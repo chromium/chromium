@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -29,6 +29,25 @@ luci.notifier(
 )
 
 luci.notifier(
+    name = "chrome-rust-experiments",
+    on_new_status = ["FAILURE", "INFRA_FAILURE"],
+    notify_emails = [
+        "chrome-rust-experiments+bots@google.com",
+    ],
+)
+
+# Notifier for "package rust" step on *_upload_clang bots.
+luci.notifier(
+    name = "chrome-rust-toolchain",
+    # Watch for Rust failure regardless of the overall build status.
+    on_occurrence = ["SUCCESS", "FAILURE", "INFRA_FAILURE"],
+    failed_step_regexp = "package rust",
+    notify_emails = [
+        "chrome-rust-experiments+toolchain@google.com",
+    ],
+)
+
+luci.notifier(
     name = "chrome-memory-sheriffs",
     on_status_change = True,
     notify_emails = [
@@ -40,7 +59,6 @@ luci.notifier(
     name = "chromium-androidx-packager",
     on_new_status = ["FAILURE"],
     notify_emails = [
-        "clank-build-core+androidxfailures@google.com",
         "clank-library-failures+androidx@google.com",
     ],
 )
@@ -50,7 +68,6 @@ luci.notifier(
     on_new_status = ["FAILURE"],
     notify_emails = [
         "chromium-3pp-packager+failures@google.com",
-        "clank-build-core+3ppfailures@google.com",
     ],
 )
 
@@ -63,8 +80,16 @@ luci.notifier(
 )
 
 luci.notifier(
+    name = "cr-fuchsia-engprod",
+    on_status_change = True,
+    notify_emails = [
+        "chrome-fuchsia-engprod+builder-notification@google.com",
+    ],
+)
+
+luci.notifier(
     name = "cronet",
-    on_occurrence = ["FAILURE", "INFRA_FAILURE"],
+    on_new_status = ["FAILURE", "INFRA_FAILURE", "SUCCESS"],
     notify_emails = [
         "cronet-sheriff@grotations.appspotmail.com",
     ],
@@ -73,7 +98,10 @@ luci.notifier(
 luci.notifier(
     name = "metadata-mapping",
     on_new_status = ["FAILURE"],
-    notify_emails = ["chromium-component-mapping@google.com"],
+    notify_emails = [
+        "chromium-component-mapping@google.com",
+        "chanli@google.com",
+    ],
 )
 
 luci.notifier(
@@ -151,7 +179,7 @@ tree_closure_notifier(
     name = "gpu-tree-closer-email",
     notify_emails = ["chrome-gpu-build-failures@google.com"],
     notify_rotation_urls = [
-        "https://chrome-ops-rotation-proxy.appspot.com/current/oncallator:chrome-gpu-pixel-wrangler",
+        "https://chrome-ops-rotation-proxy.appspot.com/current/oncallator:chrome-gpu-pixel-wrangler-weekly",
     ],
 )
 
@@ -248,4 +276,20 @@ tree_closure_notifier(
     notify_emails = [
         "thomasanderson@chromium.org",
     ],
+)
+
+luci.notifier(
+    name = "v8-sandbox-fyi-bots",
+    notify_emails = [
+        "saelo+fyi-bots@chromium.org",
+    ],
+    on_new_status = ["FAILURE"],
+)
+
+luci.notifier(
+    name = "cr-accessibility",
+    notify_emails = [
+        "chrome-a11y-alerts@google.com",
+    ],
+    on_new_status = ["FAILURE"],
 )

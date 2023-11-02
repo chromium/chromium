@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -541,12 +541,14 @@ TEST_F(TouchActionFilterTest, BitMath) {
             cc::TouchAction::kAuto & cc::TouchAction::kPan);
   EXPECT_EQ(cc::TouchAction::kManipulation,
             cc::TouchAction::kAuto & ~(cc::TouchAction::kDoubleTapZoom |
-                                       cc::TouchAction::kInternalPanXScrolls));
+                                       cc::TouchAction::kInternalPanXScrolls |
+                                       cc::TouchAction::kInternalNotWritable));
   EXPECT_EQ(cc::TouchAction::kPanX,
             cc::TouchAction::kPanLeft | cc::TouchAction::kPanRight);
   EXPECT_EQ(cc::TouchAction::kAuto, cc::TouchAction::kManipulation |
                                         cc::TouchAction::kDoubleTapZoom |
-                                        cc::TouchAction::kInternalPanXScrolls);
+                                        cc::TouchAction::kInternalPanXScrolls |
+                                        cc::TouchAction::kInternalNotWritable);
 }
 
 TEST_F(TouchActionFilterTest, MultiTouch) {

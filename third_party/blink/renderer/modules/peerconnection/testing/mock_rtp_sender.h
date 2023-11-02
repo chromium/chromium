@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,10 +24,15 @@ class MockRtpSender : public rtc::RefCountedObject<webrtc::RtpSenderInterface> {
               track,
               (),
               (const override));
+  MOCK_METHOD(rtc::scoped_refptr<webrtc::DtlsTransportInterface>,
+              dtls_transport,
+              (),
+              (const override));
   MOCK_METHOD(uint32_t, ssrc, (), (const override));
   MOCK_METHOD(cricket::MediaType, media_type, (), (const override));
   MOCK_METHOD(std::string, id, (), (const override));
   MOCK_METHOD(std::vector<std::string>, stream_ids, (), (const override));
+  MOCK_METHOD(void, SetStreams, (const std::vector<std::string>&), (override));
   MOCK_METHOD(std::vector<webrtc::RtpEncodingParameters>,
               init_send_encodings,
               (),
@@ -41,6 +46,23 @@ class MockRtpSender : public rtc::RefCountedObject<webrtc::RtpSenderInterface> {
               GetDtmfSender,
               (),
               (const override));
+  MOCK_METHOD(void,
+              SetFrameEncryptor,
+              (rtc::scoped_refptr<webrtc::FrameEncryptorInterface>),
+              (override));
+  MOCK_METHOD(rtc::scoped_refptr<webrtc::FrameEncryptorInterface>,
+              GetFrameEncryptor,
+              (),
+              (const, override));
+  MOCK_METHOD(void,
+              SetEncoderToPacketizerFrameTransformer,
+              (rtc::scoped_refptr<webrtc::FrameTransformerInterface>),
+              (override));
+  MOCK_METHOD(
+      void,
+      SetEncoderSelector,
+      (std::unique_ptr<webrtc::VideoEncoderFactory::EncoderSelectorInterface>),
+      (override));
 };
 
 }  // namespace blink

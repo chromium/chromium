@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
@@ -35,9 +34,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
-namespace remoting {
-
-namespace protocol {
+namespace remoting::protocol {
 
 class MockAuthenticator : public Authenticator {
  public:
@@ -145,6 +142,7 @@ class MockHostStub : public HostStub {
   MOCK_METHOD1(DeliverClientMessage, void(const ExtensionMessage& message));
   MOCK_METHOD1(SelectDesktopDisplay,
                void(const SelectDesktopDisplayRequest& message));
+  MOCK_METHOD1(SetVideoLayout, void(const VideoLayout& video_layout));
 };
 
 class MockClientStub : public ClientStub {
@@ -257,7 +255,7 @@ class MockPairingRegistryDelegate : public PairingRegistry::Delegate {
   ~MockPairingRegistryDelegate() override;
 
   // PairingRegistry::Delegate implementation.
-  std::unique_ptr<base::ListValue> LoadAll() override;
+  base::Value::List LoadAll() override;
   bool DeleteAll() override;
   protocol::PairingRegistry::Pairing Load(
       const std::string& client_id) override;
@@ -282,7 +280,6 @@ class SynchronousPairingRegistry : public PairingRegistry {
                 base::OnceClosure task) override;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_PROTOCOL_MOCK_OBJECTS_H_

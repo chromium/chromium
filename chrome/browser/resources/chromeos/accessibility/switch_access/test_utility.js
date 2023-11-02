@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,7 +55,7 @@ const TestUtility = {
         chrome.accessibilityPrivate.SwitchAccessCommand.SELECT);
   },
 
-  /** Only call from inside runWithLoadedTree() */
+  /** Only call after runWithLoadedTree() */
   startFocusInside(rootWebArea) {
     if (!rootWebArea) {
       throw new Error('Web root node is undefined');

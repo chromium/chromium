@@ -1,12 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/query_tiles/test/test_utils.h"
 
-#include <algorithm>
 #include <memory>
 #include <utility>
+
+#include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 
 namespace query_tiles {
 namespace test {
@@ -89,10 +91,7 @@ bool AreTileGroupsIdentical(const TileGroup& lhs, const TileGroup& rhs) {
 
   for (const auto& it : lhs.tiles) {
     auto* target = it.get();
-    auto found = std::find_if(rhs.tiles.begin(), rhs.tiles.end(),
-                              [&target](const std::unique_ptr<Tile>& entry) {
-                                return entry->id == target->id;
-                              });
+    auto found = base::ranges::find(rhs.tiles, target->id, &Tile::id);
     if (found == rhs.tiles.end() || *target != *found->get())
       return false;
   }
@@ -105,19 +104,13 @@ bool AreTilesIdentical(const Tile& lhs, const Tile& rhs) {
     return false;
 
   for (const auto& it : lhs.image_metadatas) {
-    auto found =
-        std::find_if(rhs.image_metadatas.begin(), rhs.image_metadatas.end(),
-                     [it](const ImageMetadata& image) { return image == it; });
-    if (found == rhs.image_metadatas.end())
+    if (!base::Contains(rhs.image_metadatas, it))
       return false;
   }
 
   for (const auto& it : lhs.sub_tiles) {
     auto* target = it.get();
-    auto found = std::find_if(rhs.sub_tiles.begin(), rhs.sub_tiles.end(),
-                              [&target](const std::unique_ptr<Tile>& entry) {
-                                return entry->id == target->id;
-                              });
+    auto found = base::ranges::find(rhs.sub_tiles, target->id, &Tile::id);
     if (found == rhs.sub_tiles.end() ||
         !AreTilesIdentical(*target, *found->get()))
       return false;

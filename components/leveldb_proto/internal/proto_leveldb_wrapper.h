@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #ifndef COMPONENTS_LEVELDB_PROTO_INTERNAL_PROTO_LEVELDB_WRAPPER_H_
@@ -14,9 +14,9 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_checker.h"
 #include "components/leveldb_proto/internal/proto_leveldb_wrapper_metrics.h"
@@ -152,7 +152,7 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) ProtoLevelDBWrapper {
   // Used to run blocking tasks in-order, must be the TaskRunner that |db_|
   // relies on.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  LevelDB* db_ = nullptr;
+  raw_ptr<LevelDB> db_ = nullptr;
 
   // The identifier used when recording metrics to determine the source of the
   // LevelDB calls, likely the database client name.

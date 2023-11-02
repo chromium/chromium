@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,23 @@
  * screen.
  */
 
-/* #js_imports_placeholder */
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../../components/oobe_icons.m.js';
+import '../../components/buttons/oobe_back_button.m.js';
+import '../../components/buttons/oobe_text_button.m.js';
+import '../../components/common_styles/common_styles.m.js';
+import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+import '../../components/dialogs/oobe_adaptive_dialog.m.js';
+import '../../components/dialogs/oobe_loading_dialog.m.js';
+
+import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
+import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.m.js';
+import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+
 
 // Enum that describes the current state of the Terms Of Service screen
 const ManagedTermsState = {
@@ -23,9 +39,14 @@ const ManagedTermsState = {
  * @implements {MultiStepBehaviorInterface}
  * @implements {OobeI18nBehaviorInterface}
  */
- const ManagedTermsOfServiceBase = Polymer.mixinBehaviors([OobeI18nBehavior,
-  OobeDialogHostBehavior, LoginScreenBehavior, MultiStepBehavior],
-  Polymer.Element);
+const ManagedTermsOfServiceBase = mixinBehaviors(
+    [
+      OobeI18nBehavior,
+      OobeDialogHostBehavior,
+      LoginScreenBehavior,
+      MultiStepBehavior,
+    ],
+    PolymerElement);
 
 /**
  * @typedef {{
@@ -44,7 +65,9 @@ class ManagedTermsOfService extends ManagedTermsOfServiceBase {
     return 'managed-terms-of-service-element';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {
     return {
@@ -74,21 +97,6 @@ class ManagedTermsOfService extends ManagedTermsOfServiceBase {
     return ManagedTermsState;
   }
 
-  // Whether the screen is still loading.
-  isLoading_() {
-    return this.uiStep == ManagedTermsState.LOADING;
-  }
-
-  // Whether the screen has finished loading.
-  isLoaded_() {
-    return this.uiStep == ManagedTermsState.LOADED;
-  }
-
-  // Whether the screen is in an error state.
-  hasError_() {
-    return this.uiStep == ManagedTermsState.ERROR;
-  }
-
   get EXTERNAL_API() {
     return ['setTermsOfServiceLoadError',
             'setTermsOfService'];
@@ -106,9 +114,7 @@ class ManagedTermsOfService extends ManagedTermsOfServiceBase {
   /** @override */
   ready() {
     super.ready();
-    this.initializeLoginScreen('TermsOfServiceScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('TermsOfServiceScreen');
   }
 
   focus() {
@@ -120,12 +126,6 @@ class ManagedTermsOfService extends ManagedTermsOfServiceBase {
    * @private
    */
   onTermsOfServiceAccepted_() {
-    // Ignore on-tap events when disabled.
-    // TODO: Polymer Migration - Remove this when the migration is finished.
-    // See: https://github.com/Polymer/polymer/issues/4685
-    if (this.acceptButtonDisabled_)
-      return;
-
     this.backButtonDisabled_ = true;
     this.acceptButtonDisabled_ = true;
     this.userActed('accept');
@@ -136,12 +136,6 @@ class ManagedTermsOfService extends ManagedTermsOfServiceBase {
    * @private
    */
   onTosBackButtonPressed_() {
-    // Ignore on-tap events when disabled.
-    // TODO: Polymer Migration - Remove this when the migration is finished.
-    // See: https://github.com/Polymer/polymer/issues/4685
-    if (this.backButtonDisabled_)
-      return;
-
     this.backButtonDisabled_ = true;
     this.retryButtonDisabled_ = true;
     this.acceptButtonDisabled_ = true;
@@ -153,14 +147,10 @@ class ManagedTermsOfService extends ManagedTermsOfServiceBase {
    * @private
    */
   onTosRetryButtonPressed_() {
-    // Ignore on-tap events when disabled.
-    // TODO: Polymer Migration - Remove this when the migration is finished.
-    // See: https://github.com/Polymer/polymer/issues/4685
-    if (this.retryButtonDisabled_)
-      return;
-
     this.retryButtonDisabled_ = true;
     this.userActed('retry');
+    // Show loading state while retrying.
+    this.setUIStep(ManagedTermsState.LOADING);
   }
 
   /**

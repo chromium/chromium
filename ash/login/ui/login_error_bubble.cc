@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,10 +35,14 @@ LoginErrorBubble::LoginErrorBubble(views::View* anchor_view)
 
 LoginErrorBubble::~LoginErrorBubble() = default;
 
-void LoginErrorBubble::SetContent(views::View* content) {
+void LoginErrorBubble::SetContent(std::unique_ptr<views::View> content) {
   if (content_)
-    delete content_;
-  content_ = AddChildView(content);
+    RemoveChildViewT(content_);
+  content_ = AddChildView(std::move(content));
+}
+
+views::View* LoginErrorBubble::GetContent() {
+  return content_;
 }
 
 void LoginErrorBubble::SetTextContent(const std::u16string& message) {

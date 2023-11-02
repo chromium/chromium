@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,7 +54,7 @@ class DlpContentTabHelperBrowserTest
 
 IN_PROC_BROWSER_TEST_F(DlpContentTabHelperBrowserTest, PlatformApp) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  ExtensionTestMessageListener launched_listener("Launched", false);
+  ExtensionTestMessageListener launched_listener("Launched");
 
   // Install Platform App
   content::WindowedNotificationObserver app_loaded_observer(
@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentTabHelperBFCacheBrowserTest,
               OnConfidentialityChanged(_, kScreenshotRestrictionSet))
       .Times(1);
   EXPECT_TRUE(content::NavigateToURL(web_contents, kUrlRestricted));
-  content::RenderFrameHost* const rfh_a = web_contents->GetMainFrame();
+  content::RenderFrameHost* const rfh_a = web_contents->GetPrimaryMainFrame();
   content::RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
 
   // 2) navigate to unrestricted.com
@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentTabHelperBFCacheBrowserTest,
               OnConfidentialityChanged(_, kEmptyRestrictionSet))
       .Times(1);
   EXPECT_TRUE(content::NavigateToURL(web_contents, kUrlUnrestricted));
-  content::RenderFrameHost* const rfh_b = web_contents->GetMainFrame();
+  content::RenderFrameHost* const rfh_b = web_contents->GetPrimaryMainFrame();
   content::RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
 
   EXPECT_FALSE(delete_observer_rfh_a.deleted())

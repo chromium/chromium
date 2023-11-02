@@ -44,6 +44,7 @@
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/timing_allow_origin_parser.h"
 #include "services/network/public/mojom/parsed_headers.mojom-blink.h"
+#include "services/network/public/mojom/supports_loading_mode.mojom-blink.h"
 #include "services/network/public/mojom/timing_allow_origin.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -95,6 +96,10 @@ blink::WebClientHintsType ConvertToBlink(WebClientHintsType in) {
   return in;
 }
 
+blink::LoadingMode ConvertToBlink(LoadingMode in) {
+  return static_cast<blink::LoadingMode>(in);
+}
+
 // ===== Converters for other basic Blink types =====
 String ConvertToBlink(const std::string& in) {
   return String::FromUTF8(in);
@@ -119,7 +124,7 @@ template <
     typename OutElement = decltype(ConvertToBlink(std::declval<InElement>()))>
 Vector<OutElement> ConvertToBlink(const std::vector<InElement>& in) {
   Vector<OutElement> out;
-  out.ReserveCapacity(base::checked_cast<wtf_size_t>(in.size()));
+  out.reserve(base::checked_cast<wtf_size_t>(in.size()));
   for (const auto& element : in) {
     out.push_back(ConvertToBlink(element));
   }
@@ -201,13 +206,13 @@ blink::AllowCSPFromHeaderValuePtr ConvertToBlink(
   if (!allow_csp_from)
     return nullptr;
   switch (allow_csp_from->which()) {
-    case AllowCSPFromHeaderValue::Tag::ALLOW_STAR:
+    case AllowCSPFromHeaderValue::Tag::kAllowStar:
       return blink::AllowCSPFromHeaderValue::NewAllowStar(
           allow_csp_from->get_allow_star());
-    case AllowCSPFromHeaderValue::Tag::ORIGIN:
+    case AllowCSPFromHeaderValue::Tag::kOrigin:
       return blink::AllowCSPFromHeaderValue::NewOrigin(
           ConvertToBlink(allow_csp_from->get_origin()));
-    case AllowCSPFromHeaderValue::Tag::ERROR_MESSAGE:
+    case AllowCSPFromHeaderValue::Tag::kErrorMessage:
       return blink::AllowCSPFromHeaderValue::NewErrorMessage(
           ConvertToBlink(allow_csp_from->get_error_message()));
   }
@@ -238,6 +243,12 @@ blink::TimingAllowOriginPtr ConvertToBlink(const TimingAllowOriginPtr& in) {
   }
 }
 
+blink::VariantsHeaderPtr ConvertToBlink(const VariantsHeaderPtr& in) {
+  DCHECK(in);
+  return blink::VariantsHeader::New(ConvertToBlink(in->name),
+                                    ConvertToBlink(in->available_values));
+}
+
 blink::ParsedHeadersPtr ConvertToBlink(const ParsedHeadersPtr& in) {
   DCHECK(in);
   return blink::ParsedHeaders::New(
@@ -247,14 +258,20 @@ blink::ParsedHeadersPtr ConvertToBlink(const ParsedHeadersPtr& in) {
       in->accept_ch.has_value()
           ? absl::make_optional(ConvertToBlink(in->accept_ch.value()))
           : absl::nullopt,
-      in->accept_ch_lifetime,
       in->critical_ch.has_value()
           ? absl::make_optional(ConvertToBlink(in->critical_ch.value()))
           : absl::nullopt,
       in->xfo, ConvertToBlink(in->link_headers),
-      ConvertToBlink(in->timing_allow_origin), in->bfcache_opt_in_unload,
+      ConvertToBlink(in->timing_allow_origin),
+      ConvertToBlink(in->supports_loading_mode),
       in->reporting_endpoints.has_value()
           ? absl::make_optional(ConvertToBlink(in->reporting_endpoints.value()))
+          : absl::nullopt,
+      in->variants_headers.has_value()
+          ? absl::make_optional(ConvertToBlink(in->variants_headers.value()))
+          : absl::nullopt,
+      in->content_language.has_value()
+          ? absl::make_optional(ConvertToBlink(in->content_language.value()))
           : absl::nullopt);
 }
 
@@ -344,7 +361,7 @@ bool IsValidHTTPHeaderValue(const String& name) {
 
 // See RFC 7230, Section 3.2.6.
 bool IsValidHTTPToken(const String& characters) {
-  if (characters.IsEmpty())
+  if (characters.empty())
     return false;
   for (unsigned i = 0; i < characters.length(); ++i) {
     UChar c = characters[i];
@@ -472,7 +489,7 @@ AtomicString ExtractMIMETypeFromMediaType(const AtomicString& media_type) {
 
 ContentTypeOptionsDisposition ParseContentTypeOptionsHeader(
     const String& value) {
-  if (value.IsEmpty())
+  if (value.empty())
     return kContentTypeOptionsNone;
 
   Vector<String> results;
@@ -612,7 +629,7 @@ CacheControlHeader ParseCacheControlDirectives(
   static const char kMaxAgeDirective[] = "max-age";
   static const char kStaleWhileRevalidateDirective[] = "stale-while-revalidate";
 
-  if (!cache_control_value.IsEmpty()) {
+  if (!cache_control_value.empty()) {
     Vector<std::pair<String, String>> directives;
     ParseCacheHeader(cache_control_value, directives);
 
@@ -621,7 +638,7 @@ CacheControlHeader ParseCacheControlDirectives(
       // RFC2616 14.9.1: A no-cache directive with a value is only meaningful
       // for proxy caches.  It should be ignored by a browser level cache.
       if (EqualIgnoringASCIICase(directives[i].first, kNoCacheDirective) &&
-          directives[i].second.IsEmpty()) {
+          directives[i].second.empty()) {
         cache_control_header.contains_no_cache = true;
       } else if (EqualIgnoringASCIICase(directives[i].first,
                                         kNoStoreDirective)) {
@@ -785,6 +802,8 @@ std::unique_ptr<ServerTimingHeaderVector> ParseServerTimingHeader(
 
       ServerTimingHeader header(name.ToString());
 
+      tokenizer.ConsumeBeforeAnyCharMatch({',', ';'});
+
       while (tokenizer.Consume(';')) {
         StringView parameter_name;
         if (!tokenizer.ConsumeToken(ParsedContentType::Mode::kNormal,
@@ -819,7 +838,7 @@ network::mojom::blink::ParsedHeadersPtr ParseHeaders(const String& raw_headers,
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(raw_headers.Latin1()));
   return network::mojom::ConvertToBlink(
-      network::PopulateParsedHeaders(headers.get(), url));
+      network::PopulateParsedHeaders(headers.get(), GURL(url)));
 }
 
 // This function is simply calling network::ParseContentSecurityPolicies and
@@ -831,7 +850,7 @@ ParseContentSecurityPolicies(
     network::mojom::blink::ContentSecurityPolicySource source,
     const KURL& base_url) {
   return network::mojom::ConvertToBlink(network::ParseContentSecurityPolicies(
-      raw_policies.Utf8(), type, source, base_url));
+      raw_policies.Utf8(), type, source, GURL(base_url)));
 }
 
 // This function is simply calling network::ParseContentSecurityPolicies and

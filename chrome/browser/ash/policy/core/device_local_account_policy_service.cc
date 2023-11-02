@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/settings/cros_settings_names.h"
-#include "ash/components/settings/cros_settings_provider.h"
 #include "ash/constants/ash_paths.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -19,7 +17,6 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -30,13 +27,12 @@
 #include "chrome/browser/ash/policy/invalidation/affiliated_cloud_policy_invalidator.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/common/chrome_content_client.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "components/policy/core/common/chrome_schema.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
-#include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
-#include "components/policy/core/common/cloud/resource_cache.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
@@ -47,43 +43,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-namespace em = enterprise_management;
-
 namespace policy {
 
 namespace {
-
-// Device local accounts are always affiliated.
-std::string GetDeviceDMToken(
-    ash::DeviceSettingsService* device_settings_service,
-    const std::vector<std::string>& user_affiliation_ids) {
-  return device_settings_service->policy_data()->request_token();
-}
-
-// Creates and initializes a cloud policy client. Returns nullptr if the device
-// doesn't have credentials in device settings (i.e. is not
-// enterprise-enrolled).
-std::unique_ptr<CloudPolicyClient> CreateClient(
-    ash::DeviceSettingsService* device_settings_service,
-    DeviceManagementService* device_management_service,
-    scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory) {
-  const em::PolicyData* policy_data = device_settings_service->policy_data();
-  if (!policy_data || !policy_data->has_request_token() ||
-      !policy_data->has_device_id() || !device_management_service) {
-    return nullptr;
-  }
-
-  std::unique_ptr<CloudPolicyClient> client =
-      std::make_unique<CloudPolicyClient>(
-          device_management_service, system_url_loader_factory,
-          base::BindRepeating(&GetDeviceDMToken, device_settings_service));
-  std::vector<std::string> user_affiliation_ids(
-      policy_data->user_affiliation_ids().begin(),
-      policy_data->user_affiliation_ids().end());
-  client->SetupRegistration(policy_data->request_token(),
-                            policy_data->device_id(), user_affiliation_ids);
-  return client;
-}
 
 // Get the subdirectory of the force-installed extension cache and the component
 // policy cache used for |account_id|.
@@ -111,8 +73,7 @@ void DeleteOrphanedCaches(const base::FilePath& cache_root_dir,
 // the removal is in progress.
 void DeleteObsoleteExtensionCache(const std::string& account_id_to_delete) {
   const base::FilePath path =
-      base::PathService::CheckedGet(
-          chromeos::DIR_DEVICE_LOCAL_ACCOUNT_EXTENSIONS)
+      base::PathService::CheckedGet(ash::DIR_DEVICE_LOCAL_ACCOUNT_EXTENSIONS)
           .Append(GetCacheSubdirectoryForAccountID(account_id_to_delete));
   if (base::DirectoryExists(path))
     base::DeletePathRecursively(path);
@@ -120,131 +81,8 @@ void DeleteObsoleteExtensionCache(const std::string& account_id_to_delete) {
 
 }  // namespace
 
-DeviceLocalAccountPolicyBroker::DeviceLocalAccountPolicyBroker(
-    const DeviceLocalAccount& account,
-    const base::FilePath& component_policy_cache_path,
-    std::unique_ptr<DeviceLocalAccountPolicyStore> store,
-    scoped_refptr<DeviceLocalAccountExternalDataManager> external_data_manager,
-    const base::RepeatingClosure& policy_update_callback,
-    const scoped_refptr<base::SequencedTaskRunner>& task_runner,
-    const scoped_refptr<base::SequencedTaskRunner>& resource_cache_task_runner,
-    AffiliatedInvalidationServiceProvider* invalidation_service_provider)
-    : invalidation_service_provider_(invalidation_service_provider),
-      account_id_(account.account_id),
-      user_id_(account.user_id),
-      component_policy_cache_path_(component_policy_cache_path),
-      store_(std::move(store)),
-      external_data_manager_(external_data_manager),
-      core_(dm_protocol::kChromePublicAccountPolicyType,
-            store_->account_id(),
-            store_.get(),
-            task_runner,
-            base::BindRepeating(&content::GetNetworkConnectionTracker)),
-      policy_update_callback_(policy_update_callback),
-      resource_cache_task_runner_(resource_cache_task_runner) {
-  if (account.type != DeviceLocalAccount::TYPE_ARC_KIOSK_APP &&
-      account.type != DeviceLocalAccount::TYPE_WEB_KIOSK_APP) {
-    extension_tracker_ = std::make_unique<DeviceLocalAccountExtensionTracker>(
-        account, store_.get(), &schema_registry_);
-  }
-  extension_loader_ = new chromeos::DeviceLocalAccountExternalPolicyLoader(
-      store_.get(),
-      base::PathService::CheckedGet(
-          chromeos::DIR_DEVICE_LOCAL_ACCOUNT_EXTENSIONS)
-          .Append(GetCacheSubdirectoryForAccountID(account.account_id)));
-  store_->AddObserver(this);
-
-  // Unblock the |schema_registry_| so that the |component_policy_service_|
-  // starts using it.
-  schema_registry_.RegisterComponent(
-      PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()),
-      policy::GetChromeSchema());
-  schema_registry_.SetAllDomainsReady();
-}
-
-DeviceLocalAccountPolicyBroker::~DeviceLocalAccountPolicyBroker() {
-  store_->RemoveObserver(this);
-  external_data_manager_->SetPolicyStore(nullptr);
-  external_data_manager_->Disconnect();
-}
-
-void DeviceLocalAccountPolicyBroker::Initialize() {
-  store_->Load();
-}
-
-void DeviceLocalAccountPolicyBroker::LoadImmediately() {
-  store_->LoadImmediately();
-}
-
-bool DeviceLocalAccountPolicyBroker::HasInvalidatorForTest() const {
-  return invalidator_ != nullptr;
-}
-
-void DeviceLocalAccountPolicyBroker::ConnectIfPossible(
-    ash::DeviceSettingsService* device_settings_service,
-    DeviceManagementService* device_management_service,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  if (core_.client())
-    return;
-
-  std::unique_ptr<CloudPolicyClient> client(CreateClient(
-      device_settings_service, device_management_service, url_loader_factory));
-  if (!client)
-    return;
-
-  CreateComponentCloudPolicyService(client.get());
-  core_.Connect(std::move(client));
-  external_data_manager_->Connect(url_loader_factory);
-  core_.StartRefreshScheduler();
-  UpdateRefreshDelay();
-  invalidator_ = std::make_unique<AffiliatedCloudPolicyInvalidator>(
-      PolicyInvalidationScope::kDeviceLocalAccount, &core_,
-      invalidation_service_provider_, account_id_);
-}
-
-void DeviceLocalAccountPolicyBroker::UpdateRefreshDelay() {
-  if (core_.refresh_scheduler()) {
-    const base::Value* policy_value =
-        store_->policy_map().GetValue(key::kPolicyRefreshRate);
-    if (policy_value && policy_value->is_int())
-      core_.refresh_scheduler()->SetDesiredRefreshDelay(policy_value->GetInt());
-  }
-}
-
-std::string DeviceLocalAccountPolicyBroker::GetDisplayName() const {
-  const base::Value* display_name_value =
-      store_->policy_map().GetValue(policy::key::kUserDisplayName);
-  if (display_name_value && display_name_value->is_string())
-    return display_name_value->GetString();
-  return std::string();
-}
-
-void DeviceLocalAccountPolicyBroker::OnStoreLoaded(CloudPolicyStore* store) {
-  UpdateRefreshDelay();
-  policy_update_callback_.Run();
-}
-
-void DeviceLocalAccountPolicyBroker::OnStoreError(CloudPolicyStore* store) {
-  policy_update_callback_.Run();
-}
-
-void DeviceLocalAccountPolicyBroker::OnComponentCloudPolicyUpdated() {
-  policy_update_callback_.Run();
-}
-
-void DeviceLocalAccountPolicyBroker::CreateComponentCloudPolicyService(
-    CloudPolicyClient* client) {
-  std::unique_ptr<ResourceCache> resource_cache(new ResourceCache(
-      component_policy_cache_path_, resource_cache_task_runner_,
-      /* max_cache_size */ absl::nullopt));
-
-  component_policy_service_ = std::make_unique<ComponentCloudPolicyService>(
-      dm_protocol::kChromeExtensionPolicyType, this, &schema_registry_, core(),
-      client, std::move(resource_cache), resource_cache_task_runner_);
-}
-
 DeviceLocalAccountPolicyService::DeviceLocalAccountPolicyService(
-    chromeos::SessionManagerClient* session_manager_client,
+    ash::SessionManagerClient* session_manager_client,
     ash::DeviceSettingsService* device_settings_service,
     ash::CrosSettings* cros_settings,
     AffiliatedInvalidationServiceProvider* invalidation_service_provider,
@@ -271,7 +109,7 @@ DeviceLocalAccountPolicyService::DeviceLocalAccountPolicyService(
               &DeviceLocalAccountPolicyService::UpdateAccountListIfNonePending,
               base::Unretained(this)))),
       component_policy_cache_root_(base::PathService::CheckedGet(
-          chromeos::DIR_DEVICE_LOCAL_ACCOUNT_COMPONENT_POLICY)) {
+          ash::DIR_DEVICE_LOCAL_ACCOUNT_COMPONENT_POLICY)) {
   external_data_service_ =
       std::make_unique<DeviceLocalAccountExternalDataService>(
           this, std::move(external_data_service_backend_task_runner));
@@ -293,11 +131,9 @@ void DeviceLocalAccountPolicyService::Connect(
   device_management_service_ = device_management_service;
 
   // Connect the brokers.
-  for (PolicyBrokerMap::iterator it(policy_brokers_.begin());
-       it != policy_brokers_.end(); ++it) {
-    it->second->ConnectIfPossible(device_settings_service_,
-                                  device_management_service_,
-                                  url_loader_factory_);
+  for (auto& [user_id, broker] : policy_brokers_) {
+    broker->ConnectIfPossible(device_settings_service_,
+                              device_management_service_, url_loader_factory_);
   }
 }
 
@@ -331,22 +167,20 @@ bool DeviceLocalAccountPolicyService::IsExtensionCacheDirectoryBusy(
 }
 
 void DeviceLocalAccountPolicyService::StartExtensionCachesIfPossible() {
-  for (PolicyBrokerMap::iterator it = policy_brokers_.begin();
-       it != policy_brokers_.end(); ++it) {
-    if (!it->second->extension_loader()->IsCacheRunning() &&
-        !IsExtensionCacheDirectoryBusy(it->second->account_id())) {
-      it->second->extension_loader()->StartCache(extension_cache_task_runner_);
+  for (auto& [user_id, broker] : policy_brokers_) {
+    if (!broker->IsCacheRunning() &&
+        !IsExtensionCacheDirectoryBusy(broker->account_id())) {
+      broker->StartCache(extension_cache_task_runner_);
     }
   }
 }
 
 bool DeviceLocalAccountPolicyService::StartExtensionCacheForAccountIfPresent(
     const std::string& account_id) {
-  for (PolicyBrokerMap::iterator it = policy_brokers_.begin();
-       it != policy_brokers_.end(); ++it) {
-    if (it->second->account_id() == account_id) {
-      DCHECK(!it->second->extension_loader()->IsCacheRunning());
-      it->second->extension_loader()->StartCache(extension_cache_task_runner_);
+  for (auto& [user_id, broker] : policy_brokers_) {
+    if (broker->account_id() == account_id) {
+      DCHECK(!broker->IsCacheRunning());
+      broker->StartCache(extension_cache_task_runner_);
       return true;
     }
   }
@@ -434,10 +268,9 @@ void DeviceLocalAccountPolicyService::UpdateAccountList() {
   std::set<std::string> subdirectories_to_keep;
   const std::vector<DeviceLocalAccount> device_local_accounts =
       GetDeviceLocalAccounts(cros_settings_);
-  for (std::vector<DeviceLocalAccount>::const_iterator it =
-           device_local_accounts.begin();
-       it != device_local_accounts.end(); ++it) {
-    PolicyBrokerMap::iterator broker_it = old_policy_brokers.find(it->user_id);
+  for (const auto& device_local_account : device_local_accounts) {
+    PolicyBrokerMap::iterator broker_it =
+        old_policy_brokers.find(device_local_account.user_id);
 
     std::unique_ptr<DeviceLocalAccountPolicyBroker> broker;
     bool broker_initialized = false;
@@ -447,22 +280,21 @@ void DeviceLocalAccountPolicyService::UpdateAccountList() {
       old_policy_brokers.erase(broker_it);
       broker_initialized = true;
     } else {
-      std::unique_ptr<DeviceLocalAccountPolicyStore> store(
-          new DeviceLocalAccountPolicyStore(
-              it->account_id, session_manager_client_, device_settings_service_,
-              store_background_task_runner_));
+      auto store = std::make_unique<DeviceLocalAccountPolicyStore>(
+          device_local_account.account_id, session_manager_client_,
+          device_settings_service_, store_background_task_runner_);
       scoped_refptr<DeviceLocalAccountExternalDataManager>
           external_data_manager =
-              external_data_service_->GetExternalDataManager(it->account_id,
-                                                             store.get());
+              external_data_service_->GetExternalDataManager(
+                  device_local_account.account_id, store.get());
       broker = std::make_unique<DeviceLocalAccountPolicyBroker>(
-          *it,
-          component_policy_cache_root_.Append(
-              GetCacheSubdirectoryForAccountID(it->account_id)),
+          device_local_account,
+          component_policy_cache_root_.Append(GetCacheSubdirectoryForAccountID(
+              device_local_account.account_id)),
           std::move(store), external_data_manager,
           base::BindRepeating(
               &DeviceLocalAccountPolicyService::NotifyPolicyUpdated,
-              base::Unretained(this), it->user_id),
+              base::Unretained(this), device_local_account.user_id),
           base::ThreadTaskRunnerHandle::Get(), resource_cache_task_runner_,
           invalidation_service_provider_);
     }
@@ -472,15 +304,15 @@ void DeviceLocalAccountPolicyService::UpdateAccountList() {
     broker->ConnectIfPossible(device_settings_service_,
                               device_management_service_, url_loader_factory_);
 
-    policy_brokers_[it->user_id] = std::move(broker);
+    policy_brokers_[device_local_account.user_id] = std::move(broker);
     if (!broker_initialized) {
       // The broker must be initialized after it has been added to
       // |policy_brokers_|.
-      policy_brokers_[it->user_id]->Initialize();
+      policy_brokers_[device_local_account.user_id]->Initialize();
     }
 
     subdirectories_to_keep.insert(
-        GetCacheSubdirectoryForAccountID(it->account_id));
+        GetCacheSubdirectoryForAccountID(device_local_account.account_id));
   }
 
   if (orphan_extension_cache_deletion_state_ == NOT_STARTED) {
@@ -493,8 +325,8 @@ void DeviceLocalAccountPolicyService::UpdateAccountList() {
     // cache directory.
     orphan_extension_cache_deletion_state_ = IN_PROGRESS;
 
-    const base::FilePath cache_root_dir = base::PathService::CheckedGet(
-        chromeos::DIR_DEVICE_LOCAL_ACCOUNT_EXTENSIONS);
+    const base::FilePath cache_root_dir =
+        base::PathService::CheckedGet(ash::DIR_DEVICE_LOCAL_ACCOUNT_EXTENSIONS);
     extension_cache_task_runner_->PostTaskAndReply(
         FROM_HERE,
         base::BindOnce(&DeleteOrphanedCaches, cache_root_dir,
@@ -533,15 +365,13 @@ void DeviceLocalAccountPolicyService::UpdateAccountList() {
 }
 
 void DeviceLocalAccountPolicyService::DeleteBrokers(PolicyBrokerMap* map) {
-  for (PolicyBrokerMap::iterator it = map->begin(); it != map->end(); ++it) {
-    scoped_refptr<chromeos::DeviceLocalAccountExternalPolicyLoader>
-        extension_loader = it->second->extension_loader();
-    if (extension_loader->IsCacheRunning()) {
-      DCHECK(!IsExtensionCacheDirectoryBusy(it->second->account_id()));
-      busy_extension_cache_directories_.insert(it->second->account_id());
-      extension_loader->StopCache(base::BindOnce(
+  for (auto& [user_id, broker] : *map) {
+    if (broker->IsCacheRunning()) {
+      DCHECK(!IsExtensionCacheDirectoryBusy(broker->account_id()));
+      busy_extension_cache_directories_.insert(broker->account_id());
+      broker->StopCache(base::BindOnce(
           &DeviceLocalAccountPolicyService::OnObsoleteExtensionCacheShutdown,
-          weak_factory_.GetWeakPtr(), it->second->account_id()));
+          weak_factory_.GetWeakPtr(), broker->account_id()));
     }
   }
   map->clear();

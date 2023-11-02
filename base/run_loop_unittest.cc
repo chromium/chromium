@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -572,12 +572,12 @@ TEST_P(RunLoopTest, NestingObservers) {
 }
 
 TEST_P(RunLoopTest, DisallowRunning) {
-  RunLoop::ScopedDisallowRunning disallow_running;
+  ScopedDisallowRunningRunLoop disallow_running;
   EXPECT_DCHECK_DEATH({ run_loop_.RunUntilIdle(); });
 }
 
 TEST_P(RunLoopTest, ExpiredDisallowRunning) {
-  { RunLoop::ScopedDisallowRunning disallow_running; }
+  { ScopedDisallowRunningRunLoop disallow_running; }
   // Running should be fine after |disallow_running| goes out of scope.
   run_loop_.RunUntilIdle();
 }

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,8 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/file_system_util.h"
 #include "storage/browser/quota/quota_callbacks.h"
+#include "storage/browser/test/mock_quota_manager.h"
+#include "storage/browser/test/mock_quota_manager_proxy.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-forward.h"
@@ -36,10 +38,6 @@ class FileSystemOperationRunner;
 class FileSystemURL;
 }
 
-namespace storage {
-class QuotaManager;
-}
-
 namespace sync_file_system {
 
 class FileChangeList;
@@ -52,17 +50,13 @@ class SyncFileSystemBackend;
 class CannedSyncableFileSystem
     : public LocalFileSyncStatus::Observer {
  public:
-  typedef base::OnceCallback<
-      void(const GURL& root, const std::string& name, base::File::Error result)>
+  typedef base::OnceCallback<void(const storage::FileSystemURL& root,
+                                  const std::string& name,
+                                  base::File::Error result)>
       OpenFileSystemCallback;
   typedef base::OnceCallback<void(base::File::Error)> StatusCallback;
   typedef base::RepeatingCallback<void(int64_t)> WriteCallback;
   typedef storage::FileSystemOperation::FileEntryList FileEntryList;
-
-  enum QuotaMode {
-    QUOTA_ENABLED,
-    QUOTA_DISABLED,
-  };
 
   CannedSyncableFileSystem(
       const GURL& origin,
@@ -76,7 +70,7 @@ class CannedSyncableFileSystem
   ~CannedSyncableFileSystem() override;
 
   // SetUp must be called before using this instance.
-  void SetUp(QuotaMode quota_mode);
+  void SetUp();
 
   // TearDown must be called before destructing this instance.
   void TearDown();
@@ -102,7 +96,7 @@ class CannedSyncableFileSystem
   storage::FileSystemContext* file_system_context() {
     return file_system_context_.get();
   }
-  storage::QuotaManager* quota_manager() { return quota_manager_.get(); }
+  storage::MockQuotaManager* quota_manager() { return quota_manager_.get(); }
   GURL origin() const { return origin_; }
   storage::FileSystemType type() const { return type_; }
   blink::mojom::StorageType storage_type() const {
@@ -214,7 +208,7 @@ class CannedSyncableFileSystem
   // Callbacks.
   void DidOpenFileSystem(base::SingleThreadTaskRunner* original_task_runner,
                          base::OnceClosure quit_closure,
-                         const GURL& root,
+                         const storage::FileSystemURL& root,
                          const std::string& name,
                          base::File::Error result);
   void DidInitializeFileSystemContext(base::OnceClosure quit_closure,
@@ -225,7 +219,8 @@ class CannedSyncableFileSystem
   base::ScopedTempDir data_dir_;
   const std::string service_name_;
 
-  scoped_refptr<storage::QuotaManager> quota_manager_;
+  scoped_refptr<storage::MockQuotaManager> quota_manager_;
+  scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   const GURL origin_;
   const storage::FileSystemType type_;

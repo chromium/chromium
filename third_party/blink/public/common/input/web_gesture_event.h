@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -67,7 +67,7 @@ class BLINK_COMMON_EXPORT WebGestureEvent : public WebInputEvent {
       float height;
     } show_press;
 
-    // This is used for both GestureLongPress and GestureLongTap.
+    // This is used for GestureShortPress , GestureLongPress and GestureLongTap.
     struct {
       float width;
       float height;
@@ -268,6 +268,7 @@ class BLINK_COMMON_EXPORT WebGestureEvent : public WebInputEvent {
       case Type::kGestureShowPress:
       case Type::kGestureTapCancel:
       case Type::kGestureTwoFingerTap:
+      case Type::kGestureShortPress:
       case Type::kGestureLongPress:
       case Type::kGestureLongTap:
         return false;

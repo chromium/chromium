@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -94,6 +94,20 @@ def _FindReturnValueSpace(name, paren_idx):
       break
 
   return space_idx
+
+
+def _StripAbiTag(name):
+  # Clang attribute. E.g.: std::allocator<Foo[6]>construct[abi:100]<Bar[7]>()
+  start_idx = 0
+  while True:
+    start_idx = name.find('[abi:', start_idx, len(name) - 1)
+    if start_idx == -1:
+      break
+    end_idx = name.find(']', start_idx + 5)
+    if end_idx == -1:
+      break
+    name = name[:start_idx] + name[end_idx + 1:]
+  return name
 
 
 def _StripTemplateArgs(name):
@@ -207,6 +221,7 @@ def Parse(name):
     assert right_paren_idx > left_paren_idx
     space_idx = _FindReturnValueSpace(name, left_paren_idx)
     name_no_params = name[space_idx + 1:left_paren_idx]
+
     # Special case for top-level lambdas.
     if name_no_params.endswith('}::_FUN'):
       # Don't use |name_no_params| in here since prior _idx will be off if
@@ -221,6 +236,7 @@ def Parse(name):
     full_name = name[space_idx + 1:]
     name = name_no_params + name[right_paren_idx + 1:]
 
+  name = _StripAbiTag(name)
   template_name = name
   name = _StripTemplateArgs(name)
   return full_name, template_name, name

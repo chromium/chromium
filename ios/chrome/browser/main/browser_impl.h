@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <CoreFoundation/CoreFoundation.h>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #import "ios/chrome/browser/main/browser.h"
 
@@ -24,7 +23,7 @@ class WebStateListDelegate;
 // See src/docs/ios/objects.md for more information.
 class BrowserImpl : public Browser {
  public:
-  // Constructs a BrowserImpl attached to |browser_state|.
+  // Constructs a BrowserImpl attached to `browser_state`.
   BrowserImpl(ChromeBrowserState* browser_state);
 
   BrowserImpl(const BrowserImpl&) = delete;
@@ -33,18 +32,13 @@ class BrowserImpl : public Browser {
   ~BrowserImpl() override;
 
   // Browser.
-  ChromeBrowserState* GetBrowserState() const override;
-  WebStateList* GetWebStateList() const override;
-  CommandDispatcher* GetCommandDispatcher() const override;
+  ChromeBrowserState* GetBrowserState() override;
+  WebStateList* GetWebStateList() override;
+  CommandDispatcher* GetCommandDispatcher() override;
   void AddObserver(BrowserObserver* observer) override;
   void RemoveObserver(BrowserObserver* observer) override;
 
  private:
-  // Exposed to allow unittests to inject a WebStateList
-  FRIEND_TEST_ALL_PREFIXES(BrowserImplTest, TestAccessors);
-  BrowserImpl(ChromeBrowserState* browser_state,
-              std::unique_ptr<WebStateList> web_state_list);
-
   ChromeBrowserState* browser_state_;
   std::unique_ptr<WebStateListDelegate> web_state_list_delegate_;
   std::unique_ptr<WebStateList> web_state_list_;

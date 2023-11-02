@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/debug/stack_trace.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/class_property.h"
 #include "ui/base/metadata/metadata_types.h"
 #include "ui/views/debug/debugger_utils.h"
@@ -40,7 +41,7 @@ class ViewDebugWrapperImpl : public debug::ViewDebugWrapper {
   void ForAllProperties(PropCallback callback) override;
 
  private:
-  const View* const view_;
+  const raw_ptr<const View> view_;
   std::vector<std::unique_ptr<ViewDebugWrapperImpl>> children_;
 };
 
@@ -52,6 +53,13 @@ bool IsViewClass(View* view) {
   while (child && child != parent)
     child = child->parent_class_meta_data();
   return !!child;
+}
+
+template <typename V>
+V* AsViewClass(View* view) {
+  if (!IsViewClass<V>(view))
+    return nullptr;
+  return static_cast<V*>(view);
 }
 
 VIEWS_EXPORT void PrintViewHierarchy(View* view,

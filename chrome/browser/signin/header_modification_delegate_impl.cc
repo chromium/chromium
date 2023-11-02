@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,7 +35,7 @@
 
 namespace signin {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 HeaderModificationDelegateImpl::HeaderModificationDelegateImpl(
     Profile* profile,
     bool incognito_enabled)
@@ -82,7 +82,7 @@ void HeaderModificationDelegateImpl::ProcessRequest(
 #endif
 
   ConsentLevel consent_level = ConsentLevel::kSync;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   consent_level = ConsentLevel::kSignin;
 #endif
 
@@ -96,7 +96,7 @@ void HeaderModificationDelegateImpl::ProcessRequest(
 
   int incognito_mode_availability =
       prefs->GetInteger(prefs::kIncognitoModeAvailability);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   incognito_mode_availability =
       incognito_enabled_
           ? incognito_mode_availability
@@ -134,17 +134,17 @@ bool HeaderModificationDelegateImpl::ShouldIgnoreGuestWebViewRequest(
     return true;
 
   if (extensions::WebViewRendererState::GetInstance()->IsGuest(
-          contents->GetMainFrame()->GetProcess()->GetID())) {
-    GURL identity_api_site =
-        extensions::WebViewGuest::GetSiteForGuestPartitionConfig(
-            extensions::WebAuthFlow::GetWebViewPartitionConfig(
-                extensions::WebAuthFlow::GET_AUTH_TOKEN,
-                contents->GetBrowserContext()));
-    if (contents->GetSiteInstance()->GetSiteURL() != identity_api_site)
+          contents->GetPrimaryMainFrame()->GetProcess()->GetID())) {
+    auto identity_api_config =
+        extensions::WebAuthFlow::GetWebViewPartitionConfig(
+            extensions::WebAuthFlow::GET_AUTH_TOKEN,
+            contents->GetBrowserContext());
+    if (contents->GetSiteInstance()->GetStoragePartitionConfig() !=
+        identity_api_config)
       return true;
 
-    // If the site URL matches, but |contents| is not using a guest
-    // SiteInstance, then there is likely a serious bug.
+    // If the StoragePartitionConfig matches, but |contents| is not using a
+    // guest SiteInstance, then there is likely a serious bug.
     CHECK(contents->GetSiteInstance()->IsGuest());
   }
   return false;

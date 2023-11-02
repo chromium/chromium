@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "ash/wm/resize_shadow_controller.h"
 #include "ash/wm/window_state.h"
 #include "base/bind.h"
+#include "base/ranges/algorithm.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/window_event_dispatcher.h"
@@ -114,7 +115,7 @@ class ResizeShadowAndCursorTest : public AshTestBase {
       if (visible) {
         // Make sure the shadow layer is stacked directly beneath the window
         // layer.
-        EXPECT_EQ(*(std::find(layers.begin(), layers.end(), shadow_layer) + 1),
+        EXPECT_EQ(*(base::ranges::find(layers, shadow_layer) + 1),
                   window_->layer());
       }
     }

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,9 +38,9 @@ const std::vector<InteractionsStats>& FakeFormFetcher::GetInteractionsStats()
   return stats_;
 }
 
-base::span<const InsecureCredential> FakeFormFetcher::GetInsecureCredentials()
+std::vector<const PasswordForm*> FakeFormFetcher::GetInsecureCredentials()
     const {
-  return base::make_span(insecure_credentials_);
+  return insecure_credentials_;
 }
 
 std::vector<const PasswordForm*> FakeFormFetcher::GetNonFederatedMatches()
@@ -117,4 +117,15 @@ void FakeFormFetcher::NotifyFetchCompleted() {
   for (Consumer& consumer : consumers_)
     consumer.OnFetchCompleted();
 }
+
+absl::optional<PasswordStoreBackendError>
+FakeFormFetcher::GetProfileStoreBackendError() const {
+  return profile_store_backend_error_;
+}
+
+void FakeFormFetcher::SetProfileStoreBackendError(
+    absl::optional<PasswordStoreBackendError> error) {
+  profile_store_backend_error_ = error;
+}
+
 }  // namespace password_manager

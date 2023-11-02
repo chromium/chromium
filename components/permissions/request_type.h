@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,46 +22,45 @@ namespace permissions {
 enum class RequestType {
   kAccessibilityEvents,
   kArSession,
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   kCameraPanTiltZoom,
 #endif
   kCameraStream,
   kClipboard,
   kDiskQuota,
-#if !defined(OS_ANDROID)
-  kFileHandling,
-  kFontAccess,
+#if !BUILDFLAG(IS_ANDROID)
+  kLocalFonts,
 #endif
   kGeolocation,
   kIdleDetection,
   kMicStream,
   kMidiSysex,
   kMultipleDownloads,
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   kNfcDevice,
 #endif
   kNotifications,
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   kProtectedMediaIdentifier,
 #endif
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   kRegisterProtocolHandler,
   kSecurityAttestation,
 #endif
   kStorageAccess,
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   kU2fApiRequest,
 #endif
   kVrSession,
-#if !defined(OS_ANDROID)
-  kWindowPlacement,
-  kMaxValue = kWindowPlacement
+#if !BUILDFLAG(IS_ANDROID)
+  kWindowManagement,
+  kMaxValue = kWindowManagement
 #else
   kMaxValue = kVrSession
 #endif
 };
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // On Android, icons are represented with an IDR_ identifier.
 using IconId = int;
 #else
@@ -77,10 +76,13 @@ RequestType ContentSettingsTypeToRequestType(
 absl::optional<ContentSettingsType> RequestTypeToContentSettingsType(
     RequestType request_type);
 
+// Returns whether confirmation chips can be displayed
+bool IsConfirmationChipSupported(RequestType for_request_type);
+
 // Returns the icon to display.
 IconId GetIconId(RequestType type);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Returns the blocked icon to display.
 IconId GetBlockedIconId(RequestType type);
 #endif

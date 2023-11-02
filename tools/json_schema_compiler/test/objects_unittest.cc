@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,8 +28,8 @@ TEST(JsonSchemaCompilerObjectsTest, ObjectParamParamsCreate) {
     info_value.SetIntPath("integer", 5);
     info_value.SetBoolPath("boolean", true);
 
-    std::vector<base::Value> params_value;
-    params_value.push_back(std::move(info_value));
+    base::Value::List params_value;
+    params_value.Append(std::move(info_value));
     std::unique_ptr<test::api::objects::ObjectParam::Params> params(
         test::api::objects::ObjectParam::Params::Create(params_value));
     EXPECT_TRUE(params.get());
@@ -47,8 +47,8 @@ TEST(JsonSchemaCompilerObjectsTest, ObjectParamParamsCreate) {
     info_value.SetKey("strings", std::move(strings));
     info_value.SetIntPath("integer", 5);
 
-    std::vector<base::Value> params_value;
-    params_value.push_back(std::move(info_value));
+    base::Value::List params_value;
+    params_value.Append(std::move(info_value));
     std::unique_ptr<test::api::objects::ObjectParam::Params> params(
         test::api::objects::ObjectParam::Params::Create(params_value));
     EXPECT_FALSE(params.get());
@@ -60,11 +60,11 @@ TEST(JsonSchemaCompilerObjectsTest, ReturnsObjectResultCreate) {
   info.state = test::api::objects::FIRST_STATE_FOO;
   base::Value results(test::api::objects::ReturnsObject::Results::Create(info));
   ASSERT_TRUE(results.is_list());
-  ASSERT_EQ(1u, results.GetList().size());
+  ASSERT_EQ(1u, results.GetListDeprecated().size());
 
   base::DictionaryValue expected;
   expected.SetString("state", "foo");
-  EXPECT_EQ(expected, results.GetList()[0]);
+  EXPECT_EQ(expected, results.GetListDeprecated()[0]);
 }
 
 TEST(JsonSchemaCompilerObjectsTest, OnObjectFiredCreate) {
@@ -72,11 +72,11 @@ TEST(JsonSchemaCompilerObjectsTest, OnObjectFiredCreate) {
   object.state = test::api::objects::FIRST_STATE_BAR;
   base::Value results(test::api::objects::OnObjectFired::Create(object));
   ASSERT_TRUE(results.is_list());
-  ASSERT_EQ(1u, results.GetList().size());
+  ASSERT_EQ(1u, results.GetListDeprecated().size());
 
   base::DictionaryValue expected;
   expected.SetString("state", "bar");
-  EXPECT_EQ(expected, results.GetList()[0]);
+  EXPECT_EQ(expected, results.GetListDeprecated()[0]);
 }
 
 TEST(JsonSchemaCompilerMovableObjectsTest, MovableObjectsTest) {
@@ -100,8 +100,8 @@ TEST(JsonSchemaCompilerMovableObjectsTest, MovableObjectsTest) {
   objects_movable::MovableParent parent;
   parent.pods = std::move(pods);
   parent.strs.push_back("pstr");
-  parent.blob.additional_properties.SetString("key", "val");
-  parent.choice.as_string = std::make_unique<std::string>("string");
+  parent.blob.additional_properties.Set("key", "val");
+  parent.choice.as_string = "string";
 
   objects_movable::MovableParent parent2(std::move(parent));
   ASSERT_EQ(2u, parent2.pods.size());
@@ -115,13 +115,13 @@ TEST(JsonSchemaCompilerMovableObjectsTest, MovableObjectsTest) {
   EXPECT_FALSE(parent2.pods[1].b);
   ASSERT_EQ(1u, parent2.strs.size());
   EXPECT_EQ("pstr", parent2.strs[0]);
-  EXPECT_FALSE(parent2.choice.as_movable_pod.get());
-  ASSERT_TRUE(parent2.choice.as_string.get());
+  EXPECT_FALSE(parent2.choice.as_movable_pod);
+  ASSERT_TRUE(parent2.choice.as_string);
   EXPECT_EQ("string", *parent2.choice.as_string);
-  std::string blob_string;
-  EXPECT_TRUE(
-      parent2.blob.additional_properties.GetString("key", &blob_string));
-  EXPECT_EQ("val", blob_string);
+  const std::string* blob_string =
+      parent2.blob.additional_properties.FindString("key");
+  EXPECT_TRUE(blob_string);
+  EXPECT_EQ("val", *blob_string);
 
   {
     objects_movable::MovableParent parent_with_pod_choice;
@@ -130,15 +130,14 @@ TEST(JsonSchemaCompilerMovableObjectsTest, MovableObjectsTest) {
     pod.str = "str";
     pod.num = 10;
     pod.b = false;
-    parent_with_pod_choice.choice.as_movable_pod =
-        std::make_unique<objects_movable::MovablePod>(std::move(pod));
+    parent_with_pod_choice.choice.as_movable_pod = std::move(pod);
     parent2 = std::move(parent_with_pod_choice);
   }
   EXPECT_TRUE(parent2.pods.empty());
   EXPECT_TRUE(parent2.strs.empty());
-  EXPECT_TRUE(parent2.blob.additional_properties.DictEmpty());
-  EXPECT_FALSE(parent2.choice.as_string.get());
-  ASSERT_TRUE(parent2.choice.as_movable_pod.get());
+  EXPECT_TRUE(parent2.blob.additional_properties.empty());
+  EXPECT_FALSE(parent2.choice.as_string);
+  ASSERT_TRUE(parent2.choice.as_movable_pod);
   EXPECT_EQ(objects_movable::FOO_BAZ, parent2.choice.as_movable_pod->foo);
   EXPECT_EQ("str", parent2.choice.as_movable_pod->str);
   EXPECT_EQ(10, parent2.choice.as_movable_pod->num);

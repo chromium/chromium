@@ -5,6 +5,7 @@
     "metrics_python_tests",
     "mojo_python_unittests",
     "blink_python_tests",
+    "gl_unittests_ozone",
     "grit_python_unittests",
     "telemetry_perf_unittests",
     "telemetry_perf_unittests_android_chrome",
@@ -23,7 +24,6 @@
     "monochrome_public_apk_checker"
   ],
   "fuchsia_x64_rts": [
-    "blink_web_tests",
-    "fuchsia_telemetry_gpu_integration_test"
+    "blink_web_tests"
   ]
 }

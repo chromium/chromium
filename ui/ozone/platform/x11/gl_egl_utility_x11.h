@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,6 +28,8 @@ class GLEGLUtilityX11 : public PlatformGLEGLUtility {
                            gfx::GpuExtraInfo& gpu_extra_info) const override;
   bool X11DoesVisualHaveAlphaForTest() const override;
   bool HasVisualManager() override;
+  absl::optional<base::ScopedEnvironmentVariableOverride>
+  MaybeGetScopedDisplayUnsetForVulkan() override;
 };
 
 }  // namespace ui

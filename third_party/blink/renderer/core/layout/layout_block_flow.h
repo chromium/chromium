@@ -71,17 +71,17 @@ enum IndentTextOrNot { kDoNotIndentText, kIndentText };
 // LayoutBlockFlows are the only LayoutObject allowed to own floating objects
 // (aka floats): http://www.w3.org/TR/CSS21/visuren.html#floats .
 //
-// Floats are inserted into |m_floatingObjects| (see FloatingObjects for more
+// Floats are inserted into |floating_objects_| (see FloatingObjects for more
 // information on how floats are modelled) during layout. This happens either as
-// part of laying out blocks (layoutBlockChildren) or line layout (LineBreaker
+// part of laying out blocks (LayoutBlockChildren) or line layout (LineBreaker
 // class). This is because floats can be part of an inline or a block context.
 //
 // An interesting feature of floats is that they can intrude into the next
-// block(s). This means that |m_floatingObjects| can potentially contain
+// block(s). This means that |floating_objects_| can potentially contain
 // pointers to a previous sibling LayoutBlockFlow's float.
 //
 // LayoutBlockFlow is also the only LayoutObject to own a line box tree and
-// perform inline layout. See LayoutBlockFlowLine.cpp for these parts.
+// perform inline layout. See layout_block_flow_line.cc for these parts.
 //
 // TODO(jchaffraix): We need some float and line box expert to expand on this.
 //
@@ -226,7 +226,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   // Return the number of lines in *this* block flow. Does not recurse into
   // block flow children.
   // Will start counting from the first line, and stop counting right after
-  // |stopRootInlineBox|, if specified.
+  // |stop_root_inline_box|, if specified.
   int LineCount(const RootInlineBox* stop_root_inline_box = nullptr) const;
 
   LayoutUnit FirstLineBoxBaseline() const override;
@@ -240,7 +240,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
   bool ContainsFloats() const {
     NOT_DESTROYED();
-    return floating_objects_ && !floating_objects_->Set().IsEmpty();
+    return floating_objects_ && !floating_objects_->Set().empty();
   }
   bool ContainsFloat(LayoutBox*) const;
 
@@ -363,7 +363,10 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   // Implementation detail: At some point in the future there should be no flow
   // threads. Callers that only want to know if this is a fragmentation context
   // root (and don't depend on flow threads) should call this method.
-  bool IsFragmentationContextRoot() const { return MultiColumnFlowThread(); }
+  bool IsFragmentationContextRoot() const override {
+    NOT_DESTROYED();
+    return MultiColumnFlowThread();
+  }
 
   void AddVisualOverflowFromInlineChildren();
 
@@ -375,7 +378,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
                                            LayoutUnit& max_logical_width);
 
   // Return true if this object is allowed to establish a multicol container.
-  bool AllowsColumns() const;
+  virtual bool AllowsColumns() const;
 
   bool AllowsPaginationStrut() const;
   // Pagination strut caused by the first line or child block inside this
@@ -425,7 +428,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   LayoutUnit XPositionForFloatIncludingMargin(
       const FloatingObject& child) const {
     NOT_DESTROYED();
-    LayoutUnit scrollbar_adjustment(OriginAdjustmentForScrollbars().width());
+    LayoutUnit scrollbar_adjustment(OriginAdjustmentForScrollbars().x());
     if (IsHorizontalWritingMode()) {
       return child.X() + child.GetLayoutObject()->MarginLeft() +
              scrollbar_adjustment;
@@ -463,7 +466,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   // This will mark them as "placed", which means that they have found their
   // final location in this layout pass.
   //
-  // |logicalTopMarginEdge| is the minimum logical top for the floats. The
+  // |logical_top_margin_edge| is the minimum logical top for the floats. The
   // final logical top of the floats will also be affected by clearance and
   // space available after having positioned earlier floats.
   //
@@ -471,7 +474,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   bool PlaceNewFloats(LayoutUnit logical_top_margin_edge, LineWidth* = nullptr);
 
   // Position and lay out the float, if it needs layout.
-  // |logicalTopMarginEdge| is the minimum logical top offset for the float.
+  // |logical_top_margin_edge| is the minimum logical top offset for the float.
   // The value returned is the minimum logical top offset for subsequent
   // floats.
   LayoutUnit PositionAndLayoutFloat(FloatingObject&,
@@ -536,6 +539,8 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   }
   virtual void WillCollectInlines() { NOT_DESTROYED(); }
 
+  void StopDeferringShaping() const;
+
 #if DCHECK_IS_ON()
   void ShowLineTreeAndMark(const InlineBox* = nullptr,
                            const char* = nullptr,
@@ -558,12 +563,11 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
   void UpdateBlockChildDirtyBitsBeforeLayout(bool relayout_children,
                                              LayoutBox&);
-  void AbsoluteQuads(Vector<FloatQuad>&,
+  void AbsoluteQuads(Vector<gfx::QuadF>&,
                      MapCoordinatesFlags mode = 0) const override;
-  void LocalQuadsForSelf(Vector<FloatQuad>& quads) const override;
-  void AbsoluteQuadsForSelf(Vector<FloatQuad>& quads,
+  void LocalQuadsForSelf(Vector<gfx::QuadF>& quads) const override;
+  void AbsoluteQuadsForSelf(Vector<gfx::QuadF>& quads,
                             MapCoordinatesFlags mode = 0) const override;
-  LayoutObject* HoverAncestor() const final;
 
   LayoutUnit LogicalRightOffsetForLine(
       LayoutUnit logical_top,
@@ -588,7 +592,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
         apply_text_indent);
   }
 
-  virtual LayoutObject* LayoutSpecialExcludedChild(bool /*relayoutChildren*/,
+  virtual LayoutObject* LayoutSpecialExcludedChild(bool /*relayout_children*/,
                                                    SubtreeLayoutScope&);
   bool UpdateLogicalWidthAndColumnWidth() override;
 
@@ -597,6 +601,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   void DetermineLogicalLeftPositionForChild(LayoutBox& child);
 
   void AddOutlineRects(Vector<PhysicalRect>&,
+                       OutlineInfo*,
                        const PhysicalOffset& additional_offset,
                        NGOutlineType) const override;
 
@@ -606,12 +611,12 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   bool HitTestChildren(HitTestResult&,
                        const HitTestLocation&,
                        const PhysicalOffset& accumulated_offset,
-                       HitTestAction) override;
+                       HitTestPhase) override;
 
   PhysicalOffset AccumulateRelativePositionOffsets() const override;
 
  private:
-  void QuadsForSelfInternal(Vector<FloatQuad>& quads,
+  void QuadsForSelfInternal(Vector<gfx::QuadF>& quads,
                             MapCoordinatesFlags mode,
                             bool map_to_absolute) const;
 
@@ -708,10 +713,10 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   void CreateOrDestroyMultiColumnFlowThreadIfNeeded(
       const ComputedStyle* old_style);
 
-  // Merge children of |siblingThatMayBeDeleted| into this object if possible,
-  // and delete |siblingThatMayBeDeleted|. Returns true if we were able to
-  // merge. In that case, |siblingThatMayBeDeleted| will be dead. We'll only be
-  // able to merge if both blocks are anonymous.
+  // Merge children of |sibling_that_may_be_deleted| into this object if
+  // possible, and delete |sibling_that_may_be_deleted|. Returns true if we
+  // were able to merge. In that case, |sibling_that_may_be_deleted| will be
+  // dead. We'll only be able to merge if both blocks are anonymous.
   bool MergeSiblingContiguousAnonymousBlock(
       LayoutBlockFlow* sibling_that_may_be_deleted);
 
@@ -886,9 +891,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
     return floating_objects_;
   }
 
-  static void UpdateAncestorShouldPaintFloatingObject(
-      const LayoutBox& float_box);
-
   bool ShouldTruncateOverflowingText() const;
 
  protected:
@@ -1003,7 +1005,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   LayoutUnit AdjustForUnsplittableChild(LayoutBox&,
                                         LayoutUnit logical_offset) const;
 
-  // Used to store state between styleWillChange and styleDidChange
+  // Used to store state between StyleWillChange and StyleDidChange
   static bool can_propagate_float_into_sibling_;
 
   LineBoxList line_boxes_;  // All of the root line boxes created for this block
@@ -1065,7 +1067,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
                               const InlineIterator& clean_line_start,
                               const InlineBidiResolver&,
                               const BidiStatus& clean_line_bidi_status);
-  // Helper function for layoutInlineChildren()
+  // Helper function for LayoutInlineChildren()
   RootInlineBox* CreateLineBoxesFromBidiRuns(unsigned bidi_level,
                                              BidiRunList<BidiRun>&,
                                              const InlineIterator& end,

@@ -123,9 +123,6 @@
         "filter_terrain_svg": {
             "DEFAULT": "rendering_desktop_002.wprgo"
         },
-        "geo_apis": {
-            "DEFAULT": "rendering_desktop_004.wprgo"
-        },
         "gmail_2018": {
             "DEFAULT": "rendering_desktop_000.wprgo"
         },
@@ -179,9 +176,6 @@
         },
         "js_poster_circle": {
             "DEFAULT": "rendering_desktop_009.wprgo"
-        },
-        "js_scroll_200_layer_grid": {
-            "DEFAULT": "rendering_desktop_05c1f9e507.wprgo"
         },
         "js_scroll_text_only": {
             "DEFAULT": "rendering_desktop_a2106b0095.wprgo"
@@ -262,6 +256,9 @@
             "DEFAULT": "rendering_common_c95200764f.wprgo"
         },
         "motionmark_ramp_canvas_lines": {
+            "DEFAULT": "rendering_common_c95200764f.wprgo"
+        },
+        "motionmark_ramp_composite": {
             "DEFAULT": "rendering_common_c95200764f.wprgo"
         },
         "motionmark_ramp_design": {

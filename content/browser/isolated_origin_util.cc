@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -119,6 +119,15 @@ bool IsolatedOriginUtil::IsValidOriginForOptInIsolation(
   // non-secure contexts cannot be isolated via opt-in origin isolation.
   return IsValidIsolatedOriginImpl(origin, false) &&
          network::IsOriginPotentiallyTrustworthy(origin);
+}
+
+// static
+bool IsolatedOriginUtil::IsValidOriginForOptOutIsolation(
+    const url::Origin& origin) {
+  // Per https://html.spec.whatwg.org/C/#initialise-the-document-object,
+  // non-secure contexts cannot be isolated via opt-in origin isolation,
+  // but we allow non-secure contexts to opt-out for legacy sites.
+  return IsValidIsolatedOriginImpl(origin, false);
 }
 
 // static

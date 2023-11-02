@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,7 +40,7 @@ bool XDGSurfaceWrapperImpl::Initialize() {
   }
 
   xdg_surface_add_listener(xdg_surface_.get(), &xdg_surface_listener, this);
-  connection_->ScheduleFlush();
+  connection_->Flush();
   return true;
 }
 
@@ -70,7 +70,15 @@ void XDGSurfaceWrapperImpl::Configure(void* data,
   auto* surface = static_cast<XDGSurfaceWrapperImpl*>(data);
   DCHECK(surface);
 
-  surface->wayland_window_->HandleSurfaceConfigure(serial);
+  // Calls to HandleSurfaceConfigure() might end up hiding the enclosing
+  // toplevel window, and deleting this object.
+  auto weak_window = surface->wayland_window_->AsWeakPtr();
+  weak_window->HandleSurfaceConfigure(serial);
+
+  if (!weak_window)
+    return;
+
+  weak_window->OnSurfaceConfigureEvent();
 }
 
 xdg_surface* XDGSurfaceWrapperImpl::xdg_surface() const {

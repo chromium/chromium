@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <map>
 
-#include "content/services/shared_storage_worklet/public/mojom/shared_storage_worklet_service.mojom.h"
+#include "content/common/shared_storage_worklet_service.mojom.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-persistent-handle.h"
 
@@ -21,11 +21,11 @@ class UnnamedOperationHandler {
  public:
   struct PendingRequest;
 
-  UnnamedOperationHandler();
+  explicit UnnamedOperationHandler(
+      const std::map<std::string, v8::Global<v8::Function>>&
+          operation_definition_map);
 
   ~UnnamedOperationHandler();
-
-  void RegisterOperation(gin::Arguments* args);
 
   void RunOperation(
       v8::Local<v8::Context> context,
@@ -38,7 +38,8 @@ class UnnamedOperationHandler {
   void OnPromiseRejected(PendingRequest* request, gin::Arguments* args);
 
  private:
-  std::map<std::string, v8::Global<v8::Function>> operation_definition_map_;
+  const std::map<std::string, v8::Global<v8::Function>>&
+      operation_definition_map_;
 
   std::map<PendingRequest*, std::unique_ptr<PendingRequest>> pending_requests_;
 

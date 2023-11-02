@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -57,10 +57,10 @@ class ConfigureBottomSheetActionTest : public testing::Test {
     *action_proto.mutable_configure_bottom_sheet() = proto_;
     action_ = std::make_unique<ConfigureBottomSheetAction>(
         &mock_action_delegate_, action_proto);
-    action_->ProcessAction(base::BindOnce(base::BindLambdaForTesting(
+    action_->ProcessAction(base::BindLambdaForTesting(
         [&](std::unique_ptr<ProcessedActionProto> result) {
           processed_action_ = *result;
-        })));
+        }));
   }
 
   // Runs an action that waits for a resize.

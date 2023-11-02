@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -11,7 +11,10 @@ cast_source_set("build_info") {
     "build_info.h",
   ]
 
-  deps = [ "//chromecast/base:cast_version" ]
+  deps = [
+    "//base",
+    "//chromecast/base:cast_version",
+  ]
 }
 
 cast_source_set("crash_storage") {
@@ -63,6 +66,8 @@ cast_source_set("crash") {
     sources += [
       "cast_crashdump_uploader.cc",
       "cast_crashdump_uploader.h",
+      "libcurl_wrapper.cc",
+      "libcurl_wrapper.h",
     ]
 
     if (is_linux || is_chromeos) {
@@ -87,6 +92,7 @@ cast_source_set("crash") {
 
     deps += [
       ":build_info",
+      "//chromecast:chromecast_buildflags",
       "//chromecast/base",
       "//chromecast/base:cast_sys_info_util",
       "//chromecast/base:cast_version",

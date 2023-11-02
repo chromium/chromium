@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,14 +56,11 @@ class CONTENT_EXPORT VisibleTimeRequestTrigger {
   //   contents. It is only used when |show_reason_tab_switching| is true.
   // |show_reason_tab_switching| is true when tab switch event should be
   //   reported.
-  // |show_reason_unoccluded| is true when "unoccluded" event should be
-  //   reported.
   // |show_reason_bfcache_restore| is true when page restored from bfcache event
   //   should be reported.
   void UpdateRequest(base::TimeTicks start_time,
                      bool destination_is_loaded,
                      bool show_reason_tab_switching,
-                     bool show_reason_unoccluded,
                      bool show_reason_bfcache_restore);
 
   // Returns the time set by UpdateRequest. If this was not preceded by a call

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -20,18 +21,17 @@
 
 namespace {
 
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
 bool GetPolicyOrFeature(const char* policy_name, const base::Feature& feature) {
   const policy::PolicyMap& policies =
       g_browser_process->browser_policy_connector()
           ->GetPolicyService()
           ->GetPolicies(policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME,
                                                 std::string()));
-  absl::optional<bool> policy_value;
-  if (const base::Value* value = policies.GetValue(policy_name))
-    policy_value = value->GetIfBool();
-  return policy_value.value_or(base::FeatureList::IsEnabled(feature));
+  const base::Value* value =
+      policies.GetValue(policy_name, base::Value::Type::BOOLEAN);
+  return value ? value->GetBool() : base::FeatureList::IsEnabled(feature);
 }
 #endif
 
@@ -40,8 +40,8 @@ bool GetPolicyOrFeature(const char* policy_name, const base::Feature& feature) {
 bool IsAudioServiceSandboxEnabled() {
 // TODO(crbug.com/1052397): Remove !IS_CHROMEOS_LACROS once lacros starts being
 // built with OS_CHROMEOS instead of OS_LINUX.
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
   return GetPolicyOrFeature(policy::key::kAudioSandboxEnabled,
                             features::kAudioServiceSandbox);
 #else
@@ -49,7 +49,7 @@ bool IsAudioServiceSandboxEnabled() {
 #endif
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool IsAudioProcessHighPriorityEnabled() {
   return GetPolicyOrFeature(policy::key::kAudioProcessHighPriorityEnabled,
                             features::kAudioProcessHighPriorityWin);

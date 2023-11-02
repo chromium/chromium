@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,8 +17,11 @@
 #include "media/cast/cast_sender.h"
 #include "media/cast/sender/frame_sender.h"
 
-namespace media {
-namespace cast {
+namespace openscreen::cast {
+class Sender;
+}
+
+namespace media::cast {
 
 class AudioEncoder;
 
@@ -28,12 +31,23 @@ class AudioEncoder;
 // RTCP packets.
 // Additionally it posts a bunch of delayed tasks to the main thread for various
 // timeouts.
-class AudioSender final : public FrameSender {
+class AudioSender final : public FrameSender::Client {
  public:
+  // Old way to instantiate, using a cast transport.
+  // TODO(https://crbug.com/1316434): should be removed once libcast sender is
+  // successfully launched.
   AudioSender(scoped_refptr<CastEnvironment> cast_environment,
               const FrameSenderConfig& audio_config,
               StatusChangeOnceCallback status_change_cb,
               CastTransport* const transport_sender);
+
+  // New way of instantiating using an openscreen::cast::Sender. Since the
+  // |Sender| instance is destroyed when renegotiation is complete, |this|
+  // is also invalid and should be immediately torn down.
+  AudioSender(scoped_refptr<CastEnvironment> cast_environment,
+              const FrameSenderConfig& audio_config,
+              StatusChangeOnceCallback status_change_cb,
+              std::unique_ptr<openscreen::cast::Sender> sender);
 
   AudioSender(const AudioSender&) = delete;
   AudioSender& operator=(const AudioSender&) = delete;
@@ -46,29 +60,45 @@ class AudioSender final : public FrameSender {
   void InsertAudio(std::unique_ptr<AudioBus> audio_bus,
                    const base::TimeTicks& recorded_time);
 
+  void SetTargetPlayoutDelay(base::TimeDelta new_target_playout_delay);
+  base::TimeDelta GetTargetPlayoutDelay() const;
+  int GetEncoderBitrate() const;
+
   base::WeakPtr<AudioSender> AsWeakPtr();
 
  protected:
+  // FrameSender::Client overrides.
   int GetNumberOfFramesInEncoder() const final;
-  base::TimeDelta GetInFlightMediaDuration() const final;
+  base::TimeDelta GetEncoderBacklogDuration() const final;
 
  private:
+  AudioSender(scoped_refptr<CastEnvironment> cast_environment,
+              const FrameSenderConfig& audio_config,
+              StatusChangeOnceCallback status_change_cb,
+              std::unique_ptr<FrameSender> sender);
+
   // Called by the |audio_encoder_| with the next EncodedFrame to send.
-  void OnEncodedAudioFrame(int encoder_bitrate,
-                           std::unique_ptr<SenderEncodedFrame> encoded_frame,
+  void OnEncodedAudioFrame(std::unique_ptr<SenderEncodedFrame> encoded_frame,
                            int samples_skipped);
+
+  scoped_refptr<CastEnvironment> cast_environment_;
+
+  // The number of RTP units advanced per second;
+  const int rtp_timebase_;
+
+  // The backing frame sender implementation.
+  std::unique_ptr<FrameSender> frame_sender_;
 
   // Encodes AudioBuses into EncodedFrames.
   std::unique_ptr<AudioEncoder> audio_encoder_;
 
   // The number of audio samples enqueued in |audio_encoder_|.
-  int samples_in_encoder_;
+  int samples_in_encoder_ = 0;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<AudioSender> weak_factory_{this};
 };
 
-}  // namespace cast
-}  // namespace media
+}  // namespace media::cast
 
 #endif  // MEDIA_CAST_SENDER_AUDIO_SENDER_H_

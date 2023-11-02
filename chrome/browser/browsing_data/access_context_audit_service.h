@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_BROWSING_DATA_ACCESS_CONTEXT_AUDIT_SERVICE_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/task/updateable_sequenced_task_runner.h"
 #include "chrome/browser/browsing_data/access_context_audit_database.h"
@@ -64,7 +66,7 @@ class AccessContextAuditService
     // audit service for persisting to disk.
     void FlushCookieRecords();
 
-    AccessContextAuditService* service_;
+    raw_ptr<AccessContextAuditService> service_;
     canonical_cookie::CookieHashSet accessed_cookies_;
     url::Origin last_seen_top_frame_origin_;
     base::ScopedObservation<AccessContextAuditService, CookieAccessHelper>
@@ -117,9 +119,9 @@ class AccessContextAuditService
   void Shutdown() override;
 
   // StoragePartition::DataRemovalObserver:
-  void OnOriginDataCleared(
+  void OnStorageKeyDataCleared(
       uint32_t remove_mask,
-      base::RepeatingCallback<bool(const url::Origin&)> origin_matcher,
+      content::StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
       const base::Time begin,
       const base::Time end) override;
 
@@ -181,8 +183,8 @@ class AccessContextAuditService
 
   int user_visible_tasks_in_progress = 0;
 
-  base::Clock* clock_;
-  Profile* profile_;
+  raw_ptr<base::Clock> clock_;
+  raw_ptr<Profile> profile_;
 
   base::ObserverList<CookieAccessHelper> cookie_access_helpers_;
 

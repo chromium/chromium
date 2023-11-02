@@ -43,6 +43,7 @@
 
 namespace gfx {
 class PointF;
+class Range;
 class Rect;
 }  // namespace gfx
 
@@ -148,13 +149,17 @@ class WebPlugin {
     return false;
   }
 
-  // Sets up printing with the specified printParams. Returns the number of
-  // pages to be printed at these settings.
+  // Begins a print session with the given `print_params`. A call to
+  // `PrintPage()` can only be made after after a successful call to
+  // `PrintBegin()`. Returns the number of pages required for the print output.
+  // A returned value of 0 indicates failure.
   virtual int PrintBegin(const WebPrintParams& print_params) { return 0; }
 
+  // Prints the page specified by `page_number`, using the parameters passed to
+  // `PrintBegin()`, into `canvas`.
   virtual void PrintPage(int page_number, cc::PaintCanvas* canvas) {}
 
-  // Ends the print operation.
+  // Ends the print session. Further calls to `PrintPages()` will fail.
   virtual void PrintEnd() {}
 
   virtual bool HasSelection() const { return false; }
@@ -166,6 +171,7 @@ class WebPlugin {
 
   virtual bool CanUndo() const { return false; }
   virtual bool CanRedo() const { return false; }
+  virtual bool CanCopy() const { return true; }
 
   virtual bool ExecuteEditCommand(const WebString& name,
                                   const WebString& value) {

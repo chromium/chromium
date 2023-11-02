@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,6 +55,9 @@ class AffiliationDatabase {
   void GetAllAffiliationsAndBranding(
       std::vector<AffiliatedFacetsWithUpdateTime>* results) const;
 
+  // Retrieves all stored groups.
+  std::vector<GroupedFacets> GetAllGroups() const;
+
   // Removes the stored equivalence class and branding information, if any,
   // containing |facet_uri|.
   void DeleteAffiliationsAndBrandingForFacetURI(const FacetURI& facet_uri);
@@ -63,7 +66,8 @@ class AffiliationDatabase {
   // |affiliated_facets| to the DB and returns true unless it has a non-empty
   // subset with a preexisting class, in which case no changes are made and the
   // function returns false.
-  bool Store(const AffiliatedFacetsWithUpdateTime& affiliated_facets);
+  bool Store(const AffiliatedFacetsWithUpdateTime& affiliated_facets,
+             const GroupedFacets& group);
 
   // Stores the equivalence class and branding information defined by
   // |affiliated_facets| to the database, and removes any other equivalence
@@ -72,7 +76,12 @@ class AffiliationDatabase {
   // into |removed_affiliations|.
   void StoreAndRemoveConflicting(
       const AffiliatedFacetsWithUpdateTime& affiliated_facets,
+      const GroupedFacets& group,
       std::vector<AffiliatedFacetsWithUpdateTime>* removed_affiliations);
+
+  // Removes all the stored equivalence classes and branding information which
+  // aren't represented by |facet_uris|.
+  void RemoveMissingFacetURI(std::vector<FacetURI> facet_uris);
 
   // Deletes the database file at |path| along with all its auxiliary files. The
   // database must be closed before calling this.
@@ -83,23 +92,6 @@ class AffiliationDatabase {
   int GetDatabaseVersionForTesting();
 
  private:
-  // Initializes the passed in table builders and defines the structure of the
-  // tables.
-  static void InitializeTableBuilders(
-      SQLTableBuilder* eq_classes_builder,
-      SQLTableBuilder* eq_class_members_builder);
-
-  // Creates the tables in the database using the provided table builders.
-  // Returns |false| on error, |true| on success.
-  bool CreateTables(const SQLTableBuilder& eq_classes_builder,
-                    const SQLTableBuilder& eq_class_members_builder);
-
-  // Migrates an existing database from an earlier |version| using the provided
-  // table builders. Returns |false| on error, |true| on success.
-  bool MigrateTablesFrom(const SQLTableBuilder& eq_classes_builder,
-                         const SQLTableBuilder& eq_class_members_builder,
-                         unsigned version);
-
   // Called when SQLite encounters an error.
   void SQLErrorCallback(int error_number, sql::Statement* statement);
 

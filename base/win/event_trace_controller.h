@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -29,7 +29,6 @@
 #include <string>
 
 #include "base/base_export.h"
-#include "base/macros.h"
 
 namespace base {
 namespace win {
@@ -75,7 +74,6 @@ class BASE_EXPORT EtwTraceProperties {
   // larger buffer to allow storing the logger name and logger file
   // name contiguously with the structure.
   union {
-   public:
     // Our properties header.
     EVENT_TRACE_PROPERTIES properties_;
     // The actual size of the buffer is forced by this member.

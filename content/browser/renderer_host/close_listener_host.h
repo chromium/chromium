@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,8 @@
 #include "third_party/blink/public/mojom/close_watcher/close_listener.mojom.h"
 
 namespace content {
+
+class RenderFrameHost;
 
 // CloseListenerHost is a helper class that notifies a CloseListener
 // in the renderer host of a close signal (e.g., an android back button press).

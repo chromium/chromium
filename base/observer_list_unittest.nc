@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 
 namespace base {
 
-#if defined(NCTEST_CHECKED_OBSERVER_USING_UNCHECKED_LIST)  // [r"fatal error: static_assert failed due to requirement '!std::is_base_of<base::CheckedObserver, Observer>::value' \"CheckedObserver classes must not use ObserverList<T>::Unchecked.\""]
+#if defined(NCTEST_CHECKED_OBSERVER_USING_UNCHECKED_LIST)  // [r"fatal error: static assertion failed due to requirement '!std::is_base_of<base::CheckedObserver, Observer>::value': CheckedObserver classes must not use ObserverList<T>::Unchecked."]
 
 void WontCompile() {
   struct Observer : public CheckedObserver {
@@ -22,7 +22,7 @@ void WontCompile() {
     observer.OnObserve();
 }
 
-#elif defined(NCTEST_UNCHECKED_OBSERVER_USING_CHECKED_LIST)  // [r"fatal error: static_assert failed due to requirement 'std::is_base_of<base::CheckedObserver, UncheckedObserver>::value' \"Observers should inherit from base::CheckedObserver. Use ObserverList<T>::Unchecked to observe with raw pointers.\""]
+#elif defined(NCTEST_UNCHECKED_OBSERVER_USING_CHECKED_LIST)  // [r"fatal error: static assertion failed due to requirement 'std::is_base_of<base::CheckedObserver, UncheckedObserver>::value': Observers should inherit from base::CheckedObserver. Use ObserverList<T>::Unchecked to observe with raw pointers."]
 
 void WontCompile() {
   struct UncheckedObserver {

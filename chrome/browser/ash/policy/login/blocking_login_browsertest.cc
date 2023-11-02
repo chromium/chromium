@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/tpm/install_attributes.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -90,7 +90,7 @@ class BlockingLoginTest
       public content::NotificationObserver,
       public testing::WithParamInterface<BlockingLoginTestParam> {
  public:
-  BlockingLoginTest() : profile_added_(NULL) {}
+  BlockingLoginTest() : profile_added_(nullptr) {}
 
   BlockingLoginTest(const BlockingLoginTest&) = delete;
   BlockingLoginTest& operator=(const BlockingLoginTest&) = delete;
@@ -120,7 +120,7 @@ class BlockingLoginTest
                const content::NotificationSource& source,
                const content::NotificationDetails& details) override {
     ASSERT_EQ(chrome::NOTIFICATION_PROFILE_ADDED, type);
-    if (chromeos::ProfileHelper::IsLockScreenAppProfile(
+    if (ash::ProfileHelper::IsLockScreenAppProfile(
             content::Source<Profile>(source).ptr())) {
       return;
     }
@@ -265,19 +265,19 @@ IN_PROC_BROWSER_TEST_P(BlockingLoginTest, LoginBlocksForUser) {
 
     case 5:
       PushResponse(net::HTTP_OK).set_content(GetPolicyResponse());
-      FALLTHROUGH;
+      [[fallthrough]];
 
     case 4:
       PushResponse(net::HTTP_OK).set_content(GetRegisterResponse());
-      FALLTHROUGH;
+      [[fallthrough]];
 
     case 3:
       PushResponse(net::HTTP_OK).set_content(kOAuth2AccessTokenData);
-      FALLTHROUGH;
+      [[fallthrough]];
 
     case 2:
       PushResponse(net::HTTP_OK).set_content(kOAuth2TokenPairData);
-      FALLTHROUGH;
+      [[fallthrough]];
 
     case 1:
       PushResponse(net::HTTP_OK)

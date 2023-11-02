@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,16 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
+#include "base/sequence_checker.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
+#include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
+#include "chromeos/ash/components/login/auth/auth_status_consumer.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/login/auth/auth_status_consumer.h"
-#include "chromeos/login/session/session_termination_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -25,18 +27,19 @@
 namespace policy {
 
 class ManagedSessionService
-    : public session_manager::SessionManagerObserver,
-      public ProfileObserver,
-      public chromeos::PowerManagerClient::Observer,
-      public chromeos::AuthStatusConsumer,
+    : public ash::AuthStatusConsumer,
+      public ash::KioskLaunchController::KioskProfileLoadFailedObserver,
+      public ash::SessionTerminationManager::Observer,
       public ash::UserAuthenticatorObserver,
-      public chromeos::SessionTerminationManager::Observer,
+      public chromeos::PowerManagerClient::Observer,
+      public ProfileObserver,
+      public session_manager::SessionManagerObserver,
       public user_manager::UserManager::Observer {
  public:
   class Observer : public base::CheckedObserver {
    public:
     // Occurs when a user's login attempt fails.
-    virtual void OnLoginFailure(const chromeos::AuthFailure& error) {}
+    virtual void OnLoginFailure(const ash::AuthFailure& error) {}
 
     // Occurs when a user has logged in.
     virtual void OnLogin(Profile* profile) {}
@@ -49,8 +52,14 @@ class ManagedSessionService
     // Occurs when the active user has locked the user session.
     virtual void OnLocked() {}
 
+    // TODO(b/247595531): Merge both Unlock functions into one.
     // Occurs when the active user has unlocked the user session.
     virtual void OnUnlocked() {}
+
+    // Occurs when the active user attempts to unlock the user session.
+    virtual void OnUnlockAttempt(
+        const bool success,
+        const session_manager::UnlockType unlock_type) {}
 
     // Occurs when the device recovers from a suspend state, where
     // |suspend_time| is the time when the suspend state
@@ -66,6 +75,8 @@ class ManagedSessionService
     // Occurs after a user's account is removed.
     virtual void OnUserRemoved(const AccountId& account_id,
                                user_manager::UserRemovalReason) {}
+
+    virtual void OnKioskLoginFailure() {}
   };
 
   explicit ManagedSessionService(
@@ -81,6 +92,9 @@ class ManagedSessionService
   // session_manager::SessionManagerObserver::Observer
   void OnSessionStateChanged() override;
   void OnUserProfileLoaded(const AccountId& account_id) override;
+  void OnUnlockScreenAttempt(
+      const bool success,
+      const session_manager::UnlockType unlock_type) override;
 
   // user_manager::Observer
   void OnUserToBeRemoved(const AccountId& account_id) override;
@@ -93,16 +107,26 @@ class ManagedSessionService
   // chromeos::PowerManagerClient::Observer
   void SuspendDone(base::TimeDelta sleep_duration) override;
 
+  void OnPasswordChangeDetected(const ash::UserContext& user_context) override {
+  }
+  void OnOldEncryptionDetected(const ash::UserContext& user_context,
+                               bool has_incomplete_migration) override {}
   void OnAuthSuccess(const ash::UserContext& user_context) override {}
 
-  void OnAuthFailure(const chromeos::AuthFailure& error) override;
+  void OnAuthFailure(const ash::AuthFailure& error) override;
 
   void OnAuthAttemptStarted() override;
 
   void OnSessionWillBeTerminated() override;
 
+  void OnKioskProfileLoadFailed() override;
+
  private:
+  void SetLoginStatus();
+
   bool is_session_locked_;
+
+  bool is_logged_in_observed_ = false;
 
   base::Clock* clock_;
 
@@ -128,6 +152,8 @@ class ManagedSessionService
   base::ScopedObservation<user_manager::UserManager,
                           user_manager::UserManager::Observer>
       user_manager_observation_{this};
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace policy

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,7 +60,7 @@ class MEDIA_GPU_EXPORT CommandBufferHelper
   // Retrieve the interface through which to create shared images.
   virtual gpu::SharedImageStub* GetSharedImageStub() = 0;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   virtual gpu::DXGISharedHandleManager* GetDXGISharedHandleManager() = 0;
 #endif
 
@@ -121,11 +121,6 @@ class MEDIA_GPU_EXPORT CommandBufferHelper
   // current implementation returns an empty (zero) mailbox. One solution would
   // be to add a HasStub() method, and not define behavior when it is false.
   virtual gpu::Mailbox CreateMailbox(GLuint service_id) = 0;
-
-  // Produce a texture into a mailbox.  The context does not have to be current.
-  // However, this will fail if the stub has been destroyed.
-  virtual void ProduceTexture(const gpu::Mailbox& mailbox,
-                              GLuint service_id) = 0;
 
   // Waits for a SyncToken, then runs |done_cb|.
   //

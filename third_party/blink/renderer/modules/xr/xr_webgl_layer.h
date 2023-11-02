@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -80,7 +80,7 @@ class XRWebGLLayer final : public XRLayer {
 
   // Called from XRSession::OnFrame handler. Params are background texture
   // mailbox holder and its size respectively.
-  void HandleBackgroundImage(const gpu::MailboxHolder&, const IntSize&) {}
+  void HandleBackgroundImage(const gpu::MailboxHolder&, const gfx::Size&) {}
 
   scoped_refptr<StaticBitmapImage> TransferToStaticBitmapImage();
 

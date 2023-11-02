@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,9 +27,9 @@ namespace {
 // This key/property allows tagging the textfield with its index.
 DEFINE_UI_CLASS_PROPERTY_KEY(int, kTextfieldIndexKey, 0U)
 
-constexpr gfx::Insets kInputTextfieldPadding(16, 16, 16, 0);
+constexpr auto kInputTextfieldPadding = gfx::Insets::TLBR(16, 16, 16, 0);
 
-constexpr gfx::Insets kInputReplyButtonPadding(0, 14, 0, 14);
+constexpr auto kInputReplyButtonPadding = gfx::Insets::TLBR(0, 14, 0, 14);
 
 // The icon size of inline reply input field.
 constexpr int kInputReplyButtonSize = 20;
@@ -63,16 +63,18 @@ void NotificationInputContainer::Init() {
   textfield_->set_controller(this);
   textfield_->SetBorder(views::CreateEmptyBorder(GetTextfieldPadding()));
   StyleTextfield();
-  AddChildView(textfield_);
+  AddChildView(textfield_.get());
   box_layout->SetFlexForView(textfield_, 1);
 
   button_->SetBorder(views::CreateEmptyBorder(GetSendButtonPadding()));
   SetSendButtonHighlightPath();
   button_->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   button_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
+  button_->SetTooltipText(
+      l10n_util::GetStringUTF16(GetDefaultPlaceholderStringId()));
 
   OnAfterUserAction(textfield_);
-  AddChildView(button_);
+  AddChildView(button_.get());
 
   views::InstallRectHighlightPathGenerator(this);
 }

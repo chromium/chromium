@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/signin/core/browser/account_reconcilor_delegate.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
@@ -38,12 +39,6 @@ class MirrorAccountReconcilorDelegate : public AccountReconcilorDelegate,
   gaia::GaiaSource GetGaiaApiSource() const override;
   bool ShouldAbortReconcileIfPrimaryHasError() const override;
   ConsentLevel GetConsentLevelForPrimaryAccount() const override;
-  CoreAccountId GetFirstGaiaAccountForReconcile(
-      const std::vector<CoreAccountId>& chrome_accounts,
-      const std::vector<gaia::ListedAccount>& gaia_accounts,
-      const CoreAccountId& primary_account,
-      bool first_execution,
-      bool will_logout) const override;
   std::vector<CoreAccountId> GetChromeAccountsForReconcile(
       const std::vector<CoreAccountId>& chrome_accounts,
       const CoreAccountId& primary_account,
@@ -55,9 +50,7 @@ class MirrorAccountReconcilorDelegate : public AccountReconcilorDelegate,
   // IdentityManager::Observer:
   void OnPrimaryAccountChanged(const PrimaryAccountChangeEvent& event) override;
 
-  void UpdateReconcilorStatus();
-
-  IdentityManager* identity_manager_;
+  raw_ptr<IdentityManager> identity_manager_;
   bool reconcile_enabled_;
 };
 

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,8 +27,15 @@ DomKey DomKeyFromFuchsiaNonPrintableKey(
 
 DomKey DomKeyFromFuchsiaKeyMeaning(
     const fuchsia::ui::input3::KeyMeaning& key_meaning) {
-  if (key_meaning.is_codepoint())
+  if (key_meaning.is_codepoint()) {
+    // TODO(fxbug.dev/106600): Remove this check for codepoint zero, once the
+    // platform provides non-printable key meanings consistently.
+    if (key_meaning.codepoint() == 0)
+      return DomKey::UNIDENTIFIED;
+
     return DomKey::FromCharacter(key_meaning.codepoint());
+  }
+
   if (key_meaning.is_non_printable_key())
     return DomKeyFromFuchsiaNonPrintableKey(key_meaning.non_printable_key());
 

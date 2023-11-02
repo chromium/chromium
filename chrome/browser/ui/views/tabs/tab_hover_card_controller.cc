@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,24 +6,118 @@
 
 #include "base/bind.h"
 #include "base/callback_list.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/tab_count_metrics.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/chrome_widget_sublevel.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_contents_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_thumbnail_observer.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
+#include "components/omnibox/browser/omnibox_edit_model.h"
+#include "components/omnibox/browser/omnibox_popup_view.h"
+#include "components/user_education/common/help_bubble_factory_registry.h"
+#include "components/user_education/views/help_bubble_factory_views.h"
+#include "components/user_education/views/help_bubble_view.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/events/event.h"
 #include "ui/events/event_observer.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/view.h"
+#include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace {
+
+constexpr base::TimeDelta kMemoryPressureCaptureDelay = base::Milliseconds(500);
+
+// Provides the ability to simulate memory pressure other than the current
+// pressure on the system for testing purposes via an [undocumented]
+// command-line switch.
+absl::optional<base::MemoryPressureListener::MemoryPressureLevel>
+GetMemoryPressureOverride() {
+  constexpr char kHoverCardMemoryPressureSwitch[] =
+      "hover-card-memory-pressure";
+
+  absl::optional<base::MemoryPressureListener::MemoryPressureLevel> value;
+  const base::CommandLine* const command_line =
+      base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(kHoverCardMemoryPressureSwitch)) {
+    auto arg =
+        command_line->GetSwitchValueASCII(kHoverCardMemoryPressureSwitch);
+    if (arg == "none") {
+      value = base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+    } else if (arg == "moderate") {
+      value = base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE;
+    } else if (arg == "critical") {
+      value = base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL;
+    } else {
+      NOTREACHED() << "Usage: --hover-card-memory-pressure=<value>"
+                      " where <value> is one of [ none | moderate | critical ]";
+    }
+  }
+  return value;
+}
+
+// Fetches the Omnibox drop-down widget, or returns null if the drop-down is
+// not visible.
+void FixWidgetStackOrder(views::Widget* widget, const Browser* browser) {
+  if (base::FeatureList::IsEnabled(views::features::kWidgetLayering)) {
+    widget->SetZOrderSublevel(ChromeWidgetSublevel::kSublevelHoverable);
+    return;
+  }
+
+#if BUILDFLAG(IS_LINUX)
+  // Ensure the hover card Widget assumes the highest z-order to avoid occlusion
+  // by other secondary UI Widgets (such as the omnibox Widget, see
+  // crbug.com/1226536).
+  widget->StackAtTop();
+#else  // !BUILDFLAG(IS_LINUX)
+  // Hover card should always render above omnibox (see crbug.com/1272106).
+  if (!browser || !widget)
+    return;
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser);
+  if (!browser_view)
+    return;
+  auto* const popup_view = browser_view->GetLocationBarView()
+                               ->omnibox_view()
+                               ->model()
+                               ->get_popup_view();
+  if (popup_view && popup_view->IsOpen()) {
+    widget->StackAboveWidget(
+        static_cast<OmniboxPopupContentsView*>(popup_view)->GetWidget());
+    return;
+  }
+
+  // Hover card should always render above help bubbles (see crbug.com/1309238).
+  if (browser_view->GetFeaturePromoController()) {
+    auto* const registry =
+        browser_view->GetFeaturePromoController()->bubble_factory_registry();
+    auto* const help_bubble =
+        registry->GetHelpBubble(browser_view->GetElementContext());
+    if (help_bubble && help_bubble->IsA<user_education::HelpBubbleViews>()) {
+      widget->StackAboveWidget(
+          help_bubble->AsA<user_education::HelpBubbleViews>()
+              ->bubble_view()
+              ->GetWidget());
+    }
+  }
+
+#endif  // !BUILDFLAG(IS_LINUX)
+}
 
 base::TimeDelta GetPreviewImageCaptureDelay(
     ThumbnailImage::CaptureReadiness readiness) {
@@ -128,14 +222,15 @@ class TabHoverCardController::EventSniffer : public ui::EventObserver {
                          event.AsKeyEvent()->key_code() == ui::VKEY_ESCAPE ||
                          !controller_->tab_strip_->IsFocusInTabs();
     }
+
     if (close_hover_card) {
-      controller_->UpdateHoverCard(nullptr,
-                                   TabController::HoverCardUpdateType::kEvent);
+      controller_->UpdateHoverCard(
+          nullptr, TabSlotController::HoverCardUpdateType::kEvent);
     }
   }
 
  private:
-  TabHoverCardController* const controller_;
+  const raw_ptr<TabHoverCardController> controller_;
   std::unique_ptr<views::EventMonitor> event_monitor_;
 };
 
@@ -147,7 +242,18 @@ bool TabHoverCardController::disable_animations_for_testing_ = false;
 
 TabHoverCardController::TabHoverCardController(TabStrip* tab_strip)
     : tab_strip_(tab_strip),
-      metrics_(std::make_unique<TabHoverCardMetrics>(this)) {}
+      metrics_(std::make_unique<TabHoverCardMetrics>(this)) {
+  // Possibly apply memory pressure override for testing.
+  auto override = GetMemoryPressureOverride();
+  if (override) {
+    memory_pressure_level_ = override.value();
+  } else {
+    memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
+        FROM_HERE,
+        base::BindRepeating(&TabHoverCardController::OnMemoryPressureChanged,
+                            base::Unretained(this)));
+  }
+}
 
 TabHoverCardController::~TabHoverCardController() = default;
 
@@ -174,7 +280,7 @@ bool TabHoverCardController::IsHoverCardShowingForTab(Tab* tab) const {
 
 void TabHoverCardController::UpdateHoverCard(
     Tab* tab,
-    TabController::HoverCardUpdateType update_type) {
+    TabSlotController::HoverCardUpdateType update_type) {
   // Never display a hover card for a closing tab.
   if (tab && tab->closing())
     tab = nullptr;
@@ -183,11 +289,11 @@ void TabHoverCardController::UpdateHoverCard(
   // then when the fade timer elapses we won't incorrectly try to fade in on the
   // wrong tab.
   if (target_tab_ != tab) {
+    delayed_show_timer_.Stop();
     target_tab_observation_.Reset();
     if (tab)
       target_tab_observation_.Observe(tab);
     target_tab_ = tab;
-    delayed_show_timer_.Stop();
   }
 
   // If there's nothing to attach to then there's no point in creating a card.
@@ -195,23 +301,23 @@ void TabHoverCardController::UpdateHoverCard(
     return;
 
   switch (update_type) {
-    case TabController::HoverCardUpdateType::kSelectionChanged:
+    case TabSlotController::HoverCardUpdateType::kSelectionChanged:
       metrics_->TabSelectionChanged();
       break;
-    case TabController::HoverCardUpdateType::kHover:
+    case TabSlotController::HoverCardUpdateType::kHover:
       if (!tab)
         last_mouse_exit_timestamp_ = base::TimeTicks::Now();
       break;
-    case TabController::HoverCardUpdateType::kTabDataChanged:
+    case TabSlotController::HoverCardUpdateType::kTabDataChanged:
       DCHECK(tab && IsHoverCardShowingForTab(tab));
       break;
-    case TabController::HoverCardUpdateType::kTabRemoved:
-    case TabController::HoverCardUpdateType::kAnimating:
+    case TabSlotController::HoverCardUpdateType::kTabRemoved:
+    case TabSlotController::HoverCardUpdateType::kAnimating:
       // Neither of these cases should have a tab associated.
       DCHECK(!tab);
       break;
-    case TabController::HoverCardUpdateType::kEvent:
-    case TabController::HoverCardUpdateType::kFocus:
+    case TabSlotController::HoverCardUpdateType::kEvent:
+    case TabSlotController::HoverCardUpdateType::kFocus:
       // No special action taken for this type of even (yet).
       break;
   }
@@ -232,7 +338,7 @@ void TabHoverCardController::TabSelectedViaMouse(Tab* tab) {
 
 void TabHoverCardController::UpdateOrShowCard(
     Tab* tab,
-    TabController::HoverCardUpdateType update_type) {
+    TabSlotController::HoverCardUpdateType update_type) {
   // Close is asynchronous, so make sure that if we're closing we clear out all
   // of our data *now* rather than waiting for the deletion message.
   if (hover_card_ && hover_card_->GetWidget()->IsClosed())
@@ -240,7 +346,7 @@ void TabHoverCardController::UpdateOrShowCard(
 
   // If a hover card is being updated because of a data change, the hover card
   // had better already be showing for the affected tab.
-  if (update_type == TabController::HoverCardUpdateType::kTabDataChanged) {
+  if (update_type == TabSlotController::HoverCardUpdateType::kTabDataChanged) {
     DCHECK(IsHoverCardShowingForTab(tab));
     UpdateCardContent(tab);
     slide_animator_->UpdateTargetBounds();
@@ -254,9 +360,6 @@ void TabHoverCardController::UpdateOrShowCard(
   }
 
   if (hover_card_) {
-    // Card should never exist without an anchor.
-    DCHECK(hover_card_->GetAnchorView());
-
     // If the card was visible we need to update the card now, before any slide
     // or snap occurs.
     UpdateCardContent(tab);
@@ -283,8 +386,12 @@ void TabHoverCardController::UpdateOrShowCard(
     delayed_show_timer_.Start(
         FROM_HERE, GetShowDelay(tab->width()),
         base::BindOnce(&TabHoverCardController::ShowHoverCard,
-                       base::Unretained(this), true, tab));
+                       weak_ptr_factory_.GetWeakPtr(), true, tab));
   } else {
+    // Just in case, cancel the timer. This shouldn't cancel a delayed capture
+    // since delayed capture only happens when the hover card already exists,
+    // and this code is only invoked if there is no hover card yet.
+    delayed_show_timer_.Stop();
     DCHECK_EQ(target_tab_, tab);
     ShowHoverCard(is_initial, tab);
   }
@@ -294,20 +401,27 @@ void TabHoverCardController::ShowHoverCard(bool is_initial,
                                            const Tab* intended_tab) {
   // Make sure the hover card isn't accidentally shown if it's already visible
   // or if the anchor is gone or changed.
-  if (hover_card_ || !target_tab_ || target_tab_ != intended_tab)
+  if (hover_card_ || target_tab_ != intended_tab || !TargetTabIsValid())
     return;
 
   CreateHoverCard(target_tab_);
+
+  // For some reason, |target_tab_| can be rendered invalid before the next
+  // call. There may be an asynchronous operation buried deep within
+  // CreateHoverCard() above. Regardless, the validity needs to be checked
+  // before the next call.
+  // See: crbug.com/1295601, crbug.com/1322117, crbug.com/1348956
+  // TODO(crbug.com/1364303): look into this and figure out what is actually
+  // happening.
+  if (!TargetTabIsValid()) {
+    HideHoverCard();
+    return;
+  }
+
   UpdateCardContent(target_tab_);
   slide_animator_->UpdateTargetBounds();
   MaybeStartThumbnailObservation(target_tab_, is_initial);
-
-#if defined(OS_LINUX)
-  // Ensure the hover card Widget assumes the highest z-order to avoid occlusion
-  // by other secondary UI Widgets (such as the omnibox Widget, see
-  // crbug.com/1226536).
-  hover_card_->GetWidget()->StackAtTop();
-#endif
+  FixWidgetStackOrder(hover_card_->GetWidget(), tab_strip_->GetBrowser());
 
   if (!is_initial || !UseAnimations()) {
     OnCardFullyVisible();
@@ -327,6 +441,13 @@ void TabHoverCardController::HideHoverCard() {
     thumbnail_observer_->Observe(nullptr);
     thumbnail_wait_state_ = ThumbnailWaitState::kNotWaiting;
   }
+
+  // Cancel any pending fade-in.
+  if (fade_animator_->IsFadingIn()) {
+    fade_animator_->CancelFadeIn();
+    metrics_->CardFadeCanceled();
+  }
+
   // This needs to be called whether we're doing a fade or a pop out.
   metrics_->CardWillBeHidden();
   slide_animator_->StopAnimation();
@@ -343,6 +464,7 @@ void TabHoverCardController::HideHoverCard() {
 
 void TabHoverCardController::OnViewIsDeleting(views::View* observed_view) {
   if (hover_card_ == observed_view) {
+    delayed_show_timer_.Stop();
     hover_card_observation_.Reset();
     event_sniffer_.reset();
     slide_progressed_subscription_ = base::CallbackListSubscription();
@@ -352,12 +474,31 @@ void TabHoverCardController::OnViewIsDeleting(views::View* observed_view) {
     fade_animator_.reset();
     hover_card_ = nullptr;
   } else if (target_tab_ == observed_view) {
-    UpdateHoverCard(nullptr, TabController::HoverCardUpdateType::kTabRemoved);
+    UpdateHoverCard(nullptr,
+                    TabSlotController::HoverCardUpdateType::kTabRemoved);
     // These postconditions should always be met after calling
     // UpdateHoverCard(nullptr, ...)
     DCHECK(!target_tab_);
     DCHECK(!target_tab_observation_.IsObserving());
   }
+}
+
+void TabHoverCardController::OnViewVisibilityChanged(
+    views::View* observed_view,
+    views::View* starting_view) {
+  // Only care about target tab becoming invisible.
+  if (observed_view != target_tab_)
+    return;
+  // Visibility comes from `starting_view` or the widget, if no starting view;
+  // see documentation for ViewObserver::OnViewVisibilityChanged().
+  const bool visible = starting_view
+                           ? starting_view->GetVisible()
+                           : (observed_view->GetWidget() &&
+                              observed_view->GetWidget()->IsVisible());
+  // If visibility changed to false, treat it as if the target tab had gone
+  // away.
+  if (!visible)
+    OnViewIsDeleting(observed_view);
 }
 
 size_t TabHoverCardController::GetTabCount() const {
@@ -374,28 +515,28 @@ views::Widget* TabHoverCardController::GetHoverCardWidget() {
 
 void TabHoverCardController::CreateHoverCard(Tab* tab) {
   hover_card_ = new TabHoverCardBubbleView(tab);
-  hover_card_observation_.Observe(hover_card_);
+  hover_card_observation_.Observe(hover_card_.get());
   event_sniffer_ = std::make_unique<EventSniffer>(this);
   slide_animator_ = std::make_unique<views::BubbleSlideAnimator>(hover_card_);
   slide_animator_->SetSlideDuration(
       TabHoverCardBubbleView::kHoverCardSlideDuration);
   slide_progressed_subscription_ = slide_animator_->AddSlideProgressedCallback(
       base::BindRepeating(&TabHoverCardController::OnSlideAnimationProgressed,
-                          base::Unretained(this)));
+                          weak_ptr_factory_.GetWeakPtr()));
   slide_complete_subscription_ = slide_animator_->AddSlideCompleteCallback(
       base::BindRepeating(&TabHoverCardController::OnSlideAnimationComplete,
-                          base::Unretained(this)));
+                          weak_ptr_factory_.GetWeakPtr()));
   fade_animator_ =
       std::make_unique<views::WidgetFadeAnimator>(hover_card_->GetWidget());
   fade_complete_subscription_ = fade_animator_->AddFadeCompleteCallback(
       base::BindRepeating(&TabHoverCardController::OnFadeAnimationEnded,
-                          base::Unretained(this)));
+                          weak_ptr_factory_.GetWeakPtr()));
 
   if (!thumbnail_observer_ && AreHoverCardImagesEnabled()) {
     thumbnail_observer_ = std::make_unique<TabHoverCardThumbnailObserver>();
     thumbnail_subscription_ = thumbnail_observer_->AddCallback(
         base::BindRepeating(&TabHoverCardController::OnPreviewImageAvaialble,
-                            base::Unretained(this)));
+                            weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -432,7 +573,11 @@ void TabHoverCardController::MaybeStartThumbnailObservation(
   if (thumbnail == thumbnail_observer_->current_image())
     return;
 
-  // We're definitely going to wait for an image at some point.
+  // We're probably going ask for a preview image, so figure out whether we
+  // want to capture now, later, or at all, and whether to show a placeholder
+  // in the meantime.
+
+  // The crossfade parameter determines when a placeholder image is displayed.
   const auto crossfade_at =
       TabHoverCardBubbleView::GetPreviewImageCrossfadeStart();
   if (crossfade_at.has_value() && crossfade_at.value() == 0.0) {
@@ -441,28 +586,54 @@ void TabHoverCardController::MaybeStartThumbnailObservation(
   } else {
     thumbnail_wait_state_ = ThumbnailWaitState::kWaitingWithoutPlaceholder;
   }
+
   // For the first show there has already been a delay, so it's fine to ask for
   // the image immediately; same is true if we already have a thumbnail.
-  //  Otherwise the delay is based on the capture readiness.
-  const base::TimeDelta capture_delay =
+  // Otherwise the delay is based on the capture readiness.
+  base::TimeDelta capture_delay =
       is_initial_show || thumbnail->has_data()
           ? base::TimeDelta()
           : GetPreviewImageCaptureDelay(thumbnail->GetCaptureReadiness());
+
+  // Under memory pressure, we will additionally delay the initial capture, so
+  // that generating the image is a more deliberate choice from the user.
+  switch (memory_pressure_level_) {
+    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
+      capture_delay = base::TimeDelta::Max();
+      break;
+    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
+      capture_delay += kMemoryPressureCaptureDelay;
+      break;
+    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
+      break;
+  }
+
   if (capture_delay.is_zero()) {
     thumbnail_observer_->Observe(thumbnail);
-  } else if (!delayed_show_timer_.IsRunning()) {
-    // Stop updating the preview image unless/until we re-enable capture.
-    thumbnail_observer_->Observe(nullptr);
-    if (thumbnail_wait_state_ ==
-        ThumbnailWaitState::kWaitingWithoutPlaceholder) {
-      hover_card_->SetPlaceholderImage();
-      thumbnail_wait_state_ = ThumbnailWaitState::kWaitingWithPlaceholder;
-    }
-    delayed_show_timer_.Start(
-        FROM_HERE, capture_delay,
-        base::BindOnce(&TabHoverCardController::StartThumbnailObservation,
-                       base::Unretained(this), tab));
+    return;
   }
+
+  // If we've already waiting on this tab, we're done.
+  if (delayed_show_timer_.IsRunning())
+    return;
+
+  // Stop updating the preview image unless/until we re-enable capture.
+  thumbnail_observer_->Observe(nullptr);
+  if (thumbnail_wait_state_ == ThumbnailWaitState::kWaitingWithoutPlaceholder) {
+    hover_card_->SetPlaceholderImage();
+    thumbnail_wait_state_ = ThumbnailWaitState::kWaitingWithPlaceholder;
+  }
+
+  // If we've elected to put off capture indefinitely (likely due to memory
+  // pressure), there's no additional work to do.
+  if (capture_delay.is_inf())
+    return;
+
+  // Start a delayed capture.
+  delayed_show_timer_.Start(
+      FROM_HERE, capture_delay,
+      base::BindOnce(&TabHoverCardController::StartThumbnailObservation,
+                     base::Unretained(this), tab));
 }
 
 void TabHoverCardController::StartThumbnailObservation(Tab* tab) {
@@ -472,6 +643,19 @@ void TabHoverCardController::StartThumbnailObservation(Tab* tab) {
   DCHECK(tab);
   DCHECK(hover_card_);
   DCHECK(waiting_for_preview());
+
+  // Do not capture thumbnails during critical memory pressure.
+  if (memory_pressure_level_ ==
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+    // Because we're blocked, we'll show a placeholder instead of nothing or
+    // the wrong image.
+    if (thumbnail_wait_state_ ==
+        ThumbnailWaitState::kWaitingWithoutPlaceholder) {
+      hover_card_->SetPlaceholderImage();
+      thumbnail_wait_state_ = ThumbnailWaitState::kWaitingWithPlaceholder;
+    }
+    return;
+  }
 
   auto thumbnail = tab->data().thumbnail;
   if (!thumbnail || thumbnail == thumbnail_observer_->current_image())
@@ -508,9 +692,22 @@ const views::View* TabHoverCardController::GetTargetAnchorView() const {
   return hover_card_->GetAnchorView();
 }
 
+bool TabHoverCardController::TargetTabIsValid() const {
+  // There are a bunch of conditions under which a tab may no longer be valid,
+  // including no longer belonging to the same tabstrip, being dragged or
+  // detached, or just not being visible. We need to be vigilant about invalid
+  // tabs due to e.g. crbug.com/1295601.
+  return target_tab_ && tab_strip_->GetModelIndexOf(target_tab_) >= 0 &&
+         !target_tab_->closing() && !target_tab_->detached() &&
+         !target_tab_->dragging() && target_tab_->GetVisible();
+}
+
 void TabHoverCardController::OnCardFullyVisible() {
-  const bool has_preview = ArePreviewsEnabled() && !target_tab_->IsActive() &&
-                           !waiting_for_preview();
+  // We have to do a bunch of validity checks here because this happens on a
+  // callback and so the tab may no longer be valid (or part of the original
+  // tabstrip).
+  const bool has_preview = ArePreviewsEnabled() && TargetTabIsValid() &&
+                           !target_tab_->IsActive() && !waiting_for_preview();
   metrics_->CardFullyVisibleOnTab(target_tab_, has_preview);
 }
 
@@ -577,4 +774,26 @@ void TabHoverCardController::OnPreviewImageAvaialble(
   // Can still set image on a fading-out hover card (we can change this behavior
   // later if we want).
   hover_card_->SetTargetTabImage(thumbnail_image);
+}
+
+void TabHoverCardController::OnMemoryPressureChanged(
+    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+  memory_pressure_level_ = memory_pressure_level;
+
+  // The following code is about stopping or restarting thumbnail capture due
+  // to memory pressure so if there's no capture there's no reason to continue.
+  if (!thumbnail_observer_)
+    return;
+
+  if (memory_pressure_level ==
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+    // If we're at critical memory pressure, abandon any current effort to
+    // capture thumbnails.
+    thumbnail_observer_->Observe(nullptr);
+  }
+
+  // TODO(dfried): consider restarting capture for the current hover card if
+  // memory pressure drops back to zero; however, the user is unlikely to be
+  // hovering a card through an entire CRITICAL -> NORMAL transition so as a
+  // simplification we simply don't care.
 }

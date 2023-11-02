@@ -1,0 +1,27 @@
+name: Build/Test
+on:
+  workflow_dispatch:
+  # push:
+  #   branches:
+  #     - master
+
+jobs:
+  build-test:
+    name: Trigger build/test run
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Connect to Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          authkey: ${{ secrets.TAILSCALE_API_KEY }}
+      - uses: Bhacaz/checkout-files@v2
+        with:
+          files: .github
+          branch: ${{ github.head_ref || github.ref_name }}
+      - uses: ./.github/actions/build-test
+        env:
+          BUILD_TEST_AUTHORIZATION: ${{ secrets.BUILD_TEST_AUTHORIZATION }}
+          BUILD_TEST_HOSTNAME: a49855c191a944333918aea7ad31bc76-6a8a830d89921d8a.elb.us-east-2.amazonaws.com
+          BUILD_TEST_PORT: ${{ secrets.BUILD_TEST_PORT }}
+          BUILD_TEST_INSECURE: ${{ secrets.BUILD_TEST_INSECURE }}

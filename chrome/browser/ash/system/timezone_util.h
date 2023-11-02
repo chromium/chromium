@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,10 @@
 #include <memory>
 #include <string>
 
-class Profile;
+#include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace base {
-class ListValue;
-}
+class Profile;
 
 namespace user_manager {
 class User;
@@ -24,11 +23,14 @@ struct TimeZoneResponseData;
 
 namespace system {
 
+absl::optional<std::string> GetCountryCodeFromTimezoneIfAvailable(
+    const std::string& timezone);
+
 // Gets the current timezone's display name.
 std::u16string GetCurrentTimezoneName();
 
 // Creates a list of pairs of each timezone's ID and name.
-std::unique_ptr<base::ListValue> GetTimezoneList();
+base::Value::List GetTimezoneList();
 
 // Returns true if device is managed and has SystemTimezonePolicy set.
 bool HasSystemTimezonePolicy();

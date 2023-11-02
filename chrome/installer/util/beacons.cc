@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,8 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
+#include <tuple>
+
 #include "base/notreached.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
@@ -16,7 +17,7 @@
 void UpdateDefaultBrowserBeaconForPath(const base::FilePath& chrome_exe) {
   // Getting Chrome's default state causes the beacon to be updated via a call
   // to UpdateDefaultBrowserBeaconWithState below.
-  ignore_result(ShellUtil::GetChromeDefaultStateFromPath(chrome_exe));
+  std::ignore = ShellUtil::GetChromeDefaultStateFromPath(chrome_exe);
 }
 
 void UpdateDefaultBrowserBeaconWithState(

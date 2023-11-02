@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,20 +29,20 @@ class InfobarModalCompletionNotifier {
     Observer() = default;
     ~Observer() override = default;
 
-    // Called to notify observers of |notifier| that the modal requests for
-    // |infobar| have completed.  Banners should remain visible until all
+    // Called to notify observers of `notifier` that the modal requests for
+    // `infobar` have completed.  Banners should remain visible until all
     // requests for modal UI originating from the banner's infobar is completed.
     virtual void InfobarModalsCompleted(
         InfobarModalCompletionNotifier* notifier,
         InfoBarIOS* infobar) {}
 
-    // Called when |notifier| is being destroyed.
+    // Called when `notifier` is being destroyed.
     virtual void InfobarModalCompletionNotifierDestroyed(
         InfobarModalCompletionNotifier* notifier) {}
   };
 
   // Constructs a notifier that observes the completion of modal requests in
-  // |web_state|'s queue.
+  // `web_state`'s queue.
   explicit InfobarModalCompletionNotifier(web::WebState* web_state);
   ~InfobarModalCompletionNotifier();
 
@@ -60,7 +60,7 @@ class InfobarModalCompletionNotifier {
 
    private:
     // Used as a completion callback for the modal OverlayRequests for
-    // |infobar|.
+    // `infobar`.
     void ModalCompleted(InfoBarIOS* infobar, OverlayResponse* response);
 
     // OverlayRequestCallbackInstaller:
@@ -72,11 +72,11 @@ class InfobarModalCompletionNotifier {
     base::WeakPtrFactory<ModalCompletionInstaller> weak_factory_;
   };
 
-  // Called when a completion callback for a modal request for |infobar| has
+  // Called when a completion callback for a modal request for `infobar` has
   // been installed.
   void ModalCompletionInstalled(InfoBarIOS* infobar);
 
-  // Called when a modal request for |infobar| has been completed.
+  // Called when a modal request for `infobar` has been completed.
   void ModalRequestCompleted(InfoBarIOS* infobar);
 
   // Map storing the number of active modal OverlayRequests for a given

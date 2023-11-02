@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include "ash/login/ui/auth_factor_model.h"
 #include "ash/public/cpp/login_types.h"
-#include "base/timer/timer.h"
 
 namespace ash {
 
@@ -15,16 +14,36 @@ class AuthIconView;
 
 // Implements the logic necessary to show Fingerprint as an auth factor on the
 // lock screen.
-class FingerprintAuthFactorModel : public AuthFactorModel {
+class ASH_EXPORT FingerprintAuthFactorModel : public AuthFactorModel {
  public:
-  FingerprintAuthFactorModel();
+  class Factory {
+   public:
+    Factory() = default;
+    Factory(const Factory&) = delete;
+    Factory& operator=(const Factory&) = delete;
+
+    static std::unique_ptr<FingerprintAuthFactorModel> Create(
+        FingerprintState state);
+
+    static void SetFactoryForTesting(Factory* factory);
+
+   protected:
+    virtual ~Factory() = default;
+    virtual std::unique_ptr<FingerprintAuthFactorModel> CreateInstance(
+        FingerprintState state) = 0;
+
+   private:
+    static Factory* factory_instance_;
+  };
+
+  explicit FingerprintAuthFactorModel(FingerprintState state);
   FingerprintAuthFactorModel(FingerprintAuthFactorModel&) = delete;
   FingerprintAuthFactorModel& operator=(FingerprintAuthFactorModel&) = delete;
   ~FingerprintAuthFactorModel() override;
 
   void SetFingerprintState(FingerprintState state);
+  void ResetUIState();
   void NotifyFingerprintAuthResult(bool result);
-  void SetCanUsePin(bool can_use_pin);
 
   // If |available| is false, forces |GetAuthFactorState()| to return
   // |kUnavailable|, otherwise has no effect. Used to hide Fingerprint auth
@@ -33,23 +52,20 @@ class FingerprintAuthFactorModel : public AuthFactorModel {
 
  private:
   // AuthFactorModel:
-  AuthFactorState GetAuthFactorState() override;
-  AuthFactorType GetType() override;
-  int GetLabelId() override;
-  bool ShouldAnnounceLabel() override;
-  int GetAccessibleNameId() override;
-  void OnTapOrClickEvent() override;
+  AuthFactorState GetAuthFactorState() const override;
+  AuthFactorType GetType() const override;
+  int GetLabelId() const override;
+  bool ShouldAnnounceLabel() const override;
+  int GetAccessibleNameId() const override;
+  void DoHandleTapOrClick() override;
+  void DoHandleErrorTimeout() override;
   void UpdateIcon(AuthIconView* icon) override;
 
-  void OnResetState();
-
-  FingerprintState state_ = FingerprintState::AVAILABLE_DEFAULT;
+  FingerprintState state_;
   absl::optional<bool> auth_result_;
 
-  base::OneShotTimer reset_state_;
-
-  // Affects DISABLED_FROM_TIMEOUT message.
-  bool can_use_pin_ = false;
+  // TODO(b/216691052): Change the name of this to be more clear that this is
+  // an override on top of |state_|.
   bool available_ = true;
 };
 

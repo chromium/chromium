@@ -1,11 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 
 #include "base/run_loop.h"
-#include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/test/test_gpu_memory_buffer_manager.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -29,14 +28,15 @@ TEST(CanvasResourceTest, PrepareTransferableResource_SharedBitmap) {
                                          cc::PaintFlags::FilterQuality::kLow);
   EXPECT_TRUE(!!canvas_resource);
   viz::TransferableResource resource;
-  viz::ReleaseCallback release_callback;
+  CanvasResource::ReleaseCallback release_callback;
   bool success = canvas_resource->PrepareTransferableResource(
       &resource, &release_callback, kUnverifiedSyncToken);
 
   EXPECT_TRUE(success);
   EXPECT_TRUE(resource.is_software);
 
-  std::move(release_callback).Run(gpu::SyncToken(), false);
+  std::move(release_callback)
+      .Run(std::move(canvas_resource), gpu::SyncToken(), false);
 }
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,8 +19,14 @@
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
+#include "chrome/browser/ui/app_list/app_list_util.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
+#include "chrome/browser/ui/app_list/chrome_app_list_model_updater.h"
+#include "chrome/common/apps/platform_apps/api/enterprise_remote_apps.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/services/app_service/public/cpp/menu.h"
+#include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_event_histogram_value.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
@@ -123,11 +129,13 @@ class RemoteAppsPlaceholderIcon : public gfx::CanvasImageSource {
 
 RemoteAppsManager::RemoteAppsManager(Profile* profile)
     : profile_(profile),
+      event_router_(extensions::EventRouter::Get(profile)),
       remote_apps_(std::make_unique<apps::RemoteApps>(
           apps::AppServiceProxyFactory::GetForProfile(profile_),
           this)),
       model_(std::make_unique<RemoteAppsModel>()),
       image_downloader_(std::make_unique<ImageDownloaderImpl>()) {
+  remote_apps_->Initialize();
   app_list_syncable_service_ =
       app_list::AppListSyncableServiceFactory::GetForProfile(profile_);
   model_updater_ = app_list_syncable_service_->GetModelUpdater();
@@ -149,7 +157,8 @@ void RemoteAppsManager::Initialize() {
   is_initialized_ = true;
 }
 
-void RemoteAppsManager::AddApp(const std::string& name,
+void RemoteAppsManager::AddApp(const std::string& source_id,
+                               const std::string& name,
                                const std::string& folder_id,
                                const GURL& icon_url,
                                bool add_to_front,
@@ -165,14 +174,68 @@ void RemoteAppsManager::AddApp(const std::string& name,
     return;
   }
 
-  // Disable |add_to_front| if app has a parent folder.
-  if (!folder_id.empty())
+  if (!folder_id.empty()) {
+    // Disable |add_to_front| if app has a parent folder.
     add_to_front = false;
+
+    // Ensure that the parent folder exists before adding the app.
+    MaybeAddFolder(folder_id);
+  }
 
   const RemoteAppsModel::AppInfo& info =
       model_->AddApp(name, icon_url, folder_id, add_to_front);
   add_app_callback_map_.insert({info.id, std::move(callback)});
   remote_apps_->AddApp(info);
+  app_id_to_source_id_map_.insert(
+      std::pair<std::string, std::string>(info.id, source_id));
+}
+
+void RemoteAppsManager::MaybeAddFolder(const std::string& folder_id) {
+  // If the specified folder already exists, nothing to do.
+  if (model_updater_->FindFolderItem(folder_id))
+    return;
+
+  DCHECK(!model_updater_->FindItem(folder_id));
+
+  // The folder to be added.
+  auto remote_folder =
+      std::make_unique<ChromeAppListItem>(profile_, folder_id, model_updater_);
+
+  const app_list::AppListSyncableService::SyncItem* sync_item =
+      app_list_syncable_service_->GetSyncItem(folder_id);
+  if (sync_item) {
+    // If the specified folder's sync data exists, fill `remote_folder` with
+    // the sync data.
+    DCHECK_EQ(sync_pb::AppListSpecifics::TYPE_FOLDER, sync_item->item_type);
+    remote_folder->SetMetadata(
+        app_list::GenerateItemMetadataFromSyncItem(*sync_item));
+    remote_folder->SetIsSystemFolder(true);
+    remote_folder->SetIsEphemeral(true);
+    app_list_syncable_service_->AddItem(std::move(remote_folder));
+    return;
+  }
+
+  // Handle the case that the specified folder's sync data does not exist.
+  DCHECK(model_->HasFolder(folder_id));
+  const RemoteAppsModel::FolderInfo& info = model_->GetFolderInfo(folder_id);
+  remote_folder->SetChromeName(info.name);
+  remote_folder->SetIsSystemFolder(true);
+  remote_folder->SetIsEphemeral(true);
+  remote_folder->SetChromeIsFolder(true);
+  syncer::StringOrdinal position =
+      info.add_to_front ? model_updater_->GetPositionBeforeFirstItem()
+                        : remote_folder->CalculateDefaultPositionIfApplicable();
+  remote_folder->SetChromePosition(position);
+
+  app_list_syncable_service_->AddItem(std::move(remote_folder));
+}
+
+const RemoteAppsModel::AppInfo* RemoteAppsManager::GetAppInfo(
+    const std::string& app_id) const {
+  if (!model_->HasApp(app_id))
+    return nullptr;
+
+  return &model_->GetAppInfo(app_id);
 }
 
 RemoteAppsError RemoteAppsManager::DeleteApp(const std::string& id) {
@@ -183,7 +246,13 @@ RemoteAppsError RemoteAppsManager::DeleteApp(const std::string& id) {
 
   model_->DeleteApp(id);
   remote_apps_->DeleteApp(id);
+  app_id_to_source_id_map_.erase(id);
   return RemoteAppsError::kNone;
+}
+
+void RemoteAppsManager::SortLauncherWithRemoteAppsFirst() {
+  static_cast<ChromeAppListModelUpdater*>(model_updater_)
+      ->RequestAppListSort(AppListSortOrder::kAlphabeticalEphemeralAppFirst);
 }
 
 std::string RemoteAppsManager::AddFolder(const std::string& folder_name,
@@ -215,29 +284,38 @@ bool RemoteAppsManager::ShouldAddToFront(const std::string& id) const {
   return false;
 }
 
-void RemoteAppsManager::AddObserver(Observer* observer) {
-  observer_list_.AddObserver(observer);
-}
-
-void RemoteAppsManager::RemoveObserver(Observer* observer) {
-  observer_list_.RemoveObserver(observer);
-}
-
-void RemoteAppsManager::BindInterface(
+void RemoteAppsManager::BindFactoryInterface(
     mojo::PendingReceiver<chromeos::remote_apps::mojom::RemoteAppsFactory>
         pending_remote_apps_factory) {
-  receivers_.Add(this, std::move(pending_remote_apps_factory));
+  factory_receivers_.Add(this, std::move(pending_remote_apps_factory));
+}
+
+void RemoteAppsManager::BindLacrosBridgeInterface(
+    mojo::PendingReceiver<chromeos::remote_apps::mojom::RemoteAppsLacrosBridge>
+        pending_remote_apps_lacros_bridge) {
+  bridge_receivers_.Add(this, std::move(pending_remote_apps_lacros_bridge));
 }
 
 void RemoteAppsManager::Shutdown() {}
 
-void RemoteAppsManager::Create(
+void RemoteAppsManager::BindRemoteAppsAndAppLaunchObserver(
+    const std::string& source_id,
     mojo::PendingReceiver<chromeos::remote_apps::mojom::RemoteApps>
         pending_remote_apps,
     mojo::PendingRemote<chromeos::remote_apps::mojom::RemoteAppLaunchObserver>
         pending_observer) {
-  remote_apps_impl_.Bind(std::move(pending_remote_apps),
-                         std::move(pending_observer));
+  remote_apps_impl_.BindRemoteAppsAndAppLaunchObserver(
+      source_id, std::move(pending_remote_apps), std::move(pending_observer));
+}
+
+void RemoteAppsManager::BindRemoteAppsAndAppLaunchObserverForLacros(
+    mojo::PendingReceiver<chromeos::remote_apps::mojom::RemoteApps>
+        pending_remote_apps,
+    mojo::PendingRemote<chromeos::remote_apps::mojom::RemoteAppLaunchObserver>
+        pending_observer) {
+  remote_apps_impl_.BindRemoteAppsAndAppLaunchObserver(
+      absl::nullopt, std::move(pending_remote_apps),
+      std::move(pending_observer));
 }
 
 const std::map<std::string, RemoteAppsModel::AppInfo>&
@@ -245,10 +323,22 @@ RemoteAppsManager::GetApps() {
   return model_->GetAllAppInfo();
 }
 
-void RemoteAppsManager::LaunchApp(const std::string& id) {
-  for (Observer& observer : observer_list_)
-    observer.OnAppLaunched(id);
-  remote_apps_impl_.OnAppLaunched(id);
+void RemoteAppsManager::LaunchApp(const std::string& app_id) {
+  auto it = app_id_to_source_id_map_.find(app_id);
+  if (it == app_id_to_source_id_map_.end())
+    return;
+  std::string source_id = it->second;
+
+  std::unique_ptr<extensions::Event> event = std::make_unique<
+      extensions::Event>(
+      extensions::events::ENTERPRISE_REMOTE_APPS_ON_REMOTE_APP_LAUNCHED,
+      chrome_apps::api::enterprise_remote_apps::OnRemoteAppLaunched::kEventName,
+      chrome_apps::api::enterprise_remote_apps::OnRemoteAppLaunched::Create(
+          app_id));
+
+  event_router_->DispatchEventToExtension(source_id, std::move(event));
+
+  remote_apps_impl_.OnAppLaunched(source_id, app_id);
 }
 
 gfx::ImageSkia RemoteAppsManager::GetIcon(const std::string& id) {
@@ -270,12 +360,11 @@ gfx::ImageSkia RemoteAppsManager::GetPlaceholderIcon(const std::string& id,
   return icon;
 }
 
-apps::mojom::MenuItemsPtr RemoteAppsManager::GetMenuModel(
-    const std::string& id) {
-  apps::mojom::MenuItemsPtr menu_items = apps::mojom::MenuItems::New();
-  // TODO(jityao): Temporary string for menu item.
+apps::MenuItems RemoteAppsManager::GetMenuModel(const std::string& id) {
+  apps::MenuItems menu_items;
+  // TODO(b/236785623): Temporary string for menu item.
   apps::AddCommandItem(ash::LAUNCH_NEW, IDS_APP_CONTEXT_MENU_ACTIVATE_ARC,
-                       &menu_items);
+                       menu_items);
   return menu_items;
 }
 
@@ -310,30 +399,6 @@ void RemoteAppsManager::HandleOnAppAdded(const std::string& id) {
   if (!model_->HasApp(id))
     return;
   RemoteAppsModel::AppInfo& app_info = model_->GetAppInfo(id);
-
-  const std::string& folder_id = app_info.folder_id;
-  // If folder was deleted, |folder_id| would be set to empty by the model, so
-  // we don't have to check if it was deleted.
-  if (!folder_id.empty()) {
-    bool folder_already_exists = model_updater_->FindFolderItem(folder_id);
-    model_updater_->SetItemFolderId(id, folder_id);
-    RemoteAppsModel::FolderInfo& folder_info = model_->GetFolderInfo(folder_id);
-
-    if (!folder_already_exists) {
-      // Update metadata for newly created folder.
-      ChromeAppListItem* item = model_updater_->FindFolderItem(folder_id);
-      DCHECK(item) << "Missing folder item for folder_id: " << folder_id;
-      model_updater_->SetItemName(item->id(), folder_info.name);
-      item->SetIsPersistent(true);
-
-      syncer::StringOrdinal item_position =
-          folder_info.add_to_front
-              ? model_updater_->GetPositionBeforeFirstItem()
-              : model_updater_->CalculatePositionForNewItem(*item);
-      model_updater_->SetItemPosition(item->id(), item_position);
-    }
-  }
-
   StartIconDownload(id, app_info.icon_url);
 
   auto it = add_app_callback_map_.find(id);

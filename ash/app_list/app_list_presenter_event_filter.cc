@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -81,18 +81,16 @@ void AppListPresenterEventFilter::OnKeyEvent(ui::KeyEvent* event) {
   if (view_->search_box_view()->is_search_box_active())
     return;
 
-  // Don't absorb the first event when showing Assistant.
-  if (view_->IsShowingEmbeddedAssistantUI())
-    return;
-
   // Don't absorb the first event when renaming folder.
   if (view_->IsFolderBeingRenamed())
     return;
 
   // Arrow keys or Tab will engage the traversal mode.
   if ((IsUnhandledArrowKeyEvent(*event) || event->key_code() == ui::VKEY_TAB)) {
-    // Handle the first arrow key event to just show the focus rings.
-    event->SetHandled();
+    // Handle the first arrow key event to just show the focus rings (if not
+    // showing Assistant). Don't absorb the first event when showing Assistant.
+    if (!view_->IsShowingEmbeddedAssistantUI())
+      event->SetHandled();
     controller_->SetKeyboardTraversalMode(true);
   }
 }
@@ -150,20 +148,8 @@ void AppListPresenterEventFilter::ProcessLocatedEvent(ui::LocatedEvent* event) {
     // the event can still be propagated.
     const aura::Window* status_window =
         shelf->shelf_widget()->status_area_widget()->GetNativeWindow();
-    if (status_window && status_window->Contains(target)) {
-      auto shelf_visibility_lock =
-          std::make_unique<ShelfLayoutManager::ScopedVisibilityLock>(
-              shelf->shelf_layout_manager());
-
-      // Use a task runner to delete the |shelf_visibility_lock| and update the
-      // shelf visibility after the current event has been handled by the shelf.
-      // This is important for the case where dismissing the app list might hide
-      // the shelf, which would stop the shelf from handling the event.
-      // TODO(crbug.com/1186479): Investigate whether there is a better way to
-      // do this, instead of using a task runner here.
-      base::ThreadTaskRunnerHandle::Get()->DeleteSoon(
-          FROM_HERE, std::move(shelf_visibility_lock));
-    }
+    if (status_window && status_window->Contains(target))
+      return;
 
     // Record the current AppListViewState to be used later for metrics. The
     // AppListViewState will change on app launch, so this will record the

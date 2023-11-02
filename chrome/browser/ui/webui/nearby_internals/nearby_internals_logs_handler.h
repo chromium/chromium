@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #ifndef CHROME_BROWSER_UI_WEBUI_NEARBY_INTERNALS_NEARBY_INTERNALS_LOGS_HANDLER_H_
@@ -10,10 +10,6 @@
 #include "chrome/browser/nearby_sharing/logging/log_buffer.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "content/public/browser/web_ui_message_handler.h"
-
-namespace base {
-class Value;
-}
 
 // WebUIMessageHandler for the NS_LOG Macro to pass logging messages to the
 // chrome://nearby-internals logging tab.
@@ -37,10 +33,10 @@ class NearbyInternalsLogsHandler : public content::WebUIMessageHandler,
   void OnLogBufferCleared() override;
 
   // Message handler callback that returns the Log Buffer in dictionary form.
-  void HandleGetLogMessages(const base::ListValue* args);
+  void HandleGetLogMessages(const base::Value::List& args);
 
   // Message handler callback that clears the Log Buffer.
-  void ClearLogBuffer(const base::ListValue* args);
+  void ClearLogBuffer(const base::Value::List& args);
 
   base::ScopedObservation<LogBuffer, LogBuffer::Observer> observation_{this};
   base::WeakPtrFactory<NearbyInternalsLogsHandler> weak_ptr_factory_{this};

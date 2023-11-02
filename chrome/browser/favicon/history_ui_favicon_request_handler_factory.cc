@@ -1,18 +1,15 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/favicon/history_ui_favicon_request_handler_factory.h"
 
 #include "base/memory/singleton.h"
-#include "base/task/post_task.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/favicon/large_icon_service_factory.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/favicon/core/history_ui_favicon_request_handler_impl.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_utils.h"
 #include "content/public/browser/browser_context.h"
@@ -20,9 +17,14 @@
 namespace {
 
 bool CanSendHistoryData(syncer::SyncService* sync_service) {
+  // SESSIONS and HISTORY both contain history-like data, so it's sufficient if
+  // either of them is being uploaded.
   return syncer::GetUploadToGoogleState(sync_service,
                                         syncer::ModelType::SESSIONS) ==
-         syncer::UploadState::ACTIVE;
+             syncer::UploadState::ACTIVE ||
+         syncer::GetUploadToGoogleState(sync_service,
+                                        syncer::ModelType::HISTORY) ==
+             syncer::UploadState::ACTIVE;
 }
 
 }  // namespace
@@ -42,9 +44,9 @@ HistoryUiFaviconRequestHandlerFactory::GetInstance() {
 }
 
 HistoryUiFaviconRequestHandlerFactory::HistoryUiFaviconRequestHandlerFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "HistoryUiFaviconRequestHandler",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(FaviconServiceFactory::GetInstance());
   DependsOn(LargeIconServiceFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
@@ -52,12 +54,6 @@ HistoryUiFaviconRequestHandlerFactory::HistoryUiFaviconRequestHandlerFactory()
 
 HistoryUiFaviconRequestHandlerFactory::
     ~HistoryUiFaviconRequestHandlerFactory() {}
-
-content::BrowserContext*
-HistoryUiFaviconRequestHandlerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
-}
 
 KeyedService* HistoryUiFaviconRequestHandlerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

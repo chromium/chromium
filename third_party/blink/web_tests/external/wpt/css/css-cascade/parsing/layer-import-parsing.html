@@ -10,7 +10,6 @@
     const style = document.createElement("style");
     document.head.append(style);
     const {sheet} = style;
-    document.head.removeChild(style);
     const {cssRules} = sheet;
 
     assert_equals(cssRules.length, 0, "Sheet should have no rules");

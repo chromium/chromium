@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,6 +26,8 @@ constexpr int32_t kRootId = 182;
 constexpr int32_t kRowNodeId1 = 2;
 constexpr int32_t kRowNodeId2 = 3;
 constexpr int32_t kCellNodeId = 7;
+constexpr int32_t kListElementId1 = 111;
+constexpr int32_t kListElementId2 = 222;
 
 ui::AXTreeUpdate CreateTableUpdate() {
   ui::AXTreeUpdate update;
@@ -33,31 +35,31 @@ ui::AXTreeUpdate CreateTableUpdate() {
   update.nodes.resize(8);
   auto& table = update.nodes[0];
   table.id = kRootId;
-  table.role = ax::mojom::Role::kTable;
+  table.role = AXRole::kTable;
   table.AddIntAttribute(ax::mojom::IntAttribute::kTableRowCount, 2);
   table.AddIntAttribute(ax::mojom::IntAttribute::kTableColumnCount, 2);
   table.child_ids = {888, kRowNodeId2};
 
   auto& row_group = update.nodes[1];
   row_group.id = 888;
-  row_group.role = ax::mojom::Role::kRowGroup;
+  row_group.role = AXRole::kRowGroup;
   row_group.child_ids = {kRowNodeId1};
 
   auto& row_1 = update.nodes[2];
   row_1.id = kRowNodeId1;
-  row_1.role = ax::mojom::Role::kRow;
+  row_1.role = AXRole::kRow;
   row_1.AddIntAttribute(ax::mojom::IntAttribute::kTableRowIndex, 0);
   row_1.child_ids = {4, 5};
 
   auto& row_2 = update.nodes[3];
   row_2.id = kRowNodeId2;
-  row_2.role = ax::mojom::Role::kRow;
+  row_2.role = AXRole::kRow;
   row_2.AddIntAttribute(ax::mojom::IntAttribute::kTableRowIndex, 1);
   row_2.child_ids = {6, kCellNodeId};
 
   auto& column_header_1 = update.nodes[4];
   column_header_1.id = 4;
-  column_header_1.role = ax::mojom::Role::kColumnHeader;
+  column_header_1.role = AXRole::kColumnHeader;
   column_header_1.AddIntAttribute(ax::mojom::IntAttribute::kTableCellRowIndex,
                                   0);
   column_header_1.AddIntAttribute(
@@ -65,7 +67,7 @@ ui::AXTreeUpdate CreateTableUpdate() {
 
   auto& column_header_2 = update.nodes[5];
   column_header_2.id = 5;
-  column_header_2.role = ax::mojom::Role::kColumnHeader;
+  column_header_2.role = AXRole::kColumnHeader;
   column_header_2.AddIntAttribute(ax::mojom::IntAttribute::kTableCellRowIndex,
                                   0);
   column_header_2.AddIntAttribute(
@@ -73,15 +75,39 @@ ui::AXTreeUpdate CreateTableUpdate() {
 
   auto& cell_1 = update.nodes[6];
   cell_1.id = 6;
-  cell_1.role = ax::mojom::Role::kCell;
+  cell_1.role = AXRole::kCell;
   cell_1.AddIntAttribute(ax::mojom::IntAttribute::kTableCellRowIndex, 1);
   cell_1.AddIntAttribute(ax::mojom::IntAttribute::kTableCellColumnIndex, 0);
 
   auto& cell_2 = update.nodes[7];
   cell_2.id = kCellNodeId;
-  cell_2.role = ax::mojom::Role::kCell;
+  cell_2.role = AXRole::kCell;
   cell_2.AddIntAttribute(ax::mojom::IntAttribute::kTableCellRowIndex, 1);
   cell_2.AddIntAttribute(ax::mojom::IntAttribute::kTableCellColumnIndex, 1);
+
+  return update;
+}
+
+ui::AXTreeUpdate CreateListUpdate() {
+  ui::AXTreeUpdate update;
+  update.root_id = kRootId;
+  update.nodes.resize(3);
+
+  auto& list = update.nodes[0];
+  list.id = kRootId;
+  list.role = AXRole::kList;
+  list.AddIntAttribute(ax::mojom::IntAttribute::kSetSize, 2);
+  list.child_ids = {kListElementId1, kListElementId2};
+
+  auto& list_element_1 = update.nodes[1];
+  list_element_1.id = kListElementId1;
+  list_element_1.role = AXRole::kListItem;
+  list_element_1.AddIntAttribute(ax::mojom::IntAttribute::kPosInSet, 1);
+
+  auto& list_element_2 = update.nodes[2];
+  list_element_2.id = kListElementId2;
+  list_element_2.role = AXRole::kListItem;
+  list_element_2.AddIntAttribute(ax::mojom::IntAttribute::kPosInSet, 2);
 
   return update;
 }
@@ -122,6 +148,9 @@ TEST_F(BrowserAccessibilityFuchsiaTest, ToFuchsiaNodeDataTranslatesRoles) {
           {AXRole::kHeader, Role::HEADER},
           {AXRole::kImage, Role::IMAGE},
           {AXRole::kLink, Role::LINK},
+          {AXRole::kList, Role::LIST},
+          {AXRole::kListItem, Role::LIST_ELEMENT},
+          {AXRole::kListMarker, Role::LIST_ELEMENT_MARKER},
           {AXRole::kRadioButton, Role::RADIO_BUTTON},
           {AXRole::kSlider, Role::SLIDER},
           {AXRole::kTextField, Role::TEXT_FIELD},
@@ -142,11 +171,11 @@ TEST_F(BrowserAccessibilityFuchsiaTest, ToFuchsiaNodeDataTranslatesRoles) {
 
     std::unique_ptr<BrowserAccessibilityManager> manager(
         BrowserAccessibilityManager::Create(
-            MakeAXTreeUpdate(node),
+            MakeAXTreeUpdateForTesting(node),
             test_browser_accessibility_delegate_.get()));
 
     BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
-        ToBrowserAccessibilityFuchsia(manager->GetRoot());
+        ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
 
     ASSERT_TRUE(browser_accessibility_fuchsia);
     auto fuchsia_node_data = browser_accessibility_fuchsia->ToFuchsiaNodeData();
@@ -175,11 +204,11 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
 
     std::unique_ptr<BrowserAccessibilityManager> manager(
         BrowserAccessibilityManager::Create(
-            MakeAXTreeUpdate(node),
+            MakeAXTreeUpdateForTesting(node),
             test_browser_accessibility_delegate_.get()));
 
     BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
-        ToBrowserAccessibilityFuchsia(manager->GetRoot());
+        ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
 
     ASSERT_TRUE(browser_accessibility_fuchsia);
     auto fuchsia_node_data = browser_accessibility_fuchsia->ToFuchsiaNodeData();
@@ -202,10 +231,11 @@ TEST_F(BrowserAccessibilityFuchsiaTest, ToFuchsiaNodeDataTranslatesLabels) {
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(node), test_browser_accessibility_delegate_.get()));
+          MakeAXTreeUpdateForTesting(node),
+          test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
-      ToBrowserAccessibilityFuchsia(manager->GetRoot());
+      ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
 
   ASSERT_TRUE(browser_accessibility_fuchsia);
   auto fuchsia_node_data = browser_accessibility_fuchsia->ToFuchsiaNodeData();
@@ -233,10 +263,11 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(node), test_browser_accessibility_delegate_.get()));
+          MakeAXTreeUpdateForTesting(node),
+          test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
-      ToBrowserAccessibilityFuchsia(manager->GetRoot());
+      ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
 
   ASSERT_TRUE(browser_accessibility_fuchsia);
   auto fuchsia_node_data = browser_accessibility_fuchsia->ToFuchsiaNodeData();
@@ -261,7 +292,7 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
   // Verify table node translation.
   {
     BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
-        ToBrowserAccessibilityFuchsia(manager->GetRoot());
+        ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
 
     ASSERT_TRUE(browser_accessibility_fuchsia);
     auto fuchsia_node_data = browser_accessibility_fuchsia->ToFuchsiaNodeData();
@@ -314,6 +345,42 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
 }
 
 TEST_F(BrowserAccessibilityFuchsiaTest,
+       ToFuchsiaNodeDataTranslatesListAttributes) {
+  std::unique_ptr<BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManager::Create(
+          CreateListUpdate(), test_browser_accessibility_delegate_.get()));
+
+  // Verify that the list root was translated.
+  {
+    BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
+        ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
+    ASSERT_TRUE(browser_accessibility_fuchsia);
+    auto fuchsia_node_data = browser_accessibility_fuchsia->ToFuchsiaNodeData();
+    EXPECT_EQ(fuchsia_node_data.role(),
+              fuchsia::accessibility::semantics::Role::LIST);
+    ASSERT_TRUE(fuchsia_node_data.has_attributes());
+    ASSERT_TRUE(fuchsia_node_data.attributes().has_list_attributes());
+    ASSERT_FALSE(fuchsia_node_data.attributes().has_list_element_attributes());
+    EXPECT_EQ(fuchsia_node_data.attributes().list_attributes().size(), 2u);
+  }
+
+  // Verify that the list elements were translated.
+  {
+    BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
+        ToBrowserAccessibilityFuchsia(manager->GetFromID(kListElementId2));
+    ASSERT_TRUE(browser_accessibility_fuchsia);
+    auto fuchsia_node_data = browser_accessibility_fuchsia->ToFuchsiaNodeData();
+    EXPECT_EQ(fuchsia_node_data.role(),
+              fuchsia::accessibility::semantics::Role::LIST_ELEMENT);
+    ASSERT_TRUE(fuchsia_node_data.has_attributes());
+    ASSERT_FALSE(fuchsia_node_data.attributes().has_list_attributes());
+    ASSERT_TRUE(fuchsia_node_data.attributes().has_list_element_attributes());
+    EXPECT_EQ(fuchsia_node_data.attributes().list_element_attributes().index(),
+              2u);
+  }
+}
+
+TEST_F(BrowserAccessibilityFuchsiaTest,
        ToFuchsiaNodeDataTranslatesCheckedState) {
   std::map<ax::mojom::CheckedState,
            fuchsia::accessibility::semantics::CheckedState>
@@ -335,11 +402,11 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
 
     std::unique_ptr<BrowserAccessibilityManager> manager(
         BrowserAccessibilityManager::Create(
-            MakeAXTreeUpdate(node),
+            MakeAXTreeUpdateForTesting(node),
             test_browser_accessibility_delegate_.get()));
 
     BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
-        ToBrowserAccessibilityFuchsia(manager->GetRoot());
+        ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
 
     ASSERT_TRUE(browser_accessibility_fuchsia);
     auto fuchsia_node_data = browser_accessibility_fuchsia->ToFuchsiaNodeData();
@@ -358,10 +425,11 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(node), test_browser_accessibility_delegate_.get()));
+          MakeAXTreeUpdateForTesting(node),
+          test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
-      ToBrowserAccessibilityFuchsia(manager->GetRoot());
+      ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
 
   ASSERT_TRUE(browser_accessibility_fuchsia);
   auto fuchsia_node_data = browser_accessibility_fuchsia->ToFuchsiaNodeData();
@@ -379,10 +447,11 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(node), test_browser_accessibility_delegate_.get()));
+          MakeAXTreeUpdateForTesting(node),
+          test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
-      ToBrowserAccessibilityFuchsia(manager->GetRoot());
+      ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
 
   ASSERT_TRUE(browser_accessibility_fuchsia);
   auto fuchsia_node_data = browser_accessibility_fuchsia->ToFuchsiaNodeData();
@@ -400,10 +469,11 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(node), test_browser_accessibility_delegate_.get()));
+          MakeAXTreeUpdateForTesting(node),
+          test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
-      ToBrowserAccessibilityFuchsia(manager->GetRoot());
+      ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
 
   ASSERT_TRUE(browser_accessibility_fuchsia);
   auto fuchsia_node_data = browser_accessibility_fuchsia->ToFuchsiaNodeData();
@@ -425,10 +495,11 @@ TEST_F(BrowserAccessibilityFuchsiaTest, ToFuchsiaNodeDataTranslatesValue) {
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(node), test_browser_accessibility_delegate_.get()));
+          MakeAXTreeUpdateForTesting(node),
+          test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
-      ToBrowserAccessibilityFuchsia(manager->GetRoot());
+      ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
 
   ASSERT_TRUE(browser_accessibility_fuchsia);
   auto fuchsia_node_data = browser_accessibility_fuchsia->ToFuchsiaNodeData();
@@ -450,10 +521,11 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(node), test_browser_accessibility_delegate_.get()));
+          MakeAXTreeUpdateForTesting(node),
+          test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
-      ToBrowserAccessibilityFuchsia(manager->GetRoot());
+      ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
 
   ASSERT_TRUE(browser_accessibility_fuchsia);
   auto fuchsia_node_data = browser_accessibility_fuchsia->ToFuchsiaNodeData();
@@ -480,19 +552,20 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
 
   ui::AXNodeData node;
   node.id = kRootId;
-  // gfx::Transform constructor takes arguments in row-major order.
-  node.relative_bounds.transform = std::make_unique<gfx::Transform>(
-      x_scale, 0, 0, x_translation, 0, y_scale, 0, y_translation, 0, 0, z_scale,
-      z_translation, 0, 0, 0, 1);
+  node.relative_bounds.transform =
+      std::make_unique<gfx::Transform>(gfx::Transform::RowMajor(
+          x_scale, 0, 0, x_translation, 0, y_scale, 0, y_translation, 0, 0,
+          z_scale, z_translation, 0, 0, 0, 1));
   node.relative_bounds.bounds = gfx::RectF(
       x_min, y_min, /* width = */ x_max - x_min, /* height = */ y_max - y_min);
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(node), test_browser_accessibility_delegate_.get()));
+          MakeAXTreeUpdateForTesting(node),
+          test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
-      ToBrowserAccessibilityFuchsia(manager->GetRoot());
+      ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
 
   ASSERT_TRUE(browser_accessibility_fuchsia);
   auto fuchsia_node_data = browser_accessibility_fuchsia->ToFuchsiaNodeData();
@@ -512,6 +585,206 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
   EXPECT_EQ(location.min.y, y_min);
   EXPECT_EQ(location.max.x, x_max);
   EXPECT_EQ(location.max.y, y_max);
+}
+
+TEST_F(BrowserAccessibilityFuchsiaTest,
+       ToFuchsiaNodeDataTranslatesOffsetContainerID) {
+  ui::AXNodeData node;
+  node.id = kRootId;
+  node.child_ids = {2};
+  ui::AXNodeData node_2;
+  node_2.id = 2;
+  node_2.child_ids = {3};
+  node_2.relative_bounds.offset_container_id = -1;
+  ui::AXNodeData node_3;
+  node_3.id = 3;
+  node_3.relative_bounds.offset_container_id = 2;
+  std::unique_ptr<BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManager::Create(
+          MakeAXTreeUpdateForTesting(node, node_2, node_3),
+          test_browser_accessibility_delegate_.get()));
+
+  // Verify that node 2's offset container was translated correctly.
+  BrowserAccessibilityFuchsia* root =
+      ToBrowserAccessibilityFuchsia(manager->GetFromID(kRootId));
+  BrowserAccessibilityFuchsia* child =
+      ToBrowserAccessibilityFuchsia(manager->GetFromID(2));
+  ASSERT_TRUE(child);
+  auto child_node_data = child->ToFuchsiaNodeData();
+  ASSERT_TRUE(child_node_data.has_container_id());
+  EXPECT_EQ(child_node_data.container_id(), root->GetFuchsiaNodeID());
+
+  // Verify that node 3's offset container was translated correctly.
+  BrowserAccessibilityFuchsia* grandchild =
+      ToBrowserAccessibilityFuchsia(manager->GetFromID(3));
+  ASSERT_TRUE(grandchild);
+  auto grandchild_node_data = grandchild->ToFuchsiaNodeData();
+  ASSERT_TRUE(grandchild_node_data.has_container_id());
+  EXPECT_EQ(grandchild_node_data.container_id(), child->GetFuchsiaNodeID());
+}
+
+TEST_F(BrowserAccessibilityFuchsiaTest,
+       ToleratesNonexistentOffsetContainerNodeID) {
+  ui::AXNodeData node;
+  node.id = kRootId;
+  node.child_ids = {2};
+  ui::AXNodeData node_2;
+  node_2.id = 2;
+  node_2.relative_bounds.offset_container_id = 100;
+  std::unique_ptr<BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManager::Create(
+          MakeAXTreeUpdateForTesting(node, node_2),
+          test_browser_accessibility_delegate_.get()));
+
+  // Verify that node 2's offset container was translated correctly.
+  BrowserAccessibilityFuchsia* child =
+      ToBrowserAccessibilityFuchsia(manager->GetFromID(2));
+  ASSERT_TRUE(child);
+  auto child_node_data = child->ToFuchsiaNodeData();
+  ASSERT_TRUE(child_node_data.has_container_id());
+  // Offset container ID should default to 0 if the specified node doesn't
+  // exist.
+  EXPECT_EQ(child_node_data.container_id(), 0u);
+}
+
+TEST_F(BrowserAccessibilityFuchsiaTest,
+       ToFuchsiaNodeDataTranslatesNodeIDAndChildIDs) {
+  ui::AXNodeData node;
+  node.id = kRootId;
+  node.child_ids = {2, 3};
+  ui::AXNodeData node_2;
+  node_2.id = 2;
+  ui::AXNodeData node_3;
+  node_3.id = 3;
+  std::unique_ptr<BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManager::Create(
+          MakeAXTreeUpdateForTesting(node, node_2, node_3),
+          test_browser_accessibility_delegate_.get()));
+
+  BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
+      ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
+
+  ASSERT_TRUE(browser_accessibility_fuchsia);
+  auto fuchsia_node_data = browser_accessibility_fuchsia->ToFuchsiaNodeData();
+
+  BrowserAccessibilityFuchsia* root =
+      ToBrowserAccessibilityFuchsia(manager->GetFromID(kRootId));
+  BrowserAccessibilityFuchsia* child_1 =
+      ToBrowserAccessibilityFuchsia(manager->GetFromID(2));
+  BrowserAccessibilityFuchsia* child_2 =
+      ToBrowserAccessibilityFuchsia(manager->GetFromID(3));
+
+  ASSERT_TRUE(child_1);
+  ASSERT_TRUE(child_2);
+  EXPECT_EQ(fuchsia_node_data.node_id(), root->GetFuchsiaNodeID());
+  ASSERT_EQ(fuchsia_node_data.child_ids().size(), 2u);
+  EXPECT_EQ(fuchsia_node_data.child_ids()[0], child_1->GetFuchsiaNodeID());
+  EXPECT_EQ(fuchsia_node_data.child_ids()[1], child_2->GetFuchsiaNodeID());
+}
+
+TEST_F(BrowserAccessibilityFuchsiaTest, ChildTree) {
+  // Create a child tree with multiple nodes.
+  ui::AXNodeData node;
+  node.id = 1;
+  node.child_ids = {2, 3};
+  ui::AXNodeData node_2;
+  node_2.id = 2;
+  ui::AXNodeData node_3;
+  node_3.id = 3;
+  std::unique_ptr<BrowserAccessibilityManager> child_manager(
+      BrowserAccessibilityManager::Create(
+          MakeAXTreeUpdateForTesting(node, node_2, node_3), nullptr));
+
+  // Create a parent tree that points to the child tree.
+  ui::AXNodeData node_4;
+  node_4.id = 4;
+  node_4.child_ids = {5};
+  ui::AXNodeData node_5;
+  node_5.id = 5;
+  node_5.AddChildTreeId(child_manager->ax_tree_id());
+  std::unique_ptr<BrowserAccessibilityManager> parent_manager(
+      BrowserAccessibilityManager::Create(
+          MakeAXTreeUpdateForTesting(node_4, node_5), nullptr));
+
+  // Update the child tree's parent tree ID.
+  ui::AXTreeData updated_data = child_manager->GetTreeData();
+  updated_data.parent_tree_id = parent_manager->ax_tree_id();
+  child_manager->ax_tree()->UpdateDataForTesting(updated_data);
+
+  // Get the parent node that points to the child tree.
+  BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
+      ToBrowserAccessibilityFuchsia(parent_manager->GetFromID(5));
+
+  {
+    ASSERT_TRUE(browser_accessibility_fuchsia);
+    fuchsia::accessibility::semantics::Node fuchsia_node_data =
+        browser_accessibility_fuchsia->ToFuchsiaNodeData();
+
+    // Get the root of the child tree to verify that it's present in the parent
+    // node's children.
+    BrowserAccessibilityFuchsia* child_root = ToBrowserAccessibilityFuchsia(
+        child_manager->GetBrowserAccessibilityRoot());
+
+    ASSERT_EQ(fuchsia_node_data.child_ids().size(), 1u);
+    EXPECT_EQ(fuchsia_node_data.child_ids()[0], child_root->GetFuchsiaNodeID());
+  }
+
+  // Destroy the child tree, and ensure that the parent fuchsia node's child IDs
+  // no longer reference it.
+  child_manager.reset();
+
+  {
+    ASSERT_TRUE(browser_accessibility_fuchsia);
+    fuchsia::accessibility::semantics::Node fuchsia_node_data =
+        browser_accessibility_fuchsia->ToFuchsiaNodeData();
+
+    EXPECT_TRUE(fuchsia_node_data.child_ids().empty());
+  }
+}
+
+TEST_F(BrowserAccessibilityFuchsiaTest, ChildTreeMissing) {
+  // Create a parent tree that points to a non-existent child tree.
+  ui::AXNodeData node_4;
+  node_4.id = 4;
+  node_4.child_ids = {5};
+  ui::AXNodeData node_5;
+  node_5.id = 5;
+  node_5.AddChildTreeId(ui::AXTreeID::CreateNewAXTreeID());
+  std::unique_ptr<BrowserAccessibilityManager> parent_manager(
+      BrowserAccessibilityManager::Create(
+          MakeAXTreeUpdateForTesting(node_4, node_5),
+          test_browser_accessibility_delegate_.get()));
+
+  // Get the parent node that points to the child tree.
+  BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
+      ToBrowserAccessibilityFuchsia(parent_manager->GetFromID(5));
+
+  ASSERT_TRUE(browser_accessibility_fuchsia);
+  auto fuchsia_node_data = browser_accessibility_fuchsia->ToFuchsiaNodeData();
+
+  EXPECT_TRUE(fuchsia_node_data.child_ids().empty());
+}
+
+TEST_F(BrowserAccessibilityFuchsiaTest, GetFuchsiaNodeIDNonRootTree) {
+  // We want to verify that the root of a non-root tree will NOT be assigned ID
+  // = 0, so Specify that this tree is not the root.
+  test_browser_accessibility_delegate_->is_root_frame_ = false;
+
+  ui::AXNodeData node;
+  node.id = kRootId;
+
+  std::unique_ptr<BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManager::Create(
+          MakeAXTreeUpdateForTesting(node),
+          test_browser_accessibility_delegate_.get()));
+
+  BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
+      ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
+
+  ASSERT_TRUE(browser_accessibility_fuchsia);
+  auto fuchsia_node_data = browser_accessibility_fuchsia->ToFuchsiaNodeData();
+
+  EXPECT_GT(fuchsia_node_data.node_id(), 0u);
 }
 
 }  // namespace content

@@ -1,0 +1,9 @@
+include_rules = [
+  "+v8/include",
+  "+gin",
+]
+specific_include_rules = {
+  "automation_ax_tree_wrapper.cc" : [
+    "+components/crash/core/common/crash_key.h",
+  ],
+}

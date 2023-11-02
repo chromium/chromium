@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -68,15 +68,20 @@ gfx::Rect MockIMEInputContextHandler::GetTextFieldBounds() {
   return gfx::Rect();
 }
 
-bool MockIMEInputContextHandler::SetAutocorrectRange(const gfx::Range& range) {
-  autocorrect_range_ = range;
-  return true;
+void MockIMEInputContextHandler::SetAutocorrectRange(
+    const gfx::Range& range,
+    SetAutocorrectRangeDoneCallback callback) {
+  if (autocorrect_enabled_) {
+    autocorrect_range_ = range;
+  }
+
+  std::move(callback).Run(autocorrect_enabled_);
 }
 
-absl::optional<GrammarFragment> MockIMEInputContextHandler::GetGrammarFragment(
-    const gfx::Range& range) {
+absl::optional<GrammarFragment>
+MockIMEInputContextHandler::GetGrammarFragmentAtCursor() {
   for (const auto& fragment : grammar_fragments_) {
-    if (fragment.range.Contains(range)) {
+    if (fragment.range.Contains(cursor_range_)) {
       return fragment;
     }
   }
@@ -125,6 +130,7 @@ void MockIMEInputContextHandler::Reset() {
   set_selection_range_call_count_ = 0;
   update_preedit_text_call_count_ = 0;
   delete_surrounding_text_call_count_ = 0;
+  autocorrect_enabled_ = true;
   last_commit_text_.clear();
   sent_key_events_.clear();
 }
@@ -154,6 +160,10 @@ void MockIMEInputContextHandler::ConfirmCompositionText(bool reset_engine,
 
 bool MockIMEInputContextHandler::HasCompositionText() {
   return !last_update_composition_arg_.composition_text.text.empty();
+}
+
+std::u16string MockIMEInputContextHandler::GetCompositionText() {
+  return last_update_composition_arg_.composition_text.text;
 }
 
 ukm::SourceId MockIMEInputContextHandler::GetClientSourceForMetrics() {

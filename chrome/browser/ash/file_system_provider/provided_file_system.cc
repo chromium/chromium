@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -195,7 +195,7 @@ AbortCallback ProvidedFileSystem::GetMetadata(const base::FilePath& entry_path,
                         std::move(split_callback.first)));
   if (!request_id) {
     std::move(split_callback.second)
-        .Run(base::WrapUnique<EntryMetadata>(NULL),
+        .Run(base::WrapUnique<EntryMetadata>(nullptr),
              base::File::FILE_ERROR_SECURITY);
     return AbortCallback();
   }

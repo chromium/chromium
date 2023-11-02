@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,8 +29,12 @@ class TabModelObserver {
   // Called when a |tab| starts closing.
   virtual void WillCloseTab(TabAndroid* tab, bool animate);
 
-  // Called right after a |tab| has been destroyed.
-  virtual void DidCloseTab(int tab_id, bool incognito);
+  // Called right before a |tab| has been destroyed.
+  virtual void OnFinishingTabClosure(int tab_id, bool incognito);
+
+  // Called right before all |tabs| are destroyed.
+  virtual void OnFinishingMultipleTabClosure(
+      const std::vector<TabAndroid*>& tabs);
 
   // Called before a |tab| is added to the TabModel.
   virtual void WillAddTab(TabAndroid* tab, TabModel::TabLaunchType type);

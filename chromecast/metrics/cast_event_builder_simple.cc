@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -99,6 +99,11 @@ CastEventBuilder& CastEventBuilderSimple::SetAoghLocalDeviceId(
 
 CastEventBuilder& CastEventBuilderSimple::SetAoghAgentId(
     const std::string& agent_id) {
+  return *this;
+}
+
+CastEventBuilder& CastEventBuilderSimple::SetAoghStandardAgentId(
+    const std::string& standard_agent_id) {
   return *this;
 }
 

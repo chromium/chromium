@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -111,7 +111,7 @@ function detectVideoWithDimension(
             ' to appear');
         return;
       }
-      var context = canvas.getContext('2d');
+      var context = canvas.getContext('2d', {willReadFrequently: true});
       context.drawImage(videoElement, 0, 0);
       var pixels = context.getImageData(0, 0, width, height / 3).data;
 

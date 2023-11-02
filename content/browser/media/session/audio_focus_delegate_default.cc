@@ -1,7 +1,8 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/media/session/audio_focus_delegate.h"
 
 #include "base/bind.h"
@@ -73,7 +74,7 @@ class AudioFocusDelegateDefault : public AudioFocusDelegate {
       request_client_remote_;
 
   // Weak pointer because |this| is owned by |media_session_|.
-  MediaSessionImpl* media_session_;
+  raw_ptr<MediaSessionImpl> media_session_;
 
   // The last requested AudioFocusType by the associated |media_session_|.
   absl::optional<AudioFocusType> audio_focus_type_;

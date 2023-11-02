@@ -1,10 +1,13 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/search_engines/template_url_fetcher.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -88,13 +91,15 @@ class TemplateURLFetcher::RequestDelegate {
   void AddSearchProvider();
 
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
-  TemplateURLFetcher* fetcher_;
+  raw_ptr<TemplateURLFetcher> fetcher_;
   std::unique_ptr<TemplateURL> template_url_;
   std::u16string keyword_;
   const GURL osdd_url_;
   const GURL favicon_url_;
 
   base::CallbackListSubscription template_url_subscription_;
+
+  base::WeakPtrFactory<RequestDelegate> weak_factory_{this};
 };
 
 TemplateURLFetcher::RequestDelegate::RequestDelegate(
@@ -117,7 +122,7 @@ TemplateURLFetcher::RequestDelegate::RequestDelegate(
     // Start the model load and set-up waiting for it.
     template_url_subscription_ = model->RegisterOnLoadedCallback(
         base::BindOnce(&TemplateURLFetcher::RequestDelegate::OnLoaded,
-                       base::Unretained(this)));
+                       weak_factory_.GetWeakPtr()));
     model->Load();
   }
 
@@ -142,7 +147,7 @@ TemplateURLFetcher::RequestDelegate::RequestDelegate(
       url_loader_factory,
       base::BindOnce(
           &TemplateURLFetcher::RequestDelegate::OnSimpleLoaderComplete,
-          base::Unretained(this)),
+          weak_factory_.GetWeakPtr()),
       50000 /* max_body_size */);
 }
 
@@ -187,7 +192,7 @@ void TemplateURLFetcher::RequestDelegate::OnSimpleLoaderComplete(
       &fetcher_->template_url_service_->search_terms_data(),
       *response_body.get(), TemplateURLParser::ParameterFilter(),
       base::BindOnce(&RequestDelegate::OnTemplateURLParsed,
-                     base::Unretained(this)));
+                     weak_factory_.GetWeakPtr()));
 }
 
 void TemplateURLFetcher::RequestDelegate::AddSearchProvider() {
@@ -272,10 +277,8 @@ void TemplateURLFetcher::ScheduleDownload(
 }
 
 void TemplateURLFetcher::RequestCompleted(RequestDelegate* request) {
-  auto i = std::find_if(requests_.begin(), requests_.end(),
-                        [request](const std::unique_ptr<RequestDelegate>& ptr) {
-                          return ptr.get() == request;
-                        });
+  auto i = base::ranges::find(requests_, request,
+                              &std::unique_ptr<RequestDelegate>::get);
   DCHECK(i != requests_.end());
   requests_.erase(i);
 }

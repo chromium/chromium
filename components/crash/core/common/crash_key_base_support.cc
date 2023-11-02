@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 #include <ostream>
 
+#include "base/check_op.h"
 #include "base/debug/crash_logging.h"
 #include "components/crash/core/common/crash_key.h"
 
@@ -40,6 +41,9 @@ struct BaseCrashKeyString : public base::debug::CrashKeyString {
       break;                                                                 \
     case base::debug::CrashKeySize::Size256:                                 \
       operation_prefix BaseCrashKeyString<256> operation_suffix;             \
+      break;                                                                 \
+    case base::debug::CrashKeySize::Size1024:                                \
+      operation_prefix BaseCrashKeyString<1024> operation_suffix;            \
       break;                                                                 \
   }
 

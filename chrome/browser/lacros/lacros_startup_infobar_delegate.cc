@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
@@ -34,8 +34,7 @@ constexpr base::StringPiece kLearnMoreURLGoogleInternal(
 // Returns the single main profile, or nullptr if none is found.
 Profile* GetMainProfile() {
   auto profiles = g_browser_process->profile_manager()->GetLoadedProfiles();
-  const auto main_it = base::ranges::find_if(
-      profiles, [](Profile* profile) { return profile->IsMainProfile(); });
+  const auto main_it = base::ranges::find_if(profiles, &Profile::IsMainProfile);
   if (main_it == profiles.end())
     return nullptr;
   return *main_it;
@@ -66,9 +65,7 @@ bool IsManaged() {
 
 // Returns true if Lacros is the primary browser, with ash as secondary.
 bool IsPrimary() {
-  return chromeos::LacrosService::Get()
-      ->init_params()
-      ->standalone_browser_is_primary;
+  return chromeos::BrowserParamsProxy::Get()->StandaloneBrowserIsPrimary();
 }
 
 }  // namespace

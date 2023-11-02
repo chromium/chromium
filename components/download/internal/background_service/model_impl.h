@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/download/internal/background_service/model.h"
 #include "components/download/internal/background_service/store.h"
@@ -57,7 +58,7 @@ class ModelImpl : public Model {
 
   // The external Model::Client reference that will receive all interesting
   // Model notifications.
-  Client* client_;
+  raw_ptr<Client> client_;
 
   // The backing Store that is responsible for saving and loading the
   // persisted entries.

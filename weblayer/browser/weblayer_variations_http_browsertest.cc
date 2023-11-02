@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "weblayer/test/weblayer_browser_test.h"
 
+#include "base/command_line.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "components/variations/variations_ids_provider.h"
@@ -96,8 +97,8 @@ class WebLayerVariationsHttpBrowserTest : public WebLayerBrowserTest {
     // Recover the original URL of the request by replacing the host name in
     // request.GetURL() (which is 127.0.0.1) with the host name from the request
     // headers.
-    url::Replacements<char> replacements;
-    replacements.SetHost(host.c_str(), url::Component(0, host.length()));
+    GURL::Replacements replacements;
+    replacements.SetHostStr(host);
     GURL original_url = request.GetURL().ReplaceComponents(replacements);
 
     {

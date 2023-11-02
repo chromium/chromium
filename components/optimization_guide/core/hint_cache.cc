@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,9 @@
 
 namespace optimization_guide {
 
-HintCache::HintCache(OptimizationGuideStore* optimization_guide_store,
-                     int max_memory_cache_host_keyed_hints)
+HintCache::HintCache(
+    base::WeakPtr<OptimizationGuideStore> optimization_guide_store,
+    int max_memory_cache_host_keyed_hints)
     : optimization_guide_store_(optimization_guide_store),
       host_keyed_cache_(max_memory_cache_host_keyed_hints),
       url_keyed_hint_cache_(features::MaxURLKeyedHintCacheSize()),
@@ -371,6 +372,13 @@ bool HintCache::ProcessAndCacheHints(
         }
         break;
       case proto::HOST_SUFFIX:
+        // Old component versions if not updated could potentially have
+        // HOST_SUFFIX hints. Just skip over them.
+        break;
+      case proto::HASHED_HOST:
+        // The server should not send hints with hashed host key.
+        NOTREACHED();
+        break;
       case proto::REPRESENTATION_UNSPECIFIED:
         NOTREACHED();
         break;

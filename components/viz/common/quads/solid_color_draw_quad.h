@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,18 +18,18 @@ class VIZ_COMMON_EXPORT SolidColorDrawQuad : public DrawQuad {
   void SetNew(const SharedQuadState* shared_quad_state,
               const gfx::Rect& rect,
               const gfx::Rect& visible_rect,
-              SkColor c,
+              SkColor4f c,
               bool anti_aliasing_off);
 
   void SetAll(const SharedQuadState* shared_quad_state,
               const gfx::Rect& rect,
               const gfx::Rect& visible_rect,
               bool needs_blending,
-              SkColor c,
+              SkColor4f c,
               bool anti_aliasing_off);
 
-  SkColor color;
-  bool force_anti_aliasing_off;
+  SkColor4f color;
+  bool force_anti_aliasing_off = false;
 
   static const SolidColorDrawQuad* MaterialCast(const DrawQuad*);
 

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_file_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -133,9 +134,20 @@ class ContentVerifierTest : public ExtensionBrowserTest {
         test_data_dir_.AppendASCII("content_verifier/v1.crx"));
   }
 
+  // Types of modification used by `TestContentScriptExtension` method below.
+  enum class ScriptModificationAction {
+    // Alter script content.
+    kAlter,
+    // Delete the script file.
+    kDelete,
+    // Make the script unreadable.
+    kMakeUnreadable,
+  };
+
   void TestContentScriptExtension(const std::string& crx_relpath,
                                   const std::string& id,
-                                  const std::string& script_relpath) {
+                                  const std::string& script_relpath,
+                                  ScriptModificationAction action) {
     VerifierObserver verifier_observer;
 
     // Install the extension with content scripts. The initial read of the
@@ -168,10 +180,20 @@ class ContentVerifierTest : public ExtensionBrowserTest {
     // expect to see a job failure due to the content script content hash not
     // being what was signed by the webstore.
     base::FilePath scriptfile = extension->path().AppendASCII(script_relpath);
-    std::string extra = "some_extra_function_call();";
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
-      ASSERT_TRUE(base::AppendToFile(scriptfile, extra));
+      switch (action) {
+        case ScriptModificationAction::kAlter:
+          ASSERT_TRUE(
+              base::AppendToFile(scriptfile, "some_extra_function_call();"));
+          break;
+        case ScriptModificationAction::kDelete:
+          ASSERT_TRUE(base::DeleteFile(scriptfile));
+          break;
+        case ScriptModificationAction::kMakeUnreadable:
+          ASSERT_TRUE(base::MakeFileUnreadable(scriptfile));
+          break;
+      }
     }
     DisableExtension(id);
     job_observer.ExpectJobResult(id, script_relfilepath, Result::FAILURE);
@@ -306,11 +328,12 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest, DotSlashPaths) {
 
 IN_PROC_BROWSER_TEST_F(ContentVerifierTest, ContentScripts) {
   TestContentScriptExtension("content_verifier/content_script.crx",
-                             "jmllhlobpjcnnomjlipadejplhmheiif", "script.js");
+                             "jmllhlobpjcnnomjlipadejplhmheiif", "script.js",
+                             ScriptModificationAction::kAlter);
 }
 
 // crbug.com/897059 tracks test flakiness.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ContentScriptsInLocales DISABLED_ContentScriptsInLocales
 #else
 #define MAYBE_ContentScriptsInLocales ContentScriptsInLocales
@@ -318,7 +341,27 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest, ContentScripts) {
 IN_PROC_BROWSER_TEST_F(ContentVerifierTest, MAYBE_ContentScriptsInLocales) {
   TestContentScriptExtension("content_verifier/content_script_locales.crx",
                              "jaghonccckpcikmliipifpoodmeofoon",
-                             "_locales/en/content_script.js");
+                             "_locales/en/content_script.js",
+                             ScriptModificationAction::kAlter);
+}
+
+// Tests that a deleted content_script results in content verification failure.
+//
+// Regression test for crbug.com/1296310.
+IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
+                       DeletedContentScriptFailsContentVerification) {
+  TestContentScriptExtension("content_verifier/content_script.crx",
+                             "jmllhlobpjcnnomjlipadejplhmheiif", "script.js",
+                             ScriptModificationAction::kDelete);
+}
+
+// Tests that an unreadable content_script results in content verification
+// failure.
+IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
+                       UnreadableContentScriptFailsContentVerification) {
+  TestContentScriptExtension("content_verifier/content_script.crx",
+                             "jmllhlobpjcnnomjlipadejplhmheiif", "script.js",
+                             ScriptModificationAction::kMakeUnreadable);
 }
 
 // Tests the case of a corrupt extension that is force-installed by policy and
@@ -372,6 +415,7 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest, PolicyCorrupted) {
 
   reasons = prefs->GetDisableReasons(kExtensionId);
   EXPECT_FALSE(reasons & disable_reason::DISABLE_CORRUPTED);
+  system->management_policy()->UnregisterProvider(&policy);
 }
 
 // Tests the case when an extension is first manually installed, then it gets
@@ -465,10 +509,8 @@ class UserInstalledContentVerifierTest : public ContentVerifierTest {
         test_data_dir_.AppendASCII(kStoragePermissionExtensionCrx));
   }
 
-  PendingExtensionManager* pending_extension_manager() {
-    return ExtensionSystem::Get(profile())
-        ->extension_service()
-        ->pending_extension_manager();
+  CorruptedExtensionReinstaller* corrupted_extension_reinstaller() {
+    return extension_service()->corrupted_extension_reinstaller();
   }
 };
 
@@ -515,8 +557,9 @@ IN_PROC_BROWSER_TEST_F(UserInstalledContentVerifierTest,
   EXPECT_TRUE(registry_observer.WaitForExtensionUnloaded());
 
   // The extension should be disabled and not be in expected to be repaired yet.
-  EXPECT_FALSE(pending_extension_manager()->IsReinstallForCorruptionExpected(
-      kStoragePermissionExtensionId));
+  EXPECT_FALSE(
+      corrupted_extension_reinstaller()->IsReinstallForCorruptionExpected(
+          kStoragePermissionExtensionId));
   EXPECT_EQ(disable_reason::DISABLE_CORRUPTED,
             ExtensionPrefs::Get(profile())->GetDisableReasons(
                 kStoragePermissionExtensionId));
@@ -536,15 +579,17 @@ IN_PROC_BROWSER_TEST_F(UserInstalledContentVerifierTest,
   // such as the build waterfall / trybots). If the reinstall didn't already
   // happen, wait for it.
   if (disable_reasons & disable_reason::DISABLE_CORRUPTED) {
-    EXPECT_TRUE(pending_extension_manager()->IsReinstallForCorruptionExpected(
-        kStoragePermissionExtensionId));
+    EXPECT_TRUE(
+        corrupted_extension_reinstaller()->IsReinstallForCorruptionExpected(
+            kStoragePermissionExtensionId));
     TestExtensionRegistryObserver registry_observer(
         registry, kStoragePermissionExtensionId);
     ASSERT_TRUE(registry_observer.WaitForExtensionInstalled());
     disable_reasons = prefs->GetDisableReasons(kStoragePermissionExtensionId);
   }
-  EXPECT_FALSE(pending_extension_manager()->IsReinstallForCorruptionExpected(
-      kStoragePermissionExtensionId));
+  EXPECT_FALSE(
+      corrupted_extension_reinstaller()->IsReinstallForCorruptionExpected(
+          kStoragePermissionExtensionId));
   EXPECT_EQ(disable_reason::DISABLE_NONE, disable_reasons);
   const Extension* extension =
       ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(
@@ -879,7 +924,14 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierPolicyTest,
 }
 
 // Now actually test what happens on the next startup after the PRE test above.
-IN_PROC_BROWSER_TEST_F(ContentVerifierPolicyTest, PolicyCorruptedOnStartup) {
+// TODO(crbug.com/1271946): Flaky on mac arm64.
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+#define MAYBE_PolicyCorruptedOnStartup DISABLED_PolicyCorruptedOnStartup
+#else
+#define MAYBE_PolicyCorruptedOnStartup PolicyCorruptedOnStartup
+#endif
+IN_PROC_BROWSER_TEST_F(ContentVerifierPolicyTest,
+                       MAYBE_PolicyCorruptedOnStartup) {
   // Depdending on timing, the extension may have already been reinstalled
   // between SetUpInProcessBrowserTestFixture and now (usually not during local
   // testing on a developer machine, but sometimes on a heavily loaded system

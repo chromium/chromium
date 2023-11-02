@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@
 - (void)unifiedConsentViewControllerDidTapLearnMoreLink:
     (UnifiedConsentViewController*)controller;
 
-// Called when the user taps at |point| on the IdentityButtonControl. |point| is
+// Called when the user taps at `point` on the IdentityButtonControl. `point` is
 // in the window coordinates.
 - (void)unifiedConsentViewControllerDidTapIdentityButtonControl:
             (UnifiedConsentViewController*)controller

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-class GURL;
+@class CrURL;
 
 typedef NS_ENUM(NSInteger, OmniboxIconType) {
   OmniboxIconTypeSuggestionIcon,
@@ -18,12 +18,12 @@ typedef NS_ENUM(NSInteger, OmniboxIconType) {
 // This protocol represents all the parts necessary to display a composited
 // omnibox icon. Most icons have a background and a main image. If the main
 // image is an icon (not an image from the web), it will be tinted some color.
-// |OmniboxIconView| is the preferred way to consume this protocol and display
+// `OmniboxIconView` is the preferred way to consume this protocol and display
 // the icons.
 @protocol OmniboxIcon <NSObject>
 
 @property(nonatomic, assign, readonly) OmniboxIconType iconType;
-@property(nonatomic, assign, readonly) GURL imageURL;
+@property(nonatomic, strong, readonly) CrURL* imageURL;
 @property(nonatomic, strong, readonly) UIImage* iconImage;
 @property(nonatomic, strong, readonly) UIColor* iconImageTintColor;
 @property(nonatomic, strong, readonly) UIImage* backgroundImage;

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback_list.h"
-#include "base/compiler_specific.h"
 #include "chromecast/external_mojo/public/mojom/connector.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -55,8 +54,8 @@ class ExternalConnector {
   // until it intends to unregister. By the time |callback| is executed, a new
   // attempt at connecting will be started, and this object is valid. Note that
   // some prior messages may be lost.
-  virtual base::CallbackListSubscription AddConnectionErrorCallback(
-      base::RepeatingClosure callback) WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual base::CallbackListSubscription
+  AddConnectionErrorCallback(base::RepeatingClosure callback) = 0;
 
   // Registers a service that other Mojo processes/services can bind to. Others
   // can call BindInterface(|service_name|, interface_name) to bind to this
@@ -103,6 +102,11 @@ class ExternalConnector {
   // methods are called, at which point it becomes bound to the calling
   // sequence.
   virtual std::unique_ptr<ExternalConnector> Clone() = 0;
+
+  // Requests a PendingRemote for an ExternalConnector which can be passed to a
+  // different process.
+  virtual mojo::PendingRemote<external_mojo::mojom::ExternalConnector>
+  RequestConnector() = 0;
 
   // Sends a request for a Chromium ServiceManager connector.
   virtual void SendChromiumConnectorRequest(

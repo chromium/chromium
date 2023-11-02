@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,7 +49,8 @@ bool RequirementsHandler::AlwaysParseForType(Manifest::Type type) const {
 bool RequirementsHandler::Parse(Extension* extension, std::u16string* error) {
   ManifestKeys manifest_keys;
   if (!ManifestKeys::ParseFromDictionary(
-          extension->manifest()->available_values(), &manifest_keys, error)) {
+          extension->manifest()->available_values().GetDict(), &manifest_keys,
+          error)) {
     return false;
   }
 
@@ -68,7 +69,7 @@ bool RequirementsHandler::Parse(Extension* extension, std::u16string* error) {
     extension->AddInstallWarning(
         InstallWarning(errors::kPluginsRequirementDeprecated));
     if (requirements.plugins->npapi && *requirements.plugins->npapi) {
-      *error = base::ASCIIToUTF16(errors::kNPAPIPluginsNotSupported);
+      *error = errors::kNPAPIPluginsNotSupported;
       return false;
     }
   }

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,9 @@ class PLATFORM_EXPORT HeapObserverSet {
     CHECK(iteration_state_ & kAllowingAddition);
     DCHECK(!HasObserver(observer));
     observers_.insert(observer);
+    if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers",
+                                             "HeapObserverSet"))
+      replay_observers_strong_.insert(observer);
   }
 
   // Removes the given observer from this list. Does nothing if this observer is
@@ -32,6 +35,9 @@ class PLATFORM_EXPORT HeapObserverSet {
   void RemoveObserver(ObserverType* observer) {
     CHECK(iteration_state_ & kAllowingRemoval);
     observers_.erase(observer);
+    if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers",
+                                             "HeapObserverSet"))
+      replay_observers_strong_.erase(observer);
   }
 
   // Determine whether a particular observer is in the list.
@@ -49,6 +55,9 @@ class PLATFORM_EXPORT HeapObserverSet {
   void Clear() {
     CHECK(iteration_state_ & kAllowingRemoval);
     observers_.clear();
+    if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers",
+                                             "HeapObserverSet"))
+      replay_observers_strong_.clear();
   }
 
   // Safely iterate over the registered lifecycle observers in an unpredictable
@@ -69,10 +78,13 @@ class PLATFORM_EXPORT HeapObserverSet {
     }
   }
 
-  void Trace(Visitor* visitor) const { visitor->Trace(observers_); }
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(observers_);
+    visitor->Trace(replay_observers_strong_);
+  }
 
  private:
-  using ObserverSet = HeapHashSet<WeakMember<ObserverType>>;
+  using ObserverSet = HeapHashSet<WeakMember<ObserverType>, WTF::MemberHashRecordReplayRegisteredPointerId<ObserverType>>;
 
   // TODO(keishi): Clean up iteration state once transition from
   // LifecycleObserver is complete.
@@ -87,6 +99,7 @@ class PLATFORM_EXPORT HeapObserverSet {
   // optionally barring add or remove mutations.
   mutable IterationState iteration_state_ = kNotIterating;
   ObserverSet observers_;
+  HeapHashSet<Member<ObserverType>> replay_observers_strong_;
 };
 
 }  // namespace blink

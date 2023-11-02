@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,15 +29,6 @@ const char* ConvertMessageLevelEnum(InspectorPlayerMessage::Level level) {
   }
 }
 
-const char* ConvertErrorTypeEnum(InspectorPlayerError::Type level) {
-  switch (level) {
-    case InspectorPlayerError::Type::kPipelineError:
-      return protocol::Media::PlayerError::TypeEnum::Pipeline_error;
-    case InspectorPlayerError::Type::kMediaStatus:
-      return protocol::Media::PlayerError::TypeEnum::Media_error;
-  }
-}
-
 std::unique_ptr<protocol::Media::PlayerEvent> ConvertToProtocolType(
     const InspectorPlayerEvent& event) {
   return protocol::Media::PlayerEvent::create()
@@ -62,11 +53,37 @@ std::unique_ptr<protocol::Media::PlayerMessage> ConvertToProtocolType(
       .build();
 }
 
+std::unique_ptr<protocol::Media::PlayerErrorSourceLocation>
+ConvertToProtocolType(const InspectorPlayerError::SourceLocation& stack) {
+  return protocol::Media::PlayerErrorSourceLocation::create()
+      .setFile(stack.filename)
+      .setLine(stack.line_number)
+      .build();
+}
+
 std::unique_ptr<protocol::Media::PlayerError> ConvertToProtocolType(
     const InspectorPlayerError& error) {
+  auto caused_by =
+      std::make_unique<protocol::Array<protocol::Media::PlayerError>>();
+  auto stack = std::make_unique<
+      protocol::Array<protocol::Media::PlayerErrorSourceLocation>>();
+  auto data = protocol::DictionaryValue::create();
+
+  for (const InspectorPlayerError& cause : error.caused_by)
+    caused_by->push_back(ConvertToProtocolType(cause));
+
+  for (const InspectorPlayerError::Data& pair : error.data)
+    data->setString(pair.name, pair.value);
+
+  for (const InspectorPlayerError::SourceLocation& pair : error.stack)
+    stack->push_back(ConvertToProtocolType(pair));
+
   return protocol::Media::PlayerError::create()
-      .setType(ConvertErrorTypeEnum(error.type))
-      .setErrorCode(error.errorCode)
+      .setErrorType(error.group)
+      .setCode(error.code)
+      .setCause(std::move(caused_by))
+      .setData(std::move(data))
+      .setStack(std::move(stack))
       .build();
 }
 

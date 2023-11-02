@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "media/mojo/common/input_error_code_converter.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
+#include "media/mojo/mojom/audio_processing.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace audio {
@@ -53,10 +54,12 @@ void InputIPC::CreateStream(media::AudioInputIPCDelegate* delegate,
   mojo::PendingRemote<media::mojom::AudioLog> log;
   if (log_)
     log = log_.Unbind();
+
   stream_factory_->CreateInputStream(
       stream_.BindNewPipeAndPassReceiver(), std::move(client), {},
       std::move(log), device_id_, params, total_segments,
       automatic_gain_control, std::move(invalid_key_press_count_buffer),
+      /*processing_config=*/nullptr,
       base::BindOnce(&InputIPC::StreamCreated, weak_factory_.GetWeakPtr()));
 }
 

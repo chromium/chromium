@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,16 +17,22 @@
 #include "device/bluetooth/bluetooth_discovery_session.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
+#include "device/bluetooth/bluetooth_socket_thread.h"
+#include "device/bluetooth/floss/bluetooth_low_energy_scan_session_floss.h"
 #include "device/bluetooth/floss/floss_adapter_client.h"
 #include "device/bluetooth/floss/floss_dbus_client.h"
+#include "device/bluetooth/floss/floss_gatt_client.h"
+#include "device/bluetooth/floss/floss_lescan_client.h"
 #include "device/bluetooth/floss/floss_manager_client.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
 #include "device/bluetooth/bluetooth_low_energy_scan_session.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace floss {
+
+class BluetoothDeviceFloss;
 
 // The BluetoothAdapterFloss class implements BluetoothAdapter for platforms
 // that use Floss, a dbus front-end for the Fluoride Bluetooth stack.
@@ -37,7 +43,8 @@ namespace floss {
 class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
     : public device::BluetoothAdapter,
       public floss::FlossManagerClient::Observer,
-      public floss::FlossAdapterClient::Observer {
+      public floss::FlossAdapterClient::Observer,
+      public ScannerClientObserver {
  public:
   static scoped_refptr<BluetoothAdapterFloss> CreateAdapter();
 
@@ -99,12 +106,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
       const std::string& address,
       const absl::optional<device::BluetoothDevice::AddressType>& address_type,
       ConnectDeviceCallback callback,
-      ErrorCallback error_callback) override;
+      ConnectDeviceErrorCallback error_callback) override;
 
   device::BluetoothLocalGattService* GetGattService(
       const std::string& identifier) const override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void SetServiceAllowList(const UUIDList& uuids,
                            base::OnceClosure callback,
                            ErrorCallback error_callback) override;
@@ -117,7 +124,19 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
       std::unique_ptr<device::BluetoothLowEnergyScanFilter> filter,
       base::WeakPtr<device::BluetoothLowEnergyScanSession::Delegate> delegate)
       override;
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Set the adapter name to one chosen from the system information. Only Ash
+  // needs to do this.
+  void SetStandardChromeOSAdapterName() override;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // ScannerClientObserver overrides
+  void ScannerRegistered(device::BluetoothUUID uuid,
+                         uint8_t scanner_id,
+                         GattStatus status) override;
+  void ScanResultReceived(ScanResult scan_result) override;
 
  protected:
   // BluetoothAdapter:
@@ -135,22 +154,33 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
   // Handle responses to most method calls
   void OnMethodResponse(base::OnceClosure callback,
                         ErrorCallback error_callback,
-                        const absl::optional<Void>& ret,
-                        const absl::optional<Error>& error);
+                        DBusResult<Void> ret);
+
+  // Handle when discovery is automatically repeated based on active sessions.
+  void OnRepeatedDiscoverySessionResult(
+      bool start_discovery,
+      bool is_error,
+      device::UMABluetoothDiscoverySessionOutcome outcome);
 
   // Called on completion of start discovery and stop discovery
   void OnStartDiscovery(DiscoverySessionResultCallback callback,
-                        const absl::optional<Void>& ret,
-                        const absl::optional<Error>& error);
+                        DBusResult<Void> ret);
   void OnStopDiscovery(DiscoverySessionResultCallback callback,
-                       const absl::optional<Void>& ret,
-                       const absl::optional<Error>& error);
+                       DBusResult<Void> ret);
+  // Called when all device properties have been initialized
+  void OnInitializeDeviceProperties(BluetoothDeviceFloss* device_ptr);
+  void OnGetConnectionState(const FlossDeviceId& device_id,
+                            DBusResult<uint32_t> ret);
+  void OnGetBondState(const FlossDeviceId& device_id, DBusResult<uint32_t> ret);
 
   // Announce to observers a change in the adapter state.
-  void DiscoverableChanged(bool discoverable);
   void DiscoveringChanged(bool discovering);
   void PresentChanged(bool present);
   void NotifyAdapterPoweredChanged(bool powered);
+
+  // Announce to observers that |device| has changed its connected state.
+  void NotifyDeviceConnectedStateChanged(BluetoothDeviceFloss* device,
+                                         bool is_now_connected);
 
   // Observers
   // floss::FlossManagerClient::Observer override.
@@ -163,9 +193,14 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
   // Remove any active adapters.
   void RemoveAdapter();
 
+  void PopulateInitialDevices();
+  void ClearAllDevices();
+
   // floss::FlossAdapterClient::Observer override.
+  void DiscoverableChanged(bool discoverable) override;
   void AdapterDiscoveringChanged(bool state) override;
   void AdapterFoundDevice(const FlossDeviceId& device_found) override;
+  void AdapterClearedDevice(const FlossDeviceId& device_found) override;
   void AdapterSspRequest(const FlossDeviceId& remote_device,
                          uint32_t cod,
                          FlossAdapterClient::BluetoothSspVariant variant,
@@ -188,6 +223,19 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
       DiscoverySessionResultCallback callback) override;
   void StopScan(DiscoverySessionResultCallback callback) override;
 
+  void OnRegisterScanner(
+      base::WeakPtr<BluetoothLowEnergyScanSessionFloss> scan_session,
+      DBusResult<device::BluetoothUUID> ret);
+  void OnStartScan(device::BluetoothUUID uuid,
+                   uint8_t scanner_id,
+                   DBusResult<FlossDBusClient::BtifStatus> ret);
+  void OnLowEnergyScanSessionDestroyed(const std::string& uuid_str);
+  void OnUnregisterScanner(uint8_t scanner_id, DBusResult<bool> ret);
+
+  std::map<device::BluetoothUUID,
+           base::WeakPtr<BluetoothLowEnergyScanSessionFloss>>
+      scanners_;
+
   base::OnceClosure init_callback_;
 
   // Keeps track of whether the adapter is fully initialized.
@@ -196,6 +244,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
   // Keeps track of whether Shutdown is called (and dbus clients are cleaned
   // up properly).
   bool dbus_is_shutdown_ = false;
+
+  // Socket thread object used to create sockets. Public socket apis are run on
+  // the ui thread but socket operations (including connect/disconnect) will be
+  // run in this thread. See |BluetoothSocketNet| for more details.
+  scoped_refptr<device::BluetoothSocketThread> socket_thread_;
 
   base::WeakPtrFactory<BluetoothAdapterFloss> weak_ptr_factory_{this};
 };

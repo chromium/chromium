@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 
 namespace blink {
@@ -173,7 +173,7 @@ Element* MediaControlPlaybackSpeedListElement::CreatePlaybackSpeedListItem(
   playback_speed_item_input->SetFloatingPointAttribute(PlaybackRateAttrName(),
                                                        playback_rate);
   if (playback_rate == MediaElement().playbackRate()) {
-    playback_speed_item_input->setChecked(true);
+    playback_speed_item_input->SetChecked(true);
     playback_speed_item->setAttribute(html_names::kAriaCheckedAttr, "true");
     checked_item_ = playback_speed_item;
   }
@@ -186,8 +186,7 @@ Element* MediaControlPlaybackSpeedListElement::CreatePlaybackSpeedListItem(
   auto playback_speed_label = GetLocale().QueryString(display_name);
   auto* playback_speed_label_span =
       MakeGarbageCollected<HTMLSpanElement>(GetDocument());
-  playback_speed_label_span->setInnerText(playback_speed_label,
-                                          ASSERT_NO_EXCEPTION);
+  playback_speed_label_span->setInnerText(playback_speed_label);
   playback_speed_label_span->setAttribute(html_names::kAriaHiddenAttr, "true");
   playback_speed_item->setAttribute(html_names::kAriaLabelAttr,
                                     WTF::AtomicString(playback_speed_label));
@@ -222,13 +221,13 @@ void MediaControlPlaybackSpeedListElement::RefreshPlaybackSpeedListMenu() {
   checked_item_ = nullptr;
 
   // Construct a menu for playback speeds.
-  for (unsigned i = 0; i < base::size(kPlaybackSpeeds); i++) {
+  for (unsigned i = 0; i < std::size(kPlaybackSpeeds); i++) {
     auto& playback_speed = kPlaybackSpeeds[i];
     auto* playback_speed_item = CreatePlaybackSpeedListItem(
         playback_speed.display_name, playback_speed.playback_rate);
     playback_speed_item->setAttribute(
         html_names::kAriaSetsizeAttr,
-        WTF::AtomicString::Number(base::size(kPlaybackSpeeds) + 1));
+        WTF::AtomicString::Number(std::size(kPlaybackSpeeds)));
     playback_speed_item->setAttribute(html_names::kAriaPosinsetAttr,
                                       WTF::AtomicString::Number(i + 1));
     playback_speed_item->setAttribute(html_names::kRoleAttr,
@@ -248,7 +247,7 @@ void MediaControlPlaybackSpeedListElement::CenterCheckedItem() {
   auto* arg =
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
   checked_item_->scrollIntoView(arg);
-  checked_item_->focus();
+  checked_item_->Focus();
 }
 
 void MediaControlPlaybackSpeedListElement::Trace(Visitor* visitor) const {

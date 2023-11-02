@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,8 +38,7 @@ class CC_EXPORT SoftwareImageDecodeCache
   enum class TaskProcessingResult { kFullDecode, kLockOnly, kCancelled };
 
   SoftwareImageDecodeCache(SkColorType color_type,
-                           size_t locked_memory_limit_bytes,
-                           PaintImage::GeneratorClientId generator_client_id);
+                           size_t locked_memory_limit_bytes);
   ~SoftwareImageDecodeCache() override;
 
   // ImageDecodeCache overrides.
@@ -135,7 +134,7 @@ class CC_EXPORT SoftwareImageDecodeCache
   void UnrefImage(const CacheKey& key) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   SkColorType GetColorTypeForPaintImage(
-      const gfx::ColorSpace& target_color_space,
+      const TargetColorParams& target_color_params,
       const PaintImage& paint_image);
 
   base::Lock lock_;

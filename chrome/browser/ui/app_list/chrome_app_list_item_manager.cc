@@ -1,9 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/app_list/chrome_app_list_item_manager.h"
 
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
 
 ChromeAppListItemManager::ChromeAppListItemManager() = default;
@@ -74,12 +75,7 @@ void ChromeAppListItemManager::UpdateChromeItem(
 
 void ChromeAppListItemManager::RemoveChromeItem(const std::string& id) {
   auto* item = FindItem(id);
-
-  // TODO(https://crbug.com/1263132): in tests, children could be added to the
-  // model without parent folders. After fixing those tests, we should check
-  // `item` is not null here.
-  if (!item)
-    return;
+  DCHECK(item);
 
   if (item->is_folder()) {
     auto iter = folder_item_mappings_.find(id);
@@ -175,8 +171,8 @@ void ChromeAppListItemManager::RemoveChildFromFolderItemMapping(
   std::vector<ChromeAppListItem*>* sorted_children_ptr =
       &folder_item_mappings_iter->second;
 
-  auto children_array_iter = std::find(sorted_children_ptr->cbegin(),
-                                       sorted_children_ptr->cend(), child_item);
+  auto children_array_iter =
+      base::ranges::find(*sorted_children_ptr, child_item);
   DCHECK(children_array_iter != sorted_children_ptr->cend());
 
   // Delete `child_item` from `src_folder`'s children list.

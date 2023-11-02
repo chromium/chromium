@@ -1,14 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/crostini/crostini_engagement_metrics_service.h"
 
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace crostini {
 
@@ -27,9 +27,7 @@ CrostiniEngagementMetricsService::Factory::GetInstance() {
 }
 
 CrostiniEngagementMetricsService::Factory::Factory()
-    : BrowserContextKeyedServiceFactory(
-          "CrostiniEngagementMetricsService",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("CrostiniEngagementMetricsService") {}
 
 CrostiniEngagementMetricsService::Factory::~Factory() = default;
 

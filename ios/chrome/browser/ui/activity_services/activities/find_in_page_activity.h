@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,8 @@
 // Activity to trigger the find in page feature.
 @interface FindInPageActivity : UIActivity
 
-// Initializes the find in page activity with the given |data| and the
-// |handler|.
+// Initializes the find in page activity with the given `data` and the
+// `handler`.
 - (instancetype)initWithData:(ShareToData*)data
                      handler:(id<FindInPageCommands>)handler
     NS_DESIGNATED_INITIALIZER;

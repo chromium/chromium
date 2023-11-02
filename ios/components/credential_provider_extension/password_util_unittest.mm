@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,16 +6,16 @@
 #error "This file requires ARC support."
 #endif
 
-#include "ios/components/credential_provider_extension/password_util.h"
+#import "ios/components/credential_provider_extension/password_util.h"
 
 #import <Foundation/Foundation.h>
 #import <Security/Security.h>
 
-#include "base/mac/scoped_cftyperef.h"
-#include "base/strings/sys_string_conversions.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "base/mac/scoped_cftyperef.h"
+#import "base/strings/sys_string_conversions.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
 
 namespace credential_provider_extension {
 

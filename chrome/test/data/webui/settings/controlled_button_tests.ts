@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ suite('controlled button', function() {
   const uncontrolledPref: chrome.settingsPrivate.PrefObject = {
     key: 'test',
     type: chrome.settingsPrivate.PrefType.BOOLEAN,
-    value: true
+    value: true,
   };
 
   /** @type {!chrome.settingsPrivate.PrefObject} */
@@ -41,7 +41,8 @@ suite('controlled button', function() {
   }
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     controlledButton = document.createElement('controlled-button');
     controlledButton.pref = uncontrolledPref;
     document.body.appendChild(controlledButton);

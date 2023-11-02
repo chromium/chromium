@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/discovery/media_sink_service_util.h"
-#include "components/media_router/common/mojom/logger.mojom.h"
 #include "url/origin.h"
 
 namespace media_router {
@@ -24,9 +23,9 @@ class DialMediaSinkServiceImpl;
 using OnDialSinkAddedCallback =
     base::RepeatingCallback<void(const MediaSinkInternal&)>;
 
-// Service to discover DIAL media sinks.  All public methods must be invoked on
-// the UI thread.  Delegates to DialMediaSinkServiceImpl by posting tasks to its
-// SequencedTaskRunner.
+// Service to discover DIAL media sinks. All public methods must be invoked on
+// the UI thread. Delegates to DialMediaSinkServiceImpl by posting tasks to its
+// SequencedTaskRunner. It is owned by a singleton that is never freed.
 // TODO(imcheng): Remove this class and moving the logic into a part
 // of DialMediaSinkServiceImpl that runs on the UI thread, and renaming
 // DialMediaSinkServiceImpl to DialMediaSinkService.
@@ -45,16 +44,14 @@ class DialMediaSinkService {
   // Marked virtual for tests.
   virtual void Start(const OnSinksDiscoveredCallback& sink_discovery_cb);
 
+  virtual void OnUserGesture();
+
   // Returns a raw pointer to |impl_|. This method is only valid to call after
   // |Start()| has been called. Always returns non-null.
   DialMediaSinkServiceImpl* impl() {
     DCHECK(impl_);
     return impl_.get();
   }
-
-  // Binds |pending_remote| to the Mojo Remote owned by |impl_|.
-  // Marked virtual for tests.
-  virtual void BindLogger(mojo::PendingRemote<mojom::Logger> pending_remote);
 
  private:
   // Marked virtual for tests.

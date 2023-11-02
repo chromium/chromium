@@ -1,14 +1,18 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_coordinator.h"
 
-#include "base/mac/foundation_util.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/strings/grit/components_strings.h"
+#import "base/mac/foundation_util.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/sync/sync_setup_service.h"
+#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
@@ -18,10 +22,11 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_mediator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -74,8 +79,25 @@
 }
 
 - (void)start {
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  DCHECK(authenticationService);
+  NSString* syncingUserEmail = nil;
+  id<SystemIdentity> identity =
+      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSync);
+  if (identity) {
+    SyncSetupService* syncSetupService =
+        SyncSetupServiceFactory::GetForBrowserState(
+            self.browser->GetBrowserState());
+    if (syncSetupService->IsDataTypeActive(syncer::PASSWORDS)) {
+      syncingUserEmail = identity.userEmail;
+    }
+  }
+
   self.viewController = [[PasswordDetailsTableViewController alloc]
-      initWithCredentialType:CredentialTypeNew];
+      initWithCredentialType:CredentialTypeNew
+            syncingUserEmail:syncingUserEmail];
 
   self.mediator = [[AddPasswordMediator alloc] initWithDelegate:self
                                            passwordCheckManager:_manager];
@@ -107,14 +129,14 @@
   [self.delegate passwordDetailsTableViewControllerDidFinish:self];
 }
 
-- (void)setUpdatedPasswordForm:
-    (const password_manager::PasswordForm&)passwordForm {
-  [self.delegate setMostRecentlyUpdatedPasswordDetails:passwordForm];
+- (void)setUpdatedPassword:
+    (const password_manager::CredentialUIEntry&)credential {
+  [self.delegate setMostRecentlyUpdatedPasswordDetails:credential];
 }
 
-- (void)showPasswordDetailsControllerWithForm:
-    (const password_manager::PasswordForm&)passwordForm {
-  [self.delegate dismissAddViewControllerAndShowPasswordDetails:passwordForm
+- (void)showPasswordDetailsControllerWithCredential:
+    (const password_manager::CredentialUIEntry&)credential {
+  [self.delegate dismissAddViewControllerAndShowPasswordDetails:credential
                                                     coordinator:self];
 }
 

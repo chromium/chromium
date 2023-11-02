@@ -1,5 +1,5 @@
 #!/usr/bin/env vpython3
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -45,8 +45,7 @@ class TestLocalDeviceTestRun(local_device_test_run.LocalDeviceTestRun):
   # pylint: disable=abstract-method
 
   def __init__(self):
-    super(TestLocalDeviceTestRun, self).__init__(
-        mock.MagicMock(), mock.MagicMock())
+    super().__init__(mock.MagicMock(), mock.MagicMock())
 
 
 class TestLocalDeviceNonStringTestRun(
@@ -55,14 +54,18 @@ class TestLocalDeviceNonStringTestRun(
   # pylint: disable=abstract-method
 
   def __init__(self):
-    super(TestLocalDeviceNonStringTestRun, self).__init__(
-        mock.MagicMock(), mock.MagicMock())
+    super().__init__(mock.MagicMock(), mock.MagicMock())
 
   def _GetUniqueTestName(self, test):
     return test['name']
 
 
 class LocalDeviceTestRunTest(unittest.TestCase):
+
+  def testSortTests(self):
+    test_run = TestLocalDeviceTestRun()
+    self.assertEqual(test_run._SortTests(['a', 'b', 'c', 'd', 'e', 'f', 'g']),
+                     ['d', 'f', 'c', 'b', 'e', 'a', 'g'])
 
   def testGetTestsToRetry_allTestsPassed(self):
     results = [

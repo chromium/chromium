@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,7 @@
 #include "net/base/completion_repeating_callback.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
+#include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/log/net_log_source.h"
 #include "net/log/net_log_with_source.h"
@@ -55,23 +56,28 @@ class ResolveHostAndOpenSocket final : public network::ResolveHostClientBase {
                                                   std::move(pending_receiver));
                        },
                        resolver.BindNewPipeAndPassReceiver()));
-    // Fine to use a transient NetworkIsolationKey here - this is for debugging,
-    // so performance doesn't matter, and it doesn't need to share a DNS cache
-    // with anything else.
-    resolver->ResolveHost(address, net::NetworkIsolationKey::CreateTransient(),
-                          nullptr, receiver_.BindNewPipeAndPassRemote());
-    receiver_.set_disconnect_handler(
-        base::BindOnce(&ResolveHostAndOpenSocket::OnComplete,
-                       base::Unretained(this), net::ERR_NAME_NOT_RESOLVED,
-                       net::ResolveErrorInfo(net::ERR_FAILED), absl::nullopt));
+    // Intentionally using a HostPortPair because scheme isn't specified.
+    // Fine to use a transient NetworkAnonymizationKey here - this is for
+    // debugging, so performance doesn't matter, and it doesn't need to share a
+    // DNS cache with anything else.
+    resolver->ResolveHost(
+        network::mojom::HostResolverHost::NewHostPortPair(address),
+        net::NetworkAnonymizationKey::CreateTransient(), nullptr,
+        receiver_.BindNewPipeAndPassRemote());
+    receiver_.set_disconnect_handler(base::BindOnce(
+        &ResolveHostAndOpenSocket::OnComplete, base::Unretained(this),
+        net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
+        /*resolved_addresses=*/absl::nullopt,
+        /*endpoint_results_with_metadata=*/absl::nullopt));
   }
 
  private:
   // network::mojom::ResolveHostClient implementation:
-  void OnComplete(
-      int result,
-      const net::ResolveErrorInfo& resolve_error_info,
-      const absl::optional<net::AddressList>& resolved_addresses) override {
+  void OnComplete(int result,
+                  const net::ResolveErrorInfo& resolve_error_info,
+                  const absl::optional<net::AddressList>& resolved_addresses,
+                  const absl::optional<net::HostResolverEndpointResults>&
+                      endpoint_results_with_metadata) override {
     if (result != net::OK) {
       RunSocketCallback(std::move(callback_), nullptr,
                         resolve_error_info.error);

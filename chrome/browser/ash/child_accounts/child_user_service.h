@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/child_accounts/website_approval_notifier.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 
 namespace base {
 class TimeDelta;
@@ -27,14 +28,12 @@ namespace enterprise_management {
 class ChildStatusReportRequest;
 }  // namespace enterprise_management
 
-class GURL;
 class Profile;
 
 namespace ash {
 namespace app_time {
 class AppId;
 class AppTimeController;
-class WebTimeLimitEnforcer;
 }  // namespace app_time
 
 // Facade that exposes child user related functionality on Chrome OS.
@@ -50,7 +49,6 @@ class ChildUserService : public KeyedService,
     explicit TestApi(ChildUserService* service);
     ~TestApi();
 
-    app_time::WebTimeLimitEnforcer* web_time_enforcer();
     app_time::AppTimeController* app_time_controller();
 
    private:
@@ -68,6 +66,7 @@ class ChildUserService : public KeyedService,
     kOverrideTimeLimit = 1,
     kBedTimeLimit = 2,
     kScreenTimeLimit = 3,
+    // TODO(crbug.com/1218630) deprecate this enum
     kWebTimeLimit = 4,
     kAppTimeLimit = 5,  // Does not cover blocked apps.
 
@@ -93,7 +92,7 @@ class ChildUserService : public KeyedService,
   void ResumeWebActivity(const std::string& app_service_id) override;
   absl::optional<base::TimeDelta> GetTimeLimitForApp(
       const std::string& app_service_id,
-      apps::mojom::AppType app_type) override;
+      apps::AppType app_type) override;
 
   // app_time::AppActivityReportInterface:
   app_time::AppActivityReportInterface::ReportParams GenerateAppActivityReport(
@@ -101,23 +100,9 @@ class ChildUserService : public KeyedService,
   void AppActivityReportSubmitted(
       base::Time report_generation_timestamp) override;
 
-  // Returns whether web time limit was reached for child user.
-  // Always returns false if per-app times limits feature is disabled.
-  bool WebTimeLimitReached() const;
-
-  // Returns whether given |url| can be used without any time restrictions.
-  // Viewing of allowlisted |url| does not count towards usage web time.
-  // Always returns false if per-app times limits feature is disabled.
-  bool WebTimeLimitAllowlistedURL(const GURL& url) const;
-
   // Returns whether the application with id |app_id| can be used without any
   // time restrictions.
   bool AppTimeLimitAllowlistedApp(const app_time::AppId& app_id) const;
-
-  // Returns time limit set for using the web on a given day.
-  // Should only be called if |features::kPerAppTimeLimits| and
-  // |features::kWebTimeLimits| features are enabled.
-  base::TimeDelta GetWebTimeLimit() const;
 
   // Report enabled TimeLimitPolicyType.
   void ReportTimeLimitPolicy() const;

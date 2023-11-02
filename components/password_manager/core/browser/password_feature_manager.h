@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,11 @@ class PasswordFeatureManager {
   virtual ~PasswordFeatureManager() = default;
 
   virtual bool IsGenerationEnabled() const = 0;
+
+  // Whether the entry-point independent requirements are met to offer
+  // automated password change. Currently, that means that a user must be
+  // syncing.
+  virtual bool AreRequirementsForAutomatedPasswordChangeFulfilled() const = 0;
 
   // Whether the current signed-in user (aka unconsented primary account) has
   // opted in to use the Google account storage for passwords (as opposed to
@@ -96,6 +101,11 @@ class PasswordFeatureManager {
   // their account. Should only be called if the user is signed-in and not
   // opted-in.
   virtual int GetMoveOfferedToNonOptedInUserCount() const = 0;
+
+  // Whether the user should be asked for authentication before filling
+  // passwords. This is true for eligible users that have enabled this feature
+  // before.
+  virtual bool IsBiometricAuthenticationBeforeFillingEnabled() const = 0;
 };
 
 }  // namespace password_manager

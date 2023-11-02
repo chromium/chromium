@@ -45,6 +45,7 @@ class SearchInputType final : public BaseTextInputType {
  private:
   void CountUsage() override;
   const AtomicString& FormControlType() const override;
+  ControlPart AutoAppearance() const override;
   bool NeedsContainer() const override;
   void CreateShadowSubtree() override;
   void HandleKeydownEvent(KeyboardEvent&) override;
@@ -59,6 +60,13 @@ class SearchInputType final : public BaseTextInputType {
   void UpdateCancelButtonVisibility();
 
   HeapTaskRunnerTimer<SearchInputType> search_event_timer_;
+};
+
+template <>
+struct DowncastTraits<SearchInputType> {
+  static bool AllowFrom(const InputType& type) {
+    return type.IsSearchInputType();
+  }
 };
 
 }  // namespace blink

@@ -1,9 +1,0 @@
-Tests to ensure that requests complete if interception disables between request and response.
-Network agent enabled
-Request Intercepted: resource.php?size=10
-Continuing request
-Disabling request interception
-
-Body: 
-**********
-

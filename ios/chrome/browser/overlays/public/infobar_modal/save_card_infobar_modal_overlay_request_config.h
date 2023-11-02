@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -76,13 +76,13 @@ class SaveCardModalRequestConfig
   void CreateAuxiliaryData(base::SupportsUserData* user_data) override;
 
   // Return an array of UI SaveCardMessageWithLinks model objects for
-  // |delegate|'s legal_message_lines_.
+  // `delegate`'s legal_message_lines_.
   NSMutableArray<SaveCardMessageWithLinks*>* LegalMessagesForModal(
       autofill::AutofillSaveCardInfoBarDelegateMobile* delegate);
 
   // The InfoBar causing this modal.
   InfoBarIOS* infobar_ = nullptr;
-  // Configuration data extracted from |infobar_|'s save card delegate.
+  // Configuration data extracted from `infobar_`'s save card delegate.
   std::u16string cardholder_name_;
   std::u16string expiration_date_month_;
   std::u16string expiration_date_year_;

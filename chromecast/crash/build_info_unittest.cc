@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,15 @@ constexpr char kReleaseBuild[] = "1.51.224083";
 
 TEST(VersionStringTest, VersionStringIsNonEmpty) {
   ASSERT_FALSE(GetVersionString().empty());
+}
+
+TEST(VersionStringTest, VersionStringIsCorrect) {
+  ASSERT_EQ(GetVersionString(kReleaseBuild, kIncrementalEngBuild),
+            "1.51.224083.1.51.eng");
+}
+
+TEST(VersionStringTest, EmptyVersionStringIsCorrect) {
+  ASSERT_FALSE(GetVersionString("", "").empty());
 }
 
 TEST(VersionStringTest, ReleaseVersionUnchanged) {

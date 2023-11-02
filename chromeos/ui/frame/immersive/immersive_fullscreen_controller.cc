@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -467,7 +467,8 @@ void ImmersiveFullscreenController::UpdateLocatedEventRevealedLock(
     // overshoots slightly.
     if (event && event->type() == ui::ET_MOUSE_MOVED) {
       const int kBoundsOffsetY = 8;
-      hit_bounds_in_screen[i].Inset(0, 0, 0, -kBoundsOffsetY);
+      hit_bounds_in_screen[i].Inset(
+          gfx::Insets::TLBR(0, 0, -kBoundsOffsetY, 0));
     }
 
     if (hit_bounds_in_screen[i].Contains(location_in_screen)) {
@@ -773,7 +774,8 @@ void ImmersiveFullscreenController::EnableTouchInsets(bool enable) {
     return;
 
   widget_->GetNativeWindow()->targeter()->SetInsets(
-      {}, gfx::Insets(enable ? kImmersiveFullscreenTopEdgeInset : 0, 0, 0, 0));
+      {}, gfx::Insets::TLBR(enable ? kImmersiveFullscreenTopEdgeInset : 0, 0, 0,
+                            0));
 }
 
 }  // namespace chromeos

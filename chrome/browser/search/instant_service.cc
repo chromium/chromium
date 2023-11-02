@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,11 @@
 #include "base/callback.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
+#include "base/observer_list.h"
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/clock.h"
 #include "build/build_config.h"
@@ -68,9 +68,6 @@ InstantService::InstantService(Profile* profile)
     return;
 
   registrar_.Add(this,
-                 content::NOTIFICATION_RENDERER_PROCESS_CREATED,
-                 content::NotificationService::AllSources());
-  registrar_.Add(this,
                  content::NOTIFICATION_RENDERER_PROCESS_TERMINATED,
                  content::NotificationService::AllSources());
 
@@ -98,7 +95,7 @@ InstantService::InstantService(Profile* profile)
   content::URLDataSource::Add(profile_,
                               std::make_unique<MostVisitedIframeSource>());
 
-  theme_observation_.Observe(native_theme_);
+  theme_observation_.Observe(native_theme_.get());
 }
 
 InstantService::~InstantService() = default;
@@ -167,7 +164,7 @@ NtpTheme* InstantService::GetInitializedNtpTheme() {
 void InstantService::SetNativeThemeForTesting(ui::NativeTheme* theme) {
   theme_observation_.Reset();
   native_theme_ = theme;
-  theme_observation_.Observe(native_theme_);
+  theme_observation_.Observe(native_theme_.get());
 }
 
 void InstantService::Shutdown() {
@@ -184,9 +181,6 @@ void InstantService::Observe(int type,
                              const content::NotificationSource& source,
                              const content::NotificationDetails& details) {
   switch (type) {
-    case content::NOTIFICATION_RENDERER_PROCESS_CREATED: {
-      break;
-    }
     case content::NOTIFICATION_RENDERER_PROCESS_TERMINATED: {
       content::RenderProcessHost* rph =
           content::Source<content::RenderProcessHost>(source).ptr();
@@ -252,15 +246,6 @@ void InstantService::BuildNtpTheme() {
   ThemeService* theme_service = ThemeServiceFactory::GetForProfile(profile_);
   theme_->using_default_theme = theme_service->UsingDefaultTheme();
 
-  // Get theme colors.
-  const ui::ThemeProvider& theme_provider =
-      ThemeService::GetThemeProviderForProfile(profile_);
-
-  // Set colors.
-  theme_->background_color =
-      theme_provider.GetColor(ThemeProperties::COLOR_NTP_BACKGROUND);
-  theme_->text_color_light =
-      theme_provider.GetColor(ThemeProperties::COLOR_NTP_TEXT_LIGHT);
   SetNtpElementsNtpTheme();
 
   if (theme_service->UsingExtensionTheme()) {
@@ -271,6 +256,8 @@ void InstantService::BuildNtpTheme() {
     if (extension) {
       theme_->theme_id = theme_service->GetThemeID();
 
+      const ui::ThemeProvider& theme_provider =
+          ThemeService::GetThemeProviderForProfile(profile_);
       if (theme_provider.HasCustomImage(IDR_THEME_NTP_BACKGROUND)) {
         theme_->has_theme_image = true;
 
@@ -340,7 +327,6 @@ void InstantService::SetNtpElementsNtpTheme() {
   NtpTheme* theme = GetInitializedNtpTheme();
   const ui::ThemeProvider& theme_provider =
       ThemeService::GetThemeProviderForProfile(profile_);
-  theme->text_color = theme_provider.GetColor(ThemeProperties::COLOR_NTP_TEXT);
   theme->logo_alternate = theme_provider.GetDisplayProperty(
                               ThemeProperties::NTP_LOGO_ALTERNATE) == 1;
 }

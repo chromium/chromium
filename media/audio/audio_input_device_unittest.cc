@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -86,7 +86,7 @@ ACTION_P(ReportStateChange, device) {
 // Verify that we get an OnCaptureError() callback if CreateStream fails.
 TEST_P(AudioInputDeviceTest, FailToCreateStream) {
   AudioParameters params(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                         CHANNEL_LAYOUT_STEREO, 48000, 480);
+                         ChannelLayoutConfig::Stereo(), 48000, 480);
 
   MockCaptureCallback callback;
   MockAudioInputIPC* input_ipc = new MockAudioInputIPC();
@@ -105,7 +105,7 @@ TEST_P(AudioInputDeviceTest, FailToCreateStream) {
 
 TEST_P(AudioInputDeviceTest, CreateStream) {
   AudioParameters params(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                         CHANNEL_LAYOUT_STEREO, 48000, 480);
+                         ChannelLayoutConfig::Stereo(), 48000, 480);
   base::MappedReadOnlyRegion shared_memory;
   CancelableSyncSocket browser_socket;
   CancelableSyncSocket renderer_socket;

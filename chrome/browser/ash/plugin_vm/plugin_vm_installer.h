@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,11 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_license_checker.h"
-#include "chromeos/dbus/concierge/concierge_client.h"
-#include "chromeos/dbus/concierge/concierge_service.pb.h"
-#include "chromeos/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "components/download/public/background_service/download_params.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -42,7 +43,7 @@ class PluginVmDriveImageDownloadService;
 // depending on whether an .iso (new VM) or archive (prepared VM) is
 // downloaded.
 class PluginVmInstaller : public KeyedService,
-                          public chromeos::ConciergeClient::DiskImageObserver {
+                          public ash::ConciergeClient::DiskImageObserver {
  public:
   // FailureReasons values are logged to UMA and shown to users. Do not change
   // or re-use enum values.
@@ -199,7 +200,7 @@ class PluginVmInstaller : public KeyedService,
   // Called repeatedly.
   void OnDlcDownloadProgressUpdated(double progress);
   void OnDlcDownloadCompleted(
-      const chromeos::DlcserviceClient::InstallResult& install_result);
+      const ash::DlcserviceClient::InstallResult& install_result);
 
   void StartDispatcher();
   void OnDispatcherStarted(bool success);

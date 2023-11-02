@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,7 +34,10 @@ DesktopMediaListController::DesktopMediaListController(
               switches::kThisTabCaptureAutoAccept)),
       auto_reject_this_tab_capture_(
           base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kThisTabCaptureAutoReject)) {}
+              switches::kThisTabCaptureAutoReject)) {
+  DCHECK(dialog_);
+  DCHECK(media_list_);
+}
 
 DesktopMediaListController::~DesktopMediaListController() = default;
 
@@ -47,7 +50,7 @@ std::unique_ptr<views::View> DesktopMediaListController::CreateView(
   auto view = std::make_unique<DesktopMediaListView>(
       this, generic_style, single_style, accessible_name);
   view_ = view.get();
-  view_observations_.AddObservation(view_);
+  view_observations_.AddObservation(view_.get());
   return view;
 }
 
@@ -57,24 +60,73 @@ std::unique_ptr<views::View> DesktopMediaListController::CreateTabListView(
 
   auto view = std::make_unique<DesktopMediaTabList>(this, accessible_name);
   view_ = view.get();
-  view_observations_.AddObservation(view_);
+  view_observations_.AddObservation(view_.get());
   return view;
 }
 
 void DesktopMediaListController::StartUpdating(
     content::DesktopMediaID dialog_window_id) {
-  media_list_->SetViewDialogWindowId(dialog_window_id);
+  dialog_window_id_ = dialog_window_id;
+  // Defer calling StartUpdating on media lists with a delegated source list
+  // until the first time they are focused.
+  if (!media_list_->IsSourceListDelegated())
+    StartUpdatingInternal();
+}
+
+void DesktopMediaListController::StartUpdatingInternal() {
+  is_updating_ = true;
+  media_list_->SetViewDialogWindowId(dialog_window_id_);
   media_list_->StartUpdating(this);
 }
 
 void DesktopMediaListController::FocusView() {
   if (view_)
     view_->RequestFocus();
+
+  if (media_list_->IsSourceListDelegated() && !is_updating_)
+    StartUpdatingInternal();
+
+  media_list_->FocusList();
+}
+
+void DesktopMediaListController::HideView() {
+  media_list_->HideList();
+}
+
+bool DesktopMediaListController::SupportsReselectButton() const {
+  // Only DelegatedSourceLists support the notion of reslecting.
+  return media_list_->IsSourceListDelegated();
+}
+
+void DesktopMediaListController::SetCanReselect(bool can_reselect) {
+  if (can_reselect_ == can_reselect)
+    return;
+  can_reselect_ = can_reselect;
+  dialog_->OnCanReselectChanged(this);
+}
+
+void DesktopMediaListController::OnReselectRequested() {
+  // Before we clear the delegated source list selection (which may be async),
+  // clear our own selection.
+  ClearSelection();
+
+  // Clearing the selection is enough to force the list to reappear the next
+  // time that it is focused (or now if it is currently focused).
+  media_list_->ClearDelegatedSourceListSelection();
+
+  // Once we've called Reselect, we don't want to call it again until we get a
+  // new selection.
+  SetCanReselect(false);
 }
 
 absl::optional<content::DesktopMediaID>
 DesktopMediaListController::GetSelection() const {
   return view_ ? view_->GetSelection() : absl::nullopt;
+}
+
+void DesktopMediaListController::ClearSelection() {
+  if (view_)
+    view_->ClearSelection();
 }
 
 void DesktopMediaListController::OnSourceListLayoutChanged() {
@@ -115,6 +167,11 @@ void DesktopMediaListController::SetThumbnailSize(const gfx::Size& size) {
 void DesktopMediaListController::SetPreviewedSource(
     const absl::optional<content::DesktopMediaID>& id) {
   media_list_->SetPreviewedSource(id);
+}
+
+base::WeakPtr<DesktopMediaListController>
+DesktopMediaListController::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 void DesktopMediaListController::OnSourceAdded(int index) {
@@ -168,6 +225,20 @@ void DesktopMediaListController::OnSourcePreviewChanged(size_t index) {
   if (view_) {
     view_->GetSourceListListener()->OnSourcePreviewChanged(index);
   }
+}
+
+void DesktopMediaListController::OnDelegatedSourceListSelection() {
+  DCHECK(media_list_->IsSourceListDelegated());
+  if (view_) {
+    view_->GetSourceListListener()->OnDelegatedSourceListSelection();
+  }
+
+  SetCanReselect(true);
+}
+
+void DesktopMediaListController::OnDelegatedSourceListDismissed() {
+  DCHECK(media_list_->IsSourceListDelegated());
+  dialog_->OnDelegatedSourceListDismissed();
 }
 
 void DesktopMediaListController::OnViewIsDeleting(views::View* view) {

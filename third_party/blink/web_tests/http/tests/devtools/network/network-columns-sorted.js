@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,7 @@
   function sortGrid() {
     var logView = UI.panels.network.networkLogView;
     var dataGrid = logView.dataGrid;
-    var columnsView = logView.columns;
+    var columnsView = logView.columns();
     TestRunner.addSniffer(columnsView, 'dataGridSortedForTest', dataGridSorted.bind(null, logView), true);
 
     dataGrid.markColumnAsSortedBy('name', DataGrid.DataGrid.Order.Ascending);

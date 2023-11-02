@@ -1,11 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.vr;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -24,6 +23,7 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.vr.ndk.base.AndroidCompat;
@@ -48,8 +48,8 @@ import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
 import org.chromium.chrome.browser.page_info.ChromePageInfo;
+import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
-import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
@@ -66,20 +66,18 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.vr.keyboard.VrInputMethodManagerWrapper;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
-import org.chromium.components.external_intents.RedirectHandler;
-import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.ViewEventSink;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.base.PermissionCallback;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.VirtualDisplayAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.permissions.PermissionCallback;
 import org.chromium.ui.widget.UiWidgetFactory;
 
 import java.util.ArrayList;
@@ -98,7 +96,6 @@ public class VrShell extends GvrLayout
     private final VrCompositorSurfaceManager mVrCompositorSurfaceManager;
     private final VrShellDelegate mDelegate;
     private final VirtualDisplayAndroid mContentVirtualDisplay;
-    private final RedirectHandler mRedirectHandler;
     private final TabObserver mTabObserver;
     private final TabModelSelectorObserver mTabModelSelectorObserver;
     private final View.OnTouchListener mTouchListener;
@@ -134,7 +131,6 @@ public class VrShell extends GvrLayout
 
     private boolean mReprojectedRendering;
 
-    private RedirectHandler mNonVrRedirectHandler;
     private UiWidgetFactory mNonVrUiWidgetFactory;
 
     private float mLastContentWidth;
@@ -268,13 +264,6 @@ public class VrShell extends GvrLayout
         // This has to happen after VrModalDialogManager is created.
         mNonVrUiWidgetFactory = UiWidgetFactory.getInstance();
         UiWidgetFactory.setInstance(new VrUiWidgetFactory(this, mModalDialogManagerSupplier.get()));
-
-        mRedirectHandler = new RedirectHandler() {
-            @Override
-            public boolean shouldStayInApp(boolean hasExternalProtocol) {
-                return !hasExternalProtocol;
-            }
-        };
 
         mTabObserver = new EmptyTabObserver() {
             @Override
@@ -424,7 +413,7 @@ public class VrShell extends GvrLayout
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(Build.VERSION_CODES.N)
     public void initializeNative(boolean forWebVr, boolean isStandaloneVrDevice) {
         Tab tab = mCurrentTabSupplier.get();
         if (mIsInOverviewModeSupplier.get() || tab == null) {
@@ -548,16 +537,12 @@ public class VrShell extends GvrLayout
 
     private void initializeTabForVR() {
         if (mTab == null) return;
-        // Make sure we are not redirecting to another app, i.e. out of VR mode.
-        mNonVrRedirectHandler = RedirectHandlerTabHelper.swapHandlerFor(mTab, mRedirectHandler);
         assert mTab.getWindowAndroid() == mContentVrWindowAndroid;
         configWebContentsImeForVr(mTab.getWebContents());
     }
 
     private void restoreTabFromVR() {
         if (mTab == null) return;
-        RedirectHandlerTabHelper.swapHandlerFor(mTab, mNonVrRedirectHandler);
-        mNonVrRedirectHandler = null;
         restoreWebContentsImeFromVr(mTab.getWebContents());
     }
 
@@ -603,8 +588,8 @@ public class VrShell extends GvrLayout
         Tab tab = mCurrentTabSupplier.get();
         if (tab == null) return;
         new ChromePageInfo(mModalDialogManagerSupplier, null, OpenedFromSource.VR,
-                /*storeInfoActionHandlerSupplier=*/null)
-                .show(tab, PageInfoController.NO_HIGHLIGHTED_PERMISSION, /*fromStoreIcon=*/false);
+                /*storeInfoActionHandlerSupplier=*/null, /*ephemeralTabCoordinatorSupplier=*/null)
+                .show(tab, ChromePageInfoHighlight.noHighlight());
     }
 
     // Called because showing audio permission dialog isn't supported in VR. This happens when

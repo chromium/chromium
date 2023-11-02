@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,9 @@
 #include <stddef.h>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/containers/queue.h"
+#include "base/files/file.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -17,10 +19,7 @@ namespace storage {
 
 RecursiveOperationDelegate::RecursiveOperationDelegate(
     FileSystemContext* file_system_context)
-    : file_system_context_(file_system_context),
-      canceled_(false),
-      error_behavior_(FileSystemOperation::ERROR_BEHAVIOR_ABORT),
-      failed_some_operations_(false) {}
+    : file_system_context_(file_system_context) {}
 
 RecursiveOperationDelegate::~RecursiveOperationDelegate() = default;
 
@@ -87,7 +86,16 @@ void RecursiveOperationDelegate::DidProcessDirectory(base::File::Error error) {
   DCHECK(!pending_directory_stack_.top().empty());
 
   if (canceled_ || error != base::File::FILE_OK) {
-    Done(error);
+    if (canceled_ ||
+        error_behavior_ == FileSystemOperation::ERROR_BEHAVIOR_ABORT) {
+      Done(error);
+      return;
+    }
+    SetPreviousError(error);
+    // For ERROR_BEHAVIOR_SKIP, we skip processing the current directory and
+    // proceed with the next.
+    pending_directory_stack_.top().pop();
+    ProcessSubDirectory();
     return;
   }
 
@@ -113,6 +121,8 @@ void RecursiveOperationDelegate::DidReadDirectory(const FileSystemURL& parent,
     FileSystemURL url = file_system_context_->CreateCrackedFileSystemURL(
         parent.storage_key(), parent.mount_type(),
         parent.virtual_path().Append(entries[i].name));
+    if (parent.bucket().has_value())
+      url.SetBucket(parent.bucket().value());
     if (entries[i].type == filesystem::mojom::FsFileType::DIRECTORY)
       pending_directory_stack_.top().push(url);
     else
@@ -164,7 +174,7 @@ void RecursiveOperationDelegate::DidProcessFile(const FileSystemURL& url,
       return;
     }
 
-    failed_some_operations_ = true;
+    SetPreviousError(error);
   }
 
   ProcessPendingFiles();
@@ -208,22 +218,30 @@ void RecursiveOperationDelegate::DidPostProcessDirectory(
 
   pending_directory_stack_.top().pop();
   if (canceled_ || error != base::File::FILE_OK) {
-    Done(error);
-    return;
+    if (canceled_ || error_behavior_ == ErrorBehavior::ERROR_BEHAVIOR_ABORT) {
+      Done(error);
+      return;
+    }
+    SetPreviousError(error);
   }
 
   ProcessSubDirectory();
+}
+
+void RecursiveOperationDelegate::SetPreviousError(base::File::Error error) {
+  DCHECK_NE(error, base::File::FILE_OK);
+  previous_error_ = error;
 }
 
 void RecursiveOperationDelegate::Done(base::File::Error error) {
   if (canceled_ && error == base::File::FILE_OK) {
     std::move(callback_).Run(base::File::FILE_ERROR_ABORT);
   } else {
-    if (error_behavior_ == FileSystemOperation::ERROR_BEHAVIOR_SKIP &&
-        failed_some_operations_)
-      std::move(callback_).Run(base::File::FILE_ERROR_FAILED);
-    else
+    if (error != base::File::FILE_OK) {
       std::move(callback_).Run(error);
+    } else {
+      std::move(callback_).Run(previous_error_);
+    }
   }
 }
 

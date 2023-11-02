@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,12 @@
 
 #include "base/callback_forward.h"
 #include "base/cancelable_callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/waitable_event_watcher.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
@@ -22,6 +24,7 @@
 #include "components/offline_pages/core/offline_page_model.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/browsing_data_remover_delegate.h"
+#include "device/fido/platform_credential_store.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -30,6 +33,10 @@
 class Profile;
 class ScopedProfileKeepAlive;
 class WebappRegistry;
+
+namespace base {
+class WaitableEvent;
+}
 
 namespace content {
 class BrowserContext;
@@ -43,8 +50,7 @@ class WebRtcEventLogManager;
 // as the embedder.
 class ChromeBrowsingDataRemoverDelegate
     : public content::BrowsingDataRemoverDelegate,
-      public KeyedService
-{
+      public KeyedService {
  public:
   explicit ChromeBrowsingDataRemoverDelegate(
       content::BrowserContext* browser_context);
@@ -76,7 +82,7 @@ class ChromeBrowsingDataRemoverDelegate
   void OnStartRemoving() override;
   void OnDoneRemoving() override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void OverrideWebappRegistryForTesting(
       std::unique_ptr<WebappRegistry> webapp_registry);
 #endif
@@ -93,7 +99,9 @@ class ChromeBrowsingDataRemoverDelegate
 
   // For debugging purposes. Please add new deletion tasks at the end.
   // This enum is recorded in a histogram, so don't change or reuse ids.
-  // Entries must also be added to ChromeBrowsingDataRemoverTasks in enums.xml.
+  // Entries must also be added to ChromeBrowsingDataRemoverTasks in enums.xml
+  // and History.ClearBrowsingData.Duration.ChromeTask.{Task}
+  // in histograms/metadata/history/histograms.xml.
   enum class TracingDataType {
     kSynchronous = 1,
     kHistory = 2,
@@ -103,7 +111,7 @@ class ChromeBrowsingDataRemoverDelegate
     kAutofillData = 6,
     kAutofillOrigins = 7,
     kPluginData = 8,
-    kFlashLsoHelper = 9,  // deprecated
+    // kFlashLsoHelper = 9, deprecated
     kDomainReliability = 10,
     kNetworkPredictor = 11,
     kWebrtcLogs = 12,
@@ -118,7 +126,7 @@ class ChromeBrowsingDataRemoverDelegate
     kNetworkErrorLogging = 21,
     kFlashDeauthorization = 22,
     kOfflinePages = 23,
-    kPrecache = 24,  // deprecated
+    // kPrecache = 24, deprecated
     kExploreSites = 25,
     kLegacyStrikes = 26,
     kWebrtcEventLogs = 27,
@@ -126,7 +134,7 @@ class ChromeBrowsingDataRemoverDelegate
     kHostCache = 29,
     kTpmAttestationKeys = 30,
     kStrikes = 31,
-    kLeakedCredentials = 32,  // deprecated
+    // kLeakedCredentials = 32, deprecated
     kFieldInfo = 33,
     kCompromisedCredentials = 34,
     kUserDataSnapshot = 35,
@@ -135,9 +143,20 @@ class ChromeBrowsingDataRemoverDelegate
     kAccountPasswordsSynced = 38,
     kAccountCompromisedCredentials = 39,
     kFaviconCacheExpiration = 40,
-    kSecurePaymentConfirmationInstruments = 41,
-    kMaxValue = kSecurePaymentConfirmationInstruments,
+    kSecurePaymentConfirmationCredentials = 41,
+    kWebAppHistory = 42,
+    kWebAuthnCredentials = 43,
+    kWebrtcVideoPerfHistory = 44,
+
+    // Please update ChromeBrowsingDataRemoverTasks in enums.xml and
+    // History.ClearBrowsingData.Duration.ChromeTask.{Task}
+    // in histograms/metadata/history/histograms.xml when adding entries!
+    kMaxValue = kWebrtcVideoPerfHistory,
   };
+
+  // Returns the suffix for the
+  // History.ClearBrowsingData.Duration.ChromeTask.{Task} histogram
+  const char* GetHistogramSuffix(TracingDataType task);
 
   // Called by CreateTaskCompletionClosure().
   void OnTaskStarted(TracingDataType data_type);
@@ -146,6 +165,7 @@ class ChromeBrowsingDataRemoverDelegate
   // Checks if all tasks have completed, and if so, calls callback_.
   void OnTaskComplete(TracingDataType data_type,
                       uint64_t data_type_mask,
+                      base::TimeTicks started,
                       bool success);
 
   // Increments the number of pending tasks by one, and returns a OnceClosure
@@ -181,8 +201,10 @@ class ChromeBrowsingDataRemoverDelegate
                                base::WaitableEvent* waitable_event);
 #endif
 
+  std::unique_ptr<device::fido::PlatformCredentialStore> MakeCredentialStore();
+
   // The profile for which the data will be deleted.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Prevents |profile_| from getting deleted. Only active between
   // OnStartRemoving() and OnDoneRemoving(), i.e. while there are tasks in
@@ -212,13 +234,15 @@ class ChromeBrowsingDataRemoverDelegate
   // Used if we need to clear history.
   base::CancelableTaskTracker history_task_tracker_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // WebappRegistry makes calls across the JNI. In unit tests, the Java side is
   // not initialised, so the registry must be mocked out.
   std::unique_ptr<WebappRegistry> webapp_registry_;
 #endif
 
   bool should_clear_password_account_storage_settings_ = false;
+
+  std::unique_ptr<device::fido::PlatformCredentialStore> credential_store_;
 
   base::WeakPtrFactory<ChromeBrowsingDataRemoverDelegate> weak_ptr_factory_{
       this};

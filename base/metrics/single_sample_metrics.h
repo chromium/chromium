@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/base_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
 
 namespace base {
@@ -96,7 +97,7 @@ class BASE_EXPORT DefaultSingleSampleMetric : public SingleSampleMetric {
   void SetSample(HistogramBase::Sample sample) override;
 
  private:
-  HistogramBase* const histogram_;
+  const raw_ptr<HistogramBase> histogram_;
 
   // The last sample provided to SetSample(). We use -1 as a sentinel value to
   // indicate no sample has been set.

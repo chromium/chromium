@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,16 +31,17 @@ constexpr base::TimeDelta kOneDay = base::Days(1);
 void SetScreenOff(bool is_screen_off) {
   power_manager::ScreenIdleState screen_idle_state;
   screen_idle_state.set_off(is_screen_off);
-  FakePowerManagerClient::Get()->SendScreenIdleStateChanged(screen_idle_state);
+  chromeos::FakePowerManagerClient::Get()->SendScreenIdleStateChanged(
+      screen_idle_state);
 }
 
 void SetSuspendImminent() {
-  FakePowerManagerClient::Get()->SendSuspendImminent(
+  chromeos::FakePowerManagerClient::Get()->SendSuspendImminent(
       power_manager::SuspendImminent_Reason_OTHER);
 }
 
 void CancelSuspend() {
-  FakePowerManagerClient::Get()->SendSuspendDone();
+  chromeos::FakePowerManagerClient::Get()->SendSuspendDone();
 }
 
 }  // namespace
@@ -51,14 +52,14 @@ class FamilyUserSessionMetricsTest : public testing::Test {
   ~FamilyUserSessionMetricsTest() override = default;
 
   void SetUp() override {
-    PowerManagerClient::InitializeFake();
+    chromeos::PowerManagerClient::InitializeFake();
     InitiateFamilyUserSessionMetrics();
     FamilyUserSessionMetrics::RegisterProfilePrefs(pref_service_.registry());
   }
 
   void TearDown() override {
     DestructFamilyUserSessionMetrics();
-    PowerManagerClient::Shutdown();
+    chromeos::PowerManagerClient::Shutdown();
   }
 
   void DestructFamilyUserSessionMetrics() {

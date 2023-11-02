@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
@@ -26,7 +26,6 @@
 #include "ipc/ipc_channel_factory.h"
 #include "ipc/ipc_message_pipe_reader.h"
 #include "ipc/ipc_mojo_bootstrap.h"
-#include "mojo/public/cpp/system/core.h"
 
 namespace IPC {
 
@@ -126,7 +125,7 @@ class COMPONENT_EXPORT(IPC) ChannelMojo
 
   const mojo::MessagePipeHandle pipe_;
   std::unique_ptr<MojoBootstrap> bootstrap_;
-  Listener* listener_;
+  raw_ptr<Listener> listener_;
 
   std::unique_ptr<internal::MessagePipeReader> message_reader_;
 

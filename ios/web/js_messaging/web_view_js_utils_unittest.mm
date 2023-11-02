@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,16 +6,15 @@
 
 #import <WebKit/WebKit.h>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
-#include "base/ios/ios_util.h"
+#import "base/bind.h"
+#import "base/callback_helpers.h"
 #import "base/test/ios/wait_util.h"
-#include "base/values.h"
+#import "base/values.h"
 #import "ios/web/test/fakes/crw_fake_script_message_handler.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#import "testing/platform_test.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -38,9 +37,8 @@ TEST_F(WebViewJsUtilsTest, ValueResultFromStringWKResult) {
   std::unique_ptr<base::Value> value(web::ValueResultFromWKResult(@"test"));
   EXPECT_TRUE(value);
   EXPECT_EQ(base::Value::Type::STRING, value->type());
-  std::string converted_result;
-  value->GetAsString(&converted_result);
-  EXPECT_EQ("test", converted_result);
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ("test", value->GetString());
 }
 
 // Tests that ValueResultFromWKResult converts inetger to Value::Type::DOUBLE.
@@ -64,11 +62,9 @@ TEST_F(WebViewJsUtilsTest, ValueResultFromDoubleWKResult) {
 // Tests that ValueResultFromWKResult converts bool to Value::Type::BOOLEAN.
 TEST_F(WebViewJsUtilsTest, ValueResultFromBoolWKResult) {
   std::unique_ptr<base::Value> value(web::ValueResultFromWKResult(@YES));
-  EXPECT_TRUE(value);
-  EXPECT_EQ(base::Value::Type::BOOLEAN, value->type());
-  bool converted_result = false;
-  value->GetAsBoolean(&converted_result);
-  EXPECT_TRUE(converted_result);
+  ASSERT_TRUE(value);
+  ASSERT_TRUE(value->is_bool());
+  EXPECT_TRUE(value->GetBool());
 }
 
 // Tests that ValueResultFromWKResult converts null to Value::Type::NONE.
@@ -110,7 +106,7 @@ TEST_F(WebViewJsUtilsTest, ValueResultFromArrayWKResult) {
 
   std::unique_ptr<base::Value> value(web::ValueResultFromWKResult(test_array));
   ASSERT_TRUE(value->is_list());
-  base::Value::ConstListView list = value->GetList();
+  base::Value::ConstListView list = value->GetListDeprecated();
 
   size_t list_size = 3;
   ASSERT_EQ(list_size, list.size());
@@ -145,7 +141,7 @@ TEST_F(WebViewJsUtilsTest, ValueResultFromDictionaryWithDepthCheckWKResult) {
   }));
 
   // Check that parsing the dictionary stopped at a depth of
-  // |kMaximumParsingRecursionDepth|.
+  // `kMaximumParsingRecursionDepth`.
   std::unique_ptr<base::Value> value =
       web::ValueResultFromWKResult(test_dictionary);
   base::DictionaryValue* current_dictionary = nullptr;
@@ -178,13 +174,13 @@ TEST_F(WebViewJsUtilsTest, ValueResultFromArrayWithDepthCheckWKResult) {
   }));
 
   // Check that parsing the array stopped at a depth of
-  // |kMaximumParsingRecursionDepth|.
+  // `kMaximumParsingRecursionDepth`.
   std::unique_ptr<base::Value> value = web::ValueResultFromWKResult(test_array);
   absl::optional<base::Value::ConstListView> current_list;
   absl::optional<base::Value::ConstListView> inner_list;
 
   ASSERT_TRUE(value->is_list());
-  current_list = value->GetList();
+  current_list = value->GetListDeprecated();
 
   for (int current_depth = 0; current_depth <= kMaximumParsingRecursionDepth;
        current_depth++) {
@@ -192,7 +188,7 @@ TEST_F(WebViewJsUtilsTest, ValueResultFromArrayWithDepthCheckWKResult) {
 
     inner_list = absl::nullopt;
     if (!current_list.value().empty() && current_list.value()[0].is_list())
-      inner_list = current_list.value()[0].GetList();
+      inner_list = current_list.value()[0].GetListDeprecated();
     current_list = inner_list;
   }
   EXPECT_FALSE(current_list.has_value());
@@ -241,41 +237,35 @@ TEST_F(WebViewJsUtilsTest, ExecuteJavaScript) {
 // Tests that javascript can be executed in the page content world when no
 // content world or web frame are specified.
 TEST_F(WebViewJsUtilsTest, ExecuteJavaScriptPageContentWorldByDefault) {
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
-
   __block bool complete = false;
   __block id result = nil;
   __block NSError* error = nil;
   WKWebView* web_view = [[WKWebView alloc] init];
 
-  if (@available(iOS 14, *)) {
-    __block bool set_value_complete = false;
-    __block NSError* set_value_error = nil;
+  __block bool set_value_complete = false;
+  __block NSError* set_value_error = nil;
 
-    // Set |value| in the page content world.
-    web::ExecuteJavaScript(web_view, WKContentWorld.pageWorld,
-                           /*frame_info=*/nil, @"var value = 3;",
-                           ^(id result, NSError* error) {
-                             set_value_error = [error copy];
-                             set_value_complete = true;
-                           });
+  // Set `value` in the page content world.
+  web::ExecuteJavaScript(web_view, WKContentWorld.pageWorld,
+                         /*frame_info=*/nil, @"var value = 3;",
+                         ^(id innerResult, NSError* innerError) {
+                           set_value_error = [innerError copy];
+                           set_value_complete = true;
+                         });
 
-    ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-      return set_value_complete;
-    }));
-    ASSERT_FALSE(set_value_error);
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+    return set_value_complete;
+  }));
+  ASSERT_FALSE(set_value_error);
 
-    // Retrieve the value without specifying the content world to verify that
-    // ExecuteJavaScript defaults to the page content world.
-    web::ExecuteJavaScript(web_view, /*content_world=*/nil, /*frame_info=*/nil,
-                           @"value", ^(id block_result, NSError* block_error) {
-                             result = [block_result copy];
-                             error = [block_error copy];
-                             complete = true;
-                           });
-  }
+  // Retrieve the value without specifying the content world to verify that
+  // ExecuteJavaScript defaults to the page content world.
+  web::ExecuteJavaScript(web_view, /*content_world=*/nil, /*frame_info=*/nil,
+                         @"value", ^(id block_result, NSError* block_error) {
+                           result = [block_result copy];
+                           error = [block_error copy];
+                           complete = true;
+                         });
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
     return complete;
@@ -289,41 +279,35 @@ TEST_F(WebViewJsUtilsTest, ExecuteJavaScriptPageContentWorldByDefault) {
 // Tests that javascript can be executed when the page content world is
 // explicitly specified but no frame info is given, implying the main frame.
 TEST_F(WebViewJsUtilsTest, ExecuteJavaScriptInPageWorldWithoutFrameInfo) {
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
-
   __block bool complete = false;
   __block id result = nil;
   __block NSError* error = nil;
   WKWebView* web_view = [[WKWebView alloc] init];
 
-  if (@available(iOS 14, *)) {
-    __block bool set_value_complete = false;
-    __block NSError* set_value_error = nil;
+  __block bool set_value_complete = false;
+  __block NSError* set_value_error = nil;
 
-    // Set |value| in the page content world.
-    web::ExecuteJavaScript(web_view, WKContentWorld.pageWorld,
-                           /*frame_info=*/nil, @"var value = 3;",
-                           ^(id result, NSError* error) {
-                             set_value_error = [error copy];
-                             set_value_complete = true;
-                           });
+  // Set `value` in the page content world.
+  web::ExecuteJavaScript(web_view, WKContentWorld.pageWorld,
+                         /*frame_info=*/nil, @"var value = 3;",
+                         ^(id innerResult, NSError* innerError) {
+                           set_value_error = [innerError copy];
+                           set_value_complete = true;
+                         });
 
-    ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-      return set_value_complete;
-    }));
-    ASSERT_FALSE(set_value_error);
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+    return set_value_complete;
+  }));
+  ASSERT_FALSE(set_value_error);
 
-    // Ensure the value can be accessed when specifying the content world.
-    web::ExecuteJavaScript(web_view, WKContentWorld.pageWorld,
-                           /*frame_info=*/nil, @"value",
-                           ^(id block_result, NSError* block_error) {
-                             result = [block_result copy];
-                             error = [block_error copy];
-                             complete = true;
-                           });
-  }
+  // Ensure the value can be accessed when specifying the content world.
+  web::ExecuteJavaScript(web_view, WKContentWorld.pageWorld,
+                         /*frame_info=*/nil, @"value",
+                         ^(id block_result, NSError* block_error) {
+                           result = [block_result copy];
+                           error = [block_error copy];
+                           complete = true;
+                         });
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
     return complete;
@@ -337,10 +321,6 @@ TEST_F(WebViewJsUtilsTest, ExecuteJavaScriptInPageWorldWithoutFrameInfo) {
 // Tests that javascript can be executed in the page content world when the page
 // content world and web frame are both specified.
 TEST_F(WebViewJsUtilsTest, ExecuteJavaScriptPageContentWorld) {
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
-
   CRWFakeScriptMessageHandler* script_message_handler =
       [[CRWFakeScriptMessageHandler alloc] init];
   WKWebView* web_view = [[WKWebView alloc] init];
@@ -364,30 +344,29 @@ TEST_F(WebViewJsUtilsTest, ExecuteJavaScriptPageContentWorld) {
   __block id result = nil;
   __block NSError* error = nil;
 
-  if (@available(iOS 14, *)) {
-    __block bool set_value_complete = false;
-    __block NSError* set_value_error = nil;
+  __block bool set_value_complete = false;
+  __block NSError* set_value_error = nil;
 
-    // Set |value| in the page content world.
-    web::ExecuteJavaScript(web_view, WKContentWorld.pageWorld, frame_info,
-                           @"var value = 3;", ^(id result, NSError* error) {
-                             set_value_error = [error copy];
-                             set_value_complete = true;
-                           });
+  // Set `value` in the page content world.
+  web::ExecuteJavaScript(web_view, WKContentWorld.pageWorld, frame_info,
+                         @"var value = 3;",
+                         ^(id innerResult, NSError* innerError) {
+                           set_value_error = [innerError copy];
+                           set_value_complete = true;
+                         });
 
-    ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-      return set_value_complete;
-    }));
-    ASSERT_FALSE(set_value_error);
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+    return set_value_complete;
+  }));
+  ASSERT_FALSE(set_value_error);
 
-    // Ensure the value can be accessed when specifying |frame_info|.
-    web::ExecuteJavaScript(web_view, WKContentWorld.pageWorld, frame_info,
-                           @"value", ^(id block_result, NSError* block_error) {
-                             result = [block_result copy];
-                             error = [block_error copy];
-                             complete = true;
-                           });
-  }
+  // Ensure the value can be accessed when specifying `frame_info`.
+  web::ExecuteJavaScript(web_view, WKContentWorld.pageWorld, frame_info,
+                         @"value", ^(id block_result, NSError* block_error) {
+                           result = [block_result copy];
+                           error = [block_error copy];
+                           complete = true;
+                         });
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
     return complete;
@@ -401,10 +380,6 @@ TEST_F(WebViewJsUtilsTest, ExecuteJavaScriptPageContentWorld) {
 // Tests that javascript can be executed in an isolated content world and that
 // it can not be accessed from the page content world.
 TEST_F(WebViewJsUtilsTest, ExecuteJavaScriptIsolatedWorld) {
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
-
   CRWFakeScriptMessageHandler* script_message_handler =
       [[CRWFakeScriptMessageHandler alloc] init];
   WKWebView* web_view = [[WKWebView alloc] init];
@@ -424,63 +399,61 @@ TEST_F(WebViewJsUtilsTest, ExecuteJavaScriptIsolatedWorld) {
   WKFrameInfo* frame_info =
       script_message_handler.lastReceivedScriptMessage.frameInfo;
 
-  if (@available(iOS 14, *)) {
-    __block bool set_value_complete = false;
-    __block NSError* set_value_error = nil;
-    // Set |value| in the page content world.
-    web::ExecuteJavaScript(web_view, WKContentWorld.defaultClientWorld,
-                           frame_info, @"var value = 3;",
-                           ^(id result, NSError* error) {
-                             set_value_error = [error copy];
-                             set_value_complete = true;
-                           });
+  __block bool set_value_complete = false;
+  __block NSError* set_value_error = nil;
+  // Set `value` in the page content world.
+  web::ExecuteJavaScript(web_view, WKContentWorld.defaultClientWorld,
+                         frame_info, @"var value = 3;",
+                         ^(id result, NSError* error) {
+                           set_value_error = [error copy];
+                           set_value_complete = true;
+                         });
 
-    ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-      return set_value_complete;
-    }));
-    ASSERT_FALSE(set_value_error);
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+    return set_value_complete;
+  }));
+  ASSERT_FALSE(set_value_error);
 
-    __block bool isolated_world_complete = false;
-    __block id isolated_world_result = nil;
-    __block NSError* isolated_world_error = nil;
-    // Ensure the value can be accessed when specifying an isolated world and
-    // |frame_info|.
-    web::ExecuteJavaScript(web_view, WKContentWorld.defaultClientWorld,
-                           frame_info, @"value",
-                           ^(id block_result, NSError* block_error) {
-                             isolated_world_result = [block_result copy];
-                             isolated_world_error = [block_error copy];
-                             isolated_world_complete = true;
-                           });
+  __block bool isolated_world_complete = false;
+  __block id isolated_world_result = nil;
+  __block NSError* isolated_world_error = nil;
+  // Ensure the value can be accessed when specifying an isolated world and
+  // `frame_info`.
+  web::ExecuteJavaScript(web_view, WKContentWorld.defaultClientWorld,
+                         frame_info, @"value",
+                         ^(id block_result, NSError* block_error) {
+                           isolated_world_result = [block_result copy];
+                           isolated_world_error = [block_error copy];
+                           isolated_world_complete = true;
+                         });
 
-    ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-      return isolated_world_complete;
-    }));
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+    return isolated_world_complete;
+  }));
 
-    EXPECT_FALSE(isolated_world_error);
-    EXPECT_TRUE(isolated_world_result);
-    EXPECT_NSEQ(@(3), isolated_world_result);
+  EXPECT_FALSE(isolated_world_error);
+  EXPECT_TRUE(isolated_world_result);
+  EXPECT_NSEQ(@(3), isolated_world_result);
 
-    __block bool page_world_complete = false;
-    __block id page_world_result = nil;
-    __block NSError* page_world_error = nil;
-    // The value should not be accessible from the page content world.
-    web::ExecuteJavaScript(web_view, WKContentWorld.pageWorld, frame_info,
-                           @"try { value } catch (error) { false }",
-                           ^(id block_result, NSError* block_error) {
-                             page_world_result = [block_result copy];
-                             page_world_error = [block_error copy];
-                             page_world_complete = true;
-                           });
+  __block bool page_world_complete = false;
+  __block id page_world_result = nil;
+  __block NSError* page_world_error = nil;
+  // The value should not be accessible from the page content world.
+  web::ExecuteJavaScript(web_view, WKContentWorld.pageWorld, frame_info,
+                         @"try { value } catch (error) { false }",
+                         ^(id block_result, NSError* block_error) {
+                           page_world_result = [block_result copy];
+                           page_world_error = [block_error copy];
+                           page_world_complete = true;
+                         });
 
-    ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-      return page_world_complete;
-    }));
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+    return page_world_complete;
+  }));
 
-    EXPECT_FALSE(page_world_error);
-    EXPECT_TRUE(page_world_result);
-    EXPECT_FALSE([page_world_result boolValue]);
-  }
+  EXPECT_FALSE(page_world_error);
+  EXPECT_TRUE(page_world_result);
+  EXPECT_FALSE([page_world_result boolValue]);
 }
 
 }  // namespace web

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 /**
@@ -20,22 +20,19 @@ async function sniffedFileOpen(path, entry) {
   await sendTestMessage({
     name: 'expectFileTask',
     fileNames: [entry.targetPath],
-    openType: 'launch'
+    openType: 'launch',
   });
   // Open Files.App on |path|, add imgpdf to Downloads and Drive.
   const appId = await setupAndWaitUntilReady(path, [entry], [entry]);
 
   // Open the file from Files app.
-  if (remoteCall.isSwaMode() && entry.mimeType === 'application/pdf') {
+  if (entry.mimeType === 'application/pdf') {
     // When SWA is enabled, Backlight is also enabled and becomes the default
     // handler for PDF files. So we have to use the "open with" option to open
     // in the browser.
 
     // Select the file.
-    chrome.test.assertTrue(
-        !!await remoteCall.callRemoteTestUtil(
-            'selectFile', appId, [entry.targetPath]),
-        'selectFile failed');
+    await remoteCall.waitUntilSelected(appId, entry.targetPath);
 
     // Right-click the selected file.
     await remoteCall.waitAndRightClick(appId, '.table-row[selected]');
@@ -60,9 +57,9 @@ async function sniffedFileOpen(path, entry) {
   }
 
   // The SWA window itself is detected by getBrowserWindows().
-  const initilWindowCount = remoteCall.isSwaMode() ? 1 : 0;
+  const initialWindowCount = 1;
   // Wait for a new browser window to appear.
-  const browserWindows = await getBrowserWindows(initilWindowCount);
+  const browserWindows = await getBrowserWindows(initialWindowCount);
 
   // Find the main (normal) browser window.
   let normalWindow = undefined;

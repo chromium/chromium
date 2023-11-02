@@ -1,4 +1,4 @@
-/* Copyright 2020 The Chromium Authors. All rights reserved.
+/* Copyright 2020 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
@@ -21,7 +21,7 @@ body {
   overflow: auto;
 }
 
-#page-heading {
+h1 {
   color: rgb(92, 97, 102);
   font-size: 1.5rem;
   padding-bottom: 10px;
@@ -35,9 +35,10 @@ body {
   color: red;
 }
 
-hr {
+main {
   border-top: 1px solid rgb(48, 57, 66);
-  width: 100%;
+  margin-top: 1rem;
+  padding-top: 1rem;
 }
 
 .content {
@@ -45,55 +46,7 @@ hr {
   border: 1px solid #cecece;
   border-radius: 3px;
   line-height: 1.5;
-  overflow-x: scroll;
   padding: 19px;
-}
-
-.table-wrapper {
-  background-color: #fff;
-  border-color: rgba(0,0,0,.12);
-  border-radius: 4px;
-  border-style: solid;
-  border-width: 1px;
-  display: inline-block;
-
-}
-
-table {
-  border: 0;
-  border-collapse: collapse;
-}
-
-tbody tr {
-  border-top-color: rgba(0,0,0,.12);
-  border-top-style: solid;
-  border-top-width: 1px;
-}
-
-thead tr {
-  border: 0;
-}
-
-table td,
-table th {
-  padding-inline-end: 16px;
-  padding-inline-start: 16px;
-}
-
-th[aria-sort] {
-  cursor: pointer;
-}
-
-th[aria-sort]::after {
-  content: '⬍';
-}
-
-th[aria-sort='ascending']::after {
-  content: '⬆';
-}
-
-th[aria-sort='descending']::after {
-  content: '⬇';
 }
 
 button {
@@ -101,6 +54,11 @@ button {
   margin-inline-end: 30px;
 }
 
-.http-error {
-  background-color: rgb(250,199,192);
+div[slot='tab']::before {
+  color: transparent;
+  content: '⬤ ';
+}
+
+div[slot='tab'].unread::before {
+  color: rgb(26,115,232);
 }

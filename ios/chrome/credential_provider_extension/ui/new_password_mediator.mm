@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,18 +6,18 @@
 
 #import <AuthenticationServices/AuthenticationServices.h>
 
-#include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/browser/proto/password_requirements.pb.h"
-#include "components/password_manager/core/browser/generation/password_generator.h"
-#include "ios/chrome/common/app_group/app_group_constants.h"
-#include "ios/chrome/common/app_group/app_group_metrics.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/proto/password_requirements.pb.h"
+#import "components/password_manager/core/browser/generation/password_generator.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/common/app_group/app_group_metrics.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
 #import "ios/chrome/common/credential_provider/archivable_credential_util.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/credential_provider/credential_store.h"
 #import "ios/chrome/common/credential_provider/user_defaults_credential_store.h"
 #import "ios/chrome/credential_provider_extension/metrics_util.h"
-#include "ios/chrome/credential_provider_extension/password_spec_fetcher_buildflags.h"
+#import "ios/chrome/credential_provider_extension/password_spec_fetcher_buildflags.h"
 #import "ios/chrome/credential_provider_extension/password_util.h"
 #import "ios/chrome/credential_provider_extension/ui/new_password_ui_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/ui_util.h"
@@ -110,7 +110,7 @@ using base::SysUTF16ToNSString;
 
 // Checks whether a credential already exists with the given username.
 - (BOOL)credentialExistsForUsername:(NSString*)username {
-  NSURL* url = [NSURL URLWithString:self.serviceIdentifier.identifier];
+  NSURL* url = [NSURL URLWithString:[self currentIdentifier]];
   NSString* recordIdentifier = RecordIdentifierForData(url, username);
 
   return [self.existingCredentials
@@ -120,19 +120,7 @@ using base::SysUTF16ToNSString;
 // Creates a new credential but doesn't add it to any stores.
 - (ArchivableCredential*)createNewCredentialWithUsername:(NSString*)username
                                                 password:(NSString*)password {
-  NSString* identifier = self.serviceIdentifier.identifier;
-
-  // According to Apple
-  // (https://developer.apple.com/documentation/xcode/supporting-associated-domains).
-  // associated domains must have an https:// scheme, and to autofill passwords
-  // an associated domain is needed
-  // (https://developer.apple.com/documentation/security/password_autofill/).
-  // Also iOS strips https:// from passed identifier, Chrome restores it here to
-  // save a valid URL.
-  if (self.serviceIdentifier.type == ASCredentialServiceIdentifierTypeDomain &&
-      ![identifier hasPrefix:@"https://"]) {
-    identifier = [@"https://" stringByAppendingString:identifier];
-  }
+  NSString* identifier = [self currentIdentifier];
   NSURL* url = [NSURL URLWithString:identifier];
   NSString* recordIdentifier = RecordIdentifierForData(url, username);
 
@@ -155,7 +143,7 @@ using base::SysUTF16ToNSString;
                                   validationIdentifier:validationIdentifier];
 }
 
-// Saves the given credential to disk and calls |completion| once the operation
+// Saves the given credential to disk and calls `completion` once the operation
 // is finished.
 - (void)saveNewCredential:(ArchivableCredential*)credential
                completion:(void (^)(NSError* error))completion {
@@ -182,6 +170,23 @@ using base::SysUTF16ToNSString;
                                       password:password];
   [self.context completeRequestWithSelectedCredential:ASCredential
                                     completionHandler:nil];
+}
+
+- (NSString*)currentIdentifier {
+  NSString* identifier = self.serviceIdentifier.identifier;
+
+  // According to Apple
+  // (https://developer.apple.com/documentation/xcode/supporting-associated-domains).
+  // associated domains must have an https:// scheme, and to autofill passwords
+  // an associated domain is needed
+  // (https://developer.apple.com/documentation/security/password_autofill/).
+  // Also iOS strips https:// from passed identifier, Chrome restores it here to
+  // save a valid URL.
+  if (self.serviceIdentifier.type == ASCredentialServiceIdentifierTypeDomain &&
+      ![identifier hasPrefix:@"https://"]) {
+    identifier = [@"https://" stringByAppendingString:identifier];
+  }
+  return identifier;
 }
 
 @end

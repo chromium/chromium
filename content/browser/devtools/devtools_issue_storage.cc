@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,10 @@ static const unsigned kMaxIssueCount = 1000;
 PAGE_USER_DATA_KEY_IMPL(DevToolsIssueStorage);
 
 DevToolsIssueStorage::DevToolsIssueStorage(Page& page)
-    : PageUserData<DevToolsIssueStorage>(page) {}
+    : PageUserData<DevToolsIssueStorage>(page) {
+  // DevToolsIssueStorage is only created for outermost pages.
+  DCHECK(!page.GetMainDocument().GetParentOrOuterDocument());
+}
 DevToolsIssueStorage::~DevToolsIssueStorage() = default;
 
 void DevToolsIssueStorage::AddInspectorIssue(
@@ -40,7 +43,7 @@ DevToolsIssueStorage::FindIssuesForAgentOf(
       static_cast<RenderFrameHostImpl*>(&page().GetMainDocument());
   DevToolsAgentHostImpl* agent_host =
       RenderFrameDevToolsAgentHost::GetFor(render_frame_host_impl);
-  DCHECK_EQ(&render_frame_host->GetPage(), &page());
+  DCHECK_EQ(&render_frame_host->GetOutermostMainFrame()->GetPage(), &page());
   DCHECK(RenderFrameDevToolsAgentHost::ShouldCreateDevToolsForHost(
       render_frame_host_impl));
   DCHECK(agent_host);

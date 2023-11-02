@@ -68,8 +68,9 @@ static float CalculateNormalizationScale(AudioBus* response) {
   power = sqrt(power / (number_of_channels * length));
 
   // Protect against accidental overload
-  if (std::isinf(power) || std::isnan(power) || power < kMinPower)
+  if (std::isinf(power) || std::isnan(power) || power < kMinPower) {
     power = kMinPower;
+  }
 
   float scale = 1 / power;
 
@@ -78,12 +79,14 @@ static float CalculateNormalizationScale(AudioBus* response) {
               0.05f);  // calibrate to make perceived volume same as unprocessed
 
   // Scale depends on sample-rate.
-  if (response->SampleRate())
+  if (response->SampleRate()) {
     scale *= kGainCalibrationSampleRate / response->SampleRate();
+  }
 
   // True-stereo compensation
-  if (response->NumberOfChannels() == 4)
+  if (response->NumberOfChannels() == 4) {
     scale *= 0.5f;
+  }
 
   return scale;
 }
@@ -114,7 +117,7 @@ void Reverb::Initialize(AudioBus* impulse_response_buffer,
   // The reverb can handle a mono impulse response and still do stereo
   // processing.
   unsigned num_convolvers = std::max(number_of_response_channels_, 2u);
-  convolvers_.ReserveCapacity(num_convolvers);
+  convolvers_.reserve(num_convolvers);
 
   int convolver_render_phase = 0;
   for (unsigned i = 0; i < num_convolvers; ++i) {
@@ -133,8 +136,9 @@ void Reverb::Initialize(AudioBus* impulse_response_buffer,
   // For "True" stereo processing we allocate a temporary buffer to avoid
   // repeatedly allocating it in the process() method.  It can be bad to
   // allocate memory in a real-time thread.
-  if (number_of_response_channels_ == 4)
+  if (number_of_response_channels_ == 4) {
     temp_buffer_ = AudioBus::Create(2, render_slice_size);
+  }
 }
 
 void Reverb::Process(const AudioBus* source_bus,
@@ -269,12 +273,13 @@ void Reverb::Process(const AudioBus* source_bus,
 }
 
 void Reverb::Reset() {
-  for (wtf_size_t i = 0; i < convolvers_.size(); ++i)
-    convolvers_[i]->Reset();
+  for (auto& convolver : convolvers_) {
+    convolver->Reset();
+  }
 }
 
 size_t Reverb::LatencyFrames() const {
-  return !convolvers_.IsEmpty() ? convolvers_.front()->LatencyFrames() : 0;
+  return !convolvers_.empty() ? convolvers_.front()->LatencyFrames() : 0;
 }
 
 }  // namespace blink

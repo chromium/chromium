@@ -1,0 +1,41 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/zip.gni")
+import("//chrome/version.gni")
+
+# Creates a zip archive of the inputs with a build information stamp.
+#
+# output (required)
+#     Path to output zip.
+# inputs (required)
+#     List of input files to zip.
+# base_dir (optional)
+#     If provided, the archive paths will be relative to this directory.
+#     Applies only to |inputs|.
+#
+# deps, public_deps, data, data_deps, testonly, visibility
+#     Normal meaning.
+template("artifact_zip") {
+  zip(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "output",
+                             "inputs",
+                             "base_dir",
+                             "data",
+                             "data_deps",
+                             "deps",
+                             "public_deps",
+                             "testonly",
+                             "visibility",
+                           ])
+    zip_comment_values = [
+      "path=" + rebase_path(invoker.output, root_build_dir),
+      "version=" + chrome_version_full,
+      "os=" + target_os,
+      "cpu=" + target_cpu,
+    ]
+  }
+}

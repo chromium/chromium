@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/views/layout/normalized_geometry.h"
 #include "ui/views/view.h"
@@ -110,10 +111,8 @@ void InterpolatingLayoutManager::SetDefaultLayout(
     return;
 
   // Make sure we already own the layout.
-  DCHECK(embedded_layouts_.end() !=
-         std::find_if(
-             embedded_layouts_.begin(), embedded_layouts_.end(),
-             [=](const auto& pair) { return pair.second == default_layout; }));
+  DCHECK(base::Contains(embedded_layouts_, default_layout,
+                        &Layouts::value_type::second));
   default_layout_ = default_layout;
   InvalidateHost(true);
 }
@@ -164,7 +163,8 @@ int InterpolatingLayoutManager::GetPreferredHeightForWidth(
 const views::LayoutManagerBase* InterpolatingLayoutManager::GetDefaultLayout()
     const {
   DCHECK(!embedded_layouts_.empty());
-  return default_layout_ ? default_layout_ : embedded_layouts_.rbegin()->second;
+  return default_layout_ ? default_layout_.get()
+                         : embedded_layouts_.rbegin()->second;
 }
 
 const views::LayoutManagerBase* InterpolatingLayoutManager::GetSmallestLayout()

@@ -1,22 +1,23 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/thumbnail/cc/thumbnail_cache.h"
 
-#include <algorithm>
 #include <cmath>
 #include <utility>
 
 #include "base/android/application_status_listener.h"
 #include "base/android/path_utils.h"
 #include "base/big_endian.h"
+#include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -81,8 +82,9 @@ gfx::Size GetEncodedSize(const gfx::Size& bitmap_size, bool supports_npot) {
 
 template <typename T>
 bool ReadBigEndianFromFile(base::File& file, T* out) {
-  char buffer[sizeof(T)];
-  if (file.ReadAtCurrentPos(buffer, sizeof(T)) != sizeof(T))
+  uint8_t buffer[sizeof(T)];
+  if (file.ReadAtCurrentPos(reinterpret_cast<char*>(buffer), sizeof(T)) !=
+      sizeof(T))
     return false;
   base::ReadBigEndian(buffer, out);
   return true;
@@ -145,7 +147,6 @@ ThumbnailCache::ThumbnailCache(size_t default_cache_size,
                                double jpeg_aspect_ratio)
     : file_sequenced_task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
-      jpeg_aspect_ratio_(jpeg_aspect_ratio),
       compression_queue_max_size_(compression_queue_max_size),
       write_queue_max_size_(write_queue_max_size),
       use_approximation_thumbnail_(use_approximation_thumbnail),
@@ -192,7 +193,8 @@ void ThumbnailCache::RemoveThumbnailCacheObserver(
 
 void ThumbnailCache::Put(TabId tab_id,
                          const SkBitmap& bitmap,
-                         float thumbnail_scale) {
+                         float thumbnail_scale,
+                         double jpeg_aspect_ratio) {
   if (!ui_resource_provider_ || bitmap.empty() || thumbnail_scale <= 0)
     return;
 
@@ -218,7 +220,8 @@ void ThumbnailCache::Put(TabId tab_id,
     approx_thumbnail->SetBitmap(approximation.first);
     approximation_cache_.Put(tab_id, std::move(approx_thumbnail));
   }
-  CompressThumbnailIfNecessary(tab_id, time_stamp, bitmap, thumbnail_scale);
+  CompressThumbnailIfNecessary(tab_id, time_stamp, bitmap, thumbnail_scale,
+                               jpeg_aspect_ratio);
 }
 
 void ThumbnailCache::Remove(TabId tab_id) {
@@ -349,21 +352,23 @@ void ThumbnailCache::UpdateVisibleIds(const TabIdList& priority,
 void ThumbnailCache::ForkToSaveAsJpeg(
     base::OnceCallback<void(bool, const SkBitmap&)> callback,
     int tab_id,
+    double jpeg_aspect_ratio,
     bool result,
     const SkBitmap& bitmap) {
   if (result && !bitmap.isNull())
-    SaveAsJpeg(tab_id, bitmap);
+    SaveAsJpeg(tab_id, bitmap, jpeg_aspect_ratio);
   std::move(callback).Run(result, bitmap);
 }
 
 void ThumbnailCache::DecompressThumbnailFromFile(
     TabId tab_id,
+    double jpeg_aspect_ratio,
     base::OnceCallback<void(bool, const SkBitmap&)> post_decompress_callback) {
   base::OnceCallback<void(bool, const SkBitmap&)> transcoding_callback;
   if (save_jpeg_thumbnails_) {
     transcoding_callback = base::BindOnce(
         &ThumbnailCache::ForkToSaveAsJpeg, weak_factory_.GetWeakPtr(),
-        std::move(post_decompress_callback), tab_id);
+        std::move(post_decompress_callback), tab_id, jpeg_aspect_ratio);
   } else {
     transcoding_callback = std::move(post_decompress_callback);
   }
@@ -431,7 +436,9 @@ void ThumbnailCache::WriteJpegThumbnailIfNecessary(
                      std::move(compressed_data), std::move(post_write_task)));
 }
 
-void ThumbnailCache::SaveAsJpeg(TabId tab_id, const SkBitmap& bitmap) {
+void ThumbnailCache::SaveAsJpeg(TabId tab_id,
+                                const SkBitmap& bitmap,
+                                double jpeg_aspect_ratio) {
   base::OnceCallback<void(std::vector<uint8_t>)> post_jpeg_compression_task =
       base::BindOnce(&ThumbnailCache::WriteJpegThumbnailIfNecessary,
                      weak_factory_.GetWeakPtr(), tab_id);
@@ -440,14 +447,15 @@ void ThumbnailCache::SaveAsJpeg(TabId tab_id, const SkBitmap& bitmap) {
       FROM_HERE,
       {base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&ThumbnailCache::JpegProcessingTask, jpeg_aspect_ratio_,
+      base::BindOnce(&ThumbnailCache::JpegProcessingTask, jpeg_aspect_ratio,
                      bitmap, std::move(post_jpeg_compression_task)));
 }
 
 void ThumbnailCache::CompressThumbnailIfNecessary(TabId tab_id,
                                                   const base::Time& time_stamp,
                                                   const SkBitmap& bitmap,
-                                                  float scale) {
+                                                  float scale,
+                                                  double jpeg_aspect_ratio) {
   if (compression_tasks_count_ >= compression_queue_max_size_) {
     RemoveOnMatchedTimeStamp(tab_id, time_stamp);
     return;
@@ -472,7 +480,7 @@ void ThumbnailCache::CompressThumbnailIfNecessary(TabId tab_id,
                      std::move(post_compression_task)));
 
   if (save_jpeg_thumbnails_) {
-    SaveAsJpeg(tab_id, bitmap);
+    SaveAsJpeg(tab_id, bitmap, jpeg_aspect_ratio);
   }
 }
 
@@ -512,10 +520,9 @@ void ThumbnailCache::MakeSpaceForNewItemIfNecessary(TabId tab_id) {
 
   if (!found_key_to_remove) {
     // 2. Find the least important id we can remove.
-    for (TabIdList::reverse_iterator riter = visible_ids_.rbegin();
-         riter != visible_ids_.rend(); riter++) {
-      if (cache_.Get(*riter)) {
-        key_to_remove = *riter;
+    for (const TabId& id : base::Reversed(visible_ids_)) {
+      if (cache_.Get(id)) {
+        key_to_remove = id;
         found_key_to_remove = true;
         break;
       }
@@ -527,7 +534,7 @@ void ThumbnailCache::MakeSpaceForNewItemIfNecessary(TabId tab_id) {
 }
 
 void ThumbnailCache::RemoveFromReadQueue(TabId tab_id) {
-  auto read_iter = std::find(read_queue_.begin(), read_queue_.end(), tab_id);
+  auto read_iter = base::ranges::find(read_queue_, tab_id);
   if (read_iter != read_queue_.end())
     read_queue_.erase(read_iter);
 }
@@ -915,7 +922,7 @@ void ThumbnailCache::PostReadTask(TabId tab_id,
                                   const gfx::Size& content_size) {
   read_in_progress_ = false;
 
-  auto iter = std::find(read_queue_.begin(), read_queue_.end(), tab_id);
+  auto iter = base::ranges::find(read_queue_, tab_id);
   if (iter == read_queue_.end()) {
     ReadNextThumbnail();
     return;

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_tree_data.h"
@@ -21,6 +22,8 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/test/widget_test.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
@@ -48,7 +51,6 @@ class AXTreeSourceViewsTest : public ViewsTestBase {
     ViewsTestBase::SetUp();
     widget_ = std::make_unique<Widget>();
     Widget::InitParams params(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-    params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     params.bounds = gfx::Rect(11, 22, 333, 444);
     params.context = GetContext();
     widget_->Init(std::move(params));
@@ -56,15 +58,15 @@ class AXTreeSourceViewsTest : public ViewsTestBase {
 
     label1_ = new Label(u"Label 1");
     label1_->SetBounds(1, 1, 111, 111);
-    widget_->GetContentsView()->AddChildView(label1_);
+    widget_->GetContentsView()->AddChildView(label1_.get());
 
     label2_ = new Label(u"Label 2");
     label2_->SetBounds(2, 2, 222, 222);
-    widget_->GetContentsView()->AddChildView(label2_);
+    widget_->GetContentsView()->AddChildView(label2_.get());
 
     textfield_ = new Textfield();
     textfield_->SetBounds(222, 2, 20, 200);
-    widget_->GetContentsView()->AddChildView(textfield_);
+    widget_->GetContentsView()->AddChildView(textfield_.get());
   }
 
   void TearDown() override {
@@ -72,10 +74,10 @@ class AXTreeSourceViewsTest : public ViewsTestBase {
     ViewsTestBase::TearDown();
   }
 
-  std::unique_ptr<Widget> widget_;
-  Label* label1_ = nullptr;         // Owned by views hierarchy.
-  Label* label2_ = nullptr;         // Owned by views hierarchy.
-  Textfield* textfield_ = nullptr;  // Owned by views hierarchy.
+  UniqueWidgetPtr widget_;
+  raw_ptr<Label> label1_ = nullptr;         // Owned by views hierarchy.
+  raw_ptr<Label> label2_ = nullptr;         // Owned by views hierarchy.
+  raw_ptr<Textfield> textfield_ = nullptr;  // Owned by views hierarchy.
 };
 
 TEST_F(AXTreeSourceViewsTest, Basics) {
@@ -197,8 +199,13 @@ TEST_F(AXTreeSourceViewsDesktopWidgetTest, FocusedChildWindowDestroyed) {
   // GetFocus() reflects the focused child window.
   EXPECT_NE(nullptr, cache.GetFocus());
 
+  test::WidgetDestroyedWaiter waiter(widget_.get());
+
   // Close the widget to destroy the child.
   widget_.reset();
+
+  // Wait for the async widget close.
+  waiter.Wait();
 
   // GetFocus() should return null and no use-after-free to call it.
   EXPECT_EQ(nullptr, cache.GetFocus());

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,13 @@
 
 #import "base/mac/foundation_util.h"
 #import "base/test/task_environment.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/strings/grit/ui_strings.h"
+#import "testing/platform_test.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "ui/strings/grit/ui_strings.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -21,7 +22,10 @@
 
 class ActionSheetCoordinatorTest : public PlatformTest {
  protected:
-  ActionSheetCoordinatorTest() : browser_(std::make_unique<TestBrowser>()) {}
+  ActionSheetCoordinatorTest() {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+  }
 
   void SetUp() override {
     base_view_controller_ = [[UIViewController alloc] init];
@@ -52,6 +56,7 @@ class ActionSheetCoordinatorTest : public PlatformTest {
   base::test::TaskEnvironment task_environment_;
 
   ScopedKeyWindow scoped_key_window_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
   UIViewController* base_view_controller_;
   UIView* test_view_;

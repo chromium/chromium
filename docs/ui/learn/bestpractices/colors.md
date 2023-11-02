@@ -513,14 +513,14 @@ An improved version could split the image into a fixed color portion and an
 uncolored portion using alpha that is programmatically computed based on the
 desired foreground color.
 
-## Use colors inside a View
+## Use colors inside a rooted entity.
 
-**Do not use colors outside a `View`**, since doing so correctly is difficult.
-Global access to theming objects is deprecated and will eventually be removed,
-since it's error-prone and hinders future design goals. Direct use of physical
-colors and obtaining colors from `View` instances are problematic for reasons
-given above. If you need something like this, talk to the toolkit team about the
-best approach.
+**Do not use colors outside a known rooted entity**, since doing so correctly is
+difficult. Global access to theming objects is deprecated and will eventually be
+removed, since it's error-prone and hinders future design goals. Direct use of
+physical colors and obtaining colors from `View` instances are problematic for
+reasons given above. If you need something like this, talk to the toolkit team
+about the best approach.
 
 |||---|||
 
@@ -537,7 +537,7 @@ Old code in `tab_strip_ui_handler.cc` uses global theming objects:
 [Current version](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/webui/tab_strip/tab_strip_ui_handler.cc;l=524;drc=cfa76e5827628eb2104df0e0b55d5d89f4a93eaf)
 gets colors from its embedding `View`; this will still require the caller to
 guarantee the `View`'s colors are up to date, monitor for potential changes in
-those colors, etc.:
+those colors, etc. The `View` should be rooted within a `Widget`:
 
 |||---|||
 
@@ -574,29 +574,128 @@ void TabStripUIHandler::HandleGetThemeColors(
 #####
 
 ```
-class TabStripUIHandler
-    : public content::WebUIMessageHandler,
-      public TabStripModelObserver {
+class [TabStripPageHandler](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/webui/tab_strip/tab_strip_page_handler.h;drc=beeec6c4e2ef41bca3182279155079a1c4dcb06d;l=29) : public tab_strip::mojom::PageHandler,
+                            public TabStripModelObserver,
+                            public content::WebContentsDelegate,
+                            public ThemeServiceObserver,
+                            public ui::NativeThemeObserver {
   ...
  private:
-  TabStripUIEmbedder* const embedder_;
+  const raw_ptr<TabStripUIEmbedder> embedder_;
   ...
 }
 
-void TabStripUIHandler::HandleGetThemeColors(
-    const base::ListValue* args) {
-  ...
-
-
-
-  base::DictionaryValue colors;
-  colors.SetString(
-      "--tabstrip-background-color",
-      color_utils::SkColorToRgbaString(
-          embedder_->GetColor(
-              ThemeProperties::COLOR_FRAME)));
+void [TabStripPageHandler::GetThemeColors](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/webui/tab_strip/tab_strip_page_handler.cc;drc=bf9500afcb08e7dfaec3cf4f52e00618ab663ec9;l=594)(
+    GetThemeColorsCallback callback) {
+  // This should return an object of CSS variables to rgba values so that
+  // the WebUI can use the CSS variables to color the tab strip
+  base::flat_map<std::string, std::string> colors;
+  colors["--tabstrip-background-color"] = color_utils::SkColorToRgbaString(
+      embedder_->GetColor(ThemeProperties::COLOR_FRAME_ACTIVE));
+  colors["--tabstrip-tab-background-color"] = color_utils::SkColorToRgbaString(
+      embedder_->GetColor(ThemeProperties::COLOR_TOOLBAR));
   ...
 }
 ```
 
 |||---|||
+
+Under MacOS, a top-level window (`Widget`) may not be available in the process
+from which the correct `ThemeProvider` or `ColorProvider` are obtained. In this
+case, the `AppController` is available from which the `ThemeProvider` can be
+obtained.
+
+**NOTE:** For code running within a top-level window, refer the previous best
+practice section for the preferred technique.
+
+```
+@interface AppController
+    : NSObject <NSUserInterfaceValidations,
+                NSMenuDelegate,
+                NSApplicationDelegate,
+                ASWebAuthenticationSessionWebBrowserSessionHandling> {
+
+...
+
+// Returns the last active ThemeProvider. It is only valid to call this with a
+// last available profile.
+- (const ui::ThemeProvider&)lastActiveThemeProvider;
+
+...
+
+@end
+
+class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
+                          public MainMenuItem,
+                          public history::HistoryServiceObserver {
+ public:
+
+  ...
+
+  // Adds an item for the group entry with a submenu containing its tabs.
+  // Returns whether the item was successfully added.
+  bool AddGroupEntryToMenu(sessions::TabRestoreService::Group* group,
+                           NSMenu* menu,
+                           NSInteger tag,
+                           NSInteger index);
+
+...
+
+bool [HistoryMenuBridge::AddGroupEntryToMenu](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/cocoa/history_menu_bridge.mm;drc=eb8341716b8bf349823849aae4dac3d9a7f83f13;l=320)(
+    sessions::TabRestoreService::Group* group,
+    NSMenu* menu,
+    NSInteger tag,
+    NSInteger index) {
+
+...
+
+  // Set the icon of the group to the group color circle.
+  AppController* controller =
+      base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
+  const auto& theme = [controller lastActiveThemeProvider];
+  const int color_id =
+      GetTabGroupContextMenuColorIdDeprecated(group->visual_data.color());
+  gfx::ImageSkia group_icon = gfx::CreateVectorIcon(
+      kTabGroupIcon, gfx::kFaviconSize, theme.GetColor(color_id));
+
+```
+
+|||---|||
+
+For WebUI, `content::WebContents` is used for obtaining the `ThemeProvider`.
+
+```
+namespace webui {
+
+...
+
+#if defined(TOOLKIT_VIEWS)
+
+...
+
+// Returns the ThemeProvider instance associated with the given web contents.
+const ui::ThemeProvider* GetThemeProvider(content::WebContents* web_contents);
+
+...
+
+#endif  // defined(TOOLKIT_VIEWS)
+
+}  // namespace webui
+
+void [NTPResourceCache::CreateNewTabIncognitoCSS](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/webui/ntp/ntp_resource_cache.cc;drc=29361d558ea9ffc6053f437de14cb20fd8c9e3c6;l=421)(
+    const content::WebContents::Getter& wc_getter) {
+  auto* web_contents = wc_getter.Run();
+  const ui::NativeTheme* native_theme = webui::GetNativeTheme(web_contents);
+  DCHECK(native_theme);
+
+  // Requesting the incognito CSS is only done from within incognito browser
+  // windows. The ThemeProvider associated with the requesting WebContents will
+  // wrap the relevant incognito bits.
+  const ui::ThemeProvider* tp = webui::GetThemeProvider(web_contents);
+  DCHECK(tp);
+
+  ...
+
+}
+
+```

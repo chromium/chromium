@@ -1,0 +1,51 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("webui") {
+  sources = [
+    "help_bubble_handler.cc",
+    "help_bubble_handler.h",
+    "help_bubble_webui.cc",
+    "help_bubble_webui.h",
+    "tracked_element_webui.cc",
+    "tracked_element_webui.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/user_education/common",
+    "//components/vector_icons",
+    "//skia",
+    "//third_party/abseil-cpp:absl",
+    "//ui/accessibility",
+    "//ui/base",
+    "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "help_bubble_handler_unittest.cc" ]
+
+  deps = [
+    ":webui",
+    "//base",
+    "//base/test:test_support",
+    "//components/feature_engagement/public",
+    "//components/strings",
+    "//components/user_education/common",
+    "//components/user_education/test",
+    "//components/variations",
+    "//components/vector_icons",
+    "//skia",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
+    "//ui/accessibility",
+    "//ui/base",
+    "//ui/base:test_support",
+    "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
+  ]
+}

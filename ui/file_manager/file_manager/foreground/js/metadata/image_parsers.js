@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -206,7 +206,7 @@ export class WebpParser extends SimpleImageParser {
 
       // VP8 extended file format.
       case 'VP8X':
-        br.seek(20);
+        br.seek(24);
         // Read 24-bit value. ECMAScript assures left-to-right evaluation order.
         metadata.width = (br.readScalar(2) | (br.readScalar(1) << 16)) + 1;
         metadata.height = (br.readScalar(2) | (br.readScalar(1) << 16)) + 1;

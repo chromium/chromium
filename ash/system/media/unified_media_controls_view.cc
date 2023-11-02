@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,22 +7,18 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/element_style.h"
+#include "ash/style/style_util.h"
 #include "ash/system/media/unified_media_controls_controller.h"
 #include "ash/system/tray/tray_constants.h"
-#include "ash/system/tray/tray_popup_utils.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "components/media_message_center/media_notification_util.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_id.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/views/accessibility/accessibility_paint_checks.h"
-#include "ui/views/animation/flood_fill_ink_drop_ripple.h"
-#include "ui/views/animation/ink_drop_highlight.h"
-#include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/background.h"
-#include "ui/views/border.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
@@ -42,8 +38,8 @@ constexpr int kArtworkCornerRadius = 4;
 constexpr int kTitleRowHeight = 20;
 constexpr int kTrackTitleFontSizeIncrease = 1;
 
-constexpr gfx::Insets kTrackColumnInsets = gfx::Insets(1, 8, 1, 8);
-constexpr gfx::Insets kMediaControlsViewInsets = gfx::Insets(8, 8, 8, 12);
+constexpr auto kTrackColumnInsets = gfx::Insets::TLBR(1, 8, 1, 8);
+constexpr auto kMediaControlsViewInsets = gfx::Insets::TLBR(8, 8, 8, 12);
 
 constexpr gfx::Size kEmptyArtworkIconSize = gfx::Size(20, 20);
 constexpr gfx::Size kArtworkSize = gfx::Size(40, 40);
@@ -109,24 +105,25 @@ SkColor GetBackgroundColor() {
 UnifiedMediaControlsView::MediaActionButton::MediaActionButton(
     UnifiedMediaControlsController* controller,
     MediaSessionAction action,
-    const std::u16string& accessible_name)
-    : views::ImageButton(base::BindRepeating(
-          // Handle dynamically-updated button tags without rebinding.
-          [](UnifiedMediaControlsController* controller,
-             MediaActionButton* button) {
-            controller->PerformAction(
-                media_message_center::GetActionFromButtonTag(*button));
-          },
-          controller,
-          this)),
+    int accessible_name_id)
+    : IconButton(
+          base::BindRepeating(
+              // Handle dynamically-updated button tags without rebinding.
+              [](UnifiedMediaControlsController* controller,
+                 MediaActionButton* button) {
+                controller->PerformAction(
+                    media_message_center::GetActionFromButtonTag(*button));
+              },
+              controller,
+              this),
+          IconButton::Type::kSmall,
+          &GetVectorIconForMediaAction(action),
+          accessible_name_id),
       action_(action) {
-  SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
-  SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-  SetAction(action, accessible_name);
-
-  TrayPopupUtils::ConfigureTrayPopupButton(
-      this, TrayPopupInkDropStyle::FILL_BOUNDS, /*highlight_on_hover=*/true);
-  views::InstallCircleHighlightPathGenerator(this);
+  set_tag(static_cast<int>(action));
+  StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
+                                   /*highlight_on_hover=*/true,
+                                   /*highlight_on_focus=*/false);
 }
 
 void UnifiedMediaControlsView::MediaActionButton::SetAction(
@@ -135,21 +132,7 @@ void UnifiedMediaControlsView::MediaActionButton::SetAction(
   action_ = action;
   set_tag(static_cast<int>(action));
   SetTooltipText(accessible_name);
-  UpdateVectorIcon();
-}
-
-void UnifiedMediaControlsView::MediaActionButton::OnThemeChanged() {
-  views::ImageButton::OnThemeChanged();
-  UpdateVectorIcon();
-  views::FocusRing::Get(this)->SetColor(
-      AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kFocusRingColor));
-}
-
-void UnifiedMediaControlsView::MediaActionButton::UpdateVectorIcon() {
-  element_style::DecorateSmallIconButton(
-      this, GetVectorIconForMediaAction(action_), /*toggled=*/false,
-      /*has_border=*/false);
+  SetVectorIcon(GetVectorIconForMediaAction(action));
 }
 
 UnifiedMediaControlsView::UnifiedMediaControlsView(
@@ -161,10 +144,6 @@ UnifiedMediaControlsView::UnifiedMediaControlsView(
           },
           this)),
       controller_(controller) {
-  // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
-  // able to submit accessibility checks. This crashes if fetching a11y node
-  // data during paint because message_view_ is null.
-  SetProperty(views::kSkipAccessibilityPaintChecks, true);
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   SetBackground(views::CreateRoundedRectBackground(GetBackgroundColor(),
                                                    kMediaControlsCornerRadius));
@@ -173,6 +152,8 @@ UnifiedMediaControlsView::UnifiedMediaControlsView(
       kMediaControlsViewPadding));
   box_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
+
+  views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
 
   auto artwork_view = std::make_unique<views::ImageView>();
   artwork_view->SetPreferredSize(kArtworkSize);
@@ -224,19 +205,27 @@ UnifiedMediaControlsView::UnifiedMediaControlsView(
 
   button_row->AddChildView(std::make_unique<MediaActionButton>(
       controller_, MediaSessionAction::kPreviousTrack,
-      l10n_util::GetStringUTF16(
-          IDS_ASH_MEDIA_NOTIFICATION_ACTION_PREVIOUS_TRACK)));
+      IDS_ASH_MEDIA_NOTIFICATION_ACTION_PREVIOUS_TRACK));
 
   play_pause_button_ =
       button_row->AddChildView(std::make_unique<MediaActionButton>(
           controller_, MediaSessionAction::kPause,
-          l10n_util::GetStringUTF16(IDS_ASH_MEDIA_NOTIFICATION_ACTION_PAUSE)));
+          IDS_ASH_MEDIA_NOTIFICATION_ACTION_PAUSE));
 
   button_row->AddChildView(std::make_unique<MediaActionButton>(
       controller_, MediaSessionAction::kNextTrack,
-      l10n_util::GetStringUTF16(IDS_ASH_MEDIA_NOTIFICATION_ACTION_NEXT_TRACK)));
+      IDS_ASH_MEDIA_NOTIFICATION_ACTION_NEXT_TRACK));
 
   button_row_ = AddChildView(std::move(button_row));
+
+  // Focusable views must have an accessible name when shown/painted so that
+  // the screen reader knows what to present to the user. SetTitle sets the
+  // accessible name using a string which includes the title of the song being
+  // played. That seems like the wrong string to use upon creation if nothing
+  // is playing. Therefore setting the name to a string which lacks the "now
+  // playing" information.
+  SetAccessibleName(l10n_util::GetStringUTF16(
+      IDS_ASH_QUICK_SETTINGS_BUBBLE_MEDIA_CONTROLS_SUB_MENU_ACCESSIBLE_DESCRIPTION));
 }
 
 void UnifiedMediaControlsView::SetIsPlaying(bool playing) {
@@ -308,8 +297,6 @@ void UnifiedMediaControlsView::UpdateActionButtonAvailability(
 void UnifiedMediaControlsView::OnThemeChanged() {
   views::Button::OnThemeChanged();
   auto* color_provider = AshColorProvider::Get();
-  views::FocusRing::Get(this)->SetColor(color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor));
   background()->SetNativeControlColor(GetBackgroundColor());
   title_label_->SetEnabledColor(color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary));

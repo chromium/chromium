@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "url/gurl.h"
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 #include "extensions/browser/app_window/app_window.h"
 #include "ui/base/window_open_disposition.h"
 #endif
@@ -48,7 +48,7 @@ void CheckCanOpenURL(Browser* browser, const std::string& spec) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url));
   content::WebContents* contents =
       browser->tab_strip_model()->GetActiveWebContents();
-  EXPECT_EQ(url, contents->GetURL());
+  EXPECT_EQ(url, contents->GetLastCommittedURL());
 
   std::u16string blocked_page_title;
   if (url.has_host()) {
@@ -65,7 +65,7 @@ void CheckCanOpenViewSourceURL(Browser* browser, const std::string& spec) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, view_source_url));
   content::WebContents* contents =
       browser->tab_strip_model()->GetActiveWebContents();
-  EXPECT_EQ(view_source_url, contents->GetURL());
+  EXPECT_EQ(view_source_url, contents->GetLastCommittedURL());
 }
 
 // Handler for embedded http-server, returns a small page with javascript
@@ -122,24 +122,24 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlocklist) {
   CheckCanOpenURL(browser(), kURLS[1]);
 
   // Set a blocklist.
-  base::ListValue blocklist;
+  base::Value::List blocklist;
   blocklist.Append("bbb.com");
   PolicyMap policies;
   policies.Set(key::kURLBlocklist, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-               POLICY_SOURCE_CLOUD, blocklist.Clone(), nullptr);
+               POLICY_SOURCE_CLOUD, base::Value(std::move(blocklist)), nullptr);
   UpdateProviderPolicy(policies);
   FlushBlocklistPolicy();
   // All bbb.com URLs are blocked, and "aaa.com" is still unblocked.
   CheckCanOpenURL(browser(), kURLS[0]);
-  for (size_t i = 1; i < base::size(kURLS); ++i)
+  for (size_t i = 1; i < std::size(kURLS); ++i)
     CheckURLIsBlocked(browser(), kURLS[i]);
 
   // Allowlist some sites of bbb.com.
-  base::ListValue allowlist;
+  base::Value::List allowlist;
   allowlist.Append("sub.bbb.com");
   allowlist.Append("bbb.com/policy");
   policies.Set(key::kURLAllowlist, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-               POLICY_SOURCE_CLOUD, allowlist.Clone(), nullptr);
+               POLICY_SOURCE_CLOUD, base::Value(allowlist.Clone()), nullptr);
   UpdateProviderPolicy(policies);
   FlushBlocklistPolicy();
   CheckURLIsBlocked(browser(), kURLS[1]);
@@ -166,11 +166,11 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlocklistViewSource) {
   CheckCanOpenViewSourceURL(browser(), kURL_B);
 
   // Block bbb.com urls.
-  base::ListValue blocklist;
+  base::Value::List blocklist;
   blocklist.Append("bbb.com");
   PolicyMap policies;
   policies.Set(key::kURLBlocklist, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-               POLICY_SOURCE_CLOUD, blocklist.Clone(), nullptr);
+               POLICY_SOURCE_CLOUD, base::Value(blocklist.Clone()), nullptr);
   UpdateProviderPolicy(policies);
   FlushBlocklistPolicy();
 
@@ -181,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlocklistViewSource) {
   // Block all view-source urls.
   blocklist.Append("view-source:*");
   policies.Set(key::kURLBlocklist, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-               POLICY_SOURCE_CLOUD, blocklist.Clone(), nullptr);
+               POLICY_SOURCE_CLOUD, base::Value(blocklist.Clone()), nullptr);
   UpdateProviderPolicy(policies);
   FlushBlocklistPolicy();
 
@@ -189,6 +189,33 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlocklistViewSource) {
   // block http://aaa.com.
   CheckViewSourceURLIsBlocked(browser(), kURL_A);
   CheckCanOpenURL(browser(), kURL_A);
+}
+
+IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlocklistNonStandardScheme) {
+  // Checks that non-standard schemes can be blocklisted, and that the blocking
+  // page mentions the URL's scheme.
+  const std::string kURL = "mailto:nobody";
+
+  // Block mailto: urls.
+  base::Value::List blocklist;
+  blocklist.Append("mailto:*");
+  PolicyMap policies;
+  policies.Set(key::kURLBlocklist, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+               POLICY_SOURCE_CLOUD, base::Value(blocklist.Clone()), nullptr);
+  UpdateProviderPolicy(policies);
+  FlushBlocklistPolicy();
+
+  // Ensure the URL is blocked.
+  CheckURLIsBlocked(browser(), kURL);
+
+  // Ensure the blocking page mentions the scheme.
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  std::string result;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
+      contents, "domAutomationController.send(document.body.textContent);",
+      &result));
+  EXPECT_THAT(result, testing::HasSubstr("mailto"));
 }
 
 IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlocklistIncognito) {
@@ -212,24 +239,24 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlocklistIncognito) {
   CheckCanOpenURL(incognito_browser, kURLS[1]);
 
   // Set a blocklist.
-  base::ListValue blocklist;
+  base::Value::List blocklist;
   blocklist.Append("bbb.com");
   PolicyMap policies;
   policies.Set(key::kURLBlocklist, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-               POLICY_SOURCE_CLOUD, blocklist.Clone(), nullptr);
+               POLICY_SOURCE_CLOUD, base::Value(blocklist.Clone()), nullptr);
   UpdateProviderPolicy(policies);
   FlushBlocklistPolicy();
   // All bbb.com URLs are blocked, and "aaa.com" is still unblocked.
   CheckCanOpenURL(incognito_browser, kURLS[0]);
-  for (size_t i = 1; i < base::size(kURLS); ++i)
+  for (size_t i = 1; i < std::size(kURLS); ++i)
     CheckURLIsBlocked(incognito_browser, kURLS[i]);
 
   // Allowlist some sites of bbb.com.
-  base::ListValue allowlist;
+  base::Value::List allowlist;
   allowlist.Append("sub.bbb.com");
   allowlist.Append("bbb.com/policy");
   policies.Set(key::kURLAllowlist, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-               POLICY_SOURCE_CLOUD, allowlist.Clone(), nullptr);
+               POLICY_SOURCE_CLOUD, base::Value(allowlist.Clone()), nullptr);
   UpdateProviderPolicy(policies);
   FlushBlocklistPolicy();
   CheckURLIsBlocked(incognito_browser, kURLS[1]);
@@ -244,16 +271,16 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlocklistAndAllowlist) {
 
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  base::ListValue blocklist;
+  base::Value::List blocklist;
   blocklist.Append("*");
   PolicyMap policies;
   policies.Set(key::kURLBlocklist, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-               POLICY_SOURCE_CLOUD, blocklist.Clone(), nullptr);
+               POLICY_SOURCE_CLOUD, base::Value(blocklist.Clone()), nullptr);
 
-  base::ListValue allowlist;
+  base::Value::List allowlist;
   allowlist.Append("aaa.com");
   policies.Set(key::kURLAllowlist, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-               POLICY_SOURCE_CLOUD, allowlist.Clone(), nullptr);
+               POLICY_SOURCE_CLOUD, base::Value(allowlist.Clone()), nullptr);
   UpdateProviderPolicy(policies);
   FlushBlocklistPolicy();
   CheckCanOpenURL(
@@ -274,12 +301,12 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlocklistSubresources) {
 
   // Set a blocklist containing the image and the iframe which are used by the
   // main document.
-  base::ListValue blocklist;
+  base::Value::List blocklist;
   blocklist.Append(image_url.spec().c_str());
   blocklist.Append(subframe_url.spec().c_str());
   PolicyMap policies;
   policies.Set(key::kURLBlocklist, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-               POLICY_SOURCE_CLOUD, blocklist.Clone(), nullptr);
+               POLICY_SOURCE_CLOUD, base::Value(blocklist.Clone()), nullptr);
   UpdateProviderPolicy(policies);
   FlushBlocklistPolicy();
 
@@ -316,11 +343,11 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlocklistClientRedirect) {
   EXPECT_EQ(u"Redirected!",
             browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
 
-  base::ListValue blocklist;
+  base::Value::List blocklist;
   blocklist.Append(redirected_url.spec().c_str());
   PolicyMap policies;
   policies.Set(key::kURLBlocklist, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-               POLICY_SOURCE_CLOUD, blocklist.Clone(), nullptr);
+               POLICY_SOURCE_CLOUD, base::Value(blocklist.Clone()), nullptr);
   UpdateProviderPolicy(policies);
   FlushBlocklistPolicy();
 
@@ -346,11 +373,11 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlocklistServerRedirect) {
   EXPECT_EQ(u"Redirected!",
             browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
 
-  base::ListValue blocklist;
+  base::Value::List blocklist;
   blocklist.Append(redirected_url.spec().c_str());
   PolicyMap policies;
   policies.Set(key::kURLBlocklist, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-               POLICY_SOURCE_CLOUD, blocklist.Clone(), nullptr);
+               POLICY_SOURCE_CLOUD, base::Value(blocklist.Clone()), nullptr);
   UpdateProviderPolicy(policies);
   FlushBlocklistPolicy();
 
@@ -376,11 +403,11 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, FileURLBlocklist) {
   CheckCanOpenURL(browser(), file_path2);
 
   // Set a blocklist for all the files.
-  base::ListValue blocklist;
+  base::Value::List blocklist;
   blocklist.Append("file://*");
   PolicyMap policies;
   policies.Set(key::kURLBlocklist, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-               POLICY_SOURCE_CLOUD, blocklist.Clone(), nullptr);
+               POLICY_SOURCE_CLOUD, base::Value(blocklist.Clone()), nullptr);
   UpdateProviderPolicy(policies);
   FlushBlocklistPolicy();
 
@@ -388,36 +415,36 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, FileURLBlocklist) {
   CheckURLIsBlocked(browser(), file_path2);
 
   // Replace the URLblocklist with disabling the file scheme.
-  blocklist.EraseListValue(base::Value("file://*"));
+  blocklist.EraseValue(base::Value("file://*"));
   policies.Set(key::kURLBlocklist, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-               POLICY_SOURCE_CLOUD, blocklist.Clone(), nullptr);
+               POLICY_SOURCE_CLOUD, base::Value(blocklist.Clone()), nullptr);
   UpdateProviderPolicy(policies);
   FlushBlocklistPolicy();
 
   PrefService* prefs = browser()->profile()->GetPrefs();
-  EXPECT_FALSE(
-      base::Contains(prefs->GetList(policy_prefs::kUrlBlocklist)->GetList(),
-                     base::Value("file://*")));
 
-  base::ListValue disabledscheme;
+  EXPECT_FALSE(base::Contains(prefs->GetList(policy_prefs::kUrlBlocklist),
+                              (base::Value("file://*"))));
+
+  base::Value::List disabledscheme;
   disabledscheme.Append("file");
   policies.Set(key::kDisabledSchemes, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-               POLICY_SOURCE_CLOUD, disabledscheme.Clone(), nullptr);
+               POLICY_SOURCE_CLOUD, base::Value(disabledscheme.Clone()),
+               nullptr);
   UpdateProviderPolicy(policies);
   FlushBlocklistPolicy();
 
-  EXPECT_TRUE(
-      base::Contains(prefs->GetList(policy_prefs::kUrlBlocklist)->GetList(),
-                     base::Value("file://*")));
+  EXPECT_TRUE(base::Contains(prefs->GetList(policy_prefs::kUrlBlocklist),
+                             base::Value("file://*")));
 
   // Allowlist one folder and blocklist an another just inside.
-  base::ListValue allowlist;
+  base::Value::List allowlist;
   allowlist.Append(base_path);
   policies.Set(key::kURLAllowlist, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-               POLICY_SOURCE_CLOUD, allowlist.Clone(), nullptr);
+               POLICY_SOURCE_CLOUD, base::Value(allowlist.Clone()), nullptr);
   blocklist.Append(folder_path);
   policies.Set(key::kURLBlocklist, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-               POLICY_SOURCE_CLOUD, blocklist.Clone(), nullptr);
+               POLICY_SOURCE_CLOUD, base::Value(blocklist.Clone()), nullptr);
   UpdateProviderPolicy(policies);
   FlushBlocklistPolicy();
 
@@ -446,11 +473,11 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, JavascriptBlocklistable) {
   EXPECT_EQ(JSIncrementerFetch(contents), 2);
 
   // Create and apply a policy.
-  base::ListValue blocklist;
+  base::Value::List blocklist;
   blocklist.Append("javascript://*");
   PolicyMap policies;
   policies.Set(key::kURLBlocklist, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-               POLICY_SOURCE_CLOUD, blocklist.Clone(), nullptr);
+               POLICY_SOURCE_CLOUD, base::Value(blocklist.Clone()), nullptr);
   UpdateProviderPolicy(policies);
   FlushBlocklistPolicy();
 

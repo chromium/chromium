@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -90,8 +90,9 @@ std::unique_ptr<NonClientFrameView> InfoBubble::CreateNonClientFrameView(
   DCHECK(!frame_);
   auto frame = std::make_unique<InfoBubbleFrame>(margins());
   frame->set_available_bounds(anchor_widget()->GetWindowBoundsInScreen());
-  frame->SetBubbleBorder(
-      std::make_unique<BubbleBorder>(arrow(), GetShadow(), color()));
+  auto border = std::make_unique<BubbleBorder>(arrow(), GetShadow());
+  border->SetColor(color());
+  frame->SetBubbleBorder(std::move(border));
   frame_ = frame.get();
   return frame;
 }
@@ -118,7 +119,8 @@ void InfoBubble::UpdatePosition() {
   if (!widget)
     return;
 
-  if (!GetAnchorView()->GetVisibleBounds().IsEmpty()) {
+  if (anchor_widget()->IsVisible() &&
+      !GetAnchorView()->GetVisibleBounds().IsEmpty()) {
     SizeToContents();
     widget->SetVisibilityChangedAnimationsEnabled(true);
     widget->ShowInactive();

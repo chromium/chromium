@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/pattern.h"
-#include "base/task/post_task.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
 #include "components/quirks/quirks_manager.h"
@@ -126,7 +125,7 @@ class DisplayColorManagerTest : public testing::Test {
                       .Append(FILE_PATH_LITERAL("display"))
                       .Append(FILE_PATH_LITERAL("test_data"));
     path_override_ = std::make_unique<base::ScopedPathOverride>(
-        chromeos::DIR_DEVICE_DISPLAY_PROFILES, color_path_);
+        DIR_DEVICE_DISPLAY_PROFILES, color_path_);
 
     quirks::QuirksManager::Initialize(
         std::unique_ptr<quirks::QuirksManager::Delegate>(
@@ -256,9 +255,9 @@ TEST_F(DisplayColorManagerTest, SetDisplayColorMatrixNoCTMSupport) {
   EXPECT_FALSE(base::MatchPattern(actions, "*set_color_matrix*"));
 
   // Attempt to set a color matrix.
-  skia::Matrix44 matrix(skia::Matrix44::kIdentity_Constructor);
-  matrix.set(1, 1, 0.7);
-  matrix.set(2, 2, 0.3);
+  SkM44 matrix;
+  matrix.setRC(1, 1, 0.7);
+  matrix.setRC(2, 2, 0.3);
   EXPECT_FALSE(color_manager_->SetDisplayColorMatrix(kDisplayId, matrix));
   EXPECT_EQ(color_manager_->displays_ctm_support(),
             DisplayColorManager::DisplayCtmSupport::kNone);
@@ -288,9 +287,9 @@ TEST_F(DisplayColorManagerTest,
   log_->GetActionsAndClear();
 
   // Attempt to set a color matrix.
-  skia::Matrix44 matrix(skia::Matrix44::kIdentity_Constructor);
-  matrix.set(1, 1, 0.7);
-  matrix.set(2, 2, 0.3);
+  SkM44 matrix;
+  matrix.setRC(1, 1, 0.7);
+  matrix.setRC(2, 2, 0.3);
   EXPECT_TRUE(color_manager_->SetDisplayColorMatrix(kDisplayId, matrix));
   EXPECT_EQ(color_manager_->displays_ctm_support(),
             DisplayColorManager::DisplayCtmSupport::kAll);
@@ -345,9 +344,9 @@ TEST_F(DisplayColorManagerTest, SetDisplayColorMatrixWithMixedCTMSupport) {
             DisplayColorManager::DisplayCtmSupport::kMixed);
 
   // Attempt to set a color matrix.
-  skia::Matrix44 matrix(skia::Matrix44::kIdentity_Constructor);
-  matrix.set(1, 1, 0.7);
-  matrix.set(2, 2, 0.3);
+  SkM44 matrix;
+  matrix.setRC(1, 1, 0.7);
+  matrix.setRC(2, 2, 0.3);
   EXPECT_TRUE(color_manager_->SetDisplayColorMatrix(kDisplayWithCtmId, matrix));
   // This display has no color calibration data. Gamma/degamma won't be
   // affected. Color matrix is applied as is.
@@ -382,9 +381,9 @@ TEST_F(DisplayColorManagerTest,
   log_->GetActionsAndClear();
 
   // Attempt to set a color matrix.
-  skia::Matrix44 matrix(skia::Matrix44::kIdentity_Constructor);
-  matrix.set(1, 1, 0.7);
-  matrix.set(2, 2, 0.3);
+  SkM44 matrix;
+  matrix.setRC(1, 1, 0.7);
+  matrix.setRC(2, 2, 0.3);
   EXPECT_TRUE(color_manager_->SetDisplayColorMatrix(kDisplayId, matrix));
   EXPECT_EQ(color_manager_->displays_ctm_support(),
             DisplayColorManager::DisplayCtmSupport::kAll);
@@ -484,10 +483,10 @@ TEST_F(DisplayColorManagerTest, VpdCalibration) {
   int64_t product_id = 0x0;  // No matching product ID, so no Quirks ICC.
   const base::FilePath& icc_path = color_path_.Append("06af5c10.icc");
   auto vpd_dir_override = std::make_unique<base::ScopedPathOverride>(
-      chromeos::DIR_DEVICE_DISPLAY_PROFILES_VPD);
+      DIR_DEVICE_DISPLAY_PROFILES_VPD);
   base::FilePath vpd_dir;
-  EXPECT_TRUE(base::PathService::Get(chromeos::DIR_DEVICE_DISPLAY_PROFILES_VPD,
-                                     &vpd_dir));
+  EXPECT_TRUE(
+      base::PathService::Get(DIR_DEVICE_DISPLAY_PROFILES_VPD, &vpd_dir));
   EXPECT_TRUE(base::CopyFile(icc_path,
                              vpd_dir.Append(quirks::IdToFileName(product_id))));
 
@@ -521,10 +520,10 @@ TEST_F(DisplayColorManagerTest, VpdCalibrationWithQuirks) {
   int64_t product_id = 0x06af5c10;
   const base::FilePath& icc_path = color_path_.Append("4c834a42.icc");
   auto vpd_dir_override = std::make_unique<base::ScopedPathOverride>(
-      chromeos::DIR_DEVICE_DISPLAY_PROFILES_VPD);
+      DIR_DEVICE_DISPLAY_PROFILES_VPD);
   base::FilePath vpd_dir;
-  EXPECT_TRUE(base::PathService::Get(chromeos::DIR_DEVICE_DISPLAY_PROFILES_VPD,
-                                     &vpd_dir));
+  EXPECT_TRUE(
+      base::PathService::Get(DIR_DEVICE_DISPLAY_PROFILES_VPD, &vpd_dir));
   EXPECT_TRUE(base::CopyFile(icc_path,
                              vpd_dir.Append(quirks::IdToFileName(product_id))));
 

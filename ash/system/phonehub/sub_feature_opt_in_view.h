@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,6 +31,7 @@ class ASH_EXPORT SubFeatureOptInView : public views::View {
   SubFeatureOptInView(PhoneHubViewID view_id,
                       int description_string_id,
                       int set_up_button_string_id);
+  void RefreshDescription(int description_string_id);
 
  private:
   void InitLayout();

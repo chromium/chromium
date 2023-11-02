@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,10 +16,14 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_manager_interactive_test_base.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/password_manager/passwords_navigation_observer.h"
+#include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
+#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/test_password_store.h"
@@ -29,14 +33,14 @@
 #include "content/public/test/browser_test_utils.h"
 #include "third_party/blink/public/common/switches.h"
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/password_manager/password_manager_signin_intercept_test_helper.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
-#endif  // ENABLE_DICE_SUPPORT
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 namespace {
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Wait until |condition| returns true.
 void WaitForCondition(base::RepeatingCallback<bool()> condition) {
   while (!condition.Run()) {
@@ -46,7 +50,7 @@ void WaitForCondition(base::RepeatingCallback<bool()> condition) {
     run_loop.Run();
   }
 }
-#endif  // ENABLE_DICE_SUPPORT
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace
 
@@ -100,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest, UsernameChanged) {
   // already autofilled username.
   FillElementWithValue("username_field", "orary", "temporary");
 
-  NavigationObserver navigation_observer(WebContents());
+  PasswordsNavigationObserver navigation_observer(WebContents());
   BubbleObserver prompt_observer(WebContents());
   std::string submit =
       "document.getElementById('input_submit_button').click();";
@@ -213,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   // we try and save the password even though onsubmit hasn't been called.
   FillElementWithValue("username_field", "user");
   FillElementWithValue("password_field", "1234");
-  NavigationObserver observer(WebContents());
+  PasswordsNavigationObserver observer(WebContents());
   ASSERT_TRUE(content::ExecuteScript(WebContents(), "send_xhr()"));
   observer.Wait();
   EXPECT_TRUE(BubbleObserver(WebContents()).IsSavePromptShownAutomatically());
@@ -230,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   FillElementWithValue("signup_username_field", "user");
   FillElementWithValue("signup_password_field", "1234");
   FillElementWithValue("confirmation_password_field", "1234");
-  NavigationObserver observer(WebContents());
+  PasswordsNavigationObserver observer(WebContents());
   ASSERT_TRUE(content::ExecuteScript(WebContents(), "send_xhr()"));
   observer.Wait();
   EXPECT_TRUE(BubbleObserver(WebContents()).IsSavePromptShownAutomatically());
@@ -245,14 +249,14 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   FillElementWithValue("username_field", "user");
   FillElementWithValue("password_field", "1234");
 
-  NavigationObserver observer(WebContents());
+  PasswordsNavigationObserver observer(WebContents());
   ASSERT_TRUE(content::ExecuteScript(WebContents(), "send_fetch()"));
   observer.Wait();
   EXPECT_TRUE(BubbleObserver(WebContents()).IsSavePromptShownAutomatically());
 }
 
 // TODO(crbug.com/1241462):
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_PromptForFetchWithNewPasswordsWithoutOnSubmit \
   DISABLED_PromptForFetchWithNewPasswordsWithoutOnSubmit
 #else
@@ -270,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   FillElementWithValue("signup_username_field", "user");
   FillElementWithValue("signup_password_field", "1234");
   FillElementWithValue("confirmation_password_field", "1234");
-  NavigationObserver observer(WebContents());
+  PasswordsNavigationObserver observer(WebContents());
   ASSERT_TRUE(content::ExecuteScript(WebContents(), "send_fetch()"));
   observer.Wait();
   EXPECT_TRUE(BubbleObserver(WebContents()).IsSavePromptShownAutomatically());
@@ -316,6 +320,97 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   std::string submit = "document.getElementById('submit_button').click();";
   VerifyPasswordIsSavedAndFilled("/password/password_xhr_submit.html",
                                  "username_field", "password_field", submit);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
+                       DeleteCredentialsUpdateDropdown) {
+  // With this feature enabled, the separator line is an actual element.
+  bool separator_line_as_element = base::FeatureList::IsEnabled(
+      autofill::features::kAutofillVisualImprovementsForSuggestionUi);
+
+  password_manager::PasswordStoreInterface* password_store =
+      PasswordStoreFactory::GetForProfile(browser()->profile(),
+                                          ServiceAccessType::IMPLICIT_ACCESS)
+          .get();
+
+  // Start with two logins in the password store.
+  password_manager::PasswordForm admin_form;
+  admin_form.signon_realm = embedded_test_server()->base_url().spec();
+  admin_form.url = embedded_test_server()->base_url();
+  admin_form.username_value = u"admin";
+  admin_form.password_value = u"random_secret";
+  admin_form.date_last_used = base::Time::FromTimeT(1);
+  password_store->AddLogin(admin_form);
+
+  password_manager::PasswordForm user_form = admin_form;
+  user_form.username_value = u"user";
+  admin_form.date_last_used = base::Time::FromTimeT(0);
+  password_store->AddLogin(user_form);
+
+  NavigateToFile("/password/password_form.html");
+
+  ContentPasswordManagerDriverFactory* factory =
+      ContentPasswordManagerDriverFactory::FromWebContents(WebContents());
+  autofill::mojom::PasswordManagerDriver* driver =
+      factory->GetDriverForFrame(WebContents()->GetPrimaryMainFrame());
+
+  // Just fake a position of the <input> element within the content_area_bounds.
+  // For this test it does not matter where the dropdown is rendered.
+  gfx::Rect content_area_bounds = WebContents()->GetContainerBounds();
+  gfx::RectF element_bounds(content_area_bounds.x(), content_area_bounds.y(),
+                            content_area_bounds.width(),
+                            content_area_bounds.height() * 0.1);
+
+  // Instruct Chrome to show the password dropdown.
+  driver->ShowPasswordSuggestions(base::i18n::LEFT_TO_RIGHT, std::u16string(),
+                                  0, element_bounds);
+  autofill::ChromeAutofillClient* autofill_client =
+      autofill::ChromeAutofillClient::FromWebContents(WebContents());
+  autofill::AutofillPopupController* controller =
+      autofill_client->popup_controller_for_testing().get();
+  ASSERT_TRUE(controller);
+  // Two credentials and "Manage passwords" should be displayed.
+  EXPECT_EQ(3 + (separator_line_as_element ? 1 : 0),
+            controller->GetLineCount());
+
+  // Trigger user gesture so that autofill happens.
+  ASSERT_TRUE(content::ExecuteScript(
+      WebContents(), "document.getElementById('username_field').click();"));
+  WaitForElementValue("username_field", "admin");
+
+  // Delete one credential. It should not be in the dropdown.
+  password_store->RemoveLogin(admin_form);
+  WaitForPasswordStore();
+
+  // Wait for the refetch to finish.
+  EXPECT_FALSE(autofill_client->popup_controller_for_testing());
+  WaitForPasswordStore();
+  // Reshow the dropdown.
+  driver->ShowPasswordSuggestions(base::i18n::LEFT_TO_RIGHT, std::u16string(),
+                                  0, element_bounds);
+  controller = autofill_client->popup_controller_for_testing().get();
+  ASSERT_TRUE(controller);
+  EXPECT_EQ(2 + (separator_line_as_element ? 1 : 0),
+            controller->GetLineCount());
+  EXPECT_EQ(u"user", controller->GetSuggestionMainTextAt(0));
+  EXPECT_NE(u"admin", controller->GetSuggestionMainTextAt(1));
+
+  // The username_field should get re-filled with "user" instead of "admin".
+  WaitForElementValue("username_field", "user");
+
+  // Delete all the credentials.
+  password_store->RemoveLogin(user_form);
+  WaitForPasswordStore();
+
+  // Wait for the refetch to finish.
+  EXPECT_FALSE(autofill_client->popup_controller_for_testing());
+  WaitForPasswordStore();
+  // Reshow the dropdown won't work because there is nothing to suggest.
+  driver->ShowPasswordSuggestions(base::i18n::LEFT_TO_RIGHT, std::u16string(),
+                                  0, element_bounds);
+  EXPECT_FALSE(autofill_client->popup_controller_for_testing());
+
+  WaitForElementValue("username_field", "");
 }
 
 // This fixture enables detecting submission on form clear feature.
@@ -494,9 +589,7 @@ IN_PROC_BROWSER_TEST_F(
   }
 }
 
-// TODO(crbug.com/1198490): Remove explicit !BUILDFLAG(IS_CHROMEOS_LACROS) when
-// DICE is not enabled on Lacros.
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // This test suite only applies to Gaia signin page, and checks that the
 // signin interception bubble and the password bubbles never conflict.
 class PasswordManagerInteractiveTestWithSigninInterception
@@ -554,7 +647,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTestWithSigninInterception,
                           base::Unretained(password_manager)));
 
   // Start the navigation.
-  NavigationObserver navigation_observer(WebContents());
+  PasswordsNavigationObserver navigation_observer(WebContents());
   content::ExecuteScriptAsync(
       WebContents(), "document.getElementById('input_submit_button').click()");
 
@@ -580,6 +673,6 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTestWithSigninInterception,
   navigation_observer.Wait();
   EXPECT_TRUE(prompt_observer.IsUpdatePromptShownAutomatically());
 }
-#endif  // ENABLE_DICE_SUPPORT
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace password_manager

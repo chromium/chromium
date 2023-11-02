@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/html/forms/select_type.h"
 
 #include "build/build_config.h"
+#include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_mutation_observer_init.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
@@ -43,6 +44,7 @@
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/menu_list_inner_element.h"
@@ -231,7 +233,7 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
             .domWindow()
             ->GetInputDeviceCapabilities()
             ->FiresTouchEvents(mouse_event->FromTouch());
-    select_->focus(FocusParams(SelectionBehaviorOnFocus::kRestore,
+    select_->Focus(FocusParams(SelectionBehaviorOnFocus::kRestore,
                                mojom::blink::FocusType::kMouse,
                                source_capabilities));
     if (select_->GetLayoutObject() && !will_be_destroyed_ &&
@@ -280,7 +282,7 @@ bool MenuListSelectType::ShouldOpenPopupForKeyPressEvent(
 }
 
 bool MenuListSelectType::HandlePopupOpenKeyboardEvent() {
-  select_->focus();
+  select_->Focus();
   // Calling focus() may cause us to lose our LayoutObject. Return true so
   // that our caller doesn't process the event further, but don't set
   // the event as handled.
@@ -320,7 +322,23 @@ void MenuListSelectType::ShowPopup(PopupMenu::ShowEventType type) {
     return;
   if (!select_->GetLayoutObject())
     return;
-  if (select_->VisibleBoundsInVisualViewport().IsEmpty())
+
+  gfx::Rect local_root_rect = select_->VisibleBoundsInLocalRoot();
+
+  if (!document.GetFrame()->LocalFrameRoot().IsOutermostMainFrame()) {
+    // TODO(bokan): If we're in a remote frame, we cannot access the active
+    // visual viewport. VisibleBoundsInLocalRoot will clip to the outermost
+    // main frame but if the user is pinch-zoomed this won't be accurate.
+    if (local_root_rect.IsEmpty())
+      return;
+  }
+
+  gfx::Rect visual_viewport_rect =
+      document.GetPage()->GetVisualViewport().RootFrameToViewport(
+          local_root_rect);
+  visual_viewport_rect.Intersect(
+      gfx::Rect(document.GetPage()->GetVisualViewport().Size()));
+  if (visual_viewport_rect.IsEmpty())
     return;
 
   if (!popup_) {
@@ -443,6 +461,10 @@ void MenuListSelectType::DidRecalcStyle(const StyleRecalcChange change) {
   if (change.ReattachLayoutTree())
     return;
   UpdateTextStyle();
+  if (auto* layout_object = select_->GetLayoutObject()) {
+    // Invalidate paint to ensure that the focus ring is updated.
+    layout_object->SetShouldDoFullPaintInvalidation();
+  }
   if (PopupIsVisible())
     popup_->UpdateFromElement(PopupMenu::kByStyleChange);
 }
@@ -694,7 +716,7 @@ bool ListBoxSelectType::DefaultEventHandler(const Event& event) {
   const auto* mouse_event = DynamicTo<MouseEvent>(event);
   const auto* gesture_event = DynamicTo<GestureEvent>(event);
   if (event.type() == event_type_names::kGesturetap && gesture_event) {
-    select_->focus();
+    select_->Focus();
     // Calling focus() may cause us to lose our layoutObject or change the
     // layoutObject type, in which case do not want to handle the event.
     if (!select_->GetLayoutObject() || will_be_destroyed_)
@@ -716,7 +738,7 @@ bool ListBoxSelectType::DefaultEventHandler(const Event& event) {
   if (event.type() == event_type_names::kMousedown && mouse_event &&
       mouse_event->button() ==
           static_cast<int16_t>(WebPointerProperties::Button::kLeft)) {
-    select_->focus();
+    select_->Focus();
     // Calling focus() may cause us to lose our layoutObject, in which case
     // do not want to handle the event.
     if (!select_->GetLayoutObject() || will_be_destroyed_ ||
@@ -726,7 +748,7 @@ bool ListBoxSelectType::DefaultEventHandler(const Event& event) {
     // Convert to coords relative to the list box if needed.
     if (HTMLOptionElement* option = EventTargetOption(*mouse_event)) {
       if (!option->IsDisabledFormControl()) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
         const bool meta_or_ctrl = mouse_event->metaKey();
 #else
         const bool meta_or_ctrl = mouse_event->ctrlKey();
@@ -763,7 +785,7 @@ bool ListBoxSelectType::DefaultEventHandler(const Event& event) {
       }
     }
     // Mousedown didn't happen in this element.
-    if (last_on_change_selection_.IsEmpty())
+    if (last_on_change_selection_.empty())
       return false;
 
     if (HTMLOptionElement* option = EventTargetOption(*mouse_event)) {
@@ -862,7 +884,7 @@ bool ListBoxSelectType::DefaultEventHandler(const Event& event) {
     }
 
     bool is_control_key = false;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     is_control_key = keyboard_event->metaKey();
 #else
     is_control_key = keyboard_event->ctrlKey();
@@ -980,8 +1002,16 @@ void ListBoxSelectType::DidBlur() {
 }
 
 void ListBoxSelectType::DidSetSuggestedOption(HTMLOptionElement* option) {
-  if (select_->GetLayoutObject())
-    ScrollToOption(option);
+  if (!select_->GetLayoutObject())
+    return;
+  // When ending preview state, don't leave the scroll position at the
+  // previewed element but return to the active selection end if it is
+  // defined or to the first selectable option. See crbug.com/1261689.
+  if (!option)
+    option = ActiveSelectionEnd();
+  if (!option)
+    option = FirstSelectableOption();
+  ScrollToOption(option);
 }
 
 void ListBoxSelectType::SaveLastSelection() {
@@ -1049,8 +1079,9 @@ void ListBoxSelectType::ScrollToOption(HTMLOptionElement* option) {
   if (!has_pending_task) {
     select_->GetDocument()
         .GetTaskRunner(TaskType::kUserInteraction)
-        ->PostTask(FROM_HERE, WTF::Bind(&ListBoxSelectType::ScrollToOptionTask,
-                                        WrapPersistent(this)));
+        ->PostTask(FROM_HERE,
+                   WTF::BindOnce(&ListBoxSelectType::ScrollToOptionTask,
+                                 WrapPersistent(this)));
   }
 }
 
@@ -1061,7 +1092,8 @@ void ListBoxSelectType::ScrollToOptionTask() {
   // OptionRemoved() makes sure option_to_scroll_to_ doesn't have an option
   // with another owner.
   DCHECK_EQ(option->OwnerSelectElement(), select_);
-  select_->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kScroll);
+  select_->GetDocument().UpdateStyleAndLayoutForNode(
+      select_, DocumentUpdateReason::kScroll);
   if (!select_->GetLayoutObject())
     return;
   PhysicalRect bounds = option->BoundingBoxForScrollIntoView();
@@ -1229,7 +1261,7 @@ void ListBoxSelectType::SaveListboxActiveSelection() {
 
 void ListBoxSelectType::HandleMouseRelease() {
   // We didn't start this click/drag on any options.
-  if (last_on_change_selection_.IsEmpty())
+  if (last_on_change_selection_.empty())
     return;
   ListBoxOnChange();
 }
@@ -1240,7 +1272,7 @@ void ListBoxSelectType::ListBoxOnChange() {
   // If the cached selection list is empty, or the size has changed, then fire
   // 'change' event, and return early.
   // FIXME: Why? This looks unreasonable.
-  if (last_on_change_selection_.IsEmpty() ||
+  if (last_on_change_selection_.empty() ||
       last_on_change_selection_.size() != items.size()) {
     select_->DispatchChangeEvent();
     return;

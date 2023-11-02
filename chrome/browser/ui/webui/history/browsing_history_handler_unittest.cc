@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,13 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/simple_test_clock.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -24,12 +27,25 @@
 #include "components/history/core/browser/browsing_history_service.h"
 #include "components/history/core/test/fake_web_history_service.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/driver/test_sync_service.h"
+#include "components/sync/test/test_sync_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_web_ui.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
+
+namespace history {
+
+class MockBrowsingHistoryService : public BrowsingHistoryService {
+ public:
+  MOCK_METHOD(void,
+              QueryHistory,
+              (const std::u16string& search_text, const QueryOptions& options),
+              (override));
+};
+
+}  // namespace history
 
 namespace {
 
@@ -57,6 +73,10 @@ class BrowsingHistoryHandlerWithWebUIForTesting
     set_clock(&test_clock_);
     set_web_ui(web_ui);
     test_clock_.SetNow(PretendNow());
+    auto service = std::make_unique<
+        testing::StrictMock<history::MockBrowsingHistoryService>>();
+    mock_service_ = service.get();
+    set_browsing_history_service_for_testing(std::move(service));
   }
 
   BrowsingHistoryHandlerWithWebUIForTesting(
@@ -74,10 +94,12 @@ class BrowsingHistoryHandlerWithWebUIForTesting
   void PostponeResults() { postpone_query_results_ = true; }
 
   base::SimpleTestClock* test_clock() { return &test_clock_; }
+  history::MockBrowsingHistoryService* mock_service() { return mock_service_; }
 
  private:
   base::SimpleTestClock test_clock_;
   bool postpone_query_results_ = false;
+  raw_ptr<history::MockBrowsingHistoryService> mock_service_;
 };
 
 }  // namespace
@@ -121,11 +143,11 @@ class BrowsingHistoryHandlerTest : public ChromeRenderViewHostTestHarness {
 
   void InitializeWebUI(BrowsingHistoryHandlerWithWebUIForTesting& handler) {
     // Send historyLoaded so that JS will be allowed.
-    base::Value init_args(base::Value::Type::LIST);
+    base::Value::List init_args;
     init_args.Append("query-history-callback-id");
     init_args.Append("");
     init_args.Append(150);
-    handler.HandleQueryHistory(&base::Value::AsListValue(init_args));
+    handler.HandleQueryHistory(init_args);
   }
 
   syncer::TestSyncService* sync_service() { return sync_service_; }
@@ -148,8 +170,8 @@ class BrowsingHistoryHandlerTest : public ChromeRenderViewHostTestHarness {
     return service;
   }
 
-  syncer::TestSyncService* sync_service_ = nullptr;
-  history::FakeWebHistoryService* web_history_service_ = nullptr;
+  raw_ptr<syncer::TestSyncService> sync_service_ = nullptr;
+  raw_ptr<history::FakeWebHistoryService> web_history_service_ = nullptr;
   std::unique_ptr<content::TestWebUI> web_ui_;
 };
 
@@ -229,17 +251,17 @@ TEST_F(BrowsingHistoryHandlerTest, ObservingWebHistoryDeletions) {
     EXPECT_EQ(10U, web_ui()->call_data().size());
 
     // Simulate a delete request.
-    base::Value args(base::Value::Type::LIST);
+    base::Value::List args;
     args.Append("remove-visits-callback-id");
-    base::Value to_remove(base::Value::Type::LIST);
-    base::Value visit(base::Value::Type::DICTIONARY);
-    visit.SetStringKey("url", "https://www.google.com");
-    base::Value timestamps(base::Value::Type::LIST);
+    base::Value::List to_remove;
+    base::Value::Dict visit;
+    visit.Set("url", "https://www.google.com");
+    base::Value::List timestamps;
     timestamps.Append(12345678.0);
-    visit.SetKey("timestamps", std::move(timestamps));
+    visit.Set("timestamps", std::move(timestamps));
     to_remove.Append(std::move(visit));
     args.Append(std::move(to_remove));
-    handler.HandleRemoveVisits(&base::Value::AsListValue(args));
+    handler.HandleRemoveVisits(args);
 
     EXPECT_EQ(11U, web_ui()->call_data().size());
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
@@ -269,7 +291,73 @@ TEST_F(BrowsingHistoryHandlerTest, ObservingWebHistoryDeletions) {
   }
 }
 
-#if !defined(OS_ANDROID)
+TEST_F(BrowsingHistoryHandlerTest, HostPrefixParameter) {
+  BrowsingHistoryHandlerWithWebUIForTesting handler(web_ui());
+  ASSERT_TRUE(web_ui()->call_data().empty());
+
+  std::u16string query = u"www.chromium.org";
+  EXPECT_CALL(
+      *handler.mock_service(),
+      QueryHistory(query,
+                   ::testing::Field(&history::QueryOptions::host_only, true)));
+
+  base::Value::List init_args;
+  init_args.Append("query-history-callback-id");
+  init_args.Append("host:www.chromium.org");
+  init_args.Append(150);
+  handler.HandleQueryHistory(init_args);
+}
+
+TEST_F(BrowsingHistoryHandlerTest, WithoutHostPrefixParameter) {
+  BrowsingHistoryHandlerWithWebUIForTesting handler(web_ui());
+  ASSERT_TRUE(web_ui()->call_data().empty());
+
+  std::u16string query = u"www.chromium.org";
+  EXPECT_CALL(
+      *handler.mock_service(),
+      QueryHistory(query,
+                   ::testing::Field(&history::QueryOptions::host_only, false)));
+
+  base::Value::List init_args;
+  init_args.Append("query-history-callback-id");
+  init_args.Append("www.chromium.org");
+  init_args.Append(150);
+  handler.HandleQueryHistory(init_args);
+}
+
+TEST_F(BrowsingHistoryHandlerTest, MisplacedHostPrefixParameter) {
+  BrowsingHistoryHandlerWithWebUIForTesting handler(web_ui());
+  ASSERT_TRUE(web_ui()->call_data().empty());
+  {
+    std::u16string query = u"whost:ww.chromium.org";
+    EXPECT_CALL(
+        *handler.mock_service(),
+        QueryHistory(
+            query, ::testing::Field(&history::QueryOptions::host_only, false)));
+
+    base::Value::List init_args;
+    init_args.Append("query-history-callback-id");
+    init_args.Append("whost:ww.chromium.org");
+    init_args.Append(150);
+    handler.HandleQueryHistory(init_args);
+  }
+
+  {
+    std::u16string query = u"www.chromium.orghost:";
+    EXPECT_CALL(
+        *handler.mock_service(),
+        QueryHistory(
+            query, ::testing::Field(&history::QueryOptions::host_only, false)));
+
+    base::Value::List init_args;
+    init_args.Append("query-history-callback-id");
+    init_args.Append("www.chromium.orghost:");
+    init_args.Append(150);
+    handler.HandleQueryHistory(init_args);
+  }
+}
+
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(BrowsingHistoryHandlerTest, MdTruncatesTitles) {
   history::BrowsingHistoryService::HistoryEntry long_url_entry;
   long_url_entry.url = GURL(

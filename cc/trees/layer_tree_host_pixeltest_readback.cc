@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@
 #include "components/viz/test/buildflags.h"
 #include "components/viz/test/paths.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 namespace cc {
 namespace {
@@ -88,8 +88,8 @@ class LayerTreeHostReadbackPixelTest
 
   void BeginTest() override {
     if (insert_copy_request_after_frame_count_ == 0) {
-      Layer* const target =
-          readback_target_ ? readback_target_ : layer_tree_host()->root_layer();
+      Layer* const target = readback_target_ ? readback_target_.get()
+                                             : layer_tree_host()->root_layer();
       target->RequestCopyOfOutput(CreateCopyOutputRequest());
     }
     PostSetNeedsCommitToMainThread();
@@ -98,8 +98,8 @@ class LayerTreeHostReadbackPixelTest
   void DidCommitAndDrawFrame() override {
     if (insert_copy_request_after_frame_count_ ==
         layer_tree_host()->SourceFrameNumber()) {
-      Layer* const target =
-          readback_target_ ? readback_target_ : layer_tree_host()->root_layer();
+      Layer* const target = readback_target_ ? readback_target_.get()
+                                             : layer_tree_host()->root_layer();
       target->RequestCopyOfOutput(CreateCopyOutputRequest());
     }
   }
@@ -441,8 +441,6 @@ TEST_P(LayerTreeHostReadbackPixelTest, MultipleReadbacksOnLayer) {
 ReadbackTestConfig const kTestConfigs[] = {
     ReadbackTestConfig{viz::RendererType::kSoftware, TestReadBackType::kBitmap},
 #if BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
-    ReadbackTestConfig{viz::RendererType::kGL, TestReadBackType::kTexture},
-    ReadbackTestConfig{viz::RendererType::kGL, TestReadBackType::kBitmap},
     ReadbackTestConfig{viz::RendererType::kSkiaGL, TestReadBackType::kTexture},
     ReadbackTestConfig{viz::RendererType::kSkiaGL, TestReadBackType::kBitmap},
 #endif  // BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
@@ -589,4 +587,4 @@ INSTANTIATE_TEST_SUITE_P(All,
 }  // namespace
 }  // namespace cc
 
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)

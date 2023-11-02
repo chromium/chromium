@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@ namespace base {
 class HistogramTester;
 }
 
-// Retries fetching |histogram_name| until it contains at least |count| samples.
+// Retries fetching `histogram_name` until it contains at least `count` samples.
 void RetryForHistogramUntilCountReached(
     const base::HistogramTester* histogram_tester,
     const std::string& histogram_name,

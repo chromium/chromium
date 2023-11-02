@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,15 @@
 
 #include <memory>
 #include <set>
+#include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
-#include "base/supports_user_data.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "ui/aura/aura_export.h"
+#include "ui/aura/client/cursor_shape_client.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/events/event_target.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
@@ -23,8 +26,8 @@ class EventObserver;
 class GestureRecognizer;
 class PlatformEventSource;
 
-#if defined(OS_WIN)
-class CursorFactory;
+#if BUILDFLAG(IS_WIN)
+class WinCursorFactory;
 #endif
 }  // namespace ui
 
@@ -43,12 +46,10 @@ class WindowOcclusionTracker;
 class WindowTreeHost;
 
 // A singleton object that tracks general state within Aura.
-class AURA_EXPORT Env : public ui::EventTarget,
-                        public base::SupportsUserData {
+class AURA_EXPORT Env : public ui::EventTarget {
  public:
   Env(const Env&) = delete;
   Env& operator=(const Env&) = delete;
-
   ~Env() override;
 
   // Creates a new Env instance.
@@ -112,9 +113,14 @@ class AURA_EXPORT Env : public ui::EventTarget,
   ui::GestureRecognizer* gesture_recognizer() {
     return gesture_recognizer_.get();
   }
-
   void SetGestureRecognizer(
       std::unique_ptr<ui::GestureRecognizer> gesture_recognizer);
+
+  // The `fallback` parameter allows callers of this API to specify a
+  // value to be returned in the case of a missing touch state.
+  gfx::Point GetLastPointerPoint(ui::mojom::DragEventSource event_source,
+                                 aura::Window* window,
+                                 absl::optional<gfx::Point> fallback);
 
   // Get WindowOcclusionTracker instance. Create one if not yet created.
   WindowOcclusionTracker* GetWindowOcclusionTracker();
@@ -134,6 +140,13 @@ class AURA_EXPORT Env : public ui::EventTarget,
   void RemoveEventObserver(ui::EventObserver* observer);
   void NotifyEventObservers(const ui::Event& event);
 
+  client::CursorShapeClient* cursor_shape_client() {
+    return cursor_shape_client_;
+  }
+  void set_cursor_shape_client(client::CursorShapeClient* cursor_shape_client) {
+    cursor_shape_client_ = cursor_shape_client;
+  }
+
   const std::vector<aura::WindowTreeHost*>& window_tree_hosts() const {
     return window_tree_hosts_;
   }
@@ -146,7 +159,9 @@ class AURA_EXPORT Env : public ui::EventTarget,
 
   Env();
 
-  void Init();
+  // Returns whether the initialisation was successful.  If it was not,
+  // CreateInstance will return nullptr, and the process will eventually exit.
+  bool Init();
 
   // Called by the Window when it is initialized. Notifies observers.
   void NotifyWindowInitialized(Window* window);
@@ -183,14 +198,15 @@ class AURA_EXPORT Env : public ui::EventTarget,
 
   std::unique_ptr<ui::GestureRecognizer> gesture_recognizer_;
 
-#if defined(OS_WIN)
-  std::unique_ptr<ui::CursorFactory> cursor_factory_;
+#if BUILDFLAG(IS_WIN)
+  std::unique_ptr<ui::WinCursorFactory> cursor_factory_;
 #endif
 
   std::unique_ptr<InputStateLookup> input_state_lookup_;
   std::unique_ptr<ui::PlatformEventSource> event_source_;
 
-  ui::ContextFactory* context_factory_ = nullptr;
+  // TODO(crbug.com/1298696): Breaks content_unittests.
+  raw_ptr<ui::ContextFactory, DegradeToNoOpWhenMTE> context_factory_ = nullptr;
 
   static bool initial_throttle_input_on_resize_;
   bool throttle_input_on_resize_ = initial_throttle_input_on_resize_;
@@ -198,6 +214,8 @@ class AURA_EXPORT Env : public ui::EventTarget,
   std::unique_ptr<WindowOcclusionTracker> window_occlusion_tracker_;
 
   std::vector<aura::WindowTreeHost*> window_tree_hosts_;
+
+  client::CursorShapeClient* cursor_shape_client_ = nullptr;
 };
 
 }  // namespace aura

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -55,7 +56,7 @@ class ZeroCopyGpuBacking : public ResourcePool::GpuBacking {
   }
 
   // The SharedImageInterface used to clean up the shared image.
-  gpu::SharedImageInterface* shared_image_interface = nullptr;
+  raw_ptr<gpu::SharedImageInterface> shared_image_interface = nullptr;
   // The backing for zero-copy gpu resources. The |texture_id| is bound to
   // this.
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer;
@@ -95,8 +96,8 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
     // we need to do things in IsResourceReadyToDraw() and OrderingBarrier then?
     gpu::SharedImageInterface* sii = backing_->shared_image_interface;
     if (backing_->mailbox.IsZero()) {
-      uint32_t usage =
-          gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+      uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                       gpu::SHARED_IMAGE_USAGE_SCANOUT;
       // Make a mailbox for export of the GpuMemoryBuffer to the display
       // compositor.
       backing_->mailbox = sii->CreateSharedImage(
@@ -154,11 +155,11 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
 
  private:
   // This field may only be used on the compositor thread.
-  ZeroCopyGpuBacking* backing_;
+  raw_ptr<ZeroCopyGpuBacking> backing_;
 
   // These fields are for use on the worker thread.
-  gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager_;
-  base::WaitableEvent* shutdown_event_;
+  raw_ptr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_;
+  raw_ptr<base::WaitableEvent> shutdown_event_;
   gfx::Size resource_size_;
   viz::ResourceFormat resource_format_;
   gfx::ColorSpace resource_color_space_;

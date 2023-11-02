@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
@@ -19,10 +19,6 @@
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/url_pattern_set.h"
-
-namespace base {
-class DictionaryValue;
-}
 
 class GURL;
 
@@ -74,7 +70,7 @@ class ExtensionAPI {
     ~OverrideSharedInstanceForTest();
 
    private:
-    ExtensionAPI* original_api_;
+    raw_ptr<ExtensionAPI> original_api_;
   };
 
   // Creates a completely clean instance. Configure using
@@ -111,7 +107,8 @@ class ExtensionAPI {
                                     const Extension* extension,
                                     Feature::Context context,
                                     const GURL& url,
-                                    CheckAliasStatus check_alias);
+                                    CheckAliasStatus check_alias,
+                                    int context_id);
 
   // Determines whether an API, or any parts of that API, can be exposed to
   // |context|.
@@ -123,7 +120,8 @@ class ExtensionAPI {
                                       const Extension* extension,
                                       Feature::Context context,
                                       const GURL& url,
-                                      CheckAliasStatus check_alias);
+                                      CheckAliasStatus check_alias,
+                                      int context_id);
 
   // Gets the StringPiece for the schema specified by |api_name|.
   base::StringPiece GetSchemaStringPiece(const std::string& api_name);
@@ -132,7 +130,7 @@ class ExtensionAPI {
   // Ownership remains with this object.
   // TODO(devlin): Now that we use GetSchemaStringPiece() in the renderer, we
   // may not really need this anymore.
-  const base::DictionaryValue* GetSchema(const std::string& full_name);
+  const base::Value::Dict* GetSchema(const std::string& full_name);
 
   // Splits a full name from the extension API into its API and child name
   // parts. Some examples:
@@ -166,7 +164,8 @@ class ExtensionAPI {
                                          const Feature& feature,
                                          const Extension* extension,
                                          Feature::Context context,
-                                         const GURL& url);
+                                         const GURL& url,
+                                         int context_id);
 
   // Loads a schema.
   void LoadSchema(const std::string& name, const base::StringPiece& schema);
@@ -183,8 +182,7 @@ class ExtensionAPI {
   base::Lock lock_;
 
   // Schemas for each namespace.
-  using SchemaMap =
-      std::map<std::string, std::unique_ptr<const base::DictionaryValue>>;
+  using SchemaMap = std::map<std::string, base::Value::Dict>;
   SchemaMap schemas_ GUARDED_BY(lock_);
 
   // FeatureProviders used for resolving dependencies.

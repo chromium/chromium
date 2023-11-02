@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Tracing  unittests presubmit script.
@@ -14,7 +14,9 @@ USE_PYTHON3 = True
 def RunUnittests(input_api, output_api):
   results = []
   # Run Pylint over the files in the directory.
-  pylint_checks = input_api.canned_checks.GetPylint(input_api, output_api)
+  pylint_checks = input_api.canned_checks.GetPylint(input_api,
+                                                    output_api,
+                                                    version='2.6')
   results.extend(input_api.RunTests(pylint_checks))
 
   results.extend(
@@ -23,6 +25,7 @@ def RunUnittests(input_api, output_api):
           output_api,
           '.',
           files_to_check=[r'.+_unittest\.py$'],
+          run_on_python2=not USE_PYTHON3,
           skip_shebang_check=True))
   return results
 

@@ -32,6 +32,7 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/jpeg/jpeg_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/png/png_image_decoder.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 
 namespace {
 
@@ -774,7 +775,7 @@ bool BMPImageReader::InitFrame() {
   buffer_->SetHasAlpha(false);
 
   // For BMPs, the frame always fills the entire image.
-  buffer_->SetOriginalFrameRect(IntRect(gfx::Point(), parent_->Size()));
+  buffer_->SetOriginalFrameRect(gfx::Rect(parent_->Size()));
 
   if (!is_top_down_)
     coord_.set_y(parent_->Size().height() - 1);

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -217,7 +217,7 @@ int TranslateUpdatePolicyValue(int update_policy_from_managed_preferences) {
 
 - (instancetype)initWithDictionary:(CRUUpdatePolicyDictionary*)policies {
   if (([super init])) {
-    _managed = policies.count > 0 && base::IsMachineExternallyManaged();
+    _managed = policies.count > 0 && base::IsManagedOrEnterpriseDevice();
 
     // Always create a global policy instance for default values.
     _globalPolicy.reset([[CRUManagedPreferenceGlobalPolicySettings alloc]

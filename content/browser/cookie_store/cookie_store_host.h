@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "third_party/blink/public/mojom/cookie_store/cookie_store.mojom.h"
 #include "url/origin.h"
@@ -48,7 +49,7 @@ class CookieStoreHost : public blink::mojom::CookieStore {
  private:
   // The raw pointer is safe because CookieStoreManager owns this instance via a
   // mojo::UniqueReceiverSet.
-  CookieStoreManager* const manager_;
+  const raw_ptr<CookieStoreManager> manager_;
 
   const url::Origin origin_;
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,15 +8,13 @@
 #include <map>
 #include <string>
 
-#include "content/common/content_export.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/desktop_streams_registry.h"
 #include "url/origin.h"
 
 namespace content {
 
-class CONTENT_EXPORT DesktopStreamsRegistryImpl
-    : public DesktopStreamsRegistry {
+class DesktopStreamsRegistryImpl : public DesktopStreamsRegistry {
  public:
   DesktopStreamsRegistryImpl();
 

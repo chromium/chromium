@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,10 @@
 
 #include "base/callback_helpers.h"
 #include "components/autofill_assistant/browser/dom_action.pb.h"
+#include "components/autofill_assistant/browser/public/password_change/website_login_manager_impl.h"
 #include "components/autofill_assistant/browser/user_data_util.h"
 #include "components/autofill_assistant/browser/web/element_store.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
-#include "components/autofill_assistant/browser/website_login_manager_impl.h"
 
 namespace autofill_assistant {
 
@@ -41,14 +41,14 @@ void SendKeystrokeEventsAction::InternalProcessAction(
   // When dealing with a password field we also want to know the last time that
   // a user has used it.
   auto selected_login_opt = delegate_->GetUserData()->selected_login_;
+  auto* target_render_frame_host = element_.render_frame_host();
   if (proto_.send_keystroke_events().value().value_case() ==
           TextValue::kPasswordManagerValue &&
-      selected_login_opt) {
+      selected_login_opt && target_render_frame_host) {
     // Origin check is done in PWM based on the
-    // |target_element.container_frame_host->GetLastCommittedURL()|
-    selected_login_opt->origin =
-        element_.container_frame_host->GetLastCommittedURL()
-            .DeprecatedGetOriginAsURL();
+    // |target_render_frame_host->GetLastCommittedURL()|
+    selected_login_opt->origin = target_render_frame_host->GetLastCommittedURL()
+                                     .DeprecatedGetOriginAsURL();
 
     delegate_->GetWebsiteLoginManager()->GetGetLastTimePasswordUsed(
         *selected_login_opt,

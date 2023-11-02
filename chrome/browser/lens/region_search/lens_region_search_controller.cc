@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "components/lens/lens_entrypoints.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_rendering_environment.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/gfx/image/image_util.h"
@@ -47,15 +48,6 @@ void LensRegionSearchController::Start(bool use_fullscreen_capture,
     screenshot_flow_ =
         std::make_unique<image_editor::ScreenshotFlow>(web_contents());
 
-  // Create user education bubble anchored to the toolbar container.
-  bubble_widget_ = lens::OpenLensRegionSearchInstructions(
-      browser_,
-      base::BindOnce(&LensRegionSearchController::Close,
-                     base::Unretained(this)),
-      base::BindOnce(&LensRegionSearchController::Escape,
-                     base::Unretained(this)));
-  bubble_widget_->Show();
-
   base::OnceCallback<void(const image_editor::ScreenshotCaptureResult&)>
       callback = base::BindOnce(&LensRegionSearchController::OnCaptureCompleted,
                                 weak_this_);
@@ -63,6 +55,15 @@ void LensRegionSearchController::Start(bool use_fullscreen_capture,
   if (use_fullscreen_capture) {
     screenshot_flow_->StartFullscreenCapture(std::move(callback));
   } else {
+    // Create user education bubble anchored to the toolbar container.
+    // This is only done for non-fulllscreen capture.
+    bubble_widget_ = lens::OpenLensRegionSearchInstructions(
+        browser_,
+        base::BindOnce(&LensRegionSearchController::Close,
+                       base::Unretained(this)),
+        base::BindOnce(&LensRegionSearchController::Escape,
+                       base::Unretained(this)));
+    bubble_widget_->Show();
     screenshot_flow_->Start(std::move(callback));
   }
 }
@@ -189,12 +190,19 @@ void LensRegionSearchController::OnCaptureCompleted(
   }
 
   if (is_google_default_search_provider_) {
-    core_tab_helper->SearchWithLensInNewTab(
-        image, captured_image.Size(),
-        lens::EntryPoint::CHROME_REGION_SEARCH_MENU_ITEM,
-        lens::features::kEnableSidePanelForLensRegionSearch.Get());
+    // Do not show the side panel on region searches and modify the entry point
+    // if Lens fullscreen search features are enabled.
+    lens::EntryPoint entry_point =
+        lens::features::IsLensFullscreenSearchEnabled()
+            ? lens::EntryPoint::CHROME_FULLSCREEN_SEARCH_MENU_ITEM
+            : lens::EntryPoint::CHROME_REGION_SEARCH_MENU_ITEM;
+    core_tab_helper->SearchWithLens(
+        image, captured_image.Size(), entry_point,
+        /* is_region_search_request= */ true,
+        /* is_side_panel_enabled_for_feature= */
+        lens::features::IsLensSidePanelEnabledForRegionSearch());
   } else {
-    core_tab_helper->SearchByImageInNewTab(image, captured_image.Size());
+    core_tab_helper->SearchByImage(image, captured_image.Size());
   }
 
   RecordCaptureResult(lens::LensRegionSearchCaptureResult::SUCCESS);
@@ -237,6 +245,12 @@ void LensRegionSearchController::CloseWithReason(
   }
   if (screenshot_flow_)
     screenshot_flow_->CancelCapture();
+}
+
+bool LensRegionSearchController::IsOverlayUIVisibleForTesting() {
+  if (!bubble_widget_ || !screenshot_flow_)
+    return false;
+  return bubble_widget_->IsVisible() && screenshot_flow_->IsCaptureModeActive();
 }
 
 }  // namespace lens

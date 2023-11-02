@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,15 @@
 
 #import <MobileCoreServices/MobileCoreServices.h>
 
-#include "base/mac/foundation_util.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/bookmarks/browser/bookmark_model.h"
-#include "components/prefs/pref_service.h"
-#include "ios/chrome/browser/pref_names.h"
-#include "ios/chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
+#import "base/mac/foundation_util.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/bookmarks/browser/bookmark_model.h"
+#import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #import "ios/chrome/browser/ui/activity_services/activities/bookmark_activity.h"
 #import "ios/chrome/browser/ui/activity_services/activities/copy_activity.h"
 #import "ios/chrome/browser/ui/activity_services/activities/find_in_page_activity.h"
@@ -25,10 +25,12 @@
 #import "ios/chrome/browser/ui/activity_services/activities/send_tab_to_self_activity.h"
 #import "ios/chrome/browser/ui/activity_services/activity_service_histograms.h"
 #import "ios/chrome/browser/ui/activity_services/activity_type_util.h"
+#import "ios/chrome/browser/ui/activity_services/data/chrome_activity_file_source.h"
 #import "ios/chrome/browser/ui/activity_services/data/chrome_activity_image_source.h"
 #import "ios/chrome/browser/ui/activity_services/data/chrome_activity_item_source.h"
 #import "ios/chrome/browser/ui/activity_services/data/chrome_activity_text_source.h"
 #import "ios/chrome/browser/ui/activity_services/data/chrome_activity_url_source.h"
+#import "ios/chrome/browser/ui/activity_services/data/share_file_data.h"
 #import "ios/chrome/browser/ui/activity_services/data/share_image_data.h"
 #import "ios/chrome/browser/ui/activity_services/data/share_to_data.h"
 #import "ios/chrome/browser/ui/activity_services/requirements/activity_service_positioner.h"
@@ -43,7 +45,9 @@
 
 @interface ActivityServiceMediator ()
 
-@property(nonatomic, weak) id<BrowserCommands, FindInPageCommands> handler;
+@property(nonatomic, weak)
+    id<BrowserCommands, BrowserCoordinatorCommands, FindInPageCommands>
+        handler;
 
 @property(nonatomic, weak) id<BookmarksCommands> bookmarksHandler;
 
@@ -55,18 +59,24 @@
 
 @property(nonatomic, weak) UIViewController* baseViewController;
 
+// The navigation agent.
+@property(nonatomic, readonly) WebNavigationBrowserAgent* navigationAgent;
+
 @end
 
 @implementation ActivityServiceMediator
 
 #pragma mark - Public
 
-- (instancetype)initWithHandler:(id<BrowserCommands, FindInPageCommands>)handler
+- (instancetype)initWithHandler:(id<BrowserCommands,
+                                    BrowserCoordinatorCommands,
+                                    FindInPageCommands>)handler
                bookmarksHandler:(id<BookmarksCommands>)bookmarksHandler
             qrGenerationHandler:(id<QRGenerationCommands>)qrGenerationHandler
                     prefService:(PrefService*)prefService
                   bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
-             baseViewController:(UIViewController*)baseViewController {
+             baseViewController:(UIViewController*)baseViewController
+                navigationAgent:(WebNavigationBrowserAgent*)navigationAgent {
   if (self = [super init]) {
     _handler = handler;
     _bookmarksHandler = bookmarksHandler;
@@ -74,6 +84,7 @@
     _prefService = prefService;
     _bookmarkModel = bookmarkModel;
     _baseViewController = baseViewController;
+    _navigationAgent = navigationAgent;
   }
   return self;
 }
@@ -82,8 +93,8 @@
     (NSArray<ShareToData*>*)dataItems {
   NSMutableArray* items = [[NSMutableArray alloc] init];
 
-  // The |additionalText| is not added when sharing multiple URLs since items
-  // are not associated with each other and the |additionalText| is not likely
+  // The `additionalText` is not added when sharing multiple URLs since items
+  // are not associated with each other and the `additionalText` is not likely
   // be meaningful without the context of the page it came from.
   if (dataItems.count == 1 && dataItems.firstObject.additionalText) {
     [items addObject:[[ChromeActivityTextSource alloc]
@@ -95,6 +106,7 @@
         [[ChromeActivityURLSource alloc] initWithShareURL:data.shareNSURL
                                                   subject:data.title];
     activityURLSource.thumbnailGenerator = data.thumbnailGenerator;
+    activityURLSource.linkMetadata = data.linkMetadata;
     [items addObject:activityURLSource];
   }
 
@@ -147,7 +159,8 @@
     RequestDesktopOrMobileSiteActivity* requestActivity =
         [[RequestDesktopOrMobileSiteActivity alloc]
             initWithUserAgent:data.userAgent
-                      handler:self.handler];
+                      handler:self.handler
+              navigationAgent:self.navigationAgent];
     [applicationActivities addObject:requestActivity];
   }
 
@@ -160,6 +173,11 @@
   }
 
   return applicationActivities;
+}
+
+- (NSArray<ChromeActivityFileSource*>*)activityItemsForFileData:
+    (ShareFileData*)data {
+  return @[ [[ChromeActivityFileSource alloc] initWithFilePath:data.filePath] ];
 }
 
 - (NSArray<ChromeActivityImageSource*>*)activityItemsForImageData:
@@ -192,6 +210,14 @@
   RecordScenarioInitiated(scenario);
 }
 
+- (void)recordShareChromeFinishedInPrefs {
+  PrefService* prefs = self.prefService;
+  DCHECK(prefs);
+  int count = prefs->GetInteger(prefs::kIosShareChromeCount);
+  prefs->SetInteger(prefs::kIosShareChromeCount, count + 1);
+  prefs->SetTime(prefs::kIosShareChromeLastShare, base::Time::Now());
+}
+
 - (void)shareFinishedWithScenario:(ActivityScenario)scenario
                      activityType:(NSString*)activityType
                         completed:(BOOL)completed {
@@ -201,6 +227,9 @@
     activity_type_util::RecordMetricForActivity(type);
     RecordActivityForScenario(type, scenario);
     [self.promoScheduler logUserFinishedActivityFlow];
+    if (ActivityScenario::ShareChrome == scenario) {
+      [self recordShareChromeFinishedInPrefs];
+    }
   } else {
     // Share action was cancelled.
     base::RecordAction(base::UserMetricsAction("MobileShareMenuCancel"));

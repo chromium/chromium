@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@
 #include "ui/events/test/events_test_utils.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include "ui/events/keycodes/keyboard_code_conversion.h"
@@ -55,26 +55,19 @@ namespace {
 
 void DummyCallback(EventType, const gfx::Vector2dF&) {}
 
-class TestTouchEvent : public ui::TouchEvent {
- public:
-  TestTouchEvent(ui::EventType type,
-                 const gfx::Point& root_location,
-                 int touch_id,
-                 int flags,
-                 base::TimeTicks timestamp)
-      : TouchEvent(type,
-                   root_location,
-                   timestamp,
-                   ui::PointerDetails(ui::EventPointerType::kTouch,
-                                      /* pointer_id*/ touch_id,
-                                      /* radius_x */ 1.0f,
-                                      /* radius_y */ 1.0f,
-                                      /* force */ 0.0f),
-                   flags) {}
-
-  TestTouchEvent(const TestTouchEvent&) = delete;
-  TestTouchEvent& operator=(const TestTouchEvent&) = delete;
-};
+ui::TouchEvent CreateTestTouchEvent(ui::EventType type,
+                                    const gfx::Point& root_location,
+                                    int touch_id,
+                                    int flags,
+                                    base::TimeTicks timestamp) {
+  return ui::TouchEvent(type, root_location, timestamp,
+                        ui::PointerDetails(ui::EventPointerType::kTouch,
+                                           /* pointer_id*/ touch_id,
+                                           /* radius_x */ 1.0f,
+                                           /* radius_y */ 1.0f,
+                                           /* force */ 0.0f),
+                        flags);
+}
 
 const int kAllButtonMask = ui::EF_LEFT_MOUSE_BUTTON | ui::EF_RIGHT_MOUSE_BUTTON;
 
@@ -270,8 +263,9 @@ void EventGenerator::PressTouchId(
     const absl::optional<gfx::Point>& touch_location_in_screen) {
   if (touch_location_in_screen.has_value())
     SetCurrentScreenLocation(*touch_location_in_screen);
-  TestTouchEvent touchev(ui::ET_TOUCH_PRESSED, GetLocationInCurrentRoot(),
-                         touch_id, flags_, ui::EventTimeForNow());
+  ui::TouchEvent touchev =
+      CreateTestTouchEvent(ui::ET_TOUCH_PRESSED, GetLocationInCurrentRoot(),
+                           touch_id, flags_, ui::EventTimeForNow());
   Dispatch(&touchev);
 }
 
@@ -281,8 +275,9 @@ void EventGenerator::MoveTouch(const gfx::Point& point) {
 
 void EventGenerator::MoveTouchId(const gfx::Point& point, int touch_id) {
   SetCurrentScreenLocation(point);
-  TestTouchEvent touchev(ui::ET_TOUCH_MOVED, GetLocationInCurrentRoot(),
-                         touch_id, flags_, ui::EventTimeForNow());
+  ui::TouchEvent touchev =
+      CreateTestTouchEvent(ui::ET_TOUCH_MOVED, GetLocationInCurrentRoot(),
+                           touch_id, flags_, ui::EventTimeForNow());
   Dispatch(&touchev);
 
   if (!grab_)
@@ -294,8 +289,9 @@ void EventGenerator::ReleaseTouch() {
 }
 
 void EventGenerator::ReleaseTouchId(int touch_id) {
-  TestTouchEvent touchev(ui::ET_TOUCH_RELEASED, GetLocationInCurrentRoot(),
-                         touch_id, flags_, ui::EventTimeForNow());
+  ui::TouchEvent touchev =
+      CreateTestTouchEvent(ui::ET_TOUCH_RELEASED, GetLocationInCurrentRoot(),
+                           touch_id, flags_, ui::EventTimeForNow());
   Dispatch(&touchev);
 }
 
@@ -646,7 +642,7 @@ void EventGenerator::DispatchKeyEvent(bool is_press,
                                       ui::KeyboardCode key_code,
                                       int flags,
                                       int source_device_id) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   UINT key_press = WM_KEYDOWN;
   uint16_t character = ui::DomCodeToUsLayoutCharacter(
       ui::UsLayoutKeyboardCodeToDomCode(key_code), flags);
@@ -680,7 +676,7 @@ void EventGenerator::DispatchKeyEvent(bool is_press,
         std::vector<uint8_t>{kPropertyKeyboardImeIgnoredFlag},
     }});
   }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
   keyev.set_source_device_id(source_device_id);
   Dispatch(&keyev);
 }

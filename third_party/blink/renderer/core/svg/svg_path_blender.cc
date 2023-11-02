@@ -19,6 +19,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_path_blender.h"
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream_source.h"
 #include "third_party/blink/renderer/core/svg/svg_path_consumer.h"
 #include "third_party/blink/renderer/core/svg/svg_path_data.h"
@@ -218,12 +219,12 @@ bool SVGPathBlender::BlendState::BlendSegments(
     case kPathSegCurveToCubicAbs:
       blended_segment.point1 =
           BlendAnimatedPoint(from_seg.point1, to_seg.point1);
-      FALLTHROUGH;
+      [[fallthrough]];
     case kPathSegCurveToCubicSmoothRel:
     case kPathSegCurveToCubicSmoothAbs:
       blended_segment.point2 =
           BlendAnimatedPoint(from_seg.point2, to_seg.point2);
-      FALLTHROUGH;
+      [[fallthrough]];
     case kPathSegMoveToRel:
     case kPathSegMoveToAbs:
     case kPathSegLineToRel:

@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/media/media_tray.h"
 
+#include "ash/constants/tray_background_view_catalog.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/media/media_notification_provider.h"
@@ -67,7 +68,9 @@ class MockMediaNotificationProvider : public MediaNotificationProvider {
 // Mock tray button used to test media tray bubble's anchor update.
 class MockTrayBackgroundView : public ash::TrayBackgroundView {
  public:
-  MockTrayBackgroundView(Shelf* shelf) : TrayBackgroundView(shelf) {
+  explicit MockTrayBackgroundView(Shelf* shelf)
+      : TrayBackgroundView(shelf,
+                           TrayBackgroundViewCatalogName::kTestCatalogName) {
     SetSize(kMockTraySize);
   }
 
@@ -296,7 +299,7 @@ TEST_F(MediaTrayTest, BubbleGetsFocusWhenOpenWithKeyboard) {
 
   // Generate a tab key press.
   ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
-  generator.PressKey(ui::KeyboardCode::VKEY_TAB, ui::EventFlags::EF_NONE);
+  generator.PressKey(ui::KeyboardCode::VKEY_TAB, ui::EF_NONE);
 
   EXPECT_TRUE(GetBubbleWrapper()->GetBubbleWidget()->IsActive());
 }

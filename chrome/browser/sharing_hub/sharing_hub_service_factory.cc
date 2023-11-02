@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include "base/memory/singleton.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharing_hub/sharing_hub_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace sharing_hub {
 
@@ -23,9 +22,7 @@ SharingHubServiceFactory* SharingHubServiceFactory::GetInstance() {
 }
 
 SharingHubServiceFactory::SharingHubServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "SharingHubService",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("SharingHubService") {}
 
 SharingHubServiceFactory::~SharingHubServiceFactory() = default;
 

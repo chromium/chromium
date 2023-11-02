@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,7 +41,7 @@ ScrollState* ScrollState::Create(ScrollStateInit* init) {
   scroll_state_data->from_user_input = init->fromUserInput();
   scroll_state_data->is_direct_manipulation = init->isDirectManipulation();
   scroll_state_data->delta_granularity =
-      static_cast<ScrollGranularity>(init->deltaGranularity());
+      static_cast<ui::ScrollGranularity>(init->deltaGranularity());
   ScrollState* scroll_state =
       MakeGarbageCollected<ScrollState>(std::move(scroll_state_data));
   return scroll_state;
@@ -70,7 +70,7 @@ void ScrollState::consumeDelta(double x,
 }
 
 void ScrollState::distributeToScrollChainDescendant() {
-  if (!scroll_chain_.IsEmpty()) {
+  if (!scroll_chain_.empty()) {
     DOMNodeId descendant_id = scroll_chain_.TakeFirst();
     NodeForId(descendant_id)->CallDistributeScroll(*this);
   }

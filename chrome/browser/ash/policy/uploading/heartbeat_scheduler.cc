@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,8 @@
 #include "base/time/time.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/gcm_driver/gcm_driver.h"
+
+namespace policy {
 
 namespace {
 
@@ -64,8 +66,6 @@ std::string GetDestinationID() {
 }
 
 }  // namespace
-
-namespace policy {
 
 // static
 const base::TimeDelta HeartbeatScheduler::kDefaultHeartbeatInterval =
@@ -172,8 +172,8 @@ void HeartbeatRegistrationHelper::OnRegisterAttemptComplete(
 
 HeartbeatScheduler::HeartbeatScheduler(
     gcm::GCMDriver* driver,
-    policy::CloudPolicyClient* cloud_policy_client,
-    policy::CloudPolicyStore* cloud_policy_store,
+    CloudPolicyClient* cloud_policy_client,
+    CloudPolicyStore* cloud_policy_store,
     const std::string& device_id,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner)
     : task_runner_(task_runner),

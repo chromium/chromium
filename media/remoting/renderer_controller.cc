@@ -1,17 +1,19 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/remoting/renderer_controller.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "media/remoting/metrics.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "media/base/android/media_codec_util.h"
 #endif
 
@@ -86,13 +88,15 @@ MediaObserverClient::ReasonToSwitchToLocal GetSwitchReason(
     case PEERS_OUT_OF_SYNC:
     case RPC_INVALID:
     case DATA_PIPE_CREATE_ERROR:
-    case MOJO_PIPE_ERROR:
+    case MOJO_DISCONNECTED:
+    case DATA_PIPE_WRITE_ERROR:
     case MESSAGE_SEND_FAILED:
     case DATA_SEND_FAILED:
     case UNEXPECTED_FAILURE:
       return MediaObserverClient::ReasonToSwitchToLocal::PIPELINE_ERROR;
     case ROUTE_TERMINATED:
     case MEDIA_ELEMENT_DESTROYED:
+    case MEDIA_ELEMENT_FROZEN:
     case START_RACE:
     case SERVICE_GONE:
       return MediaObserverClient::ReasonToSwitchToLocal::ROUTE_TERMINATED;
@@ -162,6 +166,7 @@ void RendererController::OnStartFailed(mojom::RemotingStartFailReason reason) {
   VLOG(1) << "Failed to start remoting:" << reason;
   if (remote_rendering_started_) {
     metrics_recorder_.WillStopSession(START_RACE);
+    metrics_recorder_.StartSessionFailed(reason);
     remote_rendering_started_ = false;
   }
 }
@@ -314,7 +319,7 @@ void RendererController::OnDataSourceInitialized(
 }
 
 void RendererController::OnHlsManifestDetected() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   is_hls_ = true;
   UpdateRemotePlaybackAvailabilityMonitoringState();
 #else
@@ -327,7 +332,7 @@ void RendererController::UpdateRemotePlaybackAvailabilityMonitoringState() {
 // thus the source is supported when the URL is either http or https, video and
 // audio codecs are supported by the remote playback device; HLS is playable by
 // Chrome on Android (which is not detected by the pipeline metadata atm).
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   const bool is_media_supported = is_hls_ || IsRemotePlaybackSupported();
 #else
   const bool is_media_supported = IsAudioOrVideoSupported();
@@ -365,6 +370,14 @@ void RendererController::OnPaused() {
   is_paused_ = true;
   // Cancel the start if in the middle of delayed start.
   CancelDelayedStart();
+}
+
+void RendererController::OnFrozen() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK(is_paused_);
+
+  // If the element is frozen we want to stop remoting.
+  UpdateAndMaybeSwitch(UNKNOWN_START_TRIGGER, MEDIA_ELEMENT_FROZEN);
 }
 
 RemotingCompatibility RendererController::GetVideoCompatibility() const {
@@ -427,6 +440,8 @@ RemotingCompatibility RendererController::GetAudioCompatibility() const {
     case AudioCodec::kPCM_ALAW:
     case AudioCodec::kALAC:
     case AudioCodec::kAC3:
+    case AudioCodec::kDTS:
+    case AudioCodec::kDTSXP2:
       compatible =
           HasAudioCapability(RemotingSinkAudioCapability::CODEC_BASELINE_SET);
       break;
@@ -611,23 +626,17 @@ void RendererController::SetClient(MediaObserverClient* client) {
 
 bool RendererController::HasVideoCapability(
     mojom::RemotingSinkVideoCapability capability) const {
-  return std::find(std::begin(sink_metadata_.video_capabilities),
-                   std::end(sink_metadata_.video_capabilities),
-                   capability) != std::end(sink_metadata_.video_capabilities);
+  return base::Contains(sink_metadata_.video_capabilities, capability);
 }
 
 bool RendererController::HasAudioCapability(
     mojom::RemotingSinkAudioCapability capability) const {
-  return std::find(std::begin(sink_metadata_.audio_capabilities),
-                   std::end(sink_metadata_.audio_capabilities),
-                   capability) != std::end(sink_metadata_.audio_capabilities);
+  return base::Contains(sink_metadata_.audio_capabilities, capability);
 }
 
 bool RendererController::HasFeatureCapability(
     RemotingSinkFeature capability) const {
-  return std::find(std::begin(sink_metadata_.features),
-                   std::end(sink_metadata_.features),
-                   capability) != std::end(sink_metadata_.features);
+  return base::Contains(sink_metadata_.features, capability);
 }
 
 bool RendererController::SinkSupportsRemoting() const {
@@ -639,7 +648,7 @@ void RendererController::SendMessageToSink(std::vector<uint8_t> message) {
   remoter_->SendMessageToSink(message);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 bool RendererController::IsAudioRemotePlaybackSupported() const {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -665,6 +674,8 @@ bool RendererController::IsAudioRemotePlaybackSupported() const {
     case AudioCodec::kPCM_ALAW:
     case AudioCodec::kALAC:
     case AudioCodec::kAC3:
+    case AudioCodec::kDTS:
+    case AudioCodec::kDTSXP2:
       return true;
     default:
       return false;
@@ -695,7 +706,7 @@ bool RendererController::IsRemotePlaybackSupported() const {
           (!has_audio() || IsAudioRemotePlaybackSupported()));
 }
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace remoting
 }  // namespace media

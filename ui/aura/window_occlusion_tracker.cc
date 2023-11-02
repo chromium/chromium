@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
-#include "base/metrics/histogram_macros.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/aura/env.h"
@@ -16,6 +15,7 @@
 #include "ui/aura/window_occlusion_change_builder.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/transform.h"
@@ -90,8 +90,8 @@ gfx::Transform GetWindowTransformRelativeToRoot(
                           static_cast<float>(window->layer()->bounds().y()));
     transform_relative_to_root = window->layer()->transform();
   }
-  transform_relative_to_root.ConcatTransform(translation);
-  transform_relative_to_root.ConcatTransform(parent_transform_relative_to_root);
+  transform_relative_to_root.PostConcat(translation);
+  transform_relative_to_root.PostConcat(parent_transform_relative_to_root);
   return transform_relative_to_root;
 }
 
@@ -100,10 +100,8 @@ SkIRect ComputeClippedAndTransformedBounds(
     const gfx::Transform& transform_relative_to_root,
     const SkIRect* clipped_bounds) {
   DCHECK(transform_relative_to_root.Preserves2dAxisAlignment());
-  gfx::RectF transformed_bounds(bounds);
-  transform_relative_to_root.TransformRect(&transformed_bounds);
-  SkIRect skirect_bounds =
-      gfx::RectToSkIRect(gfx::ToEnclosedRect(transformed_bounds));
+  gfx::Rect transformed_bounds = transform_relative_to_root.MapRect(bounds);
+  SkIRect skirect_bounds = gfx::RectToSkIRect(transformed_bounds);
   // If necessary, clip the bounds.
   if (clipped_bounds && !skirect_bounds.intersect(*clipped_bounds))
     return SkIRect::MakeEmpty();
@@ -982,9 +980,6 @@ void WindowOcclusionTracker::OnOcclusionStateChanged(
     WindowTreeHost* host,
     Window::OcclusionState new_state,
     const SkRegion& occluded_region) {
-  // TODO: the meaning of this histogram is different if
-  // `kApplyNativeOccludedRegionToWindowTracker` is true. Remove the histogram.
-  UMA_HISTOGRAM_ENUMERATION("WindowOcclusionChanged", new_state);
   Window* root_window = host->window();
   auto root_window_state_it = root_windows_.find(root_window);
   if (root_window_state_it == root_windows_.end())

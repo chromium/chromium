@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/vm_camera_mic_constants.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -20,6 +19,7 @@
 #include "ash/system/unified/notification_icons_controller.h"
 #include "base/i18n/number_formatting.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/image/canvas_image_source.h"
@@ -40,7 +40,7 @@ constexpr double kTrayNotificationCircleIconRadius = 8;
 // kUnifiedTrayIconSize is changed.
 constexpr int kNumberIconFontSize = 11;
 
-constexpr gfx::Insets kSeparatorPadding(6, 4);
+constexpr auto kSeparatorPadding = gfx::Insets::VH(6, 4);
 
 gfx::FontList GetNumberIconFontList() {
   // |kNumberIconFontSize| is hard-coded as 11, which whould be updated when
@@ -55,11 +55,21 @@ gfx::FontList GetNumberIconFontList() {
   return gfx::FontList(font);
 }
 
-SkColor SeparatorIconColor(session_manager::SessionState state) {
+ui::ColorId SeparatorIconColorId(session_manager::SessionState state) {
   if (state == session_manager::SessionState::OOBE)
-    return kIconColorInOobe;
-  return AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSeparatorColor);
+    return ui::kColorAshIconInOobe;
+  return ui::kColorAshSystemUIMenuSeparator;
+}
+
+// Returns true if we should show the counter view (e.g. during quiet mode,
+// screen lock, etc.).
+bool ShouldShowCounterView() {
+  SessionControllerImpl* session_controller =
+      Shell::Get()->session_controller();
+  return !message_center::MessageCenter::Get()->IsQuietMode() &&
+         session_controller->ShouldShowNotificationTray() &&
+         (!session_controller->IsScreenLocked() ||
+          AshMessageCenterLockScreenController::IsEnabled());
 }
 
 class NumberIconImageSource : public gfx::CanvasImageSource {
@@ -116,7 +126,7 @@ NotificationCounterView::~NotificationCounterView() = default;
 
 void NotificationCounterView::Update() {
   if (message_center_utils::GetNotificationCount() == 0 ||
-      !controller_->ShouldShowNotificationItemsInTray()) {
+      !ShouldShowCounterView()) {
     SetVisible(false);
     return;
   }
@@ -125,8 +135,7 @@ void NotificationCounterView::Update() {
   // notifications not showing. Otherwise, show the count of total
   // notifications.
   size_t notification_count;
-  if (features::IsScalableStatusAreaEnabled() &&
-      controller_->icons_view_visible() &&
+  if (controller_->icons_view_visible() &&
       controller_->TrayItemHasNotification()) {
     notification_count = message_center_utils::GetNotificationCount() -
                          controller_->TrayNotificationIconsCount();
@@ -211,11 +220,11 @@ const char* QuietModeView::GetClassName() const {
 
 SeparatorTrayItemView::SeparatorTrayItemView(Shelf* shelf)
     : TrayItemView(shelf) {
-  views::Separator* separator = new views::Separator();
-  separator->SetColor(SeparatorIconColor(
+  auto separator = std::make_unique<views::Separator>();
+  separator->SetColorId(SeparatorIconColorId(
       Shell::Get()->session_controller()->GetSessionState()));
   separator->SetBorder(views::CreateEmptyBorder(kSeparatorPadding));
-  separator_ = AddChildView(separator);
+  separator_ = AddChildView(std::move(separator));
 
   set_use_scale_in_animation(false);
 }
@@ -229,7 +238,7 @@ const char* SeparatorTrayItemView::GetClassName() const {
 }
 
 void SeparatorTrayItemView::UpdateColor(session_manager::SessionState state) {
-  separator_->SetColor(SeparatorIconColor(state));
+  separator_->SetColorId(SeparatorIconColorId(state));
 }
 
 }  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,6 +45,6 @@ TEST_F(FlagsUITest, FlagsAndDeprecatedSources) {
       content::TestWebUIDataSource::Create("B");
   FlagsUI::AddStrings(flags_strings->GetWebUIDataSource());
   FlagsDeprecatedUI::AddStrings(deprecated_strings->GetWebUIDataSource());
-  EXPECT_EQ(flags_strings->GetLocalizedStrings()->DictSize(),
-            deprecated_strings->GetLocalizedStrings()->DictSize());
+  EXPECT_EQ(flags_strings->GetLocalizedStrings()->size(),
+            deprecated_strings->GetLocalizedStrings()->size());
 }

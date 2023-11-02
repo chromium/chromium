@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,6 +32,7 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.SecurityButtonAnimationDelegate;
 import org.chromium.components.omnibox.SecurityStatusIcon;
 import org.chromium.components.page_info.PageInfoController;
+import org.chromium.components.page_info.PageInfoHighlight;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
@@ -132,7 +133,7 @@ public class UrlBarControllerImpl extends IUrlBarController.Stub {
         PageInfoController.show(mBrowserImpl.getWindowAndroid().getActivity().get(), webContents,
                 publisherUrl, PageInfoController.OpenedFromSource.TOOLBAR,
                 PageInfoControllerDelegateImpl.create(webContents),
-                PageInfoController.NO_HIGHLIGHTED_PERMISSION);
+                PageInfoHighlight.noHighlight());
     }
 
     protected class UrlBarView

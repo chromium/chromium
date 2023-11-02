@@ -1,18 +1,16 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/printing/print_management/printing_manager_factory.h"
 
+#include "chrome/browser/ash/printing/cups_print_job_manager_factory.h"
 #include "chrome/browser/ash/printing/history/print_job_history_service_factory.h"
 #include "chrome/browser/ash/printing/print_management/printing_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/printing/cups_print_job_manager_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
 namespace ash {
@@ -32,12 +30,12 @@ PrintingManagerFactory* PrintingManagerFactory::GetInstance() {
 }
 
 PrintingManagerFactory::PrintingManagerFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "PrintingManager",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(PrintJobHistoryServiceFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
-  DependsOn(chromeos::CupsPrintJobManagerFactory::GetInstance());
+  DependsOn(CupsPrintJobManagerFactory::GetInstance());
 }
 
 PrintingManagerFactory::~PrintingManagerFactory() = default;
@@ -57,18 +55,13 @@ KeyedService* PrintingManagerFactory::BuildInstanceFor(
       PrintJobHistoryServiceFactory::GetForBrowserContext(context),
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS),
-      chromeos::CupsPrintJobManagerFactory::GetForBrowserContext(context),
+      CupsPrintJobManagerFactory::GetForBrowserContext(context),
       profile->GetPrefs());
 }
 
 KeyedService* PrintingManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return BuildInstanceFor(static_cast<Profile*>(context));
-}
-
-content::BrowserContext* PrintingManagerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }
 
 void PrintingManagerFactory::RegisterProfilePrefs(

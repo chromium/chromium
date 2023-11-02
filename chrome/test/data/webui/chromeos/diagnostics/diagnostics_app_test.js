@@ -1,19 +1,25 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/diagnostics_app.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
+import {DiagnosticsAppElement} from 'chrome://diagnostics/diagnostics_app.js';
 import {DiagnosticsBrowserProxyImpl} from 'chrome://diagnostics/diagnostics_browser_proxy.js';
-import {BatteryChargeStatus, BatteryHealth, BatteryInfo, CpuUsage, MemoryUsage, SystemInfo} from 'chrome://diagnostics/diagnostics_types.js';
-import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCellularNetwork, fakeCpuUsage, fakeEthernetNetwork, fakeMemoryUsage, fakeNetworkGuidInfoList, fakePowerRoutineResults, fakeRoutineResults, fakeSystemInfo, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
+import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCellularNetwork, fakeCpuUsage, fakeEthernetNetwork, fakeKeyboards, fakeMemoryUsage, fakeNetworkGuidInfoList, fakeSystemInfo, fakeTouchDevices, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
+import {FakeInputDataProvider} from 'chrome://diagnostics/fake_input_data_provider.js';
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
-import {setNetworkHealthProviderForTesting, setSystemDataProviderForTesting, setSystemRoutineControllerForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
+import {KeyboardInfo} from 'chrome://diagnostics/input_data_provider.mojom-webui.js';
+import {setInputDataProviderForTesting, setNetworkHealthProviderForTesting, setSystemDataProviderForTesting, setSystemRoutineControllerForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
+import {BatteryChargeStatus, BatteryHealth, BatteryInfo, CpuUsage, MemoryUsage, SystemInfo} from 'chrome://diagnostics/system_data_provider.mojom-webui.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks, isVisible} from '../../test_util.js';
+import {isVisible} from '../../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 import {TestDiagnosticsBrowserProxy} from './test_diagnostics_browser_proxy.js';
@@ -42,7 +48,7 @@ export function appTestSuite() {
     setNetworkHealthProviderForTesting(networkHealthProvider);
 
     DiagnosticsBrowserProxy = new TestDiagnosticsBrowserProxy();
-    DiagnosticsBrowserProxyImpl.instance_ = DiagnosticsBrowserProxy;
+    DiagnosticsBrowserProxyImpl.setInstance(DiagnosticsBrowserProxy);
 
     // Setup a fake routine controller.
     routineController = new FakeSystemRoutineController();
@@ -50,7 +56,7 @@ export function appTestSuite() {
 
     // Enable all routines by default.
     routineController.setFakeSupportedRoutines(
-        [...fakeRoutineResults.keys(), ...fakePowerRoutineResults.keys()]);
+        routineController.getAllRoutines());
 
     setSystemRoutineControllerForTesting(routineController);
   });
@@ -70,7 +76,8 @@ export function appTestSuite() {
   function getCautionBanner() {
     assertTrue(!!page);
 
-    return /** @type {!HTMLElement} */ (page.$$('diagnostics-sticky-banner'));
+    return /** @type {!HTMLElement} */ (
+        page.shadowRoot.querySelector('diagnostics-sticky-banner'));
   }
 
   /** @return {!HTMLElement} */
@@ -80,12 +87,13 @@ export function appTestSuite() {
   }
 
   /**
-   * @return {!HTMLElement}
+   * @return {!CrButtonElement}
    */
   function getSessionLogButton() {
     assertTrue(!!page);
 
-    return /** @type {!HTMLElement} */ (page.$$('.session-log-button'));
+    return /** @type {!CrButtonElement} */ (
+        page.shadowRoot.querySelector('.session-log-button'));
   }
 
   /**
@@ -95,7 +103,7 @@ export function appTestSuite() {
     assertTrue(!!page);
 
     return /** @type {!HTMLElement} */ (
-        page.$$('[slot=bottom-nav-content-drawer]'));
+        page.shadowRoot.querySelector('[slot=bottom-nav-content-drawer]'));
   }
 
   /**
@@ -105,7 +113,7 @@ export function appTestSuite() {
     assertTrue(!!page);
 
     return /** @type {!HTMLElement} */ (
-        page.$$('[slot=bottom-nav-content-panel]'));
+        page.shadowRoot.querySelector('[slot=bottom-nav-content-panel]'));
   }
 
   /**
@@ -208,5 +216,113 @@ export function appTestSuite() {
           })
           .then(() => assertFalse(isVisible(getCautionBanner())));
     });
+
+    test('SaveSessionLogDisabledUntilResolved', () => {
+      return initializeDiagnosticsApp(
+                 fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
+                 fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
+          .then(() => {
+            assertFalse(getSessionLogButton().disabled);
+
+            DiagnosticsBrowserProxy.setSuccess(true);
+            getSessionLogButton().click();
+            assertTrue(getSessionLogButton().disabled);
+
+            return flushTasks();
+          })
+          .then(() => {
+            assertFalse(getSessionLogButton().disabled);
+          });
+    });
   }
+}
+
+export function appTestSuiteForInputHiding() {
+  /** @type {?DiagnosticsAppElement} */
+  let page = null;
+
+  /** @type {?FakeSystemDataProvider} */
+  let systemDataProvider = null;
+
+  /** @type {?FakeInputDataProvider} */
+  let inputDataProvider = null;
+
+  /** @type {?TestDiagnosticsBrowserProxy} */
+  let DiagnosticsBrowserProxy = null;
+
+  suiteSetup(() => {
+    systemDataProvider = new FakeSystemDataProvider();
+    systemDataProvider.setFakeSystemInfo(fakeSystemInfo);
+    systemDataProvider.setFakeBatteryChargeStatus(fakeBatteryChargeStatus);
+    systemDataProvider.setFakeBatteryHealth(fakeBatteryHealth);
+    systemDataProvider.setFakeBatteryInfo(fakeBatteryInfo);
+    systemDataProvider.setFakeCpuUsage(fakeCpuUsage);
+    systemDataProvider.setFakeMemoryUsage(fakeMemoryUsage);
+    setSystemDataProviderForTesting(systemDataProvider);
+
+    inputDataProvider = new FakeInputDataProvider();
+    setInputDataProviderForTesting(inputDataProvider);
+
+    DiagnosticsBrowserProxy = new TestDiagnosticsBrowserProxy();
+    DiagnosticsBrowserProxyImpl.setInstance(DiagnosticsBrowserProxy);
+  });
+
+  setup(() => {
+    document.body.innerHTML = '';
+
+    loadTimeData.overrideValues(
+        {isTouchpadEnabled: false, isTouchscreenEnabled: false});
+  });
+
+  teardown(() => {
+    loadTimeData.overrideValues(
+        {isTouchpadEnabled: true, isTouchscreenEnabled: true});
+
+    page.remove();
+    page = null;
+    inputDataProvider.reset();
+  });
+
+  /** @param {!Array<!KeyboardInfo>} keyboards */
+  function initializeDiagnosticsApp(keyboards) {
+    assertFalse(!!page);
+
+    inputDataProvider.setFakeConnectedDevices(keyboards, fakeTouchDevices);
+
+    page = /** @type {!DiagnosticsAppElement} */ (
+        document.createElement('diagnostics-app'));
+    assertTrue(!!page);
+    document.body.appendChild(page);
+    return flushTasks();
+  }
+
+  /** @param {!string} id */
+  function navigationSelectorHasId(id) {
+    const items = page.shadowRoot.querySelector('navigation-view-panel')
+                      .shadowRoot.querySelector('navigation-selector')
+                      .selectorItems;
+    return !!items.find((item) => item.id === id);
+  }
+
+  test('InputPageHiddenWhenNoKeyboardsConnected', async () => {
+    await initializeDiagnosticsApp([]);
+    assertFalse(navigationSelectorHasId('input'));
+
+    inputDataProvider.addFakeConnectedKeyboard(fakeKeyboards[0]);
+    await flushTasks();
+    assertTrue(navigationSelectorHasId('input'));
+
+    inputDataProvider.removeFakeConnectedKeyboardById(fakeKeyboards[0].id);
+    await flushTasks();
+    assertFalse(navigationSelectorHasId('input'));
+  });
+
+  test('InputPageShownWhenKeyboardConnectedAtLaunch', async () => {
+    await initializeDiagnosticsApp([fakeKeyboards[0]]);
+    assertTrue(navigationSelectorHasId('input'));
+
+    inputDataProvider.removeFakeConnectedKeyboardById(fakeKeyboards[0].id);
+    await flushTasks();
+    assertFalse(navigationSelectorHasId('input'));
+  });
 }

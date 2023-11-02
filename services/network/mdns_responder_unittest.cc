@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -396,7 +396,7 @@ class MdnsResponderTest : public testing::Test {
     Reset();
   }
 
-  ~MdnsResponderTest() {
+  ~MdnsResponderTest() override {
     // Goodbye messages are scheduled when the responder service |host_manager_|
     // is destroyed and can be synchronously sent if the rate limiting permits.
     // See ResponseScheduler::DispatchPendingPackets().

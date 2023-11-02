@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,19 +8,16 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
+#include "chrome/browser/ui/app_list/search/util/score_normalizer.pb.h"
 
 namespace app_list {
 namespace {
 
-// Prefix added to the name of each score normalizer, which is used for prefs
-// storage.
-constexpr char kNormalizerPrefix[] = "categorical_search_normalizer_";
-
 // Returns true if results from this provider should not have their result
 // scores normalized. This is to prevent creating an unnecessary number of
 // normalizers.
-bool ShouldIgnoreProvider(ProviderType type) {
-  switch (type) {
+bool ShouldIgnoreProvider(ProviderType provider) {
+  switch (provider) {
       // Deprecated types:
     case ProviderType::kLauncher:
     case ProviderType::kAnswerCard:
@@ -40,27 +37,32 @@ bool ShouldIgnoreProvider(ProviderType type) {
   }
 }
 
+std::string ProviderToString(ProviderType provider) {
+  return base::NumberToString(static_cast<int>(provider));
+}
+
 }  // namespace
 
-ScoreNormalizingRanker::ScoreNormalizingRanker(Profile* profile) {
-  static constexpr int kProviderMin = static_cast<int>(ProviderType::kUnknown);
-  static constexpr int kProviderMax = static_cast<int>(ProviderType::kMaxValue);
-
-  for (int provider_int = kProviderMin; provider_int <= kProviderMax;
-       ++provider_int) {
-    const ProviderType provider = static_cast<ProviderType>(provider_int);
-    if (ShouldIgnoreProvider(provider))
-      continue;
-
-    const std::string name =
-        base::StrCat({kNormalizerPrefix, base::NumberToString(provider_int)});
-  }
-}
+ScoreNormalizingRanker::ScoreNormalizingRanker(
+    ScoreNormalizer::Params params,
+    PersistentProto<ScoreNormalizerProto> proto)
+    : normalizer_(std::move(proto), params) {}
 
 ScoreNormalizingRanker::~ScoreNormalizingRanker() {}
 
-void ScoreNormalizingRanker::Rank(ResultsMap& results,
-                                  CategoriesMap& categories,
-                                  ProviderType provider) {}
+void ScoreNormalizingRanker::UpdateResultRanks(ResultsMap& results,
+                                               ProviderType provider) {
+  if (ShouldIgnoreProvider(provider))
+    return;
+
+  auto it = results.find(provider);
+  DCHECK(it != results.end());
+
+  std::string provider_string = ProviderToString(provider);
+  for (auto& result : it->second) {
+    result->scoring().normalized_relevance =
+        normalizer_.UpdateAndNormalize(provider_string, result->relevance());
+  }
+}
 
 }  // namespace app_list

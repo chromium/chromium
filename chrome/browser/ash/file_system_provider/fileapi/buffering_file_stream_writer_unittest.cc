@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -124,7 +124,7 @@ TEST_F(FileSystemProviderBufferingFileStreamWriterTest, Write) {
   std::vector<int> inner_flush_log;
   BufferingFileStreamWriter writer(
       base::WrapUnique(new FakeFileStreamWriter(
-          &inner_write_log, &inner_flush_log, NULL, net::OK)),
+          &inner_write_log, &inner_flush_log, nullptr, net::OK)),
       kIntermediateBufferLength);
 
   ASSERT_LT(kIntermediateBufferLength, 2 * short_text_buffer_->size());
@@ -198,7 +198,7 @@ TEST_F(FileSystemProviderBufferingFileStreamWriterTest, Write_WithError) {
   std::vector<int> inner_flush_log;
   BufferingFileStreamWriter writer(
       std::unique_ptr<storage::FileStreamWriter>(new FakeFileStreamWriter(
-          &inner_write_log, &inner_flush_log, NULL, net::ERR_FAILED)),
+          &inner_write_log, &inner_flush_log, nullptr, net::ERR_FAILED)),
       kIntermediateBufferLength);
 
   ASSERT_LT(kIntermediateBufferLength, 2 * short_text_buffer_->size());
@@ -248,7 +248,7 @@ TEST_F(FileSystemProviderBufferingFileStreamWriterTest, Write_Directly) {
   std::vector<int> inner_flush_log;
   BufferingFileStreamWriter writer(
       std::unique_ptr<storage::FileStreamWriter>(new FakeFileStreamWriter(
-          &inner_write_log, &inner_flush_log, NULL, net::OK)),
+          &inner_write_log, &inner_flush_log, nullptr, net::OK)),
       kIntermediateBufferLength);
 
   ASSERT_GT(kIntermediateBufferLength, short_text_buffer_->size());
@@ -344,7 +344,7 @@ TEST_F(FileSystemProviderBufferingFileStreamWriterTest, Flush) {
   std::vector<int> inner_flush_log;
   BufferingFileStreamWriter writer(
       std::unique_ptr<storage::FileStreamWriter>(new FakeFileStreamWriter(
-          &inner_write_log, &inner_flush_log, NULL, net::OK)),
+          &inner_write_log, &inner_flush_log, nullptr, net::OK)),
       kIntermediateBufferLength);
 
   // Write less bytes than size of the intermediate buffer.
@@ -382,7 +382,7 @@ TEST_F(FileSystemProviderBufferingFileStreamWriterTest, Flush_AfterWriteError) {
   std::vector<int> inner_flush_log;
   BufferingFileStreamWriter writer(
       std::unique_ptr<storage::FileStreamWriter>(new FakeFileStreamWriter(
-          &inner_write_log, &inner_flush_log, NULL, net::ERR_FAILED)),
+          &inner_write_log, &inner_flush_log, nullptr, net::ERR_FAILED)),
       kIntermediateBufferLength);
 
   // Write less bytes than size of the intermediate buffer. This should succeed

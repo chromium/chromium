@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,34 +55,6 @@ StaticRange* StaticRange::Create(Document& document,
       document, static_range_init->startContainer(),
       static_range_init->startOffset(), static_range_init->endContainer(),
       static_range_init->endOffset());
-}
-
-namespace {
-
-// Returns the lowest ancestor of |node| in the tree that has a containment set.
-Node* GetLowestContainAncestor(const Node* node) {
-  for (Node& ancestor : NodeTraversal::InclusiveAncestorsOf(*node)) {
-    if (LayoutObject* node_layout_object = ancestor.GetLayoutObject()) {
-      if (node_layout_object->ShouldApplyAnyContainment()) {
-        return &ancestor;
-      }
-    }
-  }
-  return nullptr;
-}
-
-}  // namespace
-
-// Returns true if the range crosses any css-contain subtree boundary.
-bool StaticRange::CrossesContainBoundary() const {
-  if (style_version_for_crosses_contain_boundary_ ==
-      owner_document_->StyleVersion())
-    return crosses_contain_boundary_;
-  style_version_for_crosses_contain_boundary_ = owner_document_->StyleVersion();
-
-  crosses_contain_boundary_ = GetLowestContainAncestor(start_container_) !=
-                              GetLowestContainAncestor(end_container_);
-  return crosses_contain_boundary_;
 }
 
 bool StaticRange::IsValid() const {

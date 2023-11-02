@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,13 +19,13 @@
 - (instancetype)init NS_UNAVAILABLE;
 
 // The locale code that should be used as the default code for the locale codes
-// found in |matchingLocales|.
+// found in `matchingLocales`.
 @property(nonatomic, readonly) NSString* matchedLocale;
 
-// The locale codes that should be matched with |matchedLocale|.
+// The locale codes that should be matched with `matchedLocale`.
 @property(nonatomic, readonly) NSArray<NSString*>* matchingLocales;
 
-// The languages that use |matchedLocale| as a default.
+// The languages that use `matchedLocale` as a default.
 @property(nonatomic, readonly) NSArray<NSString*>* matchingLanguages;
 
 @end

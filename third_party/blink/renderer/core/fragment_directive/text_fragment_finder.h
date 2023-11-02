@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,15 +30,22 @@ class CORE_EXPORT TextFragmentFinder
  public:
   class Client {
    public:
-    virtual void DidFindMatch(
-        const RangeInFlatTree& range,
-        const TextFragmentAnchorMetrics::Match match_metrics,
-        bool is_unique) = 0;
+    virtual void DidFindMatch(const RangeInFlatTree& range, bool is_unique) = 0;
     virtual void NoMatchFound() = 0;
   };
 
   // Used for tracking what should be the next match stage.
   enum FindBufferRunnerType { kAsynchronous, kSynchronous };
+
+  // Returns next position that is not space or equivalent.
+  static PositionInFlatTree NextTextPosition(PositionInFlatTree position,
+                                             PositionInFlatTree end_position);
+
+  // Returns previous position that is not space or equivalent.
+  static PositionInFlatTree PreviousTextPosition(
+      PositionInFlatTree position,
+      PositionInFlatTree max_position);
+
   // Returns true if start and end positions are in the same block and there are
   // no other blocks between them. Otherwise, returns false.
   static bool IsInSameUninterruptedBlock(const PositionInFlatTree& start,

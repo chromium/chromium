@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,6 +61,10 @@ struct COMPONENT_EXPORT(DISPLAY_SHARED_MOJOM_TRAITS)
 
   static bool is_internal(const display::ScreenInfo& r) {
     return r.is_internal;
+  }
+
+  static const std::string& label(const display::ScreenInfo& r) {
+    return r.label;
   }
 
   static int64_t display_id(const display::ScreenInfo& r) {

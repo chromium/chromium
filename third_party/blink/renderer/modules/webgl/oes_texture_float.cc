@@ -33,15 +33,14 @@ OESTextureFloat::OESTextureFloat(WebGLRenderingContextBase* context)
     : WebGLExtension(context) {
   if (context->ExtensionsUtil()->EnsureExtensionEnabled(
           "GL_OES_texture_float")) {
-    // Implicitly enable rendering to float textures
-    context->ExtensionsUtil()->EnsureExtensionEnabled(
-        "GL_CHROMIUM_color_buffer_float_rgba");
-    context->ExtensionsUtil()->EnsureExtensionEnabled(
-        "GL_CHROMIUM_color_buffer_float_rgb");
+    // Spec requires WEBGL_color_buffer_float to be implicitly turned
+    // on here if it's supported.
+    context->EnableExtensionIfSupported("WEBGL_color_buffer_float");
 
     // https://github.com/KhronosGroup/WebGL/pull/2830
-    // Spec requires EXT_float_blend needs to be turned on implicitly here
-    context->ExtensionsUtil()->EnsureExtensionEnabled("GL_EXT_float_blend");
+    // Spec requires EXT_float_blend to be implicitly turned on here if
+    // it's supported.
+    context->EnableExtensionIfSupported("EXT_float_blend");
   }
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,16 +50,24 @@ bool WaylandPopup::CreateShellPopup() {
   params.bounds = bounds_dip;
   params.menu_type =
       delegate()->GetMenuType().value_or(MenuType::kRootContextMenu);
-  params.anchor = delegate()->GetOwnedWindowAnchorAndRectInPx();
+  params.anchor = delegate()->GetOwnedWindowAnchorAndRectInDIP();
   if (params.anchor.has_value()) {
-    params.anchor->anchor_rect = gfx::ScaleToRoundedRect(
-        wl::TranslateBoundsToParentCoordinates(params.anchor->anchor_rect,
-                                               parent_window()->GetBounds()),
-        1.0 / window_scale());
+    // The anchor should originate from the window geometry, not from the
+    // surface.  See https://crbug.com/1292486.
+    params.anchor->anchor_rect =
+        wl::TranslateBoundsToParentCoordinates(
+            params.anchor->anchor_rect, parent_window()->GetBoundsInDIP()) -
+        parent_window()->GetWindowGeometryOffsetInDIP();
+
     // If size is empty, set 1x1.
     if (params.anchor->anchor_rect.size().IsEmpty())
       params.anchor->anchor_rect.set_size({1, 1});
   }
+
+  // Certain Wayland compositors (E.g. Mutter) expects wl_surface to have no
+  // buffer attached when xdg-surface role is created.
+  wl_surface_attach(root_surface()->surface(), nullptr, 0, 0);
+  root_surface()->Commit(false);
 
   ShellObjectFactory factory;
   shell_popup_ = factory.CreateShellPopupWrapper(connection(), this, params);
@@ -68,29 +76,33 @@ bool WaylandPopup::CreateShellPopup() {
     return false;
   }
 
-  const auto parent_insets_px = parent_window()->frame_insets_px();
-  if (parent_insets_px && !parent_insets_px->IsEmpty()) {
-    set_frame_insets_px(*parent_insets_px);
-    // Popups should have the same offset for their geometry as their parents
-    // have, otherwise Wayland draws them incorrectly.
-    const gfx::Point p = gfx::ScaleToRoundedPoint(
-        {parent_insets_px->left(), parent_insets_px->top()},
-        1.f / window_scale());
-    shell_popup_->SetWindowGeometry(
-        {p.x(), p.y(), params.bounds.width(), params.bounds.height()});
-  }
-
   parent_window()->set_child_window(this);
-  InitializeAuraShellSurface();
+  UpdateDecoration();
   return true;
 }
 
-void WaylandPopup::InitializeAuraShellSurface() {
+void WaylandPopup::UpdateDecoration() {
   DCHECK(shell_popup_);
-  if (!connection()->zaura_shell() || aura_surface_)
+
+  // If the surface is already decorated early return.
+  if (!connection()->zaura_shell() || decorated_via_aura_popup_)
     return;
-  aura_surface_.reset(zaura_shell_get_aura_surface(
-      connection()->zaura_shell()->wl_object(), root_surface()->surface()));
+
+  // Decorate the surface using the newer protocol. Relies on Ash >= M105.
+  if (shell_popup_->SupportsDecoration()) {
+    decorated_via_aura_popup_ = true;
+    shell_popup_->Decorate();
+    return;
+  }
+
+  // Decorate the frame using the older protocol. Can be removed once Lacros >=
+  // M107. Reshown popups will not be decorated if |aura_surface_| isn't reset
+  // when server implements the older protocol.
+  if (!aura_surface_) {
+    aura_surface_.reset(zaura_shell_get_aura_surface(
+        connection()->zaura_shell()->wl_object(), root_surface()->surface()));
+  }
+
   if (shadow_type_ == PlatformWindowShadowType::kDrop) {
     zaura_surface_set_frame(aura_surface_.get(),
                             ZAURA_SURFACE_FRAME_TYPE_SHADOW);
@@ -112,7 +124,7 @@ void WaylandPopup::Show(bool inactive) {
     return;
   }
 
-  connection()->ScheduleFlush();
+  connection()->Flush();
   WaylandWindow::Show(inactive);
 }
 
@@ -124,28 +136,32 @@ void WaylandPopup::Hide() {
     child_window()->Hide();
   WaylandWindow::Hide();
 
+  if (aura_surface_ && wl::get_version_of_object(aura_surface_.get()) >=
+                           ZAURA_SURFACE_RELEASE_SINCE_VERSION) {
+    aura_surface_.reset();
+  }
+
   if (shell_popup_) {
     parent_window()->set_child_window(nullptr);
     shell_popup_.reset();
+    decorated_via_aura_popup_ = false;
   }
 
-  // Detach buffer from surface in order to completely shutdown popups and
-  // tooltips, and release resources.
-  connection()->buffer_manager_host()->ResetSurfaceContents(root_surface());
+  connection()->Flush();
 }
 
 bool WaylandPopup::IsVisible() const {
   return !!shell_popup_;
 }
 
-void WaylandPopup::SetBounds(const gfx::Rect& bounds) {
-  auto old_bounds = GetBounds();
-  WaylandWindow::SetBounds(bounds);
+void WaylandPopup::SetBoundsInDIP(const gfx::Rect& bounds_dip) {
+  auto old_bounds_dip = GetBoundsInDIP();
+  WaylandWindow::SetBoundsInDIP(bounds_dip);
 
   // The shell popup can be null if bounds are being fixed during
   // the initialization. See WaylandPopup::CreateShellPopup.
-  if (shell_popup_ && old_bounds != bounds && !wayland_sets_bounds_) {
-    const auto bounds_dip =
+  if (shell_popup_ && old_bounds_dip != bounds_dip && !wayland_sets_bounds_) {
+    const auto bounds_dip_in_parent =
         wl::TranslateWindowBoundsToParentDIP(this, parent_window());
 
     // If Wayland moved the popup (for example, a dnd arrow icon), schedule
@@ -153,13 +169,13 @@ void WaylandPopup::SetBounds(const gfx::Rect& bounds) {
     // scheduled and a new buffer is not attached, some compositors may not
     // apply a new state. And committing the surface without attaching a buffer
     // won't make Wayland compositor apply these new bounds.
-    schedule_redraw_ = old_bounds.origin() != GetBounds().origin();
+    schedule_redraw_ = old_bounds_dip.origin() != GetBoundsInDIP().origin();
 
     // If ShellPopup doesn't support repositioning, the popup will be recreated
     // with new geometry applied. Availability of methods to move/resize popup
     // surfaces purely depends on a protocol. See implementations of ShellPopup
     // for more details.
-    if (!shell_popup_->SetBounds(bounds_dip)) {
+    if (!shell_popup_->SetBounds(bounds_dip_in_parent)) {
       // Always force redraw for recreated objects.
       schedule_redraw_ = true;
       // This will also close all the children windows...
@@ -171,39 +187,44 @@ void WaylandPopup::SetBounds(const gfx::Rect& bounds) {
 }
 
 void WaylandPopup::HandlePopupConfigure(const gfx::Rect& bounds_dip) {
-  pending_bounds_dip_ = gfx::ScaleToRoundedRect(
-      wl::TranslateBoundsToTopLevelCoordinates(
-          gfx::ScaleToRoundedRect(bounds_dip, window_scale()),
-          parent_window()->GetBounds()),
-      1.0 / window_scale());
+  gfx::Rect pending_bounds_dip(bounds_dip);
+  if (pending_bounds_dip.IsEmpty())
+    pending_bounds_dip.set_size(GetBoundsInDIP().size());
+  set_pending_bounds_dip(wl::TranslateBoundsToTopLevelCoordinates(
+      pending_bounds_dip, parent_window()->GetBoundsInDIP()));
+  set_pending_size_px(
+      delegate()->ConvertRectToPixels(pending_bounds_dip).size());
 }
 
 void WaylandPopup::HandleSurfaceConfigure(uint32_t serial) {
   if (schedule_redraw_) {
-    delegate()->OnDamageRect(gfx::Rect{{0, 0}, GetBounds().size()});
+    delegate()->OnDamageRect(gfx::Rect{size_px()});
     schedule_redraw_ = false;
   }
-
   ProcessPendingBoundsDip(serial);
 }
 
-void WaylandPopup::UpdateVisualSize(const gfx::Size& size_px,
-                                    float scale_factor) {
-  WaylandWindow::UpdateVisualSize(size_px, scale_factor);
+void WaylandPopup::UpdateVisualSize(const gfx::Size& size_px) {
+  WaylandWindow::UpdateVisualSize(size_px);
 
   if (!shell_popup())
     return;
 
-  ProcessVisualSizeUpdate(size_px, scale_factor);
+  ProcessVisualSizeUpdate(size_px);
   ApplyPendingBounds();
 }
 
 void WaylandPopup::ApplyPendingBounds() {
-  if (pending_configures_.empty())
-    return;
+  if (has_pending_configures()) {
+    base::AutoReset<bool> auto_reset(&wayland_sets_bounds_, true);
+    WaylandWindow::ApplyPendingBounds();
+  }
+}
 
-  base::AutoReset<bool> auto_reset(&wayland_sets_bounds_, true);
-  SetBoundsDip(pending_configures_.back().bounds_dip);
+void WaylandPopup::UpdateWindowMask() {
+  // Popup doesn't have a shape. Update the opaqueness.
+  std::vector<gfx::Rect> region{gfx::Rect{visual_size_px()}};
+  root_surface()->set_opaque_region(IsOpaqueWindow() ? &region : nullptr);
 }
 
 void WaylandPopup::OnCloseRequest() {
@@ -231,13 +252,9 @@ bool WaylandPopup::IsSurfaceConfigured() {
 
 void WaylandPopup::SetWindowGeometry(gfx::Rect bounds_dip) {
   DCHECK(shell_popup_);
-  gfx::Point p;
-  if (frame_insets_px() && !frame_insets_px()->IsEmpty()) {
-    p = gfx::ScaleToRoundedPoint(
-        {frame_insets_px()->left(), frame_insets_px()->top()},
-        1.f / window_scale());
-  }
-  shell_popup_->SetWindowGeometry({p, bounds_dip.size()});
+  const auto insets = GetDecorationInsetsInDIP();
+  shell_popup_->SetWindowGeometry(
+      {{insets.left(), insets.top()}, bounds_dip.size()});
 }
 
 void WaylandPopup::AckConfigure(uint32_t serial) {

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -15,24 +15,63 @@ import sys
 
 
 REPLACEMENTS = {
+  # Use system libabsl_2xxx. These 18 shims MUST be used together.
+  'absl_algorithm': 'third_party/abseil-cpp/absl/algorithm/BUILD.gn',
+  'absl_base': 'third_party/abseil-cpp/absl/base/BUILD.gn',
+  'absl_cleanup': 'third_party/abseil-cpp/absl/cleanup/BUILD.gn',
+  'absl_container': 'third_party/abseil-cpp/absl/container/BUILD.gn',
+  'absl_debugging': 'third_party/abseil-cpp/absl/debugging/BUILD.gn',
+  'absl_flags': 'third_party/abseil-cpp/absl/flags/BUILD.gn',
+  'absl_functional': 'third_party/abseil-cpp/absl/functional/BUILD.gn',
+  'absl_hash': 'third_party/abseil-cpp/absl/hash/BUILD.gn',
+  'absl_memory': 'third_party/abseil-cpp/absl/memory/BUILD.gn',
+  'absl_meta': 'third_party/abseil-cpp/absl/meta/BUILD.gn',
+  'absl_numeric': 'third_party/abseil-cpp/absl/numeric/BUILD.gn',
+  'absl_random': 'third_party/abseil-cpp/absl/random/BUILD.gn',
+  'absl_status': 'third_party/abseil-cpp/absl/status/BUILD.gn',
+  'absl_strings': 'third_party/abseil-cpp/absl/strings/BUILD.gn',
+  'absl_synchronization': 'third_party/abseil-cpp/absl/synchronization/BUILD.gn',
+  'absl_time': 'third_party/abseil-cpp/absl/time/BUILD.gn',
+  'absl_types': 'third_party/abseil-cpp/absl/types/BUILD.gn',
+  'absl_utility': 'third_party/abseil-cpp/absl/utility/BUILD.gn',
+  #
+  'brotli': 'third_party/brotli/BUILD.gn',
+  'crc32c': 'third_party/crc32c/BUILD.gn',
+  'dav1d': 'third_party/dav1d/BUILD.gn',
+  'double-conversion': 'base/third_party/double_conversion/BUILD.gn',
   'ffmpeg': 'third_party/ffmpeg/BUILD.gn',
   'flac': 'third_party/flac/BUILD.gn',
   'fontconfig': 'third_party/fontconfig/BUILD.gn',
   'freetype': 'build/config/freetype/freetype.gni',
   'harfbuzz-ng': 'third_party/harfbuzz-ng/harfbuzz.gni',
   'icu': 'third_party/icu/BUILD.gn',
+  'jsoncpp' : 'third_party/jsoncpp/BUILD.gn',
+  'libaom' : 'third_party/libaom/BUILD.gn',
+  'libavif' : 'third_party/libavif/BUILD.gn',
   'libdrm': 'third_party/libdrm/BUILD.gn',
-  'libevent': 'base/third_party/libevent/BUILD.gn',
+  'libevent': 'third_party/libevent/BUILD.gn',
   'libjpeg': 'third_party/libjpeg.gni',
+  'libjxl' : 'third_party/libjxl/BUILD.gn',
   'libpng': 'third_party/libpng/BUILD.gn',
   'libvpx': 'third_party/libvpx/BUILD.gn',
   'libwebp': 'third_party/libwebp/BUILD.gn',
   'libxml': 'third_party/libxml/BUILD.gn',
+  'libXNVCtrl' : 'third_party/angle/src/third_party/libXNVCtrl/BUILD.gn',
   'libxslt': 'third_party/libxslt/BUILD.gn',
+  'libyuv' : 'third_party/libyuv/BUILD.gn',
   'openh264': 'third_party/openh264/BUILD.gn',
   'opus': 'third_party/opus/BUILD.gn',
   're2': 'third_party/re2/BUILD.gn',
   'snappy': 'third_party/snappy/BUILD.gn',
+  # Use system libSPIRV-Tools in Swiftshader. These two shims MUST be used together.
+  'swiftshader-SPIRV-Headers' : 'third_party/swiftshader/third_party/SPIRV-Headers/BUILD.gn',
+  'swiftshader-SPIRV-Tools' : 'third_party/swiftshader/third_party/SPIRV-Tools/BUILD.gn',
+  # Use system libSPIRV-Tools inside ANGLE. These two shims MUST be used together
+  # and can only be used if WebGPU is not compiled (use_dawn=false)
+  'vulkan-SPIRV-Headers' : 'third_party/vulkan-deps/spirv-headers/src/BUILD.gn',
+  'vulkan-SPIRV-Tools' : 'third_party/vulkan-deps/spirv-tools/src/BUILD.gn',
+  #
+  'woff2': 'third_party/woff2/BUILD.gn',
   'zlib': 'third_party/zlib/BUILD.gn',
 }
 

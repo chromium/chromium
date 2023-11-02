@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,6 @@ GeolocationPermissionContext::GeolocationPermissionContext(
 GeolocationPermissionContext::~GeolocationPermissionContext() = default;
 
 void GeolocationPermissionContext::DecidePermission(
-    content::WebContents* web_contents,
     const PermissionRequestID& id,
     const GURL& requesting_origin,
     const GURL& embedding_origin,
@@ -36,10 +35,10 @@ void GeolocationPermissionContext::DecidePermission(
     BrowserPermissionCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!delegate_->DecidePermission(web_contents, id, requesting_origin,
-                                   user_gesture, &callback, this)) {
+  if (!delegate_->DecidePermission(id, requesting_origin, user_gesture,
+                                   &callback, this)) {
     DCHECK(callback);
-    PermissionContextBase::DecidePermission(web_contents, id, requesting_origin,
+    PermissionContextBase::DecidePermission(id, requesting_origin,
                                             embedding_origin, user_gesture,
                                             std::move(callback));
   }
@@ -70,10 +69,6 @@ void GeolocationPermissionContext::UpdateTabContext(
   if (allowed) {
     GetGeolocationControl()->UserDidOptIntoLocationServices();
   }
-}
-
-bool GeolocationPermissionContext::IsRestrictedToSecureOrigins() const {
-  return true;
 }
 
 device::mojom::GeolocationControl*

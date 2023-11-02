@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/geometry/geometry_util.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -27,8 +27,6 @@ class CORE_EXPORT DOMRectReadOnly : public ScriptWrappable {
                                  double height);
   static DOMRectReadOnly* FromRect(const gfx::Rect&);
   static DOMRectReadOnly* FromRectF(const gfx::RectF&);
-  static DOMRectReadOnly* FromIntRect(const IntRect&);
-  static DOMRectReadOnly* FromFloatRect(const FloatRect&);
   static DOMRectReadOnly* fromRect(const DOMRectInit*);
 
   DOMRectReadOnly(double x, double y, double width, double height);

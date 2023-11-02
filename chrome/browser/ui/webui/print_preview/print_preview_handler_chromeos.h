@@ -1,18 +1,18 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_WEBUI_PRINT_PREVIEW_PRINT_PREVIEW_HANDLER_CHROMEOS_H_
 #define CHROME_BROWSER_UI_WEBUI_PRINT_PREVIEW_PRINT_PREVIEW_HANDLER_CHROMEOS_H_
 
-#include <memory>
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chromeos/printing/print_servers_manager.h"
+#include "chrome/browser/ash/printing/print_servers_manager.h"
 #include "chrome/common/buildflags.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "components/prefs/pref_service.h"
@@ -60,7 +60,6 @@ class PrintPreviewHandlerChromeOS : public content::WebUIMessageHandler,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   friend class TestPrintServersManager;
 #endif
-  class AccessTokenService;
 
   PrintPreviewHandler* GetPrintPreviewHandler();
 
@@ -68,20 +67,13 @@ class PrintPreviewHandlerChromeOS : public content::WebUIMessageHandler,
 
   // Grants an extension access to a provisional printer.  First element of
   // |args| is the provisional printer ID.
-  void HandleGrantExtensionPrinterAccess(const base::ListValue* args);
+  void HandleGrantExtensionPrinterAccess(const base::Value::List& args);
 
   // Performs printer setup. First element of |args| is the printer name.
-  void HandlePrinterSetup(const base::ListValue* args);
-
-  // Generates new token and sends back to UI.
-  void HandleGetAccessToken(const base::ListValue* args);
+  void HandlePrinterSetup(const base::Value::List& args);
 
   // Gets the EULA URL.
-  void HandleGetEulaUrl(const base::ListValue* args);
-
-  // Send OAuth2 access token.
-  void SendAccessToken(const std::string& callback_id,
-                       const std::string& access_token);
+  void HandleGetEulaUrl(const base::Value::List& args);
 
   // Send the EULA URL;
   void SendEulaUrl(const std::string& callback_id, const std::string& eula_url);
@@ -90,7 +82,7 @@ class PrintPreviewHandlerChromeOS : public content::WebUIMessageHandler,
   // printer capabilities.
   void SendPrinterSetup(const std::string& callback_id,
                         const std::string& printer_name,
-                        base::Value settings_info);
+                        base::Value::Dict settings_info);
 
   // Called when an extension reports information requested for a provisional
   // printer.
@@ -100,7 +92,10 @@ class PrintPreviewHandlerChromeOS : public content::WebUIMessageHandler,
                                  const base::DictionaryValue& printer_info);
 
   // Called to initiate a status request for a printer.
-  void HandleRequestPrinterStatusUpdate(const base::ListValue* args);
+  void HandleRequestPrinterStatusUpdate(const base::Value::List& args);
+  void HandleRequestPrinterStatusUpdateCompletion(
+      base::Value callback_id,
+      absl::optional<base::Value::Dict> result);
 
   // crosapi::mojom::PrintServerObserver Implementation
   void OnPrintServersChanged(
@@ -109,13 +104,10 @@ class PrintPreviewHandlerChromeOS : public content::WebUIMessageHandler,
 
   // Loads printers corresponding to the print server(s).  First element of
   // |args| is the print server IDs.
-  void HandleChoosePrintServers(const base::ListValue* args);
+  void HandleChoosePrintServers(const base::Value::List& args);
 
   // Gets the list of print servers and fetching mode.
-  void HandleGetPrintServersConfig(const base::ListValue* args);
-
-  // Holds token service to get OAuth2 access tokens.
-  std::unique_ptr<AccessTokenService> token_service_;
+  void HandleGetPrintServersConfig(const base::Value::List& args);
 
   mojo::Receiver<crosapi::mojom::PrintServerObserver> receiver_{this};
 
@@ -124,7 +116,7 @@ class PrintPreviewHandlerChromeOS : public content::WebUIMessageHandler,
   // Note that this is not propagated to LocalPrinterHandlerLacros.
   // The pointer is constant - if ash crashes and the mojo connection is lost,
   // lacros will automatically be restarted.
-  crosapi::mojom::LocalPrinter* local_printer_ = nullptr;
+  raw_ptr<crosapi::mojom::LocalPrinter> local_printer_ = nullptr;
 
   base::WeakPtrFactory<PrintPreviewHandlerChromeOS> weak_factory_{this};
 };

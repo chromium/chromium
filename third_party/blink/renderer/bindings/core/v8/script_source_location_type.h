@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,9 +32,8 @@ enum class ScriptSourceLocationType {
   // by the parser.
   kInlineInsideGeneratedElement,
 
-  // Other values. Never have a ScriptResource and the corresponding
-  // ScriptSourceCode or source string is created outside of
-  // ClassicPendingScript.
+  // Other values. Never have a ScriptResource and source string is created
+  // outside of ClassicPendingScript.
 
   // A chrome-internal source.
   kInternal,

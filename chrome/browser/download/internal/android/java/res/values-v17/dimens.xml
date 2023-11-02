@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2020 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Download manager dimensions -->
@@ -17,4 +19,7 @@
     <!-- The corner radius is calculated by subtracting the hairline border width from the
          background card corner radius. -->
     <dimen name="download_manager_thumbnail_corner_radius">7dp</dimen>
+
+    <!-- Download interstitial dimensions -->
+    <dimen name="download_interstitial_horizontal_padding">24dp</dimen>
 </resources>

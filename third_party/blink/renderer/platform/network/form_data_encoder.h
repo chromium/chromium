@@ -50,8 +50,7 @@ class PLATFORM_EXPORT FormDataEncoder {
   static Vector<char> GenerateUniqueBoundaryString();
   static void BeginMultiPartHeader(Vector<char>&,
                                    const std::string& boundary,
-                                   const std::string& name,
-                                   Mode mode);
+                                   const std::string& name);
   static void AddBoundaryToMultiPartHeader(Vector<char>&,
                                            const std::string& boundary,
                                            bool is_last_boundary = false);

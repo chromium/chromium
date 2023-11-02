@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,7 @@
 #include "net/base/url_util.h"
 #include "ui/base/webui/web_ui_util.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -107,6 +107,8 @@ void AddStrings(content::WebUIDataSource* html_source) {
       {"landingDescription", IDS_WELCOME_LANDING_DESCRIPTION},
       {"landingNewUser", IDS_WELCOME_LANDING_NEW_USER},
       {"landingExistingUser", IDS_WELCOME_LANDING_EXISTING_USER},
+      {"landingPauseAnimations", IDS_WELCOME_LANDING_PAUSE_ANIMATIONS},
+      {"landingPlayAnimations", IDS_WELCOME_LANDING_PLAY_ANIMATIONS},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
@@ -138,10 +140,10 @@ WelcomeUI::WelcomeUI(content::WebUI* web_ui, const GURL& url)
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   html_source->AddResourcePath("images/background_svgs/logo.svg",
-                               IDR_PRODUCT_LOGO_24PX_1X);
+                               IDR_PRODUCT_LOGO_128PX_SVG);
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   html_source->AddBoolean("is_win10",
                           base::win::GetVersion() >= base::win::Version::WIN10);
 #endif

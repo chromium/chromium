@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,10 +41,11 @@ class GPU_EXPORT GPUTestConfig {
     kOsMacCatalina = 1 << 20,
     kOsMacBigSur = 1 << 21,
     kOsMacMonterey = 1 << 22,
+    kOsMacVentura = 1 << 23,
     kOsMac = kOsMacLeopard | kOsMacSnowLeopard | kOsMacLion |
              kOsMacMountainLion | kOsMacMavericks | kOsMacYosemite |
              kOsMacElCapitan | kOsMacSierra | kOsMacHighSierra | kOsMacMojave |
-             kOsMacCatalina | kOsMacBigSur | kOsMacMonterey,
+             kOsMacCatalina | kOsMacBigSur | kOsMacMonterey | kOsMacVentura,
     // Jump over a few bits for future OSX versions.
     kOsLinux = 1 << 25,
     kOsChromeOS = 1 << 26,

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,6 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -32,7 +31,7 @@
 #include "chrome/browser/ash/net/client_cert_store_ash.h"
 #include "chrome/browser/ash/platform_keys/chaps_util.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part_chromeos.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/extensions/api/enterprise_platform_keys/enterprise_platform_keys_api.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -183,8 +182,6 @@ class GenerateRSAKeyState : public NSSOperationState {
   void CallBack(const base::Location& from,
                 const std::string& public_key_spki_der,
                 Status status) {
-    UMA_HISTOGRAM_BOOLEAN("ChromeOS.PlatformKeysService.GenerateKey.RSA",
-                          status == Status::kSuccess);
     auto bound_callback =
         base::BindOnce(std::move(callback_), public_key_spki_der, status);
     content::GetUIThreadTaskRunner({})->PostTask(
@@ -222,8 +219,6 @@ class GenerateECKeyState : public NSSOperationState {
   void CallBack(const base::Location& from,
                 const std::string& public_key_spki_der,
                 Status status) {
-    UMA_HISTOGRAM_BOOLEAN("ChromeOS.PlatformKeysService.GenerateKey.EC",
-                          status == Status::kSuccess);
     auto bound_callback =
         base::BindOnce(std::move(callback_), public_key_spki_der, status);
     content::GetUIThreadTaskRunner({})->PostTask(
@@ -279,25 +274,11 @@ class SignState : public NSSOperationState {
   void CallBack(const base::Location& from,
                 const std::string& signature,
                 Status status) {
-    EmitOperationStatusToHistogram(status == Status::kSuccess);
     auto bound_callback =
         base::BindOnce(std::move(callback_), signature, status);
     content::GetUIThreadTaskRunner({})->PostTask(
         from, base::BindOnce(&NSSOperationState::RunCallback,
                              std::move(bound_callback), service_weak_ptr_));
-  }
-
-  void EmitOperationStatusToHistogram(bool success) const {
-    switch (key_type_) {
-      case KeyType::kRsassaPkcs1V15:
-        UMA_HISTOGRAM_BOOLEAN("ChromeOS.PlatformKeysService.SignKey.RSA",
-                              success);
-        break;
-      case KeyType::kEcdsa:
-        UMA_HISTOGRAM_BOOLEAN("ChromeOS.PlatformKeysService.SignKey.EC",
-                              success);
-        break;
-    }
   }
 
   // Must be called on origin thread, therefore use CallBack().
@@ -1247,18 +1228,20 @@ void RemoveCertificateWithDB(std::unique_ptr<RemoveCertificateState> state,
                              net::NSSCertDatabase* cert_db) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
+  PRBool certificate_found;
   net::ScopedCERTCertificate nss_cert =
       net::x509_util::CreateCERTCertificateFromX509Certificate(
           state->certificate_.get());
-  if (!nss_cert) {
+  if (!nss_cert || net::x509_util::GetCertIsPerm(
+                       nss_cert.get(), &certificate_found) != SECSuccess) {
     state->OnError(FROM_HERE, Status::kNetErrorCertificateInvalid);
     return;
   }
 
-  bool certificate_found = nss_cert->isperm;
   cert_db->DeleteCertAndKeyAsync(
-      std::move(nss_cert), base::BindOnce(&DidRemoveCertificate,
-                                          std::move(state), certificate_found));
+      std::move(nss_cert),
+      base::BindOnce(&DidRemoveCertificate, std::move(state),
+                     certificate_found != PR_FALSE));
 }
 
 // Does the actual key pair removal on a worker thread. Used by
@@ -1401,11 +1384,10 @@ CK_ATTRIBUTE_TYPE TranslateKeyAttributeType(KeyAttributeType type,
   }
 }
 
-// Does the actual attribute value setting with the obtained |cert_db|.
-// Called by SetAttributeForKey().
-void SetAttributeForKeyWithDb(std::unique_ptr<SetAttributeForKeyState> state,
-                              net::NSSCertDatabase* cert_db) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+// Does the actual attribute value setting. Called by
+// SetAttributeForKeyWithDb().
+void SetAttributeForKeyWithDbOnWorkerThread(
+    std::unique_ptr<SetAttributeForKeyState> state) {
   DCHECK(state->slot_.get());
 
   crypto::ScopedSECKEYPrivateKey private_key =
@@ -1432,11 +1414,26 @@ void SetAttributeForKeyWithDb(std::unique_ptr<SetAttributeForKeyState> state,
   state->OnSuccess(FROM_HERE);
 }
 
-// Does the actual attribute value retrieval with the obtained |cert_db|.
-// Called by GetAttributeForKey().
-void GetAttributeForKeyWithDb(std::unique_ptr<GetAttributeForKeyState> state,
+// Continues setting the attribute with the obtained NSSCertDatabase.
+// Called by SetAttributeForKey().
+void SetAttributeForKeyWithDb(std::unique_ptr<SetAttributeForKeyState> state,
                               net::NSSCertDatabase* cert_db) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  // Only the slot and not the NSSCertDatabase is required. Ignore |cert_db|.
+  // This task could interact with the TPM, hence MayBlock().
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&SetAttributeForKeyWithDbOnWorkerThread,
+                     std::move(state)));
+}
+
+// Does the actual attribute value retrieval. Called by
+// GetAttributeForKeyWithDb().
+void GetAttributeForKeyWithDbOnWorkerThread(
+    std::unique_ptr<GetAttributeForKeyState> state) {
   DCHECK(state->slot_.get());
 
   crypto::ScopedSECKEYPrivateKey private_key =
@@ -1477,6 +1474,22 @@ void GetAttributeForKeyWithDb(std::unique_ptr<GetAttributeForKeyState> state,
   }
 
   state->OnSuccess(FROM_HERE, attribute_value_str);
+}
+
+// Continues retrieving the attribute with the obtained NSSCertDatabase.
+// Called by GetAttributeForKey().
+void GetAttributeForKeyWithDb(std::unique_ptr<GetAttributeForKeyState> state,
+                              net::NSSCertDatabase* cert_db) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  // Only the slot and not the NSSCertDatabase is required. Ignore |cert_db|.
+  // This task could interact with the TPM, hence MayBlock().
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&GetAttributeForKeyWithDbOnWorkerThread,
+                     std::move(state)));
 }
 
 void IsKeyOnTokenWithDb(std::unique_ptr<IsKeyOnTokenState> state,

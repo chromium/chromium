@@ -1,42 +1,35 @@
 <style>
+  .action-button {
+    margin-inline-start: 8px;
+  }
+  
   #after-screen {
+    background-color: var(--cros-bg-color-elevation-1);
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    margin: 72px auto;
-    width: 414px;
+    height: 100%;
+    justify-content: flex-start;
+    padding: 24px 24px 20px;
   }
-
+  
   #after-screen-buttons {
     display: flex;
     justify-content: flex-end;
-    padding-top: 32px;
+    margin-top: auto; /* position at end of flexbox */
+    width: 100%;
   }
 
-  cr-button {
-    margin-inline-start: 8px;
-  }
-
-  picture {
-    margin: auto;
-  }
-
-  #illustration {
-    height: 147px;
-    width: 272px;
+  .google-logo {
+    width: 100px;
   }
 </style>
 
 <div id="after-screen">
-  <picture>
-    <source 
-      srcset="images/parent_access_illustration_dark_theme.svg"              
-      media="(prefers-color-scheme: dark)">
-    <img id="illustration"
-      src="images/parent_access_illustration_light_theme.svg">
-  </picture>
-  <template is="dom-if" if="[[isLocalWebApprovalsFlow_]]">
-    <local-web-approvals-after></local-web-approvals-after>
-  </template>
+  <img class="google-logo" src="chrome://theme/IDR_LOGO_GOOGLE_COLOR_90"
+    alt="Google">
+  </img>
+  <div id="after-screen-body"></div>
   <div id="after-screen-buttons">
     <cr-button>$i18n{denyButtonText}</cr-button>
     <cr-button class="action-button">$i18n{approveButtonText}</cr-button>

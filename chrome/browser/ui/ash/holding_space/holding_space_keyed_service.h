@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,11 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "ash/public/cpp/holding_space/holding_space_image.h"
+#include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "base/scoped_observation.h"
@@ -104,6 +106,13 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
   // Adds a nearby share item backed by the provided absolute file path.
   void AddNearbyShare(const base::FilePath& nearby_share_path);
 
+  // Adds a photo or video downloaded from a connected Android phone via
+  // PhoneHub. Returns the id of the added holding space item or an empty string
+  // if the item was not added due to de-duplication checks.
+  const std::string& AddPhoneHubCameraRollItem(
+      const base::FilePath& item_path,
+      const HoldingSpaceProgress& progress);
+
   // Adds a scanned item backed by the provided absolute file path.
   void AddScan(const base::FilePath& file_path);
 
@@ -113,23 +122,27 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
   // Adds a screenshot item backed by the provided absolute file path.
   void AddScreenshot(const base::FilePath& screenshot_path);
 
-  // Adds a photo or video downloaded from a connected Android phone via
-  // PhoneHub. Returns the id of the added holding space item or an empty string
-  // if the item was not added due to de-duplication checks.
-  const std::string& AddPhoneHubCameraRollItem(
-      const base::FilePath& item_path,
-      const HoldingSpaceProgress& progress);
+  // Replaces the existing suggestions with `suggestions`. The order among
+  // `suggestions` is respected, which means that if a suggestion A is in front
+  // of a suggestion B in the given array, after calling this function, the
+  // suggestion view of A is in front of the view of B. `suggestions` can be
+  // empty. In this case, all the existing suggestions are cleared.
+  void SetSuggestions(
+      const std::vector<std::pair<HoldingSpaceItem::Type, base::FilePath>>&
+          suggestions);
 
   // Adds the specified `item` to the holding space model. Returns the id of the
   // added holding space item or an empty string if the item was not added due
   // to de-duplication checks.
   const std::string& AddItem(std::unique_ptr<HoldingSpaceItem> item);
 
-  // Adds multiple `items` to the holding space model. Returns the ids of the
-  // added holding space items or empty strings where items were not added due
-  // to de-duplication checks.
+  // Adds multiple `items` to the holding space model. `allow_duplicates`
+  // indicates whether an item should be added to the model if it is duplicate
+  // to an existing item. Returns the ids of the added holding space items or
+  // empty strings where items were not added due to de-duplication checks.
   std::vector<std::reference_wrapper<const std::string>> AddItems(
-      std::vector<std::unique_ptr<HoldingSpaceItem>> items);
+      std::vector<std::unique_ptr<HoldingSpaceItem>> items,
+      bool allow_duplicates);
 
   // Adds an item of the specified `type` backed by the provided absolute
   // `file_path` to the holding space model. Returns the id of the added
@@ -147,14 +160,17 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
   std::unique_ptr<HoldingSpaceModel::ScopedItemUpdate> UpdateItem(
       const std::string& id);
 
-  // Attempts to cancel/pause/resume the specified holding space `item`.
-  void CancelItem(const HoldingSpaceItem* item);
-  void PauseItem(const HoldingSpaceItem* item);
-  void ResumeItem(const HoldingSpaceItem* item);
+  // Removes all holding space items directly from the model.
+  void RemoveAll();
 
-  // Attempts to mark the specified holding space `item` to be opened when
-  // complete, returning whether or not the attempt was successful.
-  bool OpenItemWhenComplete(const HoldingSpaceItem* item);
+  // Removes the holding space item with the specified `id` from the model.
+  void RemoveItem(const std::string& id);
+
+  // Attempts to mark the specified holding space `item` to open when complete.
+  // Returns `absl::nullopt` on success or the reason if the attempt was not
+  // successful.
+  absl::optional<holding_space_metrics::ItemFailureToLaunchReason>
+  OpenItemWhenComplete(const HoldingSpaceItem* item);
 
   // Returns the `profile_` associated with this service.
   Profile* profile() { return profile_; }
@@ -196,6 +212,16 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
   // Pin a drive file for offline access.
   void MakeDriveItemAvailableOffline(
       const storage::FileSystemURL& file_system_url);
+
+  // Creates an item of the specified `type` backed by the provided absolute
+  // `file_path`. Returns an empty unique pointer if the file url cannot be
+  // resolved.
+  std::unique_ptr<HoldingSpaceItem> CreateItemOfType(
+      HoldingSpaceItem::Type type,
+      const base::FilePath& file_path,
+      const HoldingSpaceProgress& progress,
+      HoldingSpaceImage::PlaceholderImageSkiaResolver
+          placeholder_image_skia_resolver);
 
   Profile* const profile_;
   const AccountId account_id_;

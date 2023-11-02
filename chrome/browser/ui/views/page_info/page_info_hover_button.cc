@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,7 +46,8 @@ PageInfoHoverButton::PageInfoHoverButton(
     int click_target_id,
     const std::u16string& tooltip_text,
     const std::u16string& subtitle_text,
-    absl::optional<ui::ImageModel> action_image_icon)
+    absl::optional<ui::ImageModel> action_image_icon,
+    absl::optional<ui::ImageModel> state_icon)
     : HoverButton(std::move(callback), std::u16string()) {
   label()->SetHandlesTooltips(false);
 
@@ -62,19 +63,34 @@ PageInfoHoverButton::PageInfoHoverButton(
   views::TableLayout* table_layout =
       SetLayoutManager(std::make_unique<views::TableLayout>());
   table_layout
+      // Column for |main_image_icon|.
       ->AddColumn(views::LayoutAlignment::kCenter,
                   views::LayoutAlignment::kCenter,
                   views::TableLayout::kFixedSize,
                   views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
       .AddPaddingColumn(views::TableLayout::kFixedSize, icon_label_spacing)
+      // Column for title.
       .AddColumn(views::LayoutAlignment::kStretch,
                  views::LayoutAlignment::kCenter, 1.0f,
                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
       .AddPaddingColumn(views::TableLayout::kFixedSize, icon_label_spacing)
+      // Column for |secondary_text|.
       .AddColumn(views::LayoutAlignment::kEnd, views::LayoutAlignment::kStretch,
                  views::TableLayout::kFixedSize,
-                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
-      .AddPaddingColumn(views::TableLayout::kFixedSize, icon_label_spacing)
+                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
+
+  if (state_icon.has_value()) {
+    table_layout
+        // Column for |state_icon|.
+        ->AddPaddingColumn(views::TableLayout::kFixedSize, icon_label_spacing)
+        .AddColumn(views::LayoutAlignment::kCenter,
+                   views::LayoutAlignment::kCenter,
+                   views::TableLayout::kFixedSize,
+                   views::TableLayout::ColumnSize::kFixed, 16, 0);
+  }
+  table_layout
+      // Column for |action_icon|.
+      ->AddPaddingColumn(views::TableLayout::kFixedSize, icon_label_spacing)
       .AddColumn(views::LayoutAlignment::kCenter,
                  views::LayoutAlignment::kCenter,
                  views::TableLayout::kFixedSize,
@@ -103,10 +119,15 @@ PageInfoHoverButton::PageInfoHoverButton(
   secondary_label->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
   secondary_label_ = AddChildView(std::move(secondary_label));
 
+  // State icon is optional and column is created only when it is set.
+  if (state_icon.has_value()) {
+    AddChildView(CreateIconView(state_icon.value()));
+  }
+
   if (action_image_icon.has_value()) {
     AddChildView(CreateIconView(action_image_icon.value()));
   } else {
-    // Fill the cell with an empty view at column 4.
+    // Fill the cell with an empty view at column 5.
     AddChildView(std::make_unique<views::View>());
   }
 
@@ -122,6 +143,7 @@ PageInfoHoverButton::PageInfoHoverButton(
     subtitle_->SetMultiLine(true);
     subtitle_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     subtitle_->SetAutoColorReadabilityEnabled(false);
+    subtitle_->SizeToFit(title_->GetPreferredSize().width());
     AddChildView(std::make_unique<views::View>());
     AddChildView(std::make_unique<views::View>());
   }
@@ -149,6 +171,12 @@ void PageInfoHoverButton::SetTitleText(int title_resource_id,
 void PageInfoHoverButton::SetTitleText(const std::u16string& title_text) {
   DCHECK(title_);
   title_->SetText(title_text);
+  UpdateAccessibleName();
+}
+
+void PageInfoHoverButton::SetSubtitleText(const std::u16string& subtitle_text) {
+  DCHECK(subtitle_);
+  subtitle_->SetText(subtitle_text);
   UpdateAccessibleName();
 }
 

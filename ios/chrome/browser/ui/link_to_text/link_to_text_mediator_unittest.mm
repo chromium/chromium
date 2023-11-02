@@ -1,8 +1,9 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/link_to_text/link_to_text_mediator.h"
+#import "base/time/time.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -71,7 +72,6 @@ class FakeJSFeature : public LinkToTextJavaScriptFeature {
  public:
   void GetLinkToText(
       web::WebState* web_state,
-      web::WebFrame* frame,
       base::OnceCallback<void(LinkToTextResponse*)> callback) override {
     std::move(callback).Run([LinkToTextResponse
         linkToTextResponseWithValue:response_
@@ -501,8 +501,8 @@ TEST_F(LinkToTextMediatorTest, LinkGenerationTimeout) {
   base::HistogramTester histogram_tester;
 
   SetLinkToTextResponse(nullptr, /*zoom=*/0);
-  fake_js_feature_.set_latency(
-      base::Milliseconds(link_to_text::kLinkGenerationTimeoutInMs + 10));
+  fake_js_feature_.set_latency(link_to_text::kLinkGenerationTimeout +
+                               base::Milliseconds(10));
 
   __block BOOL callback_invoked = NO;
   [[[mocked_consumer_ expect] andDo:^(NSInvocation*) {

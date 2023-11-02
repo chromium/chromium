@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,7 +44,7 @@ class TranslateWaiter : TranslateDriver::LanguageDetectionObserver,
   // ContentTranslateDriver::TranslationObserver:
   void OnPageTranslated(const std::string& source_lang,
                         const std::string& translated_lang,
-                        TranslateErrors::Type error_type) override;
+                        TranslateErrors error_type) override;
   void OnIsPageTranslatedChanged(content::WebContents* source) override;
 
  private:

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
@@ -75,6 +75,8 @@ class GPU_EXPORT MemoryTypeTracker {
 
   ~MemoryTypeTracker();
 
+  const MemoryTracker* memory_tracker() const { return memory_tracker_; }
+
   void TrackMemAlloc(size_t bytes);
   void TrackMemFree(size_t bytes);
   size_t GetMemRepresented() const;
@@ -82,7 +84,7 @@ class GPU_EXPORT MemoryTypeTracker {
  private:
   void TrackMemoryAllocatedChange(int64_t delta);
 
-  MemoryTracker* const memory_tracker_;
+  const raw_ptr<MemoryTracker> memory_tracker_;
 
   size_t mem_represented_ GUARDED_BY(lock_) = 0;
   mutable base::Lock lock_;

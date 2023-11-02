@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,9 +63,6 @@ class SingleClientVideoCaptureHost final
   void Resume(const base::UnguessableToken& device_id,
               const base::UnguessableToken& session_id,
               const VideoCaptureParams& params) override;
-  void Crop(const base::UnguessableToken& device_id,
-            const base::Token& crop_id,
-            CropCallback callback) override;
   void RequestRefreshFrame(const base::UnguessableToken& device_id) override;
   void ReleaseBuffer(const base::UnguessableToken& device_id,
                      int32_t buffer_id,
@@ -92,6 +89,8 @@ class SingleClientVideoCaptureHost final
   void OnBufferRetired(int buffer_id) override;
   void OnError(media::VideoCaptureError error) override;
   void OnFrameDropped(media::VideoCaptureFrameDropReason reason) override;
+  void OnNewCropVersion(uint32_t crop_version) override;
+  void OnFrameWithEmptyRegionCapture() override;
   void OnLog(const std::string& message) override;
   void OnStarted() override;
   void OnStartedUsingGpuDecode() override;
@@ -105,7 +104,7 @@ class SingleClientVideoCaptureHost final
  private:
   // Reports the |consumer_resource_utilization| and removes the buffer context.
   void OnFinishedConsumingBuffer(int buffer_context_id,
-                                 const media::VideoCaptureFeedback& feedback);
+                                 media::VideoCaptureFeedback feedback);
 
   const std::string device_id_;
   const blink::mojom::MediaStreamType type_;

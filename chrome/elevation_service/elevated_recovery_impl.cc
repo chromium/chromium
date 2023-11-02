@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -117,7 +117,7 @@ HRESULT CopyFileImpersonated(const base::FilePath from,
   HRESULT hr =
       OpenFileImpersonated(from,
                            base::File::FLAG_READ | base::File::FLAG_OPEN |
-                               base::File::FLAG_SEQUENTIAL_SCAN,
+                               base::File::FLAG_WIN_SEQUENTIAL_SCAN,
                            &from_file);
   if (FAILED(hr))
     return hr;
@@ -125,7 +125,7 @@ HRESULT CopyFileImpersonated(const base::FilePath from,
   base::File to_file;
   to_file.Initialize(to, base::File::FLAG_WRITE |
                              base::File::FLAG_CREATE_ALWAYS |
-                             base::File::FLAG_SEQUENTIAL_SCAN);
+                             base::File::FLAG_WIN_SEQUENTIAL_SCAN);
   if (!to_file.IsValid())
     return HRESULTFromLastError();
 

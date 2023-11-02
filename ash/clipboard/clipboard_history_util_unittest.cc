@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace ClipboardHistoryUtil {
+namespace ash::clipboard_history_util {
 
 namespace {
 
@@ -185,5 +184,4 @@ TEST_F(ClipboardHistoryUtilTest, IsSupported) {
   EXPECT_TRUE(IsSupported(builder.Build().data()));
 }
 
-}  // namespace ClipboardHistoryUtil
-}  // namespace ash
+}  // namespace ash::clipboard_history_util

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,19 +10,20 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "ui/base/ime/ash/ime_engine_handler_interface.h"
+#include "ui/base/ime/ash/text_input_method.h"
 #include "ui/events/event.h"
 
 namespace ash {
 
 class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMEEngineHandler
-    : public ui::IMEEngineHandlerInterface {
+    : public ui::TextInputMethod {
  public:
   MockIMEEngineHandler();
   ~MockIMEEngineHandler() override;
 
-  // ui::IMEEngineHandlerInterface:
+  // ui::TextInputMethod:
   void FocusIn(const InputContext& input_context) override;
+  void OnTouch(ui::EventPointerType pointerType) override;
   void FocusOut() override;
   void Enable(const std::string& component_id) override;
   void Disable() override;
@@ -30,6 +31,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMEEngineHandler
   void ProcessKeyEvent(const ui::KeyEvent& key_event,
                        KeyEventDoneCallback callback) override;
   void SetCompositionBounds(const std::vector<gfx::Rect>& bounds) override;
+  void SetCaretBounds(const gfx::Rect& caret_bounds) override;
   ui::VirtualKeyboardController* GetVirtualKeyboardController() const override;
   void PropertyActivate(const std::string& property_name) override;
   void CandidateClicked(uint32_t index) override;
@@ -39,6 +41,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMEEngineHandler
                           uint32_t offset_pos) override;
   void SetMirroringEnabled(bool mirroring_enabled) override;
   void SetCastingEnabled(bool casting_enabled) override;
+  bool IsReadyForTesting() override;
 
   const std::string& GetActiveComponentId() const;
 

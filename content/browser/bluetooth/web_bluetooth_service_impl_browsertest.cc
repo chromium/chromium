@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "content/browser/bluetooth/bluetooth_adapter_factory_wrapper.h"
@@ -18,7 +19,9 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
+#include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/test_web_contents.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
@@ -161,11 +164,16 @@ class TestBluetoothDelegate : public BluetoothDelegate {
     prompt_ = prompt.get();
     return std::move(prompt);
   }
-  void ShowDeviceCredentialsPrompt(RenderFrameHost* frame,
-                                   const std::u16string& device_identifier,
-                                   CredentialsCallback callback) override {
+
+  void ShowDevicePairPrompt(
+      content::RenderFrameHost* frame,
+      const std::u16string& device_identifier,
+      PairPromptCallback callback,
+      PairingKind pairing_kind,
+      const absl::optional<std::u16string>& pin) override {
     NOTREACHED();
   }
+
   blink::WebBluetoothDeviceId GetWebBluetoothDeviceId(
       RenderFrameHost* frame,
       const std::string& device_address) override {
@@ -191,6 +199,9 @@ class TestBluetoothDelegate : public BluetoothDelegate {
       const blink::WebBluetoothDeviceId& device_id) override {
     return false;
   }
+  void RevokeDevicePermissionWebInitiated(
+      RenderFrameHost* frame,
+      const blink::WebBluetoothDeviceId& device_id) override {}
   bool IsAllowedToAccessService(RenderFrameHost* frame,
                                 const blink::WebBluetoothDeviceId& device_id,
                                 const device::BluetoothUUID& service) override {
@@ -364,7 +375,7 @@ class WebBluetoothServiceImplBrowserTest : public ContentBrowserTest {
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
   scoped_refptr<FakeBluetoothAdapter> adapter_;
   TestContentBrowserClient browser_client_;
-  ContentBrowserClient* old_browser_client_ = nullptr;
+  raw_ptr<ContentBrowserClient> old_browser_client_ = nullptr;
 };
 
 // Tests that the scanning prompt is not shown in the prerendering. It also
@@ -375,7 +386,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   EXPECT_CALL(*adapter(), AddObserver(_));
-  ASSERT_TRUE(content::ExecJs(GetWebContents()->GetMainFrame(), R"(
+  ASSERT_TRUE(content::ExecJs(GetWebContents()->GetPrimaryMainFrame(), R"(
       var requestLEScanPromise = navigator.bluetooth.requestLEScan({
         acceptAllAdvertisements: true});
   )"));
@@ -385,7 +396,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
   EXPECT_TRUE(GetBluetoothDelegate()->showed_bluetooth_scanning_prompt());
 
   WebBluetoothServiceImpl* service_for_main_frame =
-      GetWebBluetoothServiceForTesting(GetWebContents()->GetMainFrame());
+      GetWebBluetoothServiceForTesting(GetWebContents()->GetPrimaryMainFrame());
   // ScanningClient with the main frame is created.
   EXPECT_EQ(service_for_main_frame->scanning_clients_.size(), 1u);
 
@@ -421,10 +432,18 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
   // Loading a new primary page removes observer and stops scanning.
   EXPECT_CALL(*adapter(), RemoveObserver(_));
 
+  RenderFrameDeletedObserver rfh_observer(
+      GetWebContents()->GetPrimaryMainFrame());
+
   // Navigates the primary page to the URL.
   prerender_helper()->NavigatePrimaryPage(prerender_url);
   // The page should be activated from the prerendering.
   EXPECT_TRUE(host_observer.was_activated());
+
+  // Wait until the previous RFH to be disposed of, so a new bluetooth adapter
+  // can be set after that.
+  rfh_observer.WaitUntilDeleted();
+
   // Sets BluetoothAdapter for the new primary page since the previous
   // adapter is released by BluetoothAdapterFactoryWrapper::ReleaseAdapter().
   BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterForTesting(
@@ -434,7 +453,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
 
   // Scanning after the prerendering activation to ensure it shows the prompt on
   // the activated page.
-  EXPECT_TRUE(ExecJs(GetWebContents()->GetMainFrame(), R"(
+  EXPECT_TRUE(ExecJs(GetWebContents()->GetPrimaryMainFrame(), R"(
       var requestLEScanPromise = navigator.bluetooth.requestLEScan({
         acceptAllAdvertisements: true});)"));
   // Waits for ShowBluetoothScanningPrompt() since the page is activated.
@@ -443,7 +462,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
   EXPECT_TRUE(GetBluetoothDelegate()->showed_bluetooth_scanning_prompt());
 
   WebBluetoothServiceImpl* service_for_activated_frame =
-      GetWebBluetoothServiceForTesting(GetWebContents()->GetMainFrame());
+      GetWebBluetoothServiceForTesting(GetWebContents()->GetPrimaryMainFrame());
   // ScanningClient is created after the prerendering activation.
   EXPECT_EQ(service_for_activated_frame->scanning_clients_.size(), 1u);
 
@@ -456,14 +475,8 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
 
 // Tests that navigator.bluetooth.requestDevice() has an error without a user
 // gesture in the prerendering and works in the prerendering activation.
-// TODO(crbug.com/1269285): Fix flakiness on Linux and ChromeOS then reenable.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-#define MAYBE_RequestDeviceInPrerendering DISABLED_RequestDeviceInPrerendering
-#else
-#define MAYBE_RequestDeviceInPrerendering RequestDeviceInPrerendering
-#endif
 IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
-                       MAYBE_RequestDeviceInPrerendering) {
+                       RequestDeviceInPrerendering) {
   GURL url = embedded_test_server()->GetURL("/hello.html");
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -487,8 +500,9 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
   )"));
 
   // WebBluetoothService is created for the main frame.
-  EXPECT_NE(GetWebBluetoothServiceForTesting(GetWebContents()->GetMainFrame()),
-            nullptr);
+  EXPECT_NE(
+      GetWebBluetoothServiceForTesting(GetWebContents()->GetPrimaryMainFrame()),
+      nullptr);
 
   // Loads a page in the prerender.
   auto prerender_url = embedded_test_server()->GetURL("/empty.html");
@@ -514,10 +528,17 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
   // Loading a new primary page removes observer.
   EXPECT_CALL(*adapter(), RemoveObserver(_));
 
+  RenderFrameDeletedObserver rfh_observer(
+      GetWebContents()->GetPrimaryMainFrame());
+
   // Navigate to the prerendered page.
   prerender_helper()->NavigatePrimaryPage(prerender_url);
   // The page should be activated from the prerendering.
   EXPECT_TRUE(host_observer.was_activated());
+
+  // Wait until the previous RFH to be disposed of, so a new bluetooth adapter
+  // can be set after that.
+  rfh_observer.WaitUntilDeleted();
 
   // Sets BluetoothAdapter for the new primary page since the previous
   // adapter is released by BluetoothAdapterFactoryWrapper::ReleaseAdapter().
@@ -526,29 +547,22 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
   EXPECT_CALL(*adapter(), AddObserver(_));
   EXPECT_CALL(*adapter(), GetDevice(kDeviceAddress));
 
-  EXPECT_TRUE(content::ExecJs(GetWebContents()->GetMainFrame(), R"(
+  EXPECT_TRUE(content::ExecJs(GetWebContents()->GetPrimaryMainFrame(), R"(
       navigator.bluetooth.requestDevice({
           filters: [{name: 'Test Device', services: ['heart_rate']}]}))"));
 
   // WebBluetoothService is created for the activated page.
-  EXPECT_NE(GetWebBluetoothServiceForTesting(GetWebContents()->GetMainFrame()),
-            nullptr);
+  EXPECT_NE(
+      GetWebBluetoothServiceForTesting(GetWebContents()->GetPrimaryMainFrame()),
+      nullptr);
 
   EXPECT_CALL(*adapter(), RemoveObserver(_));
 }
 
 // Tests that GetBluetoothAllowed() only works with the main page in order to
 // ensure that it's no problem to get the main frame from the WebContents.
-// TODO(crbug.com/1269285): Fix flakiness on Linux and ChromeOS then reenable.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-#define MAYBE_GetBluetoothAllowedNotCalledInPrerendering \
-  DISABLED_GetBluetoothAllowedNotCalledInPrerendering
-#else
-#define MAYBE_GetBluetoothAllowedNotCalledInPrerendering \
-  GetBluetoothAllowedNotCalledInPrerendering
-#endif
 IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
-                       MAYBE_GetBluetoothAllowedNotCalledInPrerendering) {
+                       GetBluetoothAllowedNotCalledInPrerendering) {
   GURL url = embedded_test_server()->GetURL("/hello.html");
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -562,7 +576,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
       prerender_helper()->GetPrerenderedMainFrameHost(host_id);
 
   // Runs JS asynchronously since Mojo calls are deferred during prerendering.
-  content::DOMMessageQueue message_queue;
+  content::DOMMessageQueue message_queue(prerendered_frame_host);
   content::ExecuteScriptAsync(prerendered_frame_host, R"(
     navigator.bluetooth.getAvailability()
     .then(isBluetoothAvailable => {
@@ -636,6 +650,77 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
   EXPECT_EQ(messages.size(), 1u);
   EXPECT_EQ(messages.back().source_frame, sub_frame);
   EXPECT_CALL(*adapter(), RemoveObserver(_));
+}
+
+class WebBluetoothServiceImplFencedFramesBrowserTest
+    : public WebBluetoothServiceImplBrowserTest {
+ public:
+  WebBluetoothServiceImplFencedFramesBrowserTest() = default;
+  ~WebBluetoothServiceImplFencedFramesBrowserTest() override = default;
+  WebBluetoothServiceImplFencedFramesBrowserTest(
+      const WebBluetoothServiceImplFencedFramesBrowserTest&) = delete;
+
+  WebBluetoothServiceImplFencedFramesBrowserTest& operator=(
+      const WebBluetoothServiceImplFencedFramesBrowserTest&) = delete;
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplFencedFramesBrowserTest,
+                       BlockFromFencedFrame) {
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/hello.html");
+  EXPECT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Setup the fake device.
+  AddFakeDevice(kDeviceAddress);
+  SetDeviceToSelect(kDeviceAddress);
+
+  EXPECT_CALL(*adapter(), AddObserver(_));
+  EXPECT_CALL(*adapter(), GetDevice(kDeviceAddress));
+
+  EXPECT_EQ("", content::EvalJs(GetWebContents(), R"(
+    (async() => {
+      try {
+        let device = await navigator.bluetooth.requestDevice({
+          filters: [{name: 'Test Device', services: ['heart_rate']}]});
+        return "";
+      } catch(e) {
+        return `${e.name}: ${e.message}`;
+      }
+    })()
+  )"));
+
+  // WebBluetoothService is created for the main frame.
+  EXPECT_NE(
+      GetWebBluetoothServiceForTesting(GetWebContents()->GetPrimaryMainFrame()),
+      nullptr);
+
+  // Loads a fenced frame
+  const GURL kFencedFrameUrl =
+      embedded_test_server()->GetURL("/fenced_frames/empty.html");
+  content::RenderFrameHost* render_frame_host =
+      fenced_frame_test_helper().CreateFencedFrame(
+          GetWebContents()->GetPrimaryMainFrame(), kFencedFrameUrl);
+  EXPECT_NE(nullptr, render_frame_host);
+
+  // Tries to request a device from the fenced, which must cause an error.
+  constexpr char kFencedFrameError[] =
+      "Web Bluetooth is not allowed in a fenced frame tree.";
+  auto result = content::EvalJs(render_frame_host, R"(
+      navigator.bluetooth.requestDevice({
+          filters: [{name: 'Test Device', services: ['heart_rate']}]}))");
+  EXPECT_THAT(result.error, ::testing::HasSubstr(kFencedFrameError));
+
+  // No service should be created, as this is a fenced-frame
+  EXPECT_EQ(nullptr, GetWebBluetoothServiceForTesting(render_frame_host));
+
+  EXPECT_CALL(*adapter(), RemoveObserver(GetWebBluetoothServiceForTesting(
+                              GetWebContents()->GetPrimaryMainFrame())));
 }
 
 }  // namespace content

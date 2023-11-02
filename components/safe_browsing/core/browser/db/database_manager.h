@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -16,6 +16,7 @@
 
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/browser/db/util.h"
@@ -232,10 +233,6 @@ class SafeBrowsingDatabaseManager
   // Returns whether download protection is enabled.
   virtual bool IsDownloadProtectionEnabled() const = 0;
 
-  // Returns true if URL-checking is supported on this build+device.
-  // If false, calls to CheckBrowseUrl may dcheck-fail.
-  virtual bool IsSupported() const = 0;
-
   //
   // Methods to indicate when to start or suspend the SafeBrowsing operations.
   // These functions are always called on the IO thread.
@@ -266,6 +263,9 @@ class SafeBrowsingDatabaseManager
   // method at the bottom of it.
   virtual void StopOnIOThread(bool shutdown);
 
+  // Called to check if database is ready or not.
+  virtual bool IsDatabaseReady();
+
  protected:
   // Bundled client info for an API abuse hash prefix check.
   class SafeBrowsingApiCheck {
@@ -284,7 +284,7 @@ class SafeBrowsingDatabaseManager
     GURL url_;
 
     // Not owned.
-    Client* client_;
+    raw_ptr<Client> client_;
   };
 
   SafeBrowsingDatabaseManager(

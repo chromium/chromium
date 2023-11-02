@@ -1,15 +1,18 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_ui_handler_impl.h"
 
 #include <string>
+#include <utility>
 
 #include "base/base64.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_callback.pb.h"
+#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_ui.mojom.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
@@ -35,7 +38,6 @@ void ParentAccessUIHandlerImpl::GetOAuthToken(GetOAuthTokenCallback callback) {
   signin::ScopeSet scopes;
   scopes.insert(GaiaConstants::kParentApprovalOAuth2Scope);
   scopes.insert(GaiaConstants::kProgrammaticChallengeOAuth2Scope);
-  scopes.insert(GaiaConstants::kKidManagementOAuth2Scope);
 
   if (oauth2_access_token_fetcher_) {
     // Only one GetOAuthToken call can happen at a time.
@@ -72,47 +74,103 @@ void ParentAccessUIHandlerImpl::OnAccessTokenFetchComplete(
       access_token_info.token);
 }
 
-void ParentAccessUIHandlerImpl::OnParentAccessResult(
-    const std::string& parent_access_result,
-    OnParentAccessResultCallback callback) {
-  std::string decoded_parent_access_result;
-  if (!base::Base64Decode(parent_access_result,
-                          &decoded_parent_access_result)) {
+void ParentAccessUIHandlerImpl::GetParentAccessParams(
+    GetParentAccessParamsCallback callback) {
+  std::move(callback).Run(
+      ParentAccessDialog::GetInstance()->CloneParentAccessParams());
+  return;
+}
+
+void ParentAccessUIHandlerImpl::OnParentAccessDone(
+    parent_access_ui::mojom::ParentAccessResult result,
+    OnParentAccessDoneCallback callback) {
+  auto dialog_result = std::make_unique<ParentAccessDialog::Result>();
+
+  switch (result) {
+    case parent_access_ui::mojom::ParentAccessResult::kApproved:
+      DCHECK(parent_access_token_);
+      dialog_result->status = ParentAccessDialog::Result::Status::kApproved;
+      dialog_result->parent_access_token = parent_access_token_->token();
+      // Only keep the seconds, not the nanoseconds.
+      dialog_result->parent_access_token_expire_timestamp =
+          base::Time::FromDoubleT(
+              parent_access_token_->expire_time().seconds());
+      break;
+    case parent_access_ui::mojom::ParentAccessResult::kDeclined:
+      dialog_result->status = ParentAccessDialog::Result::Status::kDeclined;
+      break;
+    case parent_access_ui::mojom::ParentAccessResult::kCancelled:
+      dialog_result->status = ParentAccessDialog::Result::Status::kCancelled;
+      break;
+    case parent_access_ui::mojom::ParentAccessResult::kError:
+      dialog_result->status = ParentAccessDialog::Result::Status::kError;
+      break;
+  }
+
+  ParentAccessDialog::GetInstance()->SetResultAndClose(
+      std::move(dialog_result));
+  std::move(callback).Run();
+}
+
+const kids::platform::parentaccess::client::proto::ParentAccessToken*
+ParentAccessUIHandlerImpl::GetParentAccessTokenForTest() {
+  return parent_access_token_.get();
+}
+
+void ParentAccessUIHandlerImpl::OnParentAccessCallbackReceived(
+    const std::string& encoded_parent_access_callback_proto,
+    OnParentAccessCallbackReceivedCallback callback) {
+  std::string decoded_parent_access_callback;
+  parent_access_ui::mojom::ParentAccessServerMessagePtr message =
+      parent_access_ui::mojom::ParentAccessServerMessage::New();
+  if (!base::Base64Decode(encoded_parent_access_callback_proto,
+                          &decoded_parent_access_callback)) {
     LOG(ERROR) << "ParentAccessHandler::ParentAccessResult: Error decoding "
                   "parent_access_result from base64";
-    std::move(callback).Run(
-        parent_access_ui::mojom::ParentAccessResultStatus::kError);
+    message->type =
+        parent_access_ui::mojom::ParentAccessServerMessageType::kError;
+    std::move(callback).Run(std::move(message));
     return;
   }
 
   kids::platform::parentaccess::client::proto::ParentAccessCallback
       parent_access_callback;
-  if (!parent_access_callback.ParseFromString(decoded_parent_access_result)) {
+  if (!parent_access_callback.ParseFromString(decoded_parent_access_callback)) {
     LOG(ERROR) << "ParentAccessHandler::ParentAccessResult: Error parsing "
                   "decoded_parent_access_result to proto";
-    std::move(callback).Run(
-        parent_access_ui::mojom::ParentAccessResultStatus::kError);
+
+    message->type =
+        parent_access_ui::mojom::ParentAccessServerMessageType::kError;
+    std::move(callback).Run(std::move(message));
     return;
   }
-
-  //  TODO(b/200587178): Communicate parsed callback to ChromeOS caller.
 
   switch (parent_access_callback.callback_case()) {
     case kids::platform::parentaccess::client::proto::ParentAccessCallback::
         CallbackCase::kOnParentVerified:
-      std::move(callback).Run(
-          parent_access_ui::mojom::ParentAccessResultStatus::kParentVerified);
-      break;
-    case kids::platform::parentaccess::client::proto::ParentAccessCallback::
-        CallbackCase::kOnConsentDeclined:
-      std::move(callback).Run(
-          parent_access_ui::mojom::ParentAccessResultStatus::kConsentDeclined);
+      message->type = parent_access_ui::mojom::ParentAccessServerMessageType::
+          kParentVerified;
+
+      if (parent_access_callback.on_parent_verified()
+              .verification_proof_case() ==
+          kids::platform::parentaccess::client::proto::OnParentVerified::
+              VerificationProofCase::kParentAccessToken) {
+        DCHECK(!parent_access_token_);
+        parent_access_token_ = std::make_unique<
+            kids::platform::parentaccess::client::proto::ParentAccessToken>();
+        parent_access_token_->CopyFrom(
+            parent_access_callback.on_parent_verified().parent_access_token());
+      }
+      std::move(callback).Run(std::move(message));
       break;
     default:
-      std::move(callback).Run(
-          parent_access_ui::mojom::ParentAccessResultStatus::kError);
-      LOG(ERROR) << "ParentAccessHandler::ParentAccessResult: Unknown type of "
-                    "callback received";
+      LOG(ERROR)
+          << "ParentAccessHandler::OnParentAccessCallback: Unknown type of "
+             "callback received and ignored: "
+          << parent_access_callback.callback_case();
+      message->type =
+          parent_access_ui::mojom::ParentAccessServerMessageType::kIgnore;
+      std::move(callback).Run(std::move(message));
       break;
   }
 }

@@ -1,10 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/content_creation/notes/core/server/note_data.h"
 
-#include "components/shared_highlighting/core/common/text_fragments_utils.h"
+#include "components/shared_highlighting/core/common/fragment_directives_utils.h"
 #include "url/gurl.h"
 
 namespace content_creation {

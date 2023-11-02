@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/scoped_window_targeter.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/aura/test/test_window_delegate.h"
@@ -35,19 +36,17 @@ class StaticWindowTargeter : public WindowTargeter {
     return window_;
   }
 
-  Window* window_;
+  raw_ptr<Window> window_;
 };
 
 gfx::RectF GetEffectiveVisibleBoundsInRootWindow(Window* window) {
-  gfx::RectF bounds = gfx::RectF(gfx::SizeF(window->bounds().size()));
   Window* root = window->GetRootWindow();
   CHECK(window->layer());
   CHECK(root->layer());
   gfx::Transform transform;
   if (!window->layer()->GetTargetTransformRelativeTo(root->layer(), &transform))
     return gfx::RectF();
-  transform.TransformRect(&bounds);
-  return bounds;
+  return transform.MapRect(gfx::RectF(gfx::SizeF(window->bounds().size())));
 }
 
 using WindowTargeterTest = test::AuraTestBase;

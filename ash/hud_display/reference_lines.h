@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,10 +63,11 @@ class ReferenceLines : public views::View {
  private:
   const SkColor color_;
 
-  // Graph label values.
+  // Graph label values. Note that `right_` is not implemented, thus the
+  // [[maybe_unused]].
   float left_ = 0;
   float top_ = 0;
-  float right_ = 0;
+  [[maybe_unused]] float right_ = 0;
   float bottom_ = 0;
 
   std::u16string x_unit_;

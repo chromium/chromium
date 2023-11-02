@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,7 +52,7 @@ class PasswordInfobarModalOverlayRequestConfig
 
   // The InfoBar causing this modal.
   InfoBarIOS* infobar_ = nullptr;
-  // Configuration data extracted from |infobar_|'s save passwords delegate.
+  // Configuration data extracted from `infobar_`'s save passwords delegate.
   password_modal::PasswordAction action_;
   NSString* title_ = nil;
   NSString* username_ = nil;

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,12 +12,14 @@ package metrics;
 // One structured metrics event, containing several hashed and unhashed metrics
 // related to a single event type, tied to a single pseudonymous user.
 //
-// Next tag: 5
+// Next tag: 7
 message StructuredEventProto {
   // A per-client, per-profile, per-project ID that is used only for structured
   // metrics. For projects recorded from Chrome OS's platform2 repository, this
   // ID is device-wide, not per-profile. The ID is rotated at least every 90
   // days.
+  //
+  // For events of type CROS_EVENT, the ID will be rotated every 120 days.
   optional fixed64 profile_event_id = 1;
 
   // The first 8 bytes of the MD5 hash of the event's name as a string. Each
@@ -63,12 +65,42 @@ message StructuredEventProto {
   // into. An event should have type RAW_STRING if and only if the event may
   // contain raw string metrics, ie. strings that have not been HMAC'd. The
   // UNKNOWN value is considered an error and should never be sent.
+  //
+  // An event should be marked as a SEQUENCE if it contains temporal data.
   enum EventType {
     UNKNOWN = 0;
     REGULAR = 1;
     RAW_STRING = 2;
+    SEQUENCE = 3;
   }
   optional EventType event_type = 4;
+
+  // The project name hash is the first 8 bytes of the MD5 hash of the project
+  // name that is defined in src/tools/metrics/structured/structured.xml.
+  optional fixed64 project_name_hash = 5;
+
+  // Metadata associated with events for which relative order in which the
+  // events occur are of interest.
+  //
+  // Next tag: 4
+  message EventSequenceMetadata {
+    // GUIDs generated on the client to uniquely identify an event. These event
+    // IDs will be used to establish relationships between events on the client.
+    optional fixed64 event_unique_id = 1;
+
+    // Time elapsed since boot time. Note that system uptime includes duration a
+    // device has spent asleep. System uptime resets when a machine reboots.
+    // Granularity is in milliseconds.
+    optional int64 system_uptime = 2;
+
+    // Monotonically increasing number incremented every time a system reset is
+    // detected. This value will be reset to 0 in the event of a powerwash.
+    optional int64 reset_counter = 3;
+  }
+
+  // Metadata associated with event type SEQUENCE. This field will be stripped
+  // if the event is not of type SEQUENCE.
+  optional EventSequenceMetadata event_sequence_metadata = 6;
 }
 
 // The top-level proto for structured metrics. One StructuredDataProto is

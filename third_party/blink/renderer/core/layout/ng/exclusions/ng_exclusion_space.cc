@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/layout/ng/exclusions/ng_exclusion.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
 namespace blink {
 
@@ -19,7 +20,7 @@ namespace {
 void InsertClosedArea(
     const NGExclusionSpaceInternal::NGClosedArea area,
     HeapVector<NGExclusionSpaceInternal::NGClosedArea, 4>& areas) {
-  if (areas.IsEmpty()) {
+  if (areas.empty()) {
     areas.emplace_back(area);
     return;
   }
@@ -65,7 +66,7 @@ bool HasSolidEdges(const Vector<NGExclusionSpaceInternal::NGShelfEdge>& edges,
                    LayoutUnit block_end) {
   // If there aren't any adjacent exclusions, we must be the initial shelf.
   // This always has "solid" edges on either side.
-  if (edges.IsEmpty())
+  if (edges.empty())
     return true;
 
   for (const auto& edge : edges) {
@@ -521,10 +522,10 @@ void NGExclusionSpaceInternal::DerivedGeometry::Add(
 
         // If we didn't find any edges, the line_left/line_right of the shelf
         // are pushed out to be the minimum/maximum.
-        new_shelf.line_left = new_shelf.line_left_edges.IsEmpty()
+        new_shelf.line_left = new_shelf.line_left_edges.empty()
                                   ? LayoutUnit::Min()
                                   : shelf_copy->line_left;
-        new_shelf.line_right = new_shelf.line_right_edges.IsEmpty()
+        new_shelf.line_right = new_shelf.line_right_edges.empty()
                                    ? LayoutUnit::Max()
                                    : shelf_copy->line_right;
 

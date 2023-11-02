@@ -1,3 +1,5 @@
+#![cfg(feature = "alloc")]
+
 use alloc::borrow::ToOwned;
 use alloc::string::String;
 use core::mem::{ManuallyDrop, MaybeUninit};
@@ -37,6 +39,18 @@ unsafe extern "C" fn string_from_utf8(
     }
 }
 
+#[export_name = "cxxbridge1$string$from_utf8_lossy"]
+unsafe extern "C" fn string_from_utf8_lossy(
+    this: &mut MaybeUninit<String>,
+    ptr: *const u8,
+    len: usize,
+) {
+    let slice = unsafe { slice::from_raw_parts(ptr, len) };
+    let owned = String::from_utf8_lossy(slice).into_owned();
+    let this = this.as_mut_ptr();
+    unsafe { ptr::write(this, owned) }
+}
+
 #[export_name = "cxxbridge1$string$from_utf16"]
 unsafe extern "C" fn string_from_utf16(
     this: &mut MaybeUninit<String>,
@@ -52,6 +66,18 @@ unsafe extern "C" fn string_from_utf16(
         }
         Err(_) => false,
     }
+}
+
+#[export_name = "cxxbridge1$string$from_utf16_lossy"]
+unsafe extern "C" fn string_from_utf16_lossy(
+    this: &mut MaybeUninit<String>,
+    ptr: *const u16,
+    len: usize,
+) {
+    let slice = unsafe { slice::from_raw_parts(ptr, len) };
+    let owned = String::from_utf16_lossy(slice);
+    let this = this.as_mut_ptr();
+    unsafe { ptr::write(this, owned) }
 }
 
 #[export_name = "cxxbridge1$string$drop"]

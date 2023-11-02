@@ -1,12 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/webui/diagnostics_ui/backend/system_routine_controller.h"
 
+#include "ash/system/diagnostics/routine_log.h"
 #include "ash/webui/diagnostics_ui/backend/cros_healthd_helpers.h"
 #include "ash/webui/diagnostics_ui/backend/histogram_util.h"
-#include "ash/webui/diagnostics_ui/backend/routine_log.h"
 #include "ash/webui/diagnostics_ui/backend/routine_properties.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
@@ -19,18 +19,18 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
-#include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
-#include "chromeos/services/cros_healthd/public/mojom/nullable_primitives.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/nullable_primitives.mojom.h"
 #include "content/public/browser/device_service.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
-namespace diagnostics {
+namespace ash::diagnostics {
+
 namespace {
 
-namespace healthd = ::chromeos::cros_healthd::mojom;
+namespace healthd = cros_healthd::mojom;
 
 constexpr uint32_t kBatteryDurationInSeconds = 30;
 constexpr uint32_t kBatteryChargeMinimumPercent = 0;
@@ -171,14 +171,14 @@ void SystemRoutineController::GetSupportedRoutines(
 
 void SystemRoutineController::BindInterface(
     mojo::PendingReceiver<mojom::SystemRoutineController> pending_receiver) {
-  DCHECK(!ReceiverIsBound());
+  receiver_.reset();
   receiver_.Bind(std::move(pending_receiver));
   receiver_.set_disconnect_handler(
       base::BindOnce(&SystemRoutineController::OnBoundInterfaceDisconnect,
                      base::Unretained(this)));
 }
 
-bool SystemRoutineController::ReceiverIsBound() {
+bool SystemRoutineController::IsReceiverBoundForTesting() {
   return receiver_.is_bound();
 }
 
@@ -582,17 +582,15 @@ void SystemRoutineController::OnPowerRoutineResultFetched(
 void SystemRoutineController::OnPowerRoutineJsonParsed(
     mojom::RoutineType routine_type,
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.value) {
+  if (!result.has_value()) {
     OnPowerRoutineResult(routine_type,
                          mojom::StandardRoutineResult::kExecutionError,
                          /*percent_change=*/0, /*seconds_elapsed=*/0);
-    DVLOG(2) << "JSON parsing failed: " << *result.error;
+    DVLOG(2) << "JSON parsing failed: " << result.error();
     return;
   }
 
-  const base::Value& parsed_json = *result.value;
-
-  if (parsed_json.type() != base::Value::Type::DICTIONARY) {
+  if (!result->is_dict()) {
     OnPowerRoutineResult(routine_type,
                          mojom::StandardRoutineResult::kExecutionError,
                          /*percent_change=*/0, /*seconds_elapsed=*/0);
@@ -600,8 +598,9 @@ void SystemRoutineController::OnPowerRoutineJsonParsed(
     return;
   }
 
-  const base::Value* result_details_dict =
-      parsed_json.FindDictKey(kResultDetailsKey);
+  const base::Value::Dict& parsed_json = result->GetDict();
+  const base::Value::Dict* result_details_dict =
+      parsed_json.FindDict(kResultDetailsKey);
   if (!result_details_dict) {
     OnPowerRoutineResult(routine_type,
                          mojom::StandardRoutineResult::kExecutionError,
@@ -612,8 +611,8 @@ void SystemRoutineController::OnPowerRoutineJsonParsed(
 
   absl::optional<double> charge_percent_opt =
       routine_type == mojom::RoutineType::kBatteryCharge
-          ? result_details_dict->FindDoubleKey(kChargePercentKey)
-          : result_details_dict->FindDoubleKey(kDischargePercentKey);
+          ? result_details_dict->FindDouble(kChargePercentKey)
+          : result_details_dict->FindDouble(kDischargePercentKey);
   if (!charge_percent_opt.has_value()) {
     OnPowerRoutineResult(routine_type,
                          mojom::StandardRoutineResult::kExecutionError,
@@ -661,7 +660,15 @@ void SystemRoutineController::OnPowerRoutineResult(
 
 void SystemRoutineController::SendRoutineResult(
     mojom::RoutineResultInfoPtr result_info) {
-  inflight_routine_runner_->OnRoutineResult(std::move(result_info));
+  // Added as part of investigation of crash reported in crbug/1316648 to test
+  // if crash is related to memory resource allocation. Remove if crash
+  // continues to occur.
+  if (!result_info.is_null() && !result_info->result.is_null()) {
+    inflight_routine_runner_->OnRoutineResult(std::move(result_info));
+  } else {
+    LOG(ERROR) << "RoutineResult is null";
+  }
+
   inflight_routine_runner_.reset();
   inflight_routine_id_ = kInvalidRoutineId;
   inflight_routine_type_.reset();
@@ -748,5 +755,4 @@ void SystemRoutineController::ReleaseWakeLock() {
   wake_lock_->CancelWakeLock();
 }
 
-}  // namespace diagnostics
-}  // namespace ash
+}  // namespace ash::diagnostics

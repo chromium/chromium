@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,8 +47,7 @@ TEST_F(ContentSettingsDefaultProviderTest, DefaultValues) {
                                          ContentSettingsType::COOKIES, false));
   provider_.SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::COOKIES,
-      std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
+      ContentSettingsType::COOKIES, base::Value(CONTENT_SETTING_BLOCK));
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             TestUtils::GetContentSetting(&provider_, GURL(), GURL(),
                                          ContentSettingsType::COOKIES, false));
@@ -58,17 +57,16 @@ TEST_F(ContentSettingsDefaultProviderTest, DefaultValues) {
                                      ContentSettingsType::GEOLOCATION, false));
   provider_.SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::GEOLOCATION,
-      std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
+      ContentSettingsType::GEOLOCATION, base::Value(CONTENT_SETTING_BLOCK));
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,
       TestUtils::GetContentSetting(&provider_, GURL(), GURL(),
                                    ContentSettingsType::GEOLOCATION, false));
 
-  std::unique_ptr<base::Value> value(TestUtils::GetContentSettingValue(
+  base::Value value = TestUtils::GetContentSettingValue(
       &provider_, GURL("http://example.com/"), GURL("http://example.com/"),
-      ContentSettingsType::AUTO_SELECT_CERTIFICATE, false));
-  EXPECT_FALSE(value.get());
+      ContentSettingsType::AUTO_SELECT_CERTIFICATE, false);
+  EXPECT_TRUE(value.is_none());
 }
 
 TEST_F(ContentSettingsDefaultProviderTest, IgnoreNonDefaultSettings) {
@@ -78,11 +76,10 @@ TEST_F(ContentSettingsDefaultProviderTest, IgnoreNonDefaultSettings) {
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             TestUtils::GetContentSetting(&provider_, primary_url, secondary_url,
                                          ContentSettingsType::COOKIES, false));
-  std::unique_ptr<base::Value> value(new base::Value(CONTENT_SETTING_BLOCK));
   bool owned = provider_.SetWebsiteSetting(
       ContentSettingsPattern::FromURL(primary_url),
       ContentSettingsPattern::FromURL(secondary_url),
-      ContentSettingsType::COOKIES, std::move(value));
+      ContentSettingsType::COOKIES, base::Value(CONTENT_SETTING_BLOCK));
   EXPECT_FALSE(owned);
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             TestUtils::GetContentSetting(&provider_, primary_url, secondary_url,
@@ -96,15 +93,13 @@ TEST_F(ContentSettingsDefaultProviderTest, Observer) {
   provider_.AddObserver(&mock_observer);
   provider_.SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::COOKIES,
-      std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
+      ContentSettingsType::COOKIES, base::Value(CONTENT_SETTING_BLOCK));
 
   EXPECT_CALL(mock_observer,
               OnContentSettingChanged(_, _, ContentSettingsType::GEOLOCATION));
   provider_.SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::GEOLOCATION,
-      std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
+      ContentSettingsType::GEOLOCATION, base::Value(CONTENT_SETTING_BLOCK));
 }
 
 TEST_F(ContentSettingsDefaultProviderTest, ObservePref) {
@@ -112,8 +107,7 @@ TEST_F(ContentSettingsDefaultProviderTest, ObservePref) {
 
   provider_.SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::COOKIES,
-      std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
+      ContentSettingsType::COOKIES, base::Value(CONTENT_SETTING_BLOCK));
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             TestUtils::GetContentSetting(&provider_, GURL(), GURL(),
                                          ContentSettingsType::COOKIES, false));
@@ -131,17 +125,25 @@ TEST_F(ContentSettingsDefaultProviderTest, ObservePref) {
                                          ContentSettingsType::COOKIES, false));
 }
 
-// Tests that fullscreen and mouselock content settings are cleared.
+// Tests that fullscreen, obsolete NFC (with the old semantics, see
+// crbug.com/1275576), and obsolete content settings (plugins, mouselock,
+// installed web app metadata) are cleared.
 TEST_F(ContentSettingsDefaultProviderTest, DiscardObsoletePreferences) {
   static const char kFullscreenPrefPath[] =
       "profile.default_content_setting_values.fullscreen";
-#if !defined(OS_ANDROID)
+  static const char kNfcPrefPath[] =
+      "profile.default_content_setting_values.nfc";
+#if !BUILDFLAG(IS_ANDROID)
   static const char kMouselockPrefPath[] =
       "profile.default_content_setting_values.mouselock";
   const char kObsoletePluginsDefaultPref[] =
       "profile.default_content_setting_values.plugins";
   const char kObsoletePluginsDataDefaultPref[] =
       "profile.default_content_setting_values.flash_data";
+  const char kObsoleteFileHandlingDefaultPref[] =
+      "profile.default_content_setting_values.file_handling";
+  const char kObsoleteInstalledWebAppMetadataDefaultPref[] =
+      "profile.default_content_setting_values.installed_web_app_metadata";
 #endif
   static const char kGeolocationPrefPath[] =
       "profile.default_content_setting_values.geolocation";
@@ -149,10 +151,13 @@ TEST_F(ContentSettingsDefaultProviderTest, DiscardObsoletePreferences) {
   PrefService* prefs = profile_.GetPrefs();
   // Set some pref data.
   prefs->SetInteger(kFullscreenPrefPath, CONTENT_SETTING_BLOCK);
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   prefs->SetInteger(kMouselockPrefPath, CONTENT_SETTING_ALLOW);
   prefs->SetInteger(kObsoletePluginsDefaultPref, CONTENT_SETTING_ALLOW);
   prefs->SetInteger(kObsoletePluginsDataDefaultPref, CONTENT_SETTING_ALLOW);
+  prefs->SetInteger(kObsoleteFileHandlingDefaultPref, CONTENT_SETTING_ALLOW);
+  prefs->SetInteger(kObsoleteInstalledWebAppMetadataDefaultPref,
+                    CONTENT_SETTING_ALLOW);
 #endif
   prefs->SetInteger(kGeolocationPrefPath, CONTENT_SETTING_BLOCK);
 
@@ -160,18 +165,22 @@ TEST_F(ContentSettingsDefaultProviderTest, DiscardObsoletePreferences) {
   // test the constructor's behavior after setting the above.
   DefaultProvider provider(prefs, false);
 
-  // Check that fullscreen and mouselock have been deleted.
+  // Check that obsolete prefs have been deleted.
   EXPECT_FALSE(prefs->HasPrefPath(kFullscreenPrefPath));
-#if !defined(OS_ANDROID)
+  EXPECT_FALSE(prefs->HasPrefPath(kNfcPrefPath));
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(prefs->HasPrefPath(kMouselockPrefPath));
   EXPECT_FALSE(prefs->HasPrefPath(kObsoletePluginsDefaultPref));
   EXPECT_FALSE(prefs->HasPrefPath(kObsoletePluginsDataDefaultPref));
+  EXPECT_FALSE(prefs->HasPrefPath(kObsoleteFileHandlingDefaultPref));
+  EXPECT_FALSE(prefs->HasPrefPath(kObsoleteInstalledWebAppMetadataDefaultPref));
 #endif
+  // Check that non-obsolete prefs have not been touched.
   EXPECT_TRUE(prefs->HasPrefPath(kGeolocationPrefPath));
   EXPECT_EQ(CONTENT_SETTING_BLOCK, prefs->GetInteger(kGeolocationPrefPath));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 // Tests that the protected media identifier setting is migrated.
 TEST_F(ContentSettingsDefaultProviderTest,
        MigrateProtectedMediaIdentifierPreferenceBlock) {
@@ -225,7 +234,7 @@ TEST_F(ContentSettingsDefaultProviderTest,
           website_settings->Get(ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER)
               ->default_value_pref_name()));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 
 TEST_F(ContentSettingsDefaultProviderTest, OffTheRecord) {
   DefaultProvider otr_provider(profile_.GetPrefs(), true /* incognito */);
@@ -243,8 +252,7 @@ TEST_F(ContentSettingsDefaultProviderTest, OffTheRecord) {
   // incognito map.
   provider_.SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::COOKIES,
-      std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
+      ContentSettingsType::COOKIES, base::Value(CONTENT_SETTING_BLOCK));
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             TestUtils::GetContentSetting(&provider_, GURL(), GURL(),
                                          ContentSettingsType::COOKIES,
@@ -256,10 +264,9 @@ TEST_F(ContentSettingsDefaultProviderTest, OffTheRecord) {
                                          true /* include_incognito */));
 
   // Changing content settings on the incognito provider should be ignored.
-  std::unique_ptr<base::Value> value(new base::Value(CONTENT_SETTING_ALLOW));
   bool owned = otr_provider.SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::COOKIES, std::move(value));
+      ContentSettingsType::COOKIES, base::Value(CONTENT_SETTING_ALLOW));
   EXPECT_TRUE(owned);
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             TestUtils::GetContentSetting(&provider_, GURL(), GURL(),

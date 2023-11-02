@@ -1,0 +1,76 @@
+# Copyright 2017 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//media/gpu/args.gni")
+
+assert(is_chromeos_ash)
+
+if (use_v4l2_codec || use_vaapi) {
+  static_library("video_accelerator") {
+    sources = [
+      "gpu_arc_video_decode_accelerator.cc",
+      "gpu_arc_video_decode_accelerator.h",
+      "gpu_arc_video_decoder.cc",
+      "gpu_arc_video_decoder.h",
+      "gpu_arc_video_encode_accelerator.cc",
+      "gpu_arc_video_encode_accelerator.h",
+      "gpu_arc_video_frame_pool.cc",
+      "gpu_arc_video_frame_pool.h",
+      "gpu_arc_video_protected_buffer_allocator.cc",
+      "gpu_arc_video_protected_buffer_allocator.h",
+      "oop_arc_video_accelerator_factory.cc",
+      "oop_arc_video_accelerator_factory.h",
+      "protected_buffer_manager_proxy.cc",
+      "protected_buffer_manager_proxy.h",
+    ]
+
+    deps = [
+      ":common",
+      "//ash/components/arc:arc_features",
+      "//ash/components/arc/mojom:media",
+      "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu",
+      "//gpu/ipc/common:common",
+      "//media",
+      "//media/gpu:buffer_validation",
+      "//media/gpu/chromeos:common",
+    ]
+  }
+}
+
+source_set("common") {
+  sources = [
+    "arc_video_accelerator_util.cc",
+    "arc_video_accelerator_util.h",
+    "protected_buffer_manager.cc",
+    "protected_buffer_manager.h",
+    "video_frame_plane.h",
+  ]
+
+  deps = [
+    "//media",
+    "//media/gpu:buffer_validation",
+    "//media/gpu:gpu",
+    "//mojo/public/cpp/system:system",
+    "//ui/gfx:memory_buffer",
+    "//ui/ozone",
+  ]
+
+  if (use_v4l2_codec || use_vaapi) {
+    deps += [ "//media/gpu/chromeos:chromeos" ]
+  }
+}
+
+source_set("protected_native_pixmap_query_client") {
+  sources = [
+    "protected_native_pixmap_query_client.cc",
+    "protected_native_pixmap_query_client.h",
+  ]
+
+  deps = [
+    "//ash/components/arc/mojom:media",
+    "//components/exo",
+    "//content/public/browser:browser",
+  ]
+}

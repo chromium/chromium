@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,6 @@ namespace internal {
 // Expose metrics for tests.
 extern const char kHistogramDocWriteParseStartToFirstContentfulPaint[];
 extern const char kHistogramDocWriteBlockParseStartToFirstContentfulPaint[];
-extern const char kHistogramDocWriteBlockCount[];
-extern const char kHistogramDocWriteBlockReloadCount[];
 
 }  // namespace internal
 
@@ -28,17 +26,17 @@ class DocumentWritePageLoadMetricsObserver
       const DocumentWritePageLoadMetricsObserver&) = delete;
 
   // page_load_metrics::PageLoadMetricsObserver implementation:
-  void OnFirstContentfulPaintInPage(
-      const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  ObservePolicy OnFencedFramesStart(
+      content::NavigationHandle* navigation_handle,
+      const GURL& currently_committed_url) override;
+  ObservePolicy OnPrerenderStart(content::NavigationHandle* navigation_handle,
+                                 const GURL& currently_committed_url) override;
 
-  void OnFirstMeaningfulPaintInMainFrameDocument(
+  void OnFirstContentfulPaintInPage(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
 
   void OnParseStop(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
-
-  void OnLoadingBehaviorObserved(content::RenderFrameHost* rfh,
-                                 int behavior_flags) override;
 
   enum DocumentWriteLoadingBehavior {
     LOADING_BEHAVIOR_BLOCK,
@@ -48,21 +46,11 @@ class DocumentWritePageLoadMetricsObserver
   };
 
  private:
-  static void LogLoadingBehaviorMetrics(DocumentWriteLoadingBehavior behavior,
-                                        ukm::SourceId source_id);
-
   void LogDocumentWriteBlockFirstContentfulPaint(
       const page_load_metrics::mojom::PageLoadTiming& timing);
 
   void LogDocumentWriteBlockParseStop(
       const page_load_metrics::mojom::PageLoadTiming& timing);
-
-  void LogDocumentWriteBlockFirstMeaningfulPaint(
-      const page_load_metrics::mojom::PageLoadTiming& timing);
-
-  bool doc_write_same_site_diff_scheme_ = false;
-  bool doc_write_block_observed_ = false;
-  bool doc_write_block_reload_observed_ = false;
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_DOCUMENT_WRITE_PAGE_LOAD_METRICS_OBSERVER_H_

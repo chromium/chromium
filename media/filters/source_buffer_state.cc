@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -662,8 +663,8 @@ bool SourceBufferState::OnNewConfigs(
                << " config: " << audio_config.AsHumanReadableString();
       DCHECK(audio_config.IsValidConfig());
 
-      const auto& it = std::find(expected_acodecs.begin(),
-                                 expected_acodecs.end(), audio_config.codec());
+      const auto& it =
+          base::ranges::find(expected_acodecs, audio_config.codec());
       if (it == expected_acodecs.end()) {
         MEDIA_LOG(ERROR, media_log_) << "Audio stream codec "
                                      << GetCodecName(audio_config.codec())
@@ -718,39 +719,20 @@ bool SourceBufferState::OnNewConfigs(
                << " config: " << video_config.AsHumanReadableString();
       DCHECK(video_config.IsValidConfig());
 
-      if (video_config.codec() == VideoCodec::kHEVC) {
-#if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_HEVC)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-        if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-                switches::kLacrosEnablePlatformEncryptedHevc)) {
-          NOTREACHED() << "MSE parser must not emit HEVC tracks on runtime "
-                          "configurations that do not support HEVC playback "
-                          "via platform.";
-          return false;
-        }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-        // HEVC is only supported through EME under this build flag, so
-        // require the config to be for an encrypted track. Even so,
-        // conditionally allow clear HEVC if cmdline has test override.
-        if (video_config.encryption_scheme() ==
-                EncryptionScheme::kUnencrypted &&
-            !base::CommandLine::ForCurrentProcess()->HasSwitch(
-                switches::kEnableClearHevcForTesting)) {
-          MEDIA_LOG(ERROR, media_log_)
-              << "MSE playback of HEVC on is only supported via platform "
-                 "decryptor, but the provided HEVC "
-                 "track is not encrypted.";
-          return false;
-        }
-#elif !BUILDFLAG(ENABLE_PLATFORM_HEVC)
-        NOTREACHED()
-            << "MSE parser must not emit HEVC tracks on build configurations "
-               "that do not support HEVC playback via platform.";
-#endif  // BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_HEVC)
+#if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
+      // Only encrypted Dolby Vision (DV) is supported, so require the config
+      // to be for an encrypted track.
+      if (video_config.codec() == VideoCodec::kDolbyVision &&
+          !video_config.is_encrypted()) {
+        MEDIA_LOG(ERROR, media_log_)
+            << "MSE playback of DolbyVision is only supported via platform "
+               "decryptor, but the provided DV track is not encrypted.";
+        return false;
       }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
 
-      const auto& it = std::find(expected_vcodecs.begin(),
-                                 expected_vcodecs.end(), video_config.codec());
+      const auto& it =
+          base::ranges::find(expected_vcodecs, video_config.codec());
       if (it == expected_vcodecs.end()) {
         MEDIA_LOG(ERROR, media_log_) << "Video stream codec "
                                      << GetCodecName(video_config.codec())
@@ -978,10 +960,9 @@ bool SourceBufferState::OnNewBuffers(
   DCHECK(timestamp_offset_during_append_);
   DCHECK(parsing_media_segment_);
 
-  for (const auto& it : buffer_queue_map) {
-    const StreamParser::BufferQueue& bufq = it.second;
-    DCHECK(!bufq.empty());
-    media_segment_has_data_for_track_[it.first] = true;
+  for (const auto& [track_id, buffer_queue] : buffer_queue_map) {
+    DCHECK(!buffer_queue.empty());
+    media_segment_has_data_for_track_[track_id] = true;
   }
 
   const base::TimeDelta timestamp_offset_before_processing =
@@ -994,12 +975,11 @@ bool SourceBufferState::OnNewBuffers(
       timestamp_offset_before_processing;
   if (generate_timestamps_flag()) {
     base::TimeDelta min_end_timestamp = kNoTimestamp;
-    for (const auto& it : buffer_queue_map) {
-      const StreamParser::BufferQueue& bufq = it.second;
-      DCHECK(!bufq.empty());
+    for (const auto& [track_id, buffer_queue] : buffer_queue_map) {
+      DCHECK(!buffer_queue.empty());
       if (min_end_timestamp == kNoTimestamp ||
-          EndTimestamp(bufq) < min_end_timestamp) {
-        min_end_timestamp = EndTimestamp(bufq);
+          EndTimestamp(buffer_queue) < min_end_timestamp) {
+        min_end_timestamp = EndTimestamp(buffer_queue);
         DCHECK_NE(kNoTimestamp, min_end_timestamp);
       }
     }

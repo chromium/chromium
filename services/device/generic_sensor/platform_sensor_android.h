@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,10 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/ref_counted.h"
+#include "base/task/thread_pool.h"
 #include "services/device/generic_sensor/platform_sensor.h"
 
 namespace device {
-
 class PlatformSensorAndroid : public PlatformSensor {
  public:
   // Creates a new PlatformSensorAndroid for the given sensor type, returning
@@ -54,8 +54,9 @@ class PlatformSensorAndroid : public PlatformSensor {
  private:
   // Java object org.chromium.device.sensors.PlatformSensor
   base::android::ScopedJavaGlobalRef<jobject> j_object_;
+  const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_ =
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
 };
-
 }  // namespace device
 
 #endif  // SERVICES_DEVICE_GENERIC_SENSOR_PLATFORM_SENSOR_ANDROID_H_

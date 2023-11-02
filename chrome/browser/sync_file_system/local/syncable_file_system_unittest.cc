@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,7 +45,7 @@ class SyncableFileSystemTest : public testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
-    file_system_.SetUp(CannedSyncableFileSystem::QUOTA_ENABLED);
+    file_system_.SetUp();
 
     sync_context_ =
         new LocalFileSyncContext(data_dir_.GetPath(), in_memory_env_.get(),
@@ -124,7 +124,9 @@ TEST_F(SyncableFileSystemTest, SyncableLocalSandboxCombined) {
   const int64_t kOriginalQuota = QuotaManager::kSyncableStorageDefaultHostQuota;
 
   const int64_t kQuota = 12345 * 1024;
-  QuotaManager::kSyncableStorageDefaultHostQuota = kQuota;
+  file_system_.quota_manager()->SetQuota(
+      blink::StorageKey(url::Origin::Create(file_system_.origin())),
+      file_system_.storage_type(), kQuota);
   int64_t usage, quota;
   EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk,
             file_system_.GetUsageAndQuota(&usage, &quota));
@@ -149,7 +151,9 @@ TEST_F(SyncableFileSystemTest, SyncableLocalSandboxCombined) {
 
   // Shrink the quota to the current usage, try to extend the file further
   // and see if it fails.
-  QuotaManager::kSyncableStorageDefaultHostQuota = new_usage;
+  file_system_.quota_manager()->SetQuota(
+      blink::StorageKey(url::Origin::Create(file_system_.origin())),
+      file_system_.storage_type(), new_usage);
   EXPECT_EQ(base::File::FILE_ERROR_NO_SPACE,
             file_system_.TruncateFile(URL("dir/foo"), kFileSizeToExtend + 1));
 
@@ -168,7 +172,9 @@ TEST_F(SyncableFileSystemTest, SyncableLocalSandboxCombined) {
   EXPECT_EQ(0, usage);
 
   // Restore the system default quota.
-  QuotaManager::kSyncableStorageDefaultHostQuota = kOriginalQuota;
+  file_system_.quota_manager()->SetQuota(
+      blink::StorageKey(url::Origin::Create(file_system_.origin())),
+      file_system_.storage_type(), kOriginalQuota);
 }
 
 // Combined testing with LocalFileChangeTracker.

@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,17 +24,19 @@
 #include "chrome/browser/ui/signin/profile_colors_util.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/installer/util/google_update_settings.h"
+#include "components/keyed_service/core/keyed_service_factory.h"
+#include "components/keyed_service/core/refcounted_keyed_service_factory.h"
 #include "components/profile_metrics/counts.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "content/public/browser/browser_thread.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_finder.h"
 #endif
 
 namespace {
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 constexpr base::TimeDelta kProfileActivityThreshold =
     base::Days(28);  // Should be integral number of weeks.
 #endif
@@ -69,7 +71,7 @@ ProfileType GetProfileType(const base::FilePath& profile_path) {
 
 profile_metrics::ProfileColorsUniqueness GetProfileColorsUniqueness(
     ProfileAttributesStorage* storage) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return profile_metrics::ProfileColorsUniqueness::kSingleProfile;
 #else
   std::vector<ProfileAttributesEntry*> entries =
@@ -96,6 +98,11 @@ profile_metrics::ProfileColorsUniqueness GetProfileColorsUniqueness(
                    kUniqueExceptForRepeatedDefault
              : profile_metrics::ProfileColorsUniqueness::kUnique;
 #endif
+}
+
+int GetTotalKeyedServiceCount(Profile* profile) {
+  return KeyedServiceFactory::GetServicesCount(profile) +
+         RefcountedKeyedServiceFactory::GetServicesCount(profile);
 }
 
 }  // namespace
@@ -167,7 +174,7 @@ enum ProfileAvatar {
 
 // static
 bool ProfileMetrics::IsProfileActive(const ProfileAttributesEntry* entry) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // TODO(mlerman): iOS and Android should set an ActiveTime in the
   // ProfileAttributesStorage. (see ProfileManager::OnBrowserSetLastActive)
   if (base::Time::Now() - entry->GetActiveTime() > kProfileActivityThreshold)
@@ -216,8 +223,15 @@ void ProfileMetrics::LogProfileAddNewUser(ProfileAdd metric) {
 
 // static
 void ProfileMetrics::LogProfileAddSignInFlowOutcome(
-    ProfileAddSignInFlowOutcome outcome) {
+    ProfileSignedInFlowOutcome outcome) {
   base::UmaHistogramEnumeration("Profile.AddSignInFlowOutcome", outcome);
+}
+
+// static
+void ProfileMetrics::LogLacrosPrimaryProfileFirstRunOutcome(
+    ProfileSignedInFlowOutcome outcome) {
+  base::UmaHistogramEnumeration("Profile.LacrosPrimaryProfileFirstRunOutcome",
+                                outcome);
 }
 
 void ProfileMetrics::LogProfileAvatarSelection(size_t icon_index) {
@@ -428,7 +442,7 @@ void ProfileMetrics::LogProfileSyncInfo(ProfileSync metric) {
                                 NUM_PROFILE_SYNC_METRICS);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void ProfileMetrics::LogProfileAndroidAccountManagementMenu(
     ProfileAndroidAccountManagementMenu metric,
     signin::GAIAServiceType gaia_service) {
@@ -468,10 +482,10 @@ void ProfileMetrics::LogProfileAndroidAccountManagementMenu(
       break;
   }
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void ProfileMetrics::LogProfileLaunch(Profile* profile) {
-  if (profile->IsSupervised()) {
+  if (profile->IsChild()) {
     base::RecordAction(
         base::UserMetricsAction("ManagedMode_NewManagedUserWindow"));
   }
@@ -479,4 +493,13 @@ void ProfileMetrics::LogProfileLaunch(Profile* profile) {
 
 void ProfileMetrics::LogProfileUpdate(const base::FilePath& profile_path) {
   base::UmaHistogramEnumeration("Profile.Update", GetProfileType(profile_path));
+}
+
+void ProfileMetrics::LogSystemProfileKeyedServicesCount(Profile* profile) {
+  DCHECK(profile->IsSystemProfile());
+
+  std::string histogram_name = "Profile.KeyedService.Count.SystemProfile";
+  histogram_name += profile->IsOffTheRecord() ? "OTR-M-107" : "Original-M-107";
+  base::UmaHistogramCounts1000(histogram_name,
+                               GetTotalKeyedServiceCount(profile));
 }

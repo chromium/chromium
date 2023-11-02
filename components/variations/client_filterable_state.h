@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,16 +63,16 @@ struct COMPONENT_EXPORT(VARIATIONS) ClientFilterableState {
   base::Version os_version;
 
   // The Channel for this Chrome installation.
-  Study::Channel channel;
+  Study::Channel channel = Study::UNKNOWN;
 
   // The hardware form factor that Chrome is running on.
-  Study::FormFactor form_factor;
+  Study::FormFactor form_factor = Study::DESKTOP;
 
   // The CPU architecture on which Chrome is running.
-  Study::CpuArchitecture cpu_architecture;
+  Study::CpuArchitecture cpu_architecture = Study::X86_64;
 
   // The OS on which Chrome is running.
-  Study::Platform platform;
+  Study::Platform platform = Study::PLATFORM_WINDOWS;
 
   // The named hardware configuration that Chrome is running on -- used to
   // identify models of devices.

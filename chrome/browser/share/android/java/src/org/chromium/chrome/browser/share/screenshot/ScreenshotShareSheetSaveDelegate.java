@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@ import android.graphics.Bitmap;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.share.SaveBitmapDelegate;
-import org.chromium.ui.base.AndroidPermissionDelegate;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -18,7 +18,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 class ScreenshotShareSheetSaveDelegate {
     private final PropertyModel mModel;
     private final Context mContext;
-    private final AndroidPermissionDelegate mPermissionDelegate;
+    private final WindowAndroid mWindowAndroid;
     private final Runnable mCloseDialogRunnable;
 
     /**
@@ -27,10 +27,10 @@ class ScreenshotShareSheetSaveDelegate {
      * @param propertyModel The property model to use to communicate with views.
      */
     ScreenshotShareSheetSaveDelegate(Context context, PropertyModel propertyModel,
-            Runnable closeDialogRunnable, AndroidPermissionDelegate permissionDelegate) {
+            Runnable closeDialogRunnable, WindowAndroid windowAndroid) {
         mContext = context;
         mModel = propertyModel;
-        mPermissionDelegate = permissionDelegate;
+        mWindowAndroid = windowAndroid;
         mCloseDialogRunnable = closeDialogRunnable;
     }
 
@@ -44,7 +44,7 @@ class ScreenshotShareSheetSaveDelegate {
         }
 
         SaveBitmapDelegate saveBitmapDelegate = new SaveBitmapDelegate(mContext, bitmap,
-                R.string.screenshot_filename_prefix, mCloseDialogRunnable, mPermissionDelegate);
+                R.string.screenshot_filename_prefix, mCloseDialogRunnable, mWindowAndroid);
 
         saveBitmapDelegate.save();
     }

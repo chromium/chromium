@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -46,9 +46,9 @@ source_set("unified_consent_ui") {
     "//ios/chrome/browser/ui/authentication:authentication_constants",
     "//ios/chrome/browser/ui/authentication/unified_consent/identity_chooser:identity_chooser_ui",
     "//ios/chrome/browser/ui/authentication/views",
-    "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/util",
-    "//ios/chrome/common",
+    "//ios/chrome/browser/url:constants",
+    "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ui/base",
@@ -82,7 +82,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:test_support",
     "//ios/chrome/browser/unified_consent",
-    "//ios/chrome/common",
+    "//ios/chrome/common:string_util",
+    "//ios/chrome/test:test_support",
     "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
     "//ios/public/provider/chrome/browser/signin:test_support",
     "//ios/web/public/test",

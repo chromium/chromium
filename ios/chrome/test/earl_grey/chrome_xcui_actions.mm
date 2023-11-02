@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,9 +37,9 @@ NSString* GetWindowAccessibilityIdentifier(int window_number) {
   return [NSString stringWithFormat:@"%d", window_number];
 }
 
-// Finds the element with the given |identifier| of given |type| in given
-// |window_number|.  If |identitifer| is nil, this will return a element for the
-// window with |window_number| itself.
+// Finds the element with the given `identifier` of given `type` in given
+// `window_number`.  If `identitifer` is nil, this will return a element for the
+// window with `window_number` itself.
 XCUIElement* GetElementMatchingIdentifierInWindow(XCUIApplication* app,
                                                   NSString* identifier,
                                                   int window_number,
@@ -61,7 +61,7 @@ XCUIElement* GetElementMatchingIdentifierInWindow(XCUIApplication* app,
   return [query elementBoundByIndex:0];
 }
 
-// Long press at |start_point| and drag to |end_point|, with fixed press and
+// Long press at `start_point` and drag to `end_point`, with fixed press and
 // hold druations and drag velocity.
 void LongPressAndDragBetweenCoordinates(XCUICoordinate* start_point,
                                         XCUICoordinate* end_point) {
@@ -71,8 +71,8 @@ void LongPressAndDragBetweenCoordinates(XCUICoordinate* start_point,
             thenHoldForDuration:1.0];
 }
 
-// Long press on |src_element|'s center then drag to the point in |dst_element|
-// defined by |dst_normalized_offset|. Returns NO if either element is nil, YES
+// Long press on `src_element`'s center then drag to the point in `dst_element`
+// defined by `dst_normalized_offset`. Returns NO if either element is nil, YES
 // otherwise.
 BOOL LongPressAndDragBetweenElements(XCUIElement* src_element,
                                      XCUIElement* dst_element,
@@ -100,7 +100,7 @@ BOOL LongPressCellAndDragToEdge(NSString* accessibility_identifier,
   XCUIElement* drag_element = GetElementMatchingIdentifierInWindow(
       app, accessibility_identifier, window_number, XCUIElementTypeCell);
 
-  // |app| is still an element, so it can just be passed in directly here.
+  // `app` is still an element, so it can just be passed in directly here.
   return LongPressAndDragBetweenElements(drag_element, app,
                                          GetNormalizedEdgeVector(edge));
 }

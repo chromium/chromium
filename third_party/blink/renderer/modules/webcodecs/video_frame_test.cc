@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,10 @@
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_rect_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_blob_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_imagedata_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_cssimagevalue_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_offscreencanvas_svgimageelement_videoframe.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_init.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_factories.h"
@@ -23,7 +25,6 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/geometry/rect.h"
@@ -260,6 +261,83 @@ TEST_F(VideoFrameTest, ImageBitmapCreationAndZeroCopyRoundTrip) {
   EXPECT_EQ(clone->handle()->sk_image(), original_image);
 }
 
+// Wraps |source| in a VideoFrame and checks for SkImage re-use where feasible.
+void TestWrappedVideoFrameImageReuse(V8TestingScope& scope,
+                                     const sk_sp<SkImage> orig_image,
+                                     const V8CanvasImageSource* source) {
+  // Wrapping image in a VideoFrame without changing any metadata should reuse
+  // the original image.
+  auto* init = VideoFrameInit::Create();
+  init->setTimestamp(0);  // Timestamp is required since ImageBitmap lacks.
+  auto* video_frame = VideoFrame::Create(scope.GetScriptState(), source, init,
+                                         scope.GetExceptionState());
+  EXPECT_EQ(video_frame->handle()->sk_image(), orig_image);
+
+  // Duration metadata doesn't impact drawing so VideoFrame should still reuse
+  // the original image.
+  init->setDuration(1000);
+  video_frame = VideoFrame::Create(scope.GetScriptState(), source, init,
+                                   scope.GetExceptionState());
+  EXPECT_EQ(video_frame->handle()->sk_image(), orig_image);
+
+  // VisibleRect change does impact drawing, so VideoFrame should NOT re-use the
+  // original image.
+  DOMRectInit* visible_rect = DOMRectInit::Create();
+  visible_rect->setX(1);
+  visible_rect->setY(1);
+  visible_rect->setWidth(2);
+  visible_rect->setHeight(2);
+  init->setVisibleRect(visible_rect);
+  video_frame = VideoFrame::Create(scope.GetScriptState(), source, init,
+                                   scope.GetExceptionState());
+  EXPECT_NE(video_frame->handle()->sk_image(), orig_image);
+}
+
+// Wraps an ImageBitmap in a VideoFrame and checks for SkImage re-use where
+// feasible.
+TEST_F(VideoFrameTest, ImageReuse_VideoFrameFromImage) {
+  V8TestingScope scope;
+
+  sk_sp<SkSurface> surface(SkSurface::MakeRaster(
+      SkImageInfo::MakeN32Premul(5, 5, SkColorSpace::MakeSRGB())));
+  sk_sp<SkImage> original_image = surface->makeImageSnapshot();
+
+  const auto* default_options = ImageBitmapOptions::Create();
+  auto* image_bitmap_layer = MakeGarbageCollected<ImageBitmap>(
+      UnacceleratedStaticBitmapImage::Create(original_image), absl::nullopt,
+      default_options);
+
+  TestWrappedVideoFrameImageReuse(
+      scope, original_image,
+      MakeGarbageCollected<V8CanvasImageSource>(image_bitmap_layer));
+}
+
+// Like ImageReuse_VideoFrameFromImage, but adds an intermediate VideoFrame
+// to the sandwich (which triggers distinct code paths).
+TEST_F(VideoFrameTest, ImageReuse_VideoFrameFromVideoFrameFromImage) {
+  V8TestingScope scope;
+
+  sk_sp<SkSurface> surface(SkSurface::MakeRaster(
+      SkImageInfo::MakeN32Premul(5, 5, SkColorSpace::MakeSRGB())));
+  sk_sp<SkImage> original_image = surface->makeImageSnapshot();
+
+  const auto* default_options = ImageBitmapOptions::Create();
+  auto* image_bitmap = MakeGarbageCollected<ImageBitmap>(
+      UnacceleratedStaticBitmapImage::Create(original_image), absl::nullopt,
+      default_options);
+
+  auto* init = VideoFrameInit::Create();
+  init->setTimestamp(0);  // Timestamp is required since ImageBitmap lacks.
+  auto* video_frame = VideoFrame::Create(
+      scope.GetScriptState(),
+      MakeGarbageCollected<V8CanvasImageSource>(image_bitmap), init,
+      scope.GetExceptionState());
+
+  TestWrappedVideoFrameImageReuse(
+      scope, original_image,
+      MakeGarbageCollected<V8CanvasImageSource>(video_frame));
+}
+
 TEST_F(VideoFrameTest, VideoFrameFromGPUImageBitmap) {
   V8TestingScope scope;
 
@@ -443,6 +521,68 @@ TEST_F(VideoFrameTest, VideoFrameMonitoring) {
   // update the monitor.
   blink::WebHeap::CollectAllGarbageForTesting();
   EXPECT_TRUE(monitor.IsEmpty());
+}
+
+TEST_F(VideoFrameTest, TestExternalAllocatedMemoryIsReportedCorrectlyOnClose) {
+  V8TestingScope scope;
+
+  scoped_refptr<media::VideoFrame> media_frame = CreateBlackMediaVideoFrame(
+      base::Microseconds(1000), media::PIXEL_FORMAT_I420,
+      gfx::Size(112, 208) /* coded_size */,
+      gfx::Size(100, 200) /* visible_size */);
+
+  int64_t initial_external_memory =
+      scope.GetIsolate()->AdjustAmountOfExternalAllocatedMemory(0);
+
+  VideoFrame* blink_frame =
+      CreateBlinkVideoFrame(media_frame, scope.GetExecutionContext());
+
+  EXPECT_GT(scope.GetIsolate()->AdjustAmountOfExternalAllocatedMemory(0),
+            initial_external_memory);
+
+  // Calling close should decrement externally allocated memory.
+  blink_frame->close();
+
+  EXPECT_EQ(scope.GetIsolate()->AdjustAmountOfExternalAllocatedMemory(0),
+            initial_external_memory);
+
+  // Calling close another time should not decrement external memory twice.
+  blink_frame->close();
+
+  EXPECT_EQ(scope.GetIsolate()->AdjustAmountOfExternalAllocatedMemory(0),
+            initial_external_memory);
+
+  blink_frame = nullptr;
+  blink::WebHeap::CollectAllGarbageForTesting();
+
+  // Check the destructor does not double decrement the external memory.
+  EXPECT_EQ(scope.GetIsolate()->AdjustAmountOfExternalAllocatedMemory(0),
+            initial_external_memory);
+}
+
+TEST_F(VideoFrameTest,
+       TestExternalAllocatedMemoryIsReportedCorrectlyOnDestruction) {
+  V8TestingScope scope;
+
+  scoped_refptr<media::VideoFrame> media_frame = CreateBlackMediaVideoFrame(
+      base::Microseconds(1000), media::PIXEL_FORMAT_I420,
+      gfx::Size(112, 208) /* coded_size */,
+      gfx::Size(100, 200) /* visible_size */);
+
+  int64_t initial_external_memory =
+      scope.GetIsolate()->AdjustAmountOfExternalAllocatedMemory(0);
+
+  CreateBlinkVideoFrame(media_frame, scope.GetExecutionContext());
+
+  EXPECT_GT(scope.GetIsolate()->AdjustAmountOfExternalAllocatedMemory(0),
+            initial_external_memory);
+
+  blink::WebHeap::CollectAllGarbageForTesting();
+
+  // Check the destructor correctly decrements the reported
+  // externally allocated memory  when close has not been called before.
+  EXPECT_EQ(scope.GetIsolate()->AdjustAmountOfExternalAllocatedMemory(0),
+            initial_external_memory);
 }
 
 }  // namespace

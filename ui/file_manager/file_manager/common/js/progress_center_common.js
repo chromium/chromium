@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,11 @@
  * @const @enum {string}
  */
 export const ProgressItemState = {
+  SCANNING: 'scanning',
   PROGRESSING: 'progressing',
   COMPLETED: 'completed',
   ERROR: 'error',
-  CANCELED: 'canceled'
+  CANCELED: 'canceled',
 };
 Object.freeze(ProgressItemState);
 
@@ -21,25 +22,45 @@ Object.freeze(ProgressItemState);
 export const ProgressItemType = {
   // The item is file copy operation.
   COPY: 'copy',
-  // The item is file move operation.
-  MOVE: 'move',
   // The item is file delete operation.
   DELETE: 'delete',
+  // The item is emptying the trash operation.
+  EMPTY_TRASH: 'empty-trash',
+  // The item is file extract operation.
+  EXTRACT: 'extract',
+  // The item is file move operation.
+  MOVE: 'move',
   // The item is file zip operation.
   ZIP: 'zip',
   // The item is drive sync operation.
   SYNC: 'sync',
+  // The item is restoring the trash.
+  RESTORE: 'restore',
+  RESTORE_TO_DESTINATION: 'restore_to_destination',
   // The item is general file transfer operation.
   // This is used for the mixed operation of summarized item.
   TRANSFER: 'transfer',
+  // The item is being trashed.
+  TRASH: 'trash',
   // The item is external drive format operation.
   FORMAT: 'format',
   // The item is archive operation.
   MOUNT_ARCHIVE: 'mount_archive',
   // The item is external drive partitioning operation.
-  PARTITION: 'partition'
+  PARTITION: 'partition',
 };
 Object.freeze(ProgressItemType);
+
+/**
+ * Visual signals can have an additional button that, when clicked, performs
+ * some arbitrary action. The `text` defines the button text to show and the
+ * `callback` defines the arbitrary action.
+ * @typedef {{
+ *   text: string,
+ *   callback: !function(),
+ * }}
+ */
+export let ProgressItemExtraButton;
 
 /**
  * Item of the progress center.
@@ -124,6 +145,36 @@ export class ProgressCenterItem {
      * @type {number}
      */
     this.remainingTime;
+
+    /**
+     * Contains the text and callback on an extra button when the progress
+     * center item is either in COMPLETED or ERROR state.
+     * @type {!Map<!ProgressItemState, !ProgressItemExtraButton>}
+     */
+    this.extraButton = new Map();
+  }
+
+  /**
+   * Sets the extra button text and callback. Use this to add an additional
+   * button with configurable functionality.
+   * @param {string} text Text to use for the button.
+   * @param {!ProgressItemState} state Which state to show the button,
+   *     currently only `ProgressItemState.COMPLETED` and
+   *     `ProgressItemState.ERROR` are supported.
+   * @param {!function()} callback The callback to invoke when the button is
+   *     pressed.
+   */
+  setExtraButton(state, text, callback) {
+    if (!text || !callback) {
+      console.warn('Text and callback must be supplied');
+      return;
+    }
+    if (this.extraButton.has(state)) {
+      console.warn('Extra button already defined for state:', state);
+      return;
+    }
+    const extraButton = {text, callback};
+    this.extraButton.set(state, extraButton);
   }
 
   /**

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.TextView;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.ListContentManager;
 import org.chromium.chrome.browser.xsurface.ListContentManagerObserver;
+import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
 import org.chromium.ui.base.ViewUtils;
 
 /**
@@ -37,6 +39,7 @@ public class NativeViewListRenderer extends RecyclerView.Adapter<NativeViewListR
     private final Context mContext;
 
     private ListContentManager mManager;
+    private ListLayoutHelper mLayoutHelper;
     private RecyclerView mView;
 
     public NativeViewListRenderer(Context mContext) {
@@ -79,9 +82,11 @@ public class NativeViewListRenderer extends RecyclerView.Adapter<NativeViewListR
         mManager = manager;
         mView = new RecyclerView(mContext);
         mView.setAdapter(this);
-        mView.setLayoutManager(new LinearLayoutManager(mContext));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
+        mView.setLayoutManager(layoutManager);
         mManager.addObserver(this);
         onItemRangeInserted(0, mManager.getItemCount());
+        mLayoutHelper = new NativeViewListLayoutHelper(layoutManager);
         return mView;
     }
 
@@ -119,6 +124,16 @@ public class NativeViewListRenderer extends RecyclerView.Adapter<NativeViewListR
         notifyItemMoved(curIndex, newIndex);
     }
 
+    @Override
+    public ListLayoutHelper getListLayoutHelper() {
+        return mLayoutHelper;
+    }
+
+    @VisibleForTesting
+    RecyclerView getListViewForTest() {
+        return mView;
+    }
+
     private View createCannotRenderViewItem() {
         TextView viewItem = new AppCompatTextView(mContext);
         String message = "Unable to render external view";
@@ -131,5 +146,34 @@ public class NativeViewListRenderer extends RecyclerView.Adapter<NativeViewListR
         viewItem.setLayoutParams(layoutParams);
 
         return viewItem;
+    }
+
+    class NativeViewListLayoutHelper implements ListLayoutHelper {
+        private LinearLayoutManager mLayoutManager;
+
+        public NativeViewListLayoutHelper(LinearLayoutManager layoutManager) {
+            mLayoutManager = layoutManager;
+        }
+
+        @Override
+        public int findFirstVisibleItemPosition() {
+            return mLayoutManager.findFirstVisibleItemPosition();
+        }
+
+        @Override
+        public int findLastVisibleItemPosition() {
+            return mLayoutManager.findLastVisibleItemPosition();
+        }
+
+        @Override
+        public void scrollToPositionWithOffset(int position, int offset) {
+            mLayoutManager.scrollToPositionWithOffset(position, offset);
+        }
+
+        @Override
+        public void setSpanCount(int spanCount) {
+            throw new UnsupportedOperationException(
+                    "Cannot set span count when using linear layout.");
+        }
     }
 }

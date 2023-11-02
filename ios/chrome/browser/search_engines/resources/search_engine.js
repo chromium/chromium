@@ -1,13 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 /**
  * @fileoverview Add functionality related to getting search engine details.
  */
-
-/* Beginning of anonymous object. */
-(function() {
 
 /**
  * Encodes |url| in "application/x-www-form-urlencoded" content type of <form>.
@@ -309,5 +306,3 @@ if (document.readyState == 'complete') {
 } else {
   window.addEventListener('load', findOpenSearchLink);
 }
-
-}());  // End of anonymous object

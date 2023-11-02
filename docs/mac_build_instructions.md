@@ -27,15 +27,16 @@ Are you a Google employee? See
     [official builds](https://source.chromium.org/search?q=MAC_BINARIES_LABEL&ss=chromium),
     so that version is guaranteed to work. Building with a newer SDK usually
     works too (please fix or file a bug if it doesn't).
-    
+
     Building with an older SDK might also work, but if it doesn't then we won't
     accept changes for making it work.
-    
+
     The easiest way to get the newest SDK is to use the newest version of Xcode,
     which often requires using the newest version of macOS. We don't use Xcode
     itself much, so if you're know what you're doing, you can likely get the
     build working with an older version of macOS as long as you get a new
     version of the macOS SDK on it.
+*   An APFS-formatted volume (this is the default format for macOS volumes).
 
 ## Install `depot_tools`
 
@@ -56,17 +57,6 @@ $ export PATH="$PATH:/path/to/depot_tools"
 
 ## Get the code
 
-Ensure that unicode filenames aren't mangled by HFS:
-
-```shell
-$ git config --global core.precomposeUnicode true
-```
-
-In System Preferences, check that "Energy Saver" -> "Power Adapter" ->
-"Prevent computer from sleeping automatically when the display is off" is
-checked so that your laptop doesn't go to sleep and interrupt the long network
-connection needed here.
-
 Create a `chromium` directory for the checkout and change to it (you can call
 this whatever you like and put it wherever you like, as long as the full path
 has no spaces):
@@ -79,8 +69,12 @@ Run the `fetch` tool from `depot_tools` to check out the code and its
 dependencies.
 
 ```shell
-$ fetch chromium
+$ caffeinate fetch chromium
 ```
+
+Running the `fetch` with `caffeinate` is optional, but it will prevent the
+system from sleeping for the duration of the `fetch` command, which may run for
+a considerable amount of time.
 
 If you don't need the full repo history, you can save time by using
 `fetch --no-history chromium`. You can call `git fetch --unshallow` to retrieve
@@ -188,17 +182,29 @@ Once it is built, you can simply run the browser:
 $ out/Default/Chromium.app/Contents/MacOS/Chromium
 ```
 
-## Avoiding the "incoming network connections" dialog
+## Avoiding system permissions dialogs after each build
 
-Every time you start a new developer build of Chrome you get a system dialog
-asking "Do you want the application Chromium.app to accept incoming
-network connections?" - to avoid this, run with this command-line flag:
+Every time you start a new developer build, you may get two system dialogs:
+`Chromium wants to use your confidential information stored in "Chromium Safe
+Storage" in your keychain.`, and `Do you want the application "Chromium.app" to
+accept incoming network connections?`.
 
---disable-features="DialMediaRouteProvider"
+To avoid them, you can run Chromium with these command-line flags (but of
+course beware that they will change the behavior of certain subsystems):
 
-## Running test targets
+```shell
+--use-mock-keychain --disable-features=DialMediaRouteProvider
+```
 
-You can run the tests in the same way. You can also limit which tests are
+## Build and run test targets
+
+You can build a test in the same way, e.g.:
+
+```shell
+$ autoninja -C out/Default unit_tests
+```
+
+and can run the tests in the same way. You can also limit which tests are
 run using the `--gtest_filter` arg, e.g.:
 
 ```
@@ -276,7 +282,7 @@ can be quite variable.  Increasing the system's vnode cache appears to help. By
 default, this command:
 
 ```shell
-$ sysctl -a | egrep kern\..*vnodes
+$ sysctl -a | egrep 'kern\..*vnodes'
 ```
 
 Outputs `kern.maxvnodes: 263168` (263168 is 257 * 1024).  To increase this
@@ -287,11 +293,26 @@ $ sudo sysctl kern.maxvnodes=$((512*1024))
 ```
 
 Higher values may be appropriate if you routinely move between different
-Chromium checkouts.  This setting will reset on reboot, the startup setting can
-be set in `/etc/sysctl.conf`:
+Chromium checkouts.  This setting will reset on reboot.  To apply it at startup:
 
 ```shell
-$ echo kern.maxvnodes=$((512*1024)) | sudo tee -a /etc/sysctl.conf
+$ sudo tee /Library/LaunchDaemons/kern.maxvnodes.plist > /dev/null <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>Label</key>
+      <string>kern.maxvnodes</string>
+    <key>ProgramArguments</key>
+      <array>
+        <string>sysctl</string>
+        <string>kern.maxvnodes=524288</string>
+      </array>
+    <key>RunAtLoad</key>
+      <true/>
+  </dict>
+</plist>
+EOF
 ```
 
 Or edit the file directly.
@@ -336,3 +357,13 @@ Only accepting for all users of the machine requires root:
 ```shell
 $ sudo xcodebuild -license
 ```
+
+### Exclude checkout from Spotlight indexing
+
+Chromium's checkout contains a lot of files, and building generates many more.
+Spotlight will try to index all of those files, and uses a lot of CPU time
+doing so, especially during a build, which can slow things down.
+
+To prevent the Chromium checkout from being indexed by Spotlight, open System
+Preferences, go to "Spotlight" -> "Privacy" and add your Chromium checkout
+directory to the list of excluded locations.

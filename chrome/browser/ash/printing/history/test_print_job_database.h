@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,9 +24,8 @@ class TestPrintJobDatabase : public PrintJobDatabase {
   // PrintJobDatabase:
   void Initialize(InitializeCallback callback) override;
   bool IsInitialized() override;
-  void SavePrintJob(
-      const chromeos::printing::proto::PrintJobInfo& print_job_info,
-      SavePrintJobCallback callback) override;
+  void SavePrintJob(const printing::proto::PrintJobInfo& print_job_info,
+                    SavePrintJobCallback callback) override;
   void DeletePrintJobs(const std::vector<std::string>& ids,
                        DeletePrintJobsCallback callback) override;
   void Clear(DeletePrintJobsCallback callback) override;
@@ -34,8 +33,7 @@ class TestPrintJobDatabase : public PrintJobDatabase {
 
  private:
   // In-memory database of PrintJobInfo.
-  std::unordered_map<std::string, chromeos::printing::proto::PrintJobInfo>
-      database_;
+  std::unordered_map<std::string, printing::proto::PrintJobInfo> database_;
 };
 
 }  // namespace ash

@@ -1,11 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_AURA_TEST_TEST_SCREEN_H_
 #define UI_AURA_TEST_TEST_SCREEN_H_
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen_base.h"
@@ -69,7 +69,7 @@ class TestScreen : public display::ScreenBase, public WindowObserver {
  private:
   explicit TestScreen(const gfx::Rect& screen_bounds);
 
-  aura::WindowTreeHost* host_ = nullptr;
+  raw_ptr<aura::WindowTreeHost> host_ = nullptr;
 
   float ui_scale_ = 1.0f;
 };

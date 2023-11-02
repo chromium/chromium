@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,15 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service.h"
 #include "chrome/browser/ui/webui/realbox/realbox.mojom.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/favicon_cache.h"
+#include "components/omnibox/browser/omnibox.mojom-shared.h"
+#include "components/url_formatter/spoof_checks/idna_metrics.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -34,6 +37,15 @@ struct VectorIcon;
 class RealboxHandler : public realbox::mojom::PageHandler,
                        public AutocompleteController::Observer {
  public:
+  enum class FocusState {
+    // kNormal means the row is focused, and Enter key navigates to the match.
+    kFocusedMatch,
+
+    // kFocusedButtonRemoveSuggestion state means the Remove Suggestion (X)
+    // button is focused. Pressing enter will attempt to remove this suggestion.
+    kFocusedButtonRemoveSuggestion,
+  };
+
   static void SetupWebUIDataSource(content::WebUIDataSource* source);
   static std::string AutocompleteMatchVectorIconToResourceName(
       const gfx::VectorIcon& icon);
@@ -73,6 +85,9 @@ class RealboxHandler : public realbox::mojom::PageHandler,
                      bool ctrl_key,
                      bool meta_key,
                      bool shift_key) override;
+  void OnNavigationLikely(
+      uint8_t line,
+      omnibox::mojom::NavigationPredictor navigation_predictor) override;
 
   // AutocompleteController::Observer:
   void OnResultChanged(AutocompleteController* controller,
@@ -95,13 +110,14 @@ class RealboxHandler : public realbox::mojom::PageHandler,
                bool destination_url_entered_without_scheme,
                const std::u16string&,
                const AutocompleteMatch&,
-               const AutocompleteMatch&);
+               const AutocompleteMatch&,
+               IDNA2008DeviationCharacter);
 
  private:
-  Profile* profile_;
-  content::WebContents* web_contents_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<AutocompleteController> autocomplete_controller_;
-  BitmapFetcherService* bitmap_fetcher_service_;
+  raw_ptr<BitmapFetcherService> bitmap_fetcher_service_;
   std::vector<BitmapFetcherService::RequestId> bitmap_request_ids_;
   FaviconCache favicon_cache_;
   base::TimeTicks time_user_first_modified_realbox_;

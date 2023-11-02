@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,10 +18,11 @@
 
 namespace ui {
 
-InputMethodFuchsia::InputMethodFuchsia(bool enable_virtual_keyboard,
-                                       internal::InputMethodDelegate* delegate,
-                                       fuchsia::ui::views::ViewRef view_ref)
-    : InputMethodBase(delegate) {
+InputMethodFuchsia::InputMethodFuchsia(
+    bool enable_virtual_keyboard,
+    ImeKeyEventDispatcher* ime_key_event_dispatcher,
+    fuchsia::ui::views::ViewRef view_ref)
+    : InputMethodBase(ime_key_event_dispatcher) {
   if (enable_virtual_keyboard)
     virtual_keyboard_controller_.emplace(std::move(view_ref), this);
 }
@@ -64,7 +65,7 @@ void InputMethodFuchsia::CancelComposition(const TextInputClient* client) {
   }
 }
 
-void InputMethodFuchsia::OnTextInputTypeChanged(const TextInputClient* client) {
+void InputMethodFuchsia::OnTextInputTypeChanged(TextInputClient* client) {
   DVLOG(1) << __func__;
 
   InputMethodBase::OnTextInputTypeChanged(client);

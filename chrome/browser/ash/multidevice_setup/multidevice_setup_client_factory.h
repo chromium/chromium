@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,19 +6,20 @@
 #define CHROME_BROWSER_ASH_MULTIDEVICE_SETUP_MULTIDEVICE_SETUP_CLIENT_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
-class ChromeOSMetricsProviderTest;
+class ChromeOSSystemProfileProviderTest;
+class ChromeMetricsServiceClientTest;
 class Profile;
 
 namespace ash {
 namespace multidevice_setup {
 
+class MultiDeviceSetupClient;
+
 // Singleton that owns all MultiDeviceSetupClient instances and associates them
 // with Profiles.
-class MultiDeviceSetupClientFactory : public BrowserContextKeyedServiceFactory {
+class MultiDeviceSetupClientFactory : public ProfileKeyedServiceFactory {
  public:
   static MultiDeviceSetupClient* GetForProfile(Profile* profile);
 
@@ -30,7 +31,8 @@ class MultiDeviceSetupClientFactory : public BrowserContextKeyedServiceFactory {
 
  private:
   friend struct base::DefaultSingletonTraits<MultiDeviceSetupClientFactory>;
-  friend class ::ChromeOSMetricsProviderTest;
+  friend class ::ChromeOSSystemProfileProviderTest;
+  friend class ::ChromeMetricsServiceClientTest;
 
   MultiDeviceSetupClientFactory();
   ~MultiDeviceSetupClientFactory() override;

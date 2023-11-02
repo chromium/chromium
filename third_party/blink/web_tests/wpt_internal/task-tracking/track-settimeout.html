@@ -1,0 +1,112 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Verify that setTimeout tasks can be properly tracked.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+promise_test(() => {
+  return new Promise(async (resolve, reject) => {
+    const initialId = scheduler.taskId;
+    await new Promise(resolve => setTimeout(resolve, 0));
+    queueMicrotask(() => {
+      try {
+        assert_equals(scheduler.isAncestor(initialId), "ancestor");
+        resolve();
+      } catch {
+        reject("Not an ancestor");
+      }
+    });
+  });
+}, "An immediate setTimeout microtask is a descendant of the dispatching task");
+
+promise_test(() => {
+  return new Promise(async (resolve, reject) => {
+    const initialId = scheduler.taskId;
+    await new Promise(internal_resolve => {
+      window.resolve = internal_resolve;
+      setTimeout("resolve()", 100);
+    });
+    queueMicrotask(() => {
+      try {
+        assert_equals(scheduler.isAncestor(initialId), "ancestor");
+        resolve();
+      } catch {
+        reject("Not an ancestor");
+      }
+    });
+  });
+}, "A microtask queued after a long setTimeout task with text input is a " +
+   "descendant of the dispatching task");
+
+promise_test(async () => {
+  window.initialId = scheduler.taskId;
+  await new Promise((resolve, reject) => {
+    window.resolve = resolve;
+    window.reject = reject;
+    setTimeout(`
+     try {
+       assert_equals(scheduler.isAncestor(initialId), "ancestor");
+       resolve();
+     } catch {
+       reject("Not an ancestor");
+     }`, 100);
+  });
+}, "A long setTimeout task with text input is a descendant of the dispatching task");
+
+promise_test(() => {
+  return new Promise(async (resolve, reject) => {
+    const initialId = scheduler.taskId;
+    await new Promise(resolve => setTimeout(resolve, 100));
+    queueMicrotask(() => {
+      try {
+        assert_equals(scheduler.isAncestor(initialId), "ancestor");
+        resolve();
+      } catch {
+        reject("Not an ancestor");
+      }
+    });
+  });
+}, "A long setTimeout microtask is a descendant of the dispatching task");
+
+promise_test(async () => {
+  let siblingId;
+  const initialId = scheduler.taskId;
+  await new Promise((resolve, reject) => setTimeout(() => {
+    try {
+      assert_equals(scheduler.isAncestor(initialId), "ancestor");
+      resolve();
+    } catch {
+      reject("Initial task not identified as ancestor of first setTimeout");
+    }
+    resolve();
+  }, 10));
+  await new Promise((resolve, reject) => setTimeout(() => {
+    try {
+      assert_equals(scheduler.isAncestor(initialId), "ancestor");
+      resolve();
+    } catch {
+      reject("Initial task not identified as ancestor of second setTimeout");
+    }
+  }, 10));
+}, "An async chain of setTimeouts task properly track their ancestors");
+
+promise_test(async () => {
+  const initialId = scheduler.taskId;
+  return new Promise((resolve, reject) => {
+    try {
+      assert_equals(scheduler.isAncestor(initialId), "ancestor");
+      resolve();
+    } catch {
+      reject("The task is not its own ancestor");
+    }
+  });
+}, "A task is its own ancestor");
+
+</script>
+</body>
+</html>
+

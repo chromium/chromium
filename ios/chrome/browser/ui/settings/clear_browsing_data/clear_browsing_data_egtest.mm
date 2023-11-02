@@ -1,21 +1,27 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import <XCTest/XCTest.h>
 
-#include "base/ios/ios_util.h"
-#include "base/mac/foundation_util.h"
+#import "base/ios/ios_util.h"
+#import "base/mac/foundation_util.h"
+#import "components/signin/public/base/signin_switches.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/ui/elements/activity_overlay_egtest_util.h"
+#import "ios/chrome/browser/ui/elements/elements_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
-#include "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -29,13 +35,8 @@ NSString* const kLearnMoreIdentifier = @"Learn more";
 // URL of the help center page.
 char kHelpCenterURL[] = "support.google.com";
 
-// Matcher for the history button in the tools menu.
-id<GREYMatcher> HistoryButton() {
-  return grey_accessibilityID(kToolsMenuHistoryId);
-}
-
 // Matcher for an element with or without the
-// UIAccessibilityTraitSelected accessibility trait depending on |selected|.
+// UIAccessibilityTraitSelected accessibility trait depending on `selected`.
 id<GREYMatcher> ElementIsSelected(BOOL selected) {
   return selected
              ? grey_accessibilityTrait(UIAccessibilityTraitSelected)
@@ -43,7 +44,7 @@ id<GREYMatcher> ElementIsSelected(BOOL selected) {
 }
 
 // Returns a matcher (which always matches) that records the selection
-// state of matched element in |selected| parameter.
+// state of matched element in `selected` parameter.
 id<GREYMatcher> RecordElementSelectionState(BOOL& selected) {
   GREYMatchesBlock matches = ^BOOL(UIView* view) {
     selected = ([view accessibilityTraits] & UIAccessibilityTraitSelected) != 0;
@@ -73,6 +74,20 @@ using chrome_test_util::WindowWithNumber;
 @end
 
 @implementation ClearBrowsingDataSettingsTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  if ([self isRunningTest:@selector(testTapLearnMore)] ||
+      [self isRunningTest:@selector(testTapLearnMoreFromHistory)] ||
+      [self
+          isRunningTest:@selector(testUserSignedOutWhenClearingBrowsingData)]) {
+    config.features_disabled.push_back(switches::kEnableCbdSignOut);
+  } else if ([self isRunningTest:@selector
+                   (testUserSignedInWhenClearingBrowsingData)]) {
+    config.features_enabled.push_back(switches::kEnableCbdSignOut);
+  }
+  return config;
+}
 
 - (void)openClearBrowsingDataDialog {
   [ChromeEarlGreyUI openSettingsMenu];
@@ -129,6 +144,12 @@ using chrome_test_util::WindowWithNumber;
 - (void)testClearBrowsingDataDialogInMultiWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+
+  // TODO(crbug.com/1285974).
+  if ([ChromeEarlGrey isNewOverflowMenuEnabled]) {
+    EARL_GREY_TEST_DISABLED(
+        @"Earl Grey doesn't work properly with SwiftUI and multiwindow");
+  }
 
   [ChromeEarlGrey openNewWindow];
   [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
@@ -275,7 +296,8 @@ using chrome_test_util::WindowWithNumber;
 // the "Learn more" link opens the help center.
 - (void)testTapLearnMoreFromHistory {
   [ChromeEarlGreyUI openToolsMenu];
-  [ChromeEarlGreyUI tapToolsMenuButton:HistoryButton()];
+  [ChromeEarlGreyUI
+      tapToolsMenuButton:chrome_test_util::HistoryDestinationButton()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           HistoryClearBrowsingDataButton()]
       performAction:grey_tap()];
@@ -295,6 +317,43 @@ using chrome_test_util::WindowWithNumber;
   // Check that the URL of the help center was opened.
   GREYAssertEqual(kHelpCenterURL, [ChromeEarlGrey webStateVisibleURL].host(),
                   @"Did not navigate to the help center url.");
+}
+
+// Sign-in without sync. Clear browsing data.
+- (void)signInOpenCBDAndClearDataWithFakeIdentity:
+    (FakeChromeIdentity*)fakeIdentity {
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsMenuPrivacyButton()];
+  [ChromeEarlGreyUI
+      tapPrivacyMenuButton:chrome_test_util::ButtonWithAccessibilityLabelId(
+                               IDS_IOS_CLEAR_BROWSING_DATA_TITLE)];
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
+                        chrome_test_util::ClearBrowsingDataButton()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          ConfirmClearBrowsingDataButton()]
+      performAction:grey_tap()];
+  WaitForActivityOverlayToDisappear();
+}
+
+// Tests that a user in the `ConsentLevel::kSignin` state will be signed out
+// after clearing their browsing history if `kEnableCbdSignOut` feature is
+// enabled.
+- (void)testUserSignedInWhenClearingBrowsingData {
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
+  [self signInOpenCBDAndClearDataWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+}
+
+// Tests that a user in the `ConsentLevel::kSignin` state will be signed out
+// after clearing their browsing history if `kEnableCbdSignOut` feature is
+// disabled.
+- (void)testUserSignedOutWhenClearingBrowsingData {
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
+  [self signInOpenCBDAndClearDataWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey verifySignedOut];
 }
 
 @end

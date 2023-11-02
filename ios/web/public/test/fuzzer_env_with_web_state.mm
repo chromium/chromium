@@ -1,17 +1,17 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web/public/test/fuzzer_env_with_web_state.h"
+#import "ios/web/public/test/fuzzer_env_with_web_state.h"
 
-#include "base/command_line.h"
-#include "base/i18n/icu_util.h"
+#import "base/command_line.h"
+#import "base/i18n/icu_util.h"
 #import "base/test/test_support_ios.h"
-#include "base/test/test_timeouts.h"
-#include "ios/web/public/browser_state.h"
-#include "ios/web/public/test/fakes/fake_browser_state.h"
+#import "base/test/test_timeouts.h"
+#import "ios/web/public/browser_state.h"
+#import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
-#include "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 

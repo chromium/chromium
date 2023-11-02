@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,28 @@
 
 namespace {
 
+crosapi::mojom::ProxyLocation::Scheme NetSchemeToCrosapiScheme(
+    net::ProxyServer::Scheme in) {
+  switch (in) {
+    case net::ProxyServer::Scheme::SCHEME_INVALID:
+      return crosapi::mojom::ProxyLocation::Scheme::kInvalid;
+    case net::ProxyServer::Scheme::SCHEME_DIRECT:
+      return crosapi::mojom::ProxyLocation::Scheme::kDirect;
+    case net::ProxyServer::Scheme::SCHEME_HTTP:
+      return crosapi::mojom::ProxyLocation::Scheme::kHttp;
+    case net::ProxyServer::Scheme::SCHEME_SOCKS4:
+      return crosapi::mojom::ProxyLocation::Scheme::kSocks4;
+    case net::ProxyServer::Scheme::SCHEME_SOCKS5:
+      return crosapi::mojom::ProxyLocation::Scheme::kSocks5;
+    case net::ProxyServer::Scheme::SCHEME_HTTPS:
+      return crosapi::mojom::ProxyLocation::Scheme::kHttps;
+    case net::ProxyServer::Scheme::SCHEME_QUIC:
+      return crosapi::mojom::ProxyLocation::Scheme::kQuic;
+  }
+
+  return crosapi::mojom::ProxyLocation::Scheme::kUnknown;
+}
+
 std::vector<crosapi::mojom::ProxyLocationPtr> TranslateProxyLocations(
     const net::ProxyList& proxy_list) {
   std::vector<net::ProxyServer> proxies = proxy_list.GetAll();
@@ -25,6 +47,7 @@ std::vector<crosapi::mojom::ProxyLocationPtr> TranslateProxyLocations(
     proxy_ptr = crosapi::mojom::ProxyLocation::New();
     proxy_ptr->host = proxy.host_port_pair().host();
     proxy_ptr->port = proxy.host_port_pair().port();
+    proxy_ptr->scheme = NetSchemeToCrosapiScheme(proxy.scheme());
     proxy_ptr_list.push_back(std::move(proxy_ptr));
   }
   return proxy_ptr_list;
@@ -95,37 +118,39 @@ crosapi::mojom::ProxyConfigPtr ProxyConfigToCrosapiProxy(
     GURL dhcp_wpad_url) {
   crosapi::mojom::ProxyConfigPtr proxy_config =
       crosapi::mojom::ProxyConfig::New();
-  crosapi::mojom::ProxySettingsPtr proxy = crosapi::mojom::ProxySettings::New();
   crosapi::mojom::ProxySettingsDirectPtr direct =
       crosapi::mojom::ProxySettingsDirect::New();
 
   ProxyPrefs::ProxyMode mode;
   if (!proxy_dict || !proxy_dict->GetMode(&mode)) {
-    proxy->set_direct(std::move(direct));
-    proxy_config->proxy_settings = std::move(proxy);
+    proxy_config->proxy_settings =
+        crosapi::mojom::ProxySettings::NewDirect(std::move(direct));
     return proxy_config;
   }
   switch (mode) {
     case ProxyPrefs::MODE_DIRECT:
-      proxy->set_direct(std::move(direct));
+      proxy_config->proxy_settings =
+          crosapi::mojom::ProxySettings::NewDirect(std::move(direct));
       break;
     case ProxyPrefs::MODE_AUTO_DETECT: {
       crosapi::mojom::ProxySettingsWpadPtr wpad =
           crosapi::mojom::ProxySettingsWpad::New();
       // WPAD with DHCP has a higher priority than DNS.
       if (dhcp_wpad_url.is_valid()) {
-        wpad->pac_url = dhcp_wpad_url;
+        wpad->pac_url = std::move(dhcp_wpad_url);
       } else {
         // Fallback to WPAD via DNS.
         wpad->pac_url = GURL("http://wpad/wpad.dat");
       }
-      proxy->set_wpad(std::move(wpad));
+      proxy_config->proxy_settings =
+          crosapi::mojom::ProxySettings::NewWpad(std::move(wpad));
       break;
     }
     case ProxyPrefs::MODE_PAC_SCRIPT: {
       std::string pac_url;
       if (!proxy_dict->GetPacUrl(&pac_url)) {
-        proxy->set_direct(std::move(direct));
+        proxy_config->proxy_settings =
+            crosapi::mojom::ProxySettings::NewDirect(std::move(direct));
         LOG(ERROR) << "No pac URL for pac_script proxy mode.";
         break;
       }
@@ -136,13 +161,15 @@ crosapi::mojom::ProxyConfigPtr ProxyConfigToCrosapiProxy(
           crosapi::mojom::ProxySettingsPac::New();
       pac->pac_url = GURL(pac_url);
       pac->pac_mandatory = pac_mandatory;
-      proxy->set_pac(std::move(pac));
+      proxy_config->proxy_settings =
+          crosapi::mojom::ProxySettings::NewPac(std::move(pac));
       break;
     }
     case ProxyPrefs::MODE_FIXED_SERVERS: {
       crosapi::mojom::ProxySettingsManualPtr manual =
           TranslateManualProxySettings(proxy_dict);
-      proxy->set_manual(std::move(manual));
+      proxy_config->proxy_settings =
+          crosapi::mojom::ProxySettings::NewManual(std::move(manual));
       break;
     }
     case ProxyPrefs::MODE_SYSTEM:
@@ -153,10 +180,10 @@ crosapi::mojom::ProxyConfigPtr ProxyConfigToCrosapiProxy(
       break;
     default:
       LOG(ERROR) << "Incorrect proxy mode.";
-      proxy->set_direct(std::move(direct));
+      proxy_config->proxy_settings =
+          crosapi::mojom::ProxySettings::NewDirect(std::move(direct));
   }
 
-  proxy_config->proxy_settings = std::move(proxy);
   return proxy_config;
 }
 

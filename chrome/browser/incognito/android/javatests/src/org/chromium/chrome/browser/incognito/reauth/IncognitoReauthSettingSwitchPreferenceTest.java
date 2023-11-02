@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,9 +25,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.chrome.browser.settings.DummySettingsForTest;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.browser_ui.settings.PlaceholderSettingsForTest;
 
 /**
  * Tests of {@link IncognitoReauthSettingSwitchPreference}.
@@ -38,8 +38,8 @@ public class IncognitoReauthSettingSwitchPreferenceTest {
     private static final String SUMMARY = "This is a summary.";
 
     @Rule
-    public SettingsActivityTestRule<DummySettingsForTest> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(DummySettingsForTest.class);
+    public SettingsActivityTestRule<PlaceholderSettingsForTest> mSettingsActivityTestRule =
+            new SettingsActivityTestRule<>(PlaceholderSettingsForTest.class);
 
     private IncognitoReauthSettingSwitchPreference mPreference;
     private Context mContext;

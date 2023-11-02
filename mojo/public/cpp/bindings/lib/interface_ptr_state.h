@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,28 +13,31 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback_forward.h"
-#include "base/check_op.h"
+#include "base/callback.h"
+#include "base/check.h"
 #include "base/component_export.h"
-#include "base/location.h"
-#include "base/macros.h"
-#include "base/memory/ptr_util.h"
-#include "base/memory/ref_counted.h"
+#include "base/dcheck_is_on.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "mojo/public/cpp/bindings/associated_group.h"
 #include "mojo/public/cpp/bindings/async_flusher.h"
 #include "mojo/public/cpp/bindings/connection_error_callback.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_client.h"
-#include "mojo/public/cpp/bindings/interface_id.h"
-#include "mojo/public/cpp/bindings/interface_ptr_info.h"
 #include "mojo/public/cpp/bindings/lib/multiplex_router.h"
 #include "mojo/public/cpp/bindings/lib/pending_remote_state.h"
-#include "mojo/public/cpp/bindings/message_header_validator.h"
 #include "mojo/public/cpp/bindings/pending_flush.h"
-#include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
+#include "mojo/public/cpp/bindings/thread_safe_proxy.h"
+#include "mojo/public/cpp/system/message_pipe.h"
+
+namespace base {
+class Location;
+}
 
 namespace mojo {
+
+class AssociatedGroup;
+class MessageReceiver;
+
 namespace internal {
 
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfacePtrStateBase {
@@ -91,6 +94,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfacePtrStateBase {
   void Swap(InterfacePtrStateBase* other);
   void Bind(PendingRemoteState* remote_state,
             scoped_refptr<base::SequencedTaskRunner> task_runner);
+  PendingRemoteState Unbind();
 
   ScopedMessagePipeHandle PassMessagePipe() {
     endpoint_client_.reset();
@@ -102,7 +106,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfacePtrStateBase {
       bool has_sync_methods,
       bool has_uninterruptable_methods,
       std::unique_ptr<MessageReceiver> payload_validator,
-      const char* interface_name);
+      const char* interface_name,
+      MessageToMethodInfoCallback method_info_callback,
+      MessageToMethodNameCallback method_name_callback);
 
  private:
   void OnQueryVersion(base::OnceCallback<void(uint32_t)> callback,
@@ -196,9 +202,9 @@ class InterfacePtrState : public InterfacePtrStateBase {
 
   // After this method is called, the object is in an invalid state and
   // shouldn't be reused.
-  InterfacePtrInfo<Interface> PassInterface() {
+  PendingRemoteState Unbind() {
     proxy_.reset();
-    return InterfacePtrInfo<Interface>(PassMessagePipe(), version());
+    return InterfacePtrStateBase::Unbind();
   }
 
   void set_connection_error_handler(base::OnceClosure error_handler) {
@@ -256,7 +262,8 @@ class InterfacePtrState : public InterfacePtrStateBase {
             Interface::PassesAssociatedKinds_, Interface::HasSyncMethods_,
             Interface::HasUninterruptableMethods_,
             std::make_unique<typename Interface::ResponseValidator_>(),
-            Interface::Name_)) {
+            Interface::Name_, Interface::MessageToMethodInfo_,
+            Interface::MessageToMethodName_)) {
       proxy_ = std::make_unique<Proxy>(endpoint_client());
     }
   }

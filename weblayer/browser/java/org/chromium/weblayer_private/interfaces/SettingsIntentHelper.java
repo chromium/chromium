@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,6 +62,13 @@ public class SettingsIntentHelper {
         fragmentArgs.putString(SettingsFragmentArgs.ALL_SITES_TITLE, title);
         fragmentArgs.putString(SettingsFragmentArgs.ALL_SITES_TYPE, type);
         extras.putBundle(SettingsFragmentArgs.FRAGMENT_ARGUMENTS, fragmentArgs);
+        return createIntentWithExtras(context, extras);
+    }
+
+    public static Intent createIntentForAccessibilitySettings(
+            Context context, String profileName, boolean isIncognito) {
+        Bundle extras = createSettingsExtras(profileName, isIncognito);
+        extras.putString(SettingsFragmentArgs.FRAGMENT_NAME, SettingsFragmentArgs.ACCESSIBILITY);
         return createIntentWithExtras(context, extras);
     }
 

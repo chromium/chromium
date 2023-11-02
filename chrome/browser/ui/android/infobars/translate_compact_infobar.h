@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,7 +59,7 @@ class TranslateCompactInfoBar
 
   // TranslateInfoBarDelegate::Observer implementation.
   void OnTranslateStepChanged(translate::TranslateStep step,
-                    translate::TranslateErrors::Type error_type) override;
+                              translate::TranslateErrors error_type) override;
   void OnTargetLanguageChanged(
       const std::string& target_language_code) override;
   // Returns true if the user didn't take any affirmative action.

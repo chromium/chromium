@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "courgette/courgette.h"
 #include "courgette/region.h"
 #include "courgette/streams.h"
@@ -58,7 +58,7 @@ class Element {
 
  private:
   ExecutableType kind_;
-  Ensemble* ensemble_;
+  raw_ptr<Ensemble> ensemble_;
   Region region_;
 };
 
@@ -244,9 +244,9 @@ class TransformationPatchGenerator {
                         SinkStream* reformed_element);
 
  protected:
-  Element* old_element_;
-  Element* new_element_;
-  TransformationPatcher* patcher_;
+  raw_ptr<Element> old_element_;
+  raw_ptr<Element> new_element_;
+  raw_ptr<TransformationPatcher> patcher_;
 };
 
 }  // namespace

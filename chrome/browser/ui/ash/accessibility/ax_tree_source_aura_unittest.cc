@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -120,7 +120,7 @@ TEST_F(AXTreeSourceAuraTest, Accessors) {
   ASSERT_NE(textfield->GetUniqueId(), ax_tree.GetRoot()->GetUniqueId());
 
   // Try walking up the tree to the root.
-  AXAuraObjWrapper* test_root = NULL;
+  AXAuraObjWrapper* test_root = nullptr;
   for (AXAuraObjWrapper* root_finder = ax_tree.GetParent(content); root_finder;
        root_finder = ax_tree.GetParent(root_finder))
     test_root = root_finder;
@@ -168,8 +168,8 @@ TEST_F(AXTreeSourceAuraTest, Serialize) {
   // This is the initial serialization.
   ax_serializer.SerializeChanges(ax_tree.GetRoot(), &out_update);
 
-  // The update should be the desktop node and the Lacros host node.
-  ASSERT_EQ(2U, out_update.nodes.size());
+  // The update should be the desktop node.
+  ASSERT_EQ(1U, out_update.nodes.size());
 
   // Try removing some child views and re-adding which should fire some events.
   content_->RemoveAllChildViewsWithoutDeleting();

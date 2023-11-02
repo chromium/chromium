@@ -1,10 +1,9 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.android_webview.services;
 
-import android.annotation.TargetApi;
 import android.app.job.JobInfo;
 import android.app.job.JobParameters;
 import android.app.job.JobScheduler;
@@ -19,6 +18,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.variations.VariationsServiceMetricsHelper;
 import org.chromium.android_webview.common.variations.VariationsUtils;
+import org.chromium.android_webview.services.ServicesStatsHelper.NonembeddedService;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -28,6 +28,7 @@ import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.variations.firstrun.VariationsSeedFetcher;
 import org.chromium.components.variations.firstrun.VariationsSeedFetcher.SeedFetchInfo;
+import org.chromium.components.variations.firstrun.VariationsSeedFetcher.SeedInfo;
 import org.chromium.components.version_info.Channel;
 import org.chromium.components.version_info.VersionConstants;
 
@@ -35,9 +36,8 @@ import java.net.HttpURLConnection;
 import java.util.concurrent.TimeUnit;
 
 /**
- * AwVariationsSeedFetcher is a JobService which periodically downloads the variations seed. We use
- * JobService instead of BackgroundTaskScheduler, since JobService is available on L+, and WebView
- * is L+ only. The job is scheduled whenever an app requests the seed, and it's been at least 1 day
+ * AwVariationsSeedFetcher is a JobService which periodically downloads the variations seed.
+ * The job is scheduled whenever an app requests the seed, and it's been at least 1 day
  * since the last fetch. If WebView is never used, the job will never run. The 1-day minimum fetch
  * period is chosen as a trade-off between seed freshness (and prompt delivery of feature
  * killswitches) and data and battery usage. Various Android versions may enforce longer periods,
@@ -45,7 +45,7 @@ import java.util.concurrent.TimeUnit;
  * be used outside the variations service. For the equivalent fetch in Chrome, see
  * AsyncInitTaskRunner$FetchSeedTask.
  */
-@TargetApi(Build.VERSION_CODES.LOLLIPOP) // for JobService
+// TODO(https://crbug.com/1328637): consider using BackgroundTaskScheduler instead of JobService
 public class AwVariationsSeedFetcher extends JobService {
     @VisibleForTesting
     public static final String JOB_REQUEST_COUNT_KEY = "RequestCount";
@@ -170,14 +170,15 @@ public class AwVariationsSeedFetcher extends JobService {
 
             try {
                 VariationsUtils.updateStampTime();
-
+                SeedInfo info = VariationsUtils.readSeedFile(VariationsUtils.getSeedFile());
                 VariationsUtils.debugLog("Downloading new seed");
                 VariationsSeedFetcher downloader =
                         sMockDownloader != null ? sMockDownloader : VariationsSeedFetcher.get();
                 String milestone = String.valueOf(VersionConstants.PRODUCT_MAJOR_VERSION);
                 SeedFetchInfo fetchInfo = downloader.downloadContent(
                         VariationsSeedFetcher.VariationsPlatform.ANDROID_WEBVIEW,
-                        /*restrictMode=*/null, milestone, getChannelStr());
+                        /*restrictMode=*/null, milestone, getChannelStr(),
+                        /*currentSeedInfo=*/info);
 
                 saveMetrics(startTime, /*endTime=*/currentTimeMillis());
 
@@ -185,9 +186,11 @@ public class AwVariationsSeedFetcher extends JobService {
                     return null;
                 }
 
-                // VariationsSeedFetcher returns HttpURLConnection.HTTP_OK if and only if it
-                // succeeds.
-                if (fetchInfo.seedFetchResult != HttpURLConnection.HTTP_OK) {
+                // VariationsSeedFetcher returns HttpURLConnection.HTTP_NOT_MODIFIED if seed did not
+                // change server-side, or HttpURLConnection.HTTP_OK if a new seed was successfully
+                // fetched
+                if (HttpURLConnection.HTTP_OK != fetchInfo.seedFetchResult
+                        && HttpURLConnection.HTTP_NOT_MODIFIED != fetchInfo.seedFetchResult) {
                     int requestCount = mParams.getExtras().getInt(JOB_REQUEST_COUNT_KEY) + 1;
                     mParams.getExtras().putInt(JOB_REQUEST_COUNT_KEY, requestCount);
                     // Limit the retries to JOB_MAX_REQUEST_COUNT.
@@ -221,6 +224,11 @@ public class AwVariationsSeedFetcher extends JobService {
                 Log.e(TAG, "Failed to write variations SharedPreferences to disk");
             }
         }
+    }
+
+    @Override
+    public void onCreate() {
+        ServicesStatsHelper.recordServiceLaunch(NonembeddedService.AW_VARIATIONS_SEED_FETCHER);
     }
 
     @Override

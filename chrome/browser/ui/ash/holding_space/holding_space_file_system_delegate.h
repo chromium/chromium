@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,9 @@
 #include <memory>
 #include <vector>
 
-#include "ash/components/drivefs/drivefs_host_observer.h"
+#include "ash/components/arc/mojom/file_system.mojom-forward.h"
+#include "ash/components/arc/session/connection_holder.h"
+#include "ash/components/arc/session/connection_observer.h"
 #include "base/callback.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
@@ -18,9 +20,7 @@
 #include "chrome/browser/chromeos/fileapi/file_change_service_observer.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
-#include "components/arc/mojom/file_system.mojom-forward.h"
-#include "components/arc/session/connection_holder.h"
-#include "components/arc/session/connection_observer.h"
+#include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
 
 namespace base {
 class FilePath;
@@ -63,9 +63,9 @@ class HoldingSpaceFileSystemDelegate
   void OnHoldingSpaceItemInitialized(const HoldingSpaceItem* item) override;
 
   // file_manager::VolumeManagerObserver:
-  void OnVolumeMounted(chromeos::MountError error_code,
+  void OnVolumeMounted(MountError error_code,
                        const file_manager::Volume& volume) override;
-  void OnVolumeUnmounted(chromeos::MountError error_code,
+  void OnVolumeUnmounted(MountError error_code,
                          const file_manager::Volume& volume) override;
 
   // chromeos::FileChangeServiceObserver:

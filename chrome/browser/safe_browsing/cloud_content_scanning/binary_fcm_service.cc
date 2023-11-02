@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include "base/base64.h"
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
@@ -198,8 +197,6 @@ void BinaryFCMService::OnMessage(const std::string& app_id,
 
   auto callback_it = message_token_map_.find(response.request_token());
   bool has_valid_token = (callback_it != message_token_map_.end());
-  base::UmaHistogramBoolean(
-      "SafeBrowsingFCMService.IncomingMessageHasValidToken", has_valid_token);
   if (!has_valid_token)
     return;
 

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/notifications/notifier_controller.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 
 class AppUpdate;
 class Profile;
@@ -38,9 +39,10 @@ class ArcApplicationNotifierController
                           bool enabled) override;
 
  private:
+  void CallLoadIcons();
   void CallLoadIcon(const std::string& app_id, bool allow_placeholder_icon);
-  void OnLoadIcon(const std::string& app_id,
-                  apps::mojom::IconValuePtr icon_value);
+  void OnLoadIcon(const std::string& app_id, apps::IconValuePtr icon_value);
+
   void SetIcon(const std::string& app_id, gfx::ImageSkia image);
 
   // apps::AppRegistryCache::Observer:

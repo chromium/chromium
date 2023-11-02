@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,33 +11,31 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/adapters.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "content/common/render_accessibility.mojom-test-utils.h"
-#include "content/common/render_accessibility.mojom.h"
-#include "content/public/test/fake_pepper_plugin_instance.h"
 #include "content/public/test/render_view_test.h"
 #include "content/renderer/accessibility/ax_action_target_factory.h"
 #include "content/renderer/accessibility/ax_image_annotator.h"
 #include "content/renderer/accessibility/render_accessibility_manager.h"
 #include "content/renderer/render_frame_impl.h"
-#include "content/renderer/render_view_impl.h"
 #include "content/test/test_render_frame.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "ppapi/c/private/ppp_pdf.h"
 #include "services/image_annotation/public/cpp/image_processor.h"
 #include "services/image_annotation/public/mojom/image_annotation.mojom.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/mojom/render_accessibility.mojom-test-utils.h"
+#include "third_party/blink/public/mojom/render_accessibility.mojom.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/web/web_ax_object.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -63,13 +61,13 @@ using testing::ElementsAre;
 
 namespace {
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 bool IsSelected(const WebAXObject& obj) {
   ui::AXNodeData node_data;
   obj.Serialize(&node_data, ui::kAXModeComplete);
   return node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected);
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -148,37 +146,36 @@ class MockAnnotationService : public image_annotation::mojom::Annotator {
 };
 
 class RenderAccessibilityHostInterceptor
-    : public content::mojom::RenderAccessibilityHostInterceptorForTesting {
+    : public blink::mojom::RenderAccessibilityHostInterceptorForTesting {
  public:
   explicit RenderAccessibilityHostInterceptor(
       blink::BrowserInterfaceBrokerProxy* broker) {
     broker->GetInterface(local_frame_host_remote_.BindNewPipeAndPassReceiver());
     broker->SetBinderForTesting(
-        content::mojom::RenderAccessibilityHost::Name_,
+        blink::mojom::RenderAccessibilityHost::Name_,
         base::BindRepeating(&RenderAccessibilityHostInterceptor::
                                 BindRenderAccessibilityHostReceiver,
                             base::Unretained(this)));
   }
   ~RenderAccessibilityHostInterceptor() override = default;
 
-  content::mojom::RenderAccessibilityHost* GetForwardingInterface() override {
+  blink::mojom::RenderAccessibilityHost* GetForwardingInterface() override {
     return local_frame_host_remote_.get();
   }
 
   void BindRenderAccessibilityHostReceiver(
       mojo::ScopedMessagePipeHandle handle) {
-    receiver_.Bind(
-        mojo::PendingReceiver<content::mojom::RenderAccessibilityHost>(
-            std::move(handle)));
+    receiver_.Add(this,
+                  mojo::PendingReceiver<blink::mojom::RenderAccessibilityHost>(
+                      std::move(handle)));
 
-    receiver_.set_disconnect_handler(base::BindOnce(
-        [](mojo::Receiver<content::mojom::RenderAccessibilityHost>* receiver) {
-          receiver->reset();
+    receiver_.set_disconnect_handler(base::BindRepeating(
+        [](mojo::ReceiverSet<blink::mojom::RenderAccessibilityHost>* receiver) {
         },
         base::Unretained(&receiver_)));
   }
 
-  void HandleAXEvents(mojom::AXUpdatesAndEventsPtr updates_and_events,
+  void HandleAXEvents(blink::mojom::AXUpdatesAndEventsPtr updates_and_events,
                       int32_t reset_token,
                       HandleAXEventsCallback callback) override {
     handled_updates_.insert(handled_updates_.end(),
@@ -188,7 +185,7 @@ class RenderAccessibilityHostInterceptor
   }
 
   void HandleAXLocationChanges(
-      std::vector<mojom::LocationChangesPtr> changes) override {
+      std::vector<blink::mojom::LocationChangesPtr> changes) override {
     for (auto& change : changes)
       location_changes_.emplace_back(std::move(change));
   }
@@ -202,7 +199,7 @@ class RenderAccessibilityHostInterceptor
     return handled_updates_;
   }
 
-  std::vector<mojom::LocationChangesPtr>& location_changes() {
+  std::vector<blink::mojom::LocationChangesPtr>& location_changes() {
     return location_changes_;
   }
 
@@ -211,12 +208,11 @@ class RenderAccessibilityHostInterceptor
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);
 
-  mojo::Receiver<content::mojom::RenderAccessibilityHost> receiver_{this};
-  mojo::Remote<content::mojom::RenderAccessibilityHost>
-      local_frame_host_remote_;
+  mojo::ReceiverSet<blink::mojom::RenderAccessibilityHost> receiver_;
+  mojo::Remote<blink::mojom::RenderAccessibilityHost> local_frame_host_remote_;
 
   std::vector<::ui::AXTreeUpdate> handled_updates_;
-  std::vector<mojom::LocationChangesPtr> location_changes_;
+  std::vector<blink::mojom::LocationChangesPtr> location_changes_;
 };
 
 class RenderAccessibilityTestRenderFrame : public TestRenderFrame {
@@ -240,7 +236,7 @@ class RenderAccessibilityTestRenderFrame : public TestRenderFrame {
     render_accessibility_host_->ClearHandledUpdates();
   }
 
-  std::vector<mojom::LocationChangesPtr>& LocationChanges() {
+  std::vector<blink::mojom::LocationChangesPtr>& LocationChanges() {
     return render_accessibility_host_->location_changes();
   }
 
@@ -307,10 +303,6 @@ class RenderAccessibilityImplTest : public RenderViewTest {
   }
 
  protected:
-  RenderViewImpl* view() {
-    return static_cast<RenderViewImpl*>(view_);
-  }
-
   RenderFrameImpl* frame() {
     return static_cast<RenderFrameImpl*>(RenderViewTest::GetMainRenderFrame());
   }
@@ -346,6 +338,11 @@ class RenderAccessibilityImplTest : public RenderViewTest {
     blink::WebRuntimeFeatures::EnableAccessibilityExposeHTMLElement(true);
 
     RenderViewTest::SetUp();
+    // TestBoundsFor*FixedNodeAfterScroll doesn't work with DeferredShaping,
+    // which triggers layout of shaping-deferred elements on scrollTo().
+    blink::WebRuntimeFeatures::EnableFeatureFromString("DeferredShaping",
+                                                       false);
+
     sink_ = &render_thread_->sink();
 
     // Ensure that a valid RenderAccessibilityImpl object is created and
@@ -383,7 +380,7 @@ class RenderAccessibilityImplTest : public RenderViewTest {
         ->ClearHandledUpdates();
   }
 
-  std::vector<mojom::LocationChangesPtr>& GetLocationChanges() {
+  std::vector<blink::mojom::LocationChangesPtr>& GetLocationChanges() {
     return static_cast<RenderAccessibilityTestRenderFrame*>(frame())
         ->LocationChanges();
   }
@@ -563,7 +560,6 @@ TEST_F(RenderAccessibilityImplTest, TestDeferred) {
       ax::mojom::Event::kFocus,
       ax::mojom::Event::kHover,
       ax::mojom::Event::kLoadComplete,
-      ax::mojom::Event::kTextSelectionChanged,
       ax::mojom::Event::kValueChanged};
 
   for (ax::mojom::Event event : kInteractiveEvents) {
@@ -651,6 +647,7 @@ TEST_F(RenderAccessibilityImplTest, HideAccessibilityObject) {
   EXPECT_EQ(6, CountAccessibilityNodesSentToBrowser());
 
   WebDocument document = GetMainFrame()->GetDocument();
+  // Getting the root object will also force layout.
   WebAXObject root_obj = WebAXObject::FromWebDocument(document);
   WebAXObject html = root_obj.ChildAt(0);
   WebAXObject body = html.ChildAt(0);
@@ -661,8 +658,7 @@ TEST_F(RenderAccessibilityImplTest, HideAccessibilityObject) {
   // Hide node "B" ("C" stays visible).
   ExecuteJavaScriptForTests(
       "document.getElementById('B').style.visibility = 'hidden';");
-  // Force layout now.
-  root_obj.MaybeUpdateLayoutAndCheckValidity();
+  ASSERT_TRUE(WebAXObject::MaybeUpdateLayoutAndCheckValidity(document));
 
   // Send a childrenChanged on "A".
   ClearHandledUpdates();
@@ -701,6 +697,7 @@ TEST_F(RenderAccessibilityImplTest, ShowAccessibilityObject) {
   EXPECT_EQ(6, CountAccessibilityNodesSentToBrowser());
 
   WebDocument document = GetMainFrame()->GetDocument();
+  // Getting the root object also forces a layout.
   WebAXObject root_obj = WebAXObject::FromWebDocument(document);
   WebAXObject html = root_obj.ChildAt(0);
   WebAXObject body = html.ChildAt(0);
@@ -711,8 +708,8 @@ TEST_F(RenderAccessibilityImplTest, ShowAccessibilityObject) {
   // Show node "B", then send a childrenChanged on "A".
   ExecuteJavaScriptForTests(
       "document.getElementById('B').style.visibility = 'visible';");
+  ASSERT_TRUE(WebAXObject::MaybeUpdateLayoutAndCheckValidity(document));
 
-  root_obj.MaybeUpdateLayoutAndCheckValidity();
   ClearHandledUpdates();
 
   GetRenderAccessibilityImpl()->HandleAXEvent(
@@ -756,8 +753,7 @@ TEST_F(RenderAccessibilityImplTest, TestBoundsForFixedNodeAfterScroll) {
 
   // Prepare the expected information from the tree.
   const std::vector<ui::AXTreeUpdate>& updates = GetHandledAccUpdates();
-  for (auto iter = updates.rbegin(); iter != updates.rend(); ++iter) {
-    const ui::AXTreeUpdate& update = *iter;
+  for (const auto& update : base::Reversed(updates)) {
     for (const ui::AXNodeData& node : update.nodes) {
       std::string name;
       if (node.GetStringAttribute(ax::mojom::StringAttribute::kName, &name) &&
@@ -794,7 +790,7 @@ TEST_F(RenderAccessibilityImplTest, TestBoundsForFixedNodeAfterScroll) {
   EXPECT_EQ(root_obj.AxID(), update.nodes[0].id);
 
   // Make sure that a location change is sent for the fixed-positioned node.
-  std::vector<mojom::LocationChangesPtr>& changes = GetLocationChanges();
+  std::vector<blink::mojom::LocationChangesPtr>& changes = GetLocationChanges();
   EXPECT_EQ(changes.size(), 1u);
   EXPECT_EQ(changes[0]->id, expected_id);
   EXPECT_EQ(changes[0]->new_location, expected_bounds);
@@ -857,7 +853,7 @@ TEST_F(RenderAccessibilityImplTest, TestBoundsForMultipleFixedNodeAfterScroll) {
   EXPECT_EQ(root_obj.AxID(), update.nodes[0].id);
 
   // Make sure that a location change is sent for the fixed-positioned node.
-  std::vector<mojom::LocationChangesPtr>& changes = GetLocationChanges();
+  std::vector<blink::mojom::LocationChangesPtr>& changes = GetLocationChanges();
   EXPECT_EQ(changes.size(), 2u);
   for (auto& change : changes) {
     auto search = expected.find(change->id);
@@ -882,6 +878,7 @@ TEST_F(RenderAccessibilityImplTest, TestFocusConsistency) {
   LoadHTMLAndRefreshAccessibilityTree(html);
 
   WebDocument document = GetMainFrame()->GetDocument();
+  // Getting the root object also forces a layout.
   WebAXObject root_obj = WebAXObject::FromWebDocument(document);
   WebAXObject html_elem = root_obj.ChildAt(0);
   WebAXObject body = html_elem.ChildAt(0);
@@ -894,10 +891,6 @@ TEST_F(RenderAccessibilityImplTest, TestFocusConsistency) {
   action.target_node_id = link.AxID();
   action.action = ax::mojom::Action::kFocus;
   GetRenderAccessibilityImpl()->PerformAction(action);
-
-  // Update layout so that the AXEvents themselves are queued up to
-  // RenderAccessibilityImpl.
-  ASSERT_TRUE(root_obj.MaybeUpdateLayoutAndCheckValidity());
 
   // Now perform the default action on the link, which will bounce focus to
   // the button element.
@@ -1156,7 +1149,7 @@ TEST_F(BlinkAXActionTargetTest, TestMethods) {
 
   gfx::RectF expected_bounds;
   blink::WebAXObject offset_container;
-  skia::Matrix44 container_transform;
+  gfx::Transform container_transform;
   input_checkbox.GetRelativeBounds(offset_container, expected_bounds,
                                    container_transform);
   gfx::Rect actual_bounds = input_checkbox_action_target->GetRelativeBounds();
@@ -1172,11 +1165,11 @@ TEST_F(BlinkAXActionTargetTest, TestMethods) {
   EXPECT_GE(scroller_action_target->MaximumScrollOffset().y(), 900);
 
   // Android does not produce accessible items for option elements.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(IsSelected(option));
   EXPECT_TRUE(option_action_target->SetSelected(true));
-  // Seleting option requires layout to be clean.
-  ASSERT_TRUE(root_obj.MaybeUpdateLayoutAndCheckValidity());
+  // Selecting option requires layout to be clean.
+  ASSERT_TRUE(WebAXObject::MaybeUpdateLayoutAndCheckValidity(document));
   EXPECT_TRUE(IsSelected(option));
 #endif
 
@@ -1190,7 +1183,7 @@ TEST_F(BlinkAXActionTargetTest, TestMethods) {
   EXPECT_EQ(value_to_set, input_text.GetValueForControl().Utf8());
 
   // Setting selection requires layout to be clean.
-  ASSERT_TRUE(root_obj.MaybeUpdateLayoutAndCheckValidity());
+  ASSERT_TRUE(WebAXObject::MaybeUpdateLayoutAndCheckValidity(document));
 
   EXPECT_TRUE(text_one_action_target->SetSelection(
       text_one_action_target.get(), 3, text_two_action_target.get(), 4));
@@ -1257,10 +1250,7 @@ class AXImageAnnotatorTest : public RenderAccessibilityImplTest {
     GetRenderAccessibilityImpl()->ax_image_annotator_ =
         std::make_unique<TestAXImageAnnotator>(GetRenderAccessibilityImpl(),
                                                mock_annotator().GetRemote());
-    GetRenderAccessibilityImpl()->tree_source_->RemoveBlinkImageAnnotator();
-    GetRenderAccessibilityImpl()->tree_source_->AddBlinkImageAnnotator(
-        GetRenderAccessibilityImpl()->ax_image_annotator_.get());
-    BlinkAXTreeSource::IgnoreProtocolChecksForTesting();
+    RenderAccessibilityImpl::IgnoreProtocolChecksForTesting();
   }
 
   void TearDown() override {
@@ -1303,8 +1293,8 @@ TEST_F(AXImageAnnotatorTest, OnImageAdded) {
   // Show node "B".
   ExecuteJavaScriptForTests(
       "document.getElementById('B').style.visibility = 'visible';");
+  ASSERT_TRUE(WebAXObject::MaybeUpdateLayoutAndCheckValidity(document));
   ClearHandledUpdates();
-  root_obj.MaybeUpdateLayoutAndCheckValidity();
 
   // This should update the annotations of all images on the page, including the
   // already visible one.
@@ -1360,6 +1350,7 @@ TEST_F(AXImageAnnotatorTest, OnImageUpdated) {
 
   // Update node "A".
   ExecuteJavaScriptForTests("document.querySelector('img').src = 'test2.jpg';");
+  ASSERT_TRUE(WebAXObject::MaybeUpdateLayoutAndCheckValidity(document));
 
   ClearHandledUpdates();
   // This should update the annotations of all images on the page, including the
@@ -1394,34 +1385,6 @@ class MockUkmRecorder : public ukm::MojoUkmRecorder {
   int calls_ = 0;
 };
 
-// Subclass of BlinkAXTreeSource that retains the functionality but
-// enables simulating a serialize operation taking an arbitrarily long
-// amount of time (using simulated time).
-class TimeDelayBlinkAXTreeSource : public BlinkAXTreeSource {
- public:
-  TimeDelayBlinkAXTreeSource(RenderFrameImpl* rfi,
-                             ui::AXMode mode,
-                             base::test::TaskEnvironment* task_environment)
-      : BlinkAXTreeSource(rfi, mode), task_environment_(task_environment) {}
-
-  void SetTimeDelayForNextSerialize(int time_delay_ms) {
-    time_delay_ms_ = time_delay_ms;
-  }
-
-  void SerializeNode(blink::WebAXObject node,
-                     ui::AXNodeData* out_data) const override {
-    BlinkAXTreeSource::SerializeNode(node, out_data);
-    if (time_delay_ms_) {
-      task_environment_->FastForwardBy(base::Milliseconds(time_delay_ms_));
-      time_delay_ms_ = 0;
-    }
-  }
-
- private:
-  mutable int time_delay_ms_ = 0;
-  base::test::TaskEnvironment* task_environment_;
-};
-
 // Tests for URL-keyed metrics.
 class RenderAccessibilityImplUKMTest : public RenderAccessibilityImplTest {
  public:
@@ -1429,14 +1392,6 @@ class RenderAccessibilityImplUKMTest : public RenderAccessibilityImplTest {
     RenderAccessibilityImplTest::SetUp();
     GetRenderAccessibilityImpl()->ukm_recorder_ =
         std::make_unique<MockUkmRecorder>();
-    GetRenderAccessibilityImpl()->tree_source_ =
-        std::make_unique<TimeDelayBlinkAXTreeSource>(
-            GetRenderAccessibilityImpl()->render_frame_,
-            GetRenderAccessibilityImpl()->GetAccessibilityMode(),
-            &task_environment_);
-    GetRenderAccessibilityImpl()->serializer_ =
-        std::make_unique<BlinkAXTreeSerializer>(
-            GetRenderAccessibilityImpl()->tree_source_.get());
   }
 
   void TearDown() override { RenderAccessibilityImplTest::TearDown(); }
@@ -1446,10 +1401,9 @@ class RenderAccessibilityImplUKMTest : public RenderAccessibilityImplTest {
         GetRenderAccessibilityImpl()->ukm_recorder_.get());
   }
 
-  void SetTimeDelayForNextSerialize(int time_delay_ms) {
-    static_cast<TimeDelayBlinkAXTreeSource*>(
-        GetRenderAccessibilityImpl()->tree_source_.get())
-        ->SetTimeDelayForNextSerialize(time_delay_ms);
+  void SetTimeDelayForNextSerialize(base::TimeDelta delta) {
+    task_environment_.FastForwardBy(delta);
+    GetRenderAccessibilityImpl()->slowest_serialization_time_ = delta;
   }
 };
 
@@ -1479,10 +1433,10 @@ TEST_F(RenderAccessibilityImplUKMTest, TestFireUKMs) {
   // No URL-keyed metrics should be fired even after an event that takes
   // 300 ms, but we should now have something to send.
   // This must be >= kMinSerializationTimeToSendInMS
-  SetTimeDelayForNextSerialize(300);
   GetRenderAccessibilityImpl()->HandleAXEvent(
       ui::AXEvent(root_obj.AxID(), ax::mojom::Event::kChildrenChanged));
   SendPendingAccessibilityEvents();
+  SetTimeDelayForNextSerialize(base::Milliseconds(300));
   EXPECT_EQ(0, ukm_recorder()->calls());
   histogram_tester.ExpectTotalCount(
       "Accessibility.Performance.SendPendingAccessibilityEvents", 2);
@@ -1498,8 +1452,8 @@ TEST_F(RenderAccessibilityImplUKMTest, TestFireUKMs) {
       "Accessibility.Performance.SendPendingAccessibilityEvents", 3);
 
   // Send another event that takes a long (simulated) time to serialize.
-  // This must be >= kMinSerializationTimeToSendInMS
-  SetTimeDelayForNextSerialize(200);
+  // This must be >= kMinSerializationTimeToSend
+  SetTimeDelayForNextSerialize(base::Milliseconds(200));
   GetRenderAccessibilityImpl()->HandleAXEvent(
       ui::AXEvent(root_obj.AxID(), ax::mojom::Event::kChildrenChanged));
   SendPendingAccessibilityEvents();

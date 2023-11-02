@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/prefs/pref_service.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -50,7 +49,8 @@ ReaderModeIconView::ReaderModeIconView(
     : PageActionIconView(command_updater,
                          IDC_DISTILL_PAGE,
                          icon_label_bubble_delegate,
-                         page_action_icon_delegate),
+                         page_action_icon_delegate,
+                         "ReaderMode"),
       pref_service_(pref_service) {}
 
 ReaderModeIconView::~ReaderModeIconView() {
@@ -60,8 +60,7 @@ ReaderModeIconView::~ReaderModeIconView() {
   DCHECK(!DistillabilityObserver::IsInObserverList());
 }
 
-void ReaderModeIconView::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
+void ReaderModeIconView::PrimaryPageChanged(content::Page& page) {
   if (GetVisible())
     views::InkDrop::Get(this)->AnimateToState(views::InkDropState::HIDDEN,
                                               nullptr);
@@ -79,8 +78,7 @@ void ReaderModeIconView::ReadyToCommitNavigation(
                                       GetPageType(web_contents));
 }
 
-void ReaderModeIconView::DocumentAvailableInMainFrame(
-    content::RenderFrameHost* render_frame_host) {
+void ReaderModeIconView::PrimaryMainDocumentElementAvailable() {
   content::WebContents* web_contents = GetWebContents();
   if (!web_contents)
     return;
@@ -158,7 +156,8 @@ void ReaderModeIconView::OnExecuting(
   content::WebContents* contents = GetWebContents();
   if (!contents || IsDistilledPage(contents->GetLastCommittedURL()))
     return;
-  ukm::SourceId source_id = ukm::GetSourceIdForWebContentsDocument(contents);
+  ukm::SourceId source_id =
+      contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
   ukm::builders::ReaderModeActivated(source_id)
       .SetActivatedViaOmnibox(true)
       .Record(ukm::UkmRecorder::Get());
@@ -174,7 +173,7 @@ void ReaderModeIconView::OnResult(
 
   if (result.is_last) {
     ukm::SourceId source_id =
-        ukm::GetSourceIdForWebContentsDocument(web_contents);
+        web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
     ukm::builders::ReaderModeReceivedDistillability(source_id)
         .SetIsPageDistillable(result.is_distillable)
         .Record(ukm::UkmRecorder::Get());

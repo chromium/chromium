@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -75,7 +75,6 @@ public class PaymentRequestIntegrationTest {
     private PaymentRequestClient mClient;
     private PaymentAppFactoryInterface mFactory;
     private PaymentApp mPaymentApp;
-    private boolean mIsUserGesture;
     private boolean mWaitForUpdatedDetails;
 
     @Before
@@ -160,7 +159,7 @@ public class PaymentRequestIntegrationTest {
     }
 
     private void show(PaymentRequest request) {
-        request.show(mIsUserGesture, mWaitForUpdatedDetails);
+        request.show(mWaitForUpdatedDetails);
     }
 
     private void assertInvokePaymentAppCalled() {

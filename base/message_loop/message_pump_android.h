@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,14 @@
 #define BASE_MESSAGE_LOOP_MESSAGE_PUMP_ANDROID_H_
 
 #include <jni.h>
+#include <cstdint>
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -37,7 +38,8 @@ class BASE_EXPORT MessagePumpForUI : public MessagePump {
   void Run(Delegate* delegate) override;
   void Quit() override;
   void ScheduleWork() override;
-  void ScheduleDelayedWork(const TimeTicks& delayed_work_time) override;
+  void ScheduleDelayedWork(
+      const Delegate::NextWorkInfo& next_work_info) override;
 
   // Attaches |delegate| to this native MessagePump. |delegate| will from then
   // on be invoked by the native loop to process application tasks.
@@ -59,6 +61,7 @@ class BASE_EXPORT MessagePumpForUI : public MessagePump {
   // and should not be called from outside this class.
   void OnDelayedLooperCallback();
   void OnNonDelayedLooperCallback();
+  void OnResumeNonDelayedLooperCallback();
 
  protected:
   Delegate* SetDelegate(Delegate* delegate);
@@ -68,6 +71,8 @@ class BASE_EXPORT MessagePumpForUI : public MessagePump {
 
  private:
   void ScheduleWorkInternal(bool do_idle_work);
+  // Schedules an invocation of OnNonDelayedLoopedWork after |yield_duration_|.
+  void ScheduleWorkWithDelay();
   void DoIdleWork();
 
   // Unlike other platforms, we don't control the message loop as it's
@@ -84,7 +89,7 @@ class BASE_EXPORT MessagePumpForUI : public MessagePump {
   bool quit_ = false;
 
   // The MessageLoop::Delegate for this pump.
-  Delegate* delegate_ = nullptr;
+  raw_ptr<Delegate> delegate_ = nullptr;
 
   // The time at which we are currently scheduled to wake up and perform a
   // delayed task. This avoids redundantly scheduling |delayed_fd_| with the
@@ -95,17 +100,29 @@ class BASE_EXPORT MessagePumpForUI : public MessagePump {
   // If set, a callback to fire when the message pump is quit.
   base::OnceClosure on_quit_callback_;
 
-  // The file descriptor used to signal that non-delayed work is available.
+  // The file descriptor used to request an immediate invocation of
+  // OnNonDelayedLooperWork().
   int non_delayed_fd_;
+
+  // The file descriptor used to request an invocation of
+  // OnNonDelayedLooperWork() after |yield_duration_|.
+  int resume_after_yielding_non_delayed_fd_;
 
   // The file descriptor used to signal that delayed work is available.
   int delayed_fd_;
 
+  // SequenceManager can ask the pump to yield to the Android looper if Android
+  // looper is expected to execute high-priority work (e.g. process input).
+  // As we can't ensure that the looper won't immediately call us back, we
+  // introduce a small yielding delay before continuing to run Chrome tasks to
+  // force Android looper to run non-Chrome tasks first.
+  const base::TimeDelta yield_duration_;
+
   // The Android Looper for this thread.
-  ALooper* looper_ = nullptr;
+  raw_ptr<ALooper> looper_ = nullptr;
 
   // The JNIEnv* for this thread, used to check for pending exceptions.
-  JNIEnv* env_;
+  raw_ptr<JNIEnv> env_;
 };
 
 }  // namespace base

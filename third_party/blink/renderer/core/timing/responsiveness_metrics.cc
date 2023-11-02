@@ -1,12 +1,15 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/timing/responsiveness_metrics.h"
 #include <memory>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/responsiveness_metrics/user_interaction_latency.h"
@@ -43,6 +46,14 @@ constexpr blink::DOMHighResTimeStamp kMaxDelayForEntries =
     blink::DOMHighResTimeStamp(500);
 // The length of the timer to flush entries from the time pointerup occurs.
 constexpr base::TimeDelta kFlushTimerLength = base::Seconds(1);
+// The name for the histogram which records interaction timings, and the names
+// of the variants for keyboard, click/tap, and drag interactions.
+const char kHistogramMaxEventDuration[] =
+    "Blink.Responsiveness.UserInteraction.MaxEventDuration";
+const char kHistogramAllTypes[] = ".AllTypes";
+const char kHistogramKeyboard[] = ".Keyboard";
+const char kHistogramTapOrClick[] = ".TapOrClick";
+const char kHistogramDrag[] = ".Drag";
 
 base::TimeDelta MaxEventDuration(
     const WTF::Vector<ResponsivenessMetrics::EventTimestamps>& timestamps) {
@@ -104,6 +115,13 @@ std::unique_ptr<TracedValue> UserInteractionTraceData(
   return traced_value;
 }
 
+void LogResponsivenessHistogram(base::TimeDelta max_event_duration,
+                                const char* suffix) {
+  base::UmaHistogramCustomTimes(
+      base::StrCat({kHistogramMaxEventDuration, suffix}), max_event_duration,
+      base::Milliseconds(1), base::Seconds(60), 50);
+}
+
 }  // namespace
 
 ResponsivenessMetrics::ResponsivenessMetrics(
@@ -138,16 +156,28 @@ void ResponsivenessMetrics::RecordUserInteractionUKM(
   base::TimeDelta total_event_duration = TotalEventDuration(timestamps);
   // We found some negative values in the data. Before figuring out the root
   // cause, we need this check to avoid sending nonsensical data.
-  if (max_event_duration.InMilliseconds() >= 0 &&
-      total_event_duration.InMilliseconds() >= 0) {
-    window->GetFrame()->Client()->DidObserveUserInteraction(
-        max_event_duration, total_event_duration, interaction_type);
+  if (max_event_duration.InMilliseconds() >= 0) {
+    window->GetFrame()->Client()->DidObserveUserInteraction(max_event_duration,
+                                                            interaction_type);
   }
   TRACE_EVENT2("devtools.timeline", "Responsiveness.Renderer.UserInteraction",
                "data",
                UserInteractionTraceData(max_event_duration,
                                         total_event_duration, interaction_type),
                "frame", ToTraceValue(window->GetFrame()));
+
+  LogResponsivenessHistogram(max_event_duration, kHistogramAllTypes);
+  switch (interaction_type) {
+    case UserInteractionType::kKeyboard:
+      LogResponsivenessHistogram(max_event_duration, kHistogramKeyboard);
+      break;
+    case UserInteractionType::kTapOrClick:
+      LogResponsivenessHistogram(max_event_duration, kHistogramTapOrClick);
+      break;
+    case UserInteractionType::kDrag:
+      LogResponsivenessHistogram(max_event_duration, kHistogramDrag);
+      break;
+  }
 
   ukm::UkmRecorder* ukm_recorder = window->UkmRecorder();
   ukm::SourceId source_id = window->UkmSourceID();
@@ -183,6 +213,10 @@ void ResponsivenessMetrics::RecordDragTapOrClickUKM(
                            pointer_info.GetTimeStamps());
 }
 
+// Event timing pointer events processing
+//
+// See also ./Pointer_interaction_state_machine.md to help understand the logic
+// below that how event timing group up pointer events as interactions.
 bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
     PerformanceEventTiming* entry,
     PointerId pointer_id,
@@ -193,7 +227,7 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
                            : nullptr;
   LocalDOMWindow* window = window_performance_->DomWindow();
   if (event_type == event_type_names::kPointercancel && pointer_info) {
-    MaybeNotifyPointerdown(pointer_info->GetEntry());
+    NotifyPointerdown(pointer_info->GetEntry());
     // The pointer id of the pointerdown is no longer needed.
     pointer_id_entry_map_.erase(pointer_id);
     last_pointer_id_ = absl::nullopt;
@@ -201,7 +235,7 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
     if (pointer_info) {
       // Flush the existing entry. We are starting a new interaction.
       RecordDragTapOrClickUKM(window, *pointer_info);
-      MaybeNotifyPointerdown(pointer_info->GetEntry());
+      NotifyPointerdown(pointer_info->GetEntry());
       pointer_id_entry_map_.erase(pointer_id);
     }
     // Any existing entry in the map cannot fire a click.
@@ -224,7 +258,7 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
       // Set interaction id and notify the pointer down entry.
       PerformanceEventTiming* pointer_down_entry = pointer_info->GetEntry();
       pointer_down_entry->SetInteractionId(GetCurrentInteractionId());
-      MaybeNotifyPointerdown(pointer_down_entry);
+      NotifyPointerdown(pointer_down_entry);
       pointer_info->GetTimeStamps().push_back(event_timestamps);
     } else {
       // There is no matching pointerdown: Set the map using pointerup, in
@@ -313,7 +347,7 @@ bool ResponsivenessMetrics::SetKeyIdAndRecordLatency(
         RecordKeyboardUKM(window_performance_->DomWindow(),
                           {previous_entry->GetTimeStamps()});
       }
-      window_performance_->MaybeNotifyInteractionAndAddEventTimingBuffer(
+      window_performance_->NotifyAndAddEventTimingBuffer(
           previous_entry->GetEntry());
     }
     key_code_entry_map_.Set(
@@ -330,7 +364,7 @@ bool ResponsivenessMetrics::SetKeyIdAndRecordLatency(
     // Generate a new interaction id for the keydown-keyup pair.
     UpdateInteractionId();
     previous_entry->GetEntry()->SetInteractionId(GetCurrentInteractionId());
-    window_performance_->MaybeNotifyInteractionAndAddEventTimingBuffer(
+    window_performance_->NotifyAndAddEventTimingBuffer(
         previous_entry->GetEntry());
     entry->SetInteractionId(GetCurrentInteractionId());
     RecordKeyboardUKM(window_performance_->DomWindow(),
@@ -339,8 +373,7 @@ bool ResponsivenessMetrics::SetKeyIdAndRecordLatency(
   } else if (event_type == event_type_names::kCompositionstart) {
     composition_started_ = true;
     for (auto key_entry : key_code_entry_map_.Values()) {
-      window_performance_->MaybeNotifyInteractionAndAddEventTimingBuffer(
-          key_entry->GetEntry());
+      window_performance_->NotifyAndAddEventTimingBuffer(key_entry->GetEntry());
     }
     key_code_entry_map_.clear();
   } else if (event_type == event_type_names::kCompositionend) {
@@ -397,7 +430,7 @@ void ResponsivenessMetrics::FlushPointerMap() {
     // event for this |item|, which means we have pointerdown and pointerup.
     if (entry->name() == event_type_names::kPointerup ||
         item.value->GetTimeStamps().size() > 1u) {
-      MaybeNotifyPointerdown(entry);
+      NotifyPointerdown(entry);
       RecordDragTapOrClickUKM(window, *item.value);
       pointer_ids_to_remove.push_back(item.key);
     }
@@ -405,12 +438,12 @@ void ResponsivenessMetrics::FlushPointerMap() {
   pointer_id_entry_map_.RemoveAll(pointer_ids_to_remove);
 }
 
-void ResponsivenessMetrics::MaybeNotifyPointerdown(
+void ResponsivenessMetrics::NotifyPointerdown(
     PerformanceEventTiming* entry) const {
   // We only delay dispatching entries when they are pointerdown.
   if (entry->name() != event_type_names::kPointerdown)
     return;
-  window_performance_->MaybeNotifyInteractionAndAddEventTimingBuffer(entry);
+  window_performance_->NotifyAndAddEventTimingBuffer(entry);
 }
 
 void ResponsivenessMetrics::KeyboardEntryAndTimestamps::Trace(

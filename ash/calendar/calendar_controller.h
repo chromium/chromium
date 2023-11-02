@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,8 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "components/account_id/account_id.h"
 
+class PrefRegistrySimple;
+
 namespace ash {
 
 class CalendarClient;
@@ -19,14 +21,16 @@ class CalendarClient;
 // Keeps track of all calendar clients per user account and makes
 // sure the current active client belongs to the current active user.
 // There is expected to exist at most one instance of this class at a time. In
-// production the instance is owned by ash::Shell. The instance can be retrieved
-// using `Shell::Get()->highlighter_controller()`.
+// production the instance is owned by ash::Shell.
 class ASH_EXPORT CalendarController : public SessionObserver {
  public:
   CalendarController();
   CalendarController(const CalendarController& other) = delete;
   CalendarController& operator=(const CalendarController& other) = delete;
   ~CalendarController() override;
+
+  // Registers profile prefs for Calendar client.
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Adds a client to it's corresponding user account id in a map.
   void RegisterClientForUser(const AccountId& account_id,
@@ -36,6 +40,9 @@ class ASH_EXPORT CalendarController : public SessionObserver {
   // profile is not registered with the ProfileManager, e.g. before logging in,
   // guest user, etc.
   CalendarClient* GetClient();
+
+  // For testing only, directly assign `active_user_account_id_`.
+  void SetActiveUserAccountIdForTesting(const AccountId& account_id);
 
  private:
   // SessionObserver:

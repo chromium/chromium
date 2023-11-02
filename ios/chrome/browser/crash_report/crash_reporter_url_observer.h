@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,12 +22,12 @@ class AllWebStateObservationForwarder;
 
 // Provides method to set and remove parameter values.
 @protocol CrashReporterParameterSetter
-// Sets a parameter named |key||pending| with value |value|.
+// Sets a parameter named `key||pending` with value `value`.
 - (void)setReportParameterURL:(const GURL&)URL
                        forKey:(NSNumber*)key
                       pending:(BOOL)pending;
 
-// Deletes the parameter |key||pending|.
+// Deletes the parameter `key||pending`.
 - (void)removeReportParameter:(NSNumber*)key pending:(BOOL)pending;
 @end
 
@@ -45,17 +45,17 @@ class CrashReporterURLObserver : public WebStateListObserver,
   void RemoveWebStateList(WebStateList* web_state_list);
 
   // Records the given URL associated to the given id to the list of URLs to
-  // send to the crash server. If |pending| is true, the URL is one that is
+  // send to the crash server. If `pending` is true, the URL is one that is
   // expected to start loading, but hasn't actually been seen yet.
   void RecordURL(const GURL& url, web::WebState* web_state, bool pending);
 
-  // Observes |webState| by this instance of the CrashReporterURLObserver.
+  // Observes `webState` by this instance of the CrashReporterURLObserver.
   void ObservePreloadWebState(web::WebState* web_state);
-  // Stop Observing |webState| by this instance of the CrashReporterURLObserver.
+  // Stop Observing `webState` by this instance of the CrashReporterURLObserver.
   void StopObservingPreloadWebState(web::WebState* web_state);
-  // Observes |webStateList| by this instance of the CrashReporterURLObserver.
+  // Observes `webStateList` by this instance of the CrashReporterURLObserver.
   void ObserveWebStateList(WebStateList* web_state_list);
-  // Stop Observing |webStateList| by this instance of the
+  // Stop Observing `webStateList` by this instance of the
   // CrashReporterURLObserver.
   void StopObservingWebStateList(WebStateList* web_state_list);
 
@@ -85,11 +85,11 @@ class CrashReporterURLObserver : public WebStateListObserver,
                           int index) override;
 
  private:
-  // A unique string identifying |web_state_list| as a group of WebStates.
+  // A unique string identifying `web_state_list` as a group of WebStates.
   std::string GroupForWebStateList(WebStateList* web_state_list);
-  // Convenient method to report the URL displayed by |web_state|.
+  // Convenient method to report the URL displayed by `web_state`.
   void RecordURLForWebState(web::WebState* web_state);
-  // Remove the reporting of URLs of every WebStates in |group|.
+  // Remove the reporting of URLs of every WebStates in `group`.
   void RemoveGroup(const std::string& group);
   // Map associating each Breakpad key with the group it is currently reporting
   // URLs for.

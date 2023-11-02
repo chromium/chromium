@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,32 +27,29 @@ base::Value CharacteristicPropertiesToValue(
 
 }  // namespace
 
-std::unique_ptr<base::DictionaryValue> CharacteristicToValue(
-    Characteristic* from) {
+base::Value::Dict CharacteristicToValue(Characteristic& from) {
   // Copy the properties. Use Characteristic::ToValue to generate the result
   // dictionary without the properties, to prevent json_schema_compiler from
   // failing.
-  std::vector<CharacteristicProperty> properties = from->properties;
-  from->properties.clear();
-  std::unique_ptr<base::DictionaryValue> to = from->ToValue();
-  to->SetKey("properties", CharacteristicPropertiesToValue(properties));
+  std::vector<CharacteristicProperty> properties = std::move(from.properties);
+  base::Value::Dict to = from.ToValue();
+  to.Set("properties", CharacteristicPropertiesToValue(properties));
   return to;
 }
 
-std::unique_ptr<base::DictionaryValue> DescriptorToValue(Descriptor* from) {
-  if (!from->characteristic)
-    return from->ToValue();
+base::Value::Dict DescriptorToValue(Descriptor& from) {
+  if (!from.characteristic)
+    return from.ToValue();
 
   // Copy the characteristic properties and set them later manually.
   std::vector<CharacteristicProperty> properties =
-      from->characteristic->properties;
-  from->characteristic->properties.clear();
-  std::unique_ptr<base::DictionaryValue> to = from->ToValue();
+      std::move(from.characteristic->properties);
+  from.characteristic->properties.clear();
+  base::Value::Dict to = from.ToValue();
 
-  base::DictionaryValue* chrc_value = NULL;
-  to->GetDictionaryWithoutPathExpansion("characteristic", &chrc_value);
+  base::Value::Dict* chrc_value = to.FindDict("characteristic");
   DCHECK(chrc_value);
-  chrc_value->SetKey("properties", CharacteristicPropertiesToValue(properties));
+  chrc_value->Set("properties", CharacteristicPropertiesToValue(properties));
   return to;
 }
 

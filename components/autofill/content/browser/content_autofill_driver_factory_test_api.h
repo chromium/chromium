@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 
 namespace autofill {
@@ -18,23 +19,21 @@ class ContentAutofillDriverFactoryTestApi {
   static std::unique_ptr<ContentAutofillDriverFactory> Create(
       content::WebContents* web_contents,
       AutofillClient* client,
-      const std::string& app_locale,
-      BrowserAutofillManager::AutofillDownloadManagerState
-          enable_download_manager,
-      AutofillManager::AutofillManagerFactoryCallback
-          autofill_manager_factory_callback);
+      ContentAutofillDriverFactory::DriverInitCallback driver_init_hook);
 
   explicit ContentAutofillDriverFactoryTestApi(
       ContentAutofillDriverFactory* factory);
 
   size_t num_drivers() const { return factory_->driver_map_.size(); }
 
+  void SetDriver(content::RenderFrameHost* rfh,
+                 std::unique_ptr<ContentAutofillDriver> driver);
   ContentAutofillDriver* GetDriver(content::RenderFrameHost* rfh);
 
   ContentAutofillRouter& router() { return factory_->router_; }
 
  private:
-  ContentAutofillDriverFactory* factory_;
+  raw_ptr<ContentAutofillDriverFactory> factory_;
 };
 
 }  // namespace autofill

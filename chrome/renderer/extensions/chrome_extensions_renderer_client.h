@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,7 @@ class WebFrame;
 class WebLocalFrame;
 struct WebPluginParams;
 class WebURL;
+class WebView;
 }
 
 namespace content {
@@ -32,10 +33,6 @@ namespace extensions {
 class Dispatcher;
 class RendererPermissionsPolicyDelegate;
 class ResourceRequestPolicy;
-}
-
-namespace guest_view {
-class GuestViewContainerDispatcher;
 }
 
 namespace net {
@@ -86,6 +83,8 @@ class ChromeExtensionsRendererClient
 
   // See ChromeContentRendererClient methods with the same names.
   void RenderThreadStarted();
+  void WebViewCreated(blink::WebView* web_view,
+                      const url::Origin* outermost_origin);
   void RenderFrameCreated(content::RenderFrame* render_frame,
                           service_manager::BinderRegistry* registry);
   bool OverrideCreatePlugin(content::RenderFrame* render_frame,
@@ -128,8 +127,6 @@ class ChromeExtensionsRendererClient
   std::unique_ptr<extensions::Dispatcher> extension_dispatcher_;
   std::unique_ptr<extensions::RendererPermissionsPolicyDelegate>
       permissions_policy_delegate_;
-  std::unique_ptr<guest_view::GuestViewContainerDispatcher>
-      guest_view_container_dispatcher_;
   std::unique_ptr<extensions::ResourceRequestPolicy> resource_request_policy_;
 };
 

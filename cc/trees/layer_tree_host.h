@@ -1,4 +1,4 @@
-// Copyright 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,7 @@
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -62,13 +63,13 @@
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/overlay_transform.h"
 
 namespace gfx {
 struct PresentationFeedback;
-class RenderingPipeline;
 }
 
 namespace cc {
@@ -105,6 +106,17 @@ class CC_EXPORT ScopedDeferMainFrameUpdate {
   base::WeakPtr<LayerTreeHost> host_;
 };
 
+// Returned from LayerTreeHost::PauseRendering. Automatically un-pauses on
+// destruction.
+class CC_EXPORT ScopedPauseRendering {
+ public:
+  explicit ScopedPauseRendering(LayerTreeHost* host);
+  ~ScopedPauseRendering();
+
+ private:
+  base::WeakPtr<LayerTreeHost> host_;
+};
+
 class CC_EXPORT LayerTreeHost : public MutatorHostClient {
  public:
   struct CC_EXPORT InitParams {
@@ -114,15 +126,13 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
     InitParams(InitParams&&);
     InitParams& operator=(InitParams&&);
 
-    LayerTreeHostClient* client = nullptr;
-    LayerTreeHostSchedulingClient* scheduling_client = nullptr;
-    TaskGraphRunner* task_graph_runner = nullptr;
-    LayerTreeSettings const* settings = nullptr;
+    raw_ptr<LayerTreeHostClient> client = nullptr;
+    raw_ptr<LayerTreeHostSchedulingClient> scheduling_client = nullptr;
+    raw_ptr<TaskGraphRunner> task_graph_runner = nullptr;
+    raw_ptr<const LayerTreeSettings> settings = nullptr;
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner;
-    MutatorHost* mutator_host = nullptr;
-    RasterDarkModeFilter* dark_mode_filter = nullptr;
-    gfx::RenderingPipeline* main_thread_pipeline = nullptr;
-    gfx::RenderingPipeline* compositor_thread_pipeline = nullptr;
+    raw_ptr<MutatorHost> mutator_host = nullptr;
+    raw_ptr<RasterDarkModeFilter> dark_mode_filter = nullptr;
 
     // The image worker task runner is used to schedule image decodes. The
     // compositor thread may make sync calls to this thread, analogous to the
@@ -150,7 +160,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
       InitParams params);
 
   LayerTreeHost(const LayerTreeHost&) = delete;
-  virtual ~LayerTreeHost();
+  ~LayerTreeHost() override;
 
   LayerTreeHost& operator=(const LayerTreeHost&) = delete;
 
@@ -158,23 +168,23 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   int GetId() const;
 
   // The commit state for the frame being assembled by the compositor host.
-  CommitState* pending_commit_state() {
-    DCHECK(task_runner_provider_->IsMainThread());
-    return pending_commit_state_.get();
-  }
   const CommitState* pending_commit_state() const {
-    DCHECK(task_runner_provider_->IsMainThread());
+    DCHECK(IsMainThread());
     return pending_commit_state_.get();
   }
 
-  // The commit state for the frame being committed by the compositor.
-  CommitState* active_commit_state() {
-    DCHECK(task_runner_provider_->IsImplThread());
-    return active_commit_state_.get();
+  // Additional state required for commit. Unlike pending_commit_state(), this
+  // state is *not* snapshotted. Both the compositor and the host access a
+  // single live version, so care must be taken to avoid collisions.
+  const ThreadUnsafeCommitState& thread_unsafe_commit_state() const {
+    DCHECK(IsMainThread());
+    return thread_unsafe_commit_state_;
   }
-  const CommitState* active_commit_state() const {
-    DCHECK(task_runner_provider_->IsImplThread());
-    return active_commit_state_.get();
+  // This should only be used to get a reference to ThreadUnsafeCommitState for
+  // the purpose of passing to the commit code. All other locations should use
+  // thread_unsafe_commit_state() instead.
+  ThreadUnsafeCommitState& GetUnsafeStateForCommit() {
+    return thread_unsafe_commit_state();
   }
 
   // The current source frame number. This is incremented for each main frame
@@ -187,9 +197,10 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // UIResourceLayers pushed to the LayerTree.
   UIResourceManager* GetUIResourceManager();
 
-  // Returns the TaskRunnerProvider used to access the main and compositor
-  // thread task runners.
+  // These methods are safe to call from either thread.
   TaskRunnerProvider* GetTaskRunnerProvider();
+  bool IsMainThread() const;
+  bool IsImplThread() const;
 
   // Returns the settings used by this host. These settings are constants given
   // at startup.
@@ -221,7 +232,12 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void ClearEventsMetrics();
 
   size_t saved_events_metrics_count_for_testing() const {
+    DCHECK(IsMainThread());
     return events_metrics_manager_.saved_events_metrics_count_for_testing();
+  }
+
+  std::unique_ptr<BeginMainFrameMetrics> TakeBeginMainFrameMetrics() {
+    return std::move(pending_commit_state()->begin_main_frame_metrics);
   }
 
   // Visibility and LayerTreeFrameSink -------------------------------
@@ -277,7 +293,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   // Returns true after SetNeedsAnimate(), SetNeedsUpdateLayers() or
   // SetNeedsCommit(), until it is satisfied.
-  bool RequestedMainFramePendingForTesting() const;
+  bool RequestedMainFramePending() const;
 
   // Requests that the next frame re-chooses crisp raster scales for all layers.
   void SetNeedsRecalculateRasterScales();
@@ -290,6 +306,20 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // until the ScopedDeferMainFrameUpdate object is destroyed, or
   // StopDeferringCommits is called.
   std::unique_ptr<ScopedDeferMainFrameUpdate> DeferMainFrameUpdate();
+
+  // Prevents the compositor from rendering updates. As opposed to
+  // DeferMainFrameUpdate() which only pauses main frames, this pauses both main
+  // and impl frames to ensure no visual updates are presented.
+  //
+  // Note that this ensures any previously committed or in progress (if called
+  // during the main frame) updates are presented before rendering is paused.
+  [[nodiscard]] std::unique_ptr<ScopedPauseRendering> PauseRendering();
+
+  // Notification that the proxy paused or resumed rendering.
+  void OnPauseRenderingChanged(bool);
+
+  // Returns whether main frame updates are deferred. See conditions above.
+  bool MainFrameUpdatesAreDeferred() const;
 
   // Notification that the proxy started or stopped deferring main frame updates
   void OnDeferMainFrameUpdatesChanged(bool);
@@ -308,13 +338,19 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // Returns true if commits are currently deferred.
   bool IsDeferringCommits() const;
 
+  // Returns true if rendering is currently paused.
+  bool IsRenderingPaused() const;
+
   // Notification that the proxy started or stopped deferring commits.
-  void OnDeferCommitsChanged(bool defer_status, PaintHoldingReason reason);
+  void OnDeferCommitsChanged(bool defer_status,
+                             PaintHoldingReason reason,
+                             absl::optional<PaintHoldingCommitTrigger> trigger);
 
   // Returns whether there are any outstanding ScopedDeferMainFrameUpdate,
   // though commits may be deferred also when the local_surface_id_from_parent()
   // is not valid.
   bool defer_main_frame_update() const {
+    DCHECK(IsMainThread());
     return defer_main_frame_update_count_;
   }
 
@@ -381,10 +417,11 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // attached to it and will be added/removed along with the root Layer. The
   // LayerTreeHost retains ownership of a reference to the root Layer.
   void SetRootLayer(scoped_refptr<Layer> root_layer);
-  Layer* root_layer() { return pending_commit_state()->root_layer.get(); }
+  Layer* root_layer() { return thread_unsafe_commit_state().root_layer.get(); }
   const Layer* root_layer() const {
-    return pending_commit_state()->root_layer.get();
+    return thread_unsafe_commit_state().root_layer.get();
   }
+  bool has_root_layer() const { return root_layer(); }
 
   // Sets the collection of viewport property ids, defined to allow viewport
   // pinch-zoom etc. on the compositor thread. This is set only on the
@@ -427,14 +464,10 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
                                   EventListenerProperties event_properties);
   EventListenerProperties event_listener_properties(
       EventListenerClass event_class) const {
-    DCHECK(task_runner_provider_->IsMainThread());
+    DCHECK(IsMainThread());
     return pending_commit_state()
         ->event_listener_properties[static_cast<size_t>(event_class)];
   }
-
-  // Indicates that its acceptable to throttle the frame rate for this content
-  // to prioritize lower power/CPU use.
-  void SetEnableFrameRateThrottling(bool enable_frame_rate_throttling);
 
   void SetViewportRectAndScale(
       const gfx::Rect& device_viewport_rect,
@@ -493,10 +526,10 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
     return pending_commit_state()->max_page_scale_factor;
   }
 
-  void set_background_color(SkColor color) {
+  void set_background_color(SkColor4f color) {
     pending_commit_state()->background_color = color;
   }
-  SkColor background_color() const {
+  SkColor4f background_color() const {
     return pending_commit_state()->background_color;
   }
 
@@ -507,7 +540,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
     return pending_commit_state()->display_transform_hint;
   }
 
-  void StartPageScaleAnimation(const gfx::Vector2d& target_offset,
+  void StartPageScaleAnimation(const gfx::Point& target_offset,
                                bool use_anchor,
                                float scale,
                                base::TimeDelta duration);
@@ -515,6 +548,9 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   float device_scale_factor() const {
     return pending_commit_state()->device_scale_factor;
+  }
+  float painted_device_scale_factor() const {
+    return pending_commit_state()->painted_device_scale_factor;
   }
 
   void SetRecordingScaleFactor(float recording_scale_factor);
@@ -537,11 +573,6 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
     return pending_commit_state()->new_local_surface_id_request;
   }
 
-  // Records the amount of time spent performing an update in response to new
-  // blink::VisualProperties.
-  void SetVisualPropertiesUpdateDuration(
-      base::TimeDelta visual_properties_update_duration);
-
   void SetDisplayColorSpaces(
       const gfx::DisplayColorSpaces& display_color_spaces);
   const gfx::DisplayColorSpaces& display_color_spaces() const {
@@ -549,6 +580,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   }
 
   bool HasCompositorDrivenScrollAnimationForTesting() const {
+    DCHECK(IsMainThread());
     return scroll_animation_.in_progress;
   }
 
@@ -574,8 +606,18 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   // Used externally by blink for setting the PropertyTrees when
   // UseLayerLists() is true.
-  PropertyTrees* property_trees() { return &property_trees_; }
-  const PropertyTrees* property_trees() const { return &property_trees_; }
+  PropertyTrees* property_trees() {
+    return &thread_unsafe_commit_state().property_trees;
+  }
+  const PropertyTrees* property_trees() const {
+    return &thread_unsafe_commit_state().property_trees;
+  }
+  MutatorHost* mutator_host() {
+    return thread_unsafe_commit_state().mutator_host;
+  }
+  const MutatorHost* mutator_host() const {
+    return thread_unsafe_commit_state().mutator_host;
+  }
 
   void SetPropertyTreesForTesting(const PropertyTrees* property_trees);
 
@@ -586,14 +628,20 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   Layer* LayerById(int id);
 
   bool PaintContent(const LayerList& update_layer_list);
-  bool in_paint_layer_contents() const { return in_paint_layer_contents_; }
+  bool in_paint_layer_contents() const {
+    DCHECK(IsMainThread());
+    return in_paint_layer_contents_;
+  }
 
   bool in_commit() const {
     return commit_completion_event_ && !commit_completion_event_->IsSignaled();
   }
 
   void SetHasCopyRequest(bool has_copy_request);
-  bool has_copy_request() const { return has_copy_request_; }
+  bool has_copy_request() const {
+    DCHECK(IsMainThread());
+    return has_copy_request_;
+  }
 
   void AddSurfaceRange(const viz::SurfaceRange& surface_range);
   void RemoveSurfaceRange(const viz::SurfaceRange& surface_range);
@@ -612,8 +660,14 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // Ensures a HUD layer exists if it is needed, and updates the HUD bounds and
   // position. If a HUD layer exists but is no longer needed, it is destroyed.
   void UpdateHudLayer(bool show_hud_info);
-  HeadsUpDisplayLayer* hud_layer() { return hud_layer_.get(); }
-  const HeadsUpDisplayLayer* hud_layer() const { return hud_layer_.get(); }
+  HeadsUpDisplayLayer* hud_layer() {
+    DCHECK(IsMainThread());
+    return hud_layer_.get();
+  }
+  const HeadsUpDisplayLayer* hud_layer() const {
+    DCHECK(IsMainThread());
+    return hud_layer_.get();
+  }
   bool is_hud_layer(const Layer*) const;
 
   virtual void SetNeedsFullTreeSync();
@@ -624,14 +678,6 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   void SetPropertyTreesNeedRebuild();
 
-  void PushPropertyTreesTo(LayerTreeImpl* tree_impl);
-  static void PushLayerTreePropertiesTo(CommitState* commit_state,
-                                        LayerTreeImpl* tree_impl);
-  void PushLayerTreeHostPropertiesTo(LayerTreeHostImpl* host_impl);
-  void MoveChangeTrackingToLayers(LayerTreeImpl* tree_impl);
-
-  MutatorHost* mutator_host() { return mutator_host_; }
-
   // Returns the layer with the given |element_id|. In layer-list mode, only
   // scrollable layers are registered in this map.
   Layer* LayerByElementId(ElementId element_id);
@@ -641,12 +687,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
                        Layer* layer);
   void UnregisterElement(ElementId element_id);
 
-  // For layer list mode only.
-  void UpdateActiveElements();
-
   void SetElementIdsForTesting();
   void BuildPropertyTreesForTesting();
-  void ClearActiveCommitStateForTesting() { active_commit_state_ = nullptr; }
 
   // Layer iterators.
   LayerListIterator begin();
@@ -666,22 +708,25 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void BeginMainFrameNotExpectedUntil(base::TimeTicks time);
   void AnimateLayers(base::TimeTicks monotonic_frame_begin_time);
   void RequestMainFrameUpdate(bool report_metrics);
-  void FinishCommitOnImplThread(LayerTreeHostImpl* host_impl);
   // If has_updates is true, returns the CommitState that will drive the commit.
   // Otherwise, returns nullptr.
-  CommitState* WillCommit(std::unique_ptr<CompletionEvent> completion,
-                          bool has_updates);
-  CommitState* ActivateCommitState();
-  void WaitForCommitCompletion();
-  void CommitComplete();
+  std::unique_ptr<CommitState> WillCommit(
+      std::unique_ptr<CompletionEvent> completion,
+      bool has_updates);
+  std::unique_ptr<CommitState> ActivateCommitState();
+  void CommitComplete(const CommitTimestamps&);
   void RequestNewLayerTreeFrameSink();
   void DidInitializeLayerTreeFrameSink();
   void DidFailToInitializeLayerTreeFrameSink();
-  virtual std::unique_ptr<LayerTreeHostImpl> CreateLayerTreeHostImpl(
+  std::unique_ptr<LayerTreeHostImpl> CreateLayerTreeHostImpl(
       LayerTreeHostImplClient* client);
   void DidLoseLayerTreeFrameSink();
-  void DidCommitAndDrawFrame() { client_->DidCommitAndDrawFrame(); }
+  void DidCommitAndDrawFrame() {
+    DCHECK(IsMainThread());
+    client_->DidCommitAndDrawFrame();
+  }
   void DidReceiveCompositorFrameAck() {
+    DCHECK(IsMainThread());
     client_->DidReceiveCompositorFrameAck();
   }
   bool UpdateLayers();
@@ -691,7 +736,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
       const gfx::PresentationFeedback& feedback);
   // Called when the compositor completed page scale animation.
   void DidCompletePageScaleAnimation();
-  void ApplyCompositorChanges(CompositorCommitData* commit_data);
+  // Virtual for testing
+  virtual void ApplyCompositorChanges(CompositorCommitData* commit_data);
   void ApplyMutatorEvents(std::unique_ptr<MutatorEvents> events);
   void RecordStartOfFrameMetrics();
   void RecordEndOfFrameMetrics(base::TimeTicks frame_begin_time,
@@ -699,22 +745,29 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void NotifyThroughputTrackerResults(CustomTrackerResults results);
   void NotifyTransitionRequestsFinished(
       const std::vector<uint32_t>& sequence_ids);
-  // Called during impl side initialization.
-  gfx::RenderingPipeline* TakeMainPipeline();
-  gfx::RenderingPipeline* TakeCompositorPipeline();
+  void ReportEventLatency(
+      std::vector<EventLatencyTracker::LatencyData> latencies);
 
-  LayerTreeHostClient* client() { return client_; }
+  LayerTreeHostClient* client() {
+    DCHECK(IsMainThread());
+    return client_;
+  }
   LayerTreeHostSchedulingClient* scheduling_client() {
+    DCHECK(IsMainThread());
     return scheduling_client_;
   }
 
   void CollectRenderingStats(RenderingStats* stats) const;
 
   RenderingStatsInstrumentation* rendering_stats_instrumentation() const {
+    DCHECK(IsMainThread());
     return rendering_stats_instrumentation_.get();
   }
 
-  Proxy* proxy() { return proxy_.get(); }
+  Proxy* proxy() {
+    DCHECK(IsMainThread());
+    return proxy_.get();
+  }
 
   bool IsSingleThreaded() const;
   bool IsThreaded() const;
@@ -723,6 +776,13 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // rather than layer trees. This also implies that property trees
   // are always already built and so cc doesn't have to build them.
   bool IsUsingLayerLists() const;
+
+  // ProtectedSequenceSynchronizer implementation.
+  bool IsOwnerThread() const override;
+  bool InProtectedSequence() const override;
+  // If commit is currently running on the impl thread, this will block until
+  // commit is finished.
+  void WaitForProtectedSequenceCompletion() const override;
 
   // MutatorHostClient implementation.
   bool IsElementInPropertyTrees(ElementId element_id,
@@ -742,10 +802,9 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void SetElementTransformMutated(ElementId element_id,
                                   ElementListType list_type,
                                   const gfx::Transform& transform) override;
-  void SetElementScrollOffsetMutated(
-      ElementId element_id,
-      ElementListType list_type,
-      const gfx::Vector2dF& scroll_offset) override;
+  void SetElementScrollOffsetMutated(ElementId element_id,
+                                     ElementListType list_type,
+                                     const gfx::PointF& scroll_offset) override;
 
   void ElementIsAnimatingChanged(const PropertyToElementIdMap& element_id_map,
                                  ElementListType list_type,
@@ -759,9 +818,9 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
       PaintWorkletInput::PropertyKey property_key,
       PaintWorkletInput::PropertyValue property_value) override {}
 
+  bool RunsOnCurrentThread() const override;
+
   void ScrollOffsetAnimationFinished() override {}
-  gfx::Vector2dF GetScrollOffsetForAnimation(
-      ElementId element_id) const override;
 
   void NotifyAnimationWorkletStateChange(AnimationWorkletMutationState state,
                                          ElementListType tree_type) override {}
@@ -772,7 +831,14 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   void RequestBeginMainFrameNotExpected(bool new_state);
 
-  float recording_scale_factor() const { return recording_scale_factor_; }
+  float recording_scale_factor() const {
+    DCHECK(IsMainThread());
+    return recording_scale_factor_;
+  }
+
+  const ViewportPropertyIds& viewport_property_ids() const {
+    return pending_commit_state()->viewport_property_ids;
+  }
 
   void SetSourceURL(ukm::SourceId source_id, const GURL& url);
   base::ReadOnlySharedMemoryRegion CreateSharedMemoryForSmoothnessUkm();
@@ -800,8 +866,25 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   std::vector<base::OnceClosure> TakeDocumentTransitionCallbacksForTesting();
 
-  // Returns a percentage representing average throughput of last X seconds.
-  uint32_t GetAverageThroughput() const;
+  // Returns a percentage of dropped frames of the last second.
+  double GetPercentDroppedFrames() const;
+
+  // TODO(szager): Remove these once threaded compositing is enabled for all
+  // web_tests.
+  bool in_composite_for_test() const { return in_composite_for_test_; }
+  [[nodiscard]] base::AutoReset<bool> ForceSyncCompositeForTest() {
+    return base::AutoReset<bool>(&in_composite_for_test_, true);
+  }
+
+  // Blink compositor unit tests sometimes want to simulate pushing deltas
+  // without going through the whole lifecycle to test the effects of the
+  // deltas. This flag turns off DCHECKs that deltas being set to main are
+  // during a commit phase so these tests can do this.
+  [[nodiscard]] base::AutoReset<bool> SimulateSyncingDeltasForTesting() {
+    return base::AutoReset<bool>(&syncing_deltas_for_test_, true);
+  }
+
+  void IncrementVisualUpdateDuration(base::TimeDelta visual_update_duration);
 
  protected:
   LayerTreeHost(InitParams params, CompositorMode mode);
@@ -822,11 +905,21 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   // task_graph_runner() returns a valid value only until the LayerTreeHostImpl
   // is created in CreateLayerTreeHostImpl().
-  TaskGraphRunner* task_graph_runner() const { return task_graph_runner_; }
+  TaskGraphRunner* task_graph_runner() const {
+    DCHECK(IsMainThread());
+    return task_graph_runner_;
+  }
+  CommitState* pending_commit_state() {
+    DCHECK(task_runner_provider_->IsMainThread());
+    return pending_commit_state_.get();
+  }
+  ThreadUnsafeCommitState& thread_unsafe_commit_state() {
+    DCHECK(IsMainThread());
+    WaitForProtectedSequenceCompletion();
+    return thread_unsafe_commit_state_;
+  }
 
   void OnCommitForSwapPromises();
-
-  void RecordGpuRasterizationHistogram(const LayerTreeHostImpl* host_impl);
 
   MicroBenchmarkController micro_benchmark_controller_;
 
@@ -839,11 +932,27 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
  private:
   friend class LayerTreeHostSerializationTest;
+  friend class LayerTreeTest;
   friend class ScopedDeferMainFrameUpdate;
+  friend class ScopedPauseRendering;
 
   // This is the number of consecutive frames in which we want the content to be
   // free of slow-paths before toggling the flag.
   enum { kNumFramesToConsiderBeforeRemovingSlowPathFlag = 60 };
+
+  virtual std::unique_ptr<LayerTreeHostImpl> CreateLayerTreeHostImplInternal(
+      LayerTreeHostImplClient* client,
+      MutatorHost* mutator_host,
+      const LayerTreeSettings& settings,
+      TaskRunnerProvider* task_runner_provider,
+      raw_ptr<RasterDarkModeFilter>& dark_mode_filter,
+      int id,
+      raw_ptr<TaskGraphRunner>& task_graph_runner,
+      scoped_refptr<base::SequencedTaskRunner> image_worker_task_runner,
+      LayerTreeHostSchedulingClient* scheduling_client,
+      RenderingStatsInstrumentation* rendering_stats_instrumentation,
+      std::unique_ptr<UkmRecorderFactory>& ukm_recorder_factory,
+      base::WeakPtr<CompositorDelegateForInput>& compositor_delegate_weak_ptr);
 
   void ApplyViewportChanges(const CompositorCommitData& commit_data);
   void ApplyPageScaleDeltaFromImplSide(float page_scale_delta);
@@ -851,7 +960,10 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   bool DoUpdateLayers();
 
+  void WaitForCommitCompletion(bool for_protected_sequence) const;
+
   void UpdateDeferMainFrameUpdateInternal();
+  void UpdatePauseRenderingInternal();
 
   // Preemptively applies the scroll offset and delta before sending it to the
   // client. This lets the client skip a commit if the value does not change.
@@ -864,8 +976,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   std::unique_ptr<UIResourceManager> ui_resource_manager_;
 
-  LayerTreeHostClient* client_;
-  LayerTreeHostSchedulingClient* scheduling_client_;
+  raw_ptr<LayerTreeHostClient> client_;
+  raw_ptr<LayerTreeHostSchedulingClient> scheduling_client_;
   std::unique_ptr<Proxy> proxy_;
   std::unique_ptr<TaskRunnerProvider> task_runner_provider_;
 
@@ -873,7 +985,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
       rendering_stats_instrumentation_;
 
   std::unique_ptr<CommitState> pending_commit_state_;
-  std::unique_ptr<CommitState> active_commit_state_;
+  ThreadUnsafeCommitState thread_unsafe_commit_state_;
 
   SwapPromiseManager swap_promise_manager_;
 
@@ -899,19 +1011,16 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   bool inside_main_frame_ = false;
 
   // State cached until impl side is initialized.
-  TaskGraphRunner* task_graph_runner_;
-  gfx::RenderingPipeline* main_thread_pipeline_;
-  gfx::RenderingPipeline* compositor_thread_pipeline_;
+  raw_ptr<TaskGraphRunner> task_graph_runner_;
 
   float recording_scale_factor_ = 1.f;
   // Used to track the out-bound state for ApplyViewportChanges.
   bool is_pinch_gesture_active_from_impl_ = false;
 
   uint32_t defer_main_frame_update_count_ = 0;
+  uint32_t pause_rendering_count_ = 0;
 
   gfx::Rect visual_device_viewport_intersection_rect_;
-
-  PropertyTrees property_trees_;
 
   scoped_refptr<HeadsUpDisplayLayer> hud_layer_;
 
@@ -923,14 +1032,16 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   bool in_paint_layer_contents_ = false;
 
+  bool in_apply_compositor_changes_ = false;
+
   // This is true if atleast one layer in the layer tree has a copy request. We
   // use this bool to decide whether we need to compute subtree has copy request
   // for every layer during property tree building.
   bool has_copy_request_ = false;
 
-  MutatorHost* mutator_host_;
+  raw_ptr<MutatorHost> mutator_host_;
 
-  RasterDarkModeFilter* dark_mode_filter_;
+  raw_ptr<RasterDarkModeFilter> dark_mode_filter_;
 
   std::unordered_map<int, base::OnceCallback<void(bool)>>
       pending_image_decodes_;
@@ -946,17 +1057,22 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
     base::OnceClosure end_notification;
   } scroll_animation_;
 
-  std::unique_ptr<CompletionEvent> commit_completion_event_;
+  mutable std::unique_ptr<CompletionEvent> commit_completion_event_;
 
   EventsMetricsManager events_metrics_manager_;
 
   // A list of callbacks that need to be invoked when they are processed.
   base::flat_map<uint32_t, base::OnceClosure> document_transition_callbacks_;
 
-  // Used to vend weak pointers to LayerTreeHost to ScopedDeferMainFrameUpdate
-  // objects.
-  base::WeakPtrFactory<LayerTreeHost> defer_main_frame_update_weak_ptr_factory_{
-      this};
+  // Set if WaitForCommitCompletion() was called before commit completes. Used
+  // for histograms.
+  mutable bool waited_for_protected_sequence_ = false;
+
+  bool in_composite_for_test_ = false;
+
+  bool syncing_deltas_for_test_ = false;
+
+  base::WeakPtrFactory<LayerTreeHost> weak_ptr_factory_{this};
 };
 
 }  // namespace cc

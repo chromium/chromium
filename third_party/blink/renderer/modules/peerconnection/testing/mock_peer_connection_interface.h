@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,9 +39,8 @@ class MockPeerConnectionInterface
       (rtc::scoped_refptr<webrtc::MediaStreamTrackInterface>,
        const std::vector<std::string>&),
       (override));
-  MOCK_METHOD(bool, RemoveTrack, (webrtc::RtpSenderInterface*), (override));
   MOCK_METHOD(webrtc::RTCError,
-              RemoveTrackNew,
+              RemoveTrackOrError,
               (rtc::scoped_refptr<webrtc::RtpSenderInterface>),
               (override));
   MOCK_METHOD(

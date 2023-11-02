@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,11 +12,12 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
+#include "ui/ozone/platform/wayland/host/wayland_seat.h"
 
 namespace ui {
 
 namespace {
-constexpr uint32_t kMaxCursorShapesVersion = 1;
+constexpr uint32_t kMinVersion = 1;
 }
 
 using mojom::CursorType;
@@ -30,13 +31,16 @@ void WaylandZcrCursorShapes::Instantiate(WaylandConnection* connection,
                                          uint32_t name,
                                          const std::string& interface,
                                          uint32_t version) {
-  DCHECK_EQ(interface, kInterfaceName);
+  CHECK_EQ(interface, kInterfaceName) << "Expected \"" << kInterfaceName
+                                      << "\" but got \"" << interface << "\"";
 
-  if (connection->zcr_cursor_shapes_)
+  if (connection->zcr_cursor_shapes_ ||
+      !wl::CanBind(interface, version, kMinVersion, kMinVersion)) {
     return;
+  }
 
-  auto zcr_cursor_shapes = wl::Bind<zcr_cursor_shapes_v1>(
-      registry, name, std::min(version, kMaxCursorShapesVersion));
+  auto zcr_cursor_shapes =
+      wl::Bind<zcr_cursor_shapes_v1>(registry, name, kMinVersion);
   if (!zcr_cursor_shapes) {
     LOG(ERROR) << "Failed to bind zcr_cursor_shapes_v1";
     return;
@@ -171,10 +175,11 @@ absl::optional<int32_t> WaylandZcrCursorShapes::ShapeFromType(CursorType type) {
 
 void WaylandZcrCursorShapes::SetCursorShape(int32_t shape) {
   // Nothing to do if there's no pointer (mouse) connected.
-  if (!connection_->pointer())
+  if (!connection_->seat()->pointer())
     return;
   zcr_cursor_shapes_v1_set_cursor_shape(
-      zcr_cursor_shapes_v1_.get(), connection_->pointer()->wl_object(), shape);
+      zcr_cursor_shapes_v1_.get(), connection_->seat()->pointer()->wl_object(),
+      shape);
 }
 
 }  // namespace ui

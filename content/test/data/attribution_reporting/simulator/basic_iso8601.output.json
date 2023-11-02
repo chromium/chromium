@@ -1,0 +1,18 @@
+{
+  "event_level_reports": [
+    {
+     "report": {
+         "attribution_destination": "https://d.test",
+         "randomized_trigger_rate": 0.0024,
+         "source_event_id": "123",
+         "source_type": "navigation",
+         "trigger_data": "7"
+      },
+      "report_time": "2022-01-28T22:19:33.123Z",
+      "report_url": "https://r.test/.well-known/attribution-reporting/report-event-attribution",
+      "test_info": {
+         "randomized_trigger": false
+      }
+    }
+  ]
+}

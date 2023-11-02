@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -123,24 +123,13 @@ public class JniPaymentApp extends PaymentApp {
     }
 
     @Override
-    @Nullable
-    public String getCountryCode() {
-        return JniPaymentAppJni.get().getCountryCode(mNativeObject);
-    }
-
-    @Override
-    public boolean canMakePayment() {
-        return JniPaymentAppJni.get().canMakePayment(mNativeObject);
+    public boolean hasEnrolledInstrument() {
+        return JniPaymentAppJni.get().hasEnrolledInstrument(mNativeObject);
     }
 
     @Override
     public boolean canPreselect() {
         return JniPaymentAppJni.get().canPreselect(mNativeObject);
-    }
-
-    @Override
-    public boolean isUserGestureRequiredToSkipUi() {
-        return JniPaymentAppJni.get().isUserGestureRequiredToSkipUi(mNativeObject);
     }
 
     @Override
@@ -231,10 +220,8 @@ public class JniPaymentApp extends PaymentApp {
         boolean handlesPayerName(long nativeJniPaymentApp);
         boolean handlesPayerEmail(long nativeJniPaymentApp);
         boolean handlesPayerPhone(long nativeJniPaymentApp);
-        String getCountryCode(long nativeJniPaymentApp);
-        boolean canMakePayment(long nativeJniPaymentApp);
+        boolean hasEnrolledInstrument(long nativeJniPaymentApp);
         boolean canPreselect(long nativeJniPaymentApp);
-        boolean isUserGestureRequiredToSkipUi(long nativeJniPaymentApp);
         void invokePaymentApp(long nativeJniPaymentApp, JniPaymentApp callback);
         void updateWith(long nativeJniPaymentApp, ByteBuffer responseByteBuffer);
         void onPaymentDetailsNotUpdated(long nativeJniPaymentApp);

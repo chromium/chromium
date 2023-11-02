@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/accelerator_utils.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/commander/entity_match.h"
 #include "chrome/browser/ui/commander/fuzzy_finder.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"
@@ -99,8 +101,8 @@ void CloseTabsToLeft(Browser* browser) {
     return;
   int left_selected = *(selection.selected_indices().cbegin());
   for (int i = left_selected - 1; i >= 0; --i) {
-    model->CloseWebContentsAt(i, TabStripModel::CLOSE_CREATE_HISTORICAL_TAB |
-                                     TabStripModel::CLOSE_USER_GESTURE);
+    model->CloseWebContentsAt(i, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB |
+                                     TabCloseTypes::CLOSE_USER_GESTURE);
   }
 }
 
@@ -116,16 +118,15 @@ void CloseUnpinnedTabs(Browser* browser) {
   TabStripModel* model = browser->tab_strip_model();
   for (int i = model->count() - 1; i >= 0; --i) {
     if (!model->IsTabPinned(i))
-      model->CloseWebContentsAt(i, TabStripModel::CLOSE_CREATE_HISTORICAL_TAB |
-                                       TabStripModel::CLOSE_USER_GESTURE);
+      model->CloseWebContentsAt(i, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB |
+                                       TabCloseTypes::CLOSE_USER_GESTURE);
   }
 }
 
 bool CanMoveTabsToExistingWindow(const Browser* browser_to_exclude) {
   const BrowserList* browser_list = BrowserList::GetInstance();
-  return std::any_of(
-      browser_list->begin(), browser_list->end(),
-      [browser_to_exclude](Browser* browser) {
+  return base::ranges::any_of(
+      *browser_list, [browser_to_exclude](Browser* browser) {
         return browser != browser_to_exclude && browser->is_type_normal() &&
                browser->profile() == browser_to_exclude->profile();
       });
@@ -518,7 +519,7 @@ CommandSource::CommandResults TabCommandSource::GetCommands(
     results.push_back(std::move(item));
   }
 
-  if (send_tab_to_self::ShouldOfferFeature(
+  if (send_tab_to_self::ShouldDisplayEntryPoint(
           tab_strip_model->GetActiveWebContents())) {
     if (auto item = ItemForTitle(u"Send tab to self...", finder, &ranges)) {
       item->command = base::BindOnce(&chrome::SendTabToSelfFromPageAction,

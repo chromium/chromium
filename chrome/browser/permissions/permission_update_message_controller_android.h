@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -83,7 +83,6 @@ class PermissionUpdateMessageController
       std::vector<std::string>& required_permissions,
       std::vector<std::string>& optional_permissions);
 
-  content::WebContents* web_contents_ = nullptr;
   std::vector<std::unique_ptr<PermissionUpdateMessageDelegate>>
       message_delegates_;
 

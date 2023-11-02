@@ -1,18 +1,21 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//ash/webui/media_app_ui/media_app_ui.gni")
 import("//ash/webui/web_applications/system_apps.gni")
 import("//build/buildflag_header.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/test/base/js2gtest.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 
-assert(is_chromeos, "Media App is Chrome OS only")
+assert(is_chromeos_ash, "Media App is ash-chrome only")
 
 static_library("media_app_ui") {
   sources = [
+    "file_system_access_helpers.cc",
+    "file_system_access_helpers.h",
     "media_app_guest_ui.cc",
     "media_app_guest_ui.h",
     "media_app_page_handler.cc",
@@ -27,9 +30,12 @@ static_library("media_app_ui") {
   deps = [
     ":mojo_bindings",
     ":mojo_bindings_js",
+    "//ash/constants:constants",
+    "//ash/webui/media_app_ui:buildflags",
     "//ash/webui/resources:media_app_bundle_resources",
     "//ash/webui/resources:media_app_resources",
     "//ash/webui/web_applications",
+    "//chromeos/constants",
     "//chromeos/strings",
     "//content/public/browser",
     "//content/public/common",
@@ -51,6 +57,7 @@ js2gtest("browser_tests_js") {
   deps = [
     ":browser_test_support",
     "//ash/constants",
+    "//chromeos/constants",
   ]
 }
 
@@ -70,9 +77,9 @@ source_set("browser_test_support") {
   ]
 
   data = [
+    "//ash/webui/system_apps/public/js/dom_testing_helpers.js",
     "test/driver.js",
     "test/driver_api.js",
-    "test/dom_testing_helpers.js",
     "test/guest_query_receiver.js",
     "test/media_app_ui_browsertest.js",
     "test/media_app_guest_ui_browsertest.js",
@@ -92,6 +99,7 @@ group("closure_compile") {
 
 mojom("mojo_bindings") {
   sources = [ "media_app_ui.mojom" ]
+  deps = [ "//third_party/blink/public/mojom:mojom_platform" ]
 }
 
 media_test_lib_closure_flags = system_app_closure_flags_strict + [
@@ -141,18 +149,13 @@ js_library("test_driver_api_js") {
   sources = [ "test/driver_api.js" ]
 }
 
-js_library("test_dom_testing_helpers_js") {
-  testonly = true
-  sources = [ "test/dom_testing_helpers.js" ]
-}
-
 js_library("test_guest_query_receiver_js") {
   testonly = true
   sources = [ "test/guest_query_receiver.js" ]
   deps = [
-    ":test_dom_testing_helpers_js",
     ":test_driver_api_js",
     "//ash/webui/media_app_ui/resources/js:receiver",
+    "//ash/webui/system_apps/public/js:dom_testing_helpers",
     "//ash/webui/system_apps/public/js:message_pipe",
   ]
 }

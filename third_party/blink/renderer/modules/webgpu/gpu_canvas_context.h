@@ -1,35 +1,38 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_CANVAS_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_CANVAS_CONTEXT_H_
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_canvas_alpha_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_factory.h"
-#include "third_party/blink/renderer/modules/webgpu/gpu_swap_chain.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_swap_buffer_provider.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 
 namespace blink {
 
 class GPUAdapter;
+class GPUDevice;
 class GPUCanvasConfiguration;
 class GPUSwapChain;
 class GPUTexture;
+class WebGPUTextureAlphaClearer;
 class V8UnionHTMLCanvasElementOrOffscreenCanvas;
 
 // A GPUCanvasContext does little by itself and basically just binds a canvas
 // and a GPUSwapChain together and forwards calls from one to the other.
-class GPUCanvasContext : public CanvasRenderingContext {
+class GPUCanvasContext : public CanvasRenderingContext,
+                         public WebGPUSwapBufferProvider::Client {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   class Factory : public CanvasRenderingContextFactory {
-
    public:
-    Factory();
+    Factory() = default;
 
     Factory(const Factory&) = delete;
     Factory& operator=(const Factory&) = delete;
@@ -48,17 +51,27 @@ class GPUCanvasContext : public CanvasRenderingContext {
   GPUCanvasContext(const GPUCanvasContext&) = delete;
   GPUCanvasContext& operator=(const GPUCanvasContext&) = delete;
 
-  ~GPUCanvasContext() override;
-
   void Trace(Visitor*) const override;
 
   // CanvasRenderingContext implementation
   V8RenderingContext* AsV8RenderingContext() final;
   V8OffscreenRenderingContext* AsV8OffscreenRenderingContext() final;
+  SkColorInfo CanvasRenderingContextSkColorInfo() const override;
+  // Produces a snapshot of the current contents of the swap chain if possible.
+  // If that texture has already been sent to the compositor, will produce a
+  // snapshot of the just released texture associated to this gpu context.
+  // todo(crbug/1267243) Make snapshot always return the current frame.
   scoped_refptr<StaticBitmapImage> GetImage() final;
   bool PaintRenderingResultsToCanvas(SourceDrawingBuffer) final;
+  // Copies the back buffer to given shared image resource provider which must
+  // be webgpu compatible. Returns true on success.
   bool CopyRenderingResultsFromDrawingBuffer(CanvasResourceProvider*,
                                              SourceDrawingBuffer) final;
+  bool CopyRenderingResultsToVideoFrame(
+      WebGraphicsContext3DVideoFramePool* frame_pool,
+      SourceDrawingBuffer src_buffer,
+      const gfx::ColorSpace& dst_color_space,
+      VideoFrameCopyCompletedCallback callback) override;
   void SetIsInHiddenPage(bool) override {}
   void SetIsBeingDisplayed(bool) override {}
   bool isContextLost() const override { return false; }
@@ -70,9 +83,14 @@ class GPUCanvasContext : public CanvasRenderingContext {
   int ExternallyAllocatedBufferCountPerPixel() final { return 1; }
   void Stop() final;
   cc::Layer* CcLayer() const final;
+  void Reshape(int width, int height) override;
 
   // OffscreenCanvas-specific methods
   bool PushFrame() final;
+  // Returns a StaticBitmapImage backed by a texture containing the current
+  // contents of the front buffer. This is done without any pixel copies. The
+  // texture in the ImageBitmap is from the active ContextProvider on the
+  // WebGPUSwapBufferProvider.
   ImageBitmap* TransferToImageBitmap(ScriptState*) final;
 
   bool IsOffscreenCanvas() const {
@@ -86,15 +104,54 @@ class GPUCanvasContext : public CanvasRenderingContext {
 
   void configure(const GPUCanvasConfiguration* descriptor, ExceptionState&);
   void unconfigure();
-  String getPreferredFormat(const GPUAdapter* adapter);
+  String getPreferredFormat(ExecutionContext* execution_context,
+                            GPUAdapter* adapter);
   GPUTexture* getCurrentTexture(ExceptionState&);
 
+  // WebGPUSwapBufferProvider::Client implementation
+  void OnTextureTransferred() override;
+
  private:
+  void DetachSwapBuffers();
+  GPUTexture* ReplaceCurrentTexture();
+  void ResizeSwapbuffers(gfx::Size size);
+  void InitializeAlphaModePipeline(WGPUTextureFormat format);
+
+  void FinalizeFrame(bool) override;
+
+  scoped_refptr<StaticBitmapImage> SnapshotInternal(
+      const WGPUTexture& texture,
+      const gfx::Size& size) const;
+
+  bool CopyTextureToResourceProvider(
+      const WGPUTexture& texture,
+      const gfx::Size& size,
+      CanvasResourceProvider* resource_provider) const;
+
+  // Can't use DawnObjectBase, because the device can be reconfigured.
+  const DawnProcTable& GetProcs() const;
+  base::WeakPtr<WebGraphicsContext3DProviderWrapper> GetContextProviderWeakPtr()
+      const;
+
   cc::PaintFlags::FilterQuality filter_quality_ =
       cc::PaintFlags::FilterQuality::kLow;
-  Member<GPUSwapChain> swapchain_;
-  Member<GPUDevice> configured_device_;
+  Member<GPUDevice> device_;
+  Member<GPUTexture> texture_;
+  V8GPUCanvasAlphaMode::Enum alpha_mode_;
+  scoped_refptr<WebGPUTextureAlphaClearer> alpha_clearer_;
+  scoped_refptr<WebGPUSwapBufferProvider> swap_buffers_;
+
+  bool new_texture_required_ = true;
   bool stopped_ = false;
+
+  // TODO(crbug.com/1326473): Remove after deprecation period.
+  gfx::Size configured_size_;
+
+  // Matches [[configuration]] != null in the WebGPU specification.
+  bool configured_ = false;
+  // Matches [[texture_descriptor]] in the WebGPU specification except that it
+  // never becomes null.
+  WGPUTextureDescriptor texture_descriptor_;
 };
 
 }  // namespace blink

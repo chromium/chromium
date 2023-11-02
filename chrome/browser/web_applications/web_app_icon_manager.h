@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,9 +14,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_application_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image_skia.h"
@@ -26,24 +29,24 @@ class Profile;
 namespace web_app {
 
 class FileUtilsWrapper;
-class WebAppRegistrar;
 
 using SquareSizeDip = int;
 
 // Exclusively used from the UI thread.
-class WebAppIconManager : public AppRegistrarObserver {
+class WebAppIconManager : public WebAppInstallManagerObserver {
  public:
   using FaviconReadCallback =
       base::RepeatingCallback<void(const AppId& app_id)>;
   using ReadImageSkiaCallback =
       base::OnceCallback<void(gfx::ImageSkia image_skia)>;
 
-  WebAppIconManager(Profile* profile,
-                    WebAppRegistrar& registrar,
-                    scoped_refptr<FileUtilsWrapper> utils);
+  WebAppIconManager(Profile* profile, scoped_refptr<FileUtilsWrapper> utils);
   WebAppIconManager(const WebAppIconManager&) = delete;
   WebAppIconManager& operator=(const WebAppIconManager&) = delete;
   ~WebAppIconManager() override;
+
+  void SetSubsystems(WebAppRegistrar* registrar,
+                     WebAppInstallManager* install_manager);
 
   using WriteDataCallback = base::OnceCallback<void(bool success)>;
 
@@ -86,15 +89,14 @@ class WebAppIconManager : public AppRegistrarObserver {
   void ReadIcons(const AppId& app_id,
                  IconPurpose purpose,
                  const SortedSizesPx& icon_sizes,
-                 ReadIconsCallback callback) const;
+                 ReadIconsCallback callback);
 
   // TODO (crbug.com/1102701): Callback with const ref instead of value.
   using ReadIconBitmapsCallback =
       base::OnceCallback<void(IconBitmaps icon_bitmaps)>;
   // Reads all icon bitmaps for an app. Returns empty |icon_bitmaps| in
   // |callback| if IO error.
-  void ReadAllIcons(const AppId& app_id,
-                    ReadIconBitmapsCallback callback) const;
+  void ReadAllIcons(const AppId& app_id, ReadIconBitmapsCallback callback);
 
   using ReadShortcutsMenuIconsCallback = base::OnceCallback<void(
       ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps)>;
@@ -103,7 +105,7 @@ class WebAppIconManager : public AppRegistrarObserver {
   // as that of its corresponding shortcut in the manifest's shortcuts vector.
   // Returns empty vector in |callback| if we hit any error.
   void ReadAllShortcutsMenuIcons(const AppId& app_id,
-                                 ReadShortcutsMenuIconsCallback callback) const;
+                                 ReadShortcutsMenuIconsCallback callback);
 
   using ReadIconWithPurposeCallback =
       base::OnceCallback<void(IconPurpose, SkBitmap)>;
@@ -113,7 +115,7 @@ class WebAppIconManager : public AppRegistrarObserver {
   void ReadSmallestIcon(const AppId& app_id,
                         const std::vector<IconPurpose>& purposes,
                         SquareSizePx min_size_in_px,
-                        ReadIconWithPurposeCallback callback) const;
+                        ReadIconWithPurposeCallback callback);
 
   using ReadCompressedIconWithPurposeCallback =
       base::OnceCallback<void(IconPurpose, std::vector<uint8_t> data)>;
@@ -124,13 +126,13 @@ class WebAppIconManager : public AppRegistrarObserver {
       const AppId& app_id,
       const std::vector<IconPurpose>& purposes,
       SquareSizePx min_size_in_px,
-      ReadCompressedIconWithPurposeCallback callback) const;
+      ReadCompressedIconWithPurposeCallback callback);
 
   using ReadIconCallback = base::OnceCallback<void(SkBitmap)>;
   // Convenience method for |ReadSmallestIcon| with IconPurpose::ANY only.
   void ReadSmallestIconAny(const AppId& app_id,
                            SquareSizePx min_icon_size,
-                           ReadIconCallback callback) const;
+                           ReadIconCallback callback);
 
   using ReadCompressedIconCallback =
       base::OnceCallback<void(std::vector<uint8_t> data)>;
@@ -138,7 +140,7 @@ class WebAppIconManager : public AppRegistrarObserver {
   // only.
   void ReadSmallestCompressedIconAny(const AppId& app_id,
                                      SquareSizePx min_icon_size,
-                                     ReadCompressedIconCallback callback) const;
+                                     ReadCompressedIconCallback callback);
 
   // Returns a square icon of gfx::kFaviconSize px, or an empty bitmap if not
   // found.
@@ -147,9 +149,9 @@ class WebAppIconManager : public AppRegistrarObserver {
   gfx::ImageSkia GetFaviconImageSkia(const AppId& app_id) const;
   gfx::ImageSkia GetMonochromeFavicon(const AppId& app_id) const;
 
-  // AppRegistrarObserver:
+  // WebAppInstallManagerObserver:
   void OnWebAppInstalled(const AppId& app_id) override;
-  void OnAppRegistrarDestroyed() override;
+  void OnWebAppInstallManagerDestroyed() override;
 
   // Calls back with an icon of the |desired_icon_size| and |purpose|, resizing
   // an icon of a different size if necessary. If no icons were available, calls
@@ -158,7 +160,7 @@ class WebAppIconManager : public AppRegistrarObserver {
   void ReadIconAndResize(const AppId& app_id,
                          IconPurpose purpose,
                          SquareSizePx desired_icon_size,
-                         ReadIconsCallback callback) const;
+                         ReadIconsCallback callback);
 
   // Reads multiple densities of the icon for each supported UI scale factor.
   // See ui/base/layout.h. Returns null image in |callback| if no icons found
@@ -169,8 +171,20 @@ class WebAppIconManager : public AppRegistrarObserver {
                                SquareSizeDip size_in_dip,
                                ReadImageSkiaCallback callback);
 
+  struct IconFilesCheck {
+    size_t empty = 0;
+    size_t missing = 0;
+  };
+  void CheckForEmptyOrMissingIconFiles(
+      const AppId& app_id,
+      base::OnceCallback<void(IconFilesCheck)> callback) const;
+
   void SetFaviconReadCallbackForTesting(FaviconReadCallback callback);
   void SetFaviconMonochromeReadCallbackForTesting(FaviconReadCallback callback);
+
+  base::FilePath GetIconFilePathForTesting(const AppId& app_id,
+                                           IconPurpose purpose,
+                                           SquareSizePx size);
 
   // Collects icon read/write errors (unbounded) if the |kRecordWebAppDebugInfo|
   // flag is enabled to be used by: chrome://web-app-internals
@@ -182,6 +196,9 @@ class WebAppIconManager : public AppRegistrarObserver {
       ReadIconWithPurposeCallback callback,
       IconPurpose purpose,
       SkBitmap bitmap);
+
+  base::WeakPtr<const WebAppIconManager> GetWeakPtr() const;
+  base::WeakPtr<WebAppIconManager> GetWeakPtr();
 
   absl::optional<IconSizeAndPurpose> FindIconMatchSmaller(
       const AppId& app_id,
@@ -201,12 +218,14 @@ class WebAppIconManager : public AppRegistrarObserver {
   void OnMonochromeIconConverted(const AppId& app_id,
                                  gfx::ImageSkia converted_image);
 
-  WebAppRegistrar& registrar_;
+  raw_ptr<WebAppRegistrar> registrar_;
+  raw_ptr<WebAppInstallManager> install_manager_;
   base::FilePath web_apps_directory_;
   scoped_refptr<FileUtilsWrapper> utils_;
+  scoped_refptr<base::SequencedTaskRunner> icon_task_runner_;
 
-  base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver>
-      registrar_observation_{this};
+  base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
+      install_manager_observation_{this};
 
   // We cache different densities for high-DPI displays per each app.
   std::map<AppId, gfx::ImageSkia> favicon_cache_;

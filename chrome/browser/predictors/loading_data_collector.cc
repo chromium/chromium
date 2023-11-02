@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/predictors/loading_stats_collector.h"
 #include "chrome/browser/predictors/predictors_features.h"
@@ -60,11 +61,10 @@ network::mojom::RequestDestination GetRequestDestinationFromMimeType(
   } else if (net::MatchesMimeType("text/css", mime_type)) {
     return network::mojom::RequestDestination::kStyle;
   } else {
-    bool found =
-        std::any_of(std::begin(kFontMimeTypes), std::end(kFontMimeTypes),
-                    [&mime_type](const std::string& mime) {
-                      return net::MatchesMimeType(mime, mime_type);
-                    });
+    bool found = base::ranges::any_of(
+        kFontMimeTypes, [&mime_type](const std::string& mime) {
+          return net::MatchesMimeType(mime, mime_type);
+        });
     if (found)
       return network::mojom::RequestDestination::kFont;
   }

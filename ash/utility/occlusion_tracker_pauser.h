@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,7 +33,7 @@ class ASH_EXPORT OcclusionTrackerPauser : public ui::CompositorObserver {
 
   // ui::CompositorObserver:
   void OnFirstAnimationStarted(ui::Compositor* compositor) override {}
-  void OnLastAnimationEnded(ui::Compositor* compositor) override;
+  void OnFirstNonAnimatedFrameStarted(ui::Compositor* compositor) override;
   void OnCompositingShuttingDown(ui::Compositor* compositor) override;
 
  private:

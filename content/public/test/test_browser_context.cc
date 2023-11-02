@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,9 +15,11 @@
 #include "content/public/test/mock_resource_context.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/mock_background_sync_controller.h"
+#include "content/test/mock_reduce_accept_language_controller_delegate.h"
 #include "content/test/mock_ssl_host_state_delegate.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 
 namespace content {
 
@@ -59,6 +61,11 @@ base::FilePath TestBrowserContext::TakePath() {
   return browser_context_dir_.Take();
 }
 
+void TestBrowserContext::SetReduceAcceptLanguageControllerDelegate(
+    std::unique_ptr<MockReduceAcceptLanguageControllerDelegate> delegate) {
+  reduce_accept_language_controller_delegate_ = std::move(delegate);
+}
+
 void TestBrowserContext::SetSpecialStoragePolicy(
     storage::SpecialStoragePolicy* policy) {
   special_storage_policy_ = policy;
@@ -72,6 +79,11 @@ void TestBrowserContext::SetPermissionControllerDelegate(
 void TestBrowserContext::SetPlatformNotificationService(
     std::unique_ptr<PlatformNotificationService> service) {
   platform_notification_service_ = std::move(service);
+}
+
+void TestBrowserContext::SetOriginTrialsControllerDelegate(
+    OriginTrialsControllerDelegate* delegate) {
+  origin_trials_controller_delegate_ = delegate;
 }
 
 base::FilePath TestBrowserContext::GetPath() {
@@ -153,6 +165,22 @@ TestBrowserContext::GetBrowsingDataRemoverDelegate() {
   // Most BrowsingDataRemover tests do not require a delegate
   // (not even a mock one).
   return nullptr;
+}
+
+ReduceAcceptLanguageControllerDelegate*
+TestBrowserContext::GetReduceAcceptLanguageControllerDelegate() {
+  return reduce_accept_language_controller_delegate_.get();
+}
+
+OriginTrialsControllerDelegate*
+TestBrowserContext::GetOriginTrialsControllerDelegate() {
+  return origin_trials_controller_delegate_.get();
+}
+
+// static
+TestBrowserContext* TestBrowserContext::FromBrowserContext(
+    BrowserContext* browser_context) {
+  return static_cast<TestBrowserContext*>(browser_context);
 }
 
 }  // namespace content

@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -24,7 +24,7 @@ def WriteSource(base_name,
           variables will be available as globals.
   """
   copyright_header_template = (
-      '// Copyright 2018 The Chromium Authors. All rights reserved.\n'
+      '// Copyright 2018 The Chromium Authors\n'
       '// Use of this source code is governed by a BSD-style license '
       'that can be\n'
       '// found in the LICENSE file.\n\n'

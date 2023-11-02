@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,6 +33,11 @@ class VIZ_COMMON_EXPORT SharedQuadState {
   SharedQuadState(const SharedQuadState& other);
   ~SharedQuadState();
 
+  // No comparison for |overlay_damage_index| and |is_fast_rounded_corner|.
+  bool Equals(const SharedQuadState& other) const;
+
+  void SetAll(const SharedQuadState& other);
+
   void SetAll(const gfx::Transform& transform,
               const gfx::Rect& layer_rect,
               const gfx::Rect& visible_layer_rect,
@@ -55,7 +60,8 @@ class VIZ_COMMON_EXPORT SharedQuadState {
   // of the quad rects.
   gfx::Rect visible_quad_layer_rect;
   // This mask filter's coordinates is in the target content space. It defines
-  // the corner radius to clip the quads with.
+  // the corner radius to clip the quads with, and the gradient mask applied to
+  // the clip rect given by the Rect part of |roudned_corner_bounds|.
   gfx::MaskFilterInfo mask_filter_info;
   // This rect lives in the target content space.
   absl::optional<gfx::Rect> clip_rect;

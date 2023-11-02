@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -84,15 +84,15 @@ const char* kInitialHoursBetweenEventsParams[] = {
     "user_classifier_default_interval_suggestions_shown",
     "user_classifier_default_interval_suggestions_used"};
 
-static_assert(base::size(kMetrics) ==
+static_assert(std::size(kMetrics) ==
                       static_cast<int>(UserClassifier::Metric::COUNT) &&
-                  base::size(kMetricKeys) ==
+                  std::size(kMetricKeys) ==
                       static_cast<int>(UserClassifier::Metric::COUNT) &&
-                  base::size(kLastTimeKeys) ==
+                  std::size(kLastTimeKeys) ==
                       static_cast<int>(UserClassifier::Metric::COUNT) &&
-                  base::size(kInitialHoursBetweenEvents) ==
+                  std::size(kInitialHoursBetweenEvents) ==
                       static_cast<int>(UserClassifier::Metric::COUNT) &&
-                  base::size(kInitialHoursBetweenEventsParams) ==
+                  std::size(kInitialHoursBetweenEventsParams) ==
                       static_cast<int>(UserClassifier::Metric::COUNT),
               "Fill in info for all metrics.");
 

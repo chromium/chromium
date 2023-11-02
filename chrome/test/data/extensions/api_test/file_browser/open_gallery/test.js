@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,7 +42,7 @@ function openGallery(entry, expectedResult) {
   const descriptor = {
     appId: 'jhdjimmaggjajfjphpljagpgkidjilnj',
     taskType: 'web',
-    actionId: 'open'
+    actionId: 'chrome://media-app/open'
   };
   function taskCallback(taskResult) {
     chrome.test.assertEq(expectedResult, taskResult);

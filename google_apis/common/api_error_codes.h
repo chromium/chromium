@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,6 +45,9 @@ enum ApiErrorCode {
   DRIVE_FILE_ERROR = 1000,
   DRIVE_NO_SPACE = 1001,
   DRIVE_RESPONSE_TOO_LARGE = 1002,
+
+  // Needed in order to log this in UMA.
+  kMaxValue = DRIVE_RESPONSE_TOO_LARGE,
 };
 
 // Returns a string representation of ApiErrorCode.

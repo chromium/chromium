@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:paddingTop="@dimen/autofill_assistant_loading_spinner_padding"
+    android:paddingBottom="@dimen/autofill_assistant_loading_spinner_padding">
+  <org.chromium.components.autofill_assistant.user_data.AssistantLoadingSpinner
+      android:id="@+id/loading_spinner"
+      android:layout_width="@dimen/autofill_assistant_loading_spinner_size"
+      android:layout_height="@dimen/autofill_assistant_loading_spinner_size"/>
+</LinearLayout>

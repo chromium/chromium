@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -96,6 +96,31 @@ TEST_F(MediaSessionNotificationItemTest, Freezing_DoNotUpdateMetadata) {
   EXPECT_CALL(view(), UpdateWithMediaMetadata(_)).Times(0);
   item().Freeze(base::DoNothing());
   item().MediaSessionMetadataChanged(metadata);
+}
+
+TEST_F(MediaSessionNotificationItemTest,
+       UpdateMetadataOriginWithPresentationRequestOrigin) {
+  media_session::MediaMetadata metadata;
+  metadata.source_title = u"source_title_test";
+
+  EXPECT_CALL(view(), UpdateWithMediaMetadata(metadata)).Times(1);
+  item().MediaSessionMetadataChanged(metadata);
+
+  media_session::MediaMetadata updated_metadata;
+  updated_metadata.source_title = u"example.com";
+
+  EXPECT_CALL(view(), UpdateWithMediaMetadata(updated_metadata)).Times(2);
+  item().UpdatePresentationRequestOrigin(
+      url::Origin::Create(GURL("https://example.com")));
+  // Make sure presentation request origin persists for the duration of the view
+  // despite the update of metadata.
+  item().MediaSessionMetadataChanged(metadata);
+  item().SetView(nullptr);
+
+  // Make sure that presentation request origin was reset after the view is set
+  // to null in SetView().
+  EXPECT_CALL(view(), UpdateWithMediaMetadata(metadata)).Times(1);
+  item().SetView(&view());
 }
 
 TEST_F(MediaSessionNotificationItemTest, Freezing_DoNotUpdateImage) {

@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -72,12 +72,17 @@ source_set("eg2_tests") {
     "//build/config/ios:xctest_config",
   ]
   testonly = true
-  sources = [ "feature_engagement_egtest.mm" ]
+  sources = [
+    "feature_engagement_egtest.mm",
+    "password_suggestions_iph_egtest.mm",
+  ]
   deps = [
     ":eg_test_support+eg2",
     "//base",
     "//components/feature_engagement/public",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/passwords:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/bubble:features",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/browser/ui/table_view:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

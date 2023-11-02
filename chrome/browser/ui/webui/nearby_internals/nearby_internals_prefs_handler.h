@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #ifndef CHROME_BROWSER_UI_WEBUI_NEARBY_INTERNALS_NEARBY_INTERNALS_PREFS_HANDLER_H_
@@ -30,7 +30,7 @@ class NearbyInternalsPrefsHandler : public content::WebUIMessageHandler {
  private:
   // Message handler callback that clears Nearby prefs in order to put the user
   // back into a state of before they have touched the feature.
-  void HandleClearNearbyPrefs(const base::ListValue* args);
+  void HandleClearNearbyPrefs(const base::Value::List& args);
 
   PrefService* pref_service_ = nullptr;
 

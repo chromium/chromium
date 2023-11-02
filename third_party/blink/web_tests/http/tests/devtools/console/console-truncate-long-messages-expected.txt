@@ -9,7 +9,7 @@ Message: 3, length: 41, aaaaaaaaaaaaaaaaaaaa bbbbbbbbbbbbbbbbbbbb
 Message: 4, length: 20, aaaaaaaaaaaaaaaaaaaa
 Message: 5, length: 20, 'aaaaaaaaaaaaaaaaaaa
 Message: 6, length: 20, aaaaaaaaaaaaaaaaaaaa
-Message: 7, length: 60, foo aaaaaaaaaaaaaaaaaaaa {a: 1}a: 1[[Prototype]]: Object bar
+Message: 7, length: 55, foo aaaaaaaaaaaaaaaa{a: 1}a: 1[[Prototype]]: Object bar
 Message: 8, length: 84, {a: 1}a: 1[[Prototype]]: Object 'aaaaaaaaaaaaaaaaaaa {b: 1}b: 1[[Prototype]]: Object
 Link: https://chromium.org
 Message: 9, length: 41, aaaaaaaaaaaaaaaaaaaa https://chromium.org

@@ -1,4 +1,6 @@
-This directory is used to store GN arg mapping for Chrome OS boards.
+This directory is used to store GN arg mapping for Chrome OS boards. The values
+of the args are determined by processing the [chromeos-chrome ebuild] for a
+given board and a given ChromeOS version (stored in the [CHROMEOS_LKGM] file).
 
 Files in this directory are populated by running `gclient sync` with specific
 arguments set in the .gclient file. Specifically:
@@ -50,3 +52,6 @@ goma_dir = "/path/to/goma/"
 
 TODO(bpastene): Make 'cros_boards' a first class citizen in gclient and replace
 it with 'target_boards' instead.
+
+[chromeos-chrome ebuild]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/HEAD/chromeos-base/chromeos-chrome/chromeos-chrome-9999.ebuild
+[CHROMEOS_LKGM]: https://chromium.googlesource.com/chromium/src/+/HEAD/chromeos/CHROMEOS_LKGM

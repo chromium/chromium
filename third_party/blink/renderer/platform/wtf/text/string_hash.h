@@ -22,6 +22,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_HASH_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_HASH_H_
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -75,21 +76,18 @@ struct StringHash {
 struct AlreadyHashed : IntHash<unsigned> {
   STATIC_ONLY(AlreadyHashed);
   static unsigned GetHash(unsigned key) { return key; }
-
-  // To use a hash value as a key for a hash table, we need to eliminate the
-  // "deleted" value, which is negative one. That could be done by changing
-  // the string hash function to never generate negative one, but this works
-  // and is still relatively efficient.
-  static unsigned AvoidDeletedValue(unsigned hash) {
-    DCHECK(hash);
-    unsigned new_hash = hash | (!(hash + 1) << 31);
-    DCHECK(new_hash);
-    DCHECK_NE(new_hash, 0xFFFFFFFF);
-    return new_hash;
-  }
 };
 
 }  // namespace WTF
+
+namespace std {
+template <>
+struct hash<WTF::String> {
+  size_t operator()(const WTF::String& string) const {
+    return WTF::StringHash::GetHash(string);
+  }
+};
+}  // namespace std
 
 using WTF::AlreadyHashed;
 using WTF::StringHash;

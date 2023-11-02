@@ -1,9 +1,10 @@
 Name: Kotlin Stdlib Jdk8
 Short Name: kotlin-stdlib-jdk8
 URL: https://kotlinlang.org/
-Version: 1.5.0
+Version: 1.6.20
 License: Apache Version 2.0
 License File: LICENSE
+CPEPrefix: unknown
 Security Critical: yes
 
 Description:

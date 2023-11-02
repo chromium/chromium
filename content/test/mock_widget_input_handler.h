@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <memory>
 #include <utility>
 
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom.h"
@@ -177,7 +178,8 @@ class MockWidgetInputHandler : public blink::mojom::WidgetInputHandler {
                       const ui::LatencyInfo& latency_info,
                       blink::mojom::InputEventResultState state,
                       blink::mojom::DidOverscrollParamsPtr overscroll,
-                      blink::mojom::TouchActionOptionalPtr touch_action);
+                      blink::mojom::TouchActionOptionalPtr touch_action,
+                      blink::mojom::ScrollResultDataPtr scroll_result_data);
 
     // Return if the callback is set.
     bool HasCallback() const;
@@ -237,7 +239,7 @@ class MockWidgetInputHandler : public blink::mojom::WidgetInputHandler {
   };
 
   // blink::mojom::WidgetInputHandler override.
-  void SetFocus(bool focused) override;
+  void SetFocus(blink::mojom::FocusState focus_state) override;
   void MouseCaptureLost() override;
   void SetEditCommandsForNextKeyEvent(
       std::vector<blink::mojom::EditCommandPtr> commands) override;
@@ -263,7 +265,7 @@ class MockWidgetInputHandler : public blink::mojom::WidgetInputHandler {
   void DispatchNonBlockingEvent(
       std::unique_ptr<blink::WebCoalescedInputEvent> event) override;
   void WaitForInputProcessed(WaitForInputProcessedCallback callback) override;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void AttachSynchronousCompositor(
       mojo::PendingRemote<blink::mojom::SynchronousCompositorControlHost>
           control_host,

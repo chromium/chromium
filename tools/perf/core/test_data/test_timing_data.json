@@ -2100,10 +2100,6 @@
         "name": "rendering.desktop/filter_terrain_svg"
     },
     {
-        "duration": "15.062429551282053",
-        "name": "rendering.desktop/geo_apis"
-    },
-    {
         "duration": "22.755177404040406",
         "name": "rendering.desktop/gmail"
     },
@@ -3796,10 +3792,6 @@
         "name": "smoothness.tough_canvas_cases/fill_shapes"
     },
     {
-        "duration": "14.072615097826082",
-        "name": "smoothness.tough_canvas_cases/geo_apis"
-    },
-    {
         "duration": "11.916417717391301",
         "name": "smoothness.tough_canvas_cases/hakim"
     },
@@ -4042,22 +4034,6 @@
     {
         "duration": "22.858524074074086",
         "name": "smoothness.tough_filters_cases/motion_mark_focus"
-    },
-    {
-        "duration": "7.838621234375",
-        "name": "smoothness.tough_image_decode_cases/cats_unscaled"
-    },
-    {
-        "duration": "6.262414159374999",
-        "name": "smoothness.tough_image_decode_cases/cats_viewport_width"
-    },
-    {
-        "duration": "7.830854551515154",
-        "name": "smoothness.tough_image_decode_cases/http://localhost:9000/cats-unscaled.html"
-    },
-    {
-        "duration": "6.235782620202023",
-        "name": "smoothness.tough_image_decode_cases/http://localhost:9000/cats-viewport-width.html"
     },
     {
         "duration": "17.647949535353536",
@@ -4982,10 +4958,6 @@
     {
         "duration": "21.679361585858594",
         "name": "thread_times.tough_compositor_cases/http://jsbin.com/giqafofe/1/quiet?JS_POSTER_CIRCLE"
-    },
-    {
-        "duration": "19.36412917171718",
-        "name": "thread_times.tough_compositor_cases/http://jsbin.com/jevibahi/4/quiet?JS_SCROLL_200_LAYER_GRID"
     },
     {
         "duration": "14.605747297979796",

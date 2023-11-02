@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -76,5 +76,8 @@ void* __attribute__((weak)) __rust_alloc_zeroed(size_t a, size_t b) {
 void __attribute__((weak)) __rust_alloc_error_handler(size_t a, size_t b) {
   IMMEDIATE_CRASH();
 }
+
+extern const unsigned char __attribute__((weak))
+__rust_alloc_error_handler_should_panic = 0;
 
 }  // extern "C"

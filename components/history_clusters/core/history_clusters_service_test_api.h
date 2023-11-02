@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_service.h"
@@ -49,12 +50,38 @@ class HistoryClustersServiceTestApi {
     history_clusters_service_->backend_ = std::move(backend);
   }
 
+  void SetAllKeywordsCacheTimestamp(base::Time time) {
+    history_clusters_service_->all_keywords_cache_timestamp_ = time;
+  }
+
+  void SetShortKeywordCacheTimestamp(base::Time time) {
+    history_clusters_service_->short_keyword_cache_timestamp_ = time;
+  }
+
+  void SetAllKeywordsCache(HistoryClustersService::KeywordMap cache) {
+    history_clusters_service_->all_keywords_cache_ = cache;
+  }
+
+  void SetAllUrlKeywordsCache(HistoryClustersService::URLKeywordSet cache) {
+    history_clusters_service_->all_url_keywords_cache_ = cache;
+  }
+
   HistoryClustersService* const history_clusters_service_;
   history::HistoryService* const history_service_;
 };
 
 // Fetches two hardcoded test visits.
 std::vector<history::AnnotatedVisit> GetHardcodedTestVisits();
+
+// Fetches the hardcoded `ClusterVisit` with ID `visit_id`.
+history::ClusterVisit GetHardcodedClusterVisit(history::VisitID visit_id,
+                                               float score = 0.5,
+                                               int engagement_score = 0);
+
+history::ClusterVisit AnnotatedVisitToClusterVisit(
+    const history::AnnotatedVisit& visit,
+    float score = .5,
+    int engagement_score = 0);
 
 }  // namespace history_clusters
 

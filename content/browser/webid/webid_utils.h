@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,9 +18,6 @@ class RenderFrameHost;
 // DocumentService::origin() should be used to obtain the frame's origin.
 bool IsSameOriginWithAncestors(RenderFrameHost* host,
                                const url::Origin& origin);
-
-// Checks requirements for URLs received from the IDP.
-bool IdpUrlIsValid(const GURL& url);
 
 }  // namespace content
 #endif  // CONTENT_BROWSER_WEBID_WEBID_UTILS_H_

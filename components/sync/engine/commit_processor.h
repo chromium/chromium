@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include "base/memory/raw_ptr.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/commit.h"
 #include "components/sync/engine/model_type_registry.h"
@@ -44,9 +45,9 @@ class CommitProcessor {
 
  private:
   // Gathering is split into phases for 2 reasons: 1) to provide prioritization,
-  // and 2) to avoid  infinite commit cycles when some data type generates
+  // and 2) to avoid infinite commit cycles when some data type generates
   // updates at very high speed.
-  enum class GatheringPhase { kPriority, kRegular, kDone };
+  enum class GatheringPhase { kHighPriority, kRegular, kLowPriority, kDone };
 
   // Increments |phase| (in the order given above in GatheringPhase).
   static GatheringPhase IncrementGatheringPhase(GatheringPhase phase);
@@ -72,7 +73,7 @@ class CommitProcessor {
   const ModelTypeSet commit_types_;
 
   // A map of 'commit contributors', one for each enabled type.
-  CommitContributorMap* commit_contributor_map_;
+  raw_ptr<CommitContributorMap> commit_contributor_map_;
   GatheringPhase phase_;
 };
 

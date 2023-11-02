@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,8 +22,8 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/audio/cras_audio_handler.h"
-#include "chromeos/dbus/audio/cras_audio_client.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
 #endif
 
 namespace content {
@@ -38,20 +38,13 @@ void WebRtcContentBrowserTestBase::SetUpCommandLine(
   // permission is granted.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kAllowLoopbackInPeerConnection);
-
-  // Act as if any website under test is opted in to the Plan B Deprecation
-  // Trial, i.e. allow it to use Plan B.
-  // TODO(hbos): When the Deprecation Trial ends, either update legacy browser
-  // tests to use Unified Plan or delete them in favor of WPT test coverage.
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kEnableBlinkFeatures, "RTCExtendDeadlineForPlanBRemoval");
 }
 
 void WebRtcContentBrowserTestBase::SetUp() {
   // We need pixel output when we dig pixels out of video tags for verification.
   EnablePixelOutput();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::CrasAudioClient::InitializeFake();
+  ash::CrasAudioClient::InitializeFake();
   ash::CrasAudioHandler::InitializeForTesting();
 #endif
   ContentBrowserTest::SetUp();
@@ -63,7 +56,7 @@ void WebRtcContentBrowserTestBase::TearDown() {
   ContentBrowserTest::TearDown();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::CrasAudioHandler::Shutdown();
-  chromeos::CrasAudioClient::Shutdown();
+  ash::CrasAudioClient::Shutdown();
 #endif
 }
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -68,6 +68,13 @@ class GrammarManager {
   void IgnoreSuggestion();
 
  private:
+  // Sends grammar check request to ml service or display existing grammar
+  // suggestion based on the surrounding text changes and cursor changes.
+  // Returns true is grammar suggestion window should show.
+  bool HandleSurroundingTextChange(const std::u16string& text,
+                                   int cursor_pos,
+                                   int anchor_pos);
+
   void Check(const Sentence& sentence);
 
   void OnGrammarCheckDone(const Sentence& sentence,

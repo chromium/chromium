@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,7 @@ namespace policy {
 class RequestHandlerForRegisterBrowser
     : public EmbeddedPolicyTestServer::RequestHandler {
  public:
-  RequestHandlerForRegisterBrowser(ClientStorage* client_storage,
-                                   PolicyStorage* policy_storage);
+  explicit RequestHandlerForRegisterBrowser(EmbeddedPolicyTestServer* parent);
   RequestHandlerForRegisterBrowser(RequestHandlerForRegisterBrowser&& handler) =
       delete;
   RequestHandlerForRegisterBrowser& operator=(

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,6 @@
 #include <stdio.h>
 
 #include <string>
-
-#include "base/cxx17_backports.h"
 
 #if !defined(NDEBUG)
 // Sends string |format| to the debugger for display.
@@ -23,7 +21,7 @@ void TraceImpl(const wchar_t* format, ...) {
   va_list args = {};
 
   va_start(args, format);
-  if (vswprintf(buffer, base::size(buffer), format, args) > 0) {
+  if (vswprintf(buffer, std::size(buffer), format, args) > 0) {
     OutputDebugString(buffer);
   } else {
     std::wstring error_string(L"Format error for string: ");

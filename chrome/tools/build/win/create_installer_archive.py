@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -46,7 +46,7 @@ VERSION_FILE = "VERSION"
 g_archive_inputs = []
 
 
-def BuildVersion(build_dir):
+def BuildVersion():
   """Returns the full build version string constructed from information in
   VERSION_FILE.  Any segment not found in that file will default to '0'.
   """
@@ -54,7 +54,10 @@ def BuildVersion(build_dir):
   minor = 0
   build = 0
   patch = 0
-  for line in open(os.path.join(build_dir, '../../chrome', VERSION_FILE), 'r'):
+  # The version file is located at the directory ${CHROMIUM_SRC}/chrome.
+  version_file_path = os.path.join(
+      os.path.dirname(__file__), '../../..', VERSION_FILE)
+  for line in open(version_file_path, 'r'):
     line = line.rstrip()
     if line.startswith('MAJOR='):
       major = line[6:]
@@ -168,12 +171,12 @@ def GenerateDiffPatch(options, orig_file, new_file, patch_file):
   RunSystemCommand(cmd, options.verbose)
 
 def GetLZMAExec(build_dir):
+  executable = '7za'
   if sys.platform == 'win32':
-    lzma_exec = os.path.join(build_dir, "..", "..", "third_party",
-                             "lzma_sdk", "Executable", "7za.exe")
-  else:
-    lzma_exec = '7zr'  # Use system 7zr.
-  return lzma_exec
+    executable += '.exe'
+
+  return os.path.join(build_dir, "..", "..", "third_party", "lzma_sdk", "bin",
+                      "host_platform", executable)
 
 def GetPrevVersion(build_dir, temp_dir, last_chrome_installer, output_name):
   if not last_chrome_installer:
@@ -529,7 +532,7 @@ def main(options):
   """Main method that reads input file, creates archive file and writes
   resource input file.
   """
-  current_version = BuildVersion(options.build_dir)
+  current_version = BuildVersion()
 
   config = Readconfig(options.input_file, current_version)
 

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,9 +28,9 @@ class IOSBlockingPageTabHelper
 
   ~IOSBlockingPageTabHelper() override;
 
-  // Associates |blocking_page| with |navigation_id|.  When the last committed
-  // navigation ID matches |navigation_id|, JavaScript commands are handled by
-  // |blocking_page|.
+  // Associates `blocking_page` with `navigation_id`.  When the last committed
+  // navigation ID matches `navigation_id`, JavaScript commands are handled by
+  // `blocking_page`.
   void AssociateBlockingPage(
       int64_t navigation_id,
       std::unique_ptr<IOSSecurityInterstitialPage> blocking_page);
@@ -53,7 +53,7 @@ class IOSBlockingPageTabHelper
                              bool user_is_interacting,
                              web::WebFrame* sender_frame);
 
-  // Updates the tab helper state for a finished navigation with |navigation_id|
+  // Updates the tab helper state for a finished navigation with `navigation_id`
   // that was optionally committed.
   void UpdateForFinishedNavigation(int64_t navigation_id, bool committed);
 
@@ -61,7 +61,7 @@ class IOSBlockingPageTabHelper
   // item.
   class CommittedNavigationIDListener : public web::WebStateObserver {
    public:
-    // Constructor for a listener that notifies |tab_helper| of committed
+    // Constructor for a listener that notifies `tab_helper` of committed
     // navigation ID updates.
     explicit CommittedNavigationIDListener(
         web::WebState* web_state,
@@ -87,7 +87,7 @@ class IOSBlockingPageTabHelper
   // Keeps track of blocking pages for navigations that have encountered
   // certificate errors in this WebState. When a navigation commits, the
   // corresponding blocking page is moved out and stored in
-  // |blocking_page_for_currently_committed_navigation_|.
+  // `blocking_page_for_currently_committed_navigation_`.
   std::map<int64_t, std::unique_ptr<IOSSecurityInterstitialPage>>
       blocking_pages_for_navigations_;
   // Keeps track of the blocking page for the currently committed navigation, if

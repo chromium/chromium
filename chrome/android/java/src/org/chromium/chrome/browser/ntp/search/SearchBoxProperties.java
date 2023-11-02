@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.ntp.search;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.text.TextWatcher;
-import android.util.Pair;
 import android.view.View.OnClickListener;
 
 import org.chromium.ui.modelutil.PropertyKey;
@@ -32,26 +31,25 @@ interface SearchBoxProperties {
     WritableBooleanPropertyKey LENS_VISIBILITY = new WritableBooleanPropertyKey();
     WritableObjectPropertyKey<OnClickListener> LENS_CLICK_CALLBACK =
             new WritableObjectPropertyKey<>();
-    WritableObjectPropertyKey<Pair<String, Boolean>> SEARCH_TEXT =
-            new WritableObjectPropertyKey<>();
+    WritableObjectPropertyKey<String> SEARCH_TEXT = new WritableObjectPropertyKey<>();
     WritableBooleanPropertyKey SEARCH_HINT_VISIBILITY = new WritableBooleanPropertyKey();
     WritableObjectPropertyKey<OnClickListener> SEARCH_BOX_CLICK_CALLBACK =
             new WritableObjectPropertyKey<>();
     WritableObjectPropertyKey<TextWatcher> SEARCH_BOX_TEXT_WATCHER =
             new WritableObjectPropertyKey<>();
     WritableIntPropertyKey SEARCH_BOX_HINT_COLOR = new WritableIntPropertyKey();
-    WritableObjectPropertyKey<String> CHIP_TEXT = new WritableObjectPropertyKey<>();
-    WritableBooleanPropertyKey CHIP_VISIBILITY = new WritableBooleanPropertyKey();
-    WritableObjectPropertyKey<Drawable> CHIP_DRAWABLE = new WritableObjectPropertyKey<>();
-    WritableObjectPropertyKey<OnClickListener> CHIP_CLICK_CALLBACK =
-            new WritableObjectPropertyKey<>();
-    WritableObjectPropertyKey<OnClickListener> CHIP_CANCEL_CALLBACK =
-            new WritableObjectPropertyKey<>();
+    WritableIntPropertyKey SEARCH_BOX_HEIGHT = new WritableIntPropertyKey();
+    WritableIntPropertyKey SEARCH_BOX_TOP_MARGIN = new WritableIntPropertyKey();
+    WritableIntPropertyKey SEARCH_BOX_END_PADDING = new WritableIntPropertyKey();
+    WritableFloatPropertyKey SEARCH_TEXT_TRANSLATION_X = new WritableFloatPropertyKey();
+    WritableIntPropertyKey BUTTONS_HEIGHT = new WritableIntPropertyKey();
+    WritableIntPropertyKey BUTTONS_WIDTH = new WritableIntPropertyKey();
+    WritableIntPropertyKey LENS_BUTTON_LEFT_MARGIN = new WritableIntPropertyKey();
 
     PropertyKey[] ALL_KEYS = new PropertyKey[] {ALPHA, BACKGROUND, VISIBILITY,
             VOICE_SEARCH_VISIBILITY, VOICE_SEARCH_DRAWABLE, VOICE_SEARCH_COLOR_STATE_LIST,
             VOICE_SEARCH_CLICK_CALLBACK, LENS_VISIBILITY, LENS_CLICK_CALLBACK, SEARCH_TEXT,
             SEARCH_HINT_VISIBILITY, SEARCH_BOX_CLICK_CALLBACK, SEARCH_BOX_TEXT_WATCHER,
-            SEARCH_BOX_HINT_COLOR, CHIP_TEXT, CHIP_VISIBILITY, CHIP_DRAWABLE, CHIP_CLICK_CALLBACK,
-            CHIP_CANCEL_CALLBACK};
+            SEARCH_BOX_HINT_COLOR, SEARCH_BOX_HEIGHT, SEARCH_BOX_TOP_MARGIN, SEARCH_BOX_END_PADDING,
+            SEARCH_TEXT_TRANSLATION_X, BUTTONS_HEIGHT, BUTTONS_WIDTH, LENS_BUTTON_LEFT_MARGIN};
 }

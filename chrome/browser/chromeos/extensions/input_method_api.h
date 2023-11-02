@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "chrome/common/extensions/api/input_method_private.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
@@ -82,6 +81,27 @@ class InputMethodPrivateSetCurrentInputMethodFunction
  private:
   DECLARE_EXTENSION_FUNCTION("inputMethodPrivate.setCurrentInputMethod",
                              INPUTMETHODPRIVATE_SETCURRENTINPUTMETHOD)
+};
+
+// Implements the inputMethodPrivate.switchToLastUsedInputMethod method.
+class InputMethodPrivateSwitchToLastUsedInputMethodFunction
+    : public ExtensionFunction {
+ public:
+  InputMethodPrivateSwitchToLastUsedInputMethodFunction() {}
+
+  InputMethodPrivateSwitchToLastUsedInputMethodFunction(
+      const InputMethodPrivateSwitchToLastUsedInputMethodFunction&) = delete;
+  InputMethodPrivateSwitchToLastUsedInputMethodFunction& operator=(
+      const InputMethodPrivateSwitchToLastUsedInputMethodFunction&) = delete;
+
+ protected:
+  ~InputMethodPrivateSwitchToLastUsedInputMethodFunction() override {}
+
+  ResponseAction Run() override;
+
+ private:
+  DECLARE_EXTENSION_FUNCTION("inputMethodPrivate.switchToLastUsedInputMethod",
+                             INPUTMETHODPRIVATE_SWITCHTOLASTUSEDINPUTMETHOD)
 };
 
 // Implements the inputMethodPrivate.getInputMethods method.
@@ -452,6 +472,30 @@ class InputMethodPrivateOnAutocorrectFunction : public ExtensionFunction {
  private:
   DECLARE_EXTENSION_FUNCTION("inputMethodPrivate.onAutocorrect",
                              INPUTMETHODPRIVATE_ONAUTOCORRECT)
+};
+
+class InputMethodPrivateNotifyInputMethodReadyForTestingFunction
+    : public ExtensionFunction {
+ public:
+  InputMethodPrivateNotifyInputMethodReadyForTestingFunction() = default;
+
+  InputMethodPrivateNotifyInputMethodReadyForTestingFunction(
+      const InputMethodPrivateNotifyInputMethodReadyForTestingFunction&) =
+      delete;
+  InputMethodPrivateNotifyInputMethodReadyForTestingFunction& operator=(
+      const InputMethodPrivateNotifyInputMethodReadyForTestingFunction&) =
+      delete;
+
+ protected:
+  ~InputMethodPrivateNotifyInputMethodReadyForTestingFunction() override =
+      default;
+
+  ResponseAction Run() override;
+
+ private:
+  DECLARE_EXTENSION_FUNCTION(
+      "inputMethodPrivate.notifyInputMethodReadyForTesting",
+      INPUTMETHODPRIVATE_NOTIFYINPUTMETHODREADYFORTESTING)
 };
 
 class InputMethodAPI : public BrowserContextKeyedAPI,

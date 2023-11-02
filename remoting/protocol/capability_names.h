@@ -1,12 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef REMOTING_PROTOCOL_CAPABILITY_NAMES_H_
 #define REMOTING_PROTOCOL_CAPABILITY_NAMES_H_
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // Used for negotiating client-host capabilities for touch events.
 constexpr char kTouchEventsCapability[] = "touchEvents";
@@ -30,7 +29,12 @@ constexpr char kSendAttentionSequenceAction[] = "sendAttentionSequenceAction";
 // WebRTC clients.
 constexpr char kWebrtcIceSdpRestartAction[] = "webrtcIceSdpRestartAction";
 
-}  // namespace protocol
-}  // namespace remoting
+// Host supports creating one video-stream per monitor.
+constexpr char kMultiStreamCapability[] = "multiStream";
+
+// Host supports display layouts controlled by the client.
+constexpr char kClientControlledLayoutCapability[] = "clientControlledLayout";
+
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_CAPABILITY_NAMES_H_

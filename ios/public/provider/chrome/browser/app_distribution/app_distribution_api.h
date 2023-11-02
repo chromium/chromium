@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,8 @@ namespace provider {
 // Returns the app distribution brand code.
 std::string GetBrandCode();
 
-// Schedules app distribution notifications to be sent using |context|.
+// Schedules app distribution notifications to be sent using
+// `url_loader_factory`.
 void ScheduleAppDistributionNotifications(
     const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
     bool is_first_run);
@@ -28,7 +29,7 @@ void ScheduleAppDistributionNotifications(
 // Cancels any pending app distribution notifications.
 void CancelAppDistributionNotifications();
 
-// Initializes Firebase for installation attribution purpose. |install_date|
+// Initializes Firebase for installation attribution purpose. `install_date`
 // is used to detect "legacy" users that installed Chrome before Firebase was
 // integrated and thus should not have Firebase enabled.
 void InitializeFirebase(base::Time install_date, bool is_first_run);

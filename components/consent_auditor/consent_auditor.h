@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -88,6 +88,12 @@ class ConsentAuditor : public KeyedService {
   virtual void RecordAccountPasswordsConsent(
       const CoreAccountId& account_id,
       const sync_pb::UserConsentTypes::AccountPasswordsConsent& consent) = 0;
+
+  // Records the `consent` to use Autofill Assistant for the signed-in GAIA
+  // account and the current user profile.
+  virtual void RecordAutofillAssistantConsent(
+      const CoreAccountId& account_id,
+      const sync_pb::UserConsentTypes::AutofillAssistantConsent& consent) = 0;
 
   // Records that the user consented to a |feature|. The user was presented with
   // |description_text| and accepted it by interacting |confirmation_text|

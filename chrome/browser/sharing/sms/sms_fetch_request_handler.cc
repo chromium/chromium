@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -192,7 +192,7 @@ SmsFetchRequestHandler::Request::Request(
       origin_list_(origin_list),
       client_name_(client_name),
       respond_callback_(std::move(respond_callback)) {
-  fetcher_->Subscribe(origin_list_, this);
+  fetcher_->Subscribe(origin_list_, *this);
 }
 
 SmsFetchRequestHandler::Request::~Request() {

@@ -1,0 +1,52 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module arc.mojom;
+
+// Next method ID: 2
+interface KeyboardShortcutHost {
+  // Shows keyboard shortcut helper.
+  ShowKeyboardShortcutViewer@0();
+
+  // Hides keyboard shortcut helper.
+  HideKeyboardShortcutViewer@1();
+};
+
+// Next method ID: 2
+interface KeyboardShortcutInstance {
+  // Establishes full-duplex communication with the host.
+  Init@0(pending_remote<KeyboardShortcutHost> host_remote) => ();
+
+  // Gets the list of keyboard shortcuts from the currently opened ARC apps.
+  GetKeyboardShortcuts@1() => (array<AppKeyboardShortcutsList> lists);
+};
+
+// A list of keyboard shortcuts for an app.
+struct AppKeyboardShortcutsList {
+  // The name of the app.
+  string app_name;
+  // The groups of keyboard shortcuts from the app.
+  array<KeyboardShortcutGroup> groups;
+};
+
+// A group of KeyboardShortcutInfo. Maps to android.view.KeyboardShortcutGroup.
+struct KeyboardShortcutGroup {
+  // The label to be used to describe this group.
+  string label;
+  // The list of items included in this group.
+  array<KeyboardShortcutInfo> items;
+};
+
+// Information about a Keyboard Shortcut.
+// Maps to android.view.KeyboardShortcutInfo.
+struct KeyboardShortcutInfo {
+  // The label to be used to describe this shortcut.
+  string label;
+  // The base key code that, combined with the modifiers, triggers the shortcut.
+  // The value of ui::KeyboardCode is used.
+  uint32 keycode;
+  // The set of modifiers that, combined with the key, triggers the shortcut.
+  // The value of ui::EventFlags is used.
+  uint32 modifiers;
+};

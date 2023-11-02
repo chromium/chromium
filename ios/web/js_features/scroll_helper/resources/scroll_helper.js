@@ -1,15 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 /**
  * @fileoverview APIs used for the scroll workaround. See crbug.com/554257.
  */
-
-goog.provide('__crWeb.scrollHelper');
-
-/** Beginning of anonymous object */
-(function() {
 
 /** @private */
 var webViewScrollViewIsDragging_ = false;
@@ -35,5 +30,3 @@ window.scrollTo = function() {
   if (webViewScrollViewIsDragging_) return;
   originalWindowScrollTo_.apply(null, arguments);
 };
-
-}());  // End of anonymous object

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -842,7 +843,7 @@ class MockDriveServiceForBatchProcessing : public DummyDriveService {
     }
 
    private:
-    MockDriveServiceForBatchProcessing* service;
+    raw_ptr<MockDriveServiceForBatchProcessing> service;
   };
 
  public:

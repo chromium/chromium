@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "url/url_constants.h"
@@ -18,8 +19,9 @@ const char kHostWildcard[] = "*";
 const char kPathWildcard[] = "*";
 const char kPortWildcard[] = "*";
 const char kSchemeWildcard[] = "*";
-const char kUrlPathSeparator[] = "/";
-const char kUrlPortSeparator[] = ":";
+const char kUrlPathSeparator = '/';
+const char kUrlPortSeparator = ':';
+const char kUrlPortAndPathSeparator[] = ":/";
 // A domain wildcard pattern involves exactly one separating dot,
 // inside the square brackets. This is a common misunderstanding of that
 // pattern that we want to check for. See: https://crbug.com/823706.
@@ -45,16 +47,17 @@ void PatternParser::Parse(base::StringPiece pattern_spec,
   base::StringPiece port_piece;
   base::StringPiece path_piece;
 
-  size_t start = 0;
-  size_t current_pos = 0;
+  base::StringPiece::size_type start = 0;
+  base::StringPiece::size_type current_pos = 0;
 
   if (pattern_spec.empty())
     return;
 
   // Test if a scheme pattern is in the spec.
-  const std::string standard_scheme_separator(url::kStandardSchemeSeparator);
+  const base::StringPiece standard_scheme_separator(
+      url::kStandardSchemeSeparator);
   current_pos = pattern_spec.find(standard_scheme_separator, start);
-  if (current_pos != std::string::npos) {
+  if (current_pos != base::StringPiece::npos) {
     scheme_piece = pattern_spec.substr(start, current_pos - start);
     start = current_pos + standard_scheme_separator.size();
     current_pos = start;
@@ -71,33 +74,34 @@ void PatternParser::Parse(base::StringPiece pattern_spec,
   if (pattern_spec[current_pos] == '[')
     current_pos = pattern_spec.find("]", start);
 
-  if (current_pos == std::string::npos)
+  if (current_pos == base::StringPiece::npos)
     return;  // Bad pattern spec.
 
-  current_pos = pattern_spec.find(kUrlPortSeparator, current_pos);
-  if (current_pos == std::string::npos) {
-    // No port spec found
-    current_pos = pattern_spec.find(kUrlPathSeparator, start);
-    if (current_pos == std::string::npos) {
-      current_pos = pattern_spec.size();
-      host_piece = pattern_spec.substr(start, current_pos - start);
-    } else {
-      // Pattern has a path spec.
-      host_piece = pattern_spec.substr(start, current_pos - start);
-    }
+  current_pos =
+      pattern_spec.find_first_of(kUrlPortAndPathSeparator, current_pos);
+  if (current_pos == base::StringPiece::npos) {
+    // No port spec found AND no path found.
+    current_pos = pattern_spec.size();
+    host_piece = pattern_spec.substr(start, current_pos - start);
     start = current_pos;
-  } else {
+  } else if (pattern_spec[current_pos] == kUrlPathSeparator) {
+    // Pattern has a path spec.
+    host_piece = pattern_spec.substr(start, current_pos - start);
+    start = current_pos;
+  } else if (pattern_spec[current_pos] == kUrlPortSeparator) {
     // Port spec found.
     host_piece = pattern_spec.substr(start, current_pos - start);
     start = current_pos + 1;
     if (start < pattern_spec.size()) {
       current_pos = pattern_spec.find(kUrlPathSeparator, start);
-      if (current_pos == std::string::npos) {
+      if (current_pos == base::StringPiece::npos) {
         current_pos = pattern_spec.size();
       }
       port_piece = pattern_spec.substr(start, current_pos - start);
       start = current_pos;
     }
+  } else {
+    NOTREACHED();
   }
 
   current_pos = pattern_spec.size();
@@ -145,7 +149,7 @@ void PatternParser::Parse(base::StringPiece pattern_spec,
       builder->WithHost(std::string(host_piece));
     } else {
       // If the host contains a wildcard symbol then it is invalid.
-      if (host_piece.find(kHostWildcard) != std::string::npos) {
+      if (host_piece.find(kHostWildcard) != base::StringPiece::npos) {
         builder->Invalid();
         return;
       }
@@ -164,8 +168,8 @@ void PatternParser::Parse(base::StringPiece pattern_spec,
       builder->WithPortWildcard();
     } else {
       // Check if the port string represents a valid port.
-      for (size_t i = 0; i < port_piece.size(); ++i) {
-        if (!base::IsAsciiDigit(port_piece[i])) {
+      for (const auto port_char : port_piece) {
+        if (!base::IsAsciiDigit(port_char)) {
           builder->Invalid();
           return;
         }
@@ -173,11 +177,11 @@ void PatternParser::Parse(base::StringPiece pattern_spec,
       // TODO(markusheintz): Check port range.
       builder->WithPort(std::string(port_piece));
     }
-  } else {
-    if (!ContentSettingsPattern::IsNonWildcardDomainNonPortScheme(
-            scheme_piece) &&
-        scheme_piece != url::kFileScheme)
-      builder->WithPortWildcard();
+  } else if (!ContentSettingsPattern::IsNonWildcardDomainNonPortScheme(
+                 scheme_piece) &&
+             !base::EqualsCaseInsensitiveASCII(scheme_piece,
+                                               url::kFileScheme)) {
+    builder->WithPortWildcard();
   }
 
   if (!path_piece.empty()) {
@@ -225,7 +229,7 @@ std::string PatternParser::ToString(
 
   if (ContentSettingsPattern::IsNonWildcardDomainNonPortScheme(parts.scheme)) {
     if (parts.path.empty())
-      str += std::string(kUrlPathSeparator);
+      str += kUrlPathSeparator;
     else
       str += parts.path;
     return str;

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -24,6 +23,7 @@
 #include "chrome/browser/notifications/metrics/notification_metrics_logger_factory.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
+#include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -31,6 +31,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -50,7 +51,7 @@
 #include "ui/message_center/public/cpp/notifier_id.h"
 #include "url/origin.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -76,7 +77,7 @@ namespace {
 // screen mode.
 static bool ShouldDisplayWebNotificationOnFullScreen(Profile* profile,
                                                      const GURL& origin) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   NOTIMPLEMENTED();
   return false;
 #else
@@ -225,6 +226,15 @@ void PlatformNotificationServiceImpl::DisplayNotification(
   permissions::PermissionUmaUtil::RecordPermissionUsage(
       ContentSettingsType::NOTIFICATIONS, profile_, nullptr,
       notification.origin_url());
+
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kNotificationInteractionHistory)) {
+    auto* service =
+        NotificationsEngagementServiceFactory::GetForProfile(profile_);
+    // This service might be missing for incognito profiles and in tests.
+    if (service)
+      service->RecordNotificationDisplayed(notification.origin_url());
+  }
 }
 
 void PlatformNotificationServiceImpl::DisplayPersistentNotification(
@@ -257,6 +267,15 @@ void PlatformNotificationServiceImpl::DisplayPersistentNotification(
 
   NotificationMetricsLoggerFactory::GetForBrowserContext(profile_)
       ->LogPersistentNotificationShown();
+
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kNotificationInteractionHistory)) {
+    auto* service =
+        NotificationsEngagementServiceFactory::GetForProfile(profile_);
+    // This service might be missing for incognito profiles and in tests.
+    if (service)
+      service->RecordNotificationDisplayed(notification.origin_url());
+  }
 
   permissions::PermissionUmaUtil::RecordPermissionUsage(
       ContentSettingsType::NOTIFICATIONS, profile_, nullptr,
@@ -433,19 +452,17 @@ PlatformNotificationServiceImpl::CreateNotificationFromData(
       message_center::SettingsButtonHandler::INLINE;
 
   absl::optional<WebAppIconAndTitle> web_app_icon_and_title;
-
-  if (base::FeatureList::IsEnabled(
-          features::kDesktopPWAsNotificationIconAndTitle)) {
-    web_app_icon_and_title = FindWebAppIconAndTitle(web_app_hint_url);
-    if (web_app_icon_and_title && notification_resources.badge.isNull()) {
+#if BUILDFLAG(IS_CHROMEOS)
+  web_app_icon_and_title = FindWebAppIconAndTitle(web_app_hint_url);
+  if (web_app_icon_and_title && notification_resources.badge.isNull()) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      // ChromeOS: Enables web app theme color only if monochrome web app icon
-      // has been specified. `badge` Notifications API icons must be masked with
-      // the accent color.
-      optional_fields.ignore_accent_color_for_small_image = true;
+    // ChromeOS: Enables web app theme color only if monochrome web app icon
+    // has been specified. `badge` Notifications API icons must be masked with
+    // the accent color.
+    optional_fields.ignore_accent_color_for_small_image = true;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-    }
   }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   message_center::NotifierId notifier_id(
       origin, web_app_icon_and_title
@@ -457,7 +474,8 @@ PlatformNotificationServiceImpl::CreateNotificationFromData(
   message_center::Notification notification(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
       notification_data.title, notification_data.body,
-      gfx::Image::CreateFrom1xBitmap(notification_resources.notification_icon),
+      ui::ImageModel::FromImage(gfx::Image::CreateFrom1xBitmap(
+          notification_resources.notification_icon)),
       base::UTF8ToUTF16(origin.host()), origin, notifier_id, optional_fields,
       nullptr /* delegate */);
 
@@ -533,7 +551,7 @@ std::u16string PlatformNotificationServiceImpl::DisplayNameForContextMessage(
 absl::optional<PlatformNotificationServiceImpl::WebAppIconAndTitle>
 PlatformNotificationServiceImpl::FindWebAppIconAndTitle(
     const GURL& web_app_hint_url) const {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   web_app::WebAppProvider* web_app_provider =
       web_app::WebAppProvider::GetForLocalAppsUnchecked(profile_);
   if (web_app_provider) {

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,8 +37,7 @@
 #include "remoting/protocol/auth_util.h"
 #include "remoting/protocol/p2p_stream_socket.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -152,13 +151,6 @@ class NetStreamSocketAdapter : public net::StreamSocket {
   bool GetSSLInfo(net::SSLInfo* ssl_info) override {
     NOTREACHED();
     return false;
-  }
-  void GetConnectionAttempts(net::ConnectionAttempts* out) const override {
-    NOTREACHED();
-  }
-  void ClearConnectionAttempts() override { NOTREACHED(); }
-  void AddConnectionAttempts(const net::ConnectionAttempts& attempts) override {
-    NOTREACHED();
   }
   int64_t GetTotalReceivedBytes() const override {
     NOTIMPLEMENTED();
@@ -470,5 +462,4 @@ void SslHmacChannelAuthenticator::NotifyError(int error) {
   std::move(done_callback_).Run(error, nullptr);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

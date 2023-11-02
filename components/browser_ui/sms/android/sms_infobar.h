@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "components/infobars/android/confirm_infobar.h"
 
 namespace content {
@@ -47,7 +48,7 @@ class SmsInfoBar : public infobars::ConfirmInfoBar {
       JNIEnv* env,
       const ResourceIdMapper& resource_id_mapper) override;
 
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 }  // namespace sms

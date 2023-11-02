@@ -1,24 +1,50 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import("//build/config/linux/pkg_config.gni")
+import("//build/config/sysroot.gni")
 import("//third_party/wayland/features.gni")
+import("//third_party/wayland/wayland_protocol.gni")
 import("//tools/generate_stubs/rules.gni")
+
+# This should be open to both system and non - system libwayland as
+# wayland_stubs also uses this.
+wayland_protocol("wayland_protocol_c") {
+  if (use_system_libwayland && use_sysroot) {
+    sources = [ "${sysroot}/usr/share/wayland/wayland.xml" ]
+  } else {
+    sources = [ "src/protocol/wayland.xml" ]
+  }
+  generator_type = "protocol-marshalling"
+}
 
 if (!use_system_libwayland) {
   config("wayland_config") {
     include_dirs = [
       "include",
       "include/src",
-      "include/protocol",
       "src/cursor",
       "src/egl",
       "src/src",
     ]
 
+    # Client/Server headers are automatically generated. Though, we still need
+    # to pass the path where these headers are located.
+    include_dirs += [ "$root_gen_dir/third_party/wayland/src/protocol" ]
+
     # TODO(thomasanderson): Remove this once
     # https://patchwork.freedesktop.org/patch/242086/ lands.
     cflags = [ "-Wno-macro-redefined" ]
+  }
+
+  wayland_protocol("wayland_server_protocol") {
+    sources = [ "src/protocol/wayland.xml" ]
+    generator_type = "protocol-server"
+  }
+
+  wayland_protocol("wayland_client_protocol") {
+    sources = [ "src/protocol/wayland.xml" ]
+    generator_type = "protocol-client"
   }
 
   source_set("wayland_util") {
@@ -47,24 +73,13 @@ if (!use_system_libwayland) {
     configs += [
       "//build/config/compiler:no_chromium_code",
       "//build/config/linux/libffi",
-      ":wayland_config",
     ]
-  }
-
-  static_library("wayland_protocol") {
-    sources = [ "protocol/wayland-protocol.c" ]
-
-    deps = [ ":wayland_util" ]
-
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
 
     public_configs = [ ":wayland_config" ]
   }
 
   static_library("wayland_server") {
     sources = [
-      "include/protocol/wayland-server-protocol.h",
       "src/src/event-loop.c",
       "src/src/wayland-server.c",
       "src/src/wayland-shm.c",
@@ -74,9 +89,11 @@ if (!use_system_libwayland) {
 
     deps = [
       ":wayland_private",
-      ":wayland_protocol",
+      ":wayland_protocol_c",
       ":wayland_util",
     ]
+
+    public_deps = [ ":wayland_server_protocol" ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [
@@ -88,14 +105,12 @@ if (!use_system_libwayland) {
   }
 
   static_library("wayland_client") {
-    sources = [
-      "include/protocol/wayland-client-protocol.h",
-      "src/src/wayland-client.c",
-    ]
+    sources = [ "src/src/wayland-client.c" ]
 
     deps = [
+      ":wayland_client_protocol",
       ":wayland_private",
-      ":wayland_protocol",
+      ":wayland_protocol_c",
       ":wayland_util",
     ]
 
@@ -116,7 +131,10 @@ if (!use_system_libwayland) {
       "src/egl/wayland-egl.h",
     ]
 
-    deps = [ ":wayland_util" ]
+    deps = [
+      ":wayland_client_protocol",
+      ":wayland_util",
+    ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -135,50 +153,34 @@ if (!use_system_libwayland) {
       "src/cursor/xcursor.h",
     ]
 
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-
-    public_configs = [ ":wayland_config" ]
-  }
-}
-
-if (!use_system_wayland_scanner) {
-  config("wayland_scanner_config") {
-    cflags = [
-      "-Wno-int-conversion",
-      "-Wno-implicit-function-declaration",
-    ]
-
-    include_dirs = [ "include/" ]
-  }
-
-  executable("wayland_scanner") {
-    sources = [ "src/src/scanner.c" ]
-
-    deps = [
-      ":wayland_util",
-      "//third_party/expat:expat",
-    ]
+    deps = [ ":wayland_client_protocol" ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [
       "//build/config/compiler:no_chromium_code",
-      ":wayland_scanner_config",
+      ":wayland_config",
     ]
   }
-}
+} else {
+  # use_system_libwayland
+  pkg_config("wayland_server_config") {
+    packages = [ "wayland-server" ]
+  }
 
-if (use_system_libwayland) {
+  group("wayland_server") {
+    public_configs = [ ":wayland_server_config" ]
+  }
+
+  group("wayland_util") {
+    public_configs = [ ":wayland_client_config" ]
+  }
+
   pkg_config("wayland_client_config") {
     packages = [ "wayland-client" ]
   }
 
   pkg_config("wayland_cursor_config") {
     packages = [ "wayland-cursor" ]
-  }
-
-  pkg_config("wayland_server_config") {
-    packages = [ "wayland-server" ]
   }
 
   pkg_config("wayland_egl_config") {
@@ -191,14 +193,6 @@ if (use_system_libwayland) {
 
   group("wayland_cursor") {
     public_configs = [ ":wayland_cursor_config" ]
-  }
-
-  group("wayland_server") {
-    public_configs = [ ":wayland_server_config" ]
-  }
-
-  group("wayland_util") {
-    public_configs = [ ":wayland_client_config" ]
   }
 
   group("wayland_egl") {
@@ -225,21 +219,40 @@ if (use_system_libwayland) {
   source_set("wayland_stubs") {
     public_deps = [ ":wayland_wrappers" ]
     sources = [
-      # Provide data symbols which generate_stubs.py cannot wrap -- only
-      # functions are wrappable.  wayland-protocol.c contains only data and
-      # no code.
-      "protocol/wayland-protocol.c",
-
       # Provide implementations of C variadic functions, which
       # generate_stubs.py cannot generate forwarding-functions for.
       "stubs/libwayland_variadic_support.cc",
     ]
 
-    # This is a hack to hide the symbols annoted with
-    # attribute((visibility("default"))) in wayland-protocol.c since libwayland
-    # currently doesn't provide a way to override this behavior.  This can be
-    # removed once https://gitlab.freedesktop.org/wayland/wayland/-/issues/179
-    # is fixed and we can switch to overriding WL_EXPORT directly.
-    defines = [ "visibility(x)=visibility(\"hidden\")" ]
+    # Provide data symbols which generate_stubs.py cannot wrap -- only
+    # functions are wrappable.  wayland-protocol.c contains only data and
+    # no code.
+    deps = [ ":wayland_protocol_c" ]
+  }
+}
+
+if (!use_system_wayland_scanner) {
+  config("wayland_scanner_config") {
+    cflags = [
+      "-Wno-int-conversion",
+      "-Wno-implicit-function-declaration",
+    ]
+
+    include_dirs = [ "include/" ]
+  }
+
+  executable("wayland_scanner") {
+    sources = [ "src/src/scanner.c" ]
+
+    deps = [
+      ":wayland_util",
+      "//third_party/expat:expat",
+    ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [
+      "//build/config/compiler:no_chromium_code",
+      ":wayland_scanner_config",
+    ]
   }
 }

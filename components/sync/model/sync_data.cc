@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -77,6 +77,7 @@ SyncData SyncData::CreateRemoteData(sync_pb::EntitySpecifics specifics,
   SyncData data(base::MakeRefCounted<InternalData>());
   data.ptr_->client_tag_hash = client_tag_hash;
   data.ptr_->specifics = std::move(specifics);
+  DCHECK(IsRealDataType(data.GetDataType()));
   return data;
 }
 
@@ -104,7 +105,7 @@ std::string SyncData::ToString() const {
   if (!IsValid())
     return "<Invalid SyncData>";
 
-  std::string type = ModelTypeToString(GetDataType());
+  std::string type = ModelTypeToDebugString(GetDataType());
   std::string specifics;
   base::JSONWriter::WriteWithOptions(*EntitySpecificsToValue(GetSpecifics()),
                                      base::JSONWriter::OPTIONS_PRETTY_PRINT,

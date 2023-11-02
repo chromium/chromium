@@ -42,4 +42,62 @@ async_test(function(t) {
     t.done();
   });
 }, "AccessibleNode.onaccessiblecontextmenu");
+
+test(function(t) {
+  assert_true(internals.runtimeFlags.synthesizedKeyboardEventsForAccessibilityActionsEnabled);
+}, "Make sure that keyboard event synthesis is enabled");
+
+const axTarget =
+    accessibilityController.accessibleElementById("context_menu_target");
+
+promise_test(function(t) {
+  return new Promise(resolve => {
+    window.addEventListener('keydown', resolve);
+    axTarget.showMenu();
+  }).then(event => {
+    assert_equals(event.type, "keydown");
+    assert_equals(event.keyCode, 93);  // 93 = context menu key.
+    assert_equals(event.target, document.getElementById("context_menu_target"));
+  });
+}, "Test for synthesized keydown event in context menu accessible action");
+
+promise_test(function(t) {
+  return new Promise(resolve => {
+    window.addEventListener('contextmenu', resolve);
+    axTarget.showMenu();
+  }).then(event => {
+    event.preventDefault();
+    return new Promise(resolve => {
+      window.addEventListener('keyup', resolve);
+    });
+  }).then(event => {
+    assert_equals(event.type, "keyup");
+    assert_equals(event.keyCode, 93);  // 93 = context menu key.
+    assert_equals(event.target, document.getElementById("context_menu_target"));
+  });
+}, "Test for synthesized keyup event in context menu accessible action after non-default contextmenu event");
+
+async_test(function(t) {
+    let gotContextMenuEvent = false;
+    function contextMenuListener(e) {
+      // If we called `e.preventDefault()` here, the test would fail.
+      gotContextMenuEvent = true;
+    }
+    window.addEventListener('contextmenu', contextMenuListener);
+
+    let gotKeyUpEvent = false;
+    function keyupListener(e) {
+      gotKeyUpEvent = true;
+    }
+    window.addEventListener('keyup', keyupListener);
+
+    axTarget.showMenu();
+
+    assert_true(gotContextMenuEvent);
+    assert_false(gotKeyUpEvent);
+
+    window.removeEventListener('contextmenu', contextMenuListener);
+    window.removeEventListener('keyup', keyupListener);
+    t.done();
+}, "Test for no synthesized keyup event in context menu accessible action after default contextmenu event");
 </script>

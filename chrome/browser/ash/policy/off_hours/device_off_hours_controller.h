@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,8 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
-#include "chromeos/dbus/system_clock/system_clock_client.h"
-#include "chromeos/policy/weekly_time/weekly_time_interval.h"
+#include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
+#include "chromeos/ash/components/policy/weekly_time/weekly_time_interval.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 
 namespace policy {
@@ -38,7 +38,7 @@ namespace off_hours {
 // We therefore have to assume that the clock is in fact synchronized at
 // startup. Otherwise we would terminate off-hour-allowed guest sessions
 // immediately.
-class DeviceOffHoursController : public chromeos::SystemClockClient::Observer {
+class DeviceOffHoursController : public ash::SystemClockClient::Observer {
  public:
   // Observer interface.
   class Observer {
@@ -79,7 +79,7 @@ class DeviceOffHoursController : public chromeos::SystemClockClient::Observer {
   // when "OffHours" mode is off.
   base::Time GetOffHoursEndTime() const { return off_hours_end_time_; }
 
-  // chromeos::SystemClockClient::Observer:
+  // ash::SystemClockClient::Observer:
   void SystemClockUpdated() override;
 
   // |timer_clock| is not owned and its lifetime should cover lifetime of

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/machine_learning/fake_machine_learning_client.h"
 #include "dbus/bus.h"
@@ -57,7 +58,7 @@ class MachineLearningClientImpl : public MachineLearningClient {
   }
 
  private:
-  dbus::ObjectProxy* ml_service_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> ml_service_proxy_ = nullptr;
 
   // Passes the success/failure of |dbus_response| on to |result_callback|.
   void OnBootstrapMojoConnectionResponse(

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,11 +60,6 @@ void SetCascadingProperty(
   view->SetProperty(property_key,
                     static_cast<CascadingProperty<T>*>(property.release()));
 }
-
-VIEWS_EXPORT void SetCascadingThemeProviderColor(
-    View* view,
-    const ui::ClassProperty<CascadingProperty<SkColor>*>* property_key,
-    int color_id);
 
 VIEWS_EXPORT void SetCascadingColorProviderColor(
     View* view,

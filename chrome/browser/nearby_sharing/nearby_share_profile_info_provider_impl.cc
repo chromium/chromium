@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@ NearbyShareProfileInfoProviderImpl::~NearbyShareProfileInfoProviderImpl() =
 absl::optional<std::u16string>
 NearbyShareProfileInfoProviderImpl::GetGivenName() const {
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile_);
   if (!user)
     return absl::nullopt;
 

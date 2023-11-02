@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,16 +42,16 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
-import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayImage;
-import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayModel;
-import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayModel.AssistantOverlayRect;
-import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayState;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
+import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.components.autofill_assistant.overlay.AssistantOverlayCoordinator;
+import org.chromium.components.autofill_assistant.overlay.AssistantOverlayImage;
+import org.chromium.components.autofill_assistant.overlay.AssistantOverlayModel;
+import org.chromium.components.autofill_assistant.overlay.AssistantOverlayModel.AssistantOverlayRect;
+import org.chromium.components.autofill_assistant.overlay.AssistantOverlayState;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -74,9 +74,10 @@ public class AutofillAssistantOverlayUiTest {
 
     @Before
     public void setUp() {
-        mTestRule.startCustomTabActivityWithIntent(CustomTabsTestUtils.createMinimalCustomTabIntent(
-                InstrumentationRegistry.getTargetContext(),
-                mTestRule.getTestServer().getURL(TEST_PAGE)));
+        mTestRule.startCustomTabActivityWithIntent(
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
+                        InstrumentationRegistry.getTargetContext(),
+                        mTestRule.getTestServer().getURL(TEST_PAGE)));
         mTestRule.getActivity()
                 .getRootUiCoordinatorForTesting()
                 .getScrimCoordinator()
@@ -96,7 +97,7 @@ public class AutofillAssistantOverlayUiTest {
             throws ExecutionException {
         return createCoordinator(model,
                 BitmapFactory.decodeResource(mTestRule.getActivity().getResources(),
-                        org.chromium.chrome.autofill_assistant.R.drawable.btn_close));
+                        org.chromium.components.autofill_assistant.R.drawable.btn_close));
     }
 
     /** Creates a coordinator for use in UI tests with a custom overlay image. */
@@ -104,10 +105,13 @@ public class AutofillAssistantOverlayUiTest {
             AssistantOverlayModel model, @Nullable Bitmap overlayImage) throws ExecutionException {
         ChromeActivity activity = mTestRule.getActivity();
         return runOnUiThreadBlocking(() -> {
-            return new AssistantOverlayCoordinator(activity, activity.getBrowserControlsManager(),
+            return new AssistantOverlayCoordinator(activity,
+                    ()
+                            -> new AssistantBrowserControlsChrome(
+                                    activity.getBrowserControlsManager()),
                     activity.getCompositorViewHolderForTesting(),
                     mTestRule.getActivity().getRootUiCoordinatorForTesting().getScrimCoordinator(),
-                    model);
+                    model, new AssistantStaticDependenciesChrome().getAccessibilityUtil());
         });
     }
 
@@ -231,7 +235,7 @@ public class AutofillAssistantOverlayUiTest {
     public void testOverlayImageDoesNotCrashIfValid() throws Exception {
         AssistantOverlayModel model = createModel();
         Bitmap bitmap = BitmapFactory.decodeResource(mTestRule.getActivity().getResources(),
-                org.chromium.chrome.autofill_assistant.R.drawable.btn_close);
+                org.chromium.components.autofill_assistant.R.drawable.btn_close);
         assertThat(bitmap, notNullValue());
         AssistantOverlayCoordinator coordinator =
                 createCoordinator(model, /* overlayImage = */ bitmap);

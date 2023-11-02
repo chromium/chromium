@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,8 +20,8 @@
 #include "base/run_loop.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/slide_animation.h"
-#include "ui/gfx/color_palette.h"
 
 namespace ash {
 namespace {
@@ -197,6 +197,9 @@ TEST_F(ShelfBackgroundAnimatorTest,
        MultipleAnimateCallsToSameTargetAreIgnored) {
   PaintBackground(ShelfBackgroundType::kMaximized);
   SetColorValuesOnObserver(kDummyColor);
+
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   animator_->PaintBackground(ShelfBackgroundType::kDefaultBg,
                              AnimationChangeType::ANIMATE);
   WaitForAnimationCompletion();
@@ -226,7 +229,8 @@ TEST_F(ShelfBackgroundAnimatorTest, DefaultBackground) {
 
   EXPECT_EQ(ShelfBackgroundType::kDefaultBg,
             animator_->target_background_type());
-  EXPECT_EQ((int)SkColorGetA(ShelfConfig::Get()->GetDefaultShelfColor()),
+  EXPECT_EQ((int)SkColorGetA(ShelfConfig::Get()->GetDefaultShelfColor(
+                GetPrimaryShelf()->shelf_widget())),
             observer_.GetBackgroundAlpha());
 }
 
@@ -236,21 +240,15 @@ TEST_F(ShelfBackgroundAnimatorTest, MaximizedBackground) {
 
   EXPECT_EQ(ShelfBackgroundType::kMaximized,
             animator_->target_background_type());
-  EXPECT_EQ((int)SkColorGetA(ShelfConfig::Get()->GetMaximizedShelfColor()),
-            observer_.GetBackgroundAlpha());
-}
-
-// Verify the alpha values for the ShelfBackgroundType::kAppList state.
-TEST_F(ShelfBackgroundAnimatorTest, FullscreenAppListBackground) {
-  PaintBackground(ShelfBackgroundType::kAppList);
-
-  EXPECT_EQ(ShelfBackgroundType::kAppList, animator_->target_background_type());
-  EXPECT_EQ((int)SkColorGetA(ShelfConfig::Get()->GetShelfWithAppListColor()),
+  EXPECT_EQ((int)SkColorGetA(ShelfConfig::Get()->GetMaximizedShelfColor(
+                GetPrimaryShelf()->shelf_widget())),
             observer_.GetBackgroundAlpha());
 }
 
 TEST_F(ShelfBackgroundAnimatorTest,
        AnimatorIsDetroyedWhenCompletingSuccessfully) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   PaintBackground(ShelfBackgroundType::kMaximized,
                   AnimationChangeType::ANIMATE);
   EXPECT_TRUE(test_api_->animator());
@@ -261,6 +259,8 @@ TEST_F(ShelfBackgroundAnimatorTest,
 
 TEST_F(ShelfBackgroundAnimatorTest,
        AnimatorDestroyedWhenChangingBackgroundImmediately) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   PaintBackground(ShelfBackgroundType::kMaximized,
                   AnimationChangeType::ANIMATE);
   EXPECT_TRUE(test_api_->animator());
@@ -273,6 +273,9 @@ TEST_F(ShelfBackgroundAnimatorTest,
 // Verify that existing animator is used when animating to the previous state.
 TEST_F(ShelfBackgroundAnimatorTest,
        ExistingAnimatorIsReusedWhenAnimatingToPreviousState) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
   // First PaintBackground() must be immediate so that the
   // ShelfBackgroundAnimator has its color set correctly.
   PaintBackground(ShelfBackgroundType::kDefaultBg,
@@ -293,7 +296,11 @@ TEST_F(ShelfBackgroundAnimatorTest,
 // the same as the previous background.
 TEST_F(ShelfBackgroundAnimatorTest,
        ExistingAnimatorNotReusedWhenTargetBackgroundNotPreviousBackground) {
-  PaintBackground(ShelfBackgroundType::kAppList, AnimationChangeType::ANIMATE);
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  PaintBackground(ShelfBackgroundType::kHomeLauncher,
+                  AnimationChangeType::ANIMATE);
 
   const gfx::SlideAnimation* animator = test_api_->animator();
   EXPECT_TRUE(animator);
@@ -349,7 +356,8 @@ TEST_F(ShelfBackgroundTargetColorTest, ShelfBackgroundColorUpdatedFromLogin) {
 
   NotifySessionStateChanged(session_manager::SessionState::ACTIVE);
   EXPECT_EQ(test_api.shelf_background_target_color(),
-            ShelfConfig::Get()->GetDefaultShelfColor());
+            ShelfConfig::Get()->GetDefaultShelfColor(
+                GetPrimaryShelf()->shelf_widget()));
 }
 
 // Verify the target color of the shelf background is updated based on session
@@ -371,7 +379,8 @@ TEST_F(ShelfBackgroundTargetColorTest, ShelfBackgroundColorUpdatedFromOOBE) {
 
   NotifySessionStateChanged(session_manager::SessionState::ACTIVE);
   EXPECT_EQ(test_api.shelf_background_target_color(),
-            ShelfConfig::Get()->GetDefaultShelfColor());
+            ShelfConfig::Get()->GetDefaultShelfColor(
+                GetPrimaryShelf()->shelf_widget()));
 }
 
 }  // namespace ash

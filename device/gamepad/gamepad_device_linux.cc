@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,13 +12,12 @@
 #include <sys/ioctl.h>
 
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "build/chromeos_buildflags.h"
 #include "device/gamepad/dualshock4_controller.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
 #include "device/gamepad/hid_haptic_gamepad.h"
@@ -26,9 +25,9 @@
 #include "device/gamepad/xbox_hid_controller.h"
 #include "device/udev_linux/udev.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"  // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace device {
 
@@ -53,7 +52,7 @@ const size_t kSpecialKeys[] = {
     KEY_HOMEPAGE, KEY_BACK,
     // Record is used for Xbox Series X's share button over BT.
     KEY_RECORD};
-const size_t kSpecialKeysLen = base::size(kSpecialKeys);
+const size_t kSpecialKeysLen = std::size(kSpecialKeys);
 
 #define LONG_BITS (CHAR_BIT * sizeof(long))
 #define BITS_TO_LONGS(x) (((x) + LONG_BITS - 1) / LONG_BITS)
@@ -77,8 +76,9 @@ bool HasRumbleCapability(const base::ScopedFD& fd) {
   unsigned long evbit[BITS_TO_LONGS(EV_MAX)];
   unsigned long ffbit[BITS_TO_LONGS(FF_MAX)];
 
-  if (HANDLE_EINTR(ioctl(fd.get(), EVIOCGBIT(0, EV_MAX), evbit)) < 0 ||
-      HANDLE_EINTR(ioctl(fd.get(), EVIOCGBIT(EV_FF, FF_MAX), ffbit)) < 0) {
+  if (HANDLE_EINTR(ioctl(fd.get(), EVIOCGBIT(0, sizeof(evbit)), evbit)) < 0 ||
+      HANDLE_EINTR(ioctl(fd.get(), EVIOCGBIT(EV_FF, sizeof(ffbit)), ffbit)) <
+          0) {
     return false;
   }
 
@@ -101,8 +101,9 @@ size_t CheckSpecialKeys(const base::ScopedFD& fd,
   size_t found_special_keys = 0;
 
   has_special_key->clear();
-  if (HANDLE_EINTR(ioctl(fd.get(), EVIOCGBIT(0, EV_MAX), evbit)) < 0 ||
-      HANDLE_EINTR(ioctl(fd.get(), EVIOCGBIT(EV_KEY, KEY_MAX), keybit)) < 0) {
+  if (HANDLE_EINTR(ioctl(fd.get(), EVIOCGBIT(0, sizeof(evbit)), evbit)) < 0 ||
+      HANDLE_EINTR(ioctl(fd.get(), EVIOCGBIT(EV_KEY, sizeof(keybit)), keybit)) <
+          0) {
     return 0;
   }
 
@@ -199,7 +200,7 @@ uint16_t HexStringToUInt16WithDefault(base::StringPiece input,
   return static_cast<uint16_t>(out);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 void OnOpenPathSuccess(
     chromeos::PermissionBrokerClient::OpenPathCallback callback,
     scoped_refptr<base::SequencedTaskRunner> polling_runner,
@@ -231,7 +232,7 @@ void OpenPathWithPermissionBroker(
   client->OpenPath(path, std::move(success_callback),
                    std::move(error_callback));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Small helper to avoid constructing a StringPiece from nullptr.
 base::StringPiece ToStringPiece(const char* str) {
@@ -262,12 +263,19 @@ bool GamepadDeviceLinux::IsEmpty() const {
 }
 
 bool GamepadDeviceLinux::SupportsVibration() const {
+  static constexpr auto kNoVibration = base::MakeFixedFlatSet<GamepadId>({
+      // The Xbox Adaptive Controller reports force feedback capability, but
+      // the device itself does not have any vibration actuators.
+      GamepadId::kMicrosoftProduct0b0a,
+      // SteelSeries Stratus Duo is XInput but does not support vibration.
+      GamepadId::kSteelSeriesProduct1430,
+      GamepadId::kSteelSeriesProduct1431,
+  });
+
   if (dualshock4_ || xbox_hid_ || hid_haptics_)
     return true;
 
-  // The Xbox Adaptive Controller reports force feedback capability, but the
-  // device itself does not have any vibration actuators.
-  if (gamepad_id_ == GamepadId::kMicrosoftProduct0b0a)
+  if (kNoVibration.contains(gamepad_id_))
     return false;
 
   return supports_force_feedback_ && evdev_fd_.is_valid();
@@ -568,7 +576,7 @@ void GamepadDeviceLinux::OpenHidrawNode(const UdevGamepadLinux& pad_info,
 
   auto fd = base::ScopedFD(open(pad_info.path.c_str(), O_RDWR | O_NONBLOCK));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   // If we failed to open the device it may be due to insufficient permissions.
   // Try again using the PermissionBrokerClient.
   if (!fd.is_valid()) {
@@ -583,7 +591,7 @@ void GamepadDeviceLinux::OpenHidrawNode(const UdevGamepadLinux& pad_info,
                        std::move(open_path_callback), polling_runner_));
     return;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   OnOpenHidrawNodeComplete(std::move(callback), std::move(fd));
 }
@@ -649,28 +657,28 @@ void GamepadDeviceLinux::CloseHidrawNode() {
   hidraw_fd_.reset();
 }
 
-void GamepadDeviceLinux::SetVibration(double strong_magnitude,
-                                      double weak_magnitude) {
+void GamepadDeviceLinux::SetVibration(
+    mojom::GamepadEffectParametersPtr params) {
   DCHECK(polling_runner_->RunsTasksInCurrentSequence());
   if (dualshock4_) {
-    dualshock4_->SetVibration(strong_magnitude, weak_magnitude);
+    dualshock4_->SetVibration(std::move(params));
     return;
   }
 
   if (xbox_hid_) {
-    xbox_hid_->SetVibration(strong_magnitude, weak_magnitude);
+    xbox_hid_->SetVibration(std::move(params));
     return;
   }
 
   if (hid_haptics_) {
-    hid_haptics_->SetVibration(strong_magnitude, weak_magnitude);
+    hid_haptics_->SetVibration(std::move(params));
     return;
   }
 
   uint16_t strong_magnitude_scaled =
-      static_cast<uint16_t>(strong_magnitude * kRumbleMagnitudeMax);
+      static_cast<uint16_t>(params->strong_magnitude * kRumbleMagnitudeMax);
   uint16_t weak_magnitude_scaled =
-      static_cast<uint16_t>(weak_magnitude * kRumbleMagnitudeMax);
+      static_cast<uint16_t>(params->weak_magnitude * kRumbleMagnitudeMax);
 
   // AbstractHapticGamepad will call SetZeroVibration when the effect is
   // complete, so we don't need to set the duration here except to make sure it

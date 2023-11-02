@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_EXTENSION_CONTROL_HANDLER_H_
 
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
-
-namespace base {
-class ListValue;
-}
 
 namespace settings {
 
@@ -30,7 +26,7 @@ class ExtensionControlHandler : public SettingsPageUIHandler {
  private:
   // Handler for the "disableExtension" message. Extension ID is passed as the
   // single string argument.
-  void HandleDisableExtension(const base::ListValue* args);
+  void HandleDisableExtension(const base::Value::List& args);
 };
 
 }  // namespace settings

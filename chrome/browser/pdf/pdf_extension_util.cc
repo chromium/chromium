@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/zoom/page_zoom_constants.h"
-#include "pdf/pdf_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -33,7 +32,7 @@ const char kNameTag[] = "<NAME>";
 
 // Adds strings that are used both by the stand-alone PDF Viewer and the Print
 // Preview PDF Viewer.
-void AddCommonStrings(base::Value* dict) {
+void AddCommonStrings(base::Value::Dict* dict) {
   static constexpr webui::LocalizedString kPdfResources[] = {
       {"errorDialogTitle", IDS_PDF_ERROR_DIALOG_TITLE},
       {"pageLoadFailed", IDS_PDF_PAGE_LOAD_FAILED},
@@ -46,13 +45,13 @@ void AddCommonStrings(base::Value* dict) {
       {"twoUpViewEnable", IDS_PDF_TWO_UP_VIEW_ENABLE},
   };
   for (const auto& resource : kPdfResources)
-    dict->SetStringKey(resource.name, l10n_util::GetStringUTF16(resource.id));
+    dict->Set(resource.name, l10n_util::GetStringUTF16(resource.id));
 
-  dict->SetStringKey("presetZoomFactors", zoom::GetPresetZoomFactorsAsJSON());
+  dict->Set("presetZoomFactors", zoom::GetPresetZoomFactorsAsJSON());
 }
 
 // Adds strings that are used only by the stand-alone PDF Viewer.
-void AddPdfViewerStrings(base::Value* dict) {
+void AddPdfViewerStrings(base::Value::Dict* dict) {
   static constexpr webui::LocalizedString kPdfResources[] = {
     {"annotationsShowToggle", IDS_PDF_ANNOTATIONS_SHOW_TOGGLE},
     {"bookmarks", IDS_PDF_BOOKMARKS},
@@ -90,7 +89,6 @@ void AddPdfViewerStrings(base::Value* dict) {
     {"tooltipDownload", IDS_PDF_TOOLTIP_DOWNLOAD},
     {"tooltipPrint", IDS_PDF_TOOLTIP_PRINT},
     {"tooltipRotateCCW", IDS_PDF_TOOLTIP_ROTATE_CCW},
-    {"tooltipRotateCW", IDS_PDF_TOOLTIP_ROTATE_CW},
     {"tooltipThumbnails", IDS_PDF_TOOLTIP_THUMBNAILS},
     {"zoomTextInputAriaLabel", IDS_PDF_ZOOM_TEXT_INPUT_ARIA_LABEL},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -149,16 +147,16 @@ void AddPdfViewerStrings(base::Value* dict) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   };
   for (const auto& resource : kPdfResources)
-    dict->SetStringKey(resource.name, l10n_util::GetStringUTF16(resource.id));
+    dict->Set(resource.name, l10n_util::GetStringUTF16(resource.id));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::u16string edit_string = l10n_util::GetStringUTF16(IDS_EDIT);
   base::Erase(edit_string, '&');
-  dict->SetStringKey("editButton", edit_string);
+  dict->Set("editButton", edit_string);
 #endif
 
   webui::SetLoadTimeDataDefaults(g_browser_process->GetApplicationLocale(),
-                                 static_cast<base::DictionaryValue*>(dict));
+                                 dict);
 }
 
 }  // namespace
@@ -175,7 +173,7 @@ std::string GetManifest() {
   return manifest_contents;
 }
 
-void AddStrings(PdfViewerContext context, base::Value* dict) {
+void AddStrings(PdfViewerContext context, base::Value::Dict* dict) {
   AddCommonStrings(dict);
   if (context == PdfViewerContext::kPdfViewer ||
       context == PdfViewerContext::kAll) {
@@ -187,7 +185,7 @@ void AddStrings(PdfViewerContext context, base::Value* dict) {
   }
 }
 
-void AddAdditionalData(bool enable_annotations, base::Value* dict) {
+void AddAdditionalData(bool enable_annotations, base::Value::Dict* dict) {
   bool printing_enabled = true;
   bool annotations_enabled = false;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -195,8 +193,8 @@ void AddAdditionalData(bool enable_annotations, base::Value* dict) {
   printing_enabled = !ash::LoginDisplayHost::default_host();
   annotations_enabled = enable_annotations;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  dict->SetKey("printingEnabled", base::Value(printing_enabled));
-  dict->SetKey("pdfAnnotationsEnabled", base::Value(annotations_enabled));
+  dict->Set("printingEnabled", printing_enabled);
+  dict->Set("pdfAnnotationsEnabled", annotations_enabled);
 }
 
 }  // namespace pdf_extension_util

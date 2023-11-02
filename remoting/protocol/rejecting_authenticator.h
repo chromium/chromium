@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,9 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "remoting/protocol/authenticator.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // Authenticator that accepts one message and rejects connection after that.
 class RejectingAuthenticator : public Authenticator {
@@ -40,7 +38,6 @@ class RejectingAuthenticator : public Authenticator {
   std::string auth_key_;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_REJECTING_AUTHENTICATOR_H_

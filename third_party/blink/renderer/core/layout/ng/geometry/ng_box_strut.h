@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,11 @@
 
 #include <utility>
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/geometry/box_sides.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_offset.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect_outsets.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
@@ -141,11 +144,22 @@ CORE_EXPORT std::ostream& operator<<(std::ostream&, const NGLineBoxStrut&);
 // See https://drafts.csswg.org/css-writing-modes-3/#abstract-box
 struct CORE_EXPORT NGPhysicalBoxStrut {
   NGPhysicalBoxStrut() = default;
+  explicit NGPhysicalBoxStrut(LayoutUnit value)
+      : top(value), right(value), bottom(value), left(value) {}
   NGPhysicalBoxStrut(LayoutUnit top,
                      LayoutUnit right,
                      LayoutUnit bottom,
                      LayoutUnit left)
       : top(top), right(right), bottom(bottom), left(left) {}
+
+  PhysicalOffset Offset() const { return {left, top}; }
+
+  void TruncateSides(const PhysicalBoxSides& sides_to_include) {
+    top = sides_to_include.top ? top : LayoutUnit();
+    bottom = sides_to_include.bottom ? bottom : LayoutUnit();
+    left = sides_to_include.left ? left : LayoutUnit();
+    right = sides_to_include.right ? right : LayoutUnit();
+  }
 
   // Converts physical dimensions to logical ones per
   // https://drafts.csswg.org/css-writing-modes-3/#logical-to-physical
@@ -191,6 +205,14 @@ struct CORE_EXPORT NGPhysicalBoxStrut {
     right += other.right;
     bottom += other.bottom;
     left += other.left;
+    return *this;
+  }
+
+  NGPhysicalBoxStrut& operator-=(const NGPhysicalBoxStrut& other) {
+    top -= other.top;
+    right -= other.right;
+    bottom -= other.bottom;
+    left -= other.left;
     return *this;
   }
 

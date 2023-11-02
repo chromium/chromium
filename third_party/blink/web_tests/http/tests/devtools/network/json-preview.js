@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,9 @@
     TestRunner.addResult('Creating a NetworkRequest with type: ' + type);
     var request = SDK.NetworkRequest.create(0, 'http://localhost');
     request.mimeType = type;
-    request.contentDataInternal = Promise.resolve({error: null, content: '{"number": 42}', encoded: false});
+    request.setContentDataProvider(
+        () => Promise.resolve(
+            {error: null, content: '{"number": 42}', encoded: false}));
     return request;
   }
 

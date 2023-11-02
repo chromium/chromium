@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,7 +66,8 @@ void DemoClient::Resize(const gfx::Size& size,
 }
 
 viz::CompositorFrame DemoClient::CreateFrame(const viz::BeginFrameArgs& args) {
-  constexpr SkColor colors[] = {SK_ColorRED, SK_ColorGREEN, SK_ColorYELLOW};
+  constexpr SkColor4f colors[] = {SkColors::kRed, SkColors::kGreen,
+                                  SkColors::kYellow};
   viz::CompositorFrame frame;
 
   frame.metadata.begin_frame_ack = viz::BeginFrameAck(args, true);
@@ -115,7 +116,7 @@ viz::CompositorFrame DemoClient::CreateFrame(const viz::BeginFrameArgs& args) {
     embed->SetNew(quad_state,
                   /*rect=*/gfx::Rect(child_bounds.size()),
                   /*visible_rect=*/gfx::Rect(child_bounds.size()),
-                  viz::SurfaceRange(surface_id), SK_ColorGRAY,
+                  viz::SurfaceRange(surface_id), SkColors::kGray,
                   /*stretch_content_to_fill_bounds=*/false);
   }
 
@@ -135,7 +136,7 @@ viz::CompositorFrame DemoClient::CreateFrame(const viz::BeginFrameArgs& args) {
   viz::SolidColorDrawQuad* color_quad =
       render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
   color_quad->SetNew(quad_state, output_rect, output_rect,
-                     colors[(++frame_count_ / 60) % base::size(colors)], false);
+                     colors[(++frame_count_ / 60) % std::size(colors)], false);
 
   frame.render_pass_list.push_back(std::move(render_pass));
 

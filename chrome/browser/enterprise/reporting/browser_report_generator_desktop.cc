@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,7 +58,7 @@ BrowserReportGeneratorDesktop::GetReportedProfiles() {
                                .GetAllProfilesAttributes()) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Skip sign-in and lock screen app profile on Chrome OS.
-    if (!chromeos::ProfileHelper::IsRegularProfilePath(
+    if (!ash::ProfileHelper::IsRegularProfilePath(
             entry->GetPath().BaseName())) {
       continue;
     }
@@ -79,14 +79,12 @@ bool BrowserReportGeneratorDesktop::IsExtendedStableChannel() {
 
 void BrowserReportGeneratorDesktop::GenerateBuildStateInfo(
     em::BrowserReport* report) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
   const auto* const build_state = g_browser_process->GetBuildState();
   if (build_state->update_type() != BuildState::UpdateType::kNone) {
     const auto& installed_version = build_state->installed_version();
     if (installed_version)
       report->set_installed_browser_version(installed_version->GetString());
   }
-#endif
 }
 
 void BrowserReportGeneratorDesktop::GeneratePluginsIfNeeded(

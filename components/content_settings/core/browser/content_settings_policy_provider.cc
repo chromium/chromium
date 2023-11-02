@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,6 +40,9 @@ constexpr PrefsForManagedContentSettingsMapEntry
          CONTENT_SETTING_BLOCK},
         {prefs::kManagedCookiesSessionOnlyForUrls, ContentSettingsType::COOKIES,
          CONTENT_SETTING_SESSION_ONLY},
+        {prefs::kManagedGetDisplayMediaSetSelectAllScreensAllowedForUrls,
+         ContentSettingsType::GET_DISPLAY_MEDIA_SET_SELECT_ALL_SCREENS,
+         CONTENT_SETTING_ALLOW},
         {prefs::kManagedImagesAllowedForUrls, ContentSettingsType::IMAGES,
          CONTENT_SETTING_ALLOW},
         {prefs::kManagedImagesBlockedForUrls, ContentSettingsType::IMAGES,
@@ -52,6 +55,10 @@ constexpr PrefsForManagedContentSettingsMapEntry
          ContentSettingsType::JAVASCRIPT, CONTENT_SETTING_ALLOW},
         {prefs::kManagedJavaScriptBlockedForUrls,
          ContentSettingsType::JAVASCRIPT, CONTENT_SETTING_BLOCK},
+        {prefs::kManagedClipboardAllowedForUrls,
+         ContentSettingsType::CLIPBOARD_READ_WRITE, CONTENT_SETTING_ALLOW},
+        {prefs::kManagedClipboardBlockedForUrls,
+         ContentSettingsType::CLIPBOARD_READ_WRITE, CONTENT_SETTING_BLOCK},
         {prefs::kManagedNotificationsAllowedForUrls,
          ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_ALLOW},
         {prefs::kManagedNotificationsBlockedForUrls,
@@ -64,10 +71,6 @@ constexpr PrefsForManagedContentSettingsMapEntry
          CONTENT_SETTING_ASK},
         {prefs::kManagedWebUsbBlockedForUrls, ContentSettingsType::USB_GUARD,
          CONTENT_SETTING_BLOCK},
-        {prefs::kManagedFileHandlingAllowedForUrls,
-         ContentSettingsType::FILE_HANDLING, CONTENT_SETTING_ALLOW},
-        {prefs::kManagedFileHandlingBlockedForUrls,
-         ContentSettingsType::FILE_HANDLING, CONTENT_SETTING_BLOCK},
         {prefs::kManagedFileSystemReadAskForUrls,
          ContentSettingsType::FILE_SYSTEM_READ_GUARD, CONTENT_SETTING_ASK},
         {prefs::kManagedFileSystemReadBlockedForUrls,
@@ -92,19 +95,32 @@ constexpr PrefsForManagedContentSettingsMapEntry
          ContentSettingsType::JAVASCRIPT_JIT, CONTENT_SETTING_ALLOW},
         {prefs::kManagedJavaScriptJitBlockedForSites,
          ContentSettingsType::JAVASCRIPT_JIT, CONTENT_SETTING_BLOCK},
+        {prefs::kManagedWebHidAskForUrls, ContentSettingsType::HID_GUARD,
+         CONTENT_SETTING_ASK},
+        {prefs::kManagedWebHidBlockedForUrls, ContentSettingsType::HID_GUARD,
+         CONTENT_SETTING_BLOCK},
+        {prefs::kManagedWindowPlacementAllowedForUrls,
+         ContentSettingsType::WINDOW_MANAGEMENT, CONTENT_SETTING_ALLOW},
+        {prefs::kManagedWindowPlacementBlockedForUrls,
+         ContentSettingsType::WINDOW_MANAGEMENT, CONTENT_SETTING_BLOCK},
+        {prefs::kManagedLocalFontsAllowedForUrls,
+         ContentSettingsType::LOCAL_FONTS, CONTENT_SETTING_ALLOW},
+        {prefs::kManagedLocalFontsBlockedForUrls,
+         ContentSettingsType::LOCAL_FONTS, CONTENT_SETTING_BLOCK},
 };
 
 constexpr const char* kManagedPrefs[] = {
     prefs::kManagedAutoSelectCertificateForUrls,
+    prefs::kManagedClipboardAllowedForUrls,
+    prefs::kManagedClipboardBlockedForUrls,
     prefs::kManagedCookiesAllowedForUrls,
     prefs::kManagedCookiesBlockedForUrls,
     prefs::kManagedCookiesSessionOnlyForUrls,
-    prefs::kManagedFileHandlingAllowedForUrls,
-    prefs::kManagedFileHandlingBlockedForUrls,
     prefs::kManagedFileSystemReadAskForUrls,
     prefs::kManagedFileSystemReadBlockedForUrls,
     prefs::kManagedFileSystemWriteAskForUrls,
     prefs::kManagedFileSystemWriteBlockedForUrls,
+    prefs::kManagedGetDisplayMediaSetSelectAllScreensAllowedForUrls,
     prefs::kManagedImagesAllowedForUrls,
     prefs::kManagedImagesBlockedForUrls,
     prefs::kManagedInsecureContentAllowedForUrls,
@@ -112,6 +128,8 @@ constexpr const char* kManagedPrefs[] = {
     prefs::kManagedInsecurePrivateNetworkAllowedForUrls,
     prefs::kManagedJavaScriptAllowedForUrls,
     prefs::kManagedJavaScriptBlockedForUrls,
+    prefs::kManagedJavaScriptJitAllowedForSites,
+    prefs::kManagedJavaScriptJitBlockedForSites,
     prefs::kManagedLegacyCookieAccessAllowedForDomains,
     prefs::kManagedNotificationsAllowedForUrls,
     prefs::kManagedNotificationsBlockedForUrls,
@@ -121,11 +139,15 @@ constexpr const char* kManagedPrefs[] = {
     prefs::kManagedSensorsBlockedForUrls,
     prefs::kManagedSerialAskForUrls,
     prefs::kManagedSerialBlockedForUrls,
+    prefs::kManagedWebHidAskForUrls,
+    prefs::kManagedWebHidBlockedForUrls,
     prefs::kManagedWebUsbAllowDevicesForUrls,
     prefs::kManagedWebUsbAskForUrls,
     prefs::kManagedWebUsbBlockedForUrls,
-    prefs::kManagedJavaScriptJitAllowedForSites,
-    prefs::kManagedJavaScriptJitBlockedForSites,
+    prefs::kManagedWindowPlacementAllowedForUrls,
+    prefs::kManagedWindowPlacementBlockedForUrls,
+    prefs::kManagedLocalFontsAllowedForUrls,
+    prefs::kManagedLocalFontsBlockedForUrls,
 };
 
 // The following preferences are only used to indicate if a default content
@@ -136,8 +158,8 @@ constexpr const char* kManagedPrefs[] = {
 // is managed any user defined exceptions (patterns) for this type are ignored.
 constexpr const char* kManagedDefaultPrefs[] = {
     prefs::kManagedDefaultAdsSetting,
+    prefs::kManagedDefaultClipboardSetting,
     prefs::kManagedDefaultCookiesSetting,
-    prefs::kManagedDefaultFileHandlingGuardSetting,
     prefs::kManagedDefaultFileSystemReadGuardSetting,
     prefs::kManagedDefaultFileSystemWriteGuardSetting,
     prefs::kManagedDefaultGeolocationSetting,
@@ -153,6 +175,9 @@ constexpr const char* kManagedDefaultPrefs[] = {
     prefs::kManagedDefaultWebBluetoothGuardSetting,
     prefs::kManagedDefaultWebUsbGuardSetting,
     prefs::kManagedDefaultJavaScriptJitSetting,
+    prefs::kManagedDefaultWebHidGuardSetting,
+    prefs::kManagedDefaultWindowPlacementSetting,
+    prefs::kManagedDefaultLocalFontsSetting,
 };
 
 }  // namespace
@@ -170,6 +195,8 @@ struct PolicyProvider::PrefsForManagedDefaultMapEntry {
 const PolicyProvider::PrefsForManagedDefaultMapEntry
     PolicyProvider::kPrefsForManagedDefault[] = {
         {ContentSettingsType::ADS, prefs::kManagedDefaultAdsSetting},
+        {ContentSettingsType::CLIPBOARD_READ_WRITE,
+         prefs::kManagedDefaultClipboardSetting},
         {ContentSettingsType::COOKIES, prefs::kManagedDefaultCookiesSetting},
         {ContentSettingsType::IMAGES, prefs::kManagedDefaultImagesSetting},
         {ContentSettingsType::GEOLOCATION,
@@ -189,8 +216,6 @@ const PolicyProvider::PrefsForManagedDefaultMapEntry
          prefs::kManagedDefaultWebBluetoothGuardSetting},
         {ContentSettingsType::USB_GUARD,
          prefs::kManagedDefaultWebUsbGuardSetting},
-        {ContentSettingsType::FILE_HANDLING,
-         prefs::kManagedDefaultFileHandlingGuardSetting},
         {ContentSettingsType::FILE_SYSTEM_READ_GUARD,
          prefs::kManagedDefaultFileSystemReadGuardSetting},
         {ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
@@ -202,6 +227,12 @@ const PolicyProvider::PrefsForManagedDefaultMapEntry
          prefs::kManagedDefaultInsecurePrivateNetworkSetting},
         {ContentSettingsType::JAVASCRIPT_JIT,
          prefs::kManagedDefaultJavaScriptJitSetting},
+        {ContentSettingsType::HID_GUARD,
+         prefs::kManagedDefaultWebHidGuardSetting},
+        {ContentSettingsType::WINDOW_MANAGEMENT,
+         prefs::kManagedDefaultWindowPlacementSetting},
+        {ContentSettingsType::LOCAL_FONTS,
+         prefs::kManagedDefaultLocalFontsSetting},
 };
 
 // static
@@ -260,7 +291,7 @@ void PolicyProvider::GetContentSettingsFromPreferences(
       return;
     }
 
-    base::Value::ConstListView pattern_str_list = pref->GetValue()->GetList();
+    const base::Value::List& pattern_str_list = pref->GetValue()->GetList();
     for (size_t i = 0; i < pattern_str_list.size(); ++i) {
       if (!pattern_str_list[i].is_string()) {
         NOTREACHED() << "Could not read content settings pattern #" << i
@@ -301,8 +332,7 @@ void PolicyProvider::GetContentSettingsFromPreferences(
 
       // Don't set a timestamp for policy settings.
       value_map->SetValue(pattern_pair.first, secondary_pattern,
-                          entry.content_type, base::Time(),
-                          base::Value(entry.setting), {});
+                          entry.content_type, base::Value(entry.setting), {});
     }
   }
 }
@@ -367,7 +397,8 @@ void PolicyProvider::GetAutoSelectCertificateSettingsFromPreferences(
 
     const std::string& pattern_str = pattern->GetString();
     if (filters_map.find(pattern_str) == filters_map.end())
-      filters_map[pattern_str].SetKey("filters", base::ListValue());
+      filters_map[pattern_str].SetKey("filters",
+                                      base::Value(base::Value::Type::LIST));
 
     // Don't pass removed values from `pattern_filter`, because base::Values
     // read with JSONReader use a shared string buffer. Instead, Clone() here.
@@ -376,7 +407,7 @@ void PolicyProvider::GetAutoSelectCertificateSettingsFromPreferences(
 
   for (const auto& it : filters_map) {
     const std::string& pattern_str = it.first;
-    const base::DictionaryValue& setting = it.second;
+    const base::Value& setting = it.second;
 
     ContentSettingsPattern pattern =
         ContentSettingsPattern::FromString(pattern_str);
@@ -389,7 +420,7 @@ void PolicyProvider::GetAutoSelectCertificateSettingsFromPreferences(
 
     value_map->SetValue(pattern, ContentSettingsPattern::Wildcard(),
                         ContentSettingsType::AUTO_SELECT_CERTIFICATE,
-                        base::Time(), setting.Clone(), {});
+                        setting.Clone(), {});
   }
 }
 
@@ -425,7 +456,7 @@ void PolicyProvider::UpdateManagedDefaultSetting(
     // Don't set a timestamp for policy settings.
     value_map_.SetValue(ContentSettingsPattern::Wildcard(),
                         ContentSettingsPattern::Wildcard(), entry.content_type,
-                        base::Time(), base::Value(setting), {});
+                        base::Value(setting), {});
   }
 }
 
@@ -444,7 +475,7 @@ bool PolicyProvider::SetWebsiteSetting(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
-    std::unique_ptr<base::Value>&& value,
+    base::Value&& value,
     const ContentSettingConstraints& constraints) {
   return false;
 }

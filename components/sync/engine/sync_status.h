@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,12 +37,6 @@ struct SyncStatus {
 
   SyncProtocolError sync_protocol_error;
 
-  // Number of encryption conflicts counted during most recent sync cycle.
-  int encryption_conflicts = 0;
-
-  // Number of hierarchy conflicts counted during most recent sync cycle.
-  int hierarchy_conflicts = 0;
-
   // Number of items the server refused to commit due to conflict during most
   // recent sync cycle.
   int server_conflicts = 0;
@@ -55,17 +49,11 @@ struct SyncStatus {
 
   // Total updates received by the syncer since browser start.
   int updates_received = 0;
-  // Total updates received that are echoes of our own changes.
-  int reflected_updates_received = 0;
   // Of updates_received, how many were tombstones.
   int tombstone_updates_received = 0;
 
   // Total successful commits.
   int num_commits_total = 0;
-
-  // Total number of overwrites due to conflict resolver since browser start.
-  int num_local_overwrites_total = 0;
-  int num_server_overwrites_total = 0;
 
   // Encryption related.
   ModelTypeSet encrypted_types;

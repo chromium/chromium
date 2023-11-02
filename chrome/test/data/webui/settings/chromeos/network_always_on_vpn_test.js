@@ -1,18 +1,16 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://os-settings/chromeos/os_settings.js';
 
-// #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// clang-format on
+import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {AlwaysOnVpnMode} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('NetworkAlwaysOnVpn', function() {
-  const mojom = chromeos.networkConfig.mojom;
-
   /** @type {!NetworkAlwaysOnVpnElement|undefined} */
   let alwaysOnVpnOptions;
 
@@ -21,7 +19,7 @@ suite('NetworkAlwaysOnVpn', function() {
    * @private
    */
   function flushAsync() {
-    Polymer.dom.flush();
+    flush();
     // Use setTimeout to wait for the next macrotask.
     return new Promise(resolve => setTimeout(resolve));
   }
@@ -55,7 +53,8 @@ suite('NetworkAlwaysOnVpn', function() {
    * @private
    */
   function getEnableToggle() {
-    const toggle = alwaysOnVpnOptions.$$('#alwaysOnVpnEnableToggle');
+    const toggle =
+        alwaysOnVpnOptions.shadowRoot.querySelector('#alwaysOnVpnEnableToggle');
     assert(!!toggle);
     return toggle;
   }
@@ -65,7 +64,8 @@ suite('NetworkAlwaysOnVpn', function() {
    * @private
    */
   function getLockdownToggle() {
-    const toggle = alwaysOnVpnOptions.$$('#alwaysOnVpnLockdownToggle');
+    const toggle = alwaysOnVpnOptions.shadowRoot.querySelector(
+        '#alwaysOnVpnLockdownToggle');
     assert(!!toggle);
     return toggle;
   }
@@ -75,13 +75,14 @@ suite('NetworkAlwaysOnVpn', function() {
    * @private
    */
   function getServiceSelect() {
-    const select = alwaysOnVpnOptions.$$('#alwaysOnVpnServiceSelect');
+    const select = alwaysOnVpnOptions.shadowRoot.querySelector(
+        '#alwaysOnVpnServiceSelect');
     assert(!!select);
     return select;
   }
 
   /**
-   * @param {!chromeos.networkConfig.mojom.AlwaysOnVpnMode} mode
+   * @param {!AlwaysOnVpnMode} mode
    * @param {!string} service
    * @private
    */
@@ -99,8 +100,8 @@ suite('NetworkAlwaysOnVpn', function() {
   function addVpnNetworks() {
     assert(alwaysOnVpnOptions);
     alwaysOnVpnOptions.networks = [
-      OncMojo.getDefaultNetworkState(mojom.NetworkType.kVPN, 'vpn1'),
-      OncMojo.getDefaultNetworkState(mojom.NetworkType.kVPN, 'vpn2'),
+      OncMojo.getDefaultNetworkState(NetworkType.kVPN, 'vpn1'),
+      OncMojo.getDefaultNetworkState(NetworkType.kVPN, 'vpn2'),
     ];
     return flushAsync();
   }
@@ -110,10 +111,10 @@ suite('NetworkAlwaysOnVpn', function() {
         document.createElement('network-always-on-vpn');
     assert(alwaysOnVpnOptions);
     alwaysOnVpnOptions.networks = [];
-    alwaysOnVpnOptions.mode = mojom.AlwaysOnVpnMode.kOff;
+    alwaysOnVpnOptions.mode = AlwaysOnVpnMode.kOff;
     alwaysOnVpnOptions.service = '';
     document.body.appendChild(alwaysOnVpnOptions);
-    Polymer.dom.flush();
+    flush();
   });
 
   test('Mode off without networks', () => {
@@ -135,7 +136,7 @@ suite('NetworkAlwaysOnVpn', function() {
   });
 
   test('Mode best-effort with available networks', () => {
-    return setConfiguration(mojom.AlwaysOnVpnMode.kBestEffort, '')
+    return setConfiguration(AlwaysOnVpnMode.kBestEffort, '')
         .then(addVpnNetworks)
         .then(() => {
           const enableToggle = getEnableToggle();
@@ -152,7 +153,7 @@ suite('NetworkAlwaysOnVpn', function() {
   });
 
   test('Mode strict with available networks', () => {
-    return setConfiguration(mojom.AlwaysOnVpnMode.kStrict, '')
+    return setConfiguration(AlwaysOnVpnMode.kStrict, '')
         .then(addVpnNetworks)
         .then(() => {
           const enableToggle = getEnableToggle();
@@ -169,7 +170,7 @@ suite('NetworkAlwaysOnVpn', function() {
   });
 
   test('Mode best-effort with a selected network', () => {
-    return setConfiguration(mojom.AlwaysOnVpnMode.kBestEffort, 'vpn1_guid')
+    return setConfiguration(AlwaysOnVpnMode.kBestEffort, 'vpn1_guid')
         .then(addVpnNetworks)
         .then(() => {
           // Best-effort mode
@@ -180,7 +181,7 @@ suite('NetworkAlwaysOnVpn', function() {
   });
 
   test('Mode best-effort: options count in the services menu', () => {
-    return setConfiguration(mojom.AlwaysOnVpnMode.kBestEffort, '')
+    return setConfiguration(AlwaysOnVpnMode.kBestEffort, '')
         .then(addVpnNetworks)
         .then(() => {
           // No service is selected, the menu contains a blank item (the
@@ -188,8 +189,7 @@ suite('NetworkAlwaysOnVpn', function() {
           assertEquals(3, getServiceSelect().options.length);
         })
         .then(() => {
-          return setConfiguration(
-              mojom.AlwaysOnVpnMode.kBestEffort, 'vpn1_guid');
+          return setConfiguration(AlwaysOnVpnMode.kBestEffort, 'vpn1_guid');
         })
         .then(() => {
           // A services is select, the placeholder is not required, there's only
@@ -200,7 +200,7 @@ suite('NetworkAlwaysOnVpn', function() {
 
   test('Always-on VPN without service', () => {
     return addVpnNetworks().then(() => click(getEnableToggle())).then(() => {
-      assertEquals(mojom.AlwaysOnVpnMode.kBestEffort, alwaysOnVpnOptions.mode);
+      assertEquals(AlwaysOnVpnMode.kBestEffort, alwaysOnVpnOptions.mode);
       assertEquals('', alwaysOnVpnOptions.service);
     });
   });
@@ -210,7 +210,7 @@ suite('NetworkAlwaysOnVpn', function() {
         .then(() => click(getEnableToggle()))
         .then(() => click(getLockdownToggle()))
         .then(() => {
-          assertEquals(mojom.AlwaysOnVpnMode.kStrict, alwaysOnVpnOptions.mode);
+          assertEquals(AlwaysOnVpnMode.kStrict, alwaysOnVpnOptions.mode);
           assertEquals('', alwaysOnVpnOptions.service);
         });
   });
@@ -220,8 +220,7 @@ suite('NetworkAlwaysOnVpn', function() {
         .then(() => click(getEnableToggle()))
         .then(() => select(getServiceSelect(), 'vpn2_guid'))
         .then(() => {
-          assertEquals(
-              mojom.AlwaysOnVpnMode.kBestEffort, alwaysOnVpnOptions.mode);
+          assertEquals(AlwaysOnVpnMode.kBestEffort, alwaysOnVpnOptions.mode);
           assertEquals('vpn2_guid', alwaysOnVpnOptions.service);
         });
   });

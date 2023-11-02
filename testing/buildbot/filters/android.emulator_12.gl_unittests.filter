@@ -1,0 +1,11 @@
+# crbug.com/1264644
+-GLImageRefCountedMemory/GLImageCopyTest/0.CopyTexImage
+-GLImageRefCountedMemory/GLImageCopyTest/1.CopyTexImage
+-GLImageRefCountedMemory/GLImageCopyTest/2.CopyTexImage
+-GLImageRefCountedMemory/GLImageCopyTest/3.CopyTexImage
+-GLImageSharedMemory/GLImageCopyTest/0.CopyTexImage
+-GLImageSharedMemory/GLImageCopyTest/1.CopyTexImage
+-GLImageSharedMemory/GLImageCopyTest/2.CopyTexImage
+-GLImageSharedMemory/GLImageCopyTest/3.CopyTexImage
+-GLImageSharedMemory/GLImageCopyTest/4.CopyTexImage
+-GLImageSharedMemoryPool/GLImageCopyTest/0.CopyTexImage

@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,7 @@
 #include "base/allocator/partition_allocator/starscan/raceful_worklist.h"
 #include "build/build_config.h"
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 // Interface for page protection/unprotection. This is used in DCScan to catch
 // concurrent mutator writes. Protection is done when the scanner starts
@@ -72,7 +71,6 @@ bool UserFaultFDWriteProtector::IsEnabled() const {
 
 #endif  // defined(PA_STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_WRITE_PROTECTOR_H_

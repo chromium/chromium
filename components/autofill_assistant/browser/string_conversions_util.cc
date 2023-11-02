@@ -1,10 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/autofill_assistant/browser/string_conversions_util.h"
 
-#include "base/cxx17_backports.h"
 #include "base/i18n/char_iterator.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
@@ -39,7 +38,7 @@ bool AppendUnicodeToUTF8(const UChar32 source, std::string* target) {
   char bytes[4];
   UBool error = false;
   size_t offset = 0;
-  U8_APPEND(bytes, offset, base::size(bytes), source, error);
+  U8_APPEND(bytes, offset, std::size(bytes), source, error);
   if (error == false) {
     target->append(bytes, offset);
   }

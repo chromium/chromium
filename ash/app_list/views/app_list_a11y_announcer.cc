@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 
 #include <memory>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view.h"
 
@@ -20,11 +20,6 @@ AppListA11yAnnouncer::~AppListA11yAnnouncer() = default;
 
 void AppListA11yAnnouncer::Shutdown() {
   announcement_view_ = nullptr;
-}
-
-void AppListA11yAnnouncer::AnnouncePeekingState() {
-  Announce(l10n_util::GetStringUTF16(
-      IDS_APP_LIST_SUGGESTED_APPS_ACCESSIBILITY_ANNOUNCEMENT));
 }
 
 void AppListA11yAnnouncer::AnnounceFullscreenState() {
@@ -76,11 +71,6 @@ void AppListA11yAnnouncer::AnnounceAppsGridReorder(int target_row,
       base::NumberToString16(target_column)));
 }
 
-void AppListA11yAnnouncer::AnnounceFolderOpened() {
-  Announce(l10n_util::GetStringUTF16(
-      IDS_APP_LIST_FOLDER_OPEN_FOLDER_ACCESSIBILE_NAME));
-}
-
 void AppListA11yAnnouncer::AnnounceFolderClosed() {
   Announce(l10n_util::GetStringUTF16(
       IDS_APP_LIST_FOLDER_CLOSE_FOLDER_ACCESSIBILE_NAME));
@@ -90,8 +80,7 @@ void AppListA11yAnnouncer::Announce(const std::u16string& announcement) {
   if (!announcement_view_)
     return;
 
-  announcement_view_->GetViewAccessibility().OverrideName(announcement);
-  announcement_view_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+  announcement_view_->GetViewAccessibility().AnnounceText(announcement);
 }
 
 }  // namespace ash

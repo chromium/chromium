@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,14 +58,15 @@ class ASH_EXPORT AmbientPhotoCache {
   // Write photo cache to disk at |cache_index| and call |callback| when
   // complete.
   virtual void WritePhotoCache(int cache_index,
-                               const ambient::PhotoCacheEntry& cache_entry,
+                               const ::ambient::PhotoCacheEntry& cache_entry,
                                base::OnceClosure callback) = 0;
 
   // Read the photo cache at |cache_index| and call |callback| when complete.
   // If a particular cache fails to be read, |cache_entry| will be empty.
-  virtual void ReadPhotoCache(int cache_index,
-                              ambient::PhotoCacheEntry* cache_entry,
-                              base::OnceCallback<void()> callback) = 0;
+  virtual void ReadPhotoCache(
+      int cache_index,
+      base::OnceCallback<void(::ambient::PhotoCacheEntry cache_entry)>
+          callback) = 0;
 
   // Erase all stored files from disk.
   virtual void Clear() = 0;

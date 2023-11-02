@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,8 @@ namespace {
 
 bool HostsExtension(content::WebContents* web_contents) {
   DCHECK(web_contents);
-  return web_contents->GetURL().SchemeIs(extensions::kExtensionScheme);
+  return web_contents->GetLastCommittedURL().SchemeIs(
+      extensions::kExtensionScheme);
 }
 
 }  // namespace
@@ -55,7 +56,7 @@ std::u16string TabContentsTask::GetCurrentTitle() const {
   extensions::ProcessMap* process_map = extensions::ProcessMap::Get(profile);
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(profile);
-  GURL url = web_contents()->GetURL();
+  GURL url = web_contents()->GetLastCommittedURL();
 
   bool is_app = process_map->Contains(GetChildProcessUniqueID()) &&
       extension_registry->enabled_extensions().GetAppByURL(url) != nullptr;

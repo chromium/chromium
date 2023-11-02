@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
@@ -88,8 +88,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TLSSocketFactory {
   std::unique_ptr<net::CTPolicyEnforcer> no_verification_ct_policy_enforcer_;
 
   net::SSLClientContext ssl_client_context_;
-  net::ClientSocketFactory* client_socket_factory_;
-  net::SSLConfigService* const ssl_config_service_;
+  raw_ptr<net::ClientSocketFactory> client_socket_factory_;
+  const raw_ptr<net::SSLConfigService> ssl_config_service_;
   mojo::UniqueReceiverSet<mojom::TLSClientSocket> tls_socket_receivers_;
 };
 

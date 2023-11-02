@@ -1,15 +1,15 @@
-// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/vlog.h"
 
 #include <stddef.h>
-#include <algorithm>
-#include <limits>
+
 #include <ostream>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -19,21 +19,10 @@ namespace logging {
 
 const int VlogInfo::kDefaultVlogLevel = 0;
 
-struct VlogInfo::VmodulePattern {
-  enum MatchTarget { MATCH_MODULE, MATCH_FILE };
-
-  explicit VmodulePattern(const std::string& pattern);
-
-  VmodulePattern() = default;
-
-  std::string pattern;
-  int vlog_level = VlogInfo::kDefaultVlogLevel;
-  MatchTarget match_target = MATCH_MODULE;
-  size_t score = 0;
-};
-
 VlogInfo::VmodulePattern::VmodulePattern(const std::string& pattern)
-    : pattern(pattern) {
+    : pattern(pattern),
+      vlog_level(VlogInfo::kDefaultVlogLevel),
+      match_target(MATCH_MODULE) {
   // If the pattern contains a {forward,back} slash, we assume that
   // it's meant to be tested against the entire __FILE__ string.
   std::string::size_type first_slash = pattern.find_first_of("\\/");
@@ -41,10 +30,35 @@ VlogInfo::VmodulePattern::VmodulePattern(const std::string& pattern)
     match_target = MATCH_FILE;
 }
 
+VlogInfo::VmodulePattern::VmodulePattern()
+    : vlog_level(VlogInfo::kDefaultVlogLevel), match_target(MATCH_MODULE) {}
+
+// static
+std::vector<VlogInfo::VmodulePattern> VlogInfo::ParseVmoduleLevels(
+    const std::string& vmodule_switch) {
+  std::vector<VmodulePattern> vmodule_levels;
+  base::StringPairs kv_pairs;
+  if (!base::SplitStringIntoKeyValuePairs(vmodule_switch, '=', ',',
+                                          &kv_pairs)) {
+    DLOG(WARNING) << "Could not fully parse vmodule switch \"" << vmodule_switch
+                  << "\"";
+  }
+  for (const auto& pair : kv_pairs) {
+    VmodulePattern pattern(pair.first);
+    if (!base::StringToInt(pair.second, &pattern.vlog_level)) {
+      DLOG(WARNING) << "Parsed vlog level for \"" << pair.first << "="
+                    << pair.second << "\" as " << pattern.vlog_level;
+    }
+    vmodule_levels.push_back(pattern);
+  }
+  return vmodule_levels;
+}
+
 VlogInfo::VlogInfo(const std::string& v_switch,
                    const std::string& vmodule_switch,
                    int* min_log_level)
-    : min_log_level_(min_log_level) {
+    : vmodule_levels_(ParseVmoduleLevels(vmodule_switch)),
+      min_log_level_(min_log_level) {
   DCHECK_NE(min_log_level, nullptr);
 
   int vlog_level = 0;
@@ -54,23 +68,6 @@ VlogInfo::VlogInfo(const std::string& v_switch,
     } else {
       DLOG(WARNING) << "Could not parse v switch \"" << v_switch << "\"";
     }
-  }
-
-  base::StringPairs kv_pairs;
-  if (!base::SplitStringIntoKeyValuePairs(
-          vmodule_switch, '=', ',', &kv_pairs)) {
-    DLOG(WARNING) << "Could not fully parse vmodule switch \""
-                  << vmodule_switch << "\"";
-  }
-  for (base::StringPairs::const_iterator it = kv_pairs.begin();
-       it != kv_pairs.end(); ++it) {
-    VmodulePattern pattern(it->first);
-    if (!base::StringToInt(it->second, &pattern.vlog_level)) {
-      DLOG(WARNING) << "Parsed vlog level for \""
-                    << it->first << "=" << it->second
-                    << "\" as " << pattern.vlog_level;
-    }
-    vmodule_levels_.push_back(pattern);
   }
 }
 
@@ -82,58 +79,29 @@ namespace {
 // (and any -inl suffix).  We avoid using FilePath to minimize the
 // number of dependencies the logging system has.
 base::StringPiece GetModule(base::StringPiece file) {
-  base::StringPiece module = file;
-
-  // Chop off the file extension.
-  base::StringPiece::size_type extension_start = module.rfind('.');
-  module = module.substr(0, extension_start);
-
-  // Chop off the -inl suffix.
-  static constexpr base::StringPiece kInlSuffix("-inl");
-  if (base::EndsWith(module, kInlSuffix))
-    module.remove_suffix(kInlSuffix.size());
-
-  // Chop off the path up to the start of the file name. Using single-character
-  // overload of `base::StringPiece::find_last_of` for speed; this overload does
-  // not build a lookup table.
-  base::StringPiece::size_type last_slash_pos = module.find_last_of('/');
-  if (last_slash_pos != base::StringPiece::npos) {
-    module.remove_prefix(last_slash_pos + 1);
-    return module;
-  }
-  last_slash_pos = module.find_last_of('\\');
+  base::StringPiece module(file);
+  base::StringPiece::size_type last_slash_pos = module.find_last_of("\\/");
   if (last_slash_pos != base::StringPiece::npos)
     module.remove_prefix(last_slash_pos + 1);
+  base::StringPiece::size_type extension_start = module.rfind('.');
+  module = module.substr(0, extension_start);
+  static const char kInlSuffix[] = "-inl";
+  static const int kInlSuffixLen = std::size(kInlSuffix) - 1;
+  if (base::EndsWith(module, kInlSuffix))
+    module.remove_suffix(kInlSuffixLen);
   return module;
 }
 
 }  // namespace
 
-int VlogInfo::GetVlogLevel(base::StringPiece file) {
-  base::AutoLock lock(vmodule_levels_lock_);
+int VlogInfo::GetVlogLevel(base::StringPiece file) const {
   if (!vmodule_levels_.empty()) {
     base::StringPiece module(GetModule(file));
-    for (size_t i = 0; i < vmodule_levels_.size(); i++) {
-      VmodulePattern& it = vmodule_levels_[i];
-
-      const bool kUseFile = it.match_target == VmodulePattern::MATCH_FILE;
-      if (!MatchVlogPattern(kUseFile ? file : module, it.pattern)) {
-        continue;
-      }
-      const int ret = it.vlog_level;
-
-      // Since `it` matched, increase its score because we believe it has a
-      // higher probability of winning next time.
-      if (it.score == std::numeric_limits<size_t>::max()) {
-        for (VmodulePattern& pattern : vmodule_levels_) {
-          pattern.score = 0;
-        }
-      }
-      ++it.score;
-      if (i > 0 && it.score > vmodule_levels_[i - 1].score)
-        std::swap(it, vmodule_levels_[i - 1]);
-
-      return ret;
+    for (const auto& it : vmodule_levels_) {
+      base::StringPiece target(
+          (it.match_target == VmodulePattern::MATCH_FILE) ? file : module);
+      if (MatchVlogPattern(target, it.pattern))
+        return it.vlog_level;
     }
   }
   return GetMaxVlogLevel();
@@ -148,13 +116,27 @@ int VlogInfo::GetMaxVlogLevel() const {
   return -*min_log_level_;
 }
 
+VlogInfo::VlogInfo(std::vector<VmodulePattern> vmodule_levels,
+                   int* min_log_level)
+    : vmodule_levels_(std::move(vmodule_levels)),
+      min_log_level_(min_log_level) {}
+
+VlogInfo* VlogInfo::WithSwitches(const std::string& vmodule_switch) const {
+  std::vector<VmodulePattern> vmodule_levels = vmodule_levels_;
+  std::vector<VmodulePattern> additional_vmodule_levels =
+      ParseVmoduleLevels(vmodule_switch);
+  vmodule_levels.insert(vmodule_levels.end(), additional_vmodule_levels.begin(),
+                        additional_vmodule_levels.end());
+  return new VlogInfo(std::move(vmodule_levels), min_log_level_);
+}
+
 bool MatchVlogPattern(base::StringPiece string,
                       base::StringPiece vlog_pattern) {
   // The code implements the glob matching using a greedy approach described in
   // https://research.swtch.com/glob.
   size_t s = 0, nexts = 0;
   size_t p = 0, nextp = 0;
-  const size_t slen = string.size(), plen = vlog_pattern.size();
+  size_t slen = string.size(), plen = vlog_pattern.size();
   while (s < slen || p < plen) {
     if (p < plen) {
       switch (vlog_pattern[p]) {

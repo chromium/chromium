@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,7 +46,7 @@ String NormalizeSpecifierKey(const String& key_string,
                              const KURL& base_url,
                              ConsoleLogger& logger) {
   // <spec step="1">If specifierKey is the empty string, then:</spec>
-  if (key_string.IsEmpty()) {
+  if (key_string.empty()) {
     // <spec step="1.1">Report a warning to the console that specifier keys
     // cannot be the empty string.</spec>
     AddIgnoredKeyMessage(logger, key_string,
@@ -297,7 +297,7 @@ ImportMap::SpecifierMap ImportMap::SortAndNormalizeSpecifierMap(
         NormalizeSpecifierKey(entry.first, base_url, logger);
 
     // <spec step="2.2">If normalizedSpecifierKey is null, then continue.</spec>
-    if (normalized_specifier_key.IsEmpty())
+    if (normalized_specifier_key.empty())
       continue;
 
     switch (entry.second->GetType()) {
@@ -483,8 +483,8 @@ KURL ImportMap::ResolveImportsMatchInternal(const String& key,
   //
   // <spec step="1.2.5">Let url be the result of parsing afterPrefix relative
   // to the base URL resolutionResult.</spec>
-  const KURL url = after_prefix.IsEmpty() ? matched->value
-                                          : KURL(matched->value, after_prefix);
+  const KURL url = after_prefix.empty() ? matched->value
+                                        : KURL(matched->value, after_prefix);
 
   // <spec step="1.2.6">If url is failure, then throw a TypeError indicating
   // that resolution of specifierKey was blocked due to a URL parse

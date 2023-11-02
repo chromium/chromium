@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -351,7 +351,7 @@ MediaAppUIBrowserTest.ReLaunchableAfterFastLoad = async () => {
 MediaAppUIBrowserTest.MultipleFilesHaveTokens = async () => {
   const directory = await launchWithFiles([
     await createTestImageFile(1, 1, 'file1.png'),
-    await createTestImageFile(1, 1, 'file2.png')
+    await createTestImageFile(1, 1, 'file2.png'),
   ]);
 
   assertEquals(currentFiles.length, 2);
@@ -386,10 +386,12 @@ MediaAppUIBrowserTest.MultipleSelectionLaunch = async () => {
   assertFilenamesToBe('1.png,3.png');
 };
 
-MediaAppUIBrowserTest.NotifyCurrentFile = async () => {
+// Test that each file type has an icon in light mode.
+MediaAppUIBrowserTest.NotifyCurrentFileLight = async () => {
   const imageFile = new File([], 'image.png', {type: 'image/png'});
   const audioFile = new File([], 'audio.wav', {type: 'audio/wav'});
   const videoFile = new File([], 'video.mp4', {type: 'video/mp4'});
+  const pdfFile = new File([], 'form.pdf', {type: 'application/pdf'});
   const unknownFile = new File([], 'foo.xyz', {type: 'unknown/unknown'});
 
   const TEST_CASES = [
@@ -397,6 +399,7 @@ MediaAppUIBrowserTest.NotifyCurrentFile = async () => {
     {file: audioFile, expectedTitle: 'audio.wav', expectedIconType: 'audio'},
     {file: videoFile, expectedTitle: 'video.mp4', expectedIconType: 'video'},
     {file: unknownFile, expectedTitle: 'foo.xyz', expectedIconType: 'file'},
+    {file: pdfFile, expectedTitle: 'form.pdf', expectedIconType: 'pdf'},
     {file: undefined, expectedTitle: 'Gallery', expectedIconType: 'app'},
   ];
   for (const {file, expectedTitle, expectedIconType} of TEST_CASES) {
@@ -407,7 +410,45 @@ MediaAppUIBrowserTest.NotifyCurrentFile = async () => {
 
     assertEquals(getTitle().innerText, expectedTitle);
     assertEquals(getIcon().href.includes(expectedIconType), true);
+    assertEquals(getIcon().href.includes('dark'), false);
   }
+};
+
+// Test that each file type has a corresponding dark icon.
+MediaAppUIBrowserTest.NotifyCurrentFileDark = async () => {
+  const imageFile = new File([], 'image.png', {type: 'image/png'});
+  const audioFile = new File([], 'audio.wav', {type: 'audio/wav'});
+  const videoFile = new File([], 'video.mp4', {type: 'video/mp4'});
+  const pdfFile = new File([], 'form.pdf', {type: 'application/pdf'});
+  const unknownFile = new File([], 'foo.xyz', {type: 'unknown/unknown'});
+
+  const TEST_CASES = [
+    {file: imageFile, expectedIconType: 'image'},
+    {file: audioFile, expectedIconType: 'audio'},
+    {file: videoFile, expectedIconType: 'video'},
+    {file: unknownFile, expectedIconType: 'file'},
+    {file: pdfFile, expectedIconType: 'pdf'},
+  ];
+  for (const {file, expectedIconType} of TEST_CASES) {
+    const name = file ? file.name : undefined;
+    const type = file ? file.type : undefined;
+    await sendTestMessage(
+        {simple: 'notifyCurrentFile', simpleArgs: {name, type}});
+
+    assertEquals(getIcon().href.includes(expectedIconType), true);
+    assertEquals(getIcon().href.includes('dark'), true);
+  }
+};
+
+// Test that the Gallery app icon does not have a dark variant.
+MediaAppUIBrowserTest.NotifyCurrentFileAppIconDark = async () => {
+  await sendTestMessage({
+    simple: 'notifyCurrentFile',
+    simpleArgs: {name: undefined, type: undefined},
+  });
+
+  assertEquals(getIcon().href.includes('app'), true);
+  assertEquals(getIcon().href.includes('dark'), false);
 };
 
 // Tests that we show error UX when trying to launch an unopenable file.
@@ -983,7 +1024,7 @@ MediaAppUIBrowserTest.NavigateOutOfSync = async () => {
 MediaAppUIBrowserTest.RenameOriginalIPC = async () => {
   const directory = await launchWithFiles([
     await createTestImageFile(1, 1, 'file1.png'),
-    await createTestImageFile(1, 1, 'file2.png')
+    await createTestImageFile(1, 1, 'file2.png'),
   ]);
 
   // Nothing should be deleted initially.
@@ -1236,24 +1277,6 @@ MediaAppUIBrowserTest.SaveAsErrorHandling = async () => {
   assertEquals(tokenMap.get(currentFiles[0].token), currentFiles[0].handle);
 };
 
-// Tests the IPC behind the openFile function on receivedFileList.
-MediaAppUIBrowserTest.OpenFileIPC = async () => {
-  const pickedFileHandle = new FakeFileSystemFileHandle('picked_file.jpg');
-  window.showOpenFilePicker = () => Promise.resolve([pickedFileHandle]);
-  await launchWithFiles(
-      [await createTestImageFile(10, 10, 'original_file.jpg')]);
-
-  await sendTestMessage({openFile: true});
-
-  const lastToken = [...tokenMap.keys()].slice(-1)[0];
-  assertEquals(getEntryIndex(), 1);
-  assertEquals(currentFiles.length, 2);
-  assertEquals(currentFiles[1].handle, pickedFileHandle);
-  assertEquals(currentFiles[1].handle.name, 'picked_file.jpg');
-  assertEquals(currentFiles[1].token, lastToken);
-  assertEquals(tokenMap.get(currentFiles[1].token), currentFiles[1].handle);
-};
-
 // Tests the IPC behind the AbstractFileList.openFilesWithFilePicker function to
 // relaunch the app with a new selection of files from a file picker.
 MediaAppUIBrowserTest.OpenFilesWithFilePickerIPC = async () => {
@@ -1261,6 +1284,7 @@ MediaAppUIBrowserTest.OpenFilesWithFilePickerIPC = async () => {
     new FakeFileSystemFileHandle('picked_file1.jpg'),
     new FakeFileSystemFileHandle('picked_file2.jpg'),
   ];
+  /** @type {!OpenFilePickerOptions|!DraftFilePickerOptions|undefined} */
   let lastPickerOptions;
   window.showOpenFilePicker = (pickerOptions) => {
     lastPickerOptions = pickerOptions;
@@ -1269,10 +1293,15 @@ MediaAppUIBrowserTest.OpenFilesWithFilePickerIPC = async () => {
   const directory = await launchWithFiles(
       [await createTestImageFile(10, 10, 'original_file.jpg')]);
 
-  let testResponse = await sendTestMessage(
-      {simple: 'openFilesWithFilePicker', simpleArgs: ['VIDEO', 'IMAGE']});
-  assertEquals(
-      testResponse.testQueryResult, 'openFilesWithFilePicker resolved');
+  const simpleArgs = {acceptTypeKeys: ['VIDEO', 'IMAGE']};
+  async function openFilesWithFilePickerWithSimpleArgs() {
+    const response =
+        await sendTestMessage({simple: 'openFilesWithFilePicker', simpleArgs});
+    assertEquals(response.testQueryResult, 'openFilesWithFilePicker resolved');
+    return response;
+  }
+
+  let testResponse = await openFilesWithFilePickerWithSimpleArgs();
 
   // Spot-check the file picker options. It has lots of file extensions in it.
   const {multiple, startIn, excludeAcceptAllOption, types} = lastPickerOptions;
@@ -1290,6 +1319,33 @@ MediaAppUIBrowserTest.OpenFilesWithFilePickerIPC = async () => {
 
   assertEquals(clientFiles[0].name, 'picked_file1.jpg');
   assertEquals(clientFiles[1].name, 'picked_file2.jpg');
+
+  // Test to handle invalid tokens (b/209342852). These should leave the
+  // `startIn` option unspecified.
+  simpleArgs.explicitToken = -1;
+  testResponse = await openFilesWithFilePickerWithSimpleArgs();
+  assertEquals(lastPickerOptions.startIn, undefined);
+
+  // Ensure the `singleFile` argument is handled when set.
+  simpleArgs.singleFile = true;
+  await openFilesWithFilePickerWithSimpleArgs();
+  assertEquals(lastPickerOptions.multiple, false);
+
+  simpleArgs.singleFile = false;
+  await openFilesWithFilePickerWithSimpleArgs();
+  assertEquals(lastPickerOptions.multiple, true);
+
+  // Spot-check the ALL_EX_TEXT filter key, which groups all extensions.
+  simpleArgs.acceptTypeKeys = ['ALL_EX_TEXT'];
+  await openFilesWithFilePickerWithSimpleArgs();
+  const extensions = lastPickerOptions.types[0].accept['*/*'];
+  assertEquals(lastPickerOptions.types.length, 1);
+  assertEquals(lastPickerOptions.types[0].description, 'All');
+  assertEquals(extensions.includes('.pdf'), true);
+  assertEquals(extensions.includes('.jpeg'), true);
+  assertEquals(extensions.includes('.avi'), true);
+  assertEquals(extensions.includes('.mp3'), true);
+  assertEquals(extensions.includes('.zip'), false);
 };
 
 MediaAppUIBrowserTest.RelatedFiles = async () => {
@@ -1421,4 +1477,18 @@ MediaAppUIBrowserTest.GuestHasFocus = async () => {
 
   // By the time this tests runs the iframe should already have been loaded.
   assertEquals(document.activeElement, guest);
+};
+
+// Check the body element's background color when the DarkLightMode feature is
+// enabled.
+MediaAppUIBrowserTest.BodyHasCorrectBackgroundColorWithDarkLight = () => {
+  const actualBackgroundColor = getComputedStyle(document.body).backgroundColor;
+  assertEquals(actualBackgroundColor, 'rgb(255, 255, 255)');  // White.
+};
+
+// Check the body element's background color when the DarkLightMode feature is
+// disabled.
+MediaAppUIBrowserTest.BodyHasCorrectBackgroundColorWithoutDarkLight = () => {
+  const actualBackgroundColor = getComputedStyle(document.body).backgroundColor;
+  assertEquals(actualBackgroundColor, 'rgb(32, 33, 36)');  // Grey 900.
 };

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,10 @@
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "extensions/browser/api/test/test_api_observer.h"
+
+namespace base {
+class Value;
+}
 
 namespace content {
 class BrowserContext;
@@ -38,6 +42,9 @@ class TestApiObserverRegistry {
   // respond to the message.
   bool NotifyTestMessage(TestSendMessageFunction* function,
                          const std::string& message);
+
+  // Notifies observers of a result sent via sendScriptResult.
+  void NotifyScriptResult(const base::Value& result_value);
 
   void AddObserver(TestApiObserver* observer);
   void RemoveObserver(TestApiObserver* observer);

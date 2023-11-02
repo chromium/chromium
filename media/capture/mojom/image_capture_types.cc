@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,7 @@ media::mojom::PhotoStatePtr CreateEmptyPhotoState() {
   photo_capabilities->focus_distance = media::mojom::Range::New();
   photo_capabilities->torch = false;
   photo_capabilities->red_eye_reduction = media::mojom::RedEyeReduction::NEVER;
+  photo_capabilities->supported_background_blur_modes = {};
   return photo_capabilities;
 }
 

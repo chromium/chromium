@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
@@ -72,7 +71,7 @@ class NET_EXPORT TCPServerSocket : public ServerSocket {
 
   std::unique_ptr<TCPSocket> accepted_socket_;
   IPEndPoint accepted_address_;
-  bool pending_accept_;
+  bool pending_accept_ = false;
 };
 
 }  // namespace net

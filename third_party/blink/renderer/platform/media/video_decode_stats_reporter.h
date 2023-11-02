@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,7 +41,6 @@ class PLATFORM_EXPORT VideoDecodeStatsReporter {
       GetPipelineStatsCB get_pipeline_stats_cb,
       media::VideoCodecProfile codec_profile,
       const gfx::Size& natural_size,
-      std::string key_system,
       absl::optional<media::CdmConfig> cdm_config,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       const base::TickClock* tick_clock =

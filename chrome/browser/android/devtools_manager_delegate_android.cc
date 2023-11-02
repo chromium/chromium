@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -48,7 +49,7 @@ class ClientProxy : public content::DevToolsAgentHostClient {
   }
 
  private:
-  content::DevToolsExternalAgentProxy* proxy_;
+  raw_ptr<content::DevToolsExternalAgentProxy> proxy_;
 };
 
 class TabProxyDelegate : public content::DevToolsExternalAgentProxyDelegate {
@@ -257,11 +258,6 @@ DevToolsManagerDelegateAndroid::CreateNewTarget(const GURL& url) {
 
   TabAndroid* tab = TabAndroid::FromWebContents(web_contents);
   return tab ? DevToolsAgentHostForTab(tab) : nullptr;
-}
-
-std::string DevToolsManagerDelegateAndroid::GetDiscoveryPageHTML() {
-  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-      IDR_DEVTOOLS_DISCOVERY_PAGE_HTML);
 }
 
 bool DevToolsManagerDelegateAndroid::IsBrowserTargetDiscoverable() {

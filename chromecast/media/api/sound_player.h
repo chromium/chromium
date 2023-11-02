@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,6 +48,14 @@ class SoundPlayer {
                           int64_t timestamp,
                           media::AudioChannel audio_channel,
                           AudioContentType content_type) = 0;
+
+  // Plays the sound using the provided |audio_data| starting at |timestamp|.
+  // Any sound that is currently playing is stopped immediately.
+  // If |audio_channel| is kLeft or kRight, only that channel is played.
+  virtual void PlayAudioDataAtTime(scoped_refptr<AudioData> audio_data,
+                                   int64_t timestamp,
+                                   AudioChannel audio_channel,
+                                   AudioContentType content_type) = 0;
 
   // Stops playing the sound resource with |resource_id| if it is currently
   // playing.

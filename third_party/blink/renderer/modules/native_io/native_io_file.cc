@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
+#include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
@@ -33,16 +34,17 @@
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -82,14 +84,14 @@ class NativeIOFile::FileState
   bool IsValid() {
     DCHECK(!IsMainThread());
 
-    WTF::MutexLocker locker(mutex_);
+    base::AutoLock auto_lock(lock_);
     return file_.IsValid();
   }
 
   void Close() {
     DCHECK(!IsMainThread());
 
-    WTF::MutexLocker locker(mutex_);
+    base::AutoLock auto_lock(lock_);
     DCHECK(file_.IsValid()) << __func__ << " called on invalid file";
 
     file_.Close();
@@ -100,7 +102,7 @@ class NativeIOFile::FileState
   std::pair<int64_t, base::File::Error> GetLength() {
     DCHECK(!IsMainThread());
 
-    WTF::MutexLocker mutex_locker(mutex_);
+    base::AutoLock auto_lock(lock_);
     DCHECK(file_.IsValid()) << __func__ << " called on invalid file";
 
     int64_t length = file_.GetLength();
@@ -116,7 +118,7 @@ class NativeIOFile::FileState
     DCHECK(!IsMainThread());
     DCHECK_GE(expected_length, 0);
 
-    WTF::MutexLocker mutex_locker(mutex_);
+    base::AutoLock auto_lock(lock_);
     DCHECK(file_.IsValid()) << __func__ << " called on invalid file";
 
     bool success = file_.SetLength(expected_length);
@@ -127,10 +129,10 @@ class NativeIOFile::FileState
     return {actual_length, error};
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Used to implement browser-side SetLength() on macOS < 10.15.
   base::File TakeFile() {
-    WTF::MutexLocker mutex_locker(mutex_);
+    base::AutoLock auto_lock(lock_);
     DCHECK(file_.IsValid()) << __func__ << " called on invalid file";
 
     return std::move(file_);
@@ -138,12 +140,12 @@ class NativeIOFile::FileState
 
   // Used to implement browser-side SetLength() on macOS < 10.15.
   void SetFile(base::File file) {
-    WTF::MutexLocker locker(mutex_);
+    base::AutoLock auto_lock(lock_);
     DCHECK(!file_.IsValid()) << __func__ << " called on valid file";
 
     file_ = std::move(file);
   }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   // Returns {read byte count, base::File::FILE_OK} in case of success.
   // Returns {invalid number, error} in case of failure.
@@ -155,7 +157,7 @@ class NativeIOFile::FileState
     DCHECK_GE(file_offset, 0);
     DCHECK_GE(read_size, 0);
 
-    WTF::MutexLocker mutex_locker(mutex_);
+    base::AutoLock auto_lock(lock_);
     DCHECK(file_.IsValid()) << __func__ << " called on invalid file";
 
     int read_bytes = file_.Read(file_offset, buffer->Data(), read_size);
@@ -177,7 +179,7 @@ class NativeIOFile::FileState
     DCHECK_GE(file_offset, 0);
     DCHECK_GE(write_size, 0);
 
-    WTF::MutexLocker mutex_locker(mutex_);
+    base::AutoLock auto_lock(lock_);
     DCHECK(file_.IsValid()) << __func__ << " called on invalid file";
 
     int written_bytes = file_.Write(file_offset, buffer->Data(), write_size);
@@ -196,7 +198,7 @@ class NativeIOFile::FileState
   base::File::Error Flush() {
     DCHECK(!IsMainThread());
 
-    WTF::MutexLocker mutex_locker(mutex_);
+    base::AutoLock auto_lock(lock_);
     DCHECK(file_.IsValid()) << __func__ << " called on invalid file";
 
     bool success = file_.Flush();
@@ -205,10 +207,10 @@ class NativeIOFile::FileState
 
  private:
   // Lock coordinating cross-thread access to the state.
-  WTF::Mutex mutex_;
+  base::Lock lock_;
 
   // The file on disk backing this NativeIOFile.
-  base::File file_ GUARDED_BY(mutex_);
+  base::File file_ GUARDED_BY(lock_);
 };
 
 NativeIOFile::NativeIOFile(
@@ -226,8 +228,8 @@ NativeIOFile::NativeIOFile(
       capacity_tracker_(capacity_tracker) {
   DCHECK_GE(backing_file_length, 0);
   DCHECK(capacity_tracker);
-  backend_file_.set_disconnect_handler(
-      WTF::Bind(&NativeIOFile::OnBackendDisconnect, WrapWeakPersistent(this)));
+  backend_file_.set_disconnect_handler(WTF::BindOnce(
+      &NativeIOFile::OnBackendDisconnect, WrapWeakPersistent(this)));
 }
 
 NativeIOFile::~NativeIOFile() {
@@ -345,7 +347,7 @@ ScriptPromise NativeIOFile::setLength(ScriptState* script_state,
   io_pending_ = true;
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On macOS < 10.15, a sandboxing limitation causes failures in ftruncate()
   // syscalls issued from renderers. For this reason, base::File::SetLength()
   // fails in the renderer. We work around this problem by calling ftruncate()
@@ -360,11 +362,11 @@ ScriptPromise NativeIOFile::setLength(ScriptState* script_state,
     base::File file = file_state_->TakeFile();
     backend_file_->SetLength(
         expected_length, std::move(file),
-        WTF::Bind(&NativeIOFile::DidSetLengthIpc, WrapPersistent(this),
-                  WrapPersistent(resolver)));
+        WTF::BindOnce(&NativeIOFile::DidSetLengthIpc, WrapPersistent(this),
+                      WrapPersistent(resolver)));
     return resolver->Promise();
   }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   worker_pool::PostTask(
       FROM_HERE, {base::MayBlock()},
@@ -604,9 +606,9 @@ void NativeIOFile::DidClose(
     resolver->Resolve();
     return;
   }
-  backend_file_->Close(
-      WTF::Bind([](ScriptPromiseResolver* resolver) { resolver->Resolve(); },
-                WrapPersistent(resolver.Get())));
+  backend_file_->Close(WTF::BindOnce(
+      [](ScriptPromiseResolver* resolver) { resolver->Resolve(); },
+      WrapPersistent(resolver.Get())));
 }
 
 // static
@@ -621,9 +623,7 @@ void NativeIOFile::DoGetLength(
       << "File I/O operation queued after file closed";
   DCHECK(resolver_task_runner);
 
-  int64_t length;
-  base::File::Error get_length_error;
-  std::tie(length, get_length_error) = file_state->GetLength();
+  auto [length, get_length_error] = file_state->GetLength();
 
   PostCrossThreadTask(
       *resolver_task_runner, FROM_HERE,
@@ -639,7 +639,6 @@ void NativeIOFile::DidGetLength(
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid())
     return;
-  ScriptState::Scope scope(script_state);
 
   DCHECK(io_pending_) << "I/O operation performed without io_pending_ set";
   if (get_length_error == base::File::FILE_OK) {
@@ -680,9 +679,7 @@ void NativeIOFile::DoSetLength(
   DCHECK(resolver_task_runner);
   DCHECK_GE(expected_length, 0);
 
-  int64_t actual_length;
-  base::File::Error set_length_error;
-  std::tie(actual_length, set_length_error) =
+  auto [actual_length, set_length_error] =
       file_state->SetLength(expected_length);
 
   PostCrossThreadTask(
@@ -739,7 +736,7 @@ void NativeIOFile::DidSetLengthIo(
   resolver->Resolve();
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void NativeIOFile::DidSetLengthIpc(
     ScriptPromiseResolver* resolver,
     base::File backing_file,
@@ -791,7 +788,7 @@ void NativeIOFile::DidSetLengthIpc(
 
   resolver->Resolve();
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 // static
 void NativeIOFile::DoRead(
@@ -814,9 +811,7 @@ void NativeIOFile::DoRead(
   DCHECK_LE(static_cast<size_t>(read_size), result_buffer_data->DataLength());
 #endif  // DCHECK_IS_ON()
 
-  int read_bytes;
-  base::File::Error read_error;
-  std::tie(read_bytes, read_error) =
+  auto [read_bytes, read_error] =
       file_state->Read(result_buffer_data.get(), file_offset, read_size);
 
   PostCrossThreadTask(
@@ -837,7 +832,6 @@ void NativeIOFile::DidRead(
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid())
     return;
-  ScriptState::Scope scope(script_state);
 
   DCHECK(io_pending_) << "I/O operation performed without io_pending_ set";
   io_pending_ = false;
@@ -879,10 +873,7 @@ void NativeIOFile::DoWrite(
   DCHECK_LE(static_cast<size_t>(write_size), result_buffer_data->DataLength());
 #endif  // DCHECK_IS_ON()
 
-  int written_bytes;
-  int64_t actual_file_length_on_failure = 0;
-  base::File::Error write_error;
-  std::tie(actual_file_length_on_failure, written_bytes, write_error) =
+  auto [actual_file_length_on_failure, written_bytes, write_error] =
       file_state->Write(result_buffer_data.get(), file_offset, write_size);
 
   PostCrossThreadTask(
@@ -975,7 +966,6 @@ void NativeIOFile::DidFlush(
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid())
     return;
-  ScriptState::Scope scope(script_state);
 
   DCHECK(io_pending_) << "I/O operation performed without io_pending_ set";
   io_pending_ = false;

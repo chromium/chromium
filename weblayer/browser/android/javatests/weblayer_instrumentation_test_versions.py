@@ -1,6 +1,6 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 #
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 #
@@ -113,7 +113,7 @@ def tests_to_skip(expectation_contents, impl_version='trunk',
             'Only "Skip" is supported in the skew test expectations.')
 
     # Iterate over the first (and only) item since can't index over a frozenset.
-    tag = iter(expectation.tags).next()
+    tag = next(iter(expectation.tags))
     if tag_matches(tag, impl_version, client_version):
       tests.append(expectation.test)
   return tests
@@ -185,9 +185,6 @@ def main():
       '--test-apk',
       os.path.join(args.client_outdir,
                    'apks/WebLayerInstrumentationTest.apk'),
-      '--test-jar',
-      os.path.join(args.client_outdir,
-                   'test.lib.java/WebLayerInstrumentationTest.jar'),
       '--apk-under-test',
       os.path.join(args.client_outdir, 'apks/WebLayerShellSystemWebView.apk'),
       '--use-webview-provider',

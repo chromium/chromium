@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,56 +9,74 @@
  * an animation if the percentage is indeterminate.
  */
 
-import {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
+import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_icons.css.js';
+import './nearby_shared_icons.html.js';
+import './nearby_device_icon.js';
 
-Polymer({
-  is: 'nearby-progress',
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-  properties: {
-    /**
-     * The share target to show the progress for. Expected to start as null,
-     * then change to a valid object before this component is shown.
-     * @type {?nearbyShare.mojom.ShareTarget}
-     */
-    shareTarget: {
-      type: Object,
-      value: null,
-    },
+import {getTemplate} from './nearby_progress.html.js';
 
-    /**
-     * If true, displays an animation representing an unknown amount of
-     * progress; otherwise, the progress bar is hidden.
-     * @type {boolean}
-     */
-    showIndeterminateProgress: {
-      type: Boolean,
-      value: false,
-    },
+/** @polymer */
+export class NearbyProgressElement extends PolymerElement {
+  static get is() {
+    return 'nearby-progress';
+  }
 
-    /**
-     * If true, then set progress stroke to red, stop any animation, show
-     * 100% instead, and set icons to grey. If |showProgress| is |NONE|, then
-     * the progress bar is still hidden.
-     * @type {boolean}
-     */
-    hasError: {
-      type: Boolean,
-      value: false,
-    },
+  static get template() {
+    return getTemplate();
+  }
 
-    /** @const {number} Size of the target image/icon in pixels. */
-    targetImageSize: {
-      type: Number,
-      readOnly: true,
-      value: 68,
-    },
-  },
+  static get properties() {
+    return {
+      /**
+       * The share target to show the progress for. Expected to start as null,
+       * then change to a valid object before this component is shown.
+       * @type {?nearbyShare.mojom.ShareTarget}
+       */
+      shareTarget: {
+        type: Object,
+        value: null,
+      },
 
-  ready: function() {
-    this.updateStyles(
-        {'--target-image-size': this.properties.targetImageSize.value + 'px'});
+      /**
+       * If true, displays an animation representing an unknown amount of
+       * progress; otherwise, the progress bar is hidden.
+       * @type {boolean}
+       */
+      showIndeterminateProgress: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * If true, then set progress stroke to red, stop any animation, show
+       * 100% instead, and set icons to grey. If |showProgress| is |NONE|, then
+       * the progress bar is still hidden.
+       * @type {boolean}
+       */
+      hasError: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @const {number} Size of the target image/icon in pixels. */
+      targetImageSize: {
+        type: Number,
+        readOnly: true,
+        value: 68,
+      },
+    };
+  }
+
+  ready() {
+    super.ready();
+
+    this.updateStyles({'--target-image-size': this.targetImageSize + 'px'});
     this.listenToTargetImageLoad_();
-  },
+  }
 
   /**
    * @return {string} The css class to be applied to the progress wheel.
@@ -74,7 +92,7 @@ Polymer({
       classes.push('hidden');
     }
     return classes.join(' ');
-  },
+  }
 
   /**
    * Allow focusing on the progress bar. Ignored by Chromevox otherwise.
@@ -85,7 +103,7 @@ Polymer({
       return 0;
     }
     return -1;
-  },
+  }
 
   /**
    * @return {!string} The URL of the target image.
@@ -99,13 +117,12 @@ Polymer({
     }
 
     // Adds the parameter to resize to the desired size.
-    return this.shareTarget.imageUrl.url + '=s' +
-        this.properties.targetImageSize.value;
-  },
+    return this.shareTarget.imageUrl.url + '=s' + this.targetImageSize;
+  }
 
   /** @private */
   listenToTargetImageLoad_() {
-    const autoImg = this.$$('#share-target-image');
+    const autoImg = this.shadowRoot.querySelector('#share-target-image');
     if (autoImg.complete && autoImg.naturalHeight !== 0) {
       this.onTargetImageLoad_();
     } else {
@@ -113,11 +130,14 @@ Polymer({
         this.onTargetImageLoad_();
       };
     }
-  },
+  }
 
   /** @private */
   onTargetImageLoad_() {
-    this.$$('#share-target-image').style.display = 'inline';
-    this.$$('#icon').style.display = 'none';
+    this.shadowRoot.querySelector('#share-target-image').style.display =
+        'inline';
+    this.shadowRoot.querySelector('#icon').style.display = 'none';
   }
-});
+}
+
+customElements.define(NearbyProgressElement.is, NearbyProgressElement);

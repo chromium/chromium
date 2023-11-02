@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,10 @@
 #include <memory>
 #include <set>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "remoting/protocol/port_allocator_factory.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class ChromiumPortAllocatorFactory : public PortAllocatorFactory {
  public:
@@ -31,7 +29,6 @@ class ChromiumPortAllocatorFactory : public PortAllocatorFactory {
       base::WeakPtr<SessionOptionsProvider> session_options_provider) override;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_CHROMIUM_PORT_ALLOCATOR_FACTORY_H_

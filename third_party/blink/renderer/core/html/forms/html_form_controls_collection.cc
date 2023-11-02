@@ -142,11 +142,11 @@ void HTMLFormControlsCollection::UpdateIdNameCache() const {
       HTMLElement& element = listed_element->ToHTMLElement();
       const AtomicString& id_attr_val = element.GetIdAttribute();
       const AtomicString& name_attr_val = element.GetNameAttribute();
-      if (!id_attr_val.IsEmpty()) {
+      if (!id_attr_val.empty()) {
         cache->AddElementWithId(id_attr_val, &element);
         found_input_elements.insert(id_attr_val.Impl());
       }
-      if (!name_attr_val.IsEmpty() && id_attr_val != name_attr_val) {
+      if (!name_attr_val.empty() && id_attr_val != name_attr_val) {
         cache->AddElementWithName(name_attr_val, &element);
         found_input_elements.insert(name_attr_val.Impl());
       }
@@ -159,10 +159,10 @@ void HTMLFormControlsCollection::UpdateIdNameCache() const {
   for (const auto& element : FormImageElements()) {
     const AtomicString& id_attr_val = element->GetIdAttribute();
     const AtomicString& name_attr_val = element->GetNameAttribute();
-    if (!id_attr_val.IsEmpty() &&
+    if (!id_attr_val.empty() &&
         !found_input_elements.Contains(id_attr_val.Impl()))
       cache->AddElementWithId(id_attr_val, element);
-    if (!name_attr_val.IsEmpty() && id_attr_val != name_attr_val &&
+    if (!name_attr_val.empty() && id_attr_val != name_attr_val &&
         !found_input_elements.Contains(name_attr_val.Impl()))
       cache->AddElementWithName(name_attr_val, element);
   }
@@ -177,7 +177,7 @@ V8UnionElementOrRadioNodeList* HTMLFormControlsCollection::namedGetter(
   HeapVector<Member<Element>> named_items;
   NamedItems(name, named_items);
 
-  if (named_items.IsEmpty())
+  if (named_items.empty())
     return nullptr;
 
   if (named_items.size() == 1) {
@@ -207,14 +207,14 @@ void HTMLFormControlsCollection::SupportedPropertyNames(Vector<String>& names) {
     HTMLElement* element = item(i);
     DCHECK(element);
     const AtomicString& id_attribute = element->GetIdAttribute();
-    if (!id_attribute.IsEmpty()) {
+    if (!id_attribute.empty()) {
       HashSet<AtomicString>::AddResult add_result =
           existing_names.insert(id_attribute);
       if (add_result.is_new_entry)
         names.push_back(id_attribute);
     }
     const AtomicString& name_attribute = element->GetNameAttribute();
-    if (!name_attribute.IsEmpty()) {
+    if (!name_attribute.empty()) {
       HashSet<AtomicString>::AddResult add_result =
           existing_names.insert(name_attribute);
       if (add_result.is_new_entry)

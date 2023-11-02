@@ -1,9 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {Action} from 'chrome://resources/js/cr/ui/store.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {Action} from 'chrome://resources/js/store_ts.js';
 
 import {IncognitoAvailability, ROOT_NODE_ID} from './constants.js';
 import {BookmarkNode, BookmarksPageState, NodeMap} from './types.js';
@@ -14,11 +14,11 @@ import {getDescendants, getDisplayedList, normalizeNode} from './util.js';
  * listed in one place to document available actions and their parameters.
  */
 
-export type CreateBookmarkAction = Action & {
-  id: string;
-  parentId: string;
-  parentIndex: number;
-  node: BookmarkNode;
+export type CreateBookmarkAction = Action&{
+  id: string,
+  parentId: string,
+  parentIndex: number,
+  node: BookmarkNode,
 };
 
 export function createBookmark(
@@ -33,10 +33,10 @@ export function createBookmark(
   };
 }
 
-export type EditBookmarkAction = Action & {
-  id: string;
-  changeInfo: {title: string, url?: string};
-}
+export type EditBookmarkAction = Action&{
+  id: string,
+  changeInfo: {title: string, url?: string},
+};
 
 export function editBookmark(
     id: string, changeInfo: {title: string, url?: string}): EditBookmarkAction {
@@ -47,13 +47,13 @@ export function editBookmark(
   };
 }
 
-export type MoveBookmarkAction = Action & {
-  id: string;
-  parentId: string;
-  index: number;
-  oldParentId: string;
-  oldIndex: number;
-}
+export type MoveBookmarkAction = Action&{
+  id: string,
+  parentId: string,
+  index: number,
+  oldParentId: string,
+  oldIndex: number,
+};
 
 export function moveBookmark(
     id: string, parentId: string, index: number, oldParentId: string,
@@ -68,10 +68,10 @@ export function moveBookmark(
   };
 }
 
-export type ReorderChildrenAction = Action & {
-  id: string;
-  children: string[];
-}
+export type ReorderChildrenAction = Action&{
+  id: string,
+  children: string[],
+};
 
 export function reorderChildren(
     id: string, newChildIds: string[]): ReorderChildrenAction {
@@ -82,12 +82,12 @@ export function reorderChildren(
   };
 }
 
-export type RemoveBookmarkAction = Action & {
-  id: string;
-  parentId: string;
-  index: number;
-  descendants: Set<string>;
-}
+export type RemoveBookmarkAction = Action&{
+  id: string,
+  parentId: string,
+  index: number,
+  descendants: Set<string>,
+};
 
 export function removeBookmark(
     id: string, parentId: string, index: number,
@@ -102,9 +102,9 @@ export function removeBookmark(
   };
 }
 
-export type RefreshNodesAction = Action & {
-  nodes: NodeMap;
-}
+export type RefreshNodesAction = Action&{
+  nodes: NodeMap,
+};
 
 export function refreshNodes(nodeMap: NodeMap): RefreshNodesAction {
   return {
@@ -113,9 +113,9 @@ export function refreshNodes(nodeMap: NodeMap): RefreshNodesAction {
   };
 }
 
-export type SelectFolderAction = Action & {
-  id: string;
-}
+export type SelectFolderAction = Action&{
+  id: string,
+};
 
 export function selectFolder(id: string, nodes?: NodeMap): SelectFolderAction|
     null {
@@ -130,10 +130,10 @@ export function selectFolder(id: string, nodes?: NodeMap): SelectFolderAction|
   };
 }
 
-export type ChangeFolderOpenAction = Action & {
-  id: string;
-  open: boolean;
-}
+export type ChangeFolderOpenAction = Action&{
+  id: string,
+  open: boolean,
+};
 
 export function changeFolderOpen(
     id: string, open: boolean): ChangeFolderOpenAction {
@@ -156,12 +156,12 @@ export function deselectItems(): Action {
   };
 }
 
-export type SelectItemsAction = Action & {
-  clear: boolean;
-  toggle: boolean;
-  anchor: string;
-  items: string[];
-}
+export type SelectItemsAction = Action&{
+  clear: boolean,
+  toggle: boolean,
+  anchor: string,
+  items: string[],
+};
 
 export function selectItem(
     id: string, state: BookmarksPageState,
@@ -219,9 +219,9 @@ export function selectAll(
   };
 }
 
-export type UpdateAnchorAction = Action & {
-  anchor: string;
-}
+export type UpdateAnchorAction = Action&{
+  anchor: string,
+};
 
 export function updateAnchor(id: string): UpdateAnchorAction {
   return {
@@ -230,9 +230,9 @@ export function updateAnchor(id: string): UpdateAnchorAction {
   };
 }
 
-export type StartSearchAction = Action & {
-  term: string;
-}
+export type StartSearchAction = Action&{
+  term: string,
+};
 
 export function setSearchTerm(term: string): (Action|StartSearchAction) {
   if (!term) {
@@ -245,20 +245,20 @@ export function setSearchTerm(term: string): (Action|StartSearchAction) {
   };
 }
 
-export type FinishSearchAction = Action & {
-  results: string[];
-}
+export type FinishSearchAction = Action&{
+  results: string[],
+};
 
-export function setSearchResults(ids: string[]): Action {
+export function setSearchResults(ids: string[]): FinishSearchAction {
   return {
     name: 'finish-search',
     results: ids,
-  } as Action;
+  };
 }
 
-export type SetPrefAction = Action & {
-  value: IncognitoAvailability|boolean;
-}
+export type SetPrefAction = Action&{
+  value: IncognitoAvailability | boolean,
+};
 
 export function setIncognitoAvailability(availability: IncognitoAvailability):
     SetPrefAction {

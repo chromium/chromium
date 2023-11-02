@@ -4,8 +4,11 @@ include_rules = [
   "+components/autofill/ios/browser",
   "+components/autofill/ios/form_util",
   "+components/security_state/ios",
+  "+components/ukm",
+  "+components/ukm/ios",
   "+ios/web/public",
   "+ios/web/common",
+  "+services/metrics/public",
   "+services/network/public/cpp",
   "+third_party/ocmock",
 ]

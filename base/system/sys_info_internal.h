@@ -1,9 +1,12 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef BASE_SYSTEM_SYS_INFO_INTERNAL_H_
 #define BASE_SYSTEM_SYS_INFO_INTERNAL_H_
+
+#include "base/base_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -24,6 +27,11 @@ class LazySysInfoValue {
  private:
   const T value_;
 };
+
+// Exposed for testing.
+BASE_EXPORT absl::optional<int> NumberOfPhysicalProcessors();
+
+BASE_EXPORT int NumberOfProcessors();
 
 }  // namespace internal
 

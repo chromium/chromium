@@ -41,7 +41,7 @@ namespace blink {
 
 class HRTFKernel;
 
-class PLATFORM_EXPORT HRTFDatabase {
+class HRTFDatabase {
   USING_FAST_MALLOC(HRTFDatabase);
 
  public:
@@ -63,7 +63,7 @@ class PLATFORM_EXPORT HRTFDatabase {
                                       HRTFKernel*& kernel_l,
                                       HRTFKernel*& kernel_r,
                                       double& frame_delay_l,
-                                      double& frame_delay_r);
+                                      double& frame_delay_r) const;
 
   // Returns the number of different azimuth angles.
   static unsigned NumberOfAzimuths() {

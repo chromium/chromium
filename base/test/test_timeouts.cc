@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string>
 
+#include "base/check_op.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/command_line.h"
 #include "base/debug/debugger.h"
@@ -46,13 +47,13 @@ void InitializeTimeout(const char* switch_name,
   // For MSan the slowdown depends heavily on the value of msan_track_origins
   // build flag. The multiplier below corresponds to msan_track_origins = 1.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // A handful of tests on ChromeOS run *very* close to the 6x limit used
-  // else where, so it's bumped to 7x.
-  constexpr int kTimeoutMultiplier = 7;
+  // A handful of tests on ChromeOS time out when using the 6x limit used
+  // elsewhere, so it's bumped to 10x.
+  constexpr int kTimeoutMultiplier = 10;
 #else
   constexpr int kTimeoutMultiplier = 6;
 #endif
-#elif defined(ADDRESS_SANITIZER) && defined(OS_WIN)
+#elif defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_WIN)
   // ASan/Win has not been optimized yet, give it a higher
   // timeout multiplier. See http://crbug.com/412471
   constexpr int kTimeoutMultiplier = 3;
@@ -70,7 +71,7 @@ void InitializeTimeout(const char* switch_name,
   // A number of tests on ChromeOS run very close to the base limit, so ChromeOS
   // gets 3x.
   constexpr int kTimeoutMultiplier = 3;
-#elif !defined(NDEBUG) && defined(OS_MAC)
+#elif !defined(NDEBUG) && BUILDFLAG(IS_MAC)
   // A lot of browser_tests on Mac debug time out.
   constexpr int kTimeoutMultiplier = 2;
 #else

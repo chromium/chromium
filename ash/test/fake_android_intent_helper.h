@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,7 @@ class FakeAndroidIntentHelper : public AndroidIntentHelper {
   // AndroidIntentHelper overrides:
   void LaunchAndroidIntent(const std::string& intent) override;
   absl::optional<std::string> GetAndroidAppLaunchIntent(
-      const chromeos::assistant::AndroidAppInfo& app_info) override;
+      const assistant::AndroidAppInfo& app_info) override;
 
   // Adds a fake Android app.
   // |intent| will be returned from GetAndroidAppLaunchIntent() if the value of

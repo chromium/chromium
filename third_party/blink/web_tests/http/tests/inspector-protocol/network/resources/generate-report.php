@@ -1,5 +1,5 @@
 <?php
-header('report-to: {"group":"csp","max_age":86400,"include_subdomains":true,"endpoints":[{"url":"https://localhost/reporting-endpoint"}]}');
+header('reporting-endpoints: main-endpoint="https://reports.example/main", default="https://reports.example/default", csp="https://localhost/reporting-endpoint"');
 header("content-security-policy-report-only: script-src 'none'; object-src 'none'; report-to csp");
 ?>
 

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,12 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
+namespace gfx {
+class Size;
+}
+
 namespace blink {
 
-class IntSize;
 class UseCounter;
 
 class PLATFORM_EXPORT BitmapImageMetrics {
@@ -81,7 +84,7 @@ class PLATFORM_EXPORT BitmapImageMetrics {
                                        int image_min_side,
                                        uint64_t density_centi_bpp,
                                        size_t image_size_bytes);
-  static void CountJpegArea(const IntSize& size);
+  static void CountJpegArea(const gfx::Size& size);
   static void CountJpegColorSpace(JpegColorSpace color_space);
 };
 

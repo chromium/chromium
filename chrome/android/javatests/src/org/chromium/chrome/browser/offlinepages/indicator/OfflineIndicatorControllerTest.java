@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.download.DownloadActivity;
+import org.chromium.chrome.browser.app.download.home.DownloadActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.net.connectivitydetector.ConnectivityDetector;
@@ -60,7 +60,6 @@ import java.util.concurrent.TimeUnit;
 /** Unit tests for offline indicator interacting with chrome activity. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.DisableFeatures({ChromeFeatureList.OFFLINE_INDICATOR_V2})
 @Batch(Batch.PER_CLASS)
 // TODO(jianli): Add test for disabled feature.
 public class OfflineIndicatorControllerTest {
@@ -270,7 +269,7 @@ public class OfflineIndicatorControllerTest {
     @Test
     @MediumTest
     public void testDoNotShowOfflineIndicatorOnPageLoadingWhenOffline() {
-        String testUrl = mTestServer.getURL("/slow?1");
+        String testUrl = mTestServer.getURL("/slow?3");
 
         // Load a page without waiting it to finish.
         loadPageWithoutWaiting(testUrl, null);

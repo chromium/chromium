@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,8 +16,6 @@ namespace content {
 ServiceWorkerVersionInfo::ServiceWorkerVersionInfo()
     : running_status(EmbeddedWorkerStatus::STOPPED),
       status(ServiceWorkerVersion::NEW),
-      fetch_handler_existence(
-          ServiceWorkerVersion::FetchHandlerExistence::UNKNOWN),
       thread_id(ServiceWorkerConsts::kInvalidEmbeddedWorkerThreadId),
       devtools_agent_route_id(MSG_ROUTING_NONE),
       ukm_source_id(ukm::kInvalidSourceId) {}
@@ -25,7 +23,7 @@ ServiceWorkerVersionInfo::ServiceWorkerVersionInfo()
 ServiceWorkerVersionInfo::ServiceWorkerVersionInfo(
     EmbeddedWorkerStatus running_status,
     ServiceWorkerVersion::Status status,
-    ServiceWorkerVersion::FetchHandlerExistence fetch_handler_existence,
+    absl::optional<ServiceWorkerVersion::FetchHandlerType> fetch_handler_type,
     const GURL& script_url,
     const GURL& scope,
     const blink::StorageKey& storage_key,
@@ -34,15 +32,17 @@ ServiceWorkerVersionInfo::ServiceWorkerVersionInfo(
     int process_id,
     int thread_id,
     int devtools_agent_route_id,
-    ukm::SourceId ukm_source_id)
+    ukm::SourceId ukm_source_id,
+    blink::mojom::AncestorFrameType ancestor_frame_type)
     : ServiceWorkerVersionBaseInfo(scope,
                                    storage_key,
                                    registration_id,
                                    version_id,
-                                   process_id),
+                                   process_id,
+                                   ancestor_frame_type),
       running_status(running_status),
       status(status),
-      fetch_handler_existence(fetch_handler_existence),
+      fetch_handler_type(fetch_handler_type),
       script_url(script_url),
       thread_id(thread_id),
       devtools_agent_route_id(devtools_agent_route_id),

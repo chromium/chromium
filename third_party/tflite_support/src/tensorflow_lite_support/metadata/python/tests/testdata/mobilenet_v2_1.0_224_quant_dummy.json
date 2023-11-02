@@ -1,0 +1,18 @@
+{
+  "name": "mobilenet_v2_1.0_224_quant",
+  "subgraph_metadata": [
+    {
+      "input_tensor_metadata": [
+        {
+          "name": "image"
+        }
+      ],
+      "output_tensor_metadata": [
+        {
+          "name": "probability"
+        }
+      ]
+    }
+  ],
+  "min_parser_version": "1.0.0"
+}

@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 
 class MediaStreamFocusDelegateTest : public BrowserWithTestWindowTest {
@@ -34,8 +35,8 @@ class MediaStreamFocusDelegateTest : public BrowserWithTestWindowTest {
         content::DesktopMediaID::TYPE_WEB_CONTENTS,
         content::DesktopMediaID::kNullId,
         content::WebContentsMediaCaptureId(
-            tab->GetMainFrame()->GetProcess()->GetID(),
-            tab->GetMainFrame()->GetRoutingID()));
+            tab->GetPrimaryMainFrame()->GetProcess()->GetID(),
+            tab->GetPrimaryMainFrame()->GetRoutingID()));
   }
 
   void SetFocus(const content::DesktopMediaID& media_id,

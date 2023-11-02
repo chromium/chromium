@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -95,7 +95,8 @@ void TrustedVaultAccessTokenFetcherFrontend::OnAccessTokenFetchCompleted(
 
 void TrustedVaultAccessTokenFetcherFrontend::FulfillPendingRequests(
     absl::optional<signin::AccessTokenInfo> access_token_info) {
-  for (auto& pending_request : pending_requests_) {
+  for (TrustedVaultAccessTokenFetcher::TokenCallback& pending_request :
+       pending_requests_) {
     std::move(pending_request).Run(access_token_info);
   }
   pending_requests_.clear();

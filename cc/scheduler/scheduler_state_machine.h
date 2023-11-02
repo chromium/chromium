@@ -1,4 +1,4 @@
-// Copyright 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -136,6 +136,7 @@ class CC_EXPORT SchedulerStateMachine {
     NONE,
     SEND_BEGIN_MAIN_FRAME,
     COMMIT,
+    POST_COMMIT,
     ACTIVATE_SYNC_TREE,
     PERFORM_IMPL_SIDE_INVALIDATION,
     DRAW_IF_POSSIBLE,
@@ -158,6 +159,8 @@ class CC_EXPORT SchedulerStateMachine {
   void WillNotifyBeginMainFrameNotExpectedUntil();
   void WillNotifyBeginMainFrameNotExpectedSoon();
   void WillCommit(bool commit_had_no_updates);
+  void DidCommit();
+  void DidPostCommit();
   void WillActivate();
   void WillDraw();
   void WillBeginLayerTreeFrameSinkCreation();
@@ -172,6 +175,12 @@ class CC_EXPORT SchedulerStateMachine {
   // Indicates whether the impl thread needs a BeginImplFrame callback in order
   // to make progress.
   bool BeginFrameNeeded() const;
+
+  // Indicates whether the compositor should continue to receive BeginFrame
+  // notifications. This is different from BeginFrameNeeded() for cases where we
+  // temporarily stop drawing. Unsubscribing and re-subscribing to BeginFrame
+  // notifications creates unnecessary overhead.
+  bool ShouldSubscribeToBeginFrames() const;
 
   // Indicates that the system has entered and left a BeginImplFrame callback.
   // The scheduler will not draw more than once in a given BeginImplFrame
@@ -287,6 +296,7 @@ class CC_EXPORT SchedulerStateMachine {
   // the notification received updated the state for the current pending tree,
   // if any.
   bool NotifyReadyToActivate();
+  bool IsReadyToActivate();
 
   // Indicates the active tree's visible tiles are ready to be drawn.
   void NotifyReadyToDraw();
@@ -324,6 +334,7 @@ class CC_EXPORT SchedulerStateMachine {
   bool CouldSendBeginMainFrame() const;
 
   void SetDeferBeginMainFrame(bool defer_begin_main_frame);
+  void SetPauseRendering(bool pause_rendering);
 
   void SetVideoNeedsBeginFrames(bool video_needs_begin_frames);
   bool video_needs_begin_frames() const { return video_needs_begin_frames_; }
@@ -349,11 +360,16 @@ class CC_EXPORT SchedulerStateMachine {
   bool should_defer_invalidation_for_fast_main_frame() const {
     return should_defer_invalidation_for_fast_main_frame_;
   }
-  bool did_commit_during_frame() const { return did_commit_during_frame_; }
 
   int aborted_begin_main_frame_count() const {
     return aborted_begin_main_frame_count_;
   }
+
+  bool pending_tree_is_ready_for_activation() const {
+    return pending_tree_is_ready_for_activation_;
+  }
+
+  bool resourceless_draw() const { return resourceless_draw_; }
 
  protected:
   bool BeginFrameRequiredForAction() const;
@@ -381,6 +397,7 @@ class CC_EXPORT SchedulerStateMachine {
   bool ShouldActivateSyncTree() const;
   bool ShouldSendBeginMainFrame() const;
   bool ShouldCommit() const;
+  bool ShouldRunPostCommit() const;
   bool ShouldPrepareTiles() const;
   bool ShouldInvalidateLayerTreeFrameSink() const;
   bool ShouldNotifyBeginMainFrameNotExpectedUntil() const;
@@ -396,6 +413,9 @@ class CC_EXPORT SchedulerStateMachine {
       LayerTreeFrameSinkState::NONE;
   BeginImplFrameState begin_impl_frame_state_ = BeginImplFrameState::IDLE;
   BeginMainFrameState begin_main_frame_state_ = BeginMainFrameState::IDLE;
+  // This tracks a BMF sent to the main thread before we're finished processing
+  // the previous BMF (tracked by begin_main_frame_state_) on the impl thread.
+  BeginMainFrameState next_begin_main_frame_state_ = BeginMainFrameState::IDLE;
 
   // A redraw is forced when too many checkerboarded-frames are produced during
   // an animation.
@@ -441,6 +461,7 @@ class CC_EXPORT SchedulerStateMachine {
   bool needs_prepare_tiles_ = false;
   bool needs_begin_main_frame_ = false;
   bool needs_one_begin_impl_frame_ = false;
+  bool needs_post_commit_ = false;
   bool visible_ = false;
   bool begin_frame_source_paused_ = false;
   bool resourceless_draw_ = false;
@@ -456,6 +477,7 @@ class CC_EXPORT SchedulerStateMachine {
   bool critical_begin_main_frame_to_activate_is_fast_ = true;
   bool main_thread_missed_last_deadline_ = false;
   bool defer_begin_main_frame_ = false;
+  bool pause_rendering_ = false;
   bool video_needs_begin_frames_ = false;
   bool last_commit_had_no_updates_ = false;
   bool active_tree_is_ready_to_draw_ = true;

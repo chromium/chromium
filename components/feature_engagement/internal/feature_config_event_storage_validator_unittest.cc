@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,10 +19,12 @@ namespace feature_engagement {
 
 namespace {
 
-const base::Feature kEventStorageTestFeatureFoo{
-    "test_foo", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kEventStorageTestFeatureBar{
-    "test_bar", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEventStorageTestFeatureFoo,
+             "test_foo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEventStorageTestFeatureBar,
+             "test_bar",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 FeatureConfig kNeverStored;
 FeatureConfig kStoredInUsed1Day;

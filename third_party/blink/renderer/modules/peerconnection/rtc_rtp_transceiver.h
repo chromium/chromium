@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_transceiver_init.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -61,7 +60,10 @@ class RTCRtpTransceiver final : public ScriptWrappable {
   // of remote tracks:
   // https://w3c.github.io/webrtc-pc/#set-the-rtcsessiondescription.
   void UpdateMembers();
-  void OnPeerConnectionClosed();
+  // Stopped transceivers are removed, but we don't have access to removed
+  // transceivers' internal states. This method updates the states to reflect
+  // being stopped.
+  void OnTransceiverStopped();
 
   RTCRtpTransceiverPlatform* platform_transceiver() const;
   absl::optional<webrtc::RtpTransceiverDirection> fired_direction() const;
@@ -85,7 +87,7 @@ class RTCRtpTransceiver final : public ScriptWrappable {
   std::unique_ptr<RTCRtpTransceiverPlatform> platform_transceiver_;
   Member<RTCRtpSender> sender_;
   Member<RTCRtpReceiver> receiver_;
-  bool stopped_;
+  String mid_;
   String direction_;
   String current_direction_;
   absl::optional<webrtc::RtpTransceiverDirection> fired_direction_;

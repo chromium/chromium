@@ -1,0 +1,76 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("price_notifications") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "price_notifications_coordinator.h",
+    "price_notifications_coordinator.mm",
+    "price_notifications_mediator.h",
+    "price_notifications_mediator.mm",
+  ]
+  deps = [
+    ":constants",
+    ":price_notifications_ui",
+    "resources:line_downtrend",
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/icons:settings_icons",
+    "//ios/chrome/browser/ui/icons:symbols",
+    "//ios/chrome/browser/ui/list_model",
+    "//ios/chrome/browser/ui/settings/price_notifications/tracking_price",
+    "//ios/chrome/browser/ui/table_view:utils",
+    "//ios/chrome/browser/ui/table_view/cells",
+    "//ios/chrome/common/ui/colors",
+    "//ui/base",
+  ]
+}
+
+source_set("price_notifications_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "price_notifications_consumer.h",
+    "price_notifications_navigation_commands.h",
+    "price_notifications_view_controller.h",
+    "price_notifications_view_controller.mm",
+    "price_notifications_view_controller_delegate.h",
+  ]
+  deps = [
+    ":constants",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/settings:settings_root",
+    "//ios/chrome/browser/ui/table_view",
+    "//ios/chrome/browser/ui/table_view:utils",
+    "//ui/base",
+  ]
+}
+
+source_set("constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "price_notifications_constants.h",
+    "price_notifications_constants.mm",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [ "price_notifications_egtest.mm" ]
+  deps = [
+    ":constants",
+    "//base",
+    "//base/test:test_support",
+    "//components/commerce/core:feature_list",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,7 +60,7 @@ void AppendLayerPropertiesMatchedStyle(
     // Property trees must be updated in order to get valid render surface
     // reasons.
     if (!cc_layer->layer_tree_host() ||
-        cc_layer->layer_tree_host()->property_trees()->needs_rebuild)
+        cc_layer->layer_tree_host()->property_trees()->needs_rebuild())
       return;
     cc::RenderSurfaceReason render_surface = cc_layer->GetRenderSurfaceReason();
     if (render_surface != cc::RenderSurfaceReason::kNone) {

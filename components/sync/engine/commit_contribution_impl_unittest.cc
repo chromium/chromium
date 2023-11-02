@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,9 @@
 #include "base/callback_helpers.h"
 #include "base/hash/sha1.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/nigori/cryptographer.h"
@@ -22,7 +24,7 @@
 #include "components/sync/protocol/sharing_message_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
-#include "components/sync/test/engine/fake_cryptographer.h"
+#include "components/sync/test/fake_cryptographer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {
@@ -103,7 +105,6 @@ TEST(CommitContributionImplTest, PopulateCommitProtoDefault) {
   EXPECT_EQ(kValue, entity.specifics().preference().value());
   EXPECT_TRUE(entity.parent_id_string().empty());
   EXPECT_FALSE(entity.unique_position().has_custom_compressed_v1());
-  EXPECT_EQ(0, entity.position_in_parent());
 }
 
 TEST(CommitContributionImplTest, PopulateCommitProtoBookmark) {
@@ -121,7 +122,7 @@ TEST(CommitContributionImplTest, PopulateCommitProtoBookmark) {
   data->creation_time = creation_time;
   data->modification_time = modification_time;
   data->name = "Name:";
-  data->parent_id = "ParentOf:";
+  data->legacy_parent_id = "ParentOf:";
 
   CommitRequestData request_data;
   request_data.sequence_number = 2;
@@ -146,7 +147,6 @@ TEST(CommitContributionImplTest, PopulateCommitProtoBookmark) {
   EXPECT_FALSE(entity.folder());
   EXPECT_FALSE(entity.parent_id_string().empty());
   EXPECT_TRUE(entity.unique_position().has_custom_compressed_v1());
-  EXPECT_NE(0, entity.position_in_parent());
 }
 
 TEST(CommitContributionImplTest, PopulateCommitProtoBookmarkFolder) {
@@ -164,7 +164,7 @@ TEST(CommitContributionImplTest, PopulateCommitProtoBookmarkFolder) {
   data->creation_time = creation_time;
   data->modification_time = modification_time;
   data->name = "Name:";
-  data->parent_id = "ParentOf:";
+  data->legacy_parent_id = "ParentOf:";
 
   CommitRequestData request_data;
   request_data.sequence_number = 2;
@@ -189,7 +189,6 @@ TEST(CommitContributionImplTest, PopulateCommitProtoBookmarkFolder) {
   EXPECT_TRUE(entity.folder());
   EXPECT_FALSE(entity.parent_id_string().empty());
   EXPECT_TRUE(entity.unique_position().has_custom_compressed_v1());
-  EXPECT_NE(0, entity.position_in_parent());
 }
 
 // Verifies how PASSWORDS protos are committed on the wire, making sure the data
@@ -251,7 +250,6 @@ TEST(CommitContributionImplTest,
   EXPECT_FALSE(entity.specifics().password().encrypted().blob().empty());
   EXPECT_TRUE(entity.parent_id_string().empty());
   EXPECT_FALSE(entity.unique_position().has_custom_compressed_v1());
-  EXPECT_EQ(0, entity.position_in_parent());
 }
 
 // Same as above but uses CUSTOM_PASSPHRASE. In this case, field
@@ -308,7 +306,6 @@ TEST(CommitContributionImplTest,
   EXPECT_FALSE(entity.specifics().password().has_unencrypted_metadata());
   EXPECT_TRUE(entity.parent_id_string().empty());
   EXPECT_FALSE(entity.unique_position().has_custom_compressed_v1());
-  EXPECT_EQ(0, entity.position_in_parent());
 }
 
 TEST(CommitContributionImplTest, ShouldPropagateFailedItemsOnCommitResponse) {
@@ -382,6 +379,89 @@ TEST(CommitContributionImplTest, ShouldPropagateFullCommitFailure) {
       /*only_commit_specifics=*/false);
 
   contribution.ProcessCommitFailure(SyncCommitError::kNetworkError);
+}
+
+TEST(CommitContributionImplTest, ShouldPopulatePasswordNotesBackup) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
+
+  const std::string kNoteValue = "Note Value";
+  auto data = std::make_unique<syncer::EntityData>();
+  data->client_tag_hash = kTag;
+  sync_pb::PasswordSpecificsData* password_data =
+      data->specifics.mutable_password()->mutable_client_only_encrypted_data();
+  sync_pb::PasswordSpecificsData_Notes_Note* note =
+      password_data->mutable_notes()->add_note();
+  note->set_value(kNoteValue);
+
+  auto request_data = std::make_unique<CommitRequestData>();
+  base::Base64Encode(base::SHA1HashString(data->specifics.SerializeAsString()),
+                     &request_data->specifics_hash);
+  request_data->entity = std::move(data);
+
+  CommitRequestDataList requests_data;
+  requests_data.push_back(std::move(request_data));
+
+  std::unique_ptr<FakeCryptographer> cryptographer =
+      FakeCryptographer::FromSingleDefaultKey("dummy");
+  CommitContributionImpl contribution(
+      PASSWORDS, sync_pb::DataTypeContext(), std::move(requests_data),
+      /*on_commit_response_callback=*/base::NullCallback(),
+      /*on_full_commit_failure_callback=*/base::NullCallback(),
+      cryptographer.get(), PassphraseType::kImplicitPassphrase,
+      /*only_commit_specifics=*/false);
+
+  sync_pb::ClientToServerMessage msg;
+  contribution.AddToCommitMessage(&msg);
+
+  ASSERT_EQ(1, msg.commit().entries().size());
+  SyncEntity entity = msg.commit().entries(0);
+  ASSERT_TRUE(entity.specifics().has_password());
+
+  // Verify the contents of the encrypted notes backup blob.
+  sync_pb::PasswordSpecificsData_Notes decrypted_notes;
+  cryptographer->Decrypt(entity.specifics().password().encrypted_notes_backup(),
+                         &decrypted_notes);
+  ASSERT_EQ(1, decrypted_notes.note_size());
+  EXPECT_EQ(kNoteValue, decrypted_notes.note(0).value());
+}
+
+TEST(CommitContributionImplTest,
+     ShouldPopulatePasswordNotesBackupWhenNoLocalNotes) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
+
+  auto data = std::make_unique<syncer::EntityData>();
+  data->client_tag_hash = kTag;
+  sync_pb::PasswordSpecificsData* password_data =
+      data->specifics.mutable_password()->mutable_client_only_encrypted_data();
+  password_data->set_signon_realm("signon_realm");
+
+  auto request_data = std::make_unique<CommitRequestData>();
+  base::Base64Encode(base::SHA1HashString(data->specifics.SerializeAsString()),
+                     &request_data->specifics_hash);
+  request_data->entity = std::move(data);
+
+  CommitRequestDataList requests_data;
+  requests_data.push_back(std::move(request_data));
+
+  std::unique_ptr<FakeCryptographer> cryptographer =
+      FakeCryptographer::FromSingleDefaultKey("dummy");
+  CommitContributionImpl contribution(
+      PASSWORDS, sync_pb::DataTypeContext(), std::move(requests_data),
+      /*on_commit_response_callback=*/base::NullCallback(),
+      /*on_full_commit_failure_callback=*/base::NullCallback(),
+      cryptographer.get(), PassphraseType::kImplicitPassphrase,
+      /*only_commit_specifics=*/false);
+
+  sync_pb::ClientToServerMessage msg;
+  contribution.AddToCommitMessage(&msg);
+
+  ASSERT_EQ(1, msg.commit().entries().size());
+  SyncEntity entity = msg.commit().entries(0);
+  ASSERT_TRUE(entity.specifics().has_password());
+  EXPECT_FALSE(
+      entity.specifics().password().encrypted_notes_backup().blob().empty());
 }
 
 }  // namespace

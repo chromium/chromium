@@ -9,6 +9,7 @@
 <translation id="1591070050619849194">Онемогући све анимиране слике.</translation>
 <translation id="1703735871906654364">Навигација курсором</translation>
 <translation id="1791496371305830581">Омогући све анимиране слике.</translation>
+<translation id="1974060860693918893">Напредне опције</translation>
 <translation id="1996252509865389616">Омогућити?</translation>
 <translation id="2079545284768500474">Опозови</translation>
 <translation id="2179565792157161713">Отвори пун опис на новој картици</translation>
@@ -51,6 +52,7 @@
 <translation id="6170146920149900756">Побољшавање боја</translation>
 <translation id="633394792577263429">Држите &lt;span class='key'&gt;Ctrl&lt;/span&gt; да бисте се померали са једне речи на другу.</translation>
 <translation id="6550675742724504774">Опције</translation>
+<translation id="6699630355767768222">3. корак: Замените осовину боја ради корекције.</translation>
 <translation id="6838518108677880446">Подешавање:</translation>
 <translation id="690628312087070417">Када курсор пређе велику област на страници:</translation>
 <translation id="6965382102122355670">Потврди</translation>
@@ -65,5 +67,6 @@
 <translation id="8321034316479930120">Смернице за анимацију</translation>
 <translation id="8480209185614411573">Високи контраст</translation>
 <translation id="8609925175482059018">Притисните &lt;span class='key'&gt;F7&lt;/span&gt; да бисте укључили навигацију курсором. Поновним притиском на исти тастер онемогућићете ову функцију.</translation>
+<translation id="8798099450830957504">Подразумевано</translation>
 <translation id="894241283505723656">Пун опис у контекстуалном менију</translation>
 </translationbundle>

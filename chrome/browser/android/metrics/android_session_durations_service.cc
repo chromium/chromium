@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -106,6 +106,14 @@ void AndroidSessionDurationsService::InitializeForIncognitoProfile() {
   incognito_session_metrics_recorder_ =
       std::make_unique<IncognitoSessionDurationsMetricsRecorder>();
   OnAppEnterForeground(base::TimeTicks::Now());
+}
+
+bool AndroidSessionDurationsService::IsSignedIn() const {
+  return sync_session_metrics_recorder_->IsSignedIn();
+}
+
+bool AndroidSessionDurationsService::IsSyncing() const {
+  return sync_session_metrics_recorder_->IsSyncing();
 }
 
 void AndroidSessionDurationsService::Shutdown() {

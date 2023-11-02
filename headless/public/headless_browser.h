@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,18 +13,15 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "headless/public/headless_browser_context.h"
-#include "headless/public/headless_devtools_channel.h"
 #include "headless/public/headless_export.h"
-#include "headless/public/headless_web_contents.h"
 #include "net/base/host_port_pair.h"
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/geometry/size.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "sandbox/win/src/sandbox_types.h"
 #endif
 
@@ -34,6 +31,9 @@ class SingleThreadTaskRunner;
 }
 
 namespace headless {
+
+class HeadlessDevToolsChannel;
+class HeadlessWebContents;
 
 // This class represents the global headless browser instance. To get a pointer
 // to one, call |HeadlessBrowserMain| to initiate the browser main loop. An
@@ -114,14 +114,14 @@ struct HEADLESS_EXPORT HeadlessBrowser::Options {
 
   // Command line options to be passed to browser. Initialized in constructor.
   int argc;
-  const char** argv;
+  raw_ptr<const char*> argv;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Set hardware instance if available, otherwise it defaults to 0.
   HINSTANCE instance = 0;
 
   // Set with sandbox information. This has to be already initialized.
-  sandbox::SandboxInterfaceInfo* sandbox_info = nullptr;
+  raw_ptr<sandbox::SandboxInterfaceInfo> sandbox_info = nullptr;
 #endif
 
   // Address at which DevTools should listen for connections. Disabled by
@@ -135,7 +135,7 @@ struct HEADLESS_EXPORT HeadlessBrowser::Options {
   bool DevtoolsServerEnabled();
 
   // Optional message pump that overrides the default. Must outlive the browser.
-  base::MessagePump* message_pump = nullptr;
+  raw_ptr<base::MessagePump> message_pump = nullptr;
 
   // Run the browser in single process mode instead of using separate renderer
   // processes as per default. Note that this also disables any sandboxing of
@@ -249,7 +249,7 @@ class HEADLESS_EXPORT HeadlessBrowser::Options::Builder {
   Builder& SetANGLEImplementation(const std::string& implementation);
   Builder& SetAppendCommandLineFlagsCallback(
       const Options::AppendCommandLineFlagsCallback& callback);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   Builder& SetInstance(HINSTANCE hinstance);
   Builder& SetSandboxInfo(sandbox::SandboxInterfaceInfo* info);
 #endif
@@ -278,7 +278,7 @@ class HEADLESS_EXPORT HeadlessBrowser::Options::Builder {
   Options options_;
 };
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 // The headless browser may need to create child processes (e.g., a renderer
 // which runs web content). This is done by re-executing the parent process as
 // a zygote[1] and forking each child process from that zygote.
@@ -307,7 +307,7 @@ void RunChildProcessIfNeeded(int argc, const char** argv);
 // the child process.
 void RunChildProcessIfNeeded(HINSTANCE instance,
                              sandbox::SandboxInterfaceInfo* sandbox_info);
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
 
 // Main entry point for running the headless browser. This function constructs
 // the headless browser instance, passing it to the given

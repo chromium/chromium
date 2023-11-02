@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -75,7 +75,7 @@ void UserAddingScreenImpl::Cancel() {
 }
 
 bool UserAddingScreenImpl::IsRunning() {
-  return display_host_ != NULL;
+  return display_host_ != nullptr;
 }
 
 void UserAddingScreenImpl::AddObserver(UserAddingScreen::Observer* observer) {
@@ -89,7 +89,7 @@ void UserAddingScreenImpl::RemoveObserver(
 
 void UserAddingScreenImpl::OnDisplayHostCompletion() {
   CHECK(IsRunning());
-  display_host_ = NULL;
+  display_host_ = nullptr;
 
   session_manager::SessionManager::Get()->SetSessionState(
       session_manager::SessionState::ACTIVE);
@@ -103,7 +103,7 @@ UserAddingScreenImpl* UserAddingScreenImpl::GetInstance() {
 }
 
 UserAddingScreenImpl::UserAddingScreenImpl()
-    : display_host_(NULL), im_controller_(this) {}
+    : display_host_(nullptr), im_controller_(this) {}
 
 UserAddingScreenImpl::~UserAddingScreenImpl() {}
 

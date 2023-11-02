@@ -1,0 +1,75 @@
+Test that hitting areas outside columns takes us to the right text content inside columns.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+Above first column:
+PASS document.caretRangeFromPoint(450,0).startOffset is 0
+FAIL document.caretRangeFromPoint(350,0).startOffset should be 2. Was 0.
+FAIL document.caretRangeFromPoint(291,0).startOffset should be 3. Was 0.
+FAIL document.caretRangeFromPoint(290,0).startOffset should be 3. Was 12.
+Above second column:
+PASS document.caretRangeFromPoint(289,0).startOffset is 12
+FAIL document.caretRangeFromPoint(250,0).startOffset should be 14. Was 12.
+FAIL document.caretRangeFromPoint(191,0).startOffset should be 15. Was 12.
+FAIL document.caretRangeFromPoint(190,0).startOffset should be 15. Was 24.
+Above third column:
+PASS document.caretRangeFromPoint(189,0).startOffset is 24
+FAIL document.caretRangeFromPoint(150,0).startOffset should be 26. Was 24.
+FAIL document.caretRangeFromPoint(50,0).startOffset should be 27. Was 24.
+Below first column:
+FAIL document.caretRangeFromPoint(450,100).startOffset should be 8. Was 12.
+FAIL document.caretRangeFromPoint(350,100).startOffset should be 10. Was 12.
+FAIL document.caretRangeFromPoint(291,100).startOffset should be 11. Was 12.
+FAIL document.caretRangeFromPoint(290,100).startOffset should be 11. Was 24.
+Below second column:
+FAIL document.caretRangeFromPoint(289,100).startOffset should be 20. Was 24.
+FAIL document.caretRangeFromPoint(250,100).startOffset should be 22. Was 24.
+FAIL document.caretRangeFromPoint(191,100).startOffset should be 23. Was 24.
+FAIL document.caretRangeFromPoint(190,100).startOffset should be 23. Was 32.
+Below third column:
+PASS document.caretRangeFromPoint(189,100).startOffset is 32
+FAIL document.caretRangeFromPoint(150,100).startOffset should be 34. Was 32.
+FAIL document.caretRangeFromPoint(50,100).startOffset should be 35. Was 32.
+To the right of the first column:
+PASS document.caretRangeFromPoint(400,10).startOffset is 0
+PASS document.caretRangeFromPoint(400,30).startOffset is 0
+PASS document.caretRangeFromPoint(400,50).startOffset is 4
+PASS document.caretRangeFromPoint(400,70).startOffset is 8
+FAIL document.caretRangeFromPoint(400,90).startOffset should be 8. Was 12.
+To the left of the third column:
+FAIL document.caretRangeFromPoint(0,10).startOffset should be 27. Was 24.
+PASS document.caretRangeFromPoint(0,30).startOffset is 27
+PASS document.caretRangeFromPoint(0,50).startOffset is 31
+PASS document.caretRangeFromPoint(0,70).startOffset is 35
+FAIL document.caretRangeFromPoint(0,90).startOffset should be 35. Was 32.
+In the gap between the first and second columns:
+PASS document.caretRangeFromPoint(291,20).startOffset is 3
+PASS document.caretRangeFromPoint(291,40).startOffset is 7
+PASS document.caretRangeFromPoint(291,60).startOffset is 11
+PASS document.caretRangeFromPoint(291,69).startOffset is 11
+FAIL document.caretRangeFromPoint(290,20).startOffset should be 3. Was 12.
+FAIL document.caretRangeFromPoint(290,40).startOffset should be 7. Was 16.
+FAIL document.caretRangeFromPoint(290,60).startOffset should be 11. Was 20.
+FAIL document.caretRangeFromPoint(290,69).startOffset should be 11. Was 20.
+PASS document.caretRangeFromPoint(289,20).startOffset is 12
+PASS document.caretRangeFromPoint(289,40).startOffset is 16
+PASS document.caretRangeFromPoint(289,60).startOffset is 20
+PASS document.caretRangeFromPoint(289,69).startOffset is 20
+In the gap between the second and third columns:
+PASS document.caretRangeFromPoint(191,20).startOffset is 15
+PASS document.caretRangeFromPoint(191,40).startOffset is 19
+PASS document.caretRangeFromPoint(191,60).startOffset is 23
+PASS document.caretRangeFromPoint(191,69).startOffset is 23
+FAIL document.caretRangeFromPoint(190,20).startOffset should be 15. Was 24.
+FAIL document.caretRangeFromPoint(190,40).startOffset should be 19. Was 28.
+FAIL document.caretRangeFromPoint(190,60).startOffset should be 23. Was 32.
+FAIL document.caretRangeFromPoint(190,69).startOffset should be 23. Was 32.
+PASS document.caretRangeFromPoint(189,20).startOffset is 24
+PASS document.caretRangeFromPoint(189,40).startOffset is 28
+PASS document.caretRangeFromPoint(189,60).startOffset is 32
+PASS document.caretRangeFromPoint(189,69).startOffset is 32
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+xxx xxx xxx xxx xxx xxx xxx xxx xxx

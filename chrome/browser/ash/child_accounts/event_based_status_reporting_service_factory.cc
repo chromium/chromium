@@ -1,14 +1,14 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/child_accounts/event_based_status_reporting_service_factory.h"
 
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/child_accounts/child_status_reporting_service_factory.h"
 #include "chrome/browser/ash/child_accounts/event_based_status_reporting_service.h"
 #include "chrome/browser/ash/child_accounts/screen_time_controller_factory.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace ash {
 
@@ -29,9 +29,7 @@ EventBasedStatusReportingServiceFactory::GetInstance() {
 
 EventBasedStatusReportingServiceFactory::
     EventBasedStatusReportingServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "EventBasedStatusReportingServiceFactory",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("EventBasedStatusReportingServiceFactory") {
   DependsOn(ChildStatusReportingServiceFactory::GetInstance());
   DependsOn(ArcAppListPrefsFactory::GetInstance());
   DependsOn(ScreenTimeControllerFactory::GetInstance());

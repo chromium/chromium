@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include "base/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
 #include "base/test/bind.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "net/base/net_errors.h"
@@ -150,6 +149,17 @@ FakeDeviceManagementService::CaptureRequest(
 }
 
 FakeDeviceManagementService::JobAction
+FakeDeviceManagementService::CaptureTimeout(base::TimeDelta* timeout) {
+  return [timeout](DeviceManagementService::JobForTesting job) mutable {
+    if (job.IsActive()) {
+      auto to = job.GetConfigurationForTesting()->GetTimeoutDuration();
+      if (to)
+        *timeout = to.value();
+    }
+  };
+}
+
+FakeDeviceManagementService::JobAction
 FakeDeviceManagementService::SendJobResponseAsync(int net_error,
                                                   int response_code,
                                                   const std::string& response,
@@ -271,6 +281,10 @@ void FakeJobConfiguration::SetShouldRetryResponse(
   should_retry_response_ = method;
 }
 
+void FakeJobConfiguration::SetTimeoutDuration(base::TimeDelta timeout) {
+  timeout_ = timeout;
+}
+
 DeviceManagementService::Job::RetryMethod FakeJobConfiguration::ShouldRetry(
     int response_code,
     const std::string& response_body) {
@@ -287,9 +301,9 @@ void FakeJobConfiguration::OnURLLoadComplete(DeviceManagementService::Job* job,
                                              int net_error,
                                              int response_code,
                                              const std::string& response_body) {
-  DeviceManagementStatus code =
-      MapNetErrorAndResponseCodeToDMStatus(net_error, response_code);
-  std::move(callback_).Run(job, code, net_error, response_body);
+  DeviceManagementStatus status =
+      MapNetErrorAndResponseToDMStatus(net_error, response_code, response_body);
+  std::move(callback_).Run(job, status, net_error, response_body);
 }
 
 }  // namespace policy

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,7 +56,7 @@ NGOffsetMappingBuilder::SourceNodeScope::~SourceNodeScope() {
 
 void NGOffsetMappingBuilder::ReserveCapacity(unsigned capacity) {
   unit_ranges_.ReserveCapacityForSize(capacity);
-  mapping_units_.ReserveCapacity(capacity * 1.5);
+  mapping_units_.reserve(capacity * 1.5);
 }
 
 void NGOffsetMappingBuilder::AppendIdentityMapping(unsigned length) {

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -181,6 +181,11 @@ class ASH_EXPORT HoldingSpaceViewDelegate
   // Updates `selection_ui_` based on device state and `selection_size_`.
   void UpdateSelectionUi();
 
+  // Attempts to open the holding space items associated with the given `views`.
+  // Schedules the bubble to close regardless of attempt success.
+  void OpenItemsAndScheduleClose(
+      const std::vector<const HoldingSpaceItemView*>& views);
+
   HoldingSpaceTrayBubble* const bubble_;
 
   std::unique_ptr<ui::SimpleMenuModel> context_menu_model_;
@@ -208,6 +213,8 @@ class ASH_EXPORT HoldingSpaceViewDelegate
 
   base::ScopedObservation<TabletMode, TabletModeObserver> tablet_mode_observer_{
       this};
+
+  base::WeakPtrFactory<HoldingSpaceViewDelegate> weak_factory_{this};
 };
 
 }  // namespace ash

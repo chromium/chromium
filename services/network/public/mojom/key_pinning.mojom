@@ -1,0 +1,35 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+// Structure used to hold information about a specific pinset.
+struct PinSet {
+  // Name of the pinset.
+  string name;
+  // Set of allowed SPKIs hashes.
+  array<array<uint8>> static_spki_hashes;
+  // Optional set of forbidden SPKIs hashes
+  array<array<uint8>> bad_static_spki_hashes;
+  // Optional URI to send bad pin reports to.
+  string report_uri;
+};
+
+struct PinSetInfo {
+  // Hostname this pinset applies to.
+  string hostname;
+  // Name of the pinset.
+  string pinset_name;
+  // Whether this pinset applies to subdomains.
+  bool include_subdomains;
+};
+
+struct PinList {
+  // All known pinsets.
+  array<PinSet> pinsets;
+  // List of known hosts with pins. Each element represents a different
+  // hostname, and includes the name of the pinset that applies to it, and
+  // whether it applies to subdomains.
+  array<PinSetInfo> host_pins;
+};

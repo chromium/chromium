@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,11 @@
 #define CHROME_BROWSER_METRICS_UKM_BACKGROUND_RECORDER_SERVICE_H_
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -71,7 +72,7 @@ class UkmBackgroundRecorderService : public KeyedService {
       UkmBackgroundRecorderService::GetBackgroundSourceIdCallback callback,
       history::VisibleVisitCountToHostResult result);
 
-  history::HistoryService* history_service_;
+  raw_ptr<history::HistoryService> history_service_;
 
   // Task tracker used for querying URLs in the history service.
   base::CancelableTaskTracker task_tracker_;
@@ -79,7 +80,7 @@ class UkmBackgroundRecorderService : public KeyedService {
   base::WeakPtrFactory<UkmBackgroundRecorderService> weak_ptr_factory_{this};
 };
 
-class UkmBackgroundRecorderFactory : public BrowserContextKeyedServiceFactory {
+class UkmBackgroundRecorderFactory : public ProfileKeyedServiceFactory {
  public:
   static UkmBackgroundRecorderFactory* GetInstance();
   static UkmBackgroundRecorderService* GetForProfile(Profile* profile);
@@ -91,9 +92,6 @@ class UkmBackgroundRecorderFactory : public BrowserContextKeyedServiceFactory {
   ~UkmBackgroundRecorderFactory() override;
 
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

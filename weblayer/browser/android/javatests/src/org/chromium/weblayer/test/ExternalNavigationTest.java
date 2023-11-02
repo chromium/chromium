@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,6 +28,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.Browser;
 import org.chromium.weblayer.Callback;
@@ -66,8 +67,7 @@ public class ExternalNavigationTest {
     // The package is not specified in the intent that gets created when navigating to the special
     // scheme.
     private static final String INTENT_TO_DUMMY_ACTIVITY_FOR_SPECIAL_SCHEME_PACKAGE = null;
-    private static final String INTENT_TO_SELF_DATA_CONTENT =
-            "play.google.com/store/apps/details?id=com.facebook.katana/";
+    private static final String INTENT_TO_SELF_DATA_CONTENT = "example.test";
     private static final String INTENT_TO_SELF_SCHEME = "https";
     private static final String INTENT_TO_SELF_DATA_STRING =
             INTENT_TO_SELF_SCHEME + "://" + INTENT_TO_SELF_DATA_CONTENT;
@@ -117,6 +117,8 @@ public class ExternalNavigationTest {
     private final String mNonResolvableIntentWithFallbackUrlThatLaunchesIntent =
             NON_RESOLVABLE_INTENT + "S.browser_fallback_url="
             + android.net.Uri.encode(mRedirectToIntentToSelfURL) + ";end";
+
+    private static final String SPECIALIZED_DATA_URL = "data://externalnavtest";
 
     private class IntentInterceptor implements InstrumentationActivity.IntentInterceptor {
         public Intent mLastIntent;
@@ -1412,6 +1414,7 @@ public class ExternalNavigationTest {
      */
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/1329813")
     public void
     testNonHandledExternalIntentWithFallbackUrlThatLaunchesIntentAfterRedirectBlocksFallbackIntent()
             throws Throwable {
@@ -1553,5 +1556,23 @@ public class ExternalNavigationTest {
 
         // The current URL should not have changed.
         Assert.assertEquals(url, mActivityTestRule.getCurrentDisplayUrl());
+    }
+
+    /**
+     * Verifies that for an intent with multiple matching apps that weblayer can handle, we avoid
+     * the disambiguation dialog and stay in weblayer.
+     */
+    @Test
+    @SmallTest
+    public void testAvoidDisambiguationDialog() throws Throwable {
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(ABOUT_BLANK_URL);
+        IntentInterceptor intentInterceptor = new IntentInterceptor();
+        activity.setIntentInterceptor(intentInterceptor);
+
+        // The data URL isn't valid and will fail the navigation.
+        mActivityTestRule.navigateAndWaitForFailure(SPECIALIZED_DATA_URL);
+
+        Assert.assertNull(intentInterceptor.mLastIntent);
+        Assert.assertEquals(SPECIALIZED_DATA_URL, mActivityTestRule.getCurrentDisplayUrl());
     }
 }

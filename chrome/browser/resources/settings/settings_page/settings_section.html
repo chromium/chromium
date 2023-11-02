@@ -23,6 +23,15 @@
         border-radius: var(--cr-card-border-radius);
         box-shadow: var(--cr-card-shadow);
         flex: 1;
+        overflow: hidden;
+      }
+
+      @media (forced-colors: active) {
+        /* Use border instead of box-shadow (which does not work) in Windows
+           HCM. */
+        :host(:not(.expanded)) #card {
+          border: var(--cr-border-hcm);
+        }
       }
 
       :host(.expanded) #header,

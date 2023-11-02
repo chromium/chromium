@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/c/pp_resource.h"
@@ -36,9 +35,6 @@
   F(PPB_FileIO_API)                     \
   F(PPB_FileRef_API)                    \
   F(PPB_FileSystem_API)                 \
-  F(PPB_Find_API)                       \
-  F(PPB_Flash_FontFile_API)             \
-  F(PPB_Flash_Fullscreen_API)           \
   F(PPB_Gamepad_API)                    \
   F(PPB_Graphics2D_API)                 \
   F(PPB_Graphics3D_API)                 \
@@ -54,7 +50,6 @@
   F(PPB_NetworkList_API)                \
   F(PPB_NetworkMonitor_API)             \
   F(PPB_NetworkProxy_API)               \
-  F(PPB_PDF_API)                        \
   F(PPB_Printing_API)                   \
   F(PPB_Scrollbar_API)                  \
   F(PPB_TCPServerSocket_Private_API)    \

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,8 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+
+import org.chromium.ui.widget.ButtonCompat;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -56,7 +58,7 @@ public class MoreProgressButton extends FrameLayout implements View.OnClickListe
     }
 
     protected View mProgressSpinner;
-    protected View mButton;
+    protected ButtonCompat mButton;
     protected Runnable mOnClickRunnable;
 
     protected @State int mState = State.INVALID;
@@ -106,6 +108,10 @@ public class MoreProgressButton extends FrameLayout implements View.OnClickListe
         mState = state;
         this.mButton.setVisibility(State.BUTTON == state ? View.VISIBLE : View.GONE);
         this.mProgressSpinner.setVisibility(State.LOADING == state ? View.VISIBLE : View.GONE);
+    }
+
+    public void setButtonText(String text) {
+        mButton.setText(text);
     }
 
     @VisibleForTesting

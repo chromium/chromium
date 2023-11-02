@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -187,15 +187,6 @@ void Canvas::DrawStringRectWithFlags(const std::u16string& text,
       int line_padding = 0;
       const int line_height = render_text->GetStringSize().height();
 
-      // TODO(msw|asvitkine): Center Windows multi-line text: crbug.com/107357
-#if !defined(OS_WIN)
-      if (i == 0) {
-        // TODO(msw|asvitkine): Support multi-line text with varied heights.
-        const int text_height = strings.size() * line_height - line_padding;
-        rect += Vector2d(0, (text_bounds.height() - text_height) / 2);
-      }
-#endif
-
       rect.set_height(line_height - line_padding);
 
       if (range.IsValid())
@@ -209,7 +200,7 @@ void Canvas::DrawStringRectWithFlags(const std::u16string& text,
     Range range = StripAcceleratorChars(flags, &adjusted_text);
     bool elide_text = ((flags & NO_ELLIPSIS) == 0);
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     // On Linux, eliding really means fading the end of the string. But only
     // for LTR text. RTL text is still elided (on the left) with "...".
     if (elide_text) {

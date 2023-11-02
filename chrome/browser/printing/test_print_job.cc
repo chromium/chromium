@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include "printing/printed_document.h"
 #include "ui/gfx/geometry/size.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "printing/mojom/print.mojom.h"
 #endif
 
@@ -46,11 +46,15 @@ void TestPrintJob::Cancel() {
   set_job_pending(false);
 }
 
+void TestPrintJob::OnFailed() {}
+
+void TestPrintJob::OnDocDone(int job_id, PrintedDocument* document) {}
+
 bool TestPrintJob::FlushJob(base::TimeDelta timeout) {
   return true;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void TestPrintJob::StartPdfToEmfConversion(
     scoped_refptr<base::RefCountedMemory> bytes,
     const gfx::Size& page_size,
@@ -77,7 +81,7 @@ void TestPrintJob::StartPdfToTextConversion(
   page_size_ = page_size;
   type_ = mojom::PrinterLanguageType::kTextOnly;
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 TestPrintJob::~TestPrintJob() {
   set_job_pending(false);

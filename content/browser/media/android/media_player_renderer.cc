@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "media/base/android/media_service_throttler.h"
@@ -219,11 +218,8 @@ media::MediaResourceGetter* MediaPlayerRenderer::GetMediaResourceGetter() {
       return nullptr;
 
     BrowserContext* context = host->GetBrowserContext();
-    StoragePartition* partition = host->GetStoragePartition();
-    storage::FileSystemContext* file_system_context =
-        partition ? partition->GetFileSystemContext() : nullptr;
     media_resource_getter_ = std::make_unique<MediaResourceGetterImpl>(
-        context, file_system_context, render_process_id_, routing_id_);
+        context, render_process_id_, routing_id_);
   }
   return media_resource_getter_.get();
 }

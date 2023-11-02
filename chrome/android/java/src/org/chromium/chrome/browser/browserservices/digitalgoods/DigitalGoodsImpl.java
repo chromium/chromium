@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.mojo.system.MojoException;
 import org.chromium.payments.mojom.DigitalGoods;
-import org.chromium.payments.mojom.DigitalGoods.Acknowledge_Response;
 import org.chromium.payments.mojom.DigitalGoods.GetDetails_Response;
 import org.chromium.payments.mojom.DigitalGoods.ListPurchases_Response;
 import org.chromium.url.GURL;
@@ -43,19 +42,21 @@ public class DigitalGoodsImpl implements DigitalGoods {
     }
 
     @Override
-    public void acknowledge(
-            String purchaseToken, boolean makeAvailableAgain, Acknowledge_Response callback) {
-        GURL url = mDelegate.getUrl();
-        if (url != null) {
-            mAdapter.acknowledge(
-                    Uri.parse(url.getSpec()), purchaseToken, makeAvailableAgain, callback);
-        }
-    }
-
-    @Override
     public void listPurchases(ListPurchases_Response callback) {
         GURL url = mDelegate.getUrl();
         if (url != null) mAdapter.listPurchases(Uri.parse(url.getSpec()), callback);
+    }
+
+    @Override
+    public void listPurchaseHistory(ListPurchaseHistory_Response callback) {
+        GURL url = mDelegate.getUrl();
+        if (url != null) mAdapter.listPurchaseHistory(Uri.parse(url.getSpec()), callback);
+    }
+
+    @Override
+    public void consume(String purchaseToken, Consume_Response callback) {
+        GURL url = mDelegate.getUrl();
+        if (url != null) mAdapter.consume(Uri.parse(url.getSpec()), purchaseToken, callback);
     }
 
     @Override

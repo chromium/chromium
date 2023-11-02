@@ -1,8 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.feed;
+
+import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -15,6 +17,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /**
  * Helper methods covering more complex Feed related feature checks and states.
@@ -32,10 +35,11 @@ public final class FeedFeatures {
 
     /**
      * @return Whether the feed is allowed to be used. Returns false if the feed is disabled due to
-     *         enterprise policy. The value returned should not be cached as it may change.
+     *         enterprise policy, or by flag. The value returned should not be cached as it may
+     * change.
      */
     public static boolean isFeedEnabled() {
-        return getPrefService().getBoolean(Pref.ENABLE_SNIPPETS);
+        return FeedServiceBridge.isEnabled();
     }
 
     /**
@@ -50,6 +54,25 @@ public final class FeedFeatures {
                            .getIdentityManager()
                            .hasPrimaryAccount(ConsentLevel.SYNC)
                 && !Profile.getLastUsedRegularProfile().isChild();
+    }
+
+    public static boolean shouldUseWebFeedAwarenessIPH() {
+        return ChromeFeatureList
+                .getFieldTrialParamByFeature(
+                        ChromeFeatureList.WEB_FEED_AWARENESS, "awareness_style")
+                .equals("IPH");
+    }
+
+    public static boolean shouldUseNewIndicator() {
+        return ChromeFeatureList
+                .getFieldTrialParamByFeature(
+                        ChromeFeatureList.WEB_FEED_AWARENESS, "awareness_style")
+                .equals("new_animation");
+    }
+
+    public static boolean isMultiColumnFeedEnabled(Context context) {
+        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_MULTI_COLUMN);
     }
 
     /**

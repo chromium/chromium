@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,10 +16,6 @@
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "google_apis/gaia/core_account_id.h"
 
-namespace enterprise_management {
-class DeviceManagementResponse;
-}
-
 namespace signin {
 class AccessTokenFetcher;
 class IdentityManager;
@@ -34,9 +30,10 @@ class GoogleServiceAuthError;
 
 namespace policy {
 
-// Interacts with the device management service and determines whether Android
-// management is enabled for the user or not. Uses the IdentityManager to
-// acquire access tokens for the device management.
+struct DMServerJobResult;
+
+// AndroidManagementClient is an interface to check the Android management
+// status.
 class AndroidManagementClient {
  public:
   // Indicates result of the android management check.
@@ -49,21 +46,33 @@ class AndroidManagementClient {
   // A callback which receives Result status of an operation.
   using StatusCallback = base::OnceCallback<void(Result)>;
 
-  AndroidManagementClient(
+  virtual ~AndroidManagementClient() = default;
+
+  // Starts sending of check Android management request to DM server, issues
+  // access token if necessary. |callback| is called on check Android
+  // management completion.
+  virtual void StartCheckAndroidManagement(StatusCallback callback) = 0;
+};
+
+// Interacts with the device management service and determines whether Android
+// management is enabled for the user or not. Uses the IdentityManager to
+// acquire access tokens for the device management.
+class AndroidManagementClientImpl : public AndroidManagementClient {
+ public:
+  AndroidManagementClientImpl(
       DeviceManagementService* service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const CoreAccountId& account_id,
       signin::IdentityManager* identity_manager);
 
-  AndroidManagementClient(const AndroidManagementClient&) = delete;
-  AndroidManagementClient& operator=(const AndroidManagementClient&) = delete;
+  AndroidManagementClientImpl(const AndroidManagementClientImpl&) = delete;
+  AndroidManagementClientImpl& operator=(const AndroidManagementClientImpl&) =
+      delete;
 
-  ~AndroidManagementClient();
+  ~AndroidManagementClientImpl() override;
 
-  // Starts sending of check Android management request to DM server, issues
-  // access token if necessary. |callback| is called on check Android
-  // management completion.
-  void StartCheckAndroidManagement(StatusCallback callback);
+  // AndroidManagementClient override:
+  void StartCheckAndroidManagement(StatusCallback callback) override;
 
   // |access_token| is owned by caller and must exist before
   // StartCheckAndroidManagement is called for testing.
@@ -80,11 +89,7 @@ class AndroidManagementClient {
   void CheckAndroidManagement(const std::string& access_token);
 
   // Callback for check Android management requests.
-  void OnAndroidManagementChecked(
-      DeviceManagementService::Job* job,
-      DeviceManagementStatus status,
-      int net_error,
-      const enterprise_management::DeviceManagementResponse& response);
+  void OnAndroidManagementChecked(DMServerJobResult result);
 
   // Used to communicate with the device management service.
   DeviceManagementService* const device_management_service_;
@@ -99,7 +104,7 @@ class AndroidManagementClient {
 
   StatusCallback callback_;
 
-  base::WeakPtrFactory<AndroidManagementClient> weak_ptr_factory_{this};
+  base::WeakPtrFactory<AndroidManagementClientImpl> weak_ptr_factory_{this};
 };
 
 // Outputs the stringified |result| to |os|. This is only for logging purposes.

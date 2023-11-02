@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -57,6 +57,10 @@ class BrowserAppInstanceRegistry
   const BrowserWindowInstance* GetBrowserWindowInstanceById(
       base::UnguessableToken id) const;
 
+  // Get a single window by instance ID (Ash or Lacros). Returns a nullptr if
+  // instance identified by |id| does not exist.
+  aura::Window* GetWindowByInstanceId(const base::UnguessableToken& id) const;
+
   // Get all instances of lacros browser window instances.
   std::set<const BrowserWindowInstance*> GetLacrosBrowserWindowInstances()
       const;
@@ -68,7 +72,13 @@ class BrowserAppInstanceRegistry
     if (instance) {
       return instance;
     }
-    return FindInstanceIf(ash_instance_tracker_.app_instances_, predicate);
+    instance =
+        FindInstanceIf(ash_instance_tracker_.app_tab_instances_, predicate);
+    if (instance) {
+      return instance;
+    }
+    return FindInstanceIf(ash_instance_tracker_.app_window_instances_,
+                          predicate);
   }
 
   template <typename PredicateT>
@@ -76,7 +86,10 @@ class BrowserAppInstanceRegistry
       PredicateT predicate) const {
     std::set<const BrowserAppInstance*> result;
     SelectInstances(result, lacros_app_instances_, predicate);
-    SelectInstances(result, ash_instance_tracker_.app_instances_, predicate);
+    SelectInstances(result, ash_instance_tracker_.app_tab_instances_,
+                    predicate);
+    SelectInstances(result, ash_instance_tracker_.app_window_instances_,
+                    predicate);
     return result;
   }
 
@@ -184,10 +197,8 @@ class BrowserAppInstanceRegistry
                                    aura::Window* window);
   void LacrosWindowInstanceRemoved(apps::BrowserWindowInstanceUpdate update,
                                    aura::Window* window);
-  void LacrosAppInstanceAdded(apps::BrowserAppInstanceUpdate update,
-                              aura::Window* window);
-  void LacrosAppInstanceUpdated(apps::BrowserAppInstanceUpdate update,
-                                aura::Window* window);
+  void LacrosAppInstanceAddedOrUpdated(apps::BrowserAppInstanceUpdate update,
+                                       aura::Window* window);
   void LacrosAppInstanceRemoved(apps::BrowserAppInstanceUpdate update,
                                 aura::Window* window);
 
@@ -213,7 +224,8 @@ class BrowserAppInstanceRegistry
       receiver_set_;
   mojo::Remote<crosapi::mojom::BrowserAppInstanceController> controller_;
 
-  base::ObserverList<BrowserAppInstanceObserver, true>::Unchecked observers_;
+  base::ObserverList<BrowserAppInstanceObserver, true>::Unchecked observers_{
+      base::ObserverListPolicy::EXISTING_ONLY};
 
   base::ScopedObservation<BrowserAppInstanceTracker, BrowserAppInstanceObserver>
       tracker_observation_{this};

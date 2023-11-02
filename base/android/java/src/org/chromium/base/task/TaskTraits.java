@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -98,13 +98,6 @@ public class TaskTraits {
         mUseThreadPool = other.mUseThreadPool;
         mExtensionId = other.mExtensionId;
         mExtensionData = other.mExtensionData;
-    }
-
-    // Exposed to allow changing the priority of UiThreadTaskTraits.DEFAULT for the experiment being
-    // tracked in crbug.com/1259560. SHOULD NOT BE CALLED FOR ANY OTHER REASON and will be removed
-    // once that experiment is concluded.
-    public void setTaskPriorityToUserBlockingForUiThreadDefaultTaskPriorityExperiment() {
-        mPriority = TaskPriority.USER_BLOCKING;
     }
 
     public TaskTraits taskPriority(int taskPriority) {

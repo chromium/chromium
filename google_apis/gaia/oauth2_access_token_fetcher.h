@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 
 // Interface of a OAuth2 access token fetcher.
@@ -52,7 +52,7 @@ class OAuth2AccessTokenFetcher {
   void FireOnGetTokenFailure(const GoogleServiceAuthError& error);
 
  private:
-  OAuth2AccessTokenConsumer* const consumer_;
+  const raw_ptr<OAuth2AccessTokenConsumer> consumer_;
 };
 
 #endif  // GOOGLE_APIS_GAIA_OAUTH2_ACCESS_TOKEN_FETCHER_H_

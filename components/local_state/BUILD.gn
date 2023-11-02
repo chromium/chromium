@@ -1,0 +1,43 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/typescript/ts_library.gni")
+
+preprocess_folder = "preprocessed"
+
+preprocess_if_expr("preprocess_ts") {
+  in_folder = "./"
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  in_files = [ "local_state.ts" ]
+}
+
+ts_library("build") {
+  root_dir = "$target_gen_dir/$preprocess_folder"
+  in_files = [ "local_state.ts" ]
+  deps = [ "//ui/webui/resources:library" ]
+  extra_deps = [ ":preprocess_ts" ]
+}
+
+source_set("local_state") {
+  sources = [
+    "local_state_utils.cc",
+    "local_state_utils.h",
+  ]
+  deps = [
+    "//base",
+    "//components/prefs",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "local_state_utils_unittest.cc" ]
+
+  deps = [
+    ":local_state",
+    "//base",
+    "//testing/gtest",
+  ]
+}

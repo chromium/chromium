@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybufferallowshared_arraybufferviewallowshared_readablestream.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_decode_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_decode_result.h"
@@ -26,6 +27,9 @@
 #include "third_party/blink/renderer/platform/graphics/bitmap_image_metrics.h"
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_skia.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 
 namespace blink {
 
@@ -139,10 +143,6 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
   if (init->colorSpaceConversion() == kNoneOption)
     color_behavior = ColorBehavior::Ignore();
 
-  auto alpha_option = ImageDecoder::kAlphaPremultiplied;
-  if (init->premultiplyAlpha() == kNoneOption)
-    alpha_option = ImageDecoder::kAlphaNotPremultiplied;
-
   auto desired_size = SkISize::MakeEmpty();
   if (init->hasDesiredWidth() && init->hasDesiredHeight())
     desired_size = SkISize::Make(init->desiredWidth(), init->desiredHeight());
@@ -173,7 +173,7 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
 
     decoder_ = std::make_unique<WTF::SequenceBound<ImageDecoderCore>>(
         decode_task_runner_, mime_type_, /*data=*/nullptr,
-        /*data_complete=*/false, alpha_option, color_behavior, desired_size,
+        /*data_complete=*/false, color_behavior, desired_size,
         animation_option_);
 
     consumer_ = MakeGarbageCollected<ReadableStreamBytesConsumer>(
@@ -238,8 +238,7 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
   completed_property_->ResolveWithUndefined();
   decoder_ = std::make_unique<WTF::SequenceBound<ImageDecoderCore>>(
       decode_task_runner_, mime_type_, std::move(segment_reader),
-      data_complete_, alpha_option, color_behavior, desired_size,
-      animation_option_);
+      data_complete_, color_behavior, desired_size, animation_option_);
 
   DecodeMetadata();
 }
@@ -368,13 +367,14 @@ void ImageDecoderExternal::close() {
   if (!data_complete_)
     completed_property_->Reject(exception);
 
-  if (consumer_)
-    consumer_->Cancel();
   CloseInternal(exception);
 }
 
 void ImageDecoderExternal::CloseInternal(DOMException* exception) {
   reset(exception);
+  if (consumer_)
+    consumer_->Cancel();
+
   weak_factory_.InvalidateWeakPtrs();
   pending_metadata_requests_ = 0;
   consumer_ = nullptr;
@@ -458,7 +458,7 @@ bool ImageDecoderExternal::HasPendingActivity() const {
   // will cause issues where WeakPtrs are valid between GC finalization and
   // destruction.
   const bool has_pending_activity =
-      !pending_decodes_.IsEmpty() || pending_metadata_requests_ > 0;
+      !pending_decodes_.empty() || pending_metadata_requests_ > 0;
 
   if (!has_pending_activity) {
     DCHECK(!weak_factory_.HasWeakPtrs());
@@ -545,7 +545,7 @@ void ImageDecoderExternal::OnDecodeReady(
   DCHECK(decoder_);
   DCHECK(!closed_);
   DCHECK(result);
-  DCHECK(!pending_decodes_.IsEmpty());
+  DCHECK(!pending_decodes_.empty());
 
   auto& request = pending_decodes_.front();
   DCHECK_EQ(request->frame_index, result->frame_index);
@@ -680,7 +680,7 @@ void ImageDecoderExternal::OnMetadata(
 void ImageDecoderExternal::SetFailed() {
   DVLOG(1) << __func__;
   if (failed_) {
-    DCHECK(pending_decodes_.IsEmpty());
+    DCHECK(pending_decodes_.empty());
     return;
   }
 

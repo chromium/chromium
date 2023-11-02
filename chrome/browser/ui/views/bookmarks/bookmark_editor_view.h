@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "components/bookmarks/browser/bookmark_expanded_state_tracker.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
@@ -75,7 +75,8 @@ class BookmarkEditorView : public BookmarkEditor,
   BookmarkEditorView(Profile* profile,
                      const bookmarks::BookmarkNode* parent,
                      const EditDetails& details,
-                     BookmarkEditor::Configuration configuration);
+                     BookmarkEditor::Configuration configuration,
+                     BookmarkEditor::OnSaveCallback on_save_callback);
   BookmarkEditorView(const BookmarkEditorView&) = delete;
   BookmarkEditorView& operator=(const BookmarkEditorView&) = delete;
   ~BookmarkEditorView() override;
@@ -127,7 +128,8 @@ class BookmarkEditorView : public BookmarkEditor,
                          size_t new_index) override;
   void BookmarkNodeAdded(bookmarks::BookmarkModel* model,
                          const bookmarks::BookmarkNode* parent,
-                         size_t index) override;
+                         size_t index,
+                         bool added_by_user) override;
   void BookmarkNodeRemoved(bookmarks::BookmarkModel* model,
                            const bookmarks::BookmarkNode* parent,
                            size_t index,
@@ -211,6 +213,11 @@ class BookmarkEditorView : public BookmarkEditor,
       EditorNode* editor_node,
       bookmarks::BookmarkExpandedStateTracker::Nodes* expanded_nodes);
 
+  enum {
+    kContextMenuItemEdit = 1,
+    kContextMenuItemDelete,
+    kContextMenuItemNewFolder,
+  };
   ui::SimpleMenuModel* GetMenuModel();
 
   // Helper functions that implements the IDS_DELETE logic for ExecuteCommand,
@@ -220,26 +227,26 @@ class BookmarkEditorView : public BookmarkEditor,
           non_empty_folder_confirmation_cb);
 
   // Profile the entry is from.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Model driving the TreeView.
   std::unique_ptr<EditorTreeModel> tree_model_;
 
   // Displays star folder.
-  views::TreeView* tree_view_ = nullptr;
+  raw_ptr<views::TreeView> tree_view_ = nullptr;
 
   // Used to create a new folder.
-  views::LabelButton* new_folder_button_ = nullptr;
+  raw_ptr<views::LabelButton> new_folder_button_ = nullptr;
 
   // The text field used for editing the URL.
-  views::Textfield* url_tf_ = nullptr;
+  raw_ptr<views::Textfield> url_tf_ = nullptr;
 
   // The text field used for editing the title.
-  views::Textfield* title_tf_ = nullptr;
+  raw_ptr<views::Textfield> title_tf_ = nullptr;
 
   // Initial parent to select. Is only used if |details_.existing_node| is
   // NULL.
-  const bookmarks::BookmarkNode* parent_;
+  raw_ptr<const bookmarks::BookmarkNode> parent_;
 
   const EditDetails details_;
 
@@ -248,7 +255,7 @@ class BookmarkEditorView : public BookmarkEditor,
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
 
   // Mode used to create nodes from.
-  bookmarks::BookmarkModel* bb_model_;
+  raw_ptr<bookmarks::BookmarkModel> bb_model_;
 
   // If true, we're running the menu for the bookmark bar or other bookmarks
   // nodes.
@@ -259,6 +266,10 @@ class BookmarkEditorView : public BookmarkEditor,
 
   // List of deleted bookmark folders.
   std::vector<int64_t> deletes_;
+
+  // Any extra logic that should be run after the save button is clicked,
+  // defined by the caller of BookmarkEditor::Show.
+  BookmarkEditor::OnSaveCallback on_save_callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_EDITOR_VIEW_H_

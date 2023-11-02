@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,24 +27,22 @@ CrossThreadCopier<blink::mojom::blink::ResourceTimingInfoPtr>::Type
 CrossThreadCopier<blink::mojom::blink::ResourceTimingInfoPtr>::Copy(
     const blink::mojom::blink::ResourceTimingInfoPtr& info) {
   return blink::mojom::blink::ResourceTimingInfo::New(
-      info->name.IsolatedCopy(), info->start_time,
-      info->alpn_negotiated_protocol.IsolatedCopy(),
-      info->connection_info.IsolatedCopy(),
-      info->timing ? info->timing->Clone() : nullptr,
+      info->name, info->start_time, info->alpn_negotiated_protocol,
+      info->connection_info, info->timing ? info->timing->Clone() : nullptr,
       info->last_redirect_end_time, info->response_end, info->context_type,
       info->request_destination, info->cache_state, info->encoded_body_size,
       info->decoded_body_size, info->did_reuse_connection,
       info->is_secure_transport, info->allow_timing_details,
       info->allow_redirect_details, info->allow_negative_values,
-      CloneServerTimingInfoArray(info->server_timing));
+      CloneServerTimingInfoArray(info->server_timing),
+      info->render_blocking_status, info->response_status);
 }
 
 CrossThreadCopier<blink::mojom::blink::ServerTimingInfoPtr>::Type
 CrossThreadCopier<blink::mojom::blink::ServerTimingInfoPtr>::Copy(
     const blink::mojom::blink::ServerTimingInfoPtr& info) {
-  return blink::mojom::blink::ServerTimingInfo::New(
-      info->name.IsolatedCopy(), info->duration,
-      info->description.IsolatedCopy());
+  return blink::mojom::blink::ServerTimingInfo::New(info->name, info->duration,
+                                                    info->description);
 }
 
 }  // namespace WTF

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,9 +49,9 @@ DesktopMediaSourceView::DesktopMediaSourceView(
     : parent_(parent),
       source_id_(source_id),
       selected_(false) {
-  AddChildView(icon_view_);
-  AddChildView(image_view_);
-  AddChildView(label_);
+  AddChildView(icon_view_.get());
+  AddChildView(image_view_.get());
+  AddChildView(label_.get());
   icon_view_->SetCanProcessEventsWithinSubtree(false);
   image_view_->SetCanProcessEventsWithinSubtree(false);
   SetFocusBehavior(FocusBehavior::ALWAYS);
@@ -117,6 +117,13 @@ bool DesktopMediaSourceView::GetSelected() const {
   return selected_;
 }
 
+void DesktopMediaSourceView::ClearSelection() {
+  if (!GetSelected())
+    return;
+  SetSelected(false);
+  parent_->OnSelectionChanged();
+}
+
 views::View* DesktopMediaSourceView::GetSelectedViewForGroup(int group) {
   Views neighbours;
   parent()->GetViewsInGroup(group, &neighbours);
@@ -159,10 +166,11 @@ void DesktopMediaSourceView::OnGestureEvent(ui::GestureEvent* event) {
 
 void DesktopMediaSourceView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kButton;
-  node_data->SetName(label_->GetText().empty()
-                         ? l10n_util::GetStringUTF16(
-                               IDS_DESKTOP_MEDIA_SOURCE_EMPTY_ACCESSIBLE_NAME)
-                         : label_->GetText());
+  node_data->SetNameChecked(
+      label_->GetText().empty()
+          ? l10n_util::GetStringUTF16(
+                IDS_DESKTOP_MEDIA_SOURCE_EMPTY_ACCESSIBLE_NAME)
+          : label_->GetText());
 }
 
 BEGIN_METADATA(DesktopMediaSourceView, views::View)

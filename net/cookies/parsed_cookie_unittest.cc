@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -875,15 +875,19 @@ TEST(ParsedCookieTest, SetAttributes) {
   EXPECT_FALSE(pc.IsPartitioned());
 }
 
+// Setting the domain attribute to the empty string should be valid.
+TEST(ParsedCookieTest, EmptyDomainAttributeValid) {
+  ParsedCookie pc("name=value; domain=");
+  EXPECT_TRUE(pc.IsValid());
+}
+
 // Set the domain attribute twice in a cookie line. If the second attribute's
-// value is empty, it shoud be ignored.
-//
-// This is de facto standard behavior, per https://crbug.com/601786.
+// value is empty, it should equal the empty string.
 TEST(ParsedCookieTest, MultipleDomainAttributes) {
   ParsedCookie pc1("name=value; domain=foo.com; domain=bar.com");
   EXPECT_EQ("bar.com", pc1.Domain());
   ParsedCookie pc2("name=value; domain=foo.com; domain=");
-  EXPECT_EQ("foo.com", pc2.Domain());
+  EXPECT_EQ(std::string(), pc2.Domain());
 }
 
 TEST(ParsedCookieTest, SetPriority) {

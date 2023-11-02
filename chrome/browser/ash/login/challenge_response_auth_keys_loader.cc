@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,13 +17,14 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
-#include "chrome/browser/ash/certificate_provider/certificate_provider.h"
-#include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
-#include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/certificate_provider/certificate_provider.h"
+#include "chrome/browser/certificate_provider/certificate_provider_service.h"
+#include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/login/auth/challenge_response/cert_utils.h"
-#include "chromeos/login/auth/challenge_response/known_user_pref_utils.h"
+#include "chromeos/ash/components/login/auth/challenge_response/cert_utils.h"
+#include "chromeos/ash/components/login/auth/challenge_response/known_user_pref_utils.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
@@ -84,7 +85,8 @@ void LoadStoredChallengeResponseSpkiKeysForUser(
     std::vector<std::string>* spki_items,
     base::flat_set<std::string>* extension_ids) {
   const base::Value known_user_value =
-      user_manager::known_user::GetChallengeResponseKeys(account_id);
+      user_manager::KnownUser(g_browser_process->local_state())
+          .GetChallengeResponseKeys(account_id);
   std::vector<DeserializedChallengeResponseKey>
       deserialized_challenge_response_keys;
   DeserializeChallengeResponseKeyFromKnownUser(
@@ -105,8 +107,8 @@ void LoadStoredChallengeResponseSpkiKeysForUser(
 // The sign-in profile is used since it's where the needed extensions are
 // installed (e.g., for the smart card based login they are force-installed via
 // the DeviceLoginScreenExtensions admin policy).
-CertificateProviderService* GetCertificateProviderService() {
-  return CertificateProviderServiceFactory::GetForBrowserContext(
+chromeos::CertificateProviderService* GetCertificateProviderService() {
+  return chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
       ProfileHelper::GetSigninProfile());
 }
 
@@ -420,7 +422,7 @@ void ChallengeResponseAuthKeysLoader::ContinueLoadAvailableKeysExtensionsLoaded(
   }
   // Asynchronously poll all certificate providers to get the list of
   // currently available cryptographic keys.
-  std::unique_ptr<CertificateProvider> cert_provider =
+  std::unique_ptr<chromeos::CertificateProvider> cert_provider =
       GetCertificateProviderService()->CreateCertificateProvider();
   cert_provider->GetCertificates(base::BindOnce(
       &ChallengeResponseAuthKeysLoader::ContinueLoadAvailableKeysWithCerts,
@@ -438,7 +440,7 @@ void ChallengeResponseAuthKeysLoader::ContinueLoadAvailableKeysWithCerts(
     std::move(callback).Run(/*challenge_response_keys=*/{});
     return;
   }
-  CertificateProviderService* const cert_provider_service =
+  chromeos::CertificateProviderService* const cert_provider_service =
       GetCertificateProviderService();
   std::vector<ChallengeResponseKey> filtered_keys;
   // Filter those of the currently available cryptographic keys that can be used

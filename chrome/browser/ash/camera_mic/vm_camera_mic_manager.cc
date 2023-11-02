@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,10 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/vm_camera_mic_constants.h"
+#include "ash/system/privacy/privacy_indicators_controller.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
@@ -25,7 +27,7 @@
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/webui/settings/chromeos/app_management/app_management_uma.h"
+#include "chrome/browser/ui/webui/settings/ash/app_management/app_management_uma.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-forward.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
@@ -104,9 +106,9 @@ constexpr base::TimeDelta VmCameraMicManager::kDebounceTime;
 // `OnDeviceUpdated()`, which also starts/stops the debounce timer if necessary.
 //
 // When `active == stage == target`, we are "stable" --- we don't need to do
-// anything (until the next device update). And `SyncNotification()` is normally
-// what brings us to stable. It is called when the timer expired. This is what
-// it does:
+// anything (until the next device update). And
+// `SyncNotificationAndIndicators()` is normally what brings us to stable. It is
+// called when the timer expired. This is what it does:
 //
 // * If `active != stage`, we set `active = stage`. Timer is reset if we are
 //   still not stable.
@@ -121,10 +123,12 @@ constexpr base::TimeDelta VmCameraMicManager::kDebounceTime;
 // 2: 00-01-01  # Mic turning on, debounce timer is started.
 // 3: 00-11-11  # Camera turning on, still in debounce period.
 // 4: 00-11-01  # Camera turning off, still in debounce period.
-// 5: 11-11-01  # Timer expired. `SyncNotification()` sets `active=stage` (shows
-//              # "camera and mic" notification). Reset the timer.
-// 6: 01-01-01  # Timer expired. `SyncNotification()` sets `active=stage=target`
-//              # (shows mic notification).  We are stable now.
+// 5: 11-11-01  # Timer expired. `SyncNotificationAndIndicators()` sets
+//              # `active=stage` (shows "camera and mic" notification). Reset
+//              # the timer.
+// 6: 01-01-01  # Timer expired. `SyncNotificationAndIndicators()` sets
+//              # `active=stage=target` (shows mic notification).  We are stable
+//              # now.
 // 7: 01-01-00  # Mic turning off, debounce timer is started.
 // 8: 00-00-00  # Timer expired. Same as 6, but no notification is shown now.
 //              # Reach stable again.
@@ -138,12 +142,13 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
         vm_type_(vm_type),
         name_id_(name_id),
         notification_changed_callback_(on_notification_changed),
-        debounce_timer_(FROM_HERE,
-                        kDebounceTime,
-                        base::BindRepeating(&VmInfo::SyncNotification,
-                                            // Unretained because the timer
-                                            // cannot outlive the parent.
-                                            base::Unretained(this))) {}
+        debounce_timer_(
+            FROM_HERE,
+            kDebounceTime,
+            base::BindRepeating(&VmInfo::SyncNotificationAndIndicators,
+                                // Unretained because the timer
+                                // cannot outlive the parent.
+                                base::Unretained(this))) {}
   ~VmInfo() = default;
 
   VmType vm_type() const { return vm_type_; }
@@ -196,7 +201,8 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
     }
   }
 
-  void UpdateActiveNotification(NotificationType new_notification) {
+  void UpdateActiveNotificationAndIndicators(
+      NotificationType new_notification) {
     DCHECK_NE(notifications_.active, new_notification);
 
     if (notifications_.active != kNoNotification) {
@@ -206,13 +212,23 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
       OpenNotification(new_notification);
     }
     notifications_.active = new_notification;
+
+    if (ash::features::IsPrivacyIndicatorsEnabled()) {
+      ash::UpdatePrivacyIndicatorsView(
+          /*app_id=*/GetNotificationId(vm_type_, new_notification),
+          /*is_camera_used=*/
+          new_notification[static_cast<size_t>(DeviceType::kCamera)],
+          /*is_microphone_used=*/
+          new_notification[static_cast<size_t>(DeviceType::kMic)]);
+    }
+
     notification_changed_callback_.Run();
   }
 
   // See document at the beginning of class.
-  void SyncNotification() {
+  void SyncNotificationAndIndicators() {
     if (notifications_.active != notifications_.stage) {
-      UpdateActiveNotification(notifications_.stage);
+      UpdateActiveNotificationAndIndicators(notifications_.stage);
       SyncTimer();
 
       VLOG(1) << "sync from stage. vm_type=" << static_cast<int>(vm_type_)
@@ -224,7 +240,7 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
     // Only target notification is different.
     DCHECK_NE(notifications_.active, notifications_.target);
     notifications_.stage = notifications_.target;
-    UpdateActiveNotification(notifications_.target);
+    UpdateActiveNotificationAndIndicators(notifications_.target);
     VLOG(1) << "sync from target. vm_type=" << static_cast<int>(vm_type_)
             << " state: " << notifications_.active << "-"
             << notifications_.stage << "-" << notifications_.target;
@@ -258,6 +274,24 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
     rich_notification_data.fullscreen_visibility =
         message_center::FullscreenVisibility::OVER_USER;
 
+    if (ash::features::IsPrivacyIndicatorsEnabled()) {
+      // We will use the notification id's logic here for `app_id`
+      auto notification = ash::CreatePrivacyIndicatorsNotification(
+          GetNotificationId(vm_type_, type),
+          l10n_util::GetStringUTF16(name_id_),
+          type[static_cast<size_t>(DeviceType::kCamera)],
+          type[static_cast<size_t>(DeviceType::kMic)],
+          base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
+              weak_ptr_factory_.GetMutableWeakPtr()));
+      notification->set_fullscreen_visibility(
+          message_center::FullscreenVisibility::OVER_USER);
+
+      NotificationDisplayService::GetForProfile(profile_)->Display(
+          NotificationHandler::Type::TRANSIENT, *notification,
+          /*metadata=*/nullptr);
+      return;
+    }
+
     message_center::Notification notification(
         message_center::NOTIFICATION_TYPE_SIMPLE,
         GetNotificationId(vm_type_, type),
@@ -265,16 +299,16 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
         l10n_util::GetStringFUTF16(message_id,
                                    l10n_util::GetStringUTF16(name_id_)),
         /*message=*/std::u16string(),
-        /*icon=*/gfx::Image(),
+        /*icon=*/ui::ImageModel(),
         /*display_source=*/
         l10n_util::GetStringUTF16(IDS_CHROME_OS_NOTIFICATION_SOURCE),
         /*origin_url=*/GURL(),
         message_center::NotifierId(
             message_center::NotifierType::SYSTEM_COMPONENT,
-            ash::kVmCameraMicNotifierId),
+            ash::kVmCameraMicNotifierId, NotificationCatalogName::kVMCameraMic),
         rich_notification_data,
         base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
-            weak_ptr_factory_.GetWeakPtr()));
+            weak_ptr_factory_.GetMutableWeakPtr()));
 
     NotificationDisplayService::GetForProfile(profile_)->Display(
         NotificationHandler::Type::TRANSIENT, notification,
@@ -302,12 +336,12 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
       case VmType::kPluginVm:
         chrome::ShowAppManagementPage(
             profile_, plugin_vm::kPluginVmShelfAppId,
-            AppManagementEntryPoint::kNotificationPluginVm);
+            settings::AppManagementEntryPoint::kNotificationPluginVm);
         break;
       case VmType::kBorealis:
         chrome::ShowAppManagementPage(
-            profile_, borealis::kBorealisMainAppId,
-            AppManagementEntryPoint::kAppManagementMainViewBorealis);
+            profile_, borealis::kClientAppId,
+            settings::AppManagementEntryPoint::kAppManagementMainViewBorealis);
         break;
     }
   }
@@ -393,8 +427,8 @@ void VmCameraMicManager::MaybeSubscribeToCameraService(
   // OnActiveClientChange() will be called automatically after the
   // subscription, so there is no need to get the current status here.
   camera->AddActiveClientObserver(this);
-  OnCameraPrivacySwitchStatusChanged(
-      camera->AddCameraPrivacySwitchObserver(this));
+  OnCameraHWPrivacySwitchStatusChanged(
+      /*camera_id=*/-1, camera->AddCameraPrivacySwitchObserver(this));
 }
 
 void VmCameraMicManager::UpdateVmInfo(VmType vm,
@@ -445,7 +479,8 @@ void VmCameraMicManager::SetCameraAccessing(VmType vm, bool accessing) {
   UpdateVmInfo(vm, &VmInfo::SetCameraAccessing, accessing);
 }
 
-void VmCameraMicManager::OnCameraPrivacySwitchStatusChanged(
+void VmCameraMicManager::OnCameraHWPrivacySwitchStatusChanged(
+    int32_t camera_id,
     cros::mojom::CameraPrivacySwitchState state) {
   using cros::mojom::CameraPrivacySwitchState;
   bool is_on;

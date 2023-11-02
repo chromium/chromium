@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,8 @@
 #include <string>
 #include <vector>
 
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/schema.h"
 #include "components/policy/policy_export.h"
 
 namespace policy {
@@ -19,7 +21,13 @@ namespace policy {
 // Collects error messages and their associated policies.
 class POLICY_EXPORT PolicyErrorMap {
  public:
-  typedef std::multimap<std::string, std::u16string> PolicyMapType;
+  struct POLICY_EXPORT Data {
+    bool operator==(const Data& other) const;
+
+    std::u16string message;
+    PolicyMap::MessageType level;
+  };
+  typedef std::multimap<std::string, Data> PolicyMapType;
   typedef PolicyMapType::const_iterator const_iterator;
 
   class PendingError;
@@ -34,62 +42,51 @@ class POLICY_EXPORT PolicyErrorMap {
   // IsReady is true. IsReady will be true once the UI message loop has started.
   bool IsReady() const;
 
-  // Adds an entry with key |policy| and the error message corresponding to
-  // |message_id| in grit/generated_resources.h to the map.
-  void AddError(const std::string& policy, int message_id);
+  // Adds an entry with key |policy|, the error message corresponding to
+  // |message_id| in grit/generated_resources.h and its error_path |error_path|
+  // to the map.
+  void AddError(
+      const std::string& policy,
+      int message_id,
+      PolicyErrorPath error_path = {},
+      PolicyMap::MessageType error_level = PolicyMap::MessageType::kError);
 
-  // Adds an entry with key |policy|, subkey |subkey|, and the error message
-  // corresponding to |message_id| in grit/generated_resources.h to the map.
-  void AddError(const std::string& policy,
-                const std::string& subkey,
-                int message_id);
-
-  // Adds an entry with key |policy|, list index |index|, and the error message
-  // corresponding to |message_id| in grit/generated_resources.h to the map.
-  void AddError(const std::string& policy, int index, int message_id);
-
-  // Adds an entry with key |policy| and the error message corresponding to
-  // |message_id| in grit/generated_resources.h to the map and replaces the
-  // placeholder within the error message with |replacement_string|.
-  void AddError(const std::string& policy,
-                int message_id,
-                const std::string& replacement_string);
+  // Adds an entry with key |policy|, the error message corresponding to
+  // |message_id| in grit/generated_resources.h and its error_path |error_path|
+  // to the map and replaces the placeholder within the error message with
+  // |replacement_string|.
+  void AddError(
+      const std::string& policy,
+      int message_id,
+      const std::string& replacement_string,
+      PolicyErrorPath error_path = {},
+      PolicyMap::MessageType error_level = PolicyMap::MessageType::kError);
 
   // Same as AddError above but supports two replacement strings.
-  void AddError(const std::string& policy,
-                int message_id,
-                const std::string& replacement_a,
-                const std::string& replacement_b);
-
-  // Adds an entry with key |policy|, subkey |subkey| and the error message
-  // corresponding to |message_id| in grit/generated_resources.h to the map.
-  // Replaces the placeholder in the error message with
-  // |replacement_string|.
-  void AddError(const std::string& policy,
-                const std::string& subkey,
-                int message_id,
-                const std::string& replacement_string);
-
-  // Adds an entry with key |policy|, list index |index| and the error message
-  // corresponding to |message_id| in grit/generated_resources.h to the map.
-  // Replaces the placeholder in the error message with |replacement_string|.
-  void AddError(const std::string& policy,
-                int index,
-                int message_id,
-                const std::string& replacement_string);
-
-  // Adds an entry with key |policy|, the schema validation error location
-  // |error_path|, and detailed error |message|.
-  void AddError(const std::string& policy,
-                const std::string& error_path,
-                const std::string& message);
+  void AddError(
+      const std::string& policy,
+      int message_id,
+      const std::string& replacement_a,
+      const std::string& replacement_b,
+      PolicyErrorPath error_path = {},
+      PolicyMap::MessageType error_level = PolicyMap::MessageType::kError);
 
   // Returns true if there is any error for |policy|.
   bool HasError(const std::string& policy);
 
+  // Returns true if there is any fatal error (PolicyMap::MessageType::kError)
+  // for |policy|. Returns false if |policy| only has non-fatal errors
+  // (PolicyMap::MessageType::kInfo or PolicyMap::MessageType::kWarning) or no
+  // errors at all.
+  bool HasFatalError(const std::string& policy);
+
   // Returns all the error messages stored for |policy|, separated by a white
   // space. Returns an empty string if there are no errors for |policy|.
-  std::u16string GetErrors(const std::string& policy);
+  std::u16string GetErrorMessages(const std::string& policy);
+
+  // Returns all the error metadata stored for |policy| in a vector. Returns an
+  // empty vector if there are no errors for |policy|.
+  std::vector<Data> GetErrors(const std::string& policy);
 
   bool empty() const;
   size_t size();
@@ -98,15 +95,6 @@ class POLICY_EXPORT PolicyErrorMap {
   const_iterator end();
 
   void Clear();
-
-  // Sets the debug info |debug_info| for the policy with key |policy|.
-  // This is intended to be developer-friendly, non-localized detailed
-  // information from validation of |policy|.
-  void SetDebugInfo(const std::string& policy, const std::string& debug_info);
-
-  // Returns the debug info set for the key |policy| by |SetDebugInfo| or an
-  // empty string if no debug info was set.
-  const std::string GetDebugInfo(const std::string& policy);
 
  private:
   // Maps the error when ready, otherwise adds it to the pending errors list.
@@ -120,9 +108,6 @@ class POLICY_EXPORT PolicyErrorMap {
 
   std::vector<std::unique_ptr<PendingError>> pending_;
   PolicyMapType map_;
-
-  // Maps policy keys to debug infos set through |SetDebugInfo|.
-  std::map<std::string, std::string> debug_infos_;
 };
 
 }  // namespace policy

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -59,7 +60,7 @@ class TestManagerObserver : public FlossManagerClient::Observer {
   std::map<int, bool> adapter_enabled_;
 
  private:
-  FlossManagerClient* client_ = nullptr;
+  raw_ptr<FlossManagerClient> client_ = nullptr;
 };
 
 }  // namespace
@@ -101,15 +102,19 @@ class FlossManagerClientTest : public testing::Test {
 
     // Handle method calls on the object proxy
     ON_CALL(*manager_object_proxy_.get(), DoCallMethodWithErrorResponse)
-        .WillByDefault(
-            [this](::dbus::MethodCall* method_call, int timeout_ms,
-                   ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
-              if (method_call->GetMember() == manager::kGetAvailableAdapters) {
-                HandleGetAvailableAdapters(method_call, timeout_ms, cb);
-              }
+        .WillByDefault([this](
+                           ::dbus::MethodCall* method_call, int timeout_ms,
+                           ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+          if (method_call->GetMember() == manager::kGetAvailableAdapters) {
+            HandleGetAvailableAdapters(method_call, timeout_ms, cb);
+          } else if (method_call->GetMember() == manager::kSetFlossEnabled) {
+            HandleSetFlossEnabled(method_call, timeout_ms, cb);
+          } else if (method_call->GetMember() == manager::kGetFlossEnabled) {
+            HandleGetFlossEnabled(method_call, timeout_ms, cb);
+          }
 
-              method_called_[method_call->GetMember()]++;
-            });
+          method_called_[method_call->GetMember()]++;
+        });
   }
 
   void SendHciDeviceCallback(int adapter,
@@ -200,6 +205,44 @@ class FlossManagerClientTest : public testing::Test {
     std::move(*cb).Run(response.get(), nullptr);
   }
 
+  void HandleSetFlossEnabled(::dbus::MethodCall* method_call,
+                             int timeout_ms,
+                             ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+    method_call->SetSerial(serial_++);
+    if (fail_setfloss_count_ > 0) {
+      fail_setfloss_count_--;
+
+      std::string error_name("org.foo.bar");
+      std::string error_message("SetFlossEnabled failed");
+      auto error = ::dbus::ErrorResponse::FromMethodCall(
+          method_call, error_name, error_message);
+      std::move(*cb).Run(nullptr, error.get());
+    } else {
+      auto response = ::dbus::Response::CreateEmpty();
+      std::move(*cb).Run(response.get(), nullptr);
+    }
+  }
+
+  void HandleGetFlossEnabled(::dbus::MethodCall* method_call,
+                             int timeout_ms,
+                             ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+    method_call->SetSerial(serial_++);
+    if (fail_getfloss_count_ > 0) {
+      fail_getfloss_count_--;
+
+      std::string error_name("org.foo.bar");
+      std::string error_message("GetFlossEnabled failed");
+      auto error = ::dbus::ErrorResponse::FromMethodCall(
+          method_call, error_name, error_message);
+      std::move(*cb).Run(nullptr, error.get());
+    } else {
+      auto response = ::dbus::Response::CreateEmpty();
+      ::dbus::MessageWriter writer(response.get());
+      writer.AppendBool(floss_enabled_target_);
+      std::move(*cb).Run(response.get(), nullptr);
+    }
+  }
+
   void ExpectErrorResponse(std::unique_ptr<dbus::Response> response) {
     EXPECT_EQ(response->GetMessageType(),
               dbus::Message::MessageType::MESSAGE_ERROR);
@@ -226,6 +269,23 @@ class FlossManagerClientTest : public testing::Test {
   }
 
  protected:
+  void SetFlossEnabled(bool enable,
+                       int retry_count,
+                       int retry_ms,
+                       base::RepeatingClosure quitloop) {
+    client_->SetFlossEnabled(enable, retry_count, retry_ms,
+                             GetQuitLoopCallback(quitloop));
+  }
+
+  void EndRunLoopCallback(base::RepeatingClosure quit, DBusResult<bool> ret) {
+    std::move(quit).Run();
+  }
+
+  ResponseCallback<bool> GetQuitLoopCallback(base::RepeatingClosure quit) {
+    return base::BindOnce(&FlossManagerClientTest::EndRunLoopCallback,
+                          weak_ptr_factory_.GetWeakPtr(), std::move(quit));
+  }
+
   // DBus messages require an increasing serial number or the dbus libraries
   // assert.
   int serial_ = 1;
@@ -236,14 +296,19 @@ class FlossManagerClientTest : public testing::Test {
   scoped_refptr<::dbus::ObjectManager> object_manager_;
   std::map<std::string, int> method_called_;
 
-  base::test::TaskEnvironment task_environment_;
+  // Testing the |SetFlossEnabled| retry with a target of enabling Floss.
+  int fail_setfloss_count_ = 0;
+  int fail_getfloss_count_ = 0;
+  bool floss_enabled_target_ = true;
+
+  base::test::SingleThreadTaskEnvironment task_environment_;
   base::WeakPtrFactory<FlossManagerClientTest> weak_ptr_factory_{this};
 };
 
 // Make sure adapter presence is updated on init
 TEST_F(FlossManagerClientTest, QueriesAdapterPresenceOnInit) {
   TestManagerObserver observer(client_.get());
-  client_->Init(bus_.get(), kManagerInterface, /*adapter_path=*/std::string());
+  client_->Init(bus_.get(), kManagerInterface, /*adapter_index=*/-1);
   EXPECT_EQ(observer.manager_present_count_, 1);
   EXPECT_TRUE(observer.manager_present_);
 
@@ -260,7 +325,7 @@ TEST_F(FlossManagerClientTest, QueriesAdapterPresenceOnInit) {
 // Make sure adapter presence is plumbed through callbacks
 TEST_F(FlossManagerClientTest, VerifyAdapterPresent) {
   TestManagerObserver observer(client_.get());
-  client_->Init(bus_.get(), kManagerInterface, /*adapter_path=*/std::string());
+  client_->Init(bus_.get(), kManagerInterface, /*adapter_index=*/-1);
   EXPECT_EQ(observer.adapter_present_count_, 2);
   EXPECT_EQ(observer.adapter_enabled_changed_count_, 2);
   EXPECT_TRUE(observer.adapter_present_[0]);
@@ -291,7 +356,7 @@ TEST_F(FlossManagerClientTest, VerifyAdapterPresent) {
 // Make sure adapter powered is plumbed through callbacks
 TEST_F(FlossManagerClientTest, VerifyAdapterEnabled) {
   TestManagerObserver observer(client_.get());
-  client_->Init(bus_.get(), kManagerInterface, /*adapter_path=*/std::string());
+  client_->Init(bus_.get(), kManagerInterface, /*adapter_index=*/-1);
   // Pre-conditions
   EXPECT_FALSE(client_->GetAdapterEnabled(0));
   EXPECT_TRUE(client_->GetAdapterEnabled(5));
@@ -336,7 +401,7 @@ TEST_F(FlossManagerClientTest, VerifyAdapterEnabled) {
 // Make sure manager presence is correctly detected
 TEST_F(FlossManagerClientTest, HandleManagerPresence) {
   TestManagerObserver observer(client_.get());
-  client_->Init(bus_.get(), kManagerInterface, /*adapter_path=*/std::string());
+  client_->Init(bus_.get(), kManagerInterface, /*adapter_index=*/-1);
   dbus::ObjectPath opath = dbus::ObjectPath(kManagerObject);
   EXPECT_EQ(observer.manager_present_count_, 1);
 
@@ -381,5 +446,29 @@ TEST_F(FlossManagerClientTest, HandleManagerPresence) {
   EXPECT_FALSE(client_->GetAdapterPresent(1));  // Cleared previous adapter list
   EXPECT_TRUE(method_called_[manager::kGetAvailableAdapters] > 0);
   EXPECT_TRUE(method_called_[manager::kRegisterCallback] > 0);
+}
+
+TEST_F(FlossManagerClientTest, SetFlossEnabledRetries) {
+  base::RunLoop loop;
+
+  TestManagerObserver observer(client_.get());
+  floss_enabled_target_ = false;
+  client_->Init(bus_.get(), kManagerInterface, /*adapter_index=*/-1);
+
+  // First confirm we had it set to False
+  EXPECT_EQ(method_called_[manager::kSetFlossEnabled], 1);
+  EXPECT_EQ(method_called_[manager::kGetFlossEnabled], 1);
+
+  method_called_.clear();
+
+  // Retries up to 3 times across both Get and Set.
+  fail_setfloss_count_ = 1;
+  fail_getfloss_count_ = 1;
+  floss_enabled_target_ = true;
+  SetFlossEnabled(true, 3, 0, loop.QuitClosure());
+  loop.Run();
+
+  EXPECT_EQ(method_called_[manager::kSetFlossEnabled], 2);
+  EXPECT_EQ(method_called_[manager::kGetFlossEnabled], 2);
 }
 }  // namespace floss

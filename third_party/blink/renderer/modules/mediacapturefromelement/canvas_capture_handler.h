@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,11 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "media/base/video_frame_pool.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -59,6 +59,7 @@ class MODULES_EXPORT CanvasCaptureHandler {
       LocalFrame* frame,
       const gfx::Size& size,
       double frame_rate,
+      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       MediaStreamComponent** component);
 
@@ -90,6 +91,7 @@ class MODULES_EXPORT CanvasCaptureHandler {
       LocalFrame* frame,
       const gfx::Size& size,
       double frame_rate,
+      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       MediaStreamComponent** component);
 
@@ -103,6 +105,7 @@ class MODULES_EXPORT CanvasCaptureHandler {
                  scoped_refptr<media::VideoFrame> video_frame);
 
   void AddVideoCapturerSourceToVideoTrack(
+      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
       LocalFrame* frame,
       std::unique_ptr<VideoCapturerSource> source,
       MediaStreamComponent** component);

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,9 @@
 
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
 #include "url/gurl.h"
-
-class IntentPickerAutoDisplayService;
 
 namespace content {
 class NavigationHandle;
@@ -22,9 +21,6 @@ namespace apps {
 void MaybeShowIntentPickerBubble(content::NavigationHandle* navigation_handle,
                                  std::vector<IntentPickerAppInfo> apps);
 
-bool ContainsOnlyPwasAndMacApps(
-    const std::vector<apps::IntentPickerAppInfo>& apps);
-
 // These enums are used to define the intent picker show state, whether the
 // picker is popped out or just displayed as a clickable omnibox icon.
 enum class PickerShowState {
@@ -33,13 +29,18 @@ enum class PickerShowState {
 };
 
 void OnIntentPickerClosedChromeOs(
-    content::WebContents* web_contents,
-    IntentPickerAutoDisplayService* ui_auto_display_service,
+    base::WeakPtr<content::WebContents> web_contents,
+    PickerShowState show_state,
     const GURL& url,
     const std::string& launch_name,
     PickerEntryType entry_type,
     IntentPickerCloseReason close_reason,
     bool should_persist);
+
+void LaunchAppFromIntentPickerChromeOs(content::WebContents* web_contents,
+                                       const GURL& url,
+                                       const std::string& launch_name,
+                                       PickerEntryType app_type);
 
 }  // namespace apps
 

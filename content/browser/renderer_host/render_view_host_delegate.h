@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/process/kill.h"
 #include "content/browser/dom_storage/session_storage_namespace_impl.h"
-#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/load_states.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -45,23 +44,23 @@ class RenderViewHostDelegateView;
 // this. This delegate interface is useful for renderer_host/ to make requests
 // to WebContentsImpl, as renderer_host/ is not permitted to know the
 // WebContents type (see //renderer_host/DEPS).
-class CONTENT_EXPORT RenderViewHostDelegate {
+class RenderViewHostDelegate {
  public:
   // Returns the current delegate associated with a feature. May return NULL if
   // there is no corresponding delegate.
   virtual RenderViewHostDelegateView* GetDelegateView();
 
-  // The RenderView has been constructed.
+  // The `blink::WebView` has been constructed.
   virtual void RenderViewReady(RenderViewHost* render_view_host) {}
 
-  // The process containing the RenderView exited somehow (either cleanly,
+  // The process containing the `blink::WebView` exited somehow (either cleanly,
   // crash, or user kill).
   virtual void RenderViewTerminated(RenderViewHost* render_view_host,
                                     base::TerminationStatus status,
                                     int error_code) {}
 
-  // The RenderView is going to be deleted. This is called when each
-  // RenderView is going to be destroyed
+  // The `blink::WebView` is going to be deleted. This is called when each
+  // `blink::WebView` is going to be destroyed
   virtual void RenderViewDeleted(RenderViewHost* render_view_host) {}
 
   // The page is trying to close the RenderView's representation in the client.
@@ -119,13 +118,12 @@ class CONTENT_EXPORT RenderViewHostDelegate {
   // Returns true if the render view is rendering a guest.
   virtual bool IsGuest();
 
-  // Returns true if the render view is rendering a portal.
-  virtual bool IsPortal();
-
-  // Called on RenderView creation to get the initial base background color
-  // for this RenderView. Nullopt means a color is not set, and the blink
-  // default color should be used.
+  // Called on `blink::WebView` creation to get the initial base background
+  // color for this `blink::WebView`. Nullopt means a color is not set, and the
+  // blink default color should be used.
   virtual absl::optional<SkColor> GetBaseBackgroundColor();
+
+  virtual const base::Location& GetCreatorLocation() = 0;
 
  protected:
   virtual ~RenderViewHostDelegate() {}

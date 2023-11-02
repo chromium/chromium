@@ -1,0 +1,25 @@
+rootWebArea name='done'
+++genericContainer ignored
+++++genericContainer ignored
+++++++staticText name='$'
+++++++++inlineTextBox name='$'
+++++++list name='inline list'
+++++++++staticText name='$'
+++++++++++inlineTextBox name='$'
+++++++++listItem
+++++++++++staticText name='item'
+++++++++++++inlineTextBox name='item'
+++++++++staticText name='$'
+++++++++++inlineTextBox name='$'
+++++++staticText name='$'
+++++++++inlineTextBox name='$'
+++++++list name='block list'
+++++++++staticText name='$'
+++++++++++inlineTextBox name='$'
+++++++++listItem
+++++++++++staticText name='item'
+++++++++++++inlineTextBox name='item'
+++++++++staticText name='$'
+++++++++++inlineTextBox name='$'
+++++++staticText name='$'
+++++++++inlineTextBox name='$'

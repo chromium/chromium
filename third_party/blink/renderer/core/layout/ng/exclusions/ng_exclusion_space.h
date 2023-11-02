@@ -1,11 +1,13 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_EXCLUSIONS_NG_EXCLUSION_SPACE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_EXCLUSIONS_NG_EXCLUSION_SPACE_H_
 
+#include "base/check_op.h"
 #include "base/dcheck_is_on.h"
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/exclusions/ng_exclusion.h"
 #include "third_party/blink/renderer/core/layout/ng/exclusions/ng_layout_opportunity.h"
@@ -13,6 +15,8 @@
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_bfc_rect.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -93,7 +97,7 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
     switch (type) {
       default:
         NOTREACHED();
-        FALLTHROUGH;
+        [[fallthrough]];
       case EFloat::kLeft:
         has_break_before_left_float_ = true;
         break;
@@ -107,7 +111,7 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
     switch (type) {
       default:
         NOTREACHED();
-        FALLTHROUGH;
+        [[fallthrough]];
       case EFloat::kLeft:
         has_break_inside_left_float_ = true;
         break;
@@ -122,7 +126,7 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
     switch (type) {
       default:
         NOTREACHED();
-        FALLTHROUGH;
+        [[fallthrough]];
       case EClear::kNone:
         return false;
       case EClear::kLeft:
@@ -131,7 +135,7 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
             has_break_inside_left_float_ || has_break_before_left_float_;
         if (type == EClear::kLeft)
           break;
-        FALLTHROUGH;
+        [[fallthrough]];
       case EClear::kRight:
         needs_clearance |=
             has_break_inside_right_float_ || has_break_before_right_float_;
@@ -155,7 +159,7 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
   // Pre-initializes the exclusions vector to something used in a previous
   // layout pass, however keeps the number of exclusions as zero.
   void PreInitialize(const NGExclusionSpaceInternal& other) {
-    DCHECK(exclusions_->IsEmpty());
+    DCHECK(exclusions_->empty());
     DCHECK_GT(other.exclusions_->size(), 0u);
 
     exclusions_ = other.exclusions_;

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,9 +19,8 @@ namespace {
 
 bool IsValidMimeType(const std::string& type_string) {
   std::string top_level_type;
-  std::string subtype;
   if (!net::ParseMimeTypeWithoutParameter(type_string, &top_level_type,
-                                          &subtype)) {
+                                          /*subtype=*/nullptr)) {
     return false;
   }
 
@@ -36,6 +35,8 @@ absl::optional<mojom::LinkRelAttribute> ParseRelAttribute(
     return absl::nullopt;
 
   std::string value = base::ToLowerASCII(attr.value());
+  if (value == "dns-prefetch")
+    return mojom::LinkRelAttribute::kDnsPrefetch;
   if (value == "preconnect")
     return mojom::LinkRelAttribute::kPreconnect;
   if (value == "preload")

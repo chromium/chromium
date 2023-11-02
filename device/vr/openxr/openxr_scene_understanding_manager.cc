@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #include <chrono>
 #include "base/containers/contains.h"
 #include "device/vr/openxr/openxr_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 // - UpdateInterval is the idle time between triggering a scene-compute query
@@ -147,9 +148,8 @@ void OpenXRSceneUnderstandingManager::RequestHitTest(
     gfx::Point3F plane_origin = gfx::Point3F(
         plane_pose.position.x, plane_pose.position.y, plane_pose.position.z);
     gfx::Transform mojo_to_plane = XrPoseToGfxTransform(plane_pose);
-    gfx::Vector3dF forward = {0, 0, -1};
-    gfx::Vector3dF plane_direction_vector = forward;
-    mojo_to_plane.TransformVector(&plane_direction_vector);
+    gfx::Vector3dF plane_direction_vector =
+        mojo_to_plane.MapVector(gfx::Vector3dF(0, 0, -1));
 
     absl::optional<float> distance_to_plane = GetRayPlaneDistance(
         ray_origin, ray_direction, plane_origin, plane_direction_vector);
@@ -157,8 +157,9 @@ void OpenXRSceneUnderstandingManager::RequestHitTest(
       gfx::Point3F hitpoint_position =
           ray_origin +
           gfx::ScaleVector3d(ray_direction, distance_to_plane.value());
-      gfx::Point3F hitpoint_in_plane_space = hitpoint_position;
-      mojo_to_plane.TransformPointReverse(&hitpoint_in_plane_space);
+      gfx::Point3F hitpoint_in_plane_space =
+          mojo_to_plane.InverseMapPoint(hitpoint_position)
+              .value_or(hitpoint_position);
 
       // Check to make sure that the hitpoint is within the plane boundaries.
       // XrScenePlaneMSFT does provide the triangle mesh for the plane
@@ -240,11 +241,11 @@ OpenXRSceneUnderstandingManager::GetHitTestSubscriptionResult(
   // Transform the ray according to the latest transform based on the XRSpace
   // used in hit test subscription.
 
-  gfx::Point3F origin = native_origin_ray.origin;
-  mojo_from_native_origin.TransformPoint(&origin);
+  gfx::Point3F origin =
+      mojo_from_native_origin.MapPoint(native_origin_ray.origin);
 
-  gfx::Vector3dF direction = native_origin_ray.direction;
-  mojo_from_native_origin.TransformVector(&direction);
+  gfx::Vector3dF direction =
+      mojo_from_native_origin.MapVector(native_origin_ray.direction);
 
   std::vector<mojom::XRHitResultPtr> hit_results;
   RequestHitTest(origin, direction, &hit_results);
@@ -266,12 +267,13 @@ OpenXRSceneUnderstandingManager::GetTransientHitTestSubscriptionResult(
 
   for (const auto& input_source_id_and_mojo_from_input_source :
        input_source_ids_and_mojo_from_input_sources) {
-    gfx::Point3F origin = input_source_ray.origin;
-    input_source_id_and_mojo_from_input_source.second.TransformPoint(&origin);
+    gfx::Point3F origin =
+        input_source_id_and_mojo_from_input_source.second.MapPoint(
+            input_source_ray.origin);
 
-    gfx::Vector3dF direction = input_source_ray.direction;
-    input_source_id_and_mojo_from_input_source.second.TransformVector(
-        &direction);
+    gfx::Vector3dF direction =
+        input_source_id_and_mojo_from_input_source.second.MapVector(
+            input_source_ray.direction);
 
     std::vector<mojom::XRHitResultPtr> hit_results;
     RequestHitTest(origin, direction, &hit_results);
@@ -358,7 +360,7 @@ OpenXRSceneUnderstandingManager::GetMojoFromNativeOrigin(
     const gfx::Transform& mojo_from_viewer,
     const std::vector<mojom::XRInputSourceStatePtr>& input_state) {
   switch (native_origin_information.which()) {
-    case mojom::XRNativeOriginInformation::Tag::INPUT_SOURCE_SPACE_INFO:
+    case mojom::XRNativeOriginInformation::Tag::kInputSourceSpaceInfo:
       for (auto& input_source_state : input_state) {
         mojom::XRInputSourceSpaceInfo* input_source_space_info =
             native_origin_information.get_input_source_space_info().get();
@@ -368,17 +370,17 @@ OpenXRSceneUnderstandingManager::GetMojoFromNativeOrigin(
         }
       }
       return absl::nullopt;
-    case mojom::XRNativeOriginInformation::Tag::REFERENCE_SPACE_TYPE:
+    case mojom::XRNativeOriginInformation::Tag::kReferenceSpaceType:
       return GetMojoFromReferenceSpace(
           native_origin_information.get_reference_space_type(),
           mojo_from_viewer);
-    case mojom::XRNativeOriginInformation::Tag::PLANE_ID:
+    case mojom::XRNativeOriginInformation::Tag::kPlaneId:
       return absl::nullopt;
-    case mojom::XRNativeOriginInformation::Tag::ANCHOR_ID:
+    case mojom::XRNativeOriginInformation::Tag::kAnchorId:
       return absl::nullopt;
-    case mojom::XRNativeOriginInformation::Tag::HAND_JOINT_SPACE_INFO:
+    case mojom::XRNativeOriginInformation::Tag::kHandJointSpaceInfo:
       return absl::nullopt;
-    case mojom::XRNativeOriginInformation::Tag::IMAGE_INDEX:
+    case mojom::XRNativeOriginInformation::Tag::kImageIndex:
       return absl::nullopt;
   }
 }

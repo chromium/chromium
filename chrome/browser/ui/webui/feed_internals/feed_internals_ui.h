@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/feed_internals/feed_internals.mojom-forward.h"
 #include "components/feed/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -37,7 +38,7 @@ class FeedInternalsUI : public ui::MojoWebUIController {
       mojo::PendingReceiver<feed_internals::mojom::PageHandler> receiver);
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   std::unique_ptr<FeedV2InternalsPageHandler> v2_page_handler_;
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

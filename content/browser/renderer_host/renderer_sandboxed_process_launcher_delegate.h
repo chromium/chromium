@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include "base/command_line.h"
 #include "build/build_config.h"
+#include "content/common/content_export.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 
@@ -23,14 +24,14 @@ class CONTENT_EXPORT RendererSandboxedProcessLauncherDelegate
   ZygoteHandle GetZygote() override;
 #endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   bool EnableCpuSecurityMitigations() override;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   sandbox::mojom::Sandbox GetSandboxType() override;
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // NOTE: changes to this class need to be reviewed by the security team.
 class CONTENT_EXPORT RendererSandboxedProcessLauncherDelegateWin
     : public RendererSandboxedProcessLauncherDelegate {
@@ -38,15 +39,19 @@ class CONTENT_EXPORT RendererSandboxedProcessLauncherDelegateWin
   RendererSandboxedProcessLauncherDelegateWin(base::CommandLine* cmd_line,
                                               bool is_jit_disabled);
 
+  std::string GetSandboxTag() override;
+
   bool PreSpawnTarget(sandbox::TargetPolicy* policy) override;
+  void PostSpawnTarget(base::ProcessHandle process) override;
 
   bool CetCompatible() override;
 
  private:
   const bool renderer_code_integrity_enabled_;
+  const bool renderer_app_container_disabled_;
   bool dynamic_code_can_be_disabled_ = false;
 };
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace content
 

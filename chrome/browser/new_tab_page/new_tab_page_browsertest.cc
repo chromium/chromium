@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/containers/span.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -29,10 +30,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 #include "base/command_line.h"
-#include "chrome/test/pixel/browser_skia_gold_pixel_diff.h"
+#include "ui/views/test/view_skia_gold_pixel_diff.h"
 #endif
 
 class NewTabPageTest : public InProcessBrowserTest,
@@ -41,7 +42,7 @@ class NewTabPageTest : public InProcessBrowserTest,
   NewTabPageTest() {
     features_.InitWithFeatures(
         {}, {ntp_features::kNtpOneGoogleBar, ntp_features::kNtpShortcuts,
-             ntp_features::kNtpMiddleSlotPromo, ntp_features::kModules});
+             ntp_features::kNtpMiddleSlotPromo});
   }
 
   ~NewTabPageTest() override = default;
@@ -124,7 +125,7 @@ class NewTabPageTest : public InProcessBrowserTest,
     // Read initial value of lazy-loaded in case lazy load is already complete
     // at this point in time.
     lazy_loaded_ =
-        EvalJs(contents_,
+        EvalJs(contents_.get(),
                "document.documentElement.hasAttribute('lazy-loaded')",
                content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, /*world_id=*/1)
             .ExtractBool();
@@ -152,7 +153,7 @@ class NewTabPageTest : public InProcessBrowserTest,
 
   // Blocks until the next animation frame.
   void WaitForAnimationFrame() {
-    CHECK(EvalJs(contents_,
+    CHECK(EvalJs(contents_.get(),
                  "new Promise(r => requestAnimationFrame(() => r(true)))",
                  content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, /*world_id=*/1)
               .ExtractBool());
@@ -163,18 +164,16 @@ class NewTabPageTest : public InProcessBrowserTest,
   // verification is skipped.
   bool VerifyUi(const std::string& screenshot_prefix,
                 const std::string& screenshot_name) {
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
     if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
             "browser-ui-tests-verify-pixels")) {
       return true;
     }
-    BrowserSkiaGoldPixelDiff pixel_diff;
-    pixel_diff.Init(views::Widget::GetWidgetForNativeWindow(
-                        browser()->window()->GetNativeWindow()),
-                    screenshot_prefix);
-    return pixel_diff.CompareScreenshot(screenshot_name,
-                                        browser_view_->contents_web_view());
+    views::ViewSkiaGoldPixelDiff pixel_diff;
+    pixel_diff.Init(screenshot_prefix);
+    return pixel_diff.CompareViewScreenshot(screenshot_name,
+                                            browser_view_->contents_web_view());
 #else
     return true;
 #endif
@@ -182,8 +181,8 @@ class NewTabPageTest : public InProcessBrowserTest,
 
  protected:
   base::test::ScopedFeatureList features_;
-  content::WebContents* contents_;
-  BrowserView* browser_view_;
+  raw_ptr<content::WebContents> contents_;
+  raw_ptr<BrowserView> browser_view_;
   scoped_refptr<content::DevToolsAgentHost> agent_host_;
   std::map<std::string, GURL> loading_resources_;
   base::OnceClosure network_load_quit_closure_;
@@ -192,7 +191,7 @@ class NewTabPageTest : public InProcessBrowserTest,
 };
 
 // TODO(crbug.com/1250156): NewTabPageTest.LandingPagePixelTest is flaky
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #define MAYBE_LandingPagePixelTest DISABLED_LandingPagePixelTest
 #else
 #define MAYBE_LandingPagePixelTest LandingPagePixelTest

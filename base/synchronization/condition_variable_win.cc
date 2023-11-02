@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,8 +45,8 @@ void ConditionVariable::TimedWait(const TimeDelta& max_time) {
 #endif
 
   if (!SleepConditionVariableSRW(reinterpret_cast<PCONDITION_VARIABLE>(&cv_),
-                                 reinterpret_cast<PSRWLOCK>(srwlock_), timeout,
-                                 0)) {
+                                 reinterpret_cast<PSRWLOCK>(srwlock_.get()),
+                                 timeout, 0)) {
     // On failure, we only expect the CV to timeout. Any other error value means
     // that we've unexpectedly woken up.
     // Note that WAIT_TIMEOUT != ERROR_TIMEOUT. WAIT_TIMEOUT is used with the

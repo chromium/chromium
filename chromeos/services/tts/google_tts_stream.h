@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,10 @@ class GoogleTtsStream : public mojom::GoogleTtsStream {
   ~GoogleTtsStream() override;
 
   bool IsBound() const;
+
+  void set_is_in_process_teardown(bool value) {
+    is_in_process_teardown_ = value;
+  }
 
  private:
   // mojom::GoogleTtsStream:
@@ -57,6 +61,9 @@ class GoogleTtsStream : public mojom::GoogleTtsStream {
 
   // Plays raw tts audio samples.
   TtsPlayer tts_player_;
+
+  // Whether the tts service process is tearing down.
+  bool is_in_process_teardown_ = false;
 
   base::WeakPtrFactory<GoogleTtsStream> weak_factory_{this};
 };

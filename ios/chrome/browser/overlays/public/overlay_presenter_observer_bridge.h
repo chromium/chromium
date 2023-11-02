@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-
-#include "base/macros.h"
 #include "ios/chrome/browser/overlays/public/overlay_presenter_observer.h"
 
 // Observes overlay UI presentation events from Objective-C. To use as an

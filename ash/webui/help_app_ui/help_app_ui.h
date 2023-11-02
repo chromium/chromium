@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "ash/webui/help_app_ui/help_app_ui.mojom.h"
 #include "ash/webui/help_app_ui/help_app_ui_delegate.h"
 #include "ash/webui/help_app_ui/search/search.mojom.h"
-#include "chromeos/components/local_search_service/public/mojom/index.mojom.h"
+#include "chromeos/ash/components/local_search_service/public/mojom/index.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
@@ -33,8 +33,7 @@ class HelpAppUI : public ui::MojoWebUIController,
       mojo::PendingReceiver<help_app::mojom::PageHandlerFactory> receiver);
 
   void BindInterface(
-      mojo::PendingReceiver<chromeos::local_search_service::mojom::Index>
-          index_receiver);
+      mojo::PendingReceiver<local_search_service::mojom::Index> index_receiver);
 
   // The search handler is used to update the search index for launcher search.
   void BindInterface(

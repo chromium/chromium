@@ -1,0 +1,8 @@
+WebView text:"Table example - th rowheader" focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="rootWebArea"]
+++GridView CollectionInfo:[rows=2, cols=2] actions:[AX_FOCUS] bundle:[chromeRole="table", roleDescription="table"]
+++++View actions:[AX_FOCUS] bundle:[chromeRole="row"]
+++++++View text:"Firstname" CollectionItemInfo:[heading, rowIndex=0, colIndex=0] actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="rowHeader", roleDescription="row header"]
+++++++View text:"Jill" CollectionItemInfo:[rowIndex=0, colIndex=1] actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="cell"]
+++++View actions:[AX_FOCUS] bundle:[chromeRole="row"]
+++++++View text:"Lastname" CollectionItemInfo:[heading, rowIndex=1, colIndex=0] actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="rowHeader", roleDescription="row header"]
+++++++View text:"Smith" CollectionItemInfo:[rowIndex=1, colIndex=1] actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="cell"]

@@ -1,5 +1,5 @@
 <!--
-Copyright 2020 The Chromium Authors. All rights reserved.
+Copyright 2020 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
@@ -28,7 +28,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="PhoneHub.Adoption.FeatureStatusChangesSinceLogin"
-    enum="PhoneHubFeatureStatus" expires_after="2022-10-31">
+    enum="PhoneHubFeatureStatus" expires_after="2023-02-01">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -39,14 +39,52 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.Adoption.LoginFeatureStatus"
-    enum="PhoneHubFeatureStatus" expires_after="2022-10-31">
+    enum="PhoneHubFeatureStatus" expires_after="2023-02-01">
+  <obsolete>
+    There was a bug associated with the recording on this metric. During
+    investigation, we decided that this metric is of no value and so it was
+    removed. Deprecated 07/2022
+  </obsolete>
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>The steady state feature status of PhoneHub on user login.</summary>
 </histogram>
 
+<histogram name="PhoneHub.BubbleOpened.Connectable.Failed.HostLastSeen"
+    units="ms" expires_after="2023-04-09">
+  <owner>jonmann@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The time since the last successful discovery of the phone. Emitted when the
+    PhoneHub tray bubble is opened prior to connected to the phone.
+  </summary>
+</histogram>
+
+<histogram name="PhoneHub.BubbleOpened.Connectable.Page" enum="PhoneHubScreen"
+    expires_after="2023-04-09">
+  <owner>jonmann@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The page which is shown in the Phone Hub tray bubble when it is first
+    opened. This is only emitted when we know the phone is connectable because
+    it has been discovered nearby in the past 2 minutes.
+  </summary>
+</histogram>
+
+<histogram name="PhoneHub.CameraRoll.AndroidHasStoragePermission"
+    enum="PhoneHubCameraRollBooleanStorageAccessPermission"
+    expires_after="2023-02-01">
+  <owner>jonmann@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records if the Android component has storage access permission. If not,
+    Camera Roll is hidden and the settings toggle is grayed out. Emitted when a
+    change of access state is reported by the Android device.
+  </summary>
+</histogram>
+
 <histogram name="PhoneHub.CameraRoll.Content.Clicked{MediaType}"
-    enum="PhoneHubCameraRollContentClicked" expires_after="2022-10-31">
+    enum="PhoneHubCameraRollContentClicked" expires_after="2023-02-01">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -56,8 +94,19 @@ chromium-metrics-reviews@google.com.
   <token key="MediaType" variants="CameraRollMediaType"/>
 </histogram>
 
+<histogram name="PhoneHub.CameraRoll.Content.Present" enum="BooleanPresent"
+    expires_after="2023-04-09">
+  <owner>jasonsun@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Emits to one and only one bucket. Used to help track engagement with Camera
+    Roll. Emitted once per opening of the PhoneHub bubble when Camera Roll items
+    are first shown.
+  </summary>
+</histogram>
+
 <histogram name="PhoneHub.CameraRoll.Content.Shown{MediaType}"
-    enum="PhoneHubCameraRollContentShown" expires_after="2022-10-31">
+    enum="PhoneHubCameraRollContentShown" expires_after="2023-02-01">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -68,7 +117,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.CameraRoll.ContextMenu.Download{MediaType}"
-    enum="PhoneHubCameraRollContextMenuDownload" expires_after="2022-10-31">
+    enum="PhoneHubCameraRollContextMenuDownload" expires_after="2023-02-01">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -78,8 +127,67 @@ chromium-metrics-reviews@google.com.
   <token key="MediaType" variants="CameraRollMediaType"/>
 </histogram>
 
+<histogram name="PhoneHub.CameraRoll.DownloadItem.Result"
+    enum="PhoneHubCameraRollDownloadResult" expires_after="2023-08-12">
+  <owner>jonmann@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Logs the result of attempting to download a file from Phone Hub's Camera
+    Roll.
+  </summary>
+</histogram>
+
+<histogram name="PhoneHub.CameraRoll.DownloadItem.TransferRate" units="KB/s"
+    expires_after="2023-02-01">
+  <owner>jasonsun@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Measures the data transfer rate of downloading a recent photo or video taken
+    on a connected phone via Phone Hub. Emitted when an item is downloaded
+    successfully.
+  </summary>
+</histogram>
+
+<histogram name="PhoneHub.CameraRoll.Latency.RefreshItems" units="ms"
+    expires_after="2023-04-09">
+  <owner>jasonsun@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Measures the amount of time it takes for the Chromebook to receive the
+    up-to-date set of recent photos and videos taken on a connected phone and
+    display their thumbnails on the Phone Hub tray.
+  </summary>
+</histogram>
+
+<histogram name="PhoneHub.CameraRoll.OptInEntryPoint"
+    enum="PhoneHubCameraRollOptInEntryPoint" expires_after="2023-04-09">
+  <owner>jianbing@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Emitted when a new multidevice suite user goes through the multidevice
+    onboarding flow, when the user enables the Camera Roll toggle in Settings,
+    and when user chose to turn on the feature in camera roll onboarding dialog
+    inside phone hub panel.
+  </summary>
+</histogram>
+
+<histogram name="PhoneHub.CameraRoll.OptInEvents"
+    enum="PhoneHubInterstitialScreenEvent" expires_after="2023-02-01">
+  <obsolete>
+    No longer valid as combined feature onboarding flow replaced existing camera
+    roll op-in flow. Deprecated 04/2022.
+  </obsolete>
+  <owner>jianbing@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records events from the Camera Roll opt-in view within the Phone Hub tray
+    bubble. Emitted when the opt-in view is shown and when the user clicks the
+    confirm/dismiss buttons.
+  </summary>
+</histogram>
+
 <histogram name="PhoneHub.CompletedUserAction" enum="PhoneHubUserAction"
-    expires_after="2022-10-31">
+    expires_after="2023-04-09">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -91,40 +199,56 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.Connection.Duration" units="ms"
-    expires_after="2022-10-31">
+    expires_after="2023-04-02">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     The duration of time the phone is in the connected state, and becomes
     disconnected.
+  </summary>
+</histogram>
+
+<histogram name="PhoneHub.Connection.Latency" units="ms"
+    expires_after="2023-02-01">
+  <owner>crisrael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The duration of time the phone is in the connecting state and becomes
+    connected. Emitted when the phone connects to the Chromebook.
   </summary>
 </histogram>
 
 <histogram name="PhoneHub.Connection.Result" enum="BooleanSuccess"
-    expires_after="2022-10-31">
+    expires_after="2023-04-02">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     Measures PhoneHub connection success rate, considering attempts where the
-    phone is not nearby as failures.
+    phone is not nearby as failures. This is recorded at the end of each
+    connection attempt, whether it fails or succeeds and the failures are broken
+    down into more specific categories in
+    PhoneHub.Connection.Result.FailureReason
   </summary>
 </histogram>
 
-<histogram name="PhoneHub.Connectivity.Duration" units="ms"
-    expires_after="2022-10-31">
-  <obsolete>
-    Renamed to PhoneHub.Connection.Duration on 1/2021 in M89.
-  </obsolete>
+<histogram name="PhoneHub.Connection.Result.FailureReason"
+    enum="SecureChannelConnectionAttemptFailureReason"
+    expires_after="2023-04-09">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
-    The duration of time the phone is in the connected state, and becomes
-    disconnected.
+    The reason for which a connection attempt to the phone has failed. This is a
+    breakdown of the failure bucket of PhoneHub.Connection.Result and is
+    recorded on each connection failure.
   </summary>
 </histogram>
 
 <histogram name="PhoneHub.Connectivity.Latency" units="ms"
-    expires_after="2022-10-31">
+    expires_after="2023-02-01">
+  <obsolete>
+    This metric is being deprecated for PhoneHub.Connection.Latency in order to
+    capture latencies over 10 seconds. Deprecated 09/2022.
+  </obsolete>
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -133,18 +257,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PhoneHub.Connectivity.Success" enum="BooleanSuccess"
-    expires_after="2022-10-31">
-  <obsolete>
-    Renamed to PhoneHub.Connection.Result on 11/2020 in M89.
-  </obsolete>
-  <owner>jonmann@chromium.org</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>The success rate of connecting to the Phone.</summary>
-</histogram>
-
 <histogram name="PhoneHub.InterstitialScreenEvent.{Screen}"
-    enum="PhoneHubInterstitialScreenEvent" expires_after="2022-10-31">
+    enum="PhoneHubInterstitialScreenEvent" expires_after="2023-02-01">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>Events for the given PhoneHub interstitial screen. {Screen}</summary>
@@ -152,11 +266,6 @@ chromium-metrics-reviews@google.com.
 
   <token key="Screen">
     <variant name="BluetoothOrWifiDisabled" summary=""/>
-    <variant name="InitialConnecting" summary="">
-      <obsolete>
-        Combined into PhoneConnecting on Nov 2020.
-      </obsolete>
-    </variant>
     <variant name="Onboarding.ExistingMultideviceUser"
         summary="NOTE(https://crbug.com/1187255): This metric is actually
                  logging new multi-device users. For continuity, we continue
@@ -176,7 +285,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.MultiDeviceFeatureState{PhoneHubFeature}"
-    enum="MultiDevice_FeatureState" expires_after="2022-10-31">
+    enum="MultiDevice_FeatureState" expires_after="2023-02-01">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -185,18 +294,7 @@ chromium-metrics-reviews@google.com.
     multi-device feature state changes, and every 30 minutes. {PhoneHubFeature}
   </summary>
   <token key="PhoneHubFeature">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
     <variant name=".CameraRoll" summary="Camera roll sub-feature."/>
-    <variant name=".NotificationBadge"
-        summary="Notification badge sub-feature.">
-      <obsolete>
-        Removed in M88, as the feature will not be included in the M89 launch.
-      </obsolete>
-    </variant>
     <variant name=".Notifications" summary="Notifications sub-feature."/>
     <variant name=".TaskContinuation" summary="Task continuation sub-feature."/>
     <variant name=".TopLevelFeature" summary="Top level Phone Hub feature."/>
@@ -204,8 +302,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.NotificationAccessSetup.SuccessfulSetupDuration"
-    units="ms" expires_after="2022-10-31">
-  <owner>nohle@chromium.org</owner>
+    units="ms" expires_after="2023-02-01">
+  <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     Records the time it takes for the user to successfully go through the
@@ -217,8 +315,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.NotificationAccessSetup.{AllStatusesOrLastStatus}"
-    enum="PhoneHubNotificationAccessSetupStatus" expires_after="2022-10-31">
-  <owner>nohle@chromium.org</owner>
+    enum="PhoneHubNotificationAccessSetupStatus" expires_after="2023-02-01">
+  <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     Records {AllStatusesOrLastStatus} the Chromebook UI that guides them through
@@ -235,7 +333,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.NotificationCount" units="notifications"
-    expires_after="2022-10-31">
+    expires_after="2023-04-09">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -245,7 +343,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.NotificationInteraction"
-    enum="PhoneHubNotificationInteraction" expires_after="2022-10-31">
+    enum="PhoneHubNotificationInteraction" expires_after="2023-04-09">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -254,52 +352,105 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PhoneHub.NotificationOptIn"
-    enum="PhoneHubInterstitialScreenEvent" expires_after="2022-10-31">
-  <obsolete>
-    Renamed to PhoneHub.NotificationOptInEvents on 1/2021 in M89.
-  </obsolete>
+<histogram name="PhoneHub.NotificationMessageLength" units="characters"
+    expires_after="2023-02-01">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>Events for the given notification opt-in prompt.</summary>
+  <summary>
+    The message length of a mirrored PhoneHub notification, not including the
+    title, logged each time a notification is added or updated.
+  </summary>
 </histogram>
 
 <histogram name="PhoneHub.NotificationOptInEvents"
-    enum="PhoneHubInterstitialScreenEvent" expires_after="2022-10-31">
+    enum="PhoneHubInterstitialScreenEvent" expires_after="2023-02-01">
+  <obsolete>
+    No longer valid as combined feature onboarding flow replaced existing
+    notification op-in flow. Deprecated 04/2022.
+  </obsolete>
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>Events for the given notification opt-in prompt.</summary>
 </histogram>
 
 <histogram name="PhoneHub.OptInEntryPoint" enum="PhoneHubOptInEntryPoint"
-    expires_after="2022-10-31">
+    expires_after="2023-04-09">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>Tracks the UI surface with which users enable Phone Hub.</summary>
 </histogram>
 
+<histogram
+    name="PhoneHub.PermissionsOnboarding.DialogScreenEvents.{SetupScreen}Screen"
+    enum="PhoneHubPermissionsOnboardingScreenEvent" expires_after="2023-02-01">
+  <owner>jianbing@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Actions user performed in combined multidevice feature set up {SetupScreen}.
+    Event would be emitted when user click on buttons on {SetupScreen} and setup
+    finished screen is shown.
+  </summary>
+  <token key="SetupScreen">
+    <variant name="ConnectingToPhone" summary="connecting screen"/>
+    <variant name="ConnectionLost" summary="connection lost screen"/>
+    <variant name="CouldNotEstablishConnection"
+        summary="could not establish connection screen"/>
+    <variant name="FinishSetupOnYourPhone"
+        summary="finish setup on your phone screen"/>
+    <variant name="Intro" summary="introduction screen"/>
+    <variant name="Promo" summary="promotion in Phonehub tray"/>
+    <variant name="SetAPinOrPassword" summary="set a PIN or password screen"/>
+    <variant name="SetUpFinished" summary="setup finished screen"/>
+  </token>
+</histogram>
+
+<histogram name="PhoneHub.PermissionsOnboarding.SetUpMode.IntroScreenShown"
+    enum="PhoneHubPermissionsOnboardingSetUpMode" expires_after="2023-04-09">
+  <owner>mavishsu@google.com</owner>
+  <owner>jonmann@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Tracks the multidevice permissions onboarding setup mode. Logged when intro
+    screen is displayed.
+  </summary>
+</histogram>
+
+<histogram
+    name="PhoneHub.PermissionsOnboarding.SetUpMode.SetUpFinishedScreenShown"
+    enum="PhoneHubPermissionsOnboardingSetUpResult" expires_after="2023-04-09">
+  <owner>mavishsu@google.com</owner>
+  <owner>jonmann@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Tracks the multidevice permissions onboarding setup mode. Logged when set up
+    finished screen is displayed.
+  </summary>
+</histogram>
+
+<histogram name="PhoneHub.PermissionsOnboarding.SetUpMode.{ModeRecordingEvent}"
+    enum="PhoneHubPermissionsOnboardingSetUpMode" expires_after="2023-02-01">
+  <owner>jianbing@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Tracks which feature combination user is setting up. Event would be emitted
+    when {ModeRecordingEvent}.
+  </summary>
+  <token key="ModeRecordingEvent">
+    <variant name="OnPromoShown" summary="setup promo shown in Phonehub tray"/>
+    <variant name="OnSettingsClicked"
+        summary="setup button clicked in multidevice setting\'s page"/>
+  </token>
+</histogram>
+
 <histogram name="PhoneHub.QuickActionClicked" enum="PhoneHubQuickAction"
-    expires_after="2022-10-31">
+    expires_after="2023-04-09">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>Event logged after the user clicks on a quick action.</summary>
 </histogram>
 
-<histogram name="PhoneHub.Screen.OnSettingsButtonClicked" enum="PhoneHubScreen"
-    expires_after="2022-10-31">
-  <obsolete>
-    Renamed to PhoneHub.ScreenOnSettingsButtonClicked on 1/2021 in M89.
-  </obsolete>
-  <owner>jonmann@chromium.org</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    Logs the current screen when the settings button is clicked in the tray
-    bubble.
-  </summary>
-</histogram>
-
 <histogram name="PhoneHub.ScreenOnSettingsButtonClicked" enum="PhoneHubScreen"
-    expires_after="2022-10-31">
+    expires_after="2023-02-01">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -309,7 +460,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.ScreenOn{BubbleEvent}" enum="PhoneHubScreen"
-    expires_after="2022-10-31">
+    expires_after="2023-02-01">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -323,7 +474,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.TabContinuationChipClicked" units="tab index"
-    expires_after="2022-10-31">
+    expires_after="2023-02-01">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -334,7 +485,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.TaskCompletion.TetherConnection.Result"
-    enum="PhoneHubTetherConnectionResult" expires_after="2022-10-31">
+    enum="PhoneHubTetherConnectionResult" expires_after="2023-02-01">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -344,7 +495,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.TaskCompletion.{MessageType}.Result"
-    enum="PhoneHubMessageResult" expires_after="2022-10-31">
+    enum="PhoneHubMessageResult" expires_after="2023-02-01">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -352,6 +503,7 @@ chromium-metrics-reviews@google.com.
     request message was sent and a response was received.
   </summary>
   <token key="MessageType">
+    <variant name="FeatureSetup"/>
     <variant name="FetchCameraRollItemData"/>
     <variant name="FetchCameraRollItems"/>
     <variant name="InitiateCameraRollItemTransfer"/>
@@ -365,7 +517,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.Usage.SentMessageTypeCount"
-    enum="PhoneHubMessageType" expires_after="2022-10-31">
+    enum="PhoneHubMessageType" expires_after="2023-04-09">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>

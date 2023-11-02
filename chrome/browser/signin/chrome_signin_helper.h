@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -57,9 +57,11 @@ class ChromeRequestAdapter : public RequestAdapter {
 
   virtual network::mojom::RequestDestination GetRequestDestination() const = 0;
 
+  virtual bool IsOutermostMainFrame() const = 0;
+
   virtual bool IsFetchLikeAPI() const = 0;
 
-  virtual GURL GetReferrerOrigin() const = 0;
+  virtual GURL GetReferrer() const = 0;
 
   // Associate a callback with this request which will be executed when the
   // request is complete (including any redirects). If a callback was already
@@ -77,8 +79,8 @@ class ResponseAdapter {
   virtual ~ResponseAdapter();
 
   virtual content::WebContents::Getter GetWebContentsGetter() const = 0;
-  virtual bool IsMainFrame() const = 0;
-  virtual GURL GetOrigin() const = 0;
+  virtual bool IsOutermostMainFrame() const = 0;
+  virtual GURL GetURL() const = 0;
   virtual const net::HttpResponseHeaders* GetHeaders() const = 0;
   virtual void RemoveHeader(const std::string& name) = 0;
 

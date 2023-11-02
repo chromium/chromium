@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,20 +8,20 @@
 
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/metrics/histogram_macros.h"
-#include "ash/public/cpp/file_icon_util.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ui/base/file_icon_util.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/gfx/paint_vector_icon.h"
 
-namespace ash {
-namespace ClipboardHistoryUtil {
+namespace ash::clipboard_history_util {
 
 namespace {
 
@@ -50,29 +50,27 @@ absl::optional<ui::ClipboardInternalFormat> CalculateMainFormat(
   return absl::nullopt;
 }
 
-ClipboardHistoryDisplayFormat CalculateDisplayFormat(
-    const ui::ClipboardData& data) {
+DisplayFormat CalculateDisplayFormat(const ui::ClipboardData& data) {
   switch (CalculateMainFormat(data).value()) {
     case ui::ClipboardInternalFormat::kPng:
-      return ClipboardHistoryDisplayFormat::kPng;
+      return DisplayFormat::kPng;
     case ui::ClipboardInternalFormat::kHtml:
       if ((data.markup_data().find("<img") == std::string::npos) &&
           (data.markup_data().find("<table") == std::string::npos)) {
-        return ClipboardHistoryDisplayFormat::kText;
+        return DisplayFormat::kText;
       }
-      return ClipboardHistoryDisplayFormat::kHtml;
+      return DisplayFormat::kHtml;
     case ui::ClipboardInternalFormat::kText:
     case ui::ClipboardInternalFormat::kSvg:
     case ui::ClipboardInternalFormat::kRtf:
     case ui::ClipboardInternalFormat::kBookmark:
     case ui::ClipboardInternalFormat::kWeb:
-      return ClipboardHistoryDisplayFormat::kText;
+      return DisplayFormat::kText;
     case ui::ClipboardInternalFormat::kFilenames:
-      return ClipboardHistoryDisplayFormat::kFile;
+      return DisplayFormat::kFile;
     case ui::ClipboardInternalFormat::kCustom:
-      return ContainsFileSystemData(data)
-                 ? ClipboardHistoryDisplayFormat::kFile
-                 : ClipboardHistoryDisplayFormat::kText;
+      return ContainsFileSystemData(data) ? DisplayFormat::kFile
+                                          : DisplayFormat::kText;
   }
 }
 
@@ -191,15 +189,15 @@ bool IsEnabledInCurrentMode() {
 
 gfx::ImageSkia GetIconForFileClipboardItem(const ClipboardHistoryItem& item,
                                            const std::string& file_name) {
-  DCHECK_EQ(ClipboardHistoryDisplayFormat::kFile,
-            CalculateDisplayFormat(item.data()));
+  DCHECK_EQ(DisplayFormat::kFile, CalculateDisplayFormat(item.data()));
   const int copied_files_count = GetCountOfCopiedFiles(item.data());
 
   if (copied_files_count == 0)
     return gfx::ImageSkia();
   if (copied_files_count == 1) {
-    return GetIconForPath(base::FilePath(file_name),
-                          ash::AshColorProvider::Get()->IsDarkModeEnabled());
+    return chromeos::GetIconForPath(
+        base::FilePath(file_name),
+        ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled());
   }
   constexpr std::array<const gfx::VectorIcon*, 9> icons = {
       &kTwoFilesIcon,   &kThreeFilesIcon, &kFourFilesIcon,
@@ -211,5 +209,4 @@ gfx::ImageSkia GetIconForFileClipboardItem(const ClipboardHistoryItem& item,
   return CreateVectorIcon(*icons[icon_index], icon_color);
 }
 
-}  // namespace ClipboardHistoryUtil
-}  // namespace ash
+}  // namespace ash::clipboard_history_util

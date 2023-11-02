@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -120,7 +120,7 @@ class BatteryMonitorImplTest : public DeviceServiceTestBase {
   mojo::Remote<mojom::BatteryMonitor> battery_monitor_;
 
  private:
-  FakeBatteryStatusManager* battery_manager_;
+  raw_ptr<FakeBatteryStatusManager> battery_manager_;
 };
 
 TEST_F(BatteryMonitorImplTest, BatteryManagerDefaultValues) {

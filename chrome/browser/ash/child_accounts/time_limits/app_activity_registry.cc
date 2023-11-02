@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/time/default_tick_clock.h"
+#include "base/unguessable_token.h"
 #include "base/values.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_utils.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limits_allowlist_policy_wrapper.h"
@@ -23,7 +24,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 
 namespace ash {
 namespace app_time {
@@ -225,10 +226,9 @@ void AppActivityRegistry::OnAppBlocked(const AppId& app_id) {
   SetAppState(app_id, AppState::kBlocked);
 }
 
-void AppActivityRegistry::OnAppActive(
-    const AppId& app_id,
-    const apps::Instance::InstanceKey& instance_key,
-    base::Time timestamp) {
+void AppActivityRegistry::OnAppActive(const AppId& app_id,
+                                      const base::UnguessableToken& instance_id,
+                                      base::Time timestamp) {
   if (!base::Contains(activity_registry_, app_id))
     return;
 
@@ -242,10 +242,10 @@ void AppActivityRegistry::OnAppActive(
     // If the instance is in |app_details.paused_instances| then
     // AppActivityRegistry has already notified its observers to pause it.
     // Return.
-    if (base::Contains(app_details.paused_instances, instance_key))
+    if (base::Contains(app_details.paused_instances, instance_id))
       return;
 
-    app_details.paused_instances.insert(instance_key);
+    app_details.paused_instances.insert(instance_id);
     NotifyLimitReached(app_id, /* was_active */ true);
     return;
   }
@@ -253,13 +253,13 @@ void AppActivityRegistry::OnAppActive(
   if (!IsAppAvailable(app_id))
     return;
 
-  std::set<apps::Instance::InstanceKey>& active_instances =
+  std::set<base::UnguessableToken>& active_instances =
       app_details.active_instances;
 
-  if (base::Contains(active_instances, instance_key))
+  if (base::Contains(active_instances, instance_id))
     return;
 
-  active_instances.insert(instance_key);
+  active_instances.insert(instance_id);
 
   // No need to set app as active if there were already active instances for the
   // app
@@ -271,7 +271,7 @@ void AppActivityRegistry::OnAppActive(
 
 void AppActivityRegistry::OnAppInactive(
     const AppId& app_id,
-    const apps::Instance::InstanceKey& instance_key,
+    const base::UnguessableToken& instance_id,
     base::Time timestamp) {
   if (!base::Contains(activity_registry_, app_id))
     return;
@@ -279,13 +279,13 @@ void AppActivityRegistry::OnAppInactive(
   if (app_id == GetChromeAppId())
     return;
 
-  std::set<apps::Instance::InstanceKey>& active_instances =
+  std::set<base::UnguessableToken>& active_instances =
       activity_registry_[app_id].active_instances;
 
-  if (!base::Contains(active_instances, instance_key))
+  if (!base::Contains(active_instances, instance_id))
     return;
 
-  active_instances.erase(instance_key);
+  active_instances.erase(instance_id);
   if (active_instances.size() > 0)
     return;
 
@@ -294,7 +294,7 @@ void AppActivityRegistry::OnAppInactive(
 
 void AppActivityRegistry::OnAppDestroyed(
     const AppId& app_id,
-    const apps::Instance::InstanceKey& instance_key,
+    const base::UnguessableToken& instance_id,
     base::Time timestamp) {
   if (!base::Contains(activity_registry_, app_id))
     return;
@@ -303,8 +303,8 @@ void AppActivityRegistry::OnAppDestroyed(
     return;
 
   AppDetails& app_details = activity_registry_.at(app_id);
-  if (base::Contains(app_details.paused_instances, instance_key))
-    app_details.paused_instances.erase(instance_key);
+  if (base::Contains(app_details.paused_instances, instance_id))
+    app_details.paused_instances.erase(instance_id);
 }
 
 bool AppActivityRegistry::IsAppInstalled(const AppId& app_id) const {
@@ -396,7 +396,7 @@ void AppActivityRegistry::GenerateHiddenApps(
     enterprise_management::App* app_info = report->add_hidden_app();
     app_info->set_app_id(app_id.app_id());
     app_info->set_app_type(AppTypeForReporting(app_id.app_type()));
-    if (app_id.app_type() == apps::mojom::AppType::kArc) {
+    if (app_id.app_type() == apps::AppType::kArc) {
       app_info->add_additional_app_id(
           app_service_wrapper_->GetAppServiceId(app_id));
     }
@@ -419,13 +419,12 @@ AppActivityRegistry::GenerateAppActivityReport(
     return AppActivityReportInterface::ReportParams{timestamp, false};
   }
 
-  const base::Value* value =
+  const base::Value::List& list =
       pref_service_->GetList(prefs::kPerAppTimeLimitsAppActivities);
-  DCHECK(value);
 
   const std::vector<PersistedAppInfo> applications_info =
       PersistedAppInfo::PersistedAppInfosFromList(
-          value,
+          list,
           /* include_app_activity_array */ true);
 
   const base::Time timestamp = base::Time::Now();
@@ -446,7 +445,7 @@ AppActivityRegistry::GenerateAppActivityReport(
     app_info->set_app_id(app_id.app_id());
     app_info->set_app_type(AppTypeForReporting(app_id.app_type()));
     // AppService is is only different for ARC++ apps.
-    if (app_id.app_type() == apps::mojom::AppType::kArc) {
+    if (app_id.app_type() == apps::AppType::kArc) {
       app_info->add_additional_app_id(
           app_service_wrapper_->GetAppServiceId(app_id));
     }
@@ -557,16 +556,20 @@ bool AppActivityRegistry::SetAppLimit(
   }
 
   for (auto& entry : activity_registry_) {
-    const AppId& app_id = entry.first;
-    AppDetails& details = entry.second;
-    if (ContributesToWebTimeLimit(app_id, GetAppState(app_id)))
-      details.limit = app_limit;
+    const AppId& app_id_for_entry = entry.first;
+    AppDetails& details_for_entry = entry.second;
+    if (ContributesToWebTimeLimit(app_id_for_entry,
+                                  GetAppState(app_id_for_entry))) {
+      details_for_entry.limit = app_limit;
+    }
   }
 
   for (auto& entry : activity_registry_) {
-    const AppId& app_id = entry.first;
-    if (ContributesToWebTimeLimit(app_id, GetAppState(app_id)))
-      AppLimitUpdated(app_id);
+    const AppId& app_id_for_entry = entry.first;
+    if (ContributesToWebTimeLimit(app_id_for_entry,
+                                  GetAppState(app_id_for_entry))) {
+      AppLimitUpdated(app_id_for_entry);
+    }
   }
 
   return updated;
@@ -627,13 +630,13 @@ void AppActivityRegistry::OnTimeLimitAllowlistChanged(
 
 void AppActivityRegistry::SaveAppActivity() {
   {
-    ListPrefUpdate update(pref_service_, prefs::kPerAppTimeLimitsAppActivities);
-    base::ListValue* list_value = update.Get();
+    ScopedListPrefUpdate update(pref_service_,
+                                prefs::kPerAppTimeLimitsAppActivities);
+    base::Value::List& list = update.Get();
 
     const base::Time now = base::Time::Now();
 
-    base::Value::ListView list_view = list_value->GetList();
-    for (base::Value& entry : list_view) {
+    for (base::Value& entry : list) {
       absl::optional<AppId> app_id = policy::AppIdFromAppInfoDict(entry);
       DCHECK(app_id.has_value());
 
@@ -653,7 +656,7 @@ void AppActivityRegistry::SaveAppActivity() {
       const PersistedAppInfo info = GetPersistedAppInfoForApp(app_id, now);
       base::Value value(base::Value::Type::DICTIONARY);
       info.UpdateAppActivityPreference(&value, /* replace */ false);
-      list_value->Append(std::move(value));
+      list.Append(std::move(value));
     }
     newly_installed_apps_.clear();
   }
@@ -698,15 +701,13 @@ void AppActivityRegistry::OnResetTimeReached(base::Time timestamp) {
 }
 
 void AppActivityRegistry::CleanRegistry(base::Time timestamp) {
-  ListPrefUpdate update(pref_service_, prefs::kPerAppTimeLimitsAppActivities);
+  ScopedListPrefUpdate update(pref_service_,
+                              prefs::kPerAppTimeLimitsAppActivities);
 
-  base::ListValue* list_value = update.Get();
+  base::Value::List& list = update.Get();
 
-  // base::Value::ListStorage is an alias for std::vector<base::Value>.
-  base::Value::ListStorage list_storage = std::move(*list_value).TakeList();
-
-  for (size_t index = 0; index < list_storage.size();) {
-    base::Value& entry = list_storage[index];
+  for (size_t index = 0; index < list.size();) {
+    base::Value& entry = list[index];
     absl::optional<PersistedAppInfo> info =
         PersistedAppInfo::PersistedAppInfoFromDict(&entry, true);
     DCHECK(info.has_value());
@@ -719,15 +720,13 @@ void AppActivityRegistry::CleanRegistry(base::Time timestamp) {
 
       // To efficiently remove the entry, swap it with the last element and pop
       // back.
-      if (index < list_storage.size() - 1)
-        std::swap(list_storage[index], list_storage[list_storage.size() - 1]);
-      list_storage.pop_back();
+      if (index < list.size() - 1)
+        std::swap(list[index], list[list.size() - 1]);
+      list.erase(list.end() - 1);
     } else {
       ++index;
     }
   }
-
-  *list_value = base::ListValue(std::move(list_storage));
 }
 
 void AppActivityRegistry::OnAppReinstalled(const AppId& app_id) {
@@ -834,14 +833,15 @@ void AppActivityRegistry::SetAppInactive(const AppId& app_id,
   if (ContributesToWebTimeLimit(app_id, GetAppState(app_id))) {
     base::TimeDelta active_time = details.activity.RunningActiveTime();
     for (auto& app_info : activity_registry_) {
-      const AppId& app_id = app_info.first;
-      if (!ContributesToWebTimeLimit(app_id, GetAppState(app_id))) {
+      const AppId& app_id_for_info = app_info.first;
+      if (!ContributesToWebTimeLimit(app_id_for_info,
+                                     GetAppState(app_id_for_info))) {
         continue;
       }
 
-      AppDetails& details = app_info.second;
-      if (!details.activity.is_active())
-        details.activity.set_running_active_time(active_time);
+      AppDetails& details_for_info = app_info.second;
+      if (!details_for_info.activity.is_active())
+        details_for_info.activity.set_running_active_time(active_time);
     }
   }
 }
@@ -1071,13 +1071,12 @@ void AppActivityRegistry::InitializeRegistryFromPref() {
 }
 
 void AppActivityRegistry::InitializeAppActivities() {
-  const base::Value* value =
+  const base::Value::List& list =
       pref_service_->GetList(prefs::kPerAppTimeLimitsAppActivities);
-  DCHECK(value);
 
   const std::vector<PersistedAppInfo> applications_info =
       PersistedAppInfo::PersistedAppInfosFromList(
-          value,
+          list,
           /* include_app_activity_array */ false);
 
   for (const auto& app_info : applications_info) {

@@ -26,7 +26,6 @@ Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en
 <translation id="225614027745146050">Welkom</translation>
 <translation id="2320166752086256636">Toetsenbord verbergen</translation>
 <translation id="2329392777730037872">Kan <ph name="URL" /> niet openen op de client.</translation>
-<translation id="2333212046079545895">Copyright 2021 Google LLC. Alle rechten voorbehouden.</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
 <translation id="2366718077645204424">Kan de host niet bereiken. Dit komt waarschijnlijk door de configuratie van het netwerk dat je gebruikt.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Laatst online gezien: <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -37,6 +36,7 @@ Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en
 <translation id="2599300881200251572">Met deze service zijn inkomende verbindingen van Chrome Remote Desktop-clients mogelijk.</translation>
 <translation id="2647232381348739934">Chromoting-service</translation>
 <translation id="2676780859508944670">Bezig…</translation>
+<translation id="2692522824157224199">Copyright 2022 Google LLC. Alle rechten voorbehouden.</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">Er is een fout opgetreden tijdens het verifiëren. Log opnieuw in.</translation>
 <translation id="2803375539583399270">Pincode opgeven</translation>
@@ -73,10 +73,10 @@ Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en
 <translation id="4257751272692708833"><ph name="PRODUCT_NAME" /> URL Forwarder</translation>
 <translation id="4277736576214464567">De toegangscode is ongeldig. Probeer het opnieuw.</translation>
 <translation id="4281844954008187215">Servicevoorwaarden</translation>
+<translation id="4372650392690220936">Copyright 2022 De auteurs van Chromium. Alle rechten voorbehouden.</translation>
 <translation id="4405930547258349619">Basisbibliotheek</translation>
 <translation id="443560535555262820">Voorkeuren voor toegankelijkheid openen</translation>
 <translation id="4450893287417543264">Niet meer bekijken</translation>
-<translation id="4512952200932940229">Copyright 2021 De auteurs van Chromium. Alle rechten voorbehouden.</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4563926062592110512">Verbinding met client verbroken: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> is niet goed ingesteld. Kies een andere standaardbrowser en activeer URL-doorschakeling opnieuw.</translation>

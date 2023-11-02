@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 from telemetry.page import shared_page_state
@@ -331,97 +331,6 @@ class Page15(KeySilkPage):
       action_runner.Wait(5)
 
 
-class Page16(KeySilkPage):
-
-  BASE_NAME = 'swipe_action'
-  URL = 'file://../key_silk_cases/inbox_app.html?swipe_to_dismiss'
-
-  def SwipeToDismiss(self, action_runner):
-    with action_runner.CreateGestureInteraction('SwipeAction'):
-      action_runner.SwipeElement(
-          left_start_ratio=0.8, top_start_ratio=0.2,
-          direction='left', distance=400, speed_in_pixels_per_second=5000,
-          element_function='document.getElementsByClassName("message")[2]')
-
-  def PerformPageInteractions(self, action_runner):
-    self.SwipeToDismiss(action_runner)
-
-
-class Page17(KeySilkPage):
-
-  BASE_NAME = 'stress_hidey_bars'
-  URL = 'file://../key_silk_cases/inbox_app.html?stress_hidey_bars'
-
-  def PerformPageInteractions(self, action_runner):
-    self.StressHideyBars(action_runner)
-
-  def StressHideyBars(self, action_runner):
-    with action_runner.CreateGestureInteraction(
-        'ScrollAction', repeatable=True):
-      action_runner.WaitForElement(selector='#messages')
-      action_runner.ScrollElement(
-        selector='#messages', direction='down', speed_in_pixels_per_second=200)
-    with action_runner.CreateGestureInteraction(
-        'ScrollAction', repeatable=True):
-      action_runner.WaitForElement(selector='#messages')
-      action_runner.ScrollElement(
-          selector='#messages', direction='up', speed_in_pixels_per_second=200)
-    with action_runner.CreateGestureInteraction(
-        'ScrollAction', repeatable=True):
-      action_runner.WaitForElement(selector='#messages')
-      action_runner.ScrollElement(
-          selector='#messages', direction='down',
-          speed_in_pixels_per_second=200)
-
-
-class Page18(KeySilkPage):
-
-  BASE_NAME = 'toggle_drawer'
-  URL = 'file://../key_silk_cases/inbox_app.html?toggle_drawer'
-
-  def PerformPageInteractions(self, action_runner):
-    for _ in range(6):
-      self.ToggleDrawer(action_runner)
-
-  def ToggleDrawer(self, action_runner):
-    with action_runner.CreateInteraction('Action_TapAction', repeatable=True):
-      action_runner.TapElement('#menu-button')
-      action_runner.Wait(1)
-
-
-class Page19(KeySilkPage):
-
-  BASE_NAME = 'slide_drawer'
-  URL = 'file://../key_silk_cases/inbox_app.html?slide_drawer'
-
-  def ToggleDrawer(self, action_runner):
-    with action_runner.CreateGestureInteraction('TapAction'):
-      action_runner.TapElement('#menu-button')
-
-    with action_runner.CreateInteraction('Wait'):
-      action_runner.WaitForJavaScriptCondition('''
-          document.getElementById("nav-drawer").active &&
-          document.getElementById("nav-drawer").children[0]
-              .getBoundingClientRect().left == 0''')
-
-  def RunNavigateSteps(self, action_runner):
-    super(Page19, self).RunNavigateSteps(action_runner)
-    action_runner.Wait(2)
-    self.ToggleDrawer(action_runner)
-
-  def PerformPageInteractions(self, action_runner):
-    self.SlideDrawer(action_runner)
-
-  def SlideDrawer(self, action_runner):
-    with action_runner.CreateInteraction('Action_SwipeAction'):
-      action_runner.SwipeElement(
-          left_start_ratio=0.8, top_start_ratio=0.2,
-          direction='left', distance=200,
-          element_function='document.getElementById("nav-drawer").children[0]')
-      action_runner.WaitForJavaScriptCondition(
-          '!document.getElementById("nav-drawer").active')
-
-
 class Page20(KeySilkPage):
 
   """ Why: Shadow DOM infinite scrolling. """
@@ -648,71 +557,6 @@ class SilkFinance(KeySilkPage):
       action_runner.Wait(10) # animation runs automatically
 
 
-class PolymerTopeka(KeySilkPage):
-
-  """ Why: Sample Polymer app. """
-
-  BASE_NAME = 'polymer_topeka'
-  URL = 'https://polymer-topeka.appspot.com/'
-
-  def PerformPageInteractions(self, action_runner):
-    profile = 'html /deep/ topeka-profile /deep/ '
-    first_name = profile + 'paper-input#first /deep/ input'
-    action_runner.WaitForElement(selector=first_name)
-    # Input First Name:
-    action_runner.ExecuteJavaScript('''
-        var fn = document.querySelector({{ first_name }});
-        fn.value = 'Chrome';
-        fn.fire('input');''',
-        first_name=first_name)
-    # Input Last Initial:
-    action_runner.ExecuteJavaScript('''
-        var li = document.querySelector({{ selector }});
-        li.value = 'E';
-        li.fire('input');''',
-        selector='%s paper-input#last /deep/ input' % profile)
-    with action_runner.CreateInteraction('animation_interaction'):
-      # Click the check-mark to login:
-      action_runner.ExecuteJavaScript('''
-          window.topeka_page_transitions = 0;
-          [].forEach.call(document.querySelectorAll(
-              'html /deep/ core-animated-pages'), function(p){
-                  p.addEventListener(
-                      'core-animated-pages-transition-end', function(e) {
-                          window.topeka_page_transitions++;
-                      });
-              });
-          document.querySelector({{ selector }}).fire('tap')''',
-          selector='%s paper-fab' % profile)
-      # Wait for category list to animate in:
-      action_runner.WaitForJavaScriptCondition('''
-          window.topeka_page_transitions === 1''')
-      # Click a category to start a quiz:
-      action_runner.ExecuteJavaScript('''
-          document.querySelector('\
-              html /deep/ core-selector.category-list').fire(
-              'tap',1,document.querySelector('html /deep/ \
-                      div.category-item.red-theme'));''')
-      # Wait for the category splash to animate in:
-      action_runner.WaitForJavaScriptCondition('''
-          window.topeka_page_transitions === 2''')
-      # Click to start the quiz:
-      action_runner.ExecuteJavaScript('''
-          document.querySelector('html /deep/ topeka-category-front-page /deep/\
-              paper-fab').fire('tap');''')
-      action_runner.WaitForJavaScriptCondition('''
-          window.topeka_page_transitions === 4''')
-      # Input a mostly correct answer:
-      action_runner.ExecuteJavaScript('''
-          document.querySelector('html /deep/ topeka-quiz-fill-blank /deep/\
-              input').value = 'arkinsaw';
-          document.querySelector('html /deep/ topeka-quiz-fill-blank /deep/\
-              input').fire('input');
-          document.querySelector('html /deep/ topeka-quizzes /deep/ \
-              paper-fab').fire('tap');''')
-      action_runner.WaitForJavaScriptCondition('''
-          window.topeka_page_transitions === 6''')
-
 class Masonry(KeySilkPage):
 
   """ Why: Popular layout hack. """
@@ -753,11 +597,6 @@ class KeySilkCasesPageSet(story.StorySet):
       Page13,
       Page14,
       Page15,
-      Page16,
-      Page17,
-      # Missing frames during tap interaction; crbug.com/446332
-      Page18,
-      Page19,
       Page20,
       GwsGoogleExpansion,
       GwsBoogieExpansion,
@@ -770,8 +609,6 @@ class KeySilkCasesPageSet(story.StorySet):
       SVGIconRaster,
       UpdateHistoryState,
       SilkFinance,
-      # Flaky interaction steps on Android; crbug.com/507865,
-      PolymerTopeka,
       Masonry
     ]
 

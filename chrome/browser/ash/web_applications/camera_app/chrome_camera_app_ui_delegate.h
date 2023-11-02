@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "ash/webui/camera_app_ui/camera_app_ui_delegate.h"
 #include "base/callback.h"
 #include "base/files/file_path_watcher.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_ui.h"
@@ -49,6 +50,8 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
     // SystemWebDialogDelegate
     ui::ModalType GetDialogModalType() const override;
     bool CanMaximizeDialog() const override;
+    ui::WebDialogDelegate::FrameKind GetWebDialogFrameKind() const override;
+    void AdjustWidgetInitParams(views::Widget::InitParams* params) override;
 
     // ui::WebDialogDelegate
     void GetDialogSize(gfx::Size* size) const override;
@@ -103,6 +106,7 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
   void MonitorFileDeletion(
       const std::string& name,
       base::OnceCallback<void(FileMonitorResult)> callback) override;
+  void MaybeTriggerSurvey() override;
 
  private:
   base::FilePath GetFilePathByName(const std::string& name);
@@ -113,6 +117,8 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
       base::OnceCallback<void(FileMonitorResult)> callback);
 
   content::WebUI* web_ui_;  // Owns |this|.
+
+  base::Time session_start_time_;
 
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
   // It should only be created, used and destroyed on |file_task_runner_|.

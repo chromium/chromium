@@ -6,6 +6,9 @@
 <translation id="125153950246128346">Trokit për të parë një skedë tjetër</translation>
 <translation id="1302104331113804646">Cilësimet e monitorimit të çmimeve</translation>
 <translation id="1378979118429748177">Merr njoftime kur bien çmimet</translation>
+<translation id="1403228085774130835">Skedat e mbyllura mund t'i gjesh në "Skedat e fundit" te menyja kryesore e Chrome</translation>
+<translation id="1455506303394048917">Aktiviteti yt në këto skeda "të fshehta" do të pastrohet nga kjo pajisje</translation>
+<translation id="1499635324672558517">Të mbyllen të gjitha skedat "e fshehta"?</translation>
 <translation id="1657719826150349398">Lëviz skedën poshtë</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> skedë}other{<ph name="TABS_COUNT_MANY" /> skeda}}</translation>
 <translation id="2118649612461486615">Informacione për dyqanin</translation>
@@ -24,9 +27,9 @@
 <translation id="2801787514987684416">Të shikohen informacionet e dyqanit?</translation>
 <translation id="2928243913527329289">Google | Rreth këtij dyqani</translation>
 <translation id="2977480621796371840">Hiq nga grupi</translation>
+<translation id="3008554597174452548">Ndalo monitorimin e produktit</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> ulje çmimi në <ph name="PRODUCT_NAME" /></translation>
 <translation id="3194464645767632461">vlerësimi</translation>
-<translation id="3267416433995960648">Çaktivizo sinjalizimin</translation>
 <translation id="3291470810748040983">Do të marrësh një alarm sinjalizues kur ka një çmim më të ulët në një skedë të hapur</translation>
 <translation id="3328308545011660196">Sugjerim: <ph name="NUMBER_OF_TABS" /> skeda duken të lidhura. Dëshiron t'i gruposh?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -40,11 +43,14 @@
 <translation id="4648718555153979859">Skedat e tua grupohen së bashku këtu</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> koment)}other{(<ph name="REVIEWS_COUNT_MANY" /> komente)}}</translation>
 <translation id="4850886885716139402">Pamja</translation>
+<translation id="4870911314065352661">Të mbyllen të gjitha skedat?</translation>
 <translation id="492284538114688557">U zbulua rënie çmimi</translation>
 <translation id="5007392906805964215">Rishiko</translation>
 <translation id="5073204694187207510">Fshih rrjetën me ekran të plotë</translation>
+<translation id="5076161749301278626">Të shihen komentet e dyqanit?</translation>
 <translation id="5082793167783849073">Krahaso me shpejtësi faqet duke krijuar një grup. Për të filluar, prek dhe mbaj të shtypur një lidhje.</translation>
 <translation id="5490235265819901748">Grupi i skedave u zgjerua</translation>
+<translation id="5494920125229734069">Zgjidh të gjitha</translation>
 <translation id="5533021382642990449">Shfaq më vonë</translation>
 <translation id="5556417849629758491">Shiko informacionet e dyqanit. Opsioni ofrohet pranë kreut të ekranit</translation>
 <translation id="5558362125926932819">Mbyll grupin e skedave me <ph name="NUMBER_OF_TABS" /> skeda</translation>
@@ -52,11 +58,14 @@
 <translation id="575494663145460764">Dëshiron të marrësh alarme sinjalizuese për rënien e çmimeve?</translation>
 <translation id="58326064309361797">Zvarriti skedat për t'i grupuar</translation>
 <translation id="5846292395804797011">Mbyll grupin "<ph name="TITLE_OF_GROUP" />" me <ph name="NUMBER_OF_TABS" /> skeda</translation>
+<translation id="5972844218283131174">Anulo zgjedhjen për të gjitha</translation>
 <translation id="6040143037577758943">Mbyll</translation>
 <translation id="6054741997831917303">Çmimi i artikullit ra së fundi nga <ph name="PREVIOUS_PRICE" /> në <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Zgjidh skedat</translation>
 <translation id="6228793724645064692">(vlerësimi i dyqanit)</translation>
 <translation id="6333260925957816943">Informacioni për këtë dyqan</translation>
+<translation id="639823877092900621">{TABS_COUNT,plural, =1{Anulo grupimin për <ph name="TABS_COUNT_ONE" /> skedë të zgjedhur}other{Anulo grupimin për <ph name="TABS_COUNT_MANY" /> skeda të zgjedhura}}</translation>
+<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> skedë}other{<ph name="TABS_COUNT_MANY" /> skeda}}</translation>
 <translation id="6510648526783655549">Mbyll shiritin e skedave</translation>
 <translation id="6549021453810473782">Shiko informacionet për dyqanin</translation>
 <translation id="6562820390860419811">Lëviz skedën majtas</translation>
@@ -69,6 +78,7 @@
 <translation id="7326879924029668159">Shiko politikën e kthimit etj.</translation>
 <translation id="7352298686197644113">Shiko se cili artikull në skedat e tua të hapura ka çmim më të ulët</translation>
 <translation id="753732157349120914">Ndërruesi i skedave</translation>
+<translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> shqyrtim nga Google}other{<ph name="REVIEWS_COUNT_MANY" /> shqyrtime nga Google}}</translation>
 <translation id="7559245342362162951">Shfaq skedat e grupit në rrjetën me ekran të plotë</translation>
 <translation id="7792771145871471484">Rishiko sugjerimet.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Grupo <ph name="TABS_COUNT_ONE" /> skedë të zgjedhur}other{Grupo <ph name="TABS_COUNT_MANY" /> skeda të zgjedhura}}</translation>

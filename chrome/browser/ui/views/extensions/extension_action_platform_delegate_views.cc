@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,13 +12,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/accelerator_priority.h"
+#include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view_delegate_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/common/extensions/command.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/common/api/extension_action/action_info.h"
+#include "extensions/common/command.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
 #include "ui/views/view.h"
@@ -75,18 +76,15 @@ void ExtensionActionPlatformDelegateViews::UnregisterCommand() {
 
 void ExtensionActionPlatformDelegateViews::ShowPopup(
     std::unique_ptr<extensions::ExtensionViewHost> host,
-    bool grant_tab_permissions,
-    ExtensionActionViewController::PopupShowAction show_action) {
+    PopupShowAction show_action,
+    ShowPopupCallback callback) {
   // TOP_RIGHT is correct for both RTL and LTR, because the views platform
   // performs the flipping in RTL cases.
   views::BubbleBorder::Arrow arrow = views::BubbleBorder::TOP_RIGHT;
 
-  ExtensionPopup::ShowAction popup_show_action =
-      show_action == ExtensionActionViewController::SHOW_POPUP ?
-          ExtensionPopup::SHOW : ExtensionPopup::SHOW_AND_INSPECT;
   ExtensionPopup::ShowPopup(std::move(host),
                             GetDelegateViews()->GetReferenceButtonForPopup(),
-                            arrow, popup_show_action);
+                            arrow, show_action, std::move(callback));
 }
 
 void ExtensionActionPlatformDelegateViews::OnExtensionCommandAdded(
@@ -95,13 +93,8 @@ void ExtensionActionPlatformDelegateViews::OnExtensionCommandAdded(
   if (extension_id != controller_->extension()->id())
     return;  // Not this action's extension.
 
-  if (command.command_name() !=
-          extensions::manifest_values::kBrowserActionCommandEvent &&
-      command.command_name() !=
-          extensions::manifest_values::kPageActionCommandEvent) {
-    // Not an action-related command.
+  if (!extensions::Command::IsActionRelatedCommand(command.command_name()))
     return;
-  }
 
   RegisterCommand();
 }
@@ -112,11 +105,8 @@ void ExtensionActionPlatformDelegateViews::OnExtensionCommandRemoved(
   if (extension_id != controller_->extension()->id())
     return;
 
-  if (command.command_name() !=
-          extensions::manifest_values::kBrowserActionCommandEvent &&
-      command.command_name() !=
-          extensions::manifest_values::kPageActionCommandEvent)
-    return;  // Not an action-related command.
+  if (!extensions::Command::IsActionRelatedCommand(command.command_name()))
+    return;
 
   extensions::Command extension_command;
   if (controller_->GetExtensionCommand(&extension_command))
@@ -137,8 +127,8 @@ bool ExtensionActionPlatformDelegateViews::AcceleratorPressed(
   if (controller_->IsShowingPopup()) {
     controller_->HidePopup();
   } else {
-    controller_->ExecuteAction(
-        true, ToolbarActionViewController::InvocationSource::kCommand);
+    controller_->ExecuteUserAction(
+        ToolbarActionViewController::InvocationSource::kCommand);
   }
 
   return true;

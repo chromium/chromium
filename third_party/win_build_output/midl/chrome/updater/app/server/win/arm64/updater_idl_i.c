@@ -9,7 +9,7 @@
 /* at a redacted point in time
  */
 /* Compiler settings for gen/chrome/updater/app/server/win/updater_idl.idl:
-    Oicf, W1, Zp8, env=Win64 (32b run), target_arch=ARM64 8.01.0622 
+    Oicf, W1, Zp8, env=Win64 (32b run), target_arch=ARM64 8.01.0626 
     protocol : dce , ms_ext, c_ext, robust
     error checks: allocation ref bounds_check enum stub_data 
     VC __declspec() decoration level: 
@@ -68,9 +68,6 @@ typedef IID CLSID;
 #endif // !_MIDL_USE_GUIDDEF_
 
 MIDL_DEFINE_GUID(IID, IID_IUpdateState,0x46ACF70B,0xAC13,0x406D,0xB5,0x3B,0xB2,0xC4,0xBF,0x09,0x1F,0xF6);
-
-
-MIDL_DEFINE_GUID(IID, IID_IUpdaterRegisterAppCallback,0x3FDEC4CB,0x8501,0x4ECD,0xA4,0xCF,0xBF,0x70,0x32,0x62,0x18,0xD0);
 
 
 MIDL_DEFINE_GUID(IID, IID_ICompleteStatus,0x2FCD14AF,0xB645,0x4351,0x83,0x59,0xE8,0x0A,0x0E,0x20,0x2A,0x0B);

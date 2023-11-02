@@ -1,25 +1,28 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "base/feature_list.h"
-
-#include "base/memory/ref_counted.h"
-#include "base/strings/string_piece.h"
-#include "components/reporting/proto/synced/record.pb.h"
-#include "components/reporting/util/statusor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #ifndef COMPONENTS_REPORTING_COMPRESSION_COMPRESSION_MODULE_H_
 #define COMPONENTS_REPORTING_COMPRESSION_COMPRESSION_MODULE_H_
 
+#include <string>
+
+#include "base/feature_list.h"
+#include "base/memory/ref_counted.h"
+#include "base/strings/string_piece.h"
+#include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/resources/resource_interface.h"
+#include "components/reporting/util/statusor.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 namespace reporting {
+
+// Feature to enable/disable compression.
+// By default compression is disabled, until server can support compression.
+BASE_DECLARE_FEATURE(kCompressReportingPipeline);
 
 class CompressionModule : public base::RefCountedThreadSafe<CompressionModule> {
  public:
-  // Feature to enable/disable compression.
-  // By default compression is disabled, until server can support compression.
-  static const char kCompressReportingFeature[];
-
   // Not copyable or movable
   CompressionModule(const CompressionModule& other) = delete;
   CompressionModule& operator=(const CompressionModule& other) = delete;
@@ -37,6 +40,7 @@ class CompressionModule : public base::RefCountedThreadSafe<CompressionModule> {
   // std::move(record).
   void CompressRecord(
       std::string record,
+      scoped_refptr<ResourceInterface> memory_resource,
       base::OnceCallback<
           void(std::string, absl::optional<CompressionInformation>)> cb) const;
 

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 
 namespace base {
@@ -61,8 +62,8 @@ class ExtendedCrashReporting {
   // activity report on exception - handled or not.
   void RegisterVEH();
 
-  void* veh_handle_ = nullptr;
-  base::debug::GlobalActivityTracker* const tracker_;
+  raw_ptr<void> veh_handle_ = nullptr;
+  const raw_ptr<base::debug::GlobalActivityTracker> tracker_;
 };
 
 }  // namespace browser_watcher

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 
 #include "base/callback.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -29,7 +28,7 @@ gfx::RectF ConvertCGToGfxCoordinates(CGRect bounds, int height);
 
 // This class submits an image analysis request for asynchronous execution on a
 // dispatch queue with default priority.
-class API_AVAILABLE(macos(10.13)) VisionAPIAsyncRequestMac {
+class VisionAPIAsyncRequestMac {
  public:
   // A callback run when the asynchronous execution completes. The callback is
   // repeating for the instance.

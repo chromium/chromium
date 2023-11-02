@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/launch.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -38,7 +37,7 @@
 #include "chrome/common/webui_url_constants.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/base_paths_win.h"
 #include "base/path_service.h"
 #include "base/win/windows_version.h"
@@ -54,16 +53,6 @@
 using content::Referrer;
 
 namespace {
-
-void RecordRecurrentErrorAction(
-    SSLErrorControllerClient::RecurrentErrorAction action,
-    int cert_error) {
-  UMA_HISTOGRAM_ENUMERATION("interstitial.ssl_recurrent_error.action", action);
-  if (cert_error == net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "interstitial.ssl_recurrent_error.ct_error.action", action);
-  }
-}
 
 bool HasSeenRecurrentErrorInternal(content::WebContents* web_contents,
                                    int cert_error) {
@@ -93,11 +82,7 @@ SSLErrorControllerClient::SSLErrorControllerClient(
           std::move(settings_page_helper)),
       ssl_info_(ssl_info),
       request_url_(request_url),
-      cert_error_(cert_error) {
-  if (HasSeenRecurrentErrorInternal(web_contents_, cert_error_)) {
-    RecordRecurrentErrorAction(RecurrentErrorAction::kShow, cert_error_);
-  }
-}
+      cert_error_(cert_error) {}
 
 SSLErrorControllerClient::~SSLErrorControllerClient() {}
 
@@ -106,10 +91,6 @@ void SSLErrorControllerClient::GoBack() {
 }
 
 void SSLErrorControllerClient::Proceed() {
-  if (HasSeenRecurrentErrorInternal(web_contents_, cert_error_)) {
-    RecordRecurrentErrorAction(RecurrentErrorAction::kProceed, cert_error_);
-  }
-
   MaybeTriggerSecurityInterstitialProceededEvent(web_contents_, request_url_,
                                                  "SSL_ERROR", cert_error_);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -128,8 +109,9 @@ void SSLErrorControllerClient::Proceed() {
           profile->GetSSLHostStateDelegate());
   // StatefulSSLHostStateDelegate can be null during tests.
   if (state) {
-    state->AllowCert(request_url_.host(), *ssl_info_.cert.get(), cert_error_,
-                     web_contents_);
+    state->AllowCert(
+        request_url_.host(), *ssl_info_.cert.get(), cert_error_,
+        web_contents_->GetPrimaryMainFrame()->GetStoragePartition());
     Reload();
   }
 }

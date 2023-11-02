@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,9 @@
 #define CHROMECAST_MEDIA_API_CMA_BACKEND_FACTORY_H_
 
 #include <memory>
+
+#include "base/memory/scoped_refptr.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace service_manager {
 class Connector;
@@ -31,6 +34,9 @@ class CmaBackendFactory {
   // |media_task_runner_|.
   virtual std::unique_ptr<CmaBackend> CreateBackend(
       const MediaPipelineDeviceParams& params) = 0;
+
+  // Returns |media_task_runner_|.
+  virtual scoped_refptr<base::SequencedTaskRunner> GetMediaTaskRunner() = 0;
 };
 
 }  // namespace media

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -651,7 +651,7 @@ TEST_F(ExtendedDesktopTest, MoveWindowWithTransient) {
 // Test transient child is parented after its transient parent moved to another
 // root window.
 TEST_F(ExtendedDesktopTest, PostMoveParentTransientChild) {
-  UpdateDisplay("600X400,600x400");
+  UpdateDisplay("600x400,600x400");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   // Create and activate a normal window.
   aura::Window* window =

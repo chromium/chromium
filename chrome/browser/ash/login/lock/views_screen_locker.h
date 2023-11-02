@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,7 @@ namespace ash {
 // ash (views-based lockscreen).
 class ViewsScreenLocker : public LoginScreenClientImpl::Delegate,
                           public ScreenLocker::Delegate,
-                          public PowerManagerClient::Observer,
+                          public chromeos::PowerManagerClient::Observer,
                           public lock_screen_apps::FocusCyclerDelegate {
  public:
   explicit ViewsScreenLocker(ScreenLocker* screen_locker);

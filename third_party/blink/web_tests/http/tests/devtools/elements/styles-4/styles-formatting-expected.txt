@@ -10,7 +10,7 @@ raw cssText:
           firstProperty: rgba(1, 2, 3, 0);
           color: red;   /* comment1 */
           zoom: 1;/* comment2 */ /* like: property */
-          padding: 0;
+          padding: 0
       }
 
 Running: testFormattedRemoveStart
@@ -19,7 +19,7 @@ raw cssText:
           /* leading comment */
           color: red;   /* comment1 */
           zoom: 1;/* comment2 */ /* like: property */
-          padding: 0;
+          padding: 0
       }
 
 Running: testFormattedInsertMiddle
@@ -29,7 +29,7 @@ raw cssText:
           color: red;   /* comment1 */
           middleProperty: middleValue /* comment */;
           zoom: 1;/* comment2 */ /* like: property */
-          padding: 0;
+          padding: 0
       }
 
 Running: testFormattedRemoveMiddle
@@ -38,7 +38,7 @@ raw cssText:
           /* leading comment */
           color: red;   /* comment1 */
           zoom: 1;/* comment2 */ /* like: property */
-          padding: 0;
+          padding: 0
       }
 
 Running: testFormattedInsertEnd

@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/service/display/direct_renderer.h"
@@ -121,9 +122,9 @@ class VIZ_SERVICE_EXPORT SoftwareRenderer : public DirectRenderer {
   bool is_scissor_enabled_ = false;
   gfx::Rect scissor_rect_;
 
-  SoftwareOutputDevice* output_device_;
-  SkCanvas* root_canvas_ = nullptr;
-  SkCanvas* current_canvas_ = nullptr;
+  raw_ptr<SoftwareOutputDevice> output_device_;
+  raw_ptr<SkCanvas> root_canvas_ = nullptr;
+  raw_ptr<SkCanvas> current_canvas_ = nullptr;
   SkPaint current_paint_;
   SkSamplingOptions current_sampling_;
   std::unique_ptr<SkCanvas> current_framebuffer_canvas_;

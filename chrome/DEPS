@@ -3,11 +3,10 @@ include_rules = [
   "+gpu",
   "+net",
   "+pdf/buildflags.h",
-  "+pdf/pdf_features.h",
   "+printing",
+  "+sandbox",
   "+sandbox/policy",
   "+sql",
-  "+ui/lottie",
   # Browser, renderer, common and tests access V8 for various purposes.
   "-v8",
   "+v8/include",

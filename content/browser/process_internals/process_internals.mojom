@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,9 +19,20 @@ struct SiteInstanceInfo {
   // The URL to which the SiteInstance's process is locked.
   url.mojom.Url? process_lock_url;
 
-  // Specifies whether the SiteInstance is origin-keyed.  This is true for
-  // opt-in origin isolation, false otherwise.
-  bool is_origin_keyed;
+  // Specifies whether the SiteInstance requires an origin-keyed process. This
+  // is true for opt-in origin isolation via the OriginAgentCluster header,
+  // false otherwise.
+  bool requires_origin_keyed_process;
+
+  // Specifies if the SiteInstance is for sandboxed iframe isolation.
+  bool is_sandbox_for_iframes;
+
+  // Specifies whether this SiteInstance is for a <webview> guest.
+  bool is_guest;
+
+  // If this SiteInstance uses a non-default StoragePartition, this specifies a
+  // string representation of that StoragePartition.
+  string? storage_partition;
 };
 
 // Basic information describing a frame and all of its subframes.

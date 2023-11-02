@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -78,6 +78,11 @@ public class CipherFactory {
         LazyHolder.sInstance = new CipherFactory();
     }
 
+    @VisibleForTesting
+    public static void resetInstanceForTesting(CipherFactory cipherFactory) {
+        LazyHolder.sInstance = cipherFactory;
+    }
+
     /**
      * Synchronization primitive to prevent thrashing the cipher parameters between threads
      * attempting to restore previous parameters and generate new ones.
@@ -140,22 +145,22 @@ public class CipherFactory {
      * @return Data to use for the Cipher, null if it couldn't be generated.
      */
     CipherData getCipherData(boolean generateIfNeeded) {
-        if (mData == null && generateIfNeeded) {
-            // Ideally, this task should have been started way before this.
-            triggerKeyGeneration();
+        synchronized (mDataLock) {
+            if (mData == null && generateIfNeeded) {
+                // Ideally, this task should have been started way before this.
+                triggerKeyGenerationLocked();
 
-            // Grab the data from the task.
-            CipherData data;
-            try {
-                data = mDataGenerator.get();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            } catch (ExecutionException e) {
-                throw new RuntimeException(e);
-            }
+                // Grab the data from the task.
+                CipherData data;
+                try {
+                    data = mDataGenerator.get();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                } catch (ExecutionException e) {
+                    throw new RuntimeException(e);
+                }
 
-            // Only the first thread is allowed to save the data.
-            synchronized (mDataLock) {
+                // Only the first thread is allowed to save the data.
                 if (mData == null) {
                     mData = data;
 
@@ -214,13 +219,16 @@ public class CipherFactory {
      * than immediately calling {@link CipherFactory#getCipher(int)}.
      */
     public void triggerKeyGeneration() {
-        if (mData != null) return;
-
         synchronized (mDataLock) {
-            if (mDataGenerator == null) {
-                mDataGenerator = new FutureTask<CipherData>(createGeneratorCallable());
-                AsyncTask.THREAD_POOL_EXECUTOR.execute(mDataGenerator);
-            }
+            triggerKeyGenerationLocked();
+        }
+    }
+
+    private void triggerKeyGenerationLocked() {
+        if (mData != null) return;
+        if (mDataGenerator == null) {
+            mDataGenerator = new FutureTask<CipherData>(createGeneratorCallable());
+            AsyncTask.THREAD_POOL_EXECUTOR.execute(mDataGenerator);
         }
     }
 

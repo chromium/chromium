@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -78,6 +78,10 @@ class COMPONENT_EXPORT(OZONE_BASE) SurfaceFactoryOzone {
   // GL implementation doesn't exist.
   virtual GLOzone* GetGLOzone(const gl::GLImplementationParts& implementation);
 
+  // Returns the current GLOzone based on the OzonePlatform and
+  // GLImplementationParts currently in use.
+  GLOzone* GetCurrentGLOzone();
+
 #if BUILDFLAG(ENABLE_VULKAN)
   // Creates the vulkan implementation. This object should be capable of
   // creating surfaces that swap to a platform window.
@@ -141,6 +145,8 @@ class COMPONENT_EXPORT(OZONE_BASE) SurfaceFactoryOzone {
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
       absl::optional<gfx::Size> framebuffer_size = absl::nullopt);
+
+  virtual bool CanCreateNativePixmapForFormat(gfx::BufferFormat format);
 
   // Similar to CreateNativePixmap, but returns the result asynchronously.
   using NativePixmapCallback =

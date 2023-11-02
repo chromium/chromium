@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,17 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
+#include "base/types/strong_alias.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -24,23 +29,27 @@ class Size;
 namespace blink {
 
 class KURL;
-class FeatureContext;
+class ExecutionContext;
 
 // ManifestParser handles the logic of parsing the Web Manifest from a string.
 // It implements:
 // https://w3c.github.io/manifest/#processing
-// Takes a |FeatureContext| to check origin trial statuses with.
+// Takes a |ExecutionContext| to check origin trial statuses with.
 class MODULES_EXPORT ManifestParser {
+  STACK_ALLOCATED();
+
  public:
   ManifestParser(const String& data,
                  const KURL& manifest_url,
                  const KURL& document_url,
-                 const FeatureContext* feature_context);
+                 ExecutionContext* execution_context);
 
   ManifestParser(const ManifestParser&) = delete;
   ManifestParser& operator=(const ManifestParser&) = delete;
 
   ~ManifestParser();
+
+  static void SetFileHandlerExtensionLimitForTesting(int limit);
 
   // Parse the Manifest from a string using following:
   // https://w3c.github.io/manifest/#processing
@@ -53,7 +62,7 @@ class MODULES_EXPORT ManifestParser {
 
  private:
   // Used to indicate whether to strip whitespace when parsing a string.
-  enum TrimType { Trim, NoTrim };
+  using Trim = base::StrongAlias<class TrimTag, bool>;
 
   // Indicate restrictions to be placed on the parsed URL with respect to the
   // document URL or manifest scope.
@@ -76,7 +85,7 @@ class MODULES_EXPORT ManifestParser {
   // Returns the parsed string if any, a null optional if the parsing failed.
   absl::optional<String> ParseString(const JSONObject* object,
                                      const String& key,
-                                     TrimType trim);
+                                     Trim trim);
 
   // Helper function to parse strings present in a member that itself is
   // a dictionary like 'shortcut' as defined in:
@@ -89,7 +98,7 @@ class MODULES_EXPORT ManifestParser {
                                               const String& member_name,
                                               const String& key,
                                               bool required,
-                                              TrimType trim);
+                                              Trim trim);
 
   // Helper function to parse colors present on a given |dictionary| in a given
   // field identified by its |key|. Returns a null optional if the value is not
@@ -208,16 +217,28 @@ class MODULES_EXPORT ManifestParser {
       const JSONObject* object);
 
   // Parses the 'screenshots' field of a Manifest, as defined in:
-  // https://w3c.github.io/manifest/#screenshots-member
+  // https://www.w3.org/TR/manifest-app-info/#screenshots-member
   // Returns a vector of ManifestImageResourcePtr with the successfully parsed
   // screenshots, if any. An empty vector if the field was not present or empty.
-  Vector<mojom::blink::ManifestImageResourcePtr> ParseScreenshots(
+  Vector<mojom::blink::ManifestScreenshotPtr> ParseScreenshots(
       const JSONObject* object);
 
+  // Parse the 'form_factor' field of 'screenshots' as defined in:
+  // https://www.w3.org/TR/manifest-app-info/#form_factor-member
+  mojom::blink::ManifestScreenshot::FormFactor ParseScreenshotFormFactor(
+      const JSONObject* screenshot);
+
+  // Parse the 'label' field of 'screenshots' as defined in:
+  // https://www.w3.org/TR/manifest-app-info/#label-member
+  String ParseScreenshotLabel(const JSONObject* object);
+
   // A helper function for parsing ImageResources under |key| in the manifest.
-  Vector<mojom::blink::ManifestImageResourcePtr> ParseImageResource(
+  Vector<mojom::blink::ManifestImageResourcePtr> ParseImageResourceArray(
       const String& key,
       const JSONObject* object);
+
+  absl::optional<mojom::blink::ManifestImageResourcePtr> ParseImageResource(
+      const JSONValue* object);
 
   // Parses the 'name' field of a shortcut, as defined in:
   // https://w3c.github.io/manifest/#shortcuts-member
@@ -296,7 +317,7 @@ class MODULES_EXPORT ManifestParser {
       const JSONObject* object);
 
   // Parses the 'url_handlers' field of a Manifest, as defined in:
-  // https://github.com/WICG/pwa-url-handler/blob/master/explainer.md
+  // https://github.com/WICG/pwa-url-handler/blob/main/explainer.md
   // Returns the parsed list of UrlHandlers. The returned UrlHandlers are empty
   // if the field didn't exist, parsing failed, the input list was empty, or if
   // the blink feature flag is disabled.
@@ -306,7 +327,7 @@ class MODULES_EXPORT ManifestParser {
       const JSONObject* object);
 
   // Parses a single URL handler entry in 'url_handlers', as defined in:
-  // https://github.com/WICG/pwa-url-handler/blob/master/explainer.md
+  // https://github.com/WICG/pwa-url-handler/blob/main/explainer.md
   // Returns |absl::nullopt| if the UrlHandler was invalid, or a UrlHandler if
   // parsing succeeded.
   // This feature is experimental and is only enabled by the blink feature flag:
@@ -315,7 +336,7 @@ class MODULES_EXPORT ManifestParser {
       const JSONObject* object);
 
   // Parses the 'file_handlers' field of a Manifest, as defined in:
-  // https://github.com/WICG/file-handling/blob/master/explainer.md
+  // https://github.com/WICG/file-handling/blob/main/explainer.md
   // Returns the parsed list of FileHandlers. The returned FileHandlers are
   // empty if the field didn't exist, parsing failed, or the input list was
   // empty.
@@ -323,20 +344,20 @@ class MODULES_EXPORT ManifestParser {
       const JSONObject* object);
 
   // Parses a FileHandler from an entry in the 'file_handlers' list, as
-  // defined in: https://github.com/WICG/file-handling/blob/master/explainer.md.
+  // defined in: https://github.com/WICG/file-handling/blob/main/explainer.md.
   // Returns |absl::nullopt| if the FileHandler was invalid, or a
   // FileHandler, if parsing succeeded.
   absl::optional<mojom::blink::ManifestFileHandlerPtr> ParseFileHandler(
       const JSONObject* file_handler_entry);
 
   // Parses the 'accept' field of a FileHandler, as defined in:
-  // https://github.com/WICG/file-handling/blob/master/explainer.md.
+  // https://github.com/WICG/file-handling/blob/main/explainer.md.
   // Returns the parsed accept map. Invalid accept entries are ignored.
   HashMap<String, Vector<String>> ParseFileHandlerAccept(
       const JSONObject* accept);
 
   // Parses an extension in the 'accept' field of a FileHandler, as defined in:
-  // https://github.com/WICG/file-handling/blob/master/explainer.md. Returns
+  // https://github.com/WICG/file-handling/blob/main/explainer.md. Returns
   // whether the parsing was successful and, if so, populates |output| with the
   // parsed extension.
   bool ParseFileHandlerAcceptExtension(const JSONValue* extension,
@@ -347,8 +368,6 @@ class MODULES_EXPORT ManifestParser {
   // Returns the parsed list of ProtocolHandlers. The returned ProtocolHandlers
   // are empty if the field didn't exist, parsing failed, or the input list was
   // empty.
-  // This feature is experimental and would only be enabled behind the blink
-  // feature flag: RuntimeEnabledFeatures::ParseUrlProtocolHandlerEnabled()
   Vector<mojom::blink::ManifestProtocolHandlerPtr> ParseProtocolHandlers(
       const JSONObject* object);
 
@@ -356,10 +375,21 @@ class MODULES_EXPORT ManifestParser {
   // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/master/URLProtocolHandler/explainer.md
   // Returns |absl::nullopt| if the ProtocolHandler was invalid, or a
   // ProtocolHandler if parsing succeeded.
-  // This feature is experimental and should only be used behind the blink
-  // feature flag: RuntimeEnabledFeatures::ParseUrlProtocolHandlerEnabled()
   absl::optional<mojom::blink::ManifestProtocolHandlerPtr> ParseProtocolHandler(
       const JSONObject* protocol_dictionary);
+
+  // Parses the 'start_url' field of the 'lock_screen' field of a Manifest,
+  // as defined in:
+  // https://github.com/WICG/lock-screen/
+  // Returns the parsed KURL if any, or an empty KURL if parsing failed.
+  KURL ParseLockScreenStartUrl(const JSONObject* lock_screen);
+
+  // Parses the 'lock_screen' field of a Manifest, as defined in:
+  // https://github.com/WICG/lock-screen/
+  // Returns a parsed ManifestLockScreenPtr, or nullptr if not present or
+  // parsing failed.
+  mojom::blink::ManifestLockScreenPtr ParseLockScreen(
+      const JSONObject* manifest);
 
   // Parses the 'new_note_url' field of the 'note_taking' field of a Manifest,
   // as defined in:
@@ -419,16 +449,19 @@ class MODULES_EXPORT ManifestParser {
   // Returns the parsed string if any, a null string if the parsing failed.
   String ParseGCMSenderID(const JSONObject* object);
 
-  // Parses the 'capture_links' field of the manifest.
-  // This specifies how navigations into the web app's scope should be captured.
-  // https://github.com/WICG/sw-launch/blob/master/declarative_link_capturing.md#proposal
-  mojom::blink::CaptureLinks ParseCaptureLinks(const JSONObject* object);
-
   // Parses the 'isolated_storage' field of the manifest.
   // This marks whether the application should be loaded in a dedicated storage
   // partition.
   // Returns true iff the field could be parsed as the boolean true.
   bool ParseIsolatedStorage(const JSONObject* object);
+
+  // Parses the 'permissions_policy' field of the manifest.
+  // This outsources semantic parsing of the policy to the
+  // PermissionsPolicyParser.
+  Vector<blink::ParsedPermissionsPolicyDeclaration> ParseIsolatedAppPermissions(
+      const JSONObject* object);
+  Vector<String> ParseOriginAllowlist(const JSONArray* allowlist,
+                                      const String& feature);
 
   // Parses the 'launch_handler' field of the manifest as defined in:
   // https://github.com/WICG/sw-launch/blob/main/launch_handler.md
@@ -437,10 +470,29 @@ class MODULES_EXPORT ManifestParser {
       const JSONObject* object);
 
   // Parses the 'translations' field of the manifest as defined in:
-  // https://github.com/w3c/manifest/issues/676#issuecomment-810628993
+  // https://github.com/WICG/manifest-incubations/blob/gh-pages/translations-explainer.md
   // Returns empty map if parsing fails.
   HashMap<String, mojom::blink::ManifestTranslationItemPtr> ParseTranslations(
       const JSONObject* object);
+
+  // Parses individual preferences from the 'user_preferences' field.
+  // Returns nullptr if not present or parsing failed.
+  mojom::blink::ManifestUserPreferenceOverridesPtr ParsePreferenceOverrides(
+      const JSONObject* object,
+      const String& preference);
+
+  // Parse the 'user_preferences' field of the manifest as defined in:
+  // https://github.com/WICG/manifest-incubations/blob/gh-pages/user-preferences-explainer.md
+  // Returns nullptr if parsing fails.
+  mojom::blink::ManifestUserPreferencesPtr ParseUserPreferences(
+      const JSONObject* object);
+
+  // Parses the 'tab_strip' field of the manifest as defined in:
+  // https://github.com/WICG/manifest-incubations/blob/gh-pages/tabbed-mode-explainer.md
+  mojom::blink::ManifestTabStripPtr ParseTabStrip(const JSONObject* object);
+
+  mojom::blink::TabStripMemberVisibility ParseTabStripMemberVisibility(
+      const JSONValue* json_value);
 
   void AddErrorInfo(const String& error_msg,
                     bool critical = false,
@@ -450,7 +502,11 @@ class MODULES_EXPORT ManifestParser {
   const String data_;
   KURL manifest_url_;
   KURL document_url_;
-  const FeatureContext* feature_context_;
+  ExecutionContext* execution_context_;
+
+  // The total number of file extensions seen so far while parsing
+  // `file_handlers` `accept` entries.
+  int total_file_handler_extension_count_ = 0;
 
   bool failed_;
   mojom::blink::ManifestPtr manifest_;

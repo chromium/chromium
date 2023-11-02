@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,12 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_hstring.h"
+#include "media/base/win/hresults.h"
 #include "media/base/win/mf_helpers.h"
+#include "media/cdm/load_cdm_uma_helper.h"
 
 namespace media {
 
@@ -17,6 +20,9 @@ namespace {
 using Microsoft::WRL::ComPtr;
 
 static MediaFoundationCdmModule* g_cdm_module = nullptr;
+
+// UMA report prefix
+const char kUmaPrefix[] = "Media.EME.MediaFoundationCdm.";
 
 }  // namespace
 
@@ -41,10 +47,21 @@ void MediaFoundationCdmModule::Initialize(const base::FilePath& cdm_path) {
 
   // If `cdm_path_` is not empty, load the CDM before the sandbox is sealed.
   if (!cdm_path_.empty()) {
+    base::TimeTicks start = base::TimeTicks::Now();
     library_ = base::ScopedNativeLibrary(cdm_path_);
-    LOG_IF(ERROR, !library_.is_valid())
-        << __func__ << ": Failed to load CDM at " << cdm_path_.value()
-        << " (Error: " << library_.GetError()->ToString() << ")";
+    base::TimeDelta load_time = base::TimeTicks::Now() - start;
+    if (!library_.is_valid()) {
+      LOG(ERROR) << __func__ << ": Failed to load CDM at " << cdm_path_.value()
+                 << " (Error: " << library_.GetError()->ToString() << ")";
+      ReportLoadResult(kUmaPrefix, base::PathExists(cdm_path)
+                                       ? CdmLoadResult::kLoadFailed
+                                       : CdmLoadResult::kFileMissing);
+      ReportLoadErrorCode(kUmaPrefix, library_.GetError());
+      return;
+    }
+
+    // Only report load time for success loads.
+    ReportLoadTime(kUmaPrefix, load_time);
   }
 }
 
@@ -69,8 +86,17 @@ HRESULT MediaFoundationCdmModule::GetCdmFactory(
     return E_NOT_VALID_STATE;
   }
 
-  if (!cdm_factory_)
-    RETURN_IF_FAILED(ActivateCdmFactory());
+  if (!cdm_factory_) {
+    auto hr = ActivateCdmFactory();
+    if (FAILED(hr)) {
+      ReportLoadResult(kUmaPrefix, CdmLoadResult::kActivateCdmFactoryFailed);
+      base::UmaHistogramSparse(
+          std::string(kUmaPrefix) + "ActivateCdmFactoryResult", hr);
+      return hr;
+    }
+
+    ReportLoadResult(kUmaPrefix, CdmLoadResult::kLoadSuccess);
+  }
 
   cdm_factory = cdm_factory_;
   return S_OK;
@@ -94,12 +120,12 @@ HRESULT MediaFoundationCdmModule::ActivateCdmFactory() {
 
   if (!library_.is_valid()) {
     LOG(ERROR) << "CDM failed to load previously";
-    return E_FAIL;
+    return kErrorLoadLibrary;
   }
 
   // Initialization required to call base::win::ScopedHString::Create();
   if (!base::win::ScopedHString::ResolveCoreWinRTStringDelayload())
-    return E_FAIL;
+    return kErrorResolveCoreWinRTStringDelayload;
 
   // Get function pointer to the activation factory.
   using GetActivationFactoryFunc =
@@ -110,7 +136,7 @@ HRESULT MediaFoundationCdmModule::ActivateCdmFactory() {
       library_.GetFunctionPointer(kDllGetActivationFactory));
   if (!get_activation_factory_func) {
     LOG(ERROR) << "Cannot get function " << kDllGetActivationFactory;
-    return E_FAIL;
+    return kErrorGetFunctionPointer;
   }
 
   // Activate CdmFactory. Assuming the class ID is always in the format

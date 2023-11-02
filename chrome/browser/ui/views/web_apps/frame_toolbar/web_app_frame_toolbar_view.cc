@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_content_settings_container.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_navigation_button_container.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_origin_text.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/window_controls_overlay_toggle_button.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -85,6 +86,8 @@ WebAppFrameToolbarView::WebAppFrameToolbarView(views::Widget* widget,
 
   if (browser_view_->IsWindowControlsOverlayEnabled())
     OnWindowControlsOverlayEnabledChanged();
+  if (browser_view_->AppUsesBorderlessMode())
+    UpdateBorderlessModeEnabled();
 }
 
 WebAppFrameToolbarView::~WebAppFrameToolbarView() = default;
@@ -135,6 +138,8 @@ std::pair<int, int> WebAppFrameToolbarView::LayoutInContainer(
     int trailing_x,
     int y,
     int available_height) {
+  DCHECK(!browser_view_->IsWindowControlsOverlayEnabled());
+
   SetVisible(available_height > 0);
 
   if (available_height == 0) {
@@ -161,17 +166,17 @@ std::pair<int, int> WebAppFrameToolbarView::LayoutInContainer(
 }
 
 void WebAppFrameToolbarView::LayoutForWindowControlsOverlay(
-    gfx::Rect available_rect) {
+    gfx::Rect available_space) {
   DCHECK(!left_container_);
   // The center_container_ might have been laid out by the frame view such that
   // it interferes with hit testing in the ToolbarButtonContainer. Ensure that
   // its bounds are cleared when laying out WCO.
   center_container_->SetBounds(0, 0, 0, 0);
 
-  const int width = std::min(available_rect.width(),
+  const int width = std::min(available_space.width(),
                              right_container_->GetPreferredSize().width());
-  const int x = available_rect.right() - width;
-  SetBounds(x, available_rect.y(), width, available_rect.height());
+  const int x = available_space.right() - width;
+  SetBounds(x, available_space.y(), width, available_space.height());
 }
 
 ExtensionsToolbarContainer*
@@ -235,7 +240,7 @@ void WebAppFrameToolbarView::ZoomChangedForActiveTab(bool can_show_bubble) {
       can_show_bubble);
 }
 
-ReadLaterToolbarButton* WebAppFrameToolbarView::GetSidePanelButton() {
+SidePanelToolbarButton* WebAppFrameToolbarView::GetSidePanelButton() {
   return nullptr;
 }
 
@@ -249,6 +254,14 @@ ToolbarButton* WebAppFrameToolbarView::GetBackButton() {
 
 ReloadButton* WebAppFrameToolbarView::GetReloadButton() {
   return left_container_ ? left_container_->reload_button() : nullptr;
+}
+
+IntentChipButton* WebAppFrameToolbarView::GetIntentChipButton() {
+  return nullptr;
+}
+
+DownloadToolbarButtonView* WebAppFrameToolbarView::GetDownloadButton() {
+  return right_container_ ? right_container_->download_button() : nullptr;
 }
 
 bool WebAppFrameToolbarView::DoesIntersectRect(const View* target,
@@ -287,6 +300,20 @@ void WebAppFrameToolbarView::OnWindowControlsOverlayEnabledChanged() {
     DestroyLayer();
     views::SetHitTestComponent(this, static_cast<int>(HTNOWHERE));
   }
+  right_container_->extensions_container()->WindowControlsOverlayEnabledChanged(
+      browser_view_->IsWindowControlsOverlayEnabled());
+}
+
+void WebAppFrameToolbarView::UpdateBorderlessModeEnabled() {
+  bool is_borderless_mode_enabled = browser_view_->IsBorderlessModeEnabled();
+
+  // The toolbar and menu button are hidden and not set to nullptrs,
+  // because there are many features that depend on the toolbar and would not
+  // work without it. For example all the shortcut commands (e.g. Ctrl+F, zoom)
+  // rely on the menu button and toolbar so when these are hidden, the shortcuts
+  // will still work.
+  SetVisible(!is_borderless_mode_enabled);
+  GetAppMenuButton()->SetVisible(!is_borderless_mode_enabled);
 }
 
 void WebAppFrameToolbarView::SetWindowControlsOverlayToggleVisible(

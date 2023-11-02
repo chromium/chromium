@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/glib/scoped_gobject.h"
 #include "ui/color/color_id.h"
 #include "ui/gtk/gtk_compat.h"
@@ -17,10 +18,6 @@
 
 namespace aura {
 class Window;
-}
-
-namespace base {
-class CommandLine;
 }
 
 namespace ui {
@@ -33,7 +30,7 @@ const char* GtkCssMenu();
 const char* GtkCssMenuItem();
 const char* GtkCssMenuScrollbar();
 
-void GtkInitFromCommandLine(const base::CommandLine& command_line);
+[[nodiscard]] bool GtkInitFromCommandLine(int* argc, char** argv);
 
 // Sets |dialog| as transient for |parent|, which will keep it on top and center
 // it above |parent|. Do nothing if |parent| is nullptr.
@@ -74,8 +71,8 @@ class CairoSurface {
   SkColor GetAveragePixelValue(bool frame);
 
  private:
-  cairo_surface_t* surface_;
-  cairo_t* cairo_;
+  raw_ptr<cairo_surface_t> surface_;
+  raw_ptr<cairo_t> cairo_;
 };
 
 class GtkCssContext {
@@ -111,7 +108,7 @@ class GtkCssContext {
   // GTK4 state.
   // GTK widgets own their children, so instead of keeping a reference to the
   // widget directly, keep a reference to the root widget.
-  GtkWidget* widget_ = nullptr;
+  raw_ptr<GtkWidget> widget_ = nullptr;
   ScopedGObject<GtkWidget> root_;
 };
 
@@ -243,9 +240,6 @@ float GetDeviceScaleFactor();
 
 // This should only be called on Gtk4.
 GdkTexture* GetTextureFromRenderNode(GskRenderNode* node);
-
-// Gets the GTK theme color for a given `color_id`.
-absl::optional<SkColor> SkColorFromColorId(ui::ColorId color_id);
 
 }  // namespace gtk
 

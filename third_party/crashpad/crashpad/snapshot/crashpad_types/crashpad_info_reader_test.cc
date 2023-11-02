@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@
 #include "util/misc/from_pointer_cast.h"
 #include "util/process/process_memory_native.h"
 
-#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "test/linux/fake_ptrace_connection.h"
 #endif
 
@@ -109,7 +109,7 @@ void ExpectCrashpadInfo(ProcessType process,
                         VMAddress extra_memory_address,
                         VMAddress simple_annotations_address,
                         VMAddress annotations_list_address) {
-#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   FakePtraceConnection connection;
   ASSERT_TRUE(connection.Initialize(process));
   ProcessMemoryLinux memory(&connection);

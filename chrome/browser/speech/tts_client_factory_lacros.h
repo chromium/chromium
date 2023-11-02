@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,14 @@
 #define CHROME_BROWSER_SPEECH_TTS_CLIENT_FACTORY_LACROS_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class TtsClientLacros;
 
 // Service factory to create TtsClientLacros per BrowserContext.
 // Note that OTR browser context uses its original profile's browser context,
 // and won't create a separate TtsClientLacros.
-class TtsClientFactoryLacros : public BrowserContextKeyedServiceFactory {
+class TtsClientFactoryLacros : public ProfileKeyedServiceFactory {
  public:
   // Returns the TtsClientLacros for |browser_context|, creating it if
   // it is not yet created.
@@ -29,8 +29,6 @@ class TtsClientFactoryLacros : public BrowserContextKeyedServiceFactory {
   ~TtsClientFactoryLacros() override;
 
   // BrowserContextKeyedServiceFactory overrides:
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
 };

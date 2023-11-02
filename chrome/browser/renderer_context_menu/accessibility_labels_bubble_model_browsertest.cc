@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -67,7 +67,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLabelsBubbleModelTest, OpenHelpPage) {
   model->OpenHelpPage();
   content::WebContents* web_contents = waiter.Wait();
   EXPECT_EQ(web_contents->GetBrowserContext(), browser()->profile());
-  EXPECT_EQ(web_contents->GetURL(), model->GetHelpPageURL());
+  EXPECT_EQ(web_contents->GetVisibleURL(), model->GetHelpPageURL());
 }
 
 // Tests that closing the tab with WebContents that was used to construct
@@ -81,13 +81,13 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLabelsBubbleModelTest,
                        OpenHelpPageAfterWebContentsClosed) {
   // Open a new tab so the whole browser does not close once we close
   // the tab via WebContents::Close() below.
-  AddTabAtIndex(0, GURL("data:text/html,<p>kittens!</p>"),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0, GURL("data:text/html,<p>kittens!</p>"),
+                            ui::PAGE_TRANSITION_TYPED));
   std::unique_ptr<AccessibilityLabelsBubbleModel> model = CreateConfirmBubble();
   browser()->tab_strip_model()->GetActiveWebContents()->Close();
   ui_test_utils::AllBrowserTabAddedWaiter waiter;
   model->OpenHelpPage();
   content::WebContents* web_contents = waiter.Wait();
   EXPECT_EQ(web_contents->GetBrowserContext(), browser()->profile());
-  EXPECT_EQ(web_contents->GetURL(), model->GetHelpPageURL());
+  EXPECT_EQ(web_contents->GetVisibleURL(), model->GetHelpPageURL());
 }

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2020 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <org.chromium.ui.widget.ButtonCompat
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -14,4 +16,4 @@
     android:layout_marginTop="8dp"
     android:ellipsize="end"
     android:singleLine="true"
-    android:text="@string/signin_promo_continue_as" />
+    android:text="@string/sync_promo_continue_as" />

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <message name="IDS_ENTERPRISE_COPY_PREVENTION_MISSING_LIST_ERROR" desc="Message indicating that the supplied value for the CopyPreventionSettings policy is missing one of the list fields">
+      Ignored because either the "enable" or "disable" list is missing.
+  </message>
+  <message name="IDS_ENTERPRISE_COPY_PREVENTION_DISABLE_CONTAINS_WILDCARD_ERROR" desc="Message indicating that the supplied value for the CopyPreventionSettings policy contains the wildcard character ('*') in the disable list, which is equivalent to disabling the policy completely">
+      Ignored because the disable list contains a pattern equal to '*', which is equivalent to disabling the policy.
+  </message>
+
+  <message name="IDS_ENTERPRISE_COPY_PREVENTION_WARNING_MESSAGE" desc="Message inserted into the clipboard instead of the intended data, when that data was blocked from being copied by the CopyPreventionSettings policy. This message will be visible to the user when they attempt to paste into any UI element (perhaps even outside of Chome) that supports displaying text.">
+    Your admin has prohibited this data from being copied.
+  </message>
+</grit-part>

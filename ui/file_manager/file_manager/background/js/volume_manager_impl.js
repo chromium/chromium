@@ -1,11 +1,12 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
-import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 
+import {promisify} from '../../common/js/api.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
@@ -72,6 +73,16 @@ export class VolumeManagerImpl extends EventTarget {
   }
 
   /** @override */
+  getFuseBoxOnlyFilterEnabled() {
+    return false;
+  }
+
+  /** @override */
+  getMediaStoreFilesOnlyFilterEnabled() {
+    return false;
+  }
+
+  /** @override */
   dispose() {}
 
   /**
@@ -94,10 +105,10 @@ export class VolumeManagerImpl extends EventTarget {
    * Adds new volume info from the given volumeMetadata. If the corresponding
    * volume info has already been added, the volumeMetadata is ignored.
    * @param {!VolumeInfo} volumeInfo
-   * @return {!Promise<!VolumeInfo>}
+   * @return {!VolumeInfo}
    * @private
    */
-  async addVolumeInfo_(volumeInfo) {
+  addVolumeInfo_(volumeInfo) {
     const volumeType = volumeInfo.volumeType;
 
     // We don't show Downloads and Drive on volume list if they have
@@ -153,18 +164,20 @@ export class VolumeManagerImpl extends EventTarget {
         return;
       }
       finished = true;
+      console.warn('Volumes initialization finished');
       this.finishInitialization_();
     };
 
     try {
       console.warn('Getting volumes');
-      const volumeMetadataList = await new Promise(
-          resolve => chrome.fileManagerPrivate.getVolumeMetadataList(resolve));
+      let volumeMetadataList =
+          await promisify(chrome.fileManagerPrivate.getVolumeMetadataList);
       if (!volumeMetadataList) {
-        console.error('Cannot get volumes');
+        console.warn('Cannot get volumes');
         finishInitialization();
         return;
       }
+      volumeMetadataList = volumeMetadataList.filter(volume => !volume.hidden);
       console.debug(`There are ${volumeMetadataList.length} volumes`);
 
       let counter = 0;
@@ -180,11 +193,10 @@ export class VolumeManagerImpl extends EventTarget {
           volumeInfo = await volumeManagerUtil.createVolumeInfo(volumeMetadata);
           // Add addVolumeInfo_() changes the VolumeInfoList which propagates
           // to the foreground.
-          await this.addVolumeInfo_(volumeInfo);
+          this.addVolumeInfo_(volumeInfo);
           console.debug(`Initialized volume #${idx} ${volumeId}'`);
         } catch (error) {
-          console.warn(`Error initiliazing #${idx} ${volumeId}`);
-          console.error(error);
+          console.warn(`Error initiliazing #${idx} ${volumeId}: ${error}`);
         } finally {
           counter += 1;
           // Finish after all volumes have been processed, or at least Downloads
@@ -237,15 +249,33 @@ export class VolumeManagerImpl extends EventTarget {
           case VolumeManagerCommon.VolumeError.UNKNOWN_FILESYSTEM:
           case VolumeManagerCommon.VolumeError.UNSUPPORTED_FILESYSTEM: {
             console.debug(`Mounted '${sourcePath}' as '${volumeId}'`);
-            const volumeInfo =
-                await volumeManagerUtil.createVolumeInfo(volumeMetadata);
-            await this.addVolumeInfo_(volumeInfo);
+            if (volumeMetadata.hidden) {
+              console.debug(`Mount discarded for hidden volume: '${volumeId}'`);
+              this.finishRequest_(requestKey, status);
+              return;
+            }
+
+            let volumeInfo;
+            try {
+              volumeInfo =
+                  await volumeManagerUtil.createVolumeInfo(volumeMetadata);
+            } catch (error) {
+              console.warn(
+                  'Unable to create volumeInfo for ' +
+                  `${volumeId} mounted on ${sourcePath}.` +
+                  `Mount status: ${status}. Error: ${error.stack || error}.`);
+              this.finishRequest_(requestKey, status);
+              throw (error);
+            }
+            this.addVolumeInfo_(volumeInfo);
             this.finishRequest_(requestKey, status, volumeInfo);
             return;
           }
 
           case VolumeManagerCommon.VolumeError.ALREADY_MOUNTED: {
-            console.warn(`'Cannot mount ${sourcePath}': Already mounted as '${
+            console.warn(
+                `Cannot mount (redacted): Already mounted as '${volumeId}'`);
+            console.debug(`Cannot mount '${sourcePath}': Already mounted as '${
                 volumeId}'`);
             const navigationEvent =
                 new Event(VolumeManagerCommon.VOLUME_ALREADY_MOUNTED);
@@ -255,14 +285,11 @@ export class VolumeManagerImpl extends EventTarget {
             return;
           }
 
-          case VolumeManagerCommon.VolumeError.NEED_PASSWORD: {
-            console.warn(`'Cannot mount ${sourcePath}': ${status}`);
-            this.finishRequest_(requestKey, status);
-            return;
-          }
-
+          case VolumeManagerCommon.VolumeError.NEED_PASSWORD:
+          case VolumeManagerCommon.VolumeError.CANCELLED:
           default:
-            console.error(`Cannot mount '${sourcePath}': ${status}`);
+            console.warn('Cannot mount (redacted):', status);
+            console.debug(`Cannot mount '${sourcePath}':`, status);
             this.finishRequest_(requestKey, status);
             return;
         }
@@ -279,7 +306,7 @@ export class VolumeManagerImpl extends EventTarget {
           case 'success': {
             const requested = requestKey in this.requests_;
             if (!requested && volumeInfo) {
-              console.warn(`Unmounted '${volumeId}' without request`);
+              console.debug(`Unmounted '${volumeId}' without request`);
               this.dispatchEvent(new CustomEvent(
                   'externally-unmounted', {detail: volumeInfo}));
             } else {
@@ -292,7 +319,8 @@ export class VolumeManagerImpl extends EventTarget {
           }
 
           default:
-            console.error(`Cannot unmount '${volumeId}': ${status}`);
+            console.warn('Cannot unmount (redacted):', status);
+            console.debug(`Cannot unmount '${volumeId}':`, status);
             this.finishRequest_(requestKey, status);
             return;
         }
@@ -315,39 +343,38 @@ export class VolumeManagerImpl extends EventTarget {
 
   /** @override */
   async mountArchive(fileUrl, password) {
-    const path = await new Promise(resolve => {
-      chrome.fileManagerPrivate.addMount(fileUrl, password, resolve);
-    });
+    const path =
+        await promisify(chrome.fileManagerPrivate.addMount, fileUrl, password);
     console.debug(`Mounting '${path}'`);
     const key = this.makeRequestKey_('mount', path);
     return this.startRequest_(key);
   }
 
   /** @override */
+  async cancelMounting(fileUrl) {
+    console.debug(`Cancelling mounting archive at '${fileUrl}'`);
+    return promisify(chrome.fileManagerPrivate.cancelMounting, fileUrl);
+  }
+
+  /** @override */
   async unmount({volumeId}) {
-    console.warn(`Unmounting '${volumeId}'`);
-    chrome.fileManagerPrivate.removeMount(volumeId);
+    console.debug(`Unmounting '${volumeId}'`);
     const key = this.makeRequestKey_('unmount', volumeId);
-    await this.startRequest_(key);
+    const request = this.startRequest_(key);
+    await promisify(chrome.fileManagerPrivate.removeMount, volumeId);
+    await request;
   }
 
   /** @override */
   configure(volumeInfo) {
-    return new Promise((fulfill, reject) => {
-      chrome.fileManagerPrivate.configureVolume(volumeInfo.volumeId, () => {
-        if (chrome.runtime.lastError) {
-          reject(chrome.runtime.lastError.message);
-        } else {
-          fulfill();
-        }
-      });
-    });
+    return promisify(
+        chrome.fileManagerPrivate.configureVolume, volumeInfo.volumeId);
   }
 
   /** @override */
   getVolumeInfo(entry) {
     if (!entry) {
-      console.error(`Invalid entry passed to getVolumeInfo: ${entry}`);
+      console.warn(`Invalid entry passed to getVolumeInfo: ${entry}`);
       return null;
     }
 
@@ -384,17 +411,25 @@ export class VolumeManagerImpl extends EventTarget {
   /** @override */
   getLocationInfo(entry) {
     if (!entry) {
-      console.error(`Invalid entry passed to getLocationInfo: ${entry}`);
+      console.warn(`Invalid entry passed to getLocationInfo: ${entry}`);
       return null;
     }
 
     const volumeInfo = this.getVolumeInfo(entry);
 
     if (util.isFakeEntry(entry)) {
+      // Aggregated views like RECENTS and TRASH exist as fake entries but may
+      // actually defer their logic to some underlying implementation or
+      // delegate to the location filesystem.
+      let isReadOnly = true;
+      if ((entry.rootType === VolumeManagerCommon.RootType.RECENT &&
+           util.isRecentsFilterV2Enabled()) ||
+          entry.rootType === VolumeManagerCommon.RootType.TRASH) {
+        isReadOnly = false;
+      }
       return new EntryLocationImpl(
           volumeInfo, assert(entry.rootType),
-          true /* the entry points a root directory. */,
-          true /* fake entries are read only. */);
+          true /* The entry points a root directory. */, isReadOnly);
     }
 
     if (!volumeInfo) {
@@ -529,7 +564,7 @@ export class VolumeManagerImpl extends EventTarget {
 
   /** @override */
   getDefaultDisplayRoot(callback) {
-    console.error('Unexpected call to VolumeManagerImpl.getDefaultDisplayRoot');
+    console.warn('Unexpected call to VolumeManagerImpl.getDefaultDisplayRoot');
     callback(null);
   }
 
@@ -551,7 +586,7 @@ export class VolumeManagerImpl extends EventTarget {
           errorCallbacks: [errorCallback],
 
           timeout: setTimeout(
-              this.onTimeout_.bind(this, key), volumeManagerUtil.TIMEOUT)
+              this.onTimeout_.bind(this, key), volumeManagerUtil.TIMEOUT),
         };
       }
     });

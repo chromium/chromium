@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,13 +16,9 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
-#include "base/metrics/field_trial.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
@@ -35,22 +31,17 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/security_interstitials/core/pref_names.h"
-#include "components/variations/variations_associated_data.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/common/content_switches.h"
 #include "net/base/hash_value.h"
-#include "net/base/url_util.h"
 #include "net/cert/x509_certificate.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 StatefulSSLHostStateDelegate::RecurrentInterstitialMode
     kRecurrentInterstitialDefaultMode =
         StatefulSSLHostStateDelegate::RecurrentInterstitialMode::PREF;
@@ -84,10 +75,6 @@ const char kSSLCertDecisionVersionKey[] = "version";
 
 const int kDefaultSSLCertDecisionVersion = 1;
 
-// Key for the expiration time of a decision in the per-site HTTP allowlist
-// content settings dictionary.
-const char kHTTPAllowlistExpirationTimeKey[] = "decision_expiration_time";
-
 // Records a new occurrence of |error|. The occurrence is stored in the
 // recurrent interstitial pref, which keeps track of the most recent timestamps
 // at which each error type occurred (up to the |threshold| most recent
@@ -101,39 +88,39 @@ void UpdateRecurrentInterstitialPref(PrefService* pref_service,
 
   DictionaryPrefUpdate pref_update(pref_service,
                                    prefs::kRecurrentSSLInterstitial);
-  base::Value* list_value =
-      pref_update->FindListKey(net::ErrorToShortString(error));
-  if (list_value) {
+  base::Value::Dict& dict = pref_update->GetDict();
+  base::Value::List* list = dict.FindList(net::ErrorToShortString(error));
+  if (list) {
     // Check that the values are in increasing order and wipe out the list if
     // not (presumably because the clock changed).
     double previous = 0;
-    for (const auto& error_instance : list_value->GetList()) {
+    for (const auto& error_instance : *list) {
       double error_time = error_instance.GetDouble();
       if (error_time < previous) {
-        list_value = nullptr;
+        list = nullptr;
         break;
       }
       previous = error_time;
     }
     if (now < previous)
-      list_value = nullptr;
+      list = nullptr;
   }
 
-  if (!list_value) {
+  if (!list) {
     // Either there was no list of occurrences of this error, or it was corrupt
     // (i.e. out of order). Save a new list composed of just this one error
     // instance.
-    base::Value error_list(base::Value::Type::LIST);
+    base::Value::List error_list;
     error_list.Append(now);
-    pref_update->SetKey(net::ErrorToShortString(error), std::move(error_list));
+    dict.Set(net::ErrorToShortString(error), std::move(error_list));
   } else {
     // Only up to |threshold| values need to be stored. If the list already
     // contains |threshold| values, pop one off the front and append the new one
     // at the end; otherwise just append the new one.
-    while (base::MakeStrictNum(list_value->GetList().size()) >= threshold) {
-      list_value->EraseListIter(list_value->GetList().begin());
+    while (base::MakeStrictNum(list->size()) >= threshold) {
+      list->erase(list->begin());
     }
-    list_value->Append(now);
+    list->Append(now);
   }
 }
 
@@ -142,10 +129,10 @@ bool DoesRecurrentInterstitialPrefMeetThreshold(PrefService* pref_service,
                                                 int error,
                                                 int threshold,
                                                 int error_reset_time) {
-  const base::Value* pref =
-      pref_service->GetDictionary(prefs::kRecurrentSSLInterstitial);
-  const base::Value* list_value =
-      pref->FindListKey(net::ErrorToShortString(error));
+  const base::Value::Dict& pref =
+      pref_service->GetDict(prefs::kRecurrentSSLInterstitial);
+  const base::Value::List* list_value =
+      pref.FindList(net::ErrorToShortString(error));
   if (!list_value)
     return false;
 
@@ -155,7 +142,7 @@ bool DoesRecurrentInterstitialPrefMeetThreshold(PrefService* pref_service,
   // Assume that the values in the list are in increasing order;
   // UpdateRecurrentInterstitialPref() maintains this ordering. Check if there
   // are more than |threshold| values after the cutoff time.
-  base::Value::ConstListView error_list = list_value->GetList();
+  const base::Value::List& error_list = *list_value;
   for (size_t i = 0; i < error_list.size(); i++) {
     if (base::Time::FromJsTime(error_list[i].GetDouble()) >= cutoff_time)
       return base::MakeStrictNum(error_list.size() - i) >= threshold;
@@ -206,10 +193,13 @@ StatefulSSLHostStateDelegate::StatefulSSLHostStateDelegate(
       browser_context_(browser_context),
       pref_service_(pref_service),
       host_content_settings_map_(host_content_settings_map),
+      https_only_mode_allowlist_(
+          host_content_settings_map,
+          clock_.get(),
+          base::Seconds(kDeltaDefaultExpirationInSeconds)),
       recurrent_interstitial_threshold_for_testing(-1),
       recurrent_interstitial_mode_for_testing(NOT_SET),
-      recurrent_interstitial_reset_time_for_testing(-1) {
-}
+      recurrent_interstitial_reset_time_for_testing(-1) {}
 
 StatefulSSLHostStateDelegate::~StatefulSSLHostStateDelegate() = default;
 
@@ -222,12 +212,7 @@ void StatefulSSLHostStateDelegate::AllowCert(
     const std::string& host,
     const net::X509Certificate& cert,
     int error,
-    content::WebContents* web_contents) {
-  DCHECK(web_contents);
-  content::StoragePartition* storage_partition =
-      browser_context_->GetStoragePartition(
-          web_contents->GetMainFrame()->GetSiteInstance(),
-          false /* can_create */);
+    content::StoragePartition* storage_partition) {
   if (!storage_partition ||
       storage_partition != browser_context_->GetDefaultStoragePartition()) {
     // Decisions for non-default storage partitions are stored in memory only;
@@ -241,24 +226,23 @@ void StatefulSSLHostStateDelegate::AllowCert(
   }
 
   GURL url = GetSecureGURLForHost(host);
-  std::unique_ptr<base::Value> value(
-      host_content_settings_map_->GetWebsiteSetting(
-          url, url, ContentSettingsType::SSL_CERT_DECISIONS, nullptr));
+  base::Value value(host_content_settings_map_->GetWebsiteSetting(
+      url, url, ContentSettingsType::SSL_CERT_DECISIONS, nullptr));
 
-  if (!value.get() || !value->is_dict())
-    value = std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
+  if (!value.is_dict())
+    value = base::Value(base::Value::Type::DICTIONARY);
 
-  base::Value* cert_dict =
-      GetValidCertDecisionsDict(value.get(), CREATE_DICTIONARY_ENTRIES);
+  base::Value::Dict* cert_dict =
+      GetValidCertDecisionsDict(CREATE_DICTIONARY_ENTRIES, value.GetDict());
   // If a a valid certificate dictionary cannot be extracted from the content
   // setting, that means it's in an unknown format. Unfortunately, there's
   // nothing to be done in that case, so a silent fail is the only option.
   if (!cert_dict)
     return;
 
-  value->SetKey(kSSLCertDecisionVersionKey,
-                base::Value(kDefaultSSLCertDecisionVersion));
-  cert_dict->SetKey(GetKey(cert, error), base::Value(ALLOWED));
+  value.GetDict().Set(kSSLCertDecisionVersionKey,
+                      kDefaultSSLCertDecisionVersion);
+  cert_dict->Set(GetKey(cert, error), ALLOWED);
 
   // The map takes ownership of the value, so it is released in the call to
   // SetWebsiteSettingDefaultScope.
@@ -280,22 +264,16 @@ void StatefulSSLHostStateDelegate::Clear(
   host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
       ContentSettingsType::SSL_CERT_DECISIONS, base::Time(), base::Time::Max(),
       pattern_filter);
-  host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
-      ContentSettingsType::HTTP_ALLOWED, base::Time(), base::Time::Max(),
-      pattern_filter);
+  https_only_mode_allowlist_.Clear(base::Time(), base::Time::Max(),
+                                   pattern_filter);
 }
 
 content::SSLHostStateDelegate::CertJudgment
-StatefulSSLHostStateDelegate::QueryPolicy(const std::string& host,
-                                          const net::X509Certificate& cert,
-                                          int error,
-                                          content::WebContents* web_contents) {
-  DCHECK(web_contents);
-
-  content::StoragePartition* storage_partition =
-      browser_context_->GetStoragePartition(
-          web_contents->GetMainFrame()->GetSiteInstance(),
-          false /* can_create */);
+StatefulSSLHostStateDelegate::QueryPolicy(
+    const std::string& host,
+    const net::X509Certificate& cert,
+    int error,
+    content::StoragePartition* storage_partition) {
   if (!storage_partition ||
       storage_partition != browser_context_->GetDefaultStoragePartition()) {
     if (allowed_certs_for_non_default_storage_partitions_.find(host) ==
@@ -312,15 +290,14 @@ StatefulSSLHostStateDelegate::QueryPolicy(const std::string& host,
   }
 
   GURL url = GetSecureGURLForHost(host);
-  std::unique_ptr<base::Value> value(
-      host_content_settings_map_->GetWebsiteSetting(
-          url, url, ContentSettingsType::SSL_CERT_DECISIONS, nullptr));
+  base::Value value(host_content_settings_map_->GetWebsiteSetting(
+      url, url, ContentSettingsType::SSL_CERT_DECISIONS, nullptr));
 
-  if (!value.get() || !value->is_dict())
+  if (!value.is_dict())
     return DENIED;
 
-  base::Value* cert_error_dict =
-      GetValidCertDecisionsDict(value.get(), DO_NOT_CREATE_DICTIONARY_ENTRIES);
+  base::Value::Dict* cert_error_dict = GetValidCertDecisionsDict(
+      DO_NOT_CREATE_DICTIONARY_ENTRIES, value.GetDict());
   if (!cert_error_dict) {
     // This revoke is necessary to clear any old expired setting that may be
     // lingering in the case that an old decision expried.
@@ -329,7 +306,7 @@ StatefulSSLHostStateDelegate::QueryPolicy(const std::string& host,
   }
 
   absl::optional<int> policy_decision =
-      cert_error_dict->FindIntKey(GetKey(cert, error));
+      cert_error_dict->FindInt(GetKey(cert, error));
 
   // If a policy decision was successfully retrieved and it's a valid value of
   // ALLOWED, return the valid value. Otherwise, return DENIED.
@@ -371,88 +348,40 @@ bool StatefulSSLHostStateDelegate::DidHostRunInsecureContent(
 
 void StatefulSSLHostStateDelegate::AllowHttpForHost(
     const std::string& host,
-    content::WebContents* web_contents) {
-  DCHECK(web_contents);
-
-  content::StoragePartition* storage_partition =
-      browser_context_->GetStoragePartition(
-          web_contents->GetMainFrame()->GetSiteInstance(),
-          /*can_create=*/false);
-  if (!storage_partition ||
-      storage_partition != browser_context_->GetDefaultStoragePartition()) {
-    // Decisions for non-default storage partitions are stored in memory only.
-    allowed_http_hosts_for_non_default_storage_partitions_.insert(host);
-    return;
-  }
-
-  // Store when the HTTP allowlist entry for this host should expire. This value
-  // must be stored inside a dictionary as content settings don't support
-  // directly storing a string value.
-  GURL url = GetSecureGURLForHost(host);
-  base::Time expiration_time =
-      clock_->Now() + base::Seconds(kDeltaDefaultExpirationInSeconds);
-  auto dict = std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
-  dict->SetKey(kHTTPAllowlistExpirationTimeKey,
-               base::TimeToValue(expiration_time));
-  host_content_settings_map_->SetWebsiteSettingDefaultScope(
-      url, GURL(), ContentSettingsType::HTTP_ALLOWED, std::move(dict));
+    content::StoragePartition* storage_partition) {
+  bool is_nondefault_storage =
+      !storage_partition ||
+      storage_partition != browser_context_->GetDefaultStoragePartition();
+  https_only_mode_allowlist_.AllowHttpForHost(host, is_nondefault_storage);
 }
 
 bool StatefulSSLHostStateDelegate::IsHttpAllowedForHost(
     const std::string& host,
-    content::WebContents* web_contents) {
-  content::StoragePartition* storage_partition =
-      browser_context_->GetStoragePartition(
-          web_contents->GetMainFrame()->GetSiteInstance(),
-          false /* can_create */);
-  if (!storage_partition ||
-      storage_partition != browser_context_->GetDefaultStoragePartition()) {
-    return base::Contains(
-        allowed_http_hosts_for_non_default_storage_partitions_, host);
-  }
-
-  GURL url = GetSecureGURLForHost(host);
-  const ContentSettingsPattern pattern =
-      ContentSettingsPattern::FromURLNoWildcard(url);
-
-  auto value = host_content_settings_map_->GetWebsiteSetting(
-      url, url, ContentSettingsType::HTTP_ALLOWED, nullptr);
-  if (!value || !value->is_dict()) {
-    return false;
-  }
-
-  auto* decision_expiration_value =
-      value->FindKey(kHTTPAllowlistExpirationTimeKey);
-  auto decision_expiration = base::ValueToTime(decision_expiration_value);
-  if (decision_expiration <= clock_->Now()) {
-    // Allowlist entry has expired.
-    return false;
-  }
-
-  return true;
+    content::StoragePartition* storage_partition) {
+  bool is_nondefault_storage =
+      !storage_partition ||
+      storage_partition != browser_context_->GetDefaultStoragePartition();
+  return https_only_mode_allowlist_.IsHttpAllowedForHost(host,
+                                                         is_nondefault_storage);
 }
 
 void StatefulSSLHostStateDelegate::RevokeUserAllowExceptions(
     const std::string& host) {
   GURL url = GetSecureGURLForHost(host);
-
   host_content_settings_map_->SetWebsiteSettingDefaultScope(
-      url, GURL(), ContentSettingsType::SSL_CERT_DECISIONS, nullptr);
-  host_content_settings_map_->SetWebsiteSettingDefaultScope(
-      url, GURL(), ContentSettingsType::HTTP_ALLOWED, nullptr);
-
+      url, GURL(), ContentSettingsType::SSL_CERT_DECISIONS, base::Value());
   // Decisions for non-default storage partitions are stored separately in
   // memory; delete those as well.
   allowed_certs_for_non_default_storage_partitions_.erase(host);
-  allowed_http_hosts_for_non_default_storage_partitions_.erase(host);
+
+  https_only_mode_allowlist_.RevokeUserAllowExceptions(host);
 }
 
 bool StatefulSSLHostStateDelegate::HasAllowException(
     const std::string& host,
-    content::WebContents* web_contents) {
-  DCHECK(web_contents);
-  return HasCertAllowException(host, web_contents) ||
-         IsHttpAllowedForHost(host, web_contents);
+    content::StoragePartition* storage_partition) {
+  return HasCertAllowException(host, storage_partition) ||
+         IsHttpAllowedForHost(host, storage_partition);
 }
 
 // TODO(jww): This will revoke all of the decisions in the browser context.
@@ -527,12 +456,13 @@ void StatefulSSLHostStateDelegate::ResetRecurrentErrorCountForTesting() {
   recurrent_errors_.clear();
   DictionaryPrefUpdate pref_update(pref_service_,
                                    prefs::kRecurrentSSLInterstitial);
-  pref_update->Clear();
+  pref_update->GetDict().clear();
 }
 
 void StatefulSSLHostStateDelegate::SetClockForTesting(
     std::unique_ptr<base::Clock> clock) {
   clock_ = std::move(clock);
+  https_only_mode_allowlist_.SetClockForTesting(clock_.get());
 }
 
 void StatefulSSLHostStateDelegate::SetRecurrentInterstitialThresholdForTesting(
@@ -577,11 +507,7 @@ StatefulSSLHostStateDelegate::GetRecurrentInterstitialMode() const {
 
 bool StatefulSSLHostStateDelegate::HasCertAllowException(
     const std::string& host,
-    content::WebContents* web_contents) {
-  content::StoragePartition* storage_partition =
-      browser_context_->GetStoragePartition(
-          web_contents->GetMainFrame()->GetSiteInstance(),
-          false /* can_create */);
+    content::StoragePartition* storage_partition) {
   if (!storage_partition ||
       storage_partition != browser_context_->GetDefaultStoragePartition()) {
     return base::Contains(allowed_certs_for_non_default_storage_partitions_,
@@ -592,14 +518,13 @@ bool StatefulSSLHostStateDelegate::HasCertAllowException(
   const ContentSettingsPattern pattern =
       ContentSettingsPattern::FromURLNoWildcard(url);
 
-  std::unique_ptr<base::Value> value(
-      host_content_settings_map_->GetWebsiteSetting(
-          url, url, ContentSettingsType::SSL_CERT_DECISIONS, nullptr));
+  const base::Value value(host_content_settings_map_->GetWebsiteSetting(
+      url, url, ContentSettingsType::SSL_CERT_DECISIONS, nullptr));
 
-  if (!value.get() || !value->is_dict())
+  if (!value.is_dict())
     return false;
 
-  for (auto pair : value->DictItems()) {
+  for (const auto pair : value.DictItems()) {
     if (!pair.second.is_int())
       continue;
 
@@ -621,17 +546,17 @@ bool StatefulSSLHostStateDelegate::HasCertAllowException(
 // addition to there not being any values in the dictionary). If create_entries
 // is set to |CREATE_DICTIONARY_ENTRIES|, if no dictionary is found or the
 // decisions are expired, a new dictionary will be created.
-base::Value* StatefulSSLHostStateDelegate::GetValidCertDecisionsDict(
-    base::Value* dict,
-    CreateDictionaryEntriesDisposition create_entries) {
+base::Value::Dict* StatefulSSLHostStateDelegate::GetValidCertDecisionsDict(
+    CreateDictionaryEntriesDisposition create_entries,
+    base::Value::Dict& dict) {
   // Extract the version of the certificate decision structure from the content
   // setting.
-  absl::optional<int> version = dict->FindIntKey(kSSLCertDecisionVersionKey);
+  absl::optional<int> version = dict.FindInt(kSSLCertDecisionVersionKey);
   if (!version) {
     if (create_entries == DO_NOT_CREATE_DICTIONARY_ENTRIES)
       return nullptr;
 
-    dict->SetIntKey(kSSLCertDecisionVersionKey, kDefaultSSLCertDecisionVersion);
+    dict.Set(kSSLCertDecisionVersionKey, kDefaultSSLCertDecisionVersion);
     version = absl::make_optional<int>(kDefaultSSLCertDecisionVersion);
   }
 
@@ -652,7 +577,7 @@ base::Value* StatefulSSLHostStateDelegate::GetValidCertDecisionsDict(
   bool expired = false;
   base::Time now = clock_->Now();
   auto* decision_expiration_value =
-      dict->FindKey(kSSLCertDecisionExpirationTimeKey);
+      dict.Find(kSSLCertDecisionExpirationTimeKey);
   auto decision_expiration = base::ValueToTime(decision_expiration_value);
 
   // Check to see if the user's certificate decision has expired.
@@ -670,19 +595,19 @@ base::Value* StatefulSSLHostStateDelegate::GetValidCertDecisionsDict(
     // Unfortunately, JSON (and thus content settings) doesn't support int64_t
     // values, only doubles. Since this mildly depends on precision, it is
     // better to store the value as a string.
-    dict->SetKey(kSSLCertDecisionExpirationTimeKey,
-                 base::TimeToValue(expiration_time));
+    dict.Set(kSSLCertDecisionExpirationTimeKey,
+             base::TimeToValue(expiration_time));
   }
 
   // Extract the map of certificate fingerprints to errors from the setting.
-  base::Value* cert_error_dict =
-      dict->FindDictKey(kSSLCertDecisionCertErrorMapKey);
+  base::Value::Dict* cert_error_dict =
+      dict.FindDict(kSSLCertDecisionCertErrorMapKey);
   if (expired || !cert_error_dict) {
     if (create_entries == DO_NOT_CREATE_DICTIONARY_ENTRIES)
       return nullptr;
 
-    cert_error_dict = dict->SetKey(kSSLCertDecisionCertErrorMapKey,
-                                   base::Value(base::Value::Type::DICTIONARY));
+    cert_error_dict = dict.EnsureDict(kSSLCertDecisionCertErrorMapKey);
+    cert_error_dict->clear();
   }
 
   return cert_error_dict;

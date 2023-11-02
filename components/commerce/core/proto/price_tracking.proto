@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,6 +44,9 @@ message BuyableProduct {
 
   // Cluster id.
   optional uint64 product_cluster_id = 6;
+
+  // Country code of the offer.
+  optional string country_code = 7;
 }
 
 message ProductPriceUpdate {

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,14 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
+#include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
 #include "ios/chrome/browser/main/browser_observer.h"
 #include "ios/chrome/browser/main/browser_user_data.h"
 #import "ios/chrome/browser/ui/dialogs/overlay_java_script_dialog_presenter.h"
+#include "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/chrome/browser/web_state_list/web_state_list_observer.h"
-#import "ios/web/public/web_state_delegate.h"
+#include "ios/web/public/web_state_delegate.h"
 #include "ios/web/public/web_state_observer.h"
 
 @class ContextMenuConfigurationProvider;
@@ -25,9 +28,10 @@ class GURL;
 // added to the browser's WebStateList (and unassigning them when they leave).
 // This browser agent must be created after TabInsertionBrowserAgent.
 class WebStateDelegateBrowserAgent
-    : BrowserObserver,
+    : public BrowserObserver,
       public BrowserUserData<WebStateDelegateBrowserAgent>,
-      WebStateListObserver,
+      public WebStateListObserver,
+      public web::WebStateObserver,
       public web::WebStateDelegate {
  public:
   ~WebStateDelegateBrowserAgent() override;
@@ -49,9 +53,11 @@ class WebStateDelegateBrowserAgent
   void ClearUIProviders();
 
  private:
-  explicit WebStateDelegateBrowserAgent(Browser* browser);
   friend class BrowserUserData<WebStateDelegateBrowserAgent>;
   BROWSER_USER_DATA_KEY_DECL();
+
+  WebStateDelegateBrowserAgent(Browser* browser,
+                               TabInsertionBrowserAgent* tab_insertion_agent);
 
   // WebStateListObserver::
   void WebStateInsertedAt(WebStateList* web_state_list,
@@ -65,8 +71,13 @@ class WebStateDelegateBrowserAgent
   void WebStateDetachedAt(WebStateList* web_state_list,
                           web::WebState* web_state,
                           int index) override;
+
   // BrowserObserver::
   void BrowserDestroyed(Browser* browser) override;
+
+  // web::WebStateObserver:
+  void WebStateRealized(web::WebState* web_state) override;
+  void WebStateDestroyed(web::WebState* web_state) override;
 
   // web::WebStateDelegate:
   web::WebState* CreateNewWebState(web::WebState* source,
@@ -77,8 +88,6 @@ class WebStateDelegateBrowserAgent
   web::WebState* OpenURLFromWebState(
       web::WebState* source,
       const web::WebState::OpenURLParams& params) override;
-  void HandleContextMenu(web::WebState* source,
-                         const web::ContextMenuParams& params) override;
   void ShowRepostFormWarningDialog(
       web::WebState* source,
       base::OnceCallback<void(bool)> callback) override;
@@ -99,10 +108,27 @@ class WebStateDelegateBrowserAgent
   id<CRWResponderInputView> GetResponderInputView(
       web::WebState* source) override;
 
-  WebStateList* web_state_list_;
-  TabInsertionBrowserAgent* tab_insertion_agent_;
+  // Helper methods to set/clear the WebState delegate if it is realized,
+  // or to listen for the realization of the WebState.
+  void SetWebStateDelegate(web::WebState* web_state);
+  void ClearWebStateDelegate(web::WebState* web_state);
+
+  WebStateList* web_state_list_ = nullptr;
+  TabInsertionBrowserAgent* tab_insertion_agent_ = nullptr;
 
   OverlayJavaScriptDialogPresenter java_script_dialog_presenter_;
+
+  // The browser associated with this agent.
+  Browser* browser_;
+
+  // Scoped observations of Browser, WebStateList and WebStates.
+  base::ScopedObservation<Browser, BrowserObserver> browser_observation_{this};
+
+  base::ScopedObservation<WebStateList, WebStateListObserver>
+      web_state_list_observation_{this};
+
+  base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>
+      web_state_observations_{this};
 
   // These providers are owned by other objects.
   __weak ContextMenuConfigurationProvider* context_menu_provider_;

@@ -1,0 +1,81 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_wrapper.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(!is_android)
+assert(is_chrome_branded)
+
+preprocess_folder = "preprocessed"
+
+# Compile the .grd file produced by the "build_grd" target below.
+grit("resources") {
+  defines = chrome_grit_defines
+
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/resources.grd"
+  deps = [ ":build_grd" ]
+
+  outputs = [
+    "grit/media_router_feedback_resources.h",
+    "grit/media_router_feedback_resources_map.cc",
+    "grit/media_router_feedback_resources_map.h",
+    "media_router_feedback_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
+
+preprocess_if_expr("preprocess_gen") {
+  deps = [ ":html_wrapper_files" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  in_files = [ "cast_feedback_ui.html.ts" ]
+}
+
+preprocess_if_expr("preprocess_src") {
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  in_files = [ "cast_feedback_ui.ts" ]
+}
+
+html_to_wrapper("html_wrapper_files") {
+  in_files = [ "cast_feedback_ui.html" ]
+}
+
+ts_library("build_ts") {
+  root_dir = "$target_gen_dir/$preprocess_folder"
+  out_dir = "$target_gen_dir/tsc"
+  composite = true
+  tsconfig_base = "tsconfig_base.json"
+  in_files = [
+    "cast_feedback_ui.ts",
+    "cast_feedback_ui.html.ts",
+  ]
+  definitions = [
+    "//tools/typescript/definitions/feedback_private.d.ts",
+    "//tools/typescript/definitions/chrome_send.d.ts",
+  ]
+  deps = [ "//ui/webui/resources:library" ]
+  extra_deps = [
+    ":preprocess_gen",
+    ":preprocess_src",
+  ]
+}
+
+# Build a .grd file from the various resource files needed by the
+# feedback dialog.
+generate_grd("build_grd") {
+  input_files = [ "feedback.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  grd_prefix = "media_router_feedback"
+  out_grd = "$target_gen_dir/resources.grd"
+}

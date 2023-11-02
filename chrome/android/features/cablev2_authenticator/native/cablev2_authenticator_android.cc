@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -21,6 +22,7 @@
 #include "device/fido/cable/v2_registration.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
@@ -28,6 +30,7 @@
 
 // These "headers" actually contain several function definitions and thus can
 // only be included once across Chromium.
+#include "base/time/time.h"
 #include "chrome/android/features/cablev2_authenticator/jni_headers/BLEAdvert_jni.h"
 #include "chrome/android/features/cablev2_authenticator/jni_headers/CableAuthenticator_jni.h"
 #include "chrome/android/features/cablev2_authenticator/jni_headers/USBHandler_jni.h"
@@ -182,8 +185,12 @@ enum class CableV2MobileEvent {
   kGetAssertionStarted = 19,
   kGetAssertionComplete = 20,
   kFirstTransactionDone = 21,
+  kContactIDNotReady = 22,
+  kBluetoothAdvertisePermissionRequested = 23,
+  kBluetoothAdvertisePermissionGranted = 24,
+  kBluetoothAdvertisePermissionRejected = 25,
 
-  kMaxValue = 21,
+  kMaxValue = 25,
 };
 
 // CableV2MobileResult enumerates the outcome of a caBLEv2 transction. Do not
@@ -202,8 +209,9 @@ enum class CableV2MobileResult {
   kInvalidQR = 9,
   kInvalidServerLink = 10,
   kEOFWhileProcessing = 11,
+  kDiscoverableCredentialsRejected = 12,
 
-  kMaxValue = 11,
+  kMaxValue = 12,
 };
 
 // JavaByteArrayToSpan returns a span that aliases |data|. Be aware that the
@@ -358,7 +366,7 @@ class AndroidBLEAdvert
   }
 
  private:
-  JNIEnv* const env_;
+  const raw_ptr<JNIEnv> env_;
   const ScopedJavaGlobalRef<jobject> advert_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -385,37 +393,43 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
   ~AndroidPlatform() override = default;
 
   // Platform:
-  void MakeCredential(std::unique_ptr<MakeCredentialParams> params) override {
+  void MakeCredential(
+      blink::mojom::PublicKeyCredentialCreationOptionsPtr params,
+      MakeCredentialCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     GlobalData& global_data = GetGlobalData();
     DCHECK(!global_data.pending_make_credential_callback);
-    global_data.pending_make_credential_callback = std::move(params->callback);
+    global_data.pending_make_credential_callback = std::move(callback);
 
-    Java_CableAuthenticator_makeCredential(
-        env_, cable_authenticator_,
-        ConvertUTF8ToJavaString(env_, params->rp_id),
-        ToJavaByteArray(env_, params->client_data_hash),
-        ToJavaByteArray(env_, params->user_id),
-        ToJavaIntArray(env_, params->algorithms),
-        ToJavaArrayOfByteArray(env_, params->excluded_cred_ids),
-        params->resident_key_required);
+    std::vector<uint8_t> params_bytes =
+        blink::mojom::PublicKeyCredentialCreationOptions::Serialize(&params);
+
+    Java_CableAuthenticator_makeCredential(env_, cable_authenticator_,
+                                           ToJavaByteArray(env_, params_bytes));
   }
 
-  void GetAssertion(std::unique_ptr<GetAssertionParams> params) override {
+  void GetAssertion(blink::mojom::PublicKeyCredentialRequestOptionsPtr params,
+                    GetAssertionCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     GlobalData& global_data = GetGlobalData();
     DCHECK(!global_data.pending_get_assertion_callback);
-    global_data.pending_get_assertion_callback = std::move(params->callback);
+    global_data.pending_get_assertion_callback = std::move(callback);
     global_data.get_assertion_start_time = base::TimeTicks::Now();
 
+    std::vector<uint8_t> params_bytes =
+        blink::mojom::PublicKeyCredentialRequestOptions::Serialize(&params);
+
+    ScopedJavaLocalRef<jbyteArray> tunnel_id;
+    if (global_data.server_link_tunnel_id.has_value()) {
+      tunnel_id = ToJavaByteArray(env_, *global_data.server_link_tunnel_id);
+    }
+
     RecordEvent(&global_data, CableV2MobileEvent::kGetAssertionStarted);
-    Java_CableAuthenticator_getAssertion(
-        env_, cable_authenticator_,
-        ConvertUTF8ToJavaString(env_, params->rp_id),
-        ToJavaByteArray(env_, params->client_data_hash),
-        ToJavaArrayOfByteArray(env_, params->allowed_cred_ids));
+    Java_CableAuthenticator_getAssertion(env_, cable_authenticator_,
+                                         ToJavaByteArray(env_, params_bytes),
+                                         tunnel_id);
   }
 
   void OnStatus(Status status) override {
@@ -498,6 +512,10 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
         case Error::UNKNOWN_COMMAND:
           result = CableV2MobileResult::kUnknownCommand;
           break;
+        case Error::AUTHENTICATOR_SELECTION_RECEIVED:
+        case Error::DISCOVERABLE_CREDENTIALS_REQUEST:
+          result = CableV2MobileResult::kDiscoverableCredentialsRejected;
+          break;
         case Error::INTERNAL_ERROR:
         case Error::SERVER_LINK_WRONG_LENGTH:
         case Error::SERVER_LINK_NOT_ON_CURVE:
@@ -538,7 +556,7 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
   }
 
  private:
-  JNIEnv* const env_;
+  const raw_ptr<JNIEnv> env_;
   ScopedJavaGlobalRef<jobject> cable_authenticator_;
   absl::optional<base::ElapsedTimer> tunnel_server_connect_time_;
 
@@ -592,7 +610,7 @@ class USBTransport : public device::cablev2::authenticator::Transport {
     }
   }
 
-  JNIEnv* const env_;
+  const raw_ptr<JNIEnv> env_;
   const ScopedJavaGlobalRef<jobject> usb_device_;
   base::RepeatingCallback<void(Update)> callback_;
   base::WeakPtrFactory<USBTransport> weak_factory_{this};
@@ -635,16 +653,11 @@ static void JNI_CableAuthenticator_Setup(JNIEnv* env,
   RecordEvent(&global_data, CableV2MobileEvent::kSetup);
   global_data.env = env;
 
-  if (base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport)) {
-    // If kWebAuthPhoneSupport isn't enabled then QR scanning isn't enabled and
-    // thus no linking messages will be sent. Thus there's no point in burdening
-    // FCM with registrations.
-    static_assert(sizeof(jlong) >= sizeof(void*), "");
-    global_data.registration =
-        reinterpret_cast<device::cablev2::authenticator::Registration*>(
-            registration_long);
-    global_data.registration->PrepareContactID();
-  }
+  static_assert(sizeof(jlong) >= sizeof(void*), "");
+  global_data.registration =
+      reinterpret_cast<device::cablev2::authenticator::Registration*>(
+          registration_long);
+  global_data.registration->PrepareContactID();
 
   global_data.network_context =
       reinterpret_cast<network::mojom::NetworkContext*>(network_context_long);
@@ -692,26 +705,37 @@ static jlong JNI_CableAuthenticator_StartQR(
 
   if (!link) {
     RecordEvent(&global_data, CableV2MobileEvent::kLinkingNotRequested);
+  } else if (!global_data.registration->contact_id()) {
+    LOG(ERROR) << "Contact ID was not ready for QR transaction";
+    RecordEvent(&global_data, CableV2MobileEvent::kContactIDNotReady);
   }
 
   global_data.event_to_record_if_stopped =
       CableV2MobileEvent::kStoppedWhileAwaitingTunnelServerConnection;
-  global_data.current_transaction =
-      device::cablev2::authenticator::TransactFromQRCode(
-          std::make_unique<AndroidPlatform>(env, cable_authenticator,
-                                            /*is_usb=*/false),
-          global_data.network_context, *global_data.root_secret,
-          ConvertJavaStringToUTF8(authenticator_name), decoded_qr->secret,
-          decoded_qr->peer_identity,
-          link ? global_data.registration->contact_id() : absl::nullopt);
+  global_data
+      .current_transaction = device::cablev2::authenticator::TransactFromQRCode(
+      // Just because the client supports storing linking information doesn't
+      // imply that it supports revision one, but we happened to introduce
+      // these features at the same time.
+      /*protocol_revision=*/decoded_qr->supports_linking.has_value() ? 1 : 0,
+      std::make_unique<AndroidPlatform>(env, cable_authenticator,
+                                        /*is_usb=*/false),
+      global_data.network_context, *global_data.root_secret,
+      ConvertJavaStringToUTF8(authenticator_name), decoded_qr->secret,
+      decoded_qr->peer_identity,
+      link ? global_data.registration->contact_id() : absl::nullopt,
+      // If the QR code knows about at least two registered tunnel server
+      // domains then we consider it recent enough to use the new Crypter mode.
+      /*use_new_crypter_construction=*/decoded_qr->num_known_domains >= 2);
 
   return ++global_data.instance_num;
 }
 
-static jlong JNI_CableAuthenticator_StartServerLink(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& cable_authenticator,
-    const JavaParamRef<jbyteArray>& server_link_data_java) {
+std::tuple<base::span<const uint8_t, device::kP256X962Length>,
+           base::span<const uint8_t, device::cablev2::kQRSecretSize>,
+           std::array<uint8_t, device::cablev2::kTunnelIdSize>>
+ParseServerLinkData(JNIEnv* env,
+                    const JavaParamRef<jbyteArray>& server_link_data_java) {
   constexpr size_t kDataSize =
       device::kP256X962Length + device::cablev2::kQRSecretSize;
   const absl::optional<base::span<const uint8_t, kDataSize>> server_link_data =
@@ -719,30 +743,46 @@ static jlong JNI_CableAuthenticator_StartServerLink(
   // validateServerLinkData should have been called to check this already.
   CHECK(server_link_data);
 
+  const base::span<const uint8_t, device::kP256X962Length> peer_identity =
+      server_link_data->subspan<0, device::kP256X962Length>();
+  const base::span<const uint8_t, device::cablev2::kQRSecretSize> qr_secret =
+      server_link_data
+          ->subspan<device::kP256X962Length, device::cablev2::kQRSecretSize>();
+  const std::array<uint8_t, device::cablev2::kTunnelIdSize> tunnel_id =
+      device::cablev2::Derive<device::cablev2::kTunnelIdSize>(
+          qr_secret, base::span<uint8_t>(),
+          device::cablev2::DerivedValueType::kTunnelID);
+
+  return std::make_tuple(peer_identity, qr_secret, tunnel_id);
+}
+
+static jlong JNI_CableAuthenticator_StartServerLink(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& cable_authenticator,
+    const JavaParamRef<jbyteArray>& server_link_data_java) {
+  GlobalData& global_data = GetGlobalData();
+
+  auto server_link_values = ParseServerLinkData(env, server_link_data_java);
+  auto peer_identity = std::get<0>(server_link_values);
+  auto qr_secret = std::get<1>(server_link_values);
+  global_data.server_link_tunnel_id = std::get<2>(server_link_values);
+
   // Sending pairing information is disabled when doing a server-linked
   // connection, thus the root secret and authenticator name will not be used.
   std::array<uint8_t, device::cablev2::kRootSecretSize> dummy_root_secret = {0};
   std::string dummy_authenticator_name = "";
-  GlobalData& global_data = GetGlobalData();
   global_data.event_to_record_if_stopped =
       CableV2MobileEvent::kStoppedWhileAwaitingTunnelServerConnection;
-  const base::span<const uint8_t, device::cablev2::kQRSecretSize> qr_secret =
-      server_link_data
-          ->subspan<device::kP256X962Length, device::cablev2::kQRSecretSize>();
-  global_data.server_link_tunnel_id =
-      device::cablev2::Derive<device::cablev2::kTunnelIdSize>(
-          qr_secret, base::span<uint8_t>(),
-          device::cablev2::DerivedValueType::kTunnelID);
   RecordEvent(&global_data, CableV2MobileEvent::kServerLink);
 
   global_data.current_transaction =
       device::cablev2::authenticator::TransactFromQRCode(
+          /*protocol_revision=*/0,
           std::make_unique<AndroidPlatform>(env, cable_authenticator,
                                             /*is_usb=*/false),
           global_data.network_context, dummy_root_secret,
-          dummy_authenticator_name, qr_secret,
-          server_link_data->subspan<0, device::kP256X962Length>(),
-          absl::nullopt);
+          dummy_authenticator_name, qr_secret, peer_identity, absl::nullopt,
+          /*use_new_crypter_construction=*/false);
 
   return ++global_data.instance_num;
 }
@@ -773,6 +813,7 @@ static jlong JNI_CableAuthenticator_StartCloudMessage(
       CableV2MobileEvent::kStoppedWhileAwaitingTunnelServerConnection;
   global_data.current_transaction =
       device::cablev2::authenticator::TransactFromFCM(
+          event->protocol_revision,
           std::make_unique<AndroidPlatform>(env, cable_authenticator,
                                             /*is_usb=*/false),
           global_data.network_context, *global_data.root_secret,
@@ -780,13 +821,6 @@ static jlong JNI_CableAuthenticator_StartCloudMessage(
           event->client_nonce, event->contact_id);
 
   return ++global_data.instance_num;
-}
-
-static void JNI_CableAuthenticator_Unlink(JNIEnv* env) {
-  GlobalData& global_data = GetGlobalData();
-  RecordEvent(&global_data, CableV2MobileEvent::kUnlink);
-
-  global_data.registration->RotateContactID();
 }
 
 static void JNI_CableAuthenticator_Stop(JNIEnv* env, jlong instance_num) {
@@ -846,7 +880,8 @@ static void JNI_CableAuthenticator_OnActivityStop(JNIEnv* env,
 static void JNI_CableAuthenticator_OnAuthenticatorAttestationResponse(
     JNIEnv* env,
     jint ctap_status,
-    const JavaParamRef<jbyteArray>& jattestation_object) {
+    const JavaParamRef<jbyteArray>& jattestation_object,
+    const JavaParamRef<jbyteArray>& jdevice_public_key_signature) {
   GlobalData& global_data = GetGlobalData();
 
   if (!global_data.pending_make_credential_callback) {
@@ -855,16 +890,21 @@ static void JNI_CableAuthenticator_OnAuthenticatorAttestationResponse(
   auto callback = std::move(*global_data.pending_make_credential_callback);
   global_data.pending_make_credential_callback.reset();
 
+  absl::optional<base::span<const uint8_t>> device_public_key_signature;
+  if (jdevice_public_key_signature) {
+    device_public_key_signature =
+        JavaByteArrayToSpan(env, jdevice_public_key_signature);
+  }
+
   std::move(callback).Run(ctap_status,
-                          JavaByteArrayToSpan(env, jattestation_object));
+                          JavaByteArrayToSpan(env, jattestation_object),
+                          device_public_key_signature);
 }
 
 static void JNI_CableAuthenticator_OnAuthenticatorAssertionResponse(
     JNIEnv* env,
     jint ctap_status,
-    const JavaParamRef<jbyteArray>& jcredential_id,
-    const JavaParamRef<jbyteArray>& jauthenticator_data,
-    const JavaParamRef<jbyteArray>& jsignature) {
+    const JavaParamRef<jbyteArray>& jresponse_bytes) {
   GlobalData& global_data = GetGlobalData();
   RecordEvent(&global_data, CableV2MobileEvent::kGetAssertionComplete);
 
@@ -889,10 +929,36 @@ static void JNI_CableAuthenticator_OnAuthenticatorAssertionResponse(
   auto callback = std::move(*global_data.pending_get_assertion_callback);
   global_data.pending_get_assertion_callback.reset();
 
-  std::move(callback).Run(ctap_status,
-                          JavaByteArrayToSpan(env, jcredential_id),
-                          JavaByteArrayToSpan(env, jauthenticator_data),
-                          JavaByteArrayToSpan(env, jsignature));
+  if (ctap_status ==
+      static_cast<jint>(device::CtapDeviceResponseCode::kSuccess)) {
+    base::span<const uint8_t> response_bytes =
+        JavaByteArrayToSpan(env, jresponse_bytes);
+    auto response = blink::mojom::GetAssertionAuthenticatorResponse::New();
+    if (blink::mojom::GetAssertionAuthenticatorResponse::Deserialize(
+            response_bytes.data(), response_bytes.size(), &response)) {
+      std::move(callback).Run(ctap_status, std::move(response));
+      return;
+    }
+
+    ctap_status =
+        static_cast<jint>(device::CtapDeviceResponseCode::kCtap2ErrOther);
+  }
+
+  std::move(callback).Run(ctap_status, nullptr);
+}
+
+static void JNI_CableAuthenticator_RecordEvent(
+    JNIEnv* env,
+    jint event,
+    const JavaParamRef<jbyteArray>& server_link_data_java) {
+  auto server_link_values = ParseServerLinkData(env, server_link_data_java);
+  base::UmaHistogramEnumeration("WebAuthentication.CableV2.MobileEvent",
+                                static_cast<CableV2MobileEvent>(event));
+
+  if (GetGlobalData().metrics_enabled) {
+    protobuf::LogEvent(env, /*tunnel_id=*/std::get<2>(server_link_values),
+                       protobuf::Type::kEvent, event);
+  }
 }
 
 static void JNI_USBHandler_OnUSBData(JNIEnv* env,

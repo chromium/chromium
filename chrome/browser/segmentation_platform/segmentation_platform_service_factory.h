@@ -1,11 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_SEGMENTATION_PLATFORM_SEGMENTATION_PLATFORM_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_SEGMENTATION_PLATFORM_SEGMENTATION_PLATFORM_SERVICE_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace base {
 template <typename T>
@@ -22,8 +22,7 @@ namespace segmentation_platform {
 class SegmentationPlatformService;
 
 // A factory to create a unique SegmentationPlatformService.
-class SegmentationPlatformServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+class SegmentationPlatformServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Gets the SegmentationPlatformService for the profile. Returns a dummy one
   // if the feature isn't enabled.

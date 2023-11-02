@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,18 +9,18 @@
 #include <string>
 
 #include "build/build_config.h"
+#include "ui/gfx/geometry/insets_f.h"
+#include "ui/gfx/geometry/outsets_f.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 typedef struct CGRect CGRect;
 #endif
 
 namespace gfx {
-
-class InsetsF;
 
 // A floating version of gfx::Rect.
 class GEOMETRY_EXPORT RectF {
@@ -39,7 +39,7 @@ class GEOMETRY_EXPORT RectF {
               static_cast<float>(r.width()),
               static_cast<float>(r.height())) {}
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   explicit RectF(const CGRect& r);
   // Construct an equivalent CoreGraphics object.
   CGRect ToCGRect() const;
@@ -88,27 +88,15 @@ class GEOMETRY_EXPORT RectF {
     size_.SetSize(width, height);
   }
 
-  // Shrink the rectangle by |inset| on all sides.
-  void Inset(float inset) { Inset(inset, inset); }
-  // Shrink the rectangle by a horizontal and vertical distance on all sides.
-  void Inset(float horizontal, float vertical) {
-    Inset(horizontal, vertical, horizontal, vertical);
-  }
-
-  // Shrink the rectangle by the given insets.
+  // Shrinks the rectangle by |inset| on all sides.
+  void Inset(float inset) { Inset(InsetsF(inset)); }
+  // Shrinks the rectangle by the given |insets|.
   void Inset(const InsetsF& insets);
 
-  // Shrink the rectangle by the specified amount on each side.
-  void Inset(float left, float top, float right, float bottom);
-
-  // Expand the rectangle by the specified amount on each side.
+  // Expands the rectangle by |outset| on all sides.
   void Outset(float outset) { Inset(-outset); }
-  void Outset(float horizontal, float vertical) {
-    Inset(-horizontal, -vertical);
-  }
-  void Outset(float left, float top, float right, float bottom) {
-    Inset(-left, -top, -right, -bottom);
-  }
+  // Expands the rectangle by the given |outsets|.
+  void Outset(const OutsetsF& outsets) { Inset(outsets.ToInsets()); }
 
   // Move the rectangle by a horizontal and vertical distance.
   void Offset(float horizontal, float vertical);
@@ -119,7 +107,7 @@ class GEOMETRY_EXPORT RectF {
   InsetsF InsetsFrom(const RectF& inner) const;
 
   // Returns true if the area of the rectangle is zero.
-  bool IsEmpty() const { return size_.IsEmpty(); }
+  constexpr bool IsEmpty() const { return size_.IsEmpty(); }
 
   // A rect is less than another rect if its origin is less than
   // the other rect's origin. If the origins are equal, then the
@@ -230,6 +218,14 @@ class GEOMETRY_EXPORT RectF {
     set_size(ScaleSize(size(), x_scale, y_scale));
   }
 
+  // Divides the rectangle by |inv_scale|.
+  void InvScale(float inv_scale) { InvScale(inv_scale, inv_scale); }
+
+  void InvScale(float x_scale, float y_scale) {
+    origin_.InvScale(x_scale, y_scale);
+    size_.InvScale(x_scale, y_scale);
+  }
+
   // This method reports if the RectF can be safely converted to an integer
   // Rect. When it is false, some dimension of the RectF is outside the bounds
   // of what an integer can represent, and converting it to a Rect will require
@@ -238,16 +234,20 @@ class GEOMETRY_EXPORT RectF {
 
   std::string ToString() const;
 
+  bool ApproximatelyEqual(const RectF& rect,
+                          float tolerance_x,
+                          float tolerance_y) const;
+
  private:
   PointF origin_;
   SizeF size_;
 };
 
-inline bool operator==(const RectF& lhs, const RectF& rhs) {
+constexpr bool operator==(const RectF& lhs, const RectF& rhs) {
   return lhs.origin() == rhs.origin() && lhs.size() == rhs.size();
 }
 
-inline bool operator!=(const RectF& lhs, const RectF& rhs) {
+constexpr bool operator!=(const RectF& lhs, const RectF& rhs) {
   return !(lhs == rhs);
 }
 
@@ -293,6 +293,12 @@ GEOMETRY_EXPORT RectF BoundingRect(const PointF& p1, const PointF& p2);
 
 // Return a maximum rectangle in which any point is covered by either a or b.
 GEOMETRY_EXPORT RectF MaximumCoveredRect(const RectF& a, const RectF& b);
+
+// Returns the rect in |dest_rect| corresponding to |r] in |src_rect| when
+// |src_rect| is mapped to |dest_rect|.
+GEOMETRY_EXPORT RectF MapRect(const RectF& r,
+                              const RectF& src_rect,
+                              const RectF& dest_rect);
 
 // This is declared here for use in gtest-based unit tests but is defined in
 // the //ui/gfx:test_support target. Depend on that to use this in your unit

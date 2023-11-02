@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,14 +35,15 @@ FakeFileSystemAccessPermissionContext::GetWritePermissionGrant(
       FileSystemAccessPermissionGrant::PermissionStatus::GRANTED, path);
 }
 
-void FakeFileSystemAccessPermissionContext::ConfirmSensitiveDirectoryAccess(
+void FakeFileSystemAccessPermissionContext::ConfirmSensitiveEntryAccess(
     const url::Origin& origin,
     PathType path_type,
     const base::FilePath& path,
     HandleType handle_type,
+    UserAction user_action,
     GlobalRenderFrameHostId frame_id,
-    base::OnceCallback<void(SensitiveDirectoryResult)> callback) {
-  std::move(callback).Run(SensitiveDirectoryResult::kAllowed);
+    base::OnceCallback<void(SensitiveEntryResult)> callback) {
+  std::move(callback).Run(SensitiveEntryResult::kAllowed);
 }
 
 void FakeFileSystemAccessPermissionContext::PerformAfterWriteChecks(
@@ -88,11 +89,17 @@ void FakeFileSystemAccessPermissionContext::SetWellKnownDirectoryPath(
 }
 
 base::FilePath FakeFileSystemAccessPermissionContext::GetWellKnownDirectoryPath(
-    blink::mojom::WellKnownDirectory directory) {
+    blink::mojom::WellKnownDirectory directory,
+    const url::Origin& origin) {
   return well_known_directory_map_.find(directory) !=
                  well_known_directory_map_.end()
              ? well_known_directory_map_[directory]
              : base::FilePath();
+}
+
+std::u16string FakeFileSystemAccessPermissionContext::GetPickerTitle(
+    const blink::mojom::FilePickerOptionsPtr& options) {
+  return kPickerTitle;
 }
 
 }  // namespace content

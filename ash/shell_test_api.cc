@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,6 +35,7 @@
 #include "ui/compositor/compositor_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
@@ -101,9 +102,7 @@ class WindowAnimationWaiter : public ui::LayerAnimationObserver {
   void OnLayerAnimationScheduled(
       ui::LayerAnimationSequence* sequence) override {}
 
-  void Wait() {
-    run_loop_.Run();
-  }
+  void Wait() { run_loop_.Run(); }
 
  private:
   ui::LayerAnimator* animator_;
@@ -125,13 +124,6 @@ void ShellTestApi::SetTabletControllerUseScreenshotForTest(
 void ShellTestApi::SetUseLoginNotificationDelayForTest(bool use_delay) {
   SessionStateNotificationBlocker::SetUseLoginNotificationDelayForTest(
       use_delay);
-}
-
-// static
-void ShellTestApi::SetShouldShowShortcutNotificationForTest(
-    bool show_notification) {
-  AcceleratorControllerImpl::SetShouldShowShortcutNotificationForTest(
-      show_notification);
 }
 
 MessageCenterController* ShellTestApi::message_center_controller() {
@@ -165,6 +157,7 @@ display::DisplayManager* ShellTestApi::display_manager() {
 
 void ShellTestApi::ResetPowerButtonControllerForTest() {
   shell_->backlights_forced_off_setter_->ResetForTest();
+  shell_->power_button_controller_.reset();
   shell_->power_button_controller_ = std::make_unique<PowerButtonController>(
       shell_->backlights_forced_off_setter_.get());
 }
@@ -265,7 +258,7 @@ base::OnceClosure ShellTestApi::CreateWaiterForFinishingWindowAnimation(
 
 PaginationModel* ShellTestApi::GetAppListPaginationModel() {
   AppListView* view =
-      Shell::Get()->app_list_controller()->presenter()->GetView();
+      Shell::Get()->app_list_controller()->fullscreen_presenter()->GetView();
   if (!view)
     return nullptr;
   return view->GetAppsPaginationModel();

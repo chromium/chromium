@@ -1,0 +1,29 @@
+caption: Show the middle slot announcement on the New Tab Page
+default: true
+desc: "This policy controls the visibility of the middle slot announcement on the\
+  \ New Tab Page.\n\n      If the policy is set to Enabled, the New Tab Page will\
+  \ show the middle slot announcement if it is available.\n\n      If the policy is\
+  \ set to Disabled, the New Tab Page will not show the middle slot announcement even\
+  \ if it is available.\n      "
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: New Tab Page will show the middle slot announcement if it is available
+  value: true
+- caption: New Tab Page will not show the middle slot announcement even if it is available
+  value: false
+owners:
+- danpeng@google.com
+- tiborg@chromium.org
+- chrome-desktop-ntp@google.com
+schema:
+  type: boolean
+supported_on:
+- chrome.*:99-
+- chrome_os:99-
+tags: []
+type: main

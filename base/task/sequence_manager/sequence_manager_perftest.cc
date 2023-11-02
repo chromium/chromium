@@ -1,7 +1,8 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 
 #include <stddef.h>
@@ -14,7 +15,6 @@
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/condition_variable.h"
-#include "base/task/post_task.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
 #include "base/task/sequence_manager/test/mock_time_domain.h"
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
@@ -60,18 +60,7 @@ class PerfTestTimeDomain : public MockTimeDomain {
   PerfTestTimeDomain& operator=(const PerfTestTimeDomain&) = delete;
   ~PerfTestTimeDomain() override = default;
 
-  base::TimeTicks GetNextDelayedTaskTime(DelayedWakeUp next_wake_up,
-                                         LazyNow* lazy_now) const override {
-    // Check if we have a task that should be running now.
-    if (next_wake_up.time <= NowTicks())
-      return base::TimeTicks();
-
-    // Rely on MaybeFastForwardToWakeUp to be called to advance
-    // time.
-    return base::TimeTicks::Max();
-  }
-
-  bool MaybeFastForwardToWakeUp(absl::optional<DelayedWakeUp> wake_up,
+  bool MaybeFastForwardToWakeUp(absl::optional<WakeUp> wake_up,
                                 bool quit_when_idle_requested) override {
     if (wake_up) {
       SetNowTicks(wake_up->time);
@@ -125,7 +114,7 @@ class BaseSequenceManagerPerfTestDelegate : public PerfTestDelegate {
   scoped_refptr<TaskRunner> CreateTaskRunner() override {
     scoped_refptr<TestTaskQueue> task_queue =
         manager_->CreateTaskQueueWithType<TestTaskQueue>(
-            TaskQueue::Spec("test"));
+            TaskQueue::Spec(QueueName::TEST_TQ));
     owned_task_queues_.push_back(task_queue);
     return task_queue->task_runner();
   }
@@ -179,7 +168,7 @@ class SequenceManagerWithMessagePumpPerfTestDelegate
     // runner.
     scoped_refptr<TaskQueue> default_task_queue =
         GetManager()->template CreateTaskQueueWithType<TestTaskQueue>(
-            TaskQueue::Spec("default"));
+            TaskQueue::Spec(QueueName::DEFAULT_TQ));
     GetManager()->SetDefaultTaskRunner(default_task_queue->task_runner());
   }
 
@@ -242,7 +231,7 @@ class TestCase {
   virtual void Start() = 0;
 
  protected:
-  PerfTestDelegate* const delegate_;  // NOT OWNED
+  const raw_ptr<PerfTestDelegate> delegate_;  // NOT OWNED
 };
 
 class TaskSource {
@@ -404,7 +393,7 @@ class SingleThreadImmediateTestCase : public TestCase {
 
     void SignalDone() override { delegate_->SignalDone(); }
 
-    PerfTestDelegate* delegate_;  // NOT OWNED.
+    raw_ptr<PerfTestDelegate> delegate_;  // NOT OWNED.
   };
 
   const std::unique_ptr<TaskSource> task_source_;
@@ -444,7 +433,7 @@ class SingleThreadDelayedTestCase : public TestCase {
 
     void SignalDone() override { delegate_->SignalDone(); }
 
-    PerfTestDelegate* delegate_;  // NOT OWNED.
+    raw_ptr<PerfTestDelegate> delegate_;  // NOT OWNED.
   };
 
   const std::unique_ptr<TaskSource> task_source_;
@@ -497,7 +486,7 @@ class TwoThreadTestCase : public TestCase {
     // Will be called on the main thread.
     void SignalDone() override { two_thread_test_case_->SignalDone(); }
 
-    TwoThreadTestCase* two_thread_test_case_;  // NOT OWNED.
+    raw_ptr<TwoThreadTestCase> two_thread_test_case_;  // NOT OWNED.
   };
 
   class CrossThreadImmediateTaskSource : public CrossThreadTaskSource {
@@ -518,7 +507,7 @@ class TwoThreadTestCase : public TestCase {
     // Will be called on the main thread.
     void SignalDone() override { two_thread_test_case_->SignalDone(); }
 
-    TwoThreadTestCase* two_thread_test_case_;  // NOT OWNED.
+    raw_ptr<TwoThreadTestCase> two_thread_test_case_;  // NOT OWNED.
   };
 
   void SignalDone() {

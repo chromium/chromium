@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,12 +17,12 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/json/string_escape.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -45,7 +45,7 @@
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/devtools_frontend_host.h"
 #endif
 
@@ -58,10 +58,10 @@ std::vector<ShellDevToolsBindings*>* GetShellDevtoolsBindingsInstances() {
   return instance.get();
 }
 
-base::DictionaryValue BuildObjectForResponse(const net::HttpResponseHeaders* rh,
-                                             bool success,
-                                             int net_error) {
-  base::DictionaryValue response = base::DictionaryValue();
+base::Value BuildObjectForResponse(const net::HttpResponseHeaders* rh,
+                                   bool success,
+                                   int net_error) {
+  base::Value response(base::Value::Type::DICTIONARY);
   int responseCode = 200;
   if (rh) {
     responseCode = rh->response_code();
@@ -69,18 +69,18 @@ base::DictionaryValue BuildObjectForResponse(const net::HttpResponseHeaders* rh,
     // In case of no headers, assume file:// URL and failed to load
     responseCode = 404;
   }
-  response.SetInteger("statusCode", responseCode);
-  response.SetInteger("netError", net_error);
-  response.SetString("netErrorName", net::ErrorToString(net_error));
+  response.SetIntKey("statusCode", responseCode);
+  response.SetIntKey("netError", net_error);
+  response.SetStringKey("netErrorName", net::ErrorToString(net_error));
 
-  base::DictionaryValue headers;
+  base::Value headers(base::Value::Type::DICTIONARY);
   size_t iterator = 0;
   std::string name;
   std::string value;
   // TODO(caseq): this probably needs to handle duplicate header names
   // correctly by folding them.
   while (rh && rh->EnumerateHeaderLines(&iterator, &name, &value))
-    headers.SetString(name, value);
+    headers.SetStringKey(name, value);
 
   response.SetKey("headers", std::move(headers));
   return response;
@@ -146,7 +146,7 @@ class ShellDevToolsBindings::NetworkResourceLoader
 
   const int stream_id_;
   const int request_id_;
-  ShellDevToolsBindings* const bindings_;
+  const raw_ptr<ShellDevToolsBindings> bindings_;
   std::unique_ptr<network::SimpleURLLoader> loader_;
   scoped_refptr<net::HttpResponseHeaders> response_headers_;
 };
@@ -202,11 +202,8 @@ ShellDevToolsBindings::GetInstancesForWebContents(WebContents* web_contents) {
 
 void ShellDevToolsBindings::ReadyToCommitNavigation(
     NavigationHandle* navigation_handle) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   content::RenderFrameHost* frame = navigation_handle->GetRenderFrameHost();
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (navigation_handle->IsInPrimaryMainFrame()) {
     frontend_host_ = DevToolsFrontendHost::Create(
         frame, base::BindRepeating(
@@ -264,20 +261,18 @@ void ShellDevToolsBindings::WebContentsDestroyed() {
 }
 
 void ShellDevToolsBindings::HandleMessageFromDevToolsFrontend(
-    base::Value message) {
-  if (!message.is_dict())
-    return;
-  const std::string* method = message.FindStringKey("method");
+    base::Value::Dict message) {
+  const std::string* method = message.FindString("method");
   if (!method)
     return;
 
-  int request_id = message.FindIntKey("id").value_or(0);
-  base::Value* params_value = message.FindListKey("params");
+  int request_id = message.FindInt("id").value_or(0);
+  base::Value::List* params_value = message.FindList("params");
 
   // Since we've received message by value, we can take the list.
-  base::Value::ListStorage params;
+  base::Value::List params;
   if (params_value) {
-    params = std::move(*params_value).TakeList();
+    params = std::move(*params_value);
   }
 
   if (*method == "dispatchProtocolMessage" && params.size() == 1) {
@@ -299,10 +294,10 @@ void ShellDevToolsBindings::HandleMessageFromDevToolsFrontend(
 
     GURL gurl(*url);
     if (!gurl.is_valid()) {
-      base::DictionaryValue response;
-      response.SetInteger("statusCode", 404);
-      response.SetBoolean("urlValid", false);
-      SendMessageAck(request_id, std::move(response));
+      base::Value::Dict response;
+      response.Set("statusCode", 404);
+      response.Set("urlValid", false);
+      SendMessageAck(request_id, base::Value(std::move(response)));
       return;
     }
 
@@ -340,7 +335,7 @@ void ShellDevToolsBindings::HandleMessageFromDevToolsFrontend(
     resource_request->headers.AddHeadersFromString(*headers);
 
     auto* partition =
-        inspected_contents()->GetMainFrame()->GetStoragePartition();
+        inspected_contents()->GetPrimaryMainFrame()->GetStoragePartition();
     auto factory = partition->GetURLLoaderFactoryForBrowserProcess();
 
     auto simple_url_loader = network::SimpleURLLoader::Create(
@@ -425,9 +420,9 @@ void ShellDevToolsBindings::CallClientFunction(
     base::OnceCallback<void(base::Value)> cb) {
   std::string javascript;
 
-  web_contents()->GetMainFrame()->AllowInjectingJavaScript();
+  web_contents()->GetPrimaryMainFrame()->AllowInjectingJavaScript();
 
-  base::Value arguments(base::Value::Type::LIST);
+  base::Value::List arguments;
   if (!arg1.is_none()) {
     arguments.Append(std::move(arg1));
     if (!arg2.is_none()) {
@@ -437,7 +432,7 @@ void ShellDevToolsBindings::CallClientFunction(
       }
     }
   }
-  web_contents()->GetMainFrame()->ExecuteJavaScriptMethod(
+  web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptMethod(
       base::ASCIIToUTF16(object_name), base::ASCIIToUTF16(method_name),
       std::move(arguments), std::move(cb));
 }

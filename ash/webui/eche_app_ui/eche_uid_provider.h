@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "base/containers/span.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
@@ -37,6 +38,8 @@ class EcheUidProvider : public mojom::UidGenerator {
   void Bind(mojo::PendingReceiver<mojom::UidGenerator> receiver);
 
  private:
+  friend class EcheUidProviderTest;
+
   std::string ConvertBinaryToString(base::span<const uint8_t> src);
   absl::optional<std::vector<uint8_t>> ConvertStringToBinary(
       base::StringPiece str,
@@ -51,12 +54,5 @@ class EcheUidProvider : public mojom::UidGenerator {
 
 }  // namespace eche_app
 }  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-namespace eche_app {
-using ::ash::eche_app::kEcheAppSeedPref;
-}  // namespace eche_app
-}  // namespace chromeos
 
 #endif  // ASH_WEBUI_ECHE_APP_UI_ECHE_UID_PROVIDER_H_

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ namespace chromeos {
 
 class DebugOverlayHandler : public BaseWebUIHandler {
  public:
-  explicit DebugOverlayHandler(JSCallsContainer* js_calls_container);
+  DebugOverlayHandler();
   ~DebugOverlayHandler() override;
   DebugOverlayHandler(const DebugOverlayHandler&) = delete;
   DebugOverlayHandler& operator=(const DebugOverlayHandler&) = delete;
@@ -23,11 +23,12 @@ class DebugOverlayHandler : public BaseWebUIHandler {
   void DeclareJSCallbacks() override;
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void Initialize() override;
+  void InitializeDeprecated() override;
 
  private:
   // JS callbacks.
   void HandleCaptureScreenshot(const std::string& name);
+  void ToggleColorMode();
 
   base::FilePath screenshot_dir_;
   int screenshot_index_ = 0;

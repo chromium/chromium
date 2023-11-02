@@ -1,6 +1,0 @@
-Bug 106538: Top layer fails for inline elements
-
-This tests that position 'static' computes to 'absolute' in the top layer. The test passes if you see a single green box.
-
-PASS
-PASS

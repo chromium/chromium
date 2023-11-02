@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,13 +64,22 @@ absl::optional<IntentPickerAppInfo> FindMacAppForUrl(const GURL& url) {
 }
 
 void LaunchMacApp(const GURL& url, const std::string& launch_name) {
-  [[NSWorkspace sharedWorkspace]
-                  openURLs:@[ net::NSURLWithGURL(url) ]
-      withApplicationAtURL:[NSURL fileURLWithPath:base::SysUTF8ToNSString(
-                                                      launch_name)]
-                   options:0
-             configuration:@{}
-                     error:nil];
+  if (@available(macOS 10.15, *)) {
+    [[NSWorkspace sharedWorkspace]
+                    openURLs:@[ net::NSURLWithGURL(url) ]
+        withApplicationAtURL:[NSURL fileURLWithPath:base::SysUTF8ToNSString(
+                                                        launch_name)]
+               configuration:[NSWorkspaceOpenConfiguration configuration]
+           completionHandler:nil];
+  } else {
+    [[NSWorkspace sharedWorkspace]
+                    openURLs:@[ net::NSURLWithGURL(url) ]
+        withApplicationAtURL:[NSURL fileURLWithPath:base::SysUTF8ToNSString(
+                                                        launch_name)]
+                     options:0
+               configuration:@{}
+                       error:nil];
+  }
 }
 
 }  // namespace apps

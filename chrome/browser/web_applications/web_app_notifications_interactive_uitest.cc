@@ -1,7 +1,8 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
@@ -59,7 +60,7 @@ class WebAppNotificationsBrowserTest : public WebAppControllerBrowserTest {
 
   content::EvalJsResult AwaitScript(const std::string& script) {
     content::EvalJsResult js_result =
-        content::EvalJs(GetActiveWebContents()->GetMainFrame(), script,
+        content::EvalJs(GetActiveWebContents()->GetPrimaryMainFrame(), script,
                         content::EXECUTE_SCRIPT_DEFAULT_OPTIONS);
 
     // Purges all pending messages to propagate them to notification views.
@@ -97,86 +98,12 @@ class WebAppNotificationsBrowserTest : public WebAppControllerBrowserTest {
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
 
   // Can be different from browser();
-  Browser* app_browser_ = nullptr;
+  raw_ptr<Browser> app_browser_ = nullptr;
 };
 
-class WebAppNotificationsBrowserTest_IconAndTitleEnabled
-    : public WebAppNotificationsBrowserTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kDesktopPWAsNotificationIconAndTitle};
-};
-
-class WebAppNotificationsBrowserTest_IconAndTitleDisabled
-    : public WebAppNotificationsBrowserTest {
- public:
-  WebAppNotificationsBrowserTest_IconAndTitleDisabled() {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kDesktopPWAsNotificationIconAndTitle);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(WebAppNotificationsBrowserTest_IconAndTitleDisabled,
-                       PersistentNotificationIconAndTitle) {
-  const GURL app_url =
-      https_server()->GetURL("/web_app_notifications/index.html");
-
-  const AppId app_id = InstallWebAppFromPage(browser(), app_url);
-  // The installation opens a new Browser window: |user_display_mode| is
-  // kStandalone.
-  SetAppBrowserForAppId(app_id);
-
-  EXPECT_TRUE(RequestAndAcceptPermission());
-
-  EXPECT_TRUE(AwaitScript("awaitServiceWorkerActivation()").ExtractBool());
-
-  {
-    EXPECT_TRUE(AwaitScript("displayPersistentNotification()").ExtractBool());
-
-    std::vector<message_center::Notification> notifications =
-        GetDisplayedNotifications(/*is_persistent=*/true);
-    ASSERT_EQ(1u, notifications.size());
-
-    const message_center::Notification& notification = notifications[0];
-
-    EXPECT_EQ(u"Notification Title", notification.title());
-
-    ASSERT_FALSE(notification.notifier_id().title.has_value());
-    EXPECT_TRUE(notification.small_image().IsEmpty());
-
-    EXPECT_TRUE(AwaitScript("closeAllPersistentNotifications()").ExtractBool());
-  }
-
-  {
-    EXPECT_TRUE(
-        AwaitScript("displayPersistentNotificationWithBadge()").ExtractBool());
-
-    std::vector<message_center::Notification> notifications =
-        GetDisplayedNotifications(/*is_persistent=*/true);
-    ASSERT_EQ(1u, notifications.size());
-
-    const message_center::Notification& notification = notifications[0];
-
-    EXPECT_EQ(u"Notification With Badge", notification.title());
-
-    EXPECT_FALSE(notification.notifier_id().title.has_value());
-
-    // small_image() here is chrome/test/data/web_app_notifications/blue-32.png.
-    ASSERT_FALSE(notification.small_image().IsEmpty());
-    const SkBitmap badge_from_js = *notification.small_image().ToSkBitmap();
-
-    EXPECT_EQ(32, badge_from_js.width());
-    EXPECT_EQ(32, badge_from_js.height());
-
-    EXPECT_EQ(color_utils::SkColorToRgbaString(SK_ColorBLUE),
-              color_utils::SkColorToRgbaString(badge_from_js.getColor(8, 8)));
-
-    EXPECT_TRUE(AwaitScript("closeAllPersistentNotifications()").ExtractBool());
-  }
-}
+#if BUILDFLAG(IS_CHROMEOS)
+using WebAppNotificationsBrowserTest_IconAndTitleEnabled =
+    WebAppNotificationsBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(WebAppNotificationsBrowserTest_IconAndTitleEnabled,
                        PersistentNotificationIconAndTitle) {
@@ -255,5 +182,68 @@ IN_PROC_BROWSER_TEST_F(WebAppNotificationsBrowserTest_IconAndTitleEnabled,
     EXPECT_TRUE(AwaitScript("closeAllPersistentNotifications()").ExtractBool());
   }
 }
+#else
+using WebAppNotificationsBrowserTest_IconAndTitleDisabled =
+    WebAppNotificationsBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(WebAppNotificationsBrowserTest_IconAndTitleDisabled,
+                       PersistentNotificationIconAndTitle) {
+  const GURL app_url =
+      https_server()->GetURL("/web_app_notifications/index.html");
+
+  const AppId app_id = InstallWebAppFromPage(browser(), app_url);
+  // The installation opens a new Browser window: |user_display_mode| is
+  // kStandalone.
+  SetAppBrowserForAppId(app_id);
+
+  EXPECT_TRUE(RequestAndAcceptPermission());
+
+  EXPECT_TRUE(AwaitScript("awaitServiceWorkerActivation()").ExtractBool());
+
+  {
+    EXPECT_TRUE(AwaitScript("displayPersistentNotification()").ExtractBool());
+
+    std::vector<message_center::Notification> notifications =
+        GetDisplayedNotifications(/*is_persistent=*/true);
+    ASSERT_EQ(1u, notifications.size());
+
+    const message_center::Notification& notification = notifications[0];
+
+    EXPECT_EQ(u"Notification Title", notification.title());
+
+    ASSERT_FALSE(notification.notifier_id().title.has_value());
+    EXPECT_TRUE(notification.small_image().IsEmpty());
+
+    EXPECT_TRUE(AwaitScript("closeAllPersistentNotifications()").ExtractBool());
+  }
+
+  {
+    EXPECT_TRUE(
+        AwaitScript("displayPersistentNotificationWithBadge()").ExtractBool());
+
+    std::vector<message_center::Notification> notifications =
+        GetDisplayedNotifications(/*is_persistent=*/true);
+    ASSERT_EQ(1u, notifications.size());
+
+    const message_center::Notification& notification = notifications[0];
+
+    EXPECT_EQ(u"Notification With Badge", notification.title());
+
+    EXPECT_FALSE(notification.notifier_id().title.has_value());
+
+    // small_image() here is chrome/test/data/web_app_notifications/blue-32.png.
+    ASSERT_FALSE(notification.small_image().IsEmpty());
+    const SkBitmap badge_from_js = *notification.small_image().ToSkBitmap();
+
+    EXPECT_EQ(32, badge_from_js.width());
+    EXPECT_EQ(32, badge_from_js.height());
+
+    EXPECT_EQ(color_utils::SkColorToRgbaString(SK_ColorBLUE),
+              color_utils::SkColorToRgbaString(badge_from_js.getColor(8, 8)));
+
+    EXPECT_TRUE(AwaitScript("closeAllPersistentNotifications()").ExtractBool());
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace web_app

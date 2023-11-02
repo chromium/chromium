@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,15 @@
 
 #include <utility>
 
+#include "ash/components/arc/arc_prefs.h"
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/system/sys_info.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -23,7 +25,6 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
-#include "components/arc/arc_prefs.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -83,7 +84,7 @@ void CreateOobeCompleteFlagFile() {
   const base::FilePath oobe_complete_flag_path = GetOobeCompleteFlagPath();
   if (!base::PathExists(oobe_complete_flag_path)) {
     FILE* oobe_flag_file = base::OpenFile(oobe_complete_flag_path, "w+b");
-    if (oobe_flag_file == NULL)
+    if (oobe_flag_file == nullptr)
       DLOG(WARNING) << oobe_complete_flag_path.value() << " doesn't exist.";
     else
       base::CloseFile(oobe_flag_file);
@@ -100,6 +101,15 @@ void StartupUtils::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(::prefs::kEnrollmentRecoveryRequired, false);
   registry->RegisterStringPref(::prefs::kInitialLocale, "en-US");
   registry->RegisterBooleanPref(kDisableHIDDetectionScreenForTests, false);
+  registry->RegisterBooleanPref(prefs::kOobeGuestMetricsEnabled, false);
+  registry->RegisterBooleanPref(prefs::kOobeGuestAcceptedTos, false);
+  if (switches::IsRevenBranding()) {
+    registry->RegisterBooleanPref(prefs::kOobeRevenUpdatedToFlex, false);
+  }
+  registry->RegisterBooleanPref(prefs::kOobeLocaleChangedOnWelcomeScreen,
+                                false);
+  registry->RegisterStringPref(prefs::kUrlParameterToAutofillSAMLUsername,
+                               std::string());
 }
 
 // static
@@ -118,6 +128,11 @@ void StartupUtils::RegisterOobeProfilePrefs(PrefRegistrySimple* registry) {
   // initialized along with `kOobeOnboardingTime`.
   registry->RegisterBooleanPref(
       arc::prefs::kArcPlayStoreLaunchMetricCanBeRecorded, false);
+  if (switches::IsRevenBranding() &&
+      features::IsOobeConsolidatedConsentEnabled()) {
+    registry->RegisterBooleanPref(prefs::kRevenOobeConsolidatedConsentAccepted,
+                                  false);
+  }
   OnboardingUserActivityCounter::RegisterProfilePrefs(registry);
 }
 

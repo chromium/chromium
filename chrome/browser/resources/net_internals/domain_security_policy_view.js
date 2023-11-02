@@ -1,10 +1,12 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
+import './strings.js';
 import {BrowserBridge} from './browser_bridge.js';
 import {addNode, addNodeWithText, addTextNode} from './util.js';
 import {DivView} from './view.js';
@@ -54,17 +56,22 @@ export class DomainSecurityPolicyView extends DivView {
     form = $(DomainSecurityPolicyView.QUERY_HSTS_FORM_ID);
     form.addEventListener('submit', this.onSubmitHSTSQuery_.bind(this), false);
 
-    form = $(DomainSecurityPolicyView.ADD_EXPECT_CT_FORM_ID);
-    form.addEventListener(
-        'submit', this.onSubmitExpectCTAdd_.bind(this), false);
+    if (loadTimeData.getBoolean('expectCTEnabled')) {
+      form = $(DomainSecurityPolicyView.ADD_EXPECT_CT_FORM_ID);
+      form.addEventListener(
+          'submit', this.onSubmitExpectCTAdd_.bind(this), false);
 
-    form = $(DomainSecurityPolicyView.QUERY_EXPECT_CT_FORM_ID);
-    form.addEventListener(
-        'submit', this.onSubmitExpectCTQuery_.bind(this), false);
+      form = $(DomainSecurityPolicyView.QUERY_EXPECT_CT_FORM_ID);
+      form.addEventListener(
+          'submit', this.onSubmitExpectCTQuery_.bind(this), false);
 
-    form = $(DomainSecurityPolicyView.TEST_REPORT_EXPECT_CT_FORM_ID);
-    form.addEventListener(
-        'submit', this.onSubmitExpectCTTestReport_.bind(this), false);
+      form = $(DomainSecurityPolicyView.TEST_REPORT_EXPECT_CT_FORM_ID);
+      form.addEventListener(
+          'submit', this.onSubmitExpectCTTestReport_.bind(this), false);
+    } else {
+      $(DomainSecurityPolicyView.EXPECT_CT_SECTION_ID)
+          .setAttribute('hidden', true);
+    }
 
     this.hstsObservers_ = [];
     this.expectCTObservers_ = [];
@@ -113,11 +120,11 @@ export class DomainSecurityPolicyView extends DivView {
 
   onHSTSQueryResult_(result) {
     this.queryStsOutputDiv_.innerHTML = trustedTypes.emptyHTML;
-    if (result.error != undefined) {
+    if (result.error !== undefined) {
       const s = addNode(this.queryStsOutputDiv_, 'span');
       s.textContent = result.error;
       s.style.color = '#e00';
-    } else if (result.result == false) {
+    } else if (result.result === false) {
       const notFound = document.createElement('b');
       notFound.textContent = 'Not found';
       this.queryStsOutputDiv_.appendChild(notFound);
@@ -150,7 +157,7 @@ export class DomainSecurityPolicyView extends DivView {
       const staticHashes = [];
       for (let i = 0; i < kStaticHashKeys.length; ++i) {
         const staticHashValue = result[kStaticHashKeys[i]];
-        if (staticHashValue != undefined && staticHashValue != '') {
+        if (staticHashValue !== undefined && staticHashValue !== '') {
           staticHashes.push(staticHashValue);
         }
 
@@ -161,7 +168,7 @@ export class DomainSecurityPolicyView extends DivView {
 
           // If there are no static_hashes, do not make it seem like there is a
           // static PKP policy in place.
-          if (staticHashes.length == 0 && key.startsWith('static_pkp_')) {
+          if (staticHashes.length === 0 && key.startsWith('static_pkp_')) {
             addNode(this.queryStsOutputDiv_, 'br');
             continue;
           }
@@ -173,7 +180,8 @@ export class DomainSecurityPolicyView extends DivView {
             addNodeWithText(this.queryStsOutputDiv_, 'tt', modeToString(value));
           } else {
             addNodeWithText(
-                this.queryStsOutputDiv_, 'tt', value == undefined ? '' : value);
+                this.queryStsOutputDiv_, 'tt',
+                value === undefined ? '' : value);
           }
           addNode(this.queryStsOutputDiv_, 'br');
         }
@@ -212,11 +220,11 @@ export class DomainSecurityPolicyView extends DivView {
 
   onExpectCTQueryResult_(result) {
     this.queryExpectCTOutputDiv_.innerHTML = trustedTypes.emptyHTML;
-    if (result.error != undefined) {
+    if (result.error !== undefined) {
       const s = addNode(this.queryExpectCTOutputDiv_, 'span');
       s.textContent = result.error;
       s.style.color = '#e00';
-    } else if (result.result == false) {
+    } else if (result.result === false) {
       const notFound = document.createElement('b');
       notFound.textContent = 'Not found';
       this.queryExpectCTOutputDiv_.appendChild(notFound);
@@ -241,7 +249,7 @@ export class DomainSecurityPolicyView extends DivView {
         addTextNode(this.queryExpectCTOutputDiv_, ' ' + key + ': ');
         addNodeWithText(
             this.queryExpectCTOutputDiv_, 'tt',
-            value == undefined ? '' : value);
+            value === undefined ? '' : value);
         addNode(this.queryExpectCTOutputDiv_, 'br');
       }
     }
@@ -278,9 +286,9 @@ export class DomainSecurityPolicyView extends DivView {
 function modeToString(m) {
   // These numbers must match those in
   // TransportSecurityState::STSState::UpgradeMode.
-  if (m == 0) {
+  if (m === 0) {
     return 'FORCE_HTTPS';
-  } else if (m == 1) {
+  } else if (m === 1) {
     return 'DEFAULT';
   } else {
     return 'UNKNOWN';
@@ -290,10 +298,10 @@ function modeToString(m) {
 function highlightFade(element) {
   element.style.transitionProperty = 'background-color';
   element.style.transitionDuration = '0ms';
-  element.style.backgroundColor = "var(--color-highlight)";
+  element.style.backgroundColor = 'var(--color-highlight)';
   setTimeout(function() {
     element.style.transitionDuration = '1s';
-    element.style.backgroundColor = "var(--color-background)";
+    element.style.backgroundColor = 'var(--color-background)';
   }, 0);
 }
 
@@ -313,6 +321,7 @@ DomainSecurityPolicyView.DELETE_FORM_ID =
     'domain-security-policy-view-delete-form';
 DomainSecurityPolicyView.DELETE_SUBMIT_ID =
     'domain-security-policy-view-delete-submit';
+DomainSecurityPolicyView.EXPECT_CT_SECTION_ID = 'expect-ct';
 // HSTS form elements
 DomainSecurityPolicyView.ADD_HSTS_INPUT_ID = 'hsts-view-add-input';
 DomainSecurityPolicyView.ADD_STS_CHECK_ID = 'hsts-view-check-sts-input';

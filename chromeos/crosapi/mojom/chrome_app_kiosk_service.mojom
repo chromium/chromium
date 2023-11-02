@@ -1,0 +1,80 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+// Set of parameters required to install the kiosk app from a cached location.
+[Stable]
+struct AppInstallParams {
+  // Id of the primary kiosk app.
+  string id@0;
+  // Location of the crx file in local cache.
+  string crx_file_location@1;
+  // Version of the app to be installed.
+  string version@2;
+  // Indicates whether the app should be downloaded from Chrome Web Store.
+  bool is_store_app@3;
+};
+
+[Stable, Extensible]
+enum ChromeKioskInstallResult {
+  [Default] kUnknown = 0,
+  // Installation completed successfully, kiosk is ready to launch.
+  kSuccess = 1,
+  // Primary app is not cached yet, network is required to rectify.
+  kPrimaryAppNotCached = 2,
+  // Install of primary app failed
+  kPrimaryAppInstallFailed = 3,
+  // Install of a secondary app failed
+  kSecondaryAppInstallFailed = 4,
+  // The primary app does not have kiosk support in the manifest
+  kPrimaryAppNotKioskEnabled = 5,
+};
+
+[Stable, Extensible]
+enum ChromeKioskLaunchResult {
+  [Default] kUnknown = 0,
+  // Launch of kiosk app was successful.
+  kSuccess = 1,
+  // Primary or secondary apps are not ready for launch
+  kUnableToLaunch = 2,
+  // The primary app is not offline enabled, but network is not ready
+  kNetworkMissing = 3,
+};
+
+// A client implemented in lacros-chrome for the DownloadController which is
+// implemented in ash-chrome.
+//
+// Next MinVersion: 1
+// Next ID: 1
+[Stable]
+interface ChromeKioskLaunchController {
+  // Trigger a full install of the kiosk app into Lacros chrome.
+  // Note that this contains the finalization below, so the caller is expected
+  // to only call one of the two methods.
+  // |is_network_ready| indicates whether the device has network connectivity.
+  InstallKioskApp@0(AppInstallParams params)
+      => (ChromeKioskInstallResult result);
+
+  // Only finalize the app installation. This performs the last steps of
+  // verifying that the kiosk app and its dependencies are installed and
+  // enabled.
+  // |is_network_ready| indicates whether the device has network connectivity.
+  LaunchKioskApp@1(string app_id, bool is_network_ready)
+      => (ChromeKioskLaunchResult result);
+};
+
+// Service used to register a ChromeAppKioskInstaller into ash.
+// Implemented in ash-chrome.
+//
+// Next MinVersion: 1
+// Next ID: 1
+[Stable, Uuid="7aca9ca3-6d25-450d-83ee-1a0069df0eb3"]
+interface ChromeAppKioskService{
+  // Binds the ChromeAppKioskInstaller interface, which allows the
+  // Kiosk startup process running in ash-chrome to trigger the installation of
+  // the kiosk app into lacros-chrome.
+  BindLaunchController@0(
+    pending_remote<ChromeKioskLaunchController> controller);
+};

@@ -68,8 +68,11 @@ gfx::RectF SVGLayoutSupport::LocalVisualRect(const LayoutObject& object) {
     return gfx::RectF();
 
   gfx::RectF visual_rect = object.VisualRectInLocalSVGCoordinates();
-  if (int outset = OutlinePainter::OutlineOutsetExtent(object.StyleRef()))
+  if (int outset = OutlinePainter::OutlineOutsetExtent(
+          object.StyleRef(),
+          LayoutObject::OutlineInfo::GetUnzoomedFromStyle(object.StyleRef()))) {
     visual_rect.Outset(outset);
+  }
   return visual_rect;
 }
 
@@ -93,7 +96,7 @@ static gfx::RectF MapToSVGRootIncludingFilter(
   for (; !parent->IsSVGRoot(); parent = parent->Parent()) {
     const ComputedStyle& style = parent->StyleRef();
     if (style.HasFilter())
-      visual_rect = ToGfxRectF(style.Filter().MapRect(FloatRect(visual_rect)));
+      visual_rect = style.Filter().MapRect(visual_rect);
     visual_rect = parent->LocalToSVGParentTransform().MapRect(visual_rect);
   }
 
@@ -111,11 +114,11 @@ static const LayoutSVGRoot& ComputeTransformToSVGRoot(
   for (; !parent->IsSVGRoot(); parent = parent->Parent()) {
     if (filter_skipped && parent->StyleRef().HasFilter())
       *filter_skipped = true;
-    root_border_box_transform.PreMultiply(parent->LocalToSVGParentTransform());
+    root_border_box_transform.PostConcat(parent->LocalToSVGParentTransform());
   }
 
   const auto& svg_root = To<LayoutSVGRoot>(*parent);
-  root_border_box_transform.PreMultiply(svg_root.LocalToBorderBoxTransform());
+  root_border_box_transform.PostConcat(svg_root.LocalToBorderBoxTransform());
   return svg_root;
 }
 
@@ -139,14 +142,14 @@ bool SVGLayoutSupport::MapToVisualRectInAncestorSpace(
   if (adjusted_rect.IsEmpty()) {
     result_rect = PhysicalRect();
   } else {
-    // Use EnclosingIntRect because we cannot properly apply subpixel offset of
+    // Use ToEnclosingRect because we cannot properly apply subpixel offset of
     // the SVGRoot since we don't know the desired subpixel accumulation at this
     // point.
     result_rect = PhysicalRect(gfx::ToEnclosingRect(adjusted_rect));
   }
 
   // Apply initial viewport clip.
-  if (svg_root.ShouldApplyViewportClip()) {
+  if (svg_root.ClipsToContentBox()) {
     PhysicalRect clip_rect(svg_root.OverflowClipRect(PhysicalOffset()));
     if (visual_rect_flags & kEdgeInclusive) {
       if (!result_rect.InclusiveIntersect(clip_rect))
@@ -190,7 +193,7 @@ void SVGLayoutSupport::MapAncestorToLocal(const LayoutObject& object,
   DCHECK_NE(ancestor, &object);
   DCHECK(object.IsSVGContainer() || object.IsSVGShape() ||
          object.IsSVGImage() || object.IsSVGText() ||
-         object.IsSVGForeignObject());
+         object.IsSVGForeignObjectIncludingNG());
   AffineTransform local_to_svg_root;
   const LayoutSVGRoot& svg_root =
       ComputeTransformToSVGRoot(object, local_to_svg_root, nullptr);
@@ -236,6 +239,7 @@ bool SVGLayoutSupport::IsOverflowHidden(const LayoutObject& object) {
 
 bool SVGLayoutSupport::IsOverflowHidden(const ComputedStyle& style) {
   return style.OverflowX() == EOverflow::kHidden ||
+         style.OverflowX() == EOverflow::kClip ||
          style.OverflowX() == EOverflow::kScroll;
 }
 
@@ -252,8 +256,7 @@ void SVGLayoutSupport::AdjustWithClipPathAndMask(
     visual_rect.Intersect(clipper->ResourceBoundingBox(object_bounding_box));
   if (auto* masker = GetSVGResourceAsType<LayoutSVGResourceMasker>(
           *client, style.MaskerResource())) {
-    visual_rect.Intersect(
-        ToGfxRectF(masker->ResourceBoundingBox(object_bounding_box, 1)));
+    visual_rect.Intersect(masker->ResourceBoundingBox(object_bounding_box, 1));
   }
 }
 
@@ -279,10 +282,10 @@ gfx::RectF SVGLayoutSupport::ComputeVisualRectForText(
     const gfx::RectF& text_bounds) {
   DCHECK(layout_object.IsSVGText() || layout_object.IsNGSVGText() ||
          layout_object.IsSVGInline());
-  FloatRect visual_rect(ExtendTextBBoxWithStroke(layout_object, text_bounds));
+  gfx::RectF visual_rect = ExtendTextBBoxWithStroke(layout_object, text_bounds);
   if (const ShadowList* text_shadow = layout_object.StyleRef().TextShadow())
     text_shadow->AdjustRectForShadow(visual_rect);
-  return ToGfxRectF(visual_rect);
+  return visual_rect;
 }
 
 bool SVGLayoutSupport::IntersectsClipPath(const LayoutObject& object,
@@ -291,13 +294,15 @@ bool SVGLayoutSupport::IntersectsClipPath(const LayoutObject& object,
   ClipPathOperation* clip_path_operation = object.StyleRef().ClipPath();
   if (!clip_path_operation)
     return true;
-  if (clip_path_operation->GetType() == ClipPathOperation::SHAPE) {
+  if (clip_path_operation->GetType() == ClipPathOperation::kShape) {
     ShapeClipPathOperation& clip_path =
         To<ShapeClipPathOperation>(*clip_path_operation);
-    return clip_path.GetPath(FloatRect(reference_box), 1)
-        .Contains(ToGfxPointF(location.TransformedPoint()));
+    float zoom = object.StyleRef().EffectiveZoom();
+    return clip_path.GetPath(gfx::ScaleRect(reference_box, zoom), zoom)
+        .Transform(AffineTransform::MakeScale(1.f / zoom))
+        .Contains(location.TransformedPoint());
   }
-  DCHECK_EQ(clip_path_operation->GetType(), ClipPathOperation::REFERENCE);
+  DCHECK_EQ(clip_path_operation->GetType(), ClipPathOperation::kReference);
   SVGResourceClient* client = SVGResources::GetClient(object);
   auto* clipper = GetSVGResourceAsType(
       *client, To<ReferenceClipPathOperation>(*clip_path_operation));
@@ -370,22 +375,16 @@ bool SVGLayoutSupport::IsIsolationRequired(const LayoutObject* object) {
          object->HasNonIsolatedBlendingDescendants();
 }
 
-AffineTransform::Transform
-    SubtreeContentTransformScope::current_content_transformation_ =
-        IDENTITY_TRANSFORM;
+AffineTransform SubtreeContentTransformScope::current_content_transformation_;
 
 SubtreeContentTransformScope::SubtreeContentTransformScope(
     const AffineTransform& subtree_content_transformation)
     : saved_content_transformation_(current_content_transformation_) {
-  AffineTransform content_transformation =
-      subtree_content_transformation *
-      AffineTransform(current_content_transformation_);
-  content_transformation.CopyTransformTo(current_content_transformation_);
+  current_content_transformation_.PostConcat(subtree_content_transformation);
 }
 
 SubtreeContentTransformScope::~SubtreeContentTransformScope() {
-  saved_content_transformation_.CopyTransformTo(
-      current_content_transformation_);
+  current_content_transformation_ = saved_content_transformation_;
 }
 
 AffineTransform SVGLayoutSupport::DeprecatedCalculateTransformToLayer(
@@ -399,22 +398,10 @@ AffineTransform SVGLayoutSupport::DeprecatedCalculateTransformToLayer(
   }
 
   // Continue walking up the layer tree, accumulating CSS transforms.
-  // FIXME: this queries layer compositing state - which is not
-  // supported during layout. Hence, the result may not include all CSS
-  // transforms.
   PaintLayer* layer = layout_object ? layout_object->EnclosingLayer() : nullptr;
-  while (layer && layer->IsAllowedToQueryCompositingState()) {
-    // We can stop at compositing layers, to match the backing resolution.
-    // FIXME: should we be computing the transform to the nearest composited
-    // layer, or the nearest composited layer that does not paint into its
-    // ancestor? I think this is the nearest composited ancestor since we will
-    // inherit its transforms in the composited layer tree.
-    if (layer->GetCompositingState() != kNotComposited)
-      break;
-
+  while (layer) {
     if (TransformationMatrix* layer_transform = layer->Transform())
       transform = layer_transform->ToAffineTransform() * transform;
-
     layer = layer->Parent();
   }
 
@@ -431,8 +418,6 @@ float SVGLayoutSupport::CalculateScreenFontSizeScalingFactor(
   AffineTransform ctm =
       DeprecatedCalculateTransformToLayer(layout_object) *
       SubtreeContentTransformScope::CurrentContentTransformation();
-  ctm.Scale(
-      layout_object->GetDocument().GetPage()->DeviceScaleFactorDeprecated());
 
   return ClampTo<float>(sqrt((ctm.XScaleSquared() + ctm.YScaleSquared()) / 2));
 }
@@ -486,7 +471,7 @@ static SearchCandidate SearchTreeForFindClosestLayoutSVGText(
 
   // If a LayoutSVGText was found and there are no potentially closer sub-trees,
   // just return |closestText|.
-  if (closest_text.layout_object && candidates.IsEmpty())
+  if (closest_text.layout_object && candidates.empty())
     return closest_text;
 
   std::stable_sort(candidates.begin(), candidates.end(),
@@ -518,17 +503,6 @@ LayoutObject* SVGLayoutSupport::FindClosestLayoutSVGText(
     const gfx::PointF& point) {
   return SearchTreeForFindClosestLayoutSVGText(layout_object, point)
       .layout_object;
-}
-
-void SVGLayoutSupport::NotifySVGRootOfChangedCompositingReasons(
-    const LayoutObject* object) {
-  for (auto* ancestor = object->Parent(); ancestor;
-       ancestor = ancestor->Parent()) {
-    if (ancestor->IsSVGRoot()) {
-      To<LayoutSVGRoot>(ancestor)->NotifyDescendantCompositingReasonsChanged();
-      break;
-    }
-  }
 }
 
 }  // namespace blink

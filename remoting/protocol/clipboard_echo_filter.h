@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,13 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "remoting/protocol/clipboard_stub.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
-// ClipboardEchoFilter stops the host sending a clipboard item to the
-// client, if that item was the latest item received from the client.
+// ClipboardEchoFilter stops the host sending a clipboard item to the client, if
+// that item was the latest item received from the client.
 class ClipboardEchoFilter {
  public:
   ClipboardEchoFilter();
@@ -47,7 +46,7 @@ class ClipboardEchoFilter {
     void InjectClipboardEvent(const ClipboardEvent& event) override;
 
    private:
-    ClipboardEchoFilter* filter_;
+    raw_ptr<ClipboardEchoFilter> filter_;
   };
 
   class HostFilter : public ClipboardStub {
@@ -56,14 +55,14 @@ class ClipboardEchoFilter {
     void InjectClipboardEvent(const ClipboardEvent& event) override;
 
    private:
-    ClipboardEchoFilter* filter_;
+    raw_ptr<ClipboardEchoFilter> filter_;
   };
 
   void InjectClipboardEventToHost(const ClipboardEvent& event);
   void InjectClipboardEventToClient(const ClipboardEvent& event);
 
-  ClipboardStub* host_stub_;
-  ClipboardStub* client_stub_;
+  raw_ptr<ClipboardStub> host_stub_;
+  raw_ptr<ClipboardStub> client_stub_;
   ClientFilter client_filter_;
   HostFilter host_filter_;
 
@@ -72,7 +71,6 @@ class ClipboardEchoFilter {
   std::string client_latest_data_;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_CLIPBOARD_ECHO_FILTER_H_

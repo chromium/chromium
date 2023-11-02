@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -57,27 +57,25 @@ class MediaInternalsTestBase {
     std::string utf8_update = base::UTF16ToUTF8(update);
     const std::string::size_type first_brace = utf8_update.find('{');
     const std::string::size_type last_brace = utf8_update.rfind('}');
-    std::unique_ptr<base::Value> output_value =
-        base::JSONReader::ReadDeprecated(
-            utf8_update.substr(first_brace, last_brace - first_brace + 1));
-    CHECK(output_value);
+    absl::optional<base::Value> output_value = base::JSONReader::Read(
+        utf8_update.substr(first_brace, last_brace - first_brace + 1));
+    ASSERT_TRUE(output_value);
+    ASSERT_TRUE(output_value->is_dict());
 
-    base::DictionaryValue* output_dict = nullptr;
-    CHECK(output_value->GetAsDictionary(&output_dict));
-    update_data_.MergeDictionary(output_dict);
+    update_data_.Merge(std::move(*output_value).TakeDict());
   }
 
   void ExpectInt(const std::string& key, int expected_value) const {
-    absl::optional<int> actual_value = update_data_.FindIntKey(key);
+    absl::optional<int> actual_value = update_data_.FindInt(key);
     ASSERT_TRUE(actual_value);
     EXPECT_EQ(expected_value, *actual_value);
   }
 
   void ExpectString(const std::string& key,
                     const std::string& expected_value) const {
-    std::string actual_value;
-    ASSERT_TRUE(update_data_.GetString(key, &actual_value));
-    EXPECT_EQ(expected_value, actual_value);
+    const std::string* actual_value = update_data_.FindString(key);
+    ASSERT_TRUE(actual_value);
+    EXPECT_EQ(expected_value, *actual_value);
   }
 
   void ExpectStatus(const std::string& expected_value) const {
@@ -85,21 +83,22 @@ class MediaInternalsTestBase {
   }
 
   void ExpectListOfStrings(const std::string& key,
-                           const base::ListValue& expected_list) const {
-    const base::ListValue* actual_list;
-    ASSERT_TRUE(update_data_.GetList(key, &actual_list));
-    const size_t expected_size = expected_list.GetList().size();
-    const size_t actual_size = actual_list->GetList().size();
+                           const base::Value::List& expected_list) const {
+    const base::Value::List* actual_list = update_data_.FindList(key);
+    ASSERT_TRUE(actual_list);
+    const size_t expected_size = expected_list.size();
+    const size_t actual_size = actual_list->size();
     ASSERT_EQ(expected_size, actual_size);
     for (size_t i = 0; i < expected_size; ++i) {
-      std::string expected_value, actual_value;
-      ASSERT_TRUE(expected_list.GetString(i, &expected_value));
-      ASSERT_TRUE(actual_list->GetString(i, &actual_value));
-      EXPECT_EQ(expected_value, actual_value);
+      const std::string* expected_value = expected_list[i].GetIfString();
+      const std::string* actual_value = (*actual_list)[i].GetIfString();
+      ASSERT_TRUE(expected_value);
+      ASSERT_TRUE(actual_value);
+      EXPECT_EQ(*expected_value, *actual_value);
     }
   }
 
-  base::DictionaryValue update_data_;
+  base::Value::Dict update_data_;
 
   content::MediaInternals* media_internals() const {
     return content::MediaInternals::GetInstance();
@@ -166,14 +165,14 @@ TEST_F(MediaInternalsVideoCaptureDeviceTest,
   media::VideoCaptureDeviceDescriptor descriptor;
   descriptor.device_id = "dummy";
   descriptor.set_display_name("dummy");
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   descriptor.capture_api = media::VideoCaptureApi::MACOSX_AVFOUNDATION;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   descriptor.capture_api = media::VideoCaptureApi::WIN_DIRECT_SHOW;
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   descriptor.device_id = "/dev/dummy";
   descriptor.capture_api = media::VideoCaptureApi::LINUX_V4L2_SINGLE_PLANE;
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   descriptor.capture_api = media::VideoCaptureApi::ANDROID_API2_LEGACY;
 #endif
   std::vector<std::tuple<media::VideoCaptureDeviceDescriptor,
@@ -188,22 +187,22 @@ TEST_F(MediaInternalsVideoCaptureDeviceTest,
   media_internals()->UpdateVideoCaptureDeviceCapabilities(
       descriptors_and_formats);
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   ExpectString("id", "/dev/dummy");
 #else
   ExpectString("id", "dummy");
 #endif
   ExpectString("name", "dummy");
-  base::ListValue expected_list;
+  base::Value::List expected_list;
   expected_list.Append(media::VideoCaptureFormat::ToString(format_hd));
   ExpectListOfStrings("formats", expected_list);
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   ExpectString("captureApi", "V4L2 SPLANE");
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   ExpectString("captureApi", "Direct Show");
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   ExpectString("captureApi", "AV Foundation");
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   ExpectString("captureApi", "Camera API2 Legacy");
 #endif
 }
@@ -236,7 +235,8 @@ class MediaInternalsAudioLogTest
  private:
   static media::AudioParameters MakeAudioParams() {
     media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LINEAR,
-                                  media::CHANNEL_LAYOUT_MONO, 48000, 128);
+                                  media::ChannelLayoutConfig::Mono(), 48000,
+                                  128);
     params.set_effects(media::AudioParameters::ECHO_CANCELLER |
                        media::AudioParameters::DUCKING);
     return params;
@@ -272,8 +272,7 @@ TEST_P(MediaInternalsAudioLogTest, AudioLogCreateStartStopErrorClose) {
 
   // Verify OnError().
   const char kErrorKey[] = "error_occurred";
-  std::string no_value;
-  ASSERT_FALSE(update_data_.GetString(kErrorKey, &no_value));
+  ASSERT_FALSE(update_data_.FindString(kErrorKey));
   audio_log_->OnError();
   base::RunLoop().RunUntilIdle();
   ExpectString(kErrorKey, "true");
@@ -303,7 +302,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 // TODO(https://crbug.com/873320): AudioFocusManager is not available on
 // Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -351,11 +350,11 @@ class MediaInternalsAudioFocusTest : public RenderViewHostTestHarness,
   base::Value GetSessionsFromValueAndReset() {
     base::AutoLock auto_lock(lock_);
 
-    base::Value session =
-        update_data_.FindKeyOfType("sessions", base::Value::Type::LIST)
-            ->Clone();
+    const base::Value::List* session_list = update_data_.FindList("sessions");
+    EXPECT_TRUE(session_list);
+    base::Value session(session_list->Clone());
 
-    update_data_.Clear();
+    update_data_.clear();
     run_loop_ = std::make_unique<base::RunLoop>();
     call_count_ = 0;
 
@@ -365,7 +364,7 @@ class MediaInternalsAudioFocusTest : public RenderViewHostTestHarness,
   void Reset() {
     base::AutoLock auto_lock(lock_);
 
-    update_data_.Clear();
+    update_data_.clear();
     run_loop_ = std::make_unique<base::RunLoop>();
     call_count_ = 0;
   }
@@ -379,7 +378,7 @@ class MediaInternalsAudioFocusTest : public RenderViewHostTestHarness,
 
     {
       base::AutoLock auto_lock(lock_);
-      if (!update_data_.DictEmpty() && call_count_ == wanted_call_count_)
+      if (!update_data_.empty() && call_count_ == wanted_call_count_)
         return;
     }
 
@@ -429,7 +428,7 @@ TEST_F(MediaInternalsAudioFocusTest, AudioFocusStateIsUpdated) {
     EXPECT_EQ(1u, found_sessions.GetList().size());
 
     const base::Value& session = found_sessions.GetList()[0];
-    EXPECT_TRUE(base::Value(request_id1).Equals(session.FindKey("id")));
+    EXPECT_EQ(base::Value(request_id1), *session.FindKey("id"));
     EXPECT_TRUE(session.FindKeyOfType("name", base::Value::Type::STRING));
     EXPECT_TRUE(session.FindKeyOfType("owner", base::Value::Type::STRING));
     EXPECT_TRUE(session.FindKeyOfType("state", base::Value::Type::STRING));
@@ -453,13 +452,13 @@ TEST_F(MediaInternalsAudioFocusTest, AudioFocusStateIsUpdated) {
     EXPECT_EQ(2u, found_sessions.GetList().size());
 
     const base::Value& session1 = found_sessions.GetList()[0];
-    EXPECT_TRUE(base::Value(request_id2).Equals(session1.FindKey("id")));
+    EXPECT_EQ(base::Value(request_id2), *session1.FindKey("id"));
     EXPECT_TRUE(session1.FindKeyOfType("name", base::Value::Type::STRING));
     EXPECT_TRUE(session1.FindKeyOfType("owner", base::Value::Type::STRING));
     EXPECT_TRUE(session1.FindKeyOfType("state", base::Value::Type::STRING));
 
     const base::Value& session2 = found_sessions.GetList()[1];
-    EXPECT_TRUE(base::Value(request_id1).Equals(session2.FindKey("id")));
+    EXPECT_EQ(base::Value(request_id1), *session2.FindKey("id"));
     EXPECT_TRUE(session2.FindKeyOfType("name", base::Value::Type::STRING));
     EXPECT_TRUE(session2.FindKeyOfType("owner", base::Value::Type::STRING));
     EXPECT_TRUE(session2.FindKeyOfType("state", base::Value::Type::STRING));
@@ -475,7 +474,7 @@ TEST_F(MediaInternalsAudioFocusTest, AudioFocusStateIsUpdated) {
     EXPECT_EQ(1u, found_sessions.GetList().size());
 
     const base::Value& session = found_sessions.GetList()[0];
-    EXPECT_TRUE(base::Value(request_id1).Equals(session.FindKey("id")));
+    EXPECT_EQ(base::Value(request_id1), *session.FindKey("id"));
     EXPECT_TRUE(session.FindKeyOfType("name", base::Value::Type::STRING));
     EXPECT_TRUE(session.FindKeyOfType("owner", base::Value::Type::STRING));
     EXPECT_TRUE(session.FindKeyOfType("state", base::Value::Type::STRING));
@@ -496,6 +495,6 @@ TEST_F(MediaInternalsAudioFocusTest, AudioFocusStateIsUpdated) {
   }
 }
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace content

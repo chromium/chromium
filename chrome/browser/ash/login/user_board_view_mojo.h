@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_USER_BOARD_VIEW_MOJO_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/ui/views/user_board_view.h"
 
 namespace ash {
@@ -24,7 +25,7 @@ class UserBoardViewMojo : public UserBoardView {
   void SetPublicSessionDisplayName(const AccountId& account_id,
                                    const std::string& display_name) override;
   void SetPublicSessionLocales(const AccountId& account_id,
-                               std::unique_ptr<base::ListValue> locales,
+                               base::Value::List locales,
                                const std::string& default_locale,
                                bool multiple_recommended_locales) override;
   void SetPublicSessionShowFullManagementDisclosure(

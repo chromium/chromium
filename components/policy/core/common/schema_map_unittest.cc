@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -169,11 +169,11 @@ TEST_F(SchemaMapTest, FilterBundle) {
           POLICY_SOURCE_CLOUD, base::Value(1), nullptr);
   map.Set("double", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
           POLICY_SOURCE_CLOUD, base::Value(1.2), nullptr);
-  base::DictionaryValue dict;
-  dict.SetString("a", "b");
-  dict.SetInteger("b", 2);
+  base::Value::Dict dict;
+  dict.Set("a", "b");
+  dict.Set("b", 2);
   map.Set("object", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-          POLICY_SOURCE_CLOUD, dict.Clone(), nullptr);
+          POLICY_SOURCE_CLOUD, base::Value(dict.Clone()), nullptr);
   map.Set("string", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
           POLICY_SOURCE_CLOUD, base::Value("value"), nullptr);
 

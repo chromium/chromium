@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
 #include "content/browser/sms/sms_provider.h"
@@ -41,12 +42,12 @@ class CONTENT_EXPORT SmsFetcherImpl : public content::SmsFetcher,
   // Called by devices that do not have telephony capabilities and exclusively
   // listen for SMSes received on other devices.
   void Subscribe(const OriginList& origin_list,
-                 Subscriber* subscriber) override;
+                 Subscriber& subscriber) override;
   // Called by |WebOTPService| to fetch SMSes retrieved by the SmsProvider from
   // the requested device.
   void Subscribe(const OriginList& origin_list,
-                 Subscriber* subscriber,
-                 RenderFrameHost* rfh) override;
+                 Subscriber& subscriber,
+                 RenderFrameHost& rfh) override;
   void Unsubscribe(const OriginList& origin_list,
                    Subscriber* subscriber) override;
 
@@ -69,7 +70,7 @@ class CONTENT_EXPORT SmsFetcherImpl : public content::SmsFetcher,
 
   // |provider_| is safe because all instances of SmsProvider are owned
   // by the BrowserMainLoop, which outlive instances of this class.
-  SmsProvider* const provider_;
+  const raw_ptr<SmsProvider> provider_;
 
   SmsQueue subscribers_;
   // A cancel callback can cancel receiving of the remote fetching response.

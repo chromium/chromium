@@ -17,9 +17,23 @@ self.addEventListener('fetch', function(event) {
 })
 
 self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === "get-id") {
-    event.source.postMessage({ID: ID});
-  }
+  event.waitUntil(async function() {
+    if(!event.data)
+      return;
+
+    if (event.data.type === "get-id") {
+      event.source.postMessage({ID: ID});
+    }
+    else if(event.data.type === "get-match-all") {
+      clients.matchAll({includeUncontrolled: true}).then(clients_list => {
+        const url_list = clients_list.map(item => item.url);
+        event.source.postMessage({urls_list: url_list});
+      });
+    }
+    else if(event.data.type === "claim") {
+      await clients.claim();
+    }
+  }());
 });
 
 async function fetchEventHandler(event){
@@ -44,7 +58,7 @@ async function fetchEventHandler(event){
         <html>
         Promise created by ${url_search}
         <script>self.parent.postMessage({ ID:${ID}, source: "${url_search}"
-          });</script>
+          }, '*');</script>
         </html>
         `, {headers: {'Content-Type': 'text/html'}}
       ));
@@ -52,12 +66,11 @@ async function fetchEventHandler(event){
   }
   else if ( request_url.href.endsWith('resolve.fakehtml') ) {
     var has_pending = !!pending_resolve_func;
-
     event.respondWith(new Response(`
       <html>
       Promise settled for ${url_search}
       <script>self.parent.postMessage({ ID:${ID}, has_pending: ${has_pending},
-        source: "${url_search}"  });</script>
+        source: "${url_search}"  }, '*');</script>
       </html>
     `, {headers: {'Content-Type': 'text/html'}}));
 

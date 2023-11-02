@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ class RecommendAppsFetcherDelegate {
   virtual ~RecommendAppsFetcherDelegate() = default;
 
   // Called when the download of the recommend app list is successful.
-  virtual void OnLoadSuccess(const base::Value& app_list) = 0;
+  virtual void OnLoadSuccess(base::Value app_list) = 0;
 
   // Called when the download of the recommend app list fails.
   virtual void OnLoadError() = 0;

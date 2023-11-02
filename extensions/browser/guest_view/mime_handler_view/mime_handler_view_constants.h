@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,8 @@ namespace mime_handler_view {
 // API namespace.
 extern const char kAPINamespace[];
 
-// Other.
-extern const char kViewId[];
+// Create parameters.
+extern const char kStreamId[];
 
 }  // namespace mime_handler_view
 

@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -34,21 +34,5 @@ source_set("deprecated_web_util") {
   sources = [
     "crw_web_controller_util.h",
     "crw_web_controller_util.mm",
-  ]
-}
-
-source_set("test_doubles") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-
-  deps = [
-    ":deprecated",
-    "//ios/web/js_messaging",
-    "//ios/web/public",
-    "//url",
-  ]
-
-  sources = [
-    "crw_test_js_injection_receiver.h",
-    "crw_test_js_injection_receiver.mm",
   ]
 }

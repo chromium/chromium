@@ -1,80 +1,53 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_CAPABILITIES_FETCHER_H_
 #define COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_CAPABILITIES_FETCHER_H_
 
-#include "base/memory/scoped_refptr.h"
-#include "base/time/time.h"
+#include "base/callback.h"
+#include "components/signin/public/identity_manager/account_capabilities.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "google_apis/gaia/core_account_id.h"
-#include "google_apis/gaia/gaia_oauth_client.h"
-#include "google_apis/gaia/oauth2_access_token_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace network {
-class SharedURLLoaderFactory;
-}
-
-class AccountFetcherService;
-class ProfileOAuth2TokenService;
-class GoogleServiceAuthError;
-
-class AccountCapabilitiesFetcher : public OAuth2AccessTokenManager::Consumer,
-                                   public gaia::GaiaOAuthClient::Delegate {
+class AccountCapabilitiesFetcher {
  public:
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class FetchResult {
-    kSuccess = 0,
-    kGetTokenFailure = 1,
-    kParseResponseFailure = 2,
-    kOAuthError = 3,
-    kNetworkError = 4,
-    kCancelled = 5,
-    kMaxValue = kCancelled
-  };
+  using OnCompleteCallback =
+      base::OnceCallback<void(const CoreAccountId&,
+                              const absl::optional<AccountCapabilities>&)>;
 
-  AccountCapabilitiesFetcher(
-      ProfileOAuth2TokenService* token_service,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      AccountFetcherService* service,
-      const CoreAccountId& account_id);
-  ~AccountCapabilitiesFetcher() override;
+  explicit AccountCapabilitiesFetcher(const CoreAccountInfo& account_info,
+                                      OnCompleteCallback on_complete_callback);
+  virtual ~AccountCapabilitiesFetcher();
 
   AccountCapabilitiesFetcher(const AccountCapabilitiesFetcher&) = delete;
   AccountCapabilitiesFetcher& operator=(const AccountCapabilitiesFetcher&) =
       delete;
 
-  // Start fetching account capabilities.
+  // Start fetching account capabilities. Must be called no more than once per
+  // object lifetime.
   void Start();
 
-  // OAuth2AccessTokenManager::Consumer:
-  void OnGetTokenSuccess(
-      const OAuth2AccessTokenManager::Request* request,
-      const OAuth2AccessTokenConsumer::TokenResponse& token_response) override;
-  void OnGetTokenFailure(const OAuth2AccessTokenManager::Request* request,
-                         const GoogleServiceAuthError& error) override;
+ protected:
+  const CoreAccountInfo& account_info() { return account_info_; }
+  const CoreAccountId& account_id() { return account_info_.account_id; }
 
-  // gaia::GaiaOAuthClient::Delegate:
-  void OnGetAccountCapabilitiesResponse(
-      std::unique_ptr<base::Value> account_capabilities) override;
-  void OnOAuthError() override;
-  void OnNetworkError(int response_code) override;
+  // Implemented by subclasses.
+  virtual void StartImpl() = 0;
+
+  // Completes the fetch by calling `on_complete_callback_`. Must be called no
+  // more than once per object lifetime.
+  // `this` may be destroyed after calling this function.
+  void CompleteFetchAndMaybeDestroySelf(
+      const absl::optional<AccountCapabilities>& capabilities);
 
  private:
-  void RecordFetchResultAndDuration(FetchResult result);
+  // Ensures that `Start()` isn't called multiple times.
+  bool started_ = false;
 
-  ProfileOAuth2TokenService* token_service_;
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  AccountFetcherService* service_;
-  const CoreAccountId account_id_;
-
-  std::unique_ptr<OAuth2AccessTokenManager::Request> login_token_request_;
-  std::unique_ptr<gaia::GaiaOAuthClient> gaia_oauth_client_;
-
-  // Used for metrics:
-  base::TimeTicks fetch_start_time_;
-  bool fetch_histograms_recorded_ = false;
+  const CoreAccountInfo account_info_;
+  OnCompleteCallback on_complete_callback_;
 };
 
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_CAPABILITIES_FETCHER_H_

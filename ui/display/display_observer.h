@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,6 +28,7 @@ class DISPLAY_EXPORT DisplayObserver : public base::CheckedObserver {
     DISPLAY_METRIC_COLOR_SPACE = 1 << 6,
     DISPLAY_METRIC_REFRESH_RATE = 1 << 7,
     DISPLAY_METRIC_INTERLACED = 1 << 8,
+    DISPLAY_METRIC_LABEL = 1 << 9,
   };
 
   // This may be called before other methods to signal changes are about to

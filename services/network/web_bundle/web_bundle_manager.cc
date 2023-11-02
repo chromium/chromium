@@ -1,11 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/network/web_bundle/web_bundle_manager.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
+#include "base/time/time.h"
 #include "components/web_package/web_bundle_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/network_context.h"
@@ -15,36 +18,6 @@
 #include "services/network/web_bundle/web_bundle_url_loader_factory.h"
 
 namespace network {
-
-// Represents a pending subresource request.
-struct WebBundlePendingSubresourceRequest {
-  WebBundlePendingSubresourceRequest(
-      mojo::PendingReceiver<mojom::URLLoader> receiver,
-      const ResourceRequest& url_request,
-      mojo::PendingRemote<mojom::URLLoaderClient> client,
-      mojo::Remote<mojom::TrustedHeaderClient> trusted_header_client,
-      base::Time request_start_time,
-      base::TimeTicks request_start_time_ticks)
-      : receiver(std::move(receiver)),
-        url_request(url_request),
-        client(std::move(client)),
-        trusted_header_client(std::move(trusted_header_client)),
-        request_start_time(request_start_time),
-        request_start_time_ticks(request_start_time_ticks) {}
-  ~WebBundlePendingSubresourceRequest() = default;
-
-  WebBundlePendingSubresourceRequest(
-      const WebBundlePendingSubresourceRequest&) = delete;
-  WebBundlePendingSubresourceRequest& operator=(
-      const WebBundlePendingSubresourceRequest&) = delete;
-
-  mojo::PendingReceiver<mojom::URLLoader> receiver;
-  const ResourceRequest url_request;
-  mojo::PendingRemote<mojom::URLLoaderClient> client;
-  mojo::Remote<mojom::TrustedHeaderClient> trusted_header_client;
-  base::Time request_start_time;
-  base::TimeTicks request_start_time_ticks;
-};
 
 class WebBundleManager::MemoryQuotaConsumer
     : public WebBundleMemoryQuotaConsumer {
@@ -90,8 +63,10 @@ WebBundleManager::CreateWebBundleURLLoaderFactory(
     absl::optional<std::string> devtools_request_id,
     const CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
     mojom::CrossOriginEmbedderPolicyReporter* coep_reporter) {
-  DCHECK(factories_.find({process_id, web_bundle_token_params.token}) ==
-         factories_.end());
+  Key key = GetKey(web_bundle_token_params, process_id);
+  DCHECK(factories_.find(key) == factories_.end());
+  DCHECK(web_bundle_token_params.handle.is_valid());
+  DCHECK_NE(process_id, mojom::kBrowserProcessId);
 
   mojo::Remote<mojom::WebBundleHandle> remote(
       web_bundle_token_params.CloneHandle());
@@ -99,10 +74,10 @@ WebBundleManager::CreateWebBundleURLLoaderFactory(
   // Set a disconnect handler to remove a WebBundleURLLoaderFactory from this
   // WebBundleManager when the corresponding endpoint in the renderer is
   // removed.
-  remote.set_disconnect_handler(base::BindOnce(
-      &WebBundleManager::DisconnectHandler,
-      // |this| outlives |remote|.
-      base::Unretained(this), web_bundle_token_params.token, process_id));
+  remote.set_disconnect_handler(
+      base::BindOnce(&WebBundleManager::DisconnectHandler,
+                     // |this| outlives |remote|.
+                     base::Unretained(this), key));
 
   auto factory = std::make_unique<WebBundleURLLoaderFactory>(
       bundle_url, web_bundle_token_params, std::move(remote),
@@ -111,30 +86,22 @@ WebBundleManager::CreateWebBundleURLLoaderFactory(
       std::move(devtools_observer), std::move(devtools_request_id),
       cross_origin_embedder_policy, coep_reporter);
 
-  // Process pending subresource requests if there are.
+  // Process pending subresource loaders if there are.
   // These subresource requests arrived earlier than the request for the bundle.
-  auto it = pending_requests_.find({process_id, web_bundle_token_params.token});
-  if (it != pending_requests_.end()) {
-    for (auto& pending_request : it->second) {
-      factory->StartSubresourceRequest(
-          std::move(pending_request->receiver), pending_request->url_request,
-          std::move(pending_request->client),
-          std::move(pending_request->trusted_header_client),
-          pending_request->request_start_time,
-          pending_request->request_start_time_ticks);
-    }
-    pending_requests_.erase(it);
+  auto it = pending_loaders_.find(key);
+  if (it != pending_loaders_.end()) {
+    for (auto& loader : it->second)
+      factory->StartLoader(loader);
+    pending_loaders_.erase(it);
   }
 
   auto weak_factory = factory->GetWeakPtr();
-  factories_.insert({std::make_pair(process_id, web_bundle_token_params.token),
-                     std::move(factory)});
+  factories_.insert({key, std::move(factory)});
 
   return weak_factory;
 }
 
-base::WeakPtr<WebBundleURLLoaderFactory>
-WebBundleManager::GetWebBundleURLLoaderFactory(
+WebBundleManager::Key WebBundleManager::GetKey(
     const ResourceRequest::WebBundleTokenParams& token_params,
     int32_t process_id) {
   // If the request is from the browser process, use
@@ -142,7 +109,12 @@ WebBundleManager::GetWebBundleURLLoaderFactory(
   if (process_id == mojom::kBrowserProcessId)
     process_id = token_params.render_process_id;
 
-  auto it = factories_.find({process_id, token_params.token});
+  return {process_id, token_params.token};
+}
+
+base::WeakPtr<WebBundleURLLoaderFactory>
+WebBundleManager::GetWebBundleURLLoaderFactory(const Key& key) {
+  auto it = factories_.find(key);
   if (it == factories_.end()) {
     return nullptr;
   }
@@ -156,31 +128,61 @@ void WebBundleManager::StartSubresourceRequest(
     int32_t process_id,
     mojo::Remote<mojom::TrustedHeaderClient> trusted_header_client) {
   DCHECK(url_request.web_bundle_token_params.has_value());
+  DCHECK(!url_request.web_bundle_token_params->handle.is_valid());
+
+  Key key = GetKey(*url_request.web_bundle_token_params, process_id);
   base::WeakPtr<WebBundleURLLoaderFactory> web_bundle_url_loader_factory =
-      GetWebBundleURLLoaderFactory(*url_request.web_bundle_token_params,
-                                   process_id);
+      GetWebBundleURLLoaderFactory(key);
   base::Time request_start_time = base::Time::Now();
   base::TimeTicks request_start_time_ticks = base::TimeTicks::Now();
   if (web_bundle_url_loader_factory) {
-    web_bundle_url_loader_factory->StartSubresourceRequest(
+    auto loader = WebBundleURLLoaderFactory::CreateURLLoader(
         std::move(receiver), url_request, std::move(client),
         std::move(trusted_header_client), request_start_time,
-        request_start_time_ticks);
+        request_start_time_ticks, base::DoNothing());
+    web_bundle_url_loader_factory->StartLoader(loader);
     return;
   }
+
   // A request for subresource arrives earlier than a request for a webbundle.
-  pending_requests_[{process_id, url_request.web_bundle_token_params->token}]
-      .push_back(std::make_unique<WebBundlePendingSubresourceRequest>(
-          std::move(receiver), url_request, std::move(client),
-          std::move(trusted_header_client), request_start_time,
-          request_start_time_ticks));
+  pending_loaders_[key].push_back(WebBundleURLLoaderFactory::CreateURLLoader(
+      std::move(receiver), url_request, std::move(client),
+      std::move(trusted_header_client), request_start_time,
+      request_start_time_ticks,
+      base::BindOnce(&WebBundleManager::CleanUpWillBeDeletedURLLoader,
+                     weak_ptr_factory_.GetWeakPtr(), key)));
 }
 
-void WebBundleManager::DisconnectHandler(
-    base::UnguessableToken web_bundle_token,
-    int32_t process_id) {
-  factories_.erase({process_id, web_bundle_token});
-  pending_requests_.erase({process_id, web_bundle_token});
+void WebBundleManager::CleanUpWillBeDeletedURLLoader(
+    Key key,
+    WebBundleURLLoaderFactory::URLLoader* will_be_deleted_url_loader) {
+  auto it = pending_loaders_.find(key);
+  if (it == pending_loaders_.end())
+    return;
+
+  // Since we use std::vector for holding pending loaders, the clean up may take
+  // O(N^2) if CleanUpWillBeDeletedURLLoader is called repeatedly. We might want
+  // to use more appropriate data structure if this becomes a performance
+  // issue. As of now, this happens only in non-regular cases; the bundle is
+  // blocked by, for example, Chrome Extensions APIs.
+
+  it->second.erase(base::ranges::remove_if(
+                       it->second,
+                       [will_be_deleted_url_loader](auto pending_loader) {
+                         return !pending_loader ||
+                                pending_loader.get() ==
+                                    will_be_deleted_url_loader;
+                       }),
+                   it->second.end());
+
+  if (it->second.empty()) {
+    pending_loaders_.erase(key);
+  }
+}
+
+void WebBundleManager::DisconnectHandler(Key key) {
+  factories_.erase(key);
+  DCHECK(!base::Contains(pending_loaders_, key));
 }
 
 bool WebBundleManager::AllocateMemoryForProcess(int32_t process_id,

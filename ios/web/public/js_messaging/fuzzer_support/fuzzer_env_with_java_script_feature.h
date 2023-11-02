@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,14 +13,14 @@ namespace web {
 
 // This class initializes web task environment through it's parent class's
 // constructor and stores pointers to WebState & JavaScriptFeature instances.
-// Fuzzers can invoke private/protected |JavaScriptFeature| APIs through public
+// Fuzzers can invoke private/protected `JavaScriptFeature` APIs through public
 // APIs of this class to fuzz these. The class is designed to be used as a
-// static variable in fuzzer functions like |LLVMFuzzerTestOneInput|.
+// static variable in fuzzer functions like `LLVMFuzzerTestOneInput`.
 class FuzzerEnvWithJavaScriptFeature : public FuzzerEnvWithWebState {
  public:
   FuzzerEnvWithJavaScriptFeature(JavaScriptFeature* feature);
 
-  // Invokes |JavaScriptFeature::ScriptMessageReceived| function with the web
+  // Invokes `JavaScriptFeature::ScriptMessageReceived` function with the web
   // state and feature stored in class.
   void InvokeScriptMessageReceived(const web::ScriptMessage& message);
 

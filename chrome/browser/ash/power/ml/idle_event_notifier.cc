@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/power/ml/recent_events_counter.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "ui/events/event.h"
@@ -58,7 +58,7 @@ IdleEventNotifier::ActivityData::ActivityData(const ActivityData& input_data) {
 }
 
 IdleEventNotifier::IdleEventNotifier(
-    PowerManagerClient* power_manager_client,
+    chromeos::PowerManagerClient* power_manager_client,
     ui::UserActivityDetector* detector,
     mojo::PendingReceiver<viz::mojom::VideoDetectorObserver> receiver)
     : internal_data_(std::make_unique<ActivityDataInternal>()),

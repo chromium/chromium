@@ -1,0 +1,32 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# TODO: Move this to the target public_java too.
+start_surface_java_sources = [
+  "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/BackgroundTabAnimation.java",
+  "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/ExploreSurfaceCoordinator.java",
+  "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/ExploreSurfaceCoordinatorFactory.java",
+  "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/ExploreSurfaceFeedLifecycleManager.java",
+  "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/ExploreSurfaceNavigationDelegate.java",
+  "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/ExploreSurfaceViewBinder.java",
+  "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/FeedPlaceholderCoordinator.java",
+  "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/SecondaryTasksSurfaceViewBinder.java",
+  "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/StartSurface.java",
+  "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/StartSurfaceCoordinator.java",
+  "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/StartSurfaceDelegate.java",
+  "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/StartSurfaceHomeLayout.java",
+  "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/StartSurfaceMediator.java",
+  "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/StartSurfaceProperties.java",
+  "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/TabSwitcherAndStartSurfaceLayout.java",
+  "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/TasksSurfaceViewBinder.java",
+  "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/tasks/MostVisitedTileNavigationDelegate.java",
+  "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/tasks/SingleTabSwitcherCoordinator.java",
+  "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/tasks/SingleTabSwitcherMediator.java",
+  "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/tasks/TasksSurface.java",
+  "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/tasks/TasksSurfaceCoordinator.java",
+  "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/tasks/TasksSurfaceMediator.java",
+  "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/tasks/TasksSurfaceProperties.java",
+  "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/tasks/TasksView.java",
+  "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/tasks/TasksViewBinder.java",
+]

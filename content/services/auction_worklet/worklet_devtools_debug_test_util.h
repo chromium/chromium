@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,9 +42,10 @@ class TestDevToolsAgentClient : public blink::mojom::DevToolsSessionHost {
 
   // `use_binary_protocol` determines which protocol to ask of the agent and to
   // talk to it; all methods here will always talk JSON.
-  TestDevToolsAgentClient(mojo::Remote<blink::mojom::DevToolsAgent> agent,
-                          std::string session_id,
-                          bool use_binary_protocol);
+  TestDevToolsAgentClient(
+      mojo::AssociatedRemote<blink::mojom::DevToolsAgent> agent,
+      std::string session_id,
+      bool use_binary_protocol);
   TestDevToolsAgentClient(const TestDevToolsAgentClient&) = delete;
   TestDevToolsAgentClient& operator=(const TestDevToolsAgentClient&) = delete;
   ~TestDevToolsAgentClient() override;
@@ -92,7 +93,7 @@ class TestDevToolsAgentClient : public blink::mojom::DevToolsSessionHost {
   std::string session_id_;
   bool use_binary_protocol_;
 
-  mojo::Remote<blink::mojom::DevToolsAgent> agent_;
+  mojo::AssociatedRemote<blink::mojom::DevToolsAgent> agent_;
   mojo::AssociatedRemote<blink::mojom::DevToolsSession> session_;
   mojo::Remote<blink::mojom::DevToolsSession> io_session_;
   mojo::AssociatedReceiver<blink::mojom::DevToolsSessionHost> receiver_;

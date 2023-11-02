@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,9 +19,9 @@ namespace policy {
 // Mixin to set up device and user affiliation ids. By default, device and user
 // affiliation ids will be identical, and the user will be affiliated.
 // `set_affiliated(false)` can be used to change this behavior.
-// This mixin relies on an available `chromeos::FakeSessionManagerClient` during
+// This mixin relies on an available `ash::FakeSessionManagerClient` during
 // `SetUpInProcessBrowserTestFixture()`. Users of this mixin can run
-// `chromeos::SessionManagerClient::InitializeFakeInMemory();` to ensure this is
+// `ash::SessionManagerClient::InitializeFakeInMemory();` to ensure this is
 // the case.
 class AffiliationMixin final : public InProcessBrowserTestMixin {
  public:

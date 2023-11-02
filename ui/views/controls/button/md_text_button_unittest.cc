@@ -1,9 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/views/controls/button/md_text_button.h"
 
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/views/background.h"
@@ -20,7 +22,7 @@ TEST_F(MdTextButtonTest, CustomPadding) {
   const std::u16string text = u"abc";
   auto button = std::make_unique<MdTextButton>(Button::PressedCallback(), text);
 
-  const gfx::Insets custom_padding(10, 20);
+  const auto custom_padding = gfx::Insets::VH(10, 20);
   ASSERT_NE(button->GetInsets(), custom_padding);
 
   button->SetCustomPadding(custom_padding);

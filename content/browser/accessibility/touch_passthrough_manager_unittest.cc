@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,16 @@
 #include <vector>
 
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_update.h"
+#include "ui/accessibility/platform/ax_platform_tree_manager.h"
 
 using ::testing::ContainerEq;
 
@@ -39,7 +43,7 @@ class TestTouchPassthroughManager : public TouchPassthroughManager {
     target2.relative_bounds.bounds = gfx::RectF(100, 200, 400, 100);
 
     browser_accessibility_manager_.reset(BrowserAccessibilityManager::Create(
-        MakeAXTreeUpdate(root, target1, target2), nullptr));
+        MakeAXTreeUpdateForTesting(root, target1, target2), nullptr));
   }
 
   ~TestTouchPassthroughManager() override = default;
@@ -52,14 +56,18 @@ class TestTouchPassthroughManager : public TouchPassthroughManager {
   base::TimeTicks previous_time_;
   bool button_down_ = false;
 
+  // This is needed to prevent a DCHECK failure when OnAccessibilityApiUsage
+  // is called in BrowserAccessibility::GetRole.
+  content::BrowserTaskEnvironment task_environment_;
+
   void SendHitTest(
       const gfx::Point& point_in_frame_pixels,
-      base::OnceCallback<void(BrowserAccessibilityManager* hit_manager,
-                              int hit_node_id)> callback) override {
+      base::OnceCallback<void(ui::AXPlatformTreeManager* hit_manager,
+                              ui::AXNodeID hit_node_id)> callback) override {
     BrowserAccessibility* result =
-        browser_accessibility_manager_->GetRoot()->ApproximateHitTest(
-            point_in_frame_pixels);
-    int hit_node_id = result ? result->GetId() : 0;
+        browser_accessibility_manager_->GetBrowserAccessibilityRoot()
+            ->ApproximateHitTest(point_in_frame_pixels);
+    ui::AXNodeID hit_node_id = result ? result->GetId() : ui::kInvalidAXNodeID;
     std::move(callback).Run(browser_accessibility_manager_.get(), hit_node_id);
   }
 

@@ -1,20 +1,20 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SQL_META_TABLE_H_
 #define SQL_META_TABLE_H_
 
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "base/strings/string_piece_forward.h"
 
 namespace sql {
 
 class Database;
-class Statement;
 
 // Creates and manages a table to store generic metadata. The features provided
 // are:
@@ -27,6 +27,8 @@ class COMPONENT_EXPORT(SQL) MetaTable {
   MetaTable();
   MetaTable(const MetaTable&) = delete;
   MetaTable& operator=(const MetaTable&) = delete;
+  MetaTable(MetaTable&&) = delete;
+  MetaTable& operator=(MetaTable&&) = delete;
   ~MetaTable();
 
   // Values for Get/SetMmapStatus(). `kMmapFailure` indicates that there was at
@@ -108,26 +110,20 @@ class COMPONENT_EXPORT(SQL) MetaTable {
   int GetCompatibleVersionNumber();
 
   // Set the given arbitrary key with the given data. Returns true on success.
-  bool SetValue(const char* key, const std::string& value);
-  bool SetValue(const char* key, int value);
-  bool SetValue(const char* key, int64_t value);
+  bool SetValue(base::StringPiece key, const std::string& value);
+  bool SetValue(base::StringPiece key, int64_t value);
 
   // Retrieves the value associated with the given key. This will use sqlite's
   // type conversion rules. It will return true on success.
-  bool GetValue(const char* key, std::string* value);
-  bool GetValue(const char* key, int* value);
-  bool GetValue(const char* key, int64_t* value);
+  bool GetValue(base::StringPiece key, std::string* value);
+  bool GetValue(base::StringPiece key, int* value);
+  bool GetValue(base::StringPiece key, int64_t* value);
 
   // Deletes the key from the table.
-  bool DeleteKey(const char* key);
+  bool DeleteKey(base::StringPiece key);
 
  private:
-  // Conveniences to prepare the two types of statements used by
-  // MetaTableHelper.
-  void PrepareSetStatement(Statement* statement, const char* key);
-  bool PrepareGetStatement(Statement* statement, const char* key);
-
-  Database* db_ = nullptr;
+  raw_ptr<Database> db_ = nullptr;
 };
 
 }  // namespace sql

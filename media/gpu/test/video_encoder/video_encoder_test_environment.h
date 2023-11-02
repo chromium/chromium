@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,9 @@ class GpuMemoryBufferFactory;
 }
 
 namespace media {
+
+class Bitrate;
+
 namespace test {
 class Video;
 
@@ -45,8 +48,11 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
       size_t num_spatial_layers,
       bool save_output_bitstream,
       absl::optional<uint32_t> output_bitrate,
+      Bitrate::Mode bitrate_mode,
       bool reverse,
-      const FrameOutputConfig& frame_output_config = FrameOutputConfig());
+      const FrameOutputConfig& frame_output_config = FrameOutputConfig(),
+      const std::vector<base::test::FeatureRef>& enabled_features = {},
+      const std::vector<base::test::FeatureRef>& disabled_features = {});
 
   ~VideoEncoderTestEnvironment() override;
 
@@ -63,11 +69,8 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
   // Get the spatial layers config for SVC. Return empty vector in non SVC mode.
   const std::vector<VideoEncodeAccelerator::Config::SpatialLayer>&
   SpatialLayers() const;
-  // Get default bitrate allocation from target bitrate.
-  VideoBitrateAllocation GetDefaultVideoBitrateAllocation(
-      uint32_t bitrate) const;
   // Get the target bitrate (bits/second).
-  VideoBitrateAllocation Bitrate() const;
+  const VideoBitrateAllocation& BitrateAllocation() const;
   // Whether the encoded bitstream is saved to disk.
   bool SaveOutputBitstream() const;
   // True if the video should play backwards at reaching the end of video.
@@ -87,16 +90,21 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
   bool IsKeplerUsed() const;
 
  private:
-  VideoEncoderTestEnvironment(std::unique_ptr<media::test::Video> video,
-                              bool enable_bitstream_validator,
-                              const base::FilePath& output_folder,
-                              VideoCodecProfile profile,
-                              size_t num_temporal_layers,
-                              size_t num_spatial_layers,
-                              uint32_t bitrate,
-                              bool save_output_bitstream,
-                              bool reverse,
-                              const FrameOutputConfig& frame_output_config);
+  // TODO(crbug.com/1335251): merge |use_vbr| and |bitrate| into a single
+  // Bitrate-typed field.
+  VideoEncoderTestEnvironment(
+      std::unique_ptr<media::test::Video> video,
+      bool enable_bitstream_validator,
+      const base::FilePath& output_folder,
+      VideoCodecProfile profile,
+      size_t num_temporal_layers,
+      size_t num_spatial_layers,
+      const media::Bitrate& bitrate,
+      bool save_output_bitstream,
+      bool reverse,
+      const FrameOutputConfig& frame_output_config,
+      const std::vector<base::test::FeatureRef>& enabled_features,
+      const std::vector<base::test::FeatureRef>& disabled_features);
 
   // Video file to be used for testing.
   const std::unique_ptr<media::test::Video> video_;

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_UNDER_INVALIDATION_CHECKER_H_
 
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 class DisplayItem;
-class DisplayItemClient;
 class DisplayItemList;
 class PaintController;
 struct PaintChunk;
@@ -22,6 +20,8 @@ struct PaintChunk;
 // it lets the client paint instead of using the cache, and this class checks
 // whether the painting is the same as the cache.
 class PaintUnderInvalidationChecker {
+  USING_FAST_MALLOC(PaintUnderInvalidationChecker);
+
  public:
   explicit PaintUnderInvalidationChecker(PaintController& paint_controller);
   ~PaintUnderInvalidationChecker();
@@ -37,7 +37,7 @@ class PaintUnderInvalidationChecker {
   // Called from PaintController::UseCachedSubsequenceIfPossible() to inform
   // that PaintController would use a cached subsequence if we were not checking
   // under-invalidations.
-  void WouldUseCachedSubsequence(const DisplayItemClient&);
+  void WouldUseCachedSubsequence(DisplayItemClientId);
   void CheckNewChunk();
   void WillEndSubsequence(DisplayItemClientId client_id,
                           wtf_size_t start_chunk_index);
@@ -70,7 +70,8 @@ class PaintUnderInvalidationChecker {
   // Points to the next new paint chunk which will be checked when it's
   // complete.
   wtf_size_t new_chunk_index_ = kNotFound;
-  WeakPersistent<const DisplayItemClient> subsequence_client_ = nullptr;
+
+  DisplayItemClientId subsequence_client_id_ = kInvalidDisplayItemClientId;
 };
 
 }  // namespace blink

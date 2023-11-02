@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,8 +24,6 @@ class ASH_EXPORT DictationNudgeController : public SystemNudgeController {
   DictationNudgeController(const DictationNudgeController&) = delete;
   DictationNudgeController& operator=(const DictationNudgeController&) = delete;
   ~DictationNudgeController() override;
-
-  SystemNudge* GetDictationNudgeForTesting() const { return nudge_.get(); }
 
   std::string dictation_locale() const { return dictation_locale_; }
   std::string application_locale() const { return application_locale_; }

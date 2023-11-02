@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 
 #include <algorithm>
 #include <iterator>
-
-#include "base/cxx17_backports.h"
 
 namespace device {
 
@@ -90,10 +88,14 @@ constexpr struct GamepadInfo {
     {0x045e, 0x0719, kXInputTypeXbox360},
     {0x045e, 0x0b00, kXInputTypeXboxOne},
     {0x045e, 0x0b05, kXInputTypeNone},
+    {0x045e, 0x0b06, kXInputTypeXboxOne},
     {0x045e, 0x0b0a, kXInputTypeXboxOne},
     {0x045e, 0x0b0c, kXInputTypeNone},
     {0x045e, 0x0b12, kXInputTypeXboxOne},
     {0x045e, 0x0b13, kXInputTypeNone},
+    {0x045e, 0x0b20, kXInputTypeNone},
+    {0x045e, 0x0b21, kXInputTypeNone},
+    {0x045e, 0x0b22, kXInputTypeNone},
     // Logitech, Inc.
     {0x046d, 0xc208, kXInputTypeNone},
     {0x046d, 0xc209, kXInputTypeNone},
@@ -589,12 +591,14 @@ constexpr struct GamepadInfo {
     {0x28de, 0x1106, kXInputTypeNone},
     {0x28de, 0x1142, kXInputTypeNone},
     {0x28de, 0x11fc, kXInputTypeNone},
-    {0x28de, 0x11ff, kXInputTypeNone},
+    {0x28de, 0x11ff, kXInputTypeXbox360},
     {0x28de, 0x1201, kXInputTypeNone},
     {0x28de, 0x1202, kXInputTypeNone},
     {0x2c22, 0x2000, kXInputTypeNone},
     {0x2c22, 0x2300, kXInputTypeNone},
     {0x2c22, 0x2302, kXInputTypeNone},
+    // DJI
+    {0x2ca3, 0x1020, kXInputTypeNone},
     {0x2dc8, 0x1003, kXInputTypeNone},
     {0x2dc8, 0x1080, kXInputTypeNone},
     {0x2dc8, 0x2830, kXInputTypeNone},
@@ -623,7 +627,7 @@ constexpr struct GamepadInfo {
     {0xf766, 0x0001, kXInputTypeNone},
     {0xf766, 0x0005, kXInputTypeNone},
 };
-constexpr size_t kGamepadInfoLength = base::size(kGamepadInfo);
+constexpr size_t kGamepadInfoLength = std::size(kGamepadInfo);
 
 bool CompareEntry(const GamepadInfo& a, const GamepadInfo& b) {
   return std::tie(a.vendor, a.product) < std::tie(b.vendor, b.product);

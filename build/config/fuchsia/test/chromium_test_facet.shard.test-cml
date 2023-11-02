@@ -1,0 +1,5 @@
+{
+  facets: {
+    "fuchsia.test": { type: "chromium" },
+  },
+}

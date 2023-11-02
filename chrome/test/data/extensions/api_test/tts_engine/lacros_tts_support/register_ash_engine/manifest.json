@@ -1,0 +1,31 @@
+{
+  "name": "chrome.ttsEngine",
+  "version": "0.1",
+  "manifest_version": 2,
+  "description": "browser test for chrome.ttsEngine API",
+  "background": {
+    "page": "test.html"
+  },
+  "tts_engine": {
+    "voices": [
+      {
+        "voice_name": "Amy",
+        "lang": "en-US",
+        "gender": "female",
+        "event_types": [ "end" ]
+      },
+      {
+        "voice_name": "Alex",
+        "lang": "en-US",
+        "event_types": [ "end" ]
+      },
+      {
+        "voice_name": "Amanda",
+        "lang": "en-US",
+        "gender": "feline",
+        "event_types": [ "end" ]
+      }
+    ]
+  },
+  "permissions": ["tts", "ttsEngine"]
+}

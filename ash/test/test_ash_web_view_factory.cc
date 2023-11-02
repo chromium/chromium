@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ TestAshWebViewFactory::~TestAshWebViewFactory() = default;
 
 std::unique_ptr<AshWebView> TestAshWebViewFactory::Create(
     const AshWebView::InitParams& params) {
-  return std::make_unique<TestAshWebView>();
+  return std::make_unique<TestAshWebView>(params);
 }
 
 }  // namespace ash

@@ -45,7 +45,7 @@
 #include "third_party/blink/renderer/modules/webmidi/midi_output.h"
 #include "third_party/blink/renderer/modules/webmidi/midi_output_map.h"
 #include "third_party/blink/renderer/modules/webmidi/midi_port.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 
 namespace blink {
@@ -75,7 +75,7 @@ MIDIAccess::MIDIAccess(
       has_pending_activity_(false) {
   dispatcher_->SetClient(this);
   for (const auto& port : ports) {
-    if (port.type == MIDIPort::kTypeInput) {
+    if (port.type == MIDIPortType::kInput) {
       inputs_.push_back(MakeGarbageCollected<MIDIInput>(
           this, port.id, port.manufacturer, port.name, port.version,
           ToDeviceState(port.state)));
@@ -88,7 +88,7 @@ MIDIAccess::MIDIAccess(
   constexpr IdentifiableSurface surface = IdentifiableSurface::FromTypeAndToken(
       IdentifiableSurface::Type::kWebFeature,
       WebFeature::kRequestMIDIAccess_ObscuredByFootprinting);
-  if (IdentifiabilityStudySettings::Get()->ShouldSample(surface)) {
+  if (IdentifiabilityStudySettings::Get()->ShouldSampleSurface(surface)) {
     IdentifiableTokenBuilder builder;
     for (const auto& port : ports) {
       builder.AddToken(IdentifiabilityBenignStringToken(port.id));
@@ -160,7 +160,7 @@ void MIDIAccess::DidAddInputPort(const String& id,
   auto* port = MakeGarbageCollected<MIDIInput>(this, id, manufacturer, name,
                                                version, ToDeviceState(state));
   inputs_.push_back(port);
-  DispatchEvent(*MIDIConnectionEvent::Create(port));
+  DispatchEvent(*MIDIConnectionEvent::Create(port), "MIDIAccess::DidAddInputPort");
 }
 
 void MIDIAccess::DidAddOutputPort(const String& id,
@@ -173,7 +173,7 @@ void MIDIAccess::DidAddOutputPort(const String& id,
   auto* port = MakeGarbageCollected<MIDIOutput>(
       this, port_index, id, manufacturer, name, version, ToDeviceState(state));
   outputs_.push_back(port);
-  DispatchEvent(*MIDIConnectionEvent::Create(port));
+  DispatchEvent(*MIDIConnectionEvent::Create(port), "MIDIAccess::DidAddOutputPort");
 }
 
 void MIDIAccess::DidSetInputPortState(unsigned port_index, PortState state) {

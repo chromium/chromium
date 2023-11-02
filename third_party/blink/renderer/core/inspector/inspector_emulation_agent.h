@@ -1,14 +1,16 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_EMULATION_AGENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_EMULATION_AGENT_H_
 
+#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/html/parser/parser_synchronization_policy.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
 #include "third_party/blink/renderer/core/inspector/protocol/emulation.h"
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
@@ -59,7 +61,6 @@ class CORE_EXPORT InspectorEmulationAgent final
       const String& policy,
       protocol::Maybe<double> virtual_time_budget_ms,
       protocol::Maybe<int> max_virtual_time_task_starvation_count,
-      protocol::Maybe<bool> wait_for_navigation,
       protocol::Maybe<double> initial_virtual_time,
       double* virtual_time_ticks_base_ms) override;
   protocol::Response setTimezoneOverride(const String& timezone_id) override;
@@ -81,6 +82,8 @@ class CORE_EXPORT InspectorEmulationAgent final
       protocol::Maybe<protocol::Page::Viewport>,
       protocol::Maybe<protocol::Emulation::DisplayFeature>) override;
   protocol::Response clearDeviceMetricsOverride() override;
+  protocol::Response setHardwareConcurrencyOverride(
+      int hardware_concurrency) override;
   protocol::Response setUserAgentOverride(
       const String& user_agent,
       protocol::Maybe<String> accept_language,
@@ -91,19 +94,24 @@ class CORE_EXPORT InspectorEmulationAgent final
   protocol::Response setDisabledImageTypes(
       std::unique_ptr<protocol::Array<protocol::Emulation::DisabledImageType>>)
       override;
+  protocol::Response setAutomationOverride(bool enabled) override;
+
+  // Automation Emulation API
+  void ApplyAutomationOverride(bool& enabled) const;
 
   // InspectorInstrumentation API
   void ApplyAcceptLanguageOverride(String* accept_lang);
+  void ApplyHardwareConcurrencyOverride(unsigned int& hardware_concurrency);
   void ApplyUserAgentOverride(String* user_agent);
   void ApplyUserAgentMetadataOverride(
       absl::optional<blink::UserAgentMetadata>* ua_metadata);
-  void FrameStartedLoading(LocalFrame*);
   void PrepareRequest(DocumentLoader*,
                       ResourceRequest&,
                       ResourceLoaderOptions&,
                       ResourceType);
   void GetDisabledImageTypes(HashSet<String>* result);
   void WillCommitLoad(LocalFrame*, DocumentLoader*);
+  void WillCreateDocumentParser(bool& force_sync_parsing);
 
   // InspectorBaseAgent overrides.
   protocol::Response disable() override;
@@ -120,13 +128,6 @@ class CORE_EXPORT InspectorEmulationAgent final
   void InnerEnable();
   void SetSystemThemeState();
 
-  struct PendingVirtualTimePolicy {
-    PageScheduler::VirtualTimePolicy policy;
-    absl::optional<double> virtual_time_budget_ms;
-    absl::optional<int> max_virtual_time_task_starvation_count;
-  };
-  void ApplyVirtualTimePolicy(const PendingVirtualTimePolicy& new_policy);
-
   Member<WebLocalFrameImpl> web_local_frame_;
   base::TimeTicks virtual_time_base_ticks_;
   HeapVector<Member<DocumentLoader>> pending_document_loaders_;
@@ -139,9 +140,6 @@ class CORE_EXPORT InspectorEmulationAgent final
   // the document.
   bool forced_colors_override_ = false;
 
-  // Supports a virtual time policy change scheduled to occur after any
-  // navigation has started.
-  absl::optional<PendingVirtualTimePolicy> pending_virtual_time_policy_;
   bool enabled_ = false;
 
   InspectorAgentState::Bytes default_background_color_override_rgba_;
@@ -154,6 +152,7 @@ class CORE_EXPORT InspectorEmulationAgent final
   InspectorAgentState::StringMap emulated_media_features_;
   InspectorAgentState::String emulated_vision_deficiency_;
   InspectorAgentState::String navigator_platform_override_;
+  InspectorAgentState::Integer hardware_concurrency_override_;
   InspectorAgentState::String user_agent_override_;
   InspectorAgentState::Bytes serialized_ua_metadata_override_;
   absl::optional<blink::UserAgentMetadata> ua_metadata_override_;
@@ -163,12 +162,13 @@ class CORE_EXPORT InspectorEmulationAgent final
   InspectorAgentState::Double initial_virtual_time_;
   InspectorAgentState::String virtual_time_policy_;
   InspectorAgentState::Integer virtual_time_task_starvation_count_;
-  InspectorAgentState::Boolean wait_for_navigation_;
   InspectorAgentState::Boolean emulate_focus_;
   InspectorAgentState::Boolean emulate_auto_dark_mode_;
   InspectorAgentState::Boolean auto_dark_mode_override_;
   InspectorAgentState::String timezone_id_override_;
   InspectorAgentState::BooleanMap disabled_image_types_;
+  InspectorAgentState::Double cpu_throttling_rate_;
+  InspectorAgentState::Boolean automation_override_;
 };
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,9 @@
 
 #include <string>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/string_util.h"
@@ -17,7 +19,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
-#include "components/vector_icons/vector_icons.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/notification_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -49,8 +51,8 @@ void ReleaseNotesNotification::HandleClickShowNotification() {
   SystemNotificationHelper::GetInstance()->Close(kShowNotificationID);
   base::RecordAction(
       base::UserMetricsAction("ReleaseNotes.LaunchedNotification"));
-  chrome::LaunchReleaseNotes(
-      profile_, apps::mojom::LaunchSource::kFromReleaseNotesNotification);
+  chrome::LaunchReleaseNotes(profile_,
+                             apps::LaunchSource::kFromReleaseNotesNotification);
 }
 
 void ReleaseNotesNotification::ShowReleaseNotesNotification() {
@@ -63,12 +65,15 @@ void ReleaseNotesNotification::ShowReleaseNotesNotification() {
       message_center::NOTIFICATION_TYPE_SIMPLE, kShowNotificationID,
       std::move(title), std::move(message),
       l10n_util::GetStringUTF16(IDS_HELP_APP_EXPLORE), GURL(),
-      message_center::NotifierId(), message_center::RichNotificationData(),
+      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
+                                 kShowNotificationID,
+                                 NotificationCatalogName::kReleaseNotes),
+      message_center::RichNotificationData(),
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(
               &ReleaseNotesNotification::HandleClickShowNotification,
               weak_ptr_factory_.GetWeakPtr())),
-      vector_icons::kNotificationExploreIcon,
+      kNotificationHelpAppIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
   SystemNotificationHelper::GetInstance()->Display(
       *release_notes_available_notification_);

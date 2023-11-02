@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,8 +20,8 @@
 #include "chrome/browser/ash/login/test/profile_prepared_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host_webui.h"
 #include "chrome/browser/browser_process.h"
-#include "chromeos/login/auth/key.h"
-#include "chromeos/login/auth/user_context.h"
+#include "chromeos/ash/components/login/auth/public/key.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/known_user.h"
@@ -49,8 +49,6 @@ void LoginManagerTest::SetUpCommandLine(base::CommandLine* command_line) {
 }
 
 void LoginManagerTest::SetUpOnMainThread() {
-  LoginDisplayHostWebUI::DisableRestrictiveProxyCheckForTest();
-
   host_resolver()->AddRule("*", "127.0.0.1");
 
   test::UserSessionManagerTestApi session_manager_test_api(
@@ -63,12 +61,14 @@ void LoginManagerTest::SetUpOnMainThread() {
 }
 
 void LoginManagerTest::RegisterUser(const AccountId& account_id) {
-  ListPrefUpdate users_pref(g_browser_process->local_state(), "LoggedInUsers");
+  ScopedListPrefUpdate users_pref(g_browser_process->local_state(),
+                                  "LoggedInUsers");
   base::Value email_value(account_id.GetUserEmail());
-  if (!base::Contains(users_pref->GetList(), email_value))
+  if (!base::Contains(users_pref.Get(), email_value))
     users_pref->Append(std::move(email_value));
   if (user_manager::UserManager::IsInitialized()) {
-    user_manager::known_user::SaveKnownUser(account_id);
+    user_manager::KnownUser(g_browser_process->local_state())
+        .SaveKnownUser(account_id);
     user_manager::UserManager::Get()->SaveUserOAuthStatus(
         account_id, user_manager::User::OAUTH2_TOKEN_STATUS_VALID);
   }

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_reader.h"
+#include "third_party/blink/renderer/core/streams/stream_promise_resolver.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport_error.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -221,6 +222,49 @@ TEST_F(IncomingStreamTest, ReadThenClosedWithoutFin) {
             static_cast<uint16_t>(DOMExceptionCode::kNetworkError));
   EXPECT_EQ(exception->message(),
             "The stream was aborted by the remote server");
+}
+
+// Reading after remote close should not lose data.
+TEST_F(IncomingStreamTest, ClosedWithFinThenRead) {
+  V8TestingScope scope;
+
+  auto* incoming_stream = CreateIncomingStream(scope);
+
+  EXPECT_CALL(mock_on_abort_, Run(absl::optional<uint8_t>()));
+
+  auto* script_state = scope.GetScriptState();
+  auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
+      script_state, ASSERT_NO_EXCEPTION);
+  WriteToPipe({'B'});
+  incoming_stream->OnIncomingStreamClosed(true);
+  ClosePipe();
+
+  Iterator result1 = Read(scope, reader);
+  EXPECT_FALSE(result1.done);
+  EXPECT_THAT(result1.value, ElementsAre('B'));
+
+  Iterator result2 = Read(scope, reader);
+  EXPECT_TRUE(result2.done);
+}
+
+// reader.closed is fulfilled without any read() call, when the stream is empty.
+TEST_F(IncomingStreamTest, ClosedWithFinWithoutRead) {
+  V8TestingScope scope;
+
+  auto* incoming_stream = CreateIncomingStream(scope);
+
+  EXPECT_CALL(mock_on_abort_, Run(absl::optional<uint8_t>()));
+
+  auto* script_state = scope.GetScriptState();
+  auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
+      script_state, ASSERT_NO_EXCEPTION);
+  incoming_stream->OnIncomingStreamClosed(true);
+  ClosePipe();
+
+  ScriptPromiseTester tester(
+      script_state, reader->ClosedPromise()->GetScriptPromise(script_state));
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsFulfilled());
 }
 
 TEST_F(IncomingStreamTest, DataPipeResetBeforeClosedWithFin) {

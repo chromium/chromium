@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
@@ -33,7 +34,7 @@ class ShellWebContentsViewDelegate : public WebContentsViewDelegate {
   void ShowContextMenu(RenderFrameHost& render_frame_host,
                        const ContextMenuParams& params) override;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void ActionPerformed(int id);
   NSObject<RenderWidgetHostViewMacDelegate>* CreateRenderWidgetHostViewDelegate(
       content::RenderWidgetHost* render_widget_host,
@@ -41,8 +42,8 @@ class ShellWebContentsViewDelegate : public WebContentsViewDelegate {
 #endif
 
  private:
-  WebContents* web_contents_;
-#if defined(OS_MAC)
+  raw_ptr<WebContents> web_contents_;
+#if BUILDFLAG(IS_MAC)
   ContextMenuParams params_;
 #endif
 

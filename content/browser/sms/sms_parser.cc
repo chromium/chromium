@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -85,9 +85,7 @@ SmsParser::Result SmsParser::Parse(base::StringPiece sms) {
                               &otp, &embedded_domain))
     return Result(SmsParsingStatus::kOTPFormatRegexNotMatch);
 
-  SmsParsingStatus top_domain_parsing_status;
-  GURL top_gurl;
-  std::tie(top_domain_parsing_status, top_gurl) = ParseDomain(top_domain);
+  auto [top_domain_parsing_status, top_gurl] = ParseDomain(top_domain);
   if (top_domain_parsing_status != SmsParsingStatus::kParsed)
     return Result(top_domain_parsing_status);
   DCHECK(top_gurl.is_valid());
@@ -98,9 +96,7 @@ SmsParser::Result SmsParser::Parse(base::StringPiece sms) {
   if (embedded_domain == "")
     return Result(top_origin, url::Origin(), otp);
 
-  SmsParsingStatus embedded_domain_parsing_status;
-  GURL embedded_gurl;
-  std::tie(embedded_domain_parsing_status, embedded_gurl) =
+  auto [embedded_domain_parsing_status, embedded_gurl] =
       ParseDomain(embedded_domain);
   if (embedded_domain_parsing_status != SmsParsingStatus::kParsed)
     return Result(embedded_domain_parsing_status);

@@ -1,8 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "remoting/host/input_monitor/local_hotkey_input_monitor.h"
+
+#include "base/memory/raw_ptr.h"
 
 #import <AppKit/AppKit.h>
 
@@ -15,7 +17,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
@@ -66,7 +67,7 @@ class LocalHotkeyInputMonitorMac : public LocalHotkeyInputMonitor {
 @interface LocalHotkeyInputMonitorManager : NSObject {
  @private
   GTMCarbonHotKey* _hotKey;
-  remoting::LocalHotkeyInputMonitorMac::EventHandler* _monitor;
+  raw_ptr<remoting::LocalHotkeyInputMonitorMac::EventHandler> _monitor;
 }
 
 - (instancetype)initWithMonitor:
@@ -90,12 +91,13 @@ class LocalHotkeyInputMonitorMac : public LocalHotkeyInputMonitor {
 
     GTMCarbonEventDispatcherHandler* handler =
         [GTMCarbonEventDispatcherHandler sharedEventDispatcherHandler];
-    _hotKey = [handler registerHotKey:kEscKeyCode
-                            modifiers:(NSAlternateKeyMask | NSControlKeyMask)
-                               target:self
-                               action:@selector(hotKeyHit:)
-                             userInfo:nil
-                          whenPressed:YES];
+    _hotKey = [handler
+        registerHotKey:kEscKeyCode
+             modifiers:(NSEventModifierFlagOption | NSEventModifierFlagControl)
+                target:self
+                action:@selector(hotKeyHit:)
+              userInfo:nil
+           whenPressed:YES];
     if (!_hotKey) {
       LOG(ERROR) << "registerHotKey failed.";
       [self release];

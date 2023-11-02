@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -256,49 +256,88 @@ class InlinedData:
     self.inlined_files = inlined_files
 
 
-def CheckConditionalElements(grd_node, str):
+def CheckConditionalElements(grd_node, string, add_remove_comments_for=None):
   def IsConditionSatisfied(src_match):
     expr1 = src_match.group('expr1') or ''
     expr2 = src_match.group('expr2') or ''
     return grd_node is None or grd_node.EvaluateCondition(expr1 + expr2)
 
-  """Helper function to conditionally inline inner elements"""
-  while True:
-    begin_if = _BEGIN_IF_BLOCK.search(str)
-    if begin_if is None:
-      if _END_IF_BLOCK.search(str) is not None:
-        raise Exception('Unmatched </if>')
-      return str
+  def CreateReplacementComment(string):
+    """ Creates the comment about removed lines when string is deleted.
 
-    condition_satisfied = IsConditionSatisfied(begin_if)
-    leading = str[0:begin_if.start()]
-    content_start = begin_if.end()
-
-    # Find matching "if" block end.
-    count = 1
-    pos = begin_if.end()
-    while True:
-      end_if = _END_IF_BLOCK.search(str, pos)
-      if end_if is None:
-        raise Exception('Unmatched <if>')
-
-      next_if = _BEGIN_IF_BLOCK.search(str, pos)
-      if next_if is None or next_if.start() >= end_if.end():
-        count = count - 1
-        if count == 0:
-          break
-        pos = end_if.end()
-      else:
-        count = count + 1
-        pos = next_if.end()
-
-    content = str[content_start:end_if.start()]
-    trailing = str[end_if.end():]
-
-    if condition_satisfied:
-      str = leading + CheckConditionalElements(grd_node, content) + trailing
+    Generate the "grit-removed-lines:#" comment for removing the section
+    represented by 'string'.
+    """
+    if add_remove_comments_for == '.html':
+      comment_start = '<!--'
+      comment_end = '-->'
+    elif (add_remove_comments_for == '.ts' or add_remove_comments_for == '.js'
+          or add_remove_comments_for == '.css'):
+      comment_start = '/*'
+      comment_end = '*/'
     else:
-      str = leading + trailing
+      # add_remove_comments_for an unknown file extension
+      assert False, "Unknown file extension " + str(add_remove_comments_for)
+
+    newlines = string.count('\n')
+    if newlines == 0:
+      return ""
+
+    return (comment_start + f"grit-removed-lines:{newlines}" + comment_end)
+
+  """Helper function to conditionally inline inner elements
+
+  If set, add_remove_comments_for must be one of the known file extensions. A
+  comment 'grit-removed-lines:#' will be added wherever a line was removed. The
+  comment style will be determined by the extension.
+  ('<!--grit-removed-lines:3-->' for '.html', '/*grit-removed-lines:3*/' for
+  '.js', and so on)
+  """
+  begin_if = _BEGIN_IF_BLOCK.search(string)
+  if begin_if is None:
+    if _END_IF_BLOCK.search(string) is not None:
+      raise Exception('Unmatched </if>')
+    return string
+
+  condition_satisfied = IsConditionSatisfied(begin_if)
+  leading = string[0:begin_if.start()]
+  content_start = begin_if.end()
+
+  # Find matching "if" block end.
+  count = 1
+  pos = begin_if.end()
+  while True:
+    end_if = _END_IF_BLOCK.search(string, pos)
+    if end_if is None:
+      raise Exception('Unmatched <if>')
+
+    next_if = _BEGIN_IF_BLOCK.search(string, pos)
+    if next_if is None or next_if.start() >= end_if.end():
+      count = count - 1
+      if count == 0:
+        break
+      pos = end_if.end()
+    else:
+      count = count + 1
+      pos = next_if.end()
+
+  trailing = string[end_if.end():]
+  trailing = CheckConditionalElements(grd_node, trailing,
+                                      add_remove_comments_for)
+
+  if condition_satisfied:
+    content = string[content_start:end_if.start()]
+    # if_replacement_comment will be blank unless there's a multiline expr.
+    if_replacement_comment = ('' if add_remove_comments_for is None else
+                              CreateReplacementComment(
+                                  string[begin_if.start():begin_if.end()]))
+    return leading + if_replacement_comment + CheckConditionalElements(
+        grd_node, content, add_remove_comments_for) + trailing
+
+  replacement_comment = ('' if add_remove_comments_for is None else
+                         CreateReplacementComment(
+                             string[begin_if.start():end_if.end()]))
+  return leading + replacement_comment + trailing
 
 
 def DoInline(

@@ -1,9 +1,0 @@
-specific_include_rules = {
-  # App Service is needed for tests.
-  "system_web_app_manager_browsertest\.cc": [
-    "+components/services/app_service/public/cpp",
-  ],
-}
-include_rules = [
-  "+ash/webui/os_feedback_ui",
-]

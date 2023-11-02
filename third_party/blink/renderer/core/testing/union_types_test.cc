@@ -1,9 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/testing/union_types_test.h"
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_double_internalenum.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_double_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_double_string_stringsequence.h"
@@ -86,7 +87,7 @@ String UnionTypesTest::doubleOrStringSequenceArg(
   StringBuilder builder;
   for (auto& double_or_string : sequence) {
     DCHECK(double_or_string);
-    if (!builder.IsEmpty())
+    if (!builder.empty())
       builder.Append(", ");
     switch (double_or_string->GetContentType()) {
       case V8UnionDoubleOrString::ContentType::kDouble:

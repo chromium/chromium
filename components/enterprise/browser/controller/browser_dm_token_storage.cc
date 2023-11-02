@@ -1,8 +1,9 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
+
 #include <stddef.h>
 
 #include <memory>
@@ -15,10 +16,10 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/syslog_logging.h"
-#include "base/task/post_task.h"
 #include "base/task/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -106,7 +107,7 @@ void BrowserDMTokenStorage::StoreDMToken(const std::string& dm_token,
 
   if (dm_token.empty()) {
     dm_token_ = CreateEmptyToken();
-    SaveDMToken("");
+    DeleteDMToken();
   } else if (dm_token == kInvalidTokenValue) {
     dm_token_ = CreateInvalidToken();
     SaveDMToken(kInvalidTokenValue);
@@ -179,9 +180,9 @@ void BrowserDMTokenStorage::InitIfNeeded() {
   }
 
   // checks if client ID includes an illegal character
-  if (std::find_if(client_id_.begin(), client_id_.end(), [](char ch) {
-    return ch == ' ' || !base::IsAsciiPrintable(ch);
-  }) != client_id_.end()) {
+  if (base::ranges::any_of(client_id_, [](char ch) {
+        return ch == ' ' || !base::IsAsciiPrintable(ch);
+      })) {
     SYSLOG(ERROR)
         << "Chrome browser cloud management client ID should not"
            " contain a space, new line, or any nonprintable character.";
@@ -210,6 +211,15 @@ void BrowserDMTokenStorage::InitIfNeeded() {
 
 void BrowserDMTokenStorage::SaveDMToken(const std::string& token) {
   auto task = delegate_->SaveDMTokenTask(token, RetrieveClientId());
+  auto reply = base::BindOnce(&BrowserDMTokenStorage::OnDMTokenStored,
+                              weak_factory_.GetWeakPtr());
+  base::PostTaskAndReplyWithResult(delegate_->SaveDMTokenTaskRunner().get(),
+                                   FROM_HERE, std::move(task),
+                                   std::move(reply));
+}
+
+void BrowserDMTokenStorage::DeleteDMToken() {
+  auto task = delegate_->DeleteDMTokenTask(RetrieveClientId());
   auto reply = base::BindOnce(&BrowserDMTokenStorage::OnDMTokenStored,
                               weak_factory_.GetWeakPtr());
   base::PostTaskAndReplyWithResult(delegate_->SaveDMTokenTaskRunner().get(),

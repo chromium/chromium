@@ -1,0 +1,365 @@
+This is a testharness.js-based test.
+Found 361 tests; 83 PASS, 278 FAIL, 0 TIMEOUT, 0 NOTRUN.
+FAIL idl_test setup promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'createContext')"
+PASS idl_test validation
+PASS Partial interface MLGraphBuilder: original interface defined
+PASS Partial interface MLGraphBuilder: member names are unique
+PASS Partial interface MLGraphBuilder[2]: original interface defined
+PASS Partial interface MLGraphBuilder[2]: member names are unique
+PASS Partial interface MLGraphBuilder[3]: original interface defined
+PASS Partial interface MLGraphBuilder[3]: member names are unique
+PASS Partial interface MLGraphBuilder[4]: original interface defined
+PASS Partial interface MLGraphBuilder[4]: member names are unique
+PASS Partial interface MLGraphBuilder[5]: original interface defined
+PASS Partial interface MLGraphBuilder[5]: member names are unique
+PASS Partial interface MLGraphBuilder[6]: original interface defined
+PASS Partial interface MLGraphBuilder[6]: member names are unique
+PASS Partial interface MLGraphBuilder[7]: original interface defined
+PASS Partial interface MLGraphBuilder[7]: member names are unique
+PASS Partial interface MLGraphBuilder[8]: original interface defined
+PASS Partial interface MLGraphBuilder[8]: member names are unique
+PASS Partial interface MLGraphBuilder[9]: original interface defined
+PASS Partial interface MLGraphBuilder[9]: member names are unique
+PASS Partial interface MLGraphBuilder[10]: original interface defined
+PASS Partial interface MLGraphBuilder[10]: member names are unique
+PASS Partial interface MLGraphBuilder[11]: original interface defined
+PASS Partial interface MLGraphBuilder[11]: member names are unique
+PASS Partial interface MLGraphBuilder[12]: original interface defined
+PASS Partial interface MLGraphBuilder[12]: member names are unique
+PASS Partial interface MLGraphBuilder[13]: original interface defined
+PASS Partial interface MLGraphBuilder[13]: member names are unique
+PASS Partial interface MLGraphBuilder[14]: original interface defined
+PASS Partial interface MLGraphBuilder[14]: member names are unique
+PASS Partial interface MLGraphBuilder[15]: original interface defined
+PASS Partial interface MLGraphBuilder[15]: member names are unique
+PASS Partial interface MLGraphBuilder[16]: original interface defined
+PASS Partial interface MLGraphBuilder[16]: member names are unique
+PASS Partial interface MLGraphBuilder[17]: original interface defined
+PASS Partial interface MLGraphBuilder[17]: member names are unique
+PASS Partial interface MLGraphBuilder[18]: original interface defined
+PASS Partial interface MLGraphBuilder[18]: member names are unique
+PASS Partial interface MLGraphBuilder[19]: original interface defined
+PASS Partial interface MLGraphBuilder[19]: member names are unique
+PASS Partial interface MLGraphBuilder[20]: original interface defined
+PASS Partial interface MLGraphBuilder[20]: member names are unique
+PASS Partial interface MLGraphBuilder[21]: original interface defined
+PASS Partial interface MLGraphBuilder[21]: member names are unique
+PASS Partial interface MLGraphBuilder[22]: original interface defined
+PASS Partial interface MLGraphBuilder[22]: member names are unique
+PASS Partial interface MLGraphBuilder[23]: original interface defined
+PASS Partial interface MLGraphBuilder[23]: member names are unique
+PASS Partial interface MLGraphBuilder[24]: original interface defined
+PASS Partial interface MLGraphBuilder[24]: member names are unique
+PASS Partial interface MLGraphBuilder[25]: original interface defined
+PASS Partial interface MLGraphBuilder[25]: member names are unique
+PASS Partial interface MLGraphBuilder[26]: original interface defined
+PASS Partial interface MLGraphBuilder[26]: member names are unique
+PASS Partial interface MLGraphBuilder[27]: original interface defined
+PASS Partial interface MLGraphBuilder[27]: member names are unique
+PASS Partial interface MLGraphBuilder[28]: original interface defined
+PASS Partial interface MLGraphBuilder[28]: member names are unique
+PASS Partial interface MLGraphBuilder[29]: original interface defined
+PASS Partial interface MLGraphBuilder[29]: member names are unique
+PASS Partial interface MLGraphBuilder[30]: original interface defined
+PASS Partial interface MLGraphBuilder[30]: member names are unique
+PASS Partial interface MLGraphBuilder[31]: original interface defined
+PASS Partial interface MLGraphBuilder[31]: member names are unique
+PASS Partial interface MLGraphBuilder[32]: original interface defined
+PASS Partial interface MLGraphBuilder[32]: member names are unique
+PASS Partial interface mixin NavigatorID: member names are unique
+PASS Navigator includes NavigatorML: member names are unique
+PASS WorkerNavigator includes NavigatorML: member names are unique
+PASS Navigator includes NavigatorID: member names are unique
+PASS Navigator includes NavigatorLanguage: member names are unique
+PASS Navigator includes NavigatorOnLine: member names are unique
+PASS Navigator includes NavigatorContentUtils: member names are unique
+PASS Navigator includes NavigatorCookies: member names are unique
+PASS Navigator includes NavigatorPlugins: member names are unique
+PASS Navigator includes NavigatorConcurrentHardware: member names are unique
+PASS WorkerNavigator includes NavigatorID: member names are unique
+PASS WorkerNavigator includes NavigatorLanguage: member names are unique
+PASS WorkerNavigator includes NavigatorOnLine: member names are unique
+PASS WorkerNavigator includes NavigatorConcurrentHardware: member names are unique
+PASS Navigator includes NavigatorGPU: member names are unique
+PASS WorkerNavigator includes NavigatorGPU: member names are unique
+PASS GPUTexture includes GPUObjectBase: member names are unique
+FAIL NavigatorML must be primary interface of navigator assert_own_property: self does not have own property "NavigatorML" expected property "NavigatorML" missing
+FAIL Stringification of navigator assert_class_string: class string of navigator expected "[object NavigatorML]" but got "[object WorkerNavigator]"
+PASS NavigatorML interface: navigator must not have property "ml"
+FAIL ML interface: existence and properties of interface object assert_own_property: self does not have own property "ML" expected property "ML" missing
+FAIL ML interface object length assert_own_property: self does not have own property "ML" expected property "ML" missing
+FAIL ML interface object name assert_own_property: self does not have own property "ML" expected property "ML" missing
+FAIL ML interface: existence and properties of interface prototype object assert_own_property: self does not have own property "ML" expected property "ML" missing
+FAIL ML interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "ML" expected property "ML" missing
+FAIL ML interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "ML" expected property "ML" missing
+FAIL ML interface: operation createContext(optional MLContextOptions) assert_own_property: self does not have own property "ML" expected property "ML" missing
+FAIL ML interface: operation createContext(WebGLRenderingContext) assert_own_property: self does not have own property "ML" expected property "ML" missing
+FAIL ML interface: operation createContext(GPUDevice) assert_own_property: self does not have own property "ML" expected property "ML" missing
+FAIL ML must be primary interface of navigator.ml assert_equals: wrong typeof object expected "object" but got "undefined"
+FAIL Stringification of navigator.ml assert_equals: wrong typeof object expected "object" but got "undefined"
+FAIL ML interface: navigator.ml must inherit property "createContext(optional MLContextOptions)" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
+FAIL ML interface: calling createContext(optional MLContextOptions) on navigator.ml with too few arguments must throw TypeError assert_equals: wrong typeof object expected "object" but got "undefined"
+FAIL ML interface: navigator.ml must inherit property "createContext(WebGLRenderingContext)" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
+FAIL ML interface: calling createContext(WebGLRenderingContext) on navigator.ml with too few arguments must throw TypeError assert_equals: wrong typeof object expected "object" but got "undefined"
+FAIL ML interface: navigator.ml must inherit property "createContext(GPUDevice)" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
+FAIL ML interface: calling createContext(GPUDevice) on navigator.ml with too few arguments must throw TypeError assert_equals: wrong typeof object expected "object" but got "undefined"
+FAIL MLContext interface: existence and properties of interface object assert_own_property: self does not have own property "MLContext" expected property "MLContext" missing
+FAIL MLContext interface object length assert_own_property: self does not have own property "MLContext" expected property "MLContext" missing
+FAIL MLContext interface object name assert_own_property: self does not have own property "MLContext" expected property "MLContext" missing
+FAIL MLContext interface: existence and properties of interface prototype object assert_own_property: self does not have own property "MLContext" expected property "MLContext" missing
+FAIL MLContext interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "MLContext" expected property "MLContext" missing
+FAIL MLContext interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "MLContext" expected property "MLContext" missing
+FAIL MLContext must be primary interface of context assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: context is not defined"
+FAIL Stringification of context assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: context is not defined"
+FAIL MLOperand interface: existence and properties of interface object assert_own_property: self does not have own property "MLOperand" expected property "MLOperand" missing
+FAIL MLOperand interface object length assert_own_property: self does not have own property "MLOperand" expected property "MLOperand" missing
+FAIL MLOperand interface object name assert_own_property: self does not have own property "MLOperand" expected property "MLOperand" missing
+FAIL MLOperand interface: existence and properties of interface prototype object assert_own_property: self does not have own property "MLOperand" expected property "MLOperand" missing
+FAIL MLOperand interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "MLOperand" expected property "MLOperand" missing
+FAIL MLOperand interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "MLOperand" expected property "MLOperand" missing
+FAIL MLOperand must be primary interface of input assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: input is not defined"
+FAIL Stringification of input assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: input is not defined"
+FAIL MLOperand must be primary interface of filter assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: filter is not defined"
+FAIL Stringification of filter assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: filter is not defined"
+FAIL MLOperator interface: existence and properties of interface object assert_own_property: self does not have own property "MLOperator" expected property "MLOperator" missing
+FAIL MLOperator interface object length assert_own_property: self does not have own property "MLOperator" expected property "MLOperator" missing
+FAIL MLOperator interface object name assert_own_property: self does not have own property "MLOperator" expected property "MLOperator" missing
+FAIL MLOperator interface: existence and properties of interface prototype object assert_own_property: self does not have own property "MLOperator" expected property "MLOperator" missing
+FAIL MLOperator interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "MLOperator" expected property "MLOperator" missing
+FAIL MLOperator interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "MLOperator" expected property "MLOperator" missing
+FAIL MLOperator must be primary interface of relu assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: relu is not defined"
+FAIL Stringification of relu assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: relu is not defined"
+FAIL MLGraphBuilder interface: existence and properties of interface object assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface object length assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface object name assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: existence and properties of interface prototype object assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation input(DOMString, MLOperandDescriptor) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation constant(MLOperandDescriptor, MLBufferView) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation constant(double, optional MLOperandType) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation build(MLNamedOperands) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation batchNormalization(MLOperand, MLOperand, MLOperand, optional MLBatchNormalizationOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation clamp(MLOperand, optional MLClampOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation clamp(optional MLClampOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation concat(sequence<MLOperand>, long) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation conv2d(MLOperand, MLOperand, optional MLConv2dOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation convTranspose2d(MLOperand, MLOperand, optional MLConvTranspose2dOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation add(MLOperand, MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation sub(MLOperand, MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation mul(MLOperand, MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation div(MLOperand, MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation max(MLOperand, MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation min(MLOperand, MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation pow(MLOperand, MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation abs(MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation ceil(MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation cos(MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation exp(MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation floor(MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation log(MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation neg(MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation sin(MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation tan(MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation elu(MLOperand, optional MLEluOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation elu(optional MLEluOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation gemm(MLOperand, MLOperand, optional MLGemmOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation gru(MLOperand, MLOperand, MLOperand, long, long, optional MLGruOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation gruCell(MLOperand, MLOperand, MLOperand, MLOperand, long, optional MLGruCellOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation hardSigmoid(MLOperand, optional MLHardSigmoidOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation hardSigmoid(optional MLHardSigmoidOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation hardSwish(MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation hardSwish() assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation instanceNormalization(MLOperand, optional MLInstanceNormalizationOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation leakyRelu(MLOperand, optional MLLeakyReluOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation leakyRelu(optional MLLeakyReluOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation matmul(MLOperand, MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation linear(MLOperand, optional MLLinearOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation linear(optional MLLinearOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation pad(MLOperand, MLOperand, optional MLPadOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation averagePool2d(MLOperand, optional MLPool2dOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation l2Pool2d(MLOperand, optional MLPool2dOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation maxPool2d(MLOperand, optional MLPool2dOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation reduceL1(MLOperand, optional MLReduceOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation reduceL2(MLOperand, optional MLReduceOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation reduceLogSum(MLOperand, optional MLReduceOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation reduceLogSumExp(MLOperand, optional MLReduceOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation reduceMax(MLOperand, optional MLReduceOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation reduceMean(MLOperand, optional MLReduceOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation reduceMin(MLOperand, optional MLReduceOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation reduceProduct(MLOperand, optional MLReduceOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation reduceSum(MLOperand, optional MLReduceOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation reduceSumSquare(MLOperand, optional MLReduceOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation relu(MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation relu() assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation resample2d(MLOperand, optional MLResample2dOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation reshape(MLOperand, sequence<long>) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation sigmoid(MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation sigmoid() assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation slice(MLOperand, sequence<long>, sequence<long>, optional MLSliceOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation softmax(MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation softplus(MLOperand, optional MLSoftplusOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation softplus(optional MLSoftplusOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation softsign(MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation softsign() assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation split(MLOperand, (unsigned long or sequence<unsigned long>), optional MLSplitOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation squeeze(MLOperand, optional MLSqueezeOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation tanh(MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation tanh() assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation transpose(MLOperand, optional MLTransposeOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder must be primary interface of builder assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL Stringification of builder assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "input(DOMString, MLOperandDescriptor)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling input(DOMString, MLOperandDescriptor) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "constant(MLOperandDescriptor, MLBufferView)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling constant(MLOperandDescriptor, MLBufferView) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "constant(double, optional MLOperandType)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling constant(double, optional MLOperandType) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "build(MLNamedOperands)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling build(MLNamedOperands) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "batchNormalization(MLOperand, MLOperand, MLOperand, optional MLBatchNormalizationOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling batchNormalization(MLOperand, MLOperand, MLOperand, optional MLBatchNormalizationOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "clamp(MLOperand, optional MLClampOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling clamp(MLOperand, optional MLClampOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "clamp(optional MLClampOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling clamp(optional MLClampOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "concat(sequence<MLOperand>, long)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling concat(sequence<MLOperand>, long) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "conv2d(MLOperand, MLOperand, optional MLConv2dOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling conv2d(MLOperand, MLOperand, optional MLConv2dOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "convTranspose2d(MLOperand, MLOperand, optional MLConvTranspose2dOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling convTranspose2d(MLOperand, MLOperand, optional MLConvTranspose2dOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "add(MLOperand, MLOperand)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling add(MLOperand, MLOperand) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "sub(MLOperand, MLOperand)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling sub(MLOperand, MLOperand) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "mul(MLOperand, MLOperand)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling mul(MLOperand, MLOperand) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "div(MLOperand, MLOperand)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling div(MLOperand, MLOperand) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "max(MLOperand, MLOperand)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling max(MLOperand, MLOperand) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "min(MLOperand, MLOperand)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling min(MLOperand, MLOperand) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "pow(MLOperand, MLOperand)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling pow(MLOperand, MLOperand) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "abs(MLOperand)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling abs(MLOperand) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "ceil(MLOperand)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling ceil(MLOperand) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "cos(MLOperand)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling cos(MLOperand) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "exp(MLOperand)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling exp(MLOperand) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "floor(MLOperand)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling floor(MLOperand) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "log(MLOperand)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling log(MLOperand) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "neg(MLOperand)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling neg(MLOperand) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "sin(MLOperand)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling sin(MLOperand) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "tan(MLOperand)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling tan(MLOperand) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "elu(MLOperand, optional MLEluOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling elu(MLOperand, optional MLEluOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "elu(optional MLEluOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling elu(optional MLEluOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "gemm(MLOperand, MLOperand, optional MLGemmOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling gemm(MLOperand, MLOperand, optional MLGemmOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "gru(MLOperand, MLOperand, MLOperand, long, long, optional MLGruOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling gru(MLOperand, MLOperand, MLOperand, long, long, optional MLGruOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "gruCell(MLOperand, MLOperand, MLOperand, MLOperand, long, optional MLGruCellOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling gruCell(MLOperand, MLOperand, MLOperand, MLOperand, long, optional MLGruCellOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "hardSigmoid(MLOperand, optional MLHardSigmoidOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling hardSigmoid(MLOperand, optional MLHardSigmoidOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "hardSigmoid(optional MLHardSigmoidOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling hardSigmoid(optional MLHardSigmoidOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "hardSwish(MLOperand)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling hardSwish(MLOperand) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "hardSwish()" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "instanceNormalization(MLOperand, optional MLInstanceNormalizationOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling instanceNormalization(MLOperand, optional MLInstanceNormalizationOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "leakyRelu(MLOperand, optional MLLeakyReluOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling leakyRelu(MLOperand, optional MLLeakyReluOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "leakyRelu(optional MLLeakyReluOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling leakyRelu(optional MLLeakyReluOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "matmul(MLOperand, MLOperand)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling matmul(MLOperand, MLOperand) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "linear(MLOperand, optional MLLinearOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling linear(MLOperand, optional MLLinearOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "linear(optional MLLinearOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling linear(optional MLLinearOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "pad(MLOperand, MLOperand, optional MLPadOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling pad(MLOperand, MLOperand, optional MLPadOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "averagePool2d(MLOperand, optional MLPool2dOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling averagePool2d(MLOperand, optional MLPool2dOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "l2Pool2d(MLOperand, optional MLPool2dOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling l2Pool2d(MLOperand, optional MLPool2dOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "maxPool2d(MLOperand, optional MLPool2dOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling maxPool2d(MLOperand, optional MLPool2dOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "reduceL1(MLOperand, optional MLReduceOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling reduceL1(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "reduceL2(MLOperand, optional MLReduceOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling reduceL2(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "reduceLogSum(MLOperand, optional MLReduceOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling reduceLogSum(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "reduceLogSumExp(MLOperand, optional MLReduceOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling reduceLogSumExp(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "reduceMax(MLOperand, optional MLReduceOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling reduceMax(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "reduceMean(MLOperand, optional MLReduceOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling reduceMean(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "reduceMin(MLOperand, optional MLReduceOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling reduceMin(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "reduceProduct(MLOperand, optional MLReduceOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling reduceProduct(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "reduceSum(MLOperand, optional MLReduceOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling reduceSum(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "reduceSumSquare(MLOperand, optional MLReduceOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling reduceSumSquare(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "relu(MLOperand)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling relu(MLOperand) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "relu()" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "resample2d(MLOperand, optional MLResample2dOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling resample2d(MLOperand, optional MLResample2dOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "reshape(MLOperand, sequence<long>)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling reshape(MLOperand, sequence<long>) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "sigmoid(MLOperand)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling sigmoid(MLOperand) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "sigmoid()" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "slice(MLOperand, sequence<long>, sequence<long>, optional MLSliceOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling slice(MLOperand, sequence<long>, sequence<long>, optional MLSliceOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "softmax(MLOperand)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling softmax(MLOperand) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "softplus(MLOperand, optional MLSoftplusOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling softplus(MLOperand, optional MLSoftplusOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "softplus(optional MLSoftplusOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling softplus(optional MLSoftplusOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "softsign(MLOperand)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling softsign(MLOperand) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "softsign()" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "split(MLOperand, (unsigned long or sequence<unsigned long>), optional MLSplitOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling split(MLOperand, (unsigned long or sequence<unsigned long>), optional MLSplitOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "squeeze(MLOperand, optional MLSqueezeOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling squeeze(MLOperand, optional MLSqueezeOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "tanh(MLOperand)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling tanh(MLOperand) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "tanh()" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "transpose(MLOperand, optional MLTransposeOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling transpose(MLOperand, optional MLTransposeOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraph interface: existence and properties of interface object assert_own_property: self does not have own property "MLGraph" expected property "MLGraph" missing
+FAIL MLGraph interface object length assert_own_property: self does not have own property "MLGraph" expected property "MLGraph" missing
+FAIL MLGraph interface object name assert_own_property: self does not have own property "MLGraph" expected property "MLGraph" missing
+FAIL MLGraph interface: existence and properties of interface prototype object assert_own_property: self does not have own property "MLGraph" expected property "MLGraph" missing
+FAIL MLGraph interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "MLGraph" expected property "MLGraph" missing
+FAIL MLGraph interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "MLGraph" expected property "MLGraph" missing
+FAIL MLGraph interface: operation compute(MLNamedInputs, MLNamedOutputs) assert_own_property: self does not have own property "MLGraph" expected property "MLGraph" missing
+FAIL MLGraph must be primary interface of graph assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: graph is not defined"
+FAIL Stringification of graph assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: graph is not defined"
+FAIL MLGraph interface: graph must inherit property "compute(MLNamedInputs, MLNamedOutputs)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: graph is not defined"
+FAIL MLGraph interface: calling compute(MLNamedInputs, MLNamedOutputs) on graph with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: graph is not defined"
+FAIL WorkerNavigator interface: attribute ml assert_true: The prototype object must have a property "ml" expected true got false
+FAIL WorkerNavigator interface: navigator must inherit property "ml" with the proper type assert_inherits: property "ml" not found in prototype chain
+Harness: the test ran to completion.
+

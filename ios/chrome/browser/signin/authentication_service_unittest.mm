@@ -1,50 +1,55 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
+#import <memory>
 
-#include "base/bind.h"
-#include "base/run_loop.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/test/bind.h"
-#include "base/test/gtest_util.h"
-#include "components/keyed_service/core/service_access_type.h"
-#include "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/identity_manager/device_accounts_synchronizer.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/signin/public/identity_manager/test_identity_manager_observer.h"
-#include "components/sync/driver/mock_sync_service.h"
-#include "components/sync_preferences/pref_service_mock_factory.h"
-#include "components/sync_preferences/pref_service_syncable.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state_manager.h"
-#include "ios/chrome/browser/content_settings/cookie_settings_factory.h"
-#include "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "ios/chrome/browser/pref_names.h"
-#include "ios/chrome/browser/prefs/browser_prefs.h"
+#import "base/bind.h"
+#import "base/run_loop.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/test/bind.h"
+#import "base/test/gtest_util.h"
+#import "base/test/scoped_feature_list.h"
+#import "components/keyed_service/core/service_access_type.h"
+#import "components/pref_registry/pref_registry_syncable.h"
+#import "components/prefs/pref_registry_simple.h"
+#import "components/signin/internal/identity_manager/account_capabilities_constants.h"
+#import "components/signin/ios/browser/features.h"
+#import "components/signin/public/base/signin_pref_names.h"
+#import "components/signin/public/identity_manager/device_accounts_synchronizer.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/signin/public/identity_manager/identity_test_environment.h"
+#import "components/signin/public/identity_manager/identity_test_utils.h"
+#import "components/signin/public/identity_manager/test_identity_manager_observer.h"
+#import "components/sync/test/mock_sync_service.h"
+#import "components/sync_preferences/pref_service_mock_factory.h"
+#import "components/sync_preferences/pref_service_syncable.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state_manager.h"
+#import "ios/chrome/browser/content_settings/cookie_settings_factory.h"
+#import "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
+#import "ios/chrome/browser/flags/system_flags.h"
+#import "ios/chrome/browser/policy/policy_util.h"
+#import "ios/chrome/browser/prefs/browser_prefs.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_delegate_fake.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/authentication_service_observer_bridge.h"
+#import "ios/chrome/browser/signin/authentication_service_observer.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
-#include "ios/chrome/browser/sync/sync_service_factory.h"
-#include "ios/chrome/browser/sync/sync_setup_service_factory.h"
-#include "ios/chrome/browser/sync/sync_setup_service_mock.h"
-#include "ios/chrome/browser/system_flags.h"
-#include "ios/chrome/test/testing_application_context.h"
+#import "ios/chrome/browser/sync/mock_sync_service_utils.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
+#import "ios/chrome/browser/sync/sync_setup_service_mock.h"
+#import "ios/chrome/test/testing_application_context.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
@@ -58,15 +63,34 @@ using testing::Return;
 
 namespace {
 
-std::unique_ptr<KeyedService> BuildMockSyncService(web::BrowserState* context) {
-  return std::make_unique<syncer::MockSyncService>();
-}
-
-CoreAccountId GetAccountId(ChromeIdentity* identity) {
+CoreAccountId GetAccountId(id<SystemIdentity> identity) {
   return CoreAccountId(base::SysNSStringToUTF8([identity gaiaID]));
 }
 
 }  // namespace
+
+class AuthenticationServiceObserverTest : public AuthenticationServiceObserver {
+ public:
+  void OnPrimaryAccountRestricted() override {
+    ++on_primary_account_restricted_counter_;
+  }
+
+  int GetOnPrimaryAccountRestrictedCounter() {
+    return on_primary_account_restricted_counter_;
+  }
+
+  void OnServiceStatusChanged() override {
+    ++on_service_status_changed_counter_;
+  }
+
+  int GetOnServiceStatusChangedCounter() {
+    return on_service_status_changed_counter_;
+  }
+
+ private:
+  int on_primary_account_restricted_counter_ = 0;
+  int on_service_status_changed_counter_ = 0;
+};
 
 class AuthenticationServiceTest : public PlatformTest {
  protected:
@@ -76,7 +100,7 @@ class AuthenticationServiceTest : public PlatformTest {
     TestChromeBrowserState::Builder builder;
     builder.SetPrefService(CreatePrefService());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&BuildMockSyncService));
+                              base::BindRepeating(&CreateMockSyncService));
     builder.AddTestingFactory(
         SyncSetupServiceFactory::GetInstance(),
         base::BindRepeating(&SyncSetupServiceMock::CreateKeyedService));
@@ -92,9 +116,6 @@ class AuthenticationServiceTest : public PlatformTest {
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),
         std::make_unique<AuthenticationServiceDelegateFake>());
-    // Account ID migration is done on iOS.
-    DCHECK_EQ(signin::IdentityManager::MIGRATION_DONE,
-              identity_manager()->GetAccountIdMigrationState());
   }
 
   std::unique_ptr<sync_preferences::PrefServiceSyncable> CreatePrefService() {
@@ -119,21 +140,21 @@ class AuthenticationServiceTest : public PlatformTest {
     authentication_service()->OnApplicationWillEnterForeground();
   }
 
-  void FireAccessTokenRefreshFailed(ChromeIdentity* identity,
+  void FireAccessTokenRefreshFailed(id<SystemIdentity> identity,
                                     NSDictionary* user_info) {
     authentication_service()->OnAccessTokenRefreshFailed(identity, user_info);
   }
 
-  void FireIdentityListChanged(bool keychain_reload) {
-    authentication_service()->OnIdentityListChanged(keychain_reload);
+  void FireIdentityListChanged(bool notify_user) {
+    authentication_service()->OnIdentityListChanged(notify_user);
   }
 
-  void SetCachedMDMInfo(ChromeIdentity* identity, NSDictionary* user_info) {
+  void SetCachedMDMInfo(id<SystemIdentity> identity, NSDictionary* user_info) {
     authentication_service()->cached_mdm_infos_[GetAccountId(identity)] =
         user_info;
   }
 
-  bool HasCachedMDMInfo(ChromeIdentity* identity) {
+  bool HasCachedMDMInfo(id<SystemIdentity> identity) {
     return authentication_service()->cached_mdm_infos_.count(
                GetAccountId(identity)) > 0;
   }
@@ -171,7 +192,7 @@ class AuthenticationServiceTest : public PlatformTest {
 
   // Sets a restricted pattern.
   void SetPattern(const std::string pattern) {
-    base::ListValue allowed_patterns;
+    base::Value allowed_patterns(base::Value::Type::LIST);
     allowed_patterns.Append(pattern);
     GetApplicationContext()->GetLocalState()->Set(
         prefs::kRestrictAccountsToPatterns, allowed_patterns);
@@ -335,7 +356,7 @@ TEST_F(AuthenticationServiceTest, AccountListApprovedByUser_AddedByUser) {
   authentication_service()->SignIn(identity(0));
 
   identity_service()->AddIdentities(@[ @"foo3" ]);
-  FireIdentityListChanged(/*keychain_reload=*/false);
+  FireIdentityListChanged(/*notify_user=*/false);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(authentication_service()->IsAccountListApprovedByUser());
 }
@@ -347,7 +368,7 @@ TEST_F(AuthenticationServiceTest, AccountListApprovedByUser_ChangedByKeychain) {
   authentication_service()->SignIn(identity(0));
 
   identity_service()->AddIdentities(@[ @"foo3" ]);
-  FireIdentityListChanged(/*keychain_reload=*/true);
+  FireIdentityListChanged(/*notify_user=*/true);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(authentication_service()->IsAccountListApprovedByUser());
 }
@@ -360,14 +381,14 @@ TEST_F(AuthenticationServiceTest,
   authentication_service()->SignIn(identity(0));
 
   identity_service()->AddIdentities(@[ @"foo3" ]);
-  FireIdentityListChanged(/*keychain_reload=*/true);
+  FireIdentityListChanged(/*notify_user=*/true);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(authentication_service()->IsAccountListApprovedByUser());
 
   // Simulate a switching to background, changing the accounts while in
   // background.
   identity_service()->AddIdentities(@[ @"foo4" ]);
-  FireIdentityListChanged(/*keychain_reload=*/true);
+  FireIdentityListChanged(/*notify_user=*/true);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(authentication_service()->IsAccountListApprovedByUser());
 }
@@ -379,12 +400,12 @@ TEST_F(AuthenticationServiceTest,
   authentication_service()->SignIn(identity(0));
 
   identity_service()->AddIdentities(@[ @"foo3" ]);
-  FireIdentityListChanged(/*keychain_reload=*/true);
+  FireIdentityListChanged(/*notify_user=*/true);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(authentication_service()->IsAccountListApprovedByUser());
 
-  // Clear |kSigninLastAccounts| pref to simulate a case when the list of
-  // accounts in pref |kSigninLastAccounts| are no the same as the ones
+  // Clear `kSigninLastAccounts` pref to simulate a case when the list of
+  // accounts in pref `kSigninLastAccounts` are no the same as the ones
   browser_state_->GetPrefs()->ClearPref(prefs::kSigninLastAccounts);
 
   // When entering foreground, the have accounts changed state should be
@@ -393,7 +414,7 @@ TEST_F(AuthenticationServiceTest,
   EXPECT_FALSE(authentication_service()->IsAccountListApprovedByUser());
 
   // Backgrounding and foregrounding the application a second time should update
-  // the list of accounts in |kSigninLastAccounts| and should reset the have
+  // the list of accounts in `kSigninLastAccounts` and should reset the have
   // account changed state.
   FireApplicationWillEnterForeground();
   EXPECT_FALSE(authentication_service()->IsAccountListApprovedByUser());
@@ -429,7 +450,7 @@ TEST_F(AuthenticationServiceTest, MDMErrorsClearedOnForeground) {
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
       identity_manager(), GetAccountId(identity(0)), error);
 
-  // MDM error for |identity_| is being cleared and the error state of refresh
+  // MDM error for `identity_` is being cleared and the error state of refresh
   // token will be updated.
   {
     bool notification_received = false;
@@ -605,13 +626,13 @@ TEST_F(AuthenticationServiceTest, HandleMDMBlockedNotification) {
   ON_CALL(*identity_service(), GetMDMDeviceStatus(user_info1))
       .WillByDefault(Return(1));
 
-  auto handle_mdm_notification_callback = [](ChromeIdentity*, NSDictionary*,
+  auto handle_mdm_notification_callback = [](id<SystemIdentity>, NSDictionary*,
                                              ios::MDMStatusCallback callback) {
     callback(true /* is_blocked */);
     return true;
   };
 
-  // User not signed out as |identity(1)| isn't the primary account.
+  // User not signed out as `identity(1)` isn't the primary account.
   EXPECT_CALL(*identity_service(),
               HandleMDMNotification(identity(1), user_info1, _))
       .WillOnce(Invoke(handle_mdm_notification_callback));
@@ -619,7 +640,7 @@ TEST_F(AuthenticationServiceTest, HandleMDMBlockedNotification) {
   EXPECT_TRUE(authentication_service()->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
 
-  // User signed out as |identity_| is the primary account.
+  // User signed out as `identity_` is the primary account.
   EXPECT_CALL(*identity_service(),
               HandleMDMNotification(identity(0), user_info1, _))
       .WillOnce(Invoke(handle_mdm_notification_callback));
@@ -710,15 +731,11 @@ TEST_F(AuthenticationServiceTest, SigninDisallowedCrash) {
 }
 
 // Tests that reauth prompt is not set if the primary identity is restricted and
-// |OnPrimaryAccountRestricted| is forwarded.
+// `OnPrimaryAccountRestricted` is forwarded.
 TEST_F(AuthenticationServiceTest, TestHandleRestrictedIdentityPromptSignIn) {
-  id<AuthenticationServiceObserving> observer_delegate =
-      OCMStrictProtocolMock(@protocol(AuthenticationServiceObserving));
-  AuthenticationServiceObserverBridge observer_bridge(authentication_service(),
-                                                      observer_delegate);
-
+  AuthenticationServiceObserverTest observer_test;
+  authentication_service()->AddObserver(&observer_test);
   // Sign in.
-  OCMExpect([observer_delegate onPrimaryAccountRestricted]);
   SetExpectationsForSignInAndSync();
   authentication_service()->SignIn(identity(0));
   authentication_service()->GrantSyncConsent(identity(0));
@@ -738,6 +755,51 @@ TEST_F(AuthenticationServiceTest, TestHandleRestrictedIdentityPromptSignIn) {
       signin::ConsentLevel::kSignin));
   EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
-  EXPECT_FALSE(authentication_service()->ShouldReauthPromptForSignInAndSync());
-  EXPECT_OCMOCK_VERIFY(observer_delegate);
+  EXPECT_EQ(1, observer_test.GetOnPrimaryAccountRestrictedCounter());
+  authentication_service()->RemoveObserver(&observer_test);
+}
+
+// Tests AuthenticationService::GetServiceStatus() using
+// prefs::kBrowserSigninPolicy.
+TEST_F(AuthenticationServiceTest, TestGetServiceStatus) {
+  AuthenticationServiceObserverTest observer_test;
+  authentication_service()->AddObserver(&observer_test);
+
+  // Expect sign-in allowed by default.
+  EXPECT_EQ(AuthenticationService::ServiceStatus::SigninAllowed,
+            authentication_service()->GetServiceStatus());
+
+  browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+  // Expect sign-in disabled by user.
+  EXPECT_EQ(AuthenticationService::ServiceStatus::SigninDisabledByUser,
+            authentication_service()->GetServiceStatus());
+  // Expect onServiceStatus notification called.
+  EXPECT_EQ(1, observer_test.GetOnServiceStatusChangedCounter());
+
+  // Set sign-in disabled by policy.
+  local_state_.Get()->SetInteger(
+      prefs::kBrowserSigninPolicy,
+      static_cast<int>(BrowserSigninMode::kDisabled));
+  // Expect sign-in to be disabled by policy.
+  EXPECT_EQ(AuthenticationService::ServiceStatus::SigninDisabledByPolicy,
+            authentication_service()->GetServiceStatus());
+  // Expect onServiceStatus notification called.
+  EXPECT_EQ(2, observer_test.GetOnServiceStatusChangedCounter());
+
+  // Set sign-in forced by policy.
+  local_state_.Get()->SetInteger(prefs::kBrowserSigninPolicy,
+                                 static_cast<int>(BrowserSigninMode::kForced));
+  // Expect sign-in to be forced by policy.
+  EXPECT_EQ(AuthenticationService::ServiceStatus::SigninForcedByPolicy,
+            authentication_service()->GetServiceStatus());
+  // Expect onServiceStatus notification called.
+  EXPECT_EQ(3, observer_test.GetOnServiceStatusChangedCounter());
+
+  browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, true);
+  // Expect sign-in to be still forced by policy.
+  EXPECT_EQ(AuthenticationService::ServiceStatus::SigninForcedByPolicy,
+            authentication_service()->GetServiceStatus());
+  // Expect onServiceStatus notification called.
+  EXPECT_EQ(4, observer_test.GetOnServiceStatusChangedCounter());
+  authentication_service()->RemoveObserver(&observer_test);
 }

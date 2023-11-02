@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,27 +12,27 @@
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/rand_util.h"
-#include "content/browser/aggregation_service/aggregatable_report_manager.h"
-#include "content/browser/aggregation_service/aggregation_service_key_storage.h"
+#include "content/browser/aggregation_service/aggregation_service_storage.h"
+#include "content/browser/aggregation_service/aggregation_service_storage_context.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/origin.h"
+#include "url/gurl.h"
 
 namespace content {
 
 AggregationServiceKeyFetcher::AggregationServiceKeyFetcher(
-    AggregatableReportManager* manager,
+    AggregationServiceStorageContext* storage_context,
     std::unique_ptr<NetworkFetcher> network_fetcher)
-    : manager_(manager), network_fetcher_(std::move(network_fetcher)) {}
+    : storage_context_(storage_context),
+      network_fetcher_(std::move(network_fetcher)) {}
 
 AggregationServiceKeyFetcher::~AggregationServiceKeyFetcher() = default;
 
-void AggregationServiceKeyFetcher::GetPublicKey(const url::Origin& origin,
+void AggregationServiceKeyFetcher::GetPublicKey(const GURL& url,
                                                 FetchCallback callback) {
-  DCHECK(network::IsOriginPotentiallyTrustworthy(origin));
+  DCHECK(network::IsUrlPotentiallyTrustworthy(url));
 
-  base::circular_deque<FetchCallback>& pending_callbacks =
-      origin_callbacks_[origin];
+  base::circular_deque<FetchCallback>& pending_callbacks = url_callbacks_[url];
   bool in_progress = !pending_callbacks.empty();
   pending_callbacks.push_back(std::move(callback));
 
@@ -42,77 +42,75 @@ void AggregationServiceKeyFetcher::GetPublicKey(const url::Origin& origin,
     return;
 
   // First we check if we already have keys stored.
-  // TODO(crbug.com/1223488): Pass origin by value and move after C++17.
-  manager_->GetKeyStorage()
-      .AsyncCall(&AggregationServiceKeyStorage::GetPublicKeys)
-      .WithArgs(origin)
+  // TODO(crbug.com/1223488): Pass url by value and move after C++17.
+  storage_context_->GetStorage()
+      .AsyncCall(&AggregationServiceStorage::GetPublicKeys)
+      .WithArgs(url)
       .Then(base::BindOnce(
           &AggregationServiceKeyFetcher::OnPublicKeysReceivedFromStorage,
-          weak_factory_.GetWeakPtr(), origin));
+          weak_factory_.GetWeakPtr(), url));
 }
 
 void AggregationServiceKeyFetcher::OnPublicKeysReceivedFromStorage(
-    const url::Origin& origin,
+    const GURL& url,
     std::vector<PublicKey> keys) {
   if (keys.empty()) {
     // Fetch keys from the network if not found in the storage.
-    FetchPublicKeysFromNetwork(origin);
+    FetchPublicKeysFromNetwork(url);
     return;
   }
 
-  RunCallbacksForOrigin(origin, keys);
+  RunCallbacksForUrl(url, keys);
 }
 
-void AggregationServiceKeyFetcher::FetchPublicKeysFromNetwork(
-    const url::Origin& origin) {
+void AggregationServiceKeyFetcher::FetchPublicKeysFromNetwork(const GURL& url) {
   if (!network_fetcher_) {
     // Return error if fetching from network is not enabled.
-    RunCallbacksForOrigin(origin, /*keys=*/{});
+    RunCallbacksForUrl(url, /*keys=*/{});
     return;
   }
 
   // Unretained is safe because the network fetcher is owned by `this` and will
   // be deleted before `this`.
   network_fetcher_->FetchPublicKeys(
-      origin,
-      base::BindOnce(
-          &AggregationServiceKeyFetcher::OnPublicKeysReceivedFromNetwork,
-          base::Unretained(this), origin));
+      url, base::BindOnce(
+               &AggregationServiceKeyFetcher::OnPublicKeysReceivedFromNetwork,
+               base::Unretained(this), url));
 }
 
 void AggregationServiceKeyFetcher::OnPublicKeysReceivedFromNetwork(
-    const url::Origin& origin,
+    const GURL& url,
     absl::optional<PublicKeyset> keyset) {
   if (!keyset.has_value() || keyset->expiry_time.is_null()) {
     // `keyset` will be absl::nullopt if an error occurred and `expiry_time`
     // will be null if the freshness lifetime was zero. In these cases, we will
-    // still update the keys for `origin`, i,e. clear them.
-    manager_->GetKeyStorage()
-        .AsyncCall(&AggregationServiceKeyStorage::ClearPublicKeys)
-        .WithArgs(origin);
+    // still update the keys for `url`, i,e. clear them.
+    storage_context_->GetStorage()
+        .AsyncCall(&AggregationServiceStorage::ClearPublicKeys)
+        .WithArgs(url);
   } else {
     // Store public keys fetched from network to storage, the old keys will be
     // deleted from storage.
-    manager_->GetKeyStorage()
-        .AsyncCall(&AggregationServiceKeyStorage::SetPublicKeys)
-        .WithArgs(origin, keyset.value());
+    storage_context_->GetStorage()
+        .AsyncCall(&AggregationServiceStorage::SetPublicKeys)
+        .WithArgs(url, keyset.value());
   }
 
-  RunCallbacksForOrigin(
-      origin, keyset.has_value() ? keyset->keys : std::vector<PublicKey>());
+  RunCallbacksForUrl(
+      url, keyset.has_value() ? keyset->keys : std::vector<PublicKey>());
 }
 
-void AggregationServiceKeyFetcher::RunCallbacksForOrigin(
-    const url::Origin& origin,
+void AggregationServiceKeyFetcher::RunCallbacksForUrl(
+    const GURL& url,
     const std::vector<PublicKey>& keys) {
-  auto iter = origin_callbacks_.find(origin);
-  DCHECK(iter != origin_callbacks_.end());
+  auto iter = url_callbacks_.find(url);
+  DCHECK(iter != url_callbacks_.end());
 
   base::circular_deque<FetchCallback> pending_callbacks =
       std::move(iter->second);
   DCHECK(!pending_callbacks.empty());
 
-  origin_callbacks_.erase(iter);
+  url_callbacks_.erase(iter);
 
   if (keys.empty()) {
     // Return error, don't refetch to avoid infinite loop.

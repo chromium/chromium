@@ -103,22 +103,38 @@ The following tests the latest client library against M80:
 To run WPT on android against weblayer do the following:
 
 ```
-    $ export WPT_TEST= test you want to run, relative to wpt directory.
-    $ autoninja -C out/Default run_weblayer_shell weblayer_shell_wpt
-    $ out/Default/bin/run_weblayer_shell
-    $ testing/scripts/run_android_wpt.py --webdriver-binary=out/Default/clang_x64/chromedriver --product android_weblayer --isolated-script-test-output /tmp/weblayer_out.json --include $WPT_TEST --ignore-browser-specific-expectations --ignore-default-expectations
+    $ WPT_TEST=badging/badge-success.https.html # test or directory you want to run, relative to wpt directory.
+    $ autoninja -C out/Default weblayer_shell_wpt
+    $ out/Default/bin/run_weblayer_shell_wpt \
+      -t Default \
+      --isolated-script-test-output out/Default/weblayer_out.json \
+      --include $WPT_TEST \
+      --ignore-browser-specific-expectations \
+      --ignore-default-expectations \
+      --avd-config tools/android/avd/proto/generic_android28.textpb
 ```
 
-`run_android_wpt.py` does not install `weblayer-shell`, you need to do that
-yourself (executing `run_weblayer_shell` will do that).
+The script will write test artifacts to a directory named `layout-test-results` that is a sibling of `--isolated-script-test-output`.
+You can view the results by serving them over HTTP:
+
+```
+    $ python3 -m http.server 8080 -d out/Default/layout-test-results
+```
+
+Then, navigate to `<host>:8080/results.html` in your browser.
 
 To run against clank:
 
 ```
-    $ export WPT_TEST= test you want to run, relative to wpt directory.
-    $ autoninja -C out/Default monochrome_public_apk
-    $ out/Default/bin/monochrome_public_apk install
-    $ testing/scripts/run_android_wpt.py --webdriver-binary=out/Default/clang_x64/chromedriver --product chrome_android --chrome-package-name org.chromium.chrome --isolated-script-test-output /tmp/clank_out.json --include $WPT_TEST --ignore-browser-specific-expectations --ignore-default-expectations
+    $ WPT_TEST=badging/badge-success.https.html # test or directory you want to run, relative to wpt directory.
+    $ autoninja -C out/Default chrome_public_wpt
+    $ out/Default/bin/run_chrome_public_wpt \
+      -t Default \
+      --isolated-script-test-output out/Default/clank_out.json \
+      --include $WPT_TEST \
+      --ignore-browser-specific-expectations \
+      --ignore-default-expectations \
+      --avd-config tools/android/avd/proto/generic_android28.textpb
 ```
 
 The `--ignore-browser-specific-expectations --ignore-default-expectations` flags will prevent
@@ -128,16 +144,18 @@ Once a test is fixed, rerun it without those flags to ensure the Expectations fi
 To run against linux with wptrunner (same runner we use on android, which runs normal chrome):
 
 ```
-    $ export WPT_TEST= test you want to run, relative to wpt directory.
+    $ WPT_TEST=badging/badge-success.https.html # test or directory you want to run, relative to wpt directory.
     $ autoninja -C out/Default wpt_tests_isolate
-    $ cd testing/scripts
-    $ ./run_wpt_tests.py -t Default $WPT_TEST
+    $ out/Default/bin/run_wpt_tests_isolate \
+      -t Default \
+      --isolated-script-test-output out/Default/chrome_out.json \
+      --include $WPT_TEST
 ````
 
-To run against linux with run_web_tests (same runner we use on CI, which runs content_shell):
+To run against linux with `run_web_tests` (same runner we use on CI, which runs `content_shell`):
 
 ```
-    $ export WPT_TEST= test you want to run, relative to wpt directory.
+    $ WPT_TEST=badging/badge-success.https.html # test or directory you want to run, relative to wpt directory.
     $ autoninja -C out/Default blink_tests
     $ ./third_party/blink/tools/run_web_tests.py -t Default external/wpt/$WPT_TEST
 ```

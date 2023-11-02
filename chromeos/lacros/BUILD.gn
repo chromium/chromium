@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -18,25 +18,22 @@ assert(!use_gtk)
 component("lacros") {
   defines = [ "IS_CHROMEOS_LACROS_IMPL" ]
   deps = [
+    ":lacros_paths",
     "//base",
     "//build:chromeos_buildflags",
     "//chromeos/crosapi/cpp",
+    "//chromeos/crosapi/cpp:crosapi_constants",
     "//chromeos/crosapi/mojom",
-    "//chromeos/dbus/constants",
-    "//chromeos/dbus/init",
-    "//chromeos/dbus/missive",
-    "//chromeos/dbus/permission_broker",
     "//chromeos/process_proxy",
     "//chromeos/startup",
-    "//dbus",
+    "//components/crash/core/common",
+    "//media/mojo/mojom/stable:stable_video_decoder",
     "//mojo/public/cpp/bindings",
     "//ui/native_theme",
   ]
   sources = [
-    "lacros_dbus_helper.cc",
-    "lacros_dbus_helper.h",
-    "lacros_dbus_thread_manager.cc",
-    "lacros_dbus_thread_manager.h",
+    "crosapi_pref_observer.cc",
+    "crosapi_pref_observer.h",
     "lacros_service.cc",
     "lacros_service.h",
     "lacros_service_never_blocking_state.cc",
@@ -48,12 +45,24 @@ component("lacros") {
   ]
 }
 
+static_library("lacros_paths") {
+  deps = [
+    "//base",
+    "//chromeos/crosapi/cpp:crosapi_constants",
+  ]
+  sources = [
+    "lacros_paths.cc",
+    "lacros_paths.h",
+  ]
+}
+
 source_set("test_support") {
   testonly = true
   deps = [
     "//base",
     "//chromeos/crosapi/mojom",
     "//chromeos/lacros",
+    "//chromeos/startup",
   ]
   sources = [
     "lacros_test_helper.cc",
@@ -78,6 +87,18 @@ if (is_chromeos_device) {
     tast_disabled_tests = tast_disabled_tests_from_lacros_all
   }
 
+  lacros_tast_tests("lacros_all_tast_tests_informational") {
+    # The following expression runs all informational tests. See the link below
+    # for more details:
+    # https://chromium.googlesource.com/chromiumos/platform/tast/+/main/docs/test_attributes.md
+    tast_attr_expr = "\"group:mainline\" && (\"dep:lacros\" || \"dep:lacros_unstable\") && informational"
+
+    # To disable a specific test, add it to the
+    # tast_disabled_tests_from_lacros_all list in "tast_control.gni" and cite
+    # a bug.
+    tast_disabled_tests = tast_disabled_tests_from_lacros_all
+  }
+
   lacros_tast_tests("lacros_fyi_tast_tests") {
     tast_tests = [
       "lacros.AppLauncherLaunch",
@@ -89,5 +110,9 @@ if (is_chromeos_device) {
       "lacros.ShelfLaunch",
       "lacros.ShelfLaunch.unstable",
     ]
+  }
+
+  lacros_tast_tests("lacros_variations_tast_tests") {
+    tast_tests = [ "lacros.VariationSmoke" ]
   }
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,11 +30,9 @@ void AddNaClZygoteForkDelegates(
 // ZygoteMain().
 class NaClForkDelegate : public content::ZygoteForkDelegate {
  public:
-  explicit NaClForkDelegate(bool nonsfi_mode);
-
+  NaClForkDelegate();
   NaClForkDelegate(const NaClForkDelegate&) = delete;
   NaClForkDelegate& operator=(const NaClForkDelegate&) = delete;
-
   ~NaClForkDelegate() override;
 
   void Init(int sandboxdesc, bool enable_layer1_sandbox) override;
@@ -46,6 +44,7 @@ class NaClForkDelegate : public content::ZygoteForkDelegate {
                int* uma_sample,
                int* uma_boundary_value) override;
   pid_t Fork(const std::string& process_type,
+             const std::vector<std::string>& args,
              const std::vector<int>& fds,
              const std::string& channel_id) override;
   bool GetTerminationStatus(pid_t pid,
@@ -69,7 +68,6 @@ class NaClForkDelegate : public content::ZygoteForkDelegate {
     kNaClHelperStatusBoundary  // Must be one greater than highest value used.
   };
 
-  const bool nonsfi_mode_;
   NaClHelperStatus status_;
   int fd_;
 

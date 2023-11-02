@@ -3,6 +3,8 @@
 <head>
 <script src='../../../resources/testharness.js'></script>
 <script src='../../../resources/testharnessreport.js'></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src='../../../fast/forms/resources/picker-common.js'></script>
 </head>
 <body>
@@ -18,7 +20,7 @@ promise_test(() => {
   changeEventCount = 0;
   let colorControl = document.getElementById('color1');
   colorControl.value = '#000000';
-  return openPickerWithPromise(colorControl)
+  return openPicker(colorControl)
   .then(() => {
     internals.pagePopupWindow.focus();
     const popupDocument = internals.pagePopupWindow.document;

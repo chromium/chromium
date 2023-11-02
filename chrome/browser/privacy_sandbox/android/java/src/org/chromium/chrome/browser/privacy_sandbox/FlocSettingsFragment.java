@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,53 +51,24 @@ public class FlocSettingsFragment extends PreferenceFragmentCompat
                                 + " "
                                 + getContext().getString(R.string.privacy_sandbox_floc_description),
                         new SpanInfo("<link>", "</link>",
-                                new NoUnderlineClickableSpan(getContext().getResources(),
+                                new NoUnderlineClickableSpan(getContext(),
                                         (widget) -> openUrlInCct(getFlocRegionsUrl())))));
         findPreference(RESET_FLOC_EXPLANATION)
                 .setSummary(PrivacySandboxBridge.getFlocResetExplanationString());
         // Configure the toggle.
         ChromeSwitchPreference flocToggle = (ChromeSwitchPreference) findPreference(FLOC_TOGGLE);
         flocToggle.setOnPreferenceChangeListener(this);
-        flocToggle.setChecked(PrivacySandboxBridge.isFlocEnabled());
+        // Disable FLoC while OT not active.
+        // TODO(crbug.com/1287951): Perform cleanup / adjustment as required.
+        flocToggle.setChecked(false);
+        flocToggle.setEnabled(false);
         // Configure the reset button.
         Preference resetButton = findPreference(RESET_FLOC_BUTTON);
+        resetButton.setEnabled(false);
         resetButton.setOnPreferenceClickListener(this);
         resetButton.setTitle(R.string.privacy_sandbox_floc_reset_button);
 
         RecordUserAction.record("Settings.PrivacySandbox.FlocSubpageOpened");
-
-        updateInformation();
-    }
-
-    @Override
-    public boolean onPreferenceChange(Preference preference, Object newValue) {
-        String key = preference.getKey();
-        if (!FLOC_TOGGLE.equals(key)) return true;
-        boolean enabled = (boolean) newValue;
-        PrivacySandboxBridge.setFlocEnabled(enabled);
-        updateInformation();
-        return true;
-    }
-
-    @Override
-    public boolean onPreferenceClick(Preference preference) {
-        String key = preference.getKey();
-        if (!RESET_FLOC_BUTTON.equals(key)) return true;
-        PrivacySandboxBridge.resetFlocId();
-        updateInformation();
-        return true;
-    }
-
-    /**
-     * Set the necessary CCT helpers to be able to natively open links. This is needed because the
-     * helpers are not modularized.
-     */
-    public void setCustomTabIntentHelper(PrivacySandboxHelpers.CustomTabIntentHelper tabHelper) {
-        mCustomTabHelper = tabHelper;
-    }
-
-    private void updateInformation() {
-        findPreference(RESET_FLOC_BUTTON).setEnabled(PrivacySandboxBridge.isFlocIdResettable());
 
         findPreference(FLOC_STATUS)
                 .setSummary(getContext().getString(R.string.privacy_sandbox_floc_status_title)
@@ -108,6 +79,24 @@ public class FlocSettingsFragment extends PreferenceFragmentCompat
         findPreference(FLOC_UPDATE)
                 .setSummary(getContext().getString(R.string.privacy_sandbox_floc_update_title)
                         + "\n" + PrivacySandboxBridge.getFlocUpdateString());
+    }
+
+    @Override
+    public boolean onPreferenceChange(Preference preference, Object newValue) {
+        return true;
+    }
+
+    @Override
+    public boolean onPreferenceClick(Preference preference) {
+        return true;
+    }
+
+    /**
+     * Set the necessary CCT helpers to be able to natively open links. This is needed because the
+     * helpers are not modularized.
+     */
+    public void setCustomTabIntentHelper(PrivacySandboxHelpers.CustomTabIntentHelper tabHelper) {
+        mCustomTabHelper = tabHelper;
     }
 
     private String getFlocRegionsUrl() {

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "third_party/skia/include/ports/SkFontMgr_empty.h"
 #endif
 
@@ -31,6 +31,7 @@ class WebFontTypefaceFactory {
   static sk_sp<SkFontMgr> FontManagerForSbix();
   static sk_sp<SkFontMgr> FreeTypeFontManager();
   static sk_sp<SkFontMgr> FontManagerForColrCpal();
+  static sk_sp<SkFontMgr> FontManagerForColrV0Variations();
 
  private:
   // These values are written to logs.  New enum values can be added, but

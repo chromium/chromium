@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -14,17 +14,6 @@ source_set("infobar_banner") {
   ]
 }
 
-source_set("feature_flags") {
-  sources = [
-    "infobar_banner_features.h",
-    "infobar_banner_features.mm",
-  ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
-
-  deps = [ "//base" ]
-}
-
 source_set("coordinators") {
   sources = [
     "infobar_banner_overlay_coordinator.h",
@@ -34,7 +23,6 @@ source_set("coordinators") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
-    ":feature_flags",
     ":mediators",
     "//base",
     "//ios/chrome/browser/overlays",
@@ -47,8 +35,11 @@ source_set("coordinators") {
     "//ios/chrome/browser/ui/overlays/infobar_banner/autofill_address_profile",
     "//ios/chrome/browser/ui/overlays/infobar_banner/confirm",
     "//ios/chrome/browser/ui/overlays/infobar_banner/passwords",
+    "//ios/chrome/browser/ui/overlays/infobar_banner/permissions",
     "//ios/chrome/browser/ui/overlays/infobar_banner/reading_list",
     "//ios/chrome/browser/ui/overlays/infobar_banner/save_card",
+    "//ios/chrome/browser/ui/overlays/infobar_banner/sync_error",
+    "//ios/chrome/browser/ui/overlays/infobar_banner/tailored_security",
     "//ios/chrome/browser/ui/overlays/infobar_banner/translate:mediators",
     "//ios/chrome/browser/ui/util",
   ]

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,8 +26,7 @@ class FieldTrialsProviderTest;
 class SyntheticTrialRegistryTest;
 
 namespace internal {
-COMPONENT_EXPORT(VARIATIONS)
-extern const base::Feature kExternalExperimentAllowlist;
+COMPONENT_EXPORT(VARIATIONS) BASE_DECLARE_FEATURE(kExternalExperimentAllowlist);
 }  // namespace internal
 
 class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
@@ -85,24 +84,30 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
   friend SyntheticTrialRegistryTest;
   FRIEND_TEST_ALL_PREFIXES(SyntheticTrialRegistryTest, RegisterSyntheticTrial);
   FRIEND_TEST_ALL_PREFIXES(SyntheticTrialRegistryTest,
+                           GetSyntheticFieldTrialsOlderThanSuffix);
+  FRIEND_TEST_ALL_PREFIXES(SyntheticTrialRegistryTest,
                            GetSyntheticFieldTrialActiveGroups);
   FRIEND_TEST_ALL_PREFIXES(VariationsCrashKeysTest, BasicFunctionality);
 
-  // Registers a field trial name and group to be used to annotate a UMA report
-  // with a particular Chrome configuration state.
+  // Registers a field trial name and group to be used to annotate UMA and UKM
+  // reports with a particular Chrome configuration state.
   //
-  // A UMA report will be annotated with this trial group if and only if all
-  // events in the report were created after the trial is registered. Only one
-  // group name may be registered at a time for a given trial_name. Only the
-  // last group name that is registered for a given trial name will be recorded.
-  // The values passed in must not correspond to any real field trial in the
-  // code.
+  // If the |trial_group|'s |annotation_mode| is set to |kNextLog|, then reports
+  // will be annotated with this trial group if and only if all events in the
+  // report were created after the trial's registration. If the
+  // |annotation_mode| is set to |kCurrentLog|, then reports will be annotated
+  // with this trial group even if there are events in the report that were
+  // created before this trial's registration.
   //
-  // The registered trials are not persisted to disk and will not be applied
-  // after a restart.
+  // Only one group name may be registered at a time for a given trial name.
+  // Only the last group name that is registered for a given trial name will be
+  // recorded. The values passed in must not correspond to any real field trial
+  // in the code.
   //
-  // Note: Should not be used to replace trials that were
-  // registered with RegisterExternalExperiments().
+  // Synthetic trials are not automatically re-registered after a restart.
+  //
+  // Note: Should not be used to replace trials that were registered with
+  // RegisterExternalExperiments().
   void RegisterSyntheticFieldTrial(const SyntheticTrialGroup& trial_group);
 
   // Returns the study name corresponding to |experiment_id| from the allowlist
@@ -113,10 +118,13 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
                                          const base::FieldTrialParams& params,
                                          const std::string& experiment_id);
 
-  // Returns a list of synthetic field trials that are older than |time|.
+  // Returns a list of synthetic field trials that are either (1) older than
+  // |time|, or (2) specify |kCurrentLog| as |annotation_mode|. The trial and
+  // group names are suffixed with |suffix| before being hashed.
   void GetSyntheticFieldTrialsOlderThan(
       base::TimeTicks time,
-      std::vector<ActiveGroupId>* synthetic_trials) const;
+      std::vector<ActiveGroupId>* synthetic_trials,
+      base::StringPiece suffix = "") const;
 
   // Notifies observers on a synthetic trial list change.
   void NotifySyntheticTrialObservers();

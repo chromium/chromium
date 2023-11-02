@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@ TEST(YearComboboxModelTest, ExpirationYear) {
   test_clock.SetNow(kJune2017);
 
   YearComboboxModel model;
-  ASSERT_EQ(11, model.GetItemCount());  // Placeholder + 2017-2026.
+  ASSERT_EQ(11u, model.GetItemCount());  // Placeholder + 2017-2026.
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_DIALOG_PLACEHOLDER_EXPIRY_YEAR),
       model.GetItemAt(0));
@@ -46,7 +46,7 @@ TEST(YearComboboxModelTest, ShowAdditionalYear) {
   test_clock.SetNow(kJune2017);
 
   YearComboboxModel model(2016);
-  ASSERT_EQ(12, model.GetItemCount());  // Placeholder + 2016 + 2017-2026.
+  ASSERT_EQ(12u, model.GetItemCount());  // Placeholder + 2016 + 2017-2026.
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_DIALOG_PLACEHOLDER_EXPIRY_YEAR),
       model.GetItemAt(0));
@@ -70,7 +70,7 @@ TEST(YearComboboxModelTest, ExpirationYear_ShowFarFutureYear) {
   test_clock.SetNow(kJune2017);
 
   YearComboboxModel model(2042);
-  ASSERT_EQ(12, model.GetItemCount());  // Placeholder + 2017-2026 + 2042.
+  ASSERT_EQ(12u, model.GetItemCount());  // Placeholder + 2017-2026 + 2042.
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_DIALOG_PLACEHOLDER_EXPIRY_YEAR),
       model.GetItemAt(0));
@@ -93,7 +93,7 @@ TEST(YearComboboxModelTest, SetDefaultIndexByYear) {
 
   YearComboboxModel model;
   model.SetDefaultIndexByYear(2017);
-  ASSERT_EQ(u"2017", model.GetItemAt(model.GetDefaultIndex()));
+  ASSERT_EQ(u"2017", model.GetItemAt(model.GetDefaultIndex().value()));
 }
 
 TEST(YearComboboxModelTest, SetDefaultIndexByYearOutOfRange) {
@@ -104,7 +104,7 @@ TEST(YearComboboxModelTest, SetDefaultIndexByYearOutOfRange) {
   model.SetDefaultIndexByYear(2016);
   ASSERT_EQ(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_DIALOG_PLACEHOLDER_EXPIRY_YEAR),
-      model.GetItemAt(model.GetDefaultIndex()));
+      model.GetItemAt(model.GetDefaultIndex().value()));
 }
 
 TEST(YearComboboxModelTest, SetDefaultIndexByYearAdditionalYear) {
@@ -113,13 +113,13 @@ TEST(YearComboboxModelTest, SetDefaultIndexByYearAdditionalYear) {
 
   YearComboboxModel model(2042);
   model.SetDefaultIndexByYear(2042);
-  ASSERT_EQ(u"2042", model.GetItemAt(model.GetDefaultIndex()));
+  ASSERT_EQ(u"2042", model.GetItemAt(model.GetDefaultIndex().value()));
 }
 
 TEST(MonthComboboxModelTest, SetDefaultIndexByMonth) {
   MonthComboboxModel model;
   model.SetDefaultIndexByMonth(6);
-  ASSERT_EQ(u"06", model.GetItemAt(model.GetDefaultIndex()));
+  ASSERT_EQ(u"06", model.GetItemAt(model.GetDefaultIndex().value()));
 }
 
 TEST(MonthComboboxModelTest, SetDefaultIndexByMonthOutOfRange) {
@@ -127,7 +127,7 @@ TEST(MonthComboboxModelTest, SetDefaultIndexByMonthOutOfRange) {
   model.SetDefaultIndexByMonth(13);
   ASSERT_EQ(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_DIALOG_PLACEHOLDER_EXPIRY_MONTH),
-      model.GetItemAt(model.GetDefaultIndex()));
+      model.GetItemAt(model.GetDefaultIndex().value()));
 }
 
 }  // namespace autofill

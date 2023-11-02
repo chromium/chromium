@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@
 
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/bind.h"
@@ -74,10 +75,10 @@ using iterator = std::vector<VideoCaptureDeviceInfo>::const_iterator;
 iterator FindDeviceInRange(iterator begin,
                            iterator end,
                            const std::string& device_id) {
-  return std::find_if(begin, end,
-                      [device_id](const VideoCaptureDeviceInfo& device_info) {
-                        return device_id == device_info.descriptor.device_id;
-                      });
+  return base::ranges::find(begin, end, device_id,
+                            [](const VideoCaptureDeviceInfo& device_info) {
+                              return device_info.descriptor.device_id;
+                            });
 }
 
 template <class Interface>
@@ -1223,31 +1224,31 @@ class FakeVideoCaptureDeviceFactoryWin : public VideoCaptureDeviceFactoryWin {
                                            kDirectShowDeviceName6)}));
     return true;
   }
-  bool CreateDeviceSourceMediaFoundation(
+  MFSourceOutcome CreateDeviceSourceMediaFoundation(
       Microsoft::WRL::ComPtr<IMFAttributes> attributes,
       IMFMediaSource** source) override {
     UINT32 length;
     if (FAILED(attributes->GetStringLength(
             MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_SYMBOLIC_LINK,
             &length))) {
-      return false;
+      return MFSourceOutcome::kFailed;
     }
     std::wstring symbolic_link(length, wchar_t());
     if (FAILED(attributes->GetString(
             MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_SYMBOLIC_LINK,
             &symbolic_link[0], length + 1, &length))) {
-      return false;
+      return MFSourceOutcome::kFailed;
     }
     const bool has_dxgi_device_manager =
-        static_cast<bool>(dxgi_device_manager_for_testing());
+        static_cast<bool>(GetDxgiDeviceManager());
     if (use_d3d11_with_media_foundation_for_testing() !=
         has_dxgi_device_manager) {
-      return false;
+      return MFSourceOutcome::kFailed;
     }
     *source = AddReference(
         new StubMFMediaSource(base::SysWideToUTF8(symbolic_link),
                               device_source_native_formats_[symbolic_link]));
-    return true;
+    return MFSourceOutcome::kSuccess;
   }
   bool EnumerateDeviceSourcesMediaFoundation(
       Microsoft::WRL::ComPtr<IMFAttributes> attributes,

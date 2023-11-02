@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,7 @@
 #include "ui/ozone/platform/drm/gpu/hardware_display_controller.h"
 #include "ui/ozone/platform/drm/gpu/mock_drm_device.h"
 #include "ui/ozone/platform/drm/gpu/screen_manager.h"
+#include "ui/ozone/public/overlay_surface_candidate.h"
 
 namespace {
 
@@ -235,7 +236,8 @@ void DrmOverlayValidatorTest::SetupControllers() {
   controllers_to_enable.emplace_back(
       1 /*display_id*/, drm_, kCrtcIdBase, kConnectorIdBase, gfx::Point(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
-  screen_manager_->ConfigureDisplayControllers(controllers_to_enable);
+  screen_manager_->ConfigureDisplayControllers(
+      controllers_to_enable, display::kTestModeset | display::kCommitModeset);
 
   drm_device_manager_ = std::make_unique<ui::DrmDeviceManager>(nullptr);
 
@@ -584,7 +586,7 @@ TEST_F(DrmOverlayValidatorTest, NonIntegerDisplayRect) {
                  {.formats = {DRM_FORMAT_XRGB8888, DRM_FORMAT_NV12}}}};
   InitDrmStatesAndControllers(std::vector<CrtcState>(1, state));
 
-  overlay_params_.back().display_rect.Inset(0.005f, 0.005f);
+  overlay_params_.back().display_rect.Inset(0.005f);
   plane_list_.pop_back();
   AddPlane(overlay_params_.back());
 
@@ -593,4 +595,102 @@ TEST_F(DrmOverlayValidatorTest, NonIntegerDisplayRect) {
   EXPECT_EQ(2u, returns.size());
   for (const auto& param : returns)
     EXPECT_EQ(param, ui::OVERLAY_STATUS_ABLE);
+}
+
+class TestAtOnceDrmOverlayValidatorTest
+    : public DrmOverlayValidatorTest,
+      public testing::WithParamInterface<bool> {};
+
+TEST_F(DrmOverlayValidatorTest, FourCandidates_OneCommit) {
+  // Four planes.
+  CrtcState crtc_state = {.planes = {{.formats = {DRM_FORMAT_XRGB8888}},
+                                     {.formats = {DRM_FORMAT_XRGB8888}},
+                                     {.formats = {DRM_FORMAT_XRGB8888}},
+                                     {.formats = {DRM_FORMAT_XRGB8888}}}};
+  InitDrmStatesAndControllers({crtc_state});
+  int setup_commits = drm_->get_commit_count();
+
+  // Add two more overlay candidates.
+  auto param3 = overlay_params_.back();
+  auto param4 = overlay_params_.back();
+  overlay_params_.push_back(param3);
+  overlay_params_.push_back(param4);
+
+  std::vector<ui::OverlayStatus> returns = overlay_validator_->TestPageFlip(
+      overlay_params_, ui::DrmOverlayPlaneList());
+
+  // All planes promoted.
+  ASSERT_EQ(4u, returns.size());
+  EXPECT_EQ(returns[0], ui::OVERLAY_STATUS_ABLE);
+  EXPECT_EQ(returns[1], ui::OVERLAY_STATUS_ABLE);
+  EXPECT_EQ(returns[2], ui::OVERLAY_STATUS_ABLE);
+  EXPECT_EQ(returns[3], ui::OVERLAY_STATUS_ABLE);
+  // Only 1 commit was necessary.
+  EXPECT_EQ(drm_->get_commit_count() - setup_commits, 1);
+}
+
+TEST_F(DrmOverlayValidatorTest, FourCandidatesTwoPlanes_OneCommit) {
+  // Only two planes.
+  CrtcState crtc_state = {.planes = {{.formats = {DRM_FORMAT_XRGB8888}},
+                                     {.formats = {DRM_FORMAT_XRGB8888}}}};
+  InitDrmStatesAndControllers({crtc_state});
+  int setup_commits = drm_->get_commit_count();
+
+  // Add two more overlay candidates.
+  auto param3 = overlay_params_.back();
+  auto param4 = overlay_params_.back();
+  overlay_params_.push_back(param3);
+  overlay_params_.push_back(param4);
+
+  std::vector<ui::OverlayStatus> returns = overlay_validator_->TestPageFlip(
+      overlay_params_, ui::DrmOverlayPlaneList());
+
+  // Two planes promoted.
+  ASSERT_EQ(4u, returns.size());
+  EXPECT_EQ(returns[0], ui::OVERLAY_STATUS_ABLE);
+  EXPECT_EQ(returns[1], ui::OVERLAY_STATUS_ABLE);
+  EXPECT_EQ(returns[2], ui::OVERLAY_STATUS_NOT);
+  EXPECT_EQ(returns[3], ui::OVERLAY_STATUS_NOT);
+  // We should only see one commit because we won't talk to DRM if we can't
+  // allocate planes.
+  EXPECT_EQ(drm_->get_commit_count() - setup_commits, 1);
+}
+
+TEST_F(DrmOverlayValidatorTest, TwoOfSixIgnored_OneCommit) {
+  // Six planes.
+  CrtcState crtc_state = {.planes = {{.formats = {DRM_FORMAT_XRGB8888}},
+                                     {.formats = {DRM_FORMAT_XRGB8888}},
+                                     {.formats = {DRM_FORMAT_XRGB8888}},
+                                     {.formats = {DRM_FORMAT_XRGB8888}},
+                                     {.formats = {DRM_FORMAT_XRGB8888}},
+                                     {.formats = {DRM_FORMAT_XRGB8888}}}};
+  InitDrmStatesAndControllers({crtc_state});
+  int setup_commits = drm_->get_commit_count();
+
+  auto param3 = overlay_params_.back();
+  auto param4 = overlay_params_.back();
+  auto param5 = overlay_params_.back();
+  auto param6 = overlay_params_.back();
+  // Candidate 3 and 5 are already disqualified.
+  param3.overlay_handled = false;
+  param5.overlay_handled = false;
+  overlay_params_.push_back(param3);
+  overlay_params_.push_back(param4);
+  overlay_params_.push_back(param5);
+  overlay_params_.push_back(param6);
+
+  std::vector<ui::OverlayStatus> returns = overlay_validator_->TestPageFlip(
+      overlay_params_, ui::DrmOverlayPlaneList());
+
+  ASSERT_EQ(6u, returns.size());
+  // Third and Fifth candidate were ignored.
+  EXPECT_EQ(returns[0], ui::OVERLAY_STATUS_ABLE);
+  EXPECT_EQ(returns[1], ui::OVERLAY_STATUS_ABLE);
+  EXPECT_EQ(returns[2], ui::OVERLAY_STATUS_NOT);
+  EXPECT_EQ(returns[3], ui::OVERLAY_STATUS_ABLE);
+  EXPECT_EQ(returns[4], ui::OVERLAY_STATUS_NOT);
+  EXPECT_EQ(returns[5], ui::OVERLAY_STATUS_ABLE);
+  // Only 1 commit was needed because the two unpromoted candidates were
+  // excluded before testing.
+  EXPECT_EQ(drm_->get_commit_count() - setup_commits, 1);
 }

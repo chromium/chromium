@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -39,11 +40,13 @@
 #include "media/audio/audio_device_description.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
 #include "media/mojo/mojom/audio_input_stream.mojom.h"
+#include "media/mojo/mojom/audio_processing.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/viz/public/mojom/gpu.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "url/origin.h"
@@ -111,8 +114,9 @@ content::DesktopMediaID BuildMediaIdForWebContents(
     return media_id;
   media_id.type = content::DesktopMediaID::TYPE_WEB_CONTENTS;
   media_id.web_contents_id = content::WebContentsMediaCaptureId(
-      contents->GetMainFrame()->GetProcess()->GetID(),
-      contents->GetMainFrame()->GetRoutingID(), true /* disable_local_echo */);
+      contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      contents->GetPrimaryMainFrame()->GetRoutingID(),
+      true /* disable_local_echo */);
   return media_id;
 }
 
@@ -136,27 +140,6 @@ void CastMirroringServiceHost::GetForTab(
   if (target_contents) {
     const content::DesktopMediaID media_id =
         BuildMediaIdForWebContents(target_contents);
-    mojo::MakeSelfOwnedReceiver(
-        std::make_unique<CastMirroringServiceHost>(media_id),
-        std::move(receiver));
-  }
-}
-
-// static
-void CastMirroringServiceHost::GetForDesktop(
-    content::WebContents* initiator_contents,
-    const std::string& desktop_stream_id,
-    mojo::PendingReceiver<mojom::MirroringServiceHost> receiver) {
-  DCHECK(!desktop_stream_id.empty());
-  if (initiator_contents) {
-    std::string original_extension_name;
-    const content::DesktopMediaID media_id =
-        content::DesktopStreamsRegistry::GetInstance()->RequestMediaForStreamId(
-            desktop_stream_id,
-            initiator_contents->GetMainFrame()->GetProcess()->GetID(),
-            initiator_contents->GetMainFrame()->GetRoutingID(),
-            url::Origin::Create(initiator_contents->GetVisibleURL()),
-            &original_extension_name, content::kRegistryStreamTypeDesktop);
     mojo::MakeSelfOwnedReceiver(
         std::make_unique<CastMirroringServiceHost>(media_id),
         std::move(receiver));
@@ -217,7 +200,7 @@ void CastMirroringServiceHost::Start(
           .WithDisplayName("Mirroring Service")
           .Pass());
   mojo::PendingRemote<mojom::ResourceProvider> provider;
-  resource_provider_receiver.Bind(provider.InitWithNewPipeAndPassReceiver());
+  resource_provider_receiver_.Bind(provider.InitWithNewPipeAndPassReceiver());
   mirroring_service_->Start(
       std::move(session_params), GetCaptureResolutionConstraint(),
       std::move(observer), std::move(provider), std::move(outbound_channel),
@@ -401,7 +384,7 @@ void CastMirroringServiceHost::CreateAudioStreamForDesktop(
   // over time, with little consideration for maintainable code structure, and
   // add to the fun we're having here.
   //
-  // See if you can spot all 6 unused fields! :P
+  // See if you can spot all 7 unused fields! :P
   audio_stream_factory_->CreateInputStream(
       mojo::PendingReceiver<AudioInputStream>(
           std::move(pipe_to_audio_service.handle1)),
@@ -409,7 +392,7 @@ void CastMirroringServiceHost::CreateAudioStreamForDesktop(
           std::move(pipe_to_mirroring_service.handle0), 0),
       mojo::NullRemote(), mojo::NullRemote(),
       media::AudioDeviceDescription::kLoopbackWithMuteDeviceId, params,
-      total_segments, false, base::ReadOnlySharedMemoryRegion(),
+      total_segments, false, base::ReadOnlySharedMemoryRegion(), nullptr,
       base::BindOnce(
           [](mojo::PendingRemote<mojom::AudioStreamCreatorClient> requestor,
              mojo::PendingRemote<AudioInputStream> stream,
@@ -451,14 +434,22 @@ void CastMirroringServiceHost::ShowCaptureIndicator() {
       !web_contents()) {
     return;
   }
-  const blink::MediaStreamDevice device(
-      ConvertVideoStreamType(source_media_id_.type),
-      source_media_id_.ToString(), /* name */ std::string());
+
+  blink::mojom::StreamDevices devices;
+  const blink::mojom::MediaStreamType stream_type =
+      ConvertVideoStreamType(source_media_id_.type);
+  blink::MediaStreamDevice device = blink::MediaStreamDevice(
+      stream_type, source_media_id_.ToString(), /* name */ std::string());
+  if (blink::IsAudioInputMediaType(stream_type))
+    devices.audio_device = device;
+  else if (blink::IsVideoInputMediaType(stream_type))
+    devices.video_device = device;
+  DCHECK(devices.audio_device.has_value() || devices.video_device.has_value());
   media_stream_ui_ = MediaCaptureDevicesDispatcher::GetInstance()
                          ->GetMediaStreamCaptureIndicator()
-                         ->RegisterMediaStream(web_contents(), {device});
+                         ->RegisterMediaStream(web_contents(), devices);
   media_stream_ui_->OnStarted(
-      base::OnceClosure(), content::MediaStreamUI::SourceCallback(),
+      base::RepeatingClosure(), content::MediaStreamUI::SourceCallback(),
       /*label=*/std::string(), /*screen_capture_ids=*/{},
       content::MediaStreamUI::StateChangeCallback());
 }

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "components/reporting/metrics/reporting_settings.h"
 
 namespace reporting {
+namespace test {
 
 // Fake reporting settings for testing.
 class FakeReportingSettings : public ReportingSettings {
@@ -52,6 +53,7 @@ class FakeReportingSettings : public ReportingSettings {
 
   bool is_trusted_ = true;
 };
+}  // namespace test
 }  // namespace reporting
 
 #endif  // COMPONENTS_REPORTING_METRICS_FAKE_REPORTING_SETTINGS_H_

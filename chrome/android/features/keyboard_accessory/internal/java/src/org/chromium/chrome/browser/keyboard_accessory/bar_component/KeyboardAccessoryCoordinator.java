@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,15 @@ package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SKIP_CLOSING_ANIMATION;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.VISIBLE;
 
-import android.view.ViewStub;
-
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.viewpager.widget.ViewPager;
 
+import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
+import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryViewBinder.BarItemViewHolder;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
@@ -23,7 +23,8 @@ import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
 import org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutCoordinator;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
-import org.chromium.ui.DeferredViewStubInflationProvider;
+import org.chromium.ui.AsyncViewProvider;
+import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.ViewProvider;
 import org.chromium.ui.modelutil.LazyConstructionPropertyMcp;
 import org.chromium.ui.modelutil.ListModel;
@@ -116,15 +117,16 @@ public class KeyboardAccessoryCoordinator {
     /**
      * Initializes the component as soon as the native library is loaded by e.g. starting to listen
      * to keyboard visibility events.
-     * @param barStub A {@link ViewStub} for the accessory bar layout.
+     * @param barStub A {@link AsyncViewStub} for the accessory bar layout.
      */
-    public KeyboardAccessoryCoordinator(VisibilityDelegate visibilityDelegate, ViewStub barStub) {
+    public KeyboardAccessoryCoordinator(
+            VisibilityDelegate visibilityDelegate, AsyncViewStub barStub) {
         this(new KeyboardAccessoryTabLayoutCoordinator(), visibilityDelegate,
-                new DeferredViewStubInflationProvider<>(barStub));
+                AsyncViewProvider.of(barStub, R.id.keyboard_accessory));
     }
 
     /**
-     * Constructor that allows to mock the {@link DeferredViewStubInflationProvider}.
+     * Constructor that allows to mock the {@link AsyncViewProvider}.
      * @param viewProvider A provider for the accessory.
      */
     @VisibleForTesting
@@ -225,7 +227,9 @@ public class KeyboardAccessoryCoordinator {
      * Triggers the accessory to be shown.
      */
     public void show() {
+        TraceEvent.begin("KeyboardAccessoryCoordinator#show");
         mMediator.show();
+        TraceEvent.end("KeyboardAccessoryCoordinator#show");
     }
 
     /** Next time the accessory is closed, don't delay the closing animation. */

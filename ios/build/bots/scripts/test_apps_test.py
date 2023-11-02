@@ -1,5 +1,5 @@
-#!/usr/bin/env vpython
-# Copyright 2020 The Chromium Authors. All rights reserved.
+#!/usr/bin/env vpython3
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Unittests for test_apps.py."""
@@ -20,28 +20,76 @@ _MODULE_NAME = 'test_app'
 _XCTEST_PATH = '/PlugIns/boringssl_ssl_tests_module.xctest'
 
 
+class UtilTest(test_runner_test.TestCase):
+  """Tests utility functions."""
+
+  @mock.patch('subprocess.check_output', return_value=b'\x01\x00\x00\x00')
+  def test_is_running_rosetta_true(self, _):
+    """Tests is_running_rosetta function on arm64 running rosetta."""
+    self.assertTrue(test_apps.is_running_rosetta())
+
+  @mock.patch('subprocess.check_output', return_value=b'\x00\x00\x00\x00')
+  def test_is_running_rosetta_false(self, _):
+    """Tests is_running_rosetta function on arm64 not running rosetta."""
+    self.assertFalse(test_apps.is_running_rosetta())
+
+  @mock.patch('subprocess.check_output', return_value=b'')
+  def test_is_running_rosetta_not_arm(self, _):
+    """Tests is_running_rosetta function not invoked in arm."""
+    self.assertFalse(test_apps.is_running_rosetta())
+
+
 class GetGTestFilterTest(test_runner_test.TestCase):
   """Tests for test_runner.get_gtest_filter."""
 
-  def test_correct(self):
+  def test_correct_included(self):
     """Ensures correctness of filter."""
-    tests = [
-      'test.1',
-      'test.2',
+    included = [
+        'test.1',
+        'test.2',
     ]
     expected = 'test.1:test.2'
 
-    self.assertEqual(test_apps.get_gtest_filter(tests), expected)
+    self.assertEqual(test_apps.get_gtest_filter(included, []), expected)
 
-  def test_correct_inverted(self):
+  def test_correct_excluded(self):
     """Ensures correctness of inverted filter."""
-    tests = [
-      'test.1',
-      'test.2',
+    excluded = [
+        'test.1',
+        'test.2',
     ]
     expected = '-test.1:test.2'
 
-    self.assertEqual(test_apps.get_gtest_filter(tests, invert=True), expected)
+    self.assertEqual(test_apps.get_gtest_filter([], excluded), expected)
+
+  def test_both_included_excluded(self):
+    """Ensures correctness when both included, excluded exist."""
+    included = ['test.1', 'test.2']
+    excluded = ['test.2', 'test.3']
+    expected = 'test.1'
+    self.assertEqual(test_apps.get_gtest_filter(included, excluded), expected)
+
+    included = ['test.1', 'test.2']
+    excluded = ['test.3', 'test.4']
+    expected = 'test.1:test.2'
+    self.assertEqual(test_apps.get_gtest_filter(included, excluded), expected)
+
+    included = ['test.1', 'test.2', 'test.3']
+    excluded = ['test.3']
+    expected = 'test.1:test.2'
+    self.assertEqual(test_apps.get_gtest_filter(included, excluded), expected)
+
+    included = ['test.1', 'test.2']
+    excluded = ['test.1', 'test.2']
+    expected = '-*'
+    self.assertEqual(test_apps.get_gtest_filter(included, excluded), expected)
+
+  def test_empty_included_excluded(self):
+    """Ensures correctness when both included, excluded are empty."""
+    with self.assertRaises(AssertionError) as ctx:
+      test_apps.get_gtest_filter([], [])
+      self.assertEuqals('One of included or excluded list should exist.',
+                        ctx.message)
 
 
 class EgtestsAppGetAllTestsTest(test_runner_test.TestCase):
@@ -99,6 +147,20 @@ class DeviceXCTestUnitTestsAppTest(test_runner_test.TestCase):
     xctestrun_node = test_app.fill_xctestrun_node()
     self.assertEqual(xctestrun_node, expected_xctestrun_node)
 
+  @mock.patch('test_apps.get_bundle_id', return_value=_BUNDLE_ID)
+  @mock.patch(
+      'test_apps.DeviceXCTestUnitTestsApp._xctest_path',
+      return_value=_XCTEST_PATH)
+  @mock.patch('os.path.exists', return_value=True)
+  def test_repeat_arg_in_xctestrun_node(self, *args):
+    """Tests fill_xctestrun_node method."""
+    test_app = test_apps.DeviceXCTestUnitTestsApp(
+        _TEST_APP_PATH, repeat_count=20)
+    xctestrun_node = test_app.fill_xctestrun_node()
+    self.assertIn(
+        '--gtest_repeat=20',
+        xctestrun_node.get('TestTargetName', {}).get('CommandLineArguments'))
+
 
 class SimulatorXCTestUnitTestsAppTest(test_runner_test.TestCase):
   """Tests to test methods of SimulatorXCTestUnitTestsApp."""
@@ -138,6 +200,20 @@ class SimulatorXCTestUnitTestsAppTest(test_runner_test.TestCase):
     xctestrun_node = test_app.fill_xctestrun_node()
     self.assertEqual(xctestrun_node, expected_xctestrun_node)
 
+  @mock.patch('test_apps.get_bundle_id', return_value=_BUNDLE_ID)
+  @mock.patch(
+      'test_apps.SimulatorXCTestUnitTestsApp._xctest_path',
+      return_value=_XCTEST_PATH)
+  @mock.patch('os.path.exists', return_value=True)
+  def test_repeat_arg_in_xctestrun_node(self, *args):
+    """Tests fill_xctestrun_node method."""
+    test_app = test_apps.SimulatorXCTestUnitTestsApp(
+        _TEST_APP_PATH, repeat_count=20)
+    xctestrun_node = test_app.fill_xctestrun_node()
+    self.assertIn(
+        '--gtest_repeat=20',
+        xctestrun_node.get('TestTargetName', {}).get('CommandLineArguments'))
+
 
 class GTestsAppTest(test_runner_test.TestCase):
   """Tests to test methods of GTestsApp."""
@@ -151,6 +227,27 @@ class GTestsAppTest(test_runner_test.TestCase):
     cmd_args = xctestrun_data[gtests_app.module_name +
                               '_module']['CommandLineArguments']
     self.assertTrue('--gtest_repeat=2' in cmd_args)
+
+  @mock.patch('test_apps.get_bundle_id', return_value=_BUNDLE_ID)
+  @mock.patch('os.path.exists', return_value=True)
+  def test_remove_gtest_sharding_env_vars(self, _1, _2):
+    gtests_app = test_apps.GTestsApp(
+        'app_path', env_vars=['GTEST_SHARD_INDEX=1', 'GTEST_TOTAL_SHARDS=2'])
+    assert all(key in gtests_app.env_vars
+               for key in ['GTEST_SHARD_INDEX', 'GTEST_TOTAL_SHARDS'])
+    gtests_app.remove_gtest_sharding_env_vars()
+    assert not any(key in gtests_app.env_vars
+                   for key in ['GTEST_SHARD_INDEX', 'GTEST_TOTAL_SHARDS'])
+
+  @mock.patch('test_apps.get_bundle_id', return_value=_BUNDLE_ID)
+  @mock.patch('os.path.exists', return_value=True)
+  def test_remove_gtest_sharding_env_vars_non_exist(self, _1, _2):
+    gtests_app = test_apps.GTestsApp('app_path')
+    assert not any(key in gtests_app.env_vars
+                   for key in ['GTEST_SHARD_INDEX', 'GTEST_TOTAL_SHARDS'])
+    gtests_app.remove_gtest_sharding_env_vars()
+    assert not any(key in gtests_app.env_vars
+                   for key in ['GTEST_SHARD_INDEX', 'GTEST_TOTAL_SHARDS'])
 
 
 class EgtestsAppTest(test_runner_test.TestCase):

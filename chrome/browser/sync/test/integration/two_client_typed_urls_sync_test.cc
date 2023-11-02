@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
@@ -45,7 +46,6 @@ using typed_urls_helper::GetAllSyncMetadata;
 using typed_urls_helper::GetTypedUrlsFromClient;
 using typed_urls_helper::GetUrlFromClient;
 using typed_urls_helper::GetVisitsFromClient;
-using typed_urls_helper::RemoveVisitsFromClient;
 using typed_urls_helper::WriteMetadataToClient;
 
 namespace {
@@ -60,19 +60,21 @@ class TwoClientTypedUrlsSyncTest : public SyncTest {
   TwoClientTypedUrlsSyncTest& operator=(const TwoClientTypedUrlsSyncTest&) =
       delete;
 
-  ~TwoClientTypedUrlsSyncTest() override {}
+  ~TwoClientTypedUrlsSyncTest() override = default;
 
   ::testing::AssertionResult CheckClientsEqual() {
     history::URLRows urls = GetTypedUrlsFromClient(0);
     history::URLRows urls2 = GetTypedUrlsFromClient(1);
-    if (!CheckURLRowVectorsAreEqualForTypedURLs(urls, urls2))
+    if (!CheckURLRowVectorsAreEqualForTypedURLs(urls, urls2)) {
       return ::testing::AssertionFailure() << "URLVectors are not equal";
+    }
     // Now check the visits.
     for (size_t i = 0; i < urls.size() && i < urls2.size(); i++) {
       history::VisitVector visit1 = GetVisitsFromClient(0, urls[i].id());
       history::VisitVector visit2 = GetVisitsFromClient(1, urls2[i].id());
-      if (!AreVisitsEqual(visit1, visit2))
+      if (!AreVisitsEqual(visit1, visit2)) {
         return ::testing::AssertionFailure() << "Visits are not equal";
+      }
     }
     return ::testing::AssertionSuccess();
   }
@@ -80,10 +82,11 @@ class TwoClientTypedUrlsSyncTest : public SyncTest {
   bool CheckNoDuplicateVisits() {
     for (int i = 0; i < num_clients(); ++i) {
       history::URLRows urls = GetTypedUrlsFromClient(i);
-      for (size_t j = 0; j < urls.size(); ++j) {
-        history::VisitVector visits = GetVisitsFromClient(i, urls[j].id());
-        if (!AreVisitsUnique(visits))
+      for (const history::URLRow& url : urls) {
+        history::VisitVector visits = GetVisitsFromClient(i, url.id());
+        if (!AreVisitsUnique(visits)) {
           return false;
+        }
       }
     }
     return true;
@@ -91,10 +94,11 @@ class TwoClientTypedUrlsSyncTest : public SyncTest {
 
   int GetVisitCountForFirstURL(int index) {
     history::URLRows urls = GetTypedUrlsFromClient(index);
-    if (urls.empty())
+    if (urls.empty()) {
       return 0;
-    else
+    } else {
       return urls[0].visit_count();
+    }
   }
 };
 
@@ -734,8 +738,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest, SkipImportedVisits) {
   ASSERT_EQ(2U, urls.size());
 
   // Make sure the imported URL didn't make it over.
-  for (size_t i = 0; i < urls.size(); ++i) {
-    ASSERT_NE(imported_url, urls[i].url());
+  for (const history::URLRow& url : urls) {
+    ASSERT_NE(imported_url, url.url());
   }
 }
 
@@ -827,14 +831,14 @@ IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTestWithoutLacrosSupport,
   size_t count_for_dummy = 0;
   const syncer::ClientTagHash kClientTagHash =
       syncer::ClientTagHash::FromUnhashed(syncer::TYPED_URLS, kDummyUrl);
-  for (const auto& kv : metadata_map) {
-    if (kv.second->client_tag_hash() == kClientTagHash.value()) {
+  for (const auto& [storage_key, metadata] : metadata_map) {
+    if (metadata->client_tag_hash() == kClientTagHash.value()) {
       ++count_for_dummy;
     }
   }
   EXPECT_EQ(count_for_dummy, 1u);
   histogram_tester.ExpectBucketCount(
       "Sync.ModelTypeOrphanMetadata.ModelReadyToSync",
-      /*bucket=*/ModelTypeHistogramValue(syncer::TYPED_URLS),
-      /*count=*/1);
+      /*sample=*/ModelTypeHistogramValue(syncer::TYPED_URLS),
+      /*expected_count=*/1);
 }

@@ -1,14 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/commander/commander_controller.h"
 
 #include <string>
+#include <tuple>
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/commander/command_source.h"
@@ -110,7 +111,7 @@ class ViewModelCallbackWaiter {
   ~ViewModelCallbackWaiter() { test_->WaitForExpectedCallbacks(); }
 
  private:
-  CommanderControllerTest* test_;
+  raw_ptr<CommanderControllerTest> test_;
 };
 
 TEST_F(CommanderControllerTest, PassesInputToCommandSourcesOnTextChanged) {
@@ -138,7 +139,7 @@ TEST_F(CommanderControllerTest, PassesInputToCommandSourcesOnTextChanged) {
 
 TEST_F(CommanderControllerTest, ResultSetIdsDifferAcrossCalls) {
   std::vector<std::unique_ptr<CommandSource>> sources;
-  ignore_result(AddSource(&sources, CreateNoOpCommandSource()));
+  std::ignore = AddSource(&sources, CreateNoOpCommandSource());
   base::RunLoop run_loop;
   auto controller =
       CommanderController::CreateWithSourcesForTesting(std::move(sources));

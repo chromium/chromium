@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,6 +60,12 @@ void StrikeDatabaseIntegratorTestStrikeDatabase::SetUniqueIdsRequired(
   unique_ids_required_ = unique_ids_required;
 }
 
+void StrikeDatabaseIntegratorTestStrikeDatabase::
+    SetRequiredDelaySinceLastStrike(
+        base::TimeDelta required_delay_since_last_strike) {
+  required_delay_since_last_strike_ = required_delay_since_last_strike;
+}
+
 absl::optional<size_t>
 StrikeDatabaseIntegratorTestStrikeDatabase::GetMaximumEntries() const {
   return maximum_entries_;
@@ -70,4 +76,11 @@ StrikeDatabaseIntegratorTestStrikeDatabase::GetMaximumEntriesAfterCleanup()
     const {
   return maximum_entries_after_cleanup_;
 }
+
+absl::optional<base::TimeDelta>
+StrikeDatabaseIntegratorTestStrikeDatabase::GetRequiredDelaySinceLastStrike()
+    const {
+  return required_delay_since_last_strike_;
+}
+
 }  // namespace autofill

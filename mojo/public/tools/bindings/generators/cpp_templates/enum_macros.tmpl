@@ -161,10 +161,8 @@ struct HashTraits<{{enum_name}}>
                 "{{empty_value}} is a reserved enum value");
   static_assert({{deleted_value_unused}},
                 "{{deleted_value}} is a reserved enum value");
-  static const bool hasIsEmptyValueFunction = true;
-  static bool IsEmptyValue(const {{enum_name}}& value) {
-    return value == static_cast<{{enum_name}}>({{empty_value}});
-  }
+  static const bool kEmptyValueIsZero = false;
+  static {{enum_name}} EmptyValue() { return static_cast<{{enum_name}}>({{empty_value}}); }
   static void ConstructDeletedValue({{enum_name}}& slot, bool) {
     slot = static_cast<{{enum_name}}>({{deleted_value}});
   }

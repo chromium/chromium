@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/root_window_desk_switch_animator.h"
+#include "ash/wm/overview/overview_controller.h"
 #include "base/callback.h"
 #include "base/check.h"
 #include "ui/compositor/layer.h"
@@ -177,9 +178,13 @@ bool AutotestDesksApi::RemoveActiveDesk(base::OnceClosure on_complete) {
   if (!controller->CanRemoveDesks())
     return false;
 
-  new DeskAnimationObserver(std::move(on_complete));
+  // In overview, the desk removal animation does not apply,
+  // so we should not create a `DeskAnimationObserver` for it.
+  if (!Shell::Get()->overview_controller()->InOverviewSession())
+    new DeskAnimationObserver(std::move(on_complete));
   controller->RemoveDesk(controller->active_desk(),
-                         DesksCreationRemovalSource::kButton);
+                         DesksCreationRemovalSource::kButton,
+                         DeskCloseType::kCombineDesks);
   return true;
 }
 
@@ -212,6 +217,14 @@ bool AutotestDesksApi::IsWindowInDesk(aura::Window* window, int desk_index) {
   aura::Window* desk_container = DesksController::Get()->GetDeskContainer(
       window->GetRootWindow(), desk_index);
   return desk_container->Contains(window);
+}
+
+AutotestDesksApi::DesksInfo AutotestDesksApi::GetDesksInfo() const {
+  auto* controller = DesksController::Get();
+  DesksInfo info;
+  info.active_desk_index = controller->GetActiveDeskIndex();
+  info.num_desks = controller->desks().size();
+  return info;
 }
 
 }  // namespace ash

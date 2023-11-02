@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/nacl/common/buildflags.h"
+#include "content/public/common/content_plugin_info.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/renderer/pepper/host_dispatcher_wrapper.h"
 #include "content/renderer/pepper/host_globals.h"
@@ -35,7 +36,6 @@
 #include "content/renderer/pepper/renderer_ppapi_host_impl.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_thread_impl.h"
-#include "content/renderer/render_view_impl.h"
 #include "ppapi/c/dev/ppb_audio_input_dev.h"
 #include "ppapi/c/dev/ppb_audio_output_dev.h"
 #include "ppapi/c/dev/ppb_buffer_dev.h"
@@ -104,12 +104,9 @@
 #include "ppapi/c/private/ppb_ext_crx_file_system_private.h"
 #include "ppapi/c/private/ppb_file_io_private.h"
 #include "ppapi/c/private/ppb_file_ref_private.h"
-#include "ppapi/c/private/ppb_find_private.h"
-#include "ppapi/c/private/ppb_flash_font_file.h"
 #include "ppapi/c/private/ppb_host_resolver_private.h"
 #include "ppapi/c/private/ppb_instance_private.h"
 #include "ppapi/c/private/ppb_isolated_file_system_private.h"
-#include "ppapi/c/private/ppb_pdf.h"
 #include "ppapi/c/private/ppb_proxy_private.h"
 #include "ppapi/c/private/ppb_tcp_server_socket_private.h"
 #include "ppapi/c/private/ppb_tcp_socket_private.h"
@@ -295,9 +292,7 @@ const void* InternalGetInterface(const char* name) {
     return ppapi::thunk::Get##iface_struct##_Thunk();
 
 #include "ppapi/thunk/interfaces_ppb_private.h"
-#include "ppapi/thunk/interfaces_ppb_private_flash.h"
 #include "ppapi/thunk/interfaces_ppb_private_no_permissions.h"
-#include "ppapi/thunk/interfaces_ppb_private_pdf.h"
 #include "ppapi/thunk/interfaces_ppb_public_dev.h"
 #include "ppapi/thunk/interfaces_ppb_public_dev_channel.h"
 #include "ppapi/thunk/interfaces_ppb_public_socket.h"
@@ -334,9 +329,9 @@ const void* GetInterface(const char* name) {
 // Gets the PPAPI entry points from the given library and places them into the
 // given structure. Returns true on success.
 bool LoadEntryPointsFromLibrary(const base::NativeLibrary& library,
-                                PepperPluginInfo::EntryPoints* entry_points) {
+                                ContentPluginInfo::EntryPoints* entry_points) {
   entry_points->get_interface =
-      reinterpret_cast<PepperPluginInfo::GetInterfaceFunc>(
+      reinterpret_cast<ContentPluginInfo::GetInterfaceFunc>(
           base::GetFunctionPointerFromNativeLibrary(library,
                                                     "PPP_GetInterface"));
   if (!entry_points->get_interface) {
@@ -345,7 +340,7 @@ bool LoadEntryPointsFromLibrary(const base::NativeLibrary& library,
   }
 
   entry_points->initialize_module =
-      reinterpret_cast<PepperPluginInfo::PPP_InitializeModuleFunc>(
+      reinterpret_cast<ContentPluginInfo::PPP_InitializeModuleFunc>(
           base::GetFunctionPointerFromNativeLibrary(library,
                                                     "PPP_InitializeModule"));
   if (!entry_points->initialize_module) {
@@ -356,7 +351,7 @@ bool LoadEntryPointsFromLibrary(const base::NativeLibrary& library,
   // It's okay for PPP_ShutdownModule to not be defined and shutdown_module to
   // be NULL.
   entry_points->shutdown_module =
-      reinterpret_cast<PepperPluginInfo::PPP_ShutdownModuleFunc>(
+      reinterpret_cast<ContentPluginInfo::PPP_ShutdownModuleFunc>(
           base::GetFunctionPointerFromNativeLibrary(library,
                                                     "PPP_ShutdownModule"));
 
@@ -367,7 +362,7 @@ void CreateHostForInProcessModule(RenderFrameImpl* render_frame,
                                   PluginModule* module,
                                   const WebPluginInfo& webplugin_info) {
   // First time an in-process plugin was used, make a host for it.
-  const PepperPluginInfo* info =
+  const ContentPluginInfo* info =
       PepperPluginRegistry::GetInstance()->GetInfoForPlugin(webplugin_info);
   DCHECK(!info->is_out_of_process);
 
@@ -449,7 +444,7 @@ void PluginModule::SetRendererPpapiHost(
 }
 
 bool PluginModule::InitAsInternalPlugin(
-    const PepperPluginInfo::EntryPoints& entry_points) {
+    const ContentPluginInfo::EntryPoints& entry_points) {
   if (InitializeModule(entry_points)) {
     entry_points_ = entry_points;
     return true;
@@ -462,7 +457,7 @@ bool PluginModule::InitAsLibrary(const base::FilePath& path) {
   if (!library)
     return false;
 
-  PepperPluginInfo::EntryPoints entry_points;
+  ContentPluginInfo::EntryPoints entry_points;
 
   if (!LoadEntryPointsFromLibrary(library, &entry_points) ||
       !InitializeModule(entry_points)) {
@@ -648,7 +643,7 @@ void PluginModule::ResetHostGlobalsForTest() {
 }
 
 bool PluginModule::InitializeModule(
-    const PepperPluginInfo::EntryPoints& entry_points) {
+    const ContentPluginInfo::EntryPoints& entry_points) {
   DCHECK(!host_dispatcher_wrapper_.get()) << "Don't call for proxied modules.";
   DCHECK(entry_points.initialize_module != nullptr);
   int retval = entry_points.initialize_module(pp_module(), &GetInterface);
@@ -686,7 +681,7 @@ scoped_refptr<PluginModule> PluginModule::Create(
   // In-process plugins will have always been created up-front to avoid the
   // sandbox restrictions. So getting here implies it doesn't exist or should
   // be out of process.
-  const PepperPluginInfo* info =
+  const ContentPluginInfo* info =
       PepperPluginRegistry::GetInstance()->GetInfoForPlugin(webplugin_info);
   if (!info) {
     *pepper_plugin_was_registered = false;

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include "base/memory/singleton.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_creation/reactions/core/reaction_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
 
@@ -25,9 +24,7 @@ ReactionService* ReactionServiceFactory::GetForProfile(Profile* profile) {
 }
 
 ReactionServiceFactory::ReactionServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "ReactionService",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("ReactionService") {}
 
 ReactionServiceFactory::~ReactionServiceFactory() = default;
 

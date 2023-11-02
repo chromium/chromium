@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -91,7 +91,7 @@ def main(args):
 
     arch_output_dir = os.path.join(fuchsia_root, 'out', 'release-' + arch)
 
-    sdk_tarballs = ['core.tar.gz']
+    sdk_tarballs = ['core.tar.gz', 'core_testing.tar.gz']
 
     for sdk_tar in sdk_tarballs:
       sdk_tar_path = os.path.join(arch_output_dir, 'sdk', 'archive', sdk_tar)

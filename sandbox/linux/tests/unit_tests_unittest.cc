@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,7 +45,7 @@ SANDBOX_DEATH_TEST(UnitTests,
                    SEGVDeathWithMessage,
                    DEATH_SEGV_MESSAGE("Hello")) {
   LOG(ERROR) << "Hello";
-  while (1) {
+  while (true) {
     volatile char* addr = reinterpret_cast<volatile char*>(NULL);
     *addr = '\0';
   }

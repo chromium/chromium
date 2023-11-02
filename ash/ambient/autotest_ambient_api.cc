@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/public/cpp/autotest_ambient_api.h"
 
 #include "ash/ambient/ambient_controller.h"
+#include "ash/ambient/model/ambient_photo_config.h"
 #include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/shell.h"
@@ -50,7 +51,10 @@ class PhotoTransitionAnimationObserver : public AmbientViewDelegateObserver {
   ~PhotoTransitionAnimationObserver() override = default;
 
   // AmbientViewDelegateObserver:
-  void OnPhotoTransitionAnimationCompleted() override {
+  void OnMarkerHit(AmbientPhotoConfig::Marker marker) override {
+    if (marker != AmbientPhotoConfig::Marker::kUiCycleEnded)
+      return;
+
     --num_completions_;
     if (num_completions_ == 0) {
       Cleanup();

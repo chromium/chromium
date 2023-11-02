@@ -1,41 +1,52 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import './toggle_row.js';
 
-import {assert, assertNotReached} from '//resources/js/assert.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import 'chrome://resources/cr_components/app_management/toggle_row.js';
 
-import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../../metrics_recorder.m.js';
+import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
+import {recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {recordSettingChange} from '../../metrics_recorder.js';
 
 import {BrowserProxy} from './browser_proxy.js';
-import {AppManagementUserAction} from './constants.js';
-import {recordAppManagementUserAction} from './util.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'app-management-resize-lock-item',
+/** @polymer */
+class AppManagementResizeLockItemElement extends PolymerElement {
+  static get is() {
+    return 'app-management-resize-lock-item';
+  }
 
-  properties: {
-    /**
-     * @type {App}
-     */
-    app: Object,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * @type {boolean}
-     */
-    hidden: {
-      type: Boolean,
-      computed: 'isHidden_(app)',
-      reflectToAttribute: true,
-    },
-  },
+  static get properties() {
+    return {
+      /**
+       * @type {App}
+       */
+      app: Object,
 
-  listeners: {
-    click: 'onClick_',
-    change: 'toggleSetting_',
-  },
+      /**
+       * @type {boolean}
+       */
+      hidden: {
+        type: Boolean,
+        computed: 'isHidden_(app)',
+        reflectToAttribute: true,
+      },
+    };
+  }
+
+  ready() {
+    super.ready();
+
+    this.addEventListener('click', this.onClick_);
+    this.addEventListener('change', this.toggleSetting_);
+  }
 
   /**
    * @param {App} app
@@ -48,7 +59,7 @@ Polymer({
     }
     assert(app);
     return app.resizeLocked;
-  },
+  }
 
   /**
    * @param {App} app
@@ -60,8 +71,9 @@ Polymer({
     }
     assert(app);
     return app.hideResizeLocked;
-  },
+  }
 
+  /** @private */
   toggleSetting_() {
     const newState = !this.app.resizeLocked;
     assert(newState === this.$['toggle-row'].isChecked());
@@ -70,15 +82,17 @@ Polymer({
         newState,
     );
     recordSettingChange();
-    const userAction = newState ? AppManagementUserAction.ResizeLockTurnedOn :
-                                  AppManagementUserAction.ResizeLockTurnedOff;
+    const userAction = newState ?
+        AppManagementUserAction.RESIZE_LOCK_TURNED_ON :
+        AppManagementUserAction.RESIZE_LOCK_TURNED_OFF;
     recordAppManagementUserAction(this.app.type, userAction);
-  },
+  }
 
-  /**
-   * @private
-   */
+  /** @private */
   onClick_() {
     this.$['toggle-row'].click();
-  },
-});
+  }
+}
+
+customElements.define(
+    AppManagementResizeLockItemElement.is, AppManagementResizeLockItemElement);

@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -11,8 +11,10 @@ import time
 import zipfile
 
 from collections import namedtuple
+from devil.android import apk_helper
 from devil.android import logcat_monitor
 from py_utils.tempfile_ext import NamedTemporaryDirectory
+from telemetry.core import util
 from telemetry.testing import serially_executed_browser_test_case
 
 logger = logging.getLogger(__name__)
@@ -25,9 +27,7 @@ window.webview_smoke_test_harness = test_harness;
 _COMPONENT_NAME_TO_DATA = {
   'WebViewAppsPackageNamesAllowlist': ComponentData(
       component_id = 'aemllinfpjdgcldgaelcgakpjmaekbai',
-      browser_args = [
-          '--enable-features=WebViewAppsPackageNamesAllowlist',
-          '--vmodule=*_allowlist_component_*=2'])
+      browser_args = ['--vmodule=*_allowlist_component_*=2'])
 }
 _LOGCAT_FILTERS = [
     'chromium:v',
@@ -83,17 +83,24 @@ class WebViewCrxSmokeTests(
     super(WebViewCrxSmokeTests, cls).SetUpProcess()
     assert cls._finder_options.crx_file, '--crx-file is required'
     assert cls._finder_options.component_name, '--component-name is required'
-    assert cls._finder_options.webview_package_name, (
-        '--webview-package-name is required')
-
 
     cls.SetBrowserOptions(cls._finder_options)
-    cls._device_components_dir = ('/data/data/%s/app_webview/components' %
-                                  cls._finder_options.webview_package_name)
+    webview_package_name = cls._finder_options.webview_package_name
 
-    logcat_output_dir = (
-        os.path.dirname(cls._typ_runner.args.write_full_results_to or '') or
-        os.getcwd())
+    if not webview_package_name:
+      webview_provider_apk = (cls._browser_to_create
+                              .settings.GetApkName(cls._device))
+      webview_apk_path = util.FindLatestApkOnHost(
+          cls._finder_options.chrome_root, webview_provider_apk)
+      webview_package_name = apk_helper.GetPackageName(webview_apk_path)
+
+    cls._device_components_dir = ('/data/data/%s/app_webview/components' %
+                                  webview_package_name)
+
+    if cls.child.artifact_output_dir:
+      logcat_output_dir = os.path.dirname(cls.child.artifact_output_dir)
+    else:
+      logcat_output_dir = os.getcwd()
 
     # Set up a logcat monitor
     cls._logcat_monitor = logcat_monitor.LogcatMonitor(
@@ -164,7 +171,7 @@ class WebViewCrxSmokeTests(
     """Adds test suite specific command line arguments"""
     parser.add_option('--crx-file', action='store', help='Path to CRX file')
     parser.add_option('--component-name', action='store', help='Component name',
-                      choices=_COMPONENT_NAME_TO_DATA.keys())
+                      choices=list(_COMPONENT_NAME_TO_DATA.keys()))
     parser.add_option('--webview-package-name', action='store',
                       help='WebView package name')
 

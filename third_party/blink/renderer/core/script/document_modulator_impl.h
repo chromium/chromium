@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_DOCUMENT_MODULATOR_IMPL_H_
 
 #include "third_party/blink/renderer/core/script/modulator_impl_base.h"
-
-#include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
 

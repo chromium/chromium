@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_document.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_window.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
@@ -300,7 +301,7 @@ void TakeSnapshotForWorld(v8::SnapshotCreator* snapshot_creator,
     int indices[] = {kV8DOMWrapperObjectIndex, kV8DOMWrapperTypeIndex};
     void* values[] = {nullptr,
                       const_cast<WrapperTypeInfo*>(document_wrapper_type_info)};
-    document_wrapper->SetAlignedPointerInInternalFields(base::size(indices),
+    document_wrapper->SetAlignedPointerInInternalFields(std::size(indices),
                                                         indices, values);
 
     V8PrivateProperty::GetWindowDocumentCachedAccessor(isolate).Set(
@@ -399,12 +400,12 @@ void V8ContextSnapshotImpl::InstallInterfaceTemplates(v8::Isolate* isolate) {
 
   for (size_t world_index = 0; world_index < kNumOfWorlds; ++world_index) {
     scoped_refptr<DOMWrapperWorld> world = IndexToWorld(isolate, world_index);
-    for (size_t i = 0; i < base::size(type_info_table); ++i) {
+    for (size_t i = 0; i < std::size(type_info_table); ++i) {
       const auto& type_info = type_info_table[i];
       v8::Local<v8::FunctionTemplate> interface_template =
           isolate
               ->GetDataFromSnapshotOnce<v8::FunctionTemplate>(
-                  world_index * base::size(type_info_table) + i)
+                  world_index * std::size(type_info_table) + i)
               .ToLocalChecked();
       per_isolate_data->AddV8Template(*world, type_info.wrapper_type_info,
                                       interface_template);
@@ -417,7 +418,8 @@ void V8ContextSnapshotImpl::InstallInterfaceTemplates(v8::Isolate* isolate) {
 
 v8::StartupData V8ContextSnapshotImpl::TakeSnapshot() {
   v8::Isolate* isolate = V8PerIsolateData::MainThreadIsolate();
-  CHECK_EQ(isolate, v8::Isolate::GetCurrent());
+  CHECK(isolate);
+  CHECK(isolate->IsCurrent());
   V8PerIsolateData* per_isolate_data = V8PerIsolateData::From(isolate);
   CHECK_EQ(per_isolate_data->GetV8ContextSnapshotMode(),
            V8PerIsolateData::V8ContextSnapshotMode::kTakeSnapshot);
@@ -473,7 +475,7 @@ const intptr_t* V8ContextSnapshotImpl::GetReferenceTable() {
       bindings::v8_context_snapshot::GetRefTableOfV8Window(),
       last_table,
   };
-  DCHECK_EQ(base::size(tables), base::size(type_info_table) + 1);
+  DCHECK_EQ(std::size(tables), std::size(type_info_table) + 1);
 
   size_t size_bytes = 0;
   for (const auto& table : tables)

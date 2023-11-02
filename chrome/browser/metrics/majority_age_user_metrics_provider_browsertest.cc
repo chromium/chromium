@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@
 #include "components/metrics/demographics/demographic_metrics_test_utils.h"
 #include "components/metrics/demographics/user_demographics.h"
 #include "components/metrics/metrics_service.h"
-#include "components/sync/test/fake_server/fake_server.h"
+#include "components/sync/test/fake_server.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
@@ -53,7 +53,7 @@ class MajorityAgeUserMetricsProviderTest
  public:
   MajorityAgeUserMetricsProviderTest() : SyncTest(SINGLE_CLIENT) {
     scoped_feature_list_.InitAndEnableFeature(
-        metrics::DemographicMetricsProvider::kDemographicMetricsReporting);
+        metrics::kDemographicMetricsReporting);
   }
 
   int GetAge() { return GetParam(); }
@@ -117,7 +117,7 @@ class MajorityAgeUserMetricsProviderGuestModeTest
  public:
   MajorityAgeUserMetricsProviderGuestModeTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        metrics::DemographicMetricsProvider::kDemographicMetricsReporting);
+        metrics::kDemographicMetricsReporting);
   }
 
  private:

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -49,7 +50,7 @@ class NssService : public KeyedService {
   // thread and then invoked.  While the returned getter must be invoked on
   // the IO thread, this method itself may only be invoked on the UI thread,
   // where the NssService lives.
-  NssCertDatabaseGetter CreateNSSCertDatabaseGetterForIOThread();
+  virtual NssCertDatabaseGetter CreateNSSCertDatabaseGetterForIOThread();
 
   // Unsafely returns the `NssCertDatabase` directly to the caller (on the UI
   // thread). This is unsafe, because if the `content::BrowserContext` / this
@@ -69,7 +70,7 @@ class NssService : public KeyedService {
   // destroyed exclusively on the IO thread.
   std::unique_ptr<NSSCertDatabaseChromeOSManager> nss_cert_database_manager_;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext> context_;
 #endif
 };
 

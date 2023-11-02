@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "components/ukm/test_ukm_recorder.h"
@@ -6,11 +6,13 @@
 
 #include "base/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
@@ -51,7 +53,7 @@ class InteractiveDetectorTest : public testing::Test,
     auto test_task_runner = platform_->test_task_runner();
     auto* tick_clock = test_task_runner->GetMockTickClock();
     dummy_page_holder_ = std::make_unique<DummyPageHolder>(
-        IntSize(), nullptr, nullptr, base::NullCallback(), tick_clock);
+        gfx::Size(), nullptr, nullptr, base::NullCallback(), tick_clock);
 
     Document* document = &dummy_page_holder_->GetDocument();
     detector_ = MakeGarbageCollected<InteractiveDetector>(
@@ -151,6 +153,11 @@ class InteractiveDetectorTest : public testing::Test,
 
   base::TimeDelta GetTotalBlockingTime() {
     return detector_->ComputeTotalBlockingTime();
+  }
+
+  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() {
+    return dummy_page_holder_->GetDocument().GetTaskRunner(
+        TaskType::kUserInteraction);
   }
 
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
@@ -493,9 +500,9 @@ TEST_F(InteractiveDetectorTest, TaskLongerThan5sBlocksTTI) {
   SimulateFCPDetected(t0 + base::Seconds(3), t0 + base::Seconds(4));
 
   // Post a task with 6 seconds duration.
-  Thread::Current()->GetTaskRunner()->PostTask(
-      FROM_HERE, WTF::Bind(&InteractiveDetectorTest::DummyTaskWithDuration,
-                           WTF::Unretained(this), 6.0));
+  GetTaskRunner()->PostTask(
+      FROM_HERE, WTF::BindOnce(&InteractiveDetectorTest::DummyTaskWithDuration,
+                               WTF::Unretained(this), 6.0));
 
   platform_->RunUntilIdle();
 
@@ -512,9 +519,9 @@ TEST_F(InteractiveDetectorTest, LongTaskAfterTTIDoesNothing) {
   SimulateFCPDetected(t0 + base::Seconds(3), t0 + base::Seconds(4));
 
   // Long task 1.
-  Thread::Current()->GetTaskRunner()->PostTask(
-      FROM_HERE, WTF::Bind(&InteractiveDetectorTest::DummyTaskWithDuration,
-                           WTF::Unretained(this), 0.1));
+  GetTaskRunner()->PostTask(
+      FROM_HERE, WTF::BindOnce(&InteractiveDetectorTest::DummyTaskWithDuration,
+                               WTF::Unretained(this), 0.1));
 
   platform_->RunUntilIdle();
 
@@ -524,9 +531,9 @@ TEST_F(InteractiveDetectorTest, LongTaskAfterTTIDoesNothing) {
   EXPECT_EQ(GetInteractiveTime(), long_task_1_end_time);
 
   // Long task 2.
-  Thread::Current()->GetTaskRunner()->PostTask(
-      FROM_HERE, WTF::Bind(&InteractiveDetectorTest::DummyTaskWithDuration,
-                           WTF::Unretained(this), 0.1));
+  GetTaskRunner()->PostTask(
+      FROM_HERE, WTF::BindOnce(&InteractiveDetectorTest::DummyTaskWithDuration,
+                               WTF::Unretained(this), 0.1));
 
   platform_->RunUntilIdle();
   // Wait 5 seconds to see if TTI time changes.
@@ -627,7 +634,6 @@ TEST_F(InteractiveDetectorTest, FirstInputDelayForClickOnMobile) {
 TEST_F(InteractiveDetectorTest,
        FirstInputDelayForClickOnDesktopWithFixEnabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(blink::kFixFirstInputDelayForDesktop);
   auto* detector = GetDetector();
   base::TimeTicks t0 = Now();
   // Pointerdown
@@ -654,40 +660,6 @@ TEST_F(InteractiveDetectorTest,
                                 t0 + base::Milliseconds(50));
   EXPECT_TRUE(detector->GetFirstInputDelay().has_value());
   EXPECT_EQ(detector->GetFirstInputDelay().value(), base::Milliseconds(17));
-}
-
-TEST_F(InteractiveDetectorTest,
-       FirstInputDelayForClickOnDesktopWithFixDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(blink::kFixFirstInputDelayForDesktop);
-  auto* detector = GetDetector();
-  base::TimeTicks t0 = Now();
-  // Pointerdown
-  Event pointerdown(event_type_names::kPointerdown, MessageEvent::Bubbles::kYes,
-                    MessageEvent::Cancelable::kYes,
-                    MessageEvent::ComposedMode::kComposed, t0);
-  pointerdown.SetTrusted(true);
-  detector->HandleForInputDelay(pointerdown, t0, t0 + base::Milliseconds(17));
-  EXPECT_FALSE(detector->GetFirstInputDelay().has_value());
-  // Mousedown
-  Event mousedown(event_type_names::kMousedown, MessageEvent::Bubbles::kYes,
-                  MessageEvent::Cancelable::kYes,
-                  MessageEvent::ComposedMode::kComposed, t0);
-  mousedown.SetTrusted(true);
-  detector->HandleForInputDelay(mousedown, t0, t0 + base::Milliseconds(13));
-  EXPECT_TRUE(detector->GetFirstInputDelay().has_value());
-  EXPECT_EQ(detector->GetFirstInputDelay().value(), base::Milliseconds(13));
-
-  // Pointerup
-  Event pointerup(event_type_names::kPointerup, MessageEvent::Bubbles::kYes,
-                  MessageEvent::Cancelable::kYes,
-                  MessageEvent::ComposedMode::kComposed,
-                  t0 + base::Milliseconds(20));
-  pointerup.SetTrusted(true);
-  detector->HandleForInputDelay(pointerup, t0 + base::Milliseconds(20),
-                                t0 + base::Milliseconds(50));
-  EXPECT_TRUE(detector->GetFirstInputDelay().has_value());
-  EXPECT_EQ(detector->GetFirstInputDelay().value(), base::Milliseconds(13));
 }
 
 }  // namespace blink

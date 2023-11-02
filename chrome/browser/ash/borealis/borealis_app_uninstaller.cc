@@ -1,10 +1,9 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/borealis/borealis_app_uninstaller.h"
 
-#include "base/base64.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/borealis/borealis_app_launcher.h"
 #include "chrome/browser/ash/borealis/borealis_installer.h"
@@ -15,14 +14,12 @@
 
 namespace borealis {
 
-const char kBorealisUninstallPrefix[] = "Oi8vdW5pbnN0YWxsLw==";
-
 BorealisAppUninstaller::BorealisAppUninstaller(Profile* profile)
     : profile_(profile) {}
 
 void BorealisAppUninstaller::Uninstall(std::string app_id,
                                        OnUninstalledCallback callback) {
-  if (app_id == kBorealisAppId || app_id == kBorealisMainAppId) {
+  if (app_id == kInstallerAppId || app_id == kClientAppId) {
     BorealisService::GetForProfile(profile_)->Installer().Uninstall(
         base::BindOnce(
             [](OnUninstalledCallback callback, BorealisUninstallResult result) {
@@ -53,25 +50,18 @@ void BorealisAppUninstaller::Uninstall(std::string app_id,
     std::move(callback).Run(UninstallResult::kError);
     return;
   }
-  // TODO(174282035): Changeup string usage and finish tests.
   absl::optional<guest_os::GuestOsRegistryService::Registration> main_app =
       guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_)
-          ->GetRegistration(kBorealisMainAppId);
+          ->GetRegistration(kClientAppId);
   if (!main_app.has_value()) {
     LOG(ERROR) << "Failed to retrieve a registration for the Borealis main app";
     std::move(callback).Run(UninstallResult::kError);
     return;
   }
-  std::string prefix;
-  if (!base::Base64Decode(kBorealisUninstallPrefix, &prefix)) {
-    LOG(ERROR) << "Couldn't decode the Borealis uninstall prefix";
-    std::move(callback).Run(UninstallResult::kError);
-    return;
-  }
-  std::string uninstall_string = main_app->DesktopFileId() + prefix +
-                                 base::NumberToString(*uninstall_app_id);
+  std::string uninstall_string =
+      "steam://uninstall/" + base::NumberToString(*uninstall_app_id);
   borealis::BorealisService::GetForProfile(profile_)->AppLauncher().Launch(
-      kBorealisMainAppId, {uninstall_string},
+      kClientAppId, {uninstall_string},
       base::BindOnce(
           [](OnUninstalledCallback callback,
              BorealisAppLauncher::LaunchResult result) {

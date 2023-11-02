@@ -1,35 +1,39 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/loader/navigation_early_hints_manager.h"
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/url_loader_throttles.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/referrer.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "net/base/load_flags.h"
 #include "net/base/schemeful_site.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request_job.h"
+#include "services/network/public/cpp/content_security_policy/content_security_policy.h"
+#include "services/network/public/cpp/content_security_policy/csp_source_list.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/content_security_policy.mojom-shared.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
-#include "third_party/blink/public/common/origin_trials/trial_token.h"
-#include "third_party/blink/public/common/origin_trials/trial_token_result.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "url/origin.h"
 
@@ -77,12 +81,65 @@ const net::NetworkTrafficAnnotationTag kEarlyHintsPreloadTrafficAnnotation =
       "of both) limits the scope of these requests."
 )");
 
-constexpr char kEarlyHintsPreloadForNavigationOriginTrialName[] =
-    "EarlyHintsPreloadForNavigation";
-
 bool IsDisabledEarlyHintsPreloadForcibly() {
   return base::GetFieldTrialParamByFeatureAsBool(
       features::kEarlyHintsPreloadForNavigation, "force_disable", false);
+}
+
+bool IsEnabledEarlyHintsPreconnect() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      features::kEarlyHintsPreloadForNavigation, "enable_preconnect", true);
+}
+
+network::mojom::CSPDirectiveName LinkAsAttributeToCSPDirective(
+    network::mojom::LinkAsAttribute attr) {
+  switch (attr) {
+    case network::mojom::LinkAsAttribute::kUnspecified:
+      return network::mojom::CSPDirectiveName::Unknown;
+    case network::mojom::LinkAsAttribute::kImage:
+      return network::mojom::CSPDirectiveName::ImgSrc;
+    case network::mojom::LinkAsAttribute::kFont:
+      return network::mojom::CSPDirectiveName::FontSrc;
+    case network::mojom::LinkAsAttribute::kScript:
+      return network::mojom::CSPDirectiveName::ScriptSrcElem;
+    case network::mojom::LinkAsAttribute::kStyleSheet:
+      return network::mojom::CSPDirectiveName::StyleSrcElem;
+  }
+  NOTREACHED();
+  return network::mojom::CSPDirectiveName::Unknown;
+}
+
+bool CheckContentSecurityPolicyForPreload(
+    const network::mojom::LinkHeaderPtr& link,
+    const std::vector<network::mojom::ContentSecurityPolicyPtr>&
+        content_security_policies) {
+  DCHECK(link->rel == network::mojom::LinkRelAttribute::kPreload ||
+         link->rel == network::mojom::LinkRelAttribute::kModulePreload);
+
+  network::mojom::CSPDirectiveName directive =
+      LinkAsAttributeToCSPDirective(link->as);
+
+  for (network::mojom::CSPDirectiveName effective_directive = directive;
+       effective_directive != network::mojom::CSPDirectiveName::Unknown;
+       effective_directive =
+           network::CSPFallbackDirective(effective_directive, directive)) {
+    for (auto& policy : content_security_policies) {
+      const auto& it = policy->directives.find(effective_directive);
+      if (it == policy->directives.end())
+        continue;
+
+      if (!network::CheckCSPSourceList(
+              directive, *it->second, link->href, *(policy->self_origin),
+              /*has_followed_redirect=*/false, /*is_response_check=*/false,
+              /*is_opaque_fenced_frame=*/false)) {
+        // TODO(https://crbug.com/1305896): Report CSP violation once the final
+        // response is received.
+        return false;
+      }
+    }
+  }
+
+  return true;
 }
 
 network::mojom::RequestDestination LinkAsAttributeToRequestDestination(
@@ -243,7 +300,7 @@ NavigationEarlyHintsManager::PreloadedResource::operator=(
 NavigationEarlyHintsManager::InflightPreload::InflightPreload(
     std::unique_ptr<blink::ThrottlingURLLoader> loader,
     std::unique_ptr<PreloadURLLoaderClient> client)
-    : loader(std::move(loader)), client(std::move(client)) {}
+    : client(std::move(client)), loader(std::move(loader)) {}
 
 NavigationEarlyHintsManager::InflightPreload::~InflightPreload() = default;
 
@@ -254,8 +311,11 @@ class NavigationEarlyHintsManager::PreloadURLLoaderClient
     : public network::mojom::URLLoaderClient,
       public mojo::DataPipeDrainer::Client {
  public:
-  PreloadURLLoaderClient(NavigationEarlyHintsManager& owner, const GURL& url)
-      : owner_(owner), url_(url) {}
+  PreloadURLLoaderClient(NavigationEarlyHintsManager& owner,
+                         const network::ResourceRequest& request)
+      : owner_(owner),
+        url_(request.url),
+        request_destination_(request.destination) {}
 
   ~PreloadURLLoaderClient() override = default;
 
@@ -268,11 +328,26 @@ class NavigationEarlyHintsManager::PreloadURLLoaderClient
   // mojom::URLLoaderClient overrides:
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
   }
-  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head) override {
-    if (head->network_accessed || !head->was_fetched_via_cache)
+  void OnReceiveResponse(
+      network::mojom::URLResponseHeadPtr head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      absl::optional<mojo_base::BigBuffer> cached_metadata) override {
+    if (!head->network_accessed && head->was_fetched_via_cache) {
+      // Cancel the client since the response is already stored in the cache.
+      result_.was_canceled = true;
+      MaybeCompletePreload();
       return;
-    result_.was_canceled = true;
-    MaybeCompletePreload();
+    }
+
+    if (!body)
+      return;
+
+    if (response_body_drainer_) {
+      mojo::ReportBadMessage("NEHM_BAD_RESPONSE_BODY");
+      return;
+    }
+    response_body_drainer_ =
+        std::make_unique<mojo::DataPipeDrainer>(this, std::move(body));
   }
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          network::mojom::URLResponseHeadPtr head) override {}
@@ -281,17 +356,7 @@ class NavigationEarlyHintsManager::PreloadURLLoaderClient
                         OnUploadProgressCallback callback) override {
     NOTREACHED();
   }
-  void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override {}
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override {}
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override {
-    if (response_body_drainer_) {
-      mojo::ReportBadMessage("NEHM_BAD_RESPONSE_BODY");
-      return;
-    }
-    response_body_drainer_ =
-        std::make_unique<mojo::DataPipeDrainer>(this, std::move(body));
-  }
   void OnComplete(const network::URLLoaderCompletionStatus& status) override {
     if (result_.was_canceled || result_.error_code.has_value()) {
       mojo::ReportBadMessage("NEHM_BAD_COMPLETE");
@@ -320,6 +385,12 @@ class NavigationEarlyHintsManager::PreloadURLLoaderClient
 
   void MaybeCompletePreload() {
     if (CanCompletePreload()) {
+      if (!result_.was_canceled) {
+        base::UmaHistogramEnumeration(
+            kEarlyHintsPreloadRequestDestinationHistogramName,
+            request_destination_);
+      }
+
       // Delete `this`.
       owner_.OnPreloadComplete(url_, result_);
     }
@@ -327,6 +398,7 @@ class NavigationEarlyHintsManager::PreloadURLLoaderClient
 
   NavigationEarlyHintsManager& owner_;
   const GURL url_;
+  const network::mojom::RequestDestination request_destination_;
 
   PreloadedResource result_;
   std::unique_ptr<mojo::DataPipeDrainer> response_body_drainer_;
@@ -352,32 +424,35 @@ NavigationEarlyHintsManager::~NavigationEarlyHintsManager() = default;
 
 void NavigationEarlyHintsManager::HandleEarlyHints(
     network::mojom::EarlyHintsPtr early_hints,
-    const network::ResourceRequest& navigation_request) {
-  bool enabled_by_origin_trial = IsPreloadForNavigationEnabledByOriginTrial(
-      early_hints->origin_trial_tokens);
+    const network::ResourceRequest& request_for_navigation) {
+  // Ignore the second and subsequent responses to avoid situations where
+  // policies such as CSP are inconsistent among the first and following
+  // responses.
+  // TODO(https://crbug.com/1305896): Refer to a relevant specification once the
+  // spec discussion is settled.
+  if (was_first_early_hints_received_)
+    return;
+
+  was_first_early_hints_received_ = true;
+
+  net::ReferrerPolicy referrer_policy =
+      Referrer::ReferrerPolicyForUrlRequest(early_hints->referrer_policy);
 
   for (const auto& link : early_hints->headers->link_headers) {
     // TODO(crbug.com/671310): Support other `rel` attributes.
     if (link->rel == network::mojom::LinkRelAttribute::kPreconnect) {
-      MaybePreconnect(link, enabled_by_origin_trial);
+      MaybePreconnect(link);
     } else if (link->rel == network::mojom::LinkRelAttribute::kPreload ||
                link->rel == network::mojom::LinkRelAttribute::kModulePreload) {
-      MaybePreloadHintedResource(link, navigation_request,
-                                 enabled_by_origin_trial);
+      MaybePreloadHintedResource(link, request_for_navigation,
+                                 early_hints->headers->content_security_policy,
+                                 referrer_policy);
     }
   }
 }
 
 bool NavigationEarlyHintsManager::WasResourceHintsReceived() const {
-  // The field trial for Early Hints preload uses this method to determine
-  // whether custom page metrics for the trial should be recorded. Returns false
-  // when Early Hints preloads are triggered by the origin trial but the field
-  // trial is disabled so that we can avoid skewing the custom page metrics for
-  // the field trial.
-  if (base::FeatureList::IsEnabled(features::kEarlyHintsPreloadForNavigation))
-    return was_resource_hints_received_;
-  return was_resource_hints_received_ &&
-         !was_resource_hints_triggered_by_origin_trial_;
+  return was_resource_hints_received_;
 }
 
 std::vector<GURL> NavigationEarlyHintsManager::TakePreloadedResourceURLs() {
@@ -412,36 +487,14 @@ NavigationEarlyHintsManager::GetNetworkContext() {
   return storage_partition_.GetNetworkContext();
 }
 
-bool NavigationEarlyHintsManager::IsPreloadForNavigationEnabledByOriginTrial(
-    const std::vector<std::string>& raw_tokens) {
-  if (!blink::TrialTokenValidator::IsTrialPossibleOnOrigin(origin_.GetURL()))
-    return false;
-
-  auto current_time = base::Time::Now();
-  for (auto& raw_token : raw_tokens) {
-    blink::TrialTokenResult result =
-        trial_token_validator_.ValidateToken(raw_token, origin_, current_time);
-    if (result.Status() != blink::OriginTrialTokenStatus::kSuccess)
-      continue;
-
-    const blink::TrialToken* token = result.ParsedToken();
-    DCHECK(token);
-    DCHECK_EQ(token->IsValid(origin_, current_time),
-              blink::OriginTrialTokenStatus::kSuccess);
-    if (token->feature_name() != kEarlyHintsPreloadForNavigationOriginTrialName)
-      continue;
-
-    return true;
-  }
-  return false;
-}
-
 void NavigationEarlyHintsManager::MaybePreconnect(
-    const network::mojom::LinkHeaderPtr& link,
-    bool enabled_by_origin_trial) {
+    const network::mojom::LinkHeaderPtr& link) {
   was_resource_hints_received_ = true;
 
-  if (!ShouldHandleResourceHints(link, enabled_by_origin_trial))
+  if (!IsEnabledEarlyHintsPreconnect())
+    return;
+
+  if (!ShouldHandleResourceHints(link))
     return;
 
   PreconnectEntry entry(url::Origin::Create(link->href), link->cross_origin);
@@ -454,25 +507,27 @@ void NavigationEarlyHintsManager::MaybePreconnect(
 
   bool allow_credentials =
       link->cross_origin != network::mojom::CrossOriginAttribute::kAnonymous;
-  network_context->PreconnectSockets(/*num_streams=*/1, link->href,
-                                     allow_credentials,
-                                     isolation_info_.network_isolation_key());
+  network_context->PreconnectSockets(
+      /*num_streams=*/1, link->href, allow_credentials,
+      isolation_info_.network_anonymization_key());
   preconnect_entries_.insert(std::move(entry));
-
-  if (enabled_by_origin_trial)
-    was_resource_hints_triggered_by_origin_trial_ = true;
 }
 
 void NavigationEarlyHintsManager::MaybePreloadHintedResource(
     const network::mojom::LinkHeaderPtr& link,
-    const network::ResourceRequest& navigation_request,
-    bool enabled_by_origin_trial) {
-  DCHECK(navigation_request.is_main_frame);
-  DCHECK(navigation_request.url.SchemeIsHTTPOrHTTPS());
+    const network::ResourceRequest& request_for_navigation,
+    const std::vector<network::mojom::ContentSecurityPolicyPtr>&
+        content_security_policies,
+    net::ReferrerPolicy referrer_policy) {
+  DCHECK(request_for_navigation.is_outermost_main_frame);
+  DCHECK(request_for_navigation.url.SchemeIsHTTPOrHTTPS());
 
   was_resource_hints_received_ = true;
 
-  if (!ShouldHandleResourceHints(link, enabled_by_origin_trial))
+  if (!ShouldHandleResourceHints(link))
+    return;
+
+  if (!CheckContentSecurityPolicyForPreload(link, content_security_policies))
     return;
 
   if (inflight_preloads_.contains(link->href) ||
@@ -492,13 +547,15 @@ void NavigationEarlyHintsManager::MaybePreloadHintedResource(
   request.site_for_cookies = site_for_cookies;
   request.request_initiator = origin_;
   request.referrer = net::URLRequestJob::ComputeReferrerForPolicy(
-      navigation_request.referrer_policy, navigation_request.url, request.url);
-  request.referrer_policy = navigation_request.referrer_policy;
+      referrer_policy, request_for_navigation.url, request.url);
+  request.referrer_policy = referrer_policy;
   request.load_flags = net::LOAD_NORMAL;
   request.resource_type =
       static_cast<int>(blink::mojom::ResourceType::kSubResource);
   request.mode = CalculateRequestMode(link);
   request.credentials_mode = CalculateCredentialsMode(link);
+
+  blink::network_utils::SetAcceptHeader(request.headers, request.destination);
 
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles =
       CreateContentBrowserURLLoaderThrottles(
@@ -507,8 +564,7 @@ void NavigationEarlyHintsManager::MaybePreloadHintedResource(
                               frame_tree_node_id_),
           /*navigation_ui_data=*/nullptr, frame_tree_node_id_);
 
-  auto loader_client =
-      std::make_unique<PreloadURLLoaderClient>(*this, request.url);
+  auto loader_client = std::make_unique<PreloadURLLoaderClient>(*this, request);
   auto loader = blink::ThrottlingURLLoader::CreateLoaderAndStart(
       shared_loader_factory_, std::move(throttles),
       content::GlobalRequestID::MakeBrowserInitiated().request_id,
@@ -519,22 +575,15 @@ void NavigationEarlyHintsManager::MaybePreloadHintedResource(
       std::move(loader), std::move(loader_client));
 
   preloaded_urls_.push_back(request.url);
-
-  if (enabled_by_origin_trial)
-    was_resource_hints_triggered_by_origin_trial_ = true;
 }
 
 bool NavigationEarlyHintsManager::ShouldHandleResourceHints(
-    const network::mojom::LinkHeaderPtr& link,
-    bool enabled_by_origin_trial) {
+    const network::mojom::LinkHeaderPtr& link) {
   if (IsDisabledEarlyHintsPreloadForcibly())
     return false;
 
-  if (!base::FeatureList::IsEnabled(
-          features::kEarlyHintsPreloadForNavigation) &&
-      !enabled_by_origin_trial) {
+  if (!base::FeatureList::IsEnabled(features::kEarlyHintsPreloadForNavigation))
     return false;
-  }
 
   if (!link->href.SchemeIsHTTPOrHTTPS())
     return false;

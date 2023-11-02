@@ -1,0 +1,92 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("legacy_signin") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "legacy_signin_screen_coordinator.h",
+    "legacy_signin_screen_coordinator.mm",
+    "legacy_signin_screen_mediator.h",
+    "legacy_signin_screen_mediator.mm",
+  ]
+  deps = [
+    ":legacy_signin_ui",
+    "//components/prefs",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/first_run",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/policy",
+    "//ios/chrome/browser/policy:policy_util",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
+    "//ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt",
+    "//ios/chrome/browser/ui/authentication/signin/user_signin/logging",
+    "//ios/chrome/browser/ui/authentication/unified_consent/identity_chooser",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/first_run:interruptible_chrome_coordinator",
+    "//ios/chrome/browser/ui/first_run:screen_delegate",
+    "//ios/chrome/browser/ui/first_run:utils",
+    "//ios/chrome/browser/ui/main:scene_state_header",
+    "//ios/chrome/browser/unified_consent",
+    "//ios/chrome/browser/url_loading",
+    "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser/signin",
+  ]
+}
+
+source_set("legacy_signin_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "legacy_signin_screen_consumer.h",
+    "legacy_signin_screen_view_controller.h",
+    "legacy_signin_screen_view_controller.mm",
+  ]
+  deps = [
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
+    "//ios/chrome/browser/ui/authentication/views",
+    "//ios/chrome/browser/ui/elements:elements_internal",
+    "//ios/chrome/browser/ui/first_run:constants",
+    "//ios/chrome/browser/ui/first_run/resources:legacy_forced_signin_screen_banner",
+    "//ios/chrome/browser/ui/first_run/resources:legacy_signin_screen_banner",
+    "//ios/chrome/browser/ui/settings/elements:constants",
+    "//ios/chrome/browser/ui/settings/elements:enterprise_info_popover_view_controller",
+    "//ios/chrome/common:string_util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements:popover_label_view_controller",
+    "//ios/chrome/common/ui/promo_style",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "legacy_signin_screen_mediator_unittest.mm" ]
+  deps = [
+    ":legacy_signin",
+    ":legacy_signin_ui",
+    "//base",
+    "//base/test:test_support",
+    "//components/prefs",
+    "//components/unified_consent",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:test_support",
+    "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/unified_consent",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/test:test_support",
+    "//ios/public/provider/chrome/browser:test_support",
+    "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
+    "//ios/public/provider/chrome/browser/signin:test_support",
+    "//ios/web/public/test",
+    "//third_party/ocmock",
+  ]
+}

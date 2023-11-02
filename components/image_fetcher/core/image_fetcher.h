@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,17 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/image_fetcher/core/image_fetcher_types.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
+
+namespace data_decoder {
+class DataDecoder;
+}  // namespace data_decoder
 
 namespace image_fetcher {
 
@@ -97,6 +102,15 @@ class ImageFetcherParams {
     expiration_interval_ = expiration_interval;
   }
 
+  // Sets the data decoder to use for this image. Using the same data decoder
+  // across multiple image fetches allows them to be decoded in the same
+  // process.
+  void set_data_decoder(data_decoder::DataDecoder* data_decoder) {
+    data_decoder_ = data_decoder;
+  }
+
+  data_decoder::DataDecoder* data_decoder() const { return data_decoder_; }
+
  private:
   void set_skip_transcoding(bool skip_transcoding) {
     skip_transcoding_ = skip_transcoding;
@@ -126,6 +140,10 @@ class ImageFetcherParams {
   // True if allowing images that need transcoding to be stored with a prefix in
   // file names.
   bool allow_needs_transcoding_file_;
+
+  // The data decoder to use for decoding this image. If null, a new data
+  // decoder will be created for each fetch.
+  raw_ptr<data_decoder::DataDecoder> data_decoder_ = nullptr;
 };
 
 // A class used to fetch server images. It can be called from any thread and the

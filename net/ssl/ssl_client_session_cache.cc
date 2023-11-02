@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@ namespace {
 
 // Returns a tuple of references to fields of |key|, for comparison purposes.
 auto TieKeyFields(const SSLClientSessionCache::Key& key) {
-  return std::tie(key.server, key.dest_ip_addr, key.network_isolation_key,
+  return std::tie(key.server, key.dest_ip_addr, key.network_anonymization_key,
                   key.privacy_mode, key.disable_legacy_crypto);
 }
 
@@ -44,8 +44,7 @@ bool SSLClientSessionCache::Key::operator<(const Key& other) const {
 SSLClientSessionCache::SSLClientSessionCache(const Config& config)
     : clock_(base::DefaultClock::GetInstance()),
       config_(config),
-      cache_(config.max_entries),
-      lookups_since_flush_(0) {
+      cache_(config.max_entries) {
   memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
       FROM_HERE, base::BindRepeating(&SSLClientSessionCache::OnMemoryPressure,
                                      base::Unretained(this)));

@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,14 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/policy/core/common/cloud/resource_cache.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_types.h"
+#include "components/policy/core/common/values_util.h"
 #include "components/policy/policy_export.h"
 
 namespace enterprise_management {
@@ -76,6 +78,9 @@ class POLICY_EXPORT ComponentCloudPolicyStore {
 
   // The current list of policies.
   const PolicyBundle& policy() const { return policy_bundle_; }
+
+  // Returns the map of JSON policy value for each namespace.
+  ComponentPolicyMap GetJsonPolicyMap();
 
   // The cached hash for namespace |ns|, or the empty string if |ns| is not
   // cached.
@@ -148,8 +153,8 @@ class POLICY_EXPORT ComponentCloudPolicyStore {
                    PolicyMap* policy,
                    std::string* error);
 
-  Delegate* const delegate_;
-  ResourceCache* const cache_;
+  const raw_ptr<Delegate> delegate_;
+  const raw_ptr<ResourceCache> cache_;
 
   // The following fields contain credentials used for validating the policy.
   std::string username_;
@@ -168,7 +173,7 @@ class POLICY_EXPORT ComponentCloudPolicyStore {
   // exposed component.
   std::map<PolicyNamespace, base::Time> stored_policy_times_;
 
-  const DomainConstants* domain_constants_;
+  raw_ptr<const DomainConstants> domain_constants_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

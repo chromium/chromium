@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,10 +45,20 @@ Contact::Contact(std::unique_ptr<autofill::AutofillProfile> _profile)
     : profile(std::move(_profile)) {}
 Contact::~Contact() = default;
 
+PhoneNumber::PhoneNumber() = default;
+PhoneNumber::PhoneNumber(std::unique_ptr<autofill::AutofillProfile> _profile)
+    : profile(std::move(_profile)) {}
+PhoneNumber::~PhoneNumber() = default;
+
 Address::Address() = default;
 Address::Address(std::unique_ptr<autofill::AutofillProfile> _profile)
     : profile(std::move(_profile)) {}
 Address::~Address() = default;
+
+UserDataMetrics::UserDataMetrics() = default;
+UserDataMetrics::~UserDataMetrics() = default;
+UserDataMetrics::UserDataMetrics(const UserDataMetrics&) = default;
+UserDataMetrics& UserDataMetrics::operator=(const UserDataMetrics&) = default;
 
 UserData::UserData() = default;
 UserData::~UserData() = default;
@@ -68,6 +78,10 @@ const autofill::AutofillProfile* UserData::selected_address(
   }
 
   return it->second.get();
+}
+
+const autofill::AutofillProfile* UserData::selected_phone_number() const {
+  return selected_phone_number_.get();
 }
 
 const autofill::CreditCard* UserData::selected_card() const {
@@ -103,4 +117,10 @@ std::string UserData::GetAllAddressKeyNames() const {
   std::sort(entries.begin(), entries.end());
   return base::JoinString(entries, ",");
 }
+
+void UserData::SetSelectedPhoneNumber(
+    std::unique_ptr<autofill::AutofillProfile> profile) {
+  selected_phone_number_ = std::move(profile);
+}
+
 }  // namespace autofill_assistant

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
@@ -40,24 +40,25 @@ class AudioParameters;
 }  // namespace media
 
 namespace audio {
-class OutputStreamActivityMonitor;
-
 class OutputStream final : public media::mojom::AudioOutputStream,
                            public OutputController::EventHandler {
  public:
   using DeleteCallback = base::OnceCallback<void(OutputStream*)>;
   using CreatedCallback =
       base::OnceCallback<void(media::mojom::ReadWriteAudioDataPipePtr)>;
+  using ManagedDeviceOutputStreamCreateCallback =
+      OutputController::ManagedDeviceOutputStreamCreateCallback;
 
   OutputStream(
       CreatedCallback created_callback,
       DeleteCallback delete_callback,
+      ManagedDeviceOutputStreamCreateCallback
+          managed_device_output_stream_create_callback,
       mojo::PendingReceiver<media::mojom::AudioOutputStream> stream_receiver,
       mojo::PendingAssociatedRemote<media::mojom::AudioOutputStreamObserver>
           observer,
       mojo::PendingRemote<media::mojom::AudioLog> log,
       media::AudioManager* audio_manager,
-      OutputStreamActivityMonitor* activity_monitor,
       const std::string& output_device_id,
       const media::AudioParameters& params,
       LoopbackCoordinator* coordinator,
@@ -101,7 +102,7 @@ class OutputStream final : public media::mojom::AudioOutputStream,
   mojo::Receiver<AudioOutputStream> receiver_;
   mojo::AssociatedRemote<media::mojom::AudioOutputStreamObserver> observer_;
   const mojo::SharedRemote<media::mojom::AudioLog> log_;
-  LoopbackCoordinator* const coordinator_;
+  const raw_ptr<LoopbackCoordinator> coordinator_;
 
   SyncReader reader_;
   OutputController controller_;

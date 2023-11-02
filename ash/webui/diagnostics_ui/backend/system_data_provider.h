@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 #include "ash/webui/diagnostics_ui/backend/cpu_usage_data.h"
 #include "ash/webui/diagnostics_ui/mojom/system_data_provider.mojom.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -28,7 +28,7 @@ namespace diagnostics {
 class TelemetryLog;
 
 class SystemDataProvider : public mojom::SystemDataProvider,
-                           public PowerManagerClient::Observer {
+                           public chromeos::PowerManagerClient::Observer {
  public:
   SystemDataProvider();
   explicit SystemDataProvider(TelemetryLog* telemetry_log_ptr);
@@ -68,10 +68,6 @@ class SystemDataProvider : public mojom::SystemDataProvider,
 
   void SetCpuUsageTimerForTesting(std::unique_ptr<base::RepeatingTimer> timer);
 
-  // Handler for when remote attached to |receiver_| disconnects.
-  void OnBoundInterfaceDisconnect();
-  bool ReceiverIsBound();
-
  private:
   void BindCrosHealthdProbeServiceIfNeccessary();
 
@@ -79,11 +75,11 @@ class SystemDataProvider : public mojom::SystemDataProvider,
 
   void OnSystemInfoProbeResponse(
       GetSystemInfoCallback callback,
-      chromeos::cros_healthd::mojom::TelemetryInfoPtr info_ptr);
+      cros_healthd::mojom::TelemetryInfoPtr info_ptr);
 
   void OnBatteryInfoProbeResponse(
       GetBatteryInfoCallback callback,
-      chromeos::cros_healthd::mojom::TelemetryInfoPtr info_ptr);
+      cros_healthd::mojom::TelemetryInfoPtr info_ptr);
 
   void UpdateBatteryChargeStatus();
 
@@ -106,20 +102,16 @@ class SystemDataProvider : public mojom::SystemDataProvider,
   void OnBatteryChargeStatusUpdated(
       const absl::optional<power_manager::PowerSupplyProperties>&
           power_supply_properties,
-      chromeos::cros_healthd::mojom::TelemetryInfoPtr info_ptr);
+      cros_healthd::mojom::TelemetryInfoPtr info_ptr);
 
-  void OnBatteryHealthUpdated(
-      chromeos::cros_healthd::mojom::TelemetryInfoPtr info_ptr);
+  void OnBatteryHealthUpdated(cros_healthd::mojom::TelemetryInfoPtr info_ptr);
 
-  void OnMemoryUsageUpdated(
-      chromeos::cros_healthd::mojom::TelemetryInfoPtr info_ptr);
+  void OnMemoryUsageUpdated(cros_healthd::mojom::TelemetryInfoPtr info_ptr);
 
-  void OnCpuUsageUpdated(
-      chromeos::cros_healthd::mojom::TelemetryInfoPtr info_ptr);
+  void OnCpuUsageUpdated(cros_healthd::mojom::TelemetryInfoPtr info_ptr);
 
-  void ComputeAndPopulateCpuUsage(
-      const chromeos::cros_healthd::mojom::CpuInfo& cpu_info,
-      mojom::CpuUsage& out_cpu_usage);
+  void ComputeAndPopulateCpuUsage(const cros_healthd::mojom::CpuInfo& cpu_info,
+                                  mojom::CpuUsage& out_cpu_usage);
 
   bool IsLoggingEnabled() const;
 
@@ -127,8 +119,7 @@ class SystemDataProvider : public mojom::SystemDataProvider,
 
   CpuUsageData previous_cpu_usage_data_;
 
-  mojo::Remote<chromeos::cros_healthd::mojom::CrosHealthdProbeService>
-      probe_service_;
+  mojo::Remote<cros_healthd::mojom::CrosHealthdProbeService> probe_service_;
   mojo::RemoteSet<mojom::BatteryChargeStatusObserver>
       battery_charge_status_observers_;
   mojo::RemoteSet<mojom::BatteryHealthObserver> battery_health_observers_;

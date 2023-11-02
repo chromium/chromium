@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "url/gurl.h"
 
 BlockedWindowParams::BlockedWindowParams(
@@ -55,13 +56,13 @@ NavigateParams BlockedWindowParams::CreateNavigateParams(
   nav_params.opened_by_another_window = !opener_suppressed_;
   nav_params.window_bounds = web_contents->GetContainerBounds();
   if (features_.has_x)
-    nav_params.window_bounds.set_x(features_.x);
+    nav_params.window_bounds.set_x(features_.bounds.x());
   if (features_.has_y)
-    nav_params.window_bounds.set_y(features_.y);
+    nav_params.window_bounds.set_y(features_.bounds.y());
   if (features_.has_width)
-    nav_params.window_bounds.set_width(features_.width);
+    nav_params.window_bounds.set_width(features_.bounds.width());
   if (features_.has_height)
-    nav_params.window_bounds.set_height(features_.height);
+    nav_params.window_bounds.set_height(features_.bounds.height());
 
   nav_params.disposition = disposition_;
 

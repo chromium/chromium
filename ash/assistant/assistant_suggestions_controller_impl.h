@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,8 +49,7 @@ class AssistantSuggestionsControllerImpl
   // AssistantStateObserver:
   void OnAssistantContextEnabled(bool enabled) override;
   void OnAssistantOnboardingModeChanged(
-      chromeos::assistant::prefs::AssistantOnboardingMode onboarding_mode)
-      override;
+      assistant::prefs::AssistantOnboardingMode onboarding_mode) override;
 
   void UpdateConversationStarters();
   void UpdateOnboardingSuggestions();

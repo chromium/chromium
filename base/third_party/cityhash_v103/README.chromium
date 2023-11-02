@@ -4,6 +4,7 @@ URL: https://github.com/google/cityhash
 Version: 1.0.3
 Revision: 00b9287e8c1255b5922ef90e304d5287361b2c2a
 License: MIT
+License File: COPYING
 Security Critical: yes
 
 Description:
@@ -19,3 +20,4 @@ Local Modifications:
 - 004-google-style.patch: Use nullptr, remove 'using namespace std;'.
 - 005-bswap-clang.patch: Use the builtins for bswap when compiling with clang.
 - clang-format
+- 006-warnings.patch: Fix various compiler warnings.

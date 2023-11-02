@@ -1,11 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_APP_LIST_MODEL_APP_LIST_MODEL_OBSERVER_H_
 #define ASH_APP_LIST_MODEL_APP_LIST_MODEL_OBSERVER_H_
-
-#include <string>
 
 #include "ash/app_list/model/app_list_model_export.h"
 #include "base/observer_list_types.h"
@@ -26,9 +24,6 @@ class APP_LIST_MODEL_EXPORT AppListModelObserver
 
   // Triggered just before an item is deleted from the model.
   virtual void OnAppListItemWillBeDeleted(AppListItem* item) {}
-
-  // Triggered just after an item is deleted from the model.
-  virtual void OnAppListItemDeleted(const std::string& id) {}
 
   // Triggered after |item| has moved, changed folders, or changed properties.
   virtual void OnAppListItemUpdated(AppListItem* item) {}

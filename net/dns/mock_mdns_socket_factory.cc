@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -80,8 +80,9 @@ void MockMDnsSocketFactory::CreateSockets(
 void MockMDnsSocketFactory::CreateSocket(
     AddressFamily address_family,
     std::vector<std::unique_ptr<DatagramServerSocket>>* sockets) {
-  std::unique_ptr<testing::NiceMock<MockMDnsDatagramServerSocket>> new_socket(
-      new testing::NiceMock<MockMDnsDatagramServerSocket>(address_family));
+  auto new_socket =
+      std::make_unique<testing::NiceMock<MockMDnsDatagramServerSocket>>(
+          address_family);
 
   ON_CALL(*new_socket, SendToInternal(_, _, _))
       .WillByDefault(Invoke(

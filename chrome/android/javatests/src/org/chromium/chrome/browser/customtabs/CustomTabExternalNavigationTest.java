@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -110,12 +110,12 @@ public class CustomTabExternalNavigationTest {
     public void testExternalActivityStartedForDefaultUrl() {
         final GURL testUrl = new GURL("customtab://customtabtest/intent");
         ExternalNavigationParams params = new ExternalNavigationParams.Builder(testUrl, false)
-                .build();
+                                                  .setIsMainFrame(true)
+                                                  .setIsRendererInitiated(true)
+                                                  .build();
         OverrideUrlLoadingResult result = mUrlHandler.shouldOverrideUrlLoading(params);
         Assert.assertEquals(
                 OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT, result.getResultType());
-        Assert.assertTrue("A dummy activity should have been started to handle the special url.",
-                mNavigationDelegate.hasExternalActivityStarted());
     }
 
     /**
@@ -133,8 +133,6 @@ public class CustomTabExternalNavigationTest {
                 .build();
         OverrideUrlLoadingResult result = mUrlHandler.shouldOverrideUrlLoading(params);
         Assert.assertEquals(OverrideUrlLoadingResultType.NO_OVERRIDE, result.getResultType());
-        Assert.assertFalse("External activities should not be started to handle the url",
-                mNavigationDelegate.hasExternalActivityStarted());
     }
 
     private @VerificationStatus int getCurrentPageVerifierStatus() {

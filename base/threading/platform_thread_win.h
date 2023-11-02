@@ -1,9 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef BASE_THREADING_PLATFORM_THREAD_WIN_H_
 #define BASE_THREADING_PLATFORM_THREAD_WIN_H_
+
+#include "base/win/windows_types.h"
 
 #include "base/threading/platform_thread.h"
 
@@ -18,6 +20,9 @@ namespace internal {
 BASE_EXPORT void AssertMemoryPriority(HANDLE thread, int memory_priority);
 
 }  // namespace internal
+
+BASE_EXPORT void InitializePlatformThreadFeatures();
+
 }  // namespace base
 
 #endif  // BASE_THREADING_PLATFORM_THREAD_WIN_H_

@@ -1,11 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/vr/elements/ui_element_name.h"
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 
 namespace vr {
 
@@ -155,7 +154,7 @@ static const char* g_ui_element_name_strings[] = {
 };
 
 static_assert(
-    kNumUiElementNames == base::size(g_ui_element_name_strings),
+    kNumUiElementNames == std::size(g_ui_element_name_strings),
     "Mismatch between the kUiElementName enum and the corresponding array "
     "of strings.");
 

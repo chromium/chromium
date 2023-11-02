@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,24 +14,24 @@ class InfoBarIOS;
 class OverlayRequest;
 class OverlayRequestQueue;
 
-// Returns the InfoBarIOS used to configure |request|, or null if the InfoBarIOS
-// was already destroyed or if |request| was not created with an infobar config.
+// Returns the InfoBarIOS used to configure `request`, or null if the InfoBarIOS
+// was already destroyed or if `request` was not created with an infobar config.
 InfoBarIOS* GetOverlayRequestInfobar(OverlayRequest* request);
 
-// Returns the InfobarType of the InfoBar used to configure |request|.
-// |request| must be non-null and configured with an
+// Returns the InfobarType of the InfoBar used to configure `request`.
+// `request` must be non-null and configured with an
 // InfobarOverlayRequestConfig.
-// TODO(crbug.com/1038933): Remove requirements on |request| and return
+// TODO(crbug.com/1038933): Remove requirements on `request` and return
 // InfobarType::kNone once added.
 InfobarType GetOverlayRequestInfobarType(OverlayRequest* request);
 
-// Returns the InfobarOverlayType for |request|.  |request| must be non-null and
+// Returns the InfobarOverlayType for `request`.  `request` must be non-null and
 // configured with an InfobarOverlayRequestConfig.
 InfobarOverlayType GetOverlayRequestInfobarOverlayType(OverlayRequest* request);
 
-// Searches through |queue| for an OverlayRequest configured with |infobar|.  If
-// found, returns true and populates |index| with the index of the first request
-// configured with |infobar|.  If no matching request was found, returns false.
+// Searches through `queue` for an OverlayRequest configured with `infobar`.  If
+// found, returns true and populates `index` with the index of the first request
+// configured with `infobar`.  If no matching request was found, returns false.
 // All arguments must be non-null.
 bool GetInfobarOverlayRequestIndex(OverlayRequestQueue* queue,
                                    InfoBarIOS* infobar,

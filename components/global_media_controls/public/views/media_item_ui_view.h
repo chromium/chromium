@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/global_media_controls/public/constants.h"
@@ -79,7 +80,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIView
       const base::flat_set<media_session::mojom::MediaSessionAction>& actions)
       override;
   void OnMediaArtworkChanged(const gfx::ImageSkia& image) override;
-  void OnColorsChanged(SkColor foreground, SkColor background) override;
+  void OnColorsChanged(SkColor foreground,
+                       SkColor foreground_disabled,
+                       SkColor background) override;
   void OnHeaderClicked() override;
 
   // views::SlideOutControllerDelegate:
@@ -125,28 +128,29 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIView
   void OnSizeChanged();
 
   const std::string id_;
-  views::View* swipeable_container_ = nullptr;
+  raw_ptr<views::View> swipeable_container_ = nullptr;
 
   std::u16string title_;
 
   // Always "visible" so that it reserves space in the header so that the
   // dismiss button can appear without forcing things to shift.
-  views::View* dismiss_button_placeholder_ = nullptr;
+  raw_ptr<views::View> dismiss_button_placeholder_ = nullptr;
 
   // Shows the colored circle background behind the dismiss button to give it
   // proper contrast against the artwork. The background can't be on the dismiss
   // button itself because it messes up the ink drop.
-  views::View* dismiss_button_container_ = nullptr;
+  raw_ptr<views::View> dismiss_button_container_ = nullptr;
 
-  DismissButton* dismiss_button_ = nullptr;
-  media_message_center::MediaNotificationView* view_ = nullptr;
+  raw_ptr<DismissButton> dismiss_button_ = nullptr;
+  raw_ptr<media_message_center::MediaNotificationView> view_ = nullptr;
 
-  MediaItemUIFooter* const footer_view_;
+  const raw_ptr<MediaItemUIFooter> footer_view_;
 
-  MediaItemUIDeviceSelector* device_selector_view_ = nullptr;
+  raw_ptr<MediaItemUIDeviceSelector> device_selector_view_ = nullptr;
 
-  SkColor foreground_color_;
-  SkColor background_color_;
+  SkColor foreground_color_ = kDefaultForegroundColor;
+  SkColor foreground_disabled_color_ = kDefaultForegroundColor;
+  SkColor background_color_ = kDefaultBackgroundColor;
 
   bool has_artwork_ = false;
   bool has_many_actions_ = false;

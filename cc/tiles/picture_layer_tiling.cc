@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
-#include "base/cxx17_backports.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -27,6 +26,10 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_conversions.h"
+
+#include "base/record_replay.h"
+
+static int tile_id_ = 1;
 
 namespace cc {
 
@@ -45,6 +48,9 @@ PictureLayerTiling::PictureLayerTiling(
       min_preraster_distance_(min_preraster_distance),
       max_preraster_distance_(max_preraster_distance),
       can_use_lcd_text_(can_use_lcd_text) {
+  record_replay_id_ = recordreplay::NewIdAnyThread("PictureLayerTiling");
+  tile_id = tile_id_++;
+  
   DCHECK(!raster_source->IsSolidColor());
   DCHECK_GE(raster_transform.translation().x(), 0.f);
   DCHECK_LT(raster_transform.translation().x(), 1.f);
@@ -108,6 +114,7 @@ void PictureLayerTiling::CreateMissingTilesInLiveTilesRect() {
        iter; ++iter) {
     TileMapKey key(iter.index());
     auto find = tiles_.find(key);
+
     if (find != tiles_.end())
       continue;
 
@@ -129,6 +136,7 @@ void PictureLayerTiling::CreateMissingTilesInLiveTilesRect() {
             invalid_content_rect.Intersect(tile_rect);
             invalidated.Union(invalid_content_rect);
           }
+
           tile->SetInvalidated(invalidated, old_tile->id());
         }
       }
@@ -179,6 +187,10 @@ void PictureLayerTiling::TakeTilesAndPropertiesFrom(
 
 void PictureLayerTiling::SetRasterSourceAndResize(
     scoped_refptr<RasterSource> raster_source) {
+  // https://linear.app/replay/issue/RUN-885
+  recordreplay::Assert("PictureLayerTiling::SetRasterSourceAndResize %d %d",
+                       raster_source->GetSize().width(), raster_source->GetSize().height());
+
   DCHECK(!raster_source->IsSolidColor());
   gfx::Size old_layer_bounds = raster_source_->GetSize();
   raster_source_ = std::move(raster_source);
@@ -265,11 +277,6 @@ void PictureLayerTiling::Invalidate(const Region& layer_invalidation) {
 
 void PictureLayerTiling::RemoveTilesInRegion(const Region& layer_invalidation,
                                              bool recreate_tiles) {
-  // We only invalidate the active tiling when it's orphaned: it has no pending
-  // twin, so it's slated for removal in the future.
-  if (live_tiles_rect_.IsEmpty())
-    return;
-
   base::flat_map<TileMapKey, gfx::Rect> remove_tiles;
   gfx::Rect expanded_live_tiles_rect =
       tiling_data_.ExpandRectToTileBounds(live_tiles_rect_);
@@ -303,8 +310,9 @@ void PictureLayerTiling::RemoveTilesInRegion(const Region& layer_invalidation,
     std::unique_ptr<Tile> old_tile = TakeTileAt(key.index_x, key.index_y);
     if (recreate_tiles && old_tile) {
       Tile::CreateInfo info = CreateInfoForTile(key.index_x, key.index_y);
-      if (Tile* tile = CreateTile(info))
+      if (Tile* tile = CreateTile(info)) {
         tile->SetInvalidated(invalid_content_rect, old_tile->id());
+      }
     }
   }
 }
@@ -334,32 +342,37 @@ bool PictureLayerTiling::ShouldCreateTileAt(
   // the tile for instance). Pending tree, on the other hand, should only be
   // creating tiles that are different from the current active tree, which is
   // represented by the logic in the rest of the function.
-  if (tree_ == ACTIVE_TREE)
+  if (tree_ == ACTIVE_TREE) {
     return true;
+  }
 
   // If the pending tree has no active twin, then it needs to create all tiles.
   const PictureLayerTiling* active_twin =
       client_->GetPendingOrActiveTwinTiling(this);
-  if (!active_twin)
+  if (!active_twin) {
     return true;
+  }
 
   // Pending tree will override the entire active tree if indices don't match.
-  if (!TilingMatchesTileIndices(active_twin))
+  if (!TilingMatchesTileIndices(active_twin)) {
     return true;
+  }
 
   // If our settings don't match the active twin, it means that the active
   // tiles will all be removed when we activate. So we need all the tiles on the
   // pending tree to be created. See
   // PictureLayerTilingSet::CopyTilingsAndPropertiesFromPendingTwin.
   if (can_use_lcd_text() != active_twin->can_use_lcd_text() ||
-      raster_transform() != active_twin->raster_transform())
+      raster_transform() != active_twin->raster_transform()) {
     return true;
+  }
 
   // If the active tree can't create a tile, because of its raster source, then
   // the pending tree should create one.
   if (!active_twin->raster_source()->IntersectsRect(info.enclosing_layer_rect,
-                                                    *active_twin->client()))
+                                                    *active_twin->client())) {
     return true;
+  }
 
   const Region* layer_invalidation = client_->GetPendingInvalidation();
 
@@ -369,8 +382,9 @@ bool PictureLayerTiling::ShouldCreateTileAt(
   for (gfx::Rect layer_rect : *layer_invalidation) {
     gfx::Rect invalid_content_rect =
         EnclosingContentsRectFromLayerRect(layer_rect);
-    if (invalid_content_rect.Intersects(info.content_rect))
+    if (invalid_content_rect.Intersects(info.content_rect)) {
       return true;
+    }
   }
   // If the active tree doesn't have a tile here, but it's in the pending tree's
   // visible rect, then the pending tree should create a tile. This can happen
@@ -378,8 +392,9 @@ bool PictureLayerTiling::ShouldCreateTileAt(
   // rect. In those situations, we need to block activation until we're ready to
   // display content, which will have to come from the pending tree.
   if (!active_twin->TileAt(i, j) &&
-      current_visible_rect_.Intersects(info.content_rect))
+      current_visible_rect_.Intersects(info.content_rect)) {
     return true;
+  }
 
   // In all other cases, the pending tree doesn't need to create a tile.
   return false;
@@ -501,7 +516,8 @@ PictureLayerTiling::CoverageIterator::operator++() {
 
     int inset_left = std::max(0, min_left - current_geometry_rect_.x());
     int inset_top = std::max(0, min_top - current_geometry_rect_.y());
-    current_geometry_rect_.Inset(inset_left, inset_top, 0, 0);
+    current_geometry_rect_.Inset(
+        gfx::Insets::TLBR(inset_top, inset_left, 0, 0));
 
 #if DCHECK_IS_ON()
     // Sometimes we run into an extreme case where we are at the edge of integer
@@ -509,7 +525,7 @@ PictureLayerTiling::CoverageIterator::operator++() {
     // unexpectedly. Unfortunately, there isn't much we can do at this point, so
     // we just do the correctness checks if both y and x offsets are
     // 'reasonable', meaning they are less than the specified value.
-    static constexpr int kReasonableOffsetForDcheck = 500'000'000;
+    static constexpr int kReasonableOffsetForDcheck = 100'000'000;
     if (!new_row && current_geometry_rect_.x() <= kReasonableOffsetForDcheck &&
         current_geometry_rect_.y() <= kReasonableOffsetForDcheck) {
       DCHECK_EQ(last_geometry_rect.right(), current_geometry_rect_.x());
@@ -538,7 +554,7 @@ gfx::Rect PictureLayerTiling::CoverageIterator::ComputeGeometryRect() const {
     // 255 * (1 - (1 - 1/1024) * (1 - 1/1024)) ~= 0.498
     // i.e. The color value can never flip over a rounding threshold.
     constexpr float epsilon = 1.f / 1024.f;
-    texel_extent.Inset(-epsilon, -epsilon);
+    texel_extent.Inset(-epsilon);
   }
 
   // Convert texel_extent to coverage scale, which is what we have to report
@@ -555,14 +571,14 @@ gfx::Rect PictureLayerTiling::CoverageIterator::ComputeGeometryRect() const {
     // sampled as the AA fragment shader clamps sample coordinate and
     // antialiasing itself.
     const TilingData& data = tiling_->tiling_data_;
-    candidate.Inset(
-        tile_i_ ? 0 : -candidate.x(), tile_j_ ? 0 : -candidate.y(),
-        (tile_i_ != data.num_tiles_x() - 1)
-            ? 0
-            : candidate.right() - coverage_rect_max_bounds_.width(),
+    candidate.Inset(gfx::Insets::TLBR(
+        tile_j_ ? 0 : -candidate.y(), tile_i_ ? 0 : -candidate.x(),
         (tile_j_ != data.num_tiles_y() - 1)
             ? 0
-            : candidate.bottom() - coverage_rect_max_bounds_.height());
+            : candidate.bottom() - coverage_rect_max_bounds_.height(),
+        (tile_i_ != data.num_tiles_x() - 1)
+            ? 0
+            : candidate.right() - coverage_rect_max_bounds_.width()));
   }
 
   candidate.Intersect(coverage_rect_);
@@ -621,7 +637,7 @@ void PictureLayerTiling::ComputeTilePriorityRects(
       &visible_rect_in_layer_space, &skewport_in_layer_space,
       &soon_border_rect_in_layer_space, &eventually_rect_in_layer_space};
   gfx::Rect output_rects[4];
-  for (size_t i = 0; i < base::size(input_rects); ++i)
+  for (size_t i = 0; i < std::size(input_rects); ++i)
     output_rects[i] = EnclosingContentsRectFromLayerRect(*input_rects[i]);
   // Make sure the eventually rect is aligned to tile bounds.
   output_rects[3] =
@@ -957,6 +973,24 @@ gfx::Rect PictureLayerTiling::EnclosingLayerRectFromContentsRect(
     const gfx::Rect& contents_rect) const {
   return ToEnclosingRect(
       raster_transform_.InverseMapRect(gfx::RectF(contents_rect)));
+}
+
+PictureLayerTiling::TileIterator::TileIterator(PictureLayerTiling* tiling)
+    : tiling_(tiling), iter_(tiling->tiles_.begin()) {}
+
+PictureLayerTiling::TileIterator::~TileIterator() = default;
+
+Tile* PictureLayerTiling::TileIterator::GetCurrent() {
+  return AtEnd() ? nullptr : iter_->second.get();
+}
+
+void PictureLayerTiling::TileIterator::Next() {
+  if (!AtEnd())
+    ++iter_;
+}
+
+bool PictureLayerTiling::TileIterator::AtEnd() const {
+  return iter_ == tiling_->tiles_.end();
 }
 
 }  // namespace cc

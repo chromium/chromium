@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 namespace ash {
 
 // Enables showing handoff screen to Family Link user during OOBE.
-extern const base::Feature kFamilyLinkOobeHandoff;
+BASE_DECLARE_FEATURE(kFamilyLinkOobeHandoff);
 
 bool IsFamilyLinkOobeHandoffEnabled();
 

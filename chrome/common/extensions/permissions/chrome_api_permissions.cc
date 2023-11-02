@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,6 +41,7 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
     {APIPermissionID::kDownloads, "downloads"},
     {APIPermissionID::kDownloadsOpen, "downloads.open"},
     {APIPermissionID::kDownloadsShelf, "downloads.shelf"},
+    {APIPermissionID::kDownloadsUi, "downloads.ui"},
     {APIPermissionID::kIdentity, "identity"},
     {APIPermissionID::kIdentityEmail, "identity.email"},
     {APIPermissionID::kExperimental, "experimental",
@@ -105,10 +106,11 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagRequiresManagementUIWarning},
     {APIPermissionID::kSearch, "search",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
+    {APIPermissionID::kFavicon, "favicon"},
     {APIPermissionID::kScripting, "scripting",
      APIPermissionInfo::kFlagRequiresManagementUIWarning},
     {APIPermissionID::kSessions, "sessions"},
-    {APIPermissionID::kSignedInDevices, "signedInDevices"},
+    {APIPermissionID::kSidePanel, "sidePanel"},
     {APIPermissionID::kTabGroups, "tabGroups",
      APIPermissionInfo::kFlagRequiresManagementUIWarning},
     {APIPermissionID::kTab, "tabs",
@@ -169,8 +171,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
     {APIPermissionID::kTerminalPrivate, "terminalPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kVirtualKeyboardPrivate, "virtualKeyboardPrivate",
-     APIPermissionInfo::kFlagCannotBeOptional},
-    {APIPermissionID::kWallpaperPrivate, "wallpaperPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kWebstorePrivate, "webstorePrivate",
      APIPermissionInfo::kFlagCannotBeOptional},

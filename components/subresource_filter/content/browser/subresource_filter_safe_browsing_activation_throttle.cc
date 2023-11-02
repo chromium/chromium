@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,13 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "components/subresource_filter/content/browser/content_activation_list_utils.h"
+#include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
 #include "components/subresource_filter/content/browser/devtools_interaction_tracker.h"
 #include "components/subresource_filter/content/browser/navigation_console_logger.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
@@ -76,8 +79,7 @@ SubresourceFilterSafeBrowsingActivationThrottle::
                            base::ThreadTaskRunnerHandle::Get()),
                        base::OnTaskRunnerDeleter(io_task_runner_)),
       delegate_(delegate) {
-  DCHECK(handle->IsInMainFrame());
-
+  DCHECK(IsInSubresourceFilterRoot(handle));
   CheckCurrentUrl();
   DCHECK(!check_results_.empty());
 }
@@ -278,12 +280,11 @@ SubresourceFilterSafeBrowsingActivationThrottle::
   if (navigation_handle()->GetURL().SchemeIsHTTPOrHTTPS()) {
     const auto& decreasing_configs =
         GetEnabledConfigurations()->configs_by_decreasing_priority();
-    const auto selected_config_itr =
-        std::find_if(decreasing_configs.begin(), decreasing_configs.end(),
-                     [matched_list, this](const Configuration& config) {
-                       return DoesMainFrameURLSatisfyActivationConditions(
-                           config.activation_conditions, matched_list);
-                     });
+    const auto selected_config_itr = base::ranges::find_if(
+        decreasing_configs, [matched_list, this](const Configuration& config) {
+          return DoesRootFrameURLSatisfyActivationConditions(
+              config.activation_conditions, matched_list);
+        });
     if (selected_config_itr != decreasing_configs.end()) {
       selected_config = *selected_config_itr;
       matched = true;
@@ -311,7 +312,7 @@ SubresourceFilterSafeBrowsingActivationThrottle::GetActivationDecision(
 }
 
 bool SubresourceFilterSafeBrowsingActivationThrottle::
-    DoesMainFrameURLSatisfyActivationConditions(
+    DoesRootFrameURLSatisfyActivationConditions(
         const Configuration::ActivationConditions& conditions,
         ActivationList matched_list) const {
   // Avoid copies when tracing disabled.
@@ -322,7 +323,7 @@ bool SubresourceFilterSafeBrowsingActivationThrottle::
   };
   TRACE_EVENT2(TRACE_DISABLED_BY_DEFAULT("loading"),
                "SubresourceFilterSafeBrowsingActivationThrottle::"
-               "DoesMainFrameURLSatisfyActivationConditions",
+               "DoesRootFrameURLSatisfyActivationConditions",
                "matched_list", list_to_string(matched_list), "conditions",
                conditions.ToTracedValue());
   switch (conditions.activation_scope) {

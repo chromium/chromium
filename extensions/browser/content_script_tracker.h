@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,10 +54,18 @@ class ContentScriptTracker {
       const content::RenderProcessHost& process,
       const ExtensionId& extension_id);
 
+  // Returns all the IDs for extensions that have ever in the past run a content
+  // script in `process`.
+  static ExtensionIdSet GetExtensionsThatRanScriptsInProcess(
+      const content::RenderProcessHost& process);
+
   // The few methods below are called by ExtensionWebContentsObserver to notify
   // ContentScriptTracker about various events.  The methods correspond directly
   // to methods of content::WebContentsObserver with the same names.
   static void ReadyToCommitNavigation(
+      base::PassKey<ExtensionWebContentsObserver> pass_key,
+      content::NavigationHandle* navigation);
+  static void DidFinishNavigation(
       base::PassKey<ExtensionWebContentsObserver> pass_key,
       content::NavigationHandle* navigation);
   static void RenderFrameCreated(

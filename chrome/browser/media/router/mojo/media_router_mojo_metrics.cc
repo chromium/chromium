@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
@@ -31,7 +30,7 @@ void MediaRouterMojoMetrics::RecordMediaRouteControllerCreationResult(
 void MediaRouterMojoMetrics::RecordTabMirroringMetrics(
     content::WebContents* web_contents) {
   ukm::SourceId source_id =
-      ukm::GetSourceIdForWebContentsDocument(web_contents);
+      web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
   WebContentsAudioState audio_state = WebContentsAudioState::kWasNeverAudible;
   if (web_contents->IsCurrentlyAudible()) {
     audio_state = WebContentsAudioState::kIsCurrentlyAudible;
@@ -49,7 +48,7 @@ void MediaRouterMojoMetrics::RecordSiteInitiatedMirroringStarted(
     content::WebContents* web_contents,
     const MediaSource& media_source) {
   ukm::SourceId source_id =
-      ukm::GetSourceIdForWebContentsDocument(web_contents);
+      web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
   auto cast_source = CastMediaSource::FromMediaSource(media_source);
   if (cast_source) {
     ukm::builders::MediaRouter_SiteInitiatedMirroringStarted(source_id)

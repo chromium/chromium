@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -410,14 +410,14 @@ void ViewAndroid::SetLayer(scoped_refptr<cc::Layer> layer) {
   layer_ = layer;
 }
 
-bool ViewAndroid::StartDragAndDrop(const JavaRef<jstring>& jtext,
-                                   const JavaRef<jobject>& jimage) {
+bool ViewAndroid::StartDragAndDrop(const JavaRef<jobject>& jshadow_image,
+                                   const JavaRef<jobject>& jdrop_data) {
   ScopedJavaLocalRef<jobject> delegate(GetViewAndroidDelegate());
   if (delegate.is_null())
     return false;
   JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_ViewAndroidDelegate_startDragAndDrop(env, delegate, jtext,
-                                                   jimage);
+  return Java_ViewAndroidDelegate_startDragAndDrop(env, delegate, jshadow_image,
+                                                   jdrop_data);
 }
 
 void ViewAndroid::OnCursorChanged(const Cursor& cursor) {
@@ -440,6 +440,15 @@ void ViewAndroid::OnCursorChanged(const Cursor& cursor) {
     Java_ViewAndroidDelegate_onCursorChanged(env, delegate,
                                              static_cast<int>(cursor.type()));
   }
+}
+
+void ViewAndroid::SetHoverActionStylusWritable(bool stylus_writable) {
+  ScopedJavaLocalRef<jobject> delegate(GetViewAndroidDelegate());
+  if (delegate.is_null())
+    return;
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_ViewAndroidDelegate_setHoverActionStylusWritable(env, delegate,
+                                                        stylus_writable);
 }
 
 void ViewAndroid::OnBackgroundColorChanged(unsigned int color) {
@@ -571,7 +580,7 @@ gfx::Size ViewAndroid::GetSize() const {
 
 bool ViewAndroid::OnDragEvent(const DragEventAndroid& event) {
   return HitTest(base::BindRepeating(&ViewAndroid::SendDragEventToHandler),
-                 event, event.location_f());
+                 event, event.location());
 }
 
 // static
@@ -697,11 +706,11 @@ bool ViewAndroid::HitTest(EventHandlerCallback<E> handler_callback,
                           const gfx::PointF& point) {
   if (event_handler_) {
     if (bounds_.origin().IsOrigin()) {  // (x, y) == (0, 0)
-      if (handler_callback.Run(event_handler_, event))
+      if (handler_callback.Run(event_handler_.get(), event))
         return true;
     } else {
       std::unique_ptr<E> e(event.CreateFor(point));
-      if (handler_callback.Run(event_handler_, *e))
+      if (handler_callback.Run(event_handler_.get(), *e))
         return true;
     }
   }

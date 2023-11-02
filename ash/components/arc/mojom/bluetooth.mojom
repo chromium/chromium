@@ -1,0 +1,571 @@
+// Copyright 2016 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 21
+
+module arc.mojom;
+
+import "mojo/public/mojom/base/values.mojom";
+
+[Extensible]
+enum BluetoothAdapterState {
+  OFF = 0,
+  ON
+};
+
+[Extensible]
+enum BluetoothDiscoveryState {
+  STOPPED,
+  STARTED
+};
+
+[Extensible]
+enum BluetoothAclState {
+  CONNECTED,
+  DISCONNECTED
+};
+
+[Extensible]
+enum BluetoothStatus {
+  SUCCESS = 0,
+  FAIL,
+  NOT_READY,
+  NOMEM,
+  BUSY,
+  DONE,
+  UNSUPPORTED,
+  PARM_INVALID,
+  UNHANDLED,
+  AUTH_FAILURE,
+  RMT_DEV_DOWN,
+  AUTH_REJECTED
+};
+
+struct BluetoothAddress {
+  array<uint8, 6> address;
+};
+
+struct BluetoothUUID {
+  array<uint8, 16> uuid;
+};
+
+struct BluetoothServiceRecord {
+  BluetoothUUID uuid;
+  uint16 channel;
+  string name;
+};
+
+struct BluetoothLocalLEFeatures {
+  uint16 version_supported;
+  uint8 local_privacy_enabled;
+  uint8 max_adv_instance;
+  uint8 rpa_offload_supported;
+  uint8 max_irk_list_size;
+  uint8 max_adv_filter_supported;
+  uint8 activity_energy_info_supported;
+  uint16 scan_result_storage_size;
+  uint16 total_trackable_advertisers;
+  bool extended_scan_support;
+  bool debug_logging_supported;
+};
+
+[Extensible]
+enum BluetoothPropertyType {
+  ALL = 0,
+  BDNAME = 1,
+  BDADDR,
+  UUIDS,
+  CLASS_OF_DEVICE,
+  TYPE_OF_DEVICE,
+  SERVICE_RECORD,
+  ADAPTER_SCAN_MODE,
+  ADAPTER_BONDED_DEVICES,
+  ADAPTER_DISCOVERY_TIMEOUT,
+  REMOTE_FRIENDLY_NAME,
+  REMOTE_RSSI,
+  REMOTE_VERSION_INFO,
+  LOCAL_LE_FEATURES,
+  REMOTE_DEVICE_TIMESTAMP = 0xFF,
+};
+
+[Extensible]
+enum BluetoothScanMode {
+  NONE = 0x0,
+  CONNECTABLE,
+  CONNECTABLE_DISCOVERABLE
+};
+
+[Extensible]
+enum BluetoothDeviceType {
+  BREDR = 0x1,
+  BLE,
+  DUAL
+};
+
+[Extensible]
+enum BluetoothBondState {
+  NONE = 0,
+  BONDING,
+  BONDED
+};
+
+struct BluetoothRemoteVersion {
+  int32 version;
+  int32 sub_ver;
+  int32 manufacturer;
+};
+
+union BluetoothProperty {
+  string bdname;
+  BluetoothAddress bdaddr;
+  array<BluetoothUUID> uuids;
+  uint32 device_class;
+  BluetoothDeviceType device_type;
+  BluetoothServiceRecord service_record;
+  BluetoothScanMode adapter_scan_mode;
+  array<BluetoothAddress> bonded_devices;
+  uint32 discovery_timeout;
+  string remote_friendly_name;
+  int32 remote_rssi;
+  BluetoothRemoteVersion remote_version;
+  BluetoothLocalLEFeatures local_le_features;
+};
+
+// Bluetooth GATT types
+// Copy from Android API
+// https://developer.android.com/reference/android/bluetooth/BluetoothGatt.html
+[Extensible]
+enum BluetoothGattStatus {
+  GATT_SUCCESS = 0,
+  GATT_READ_NOT_PERMITTED = 0x2,
+  GATT_WRITE_NOT_PERMITTED = 0x3,
+  GATT_INSUFFICIENT_AUTHENTICATION = 0x5,
+  GATT_REQUEST_NOT_SUPPORTED = 0x6,
+  GATT_INVALID_OFFSET = 0x7,
+  GATT_INVALID_ATTRIBUTE_LENGTH = 0xd,
+  GATT_INSUFFICIENT_ENCRYPTION = 0xf,
+  GATT_CONNECTION_CONGESTED = 0x8f,
+  GATT_FAILURE = 0x101,
+};
+
+// Copy from Android API
+// https://source.android.com/devices/halref/structbtgatt__gatt__id__t.html
+struct BluetoothGattID {
+  BluetoothUUID uuid;
+  uint8 deprecated_inst_id;
+  // Diverges from above spec since ARC++ uses 16-bit handles in this field.
+  [MinVersion=19] uint16 instance_id;
+};
+
+// Copy from Android API
+// is_primary is not a boolean because Android defines it as uint8_t.
+// https://source.android.com/devices/halref/structbtgatt__srvc__id__t.html
+struct BluetoothGattServiceID {
+  BluetoothGattID id;
+  uint8 is_primary;
+};
+
+struct BluetoothGattValue {
+  BluetoothGattStatus status;
+  array<uint8> value;
+};
+
+const int8 kUnknownPower = 127;
+
+// Copied from Android Bluetooth package. See AdvertiseManager$AdvertiseNative
+// http://goo.gl/UnKC5N
+enum BluetoothAdvertisementType {
+  ADV_TYPE_CONNECTABLE = 0,
+  ADV_TYPE_SCANNABLE = 2,
+  ADV_TYPE_NON_CONNECTABLE = 3,
+};
+
+// Copy from Bluetooth Assigned Numbers Document, Generic Access Profile
+// https://www.bluetooth.com/specifications/assigned-numbers/generic-access-profile
+[Extensible]
+enum BluetoothAdvertisingDataType {
+  DATA_TYPE_FLAGS = 0x01,
+  DATA_TYPE_SERVICE_UUIDS_16_BIT_COMPLETE = 0x03,
+  DATA_TYPE_SERVICE_UUIDS_128_BIT_COMPLETE = 0x07,
+  DATA_TYPE_LOCAL_NAME_COMPLETE = 0x09,
+  DATA_TYPE_TX_POWER_LEVEL = 0x0A,
+  DATA_TYPE_SERVICE_DATA = 0x16,
+  DATA_TYPE_MANUFACTURER_SPECIFIC_DATA = 0xff,
+};
+
+// Copy from Bluetooth Core v4.2 Volume 3 Part C Chapter 11
+// and Bluetooth Core Specification Supplement v6 Part A Chapter 1
+// https://www.bluetooth.com/specifications/adopted-specifications
+union BluetoothAdvertisingData {
+  uint8 flags;
+  array<uint16> service_uuids_16;
+  array<BluetoothUUID> service_uuids;
+  string local_name;
+  uint8 tx_power_level;
+  BluetoothServiceData service_data;
+  array<uint8> manufacturer_data;
+  array<uint8> other_data;
+};
+
+struct BluetoothServiceData {
+  uint16 uuid_16bit;
+  array<uint8> data;
+};
+
+struct BluetoothAdvertisement {
+  BluetoothAdvertisementType type;
+  bool include_tx_power;
+  array<BluetoothAdvertisingData> data;
+  // Add more here as Chrome supports it.
+};
+
+[Extensible]
+enum BluetoothGattDBAttributeType {
+  BTGATT_DB_PRIMARY_SERVICE = 0,
+  BTGATT_DB_SECONDARY_SERVICE,
+  BTGATT_DB_INCLUDED_SERVICE,
+  BTGATT_DB_CHARACTERISTIC,
+  BTGATT_DB_DESCRIPTOR,
+};
+
+struct BluetoothGattDBElement {
+  uint8 deprecated_id;
+  BluetoothUUID uuid;
+  BluetoothGattDBAttributeType type;
+  uint16 attribute_handle;
+
+  /*
+   * If |type| is |BTGATT_DB_PRIMARY_SERVICE|, or
+   * |BTGATT_DB_SECONDARY_SERVICE|, this contains the start and end attribute
+   * handles.
+   */
+  uint16 start_handle;
+  uint16 end_handle;
+
+  /*
+   * If |type| is |BTGATT_DB_CHARACTERISTIC|, this contains the properties of
+   * the characteristic.
+   */
+  uint8 properties;
+
+  // Attribute IDs are stored in this field; it must be 16-bits wide.
+  [MinVersion=19] uint16 element_id;
+};
+
+// Bluetooth SDP types
+[Extensible]
+enum BluetoothSdpAttributeType {
+  NULLTYPE = 0,
+  UINT,
+  INT,
+  UUID,
+  STRING,
+  BOOL,
+  SEQUENCE,
+  URL,
+};
+
+/*
+ * A BluetoothSdpAttribute contains either a value or a sequence, where a
+ * sequence is an array of BluetoothSdpAttribute. A multi-layered attribute
+ * design is intended. Note BluetoothSdpAttribute supports up to depth 32 for
+ * the attribute with multi-layer sequences. The attributes within a sequence
+ * which has the depth beyond the maximum supported depth will be invalidated
+ * and ignored.
+ */
+struct BluetoothSdpAttribute {
+  BluetoothSdpAttributeType type;
+  uint32 type_size;
+  array<BluetoothSdpAttribute> sequence;
+  string? deprecated_json_value@3;
+  [MinVersion=14] mojo_base.mojom.Value? value;
+};
+
+struct BluetoothSdpRecord {
+  map<uint16, BluetoothSdpAttribute> attrs;
+};
+
+struct BluetoothCreateSdpRecordResult {
+  BluetoothStatus status;
+  uint32 service_handle;
+};
+
+// BluetoothRfcommConnection contains the information for a new RFCOMM
+// connection. Since we cannot get socket (or peer) name on the transferred
+// socket on Android side, we also need to pass the peer address and channel
+// number.
+struct BluetoothRfcommConnection {
+  handle sock;
+  BluetoothAddress addr;
+  int32 channel;
+};
+
+// The mojo connection represents a listening socket.
+// Next Method ID: 1
+interface RfcommListeningSocketClient {
+  // Called when accept() succeeds. |channel| in |connection| is the peer
+  // channel number.
+  OnAccepted@0(BluetoothRfcommConnection connection);
+};
+
+// The mojo connection represents a connecting (not connected yet) socket.
+// After connect() either succeeds or fails, Android is responsible for closing
+// this mojo connection.
+// Next Method ID: 2
+interface RfcommConnectingSocketClient {
+  // Called when connect() succeeds. |channel| in |connection| is the channel
+  // number on our side.
+  OnConnected@0(BluetoothRfcommConnection connection);
+  // Called when connect() fails.
+  OnConnectFailed@1();
+};
+
+// Copied from Android. See android.bluetooth.BluetoothSocket.
+// Currently we only support RFCOMM and LE CoC (L2CAP_LE) sockets.
+[Extensible]
+enum BluetoothSocketType {
+  TYPE_RFCOMM = 1,
+  TYPE_L2CAP_LE = 4,
+};
+
+// Bluetooth socket security flags in Android, used in open socket requests.
+// Chrome should set the socket option based on these flags.
+struct BluetoothSocketFlags {
+  bool encrypt;
+  bool auth;
+  bool auth_mitm;
+  bool auth_16_digit;
+};
+
+// BluetoothSocketConnection contains the information for a new Bluetooth socket
+// connection. Note that |port| is either the channel number for an RFCOMM
+// socket or PSM for an L2CAP socket. Since we cannot get socket (or peer) name
+// on the transferred socket on Android side, we also need to pass the peer
+// address and port number.
+struct BluetoothSocketConnection {
+  handle sock;
+  BluetoothAddress addr;
+  int32 port;
+};
+
+// The mojo connection represents a listening socket.
+// Next Method ID: 1
+interface BluetoothListenSocketClient {
+  // Called when accept() succeeds. |port| in |connection| is the peer port
+  // number.
+  OnAccepted@0(BluetoothSocketConnection connection);
+};
+
+// The mojo connection represents a connecting (not connected yet) socket.
+// After connect() either succeeds or fails, Android is responsible for closing
+// this mojo connection.
+// Next Method ID: 2
+interface BluetoothConnectSocketClient {
+  // Called when connect() succeeds. |port| in |connection| is the port number
+  // on our side.
+  OnConnected@0(BluetoothSocketConnection connection);
+  // Called when connect() fails.
+  OnConnectFailed@1();
+};
+
+// Next Method ID: 49
+// Deprecated Method ID: 4, 5, 6, 7, 20, 21, 29, 45, 46
+interface BluetoothHost {
+  EnableAdapter@0() => (BluetoothAdapterState state);
+  DisableAdapter@1() => (BluetoothAdapterState state);
+  GetAdapterProperty@2(BluetoothPropertyType type);
+  SetAdapterProperty@3(BluetoothProperty property);
+  StartDiscovery@8();
+  CancelDiscovery@9();
+  CreateBond@10(BluetoothAddress addr, int32 transport);
+  RemoveBond@11(BluetoothAddress addr);
+  CancelBond@12(BluetoothAddress addr);
+
+  GetConnectionState@13(BluetoothAddress addr) => (bool connected);
+
+  // Bluetooth Gatt Client functions
+  [MinVersion=1] StartLEScan@14();
+  [MinVersion=1] StopLEScan@15();
+  [MinVersion=1] ConnectLEDevice@16(BluetoothAddress remote_addr);
+  [MinVersion=1] DisconnectLEDevice@17(BluetoothAddress remote_addr);
+  [MinVersion=1] SearchService@18(BluetoothAddress remote_addr);
+  [MinVersion=1] GetGattDB@19(BluetoothAddress remote_addr);
+  [MinVersion=1] ReadGattCharacteristic@22(BluetoothAddress remote_addr,
+                                           BluetoothGattServiceID service_id,
+                                           BluetoothGattID char_id)
+      => (BluetoothGattValue value);
+  [MinVersion=1] WriteGattCharacteristic@23(BluetoothAddress remote_addr,
+                                            BluetoothGattServiceID service_id,
+                                            BluetoothGattID char_id,
+                                            BluetoothGattValue value,
+                                            [MinVersion=11] bool prepare)
+      => (BluetoothGattStatus status);
+  [MinVersion=1] ReadGattDescriptor@24(BluetoothAddress remote_addr,
+                                       BluetoothGattServiceID service_id,
+                                       BluetoothGattID char_id,
+                                       BluetoothGattID desc_id)
+      => (BluetoothGattValue value);
+  [MinVersion=1] WriteGattDescriptor@25(BluetoothAddress remote_addr,
+                                        BluetoothGattServiceID service_id,
+                                        BluetoothGattID char_id,
+                                        BluetoothGattID desc_id,
+                                        BluetoothGattValue value)
+      => (BluetoothGattStatus status);
+  [MinVersion=11] ExecuteWrite@44(BluetoothAddress remote_addr,
+                                  bool execute)
+      => (BluetoothGattStatus status);
+  [MinVersion=1] RegisterForGattNotification@26(
+      BluetoothAddress remote_addr,
+      BluetoothGattServiceID service_id,
+      BluetoothGattID char_id)
+      => (BluetoothGattStatus status);
+  [MinVersion=1] DeregisterForGattNotification@27(
+      BluetoothAddress remote_addr,
+      BluetoothGattServiceID service_id,
+      BluetoothGattID char_id)
+      => (BluetoothGattStatus status);
+  [MinVersion=1] ReadRemoteRssi@28(BluetoothAddress remote_addr)
+      => (int32 rssi);
+
+  // Bluetooth Gatt Server functions
+  // Copied from Android API
+  // https://source.android.com/devices/halref/bt__gatt__server_8h.html
+  [MinVersion=3] AddService@30(BluetoothGattServiceID service_id,
+                               int32 num_handles)
+      => (int32 service_handle);
+  [MinVersion=3] AddCharacteristic@31(int32 service_handle,
+                                      BluetoothUUID uuid,
+                                      int32 properties,
+                                      int32 permissions)
+      => (int32 characteristic_handle);
+  [MinVersion=3] AddDescriptor@32(int32 service_handle,
+                                  BluetoothUUID uuid,
+                                  int32 permissions)
+      => (int32 descriptor_handle);
+  [MinVersion=3] StartService@33(int32 service_handle)
+      => (BluetoothGattStatus status);
+  [MinVersion=3] StopService@34(int32 service_handle)
+      => (BluetoothGattStatus status);
+  [MinVersion=3] DeleteService@35(int32 service_handle)
+      => (BluetoothGattStatus status);
+  [MinVersion=3] SendIndication@36(int32 attribute_handle,
+                                   BluetoothAddress address,
+                                   bool confirm,
+                                   array<uint8> value)
+      => (BluetoothGattStatus status);
+
+  // Bluetooth SDP functions
+  [MinVersion=5] GetSdpRecords@37(BluetoothAddress remote_addr,
+                                  BluetoothUUID target_uuid);
+  [MinVersion=5] CreateSdpRecord@38(BluetoothSdpRecord record)
+      => (BluetoothCreateSdpRecordResult result);
+  [MinVersion=5] RemoveSdpRecord@39(uint32 service_handle)
+      => (BluetoothStatus status);
+
+  // Multi-advertisement functions
+  [MinVersion=6] ReserveAdvertisementHandle@40()
+      => (BluetoothGattStatus status, int32 adv_handle);
+  [MinVersion=6] EnableAdvertisement@41(int32 adv_handle,
+                                        BluetoothAdvertisement adv)
+      => (BluetoothGattStatus status);
+  [MinVersion=6] ReleaseAdvertisementHandle@42(int32 adv_handle)
+      => (BluetoothGattStatus status);
+  [MinVersion=8] DisableAdvertisement@43(int32 adv_handle)
+      => (BluetoothGattStatus status);
+
+  // Bluetooth socket (RFCOMM and L2CAP LE) functions
+  // Opens a |sock_type| socket with security options in |sock_flags|, and
+  // listens on |port| (RFCOMM channel or L2CAP PSM). When |port| = 0, we will
+  // select a port number automatically. If this process succeeds, the actual
+  // listening port will be returned in |port|.
+  [MinVersion=18] BluetoothSocketListen@47(BluetoothSocketType sock_type,
+                                           BluetoothSocketFlags sock_flags,
+                                           int32 port)
+      => (BluetoothStatus status, int32 port,
+          pending_receiver<BluetoothListenSocketClient>? client);
+  // Opens a |sock_type| socket with security options in |sock_flags|, and
+  // connects to |remote_addr| which is listening on |remote_port|.
+  [MinVersion=18] BluetoothSocketConnect@48(BluetoothSocketType sock_type,
+                                            BluetoothSocketFlags sock_flags,
+                                            BluetoothAddress remote_addr,
+                                            int32 remote_port)
+      => (BluetoothStatus status, pending_receiver<BluetoothConnectSocketClient>? client);
+};
+
+// Next Method ID: 25
+// Deprecated Method ID: 0, 2, 6, 11, 12
+interface BluetoothInstance {
+  // Establishes full-duplex communication with the host.
+  [MinVersion=7] Init@18(pending_remote<BluetoothHost> host_remote) => ();
+
+  OnAdapterProperties@1(BluetoothStatus status,
+                        array<BluetoothProperty> properties);
+  OnDeviceFound@3(array<BluetoothProperty> properties);
+  [MinVersion=16] OnDevicePropertiesChanged@22(
+      BluetoothAddress remote_addr, array<BluetoothProperty> properties);
+  OnDiscoveryStateChanged@4(BluetoothDiscoveryState state);
+  OnBondStateChanged@5(BluetoothStatus status,
+                       BluetoothAddress remote_addr,
+                       BluetoothBondState state);
+
+  // When the underlying BT link state changed, OnConnectionStateChanged() will
+  // always be invoked, while OnLEConnectionStateChange() will be invoked only
+  // when Chrome is holding a BluetoothGattConnection object for this address
+  // (i.e., this is a GATT connection which started by LEConnect() from ARC).
+  [MinVersion=17] OnConnectionStateChanged@23(BluetoothAddress remote_addr,
+                                              BluetoothDeviceType device_type,
+                                              bool connected);
+
+  // Bluetooth Gatt Client callbacks
+  [MinVersion=13] OnLEDeviceFound@21(BluetoothAddress addr,
+                                     int32 rssi,
+                                     array<uint8> eir);
+  // Used to notfiy the state of BluetoothGattConnection held by Chrome, called
+  // when that object becomes connected / disconnected or the LE connect request
+  // from ARC failed.
+  [MinVersion=1] OnLEConnectionStateChange@8(BluetoothAddress remote_addr,
+                                             bool connected);
+  [MinVersion=4] OnLEDeviceAddressChange@16(BluetoothAddress old_addr,
+                                            BluetoothAddress new_addr);
+  [MinVersion=1] OnSearchComplete@9(BluetoothAddress remote_addr,
+                                    BluetoothGattStatus status);
+  [MinVersion=1] OnGetGattDB@10(BluetoothAddress remote_addr,
+                                array<BluetoothGattDBElement> db);
+  [MinVersion=2] OnGattNotify@13(BluetoothAddress remote_addr,
+                                 BluetoothGattServiceID service_id,
+                                 BluetoothGattID char_id,
+                                 bool is_notify,
+                                 array<uint8> value);
+  // Used to notify service change, called when service is added or
+  // removed.
+  [MinVersion=20] OnServiceChanged@24(BluetoothAddress remote_addr);
+
+  // Bluetooth Gatt Server functions
+  [MinVersion=3] RequestGattRead@14(
+      BluetoothAddress address,
+      int32 attribute_handle,
+      int32 offset,
+      bool is_long,
+      [MinVersion=9] BluetoothGattDBAttributeType attribute_type)
+      => (BluetoothGattStatus status, array<uint8> value);
+  [MinVersion=3] RequestGattWrite@15(
+      BluetoothAddress address,
+      int32 attribute_handle,
+      int32 offset,
+      array<uint8> value,
+      [MinVersion=9] BluetoothGattDBAttributeType attribute_type,
+      [MinVersion=12] bool is_prepare)
+      => (BluetoothGattStatus status);
+  [MinVersion=12] RequestGattExecuteWrite@20(
+      BluetoothAddress address,
+      bool execute)
+      => (BluetoothGattStatus status);
+  [MinVersion=10] OnMTUReceived@19(BluetoothAddress remote_addr, uint16 mtu);
+
+  // Bluetooth SDP function
+  [MinVersion=5] OnGetSdpRecords@17(BluetoothStatus status,
+                                    BluetoothAddress remote_addr,
+                                    BluetoothUUID target_uuid,
+                                    array<BluetoothSdpRecord> records);
+};

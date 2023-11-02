@@ -1,14 +1,20 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/webapps/browser/android/installable/installable_ambient_badge_message_controller.h"
 
 #include "base/bind.h"
+#include "base/containers/lru_cache.h"
+#include "base/no_destructor.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
+#include "components/messages/android/throttler/domain_session_throttler.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/webapps/browser/android/installable/installable_ambient_badge_client.h"
+#include "components/webapps/browser/android/webapps_icon_utils.h"
+#include "components/webapps/browser/features.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace webapps {
@@ -31,9 +37,15 @@ void InstallableAmbientBadgeMessageController::EnqueueMessage(
     content::WebContents* web_contents,
     const std::u16string& app_name,
     const SkBitmap& icon,
+    const bool is_primary_icon_maskable,
     const GURL& start_url) {
   DCHECK(!message_);
+  if (!GetThrottler()->ShouldShow(
+          web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin())) {
+    return;
+  }
 
+  save_origin_ = web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   message_ = std::make_unique<messages::MessageWrapper>(
       messages::MessageIdentifier::INSTALLABLE_AMBIENT_BADGE,
       base::BindOnce(
@@ -47,9 +59,16 @@ void InstallableAmbientBadgeMessageController::EnqueueMessage(
       IDS_AMBIENT_BADGE_INSTALL_ALTERNATIVE, app_name));
   message_->SetDescription(url_formatter::FormatUrlForSecurityDisplay(
       start_url, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
-  // TODO(crbug.com/1247374): Add support for maskable primary icon.
   message_->DisableIconTint();
-  message_->SetIcon(icon);
+  if (is_primary_icon_maskable &&
+      WebappsIconUtils::DoesAndroidSupportMaskableIcons()) {
+    message_->SetIcon(WebappsIconUtils::GenerateAdaptiveIconBitmap(icon));
+  } else {
+    message_->SetIcon(icon);
+  }
+  message_->EnableLargeIcon(true);
+  message_->SetIconRoundedCornerRadius(
+      WebappsIconUtils::GetIdealIconCornerRadiusPxForPromptUI());
   message_->SetPrimaryButtonText(l10n_util::GetStringUTF16(IDS_INSTALL));
   messages::MessageDispatcherBridge::Get()->EnqueueMessage(
       message_.get(), web_contents, messages::MessageScopeType::NAVIGATION,
@@ -75,6 +94,17 @@ void InstallableAmbientBadgeMessageController::HandleMessageDismissed(
   if (dismiss_reason == messages::DismissReason::GESTURE) {
     client_->BadgeDismissed();
   }
+  if (dismiss_reason != messages::DismissReason::PRIMARY_ACTION) {
+    GetThrottler()->AddStrike(save_origin_);
+  }
+}
+
+// static
+messages::DomainSessionThrottler*
+InstallableAmbientBadgeMessageController::GetThrottler() {
+  static messages::DomainSessionThrottler instance(
+      features::kInstallableAmbientBadgeMessage_ThrottleDomainsCapacity.Get());
+  return &instance;
 }
 
 }  // namespace webapps

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 // website, the URL and a timestamp of a previously visited website.
 @interface HistoryEntryItem : TableViewItem<HistoryEntryItemInterface>
 
-// The |delegate| is used to perform accessibility actions, it might be nil and
+// The `delegate` is used to perform accessibility actions, it might be nil and
 // it will not be retained.
 - (instancetype)initWithType:(NSInteger)type
        accessibilityDelegate:(id<HistoryEntryItemDelegate>)delegate

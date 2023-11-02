@@ -2,7 +2,7 @@
 
 This document describes the workflow for getting a large-scale change approved ([Chrome LSC](large_scale_changes.md)).
 
-## 1 Complete the LSC template ([link](https://docs.google.com/document/d/10S8ESUvwhEOOBEKr-hn97y8eRTYczavizsUNv5Gvcg8/edit)) {#1-complete-the-lsc-template-link}
+## 1 Complete the LSC template ([link](https://docs.google.com/document/d/10S8ESUvwhEOOBEKr-hn97y8eRTYczavizsUNv5Gvcg8/template/preview)) {#1-complete-the-lsc-template-link}
 
 This short document will describe the large-scale change you want to make: What the change is, why you want to make it, estimated size (#CLs, #files), etc. Once you start sending out CLs, a link to that document should also be included in the description of each CL (more details at [Chrome LSC Template](https://docs.google.com/document/d/10S8ESUvwhEOOBEKr-hn97y8eRTYczavizsUNv5Gvcg8/edit)).
 

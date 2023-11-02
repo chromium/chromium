@@ -1,9 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.omnibox.suggestions.base;
 
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -16,23 +17,30 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.view.View;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.ImageView;
+
+import androidx.annotation.ColorInt;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxTheme;
+import org.chromium.chrome.browser.omnibox.suggestions.DropdownCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
-import org.chromium.testing.local.LocalRobolectricTestRunner;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -42,9 +50,13 @@ import java.util.List;
 /**
  * Tests for {@link BaseSuggestionViewBinder}.
  */
-@RunWith(LocalRobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class BaseSuggestionViewBinderUnitTest {
+    @Rule
+    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
+
     @Mock
     BaseSuggestionView mBaseView;
 
@@ -65,10 +77,7 @@ public class BaseSuggestionViewBinderUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
-        // First set the app theme, then apply the feed theme overlay.
-        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
-        mActivity.setTheme(R.style.ThemeOverlay_Feed_Light);
+        mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
         mResources = mActivity.getResources();
 
         when(mContentView.getContext()).thenReturn(mActivity);
@@ -224,7 +233,7 @@ public class BaseSuggestionViewBinderUnitTest {
         Assert.assertNull(mModel.get(BaseSuggestionViewProperties.ACTIONS));
         mBaseView.setActionButtonsCount(1);
         // Change in color scheme happening ahead of setting action could cause a crash.
-        mModel.set(SuggestionCommonProperties.OMNIBOX_THEME, OmniboxTheme.LIGHT_THEME);
+        mModel.set(SuggestionCommonProperties.COLOR_SCHEME, BrandedColorScheme.LIGHT_BRANDED_THEME);
     }
 
     @Test
@@ -249,5 +258,76 @@ public class BaseSuggestionViewBinderUnitTest {
         mModel.set(BaseSuggestionViewProperties.ICON, null);
         verify(mDecoratedView).setPaddingRelative(startSpace, 0, endSpace, 0);
         verify(mBaseView, never()).setPaddingRelative(anyInt(), anyInt(), anyInt(), anyInt());
+    }
+
+    @Test
+    public void suggestionDensity_defaultMode() {
+        mModel.set(
+                BaseSuggestionViewProperties.DENSITY, BaseSuggestionViewProperties.Density.DEFAULT);
+        final int expectedPadding =
+                mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_semicompact_padding);
+        final int expectedHeight =
+                mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_semicompact_height);
+        verify(mContentView).setPaddingRelative(0, expectedPadding, 0, expectedPadding);
+        verify(mContentView).setMinimumHeight(expectedHeight);
+    }
+
+    @Test
+    public void suggestionDensity_compactMode() {
+        mModel.set(
+                BaseSuggestionViewProperties.DENSITY, BaseSuggestionViewProperties.Density.COMPACT);
+        final int expectedPadding =
+                mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_compact_padding);
+        final int expectedHeight =
+                mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_compact_height);
+        verify(mContentView).setPaddingRelative(0, expectedPadding, 0, expectedPadding);
+        verify(mContentView).setMinimumHeight(expectedHeight);
+    }
+
+    @Test
+    public void suggestionBackground() {
+        mModel.set(DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED, false);
+        mModel.set(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED, true);
+
+        verify(mBaseView).setBackground(any());
+        Assert.assertNotNull(mBaseView.getBackground());
+    }
+
+    @Test
+    public void suggestionMargin() {
+        mModel.set(DropdownCommonProperties.BOTTOM_MARGIN, 17);
+        mModel.set(DropdownCommonProperties.TOP_MARGIN, 13);
+
+        verify(mBaseView).setLayoutParams(any());
+        int sideSpacing = mBaseView.getContext().getResources().getDimensionPixelOffset(
+                R.dimen.omnibox_suggestion_side_spacing);
+        MarginLayoutParams layoutParams = (MarginLayoutParams) mBaseView.getLayoutParams();
+        Assert.assertNotNull(layoutParams);
+        Assert.assertEquals(sideSpacing, layoutParams.leftMargin);
+        Assert.assertEquals(13, layoutParams.topMargin);
+        Assert.assertEquals(sideSpacing, layoutParams.rightMargin);
+        Assert.assertEquals(17, layoutParams.bottomMargin);
+    }
+
+    @Test
+    public void getBackgroundDrawableColor_incognito() {
+        final @ColorInt int expectedColor =
+                mBaseView.getContext().getColor(R.color.omnibox_suggestion_bg_incognito);
+        final boolean isIncognito = true;
+
+        Assert.assertEquals(
+                BaseSuggestionViewBinder.getBackgroundDrawableColor(isIncognito, mBaseView),
+                expectedColor);
+    }
+
+    @Test
+    public void getBackgroundDrawableColor_notIncognito() {
+        final @ColorInt int expectedColor = ChromeColors.getSurfaceColor(
+                mBaseView.getContext(), R.dimen.omnibox_suggestion_bg_elevation);
+        final boolean isIncognito = false;
+
+        Assert.assertEquals(
+                BaseSuggestionViewBinder.getBackgroundDrawableColor(isIncognito, mBaseView),
+                expectedColor);
     }
 }

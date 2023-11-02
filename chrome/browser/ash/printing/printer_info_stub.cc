@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chromeos/printing/cups_printer_status.h"
 #include "printing/printer_status.h"
 
 namespace ash {
@@ -23,7 +23,8 @@ void QueryIppPrinter(const std::string& host,
       FROM_HERE, base::BindOnce(std::move(callback),
                                 printing::PrinterQueryResult::kUnknownFailure,
                                 printing::PrinterStatus(), "Foo Bar",
-                                std::vector<std::string>{}, false));
+                                std::vector<std::string>{}, false,
+                                chromeos::PrinterAuthenticationInfo{}));
 }
 
 }  // namespace ash

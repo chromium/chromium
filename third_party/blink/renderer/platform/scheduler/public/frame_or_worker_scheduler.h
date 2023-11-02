@@ -1,11 +1,13 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_PUBLIC_FRAME_OR_WORKER_SCHEDULER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_PUBLIC_FRAME_OR_WORKER_SCHEDULER_H_
 
+#include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/types/strong_alias.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/scheduling_lifecycle_state.h"
@@ -13,6 +15,8 @@
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
+
+#include "base/record_replay.h"
 
 namespace blink {
 class FrameScheduler;
@@ -26,30 +30,21 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
   // Observer type that regulates conditions to invoke callbacks.
   enum class ObserverType { kLoader, kWorkerScheduler };
 
-  // Observer interface to receive scheduling policy change events.
-  class Observer {
-   public:
-    virtual ~Observer() = default;
-
-    // Notified when throttling state is changed. May be called consecutively
-    // with the same value.
-    virtual void OnLifecycleStateChanged(
-        scheduler::SchedulingLifecycleState) = 0;
-  };
+  // Callback type for receiving scheduling policy change events.
+  using OnLifecycleStateChangedCallback =
+      base::RepeatingCallback<void(scheduler::SchedulingLifecycleState)>;
 
   class PLATFORM_EXPORT LifecycleObserverHandle {
     USING_FAST_MALLOC(LifecycleObserverHandle);
 
    public:
-    LifecycleObserverHandle(FrameOrWorkerScheduler* scheduler,
-                            Observer* observer);
+    explicit LifecycleObserverHandle(FrameOrWorkerScheduler* scheduler);
     LifecycleObserverHandle(const LifecycleObserverHandle&) = delete;
     LifecycleObserverHandle& operator=(const LifecycleObserverHandle&) = delete;
     ~LifecycleObserverHandle();
 
    private:
     base::WeakPtr<FrameOrWorkerScheduler> scheduler_;
-    Observer* observer_;
   };
 
   // RAII handle which should be kept alive as long as the feature is active
@@ -63,7 +58,12 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
     SchedulingAffectingFeatureHandle& operator=(
         SchedulingAffectingFeatureHandle&&);
 
-    inline ~SchedulingAffectingFeatureHandle() { reset(); }
+    inline ~SchedulingAffectingFeatureHandle() {
+      if (!recordreplay::AreEventsDisallowed("~SchedulingAffectingFeatureHandle")) {
+        // This might touch the recording stream during GC when using devtools.
+        reset();
+      }
+    }
 
     explicit operator bool() const { return scheduler_.get(); }
 
@@ -109,9 +109,9 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
   // Usage:
   // handle = scheduler->RegisterFeature(
   //     kYourFeature, { SchedulingPolicy::DisableSomething() });
-  SchedulingAffectingFeatureHandle RegisterFeature(
+  [[nodiscard]] SchedulingAffectingFeatureHandle RegisterFeature(
       SchedulingPolicy::Feature feature,
-      SchedulingPolicy policy) WARN_UNUSED_RESULT;
+      SchedulingPolicy policy);
 
   // Register a feature which is used for the rest of the lifetime of
   // the document and can't be unregistered.
@@ -120,14 +120,21 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
   void RegisterStickyFeature(SchedulingPolicy::Feature feature,
                              SchedulingPolicy policy);
 
-  // Adds an Observer instance to be notified on scheduling policy changed.
-  // When an Observer is added, the initial state will be notified synchronously
-  // through the Observer interface.
-  // A RAII handle is returned and observer is unregistered when the handle is
-  // destroyed.
-  std::unique_ptr<LifecycleObserverHandle> AddLifecycleObserver(ObserverType,
-                                                                Observer*)
-      WARN_UNUSED_RESULT;
+  // Adds an observer callback to be notified on scheduling policy changed.
+  // When a callback is added, the initial state will be notified synchronously
+  // through the callback. The callback may be invoked consecutively with the
+  // same value. Returns a RAII handle that unregisters the callback when the
+  // handle is destroyed.
+  //
+  // New usage outside of platform/ should be rare. Prefer using
+  // ExecutionContextLifecycleStateObserver to observe paused and frozenness
+  // changes and PageVisibilityObserver to observe visibility changes. One
+  // exception is that this observer enables observing visibility changes of the
+  // associated page in workers, whereas PageVisibilityObserver does not
+  // (crbug.com/1286570).
+  [[nodiscard]] std::unique_ptr<LifecycleObserverHandle> AddLifecycleObserver(
+      ObserverType,
+      OnLifecycleStateChangedCallback);
 
   virtual std::unique_ptr<WebSchedulingTaskQueue> CreateWebSchedulingTaskQueue(
       WebSchedulingPriority) = 0;
@@ -135,6 +142,12 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
   virtual FrameScheduler* ToFrameScheduler() { return nullptr; }
 
   base::WeakPtr<FrameOrWorkerScheduler> GetWeakPtr();
+
+  // Returns a task runner for compositor tasks. This is intended only to be
+  // used by specific animation and rendering related tasks (e.g. animated GIFS)
+  // and should not generally be used.
+  virtual scoped_refptr<base::SingleThreadTaskRunner>
+  CompositorTaskRunner() = 0;
 
  protected:
   FrameOrWorkerScheduler();
@@ -157,10 +170,25 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
   GetSchedulingAffectingFeatureWeakPtr() = 0;
 
  private:
-  void RemoveLifecycleObserver(Observer* observer);
+  class ObserverState {
+   public:
+    ObserverState(ObserverType, OnLifecycleStateChangedCallback);
+    ObserverState(const ObserverState&) = delete;
+    ObserverState& operator=(const ObserverState&) = delete;
+    ~ObserverState();
 
-  // Observers are not owned by the scheduler.
-  HashMap<Observer*, ObserverType> lifecycle_observers_;
+    ObserverType GetObserverType() const { return observer_type_; }
+    OnLifecycleStateChangedCallback& GetCallback() { return callback_; }
+
+   private:
+    ObserverType observer_type_;
+    OnLifecycleStateChangedCallback callback_;
+  };
+
+  void RemoveLifecycleObserver(LifecycleObserverHandle* handle);
+
+  HashMap<LifecycleObserverHandle*, std::unique_ptr<ObserverState>>
+      lifecycle_observers_;
   base::WeakPtrFactory<FrameOrWorkerScheduler> weak_factory_{this};
 };
 

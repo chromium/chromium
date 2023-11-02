@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_CREDENTIAL_MANAGER_IMPL_H_
@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/credential_manager_password_form_manager.h"
 #include "components/password_manager/core/browser/credential_manager_pending_prevent_silent_access_task.h"
@@ -79,10 +80,7 @@ class CredentialManagerImpl
   // CredentialManagerPasswordFormManagerDelegate:
   void OnProvisionalSaveComplete() override;
 
-  PasswordManagerClient* client_;
-
-  // Set to false to disable automatic signing in.
-  BooleanPrefMember auto_signin_enabled_;
+  raw_ptr<PasswordManagerClient> client_;
 
   // Used to store or update a credential. Calls OnProvisionalSaveComplete
   // on this delegate.

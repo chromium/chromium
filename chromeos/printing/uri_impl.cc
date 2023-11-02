@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -72,24 +72,10 @@ bool ParseCharacter(const Iter& end, Iter* current, char* out) {
   return true;
 }
 
-// Helper struct for the function below.
-class Comparator {
- public:
-  // The string given as a parameter must be valid for the whole lifetime
-  // of this object.
-  explicit Comparator(const std::string& chars) : chars_(chars) {}
-  bool operator()(std::string::value_type element) const {
-    return (chars_.find(element) != std::string::npos);
-  }
-
- private:
-  const std::string& chars_;
-};
-
 // Returns iterator to the first occurrence of any character from |chars|
 // in |begin|-|end|. Returns |end| if none of the characters were found.
 Iter FindFirstOf(Iter begin, Iter end, const std::string& chars) {
-  return std::find_if(begin, end, Comparator(chars));
+  return std::find_first_of(begin, end, chars.begin(), chars.end());
 }
 
 }  // namespace
@@ -228,7 +214,7 @@ bool Uri::Pim::SaveQuery(
     // Process parameter name.
     auto it1 = val[i].first.begin();
     auto it2 = val[i].first.end();
-    if (!ParseString<encoded>(it1, it2, &out[i].first, true))
+    if (!ParseString<encoded>(it1, it2, &out[i].first, encoded))
       return false;
     if (out[i].first.empty()) {
       --parser_error_.parsed_strings;  // it was already counted
@@ -239,7 +225,7 @@ bool Uri::Pim::SaveQuery(
     // Process parameter value.
     it1 = val[i].second.begin();
     it2 = val[i].second.end();
-    if (!ParseString<encoded>(it1, it2, &out[i].second, true))
+    if (!ParseString<encoded>(it1, it2, &out[i].second, encoded))
       return false;
   }
   query_ = std::move(out);

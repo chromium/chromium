@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "components/autofill_assistant/browser/action_value.pb.h"
 #include "components/autofill_assistant/browser/field_formatter.h"
@@ -54,6 +55,12 @@ bool operator<(const SelectorProto::PropertyFilter& a,
     case SelectorProto::PropertyFilter::VALUE_NOT_SET:
       return false;
   }
+}
+
+bool operator<(const SelectorProto::SemanticFilter& a,
+               const SelectorProto::SemanticFilter& b) {
+  return std::make_tuple(a.objective(), a.role(), a.ignore_objective()) <
+         std::make_tuple(b.objective(), b.role(), b.ignore_objective());
 }
 
 // Used by operator<(RepeatedPtrField<Filter>, RepeatedPtrField<Filter>)
@@ -111,6 +118,7 @@ bool operator<(const SelectorProto::Filter& a, const SelectorProto::Filter& b) {
 
     case SelectorProto::Filter::kEnterFrame:
     case SelectorProto::Filter::kLabelled:
+    case SelectorProto::Filter::kParent:
       return false;
 
     case SelectorProto::Filter::kMatchCssSelector:
@@ -121,6 +129,9 @@ bool operator<(const SelectorProto::Filter& a, const SelectorProto::Filter& b) {
 
     case SelectorProto::Filter::kProperty:
       return a.property() < b.property();
+
+    case SelectorProto::Filter::kSemantic:
+      return a.semantic() < b.semantic();
 
     case SelectorProto::Filter::FILTER_NOT_SET:
       return false;
@@ -192,10 +203,10 @@ Selector::Selector(const SelectorProto& selector_proto)
 
 Selector::~Selector() = default;
 
-Selector::Selector(Selector&& other) = default;
+Selector::Selector(Selector&& other) noexcept = default;
 Selector::Selector(const Selector& other) = default;
 Selector& Selector::operator=(const Selector& other) = default;
-Selector& Selector::operator=(Selector&& other) = default;
+Selector& Selector::operator=(Selector&& other) noexcept = default;
 
 bool Selector::operator<(const Selector& other) const {
   return proto.filters() < other.proto.filters();
@@ -216,24 +227,27 @@ Selector& Selector::MustBeVisible() {
 }
 
 bool Selector::empty() const {
-  bool has_css_selector = false;
-  for (const SelectorProto::Filter& filter : proto.filters()) {
-    switch (filter.filter_case()) {
-      case SelectorProto::Filter::FILTER_NOT_SET:
-        // There must not be any unknown or invalid filters.
-        return true;
-
-      case SelectorProto::Filter::kCssSelector:
-        // There must be at least one CSS selector, since it's the only
-        // way we have of expanding the set of matches.
-        has_css_selector = true;
-        break;
-
-      default:
-        break;
-    }
+  if (base::ranges::any_of(proto.filters(),
+                           [](const SelectorProto::Filter& filter) {
+                             return filter.filter_case() ==
+                                    SelectorProto::Filter::FILTER_NOT_SET;
+                           })) {
+    return true;
   }
-  return !has_css_selector;
+
+  int semantic_selector_count = base::ranges::count_if(
+      proto.filters(), [](const SelectorProto::Filter& filter) {
+        return filter.filter_case() == SelectorProto::Filter::kSemantic;
+      });
+  if (semantic_selector_count > 0) {
+    return semantic_selector_count > 1 ||
+           proto.filters(0).filter_case() != SelectorProto::Filter::kSemantic;
+  }
+
+  return !base::ranges::any_of(
+      proto.filters(), [](const SelectorProto::Filter& filter) {
+        return filter.filter_case() == SelectorProto::Filter::kCssSelector;
+      });
 }
 
 std::ostream& operator<<(std::ostream& out, const Selector& selector) {
@@ -281,6 +295,18 @@ std::ostream& operator<<(std::ostream& out,
       out << "/<unknown>/";
       break;
   }
+  return out;
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         const SelectorProto::SemanticFilter& c) {
+  out << "Semantic { role: " << c.role() << ", objective: ";
+  if (c.ignore_objective()) {
+    out << "ignored";
+  } else {
+    out << c.objective();
+  }
+  out << " }";
   return out;
 }
 
@@ -379,6 +405,14 @@ std::ostream& operator<<(std::ostream& out, const SelectorProto::Filter& f) {
 
     case SelectorProto::Filter::kProperty:
       out << f.property();
+      return out;
+
+    case SelectorProto::Filter::kParent:
+      out << "parent";
+      return out;
+
+    case SelectorProto::Filter::kSemantic:
+      out << f.semantic();
       return out;
 
     case SelectorProto::Filter::FILTER_NOT_SET:

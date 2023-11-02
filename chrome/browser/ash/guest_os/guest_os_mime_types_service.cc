@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,114 +8,50 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/dbus/vm_applications/apps.pb.h"
+#include "chromeos/ash/components/dbus/vm_applications/apps.pb.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-
-using vm_tools::apps::App;
+#include "third_party/xdg_shared_mime_info/mime_cache.h"
 
 namespace guest_os {
-
-namespace {
-
-constexpr char kMimeTypeKey[] = "mime_type";
-
-}  // namespace
 
 GuestOsMimeTypesService::GuestOsMimeTypesService(Profile* profile)
     : prefs_(profile->GetPrefs()) {}
 
 GuestOsMimeTypesService::~GuestOsMimeTypesService() = default;
 
-// static
-// TODO(crbug.com/1015353): Can be removed after M99.
-void GuestOsMimeTypesService::MigrateVerboseMimeTypePrefs(
-    PrefService* pref_service) {
-  DictionaryPrefUpdate update(pref_service, prefs::kGuestOsMimeTypes);
-  base::DictionaryValue* mime_types = update.Get();
-  std::map<std::string,
-           std::map<std::string, std::map<std::string, std::string>>>
-      migrated;
-  std::vector<std::string> to_remove;
-
-  for (const auto item : mime_types->DictItems()) {
-    std::vector<std::string> parts = base::SplitString(
-        item.first, "/", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-    if (parts.size() == 1) {
-      // Already migrated.
-      continue;
-    }
-
-    // Migrate: "termina/penguin/txt": { "mime_type": "text/plain" } to:
-    // "termina": { "penguin": { "txt": "text/plain" } }
-    to_remove.push_back(item.first);
-    std::string* mime_type;
-    if (parts.size() == 3 && item.second.is_dict() &&
-        (mime_type = item.second.FindStringKey(kMimeTypeKey))) {
-      migrated[parts[0]][parts[1]][parts[2]] = *mime_type;
-    } else {
-      LOG(ERROR) << "Deleting unexpected crostini.mime_types key " << item.first
-                 << "=" << item.second;
-    }
-  }
-
-  // Delete old values.
-  for (const std::string& s : to_remove) {
-    mime_types->RemoveKey(s);
-  }
-
-  auto get_or_create = [](base::Value* v, const std::string& k) {
-    base::Value* result = v->FindDictKey(k);
-    if (!result) {
-      result = v->SetKey(k, base::Value(base::Value::Type::DICTIONARY));
-    }
-    return result;
-  };
-
-  // Add migrated values.
-  for (const auto& vm_item : migrated) {
-    base::Value* vm = get_or_create(mime_types, vm_item.first);
-    for (const auto& container_item : vm_item.second) {
-      base::Value* container = get_or_create(vm, container_item.first);
-      for (const auto& ext : container_item.second) {
-        container->SetStringKey(ext.first, ext.second);
-      }
-    }
-  }
-}
-
 std::string GuestOsMimeTypesService::GetMimeType(
     const base::FilePath& file_path,
     const std::string& vm_name,
     const std::string& container_name) const {
-  const base::Value* vm =
-      prefs_->GetDictionary(prefs::kGuestOsMimeTypes)->FindDictKey(vm_name);
+  const base::Value::Dict* vm =
+      prefs_->GetDict(prefs::kGuestOsMimeTypes).FindDict(vm_name);
   if (vm) {
-    const base::Value* container = vm->FindDictKey(container_name);
+    const base::Value::Dict* container = vm->FindDict(container_name);
     if (container) {
       // Try Extension() which may be a double like ".tar.gz".
       std::string extension = file_path.Extension();
       // Remove leading dot.
       extension.erase(0, 1);
-      const std::string* result = container->FindStringKey(extension);
+      const std::string* result = container->FindString(extension);
       if (!result) {
         // Try lowercase.
-        result = container->FindStringKey(base::ToLowerASCII(extension));
+        result = container->FindString(base::ToLowerASCII(extension));
       }
       // If this was a double extension, then try FinalExtension().
       if (!result && extension.find('.') != std::string::npos) {
         extension = file_path.FinalExtension();
         extension.erase(0, 1);
-        result = container->FindStringKey(extension);
+        result = container->FindString(extension);
         if (!result) {
           // Try lowercase.
-          result = container->FindStringKey(base::ToLowerASCII(extension));
+          result = container->FindString(base::ToLowerASCII(extension));
         }
       }
       if (result) {
@@ -126,17 +62,45 @@ std::string GuestOsMimeTypesService::GetMimeType(
   return "";
 }
 
+std::vector<std::string>
+GuestOsMimeTypesService::GetExtensionTypesFromMimeTypes(
+    const std::set<std::string>& supported_mime_types,
+    const std::string& vm_name,
+    const std::string& container_name) const {
+  const base::Value::Dict* vm =
+      prefs_->GetDict(prefs::kGuestOsMimeTypes).FindDict(vm_name);
+  if (!vm) {
+    return {};
+  }
+  const base::Value::Dict* container = vm->FindDict(container_name);
+  if (!container) {
+    return {};
+  }
+  const base::Value::Dict* extension_to_mime = vm->FindDict(container_name);
+  if (!extension_to_mime) {
+    return {};
+  }
+
+  std::vector<std::string> extension_types;
+  for (auto entry : *extension_to_mime) {
+    if (base::Contains(supported_mime_types, entry.second.GetString())) {
+      extension_types.push_back(entry.first);
+    }
+  }
+  return extension_types;
+}
+
 void GuestOsMimeTypesService::ClearMimeTypes(
     const std::string& vm_name,
     const std::string& container_name) {
   VLOG(1) << "ClearMimeTypes(" << vm_name << ", " << container_name << ")";
-  DictionaryPrefUpdate update(prefs_, prefs::kGuestOsMimeTypes);
-  base::DictionaryValue* mime_types = update.Get();
-  base::Value* vm = mime_types->FindDictKey(vm_name);
+  ScopedDictPrefUpdate update(prefs_, prefs::kGuestOsMimeTypes);
+  base::Value::Dict& mime_types = update.Get();
+  base::Value::Dict* vm = mime_types.FindDict(vm_name);
   if (vm) {
-    vm->RemoveKey(container_name);
-    if (container_name.empty() || vm->DictEmpty()) {
-      mime_types->RemoveKey(vm_name);
+    vm->Remove(container_name);
+    if (container_name.empty() || vm->empty()) {
+      mime_types.Remove(vm_name);
     }
   }
 }
@@ -154,18 +118,20 @@ void GuestOsMimeTypesService::UpdateMimeTypes(
 
   base::Value exts(base::Value::Type::DICTIONARY);
   for (const auto& mapping : mime_type_mappings.mime_type_mappings()) {
-    exts.SetStringKey(mapping.first, mapping.second);
+    // Only store mappings from container that are different to host.
+    std::string type;
+    if (!xdg_shared_mime_info::GetMimeCacheTypeFromExtension(mapping.first,
+                                                             &type) ||
+        mapping.second != type) {
+      exts.SetStringKey(mapping.first, mapping.second);
+    }
   }
   VLOG(1) << "UpdateMimeTypes(" << mime_type_mappings.vm_name() << ", "
           << mime_type_mappings.container_name() << ")=" << exts;
-  DictionaryPrefUpdate update(prefs_, prefs::kGuestOsMimeTypes);
-  base::DictionaryValue* mime_types = update.Get();
-  base::Value* vm = mime_types->FindDictKey(mime_type_mappings.vm_name());
-  if (!vm) {
-    vm = mime_types->SetKey(mime_type_mappings.vm_name(),
-                            base::Value(base::Value::Type::DICTIONARY));
-  }
-  vm->SetKey(mime_type_mappings.container_name(), std::move(exts));
+  ScopedDictPrefUpdate update(prefs_, prefs::kGuestOsMimeTypes);
+  base::Value::Dict& mime_types = update.Get();
+  base::Value::Dict* vm = mime_types.EnsureDict(mime_type_mappings.vm_name());
+  vm->Set(mime_type_mappings.container_name(), std::move(exts));
 }
 
 }  // namespace guest_os

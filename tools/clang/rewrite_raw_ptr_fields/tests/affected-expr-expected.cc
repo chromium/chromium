@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -222,16 +222,22 @@ class MyTemplate {
 // We also want to append |.get()| for |T| parameters (i.e. not just for |T*|
 // parameters).
 //
-// One motivating example is ActivityLogDatabasePolicy::ScheduleAndForget which
-// passes its argument to base::Unretained.
-//
-// Another motivating example, is the following pattern from
+// One motivating example is the following pattern from
 // //components/variations/service/ui_string_overrider.cc where the type of the
 // 2 arguments needs to be kept consistent:
 //     const uint32_t* end = ptr_field_ + num_resources_;
 //     const uint32_t* element = std::lower_bound(ptr_field_, end, hash);
 template <typename T>
 void AffectedNonPointerFunction(T t) {}
+
+// base::Unretained has a template specialization that accepts `const
+// raw_ptr<T>&` as an argument (since https://crrev.com/c/3283196).  Therefore
+// we expect that `.get()` is *not* used when calling base::Unretained.
+//
+// Originally, ActivityLogDatabasePolicy::ScheduleAndForget was used as a
+// motivating example - passes a raw_ptr to base::Unretained.
+template <typename T>
+void Unretained(T* t) {}
 
 // AffectedFunctionWithDeepT mimics ConvertPPResourceArrayToObjects from
 // //ppapi/cpp/array_output.h
@@ -271,6 +277,11 @@ void foo() {
   // No rewrite expected - T& parameter.
   std::swap(my_struct.ptr, my_struct.ptr2);
   std::tie(my_struct.ptr, my_struct.ptr2) = std::make_pair(nullptr, nullptr);
+
+  // No rewrite expected - functions named "Unretained" are excluded (they have
+  // been manually modified to also provide a template specialization that
+  // accepts `const raw_ptr<T>&` as an argument).
+  Unretained(my_struct.ptr);
 }
 
 }  // namespace templated_functions

@@ -198,20 +198,11 @@ s! {
     }
 }
 
-pub const RLIM_INFINITY: ::rlim_t = !0;
+pub const O_LARGEFILE: ::c_int = 0;
 pub const VEOF: usize = 4;
 pub const RTLD_DEEPBIND: ::c_int = 0x8;
 pub const RTLD_GLOBAL: ::c_int = 0x100;
 pub const RTLD_NOLOAD: ::c_int = 0x4;
-pub const TIOCGSOFTCAR: ::c_ulong = 21529;
-pub const TIOCSSOFTCAR: ::c_ulong = 21530;
-pub const TIOCGRS485: ::c_int = 21550;
-pub const TIOCSRS485: ::c_int = 21551;
-pub const RLIMIT_RSS: ::__rlimit_resource_t = 5;
-pub const RLIMIT_AS: ::__rlimit_resource_t = 9;
-pub const RLIMIT_MEMLOCK: ::__rlimit_resource_t = 8;
-pub const RLIMIT_NOFILE: ::__rlimit_resource_t = 7;
-pub const RLIMIT_NPROC: ::__rlimit_resource_t = 6;
 pub const O_APPEND: ::c_int = 1024;
 pub const O_CREAT: ::c_int = 64;
 pub const O_EXCL: ::c_int = 128;
@@ -341,23 +332,6 @@ pub const SFD_NONBLOCK: ::c_int = 2048;
 pub const TCSANOW: ::c_int = 0;
 pub const TCSADRAIN: ::c_int = 1;
 pub const TCSAFLUSH: ::c_int = 2;
-pub const TIOCLINUX: ::c_ulong = 21532;
-pub const TIOCGSERIAL: ::c_ulong = 21534;
-pub const TIOCEXCL: ::c_ulong = 21516;
-pub const TIOCNXCL: ::c_ulong = 21517;
-pub const TIOCSCTTY: ::c_ulong = 21518;
-pub const TIOCSTI: ::c_ulong = 21522;
-pub const TIOCMGET: ::c_ulong = 21525;
-pub const TIOCMBIS: ::c_ulong = 21526;
-pub const TIOCMBIC: ::c_ulong = 21527;
-pub const TIOCMSET: ::c_ulong = 21528;
-pub const TIOCCONS: ::c_ulong = 21533;
-pub const TIOCM_ST: ::c_int = 8;
-pub const TIOCM_SR: ::c_int = 16;
-pub const TIOCM_CTS: ::c_int = 32;
-pub const TIOCM_CAR: ::c_int = 64;
-pub const TIOCM_RNG: ::c_int = 128;
-pub const TIOCM_DSR: ::c_int = 256;
 
 pub const __SIZEOF_PTHREAD_CONDATTR_T: usize = 4;
 pub const __SIZEOF_PTHREAD_MUTEXATTR_T: usize = 4;
@@ -381,9 +355,6 @@ pub const ENOTNAM: ::c_int = 118;
 pub const ENAVAIL: ::c_int = 119;
 pub const EISNAM: ::c_int = 120;
 pub const EREMOTEIO: ::c_int = 121;
-pub const FIOCLEX: ::c_ulong = 21585;
-pub const FIONCLEX: ::c_ulong = 21584;
-pub const FIONBIO: ::c_ulong = 21537;
 pub const MCL_CURRENT: ::c_int = 1;
 pub const MCL_FUTURE: ::c_int = 2;
 pub const SIGSTKSZ: ::size_t = 8192;
@@ -479,26 +450,18 @@ pub const IEXTEN: ::tcflag_t = 32768;
 pub const TOSTOP: ::tcflag_t = 256;
 pub const FLUSHO: ::tcflag_t = 4096;
 pub const EXTPROC: ::tcflag_t = 65536;
-pub const TCGETS: ::c_ulong = 21505;
-pub const TCSETS: ::c_ulong = 21506;
-pub const TCSETSW: ::c_ulong = 21507;
-pub const TCSETSF: ::c_ulong = 21508;
-pub const TCGETA: ::c_ulong = 21509;
-pub const TCSETA: ::c_ulong = 21510;
-pub const TCSETAW: ::c_ulong = 21511;
-pub const TCSETAF: ::c_ulong = 21512;
-pub const TCSBRK: ::c_ulong = 21513;
-pub const TCXONC: ::c_ulong = 21514;
-pub const TCFLSH: ::c_ulong = 21515;
-pub const TIOCINQ: ::c_ulong = 21531;
-pub const TIOCGPGRP: ::c_ulong = 21519;
-pub const TIOCSPGRP: ::c_ulong = 21520;
-pub const TIOCOUTQ: ::c_ulong = 21521;
-pub const TIOCGWINSZ: ::c_ulong = 21523;
-pub const TIOCSWINSZ: ::c_ulong = 21524;
-pub const FIONREAD: ::c_ulong = 21531;
 pub const __SIZEOF_PTHREAD_MUTEX_T: usize = 40;
 pub const __SIZEOF_PTHREAD_RWLOCK_T: usize = 56;
+pub const NGREG: usize = 32;
+pub const REG_PC: usize = 0;
+pub const REG_RA: usize = 1;
+pub const REG_SP: usize = 2;
+pub const REG_TP: usize = 4;
+pub const REG_S0: usize = 8;
+pub const REG_S1: usize = 9;
+pub const REG_A0: usize = 10;
+pub const REG_S2: usize = 18;
+pub const REG_NARGS: usize = 8;
 
 pub const SYS_read: ::c_long = 63;
 pub const SYS_write: ::c_long = 64;
@@ -775,6 +738,7 @@ pub const SYS_pkey_mprotect: ::c_long = 288;
 pub const SYS_pkey_alloc: ::c_long = 289;
 pub const SYS_pkey_free: ::c_long = 290;
 pub const SYS_statx: ::c_long = 291;
+pub const SYS_rseq: ::c_long = 293;
 pub const SYS_pidfd_send_signal: ::c_long = 424;
 pub const SYS_io_uring_setup: ::c_long = 425;
 pub const SYS_io_uring_enter: ::c_long = 426;
@@ -794,3 +758,10 @@ pub const SYS_faccessat2: ::c_long = 439;
 pub const SYS_process_madvise: ::c_long = 440;
 pub const SYS_epoll_pwait2: ::c_long = 441;
 pub const SYS_mount_setattr: ::c_long = 442;
+
+cfg_if! {
+    if #[cfg(libc_align)] {
+        mod align;
+        pub use self::align::*;
+    }
+}

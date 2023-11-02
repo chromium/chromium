@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,7 +46,7 @@
 #include "ppapi/shared_impl/private/ppb_x509_util_shared.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/network/firewall_hole.h"
+#include "chromeos/ash/components/network/firewall_hole.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using ppapi::NetAddressPrivateImpl;
@@ -228,7 +228,9 @@ void PepperTCPSocketMessageFilter::OnHostDestroyed() {
 void PepperTCPSocketMessageFilter::OnComplete(
     int result,
     const net::ResolveErrorInfo& resolve_error_info,
-    const absl::optional<net::AddressList>& resolved_addresses) {
+    const absl::optional<net::AddressList>& resolved_addresses,
+    const absl::optional<net::HostResolverEndpointResults>&
+        endpoint_results_with_metadata) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   receiver_.reset();
 
@@ -389,14 +391,19 @@ int32_t PepperTCPSocketMessageFilter::OnMsgConnect(
   if (!render_frame_host)
     return PP_ERROR_FAILED;
 
-  // TODO(mmenke): Pass in correct NetworkIsolationKey.
-  network_context->ResolveHost(net::HostPortPair(host, port),
-                               render_frame_host->GetNetworkIsolationKey(),
-                               nullptr, receiver_.BindNewPipeAndPassRemote());
-  receiver_.set_disconnect_handler(
-      base::BindOnce(&PepperTCPSocketMessageFilter::OnComplete,
-                     base::Unretained(this), net::ERR_NAME_NOT_RESOLVED,
-                     net::ResolveErrorInfo(net::ERR_FAILED), absl::nullopt));
+  // Intentionally using a HostPortPair because scheme isn't specified.
+  // TODO(mmenke): Pass in correct NetworkAnonymizationKey.
+  network_context->ResolveHost(
+      network::mojom::HostResolverHost::NewHostPortPair(
+          net::HostPortPair(host, port)),
+      render_frame_host->GetIsolationInfoForSubresources()
+          .network_anonymization_key(),
+      nullptr, receiver_.BindNewPipeAndPassRemote());
+  receiver_.set_disconnect_handler(base::BindOnce(
+      &PepperTCPSocketMessageFilter::OnComplete, base::Unretained(this),
+      net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
+      /*resolved_addresses=*/absl::nullopt,
+      /*endpoint_results_with_metadata=*/absl::nullopt));
 
   state_.SetPendingTransition(TCPSocketState::CONNECT);
   host_resolve_context_ = context->MakeReplyMessageContext();
@@ -1200,7 +1207,7 @@ void PepperTCPSocketMessageFilter::OpenFirewallHole(
 
 void PepperTCPSocketMessageFilter::OnFirewallHoleOpened(
     const ppapi::host::ReplyMessageContext& context,
-    std::unique_ptr<chromeos::FirewallHole> hole) {
+    std::unique_ptr<ash::FirewallHole> hole) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(state_.IsPending(TCPSocketState::LISTEN));
   LOG_IF(WARNING, !hole.get()) << "Firewall hole could not be opened.";

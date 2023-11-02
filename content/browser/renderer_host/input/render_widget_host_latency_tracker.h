@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/event_with_latency_info.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
@@ -60,7 +61,7 @@ class CONTENT_EXPORT RenderWidgetHostLatencyTracker {
   // default action prevented. Only valid for single finger gestures.
   bool touch_start_default_prevented_;
 
-  RenderWidgetHostDelegate* render_widget_host_delegate_;
+  raw_ptr<RenderWidgetHostDelegate> render_widget_host_delegate_;
 };
 
 }  // namespace content

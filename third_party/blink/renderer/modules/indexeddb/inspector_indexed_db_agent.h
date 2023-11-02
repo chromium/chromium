@@ -58,12 +58,15 @@ class MODULES_EXPORT InspectorIndexedDBAgent final
   protocol::Response enable() override;
   protocol::Response disable() override;
   void requestDatabaseNames(
-      const String& security_origin,
+      protocol::Maybe<String> security_origin,
+      protocol::Maybe<String> storage_key,
       std::unique_ptr<RequestDatabaseNamesCallback>) override;
-  void requestDatabase(const String& security_origin,
+  void requestDatabase(protocol::Maybe<String> security_origin,
+                       protocol::Maybe<String> storage_key,
                        const String& database_name,
                        std::unique_ptr<RequestDatabaseCallback>) override;
-  void requestData(const String& security_origin,
+  void requestData(protocol::Maybe<String> security_origin,
+                   protocol::Maybe<String> storage_key,
                    const String& database_name,
                    const String& object_store_name,
                    const String& index_name,
@@ -71,21 +74,25 @@ class MODULES_EXPORT InspectorIndexedDBAgent final
                    int page_size,
                    protocol::Maybe<protocol::IndexedDB::KeyRange>,
                    std::unique_ptr<RequestDataCallback>) override;
-  void getMetadata(const String& security_origin,
+  void getMetadata(protocol::Maybe<String> security_origin,
+                   protocol::Maybe<String> storage_key,
                    const String& database_name,
                    const String& object_store_name,
                    std::unique_ptr<GetMetadataCallback>) override;
   void deleteObjectStoreEntries(
-      const String& security_origin,
+      protocol::Maybe<String> security_origin,
+      protocol::Maybe<String> storage_key,
       const String& database_name,
       const String& object_store_name,
       std::unique_ptr<protocol::IndexedDB::KeyRange>,
       std::unique_ptr<DeleteObjectStoreEntriesCallback>) override;
-  void clearObjectStore(const String& security_origin,
+  void clearObjectStore(protocol::Maybe<String> security_origin,
+                        protocol::Maybe<String> storage_key,
                         const String& database_name,
                         const String& object_store_name,
                         std::unique_ptr<ClearObjectStoreCallback>) override;
-  void deleteDatabase(const String& security_origin,
+  void deleteDatabase(protocol::Maybe<String> security_origin,
+                      protocol::Maybe<String> storage_key,
                       const String& database_name,
                       std::unique_ptr<DeleteDatabaseCallback>) override;
 

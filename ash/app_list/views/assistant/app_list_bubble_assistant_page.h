@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,6 +29,9 @@ class ASH_EXPORT AppListBubbleAssistantPage : public views::View {
 
   // views::View:
   void RequestFocus() override;
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+
+  void InitializeUIForBubbleView();
 
  private:
   // The text and microphone input area. Owned by views hierarchy.

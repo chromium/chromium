@@ -1,111 +1,106 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/file_system/consent_provider.h"
+#include "chrome/browser/extensions/api/file_system/consent_provider_impl.h"
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/bind.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
 #include "content/public/test/browser_task_environment.h"
-#include "extensions/browser/api/file_system/file_system_delegate.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest.h"
-#include "extensions/common/permissions/permissions_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using extensions::file_system_api::ConsentProvider;
+using extensions::file_system_api::ConsentProviderImpl;
 using extensions::mojom::ManifestLocation;
-using file_manager::Volume;
 
 namespace extensions {
 namespace {
 
+// Configurations and results for TestingConsentProviderDelegate, with directly
+// accessible fields.
+struct TestDelegateState {
+  // Used to assign a fake dialog response.
+  ui::DialogButton dialog_button = ui::DIALOG_BUTTON_NONE;
+
+  // Used to assign fake result of detection the auto launch kiosk mode.
+  bool is_auto_launched = false;
+
+  // Used to set allowlisted components list with a single id.
+  std::string allowlisted_component_id;
+
+  // Counters to record calls.
+  int show_dialog_counter = 0;
+  int show_notification_counter = 0;
+};
+
+// Test implementation of ConsentProviderImpl::DelegateInterface that exposes
+// states to a TestDelegateState instance.
 class TestingConsentProviderDelegate
-    : public ConsentProvider::DelegateInterface {
+    : public ConsentProviderImpl::DelegateInterface {
  public:
-  TestingConsentProviderDelegate()
-      : show_dialog_counter_(0),
-        show_notification_counter_(0),
-        dialog_button_(ui::DIALOG_BUTTON_NONE),
-        is_auto_launched_(false) {}
+  explicit TestingConsentProviderDelegate(TestDelegateState* state)
+      : state_(state) {}
 
   TestingConsentProviderDelegate(const TestingConsentProviderDelegate&) =
       delete;
   TestingConsentProviderDelegate& operator=(
       const TestingConsentProviderDelegate&) = delete;
 
-  ~TestingConsentProviderDelegate() {}
-
-  // Sets a fake dialog response.
-  void SetDialogButton(ui::DialogButton button) { dialog_button_ = button; }
-
-  // Sets a fake result of detection the auto launch kiosk mode.
-  void SetIsAutoLaunched(bool is_auto_launched) {
-    is_auto_launched_ = is_auto_launched;
-  }
-
-  // Sets an allowlisted components list with a single id.
-  void SetComponentAllowlist(const std::string& extension_id) {
-    allowlisted_component_id_ = extension_id;
-  }
-
-  int show_dialog_counter() const { return show_dialog_counter_; }
-  int show_notification_counter() const { return show_notification_counter_; }
+  ~TestingConsentProviderDelegate() override = default;
 
  private:
-  // ConsentProvider::DelegateInterface overrides:
-  void ShowDialog(const extensions::Extension& extension,
-                  content::RenderFrameHost* host,
-                  const base::WeakPtr<Volume>& volume,
+  // ConsentProviderImpl::DelegateInterface:
+  void ShowDialog(content::RenderFrameHost* host,
+                  const extensions::ExtensionId& extension_id,
+                  const std::string& extension_name,
+                  const std::string& volume_id,
+                  const std::string& volume_label,
                   bool writable,
-                  ConsentProvider::ShowDialogCallback callback) override {
-    ++show_dialog_counter_;
-    std::move(callback).Run(dialog_button_);
+                  ConsentProviderImpl::ShowDialogCallback callback) override {
+    ++state_->show_dialog_counter;
+    std::move(callback).Run(state_->dialog_button);
   }
 
-  void ShowNotification(const extensions::Extension& extension,
-                        const base::WeakPtr<Volume>& volume,
+  // ConsentProviderImpl::DelegateInterface:
+  void ShowNotification(const extensions::ExtensionId& extension_id,
+                        const std::string& extension_name,
+                        const std::string& volume_id,
+                        const std::string& volume_label,
                         bool writable) override {
-    ++show_notification_counter_;
+    ++state_->show_notification_counter;
   }
 
+  // ConsentProviderImpl::DelegateInterface:
   bool IsAutoLaunched(const extensions::Extension& extension) override {
-    return is_auto_launched_;
+    return state_->is_auto_launched;
   }
 
+  // ConsentProviderImpl::DelegateInterface:
   bool IsAllowlistedComponent(const extensions::Extension& extension) override {
-    return allowlisted_component_id_.compare(extension.id()) == 0;
+    return state_->allowlisted_component_id.compare(extension.id()) == 0;
   }
 
-  bool HasRequestDownloadsPermission(const Extension& extension) override {
-    return extension.permissions_data()->HasAPIPermission(
-        mojom::APIPermissionID::kFileSystemRequestDownloads);
-  }
-
-  int show_dialog_counter_;
-  int show_notification_counter_;
-  ui::DialogButton dialog_button_;
-  bool is_auto_launched_;
-  std::string allowlisted_component_id_;
+  // Use raw_ptr since |state| is owned by owner.
+  base::raw_ptr<TestDelegateState> state_;
 };
 
 // Rewrites result of a consent request from |result| to |log|.
-void OnConsentReceived(ConsentProvider::Consent* log,
-                       const ConsentProvider::Consent result) {
+void OnConsentReceived(ConsentProviderImpl::Consent* log,
+                       const ConsentProviderImpl::Consent result) {
   *log = result;
 }
 
@@ -123,8 +118,6 @@ class FileSystemApiConsentProviderTest : public testing::Test {
     scoped_user_manager_enabler_ =
         std::make_unique<user_manager::ScopedUserManager>(
             base::WrapUnique(user_manager_));
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    download_volume_ = Volume::CreateForDownloads(temp_dir_.GetPath());
   }
 
   void TearDown() override {
@@ -135,13 +128,10 @@ class FileSystemApiConsentProviderTest : public testing::Test {
   }
 
  protected:
-  base::WeakPtr<Volume> volume_;
   std::unique_ptr<TestingPrefServiceSimple> testing_pref_service_;
   ash::FakeChromeUserManager* user_manager_;  // Owned by the scope enabler.
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_enabler_;
   content::BrowserTaskEnvironment task_environment_;
-  base::ScopedTempDir temp_dir_;
-  std::unique_ptr<Volume> download_volume_;
 };
 
 TEST_F(FileSystemApiConsentProviderTest, ForNonKioskApps) {
@@ -151,10 +141,10 @@ TEST_F(FileSystemApiConsentProviderTest, ForNonKioskApps) {
         ExtensionBuilder("Test", ExtensionBuilder::Type::PLATFORM_APP)
             .SetLocation(ManifestLocation::kComponent)
             .Build());
-    TestingConsentProviderDelegate delegate;
-    ConsentProvider provider(&delegate);
-    EXPECT_EQ(provider.GetGrantVolumesMode(*component_extension),
-              FileSystemDelegate::kGrantNone);
+    TestDelegateState state;
+    ConsentProviderImpl provider(
+        std::make_unique<TestingConsentProviderDelegate>(&state));
+    EXPECT_FALSE(provider.IsGrantable(*component_extension));
   }
 
   // Allowlisted component apps are instantly granted access without asking
@@ -164,48 +154,21 @@ TEST_F(FileSystemApiConsentProviderTest, ForNonKioskApps) {
         ExtensionBuilder("Test", ExtensionBuilder::Type::PLATFORM_APP)
             .SetLocation(ManifestLocation::kComponent)
             .Build());
-    TestingConsentProviderDelegate delegate;
-    delegate.SetComponentAllowlist(allowlisted_component_extension->id());
-    ConsentProvider provider(&delegate);
-    EXPECT_EQ(provider.GetGrantVolumesMode(*allowlisted_component_extension),
-              FileSystemDelegate::kGrantAll);
+    TestDelegateState state;
+    state.allowlisted_component_id = allowlisted_component_extension->id();
+    ConsentProviderImpl provider(
+        std::make_unique<TestingConsentProviderDelegate>(&state));
+    EXPECT_TRUE(provider.IsGrantable(*allowlisted_component_extension));
 
-    ConsentProvider::Consent result = ConsentProvider::CONSENT_IMPOSSIBLE;
-    provider.RequestConsent(*allowlisted_component_extension.get(), nullptr,
-                            volume_, true /* writable */,
+    ConsentProviderImpl::Consent result = ConsentProvider::CONSENT_IMPOSSIBLE;
+    provider.RequestConsent(nullptr, *allowlisted_component_extension.get(),
+                            "Volume ID 1", "Volume Label 1",
+                            true /* writable */,
                             base::BindOnce(&OnConsentReceived, &result));
     base::RunLoop().RunUntilIdle();
 
-    EXPECT_EQ(0, delegate.show_dialog_counter());
-    EXPECT_EQ(0, delegate.show_notification_counter());
-    EXPECT_EQ(ConsentProvider::CONSENT_GRANTED, result);
-  }
-
-  // Allowlisted extensions are instantly granted downloads access without
-  // asking user.
-  {
-    scoped_refptr<const Extension> allowlisted_extension(
-        ExtensionBuilder("Test", ExtensionBuilder::Type::PLATFORM_APP)
-            .SetLocation(ManifestLocation::kComponent)
-            .AddPermission("fileSystem.requestDownloads")
-            .Build());
-    TestingConsentProviderDelegate delegate;
-    ConsentProvider provider(&delegate);
-    EXPECT_EQ(provider.GetGrantVolumesMode(*allowlisted_extension),
-              FileSystemDelegate::kGrantPerVolume);
-    EXPECT_FALSE(
-        provider.IsGrantableForVolume(*allowlisted_extension, volume_));
-    EXPECT_TRUE(provider.IsGrantableForVolume(*allowlisted_extension,
-                                              download_volume_->AsWeakPtr()));
-
-    ConsentProvider::Consent result = ConsentProvider::CONSENT_IMPOSSIBLE;
-    provider.RequestConsent(*allowlisted_extension.get(), nullptr,
-                            download_volume_->AsWeakPtr(), true /* writable */,
-                            base::BindRepeating(&OnConsentReceived, &result));
-    base::RunLoop().RunUntilIdle();
-
-    EXPECT_EQ(0, delegate.show_dialog_counter());
-    EXPECT_EQ(0, delegate.show_notification_counter());
+    EXPECT_EQ(0, state.show_dialog_counter);
+    EXPECT_EQ(0, state.show_notification_counter);
     EXPECT_EQ(ConsentProvider::CONSENT_GRANTED, result);
   }
 
@@ -214,10 +177,10 @@ TEST_F(FileSystemApiConsentProviderTest, ForNonKioskApps) {
   {
     scoped_refptr<const Extension> non_component_extension(
         ExtensionBuilder("Test").Build());
-    TestingConsentProviderDelegate delegate;
-    ConsentProvider provider(&delegate);
-    EXPECT_EQ(provider.GetGrantVolumesMode(*non_component_extension),
-              FileSystemDelegate::kGrantNone);
+    TestDelegateState state;
+    ConsentProviderImpl provider(
+        std::make_unique<TestingConsentProviderDelegate>(&state));
+    EXPECT_FALSE(provider.IsGrantable(*non_component_extension));
   }
 }
 
@@ -235,20 +198,20 @@ TEST_F(FileSystemApiConsentProviderTest, ForKioskApps) {
     user_manager_->LoginUser(
         AccountId::FromUserEmail(auto_launch_kiosk_app->id()));
 
-    TestingConsentProviderDelegate delegate;
-    delegate.SetIsAutoLaunched(true);
-    ConsentProvider provider(&delegate);
-    EXPECT_EQ(provider.GetGrantVolumesMode(*auto_launch_kiosk_app),
-              FileSystemDelegate::kGrantAll);
+    TestDelegateState state;
+    state.is_auto_launched = true;
+    ConsentProviderImpl provider(
+        std::make_unique<TestingConsentProviderDelegate>(&state));
+    EXPECT_TRUE(provider.IsGrantable(*auto_launch_kiosk_app));
 
-    ConsentProvider::Consent result = ConsentProvider::CONSENT_IMPOSSIBLE;
-    provider.RequestConsent(*auto_launch_kiosk_app.get(), nullptr, volume_,
-                            true /* writable */,
-                            base::BindOnce(&OnConsentReceived, &result));
+    ConsentProviderImpl::Consent result = ConsentProvider::CONSENT_IMPOSSIBLE;
+    provider.RequestConsent(
+        nullptr, *auto_launch_kiosk_app.get(), "Volume ID 2", "Volume Label 2",
+        true /* writable */, base::BindOnce(&OnConsentReceived, &result));
     base::RunLoop().RunUntilIdle();
 
-    EXPECT_EQ(0, delegate.show_dialog_counter());
-    EXPECT_EQ(1, delegate.show_notification_counter());
+    EXPECT_EQ(0, state.show_dialog_counter);
+    EXPECT_EQ(1, state.show_notification_counter);
     EXPECT_EQ(ConsentProvider::CONSENT_GRANTED, result);
   }
 
@@ -264,40 +227,42 @@ TEST_F(FileSystemApiConsentProviderTest, ForKioskApps) {
           AccountId::FromUserEmail(manual_launch_kiosk_app->id()));
   user_manager_->KioskAppLoggedIn(manual_kiosk_app_user);
   {
-    TestingConsentProviderDelegate delegate;
-    delegate.SetDialogButton(ui::DIALOG_BUTTON_OK);
-    ConsentProvider provider(&delegate);
-    EXPECT_EQ(provider.GetGrantVolumesMode(*manual_launch_kiosk_app),
-              FileSystemDelegate::kGrantAll);
+    TestDelegateState state;
+    state.dialog_button = ui::DIALOG_BUTTON_OK;
+    ConsentProviderImpl provider(
+        std::make_unique<TestingConsentProviderDelegate>(&state));
+    EXPECT_TRUE(provider.IsGrantable(*manual_launch_kiosk_app));
 
-    ConsentProvider::Consent result = ConsentProvider::CONSENT_IMPOSSIBLE;
-    provider.RequestConsent(*manual_launch_kiosk_app.get(), nullptr, volume_,
+    ConsentProviderImpl::Consent result = ConsentProvider::CONSENT_IMPOSSIBLE;
+    provider.RequestConsent(nullptr, *manual_launch_kiosk_app.get(),
+                            "Volume ID 3", "Volume Label 3",
                             true /* writable */,
                             base::BindOnce(&OnConsentReceived, &result));
     base::RunLoop().RunUntilIdle();
 
-    EXPECT_EQ(1, delegate.show_dialog_counter());
-    EXPECT_EQ(0, delegate.show_notification_counter());
+    EXPECT_EQ(1, state.show_dialog_counter);
+    EXPECT_EQ(0, state.show_notification_counter);
     EXPECT_EQ(ConsentProvider::CONSENT_GRANTED, result);
   }
 
   // Non-component apps in manual-launch kiosk mode will be rejected access
   // after rejecting by a user.
   {
-    TestingConsentProviderDelegate delegate;
-    ConsentProvider provider(&delegate);
-    delegate.SetDialogButton(ui::DIALOG_BUTTON_CANCEL);
-    EXPECT_EQ(provider.GetGrantVolumesMode(*manual_launch_kiosk_app),
-              FileSystemDelegate::kGrantAll);
+    TestDelegateState state;
+    state.dialog_button = ui::DIALOG_BUTTON_CANCEL;
+    ConsentProviderImpl provider(
+        std::make_unique<TestingConsentProviderDelegate>(&state));
+    EXPECT_TRUE(provider.IsGrantable(*manual_launch_kiosk_app));
 
-    ConsentProvider::Consent result = ConsentProvider::CONSENT_IMPOSSIBLE;
-    provider.RequestConsent(*manual_launch_kiosk_app.get(), nullptr, volume_,
+    ConsentProviderImpl::Consent result = ConsentProvider::CONSENT_IMPOSSIBLE;
+    provider.RequestConsent(nullptr, *manual_launch_kiosk_app.get(),
+                            "Volume ID 4", "Volume Label 4",
                             true /* writable */,
                             base::BindOnce(&OnConsentReceived, &result));
     base::RunLoop().RunUntilIdle();
 
-    EXPECT_EQ(1, delegate.show_dialog_counter());
-    EXPECT_EQ(0, delegate.show_notification_counter());
+    EXPECT_EQ(1, state.show_dialog_counter);
+    EXPECT_EQ(0, state.show_notification_counter);
     EXPECT_EQ(ConsentProvider::CONSENT_REJECTED, result);
   }
 }

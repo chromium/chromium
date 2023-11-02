@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,8 +16,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner_util.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
 
 namespace policy {
 
@@ -34,7 +34,7 @@ const size_t kKeySizeLimit = 16 * 1024;
 }  // namespace
 
 CachedPolicyKeyLoader::CachedPolicyKeyLoader(
-    chromeos::CryptohomeMiscClient* cryptohome_misc_client,
+    ash::CryptohomeMiscClient* cryptohome_misc_client,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     const AccountId& account_id,
     const base::FilePath& user_policy_key_dir)

@@ -1,13 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/overlays/test/fake_overlay_presentation_context.h"
+#import "ios/chrome/browser/overlays/test/fake_overlay_presentation_context.h"
 
-#include "base/bind.h"
-#include "base/check_op.h"
-#include "ios/chrome/browser/overlays/public/overlay_presentation_context_observer.h"
-#include "ios/chrome/browser/overlays/public/overlay_request_queue.h"
+#import "base/bind.h"
+#import "base/check_op.h"
+#import "ios/chrome/browser/overlays/public/overlay_presentation_context_observer.h"
+#import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

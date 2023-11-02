@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -19,13 +19,12 @@ import filecmp
 import hashlib
 import logging
 import os
+import pathlib
 import re
 import shutil
 import subprocess
 import sys
-import tempfile
 import textwrap
-import zipfile
 from xml.etree import ElementTree
 
 from util import build_utils
@@ -53,7 +52,26 @@ def _ParseArgs(args):
   Returns:
     An options object as from argparse.ArgumentParser.parse_args()
   """
-  parser, input_opts, output_opts = resource_utils.ResourceArgsParser()
+  parser = argparse.ArgumentParser(description=__doc__)
+
+  input_opts = parser.add_argument_group('Input options')
+  output_opts = parser.add_argument_group('Output options')
+
+  input_opts.add_argument('--include-resources',
+                          action='append',
+                          required=True,
+                          help='Paths to arsc resource files used to link '
+                          'against. Can be specified multiple times.')
+
+  input_opts.add_argument(
+      '--dependencies-res-zips',
+      default=[],
+      help='Resources zip archives from dependents. Required to '
+      'resolve @type/foo references into dependent libraries.')
+
+  input_opts.add_argument(
+      '--extra-res-packages',
+      help='Additional package names to generate R.java files for.')
 
   input_opts.add_argument(
       '--aapt2-path', required=True, help='Path to the Android aapt2 tool.')
@@ -178,16 +196,29 @@ def _ParseArgs(args):
       action='store_true',
       help='Whether to strip xml namespaces from processed xml resources.')
 
+  input_opts.add_argument(
+      '--is-bundle-module',
+      action='store_true',
+      help='Whether resources are being generated for a bundle module.')
+
+  input_opts.add_argument(
+      '--uses-split',
+      help='Value to set uses-split to in the AndroidManifest.xml.')
+
+  input_opts.add_argument(
+      '--extra-verification-manifest',
+      help='Path to AndroidManifest.xml which should be merged into base '
+      'manifest when performing verification.')
+
+  build_utils.AddDepfileOption(output_opts)
   output_opts.add_argument('--arsc-path', help='Apk output for arsc format.')
   output_opts.add_argument('--proto-path', help='Apk output for proto format.')
-  group = input_opts.add_mutually_exclusive_group()
 
   output_opts.add_argument(
       '--info-path', help='Path to output info file for the partial apk.')
 
   output_opts.add_argument(
       '--srcjar-out',
-      required=True,
       help='Path to srcjar to contain generated R.java.')
 
   output_opts.add_argument('--r-text-out',
@@ -203,25 +234,14 @@ def _ParseArgs(args):
   output_opts.add_argument(
       '--emit-ids-out', help='Path to file produced by aapt2 --emit-ids.')
 
-  input_opts.add_argument(
-      '--is-bundle-module',
-      action='store_true',
-      help='Whether resources are being generated for a bundle module.')
-
-  input_opts.add_argument(
-      '--uses-split',
-      help='Value to set uses-split to in the AndroidManifest.xml.')
-
-  input_opts.add_argument(
-      '--extra-verification-manifest',
-      help='Path to AndroidManifest.xml which should be merged into base '
-      'manifest when performing verification.')
-
   diff_utils.AddCommandLineFlags(parser)
   options = parser.parse_args(args)
 
-  resource_utils.HandleCommonOptions(options)
-
+  options.include_resources = build_utils.ParseGnList(options.include_resources)
+  options.dependencies_res_zips = build_utils.ParseGnList(
+      options.dependencies_res_zips)
+  options.extra_res_packages = build_utils.ParseGnList(
+      options.extra_res_packages)
   options.locale_allowlist = build_utils.ParseGnList(options.locale_allowlist)
   options.shared_resources_allowlist_locales = build_utils.ParseGnList(
       options.shared_resources_allowlist_locales)
@@ -389,16 +409,22 @@ def _FixManifest(options, temp_dir, extra_manifest=None):
     except build_utils.CalledProcessError:
       return None
 
-  android_sdk_jars = [j for j in options.include_resources
-                      if os.path.basename(j) in ('android.jar',
-                                                 'android_system.jar')]
+  def is_sdk_jar(jar_name):
+    if jar_name in ('android.jar', 'android_system.jar'):
+      return True
+    # Robolectric jar looks a bit different.
+    return 'android-all' in jar_name and 'robolectric' in jar_name
+
+  android_sdk_jars = [
+      j for j in options.include_resources if is_sdk_jar(os.path.basename(j))
+  ]
   extract_all = [maybe_extract_version(j) for j in android_sdk_jars]
   successful_extractions = [x for x in extract_all if x]
   if len(successful_extractions) == 0:
     raise Exception(
         'Unable to find android SDK jar among candidates: %s'
             % ', '.join(android_sdk_jars))
-  elif len(successful_extractions) > 1:
+  if len(successful_extractions) > 1:
     raise Exception(
         'Found multiple android SDK jars among candidates: %s'
             % ', '.join(android_sdk_jars))
@@ -799,7 +825,7 @@ def _PackageApk(options, build):
   if options.package_id:
     link_command += [
         '--package-id',
-        hex(options.package_id),
+        '0x%02x' % options.package_id,
         '--allow-reserved-package-id',
     ]
 
@@ -813,12 +839,15 @@ def _PackageApk(options, build):
       desired_manifest_package_name
   ]
 
-  # Creates a .zip with AndroidManifest.xml, resources.arsc, res/*
-  # Also creates R.txt
-  if options.use_resource_ids_path:
-    _CreateStableIdsFile(options.use_resource_ids_path, build.stable_ids_path,
-                         fixed_manifest_package)
-    link_command += ['--stable-ids', build.stable_ids_path]
+  if options.package_id is not None:
+    package_id = options.package_id
+  elif options.shared_resources:
+    package_id = 0
+  else:
+    package_id = 0x7f
+  _CreateStableIdsFile(options.use_resource_ids_path, build.stable_ids_path,
+                       fixed_manifest_package, package_id)
+  link_command += ['--stable-ids', build.stable_ids_path]
 
   link_command += partials
 
@@ -830,12 +859,21 @@ def _PackageApk(options, build):
   link_proc = subprocess.Popen(link_command)
 
   # Create .res.info file in parallel.
-  _CreateResourceInfoFile(path_info, build.info_path,
-                          options.dependencies_res_zips)
-  logging.debug('Created .res.info file')
+  if options.info_path:
+    logging.debug('Creating .res.info file')
+    _CreateResourceInfoFile(path_info, build.info_path,
+                            options.dependencies_res_zips)
 
   exit_code = link_proc.wait()
+  assert exit_code == 0, f'aapt2 link cmd failed with {exit_code=}'
   logging.debug('Finished: aapt2 link')
+
+  if options.shared_resources:
+    logging.debug('Resolving styleables in R.txt')
+    # Need to resolve references because unused resource removal tool does not
+    # support references in R.txt files.
+    resource_utils.ResolveStyleableReferences(build.r_txt_path)
+
   if exit_code:
     raise subprocess.CalledProcessError(exit_code, link_command)
 
@@ -871,29 +909,38 @@ def _PackageApk(options, build):
         build.arsc_path, build.proto_path
     ])
 
+  # Sanity check that the created resources have the expected package ID.
+  logging.debug('Performing sanity check')
+  _, actual_package_id = resource_utils.ExtractArscPackage(
+      options.aapt2_path,
+      build.arsc_path if options.arsc_path else build.proto_path)
+  # When there are no resources, ExtractArscPackage returns (None, None), in
+  # this case there is no need to check for matching package ID.
+  if actual_package_id is not None and actual_package_id != package_id:
+    raise Exception('Invalid package ID 0x%x (expected 0x%x)' %
+                    (actual_package_id, package_id))
+
   return desired_manifest_package_name
 
 
-@contextlib.contextmanager
-def _CreateStableIdsFile(in_path, out_path, package_name):
+def _CreateStableIdsFile(in_path, out_path, package_name, package_id):
   """Transforms a file generated by --emit-ids from another package.
 
   --stable-ids is generally meant to be used by different versions of the same
   package. To make it work for other packages, we need to transform the package
   name references to match the package that resources are being generated for.
-
-  Note: This will fail if the package ID of the resources in
-  |options.use_resource_ids_path| does not match the package ID of the
-  resources being linked.
   """
-  with open(in_path) as stable_ids_file:
-    with open(out_path, 'w') as output_ids_file:
-      output_stable_ids = re.sub(
-          r'^.*?:',
-          package_name + ':',
-          stable_ids_file.read(),
-          flags=re.MULTILINE)
-      output_ids_file.write(output_stable_ids)
+  if in_path:
+    data = pathlib.Path(in_path).read_text()
+  else:
+    # Force IDs to use 0x01 for the type byte in order to ensure they are
+    # different from IDs generated by other apps. https://crbug.com/1293336
+    data = 'pkg:id/fake_resource_id = 0x7f010000\n'
+  # Replace "pkg:" with correct package name.
+  data = re.sub(r'^.*?:', package_name + ':', data, flags=re.MULTILINE)
+  # Replace "0x7f" with correct package id.
+  data = re.sub(r'0x..', '0x%02x' % package_id, data)
+  pathlib.Path(out_path).write_text(data)
 
 
 def _WriteOutputs(options, build):
@@ -993,35 +1040,20 @@ def main(args):
       # will be created in the base module.
       apk_package_name = None
 
-    logging.debug('Creating R.srcjar')
-    resource_utils.CreateRJavaFiles(
-        build.srcjar_dir, apk_package_name, build.r_txt_path,
-        options.extra_res_packages, rjava_build_options, options.srcjar_out,
-        custom_root_package_name, grandparent_custom_package_name,
-        options.extra_main_r_text_files)
-    build_utils.ZipDir(build.srcjar_path, build.srcjar_dir)
-
-    # Sanity check that the created resources have the expected package ID.
-    logging.debug('Performing sanity check')
-    if options.package_id:
-      expected_id = options.package_id
-    elif options.shared_resources:
-      expected_id = 0
-    else:
-      expected_id = 127  # == '0x7f'.
-    _, package_id = resource_utils.ExtractArscPackage(
-        options.aapt2_path,
-        build.arsc_path if options.arsc_path else build.proto_path)
-    # When there are no resources, ExtractArscPackage returns (None, None), in
-    # this case there is no need to check for matching package ID.
-    if package_id is not None and package_id != expected_id:
-      raise Exception(
-          'Invalid package ID 0x%x (expected 0x%x)' % (package_id, expected_id))
+    if options.srcjar_out:
+      logging.debug('Creating R.srcjar')
+      resource_utils.CreateRJavaFiles(
+          build.srcjar_dir, apk_package_name, build.r_txt_path,
+          options.extra_res_packages, rjava_build_options, options.srcjar_out,
+          custom_root_package_name, grandparent_custom_package_name,
+          options.extra_main_r_text_files)
+      build_utils.ZipDir(build.srcjar_path, build.srcjar_dir)
 
     logging.debug('Copying outputs')
     _WriteOutputs(options, build)
 
   if options.depfile:
+    assert options.srcjar_out, 'Update first output below and remove assert.'
     depfile_deps = (options.dependencies_res_zips +
                     options.dependencies_res_zip_overlays +
                     options.extra_main_r_text_files + options.include_resources)

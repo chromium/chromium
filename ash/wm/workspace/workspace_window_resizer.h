@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,9 @@
 #include "ash/wm/window_resizer.h"
 #include "ash/wm/workspace/magnetism_matcher.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "ui/aura/window_tracker.h"
+#include "ui/compositor/presentation_time_recorder.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/point_f.h"
 
@@ -50,6 +52,7 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
 
  private:
   friend class WorkspaceWindowResizerTest;
+  FRIEND_TEST_ALL_PREFIXES(HapticsUtilTest, HapticFeedbackForNormalWindowSnap);
 
   WorkspaceWindowResizer(WindowState* window_state,
                          const std::vector<aura::Window*>& attached_windows);
@@ -169,10 +172,10 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
   WindowState* window_state() { return window_state_; }
   const WindowState* window_state() const { return window_state_; }
 
-  const std::vector<aura::Window*> attached_windows_;
-
   // Returns the currently used instance for test.
   static WorkspaceWindowResizer* GetInstanceForTest();
+
+  const std::vector<aura::Window*> attached_windows_;
 
   bool did_lock_cursor_ = false;
 
@@ -209,8 +212,8 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
   // The location for drag maximize in screen.
   absl::optional<gfx::PointF> dwell_location_in_screen_;
 
-  // The mouse location passed to Drag().
-  gfx::PointF last_mouse_location_;
+  // The location in parent passed to `Drag()`.
+  gfx::PointF last_location_in_parent_;
 
   // Window the drag has magnetically attached to.
   aura::Window* magnetism_window_ = nullptr;
@@ -230,7 +233,7 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
   gfx::Rect restore_bounds_for_gesture_;
 
   // Presentation time recorder for tab dragging in clamshell mode.
-  std::unique_ptr<PresentationTimeRecorder> tab_dragging_recorder_;
+  std::unique_ptr<ui::PresentationTimeRecorder> tab_dragging_recorder_;
 
   // Used to determine if this has been deleted during a drag such as when a tab
   // gets dragged into another browser window.

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,6 +30,8 @@ class GtkShell1 : public wl::GlobalObjectRegistrar<GtkShell1> {
 
   std::unique_ptr<GtkSurface1> GetGtkSurface1(
       wl_surface* top_level_window_surface);
+
+  void SetStartupId(const std::string& startup_id);
 
  private:
   wl::Object<gtk_shell1> shell1_;

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "ash/components/phonehub/notification.h"
 #include "ash/components/phonehub/notification_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class FakeNotificationManager : public NotificationManager {
@@ -58,6 +58,6 @@ class FakeNotificationManager : public NotificationManager {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_FAKE_NOTIFICATION_MANAGER_H_

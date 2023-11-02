@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@ base::win::ScopedHandle CreateAndOpenShortcutInTempDir(
       temp_dir->GetPath().AppendASCII(lnk_name.c_str());
   if (!base::win::CreateOrUpdateShortcutLink(
           shortcut_path, properties,
-          base::win::ShortcutOperation::SHORTCUT_CREATE_ALWAYS)) {
+          base::win::ShortcutOperation::kCreateAlways)) {
     LOG(ERROR) << "Could not create shortcut";
     return base::win::ScopedHandle(INVALID_HANDLE_VALUE);
   }

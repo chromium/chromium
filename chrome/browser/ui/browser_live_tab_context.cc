@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,13 @@
 
 #include "base/feature_list.h"
 #include "base/token.h"
+#include "base/values.h"
 #include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/closed_tab_cache.h"
 #include "chrome/browser/sessions/closed_tab_cache_service_factory.h"
+#include "chrome/browser/sessions/session_service_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -25,8 +27,10 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/common/buildflags.h"
 #include "components/sessions/content/content_live_tab.h"
 #include "components/sessions/content/content_platform_specific_tab_data.h"
+#include "components/sessions/core/session_types.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/browser/navigation_controller.h"
@@ -35,6 +39,10 @@
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
 #include "chrome/browser/sessions/tab_loader.h"
 #endif
+
+#if defined(TOOLKIT_VIEWS)
+#include "chrome/browser/ui/side_search/side_search_utils.h"
+#endif  // defined(TOOLKIT_VIEWS)
 
 using content::NavigationController;
 using content::SessionStorageNamespace;
@@ -70,6 +78,11 @@ SessionID BrowserLiveTabContext::GetSessionID() const {
   return browser_->session_id();
 }
 
+sessions::SessionWindow::WindowType BrowserLiveTabContext::GetWindowType()
+    const {
+  return WindowTypeForBrowserType(browser_->type());
+}
+
 int BrowserLiveTabContext::GetTabCount() const {
   return browser_->tab_strip_model()->count();
 }
@@ -96,8 +109,26 @@ sessions::LiveTab* BrowserLiveTabContext::GetActiveLiveTab() const {
       browser_->tab_strip_model()->GetActiveWebContents());
 }
 
-bool BrowserLiveTabContext::IsTabPinned(int index) const {
-  return browser_->tab_strip_model()->IsTabPinned(index);
+std::map<std::string, std::string> BrowserLiveTabContext::GetExtraDataForTab(
+    int index) const {
+  std::map<std::string, std::string> extra_data;
+
+#if defined(TOOLKIT_VIEWS)
+  if (IsSideSearchEnabled(browser_->profile())) {
+    absl::optional<std::pair<std::string, std::string>> side_search_data =
+        side_search::MaybeGetSideSearchTabRestoreData(
+            browser_->tab_strip_model()->GetWebContentsAt(index));
+    if (side_search_data.has_value())
+      extra_data.insert(side_search_data.value());
+  }
+#endif  // defined(TOOLKIT_VIEWS)
+
+  return extra_data;
+}
+
+std::map<std::string, std::string>
+BrowserLiveTabContext::GetExtraDataForWindow() const {
+  return std::map<std::string, std::string>();
 }
 
 absl::optional<tab_groups::TabGroupId> BrowserLiveTabContext::GetTabGroupForTab(
@@ -112,6 +143,10 @@ BrowserLiveTabContext::GetVisualDataForGroup(
       ->group_model()
       ->GetTabGroup(group)
       ->visual_data();
+}
+
+bool BrowserLiveTabContext::IsTabPinned(int index) const {
+  return browser_->tab_strip_model()->IsTabPinned(index);
 }
 
 void BrowserLiveTabContext::SetVisualDataForGroup(
@@ -144,6 +179,7 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
     bool pin,
     const sessions::PlatformSpecificTabData* tab_platform_data,
     const sessions::SerializedUserAgentOverride& user_agent_override,
+    const std::map<std::string, std::string>& extra_data,
     const SessionID* tab_id) {
   SessionStorageNamespace* storage_namespace =
       tab_platform_data
@@ -169,9 +205,9 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
     if (wc) {
       // Cache hit.
       restored_from_closed_tab_cache = true;
-      web_contents = chrome::AddRestoredTabFromCache(std::move(wc), browser_,
-                                                     tab_index, group, select,
-                                                     pin, user_agent_override);
+      web_contents = chrome::AddRestoredTabFromCache(
+          std::move(wc), browser_, tab_index, group, select, pin,
+          user_agent_override, extra_data);
     }
   }
 
@@ -180,7 +216,7 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
     web_contents = chrome::AddRestoredTab(
         browser_, navigations, tab_index, selected_navigation, extension_app_id,
         group, select, pin, base::TimeTicks(), storage_namespace,
-        user_agent_override, false /* from_session_restore */);
+        user_agent_override, extra_data, false /* from_session_restore */);
   }
 
   // Only update the metadata if the group doesn't already exist since the
@@ -221,7 +257,8 @@ sessions::LiveTab* BrowserLiveTabContext::ReplaceRestoredTab(
     int selected_navigation,
     const std::string& extension_app_id,
     const sessions::PlatformSpecificTabData* tab_platform_data,
-    const sessions::SerializedUserAgentOverride& user_agent_override) {
+    const sessions::SerializedUserAgentOverride& user_agent_override,
+    const std::map<std::string, std::string>& extra_data) {
   SessionStorageNamespace* storage_namespace =
       tab_platform_data
           ? static_cast<const sessions::ContentPlatformSpecificTabData*>(
@@ -231,8 +268,8 @@ sessions::LiveTab* BrowserLiveTabContext::ReplaceRestoredTab(
 
   WebContents* web_contents = chrome::ReplaceRestoredTab(
       browser_, navigations, selected_navigation, extension_app_id,
-      storage_namespace, user_agent_override, false /* from_session_restore */);
-
+      storage_namespace, user_agent_override, extra_data,
+      false /* from_session_restore */);
   return sessions::ContentLiveTab::GetForWebContents(web_contents);
 }
 
@@ -243,18 +280,27 @@ void BrowserLiveTabContext::CloseTab() {
 // static
 sessions::LiveTabContext* BrowserLiveTabContext::Create(
     Profile* profile,
+    sessions::SessionWindow::WindowType type,
     const std::string& app_name,
     const gfx::Rect& bounds,
     ui::WindowShowState show_state,
     const std::string& workspace,
-    const std::string& user_title) {
+    const std::string& user_title,
+    const std::map<std::string, std::string>& extra_data) {
   std::unique_ptr<Browser::CreateParams> create_params;
   if (ShouldCreateAppWindowForAppName(profile, app_name)) {
     // Only trusted app popup windows should ever be restored.
-    create_params = std::make_unique<Browser::CreateParams>(
-        Browser::CreateParams::CreateForApp(app_name, true /* trusted_source */,
-                                            bounds, profile,
-                                            true /* user_gesture */));
+    if (type == sessions::SessionWindow::TYPE_APP_POPUP) {
+      create_params = std::make_unique<Browser::CreateParams>(
+          Browser::CreateParams::CreateForAppPopup(
+              app_name, /*trusted_source=*/true, bounds, profile,
+              /*user_gesture=*/true));
+    } else {
+      create_params = std::make_unique<Browser::CreateParams>(
+          Browser::CreateParams::CreateForApp(app_name, /*trusted_source=*/true,
+                                              bounds, profile,
+                                              /*user_gesture=*/true));
+    }
   } else {
     create_params = std::make_unique<Browser::CreateParams>(
         Browser::CreateParams(profile, true));
@@ -265,6 +311,7 @@ sessions::LiveTabContext* BrowserLiveTabContext::Create(
   create_params->initial_workspace = workspace;
   create_params->user_title = user_title;
   Browser* browser = Browser::Create(*create_params.get());
+
   return browser->live_tab_context();
 }
 

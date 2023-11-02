@@ -191,7 +191,7 @@ established a TLS connection to media hostnames.
 and failed to establish a TLS connection to media hostnames.
 
 [Network Health and Configuration]: https://docs.google.com/document/d/10DSy-jZXaRo9I9aq1UqERy76t7HkgGvInWk57pHEkzg
-[network_diagnostics.mojom]: https://source.chromium.org/chromium/chromium/src/+/main:ash/services/network_health/public/mojom/network_diagnostics.mojom
+[network_diagnostics.mojom]: https://source.chromium.org/chromium/chromium/src/+/main:chromeos/services/network_health/public/mojom/network_diagnostics.mojom
 [NetworkHealthService]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ash/net/network_health/network_health_service.h
 [here]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ash/net/network_diagnostics/
 [RoutineVerdict]: https://source.chromium.org/chromium/chromium/src/+/main:chromeos/services/network_health/public/mojom/network_diagnostics.mojom;l=12;drc=93304dcbcf58b0af39403af08928ea4e4ec28e6d

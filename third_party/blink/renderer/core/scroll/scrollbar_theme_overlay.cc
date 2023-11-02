@@ -25,11 +25,11 @@
 
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay.h"
 
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
+#include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
@@ -40,13 +40,11 @@ namespace blink {
 ScrollbarThemeOverlay& ScrollbarThemeOverlay::GetInstance() {
   DEFINE_STATIC_LOCAL(
       ScrollbarThemeOverlay, theme,
-      (Platform::Current()
-           ->ThemeEngine()
+      (WebThemeEngineHelper::GetNativeThemeEngine()
            ->GetSize(WebThemeEngine::kPartScrollbarVerticalThumb)
            .width(),
        0,
-       Platform::Current()
-           ->ThemeEngine()
+       WebThemeEngineHelper::GetNativeThemeEngine()
            ->GetSize(WebThemeEngine::kPartScrollbarVerticalThumb)
            .width(),
        0));
@@ -96,15 +94,15 @@ bool ScrollbarThemeOverlay::UsesOverlayScrollbars() const {
 
 base::TimeDelta ScrollbarThemeOverlay::OverlayScrollbarFadeOutDelay() const {
   WebThemeEngine::ScrollbarStyle style;
-  DCHECK(Platform::Current()->ThemeEngine());
-  Platform::Current()->ThemeEngine()->GetOverlayScrollbarStyle(&style);
+  WebThemeEngineHelper::GetNativeThemeEngine()->GetOverlayScrollbarStyle(
+      &style);
   return style.fade_out_delay;
 }
 
 base::TimeDelta ScrollbarThemeOverlay::OverlayScrollbarFadeOutDuration() const {
   WebThemeEngine::ScrollbarStyle style;
-  DCHECK(Platform::Current()->ThemeEngine());
-  Platform::Current()->ThemeEngine()->GetOverlayScrollbarStyle(&style);
+  WebThemeEngineHelper::GetNativeThemeEngine()->GetOverlayScrollbarStyle(
+      &style);
   return style.fade_out_duration;
 }
 
@@ -137,26 +135,27 @@ bool ScrollbarThemeOverlay::HasThumb(const Scrollbar& scrollbar) {
   return true;
 }
 
-IntRect ScrollbarThemeOverlay::BackButtonRect(const Scrollbar&) {
-  return IntRect();
+gfx::Rect ScrollbarThemeOverlay::BackButtonRect(const Scrollbar&) {
+  return gfx::Rect();
 }
 
-IntRect ScrollbarThemeOverlay::ForwardButtonRect(const Scrollbar&) {
-  return IntRect();
+gfx::Rect ScrollbarThemeOverlay::ForwardButtonRect(const Scrollbar&) {
+  return gfx::Rect();
 }
 
-IntRect ScrollbarThemeOverlay::TrackRect(const Scrollbar& scrollbar) {
-  IntRect rect = scrollbar.FrameRect();
-  EScrollbarWidth scrollbar_width = scrollbar.CSSScrollbarWidth();
+gfx::Rect ScrollbarThemeOverlay::TrackRect(const Scrollbar& scrollbar) {
+  gfx::Rect rect = scrollbar.FrameRect();
+  int scrollbar_margin =
+      ScrollbarMargin(scrollbar.ScaleFromDIP(), scrollbar.CSSScrollbarWidth());
   if (scrollbar.Orientation() == kHorizontalScrollbar)
-    rect.OutsetX(-ScrollbarMargin(scrollbar.ScaleFromDIP(), scrollbar_width));
+    rect.Inset(gfx::Insets::VH(0, scrollbar_margin));
   else
-    rect.OutsetY(-ScrollbarMargin(scrollbar.ScaleFromDIP(), scrollbar_width));
+    rect.Inset(gfx::Insets::VH(scrollbar_margin, 0));
   return rect;
 }
 
-IntRect ScrollbarThemeOverlay::ThumbRect(const Scrollbar& scrollbar) {
-  IntRect rect = ScrollbarTheme::ThumbRect(scrollbar);
+gfx::Rect ScrollbarThemeOverlay::ThumbRect(const Scrollbar& scrollbar) {
+  gfx::Rect rect = ScrollbarTheme::ThumbRect(scrollbar);
   EScrollbarWidth scrollbar_width = scrollbar.CSSScrollbarWidth();
   if (scrollbar.Orientation() == kHorizontalScrollbar) {
     rect.set_height(ThumbThickness(scrollbar.ScaleFromDIP(), scrollbar_width));
@@ -172,13 +171,13 @@ IntRect ScrollbarThemeOverlay::ThumbRect(const Scrollbar& scrollbar) {
 
 void ScrollbarThemeOverlay::PaintThumb(GraphicsContext& context,
                                        const Scrollbar& scrollbar,
-                                       const IntRect& rect) {
+                                       const gfx::Rect& rect) {
   if (DrawingRecorder::UseCachedDrawingIfPossible(context, scrollbar,
                                                   DisplayItem::kScrollbarThumb))
     return;
 
   DrawingRecorder recorder(context, scrollbar, DisplayItem::kScrollbarThumb,
-                           ToGfxRect(rect));
+                           rect);
 
   WebThemeEngine::State state = WebThemeEngine::kStateNormal;
 
@@ -207,9 +206,8 @@ void ScrollbarThemeOverlay::PaintThumb(GraphicsContext& context,
     canvas->scale(-1, 1);
   }
 
-  Platform::Current()->ThemeEngine()->Paint(canvas, part, state,
-                                            ToGfxRect(rect), &params,
-                                            scrollbar.UsedColorScheme());
+  WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
+      canvas, part, state, rect, &params, scrollbar.UsedColorScheme());
 
   if (scrollbar.IsLeftSideVerticalScrollbar())
     canvas->restore();
@@ -225,13 +223,12 @@ ScrollbarPart ScrollbarThemeOverlay::HitTest(const Scrollbar& scrollbar,
 }
 
 bool ScrollbarThemeOverlay::UsesNinePatchThumbResource() const {
-  DCHECK(Platform::Current()->ThemeEngine());
   // Thumb orientation doesn't matter here.
-  return Platform::Current()->ThemeEngine()->SupportsNinePatch(
+  return WebThemeEngineHelper::GetNativeThemeEngine()->SupportsNinePatch(
       WebThemeEngine::kPartScrollbarVerticalThumb);
 }
 
-IntSize ScrollbarThemeOverlay::NinePatchThumbCanvasSize(
+gfx::Size ScrollbarThemeOverlay::NinePatchThumbCanvasSize(
     const Scrollbar& scrollbar) const {
   DCHECK(UsesNinePatchThumbResource());
 
@@ -240,11 +237,11 @@ IntSize ScrollbarThemeOverlay::NinePatchThumbCanvasSize(
           ? WebThemeEngine::kPartScrollbarVerticalThumb
           : WebThemeEngine::kPartScrollbarHorizontalThumb;
 
-  DCHECK(Platform::Current()->ThemeEngine());
-  return IntSize(Platform::Current()->ThemeEngine()->NinePatchCanvasSize(part));
+  return WebThemeEngineHelper::GetNativeThemeEngine()->NinePatchCanvasSize(
+      part);
 }
 
-IntRect ScrollbarThemeOverlay::NinePatchThumbAperture(
+gfx::Rect ScrollbarThemeOverlay::NinePatchThumbAperture(
     const Scrollbar& scrollbar) const {
   DCHECK(UsesNinePatchThumbResource());
 
@@ -252,20 +249,17 @@ IntRect ScrollbarThemeOverlay::NinePatchThumbAperture(
   if (scrollbar.Orientation() == kVerticalScrollbar)
     part = WebThemeEngine::kPartScrollbarVerticalThumb;
 
-  DCHECK(Platform::Current()->ThemeEngine());
-  return IntRect(Platform::Current()->ThemeEngine()->NinePatchAperture(part));
+  return WebThemeEngineHelper::GetNativeThemeEngine()->NinePatchAperture(part);
 }
 
 int ScrollbarThemeOverlay::MinimumThumbLength(const Scrollbar& scrollbar) {
   if (scrollbar.Orientation() == kVerticalScrollbar) {
-    return Platform::Current()
-        ->ThemeEngine()
+    return WebThemeEngineHelper::GetNativeThemeEngine()
         ->GetSize(WebThemeEngine::kPartScrollbarVerticalThumb)
         .height();
   }
 
-  return Platform::Current()
-      ->ThemeEngine()
+  return WebThemeEngineHelper::GetNativeThemeEngine()
       ->GetSize(WebThemeEngine::kPartScrollbarHorizontalThumb)
       .width();
 }

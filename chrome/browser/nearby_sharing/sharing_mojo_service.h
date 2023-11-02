@@ -1,11 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_NEARBY_SHARING_SHARING_MOJO_SERVICE_H_
 #define CHROME_BROWSER_NEARBY_SHARING_SHARING_MOJO_SERVICE_H_
 
-#include "chromeos/services/nearby/public/mojom/sharing.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/sharing.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace sharing {

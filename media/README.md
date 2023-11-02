@@ -94,7 +94,7 @@ audio and video rendering.
 Specifically under the playback heading, media/ contains the implementations of
 components required for HTML media elements and extensions:
 
-* [HTML5 Audio & Video](https://dev.w3.org/html5/spec-author-view/video.html)
+* [HTML5 Audio & Video](https://www.w3.org/html/wg/spec/video.html)
 * [Media Source Extensions](https://www.w3.org/TR/media-source/)
 * [Encrypted Media Extensions](https://www.w3.org/TR/encrypted-media/)
 

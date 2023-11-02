@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,14 +10,14 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-struct WebApplicationInfo;
+struct WebAppInstallInfo;
 
 namespace content {
 class WebContents;
@@ -27,7 +27,8 @@ namespace web_app {
 
 // |app_id| may be empty on failure.
 using OnceInstallCallback =
-    base::OnceCallback<void(const AppId& app_id, InstallResultCode code)>;
+    base::OnceCallback<void(const AppId& app_id,
+                            webapps::InstallResultCode code)>;
 using OnceUninstallCallback =
     base::OnceCallback<void(const AppId& app_id, bool uninstalled)>;
 
@@ -35,28 +36,14 @@ using OnceUninstallCallback =
 // web app.
 using WebAppInstallationAcceptanceCallback =
     base::OnceCallback<void(bool user_accepted,
-                            std::unique_ptr<WebApplicationInfo>)>;
+                            std::unique_ptr<WebAppInstallInfo>)>;
 
 // Callback to show the WebApp installation confirmation bubble in UI.
-// |web_app_info| is the WebApplicationInfo to be installed.
+// |web_app_info| is the WebAppInstallInfo to be installed.
 using WebAppInstallDialogCallback = base::OnceCallback<void(
     content::WebContents* initiator_web_contents,
-    std::unique_ptr<WebApplicationInfo> web_app_info,
-    ForInstallableSite for_installable_site,
+    std::unique_ptr<WebAppInstallInfo> web_app_info,
     WebAppInstallationAcceptanceCallback acceptance_callback)>;
-
-enum class InstallableCheckResult {
-  kNotInstallable,
-  kInstallable,
-  kAlreadyInstalled,
-};
-// Callback with the result of manifest check.
-// |web_contents| owns the WebContents that was used to check for a manifest.
-// |app_id| will be present iff already installed.
-using WebAppManifestCheckCallback =
-    base::OnceCallback<void(std::unique_ptr<content::WebContents> web_contents,
-                            InstallableCheckResult result,
-                            absl::optional<AppId> app_id)>;
 
 // See related ExternalInstallOptions struct and
 // ConvertExternalInstallOptionsToParams function.
@@ -68,7 +55,8 @@ struct WebAppInstallParams {
   // Whether the app should be reinstalled even if it is already installed.
   bool force_reinstall = false;
 
-  DisplayMode user_display_mode = DisplayMode::kUndefined;
+  // See `WebAppInstallTask::ApplyParamsToWebAppInstallInfo`
+  absl::optional<UserDisplayMode> user_display_mode = absl::nullopt;
 
   // URL to be used as start_url if manifest is unavailable.
   GURL fallback_start_url;
@@ -82,29 +70,56 @@ struct WebAppInstallParams {
   absl::optional<std::u16string> fallback_app_name;
 
   bool locally_installed = true;
+
+  // If true, OsIntegrationManager::InstallOsHooks won't be called at all,
+  // meaning that all other OS Hooks related parameters will be ignored.
+  bool bypass_os_hooks = false;
+
   // These OS shortcut fields can't be true if |locally_installed| is false.
+  // They only have an effect when |bypass_os_hooks| is false.
   bool add_to_applications_menu = true;
   bool add_to_desktop = true;
   bool add_to_quick_launch_bar = true;
-  bool run_on_os_login = false;
 
   // These have no effect outside of Chrome OS.
   bool add_to_search = true;
   bool add_to_management = true;
   bool is_disabled = false;
+  bool handles_file_open_intents = true;
 
   bool bypass_service_worker_check = false;
   bool require_manifest = false;
 
+  // Used only by ExternallyManagedInstallCommand.
+  // Has the same meaning as WebAppInstallFlow::kCreateShortcut
+  bool install_as_shortcut = false;
+
   std::vector<std::string> additional_search_terms;
 
   absl::optional<std::string> launch_query_params;
-  absl::optional<SystemAppType> system_app_type;
+  absl::optional<ash::SystemWebAppType> system_app_type;
 
   bool oem_installed = false;
 
   // Set for SUB_APP API installs.
   absl::optional<AppId> parent_app_id;
+
+  // The install URL for the app. This does not always need to be
+  // populated (especially for user installed or sync installed apps)
+  // in which case the URL will not be written to the web_app DB.
+  GURL install_url;
+};
+
+// The different UI flows that exist for creating a web app.
+enum class WebAppInstallFlow {
+  // TODO(crbug.com/1216457): This should be removed by adding all known flows
+  // to this enum.
+  kUnknown,
+  // The 'Create Shortcut' flow for adding the current page as a shortcut app.
+  kCreateShortcut,
+  // The 'Install Site' flow for installing the current site with an app
+  // experience determined by the site.
+  kInstallSite,
 };
 
 }  // namespace web_app

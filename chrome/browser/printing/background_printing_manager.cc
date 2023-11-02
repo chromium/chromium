@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -33,7 +34,7 @@ class BackgroundPrintingManager::Observer
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
 
-  BackgroundPrintingManager* manager_;
+  raw_ptr<BackgroundPrintingManager> manager_;
 };
 
 BackgroundPrintingManager::Observer::Observer(
@@ -53,7 +54,7 @@ BackgroundPrintingManager::BackgroundPrintingManager() {
 
 BackgroundPrintingManager::~BackgroundPrintingManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // The might be some WebContentses still in |printing_contents_map_| at this
+  // The might be some WebContentses still in `printing_contents_map_` at this
   // point (e.g. when the last remaining tab closes and there is still a print
   // preview WebContents trying to print). In such a case it will fail to print,
   // but we should at least clean up the observers.
@@ -64,7 +65,7 @@ void BackgroundPrintingManager::OwnPrintPreviewDialog(
     std::unique_ptr<WebContents> preview_dialog) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(PrintPreviewDialogController::IsPrintPreviewURL(
-      preview_dialog->GetURL()));
+      preview_dialog->GetVisibleURL()));
   CHECK(!HasPrintPreviewDialog(preview_dialog.get()));
 
   WebContents* raw_preview_dialog = preview_dialog.get();
@@ -109,7 +110,7 @@ void BackgroundPrintingManager::DeletePreviewContents(
     WebContents* preview_contents) {
   auto i = printing_contents_map_.find(preview_contents);
   if (i == printing_contents_map_.end()) {
-    // Everyone is racing to be the first to delete the |preview_contents|. If
+    // Everyone is racing to be the first to delete the `preview_contents`. If
     // this case is hit, someone else won the race, so there is no need to
     // continue. <http://crbug.com/100806>
     return;
@@ -120,7 +121,7 @@ void BackgroundPrintingManager::DeletePreviewContents(
   printing_contents_map_.erase(i);
 
   // ... and mortally wound the contents. Deletion immediately is not a good
-  // idea in case this was triggered by |preview_contents| far up the
+  // idea in case this was triggered by `preview_contents` far up the
   // callstack. (Trace where the NOTIFICATION_PRINT_JOB_RELEASED comes from.)
   base::ThreadTaskRunnerHandle::Get()->DeleteSoon(
       FROM_HERE, std::move(contents_to_delete));

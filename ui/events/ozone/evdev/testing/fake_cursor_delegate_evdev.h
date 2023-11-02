@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,7 @@ class FakeCursorDelegateEvdev : public CursorDelegateEvdev {
   void MoveCursor(const gfx::Vector2dF& delta) override {
     cursor_location_ = gfx::PointF(delta.x(), delta.y());
   }
-  bool IsCursorVisible() override { return 1; }
+  bool IsCursorVisible() override { return true; }
   gfx::Rect GetCursorConfinedBounds() override {
     NOTIMPLEMENTED();
     return gfx::Rect();

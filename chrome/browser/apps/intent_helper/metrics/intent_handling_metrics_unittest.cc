@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,46 +7,228 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
+#include "chrome/browser/apps/intent_helper/chromeos_intent_picker_helpers.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/arc/intent_helper/arc_external_protocol_dialog.h"
-#include "components/arc/arc_prefs.h"
+#include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/metrics/arc_metrics_service.h"
+#include "ash/components/arc/metrics/stability_metrics_manager.h"
+#include "ash/components/arc/session/arc_service_manager.h"
+#include "chrome/browser/chromeos/arc/arc_external_protocol_dialog.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
-#include "components/arc/metrics/arc_metrics_service.h"
-#include "components/arc/metrics/stability_metrics_manager.h"
-#include "components/arc/session/arc_service_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace apps {
 
 TEST(IntentHandlingMetricsTest, TestRecordIntentPickerMetrics) {
+  struct TestCase {
+    PickerEntryType entry_type;
+    IntentPickerCloseReason close_reason;
+    bool should_persist;
+
+    IntentHandlingMetrics::IntentPickerAction expected_action;
+    IntentHandlingMetrics::Platform expected_platform;
+  };
+
+  const TestCase kTestCases[]{
+      // Open in ARC:
+      {PickerEntryType::kArc, IntentPickerCloseReason::OPEN_APP, true,
+       IntentHandlingMetrics::IntentPickerAction::kArcAppSelectedAndPreferred,
+       IntentHandlingMetrics::Platform::ARC},
+
+      {PickerEntryType::kArc, IntentPickerCloseReason::OPEN_APP, false,
+       IntentHandlingMetrics::IntentPickerAction::kArcAppSelected,
+       IntentHandlingMetrics::Platform::ARC},
+
+      // Open in PWA:
+      {PickerEntryType::kWeb, IntentPickerCloseReason::OPEN_APP, true,
+       IntentHandlingMetrics::IntentPickerAction::kPwaSelectedAndPreferred,
+       IntentHandlingMetrics::Platform::PWA},
+
+      {PickerEntryType::kWeb, IntentPickerCloseReason::OPEN_APP, false,
+       IntentHandlingMetrics::IntentPickerAction::kPwaSelected,
+       IntentHandlingMetrics::Platform::PWA},
+
+      // Stay in Chrome:
+      {PickerEntryType::kWeb, IntentPickerCloseReason::STAY_IN_CHROME, true,
+       IntentHandlingMetrics::IntentPickerAction::kChromeSelectedAndPreferred,
+       IntentHandlingMetrics::Platform::CHROME},
+
+      {PickerEntryType::kWeb, IntentPickerCloseReason::STAY_IN_CHROME, false,
+       IntentHandlingMetrics::IntentPickerAction::kChromeSelected,
+       IntentHandlingMetrics::Platform::CHROME},
+
+      // Dismiss/error:
+      {PickerEntryType::kWeb, IntentPickerCloseReason::DIALOG_DEACTIVATED, true,
+       IntentHandlingMetrics::IntentPickerAction::kDialogDeactivated,
+       IntentHandlingMetrics::Platform::CHROME},
+
+      {PickerEntryType::kWeb, IntentPickerCloseReason::ERROR_AFTER_PICKER, true,
+       IntentHandlingMetrics::IntentPickerAction::kError,
+       IntentHandlingMetrics::Platform::CHROME},
+  };
+
+  for (const auto& test : kTestCases) {
+    base::HistogramTester histogram_tester;
+
+    IntentHandlingMetrics::RecordIntentPickerMetrics(
+        test.entry_type, test.close_reason, test.should_persist,
+        PickerShowState::kOmnibox);
+
+    histogram_tester.ExpectBucketCount("ChromeOS.Intents.IntentPickerAction",
+                                       test.expected_action, 1);
+    histogram_tester.ExpectBucketCount(
+        "ChromeOS.Apps.IntentPickerDestinationPlatform", test.expected_platform,
+        1);
+  }
+}
+
+TEST(IntentHandlingMetricsTest, TestRecordIntentPickerMetricsWithSource) {
   base::HistogramTester histogram_tester;
 
-  IntentHandlingMetrics test = IntentHandlingMetrics();
-  test.RecordIntentPickerMetrics(
-      Source::kExternalProtocol, false,
-      IntentHandlingMetrics::PickerAction::ARC_APP_PREFERRED_PRESSED,
-      IntentHandlingMetrics::Platform::ARC);
+  IntentHandlingMetrics::RecordIntentPickerMetrics(
+      PickerEntryType::kArc, IntentPickerCloseReason::OPEN_APP, true,
+      PickerShowState::kOmnibox);
 
   histogram_tester.ExpectBucketCount(
-      "ChromeOS.Apps.ExternalProtocolDialog",
-      IntentHandlingMetrics::PickerAction::ARC_APP_PREFERRED_PRESSED, 1);
+      "ChromeOS.Intents.IntentPickerAction",
+      IntentHandlingMetrics::IntentPickerAction::kArcAppSelectedAndPreferred,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.IntentPickerAction.FromOmniboxIcon",
+      IntentHandlingMetrics::IntentPickerAction::kArcAppSelectedAndPreferred,
+      1);
 
-  test.RecordIntentPickerMetrics(
-      Source::kHttpOrHttps, true,
-      IntentHandlingMetrics::PickerAction::ARC_APP_PREFERRED_PRESSED,
-      IntentHandlingMetrics::Platform::ARC);
+  IntentHandlingMetrics::RecordIntentPickerMetrics(
+      PickerEntryType::kArc, IntentPickerCloseReason::OPEN_APP, true,
+      PickerShowState::kPopOut);
 
   histogram_tester.ExpectBucketCount(
-      "ChromeOS.Apps.IntentPickerAction",
-      IntentHandlingMetrics::PickerAction::ARC_APP_PREFERRED_PRESSED, 1);
+      "ChromeOS.Intents.IntentPickerAction",
+      IntentHandlingMetrics::IntentPickerAction::kArcAppSelectedAndPreferred,
+      2);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.IntentPickerAction.FromAutoPopOut",
+      IntentHandlingMetrics::IntentPickerAction::kArcAppSelectedAndPreferred,
+      1);
+}
+
+TEST(IntentHandlingMetricsTest, TestRecordPreferredAppLinkClickMetrics) {
+  base::HistogramTester histogram_tester;
+
+  IntentHandlingMetrics::RecordPreferredAppLinkClickMetrics(
+      IntentHandlingMetrics::Platform::ARC);
+
   histogram_tester.ExpectBucketCount(
       "ChromeOS.Apps.IntentPickerDestinationPlatform",
       IntentHandlingMetrics::Platform::ARC, 1);
+}
+
+TEST(IntentHandlingMetricsTest, TestRecordOpenBrowserMetrics) {
+  base::HistogramTester histogram_tester;
+
+  IntentHandlingMetrics test;
+  test.RecordOpenBrowserMetrics(IntentHandlingMetrics::AppType::kArc);
+
+  histogram_tester.ExpectBucketCount("ChromeOS.Apps.OpenBrowser",
+                                     IntentHandlingMetrics::AppType::kArc, 1);
+}
+
+TEST(IntentHandlingMetricsTest, TestRecordLinkCapturingEntryPointShown) {
+  base::HistogramTester histogram_tester;
+  IntentHandlingMetrics test;
+
+  std::vector<apps::IntentPickerAppInfo> app_info;
+  app_info.emplace_back(apps::PickerEntryType::kDevice, ui::ImageModel(),
+                        "test", "test");
+
+  // Link capturing entry point shown for unknown app type.
+  test.RecordLinkCapturingEntryPointShown(app_info);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent2.ArcApp",
+      IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 0);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent2.WebApp",
+      IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 0);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent2",
+      IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 1);
+
+  // Prepare the app info for next testcase.
+  app_info.clear();
+  app_info.emplace_back(apps::PickerEntryType::kWeb, ui::ImageModel(), "test",
+                        "test");
+
+  // Link capturing entry point shown for web app type.
+  test.RecordLinkCapturingEntryPointShown(app_info);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent2.ArcApp",
+      IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 0);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent2.WebApp",
+      IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 1);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent2",
+      IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 2);
+
+  // Prepare the app info for next testcase.
+  app_info.clear();
+  app_info.emplace_back(apps::PickerEntryType::kArc, ui::ImageModel(), "test",
+                        "test");
+  app_info.emplace_back(apps::PickerEntryType::kWeb, ui::ImageModel(), "test",
+                        "test");
+  app_info.emplace_back(apps::PickerEntryType::kWeb, ui::ImageModel(), "test",
+                        "test");
+
+  // Link capturing entry point shown for 2 web apps and 1 ARC app.
+  test.RecordLinkCapturingEntryPointShown(app_info);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent2.ArcApp",
+      IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 1);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent2.WebApp",
+      IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 2);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent2",
+      IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 3);
+}
+
+TEST(IntentHandlingMetricsTest, TestRecordLinkCapturingEvent) {
+  base::HistogramTester histogram_tester;
+  IntentHandlingMetrics test;
+
+  // ARC app captures a link.
+  test.RecordLinkCapturingEvent(
+      PickerEntryType::kArc,
+      IntentHandlingMetrics::LinkCapturingEvent::kAppOpened);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent2.ArcApp",
+      IntentHandlingMetrics::LinkCapturingEvent::kAppOpened, 1);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent2.WebApp",
+      IntentHandlingMetrics::LinkCapturingEvent::kAppOpened, 0);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent2",
+      IntentHandlingMetrics::LinkCapturingEvent::kAppOpened, 1);
+
+  // Link capturing settings changed for web app.
+  test.RecordLinkCapturingEvent(
+      PickerEntryType::kWeb,
+      IntentHandlingMetrics::LinkCapturingEvent::kSettingsChanged);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent2.ArcApp",
+      IntentHandlingMetrics::LinkCapturingEvent::kSettingsChanged, 0);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent2.WebApp",
+      IntentHandlingMetrics::LinkCapturingEvent::kSettingsChanged, 1);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent2",
+      IntentHandlingMetrics::LinkCapturingEvent::kSettingsChanged, 1);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -77,21 +259,59 @@ class IntentHandlingMetricsTestWithMetricsService : public testing::Test {
 };
 
 TEST_F(IntentHandlingMetricsTestWithMetricsService,
-       TestRecordIntentPickerUserInteractionMetrics) {
-  base::HistogramTester histogram_tester;
+       TestRecordExternalProtocolUserInteractionMetrics) {
+  struct TestCase {
+    PickerEntryType entry_type;
+    IntentPickerCloseReason close_reason;
+    bool should_persist;
 
-  IntentHandlingMetrics test = IntentHandlingMetrics();
-  test.RecordIntentPickerUserInteractionMetrics(
-      profile(), "app_package", PickerEntryType::kArc,
-      IntentPickerCloseReason::OPEN_APP, Source::kExternalProtocol, true);
+    IntentHandlingMetrics::PickerAction expected_action;
+    bool expected_link_click;
+  };
 
-  histogram_tester.ExpectBucketCount(
-      "Arc.UserInteraction", arc::UserInteractionType::APP_STARTED_FROM_LINK,
-      1);
+  const TestCase kTestCases[]{
+      // Arc apps:
+      {PickerEntryType::kArc, IntentPickerCloseReason::OPEN_APP,
+       /*should_persist=*/true,
+       IntentHandlingMetrics::PickerAction::ARC_APP_PREFERRED_PRESSED,
+       /*expected_link_click=*/true},
 
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Apps.ExternalProtocolDialog",
-      IntentHandlingMetrics::PickerAction::ARC_APP_PREFERRED_PRESSED, 1);
+      {PickerEntryType::kArc, IntentPickerCloseReason::OPEN_APP,
+       /*should_persist=*/false,
+       IntentHandlingMetrics::PickerAction::ARC_APP_PRESSED,
+       /*expected_link_click=*/true},
+
+      {PickerEntryType::kArc, IntentPickerCloseReason::PREFERRED_APP_FOUND,
+       /*should_persist=*/false,
+       IntentHandlingMetrics::PickerAction::PREFERRED_ARC_ACTIVITY_FOUND,
+       /*expected_link_click=*/true},
+
+      // Device:
+      {PickerEntryType::kDevice, IntentPickerCloseReason::OPEN_APP,
+       /*should_persist=*/false,
+       IntentHandlingMetrics::PickerAction::DEVICE_PRESSED,
+       /*expected_link_click=*/false},
+
+      // Dismiss:
+      {PickerEntryType::kArc, IntentPickerCloseReason::DIALOG_DEACTIVATED,
+       /*should_persist=*/false,
+       IntentHandlingMetrics::PickerAction::DIALOG_DEACTIVATED,
+       /*expected_link_click=*/false},
+  };
+
+  for (const auto& test : kTestCases) {
+    base::HistogramTester histogram_tester;
+
+    IntentHandlingMetrics::RecordExternalProtocolUserInteractionMetrics(
+        profile(), test.entry_type, test.close_reason, test.should_persist);
+
+    histogram_tester.ExpectBucketCount(
+        "Arc.UserInteraction", arc::UserInteractionType::APP_STARTED_FROM_LINK,
+        test.expected_link_click);
+
+    histogram_tester.ExpectBucketCount("ChromeOS.Apps.ExternalProtocolDialog",
+                                       test.expected_action, 1);
+  }
 }
 
 TEST(IntentHandlingMetricsTest, TestRecordExternalProtocolMetrics) {
@@ -106,297 +326,5 @@ TEST(IntentHandlingMetricsTest, TestRecordExternalProtocolMetrics) {
       arc::ProtocolAction::IRC_ACCEPTED_PERSISTED, 1);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-TEST(IntentHandlingMetricsTest, TestRecordOpenBrowserMetrics) {
-  base::HistogramTester histogram_tester;
-
-  IntentHandlingMetrics test;
-  test.RecordOpenBrowserMetrics(IntentHandlingMetrics::AppType::kArc);
-
-  histogram_tester.ExpectBucketCount("ChromeOS.Apps.OpenBrowser",
-                                     IntentHandlingMetrics::AppType::kArc, 1);
-}
-
-TEST(IntentHandlingMetricsTest, TestGetPickerAction) {
-  EXPECT_EQ(IntentHandlingMetrics::PickerAction::ERROR_BEFORE_PICKER,
-            IntentHandlingMetrics::GetPickerAction(
-                PickerEntryType::kUnknown,
-                IntentPickerCloseReason::ERROR_BEFORE_PICKER,
-                /*should_persist=*/true));
-
-  EXPECT_EQ(
-      IntentHandlingMetrics::PickerAction::ERROR_BEFORE_PICKER,
-      IntentHandlingMetrics::GetPickerAction(
-          PickerEntryType::kArc, IntentPickerCloseReason::ERROR_BEFORE_PICKER,
-          /*should_persist=*/true));
-
-  EXPECT_EQ(IntentHandlingMetrics::PickerAction::ERROR_BEFORE_PICKER,
-            IntentHandlingMetrics::GetPickerAction(
-                PickerEntryType::kUnknown,
-                IntentPickerCloseReason::ERROR_BEFORE_PICKER,
-                /*should_persist=*/false));
-
-  EXPECT_EQ(
-      IntentHandlingMetrics::PickerAction::ERROR_BEFORE_PICKER,
-      IntentHandlingMetrics::GetPickerAction(
-          PickerEntryType::kArc, IntentPickerCloseReason::ERROR_BEFORE_PICKER,
-          /*should_persist=*/false));
-
-  EXPECT_EQ(IntentHandlingMetrics::PickerAction::ERROR_AFTER_PICKER,
-            IntentHandlingMetrics::GetPickerAction(
-                PickerEntryType::kUnknown,
-                IntentPickerCloseReason::ERROR_AFTER_PICKER,
-                /*should_persist=*/true));
-
-  EXPECT_EQ(
-      IntentHandlingMetrics::PickerAction::ERROR_AFTER_PICKER,
-      IntentHandlingMetrics::GetPickerAction(
-          PickerEntryType::kArc, IntentPickerCloseReason::ERROR_AFTER_PICKER,
-          /*should_persist=*/true));
-
-  EXPECT_EQ(IntentHandlingMetrics::PickerAction::ERROR_AFTER_PICKER,
-            IntentHandlingMetrics::GetPickerAction(
-                PickerEntryType::kUnknown,
-                IntentPickerCloseReason::ERROR_AFTER_PICKER,
-                /*should_persist=*/false));
-
-  EXPECT_EQ(
-      IntentHandlingMetrics::PickerAction::ERROR_AFTER_PICKER,
-      IntentHandlingMetrics::GetPickerAction(
-          PickerEntryType::kArc, IntentPickerCloseReason::ERROR_AFTER_PICKER,
-          /*should_persist=*/false));
-
-  // Expect PickerAction::DIALOG_DEACTIVATED if the close_reason is
-  // DIALOG_DEACTIVATED.
-  EXPECT_EQ(IntentHandlingMetrics::PickerAction::DIALOG_DEACTIVATED,
-            IntentHandlingMetrics::GetPickerAction(
-                PickerEntryType::kUnknown,
-                IntentPickerCloseReason::DIALOG_DEACTIVATED,
-                /*should_persist=*/true));
-
-  EXPECT_EQ(
-      IntentHandlingMetrics::PickerAction::DIALOG_DEACTIVATED,
-      IntentHandlingMetrics::GetPickerAction(
-          PickerEntryType::kArc, IntentPickerCloseReason::DIALOG_DEACTIVATED,
-          /*should_persist=*/true));
-
-  EXPECT_EQ(IntentHandlingMetrics::PickerAction::DIALOG_DEACTIVATED,
-            IntentHandlingMetrics::GetPickerAction(
-                PickerEntryType::kUnknown,
-                IntentPickerCloseReason::DIALOG_DEACTIVATED,
-                /*should_persist=*/false));
-
-  EXPECT_EQ(
-      IntentHandlingMetrics::PickerAction::DIALOG_DEACTIVATED,
-      IntentHandlingMetrics::GetPickerAction(
-          PickerEntryType::kArc, IntentPickerCloseReason::DIALOG_DEACTIVATED,
-          /*should_persist=*/false));
-
-  // Expect PREFERRED FOUND depending on entry type if the close_reason is
-  // PREFERRED_APP_FOUND.
-  EXPECT_EQ(IntentHandlingMetrics::PickerAction::PREFERRED_CHROME_BROWSER_FOUND,
-            IntentHandlingMetrics::GetPickerAction(
-                PickerEntryType::kUnknown,
-                IntentPickerCloseReason::PREFERRED_APP_FOUND,
-                /*should_persist=*/true));
-
-  EXPECT_EQ(
-      IntentHandlingMetrics::PickerAction::PREFERRED_ARC_ACTIVITY_FOUND,
-      IntentHandlingMetrics::GetPickerAction(
-          PickerEntryType::kArc, IntentPickerCloseReason::PREFERRED_APP_FOUND,
-          /*should_persist=*/true));
-
-  EXPECT_EQ(
-      IntentHandlingMetrics::PickerAction::PREFERRED_PWA_FOUND,
-      IntentHandlingMetrics::GetPickerAction(
-          PickerEntryType::kWeb, IntentPickerCloseReason::PREFERRED_APP_FOUND,
-          /*should_persist=*/true));
-
-  EXPECT_DCHECK_DEATH(IntentHandlingMetrics::GetPickerAction(
-      PickerEntryType::kDevice, IntentPickerCloseReason::PREFERRED_APP_FOUND,
-      /*should_persist=*/true));
-
-  EXPECT_DCHECK_DEATH(IntentHandlingMetrics::GetPickerAction(
-      PickerEntryType::kMacOs, IntentPickerCloseReason::PREFERRED_APP_FOUND,
-      /*should_persist=*/true));
-
-  EXPECT_EQ(IntentHandlingMetrics::PickerAction::PREFERRED_CHROME_BROWSER_FOUND,
-            IntentHandlingMetrics::GetPickerAction(
-                PickerEntryType::kUnknown,
-                IntentPickerCloseReason::PREFERRED_APP_FOUND,
-                /*should_persist=*/false));
-
-  EXPECT_EQ(
-      IntentHandlingMetrics::PickerAction::PREFERRED_ARC_ACTIVITY_FOUND,
-      IntentHandlingMetrics::GetPickerAction(
-          PickerEntryType::kArc, IntentPickerCloseReason::PREFERRED_APP_FOUND,
-          /*should_persist=*/false));
-
-  EXPECT_EQ(
-      IntentHandlingMetrics::PickerAction::PREFERRED_PWA_FOUND,
-      IntentHandlingMetrics::GetPickerAction(
-          PickerEntryType::kWeb, IntentPickerCloseReason::PREFERRED_APP_FOUND,
-          /*should_persist=*/false));
-
-  EXPECT_DCHECK_DEATH(IntentHandlingMetrics::GetPickerAction(
-      PickerEntryType::kDevice, IntentPickerCloseReason::PREFERRED_APP_FOUND,
-      /*should_persist=*/false));
-
-  EXPECT_DCHECK_DEATH(IntentHandlingMetrics::GetPickerAction(
-      PickerEntryType::kMacOs, IntentPickerCloseReason::PREFERRED_APP_FOUND,
-      /*should_persist=*/false));
-
-  // Expect PREFERRED depending on the value of |should_persist|, and
-  // |entry_type| to be ignored if reason is STAY_IN_CHROME.
-  EXPECT_EQ(
-      IntentHandlingMetrics::PickerAction::CHROME_PREFERRED_PRESSED,
-      IntentHandlingMetrics::GetPickerAction(
-          PickerEntryType::kUnknown, IntentPickerCloseReason::STAY_IN_CHROME,
-          /*should_persist=*/true));
-
-  EXPECT_EQ(IntentHandlingMetrics::PickerAction::CHROME_PREFERRED_PRESSED,
-            IntentHandlingMetrics::GetPickerAction(
-                PickerEntryType::kArc, IntentPickerCloseReason::STAY_IN_CHROME,
-                /*should_persist=*/true));
-
-  EXPECT_EQ(
-      IntentHandlingMetrics::PickerAction::CHROME_PRESSED,
-      IntentHandlingMetrics::GetPickerAction(
-          PickerEntryType::kUnknown, IntentPickerCloseReason::STAY_IN_CHROME,
-          /*should_persist=*/false));
-
-  EXPECT_EQ(IntentHandlingMetrics::PickerAction::CHROME_PRESSED,
-            IntentHandlingMetrics::GetPickerAction(
-                PickerEntryType::kArc, IntentPickerCloseReason::STAY_IN_CHROME,
-                /*should_persist=*/false));
-
-  // Expect PREFERRED depending on the value of |should_persist|, and
-  // different entry type to be chosen if reason is OPEN_APP.
-  EXPECT_DCHECK_DEATH(IntentHandlingMetrics::GetPickerAction(
-      PickerEntryType::kUnknown, IntentPickerCloseReason::OPEN_APP,
-      /*should_persist=*/true));
-
-  EXPECT_EQ(IntentHandlingMetrics::PickerAction::ARC_APP_PREFERRED_PRESSED,
-            IntentHandlingMetrics::GetPickerAction(
-                PickerEntryType::kArc, IntentPickerCloseReason::OPEN_APP,
-                /*should_persist=*/true));
-
-  EXPECT_EQ(IntentHandlingMetrics::PickerAction::PWA_APP_PREFERRED_PRESSED,
-            IntentHandlingMetrics::GetPickerAction(
-                PickerEntryType::kWeb, IntentPickerCloseReason::OPEN_APP,
-                /*should_persist=*/true));
-
-  EXPECT_EQ(IntentHandlingMetrics::PickerAction::DEVICE_PRESSED,
-            IntentHandlingMetrics::GetPickerAction(
-                PickerEntryType::kDevice, IntentPickerCloseReason::OPEN_APP,
-                /*should_persist=*/true));
-
-  EXPECT_EQ(IntentHandlingMetrics::PickerAction::MAC_OS_APP_PRESSED,
-            IntentHandlingMetrics::GetPickerAction(
-                PickerEntryType::kMacOs, IntentPickerCloseReason::OPEN_APP,
-                /*should_persist=*/true));
-
-  EXPECT_DCHECK_DEATH(IntentHandlingMetrics::GetPickerAction(
-      PickerEntryType::kUnknown, IntentPickerCloseReason::OPEN_APP,
-      /*should_persist=*/false));
-
-  EXPECT_EQ(IntentHandlingMetrics::PickerAction::ARC_APP_PRESSED,
-            IntentHandlingMetrics::GetPickerAction(
-                PickerEntryType::kArc, IntentPickerCloseReason::OPEN_APP,
-                /*should_persist=*/false));
-
-  EXPECT_EQ(IntentHandlingMetrics::PickerAction::PWA_APP_PRESSED,
-            IntentHandlingMetrics::GetPickerAction(
-                PickerEntryType::kWeb, IntentPickerCloseReason::OPEN_APP,
-                /*should_persist=*/false));
-
-  EXPECT_EQ(IntentHandlingMetrics::PickerAction::DEVICE_PRESSED,
-            IntentHandlingMetrics::GetPickerAction(
-                PickerEntryType::kDevice, IntentPickerCloseReason::OPEN_APP,
-                /*should_persist=*/false));
-
-  EXPECT_EQ(IntentHandlingMetrics::PickerAction::MAC_OS_APP_PRESSED,
-            IntentHandlingMetrics::GetPickerAction(
-                PickerEntryType::kMacOs, IntentPickerCloseReason::OPEN_APP,
-                /*should_persist=*/false));
-}
-
-TEST(IntentHandlingMetricsTest, TestGetDestinationPlatform) {
-  const std::string app_id = "fake_package";
-
-  // When the PickerAction is either ERROR or DIALOG_DEACTIVATED we MUST stay
-  // in Chrome not taking into account the selected_app_package.
-  EXPECT_EQ(
-      IntentHandlingMetrics::Platform::CHROME,
-      IntentHandlingMetrics::GetDestinationPlatform(
-          app_id, IntentHandlingMetrics::PickerAction::ERROR_BEFORE_PICKER));
-  EXPECT_EQ(
-      IntentHandlingMetrics::Platform::CHROME,
-      IntentHandlingMetrics::GetDestinationPlatform(
-          app_id, IntentHandlingMetrics::PickerAction::ERROR_AFTER_PICKER));
-  EXPECT_EQ(
-      IntentHandlingMetrics::Platform::CHROME,
-      IntentHandlingMetrics::GetDestinationPlatform(
-          app_id, IntentHandlingMetrics::PickerAction::DIALOG_DEACTIVATED));
-
-  // When stay in chrome is selected, or when user remember the stay in
-  // chrome selection, always expect the platform to be CHROME.
-  EXPECT_EQ(IntentHandlingMetrics::Platform::CHROME,
-            IntentHandlingMetrics::GetDestinationPlatform(
-                app_id, IntentHandlingMetrics::PickerAction::CHROME_PRESSED));
-  EXPECT_EQ(IntentHandlingMetrics::Platform::CHROME,
-            IntentHandlingMetrics::GetDestinationPlatform(
-                app_id,
-                IntentHandlingMetrics::PickerAction::CHROME_PREFERRED_PRESSED));
-  EXPECT_EQ(
-      IntentHandlingMetrics::Platform::CHROME,
-      IntentHandlingMetrics::GetDestinationPlatform(
-          app_id,
-          IntentHandlingMetrics::PickerAction::PREFERRED_CHROME_BROWSER_FOUND));
-
-  // When user select PWA or PWA auto launched, always expect the platform to
-  // be PWA.
-  EXPECT_EQ(IntentHandlingMetrics::Platform::PWA,
-            IntentHandlingMetrics::GetDestinationPlatform(
-                app_id, IntentHandlingMetrics::PickerAction::PWA_APP_PRESSED));
-
-  EXPECT_EQ(
-      IntentHandlingMetrics::Platform::PWA,
-      IntentHandlingMetrics::GetDestinationPlatform(
-          app_id,
-          IntentHandlingMetrics::PickerAction::PWA_APP_PREFERRED_PRESSED));
-  EXPECT_EQ(
-      IntentHandlingMetrics::Platform::PWA,
-      IntentHandlingMetrics::GetDestinationPlatform(
-          app_id, IntentHandlingMetrics::PickerAction::PREFERRED_PWA_FOUND));
-
-  // When user select ARC app or ARC app auto launched, always expect the
-  // platform to be ARC.
-  EXPECT_EQ(IntentHandlingMetrics::Platform::ARC,
-            IntentHandlingMetrics::GetDestinationPlatform(
-                app_id, IntentHandlingMetrics::PickerAction::ARC_APP_PRESSED));
-
-  EXPECT_EQ(
-      IntentHandlingMetrics::Platform::ARC,
-      IntentHandlingMetrics::GetDestinationPlatform(
-          app_id,
-          IntentHandlingMetrics::PickerAction::ARC_APP_PREFERRED_PRESSED));
-  EXPECT_EQ(
-      IntentHandlingMetrics::Platform::ARC,
-      IntentHandlingMetrics::GetDestinationPlatform(
-          app_id,
-          IntentHandlingMetrics::PickerAction::PREFERRED_ARC_ACTIVITY_FOUND));
-
-  // When user select Mac OS app, expect the platform to be MAC_OS.
-  EXPECT_EQ(
-      IntentHandlingMetrics::Platform::MAC_OS,
-      IntentHandlingMetrics::GetDestinationPlatform(
-          app_id, IntentHandlingMetrics::PickerAction::MAC_OS_APP_PRESSED));
-
-  // When user select a device, expect the platform to be DEVICE.
-  EXPECT_EQ(IntentHandlingMetrics::Platform::DEVICE,
-            IntentHandlingMetrics::GetDestinationPlatform(
-                app_id, IntentHandlingMetrics::PickerAction::DEVICE_PRESSED));
-}
 
 }  // namespace apps

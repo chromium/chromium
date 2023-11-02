@@ -1,20 +1,17 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-goog.provide('ChromeVoxKbHandler');
-
-goog.require('ChromeVox');
-goog.require('KeyMap');
-goog.require('KeySequence');
-goog.require('KeyUtil');
-goog.require('ChromeVoxState');
-
 /**
  * @fileoverview Handles user keyboard input events.
- *
  */
-ChromeVoxKbHandler = {};
+import {UserActionMonitor} from '../background/user_action_monitor.js';
+
+import {Command} from './command_store.js';
+import {KeyMap} from './key_map.js';
+import {KeyUtil} from './key_util.js';
+
+export const ChromeVoxKbHandler = {};
 
 /**
  * The key map
@@ -26,7 +23,7 @@ ChromeVoxKbHandler.handlerKeyMap = KeyMap.get();
 /**
  * Handler for ChromeVox commands. Returns undefined if the command does not
  * exist. Otherwise, returns the result of executing the command.
- * @type {function(string): (boolean|undefined)}
+ * @type {function(!Command): (boolean|undefined)}
  */
 ChromeVoxKbHandler.commandHandler;
 
@@ -73,14 +70,6 @@ ChromeVoxKbHandler.sortKeyToFunctionsTable_ = function(keyToFunctionsTable) {
  */
 ChromeVoxKbHandler.basicKeyDownActionsListener = function(evt) {
   const keySequence = KeyUtil.keyEventToKeySequence(evt);
-  const chromeVoxState = ChromeVoxState.instance;
-  const monitor = chromeVoxState ? chromeVoxState.getUserActionMonitor() : null;
-  if (monitor && !monitor.onKeySequence(keySequence)) {
-    // UserActionMonitor returns true if this key sequence should propagate.
-    // Prevent the default action if it returns false.
-    return false;
-  }
-
   let functionName;
   if (ChromeVoxKbHandler.handlerKeyMap !== undefined) {
     functionName = ChromeVoxKbHandler.handlerKeyMap.commandForKey(keySequence);
@@ -108,10 +97,5 @@ ChromeVoxKbHandler.basicKeyDownActionsListener = function(evt) {
     returnValue = false;
   }
 
-  // If the whole document is hidden from screen readers, let the app
-  // catch keys as well.
-  if (ChromeVox.entireDocumentIsHidden) {
-    returnValue = true;
-  }
   return returnValue;
 };

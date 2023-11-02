@@ -1,0 +1,21 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package feedunsignedpersonalizationstore;
+
+option optimize_for = LITE_RUNTIME;
+
+message VisitMetadata {
+  // Wall clock timestamp when user clicked on the feed card. Recorded as time
+  // in seconds since epoch.
+  int64 timestamp_seconds_since_epoch = 1;
+
+  // Serialized url::Origin of the URL corresponding to the card.
+  string origin = 2;
+
+  // Entity mids corresponding to the card.
+  repeated uint64 entity_mids = 3;
+}

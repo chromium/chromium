@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -32,7 +32,10 @@ android_library("runtime_library_for_assets_java") {
   sources =
       [ "src/org/chromium/webapk/lib/runtime_library/WebApkServiceImpl.java" ]
   srcjar_deps = [ ":webapk_service_aidl" ]
-  deps = [ "//third_party/androidx:androidx_core_core_java" ]
+  deps = [
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
+  ]
 }
 
 # The subset of runtime_library_from_assets_java needed for tests.
@@ -41,6 +44,7 @@ android_library("runtime_library_for_tests_java") {
       [ "src/org/chromium/webapk/lib/runtime_library/WebApkServiceImpl.java" ]
   deps = [
     ":webapk_service_aidl_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
   ]
 }
@@ -48,11 +52,7 @@ android_library("runtime_library_for_tests_java") {
 dist_dex("webapk_runtime_library") {
   deps = [ ":runtime_library_for_assets_java" ]
   proguard_enabled = true
-  proguard_configs = [
-    "runtime_library.proguard.flags",
-    "//base/android/proguard/chromium_code.flags",
-    "//base/android/proguard/chromium_apk.flags",
-  ]
+  proguard_configs = [ "runtime_library.proguard.flags" ]
   output = "$target_out_dir/$runtime_library_dex_asset_name"
 }
 
@@ -74,7 +74,7 @@ android_library("runtime_library_javatests") {
     ":runtime_library_for_tests_java",
     ":webapk_service_aidl_java",
     "//base:base_java_test_support",
-    "//chrome/test/android:chrome_java_test_support",
+    "//chrome/test/android:chrome_java_integration_test_support",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_test_runner_java",

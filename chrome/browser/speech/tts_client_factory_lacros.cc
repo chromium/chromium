@@ -1,14 +1,12 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/speech/tts_client_factory_lacros.h"
 
 #include "base/no_destructor.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/tts_client_lacros.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 TtsClientLacros* TtsClientFactoryLacros::GetForBrowserContext(
     content::BrowserContext* context) {
@@ -22,22 +20,13 @@ TtsClientFactoryLacros* TtsClientFactoryLacros::GetInstance() {
 }
 
 TtsClientFactoryLacros::TtsClientFactoryLacros()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "TtsClientLacros",
-          BrowserContextDependencyManager::GetInstance()) {}
+          // For incognito mode, use its original profile as browser context, so
+          // that it will have the same tts support as the original profile.
+          ProfileSelections::BuildRedirectedInIncognito()) {}
 
 TtsClientFactoryLacros::~TtsClientFactoryLacros() = default;
-
-content::BrowserContext* TtsClientFactoryLacros::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  // For incognito mode, use its original profile as browser context, so that
-  // it will have the same tts support as the original profile.
-  bool is_off_record = Profile::FromBrowserContext(context)->IsOffTheRecord();
-  content::BrowserContext* context_to_use =
-      is_off_record ? chrome::GetBrowserContextRedirectedInIncognito(context)
-                    : context;
-  return context_to_use;
-}
 
 KeyedService* TtsClientFactoryLacros::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

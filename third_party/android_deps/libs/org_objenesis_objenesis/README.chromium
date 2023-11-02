@@ -1,0 +1,14 @@
+Name: Objenesis
+Short Name: objenesis
+URL: http://objenesis.org/index.html
+Version: 3.2
+License: Apache 2.0
+License File: NOT_SHIPPED
+CPEPrefix: unknown
+Security Critical: no
+
+Description:
+A library for instantiating Java objects
+
+Local Modifications:
+No modifications.

@@ -1,14 +1,17 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/components/phonehub/browser_tabs_model_controller.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
+
 namespace {
+
 using multidevice_setup::mojom::Feature;
 using multidevice_setup::mojom::FeatureState;
+
 }  // namespace
 
 BrowserTabsModelController::BrowserTabsModelController(
@@ -52,4 +55,4 @@ void BrowserTabsModelController::UpdateBrowserTabsModel() {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -72,8 +72,12 @@ class URLLoaderRelay : public network::mojom::URLLoaderClient,
     client_sink_->OnReceiveEarlyHints(std::move(early_hints));
   }
 
-  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head) override {
-    client_sink_->OnReceiveResponse(std::move(head));
+  void OnReceiveResponse(
+      network::mojom::URLResponseHeadPtr head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      absl::optional<mojo_base::BigBuffer> cached_metadata) override {
+    client_sink_->OnReceiveResponse(std::move(head), std::move(body),
+                                    std::move(cached_metadata));
   }
 
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
@@ -88,17 +92,8 @@ class URLLoaderRelay : public network::mojom::URLLoaderClient,
                                    std::move(callback));
   }
 
-  void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override {
-    client_sink_->OnReceiveCachedMetadata(std::move(data));
-  }
-
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override {
     client_sink_->OnTransferSizeUpdated(transfer_size_diff);
-  }
-
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override {
-    client_sink_->OnStartLoadingResponseBody(std::move(body));
   }
 
   void OnComplete(const network::URLLoaderCompletionStatus& status) override {
@@ -199,7 +194,9 @@ void ChildURLLoaderFactoryBundle::CreateLoaderAndStart(
 
     mojo::Remote<network::mojom::URLLoaderClient> client_remote(
         std::move(client));
-    client_remote->OnReceiveResponse(std::move(transferrable_loader->head));
+    client_remote->OnReceiveResponse(std::move(transferrable_loader->head),
+                                     std::move(transferrable_loader->body),
+                                     absl::nullopt);
     mojo::MakeSelfOwnedReceiver(
         std::make_unique<URLLoaderRelay>(
             std::move(transferrable_loader->url_loader),

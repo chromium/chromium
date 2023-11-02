@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -134,7 +134,9 @@ void TableSectionPainter::PaintCollapsedSectionBorders(
       !layout_table_section_.Table()->EffectiveColumns().size())
     return;
 
-  ScopedPaintState paint_state(layout_table_section_, paint_info);
+  ScopedPaintState paint_state(
+      layout_table_section_, paint_info,
+      /*painting_legacy_table_part_in_ancestor_layer*/ true);
   absl::optional<ScopedBoxContentsPaintState> contents_paint_state;
   if (paint_info.phase != PaintPhase::kMask)
     contents_paint_state.emplace(paint_state, layout_table_section_);
@@ -202,7 +204,7 @@ void TableSectionPainter::PaintObject(const PaintInfo& paint_info,
 
   const auto& visually_overflowing_cells =
       layout_table_section_.VisuallyOverflowingCells();
-  if (visually_overflowing_cells.IsEmpty()) {
+  if (visually_overflowing_cells.empty()) {
     // This path is for 2 cases:
     // 1. Normal partial paint, without overflowing cells;
     // 2. Full paint, for small sections or big sections with many overflowing
@@ -233,8 +235,7 @@ void TableSectionPainter::PaintObject(const PaintInfo& paint_info,
     // This path paints section with a reasonable number of overflowing cells.
     // This is the "partial paint path" for overflowing cells referred in
     // LayoutTableSection::ComputeOverflowFromDescendants().
-    HeapVector<Member<const LayoutTableCell>> cells;
-    CopyToVector(visually_overflowing_cells, cells);
+    HeapVector<Member<const LayoutTableCell>> cells(visually_overflowing_cells);
 
     HeapHashSet<Member<const LayoutTableCell>> spanning_cells;
     for (unsigned r = dirtied_rows.Start(); r < dirtied_rows.End(); r++) {
@@ -302,8 +303,11 @@ void TableSectionPainter::PaintBoxDecorationBackground(
       absl::optional<ScopedPaintState> row_paint_state;
       for (auto c = dirtied_columns.Start(); c < dirtied_columns.End(); c++) {
         if (const auto* cell = layout_table_section_.OriginatingCellAt(r, c)) {
-          if (!row_paint_state)
-            row_paint_state.emplace(*cell->Row(), paint_info_for_cells);
+          if (!row_paint_state) {
+            row_paint_state.emplace(
+                *cell->Row(), paint_info_for_cells,
+                /*painting_legacy_table_part_in_ancestor_layer*/ true);
+          }
           PaintBackgroundsBehindCell(*cell, row_paint_state->GetPaintInfo());
         }
       }

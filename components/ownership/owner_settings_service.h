@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -129,13 +129,16 @@ class OWNERSHIP_EXPORT OwnerSettingsService : public KeyedService {
  protected:
   void ReloadKeypair();
 
-  void OnKeypairLoaded(const scoped_refptr<PublicKey>& public_key,
-                       const scoped_refptr<PrivateKey>& private_key);
+  // Stores the provided keys. Ensures that |public_key_| and |private_key_| are
+  // not null (even if the key objects themself are empty) to indicate that the
+  // key loading finished.
+  void OnKeypairLoaded(scoped_refptr<PublicKey> public_key,
+                       scoped_refptr<PrivateKey> private_key);
 
   // Platform-specific keypair loading algorithm.
   virtual void ReloadKeypairImpl(
-      base::OnceCallback<void(const scoped_refptr<PublicKey>& public_key,
-                              const scoped_refptr<PrivateKey>& private_key)>
+      base::OnceCallback<void(scoped_refptr<PublicKey> public_key,
+                              scoped_refptr<PrivateKey> private_key)>
           callback) = 0;
 
   // Plafrom-specific actions which should be performed when keypair is loaded.

@@ -20,10 +20,9 @@
 
 #include "third_party/blink/renderer/core/svg/svg_transform.h"
 
-#include "base/cxx17_backports.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -42,7 +41,7 @@ SVGTransform::SVGTransform(const AffineTransform& matrix)
 
 SVGTransform::SVGTransform(SVGTransformType transform_type,
                            float angle,
-                           const FloatPoint& center,
+                           const gfx::PointF& center,
                            const AffineTransform& matrix)
     : transform_type_(transform_type),
       angle_(angle),
@@ -80,27 +79,29 @@ void SVGTransform::SetTranslate(float tx, float ty) {
   matrix_.Translate(tx, ty);
 }
 
-FloatPoint SVGTransform::Translate() const {
-  return FloatPoint::NarrowPrecision(matrix_.E(), matrix_.F());
+gfx::Vector2dF SVGTransform::Translate() const {
+  return gfx::Vector2dF(ClampTo<float>(matrix_.E()),
+                        ClampTo<float>(matrix_.F()));
 }
 
 void SVGTransform::SetScale(float sx, float sy) {
   transform_type_ = SVGTransformType::kScale;
   angle_ = 0;
-  center_ = FloatPoint();
+  center_ = gfx::PointF();
 
   matrix_.MakeIdentity();
   matrix_.ScaleNonUniform(sx, sy);
 }
 
-FloatSize SVGTransform::Scale() const {
-  return FloatSize::NarrowPrecision(matrix_.A(), matrix_.D());
+gfx::Vector2dF SVGTransform::Scale() const {
+  return gfx::Vector2dF(ClampTo<float>(matrix_.A()),
+                        ClampTo<float>(matrix_.D()));
 }
 
 void SVGTransform::SetRotate(float angle, float cx, float cy) {
   transform_type_ = SVGTransformType::kRotate;
   angle_ = angle;
-  center_ = FloatPoint(cx, cy);
+  center_ = gfx::PointF(cx, cy);
 
   // TODO: toString() implementation, which can show cx, cy (need to be stored?)
   matrix_.MakeIdentity();
@@ -203,7 +204,7 @@ String SVGTransform::ValueAsString() const {
       arguments[argument_count++] = angle_;
       break;
   }
-  DCHECK_LE(argument_count, base::size(arguments));
+  DCHECK_LE(argument_count, std::size(arguments));
 
   StringBuilder builder;
   builder.Append(TransformTypePrefixForParsing(transform_type_));

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,6 +26,21 @@ static const char kAuthorizationHeaderFormat[] = "Bearer %s";
 
 static std::string MakeAuthorizationHeader(const std::string& auth_token) {
   return base::StringPrintf(kAuthorizationHeaderFormat, auth_token.c_str());
+}
+
+static const char kLegacyGoogleApisHost[] = "www.googleapis.com";
+
+// Replaces the host of the User Info API URL with the legacy host if needed.
+// The legacy host is needed when the host is set to the new OAuth2 host which
+// doesn't support the User Info API anymore. This is needed on iOS, which is
+// the only platform that uses the new OAuth2 host at the moment.
+GURL SwitchBackToLegacyHostIfNeeded(GURL url) {
+  if (url.host() == "oauth2.googleapis.com") {
+    GURL::Replacements replace_host;
+    replace_host.SetHostStr(kLegacyGoogleApisHost);
+    url = url.ReplaceComponents(replace_host);
+  }
+  return url;
 }
 
 }  // namespace
@@ -68,7 +83,11 @@ void UserInfoFetcher::Start(const std::string& access_token) {
         })");
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = GaiaUrls::GetInstance()->oauth_user_info_url();
+  // TODO(crbug.com/1352139): Don't switch back to the legacy host once
+  // oauth_user_info_url() returns a valid URL on iOS. We are currently working
+  // on finding the best approach to deal with the new User Info API.
+  resource_request->url = SwitchBackToLegacyHostIfNeeded(
+      GaiaUrls::GetInstance()->oauth_user_info_url());
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
                                       MakeAuthorizationHeader(access_token));
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
@@ -106,11 +125,10 @@ void UserInfoFetcher::OnFetchComplete(
   // to the delegate.
   DCHECK(unparsed_data);
   DVLOG(1) << "Received UserInfo response: " << *unparsed_data;
-  std::unique_ptr<base::Value> parsed_value =
-      base::JSONReader::ReadDeprecated(*unparsed_data);
-  base::DictionaryValue* dict;
-  if (parsed_value.get() && parsed_value->GetAsDictionary(&dict)) {
-    delegate_->OnGetUserInfoSuccess(dict);
+  absl::optional<base::Value> parsed_value =
+      base::JSONReader::Read(*unparsed_data);
+  if (parsed_value && parsed_value->is_dict()) {
+    delegate_->OnGetUserInfoSuccess(parsed_value->GetDict());
   } else {
     NOTREACHED() << "Could not parse userinfo response from server";
     delegate_->OnGetUserInfoFailure(GoogleServiceAuthError(

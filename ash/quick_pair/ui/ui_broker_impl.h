@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@ namespace quick_pair {
 class FastPairPresenter;
 struct Device;
 
-class COMPONENT_EXPORT(QUICK_PAIR_UI) UIBrokerImpl final : public UIBroker {
+class UIBrokerImpl final : public UIBroker {
  public:
   UIBrokerImpl();
   UIBrokerImpl(const UIBrokerImpl&) = delete;
@@ -33,7 +33,11 @@ class COMPONENT_EXPORT(QUICK_PAIR_UI) UIBrokerImpl final : public UIBroker {
   void ShowPairingFailed(scoped_refptr<Device> device) override;
   void ShowAssociateAccount(scoped_refptr<Device> device) override;
   void ShowCompanionApp(scoped_refptr<Device> device) override;
-  void RemoveNotifications(scoped_refptr<Device> device) override;
+  void RemoveNotifications(
+      bool clear_already_shown_discovery_notification_cache) override;
+  void RemoveDeviceFromAlreadyShownDiscoveryNotificationCache(
+      scoped_refptr<Device> device) override;
+  void StartDeviceLostTimer(scoped_refptr<Device> device) override;
 
  private:
   void NotifyDiscoveryAction(scoped_refptr<Device> device,

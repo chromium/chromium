@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 // This UIActivityItemSource-conforming object conforms to UTType public.text.
 @interface ChromeActivityTextSource : NSObject <ChromeActivityItemSource>
 
-// Default initializer. |text| must not be nil.
+// Default initializer. `text` must not be nil.
 - (instancetype)initWithText:(NSString*)text;
 
 @end

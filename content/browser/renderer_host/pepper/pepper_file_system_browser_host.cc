@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,9 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/renderer_host/pepper/pepper_file_io_host.h"
 #include "content/browser/renderer_host/pepper/quota_reservation.h"
 #include "content/common/pepper_file_util.h"
@@ -16,7 +17,7 @@
 #include "content/public/browser/plugin_service.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/common/pepper_plugin_info.h"
+#include "content/public/common/content_plugin_info.h"
 #include "net/base/mime_util.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/host/dispatch_host_message.h"
@@ -120,8 +121,8 @@ void PepperFileSystemBrowserHost::IOThreadState::OpenFileSystem(
     scoped_refptr<storage::FileSystemContext> file_system_context) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   if (!file_system_context.get()) {
-    OpenFileSystemComplete(reply_context, GURL(), std::string(),
-                           base::File::FILE_ERROR_FAILED);
+    OpenFileSystemComplete(reply_context, storage::FileSystemURL(),
+                           std::string(), base::File::FILE_ERROR_FAILED);
     return;
   }
 
@@ -131,8 +132,8 @@ void PepperFileSystemBrowserHost::IOThreadState::OpenFileSystem(
   // should replaced with a third-party value: is ppapi only limited to
   // first-party contexts? If so, the implementation below is correct.
   file_system_context_->OpenFileSystem(
-      blink::StorageKey(url::Origin::Create(origin)), file_system_type,
-      storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
+      blink::StorageKey(url::Origin::Create(origin)), /*bucket=*/absl::nullopt,
+      file_system_type, storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
       base::BindOnce(&IOThreadState::OpenFileSystemComplete, this,
                      reply_context));
 }
@@ -171,14 +172,15 @@ void PepperFileSystemBrowserHost::IOThreadState::OpenIsolatedFileSystem(
 
 void PepperFileSystemBrowserHost::IOThreadState::OpenFileSystemComplete(
     ppapi::host::ReplyMessageContext reply_context,
-    const GURL& root,
+    const storage::FileSystemURL& root,
     const std::string& name,
     base::File::Error error) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   int32_t pp_error = ppapi::FileErrorToPepperError(error);
   if (pp_error == PP_OK) {
     opened_ = true;
-    root_url_ = root;
+    // TODO(crbug.com/1323925): Store and use FileSystemURL instead.
+    root_url_ = root.ToGURL();
 
     ShouldCreateQuotaReservation(base::BindOnce(
         [](scoped_refptr<IOThreadState> io_thread_state,
@@ -197,40 +199,6 @@ void PepperFileSystemBrowserHost::IOThreadState::OpenFileSystemComplete(
     return;
   }
   SendReplyForFileSystemIfHostAlive(reply_context, pp_error);
-}
-
-void PepperFileSystemBrowserHost::IOThreadState::OpenPluginPrivateFileSystem(
-    const GURL& origin,
-    const std::string& plugin_id,
-    ppapi::host::ReplyMessageContext reply_context,
-    const std::string& fsid,
-    scoped_refptr<storage::FileSystemContext> file_system_context) {
-  if (!origin.is_valid()) {
-    SendReplyForIsolatedFileSystem(reply_context, fsid, PP_ERROR_FAILED);
-    return;
-  }
-
-  if (plugin_id.empty()) {
-    SendReplyForIsolatedFileSystem(reply_context, fsid, PP_ERROR_BADARGUMENT);
-    return;
-  }
-
-  file_system_context->OpenPluginPrivateFileSystem(
-      url::Origin::Create(origin), storage::kFileSystemTypePluginPrivate, fsid,
-      plugin_id, storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
-      base::BindOnce(&IOThreadState::OpenPluginPrivateFileSystemComplete, this,
-                     reply_context, fsid));
-}
-
-void PepperFileSystemBrowserHost::IOThreadState::
-    OpenPluginPrivateFileSystemComplete(
-        ppapi::host::ReplyMessageContext reply_context,
-        const std::string& fsid,
-        base::File::Error error) {
-  int32_t pp_error = ppapi::FileErrorToPepperError(error);
-  if (pp_error == PP_OK)
-    opened_ = true;
-  SendReplyForIsolatedFileSystem(reply_context, fsid, pp_error);
 }
 
 void PepperFileSystemBrowserHost::IOThreadState::RunCallbackIfHostAlive(
@@ -310,7 +278,7 @@ void PepperFileSystemBrowserHost::IOThreadState::ShouldCreateQuotaReservation(
   }
 
   // For file system types with quota, some origins have unlimited storage.
-  storage::QuotaManagerProxy* quota_manager_proxy =
+  const scoped_refptr<storage::QuotaManagerProxy>& quota_manager_proxy =
       file_system_context_->quota_manager_proxy();
   CHECK(quota_manager_proxy);
   storage::FileSystemType file_system_type =
@@ -601,8 +569,8 @@ void PepperFileSystemBrowserHost::GotReservedQuota(
 
 std::string PepperFileSystemBrowserHost::GetPluginMimeType() const {
   base::FilePath plugin_path = browser_ppapi_host_->GetPluginPath();
-  const PepperPluginInfo* info =
-      PluginService::GetInstance()->GetRegisteredPpapiPluginInfo(plugin_path);
+  const ContentPluginInfo* info =
+      PluginService::GetInstance()->GetRegisteredPluginInfo(plugin_path);
   if (!info || info->mime_types.empty())
     return std::string();
   // Use the first element in |info->mime_types| even if several elements exist.

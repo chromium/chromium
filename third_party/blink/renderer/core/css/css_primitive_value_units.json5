@@ -95,6 +95,14 @@
       unit_type: "kViewportHeight",
     },
     {
+      name: "vi",
+      unit_type: "kViewportInlineSize",
+    },
+    {
+      name: "vb",
+      unit_type: "kViewportBlockSize",
+    },
+    {
       name: "vmin",
       unit_type: "kViewportMin",
     },
@@ -103,27 +111,99 @@
       unit_type: "kViewportMax",
     },
     {
-      name: "qw",
+      name: "svw",
+      unit_type: "kSmallViewportWidth",
+    },
+    {
+      name: "svh",
+      unit_type: "kSmallViewportHeight",
+    },
+    {
+      name: "svi",
+      unit_type: "kSmallViewportInlineSize",
+    },
+    {
+      name: "svb",
+      unit_type: "kSmallViewportBlockSize",
+    },
+    {
+      name: "svmin",
+      unit_type: "kSmallViewportMin",
+    },
+    {
+      name: "svmax",
+      unit_type: "kSmallViewportMax",
+    },
+    {
+      name: "lvw",
+      unit_type: "kLargeViewportWidth",
+    },
+    {
+      name: "lvh",
+      unit_type: "kLargeViewportHeight",
+    },
+    {
+      name: "lvi",
+      unit_type: "kLargeViewportInlineSize",
+    },
+    {
+      name: "lvb",
+      unit_type: "kLargeViewportBlockSize",
+    },
+    {
+      name: "lvmin",
+      unit_type: "kLargeViewportMin",
+    },
+    {
+      name: "lvmax",
+      unit_type: "kLargeViewportMax",
+    },
+    {
+      name: "dvw",
+      unit_type: "kDynamicViewportWidth",
+    },
+    {
+      name: "dvh",
+      unit_type: "kDynamicViewportHeight",
+    },
+    {
+      name: "dvi",
+      unit_type: "kDynamicViewportInlineSize",
+    },
+    {
+      name: "dvb",
+      unit_type: "kDynamicViewportBlockSize",
+    },
+    {
+      name: "dvmin",
+      unit_type: "kDynamicViewportMin",
+    },
+    {
+      name: "dvmax",
+      unit_type: "kDynamicViewportMax",
+    },
+    {
+      name: "cqw",
       unit_type: "kContainerWidth",
     },
     {
-      name: "qh",
+      name: "cqh",
       unit_type: "kContainerHeight",
     },
     {
-      name: "qi",
+      name: "cqi",
       unit_type: "kContainerInlineSize",
     },
     {
-      name: "qb",
+      name: "cqb",
       unit_type: "kContainerBlockSize",
     },
     {
-      name: "qmin",
+      name: "cqmin",
       unit_type: "kContainerMin",
     },
     {
-      name: "qmax",
+      name: "cqmax",
       unit_type: "kContainerMax",
     },
     {
@@ -141,6 +221,14 @@
     {
       name: "ch",
       unit_type: "kChs",
+    },
+    {
+      name: "ic",
+      unit_type: "kIcs",
+    },
+    {
+      name: "lh",
+      unit_type: "kLhs",
     },
     {
       name: "__qem",

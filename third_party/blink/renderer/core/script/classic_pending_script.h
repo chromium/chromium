@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_cache_consumer_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_location_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/loader/resource/script_resource.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/script/pending_script.h"
@@ -15,8 +16,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 
 namespace blink {
-
-class ScriptCacheConsumer;
 
 // PendingScript for a classic script
 // https://html.spec.whatwg.org/C/#classic-script.
@@ -26,10 +25,10 @@ class ScriptCacheConsumer;
 // A RefPtr alone does not prevent the underlying Resource from purging its data
 // buffer. This class holds a dummy client open for its lifetime in order to
 // guarantee that the data buffer will not be purged.
-class CORE_EXPORT ClassicPendingScript final : public PendingScript,
-                                               public ResourceClient,
-                                               public ScriptCacheConsumerClient,
-                                               public MemoryPressureListener {
+class CORE_EXPORT ClassicPendingScript final
+    : public PendingScript,
+      public ResourceClient,
+      public ScriptCacheConsumerClient {
  public:
   // https://html.spec.whatwg.org/C/#fetch-a-classic-script
   //
@@ -46,6 +45,7 @@ class CORE_EXPORT ClassicPendingScript final : public PendingScript,
   // For an inline script.
   static ClassicPendingScript* CreateInline(ScriptElementBase*,
                                             const TextPosition&,
+                                            const KURL& source_url,
                                             const KURL& base_url,
                                             const String& source_text,
                                             ScriptSourceLocationType,
@@ -53,6 +53,7 @@ class CORE_EXPORT ClassicPendingScript final : public PendingScript,
 
   ClassicPendingScript(ScriptElementBase*,
                        const TextPosition&,
+                       const KURL& source_url_for_inline_script,
                        const KURL& base_url_for_inline_script,
                        const String& source_text_for_inline_script,
                        ScriptSourceLocationType,
@@ -66,24 +67,23 @@ class CORE_EXPORT ClassicPendingScript final : public PendingScript,
     return mojom::blink::ScriptType::kClassic;
   }
 
-  ClassicScript* GetSource(const KURL& document_url) const override;
+  ClassicScript* GetSource() const override;
   bool IsReady() const override;
   bool IsExternal() const override { return is_external_; }
   bool WasCanceled() const override;
   KURL UrlForTracing() const override;
   void DisposeInternal() override;
 
+  // ScriptCacheConsumerClient:
   void NotifyCacheConsumeFinished() override;
 
-  void SetNotStreamingReasonForTest(ScriptStreamer::NotStreamingReason reason) {
-    not_streamed_reason_ = reason;
-  }
-
-  bool IsEligibleForDelay() const override;
+  // Check if this script is eligible for kLowPriorityAsyncScriptExecution
+  // feature (see crbug/1348467).
+  bool IsEligibleForLowPriorityAsyncScriptExecution() const override;
 
  private:
   // See AdvanceReadyState implementation for valid state transitions.
-  enum ReadyState {
+  enum ReadyState : uint8_t {
     // These states are considered "not ready".
     kWaitingForResource,
     kWaitingForCacheConsumer,
@@ -108,10 +108,9 @@ class CORE_EXPORT ClassicPendingScript final : public PendingScript,
 
   void RecordThirdPartyRequestWithCookieIfNeeded(const ResourceResponse&) const;
 
-  // MemoryPressureListener
-  void OnPurgeMemory() override;
-
   const ScriptFetchOptions options_;
+
+  const KURL source_url_for_inline_script_;
 
   // "base url" snapshot taken at #prepare-a-script timing.
   // https://html.spec.whatwg.org/C/#prepare-a-script
@@ -125,18 +124,14 @@ class CORE_EXPORT ClassicPendingScript final : public PendingScript,
   // This is a null string for external scripts and is not used.
   const String source_text_for_inline_script_;
 
+  Member<ClassicScript> classic_script_;
+
   const ScriptSourceLocationType source_location_type_;
   const bool is_external_;
   ReadyState ready_state_;
-  bool integrity_failure_;
 
   // The request is intervened by document.write() intervention.
   bool intervened_ = false;
-
-  // Specifies the reason that script was never streamed.
-  ScriptStreamer::NotStreamingReason not_streamed_reason_;
-
-  Member<ScriptCacheConsumer> cache_consumer_;
 };
 
 }  // namespace blink

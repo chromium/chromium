@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
@@ -19,6 +20,7 @@
 #include "components/permissions/object_permission_context_base.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/file_system_access_permission_context.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
 class HostContentSettingsMap;
@@ -30,7 +32,7 @@ class BrowserContext;
 
 namespace features {
 // Enables persistent permissions for the File System Access API.
-extern const base::Feature kFileSystemAccessPersistentPermissions;
+BASE_DECLARE_FEATURE(kFileSystemAccessPersistentPermissions);
 }  // namespace features
 
 // Chrome implementation of FileSystemAccessPermissionContext. This class
@@ -78,13 +80,14 @@ class ChromeFileSystemAccessPermissionContext
                           const base::FilePath& path,
                           HandleType handle_type,
                           UserAction user_action) override;
-  void ConfirmSensitiveDirectoryAccess(
+  void ConfirmSensitiveEntryAccess(
       const url::Origin& origin,
       PathType path_type,
       const base::FilePath& path,
       HandleType handle_type,
+      UserAction user_action,
       content::GlobalRenderFrameHostId frame_id,
-      base::OnceCallback<void(SensitiveDirectoryResult)> callback) override;
+      base::OnceCallback<void(SensitiveEntryResult)> callback) override;
   void PerformAfterWriteChecks(
       std::unique_ptr<content::FileSystemAccessWriteItem> item,
       content::GlobalRenderFrameHostId frame_id,
@@ -99,7 +102,11 @@ class ChromeFileSystemAccessPermissionContext
   PathInfo GetLastPickedDirectory(const url::Origin& origin,
                                   const std::string& id) override;
   base::FilePath GetWellKnownDirectoryPath(
-      blink::mojom::WellKnownDirectory directory) override;
+      blink::mojom::WellKnownDirectory directory,
+      const url::Origin& origin) override;
+
+  std::u16string GetPickerTitle(
+      const blink::mojom::FilePickerOptionsPtr& options) override;
 
   ContentSetting GetReadGuardContentSetting(const url::Origin& origin);
   ContentSetting GetWriteGuardContentSetting(const url::Origin& origin);
@@ -115,7 +122,8 @@ class ChromeFileSystemAccessPermissionContext
     kUpdatePersistedPermission,
   };
 
-  // Returns a snapshot of the currently granted active permissions.
+  // Returns a snapshot of both the currently granted active and persisted
+  // permissions.
   struct Grants {
     Grants();
     ~Grants();
@@ -159,9 +167,9 @@ class ChromeFileSystemAccessPermissionContext
   // This long after the handle has last been used, revoke the persisted
   // permission.
   static constexpr base::TimeDelta
-      kPersistentPermissionExpirationTimeoutNonPWA = base::Hours(5);
-  static constexpr base::TimeDelta kPersistentPermissionExpirationTimeoutPWA =
-      base::Days(30);
+      kPersistentPermissionExpirationTimeoutDefault = base::Hours(5);
+  static constexpr base::TimeDelta
+      kPersistentPermissionExpirationTimeoutExtended = base::Days(30);
   // Amount of time a persisted permission will remain persisted after its
   // expiry. Used for metrics.
   static constexpr base::TimeDelta kPersistentPermissionGracePeriod =
@@ -175,8 +183,9 @@ class ChromeFileSystemAccessPermissionContext
     return periodic_sweep_persisted_permissions_timer_;
   }
 
-  // Overridden in tests.
-  virtual bool OriginIsInstalledPWA(const url::Origin& origin);
+  // Returns whether persisted permission grants for the origin are subject to
+  // the extended permission duration policy.
+  bool OriginHasExtendedPermissions(const url::Origin& origin);
 
  private:
   enum class MetricsOptions { kRecord, kDoNotRecord };
@@ -188,8 +197,9 @@ class ChromeFileSystemAccessPermissionContext
       const url::Origin& origin,
       const base::FilePath& path,
       HandleType handle_type,
+      UserAction user_action,
       content::GlobalRenderFrameHostId frame_id,
-      base::OnceCallback<void(SensitiveDirectoryResult)> callback,
+      base::OnceCallback<void(SensitiveEntryResult)> callback,
       bool should_block);
 
   void MaybeMigrateOriginToNewSchema(const url::Origin& origin);
@@ -197,7 +207,7 @@ class ChromeFileSystemAccessPermissionContext
   // An origin can only specify up to `max_ids_per_origin_` custom IDs per
   // origin (not including the default ID). If this limit is exceeded, evict
   // using LRU.
-  void MaybeEvictEntries(std::unique_ptr<base::Value>& value);
+  void MaybeEvictEntries(base::Value& value);
 
   // Schedules triggering all open windows to update their File System Access
   // usage indicator icon. Multiple calls to this method can result in only a
@@ -222,7 +232,7 @@ class ChromeFileSystemAccessPermissionContext
   // revoke the persisted permission if it has expired.
   void MaybeRenewOrRevokePersistedPermission(const url::Origin& origin,
                                              base::Value grant,
-                                             bool is_installed_pwa);
+                                             bool has_extended_permissions);
 
   bool AncestorHasActivePermission(const url::Origin& origin,
                                    const base::FilePath& path,
@@ -236,11 +246,11 @@ class ChromeFileSystemAccessPermissionContext
                               GrantType grant_type,
                               MetricsOptions options);
   bool PersistentPermissionIsExpired(const base::Time& last_used,
-                                     bool is_installed_pwa);
+                                     bool has_extended_permissions);
 
   base::WeakPtr<ChromeFileSystemAccessPermissionContext> GetWeakPtr();
 
-  content::BrowserContext* const profile_;
+  const raw_ptr<content::BrowserContext> profile_;
 
   // Permission state per origin.
   struct OriginState;
@@ -253,7 +263,7 @@ class ChromeFileSystemAccessPermissionContext
   // Number of custom IDs an origin can specify.
   size_t max_ids_per_origin_ = 32u;
 
-  const base::Clock* const clock_;
+  const raw_ptr<const base::Clock> clock_;
   base::RepeatingTimer periodic_sweep_persisted_permissions_timer_;
 
   base::WeakPtrFactory<ChromeFileSystemAccessPermissionContext> weak_factory_{

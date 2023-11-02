@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define SANDBOX_LINUX_TESTS_TEST_UTILS_H_
 
 #include <sys/types.h>
-
-#include "base/macros.h"
 
 namespace sandbox {
 

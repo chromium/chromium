@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
@@ -15,6 +14,7 @@
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/proxy_settings_constants.h"
+#include "components/policy/core/common/schema.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
@@ -25,6 +25,7 @@ namespace {
 
 using policy::kProxyPacMandatory;
 using policy::PolicyErrorMap;
+using policy::PolicyErrorPath;
 using policy::PolicyMap;
 using policy::key::kProxyBypassList;
 using policy::key::kProxyMode;
@@ -49,7 +50,7 @@ struct ProxyModeValidationEntry {
 
 // List of entries determining which proxy policies can be specified, depending
 // on the ProxyMode.
-const ProxyModeValidationEntry kProxyModeValidationMap[] = {
+constexpr ProxyModeValidationEntry kProxyModeValidationMap[] = {
     {ProxyPrefs::kDirectProxyModeName, false, false, false, false,
      IDS_POLICY_PROXY_MODE_DISABLED_ERROR},
     {ProxyPrefs::kAutoDetectProxyModeName, false, false, false, false,
@@ -62,7 +63,9 @@ const ProxyModeValidationEntry kProxyModeValidationMap[] = {
      IDS_POLICY_PROXY_MODE_SYSTEM_ERROR},
 };
 
-const char* kDeprecatedProxyPolicies[] = {
+// Cannot be constexpr because the values of the strings are defined in an
+// automatically generated .cc file.
+const char* const kDeprecatedProxyPolicies[] = {
     kProxyMode, kProxyServerMode, kProxyServer, kProxyPacUrl, kProxyBypassList,
 };
 
@@ -77,8 +80,8 @@ base::Value RemapProxyPolicies(const PolicyMap& policies) {
   policy::PolicySource inherited_source =
       policy::POLICY_SOURCE_ENTERPRISE_DEFAULT;
   base::Value proxy_settings(base::Value::Type::DICTIONARY);
-  for (size_t i = 0; i < base::size(kDeprecatedProxyPolicies); ++i) {
-    const PolicyMap::Entry* entry = policies.Get(kDeprecatedProxyPolicies[i]);
+  for (auto* policy : kDeprecatedProxyPolicies) {
+    const PolicyMap::Entry* entry = policies.Get(policy);
     if (!entry)
       continue;
     if (policies.EntryHasHigherPriority(*entry, current_priority)) {
@@ -90,8 +93,8 @@ base::Value RemapProxyPolicies(const PolicyMap& policies) {
     // If two priorities are the same.
     if (!policies.EntryHasHigherPriority(*entry, current_priority) &&
         !policies.EntryHasHigherPriority(current_priority, *entry)) {
-      proxy_settings.SetKey(kDeprecatedProxyPolicies[i],
-                            entry->value()->Clone());
+      // |value_unsafe| is used due to multiple policy types being handled.
+      proxy_settings.SetKey(policy, entry->value_unsafe()->Clone());
     }
   }
   // Sets the new |proxy_settings| if kProxySettings isn't set yet, or if the
@@ -101,8 +104,8 @@ base::Value RemapProxyPolicies(const PolicyMap& policies) {
       (!existing ||
        policies.EntryHasHigherPriority(current_priority, *existing))) {
     return proxy_settings;
-  } else if (existing && existing->value()) {
-    return existing->value()->Clone();
+  } else if (existing && existing->value(base::Value::Type::DICT)) {
+    return existing->value(base::Value::Type::DICT)->Clone();
   }
   return base::Value();
 }
@@ -135,8 +138,8 @@ bool ProxyPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
       GetProxyPolicyValue(&proxy_settings, kProxyBypassList);
 
   if ((server || pac_url || bypass_list) && !(mode || server_mode)) {
-    errors->AddError(kProxySettings, kProxyMode,
-                     IDS_POLICY_NOT_SPECIFIED_ERROR);
+    errors->AddError(kProxySettings, IDS_POLICY_NOT_SPECIFIED_ERROR,
+                     PolicyErrorPath{kProxyMode});
     return false;
   }
 
@@ -150,7 +153,7 @@ bool ProxyPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
     return true;
 
   bool is_valid_mode = false;
-  for (size_t i = 0; i != base::size(kProxyModeValidationMap); ++i) {
+  for (size_t i = 0; i != std::size(kProxyModeValidationMap); ++i) {
     const ProxyModeValidationEntry& entry = kProxyModeValidationMap[i];
     if (entry.mode_value != mode_value)
       continue;
@@ -158,18 +161,20 @@ bool ProxyPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
     is_valid_mode = true;
 
     if (!entry.pac_url_allowed && pac_url) {
-      errors->AddError(kProxySettings, kProxyPacUrl, entry.error_message_id);
+      errors->AddError(kProxySettings, entry.error_message_id,
+                       PolicyErrorPath{kProxyPacUrl});
     }
     if (!entry.pac_mandatory_allowed && pac_mandatory) {
-      errors->AddError(kProxySettings, kProxyPacMandatory,
-                       entry.error_message_id);
+      errors->AddError(kProxySettings, entry.error_message_id,
+                       PolicyErrorPath{kProxyPacMandatory});
     }
     if (!entry.bypass_list_allowed && bypass_list) {
-      errors->AddError(kProxySettings, kProxyBypassList,
-                       entry.error_message_id);
+      errors->AddError(kProxySettings, entry.error_message_id,
+                       PolicyErrorPath{kProxyBypassList});
     }
     if (!entry.server_allowed && server) {
-      errors->AddError(kProxySettings, kProxyServer, entry.error_message_id);
+      errors->AddError(kProxySettings, entry.error_message_id,
+                       PolicyErrorPath{kProxyServer});
     }
 
     if ((!entry.pac_url_allowed && pac_url) ||
@@ -181,8 +186,8 @@ bool ProxyPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
   }
 
   if (!is_valid_mode) {
-    errors->AddError(kProxySettings, mode ? kProxyMode : kProxyServerMode,
-                     IDS_POLICY_OUT_OF_RANGE_ERROR, mode_value);
+    errors->AddError(kProxySettings, IDS_POLICY_OUT_OF_RANGE_ERROR, mode_value,
+                     PolicyErrorPath{mode ? kProxyMode : kProxyServerMode});
     return false;
   }
   return true;
@@ -231,22 +236,23 @@ void ProxyPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
     return;
   }
 
+  auto set_proxy_pref_value = [&prefs](base::Value::Dict dict) {
+    prefs->SetValue(proxy_config::prefs::kProxy, base::Value(std::move(dict)));
+  };
+
   switch (proxy_mode) {
     case ProxyPrefs::MODE_DIRECT:
-      prefs->SetValue(proxy_config::prefs::kProxy,
-                      ProxyConfigDictionary::CreateDirect());
+      set_proxy_pref_value(ProxyConfigDictionary::CreateDirect());
       break;
     case ProxyPrefs::MODE_AUTO_DETECT:
-      prefs->SetValue(proxy_config::prefs::kProxy,
-                      ProxyConfigDictionary::CreateAutoDetect());
+      set_proxy_pref_value(ProxyConfigDictionary::CreateAutoDetect());
       break;
     case ProxyPrefs::MODE_PAC_SCRIPT: {
       if (pac_url && pac_url->is_string()) {
         bool mandatory =
             pac_mandatory && pac_mandatory->GetIfBool().value_or(false);
-        prefs->SetValue(proxy_config::prefs::kProxy,
-                        ProxyConfigDictionary::CreatePacScript(
-                            pac_url->GetString(), mandatory));
+        set_proxy_pref_value(ProxyConfigDictionary::CreatePacScript(
+            pac_url->GetString(), mandatory));
       } else {
         NOTREACHED();
       }
@@ -254,18 +260,15 @@ void ProxyPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
     }
     case ProxyPrefs::MODE_FIXED_SERVERS: {
       if (server->is_string()) {
-        prefs->SetValue(
-            proxy_config::prefs::kProxy,
-            ProxyConfigDictionary::CreateFixedServers(
-                server->GetString(), bypass_list && bypass_list->is_string()
-                                         ? bypass_list->GetString()
-                                         : std::string()));
+        set_proxy_pref_value(ProxyConfigDictionary::CreateFixedServers(
+            server->GetString(), bypass_list && bypass_list->is_string()
+                                     ? bypass_list->GetString()
+                                     : std::string()));
       }
       break;
     }
     case ProxyPrefs::MODE_SYSTEM:
-      prefs->SetValue(proxy_config::prefs::kProxy,
-                      ProxyConfigDictionary::CreateSystem());
+      set_proxy_pref_value(ProxyConfigDictionary::CreateSystem());
       break;
     case ProxyPrefs::kModeCount:
       NOTREACHED();
@@ -275,12 +278,14 @@ void ProxyPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
 const base::Value* ProxyPolicyHandler::GetProxyPolicyValue(
     const base::Value* value,
     const char* policy_name) {
-  const base::DictionaryValue* settings;
-  if (!value || !value->GetAsDictionary(&settings))
+  if (!value)
+    return nullptr;
+  const base::Value::Dict* settings = value->GetIfDict();
+  if (!settings)
     return nullptr;
 
-  const base::Value* policy_value = nullptr;
-  if (!settings->Get(policy_name, &policy_value) || policy_value->is_none())
+  const base::Value* policy_value = settings->Find(policy_name);
+  if (!policy_value || policy_value->is_none())
     return nullptr;
   const std::string* tmp = policy_value->GetIfString();
   if (tmp && tmp->empty())
@@ -303,37 +308,39 @@ bool ProxyPolicyHandler::CheckProxyModeAndServerMode(
   // When both are specified, the mode takes precedence.
   if (mode) {
     if (server_mode) {
-      errors->AddError(kProxySettings, kProxyServerMode, IDS_POLICY_OVERRIDDEN,
-                       kProxyMode);
+      errors->AddError(kProxySettings, IDS_POLICY_OVERRIDDEN, kProxyMode,
+                       PolicyErrorPath{kProxyServerMode});
     }
     if (!mode->is_string()) {
-      errors->AddError(kProxySettings, kProxyMode, IDS_POLICY_TYPE_ERROR,
-                       base::Value::GetTypeName(base::Value::Type::BOOLEAN));
+      errors->AddError(kProxySettings, IDS_POLICY_TYPE_ERROR,
+                       base::Value::GetTypeName(base::Value::Type::BOOLEAN),
+                       PolicyErrorPath{kProxyMode});
       return false;
     }
     *mode_value = mode->GetString();
 
     ProxyPrefs::ProxyMode proxy_mode;
     if (!ProxyPrefs::StringToProxyMode(*mode_value, &proxy_mode)) {
-      errors->AddError(kProxySettings, kProxyMode,
-                       IDS_POLICY_INVALID_PROXY_MODE_ERROR);
+      errors->AddError(kProxySettings, IDS_POLICY_INVALID_PROXY_MODE_ERROR,
+                       PolicyErrorPath{kProxyMode});
       return false;
     }
 
     if (proxy_mode == ProxyPrefs::MODE_PAC_SCRIPT && !pac_url) {
-      errors->AddError(kProxySettings, kProxyPacUrl,
-                       IDS_POLICY_NOT_SPECIFIED_ERROR);
+      errors->AddError(kProxySettings, IDS_POLICY_NOT_SPECIFIED_ERROR,
+                       PolicyErrorPath{kProxyPacUrl});
       return false;
     }
     if (proxy_mode == ProxyPrefs::MODE_FIXED_SERVERS && !server) {
-      errors->AddError(kProxySettings, kProxyServer,
-                       IDS_POLICY_NOT_SPECIFIED_ERROR);
+      errors->AddError(kProxySettings, IDS_POLICY_NOT_SPECIFIED_ERROR,
+                       PolicyErrorPath{kProxyServer});
       return false;
     }
   } else if (server_mode) {
     if (!server_mode->is_int()) {
-      errors->AddError(kProxySettings, kProxyServerMode, IDS_POLICY_TYPE_ERROR,
-                       base::Value::GetTypeName(base::Value::Type::INTEGER));
+      errors->AddError(kProxySettings, IDS_POLICY_TYPE_ERROR,
+                       base::Value::GetTypeName(base::Value::Type::INTEGER),
+                       PolicyErrorPath{kProxyServerMode});
       return false;
     }
 
@@ -347,14 +354,18 @@ bool ProxyPolicyHandler::CheckProxyModeAndServerMode(
       case PROXY_MANUALLY_CONFIGURED_PROXY_SERVER_MODE:
         if (server && pac_url) {
           int message_id = IDS_POLICY_PROXY_BOTH_SPECIFIED_ERROR;
-          errors->AddError(kProxySettings, kProxyServer, message_id);
-          errors->AddError(kProxySettings, kProxyPacUrl, message_id);
+          errors->AddError(kProxySettings, message_id,
+                           PolicyErrorPath{kProxyServer});
+          errors->AddError(kProxySettings, message_id,
+                           PolicyErrorPath{kProxyPacUrl});
           return false;
         }
         if (!server && !pac_url) {
           int message_id = IDS_POLICY_PROXY_NEITHER_SPECIFIED_ERROR;
-          errors->AddError(kProxySettings, kProxyServer, message_id);
-          errors->AddError(kProxySettings, kProxyPacUrl, message_id);
+          errors->AddError(kProxySettings, message_id,
+                           PolicyErrorPath{kProxyServer});
+          errors->AddError(kProxySettings, message_id,
+                           PolicyErrorPath{kProxyPacUrl});
           return false;
         }
         *mode_value = pac_url ? ProxyPrefs::kPacScriptProxyModeName
@@ -364,9 +375,9 @@ bool ProxyPolicyHandler::CheckProxyModeAndServerMode(
         *mode_value = ProxyPrefs::kSystemProxyModeName;
         break;
       default:
-        errors->AddError(kProxySettings, kProxyServerMode,
-                         IDS_POLICY_OUT_OF_RANGE_ERROR,
-                         base::NumberToString(server_mode->GetInt()));
+        errors->AddError(kProxySettings, IDS_POLICY_OUT_OF_RANGE_ERROR,
+                         base::NumberToString(server_mode->GetInt()),
+                         PolicyErrorPath{kProxyServerMode});
         return false;
     }
   }

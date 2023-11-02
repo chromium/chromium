@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,49 +8,21 @@
 #include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/clipboard/clipboard_nudge.h"
 #include "ash/clipboard/clipboard_nudge_constants.h"
-#include "ash/constants/ash_features.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/clipboard_non_backed.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace ash {
-namespace {
-
-class NudgeWigetObserver : public views::WidgetObserver {
- public:
-  NudgeWigetObserver(views::Widget* widget) : widget_(widget) {
-    if (widget_)
-      widget_->AddObserver(this);
-  }
-
-  ~NudgeWigetObserver() override { CleanupWidget(); }
-
-  bool WidgetClosed() const { return !widget_; }
-
-  // views::WidgetObserver:
-  void OnWidgetClosing(views::Widget* widget) override { CleanupWidget(); }
-
-  void CleanupWidget() {
-    if (widget_) {
-      widget_->RemoveObserver(this);
-      widget_ = nullptr;
-    }
-  }
-
- private:
-  views::Widget* widget_;
-};
-}  // namespace
 
 class ClipboardNudgeControllerTest : public AshTestBase {
  public:
@@ -64,10 +36,6 @@ class ClipboardNudgeControllerTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kClipboardHistory,
-         chromeos::features::kClipboardHistoryContextMenuNudge},
-        {});
     AshTestBase::SetUp();
     nudge_controller_ =
         Shell::Get()->clipboard_history_controller()->nudge_controller();
@@ -89,9 +57,6 @@ class ClipboardNudgeControllerTest : public AshTestBase {
       case ClipboardNudgeType::kZeroStateNudge:
         nudge_controller_->ShowNudge(nudge_type);
         return;
-      case ClipboardNudgeType::kNewFeatureBadge:
-        nudge_controller_->MarkNewFeatureBadgeShown();
-        return;
       case ClipboardNudgeType::kScreenshotNotificationNudge:
         nudge_controller_->MarkScreenshotNotificationShown();
         return;
@@ -101,7 +66,6 @@ class ClipboardNudgeControllerTest : public AshTestBase {
   base::HistogramTester& histograms() { return histograms_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::SimpleTestClock test_clock_;
   // Histogram value verifier.
   base::HistogramTester histograms_;
@@ -130,7 +94,7 @@ TEST_F(ClipboardNudgeControllerTest, ShouldShowNudgeAfterCorrectSequence) {
             nudge_controller_->GetClipboardStateForTesting());
 
   // Check that clipbaord nudge has not yet been created.
-  EXPECT_FALSE(nudge_controller_->GetClipboardNudgeForTesting());
+  EXPECT_FALSE(nudge_controller_->GetSystemNudgeForTesting());
 
   // Checks that the second paste resets state as expected.
   nudge_controller_->OnClipboardDataRead();
@@ -138,7 +102,7 @@ TEST_F(ClipboardNudgeControllerTest, ShouldShowNudgeAfterCorrectSequence) {
             nudge_controller_->GetClipboardStateForTesting());
 
   // Check that clipbaord nudge has been created.
-  EXPECT_TRUE(nudge_controller_->GetClipboardNudgeForTesting());
+  EXPECT_TRUE(nudge_controller_->GetSystemNudgeForTesting());
 }
 
 // Checks that the clipboard state does not advace if too much time passes
@@ -182,7 +146,7 @@ TEST_F(ClipboardNudgeControllerTest, NudgeDoesNotTimeOutWithSparsePastes) {
   }
 
   // Check that clipbaord nudge has not yet been created.
-  EXPECT_FALSE(nudge_controller_->GetClipboardNudgeForTesting());
+  EXPECT_FALSE(nudge_controller_->GetSystemNudgeForTesting());
 
   // Check that HandleClipboardChanged() will advance nudge_controller's
   // ClipboardState.
@@ -195,7 +159,7 @@ TEST_F(ClipboardNudgeControllerTest, NudgeDoesNotTimeOutWithSparsePastes) {
             nudge_controller_->GetClipboardStateForTesting());
 
   // Check that clipbaord nudge has been created.
-  EXPECT_TRUE(nudge_controller_->GetClipboardNudgeForTesting());
+  EXPECT_TRUE(nudge_controller_->GetSystemNudgeForTesting());
 }
 
 // Checks that consecutive copy events does not advance the clipboard state.
@@ -241,23 +205,6 @@ TEST_F(ClipboardNudgeControllerTest, AdminWriteDoesNotAdvanceState) {
             nudge_controller_->GetClipboardStateForTesting());
 }
 
-// Verifies that the context menu new feature badge for the clipboard option
-// only shows |kContextMenuBadgeShowLimit| times.
-TEST_F(ClipboardNudgeControllerTest, ShowNewFeatureNudge) {
-  ASSERT_TRUE(nudge_controller_->ShouldShowNewFeatureBadge());
-
-  // Mark the badge shown |kContextMenuBadgeShowLimit| - 1 times.
-  // Should expect to keep showing the badge
-  for (int i = 0; i < kContextMenuBadgeShowLimit - 1; ++i) {
-    nudge_controller_->MarkNewFeatureBadgeShown();
-    EXPECT_TRUE(nudge_controller_->ShouldShowNewFeatureBadge());
-  }
-  // Marking the badge as shown |kContextMenuBadgeShowLimit| times should not
-  // expect to show the badge the next time.
-  nudge_controller_->MarkNewFeatureBadgeShown();
-  EXPECT_FALSE(nudge_controller_->ShouldShowNewFeatureBadge());
-}
-
 // Verifies that controller cleans up and closes an old nudge before displaying
 // another one.
 TEST_F(ClipboardNudgeControllerTest, ShowZeroStateNudgeAfterOngoingNudge) {
@@ -267,20 +214,18 @@ TEST_F(ClipboardNudgeControllerTest, ShowZeroStateNudgeAfterOngoingNudge) {
   ShowNudgeForType(ClipboardNudgeType::kOnboardingNudge);
 
   ClipboardNudge* nudge = static_cast<ClipboardNudge*>(
-      nudge_controller_->GetClipboardNudgeForTesting());
+      nudge_controller_->GetSystemNudgeForTesting());
   views::Widget* nudge_widget = nudge->widget();
   ASSERT_TRUE(nudge_widget->GetLayer()->GetAnimator()->is_animating());
   EXPECT_FALSE(nudge_widget->IsClosed());
   EXPECT_EQ(ClipboardNudgeType::kOnboardingNudge, nudge->nudge_type());
 
-  NudgeWigetObserver widget_close_observer(nudge_widget);
-
   ShowNudgeForType(ClipboardNudgeType::kZeroStateNudge);
   // Verify the old nudge widget was closed.
-  EXPECT_TRUE(widget_close_observer.WidgetClosed());
+  EXPECT_TRUE(nudge_widget->IsClosed());
 
   nudge = static_cast<ClipboardNudge*>(
-      nudge_controller_->GetClipboardNudgeForTesting());
+      nudge_controller_->GetSystemNudgeForTesting());
   EXPECT_FALSE(nudge->widget()->IsClosed());
   EXPECT_EQ(ClipboardNudgeType::kZeroStateNudge, nudge->nudge_type());
 }
@@ -291,7 +236,7 @@ TEST_F(ClipboardNudgeControllerTest, NudgeClosingDuringShutdown) {
   ShowNudgeForType(ClipboardNudgeType::kOnboardingNudge);
 
   ClipboardNudge* nudge = static_cast<ClipboardNudge*>(
-      nudge_controller_->GetClipboardNudgeForTesting());
+      nudge_controller_->GetSystemNudgeForTesting());
   views::Widget* nudge_widget = nudge->widget();
   EXPECT_FALSE(nudge_widget->IsClosed());
   EXPECT_EQ(ClipboardNudgeType::kOnboardingNudge, nudge->nudge_type());
@@ -310,8 +255,6 @@ TEST_F(ClipboardNudgeControllerTest, NudgeMetrics_StartAtZero) {
   histograms().ExpectTotalCount(kOnboardingNudge_PasteTime, 0);
   histograms().ExpectTotalCount(kZeroStateNudge_OpenTime, 0);
   histograms().ExpectTotalCount(kZeroStateNudge_PasteTime, 0);
-  histograms().ExpectTotalCount(kNewBadge_OpenTime, 0);
-  histograms().ExpectTotalCount(kNewBadge_PasteTime, 0);
   histograms().ExpectTotalCount(kScreenshotNotification_OpenTime, 0);
   histograms().ExpectTotalCount(kScreenshotNotification_PasteTime, 0);
 }
@@ -322,19 +265,14 @@ TEST_F(ClipboardNudgeControllerTest, NudgeMetrics_StartAtZero) {
 TEST_F(ClipboardNudgeControllerTest, ShowMenuAfterNudges_LogsOpenNudgeMetrics) {
   ShowNudgeForType(ClipboardNudgeType::kOnboardingNudge);
   ShowNudgeForType(ClipboardNudgeType::kZeroStateNudge);
-  ShowNudgeForType(ClipboardNudgeType::kNewFeatureBadge);
   ShowNudgeForType(ClipboardNudgeType::kScreenshotNotificationNudge);
-  nudge_controller_->OnClipboardHistoryMenuShown(
-      crosapi::mojom::ClipboardHistoryControllerShowSource::
-          kRenderViewContextMenu);
+  nudge_controller_->OnClipboardHistoryMenuShown();
 
   histograms().ExpectTotalCount(kOnboardingNudge_OpenTime, 1);
   histograms().ExpectTotalCount(kZeroStateNudge_OpenTime, 1);
-  histograms().ExpectTotalCount(kNewBadge_OpenTime, 1);
   histograms().ExpectTotalCount(kScreenshotNotification_OpenTime, 1);
   histograms().ExpectTotalCount(kOnboardingNudge_PasteTime, 0);
   histograms().ExpectTotalCount(kZeroStateNudge_PasteTime, 0);
-  histograms().ExpectTotalCount(kNewBadge_PasteTime, 0);
   histograms().ExpectTotalCount(kScreenshotNotification_PasteTime, 0);
 }
 
@@ -344,20 +282,15 @@ TEST_F(ClipboardNudgeControllerTest, ShowMenuAfterNudges_LogsOpenNudgeMetrics) {
 TEST_F(ClipboardNudgeControllerTest, PasteAfterNudges_LogsPasteNudgeMetrics) {
   ShowNudgeForType(ClipboardNudgeType::kOnboardingNudge);
   ShowNudgeForType(ClipboardNudgeType::kZeroStateNudge);
-  ShowNudgeForType(ClipboardNudgeType::kNewFeatureBadge);
   ShowNudgeForType(ClipboardNudgeType::kScreenshotNotificationNudge);
-  nudge_controller_->OnClipboardHistoryMenuShown(
-      crosapi::mojom::ClipboardHistoryControllerShowSource::
-          kRenderViewContextMenu);
+  nudge_controller_->OnClipboardHistoryMenuShown();
   nudge_controller_->OnClipboardHistoryPasted();
 
   histograms().ExpectTotalCount(kOnboardingNudge_OpenTime, 1);
   histograms().ExpectTotalCount(kZeroStateNudge_OpenTime, 1);
-  histograms().ExpectTotalCount(kNewBadge_OpenTime, 1);
   histograms().ExpectTotalCount(kScreenshotNotification_OpenTime, 1);
   histograms().ExpectTotalCount(kOnboardingNudge_PasteTime, 1);
   histograms().ExpectTotalCount(kZeroStateNudge_PasteTime, 1);
-  histograms().ExpectTotalCount(kNewBadge_PasteTime, 1);
   histograms().ExpectTotalCount(kScreenshotNotification_PasteTime, 1);
 }
 
@@ -365,18 +298,14 @@ TEST_F(ClipboardNudgeControllerTest, PasteAfterNudges_LogsPasteNudgeMetrics) {
 // onboarding nudge histograms,
 TEST_F(ClipboardNudgeControllerTest, OnboardingNudge_DoesNotLogOtherMetrics) {
   ShowNudgeForType(ClipboardNudgeType::kOnboardingNudge);
-  nudge_controller_->OnClipboardHistoryMenuShown(
-      crosapi::mojom::ClipboardHistoryControllerShowSource::
-          kRenderViewContextMenu);
+  nudge_controller_->OnClipboardHistoryMenuShown();
   nudge_controller_->OnClipboardHistoryPasted();
 
   histograms().ExpectTotalCount(kOnboardingNudge_OpenTime, 1);
   histograms().ExpectTotalCount(kZeroStateNudge_OpenTime, 0);
-  histograms().ExpectTotalCount(kNewBadge_OpenTime, 0);
   histograms().ExpectTotalCount(kScreenshotNotification_OpenTime, 0);
   histograms().ExpectTotalCount(kOnboardingNudge_PasteTime, 1);
   histograms().ExpectTotalCount(kZeroStateNudge_PasteTime, 0);
-  histograms().ExpectTotalCount(kNewBadge_PasteTime, 0);
   histograms().ExpectTotalCount(kScreenshotNotification_PasteTime, 0);
 }
 
@@ -384,37 +313,14 @@ TEST_F(ClipboardNudgeControllerTest, OnboardingNudge_DoesNotLogOtherMetrics) {
 // state nudge histograms,
 TEST_F(ClipboardNudgeControllerTest, ZeroStateNudge_DoesNotLogOtherMetrics) {
   ShowNudgeForType(ClipboardNudgeType::kZeroStateNudge);
-  nudge_controller_->OnClipboardHistoryMenuShown(
-      crosapi::mojom::ClipboardHistoryControllerShowSource::
-          kRenderViewContextMenu);
+  nudge_controller_->OnClipboardHistoryMenuShown();
   nudge_controller_->OnClipboardHistoryPasted();
 
   histograms().ExpectTotalCount(kOnboardingNudge_OpenTime, 0);
   histograms().ExpectTotalCount(kZeroStateNudge_OpenTime, 1);
-  histograms().ExpectTotalCount(kNewBadge_OpenTime, 0);
   histograms().ExpectTotalCount(kScreenshotNotification_OpenTime, 0);
   histograms().ExpectTotalCount(kOnboardingNudge_PasteTime, 0);
   histograms().ExpectTotalCount(kZeroStateNudge_PasteTime, 1);
-  histograms().ExpectTotalCount(kNewBadge_PasteTime, 0);
-  histograms().ExpectTotalCount(kScreenshotNotification_PasteTime, 0);
-}
-
-// Test that the new feature badge being shown only logs the metrics for the new
-// feature badge histograms,
-TEST_F(ClipboardNudgeControllerTest, NewFeatureBadge_DoesNotLogOtherMetrics) {
-  ShowNudgeForType(ClipboardNudgeType::kNewFeatureBadge);
-  nudge_controller_->OnClipboardHistoryMenuShown(
-      crosapi::mojom::ClipboardHistoryControllerShowSource::
-          kRenderViewContextMenu);
-  nudge_controller_->OnClipboardHistoryPasted();
-
-  histograms().ExpectTotalCount(kOnboardingNudge_OpenTime, 0);
-  histograms().ExpectTotalCount(kZeroStateNudge_OpenTime, 0);
-  histograms().ExpectTotalCount(kNewBadge_OpenTime, 1);
-  histograms().ExpectTotalCount(kScreenshotNotification_OpenTime, 0);
-  histograms().ExpectTotalCount(kOnboardingNudge_PasteTime, 0);
-  histograms().ExpectTotalCount(kZeroStateNudge_PasteTime, 0);
-  histograms().ExpectTotalCount(kNewBadge_PasteTime, 1);
   histograms().ExpectTotalCount(kScreenshotNotification_PasteTime, 0);
 }
 
@@ -423,18 +329,14 @@ TEST_F(ClipboardNudgeControllerTest, NewFeatureBadge_DoesNotLogOtherMetrics) {
 TEST_F(ClipboardNudgeControllerTest,
        ScreenshotNotification_DoesNotLogOtherMetrics) {
   ShowNudgeForType(ClipboardNudgeType::kScreenshotNotificationNudge);
-  nudge_controller_->OnClipboardHistoryMenuShown(
-      crosapi::mojom::ClipboardHistoryControllerShowSource::
-          kRenderViewContextMenu);
+  nudge_controller_->OnClipboardHistoryMenuShown();
   nudge_controller_->OnClipboardHistoryPasted();
 
   histograms().ExpectTotalCount(kOnboardingNudge_OpenTime, 0);
   histograms().ExpectTotalCount(kZeroStateNudge_OpenTime, 0);
-  histograms().ExpectTotalCount(kNewBadge_OpenTime, 0);
   histograms().ExpectTotalCount(kScreenshotNotification_OpenTime, 1);
   histograms().ExpectTotalCount(kOnboardingNudge_PasteTime, 0);
   histograms().ExpectTotalCount(kZeroStateNudge_PasteTime, 0);
-  histograms().ExpectTotalCount(kNewBadge_PasteTime, 0);
   histograms().ExpectTotalCount(kScreenshotNotification_PasteTime, 1);
 }
 
@@ -443,24 +345,17 @@ TEST_F(ClipboardNudgeControllerTest,
 TEST_F(ClipboardNudgeControllerTest, SecondTimeAction_DoesNotLogNudgeMetrics) {
   ShowNudgeForType(ClipboardNudgeType::kOnboardingNudge);
   ShowNudgeForType(ClipboardNudgeType::kZeroStateNudge);
-  ShowNudgeForType(ClipboardNudgeType::kNewFeatureBadge);
   ShowNudgeForType(ClipboardNudgeType::kScreenshotNotificationNudge);
-  nudge_controller_->OnClipboardHistoryMenuShown(
-      crosapi::mojom::ClipboardHistoryControllerShowSource::
-          kRenderViewContextMenu);
+  nudge_controller_->OnClipboardHistoryMenuShown();
   nudge_controller_->OnClipboardHistoryPasted();
-  nudge_controller_->OnClipboardHistoryMenuShown(
-      crosapi::mojom::ClipboardHistoryControllerShowSource::
-          kRenderViewContextMenu);
+  nudge_controller_->OnClipboardHistoryMenuShown();
   nudge_controller_->OnClipboardHistoryPasted();
 
   histograms().ExpectTotalCount(kOnboardingNudge_OpenTime, 1);
   histograms().ExpectTotalCount(kZeroStateNudge_OpenTime, 1);
-  histograms().ExpectTotalCount(kNewBadge_OpenTime, 1);
   histograms().ExpectTotalCount(kScreenshotNotification_OpenTime, 1);
   histograms().ExpectTotalCount(kOnboardingNudge_PasteTime, 1);
   histograms().ExpectTotalCount(kZeroStateNudge_PasteTime, 1);
-  histograms().ExpectTotalCount(kNewBadge_PasteTime, 1);
   histograms().ExpectTotalCount(kScreenshotNotification_PasteTime, 1);
 }
 
@@ -468,56 +363,21 @@ TEST_F(ClipboardNudgeControllerTest, SecondTimeAction_DoesNotLogNudgeMetrics) {
 TEST_F(ClipboardNudgeControllerTest, ShowNudgeTwice_LogsMetricsTwoTimes) {
   ShowNudgeForType(ClipboardNudgeType::kOnboardingNudge);
   ShowNudgeForType(ClipboardNudgeType::kZeroStateNudge);
-  ShowNudgeForType(ClipboardNudgeType::kNewFeatureBadge);
   ShowNudgeForType(ClipboardNudgeType::kScreenshotNotificationNudge);
-  nudge_controller_->OnClipboardHistoryMenuShown(
-      crosapi::mojom::ClipboardHistoryControllerShowSource::
-          kRenderViewContextMenu);
+  nudge_controller_->OnClipboardHistoryMenuShown();
   nudge_controller_->OnClipboardHistoryPasted();
   ShowNudgeForType(ClipboardNudgeType::kOnboardingNudge);
   ShowNudgeForType(ClipboardNudgeType::kZeroStateNudge);
-  ShowNudgeForType(ClipboardNudgeType::kNewFeatureBadge);
   ShowNudgeForType(ClipboardNudgeType::kScreenshotNotificationNudge);
-  nudge_controller_->OnClipboardHistoryMenuShown(
-      crosapi::mojom::ClipboardHistoryControllerShowSource::
-          kRenderViewContextMenu);
+  nudge_controller_->OnClipboardHistoryMenuShown();
   nudge_controller_->OnClipboardHistoryPasted();
 
   histograms().ExpectTotalCount(kOnboardingNudge_OpenTime, 2);
   histograms().ExpectTotalCount(kZeroStateNudge_OpenTime, 2);
-  histograms().ExpectTotalCount(kNewBadge_OpenTime, 2);
   histograms().ExpectTotalCount(kScreenshotNotification_OpenTime, 2);
   histograms().ExpectTotalCount(kOnboardingNudge_PasteTime, 2);
   histograms().ExpectTotalCount(kZeroStateNudge_PasteTime, 2);
-  histograms().ExpectTotalCount(kNewBadge_PasteTime, 2);
   histograms().ExpectTotalCount(kScreenshotNotification_PasteTime, 2);
-}
-
-// For the new feature badge, metrics should only log for opening a menu by a
-// context menu source.
-TEST_F(ClipboardNudgeControllerTest,
-       NewFeatureBadgeOpen_LogsByWithContextMenuSource) {
-  ShowNudgeForType(ClipboardNudgeType::kNewFeatureBadge);
-  nudge_controller_->OnClipboardHistoryMenuShown(
-      crosapi::mojom::ClipboardHistoryControllerShowSource::
-          kRenderViewContextMenu);
-  ShowNudgeForType(ClipboardNudgeType::kNewFeatureBadge);
-  nudge_controller_->OnClipboardHistoryMenuShown(
-      crosapi::mojom::ClipboardHistoryControllerShowSource::
-          kTextfieldContextMenu);
-
-  histograms().ExpectTotalCount(kNewBadge_OpenTime, 2);
-}
-
-TEST_F(ClipboardNudgeControllerTest,
-       NewFeatureBadgeOpen_DoesNotLogsWithNotContextMenuSource) {
-  ShowNudgeForType(ClipboardNudgeType::kNewFeatureBadge);
-  nudge_controller_->OnClipboardHistoryMenuShown(
-      crosapi::mojom::ClipboardHistoryControllerShowSource::kAccelerator);
-  nudge_controller_->OnClipboardHistoryMenuShown(
-      crosapi::mojom::ClipboardHistoryControllerShowSource::kVirtualKeyboard);
-
-  histograms().ExpectTotalCount(kNewBadge_OpenTime, 0);
 }
 
 }  // namespace ash

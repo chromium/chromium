@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,18 +6,42 @@ import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {RESULTS_PER_PAGE} from './constants.js';
 import {ForeignSession, HistoryEntry, HistoryQuery} from './externs.js';
 
-type RemoveVisitsRequest = Array<{
+export type RemoveVisitsRequest = Array<{
   url: string,
-  timestamps: Array<number>,
+  timestamps: number[],
 }>;
+
+export interface QueryResult {
+  info: HistoryQuery;
+  value: HistoryEntry[];
+}
 
 /**
  * @fileoverview Defines a singleton object, history.BrowserService, which
  * provides access to chrome.send APIs.
  */
 
-export class BrowserService {
-  /** @return {!Promise<!Array<!ForeignSession>>} */
+export interface BrowserService {
+  getForeignSessions(): Promise<ForeignSession[]>;
+  removeBookmark(url: string): void;
+  removeVisits(removalList: RemoveVisitsRequest): Promise<void>;
+  openForeignSessionAllTabs(sessionTag: string): void;
+  openForeignSessionTab(
+      sessionTag: string, windowId: number, tabId: number, e: MouseEvent): void;
+  deleteForeignSession(sessionTag: string): void;
+  openClearBrowsingData(): void;
+  recordHistogram(histogram: string, value: number, max: number): void;
+  recordAction(action: string): void;
+  recordTime(histogram: string, time: number): void;
+  recordLongTime(histogram: string, time: number): void;
+  navigateToUrl(url: string, target: string, e: MouseEvent): void;
+  otherDevicesInitialized(): void;
+  queryHistoryContinuation(): Promise<QueryResult>;
+  queryHistory(searchTerm: string): Promise<QueryResult>;
+  startTurnOnSyncFlow(): void;
+}
+
+export class BrowserServiceImpl implements BrowserService {
   getForeignSessions() {
     return sendWithPromise('getForeignSessions');
   }
@@ -30,11 +54,10 @@ export class BrowserService {
    * @return Promise that is resolved when items are deleted
    *     successfully or rejected when deletion fails.
    */
-  removeVisits(removalList: RemoveVisitsRequest): Promise<void> {
+  removeVisits(removalList: RemoveVisitsRequest) {
     return sendWithPromise('removeVisits', removalList);
   }
 
-  /** @param {string} sessionTag */
   openForeignSessionAllTabs(sessionTag: string) {
     chrome.send('openForeignSession', [sessionTag]);
   }
@@ -42,8 +65,14 @@ export class BrowserService {
   openForeignSessionTab(
       sessionTag: string, windowId: number, tabId: number, e: MouseEvent) {
     chrome.send('openForeignSession', [
-      sessionTag, String(windowId), String(tabId), e.button || 0, e.altKey,
-      e.ctrlKey, e.metaKey, e.shiftKey
+      sessionTag,
+      String(windowId),
+      String(tabId),
+      e.button || 0,
+      e.altKey,
+      e.ctrlKey,
+      e.metaKey,
+      e.shiftKey,
     ]);
   }
 
@@ -74,6 +103,13 @@ export class BrowserService {
     chrome.send('metricsHandler:recordTime', [histogram, time]);
   }
 
+  recordLongTime(histogram: string, time: number) {
+    // It's a bit odd that this is the only one to use chrome.metricsPrivate,
+    // but that's because the other code predates chrome.metricsPrivate.
+    // In any case, the MetricsHandler doesn't support long time histograms.
+    chrome.metricsPrivate.recordLongTime(histogram, time);
+  }
+
   navigateToUrl(url: string, target: string, e: MouseEvent) {
     chrome.send(
         'navigateToUrl',
@@ -84,24 +120,20 @@ export class BrowserService {
     chrome.send('otherDevicesInitialized');
   }
 
-  /**
-   * @return {!Promise<{info: !HistoryQuery, value: !Array<!HistoryEntry>}>}
-   */
   queryHistoryContinuation() {
     return sendWithPromise('queryHistoryContinuation');
   }
 
-  queryHistory(searchTerm: string):
-      Promise<{info: HistoryQuery, value: Array<HistoryEntry>}> {
+  queryHistory(searchTerm: string) {
     return sendWithPromise('queryHistory', searchTerm, RESULTS_PER_PAGE);
   }
 
-  startSignInFlow() {
-    chrome.send('startSignInFlow');
+  startTurnOnSyncFlow() {
+    chrome.send('startTurnOnSyncFlow');
   }
 
   static getInstance(): BrowserService {
-    return instance || (instance = new BrowserService());
+    return instance || (instance = new BrowserServiceImpl());
   }
 
   static setInstance(obj: BrowserService) {

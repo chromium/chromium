@@ -1,0 +1,10 @@
+Extensions:
+  caption: Extensions
+  policies:
+  - ExtensionInstallAllowlist
+  - ExtensionInstallBlocklist
+  - ExtensionInstallForcelist
+  - ExtensionInstallSources
+  - ExtensionAllowedTypes
+  - ExtensionAllowInsecureUpdates
+  - ExtensionSettings

@@ -32,6 +32,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_WINDOW_PERFORMANCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_WINDOW_PERFORMANCE_H_
 
+#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
@@ -45,7 +46,6 @@
 #include "third_party/blink/renderer/core/timing/performance_navigation.h"
 #include "third_party/blink/renderer/core/timing/performance_timing.h"
 #include "third_party/blink/renderer/core/timing/responsiveness_metrics.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
@@ -140,6 +140,8 @@ class CORE_EXPORT WindowPerformance final : public Performance,
 
   void AddLayoutShiftEntry(LayoutShift*);
   void AddVisibilityStateEntry(bool is_visible, base::TimeTicks start_time);
+  void AddSoftNavigationEntry(const AtomicString& name,
+                              base::TimeTicks start_time);
 
   // PageVisibilityObserver
   void PageVisibilityChanged() override;
@@ -202,10 +204,6 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // Notify observer that an event timing entry is ready and add it to the event
   // timing buffer if needed.
   void NotifyAndAddEventTimingBuffer(PerformanceEventTiming* entry);
-
-  // NotifyAndAddEventTimingBuffer() when interactionId feature is enabled.
-  void MaybeNotifyInteractionAndAddEventTimingBuffer(
-      PerformanceEventTiming* entry);
 
   // The last time the page visibility was changed.
   base::TimeTicks last_visibility_change_timestamp_;

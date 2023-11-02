@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,16 +29,16 @@ mojom::WebAppOriginAssociationPtr WebAppOriginAssociationParser::Parse(
     const std::string& data) {
   auto parsed_data = base::JSONReader::ReadAndReturnValueWithError(data);
 
-  if (parsed_data.value == absl::nullopt) {
-    AddErrorInfo(parsed_data.error_message, parsed_data.error_line,
-                 parsed_data.error_column);
+  if (!parsed_data.has_value()) {
+    AddErrorInfo(parsed_data.error().message, parsed_data.error().line,
+                 parsed_data.error().column);
     failed_ = true;
     webapps::WebAppOriginAssociationMetrics::RecordParseResult(
         webapps::WebAppOriginAssociationMetrics::ParseResult::
             kParseFailedInvalidJson);
     return nullptr;
   }
-  if (!parsed_data.value->is_dict()) {
+  if (!parsed_data->is_dict()) {
     AddErrorInfo("No valid JSON object found.");
     failed_ = true;
     webapps::WebAppOriginAssociationMetrics::RecordParseResult(
@@ -49,7 +49,7 @@ mojom::WebAppOriginAssociationPtr WebAppOriginAssociationParser::Parse(
 
   mojom::WebAppOriginAssociationPtr association =
       mojom::WebAppOriginAssociation::New();
-  association->apps = ParseAssociatedWebApps(*parsed_data.value);
+  association->apps = ParseAssociatedWebApps(*parsed_data);
   webapps::WebAppOriginAssociationMetrics::RecordParseResult(
       webapps::WebAppOriginAssociationMetrics::ParseResult::kParseSucceeded);
   return association;

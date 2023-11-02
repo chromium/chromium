@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,17 +23,13 @@
 HatsHelper::~HatsHelper() = default;
 
 HatsHelper::HatsHelper(content::WebContents* web_contents)
-    : WebContentsObserver(web_contents) {}
+    : WebContentsObserver(web_contents),
+      content::WebContentsUserData<HatsHelper>(*web_contents) {}
 
-void HatsHelper::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
+void HatsHelper::PrimaryPageChanged(content::Page& page) {
   // Ignore everything except NTP opens.
-  if (!navigation_handle->HasCommitted() ||
-      !navigation_handle->IsInMainFrame() ||
-      navigation_handle->GetWebContents()->GetLastCommittedURL() !=
-          chrome::kChromeUINewTabURL) {
+  if (web_contents()->GetLastCommittedURL() != chrome::kChromeUINewTabURL)
     return;
-  }
 
   if (auto* sentiment_service =
           TrustSafetySentimentServiceFactory::GetForProfile(profile())) {

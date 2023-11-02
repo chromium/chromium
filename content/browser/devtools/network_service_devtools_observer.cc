@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,11 @@
 #include "content/browser/devtools/protocol/audits_handler.h"
 #include "content/browser/devtools/protocol/network_handler.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/network/public/mojom/http_raw_headers.mojom.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 namespace content {
 
@@ -184,21 +187,38 @@ void NetworkServiceDevToolsObserver::OnCorsPreflightRequestCompleted(
 void NetworkServiceDevToolsObserver::OnCorsError(
     const absl::optional<std::string>& devtools_request_id,
     const absl::optional<::url::Origin>& initiator_origin,
+    network::mojom::ClientSecurityStatePtr client_security_state,
     const GURL& url,
-    const network::CorsErrorStatus& cors_error_status) {
+    const network::CorsErrorStatus& cors_error_status,
+    bool is_warning) {
   if (frame_tree_node_id_ == FrameTreeNode::kFrameTreeNodeInvalidId)
     return;
+
   auto* ftn = FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
   if (!ftn)
     return;
+
+  RenderFrameHostImpl* rfhi = ftn->current_frame_host();
+  if (!rfhi)
+    return;
+
+  // TODO(https://crbug.com/1268378): Remove this once enforcement is always
+  // enabled and warnings are no more.
+  if (is_warning) {
+    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+        rfhi,
+        blink::mojom::WebFeature::kPrivateNetworkAccessIgnoredPreflightError);
+  }
+
   std::unique_ptr<protocol::Audits::AffectedRequest> affected_request =
       protocol::Audits::AffectedRequest::Create()
           .SetRequestId(devtools_request_id ? *devtools_request_id : "")
           .SetUrl(url.spec())
           .Build();
+
   auto cors_issue_details =
       protocol::Audits::CorsIssueDetails::Create()
-          .SetIsWarning(false)
+          .SetIsWarning(is_warning)
           .SetRequest(std::move(affected_request))
           .SetCorsErrorStatus(
               protocol::NetworkHandler::BuildCorsErrorStatus(cors_error_status))
@@ -206,6 +226,14 @@ void NetworkServiceDevToolsObserver::OnCorsError(
   if (initiator_origin) {
     cors_issue_details->SetInitiatorOrigin(initiator_origin->GetURL().spec());
   }
+  auto maybe_protocol_security_state =
+      protocol::NetworkHandler::MaybeBuildClientSecurityState(
+          client_security_state);
+  if (maybe_protocol_security_state.isJust()) {
+    cors_issue_details->SetClientSecurityState(
+        maybe_protocol_security_state.takeJust());
+  }
+
   auto details = protocol::Audits::InspectorIssueDetails::Create()
                      .SetCorsIssueDetails(std::move(cors_issue_details))
                      .Build();
@@ -214,8 +242,7 @@ void NetworkServiceDevToolsObserver::OnCorsError(
                    .SetDetails(std::move(details))
                    .SetIssueId(cors_error_status.issue_id.ToString())
                    .Build();
-  devtools_instrumentation::ReportBrowserInitiatedIssue(
-      ftn->current_frame_host(), issue.get());
+  devtools_instrumentation::ReportBrowserInitiatedIssue(rfhi, issue.get());
 }
 
 void NetworkServiceDevToolsObserver::OnSubresourceWebBundleMetadata(

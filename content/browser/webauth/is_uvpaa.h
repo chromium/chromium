@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 class BrowserContext;
 #endif
 
@@ -22,14 +22,14 @@ namespace content {
 using IsUVPlatformAuthenticatorAvailableCallback =
     base::OnceCallback<void(bool is_available)>;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 CONTENT_EXPORT void IsUVPlatformAuthenticatorAvailable(
     BrowserContext* browser_context,
     IsUVPlatformAuthenticatorAvailableCallback);
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 CONTENT_EXPORT void IsUVPlatformAuthenticatorAvailable(
     IsUVPlatformAuthenticatorAvailableCallback);
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
 CONTENT_EXPORT void IsUVPlatformAuthenticatorAvailable(
     IsUVPlatformAuthenticatorAvailableCallback);
 #endif

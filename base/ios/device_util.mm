@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,7 @@
 
 #include "base/check.h"
 #include "base/mac/scoped_cftyperef.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -57,11 +58,15 @@ namespace ios {
 namespace device_util {
 
 std::string GetPlatform() {
+#if TARGET_OS_SIMULATOR
+  return getenv("SIMULATOR_MODEL_IDENTIFIER");
+#elif TARGET_OS_IPHONE
   std::string platform;
   size_t size = 0;
   sysctlbyname("hw.machine", NULL, &size, NULL, 0);
   sysctlbyname("hw.machine", base::WriteInto(&platform, size), &size, NULL, 0);
   return platform;
+#endif
 }
 
 bool RamIsAtLeast512Mb() {
@@ -169,7 +174,8 @@ std::string GetSaltedString(const std::string& in_string,
       dataUsingEncoding:NSUTF8StringEncoding];
 
   unsigned char hash[CC_SHA256_DIGEST_LENGTH];
-  CC_SHA256([hash_data bytes], [hash_data length], hash);
+  CC_SHA256([hash_data bytes], base::checked_cast<CC_LONG>([hash_data length]),
+            hash);
   CFUUIDBytes* uuid_bytes = reinterpret_cast<CFUUIDBytes*>(hash);
 
   base::ScopedCFTypeRef<CFUUIDRef> uuid_object(

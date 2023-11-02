@@ -1,21 +1,31 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "extensions/browser/api/web_request/web_request_proxying_url_loader_factory.h"
 
 #include <memory>
+#include <ostream>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/feature_list.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
-#include "components/ukm/content/source_url_recorder.h"
+#include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -23,16 +33,21 @@
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/url_utils.h"
 #include "extensions/browser/api/web_request/permission_helper.h"
+#include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/extension_navigation_ui_data.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
-#include "net/base/completion_repeating_callback.h"
+#include "net/base/auth.h"
+#include "net/base/ip_endpoint.h"
+#include "net/base/isolation_info.h"
+#include "net/base/net_errors.h"
+#include "net/base/request_priority.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
@@ -41,12 +56,16 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/parsed_headers.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
+#include "url/gurl.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 namespace extensions {
 namespace {
@@ -237,7 +256,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
       request_id_, factory_->render_process_id_, frame_routing_id_,
       factory_->navigation_ui_data_ ? factory_->navigation_ui_data_->DeepCopy()
                                     : nullptr,
-      view_routing_id_, request_for_info, factory_->IsForDownload(),
+      request_for_info, factory_->IsForDownload(),
       !(options_ & network::mojom::kURLLoadOptionSynchronous),
       factory_->IsForServiceWorkerScript(), factory_->navigation_id_,
       ukm_source_id_));
@@ -249,12 +268,10 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
   // `current_request_uses_header_client_` is true but the request is not made
   // with the kURLLoadOptionUseHeaderClient option, also check
   // `has_any_extra_headers_listeners_` here. See http://crbug.com/1074282.
-  // TODO(https://crbug.com/1257045): Remove urn: scheme support.
   current_request_uses_header_client_ =
       has_any_extra_headers_listeners_ &&
       factory_->url_loader_header_client_receiver_.is_bound() &&
       (request_.url.SchemeIsHTTPOrHTTPS() ||
-       request_.url.SchemeIs(url::kUrnScheme) ||
        request_.url.SchemeIs(url::kUuidInPackageScheme)) &&
       (for_cors_preflight_ || network_service_request_id_ != 0) &&
       ExtensionWebRequestEventRouter::GetInstance()
@@ -383,7 +400,9 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnReceiveEarlyHints(
 }
 
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnReceiveResponse(
-    network::mojom::URLResponseHeadPtr head) {
+    network::mojom::URLResponseHeadPtr head,
+    mojo::ScopedDataPipeConsumerHandle body,
+    absl::optional<mojo_base::BigBuffer> cached_metadata) {
   TRACE_EVENT_WITH_FLOW0(
       "extensions",
       "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
@@ -392,12 +411,24 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnReceiveResponse(
                           TRACE_ID_LOCAL(request_id_)),
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
 
+  current_body_ = std::move(body);
+  current_cached_metadata_ = std::move(cached_metadata);
   if (current_request_uses_header_client_) {
-    // Use the headers we got from OnHeadersReceived as that'll contain
-    // Set-Cookie if it existed.
+    // Use the cookie headers we got from OnHeadersReceived as that'll contain
+    // Set-Cookie if it existed. Re-adding cookie headers here does not
+    // duplicate any headers, because the headers we received via Mojo have been
+    // stripped of any cookie response headers.
     auto saved_headers = current_response_->headers;
     current_response_ = std::move(head);
-    current_response_->headers = saved_headers;
+    size_t headers_iterator = 0;
+    std::string header_name, header_value;
+    while (saved_headers != nullptr &&
+           saved_headers->EnumerateHeaderLines(&headers_iterator, &header_name,
+                                               &header_value)) {
+      if (net::HttpResponseHeaders::IsCookieResponseHeader(header_name)) {
+        current_response_->headers->AddHeader(header_name, header_value);
+      }
+    }
     ContinueToResponseStarted();
   } else {
     current_response_ = std::move(head);
@@ -453,26 +484,8 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnUploadProgress(
 }
 
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::
-    OnReceiveCachedMetadata(mojo_base::BigBuffer data) {
-  target_client_->OnReceiveCachedMetadata(std::move(data));
-}
-
-void WebRequestProxyingURLLoaderFactory::InProgressRequest::
     OnTransferSizeUpdated(int32_t transfer_size_diff) {
   target_client_->OnTransferSizeUpdated(transfer_size_diff);
-}
-
-void WebRequestProxyingURLLoaderFactory::InProgressRequest::
-    OnStartLoadingResponseBody(mojo::ScopedDataPipeConsumerHandle body) {
-  TRACE_EVENT_WITH_FLOW0(
-      "extensions",
-      "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
-      "OnStartLoadingResponseBody",
-      TRACE_ID_WITH_SCOPE(kWebRequestProxyingURLLoaderFactoryScope,
-                          TRACE_ID_LOCAL(request_id_)),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
-
-  target_client_->OnStartLoadingResponseBody(std::move(body));
 }
 
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnComplete(
@@ -670,10 +683,8 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
   // Following checks implement the step 10 of "4.4. HTTP-redirect fetch",
   // https://fetch.spec.whatwg.org/#http-redirect-fetch
   if (request_.request_initiator &&
-      (!url::Origin::Create(redirect_url_)
-            .IsSameOriginWith(url::Origin::Create(request_.url)) &&
-       !request_.request_initiator->IsSameOriginWith(
-           url::Origin::Create(request_.url)))) {
+      (!url::IsSameOriginWith(redirect_url_, request_.url) &&
+       !request_.request_initiator->IsSameOriginWith(request_.url))) {
     // Reset the initiator to pretend tainted origin flag of the spec is set.
     request_.request_initiator = url::Origin();
   }
@@ -709,9 +720,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
   if (proxied_client_receiver_.is_bound())
     proxied_client_receiver_.Resume();
 
-  // TODO(https://crbug.com/1257045): Remove urn: scheme support.
   if (request_.url.SchemeIsHTTPOrHTTPS() ||
-      request_.url.SchemeIs(url::kUrnScheme) ||
       request_.url.SchemeIs(url::kUuidInPackageScheme)) {
     // NOTE: While it does not appear to be documented (and in fact it may be
     // intuitive), |onBeforeSendHeaders| is only dispatched for HTTP and HTTPS
@@ -761,6 +770,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
     ContinueToBeforeSendHeadersWithOk() {
   ContinueToBeforeSendHeaders(State::kInvalid, net::OK);
 }
+
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::
     ContinueToStartRequest(State state_on_error, int error_code) {
   TRACE_EVENT_WITH_FLOW2(
@@ -880,9 +890,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
   if (proxied_client_receiver_.is_bound())
     proxied_client_receiver_.Resume();
 
-  // TODO(https://crbug.com/1257045): Remove urn: scheme support.
   if (request_.url.SchemeIsHTTPOrHTTPS() ||
-      request_.url.SchemeIs(url::kUrnScheme) ||
       request_.url.SchemeIs(url::kUuidInPackageScheme)) {
     // NOTE: While it does not appear to be documented (and in fact it may be
     // intuitive), |onSendHeaders| is only dispatched for HTTP and HTTPS
@@ -1116,6 +1124,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
     case URLLoaderFactoryType::kWorkerMainResource:
     case URLLoaderFactoryType::kServiceWorkerScript:
     case URLLoaderFactoryType::kDownload:
+    case URLLoaderFactoryType::kPrefetch:
       break;
   }
 
@@ -1188,7 +1197,9 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
 
   ExtensionWebRequestEventRouter::GetInstance()->OnResponseStarted(
       factory_->browser_context_, &info_.value(), net::OK);
-  target_client_->OnReceiveResponse(current_response_.Clone());
+  target_client_->OnReceiveResponse(current_response_.Clone(),
+                                    std::move(current_body_),
+                                    std::move(current_cached_metadata_));
 }
 
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::
@@ -1248,9 +1259,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
   redirect_url_ = GURL();
 
   auto callback_pair = base::SplitOnceCallback(std::move(continuation));
-  // TODO(https://crbug.com/1257045): Remove urn: scheme support.
   if (request_.url.SchemeIsHTTPOrHTTPS() ||
-      request_.url.SchemeIs(url::kUrnScheme) ||
       request_.url.SchemeIs(url::kUuidInPackageScheme)) {
     DCHECK(info_.has_value());
     int result =

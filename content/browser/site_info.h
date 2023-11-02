@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,14 +42,33 @@ struct UrlInfo;
 // different SiteInfos and thus different processes.
 class CONTENT_EXPORT SiteInfo {
  public:
+  // Helper to create a SiteInfo that will be used for an error page.  This is
+  // used only when error page isolation is enabled.  Note that when site
+  // isolation for guests is enabled, an error page SiteInfo may also be
+  // associated with a guest. Similarly, when process isolation for fenced
+  // frames is enabled, error pages inside fenced frames will be isolated from
+  // embedders.
   static SiteInfo CreateForErrorPage(
-      const StoragePartitionConfig storage_partition_config);
+      const StoragePartitionConfig storage_partition_config,
+      bool is_guest,
+      bool is_fenced);
+
+  // Helper to create a SiteInfo for default SiteInstances.  Default
+  // SiteInstances are used for non-isolated sites on platforms without strict
+  // site isolation, such as on Android.  They may also be used on desktop
+  // platforms when strict site isolation is explicitly turned off (e.g., via
+  // switches::kDisableSiteIsolation).
   static SiteInfo CreateForDefaultSiteInstance(
-      BrowserContext* browser_context,
+      const IsolationContext& isolation_context,
       const StoragePartitionConfig storage_partition_config,
       const WebExposedIsolationInfo& web_exposed_isolation_info);
-  static SiteInfo CreateForGuest(BrowserContext* browser_context,
-                                 const GURL& guest_site_url);
+
+  // Helper to create a SiteInfo for a <webview> guest.  This helper can be
+  // used for a new guest associated with a specific StoragePartitionConfig
+  // (prior to navigations).
+  static SiteInfo CreateForGuest(
+      BrowserContext* browser_context,
+      const StoragePartitionConfig& partition_config);
 
   // This function returns a SiteInfo with the appropriate site_url and
   // process_lock_url computed. This function can only be called on the UI
@@ -113,16 +132,26 @@ class CONTENT_EXPORT SiteInfo {
   // accordingly.
   SiteInfo(const GURL& site_url,
            const GURL& process_lock_url,
-           bool is_origin_keyed,
+           bool requires_origin_keyed_process,
+           bool is_sandboxed,
+           int unique_sandbox_id,
            const StoragePartitionConfig storage_partition_config,
            const WebExposedIsolationInfo& web_exposed_isolation_info,
            bool is_guest,
            bool does_site_request_dedicated_process_for_coop,
            bool is_jit_disabled,
-           bool is_pdf);
+           bool is_pdf,
+           bool is_fenced);
   SiteInfo() = delete;
   SiteInfo(const SiteInfo& rhs);
   ~SiteInfo();
+
+  // This function returns a new SiteInfo which is equivalent to the original,
+  // except that (1) is_origin_keyed is false, and (2) the remaining SiteInfo
+  // state is used to compute a new SiteInfo from a UrlInfo reconstructed from
+  // the original SiteInfo, minus any OAC opt-in request.
+  SiteInfo GetNonOriginKeyedEquivalentForMetrics(
+      const IsolationContext& isolation_context) const;
 
   // Returns the site URL associated with all of the documents and workers in
   // this principal, as described above.
@@ -157,8 +186,8 @@ class CONTENT_EXPORT SiteInfo {
   //                if the SiteInstance's process isn't going to be locked.
   const GURL& process_lock_url() const { return process_lock_url_; }
 
-  // Returns whether this SiteInfo is specific to an origin rather than a site,
-  // such as due to opt-in origin isolation. This resolves an ambiguity of
+  // Returns whether this SiteInfo requires an origin-keyed process, such as for
+  // an OriginAgentCluster response header. This resolves an ambiguity of
   // whether a process with a lock_url() like "https://foo.example" is allowed
   // to include "https://sub.foo.example" or not. In opt-in isolation, it is
   // possible for example.com to be isolated, and sub.example.com not be
@@ -166,7 +195,19 @@ class CONTENT_EXPORT SiteInfo {
   // example.com, then sub.example.com is also (automatically) isolated.
   // Also note that opt-in isolated origins will include ports (if non-default)
   // in their site urls.
-  bool is_origin_keyed() const { return is_origin_keyed_; }
+  bool requires_origin_keyed_process() const {
+    return requires_origin_keyed_process_;
+  }
+
+  // The following accessor is for the `is_sandboxed` flag, which is true when
+  // this SiteInfo is for an origin-restricted-sandboxed iframe.
+  bool is_sandboxed() const { return is_sandboxed_; }
+
+  // Returns either kInvalidUniqueSandboxId or the unique sandbox id provided
+  // when this SiteInfo was created. The latter case only occurs when
+  // `is_sandboxed` is true, and kIsolateSandboxedIframes was specified with
+  // the per-document grouping parameter.
+  int unique_sandbox_id() const { return unique_sandbox_id_; }
 
   // Returns the web-exposed isolation status of pages hosted by the
   // SiteInstance. The level of isolation which a page opts-into has
@@ -181,6 +222,7 @@ class CONTENT_EXPORT SiteInfo {
   bool is_error_page() const;
   bool is_jit_disabled() const { return is_jit_disabled_; }
   bool is_pdf() const { return is_pdf_; }
+  bool is_fenced() const { return is_fenced_; }
 
   // See comments on `does_site_request_dedicated_process_for_coop_` for more
   // details.
@@ -202,6 +244,13 @@ class CONTENT_EXPORT SiteInfo {
   // Returns true if all fields in `other` match the corresponding fields in
   // this object.
   bool IsExactMatch(const SiteInfo& other) const;
+
+  // Determines how a ProcessLock based on this SiteInfo compares to a
+  // ProcessLock based on the `other` SiteInfo. Note that this doesn't just
+  // compare all SiteInfo fields, e.g. it doesn't use site_url_ since that
+  // may include effective URLs.
+  // Returns -1 if `this` < `other`, 1 if `this` > `other`, 0 otherwise.
+  int ProcessLockCompareTo(const SiteInfo& other) const;
 
   // Note: equality operators are defined in terms of IsSamePrincipalWith().
   bool operator==(const SiteInfo& other) const;
@@ -242,12 +291,9 @@ class CONTENT_EXPORT SiteInfo {
   // RenderProcessHost per site for the entire browser context.
   bool ShouldUseProcessPerSite(BrowserContext* browser_context) const;
 
-  // Get the partition ID or StoragePartitionConfig for this object given a
-  // specific `browser_context`. The BrowserContext will affect whether the
-  // partition is forced to be in memory based on whether it is off-the-record
-  // or not.
-  StoragePartitionId GetStoragePartitionId(
-      BrowserContext* browser_context) const;
+  // Get the StoragePartitionConfig, which describes the StoragePartition this
+  // SiteInfo is associated with.  For example, this will correspond to a
+  // non-default StoragePartition for <webview> guests.
   const StoragePartitionConfig& storage_partition_config() const {
     return storage_partition_config_;
   }
@@ -289,6 +335,10 @@ class CONTENT_EXPORT SiteInfo {
                                     const UrlInfo& url,
                                     bool should_use_effective_urls);
 
+  // Helper function for ProcessLockCompareTo(). Returns a std::tie of the
+  // SiteInfo elements required for doing a ProcessLock comparison.
+  auto MakeProcessLockComparisonKey() const;
+
   GURL site_url_;
 
   // The URL to use when locking a process to this SiteInstance's site via
@@ -297,11 +347,26 @@ class CONTENT_EXPORT SiteInfo {
   // a site URL that is computed without the use of effective URLs.
   GURL process_lock_url_;
 
-  // Indicates whether this SiteInfo is specific to a single origin, rather than
-  // including all subdomains of that origin. Only used for opt-in origin
-  // isolation. In contrast, the site-level URLs that are typically used in
-  // SiteInfo include subdomains, as do command-line isolated origins.
-  bool is_origin_keyed_ = false;
+  // Indicates whether this SiteInfo is specific to a single origin and requires
+  // an origin-keyed process, rather than including all subdomains of that
+  // origin. Only used for OriginAgentCluster header opt-ins. In contrast, the
+  // site-level URLs that are typically used in SiteInfo include subdomains, as
+  // do command-line isolated origins.
+  bool requires_origin_keyed_process_ = false;
+
+  // When true, indicates this SiteInfo is for a origin-restricted-sandboxed
+  // iframe.
+  bool is_sandboxed_ = false;
+
+  // When kIsolateSandboxedIframes is active using per-document grouping, each
+  // isolated frame gets its own SiteInfo with a unique document identifier,
+  // which in practice is the `navigation_id` for the NavigationRequest that led
+  // to the creation of the SiteInstance. This value will be used in comparing
+  // SiteInfos unless it is kInvalidUniqueSandboxId. It should be noted that the
+  // value of `unique_sandbox_id_` will change for any cross-document
+  // navigation, even if it's same-origin and/or stays in the same
+  // RenderFrameHost.
+  int unique_sandbox_id_;
 
   // The StoragePartitionConfig to use when loading content belonging to this
   // SiteInfo.
@@ -327,6 +392,13 @@ class CONTENT_EXPORT SiteInfo {
 
   // Indicates that this SiteInfo is for PDF content.
   bool is_pdf_ = false;
+
+  // Indicates that this SiteInfo is for content inside a fenced frame. We use
+  // just a bool as opposed to a GUID here in order to group same-origin fenced
+  // frames together. See more details around fenced frame process isolation
+  // here:
+  // https://github.com/WICG/fenced-frame/blob/master/explainer/process_isolation.md.
+  bool is_fenced_ = false;
 };
 
 CONTENT_EXPORT std::ostream& operator<<(std::ostream& out,

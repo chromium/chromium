@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_ZWP_POINTER_GESTURES_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_ZWP_POINTER_GESTURES_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/types/event_type.h"
@@ -70,17 +71,25 @@ class WaylandZwpPointerGestures
 
   wl::Object<zwp_pointer_gestures_v1> obj_;
   wl::Object<zwp_pointer_gesture_pinch_v1> pinch_;
-  WaylandConnection* const connection_;
-  Delegate* const delegate_;
+  double current_scale_ = 1;
+  const raw_ptr<WaylandConnection> connection_;
+  const raw_ptr<Delegate> delegate_;
 };
 
 class WaylandZwpPointerGestures::Delegate {
  public:
-  virtual void OnPinchEvent(EventType event_type,
-                            const gfx::Vector2dF& delta,
-                            base::TimeTicks timestamp,
-                            int device_id,
-                            absl::optional<float> scale = absl::nullopt) = 0;
+  // Handles the events coming during the pinch zoom session.
+  // |event_type| is one of ET_GESTURE_PINCH_### members.
+  // |delta| is empty on the BEGIN and END, and shows the movement of the centre
+  // of the gesture compared to the previous event.
+  // |scale_delta| is the change to the scale compared to the previous event, to
+  // be applied as multiplier (as the compositor expects it).
+  virtual void OnPinchEvent(
+      EventType event_type,
+      const gfx::Vector2dF& delta,
+      base::TimeTicks timestamp,
+      int device_id,
+      absl::optional<float> scale_delta = absl::nullopt) = 0;
 };
 
 }  // namespace ui

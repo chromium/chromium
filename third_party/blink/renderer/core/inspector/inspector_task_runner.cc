@@ -1,35 +1,38 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/inspector/inspector_task_runner.h"
 
-#include "third_party/blink/renderer/core/inspector/thread_debugger.h"
+#include "third_party/blink/renderer/platform/bindings/thread_debugger.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+
+#include "base/record_replay.h"
 
 namespace blink {
 
 InspectorTaskRunner::InspectorTaskRunner(
     scoped_refptr<base::SingleThreadTaskRunner> isolate_task_runner)
-    : isolate_task_runner_(isolate_task_runner) {}
+    : lock_("InspectorTaskRunner.lock_"), isolate_task_runner_(isolate_task_runner) {}
 
 InspectorTaskRunner::~InspectorTaskRunner() = default;
 
 void InspectorTaskRunner::InitIsolate(v8::Isolate* isolate) {
-  MutexLocker lock(mutex_);
+  base::AutoLock locker(lock_);
   isolate_ = isolate;
 }
 
 void InspectorTaskRunner::Dispose() {
-  MutexLocker lock(mutex_);
+  recordreplay::AutoLockMaybeEventsDisallowed locker(lock_);
   disposed_ = true;
   isolate_ = nullptr;
   isolate_task_runner_ = nullptr;
 }
 
 bool InspectorTaskRunner::AppendTask(Task task) {
-  MutexLocker lock(mutex_);
+  base::AutoLock locker(lock_);
   if (disposed_)
     return false;
   interrupting_task_queue_.push_back(std::move(task));
@@ -46,7 +49,7 @@ bool InspectorTaskRunner::AppendTask(Task task) {
 }
 
 bool InspectorTaskRunner::AppendTaskDontInterrupt(Task task) {
-  MutexLocker lock(mutex_);
+  base::AutoLock locker(lock_);
   if (disposed_)
     return false;
   PostCrossThreadTask(*isolate_task_runner_, FROM_HERE, std::move(task));
@@ -54,9 +57,9 @@ bool InspectorTaskRunner::AppendTaskDontInterrupt(Task task) {
 }
 
 InspectorTaskRunner::Task InspectorTaskRunner::TakeNextInterruptingTask() {
-  MutexLocker lock(mutex_);
+  base::AutoLock locker(lock_);
 
-  if (disposed_ || interrupting_task_queue_.IsEmpty())
+  if (disposed_ || interrupting_task_queue_.empty())
     return Task();
 
   return interrupting_task_queue_.TakeFirst();

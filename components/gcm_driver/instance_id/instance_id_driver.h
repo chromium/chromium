@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@
 #include <map>
 #include <memory>
 #include <string>
+
+#include "base/memory/raw_ptr.h"
 
 namespace gcm {
 class GCMDriver;
@@ -46,7 +48,7 @@ class InstanceIDDriver {
  private:
   // Owned by GCMProfileServiceFactory, which is a dependency of
   // InstanceIDProfileServiceFactory, which owns this.
-  gcm::GCMDriver* gcm_driver_;
+  raw_ptr<gcm::GCMDriver> gcm_driver_;
 
   std::map<std::string, std::unique_ptr<InstanceID>> instance_id_map_;
 };

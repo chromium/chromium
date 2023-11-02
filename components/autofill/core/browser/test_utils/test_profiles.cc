@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 #include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
+
+using structured_address::VerificationStatus;
 
 namespace test {
 
@@ -24,22 +26,6 @@ void SetProfileTestValues(AutofillProfile* profile,
 
   if (finalize) {
     profile->FinalizeAfterImport();
-  }
-
-  // If structured names are not enabled, the first, middle and last names must
-  // be derived from the full name if they are not explicitly set.
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForMoreStructureInNames)) {
-    if (profile->GetRawInfo(NAME_FULL).empty()) {
-      return;
-    }
-    // If first, middle and last names are empty, use the 'SetInfo()' method to
-    // trigger the completion.
-    if (profile->GetRawInfo(NAME_FIRST).empty() &&
-        profile->GetRawInfo(NAME_MIDDLE).empty() &&
-        profile->GetRawInfo(NAME_LAST).empty()) {
-      profile->SetInfo(NAME_FULL, profile->GetRawInfo(NAME_FULL), "en_US");
-    }
   }
 }
 

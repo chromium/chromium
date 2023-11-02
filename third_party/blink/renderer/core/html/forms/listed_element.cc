@@ -45,7 +45,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/text/bidi_text_run.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -347,7 +347,7 @@ void ListedElement::UpdateWillValidateCache() {
 }
 
 bool ListedElement::CustomError() const {
-  return !custom_validation_message_.IsEmpty();
+  return !custom_validation_message_.empty();
 }
 
 bool ListedElement::HasBadInput() const {
@@ -423,7 +423,7 @@ void ListedElement::FindCustomValidationMessageTextDirection(
     String& sub_message,
     TextDirection& sub_message_dir) {
   message_dir = DetermineDirectionality(message);
-  if (!sub_message.IsEmpty()) {
+  if (!sub_message.empty()) {
     sub_message_dir = ToHTMLElement().GetLayoutObject()->Style()->Direction();
   }
 }
@@ -445,7 +445,7 @@ void ListedElement::UpdateVisibleValidationMessage() {
   TextDirection message_dir = TextDirection::kLtr;
   TextDirection sub_message_dir = TextDirection::kLtr;
   String sub_message = ValidationSubMessage().StripWhiteSpace();
-  if (message.IsEmpty()) {
+  if (message.empty()) {
     client->HideValidationMessage(element);
   } else {
     FindCustomValidationMessageTextDirection(message, message_dir, sub_message,
@@ -499,7 +499,7 @@ bool ListedElement::checkValidity(List* unhandled_invalid_controls) {
   HTMLElement& element = ToHTMLElement();
   Document* original_document = &element.GetDocument();
   DispatchEventResult dispatch_result = element.DispatchEvent(
-      *Event::CreateCancelable(event_type_names::kInvalid));
+      *Event::CreateCancelable(event_type_names::kInvalid), "ListedElement::CheckValidity");
   if (dispatch_result == DispatchEventResult::kNotCanceled &&
       unhandled_invalid_controls && element.isConnected() &&
       original_document == element.GetDocument())
@@ -511,36 +511,20 @@ void ListedElement::ShowValidationMessage() {
   Element& element = ValidationAnchor();
   element.scrollIntoViewIfNeeded(false);
   if (element.IsFocusable())
-    element.focus();
+    element.Focus();
   else
-    ToHTMLElement().focus();
+    ToHTMLElement().Focus();
   UpdateVisibleValidationMessage();
 }
 
 bool ListedElement::reportValidity() {
   List unhandled_invalid_controls;
   bool is_valid = checkValidity(&unhandled_invalid_controls);
-  if (is_valid || unhandled_invalid_controls.IsEmpty())
+  if (is_valid || unhandled_invalid_controls.empty())
     return is_valid;
   DCHECK_EQ(unhandled_invalid_controls.size(), 1u);
   DCHECK_EQ(unhandled_invalid_controls[0].Get(), this);
-  // Update layout now before calling IsFocusable(), which has
-  // !LayoutObject()->NeedsLayout() assertion.
-  HTMLElement& element = ToHTMLElement();
-  element.GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kForm);
-  if (element.IsFocusable()) {
-    ShowValidationMessage();
-    return false;
-  }
-  if (element.GetDocument().GetFrame()) {
-    String message(
-        "An invalid form control with name='%name' is not focusable.");
-    message.Replace("%name", GetName());
-    element.GetDocument().AddConsoleMessage(
-        MakeGarbageCollected<ConsoleMessage>(
-            mojom::ConsoleMessageSource::kRendering,
-            mojom::ConsoleMessageLevel::kError, message));
-  }
+  ShowValidationMessage();
   return false;
 }
 
@@ -579,8 +563,8 @@ void ListedElement::SetNeedsValidityCheck() {
     element.GetDocument()
         .GetTaskRunner(TaskType::kDOMManipulation)
         ->PostTask(FROM_HERE,
-                   WTF::Bind(&ListedElement::UpdateVisibleValidationMessage,
-                             WrapPersistent(this)));
+                   WTF::BindOnce(&ListedElement::UpdateVisibleValidationMessage,
+                                 WrapPersistent(this)));
   }
 }
 
@@ -590,6 +574,10 @@ void ListedElement::DisabledAttributeChanged() {
   element.PseudoStateChanged(CSSSelector::kPseudoDisabled);
   element.PseudoStateChanged(CSSSelector::kPseudoEnabled);
   DisabledStateMightBeChanged();
+}
+
+void ListedElement::ReadonlyAttributeChanged() {
+  UpdateWillValidateCache();
 }
 
 void ListedElement::UpdateAncestorDisabledState() const {

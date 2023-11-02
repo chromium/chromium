@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,17 +22,13 @@ static bool Contains(const remoting::ChromotingEvent& actual,
   auto actual_dict = actual.CopyDictionaryValue();
   auto expected_dict = expected.CopyDictionaryValue();
 
-  base::DictionaryValue::Iterator expected_it(*expected_dict);
+  for (const auto expected_item : *expected_dict) {
+    const std::string& key = expected_item.first;
+    const base::Value* out_value = actual_dict->Find(key);
 
-  while (!expected_it.IsAtEnd()) {
-    const std::string& key = expected_it.key();
-    const base::Value* out_value = nullptr;
-
-    if (!actual_dict->Get(key, &out_value) ||
-        !expected_it.value().Equals(out_value)) {
+    if (!out_value || expected_item.second != *out_value) {
       return false;
     }
-    expected_it.Advance();
   }
   return true;
 }

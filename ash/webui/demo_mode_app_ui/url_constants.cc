@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,10 @@
 
 namespace ash {
 
-const char kChromeUIDemoModeAppHost[] = "demo-mode-app";
-const char kChromeUIDemoModeAppURL[] = "chrome://demo-mode-app/";
+const char kChromeUntrustedUIDemoModeAppHost[] = "demo-mode-app";
+const char kChromeUntrustedUIDemoModeAppURL[] =
+    "chrome-untrusted://demo-mode-app/";
+const char kChromeUntrustedUIDemoModeAppIndexURL[] =
+    "chrome-untrusted://demo-mode-app/index.html";
 
 }  // namespace ash

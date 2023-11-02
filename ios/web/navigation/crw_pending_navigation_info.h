@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,7 +36,6 @@
 @property(nonatomic, assign) BOOL hasUserGesture;
 // Whether the navigation had a server redirect.
 @property(nonatomic, assign) BOOL unsafeRedirect;
-
 @end
 
 #endif  // IOS_WEB_NAVIGATION_CRW_PENDING_NAVIGATION_INFO_H_

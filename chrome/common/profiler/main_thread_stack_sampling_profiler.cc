@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,20 +9,20 @@
 #include "base/threading/platform_thread.h"
 #include "chrome/common/profiler/process_type.h"
 #include "chrome/common/profiler/thread_profiler.h"
+#include "components/metrics/call_stack_profile_builder.h"
 #include "components/metrics/call_stack_profile_metrics_provider.h"
 #include "content/public/common/content_switches.h"
 
 namespace {
 
 // Returns the profiler appropriate for the current process.
-std::unique_ptr<ThreadProfiler> CreateThreadProfiler() {
-  const metrics::CallStackProfileParams::Process process =
-      GetProfileParamsProcess(*base::CommandLine::ForCurrentProcess());
-
+std::unique_ptr<ThreadProfiler> CreateThreadProfiler(
+    const metrics::CallStackProfileParams::Process process) {
   // TODO(wittman): Do this for other process types too.
   if (process == metrics::CallStackProfileParams::Process::kBrowser) {
-    ThreadProfiler::SetBrowserProcessReceiverCallback(base::BindRepeating(
-        &metrics::CallStackProfileMetricsProvider::ReceiveProfile));
+    metrics::CallStackProfileBuilder::SetBrowserProcessReceiverCallback(
+        base::BindRepeating(
+            &metrics::CallStackProfileMetricsProvider::ReceiveProfile));
     return ThreadProfiler::CreateAndStartOnMainThread();
   }
 
@@ -33,7 +33,9 @@ std::unique_ptr<ThreadProfiler> CreateThreadProfiler() {
 }  // namespace
 
 MainThreadStackSamplingProfiler::MainThreadStackSamplingProfiler() {
-  sampling_profiler_ = CreateThreadProfiler();
+  const metrics::CallStackProfileParams::Process process =
+      GetProfileParamsProcess(*base::CommandLine::ForCurrentProcess());
+  sampling_profiler_ = CreateThreadProfiler(process);
 }
 
 // Note that it's important for the |sampling_profiler_| destructor to run, as

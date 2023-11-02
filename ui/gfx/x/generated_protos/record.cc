@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,6 +40,7 @@
 
 #include "record.h"
 
+#include <unistd.h>
 #include <xcb/xcb.h>
 #include <xcb/xcbext.h>
 
@@ -56,7 +57,9 @@ std::string Record::BadContextError::ToString() const {
   std::stringstream ss_;
   ss_ << "Record::BadContextError{";
   ss_ << ".sequence = " << static_cast<uint64_t>(sequence) << ", ";
-  ss_ << ".invalid_record = " << static_cast<uint64_t>(invalid_record);
+  ss_ << ".invalid_record = " << static_cast<uint64_t>(invalid_record) << ", ";
+  ss_ << ".minor_opcode = " << static_cast<uint64_t>(minor_opcode) << ", ";
+  ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
 }
@@ -68,6 +71,8 @@ void ReadError<Record::BadContextError>(Record::BadContextError* error_,
 
   auto& sequence = (*error_).sequence;
   auto& invalid_record = (*error_).invalid_record;
+  auto& minor_opcode = (*error_).minor_opcode;
+  auto& major_opcode = (*error_).major_opcode;
 
   // response_type
   uint8_t response_type;
@@ -82,6 +87,12 @@ void ReadError<Record::BadContextError>(Record::BadContextError* error_,
 
   // invalid_record
   Read(&invalid_record, &buf);
+
+  // minor_opcode
+  Read(&minor_opcode, &buf);
+
+  // major_opcode
+  Read(&major_opcode, &buf);
 
   DCHECK_LE(buf.offset, 32ul);
 }

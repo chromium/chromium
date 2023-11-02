@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,9 @@
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
+#include "base/containers/adapters.h"
 #include "base/memory/ptr_util.h"
+#include "base/observer_list.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/undo/undo_manager_observer.h"
 #include "components/undo/undo_operation.h"
@@ -41,8 +43,9 @@ void UndoGroup::AddOperation(std::unique_ptr<UndoOperation> operation) {
 }
 
 void UndoGroup::Undo() {
-  for (auto ri = operations_.rbegin(); ri != operations_.rend(); ++ri)
-    (*ri)->Undo();
+  for (const std::unique_ptr<UndoOperation>& operation :
+       base::Reversed(operations_))
+    operation->Undo();
 }
 
 // UndoManager ----------------------------------------------------------------
@@ -91,9 +94,9 @@ void UndoManager::AddUndoOperation(std::unique_ptr<UndoOperation> operation) {
   if (group_actions_count_) {
     pending_grouped_action_->AddOperation(std::move(operation));
   } else {
-    UndoGroup* new_action = new UndoGroup();
+    auto new_action = std::make_unique<UndoGroup>();
     new_action->AddOperation(std::move(operation));
-    AddUndoGroup(new_action);
+    AddUndoGroup(std::move(new_action));
   }
 }
 
@@ -113,7 +116,7 @@ void UndoManager::EndGroupingActions() {
 
   bool is_user_action = !performing_undo_ && !performing_redo_;
   if (!pending_grouped_action_->undo_operations().empty()) {
-    AddUndoGroup(pending_grouped_action_.release());
+    AddUndoGroup(std::move(pending_grouped_action_));
   } else {
     // No changes were executed since we started grouping actions, so the
     // pending UndoGroup should be discarded.
@@ -182,8 +185,8 @@ void UndoManager::NotifyOnUndoManagerStateChange() {
     observer.OnUndoManagerStateChange();
 }
 
-void UndoManager::AddUndoGroup(UndoGroup* new_undo_group) {
-  GetActiveUndoGroup()->push_back(base::WrapUnique<UndoGroup>(new_undo_group));
+void UndoManager::AddUndoGroup(std::unique_ptr<UndoGroup> new_undo_group) {
+  GetActiveUndoGroup()->push_back(std::move(new_undo_group));
 
   // User actions invalidate any available redo actions.
   if (is_user_action())

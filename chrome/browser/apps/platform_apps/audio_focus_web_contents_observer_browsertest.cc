@@ -1,7 +1,8 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/apps/platform_apps/audio_focus_web_contents_observer.h"
 #include "content/public/test/browser_test.h"
@@ -29,11 +30,18 @@ class AudioFocusWebContentsObserverBrowserTest
   }
 };
 
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_PlatformAppHasDifferentAudioFocus \
+  DISABLED_PlatformAppHasDifferentAudioFocus
+#else
+#define MAYBE_PlatformAppHasDifferentAudioFocus \
+  PlatformAppHasDifferentAudioFocus
+#endif
 IN_PROC_BROWSER_TEST_F(AudioFocusWebContentsObserverBrowserTest,
-                       PlatformAppHasDifferentAudioFocus) {
+                       MAYBE_PlatformAppHasDifferentAudioFocus) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  ExtensionTestMessageListener launched_listener("Launched", false);
+  ExtensionTestMessageListener launched_listener("Launched");
   const extensions::Extension* extension =
       InstallAndLaunchPlatformApp("minimal");
   ASSERT_TRUE(extension);
@@ -49,7 +57,7 @@ IN_PROC_BROWSER_TEST_F(AudioFocusWebContentsObserverBrowserTest,
   EXPECT_NE(base::UnguessableToken::Null(), GetAudioFocusGroupId(web_contents));
 
   // Create a new window and navigate it to the test app.
-  ExtensionTestMessageListener new_launched_listener("Launched", false);
+  ExtensionTestMessageListener new_launched_listener("Launched");
   LaunchPlatformApp(extension);
   ASSERT_TRUE(new_launched_listener.WaitUntilSatisfied());
 

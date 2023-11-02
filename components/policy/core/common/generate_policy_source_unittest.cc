@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -85,7 +85,7 @@ TEST(GeneratePolicySource, ChromeSchemaData) {
     EXPECT_TRUE(GetChromePolicyDetails(it.key()));
   }
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   subschema = schema.GetProperty(key::kDefaultCookiesSetting);
   ASSERT_TRUE(subschema.valid());
   EXPECT_EQ(base::Value::Type::INTEGER, subschema.type());
@@ -130,9 +130,9 @@ TEST(GeneratePolicySource, ChromeSchemaData) {
       EXPECT_EQ(base::Value::Type::STRING, it.schema().type());
   }
   EXPECT_TRUE(*next == nullptr);
-#endif  // !OS_IOS
+#endif  // !BUILDFLAG(IS_IOS)
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   subschema = schema.GetProperty(key::kExtensionSettings);
   ASSERT_TRUE(subschema.valid());
   ASSERT_EQ(base::Value::Type::DICTIONARY, subschema.type());
@@ -194,7 +194,7 @@ TEST(GeneratePolicySource, PolicyDetails) {
   EXPECT_EQ(6, details->id);
   EXPECT_EQ(0u, details->max_external_data_size);
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   details = GetChromePolicyDetails(key::kJavascriptEnabled);
   ASSERT_TRUE(details);
   EXPECT_TRUE(details->is_deprecated);
@@ -222,27 +222,27 @@ TEST(GeneratePolicySource, PolicyDetails) {
 #endif
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST(GeneratePolicySource, SetEnterpriseDefaults) {
   PolicyMap policy_map;
 
   // If policy not configured yet, set the enterprise default.
   SetEnterpriseUsersDefaults(&policy_map);
 
-  const base::Value* multiprof_behavior =
-      policy_map.GetValue(key::kChromeOsMultiProfileUserBehavior);
+  const base::Value* multiprof_behavior = policy_map.GetValue(
+      key::kChromeOsMultiProfileUserBehavior, base::Value::Type::STRING);
   base::Value expected("primary-only");
-  EXPECT_TRUE(expected.Equals(multiprof_behavior));
+  EXPECT_EQ(expected, *multiprof_behavior);
 
   // If policy already configured, it's not changed to enterprise defaults.
   policy_map.Set(key::kChromeOsMultiProfileUserBehavior, POLICY_LEVEL_MANDATORY,
                  POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                  base::Value("test_value"), nullptr);
   SetEnterpriseUsersDefaults(&policy_map);
-  multiprof_behavior =
-      policy_map.GetValue(key::kChromeOsMultiProfileUserBehavior);
+  multiprof_behavior = policy_map.GetValue(
+      key::kChromeOsMultiProfileUserBehavior, base::Value::Type::STRING);
   expected = base::Value("test_value");
-  EXPECT_TRUE(expected.Equals(multiprof_behavior));
+  EXPECT_EQ(expected, *multiprof_behavior);
 }
 
 TEST(GeneratePolicySource, SetEnterpriseSystemWideDefaults) {
@@ -251,12 +251,12 @@ TEST(GeneratePolicySource, SetEnterpriseSystemWideDefaults) {
   // If policy not configured yet, set the enterprise system-wide default.
   SetEnterpriseUsersSystemWideDefaults(&policy_map);
 
-  const base::Value* pin_unlock_autosubmit_enabled =
-      policy_map.GetValue(key::kPinUnlockAutosubmitEnabled);
+  const base::Value* pin_unlock_autosubmit_enabled = policy_map.GetValue(
+      key::kPinUnlockAutosubmitEnabled, base::Value::Type::BOOLEAN);
   ASSERT_TRUE(pin_unlock_autosubmit_enabled);
   EXPECT_FALSE(pin_unlock_autosubmit_enabled->GetBool());
-  const base::Value* allow_dinosaur_easter_egg =
-      policy_map.GetValue(key::kAllowDinosaurEasterEgg);
+  const base::Value* allow_dinosaur_easter_egg = policy_map.GetValue(
+      key::kAllowDinosaurEasterEgg, base::Value::Type::BOOLEAN);
   EXPECT_EQ(nullptr, allow_dinosaur_easter_egg);
 
   // If policy already configured, it's not changed to enterprise defaults.
@@ -264,11 +264,12 @@ TEST(GeneratePolicySource, SetEnterpriseSystemWideDefaults) {
                  POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(true),
                  nullptr);
   SetEnterpriseUsersSystemWideDefaults(&policy_map);
-  pin_unlock_autosubmit_enabled =
-      policy_map.GetValue(key::kPinUnlockAutosubmitEnabled);
+  pin_unlock_autosubmit_enabled = policy_map.GetValue(
+      key::kPinUnlockAutosubmitEnabled, base::Value::Type::BOOLEAN);
   ASSERT_TRUE(pin_unlock_autosubmit_enabled);
   EXPECT_TRUE(pin_unlock_autosubmit_enabled->GetBool());
-  allow_dinosaur_easter_egg = policy_map.GetValue(key::kAllowDinosaurEasterEgg);
+  allow_dinosaur_easter_egg = policy_map.GetValue(key::kAllowDinosaurEasterEgg,
+                                                  base::Value::Type::BOOLEAN);
   EXPECT_EQ(nullptr, allow_dinosaur_easter_egg);
 }
 
@@ -278,12 +279,12 @@ TEST(GeneratePolicySource, SetEnterpriseProfileDefaults) {
   // If policy not configured yet, set the enterprise profile default.
   SetEnterpriseUsersProfileDefaults(&policy_map);
 
-  const base::Value* allow_dinosaur_easter_egg =
-      policy_map.GetValue(key::kAllowDinosaurEasterEgg);
+  const base::Value* allow_dinosaur_easter_egg = policy_map.GetValue(
+      key::kAllowDinosaurEasterEgg, base::Value::Type::BOOLEAN);
   ASSERT_TRUE(allow_dinosaur_easter_egg);
   EXPECT_FALSE(allow_dinosaur_easter_egg->GetBool());
-  const base::Value* pin_unlock_autosubmit_enabled =
-      policy_map.GetValue(key::kPinUnlockAutosubmitEnabled);
+  const base::Value* pin_unlock_autosubmit_enabled = policy_map.GetValue(
+      key::kPinUnlockAutosubmitEnabled, base::Value::Type::BOOLEAN);
   EXPECT_EQ(nullptr, pin_unlock_autosubmit_enabled);
 
   // If policy already configured, it's not changed to enterprise defaults.
@@ -291,11 +292,12 @@ TEST(GeneratePolicySource, SetEnterpriseProfileDefaults) {
                  POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(true),
                  nullptr);
   SetEnterpriseUsersProfileDefaults(&policy_map);
-  allow_dinosaur_easter_egg = policy_map.GetValue(key::kAllowDinosaurEasterEgg);
+  allow_dinosaur_easter_egg = policy_map.GetValue(key::kAllowDinosaurEasterEgg,
+                                                  base::Value::Type::BOOLEAN);
   ASSERT_TRUE(allow_dinosaur_easter_egg);
   EXPECT_TRUE(allow_dinosaur_easter_egg->GetBool());
-  pin_unlock_autosubmit_enabled =
-      policy_map.GetValue(key::kPinUnlockAutosubmitEnabled);
+  pin_unlock_autosubmit_enabled = policy_map.GetValue(
+      key::kPinUnlockAutosubmitEnabled, base::Value::Type::BOOLEAN);
   EXPECT_EQ(nullptr, pin_unlock_autosubmit_enabled);
 }
 #endif

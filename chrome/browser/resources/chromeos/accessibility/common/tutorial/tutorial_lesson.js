@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,11 @@
  * ChromeVox interactive tutorial.
  */
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import 'chrome://resources/cr_elements/md_select_css.m.js';
-import 'chrome://resources/cr_elements/shared_style_css.m.js';
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/md_select.css.js';
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -59,7 +59,7 @@ export const TutorialLesson = Polymer({
 
   /** @override */
   ready() {
-    this.$.contentTemplate.addEventListener('dom-change', (evt) => {
+    this.$.contentTemplate.addEventListener('dom-change', evt => {
       this.dispatchEvent(new CustomEvent('lessonready', {composed: true}));
     });
 
@@ -70,12 +70,12 @@ export const TutorialLesson = Polymer({
         this.$.practiceContent.addEventListener(
             evt, event => this.onPracticeEvent(event), true);
       }
-      this.$.practiceContent.addEventListener('focus', (evt) => {
+      this.$.practiceContent.addEventListener('focus', evt => {
         // The practice area has the potential to overflow, so ensure elements
         // are scrolled into view when focused.
         evt.target.scrollIntoView();
       }, true);
-      this.$.practiceContent.addEventListener('click', (evt) => {
+      this.$.practiceContent.addEventListener('click', evt => {
         // Intercept click events. For example, clicking a link will exit the
         // tutorial without this listener.
         evt.preventDefault();
@@ -139,7 +139,7 @@ export const TutorialLesson = Polymer({
     const path = '../tutorial/practice_areas/' + this.practiceFile + '.html';
     const xhr = new XMLHttpRequest();
     xhr.open('GET', path, true);
-    xhr.onload = (evt) => {
+    xhr.onload = evt => {
       if (xhr.readyState === 4 && xhr.status === 200) {
         this.$.practiceContent.innerHTML = xhr.responseText;
         this.localizePracticeAreaContent();

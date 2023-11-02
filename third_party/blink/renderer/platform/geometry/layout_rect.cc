@@ -32,16 +32,12 @@
 
 #include <stdio.h>
 #include <algorithm>
-#include "third_party/blink/renderer/platform/geometry/double_rect.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
-
-LayoutRect::LayoutRect(const DoubleRect& r)
-    : location_(LayoutPoint(r.Location())), size_(LayoutSize(r.Size())) {}
 
 bool LayoutRect::Intersects(const LayoutRect& other) const {
   // Checking emptiness handles negative widths as well as zero.
@@ -165,8 +161,12 @@ String LayoutRect::ToString() const {
                         Size().ToString().Ascii().c_str());
 }
 
-WTF::TextStream& operator<<(WTF::TextStream& ts, const LayoutRect& rect) {
-  return ts << FloatRect(rect);
+WTF::TextStream& operator<<(WTF::TextStream& ts, const LayoutRect& r) {
+  ts << "at (" << WTF::TextStream::FormatNumberRespectingIntegers(r.X());
+  ts << "," << WTF::TextStream::FormatNumberRespectingIntegers(r.Y());
+  ts << ") size " << WTF::TextStream::FormatNumberRespectingIntegers(r.Width());
+  ts << "x" << WTF::TextStream::FormatNumberRespectingIntegers(r.Height());
+  return ts;
 }
 
 }  // namespace blink

@@ -32,14 +32,13 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 class ExceptionState;
-class ExecutionContext;
 class FilePropertyBag;
 class FileMetadata;
 class FormControlState;
@@ -113,15 +112,32 @@ class CORE_EXPORT File final : public Blob {
     return MakeGarbageCollected<File>(name, metadata, user_visibility);
   }
 
+  // KURL has a String() operator, so if this signature is called and not
+  // deleted it will overload to the signature above
+  // `CreateForFileSystemFile(String, FileMetadata, user_visibility)`.
   static File* CreateForFileSystemFile(const KURL& url,
                                        const FileMetadata& metadata,
-                                       UserVisibility user_visibility) {
-    return MakeGarbageCollected<File>(url, metadata, user_visibility);
+                                       UserVisibility user_visibility) = delete;
+
+  static File* CreateForFileSystemFile(
+      const KURL& url,
+      const FileMetadata& metadata,
+      UserVisibility user_visibility,
+      scoped_refptr<BlobDataHandle> blob_data_handle) {
+    return MakeGarbageCollected<File>(url, metadata, user_visibility,
+                                      std::move(blob_data_handle));
   }
 
-  File(const String& path,
-       ContentTypeLookupPolicy = kWellKnownContentTypes,
-       UserVisibility = File::kIsUserVisible);
+  // Calls RegisterBlob through the relevant FileSystemManager, then constructs
+  // a File with the resulting BlobDataHandle.
+  static File* CreateForFileSystemFile(ExecutionContext& context,
+                                       const KURL& url,
+                                       const FileMetadata& metadata,
+                                       UserVisibility user_visibility);
+
+  explicit File(const String& path,
+                ContentTypeLookupPolicy = kWellKnownContentTypes,
+                UserVisibility = File::kIsUserVisible);
   File(const String& path,
        const String& name,
        ContentTypeLookupPolicy,
@@ -138,7 +154,11 @@ class CORE_EXPORT File final : public Blob {
        const absl::optional<base::Time>& modification_time,
        scoped_refptr<BlobDataHandle>);
   File(const String& name, const FileMetadata&, UserVisibility);
-  File(const KURL& file_system_url, const FileMetadata&, UserVisibility);
+  File(const KURL& file_system_url,
+       const FileMetadata& metadata,
+       UserVisibility user_visibility,
+       scoped_refptr<BlobDataHandle> blob_data_handle);
+
   File(const File&);
 
   KURL FileSystemURL() const {
@@ -152,7 +172,7 @@ class CORE_EXPORT File final : public Blob {
   // associated DOM properties) that differs from the one provided in the path.
   static File* CreateForUserProvidedFile(const String& path,
                                          const String& display_name) {
-    if (display_name.IsEmpty()) {
+    if (display_name.empty()) {
       return MakeGarbageCollected<File>(path, File::kAllContentTypes,
                                         File::kIsUserVisible);
     }
@@ -164,7 +184,7 @@ class CORE_EXPORT File final : public Blob {
       const String& path,
       const String& name,
       ContentTypeLookupPolicy policy = kWellKnownContentTypes) {
-    if (name.IsEmpty())
+    if (name.empty())
       return MakeGarbageCollected<File>(path, policy, File::kIsNotUserVisible);
     return MakeGarbageCollected<File>(path, name, policy,
                                       File::kIsNotUserVisible);
@@ -239,7 +259,7 @@ class CORE_EXPORT File final : public Blob {
     return !HasBackingFile() || file_system_url_.IsEmpty();
   }
   // Instances not backed by a file must have an empty path set.
-  bool HasValidFilePath() const { return HasBackingFile() || path_.IsEmpty(); }
+  bool HasValidFilePath() const { return HasBackingFile() || path_.empty(); }
 #endif
 
   bool has_backing_file_;

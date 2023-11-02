@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -142,7 +142,7 @@ TEST_F(PushMessagingAppIdentifierTest, FindLegacy) {
 
   // Create a legacy preferences entry (the test happens to use PersistToPrefs
   // since that currently works, but it's ok to change the behavior of
-  // PersistToPrefs; if so, this test can just do a raw DictionaryPrefUpdate).
+  // PersistToPrefs; if so, this test can just do a raw ScopedDictPrefUpdate).
   original_.app_id_ = legacy_app_id;
   original_.PersistToPrefs(profile());
 

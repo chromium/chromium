@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,12 @@ namespace network {
 
 // These strings are used in histograms, so do not change the values without
 // updating/deprecating histograms which use RequestDestination.
+
 const char* RequestDestinationToString(
     network::mojom::RequestDestination dest) {
   switch (dest) {
     case network::mojom::RequestDestination::kEmpty:
+      // See https://crbug.com/1121493
       return "";
     case network::mojom::RequestDestination::kAudio:
       return "audio";
@@ -57,9 +59,16 @@ const char* RequestDestinationToString(
       return "xslt";
     case network::mojom::RequestDestination::kFencedframe:
       return "fencedframe";
+    case network::mojom::RequestDestination::kWebIdentity:
+      return "webidentity";
   }
-  NOTREACHED();
-  return "empty";
+}
+
+const char* RequestDestinationToStringForHistogram(
+    network::mojom::RequestDestination dest) {
+  return dest == network::mojom::RequestDestination::kEmpty
+             ? "empty"
+             : RequestDestinationToString(dest);
 }
 
 bool IsRequestDestinationEmbeddedFrame(

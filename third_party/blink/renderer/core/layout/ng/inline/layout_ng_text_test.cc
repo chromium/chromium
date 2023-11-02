@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@ class LayoutNGTextTest : public NGLayoutTest {
       return "LayoutText has NeedsCollectInlines";
     if (!layout_text.HasValidInlineItems())
       return "No valid inline items in LayoutText";
-    const LayoutBlockFlow& block_flow = *layout_text.ContainingNGBlockFlow();
+    const LayoutBlockFlow& block_flow = *layout_text.FragmentItemsContainer();
     if (block_flow.NeedsCollectInlines())
       return "LayoutBlockFlow has NeedsCollectInlines";
     const NGInlineNodeData& data = *block_flow.GetNGInlineNodeData();
@@ -39,7 +39,7 @@ class LayoutNGTextTest : public NGLayoutTest {
       if (const auto* shape_result = item.TextShapeResult()) {
         stream << ", ShapeResult=" << shape_result->StartIndex() << "+"
                << shape_result->NumCharacters();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
         if (shape_result->NumCharacters() != shape_result->NumGlyphs())
           stream << " #glyphs=" << shape_result->NumGlyphs();
 #else
@@ -69,8 +69,8 @@ TEST_F(LayoutNGTextTest, SetTextWithOffsetAppendBidi) {
   text.appendData(u"\u05D0\u05D1\u05BC\u05D2");
 
   EXPECT_EQ(
-      u8"*{'\u05D0\u05D1\u05BC\u05D2\u05D0\u05D1\u05BC\u05D2', "
-      u8"ShapeResult=0+8 #glyphs=6}\n",
+      "*{'\u05D0\u05D1\u05BC\u05D2\u05D0\u05D1\u05BC\u05D2', "
+      "ShapeResult=0+8 #glyphs=6}\n",
       GetItemsAsString(*text.GetLayoutObject(), 6));
 }
 
@@ -127,17 +127,17 @@ TEST_F(LayoutNGTextTest, SetTextWithOffsetAppendEmojiWithZWJ) {
   Text& text = To<Text>(*GetElementById("target")->firstChild());
   UpdateAllLifecyclePhasesForTest();
   text.appendData(u"\u200D");
-  EXPECT_EQ(u8"*{'\U0001F937\u200D', ShapeResult=0+3 #glyphs=2}\n",
+  EXPECT_EQ("*{'\U0001F937\u200D', ShapeResult=0+3 #glyphs=2}\n",
             GetItemsAsString(*text.GetLayoutObject(), 2));
 
   UpdateAllLifecyclePhasesForTest();
   text.appendData(u"\u2640");
-  EXPECT_EQ(u8"*{'\U0001F937\u200D\u2640', ShapeResult=0+4 #glyphs=1}\n",
+  EXPECT_EQ("*{'\U0001F937\u200D\u2640', ShapeResult=0+4 #glyphs=1}\n",
             GetItemsAsString(*text.GetLayoutObject(), 1));
 
   UpdateAllLifecyclePhasesForTest();
   text.appendData(u"\uFE0F");
-  EXPECT_EQ(u8"*{'\U0001F937\u200D\u2640\uFE0F', ShapeResult=0+5 #glyphs=1}\n",
+  EXPECT_EQ("*{'\U0001F937\u200D\u2640\uFE0F', ShapeResult=0+5 #glyphs=1}\n",
             GetItemsAsString(*text.GetLayoutObject(), 1));
 }
 

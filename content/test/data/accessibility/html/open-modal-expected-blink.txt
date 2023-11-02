@@ -4,10 +4,12 @@ rootWebArea
 ++++++staticText name='some text'
 ++++++++inlineTextBox name='some text'
 ++++++genericContainer ignored
-++++++++genericContainer ignored invisible
+++++++++dialog ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++++staticText ignored name='Some Text'
 === Start Continuation ===
 rootWebArea
-++genericContainer ignored
+++genericContainer ignored invisible
 ++++genericContainer ignored invisible
 ++++++genericContainer ignored invisible
 ++++++++dialog
@@ -16,7 +18,7 @@ rootWebArea
 ++++++++++++++inlineTextBox name='Some Text'
 === Start Continuation ===
 rootWebArea
-++genericContainer ignored
+++genericContainer ignored invisible
 ++++genericContainer ignored invisible
 ++++++genericContainer ignored invisible
 ++++++++dialog

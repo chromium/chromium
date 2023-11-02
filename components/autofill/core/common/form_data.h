@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,8 @@ using ButtonTitleInfo = std::pair<std::u16string, mojom::ButtonTitleType>;
 
 // List of button titles of a given form.
 using ButtonTitleList = std::vector<ButtonTitleInfo>;
+
+using FormVersion = ::base::IdTypeU64<class FormVersionMarker>;
 
 // Element of FormData::child_frames.
 struct FrameTokenWithPredecessor {
@@ -132,15 +134,22 @@ struct FrameTokenWithPredecessor {
 // [4] https://html.spec.whatwg.org/multipage/input.html#attr-input-type
 // clang-format on
 struct FormData {
-  // Less-than relation for STL containers. Compares only members needed to
-  // uniquely identify a form.
-  // TODO(crbug.com/1215333): Remove once `AutofillUseNewFormExtraction` is
-  // launched.
-  struct IdentityComparator {
-    bool operator()(const FormData& a, const FormData& b) const;
-  };
-
-  // Returns true if all members of forms |a| and |b| are identical.
+  // Returns true if many members of forms |a| and |b| are identical.
+  //
+  // "Many" is intended to be "all", but currently the following members are not
+  // being compared:
+  //
+  // - FormData::button_titles,
+  // - FormData::full_url,
+  // - FormData::is_action_empty,
+  // - FormData::main_frame_origin,
+  // - FormData::host_frame,
+  // - FormData::version,
+  // - FormData::submission_event,
+  // - FormData::username_predictions,
+  // - FormData::is_gaia_with_skip_save_password_form,
+  // - FormData::frame_id,
+  // - some fields of FormFieldData (see FormFieldData::Equal()).
   static bool DeepEqual(const FormData& a, const FormData& b);
 
   FormData();
@@ -179,7 +188,6 @@ struct FormData {
   // The name attribute of the form.
   std::u16string name_attribute;
 
-  // NOTE: update IdentityComparator                when adding new a member.
   // NOTE: update SameFormAs()            if needed when adding new a member.
   // NOTE: update SimilarFormAs()         if needed when adding new a member.
   // NOTE: update DynamicallySameFormAs() if needed when adding new a member.
@@ -190,26 +198,38 @@ struct FormData {
   // form signatures.
   // TODO(crbug/896689): remove this and use attributes/unique_id instead.
   std::u16string name;
+
   // Titles of form's buttons.
+  // Only populated in Password Manager.
   ButtonTitleList button_titles;
+
   // The URL (minus query parameters and fragment) containing the form.
   // This value should not be sent via mojo.
   GURL url;
+
   // The full URL, including query parameters and fragment.
   // This value should be set only for password forms.
   // This value should not be sent via mojo.
   GURL full_url;
+
   // The action target of the form.
   GURL action;
+
   // If the form in the DOM has an empty action attribute, the |action| field in
   // the FormData is set to the frame URL of the embedding document. This field
   // indicates whether the action attribute is empty in the form in the DOM.
   bool is_action_empty = false;
+
   // The URL of main frame containing this form.
   // This value should not be sent via mojo.
+  // |main_frame_origin| represents the main frame (not necessarily primary
+  // main frame) of the form's frame tree as described by MPArch nested frame
+  // trees. For details, see RenderFrameHost::GetMainFrame().
   url::Origin main_frame_origin;
+
   // True if this form is a form tag.
   bool is_form_tag = true;
+
   // A unique identifier of the containing frame. This value is not serialized
   // because LocalFrameTokens must not be leaked to other renderer processes.
   LocalFrameToken host_frame;
@@ -218,24 +238,42 @@ struct FormData {
   // |host_frame| to identify a field; see global_id(). It is not persistent
   // between page loads and therefore not used in comparison in SameFieldAs().
   FormRendererId unique_renderer_id;
-  // A vector of all frames in the form.
+
+  // A monotonically increasing counter that indicates the generation of the
+  // form: if `f.version < g.version`, then `f` has been received from the
+  // renderer before `g`. On non-iOS, the converse direction holds as well.
+  //
+  // This is intended only for AutofillManager's form cache as a workaround for
+  // the cache-downdating problem.
+  // TODO(crbug.com/1117028): Remove once FormData objects aren't stored
+  // globally anymore.
+  FormVersion version;
+
+  // A vector of all frames in the form, where currently 'frames' only refers
+  // to iframes and not fenced frames. It can only be iframes because those are
+  // the only frames with cross frame form filling.
   std::vector<FrameTokenWithPredecessor> child_frames;
+
   // The type of the event that was taken as an indication that this form is
   // being or has already been submitted. This field is filled only in Password
   // Manager for submitted password forms.
   mojom::SubmissionIndicatorEvent submission_event =
       mojom::SubmissionIndicatorEvent::NONE;
+
   // A vector of all the input fields in the form.
   std::vector<FormFieldData> fields;
+
   // Contains unique renderer IDs of text elements which are predicted to be
   // usernames. The order matters: elements are sorted in descending likelihood
   // of being a username (the first one is the most likely username). Can
   // contain IDs of elements which are not in |fields|. This is only used during
   // parsing into PasswordForm, and hence not serialised for storage.
   std::vector<FieldRendererId> username_predictions;
+
   // True if this is a Gaia form which should be skipped on saving.
   bool is_gaia_with_skip_save_password_form = false;
-#if defined(OS_IOS)
+
+#if BUILDFLAG(IS_IOS)
   std::string frame_id;
 #endif
 };
@@ -254,8 +292,6 @@ void SerializeFormData(const FormData& form_data, base::Pickle* pickle);
 bool DeserializeFormData(base::PickleIterator* iter, FormData* form_data);
 
 LogBuffer& operator<<(LogBuffer& buffer, const FormData& form);
-
-bool FormDataEqualForTesting(const FormData& lhs, const FormData& rhs);
 
 }  // namespace autofill
 

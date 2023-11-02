@@ -1,9 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/password_feature_manager_impl.h"
 
+#include "build/build_config.h"
 #include "components/password_manager/core/browser/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -11,12 +12,19 @@
 #include "components/prefs/pref_service.h"
 #include "components/sync/driver/sync_service.h"
 
+#if !BUILDFLAG(IS_IOS)
+#include "components/autofill_assistant/browser/public/prefs.h"
+#endif  // !BUILDFLAG(IS_IOS)
+
 namespace password_manager {
 
 PasswordFeatureManagerImpl::PasswordFeatureManagerImpl(
     PrefService* pref_service,
+    PrefService* local_state,
     const syncer::SyncService* sync_service)
-    : pref_service_(pref_service), sync_service_(sync_service) {}
+    : pref_service_(pref_service),
+      local_state_(local_state),
+      sync_service_(sync_service) {}
 
 bool PasswordFeatureManagerImpl::IsGenerationEnabled() const {
   switch (password_manager_util::GetPasswordSyncState(sync_service_)) {
@@ -25,6 +33,29 @@ bool PasswordFeatureManagerImpl::IsGenerationEnabled() const {
     case SyncState::kSyncingWithCustomPassphrase:
     case SyncState::kSyncingNormalEncryption:
     case SyncState::kAccountPasswordsActiveNormalEncryption:
+      return true;
+  }
+}
+
+bool PasswordFeatureManagerImpl::
+    AreRequirementsForAutomatedPasswordChangeFulfilled() const {
+  // Only offer APC if Autofill Assistant is not disabled (by user choice
+  // or by enterprise policy).
+#if !BUILDFLAG(IS_IOS)
+  if (!pref_service_->GetBoolean(
+          autofill_assistant::prefs::kAutofillAssistantEnabled)) {
+    return false;
+  }
+#endif  // !BUILDFLAG(IS_IOS)
+
+  // TODO(crbug.com/1349782): Re-enable for account store users once
+  // adjustments to script fetchers and WebsiteLoginManager are made.
+  switch (password_manager_util::GetPasswordSyncState(sync_service_)) {
+    case SyncState::kNotSyncing:
+    case SyncState::kAccountPasswordsActiveNormalEncryption:
+      return false;
+    case SyncState::kSyncingWithCustomPassphrase:
+    case SyncState::kSyncingNormalEncryption:
       return true;
   }
 }
@@ -66,9 +97,7 @@ bool PasswordFeatureManagerImpl::ShouldShowAccountStorageBubbleUi() const {
 
 bool PasswordFeatureManagerImpl::
     ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally() const {
-  return base::FeatureList::IsEnabled(
-             features::kPasswordsAccountStorageRevisedOptInFlow) &&
-         ShouldShowAccountStorageOptIn() && !IsDefaultPasswordStoreSet();
+  return ShouldShowAccountStorageOptIn() && !IsDefaultPasswordStoreSet();
 }
 
 PasswordForm::Store PasswordFeatureManagerImpl::GetDefaultPasswordStore()
@@ -95,6 +124,30 @@ void PasswordFeatureManagerImpl::RecordMoveOfferedToNonOptedInUser() {
 int PasswordFeatureManagerImpl::GetMoveOfferedToNonOptedInUserCount() const {
   return features_util::GetMoveOfferedToNonOptedInUserCount(pref_service_,
                                                             sync_service_);
+}
+
+bool PasswordFeatureManagerImpl::IsBiometricAuthenticationBeforeFillingEnabled()
+    const {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // This checking order is important to ensure balanced experiment groups.
+  // First check for `kHadBiometricsAvailable` ensures that user have biometric
+  // scanner on their devices, shrinking down the amount of affected users.
+  // Check for the feature flag happens for everyone no matter whether they
+  // are/aren't using this feature, assuming they could use it(biometric scanner
+  // is available). Final check `kBiometricAuthenticationBeforeFilling` ensures
+  // that toggle in settings that manages this feature is turned on.
+  return local_state_ &&
+         local_state_->GetBoolean(
+             password_manager::prefs::kHadBiometricsAvailable) &&
+         base::FeatureList::IsEnabled(
+             password_manager::features::kBiometricAuthenticationForFilling) &&
+         pref_service_ &&
+         pref_service_->GetBoolean(
+             password_manager::prefs::kBiometricAuthenticationBeforeFilling);
+#else
+  NOTREACHED();
+  return false;
+#endif
 }
 
 }  // namespace password_manager

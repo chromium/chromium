@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"
@@ -101,10 +102,10 @@ class SharingFCMHandler : public gcm::GCMAppHandler {
       absl::optional<std::string> message_id,
       SharingChannelType channel_type);
 
-  gcm::GCMDriver* const gcm_driver_;
-  syncer::DeviceInfoTracker* device_info_tracker_;
-  SharingFCMSender* sharing_fcm_sender_;
-  SharingHandlerRegistry* handler_registry_;
+  const raw_ptr<gcm::GCMDriver> gcm_driver_;
+  raw_ptr<syncer::DeviceInfoTracker> device_info_tracker_;
+  raw_ptr<SharingFCMSender> sharing_fcm_sender_;
+  raw_ptr<SharingHandlerRegistry> handler_registry_;
 
   bool is_listening_ = false;
 

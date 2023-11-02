@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,7 @@
 
 class Profile;
 
-namespace ash {
-namespace full_restore {
+namespace ash::full_restore {
 
 // This class handles the new user's OS restore pref "restore_apps_and_pages".
 //
@@ -69,7 +68,6 @@ class NewUserRestorePrefHandler
       syncable_pref_observer_{this};
 };
 
-}  // namespace full_restore
-}  // namespace ash
+}  // namespace ash::full_restore
 
 #endif  // CHROME_BROWSER_ASH_APP_RESTORE_NEW_USER_RESTORE_PREF_HANDLER_H_

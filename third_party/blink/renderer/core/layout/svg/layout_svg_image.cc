@@ -120,8 +120,7 @@ gfx::SizeF LayoutSVGImage::CalculateObjectSize() const {
 
     RespectImageOrientationEnum respect_orientation =
         LayoutObject::ShouldRespectImageOrientation(this);
-    intrinsic_size =
-        ToGfxSizeF(cached_image->GetImage()->SizeAsFloat(respect_orientation));
+    intrinsic_size = cached_image->GetImage()->SizeAsFloat(respect_orientation);
     if (auto* svg_image = DynamicTo<SVGImage>(cached_image->GetImage())) {
       IntrinsicSizingInfo intrinsic_sizing_info;
       has_intrinsic_ratio &=
@@ -208,17 +207,17 @@ void LayoutSVGImage::Paint(const PaintInfo& paint_info) const {
 bool LayoutSVGImage::NodeAtPoint(HitTestResult& result,
                                  const HitTestLocation& hit_test_location,
                                  const PhysicalOffset& accumulated_offset,
-                                 HitTestAction hit_test_action) {
+                                 HitTestPhase phase) {
   NOT_DESTROYED();
   DCHECK_EQ(accumulated_offset, PhysicalOffset());
-  // We only draw in the forground phase, so we only hit-test then.
-  if (hit_test_action != kHitTestForeground)
+  // We only draw in the foreground phase, so we only hit-test then.
+  if (phase != HitTestPhase::kForeground)
     return false;
 
   const ComputedStyle& style = StyleRef();
-  PointerEventsHitRules hit_rules(PointerEventsHitRules::SVG_IMAGE_HITTESTING,
+  PointerEventsHitRules hit_rules(PointerEventsHitRules::kSvgImageHitTesting,
                                   result.GetHitTestRequest(),
-                                  style.PointerEvents());
+                                  style.UsedPointerEvents());
   if (hit_rules.require_visible && style.Visibility() != EVisibility::kVisible)
     return false;
 
@@ -232,7 +231,7 @@ bool LayoutSVGImage::NodeAtPoint(HitTestResult& result,
 
   if (hit_rules.can_hit_fill || hit_rules.can_hit_bounding_box) {
     if (local_location->Intersects(object_bounding_box_)) {
-      UpdateHitTestResult(result, PhysicalOffset::FromFloatPointRound(
+      UpdateHitTestResult(result, PhysicalOffset::FromPointFRound(
                                       local_location->TransformedPoint()));
       if (result.AddNodeToListBasedTestResult(GetElement(), *local_location) ==
           kStopHitTesting)

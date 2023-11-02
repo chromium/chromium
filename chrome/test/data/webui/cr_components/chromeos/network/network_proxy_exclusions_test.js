@@ -1,13 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/strings.m.js';
-// #import 'chrome://resources/cr_components/chromeos/network/network_proxy_exclusions.m.js';
+import 'chrome://os-settings/strings.m.js';
+import 'chrome://resources/ash/common/network/network_proxy_exclusions.js';
+
 //
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// clang-format on
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('NetworkProxyExclusionsTest', function() {
   /** @type {!NetworkProxyExclusions|undefined} */
@@ -16,14 +15,16 @@ suite('NetworkProxyExclusionsTest', function() {
   setup(function() {
     proxyExclusions = document.createElement('network-proxy-exclusions');
     document.body.appendChild(proxyExclusions);
-    Polymer.dom.flush();
+    flush();
   });
 
   test('Clear fires proxy-exclusions-change event', function(done) {
     proxyExclusions.exclusions = [
-      'one', 'two', 'three'
+      'one',
+      'two',
+      'three',
     ];
-    Polymer.dom.flush();
+    flush();
 
     // Verify that clicking the clear button fires the proxy-exclusions-change
     // event and that the item was removed from the exclusions list.

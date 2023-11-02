@@ -67,7 +67,7 @@ class AnalyzeBaselines(AbstractRebaseliningCommand):
             name = self._port.output_filename(
                 test_name, self._port.BASELINE_SUFFIX, extension)
             results_by_directory = self._baseline_optimizer.read_results_by_directory(
-                name)
+                test_name, name)
             if results_by_directory:
                 self._write('%s:' % name)
                 self._baseline_optimizer.write_by_directory(

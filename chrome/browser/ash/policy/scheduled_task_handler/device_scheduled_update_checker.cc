@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,9 @@
 #include <memory>
 #include <utility>
 
-#include "ash/components/settings/cros_settings_names.h"
-#include "ash/components/settings/timezone_settings.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -23,6 +22,9 @@
 #include "chrome/browser/ash/policy/scheduled_task_handler/scheduled_task_executor_impl.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/scheduled_task_util.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/task_executor_with_retries.h"
+#include "chrome/common/chrome_features.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/settings/timezone_settings.h"
 
 namespace policy {
 
@@ -44,7 +46,7 @@ constexpr char kTaskTimeFieldName[] = "update_check_time";
 // so it's safe to use "this" with any callbacks.
 DeviceScheduledUpdateChecker::DeviceScheduledUpdateChecker(
     ash::CrosSettings* cros_settings,
-    chromeos::NetworkStateHandler* network_state_handler,
+    ash::NetworkStateHandler* network_state_handler,
     std::unique_ptr<ScheduledTaskExecutor> update_check_executor)
     : cros_settings_(cros_settings),
       cros_settings_subscription_(cros_settings_->AddSettingsObserver(
@@ -115,11 +117,17 @@ void DeviceScheduledUpdateChecker::TimezoneChanged(
 }
 
 void DeviceScheduledUpdateChecker::OnScheduledUpdateCheckDataChanged() {
-  // If the policy is removed then reset all state including any existing update
-  // checks.
+  // If the policy is removed or is not supported on the device, then reset all
+  // state including any existing update checks.
+  // The policy is not supported if device can not reliably schedule RTC wake
+  // in a required range. The specific feature used is one that describes a
+  // a known bug on some platforms, where setting rtc wake further than 24 hours
+  // away crashes the device. Alternative ways to fix it are too risky, since
+  // they may break a bigger proportion of the devices when pushed.
   const base::Value* value =
       cros_settings_->GetPref(ash::kDeviceScheduledUpdateCheck);
-  if (!value) {
+  if (!base::FeatureList::IsEnabled(::features::kSupportsRtcWakeOver24Hours) ||
+      !value) {
     ResetState();
     return;
   }

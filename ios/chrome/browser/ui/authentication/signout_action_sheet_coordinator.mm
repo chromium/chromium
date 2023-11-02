@@ -1,25 +1,27 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet_coordinator.h"
 
 #import "base/check.h"
+#import "base/feature_list.h"
 #import "base/format_macros.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
-#include "ios/chrome/browser/signin/authentication_service_factory.h"
-#include "ios/chrome/browser/sync/sync_setup_service.h"
-#include "ios/chrome/browser/sync/sync_setup_service_factory.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/sync/sync_setup_service.h"
+#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
-#include "ios/chrome/grit/ios_chromium_strings.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -46,6 +48,8 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   CGRect _rect;
   // View for the popovert alert.
   __weak UIView* _view;
+  // Source of the sign-out action. For histogram if the sign-out occurs.
+  signin_metrics::ProfileSignout _signout_source_metric;
 }
 
 // Service for managing identity authentication.
@@ -63,11 +67,14 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                       rect:(CGRect)rect
-                                      view:(UIView*)view {
+                                      view:(UIView*)view
+                                withSource:(signin_metrics::ProfileSignout)
+                                               signout_source_metric {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _rect = rect;
     _view = view;
+    _signout_source_metric = signout_source_metric;
   }
   return self;
 }
@@ -151,8 +158,12 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
       if (IsForceSignInEnabled()) {
         title = l10n_util::GetNSString(
             IDS_IOS_ENTERPRISE_FORCED_SIGNIN_SIGNOUT_DIALOG_TITLE);
-        break;
+      } else if (self.showUnavailableFeatureDialogHeader) {
+        DCHECK(base::FeatureList::IsEnabled(switches::kEnableCbdSignOut));
+        title = l10n_util::GetNSString(
+            IDS_IOS_SIGNOUT_DIALOG_TITLE_WITHOUT_SYNCING_ACCOUNT);
       }
+      break;
     }
   }
 
@@ -283,17 +294,18 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
     return;
   }
 
-  [self.delegate didSelectSignoutDataRetentionStrategy];
+  [self.delegate signoutActionSheetCoordinatorPreventUserInteraction:self];
 
-  [self.baseViewController.view setUserInteractionEnabled:NO];
   __weak SignoutActionSheetCoordinator* weakSelf = self;
   self.authenticationService->SignOut(
       signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS, forceClearData, ^{
-        if (!weakSelf) {
+        __strong SignoutActionSheetCoordinator* strongSelf = weakSelf;
+        if (!strongSelf) {
           return;
         }
-        [weakSelf.baseViewController.view setUserInteractionEnabled:YES];
-        weakSelf.completion(YES);
+        [strongSelf.delegate
+            signoutActionSheetCoordinatorAllowUserInteraction:strongSelf];
+        strongSelf.completion(YES);
       });
   // Get UMA metrics on the usage of different options for signout available
   // for users with non-managed accounts.
@@ -303,11 +315,9 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
                           forceClearData);
   }
   if (forceClearData) {
-    base::RecordAction(base::UserMetricsAction(
-        "Signin_SignoutClearData_FromAccountListSettings"));
+    base::RecordAction(base::UserMetricsAction("Signin_SignoutClearData"));
   } else {
-    base::RecordAction(
-        base::UserMetricsAction("Signin_Signout_FromAccountListSettings"));
+    base::RecordAction(base::UserMetricsAction("Signin_Signout"));
   }
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,10 @@
 namespace blink {
 
 class HTMLTextAreaElementTest : public testing::WithParamInterface<bool>,
-                                private ScopedLayoutNGTextControlForTest,
+                                private ScopedLayoutNGForTest,
                                 public RenderingTest {
  public:
-  HTMLTextAreaElementTest() : ScopedLayoutNGTextControlForTest(GetParam()) {}
+  HTMLTextAreaElementTest() : ScopedLayoutNGForTest(GetParam()) {}
 
  protected:
   HTMLTextAreaElement& TestElement() {
@@ -61,13 +61,13 @@ TEST_P(HTMLTextAreaElementTest, ValueWithHardLineBreaks) {
   )HTML");
   HTMLTextAreaElement& textarea = TestElement();
   RunDocumentLifecycle();
-  EXPECT_TRUE(textarea.ValueWithHardLineBreaks().IsEmpty());
+  EXPECT_TRUE(textarea.ValueWithHardLineBreaks().empty());
 
-  textarea.setValue("12345678");
+  textarea.SetValue("12345678");
   RunDocumentLifecycle();
   EXPECT_EQ("1234\n5678", textarea.ValueWithHardLineBreaks());
 
-  textarea.setValue("1234567890\n");
+  textarea.SetValue("1234567890\n");
   RunDocumentLifecycle();
   EXPECT_EQ("1234\n5678\n90\n", textarea.ValueWithHardLineBreaks());
 
@@ -98,7 +98,7 @@ TEST_P(HTMLTextAreaElementTest, ValueWithHardLineBreaksRtl) {
 
 #define LTO "\xE2\x80\xAD"
 #define RTO "\xE2\x80\xAE"
-  textarea.setValue(
+  textarea.SetValue(
       String::FromUTF8(RTO "Hebrew" LTO " English " RTO "Arabic" LTO));
   // This textarea is rendered as:
   //    -----------------
@@ -110,6 +110,25 @@ TEST_P(HTMLTextAreaElementTest, ValueWithHardLineBreaksRtl) {
             textarea.ValueWithHardLineBreaks());
 #undef LTO
 #undef RTO
+}
+
+TEST_P(HTMLTextAreaElementTest, DefaultToolTip) {
+  LoadAhem();
+
+  SetBodyContent(R"HTML(
+    <textarea id=test></textarea>
+  )HTML");
+  HTMLTextAreaElement& textarea = TestElement();
+
+  textarea.SetBooleanAttribute(html_names::kRequiredAttr, true);
+  EXPECT_EQ("<<ValidationValueMissing>>", textarea.DefaultToolTip());
+
+  textarea.SetBooleanAttribute(html_names::kNovalidateAttr, true);
+  EXPECT_EQ(String(), textarea.DefaultToolTip());
+
+  textarea.removeAttribute(html_names::kNovalidateAttr);
+  textarea.SetValue("1234567890\n");
+  EXPECT_EQ(String(), textarea.DefaultToolTip());
 }
 
 }  // namespace blink

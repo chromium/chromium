@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -69,18 +69,7 @@ const char kEULAAutoAccept[] = "eulaAutoAccept";
 // automatically.
 const char kArcTosAutoAccept[] = "arcTosAutoAccept";
 
-// == Update screen:
-
-// Boolean value, indicating that all non-critical updates should be skipped.
-// This should be used only during rollback scenario, when Chrome version is
-// known not to have any critical issues.
-const char kUpdateSkipUpdate[] = "updateSkipNonCritical";
-
 // == Wizard controller:
-
-// Boolean value, controls if WizardController should automatically start
-// enrollment at appropriate moment.
-const char kWizardAutoEnroll[] = "wizardAutoEnroll";
 
 // String value, containing device requisition parameter.
 const char kDeviceRequisition[] = "deviceRequisition";
@@ -120,10 +109,6 @@ constexpr struct {
     {kEULASendUsageStatistics, ValueType::BOOLEAN,
      ConfigurationHandlerSide::HANDLER_JS},
     {kEULAAutoAccept, ValueType::BOOLEAN, ConfigurationHandlerSide::HANDLER_JS},
-    {kUpdateSkipUpdate, ValueType::BOOLEAN,
-     ConfigurationHandlerSide::HANDLER_CPP},
-    {kWizardAutoEnroll, ValueType::BOOLEAN,
-     ConfigurationHandlerSide::HANDLER_CPP},
     {kRestoreAfterRollback, ValueType::BOOLEAN,
      ConfigurationHandlerSide::HANDLER_CPP},
     {kDeviceRequisition, ValueType::STRING,
@@ -144,43 +129,40 @@ constexpr struct {
     {"testValue", ValueType::STRING, ConfigurationHandlerSide::HANDLER_BOTH},
 };
 
-bool ValidateConfiguration(const base::Value& configuration) {
-  if (configuration.type() != ValueType::DICTIONARY) {
-    LOG(ERROR) << "Configuration should be a dictionary";
-    return false;
-  }
-  base::Value clone = configuration.Clone();
+bool ValidateConfiguration(const base::Value::Dict& configuration) {
+  base::Value::Dict clone = configuration.Clone();
   bool valid = true;
   for (const auto& key : kAllConfigurationKeys) {
-    auto* value = clone.FindKey(key.key);
+    auto* value = clone.Find(key.key);
     if (value) {
       if (value->type() != key.type) {
         valid = false;
         LOG(ERROR) << "Invalid configuration: key " << key.key
                    << " type is invalid";
       }
-      clone.RemoveKey(key.key);
+      clone.Remove(key.key);
     }
   }
-  for (const auto item : clone.DictItems())
+  for (const auto item : clone)
     LOG(WARNING) << "Unknown configuration key " << item.first;
   return valid;
 }
 
-void FilterConfiguration(const base::Value& configuration,
-                         ConfigurationHandlerSide side,
-                         base::Value& filtered_result) {
+base::Value::Dict FilterConfiguration(const base::Value::Dict& configuration,
+                                      ConfigurationHandlerSide side) {
   DCHECK(side == ConfigurationHandlerSide::HANDLER_CPP ||
          side == ConfigurationHandlerSide::HANDLER_JS);
+  base::Value::Dict filtered_result;
   for (const auto& key : kAllConfigurationKeys) {
     if (key.side == side ||
         key.side == ConfigurationHandlerSide::HANDLER_BOTH) {
-      auto* value = configuration.FindKey(key.key);
+      auto* value = configuration.Find(key.key);
       if (value) {
-        filtered_result.SetKey(key.key, value->Clone());
+        filtered_result.Set(key.key, value->Clone());
       }
     }
   }
+  return filtered_result;
 }
 
 }  // namespace configuration

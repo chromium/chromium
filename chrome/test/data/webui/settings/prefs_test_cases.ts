@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
  * for a given pref, not every "next" value is different from the previous
  * value; this tests what happens when stale changes are reported.
  */
-type TestCase = {
-  pref: chrome.settingsPrivate.PrefObject,
-  nextValues: any[],
+interface TestCase {
+  pref: chrome.settingsPrivate.PrefObject;
+  nextValues: any[];
 }
 
 export const prefsTestCases: TestCase[] = [
@@ -72,9 +72,9 @@ export const prefsTestCases: TestCase[] = [
           javascript: ['chromium.org', 'example.com'],
           cookies: ['example.net'],
           mic: ['example.com'],
-          flash: []
+          flash: [],
         },
-        {some: 4, other: 8, dictionary: 16}
+        {some: 4, other: 8, dictionary: 16},
       ],
     },
     nextValues: [
@@ -82,18 +82,18 @@ export const prefsTestCases: TestCase[] = [
         {
           javascript: ['example.com', 'example.net'],
           cookies: ['example.net', 'example.com'],
-          mic: ['example.com']
+          mic: ['example.com'],
         },
-        {some: 4, other: 8, dictionary: 16}
+        {some: 4, other: 8, dictionary: 16},
       ],
       [
         {
           javascript: ['chromium.org', 'example.com'],
           cookies: ['chromium.org', 'example.net', 'example.com'],
           flash: ['localhost'],
-          mic: ['example.com']
+          mic: ['example.com'],
         },
-        {some: 2.2, dictionary: 4.4}
+        {some: 2.2, dictionary: 4.4},
       ],
     ],
   },
@@ -140,7 +140,7 @@ export const prefsTestCases: TestCase[] = [
           'last_used': 1442489000.1000,
           'setting': 2,
         },
-      }
+      },
     ],
-  }
+  },
 ];

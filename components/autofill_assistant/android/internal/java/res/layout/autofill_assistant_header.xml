@@ -32,19 +32,21 @@
         android:paddingStart="8dp"
         android:paddingEnd="16dp"
         android:layout_marginTop="14dp"
+        android:focusable="true"
+        android:importantForAccessibility="yes"
         android:layout_marginBottom="@dimen/autofill_assistant_header_text_vertical_spacing"
         android:maxLines="4"
         android:ellipsize="end"
         android:textAppearance="@style/TextAppearance.AssistantBlackTitle"/>
 
-    <!-- Not adding contentDescription as we will hide the button in Talkback mode -->
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/tts_button"
         android:layout_width="@dimen/autofill_assistant_minimum_touch_target_size"
         android:layout_height="@dimen/autofill_assistant_minimum_touch_target_size"
         android:padding="@dimen/autofill_assistant_tts_button_padding"
         android:visibility="gone"
-        android:tint="@color/default_icon_color"
+        android:tint="@macro/default_icon_color"
+        android:contentDescription="@string/autofill_assistant_tts_button"
         app:srcCompat="@drawable/ic_volume_on_white_24dp"/>
 
     <org.chromium.ui.widget.ChromeImageView
@@ -53,7 +55,7 @@
         android:layout_height="@dimen/autofill_assistant_minimum_touch_target_size"
         android:padding="@dimen/autofill_assistant_profile_icon_padding"
         android:contentDescription="@string/settings"
-        app:srcCompat="@drawable/logo_avatar_anonymous"/>
+        app:srcCompat="@drawable/anonymous_account_image"/>
   </LinearLayout>
 
   <LinearLayout

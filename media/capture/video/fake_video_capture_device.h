@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,9 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "media/capture/video/video_capture_device.h"
 
 namespace gpu {
@@ -47,7 +49,7 @@ class PacmanFramePainter {
                   int bytes_per_row);
 
   const Format pixel_format_;
-  const FakeDeviceState* fake_device_state_ = nullptr;
+  raw_ptr<const FakeDeviceState> fake_device_state_ = nullptr;
 };
 
 // Implementation of VideoCaptureDevice that generates test frames. This is
@@ -91,9 +93,11 @@ class FakeVideoCaptureDevice : public VideoCaptureDevice {
   void OnNextFrameDue(base::TimeTicks expected_execution_time, int session_id);
 
   const VideoCaptureFormats supported_formats_;
-  const std::unique_ptr<FrameDelivererFactory> frame_deliverer_factory_;
-  const std::unique_ptr<FakePhotoDevice> photo_device_;
+  // `photo_device_` and `frame_deliverer_factory_` both hold a raw pointer on
+  // `device_state_`, so they need to be declared last to be destroyed first.
   const std::unique_ptr<FakeDeviceState> device_state_;
+  const std::unique_ptr<FakePhotoDevice> photo_device_;
+  const std::unique_ptr<FrameDelivererFactory> frame_deliverer_factory_;
   std::unique_ptr<FrameDeliverer> frame_deliverer_;
   int current_session_id_ = 0;
 
@@ -140,6 +144,7 @@ struct FakeDeviceState {
   double focus_distance;
   mojom::MeteringMode focus_mode;
   VideoCaptureFormat format;
+  bool background_blur = false;
 };
 
 // A dependency needed by FakeVideoCaptureDevice.
@@ -157,7 +162,7 @@ class FrameDelivererFactory {
 
  private:
   const FakeVideoCaptureDevice::DeliveryMode delivery_mode_;
-  const FakeDeviceState* device_state_ = nullptr;
+  raw_ptr<const FakeDeviceState> device_state_ = nullptr;
   std::unique_ptr<gpu::GpuMemoryBufferSupport> gmb_support_;
 };
 
@@ -185,7 +190,7 @@ class FakePhotoDevice {
 
  private:
   const std::unique_ptr<PacmanFramePainter> sk_n32_painter_;
-  const FakeDeviceState* const fake_device_state_;
+  const raw_ptr<const FakeDeviceState> fake_device_state_;
   const FakePhotoDeviceConfig config_;
 };
 

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "base/time/time.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/protocol/sync_enums.pb.h"
+#include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_util.h"
 
 namespace syncer {
@@ -17,6 +18,8 @@ FakeLocalDeviceInfoProvider::FakeLocalDeviceInfoProvider()
                    "chrome_version",
                    "user_agent",
                    sync_pb::SyncEnums_DeviceType_TYPE_LINUX,
+                   DeviceInfo::OsType::kLinux,
+                   DeviceInfo::FormFactor::kDesktop,
                    "device_id",
                    "fake_manufacturer",
                    "fake_model",
@@ -49,8 +52,9 @@ FakeLocalDeviceInfoProvider::RegisterOnInitializedCallback(
 void FakeLocalDeviceInfoProvider::SetReady(bool ready) {
   bool got_ready = !ready_ && ready;
   ready_ = ready;
-  if (got_ready)
+  if (got_ready) {
     closure_list_.Notify();
+  }
 }
 
 DeviceInfo* FakeLocalDeviceInfoProvider::GetMutableDeviceInfo() {

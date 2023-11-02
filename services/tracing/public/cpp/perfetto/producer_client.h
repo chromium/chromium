@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,9 @@
 #include "base/atomicops.h"
 #include "base/callback_forward.h"
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/tracing/perfetto_task_runner.h"
@@ -31,7 +32,7 @@ class SharedMemoryArbiter;
 
 namespace tracing {
 
-class MojoSharedMemory;
+class ChromeBaseSharedMemory;
 
 // This class is the per-process client side of the Perfetto
 // producer, and is responsible for creating specific kinds
@@ -53,6 +54,8 @@ class COMPONENT_EXPORT(TRACING_CPP) ProducerClient
   void BindInProcessSharedMemoryArbiter(
       perfetto::TracingService::ProducerEndpoint*,
       base::tracing::PerfettoTaskRunner*);
+
+  void Disconnect() override;
 
   // PerfettoProducer implementation.
   void BindStartupTargetBuffer(
@@ -134,7 +137,8 @@ class COMPONENT_EXPORT(TRACING_CPP) ProducerClient
   uint32_t data_sources_tracing_ = 0;
   std::unique_ptr<mojo::Receiver<mojom::ProducerClient>> receiver_;
   mojo::Remote<mojom::ProducerHost> producer_host_;
-  base::tracing::PerfettoTaskRunner* in_process_arbiter_task_runner_ = nullptr;
+  raw_ptr<base::tracing::PerfettoTaskRunner> in_process_arbiter_task_runner_ =
+      nullptr;
   // First value is the flush ID, the second is the number of
   // replies we're still waiting for.
   std::pair<uint64_t, size_t> pending_replies_for_latest_flush_;
@@ -144,7 +148,7 @@ class COMPONENT_EXPORT(TRACING_CPP) ProducerClient
   // TODO(eseckler): Consider accessing |shared_memory_| and
   // |shared_memory_arbiter_| without locks after setup was completed, since we
   // never destroy or unset them.
-  std::unique_ptr<MojoSharedMemory> shared_memory_ GUARDED_BY(lock_);
+  std::unique_ptr<ChromeBaseSharedMemory> shared_memory_ GUARDED_BY(lock_);
   std::unique_ptr<perfetto::SharedMemoryArbiter> shared_memory_arbiter_
       GUARDED_BY(lock_);
 

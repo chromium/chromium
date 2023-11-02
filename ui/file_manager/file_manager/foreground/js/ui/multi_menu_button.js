@@ -1,14 +1,14 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
-import {HideType} from 'chrome://resources/js/cr/ui/menu_button.m.js';
-import {MenuItem} from 'chrome://resources/js/cr/ui/menu_item.m.js';
-import {AnchorType, positionPopupAroundElement} from 'chrome://resources/js/cr/ui/position_util.m.js';
-import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {decorate} from 'chrome://resources/js/cr/ui.js';
+import {Menu} from './menu.js';
+import {HideType} from './menu_button.js';
+import {MenuItem} from './menu_item.js';
+import {AnchorType, positionPopupAroundElement} from './position_util.js';
+import {EventTracker} from 'chrome://resources/ash/common/event_tracker.js';
 
 import {util} from '../../../common/js/util.js';
 
@@ -75,7 +75,7 @@ export class MultiMenuButton {
         this.setMenu_(menu);
       },
       enumerable: true,
-      configurable: true
+      configurable: true,
     });
     element = /** @type {!MultiMenuButton} */ (element);
     element.decorate();
@@ -226,8 +226,10 @@ export class MultiMenuButton {
         break;
       case 'keydown':
         this.handleKeyDown(e);
-        // If a menu is visible we let it handle all the keyboard events.
-        if (e.currentTarget == this.ownerDocument && this.hasVisibleMenu_()) {
+        // If a menu is visible we let it handle all the keyboard events
+        // unless Ctrl is held down.
+        if (e.currentTarget == this.ownerDocument && this.hasVisibleMenu_() &&
+            !e.ctrlKey) {
           this.menu.handleKeyDown(e);
           e.preventDefault();
           e.stopPropagation();

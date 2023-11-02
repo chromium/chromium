@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/android/infobars/update_password_infobar.h"
-#include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -33,7 +33,7 @@ void UpdatePasswordInfoBarDelegate::Create(
   // is_smartlock_branding_enabled indicates whether the user is syncing
   // passwords to their Google Account.
   const bool is_smartlock_branding_enabled =
-      password_bubble_experiment::IsSmartLockUser(
+      password_bubble_experiment::HasChosenToSyncPasswords(
           SyncServiceFactory::GetForProfile(
               Profile::FromBrowserContext(web_contents->GetBrowserContext())));
   infobars::ContentInfoBarManager::FromWebContents(web_contents)

@@ -1,11 +1,13 @@
-<!-- Copyright 2019 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2019 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <link rel="import" href="chrome://resources/html/polymer.html">
 
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_shared_vars.css.html">
+<link rel="import" href="chrome://resources/ash/common/i18n_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 
 <link rel="import" href="../../components/oobe_icons.html">
@@ -35,7 +37,7 @@
       </p>
       <div slot="content" class="flex layout vertical center center-justified">
         <img src="../../images/enrollment_complete.svg"
-            class="oobe-illustration">
+            class="oobe-illustration" aria-hidden="true">
       </div>
       <div slot="bottom-buttons">
         <oobe-text-button id="dont-enroll-button"

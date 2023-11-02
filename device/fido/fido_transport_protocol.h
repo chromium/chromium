@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/strings/string_piece.h"
+#include "device/fido/fido_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
@@ -20,7 +21,7 @@ enum class FidoTransportProtocol : uint8_t {
   kUsbHumanInterfaceDevice = 0,
   kNearFieldCommunication = 1,
   kBluetoothLowEnergy = 2,
-  kCloudAssistedBluetoothLowEnergy = 3,
+  kHybrid = 3,
   kInternal = 4,
   kAndroidAccessory = 5,
   kMaxValue = kAndroidAccessory,
@@ -30,7 +31,7 @@ enum class FidoTransportProtocol : uint8_t {
 extern const char kUsbHumanInterfaceDevice[];
 extern const char kNearFieldCommunication[];
 extern const char kBluetoothLowEnergy[];
-extern const char kCloudAssistedBluetoothLowEnergy[];
+extern const char kHybrid[];
 extern const char kInternal[];
 
 COMPONENT_EXPORT(DEVICE_FIDO)
@@ -39,6 +40,10 @@ absl::optional<FidoTransportProtocol> ConvertToFidoTransportProtocol(
 
 COMPONENT_EXPORT(DEVICE_FIDO)
 base::StringPiece ToString(FidoTransportProtocol protocol);
+
+COMPONENT_EXPORT(DEVICE_FIDO)
+AuthenticatorAttachment AuthenticatorAttachmentFromTransport(
+    FidoTransportProtocol transport);
 
 }  // namespace device
 

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,13 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/mock_function_scope.h"
 #include "third_party/blink/renderer/modules/payments/payment_request.h"
 #include "third_party/blink/renderer/modules/payments/payment_request_delegate.h"
@@ -47,7 +48,7 @@ TEST(PaymentRequestUpdateEventTest, OnUpdatePaymentDetailsCalled) {
   MockPaymentRequest* request = MakeGarbageCollected<MockPaymentRequest>();
   event->SetTrusted(true);
   event->SetPaymentRequest(request);
-  event->SetEventPhase(Event::kCapturingPhase);
+  event->SetEventPhase(Event::PhaseType::kCapturingPhase);
   auto* payment_details =
       MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
   event->updateWith(scope.GetScriptState(), payment_details->Promise(),
@@ -67,7 +68,7 @@ TEST(PaymentRequestUpdateEventTest, OnUpdatePaymentDetailsFailureCalled) {
   MockPaymentRequest* request = MakeGarbageCollected<MockPaymentRequest>();
   event->SetTrusted(true);
   event->SetPaymentRequest(request);
-  event->SetEventPhase(Event::kCapturingPhase);
+  event->SetEventPhase(Event::PhaseType::kCapturingPhase);
   auto* payment_details =
       MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
   event->updateWith(scope.GetScriptState(), payment_details->Promise(),
@@ -102,7 +103,7 @@ TEST(PaymentRequestUpdateEventTest, CannotUpdateTwice) {
   MockPaymentRequest* request = MakeGarbageCollected<MockPaymentRequest>();
   event->SetTrusted(true);
   event->SetPaymentRequest(request);
-  event->SetEventPhase(Event::kCapturingPhase);
+  event->SetEventPhase(Event::PhaseType::kCapturingPhase);
   event->updateWith(
       scope.GetScriptState(),
       MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState())
@@ -146,6 +147,8 @@ TEST(PaymentRequestUpdateEventTest, AddressChangeUpdateWithTimeout) {
   event->SetTrusted(true);
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   String error_message;
   request->show(scope.GetScriptState(), scope.GetExceptionState())
       .Then(funcs.ExpectNoCall(), funcs.ExpectCall(&error_message));
@@ -154,7 +157,7 @@ TEST(PaymentRequestUpdateEventTest, AddressChangeUpdateWithTimeout) {
       ->OnShippingAddressChange(BuildPaymentAddressForTest());
   request->OnUpdatePaymentDetailsTimeoutForTesting();
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetScriptState()->GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
   EXPECT_EQ(
       "AbortError: Timed out waiting for a "
       "PaymentRequestUpdateEvent.updateWith(promise) to resolve.",
@@ -183,6 +186,8 @@ TEST(PaymentRequestUpdateEventTest, OptionChangeUpdateWithTimeout) {
   event->SetPaymentRequest(request);
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   String error_message;
   request->show(scope.GetScriptState(), scope.GetExceptionState())
       .Then(funcs.ExpectNoCall(), funcs.ExpectCall(&error_message));
@@ -191,7 +196,7 @@ TEST(PaymentRequestUpdateEventTest, OptionChangeUpdateWithTimeout) {
       ->OnShippingAddressChange(BuildPaymentAddressForTest());
   request->OnUpdatePaymentDetailsTimeoutForTesting();
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetScriptState()->GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
   EXPECT_EQ(
       "AbortError: Timed out waiting for a "
       "PaymentRequestUpdateEvent.updateWith(promise) to resolve.",
@@ -219,7 +224,10 @@ TEST(PaymentRequestUpdateEventTest, AddressChangePromiseTimeout) {
       scope.GetExecutionContext(), event_type_names::kShippingaddresschange);
   event->SetTrusted(true);
   event->SetPaymentRequest(request);
-  event->SetEventPhase(Event::kCapturingPhase);
+  event->SetEventPhase(Event::PhaseType::kCapturingPhase);
+
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   String error_message;
   request->show(scope.GetScriptState(), scope.GetExceptionState())
       .Then(funcs.ExpectNoCall(), funcs.ExpectCall(&error_message));
@@ -233,7 +241,7 @@ TEST(PaymentRequestUpdateEventTest, AddressChangePromiseTimeout) {
 
   request->OnUpdatePaymentDetailsTimeoutForTesting();
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetScriptState()->GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
   EXPECT_EQ(
       "AbortError: Timed out waiting for a "
       "PaymentRequestUpdateEvent.updateWith(promise) to resolve.",
@@ -253,7 +261,10 @@ TEST(PaymentRequestUpdateEventTest, OptionChangePromiseTimeout) {
       scope.GetExecutionContext(), event_type_names::kShippingoptionchange);
   event->SetTrusted(true);
   event->SetPaymentRequest(request);
-  event->SetEventPhase(Event::kCapturingPhase);
+  event->SetEventPhase(Event::PhaseType::kCapturingPhase);
+
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   String error_message;
   request->show(scope.GetScriptState(), scope.GetExceptionState())
       .Then(funcs.ExpectNoCall(), funcs.ExpectCall(&error_message));
@@ -267,7 +278,7 @@ TEST(PaymentRequestUpdateEventTest, OptionChangePromiseTimeout) {
 
   request->OnUpdatePaymentDetailsTimeoutForTesting();
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetScriptState()->GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
   EXPECT_EQ(
       "AbortError: Timed out waiting for a "
       "PaymentRequestUpdateEvent.updateWith(promise) to resolve.",

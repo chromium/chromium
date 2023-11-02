@@ -1,16 +1,16 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/printing/print_job_manager.h"
 
 #include "base/bind.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/printing/print_job.h"
 #include "chrome/browser/printing/printer_query.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_service.h"
+#include "content/public/browser/global_routing_id.h"
 #include "printing/printed_document.h"
 
 // This should be after all other #includes.
@@ -20,8 +20,7 @@
 
 namespace printing {
 
-PrintQueriesQueue::PrintQueriesQueue() {
-}
+PrintQueriesQueue::PrintQueriesQueue() = default;
 
 PrintQueriesQueue::~PrintQueriesQueue() {
   base::AutoLock lock(lock_);
@@ -52,9 +51,8 @@ std::unique_ptr<PrinterQuery> PrintQueriesQueue::PopPrinterQuery(
 }
 
 std::unique_ptr<PrinterQuery> PrintQueriesQueue::CreatePrinterQuery(
-    int render_process_id,
-    int render_frame_id) {
-  return std::make_unique<PrinterQuery>(render_process_id, render_frame_id);
+    content::GlobalRenderFrameHostId rfh_id) {
+  return std::make_unique<PrinterQuery>(rfh_id);
 }
 
 void PrintQueriesQueue::Shutdown() {
@@ -73,12 +71,13 @@ void PrintQueriesQueue::Shutdown() {
   }
 }
 
-PrintJobManager::PrintJobManager() {
-  registrar_.Add(this, chrome::NOTIFICATION_PRINT_JOB_EVENT,
-                 content::NotificationService::AllSources());
-}
+PrintJobManager::PrintJobManager() = default;
 
-PrintJobManager::~PrintJobManager() {
+PrintJobManager::~PrintJobManager() = default;
+
+base::CallbackListSubscription PrintJobManager::AddDocDoneCallback(
+    DocDoneCallback callback) {
+  return callback_list_.Add(callback);
 }
 
 scoped_refptr<PrintQueriesQueue> PrintJobManager::queue() {
@@ -98,7 +97,6 @@ void PrintJobManager::Shutdown() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!is_shutdown_);
   is_shutdown_ = true;
-  registrar_.RemoveAll();
   StopJobs(true);
   if (queue_) {
     queue_->Shutdown();
@@ -120,37 +118,37 @@ void PrintJobManager::StopJobs(bool wait_for_finish) {
   }
 }
 
-void PrintJobManager::Observe(int type,
-                              const content::NotificationSource& source,
-                              const content::NotificationDetails& details) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_EQ(chrome::NOTIFICATION_PRINT_JOB_EVENT, type);
+void PrintJobManager::OnStarted(PrintJob* print_job) {
+  if (is_shutdown_)
+    return;
 
-  OnPrintJobEvent(content::Source<PrintJob>(source).ptr(),
-                  *content::Details<JobEventDetails>(details).ptr());
+  // Causes a AddRef().
+  bool inserted = current_jobs_.insert(print_job).second;
+  DCHECK(inserted);
 }
 
-void PrintJobManager::OnPrintJobEvent(
-    PrintJob* print_job,
-    const JobEventDetails& event_details) {
-  switch (event_details.type()) {
-    case JobEventDetails::NEW_DOC: {
-      // Causes a AddRef().
-      bool inserted = current_jobs_.insert(print_job).second;
-      DCHECK(inserted);
-      break;
-    }
-    case JobEventDetails::JOB_DONE: {
-      size_t erased = current_jobs_.erase(print_job);
-      DCHECK_EQ(1U, erased);
-      break;
-    }
-    case JobEventDetails::FAILED:
-      current_jobs_.erase(print_job);
-      break;
-    default:
-      break;
-  }
+void PrintJobManager::OnDocDone(PrintJob* print_job,
+                                PrintedDocument* document,
+                                int job_id) {
+  if (is_shutdown_)
+    return;
+
+  callback_list_.Notify(print_job, document, job_id);
+}
+
+void PrintJobManager::OnJobDone(PrintJob* print_job) {
+  if (is_shutdown_)
+    return;
+
+  size_t erased = current_jobs_.erase(print_job);
+  DCHECK_EQ(1U, erased);
+}
+
+void PrintJobManager::OnFailed(PrintJob* print_job) {
+  if (is_shutdown_)
+    return;
+
+  current_jobs_.erase(print_job);
 }
 
 }  // namespace printing

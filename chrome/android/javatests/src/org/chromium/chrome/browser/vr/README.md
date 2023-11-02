@@ -113,7 +113,7 @@ is pre-installed as a system app. This can be dealt with in the following ways:
   [here](go/vrcore/building-and-running). This will permanently solve the issue
   unless you reflash your device.
 * Use `--replace-system-package
-  com.google.vr.vrcore,//third_party/gvr-android-sdk/test-apks/vr_services/vr_services_current.apk`
+  //third_party/gvr-android-sdk/test-apks/vr_services/vr_services_current.apk`
   instead. This will take significantly longer, as it requires rebooting, and
   must be done every time you run the tests.
 * Skip this argument entirely and just ensure that the VrCore version on the

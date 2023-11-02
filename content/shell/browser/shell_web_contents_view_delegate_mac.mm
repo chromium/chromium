@@ -1,10 +1,14 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/shell/browser/shell_web_contents_view_delegate.h"
 
-#import  <Cocoa/Cocoa.h>
+#include "base/memory/raw_ptr.h"
+
+#import <Cocoa/Cocoa.h>
+
+#include <memory>
 
 #include "base/command_line.h"
 #include "content/public/browser/context_menu_params.h"
@@ -40,7 +44,7 @@ enum {
 
 @interface ShellContextMenuDelegate : NSObject<NSMenuDelegate> {
  @private
-  content::ShellWebContentsViewDelegate* _delegate;
+  raw_ptr<content::ShellWebContentsViewDelegate> _delegate;
 }
 @end
 
@@ -81,9 +85,9 @@ NSMenuItem* MakeContextMenuItem(NSString* title,
 
 namespace content {
 
-WebContentsViewDelegate* CreateShellWebContentsViewDelegate(
-  WebContents* web_contents) {
-  return new ShellWebContentsViewDelegate(web_contents);
+std::unique_ptr<WebContentsViewDelegate> CreateShellWebContentsViewDelegate(
+    WebContents* web_contents) {
+  return std::make_unique<ShellWebContentsViewDelegate>(web_contents);
 }
 
 ShellWebContentsViewDelegate::ShellWebContentsViewDelegate(
@@ -206,7 +210,7 @@ void ShellWebContentsViewDelegate::ShowContextMenu(
   NSWindow* window = [parent_view window];
   NSPoint position = [window mouseLocationOutsideOfEventStream];
   NSTimeInterval eventTime = [currentEvent timestamp];
-  NSEvent* clickEvent = [NSEvent mouseEventWithType:NSRightMouseDown
+  NSEvent* clickEvent = [NSEvent mouseEventWithType:NSEventTypeRightMouseDown
                                            location:position
                                       modifierFlags:0
                                           timestamp:eventTime

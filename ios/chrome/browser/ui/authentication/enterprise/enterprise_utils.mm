@@ -1,18 +1,20 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 
-#include "base/values.h"
-#include "components/policy/policy_constants.h"
-#include "components/prefs/pref_service.h"
-#include "components/signin/public/base/signin_pref_names.h"
-#include "components/sync/base/pref_names.h"
-#include "ios/chrome/browser/application_context.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/policy/policy_util.h"
-#include "ios/chrome/browser/pref_names.h"
+#import "base/values.h"
+#import "components/policy/policy_constants.h"
+#import "components/prefs/pref_service.h"
+#import "components/signin/public/base/signin_pref_names.h"
+#import "components/sync/base/pref_names.h"
+#import "components/sync/driver/sync_service.h"
+#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/policy/policy_util.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -35,10 +37,10 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
 }  // namespace
 
 bool IsRestrictAccountsToPatternsEnabled() {
-  const base::ListValue* value =
-      GetApplicationContext()->GetLocalState()->GetList(
-          prefs::kRestrictAccountsToPatterns);
-  return !value->GetList().empty();
+  return !GetApplicationContext()
+              ->GetLocalState()
+              ->GetList(prefs::kRestrictAccountsToPatterns)
+              .empty();
 }
 
 // TODO(crbug.com/1244632): Use the Authentication Service sign-in status API
@@ -50,32 +52,50 @@ bool IsForceSignInEnabled() {
   return policy_mode == BrowserSigninMode::kForced;
 }
 
-bool IsManagedSyncDataType(ChromeBrowserState* browserState,
-                           SyncSetupService::SyncableDatatype dataType) {
-  return browserState->GetPrefs()
-      ->FindPreference(kSyncableItemTypes.at(dataType))
+bool IsManagedSyncDataType(PrefService* pref_service,
+                           SyncSetupService::SyncableDatatype data_type) {
+  return pref_service->FindPreference(kSyncableItemTypes.at(data_type))
       ->IsManaged();
 }
 
-bool HasManagedSyncDataType(ChromeBrowserState* browserState) {
+bool HasManagedSyncDataType(PrefService* pref_service) {
   for (int type = 0; type != SyncSetupService::kNumberOfSyncableDatatypes;
        type++) {
-    SyncSetupService::SyncableDatatype dataType =
+    SyncSetupService::SyncableDatatype data_type =
         static_cast<SyncSetupService::SyncableDatatype>(type);
-    if (IsManagedSyncDataType(browserState, dataType))
+    if (IsManagedSyncDataType(pref_service, data_type))
       return true;
   }
   return false;
 }
 
 EnterpriseSignInRestrictions GetEnterpriseSignInRestrictions(
-    ChromeBrowserState* browserState) {
+    AuthenticationService* authentication_service,
+    PrefService* pref_service,
+    syncer::SyncService* sync_service) {
   EnterpriseSignInRestrictions restrictions = kNoEnterpriseRestriction;
-  if (IsForceSignInEnabled())
-    restrictions |= kEnterpriseForceSignIn;
+  switch (authentication_service->GetServiceStatus()) {
+    case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
+      restrictions |= kEnterpriseForceSignIn;
+      break;
+    case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
+      restrictions |= kEnterpriseSignInDisabled;
+      break;
+    case AuthenticationService::ServiceStatus::SigninAllowed:
+    case AuthenticationService::ServiceStatus::SigninDisabledByUser:
+    case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
+      break;
+  }
   if (IsRestrictAccountsToPatternsEnabled())
     restrictions |= kEnterpriseRestrictAccounts;
-  if (HasManagedSyncDataType(browserState))
+  if (IsSyncDisabledByPolicy(sync_service))
+    restrictions |= kEnterpriseSyncDisabled;
+  if (HasManagedSyncDataType(pref_service))
     restrictions |= kEnterpriseSyncTypesListDisabled;
   return restrictions;
+}
+
+bool IsSyncDisabledByPolicy(syncer::SyncService* sync_service) {
+  return sync_service->GetDisableReasons().Has(
+      syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
 }

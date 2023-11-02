@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -73,7 +73,8 @@ TEST(ChromeSigninURLLoaderThrottleTest, Intercept) {
             EXPECT_EQ(kTestURL, adapter->GetUrl());
             EXPECT_EQ(network::mojom::RequestDestination::kDocument,
                       adapter->GetRequestDestination());
-            EXPECT_EQ(GURL("https://chrome.com"), adapter->GetReferrerOrigin());
+            EXPECT_TRUE(adapter->IsOutermostMainFrame());
+            EXPECT_EQ(kTestReferrer, adapter->GetReferrer());
 
             EXPECT_TRUE(adapter->HasHeader("X-Request-1"));
             adapter->RemoveRequestHeaderByName("X-Request-1");
@@ -91,6 +92,7 @@ TEST(ChromeSigninURLLoaderThrottleTest, Intercept) {
   request.url = kTestURL;
   request.referrer = kTestReferrer;
   request.destination = network::mojom::RequestDestination::kDocument;
+  request.is_outermost_main_frame = true;
   request.headers.SetHeader("X-Request-1", "Foo");
   bool defer = false;
   throttle->WillStartRequest(&request, &defer);
@@ -115,8 +117,8 @@ TEST(ChromeSigninURLLoaderThrottleTest, Intercept) {
 
   EXPECT_CALL(*delegate, ProcessResponse(_, _))
       .WillOnce(Invoke([&](ResponseAdapter* adapter, const GURL& redirect_url) {
-        EXPECT_EQ(GURL("https://google.com"), adapter->GetOrigin());
-        EXPECT_TRUE(adapter->IsMainFrame());
+        EXPECT_EQ(kTestURL, adapter->GetURL());
+        EXPECT_TRUE(adapter->IsOutermostMainFrame());
 
         adapter->SetUserData(kResponseUserDataKey,
                              std::move(response_user_data));
@@ -137,11 +139,12 @@ TEST(ChromeSigninURLLoaderThrottleTest, Intercept) {
           Invoke([&](ChromeRequestAdapter* adapter, const GURL& redirect_url) {
             EXPECT_EQ(network::mojom::RequestDestination::kDocument,
                       adapter->GetRequestDestination());
+            EXPECT_TRUE(adapter->IsOutermostMainFrame());
 
             // Changes to the URL and referrer take effect after the redirect
             // is followed.
             EXPECT_EQ(kTestURL, adapter->GetUrl());
-            EXPECT_EQ(GURL("https://chrome.com"), adapter->GetReferrerOrigin());
+            EXPECT_EQ(kTestReferrer, adapter->GetReferrer());
 
             // X-Request-1 and X-Request-2 were modified in the previous call to
             // ProcessRequest(). These changes should still be present.
@@ -194,8 +197,8 @@ TEST(ChromeSigninURLLoaderThrottleTest, Intercept) {
 
   EXPECT_CALL(*delegate, ProcessResponse(_, _))
       .WillOnce(Invoke([&](ResponseAdapter* adapter, const GURL& redirect_url) {
-        EXPECT_EQ(GURL("https://youtube.com"), adapter->GetOrigin());
-        EXPECT_TRUE(adapter->IsMainFrame());
+        EXPECT_EQ(kTestRedirectURL, adapter->GetURL());
+        EXPECT_TRUE(adapter->IsOutermostMainFrame());
 
         EXPECT_EQ(response_user_data_ptr,
                   adapter->GetUserData(kResponseUserDataKey));
@@ -242,11 +245,13 @@ TEST(ChromeSigninURLLoaderThrottleTest, InterceptSubFrame) {
           [](ChromeRequestAdapter* adapter, const GURL& redirect_url) {
             EXPECT_EQ(network::mojom::RequestDestination::kIframe,
                       adapter->GetRequestDestination());
+            EXPECT_FALSE(adapter->IsOutermostMainFrame());
           });
 
   network::ResourceRequest request;
   request.url = GURL("https://google.com");
   request.destination = network::mojom::RequestDestination::kIframe;
+  request.is_outermost_main_frame = false;
 
   bool defer = false;
   throttle->WillStartRequest(&request, &defer);
@@ -255,7 +260,7 @@ TEST(ChromeSigninURLLoaderThrottleTest, InterceptSubFrame) {
   EXPECT_CALL(*delegate, ProcessResponse(_, _))
       .Times(2)
       .WillRepeatedly(([](ResponseAdapter* adapter, const GURL& redirect_url) {
-        EXPECT_FALSE(adapter->IsMainFrame());
+        EXPECT_FALSE(adapter->IsOutermostMainFrame());
       }));
 
   net::RedirectInfo redirect_info;

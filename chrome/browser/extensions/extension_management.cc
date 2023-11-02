@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/observer_list.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/syslog_logging.h"
@@ -35,7 +36,6 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "components/crx_file/id_util.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/extension_prefs.h"
@@ -64,7 +64,7 @@ ExtensionManagement::ExtensionManagement(Profile* profile)
   TRACE_EVENT0("browser,startup",
                "ExtensionManagement::ExtensionManagement::ctor");
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  is_signin_profile_ = chromeos::ProfileHelper::IsSigninProfile(profile);
+  is_signin_profile_ = ash::ProfileHelper::IsSigninProfile(profile);
 #endif
   pref_change_registrar_.Init(pref_service_);
   base::RepeatingClosure pref_change_callback = base::BindRepeating(
@@ -129,10 +129,10 @@ bool ExtensionManagement::BlocklistedByDefault() const {
 
 ExtensionManagement::InstallationMode ExtensionManagement::GetInstallationMode(
     const Extension* extension) {
-  std::string update_url;
-  if (extension->manifest()->GetString(manifest_keys::kUpdateURL, &update_url))
-    return GetInstallationMode(extension->id(), update_url);
-  return GetInstallationMode(extension->id(), std::string());
+  const std::string* update_url =
+      extension->manifest()->FindStringPath(manifest_keys::kUpdateURL);
+  return GetInstallationMode(extension->id(),
+                             update_url ? *update_url : std::string());
 }
 
 ExtensionManagement::InstallationMode ExtensionManagement::GetInstallationMode(
@@ -242,7 +242,7 @@ bool ExtensionManagement::IsInstallationExplicitlyBlocked(
   // No settings explicitly specified for |id|.
   if (setting == nullptr)
     return false;
-  // Checks if the extension is on the black list or removed list.
+  // Checks if the extension is listed as blocked or removed.
   InstallationMode mode = setting->installation_mode;
   return mode == INSTALLATION_BLOCKED || mode == INSTALLATION_REMOVED;
 }
@@ -282,10 +282,10 @@ bool ExtensionManagement::IsAllowedManifestType(
 
 APIPermissionSet ExtensionManagement::GetBlockedAPIPermissions(
     const Extension* extension) {
-  std::string update_url;
-  if (extension->manifest()->GetString(manifest_keys::kUpdateURL, &update_url))
-    return GetBlockedAPIPermissions(extension->id(), update_url);
-  return GetBlockedAPIPermissions(extension->id(), std::string());
+  const std::string* update_url =
+      extension->manifest()->FindStringPath(manifest_keys::kUpdateURL);
+  return GetBlockedAPIPermissions(extension->id(),
+                                  update_url ? *update_url : std::string());
 }
 
 APIPermissionSet ExtensionManagement::GetBlockedAPIPermissions(
@@ -364,10 +364,10 @@ std::unique_ptr<const PermissionSet> ExtensionManagement::GetBlockedPermissions(
 
 bool ExtensionManagement::IsPermissionSetAllowed(const Extension* extension,
                                                  const PermissionSet& perms) {
-  std::string update_url;
-  if (extension->manifest()->GetString(manifest_keys::kUpdateURL, &update_url))
-    return IsPermissionSetAllowed(extension->id(), update_url, perms);
-  return IsPermissionSetAllowed(extension->id(), std::string(), perms);
+  const std::string* update_url =
+      extension->manifest()->FindStringPath(manifest_keys::kUpdateURL);
+  return IsPermissionSetAllowed(
+      extension->id(), update_url ? *update_url : std::string(), perms);
 }
 
 bool ExtensionManagement::IsPermissionSetAllowed(
@@ -436,8 +436,7 @@ void ExtensionManagement::Refresh() {
           pref_names::kAllowedTypes, true, base::Value::Type::LIST));
   const base::DictionaryValue* dict_pref =
       static_cast<const base::DictionaryValue*>(
-          LoadPreference(pref_names::kExtensionManagement,
-                         true,
+          LoadPreference(pref_names::kExtensionManagement, true,
                          base::Value::Type::DICTIONARY));
   const base::Value* extension_request_pref = LoadPreference(
       prefs::kCloudExtensionRequestEnabled, false, base::Value::Type::BOOLEAN);
@@ -451,16 +450,12 @@ void ExtensionManagement::Refresh() {
   // Parse default settings.
   const base::Value wildcard("*");
   if ((denied_list_pref &&
-       // TODO(crbug.com/1187106): Use base::Contains once |denied_list_pref| is
-       // not a ListValue.
-       std::find(denied_list_pref->GetList().begin(),
-                 denied_list_pref->GetList().end(),
-                 wildcard) != denied_list_pref->GetList().end()) ||
+       base::Contains(denied_list_pref->GetList(), wildcard)) ||
       (extension_request_pref && extension_request_pref->GetBool())) {
     default_settings_->installation_mode = INSTALLATION_BLOCKED;
   }
 
-  const base::DictionaryValue* subdict = NULL;
+  const base::DictionaryValue* subdict = nullptr;
   if (dict_pref &&
       dict_pref->GetDictionary(schema_constants::kWildcard, &subdict)) {
     if (!default_settings_->Parse(
@@ -470,7 +465,7 @@ void ExtensionManagement::Refresh() {
     }
 
     // Settings from new preference have higher priority over legacy ones.
-    const base::ListValue* list_value = NULL;
+    const base::ListValue* list_value = nullptr;
     if (subdict->GetList(schema_constants::kInstallSources, &list_value))
       install_sources_pref = list_value;
     if (subdict->GetList(schema_constants::kAllowedTypes, &list_value))
@@ -559,7 +554,8 @@ void ExtensionManagement::Refresh() {
                 subdict, internal::IndividualSettings::SCOPE_UPDATE_URL)) {
           settings_by_update_url_.erase(update_url);
           LOG(WARNING) << "Malformed Extension Management settings for "
-                          "extensions with update url: " << update_url << ".";
+                          "extensions with update url: "
+                       << update_url << ".";
         }
       } else {
         std::vector<std::string> extension_ids = base::SplitString(
@@ -658,11 +654,11 @@ void ExtensionManagement::LoadDeferredExtensionSetting(
   // No need to check again later.
   deferred_ids_.erase(extension_id);
 
-  const base::DictionaryValue* extension_settings = nullptr;
   const base::DictionaryValue* dict_pref =
       static_cast<const base::DictionaryValue*>(
           LoadPreference(pref_names::kExtensionManagement, true,
                          base::Value::Type::DICTIONARY));
+  bool found = false;
   for (auto iter : dict_pref->DictItems()) {
     if (iter.first == schema_constants::kWildcard ||
         base::StartsWith(iter.first, schema_constants::kUpdateUrlPrefix,
@@ -676,14 +672,13 @@ void ExtensionManagement::LoadDeferredExtensionSetting(
     auto extension_ids = base::SplitStringPiece(
         iter.first, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     if (base::Contains(extension_ids, extension_id)) {
-      // Found our settings!
-      extension_settings = subdict;
-      break;
+      // Found our settings. After parsing, continue looking for more entries.
+      ParseById(extension_id, subdict);
+      found = true;
     }
   }
 
-  DCHECK(extension_settings);
-  ParseById(extension_id, extension_settings);
+  DCHECK(found) << "Couldn't find dictionary for extension in deferred_ids_.";
 }
 
 const base::Value* ExtensionManagement::LoadPreference(
@@ -742,10 +737,10 @@ ExtensionManagement::GetInstallListByMode(
          installation_mode == INSTALLATION_RECOMMENDED);
 
   auto extension_dict = std::make_unique<base::DictionaryValue>();
-  for (const auto& entry : settings_by_id_) {
-    if (entry.second->installation_mode == installation_mode) {
-      ExternalPolicyLoader::AddExtension(extension_dict.get(), entry.first,
-                                         entry.second->update_url);
+  for (const auto& [id, settings] : settings_by_id_) {
+    if (settings->installation_mode == installation_mode) {
+      ExternalPolicyLoader::AddExtension(extension_dict->GetDict(), id,
+                                         settings->update_url);
     }
   }
   return extension_dict;
@@ -824,25 +819,19 @@ ExtensionManagementFactory* ExtensionManagementFactory::GetInstance() {
 }
 
 ExtensionManagementFactory::ExtensionManagementFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "ExtensionManagement",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(InstallStageTrackerFactory::GetInstance());
 }
 
-ExtensionManagementFactory::~ExtensionManagementFactory() {
-}
+ExtensionManagementFactory::~ExtensionManagementFactory() {}
 
 KeyedService* ExtensionManagementFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   TRACE_EVENT0("browser,startup",
                "ExtensionManagementFactory::BuildServiceInstanceFor");
   return new ExtensionManagement(Profile::FromBrowserContext(context));
-}
-
-content::BrowserContext* ExtensionManagementFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }
 
 void ExtensionManagementFactory::RegisterProfilePrefs(

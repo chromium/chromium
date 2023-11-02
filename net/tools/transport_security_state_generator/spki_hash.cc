@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,7 @@
 #include "base/strings/string_util.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
 
-namespace net {
-
-namespace transport_security_state {
+namespace net::transport_security_state {
 
 SPKIHash::SPKIHash() = default;
 
@@ -44,6 +42,4 @@ void SPKIHash::CalculateFromBytes(const uint8_t* input, size_t input_length) {
   SHA256(input, input_length, data_);
 }
 
-}  // namespace transport_security_state
-
-}  // namespace net
+}  // namespace net::transport_security_state

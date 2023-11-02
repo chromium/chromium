@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,11 +36,13 @@ enum class BufferFormat {
 
 // The usage mode affects how a buffer can be used. Only buffers created with
 // *_CPU_READ_WRITE_* can be mapped into the client's address space and accessed
-// by the CPU. SCANOUT implies GPU_READ_WRITE.
-// *_VDA_WRITE is for cases where a video decode accellerator writes into
-// the buffers.
+// by the CPU.
+// *_VDA_WRITE is for cases where a video decode accelerator writes into the
+// buffers.
 // PROTECTED_* are for HW protected buffers that cannot be read by the CPU and
 // can only be read in protected GPU contexts or scanned out to overlays.
+// At present, SCANOUT implies GPU_READ_WRITE. This doesn't apply to other
+// SCANOUT_* values.
 
 // TODO(reveman): Add GPU_READ_WRITE for use-cases where SCANOUT is not
 // required.

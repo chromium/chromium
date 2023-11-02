@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,30 +10,31 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/values.h"
+#include "build/buildflag.h"
+#include "printing/buildflags/buildflags.h"
 #include "printing/metafile.h"
 #include "printing/mojom/print.mojom.h"
-#include "printing/print_dialog_gtk_interface.h"
+#include "printing/print_dialog_linux_interface.h"
 #include "printing/print_job_constants.h"
 #include "printing/units.h"
 
+// Avoid using LinuxUi on Fuchsia.
+#if BUILDFLAG(IS_LINUX)
+#include "ui/linux/linux_ui.h"
+#endif
+
 namespace printing {
-
-namespace {
-
-// Function pointer for creating print dialogs. `callback` is only used when
-// `show_dialog` is true.
-PrintDialogGtkInterface* (*create_dialog_func_)(PrintingContextLinux* context) =
-    nullptr;
-
-// Function pointer for determining paper size.
-gfx::Size (*get_pdf_paper_size_)(PrintingContextLinux* context) = nullptr;
-
-}  // namespace
 
 // static
 std::unique_ptr<PrintingContext> PrintingContext::CreateImpl(
-    Delegate* delegate) {
-  return std::make_unique<PrintingContextLinux>(delegate);
+    Delegate* delegate,
+    bool skip_system_calls) {
+  auto context = std::make_unique<PrintingContextLinux>(delegate);
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  if (skip_system_calls)
+    context->set_skip_system_calls();
+#endif
+  return context;
 }
 
 PrintingContextLinux::PrintingContextLinux(Delegate* delegate)
@@ -44,28 +45,6 @@ PrintingContextLinux::~PrintingContextLinux() {
 
   if (print_dialog_)
     print_dialog_->ReleaseDialog();
-}
-
-// static
-void PrintingContextLinux::SetCreatePrintDialogFunction(
-    PrintDialogGtkInterface* (*create_dialog_func)(
-        PrintingContextLinux* context)) {
-  DCHECK(create_dialog_func);
-  DCHECK(!create_dialog_func_);
-  create_dialog_func_ = create_dialog_func;
-}
-
-// static
-void PrintingContextLinux::SetPdfPaperSizeFunction(
-    gfx::Size (*get_pdf_paper_size)(PrintingContextLinux* context)) {
-  DCHECK(get_pdf_paper_size);
-  DCHECK(!get_pdf_paper_size_);
-  get_pdf_paper_size_ = get_pdf_paper_size;
-}
-
-void PrintingContextLinux::PrintDocument(const MetafilePlayer& metafile) {
-  DCHECK(print_dialog_);
-  print_dialog_->PrintDocument(metafile, document_name_);
 }
 
 void PrintingContextLinux::AskUserForSettings(int max_pages,
@@ -89,45 +68,44 @@ mojom::ResultCode PrintingContextLinux::UseDefaultSettings() {
 
   ResetSettings();
 
-  if (!create_dialog_func_)
+#if BUILDFLAG(IS_LINUX)
+  if (!ui::LinuxUi::instance())
     return mojom::ResultCode::kSuccess;
 
-  if (!print_dialog_) {
-    print_dialog_ = create_dialog_func_(this);
-    print_dialog_->AddRefToDialog();
-  }
+  if (!print_dialog_)
+    print_dialog_ = ui::LinuxUi::instance()->CreatePrintDialog(this);
   print_dialog_->UseDefaultSettings();
+#endif
 
   return mojom::ResultCode::kSuccess;
 }
 
 gfx::Size PrintingContextLinux::GetPdfPaperSizeDeviceUnits() {
-  if (get_pdf_paper_size_)
-    return get_pdf_paper_size_(this);
+#if BUILDFLAG(IS_LINUX)
+  if (ui::LinuxUi::instance())
+    return ui::LinuxUi::instance()->GetPdfPaperSize(this);
+#endif
 
   return gfx::Size();
 }
 
 mojom::ResultCode PrintingContextLinux::UpdatePrinterSettings(
-    bool external_preview,
-    bool show_system_dialog,
-    int page_count) {
-  DCHECK(!show_system_dialog);
+    const PrinterSettings& printer_settings) {
+  DCHECK(!printer_settings.show_system_dialog);
   DCHECK(!in_print_job_);
-  DCHECK(!external_preview) << "Not implemented";
 
-  if (!create_dialog_func_)
+#if BUILDFLAG(IS_LINUX)
+  if (!ui::LinuxUi::instance())
     return mojom::ResultCode::kSuccess;
 
-  if (!print_dialog_) {
-    print_dialog_ = create_dialog_func_(this);
-    print_dialog_->AddRefToDialog();
-  }
+  if (!print_dialog_)
+    print_dialog_ = ui::LinuxUi::instance()->CreatePrintDialog(this);
 
   // PrintDialogGtk::UpdateSettings() calls InitWithSettings() so settings_ will
   // remain non-null after this line.
   print_dialog_->UpdateSettings(std::move(settings_));
   DCHECK(settings_);
+#endif
 
   return mojom::ResultCode::kSuccess;
 }
@@ -144,28 +122,25 @@ mojom::ResultCode PrintingContextLinux::NewDocument(
   DCHECK(!in_print_job_);
   in_print_job_ = true;
 
+  // If this implementation is expanded to include system calls then such calls
+  // should be gated upon `skip_system_calls()`.
+
   document_name_ = document_name;
 
   return mojom::ResultCode::kSuccess;
 }
 
-mojom::ResultCode PrintingContextLinux::NewPage() {
+mojom::ResultCode PrintingContextLinux::PrintDocument(
+    const MetafilePlayer& metafile,
+    const PrintSettings& settings,
+    uint32_t num_pages) {
   if (abort_printing_)
     return mojom::ResultCode::kCanceled;
   DCHECK(in_print_job_);
-
-  // Intentional No-op.
-
-  return mojom::ResultCode::kSuccess;
-}
-
-mojom::ResultCode PrintingContextLinux::PageDone() {
-  if (abort_printing_)
-    return mojom::ResultCode::kCanceled;
-  DCHECK(in_print_job_);
-
-  // Intentional No-op.
-
+  DCHECK(print_dialog_);
+  // TODO(crbug.com/1252685)  Plumb error code back from
+  // `PrintDialogLinuxInterface`.
+  print_dialog_->PrintDocument(metafile, document_name_);
   return mojom::ResultCode::kSuccess;
 }
 

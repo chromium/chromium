@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+  <outputs>
+    <output filename="grit/ash_resources.h" type="rc_header">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="grit/ash_resources_map.cc"
+            type="resource_file_map_source" />
+    <output filename="grit/ash_resources_map.h"
+            type="resource_map_header" />
+    <output filename="ash_resources.pak" type="data_package" />
+  </outputs>
+  <release seq="1">
+    <includes>
+      <part file="auth_factor_config_resources.grdp" />
+      <part file="bluetooth_config_resources.grdp" />
+      <part file="cellular_resources.grdp" />
+      <part file="human_presence_resources.grdp" />
+      <part file="multidevice_resources.grdp" />
+      <if expr="enable_cros_libassistant">
+        <part file="assistant_resources.grdp" />
+      </if>
+    </includes>
+  </release>
+</grit>

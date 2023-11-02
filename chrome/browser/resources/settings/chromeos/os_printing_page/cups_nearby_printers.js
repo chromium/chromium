@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,112 +6,143 @@
  * @fileoverview 'settings-cups-nearby-printers' is a list container for
  * Nearby Printers.
  */
-import '//resources/polymer/v3_0/iron-list/iron-list.js';
+import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import './cups_printers_entry.js';
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 
-import {ListPropertyUpdateBehavior} from '//resources/js/list_property_update_behavior.m.js';
-import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {ListPropertyUpdateBehavior, ListPropertyUpdateBehaviorInterface} from 'chrome://resources/ash/common/list_property_update_behavior.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../metrics_recorder.m.js';
+import {recordSettingChange} from '../metrics_recorder.js';
 
-import {getBaseName, getErrorText, getPrintServerErrorText, isNameAndAddressValid, isNetworkProtocol, isPPDInfoValid, matchesSearchTerm, sortPrinters} from './cups_printer_dialog_util.js';
-import {PrinterListEntry, PrinterType} from './cups_printer_types.js';
-import {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, CupsPrintersList, ManufacturersInfo, ModelsInfo, PrinterMakeModel, PrinterPpdMakeModel, PrinterSetupResult, PrintServerResult} from './cups_printers_browser_proxy.js';
-import {CupsPrintersEntryListBehavior} from './cups_printers_entry_list_behavior.js';
-import {CupsPrintersEntryManager} from './cups_printers_entry_manager.js';
+import {matchesSearchTerm, sortPrinters} from './cups_printer_dialog_util.js';
+import {PrinterListEntry} from './cups_printer_types.js';
+import {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, PrinterSetupResult} from './cups_printers_browser_proxy.js';
+import {CupsPrintersEntryListBehavior, CupsPrintersEntryListBehaviorInterface} from './cups_printers_entry_list_behavior.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-cups-nearby-printers',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {CupsPrintersEntryListBehaviorInterface}
+ * @implements {ListPropertyUpdateBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const SettingsCupsNearbyPrintersElementBase = mixinBehaviors(
+    [
+      CupsPrintersEntryListBehavior,
+      ListPropertyUpdateBehavior,
+      WebUIListenerBehavior,
+    ],
+    PolymerElement);
 
-  // ListPropertyUpdateBehavior is used in CupsPrintersEntryListBehavior.
-  behaviors: [
-    CupsPrintersEntryListBehavior,
-    ListPropertyUpdateBehavior,
-    WebUIListenerBehavior,
-  ],
+/** @polymer */
+class SettingsCupsNearbyPrintersElement extends
+    SettingsCupsNearbyPrintersElementBase {
+  static get is() {
+    return 'settings-cups-nearby-printers';
+  }
 
-  properties: {
-    /**
-     * Search term for filtering |nearbyPrinters|.
-     * @type {string}
-     */
-    searchTerm: {
-      type: String,
-      value: '',
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * This value is set to true if UserPrintersAllowed policy is enabled.
-     */
-    userPrintersAllowed: {
-      type: Boolean,
-      value: false,
-    },
+  static get properties() {
+    return {
+      /**
+       * Search term for filtering |nearbyPrinters|.
+       * @type {string}
+       */
+      searchTerm: {
+        type: String,
+        value: '',
+      },
 
-    /** @type {?CupsPrinterInfo} */
-    activePrinter: {
-      type: Object,
-      notify: true,
-    },
+      /**
+       * This value is set to true if UserPrintersAllowed policy is enabled.
+       */
+      userPrintersAllowed: {
+        type: Boolean,
+        value: false,
+      },
 
-    printersCount: {
-      type: Number,
-      computed: 'getFilteredPrintersLength_(filteredPrinters_.*)',
-      notify: true,
-    },
+      /** @type {?CupsPrinterInfo} */
+      activePrinter: {
+        type: Object,
+        notify: true,
+      },
 
-    /**
-     * @type {number}
-     * @private
-     */
-    activePrinterListEntryIndex_: {
-      type: Number,
-      value: -1,
-    },
+      printersCount: {
+        type: Number,
+        computed: 'getFilteredPrintersLength_(filteredPrinters_.*)',
+        notify: true,
+      },
 
-    /**
-     * List of printers filtered through a search term.
-     * @type {!Array<!PrinterListEntry>}
-     * @private
-     */
-    filteredPrinters_: {
-      type: Array,
-      value: () => [],
-    },
+      /**
+       * @type {number}
+       * @private
+       */
+      activePrinterListEntryIndex_: {
+        type: Number,
+        value: -1,
+      },
 
-    /**
-     * Used by FocusRowBehavior to track the last focused element on a row.
-     * @private
-     */
-    lastFocused_: Object,
+      /**
+       * List of printers filtered through a search term.
+       * @type {!Array<!PrinterListEntry>}
+       * @private
+       */
+      filteredPrinters_: {
+        type: Array,
+        value: () => [],
+      },
 
-    /**
-     * Used by FocusRowBehavior to track if the list has been blurred.
-     * @private
-     */
-    listBlurred_: Boolean,
+      /**
+       * Used by FocusRowBehavior to track the last focused element on a row.
+       * @private
+       */
+      lastFocused_: Object,
 
-    /**
-     * This is set to true while waiting for a response during a printer setup.
-     * @type {boolean}
-     * @private
-     */
-    savingPrinter_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      /**
+       * Used by FocusRowBehavior to track if the list has been blurred.
+       * @private
+       */
+      listBlurred_: Boolean,
 
-  listeners: {
-    'add-automatic-printer': 'onAddAutomaticPrinter_',
-    'add-print-server-printer': 'onAddPrintServerPrinter_',
-    'query-discovered-printer': 'onQueryDiscoveredPrinter_',
-  },
+      /**
+       * This is set to true while waiting for a response during a printer
+       * setup.
+       * @type {boolean}
+       * @private
+       */
+      savingPrinter_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
-  observers: ['onSearchOrPrintersChanged_(nearbyPrinters.*, searchTerm)'],
+  static get observers() {
+    return ['onSearchOrPrintersChanged_(nearbyPrinters.*, searchTerm)'];
+  }
+
+  ready() {
+    super.ready();
+    this.addEventListener('add-automatic-printer', (event) => {
+      this.onAddAutomaticPrinter_(
+          /** @type {!CustomEvent<{item: !PrinterListEntry}>} */ (event));
+    });
+
+    this.addEventListener('add-print-server-printer', (event) => {
+      this.onAddPrintServerPrinter_(
+          /** @type {!CustomEvent<{item: !PrinterListEntry}>} */ (event));
+    });
+
+    this.addEventListener('query-discovered-printer', (event) => {
+      this.onQueryDiscoveredPrinter_(
+          /** @type {!CustomEvent<{item: !PrinterListEntry}>} */ (event));
+    });
+  }
 
   /**
    * Redoes the search whenever |searchTerm| or |nearbyPrinters| changes.
@@ -133,7 +164,7 @@ Polymer({
     this.updateList(
         'filteredPrinters_', printer => printer.printerInfo.printerId,
         updatedPrinters);
-  },
+  }
 
   /**
    * @param {!CustomEvent<{item: !PrinterListEntry}>} e
@@ -151,7 +182,7 @@ Polymer({
                 this, item.printerInfo.printerName),
             this.onAddNearbyPrinterFailed_.bind(this));
     recordSettingChange();
-  },
+  }
 
   /**
    * @param {!CustomEvent<{item: !PrinterListEntry}>} e
@@ -168,7 +199,7 @@ Polymer({
             this.onAddNearbyPrintersSucceeded_.bind(
                 this, item.printerInfo.printerName),
             this.onAddNearbyPrinterFailed_.bind(this));
-  },
+  }
 
   /**
    * @param {!CustomEvent<{item: !PrinterListEntry}>} e
@@ -191,7 +222,7 @@ Polymer({
                 this, item.printerInfo.printerName),
             queryDiscoveredPrinterFailed);
     recordSettingChange();
-  },
+  }
 
   /**
    * Retrieves the index of |item| in |nearbyPrinters_| and sets that printer as
@@ -207,7 +238,24 @@ Polymer({
     this.activePrinter =
         this.get(['nearbyPrinters', this.activePrinterListEntryIndex_])
             .printerInfo;
-  },
+  }
+
+  /**
+   * @param {!PrinterSetupResult} resultCode
+   * @param {string} printerName
+   * @private
+   */
+  showCupsPrinterToast_(resultCode, printerName) {
+    const event = new CustomEvent('show-cups-printer-toast', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        resultCode,
+        printerName,
+      },
+    });
+    this.dispatchEvent(event);
+  }
 
   /**
    * Handler for addDiscoveredPrinter success.
@@ -217,10 +265,8 @@ Polymer({
    */
   onAddNearbyPrintersSucceeded_(printerName, result) {
     this.savingPrinter_ = false;
-    this.fire(
-        'show-cups-printer-toast',
-        {resultCode: result, printerName: printerName});
-  },
+    this.showCupsPrinterToast_(result, printerName);
+  }
 
   /**
    * Handler for addDiscoveredPrinter failure.
@@ -229,11 +275,9 @@ Polymer({
    */
   onAddNearbyPrinterFailed_(printer) {
     this.savingPrinter_ = false;
-    this.fire('show-cups-printer-toast', {
-      resultCode: PrinterSetupResult.PRINTER_UNREACHABLE,
-      printerName: printer.printerName
-    });
-  },
+    this.showCupsPrinterToast_(
+        PrinterSetupResult.PRINTER_UNREACHABLE, printer.printerName);
+  }
 
   /**
    * Handler for queryDiscoveredPrinter success.
@@ -243,10 +287,8 @@ Polymer({
    */
   onQueryDiscoveredPrinterSucceeded_(printerName, result) {
     this.savingPrinter_ = false;
-    this.fire(
-        'show-cups-printer-toast',
-        {resultCode: result, printerName: printerName});
-  },
+    this.showCupsPrinterToast_(result, printerName);
+  }
 
   /**
    * Handler for queryDiscoveredPrinter failure.
@@ -255,10 +297,14 @@ Polymer({
    */
   onQueryDiscoveredPrinterFailed_(printer) {
     this.savingPrinter_ = false;
-    this.fire(
-        'open-manufacturer-model-dialog-for-specified-printer',
-        {item: /** @type {CupsPrinterInfo} */ (printer)});
-  },
+    const openManufacturerDialogEvent = new CustomEvent(
+        'open-manufacturer-model-dialog-for-specified-printer', {
+          bubbles: true,
+          composed: true,
+          detail: {item: /** @type {CupsPrinterInfo} */ (printer)},
+        });
+    this.dispatchEvent(openManufacturerDialogEvent);
+  }
 
   /**
    * @return {boolean} Returns true if the no search message should be visible.
@@ -266,7 +312,7 @@ Polymer({
    */
   showNoSearchResultsMessage_() {
     return !!this.searchTerm && !this.filteredPrinters_.length;
-  },
+  }
 
   /**
    * @private
@@ -274,5 +320,8 @@ Polymer({
    */
   getFilteredPrintersLength_() {
     return this.filteredPrinters_.length;
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsCupsNearbyPrintersElement.is, SettingsCupsNearbyPrintersElement);

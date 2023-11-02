@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
@@ -42,8 +43,8 @@ class NativeViewHostAura::ClippingWindowDelegate : public aura::WindowDelegate {
   gfx::Size GetMaximumSize() const override { return gfx::Size(); }
   void OnBoundsChanged(const gfx::Rect& old_bounds,
                        const gfx::Rect& new_bounds) override {}
-  gfx::NativeCursor GetCursor(const gfx::Point& point) override {
-    return gfx::kNullCursor;
+  ui::Cursor GetCursor(const gfx::Point& point) override {
+    return ui::Cursor();
   }
   int GetNonClientComponent(const gfx::Point& point) const override {
     return HTCLIENT;
@@ -71,7 +72,7 @@ class NativeViewHostAura::ClippingWindowDelegate : public aura::WindowDelegate {
   void GetHitTestMask(SkPath* mask) const override {}
 
  private:
-  aura::Window* native_view_ = nullptr;
+  raw_ptr<aura::Window> native_view_ = nullptr;
 };
 
 NativeViewHostAura::NativeViewHostAura(NativeViewHost* host) : host_(host) {}
@@ -260,10 +261,10 @@ gfx::NativeViewAccessible NativeViewHostAura::GetNativeViewAccessible() {
   return nullptr;
 }
 
-gfx::NativeCursor NativeViewHostAura::GetCursor(int x, int y) {
+ui::Cursor NativeViewHostAura::GetCursor(int x, int y) {
   if (host_->native_view())
     return host_->native_view()->GetCursor(gfx::Point(x, y));
-  return gfx::kNullCursor;
+  return ui::Cursor();
 }
 
 void NativeViewHostAura::SetVisible(bool visible) {
@@ -384,7 +385,8 @@ void NativeViewHostAura::UpdateInsets() {
       clipping_window_->SetEventTargeter(
           std::make_unique<aura::WindowTargeter>());
     }
-    clipping_window_->targeter()->SetInsets(gfx::Insets(top_inset_, 0, 0, 0));
+    clipping_window_->targeter()->SetInsets(
+        gfx::Insets::TLBR(top_inset_, 0, 0, 0));
   }
 }
 

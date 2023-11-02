@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,14 @@
 function generateBid(interestGroup, auctionSignals, perBuyerSignals,
                      trustedBiddingSignals, browserSignals) {
   const ad = interestGroup.ads[0];
-  let result = {'ad': ad, 'bid': 1, 'render': ad.renderUrl};
+
+  // `auctionSignals` controls whether or not component auctions are allowed.
+  let allowComponentAuction =
+      typeof auctionSignals === 'string' &&
+      auctionSignals.includes('bidderAllowsComponentAuction');
+
+  let result = {'ad': ad, 'bid': 1, 'render': ad.renderUrl,
+                'allowComponentAuction': allowComponentAuction};
   if (interestGroup.adComponents && interestGroup.adComponents[0])
     result.adComponents = [interestGroup.adComponents[0].renderUrl];
   return result;
@@ -16,4 +23,7 @@ function generateBid(interestGroup, auctionSignals, perBuyerSignals,
 function reportWin(auctionSignals, perBuyerSignals, sellerSignals,
                    browserSignals) {
   sendReportTo(browserSignals.interestGroupOwner + '/echoall?report_bidder');
+  registerAdBeacon({'auctionwinner':
+   browserSignals.interestGroupOwner.replace('a.test','d.test') +
+                                             '/echoall?report_win_beacon'});
 }

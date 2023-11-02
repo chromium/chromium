@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,8 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/autofill/manual_filling_view_interface.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_data.h"
 
@@ -37,7 +39,7 @@ class ManualFillingViewAndroid : public ManualFillingViewInterface {
   ~ManualFillingViewAndroid() override;
 
   // ManualFillingViewInterface:
-  void OnItemsAvailable(const autofill::AccessorySheetData& data) override;
+  void OnItemsAvailable(autofill::AccessorySheetData data) override;
   void OnAutomaticGenerationStatusChanged(bool available) override;
   void CloseAccessorySheet() override;
   void SwapSheetWithKeyboard() override;
@@ -76,22 +78,17 @@ class ManualFillingViewAndroid : public ManualFillingViewInterface {
                       base::android::ScopedJavaGlobalRef<jobject> j_callback,
                       const gfx::Image& image);
 
-  base::android::ScopedJavaLocalRef<jobject>
-  ConvertAccessorySheetDataToJavaObject(
-      JNIEnv* env,
-      const autofill::AccessorySheetData& tab_data);
-
-  autofill::AccessorySheetField ConvertJavaUserInfoField(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& j_field_to_convert);
-
   base::android::ScopedJavaGlobalRef<jobject> GetOrCreateJavaObject();
 
+  scoped_refptr<base::SequencedTaskRunner> background_task_runner_ =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::BEST_EFFORT});
+
   // The controller provides data for this view and owns it.
-  ManualFillingController* controller_;
+  raw_ptr<ManualFillingController> controller_;
 
   // WebContents object that the controller and the bridge correspond to.
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
   // The corresponding java object. Use `GetOrCreateJavaObject()` to access.
   base::android::ScopedJavaGlobalRef<jobject> java_object_internal_;

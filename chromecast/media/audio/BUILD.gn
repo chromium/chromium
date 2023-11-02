@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import("//build/buildflag_header.gni")
@@ -30,16 +30,16 @@ cast_source_set("wav_header") {
 
 cast_source_set("processing") {
   sources = [
-    "audio_clock_simulator.cc",
-    "audio_clock_simulator.h",
     "audio_fader.cc",
     "audio_fader.h",
-    "audio_provider.h",
     "cast_audio_bus.cc",
     "cast_audio_bus.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//chromecast/media/api",
+  ]
 
   # Use fastest possible float math.
   configs -= [ "//build/config/compiler:default_optimization" ]
@@ -54,8 +54,8 @@ cast_source_set("playback_rate_shifter") {
   ]
 
   deps = [
-    ":processing",
     "//base",
+    "//chromecast/media/api",
     "//media",
   ]
 }
@@ -100,6 +100,16 @@ cast_source_set("resampler") {
   ]
 }
 
+cast_source_set("channel_mixer") {
+  sources = [ "cast_channel_mixer_impl.cc" ]
+  deps = [
+    "//base",
+    "//chromecast/media/api",
+    "//chromecast/media/cma/base",
+    "//media",
+  ]
+}
+
 cast_source_set("audio_renderer") {
   sources = [
     "cast_audio_renderer.cc",
@@ -126,6 +136,7 @@ cast_source_set("audio_renderer") {
 
 cast_source_set("audio") {
   sources = [
+    "audio_clock_simulator_impl.cc",
     "cast_audio_input_stream.cc",
     "cast_audio_input_stream.h",
     "cast_audio_manager.cc",
@@ -298,11 +309,13 @@ cast_source_set("unittests") {
   ]
 
   deps = [
+    ":audio",
     ":interleaved_channel_mixer",
     ":playback_rate_shifter",
     ":processing",
     ":rate_adjuster",
     "//base",
+    "//chromecast/media/api",
     "//media",
     "//testing/gmock",
     "//testing/gtest",

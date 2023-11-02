@@ -1,21 +1,25 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/supervised_user/supervised_user_pref_store.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
+#include "chrome/browser/supervised_user/supervised_user_features/supervised_user_features.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service.h"
 #include "chrome/browser/supervised_user/supervised_user_url_filter.h"
 #include "chrome/common/chrome_switches.h"
@@ -24,6 +28,7 @@
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "extensions/buildflags/buildflags.h"
 
 namespace {
@@ -83,14 +88,13 @@ SupervisedUserPrefStore::SupervisedUserPrefStore(
               base::Unretained(this)));
 }
 
-bool SupervisedUserPrefStore::GetValue(const std::string& key,
+bool SupervisedUserPrefStore::GetValue(base::StringPiece key,
                                        const base::Value** value) const {
   return prefs_->GetValue(key, value);
 }
 
-std::unique_ptr<base::DictionaryValue> SupervisedUserPrefStore::GetValues()
-    const {
-  return prefs_->AsDictionaryValue();
+base::Value::Dict SupervisedUserPrefStore::GetValues() const {
+  return prefs_->AsDict();
 }
 
 void SupervisedUserPrefStore::AddObserver(PrefStore::Observer* observer) {
@@ -136,23 +140,26 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
 
     // Manually set preferences that aren't direct copies of the settings value.
     {
-      bool record_history = true;
-      settings->GetBoolean(supervised_users::kRecordHistory, &record_history);
-      prefs_->SetBoolean(prefs::kAllowDeletingBrowserHistory, !record_history);
+      // Allow history deletion for supervised accounts on supported platforms.
+      bool allow_history_deletion = base::FeatureList::IsEnabled(
+          supervised_users::kAllowHistoryDeletionForChildAccounts);
+      prefs_->SetBoolean(prefs::kAllowDeletingBrowserHistory,
+                         allow_history_deletion);
+      // Incognito is disabled for supervised users across platforms.
+      // First-party sites use signed-in cookies to ensure that parental
+      // restrictions are applied for Unicorn accounts.
       prefs_->SetInteger(
           prefs::kIncognitoModeAvailability,
-          static_cast<int>(record_history
-                               ? IncognitoModePrefs::Availability::kDisabled
-                               : IncognitoModePrefs::Availability::kEnabled));
+          static_cast<int>(IncognitoModePrefs::Availability::kDisabled));
     }
 
     {
       // Note that |prefs::kForceGoogleSafeSearch| is set automatically as part
       // of |kSupervisedUserSettingsPrefMapping|, but this can't be done for
       // |prefs::kForceYouTubeRestrict| because it is an int, not a bool.
-      bool force_safe_search = true;
-      settings->GetBoolean(supervised_users::kForceSafeSearch,
-                           &force_safe_search);
+      bool force_safe_search =
+          settings->FindBoolPath(supervised_users::kForceSafeSearch)
+              .value_or(true);
       prefs_->SetInteger(
           prefs::kForceYouTubeRestrict,
           force_safe_search ? safe_search_util::YOUTUBE_RESTRICT_MODERATE
@@ -165,9 +172,9 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
       // extension permissions. Until then, rely on other side effects of the
       // "Permissions for sites, apps and extensions" setting, like geolocation
       // being disallowed.
-      bool permissions_disallowed = true;
-      settings->GetBoolean(supervised_users::kGeolocationDisabled,
-                           &permissions_disallowed);
+      bool permissions_disallowed =
+          settings->FindBoolPath(supervised_users::kGeolocationDisabled)
+              .value_or(true);
       prefs_->SetBoolean(prefs::kSupervisedUserExtensionsMayRequestPermissions,
                          !permissions_disallowed);
       base::UmaHistogramBoolean(

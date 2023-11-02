@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,10 +29,10 @@
 
 namespace blink {
 
+class CachedMetadataHandler;
 class FetchContext;
 class FetchParameters;
 class ResourceLoadInfoNotifierWrapper;
-class SingleCachedMetadataHandler;
 class WorkerMainScriptLoaderClient;
 struct ResourceLoaderOptions;
 
@@ -62,17 +62,16 @@ class PLATFORM_EXPORT WorkerMainScriptLoader final
   // Implements network::mojom::URLLoaderClient.
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
   void OnReceiveResponse(
-      network::mojom::URLResponseHeadPtr response_head) override;
+      network::mojom::URLResponseHeadPtr response_head,
+      mojo::ScopedDataPipeConsumerHandle handle,
+      absl::optional<mojo_base::BigBuffer> cached_metadata) override;
   void OnReceiveRedirect(
       const net::RedirectInfo& redirect_info,
       network::mojom::URLResponseHeadPtr response_head) override;
   void OnUploadProgress(int64_t current_position,
                         int64_t total_size,
                         OnUploadProgressCallback callback) override;
-  void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override;
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle handle) override;
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
   const KURL& GetRequestURL() const { return initial_request_url_; }
@@ -80,7 +79,7 @@ class PLATFORM_EXPORT WorkerMainScriptLoader final
   // Gets the raw data of the main script.
   SharedBuffer* Data() const { return data_.get(); }
   WTF::TextEncoding GetScriptEncoding() { return script_encoding_; }
-  SingleCachedMetadataHandler* CreateCachedMetadataHandler();
+  CachedMetadataHandler* CreateCachedMetadataHandler();
 
   virtual void Trace(Visitor*) const;
 

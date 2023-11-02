@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,20 +6,20 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "base/bind.h"
 #include "chrome/browser/ash/net/network_diagnostics/arc_ping_routine.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_util.h"
 #include "chromeos/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
-#include "components/arc/session/arc_service_manager.h"
 
 namespace ash {
 namespace network_diagnostics {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after
-// chromeos/services/network_config/ is moved to ash/.
+// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
+namespace mojom = ::chromeos::network_diagnostics::mojom;
 namespace network_config = ::chromeos::network_config;
 
 using chromeos::network_config::mojom::CrosNetworkConfig;
@@ -125,7 +125,7 @@ void ArcPingRoutine::FetchManagedProperties(
 void ArcPingRoutine::PingGateways() {
   arc::mojom::NetInstance* net_instance = GetNetInstance();
   if (net_instance) {
-    for (int i = 0; i < gateways_.size(); i++) {
+    for (size_t i = 0; i < gateways_.size(); i++) {
       net_instance->PingTest(
           gateways_transport_names_[i], gateways_[i],
           base::BindOnce(&ArcPingRoutine::OnRequestComplete,

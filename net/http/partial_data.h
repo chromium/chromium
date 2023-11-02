@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/completion_once_callback.h"
 #include "net/disk_cache/disk_cache.h"
@@ -137,8 +136,8 @@ class PartialData {
   void GetAvailableRangeCompleted(const disk_cache::RangeResult& result);
 
   // The portion we're trying to get, either from cache or network.
-  int64_t current_range_start_;
-  int64_t current_range_end_;
+  int64_t current_range_start_ = 0;
+  int64_t current_range_end_ = 0;
 
   // Next portion available in the cache --- this may be what's currently being
   // read, or the next thing that will be read if the current network portion
@@ -147,20 +146,20 @@ class PartialData {
   // |cached_start_| represents the beginning of the range, while
   // |cached_min_len_| the data not yet read (possibly overestimated). It may
   // also have an error code latched into it.
-  int64_t cached_start_;
-  int cached_min_len_;
+  int64_t cached_start_ = 0;
+  int cached_min_len_ = 0;
 
   // The size of the whole file.
-  int64_t resource_size_;
+  int64_t resource_size_ = 0;
   HttpByteRange byte_range_;  // The range requested by the user.
   // The clean set of extra headers (no ranges).
   HttpRequestHeaders extra_headers_;
-  bool range_requested_;  // ###
-  bool range_present_;  // True if next range entry is already stored.
-  bool final_range_;
-  bool sparse_entry_;
-  bool truncated_;  // We have an incomplete 200 stored.
-  bool initial_validation_;  // Only used for truncated entries.
+  bool range_requested_ = false;  // ###
+  bool range_present_ = false;    // True if next range entry is already stored.
+  bool final_range_ = false;
+  bool sparse_entry_ = true;
+  bool truncated_ = false;           // We have an incomplete 200 stored.
+  bool initial_validation_ = false;  // Only used for truncated entries.
   CompletionOnceCallback callback_;
   base::WeakPtrFactory<PartialData> weak_factory_{this};
 };

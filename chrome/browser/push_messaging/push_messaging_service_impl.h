@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,35 +13,36 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/compiler_specific.h"
+#include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "chrome/browser/permissions/abusive_origin_permission_revocation_request.h"
+#include "chrome/browser/permissions/permission_revocation_request.h"
 #include "chrome/browser/push_messaging/push_messaging_notification_manager.h"
 #include "chrome/browser/push_messaging/push_messaging_refresher.h"
 #include "chrome/common/buildflags.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
-#include "components/content_settings/core/common/content_settings.h"
-#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/gcm_driver/common/gcm_message.h"
 #include "components/gcm_driver/crypto/gcm_encryption_provider.h"
 #include "components/gcm_driver/gcm_app_handler.h"
 #include "components/gcm_driver/gcm_client.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/push_messaging_service.h"
+#include "content/public/common/child_process_host.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom-forward.h"
 
 class GURL;
+class PrefRegistrySimple;
+class PrefService;
 class Profile;
 class PushMessagingAppIdentifier;
 class PushMessagingServiceTest;
+class FCMRevocationTest;
 class ScopedKeepAlive;
 class ScopedProfileKeepAlive;
 
@@ -83,7 +84,6 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
                                  public gcm::GCMAppHandler,
                                  public content_settings::Observer,
                                  public KeyedService,
-                                 public content::NotificationObserver,
                                  public PushMessagingRefresher::Observer {
  public:
   // If any Service Workers are using push, starts GCM and adds an app handler.
@@ -102,6 +102,11 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
   // Gets the permission status for the given |origin|.
   blink::mojom::PermissionStatus GetPermissionStatus(const GURL& origin,
                                                      bool user_visible);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Registers Local State prefs used by this class.
+  static void RegisterPrefs(PrefRegistrySimple* registry);
+#endif
 
   // gcm::GCMAppHandler implementation.
   void ShutdownHandler() override;
@@ -129,6 +134,7 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
                              RegisterCallback callback) override;
   void SubscribeFromWorker(const GURL& requesting_origin,
                            int64_t service_worker_registration_id,
+                           int render_process_id,
                            blink::mojom::PushSubscriptionOptionsPtr options,
                            RegisterCallback callback) override;
   void GetSubscriptionInfo(const GURL& origin,
@@ -166,11 +172,6 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
   // KeyedService implementation.
   void Shutdown() override;
 
-  // content::NotificationObserver implementation
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
   // WARNING: Only call this function if features::kPushSubscriptionChangeEvent
   // is enabled, will be later used by the Push Service to trigger subscription
   // refreshes
@@ -194,14 +195,30 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
       base::RepeatingClosure callback);
   void SetRemoveExpiredSubscriptionsCallbackForTesting(
       base::OnceClosure closure);
+  void set_enabled_app_level_notification_permission_for_testing(bool enabled) {
+    enabled_app_level_notification_permission_for_testing_ = enabled;
+  }
+  void set_prefs_for_testing(PrefService* prefs_for_testing) {
+    prefs_for_testing_ = prefs_for_testing;
+  }
 
  private:
   friend class PushMessagingBrowserTestBase;
   friend class PushMessagingServiceTest;
+  friend class FCMRevocationTest;
+  FRIEND_TEST_ALL_PREFIXES(PushMessagingBrowserTest, PushEventOnShutdown);
   FRIEND_TEST_ALL_PREFIXES(PushMessagingServiceTest, NormalizeSenderInfo);
   FRIEND_TEST_ALL_PREFIXES(PushMessagingServiceTest, PayloadEncryptionTest);
   FRIEND_TEST_ALL_PREFIXES(PushMessagingServiceTest,
                            TestMultipleIncomingPushMessages);
+#if BUILDFLAG(IS_ANDROID)
+  FRIEND_TEST_ALL_PREFIXES(FCMRevocationTest,
+                           TestPermissionRevocationClearPreferences);
+  FRIEND_TEST_ALL_PREFIXES(FCMRevocationTest,
+                           TestPermissionRevocationNoPermissionFirstMessage);
+  FRIEND_TEST_ALL_PREFIXES(FCMRevocationTest,
+                           TestPermissionRevocationGracePeriodIsOver);
+#endif
 
   // A subscription is pending until it has succeeded or failed.
   void IncreasePushSubscriptionCount(int add, bool is_pending);
@@ -226,16 +243,26 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
                         const std::string& push_message_id,
                         bool did_show_generic_notification);
 
-  void OnCheckedOriginForAbuse(
-      PendingMessage message,
-      AbusiveOriginPermissionRevocationRequest::Outcome outcome);
+  void OnCheckedOrigin(PendingMessage message,
+                       PermissionRevocationRequest::Outcome outcome);
 
   void DeliverNextQueuedMessageForServiceWorkerRegistration(
       const GURL& origin,
       int64_t service_worker_registration_id);
 
-  void CheckOriginForAbuseAndDispatchNextMessage();
+  void CheckOriginAndDispatchNextMessage();
 
+#if BUILDFLAG(IS_ANDROID)
+  //  Verifies if Chrome has Android app-level Notifications permission. If
+  //  app-level permission is missing, `message` will be ignored, and site-level
+  //  Notifications permission and FCM will be revoked.
+  //
+  //  Returns true if `message` should be ignored, returns false otherwise.
+  bool CheckAndRevokeNotificationPermissionIfNeeded(
+      const std::string& app_id,
+      const gcm::IncomingMessage& message,
+      const PushMessagingAppIdentifier& app_identifier);
+#endif
   // Subscribe methods ---------------------------------------------------------
 
   void DoSubscribe(PushMessagingAppIdentifier app_identifier,
@@ -243,7 +270,7 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
                    RegisterCallback callback,
                    int render_process_id,
                    int render_frame_id,
-                   ContentSetting permission_status);
+                   blink::mojom::PermissionStatus permission_status);
 
   void SubscribeEnd(RegisterCallback callback,
                     const std::string& subscription_id,
@@ -418,9 +445,10 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
     message_dispatched_callback_for_testing_ = callback;
   }
 
-  Profile* profile_;
-  std::unique_ptr<AbusiveOriginPermissionRevocationRequest>
-      abusive_origin_revocation_request_;
+  void OnAppTerminating();
+
+  raw_ptr<Profile> profile_;
+  std::unique_ptr<PermissionRevocationRequest> origin_revocation_request_;
   std::queue<PendingMessage> messages_pending_permission_check_;
 
   // {Origin, ServiceWokerRegistratonId} key for message delivery queue. This
@@ -463,11 +491,16 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
   std::unique_ptr<ScopedProfileKeepAlive> in_flight_profile_keep_alive_;
 #endif
 
-  content::NotificationRegistrar registrar_;
+  base::CallbackListSubscription on_app_terminating_subscription_;
 
   // True when shutdown has started. Do not allow processing of incoming
   // messages when this is true.
   bool shutdown_started_ = false;
+
+  int render_process_id_ = content::ChildProcessHost::kInvalidUniqueID;
+
+  absl::optional<bool> enabled_app_level_notification_permission_for_testing_;
+  absl::optional<PrefService*> prefs_for_testing_;
 
   base::WeakPtrFactory<PushMessagingServiceImpl> weak_factory_{this};
 };

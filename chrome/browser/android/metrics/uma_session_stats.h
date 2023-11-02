@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
+#include "components/variations/synthetic_trials.h"
 
 // The native part of java UmaSessionStats class. This is a singleton.
 class UmaSessionStats {
@@ -38,8 +39,10 @@ class UmaSessionStats {
   // Called once on browser startup.
   static void OnStartup();
 
-  static void RegisterSyntheticFieldTrial(const std::string& trial_name,
-                                          const std::string& group_name);
+  static void RegisterSyntheticFieldTrial(
+      const std::string& trial_name,
+      const std::string& group_name,
+      variations::SyntheticTrialAnnotationMode annotation_mode);
 
   static bool IsBackgroundSessionStartForTesting();
 

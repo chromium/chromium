@@ -3,6 +3,7 @@
     "gn_args": {
       "chrome_pgo_phase": 0,
       "clang_use_default_sample_profile": false,
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_chrome_branded": true,
       "is_official_build": true,
@@ -13,10 +14,24 @@
       "use_goma": true
     }
   },
+  "Android Compile Perf PGO": {
+    "gn_args": {
+      "clang_use_default_sample_profile": false,
+      "debuggable_apks": false,
+      "ffmpeg_branding": "Chrome",
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_os": "android",
+      "use_goma": true
+    }
+  },
   "Android arm64 Compile Perf": {
     "gn_args": {
       "chrome_pgo_phase": 0,
       "clang_use_default_sample_profile": false,
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_chrome_branded": true,
       "is_official_build": true,
@@ -28,12 +43,24 @@
       "use_goma": true
     }
   },
+  "Android arm64 Compile Perf PGO": {
+    "gn_args": {
+      "clang_use_default_sample_profile": false,
+      "debuggable_apks": false,
+      "ffmpeg_branding": "Chrome",
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "use_goma": true
+    }
+  },
   "Chromeos Amd64 Generic Lacros Builder Perf": {
     "args_file": "//build/args/chromeos/amd64-generic-crostoolchain.gni",
     "gn_args": {
       "chromeos_is_browser_only": true,
-      "cros_host_sysroot": "//build/linux/debian_sid_amd64-sysroot",
-      "cros_v8_snapshot_sysroot": "//build/linux/debian_sid_amd64-sysroot",
       "dcheck_always_on": false,
       "is_cfi": true,
       "is_chrome_branded": true,
@@ -50,7 +77,8 @@
     "gn_args": {
       "ffmpeg_branding": "Chrome",
       "fuchsia_additional_boot_images": [
-        "//third_party/fuchsia-sdk/images-internal/astro-release/"
+        "//third_party/fuchsia-sdk/images-internal/astro-release/",
+        "//third_party/fuchsia-sdk/images-internal/sherlock-release/"
       ],
       "is_chrome_branded": true,
       "is_official_build": true,
@@ -59,6 +87,24 @@
       "target_cpu": "arm64",
       "target_os": "fuchsia",
       "test_isolate_uses_emulator": false,
+      "use_cfv2_script": true,
+      "use_goma": true
+    }
+  },
+  "Fuchsia Builder Perf x64": {
+    "gn_args": {
+      "ffmpeg_branding": "Chrome",
+      "fuchsia_additional_boot_images": [
+        "//third_party/fuchsia-sdk/images/chromebook-x64-release/"
+      ],
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "x64",
+      "target_os": "fuchsia",
+      "test_isolate_uses_emulator": false,
+      "use_cfv2_script": true,
       "use_goma": true
     }
   },
@@ -73,6 +119,15 @@
       "use_goma": true
     }
   },
+  "Linux Builder Perf PGO": {
+    "gn_args": {
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "symbol_level": 1,
+      "use_gnome_keyring": false,
+      "use_goma": true
+    }
+  },
   "Mac Builder Perf": {
     "gn_args": {
       "chrome_pgo_phase": 0,
@@ -81,7 +136,17 @@
       "is_chrome_branded": true,
       "is_official_build": true,
       "strip_absolute_paths_from_debug_symbols": true,
-      "symbol_level": 2,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "Mac Builder Perf PGO": {
+    "gn_args": {
+      "enable_keystone_registration_framework": false,
+      "ignore_missing_widevine_signing_cert": true,
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "symbol_level": 1,
       "use_goma": true
     }
   },
@@ -93,19 +158,19 @@
       "is_chrome_branded": true,
       "is_official_build": true,
       "strip_absolute_paths_from_debug_symbols": true,
-      "symbol_level": 2,
+      "symbol_level": 1,
       "target_cpu": "arm64",
       "use_goma": true
     }
   },
-  "Win Builder Perf": {
+  "Mac arm Builder Perf PGO": {
     "gn_args": {
-      "chrome_pgo_phase": 0,
+      "enable_keystone_registration_framework": false,
+      "ignore_missing_widevine_signing_cert": true,
       "is_chrome_branded": true,
       "is_official_build": true,
-      "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
-      "target_cpu": "x86",
+      "target_cpu": "arm64",
       "use_goma": true
     }
   },
@@ -115,6 +180,14 @@
       "is_chrome_branded": true,
       "is_official_build": true,
       "strip_absolute_paths_from_debug_symbols": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "Win x64 Builder Perf PGO": {
+    "gn_args": {
+      "is_chrome_branded": true,
+      "is_official_build": true,
       "symbol_level": 1,
       "use_goma": true
     }

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,12 @@
 
 #include <map>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
@@ -39,6 +41,9 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
       scoped_refptr<CompressionModule> compression_module,
       base::OnceCallback<void(StatusOr<scoped_refptr<Storage>>)> completion_cb);
 
+  Storage(const Storage& other) = delete;
+  Storage& operator=(const Storage& other) = delete;
+
   // Wraps and serializes Record (taking ownership of it), encrypts and writes
   // the resulting blob into the Storage (the last file of it) according to the
   // priority with the next sequencing id assigned. If file is going to
@@ -47,14 +52,17 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
              Record record,
              base::OnceCallback<void(Status)> completion_cb);
 
-  // Confirms acceptance of the records according to the priority up to
-  // |sequencing_id| (inclusively). All records with sequencing ids <= this
-  // one can be removed from the Storage, and can no longer be uploaded.
-  // If |force| is false (which is used in most cases), |sequencing_id| is
-  // only accepted if no higher ids were confirmed before; otherwise it is
-  // accepted unconditionally.
-  void Confirm(Priority priority,
-               absl::optional<int64_t> sequencing_id,
+  // Confirms acceptance of the records according to the
+  // |sequence_information.priority()| up to
+  // |sequence_information.sequencing_id()| (inclusively), if the
+  // |sequence_information.generation_id()| matches. All records with sequencing
+  // ids <= this one can be removed from the Storage, and can no longer be
+  // uploaded. In order to reset to the very first record (seq_id=0)
+  // |sequence_information.sequencing_id()| should be set to -1.
+  // If |force| is false (which is used in most cases),
+  // |sequence_information.sequencing_id()| is only accepted if no higher ids
+  // were confirmed before; otherwise it is accepted unconditionally.
+  void Confirm(SequenceInformation sequence_information,
                bool force,
                base::OnceCallback<void(Status)> completion_cb);
 
@@ -68,8 +76,11 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
   // be paased here.
   void UpdateEncryptionKey(SignedEncryptionInfo signed_encryption_key);
 
-  Storage(const Storage& other) = delete;
-  Storage& operator=(const Storage& other) = delete;
+  // Stores the given |pipeline_id|. Overwrites any data from previous calls.
+  // Returns "ok" |Status| if success. Otherwise returns error Status.
+  Status StorePipelineId(base::StringPiece pipeline_id);
+  // Returns the pipeline ID if possible. Otherwise, returns error Status.
+  StatusOr<std::string> GetPipelineId();
 
  protected:
   virtual ~Storage();
@@ -88,6 +99,9 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
   // one server roundtrip and notify all requestors upon its completion.
   class KeyDelivery;
 
+  // Private helper class for pipeline ID upload/download to the file system.
+  class PipelineIdInStorage;
+
   // Private constructor, to be called by Create factory method only.
   // Queues need to be added afterwards.
   Storage(const StorageOptions& options,
@@ -104,7 +118,7 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
   // if priority does not match any queue.
   // Note: queues_ never change after initialization is finished, so there is no
   // need to protect or serialize access to it.
-  StatusOr<scoped_refptr<StorageQueue>> GetQueue(Priority priority);
+  StatusOr<scoped_refptr<StorageQueue>> GetQueue(Priority priority) const;
 
   // Immutable options, stored at the time of creation.
   const StorageOptions options_;
@@ -126,6 +140,9 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
 
   // Upload provider callback.
   const UploaderInterface::AsyncStartUploaderCb async_start_upload_cb_;
+
+  // Internal pipeline ID management module.
+  std::unique_ptr<PipelineIdInStorage> pipeline_id_in_storage_;
 };
 
 }  // namespace reporting

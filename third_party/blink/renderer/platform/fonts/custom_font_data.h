@@ -23,10 +23,17 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
+#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
 namespace blink {
 
+// The `CustomFontData` provides an interface of loadable font resource and
+// lifetime management. `SimpleFontData` owns its instance.
+//
+// Following classes construct an instance:
+//  * `BinaryDataFontFaceSource` as loaded font resource
+//  * `LocalFontFaceSource` as derived class `CSSCustomFontData`
+//  * `RemoteFontFaceSource` as derived class `CSSCustomFontData`
 class PLATFORM_EXPORT CustomFontData : public RefCounted<CustomFontData> {
  public:
   static scoped_refptr<CustomFontData> Create() {

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,11 @@
 
 #include <utility>
 
-#include "base/bind.h"
-#include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "base/task/current_thread.h"
-#include "base/task/post_task.h"
-#include "components/metrics/structured/event_base.h"
 #include "components/metrics/structured/histogram_util.h"
 #include "components/metrics/structured/structured_metrics_features.h"
+#include "components/metrics/structured/structured_metrics_validator.h"
 
 namespace metrics {
 namespace structured {
@@ -26,12 +24,6 @@ Recorder* Recorder::GetInstance() {
 }
 
 void Recorder::RecordEvent(Event&& event) {
-  auto event_base = EventBase::FromEvent(std::move(event));
-  if (event_base.has_value())
-    Record(std::move(event_base.value()));
-}
-
-void Recorder::Record(EventBase&& event) {
   // All calls to StructuredMetricsProvider (the observer) must be on the UI
   // sequence, so re-call Record if needed. If a UI task runner hasn't been set
   // yet, ignore this Record.
@@ -42,31 +34,23 @@ void Recorder::Record(EventBase&& event) {
 
   if (!ui_task_runner_->RunsTasksInCurrentSequence()) {
     ui_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&Recorder::Record, base::Unretained(this), event));
+        FROM_HERE, base::BindOnce(&Recorder::RecordEvent,
+                                  base::Unretained(this), std::move(event)));
     return;
   }
 
-  // If the feature is disabled, it means that the event was recorded directly
-  // and not through the mojo API.
-  if (!base::FeatureList::IsEnabled(kUseCrosApiInterface)) {
-    LogIsEventRecordedUsingMojo(false);
-  }
-
   DCHECK(base::CurrentUIThread::IsSet());
+
+  // Make a copy of an event that all observers can share.
+  const auto event_clone = event.Clone();
   for (auto& observer : observers_)
-    observer.OnRecord(event);
+    observer.OnEventRecord(event_clone);
 
   if (observers_.empty()) {
     // Other values of EventRecordingState are recorded in
     // StructuredMetricsProvider::OnRecord.
     LogEventRecordingState(EventRecordingState::kProviderMissing);
   }
-}
-
-bool Recorder::IsReadyToRecord() const {
-  // No initialization needed. Always ready to record.
-  return true;
 }
 
 void Recorder::ProfileAdded(const base::FilePath& profile_path) {
@@ -79,7 +63,13 @@ void Recorder::ProfileAdded(const base::FilePath& profile_path) {
     observer.OnProfileAdded(profile_path);
 }
 
-absl::optional<int> Recorder::LastKeyRotation(uint64_t project_name_hash) {
+absl::optional<int> Recorder::LastKeyRotation(const Event& event) {
+  auto project_validator = validator::GetProjectValidator(event.project_name());
+  if (!project_validator.has_value())
+    return absl::nullopt;
+
+  auto project_name_hash = project_validator.value()->project_hash();
+
   absl::optional<int> result;
   // |observers_| will contain at most one observer, despite being an
   // ObserverList.
@@ -92,6 +82,12 @@ absl::optional<int> Recorder::LastKeyRotation(uint64_t project_name_hash) {
 void Recorder::OnReportingStateChanged(bool enabled) {
   for (auto& observer : observers_) {
     observer.OnReportingStateChanged(enabled);
+  }
+}
+
+void Recorder::OnSystemProfileInitialized() {
+  for (auto& observer : observers_) {
+    observer.OnSystemProfileInitialized();
   }
 }
 

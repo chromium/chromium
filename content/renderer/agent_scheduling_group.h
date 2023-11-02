@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,8 @@
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/associated_interfaces.mojom.h"
 #include "content/common/content_export.h"
+#include "content/common/shared_storage_worklet_service.mojom-forward.h"
 #include "content/public/common/content_features.h"
-#include "content/services/shared_storage_worklet/public/mojom/shared_storage_worklet_service.mojom-forward.h"
 #include "ipc/ipc.mojom.h"
 #include "ipc/ipc_listener.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -30,6 +30,10 @@ namespace IPC {
 class Message;
 class SyncChannel;
 }  // namespace IPC
+
+namespace blink {
+class WebView;
+}  // namespace blink
 
 namespace content {
 class RenderThread;
@@ -72,12 +76,15 @@ class CONTENT_EXPORT AgentSchedulingGroup
     return *agent_group_scheduler_;
   }
 
+  // Create a new WebView in this AgentSchedulingGroup.
+  blink::WebView* CreateWebView(mojom::CreateViewParamsPtr params,
+                                bool was_created_by_renderer);
+
  protected:
   // mojom::AgentSchedulingGroup:
   void BindAssociatedInterfaces(
       mojo::PendingAssociatedRemote<mojom::AgentSchedulingGroupHost>
           remote_host,
-      mojo::PendingAssociatedRemote<mojom::RouteProvider> remote_route_provider,
       mojo::PendingAssociatedReceiver<mojom::RouteProvider>
           route_provider_receiever) override;
 
@@ -91,19 +98,7 @@ class CONTENT_EXPORT AgentSchedulingGroup
 
   // mojom::AgentSchedulingGroup:
   void CreateView(mojom::CreateViewParamsPtr params) override;
-  void DestroyView(int32_t view_id) override;
   void CreateFrame(mojom::CreateFrameParamsPtr params) override;
-  void CreateFrameProxy(
-      const blink::RemoteFrameToken& token,
-      int32_t routing_id,
-      const absl::optional<blink::FrameToken>& opener_frame_token,
-      int32_t view_routing_id,
-      int32_t parent_routing_id,
-      blink::mojom::TreeScopeType tree_scope_type,
-      blink::mojom::FrameReplicationStatePtr replicated_state,
-      const base::UnguessableToken& devtools_frame_token,
-      mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces)
-      override;
   void CreateSharedStorageWorkletService(
       mojo::PendingReceiver<
           shared_storage_worklet::mojom::SharedStorageWorkletService> receiver)
@@ -145,16 +140,18 @@ class CONTENT_EXPORT AgentSchedulingGroup
   // the (browser-side) AgentSchedulingGroupHost.
   mojo::AssociatedRemote<mojom::AgentSchedulingGroupHost> host_remote_;
 
-  // The |mojom::RouteProvider| mojo pair to setup
-  // |blink::AssociatedInterfaceProvider| routes between us and the browser-side
-  // |AgentSchedulingGroup|.
-  mojo::AssociatedRemote<mojom::RouteProvider> remote_route_provider_;
+  // The `mojom::RouteProvider` mojo receiver that the browser uses to establish
+  // a `blink::AssociatedInterfaceProvider` route between `this` and a
+  // `RenderFrameHostImpl`. See documentation above
+  // `associated_interface_provider_receivers_`.
   mojo::AssociatedReceiver<mojom::RouteProvider> route_provider_receiver_{this};
 
   // The `blink::mojom::AssociatedInterfaceProvider` receiver set that *all*
-  // browser-side `blink::AssociatedInterfaceProvider` objects own a remote to.
-  // `AgentSchedulingGroupHost` will be responsible for routing each associated
-  // interface request to the appropriate renderer object.
+  // `RenderFrameHostImpl`s associated with this agent scheduling group own a
+  // remote to. `this` handles each of their associated interface requests. If
+  // we have an associated `RenderFrameImpl` that we can forward the request to,
+  // we do. Otherwise, we "queue" these requests in `pending_receivers_`. This
+  // is really bad though; see the documentation there.
   mojo::AssociatedReceiverSet<blink::mojom::AssociatedInterfaceProvider,
                               int32_t>
       associated_interface_provider_receivers_;

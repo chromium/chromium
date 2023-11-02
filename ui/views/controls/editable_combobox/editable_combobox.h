@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -109,9 +110,9 @@ class VIEWS_EXPORT EditableCombobox
 
   // Accessors of private members for tests.
   ui::ComboboxModel* GetComboboxModelForTest() { return combobox_model_.get(); }
-  int GetItemCountForTest();
-  std::u16string GetItemForTest(int index);
-  ui::ImageModel GetIconForTest(int index);
+  size_t GetItemCountForTest();
+  std::u16string GetItemForTest(size_t index);
+  ui::ImageModel GetIconForTest(size_t index);
   MenuRunner* GetMenuRunnerForTest() { return menu_runner_.get(); }
   Textfield* GetTextfieldForTest() { return textfield_; }
 
@@ -122,7 +123,7 @@ class VIEWS_EXPORT EditableCombobox
   void CloseMenu();
 
   // Called when an item is selected from the menu.
-  void OnItemSelected(int index);
+  void OnItemSelected(size_t index);
 
   // Notifies listener of new content and updates the menu items to show.
   void HandleNewContent(const std::u16string& new_content);
@@ -153,8 +154,8 @@ class VIEWS_EXPORT EditableCombobox
   void OnLayoutIsAnimatingChanged(views::AnimatingLayoutManager* source,
                                   bool is_animating) override;
 
-  Textfield* textfield_;
-  Button* arrow_ = nullptr;
+  raw_ptr<Textfield> textfield_;
+  raw_ptr<Button> arrow_ = nullptr;
   std::unique_ptr<ui::ComboboxModel> combobox_model_;
 
   // The EditableComboboxMenuModel used by |menu_runner_|.

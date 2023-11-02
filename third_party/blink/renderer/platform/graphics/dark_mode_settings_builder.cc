@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@ const constexpr DarkModeInversionAlgorithm kDefaultDarkModeInversionAlgorithm =
     DarkModeInversionAlgorithm::kInvertLightnessLAB;
 const constexpr DarkModeImagePolicy kDefaultDarkModeImagePolicy =
     DarkModeImagePolicy::kFilterSmart;
-const constexpr int kDefaultTextBrightnessThreshold = 150;
+const constexpr int kDefaultForegroundBrightnessThreshold = 150;
 const constexpr int kDefaultBackgroundBrightnessThreshold = 205;
 const constexpr float kDefaultDarkModeContrastPercent = 0.0f;
 
@@ -105,14 +105,14 @@ DarkModeImagePolicy GetImagePolicy(const SwitchParams& switch_params) {
   }
 }
 
-int GetTextBrightnessThreshold(const SwitchParams& switch_params) {
+int GetForegroundBrightnessThreshold(const SwitchParams& switch_params) {
   const int flag_value = base::GetFieldTrialParamByFeatureAsInt(
       features::kForceWebContentsDarkMode,
-      features::kForceDarkTextLightnessThresholdParam.name, -1);
+      features::kForceDarkForegroundLightnessThresholdParam.name, -1);
   return flag_value >= 0 ? flag_value
                          : GetIntegerSwitchParamValue<int>(
-                               switch_params, "TextBrightnessThreshold",
-                               kDefaultTextBrightnessThreshold);
+                               switch_params, "ForegroundBrightnessThreshold",
+                               kDefaultForegroundBrightnessThreshold);
 }
 
 int GetBackgroundBrightnessThreshold(const SwitchParams& switch_params) {
@@ -130,19 +130,6 @@ T Clamp(T value, T min_value, T max_value) {
   return std::max(min_value, std::min(value, max_value));
 }
 
-bool GetIncreaseTextContrast(const SwitchParams& switch_params) {
-  switch (features::kForceDarkIncreaseTextContrastParam.Get()) {
-    case ForceDarkIncreaseTextContrast::kUseBlinkSettings:
-      return GetIntegerSwitchParamValue<int>(switch_params,
-                                             "IncreaseTextContrast", 0);
-    case ForceDarkIncreaseTextContrast::kFalse:
-      return false;
-    case ForceDarkIncreaseTextContrast::kTrue:
-      return true;
-  }
-  NOTREACHED();
-}
-
 DarkModeSettings BuildDarkModeSettings() {
   SwitchParams switch_params = ParseDarkModeSettings();
 
@@ -154,15 +141,13 @@ DarkModeSettings BuildDarkModeSettings() {
       GetImagePolicy(switch_params), DarkModeImagePolicy::kFirst,
       DarkModeImagePolicy::kLast);
   settings.foreground_brightness_threshold =
-      Clamp<int>(GetTextBrightnessThreshold(switch_params), 0, 255);
+      Clamp<int>(GetForegroundBrightnessThreshold(switch_params), 0, 255);
   settings.background_brightness_threshold =
       Clamp<int>(GetBackgroundBrightnessThreshold(switch_params), 0, 255);
   settings.contrast =
       Clamp<float>(GetFloatSwitchParamValue(switch_params, "ContrastPercent",
                                             kDefaultDarkModeContrastPercent),
                    -1.0f, 1.0f);
-
-  settings.increase_text_contrast = GetIncreaseTextContrast(switch_params);
 
   return settings;
 }

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,7 +64,7 @@ class VIZ_COMMON_EXPORT CopyOutputRequest {
   CopyOutputRequest(const CopyOutputRequest&) = delete;
   CopyOutputRequest& operator=(const CopyOutputRequest&) = delete;
 
-  ~CopyOutputRequest();
+  virtual ~CopyOutputRequest();
 
   // Returns the requested result format.
   ResultFormat result_format() const { return result_format_; }
@@ -116,12 +116,14 @@ class VIZ_COMMON_EXPORT CopyOutputRequest {
   // Optionally specify that only a portion of the result be generated. The
   // selection rect will be clamped to the result bounds, which always starts at
   // 0,0 and spans the post-scaling size of the copy area (see set_area()
-  // above). Only RGBA format supports odd-sized result selection.
+  // above). Only RGBA format supports odd-sized result selection. Can only be
+  // called before blit request was set on the copy request.
   void set_result_selection(const gfx::Rect& selection) {
     DCHECK(result_format_ == ResultFormat::RGBA ||
            (selection.width() % 2 == 0 && selection.height() % 2 == 0))
         << "CopyOutputRequest supports odd-sized result_selection() only for "
            "RGBA!";
+    DCHECK(!has_blit_request());
     result_selection_ = selection;
   }
   bool has_result_selection() const { return result_selection_.has_value(); }
@@ -129,8 +131,16 @@ class VIZ_COMMON_EXPORT CopyOutputRequest {
 
   // Requests that the region copied by the CopyOutputRequest be blitted into
   // the caller's textures. Can be called only for CopyOutputRequests that
-  // target native textures.
-  void set_blit_request(const BlitRequest& blit_request);
+  // target native textures. Requires that result selection was set, in which
+  // case the caller's textures will be populated with the results of the
+  // copy request. The region in the caller's textures that will be populated
+  // is specified by `gfx::Rect(blit_request.destination_region_offset(),
+  // result_selection().size())`. If blit request is configured to perform
+  // letterboxing, all contents outside of that region will be overwritten with
+  // black, otherwise they will be unchanged. If the copy request's result would
+  // be smaller than `result_selection().size()`, the request will fail (i.e.
+  // empty result will be sent).
+  void set_blit_request(BlitRequest blit_request);
   bool has_blit_request() const { return blit_request_.has_value(); }
   const BlitRequest& blit_request() const { return *blit_request_; }
 

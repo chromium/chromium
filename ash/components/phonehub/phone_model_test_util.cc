@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 const char16_t kFakeMobileProviderName[] = u"Fake Mobile Provider";
@@ -79,7 +79,8 @@ const base::flat_map<Notification::ActionType, int64_t> kFakeActionIdMap = {
 
 const Notification::AppMetadata& CreateFakeAppMetadata() {
   static const base::NoDestructor<Notification::AppMetadata> fake_app_metadata{
-      kFakeAppVisibleName, kFakeAppPackageName, gfx::Image(), kUserId};
+      kFakeAppVisibleName,          kFakeAppPackageName,         gfx::Image(),
+      /*icon_color=*/absl::nullopt, /*icon_is_monochrome=*/true, kUserId};
   return *fake_app_metadata;
 }
 
@@ -98,4 +99,4 @@ const Notification& CreateFakeNotification() {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

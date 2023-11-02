@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,10 @@
 
 #include "ui/wm/core/window_animations.h"
 
-DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(WM_CORE_EXPORT,
+DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(UI_WM),
                                        wm::WindowVisibilityAnimationTransition)
 
-DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(WM_CORE_EXPORT, float)
+DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(UI_WM), float)
 
 namespace wm {
 
@@ -26,5 +26,6 @@ DEFINE_UI_CLASS_PROPERTY_KEY(int,
 DEFINE_UI_CLASS_PROPERTY_KEY(float,
                              kWindowVisibilityAnimationVerticalPositionKey,
                              15.f)
+DEFINE_UI_CLASS_PROPERTY_KEY(int32_t, kWindowHidingAnimationCountKey, 0)
 
 }  // namespace wm

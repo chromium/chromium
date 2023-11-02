@@ -1,10 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_MAC_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_MAC_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/common/content_export.h"
 #include "ui/accessibility/ax_node.h"
@@ -19,13 +20,6 @@ class AXPlatformNodeMac;
 
 namespace content {
 
-#if __OBJC__
-CONTENT_EXPORT const BrowserAccessibilityCocoa* ToBrowserAccessibilityCocoa(
-    const BrowserAccessibility* obj);
-CONTENT_EXPORT BrowserAccessibilityCocoa* ToBrowserAccessibilityCocoa(
-    BrowserAccessibility* obj);
-#endif
-
 class BrowserAccessibilityMac : public BrowserAccessibility {
  public:
   ~BrowserAccessibilityMac() override;
@@ -34,8 +28,8 @@ class BrowserAccessibilityMac : public BrowserAccessibility {
 
   // BrowserAccessibility overrides.
   void OnDataChanged() override;
-  uint32_t PlatformChildCount() const override;
-  BrowserAccessibility* PlatformGetChild(uint32_t child_index) const override;
+  size_t PlatformChildCount() const override;
+  BrowserAccessibility* PlatformGetChild(size_t child_index) const override;
 
   BrowserAccessibility* PlatformGetFirstChild() const override;
   BrowserAccessibility* PlatformGetLastChild() const override;
@@ -66,7 +60,7 @@ class BrowserAccessibilityMac : public BrowserAccessibility {
   BrowserAccessibilityCocoa* CreateNativeWrapper();
 
   // Manager of the native cocoa node. We own this object.
-  ui::AXPlatformNodeMac* platform_node_ = nullptr;
+  raw_ptr<ui::AXPlatformNodeMac> platform_node_ = nullptr;
 };
 
 }  // namespace content

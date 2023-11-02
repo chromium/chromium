@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,7 +44,7 @@ class SimpleAPIPermission : public APIPermission {
   bool FromValue(const base::Value* value,
                  std::string* /*error*/,
                  std::vector<std::string>* /*unhandled_permissions*/) override {
-    return (value == NULL);
+    return (value == nullptr);
   }
 
   std::unique_ptr<base::Value> ToValue() const override { return nullptr; }

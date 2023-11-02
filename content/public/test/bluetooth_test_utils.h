@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,11 @@ namespace content {
 // Configure the BluetoothAdapter which will be returned by
 // BluetoothAdapterFactoryWrapper::GetAdapter().
 void SetBluetoothAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
+
+// Configure WebBluetoothServiceImpl to not clear its advertisement clients
+// lists when the window loses focus or becomes hidden or occluded, to avoid
+// flakiness in browser tests.
+void IgnoreBluetoothVisibilityRequirementsForTesting();
 
 }  // namespace content
 

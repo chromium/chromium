@@ -26,6 +26,9 @@ from tensorflow.python.client import session
 from tensorflow.python.data.ops import dataset_ops
 from tensorflow.python.eager import context
 from tensorflow.python.eager import def_function
+from tensorflow.python.framework import dtypes
+from tensorflow.python.framework import tensor_shape
+from tensorflow.python.ops import array_ops
 from tensorflow.python.ops import lookup_ops
 from tensorflow.python.ops import variables as variables_lib
 from tensorflow.python.ops.ragged import ragged_tensor
@@ -224,15 +227,18 @@ class OpsBaseBenchmark(benchmark.Benchmark):
       sess.run(variables_lib.global_variables_initializer())
 
       inputs = sess.run(self.input_data)
-      benchmark_op = fn(inputs, **kwargs)
+      placeholder = array_ops.placeholder(dtypes.string,
+                                          tensor_shape.TensorShape({None}))
+      op_feed_dict = {placeholder: inputs}
+      benchmark_op = fn(placeholder, **kwargs)
 
       def run_benchmark():
         for _ in range(burn_iters):
-          sess.run(benchmark_op)
+          sess.run(benchmark_op, op_feed_dict)
         total_time = 0
         for _ in range(iters):
           start_time = time.time()
-          sess.run(benchmark_op)
+          sess.run(benchmark_op, op_feed_dict)
           total_time += time.time() - start_time
 
         return total_time

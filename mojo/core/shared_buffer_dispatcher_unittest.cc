@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include <limits>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/writable_shared_memory_region.h"
@@ -67,7 +66,7 @@ TEST_F(SharedBufferDispatcherTest, ValidateCreateOptionsValid) {
   // Different flags.
   MojoCreateSharedBufferFlags flags_values[] = {
       MOJO_CREATE_SHARED_BUFFER_FLAG_NONE};
-  for (size_t i = 0; i < base::size(flags_values); i++) {
+  for (size_t i = 0; i < std::size(flags_values); i++) {
     const MojoCreateSharedBufferFlags flags = flags_values[i];
 
     // Different capacities (size 1).

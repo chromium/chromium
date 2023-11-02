@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,7 +60,7 @@ declare namespace chrome {
                                    callback: (p1: Window) => void): void;
     export function getAll(getInfo: (GetInfo|null),
                            callback: (p1: Window[]) => void): void;
-    type CreateData = {
+    interface CreateData {
       url?: (string|string[]);
       tabId?: number;
       left?: number;
@@ -77,7 +77,7 @@ declare namespace chrome {
     export function create(createData?: CreateData,
                            callback?: (p1: Window) => void): void;
 
-    type UpdateInfo = {
+    interface UpdateInfo {
       left?: number;
       top?: number;
       width?: number;

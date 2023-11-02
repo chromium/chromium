@@ -1,20 +1,21 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 
-#include "ash/grit/ash_eche_app_resources.h"
 #include "ash/webui/eche_app_ui/eche_app_manager.h"
 #include "ash/webui/eche_app_ui/eche_app_ui.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "ash/webui/eche_app_ui/url_constants.h"
-#include "chromeos/grit/chromeos_eche_bundle_resources.h"
+#include "ash/webui/grit/ash_eche_app_resources.h"
+#include "ash/webui/grit/ash_eche_bundle_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/js/grit/mojo_bindings_resources.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/webui/webui_allowlist.h"
 
 namespace ash {
@@ -24,24 +25,27 @@ EcheAppUI::EcheAppUI(content::WebUI* web_ui,
                      BindSignalingMessageExchangerCallback exchanger_callback,
                      BindSystemInfoProviderCallback system_info_callback,
                      BindUidGeneratorCallback generator_callback,
-                     BindNotificationGeneratorCallback notification_callback)
+                     BindNotificationGeneratorCallback notification_callback,
+                     BindDisplayStreamHandlerCallback stream_handler_callback)
     : ui::MojoWebUIController(web_ui),
       bind_exchanger_callback_(std::move(exchanger_callback)),
       bind_system_info_callback_(std::move(system_info_callback)),
       bind_generator_callback_(std::move(generator_callback)),
-      bind_notification_callback_(std::move(notification_callback)) {
-  auto html_source =
-      base::WrapUnique(content::WebUIDataSource::Create(kChromeUIEcheAppHost));
+      bind_notification_callback_(std::move(notification_callback)),
+      bind_stream_handler_callback_(std::move(stream_handler_callback)) {
+  auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
+  content::WebUIDataSource* html_source =
+      content::WebUIDataSource::CreateAndAdd(browser_context,
+                                             kChromeUIEcheAppHost);
 
-  html_source->AddResourcePath("", IDR_CHROMEOS_ECHE_INDEX_HTML);
+  html_source->AddResourcePath("", IDR_ASH_ECHE_INDEX_HTML);
   html_source->AddResourcePath("system_assets/app_icon_32.png",
-                               IDR_CHROMEOS_ECHE_APP_ICON_32_PNG);
+                               IDR_ASH_ECHE_APP_ICON_32_PNG);
   html_source->AddResourcePath("system_assets/app_icon_256.png",
-                               IDR_CHROMEOS_ECHE_APP_ICON_256_PNG);
-  html_source->AddResourcePath("js/app_bundle.js",
-                               IDR_CHROMEOS_ECHE_APP_BUNDLE_JS);
+                               IDR_ASH_ECHE_APP_ICON_256_PNG);
+  html_source->AddResourcePath("js/app_bundle.js", IDR_ASH_ECHE_APP_BUNDLE_JS);
   html_source->AddResourcePath("assets/app_bundle.css",
-                               IDR_CHROMEOS_ECHE_APP_BUNDLE_CSS);
+                               IDR_ASH_ECHE_APP_BUNDLE_CSS);
   html_source->AddResourcePath("big_buffer.mojom-lite.js",
                                IDR_MOJO_BIG_BUFFER_MOJOM_LITE_JS);
   html_source->AddResourcePath("string16.mojom-lite.js",
@@ -67,8 +71,6 @@ EcheAppUI::EcheAppUI(content::WebUI* web_ui,
   std::string csp = std::string("frame-src ") + kChromeUIEcheAppGuestURL + ";";
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameSrc, csp);
-  auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
-  content::WebUIDataSource::Add(browser_context, html_source.release());
 
   // Add ability to request chrome-untrusted: URLs.
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
@@ -88,6 +90,12 @@ EcheAppUI::EcheAppUI(content::WebUI* web_ui,
     webui_allowlist->RegisterAutoGrantedPermission(untrusted_eche_app_origin,
                                                    permission);
   }
+
+  // Set untrusted URL of Eche app in WebApp scope for allowing AutoPlay.
+  auto* web_contents = web_ui->GetWebContents();
+  auto prefs = web_contents->GetOrCreateWebPreferences();
+  prefs.web_app_scope = GURL(kChromeUIEcheAppGuestURL);
+  web_contents->SetWebPreferences(prefs);
 }
 
 EcheAppUI::~EcheAppUI() = default;
@@ -110,6 +118,11 @@ void EcheAppUI::BindInterface(
 void EcheAppUI::BindInterface(
     mojo::PendingReceiver<mojom::NotificationGenerator> receiver) {
   bind_notification_callback_.Run(std::move(receiver));
+}
+
+void EcheAppUI::BindInterface(
+    mojo::PendingReceiver<mojom::DisplayStreamHandler> receiver) {
+  bind_stream_handler_callback_.Run(std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(EcheAppUI)

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -65,7 +65,6 @@ class FieldFormatterStateMapTest : public ::testing::Test {
                                 /*pref_service=*/autofill_client_.GetPrefs(),
                                 /*local_state=*/autofill_client_.GetPrefs(),
                                 /*identity_manager=*/nullptr,
-                                /*client_profile_validator=*/nullptr,
                                 /*history_service=*/nullptr,
                                 /*strike_database=*/nullptr,
                                 /*image_fetcher=*/nullptr,
@@ -143,6 +142,44 @@ TEST_F(FieldFormatterStateMapTest, AlternativeStateNameForNonUS) {
   EXPECT_THAT(CreateAutofillMappings(state_name_profile, "en-US"),
               AllOf(Not(Contains(Pair(Key(34), _))),
                     Contains(Pair(Key(-6), "Invalid"))));
+}
+
+TEST_F(FieldFormatterStateMapTest, AlternativeStateNameForNonASCII) {
+  autofill::test::ClearAlternativeStateNameMapForTesting();
+  WritePathToPref(GetPath());
+  autofill::test::TestStateEntry test_state_entry;
+  test_state_entry.canonical_name = "أبو ظبي'";
+  test_state_entry.abbreviations = {};
+  test_state_entry.alternative_names = {"Abu Dhabi"};
+  base::WriteFile(
+      GetPath().AppendASCII("AE"),
+      autofill::test::CreateStatesProtoAsString("AE", {test_state_entry}));
+
+  autofill::AutofillProfile alternative_state_map_profile;
+  alternative_state_map_profile.SetInfo(autofill::ADDRESS_HOME_STATE,
+                                        u"Abu Dhabi", "en-US");
+  alternative_state_map_profile.SetInfo(autofill::ADDRESS_HOME_COUNTRY, u"AE",
+                                        "en-US");
+
+  base::RunLoop run_loop;
+  autofill::MockAlternativeStateNameMapUpdater
+      mock_alternative_state_name_updater(run_loop.QuitClosure(),
+                                          autofill_client_.GetPrefs(),
+                                          &personal_data_manager_);
+  personal_data_manager_.AddObserver(&mock_alternative_state_name_updater);
+  personal_data_manager_.AddProfile(alternative_state_map_profile);
+  run_loop.Run();
+  personal_data_manager_.RemoveObserver(&mock_alternative_state_name_updater);
+
+  EXPECT_FALSE(autofill::AlternativeStateNameMap::GetInstance()
+                   ->IsLocalisedStateNamesMapEmpty());
+
+  // State handling from state name.
+  autofill::AutofillProfile state_name_profile(base::GenerateGUID(), kFakeUrl);
+  autofill::test::SetProfileInfo(&state_name_profile, "John", "", "Doe", "", "",
+                                 "", "", "", "Abu Dhabi", "", "AE", "");
+  EXPECT_THAT(CreateAutofillMappings(state_name_profile, "en-US"),
+              IsSupersetOf({Pair(Key(-6), "أبو ظبي'")}));
 }
 
 TEST_F(FieldFormatterStateMapTest,
@@ -440,6 +477,96 @@ TEST(FieldFormatterTest, FormatExpressionWithReplacements) {
   EXPECT_EQ("\\+0041", result);
 }
 
+TEST(FieldFormatterTest, FormatExpressionWithRegexpReplacement) {
+  base::flat_map<Key, std::string> mappings = {
+      {Key(1), "AA"}, {Key(2), "Bb"}, {Key(3), "Cc"}, {Key(4), "DD"}};
+  std::string result;
+
+  ValueExpression value_expression;
+  auto* chunk = value_expression.add_chunk();
+  // AA -> rA
+  chunk->set_key(1);
+  auto* case_insensitive_local = chunk->add_regexp_replacements();
+  case_insensitive_local->mutable_text_filter()->set_re2("a");
+  case_insensitive_local->mutable_text_filter()->set_case_sensitive(false);
+  case_insensitive_local->set_global(false);
+  case_insensitive_local->set_replacement("r");
+  // Bb -> Br
+  chunk = value_expression.add_chunk();
+  chunk->set_key(2);
+  auto* case_sensitive_local = chunk->add_regexp_replacements();
+  case_sensitive_local->mutable_text_filter()->set_re2("b");
+  case_sensitive_local->mutable_text_filter()->set_case_sensitive(true);
+  case_sensitive_local->set_global(false);
+  case_sensitive_local->set_replacement("r");
+  // Cc -> rr
+  chunk = value_expression.add_chunk();
+  chunk->set_key(3);
+  auto* case_insensitive_global = chunk->add_regexp_replacements();
+  case_insensitive_global->mutable_text_filter()->set_re2("c");
+  case_insensitive_global->mutable_text_filter()->set_case_sensitive(false);
+  case_insensitive_global->set_global(true);
+  case_insensitive_global->set_replacement("r");
+  // DD -> rr
+  chunk = value_expression.add_chunk();
+  chunk->set_key(4);
+  auto* case_insensitive_local_first = chunk->add_regexp_replacements();
+  case_insensitive_local_first->mutable_text_filter()->set_re2("d");
+  case_insensitive_local_first->mutable_text_filter()->set_case_sensitive(
+      false);
+  case_insensitive_local_first->set_global(false);
+  case_insensitive_local_first->set_replacement("r");
+  auto* case_insensitive_local_second = chunk->add_regexp_replacements();
+  case_insensitive_local_second->mutable_text_filter()->set_re2("d");
+  case_insensitive_local_second->mutable_text_filter()->set_case_sensitive(
+      false);
+  case_insensitive_local_second->set_global(false);
+  case_insensitive_local_second->set_replacement("r");
+
+  EXPECT_EQ(ACTION_APPLIED, FormatExpression(value_expression, mappings,
+                                             /* quote_meta= */ false, &result)
+                                .proto_status());
+  EXPECT_EQ("rABrrrrr", result);
+}
+
+TEST(FieldFormatterTest, FormatExpressionWithRegexpReplacementCapturingGroups) {
+  std::string result;
+
+  ValueExpression value_expression;
+  auto* chunk = value_expression.add_chunk();
+  chunk->set_text("John Doe");
+  auto* group_replacement = chunk->add_regexp_replacements();
+  group_replacement->mutable_text_filter()->set_re2("(\\w+)\\s(\\w+)");
+  group_replacement->set_replacement("\\2 \\1");
+
+  EXPECT_EQ(ACTION_APPLIED,
+            FormatExpression(value_expression,
+                             /* mappings= */ base::flat_map<Key, std::string>(),
+                             /* quote_meta= */ false, &result)
+                .proto_status());
+  EXPECT_EQ("Doe John", result);
+}
+
+TEST(FieldFormatterTest, FormatExpressionWithInvalidRegexpReplacement) {
+  base::flat_map<Key, std::string> mappings = {{Key(1), "AA"}};
+  std::string result;
+
+  ValueExpression value_expression;
+  auto* chunk = value_expression.add_chunk();
+  // AA -> ?
+  chunk->set_key(1);
+  auto* invalid_replacement = chunk->add_regexp_replacements();
+  invalid_replacement->mutable_text_filter()->set_re2("^*");
+  invalid_replacement->mutable_text_filter()->set_case_sensitive(false);
+  invalid_replacement->set_global(false);
+  invalid_replacement->set_replacement("");
+
+  EXPECT_EQ(ACTION_APPLIED, FormatExpression(value_expression, mappings,
+                                             /* quote_meta= */ false, &result)
+                                .proto_status());
+  EXPECT_EQ("AA", result);
+}
+
 TEST(FieldFormatterTest, FormatExpressionWithMemoryKey) {
   base::flat_map<Key, std::string> mappings = {{Key("_var0"), "valueA"},
                                                {Key("_var1"), "val.ueB"}};
@@ -506,8 +633,15 @@ TEST(FieldFormatterTest, DifferentLocales) {
               Contains(Pair(Key(36), "Vereinigte Staaten")));
 
   // Invalid locales default to "en-US".
+  // Android and Desktop use a different default.
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_THAT(CreateAutofillMappings(profile, ""),
               Contains(Pair(Key(36), "United States")));
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
+  EXPECT_THAT(CreateAutofillMappings(profile, ""),
+              Contains(Pair(Key(36), "US")));
+#endif
   EXPECT_THAT(CreateAutofillMappings(profile, "invalid"),
               Contains(Pair(Key(36), "United States")));
 }

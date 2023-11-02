@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,7 +52,7 @@ class LeveldbValueStore : public ValueStore,
                   const std::string& key,
                   const base::Value& value) override;
   WriteResult Set(ValueStore::WriteOptions options,
-                  const base::DictionaryValue& values) override;
+                  const base::Value::Dict& values) override;
   WriteResult Remove(const std::string& key) override;
   WriteResult Remove(const std::vector<std::string>& keys) override;
   WriteResult Clear() override;

@@ -1,0 +1,26 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Configuration for a generic x86 android-22 AVD (userdebug build).
+
+emulator_package {
+  package_name: "chromium/third_party/android_sdk/public/emulator"
+  version: "qI9liK4Dm1fguyeCE5zsfgvu154CZZ8XTk7JEhcw21MC"  # 31.2.7
+  dest_path: "generic_android22"
+}
+
+system_image_package {
+  package_name: "chromium/third_party/android_sdk/public/system-images/android-22/google_apis/x86"
+  version: "6jxw-rwCBPxhAgB1q_mBTkC9602dwM-wtgtux_Q_SXIC"  # 26
+  dest_path: "generic_android22"
+}
+system_image_name: "system-images;android-22;google_apis;x86"
+
+avd_package {
+  package_name: "chromium/third_party/android_sdk/public/avds/android-22/google_apis/x86"
+  # Created in https://ci.chromium.org/b/8821945131962103569
+  version: "dptAbtPdeaYt9lQeHaIWDBd-VRX-alejBvmCS1Hc9IkC"
+  dest_path: "generic_android22"
+}
+avd_name: "android_22_google_apis_x86"

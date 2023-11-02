@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,14 +35,15 @@ public class AutofillSaveCardConfirmFlowPrompt extends AutofillSaveCardPromptBas
      * @param delegate A {@link AutofillSaveCardConfirmFlowPromptDelegate} to handle events.
      * @param title Title of the dialog prompt.
      * @param cardLabel Label representing a card which will be saved.
+     * @param cardholderAccount The Google account where a card will be saved.
      * @param confirmButtonLabel Label for the confirm button.
      * @return A {@link AutofillSaveCardConfirmFlowPrompt} to confirm saving card.
      */
     public static AutofillSaveCardConfirmFlowPrompt createPrompt(Context context,
             AutofillSaveCardConfirmFlowPromptDelegate delegate, String title, String cardLabel,
-            String confirmButtonLabel) {
+            String cardholderAccount, String confirmButtonLabel) {
         return new AutofillSaveCardConfirmFlowPrompt(
-                context, delegate, title, cardLabel, confirmButtonLabel);
+                context, delegate, title, cardLabel, cardholderAccount, confirmButtonLabel);
     }
 
     private final AutofillSaveCardConfirmFlowPromptDelegate mDelegate;
@@ -52,8 +53,8 @@ public class AutofillSaveCardConfirmFlowPrompt extends AutofillSaveCardPromptBas
      */
     private AutofillSaveCardConfirmFlowPrompt(Context context,
             AutofillSaveCardConfirmFlowPromptDelegate delegate, String title, String cardLabel,
-            String confirmButtonLabel) {
-        super(context, delegate, 0, title, 0, confirmButtonLabel, true);
+            String cardholderAccount, String confirmButtonLabel) {
+        super(context, delegate, 0, title, 0, cardholderAccount, confirmButtonLabel, true);
         mDelegate = delegate;
         TextView cardDetailsMasked = (TextView) mDialogView.findViewById(R.id.cc_details_masked);
         cardDetailsMasked.setText(cardLabel);
@@ -74,6 +75,12 @@ public class AutofillSaveCardConfirmFlowPrompt extends AutofillSaveCardPromptBas
 
     @Override
     public void onDismiss(PropertyModel model, int dismissalCause) {
+        // Do not call onUserDismiss if dialog was dismissed either because the user
+        // accepted to save the card or was dismissed by native code.
+        if (dismissalCause == DialogDismissalCause.NEGATIVE_BUTTON_CLICKED) {
+            mDelegate.onUserDismiss();
+        }
+        // Call whenever the dialog is dismissed.
         mDelegate.onPromptDismissed();
     }
 }

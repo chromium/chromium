@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/chromedriver/capabilities.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 #include "chrome/test/chromedriver/command_listener.h"
@@ -84,10 +84,11 @@ class PerformanceLogger : public DevToolsEventListener, public CommandListener {
   Status CollectTraceEvents();  // Ditto.
   Status IsTraceDone(bool* trace_done) const; // True if trace is not buffering.
 
-  Log* log_;  // The log where to create entries.
-  const Session* session_;
+  raw_ptr<Log> log_;  // The log where to create entries.
+  raw_ptr<const Session> session_;
   PerfLoggingPrefs prefs_;
-  DevToolsClient* browser_client_; // Pointer to browser-wide |DevToolsClient|.
+  raw_ptr<DevToolsClient>
+      browser_client_;    // Pointer to browser-wide |DevToolsClient|.
   bool trace_buffering_;  // True unless trace stopped and all events received.
   bool enable_service_worker_;
 };

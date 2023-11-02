@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@ namespace autofill_assistant {
 
 // Please keep the list alphabetized.
 extern const char kBuyMovieTicket[];
+extern const char kChromeFastCheckout[];
 extern const char kFlightsCheckin[];
 extern const char kFoodOrdering[];
 extern const char kFoodOrderingDelivery[];

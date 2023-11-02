@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,6 +42,8 @@ class TestFrameNavigationObserver : public WebContentsObserver {
   bool last_navigation_succeeded() const { return last_navigation_succeeded_; }
 
   net::Error last_net_error_code() const { return last_net_error_code_; }
+
+  bool navigation_started() const { return navigation_started_; }
 
  private:
   // WebContentsObserver

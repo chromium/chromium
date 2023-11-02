@@ -1,5 +1,5 @@
 <!--
-Copyright 2020 The Chromium Authors. All rights reserved.
+Copyright 2020 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
@@ -26,6 +26,7 @@ chromium-metrics-reviews@google.com.
   <variant name="CrosSettings." summary="Cros Settings"/>
   <variant name="HelpApp." summary="Help App"/>
   <variant name="HelpAppLauncher." summary="Help App Launcher"/>
+  <variant name="Personalization." summary="Personalization App"/>
 </variants>
 
 <variants name="LocalStorageSizes">
@@ -55,7 +56,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalSearchService.BindIndexHasError" enum="Boolean"
-    expires_after="2021-12-30">
+    expires_after="2022-11-30">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -66,7 +67,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalSearchService.MetricsDailyEventInterval"
-    enum="DailyEventIntervalType" expires_after="2021-12-30">
+    enum="DailyEventIntervalType" expires_after="2022-11-30">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -76,7 +77,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalSearchService.{IndexId}AddOrUpdateLatency" units="ms"
-    expires_after="2021-12-30">
+    expires_after="2022-11-30">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -90,7 +91,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalSearchService.{IndexId}Backend"
-    enum="LocalSearchServiceBackend" expires_after="2021-12-30">
+    enum="LocalSearchServiceBackend" expires_after="2022-11-30">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -104,7 +105,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalSearchService.{IndexId}ClearIndexLatency" units="ms"
-    expires_after="2021-12-30">
+    expires_after="2022-11-30">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -118,7 +119,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalSearchService.{IndexId}DailySearch" units="count"
-    expires_after="2021-12-30">
+    expires_after="2022-11-30">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -137,7 +138,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalSearchService.{IndexId}DeleteLatency" units="ms"
-    expires_after="2021-12-30">
+    expires_after="2022-11-30">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -151,7 +152,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalSearchService.{IndexId}NumberDocuments" units="count"
-    expires_after="2021-12-30">
+    expires_after="2022-11-30">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -166,7 +167,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalSearchService.{IndexId}NumberResults" units="count"
-    expires_after="2021-12-30">
+    expires_after="2022-11-30">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -179,7 +180,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalSearchService.{IndexId}NumberSearchPerformedDone"
-    enum="Boolean" expires_after="2021-12-30">
+    enum="Boolean" expires_after="2022-11-30">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -193,7 +194,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalSearchService.{IndexId}ResponseStatus"
-    enum="LocalSearchServiceResponseStatus" expires_after="2021-12-30">
+    enum="LocalSearchServiceResponseStatus" expires_after="2022-11-30">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -206,7 +207,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalSearchService.{IndexId}SearchLatency" units="ms"
-    expires_after="2021-12-30">
+    expires_after="2022-11-30">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -220,7 +221,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalSearchService.{IndexId}UpdateDocumentsLatency" units="ms"
-    expires_after="2021-12-30">
+    expires_after="2022-11-30">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -281,7 +282,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalStorage.RendererAreaCacheHit"
-    enum="LocalStorageRendererAreaCacheHitEnum" expires_after="2022-05-01">
+    enum="LocalStorageRendererAreaCacheHitEnum" expires_after="2023-05-01">
   <owner>mek@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -298,145 +299,6 @@ chromium-metrics-reviews@google.com.
   <owner>dmurph@chromium.org</owner>
   <summary>
     Size of the HTML5 LocalStorage DB in KB in the renderer-side cache.
-  </summary>
-</histogram>
-
-<histogram name="LocalStorageContext.CachePurgedInKB" units="KB"
-    expires_after="M87">
-  <owner>mek@chromium.org</owner>
-  <summary>
-    Total size of the HTML5 LocalStorage browser-side cache purged in KB when
-    memory pressure signal was triggered or cache size hit the limits.
-  </summary>
-</histogram>
-
-<histogram name="LocalStorageContext.CacheSizeInKB" units="KB"
-    expires_after="M87">
-  <owner>mek@chromium.org</owner>
-  <summary>
-    Total size of the HTML5 LocalStorage databases in KB in the browser-side
-    cache. Recorded each time a new database is opened in memory.
-  </summary>
-</histogram>
-
-<histogram name="LocalStorageContext.CommitResult" enum="LevelDBStatus"
-    expires_after="M87">
-  <owner>mek@chromium.org</owner>
-  <summary>
-    The result of an attempt to commit localstorage data to the database.
-  </summary>
-</histogram>
-
-<histogram name="LocalStorageContext.DatabaseOpenError" enum="LevelDBStatus"
-    expires_after="M87">
-  <owner>mek@chromium.org</owner>
-  <summary>
-    The result of a failed attempt to open a LevelDB database for LocalStorage.
-  </summary>
-</histogram>
-
-<histogram name="LocalStorageContext.DatabaseOpenError.Disk"
-    enum="LevelDBStatus" expires_after="M87">
-  <owner>mek@chromium.org</owner>
-  <summary>
-    The result of a failed attempt to open a LevelDB database for LocalStorage
-    on disk.
-  </summary>
-</histogram>
-
-<histogram name="LocalStorageContext.DatabaseOpenError.Memory"
-    enum="LevelDBStatus" expires_after="M87">
-  <owner>mek@chromium.org</owner>
-  <summary>
-    The result of a failed attempt to open a LevelDB database for LocalStorage
-    in memory.
-  </summary>
-</histogram>
-
-<histogram name="LocalStorageContext.DestroyDBResult" enum="LevelDBStatus"
-    expires_after="M87">
-  <owner>mek@chromium.org</owner>
-  <summary>
-    The result of attempting to delete the LocalStorage database.
-  </summary>
-</histogram>
-
-<histogram name="LocalStorageContext.DirectoryOpenError"
-    enum="PlatformFileError" expires_after="M87">
-  <owner>mek@chromium.org</owner>
-  <summary>
-    The reason opening a directory for the LevelDB database that backs
-    LocalStorage failed.
-  </summary>
-</histogram>
-
-<histogram name="LocalStorageContext.MapLoadError" enum="LevelDBStatus"
-    expires_after="M87">
-  <owner>mek@chromium.org</owner>
-  <summary>
-    The reason loading an initial snapshot of the localstorage data for an
-    origin failed.
-  </summary>
-</histogram>
-
-<histogram name="LocalStorageContext.MigrationFixUpNeeded" enum="Boolean"
-    expires_after="M87">
-  <obsolete>
-    Removed May 2021 as part of legacy migration code cleanup.
-  </obsolete>
-  <owner>mek@chromium.org</owner>
-  <summary>
-    Whether or not any fixes needed to be made to localstorage data, as a result
-    of bugs in the migration code in M61/M62. Recorded every time the browser
-    loads an initial snapshot of the localstorage data for an origin.
-  </summary>
-</histogram>
-
-<histogram name="LocalStorageContext.OnConnectionDestroyed" enum="Boolean"
-    expires_after="M87">
-  <owner>mek@chromium.org</owner>
-  <owner>dullweber@chromium.org</owner>
-  <summary>
-    Recorded when the database connection is closed unexpectedly.
-  </summary>
-</histogram>
-
-<histogram name="LocalStorageContext.OpenError" enum="LocalStorageOpenError"
-    expires_after="M87">
-  <owner>mek@chromium.org</owner>
-  <summary>
-    The reason opening the LevelDB database that backs LocalStorage failed.
-  </summary>
-</histogram>
-
-<histogram
-    name="LocalStorageContext.OpenResultAfter{LocalStorageContextOpenReasons}"
-    enum="LocalStorageOpenError" expires_after="M87">
-  <owner>mek@chromium.org</owner>
-  <summary>
-    The result of opening the LevelDB database that backs LocalStorage.
-    {LocalStorageContextOpenReasons}
-  </summary>
-  <token key="LocalStorageContextOpenReasons">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-    <variant name="CommitErrors" summary="After too many commit errors."/>
-    <variant name="InvalidVersion"
-        summary="After an invalid version was read."/>
-    <variant name="OpenFailed" summary="After opening the DB failed."/>
-    <variant name="ReadVersionError"
-        summary="After reading the schema version failed."/>
-  </token>
-</histogram>
-
-<histogram name="LocalStorageContext.ReadVersionError" enum="LevelDBStatus"
-    expires_after="M87">
-  <owner>mek@chromium.org</owner>
-  <summary>
-    The reason reading the schema version of the LocalStorage database failed.
   </summary>
 </histogram>
 

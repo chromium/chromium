@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/shelf/drag_handle.h"
+#include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -119,7 +120,7 @@ void HotseatTransitionAnimator::DoAnimation(HotseatState old_state,
   StopObservingImplicitAnimations();
 
   shelf_widget_->GetAnimatingBackground()->SetColor(
-      ShelfConfig::Get()->GetMaximizedShelfColor());
+      ShelfConfig::Get()->GetMaximizedShelfColor(shelf_widget_));
 
   gfx::Rect drag_handle_bounds(shelf_widget_->GetAnimatingBackground()->size());
   drag_handle_bounds.ClampToCenteredSize(ShelfConfig::Get()->DragHandleSize());
@@ -153,6 +154,11 @@ void HotseatTransitionAnimator::DoAnimation(HotseatState old_state,
 bool HotseatTransitionAnimator::ShouldDoAnimation(HotseatState old_state,
                                                   HotseatState new_state) {
   if (!animations_enabled_for_current_session_state_)
+    return false;
+
+  // The shelf should be directly hidden without animation if the auto hide
+  // state is auto hidden.
+  if (shelf_widget_->shelf_layout_manager()->is_shelf_auto_hidden())
     return false;
 
   return (new_state == HotseatState::kShownHomeLauncher ||

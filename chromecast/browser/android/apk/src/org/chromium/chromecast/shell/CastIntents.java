@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,16 +13,8 @@ public class CastIntents {
             "com.google.android.apps.castshell.intent.action.ACTION_SCREEN_OFF";
 
     /**
-     * Action type of intent from CastWebContentsComponent to host activity of
-     * CastWebContentsFragment to show web contents. (To start CastWebContentsActivity use
-     * Context.startActivity())
-     */
-    public static final String ACTION_SHOW_WEB_CONTENT = "com.google.assistant.SHOW_WEB_CONTENT";
-
-    /**
-     * Action type of intent from CastWebContentsComponent to mInternalStopReceiver to detach
-     * WebContents and then file an intent to CastWebContentsFragment's host activity to stop
-     * fragment.
+     * Used by CastWebContentsComponent to tell CastWebContentsSurfaceHelper to tear down the web
+     * contents.
      */
     public static final String ACTION_STOP_WEB_CONTENT = "com.google.assistant.STOP_WEB_CONTENT";
 
@@ -36,4 +28,7 @@ public class CastIntents {
      */
     public static final String ACTION_ON_WEB_CONTENT_STOPPED =
             "com.google.assistant.ON_WEB_CONTENT_STOPPED";
+
+    public static final String ACTION_START_CAST_BROWSER =
+            "com.google.cast.action.START_CAST_BROWSER";
 }

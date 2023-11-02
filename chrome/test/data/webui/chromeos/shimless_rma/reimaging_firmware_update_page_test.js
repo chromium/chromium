@@ -1,45 +1,56 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
-import {ReimagingFirmwareUpdatePageElement} from 'chrome://shimless-rma/reimaging_firmware_update_page.js';
+import {UpdateRoFirmwarePage} from 'chrome://shimless-rma/reimaging_firmware_update_page.js';
+import {ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
+import {UpdateRoFirmwareStatus} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.js';
 
 export function reimagingFirmwareUpdatePageTest() {
-  /** @type {?ReimagingFirmwareUpdatePageElement} */
+  /**
+   * ShimlessRma is needed to handle the 'transition-state' event used
+   * when handling calibration overall progress signals.
+   * @type {?ShimlessRma}
+   */
+  let shimlessRmaComponent = null;
+
+  /** @type {?UpdateRoFirmwarePage} */
   let component = null;
 
   /** @type {?FakeShimlessRmaService} */
   let service = null;
 
-  suiteSetup(() => {
+  setup(() => {
+    document.body.innerHTML = '';
     service = new FakeShimlessRmaService();
     setShimlessRmaServiceForTesting(service);
   });
 
-  setup(() => {
-    document.body.innerHTML = '';
-  });
-
   teardown(() => {
+    shimlessRmaComponent.remove();
+    shimlessRmaComponent = null;
     component.remove();
     component = null;
     service.reset();
   });
 
-  /**
-   * @param {boolean} reimageRequired
-   * @return {!Promise}
-   */
-  function initializeReimagingFirmwareUpdatePage(reimageRequired) {
+  /** @return {!Promise} */
+  function initializeReimagingFirmwareUpdatePage() {
     assertFalse(!!component);
 
-    service.setReimageRequiredResult(reimageRequired);
-    component = /** @type {!ReimagingFirmwareUpdatePageElement} */ (
+    shimlessRmaComponent =
+        /** @type {!ShimlessRma} */ (document.createElement('shimless-rma'));
+    assertTrue(!!shimlessRmaComponent);
+    document.body.appendChild(shimlessRmaComponent);
+
+    component = /** @type {!UpdateRoFirmwarePage} */ (
         document.createElement('reimaging-firmware-update-page'));
     assertTrue(!!component);
     document.body.appendChild(component);
@@ -47,138 +58,74 @@ export function reimagingFirmwareUpdatePageTest() {
     return flushTasks();
   }
 
-  test('ReimagingFirmwareUpdatePageRequiredInitializes', async () => {
-    await initializeReimagingFirmwareUpdatePage(true);
+  test('RoFirmwareUpdatePageInitializes', async () => {
+    await initializeReimagingFirmwareUpdatePage();
     await flushTasks();
-    const downloadReimageComponent =
-        component.shadowRoot.querySelector('#firmwareReimageDownload');
-    const usbReimageComponent =
-        component.shadowRoot.querySelector('#firmwareReimageUsb');
-    const skipReimageComponent =
-        component.shadowRoot.querySelector('#firmwareReimageSkip');
-
-    assertFalse(downloadReimageComponent.checked);
-    assertFalse(usbReimageComponent.checked);
-    assertFalse(skipReimageComponent.checked);
-    assertTrue(skipReimageComponent.hidden);
+    const updateStatus =
+        component.shadowRoot.querySelector('#firmwareUpdateStatus');
+    assertFalse(updateStatus.hidden);
+    assertEquals('', updateStatus.textContent.trim());
   });
 
-  test('ReimagingFirmwareUpdatePageNotRequiredInitializes', async () => {
-    await initializeReimagingFirmwareUpdatePage(false);
-    const downloadReimageComponent =
-        component.shadowRoot.querySelector('#firmwareReimageDownload');
-    const usbReimageComponent =
-        component.shadowRoot.querySelector('#firmwareReimageUsb');
-    const skipReimageComponent =
-        component.shadowRoot.querySelector('#firmwareReimageSkip');
+  test(
+      'UnpluggingUsbDoesntTriggerTransitionToNextPageIfUpdateIsNotComplete',
+      async () => {
+        const resolver = new PromiseResolver();
 
-    assertFalse(downloadReimageComponent.checked);
-    assertFalse(usbReimageComponent.checked);
-    assertFalse(skipReimageComponent.checked);
-    assertFalse(skipReimageComponent.hidden);
-  });
+        let callCount = 0;
+        service.roFirmwareUpdateComplete = () => {
+          callCount++;
+          return resolver.promise;
+        };
 
-  test('ReimagingFirmwareUpdatePageOneChoiceOnly', async () => {
-    await initializeReimagingFirmwareUpdatePage(true);
-    const downloadReimageComponent =
-        component.shadowRoot.querySelector('#firmwareReimageDownload');
-    const usbReimageComponent =
-        component.shadowRoot.querySelector('#firmwareReimageUsb');
+        await initializeReimagingFirmwareUpdatePage();
+        service.triggerExternalDiskObserver(false, 0);
+        await flushTasks();
+        assertEquals(0, callCount);
 
-    downloadReimageComponent.click();
-    await flushTasks;
+        service.triggerUpdateRoFirmwareObserver(
+            UpdateRoFirmwareStatus.kUpdating, 0);
+        await flushTasks();
 
-    assertTrue(downloadReimageComponent.checked);
-    assertFalse(usbReimageComponent.checked);
+        service.triggerExternalDiskObserver(false, 0);
+        await flushTasks();
+        assertEquals(0, callCount);
+      });
 
-    usbReimageComponent.click();
-    await flushTasks;
+  test(
+      'UnpluggingUsbTriggersTransitionToNextPageIfUpdateIsComplete',
+      async () => {
+        const resolver = new PromiseResolver();
+        await initializeReimagingFirmwareUpdatePage();
 
-    assertFalse(downloadReimageComponent.checked);
-    assertTrue(usbReimageComponent.checked);
-  });
+        const firmwareTitle = component.shadowRoot.querySelector('#titleText');
+        assertEquals(
+            loadTimeData.getString('firmwareUpdateInstallImageTitleText'),
+            firmwareTitle.textContent.trim());
 
-  test('SelectDownloadImage', async () => {
-    const resolver = new PromiseResolver();
-    let callCounter = 0;
-    await initializeReimagingFirmwareUpdatePage(true);
-    service.reimageFromUsb = () => assertTrue(false);
-    service.reimageSkipped = () => assertTrue(false);
-    service.reimageFromDownload = () => {
-      callCounter++;
-      return resolver.promise;
-    };
-    const downloadReimageComponent =
-        component.shadowRoot.querySelector('#firmwareReimageDownload');
+        let callCount = 0;
+        service.roFirmwareUpdateComplete = () => {
+          callCount++;
+          return resolver.promise;
+        };
 
-    downloadReimageComponent.click();
-    await flushTasks();
-    assertTrue(downloadReimageComponent.checked);
+        // Complete the update.
+        service.triggerUpdateRoFirmwareObserver(
+            UpdateRoFirmwareStatus.kComplete, 0);
+        await flushTasks();
 
-    let expectedResult = {foo: 'bar'};
-    let savedResult;
-    component.onNextButtonClick().then((result) => savedResult = result);
-    // Resolve to a distinct result to confirm it was not modified.
-    resolver.resolve(expectedResult);
-    await flushTasks();
+        // Make sure that the transition doesn't happen until the USB is
+        // unplugged.
+        assertEquals(0, callCount);
 
-    assertEquals(callCounter, 1);
-    assertDeepEquals(savedResult, expectedResult);
-  });
+        // Confirm the page title changes after firmware install completes.
+        assertEquals(
+            loadTimeData.getString('firmwareUpdateInstallCompleteTitleText'),
+            firmwareTitle.textContent.trim());
 
-  test('SelectUsbImage', async () => {
-    const resolver = new PromiseResolver();
-    let callCounter = 0;
-    await initializeReimagingFirmwareUpdatePage(true);
-    service.reimageFromDownload = () => assertTrue(false);
-    service.reimageSkipped = () => assertTrue(false);
-    service.reimageFromUsb = () => {
-      callCounter++;
-      return resolver.promise;
-    };
-    const usbReimageComponent =
-        component.shadowRoot.querySelector('#firmwareReimageUsb');
-
-    usbReimageComponent.click();
-    await flushTasks();
-    assertTrue(usbReimageComponent.checked);
-
-    let expectedResult = {foo: 'bar'};
-    let savedResult;
-    component.onNextButtonClick().then((result) => savedResult = result);
-    // Resolve to a distinct result to confirm it was not modified.
-    resolver.resolve(expectedResult);
-    await flushTasks();
-
-    assertEquals(callCounter, 1);
-    assertDeepEquals(savedResult, expectedResult);
-  });
-
-  test('SelectSkipImage', async () => {
-    const resolver = new PromiseResolver();
-    let callCounter = 0;
-    await initializeReimagingFirmwareUpdatePage(false);
-    service.reimageFromDownload = () => assertTrue(false);
-    service.reimageFromUsb = () => assertTrue(false);
-    service.reimageSkipped = () => {
-      callCounter++;
-      return resolver.promise;
-    };
-    const skipReimageComponent =
-        component.shadowRoot.querySelector('#firmwareReimageSkip');
-
-    skipReimageComponent.click();
-    await flushTasks();
-    assertTrue(skipReimageComponent.checked);
-
-    let expectedResult = {foo: 'bar'};
-    let savedResult;
-    component.onNextButtonClick().then((result) => savedResult = result);
-    // Resolve to a distinct result to confirm it was not modified.
-    resolver.resolve(expectedResult);
-    await flushTasks();
-
-    assertEquals(callCounter, 1);
-    assertDeepEquals(savedResult, expectedResult);
-  });
+        // Unplug the USB and verify that the transition happened.
+        service.triggerExternalDiskObserver(false, 0);
+        await flushTasks();
+        assertEquals(1, callCount);
+      });
 }

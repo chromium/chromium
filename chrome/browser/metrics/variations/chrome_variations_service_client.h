@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,6 +34,8 @@ class ChromeVariationsServiceClient
   bool OverridesRestrictParameter(std::string* parameter) override;
   variations::Study::FormFactor GetCurrentFormFactor() override;
   bool IsEnterprise() override;
+  std::unique_ptr<variations::SeedResponse>
+  TakeSeedFromNativeVariationsSeedStore() override;
 
  private:
   // variations::VariationsServiceClient:

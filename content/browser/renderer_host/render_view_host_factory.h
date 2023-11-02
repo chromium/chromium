@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "content/browser/renderer_host/browsing_context_state.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -14,7 +15,7 @@ class FrameTree;
 class RenderViewHost;
 class RenderViewHostDelegate;
 class RenderWidgetHostDelegate;
-class SiteInstance;
+class SiteInstanceGroup;
 
 // A factory for creating RenderViewHosts. There is a global factory function
 // that can be installed for the purposes of testing to provide a specialized
@@ -24,13 +25,15 @@ class RenderViewHostFactory {
   // Creates a RenderViewHost using the currently registered factory, or the
   // default one if no factory is registered. Ownership of the returned
   // pointer will be passed to the caller.
-  static RenderViewHost* Create(FrameTree* frame_tree,
-                                SiteInstance* instance,
-                                RenderViewHostDelegate* delegate,
-                                RenderWidgetHostDelegate* widget_delegate,
-                                int32_t main_frame_routing_id,
-                                bool swapped_out,
-                                bool renderer_initiated_creation);
+  static RenderViewHost* Create(
+      FrameTree* frame_tree,
+      SiteInstanceGroup* group,
+      const StoragePartitionConfig& storage_partition_config,
+      RenderViewHostDelegate* delegate,
+      RenderWidgetHostDelegate* widget_delegate,
+      int32_t main_frame_routing_id,
+      bool renderer_initiated_creation,
+      scoped_refptr<BrowsingContextState> main_browsing_context_state);
 
   RenderViewHostFactory(const RenderViewHostFactory&) = delete;
   RenderViewHostFactory& operator=(const RenderViewHostFactory&) = delete;
@@ -60,13 +63,14 @@ class RenderViewHostFactory {
   // function to create a different kind of RenderViewHost for testing.
   virtual RenderViewHost* CreateRenderViewHost(
       FrameTree* frame_tree,
-      SiteInstance* instance,
+      SiteInstanceGroup* group,
+      const StoragePartitionConfig& storage_partition_config,
       RenderViewHostDelegate* delegate,
       RenderWidgetHostDelegate* widget_delegate,
       int32_t routing_id,
       int32_t main_frame_routing_id,
       int32_t widget_routing_id,
-      bool swapped_out) = 0;
+      scoped_refptr<BrowsingContextState> main_browsing_context_state) = 0;
 
   // Registers your factory to be called when new RenderViewHosts are created.
   // We have only one global factory, so there must be no factory registered

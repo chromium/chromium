@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,12 @@
  * @fileoverview Listens for download events and provides corresponding
  * notifications in ChromeVox.
  */
+import {Msgs} from '../common/msgs.js';
+import {QueueMode} from '../common/tts_interface.js';
 
-goog.provide('DownloadHandler');
+import {Output} from './output/output.js';
+
+export class DownloadHandler {}
 
 /**
  * Maps download item ID to an object containing its file name and progress
@@ -178,19 +182,19 @@ DownloadHandler.notifyProgress = function(id) {
       } else if (timeRemaining < 60) {
         // Seconds. Use up until 1 minute remaining.
         timeUnit = new goog.i18n.MessageFormat(Msgs.getMsg('seconds')).format({
-          COUNT: timeRemaining
+          COUNT: timeRemaining,
         });
       } else if (timeRemaining < 3600) {
         // Minutes. Use up until 1 hour remaining.
         timeRemaining = Math.floor(timeRemaining / 60);
         timeUnit = new goog.i18n.MessageFormat(Msgs.getMsg('minutes')).format({
-          COUNT: timeRemaining
+          COUNT: timeRemaining,
         });
       } else if (timeRemaining < 36000) {
         // Hours. Use up until 10 hours remaining.
         timeRemaining = Math.floor(timeRemaining / 3600);
         timeUnit = new goog.i18n.MessageFormat(Msgs.getMsg('hours')).format({
-          COUNT: timeRemaining
+          COUNT: timeRemaining,
         });
       } else {
         // If 10+ hours remaining, do not report progress.
@@ -198,7 +202,10 @@ DownloadHandler.notifyProgress = function(id) {
       }
 
       const optSubs = [
-        storedItem.percentComplete, storedItem.fileName, timeRemaining, timeUnit
+        storedItem.percentComplete,
+        storedItem.fileName,
+        timeRemaining,
+        timeUnit,
       ];
       DownloadHandler.speechAndBrailleOutput(
           'download_progress', QueueMode.FLUSH, optSubs);

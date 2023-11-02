@@ -11,8 +11,8 @@
 
 #include "../common/platform.h"
 #include <brotli/types.h>
-#include "./fast_log.h"
-#include "./histogram.h"
+#include "fast_log.h"
+#include "histogram.h"
 
 #if defined(__cplusplus) || defined(c_plusplus)
 extern "C" {
@@ -45,7 +45,7 @@ static BROTLI_INLINE double BitsEntropy(
     const uint32_t* population, size_t size) {
   size_t sum;
   double retval = ShannonEntropy(population, size, &sum);
-  if (retval < sum) {
+  if (retval < (double)sum) {
     /* At least one bit per literal is needed. */
     retval = (double)sum;
   }

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -116,14 +116,14 @@ IN_PROC_BROWSER_TEST_F(DockedMagnifierVirtualKeyboardTest, WelcomeScreen) {
   gfx::Rect expected_bounds(original_bounds);
 
   ShowDockedMagnifier();
-  expected_bounds.Inset(0, GetMagnifierHeight(), 0, 0);
+  expected_bounds.Inset(gfx::Insets::TLBR(GetMagnifierHeight(), 0, 0, 0));
   EXPECT_EQ(expected_bounds, GetOobeBounds());
 
   ShowKeyboard();
-  expected_bounds.Inset(0, 0, 0, GetKeyboardHeight());
+  expected_bounds.Inset(gfx::Insets::TLBR(0, 0, GetKeyboardHeight(), 0));
   EXPECT_EQ(expected_bounds, GetOobeBounds());
 
-  expected_bounds.Inset(0, -GetMagnifierHeight(), 0, 0);
+  expected_bounds.Inset(gfx::Insets::TLBR(-GetMagnifierHeight(), 0, 0, 0));
   HideDockedMagnifier();
   EXPECT_EQ(expected_bounds, GetOobeBounds());
 

@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/web_package/web_bundle_url_loader_factory.h"
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/web_package/mock_web_bundle_reader_factory.h"
@@ -41,12 +42,9 @@ class WebBundleURLLoaderFactoryTest : public testing::Test {
     loader_factory_ = std::make_unique<WebBundleURLLoaderFactory>(
         std::move(reader), FrameTreeNode::kFrameTreeNodeInvalidId);
 
-    base::flat_map<GURL, web_package::mojom::BundleIndexValuePtr> items;
-    web_package::mojom::BundleIndexValuePtr item =
-        web_package::mojom::BundleIndexValue::New();
-    item->response_locations.push_back(
-        web_package::mojom::BundleResponseLocation::New(573u, 765u));
-    items.insert({primary_url_, std::move(item)});
+    base::flat_map<GURL, web_package::mojom::BundleResponseLocationPtr> items;
+    items.insert({primary_url_,
+                  web_package::mojom::BundleResponseLocation::New(573u, 765u)});
 
     web_package::mojom::BundleMetadataPtr metadata =
         web_package::mojom::BundleMetadata::New();
@@ -120,10 +118,10 @@ class WebBundleURLLoaderFactoryTest : public testing::Test {
     EXPECT_TRUE(test_client_.has_received_response());
     EXPECT_FALSE(test_client_.has_received_redirect());
     EXPECT_FALSE(test_client_.has_received_upload_progress());
-    EXPECT_FALSE(test_client_.has_received_cached_metadata());
 
     ASSERT_TRUE(test_client_.response_head()->headers);
     ASSERT_TRUE(test_client_.response_body());
+    ASSERT_FALSE(test_client_.cached_metadata().has_value());
 
     EXPECT_EQ(expected_response_code,
               test_client_.response_head()->headers->response_code());
@@ -171,7 +169,7 @@ class WebBundleURLLoaderFactoryTest : public testing::Test {
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<MockWebBundleReaderFactory> mock_factory_;
   std::unique_ptr<WebBundleURLLoaderFactory> loader_factory_;
-  WebBundleReader* reader_;
+  raw_ptr<WebBundleReader> reader_;
   network::TestURLLoaderClient test_client_;
   const std::string body_ = std::string("present day, present time");
   const GURL primary_url_ = GURL("https://test.example.org/");

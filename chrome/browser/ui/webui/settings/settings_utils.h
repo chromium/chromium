@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,16 +41,9 @@ base::RefCountedMemory* GetFaviconResourceBytes(
 base::RefCountedMemory* GetPrivacySandboxFaviconResourceBytes(
     ui::ResourceScaleFactor scale_factor);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void ValidateSavedFonts(PrefService* prefs);
 #endif
-
-// When |font_name_or_list| starts with ",", it is a list of font names
-// separated by "," and this function returns the first available font name.
-// Otherwise returns |font_name_or_list| as is.
-// Unlike gfx::FontList, this function picks one font, and character-level
-// fallback is handled in CSS.
-std::string ResolveFontList(const std::string& font_name_or_list);
 
 }  // namespace settings_utils
 

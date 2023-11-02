@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/service.pb.h"
-#include "components/autofill_assistant/browser/web/element_finder.h"
+#include "components/autofill_assistant/browser/web/element_finder_result.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -37,7 +37,7 @@ RequiredField CreateRequiredField(int key,
   RequiredField required_field;
   required_field.proto.mutable_value_expression()->add_chunk()->set_key(key);
   required_field.selector = Selector(selector);
-  required_field.status = RequiredField::EMPTY;
+  required_field.status = RequiredField::FieldValueStatus::kEmpty;
   return required_field;
 }
 
@@ -46,7 +46,7 @@ RequiredField CreateRequiredField(const ValueExpression& value_expression,
   RequiredField required_field;
   *required_field.proto.mutable_value_expression() = value_expression;
   required_field.selector = Selector(selector);
-  required_field.status = RequiredField::EMPTY;
+  required_field.status = RequiredField::FieldValueStatus::kEmpty;
   return required_field;
 }
 
@@ -494,7 +494,7 @@ TEST_F(RequiredFieldsFallbackHandlerTest, UsesSelectOptionForDropdowns) {
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), std::string()));
 
   // Fill field.
-  const ElementFinder::Result& expected_element =
+  const ElementFinderResult& expected_element =
       test_util::MockFindElement(mock_action_delegate_, expected_selector);
   EXPECT_CALL(mock_web_controller_,
               GetElementTag(EqualsElement(expected_element), _))
@@ -544,7 +544,7 @@ TEST_F(RequiredFieldsFallbackHandlerTest,
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), std::string()));
 
   // Fill field.
-  const ElementFinder::Result& expected_element =
+  const ElementFinderResult& expected_element =
       test_util::MockFindElement(mock_action_delegate_, expected_selector);
   EXPECT_CALL(mock_web_controller_,
               GetElementTag(EqualsElement(expected_element), _))

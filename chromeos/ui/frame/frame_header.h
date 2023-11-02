@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/caption_buttons/frame_center_button.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -79,7 +80,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader {
    private:
     void StopAnimation();
 
-    views::View* parent_;
+    raw_ptr<views::View> parent_;
     std::unique_ptr<ui::LayerTreeOwner> layer_owner_;
   };
 
@@ -132,6 +133,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader {
 
   // Called when frame show state is changed.
   void OnShowStateChanged(ui::WindowShowState show_state);
+
+  void OnFloatStateChanged();
 
   void SetLeftHeaderView(views::View* view);
   void SetBackButton(views::FrameCaptionButton* view);
@@ -196,20 +199,20 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader {
 
   gfx::Rect GetTitleBounds() const;
 
-  void UpdateSnapIcons();
-
   // The widget that the caption buttons act on. This can be different from
   // |view_|'s widget.
-  views::Widget* target_widget_;
+  raw_ptr<views::Widget> target_widget_;
 
   // The view into which |this| paints.
-  views::View* view_;
-  views::FrameCaptionButton* back_button_ = nullptr;  // May remain nullptr.
-  views::View* left_header_view_ = nullptr;           // May remain nullptr.
-  chromeos::FrameCaptionButtonContainerView* caption_button_container_ =
+  raw_ptr<views::View> view_;
+  raw_ptr<views::FrameCaptionButton> back_button_ =
+      nullptr;                                       // May remain nullptr.
+  raw_ptr<views::View> left_header_view_ = nullptr;  // May remain nullptr.
+  raw_ptr<chromeos::FrameCaptionButtonContainerView> caption_button_container_ =
       nullptr;
-  FrameAnimatorView* frame_animator_ = nullptr;  // owned by view tree.
-  chromeos::FrameCenterButton* center_button_ = nullptr;  // May remain nullptr.
+  raw_ptr<FrameAnimatorView> frame_animator_ = nullptr;  // owned by view tree.
+  raw_ptr<chromeos::FrameCenterButton> center_button_ =
+      nullptr;  // May remain nullptr.
 
   // The height of the header to paint.
   int painted_height_ = 0;

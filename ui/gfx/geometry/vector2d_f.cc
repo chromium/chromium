@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 namespace gfx {
 
 std::string Vector2dF::ToString() const {
-  return base::StringPrintf("[%f %f]", x_, y_);
+  return base::StringPrintf("[%g %g]", x_, y_);
 }
 
 bool Vector2dF::IsZero() const {
@@ -42,6 +42,11 @@ void Vector2dF::Scale(float x_scale, float y_scale) {
   y_ *= y_scale;
 }
 
+void Vector2dF::InvScale(float inv_x_scale, float inv_y_scale) {
+  x_ /= inv_x_scale;
+  y_ /= inv_y_scale;
+}
+
 double CrossProduct(const Vector2dF& lhs, const Vector2dF& rhs) {
   return static_cast<double>(lhs.x()) * rhs.y() -
       static_cast<double>(lhs.y()) * rhs.x();
@@ -59,7 +64,7 @@ Vector2dF ScaleVector2d(const Vector2dF& v, float x_scale, float y_scale) {
 }
 
 float Vector2dF::SlopeAngleRadians() const {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // atan2f(...) returns less accurate results on Mac.
   // 3.1415925 vs. 3.14159274 for atan2f(0, -50) as an example.
   return static_cast<float>(

@@ -1,10 +1,12 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
@@ -13,6 +15,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -25,6 +28,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -34,8 +38,10 @@
 #include "ui/views/background.h"
 #include "ui/views/window/hit_test_utils.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/taskbar/taskbar_decorator_win.h"
+#include "ui/display/win/screen_win.h"
+#include "ui/views/win/hwnd_util.h"
 #endif
 
 // static
@@ -151,15 +157,16 @@ bool BrowserNonClientFrameView::CanDrawStrokes() const {
 
 SkColor BrowserNonClientFrameView::GetCaptionColor(
     BrowserFrameActiveState active_state) const {
-  return color_utils::GetColorWithMaxContrast(GetFrameColor(active_state));
+  return GetColorProvider()->GetColor(ShouldPaintAsActive(active_state)
+                                          ? kColorFrameCaptionActive
+                                          : kColorFrameCaptionInactive);
 }
 
 SkColor BrowserNonClientFrameView::GetFrameColor(
     BrowserFrameActiveState active_state) const {
-  return GetFrameThemeProvider()->GetColor(
-      ShouldPaintAsActive(active_state)
-          ? ThemeProperties::COLOR_FRAME_ACTIVE
-          : ThemeProperties::COLOR_FRAME_INACTIVE);
+  return GetColorProvider()->GetColor(ShouldPaintAsActive(active_state)
+                                          ? ui::kColorFrameActive
+                                          : ui::kColorFrameInactive);
 }
 
 void BrowserNonClientFrameView::UpdateFrameColor() {
@@ -167,17 +174,6 @@ void BrowserNonClientFrameView::UpdateFrameColor() {
   if (web_app_frame_toolbar_)
     web_app_frame_toolbar_->UpdateCaptionColors();
   SchedulePaint();
-}
-
-SkColor BrowserNonClientFrameView::GetToolbarTopSeparatorColor() const {
-  const int color_id =
-      ShouldPaintAsActive()
-          ? ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR
-          : ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR_INACTIVE;
-  // The vertical tab separator might show through the stroke if the stroke
-  // color is translucent.  To prevent this, always use an opaque stroke color.
-  return color_utils::GetResultingPaintColor(
-      GetFrameThemeProvider()->GetColor(color_id), GetFrameColor());
 }
 
 absl::optional<int> BrowserNonClientFrameView::GetCustomBackgroundId(
@@ -211,6 +207,10 @@ void BrowserNonClientFrameView::SetWindowControlsOverlayToggleVisible(
     bool visible) {
   DCHECK(browser_view_->AppUsesWindowControlsOverlay());
   web_app_frame_toolbar_->SetWindowControlsOverlayToggleVisible(visible);
+}
+
+void BrowserNonClientFrameView::UpdateBorderlessModeEnabled() {
+  web_app_frame_toolbar_->UpdateBorderlessModeEnabled();
 }
 
 void BrowserNonClientFrameView::Layout() {
@@ -275,7 +275,7 @@ bool BrowserNonClientFrameView::ShouldPaintAsActive(
 
 gfx::ImageSkia BrowserNonClientFrameView::GetFrameImage(
     BrowserFrameActiveState active_state) const {
-  const ui::ThemeProvider* tp = GetFrameThemeProvider();
+  const ui::ThemeProvider* tp = GetThemeProvider();
   const int frame_image_id = ShouldPaintAsActive(active_state)
                                  ? IDR_THEME_FRAME
                                  : IDR_THEME_FRAME_INACTIVE;
@@ -290,7 +290,7 @@ gfx::ImageSkia BrowserNonClientFrameView::GetFrameOverlayImage(
   if (browser_view_->GetIncognito() || !browser_view_->GetIsNormalType())
     return gfx::ImageSkia();
 
-  const ui::ThemeProvider* tp = GetFrameThemeProvider();
+  const ui::ThemeProvider* tp = GetThemeProvider();
   const int frame_overlay_image_id = ShouldPaintAsActive(active_state)
                                          ? IDR_THEME_FRAME_OVERLAY
                                          : IDR_THEME_FRAME_OVERLAY_INACTIVE;
@@ -317,7 +317,7 @@ void BrowserNonClientFrameView::OnProfileWasRemoved(
 
 void BrowserNonClientFrameView::OnProfileAvatarChanged(
     const base::FilePath& profile_path) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   taskbar::UpdateTaskbarDecoration(browser_view()->browser()->profile(),
                                    frame_->GetNativeWindow());
 #endif
@@ -325,13 +325,32 @@ void BrowserNonClientFrameView::OnProfileAvatarChanged(
 
 void BrowserNonClientFrameView::OnProfileHighResAvatarLoaded(
     const base::FilePath& profile_path) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   taskbar::UpdateTaskbarDecoration(browser_view()->browser()->profile(),
                                    frame_->GetNativeWindow());
 #endif
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
+// Sending the WM_NCPOINTERDOWN, WM_NCPOINTERUPDATE, and WM_NCPOINTERUP to the
+// default window proc does not bring up the system menu on long press, so we
+// use the gesture recognizer to turn it into a LONG_TAP gesture and handle it
+// here. See https://crbug.com/1327506 for more info.
+void BrowserNonClientFrameView::OnGestureEvent(ui::GestureEvent* event) {
+  gfx::Point event_loc = event->location();
+  // This opens the title bar system context menu on long press in the titlebar.
+  // NonClientHitTest returns HTCAPTION if `event_loc` is in the empty space on
+  // the titlebar.
+  if (event->type() == ui::ET_GESTURE_LONG_TAP &&
+      NonClientHitTest(event_loc) == HTCAPTION) {
+    views::View::ConvertPointToScreen(this, &event_loc);
+    event_loc = display::win::ScreenWin::DIPToScreenPoint(event_loc);
+    views::ShowSystemMenuAtScreenPixelLocation(views::HWNDForView(this),
+                                               event_loc);
+    event->SetHandled();
+  }
+}
+
 int BrowserNonClientFrameView::GetSystemMenuY() const {
   if (!browser_view()->GetTabStripVisible())
     return GetTopInset(false);
@@ -340,15 +359,7 @@ int BrowserNonClientFrameView::GetSystemMenuY() const {
              .bottom() -
          GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
 }
-#endif
-
-const ui::ThemeProvider* BrowserNonClientFrameView::GetFrameThemeProvider()
-    const {
-  // The |frame_| theme provider is obtained from the profile rather than the
-  // widget. This is done this way because it can happen prior to being inserted
-  // into the view hierarchy.
-  return frame_->GetThemeProvider();
-}
+#endif  // BUILDFLAG(IS_WIN)
 
 BEGIN_METADATA(BrowserNonClientFrameView, views::NonClientFrameView)
 END_METADATA

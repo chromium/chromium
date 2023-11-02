@@ -1,14 +1,17 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 #include <string>
 
+#include "ash/components/arc/mojom/app.mojom.h"
+#include "ash/components/arc/test/arc_util_test_support.h"
+#include "ash/components/arc/test/connection_holder_util.h"
+#include "ash/components/arc/test/fake_app_instance.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/child_accounts/child_user_service.h"
@@ -28,11 +31,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "components/arc/mojom/app.mojom.h"
-#include "components/arc/mojom/app_permissions.mojom.h"
-#include "components/arc/test/arc_util_test_support.h"
-#include "components/arc/test/connection_holder_util.h"
-#include "components/arc/test/fake_app_instance.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
@@ -54,17 +53,13 @@ arc::mojom::ArcPackageInfoPtr CreateArcAppPackage(
   package->last_backup_time = 1;
   package->sync = false;
   package->system = false;
-  package->permissions = base::flat_map<::arc::mojom::AppPermission, bool>();
   return package;
 }
 
-arc::mojom::AppInfo CreateArcAppInfo(const std::string& package_name) {
-  arc::mojom::AppInfo app;
-  app.package_name = package_name;
-  app.name = package_name;
-  app.activity = base::StrCat({package_name, ".", "activity"});
-  app.sticky = true;
-  return app;
+arc::mojom::AppInfoPtr CreateArcAppInfo(const std::string& package_name) {
+  return arc::mojom::AppInfo::New(package_name, package_name,
+                                  base::StrCat({package_name, ".", "activity"}),
+                                  true /* sticky */);
 }
 
 }  // namespace
@@ -77,21 +72,7 @@ class AppTimeTest : public MixinBasedInProcessBrowserTest {
   AppTimeTest& operator=(const AppTimeTest&) = delete;
   ~AppTimeTest() override = default;
 
-  virtual bool ShouldEnableWebTimeLimit() { return true; }
-
   // MixinBasedInProcessBrowserTest:
-  void SetUp() override {
-    std::vector<base::Feature> enabled_features;
-    std::vector<base::Feature> disabled_features;
-    if (ShouldEnableWebTimeLimit())
-      enabled_features.push_back(features::kWebTimeLimits);
-    else
-      disabled_features.push_back(features::kWebTimeLimits);
-
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
-    MixinBasedInProcessBrowserTest::SetUp();
-  }
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
     arc::SetArcAvailableCommandLineForTesting(command_line);
@@ -157,13 +138,15 @@ class AppTimeTest : public MixinBasedInProcessBrowserTest {
   }
 
   void InstallArcApp(const AppId& app_id) {
-    EXPECT_EQ(apps::mojom::AppType::kArc, app_id.app_type());
+    EXPECT_EQ(apps::AppType::kArc, app_id.app_type());
     const std::string& package_name = app_id.app_id();
     arc_app_instance_->SendPackageAdded(
         CreateArcAppPackage(package_name)->Clone());
 
-    const arc::mojom::AppInfo app = CreateArcAppInfo(package_name);
-    arc_app_instance_->SendPackageAppListRefreshed(package_name, {app});
+    std::vector<arc::mojom::AppInfoPtr> apps;
+    apps.emplace_back(CreateArcAppInfo(package_name));
+
+    arc_app_instance_->SendPackageAppListRefreshed(package_name, apps);
 
     base::RunLoop().RunUntilIdle();
   }
@@ -194,11 +177,10 @@ class AppTimeTest : public MixinBasedInProcessBrowserTest {
 
   ArcAppListPrefs* arc_app_list_prefs_ = nullptr;
   std::unique_ptr<arc::FakeAppInstance> arc_app_instance_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(AppTimeTest, AppInstallation) {
-  const AppId app1(apps::mojom::AppType::kArc, "com.example.app1");
+  const AppId app1(apps::AppType::kArc, "com.example.app1");
   AppActivityRegistry* app_registry = GetAppRegistry();
   EXPECT_FALSE(app_registry->IsAppInstalled(app1));
 
@@ -210,7 +192,7 @@ IN_PROC_BROWSER_TEST_F(AppTimeTest, AppInstallation) {
 
 IN_PROC_BROWSER_TEST_F(AppTimeTest, PerAppTimeLimitsPolicyUpdates) {
   // Install an app.
-  const AppId app1(apps::mojom::AppType::kArc, "com.example.app1");
+  const AppId app1(apps::AppType::kArc, "com.example.app1");
   InstallArcApp(app1);
 
   AppActivityRegistry* app_registry = GetAppRegistry();
@@ -274,13 +256,13 @@ IN_PROC_BROWSER_TEST_F(AppTimeTest, PerAppTimeLimitsPolicyUpdates) {
 
 IN_PROC_BROWSER_TEST_F(AppTimeTest, PerAppTimeLimitsPolicyMultipleEntries) {
   // Install apps.
-  const AppId app1(apps::mojom::AppType::kArc, "com.example.app1");
+  const AppId app1(apps::AppType::kArc, "com.example.app1");
   InstallArcApp(app1);
-  const AppId app2(apps::mojom::AppType::kArc, "com.example.app2");
+  const AppId app2(apps::AppType::kArc, "com.example.app2");
   InstallArcApp(app2);
-  const AppId app3(apps::mojom::AppType::kArc, "com.example.app3");
+  const AppId app3(apps::AppType::kArc, "com.example.app3");
   InstallArcApp(app3);
-  const AppId app4(apps::mojom::AppType::kArc, "com.example.app4");
+  const AppId app4(apps::AppType::kArc, "com.example.app4");
   InstallArcApp(app4);
 
   AppActivityRegistry* app_registry = GetAppRegistry();
@@ -316,30 +298,6 @@ IN_PROC_BROWSER_TEST_F(AppTimeTest, PerAppTimeLimitsPolicyMultipleEntries) {
   ASSERT_TRUE(app_registry_test.GetAppLimit(app4));
   EXPECT_EQ(AppRestriction::kTimeLimit,
             app_registry_test.GetAppLimit(app4)->restriction());
-}
-
-class WebTimeLimitDisabledTest : public AppTimeTest {
- protected:
-  WebTimeLimitDisabledTest() = default;
-  WebTimeLimitDisabledTest(const WebTimeLimitDisabledTest&) = delete;
-  WebTimeLimitDisabledTest& operator=(const WebTimeLimitDisabledTest&) = delete;
-  ~WebTimeLimitDisabledTest() override = default;
-
-  bool ShouldEnableWebTimeLimit() override { return false; }
-};
-
-IN_PROC_BROWSER_TEST_F(WebTimeLimitDisabledTest, WebTimeLimitDisabled) {
-  AppTimeLimitsPolicyBuilder policy;
-  policy.SetResetTime(6, 0);
-  policy.AddAppLimit(GetChromeAppId(),
-                     AppLimit(AppRestriction::kTimeLimit, base::Minutes(0),
-                              base::Time::Now()));
-
-  UpdatePerAppTimeLimitsPolicy(policy.value());
-
-  AppActivityRegistry* app_registry = GetAppRegistry();
-  AppActivityRegistry::TestApi app_registry_test(app_registry);
-  EXPECT_FALSE(app_registry_test.GetAppLimit(GetChromeAppId()));
 }
 
 }  // namespace app_time

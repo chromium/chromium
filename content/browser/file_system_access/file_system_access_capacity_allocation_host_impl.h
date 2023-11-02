@@ -1,13 +1,16 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_CAPACITY_ALLOCATION_HOST_IMPL_H_
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_CAPACITY_ALLOCATION_HOST_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/thread_annotations.h"
 #include "base/types/pass_key.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
+#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -68,7 +71,7 @@ class CONTENT_EXPORT FileSystemAccessCapacityAllocationHostImpl
   }
 
  private:
-  storage::QuotaManagerProxy* quota_manager_proxy() const {
+  const scoped_refptr<storage::QuotaManagerProxy>& quota_manager_proxy() const {
     return manager_->context()->quota_manager_proxy();
   }
 
@@ -85,13 +88,13 @@ class CONTENT_EXPORT FileSystemAccessCapacityAllocationHostImpl
 
   // Raw pointer use is safe, since the manager owns the
   // FileSystemAccessAccessHandleHostImpl which owns this class.
-  FileSystemAccessManagerImpl* const manager_;
+  const raw_ptr<FileSystemAccessManagerImpl> manager_;
 
   // URL of the file whose capacity is managed through this host.
   const storage::FileSystemURL url_;
 
-  mojo::Receiver<blink::mojom::FileSystemAccessCapacityAllocationHost>
-      receiver_;
+  mojo::Receiver<blink::mojom::FileSystemAccessCapacityAllocationHost> receiver_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Total capacity granted to the file managed through this host. Initially,
   // this is the file's size. Later, this value is modified through mojo calls

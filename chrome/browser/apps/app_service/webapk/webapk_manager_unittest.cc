@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,18 @@
 #include <memory>
 #include <vector>
 
+#include "ash/components/arc/mojom/app.mojom.h"
+#include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/constants/ash_features.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
+#include "chrome/browser/apps/app_service/publishers/arc_apps.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_install_queue.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_install_task.h"
+#include "chrome/browser/apps/app_service/webapk/webapk_metrics.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_prefs.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
@@ -23,9 +26,10 @@
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/mojom/app.mojom.h"
-#include "components/arc/test/fake_app_instance.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/app_update.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,8 +43,8 @@ constexpr char kTestShareTextParam[] = "share_text";
 constexpr char kTestWebApkPackageName[] = "org.chromium.webapk.some_package";
 const std::u16string kTestAppTitle = u"Test App";
 
-std::unique_ptr<WebApplicationInfo> BuildDefaultWebAppInfo() {
-  auto app_info = std::make_unique<WebApplicationInfo>();
+std::unique_ptr<WebAppInstallInfo> BuildDefaultWebAppInfo() {
+  auto app_info = std::make_unique<WebAppInstallInfo>();
   app_info->start_url = GURL(kTestAppUrl);
   app_info->scope = GURL(kTestAppUrl);
   app_info->title = kTestAppTitle;
@@ -64,22 +68,13 @@ arc::mojom::ArcPackageInfoPtr GetArcPackage(const std::string& package_name) {
 
 }  // namespace
 
-class WebApkManagerTest : public testing::Test {
+class WebApkManagerTest : public apps::AppRegistryCache::Observer,
+                          public testing::Test {
  public:
   WebApkManagerTest() = default;
 
   void SetUp() override {
     testing::Test::SetUp();
-    // Disable the WebAPKs feature so that App Service does not start a
-    // WebApkManager which interferes with the test.
-    // TODO(crbug.com/1234279): Reuse the WebApkManager from App Service
-    // instead.
-    scoped_feature_list_.InitAndDisableFeature(ash::features::kWebApkGenerator);
-
-    arc_test_.SetUp(&profile_);
-
-    auto* const provider = web_app::FakeWebAppProvider::Get(&profile_);
-    provider->SkipAwaitingExtensionSystem();
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
@@ -87,8 +82,8 @@ class WebApkManagerTest : public testing::Test {
 
   void StartWebApkManager() {
     app_service_test_.SetUp(&profile_);
-    app_service_test_.FlushMojoCalls();
-    webapk_manager_ = std::make_unique<apps::WebApkManager>(profile());
+    // This starts the ArcApps publisher, which owns the WebApkManager.
+    arc_test_.SetUp(&profile_);
   }
 
   void AssertNoPendingInstalls() {
@@ -99,27 +94,55 @@ class WebApkManagerTest : public testing::Test {
     bool installed = false;
     app_service_proxy()->AppRegistryCache().ForOneApp(
         app_id, [&](const apps::AppUpdate& app) {
-          installed = app.Readiness() == apps::mojom::Readiness::kReady;
+          installed = app.Readiness() == apps::Readiness::kReady;
         });
     return installed;
   }
 
+  void WaitForAppUninstall(const std::string& app_id) {
+    Observe(&(app_service_proxy()->AppRegistryCache()));
+    app_id_ = app_id;
+    base::RunLoop run_loop;
+    quit_callback_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+  // apps::AppRegistryCache::Observer overrides.
+  void OnAppUpdate(const apps::AppUpdate& update) override {
+    if (app_id_.empty()) {
+      return;
+    }
+
+    if (app_id_ == update.AppId() &&
+        update.Readiness() == apps::Readiness::kUninstalledByUser &&
+        !quit_callback_.is_null()) {
+      std::move(quit_callback_).Run();
+      Observe(nullptr);
+    }
+  }
+
+  void OnAppRegistryCacheWillBeDestroyed(
+      apps::AppRegistryCache* cache) override {
+    Observe(nullptr);
+  }
+
   TestingProfile* profile() { return &profile_; }
   apps::AppServiceTest* app_service_test() { return &app_service_test_; }
-  apps::WebApkManager* webapk_manager() { return webapk_manager_.get(); }
+  apps::WebApkManager* webapk_manager() {
+    return apps::ArcApps::Get(profile())->GetWebApkManagerForTesting();
+  }
   ArcAppTest* arc_test() { return &arc_test_; }
   apps::AppServiceProxyBase* app_service_proxy() {
     return apps::AppServiceProxyFactory::GetForProfile(profile());
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   ArcAppTest arc_test_;
   apps::AppServiceTest app_service_test_;
-
-  std::unique_ptr<apps::WebApkManager> webapk_manager_;
+  std::string app_id_;
+  base::OnceClosure quit_callback_;
 };
 
 TEST_F(WebApkManagerTest, InstallsWebApkOnStartup) {
@@ -141,7 +164,6 @@ TEST_F(WebApkManagerTest, InstallWebApkAfterStartup) {
 
   auto app_id =
       web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
-  app_service_test()->FlushMojoCalls();
 
   auto install_task =
       webapk_manager()->GetInstallQueueForTest()->PopTaskForTest();
@@ -152,7 +174,7 @@ TEST_F(WebApkManagerTest, InstallWebApkAfterStartup) {
 
 // Does not install web apps without a Share Target definition.
 TEST_F(WebApkManagerTest, NoShareTarget) {
-  auto app_info = std::make_unique<WebApplicationInfo>();
+  auto app_info = std::make_unique<WebAppInstallInfo>();
   app_info->start_url = GURL(kTestAppUrl);
   app_info->title = kTestAppTitle;
   auto app_id = web_app::test::InstallWebApp(profile(), std::move(app_info));
@@ -187,7 +209,7 @@ TEST_F(WebApkManagerTest, IgnoresAlreadyInstalledWebApkOnStartup) {
 }
 
 TEST_F(WebApkManagerTest, RemovesIneligibleWebApkOnStartup) {
-  auto app_info = std::make_unique<WebApplicationInfo>();
+  auto app_info = std::make_unique<WebAppInstallInfo>();
   app_info->start_url = GURL(kTestAppUrl);
   app_info->title = kTestAppTitle;
   auto app_id = web_app::test::InstallWebApp(profile(), std::move(app_info));
@@ -198,7 +220,6 @@ TEST_F(WebApkManagerTest, RemovesIneligibleWebApkOnStartup) {
 
   StartWebApkManager();
   arc_test()->app_instance()->SendRefreshPackageList({});
-  app_service_test()->FlushMojoCalls();
 
   // The WebAPK should have been uninstalled, but the app itself is still
   // installed.
@@ -221,9 +242,11 @@ TEST_F(WebApkManagerTest, RemovesAppUninstalledFromChrome) {
   StartWebApkManager();
   arc_test()->app_instance()->SendRefreshPackageList({});
 
-  app_service_proxy()->UninstallSilently(
-      app_id, apps::mojom::UninstallSource::kUnknown);
-  app_service_test()->FlushMojoCalls();
+  app_service_proxy()->UninstallSilently(app_id,
+                                         apps::UninstallSource::kUnknown);
+
+  // Wait for the async web app uninstallation.
+  WaitForAppUninstall(app_id);
 
   ASSERT_FALSE(apps::webapk_prefs::GetWebApkPackageName(profile(), app_id));
 }
@@ -241,7 +264,6 @@ TEST_F(WebApkManagerTest, QueuesUpdatedApp) {
   auto updated_app_id =
       web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
   EXPECT_EQ(app_id, updated_app_id);
-  app_service_test()->FlushMojoCalls();
 
   auto install_task =
       webapk_manager()->GetInstallQueueForTest()->PopTaskForTest();
@@ -288,7 +310,6 @@ TEST_F(WebApkManagerTest, IgnoresInstallsWhilePlayStoreDisabled) {
 
   auto app_id =
       web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
-  app_service_test()->FlushMojoCalls();
 
   AssertNoPendingInstalls();
 }
@@ -300,7 +321,6 @@ TEST_F(WebApkManagerTest, IgnoresInstallsWhilePolicyDisabled) {
 
   auto app_id =
       web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
-  app_service_test()->FlushMojoCalls();
 
   AssertNoPendingInstalls();
 }
@@ -309,9 +329,10 @@ TEST_F(WebApkManagerTest, RemovesWebApksWhenPolicyDisabled) {
   auto app_id =
       web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
   apps::webapk_prefs::AddWebApk(profile(), app_id, kTestWebApkPackageName);
-  arc_test()->app_instance()->SendRefreshPackageList({});
 
   StartWebApkManager();
+  arc_test()->app_instance()->SendRefreshPackageList({});
+
   profile()->GetPrefs()->SetBoolean(
       apps::webapk_prefs::kGeneratedWebApksEnabled, false);
 
@@ -330,12 +351,10 @@ TEST_F(WebApkManagerTest, RemovesUntrackedInstalledWebApk) {
                                 "org.chromium.webapk.package1");
   StartWebApkManager();
 
-  base::HistogramTester histograms;
   arc_test()->app_instance()->SendRefreshPackageList(std::move(packages));
 
   ASSERT_TRUE(ArcAppListPrefs::Get(profile())->GetPackage(
       "org.chromium.webapk.package1"));
   ASSERT_FALSE(ArcAppListPrefs::Get(profile())->GetPackage(
       "org.chromium.webapk.package2"));
-  histograms.ExpectUniqueSample("ChromeOS.WebAPK.UnlinkedWebAPKCount", 1, 1);
 }

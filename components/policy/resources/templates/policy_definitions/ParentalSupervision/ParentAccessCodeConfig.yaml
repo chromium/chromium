@@ -1,0 +1,50 @@
+caption: Parent Access Code Configuration
+desc: |-
+  This policy specifies configuration that is used to generate and verify Parent Access Code.
+
+        |current_config| is always used for generating access code and should be used for validating access code only when it cannot be validated with |future_config|.
+        |future_config| is the primary config used for validating access code.
+        |old_configs| should be used for validating access code only when it cannot be validated with |future_config| nor |current_config|.
+
+        The expected way of using this policy is to gradually rotate access code configuration. New configuration is always put into |future_config| and at the same
+        time the existing value is moved into |current_config|. |current_config|'s previous values are moved into |old_configs| and removed after rotation cycle is finished.
+
+        This policy applies only to child user.
+        When this policy is set Parent Access Code can be verified on child user's device.
+        When this policy is unset it is not possible to verify Parent Access Code on child user's device.
+example_value:
+  current_config:
+    access_code_ttl: 600
+    clock_drift_tolerance: 300
+    shared_secret: oOA9nX02LdhYdOzwMsGof+QA3wUKP4YMNlk9S/W3o+w=
+  future_config:
+    access_code_ttl: 600
+    clock_drift_tolerance: 300
+    shared_secret: KMsoIjnpvcWmiU1GHchp2blR96mNyJwS
+  old_configs:
+  - access_code_ttl: 600
+    clock_drift_tolerance: 300
+    shared_secret: sTr6jqMTJGCbLhWI5plFTQb/VsqxwX2Q
+features:
+  dynamic_refresh: true
+  per_profile: false
+owners:
+- file://chrome/browser/ash/child_accounts/OWNERS
+- agawronska@chromium.org
+schema:
+  properties:
+    current_config:
+      $ref: Config
+      description: Configuration used to generate and verify Parent Access Code.
+    future_config:
+      $ref: Config
+    old_configs:
+      items:
+        $ref: Config
+      type: array
+  sensitiveValue: true
+  type: object
+supported_on:
+- chrome_os:73-
+tags: []
+type: dict

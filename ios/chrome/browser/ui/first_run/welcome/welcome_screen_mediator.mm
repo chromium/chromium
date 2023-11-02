@@ -1,25 +1,20 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/first_run/welcome/welcome_screen_mediator.h"
 
-#include "components/metrics/metrics_pref_names.h"
-#include "components/metrics/metrics_reporting_default_state.h"
-#include "components/prefs/pref_service.h"
-#import "ios/chrome/browser/application_context.h"
+#import "components/metrics/metrics_pref_names.h"
+#import "components/prefs/pref_service.h"
+#import "components/web_resource/web_resource_pref_names.h"
+#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/policy/policy_util.h"
+#import "ios/chrome/browser/ui/first_run/first_run_util.h"
+#import "ios/chrome/browser/ui/first_run/welcome/welcome_screen_consumer.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-namespace {
-
-// Default value for metrics reporting state. "YES" corresponding to "opt-out"
-// state.
-const BOOL kDefaultStatsCheckboxValue = YES;
-
-}  // namespace
 
 @interface WelcomeScreenMediator ()
 
@@ -32,13 +27,14 @@ const BOOL kDefaultStatsCheckboxValue = YES;
 - (instancetype)init {
   self = [super init];
   if (self) {
-    [self recordMetricsReportingDefaultState];
+    RecordMetricsReportingDefaultState();
+    _UMAReportingUserChoice = kDefaultMetricsReportingCheckboxValue;
   }
   return self;
 }
 
 - (BOOL)isCheckboxSelectedByDefault {
-  return kDefaultStatsCheckboxValue;
+  return kDefaultMetricsReportingCheckboxValue;
 }
 
 - (void)setMetricsReportingEnabled:(BOOL)enabled {
@@ -46,27 +42,20 @@ const BOOL kDefaultStatsCheckboxValue = YES;
       metrics::prefs::kMetricsReportingEnabled, enabled);
 }
 
-#pragma mark - Private
+- (void)acceptToS {
+  PrefService* prefs = GetApplicationContext()->GetLocalState();
+  // Sets a LocalState pref marking EULA as accepted.
+  if (!prefs->GetBoolean(prefs::kEulaAccepted)) {
+    prefs->SetBoolean(prefs::kEulaAccepted, true);
+    prefs->CommitPendingWrite();
+  }
+}
 
-// Records what the default opt-in state for metrics reporting is in the local
-// prefs, based on whether the consent checkbox should be selected by default.
-- (void)recordMetricsReportingDefaultState {
-  // Record metrics reporting as opt-in/opt-out only once.
-  static dispatch_once_t once;
-  dispatch_once(&once, ^{
-    // Don't call RecordMetricsReportingDefaultState twice. This can happen if
-    // the app is quit before accepting the TOS, or via experiment settings.
-    if (metrics::GetMetricsReportingDefaultState(
-            GetApplicationContext()->GetLocalState()) !=
-        metrics::EnableMetricsDefault::DEFAULT_UNKNOWN) {
-      return;
-    }
+#pragma mark - Properties
 
-    metrics::RecordMetricsReportingDefaultState(
-        GetApplicationContext()->GetLocalState(),
-        kDefaultStatsCheckboxValue ? metrics::EnableMetricsDefault::OPT_OUT
-                                   : metrics::EnableMetricsDefault::OPT_IN);
-  });
+- (void)setConsumer:(id<WelcomeScreenConsumer>)consumer {
+  _consumer = consumer;
+  self.consumer.isManaged = IsApplicationManagedByPlatform();
 }
 
 @end

@@ -1,0 +1,94 @@
+foo
+bar
+baz
+garply
+ 
+abc
+xyz
+==> Arrow keys + Enter
+PASS picker.selectElement_.value is "1"
+PASS menu.value is "bar"
+PASS internals.selectMenuListText(menu) is "bar"
+PASS picker.selectElement_.value is "4"
+PASS menu.value is "bar"
+PASS internals.selectMenuListText(menu) is "garply"
+PASS picker.selectElement_.value is "4"
+PASS menu.value is "bar"
+PASS internals.selectMenuListText(menu) is "garply"
+PASS picker.selectElement_.value is "1"
+PASS menu.value is "bar"
+PASS internals.selectMenuListText(menu) is "bar"
+PASS picker.selectElement_.value is "0"
+PASS menu.value is "bar"
+PASS internals.selectMenuListText(menu) is "foo"
+PASS picker.selectElement_.value is "0"
+PASS menu.value is "bar"
+PASS internals.selectMenuListText(menu) is "foo"
+PASS internals.pagePopupWindow is null
+PASS menu.value is "foo"
+PASS internals.selectMenuListText(menu) is "foo"
+==> Arrow keys + ESC
+PASS picker.selectElement_.value is "0"
+PASS internals.selectMenuListText(menu) is "foo"
+PASS picker.selectElement_.value is "1"
+PASS menu.value is "foo"
+PASS internals.selectMenuListText(menu) is "bar"
+PASS internals.pagePopupWindow is null
+PASS menu.value is "bar"
+PASS internals.selectMenuListText(menu) is "bar"
+==> Arrow keys + blur
+PASS picker.selectElement_.value is "0"
+PASS internals.selectMenuListText(menu) is "foo"
+PASS picker.selectElement_.value is "1"
+PASS menu.value is "foo"
+PASS internals.selectMenuListText(menu) is "bar"
+PASS internals.pagePopupWindow is null
+PASS menu.value is "bar"
+PASS internals.selectMenuListText(menu) is "bar"
+==> Typeahead + ESC
+PASS picker.selectElement_.value is "1"
+PASS internals.selectMenuListText(menu) is "bar"
+PASS picker.selectElement_.value is "4"
+PASS menu.value is "bar"
+PASS internals.selectMenuListText(menu) is "garply"
+PASS internals.pagePopupWindow is null
+PASS menu.value is "garply"
+PASS internals.selectMenuListText(menu) is "garply"
+==> Hover + ESC
+PASS picker.selectElement_.value is "4"
+PASS internals.selectMenuListText(menu) is "garply"
+PASS picker.selectElement_.value is "0"
+PASS menu.value is "garply"
+PASS internals.selectMenuListText(menu) is "garply"
+PASS internals.pagePopupWindow is null
+PASS menu.value is "garply"
+PASS internals.selectMenuListText(menu) is "garply"
+==> Hover + Invalid arrow + ESC
+PASS picker.selectElement_.value is "4"
+PASS internals.selectMenuListText(menu) is "garply"
+PASS picker.selectElement_.value is "0"
+PASS menu.value is "garply"
+PASS internals.selectMenuListText(menu) is "garply"
+PASS picker.selectElement_.value is "0"
+PASS menu.value is "garply"
+PASS internals.selectMenuListText(menu) is "garply"
+PASS internals.pagePopupWindow is null
+PASS menu.value is "garply"
+PASS internals.selectMenuListText(menu) is "garply"
+==> Arrow key + Click
+PASS picker.selectElement_.value is "0"
+PASS internals.selectMenuListText(menu) is "foo"
+PASS picker.selectElement_.value is "1"
+PASS menu.value is "foo"
+PASS internals.selectMenuListText(menu) is "bar"
+PASS internals.pagePopupWindow is null
+PASS menu.value is "foo"
+PASS internals.selectMenuListText(menu) is "foo"
+==> Enter with no selected OPTION
+PASS picker.selectElement_.value is ""
+PASS internals.pagePopupWindow is null
+PASS menu2.value is ""
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

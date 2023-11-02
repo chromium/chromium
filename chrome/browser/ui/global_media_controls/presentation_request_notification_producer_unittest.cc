@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
@@ -28,19 +29,6 @@
 using testing::_;
 using testing::AtLeast;
 using testing::NiceMock;
-
-namespace {
-
-
-media_router::MediaRoute CreateMediaRoute(
-    media_router::MediaRoute::Id route_id) {
-  media_router::MediaRoute media_route(route_id,
-                                       media_router::MediaSource("source_id"),
-                                       "sink_id", "description", true, true);
-  media_route.set_controller_type(media_router::RouteControllerType::kGeneric);
-  return media_route;
-}
-}  // namespace
 
 class PresentationRequestNotificationProducerTest
     : public ChromeRenderViewHostTestHarness {
@@ -102,9 +90,8 @@ class PresentationRequestNotificationProducerTest
         std::move(context));
   }
 
-  void SimulateMediaRouteChanged(
-      const std::vector<media_router::MediaRoute>& routes) {
-    notification_producer_->OnMediaRoutesChanged(routes);
+  void SimulatePresentationsChanged(bool has_presentation) {
+    notification_producer_->OnPresentationsChanged(has_presentation);
   }
 
   content::RenderFrameHost* CreateChildFrame() {
@@ -121,7 +108,8 @@ class PresentationRequestNotificationProducerTest
 
  protected:
   std::unique_ptr<MediaNotificationService> notification_service_;
-  PresentationRequestNotificationProducer* notification_producer_ = nullptr;
+  raw_ptr<PresentationRequestNotificationProducer> notification_producer_ =
+      nullptr;
   std::unique_ptr<MockWebContentsPresentationManager> presentation_manager_;
   base::test::ScopedFeatureList feature_list_;
 };
@@ -129,7 +117,7 @@ class PresentationRequestNotificationProducerTest
 TEST_F(PresentationRequestNotificationProducerTest,
        HideItemOnMediaRoutesChanged) {
   SimulateStartPresentationContextCreated();
-  SimulateMediaRouteChanged({CreateMediaRoute("id")});
+  SimulatePresentationsChanged(true);
   EXPECT_FALSE(notification_service_->media_item_manager()->HasOpenDialog());
   task_environment()->RunUntilIdle();
 }

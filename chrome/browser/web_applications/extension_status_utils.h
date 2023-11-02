@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,12 +32,18 @@ bool IsExtensionForceInstalled(content::BrowserContext* context,
                                const std::string& extension_id,
                                std::u16string* reason);
 
+// Returns whether the extension with `extension_id` was installed as a default
+// extension/app.
+bool IsExtensionDefaultInstalled(content::BrowserContext* context,
+                                 const std::string& extension_id);
+
 // Returns whether the user has uninstalled an externally installed extension
 // with |extension_id|.
 bool IsExternalExtensionUninstalled(content::BrowserContext* context,
                                     const std::string& extension_id);
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_FUCHSIA)
 // Returns whether |extension_id| is a Chrome App and should be blocked by the
 // Chrome Apps Deprecation. Policy installed Chrome Apps are still allowed, and
 // all apps are allowed if the deprecation feature flag is not enabled.

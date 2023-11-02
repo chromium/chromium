@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted.h"
@@ -16,6 +15,7 @@
 namespace content {
 
 class MockBackgroundSyncController;
+class MockReduceAcceptLanguageControllerDelegate;
 class MockResourceContext;
 class MockSSLHostStateDelegate;
 class ZoomLevelDelegate;
@@ -30,15 +30,23 @@ class TestBrowserContext : public BrowserContext {
 
   ~TestBrowserContext() override;
 
+  // Returns the TestBrowserContext corresponding to the given browser context.
+  static TestBrowserContext* FromBrowserContext(
+      BrowserContext* browser_context);
+
   // Takes ownership of the temporary directory so that it's not deleted when
   // this object is destructed.
   base::FilePath TakePath();
 
+  void SetReduceAcceptLanguageControllerDelegate(
+      std::unique_ptr<MockReduceAcceptLanguageControllerDelegate> delegate);
   void SetSpecialStoragePolicy(storage::SpecialStoragePolicy* policy);
   void SetPermissionControllerDelegate(
       std::unique_ptr<PermissionControllerDelegate> delegate);
   void SetPlatformNotificationService(
       std::unique_ptr<PlatformNotificationService> service);
+  void SetOriginTrialsControllerDelegate(
+      OriginTrialsControllerDelegate* delegate);
 
   // Allow clients to make this an incognito context.
   void set_is_off_the_record(bool is_off_the_record) {
@@ -63,6 +71,10 @@ class TestBrowserContext : public BrowserContext {
   BackgroundFetchDelegate* GetBackgroundFetchDelegate() override;
   BackgroundSyncController* GetBackgroundSyncController() override;
   BrowsingDataRemoverDelegate* GetBrowsingDataRemoverDelegate() override;
+  ReduceAcceptLanguageControllerDelegate*
+  GetReduceAcceptLanguageControllerDelegate() override;
+  content::OriginTrialsControllerDelegate* GetOriginTrialsControllerDelegate()
+      override;
 
  private:
   // Hold a reference here because BrowserContext owns lifetime.
@@ -73,6 +85,10 @@ class TestBrowserContext : public BrowserContext {
   std::unique_ptr<PermissionControllerDelegate> permission_controller_delegate_;
   std::unique_ptr<MockBackgroundSyncController> background_sync_controller_;
   std::unique_ptr<PlatformNotificationService> platform_notification_service_;
+  std::unique_ptr<MockReduceAcceptLanguageControllerDelegate>
+      reduce_accept_language_controller_delegate_;
+  base::raw_ptr<OriginTrialsControllerDelegate>
+      origin_trials_controller_delegate_;
   bool is_off_the_record_ = false;
 };
 

@@ -1,4 +1,4 @@
-// Copyright 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,7 @@
 #include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace cc {
 
@@ -105,8 +106,9 @@ void DamageTracker::UpdateDamageTracking(LayerTreeImpl* layer_tree_impl) {
     render_surface->damage_tracker()->PrepareForUpdate();
   }
 
-  EffectTree& effect_tree = layer_tree_impl->property_trees()->effect_tree;
-  int current_target_effect_id = EffectTree::kContentsRootNodeId;
+  EffectTree& effect_tree =
+      layer_tree_impl->property_trees()->effect_tree_mutable();
+  int current_target_effect_id = kContentsRootPropertyNodeId;
   DCHECK(effect_tree.GetRenderSurface(current_target_effect_id));
   for (LayerImpl* layer : *layer_tree_impl) {
     if (!layer->contributes_to_drawn_render_surface())
@@ -145,12 +147,12 @@ void DamageTracker::UpdateDamageTracking(LayerTreeImpl* layer_tree_impl) {
     }
   }
 
-  DCHECK_GE(current_target_effect_id, EffectTree::kContentsRootNodeId);
+  DCHECK_GE(current_target_effect_id, kContentsRootPropertyNodeId);
   RenderSurfaceImpl* current_target =
       effect_tree.GetRenderSurface(current_target_effect_id);
   while (true) {
     current_target->damage_tracker()->ComputeSurfaceDamage(current_target);
-    if (current_target->EffectTreeIndex() == EffectTree::kContentsRootNodeId)
+    if (current_target->EffectTreeIndex() == kContentsRootPropertyNodeId)
       break;
     RenderSurfaceImpl* next_target = current_target->render_target();
     next_target->damage_tracker()->AccumulateDamageFromRenderSurface(
@@ -215,7 +217,8 @@ void DamageTracker::ComputeSurfaceDamage(RenderSurfaceImpl* render_surface) {
     bool is_rect_valid = damage_for_this_update_.GetAsRect(&damage_rect);
     if (is_rect_valid && !damage_rect.IsEmpty()) {
       damage_rect = render_surface->Filters().MapRect(
-          damage_rect, SkMatrix(render_surface->SurfaceScale().matrix()));
+          damage_rect,
+          gfx::TransformToFlattenedSkMatrix(render_surface->SurfaceScale()));
       damage_for_this_update_ = DamageAccumulator();
       damage_for_this_update_.Union(damage_rect);
     }
@@ -393,8 +396,9 @@ void DamageTracker::AccumulateDamageFromLayer(LayerImpl* layer) {
   bool property_change_on_non_target_node = false;
   if (layer->LayerPropertyChangedFromPropertyTrees()) {
     auto effect_id = layer->render_target()->EffectTreeIndex();
-    auto* effect_node =
-        layer->layer_tree_impl()->property_trees()->effect_tree.Node(effect_id);
+    const auto* effect_node =
+        layer->layer_tree_impl()->property_trees()->effect_tree().Node(
+            effect_id);
     auto transform_id = effect_node->transform_id;
     property_change_on_non_target_node =
         layer->effect_tree_index() != effect_id ||

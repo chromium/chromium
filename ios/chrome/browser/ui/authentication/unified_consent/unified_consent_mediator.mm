@@ -1,14 +1,14 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_mediator.h"
+#import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_mediator.h"
 
-#include "base/check.h"
+#import "base/check.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
-#include "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_view_controller.h"
+#import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_view_controller.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -79,8 +79,8 @@
 
 #pragma mark - Properties
 
-- (void)setSelectedIdentity:(ChromeIdentity*)selectedIdentity {
-  if ([self.selectedIdentity isEqual:selectedIdentity]) {
+- (void)setSelectedIdentity:(id<SystemIdentity>)selectedIdentity {
+  if ([_selectedIdentity isEqual:selectedIdentity]) {
     return;
   }
   // nil is allowed only if there is no other identity.
@@ -91,7 +91,7 @@
 
 #pragma mark - Private
 
-- (ChromeIdentity*)findDefaultSelectedIdentity {
+- (id<SystemIdentity>)findDefaultSelectedIdentity {
   if (self.authenticationService->HasPrimaryIdentity(
           signin::ConsentLevel::kSignin)) {
     return self.authenticationService->GetPrimaryIdentity(
@@ -109,14 +109,14 @@
   if (!self.accountManagerService)
     return;
 
-  if (self.selectedIdentity) {
+  id<SystemIdentity> selectedIdentity = self.selectedIdentity;
+  if (selectedIdentity) {
     [self.unifiedConsentViewController
-        updateIdentityButtonControlWithUserFullName:self.selectedIdentity
+        updateIdentityButtonControlWithUserFullName:selectedIdentity
                                                         .userFullName
-                                              email:self.selectedIdentity
-                                                        .userEmail];
+                                              email:selectedIdentity.userEmail];
     UIImage* avatar = self.accountManagerService->GetIdentityAvatarWithIdentity(
-        self.selectedIdentity, IdentityAvatarSize::DefaultLarge);
+        selectedIdentity, IdentityAvatarSize::Regular);
     DCHECK(avatar);
     [self.unifiedConsentViewController
         updateIdentityButtonControlWithAvatar:avatar];
@@ -131,15 +131,14 @@
   if (!self.accountManagerService)
     return;
 
-  if (!self.selectedIdentity ||
-      !self.accountManagerService->IsValidIdentity(self.selectedIdentity)) {
+  if (!self.accountManagerService->IsValidIdentity(self.selectedIdentity)) {
     self.selectedIdentity = [self findDefaultSelectedIdentity];
     [self.delegate
         unifiedConsentViewMediatorDelegateNeedPrimaryButtonUpdate:self];
   }
 }
 
-- (void)identityChanged:(ChromeIdentity*)identity {
+- (void)identityChanged:(id<SystemIdentity>)identity {
   if ([self.selectedIdentity isEqual:identity]) {
     [self updateViewController];
   }

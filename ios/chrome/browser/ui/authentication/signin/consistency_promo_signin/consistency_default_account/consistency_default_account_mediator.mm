@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,7 +56,7 @@
 
 - (void)setSelectedIdentity:(ChromeIdentity*)identity {
   DCHECK(identity);
-  if (_selectedIdentity == identity) {
+  if ([_selectedIdentity isEqual:identity]) {
     return;
   }
   _selectedIdentity = identity;
@@ -100,7 +100,7 @@
   [self selectSelectedIdentity];
 }
 
-- (void)identityChanged:(ChromeIdentity*)identity {
+- (void)identityChanged:(id<SystemIdentity>)identity {
   if ([self.selectedIdentity isEqual:identity]) {
     [self updateSelectedIdentityUI];
   }

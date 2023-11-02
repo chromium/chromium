@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,7 +40,7 @@ struct SSLStatus {
                 : true) &&
            cert_status == status.cert_status &&
            content_status == status.content_status;
-    // |cert_status_host| is not used for comparison intentionally.
+    // `cert_status_host` is not used for comparison intentionally.
   }
 
   web::SecurityStyle security_style;
@@ -48,9 +48,9 @@ struct SSLStatus {
   net::CertStatus cert_status;
   // A combination of the ContentStatusFlags above.
   int content_status;
-  // Host which was used for |cert_status| calculation. It is not an actual part
-  // of SSL status, hence it's not taken into account in |Equals| method.
-  // Used to check if |cert_status| is still valid or needs to be recalculated
+  // Host which was used for `cert_status` calculation. It is not an actual part
+  // of SSL status, hence it's not taken into account in `Equals` method.
+  // Used to check if `cert_status` is still valid or needs to be recalculated
   // (e.g. after redirect).
   std::string cert_status_host;
 };

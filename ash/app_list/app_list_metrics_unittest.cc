@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,11 +23,10 @@
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/privacy_container_view.h"
+#include "ash/app_list/views/recent_apps_view.h"
 #include "ash/app_list/views/search_result_container_view.h"
 #include "ash/app_list/views/search_result_page_view.h"
 #include "ash/app_list/views/search_result_tile_item_list_view.h"
-#include "ash/app_list/views/search_result_tile_item_view.h"
-#include "ash/app_list/views/suggestion_chip_container_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
@@ -37,14 +36,12 @@
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shelf/shelf_view.h"
 #include "ash/shelf/shelf_view_test_api.h"
-#include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/display/screen.h"
-#include "ui/events/test/event_generator.h"
 
 namespace ash {
 
@@ -80,15 +77,14 @@ int64_t GetPrimaryDisplayId() {
 }
 
 // Used to test that app launched metrics are properly recorded.
-class AppListAppLaunchedMetricTest : public AshTestBase {
+class AppListMetricsTest : public AshTestBase {
  public:
-  AppListAppLaunchedMetricTest() = default;
+  AppListMetricsTest() = default;
 
-  AppListAppLaunchedMetricTest(const AppListAppLaunchedMetricTest&) = delete;
-  AppListAppLaunchedMetricTest& operator=(const AppListAppLaunchedMetricTest&) =
-      delete;
+  AppListMetricsTest(const AppListMetricsTest&) = delete;
+  AppListMetricsTest& operator=(const AppListMetricsTest&) = delete;
 
-  ~AppListAppLaunchedMetricTest() override = default;
+  ~AppListMetricsTest() override = default;
 
   void SetUp() override {
     AshTestBase::SetUp();
@@ -117,15 +113,7 @@ class AppListAppLaunchedMetricTest : public AshTestBase {
     // Get location of the shelf item.
     const views::ViewModel* view_model =
         GetPrimaryShelf()->GetShelfViewForTesting()->view_model_for_test();
-    gfx::Point center = view_model->view_at(kBrowserAppIndexOnShelf)
-                            ->GetBoundsInScreen()
-                            .CenterPoint();
-
-    // Click on the shelf item.
-    ui::test::EventGenerator* generator = GetEventGenerator();
-    generator->MoveMouseTo(center);
-    generator->ClickLeftButton();
-    generator->ReleaseLeftButton();
+    LeftClickOn(view_model->view_at(kBrowserAppIndexOnShelf));
   }
 
   void PopulateAndLaunchSearchBoxTileItem() {
@@ -133,6 +121,12 @@ class AppListAppLaunchedMetricTest : public AshTestBase {
     for (size_t i = 0; i < 4; i++) {
       auto search_result = std::make_unique<SearchResult>();
       search_result->set_display_type(SearchResultDisplayType::kTile);
+
+      // Give each item a name so that the accessibility paint checks pass.
+      // (Focusable items should have accessible names.)
+      search_result->SetAccessibleName(
+          base::UTF8ToUTF16(base::StringPrintf("item %zu", i)));
+
       search_model_->results()->Add(std::move(search_result));
     }
     GetAppListTestHelper()->WaitUntilIdle();
@@ -141,7 +135,7 @@ class AppListAppLaunchedMetricTest : public AshTestBase {
     // first search container.
     ContentsView* contents_view = Shell::Get()
                                       ->app_list_controller()
-                                      ->presenter()
+                                      ->fullscreen_presenter()
                                       ->GetView()
                                       ->app_list_main_view()
                                       ->contents_view();
@@ -161,44 +155,19 @@ class AppListAppLaunchedMetricTest : public AshTestBase {
     PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   }
 
-  void PopulateAndLaunchSuggestionChip() {
-    // Populate 4 suggestion chips.
-    for (size_t i = 0; i < 4; i++) {
-      auto search_result_chip = std::make_unique<SearchResult>();
-      search_result_chip->set_display_type(SearchResultDisplayType::kChip);
-      search_result_chip->set_is_recommendation(true);
-      search_model_->results()->Add(std::move(search_result_chip));
-    }
-    GetAppListTestHelper()->WaitUntilIdle();
-
-    SearchResultContainerView* suggestions_container_ =
-        Shell::Get()
-            ->app_list_controller()
-            ->presenter()
-            ->GetView()
-            ->app_list_main_view()
-            ->contents_view()
-            ->apps_container_view()
-            ->suggestion_chip_container_view_for_test();
-
-    // Get focus on the first chip.
-    suggestions_container_->children().front()->RequestFocus();
-    GetAppListTestHelper()->WaitUntilIdle();
-
-    // Press return to simulate an app launch from the suggestion chip.
-    PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
-  }
-
-  void PopulateAndLaunchAppInGrid() {
+  void PopulateAndLaunchAppInGrid(int num = 4) {
     // Populate apps in the root app grid.
     AppListModel* model = AppListModelProvider::Get()->model();
-    model->AddItem(std::make_unique<AppListItem>("item 0"));
-    model->AddItem(std::make_unique<AppListItem>("item 1"));
-    model->AddItem(std::make_unique<AppListItem>("item 2"));
-    model->AddItem(std::make_unique<AppListItem>("item 3"));
+    for (int i = 0; i < num; i++) {
+      AppListItem* item = model->AddItem(
+          std::make_unique<AppListItem>(base::StringPrintf("item %d", i)));
+      // Give each item a name so that the accessibility paint checks pass.
+      // (Focusable items should have accessible names.)
+      model->SetItemName(item, item->id());
+    }
 
     AppListView::TestApi test_api(
-        Shell::Get()->app_list_controller()->presenter()->GetView());
+        Shell::Get()->app_list_controller()->fullscreen_presenter()->GetView());
 
     // Focus the first item in the root app grid.
     test_api.GetRootAppsGridView()->GetItemViewAt(0)->RequestFocus();
@@ -212,205 +181,26 @@ class AppListAppLaunchedMetricTest : public AshTestBase {
   std::unique_ptr<ShelfViewTestAPI> shelf_test_api_;
 };
 
-// Test that the histogram records an app launch from the shelf while the half
-// launcher is showing.
-TEST_F(AppListAppLaunchedMetricTest, HalfLaunchFromShelf) {
-  base::HistogramTester histogram_tester;
+// Suite for tests that run in tablet mode, parameterized by feature
+// ProductivityLauncher.
+class AppListMetricsTabletTest : public AppListMetricsTest,
+                                 public testing::WithParamInterface<bool> {
+ public:
+  AppListMetricsTabletTest() {
+    const bool enable = GetParam();
+    feature_list_.InitWithFeatureState(features::kProductivityLauncher, enable);
+  }
+  ~AppListMetricsTabletTest() override = default;
 
-  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
-  GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
-
-  // Press a letter key, the AppListView should transition to kHalf.
-  PressAndReleaseKey(ui::KeyboardCode::VKEY_H);
-  GetAppListTestHelper()->CheckState(AppListViewState::kHalf);
-
-  CreateAndClickShelfItem();
-  GetAppListTestHelper()->WaitUntilIdle();
-
-  histogram_tester.ExpectBucketCount(
-      "Apps.AppListAppLaunchedV2.Half", AppListLaunchedFrom::kLaunchedFromShelf,
-      1 /* Number of times launched from shelf */);
-}
-
-// Test that the histogram records an app launch from the search box while the
-// half launcher is showing.
-TEST_F(AppListAppLaunchedMetricTest, HalfLaunchFromSearchBox) {
-  base::HistogramTester histogram_tester;
-
-  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
-  GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
-
-  // Press a letter key, the AppListView should transition to kHalf.
-  PressAndReleaseKey(ui::KeyboardCode::VKEY_H);
-  GetAppListTestHelper()->CheckState(AppListViewState::kHalf);
-
-  PopulateAndLaunchSearchBoxTileItem();
-
-  histogram_tester.ExpectBucketCount(
-      "Apps.AppListAppLaunchedV2.Half",
-      AppListLaunchedFrom::kLaunchedFromSearchBox,
-      1 /* Number of times launched from search box */);
-}
-
-// Test that the histogram records an app launch from the search box while the
-// fullscreen search launcher is showing.
-TEST_F(AppListAppLaunchedMetricTest, FullscreenSearchLaunchFromSearchBox) {
-  base::HistogramTester histogram_tester;
-
-  // Press search + shift to transition to kFullscreenAllApps.
-  PressAndReleaseKey(ui::KeyboardCode::VKEY_BROWSER_SEARCH, ui::EF_SHIFT_DOWN);
-  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
-
-  // Press a letter key, the AppListView should transition to kFullscreenSearch.
-  PressAndReleaseKey(ui::KeyboardCode::VKEY_H);
-  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenSearch);
-
-  PopulateAndLaunchSearchBoxTileItem();
-
-  GetAppListTestHelper()->WaitUntilIdle();
-  histogram_tester.ExpectBucketCount(
-      "Apps.AppListAppLaunchedV2.FullscreenSearch",
-      AppListLaunchedFrom::kLaunchedFromSearchBox,
-      1 /* Number of times launched from search box */);
-}
-
-// Test that the histogram records an app launch from the shelf while the
-// fullscreen search launcher is showing.
-TEST_F(AppListAppLaunchedMetricTest, FullscreenSearchLaunchFromShelf) {
-  base::HistogramTester histogram_tester;
-
-  // Press search + shift to transition to kFullscreenAllApps.
-  PressAndReleaseKey(ui::KeyboardCode::VKEY_BROWSER_SEARCH, ui::EF_SHIFT_DOWN);
-  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
-
-  // Press a letter key, the AppListView should transition to kFullscreenSearch.
-  PressAndReleaseKey(ui::KeyboardCode::VKEY_H);
-  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenSearch);
-
-  CreateAndClickShelfItem();
-
-  histogram_tester.ExpectBucketCount(
-      "Apps.AppListAppLaunchedV2.FullscreenSearch",
-      AppListLaunchedFrom::kLaunchedFromShelf,
-      1 /* Number of times launched from shelf */);
-}
-
-// Test that the histogram records an app launch from a suggestion chip while
-// the fullscreen all apps launcher is showing.
-TEST_F(AppListAppLaunchedMetricTest, FullscreenAllAppsLaunchFromChip) {
-  base::HistogramTester histogram_tester;
-
-  // Press search + shift to transition to kFullscreenAllApps.
-  PressAndReleaseKey(ui::KeyboardCode::VKEY_BROWSER_SEARCH, ui::EF_SHIFT_DOWN);
-  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
-
-  PopulateAndLaunchSuggestionChip();
-
-  histogram_tester.ExpectBucketCount(
-      "Apps.AppListAppLaunchedV2.FullscreenAllApps",
-      AppListLaunchedFrom::kLaunchedFromSuggestionChip,
-      1 /* Number of times launched from chip */);
-}
-
-// Test that the histogram records an app launch from the app grid while the
-// fullscreen all apps launcher is showing.
-TEST_F(AppListAppLaunchedMetricTest, FullscreenAllAppsLaunchFromGrid) {
-  base::HistogramTester histogram_tester;
-
-  // Press search + shift to transition to kFullscreenAllApps.
-  PressAndReleaseKey(ui::KeyboardCode::VKEY_BROWSER_SEARCH, ui::EF_SHIFT_DOWN);
-  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
-
-  PopulateAndLaunchAppInGrid();
-
-  histogram_tester.ExpectBucketCount(
-      "Apps.AppListAppLaunchedV2.FullscreenAllApps",
-      AppListLaunchedFrom::kLaunchedFromGrid,
-      1 /* Number of times launched from grid */);
-}
-
-// Test that the histogram records an app launch from the shelf while the
-// fullscreen all apps launcher is showing.
-TEST_F(AppListAppLaunchedMetricTest, FullscreenAllAppsLaunchFromShelf) {
-  base::HistogramTester histogram_tester;
-
-  // Press search + shift to transition to kFullscreenAllApps.
-  PressAndReleaseKey(ui::KeyboardCode::VKEY_BROWSER_SEARCH, ui::EF_SHIFT_DOWN);
-  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
-
-  CreateAndClickShelfItem();
-
-  histogram_tester.ExpectBucketCount(
-      "Apps.AppListAppLaunchedV2.FullscreenAllApps",
-      AppListLaunchedFrom::kLaunchedFromShelf,
-      1 /* Number of times launched from shelf */);
-}
-
-// Test that the histogram records an app launch from the shelf while the
-// peeking launcher is showing.
-TEST_F(AppListAppLaunchedMetricTest, PeekingLaunchFromShelf) {
-  base::HistogramTester histogram_tester;
-
-  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
-  GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
-
-  CreateAndClickShelfItem();
-
-  histogram_tester.ExpectBucketCount(
-      "Apps.AppListAppLaunchedV2.Peeking",
-      AppListLaunchedFrom::kLaunchedFromShelf,
-      1 /* Number of times launched from shelf */);
-}
-
-// Test that the histogram records an app launch from a suggestion chip while
-// the peeking launcher is showing.
-TEST_F(AppListAppLaunchedMetricTest, PeekingLaunchFromChip) {
-  base::HistogramTester histogram_tester;
-
-  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
-  GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
-
-  PopulateAndLaunchSuggestionChip();
-
-  histogram_tester.ExpectBucketCount(
-      "Apps.AppListAppLaunchedV2.Peeking",
-      AppListLaunchedFrom::kLaunchedFromSuggestionChip,
-      1 /* Number of times launched from chip */);
-}
-
-// Test that the histogram records an app launch from the shelf while the
-// launcher is closed.
-TEST_F(AppListAppLaunchedMetricTest, ClosedLaunchFromShelf) {
-  base::HistogramTester histogram_tester;
-
-  GetAppListTestHelper()->CheckState(AppListViewState::kClosed);
-
-  CreateAndClickShelfItem();
-
-  histogram_tester.ExpectBucketCount(
-      "Apps.AppListAppLaunchedV2.Closed",
-      AppListLaunchedFrom::kLaunchedFromShelf,
-      1 /* Number of times launched from shelf */);
-
-  // Open the launcher to peeking.
-  PressAndReleaseKey(ui::KeyboardCode::VKEY_BROWSER_SEARCH);
-  GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
-
-  // Close launcher back to closed.
-  PressAndReleaseKey(ui::KeyboardCode::VKEY_BROWSER_SEARCH);
-  GetAppListTestHelper()->CheckState(AppListViewState::kClosed);
-
-  ClickShelfItem();
-
-  histogram_tester.ExpectBucketCount(
-      "Apps.AppListAppLaunchedV2.Closed",
-      AppListLaunchedFrom::kLaunchedFromShelf,
-      2 /* Number of times launched from shelf */);
-}
+  base::test::ScopedFeatureList feature_list_;
+};
+INSTANTIATE_TEST_SUITE_P(ProductivityLauncher,
+                         AppListMetricsTabletTest,
+                         testing::Bool());
 
 // Test that the histogram records an app launch from the shelf while the
 // homecher all apps state is showing.
-TEST_F(AppListAppLaunchedMetricTest, HomecherAllAppsLaunchFromShelf) {
+TEST_P(AppListMetricsTabletTest, HomecherAllAppsLaunchFromShelf) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   base::HistogramTester histogram_tester;
 
@@ -426,7 +216,7 @@ TEST_F(AppListAppLaunchedMetricTest, HomecherAllAppsLaunchFromShelf) {
 
 // Test that the histogram records an app launch from the app grid while the
 // homecher all apps state is showing.
-TEST_F(AppListAppLaunchedMetricTest, HomecherAllAppsLaunchFromGrid) {
+TEST_P(AppListMetricsTabletTest, HomecherAllAppsLaunchFromGrid) {
   base::HistogramTester histogram_tester;
 
   // Enable tablet mode.
@@ -439,29 +229,11 @@ TEST_F(AppListAppLaunchedMetricTest, HomecherAllAppsLaunchFromGrid) {
       "Apps.AppListAppLaunchedV2.HomecherAllApps",
       AppListLaunchedFrom::kLaunchedFromGrid,
       1 /* Number of times launched from grid */);
-}
-
-// Test that the histogram records an app launch from a suggestion chip while
-// the homecher all apps state is showing.
-TEST_F(AppListAppLaunchedMetricTest, HomecherAllAppsLaunchFromChip) {
-  base::HistogramTester histogram_tester;
-
-  GetAppListTestHelper()->WaitUntilIdle();
-  // Enable tablet mode.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
-
-  PopulateAndLaunchSuggestionChip();
-
-  histogram_tester.ExpectBucketCount(
-      "Apps.AppListAppLaunchedV2.HomecherAllApps",
-      AppListLaunchedFrom::kLaunchedFromSuggestionChip,
-      1 /* Number of times launched from chip */);
 }
 
 // Test that the histogram records an app launch from the shelf while the
 // homecher search state is showing.
-TEST_F(AppListAppLaunchedMetricTest, HomecherSearchLaunchFromShelf) {
+TEST_P(AppListMetricsTabletTest, HomecherSearchLaunchFromShelf) {
   base::HistogramTester histogram_tester;
 
   // Enable tablet mode.
@@ -483,7 +255,11 @@ TEST_F(AppListAppLaunchedMetricTest, HomecherSearchLaunchFromShelf) {
 
 // Test that the histogram records an app launch from the search box while the
 // homercher search state is showing.
-TEST_F(AppListAppLaunchedMetricTest, HomecherSearchLaunchFromSearchBox) {
+TEST_P(AppListMetricsTabletTest, HomecherSearchLaunchFromSearchBox) {
+  // ProductivityLauncher does not tile search results.
+  if (features::IsProductivityLauncherEnabled())
+    return;
+
   base::HistogramTester histogram_tester;
 
   // Enable tablet mode.
@@ -504,6 +280,133 @@ TEST_F(AppListAppLaunchedMetricTest, HomecherSearchLaunchFromSearchBox) {
       1 /* Number of times launched from search box */);
 }
 
+// Tests with feature ProductivityLauncher enabled.
+class AppListMetricsProductivityLauncherTest : public AppListMetricsTest {
+ public:
+  AppListMetricsProductivityLauncherTest() {
+    scoped_feature_list_.InitWithFeatures({features::kProductivityLauncher},
+                                          {});
+  }
+  ~AppListMetricsProductivityLauncherTest() override = default;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Test that the histogram records an app launch from a recent app suggestion
+// while the bubble launcher all apps is showing.
+TEST_F(AppListMetricsProductivityLauncherTest,
+       BubbleAllAppsLaunchFromRecentApps) {
+  base::HistogramTester histogram_tester;
+  auto* helper = GetAppListTestHelper();
+
+  helper->WaitUntilIdle();
+
+  helper->AddRecentApps(5);
+  helper->AddAppItems(5);
+  helper->ShowAppList();
+
+  helper->WaitUntilIdle();
+  views::View* recent_apps = helper->GetBubbleRecentAppsView();
+
+  // Get focus on the first chip.
+  recent_apps->children().front()->RequestFocus();
+  helper->WaitUntilIdle();
+
+  // Press return to simulate an app launch from the recent apps.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  helper->WaitUntilIdle();
+
+  histogram_tester.ExpectBucketCount(
+      "Apps.AppListAppLaunchedV2.BubbleAllApps",
+      AppListLaunchedFrom::kLaunchedFromRecentApps,
+      1 /* Number of times launched from chip */);
+}
+
+TEST_F(AppListMetricsProductivityLauncherTest,
+       HideContinueSectionMetricInClamshellMode) {
+  base::HistogramTester histograms;
+
+  // Show the app list with a full continue section.
+  auto* helper = GetAppListTestHelper();
+  helper->AddContinueSuggestionResults(4);
+  helper->AddRecentApps(5);
+  helper->AddAppItems(5);
+  helper->ShowAppList();
+
+  // Metric is recorded in false bucket.
+  const int false_bucket = 0;
+  histograms.ExpectBucketCount(
+      "Apps.AppList.ContinueSectionHiddenByUser.ClamshellMode", false_bucket,
+      1);
+  helper->Dismiss();
+
+  // Hide the continue section, then show the app list.
+  Shell::Get()->app_list_controller()->SetHideContinueSection(true);
+  helper->ShowAppList();
+
+  // Metric is recorded in true bucket.
+  const int true_bucket = 1;
+  histograms.ExpectBucketCount(
+      "Apps.AppList.ContinueSectionHiddenByUser.ClamshellMode", true_bucket, 1);
+  helper->Dismiss();
+}
+
+TEST_F(AppListMetricsProductivityLauncherTest,
+       HideContinueSectionMetricInTabletMode) {
+  base::HistogramTester histograms;
+
+  // Show the tablet mode app list with a full continue section.
+  auto* helper = GetAppListTestHelper();
+  helper->AddContinueSuggestionResults(4);
+  helper->AddRecentApps(5);
+  helper->AddAppItems(5);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+  // Metric is recorded in false bucket.
+  const int false_bucket = 0;
+  histograms.ExpectBucketCount(
+      "Apps.AppList.ContinueSectionHiddenByUser.TabletMode", false_bucket, 1);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+
+  // Hide the continue section, then show the tablet mode app list.
+  Shell::Get()->app_list_controller()->SetHideContinueSection(true);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+  // Metric is recorded in true bucket.
+  const int true_bucket = 1;
+  histograms.ExpectBucketCount(
+      "Apps.AppList.ContinueSectionHiddenByUser.TabletMode", true_bucket, 1);
+}
+
+// Test that the histogram records an app launch from a recent app suggestion
+// while the homecher all apps is showing.
+TEST_F(AppListMetricsProductivityLauncherTest, HomecherLaunchFromRecentApps) {
+  base::HistogramTester histogram_tester;
+  auto* helper = GetAppListTestHelper();
+
+  helper->WaitUntilIdle();
+
+  helper->AddRecentApps(5);
+  helper->AddAppItems(5);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+  helper->WaitUntilIdle();
+  views::View* recent_apps = helper->GetFullscreenRecentAppsView();
+
+  // Get focus on the first chip.
+  recent_apps->children().front()->RequestFocus();
+  helper->WaitUntilIdle();
+
+  // Press return to simulate an app launch from the recent apps.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  helper->WaitUntilIdle();
+
+  histogram_tester.ExpectBucketCount(
+      "Apps.AppListAppLaunchedV2.HomecherAllApps",
+      AppListLaunchedFrom::kLaunchedFromRecentApps,
+      1 /* Number of times launched from chip */);
+}
+
 class AppListShowSourceMetricTest : public AshTestBase {
  public:
   AppListShowSourceMetricTest() = default;
@@ -516,12 +419,7 @@ class AppListShowSourceMetricTest : public AshTestBase {
 
  protected:
   void ClickHomeButton() {
-    HomeButton* home_button =
-        GetPrimaryShelf()->navigation_widget()->GetHomeButton();
-    gfx::Point center = home_button->GetCenterPoint();
-    views::View::ConvertPointToScreen(home_button, &center);
-    GetEventGenerator()->MoveMouseTo(center);
-    GetEventGenerator()->ClickLeftButton();
+    LeftClickOn(GetPrimaryShelf()->navigation_widget()->GetHomeButton());
   }
 };
 
@@ -542,10 +440,10 @@ TEST_F(AppListShowSourceMetricTest, TabletInAppToHome) {
 
   ClickHomeButton();
   histogram_tester.ExpectBucketCount(
-      "Apps.AppListShowSource", kShelfButton,
+      "Apps.AppListShowSource", AppListShowSource::kShelfButton,
       1 /* Number of times app list is shown with a shelf button */);
   histogram_tester.ExpectBucketCount(
-      "Apps.AppListShowSource", kTabletMode,
+      "Apps.AppListShowSource", AppListShowSource::kTabletMode,
       0 /* Number of times app list is shown by tablet mode transition */);
 
   GetAppListTestHelper()->CheckVisibility(true);
@@ -554,7 +452,7 @@ TEST_F(AppListShowSourceMetricTest, TabletInAppToHome) {
   // showing the app list.
   ClickHomeButton();
   histogram_tester.ExpectBucketCount(
-      "Apps.AppListShowSource", kShelfButton,
+      "Apps.AppListShowSource", AppListShowSource::kShelfButton,
       1 /* Number of times app list shown with a shelf button */);
   histogram_tester.ExpectTotalCount("Apps.AppListShowSource", 1);
 }
@@ -581,7 +479,7 @@ TEST_F(AppListShowSourceMetricTest, TabletModeWithNoWindowOpen) {
   GetAppListTestHelper()->CheckVisibility(true);
 
   histogram_tester.ExpectBucketCount(
-      "Apps.AppListShowSource", kTabletMode,
+      "Apps.AppListShowSource", AppListShowSource::kTabletMode,
       1 /* Number of times app list shown after entering tablet mode */);
 }
 
@@ -681,10 +579,10 @@ TEST_F(AppListBubbleShowSourceMetricTest, ToggleDoesNotRecordOnHide) {
   histogram_tester.ExpectTotalCount("Apps.AppListBubbleShowSource", 1);
 }
 
-using AppListAppCountMetricTest = AshTestBase;
+using AppListPeriodicMetricsTest = AshTestBase;
 
 // Verify that the number of items in the app list are recorded correctly.
-TEST_F(AppListAppCountMetricTest, RecordApplistItemCounts) {
+TEST_F(AppListPeriodicMetricsTest, PeriodicAppListMetrics_NumberOfApps) {
   base::HistogramTester histogram;
   histogram.ExpectTotalCount("Apps.AppList.NumberOfApps", 0);
   histogram.ExpectTotalCount("Apps.AppList.NumberOfRootLevelItems", 0);
@@ -706,7 +604,7 @@ TEST_F(AppListAppCountMetricTest, RecordApplistItemCounts) {
 
   // Create a folder and add 3 items to it.
   const std::string folder_id = "folder_id";
-  model->AddFolderItemForTest(folder_id);
+  model->CreateFolderItem(folder_id);
   for (int i = 0; i < 3; i++) {
     auto item =
         std::make_unique<AppListItem>(base::StringPrintf("id_in_folder_%d", i));
@@ -717,6 +615,57 @@ TEST_F(AppListAppCountMetricTest, RecordApplistItemCounts) {
   RecordPeriodicAppListMetrics();
   histogram.ExpectBucketCount("Apps.AppList.NumberOfApps", 8, 1);
   histogram.ExpectBucketCount("Apps.AppList.NumberOfRootLevelItems", 6, 1);
+}
+
+TEST_F(AppListPeriodicMetricsTest, RecordFolderMetrics_ZeroFolders) {
+  base::HistogramTester histogram;
+  GetAppListTestHelper()->model()->PopulateApps(2);
+
+  RecordPeriodicAppListMetrics();
+
+  // 1 sample in the 0 folders bucket.
+  EXPECT_EQ(1, histogram.GetBucketCount("Apps.AppList.NumberOfFolders", 0));
+  // 1 sample in the 0 folders bucket.
+  EXPECT_EQ(
+      1, histogram.GetBucketCount("Apps.AppList.NumberOfNonSystemFolders", 0));
+  // 1 sample in the 0 apps bucket.
+  EXPECT_EQ(1, histogram.GetBucketCount(
+                   "Apps.AppList.NumberOfAppsInNonSystemFolders", 0));
+}
+
+TEST_F(AppListPeriodicMetricsTest, RecordFolderMetrics_OneRegularFolder) {
+  base::HistogramTester histogram;
+  GetAppListTestHelper()->model()->CreateAndPopulateFolderWithApps(2);
+
+  RecordPeriodicAppListMetrics();
+
+  // 1 sample in the 1 folder bucket.
+  EXPECT_EQ(1, histogram.GetBucketCount("Apps.AppList.NumberOfFolders", 1));
+  // 1 sample in the 1 folder bucket.
+  EXPECT_EQ(
+      1, histogram.GetBucketCount("Apps.AppList.NumberOfNonSystemFolders", 1));
+  // 1 sample in the 2 apps bucket.
+  EXPECT_EQ(1, histogram.GetBucketCount(
+                   "Apps.AppList.NumberOfAppsInNonSystemFolders", 2));
+}
+
+TEST_F(AppListPeriodicMetricsTest, RecordFolderMetrics_SystemFolder) {
+  base::HistogramTester histogram;
+  AppListFolderItem* folder =
+      GetAppListTestHelper()->model()->CreateSingleItemFolder("folder_id",
+                                                              "item_id");
+  folder->SetIsSystemFolder(true);
+
+  RecordPeriodicAppListMetrics();
+
+  // 1 sample in the 1 folder bucket.
+  EXPECT_EQ(1, histogram.GetBucketCount("Apps.AppList.NumberOfFolders", 1));
+  // 1 sample in the 0 folders bucket, because the folder is a system folder.
+  EXPECT_EQ(
+      1, histogram.GetBucketCount("Apps.AppList.NumberOfNonSystemFolders", 0));
+  // 1 sample in the 0 apps bucket, because items in system folders don't count.
+  EXPECT_EQ(1, histogram.GetBucketCount(
+                   "Apps.AppList.NumberOfAppsInNonSystemFolders", 0));
 }
 
 }  // namespace ash

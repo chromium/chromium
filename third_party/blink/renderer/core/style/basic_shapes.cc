@@ -30,21 +30,20 @@
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
 
 #include "third_party/blink/renderer/core/css/basic_shape_functions.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
+#include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
-bool BasicShapeCircle::operator==(const BasicShape& o) const {
-  if (!IsSameType(o))
-    return false;
+bool BasicShapeCircle::IsEqualAssumingSameType(const BasicShape& o) const {
   const BasicShapeCircle& other = To<BasicShapeCircle>(o);
   return center_x_ == other.center_x_ && center_y_ == other.center_y_ &&
          radius_ == other.radius_;
 }
 
-float BasicShapeCircle::FloatValueForRadiusInBox(FloatSize box_size) const {
+float BasicShapeCircle::FloatValueForRadiusInBox(gfx::SizeF box_size) const {
   if (radius_.GetType() == BasicShapeRadius::kValue) {
     return FloatValueForLength(
         radius_.Value(),
@@ -66,18 +65,16 @@ float BasicShapeCircle::FloatValueForRadiusInBox(FloatSize box_size) const {
 }
 
 void BasicShapeCircle::GetPath(Path& path,
-                               const FloatRect& bounding_box,
+                               const gfx::RectF& bounding_box,
                                float) {
   DCHECK(path.IsEmpty());
   gfx::PointF center =
       PointForCenterCoordinate(center_x_, center_y_, bounding_box.size());
   float radius = FloatValueForRadiusInBox(bounding_box.size());
-  path.AddEllipse(center, radius, radius);
+  path.AddEllipse(center + bounding_box.OffsetFromOrigin(), radius, radius);
 }
 
-bool BasicShapeEllipse::operator==(const BasicShape& o) const {
-  if (!IsSameType(o))
-    return false;
+bool BasicShapeEllipse::IsEqualAssumingSameType(const BasicShape& o) const {
   const BasicShapeEllipse& other = To<BasicShapeEllipse>(o);
   return center_x_ == other.center_x_ && center_y_ == other.center_y_ &&
          radius_x_ == other.radius_x_ && radius_y_ == other.radius_y_;
@@ -99,7 +96,7 @@ float BasicShapeEllipse::FloatValueForRadiusInBox(
 }
 
 void BasicShapeEllipse::GetPath(Path& path,
-                                const FloatRect& bounding_box,
+                                const gfx::RectF& bounding_box,
                                 float) {
   DCHECK(path.IsEmpty());
   gfx::PointF center =
@@ -108,11 +105,11 @@ void BasicShapeEllipse::GetPath(Path& path,
       FloatValueForRadiusInBox(radius_x_, center.x(), bounding_box.width());
   float radius_y =
       FloatValueForRadiusInBox(radius_y_, center.y(), bounding_box.height());
-  path.AddEllipse(center, radius_x, radius_y);
+  path.AddEllipse(center + bounding_box.OffsetFromOrigin(), radius_x, radius_y);
 }
 
 void BasicShapePolygon::GetPath(Path& path,
-                                const FloatRect& bounding_box,
+                                const gfx::RectF& bounding_box,
                                 float) {
   DCHECK(path.IsEmpty());
   DCHECK(!(values_.size() % 2));
@@ -136,20 +133,28 @@ void BasicShapePolygon::GetPath(Path& path,
   path.CloseSubpath();
 }
 
-bool BasicShapePolygon::operator==(const BasicShape& o) const {
-  if (!IsSameType(o))
-    return false;
+bool BasicShapePolygon::IsEqualAssumingSameType(const BasicShape& o) const {
   const BasicShapePolygon& other = To<BasicShapePolygon>(o);
   return wind_rule_ == other.wind_rule_ && values_ == other.values_;
 }
 
+bool BasicShapeRectCommon::IsEqualAssumingSameType(const BasicShape& o) const {
+  const BasicShapeRectCommon& other = To<BasicShapeRectCommon>(o);
+  return right_ == other.right_ && top_ == other.top_ &&
+         bottom_ == other.bottom_ && left_ == other.left_ &&
+         top_left_radius_ == other.top_left_radius_ &&
+         top_right_radius_ == other.top_right_radius_ &&
+         bottom_right_radius_ == other.bottom_right_radius_ &&
+         bottom_left_radius_ == other.bottom_left_radius_;
+}
+
 void BasicShapeInset::GetPath(Path& path,
-                              const FloatRect& bounding_box,
+                              const gfx::RectF& bounding_box,
                               float) {
   DCHECK(path.IsEmpty());
   float left = FloatValueForLength(left_, bounding_box.width());
   float top = FloatValueForLength(top_, bounding_box.height());
-  FloatRect rect(
+  gfx::RectF rect(
       left + bounding_box.x(), top + bounding_box.y(),
       std::max<float>(bounding_box.width() - left -
                           FloatValueForLength(right_, bounding_box.width()),
@@ -157,24 +162,88 @@ void BasicShapeInset::GetPath(Path& path,
       std::max<float>(bounding_box.height() - top -
                           FloatValueForLength(bottom_, bounding_box.height()),
                       0));
-  const FloatSize& box_size = bounding_box.size();
+  gfx::SizeF box_size = bounding_box.size();
   auto radii = FloatRoundedRect::Radii(
-      FloatSizeForLengthSize(top_left_radius_, box_size),
-      FloatSizeForLengthSize(top_right_radius_, box_size),
-      FloatSizeForLengthSize(bottom_left_radius_, box_size),
-      FloatSizeForLengthSize(bottom_right_radius_, box_size));
+      SizeForLengthSize(top_left_radius_, box_size),
+      SizeForLengthSize(top_right_radius_, box_size),
+      SizeForLengthSize(bottom_left_radius_, box_size),
+      SizeForLengthSize(bottom_right_radius_, box_size));
 
   FloatRoundedRect final_rect(rect, radii);
   final_rect.ConstrainRadii();
   path.AddRoundedRect(final_rect);
 }
 
-bool BasicShapeInset::operator==(const BasicShape& o) const {
-  if (!IsSameType(o))
-    return false;
-  const BasicShapeInset& other = To<BasicShapeInset>(o);
-  return right_ == other.right_ && top_ == other.top_ &&
-         bottom_ == other.bottom_ && left_ == other.left_ &&
+void BasicShapeRect::GetPath(Path& path,
+                             const gfx::RectF& bounding_box,
+                             float) {
+  DCHECK(path.IsEmpty());
+
+  // The following computes |left|, |right| as the inset from the left edge
+  // of the bounding box and |top|, |bottom| as the inset from the top edge of
+  // the bounding box.
+  // auto aligns the inset with the corresponding edge. So |left| and |top|
+  // align with the left and top edge of the bounding box and compute
+  // equivalent to 0%. And |right| and |bottom| align with the right and bottom
+  // edge of the bounding box and compute equivalent to 100%.
+  float left = left_.GetType() == Length::kAuto
+                   ? 0
+                   : FloatValueForLength(left_, bounding_box.width());
+
+  float top = top_.GetType() == Length::kAuto
+                  ? 0
+                  : FloatValueForLength(top_, bounding_box.height());
+
+  float right = right_.GetType() == Length::kAuto
+                    ? bounding_box.width()
+                    : FloatValueForLength(right_, bounding_box.width());
+  right = std::max(right, left);
+
+  float bottom = bottom_.GetType() == Length::kAuto
+                     ? bounding_box.height()
+                     : FloatValueForLength(bottom_, bounding_box.height());
+  bottom = std::max(top, bottom);
+
+  gfx::RectF rect(left + bounding_box.x(), top + bounding_box.y(), right - left,
+                  bottom - top);
+
+  gfx::SizeF box_size = bounding_box.size();
+  auto radii = FloatRoundedRect::Radii(
+      SizeForLengthSize(top_left_radius_, box_size),
+      SizeForLengthSize(top_right_radius_, box_size),
+      SizeForLengthSize(bottom_left_radius_, box_size),
+      SizeForLengthSize(bottom_right_radius_, box_size));
+
+  FloatRoundedRect final_rect(rect, radii);
+  final_rect.ConstrainRadii();
+  path.AddRoundedRect(final_rect);
+}
+
+void BasicShapeXYWH::GetPath(Path& path,
+                             const gfx::RectF& bounding_box,
+                             float) {
+  DCHECK(path.IsEmpty());
+  gfx::RectF rect(FloatValueForLength(x_, bounding_box.width()),
+                  FloatValueForLength(y_, bounding_box.height()),
+                  FloatValueForLength(width_, bounding_box.height()),
+                  FloatValueForLength(height_, bounding_box.height()));
+
+  gfx::SizeF box_size = bounding_box.size();
+  auto radii = FloatRoundedRect::Radii(
+      SizeForLengthSize(top_left_radius_, box_size),
+      SizeForLengthSize(top_right_radius_, box_size),
+      SizeForLengthSize(bottom_left_radius_, box_size),
+      SizeForLengthSize(bottom_right_radius_, box_size));
+
+  FloatRoundedRect final_rect(rect, radii);
+  final_rect.ConstrainRadii();
+  path.AddRoundedRect(final_rect);
+}
+
+bool BasicShapeXYWH::IsEqualAssumingSameType(const BasicShape& o) const {
+  const BasicShapeXYWH& other = To<BasicShapeXYWH>(o);
+  return x_ == other.x_ && y_ == other.y_ && width_ == other.width_ &&
+         height_ == other.height_ &&
          top_left_radius_ == other.top_left_radius_ &&
          top_right_radius_ == other.top_right_radius_ &&
          bottom_right_radius_ == other.bottom_right_radius_ &&

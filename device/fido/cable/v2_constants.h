@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,11 +64,16 @@ constexpr auto kTunnelServer = tunnelserver::KnownDomainID(0);
 // kPostHandshakeMsgPaddingGranularity is the granularity of the padding added
 // to the post-handshake message. This should be sufficiently large to pad away
 // all information about the contents of this message.
-constexpr size_t kPostHandshakeMsgPaddingGranularity = 256;
-// kFuturePostHandshakeMsgPaddingGranularity will be the granularity of the
-// padding added to the post-handshake message. This is currently only used for
-// testing.
-constexpr size_t kFuturePostHandshakeMsgPaddingGranularity = 512;
+constexpr size_t kPostHandshakeMsgPaddingGranularity = 512;
+
+// MessageType enumerates the types of caBLEv2 messages on the wire.
+enum class MessageType : uint8_t {
+  kShutdown = 0,
+  kCTAP = 1,
+  kUpdate = 2,
+
+  kMaxValue = 2,
+};
 
 }  // namespace cablev2
 }  // namespace device

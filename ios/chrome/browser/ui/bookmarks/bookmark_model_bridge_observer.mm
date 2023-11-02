@@ -1,14 +1,14 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/ui/bookmarks/bookmark_model_bridge_observer.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmark_model_bridge_observer.h"
 
 #import <Foundation/Foundation.h>
 
-#include "base/check.h"
-#include "base/notreached.h"
-#include "components/bookmarks/browser/bookmark_model.h"
+#import "base/check.h"
+#import "base/notreached.h"
+#import "components/bookmarks/browser/bookmark_model.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -53,7 +53,8 @@ void BookmarkModelBridge::BookmarkNodeMoved(BookmarkModel* model,
 
 void BookmarkModelBridge::BookmarkNodeAdded(BookmarkModel* model,
                                             const BookmarkNode* parent,
-                                            size_t index) {
+                                            size_t index,
+                                            bool added_by_user) {
   [observer_ bookmarkNodeChildrenChanged:parent];
 }
 
@@ -63,8 +64,8 @@ void BookmarkModelBridge::BookmarkNodeRemoved(
     size_t old_index,
     const BookmarkNode* node,
     const std::set<GURL>& removed_urls) {
-  // Hold a non-weak reference to |observer_|, in case the first event below
-  // destroys |this|.
+  // Hold a non-weak reference to `observer_`, in case the first event below
+  // destroys `this`.
   id<BookmarkModelBridgeObserver> observer = observer_;
 
   [observer bookmarkNodeDeleted:node fromFolder:parent];

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,8 @@
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/actions/action.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
-#include "components/autofill_assistant/browser/web/element_finder.h"
+#include "components/autofill_assistant/browser/web/element_finder_result.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill_assistant {
 
@@ -36,7 +37,7 @@ class SendKeystrokeEventsAction : public Action {
 
   void EndAction(const ClientStatus& status);
 
-  ElementFinder::Result element_;
+  ElementFinderResult element_;
   ProcessActionCallback callback_;
 
   base::WeakPtrFactory<SendKeystrokeEventsAction> weak_ptr_factory_{this};

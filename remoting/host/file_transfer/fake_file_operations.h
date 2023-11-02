@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "remoting/host/file_transfer/file_operations.h"
 #include "remoting/proto/file_transfer.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -92,7 +93,7 @@ class FakeFileOperations : public FileOperations {
   class FakeFileReader;
   class FakeFileWriter;
 
-  TestIo* test_io_;
+  raw_ptr<TestIo> test_io_;
 };
 
 }  // namespace remoting

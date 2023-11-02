@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_VR_ELEMENTS_BUTTON_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/elements/draw_phase.h"
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/model/color_scheme.h"
@@ -89,8 +90,8 @@ class VR_UI_EXPORT Button : public UiElement {
   base::RepeatingCallback<void()> click_handler_;
   ButtonColors colors_;
   float hover_offset_;
-  Rect* background_;
-  UiElement* hit_plane_;
+  raw_ptr<Rect> background_;
+  raw_ptr<UiElement> hit_plane_;
   Sounds disabled_sounds_;
 };
 

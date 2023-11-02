@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,10 @@
 #include <math.h>
 
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/root_window_controller.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/default_color_constants.h"
-#include "ash/style/default_colors.h"
 #include "ash/wm/window_util.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -25,9 +23,11 @@
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/box_layout.h"
+#include "ui/views/highlight_border.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/shadow_controller.h"
 #include "ui/wm/core/shadow_types.h"
 
@@ -49,8 +49,8 @@ constexpr base::TimeDelta kScrimEntranceOpacityAnimationDurationMs =
 // active window.
 // The shadow ninebox requires a minimum size to work well. See
 // ui/compositor_extra/shadow.cc
-constexpr int kMinWidthWithShadow = 2 * ::wm::kShadowElevationActiveWindow;
-constexpr int kMinHeightWithShadow = 4 * ::wm::kShadowElevationActiveWindow;
+constexpr int kMinWidthWithShadow = 2 * wm::kShadowElevationActiveWindow;
+constexpr int kMinHeightWithShadow = 4 * wm::kShadowElevationActiveWindow;
 
 // The top margin of the cue from the top of work area.
 constexpr int kMaximizeCueTopMargin = 32;
@@ -60,8 +60,6 @@ constexpr int kMaximizeCueVerticalInsets = 8;
 
 constexpr int kPhantomWindowCornerRadius = 4;
 constexpr gfx::Insets kPhantomWindowInsets(8);
-
-constexpr int kHighlightBorderThickness = 1;
 
 // The move up factor of starting y-position from the target position for
 // entrance animation of maximize cue.
@@ -76,63 +74,6 @@ constexpr base::TimeDelta kMaximizeCueExitAnimationDurationMs =
 // The delay of the maximize cue entrance and exit animation.
 constexpr base::TimeDelta kMaximizeCueAnimationDelayMs =
     base::Milliseconds(100);
-
-// A rounded rectangle border that has inner (highlight) and outer color.
-class HighlightBorder : public views::Border {
- public:
-  explicit HighlightBorder(int corner_radius);
-
-  HighlightBorder(const HighlightBorder&) = delete;
-  HighlightBorder& operator=(const HighlightBorder&) = delete;
-
-  // views::Border:
-  void Paint(const views::View& view, gfx::Canvas* canvas) override;
-  gfx::Insets GetInsets() const override;
-  gfx::Size GetMinimumSize() const override;
-
- private:
-  const int corner_radius_;
-  const SkColor inner_color_;
-  const SkColor outer_color_;
-};
-
-// TODO(crbug/1224694): Remove |inner_color_| and |outer_color| and call
-// `GetControlsLayerColor()` for colors directly in `Paint()` once we
-// officially launch Dark/Light mode and no longer use default mode.
-HighlightBorder::HighlightBorder(int corner_radius)
-    : corner_radius_(corner_radius),
-      inner_color_(AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kHighlightBorderHighlightColor)),
-      outer_color_(AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kHighlightBorderBorderColor)) {}
-
-void HighlightBorder::Paint(const views::View& view, gfx::Canvas* canvas) {
-  cc::PaintFlags flags;
-  flags.setStrokeWidth(kHighlightBorderThickness);
-  flags.setColor(outer_color_);
-  flags.setStyle(cc::PaintFlags::kStroke_Style);
-  flags.setAntiAlias(true);
-
-  const float half_thickness = kHighlightBorderThickness / 2.0f;
-  gfx::RectF outer_border_bounds(view.GetLocalBounds());
-  outer_border_bounds.Inset(half_thickness, half_thickness);
-  canvas->DrawRoundRect(outer_border_bounds, corner_radius_, flags);
-
-  gfx::RectF inner_border_bounds(view.GetLocalBounds());
-  inner_border_bounds.Inset(gfx::Insets(kHighlightBorderThickness));
-  inner_border_bounds.Inset(half_thickness, half_thickness);
-  flags.setColor(inner_color_);
-  canvas->DrawRoundRect(inner_border_bounds, corner_radius_, flags);
-}
-
-gfx::Insets HighlightBorder::GetInsets() const {
-  return gfx::Insets(2 * kHighlightBorderThickness);
-}
-
-gfx::Size HighlightBorder::GetMinimumSize() const {
-  return gfx::Size(kHighlightBorderThickness * 4,
-                   kHighlightBorderThickness * 4);
-}
 
 }  // namespace
 
@@ -160,9 +101,9 @@ void PhantomWindowController::Show(const gfx::Rect& window_bounds_in_screen) {
   int start_height = std::max(kMinHeightWithShadow,
                               static_cast<int>(start_bounds_in_screen.height() *
                                                kScrimStartBoundsRatio));
-  start_bounds_in_screen.Inset(
-      floor((start_bounds_in_screen.width() - start_width) / 2.0f),
-      floor((start_bounds_in_screen.height() - start_height) / 2.0f));
+  start_bounds_in_screen.Inset(gfx::Insets::VH(
+      floor((start_bounds_in_screen.height() - start_height) / 2.0f),
+      floor((start_bounds_in_screen.width() - start_width) / 2.0f)));
 
   // Create a phantom widget with starting size so `ShowPhantomWidget()` can
   // animate from that current size to |target_bounds_in_screen|.
@@ -233,7 +174,7 @@ void PhantomWindowController::TransformPhantomWidgetFromSnapTopToMaximize(
                  gfx::Tween::ACCEL_20_DECEL_100);
 }
 
-gfx::Rect PhantomWindowController::GetTargetWindowBoundsForTesting() const {
+gfx::Rect PhantomWindowController::GetTargetWindowBounds() const {
   gfx::Rect target_window_bounds = target_bounds_in_screen_;
   target_window_bounds.Inset(-kPhantomWindowInsets);
   return target_window_bounds;
@@ -246,49 +187,32 @@ views::Widget* PhantomWindowController::GetMaximizeCueForTesting() const {
 std::unique_ptr<views::Widget> PhantomWindowController::CreatePhantomWidget(
     aura::Window* root_window,
     const gfx::Rect& bounds_in_screen) {
-  std::unique_ptr<views::Widget> phantom_widget(new views::Widget);
+  auto phantom_widget = std::make_unique<views::Widget>();
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  // PhantomWindowController is used by FrameMaximizeButton to highlight the
-  // launcher button. Put the phantom in the same window as the launcher so that
-  // the phantom is visible.
-  params.z_order = ui::ZOrderLevel::kFloatingUIElement;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.name = "PhantomWindow";
-  params.layer_type = ui::LAYER_SOLID_COLOR;
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   params.parent = root_window->GetChildById(kShellWindowId_ShelfContainer);
+
   phantom_widget->set_focus_on_creation(false);
   phantom_widget->Init(std::move(params));
   phantom_widget->SetVisibilityChangedAnimationsEnabled(false);
   aura::Window* phantom_widget_window = phantom_widget->GetNativeWindow();
   phantom_widget_window->SetId(kShellWindowId_PhantomWindow);
   phantom_widget->SetBounds(bounds_in_screen);
-  // TODO(sky): I suspect this is never true, verify that.
-  if (phantom_widget_window->parent() == window_->parent()) {
-    phantom_widget_window->parent()->StackChildAbove(phantom_widget_window,
-                                                     window_);
-  } else {
-    // Ensure the phantom and its shadow do not cover the shelf.
-    phantom_widget_window->parent()->StackChildAtBottom(phantom_widget_window);
-  }
+  // Ensure the phantom and its shadow do not cover the shelf.
+  phantom_widget_window->parent()->StackChildAtBottom(phantom_widget_window);
 
-  views::View* phantom_view =
-      phantom_widget->SetContentsView(std::make_unique<views::View>());
-  phantom_view->SetPaintToLayer();
-  phantom_view->layer()->SetFillsBoundsOpaquely(false);
-  phantom_view->SetBackground(views::CreateRoundedRectBackground(
-      DeprecatedGetShieldLayerColor(
-          AshColorProvider::ShieldLayerType::kShield20,
-          kSplitviewPhantomWindowColor),
-      kPhantomWindowCornerRadius));
-
-  ScopedLightModeAsDefault scoped_light_mode_as_default;
-  phantom_view->SetBorder(
-      std::make_unique<HighlightBorder>(kPhantomWindowCornerRadius));
-  // TODO(crbug/1258983): Add border highlight that supports dark/light mode
-  // once we support border highlight for split view highlight view.
-
+  phantom_widget->SetContentsView(
+      views::Builder<views::View>()
+          .SetBackground(views::CreateThemedRoundedRectBackground(
+              kColorAshShieldAndBase20, kPhantomWindowCornerRadius))
+          .SetBorder(std::make_unique<views::HighlightBorder>(
+              kPhantomWindowCornerRadius,
+              views::HighlightBorder::Type::kHighlightBorder1,
+              /*use_light_colors=*/false))
+          .Build());
   return phantom_widget;
 }
 
@@ -296,66 +220,60 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreateMaximizeCue(
     aura::Window* root_window) {
   DCHECK(phantom_widget_);
 
-  std::unique_ptr<views::Widget> maximize_cue_widget(new views::Widget);
+  auto maximize_cue_widget = std::make_unique<views::Widget>();
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  // Put the maximize cue in the same window as the floating UI.
-  params.z_order = ui::ZOrderLevel::kFloatingUIElement;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.name = "MaximizeCueWidget";
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   params.parent = root_window->GetChildById(kShellWindowId_OverlayContainer);
+
   maximize_cue_widget->set_focus_on_creation(false);
   maximize_cue_widget->Init(std::move(params));
+
+  ui::Layer* layer = maximize_cue_widget->GetLayer();
+  layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+  layer->SetRoundedCornerRadius(gfx::RoundedCornersF(kMaximizeCueHeight / 2.f));
 
   aura::Window* maximize_cue_widget_window =
       maximize_cue_widget->GetNativeWindow();
   maximize_cue_widget_window->parent()->StackChildAtTop(
       maximize_cue_widget_window);
 
-  views::View* maximize_cue =
-      maximize_cue_widget->SetContentsView(std::make_unique<views::View>());
-  maximize_cue->SetPaintToLayer();
-  maximize_cue->layer()->SetFillsBoundsOpaquely(false);
-
+  // The cue has one view and a child label.
   auto* color_provider = AshColorProvider::Get();
-  maximize_cue->SetBackground(views::CreateRoundedRectBackground(
-      color_provider->GetBaseLayerColor(
-          AshColorProvider::BaseLayerType::kTransparent80),
-      kMaximizeCueHeight / 2));
-  maximize_cue->layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-  const gfx::RoundedCornersF radii(kMaximizeCueHeight / 2);
-  maximize_cue->layer()->SetRoundedCornerRadius(radii);
-  maximize_cue->SetBorder(
-      std::make_unique<HighlightBorder>(kMaximizeCueHeight / 2));
-
-  // Set layout of cue view and add a label to the view.
-  maximize_cue->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets(kMaximizeCueVerticalInsets, kMaximizeCueHorizontalInsets)));
-  views::Label* maximize_cue_label =
-      maximize_cue->AddChildView(std::make_unique<views::Label>(
-          l10n_util::GetStringUTF16(IDS_ASH_SPLIT_VIEW_HOLD_TO_MAXIMIZE)));
-  maximize_cue_label->SetPaintToLayer();
-  maximize_cue_label->layer()->SetFillsBoundsOpaquely(false);
-  maximize_cue_label->SetEnabledColor(color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
-  maximize_cue_label->SetVisible(true);
-
-  maximize_cue_label->SetAutoColorReadabilityEnabled(false);
-  maximize_cue_label->SetFontList(views::Label::GetDefaultFontList().Derive(
-      2, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::NORMAL));
+  views::View* maximize_cue_view = maximize_cue_widget->SetContentsView(
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+          .SetInsideBorderInsets(gfx::Insets::VH(kMaximizeCueVerticalInsets,
+                                                 kMaximizeCueHorizontalInsets))
+          .SetBackground(views::CreateThemedRoundedRectBackground(
+              kColorAshShieldAndBase20, kPhantomWindowCornerRadius))
+          .SetBorder(std::make_unique<views::HighlightBorder>(
+              kPhantomWindowCornerRadius,
+              views::HighlightBorder::Type::kHighlightBorder1,
+              /*use_light_colors=*/false))
+          .AddChildren(
+              views::Builder<views::Label>()
+                  .SetText(l10n_util::GetStringUTF16(
+                      IDS_ASH_SPLIT_VIEW_HOLD_TO_MAXIMIZE))
+                  .SetEnabledColor(color_provider->GetContentLayerColor(
+                      AshColorProvider::ContentLayerType::kTextColorPrimary))
+                  .SetAutoColorReadabilityEnabled(false)
+                  .SetFontList(views::Label::GetDefaultFontList().Derive(
+                      2, gfx::Font::FontStyle::NORMAL,
+                      gfx::Font::Weight::NORMAL)))
+          .Build());
 
   const display::Display& display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(root_window);
   const gfx::Rect work_area = display.work_area();
-  const int maximize_cue_width = maximize_cue->GetPreferredSize().width();
+  const int maximize_cue_width = maximize_cue_view->GetPreferredSize().width();
   const int maximize_cue_y = work_area.y() + kMaximizeCueTopMargin;
-  const gfx::Rect phantom_bounds = phantom_widget_->GetNativeView()->bounds();
+  const gfx::Rect phantom_bounds = phantom_widget_->GetNativeWindow()->bounds();
   const gfx::Rect maximize_cue_bounds =
       gfx::Rect(phantom_bounds.CenterPoint().x() - maximize_cue_width / 2,
                 maximize_cue_y, maximize_cue_width, kMaximizeCueHeight);
-
   maximize_cue_widget->SetBounds(maximize_cue_bounds);
   return maximize_cue_widget;
 }
@@ -365,13 +283,17 @@ void PhantomWindowController::ShowPhantomWidget() {
   phantom_widget_->SetOpacity(0);
   ui::Layer* widget_layer = phantom_widget_->GetLayer();
 
+  // Layer uses bounds in parent so convert from screen bounds.
+  gfx::Rect bounds = target_bounds_in_screen_;
+  wm::ConvertRectFromScreen(phantom_widget_->GetNativeWindow()->parent(),
+                            &bounds);
+
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
       .Once()
       .SetDuration(kScrimEntranceSizeAnimationDurationMs)
-      .SetBounds(widget_layer, target_bounds_in_screen_,
-                 gfx::Tween::ACCEL_20_DECEL_100)
+      .SetBounds(widget_layer, bounds, gfx::Tween::ACCEL_20_DECEL_100)
       .At(base::Seconds(0))
       .SetDuration(kScrimEntranceOpacityAnimationDurationMs)
       .SetOpacity(widget_layer, 1, gfx::Tween::LINEAR);

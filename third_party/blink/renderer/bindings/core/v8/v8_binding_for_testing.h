@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -23,6 +23,7 @@ class LocalDOMWindow;
 class LocalFrame;
 class KURL;
 class Page;
+class ScriptState;
 
 class V8TestingScope {
   STACK_ALLOCATED();
@@ -42,6 +43,9 @@ class V8TestingScope {
   LocalDOMWindow& GetWindow();
   Document& GetDocument();
   ~V8TestingScope();
+
+  // Perform a checkpoint on the context's microtask queue.
+  void PerformMicrotaskCheckpoint();
 
  private:
   std::unique_ptr<DummyPageHolder> holder_;

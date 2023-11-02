@@ -1,5 +1,5 @@
-#!/usr/bin/python3
-# Copyright 2019 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -24,7 +24,8 @@ _GSUTIL = os.path.join(_DIR_SOURCE_ROOT, 'third_party', 'depot_tools',
 
 
 def _WriteReportsJson(out):
-  output = subprocess.check_output([_GSUTIL, 'ls', '-R', _REPORTS_GS_URL])
+  output = subprocess.check_output([_GSUTIL, 'ls', '-R', _REPORTS_GS_URL],
+                                   encoding='utf8')
 
   reports = []
   report_re = re.compile(
@@ -43,7 +44,7 @@ def _WriteReportsJson(out):
 
 
 def _UploadReportsJson():
-  with tempfile.NamedTemporaryFile() as f:
+  with tempfile.NamedTemporaryFile(mode='wt') as f:
     _WriteReportsJson(f)
     f.flush()
     cmd = [

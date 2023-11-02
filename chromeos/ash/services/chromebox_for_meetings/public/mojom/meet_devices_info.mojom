@@ -1,0 +1,89 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromeos.cfm.mojom;
+
+// Interface defined by chromium specifically for the ChromeboxForMeetings
+// platform to query relevant device system and policy information.
+interface MeetDevicesInfo {
+  // Adds a DevicePolicyObserver for policy info change events.
+  // Returns unique id which can be used to remove the observer
+  // Note: Initial update using available policy if applicable upon registration
+  AddDeviceSettingsObserver@0(pending_remote<PolicyInfoObserver> observer);
+
+  // Request device policy information
+  // Note: will return nullptr on failure to query policy information
+  GetPolicyInfo@1()=>(PolicyInfo? info);
+
+  // Request device system information
+  GetSysInfo@2()=>(SysInfo info);
+
+  // Request Machine Statistics Information
+  // Note: Will return nullptr on failure to query machine statistics info
+  GetMachineStatisticsInfo@3()=>(MachineStatisticsInfo? info);
+};
+
+// Inteface for an observer to monitor device policy changes
+interface PolicyInfoObserver {
+  // Called whenever a devices policy change event is recieved.
+  OnPolicyInfoChange@0(PolicyInfo info);
+};
+
+// Device policy information
+struct PolicyInfo {
+  // PolicyData::Timestamp
+  // Timestamp in milliseconds (javatime)
+  // From DMServer when server issued response (Java time)
+  int64 timestamp_ms@0;
+
+  // PolicyData::DirectoryApiId
+  string? device_id@1;
+
+  // PolicyData::ServiceAccountIdentity
+  string? service_account_email_address@2;
+
+  // PolicyData::GaiaId
+  int64 service_account_gaia_id@3;
+
+  // PolicyData::DeviceID
+  string? cros_device_id@4;
+
+  // ChromeDeviceSettingsProto::AutoUpdateSettings::CohortHint
+  string? cohort_hint@5;
+
+  // ChromeDeviceSettingsProto::ReleaseChannel::ReleaseChannelDelegated
+  bool release_channel_delegated@6;
+};
+
+// Basic system information
+struct SysInfo {
+  // Returns the kernel version
+  string kernel_version@0;
+
+  // /etc/lsb-release: CHROMEOS_RELEASE_VERSION
+  string? release_version@1;
+
+  // /etc/lsb-release: CHROMEOS_RELEASE_BUILD_TYPE
+  string? release_build_type@2;
+
+  // /etc/lsb-release: CHROMEOS_RELEASE_TRACK
+  string? release_track@3;
+
+  // /etc/lsb-release: CHROMEOS_RELEASE_CHROME_MILESTONE
+  string? release_milestone@4;
+
+  // The full browser version number
+  string? browser_version@5;
+
+  // Returns the current channel name
+  string? channel_name@6;
+
+  // /etc/lsb-release: CHROMEOS_RELEASE_BOARD
+  string? release_board@7;
+};
+
+struct MachineStatisticsInfo {
+  // Returns hwid (http://sites/chromeos-hwid)
+  string? hwid;
+};

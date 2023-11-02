@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/gin_port.h"
 #include "extensions/renderer/one_time_message_handler.h"
 #include "gin/handle.h"
@@ -113,12 +113,16 @@ class NativeRendererMessagingService : public GinPort::Delegate {
                                const std::string& name,
                                SerializationFormat format);
 
-  // Sends a one-time message, as is used by runtime.sendMessage.
-  void SendOneTimeMessage(ScriptContext* script_context,
-                          const MessageTarget& target,
-                          const std::string& channel_name,
-                          const Message& message,
-                          v8::Local<v8::Function> response_callback);
+  // Sends a one-time message, as is used by runtime.sendMessage. Returns a
+  // Promise if used in a promise based API call, otherwise returns an empty
+  // v8::Local<>.
+  v8::Local<v8::Promise> SendOneTimeMessage(
+      ScriptContext* script_context,
+      const MessageTarget& target,
+      const std::string& channel_name,
+      const Message& message,
+      binding::AsyncResponseType async_type,
+      v8::Local<v8::Function> response_callback);
 
   // GinPort::Delegate:
   void PostMessageToPort(v8::Local<v8::Context> context,
@@ -152,6 +156,12 @@ class NativeRendererMessagingService : public GinPort::Delegate {
   void DeliverMessageToScriptContext(const Message& message,
                                      const PortId& target_port_id,
                                      ScriptContext* script_context);
+  void DeliverMessageToWorker(const Message& message,
+                              const PortId& target_port_id,
+                              ScriptContext* script_context);
+  void DeliverMessageToBackgroundPage(const Message& message,
+                                      const PortId& target_port_id,
+                                      ScriptContext* script_context);
   void DispatchOnDisconnectToScriptContext(const PortId& port_id,
                                            const std::string& error_message,
                                            ScriptContext* script_context);

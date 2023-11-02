@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/native_paint_image_generator.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -31,7 +31,7 @@ class CORE_EXPORT BackgroundColorPaintImageGenerator
       BackgroundColorPaintImageGeneratorCreateFunction create_function);
 
   virtual scoped_refptr<Image> Paint(
-      const FloatSize& container_size,
+      const gfx::SizeF& container_size,
       const Node*,
       const Vector<Color>& animated_colors,
       const Vector<double>& offsets,

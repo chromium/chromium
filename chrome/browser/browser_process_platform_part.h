@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,16 +9,19 @@
 #include "build/chromeos_buildflags.h"
 
 // Include the appropriate BrowserProcessPlatformPart based on the platform.
-#if defined(OS_ANDROID)
-#include "chrome/browser/browser_process_platform_part_android.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/browser_process_platform_part_android.h"  // IWYU pragma: export
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/browser_process_platform_part_chromeos.h"
-#elif defined(OS_MAC)
-#include "chrome/browser/browser_process_platform_part_mac.h"
-#elif defined(OS_WIN)
-#include "chrome/browser/browser_process_platform_part_win.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"  // IWYU pragma: export
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/browser_process_platform_part_chromeos.h"  // IWYU pragma: export
+class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {};
+#elif BUILDFLAG(IS_MAC)
+#include "chrome/browser/browser_process_platform_part_mac.h"  // IWYU pragma: export
+#elif BUILDFLAG(IS_WIN)
+#include "chrome/browser/browser_process_platform_part_win.h"  // IWYU pragma: export
 #else
-#include "chrome/browser/browser_process_platform_part_base.h"
+#include "chrome/browser/browser_process_platform_part_base.h"  // IWYU pragma: export
 class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {};
 #endif
 

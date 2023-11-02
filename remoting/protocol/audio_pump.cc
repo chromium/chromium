@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -84,8 +83,7 @@ media::ChannelLayout RetrieveLayout(const remoting::AudioPacket& packet) {
 
 }  // namespace
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // Limit the data stored in the pending send buffers to 250ms.
 const int kMaxBufferedIntervalMs = 250;
@@ -111,8 +109,6 @@ class AudioPump::Core {
 
   void EncodeAudioPacket(std::unique_ptr<AudioPacket> packet);
 
-  base::ThreadChecker thread_checker_;
-
   base::WeakPtr<AudioPump> pump_;
 
   scoped_refptr<base::SingleThreadTaskRunner> pump_task_runner_;
@@ -128,6 +124,8 @@ class AudioPump::Core {
 
   std::unique_ptr<media::ChannelMixer> mixer_;
   media::ChannelLayout mixer_input_layout_ = media::CHANNEL_LAYOUT_NONE;
+
+  THREAD_CHECKER(thread_checker_);
 };
 
 AudioPump::Core::Core(base::WeakPtr<AudioPump> pump,
@@ -139,35 +137,35 @@ AudioPump::Core::Core(base::WeakPtr<AudioPump> pump,
       audio_encoder_(std::move(audio_encoder)),
       enabled_(true),
       bytes_pending_(0) {
-  thread_checker_.DetachFromThread();
+  DETACH_FROM_THREAD(thread_checker_);
 }
 
 AudioPump::Core::~Core() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
 void AudioPump::Core::Start() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   audio_source_->Start(
       base::BindRepeating(&Core::EncodeAudioPacket, base::Unretained(this)));
 }
 
 void AudioPump::Core::Pause(bool pause) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   enabled_ = !pause;
 }
 
 void AudioPump::Core::OnPacketSent(int size) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   bytes_pending_ -= size;
   DCHECK_GE(bytes_pending_, 0);
 }
 
 void AudioPump::Core::EncodeAudioPacket(std::unique_ptr<AudioPacket> packet) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(packet);
 
   int max_buffered_bytes =
@@ -198,7 +196,7 @@ void AudioPump::Core::EncodeAudioPacket(std::unique_ptr<AudioPacket> packet) {
 
 std::unique_ptr<AudioPacket> AudioPump::Core::Downmix(
     std::unique_ptr<AudioPacket> packet) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(packet);
   DCHECK_EQ(packet->data_size(), 1);
   DCHECK_EQ(packet->bytes_per_sample(), AudioPacket::BYTES_PER_SAMPLE_2);
@@ -242,13 +240,13 @@ AudioPump::AudioPump(
 }
 
 AudioPump::~AudioPump() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   audio_task_runner_->DeleteSoon(FROM_HERE, core_.release());
 }
 
 void AudioPump::Pause(bool pause) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   audio_task_runner_->PostTask(
       FROM_HERE,
@@ -256,7 +254,7 @@ void AudioPump::Pause(bool pause) {
 }
 
 void AudioPump::SendAudioPacket(std::unique_ptr<AudioPacket> packet, int size) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(packet);
 
   audio_stub_->ProcessAudioPacket(
@@ -270,5 +268,4 @@ void AudioPump::OnPacketSent(int size) {
       base::BindOnce(&Core::OnPacketSent, base::Unretained(core_.get()), size));
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

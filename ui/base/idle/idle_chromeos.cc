@@ -1,11 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/base/idle/idle.h"
 
 #include "base/time/time.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "ui/base/idle/idle_internal.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 
@@ -21,7 +21,7 @@ bool CheckIdleStateIsLocked() {
   if (IdleStateForTesting().has_value())
     return IdleStateForTesting().value() == IDLE_STATE_LOCKED;
 
-  return chromeos::SessionManagerClient::Get()->IsScreenLocked();
+  return ash::SessionManagerClient::Get()->IsScreenLocked();
 }
 
 }  // namespace ui

@@ -29,6 +29,18 @@ source "${ABSEIL_ROOT}/ci/cmake_common.sh"
 source "${ABSEIL_ROOT}/ci/linux_docker_containers.sh"
 readonly DOCKER_CONTAINER=${LINUX_GCC_LATEST_CONTAINER}
 
+# Verify that everything works with the standard "cmake && make && make install"
+# without building tests or requiring GoogleTest.
+time docker run \
+    --mount type=bind,source="${ABSEIL_ROOT}",target=/abseil-cpp-ro,readonly \
+    --tmpfs=/buildfs:exec \
+    --workdir=/buildfs \
+    --rm \
+    ${DOCKER_EXTRA_ARGS:-} \
+    ${DOCKER_CONTAINER} \
+    /bin/bash -c "cmake /abseil-cpp-ro && make -j$(nproc) && make install"
+
+# Verify that a more complicated project works.
 for link_type in ${LINK_TYPE}; do
   time docker run \
     --mount type=bind,source="${ABSEIL_ROOT}",target=/abseil-cpp-ro,readonly \

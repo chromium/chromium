@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,8 +49,8 @@ class CredentialManagementHandlerTest : public ::testing::Test {
     return handler;
   }
 
-  void GetPIN(uint32_t min_pin_length,
-              int64_t num_attempts,
+  void GetPIN(CredentialManagementHandler::AuthenticatorProperties
+                  authenticator_properties,
               base::OnceCallback<void(std::string)> provide_pin) {
     std::move(provide_pin).Run(kPIN);
   }
@@ -81,11 +81,9 @@ TEST_F(CredentialManagementHandlerTest, TestDeleteCredential) {
   virtual_device_factory_.mutable_state()->pin = kPIN;
   virtual_device_factory_.mutable_state()->pin_retries = device::kMaxPinRetries;
 
-  PublicKeyCredentialRpEntity rp(kRPID, kRPName,
-                                 /*icon_url=*/absl::nullopt);
+  PublicKeyCredentialRpEntity rp(kRPID, kRPName);
   PublicKeyCredentialUserEntity user(fido_parsing_utils::Materialize(kUserID),
-                                     kUserName, kUserDisplayName,
-                                     /*icon_url=*/absl::nullopt);
+                                     kUserName, kUserDisplayName);
 
   ASSERT_TRUE(virtual_device_factory_.mutable_state()->InjectResidentKey(
       kCredentialID, rp, user));
@@ -133,11 +131,9 @@ TEST_F(CredentialManagementHandlerTest, TestUpdateUserInformation) {
   std::vector<uint8_t> credential_id =
       fido_parsing_utils::Materialize(kCredentialID);
 
-  PublicKeyCredentialRpEntity rp(kRPID, kRPName,
-                                 /*icon_url=*/absl::nullopt);
+  PublicKeyCredentialRpEntity rp(kRPID, kRPName);
   PublicKeyCredentialUserEntity user(fido_parsing_utils::Materialize(kUserID),
-                                     kUserName, kUserDisplayName,
-                                     /*icon_url=*/absl::nullopt);
+                                     kUserName, kUserDisplayName);
 
   ASSERT_TRUE(virtual_device_factory_.mutable_state()->InjectResidentKey(
       kCredentialID, rp, user));
@@ -147,8 +143,7 @@ TEST_F(CredentialManagementHandlerTest, TestUpdateUserInformation) {
 
   PublicKeyCredentialUserEntity updated_user(
       fido_parsing_utils::Materialize(kUserID), "bobbyr@example.com",
-      "Bobby R. Smith",
-      /*icon_url=*/absl::nullopt);
+      "Bobby R. Smith");
 
   handler->UpdateUserInformation(
       device::PublicKeyCredentialDescriptor(device::CredentialType::kPublicKey,
@@ -218,13 +213,11 @@ TEST_F(CredentialManagementHandlerTest,
   ASSERT_TRUE(virtual_device_factory_.mutable_state()->InjectResidentKey(
       kCredentialID,
       PublicKeyCredentialRpEntity(kRPID,
-                                  base::StrCat({rp_name, kTruncatedUTF8}),
-                                  /*icon_url=*/absl::nullopt),
+                                  base::StrCat({rp_name, kTruncatedUTF8})),
       PublicKeyCredentialUserEntity(
           fido_parsing_utils::Materialize(kUserID),
           base::StrCat({user_name, kTruncatedUTF8}),
-          base::StrCat({display_name, kTruncatedUTF8}),
-          /*icon_url=*/absl::nullopt)));
+          base::StrCat({display_name, kTruncatedUTF8}))));
 
   auto handler = MakeHandler();
   ready_callback_.WaitForCallback();
@@ -238,13 +231,11 @@ TEST_F(CredentialManagementHandlerTest,
   ASSERT_EQ(opt_response->size(), 1u);
   ASSERT_EQ(opt_response->front().credentials.size(), 1u);
   EXPECT_EQ(opt_response->front().rp,
-            PublicKeyCredentialRpEntity(kRPID, rp_name,
-                                        /*icon_url=*/absl::nullopt));
+            PublicKeyCredentialRpEntity(kRPID, rp_name));
   EXPECT_EQ(
       opt_response->front().credentials.front().user,
       PublicKeyCredentialUserEntity(fido_parsing_utils::Materialize(kUserID),
-                                    user_name, display_name,
-                                    /*icon_url=*/absl::nullopt));
+                                    user_name, display_name));
 }
 
 TEST_F(CredentialManagementHandlerTest, EnumerateCredentialsMultipleRPs) {
@@ -259,13 +250,13 @@ TEST_F(CredentialManagementHandlerTest, EnumerateCredentialsMultipleRPs) {
   virtual_device_factory_.mutable_state()->pin_retries = device::kMaxPinRetries;
 
   const PublicKeyCredentialRpEntity rps[] = {
-      {"foo.com", "foo", absl::nullopt},
-      {"bar.com", "bar", absl::nullopt},
-      {"foobar.com", "foobar", absl::nullopt},
+      {"foo.com", "foo"},
+      {"bar.com", "bar"},
+      {"foobar.com", "foobar"},
   };
   const PublicKeyCredentialUserEntity users[] = {
-      {{0}, "alice", "Alice", absl::nullopt},
-      {{1}, "bob", "Bob", absl::nullopt},
+      {{0}, "alice", "Alice"},
+      {{1}, "bob", "Bob"},
   };
 
   uint8_t credential_id[] = {0};

@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,10 +13,12 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/model/virtual_keyboard_model.h"
 #include "ash/wm/overview/overview_observer.h"
+#include "ash/wm/splitview/split_view_observer.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_id.h"
 #include "ui/display/display_observer.h"
 #include "ui/gfx/animation/tween.h"
 
@@ -66,6 +68,9 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   // OverviewObserver:
   void OnOverviewModeWillStart() override;
   void OnOverviewModeEnding(OverviewSession* overview_session) override;
+
+  void OnSplitViewStateChanged(SplitViewController::State previous_state,
+                               SplitViewController::State state);
 
   // TabletModeObserver:
   void OnTabletModeStarting() override;
@@ -145,7 +150,6 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   // if the shelf visibility should change during a drag.
   float drag_hide_ratio_threshold() const;
 
-  SkColor shelf_focus_border_color() const { return shelf_focus_border_color_; }
   int workspace_area_visible_inset() const {
     return workspace_area_visible_inset_;
   }
@@ -185,6 +189,10 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
 
   bool is_in_app() const { return is_in_app_; }
 
+  bool in_split_view_with_overview() const {
+    return in_split_view_with_overview_;
+  }
+
   bool shelf_controls_shown() const { return shelf_controls_shown_; }
 
   bool is_virtual_keyboard_shown() const { return is_virtual_keyboard_shown_; }
@@ -194,20 +202,17 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   bool in_overview_mode() const { return overview_mode_; }
 
   // Gets the current color for the shelf control buttons.
-  SkColor GetShelfControlButtonColor() const;
-
-  // Gets the shelf color when the app list is open, used in clamshell mode.
-  SkColor GetShelfWithAppListColor() const;
+  SkColor GetShelfControlButtonColor(const views::Widget* widget) const;
 
   // Gets the shelf color when a window is maximized.
-  SkColor GetMaximizedShelfColor() const;
+  SkColor GetMaximizedShelfColor(const views::Widget* widget) const;
 
-  // Gets the base layer type for shelf color.
-  AshColorProvider::BaseLayerType GetShelfBaseLayerType() const;
+  // Gets the ColorId for shelf color.
+  ui::ColorId GetShelfBaseLayerColorId() const;
 
   // Gets the default shelf color, calculated using the wallpaper color if
   // available.
-  SkColor GetDefaultShelfColor() const;
+  SkColor GetDefaultShelfColor(const views::Widget* widget) const;
 
   // Returns the current blur radius to use for the control buttons.
   int GetShelfControlButtonBlurRadius() const;
@@ -231,6 +236,7 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   friend class ShelfConfigTest;
 
   class ShelfAccessibilityObserver;
+  class ShelfSplitViewObserver;
 
   // Called whenever something has changed in the shelf configuration. Notifies
   // all observers.
@@ -271,6 +277,9 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   // Whether the shelf is currently in in-app state.
   bool is_in_app_;
 
+  // Whether the device is in split view. Only tracked in overview mode.
+  bool in_split_view_with_overview_;
+
   // Whether the shelf buttons (navigation controls, and overview tray button)
   // should be shown.
   bool shelf_controls_shown_;
@@ -301,8 +310,6 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   // The margin on either side of the group of app icons in tablet/clamshell.
   const int app_icon_group_margin_tablet_;
   const int app_icon_group_margin_clamshell_;
-
-  const SkColor shelf_focus_border_color_;
 
   // We reserve a small area on the edge of the workspace area to ensure that
   // the resize handle at the edge of the window can be hit.
@@ -345,6 +352,10 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   // Object responsible for observing accessibility settings relevant to shelf
   // config.
   std::unique_ptr<ShelfAccessibilityObserver> accessibility_observer_;
+
+  // Object responsible for observing overview mode split state changes relevant
+  // to shelf config.
+  std::unique_ptr<ShelfSplitViewObserver> split_view_observer_;
 
   // Receive callbacks from DisplayObserver.
   absl::optional<display::ScopedDisplayObserver> display_observer_;

@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <unordered_map>
 
+#include "base/memory/raw_ptr.h"
 #include "cc/animation/scroll_offset_animations_impl.h"
 #include "cc/trees/mutator_host_client.h"
 
@@ -54,7 +55,7 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimations {
       std::unordered_map<ElementId, ScrollOffsetAnimationUpdate, ElementIdHash>;
   ElementToUpdateMap element_to_update_map_;
 
-  AnimationHost* animation_host_;
+  raw_ptr<AnimationHost> animation_host_;
 };
 
 }  // namespace cc

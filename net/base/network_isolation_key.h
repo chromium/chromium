@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -94,9 +94,11 @@ class NET_EXPORT NetworkIsolationKey {
            std::tie(other.top_frame_site_, other.frame_site_, other.nonce_);
   }
 
-  // Returns the string representation of the key, which is the string
-  // representation of each piece of the key separated by spaces.
-  std::string ToString() const;
+  // Returns the string representation of the key for use in string-keyed disk
+  // cache. This is the string representation of each piece of the key separated
+  // by spaces. Returns nullopt if the network isolation key is transient, in
+  // which case, nothing should typically be saved to disk using the key.
+  absl::optional<std::string> ToCacheKeyString() const;
 
   // Returns string for debugging. Difference from ToString() is that transient
   // entries may be distinguishable from each other.
@@ -116,7 +118,13 @@ class NET_EXPORT NetworkIsolationKey {
   const absl::optional<SchemefulSite>& GetTopFrameSite() const {
     return top_frame_site_;
   }
-  const absl::optional<SchemefulSite>& GetFrameSite() const {
+
+  const absl::optional<SchemefulSite>& GetFrameSite() const;
+
+  // Do not use outside of testing. Returns the `frame_site_` if
+  // `kForceIsolationInfoFrameOriginToTopLevelFrame` is disabled. Else it
+  // returns nullopt.
+  const absl::optional<SchemefulSite>& GetFrameSiteForTesting() const {
     return frame_site_;
   }
 
@@ -128,18 +136,22 @@ class NET_EXPORT NetworkIsolationKey {
   // Returns true if all parts of the key are empty.
   bool IsEmpty() const;
 
+  // Returns true if the NetworkIsolationKey has a triple keyed scheme. This
+  // means both `frame_site_` and `top_frame_site_` are populated.
+  static bool IsFrameSiteEnabled();
+
   // Returns a representation of |this| as a base::Value. Returns false on
   // failure. Succeeds if either IsEmpty() or !IsTransient().
-  bool ToValue(base::Value* out_value) const WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ToValue(base::Value* out_value) const;
 
   // Inverse of ToValue(). Writes the result to |network_isolation_key|. Returns
   // false on failure. Fails on values that could not have been produced by
   // ToValue(), like transient origins. If the value of
   // net::features::kAppendFrameOriginToNetworkIsolationKey has changed between
   // saving and loading the data, fails.
-  static bool FromValue(const base::Value& value,
-                        NetworkIsolationKey* out_network_isolation_key)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool FromValue(
+      const base::Value& value,
+      NetworkIsolationKey* out_network_isolation_key);
 
  private:
   // Whether this key has opaque origins or a nonce.

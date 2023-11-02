@@ -1,12 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 import {Cdd} from './data/cdd.js';
-import {PrinterType} from './data/destination_match.js';
+import {PrinterType} from './data/destination.js';
 import {LocalDestinationInfo} from './data/local_parsers.js';
 import {MeasurementSystemUnitType} from './data/measurement_system.js';
 
@@ -46,6 +45,7 @@ export enum DuplexModeRestriction {
   DUPLEX = 0x6,
 }
 
+// <if expr="is_chromeos">
 /**
  * Enumeration of PIN printing mode restrictions used by Chromium.
  * This has to coincide with |printing::PinModeRestriction| as defined in
@@ -56,59 +56,62 @@ export enum PinModeRestriction {
   PIN = 1,
   NO_PIN = 2,
 }
+// </if>
 
 /**
  * Policies affecting print settings values and availability.
  */
-export type Policies = {
-  headerFooter?: {allowedMode?: boolean, defaultMode?: boolean},
+export interface Policies {
+  headerFooter?: {allowedMode?: boolean, defaultMode?: boolean};
   cssBackground?: {
     allowedMode?: BackgroundGraphicsModeRestriction,
-    defaultMode?: BackgroundGraphicsModeRestriction
-  },
-  mediaSize?: {defaultMode?: {width: number, height: number}},
-  sheets?: {value?: number},
+    defaultMode?: BackgroundGraphicsModeRestriction,
+  };
+  mediaSize?: {defaultMode?: {width: number, height: number}};
+  sheets?: {value?: number};
   color?: {
     allowedMode?: ColorModeRestriction,
-    defaultMode?: ColorModeRestriction
-  },
+    defaultMode?: ColorModeRestriction,
+  };
   duplex?: {
     allowedMode?: DuplexModeRestriction,
-    defaultMode?: DuplexModeRestriction
-  },
-  pin?: {allowedMode?: PinModeRestriction, defaultMode?: PinModeRestriction},
-  printPdfAsImage?: {defaultMode?: boolean},
-  printPdfAsImageAvailability?: {allowedMode?: boolean},
-};
+    defaultMode?: DuplexModeRestriction,
+  };
+  // <if expr="is_chromeos">
+  pin?: {allowedMode?: PinModeRestriction, defaultMode?: PinModeRestriction};
+  // </if>
+  printPdfAsImage?: {defaultMode?: boolean};
+  printPdfAsImageAvailability?: {allowedMode?: boolean};
+}
 
 /**
  * @see corresponding field name definitions in print_preview_handler.cc
  */
-export type NativeInitialSettings = {
-  isInKioskAutoPrintMode: boolean,
-  isInAppKioskMode: boolean,
-  uiLocale: string,
-  thousandsDelimiter: string,
-  decimalDelimiter: string,
-  unitType: MeasurementSystemUnitType,
-  previewModifiable: boolean,
-  previewIsFromArc: boolean,
-  documentTitle: string,
-  documentHasSelection: boolean,
-  shouldPrintSelectionOnly: boolean,
-  printerName: string,
-  policies?: Policies,
-          serializedAppStateStr: string|null,
-          serializedDefaultDestinationSelectionRulesStr: string|null,
-          pdfPrinterDisabled: boolean,
-          destinationsManaged: boolean,
-  cloudPrintURL?: string,
-  isDriveMounted?: boolean,
-};
+export interface NativeInitialSettings {
+  isInKioskAutoPrintMode: boolean;
+  isInAppKioskMode: boolean;
+  uiLocale: string;
+  thousandsDelimiter: string;
+  decimalDelimiter: string;
+  unitType: MeasurementSystemUnitType;
+  previewModifiable: boolean;
+  previewIsFromArc: boolean;
+  documentTitle: string;
+  documentHasSelection: boolean;
+  shouldPrintSelectionOnly: boolean;
+  printerName: string;
+  policies?: Policies;
+  serializedAppStateStr: string|null;
+  serializedDefaultDestinationSelectionRulesStr: string|null;
+  pdfPrinterDisabled: boolean;
+  destinationsManaged: boolean;
+  isDriveMounted?: boolean;
+}
 
-export type CapabilitiesResponse = {
-  printer?: LocalDestinationInfo, capabilities: Cdd|null,
-};
+export interface CapabilitiesResponse {
+  printer?: LocalDestinationInfo;
+  capabilities: Cdd|null;
+}
 
 /**
  * An interface to the native Chromium printing system layer.
@@ -170,7 +173,7 @@ export interface NativeLayer {
    */
   saveAppState(appStateStr: string): void;
 
-  // <if expr="not chromeos and not lacros and not is_win">
+  // <if expr="not is_chromeos and not is_win">
   /** Shows the system's native printing dialog. */
   showSystemDialog(): void;
   // </if>
@@ -186,12 +189,6 @@ export interface NativeLayer {
 
   /** Hide the print preview dialog and allow the native layer to close it. */
   hidePreview(): void;
-
-  /**
-   * Opens the Google Cloud Print sign-in tab. If the user signs in
-   * successfully, the user-accounts-updated event will be sent in response.
-   */
-  signIn(): void;
 
   /**
    * Notifies the metrics handler to record a histogram value.
@@ -235,7 +232,7 @@ export class NativeLayerImpl implements NativeLayer {
     chrome.send('saveAppState', [appStateStr]);
   }
 
-  // <if expr="not chromeos and not lacros and not is_win">
+  // <if expr="not chromeos_ash and not chromeos_lacros and not is_win">
   showSystemDialog() {
     chrome.send('showSystemDialog');
   }
@@ -250,10 +247,6 @@ export class NativeLayerImpl implements NativeLayer {
 
   hidePreview() {
     chrome.send('hidePreview');
-  }
-
-  signIn() {
-    chrome.send('signIn');
   }
 
   recordInHistogram(histogram: string, bucket: number, maxBucket: number) {

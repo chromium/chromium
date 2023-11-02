@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 class ChromeBrowserMainPartsMac : public ChromeBrowserMainPartsPosix {
  public:
-  ChromeBrowserMainPartsMac(content::MainFunctionParams parameters,
+  ChromeBrowserMainPartsMac(bool is_integration_test,
                             StartupData* startup_data);
 
   ChromeBrowserMainPartsMac(const ChromeBrowserMainPartsMac&) = delete;
@@ -23,7 +23,7 @@ class ChromeBrowserMainPartsMac : public ChromeBrowserMainPartsPosix {
   void PreCreateMainMessageLoop() override;
   void PostCreateMainMessageLoop() override;
   void PreProfileInit() override;
-  void PostProfileInit() override;
+  void PostProfileInit(Profile* profile, bool is_initial_profile) override;
 
   // Perform platform-specific work that needs to be done after the main event
   // loop has ended. The embedder must be sure to call this.

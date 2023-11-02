@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -15,11 +15,11 @@ from blinkpy.common.host_mock import MockHost
 from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
 from blinkpy.web_tests.controllers.test_result_sink import CreateTestResultSink
 from blinkpy.web_tests.controllers.test_result_sink import TestResultSink
-from blinkpy.web_tests.models import test_results
+from blinkpy.web_tests.models import test_results, failure_reason
 from blinkpy.web_tests.models.typ_types import ResultType
 from blinkpy.web_tests.port.test import add_manifest_to_mock_filesystem
 from blinkpy.web_tests.port.test import TestPort
-from blinkpy.web_tests.port.test import WEB_TEST_DIR
+from blinkpy.web_tests.port.test import MOCK_WEB_TESTS
 
 
 class TestResultSinkTestBase(unittest.TestCase):
@@ -329,7 +329,7 @@ class TestResultSinkMessage(TestResultSinkTestBase):
             'virtual/virtual_passes/passes/does_not_exist.html',
             'passes/does_not_exist.html')
         self.port.host.filesystem.write_text_file(
-            self.port.host.filesystem.join(WEB_TEST_DIR, 'virtual',
+            self.port.host.filesystem.join(MOCK_WEB_TESTS, 'virtual',
                                            'virtual_passes', 'passes',
                                            'exists.html'),
             'body',
@@ -347,3 +347,32 @@ class TestResultSinkMessage(TestResultSinkTestBase):
             'virtual/virtual_wpt/external/wpt/dom/ranges/Range-attributes.html',
             'external/wpt/dom/ranges/Range-attributes.html',
         )
+
+    def test_failure_reason(self):
+        tr = test_results.TestResult(test_name='test-name')
+        tr.failure_reason = failure_reason.FailureReason(
+            'primary error message')
+        sent_data = self.sink(True, tr)
+        self.assertDictEqual(sent_data['failureReason'], {
+            'primaryErrorMessage': 'primary error message',
+        })
+
+    def test_failure_reason_truncated(self):
+        # Swedish "Place of interest symbol", which encodes as 3 bytes in
+        # UTF-8. This is one Unicode code point.
+        poi = b'\xE2\x8C\x98'.decode('utf-8')
+        primary_error_message = poi * 350
+
+        # Test that the primary error message is truncated to 1K bytes in
+        # UTF-8 encoding.
+        tr = test_results.TestResult(test_name='test-name')
+        tr.failure_reason = failure_reason.FailureReason(primary_error_message)
+        sent_data = self.sink(True, tr)
+
+        # Ensure truncation has left only whole unicode code points.
+        # In this case, the output ends up being 1023 bytes, which is one
+        # byte less than the allowed size of 1024 bytes, as we do not want
+        # part of a unicode code point to be included in the output.
+        self.assertDictEqual(sent_data['failureReason'], {
+            'primaryErrorMessage': (poi * 340) + '...',
+        })

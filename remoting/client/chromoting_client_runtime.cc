@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,10 +39,6 @@ ChromotingClientRuntime::ChromotingClientRuntime() {
   VLOG(1) << "Starting main message loop";
   ui_task_executor_ = std::make_unique<base::SingleThreadTaskExecutor>(
       base::MessagePumpType::UI);
-
-#if defined(DEBUG)
-  net::URLFetcher::SetIgnoreCertificateRequests(true);
-#endif  // DEBUG
 
   // |ui_task_executor_| runs on the main thread, so |ui_task_runner_| will run
   // on the main thread.  We can not kill the main thread when the message loop

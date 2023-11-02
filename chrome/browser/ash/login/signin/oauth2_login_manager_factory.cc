@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,11 @@
 #include "chrome/browser/ash/login/signin/oauth2_login_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace ash {
 
 OAuth2LoginManagerFactory::OAuth2LoginManagerFactory()
-    : BrowserContextKeyedServiceFactory(
-          "OAuth2LoginManager",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("OAuth2LoginManager") {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 

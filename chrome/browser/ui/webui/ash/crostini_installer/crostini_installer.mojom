@@ -1,0 +1,63 @@
+// Copyright 2019 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.crostini_installer.mojom;
+
+import "chrome/browser/ash/crostini/crostini_types.mojom";
+
+// Lives in the browser process. A renderer uses this to create a page handler
+// for controlling Crostini installation.
+interface PageHandlerFactory {
+  // Create a page handler to control Crostini installation.
+  CreatePageHandler(pending_remote<Page> page,
+                    pending_receiver<PageHandler> handler);
+};
+
+// Lives in the browser process. A renderer use this to control Crostini
+// installation.
+interface PageHandler {
+  // Start installation, |disk_size| is in bytes, username is the user's
+  // desired username for inside the container.
+  Install(int64 disk_size, string username);
+  // Cancel an on-going installation
+  Cancel();
+  // If a user cancels the installation without starting it at all, this should
+  // be called so that metrics can be recorded.
+  CancelBeforeStart();
+  // This is called when the web page is "closed", and the dialog (or whatever)
+  // hosting it should also be closed. This can happen as a result of
+  // Page::RequestClose() being called, or it can happen spontaneously (e.g.
+  // user clicking cancel on the page or installation finished).
+  //
+  // Note that the web page should not use something like
+  // chrome.send('dialogClose'), which could kill the page handler before
+  // previous mojom calls have been run.
+  OnPageClosed();
+  // Fetches the amount of free disk space. `ticks` is an array of disk size
+  // options that the user is allowed to choose from based on the free disk
+  // size. `is_low_space_available` indicates that there is less than the
+  // recommended amount of space available for Crostini (though enough to
+  // continue with the installation).
+  RequestAmountOfFreeDiskSpace() => (array<crostini.mojom.DiskSliderTick> ticks,
+                                     int8 default_index,
+                                     bool is_low_space_available);
+};
+
+// Lives in the renderer process. The browser uses this to sends installation
+// updates to the web page in the render.
+interface Page {
+  // Callback to receive the install progress once the installation has
+  // started.
+  OnProgressUpdate(crostini.mojom.InstallerState install_state,
+                   double progress_fraction);
+  // This is called when the installation finished. |error| is kNone if the
+  // install succeeded.
+  OnInstallFinished(crostini.mojom.InstallerError error);
+  // After user cancels the installation, this is called when the cancellation
+  // finishes.
+  OnCanceled();
+  // Informs the page that it should be closed. The page should respond with
+  // PageHandler::OnPageClosed() to indicate it is ready to be closed.
+  RequestClose();
+};

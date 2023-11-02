@@ -1,11 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.toolbar;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -39,7 +38,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -55,6 +53,7 @@ import java.util.Map;
 @RunWith(LocalRobolectricTestRunner.class)
 @Config(manifest = Config.NONE,
         shadows = {VoiceToolbarButtonControllerUnitTest.ShadowChromeFeatureList.class})
+@SuppressWarnings("DoNotMock") // Mocks GURL
 public final class VoiceToolbarButtonControllerUnitTest {
     // TODO(crbug.com/1199025): Remove this shadow.
     @Implements(ChromeFeatureList.class)
@@ -102,7 +101,7 @@ public final class VoiceToolbarButtonControllerUnitTest {
         MockitoAnnotations.initMocks(this);
         ShadowChromeFeatureList.reset();
 
-        mConfiguration.screenWidthDp = VoiceToolbarButtonController.DEFAULT_MIN_WIDTH_DP;
+        mConfiguration.screenWidthDp = AdaptiveToolbarFeatures.DEFAULT_MIN_WIDTH_DP;
         doReturn(mConfiguration).when(mResources).getConfiguration();
         doReturn(mResources).when(mContext).getResources();
 
@@ -116,8 +115,8 @@ public final class VoiceToolbarButtonControllerUnitTest {
         doReturn(mContext).when(mTab).getContext();
         AdaptiveToolbarFeatures.clearParsedParamsForTesting();
         // clang-format off
-        mVoiceToolbarButtonController = new VoiceToolbarButtonController(mContext, mDrawable,
-                () -> mTab, () -> mTracker, mActivityLifecycleDispatcher, mModalDialogManager,
+        mVoiceToolbarButtonController = new VoiceToolbarButtonController(mDrawable,
+                () -> mTab, () -> mTracker, mModalDialogManager,
                 mVoiceSearchDelegate);
         // clang-format on
 
@@ -125,33 +124,7 @@ public final class VoiceToolbarButtonControllerUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.TOOLBAR_MIC_IPH_ANDROID,
-            ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR,
-            ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2,
-            ChromeFeatureList.SHARE_BUTTON_IN_TOP_TOOLBAR})
-    @EnableFeatures({ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR})
-    public void
-    onConfigurationChanged_screenWidthChanged() {
-        assertTrue(mVoiceToolbarButtonController.get(mTab).canShow());
-
-        // Screen width shrinks below the threshold (e.g. screen rotated).
-        mConfiguration.screenWidthDp = VoiceToolbarButtonController.DEFAULT_MIN_WIDTH_DP - 1;
-        mVoiceToolbarButtonController.onConfigurationChanged(mConfiguration);
-
-        assertFalse(mVoiceToolbarButtonController.get(mTab).canShow());
-
-        // Make sure the opposite works as well.
-        mConfiguration.screenWidthDp = VoiceToolbarButtonController.DEFAULT_MIN_WIDTH_DP;
-        mVoiceToolbarButtonController.onConfigurationChanged(mConfiguration);
-
-        assertTrue(mVoiceToolbarButtonController.get(mTab).canShow());
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2,
-            ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR,
-            ChromeFeatureList.SHARE_BUTTON_IN_TOP_TOOLBAR})
-    @EnableFeatures({ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR,
+    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2,
             ChromeFeatureList.TOOLBAR_MIC_IPH_ANDROID})
     public void
     testIPHCommandHelper() {
@@ -170,11 +143,8 @@ public final class VoiceToolbarButtonControllerUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR,
-            ChromeFeatureList.TOOLBAR_MIC_IPH_ANDROID})
     @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
-    public void
-    testIPHEvent() {
+    public void testIPHEvent() {
         doReturn(true).when(mTracker).shouldTriggerHelpUI(
                 FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_VOICE_SEARCH_FEATURE);
 
@@ -186,26 +156,7 @@ public final class VoiceToolbarButtonControllerUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
-    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
-    public void isToolbarMicEnabled_adaptiveButtons_nonVoice() {
-        ShadowChromeFeatureList.sParamValues.put("mode", AdaptiveToolbarFeatures.ALWAYS_NEW_TAB);
-        assertFalse(VoiceToolbarButtonController.isToolbarMicEnabled());
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
-    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
-    public void isToolbarMicEnabled_adaptiveButtons_voice() {
-        ShadowChromeFeatureList.sParamValues.put("mode", AdaptiveToolbarFeatures.ALWAYS_VOICE);
-        assertTrue(VoiceToolbarButtonController.isToolbarMicEnabled());
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2,
-            ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR,
-            ChromeFeatureList.SHARE_BUTTON_IN_TOP_TOOLBAR})
-    @EnableFeatures({ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR})
+    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
     // clang-format off
     public void isToolbarMicEnabled_toolbarMic() {
         // clang-format on

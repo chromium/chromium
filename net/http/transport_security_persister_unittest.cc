@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/features.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/schemeful_site.h"
 #include "net/http/transport_security_state.h"
 #include "net/test/test_with_task_environment.h"
@@ -41,6 +41,14 @@ class TransportSecurityPersisterTest : public ::testing::TestWithParam<bool>,
   TransportSecurityPersisterTest()
       : WithTaskEnvironment(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    // This feature is used in initializing |state_|.
+    if (partition_expect_ct_state()) {
+      feature_list_.InitAndEnableFeature(
+          features::kPartitionExpectCTStateByNetworkIsolationKey);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          features::kPartitionExpectCTStateByNetworkIsolationKey);
+    }
     // Mock out time so that entries with hard-coded json data can be
     // successfully loaded. Use a large enough value that dynamically created
     // entries have at least somewhat interesting expiration times.
@@ -61,14 +69,6 @@ class TransportSecurityPersisterTest : public ::testing::TestWithParam<bool>,
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
              base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
-    // This feature is used in initializing |state_|.
-    if (partition_expect_ct_state()) {
-      feature_list_.InitAndEnableFeature(
-          features::kPartitionExpectCTStateByNetworkIsolationKey);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          features::kPartitionExpectCTStateByNetworkIsolationKey);
-    }
     state_ = std::make_unique<TransportSecurityState>();
     persister_ = std::make_unique<TransportSecurityPersister>(
         state_.get(), std::move(background_runner),
@@ -90,8 +90,7 @@ INSTANTIATE_TEST_SUITE_P(All, TransportSecurityPersisterTest, testing::Bool());
 // Tests that LoadEntries() clears existing non-static entries.
 TEST_P(TransportSecurityPersisterTest, LoadEntriesClearsExistingState) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      TransportSecurityState::kDynamicExpectCTFeature);
+  feature_list.InitAndEnableFeature(kDynamicExpectCTFeature);
 
   TransportSecurityState::STSState sts_state;
   TransportSecurityState::ExpectCTState expect_ct_state;
@@ -103,17 +102,17 @@ TEST_P(TransportSecurityPersisterTest, LoadEntriesClearsExistingState) {
 
   state_->AddHSTS(kYahooDomain, expiry, false /* include subdomains */);
   state_->AddExpectCT(kYahooDomain, expiry, true /* enforce */, GURL(),
-                      NetworkIsolationKey());
+                      NetworkAnonymizationKey());
 
   EXPECT_TRUE(state_->GetDynamicSTSState(kYahooDomain, &sts_state));
   EXPECT_TRUE(state_->GetDynamicExpectCTState(
-      kYahooDomain, NetworkIsolationKey(), &expect_ct_state));
+      kYahooDomain, NetworkAnonymizationKey(), &expect_ct_state));
 
   persister_->LoadEntries("{\"version\":2}");
 
   EXPECT_FALSE(state_->GetDynamicSTSState(kYahooDomain, &sts_state));
   EXPECT_FALSE(state_->GetDynamicExpectCTState(
-      kYahooDomain, NetworkIsolationKey(), &expect_ct_state));
+      kYahooDomain, NetworkAnonymizationKey(), &expect_ct_state));
 }
 
 // Tests that serializing -> deserializing -> reserializing results in the same
@@ -160,21 +159,20 @@ TEST_P(TransportSecurityPersisterTest, SerializeData2) {
 
 TEST_P(TransportSecurityPersisterTest, SerializeData3) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      TransportSecurityState::kDynamicExpectCTFeature);
+  feature_list.InitAndEnableFeature(kDynamicExpectCTFeature);
   const GURL report_uri(kReportUri);
   // Add an entry.
   base::Time expiry = base::Time::Now() + base::Seconds(1000);
   bool include_subdomains = false;
   state_->AddHSTS("www.example.com", expiry, include_subdomains);
   state_->AddExpectCT("www.example.com", expiry, true /* enforce */, GURL(),
-                      NetworkIsolationKey());
+                      NetworkAnonymizationKey());
 
   // Add another entry.
   expiry = base::Time::Now() + base::Seconds(3000);
   state_->AddHSTS("www.example.net", expiry, include_subdomains);
   state_->AddExpectCT("www.example.net", expiry, false /* enforce */,
-                      report_uri, NetworkIsolationKey());
+                      report_uri, NetworkAnonymizationKey());
 
   // Save a copy of everything.
   std::set<std::string> sts_saved;
@@ -309,19 +307,18 @@ TEST_P(TransportSecurityPersisterTest, DeserializeDataOldMergedDictionary) {
 // Tests that dynamic Expect-CT state is serialized and deserialized correctly.
 TEST_P(TransportSecurityPersisterTest, ExpectCT) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      TransportSecurityState::kDynamicExpectCTFeature);
+  feature_list.InitAndEnableFeature(kDynamicExpectCTFeature);
   const GURL report_uri(kReportUri);
   TransportSecurityState::ExpectCTState expect_ct_state;
   static const char kTestDomain[] = "example.test";
 
   EXPECT_FALSE(state_->GetDynamicExpectCTState(
-      kTestDomain, NetworkIsolationKey(), &expect_ct_state));
+      kTestDomain, NetworkAnonymizationKey(), &expect_ct_state));
 
   const base::Time current_time(base::Time::Now());
   const base::Time expiry = current_time + base::Seconds(1000);
   state_->AddExpectCT(kTestDomain, expiry, true /* enforce */, GURL(),
-                      NetworkIsolationKey());
+                      NetworkAnonymizationKey());
   std::string serialized;
   EXPECT_TRUE(persister_->SerializeData(&serialized));
   // LoadEntries() clears existing dynamic data before loading entries from
@@ -330,7 +327,7 @@ TEST_P(TransportSecurityPersisterTest, ExpectCT) {
 
   TransportSecurityState::ExpectCTState new_expect_ct_state;
   EXPECT_TRUE(state_->GetDynamicExpectCTState(
-      kTestDomain, NetworkIsolationKey(), &new_expect_ct_state));
+      kTestDomain, NetworkAnonymizationKey(), &new_expect_ct_state));
   EXPECT_TRUE(new_expect_ct_state.enforce);
   EXPECT_TRUE(new_expect_ct_state.report_uri.is_empty());
   EXPECT_EQ(expiry, new_expect_ct_state.expiry);
@@ -338,11 +335,11 @@ TEST_P(TransportSecurityPersisterTest, ExpectCT) {
   // Update the state for the domain and check that it is
   // serialized/deserialized correctly.
   state_->AddExpectCT(kTestDomain, expiry, false /* enforce */, report_uri,
-                      NetworkIsolationKey());
+                      NetworkAnonymizationKey());
   EXPECT_TRUE(persister_->SerializeData(&serialized));
   persister_->LoadEntries(serialized);
   EXPECT_TRUE(state_->GetDynamicExpectCTState(
-      kTestDomain, NetworkIsolationKey(), &new_expect_ct_state));
+      kTestDomain, NetworkAnonymizationKey(), &new_expect_ct_state));
   EXPECT_FALSE(new_expect_ct_state.enforce);
   EXPECT_EQ(report_uri, new_expect_ct_state.report_uri);
   EXPECT_EQ(expiry, new_expect_ct_state.expiry);
@@ -352,20 +349,19 @@ TEST_P(TransportSecurityPersisterTest, ExpectCT) {
 // when there is also STS data present.
 TEST_P(TransportSecurityPersisterTest, ExpectCTWithSTSDataPresent) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      TransportSecurityState::kDynamicExpectCTFeature);
+  feature_list.InitAndEnableFeature(kDynamicExpectCTFeature);
   const GURL report_uri(kReportUri);
   TransportSecurityState::ExpectCTState expect_ct_state;
   static const char kTestDomain[] = "example.test";
 
   EXPECT_FALSE(state_->GetDynamicExpectCTState(
-      kTestDomain, NetworkIsolationKey(), &expect_ct_state));
+      kTestDomain, NetworkAnonymizationKey(), &expect_ct_state));
 
   const base::Time current_time(base::Time::Now());
   const base::Time expiry = current_time + base::Seconds(1000);
   state_->AddHSTS(kTestDomain, expiry, false /* include subdomains */);
   state_->AddExpectCT(kTestDomain, expiry, true /* enforce */, GURL(),
-                      NetworkIsolationKey());
+                      NetworkAnonymizationKey());
 
   std::string serialized;
   EXPECT_TRUE(persister_->SerializeData(&serialized));
@@ -375,7 +371,7 @@ TEST_P(TransportSecurityPersisterTest, ExpectCTWithSTSDataPresent) {
 
   TransportSecurityState::ExpectCTState new_expect_ct_state;
   EXPECT_TRUE(state_->GetDynamicExpectCTState(
-      kTestDomain, NetworkIsolationKey(), &new_expect_ct_state));
+      kTestDomain, NetworkAnonymizationKey(), &new_expect_ct_state));
   EXPECT_TRUE(new_expect_ct_state.enforce);
   EXPECT_TRUE(new_expect_ct_state.report_uri.is_empty());
   EXPECT_EQ(expiry, new_expect_ct_state.expiry);
@@ -390,44 +386,42 @@ TEST_P(TransportSecurityPersisterTest, ExpectCTWithSTSDataPresent) {
 // is disabled.
 TEST_P(TransportSecurityPersisterTest, ExpectCTDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      TransportSecurityState::kDynamicExpectCTFeature);
+  feature_list.InitAndDisableFeature(kDynamicExpectCTFeature);
   const GURL report_uri(kReportUri);
   TransportSecurityState::ExpectCTState expect_ct_state;
   static const char kTestDomain[] = "example.test";
 
   EXPECT_FALSE(state_->GetDynamicExpectCTState(
-      kTestDomain, NetworkIsolationKey(), &expect_ct_state));
+      kTestDomain, NetworkAnonymizationKey(), &expect_ct_state));
 
   const base::Time current_time(base::Time::Now());
   const base::Time expiry = current_time + base::Seconds(1000);
   state_->AddExpectCT(kTestDomain, expiry, true /* enforce */, GURL(),
-                      NetworkIsolationKey());
+                      NetworkAnonymizationKey());
   std::string serialized;
   EXPECT_TRUE(persister_->SerializeData(&serialized));
   persister_->LoadEntries(serialized);
 
   TransportSecurityState::ExpectCTState new_expect_ct_state;
   EXPECT_FALSE(state_->GetDynamicExpectCTState(
-      kTestDomain, NetworkIsolationKey(), &new_expect_ct_state));
+      kTestDomain, NetworkAnonymizationKey(), &new_expect_ct_state));
 }
 
-// Save data with several NetworkIsolationKeys with
+// Save data with several NetworkAnonymizationKeys with
 // kPartitionExpectCTStateByNetworkIsolationKey enabled, and then load it with
 // the feature enabled or disabled, based on partition_expect_ct_state().
 TEST_P(TransportSecurityPersisterTest, ExpectCTWithNetworkIsolationKey) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      TransportSecurityState::kDynamicExpectCTFeature);
+  feature_list.InitAndEnableFeature(kDynamicExpectCTFeature);
 
   const GURL report_uri(kReportUri);
   static const char kTestDomain[] = "example.test";
   const SchemefulSite kSite(GURL("https://somewhere.else.test"));
-  const NetworkIsolationKey empty_network_isolation_key;
-  const NetworkIsolationKey network_isolation_key(kSite /* top_frame_site */,
-                                                  kSite /* frame_site */);
-  const NetworkIsolationKey transient_network_isolation_key =
-      NetworkIsolationKey::CreateTransient();
+  const NetworkAnonymizationKey empty_network_anonymization_key;
+  const NetworkAnonymizationKey network_anonymization_key(
+      kSite /* top_frame_site */, kSite /* frame_site */);
+  const NetworkAnonymizationKey transient_network_anonymization_key =
+      NetworkAnonymizationKey::CreateTransient();
 
   const base::Time current_time(base::Time::Now());
   const base::Time expiry1 = current_time + base::Seconds(1000);
@@ -450,19 +444,19 @@ TEST_P(TransportSecurityPersisterTest, ExpectCTWithNetworkIsolationKey) {
         transport_security_file_path_);
     TransportSecurityState::ExpectCTState expect_ct_state;
     state2.AddExpectCT(kTestDomain, expiry1, true /* enforce */, GURL(),
-                       empty_network_isolation_key);
+                       empty_network_anonymization_key);
     state2.AddExpectCT(kTestDomain, expiry2, true /* enforce */, GURL(),
-                       network_isolation_key);
+                       network_anonymization_key);
     state2.AddExpectCT(kTestDomain, expiry3, true /* enforce */, GURL(),
-                       transient_network_isolation_key);
+                       transient_network_anonymization_key);
     EXPECT_TRUE(persister2.SerializeData(&serialized));
 
     EXPECT_TRUE(state2.GetDynamicExpectCTState(
-        kTestDomain, empty_network_isolation_key, &expect_ct_state));
+        kTestDomain, empty_network_anonymization_key, &expect_ct_state));
     EXPECT_TRUE(state2.GetDynamicExpectCTState(
-        kTestDomain, network_isolation_key, &expect_ct_state));
+        kTestDomain, network_anonymization_key, &expect_ct_state));
     EXPECT_TRUE(state2.GetDynamicExpectCTState(
-        kTestDomain, transient_network_isolation_key, &expect_ct_state));
+        kTestDomain, transient_network_anonymization_key, &expect_ct_state));
   }
 
   // Load entries into the other persister.
@@ -471,27 +465,28 @@ TEST_P(TransportSecurityPersisterTest, ExpectCTWithNetworkIsolationKey) {
   if (partition_expect_ct_state()) {
     TransportSecurityState::ExpectCTState new_expect_ct_state;
     EXPECT_TRUE(state_->GetDynamicExpectCTState(
-        kTestDomain, empty_network_isolation_key, &new_expect_ct_state));
+        kTestDomain, empty_network_anonymization_key, &new_expect_ct_state));
     EXPECT_TRUE(new_expect_ct_state.enforce);
     EXPECT_TRUE(new_expect_ct_state.report_uri.is_empty());
     EXPECT_EQ(expiry1, new_expect_ct_state.expiry);
 
     EXPECT_TRUE(state_->GetDynamicExpectCTState(
-        kTestDomain, network_isolation_key, &new_expect_ct_state));
+        kTestDomain, network_anonymization_key, &new_expect_ct_state));
     EXPECT_TRUE(new_expect_ct_state.enforce);
     EXPECT_TRUE(new_expect_ct_state.report_uri.is_empty());
     EXPECT_EQ(expiry2, new_expect_ct_state.expiry);
 
-    // The data associated with the transient NetworkIsolationKey should not
+    // The data associated with the transient NetworkAnonymizationKey should not
     // have been saved.
     EXPECT_FALSE(state_->GetDynamicExpectCTState(
-        kTestDomain, transient_network_isolation_key, &new_expect_ct_state));
+        kTestDomain, transient_network_anonymization_key,
+        &new_expect_ct_state));
   } else {
     std::set<std::string> expect_ct_saved;
     TransportSecurityState::ExpectCTStateIterator expect_ct_iter(*state_);
     ASSERT_TRUE(expect_ct_iter.HasNext());
-    EXPECT_EQ(empty_network_isolation_key,
-              expect_ct_iter.network_isolation_key());
+    EXPECT_EQ(empty_network_anonymization_key,
+              expect_ct_iter.network_anonymization_key());
     EXPECT_TRUE(expect_ct_iter.domain_state().enforce);
     EXPECT_TRUE(expect_ct_iter.domain_state().report_uri.is_empty());
     expect_ct_iter.Advance();
@@ -499,13 +494,13 @@ TEST_P(TransportSecurityPersisterTest, ExpectCTWithNetworkIsolationKey) {
   }
 }
 
-// Test the case when deserializing a NetworkIsolationKey fails.
+// Test the case when deserializing a NetworkAnonymizationKey fails.
 TEST_P(TransportSecurityPersisterTest,
        ExpectCTNetworkIsolationKeyDeserializationFails) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       // enabled_features
-      {TransportSecurityState::kDynamicExpectCTFeature,
+      {kDynamicExpectCTFeature,
        features::kPartitionExpectCTStateByNetworkIsolationKey},
       // disabled_features
       {});
@@ -513,9 +508,9 @@ TEST_P(TransportSecurityPersisterTest,
   const GURL report_uri(kReportUri);
   static const char kTestDomain[] = "example.test";
   const SchemefulSite kSite(GURL("https://somewhere.else.test"));
-  const NetworkIsolationKey empty_network_isolation_key;
-  const NetworkIsolationKey network_isolation_key(kSite /* top_frame_site */,
-                                                  kSite /* frame_site */);
+  const NetworkAnonymizationKey empty_network_anonymization_key;
+  const NetworkAnonymizationKey network_anonymization_key(
+      kSite /* top_frame_site */, kSite /* frame_site */);
   const base::Time current_time(base::Time::Now());
   const base::Time expiry1 = current_time + base::Seconds(1000);
   const base::Time expiry2 = current_time + base::Seconds(2000);
@@ -531,20 +526,20 @@ TEST_P(TransportSecurityPersisterTest,
       transport_security_file_path_);
   TransportSecurityState::ExpectCTState expect_ct_state;
   state2.AddExpectCT(kTestDomain, expiry1, true /* enforce */, GURL(),
-                     empty_network_isolation_key);
+                     empty_network_anonymization_key);
   state2.AddExpectCT(kTestDomain, expiry2, true /* enforce */, GURL(),
-                     network_isolation_key);
+                     network_anonymization_key);
   EXPECT_TRUE(persister2.SerializeData(&serialized));
 
   EXPECT_TRUE(state2.GetDynamicExpectCTState(
-      kTestDomain, empty_network_isolation_key, &expect_ct_state));
-  EXPECT_TRUE(state2.GetDynamicExpectCTState(kTestDomain, network_isolation_key,
-                                             &expect_ct_state));
+      kTestDomain, empty_network_anonymization_key, &expect_ct_state));
+  EXPECT_TRUE(state2.GetDynamicExpectCTState(
+      kTestDomain, network_anonymization_key, &expect_ct_state));
 
-  // Replace reference to |network_isolation_key|'s value with an invalid NIK
-  // value.
+  // Replace reference to |network_anonymization_key|'s value with an invalid
+  // NIK value.
   base::Value nik_value;
-  ASSERT_TRUE(network_isolation_key.ToValue(&nik_value));
+  ASSERT_TRUE(network_anonymization_key.ToValue(&nik_value));
   std::string nik_string;
   ASSERT_TRUE(base::JSONWriter::Write(nik_value, &nik_string));
   base::ReplaceFirstSubstringAfterOffset(&serialized, 0, nik_string,
@@ -553,13 +548,13 @@ TEST_P(TransportSecurityPersisterTest,
   // Load entries into the other persister.
   persister_->LoadEntries(serialized);
 
-  // The entry with the non-empty NetworkIsolationKey should be dropped, since
-  // its NIK is now invalid. The other entry should be preserved.
+  // The entry with the non-empty NetworkAnonymizationKey should be dropped,
+  // since its NIK is now invalid. The other entry should be preserved.
   std::set<std::string> expect_ct_saved;
   TransportSecurityState::ExpectCTStateIterator expect_ct_iter(*state_);
   ASSERT_TRUE(expect_ct_iter.HasNext());
-  EXPECT_EQ(empty_network_isolation_key,
-            expect_ct_iter.network_isolation_key());
+  EXPECT_EQ(empty_network_anonymization_key,
+            expect_ct_iter.network_anonymization_key());
   EXPECT_TRUE(expect_ct_iter.domain_state().enforce);
   EXPECT_TRUE(expect_ct_iter.domain_state().report_uri.is_empty());
   expect_ct_iter.Advance();

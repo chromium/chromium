@@ -1,0 +1,10 @@
+{
+   "aggregation_service_payloads": [ {
+      "debug_cleartext_payload": "omRkYXRhgaJldmFsdWVEAAAAAmZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAWlvcGVyYXRpb25paGlzdG9ncmFt",
+      "key_id": "example_id",
+      "payload": "+3Q4+JVUsuSEaoct8xQpBqBFZGtfWQvsTTq142kGIRfO99j+JHuI87CLyPKguIEdC7fWjQ75d4HmQ9D/WXzVSMNPbXNjY67MMnkwN8/a0rISl8YGVyLyvmGtnJ36zmJvMMMHZmFVNp2LP9o1LbFo"
+   } ],
+  "shared_info": "{\"api\":\"attribution-reporting\",\"attribution_destination\":\"https://conversion.test\",\"debug_mode\":\"enabled\",\"report_id\":\"21abd97f-73e8-4b88-9389-a9fee6abda5e\",\"reporting_origin\":\"https://report.test\",\"scheduled_report_time\":\"1234486400\",\"source_registration_time\":\"1234483200\",\"version\":\"0.1\"}",
+   "source_debug_key": "123",
+   "trigger_debug_key": "456"
+}

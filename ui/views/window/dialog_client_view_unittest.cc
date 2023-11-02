@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "ui/base/ui_base_types.h"
@@ -24,6 +25,7 @@
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/test_layout_provider.h"
 #include "ui/views/test/test_views.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -65,9 +67,14 @@ class DialogClientViewTest : public test::WidgetTest {
 
  protected:
   gfx::Rect GetUpdatedClientBounds() {
-    client_view()->SizeToPreferredSize();
-    client_view()->Layout();
+    SizeAndLayoutWidget();
     return client_view()->bounds();
+  }
+
+  void SizeAndLayoutWidget() {
+    Widget* dialog = widget();
+    dialog->SetSize(dialog->GetContentsView()->GetPreferredSize());
+    views::test::RunScheduledLayout(dialog);
   }
 
   // Makes sure that the content view is sized correctly. Width must be at least
@@ -166,13 +173,13 @@ class DialogClientViewTest : public test::WidgetTest {
     gfx::Size GetMaximumSize() const override { return parent_->max_size_; }
 
    private:
-    DialogClientViewTest* const parent_;
+    const raw_ptr<DialogClientViewTest> parent_;
   };
 
   // The dialog Widget.
   std::unique_ptr<test::TestLayoutProvider> layout_provider_;
-  Widget* widget_ = nullptr;
-  DialogDelegateView* delegate_ = nullptr;
+  raw_ptr<Widget> widget_ = nullptr;
+  raw_ptr<DialogDelegateView> delegate_ = nullptr;
 
   gfx::Size preferred_size_;
   gfx::Size min_size_;
@@ -180,6 +187,11 @@ class DialogClientViewTest : public test::WidgetTest {
 };
 
 TEST_F(DialogClientViewTest, UpdateButtons) {
+  // Make sure this test runs on all platforms. Mac doesn't allow 0 size
+  // windows. Test only makes sure the size changes based on whether the buttons
+  // exist or not. The initial size should not matter.
+  SetSizeConstraints(gfx::Size(200, 100), gfx::Size(300, 200),
+                     gfx::Size(400, 300));
   // This dialog should start with no buttons.
   EXPECT_EQ(delegate()->GetDialogButtons(), ui::DIALOG_BUTTON_NONE);
   EXPECT_EQ(nullptr, client_view()->ok_button());
@@ -277,16 +289,24 @@ TEST_F(DialogClientViewTest, SetupFocusChain) {
 
   // Views are added to the contents view, not the client view, so the focus
   // chain within the client view is not affected.
-  EXPECT_EQ(nullptr, client_view()->cancel_button()->GetNextFocusableView());
+  // NOTE: The TableLayout requires a view to be in every cell. "Dummy" non-
+  // focusable views are inserted to satisfy this requirement.
+  EXPECT_TRUE(!client_view()->cancel_button()->GetNextFocusableView() ||
+              client_view()
+                      ->cancel_button()
+                      ->GetNextFocusableView()
+                      ->GetFocusBehavior() == View::FocusBehavior::NEVER);
 }
 
 // Test that the contents view gets its preferred size in the basic dialog
 // configuration.
 TEST_F(DialogClientViewTest, ContentsSize) {
+  // On Mac the size cannot be 0, so we give it a preferred size.
+  SetSizeConstraints(gfx::Size(200, 100), gfx::Size(300, 200),
+                     gfx::Size(400, 300));
   CheckContentsIsSetToPreferredSize();
   EXPECT_EQ(delegate()->GetContentsView()->size(), client_view()->size());
-  // There's nothing in the contents view (i.e. |this|), so it should be 0x0.
-  EXPECT_EQ(gfx::Size(), client_view()->size());
+  EXPECT_EQ(gfx::Size(300, 200), client_view()->size());
 }
 
 // Test the effect of the button strip on layout.
@@ -466,8 +486,7 @@ TEST_F(DialogClientViewTest, ButtonPosition) {
   SetSizeConstraints(gfx::Size(), gfx::Size(contents_width, contents_height),
                      gfx::Size(666, 666));
   SetDialogButtons(ui::DIALOG_BUTTON_OK);
-  client_view()->SizeToPreferredSize();
-  client_view()->Layout();
+  SizeAndLayoutWidget();
   EXPECT_EQ(contents_width - button_row_inset,
             client_view()->ok_button()->bounds().right());
   EXPECT_EQ(contents_height + button_row_inset,
@@ -603,8 +622,7 @@ TEST_F(DialogClientViewTest, ButtonLayoutWithExtra) {
   ASSERT_NE(ok, extra);
   ASSERT_NE(cancel, extra);
 
-  client_view()->SizeToPreferredSize();
-  client_view()->Layout();
+  SizeAndLayoutWidget();
 
   auto bounds_left = [](View* v) { return v->GetBoundsInScreen().x(); };
   auto bounds_right = [](View* v) { return v->GetBoundsInScreen().right(); };
@@ -639,8 +657,7 @@ TEST_F(DialogClientViewTest, ButtonLayoutWithExtra) {
 
   SetSizeConstraints(gfx::Size(), gfx::Size(delegate()->width() + 100, 0),
                      gfx::Size());
-  client_view()->SizeToPreferredSize();
-  client_view()->Layout();
+  SizeAndLayoutWidget();
 
   EXPECT_EQ(old_margin, get_margin());
   EXPECT_EQ(old_flex_margin + 100, get_flex_margin());

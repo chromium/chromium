@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -22,8 +22,8 @@ copy("copy_audio") {
 }
 
 copy("copy_mojo") {
-  deps = [ "//chrome/browser/ui/webui/chromeos/audio:mojo_bindings_webui_js" ]
-  sources = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/chromeos/audio/audio.mojom-webui.js" ]
+  deps = [ "//chrome/browser/ui/webui/ash/audio:mojo_bindings_webui_js" ]
+  sources = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/ash/audio/audio.mojom-webui.js" ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
@@ -59,7 +59,8 @@ generate_grd("build_grd") {
     "audio.css",
   ]
   input_files_base_dir = rebase_path(".", "//")
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
 
   grd_prefix = "audio"
   out_grd = resources_grd_file

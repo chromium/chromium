@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define ANDROID_WEBVIEW_BROWSER_GFX_VIZ_COMPOSITOR_THREAD_RUNNER_WEBVIEW_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/threading/thread.h"
@@ -59,14 +59,13 @@ class VizCompositorThreadRunnerWebView : public viz::VizCompositorThreadRunner {
   viz::GpuServiceImpl* GetGpuService();
 
   // viz::VizCompositorThreadRunner overrides.
-  base::PlatformThreadId thread_id() override;
   base::SingleThreadTaskRunner* task_runner() override;
-  void CreateFrameSinkManager(
-      viz::mojom::FrameSinkManagerParamsPtr params) override;
+  bool CreateHintSessionFactory(
+      base::flat_set<base::PlatformThreadId> thread_ids,
+      base::RepeatingClosure* wake_up_closure) override;
   void CreateFrameSinkManager(viz::mojom::FrameSinkManagerParamsPtr params,
-                              gpu::CommandBufferTaskExecutor* task_executor,
-                              viz::GpuServiceImpl* gpu_service,
-                              gfx::RenderingPipeline* gpu_pipeline) override;
+                              viz::GpuServiceImpl* gpu_service) override;
+
  private:
   friend class base::NoDestructor<VizCompositorThreadRunnerWebView>;
 
@@ -84,7 +83,7 @@ class VizCompositorThreadRunnerWebView : public viz::VizCompositorThreadRunner {
   THREAD_CHECKER(viz_thread_checker_);
   std::unique_ptr<viz::ServerSharedBitmapManager> server_shared_bitmap_manager_;
   std::unique_ptr<viz::FrameSinkManagerImpl> frame_sink_manager_;
-  viz::GpuServiceImpl* gpu_service_impl_ = nullptr;
+  raw_ptr<viz::GpuServiceImpl> gpu_service_impl_ = nullptr;
 };
 
 }  // namespace android_webview

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2014 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2014 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <resources>
     <style name="NavigationPopupDialog" parent="Widget.AppCompat.Light.ListPopupWindow">
@@ -12,7 +14,7 @@
         <!-- Set android alert dialog attributes because the context menu dialog is
              OS-dependent. Not setting alertDialogTheme pre-v21 because the window background
              causes bad visual states with alert dialog list. -->
-        <item name="android:alertDialogTheme">@style/Theme.Chromium.AlertDialog</item>
+        <item name="android:alertDialogTheme">@style/ThemeOverlay.BrowserUI.AlertDialog</item>
     </style>
     <style name="Base.Theme.Chromium" parent="Base.V21.Theme.Chromium" />
 

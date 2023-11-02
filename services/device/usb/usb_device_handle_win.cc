@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <winioctl.h>
 #include <winusb.h>
 
-#include <algorithm>
 #include <memory>
 #include <numeric>
 #include <string>
@@ -22,10 +21,9 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/task/post_task.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -914,7 +912,7 @@ void UsbDeviceHandleWin::OpenInterfaceForControlTransfer(
       }
 
       index = endpoint_it->second.interface->interface_number;
-      FALLTHROUGH;
+      [[fallthrough]];
     }
 
     case UsbControlTransferRecipient::INTERFACE: {
@@ -1003,11 +1001,8 @@ UsbDeviceHandleWin::Request* UsbDeviceHandleWin::MakeRequest(
 
 std::unique_ptr<UsbDeviceHandleWin::Request> UsbDeviceHandleWin::UnlinkRequest(
     UsbDeviceHandleWin::Request* request_ptr) {
-  auto it = std::find_if(
-      requests_.begin(), requests_.end(),
-      [request_ptr](const std::unique_ptr<Request>& request) -> bool {
-        return request.get() == request_ptr;
-      });
+  auto it = base::ranges::find(requests_, request_ptr,
+                               &std::unique_ptr<Request>::get);
   DCHECK(it != requests_.end());
   std::unique_ptr<Request> request = std::move(*it);
   requests_.erase(it);

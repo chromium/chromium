@@ -30,7 +30,9 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/graphics/color_behavior.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
@@ -40,10 +42,9 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
-#include "third_party/skia/include/third_party/skcms/skcms.h"
+#include "third_party/skia/modules/skcms/skcms.h"
 
 class SkColorSpace;
 
@@ -169,7 +170,7 @@ class PLATFORM_EXPORT ImageDecoder {
 
   ImageDecoder(const ImageDecoder&) = delete;
   ImageDecoder& operator=(const ImageDecoder&) = delete;
-  virtual ~ImageDecoder() = default;
+  virtual ~ImageDecoder();
 
   // Returns a caller-owned decoder of the appropriate type.  Returns nullptr if
   // we can't sniff a supported type from the provided data (possibly
@@ -250,12 +251,12 @@ class PLATFORM_EXPORT ImageDecoder {
 
   bool IsDecodedSizeAvailable() const { return !failed_ && size_available_; }
 
-  virtual IntSize Size() const { return size_; }
+  virtual gfx::Size Size() const { return size_; }
   virtual Vector<SkISize> GetSupportedDecodeSizes() const { return {}; }
 
   // Decoders which downsample images should override this method to
   // return the actual decoded size.
-  virtual IntSize DecodedSize() const { return Size(); }
+  virtual gfx::Size DecodedSize() const { return Size(); }
 
   // The YUV subsampling of the image.
   virtual cc::YUVSubsampling GetYUVSubsampling() const {
@@ -264,9 +265,9 @@ class PLATFORM_EXPORT ImageDecoder {
 
   // Image decoders that support YUV decoding must override this to
   // provide the size of each component.
-  virtual IntSize DecodedYUVSize(cc::YUVIndex) const {
+  virtual gfx::Size DecodedYUVSize(cc::YUVIndex) const {
     NOTREACHED();
-    return IntSize();
+    return gfx::Size();
   }
 
   // Image decoders that support YUV decoding must override this to
@@ -301,7 +302,7 @@ class PLATFORM_EXPORT ImageDecoder {
   // sizes. This does NOT differ from Size() for GIF or WebP, since
   // decoding GIF or WebP composites any smaller frames against previous
   // frames to create full-size frames.
-  virtual IntSize FrameSizeAtIndex(wtf_size_t) const { return Size(); }
+  virtual gfx::Size FrameSizeAtIndex(wtf_size_t) const { return Size(); }
 
   // Returns whether the size is legal (i.e. not going to result in
   // overflow elsewhere).  If not, marks decoding as failed.
@@ -313,7 +314,7 @@ class PLATFORM_EXPORT ImageDecoder {
     if (SizeCalculationMayOverflow(width, height, decoded_bytes_per_pixel))
       return SetFailed();
 
-    size_ = IntSize(width, height);
+    size_ = gfx::Size(width, height);
     size_available_ = true;
     return true;
   }
@@ -341,6 +342,13 @@ class PLATFORM_EXPORT ImageDecoder {
   // Returns true if a cached complete decode is available.
   bool FrameIsDecodedAtIndex(wtf_size_t) const;
 
+  // Timestamp for displaying a frame. This method is only used by animated
+  // images. Only formats with timestamps (like AVIF) should implement this.
+  virtual absl::optional<base::TimeDelta> FrameTimestampAtIndex(
+      wtf_size_t) const {
+    return absl::nullopt;
+  }
+
   // Duration for displaying a frame. This method is only used by animated
   // images.
   virtual base::TimeDelta FrameDurationAtIndex(wtf_size_t) const {
@@ -353,7 +361,7 @@ class PLATFORM_EXPORT ImageDecoder {
   virtual wtf_size_t FrameBytesAtIndex(wtf_size_t) const;
 
   ImageOrientation Orientation() const { return orientation_; }
-  IntSize DensityCorrectedSize() const { return density_corrected_size_; }
+  gfx::Size DensityCorrectedSize() const { return density_corrected_size_; }
 
   bool IgnoresColorSpace() const { return color_behavior_.IsIgnore(); }
   const ColorBehavior& GetColorBehavior() const { return color_behavior_; }
@@ -411,7 +419,7 @@ class PLATFORM_EXPORT ImageDecoder {
     // Not all animated image formats share these requirements. Blocking
     // all animated formats is overly aggressive. If a need arises for an
     // external memory allocator for animated images, this should be changed.
-    if (frame_buffer_cache_.IsEmpty()) {
+    if (frame_buffer_cache_.empty()) {
       // Ensure that InitializeNewFrame is called, after parsing if
       // necessary.
       if (!FrameCount())
@@ -439,13 +447,7 @@ class PLATFORM_EXPORT ImageDecoder {
   ImageDecoder(AlphaOption alpha_option,
                HighBitDepthDecodingOption high_bit_depth_decoding_option,
                const ColorBehavior& color_behavior,
-               wtf_size_t max_decoded_bytes)
-      : premultiply_alpha_(alpha_option == kAlphaPremultiplied),
-        high_bit_depth_decoding_option_(high_bit_depth_decoding_option),
-        color_behavior_(color_behavior),
-        max_decoded_bytes_(max_decoded_bytes),
-        allow_decode_to_yuv_(false),
-        purge_aggressively_(false) {}
+               wtf_size_t max_decoded_bytes);
 
   // Calculates the most recent frame whose image data may be needed in
   // order to decode frame |frame_index|, based on frame disposal methods
@@ -537,7 +539,7 @@ class PLATFORM_EXPORT ImageDecoder {
   const HighBitDepthDecodingOption high_bit_depth_decoding_option_;
   const ColorBehavior color_behavior_;
   ImageOrientation orientation_;
-  IntSize density_corrected_size_;
+  gfx::Size density_corrected_size_;
 
   // The maximum amount of memory a decoded image should require. Ideally,
   // image decoders should downsample large images to fit under this limit
@@ -595,6 +597,10 @@ class PLATFORM_EXPORT ImageDecoder {
 
   bool purge_aggressively_;
 
+  // Update `sk_image_color_space_` and `embedded_to_sk_image_transform_`, if
+  // needed.
+  void UpdateSkImageColorSpaceAndTransform();
+
   // This methods gets called at the end of InitFrameBuffer. Subclasses can do
   // format specific initialization, for e.g. alpha settings, here.
   virtual void OnInitFrameBuffer(wtf_size_t) {}
@@ -603,16 +609,24 @@ class PLATFORM_EXPORT ImageDecoder {
   // previous frame. This condition is different for GIF and WEBP.
   virtual bool CanReusePreviousFrameBuffer(wtf_size_t) const { return false; }
 
-  IntSize size_;
+  gfx::Size size_;
   bool size_available_ = false;
   bool is_all_data_received_ = false;
   bool failed_ = false;
 
+  // The precise color profile of the image.
   std::unique_ptr<ColorProfile> embedded_color_profile_;
-  sk_sp<SkColorSpace> color_space_for_sk_images_;
 
-  bool source_to_target_color_transform_needs_update_ = false;
-  std::unique_ptr<ColorProfileTransform> source_to_target_color_transform_;
+  // The color space for the SkImage that will be produced.  If
+  // `color_behavior_` is tag, then this is the SkColorSpace representation of
+  // `embedded_color_profile_`. If `color_behavior_` is convert to sRGB, then
+  // this is sRGB.
+  sk_sp<SkColorSpace> sk_image_color_space_;
+
+  // Transforms `embedded_color_profile_` to `sk_image_color_space_`. This
+  // is needed if `sk_image_color_space_` is not an exact representation of
+  // `embedded_color_profile_`.
+  std::unique_ptr<ColorProfileTransform> embedded_to_sk_image_transform_;
 
   wtf_size_t metrics_frame_index_ = kNotFound;
   base::TimeDelta metrics_time_delta_;

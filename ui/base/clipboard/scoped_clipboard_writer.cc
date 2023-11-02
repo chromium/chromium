@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,10 @@
 
 #include "base/json/json_writer.h"
 #include "base/pickle.h"
+#include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "net/base/escape.h"
+#include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/clipboard_metrics.h"
 #include "ui/gfx/geometry/size.h"
@@ -48,6 +49,11 @@ ScopedClipboardWriter::~ScopedClipboardWriter() {
 
   if (confidential_)
     Clipboard::GetForCurrentThread()->MarkAsConfidential();
+}
+
+void ScopedClipboardWriter::SetDataSource(
+    std::unique_ptr<DataTransferEndpoint> data_src) {
+  data_src_ = std::move(data_src);
 }
 
 void ScopedClipboardWriter::WriteText(const std::u16string& text) {
@@ -125,9 +131,9 @@ void ScopedClipboardWriter::WriteHyperlink(const std::u16string& anchor_text,
 
   // Construct the hyperlink.
   std::string html = "<a href=\"";
-  html += net::EscapeForHTML(url);
+  html += base::EscapeForHTML(url);
   html += "\">";
-  html += net::EscapeForHTML(base::UTF16ToUTF8(anchor_text));
+  html += base::EscapeForHTML(base::UTF16ToUTF8(anchor_text));
   html += "</a>";
   WriteHTML(base::UTF8ToUTF16(html), std::string());
 }
@@ -198,8 +204,7 @@ void ScopedClipboardWriter::WriteData(const std::u16string& format,
   // have a mapping of custom format MIME type to web custom format.
   // There can only be 100 custom format per write and it will be
   // registered when the web authors request for a custom format.
-  static constexpr int kMaxRegisteredFormats = 100;
-  if (counter_ >= kMaxRegisteredFormats)
+  if (counter_ >= ui::kMaxRegisteredClipboardFormats)
     return;
   std::string format_in_ascii = base::UTF16ToASCII(format);
   if (registered_formats_.find(format_in_ascii) == registered_formats_.end()) {
@@ -211,6 +216,16 @@ void ScopedClipboardWriter::WriteData(const std::u16string& format,
         {web_custom_format_string, std::move(data)});
   }
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void ScopedClipboardWriter::WriteEncodedDataTransferEndpointForTesting(
+    const std::string& json) {
+  Clipboard::ObjectMapParams parameters;
+  parameters.push_back(Clipboard::ObjectMapParam(json.begin(), json.end()));
+  objects_[Clipboard::PortableFormat::kEncodedDataTransferEndpoint] =
+      parameters;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void ScopedClipboardWriter::Reset() {
   objects_.clear();

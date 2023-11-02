@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,27 @@
 #include "components/lookalikes/core/features.h"
 #include "components/reputation/core/safety_tip_test_utils.h"
 #include "components/reputation/core/safety_tips_config.h"
+#include "components/version_info/channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using version_info::Channel;
+
+namespace {
+// Tests lists for Combo Squatting. Some of these entries are intended to test
+// for various edge cases and aren't realistic for production.
+constexpr std::pair<const char*, const char*> kBrandNames[] = {
+    {"google", "google"},
+    {"youtube", "youtube"},
+    {"sample", "sarnple"},
+    {"example", "exarnple"},
+    {"vices", "vices"}};
+const char* const kPopularKeywords[] = {
+    "online", "login", "account", "arnple", "services", "test", "security"};
+const ComboSquattingParams kComboSquattingParams{
+    kBrandNames, std::size(kBrandNames), kPopularKeywords,
+    std::size(kPopularKeywords)};
+
+}  // namespace
 
 std::string TargetEmbeddingTypeToString(TargetEmbeddingType type) {
   switch (type) {
@@ -177,7 +197,39 @@ struct TargetEmbeddingHeuristicTestCase {
   const TargetEmbeddingType expected_type;
 };
 
-TEST(LookalikeUrlUtilTest, TargetEmbedding) {
+TEST(LookalikeUrlUtilTest, ShouldBlockBySpoofCheckResult) {
+  EXPECT_FALSE(ShouldBlockBySpoofCheckResult(
+      GetDomainInfo(GURL("https://example.com"))));
+  // ASCII short eTLD+1:
+  EXPECT_FALSE(
+      ShouldBlockBySpoofCheckResult(GetDomainInfo(GURL("https://e.com"))));
+  EXPECT_FALSE(ShouldBlockBySpoofCheckResult(
+      GetDomainInfo(GURL("https://subdomain.e.com"))));
+  // Unicode single character e2LD:
+  EXPECT_FALSE(
+      ShouldBlockBySpoofCheckResult(GetDomainInfo(GURL("https://τ.com"))));
+  EXPECT_FALSE(
+      ShouldBlockBySpoofCheckResult(GetDomainInfo(GURL("https://test.τ.com"))));
+  // Unicode single character e2LD with a unicode registry.
+  EXPECT_FALSE(
+      ShouldBlockBySpoofCheckResult(GetDomainInfo(GURL("https://τ.рф"))));
+  EXPECT_FALSE(
+      ShouldBlockBySpoofCheckResult(GetDomainInfo(GURL("https://test.τ.рф"))));
+  // Non-unique hostname:
+  EXPECT_FALSE(ShouldBlockBySpoofCheckResult(GetDomainInfo(GURL("https://τ"))));
+
+  // Multi character e2LD with disallowed characters:
+  EXPECT_TRUE(
+      ShouldBlockBySpoofCheckResult(GetDomainInfo(GURL("https://ττ.com"))));
+  EXPECT_TRUE(ShouldBlockBySpoofCheckResult(
+      GetDomainInfo(GURL("https://test.ττ.com"))));
+  EXPECT_TRUE(
+      ShouldBlockBySpoofCheckResult(GetDomainInfo(GURL("https://ττ.рф"))));
+  EXPECT_TRUE(
+      ShouldBlockBySpoofCheckResult(GetDomainInfo(GURL("https://test.ττ.рф"))));
+}
+
+TEST(LookalikeUrlUtilTest, TargetEmbeddingTest) {
   const std::vector<DomainInfo> kEngagedSites = {
       GetDomainInfo(GURL("https://highengagement.com")),
       GetDomainInfo(GURL("https://highengagement.inthesubdomain.com")),
@@ -465,5 +517,237 @@ TEST(LookalikeUrlUtilTest, HasOneCharacterSwap) {
                                       base::WideToUTF16(test_case.str2));
     EXPECT_EQ(test_case.expected, result)
         << "when comparing " << test_case.str1 << " with " << test_case.str2;
+  }
+}
+
+TEST(LookalikeUrlUtilTest, IsHeuristicEnabledForHostname) {
+  reputation::SafetyTipsConfig proto;
+  reputation::HeuristicLaunchConfig* config = proto.add_launch_config();
+  config->set_heuristic(reputation::HeuristicLaunchConfig::
+                            HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES);
+
+  // Minimum rollout percentages to enable a heuristic on each site on Stable
+  // channel:
+  // example1.com: 79%
+  // example2.com: 16%
+  // example3.com: 36%
+
+  // Slowly ramp up the launch and cover more sites on Stable channel.
+  config->set_launch_percentage(0);
+  EXPECT_FALSE(IsHeuristicEnabledForHostname(
+      &proto,
+      reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES,
+      "example1.com", Channel::STABLE));
+  EXPECT_FALSE(IsHeuristicEnabledForHostname(
+      &proto,
+      reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES,
+      "example2.com", Channel::STABLE));
+  EXPECT_FALSE(IsHeuristicEnabledForHostname(
+      &proto,
+      reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES,
+      "example3.com", Channel::STABLE));
+
+  config->set_launch_percentage(25);
+  EXPECT_FALSE(IsHeuristicEnabledForHostname(
+      &proto,
+      reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES,
+      "example1.com", Channel::STABLE));
+  EXPECT_TRUE(IsHeuristicEnabledForHostname(
+      &proto,
+      reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES,
+      "example2.com", Channel::STABLE));
+  EXPECT_FALSE(IsHeuristicEnabledForHostname(
+      &proto,
+      reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES,
+      "example3.com", Channel::STABLE));
+
+  config->set_launch_percentage(50);
+  EXPECT_FALSE(IsHeuristicEnabledForHostname(
+      &proto,
+      reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES,
+      "example1.com", Channel::STABLE));
+  EXPECT_TRUE(IsHeuristicEnabledForHostname(
+      &proto,
+      reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES,
+      "example2.com", Channel::STABLE));
+  EXPECT_TRUE(IsHeuristicEnabledForHostname(
+      &proto,
+      reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES,
+      "example3.com", Channel::STABLE));
+
+  config->set_launch_percentage(100);
+  EXPECT_TRUE(IsHeuristicEnabledForHostname(
+      &proto,
+      reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES,
+      "example1.com", Channel::STABLE));
+  EXPECT_TRUE(IsHeuristicEnabledForHostname(
+      &proto,
+      reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES,
+      "example2.com", Channel::STABLE));
+  EXPECT_TRUE(IsHeuristicEnabledForHostname(
+      &proto,
+      reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES,
+      "example3.com", Channel::STABLE));
+
+  // On Beta, launch is always at 50%.
+  config->set_launch_percentage(0);
+  EXPECT_FALSE(IsHeuristicEnabledForHostname(
+      &proto,
+      reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES,
+      "example1.com", Channel::BETA));
+  EXPECT_TRUE(IsHeuristicEnabledForHostname(
+      &proto,
+      reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES,
+      "example2.com", Channel::BETA));
+  EXPECT_TRUE(IsHeuristicEnabledForHostname(
+      &proto,
+      reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES,
+      "example3.com", Channel::BETA));
+}
+
+class ComboSquattingTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    SetComboSquattingParamsForTesting(kComboSquattingParams);
+  }
+  void TearDown() override { ResetComboSquattingParamsForTesting(); }
+};
+
+// Test for Combo Squatting check of domains.
+TEST_F(ComboSquattingTest, IsComboSquatting) {
+  const std::vector<DomainInfo> kEngagedSites = {
+      // An engaged site which is not in the hard coded brand names.
+      GetDomainInfo(GURL("https://engagedsite.com")),
+      // An engaged site which is duplicate with a hard coded brand name.
+      GetDomainInfo(GURL("https://subdomain.google.com")),
+      // An engaged site with length less than threshold (4) for
+      // consideration.
+      GetDomainInfo(GURL("https://len.com")),
+      // An engaged site with a registry other than com.
+      GetDomainInfo(GURL("https://testcombo.org")),
+      // Test case for overlapping brand name and keyword (highs +
+      // security = highsecurity). Single letter overlap.
+      GetDomainInfo(GURL("https://highs.com")),
+  };
+  const struct TestCase {
+    const char* domain;
+    const char* expected_suggested_domain;
+    const ComboSquattingType expected_type;
+  } kTestCases[] = {
+      // Not Combo Squatting (CSQ).
+      {"google.com", "", ComboSquattingType::kNone},
+      {"youtube.ca", "", ComboSquattingType::kNone},
+
+      // Not CSQ, contains subdomains.
+      {"login.google.com", "", ComboSquattingType::kNone},
+
+      // Not CSQ, non registrable domains.
+      {"google-login.test", "", ComboSquattingType::kNone},
+
+      // CSQ with "-".
+      {"google-online.com", "google.com", ComboSquattingType::kHardCoded},
+
+      // CSQ with more than one keyword (login, online) with "-".
+      {"google-login-online.com", "google.com", ComboSquattingType::kHardCoded},
+
+      // CSQ with one keyword (online) and one random word (one) with "-".
+      {"one-sample-online.com", "sample.com", ComboSquattingType::kHardCoded},
+
+      // Not CSQ, with a keyword (test) as TLD.
+      {"www.example.test", "", ComboSquattingType::kNone},
+
+      // CSQ with more than one brand (google, youtube) with "-".
+      {"google-youtube-account.com", "google.com",
+       ComboSquattingType::kHardCoded},
+
+      // CSQ without separator.
+      {"loginsample.com", "sample.com", ComboSquattingType::kHardCoded},
+
+      // Not CSQ with a keyword (ample) inside brand name (sample).
+      {"sample.com", "", ComboSquattingType::kNone},
+
+      // Current version of the heuristic cannot flag this kind of CSQ
+      // with a keyword (ample) inside brand name (sample) and as an added
+      // keyword to the domain.
+      {"sample-ample.com", "", ComboSquattingType::kNone},
+
+      // CSQ with more than one keyword (account, online) without separator.
+      {"accountexampleonline.com", "example.com",
+       ComboSquattingType::kHardCoded},
+
+      // CSQ with one keyword (login) and one random word (one) without "-".
+      {"oneyoutubelogin.com", "youtube.com", ComboSquattingType::kHardCoded},
+
+      // Not CSQ, google is a public TLD.
+      {"online.google", "", ComboSquattingType::kNone},
+
+      // Not CSQ, brand name (vice) is part of keyword (service).
+      {"keyservices.com", "", ComboSquattingType::kNone},
+
+      // CSQ, brand name (engagedsite) is from engaged sites list.
+      {"engagedsite-login.com", "engagedsite.com",
+       ComboSquattingType::kSiteEngagement},
+
+      // Not CSQ, brand name (len) is from engaged sites list but it is short.
+      {"len-online.com", "", ComboSquattingType::kNone},
+
+      // CSQ, brand name (googlé) is one of the hard coded brand names and has
+      // IDN spoofing as well.
+      {"googlé-login.com", "google.com", ComboSquattingType::kHardCoded},
+
+      // CSQ, brand name (engagedsité) is one of the brand names from engaged
+      // sites and has IDN spoofing as well.
+      {"engagedsité-online.com", "engagedsite.com",
+       ComboSquattingType::kSiteEngagement},
+
+      // CSQ, keyword (lógin) has IDN spoofing.
+      {"google-lógin.com", "google.com", ComboSquattingType::kHardCoded},
+
+      // CSQ, CSQ with more than one brand (googlé, youtubé) with "-" and IDN
+      // spoofing.
+      {"googlé-youtubé-account.com", "google.com",
+       ComboSquattingType::kHardCoded},
+
+      // Not CSQ.
+      {"ónline.googlé", "", ComboSquattingType::kNone},
+
+      // Not CSQ, it has IDN spoofing but brand name (vicé) is part of keyword
+      // (servicé).
+      {"keyservicés.com", "", ComboSquattingType::kNone},
+
+      // CSQ without separator and with IDN spoofing in the keyword.
+      {"lóginsample.com", "sample.com", ComboSquattingType::kHardCoded},
+
+      // CSQ without separator and with IDN spoofing in the brand name.
+      {"loginsamplé.com", "sample.com", ComboSquattingType::kHardCoded},
+
+      // Not CSQ, skeleton of brand name (lén) is from engaged sites list but it
+      // is short.
+      {"lén-online.com", "", ComboSquattingType::kNone},
+
+      // CSQ when domain and registry are in top domains.
+      {"google-login.co.kr", "google.co.kr", ComboSquattingType::kHardCoded},
+
+      // CSQ when brand name is in hard coded brand names, but domain and
+      // registry are not in top domains.
+      {"google-login.co.ir", "google.com", ComboSquattingType::kHardCoded},
+
+      // CSQ when domain and registry are in engaged sites, with registry other
+      // than com.
+      {"testcomboonline.org", "testcombo.org",
+       ComboSquattingType::kSiteEngagement},
+
+      // If the brand name (highsec) and keyword (security) overlap, ignore.
+      {"highsecurity.com", "", ComboSquattingType::kNone},
+  };
+  for (const TestCase& test_case : kTestCases) {
+    auto navigated =
+        GetDomainInfo(GURL(std::string(url::kHttpsScheme) +
+                           url::kStandardSchemeSeparator + test_case.domain));
+    std::string matched_domain;
+    ComboSquattingType type =
+        GetComboSquattingType(navigated, kEngagedSites, &matched_domain);
+    EXPECT_EQ(std::string(test_case.expected_suggested_domain), matched_domain);
+    EXPECT_EQ(test_case.expected_type, type);
   }
 }

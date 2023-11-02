@@ -40,7 +40,7 @@
 #define BROTLI_X_BIG_ENDIAN BIG_ENDIAN
 #endif
 
-#if BROTLI_MSVC_VERSION_CHECK(12, 0, 0)
+#if BROTLI_MSVC_VERSION_CHECK(18, 0, 0)
 #include <intrin.h>
 #endif
 
@@ -154,24 +154,6 @@ OR:
 #define BROTLI_NOINLINE _Pragma("inline=never")
 #else
 #define BROTLI_NOINLINE
-#endif
-
-/* BROTLI_INTERNAL could be defined to override visibility, e.g. for tests. */
-#if !defined(BROTLI_INTERNAL)
-#if defined(_WIN32) || defined(__CYGWIN__)
-#define BROTLI_INTERNAL
-#elif BROTLI_GNUC_VERSION_CHECK(3, 3, 0) ||                         \
-    BROTLI_TI_VERSION_CHECK(8, 0, 0) ||                             \
-    BROTLI_INTEL_VERSION_CHECK(16, 0, 0) ||                         \
-    BROTLI_ARM_VERSION_CHECK(4, 1, 0) ||                            \
-    BROTLI_IBM_VERSION_CHECK(13, 1, 0) ||                           \
-    BROTLI_SUNPRO_VERSION_CHECK(5, 11, 0) ||                        \
-    (BROTLI_TI_VERSION_CHECK(7, 3, 0) &&                            \
-     defined(__TI_GNU_ATTRIBUTE_SUPPORT__) && defined(__TI_EABI__))
-#define BROTLI_INTERNAL __attribute__ ((visibility ("hidden")))
-#else
-#define BROTLI_INTERNAL
-#endif
 #endif
 
 /* <<< <<< <<< end of hedley macros. */
@@ -485,11 +467,11 @@ static BROTLI_INLINE void BrotliDump(const char* f, int l, const char* fn) {
 #define BROTLI_DUMP() (void)(0)
 #endif
 
-/* TODO: add appropriate icc/sunpro/arm/ibm/ti checks. */
+/* TODO(eustas): add appropriate icc/sunpro/arm/ibm/ti checks. */
 #if (BROTLI_GNUC_VERSION_CHECK(3, 0, 0) || defined(__llvm__)) && \
     !defined(BROTLI_BUILD_NO_RBIT)
 #if defined(BROTLI_TARGET_ARMV7) || defined(BROTLI_TARGET_ARMV8_ANY)
-/* TODO: detect ARMv6T2 and enable this code for it. */
+/* TODO(eustas): detect ARMv6T2 and enable this code for it. */
 static BROTLI_INLINE brotli_reg_t BrotliRBit(brotli_reg_t input) {
   brotli_reg_t output;
   __asm__("rbit %0, %1\n" : "=r"(output) : "r"(input));
@@ -529,7 +511,7 @@ BROTLI_MIN_MAX(size_t) BROTLI_MIN_MAX(uint32_t) BROTLI_MIN_MAX(uint8_t)
 #if BROTLI_GNUC_HAS_BUILTIN(__builtin_ctzll, 3, 4, 0) || \
     BROTLI_INTEL_VERSION_CHECK(16, 0, 0)
 #define BROTLI_TZCNT64 __builtin_ctzll
-#elif BROTLI_MSVC_VERSION_CHECK(12, 0, 0)
+#elif BROTLI_MSVC_VERSION_CHECK(18, 0, 0)
 #if defined(BROTLI_TARGET_X64)
 #define BROTLI_TZCNT64 _tzcnt_u64
 #else /* BROTLI_TARGET_X64 */
@@ -546,7 +528,7 @@ static BROTLI_INLINE uint32_t BrotliBsf64Msvc(uint64_t x) {
 #if BROTLI_GNUC_HAS_BUILTIN(__builtin_clz, 3, 4, 0) || \
     BROTLI_INTEL_VERSION_CHECK(16, 0, 0)
 #define BROTLI_BSR32(x) (31u ^ (uint32_t)__builtin_clz(x))
-#elif BROTLI_MSVC_VERSION_CHECK(12, 0, 0)
+#elif BROTLI_MSVC_VERSION_CHECK(18, 0, 0)
 static BROTLI_INLINE uint32_t BrotliBsr32Msvc(uint32_t x) {
   unsigned long msb;
   _BitScanReverse(&msb, x);

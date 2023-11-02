@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ absl::optional<size_t> requested_read_only_shmem_size;
 absl::optional<size_t> requested_unsafe_shmem_size;
 absl::optional<size_t> requested_writable_shmem_size;
 
-MappedReadOnlyRegion ReadOnlyShmemCreateHook(size_t size) {
+MappedReadOnlyRegion ReadOnlyShmemCreateHook(size_t size, SharedMemoryMapper* mapper) {
   requested_read_only_shmem_size = size;
   return {};
 }

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_device.h"
@@ -71,7 +71,7 @@ class DeviceOperation : public GenericDeviceOperation {
   absl::optional<FidoDevice::CancelToken> token_;
 
  private:
-  FidoDevice* const device_ = nullptr;
+  const raw_ptr<FidoDevice> device_ = nullptr;
   Request request_;
   DeviceResponseCallback callback_;
 };

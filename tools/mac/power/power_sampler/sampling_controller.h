@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,7 @@ struct DataColumnKey;
 class SamplingController {
  public:
   SamplingController();
+  SamplingController(int sample_every);
   ~SamplingController();
 
   // Adds |sampler| to this controller if it has a unique name.
@@ -59,6 +60,9 @@ class SamplingController {
 
   Samplers samplers_;
   Monitors monitors_;
+
+  int sample_every_nth_ = 1;
+  int sampling_event_count_ = 0;
 
   base::flat_map<DataColumnKey, std::string> data_columns_units_;
 

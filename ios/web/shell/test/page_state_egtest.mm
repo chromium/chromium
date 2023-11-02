@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,13 @@
 #import <Foundation/Foundation.h>
 #import <XCTest/XCTest.h>
 
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/shell/test/earl_grey/shell_earl_grey.h"
 #import "ios/web/shell/test/earl_grey/shell_matchers.h"
 #import "ios/web/shell/test/earl_grey/web_shell_test_case.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -28,7 +28,7 @@ const char kLongPage2[] =
 const CGFloat kOffset1 = 20.0f;
 const CGFloat kOffset2 = 40.0f;
 
-// Waits for the web view scroll view is scrolled to |y_offset|.
+// Waits for the web view scroll view is scrolled to `y_offset`.
 void WaitForOffset(CGFloat y_offset) {
   CGPoint offset = CGPointMake(0.0, y_offset);
   NSString* content_offset_string = NSStringFromCGPoint(offset);
@@ -51,7 +51,7 @@ void WaitForOffset(CGFloat y_offset) {
   GREYAssert([condition waitWithTimeout:10], error_text);
 }
 
-// Loads the long page at |url|, scrolls to the top, and waits for the offset to
+// Loads the long page at `url`, scrolls to the top, and waits for the offset to
 // be {0, 0} before returning.
 void ScrollLongPageToTop(const GURL& url) {
   // Load the page and swipe down.
@@ -114,7 +114,9 @@ void ScrollLongPageToTop(const GURL& url) {
 
 // Tests that the content offset of the webview scroll view is {0, 0} after a
 // load.
-- (void)testZeroContentOffsetAfterLoad {
+// // TODO(crbug.com/1363701): Investigate flakiness on
+// ios-simulator-full-config bots.
+- (void)DISABLED_testZeroContentOffsetAfterLoad {
   // Set up the file-based server to load the tall page.
   const GURL baseURL = _server.GetURL(kLongPage1);
   [ShellEarlGrey loadURL:baseURL];

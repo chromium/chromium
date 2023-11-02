@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/renderer_host/pepper/quota_reservation.h"
@@ -135,19 +136,9 @@ class CONTENT_EXPORT PepperFileSystemBrowserHost
     ~IOThreadState();
 
     void OpenFileSystemComplete(ppapi::host::ReplyMessageContext reply_context,
-                                const GURL& root,
+                                const storage::FileSystemURL& root,
                                 const std::string& name,
                                 base::File::Error error);
-    void OpenPluginPrivateFileSystem(
-        const GURL& origin,
-        const std::string& plugin_id,
-        ppapi::host::ReplyMessageContext reply_context,
-        const std::string& fsid,
-        scoped_refptr<storage::FileSystemContext> file_system_context);
-    void OpenPluginPrivateFileSystemComplete(
-        ppapi::host::ReplyMessageContext reply_context,
-        const std::string& fsid,
-        base::File::Error error);
 
     // Runs on |task_runner_.
     void RunCallbackIfHostAlive(base::OnceClosure callback);
@@ -224,7 +215,7 @@ class CONTENT_EXPORT PepperFileSystemBrowserHost
   GetFileSystemOperationRunnerInternal(
       scoped_refptr<IOThreadState> io_thread_state);
 
-  BrowserPpapiHost* browser_ppapi_host_;
+  raw_ptr<BrowserPpapiHost> browser_ppapi_host_;
 
   PP_FileSystemType type_;
   bool called_open_;  // whether open has been called.

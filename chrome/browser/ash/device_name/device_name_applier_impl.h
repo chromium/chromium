@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_DEVICE_NAME_DEVICE_NAME_APPLIER_IMPL_H_
 
 #include "chrome/browser/ash/device_name/device_name_applier.h"
-#include "chromeos/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "net/base/backoff_entry.h"
 

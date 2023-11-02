@@ -52,6 +52,7 @@
 #include "absl/base/port.h"
 #include "absl/container/internal/inlined_vector.h"
 #include "absl/memory/memory.h"
+#include "absl/meta/type_traits.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
@@ -77,6 +78,8 @@ class InlinedVector {
   using MoveIterator = inlined_vector_internal::MoveIterator<TheA>;
   template <typename TheA>
   using IsMemcpyOk = inlined_vector_internal::IsMemcpyOk<TheA>;
+  template <typename TheA>
+  using IsMoveAssignOk = inlined_vector_internal::IsMoveAssignOk<TheA>;
 
   template <typename TheA, typename Iterator>
   using IteratorValueAdapter =
@@ -93,6 +96,15 @@ class InlinedVector {
   template <typename Iterator>
   using DisableIfAtLeastForwardIterator = absl::enable_if_t<
       !inlined_vector_internal::IsAtLeastForwardIterator<Iterator>::value, int>;
+
+  struct MemcpyPolicy {};
+  struct ElementwiseAssignPolicy {};
+  struct ElementwiseConstructPolicy {};
+
+  using MoveAssignmentPolicy = absl::conditional_t<
+      IsMemcpyOk<A>::value, MemcpyPolicy,
+      absl::conditional_t<IsMoveAssignOk<A>::value, ElementwiseAssignPolicy,
+                          ElementwiseConstructPolicy>>;
 
  public:
   using allocator_type = A;
@@ -151,7 +163,7 @@ class InlinedVector {
                 const allocator_type& allocator = allocator_type())
       : storage_(allocator) {
     storage_.Initialize(IteratorValueAdapter<A, ForwardIterator>(first),
-                        std::distance(first, last));
+                        static_cast<size_t>(std::distance(first, last)));
   }
 
   // Creates an inlined vector with elements constructed from the provided input
@@ -275,8 +287,10 @@ class InlinedVector {
   size_type max_size() const noexcept {
     // One bit of the size storage is used to indicate whether the inlined
     // vector contains allocated memory. As a result, the maximum size that the
-    // inlined vector can express is half of the max for `size_type`.
-    return (std::numeric_limits<size_type>::max)() / 2;
+    // inlined vector can express is the minimum of the limit of how many
+    // objects we can allocate and std::numeric_limits<size_type>::max() / 2.
+    return (std::min)(AllocatorTraits<A>::max_size(storage_.GetAllocator()),
+                      (std::numeric_limits<size_type>::max)() / 2);
   }
 
   // `InlinedVector::capacity()`
@@ -484,18 +498,7 @@ class InlinedVector {
   // unspecified state.
   InlinedVector& operator=(InlinedVector&& other) {
     if (ABSL_PREDICT_TRUE(this != std::addressof(other))) {
-      if (IsMemcpyOk<A>::value || other.storage_.GetIsAllocated()) {
-        inlined_vector_internal::DestroyAdapter<A>::DestroyElements(
-            storage_.GetAllocator(), data(), size());
-        storage_.DeallocateIfAllocated();
-        storage_.MemcpyFrom(other.storage_);
-
-        other.storage_.SetInlinedSize(0);
-      } else {
-        storage_.Assign(IteratorValueAdapter<A, MoveIterator<A>>(
-                            MoveIterator<A>(other.storage_.GetInlinedData())),
-                        other.size());
-      }
+      MoveAssignment(MoveAssignmentPolicy{}, std::move(other));
     }
 
     return *this;
@@ -522,7 +525,7 @@ class InlinedVector {
             EnableIfAtLeastForwardIterator<ForwardIterator> = 0>
   void assign(ForwardIterator first, ForwardIterator last) {
     storage_.Assign(IteratorValueAdapter<A, ForwardIterator>(first),
-                    std::distance(first, last));
+                    static_cast<size_t>(std::distance(first, last)));
   }
 
   // Overload of `InlinedVector::assign(...)` to replace the contents of the
@@ -585,8 +588,20 @@ class InlinedVector {
 
     if (ABSL_PREDICT_TRUE(n != 0)) {
       value_type dealias = v;
+      // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=102329#c2
+      // It appears that GCC thinks that since `pos` is a const pointer and may
+      // point to uninitialized memory at this point, a warning should be
+      // issued. But `pos` is actually only used to compute an array index to
+      // write to.
+#if !defined(__clang__) && defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
       return storage_.Insert(pos, CopyValueAdapter<A>(std::addressof(dealias)),
                              n);
+#if !defined(__clang__) && defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
     } else {
       return const_cast<iterator>(pos);
     }
@@ -612,9 +627,9 @@ class InlinedVector {
     ABSL_HARDENING_ASSERT(pos <= end());
 
     if (ABSL_PREDICT_TRUE(first != last)) {
-      return storage_.Insert(pos,
-                             IteratorValueAdapter<A, ForwardIterator>(first),
-                             std::distance(first, last));
+      return storage_.Insert(
+          pos, IteratorValueAdapter<A, ForwardIterator>(first),
+          static_cast<size_type>(std::distance(first, last)));
     } else {
       return const_cast<iterator>(pos);
     }
@@ -631,7 +646,7 @@ class InlinedVector {
     ABSL_HARDENING_ASSERT(pos >= begin());
     ABSL_HARDENING_ASSERT(pos <= end());
 
-    size_type index = std::distance(cbegin(), pos);
+    size_type index = static_cast<size_type>(std::distance(cbegin(), pos));
     for (size_type i = index; first != last; ++i, static_cast<void>(++first)) {
       insert(data() + i, *first);
     }
@@ -758,6 +773,42 @@ class InlinedVector {
  private:
   template <typename H, typename TheT, size_t TheN, typename TheA>
   friend H AbslHashValue(H h, const absl::InlinedVector<TheT, TheN, TheA>& a);
+
+  void MoveAssignment(MemcpyPolicy, InlinedVector&& other) {
+    inlined_vector_internal::DestroyAdapter<A>::DestroyElements(
+        storage_.GetAllocator(), data(), size());
+    storage_.DeallocateIfAllocated();
+    storage_.MemcpyFrom(other.storage_);
+
+    other.storage_.SetInlinedSize(0);
+  }
+
+  void MoveAssignment(ElementwiseAssignPolicy, InlinedVector&& other) {
+    if (other.storage_.GetIsAllocated()) {
+      MoveAssignment(MemcpyPolicy{}, std::move(other));
+    } else {
+      storage_.Assign(IteratorValueAdapter<A, MoveIterator<A>>(
+                          MoveIterator<A>(other.storage_.GetInlinedData())),
+                      other.size());
+    }
+  }
+
+  void MoveAssignment(ElementwiseConstructPolicy, InlinedVector&& other) {
+    if (other.storage_.GetIsAllocated()) {
+      MoveAssignment(MemcpyPolicy{}, std::move(other));
+    } else {
+      inlined_vector_internal::DestroyAdapter<A>::DestroyElements(
+          storage_.GetAllocator(), data(), size());
+      storage_.DeallocateIfAllocated();
+
+      IteratorValueAdapter<A, MoveIterator<A>> other_values(
+          MoveIterator<A>(other.storage_.GetInlinedData()));
+      inlined_vector_internal::ConstructElements<A>(
+          storage_.GetAllocator(), storage_.GetInlinedData(), other_values,
+          other.storage_.GetSize());
+      storage_.SetInlinedSize(other.storage_.GetSize());
+    }
+  }
 
   Storage storage_;
 };

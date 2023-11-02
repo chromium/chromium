@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_frame.h"
@@ -14,6 +15,7 @@
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkYUVAPixmaps.h"
 
 namespace blink {
@@ -84,12 +86,10 @@ ImageDecoderCore::ImageDecoderCore(
     String mime_type,
     scoped_refptr<SegmentReader> data,
     bool data_complete,
-    ImageDecoder::AlphaOption alpha_option,
     const ColorBehavior& color_behavior,
     const SkISize& desired_size,
     ImageDecoder::AnimationOption animation_option)
     : mime_type_(mime_type),
-      alpha_option_(alpha_option),
       color_behavior_(color_behavior),
       desired_size_(desired_size),
       animation_option_(animation_option),
@@ -122,7 +122,7 @@ ImageDecoderCore::ImageMetadata ImageDecoderCore::DecodeMetadata() {
   }
 
   metadata.has_size = true;
-  metadata.frame_count = SafeCast<uint32_t>(decoder_->FrameCount());
+  metadata.frame_count = base::checked_cast<uint32_t>(decoder_->FrameCount());
   metadata.repetition_count = decoder_->RepetitionCount();
   metadata.image_has_both_still_and_animated_sub_images =
       decoder_->ImageHasBothStillAndAnimatedSubImages();
@@ -240,8 +240,9 @@ std::unique_ptr<ImageDecoderCore::ImageDecodeResult> ImageDecoderCore::Decode(
 
   // This is zero copy; the VideoFrame points into the SkBitmap.
   const gfx::Size coded_size(sk_image->width(), sk_image->height());
-  auto frame = media::CreateFromSkImage(sk_image, gfx::Rect(coded_size),
-                                        coded_size, media::kNoTimestamp);
+  auto frame =
+      media::CreateFromSkImage(sk_image, gfx::Rect(coded_size), coded_size,
+                               GetTimestampForFrame(frame_index));
   if (!frame) {
     NOTREACHED() << "Failed to create VideoFrame from SkImage.";
     result->status = Status::kDecodeError;
@@ -256,6 +257,17 @@ std::unique_ptr<ImageDecoderCore::ImageDecodeResult> ImageDecoderCore::Decode(
       decoder_->RepetitionCount() != kAnimationNone) {
     frame->metadata().frame_duration =
         decoder_->FrameDurationAtIndex(frame_index);
+  }
+
+  if (is_decoding_in_order_) {
+    // Stop aggressive purging when out of order decoding is detected.
+    if (last_decoded_frame_ != frame_index &&
+        ((last_decoded_frame_ + 1) % decoder_->FrameCount()) != frame_index) {
+      is_decoding_in_order_ = false;
+    } else {
+      decoder_->ClearCacheExceptFrame(frame_index);
+    }
+    last_decoded_frame_ = frame_index;
   }
 
   result->status = Status::kOk;
@@ -274,7 +286,7 @@ void ImageDecoderCore::AppendData(size_t data_size,
   data_complete_ = data_complete;
   if (data) {
     stream_buffer_->Append(reinterpret_cast<const char*>(data.get()),
-                           SafeCast<wtf_size_t>(data_size));
+                           base::checked_cast<wtf_size_t>(data_size));
   } else {
     DCHECK_EQ(data_size, 0u);
   }
@@ -290,6 +302,10 @@ void ImageDecoderCore::Clear() {
   yuv_frame_ = nullptr;
   have_completed_rgb_decode_ = false;
   have_completed_yuv_decode_ = false;
+  last_decoded_frame_ = 0u;
+  is_decoding_in_order_ = true;
+  timestamp_cache_.clear();
+  timestamp_cache_.emplace_back();
 }
 
 void ImageDecoderCore::Reinitialize(
@@ -297,10 +313,16 @@ void ImageDecoderCore::Reinitialize(
   Clear();
   animation_option_ = animation_option;
   decoder_ = ImageDecoder::CreateByMimeType(
-      mime_type_, segment_reader_, data_complete_, alpha_option_,
+      mime_type_, segment_reader_, data_complete_,
+      ImageDecoder::kAlphaNotPremultiplied,
       ImageDecoder::HighBitDepthDecodingOption::kDefaultBitDepth,
       color_behavior_, desired_size_, animation_option_);
   DCHECK(decoder_);
+}
+
+bool ImageDecoderCore::FrameIsDecodedAtIndexForTesting(
+    uint32_t frame_index) const {
+  return decoder_->FrameIsDecodedAtIndex(frame_index);
 }
 
 void ImageDecoderCore::MaybeDecodeToYuv() {
@@ -316,8 +338,7 @@ void ImageDecoderCore::MaybeDecodeToYuv() {
   // not populated with image data. To avoid thrashing as bytes come in, only
   // create the frame once.
   if (!yuv_frame_) {
-    const auto coded_size =
-        ToGfxSize(decoder_->DecodedYUVSize(cc::YUVIndex::kY));
+    const auto coded_size = decoder_->DecodedYUVSize(cc::YUVIndex::kY);
 
     // Plane sizes are guaranteed to fit in an int32_t by
     // ImageDecoder::SetSize(); since YUV is 1 byte-per-channel, we can just
@@ -339,8 +360,9 @@ void ImageDecoderCore::MaybeDecodeToYuv() {
       return;
   }
 
-  void* planes[cc::kNumYUVPlanes] = {yuv_frame_->data(0), yuv_frame_->data(1),
-                                     yuv_frame_->data(2)};
+  void* planes[cc::kNumYUVPlanes] = {yuv_frame_->writable_data(0),
+                                     yuv_frame_->writable_data(1),
+                                     yuv_frame_->writable_data(2)};
   wtf_size_t row_bytes[cc::kNumYUVPlanes] = {
       static_cast<wtf_size_t>(yuv_frame_->stride(0)),
       static_cast<wtf_size_t>(yuv_frame_->stride(1)),
@@ -376,6 +398,10 @@ void ImageDecoderCore::MaybeDecodeToYuv() {
     }
   }
 
+  yuv_frame_->set_timestamp(GetTimestampForFrame(0));
+  yuv_frame_->metadata().transformation = ImageOrientationToVideoTransformation(
+      decoder_->Orientation().Orientation());
+
   if (gfx_cs.IsValid()) {
     yuv_frame_->set_color_space(YUVColorSpaceToGfxColorSpace(
         skyuv_cs, gfx_cs.GetPrimaryID(), gfx_cs.GetTransferID()));
@@ -401,6 +427,33 @@ void ImageDecoderCore::MaybeDecodeToYuv() {
 
   yuv_frame_->set_color_space(YUVColorSpaceToGfxColorSpace(
       skyuv_cs, gfx::ColorSpace::PrimaryID::BT2020, transfer_id));
+}
+
+base::TimeDelta ImageDecoderCore::GetTimestampForFrame(uint32_t index) const {
+  // The zero entry is always populated by this point.
+  DCHECK_GE(timestamp_cache_.size(), 1u);
+
+  auto ts = decoder_->FrameTimestampAtIndex(index);
+  if (ts.has_value())
+    return *ts;
+
+  if (index < timestamp_cache_.size())
+    return timestamp_cache_[index];
+
+  // Calling FrameCount() ensures duration information is populated for every
+  // frame up to the current count. DecodeFrameBufferAtIndex() or DecodeToYUV()
+  // have also been called this point, so index is always valid.
+  DCHECK_LT(index, decoder_->FrameCount());
+  DCHECK(!decoder_->Failed());
+
+  const auto old_size = timestamp_cache_.size();
+  timestamp_cache_.resize(decoder_->FrameCount());
+  for (auto i = old_size; i < timestamp_cache_.size(); ++i) {
+    timestamp_cache_[i] =
+        timestamp_cache_[i - 1] + decoder_->FrameDurationAtIndex(i - 1);
+  }
+
+  return timestamp_cache_[index];
 }
 
 }  // namespace blink

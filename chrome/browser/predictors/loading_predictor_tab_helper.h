@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_PREDICTORS_LOADING_PREDICTOR_TAB_HELPER_H_
 #define CHROME_BROWSER_PREDICTORS_LOADING_PREDICTOR_TAB_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/id_type.h"
@@ -61,8 +62,7 @@ class LoadingPredictorTabHelper
       const GURL& url,
       const std::string& mime_type,
       network::mojom::RequestDestination request_destination) override;
-  void DocumentOnLoadCompletedInMainFrame(
-      content::RenderFrameHost* render_frame_host) override;
+  void DocumentOnLoadCompletedInPrimaryMainFrame() override;
 
   // Used by LoadingPredictorPageLoadMetricsObserver.
   void RecordFirstContentfulPaint(content::RenderFrameHost* render_frame_host,
@@ -104,7 +104,7 @@ class LoadingPredictorTabHelper
     bool has_local_preconnect_predictions_for_current_navigation_ = false;
 
     // The optimization guide prediction for the current navigation. If set,
-    // this will be cleared on |DocumentOnLoadCompletedInMainFrame|.
+    // this will be cleared on |DocumentOnLoadCompletedInPrimaryMainFrame|.
     absl::optional<OptimizationGuidePrediction>
         last_optimization_guide_prediction_;
 
@@ -143,7 +143,7 @@ class LoadingPredictorTabHelper
     NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
 
     scoped_refptr<PageData> page_data_;
-    content::NavigationHandle& navigation_handle_;
+    base::SafeRef<content::NavigationHandle> navigation_handle_;
     base::WeakPtrFactory<NavigationPageDataHolder> weak_factory_{this};
   };
 
@@ -163,8 +163,8 @@ class LoadingPredictorTabHelper
   base::WeakPtr<LoadingPredictor> predictor_;
 
   // The optimization guide decider to consult for remote predictions.
-  optimization_guide::OptimizationGuideDecider* optimization_guide_decider_ =
-      nullptr;
+  raw_ptr<optimization_guide::OptimizationGuideDecider>
+      optimization_guide_decider_ = nullptr;
 
   // Used to get a weak pointer to |this|.
   base::WeakPtrFactory<LoadingPredictorTabHelper> weak_ptr_factory_{this};

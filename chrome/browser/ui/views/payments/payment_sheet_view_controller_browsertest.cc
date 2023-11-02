@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,60 +19,22 @@
 
 namespace payments {
 
-// A simple PaymentRequest which simply requests 'visa' or 'mastercard' and
-// nothing else.
-typedef PaymentRequestBrowserTestBase PaymentSheetViewControllerNoShippingTest;
-
-// With no data present, the pay button should be disabled.
-IN_PROC_BROWSER_TEST_F(PaymentSheetViewControllerNoShippingTest, NoData) {
-  NavigateTo("/payment_request_no_shipping_test.html");
-  InvokePaymentRequestUI();
-
-  EXPECT_FALSE(IsPayButtonEnabled());
-}
-
-// With a supported card (Visa) present, the pay button should be enabled.
-IN_PROC_BROWSER_TEST_F(PaymentSheetViewControllerNoShippingTest,
-                       SupportedCard) {
-  NavigateTo("/payment_request_no_shipping_test.html");
-  autofill::AutofillProfile profile(autofill::test::GetFullProfile());
-  AddAutofillProfile(profile);
-  autofill::CreditCard card(autofill::test::GetCreditCard());  // Visa card.
-  card.set_billing_address_id(profile.guid());
-  AddCreditCard(card);
-
-  InvokePaymentRequestUI();
-  EXPECT_TRUE(IsPayButtonEnabled());
-
-  // When an autofill payment app is selected the primary button should have
-  // "Pay" label.
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PAYMENTS_PAY_BUTTON),
-            GetPrimaryButtonLabel());
-}
-
-// With only an unsupported card (Amex) in the database, the pay button should
-// be disabled.
-IN_PROC_BROWSER_TEST_F(PaymentSheetViewControllerNoShippingTest,
-                       UnsupportedCard) {
-  NavigateTo("/payment_request_no_shipping_test.html");
-  AddCreditCard(autofill::test::GetCreditCard2());  // Amex card.
-
-  InvokePaymentRequestUI();
-  EXPECT_FALSE(IsPayButtonEnabled());
-}
+using PaymentSheetViewControllerNoShippingTest = PaymentRequestBrowserTestBase;
 
 // If shipping and contact info are not requested, their rows should not be
 // present.
 IN_PROC_BROWSER_TEST_F(PaymentSheetViewControllerNoShippingTest,
                        NoShippingNoContactRows) {
+  std::string payment_method_name;
+  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+                    &payment_method_name);
+
   NavigateTo("/payment_request_no_shipping_test.html");
-  InvokePaymentRequestUI();
+  InvokePaymentRequestUIWithJs("buyWithMethods([{supportedMethods:'" +
+                               payment_method_name + "'}]);");
 
   EXPECT_NE(nullptr, dialog_view()->GetViewByID(static_cast<int>(
                          DialogViewID::PAYMENT_SHEET_SUMMARY_SECTION)));
-  EXPECT_NE(nullptr,
-            dialog_view()->GetViewByID(static_cast<int>(
-                DialogViewID::PAYMENT_SHEET_PAYMENT_METHOD_SECTION_BUTTON)));
   EXPECT_EQ(nullptr,
             dialog_view()->GetViewByID(static_cast<int>(
                 DialogViewID::PAYMENT_SHEET_SHIPPING_ADDRESS_SECTION)));

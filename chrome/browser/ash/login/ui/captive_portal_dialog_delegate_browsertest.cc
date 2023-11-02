@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,9 @@ class ChildModalDialogDelegate : public views::DialogDelegateView {
     DCHECK(owned_by_widget());
     SetModalType(ui::MODAL_TYPE_CHILD);
     SetFocusBehavior(FocusBehavior::ALWAYS);
-    // Dialogs that take focus must have a name to pass accessibility checks.
+    // Dialogs that take focus must have a name and role to pass accessibility
+    // checks.
+    GetViewAccessibility().OverrideRole(ax::mojom::Role::kDialog);
     GetViewAccessibility().OverrideName("Test dialog");
   }
   ChildModalDialogDelegate(const ChildModalDialogDelegate&) = delete;

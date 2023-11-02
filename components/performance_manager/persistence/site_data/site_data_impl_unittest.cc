@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,7 +47,7 @@ class MockDataStore : public testing::NoopSiteDataStore {
   MockDataStore(const MockDataStore&) = delete;
   MockDataStore& operator=(const MockDataStore&) = delete;
 
-  ~MockDataStore() = default;
+  ~MockDataStore() override = default;
 
   // Note: As move-only parameters (e.g. OnceCallback) aren't supported by mock
   // methods, add On... methods to pass a non-const reference to OnceCallback.

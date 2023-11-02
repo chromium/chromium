@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -74,7 +74,7 @@
   DEVICE_LOG(::device_event_log::LOG_TYPE_CAMERA, \
              ::device_event_log::LOG_LEVEL_##level)
 
-#if defined(OS_ANDROID) && defined(OFFICIAL_BUILD)
+#if BUILDFLAG(IS_ANDROID) && defined(OFFICIAL_BUILD)
 // FIDO_LOG is discarded for release Android builds in order to reduce binary
 // size.
 #define FIDO_LOG(level) EAT_CHECK_STREAM_PARAMS()

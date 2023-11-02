@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,13 +11,14 @@ export interface AppearanceBrowserProxy {
   getDefaultZoom(): Promise<number>;
   getThemeInfo(themeId: string): Promise<chrome.management.ExtensionInfo>;
 
-  /** @return Whether the current profile is supervised. */
-  isSupervised(): boolean;
+  /** @return Whether the current profile is a child account. */
+  isChildAccount(): boolean;
 
   useDefaultTheme(): void;
 
-  // <if expr="is_linux and not chromeos">
-  useSystemTheme(): void;
+  // <if expr="is_linux">
+  useGtkTheme(): void;
+  useQtTheme(): void;
   // </if>
 
   validateStartupPage(url: string): Promise<boolean>;
@@ -36,17 +37,21 @@ export class AppearanceBrowserProxyImpl implements AppearanceBrowserProxy {
     });
   }
 
-  isSupervised() {
-    return loadTimeData.getBoolean('isSupervised');
+  isChildAccount() {
+    return loadTimeData.getBoolean('isChildAccount');
   }
 
   useDefaultTheme() {
     chrome.send('useDefaultTheme');
   }
 
-  // <if expr="is_linux and not chromeos">
-  useSystemTheme() {
-    chrome.send('useSystemTheme');
+  // <if expr="is_linux">
+  useGtkTheme() {
+    chrome.send('useGtkTheme');
+  }
+
+  useQtTheme() {
+    chrome.send('useQtTheme');
   }
   // </if>
 

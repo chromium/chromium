@@ -34,6 +34,7 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/record_replay.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_flags.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -361,6 +362,7 @@ class CORE_EXPORT InvalidationSet
   explicit InvalidationSet(InvalidationType);
 
   ~InvalidationSet() {
+    recordreplay::UnregisterPointer(this);
     CHECK(is_alive_);
     is_alive_ = false;
     ClearAllBackings();

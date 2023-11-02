@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,11 @@
 
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/ash_export.h"
-#include "ash/components/audio/audio_device.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "ash/system/tray/tray_toggle_button.h"
 #include "base/callback.h"
+#include "chromeos/ash/components/audio/audio_device.h"
+#include "components/soda/soda_installer.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/view.h"
 
@@ -23,12 +24,12 @@ struct VectorIcon;
 
 namespace ash {
 class MicGainSliderController;
+class UnifiedAudioDetailedViewControllerSodaTest;
 class UnifiedAudioDetailedViewControllerTest;
 
-namespace tray {
-
 class ASH_EXPORT AudioDetailedView : public TrayDetailedView,
-                                     public ::ash::AccessibilityObserver {
+                                     public AccessibilityObserver,
+                                     public speech::SodaInstaller::Observer {
  public:
   explicit AudioDetailedView(DetailedViewDelegate* delegate);
 
@@ -47,11 +48,12 @@ class ASH_EXPORT AudioDetailedView : public TrayDetailedView,
   static void SetMapNoiseCancellationToggleCallbackForTest(
       NoiseCancellationCallback* map_noise_cancellation_toggle_callback);
 
-  // ::ash::AccessibilityObserver:
+  // AccessibilityObserver:
   void OnAccessibilityStatusChanged() override;
 
  private:
-  friend class ::ash::UnifiedAudioDetailedViewControllerTest;
+  friend class UnifiedAudioDetailedViewControllerSodaTest;
+  friend class UnifiedAudioDetailedViewControllerTest;
 
   // Helper function to add non-clickable header rows within the scrollable
   // list.
@@ -70,6 +72,16 @@ class ASH_EXPORT AudioDetailedView : public TrayDetailedView,
   // TrayDetailedView:
   void HandleViewClicked(views::View* view) override;
 
+  // SodaInstaller::Observer:
+  void OnSodaInstalled(speech::LanguageCode language_code) override;
+  void OnSodaInstallError(speech::LanguageCode language_code,
+                          speech::SodaInstaller::ErrorCode error_code) override;
+  void OnSodaProgress(speech::LanguageCode language_code,
+                      int combined_progress) override;
+
+  void MaybeShowSodaMessage(speech::LanguageCode language_code,
+                            std::u16string message);
+
   typedef std::map<views::View*, AudioDevice> AudioDeviceMap;
 
   std::unique_ptr<MicGainSliderController> mic_gain_controller_;
@@ -80,7 +92,6 @@ class ASH_EXPORT AudioDetailedView : public TrayDetailedView,
   HoverHighlightView* live_caption_view_ = nullptr;
 };
 
-}  // namespace tray
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_AUDIO_AUDIO_DETAILED_VIEW_H_

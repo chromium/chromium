@@ -1,31 +1,39 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
-import {WrapupWaitForManualWpEnablePageElement} from 'chrome://shimless-rma/wrapup_wait_for_manual_wp_enable_page.js';
+import {ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
+import {WrapupWaitForManualWpEnablePage} from 'chrome://shimless-rma/wrapup_wait_for_manual_wp_enable_page.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.js';
 
 export function wrapupWaitForManualWpEnablePageTest() {
-  /** @type {?WrapupWaitForManualWpEnablePageElement} */
+  /**
+   * ShimlessRma is needed to handle the 'transition-state' used to signal write
+   * write protect is enabled.
+   * @type {?ShimlessRma}
+   */
+  let shimlessRmaComponent = null;
+
+  /** @type {?WrapupWaitForManualWpEnablePage} */
   let component = null;
 
   /** @type {?FakeShimlessRmaService} */
   let service = null;
 
-  suiteSetup(() => {
+  setup(() => {
+    document.body.innerHTML = '';
     service = new FakeShimlessRmaService();
     setShimlessRmaServiceForTesting(service);
   });
 
-  setup(() => {
-    document.body.innerHTML = '';
-  });
-
   teardown(() => {
+    shimlessRmaComponent.remove();
+    shimlessRmaComponent = null;
     component.remove();
     component = null;
     service.reset();
@@ -37,7 +45,12 @@ export function wrapupWaitForManualWpEnablePageTest() {
   function initializeWaitForManualWpEnablePage() {
     assertFalse(!!component);
 
-    component = /** @type {!WrapupWaitForManualWpEnablePageElement} */ (
+    shimlessRmaComponent =
+        /** @type {!ShimlessRma} */ (document.createElement('shimless-rma'));
+    assertTrue(!!shimlessRmaComponent);
+    document.body.appendChild(shimlessRmaComponent);
+
+    component = /** @type {!WrapupWaitForManualWpEnablePage} */ (
         document.createElement('wrapup-wait-for-manual-wp-enable-page'));
     assertTrue(!!component);
     document.body.appendChild(component);
@@ -52,38 +65,18 @@ export function wrapupWaitForManualWpEnablePageTest() {
     assertFalse(manualEnableComponent.hidden);
   });
 
-  test('HwwpDisabledDisablesNext', async () => {
-    await initializeWaitForManualWpEnablePage();
-
-    let savedResult;
-    let savedError;
-    component.onNextButtonClick()
-        .then((result) => savedResult = result)
-        .catch((error) => savedError = error);
-    await flushTasks();
-
-    assertTrue(savedError instanceof Error);
-    assertEquals(
-        savedError.message, 'Hardware Write Protection is not enabled.');
-    assertEquals(savedResult, undefined);
-  });
-
-  test('HwwpEnabledEnablesNext', async () => {
+  test('WriteProtectEnabledAutoTransitions', async () => {
     const resolver = new PromiseResolver();
     await initializeWaitForManualWpEnablePage();
-    service.triggerHardwareWriteProtectionObserver(true, 0);
-    await flushTasks();
+
+    let callCount = 0;
     service.writeProtectManuallyEnabled = () => {
+      callCount++;
       return resolver.promise;
     };
-
-    let expectedResult = {foo: 'bar'};
-    let savedResult;
-    component.onNextButtonClick().then((result) => savedResult = result);
-    // Resolve to a distinct result to confirm it was not modified.
-    resolver.resolve(expectedResult);
+    service.triggerHardwareWriteProtectionObserver(true, 0);
     await flushTasks();
 
-    assertDeepEquals(savedResult, expectedResult);
+    assertEquals(1, callCount);
   });
 }

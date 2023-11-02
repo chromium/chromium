@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -57,8 +57,10 @@ class MEDIA_EXPORT Renderer {
   // different than 1.0.
   virtual void SetPreservesPitch(bool preserves_pitch);
 
-  // Sets a flag indicating whether the audio stream was initiated by autoplay.
-  virtual void SetAutoplayInitiated(bool autoplay_initiated);
+  // Sets a flag indicating whether the audio stream was played with user
+  // activation.
+  virtual void SetWasPlayedWithUserActivation(
+      bool was_played_with_user_activation);
 
   // The following functions must be called after Initialize().
 
@@ -90,6 +92,17 @@ class MEDIA_EXPORT Renderer {
   virtual void OnEnabledAudioTracksChanged(
       const std::vector<DemuxerStream*>& enabled_tracks,
       base::OnceClosure change_completed_cb);
+
+  // Signal to the renderer that there has been a client request to access a
+  // VideoFrame. This signal may be used by the renderer to ensure it is
+  // operating in a mode which produces a VideoFrame usable by the client.
+  // E.g., the MediaFoundationRendererClient on Windows has two modes
+  // of operation: Frame Server & Direct Composition. Direct Composition mode
+  // does not produce a VideoFrame with an accessible 'data' buffer, so clients
+  // cannot access the underlying image data. In order for
+  // MediaFoundationRendererClient to produce a VideoFrame with 'data'
+  // accessible by the client it must switch to operate in Frame Server mode.
+  virtual void OnExternalVideoFrameRequest();
 };
 
 }  // namespace media

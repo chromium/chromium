@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,7 +37,7 @@ class WizardControllerExitWaiter : public test::TestConditionWaiter,
 
   void EndWait();
 
-  const OobeScreenId target_screen_id_ = OobeScreen::SCREEN_UNKNOWN;
+  const OobeScreenId target_screen_id_ = ash::OOBE_SCREEN_UNKNOWN;
 
   State state_ = State::IDLE;
 

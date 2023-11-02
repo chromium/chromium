@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,17 @@
 #include <dawn/webgpu.h>
 
 #include "gpu/command_buffer/client/webgpu_interface.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_usvstring_uint32array.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_shader_module_descriptor.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_compilation_info.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_compilation_message.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
+#include "third_party/blink/renderer/modules/webgpu/string_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/graphics/gpu/dawn_callback.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_callback.h"
 
 namespace blink {
 
@@ -93,8 +95,8 @@ void GPUShaderModule::OnCompilationInfoCallback(
   for (uint32_t i = 0; i < info->messageCount; ++i) {
     const WGPUCompilationMessage* message = &info->messages[i];
     result->AppendMessage(MakeGarbageCollected<GPUCompilationMessage>(
-        message->message, message->type, message->lineNum, message->linePos,
-        message->offset, message->length));
+        StringFromASCIIAndUTF8(message->message), message->type,
+        message->lineNum, message->linePos, message->offset, message->length));
   }
 
   resolver->Resolve(result);
@@ -105,14 +107,14 @@ ScriptPromise GPUShaderModule::compilationInfo(ScriptState* script_state) {
   ScriptPromise promise = resolver->Promise();
 
   auto* callback =
-      BindDawnOnceCallback(&GPUShaderModule::OnCompilationInfoCallback,
+      BindWGPUOnceCallback(&GPUShaderModule::OnCompilationInfoCallback,
                            WrapPersistent(this), WrapPersistent(resolver));
 
   GetProcs().shaderModuleGetCompilationInfo(
       GetHandle(), callback->UnboundCallback(), callback->AsUserdata());
   // WebGPU guarantees that promises are resolved in finite time so we
   // need to ensure commands are flushed.
-  EnsureFlush();
+  EnsureFlush(ToEventLoop(script_state));
   return promise;
 }
 

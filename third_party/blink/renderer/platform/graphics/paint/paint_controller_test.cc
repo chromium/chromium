@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -1816,7 +1816,7 @@ void DrawPath(GraphicsContext& context,
   builder.lineTo(100, 0);
   builder.close();
   SkPath path = builder.detach();
-  PaintFlags flags;
+  cc::PaintFlags flags;
   flags.setAntiAlias(true);
   for (unsigned i = 0; i < count; i++)
     context.DrawPath(path, flags, AutoDarkMode::Disabled());
@@ -1964,6 +1964,34 @@ TEST_P(PaintControllerTest, TransientPaintControllerIncompleteCycle) {
   paint_controller = nullptr;
 }
 
+TEST_P(PaintControllerTest, AllowDuplicatedIdForTransientPaintController) {
+  auto paint_controller =
+      std::make_unique<PaintController>(PaintController::kTransient);
+  GraphicsContext context(*paint_controller);
+  FakeDisplayItemClient& client =
+      *MakeGarbageCollected<FakeDisplayItemClient>("client");
+  {
+    CommitCycleScope cycle_scope(*paint_controller);
+    InitRootChunk(*paint_controller);
+    {
+      paint_controller->SetWillForceNewChunk(true);
+      ScopedPaintChunkProperties p(*paint_controller,
+                                   DefaultPaintChunkProperties(), client,
+                                   kBackgroundType);
+      DrawRect(context, client, kBackgroundType, gfx::Rect(100, 100, 50, 50));
+    }
+    {
+      paint_controller->SetWillForceNewChunk(true);
+      ScopedPaintChunkProperties p(*paint_controller,
+                                   DefaultPaintChunkProperties(), client,
+                                   kBackgroundType);
+      DrawRect(context, client, kBackgroundType, gfx::Rect(100, 100, 50, 50));
+    }
+  }
+  EXPECT_EQ(2u, paint_controller->GetDisplayItemList().size());
+  EXPECT_EQ(2u, paint_controller->PaintChunks().size());
+}
+
 TEST_P(PaintControllerTest, AllowDuplicatedIdForUncacheableItem) {
   if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled())
     return;
@@ -2032,7 +2060,7 @@ TEST_P(PaintControllerTest, RecordRegionCaptureDataValidData) {
 }
 
 // Death tests don't work properly on Android.
-#if defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID)
+#if defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 
 TEST_P(PaintControllerTest, RecordRegionCaptureDataEmptyToken) {
   static const auto kCropId = RegionCaptureCropId(base::Token{});
@@ -2144,6 +2172,6 @@ TEST_P(PaintControllerTest, DeletedClientInUnderInvalidatedSubsequence) {
   }
 }
 
-#endif  // defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID)
+#endif  // defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 
 }  // namespace blink

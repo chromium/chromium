@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
+#include "ui/gfx/geometry/size_conversions.h"
 
 namespace blink {
 
@@ -65,7 +66,7 @@ void PageScaleConstraintsSet::UpdatePageDefinedConstraints(
     const ViewportDescription& description,
     const Length& legacy_fallback_width) {
   page_defined_constraints_ =
-      description.Resolve(FloatSize(icb_size_), legacy_fallback_width);
+      description.Resolve(gfx::SizeF(icb_size_), legacy_fallback_width);
 
   constraints_dirty_ = true;
 }
@@ -118,7 +119,7 @@ void PageScaleConstraintsSet::SetNeedsReset(bool needs_reset) {
 }
 
 void PageScaleConstraintsSet::DidChangeContentsSize(
-    IntSize contents_size,
+    gfx::Size contents_size,
     int vertical_scrollbar_width,
     float page_scale_factor) {
   // If a large fixed-width element expanded the size of the document late in
@@ -136,11 +137,10 @@ void PageScaleConstraintsSet::DidChangeContentsSize(
 }
 
 static float ComputeDeprecatedTargetDensityDPIFactor(
-    const ViewportDescription& description,
-    float device_scale_factor) {
+    const ViewportDescription& description) {
   if (description.deprecated_target_density_dpi ==
       ViewportDescription::kValueDeviceDPI)
-    return 1.0f / device_scale_factor;
+    return 1.0f;
 
   float target_dpi = -1.0f;
   if (description.deprecated_target_density_dpi ==
@@ -158,19 +158,19 @@ static float ComputeDeprecatedTargetDensityDPIFactor(
   return target_dpi > 0 ? 160.0f / target_dpi : 1.0f;
 }
 
-static float GetLayoutWidthForNonWideViewport(const FloatSize& device_size,
+static float GetLayoutWidthForNonWideViewport(const gfx::Size& device_size,
                                               float initial_scale) {
   return initial_scale == -1 ? device_size.width()
                              : device_size.width() / initial_scale;
 }
 
 static float ComputeHeightByAspectRatio(float width,
-                                        const FloatSize& device_size) {
-  return width * (device_size.height() / device_size.width());
+                                        const gfx::Size& device_size) {
+  return width * device_size.height() / device_size.width();
 }
 
 void PageScaleConstraintsSet::DidChangeInitialContainingBlockSize(
-    const IntSize& size) {
+    const gfx::Size& size) {
   if (icb_size_ == size)
     return;
 
@@ -178,14 +178,13 @@ void PageScaleConstraintsSet::DidChangeInitialContainingBlockSize(
   constraints_dirty_ = true;
 }
 
-IntSize PageScaleConstraintsSet::GetLayoutSize() const {
-  return FlooredIntSize(ComputeConstraintsStack().layout_size);
+gfx::Size PageScaleConstraintsSet::GetLayoutSize() const {
+  return gfx::ToFlooredSize(ComputeConstraintsStack().layout_size);
 }
 
 void PageScaleConstraintsSet::AdjustForAndroidWebViewQuirks(
     const ViewportDescription& description,
     int layout_fallback_width,
-    float device_scale_factor,
     bool support_target_density_dpi,
     bool wide_viewport_quirk_enabled,
     bool use_wide_viewport,
@@ -216,8 +215,8 @@ void PageScaleConstraintsSet::AdjustForAndroidWebViewQuirks(
   float target_density_dpi_factor = 1.0f;
 
   if (support_target_density_dpi) {
-    target_density_dpi_factor = ComputeDeprecatedTargetDensityDPIFactor(
-        description, device_scale_factor);
+    target_density_dpi_factor =
+        ComputeDeprecatedTargetDensityDPIFactor(description);
     if (page_defined_constraints_.initial_scale != -1)
       page_defined_constraints_.initial_scale *= target_density_dpi_factor;
     if (page_defined_constraints_.minimum_scale != -1)
@@ -238,17 +237,17 @@ void PageScaleConstraintsSet::AdjustForAndroidWebViewQuirks(
         description.zoom != 1.0f) {
       if (layout_fallback_width)
         adjusted_layout_size_width = layout_fallback_width;
-      adjusted_layout_size_height = ComputeHeightByAspectRatio(
-          adjusted_layout_size_width, FloatSize(icb_size_));
+      adjusted_layout_size_height =
+          ComputeHeightByAspectRatio(adjusted_layout_size_width, icb_size_);
     } else if (!use_wide_viewport) {
       const float non_wide_scale =
           description.zoom < 1 && !description.max_width.IsDeviceWidth() &&
                   !description.max_width.IsDeviceHeight()
               ? -1
               : old_initial_scale;
-      adjusted_layout_size_width = GetLayoutWidthForNonWideViewport(
-                                       FloatSize(icb_size_), non_wide_scale) /
-                                   target_density_dpi_factor;
+      adjusted_layout_size_width =
+          GetLayoutWidthForNonWideViewport(icb_size_, non_wide_scale) /
+          target_density_dpi_factor;
       float new_initial_scale = target_density_dpi_factor;
       if (user_agent_constraints_.initial_scale != -1 &&
           (description.max_width.IsDeviceWidth() ||
@@ -258,8 +257,8 @@ void PageScaleConstraintsSet::AdjustForAndroidWebViewQuirks(
         adjusted_layout_size_width /= user_agent_constraints_.initial_scale;
         new_initial_scale = user_agent_constraints_.initial_scale;
       }
-      adjusted_layout_size_height = ComputeHeightByAspectRatio(
-          adjusted_layout_size_width, FloatSize(icb_size_));
+      adjusted_layout_size_height =
+          ComputeHeightByAspectRatio(adjusted_layout_size_width, icb_size_);
       if (description.zoom < 1) {
         page_defined_constraints_.initial_scale = new_initial_scale;
         if (page_defined_constraints_.minimum_scale != -1)
@@ -285,8 +284,8 @@ void PageScaleConstraintsSet::AdjustForAndroidWebViewQuirks(
         description.max_width.IsDeviceWidth()) {
       adjusted_layout_size_width =
           icb_size_.width() / target_density_dpi_factor;
-      adjusted_layout_size_height = ComputeHeightByAspectRatio(
-          adjusted_layout_size_width, FloatSize(icb_size_));
+      adjusted_layout_size_height =
+          ComputeHeightByAspectRatio(adjusted_layout_size_width, icb_size_);
     }
   }
 

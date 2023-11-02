@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,11 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/observer_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/network_change_notifier.h"
 
-namespace net {
-
-namespace nqe {
-
-namespace internal {
+namespace net::nqe::internal {
 
 NetworkQualityStore::NetworkQualityStore() {
   static_assert(kMaximumNetworkQualityCacheSize > 0,
@@ -70,9 +67,9 @@ bool NetworkQualityStore::GetById(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // First check if an exact match can be found.
-  for (auto it = cached_network_qualities_.begin();
-       it != cached_network_qualities_.end(); ++it) {
-    if (network_id.type != it->first.type || network_id.id != it->first.id) {
+  for (const auto& cached_quality : cached_network_qualities_) {
+    if (network_id.type != cached_quality.first.type ||
+        network_id.id != cached_quality.first.id) {
       // The |type| and |id| must match.
       continue;
     }
@@ -81,8 +78,8 @@ bool NetworkQualityStore::GetById(
     // It's possible that the current network does not have signal strength
     // available. In that case, return the cached network quality when the
     // signal strength was unavailable.
-    if (network_id.signal_strength == it->first.signal_strength) {
-      *cached_network_quality = it->second;
+    if (network_id.signal_strength == cached_quality.first.signal_strength) {
+      *cached_network_quality = cached_quality.second;
       return true;
     }
   }
@@ -196,8 +193,4 @@ void NetworkQualityStore::NotifyCacheObserverIfPresent(
     observer->OnChangeInCachedNetworkQuality(it.first, it.second);
 }
 
-}  // namespace internal
-
-}  // namespace nqe
-
-}  // namespace net
+}  // namespace net::nqe::internal

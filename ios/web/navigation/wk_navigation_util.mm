@@ -1,24 +1,24 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/web/navigation/wk_navigation_util.h"
 
-#include <algorithm>
+#import <algorithm>
 
-#include "base/json/json_writer.h"
-#include "base/mac/bundle_locations.h"
-#include "base/metrics/field_trial_params.h"
-#include "base/strings/string_util.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/values.h"
-#include "ios/web/common/features.h"
+#import "base/json/json_writer.h"
+#import "base/mac/bundle_locations.h"
+#import "base/metrics/field_trial_params.h"
+#import "base/strings/escape.h"
+#import "base/strings/string_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/values.h"
+#import "ios/web/common/features.h"
 #import "ios/web/navigation/crw_error_page_helper.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/web_client.h"
-#include "net/base/escape.h"
-#include "net/base/url_util.h"
-#include "url/url_constants.h"
+#import "net/base/url_util.h"
+#import "url/url_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -122,7 +122,7 @@ void CreateRestoreSessionUrl(
   base::JSONWriter::Write(session, &session_json);
   std::string ref =
       kRestoreSessionSessionHashPrefix +
-      net::EscapeQueryParamValue(session_json, false /* use_plus */);
+      base::EscapeQueryParamValue(session_json, false /* use_plus */);
   GURL::Replacements replacements;
   replacements.SetRefStr(ref);
   *first_index = first_restored_item_offset;
@@ -144,7 +144,7 @@ GURL CreateRedirectUrl(const GURL& target_url) {
   GURL::Replacements replacements;
   std::string ref =
       kRestoreSessionTargetUrlHashPrefix +
-      net::EscapeQueryParamValue(target_url.spec(), false /* use_plus */);
+      base::EscapeQueryParamValue(target_url.spec(), false /* use_plus */);
   replacements.SetRefStr(ref);
   return GetRestoreSessionBaseUrl().ReplaceComponents(replacements);
 }
@@ -159,7 +159,7 @@ bool ExtractTargetURL(const GURL& restore_session_url, GURL* target_url) {
   if (success) {
     std::string encoded_target_url = restore_session_url.ref().substr(
         strlen(kRestoreSessionTargetUrlHashPrefix));
-    *target_url = GURL(net::UnescapeBinaryURLComponent(encoded_target_url));
+    *target_url = GURL(base::UnescapeBinaryURLComponent(encoded_target_url));
   }
 
   return success;

@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,7 +44,13 @@ class AllocatorState {
 
   // Maximum number of virtual memory slots (guard-page buffered pages) this
   // class can allocate.
-  static constexpr size_t kMaxSlots = 4096;
+  static constexpr size_t kMaxRequestedSlots = 4096;
+  // When PartitionAlloc is used as the backing allocator, we might have to
+  // reserve extra slots to store PA metadata. Therefore, the number of reserved
+  // slots might be higher than the number of requested slots. Note that the
+  // current value is just a reasonable upper bound; the actual "slot overhead"
+  // from PA is significantly smaller.
+  static constexpr size_t kMaxReservedSlots = 2 * kMaxRequestedSlots;
   // Maximum number of concurrent allocations/metadata this class can allocate.
   static constexpr size_t kMaxMetadata = 2048;
   // Invalid metadata index.
@@ -57,7 +63,7 @@ class AllocatorState {
   // stack traces. (Stack trace entries take ~3.5 bytes on average.)
   static constexpr size_t kMaxPackedTraceLength = 400;
 
-  static_assert(std::numeric_limits<SlotIdx>::max() >= kMaxSlots - 1,
+  static_assert(std::numeric_limits<SlotIdx>::max() >= kMaxReservedSlots,
                 "SlotIdx can hold all possible slot index values");
   static_assert(std::numeric_limits<MetadataIdx>::max() >= kMaxMetadata - 1,
                 "MetadataIdx can hold all possible metadata index values");
@@ -167,12 +173,14 @@ class AllocatorState {
   uintptr_t SlotToAddr(SlotIdx slot) const;
   SlotIdx AddrToSlot(uintptr_t addr) const;
 
-  uintptr_t pages_base_addr = 0;  // Points to start of mapped region.
-  uintptr_t pages_end_addr = 0;   // Points to the end of mapped region.
-  uintptr_t first_page_addr = 0;  // Points to first allocatable page.
-  size_t num_metadata = 0;        // Number of entries in |metadata_addr|.
-  size_t total_pages = 0;         // Virtual memory page pool size.
-  size_t page_size = 0;           // Page size.
+  uintptr_t pages_base_addr = 0;     // Points to start of mapped region.
+  uintptr_t pages_end_addr = 0;      // Points to the end of mapped region.
+  uintptr_t first_page_addr = 0;     // Points to first allocatable page.
+  size_t num_metadata = 0;           // Number of entries in |metadata_addr|.
+  size_t total_requested_pages = 0;  // Virtual memory page pool size.
+  size_t total_reserved_pages = 0;   // |total_requested_pages| plus zero or
+                                     // more pages to store allocator metadata.
+  size_t page_size = 0;              // Page size.
 
   // Pointer to an array of metadata about every allocation, including its size,
   // offset, and pointers to the allocation/deallocation stack traces (if
@@ -194,6 +202,8 @@ class AllocatorState {
 // destructors operating on the fields in an unexpected way.
 static_assert(std::is_trivially_copyable<AllocatorState>(),
               "AllocatorState must be POD");
+static_assert(std::is_trivially_copyable<AllocatorState::SlotMetadata>(),
+              "AllocatorState::SlotMetadata must be POD");
 
 }  // namespace internal
 }  // namespace gwp_asan

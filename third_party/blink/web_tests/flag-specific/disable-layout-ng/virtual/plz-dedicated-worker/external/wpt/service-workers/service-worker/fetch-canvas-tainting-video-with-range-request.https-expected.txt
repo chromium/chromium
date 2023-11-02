@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS range responses from single origin (same-origin)
+PASS range responses from multiple origins (cross-origin first)
+PASS range responses from single origin with both opaque and non-opaque responses
+Harness: the test ran to completion.
+

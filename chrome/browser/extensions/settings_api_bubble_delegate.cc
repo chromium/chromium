@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -112,15 +112,15 @@ std::u16string SettingsApiBubbleDelegate::GetMessageBody(
   const Extension* extension =
       registry()->GetExtensionById(extension_id_, ExtensionRegistry::ENABLED);
   const SettingsOverrides* settings =
-      extension ? SettingsOverrides::Get(extension) : NULL;
+      extension ? SettingsOverrides::Get(extension) : nullptr;
   if (!extension || !settings) {
     NOTREACHED();
     return std::u16string();
   }
 
-  bool home_change = settings->homepage != NULL;
+  bool home_change = settings->homepage.has_value();
   bool startup_change = !settings->startup_pages.empty();
-  bool search_change = settings->search_engine != NULL;
+  bool search_change = settings->search_engine.has_value();
 
   int first_line_id = 0;
   int second_line_id = 0;

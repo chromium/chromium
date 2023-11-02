@@ -23,6 +23,7 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_container.h"
 
+#include "base/record_replay.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
@@ -90,10 +91,13 @@ void LayoutSVGContainer::UpdateLayout() {
 
   if (!IsSVGHiddenContainer()) {
     SetTransformAffectsVectorEffect(false);
+    ClearSVGDescendantMayHaveTransformRelatedAnimation();
     for (auto* child = FirstChild(); child; child = child->NextSibling()) {
-      if (child->TransformAffectsVectorEffect()) {
+      if (child->TransformAffectsVectorEffect())
         SetTransformAffectsVectorEffect(true);
-        break;
+      if (child->StyleRef().HasCurrentTransformRelatedAnimation() ||
+          child->SVGDescendantMayHaveTransformRelatedAnimation()) {
+        SetSVGDescendantMayHaveTransformRelatedAnimation();
       }
     }
   }
@@ -197,7 +201,7 @@ bool LayoutSVGContainer::UpdateCachedBoundaries() {
 bool LayoutSVGContainer::NodeAtPoint(HitTestResult& result,
                                      const HitTestLocation& hit_test_location,
                                      const PhysicalOffset& accumulated_offset,
-                                     HitTestAction hit_test_action) {
+                                     HitTestPhase phase) {
   NOT_DESTROYED();
   DCHECK_EQ(accumulated_offset, PhysicalOffset());
   TransformedHitTestLocation local_location(hit_test_location,
@@ -209,17 +213,17 @@ bool LayoutSVGContainer::NodeAtPoint(HitTestResult& result,
     return false;
 
   if (!ChildPaintBlockedByDisplayLock() &&
-      content_.HitTest(result, *local_location, hit_test_action))
+      content_.HitTest(result, *local_location, phase))
     return true;
 
   // pointer-events: bounding-box makes it possible for containers to be direct
   // targets.
-  if (StyleRef().PointerEvents() == EPointerEvents::kBoundingBox) {
+  if (StyleRef().UsedPointerEvents() == EPointerEvents::kBoundingBox) {
     // Check for a valid bounding box because it will be invalid for empty
     // containers.
     if (IsObjectBoundingBoxValid() &&
         local_location->Intersects(ObjectBoundingBox())) {
-      UpdateHitTestResult(result, PhysicalOffset::FromFloatPointRound(
+      UpdateHitTestResult(result, PhysicalOffset::FromPointFRound(
                                       local_location->TransformedPoint()));
       if (result.AddNodeToListBasedTestResult(GetElement(), *local_location) ==
           kStopHitTesting)

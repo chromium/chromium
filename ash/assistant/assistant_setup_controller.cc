@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 
 namespace {
 
@@ -51,7 +51,7 @@ void AssistantSetupController::OnDeepLinkReceived(
 }
 
 void AssistantSetupController::OnOptInButtonPressed() {
-  using chromeos::assistant::prefs::ConsentStatus;
+  using assistant::prefs::ConsentStatus;
   if (AssistantState::Get()->consent_status().value_or(
           ConsentStatus::kUnknown) == ConsentStatus::kUnauthorized) {
     AssistantController::Get()->OpenUrl(assistant::util::CreateLocalizedGURL(
@@ -66,8 +66,7 @@ void AssistantSetupController::StartOnboarding(bool relaunch, FlowType type) {
   if (!assistant_setup)
     return;
 
-  AssistantUiController::Get()->CloseUi(
-      chromeos::assistant::AssistantExitPoint::kSetup);
+  AssistantUiController::Get()->CloseUi(assistant::AssistantExitPoint::kSetup);
 
   assistant_setup->StartAssistantOptInFlow(
       type, base::BindOnce(&AssistantSetupController::OnOptInFlowFinished,
@@ -78,7 +77,7 @@ void AssistantSetupController::OnOptInFlowFinished(bool relaunch,
                                                    bool completed) {
   if (relaunch && completed) {
     AssistantUiController::Get()->ShowUi(
-        chromeos::assistant::AssistantEntryPoint::kSetup);
+        assistant::AssistantEntryPoint::kSetup);
   }
 }
 

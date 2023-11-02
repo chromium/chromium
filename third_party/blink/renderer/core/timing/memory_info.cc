@@ -33,7 +33,7 @@
 #include <limits>
 
 #include "base/time/default_tick_clock.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "base/time/time.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -85,8 +85,8 @@ class HeapSizeCache {
     // avoid exposing precise GC timings.
     base::TimeTicks now = clock_->NowTicks();
     base::TimeDelta delta_allowed =
-        precision == MemoryInfo::Precision::Bucketized ? kTwentyMinutes
-                                                       : kFiftyMs;
+        precision == MemoryInfo::Precision::kBucketized ? kTwentyMinutes
+                                                        : kFiftyMs;
     if (!last_update_time_.has_value() ||
         now - last_update_time_.value() >= delta_allowed) {
       Update(precision);
@@ -96,7 +96,7 @@ class HeapSizeCache {
 
   void Update(MemoryInfo::Precision precision) {
     GetHeapSize(info_);
-    if (precision == MemoryInfo::Precision::Precise)
+    if (precision == MemoryInfo::Precision::kPrecise)
       return;
 
     info_.used_js_heap_size = QuantizeMemorySize(info_.used_js_heap_size);
@@ -118,7 +118,7 @@ size_t QuantizeMemorySize(size_t size) {
   const int kNumberOfBuckets = 100;
   DEFINE_STATIC_LOCAL(Vector<size_t>, bucket_size_list, ());
 
-  if (bucket_size_list.IsEmpty()) {
+  if (bucket_size_list.empty()) {
     bucket_size_list.resize(kNumberOfBuckets);
 
     float size_of_next_bucket =
@@ -182,6 +182,24 @@ void MemoryInfo::SetTickClockForTestingForCurrentThread(
   HeapSizeCache& cache = HeapSizeCache::ForCurrentThread();
   cache.SetTickClockForTesting(clock);
   cache.ResetLastUpdateTimeForTesting();
+}
+
+// The values below are recorded/replayed when accessed by JS so that
+// they will be consistent when replaying.
+
+uint64_t MemoryInfo::totalJSHeapSize() const {
+  return recordreplay::RecordReplayValue("MemoryInfo::totalJSHeapSize",
+                                         info_.total_js_heap_size);
+}
+
+uint64_t MemoryInfo::usedJSHeapSize() const {
+  return recordreplay::RecordReplayValue("MemoryInfo::usedJSHeapSize",
+                                         info_.used_js_heap_size);
+}
+
+uint64_t MemoryInfo::jsHeapSizeLimit() const {
+  return recordreplay::RecordReplayValue("MemoryInfo::jsHeapSizeLimit",
+                                         info_.js_heap_size_limit);
 }
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,19 +6,21 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <memory>
 
 #include "base/barrier_closure.h"
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/containers/queue.h"
+#include "base/feature_list.h"
 #include "base/i18n/i18n_constants.h"
 #include "base/i18n/icu_string_conversions.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "content/browser/background_sync/background_sync_manager.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
@@ -59,6 +61,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
@@ -69,6 +72,7 @@
 #include "net/cert/x509_util.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_inclusion_status.h"
+#include "net/cookies/cookie_partition_key.h"
 #include "net/cookies/cookie_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
@@ -190,7 +194,23 @@ std::unique_ptr<Network::Cookie> BuildCookie(
   if (maybe_same_site) {
     devtools_cookie->SetSameSite(*maybe_same_site);
   }
-
+  absl::optional<net::CookiePartitionKey> partition_key = cookie.PartitionKey();
+  if (partition_key) {
+    std::string serialized_partition_key;
+    if (partition_key->IsSerializeable()) {
+      bool serialized = net::CookiePartitionKey::Serialize(
+          partition_key, serialized_partition_key);
+      DCHECK(serialized);
+      devtools_cookie->SetPartitionKey(serialized_partition_key);
+    } else {
+      devtools_cookie->SetPartitionKeyOpaque(partition_key->site().opaque());
+      // IsSerializeable may return false when the partition key's site is not
+      // opaque since we introduced nonce-based cookie partitioning in
+      // https://crrev.com/c/3285244.
+      // TODO(1225444,1229638): Surface nonce-based cookie partition keys in
+      // DevTools.
+    }
+  }
   return devtools_cookie;
 }
 
@@ -199,13 +219,17 @@ class CookieRetrieverNetworkService
  public:
   static void Retrieve(network::mojom::CookieManager* cookie_manager,
                        const std::vector<GURL> urls,
+                       const net::NetworkIsolationKey& network_isolation_key,
                        std::unique_ptr<GetCookiesCallback> callback) {
     scoped_refptr<CookieRetrieverNetworkService> self =
         new CookieRetrieverNetworkService(std::move(callback));
     net::CookieOptions cookie_options = net::CookieOptions::MakeAllInclusive();
     for (const auto& url : urls) {
       cookie_manager->GetCookieList(
-          url, cookie_options, net::CookiePartitionKeychain::Todo(),
+          url, cookie_options,
+          net::CookiePartitionKeyCollection::FromOptional(
+              net::CookiePartitionKey::FromNetworkIsolationKey(
+                  network_isolation_key)),
           base::BindOnce(&CookieRetrieverNetworkService::GotCookies, self));
     }
   }
@@ -317,7 +341,8 @@ MakeCookieFromProtocolValues(const std::string& name,
                              const std::string& priority,
                              bool same_party,
                              const Maybe<std::string>& source_scheme,
-                             const Maybe<int>& source_port) {
+                             const Maybe<int>& source_port,
+                             const Maybe<std::string>& partition_key) {
   std::string normalized_domain = domain;
 
   if (url_spec.empty() && domain.empty()) {
@@ -373,12 +398,24 @@ MakeCookieFromProtocolValues(const std::string& name,
   else if (priority == Network::CookiePriorityEnum::Low)
     cp = net::CookiePriority::COOKIE_PRIORITY_LOW;
 
+  absl::optional<net::CookiePartitionKey> deserialized_partition_key;
+  if (partition_key.isJust()) {
+    if (!base::FeatureList::IsEnabled(net::features::kPartitionedCookies)) {
+      return Response::InvalidParams(
+          "Partitioned cookies disabled. Cannot set cookie partition key");
+    }
+    if (!net::CookiePartitionKey::Deserialize(partition_key.fromJust(),
+                                              deserialized_partition_key)) {
+      return Response::InvalidParams(
+          "Deserializing cookie partition key failed");
+    }
+  }
   // TODO(crbug.com/1225444) Add Partitioned to DevTools cookie structures.
   std::unique_ptr<net::CanonicalCookie> cookie =
       net::CanonicalCookie::CreateSanitizedCookie(
           url, name, value, normalized_domain, path, base::Time(),
           expiration_date, base::Time(), secure, http_only, css, cp, same_party,
-          absl::nullopt);
+          deserialized_partition_key);
 
   if (!cookie)
     return Response::InvalidParams("Sanitizing cookie failed");
@@ -448,24 +485,6 @@ std::vector<GURL> ComputeCookieURLs(RenderFrameHostImpl* frame_host,
     }
   }
 
-  return urls;
-}
-
-std::vector<GURL> ComputeReportingURLs(RenderFrameHostImpl* frame_host) {
-  std::vector<GURL> urls;
-  base::queue<FrameTreeNode*> queue;
-  queue.push(frame_host->frame_tree_node());
-  while (!queue.empty()) {
-    FrameTreeNode* node = queue.front();
-    queue.pop();
-    if (node != frame_host->frame_tree_node() &&
-        node->current_frame_host()->is_local_root_subframe())
-      continue;
-
-    urls.push_back(node->current_url());
-    for (size_t i = 0; i < node->child_count(); ++i)
-      queue.push(node->child_at(i));
-  }
   return urls;
 }
 
@@ -560,9 +579,9 @@ std::unique_ptr<Network::ResourceTiming> GetTiming(
           timeDelta(load_timing.proxy_resolve_start, load_timing.request_start))
       .SetProxyEnd(
           timeDelta(load_timing.proxy_resolve_end, load_timing.request_start))
-      .SetDnsStart(timeDelta(load_timing.connect_timing.dns_start,
+      .SetDnsStart(timeDelta(load_timing.connect_timing.domain_lookup_start,
                              load_timing.request_start))
-      .SetDnsEnd(timeDelta(load_timing.connect_timing.dns_end,
+      .SetDnsEnd(timeDelta(load_timing.connect_timing.domain_lookup_end,
                            load_timing.request_start))
       .SetConnectStart(timeDelta(load_timing.connect_timing.connect_start,
                                  load_timing.request_start))
@@ -598,12 +617,10 @@ std::unique_ptr<Network::ConnectTiming> GetConnectTiming(
       .Build();
 }
 
-std::unique_ptr<Object> GetRawHeaders(
+std::unique_ptr<base::Value::Dict> GetRawHeaders(
     const std::vector<network::mojom::HttpRawHeaderPairPtr>& headers) {
-  std::unique_ptr<DictionaryValue> headers_dict(DictionaryValue::create());
+  auto headers_dict = std::make_unique<base::Value::Dict>();
   for (const auto& header : headers) {
-    std::string value;
-    bool merge_with_another = headers_dict->getString(header->key, &value);
     std::string header_value;
     if (!base::ConvertToUtf8AndNormalize(header->value, base::kCodepageLatin1,
                                          &header_value)) {
@@ -611,11 +628,16 @@ std::unique_ptr<Object> GetRawHeaders(
       // might fail; in that case this is the most useful thing we can do.
       header_value = header->value;
     }
-    headers_dict->setString(header->key, merge_with_another
-                                             ? value + '\n' + header_value
-                                             : header_value);
+    // TODO(https://crbug.com/1335607): Once there's an API to do this without
+    // a double lookup, switch do doing so.
+    base::Value* value = headers_dict->Find(header->key);
+    if (value) {
+      *value = base::Value(value->GetString() + '\n' + header_value);
+    } else {
+      headers_dict->Set(header->key, header_value);
+    }
   }
-  return Object::fromValue(headers_dict.get(), nullptr);
+  return headers_dict;
 }
 
 String GetProtocol(const GURL& url,
@@ -992,7 +1014,8 @@ NetworkHandler::NetworkHandler(
     const std::string& host_id,
     const base::UnguessableToken& devtools_token,
     DevToolsIOContext* io_context,
-    base::RepeatingClosure update_loader_factories_callback)
+    base::RepeatingClosure update_loader_factories_callback,
+    bool allow_file_access)
     : DevToolsDomainHandler(Network::Metainfo::domainName),
       host_id_(host_id),
       devtools_token_(devtools_token),
@@ -1007,7 +1030,8 @@ NetworkHandler::NetworkHandler(
       bypass_service_worker_(false),
       cache_disabled_(false),
       update_loader_factories_callback_(
-          std::move(update_loader_factories_callback)) {
+          std::move(update_loader_factories_callback)),
+      allow_file_access_(allow_file_access) {
   DCHECK(io_context_);
   static bool have_configured_service_worker_context = false;
   if (have_configured_service_worker_context)
@@ -1267,6 +1291,24 @@ String BuildReportStatus(const net::ReportingReport::Status status) {
   }
 }
 
+std::vector<GURL> ComputeReportingURLs(RenderFrameHostImpl* frame_host) {
+  std::vector<GURL> urls;
+  base::queue<FrameTreeNode*> queue;
+  queue.push(frame_host->frame_tree_node());
+  while (!queue.empty()) {
+    FrameTreeNode* node = queue.front();
+    queue.pop();
+    if (node != frame_host->frame_tree_node() &&
+        node->current_frame_host()->is_local_root_subframe())
+      continue;
+
+    urls.push_back(node->current_url());
+    for (size_t i = 0; i < node->child_count(); ++i)
+      queue.push(node->child_at(i));
+  }
+  return urls;
+}
+
 }  // namespace
 
 std::unique_ptr<protocol::Network::ReportingApiReport>
@@ -1275,9 +1317,7 @@ NetworkHandler::BuildProtocolReport(const net::ReportingReport& report) {
     return nullptr;
   }
   std::vector<GURL> reporting_filter_urls = ComputeReportingURLs(host_);
-  auto iter = std::find(reporting_filter_urls.begin(),
-                        reporting_filter_urls.end(), report.url);
-  if (iter != reporting_filter_urls.end()) {
+  if (base::Contains(reporting_filter_urls, report.url)) {
     return protocol::Network::ReportingApiReport::Create()
         .SetId(report.id.ToString())
         .SetInitiatorUrl(report.url.spec())
@@ -1287,8 +1327,7 @@ NetworkHandler::BuildProtocolReport(const net::ReportingReport& report) {
             (report.queued - base::TimeTicks::UnixEpoch()).InSecondsF())
         .SetDepth(report.depth)
         .SetCompletedAttempts(report.attempts)
-        .SetBody(protocol::DictionaryValue::cast(
-            protocol::toProtocolValue(report.body.get(), 1000)))
+        .SetBody(std::make_unique<base::Value::Dict>(report.body.Clone()))
         .SetStatus(BuildReportStatus(report.status))
         .Build();
   }
@@ -1309,8 +1348,43 @@ void NetworkHandler::OnReportUpdated(const net::ReportingReport& report) {
   }
 }
 
+std::unique_ptr<protocol::Network::ReportingApiEndpoint>
+NetworkHandler::BuildProtocolEndpoint(const net::ReportingEndpoint& endpoint) {
+  return protocol::Network::ReportingApiEndpoint::Create()
+      .SetUrl(endpoint.info.url.spec())
+      .SetGroupName(endpoint.group_key.group_name)
+      .Build();
+}
+
+void NetworkHandler::OnEndpointsUpdatedForOrigin(
+    const std::vector<::net::ReportingEndpoint>& endpoints) {
+  if (!host_ || endpoints.empty()) {
+    return;
+  }
+  url::Origin origin = endpoints[0].group_key.origin;
+  DCHECK(base::ranges::all_of(endpoints, [&](auto const& endpoint) {
+    return endpoint.group_key.origin == origin;
+  }));
+  std::vector<GURL> reporting_filter_urls = ComputeReportingURLs(host_);
+
+  // Only send protocol event if the origin of the updated endpoints matches
+  // an origin in the local frame tree.
+  if (base::ranges::any_of(reporting_filter_urls, [&](auto const& url) {
+        return url::Origin::Create(url) == origin;
+      })) {
+    auto protocol_endpoints = std::make_unique<
+        protocol::Array<protocol::Network::ReportingApiEndpoint>>();
+    protocol_endpoints->reserve(endpoints.size());
+    for (const auto& endpoint : endpoints) {
+      protocol_endpoints->push_back(BuildProtocolEndpoint(endpoint));
+    }
+    frontend_->ReportingApiEndpointsChangedForOrigin(
+        origin.Serialize(), std::move(protocol_endpoints));
+  }
+}
+
 Response NetworkHandler::EnableReportingApi(const bool enable) {
-  if (!storage_partition_) {
+  if (!storage_partition_ || !host_) {
     return Response::InternalError();
   }
 
@@ -1418,7 +1492,7 @@ void NetworkHandler::GetCookies(Maybe<Array<String>> protocol_urls,
 
   CookieRetrieverNetworkService::Retrieve(
       storage_partition_->GetCookieManagerForBrowserProcess(), urls,
-      std::move(callback));
+      host_->GetNetworkIsolationKey(), std::move(callback));
 }
 
 void NetworkHandler::GetAllCookies(
@@ -1449,6 +1523,7 @@ void NetworkHandler::SetCookie(const std::string& name,
                                Maybe<bool> same_party,
                                Maybe<std::string> source_scheme,
                                Maybe<int> source_port,
+                               Maybe<std::string> partition_key,
                                std::unique_ptr<SetCookieCallback> callback) {
   if (!storage_partition_) {
     callback->sendFailure(Response::InternalError());
@@ -1459,7 +1534,7 @@ void NetworkHandler::SetCookie(const std::string& name,
       name, value, url.fromMaybe(""), domain.fromMaybe(""), path.fromMaybe(""),
       secure.fromMaybe(false), http_only.fromMaybe(false),
       same_site.fromMaybe(""), expires.fromMaybe(-1), priority.fromMaybe(""),
-      same_party.fromMaybe(false), source_scheme, source_port);
+      same_party.fromMaybe(false), source_scheme, source_port, partition_key);
 
   if (absl::holds_alternative<Response>(cookie_or_error)) {
     callback->sendFailure(absl::get<Response>(std::move(cookie_or_error)));
@@ -1497,13 +1572,17 @@ void NetworkHandler::SetCookies(
     const Maybe<int> source_port = cookie->HasSourcePort()
                                        ? Maybe<int>(cookie->GetSourcePort(0))
                                        : Maybe<int>();
+    const Maybe<std::string> partition_key =
+        cookie->HasPartitionKey()
+            ? Maybe<std::string>(cookie->GetPartitionKey(""))
+            : Maybe<std::string>();
 
     auto net_cookie_or_error = MakeCookieFromProtocolValues(
         cookie->GetName(), cookie->GetValue(), cookie->GetUrl(""),
         cookie->GetDomain(""), cookie->GetPath(""), cookie->GetSecure(false),
         cookie->GetHttpOnly(false), cookie->GetSameSite(""),
         cookie->GetExpires(-1), cookie->GetPriority(""),
-        cookie->GetSameParty(false), source_scheme, source_port);
+        cookie->GetSameParty(false), source_scheme, source_port, partition_key);
     if (absl::holds_alternative<Response>(net_cookie_or_error)) {
       // TODO: Investiage whether we can report the error as a protocol error
       // (this might be a breaking CDP change).
@@ -1592,14 +1671,12 @@ void NetworkHandler::DeleteCookies(
 Response NetworkHandler::SetExtraHTTPHeaders(
     std::unique_ptr<protocol::Network::Headers> headers) {
   std::vector<std::pair<std::string, std::string>> new_headers;
-  std::unique_ptr<protocol::DictionaryValue> object = headers->toValue();
-  for (size_t i = 0; i < object->size(); ++i) {
-    auto entry = object->at(i);
-    std::string value;
-    if (!entry.second->asString(&value))
+  for (const auto entry : *headers) {
+    if (!entry.second.is_string())
       return Response::InvalidParams("Invalid header value, string expected");
     if (!net::HttpUtil::IsValidHeaderName(entry.first))
       return Response::InvalidParams("Invalid header name");
+    const std::string& value = entry.second.GetString();
     if (!net::HttpUtil::IsValidHeaderValue(value))
       return Response::InvalidParams("Invalid header value");
     new_headers.emplace_back(entry.first, value);
@@ -1718,6 +1795,7 @@ std::unique_ptr<protocol::Network::SecurityDetails> BuildSecurityDetails(
               std::move(signed_certificate_timestamp_list))
           .SetCertificateTransparencyCompliance(
               SerializeCTPolicyCompliance(ssl_info.ct_policy_compliance))
+          .SetEncryptedClientHello(ssl_info.encrypted_client_hello)
           .Build();
 
   if (ssl_info.key_exchange_group != 0) {
@@ -1728,25 +1806,44 @@ std::unique_ptr<protocol::Network::SecurityDetails> BuildSecurityDetails(
   }
   if (mac)
     security_details->SetMac(mac);
+  if (ssl_info.peer_signature_algorithm != 0) {
+    security_details->SetServerSignatureAlgorithm(
+        ssl_info.peer_signature_algorithm);
+  }
 
   return security_details;
 }
 
-std::unique_ptr<protocol::Object> BuildResponseHeaders(
-    scoped_refptr<net::HttpResponseHeaders> headers) {
-  auto headers_dict = DictionaryValue::create();
+std::unique_ptr<base::Value::Dict> BuildResponseHeaders(
+    const net::HttpResponseHeaders* headers) {
+  auto headers_dict = std::make_unique<base::Value::Dict>();
   if (!headers)
-    return std::make_unique<protocol::Object>(std::move(headers_dict));
+    return headers_dict;
   size_t iterator = 0;
   std::string name;
   std::string value;
   while (headers->EnumerateHeaderLines(&iterator, &name, &value)) {
-    std::string old_value;
-    bool merge_with_another = headers_dict->getString(name, &old_value);
-    headers_dict->setString(
-        name, merge_with_another ? old_value + '\n' + value : value);
+    base::Value* header_value = headers_dict->Find(name);
+    if (header_value)
+      *header_value = base::Value(header_value->GetString() + '\n' + value);
+    else
+      headers_dict->Set(name, value);
   }
-  return std::make_unique<protocol::Object>(std::move(headers_dict));
+  return headers_dict;
+}
+
+std::unique_ptr<base::Value::Dict> BuildRequestHeaders(
+    const net::HttpRequestHeaders& headers,
+    const GURL& referrer) {
+  auto headers_dict = std::make_unique<base::Value::Dict>();
+  for (net::HttpRequestHeaders::Iterator it(headers); it.GetNext();)
+    headers_dict->Set(it.name(), it.value());
+
+  // This is normally added down the stack, so we have to fake it here.
+  if (!referrer.is_empty())
+    headers_dict->Set(net::HttpRequestHeaders::kReferer, referrer.spec());
+
+  return headers_dict;
 }
 
 String BuildServiceWorkerResponseSource(
@@ -1761,6 +1858,38 @@ String BuildServiceWorkerResponseSource(
     case network::mojom::FetchResponseSource::kUnspecified:
       return protocol::Network::ServiceWorkerResponseSourceEnum::FallbackCode;
   }
+}
+
+String AlternateProtocolUsageToString(
+    net::AlternateProtocolUsage alternate_protocol_usage) {
+  switch (alternate_protocol_usage) {
+    case net::AlternateProtocolUsage::ALTERNATE_PROTOCOL_USAGE_NO_RACE:
+      return protocol::Network::AlternateProtocolUsageEnum::
+          AlternativeJobWonWithoutRace;
+    case net::AlternateProtocolUsage::ALTERNATE_PROTOCOL_USAGE_WON_RACE:
+      return protocol::Network::AlternateProtocolUsageEnum::
+          AlternativeJobWonRace;
+    case net::AlternateProtocolUsage::
+        ALTERNATE_PROTOCOL_USAGE_MAIN_JOB_WON_RACE:
+      return protocol::Network::AlternateProtocolUsageEnum::MainJobWonRace;
+    case net::AlternateProtocolUsage::ALTERNATE_PROTOCOL_USAGE_MAPPING_MISSING:
+      return protocol::Network::AlternateProtocolUsageEnum::MappingMissing;
+    case net::AlternateProtocolUsage::ALTERNATE_PROTOCOL_USAGE_BROKEN:
+      return protocol::Network::AlternateProtocolUsageEnum::Broken;
+    case net::AlternateProtocolUsage::
+        ALTERNATE_PROTOCOL_USAGE_DNS_ALPN_H3_JOB_WON_WITHOUT_RACE:
+      return protocol::Network::AlternateProtocolUsageEnum::
+          DnsAlpnH3JobWonWithoutRace;
+    case net::AlternateProtocolUsage::
+        ALTERNATE_PROTOCOL_USAGE_DNS_ALPN_H3_JOB_WON_RACE:
+      return protocol::Network::AlternateProtocolUsageEnum::DnsAlpnH3JobWonRace;
+    case net::AlternateProtocolUsage::
+        ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON:
+      return protocol::Network::AlternateProtocolUsageEnum::UnspecifiedReason;
+    case net::AlternateProtocolUsage::ALTERNATE_PROTOCOL_USAGE_MAX:
+      return protocol::Network::AlternateProtocolUsageEnum::UnspecifiedReason;
+  }
+  return protocol::Network::AlternateProtocolUsageEnum::UnspecifiedReason;
 }
 
 std::unique_ptr<Network::Response> BuildResponse(
@@ -1782,7 +1911,7 @@ std::unique_ptr<Network::Response> BuildResponse(
           .SetUrl(NetworkHandler::ExtractFragment(url, &url_fragment))
           .SetStatus(status)
           .SetStatusText(status_text)
-          .SetHeaders(BuildResponseHeaders(info.headers))
+          .SetHeaders(BuildResponseHeaders(info.headers.get()))
           .SetMimeType(info.mime_type)
           .SetConnectionReused(info.load_timing.socket_reused)
           .SetConnectionId(info.load_timing.socket_log_id)
@@ -1807,6 +1936,8 @@ std::unique_ptr<Network::Response> BuildResponse(
   }
 
   response->SetProtocol(GetProtocol(url, info));
+  response->SetAlternateProtocolUsage(
+      AlternateProtocolUsageToString(info.alternate_protocol_usage));
   response->SetRemoteIPAddress(
       net::HostPortPair::FromIPEndPoint(info.remote_endpoint).HostForURL());
   response->SetRemotePort(info.remote_endpoint.port());
@@ -1938,24 +2069,54 @@ std::unique_ptr<protocol::Network::TrustTokenParams> BuildTrustTokenParams(
 
 }  // namespace
 
+void NetworkHandler::PrefetchRequestWillBeSent(
+    const std::string& request_id,
+    const network::ResourceRequest& request,
+    const GURL& initiator_url,
+    Maybe<std::string> frame_token,
+    base::TimeTicks timestamp) {
+  if (!enabled_)
+    return;
+
+  std::string url = request.url.is_valid() ? request.url.spec() : "";
+  double current_ticks = timestamp.since_origin().InSecondsF();
+  double current_wall_time = base::Time::Now().ToDoubleT();
+  auto initiator =
+      Network::Initiator::Create()
+          .SetType(Network::Initiator::TypeEnum::Script)
+          .SetUrl(initiator_url.is_valid() ? initiator_url.spec() : "")
+          .Build();
+  // TODO: for now redirect is empty
+  bool redirect_emitted_extra_info = false;
+  std::unique_ptr<Network::Response> redirect_response;
+
+  auto request_info =
+      Network::Request::Create()
+          .SetUrl(url)
+          .SetMethod(request.method)
+          .SetHeaders(BuildRequestHeaders(request.headers, request.referrer))
+          .SetInitialPriority(resourcePriority(request.priority))
+          .SetReferrerPolicy(referrerPolicy(request.referrer_policy))
+          .Build();
+
+  frontend_->RequestWillBeSent(
+      request_id, request_id, url, std::move(request_info), current_ticks,
+      current_wall_time, std::move(initiator), redirect_emitted_extra_info,
+      std::move(redirect_response),
+      std::string(Network::ResourceTypeEnum::Prefetch), std::move(frame_token),
+      request.has_user_gesture);
+}
+
 void NetworkHandler::NavigationRequestWillBeSent(
     const NavigationRequest& nav_request,
     base::TimeTicks timestamp) {
   if (!enabled_)
     return;
 
-  net::HttpRequestHeaders headers;
-  headers.AddHeadersFromString(nav_request.begin_params().headers);
-  std::unique_ptr<DictionaryValue> headers_dict(DictionaryValue::create());
-  for (net::HttpRequestHeaders::Iterator it(headers); it.GetNext();)
-    headers_dict->setString(it.name(), it.value());
-
   const blink::mojom::CommonNavigationParams& common_params =
       nav_request.common_params();
-  GURL referrer = common_params.referrer->url;
-  // This is normally added down the stack, so we have to fake it here.
-  if (!referrer.is_empty())
-    headers_dict->setString(net::HttpRequestHeaders::kReferer, referrer.spec());
+  net::HttpRequestHeaders headers;
+  headers.AddHeadersFromString(nav_request.begin_params().headers);
 
   std::unique_ptr<Network::Response> redirect_response;
   const blink::mojom::CommitNavigationParams& commit_params =
@@ -1977,7 +2138,7 @@ void NetworkHandler::NavigationRequestWillBeSent(
       Network::Request::Create()
           .SetUrl(url_without_fragment)
           .SetMethod(common_params.method)
-          .SetHeaders(Object::fromValue(headers_dict.get(), nullptr))
+          .SetHeaders(BuildRequestHeaders(headers, common_params.referrer->url))
           .SetInitialPriority(resourcePriority(net::HIGHEST))
           .SetReferrerPolicy(referrerPolicy(common_params.referrer->policy))
           .Build();
@@ -2000,12 +2161,10 @@ void NetworkHandler::NavigationRequestWillBeSent(
   request->SetMixedContentType(Security::MixedContentTypeEnum::None);
 
   std::unique_ptr<Network::Initiator> initiator;
-  const absl::optional<base::Value>& initiator_optional =
+  const absl::optional<base::Value::Dict>& initiator_optional =
       nav_request.begin_params().devtools_initiator;
-  if (initiator_optional.has_value()) {
-    initiator = protocol::ValueTypeConverter<Network::Initiator>::FromValue(
-        *toProtocolValue(&initiator_optional.value(), 1000));
-  }
+  if (initiator_optional.has_value())
+    crdtp::ConvertProtocolValue(initiator_optional.value(), &initiator);
   if (!initiator) {
     initiator = Network::Initiator::Create()
                     .SetType(Network::Initiator::TypeEnum::Other)
@@ -2025,7 +2184,7 @@ void NetworkHandler::NavigationRequestWillBeSent(
   }
 
   if (host_) {
-    if (nav_request.frame_tree_node()->IsMainFrame()) {
+    if (nav_request.frame_tree_node()->IsOutermostMainFrame()) {
       request->SetIsSameSite(true);
     } else {
       request->SetIsSameSite(
@@ -2051,9 +2210,6 @@ void NetworkHandler::RequestSent(
     base::TimeTicks timestamp) {
   if (!enabled_)
     return;
-  std::unique_ptr<DictionaryValue> headers_dict(DictionaryValue::create());
-  for (net::HttpRequestHeaders::Iterator it(request_headers); it.GetNext();)
-    headers_dict->setString(it.name(), it.value());
   std::unique_ptr<Network::Initiator> initiator =
       Network::Initiator::Create().SetType(initiator_type).Build();
   if (initiator_url)
@@ -2067,7 +2223,7 @@ void NetworkHandler::RequestSent(
       Network::Request::Create()
           .SetUrl(url_without_fragment)
           .SetMethod(request_info.method)
-          .SetHeaders(Object::fromValue(headers_dict.get(), nullptr))
+          .SetHeaders(BuildRequestHeaders(request_headers, GURL()))
           .SetInitialPriority(resourcePriority(request_info.priority))
           .SetReferrerPolicy(referrerPolicy(request_info.referrer_policy))
           .Build();
@@ -2077,14 +2233,24 @@ void NetworkHandler::RequestSent(
     request_object->SetTrustTokenParams(
         BuildTrustTokenParams(*request_info.trust_token_params));
   }
+
+  std::string resource_type = Network::ResourceTypeEnum::Other;
+  if (request_info.resource_type ==
+          static_cast<int>(blink::mojom::ResourceType::kWorker) ||
+      request_info.resource_type ==
+          static_cast<int>(blink::mojom::ResourceType::kSharedWorker) ||
+      request_info.resource_type ==
+          static_cast<int>(blink::mojom::ResourceType::kServiceWorker)) {
+    resource_type = Network::ResourceTypeEnum::Script;
+  }
+
   // TODO(crbug.com/1261605): Populate redirect_emitted_extra_info instead of
   // just returning false.
   frontend_->RequestWillBeSent(
       request_id, loader_id, url_without_fragment, std::move(request_object),
       timestamp.since_origin().InSecondsF(), base::Time::Now().ToDoubleT(),
       std::move(initiator), /*redirect_emitted_extra_info=*/false,
-      std::unique_ptr<Network::Response>(),
-      std::string(Network::ResourceTypeEnum::Other),
+      std::unique_ptr<Network::Response>(), resource_type,
       Maybe<std::string>() /* frame_id */, request_info.has_user_gesture);
 }
 
@@ -2145,11 +2311,13 @@ String BuildCorsError(network::mojom::CorsError cors_error) {
     case network::mojom::CorsError::kPreflightInvalidAllowCredentials:
       return protocol::Network::CorsErrorEnum::PreflightInvalidAllowCredentials;
 
-    case network::mojom::CorsError::kPreflightMissingAllowExternal:
-      return protocol::Network::CorsErrorEnum::PreflightMissingAllowExternal;
+    case network::mojom::CorsError::kPreflightMissingAllowPrivateNetwork:
+      return protocol::Network::CorsErrorEnum::
+          PreflightMissingAllowPrivateNetwork;
 
-    case network::mojom::CorsError::kPreflightInvalidAllowExternal:
-      return protocol::Network::CorsErrorEnum::PreflightInvalidAllowExternal;
+    case network::mojom::CorsError::kPreflightInvalidAllowPrivateNetwork:
+      return protocol::Network::CorsErrorEnum::
+          PreflightInvalidAllowPrivateNetwork;
 
     case network::mojom::CorsError::kInvalidAllowMethodsPreflightResponse:
       return protocol::Network::CorsErrorEnum::
@@ -2206,7 +2374,6 @@ void NetworkHandler::LoadingComplete(
     const network::URLLoaderCompletionStatus& status) {
   if (!enabled_)
     return;
-
   if (status.error_code != net::OK) {
     frontend_->LoadingFailed(
         request_id,
@@ -2245,9 +2412,9 @@ void NetworkHandler::OnSignedExchangeReceived(
           .Build();
 
   if (envelope) {
-    std::unique_ptr<DictionaryValue> headers_dict(DictionaryValue::create());
+    auto headers_dict = std::make_unique<base::Value::Dict>();
     for (const auto& it : envelope->response_headers())
-      headers_dict->setString(it.first, it.second);
+      headers_dict->Set(it.first, it.second);
 
     const SignedExchangeSignatureHeaderField::Signature& sig =
         envelope->signature();
@@ -2287,7 +2454,7 @@ void NetworkHandler::OnSignedExchangeReceived(
         Network::SignedExchangeHeader::Create()
             .SetRequestUrl(envelope->request_url().url.spec())
             .SetResponseCode(envelope->response_code())
-            .SetResponseHeaders(Object::fromValue(headers_dict.get(), nullptr))
+            .SetResponseHeaders(std::move(headers_dict))
             .SetSignatures(std::move(signatures))
             .SetHeaderIntegrity(
                 signed_exchange_utils::CreateHeaderIntegrityHashString(
@@ -2394,18 +2561,16 @@ void NetworkHandler::ContinueInterceptedRequest(
   std::unique_ptr<DevToolsURLLoaderInterceptor::Modifications::HeadersVector>
       override_headers;
   if (opt_headers.isJust()) {
-    std::unique_ptr<protocol::DictionaryValue> headers =
-        opt_headers.fromJust()->toValue();
+    const base::Value::Dict& headers = *opt_headers.fromJust();
     override_headers = std::make_unique<
         DevToolsURLLoaderInterceptor::Modifications::HeadersVector>();
-    for (size_t i = 0; i < headers->size(); ++i) {
-      const protocol::DictionaryValue::Entry& entry = headers->at(i);
+    for (const auto entry : headers) {
       std::string value;
-      if (!entry.second->asString(&value)) {
+      if (!entry.second.is_string()) {
         callback->sendFailure(Response::InvalidParams("Invalid header value"));
         return;
       }
-      override_headers->emplace_back(entry.first, value);
+      override_headers->emplace_back(entry.first, entry.second.GetString());
     }
   }
   using AuthChallengeResponse =
@@ -2462,6 +2627,23 @@ void NetworkHandler::GetResponseBodyForInterception(
                                            std::move(callback));
 }
 
+void NetworkHandler::BodyDataReceived(const String& request_id,
+                                      const String& body,
+                                      bool is_base64_encoded) {
+  received_body_data_[request_id] = {body, is_base64_encoded};
+}
+
+void NetworkHandler::GetResponseBody(
+    const String& request_id,
+    std::unique_ptr<GetResponseBodyCallback> callback) {
+  auto it = received_body_data_.find(request_id);
+  if (it != received_body_data_.end()) {
+    callback->sendSuccess(it->second.first, it->second.second);
+  } else {
+    callback->fallThrough();
+  }
+}
+
 void NetworkHandler::TakeResponseBodyForInterceptionAsStream(
     const String& interception_id,
     std::unique_ptr<TakeResponseBodyForInterceptionAsStreamCallback> callback) {
@@ -2513,22 +2695,17 @@ std::unique_ptr<Network::Request>
 NetworkHandler::CreateRequestFromResourceRequest(
     const network::ResourceRequest& request,
     const std::string& cookie_line) {
-  std::unique_ptr<DictionaryValue> headers_dict(DictionaryValue::create());
-  for (net::HttpRequestHeaders::Iterator it(request.headers); it.GetNext();)
-    headers_dict->setString(it.name(), it.value());
-  if (request.referrer.is_valid()) {
-    headers_dict->setString(net::HttpRequestHeaders::kReferer,
-                            request.referrer.spec());
-  }
+  std::unique_ptr<base::Value::Dict> headers_dict =
+      BuildRequestHeaders(request.headers, request.referrer);
   if (!cookie_line.empty())
-    headers_dict->setString(net::HttpRequestHeaders::kCookie, cookie_line);
+    headers_dict->Set(net::HttpRequestHeaders::kCookie, cookie_line);
 
   std::string url_fragment;
   std::unique_ptr<protocol::Network::Request> request_object =
       Network::Request::Create()
           .SetUrl(ExtractFragment(request.url, &url_fragment))
           .SetMethod(request.method)
-          .SetHeaders(Object::fromValue(headers_dict.get(), nullptr))
+          .SetHeaders(std::move(headers_dict))
           .SetInitialPriority(resourcePriority(request.priority))
           .SetReferrerPolicy(referrerPolicy(request.referrer_policy))
           .Build();
@@ -2591,7 +2768,7 @@ void NetworkHandler::RequestIntercepted(
   Maybe<protocol::Network::Headers> response_headers;
   if (info->response_headers) {
     status_code = info->response_headers->response_code();
-    response_headers = BuildResponseHeaders(info->response_headers);
+    response_headers = BuildResponseHeaders(info->response_headers.get());
   }
 
   std::unique_ptr<protocol::Network::AuthChallenge> auth_challenge;
@@ -2649,6 +2826,13 @@ makeCrossOriginOpenerPolicyValue(
     case network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
       return protocol::Network::CrossOriginOpenerPolicyValueEnum::
           SameOriginPlusCoep;
+    case network::mojom::CrossOriginOpenerPolicyValue::kRestrictProperties:
+      return protocol::Network::CrossOriginOpenerPolicyValueEnum::
+          RestrictProperties;
+    case network::mojom::CrossOriginOpenerPolicyValue::
+        kRestrictPropertiesPlusCoep:
+      return protocol::Network::CrossOriginOpenerPolicyValueEnum::
+          RestrictPropertiesPlusCoep;
   }
 }
 protocol::Network::CrossOriginEmbedderPolicyValue
@@ -2787,19 +2971,7 @@ void NetworkHandler::OnLoadNetworkResourceFinished(
 
   if (rh) {
     result->SetHttpStatusCode(rh->response_code());
-    std::unique_ptr<protocol::DictionaryValue> headers_object =
-        protocol::DictionaryValue::create();
-    size_t iterator = 0;
-    std::string name;
-    std::string value;
-    // TODO(chromium:1069378): This probably needs to handle duplicate header
-    // names correctly by folding them.
-    while (rh->EnumerateHeaderLines(&iterator, &name, &value)) {
-      headers_object->setString(name, value);
-    }
-    protocol::ErrorSupport errors;
-    result->SetHeaders(
-        protocol::Network::Headers::fromValue(headers_object.get(), &errors));
+    result->SetHeaders(BuildResponseHeaders(rh));
   }
 
   callback->sendSuccess(std::move(result));
@@ -2810,7 +2982,10 @@ namespace {
 
 mojo::PendingRemote<network::mojom::URLLoaderFactory>
 CreateNetworkFactoryForDevTools(
+    base::StringPiece scheme,
     RenderProcessHost* host,
+    int routing_id,
+    const url::Origin& origin,
     network::mojom::URLLoaderFactoryParamsPtr params) {
   if (!host || !params) {
     // Return an invalid remote by default.
@@ -2825,10 +3000,26 @@ CreateNetworkFactoryForDevTools(
   // See BUG(chromium:1076435) for more context.
   params->is_corb_enabled = false;
 
-  mojo::PendingRemote<network::mojom::URLLoaderFactory> remote;
-  host->CreateURLLoaderFactory(remote.InitWithNewPipeAndPassReceiver(),
-                               std::move(params));
-  return remote;
+  if (scheme == url::kHttpScheme || scheme == url::kHttpsScheme) {
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> remote;
+    host->CreateURLLoaderFactory(remote.InitWithNewPipeAndPassReceiver(),
+                                 std::move(params));
+    return remote;
+  }
+
+  if (scheme != url::kFileScheme) {
+    ContentBrowserClient::NonNetworkURLLoaderFactoryMap factories;
+    GetContentClient()
+        ->browser()
+        ->RegisterNonNetworkSubresourceURLLoaderFactories(
+            host->GetID(), routing_id, origin, &factories);
+    auto i = factories.find(std::string(scheme));
+    if (i == factories.end()) {
+      return {};
+    }
+    return std::move(i->second);
+  }
+  return {};
 }
 }  // namespace
 
@@ -2838,10 +3029,14 @@ void NetworkHandler::LoadNetworkResource(
     std::unique_ptr<protocol::Network::LoadNetworkResourceOptions> options,
     std::unique_ptr<LoadNetworkResourceCallback> callback) {
   GURL gurl(url);
-  const bool is_gurl_valid = gurl.is_valid() && gurl.SchemeIsHTTPOrHTTPS();
+  const bool is_gurl_valid = gurl.is_valid();
   if (!is_gurl_valid) {
-    callback->sendFailure(Response::InvalidParams(
-        "The url must be valid and have scheme http or https"));
+    callback->sendFailure(Response::InvalidParams("The url must be valid"));
+    return;
+  }
+
+  if (gurl.SchemeIs(url::kFileScheme) && !allow_file_access_) {
+    callback->sendFailure(Response::InvalidParams("Unsupported URL scheme"));
     return;
   }
 
@@ -2888,8 +3083,14 @@ void NetworkHandler::LoadNetworkResource(
         network::mojom::TrustTokenRedemptionPolicy::kForbid,
         "NetworkHandler::LoadNetworkResource");
 
-    auto factory =
-        CreateNetworkFactoryForDevTools(frame->GetProcess(), std::move(params));
+    auto factory = CreateNetworkFactoryForDevTools(
+        gurl.scheme(), frame->GetProcess(), frame->GetRoutingID(),
+        frame->GetLastCommittedOrigin(), std::move(params));
+    if (!factory.is_valid()) {
+      callback->sendFailure(Response::InvalidParams("Unsupported URL scheme"));
+      return;
+    }
+
     url_loader_factory.Bind(std::move(factory));
     auto loader = DevToolsNetworkResourceLoader::Create(
         std::move(url_loader_factory), std::move(gurl),
@@ -2904,7 +3105,8 @@ void NetworkHandler::LoadNetworkResource(
     // TODO(sigurds): Support dedicated workers.
     auto info = host->CreateNetworkFactoryParamsForDevTools();
     auto factory = CreateNetworkFactoryForDevTools(
-        host->GetProcessHost(), std::move(info.factory_params));
+        gurl.scheme(), host->GetProcessHost(), MSG_ROUTING_NONE, info.origin,
+        std::move(info.factory_params));
     if (factory.is_valid()) {
       url_loader_factory.Bind(std::move(factory));
       auto loader = DevToolsNetworkResourceLoader::Create(

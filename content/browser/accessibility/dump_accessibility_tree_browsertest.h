@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include "content/browser/accessibility/dump_accessibility_browsertest_base.h"
 
+#include "base/command_line.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
 
@@ -105,8 +106,9 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
 
  protected:
   // Override from DumpAccessibilityTestBase.
-  void ChooseFeatures(std::vector<base::Feature>* enabled_features,
-                      std::vector<base::Feature>* disabled_features) override;
+  void ChooseFeatures(
+      std::vector<base::test::FeatureRef>* enabled_features,
+      std::vector<base::test::FeatureRef>* disabled_features) override;
 };
 
 // Subclass of DumpAccessibilityTreeTest that exposes ignored nodes.
@@ -114,8 +116,9 @@ class DumpAccessibilityTreeTestWithIgnoredNodes
     : public DumpAccessibilityTreeTest {
  protected:
   // Override from DumpAccessibilityTreeTest.
-  void ChooseFeatures(std::vector<base::Feature>* enabled_features,
-                      std::vector<base::Feature>* disabled_features) override;
+  void ChooseFeatures(
+      std::vector<base::test::FeatureRef>* enabled_features,
+      std::vector<base::test::FeatureRef>* disabled_features) override;
 };
 
 }  // namespace content

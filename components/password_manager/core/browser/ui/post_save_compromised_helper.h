@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,8 @@
 
 #include "base/callback.h"
 #include "base/containers/span.h"
-#include "components/password_manager/core/browser/insecure_credentials_table.h"
+#include "base/memory/weak_ptr.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -39,7 +40,7 @@ class PostSaveCompromisedHelper
 
   // |compromised| contains all insecure credentials for the current site.
   // |current_username| is the username that was just saved or updated.
-  PostSaveCompromisedHelper(base::span<const InsecureCredential> compromised,
+  PostSaveCompromisedHelper(const std::vector<const PasswordForm*>& compromised,
                             const std::u16string& current_username);
   ~PostSaveCompromisedHelper() override;
 
@@ -66,7 +67,7 @@ class PostSaveCompromisedHelper
   void AnalyzeLeakedCredentialsInternal();
 
   // Contains the entry for the currently leaked credentials if it was leaked.
-  absl::optional<InsecureCredential> current_leak_;
+  absl::optional<PasswordForm> current_leak_;
   // Callback to notify the caller about the bubble type.
   BubbleCallback callback_;
   // BubbleType after the callback was executed.
@@ -78,6 +79,8 @@ class PostSaveCompromisedHelper
   base::RepeatingClosure forms_received_;
 
   std::vector<std::unique_ptr<PasswordForm>> passwords_;
+
+  base::WeakPtrFactory<PostSaveCompromisedHelper> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

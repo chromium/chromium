@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,6 +33,7 @@ class Origin;
 
 namespace payments {
 
+class CSPChecker;
 class PaymentManifestDownloader;
 class PaymentManifestWebDataService;
 
@@ -74,7 +75,7 @@ class ServiceWorkerPaymentAppFinder
       const url::Origin& merchant_origin,
       scoped_refptr<PaymentManifestWebDataService> cache,
       std::vector<mojom::PaymentMethodDataPtr> requested_method_data,
-      bool may_crawl_for_installable_payment_apps,
+      base::WeakPtr<CSPChecker> csp_checker,
       GetAllPaymentAppsCallback callback,
       base::OnceClosure finished_writing_cache_callback_for_testing);
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 #define ASH_WM_NATIVE_CURSOR_MANAGER_ASH_H_
 
 #include "ash/ash_export.h"
-#include "ui/base/cursor/cursor_loader.h"
 #include "ui/display/display.h"
+#include "ui/wm/core/cursor_loader.h"
 #include "ui/wm/core/native_cursor_manager.h"
 
 namespace ash {
@@ -27,7 +27,7 @@ class ASH_EXPORT NativeCursorManagerAsh : public ::wm::NativeCursorManager {
 
   // Toggle native cursor enabled/disabled.
   // The native cursor is enabled by default. When disabled, we hide the native
-  // cursor regardless of visibility state, and let CursorWindowManager draw
+  // cursor regardless of visibility state, and let CursorWindowController draw
   // the cursor.
   void SetNativeCursorEnabled(bool enabled);
 
@@ -55,7 +55,7 @@ class ASH_EXPORT NativeCursorManagerAsh : public ::wm::NativeCursorManager {
 
   bool native_cursor_enabled_;
 
-  ui::CursorLoader cursor_loader_{/*use_platform_cursors=*/false};
+  wm::CursorLoader cursor_loader_{/*use_platform_cursors=*/false};
 };
 
 }  // namespace ash

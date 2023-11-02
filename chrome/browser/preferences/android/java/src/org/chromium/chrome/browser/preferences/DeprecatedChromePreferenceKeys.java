@@ -1,10 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.preferences;
 
-import org.chromium.base.annotations.CheckDiscard;
+import org.chromium.build.annotations.CheckDiscard;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -19,7 +19,11 @@ public class DeprecatedChromePreferenceKeys {
     static List<String> getKeysForTesting() {
         // clang-format off
         return Arrays.asList(
+                "AUTOFILL_ASSISTANT_SKIP_INIT_SCREEN",
+                "BANDWIDTH_REDUCTION_PROXY_ENABLED",
+                "BANDWIDTH_REDUCTION_FIRST_ENABLED_TIME",
                 "Chrome.AccountPickerBottomSheet.ShownCount",
+                "Chrome.AutofillAssistant.NumberOfLiteScriptsCanceled",
                 "Chrome.Flags.PaintPreviewTestEnabled",
                 "Chrome.Flags.SafeBool.*",
                 "Chrome.Flags.SafeDouble.*",
@@ -31,6 +35,7 @@ public class DeprecatedChromePreferenceKeys {
                 "Chrome.OfflineMeasurements.IsRoaming",
                 "Chrome.OfflineMeasurements.TimeBetweenChecksMillisList",
                 "Chrome.OfflineMeasurements.UserStateList",
+                "Chrome.SigninPromo.NTPImpressions",
                 "Chrome.PriceTracking.PriceDropAlerts",
                 "PersistedNotificationId",
                 "PhysicalWeb.ActivityReferral",
@@ -65,9 +70,36 @@ public class DeprecatedChromePreferenceKeys {
                 "chrome_modern_design_enabled",
                 "chromium.invalidations.uuid",
                 "click_to_call_open_dialer_directly",
+                "contextual_search_all_time_open_count",
+                "contextual_search_all_time_tap_count",
+                "contextual_search_all_time_tap_quick_answer_count",
+                "contextual_search_clicks_week_*",
+                "contextual_search_current_week_number",
+                "contextual_search_entity_impressions_count",
+                "contextual_search_entity_opens_count",
+                "contextual_search_impressions_week_*",
+                "contextual_search_last_animation_time",
+                "contextual_search_newest_week",
+                "contextual_search_oldest_week",
+                "contextual_search_previous_interaction_encoded_outcomes",
+                "contextual_search_previous_interaction_event_id",
+                "contextual_search_previous_interaction_timestamp",
+                "contextual_search_promo_open_count",
+                "contextual_search_quick_action_impressions_count",
+                "contextual_search_quick_actions_ignored_count",
+                "contextual_search_quick_actions_taken_count",
+                "contextual_search_tap_count",
                 "crash_dump_upload",
                 "crash_dump_upload_no_cellular",
+                "data_reduction_site_breakdown_allowed_date",
+                "displayed_data_reduction_infobar_promo",
+                "displayed_data_reduction_infobar_promo_version",
+                "displayed_data_reduction_promo",
+                "displayed_data_reduction_promo_time_ms",
+                "displayed_data_reduction_promo_version",
+                "displayed_data_reduction_snackbar_promo_saved_bytes",
                 "darken_websites_enabled",
+                "fre_promo_opt_out",
                 "home_page_button_force_enabled",
                 "homepage_tile_enabled",
                 "inflate_toolbar_on_background_thread",
@@ -90,6 +122,10 @@ public class DeprecatedChromePreferenceKeys {
                 "prefetch_notification_offline_counter",
                 "prefetch_notification_shown_time",
                 "prioritize_bootstrap_tasks",
+                "service_manager_for_background_prefetch",
+                "service_manager_for_download_resumption",
+                "signin_promo_impressions_count_bookmarks",
+                "signin_promo_impressions_count_settings",
                 "sole_integration_enabled",
                 "start_surface_single_pane_enabled",
                 "tab_persistent_store_task_runner_enabled",

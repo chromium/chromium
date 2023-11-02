@@ -1,11 +1,11 @@
 #!/bin/bash
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 set -eux
 
-revision=9a84af84d3fa62b230569cf1d3abf69cc7c576e2
+revision=17ec234f823f7bff6ada6584fdbbee9d54b8fc58
 
 cd $(dirname $0)
 

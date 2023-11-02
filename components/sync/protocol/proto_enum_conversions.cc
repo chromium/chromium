@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -106,6 +106,22 @@ const char* ProtoEnumToString(
 }
 
 const char* ProtoEnumToString(
+    sync_pb::ContactInfoSpecifics::VerificationStatus verification_status) {
+  ASSERT_ENUM_BOUNDS(sync_pb::ContactInfoSpecifics, VerificationStatus,
+                     VERIFICATION_STATUS_UNSPECIFIED, SERVER_PARSED);
+  switch (verification_status) {
+    ENUM_CASE(sync_pb::ContactInfoSpecifics, VERIFICATION_STATUS_UNSPECIFIED);
+    ENUM_CASE(sync_pb::ContactInfoSpecifics, PARSED);
+    ENUM_CASE(sync_pb::ContactInfoSpecifics, FORMATTED);
+    ENUM_CASE(sync_pb::ContactInfoSpecifics, OBSERVED);
+    ENUM_CASE(sync_pb::ContactInfoSpecifics, USER_VERIFIED);
+    ENUM_CASE(sync_pb::ContactInfoSpecifics, SERVER_PARSED);
+  }
+  NOTREACHED();
+  return "";
+}
+
+const char* ProtoEnumToString(
     sync_pb::GetUpdatesCallerInfo::GetUpdatesSource updates_source) {
   ASSERT_ENUM_BOUNDS(sync_pb::GetUpdatesCallerInfo, GetUpdatesSource, UNKNOWN,
                      PROGRAMMATIC);
@@ -157,6 +173,27 @@ const char* ProtoEnumToString(
 }
 
 const char* ProtoEnumToString(
+    sync_pb::SavedTabGroup::SavedTabGroupColor color) {
+  ASSERT_ENUM_BOUNDS(sync_pb::SavedTabGroup, SavedTabGroupColor,
+                     SAVED_TAB_GROUP_COLOR_UNSPECIFIED,
+                     SAVED_TAB_GROUP_COLOR_ORANGE);
+  switch (color) {
+    ENUM_CASE(sync_pb::SavedTabGroup, SAVED_TAB_GROUP_COLOR_UNSPECIFIED);
+    ENUM_CASE(sync_pb::SavedTabGroup, SAVED_TAB_GROUP_COLOR_GREY);
+    ENUM_CASE(sync_pb::SavedTabGroup, SAVED_TAB_GROUP_COLOR_BLUE);
+    ENUM_CASE(sync_pb::SavedTabGroup, SAVED_TAB_GROUP_COLOR_RED);
+    ENUM_CASE(sync_pb::SavedTabGroup, SAVED_TAB_GROUP_COLOR_YELLOW);
+    ENUM_CASE(sync_pb::SavedTabGroup, SAVED_TAB_GROUP_COLOR_GREEN);
+    ENUM_CASE(sync_pb::SavedTabGroup, SAVED_TAB_GROUP_COLOR_PINK);
+    ENUM_CASE(sync_pb::SavedTabGroup, SAVED_TAB_GROUP_COLOR_PURPLE);
+    ENUM_CASE(sync_pb::SavedTabGroup, SAVED_TAB_GROUP_COLOR_CYAN);
+    ENUM_CASE(sync_pb::SavedTabGroup, SAVED_TAB_GROUP_COLOR_ORANGE);
+  }
+  NOTREACHED();
+  return "";
+}
+
+const char* ProtoEnumToString(
     sync_pb::SearchEngineSpecifics::ActiveStatus is_active) {
   ASSERT_ENUM_BOUNDS(sync_pb::SearchEngineSpecifics, ActiveStatus,
                      ACTIVE_STATUS_UNSPECIFIED, ACTIVE_STATUS_FALSE);
@@ -164,6 +201,29 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::SearchEngineSpecifics, ACTIVE_STATUS_UNSPECIFIED);
     ENUM_CASE(sync_pb::SearchEngineSpecifics, ACTIVE_STATUS_TRUE);
     ENUM_CASE(sync_pb::SearchEngineSpecifics, ACTIVE_STATUS_FALSE);
+  }
+  NOTREACHED();
+  return "";
+}
+
+const char* ProtoEnumToString(
+    sync_pb::SegmentationSpecifics::DeviceMetadata::PlatformType
+        platform_type) {
+  ASSERT_ENUM_BOUNDS(sync_pb::SegmentationSpecifics::DeviceMetadata,
+                     PlatformType, PLATFORM_TYPE_UNSPECIFIED,
+                     PLATFORM_CHROMEOS_LACROS);
+  switch (platform_type) {
+    ENUM_CASE(sync_pb::SegmentationSpecifics::DeviceMetadata,
+              PLATFORM_TYPE_UNSPECIFIED);
+    ENUM_CASE(sync_pb::SegmentationSpecifics::DeviceMetadata, PLATFORM_WINDOWS);
+    ENUM_CASE(sync_pb::SegmentationSpecifics::DeviceMetadata, PLATFORM_MAC);
+    ENUM_CASE(sync_pb::SegmentationSpecifics::DeviceMetadata, PLATFORM_LINUX);
+    ENUM_CASE(sync_pb::SegmentationSpecifics::DeviceMetadata,
+              PLATFORM_CHROMEOS_ASH);
+    ENUM_CASE(sync_pb::SegmentationSpecifics::DeviceMetadata, PLATFORM_ANDROID);
+    ENUM_CASE(sync_pb::SegmentationSpecifics::DeviceMetadata, PLATFORM_IOS);
+    ENUM_CASE(sync_pb::SegmentationSpecifics::DeviceMetadata,
+              PLATFORM_CHROMEOS_LACROS);
   }
   NOTREACHED();
   return "";
@@ -177,14 +237,14 @@ const char* ProtoEnumToString(sync_pb::SessionTab::FaviconType favicon_type) {
   return "";
 }
 
-const char* ProtoEnumToString(
-    sync_pb::SessionWindow::BrowserType browser_type) {
-  ASSERT_ENUM_BOUNDS(sync_pb::SessionWindow, BrowserType, TYPE_TABBED,
+const char* ProtoEnumToString(sync_pb::SyncEnums::BrowserType browser_type) {
+  ASSERT_ENUM_BOUNDS(sync_pb::SyncEnums, BrowserType, BROWSER_TYPE_UNKNOWN,
                      TYPE_CUSTOM_TAB);
   switch (browser_type) {
-    ENUM_CASE(sync_pb::SessionWindow, TYPE_TABBED);
-    ENUM_CASE(sync_pb::SessionWindow, TYPE_POPUP);
-    ENUM_CASE(sync_pb::SessionWindow, TYPE_CUSTOM_TAB);
+    ENUM_CASE(sync_pb::SyncEnums, BROWSER_TYPE_UNKNOWN);
+    ENUM_CASE(sync_pb::SyncEnums, TYPE_TABBED);
+    ENUM_CASE(sync_pb::SyncEnums, TYPE_POPUP);
+    ENUM_CASE(sync_pb::SyncEnums, TYPE_CUSTOM_TAB);
   }
   NOTREACHED();
   return "";
@@ -303,7 +363,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::SyncEnums, PASSPHRASE_TYPE_CHANGED);
     ENUM_CASE(sync_pb::SyncEnums, DEPRECATED_KEYSTORE_TOKEN_UPDATED);
     ENUM_CASE(sync_pb::SyncEnums, CONFIGURE_COMPLETE);
-    ENUM_CASE(sync_pb::SyncEnums, BOOTSTRAP_TOKEN_UPDATED);
+    ENUM_CASE(sync_pb::SyncEnums, DEPRECATED_BOOTSTRAP_TOKEN_UPDATED);
     ENUM_CASE(sync_pb::SyncEnums, TRUSTED_VAULT_KEY_REQUIRED);
     ENUM_CASE(sync_pb::SyncEnums, TRUSTED_VAULT_KEY_ACCEPTED);
   }
@@ -322,13 +382,13 @@ const char* ProtoEnumToString(sync_pb::TabNavigation::BlockedState state) {
   return "";
 }
 
-const char* ProtoEnumToString(sync_pb::TabNavigation::PasswordState state) {
-  ASSERT_ENUM_BOUNDS(sync_pb::TabNavigation, PasswordState,
-                     PASSWORD_STATE_UNKNOWN, HAS_PASSWORD_FIELD);
+const char* ProtoEnumToString(sync_pb::SyncEnums::PasswordState state) {
+  ASSERT_ENUM_BOUNDS(sync_pb::SyncEnums, PasswordState, PASSWORD_STATE_UNKNOWN,
+                     HAS_PASSWORD_FIELD);
   switch (state) {
-    ENUM_CASE(sync_pb::TabNavigation, PASSWORD_STATE_UNKNOWN);
-    ENUM_CASE(sync_pb::TabNavigation, NO_PASSWORD_FIELD);
-    ENUM_CASE(sync_pb::TabNavigation, HAS_PASSWORD_FIELD);
+    ENUM_CASE(sync_pb::SyncEnums, PASSWORD_STATE_UNKNOWN);
+    ENUM_CASE(sync_pb::SyncEnums, NO_PASSWORD_FIELD);
+    ENUM_CASE(sync_pb::SyncEnums, HAS_PASSWORD_FIELD);
   }
   NOTREACHED();
   return "";
@@ -476,11 +536,28 @@ const char* ProtoEnumToString(
     sync_pb::WalletMaskedCreditCard::VirtualCardEnrollmentState
         virtual_card_enrollment_state) {
   ASSERT_ENUM_BOUNDS(sync_pb::WalletMaskedCreditCard,
-                     VirtualCardEnrollmentState, UNSPECIFIED, ENROLLED);
+                     VirtualCardEnrollmentState, UNSPECIFIED,
+                     UNENROLLED_AND_ELIGIBLE);
   switch (virtual_card_enrollment_state) {
     ENUM_CASE(sync_pb::WalletMaskedCreditCard, UNSPECIFIED);
     ENUM_CASE(sync_pb::WalletMaskedCreditCard, UNENROLLED);
     ENUM_CASE(sync_pb::WalletMaskedCreditCard, ENROLLED);
+    ENUM_CASE(sync_pb::WalletMaskedCreditCard, UNENROLLED_AND_NOT_ELIGIBLE);
+    ENUM_CASE(sync_pb::WalletMaskedCreditCard, UNENROLLED_AND_ELIGIBLE);
+  }
+  NOTREACHED();
+  return "";
+}
+
+const char* ProtoEnumToString(
+    sync_pb::WalletMaskedCreditCard::VirtualCardEnrollmentType
+        virtual_card_enrollment_type) {
+  ASSERT_ENUM_BOUNDS(sync_pb::WalletMaskedCreditCard, VirtualCardEnrollmentType,
+                     TYPE_UNSPECIFIED, NETWORK);
+  switch (virtual_card_enrollment_type) {
+    ENUM_CASE(sync_pb::WalletMaskedCreditCard, TYPE_UNSPECIFIED);
+    ENUM_CASE(sync_pb::WalletMaskedCreditCard, ISSUER);
+    ENUM_CASE(sync_pb::WalletMaskedCreditCard, NETWORK);
   }
   NOTREACHED();
   return "";
@@ -501,7 +578,7 @@ const char* ProtoEnumToString(
 const char* ProtoEnumToString(
     sync_pb::WalletMaskedCreditCard::WalletCardType wallet_card_type) {
   ASSERT_ENUM_BOUNDS(sync_pb::WalletMaskedCreditCard, WalletCardType, UNKNOWN,
-                     UNIONPAY);
+                     ELO);
   switch (wallet_card_type) {
     ENUM_CASE(sync_pb::WalletMaskedCreditCard, UNKNOWN);
     ENUM_CASE(sync_pb::WalletMaskedCreditCard, AMEX);
@@ -513,6 +590,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::WalletMaskedCreditCard, SWITCH);
     ENUM_CASE(sync_pb::WalletMaskedCreditCard, VISA);
     ENUM_CASE(sync_pb::WalletMaskedCreditCard, UNIONPAY);
+    ENUM_CASE(sync_pb::WalletMaskedCreditCard, ELO);
   }
   NOTREACHED();
   return "";
@@ -665,6 +743,44 @@ const char* ProtoEnumToString(
 }
 
 const char* ProtoEnumToString(
+    sync_pb::WorkspaceDeskSpecifics::LaunchContainer container) {
+  ASSERT_ENUM_BOUNDS(sync_pb::WorkspaceDeskSpecifics, LaunchContainer,
+                     LAUNCH_CONTAINER_UNSPECIFIED, LAUNCH_CONTAINER_NONE);
+  switch (container) {
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, LAUNCH_CONTAINER_UNSPECIFIED);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, LAUNCH_CONTAINER_WINDOW);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics,
+              LAUNCH_CONTAINER_PANEL_DEPRECATED);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, LAUNCH_CONTAINER_TAB);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, LAUNCH_CONTAINER_NONE);
+  }
+  NOTREACHED();
+  return "";
+}
+
+const char* ProtoEnumToString(
+    sync_pb::WorkspaceDeskSpecifics::WindowOpenDisposition disposition) {
+  ASSERT_ENUM_BOUNDS(sync_pb::WorkspaceDeskSpecifics, WindowOpenDisposition,
+                     UNKNOWN, NEW_PICTURE_IN_PICTURE);
+  switch (disposition) {
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, UNKNOWN);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, CURRENT_TAB);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, SINGLETON_TAB);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, NEW_FOREGROUND_TAB);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, NEW_BACKGROUND_TAB);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, NEW_POPUP);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, NEW_WINDOW);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, SAVE_TO_DISK);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, OFF_THE_RECORD);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, IGNORE_ACTION);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, SWITCH_TO_TAB);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, NEW_PICTURE_IN_PICTURE);
+  }
+  NOTREACHED();
+  return "";
+}
+
+const char* ProtoEnumToString(
     sync_pb::UserConsentTypes::AssistantActivityControlConsent::SettingType
         setting_type) {
   ASSERT_ENUM_BOUNDS(sync_pb::UserConsentTypes::AssistantActivityControlConsent,
@@ -677,6 +793,39 @@ const char* ProtoEnumToString(
               WEB_AND_APP_ACTIVITY);
     ENUM_CASE(sync_pb::UserConsentTypes::AssistantActivityControlConsent,
               DEVICE_APPS);
+  }
+  NOTREACHED();
+  return "";
+}
+
+const char* ProtoEnumToString(sync_pb::WorkspaceDeskSpecifics::DeskType type) {
+  ASSERT_ENUM_BOUNDS(sync_pb::WorkspaceDeskSpecifics, DeskType, UNKNOWN_TYPE,
+                     SAVE_AND_RECALL);
+  switch (type) {
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, UNKNOWN_TYPE);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, TEMPLATE);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, SAVE_AND_RECALL);
+  }
+  NOTREACHED();
+  return "";
+}
+
+const char* ProtoEnumToString(
+    sync_pb::WorkspaceDeskSpecifics::TabGroupColor color) {
+  ASSERT_ENUM_BOUNDS(sync_pb::WorkspaceDeskSpecifics, TabGroupColor,
+                     UNKNOWN_COLOR, ORANGE);
+
+  switch (color) {
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, UNKNOWN_COLOR);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, GREY);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, BLUE);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, RED);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, YELLOW);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, GREEN);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, PINK);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, PURPLE);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, CYAN);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, ORANGE);
   }
   NOTREACHED();
   return "";

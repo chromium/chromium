@@ -1,8 +1,8 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Action, DeferredAction, StoreObserver} from 'chrome://resources/js/cr/ui/store.js';
+import {Action, DeferredAction} from 'chrome://resources/js/store_ts.js';
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Store} from './store.js';
@@ -10,10 +10,10 @@ import {BookmarksPageState} from './types.js';
 
 type Constructor<T> = new (...args: any[]) => T;
 
-type Watch = {
-  localProperty: string,
-  valueGetter: (p: BookmarksPageState) => any,
-};
+interface Watch {
+  localProperty: string;
+  valueGetter: (p: BookmarksPageState) => any;
+}
 
 export const StoreClientMixin = dedupingMixin(
     <T extends Constructor<PolymerElement>>(superClass: T): T&
@@ -22,12 +22,12 @@ export const StoreClientMixin = dedupingMixin(
           StoreClientMixinInterface {
         private watches_: Watch[] = [];
 
-        connectedCallback() {
+        override connectedCallback() {
           super.connectedCallback();
           this.getStore().addObserver(this);
         }
 
-        disconnectedCallback() {
+        override disconnectedCallback() {
           super.disconnectedCallback();
           this.getStore().removeObserver(this);
         }

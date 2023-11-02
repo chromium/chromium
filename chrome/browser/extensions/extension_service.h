@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,14 +11,16 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/blocklist.h"
+#include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
 #include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_metrics.h"
@@ -54,6 +56,10 @@
 #error "Extensions must be enabled"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/extensions/ash_extension_keeplist_manager.h"
+#endif
+
 class BlocklistedExtensionSyncServiceTest;
 class Profile;
 
@@ -87,6 +93,9 @@ class ExtensionServiceInterface
 
   // Gets the object managing the set of pending extensions.
   virtual PendingExtensionManager* pending_extension_manager() = 0;
+
+  // Gets the object managing reinstalls of the corrupted extensions.
+  virtual CorruptedExtensionReinstaller* corrupted_extension_reinstaller() = 0;
 
   // Installs an update with the contents from |extension_path|. Returns true if
   // the install can be started. Sets |out_crx_installer| to the installer if
@@ -186,6 +195,7 @@ class ExtensionService : public ExtensionServiceInterface,
   // ExtensionServiceInterface implementation.
   //
   PendingExtensionManager* pending_extension_manager() override;
+  CorruptedExtensionReinstaller* corrupted_extension_reinstaller() override;
   bool UpdateExtension(const CRXFileInfo& file,
                        bool file_ownership_passed,
                        CrxInstaller** out_crx_installer) override;
@@ -209,7 +219,7 @@ class ExtensionService : public ExtensionServiceInterface,
       const ExternalInstallInfoFile& info) override;
   bool OnExternalExtensionUpdateUrlFound(
       const ExternalInstallInfoUpdateUrl& info,
-      bool is_initial_load) override;
+      bool force_update) override;
   void OnExternalProviderReady(
       const ExternalProviderInterface* provider) override;
   void OnExternalProviderUpdateComplete(
@@ -460,6 +470,10 @@ class ExtensionService : public ExtensionServiceInterface,
   }
 
   void UninstallMigratedExtensionsForTest() { UninstallMigratedExtensions(); }
+
+  void ProfileMarkedForPermanentDeletionForTest() {
+    OnProfileMarkedForPermanentDeletion(profile_);
+  }
 #endif
 
   void set_browser_terminating_for_test(bool value) {
@@ -487,6 +501,8 @@ class ExtensionService : public ExtensionServiceInterface,
   void OnExtensionHostRenderProcessGone(
       content::BrowserContext* browser_context,
       ExtensionHost* extension_host) override;
+
+  void OnAppTerminating();
 
   // content::NotificationObserver implementation:
   void Observe(int type,
@@ -617,19 +633,19 @@ class ExtensionService : public ExtensionServiceInterface,
       const std::string& extension_id,
       const absl::optional<CrxInstallError>& error);
 
-  const base::CommandLine* command_line_ = nullptr;
+  raw_ptr<const base::CommandLine> command_line_ = nullptr;
 
   // The normal profile associated with this ExtensionService.
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
   // The ExtensionSystem for the profile above.
-  ExtensionSystem* system_ = nullptr;
+  raw_ptr<ExtensionSystem> system_ = nullptr;
 
   // Preferences for the owning profile.
-  ExtensionPrefs* extension_prefs_ = nullptr;
+  raw_ptr<ExtensionPrefs> extension_prefs_ = nullptr;
 
   // Blocklist for the owning profile.
-  Blocklist* blocklist_ = nullptr;
+  raw_ptr<Blocklist> blocklist_ = nullptr;
 
   ExtensionAllowlist allowlist_;
 
@@ -638,7 +654,7 @@ class ExtensionService : public ExtensionServiceInterface,
   OmahaAttributesHandler omaha_attributes_handler_;
 
   // Sets of enabled/disabled/terminated/blocklisted extensions. Not owned.
-  ExtensionRegistry* registry_ = nullptr;
+  raw_ptr<ExtensionRegistry> registry_ = nullptr;
 
   // Set of allowlisted enabled extensions loaded from the
   // --disable-extensions-except command line flag.
@@ -659,11 +675,12 @@ class ExtensionService : public ExtensionServiceInterface,
   bool extensions_enabled_ = true;
 
   // Signaled when all extensions are loaded.
-  base::OneShotEvent* const ready_;
+  const raw_ptr<base::OneShotEvent> ready_;
 
   // Our extension updater, if updates are turned on.
   std::unique_ptr<ExtensionUpdater> updater_;
 
+  base::CallbackListSubscription on_app_terminating_subscription_;
   content::NotificationRegistrar registrar_;
 
   // Keeps track of loading and unloading component extensions.
@@ -725,6 +742,9 @@ class ExtensionService : public ExtensionServiceInterface,
   // Reports force-installed extension metrics to UMA.
   ForceInstalledMetrics force_installed_metrics_;
 
+  // Schedules downloads/reinstalls of the corrupted extensions.
+  CorruptedExtensionReinstaller corrupted_extension_reinstaller_;
+
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       profile_manager_observation_{this};
 
@@ -735,6 +755,10 @@ class ExtensionService : public ExtensionServiceInterface,
   using InstallGateRegistry =
       std::map<ExtensionPrefs::DelayReason, InstallGate*>;
   InstallGateRegistry install_delayer_registry_;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  AshExtensionKeeplistManager ash_keeplist_manager_;
+#endif
 
   FRIEND_TEST_ALL_PREFIXES(ExtensionServiceTest,
                            DestroyingProfileClearsExtensions);
@@ -779,6 +803,10 @@ class ExtensionService : public ExtensionServiceInterface,
                            DisableExtensionWhenSwitchingBetweenGreylistStates);
   FRIEND_TEST_ALL_PREFIXES(SafeBrowsingVerdictHandlerUnitTest,
                            AcknowledgedStateBackFilled);
+  FRIEND_TEST_ALL_PREFIXES(SafeBrowsingVerdictHandlerUnitTest,
+                           ExtensionUninstalledWhenBlocklisted);
+  FRIEND_TEST_ALL_PREFIXES(SafeBrowsingVerdictHandlerUnitTest,
+                           ExtensionUninstalledWhenBlocklistFetching);
   friend class ::BlocklistedExtensionSyncServiceTest;
   friend class SafeBrowsingVerdictHandlerUnitTest;
   friend class BlocklistStatesInteractionUnitTest;

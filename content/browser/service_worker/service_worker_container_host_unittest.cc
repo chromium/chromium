@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -130,20 +131,23 @@ class ServiceWorkerContainerHostTest : public testing::Test {
     blink::mojom::ServiceWorkerRegistrationOptions options1;
     options1.scope = GURL("https://www.example.com/");
     blink::StorageKey key1(url::Origin::Create(options1.scope));
-    registration1_ = new ServiceWorkerRegistration(options1, key1, 1L,
-                                                   context_->AsWeakPtr());
+    registration1_ = new ServiceWorkerRegistration(
+        options1, key1, 1L, context_->AsWeakPtr(),
+        blink::mojom::AncestorFrameType::kNormalFrame);
 
     blink::mojom::ServiceWorkerRegistrationOptions options2;
     options2.scope = GURL("https://www.example.com/example");
     blink::StorageKey key2(url::Origin::Create(options2.scope));
-    registration2_ = new ServiceWorkerRegistration(options2, key2, 2L,
-                                                   context_->AsWeakPtr());
+    registration2_ = new ServiceWorkerRegistration(
+        options2, key2, 2L, context_->AsWeakPtr(),
+        blink::mojom::AncestorFrameType::kNormalFrame);
 
     blink::mojom::ServiceWorkerRegistrationOptions options3;
     options3.scope = GURL("https://other.example.com/");
     blink::StorageKey key3(url::Origin::Create(options3.scope));
-    registration3_ = new ServiceWorkerRegistration(options3, key3, 3L,
-                                                   context_->AsWeakPtr());
+    registration3_ = new ServiceWorkerRegistration(
+        options3, key3, 3L, context_->AsWeakPtr(),
+        blink::mojom::AncestorFrameType::kNormalFrame);
   }
 
   void TearDown() override {
@@ -158,33 +162,27 @@ class ServiceWorkerContainerHostTest : public testing::Test {
   ServiceWorkerRemoteContainerEndpoint PrepareServiceWorkerContainerHost(
       const GURL& document_url) {
     ServiceWorkerRemoteContainerEndpoint remote_endpoint;
-    net::SiteForCookies site_for_cookies =
-        net::SiteForCookies::FromUrl(document_url);
     url::Origin top_frame_origin = url::Origin::Create(document_url);
-    CreateContainerHostInternal(document_url, site_for_cookies,
-                                top_frame_origin, &remote_endpoint);
+    CreateContainerHostInternal(document_url, top_frame_origin,
+                                &remote_endpoint);
     return remote_endpoint;
   }
 
   ServiceWorkerRemoteContainerEndpoint
   PrepareServiceWorkerContainerHostWithSiteForCookies(
       const GURL& document_url,
-      const net::SiteForCookies& site_for_cookies,
       const absl::optional<url::Origin>& top_frame_origin) {
     ServiceWorkerRemoteContainerEndpoint remote_endpoint;
-    CreateContainerHostInternal(document_url, site_for_cookies,
-                                top_frame_origin, &remote_endpoint);
+    CreateContainerHostInternal(document_url, top_frame_origin,
+                                &remote_endpoint);
     return remote_endpoint;
   }
 
   base::WeakPtr<ServiceWorkerContainerHost> CreateContainerHost(
       const GURL& document_url) {
-    net::SiteForCookies site_for_cookies =
-        net::SiteForCookies::FromUrl(document_url);
     url::Origin top_frame_origin = url::Origin::Create(document_url);
     remote_endpoints_.emplace_back();
-    return CreateContainerHostInternal(document_url, site_for_cookies,
-                                       top_frame_origin,
+    return CreateContainerHostInternal(document_url, top_frame_origin,
                                        &remote_endpoints_.back());
   }
 
@@ -198,8 +196,7 @@ class ServiceWorkerContainerHostTest : public testing::Test {
             /*is_parent_frame_secure=*/false, helper_->context()->AsWeakPtr(),
             &remote_endpoints_.back());
     container_host->UpdateUrls(
-        document_url, net::SiteForCookies::FromUrl(document_url),
-        url::Origin::Create(document_url),
+        document_url, url::Origin::Create(document_url),
         blink::StorageKey(url::Origin::Create(document_url)));
     return container_host;
   }
@@ -207,8 +204,7 @@ class ServiceWorkerContainerHostTest : public testing::Test {
   void FinishNavigation(ServiceWorkerContainerHost* container_host) {
     // In production code, the loader/request handler does this.
     const GURL url("https://www.example.com/page");
-    container_host->UpdateUrls(url, net::SiteForCookies::FromUrl(url),
-                               url::Origin::Create(url),
+    container_host->UpdateUrls(url, url::Origin::Create(url),
                                blink::StorageKey(url::Origin::Create(url)));
 
     // Establish a dummy connection to allow sending messages without errors.
@@ -221,7 +217,7 @@ class ServiceWorkerContainerHostTest : public testing::Test {
     container_host->OnBeginNavigationCommit(
         GlobalRenderFrameHostId(helper_->mock_render_process_id(),
                                 1 /* route_id */),
-        network::CrossOriginEmbedderPolicy(), std::move(reporter),
+        PolicyContainerPolicies(), std::move(reporter),
         ukm::UkmRecorder::GetNewSourceID());
   }
 
@@ -335,21 +331,20 @@ class ServiceWorkerContainerHostTest : public testing::Test {
   BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<EmbeddedWorkerTestHelper> helper_;
-  ServiceWorkerContextCore* context_;
+  raw_ptr<ServiceWorkerContextCore> context_;
   scoped_refptr<ServiceWorkerRegistration> registration1_;
   scoped_refptr<ServiceWorkerRegistration> registration2_;
   scoped_refptr<ServiceWorkerRegistration> registration3_;
   GURL script_url_;
   ServiceWorkerTestContentClient test_content_client_;
   TestContentBrowserClient test_content_browser_client_;
-  ContentBrowserClient* old_content_browser_client_;
+  raw_ptr<ContentBrowserClient> old_content_browser_client_;
   std::vector<ServiceWorkerRemoteContainerEndpoint> remote_endpoints_;
   std::vector<std::string> bad_messages_;
 
  private:
   base::WeakPtr<ServiceWorkerContainerHost> CreateContainerHostInternal(
       const GURL& document_url,
-      const net::SiteForCookies& site_for_cookies,
       const absl::optional<url::Origin>& top_frame_origin,
       ServiceWorkerRemoteContainerEndpoint* remote_endpoint) {
     base::WeakPtr<ServiceWorkerContainerHost> container_host =
@@ -359,7 +354,7 @@ class ServiceWorkerContainerHostTest : public testing::Test {
             /*is_parent_frame_secure=*/true, helper_->context()->AsWeakPtr(),
             remote_endpoint);
     container_host->UpdateUrls(
-        document_url, site_for_cookies, top_frame_origin,
+        document_url, top_frame_origin,
         blink::StorageKey(url::Origin::Create(document_url)));
     return container_host;
   }
@@ -400,7 +395,6 @@ TEST_F(ServiceWorkerContainerHostTest, MatchRegistration) {
   // SetDocumentUrl sets all of matching registrations
   container_host->UpdateUrls(
       GURL("https://www.example.com/example1"),
-      net::SiteForCookies::FromUrl(GURL("https://www.example.com/example1")),
       url::Origin::Create(GURL("https://www.example.com/example1")),
       blink::StorageKey(
           url::Origin::Create(GURL("https://www.example.com/example1"))));
@@ -411,7 +405,6 @@ TEST_F(ServiceWorkerContainerHostTest, MatchRegistration) {
   // SetDocumentUrl with another origin also updates matching registrations
   container_host->UpdateUrls(
       GURL("https://other.example.com/example"),
-      net::SiteForCookies::FromUrl(GURL("https://other.example.com/example")),
       url::Origin::Create(GURL("https://other.example.com/example")),
       blink::StorageKey(
           url::Origin::Create(GURL("https://other.example.com/example1"))));
@@ -429,24 +422,21 @@ TEST_F(ServiceWorkerContainerHostTest, ContextSecurity) {
 
   // Insecure document URL.
   container_host_secure_parent->UpdateUrls(
-      GURL("http://host"), net::SiteForCookies::FromUrl(GURL("http://host")),
-      url::Origin::Create(GURL("http://host")),
+      GURL("http://host"), url::Origin::Create(GURL("http://host")),
       blink::StorageKey(url::Origin::Create(GURL("http://host"))));
   EXPECT_FALSE(
       container_host_secure_parent->IsEligibleForServiceWorkerController());
 
   // Insecure parent frame.
   container_host_insecure_parent->UpdateUrls(
-      GURL("https://host"), net::SiteForCookies::FromUrl(GURL("https://host")),
-      url::Origin::Create(GURL("https://host")),
+      GURL("https://host"), url::Origin::Create(GURL("https://host")),
       blink::StorageKey(url::Origin::Create(GURL("https://host"))));
   EXPECT_FALSE(
       container_host_insecure_parent->IsEligibleForServiceWorkerController());
 
   // Secure URL and parent frame.
   container_host_secure_parent->UpdateUrls(
-      GURL("https://host"), net::SiteForCookies::FromUrl(GURL("https://host")),
-      url::Origin::Create(GURL("https://host")),
+      GURL("https://host"), url::Origin::Create(GURL("https://host")),
       blink::StorageKey(url::Origin::Create(GURL("https://host"))));
   EXPECT_TRUE(
       container_host_secure_parent->IsEligibleForServiceWorkerController());
@@ -457,16 +447,14 @@ TEST_F(ServiceWorkerContainerHostTest, ContextSecurity) {
   EXPECT_TRUE(url.is_valid());
   EXPECT_FALSE(network::IsUrlPotentiallyTrustworthy(url));
   EXPECT_TRUE(OriginCanAccessServiceWorkers(url));
-  container_host_secure_parent->UpdateUrls(url,
-                                           net::SiteForCookies::FromUrl(url),
-                                           origin, blink::StorageKey(origin));
+  container_host_secure_parent->UpdateUrls(url, origin,
+                                           blink::StorageKey(origin));
   EXPECT_TRUE(
       container_host_secure_parent->IsEligibleForServiceWorkerController());
 
   // Exceptional service worker scheme with insecure parent frame.
-  container_host_insecure_parent->UpdateUrls(url,
-                                             net::SiteForCookies::FromUrl(url),
-                                             origin, blink::StorageKey(origin));
+  container_host_insecure_parent->UpdateUrls(url, origin,
+                                             blink::StorageKey(origin));
   EXPECT_FALSE(
       container_host_insecure_parent->IsEligibleForServiceWorkerController());
 }
@@ -482,8 +470,7 @@ TEST_F(ServiceWorkerContainerHostTest, UpdateUrls_SameOriginRedirect) {
   EXPECT_TRUE(container_host->site_for_cookies().IsEquivalent(
       net::SiteForCookies::FromUrl(url1)));
 
-  container_host->UpdateUrls(url2, net::SiteForCookies::FromUrl(url2),
-                             url::Origin::Create(url2),
+  container_host->UpdateUrls(url2, url::Origin::Create(url2),
                              blink::StorageKey(url::Origin::Create(url2)));
   EXPECT_EQ(url2, container_host->url());
   EXPECT_TRUE(container_host->site_for_cookies().IsEquivalent(
@@ -505,8 +492,7 @@ TEST_F(ServiceWorkerContainerHostTest, UpdateUrls_CrossOriginRedirect) {
   EXPECT_TRUE(container_host->site_for_cookies().IsEquivalent(
       net::SiteForCookies::FromUrl(url1)));
 
-  container_host->UpdateUrls(url2, net::SiteForCookies::FromUrl(url2),
-                             url::Origin::Create(url2),
+  container_host->UpdateUrls(url2, url::Origin::Create(url2),
                              blink::StorageKey(url::Origin::Create(url2)));
   EXPECT_EQ(url2, container_host->url());
   EXPECT_TRUE(container_host->site_for_cookies().IsEquivalent(
@@ -530,17 +516,15 @@ TEST_F(ServiceWorkerContainerHostTest, UpdateUrls_CorrectStorageKey) {
       CreateContainerHost(url1);
   EXPECT_EQ(key1, container_host->key());
 
-  container_host->UpdateUrls(url2, net::SiteForCookies::FromUrl(url2),
-                             url::Origin::Create(url2), key2);
+  container_host->UpdateUrls(url2, url::Origin::Create(url2), key2);
   EXPECT_EQ(key2, container_host->key());
 
   auto container_host_for_service_worker =
       std::make_unique<ServiceWorkerContainerHost>(
           helper_->context()->AsWeakPtr());
 
-  container_host_for_service_worker->UpdateUrls(
-      url3, net::SiteForCookies::FromUrl(url3), url::Origin::Create(url3),
-      key3);
+  container_host_for_service_worker->UpdateUrls(url3, url::Origin::Create(url3),
+                                                key3);
   EXPECT_EQ(key3, container_host_for_service_worker->key());
 }
 
@@ -636,8 +620,8 @@ TEST_F(ServiceWorkerContainerHostTest, Controller) {
       blink::mojom::ScriptType::kClassic, 1 /* version_id */,
       mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
       helper_->context()->AsWeakPtr());
-  version->set_fetch_handler_existence(
-      ServiceWorkerVersion::FetchHandlerExistence::EXISTS);
+  version->set_fetch_handler_type(
+      ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
   version->SetStatus(ServiceWorkerVersion::ACTIVATED);
   registration1_->SetActiveVersion(version);
 
@@ -700,7 +684,6 @@ TEST_F(ServiceWorkerContainerHostTest,
   ServiceWorkerRemoteContainerEndpoint remote_endpoint =
       PrepareServiceWorkerContainerHostWithSiteForCookies(
           GURL("https://www.example.com/foo"),
-          net::SiteForCookies::FromUrl(GURL("https://www.example.com/top")),
           url::Origin::Create(GURL("https://www.example.com")));
 
   EXPECT_EQ(blink::mojom::ServiceWorkerErrorType::kDisabled,
@@ -947,6 +930,55 @@ TEST_F(ServiceWorkerContainerHostTest,
   EXPECT_EQ(3u, bad_messages_.size());
 }
 
+class WebUIServiceWorkerContainerHostTest
+    : public ServiceWorkerContainerHostTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  WebUIServiceWorkerContainerHostTest() {
+    if (GetParam()) {
+      features_.InitAndEnableFeature(
+          features::kEnableServiceWorkersForChromeUntrusted);
+    } else {
+      features_.InitAndDisableFeature(
+          features::kEnableServiceWorkersForChromeUntrusted);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+TEST_P(WebUIServiceWorkerContainerHostTest, Register_RegistrationShouldFail) {
+  ServiceWorkerRemoteContainerEndpoint remote_endpoint =
+      PrepareServiceWorkerContainerHost(GURL("chrome://testwebui/"));
+
+  ASSERT_TRUE(bad_messages_.empty());
+  Register(remote_endpoint.host_remote()->get(), GURL("chrome://testwebui/"),
+           GURL("chrome://testwebui/sw.js"));
+  EXPECT_EQ(1u, bad_messages_.size());
+}
+
+TEST_P(WebUIServiceWorkerContainerHostTest,
+       Register_UntrustedRegistrationShouldFail) {
+  ServiceWorkerRemoteContainerEndpoint remote_endpoint =
+      PrepareServiceWorkerContainerHost(GURL("chrome-untrusted://testwebui/"));
+
+  ASSERT_TRUE(bad_messages_.empty());
+  Register(remote_endpoint.host_remote()->get(),
+           GURL("chrome-untrusted://testwebui/"),
+           GURL("chrome-untrusted://testwebui/sw.js"));
+  EXPECT_EQ(1u, bad_messages_.size());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         WebUIServiceWorkerContainerHostTest,
+                         testing::Bool(),
+                         [](const ::testing::TestParamInfo<bool>& info) {
+                           if (info.param)
+                             return "ServiceWorkersForChromeUntrustedEnabled";
+                           return "ServiceWorkersForChromeUntrustedDisabled";
+                         });
+
 TEST_F(ServiceWorkerContainerHostTest, EarlyContextDeletion) {
   ServiceWorkerRemoteContainerEndpoint remote_endpoint =
       PrepareServiceWorkerContainerHost(GURL("https://www.example.com/foo"));
@@ -1059,13 +1091,11 @@ void ServiceWorkerContainerHostTest::TestReservedClientsAreNotExposed(
         context_->CreateContainerHostForWorker(
             std::move(host_receiver), helper_->mock_render_process_id(),
             std::move(client_remote), client_info);
-    container_host->UpdateUrls(url, net::SiteForCookies::FromUrl(url),
-                               url::Origin::Create(url),
+    container_host->UpdateUrls(url, url::Origin::Create(url),
                                blink::StorageKey(url::Origin::Create(url)));
     EXPECT_FALSE(CanFindClientContainerHost(container_host.get()));
     container_host->CompleteWebWorkerPreparation(
-        network::CrossOriginEmbedderPolicy(),
-        ukm::UkmRecorder::GetNewSourceID());
+        PolicyContainerPolicies(), ukm::UkmRecorder::GetNewSourceID());
     EXPECT_TRUE(CanFindClientContainerHost(container_host.get()));
   }
 
@@ -1151,11 +1181,10 @@ void ServiceWorkerContainerHostTest::TestClientPhaseTransition(
   EXPECT_FALSE(container_host->is_response_committed());
   EXPECT_FALSE(container_host->is_execution_ready());
 
-  container_host->UpdateUrls(url, net::SiteForCookies::FromUrl(url),
-                             url::Origin::Create(url),
+  container_host->UpdateUrls(url, url::Origin::Create(url),
                              blink::StorageKey(url::Origin::Create(url)));
   container_host->CompleteWebWorkerPreparation(
-      network::CrossOriginEmbedderPolicy(), ukm::UkmRecorder::GetNewSourceID());
+      PolicyContainerPolicies(), ukm::UkmRecorder::GetNewSourceID());
 
   EXPECT_TRUE(container_host->is_response_committed());
   EXPECT_TRUE(container_host->is_execution_ready());
@@ -1311,8 +1340,8 @@ TEST_F(ServiceWorkerContainerHostTestWithBackForwardCache, ControlleeEvents) {
       blink::mojom::ScriptType::kClassic, 1 /* version_id */,
       mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
       helper_->context()->AsWeakPtr());
-  version->set_fetch_handler_existence(
-      ServiceWorkerVersion::FetchHandlerExistence::EXISTS);
+  version->set_fetch_handler_type(
+      ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
   version->SetStatus(ServiceWorkerVersion::ACTIVATED);
   registration1_->SetActiveVersion(version);
 
@@ -1366,8 +1395,8 @@ TEST_F(ServiceWorkerContainerHostTest, UpdateServiceWorkerOnDestruction) {
       blink::mojom::ScriptType::kClassic, 1 /* version_id */,
       mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
       helper_->context()->AsWeakPtr());
-  version1->set_fetch_handler_existence(
-      ServiceWorkerVersion::FetchHandlerExistence::EXISTS);
+  version1->set_fetch_handler_type(
+      ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
   version1->SetStatus(ServiceWorkerVersion::ACTIVATED);
   registration1_->SetActiveVersion(version1);
 
@@ -1376,8 +1405,8 @@ TEST_F(ServiceWorkerContainerHostTest, UpdateServiceWorkerOnDestruction) {
       blink::mojom::ScriptType::kClassic, 2 /* version_id */,
       mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
       helper_->context()->AsWeakPtr());
-  version2->set_fetch_handler_existence(
-      ServiceWorkerVersion::FetchHandlerExistence::EXISTS);
+  version2->set_fetch_handler_type(
+      ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
   version2->SetStatus(ServiceWorkerVersion::ACTIVATED);
   registration2_->SetActiveVersion(version1);
 
@@ -1405,8 +1434,8 @@ TEST_F(ServiceWorkerContainerHostTest, HintToUpdateServiceWorker) {
       blink::mojom::ScriptType::kClassic, 1 /* version_id */,
       mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
       helper_->context()->AsWeakPtr());
-  version1->set_fetch_handler_existence(
-      ServiceWorkerVersion::FetchHandlerExistence::EXISTS);
+  version1->set_fetch_handler_type(
+      ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
   version1->SetStatus(ServiceWorkerVersion::ACTIVATED);
   registration1_->SetActiveVersion(version1);
 
@@ -1444,8 +1473,8 @@ TEST_F(ServiceWorkerContainerHostTest,
       blink::mojom::ScriptType::kClassic, 1 /* version_id */,
       mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
       helper_->context()->AsWeakPtr());
-  version1->set_fetch_handler_existence(
-      ServiceWorkerVersion::FetchHandlerExistence::EXISTS);
+  version1->set_fetch_handler_type(
+      ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
   version1->SetStatus(ServiceWorkerVersion::ACTIVATED);
   registration1_->SetActiveVersion(version1);
 
@@ -1472,8 +1501,8 @@ TEST_F(ServiceWorkerContainerHostTest, HintToUpdateServiceWorkerMultiple) {
       blink::mojom::ScriptType::kClassic, 1 /* version_id */,
       mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
       helper_->context()->AsWeakPtr());
-  version1->set_fetch_handler_existence(
-      ServiceWorkerVersion::FetchHandlerExistence::EXISTS);
+  version1->set_fetch_handler_type(
+      ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
   version1->SetStatus(ServiceWorkerVersion::ACTIVATED);
   registration1_->SetActiveVersion(version1);
 
@@ -1482,8 +1511,8 @@ TEST_F(ServiceWorkerContainerHostTest, HintToUpdateServiceWorkerMultiple) {
       blink::mojom::ScriptType::kClassic, 2 /* version_id */,
       mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
       helper_->context()->AsWeakPtr());
-  version2->set_fetch_handler_existence(
-      ServiceWorkerVersion::FetchHandlerExistence::EXISTS);
+  version2->set_fetch_handler_type(
+      ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
   version2->SetStatus(ServiceWorkerVersion::ACTIVATED);
   registration2_->SetActiveVersion(version1);
 
@@ -1492,8 +1521,8 @@ TEST_F(ServiceWorkerContainerHostTest, HintToUpdateServiceWorkerMultiple) {
       blink::mojom::ScriptType::kClassic, 3 /* version_id */,
       mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
       helper_->context()->AsWeakPtr());
-  version3->set_fetch_handler_existence(
-      ServiceWorkerVersion::FetchHandlerExistence::EXISTS);
+  version3->set_fetch_handler_type(
+      ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
   version3->SetStatus(ServiceWorkerVersion::ACTIVATED);
   registration3_->SetActiveVersion(version1);
 

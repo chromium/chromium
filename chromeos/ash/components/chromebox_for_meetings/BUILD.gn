@@ -1,0 +1,23 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This file is in a separate directory so all targets in the build can refer to
+# the buildflag header and feature list to get the necessary finch experiments,
+# respectively, without bringing in unneeded resources.
+
+import("//build/config/chromebox_for_meetings/buildflags.gni")
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+assert(is_cfm)
+
+component("chromebox_for_meetings") {
+  output_name = "cfm_features"
+  defines = [ "IS_CFM_FEATURES_IMPL" ]
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+  deps = [ "//base" ]
+}

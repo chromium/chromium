@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/ng/exclusions/ng_exclusion_space.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_column_spanner_path.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_positioned_float.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
@@ -19,20 +20,17 @@ namespace blink {
 
 namespace {
 
-struct SameSizeAsNGLayoutResult : public RefCounted<SameSizeAsNGLayoutResult> {
+struct SameSizeAsNGLayoutResult
+    : public GarbageCollected<SameSizeAsNGLayoutResult> {
   const NGConstraintSpace space;
-  void* physical_fragment;
+  Member<void*> physical_fragment;
+  Member<void*> rare_data_;
   union {
     NGBfcOffset bfc_offset;
     LogicalOffset oof_positioned_offset;
-    void* rare_data;
   };
   LayoutUnit intrinsic_block_size;
   unsigned bitfields[1];
-
-#if DCHECK_IS_ON()
-  bool has_valid_space;
-#endif
 };
 
 ASSERT_SIZE(NGLayoutResult, SameSizeAsNGLayoutResult);
@@ -40,20 +38,25 @@ ASSERT_SIZE(NGLayoutResult, SameSizeAsNGLayoutResult);
 }  // namespace
 
 // static
-scoped_refptr<const NGLayoutResult>
-NGLayoutResult::CloneWithPostLayoutFragments(
-    const NGLayoutResult& other,
-    const absl::optional<PhysicalRect> updated_layout_overflow) {
-  return base::AdoptRef(new NGLayoutResult(
-      other, NGPhysicalBoxFragment::CloneWithPostLayoutFragments(
-                 To<NGPhysicalBoxFragment>(other.PhysicalFragment()),
-                 updated_layout_overflow)));
+const NGLayoutResult* NGLayoutResult::Clone(const NGLayoutResult& other) {
+  return MakeGarbageCollected<NGLayoutResult>(
+      other, NGPhysicalBoxFragment::Clone(
+                 To<NGPhysicalBoxFragment>(other.PhysicalFragment())));
 }
 
-NGLayoutResult::NGLayoutResult(
-    NGBoxFragmentBuilderPassKey passkey,
-    scoped_refptr<const NGPhysicalFragment> physical_fragment,
-    NGBoxFragmentBuilder* builder)
+// static
+const NGLayoutResult* NGLayoutResult::CloneWithPostLayoutFragments(
+    const NGLayoutResult& other,
+    const absl::optional<PhysicalRect> updated_layout_overflow) {
+  return MakeGarbageCollected<NGLayoutResult>(
+      other, NGPhysicalBoxFragment::CloneWithPostLayoutFragments(
+                 To<NGPhysicalBoxFragment>(other.PhysicalFragment()),
+                 updated_layout_overflow));
+}
+
+NGLayoutResult::NGLayoutResult(NGBoxFragmentBuilderPassKey passkey,
+                               const NGPhysicalFragment* physical_fragment,
+                               NGBoxFragmentBuilder* builder)
     : NGLayoutResult(std::move(physical_fragment),
                      static_cast<NGContainerFragmentBuilder*>(builder)) {
   bitfields_.is_initial_block_size_indefinite =
@@ -79,47 +82,77 @@ NGLayoutResult::NGLayoutResult(
 
       // This field shares storage with "minimal space shortage", so both
       // cannot be set at the same time.
-      DCHECK_EQ(builder->minimal_space_shortage_, LayoutUnit::Max());
-    } else if (builder->minimal_space_shortage_ != LayoutUnit::Max()) {
+      DCHECK_EQ(builder->minimal_space_shortage_, kIndefiniteSize);
+    } else if (builder->minimal_space_shortage_ != kIndefiniteSize) {
       rare_data->minimal_space_shortage = builder->minimal_space_shortage_;
     }
 
     rare_data->block_size_for_fragmentation =
         builder->block_size_for_fragmentation_;
 
+    bitfields_.is_block_size_for_fragmentation_clamped =
+        builder->is_block_size_for_fragmentation_clamped_;
+
     bitfields_.break_appeal = builder->break_appeal_;
+    bitfields_.has_forced_break = builder->has_forced_break_;
+  }
+  bitfields_.disable_simplified_layout = builder->disable_simplified_layout;
+  bitfields_.is_truncated_by_fragmentation_line =
+      builder->is_truncated_by_fragmentation_line;
+
+  if (builder->ConstraintSpace().ShouldPropagateChildBreakValues() &&
+      !builder->layout_object_->ShouldApplyLayoutContainment()) {
     bitfields_.initial_break_before = static_cast<unsigned>(
         builder->initial_break_before_.value_or(EBreakBetween::kAuto));
     bitfields_.final_break_after =
         static_cast<unsigned>(builder->previous_break_after_);
-    bitfields_.has_forced_break = builder->has_forced_break_;
+
+    if ((builder->start_page_name_ != g_null_atom &&
+         builder->start_page_name_) ||
+        builder->previous_page_name_) {
+      RareData* rare_data = EnsureRareData();
+      rare_data->start_page_name = builder->start_page_name_;
+      rare_data->end_page_name = builder->previous_page_name_;
+    }
   }
-  if (builder->table_column_count_)
-    EnsureRareData()->table_column_count_ = *builder->table_column_count_;
-  if (builder->math_data_.has_value())
-    EnsureRareData()->math_layout_data_ = builder->math_data_;
-  if (builder->grid_layout_data_)
-    EnsureRareData()->grid_layout_data_ = std::move(builder->grid_layout_data_);
+
+  if (builder->table_column_count_) {
+    EnsureRareData()->EnsureTableData()->table_column_count =
+        *builder->table_column_count_;
+  }
+  if (builder->math_italic_correction_) {
+    EnsureRareData()->EnsureMathData()->italic_correction =
+        builder->math_italic_correction_;
+  }
+  if (builder->grid_layout_data_) {
+    EnsureRareData()->EnsureGridData()->grid_layout_data =
+        std::move(builder->grid_layout_data_);
+  }
+  if (builder->flex_layout_data_) {
+    EnsureRareData()->EnsureFlexData()->flex_layout_data =
+        std::move(builder->flex_layout_data_);
+  }
 }
 
-NGLayoutResult::NGLayoutResult(
-    NGLineBoxFragmentBuilderPassKey passkey,
-    scoped_refptr<const NGPhysicalFragment> physical_fragment,
-    NGLineBoxFragmentBuilder* builder)
+NGLayoutResult::NGLayoutResult(NGLineBoxFragmentBuilderPassKey passkey,
+                               const NGPhysicalFragment* physical_fragment,
+                               NGLineBoxFragmentBuilder* builder)
     : NGLayoutResult(std::move(physical_fragment),
                      static_cast<NGContainerFragmentBuilder*>(builder)) {
   DCHECK_EQ(builder->bfc_block_offset_.has_value(),
             builder->line_box_bfc_block_offset_.has_value());
   if (builder->bfc_block_offset_ != builder->line_box_bfc_block_offset_) {
-    EnsureRareData()->line_box_bfc_block_offset =
-        builder->line_box_bfc_block_offset_;
+    EnsureRareData()->SetLineBoxBfcBlockOffset(
+        *builder->line_box_bfc_block_offset_);
   }
   if (builder->annotation_block_offset_adjustment_) {
-    EnsureRareData()->annotation_block_offset_adjustment =
+    EnsureRareData()->EnsureLineData()->annotation_block_offset_adjustment =
         builder->annotation_block_offset_adjustment_;
   }
-  if (builder->clearance_after_line_)
-    EnsureRareData()->clearance_after_line = builder->clearance_after_line_;
+  if (builder->clearance_after_line_) {
+    EnsureRareData()->EnsureLineData()->clearance_after_line =
+        builder->clearance_after_line_;
+  }
 }
 
 NGLayoutResult::NGLayoutResult(NGContainerFragmentBuilderPassKey key,
@@ -141,10 +174,10 @@ NGLayoutResult::NGLayoutResult(const NGLayoutResult& other,
       physical_fragment_(other.physical_fragment_),
       intrinsic_block_size_(other.intrinsic_block_size_),
       bitfields_(other.bitfields_) {
-  if (HasRareData()) {
-    rare_data_ = new RareData(*other.rare_data_);
+  if (other.HasRareData()) {
+    rare_data_ = MakeGarbageCollected<RareData>(*other.rare_data_);
     rare_data_->bfc_line_offset = bfc_line_offset;
-    rare_data_->bfc_block_offset = bfc_block_offset;
+    rare_data_->SetBfcBlockOffset(bfc_block_offset);
   } else if (!bitfields_.has_oof_positioned_offset) {
     bfc_offset_.line_offset = bfc_line_offset;
     bfc_offset_.block_offset = bfc_block_offset.value_or(LayoutUnit());
@@ -168,21 +201,16 @@ NGLayoutResult::NGLayoutResult(const NGLayoutResult& other,
 
   if (new_end_margin_strut != NGMarginStrut() || HasRareData())
     EnsureRareData()->end_margin_strut = new_end_margin_strut;
-
-#if DCHECK_IS_ON()
-  has_valid_space_ = other.has_valid_space_;
-#endif
 }
 
-NGLayoutResult::NGLayoutResult(
-    const NGLayoutResult& other,
-    scoped_refptr<const NGPhysicalFragment> physical_fragment)
+NGLayoutResult::NGLayoutResult(const NGLayoutResult& other,
+                               const NGPhysicalFragment* physical_fragment)
     : space_(other.space_),
       physical_fragment_(std::move(physical_fragment)),
       intrinsic_block_size_(other.intrinsic_block_size_),
       bitfields_(other.bitfields_) {
-  if (HasRareData()) {
-    rare_data_ = new RareData(*other.rare_data_);
+  if (other.HasRareData()) {
+    rare_data_ = MakeGarbageCollected<RareData>(*other.rare_data_);
   } else if (!bitfields_.has_oof_positioned_offset) {
     bfc_offset_ = other.bfc_offset_;
   } else {
@@ -191,17 +219,11 @@ NGLayoutResult::NGLayoutResult(
   }
 
   DCHECK_EQ(physical_fragment_->Size(), other.physical_fragment_->Size());
-
-#if DCHECK_IS_ON()
-  has_valid_space_ = other.has_valid_space_;
-#endif
 }
 
-NGLayoutResult::NGLayoutResult(
-    scoped_refptr<const NGPhysicalFragment> physical_fragment,
-    NGContainerFragmentBuilder* builder)
-    : space_(builder->space_ ? NGConstraintSpace(*builder->space_)
-                             : NGConstraintSpace()),
+NGLayoutResult::NGLayoutResult(const NGPhysicalFragment* physical_fragment,
+                               NGContainerFragmentBuilder* builder)
+    : space_(builder->space_),
       physical_fragment_(std::move(physical_fragment)),
       bitfields_(builder->is_self_collapsing_,
                  builder->is_pushed_by_floats_,
@@ -247,14 +269,18 @@ NGLayoutResult::NGLayoutResult(
       (!physical_fragment_ || !physical_fragment_->BreakToken()))
     EnsureRareData()->early_break = builder->early_break_;
 
-  if (builder->column_spanner_) {
-    EnsureRareData()->column_spanner = builder->column_spanner_;
+  if (builder->column_spanner_path_) {
+    EnsureRareData()->EnsureBlockData()->column_spanner_path =
+        builder->column_spanner_path_;
     bitfields_.is_empty_spanner_parent = builder->is_empty_spanner_parent_;
   }
 
+  bitfields_.should_force_same_fragmentation_flow =
+      builder->should_force_same_fragmentation_flow_;
+
   if (HasRareData()) {
     rare_data_->bfc_line_offset = builder->bfc_line_offset_;
-    rare_data_->bfc_block_offset = builder->bfc_block_offset_;
+    rare_data_->SetBfcBlockOffset(builder->bfc_block_offset_);
   } else {
     bfc_offset_.line_offset = builder->bfc_line_offset_;
     bfc_offset_.block_offset =
@@ -262,15 +288,6 @@ NGLayoutResult::NGLayoutResult(
     bitfields_.is_bfc_block_offset_nullopt =
         !builder->bfc_block_offset_.has_value();
   }
-
-#if DCHECK_IS_ON()
-  has_valid_space_ = builder->space_;
-#endif
-}
-
-NGLayoutResult::~NGLayoutResult() {
-  if (HasRareData())
-    delete rare_data_;
 }
 
 NGExclusionSpace NGLayoutResult::MergeExclusionSpaces(
@@ -292,10 +309,9 @@ NGLayoutResult::RareData* NGLayoutResult::EnsureRareData() {
     absl::optional<LayoutUnit> bfc_block_offset;
     if (!bitfields_.is_bfc_block_offset_nullopt)
       bfc_block_offset = bfc_offset_.block_offset;
-    rare_data_ = new RareData(bfc_offset_.line_offset, bfc_block_offset);
-    bitfields_.has_rare_data = true;
+    rare_data_ = MakeGarbageCollected<RareData>(bfc_offset_.line_offset,
+                                                bfc_block_offset);
   }
-
   return rare_data_;
 }
 
@@ -318,8 +334,11 @@ void NGLayoutResult::CheckSameForSimplifiedLayout(
   // this may change (even if the size of the fragment remains the same).
 
   DCHECK(EndMarginStrut() == other.EndMarginStrut());
-  DCHECK_EQ(MinimalSpaceShortage(), other.MinimalSpaceShortage());
+  DCHECK(MinimalSpaceShortage() == other.MinimalSpaceShortage());
   DCHECK_EQ(TableColumnCount(), other.TableColumnCount());
+
+  DCHECK_EQ(StartPageName(), other.StartPageName());
+  DCHECK_EQ(EndPageName(), other.EndPageName());
 
   DCHECK_EQ(bitfields_.has_forced_break, other.bitfields_.has_forced_break);
   DCHECK_EQ(bitfields_.is_self_collapsing, other.bitfields_.is_self_collapsing);
@@ -351,5 +370,18 @@ void NGLayoutResult::AssertSoleBoxFragment() const {
   DCHECK(!physical_fragment_->BreakToken());
 }
 #endif
+
+void NGLayoutResult::Trace(Visitor* visitor) const {
+  visitor->Trace(physical_fragment_);
+  visitor->Trace(rare_data_);
+}
+
+void NGLayoutResult::RareData::Trace(Visitor* visitor) const {
+  visitor->Trace(early_break);
+  // This will not cause TOCTOU issue because data_union_type is set in the
+  // constructor and never changed.
+  if (const BlockData* data = GetBlockData())
+    visitor->Trace(data->column_spanner_path);
+}
 
 }  // namespace blink

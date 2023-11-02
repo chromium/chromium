@@ -1,10 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_OFFLINE_PAGES_CORE_SNAPSHOT_CONTROLLER_H_
 #define COMPONENTS_OFFLINE_PAGES_CORE_SNAPSHOT_CONTROLLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -81,11 +82,11 @@ class SnapshotController {
   // now completed (so the next one can be started).
   void PendingSnapshotCompleted();
 
-  // Invoked from WebContentObserver::DocumentAvailableInMainFrame
-  void DocumentAvailableInMainFrame();
+  // Invoked from WebContentObserver::PrimaryMainDocumentElementAvailable
+  void PrimaryMainDocumentElementAvailable();
 
-  // Invoked from WebContentObserver::DocumentOnLoadCompletedInMainFrame
-  void DocumentOnLoadCompletedInMainFrame();
+  // Invoked from WebContentObserver::DocumentOnLoadCompletedInPrimaryMainFrame
+  void DocumentOnLoadCompletedInPrimaryMainFrame();
 
   int64_t GetDelayAfterDocumentAvailableForTest();
   int64_t GetDelayAfterDocumentOnLoadCompletedForTest();
@@ -98,7 +99,7 @@ class SnapshotController {
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   // Client owns this class.
-  SnapshotController::Client* client_;
+  raw_ptr<SnapshotController::Client> client_;
   SnapshotController::State state_;
   int64_t delay_after_document_available_ms_;
   int64_t delay_after_document_on_load_completed_ms_;

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,12 +26,19 @@ void FakeAffiliationService::Prefetch(const FacetURI& facet_uri,
 void FakeAffiliationService::CancelPrefetch(
     const FacetURI& facet_uri,
     const base::Time& keep_fresh_until) {}
+void FakeAffiliationService::KeepPrefetchForFacets(
+    std::vector<FacetURI> facet_uris) {}
 void FakeAffiliationService::TrimCacheForFacetURI(const FacetURI& facet_uri) {}
+void FakeAffiliationService::TrimUnusedCache(std::vector<FacetURI> facet_uris) {
+}
+void FakeAffiliationService::GetAllGroups(GroupsCallback callback) const {
+  std::move(callback).Run({});
+}
 
 void FakeAffiliationService::InjectAffiliationAndBrandingInformation(
     std::vector<std::unique_ptr<PasswordForm>> forms,
     AffiliationService::StrategyOnCacheMiss strategy_on_cache_miss,
-    PasswordFormsCallback result_callback) {
+    PasswordFormsOrErrorCallback result_callback) {
   std::move(result_callback).Run(std::move(forms));
 }
 

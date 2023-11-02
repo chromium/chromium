@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/manifest_handlers/csp_info.h"
 #include "extensions/common/mojom/host_id.mojom.h"
+#include "extensions/renderer/extension_web_view_helper.h"
 #include "extensions/renderer/renderer_extension_registry.h"
-#include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
 namespace extensions {
@@ -50,11 +50,19 @@ PermissionsData::PageAccess ExtensionInjectionHost::CanExecuteOnFrame(
     content::RenderFrame* render_frame,
     int tab_id,
     bool is_declarative) const {
-  blink::WebSecurityOrigin top_frame_security_origin =
-      render_frame->GetWebFrame()->Top()->GetSecurityOrigin();
+  // If the WebView is embedded in another WebView the outermost extension
+  // origin will be set, otherwise we should use it directly from the
+  // WebFrame's top origin.
+  auto outermost_origin =
+      ExtensionWebViewHelper::Get(render_frame->GetWebView())
+          ->GetOutermostOrigin();
+  if (!outermost_origin) {
+    outermost_origin = render_frame->GetWebFrame()->Top()->GetSecurityOrigin();
+  }
+
   // Only allowlisted extensions may run scripts on another extension's page.
-  if (top_frame_security_origin.Protocol().Utf8() == kExtensionScheme &&
-      top_frame_security_origin.Host().Utf8() != extension_->id() &&
+  if (outermost_origin->scheme() == kExtensionScheme &&
+      outermost_origin->host() != extension_->id() &&
       !PermissionsData::CanExecuteScriptEverywhere(extension_->id(),
                                                    extension_->location())) {
     return PermissionsData::PageAccess::kDenied;
@@ -76,7 +84,7 @@ PermissionsData::PageAccess ExtensionInjectionHost::CanExecuteOnFrame(
         nullptr /* ignore error */);
   }
   if (access == PermissionsData::PageAccess::kWithheld &&
-      (tab_id == -1 || render_frame->GetWebFrame()->Parent())) {
+      (tab_id == -1 || !render_frame->GetWebFrame()->IsOutermostMainFrame())) {
     // Note: we don't consider ACCESS_WITHHELD for child frames or for frames
     // outside of tabs because there is nowhere to surface a request.
     // TODO(devlin): We should ask for permission somehow. crbug.com/491402.

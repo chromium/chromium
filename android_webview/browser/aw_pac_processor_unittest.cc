@@ -1,12 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include <android/multinetwork.h>
 #include <string>
 
 #include "android_webview/browser/aw_pac_processor.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace android_webview {
 
@@ -33,7 +34,7 @@ class AwPacProcessorTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_{
            base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  AwPacProcessor* pac_processor_ = new AwPacProcessor();
+  raw_ptr<AwPacProcessor> pac_processor_ = new AwPacProcessor();
 };
 
 TEST_F(AwPacProcessorTest, MakeProxyRequest) {

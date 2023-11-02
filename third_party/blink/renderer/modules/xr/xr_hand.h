@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,10 @@ class XRInputSource;
 class XRJointSpace;
 
 class XRHand : public ScriptWrappable,
-               public PairIterable<String, Member<XRJointSpace>> {
+               public PairIterable<String,
+                                   IDLString,
+                                   Member<XRJointSpace>,
+                                   XRJointSpace> {
   DEFINE_WRAPPERTYPEINFO();
 
   static const unsigned kNumJoints =

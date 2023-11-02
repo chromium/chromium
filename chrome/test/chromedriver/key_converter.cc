@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,14 @@
 
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/third_party/icu/icu_utf.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/chrome/ui_events.h"
 #include "chrome/test/chromedriver/keycode_text_conversion.h"
+
 namespace {
 
 struct ModifierMaskAndKeyCode {
@@ -172,7 +171,7 @@ bool IsModifierKey(char16_t key) {
 bool KeyCodeFromSpecialWebDriverKey(char16_t key, ui::KeyboardCode* key_code) {
   int index = static_cast<int>(key) - 0xE000U;
   bool is_special_key =
-      index >= 0 && index < static_cast<int>(base::size(kSpecialWebDriverKeys));
+      index >= 0 && index < static_cast<int>(std::size(kSpecialWebDriverKeys));
   if (is_special_key)
     *key_code = kSpecialWebDriverKeys[index];
   return is_special_key;
@@ -320,12 +319,11 @@ const char* const kNormalisedKeyValue[] = {
 // * Replaced "OSLeft" and "OSRight" with "MetaLeft" and "MetaRight", to be
 //   compatible with Chrome.
 //   TODO(johnchen@chromium.org): Find a better way to handle this.
-const struct CodeForKey {
+const struct {
   char16_t key;
   char16_t alternate_key;
   std::string code;
 } kCodeForKey[] = {
-    // clang-format off
     {'`',    '~',    "Backquote"},
     {'\\',   '|',    "Backslash"},
     {0xE003, 0,      "Backspace"},
@@ -427,7 +425,6 @@ const struct CodeForKey {
     {0xE007, 0,      "NumpadEnter"},
     {0xE024, 0,      "NumpadMultiply"},
     {0xE027, 0,      "NumpadSubtract"},
-    // clang-format on
 };
 
 // The "key location for key" table from W3C spec
@@ -448,23 +445,6 @@ int GetKeyLocation(uint32_t code_point) {
 }
 
 }  // namespace
-
-bool IsTypeableKey(char16_t key, std::string* code) {
-  if (!key)
-    return false;
-  auto* it = std::find_if(std::begin(kCodeForKey), std::end(kCodeForKey),
-                          [key](const CodeForKey& p) {
-                            return p.key == key || p.alternate_key == key;
-                          });
-
-  if (it != std::end(kCodeForKey)) {
-    if (code != nullptr) {
-      *code = it->code;
-    }
-    return true;
-  }
-  return false;
-}
 
 Status ConvertKeysToKeyEvents(const std::u16string& client_keys,
                               bool release_modifiers,
@@ -538,15 +518,18 @@ Status ConvertKeysToKeyEvents(const std::u16string& client_keys,
     int all_modifiers = sticky_modifiers;
 
     // Get the key code, text, and modifiers for the given key.
+    bool should_skip = false;
     bool is_special_key = KeyCodeFromSpecialWebDriverKey(key, &key_code);
     std::string error_msg;
-    if (is_special_key) {
+    if (is_special_key ||
+        KeyCodeFromShorthandKey(key, &key_code, &should_skip)) {
+      if (should_skip)
+        continue;
       if (key_code == ui::VKEY_UNKNOWN) {
-        return Status(
-            kUnknownError,
-            base::StringPrintf(
-                "unknown WebDriver key(%d) at string index (%" PRIuS ")",
-                static_cast<int>(key), i));
+        return Status(kUnknownError, base::StringPrintf(
+            "unknown WebDriver key(%d) at string index (%" PRIuS ")",
+            static_cast<int>(key),
+            i));
       }
       if (key_code == ui::VKEY_RETURN) {
         // For some reason Chrome expects a carriage return for the return key.
@@ -561,11 +544,12 @@ Status ConvertKeysToKeyEvents(const std::u16string& client_keys,
         int webdriver_modifiers = 0;
         if (key_code >= ui::VKEY_NUMPAD0 && key_code <= ui::VKEY_NUMPAD9)
           webdriver_modifiers = kNumLockKeyModifierMask;
-        if (!ConvertKeyCodeToText(key_code, webdriver_modifiers,
-                                  &unmodified_text, &error_msg))
+        if (!ConvertKeyCodeToText(
+            key_code, webdriver_modifiers, &unmodified_text, &error_msg))
           return Status(kUnknownError, error_msg);
-        if (!ConvertKeyCodeToText(key_code, all_modifiers | webdriver_modifiers,
-                                  &modified_text, &error_msg))
+        if (!ConvertKeyCodeToText(
+            key_code, all_modifiers | webdriver_modifiers, &modified_text,
+            &error_msg))
           return Status(kUnknownError, error_msg);
       }
     } else {
@@ -577,8 +561,8 @@ Status ConvertKeysToKeyEvents(const std::u16string& client_keys,
       if (key_code != ui::VKEY_UNKNOWN) {
         if (!ConvertKeyCodeToText(key_code, 0, &unmodified_text, &error_msg))
           return Status(kUnknownError, error_msg);
-        if (!ConvertKeyCodeToText(key_code, all_modifiers, &modified_text,
-                                  &error_msg))
+        if (!ConvertKeyCodeToText(
+            key_code, all_modifiers, &modified_text, &error_msg))
           return Status(kUnknownError, error_msg);
         if (unmodified_text.empty() || modified_text.empty()) {
           // To prevent char event for special cases like CTRL + x (cut).
@@ -586,14 +570,14 @@ Status ConvertKeysToKeyEvents(const std::u16string& client_keys,
           modified_text.clear();
         }
       } else {
-        // Non-typeable character must not be sent as KeyEvent
-        return Status(kUnknownError,
-                      "Cannot construct KeyEvent from non-typeable key");
+        // Do a best effort and use the raw key we were given.
+        unmodified_text = base::UTF16ToUTF8(keys.substr(i, 1));
+        modified_text = base::UTF16ToUTF8(keys.substr(i, 1));
       }
     }
 
     // Create the key events.
-    int number_modifiers = base::size(kModifiers);
+    int number_modifiers = std::size(kModifiers);
     bool necessary_modifiers[number_modifiers];
     for (int j = 0; j < number_modifiers; ++j) {
       necessary_modifiers[j] = all_modifiers & kModifiers[j].mask &&
@@ -630,31 +614,32 @@ Status ConvertKeysToKeyEvents(const std::u16string& client_keys,
   return Status(kOk);
 }
 
-Status ConvertKeyActionToKeyEvent(const base::DictionaryValue* action_object,
+Status ConvertKeyActionToKeyEvent(const base::Value::Dict& action_object,
                                   base::DictionaryValue* input_state,
                                   bool is_key_down,
                                   std::vector<KeyEvent>* key_events) {
-  std::string raw_key;
-  if (!action_object->GetString("value", &raw_key))
+  const std::string* raw_key = action_object.FindString("value");
+  if (!raw_key)
     return Status(kUnknownError, "missing 'value'");
 
-  int32_t char_index = 0;
-  uint32_t code_point;
-  base::ReadUnicodeCharacter(raw_key.c_str(), raw_key.size(), &char_index,
+  size_t char_index = 0;
+  base_icu::UChar32 code_point;
+  base::ReadUnicodeCharacter(raw_key->c_str(), raw_key->size(), &char_index,
                              &code_point);
 
   std::string key;
   if (code_point >= kNormalisedKeyValueBase &&
-      code_point < kNormalisedKeyValueBase + base::size(kNormalisedKeyValue)) {
+      code_point < base_icu::UChar32{kNormalisedKeyValueBase +
+                                     std::size(kNormalisedKeyValue)}) {
     key = kNormalisedKeyValue[code_point - kNormalisedKeyValueBase];
   }
   if (key.size() == 0)
-    key = raw_key;
+    key = *raw_key;
 
   base::DictionaryValue* pressed;
   if (!input_state->GetDictionary("pressed", &pressed))
     return Status(kUnknownError, "missing 'pressed'");
-  bool already_pressed = pressed->HasKey(key);
+  bool already_pressed = pressed->FindKey(key);
   if (!is_key_down && !already_pressed)
     return Status(kOk);
 
@@ -668,9 +653,11 @@ Status ConvertKeyActionToKeyEvent(const base::DictionaryValue* action_object,
     }
   }
 
-  int modifiers;
-  if (!input_state->GetInteger("modifiers", &modifiers))
+  absl::optional<int> maybe_modifiers = input_state->FindIntKey("modifiers");
+  if (!maybe_modifiers)
     return Status(kUnknownError, "missing 'modifiers'");
+
+  int modifiers = *maybe_modifiers;
 
   bool is_modifier_key = false;
   bool is_special_key = false;
@@ -763,15 +750,15 @@ Status ConvertKeyActionToKeyEvent(const base::DictionaryValue* action_object,
       }
     } else {
       // Do a best effort and use the raw key we were given.
-      unmodified_text = raw_key;
-      modified_text = raw_key;
+      unmodified_text = *raw_key;
+      modified_text = *raw_key;
     }
   }
 
   if (is_key_down)
-    pressed->SetBoolean(key, true);
+    pressed->GetDict().Set(key, true);
   else
-    pressed->RemoveKey(key);
+    pressed->GetDict().Remove(key);
 
   KeyEventBuilder builder;
   builder.SetKeyCode(key_code)

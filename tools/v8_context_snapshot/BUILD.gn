@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -28,15 +28,9 @@ group("v8_context_snapshot") {
 
 config("use_v8_context_snapshot") {
   defines = []
-  if (include_both_v8_snapshots) {
-    defines += [ "INCLUDE_BOTH_V8_SNAPSHOTS" ]
-  }
   if (use_v8_context_snapshot) {
     defines += [
       "USE_V8_CONTEXT_SNAPSHOT",
-
-      # NOTE: android builds may include both 64 and 32 bit snapshot files. For
-      # this reason, android code generally does not use this define.
       "V8_CONTEXT_SNAPSHOT_FILENAME=\"$v8_context_snapshot_filename\"",
     ]
   }
@@ -107,7 +101,7 @@ if (use_v8_context_snapshot) {
     }
 
     executable("v8_context_snapshot_generator") {
-      sources = [ "v8_context_snapshot_generator.cc" ]
+      sources = [ "v8_context_snapshot_generator.cc", "//components/viz/service/display/record_replay_render_nop.cc" ]
 
       deps = [
         "//gin:gin",

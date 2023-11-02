@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 
@@ -54,12 +55,16 @@ PushableMediaStreamVideoSource* CreatePushableVideoSource() {
   PushableMediaStreamVideoSource* pushable_video_source =
       new PushableMediaStreamVideoSource(
           scheduler::GetSingleThreadTaskRunnerForTesting());
-  MediaStreamSource* media_stream_source =
-      MakeGarbageCollected<MediaStreamSource>(
-          "source_id", MediaStreamSource::kTypeVideo, "source_name",
-          /*remote=*/false);
-  media_stream_source->SetPlatformSource(
-      base::WrapUnique(pushable_video_source));
+  // The constructor of MediaStreamSource sets itself as the Owner
+  // of the PushableMediaStreamVideoSource, so as long as the test calls
+  // CreateVideoMediaStreamTrack() with the returned pushable_video_source,
+  // there will be a Member reference to this MediaStreamSource, and we
+  // can drop the reference here.
+  // TODO(crbug.com/1302689): Fix this ownership nonsense, just have a single
+  // class which is GC owned.
+  MakeGarbageCollected<MediaStreamSource>(
+      "source_id", MediaStreamSource::kTypeVideo, "source_name",
+      /*remote=*/false, base::WrapUnique(pushable_video_source));
   return pushable_video_source;
 }
 
@@ -71,15 +76,16 @@ MediaStreamTrack* CreateAudioMediaStreamTrack(
   MediaStreamSource* media_stream_source =
       MakeGarbageCollected<MediaStreamSource>(
           "source_id", MediaStreamSource::kTypeAudio, "source_name",
-          /*remote=*/false);
-  media_stream_source->SetPlatformSource(std::move(source));
+          /*remote=*/false, std::move(source));
 
   MediaStreamComponent* component =
-      MakeGarbageCollected<MediaStreamComponent>(media_stream_source);
+      MakeGarbageCollected<MediaStreamComponentImpl>(
+          media_stream_source,
+          std::make_unique<MediaStreamAudioTrack>(true /* is_local_track */));
 
-  source_ptr->ConnectToTrack(component);
+  source_ptr->ConnectToInitializedTrack(component);
 
-  return MakeGarbageCollected<MediaStreamTrack>(context, component);
+  return MakeGarbageCollected<MediaStreamTrackImpl>(context, component);
 }
 
 }  // namespace
@@ -87,12 +93,22 @@ MediaStreamTrack* CreateAudioMediaStreamTrack(
 class MediaStreamTrackProcessorTest : public testing::Test {
  public:
   ~MediaStreamTrackProcessorTest() override {
-    platform_->RunUntilIdle();
+    RunIOUntilIdle();
     WebHeap::CollectAllGarbageForTesting();
   }
 
  protected:
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
+
+ private:
+  void RunIOUntilIdle() const {
+    // Make sure that tasks on IO thread are completed before moving on.
+    base::RunLoop run_loop;
+    Platform::Current()->GetIOTaskRunner()->PostTaskAndReply(
+        FROM_HERE, base::BindOnce([] {}), run_loop.QuitClosure());
+    run_loop.Run();
+    base::RunLoop().RunUntilIdle();
+  }
 };
 
 TEST_F(MediaStreamTrackProcessorTest, VideoFramesAreExposed) {
@@ -344,7 +360,7 @@ TEST_F(MediaStreamTrackProcessorTest, VideoCloseOnTrackEnd) {
   EXPECT_TRUE(readable->IsClosed());
 }
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 // TODO(https://crbug.com/1234343): Test seems flaky on Fuchsia, enable once
 // flakiness has been investigated.
 #define MAYBE_VideoNoCloseOnTrackDisable DISABLED_VideoNoCloseOnTrackDisable

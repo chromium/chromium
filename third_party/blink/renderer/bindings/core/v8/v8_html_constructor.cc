@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -106,7 +106,7 @@ void V8HTMLConstructor::HtmlConstructor(
   // 7. If Type(prototype) is not Object, then: ...
   if (!prototype->IsObject()) {
     if (V8PerContextData* per_context_data = V8PerContextData::From(
-            new_target.As<v8::Object>()->CreationContext())) {
+            new_target.As<v8::Object>()->GetCreationContextChecked())) {
       prototype = per_context_data->PrototypeForType(&wrapper_type_info);
     } else {
       V8ThrowException::ThrowError(isolate, "The context has been destroyed");
@@ -116,7 +116,7 @@ void V8HTMLConstructor::HtmlConstructor(
 
   // 8. If definition's construction stack is empty...
   Element* element;
-  if (definition->GetConstructionStack().IsEmpty()) {
+  if (definition->GetConstructionStack().empty()) {
     // This is an element being created with 'new' from script
     element = definition->CreateElementForConstructor(*window->document());
   } else {

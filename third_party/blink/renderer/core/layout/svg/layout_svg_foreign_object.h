@@ -26,8 +26,6 @@
 
 namespace blink {
 
-class SVGForeignObjectElement;
-
 // LayoutSVGForeignObject is the LayoutObject associated with <foreignobject>.
 // http://www.w3.org/TR/SVG/extend.html#ForeignObjectElement
 //
@@ -52,7 +50,7 @@ class SVGForeignObjectElement;
 // compatible with the expectations of the getBBox() DOM interface.
 class LayoutSVGForeignObject final : public LayoutSVGBlock {
  public:
-  explicit LayoutSVGForeignObject(SVGForeignObjectElement*);
+  explicit LayoutSVGForeignObject(Element*);
   ~LayoutSVGForeignObject() override;
 
   const char* GetName() const override {
@@ -86,7 +84,7 @@ class LayoutSVGForeignObject final : public LayoutSVGBlock {
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
                    const PhysicalOffset&,
-                   HitTestAction) override;
+                   HitTestPhase) override;
 
   // A method to call when recursively hit testing from an SVG parent.
   // Since LayoutSVGRoot has a PaintLayer always, this will cause a
@@ -95,7 +93,7 @@ class LayoutSVGForeignObject final : public LayoutSVGBlock {
   bool NodeAtPointFromSVG(HitTestResult&,
                           const HitTestLocation&,
                           const PhysicalOffset&,
-                          HitTestAction);
+                          HitTestPhase);
 
   bool IsOfType(LayoutObjectType type) const override {
     NOT_DESTROYED();

@@ -1,20 +1,20 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/task/post_task.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_stats_tracker.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
@@ -286,7 +286,7 @@ void ThumbnailImage::HandleSubscriptionDestroyed(Subscription* subscription) {
   // The order of |subscribers_| does not matter. We can simply swap
   // |subscription| in |subscribers_| with the last element, then pop it
   // off the back.
-  auto it = std::find(subscribers_.begin(), subscribers_.end(), subscription);
+  auto it = base::ranges::find(subscribers_, subscription);
   DCHECK(it != subscribers_.end());
   std::swap(*it, *(subscribers_.end() - 1));
   subscribers_.pop_back();

@@ -1,12 +1,12 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/common/use_counter/use_counter_feature_mojom_traits.h"
 
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
-#include "third_party/blink/public/mojom/use_counter/css_property_id.mojom-shared.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-shared.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom-shared.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 
 namespace mojo {
 namespace {
@@ -30,6 +30,8 @@ bool IsReservedFeature(const blink::UseCounterFeature& feature) {
       return feature.value() ==
              static_cast<blink::UseCounterFeature::EnumValue>(
                  blink::mojom::PermissionsPolicyFeature::kNotFound);
+    case blink::mojom::UseCounterFeatureType::kUserAgentOverride:
+      return false;
   }
 }
 }  // namespace

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -186,6 +186,20 @@ std::ostream& operator<<(std::ostream& output, const ParseResult& result) {
     case ParseResult::ERROR_EMPTY_DOMAINS_LIST:
       output << "ERROR_EMPTY_DOMAINS_LIST";
       break;
+    case ParseResult::ERROR_EMPTY_INITIATOR_DOMAINS_LIST:
+      output << "ERROR_EMPTY_INITIATOR_DOMAINS_LIST";
+      break;
+    case ParseResult::ERROR_EMPTY_REQUEST_DOMAINS_LIST:
+      output << "ERROR_EMPTY_REQUEST_DOMAINS_LIST";
+      break;
+    case ParseResult::ERROR_DOMAINS_AND_INITIATOR_DOMAINS_BOTH_SPECIFIED:
+      output << "ERROR_DOMAINS_AND_INITIATOR_DOMAINS_BOTH_SPECIFIED";
+      break;
+    case ParseResult::
+        ERROR_EXCLUDED_DOMAINS_AND_EXCLUDED_INITIATOR_DOMAINS_BOTH_SPECIFIED:
+      output << "ERROR_EXCLUDED_DOMAINS_AND_EXCLUDED_INITIATOR_DOMAINS_BOTH_"
+                "SPECIFIED";
+      break;
     case ParseResult::ERROR_EMPTY_RESOURCE_TYPES_LIST:
       output << "ERROR_EMPTY_RESOURCE_TYPES_LIST";
       break;
@@ -209,6 +223,18 @@ std::ostream& operator<<(std::ostream& output, const ParseResult& result) {
       break;
     case ParseResult::ERROR_NON_ASCII_EXCLUDED_DOMAIN:
       output << "ERROR_NON_ASCII_EXCLUDED_DOMAIN";
+      break;
+    case ParseResult::ERROR_NON_ASCII_INITIATOR_DOMAIN:
+      output << "ERROR_NON_ASCII_INITIATOR_DOMAIN";
+      break;
+    case ParseResult::ERROR_NON_ASCII_EXCLUDED_INITIATOR_DOMAIN:
+      output << "ERROR_NON_ASCII_EXCLUDED_INITIATOR_DOMAIN";
+      break;
+    case ParseResult::ERROR_NON_ASCII_REQUEST_DOMAIN:
+      output << "ERROR_NON_ASCII_REQUEST_DOMAIN";
+      break;
+    case ParseResult::ERROR_NON_ASCII_EXCLUDED_REQUEST_DOMAIN:
+      output << "ERROR_NON_ASCII_EXCLUDED_REQUEST_DOMAIN";
       break;
     case ParseResult::ERROR_INVALID_URL_FILTER:
       output << "ERROR_INVALID_URL_FILTER";
@@ -409,9 +435,7 @@ dnr_api::ModifyHeaderInfo CreateModifyHeaderInfo(
 
   header_info.operation = operation;
   header_info.header = header;
-
-  if (value)
-    header_info.value = std::make_unique<std::string>(*value);
+  header_info.value = value;
 
   return header_info;
 }

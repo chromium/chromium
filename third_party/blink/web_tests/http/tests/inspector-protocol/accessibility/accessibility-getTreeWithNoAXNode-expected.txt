@@ -9,6 +9,10 @@ RootWebArea
           *none
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 0
+    }
     domNode : div#hidden
     ignored : true
     ignoredReasons : [

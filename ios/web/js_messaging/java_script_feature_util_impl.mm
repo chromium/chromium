@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,21 +6,22 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/ios/ios_util.h"
-#include "base/logging.h"
-#include "base/no_destructor.h"
+#import "base/ios/ios_util.h"
+#import "base/logging.h"
+#import "base/no_destructor.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/web/annotations/annotations_java_script_feature.h"
+#import "ios/web/common/features.h"
 #import "ios/web/favicon/favicon_java_script_feature.h"
 #import "ios/web/find_in_page/find_in_page_java_script_feature.h"
-#include "ios/web/js_features/context_menu/context_menu_java_script_feature.h"
-#include "ios/web/js_features/scroll_helper/scroll_helper_java_script_feature.h"
-#include "ios/web/js_features/web_performance_metrics/web_performance_metrics_java_script_feature.h"
+#import "ios/web/js_features/context_menu/context_menu_java_script_feature.h"
+#import "ios/web/js_features/scroll_helper/scroll_helper_java_script_feature.h"
 #import "ios/web/js_features/window_error/window_error_java_script_feature.h"
 #import "ios/web/js_messaging/script_command_java_script_feature.h"
 #import "ios/web/js_messaging/web_frames_manager_java_script_feature.h"
 #import "ios/web/navigation/navigation_java_script_feature.h"
 #import "ios/web/navigation/session_restore_java_script_feature.h"
-#include "ios/web/public/js_messaging/java_script_feature.h"
+#import "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/text_fragments/text_fragments_java_script_feature.h"
 
@@ -31,10 +32,11 @@
 namespace web {
 namespace {
 
-const char kBaseScriptName[] = "base_js";
-const char kCommonScriptName[] = "common_js";
-const char kMessageScriptName[] = "message_js";
-const char kPluginPlaceholderScriptName[] = "plugin_placeholder_js";
+const char kBaseScriptName[] = "gcrweb";
+const char kCommonScriptName[] = "common";
+const char kMessageScriptName[] = "message";
+const char kPluginPlaceholderScriptName[] = "plugin_placeholder";
+const char kShareWorkaroundScriptName[] = "share_workaround";
 
 const char kMainFrameDescription[] = "Main frame";
 const char kIframeDescription[] = "Iframe";
@@ -60,13 +62,13 @@ NSDictionary<NSString*, NSString*>* PlaceholderReplacements() {
 }
 
 FaviconJavaScriptFeature* GetFaviconJavaScriptFeature() {
-  // Static storage is ok for |favicon_feature| as it holds no state.
+  // Static storage is ok for `favicon_feature` as it holds no state.
   static base::NoDestructor<FaviconJavaScriptFeature> favicon_feature;
   return favicon_feature.get();
 }
 
 WindowErrorJavaScriptFeature* GetWindowErrorJavaScriptFeature() {
-  // Static storage is ok for |window_error_feature| as it holds no state.
+  // Static storage is ok for `window_error_feature` as it holds no state.
   static base::NoDestructor<WindowErrorJavaScriptFeature> window_error_feature(
       base::BindRepeating(^(
           WindowErrorJavaScriptFeature::ErrorDetails error_details) {
@@ -88,7 +90,7 @@ WindowErrorJavaScriptFeature* GetWindowErrorJavaScriptFeature() {
 }
 
 JavaScriptFeature* GetPluginPlaceholderJavaScriptFeature() {
-  // Static storage is ok for |plugin_placeholder_feature| as it holds no state.
+  // Static storage is ok for `plugin_placeholder_feature` as it holds no state.
   static base::NoDestructor<JavaScriptFeature> plugin_placeholder_feature(
       JavaScriptFeature::ContentWorld::kAnyContentWorld,
       std::vector<const JavaScriptFeature::FeatureScript>(
@@ -102,6 +104,20 @@ JavaScriptFeature* GetPluginPlaceholderJavaScriptFeature() {
   return plugin_placeholder_feature.get();
 }
 
+JavaScriptFeature* GetShareWorkaroundJavaScriptFeature() {
+  // Static storage is ok for `share_workaround_feature` as it holds no state.
+  static base::NoDestructor<JavaScriptFeature> share_workaround_feature(
+      JavaScriptFeature::ContentWorld::kPageContentWorld,
+      std::vector<const JavaScriptFeature::FeatureScript>(
+          {JavaScriptFeature::FeatureScript::CreateWithFilename(
+              kShareWorkaroundScriptName,
+              JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
+              JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames,
+              JavaScriptFeature::FeatureScript::ReinjectionBehavior::
+                  kInjectOncePerWindow)}));
+  return share_workaround_feature.get();
+}
+
 }  // namespace
 
 namespace java_script_features {
@@ -113,9 +129,9 @@ std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures(
       FindInPageJavaScriptFeature::GetInstance(),
       GetFaviconJavaScriptFeature(),
       GetScrollHelperJavaScriptFeature(),
+      GetShareWorkaroundJavaScriptFeature(),
       GetWindowErrorJavaScriptFeature(),
       NavigationJavaScriptFeature::GetInstance(),
-      WebPerformanceMetricsJavaScriptFeature::GetInstance(),
       ScriptCommandJavaScriptFeature::GetInstance(),
       SessionRestoreJavaScriptFeature::FromBrowserState(browser_state),
       TextFragmentsJavaScriptFeature::GetInstance(),
@@ -128,18 +144,22 @@ std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures(
     features.push_back(GetPluginPlaceholderJavaScriptFeature());
   }
 
+  if (base::FeatureList::IsEnabled(web::features::kEnableWebPageAnnotations)) {
+    features.push_back(AnnotationsJavaScriptFeature::GetInstance());
+  }
+
   return features;
 }
 
 ScrollHelperJavaScriptFeature* GetScrollHelperJavaScriptFeature() {
-  // Static storage is ok for |scroll_helper_feature| as it holds no state.
+  // Static storage is ok for `scroll_helper_feature` as it holds no state.
   static base::NoDestructor<ScrollHelperJavaScriptFeature>
       scroll_helper_feature;
   return scroll_helper_feature.get();
 }
 
 JavaScriptFeature* GetBaseJavaScriptFeature() {
-  // Static storage is ok for |base_feature| as it holds no state.
+  // Static storage is ok for `base_feature` as it holds no state.
   static base::NoDestructor<JavaScriptFeature> base_feature(
       JavaScriptFeature::ContentWorld::kAnyContentWorld,
       std::vector<const JavaScriptFeature::FeatureScript>(
@@ -151,7 +171,7 @@ JavaScriptFeature* GetBaseJavaScriptFeature() {
 }
 
 JavaScriptFeature* GetCommonJavaScriptFeature() {
-  // Static storage is ok for |common_feature| as it holds no state.
+  // Static storage is ok for `common_feature` as it holds no state.
   static base::NoDestructor<JavaScriptFeature> common_feature(
       JavaScriptFeature::ContentWorld::kAnyContentWorld,
       std::vector<const JavaScriptFeature::FeatureScript>(
@@ -164,7 +184,7 @@ JavaScriptFeature* GetCommonJavaScriptFeature() {
 }
 
 JavaScriptFeature* GetMessageJavaScriptFeature() {
-  // Static storage is ok for |message_feature| as it holds no state.
+  // Static storage is ok for `message_feature` as it holds no state.
   static base::NoDestructor<JavaScriptFeature> message_feature(
       JavaScriptFeature::ContentWorld::kAnyContentWorld,
       std::vector<const JavaScriptFeature::FeatureScript>(

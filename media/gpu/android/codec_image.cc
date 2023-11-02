@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/callback_helpers.h"
+#include "base/debug/dump_without_crashing.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -93,8 +94,8 @@ bool CodecImage::CopyTexImage(unsigned target) {
   DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
 
   // This method is only called for SurfaceTexture implementation which can't be
-  // thread-safe.
-  DCHECK(!features::NeedThreadSafeAndroidMedia());
+  // thread-safe. Hence the lock which ensures thread safety should be null.
+  DCHECK(!GetDrDcLockPtr());
 
   TRACE_EVENT0("media", "CodecImage::CopyTexImage");
   DCHECK_EQ(COPY, ShouldBindOrCopy());
@@ -115,6 +116,18 @@ bool CodecImage::CopyTexImage(unsigned target) {
       static_cast<unsigned>(texture_id) !=
           output_buffer_renderer_->texture_owner()->GetTextureId()) {
     return false;
+  }
+
+  // Our hypothesis is that in actuality the rendering to the front buffer and
+  // binding of the image, if possible, have always already occurred by the time
+  // that this method is called. The below DumpWithoutCrashing() call serves to
+  // verify whether this hypothesis is correct. See crbug.com/1310020 for
+  // details.
+  // TODO(crbug.com/1310020): Remove this code as part of removing this entire
+  // function once we have verified that it is indeed no longer needed.
+  if (!output_buffer_renderer_
+           ->render_to_front_buffer_will_be_noop_for_debugging()) {
+    base::debug::DumpWithoutCrashing();
   }
 
   // On some devices GL_TEXTURE_BINDING_EXTERNAL_OES is not supported as
@@ -259,17 +272,25 @@ CodecImage::GetAHardwareBuffer() {
   return output_buffer_renderer_->texture_owner()->GetAHardwareBuffer();
 }
 
-bool CodecImage::HasMutableState() const {
-  return false;
-}
-
 CodecImageHolder::CodecImageHolder(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    scoped_refptr<CodecImage> codec_image)
+    scoped_refptr<CodecImage> codec_image,
+    scoped_refptr<gpu::RefCountedLock> drdc_lock)
     : base::RefCountedDeleteOnSequence<CodecImageHolder>(
           std::move(task_runner)),
+      gpu::RefCountedLockHelperDrDc(std::move(drdc_lock)),
       codec_image_(std::move(codec_image)) {}
 
-CodecImageHolder::~CodecImageHolder() = default;
+CodecImageHolder::~CodecImageHolder() {
+  // Note that CodecImageHolder is always destroyed on the thread it was created
+  // on which is gpu main thread. CodecImage destructor also has checks to
+  // ensure that it is destroyed on gpu main thread.
+  // Acquiring DrDc lock here to ensure that the lock is held from all the paths
+  // from where |codec_image_| can be destroyed.
+  {
+    auto scoped_lock = GetScopedDrDcLock();
+    codec_image_.reset();
+  }
+}
 
 }  // namespace media

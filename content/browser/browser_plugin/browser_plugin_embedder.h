@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #ifndef CONTENT_BROWSER_BROWSER_PLUGIN_BROWSER_PLUGIN_EMBEDDER_H_
 #define CONTENT_BROWSER_BROWSER_PLUGIN_BROWSER_PLUGIN_EMBEDDER_H_
 
-#include "content/common/content_export.h"
+#include "base/memory/raw_ptr.h"
 
 namespace content {
 
@@ -26,7 +26,7 @@ struct NativeWebKeyboardEvent;
 
 // TODO(wjmaclean): Get rid of "BrowserPlugin" in the name of this class.
 // Perhaps "WebContentsEmbedderDelegate" would be better?
-class CONTENT_EXPORT BrowserPluginEmbedder {
+class BrowserPluginEmbedder {
  public:
   BrowserPluginEmbedder(const BrowserPluginEmbedder&) = delete;
   BrowserPluginEmbedder& operator=(const BrowserPluginEmbedder&) = delete;
@@ -64,7 +64,7 @@ class CONTENT_EXPORT BrowserPluginEmbedder {
   static bool GuestCurrentlyAudibleCallback(WebContents* guest);
 
   // Pointer to the WebContentsImpl that owns this object.
-  WebContentsImpl* web_contents_;
+  raw_ptr<WebContentsImpl> web_contents_;
 };
 
 }  // namespace content

@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,13 @@
 
 #ifdef USE_SYMBOLIZE
 
-#include "base/third_party/symbolize/symbolize.h"
-
 #include <algorithm>
 #include <cstring>
 
-namespace base {
-namespace debug {
+#include "base/numerics/safe_conversions.h"
+#include "base/third_party/symbolize/symbolize.h"
+
+namespace base::debug {
 
 BufferedDwarfReader::BufferedDwarfReader(int fd, uint64_t position)
     : fd_(fd), next_chunk_start_(position), last_chunk_start_(position) {}
@@ -20,10 +20,10 @@ BufferedDwarfReader::BufferedDwarfReader(int fd, uint64_t position)
 size_t BufferedDwarfReader::ReadCString(uint64_t max_position,
                                         char* out,
                                         size_t out_size) {
-  uint8_t character;
+  char character;
   size_t bytes_written = 0;
   do {
-    if (!ReadInt8(character)) {
+    if (!ReadChar(character)) {
       return 0;
     }
 
@@ -176,15 +176,18 @@ bool BufferedDwarfReader::BufferedRead(void* out, const size_t bytes) {
   while (bytes_left > 0) {
     // Refresh the buffer.
     if (unconsumed_amount_ == 0) {
-      unconsumed_amount_ =
-          google::ReadFromOffset(fd_, buf_, sizeof(buf_), next_chunk_start_);
-      if (unconsumed_amount_ == 0) {
+      if (!base::IsValueInRangeForNumericType<size_t>(next_chunk_start_))
+        return false;
+      const ssize_t unconsumed_amount = google::ReadFromOffset(
+          fd_, buf_, sizeof(buf_), static_cast<size_t>(next_chunk_start_));
+      if (unconsumed_amount <= 0) {
         // Read error.
         return false;
       }
+      unconsumed_amount_ = static_cast<size_t>(unconsumed_amount);
 
       last_chunk_start_ = next_chunk_start_;
-      next_chunk_start_ = next_chunk_start_ + unconsumed_amount_;
+      next_chunk_start_ += unconsumed_amount_;
       cursor_in_buffer_ = 0;
     }
 
@@ -197,7 +200,6 @@ bool BufferedDwarfReader::BufferedRead(void* out, const size_t bytes) {
   return true;
 }
 
-}  // namespace debug
-}  // namespace base
+}  // namespace base::debug
 
 #endif

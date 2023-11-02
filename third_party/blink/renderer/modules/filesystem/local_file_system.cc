@@ -58,7 +58,7 @@ namespace blink {
 void LocalFileSystem::ResolveURL(const KURL& file_system_url,
                                  std::unique_ptr<ResolveURICallbacks> callbacks,
                                  SynchronousType type) {
-  RequestFileSystemAccessInternal(WTF::Bind(
+  RequestFileSystemAccessInternal(WTF::BindOnce(
       &LocalFileSystem::ResolveURLCallback, WrapCrossThreadPersistent(this),
       file_system_url, std::move(callbacks), type));
 }
@@ -80,7 +80,7 @@ void LocalFileSystem::RequestFileSystem(
     int64_t size,
     std::unique_ptr<FileSystemCallbacks> callbacks,
     SynchronousType sync_type) {
-  RequestFileSystemAccessInternal(WTF::Bind(
+  RequestFileSystemAccessInternal(WTF::BindOnce(
       &LocalFileSystem::RequestFileSystemCallback,
       WrapCrossThreadPersistent(this), type, std::move(callbacks), sync_type));
 }
@@ -127,18 +127,18 @@ void LocalFileSystem::FileSystemNotAllowedInternal(
     std::unique_ptr<FileSystemCallbacks> callbacks) {
   GetSupplementable()
       ->GetTaskRunner(TaskType::kFileReading)
-      ->PostTask(FROM_HERE,
-                 WTF::Bind(&FileSystemCallbacks::DidFail, std::move(callbacks),
-                           base::File::FILE_ERROR_ABORT));
+      ->PostTask(FROM_HERE, WTF::BindOnce(&FileSystemCallbacks::DidFail,
+                                          std::move(callbacks),
+                                          base::File::FILE_ERROR_ABORT));
 }
 
 void LocalFileSystem::FileSystemNotAllowedInternal(
     std::unique_ptr<ResolveURICallbacks> callbacks) {
   GetSupplementable()
       ->GetTaskRunner(TaskType::kFileReading)
-      ->PostTask(FROM_HERE,
-                 WTF::Bind(&ResolveURICallbacks::DidFail, std::move(callbacks),
-                           base::File::FILE_ERROR_ABORT));
+      ->PostTask(FROM_HERE, WTF::BindOnce(&ResolveURICallbacks::DidFail,
+                                          std::move(callbacks),
+                                          base::File::FILE_ERROR_ABORT));
 }
 
 void LocalFileSystem::FileSystemAllowedInternal(

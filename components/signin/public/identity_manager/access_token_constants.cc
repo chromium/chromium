@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,6 +56,21 @@ const std::set<std::string> GetUnconsentedOAuth2Scopes() {
       // Required by the Google Photos NTP module.
       GaiaConstants::kPhotosModuleOAuth2Scope,
       GaiaConstants::kPhotosModuleImageOAuth2Scope,
+
+      // Required for displaying information about parents on supervised child
+      // devices.  Consent is obtained outside Chrome within Family Link flows.
+      GaiaConstants::kKidFamilyReadonlyOAuth2Scope,
+
+      // Required to fetch the ManagedAccounsSigninRestriction policy.
+      GaiaConstants::kSecureConnectOAuth2Scope,
+
+      // Required for requesting Discover feed with personalization without
+      // sync consent. Sync consent isn't required for personalization but can
+      // improve suggestions.
+      GaiaConstants::kFeedOAuth2Scope,
+
+      // Required by k-Anonymity Server (FLEDGE)
+      GaiaConstants::kKAnonymityServiceOAuth2Scope,
 
     // Required by ChromeOS only.
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_elements_helper.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_resource_loader.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 
 namespace blink {
@@ -52,8 +52,7 @@ void MediaControlScrubbingMessageElement::PopulateChildren() {
   arrow_left_div2->setInnerHTML(
       MediaControlsResourceLoader::GetArrowLeftSVGImage());
   message_div->setInnerText(
-      MediaElement().GetLocale().QueryString(IDS_MEDIA_SCRUBBING_MESSAGE_TEXT),
-      ASSERT_NO_EXCEPTION);
+      MediaElement().GetLocale().QueryString(IDS_MEDIA_SCRUBBING_MESSAGE_TEXT));
   arrow_right_div1->setInnerHTML(
       MediaControlsResourceLoader::GetArrowRightSVGImage());
   arrow_right_div2->setInnerHTML(

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/path_service.h"
@@ -31,6 +30,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_family.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 
 using extensions::mojom::ManifestLocation;
 
@@ -184,7 +184,7 @@ TEST_F(ImageLoaderTest, MultipleImages) {
   std::vector<ImageLoader::ImageRepresentation> info_list;
   int sizes[] = {extension_misc::EXTENSION_ICON_BITTY,
                  extension_misc::EXTENSION_ICON_SMALLISH, };
-  for (size_t i = 0; i < base::size(sizes); ++i) {
+  for (size_t i = 0; i < std::size(sizes); ++i) {
     ExtensionResource resource = IconsInfo::GetIconResource(
         extension.get(), sizes[i], ExtensionIconSet::MATCH_EXACTLY);
     info_list.push_back(ImageLoader::ImageRepresentation(
@@ -227,7 +227,7 @@ TEST_F(ImageLoaderTest, LoadImageFamily) {
   std::vector<ImageLoader::ImageRepresentation> info_list;
   int sizes[] = {extension_misc::EXTENSION_ICON_BITTY,
                  extension_misc::EXTENSION_ICON_SMALLISH, };
-  for (size_t i = 0; i < base::size(sizes); ++i) {
+  for (size_t i = 0; i < std::size(sizes); ++i) {
     ExtensionResource resource = IconsInfo::GetIconResource(
         extension.get(), sizes[i], ExtensionIconSet::MATCH_EXACTLY);
     info_list.push_back(ImageLoader::ImageRepresentation(
@@ -262,7 +262,7 @@ TEST_F(ImageLoaderTest, LoadImageFamily) {
   EXPECT_EQ(1, image_loaded_count());
 
   // Check that all images were loaded.
-  for (size_t i = 0; i < base::size(sizes); ++i) {
+  for (size_t i = 0; i < std::size(sizes); ++i) {
     const gfx::Image* image = image_family_.GetBest(sizes[i], sizes[i]);
     EXPECT_EQ(sizes[i], image->Width());
   }

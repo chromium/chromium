@@ -1,13 +1,37 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/frame/browser_frame_view_linux_native.h"
 
+#include "base/notreached.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_layout_linux_native.h"
+#include "ui/linux/linux_ui.h"
 #include "ui/views/controls/button/image_button.h"
-#include "ui/views/linux_ui/linux_ui.h"
 #include "ui/views/window/frame_background.h"
+
+namespace {
+
+ui::NavButtonProvider::ButtonState ButtonStateToNavButtonProviderState(
+    views::Button::ButtonState state) {
+  switch (state) {
+    case views::Button::STATE_NORMAL:
+      return ui::NavButtonProvider::ButtonState::kNormal;
+    case views::Button::STATE_HOVERED:
+      return ui::NavButtonProvider::ButtonState::kHovered;
+    case views::Button::STATE_PRESSED:
+      return ui::NavButtonProvider::ButtonState::kPressed;
+    case views::Button::STATE_DISABLED:
+      return ui::NavButtonProvider::ButtonState::kDisabled;
+
+    case views::Button::STATE_COUNT:
+    default:
+      NOTREACHED();
+      return ui::NavButtonProvider::ButtonState::kNormal;
+  }
+}
+
+}  // namespace
 
 bool BrowserFrameViewLinuxNative::DrawFrameButtonParams::operator==(
     const DrawFrameButtonParams& other) const {
@@ -19,8 +43,8 @@ BrowserFrameViewLinuxNative::BrowserFrameViewLinuxNative(
     BrowserFrame* frame,
     BrowserView* browser_view,
     BrowserFrameViewLayoutLinux* layout,
-    std::unique_ptr<views::NavButtonProvider> nav_button_provider,
-    views::WindowFrameProvider* window_frame_provider)
+    std::unique_ptr<ui::NavButtonProvider> nav_button_provider,
+    ui::WindowFrameProvider* window_frame_provider)
     : BrowserFrameViewLinux(frame, browser_view, layout),
       nav_button_provider_(std::move(nav_button_provider)),
       window_frame_provider_(window_frame_provider) {}
@@ -61,11 +85,11 @@ void BrowserFrameViewLinuxNative::MaybeUpdateCachedFrameButtonImages() {
   nav_button_provider_->RedrawImages(params.top_area_height, params.maximized,
                                      params.active);
   for (auto type : {
-           views::NavButtonProvider::FrameButtonDisplayType::kMinimize,
+           ui::NavButtonProvider::FrameButtonDisplayType::kMinimize,
            IsMaximized()
-               ? views::NavButtonProvider::FrameButtonDisplayType::kRestore
-               : views::NavButtonProvider::FrameButtonDisplayType::kMaximize,
-           views::NavButtonProvider::FrameButtonDisplayType::kClose,
+               ? ui::NavButtonProvider::FrameButtonDisplayType::kRestore
+               : ui::NavButtonProvider::FrameButtonDisplayType::kMaximize,
+           ui::NavButtonProvider::FrameButtonDisplayType::kClose,
        }) {
     for (size_t state = 0; state < views::Button::STATE_COUNT; state++) {
       views::Button::ButtonState button_state =
@@ -74,21 +98,23 @@ void BrowserFrameViewLinuxNative::MaybeUpdateCachedFrameButtonImages() {
       DCHECK_EQ(std::string(views::ImageButton::kViewClassName),
                 button->GetClassName());
       static_cast<views::ImageButton*>(button)->SetImage(
-          button_state, nav_button_provider_->GetImage(type, button_state));
+          button_state,
+          nav_button_provider_->GetImage(
+              type, ButtonStateToNavButtonProviderState(button_state)));
     }
   }
 }
 
 views::Button* BrowserFrameViewLinuxNative::GetButtonFromDisplayType(
-    views::NavButtonProvider::FrameButtonDisplayType type) {
+    ui::NavButtonProvider::FrameButtonDisplayType type) {
   switch (type) {
-    case views::NavButtonProvider::FrameButtonDisplayType::kMinimize:
+    case ui::NavButtonProvider::FrameButtonDisplayType::kMinimize:
       return minimize_button();
-    case views::NavButtonProvider::FrameButtonDisplayType::kMaximize:
+    case ui::NavButtonProvider::FrameButtonDisplayType::kMaximize:
       return maximize_button();
-    case views::NavButtonProvider::FrameButtonDisplayType::kRestore:
+    case ui::NavButtonProvider::FrameButtonDisplayType::kRestore:
       return restore_button();
-    case views::NavButtonProvider::FrameButtonDisplayType::kClose:
+    case ui::NavButtonProvider::FrameButtonDisplayType::kClose:
       return close_button();
     default:
       NOTREACHED();

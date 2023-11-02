@@ -1,14 +1,17 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/tray/tray_detailed_view.h"
 
+#include <cstring>
+#include <string>
 #include <utility>
 
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/time/calendar_view.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/system_menu_button.h"
@@ -25,6 +28,7 @@
 #include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/skia_paint_util.h"
@@ -88,7 +92,7 @@ class ScrollContentsView : public views::View {
       ui::ClipRecorder clip_recorder(paint_info.context());
       gfx::Rect clip_rect = gfx::Rect(paint_info.paint_recording_size()) -
                             paint_info.offset_from_parent();
-      gfx::Insets clip_insets(sticky_header_height, 0, 0, 0);
+      auto clip_insets = gfx::Insets::TLBR(sticky_header_height, 0, 0, 0);
       clip_rect.Inset(gfx::ScaleToFlooredInsets(
           clip_insets, paint_info.paint_recording_scale_x(),
           paint_info.paint_recording_scale_y()));
@@ -158,10 +162,10 @@ class ScrollContentsView : public views::View {
       // header).
       DCHECK_EQ(box_layout_, GetLayoutManager());
       box_layout_->set_inside_border_insets(
-          gfx::Insets(details.child->GetID() == VIEW_ID_STICKY_HEADER
-                          ? 0
-                          : kMenuSeparatorVerticalPadding,
-                      0, kMenuSeparatorVerticalPadding, 0));
+          gfx::Insets::TLBR(details.child->GetID() == VIEW_ID_STICKY_HEADER
+                                ? 0
+                                : kMenuSeparatorVerticalPadding,
+                            0, kMenuSeparatorVerticalPadding, 0));
     }
   }
 
@@ -271,8 +275,7 @@ class ScrollContentsView : public views::View {
 TrayDetailedView::TrayDetailedView(DetailedViewDelegate* delegate)
     : delegate_(delegate) {
   box_layout_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical,
-      delegate->GetInsetsForDetailedView()));
+      views::BoxLayout::Orientation::kVertical));
   SetBackground(views::CreateSolidBackground(
       delegate_->GetBackgroundColor().value_or(SK_ColorTRANSPARENT)));
 }
@@ -281,6 +284,11 @@ TrayDetailedView::~TrayDetailedView() = default;
 
 void TrayDetailedView::OnViewClicked(views::View* sender) {
   HandleViewClicked(sender);
+}
+
+void TrayDetailedView::OverrideProgressBarAccessibleName(
+    const std::u16string& name) {
+  progress_bar_accessible_name_ = name;
 }
 
 void TrayDetailedView::CreateTitleRow(int string_id) {
@@ -293,7 +301,17 @@ void TrayDetailedView::CreateTitleRow(int string_id) {
   tri_view_->AddView(TriView::Container::START, back_button_);
 
   AddChildViewAt(tri_view_, 0);
-  AddChildViewAt(delegate_->CreateTitleSeparator(), kTitleRowSeparatorIndex);
+
+  // If this view doesn't have a separator, adds an empty view as a placeholder
+  // so that the views below won't move up when the `progress_bar_` becomes
+  // invisible.
+  if (!has_separator_) {
+    auto buffer_view = std::make_unique<views::View>();
+    buffer_view->SetPreferredSize(gfx::Size(1, kTitleRowProgressBarHeight));
+    AddChildViewAt(std::move(buffer_view), kTitleRowSeparatorIndex);
+  } else {
+    AddChildViewAt(delegate_->CreateTitleSeparator(), kTitleRowSeparatorIndex);
+  }
 
   CreateExtraTitleRowButtons();
   Layout();
@@ -390,8 +408,8 @@ void TrayDetailedView::ShowProgress(double value, bool visible) {
         std::make_unique<views::ProgressBar>(kTitleRowProgressBarHeight),
         kTitleRowSeparatorIndex + 1);
     progress_bar_->GetViewAccessibility().OverrideName(
-        l10n_util::GetStringUTF16(
-            IDS_ASH_STATUS_TRAY_NETWORK_PROGRESS_ACCESSIBLE_NAME));
+        progress_bar_accessible_name_.value_or(l10n_util::GetStringUTF16(
+            IDS_ASH_STATUS_TRAY_PROGRESS_BAR_ACCESSIBLE_NAME)));
     progress_bar_->SetVisible(false);
     progress_bar_->SetForegroundColor(
         AshColorProvider::Get()->GetContentLayerColor(
@@ -443,6 +461,10 @@ void TrayDetailedView::CloseBubble() {
   delegate_->CloseBubble();
 }
 
+void TrayDetailedView::IgnoreSeparator() {
+  has_separator_ = false;
+}
+
 void TrayDetailedView::Layout() {
   views::View::Layout();
   if (scroller_ && !scroller_->is_bounded())
@@ -465,6 +487,7 @@ const char* TrayDetailedView::GetClassName() const {
 
 void TrayDetailedView::OnThemeChanged() {
   views::View::OnThemeChanged();
+
   delegate_->UpdateColors();
 
   auto* color_provider = AshColorProvider::Get();

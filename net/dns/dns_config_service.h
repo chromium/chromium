@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -41,14 +41,6 @@ class NET_EXPORT_PRIVATE DnsConfigService {
   // Creates the platform-specific DnsConfigService. May return |nullptr| if
   // reading system DNS settings is not supported on the current platform.
   static std::unique_ptr<DnsConfigService> CreateSystemService();
-
-  // On detecting config change, will post and wait `config_change_delay` before
-  // triggering refreshes. Will trigger refreshes synchronously on nullopt.
-  // Useful for platforms where multiple changes may be made and detected before
-  // the config is stabilized and ready to be read.
-  explicit DnsConfigService(base::FilePath::StringPieceType hosts_file_path,
-                            absl::optional<base::TimeDelta>
-                                config_change_delay = base::Milliseconds(50));
 
   DnsConfigService(const DnsConfigService&) = delete;
   DnsConfigService& operator=(const DnsConfigService&) = delete;
@@ -109,7 +101,7 @@ class NET_EXPORT_PRIVATE DnsConfigService {
 
     // Back pointer. `this` is expected to be owned by `service_`, making this
     // raw pointer safe.
-    DnsConfigService* const service_;
+    const raw_ptr<DnsConfigService> service_;
 
     SEQUENCE_CHECKER(sequence_checker_);
   };
@@ -156,17 +148,25 @@ class NET_EXPORT_PRIVATE DnsConfigService {
 
     // SerialWorker:
     std::unique_ptr<SerialWorker::WorkItem> CreateWorkItem() override;
-    void OnWorkFinished(
+    bool OnWorkFinished(
         std::unique_ptr<SerialWorker::WorkItem> work_item) final;
 
    private:
     // Raw pointer to owning DnsConfigService. This must never be accessed
     // inside DoWork(), since service may be destroyed while SerialWorker is
     // running on worker thread.
-    DnsConfigService* const service_;
+    const raw_ptr<DnsConfigService> service_;
 
     const base::FilePath hosts_file_path_;
   };
+
+  // On detecting config change, will post and wait `config_change_delay` before
+  // triggering refreshes. Will trigger refreshes synchronously on nullopt.
+  // Useful for platforms where multiple changes may be made and detected before
+  // the config is stabilized and ready to be read.
+  explicit DnsConfigService(base::FilePath::StringPieceType hosts_file_path,
+                            absl::optional<base::TimeDelta>
+                                config_change_delay = base::Milliseconds(50));
 
   // Immediately attempts to read the current configuration.
   virtual void ReadConfigNow() = 0;
@@ -205,15 +205,15 @@ class NET_EXPORT_PRIVATE DnsConfigService {
 
   // True if any of the necessary watchers failed. In that case, the service
   // will communicate changes via OnTimeout, but will only send empty DnsConfig.
-  bool watch_failed_;
+  bool watch_failed_ = false;
   // True after On*Read, before Invalidate*. Tells if the config is complete.
-  bool have_config_;
-  bool have_hosts_;
+  bool have_config_ = false;
+  bool have_hosts_ = false;
   // True if receiver needs to be updated when the config becomes complete.
-  bool need_update_;
+  bool need_update_ = false;
   // True if the last config sent was empty (instead of |dns_config_|).
   // Set when |timer_| expires.
-  bool last_sent_empty_;
+  bool last_sent_empty_ = true;
 
   const absl::optional<base::TimeDelta> config_change_delay_;
   const base::FilePath hosts_file_path_;

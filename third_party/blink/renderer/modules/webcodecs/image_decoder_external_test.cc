@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,8 @@
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/test_underlying_source.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/modules/webcodecs/image_track.h"
+#include "third_party/blink/renderer/modules/webcodecs/image_track_list.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -45,7 +47,7 @@ class ImageDecoderTest : public testing::Test {
     init->setType(mime_type);
 
     auto data = ReadFile(file_name);
-    DCHECK(!data->IsEmpty()) << "Missing file: " << file_name;
+    DCHECK(!data->empty()) << "Missing file: " << file_name;
     init->setData(MakeGarbageCollected<V8ImageBufferSource>(
         DOMArrayBuffer::Create(std::move(data))));
     return ImageDecoderExternal::Create(v8_scope->GetScriptState(), init,
@@ -85,6 +87,14 @@ class ImageDecoderTest : public testing::Test {
     EXPECT_TRUE(v8_value->IsBoolean());
     return v8_value.As<v8::Boolean>()->Value();
   }
+
+  static bool HasAv1Decoder() {
+#if BUILDFLAG(ENABLE_AV1_DECODER)
+    return true;
+#else
+    return false;
+#endif
+  }
 };
 
 TEST_F(ImageDecoderTest, IsTypeSupported) {
@@ -104,8 +114,7 @@ TEST_F(ImageDecoderTest, IsTypeSupported) {
   EXPECT_TRUE(IsTypeSupported(&v8_scope, "image/bmp"));
   EXPECT_TRUE(IsTypeSupported(&v8_scope, "image/x-xbitmap"));
 
-  EXPECT_EQ(IsTypeSupported(&v8_scope, "image/avif"),
-            BUILDFLAG(ENABLE_AV1_DECODER));
+  EXPECT_EQ(IsTypeSupported(&v8_scope, "image/avif"), HasAv1Decoder());
 
   EXPECT_FALSE(IsTypeSupported(&v8_scope, "image/x-icon"));
   EXPECT_FALSE(IsTypeSupported(&v8_scope, "image/vnd.microsoft.icon"));
@@ -157,7 +166,7 @@ TEST_F(ImageDecoderTest, DecodeNeuteredAtDecodeTime) {
 
   constexpr char kTestFile[] = "images/resources/animated.gif";
   auto data = ReadFile(kTestFile);
-  DCHECK(!data->IsEmpty()) << "Missing file: " << kTestFile;
+  DCHECK(!data->empty()) << "Missing file: " << kTestFile;
 
   auto* buffer = DOMArrayBuffer::Create(std::move(data));
 
@@ -212,12 +221,65 @@ TEST_F(ImageDecoderTest, DecoderCreationMixedCaseMimeType) {
   EXPECT_EQ(decoder->type(), "image/gif");
 }
 
-TEST_F(ImageDecoderTest, DecodeGif) {
+TEST_F(ImageDecoderTest, DecodeGifZeroDuration) {
   V8TestingScope v8_scope;
   constexpr char kImageType[] = "image/gif";
   EXPECT_TRUE(IsTypeSupported(&v8_scope, kImageType));
   auto* decoder =
       CreateDecoder(&v8_scope, "images/resources/animated.gif", kImageType);
+  ASSERT_TRUE(decoder);
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+
+  {
+    auto promise = decoder->tracks().ready(v8_scope.GetScriptState());
+    ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    ASSERT_TRUE(tester.IsFulfilled());
+  }
+
+  {
+    auto promise = decoder->decode(MakeOptions(0, true));
+    ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    ASSERT_TRUE(tester.IsFulfilled());
+    auto* result = ToImageDecodeResult(&v8_scope, tester.Value());
+    EXPECT_TRUE(result->complete());
+
+    auto* frame = result->image();
+    EXPECT_EQ(frame->timestamp(), 0u);
+    EXPECT_EQ(frame->duration(), 0u);
+    EXPECT_EQ(frame->displayWidth(), 16u);
+    EXPECT_EQ(frame->displayHeight(), 16u);
+  }
+
+  {
+    auto promise = decoder->decode(MakeOptions(1, true));
+    ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    ASSERT_TRUE(tester.IsFulfilled());
+    auto* result = ToImageDecodeResult(&v8_scope, tester.Value());
+    EXPECT_TRUE(result->complete());
+
+    auto* frame = result->image();
+    EXPECT_EQ(frame->timestamp(), 0u);
+    EXPECT_EQ(frame->duration(), 0u);
+    EXPECT_EQ(frame->displayWidth(), 16u);
+    EXPECT_EQ(frame->displayHeight(), 16u);
+  }
+
+  // Decoding past the end should result in a rejected promise.
+  auto promise = decoder->decode(MakeOptions(3, true));
+  ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  ASSERT_TRUE(tester.IsRejected());
+}
+
+TEST_F(ImageDecoderTest, DecodeGif) {
+  V8TestingScope v8_scope;
+  constexpr char kImageType[] = "image/gif";
+  EXPECT_TRUE(IsTypeSupported(&v8_scope, kImageType));
+  auto* decoder = CreateDecoder(
+      &v8_scope, "images/resources/animated-10color.gif", kImageType);
   ASSERT_TRUE(decoder);
   ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
 
@@ -234,7 +296,7 @@ TEST_F(ImageDecoderTest, DecodeGif) {
   EXPECT_EQ(tracks.selectedTrack().value()->animated(), true);
 
   EXPECT_EQ(decoder->type(), kImageType);
-  EXPECT_EQ(tracks.selectedTrack().value()->frameCount(), 2u);
+  EXPECT_EQ(tracks.selectedTrack().value()->frameCount(), 10u);
   EXPECT_EQ(tracks.selectedTrack().value()->repetitionCount(), INFINITY);
   EXPECT_EQ(decoder->complete(), true);
 
@@ -247,10 +309,10 @@ TEST_F(ImageDecoderTest, DecodeGif) {
     EXPECT_TRUE(result->complete());
 
     auto* frame = result->image();
-    EXPECT_EQ(frame->timestamp(), absl::nullopt);
-    EXPECT_EQ(frame->duration(), 0u);
-    EXPECT_EQ(frame->displayWidth(), 16u);
-    EXPECT_EQ(frame->displayHeight(), 16u);
+    EXPECT_EQ(frame->timestamp(), 0u);
+    EXPECT_EQ(frame->duration(), 100000u);
+    EXPECT_EQ(frame->displayWidth(), 100u);
+    EXPECT_EQ(frame->displayHeight(), 100u);
   }
 
   {
@@ -262,14 +324,14 @@ TEST_F(ImageDecoderTest, DecodeGif) {
     EXPECT_TRUE(result->complete());
 
     auto* frame = result->image();
-    EXPECT_EQ(frame->timestamp(), absl::nullopt);
-    EXPECT_EQ(frame->duration(), 0u);
-    EXPECT_EQ(frame->displayWidth(), 16u);
-    EXPECT_EQ(frame->displayHeight(), 16u);
+    EXPECT_EQ(frame->timestamp(), 100000u);
+    EXPECT_EQ(frame->duration(), 100000u);
+    EXPECT_EQ(frame->displayWidth(), 100u);
+    EXPECT_EQ(frame->displayHeight(), 100u);
   }
 
   // Decoding past the end should result in a rejected promise.
-  auto promise = decoder->decode(MakeOptions(3, true));
+  auto promise = decoder->decode(MakeOptions(11, true));
   ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
   tester.WaitUntilSettled();
   ASSERT_TRUE(tester.IsRejected());
@@ -295,7 +357,7 @@ TEST_F(ImageDecoderTest, DecodeCompleted) {
 TEST_F(ImageDecoderTest, DecodeAborted) {
   V8TestingScope v8_scope;
   constexpr char kImageType[] = "image/avif";
-  EXPECT_TRUE(IsTypeSupported(&v8_scope, kImageType));
+  EXPECT_EQ(IsTypeSupported(&v8_scope, kImageType), HasAv1Decoder());
 
   // Use an expensive-to-decode image to try and ensure work exists to abort.
   auto* decoder = CreateDecoder(
@@ -310,7 +372,7 @@ TEST_F(ImageDecoderTest, DecodeAborted) {
     auto promise = decoder->tracks().ready(v8_scope.GetScriptState());
     ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
     tester.WaitUntilSettled();
-    ASSERT_TRUE(tester.IsFulfilled());
+    ASSERT_EQ(tester.IsFulfilled(), HasAv1Decoder());
   }
 
   // Setup a scenario where there should be work to abort. Since blink tests use
@@ -549,7 +611,7 @@ TEST_F(ImageDecoderTest, DecoderReadableStream) {
     EXPECT_TRUE(result->complete());
 
     auto* frame = result->image();
-    EXPECT_EQ(frame->timestamp(), absl::nullopt);
+    EXPECT_EQ(frame->timestamp(), 0u);
     EXPECT_EQ(*frame->duration(), 100000u);
     EXPECT_EQ(frame->displayWidth(), 100u);
     EXPECT_EQ(frame->displayHeight(), 100u);
@@ -559,7 +621,7 @@ TEST_F(ImageDecoderTest, DecoderReadableStream) {
 TEST_F(ImageDecoderTest, DecoderReadableStreamAvif) {
   V8TestingScope v8_scope;
   constexpr char kImageType[] = "image/avif";
-  EXPECT_TRUE(IsTypeSupported(&v8_scope, kImageType));
+  EXPECT_EQ(IsTypeSupported(&v8_scope, kImageType), HasAv1Decoder());
 
   auto data = ReadFile("images/resources/avif/star-animated-8bpc.avif");
 
@@ -615,25 +677,29 @@ TEST_F(ImageDecoderTest, DecoderReadableStreamAvif) {
 
   // Ensure we have metadata.
   metadata_tester.WaitUntilSettled();
-  ASSERT_TRUE(metadata_tester.IsFulfilled());
+  ASSERT_EQ(metadata_tester.IsFulfilled(), HasAv1Decoder());
 
   // Verify decode completes successfully.
   decode_tester.WaitUntilSettled();
+#if BUILDFLAG(ENABLE_AV1_DECODER)
   ASSERT_TRUE(decode_tester.IsFulfilled());
   auto* result = ToImageDecodeResult(&v8_scope, decode_tester.Value());
   EXPECT_TRUE(result->complete());
 
   auto* frame = result->image();
-  EXPECT_EQ(frame->timestamp(), absl::nullopt);
+  EXPECT_EQ(frame->timestamp(), 0u);
   EXPECT_EQ(*frame->duration(), 100000u);
   EXPECT_EQ(frame->displayWidth(), 159u);
   EXPECT_EQ(frame->displayHeight(), 159u);
+#else
+  EXPECT_FALSE(decode_tester.IsFulfilled());
+#endif
 }
 
 TEST_F(ImageDecoderTest, ReadableStreamAvifStillYuvDecoding) {
   V8TestingScope v8_scope;
   constexpr char kImageType[] = "image/avif";
-  EXPECT_TRUE(IsTypeSupported(&v8_scope, kImageType));
+  EXPECT_EQ(IsTypeSupported(&v8_scope, kImageType), HasAv1Decoder());
 
   auto data = ReadFile("images/resources/avif/red-limited-range-420-8bpc.avif");
 
@@ -670,7 +736,7 @@ TEST_F(ImageDecoderTest, ReadableStreamAvifStillYuvDecoding) {
     auto promise = decoder->tracks().ready(v8_scope.GetScriptState());
     ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
     tester.WaitUntilSettled();
-    ASSERT_TRUE(tester.IsFulfilled());
+    ASSERT_EQ(tester.IsFulfilled(), HasAv1Decoder());
   }
 
   // Attempt to decode a frame greater than the first.
@@ -691,16 +757,20 @@ TEST_F(ImageDecoderTest, ReadableStreamAvifStillYuvDecoding) {
     auto promise = decoder->decode();
     ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
     tester.WaitUntilSettled();
+#if BUILDFLAG(ENABLE_AV1_DECODER)
     ASSERT_TRUE(tester.IsFulfilled());
     auto* result = ToImageDecodeResult(&v8_scope, tester.Value());
     EXPECT_TRUE(result->complete());
 
     auto* frame = result->image();
     EXPECT_EQ(frame->format(), "I420");
-    EXPECT_EQ(frame->timestamp(), absl::nullopt);
+    EXPECT_EQ(frame->timestamp(), 0u);
     EXPECT_EQ(frame->duration(), absl::nullopt);
     EXPECT_EQ(frame->displayWidth(), 3u);
     EXPECT_EQ(frame->displayHeight(), 3u);
+#else
+    EXPECT_FALSE(tester.IsFulfilled());
+#endif
   }
 }
 
@@ -896,7 +966,7 @@ TEST_F(ImageDecoderTest, DecodeYuv) {
 
     auto* frame = result->image();
     EXPECT_EQ(frame->format(), "I420");
-    EXPECT_EQ(frame->timestamp(), absl::nullopt);
+    EXPECT_EQ(frame->timestamp(), 0u);
     EXPECT_EQ(frame->duration(), absl::nullopt);
     EXPECT_EQ(frame->displayWidth(), 99u);
     EXPECT_EQ(frame->displayHeight(), 99u);

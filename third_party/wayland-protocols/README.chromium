@@ -1,3 +1,23 @@
+Name: wayland-protocols
+URL: http://wayland.freedesktop.org/
+Version: 1.26
+License: MIT
+License File: src/COPYING
+Security Critical: yes
+
+Description:
+wayland-protocols/src contains the official library of Wayland protocol
+extensions maintained by the developers of the Wayland project.
+
+unstable/ contains unofficial ChromeOS extensions to wayland.
+
+Repository:
+https://anongit.freedesktop.org/git/wayland/wayland-protocols.git.
+
+Source checkout path:
+src/third_party/wayland-protocols/src
+
+Additional note:
 This component wraps several external sources of Wayland protocol extensions.
 Descriptions of each source go below.
 
@@ -8,24 +28,6 @@ To upgrade a source to a new version:
   $ roll-dep --roll-to=<commit> <source-checkout-path>
 - Run gclient sync to update the local working copy with the new version.
 - Update this README to reflect the new version number in the source's section.
-
---------------------------------------------------------------------------------
-Name: wayland-protocols
-URL: http://wayland.freedesktop.org/
-Version: 1.21
-License: MIT
-License File: src/COPYING
-Security Critical: yes
-
-Description:
-wayland-protocols/src contains the official library of Wayland protocol
-extensions maintained by the developers of the Wayland project.
-
-Repository:
-https://anongit.freedesktop.org/git/wayland/wayland-protocols.git.
-
-Source checkout path:
-src/third_party/wayland-protocols/src
 
 --------------------------------------------------------------------------------
 Name: gtk

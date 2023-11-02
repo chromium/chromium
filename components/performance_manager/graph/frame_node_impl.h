@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
@@ -105,6 +106,7 @@ class FrameNodeImpl
   bool is_audible() const;
   const absl::optional<gfx::Rect>& viewport_intersection() const;
   Visibility visibility() const;
+  uint64_t resident_set_kb_estimate() const;
 
   // Setters are not thread safe.
   void SetIsCurrent(bool is_current);
@@ -113,6 +115,7 @@ class FrameNodeImpl
   void SetIsAudible(bool is_audible);
   void SetViewportIntersection(const gfx::Rect& viewport_intersection);
   void SetVisibility(Visibility visibility);
+  void SetResidentSetKbEstimate(uint64_t rss_estimate);
 
   // Invoked when a navigation is committed in the frame.
   void OnNavigationCommitted(const GURL& url, bool same_document);
@@ -187,6 +190,7 @@ class FrameNodeImpl
   bool IsAudible() const override;
   const absl::optional<gfx::Rect>& GetViewportIntersection() const override;
   Visibility GetVisibility() const override;
+  uint64_t GetResidentSetKbEstimate() const override;
 
   // Properties associated with a Document, which are reset when a
   // different-document navigation is committed in the frame.
@@ -248,9 +252,9 @@ class FrameNodeImpl
 
   mojo::Receiver<mojom::DocumentCoordinationUnit> receiver_{this};
 
-  FrameNodeImpl* const parent_frame_node_;
-  PageNodeImpl* const page_node_;
-  ProcessNodeImpl* const process_node_;
+  const raw_ptr<FrameNodeImpl> parent_frame_node_;
+  const raw_ptr<PageNodeImpl> page_node_;
+  const raw_ptr<ProcessNodeImpl> process_node_;
   // The routing id of the frame.
   const int render_frame_id_;
 
@@ -278,6 +282,8 @@ class FrameNodeImpl
 
   // The set of pages that have been embedded by this frame.
   base::flat_set<PageNodeImpl*> embedded_page_nodes_;
+
+  uint64_t resident_set_kb_estimate_ = 0;
 
   // Does *not* change when a navigation is committed.
   ObservedProperty::NotifiesOnlyOnChanges<

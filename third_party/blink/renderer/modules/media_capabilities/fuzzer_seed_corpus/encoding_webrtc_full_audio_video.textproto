@@ -1,0 +1,12 @@
+type: ENCODING_WEBRTC
+video {
+    content_type: 'video/VP9'
+    width: 1280
+    height: 720
+    bitrate: 3000
+    framerate: "24"
+    scalabilityMode: "L3T3_KEY"
+  }
+audio {
+    content_type: 'audio/opus'
+  }

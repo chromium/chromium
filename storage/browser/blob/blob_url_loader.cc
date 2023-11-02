@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "base/format_macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -23,7 +22,6 @@
 #include "net/http/http_response_info.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
-#include "net/url_request/url_request.h"
 #include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -206,9 +204,6 @@ void BlobURLLoader::DidReadSideData(absl::optional<mojo_base::BigBuffer> data) {
 
 void BlobURLLoader::OnComplete(net::Error error_code,
                                uint64_t total_written_bytes) {
-  base::UmaHistogramSparse("Storage.Blob.BlobUrlLoader.FailureType",
-                           error_code);
-
   network::URLLoaderCompletionStatus status(error_code);
   status.encoded_body_length = total_written_bytes;
   status.decoded_body_length = total_written_bytes;
@@ -234,14 +229,11 @@ void BlobURLLoader::HeadersCompleted(
 
   // TODO(jam): some of this code can be shared with
   // services/network/url_loader.h
-  client_->OnReceiveResponse(std::move(response));
+
+  client_->OnReceiveResponse(std::move(response),
+                             std::move(response_body_consumer_handle_),
+                             std::move(metadata));
   sent_headers_ = true;
-
-  if (metadata.has_value())
-    client_->OnReceiveCachedMetadata(std::move(metadata.value()));
-
-  client_->OnStartLoadingResponseBody(
-      std::move(response_body_consumer_handle_));
 }
 
 }  // namespace storage

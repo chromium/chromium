@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -65,6 +65,7 @@ class PLATFORM_EXPORT WorkerSchedulerImpl : public WorkerScheduler {
   void SetPreemptedForCooperativeScheduling(Preempted) override {}
   std::unique_ptr<WebSchedulingTaskQueue> CreateWebSchedulingTaskQueue(
       WebSchedulingPriority) override;
+  scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override;
 
  protected:
   scoped_refptr<NonMainThreadTaskQueue> ThrottleableTaskQueue();
@@ -98,7 +99,8 @@ class PLATFORM_EXPORT WorkerSchedulerImpl : public WorkerScheduler {
 
   using TaskQueueVoterMap = std::map<
       scoped_refptr<NonMainThreadTaskQueue>,
-      std::unique_ptr<base::sequence_manager::TaskQueue::QueueEnabledVoter>>;
+      std::unique_ptr<base::sequence_manager::TaskQueue::QueueEnabledVoter>,
+      recordreplay::CompareRefptrByPointerId<scoped_refptr<NonMainThreadTaskQueue>>>;
 
   TaskQueueVoterMap task_runners_;
 

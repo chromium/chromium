@@ -23,7 +23,6 @@ kouhei@chromium.org
 # Perf bot sheriffs can disable stories.
 per-file expectations.config=skyostil@chromium.org
 per-file expectations.config=nuskos@chromium.org
-per-file expectations.config=sadrul@chromium.org
 per-file expectations.config=eseckler@chromium.org
 
 # emeritus:

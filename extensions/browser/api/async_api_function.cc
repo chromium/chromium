@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,12 +66,12 @@ void AsyncApiFunction::AsyncWorkCompleted() {
   }
 }
 
-void AsyncApiFunction::SetResult(std::unique_ptr<base::Value> result) {
-  results_ = std::make_unique<base::ListValue>();
+void AsyncApiFunction::SetResult(base::Value result) {
+  results_.emplace();
   results_->Append(std::move(result));
 }
 
-void AsyncApiFunction::SetResultList(std::unique_ptr<base::ListValue> results) {
+void AsyncApiFunction::SetResultList(base::Value::List results) {
   results_ = std::move(results);
 }
 
@@ -95,11 +95,17 @@ void AsyncApiFunction::RespondOnUIThread() {
 
 void AsyncApiFunction::SendResponse(bool success) {
   ResponseValue response;
+  base::Value::List arguments;
+  if (results_) {
+    arguments = std::move(*results_);
+    results_.reset();
+  }
   if (success) {
-    response = ArgumentList(std::move(results_));
+    response = ArgumentList(std::move(arguments));
+  } else if (results_) {
+    response = ErrorWithArguments(std::move(arguments), error_);
   } else {
-    response = results_ ? ErrorWithArguments(std::move(results_), error_)
-                        : Error(error_);
+    response = Error(error_);
   }
   ExtensionFunction::Respond(std::move(response));
 }

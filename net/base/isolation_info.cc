@@ -1,12 +1,18 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/base/isolation_info.h"
 
+#include <cstddef>
+
 #include "base/check_op.h"
 #include "base/unguessable_token.h"
+#include "net/base/features.h"
+#include "net/base/isolation_info.h"
 #include "net/base/isolation_info.pb.h"
+#include "net/base/network_anonymization_key.h"
+#include "net/base/proxy_server.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
@@ -51,37 +57,42 @@ bool IsConsistent(IsolationInfo::RequestType request_type,
            !party_context;
   }
 
-  // |frame_origin| may only be nullopt if |top_frame_origin| is as well.
-  if (!frame_origin)
-    return false;
-
   // As long as there is a |top_frame_origin|, |site_for_cookies| must be
   // consistent with the |top_frame_origin|.
   if (!ValidateSameSite(*top_frame_origin, site_for_cookies))
     return false;
 
-  switch (request_type) {
-    case IsolationInfo::RequestType::kMainFrame:
-      // TODO(https://crbug.com/1056706): Check that |top_frame_origin| and
-      // |frame_origin| are the same, once the ViewSource code creates a
-      // consistent IsolationInfo object.
-      //
-      // TODO(https://crbug.com/1060631): Once CreatePartial() is removed, check
-      // if SiteForCookies is non-null if the scheme is HTTP or HTTPS.
-      //
-      // TODO(https://crbug.com/1151947): Once CreatePartial() is removed, check
-      // if party_context is non-null and empty.
-      return true;
-    case IsolationInfo::RequestType::kSubFrame:
-      // For subframe navigations, the subframe's origin may not be consistent
-      // with the SiteForCookies, so SameSite cookies may be sent if there's a
-      // redirect to main frames site.
-      return true;
-    case IsolationInfo::RequestType::kOther:
-      // SiteForCookies must consistent with the frame origin as well for
-      // subresources.
-      return ValidateSameSite(*frame_origin, site_for_cookies);
+  // Validate frame `frame_origin`
+  if (IsolationInfo::IsFrameSiteEnabled()) {
+    // IsolationInfo must have a `frame_origin` when frame origins are enabled
+    // and the IsolationInfo is not default-constructed.
+    if (!frame_origin) {
+      return false;
+    }
+    switch (request_type) {
+      case IsolationInfo::RequestType::kMainFrame:
+        // TODO(https://crbug.com/1056706): Check that |top_frame_origin| and
+        // |frame_origin| are the same, once the ViewSource code creates a
+        // consistent IsolationInfo object.
+        //
+        // TODO(https://crbug.com/1060631): Once CreatePartial() is removed,
+        // check if SiteForCookies is non-null if the scheme is HTTP or HTTPS.
+        //
+        // TODO(https://crbug.com/1151947): Once CreatePartial() is removed,
+        // check if party_context is non-null and empty.
+        break;
+      case IsolationInfo::RequestType::kSubFrame:
+        // For subframe navigations, the subframe's origin may not be consistent
+        // with the SiteForCookies, so SameSite cookies may be sent if there's a
+        // redirect to main frames site.
+        break;
+      case IsolationInfo::RequestType::kOther:
+        // SiteForCookies must consistent with the frame origin as well for
+        // subresources.
+        return ValidateSameSite(*frame_origin, site_for_cookies);
+    }
   }
+  return true;
 }
 
 }  // namespace
@@ -144,6 +155,18 @@ absl::optional<IsolationInfo> IsolationInfo::Deserialize(
       std::move(party_context), nullptr);
 }
 
+IsolationInfo IsolationInfo::CreateDoubleKey(
+    RequestType request_type,
+    const url::Origin& top_frame_origin,
+    const SiteForCookies& site_for_cookies,
+    absl::optional<std::set<SchemefulSite>> party_context,
+    const base::UnguessableToken* nonce) {
+  // This should only be used when the frame site is disabled for double keying.
+  DCHECK(!IsFrameSiteEnabled());
+  return IsolationInfo(request_type, top_frame_origin, absl::nullopt,
+                       site_for_cookies, nonce, std::move(party_context));
+}
+
 IsolationInfo IsolationInfo::Create(
     RequestType request_type,
     const url::Origin& top_frame_origin,
@@ -164,13 +187,12 @@ IsolationInfo IsolationInfo::CreatePartial(
   // TODO(https://crbug.com/1148927): Use null origins in this case.
   url::Origin top_frame_origin =
       network_isolation_key.GetTopFrameSite()->site_as_origin_;
-  url::Origin frame_origin;
-  if (network_isolation_key.GetFrameSite().has_value()) {
+  absl::optional<url::Origin> frame_origin;
+  if (IsFrameSiteEnabled() &&
+      network_isolation_key.GetFrameSite().has_value()) {
     frame_origin = network_isolation_key.GetFrameSite()->site_as_origin_;
-  } else if (request_type == RequestType::kMainFrame) {
-    frame_origin = top_frame_origin;
   } else {
-    frame_origin = url::Origin();
+    frame_origin = absl::nullopt;
   }
 
   const base::UnguessableToken* nonce =
@@ -181,6 +203,48 @@ IsolationInfo IsolationInfo::CreatePartial(
   return IsolationInfo(request_type, top_frame_origin, frame_origin,
                        SiteForCookies(), nonce,
                        absl::nullopt /* party_context */);
+}
+
+IsolationInfo IsolationInfo::DoNotUseCreatePartialFromNak(
+    const net::NetworkAnonymizationKey& network_anonymization_key) {
+  if (!network_anonymization_key.IsFullyPopulated()) {
+    return IsolationInfo();
+  }
+
+  url::Origin top_frame_origin =
+      network_anonymization_key.GetTopFrameSite()->site_as_origin_;
+
+  absl::optional<url::Origin> frame_origin;
+  if (NetworkAnonymizationKey::IsFrameSiteEnabled() &&
+      network_anonymization_key.GetFrameSite().has_value()) {
+    // If frame site is set on the network anonymization key, use it to set the
+    // frame origin on the isolation info.
+    frame_origin = network_anonymization_key.GetFrameSite()->site_as_origin_;
+  } else if (NetworkAnonymizationKey::IsCrossSiteFlagSchemeEnabled() &&
+             network_anonymization_key.GetIsCrossSite().value()) {
+    // If frame site is not set on the network anonymization key but we know
+    // that it is cross site to the top level site, create an empty origin to
+    // use as the frame origin for the isolation info. This should be cross site
+    // with the top level origin.
+    frame_origin = url::Origin();
+  } else {
+    // If frame sit is not set on the network anonymization key and we don't
+    // know that it's cross site to the top level site, use the top frame site
+    // to set the frame origin.
+    frame_origin = top_frame_origin;
+  }
+
+  const base::UnguessableToken* nonce =
+      network_anonymization_key.GetNonce()
+          ? &network_anonymization_key.GetNonce().value()
+          : nullptr;
+
+  auto isolation_info = IsolationInfo::Create(
+      IsolationInfo::RequestType::kOther, top_frame_origin,
+      frame_origin.value(), SiteForCookies(),
+      /*party_context=*/absl::nullopt, nonce);
+  // TODO(crbug/1343856): DCHECK isolation info is fully populated.
+  return isolation_info;
 }
 
 absl::optional<IsolationInfo> IsolationInfo::CreateIfConsistent(
@@ -217,11 +281,23 @@ IsolationInfo IsolationInfo::CreateForRedirect(
                        party_context_);
 }
 
+const absl::optional<url::Origin>& IsolationInfo::frame_origin() const {
+  // Frame origin will be empty if double-keying is enabled.
+  CHECK(IsolationInfo::IsFrameSiteEnabled());
+  return frame_origin_;
+}
+
+const absl::optional<url::Origin>& IsolationInfo::frame_origin_for_testing()
+    const {
+  return frame_origin_;
+}
+
 bool IsolationInfo::IsEqualForTesting(const IsolationInfo& other) const {
   return (request_type_ == other.request_type_ &&
           top_frame_origin_ == other.top_frame_origin_ &&
           frame_origin_ == other.frame_origin_ &&
           network_isolation_key_ == other.network_isolation_key_ &&
+          network_anonymization_key_ == other.network_anonymization_key_ &&
           nonce_ == other.nonce_ &&
           site_for_cookies_.IsEquivalent(other.site_for_cookies_) &&
           party_context_ == other.party_context_);
@@ -262,6 +338,49 @@ std::string IsolationInfo::Serialize() const {
   return info.SerializeAsString();
 }
 
+bool IsolationInfo::IsFrameSiteEnabled() {
+  return !base::FeatureList::IsEnabled(
+      net::features::kForceIsolationInfoFrameOriginToTopLevelFrame);
+}
+
+NetworkAnonymizationKey
+IsolationInfo::CreateNetworkAnonymizationKeyForIsolationInfo(
+    const absl::optional<url::Origin>& top_frame_origin,
+    const absl::optional<url::Origin>& frame_origin,
+    const base::UnguessableToken* nonce) const {
+  if (!top_frame_origin) {
+    return NetworkAnonymizationKey();
+  }
+
+  // When IsolationInfo::IsFrameSiteEnabled and
+  // NetworkAnonymizationKey::IsFrameSiteEnabled set the `nak_frame_site` to the
+  // passed value. When NetworkAnonymizationKey::IsFrameSiteEnabled is false set
+  // the `nak_frame_site` to nullopt. When IsolationInfo::IsFrameSiteEnabled is
+  // false but NetworkAnonymizationKey::IsFrameSiteEnabled is true we might have
+  // the frame_site passed correctly to the constructor OR we might have created
+  // a double key in which case we cannot determine the `nak_frame_site`.
+  absl::optional<SchemefulSite> nak_frame_site =
+      NetworkAnonymizationKey::IsFrameSiteEnabled() && frame_origin.has_value()
+          ? absl::make_optional((SchemefulSite(*frame_origin)))
+          : absl::nullopt;
+
+  bool nak_is_cross_site;
+  if (frame_origin) {
+    SiteForCookies site_for_cookies =
+        net::SiteForCookies::FromOrigin(top_frame_origin.value());
+    nak_is_cross_site = !site_for_cookies.IsFirstParty(frame_origin->GetURL());
+  } else {
+    // If we are unable to determine if the frame is cross site we should create
+    // it as cross site.
+    nak_is_cross_site = true;
+  }
+
+  return NetworkAnonymizationKey(
+      SchemefulSite(*top_frame_origin), nak_frame_site,
+      absl::make_optional(nak_is_cross_site),
+      nonce ? absl::make_optional(*nonce) : absl::nullopt);
+}
+
 IsolationInfo::IsolationInfo(
     RequestType request_type,
     const absl::optional<url::Origin>& top_frame_origin,
@@ -271,13 +390,19 @@ IsolationInfo::IsolationInfo(
     absl::optional<std::set<SchemefulSite>> party_context)
     : request_type_(request_type),
       top_frame_origin_(top_frame_origin),
-      frame_origin_(frame_origin),
+      frame_origin_(IsFrameSiteEnabled() ? frame_origin : absl::nullopt),
       network_isolation_key_(
           !top_frame_origin
               ? NetworkIsolationKey()
               : NetworkIsolationKey(SchemefulSite(*top_frame_origin),
-                                    SchemefulSite(*frame_origin),
+                                    IsFrameSiteEnabled()
+                                        ? SchemefulSite(*frame_origin)
+                                        : SchemefulSite(),
                                     nonce)),
+      network_anonymization_key_(
+          CreateNetworkAnonymizationKeyForIsolationInfo(top_frame_origin,
+                                                        frame_origin,
+                                                        nonce)),
       site_for_cookies_(site_for_cookies),
       nonce_(nonce ? absl::make_optional(*nonce) : absl::nullopt),
       party_context_(party_context.has_value() &&

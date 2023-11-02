@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,13 +58,13 @@ class RulesRegistryWithCacheTest : public testing::Test {
     base::DictionaryValue manifest_extra;
     std::string key;
     CHECK(Extension::ProducePEM("test extension 1", &key));
-    manifest_extra.SetString(manifest_keys::kPublicKey, key);
+    manifest_extra.SetStringKey(manifest_keys::kPublicKey, key);
     extension1_ = env_.MakeExtension(manifest_extra);
     CHECK(extension1_.get());
 
     // Different "key" values for the two extensions ensure a different ID.
     CHECK(Extension::ProducePEM("test extension 2", &key));
-    manifest_extra.SetString(manifest_keys::kPublicKey, key);
+    manifest_extra.SetStringKey(manifest_keys::kPublicKey, key);
     extension2_ = env_.MakeExtension(manifest_extra);
     CHECK(extension2_.get());
     CHECK_NE(extension2_->id(), extension1_->id());
@@ -77,7 +77,7 @@ class RulesRegistryWithCacheTest : public testing::Test {
                       TestRulesRegistry* registry) {
     std::vector<api::events::Rule> add_rules;
     add_rules.emplace_back();
-    add_rules[0].id = std::make_unique<std::string>(rule_id);
+    add_rules[0].id = rule_id;
     return registry->AddRules(extension_id, std::move(add_rules));
   }
 
@@ -194,7 +194,7 @@ TEST_F(RulesRegistryWithCacheTest, GetRules) {
   std::vector<const api::events::Rule*> gotten_rules;
   registry_->GetRules(extension1_->id(), rules_to_get, &gotten_rules);
   ASSERT_EQ(1u, gotten_rules.size());
-  ASSERT_TRUE(gotten_rules[0]->id.get());
+  ASSERT_TRUE(gotten_rules[0]->id);
   EXPECT_EQ(kRuleId, *(gotten_rules[0]->id));
 }
 
@@ -208,8 +208,8 @@ TEST_F(RulesRegistryWithCacheTest, GetAllRules) {
   std::vector<const api::events::Rule*> gotten_rules;
   registry_->GetAllRules(extension1_->id(), &gotten_rules);
   EXPECT_EQ(2u, gotten_rules.size());
-  ASSERT_TRUE(gotten_rules[0]->id.get());
-  ASSERT_TRUE(gotten_rules[1]->id.get());
+  ASSERT_TRUE(gotten_rules[0]->id);
+  ASSERT_TRUE(gotten_rules[1]->id);
   EXPECT_TRUE((kRuleId == *(gotten_rules[0]->id) &&
                kRule2Id == *(gotten_rules[1]->id)) ||
               (kRuleId == *(gotten_rules[1]->id) &&
@@ -254,7 +254,7 @@ TEST_F(RulesRegistryWithCacheTest, DeclarativeRulesStored) {
 
   // 2. Test writing behavior.
   {
-    base::Value value(base::Value::Type::LIST);
+    base::Value::List value;
     value.Append(base::Value(true));
     cache_delegate->UpdateRules(extension1_->id(), std::move(value));
   }
@@ -267,7 +267,7 @@ TEST_F(RulesRegistryWithCacheTest, DeclarativeRulesStored) {
   int write_count = store->write_count();
 
   {
-    base::Value value = base::Value(base::Value::Type::LIST);
+    base::Value::List value;
     cache_delegate->UpdateRules(extension1_->id(), std::move(value));
     EXPECT_FALSE(cache_delegate->GetDeclarativeRulesStored(extension1_->id()));
   }
@@ -277,7 +277,7 @@ TEST_F(RulesRegistryWithCacheTest, DeclarativeRulesStored) {
   write_count = store->write_count();
 
   {
-    base::Value value = base::Value(base::Value::Type::LIST);
+    base::Value::List value;
     cache_delegate->UpdateRules(extension1_->id(), std::move(value));
     EXPECT_FALSE(cache_delegate->GetDeclarativeRulesStored(extension1_->id()));
   }
@@ -302,7 +302,7 @@ TEST_F(RulesRegistryWithCacheTest, DeclarativeRulesStored) {
 TEST_F(RulesRegistryWithCacheTest, EphemeralCacheIsEphemeral) {
   auto cache_delegate = std::make_unique<RulesCacheDelegate>(
       RulesCacheDelegate::Type::kEphemeral, false);
-  base::Value value(base::Value::Type::LIST);
+  base::Value::List value;
   value.Append(base::Value(true));
   cache_delegate->UpdateRules(extension1_->id(), std::move(value));
   content::RunAllTasksUntilIdle();

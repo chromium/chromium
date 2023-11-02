@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,10 @@
 // Please run the closure compiler before committing changes.
 // See https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md
 
-/** @fileoverview Externs generated from namespace: inputMethodPrivate */
+/**
+ * @fileoverview Externs generated from namespace: inputMethodPrivate
+ * @externs
+ */
 
 /** @const */
 chrome.inputMethodPrivate = {};
@@ -121,6 +124,7 @@ chrome.inputMethodPrivate.InputContext;
  *   enableSoundOnKeypress: (boolean|undefined),
  *   physicalKeyboardAutoCorrectionLevel: (number|undefined),
  *   physicalKeyboardEnableCapitalization: (boolean|undefined),
+ *   physicalKeyboardEnableDiacriticsOnLongpress: (boolean|undefined),
  *   virtualKeyboardAutoCorrectionLevel: (number|undefined),
  *   virtualKeyboardEnableCapitalization: (boolean|undefined),
  *   xkbLayout: (string|undefined),
@@ -190,6 +194,15 @@ chrome.inputMethodPrivate.getCurrentInputMethod = function(callback) {};
  *     input method is set. If unsuccessful $(ref:runtime.lastError) is set.
  */
 chrome.inputMethodPrivate.setCurrentInputMethod = function(inputMethodId, callback) {};
+
+/**
+ * Switches to the last used input method. If no last used input method, this is
+ * a no-op.
+ * @param {function(): void=} callback Callback which is called once the input
+ *     method is swapped (if applicable). If unsuccessful
+ *     $(ref:runtime.lastError) is set.
+ */
+chrome.inputMethodPrivate.switchToLastUsedInputMethod = function(callback) {};
 
 /**
  * Fetches a list of all the words currently in the dictionary.
@@ -428,8 +441,19 @@ chrome.inputMethodPrivate.onAutocorrect = function(parameters) {};
  * }): void} callback Called with screen coordinates of the text field when the
  *     operation completes. On failure, $(ref:runtime.lastError) is set.
  */
-chrome.inputMethodPrivate.getTextFieldBounds = function(
-    parameters, callback) {};
+chrome.inputMethodPrivate.getTextFieldBounds = function(parameters, callback) {};
+
+/**
+ * Notifies Chrome that the current input method is ready to accept key events
+ * from Tast.
+ */
+chrome.inputMethodPrivate.notifyInputMethodReadyForTesting = function() {};
+
+/**
+ * Fired when the caret bounds change.
+ * @type {!ChromeEvent}
+ */
+chrome.inputMethodPrivate.onCaretBoundsChanged;
 
 /**
  * Fired when the input method is changed.
@@ -481,6 +505,13 @@ chrome.inputMethodPrivate.onImeMenuItemsChanged;
  * @type {!ChromeEvent}
  */
 chrome.inputMethodPrivate.onFocus;
+
+/**
+ * This event is sent when a touch occurs in a text field. Should only happen
+ * after onFocus()
+ * @type {!ChromeEvent}
+ */
+chrome.inputMethodPrivate.onTouch;
 
 /**
  * This event is sent when the settings for any input method changed. It is sent

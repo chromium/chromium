@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,12 @@
 #include <utility>
 
 #include "base/hash/md5.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 TestAppWindowIconObserver::TestAppWindowIconObserver(
@@ -59,7 +61,7 @@ void TestAppWindowIconObserver::OnAppWindowRemoved(
     extensions::AppWindow* app_window) {
   aura::Window* window = app_window->GetNativeWindow();
   if (window) {
-    windows_.erase(std::find(windows_.begin(), windows_.end(), window));
+    windows_.erase(base::ranges::find(windows_, window));
     window->RemoveObserver(this);
   }
 }

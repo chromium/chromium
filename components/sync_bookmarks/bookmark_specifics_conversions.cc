@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/guid.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
@@ -19,15 +20,16 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/sync/base/unique_position.h"
-#include "components/sync/engine/entity_data.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
+#include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync_bookmarks/switches.h"
-#include "components/sync_bookmarks/synced_bookmark_tracker.h"
 #include "ui/gfx/favicon_size.h"
 #include "url/gurl.h"
 
@@ -41,6 +43,11 @@ const int kLegacyCanonicalizedTitleLimitBytes = 255;
 
 // The list of bookmark titles which are reserved for use by the server.
 const char* const kForbiddenTitles[] = {"", ".", ".."};
+
+// Maximum size for the favicon URL. This limit should be very generous in most
+// cases, the notable exception being data: URLs that encode the content of
+// the favicon itself in the URL, and may be arbitrarily large.
+const int kMaxFaviconUrlSize = 4096;
 
 // Used in metrics: "Sync.InvalidBookmarkSpecifics". These values are
 // persisted to logs. Entries should not be renumbered and numeric values
@@ -70,10 +77,10 @@ void LogFaviconContainedInSpecifics(bool contains_favicon) {
 void UpdateBookmarkSpecificsMetaInfo(
     const bookmarks::BookmarkNode::MetaInfoMap* metainfo_map,
     sync_pb::BookmarkSpecifics* bm_specifics) {
-  for (const std::pair<const std::string, std::string>& pair : *metainfo_map) {
+  for (const auto& [key, value] : *metainfo_map) {
     sync_pb::MetaInfo* meta_info = bm_specifics->add_meta_info();
-    meta_info->set_key(pair.first);
-    meta_info->set_value(pair.second);
+    meta_info->set_key(key);
+    meta_info->set_value(value);
   }
 }
 
@@ -119,10 +126,10 @@ void SetBookmarkFaviconFromSpecifics(
   LogFaviconContainedInSpecifics(true);
 
   if (icon_url.is_empty()) {
-    // WebUI pages such as "chrome://bookmarks/" are missing a favicon URL but
-    // they have a favicon. In addition, ancient clients (prior to M25) may not
-    // be syncing the favicon URL. If the icon URL is not synced, use the page
-    // URL as a fake icon URL as it is guaranteed to be unique.
+    // See documentation in BookmarkSpecifics to understand the (rare) scenarios
+    // where |icon_url| may be missing despite a favicon image itself (proto
+    // field |favicon|) being set. In this case, use the page URL as a fake icon
+    // URL as it is guaranteed to be unique.
     icon_url = GURL(bookmark_node->url());
   }
 
@@ -137,8 +144,6 @@ void SetBookmarkFaviconFromSpecifics(
 }
 
 // This is an exact copy of the same code in bookmark_update_preprocessing.cc.
-// TODO(crbug.com/1032052): Remove when client tags are adopted in
-// ModelTypeWorker.
 std::string ComputeGuidFromBytes(base::span<const uint8_t> bytes) {
   DCHECK_GE(bytes.size(), 16U);
 
@@ -162,9 +167,13 @@ std::string ComputeGuidFromBytes(base::span<const uint8_t> bytes) {
       bytes[14], bytes[15]);
 }
 
-// This is an exact copy of the same code in bookmark_update_preprocessing.cc.
-// TODO(crbug.com/1032052): Remove when client tags are adopted in
-// ModelTypeWorker.
+// This is an exact copy of the same code in bookmark_update_preprocessing.cc,
+// which could be removed if eventually client tags are adapted/inferred in
+// ModelTypeWorker. The reason why this is non-trivial today is that some users
+// are known to contain corrupt data in the sense that several different
+// entities (identified by their server-provided ID) use the same client tag
+// (and GUID). Currently BookmarkModelMerger has logic to prefer folders over
+// regular URLs and reassign GUIDs.
 std::string InferGuidForLegacyBookmark(
     const std::string& originator_cache_guid,
     const std::string& originator_client_item_id) {
@@ -291,6 +300,10 @@ sync_pb::EntitySpecifics CreateSpecificsFromBookmarkNode(
   bm_specifics->set_creation_time_us(
       node->date_added().ToDeltaSinceWindowsEpoch().InMicroseconds());
   *bm_specifics->mutable_unique_position() = unique_position;
+  if (!node->is_folder() && node->date_last_used() != base::Time()) {
+    bm_specifics->set_last_used_time_us(
+        node->date_last_used().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  }
 
   if (node->GetMetaInfoMap()) {
     UpdateBookmarkSpecificsMetaInfo(node->GetMetaInfoMap(), bm_specifics);
@@ -312,11 +325,18 @@ sync_pb::EntitySpecifics CreateSpecificsFromBookmarkNode(
 
   if (favicon_bytes.get() && favicon_bytes->size() != 0) {
     bm_specifics->set_favicon(favicon_bytes->front(), favicon_bytes->size());
-    bm_specifics->set_icon_url(node->icon_url() ? node->icon_url()->spec()
-                                                : std::string());
-  } else {
-    bm_specifics->clear_favicon();
-    bm_specifics->clear_icon_url();
+    // Avoid sync-ing favicon URLs that are unreasonably large, as determined by
+    // |kMaxFaviconUrlSize|. Most notably, URLs prefixed with the data: scheme
+    // to embed the content of the image itself in the URL may be arbitrarily
+    // large and run into the server-side enforced limit per sync entity.
+    if (node->icon_url() &&
+        (node->icon_url()->spec().size() <= kMaxFaviconUrlSize ||
+         !base::FeatureList::IsEnabled(
+             switches::kSyncOmitLargeBookmarkFaviconUrl))) {
+      bm_specifics->set_icon_url(node->icon_url()->spec());
+    } else {
+      bm_specifics->set_icon_url(std::string());
+    }
   }
 
   return specifics;
@@ -332,9 +352,15 @@ const bookmarks::BookmarkNode* CreateBookmarkNodeFromSpecifics(
   DCHECK(model);
   DCHECK(favicon_service);
   DCHECK(IsValidBookmarkSpecifics(specifics));
+  TRACE_EVENT0("sync", "CreateBookmarkNodeFromSpecifics");
 
-  base::GUID guid = base::GUID::ParseLowercase(specifics.guid());
+  const base::GUID guid = base::GUID::ParseLowercase(specifics.guid());
   DCHECK(guid.is_valid());
+
+  const base::GUID parent_guid =
+      base::GUID::ParseLowercase(specifics.parent_guid());
+  DCHECK(parent_guid.is_valid());
+  DCHECK_EQ(parent_guid, parent->guid());
 
   bookmarks::BookmarkNode::MetaInfoMap metainfo =
       GetBookmarkMetaInfo(specifics);
@@ -353,6 +379,15 @@ const bookmarks::BookmarkNode* CreateBookmarkNodeFromSpecifics(
       const bookmarks::BookmarkNode* node =
           model->AddURL(parent, index, NodeTitleFromSpecifics(specifics),
                         GURL(specifics.url()), &metainfo, creation_time, guid);
+      if (specifics.has_last_used_time_us()) {
+        const int64_t last_used_time_us = specifics.last_used_time_us();
+        const base::Time last_used_time =
+            base::Time::FromDeltaSinceWindowsEpoch(
+                // Use FromDeltaSinceWindowsEpoch because last_used_time_us has
+                // always used the Windows epoch.
+                base::Microseconds(last_used_time_us));
+        model->UpdateLastUsedTime(node, last_used_time);
+      }
       SetBookmarkFaviconFromSpecifics(specifics, node, favicon_service);
       return node;
     }
@@ -379,12 +414,23 @@ void UpdateBookmarkNodeFromSpecifics(
   base::GUID guid = base::GUID::ParseLowercase(specifics.guid());
   DCHECK(!guid.is_valid() || guid == node->guid());
 
-  model->SetTitle(node, NodeTitleFromSpecifics(specifics));
+  model->SetTitle(node, NodeTitleFromSpecifics(specifics),
+                  bookmarks::metrics::BookmarkEditSource::kOther);
   model->SetNodeMetaInfoMap(node, GetBookmarkMetaInfo(specifics));
 
   if (!node->is_folder()) {
-    model->SetURL(node, GURL(specifics.url()));
+    model->SetURL(node, GURL(specifics.url()),
+                  bookmarks::metrics::BookmarkEditSource::kOther);
     SetBookmarkFaviconFromSpecifics(specifics, node, favicon_service);
+
+    if (specifics.has_last_used_time_us()) {
+      const int64_t last_used_time_us = specifics.last_used_time_us();
+      const base::Time last_used_time = base::Time::FromDeltaSinceWindowsEpoch(
+          // Use FromDeltaSinceWindowsEpoch because last_used_time_us has
+          // always used the Windows epoch.
+          base::Microseconds(last_used_time_us));
+      model->UpdateLastUsedTime(node, last_used_time);
+    }
   }
 }
 
@@ -419,13 +465,14 @@ const bookmarks::BookmarkNode* ReplaceBookmarkNodeGUID(
   const bookmarks::BookmarkNode* new_node = nullptr;
   if (node->is_folder()) {
     new_node = model->AddFolder(
-        node->parent(), node->parent()->GetIndexOf(node), node->GetTitle(),
-        node->GetMetaInfoMap(), node->date_added(), guid);
+        node->parent(), node->parent()->GetIndexOf(node).value(),
+        node->GetTitle(), node->GetMetaInfoMap(), node->date_added(), guid);
     MoveAllChildren(model, node, new_node);
   } else {
-    new_node = model->AddURL(node->parent(), node->parent()->GetIndexOf(node),
-                             node->GetTitle(), node->url(),
-                             node->GetMetaInfoMap(), node->date_added(), guid);
+    new_node =
+        model->AddURL(node->parent(), node->parent()->GetIndexOf(node).value(),
+                      node->GetTitle(), node->url(), node->GetMetaInfoMap(),
+                      node->date_added(), guid);
   }
 
   model->Remove(node);
@@ -452,14 +499,13 @@ bool IsValidBookmarkSpecifics(const sync_pb::BookmarkSpecifics& specifics) {
     LogInvalidSpecifics(InvalidBookmarkSpecificsError::kBannedGUID);
     is_valid = false;
   }
-  if (specifics.has_parent_guid()) {
-    const base::GUID parent_guid =
-        base::GUID::ParseLowercase(specifics.parent_guid());
-    if (!parent_guid.is_valid()) {
-      DLOG(ERROR) << "Invalid bookmark: invalid parent GUID in specifics.";
-      LogInvalidSpecifics(InvalidBookmarkSpecificsError::kInvalidParentGUID);
-      is_valid = false;
-    }
+
+  const base::GUID parent_guid =
+      base::GUID::ParseLowercase(specifics.parent_guid());
+  if (!parent_guid.is_valid()) {
+    DLOG(ERROR) << "Invalid bookmark: invalid parent GUID in specifics.";
+    LogInvalidSpecifics(InvalidBookmarkSpecificsError::kInvalidParentGUID);
+    is_valid = false;
   }
 
   switch (specifics.type()) {
@@ -547,48 +593,6 @@ bool HasExpectedBookmarkGuid(const sync_pb::BookmarkSpecifics& specifics,
   return base::GUID::ParseLowercase(specifics.guid()) ==
          InferGuidFromLegacyOriginatorId(originator_cache_guid,
                                          originator_client_item_id);
-}
-
-void MaybeFixGuidInSpecificsDueToPastBug(const SyncedBookmarkTracker& tracker,
-                                         syncer::EntityData* update_entity) {
-  DCHECK(update_entity);
-
-  // Permanent entities and tombstones have no GUID to fix.
-  if (!update_entity->server_defined_unique_tag.empty() ||
-      update_entity->is_deleted()) {
-    return;
-  }
-
-  // If the GUID in specifics is populated (inferred or otherwise), there's
-  // nothing to populate.
-  if (!update_entity->specifics.bookmark().guid().empty()) {
-    return;
-  }
-
-  // The bug that motivates this function (crbug.com/1231450) only affected
-  // bookmarks created with a client tag hash. Skip all other updates.
-  if (update_entity->client_tag_hash.value().empty()) {
-    return;
-  }
-
-  const SyncedBookmarkTracker::Entity* const tracked_entity =
-      tracker.GetEntityForSyncId(update_entity->id);
-  if (!tracked_entity || !tracked_entity->bookmark_node()) {
-    // The entity is not tracked locally or it has been deleted, so the GUID is
-    // unknown.
-    return;
-  }
-
-  // Reaching this point should guarantee that the local GUID is correct, but
-  // to double check, let's verify that client tag hash matches the GUID.
-  const base::GUID local_guid = tracked_entity->bookmark_node()->guid();
-  if (update_entity->client_tag_hash !=
-      SyncedBookmarkTracker::GetClientTagHashFromGUID(local_guid)) {
-    return;
-  }
-
-  update_entity->specifics.mutable_bookmark()->set_guid(
-      local_guid.AsLowercaseString());
 }
 
 }  // namespace sync_bookmarks

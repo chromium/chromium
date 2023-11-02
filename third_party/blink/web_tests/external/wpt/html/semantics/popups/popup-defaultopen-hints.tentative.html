@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel=author href="mailto:masonf@chromium.org">
+<link rel=help href="https://open-ui.org/components/popup.research.explainer">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/popup-utils.js"></script>
+
+<div popup=hint defaultopen>This is a popup=hint with defaultopen, which should NOT be open upon load</div>
+
+<script>
+  promise_test(async () => {
+    await waitForRender();
+    await waitForRender();
+    const popUp = document.querySelector('[popup]');
+    assert_false(popUp.matches(':open'),'defaultopen does not apply to hint pop-ups');
+    assert_true(popUp.hasAttribute('defaultopen'),'attribute should still be present');
+    assert_true(popUp.defaultOpen,'defaultopen should be present/true, even if not opened');
+  }, "The defaultopen attribute should not apply to popup=hint");
+</script>

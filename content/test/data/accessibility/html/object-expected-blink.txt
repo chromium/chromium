@@ -1,4 +1,4 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer
-++++++pluginObject
+++++++pluginObject restriction=disabled

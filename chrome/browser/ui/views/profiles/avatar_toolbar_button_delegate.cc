@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button_delegate.h"
 
 #include "base/check_op.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -153,6 +154,10 @@ AvatarToolbarButton::State AvatarToolbarButtonDelegate::GetState() const {
 
   if (identity_animation_state_ == IdentityAnimationState::kShowing)
     return AvatarToolbarButton::State::kAnimatedUserIdentity;
+
+  if (!SyncServiceFactory::IsSyncAllowed(profile_)) {
+    return AvatarToolbarButton::State::kNormal;
+  }
 
   // Show any existing sync errors (sync-the-feature or sync-the-transport).
   // |last_avatar_error_| should be checked here rather than

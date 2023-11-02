@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/gcm_driver_constants.h"
@@ -56,8 +57,8 @@ class GCMProfileService::IdentityObserver
   void StartAccountTracker(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
-  GCMDriver* driver_;
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<GCMDriver> driver_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
   std::unique_ptr<GCMAccountTracker> gcm_account_tracker_;
 
   // The account ID that this service is responsible for. Empty when the service
@@ -156,11 +157,17 @@ GCMProfileService::GCMProfileService(
     scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner)
     : identity_manager_(identity_manager),
       url_loader_factory_(std::move(url_loader_factory)) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   signin::IdentityManager::AccountIdMigrationState id_migration =
       identity_manager_->GetAccountIdMigrationState();
   bool remove_account_mappings_with_email_key =
       (id_migration == signin::IdentityManager::MIGRATION_IN_PROGRESS) ||
       (id_migration == signin::IdentityManager::MIGRATION_DONE);
+#else
+  // Migration is done on non-ChromeOS platforms.
+  bool remove_account_mappings_with_email_key = false;
+#endif
+
   driver_ = CreateGCMDriverDesktop(
       std::move(gcm_client_factory), prefs,
       path.Append(gcm_driver::kGCMStoreDirname),

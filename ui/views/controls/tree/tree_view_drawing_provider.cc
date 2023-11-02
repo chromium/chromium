@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,6 +31,13 @@ SkColor TreeViewDrawingProvider::GetTextColorForNode(TreeView* tree_view,
                    : ui::kColorTreeNodeForegroundSelectedUnfocused;
   }
   return tree_view->GetColorProvider()->GetColor(color_id);
+}
+
+SkColor TreeViewDrawingProvider::GetAuxiliaryTextColorForNode(
+    TreeView* tree_view,
+    ui::TreeModelNode* node) {
+  // Default to using the same color as the primary text.
+  return GetTextColorForNode(tree_view, node);
 }
 
 std::u16string TreeViewDrawingProvider::GetAuxiliaryTextForNode(

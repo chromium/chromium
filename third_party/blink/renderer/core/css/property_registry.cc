@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,19 +10,22 @@ void PropertyRegistry::RegisterProperty(const AtomicString& name,
                                         PropertyRegistration& registration) {
   DCHECK(!IsInRegisteredPropertySet(name));
   registered_properties_.Set(name, &registration);
+  registered_viewport_unit_flags_ |= registration.GetViewportUnitFlags();
   version_++;
 }
 
 void PropertyRegistry::DeclareProperty(const AtomicString& name,
                                        PropertyRegistration& registration) {
   declared_properties_.Set(name, &registration);
+  declared_viewport_unit_flags_ |= registration.GetViewportUnitFlags();
   version_++;
 }
 
 void PropertyRegistry::RemoveDeclaredProperties() {
-  if (declared_properties_.IsEmpty())
+  if (declared_properties_.empty())
     return;
   declared_properties_.clear();
+  declared_viewport_unit_flags_ = 0;
   version_++;
 }
 
@@ -40,7 +43,7 @@ const PropertyRegistration* PropertyRegistry::Registration(
 }
 
 bool PropertyRegistry::IsEmpty() const {
-  return registered_properties_.IsEmpty() && declared_properties_.IsEmpty();
+  return registered_properties_.empty() && declared_properties_.empty();
 }
 
 bool PropertyRegistry::IsInRegisteredPropertySet(

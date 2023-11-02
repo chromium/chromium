@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,14 @@
 #include "base/hash/sha1.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/version_info/version_info.h"
 #include "crypto/sha2.h"
 #include "google_apis/google_api_keys.h"
-#include "net/base/escape.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
@@ -46,7 +47,7 @@ std::string Unescape(const std::string& url) {
   int loop_var = 0;
   do {
     old_size = unescaped_str.size();
-    unescaped_str = net::UnescapeBinaryURLComponent(unescaped_str);
+    unescaped_str = base::UnescapeBinaryURLComponent(unescaped_str);
   } while (old_size != unescaped_str.size() &&
            ++loop_var <= kMaxLoopIterations);
 
@@ -96,7 +97,7 @@ std::string GetReportUrl(const V4ProtocolConfig& config,
   std::string api_key = google_apis::GetAPIKey();
   if (!api_key.empty()) {
     base::StringAppendF(&url, "&key=%s",
-                        net::EscapeQueryParamValue(api_key, true).c_str());
+                        base::EscapeQueryParamValue(api_key, true).c_str());
   }
   if (reporting_level)
     url.append(base::StringPrintf("&ext=%d", *reporting_level));
@@ -113,13 +114,13 @@ std::ostream& operator<<(std::ostream& os, const ListIdentifier& id) {
 }
 
 PlatformType GetCurrentPlatformType() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return WINDOWS_PLATFORM;
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return LINUX_PLATFORM;
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
   return IOS_PLATFORM;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   return OSX_PLATFORM;
 #else
   return ANDROID_PLATFORM;
@@ -297,18 +298,6 @@ base::TimeDelta V4ProtocolManagerUtil::GetNextBackOffInterval(
 }
 
 // static
-void V4ProtocolManagerUtil::RecordHttpResponseOrErrorCode(
-    const char* metric_name,
-    int net_error,
-    int response_code) {
-  base::UmaHistogramSparse(
-      metric_name,
-      net_error == net::OK || net_error == net::ERR_HTTP_RESPONSE_CODE_FAILURE
-          ? response_code
-          : net_error);
-}
-
-// static
 void V4ProtocolManagerUtil::GetRequestUrlAndHeaders(
     const std::string& request_base64,
     const std::string& method_name,
@@ -334,7 +323,7 @@ std::string V4ProtocolManagerUtil::ComposeUrl(const std::string& prefix,
       method.c_str(), request_base64.c_str());
   if (!key_param.empty()) {
     base::StringAppendF(&url, "&key=%s",
-                        net::EscapeQueryParamValue(key_param, true).c_str());
+                        base::EscapeQueryParamValue(key_param, true).c_str());
   }
   return url;
 }

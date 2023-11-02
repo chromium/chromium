@@ -1,14 +1,14 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 #include <vector>
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
@@ -23,7 +23,8 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/api/users_private.h"
-#include "chromeos/tpm/stub_install_attributes.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "components/prefs/pref_service.h"
@@ -51,11 +52,11 @@ class TestPrefsUtil : public PrefsUtil {
     pref_object->key = name;
     pref_object->type = api::settings_private::PrefType::PREF_TYPE_LIST;
 
-    base::ListValue* value = new base::ListValue();
+    base::Value::List value;
     for (auto& email : user_list_) {
-      value->Append(email);
+      value.Append(email);
     }
-    pref_object->value.reset(value);
+    pref_object->value = base::Value(std::move(value));
 
     return pref_object;
   }
@@ -81,7 +82,7 @@ class TestPrefsUtil : public PrefsUtil {
     if (value.is_string())
       email = value.GetString();
 
-    auto iter = std::find(user_list_.begin(), user_list_.end(), email);
+    auto iter = base::ranges::find(user_list_, email);
     if (iter != user_list_.end())
       user_list_.erase(iter);
 
@@ -123,7 +124,8 @@ class UsersPrivateApiTest : public ExtensionApiTest {
     // OwnerSettingsServiceAsh is created.
     scoped_refptr<ownership::MockOwnerKeyUtil> owner_key_util =
         new ownership::MockOwnerKeyUtil();
-    owner_key_util->SetPrivateKey(crypto::RSAPrivateKey::Create(512));
+    owner_key_util->ImportPrivateKeyAndSetPublicKey(
+        crypto::RSAPrivateKey::Create(512));
 
     ash::OwnerSettingsServiceAshFactory::GetInstance()
         ->SetOwnerKeyUtilForTesting(owner_key_util);
@@ -156,8 +158,9 @@ class UsersPrivateApiTest : public ExtensionApiTest {
 
  protected:
   bool RunSubtest(const std::string& subtest) {
-    const std::string page_url = "main.html?" + subtest;
-    return RunExtensionTest("users_private", {.page_url = page_url.c_str()},
+    const std::string extension_url = "main.html?" + subtest;
+    return RunExtensionTest("users_private",
+                            {.extension_url = extension_url.c_str()},
                             {.load_as_component = true});
   }
 
@@ -166,12 +169,12 @@ class UsersPrivateApiTest : public ExtensionApiTest {
   static TestDelegate* s_test_delegate_;
 
  private:
-  chromeos::ScopedStubInstallAttributes scoped_stub_install_attributes_;
+  ash::ScopedStubInstallAttributes scoped_stub_install_attributes_;
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
 // static
-TestDelegate* UsersPrivateApiTest::s_test_delegate_ = NULL;
+TestDelegate* UsersPrivateApiTest::s_test_delegate_ = nullptr;
 
 class LoginStatusTestConfig {
  public:
@@ -239,7 +242,7 @@ IN_PROC_BROWSER_TEST_F(UsersPrivateApiTest, IsOwner) {
 // User profile - logged in, screen not locked.
 IN_PROC_BROWSER_TEST_F(UsersPrivateApiLoginStatusTest, User) {
   EXPECT_TRUE(RunExtensionTest("users_private",
-                               {.page_url = "main.html?getLoginStatus"},
+                               {.extension_url = "main.html?getLoginStatus"},
                                {.load_as_component = true}))
       << message_;
 }
@@ -250,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(UsersPrivateApiLoginStatusTest, User) {
 IN_PROC_BROWSER_TEST_F(UsersPrivateApiLockStatusTest, ScreenLock) {
   ash::ScreenLockerTester().Lock();
   EXPECT_TRUE(RunExtensionTest("users_private",
-                               {.page_url = "main.html?getLoginStatus"},
+                               {.extension_url = "main.html?getLoginStatus"},
                                {.load_as_component = true}))
       << message_;
 }

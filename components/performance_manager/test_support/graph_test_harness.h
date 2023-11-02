@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "components/performance_manager/embedder/graph_features.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
@@ -170,7 +171,7 @@ class TestNodeWrapper<SystemNodeImpl> {
   void reset() { impl_ = nullptr; }
 
  private:
-  SystemNodeImpl* impl_;
+  raw_ptr<SystemNodeImpl> impl_;
 };
 
 class TestGraphImpl : public GraphImpl {

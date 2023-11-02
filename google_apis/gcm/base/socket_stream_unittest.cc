@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
@@ -24,6 +23,8 @@
 #include "net/log/net_log_source.h"
 #include "net/socket/socket_test_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
@@ -38,11 +39,11 @@ typedef std::vector<net::MockRead> ReadList;
 typedef std::vector<net::MockWrite> WriteList;
 
 const char kReadData[] = "read_data";
-const int kReadDataSize = base::size(kReadData) - 1;
+const int kReadDataSize = std::size(kReadData) - 1;
 const char kReadData2[] = "read_alternate_data";
-const int kReadData2Size = base::size(kReadData2) - 1;
+const int kReadData2Size = std::size(kReadData2) - 1;
 const char kWriteData[] = "write_data";
-const int kWriteDataSize = base::size(kWriteData) - 1;
+const int kWriteDataSize = std::size(kWriteData) - 1;
 
 class GCMSocketStreamTest : public testing::Test {
  public:
@@ -98,7 +99,7 @@ class GCMSocketStreamTest : public testing::Test {
   std::unique_ptr<network::NetworkService> network_service_;
   mojo::Remote<network::mojom::NetworkContext> network_context_remote_;
   net::MockClientSocketFactory socket_factory_;
-  net::TestURLRequestContext url_request_context_;
+  std::unique_ptr<net::URLRequestContext> url_request_context_;
   std::unique_ptr<network::NetworkContext> network_context_;
   mojo::Remote<network::mojom::ProxyResolvingSocketFactory>
       mojo_socket_factory_remote_;
@@ -110,18 +111,18 @@ GCMSocketStreamTest::GCMSocketStreamTest()
     : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
       network_change_notifier_(
           net::NetworkChangeNotifier::CreateMockIfNeeded()),
-      network_service_(network::NetworkService::CreateForTesting()),
-      url_request_context_(true /* delay_initialization */) {
+      network_service_(network::NetworkService::CreateForTesting()) {
   address_list_ = net::AddressList::CreateFromIPAddress(
       net::IPAddress::IPv4Localhost(), 5228);
   socket_factory_.set_enable_read_if_ready(true);
-  url_request_context_.set_client_socket_factory(&socket_factory_);
-  url_request_context_.Init();
+  auto context_builder = net::CreateTestURLRequestContextBuilder();
+  context_builder->set_client_socket_factory_for_testing(&socket_factory_);
+  url_request_context_ = context_builder->Build();
 
   network_context_ = std::make_unique<network::NetworkContext>(
       network_service_.get(),
       network_context_remote_.BindNewPipeAndPassReceiver(),
-      &url_request_context_,
+      url_request_context_.get(),
       /*cors_exempt_header_list=*/std::vector<std::string>());
 }
 
@@ -236,8 +237,9 @@ void GCMSocketStreamTest::OpenConnection() {
   const url::Origin kOrigin = url::Origin::Create(kDestination);
   mojo_socket_factory_remote_->CreateProxyResolvingSocket(
       kDestination,
-      net::NetworkIsolationKey(kOrigin /* top_frame_origin */,
-                               kOrigin /* frame_origin */),
+      net::NetworkAnonymizationKey(
+          /* top_frame_site */ net::SchemefulSite(kOrigin),
+          /* frame_site */ net::SchemefulSite(kOrigin)),
       std::move(options),
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
       mojo_socket_remote_.BindNewPipeAndPassReceiver(),

@@ -1,204 +1,186 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/rationalization_util.h"
 
-#include <stddef.h>
+#include <memory>
+#include <tuple>
+#include <vector>
 
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::ASCIIToUTF16;
-using base::StringToInt;
-using base::UTF8ToUTF16;
-
 namespace autofill {
+namespace {
 
-class AutofillRationalizationUtilTest : public testing::Test {};
+struct FieldTemplate {
+  // Description of the field passed to the rationalization.
+  autofill::ServerFieldType type;
 
-TEST_F(AutofillRationalizationUtilTest, PhoneNumber_FirstNumberIsWholeNumber) {
-  std::vector<AutofillField*> field_list;
+  // Expectation of field after rationalization.
+  bool only_fill_when_focused;
+};
 
-  AutofillField field0;
-  field0.SetTypeTo(AutofillType(NAME_FULL));
-  field_list.push_back(&field0);
+// Returns a tuple of test input and expectations.
+// The input is the vector of fields. The expectations indicate whether
+// the fields will have the only_fill_when_focused flag set to true.
+std::tuple<std::vector<std::unique_ptr<AutofillField>>, std::vector<bool>>
+CreateTest(std::vector<FieldTemplate> field_templates) {
+  std::vector<std::unique_ptr<AutofillField>> fields;
+  for (const auto& f : field_templates) {
+    fields.push_back(std::make_unique<AutofillField>());
+    fields.back()->SetTypeTo(AutofillType(f.type));
+  }
 
-  AutofillField field1;
-  field1.SetTypeTo(AutofillType(ADDRESS_HOME_LINE1));
-  field_list.push_back(&field1);
+  std::vector<bool> expected_only_fill_when_focused;
+  for (const auto& f : field_templates)
+    expected_only_fill_when_focused.push_back(f.only_fill_when_focused);
 
-  AutofillField field2;
-  field2.SetTypeTo(AutofillType(PHONE_HOME_WHOLE_NUMBER));
-  field_list.push_back(&field2);
-
-  AutofillField field3;
-  field3.SetTypeTo(AutofillType(PHONE_HOME_CITY_AND_NUMBER));
-  field_list.push_back(&field3);
-
-  rationalization_util::RationalizePhoneNumberFields(field_list);
-
-  EXPECT_FALSE(field_list[0]->only_fill_when_focused());
-  EXPECT_FALSE(field_list[1]->only_fill_when_focused());
-  EXPECT_FALSE(field_list[2]->only_fill_when_focused());
-  EXPECT_TRUE(field_list[3]->only_fill_when_focused());
+  return std::make_tuple(std::move(fields),
+                         std::move(expected_only_fill_when_focused));
 }
 
-TEST_F(AutofillRationalizationUtilTest,
-       PhoneNumber_FirstNumberIsComponentized) {
-  std::vector<AutofillField*> field_list;
-
-  AutofillField field0;
-  field0.SetTypeTo(AutofillType(NAME_FULL));
-  field_list.push_back(&field0);
-
-  AutofillField field1;
-  field1.SetTypeTo(AutofillType(ADDRESS_HOME_LINE1));
-  field_list.push_back(&field1);
-
-  AutofillField field2;
-  field2.max_length = 2;
-  field2.SetTypeTo(AutofillType(PHONE_HOME_COUNTRY_CODE));
-  field_list.push_back(&field2);
-
-  AutofillField field3;
-  field3.max_length = 3;
-  field3.SetTypeTo(AutofillType(PHONE_HOME_CITY_CODE));
-  field_list.push_back(&field3);
-
-  AutofillField field4;
-  field4.max_length = 7;
-  field4.SetTypeTo(AutofillType(PHONE_HOME_NUMBER));
-  field_list.push_back(&field4);
-
-  AutofillField field5;
-  field5.max_length = 2;
-  field5.SetTypeTo(AutofillType(PHONE_HOME_COUNTRY_CODE));
-  field_list.push_back(&field5);
-
-  AutofillField field6;
-  field6.max_length = 3;
-  field6.SetTypeTo(AutofillType(PHONE_HOME_CITY_CODE));
-  field_list.push_back(&field6);
-
-  AutofillField field7;
-  field7.max_length = 7;
-  field7.SetTypeTo(AutofillType(PHONE_HOME_NUMBER));
-  field_list.push_back(&field7);
-
-  rationalization_util::RationalizePhoneNumberFields(field_list);
-
-  EXPECT_FALSE(field_list[0]->only_fill_when_focused());
-  EXPECT_FALSE(field_list[1]->only_fill_when_focused());
-  EXPECT_FALSE(field_list[2]->only_fill_when_focused());
-  EXPECT_FALSE(field_list[3]->only_fill_when_focused());
-  EXPECT_FALSE(field_list[4]->only_fill_when_focused());
-
-  EXPECT_TRUE(field_list[5]->only_fill_when_focused());
-  EXPECT_TRUE(field_list[6]->only_fill_when_focused());
-  EXPECT_TRUE(field_list[7]->only_fill_when_focused());
+std::vector<AutofillField*> ToPointers(
+    std::vector<std::unique_ptr<AutofillField>>& fields) {
+  std::vector<AutofillField*> result;
+  for (const auto& f : fields)
+    result.push_back(f.get());
+  return result;
 }
 
-TEST_F(AutofillRationalizationUtilTest,
-       PhoneNumber_BestEffortWhenNoCompleteNumberIsFound) {
-  std::vector<AutofillField*> field_list;
-
-  AutofillField field0;
-  field0.SetTypeTo(AutofillType(NAME_FULL));
-  field_list.push_back(&field0);
-
-  AutofillField field1;
-  field1.SetTypeTo(AutofillType(ADDRESS_HOME_LINE1));
-  field_list.push_back(&field1);
-
-  AutofillField field2;
-  field2.SetTypeTo(AutofillType(PHONE_HOME_COUNTRY_CODE));
-  field_list.push_back(&field2);
-
-  AutofillField field3;
-  field3.SetTypeTo(AutofillType(PHONE_HOME_CITY_CODE));
-  field_list.push_back(&field3);
-
-  rationalization_util::RationalizePhoneNumberFields(field_list);
-
-  EXPECT_FALSE(field_list[0]->only_fill_when_focused());
-  EXPECT_FALSE(field_list[1]->only_fill_when_focused());
-  EXPECT_FALSE(field_list[2]->only_fill_when_focused());
-  EXPECT_FALSE(field_list[3]->only_fill_when_focused());
+std::vector<bool> GetOnlyFilledWhenFocused(
+    const std::vector<std::unique_ptr<AutofillField>>& fields) {
+  std::vector<bool> result;
+  for (const auto& f : fields)
+    result.push_back(f->only_fill_when_focused());
+  return result;
 }
 
-TEST_F(AutofillRationalizationUtilTest, PhoneNumber_FillPhonePartsOnceOnly) {
-  std::vector<AutofillField*> field_list;
+}  // namespace
 
-  AutofillField field0;
-  field0.SetTypeTo(AutofillType(NAME_FULL));
-  field_list.push_back(&field0);
-
-  AutofillField field1;
-  field1.SetTypeTo(AutofillType(ADDRESS_HOME_LINE1));
-  field_list.push_back(&field1);
-
-  AutofillField field2;
-  field2.SetTypeTo(AutofillType(PHONE_HOME_CITY_CODE));
-  field_list.push_back(&field2);
-
-  AutofillField field3;
-  field3.max_length = 10;
-  field3.SetTypeTo(AutofillType(PHONE_HOME_NUMBER));
-  field_list.push_back(&field3);
-
-  AutofillField field4;
-  field4.max_length = 12;
-  field4.SetTypeTo(AutofillType(PHONE_HOME_WHOLE_NUMBER));
-  field_list.push_back(&field4);
-
-  AutofillField field5;
-  field5.SetTypeTo(AutofillType(PHONE_HOME_CITY_CODE));
-  field_list.push_back(&field5);
-
-  rationalization_util::RationalizePhoneNumberFields(field_list);
-
-  EXPECT_FALSE(field_list[0]->only_fill_when_focused());
-  EXPECT_FALSE(field_list[1]->only_fill_when_focused());
-  EXPECT_FALSE(field_list[2]->only_fill_when_focused());
-  EXPECT_FALSE(field_list[3]->only_fill_when_focused());
-  EXPECT_TRUE(field_list[4]->only_fill_when_focused());
-  EXPECT_TRUE(field_list[5]->only_fill_when_focused());
+TEST(AutofillRationalizationUtilTest, PhoneNumber_FirstNumberIsWholeNumber) {
+  auto [fields, expected_only_fill_when_focused] =
+      CreateTest({{NAME_FULL, false},
+                  {ADDRESS_HOME_LINE1, false},
+                  {PHONE_HOME_WHOLE_NUMBER, false},
+                  {PHONE_HOME_CITY_AND_NUMBER, true}});
+  rationalization_util::RationalizePhoneNumberFields(ToPointers(fields));
+  EXPECT_THAT(GetOnlyFilledWhenFocused(fields),
+              ::testing::Eq(expected_only_fill_when_focused));
 }
 
-TEST_F(AutofillRationalizationUtilTest,
-       PhoneNumber_SkipHiddenPhoneNumberFields) {
-  std::vector<AutofillField*> field_list;
+TEST(AutofillRationalizationUtilTest, PhoneNumber_FirstNumberIsComponentized) {
+  auto [fields, expected_only_fill_when_focused] =
+      CreateTest({{NAME_FULL, false},
+                  {ADDRESS_HOME_LINE1, false},
+                  {PHONE_HOME_COUNTRY_CODE, false},
+                  {PHONE_HOME_CITY_CODE, false},
+                  {PHONE_HOME_NUMBER, false},
+                  {PHONE_HOME_COUNTRY_CODE, true},
+                  {PHONE_HOME_CITY_CODE, true},
+                  {PHONE_HOME_NUMBER, true}});
+  rationalization_util::RationalizePhoneNumberFields(ToPointers(fields));
+  EXPECT_THAT(GetOnlyFilledWhenFocused(fields),
+              ::testing::Eq(expected_only_fill_when_focused));
+}
 
-  AutofillField field0;
-  field0.SetTypeTo(AutofillType(NAME_FULL));
-  field_list.push_back(&field0);
+TEST(AutofillRationalizationUtilTest,
+     PhoneNumber_BestEffortWhenNoCompleteNumberIsFound) {
+  auto [fields, expected_only_fill_when_focused] =
+      CreateTest({{NAME_FULL, false},
+                  {ADDRESS_HOME_LINE1, false},
+                  {PHONE_HOME_COUNTRY_CODE, false},
+                  {PHONE_HOME_CITY_CODE, false}});
+  // Even though we did not find the PHONE_HOME_NUMBER finishing the phone
+  // number, the remaining fields are filled.
+  rationalization_util::RationalizePhoneNumberFields(ToPointers(fields));
+  EXPECT_THAT(GetOnlyFilledWhenFocused(fields),
+              ::testing::Eq(expected_only_fill_when_focused));
+}
 
-  AutofillField field1;
-  field1.SetTypeTo(AutofillType(ADDRESS_HOME_LINE1));
-  field_list.push_back(&field1);
+TEST(AutofillRationalizationUtilTest, PhoneNumber_FillPhonePartsOnceOnly) {
+  auto [fields, expected_only_fill_when_focused] =
+      CreateTest({{NAME_FULL, false},
+                  {ADDRESS_HOME_LINE1, false},
+                  {PHONE_HOME_COUNTRY_CODE, false},
+                  {PHONE_HOME_CITY_CODE, false},
+                  {PHONE_HOME_NUMBER, false},
+                  // The following represent a second number and an incomplete
+                  // third number that are not filled.
+                  {PHONE_HOME_WHOLE_NUMBER, true},
+                  {PHONE_HOME_CITY_CODE, true}});
+  rationalization_util::RationalizePhoneNumberFields(ToPointers(fields));
+  EXPECT_THAT(GetOnlyFilledWhenFocused(fields),
+              ::testing::Eq(expected_only_fill_when_focused));
+}
 
-  AutofillField field2;
-  field2.is_focusable = false;
-  field2.SetTypeTo(AutofillType(PHONE_HOME_CITY_AND_NUMBER));
-  field_list.push_back(&field2);
+TEST(AutofillRationalizationUtilTest, PhoneNumber_SkipHiddenPhoneNumberFields) {
+  auto [fields, expected_only_fill_when_focused] =
+      CreateTest({{NAME_FULL, false},
+                  {ADDRESS_HOME_LINE1, false},
+                  // This one is not focusable (e.g. hidden) and does not get
+                  // filled for that reason.
+                  {PHONE_HOME_CITY_AND_NUMBER, true},
+                  {PHONE_HOME_WHOLE_NUMBER, false}});
+  // With the `kAutofillUseParameterizedSectioning` `!FormFieldData::is_visible`
+  // fields are skipped.
+  fields[2]->is_visible = false;
+  fields[2]->is_focusable = false;
+  rationalization_util::RationalizePhoneNumberFields(ToPointers(fields));
+  EXPECT_THAT(GetOnlyFilledWhenFocused(fields),
+              ::testing::Eq(expected_only_fill_when_focused));
+}
 
-  AutofillField field3;
-  field3.SetTypeTo(AutofillType(PHONE_HOME_WHOLE_NUMBER));
-  field_list.push_back(&field3);
+TEST(AutofillRationalizationUtilTest,
+     PhoneNumber_ProcessNumberPrefixAndSuffix) {
+  auto [fields, expected_only_fill_when_focused] =
+      CreateTest({{NAME_FULL, false},
+                  {ADDRESS_HOME_LINE1, false},
+                  {PHONE_HOME_CITY_CODE, false},
+                  {PHONE_HOME_NUMBER_PREFIX, false},
+                  {PHONE_HOME_NUMBER_SUFFIX, false},
+                  // This would be a second number.
+                  {PHONE_HOME_CITY_CODE, true},
+                  {PHONE_HOME_NUMBER_PREFIX, true},
+                  {PHONE_HOME_NUMBER_SUFFIX, true}});
+  rationalization_util::RationalizePhoneNumberFields(ToPointers(fields));
+  EXPECT_THAT(GetOnlyFilledWhenFocused(fields),
+              ::testing::Eq(expected_only_fill_when_focused));
+}
 
-  rationalization_util::RationalizePhoneNumberFields(field_list);
+TEST(AutofillRationalizationUtilTest, PhoneNumber_IncorrectPrefix) {
+  auto [fields, expected_only_fill_when_focused] =
+      CreateTest({{NAME_FULL, false},
+                  {ADDRESS_HOME_LINE1, false},
+                  // Let's assume this field was incorrectly classified as a
+                  // prefix and there is no suffix but a local phone number.
+                  {PHONE_HOME_NUMBER_PREFIX, true},
+                  {PHONE_HOME_CITY_CODE, false},
+                  {PHONE_HOME_NUMBER, false},
+                  // This would be a second number.
+                  {PHONE_HOME_CITY_AND_NUMBER, true}});
+  rationalization_util::RationalizePhoneNumberFields(ToPointers(fields));
+  EXPECT_THAT(GetOnlyFilledWhenFocused(fields),
+              ::testing::Eq(expected_only_fill_when_focused));
+}
 
-  EXPECT_FALSE(field_list[0]->only_fill_when_focused());
-  EXPECT_FALSE(field_list[1]->only_fill_when_focused());
-  EXPECT_TRUE(field_list[2]->only_fill_when_focused());
-  EXPECT_FALSE(field_list[3]->only_fill_when_focused());
+TEST(AutofillRationalizationUtilTest, PhoneNumber_IncorrectSuffix) {
+  auto [fields, expected_only_fill_when_focused] =
+      CreateTest({{NAME_FULL, false},
+                  {ADDRESS_HOME_LINE1, false},
+                  // Let's assume this field was incorrectly classified as a
+                  // suffix and there is no prefix but a local phone number.
+                  {PHONE_HOME_NUMBER_SUFFIX, true},
+                  {PHONE_HOME_CITY_CODE, false},
+                  {PHONE_HOME_NUMBER, false},
+                  // This would be a second number.
+                  {PHONE_HOME_CITY_AND_NUMBER, true}});
+  rationalization_util::RationalizePhoneNumberFields(ToPointers(fields));
+  EXPECT_THAT(GetOnlyFilledWhenFocused(fields),
+              ::testing::Eq(expected_only_fill_when_focused));
 }
 
 }  // namespace autofill

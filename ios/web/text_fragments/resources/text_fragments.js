@@ -1,11 +1,8 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-goog.module('__crWeb.textFragments');
-goog.module.declareLegacyNamespace();
-
-const utils = goog.require('googleChromeLabs.textFragmentPolyfill.textFragmentUtils');
+import * as utils from '//third_party/text-fragments-polyfill/src/src/text-fragment-utils.js';
 
 /**
  * @fileoverview Interface used for Chrome/WebView to call into the
@@ -17,7 +14,8 @@ const utils = goog.require('googleChromeLabs.textFragmentPolyfill.textFragmentUt
 
   __gCrWeb['textFragments'] = {};
 
-  var marks;
+  let marks;
+  let cachedFragments;
 
   /**
    * Attempts to identify and highlight the given text fragments and
@@ -33,6 +31,12 @@ const utils = goog.require('googleChromeLabs.textFragmentPolyfill.textFragmentUt
    */
   __gCrWeb.textFragments.handleTextFragments =
       function(fragments, scroll, backgroundColor, foregroundColor) {
+    // If |marks| already exists, it's because we've already highlighted
+    // fragments on this page. This might happen if the user got here by
+    // navigating back. Stop now to avoid creating nested <mark> elements.
+    if (marks?.length)
+      return;
+
     const markDefaultStyle = backgroundColor && foregroundColor ? {
       backgroundColor: `#${backgroundColor}`,
       color: `#${foregroundColor}`
@@ -50,6 +54,7 @@ const utils = goog.require('googleChromeLabs.textFragmentPolyfill.textFragmentUt
 
   __gCrWeb.textFragments.removeHighlights = function(new_url) {
     utils.removeMarks(marks);
+    marks = null;
     document.removeEventListener("click", handleClick,
                                  /*useCapture=*/true);
     if (new_url) {
@@ -82,10 +87,9 @@ const utils = goog.require('googleChromeLabs.textFragmentPolyfill.textFragmentUt
           .filter((mark) => { return !!mark });
 
       if (Array.isArray(foundRanges)) {
-        // If length < 1, then nothing was found. If length > 1, then the
-        // fragment in the URL is ambiguous (i.e., it could identify multiple
-        // different places on the page) so we discard it as well.
-        if (foundRanges.length === 1) {
+        // If length < 1, then nothing was found. If length > 1, the spec says
+        // to take the first instance.
+        if (foundRanges.length >= 1) {
           ++successCount;
           let newMarks = utils.markRange(foundRanges[0]);
           if (Array.isArray(newMarks)) {
@@ -95,13 +99,22 @@ const utils = goog.require('googleChromeLabs.textFragmentPolyfill.textFragmentUt
       }
     }
 
-    if (scroll && marks.length > 0)
+    if (scroll && marks.length > 0) {
+      cachedFragments = fragments;
       utils.scrollElementIntoView(marks[0]);
+    }
 
-    // Clean-up marks whenever the user taps somewhere on the page. Use capture
-    // to make sure the event listener is executed immediately and cannot be
-    // prevented by the event target (during bubble phase).
+    // Send events back to the browser when the user taps a mark, and when the
+    // user taps the page anywhere. We have to send both because one is consumed
+    // when kIOSSharedHighlightingV2 is enabled, and the other when it's
+    // disabled, and this JS file doesn't know about flag states.
+
+    // Use capture to make sure the event listener is executed immediately and
+    // cannot be prevented by the event target (during bubble phase).
     document.addEventListener("click", handleClick, /*useCapture=*/true);
+    for (let mark of marks) {
+      mark.addEventListener("click", handleClickWithSender.bind(mark), true);
+    }
 
     __gCrWeb.common.sendWebKitMessage('textFragments', {
       command: 'textFragments.processingComplete',
@@ -116,5 +129,37 @@ const utils = goog.require('googleChromeLabs.textFragmentPolyfill.textFragmentUt
       __gCrWeb.common.sendWebKitMessage('textFragments', {
         command: 'textFragments.onClick'
       });
+    };
+
+  const handleClickWithSender = function(event) {
+    const mark = event.currentTarget;
+
+    // Traverse upwards from the mark element to see if it's a child of an <a>.
+    // If so, discard the event to prevent showing a menu while navigation is
+    // in progress.
+    let node = mark.parentNode;
+    while (node != null) {
+      if (node.tagName == 'A') {
+        return;
+      }
+      node = node.parentNode;
     }
+
+    __gCrWeb.common.sendWebKitMessage('textFragments', {
+      command: 'textFragments.onClickWithSender',
+      rect: rectFromElement(mark),
+      text: `"${mark.innerText}"`,
+      fragments: cachedFragments
+    });
+  };
+
+  const rectFromElement = function(elt) {
+    const domRect = elt.getClientRects()[0];
+    return {
+      x: domRect.x,
+      y: domRect.y,
+      width: domRect.width,
+      height: domRect.height
+    };
+  };
 })();

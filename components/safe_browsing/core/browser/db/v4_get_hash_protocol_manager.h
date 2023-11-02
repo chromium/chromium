@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
@@ -228,6 +229,7 @@ class V4GetHashProtocolManager {
                            TestGetHashErrorHandlingParallelRequests);
   FRIEND_TEST_ALL_PREFIXES(V4GetHashProtocolManagerTest, GetCachedResults);
   FRIEND_TEST_ALL_PREFIXES(V4GetHashProtocolManagerTest, TestUpdatesAreMerged);
+  FRIEND_TEST_ALL_PREFIXES(V4GetHashProtocolManagerTest, TestBackoffErrorHistogramCount);
   friend class V4GetHashProtocolManagerTest;
   friend class V4GetHashProtocolManagerFuzzer;
   friend class V4GetHashProtocolManagerFactoryImpl;
@@ -328,6 +330,9 @@ class V4GetHashProtocolManager {
   // response, used for request backoff timing.
   size_t gethash_error_count_;
 
+  // The number of backoff errors since the last successful HTTP response.
+  size_t backoff_error_count_ = 0;
+
   // Multiplier for the backoff error after the second.
   size_t gethash_back_off_mult_;
 
@@ -348,7 +353,7 @@ class V4GetHashProtocolManager {
   int number_of_hits_ = 0;
 
   // The clock used to vend times.
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
   // The following sets represent the combination of lists that we would always
   // request from the server, irrespective of which list we found the hash

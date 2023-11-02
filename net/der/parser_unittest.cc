@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,7 @@
 #include "net/der/parse_values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-namespace der {
-namespace test {
+namespace net::der::test {
 
 TEST(ParserTest, ConsumesAllBytesOfTLV) {
   const uint8_t der[] = {0x04 /* OCTET STRING */, 0x00};
@@ -344,14 +342,14 @@ TEST(ParserTest, ReadBitString) {
   const uint8_t der[] = {0x03, 0x03, 0x01, 0xAA, 0xBE};
   Parser parser((Input(der)));
 
-  BitString bit_string;
-  ASSERT_TRUE(parser.ReadBitString(&bit_string));
+  absl::optional<BitString> bit_string = parser.ReadBitString();
+  ASSERT_TRUE(bit_string.has_value());
   EXPECT_FALSE(parser.HasMore());
 
-  EXPECT_EQ(1u, bit_string.unused_bits());
-  ASSERT_EQ(2u, bit_string.bytes().Length());
-  EXPECT_EQ(0xAA, bit_string.bytes().UnsafeData()[0]);
-  EXPECT_EQ(0xBE, bit_string.bytes().UnsafeData()[1]);
+  EXPECT_EQ(1u, bit_string->unused_bits());
+  ASSERT_EQ(2u, bit_string->bytes().Length());
+  EXPECT_EQ(0xAA, bit_string->bytes().UnsafeData()[0]);
+  EXPECT_EQ(0xBE, bit_string->bytes().UnsafeData()[1]);
 }
 
 // Tries reading a BIT STRING. This should fail because the tag is not for a
@@ -360,10 +358,8 @@ TEST(ParserTest, ReadBitStringBadTag) {
   const uint8_t der[] = {0x05, 0x03, 0x01, 0xAA, 0xBE};
   Parser parser((Input(der)));
 
-  BitString bit_string;
-  EXPECT_FALSE(parser.ReadBitString(&bit_string));
+  absl::optional<BitString> bit_string = parser.ReadBitString();
+  EXPECT_FALSE(bit_string.has_value());
 }
 
-}  // namespace test
-}  // namespace der
-}  // namespace net
+}  // namespace net::der::test

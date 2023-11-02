@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!-- Copyright 2013 The Chromium Authors. All rights reserved.
-
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file.
+<!--
+Copyright 2013 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
 -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="DropdownPopupWindow" parent="@android:style/Widget.ListPopupWindow">
-        <item name="android:popupBackground">@drawable/dialog_bg_tinted</item>
+        <item name="android:popupBackground">@drawable/dialog_bg_baseline</item>
     </style>
 
     <!-- Buttons -->
@@ -38,7 +38,8 @@
         <item name="android:paddingStart">24dp</item>
         <item name="android:paddingEnd">24dp</item>
         <item name="android:textAppearance">@style/TextAppearance.Button.Text.Filled</item>
-        <item name="buttonColor">@color/filled_button_bg</item>
+        <item name="buttonTextColor">?attr/globalFilledButtonTextColor</item>
+        <item name="buttonColor">?attr/globalFilledButtonBgColor</item>
         <item name="rippleColor">@color/filled_button_ripple_color</item>
         <item name="buttonRaised">true</item>
     </style>
@@ -49,61 +50,14 @@
         <item name="android:paddingStart">8dp</item>
         <item name="android:paddingEnd">8dp</item>
         <item name="android:textAppearance">@style/TextAppearance.Button.Text.Blue</item>
+        <item name="buttonTextColor">?attr/globalTextButtonTextColor</item>
         <item name="buttonColor">@android:color/transparent</item>
         <item name="rippleColor">@color/text_button_ripple_color</item>
         <item name="buttonRaised">false</item>
     </style>
-    <style name="TextButton.Inverse" tools:ignore="UnusedResources">
-        <item name="android:textAppearance">@style/TextAppearance.Button.Text.Inverse</item>
-        <item name="rippleColor">@color/filled_button_ripple_color</item>
-    </style>
-
-    <!-- Chips -->
-    <style name="SuggestionChipThemeOverlay" tools:ignore="UnusedResources">
-        <item name="chipStyle">@style/SuggestionChip</item>
-    </style>
-
-    <style name="Chip">
-        <item name="android:minHeight">@dimen/min_touch_target_size</item>
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:orientation">horizontal</item>
-        <item name="chipColor">@color/chip_background_color</item>
-        <item name="primaryTextAppearance">@style/TextAppearance.ChipText</item>
-        <item name="secondaryTextAppearance">@style/TextAppearance.ChipHint</item>
-        <item name="rippleColor">@color/chip_ripple_color</item>
-        <item name="verticalInset">@dimen/chip_bg_vertical_inset</item>
-    </style>
-    <style name="SuggestionChip" parent="Chip" tools:ignore="UnusedResources">
-        <item name="primaryTextAppearance">@style/TextAppearance.ChipHint</item>
-        <item name="cornerRadius">@dimen/chip_corner_radius</item>
-    </style>
-    <style name="InputChip" parent="Chip" tools:ignore="UnusedResources">
-        <item name="cornerRadius">@dimen/chip_default_height</item>
-    </style>
-    <style name="AssistiveChip" parent="Chip" tools:ignore="UnusedResources">
-        <item name="cornerRadius">@dimen/chip_default_height</item>
-    </style>
-    <style name="InputChipWithRemoveIcon" parent="InputChip" tools:ignore="UnusedResources">
-        <item name="iconWidth">28dp</item>
-        <item name="iconHeight">28dp</item>
-        <item name="useRoundedIcon">true</item>
-        <item name="endIconWidth">18dp</item>
-        <item name="endIconHeight">18dp</item>
-    </style>
-
-    <style name="ChipTextView" tools:ignore="UnusedResources">
-        <item name="android:gravity">center</item>
-        <item name="android:maxLines">1</item>
-        <item name="android:paddingStart">@dimen/chip_element_leading_padding</item>
-        <item name="android:textAlignment">center</item>
-    </style>
-
-    <style name="MenuChip" parent="Chip">
-        <item name="cornerRadius">@dimen/chip_default_height</item>
-        <item name="primaryTextAppearance">@style/TextAppearance.MenuChip.Text.Blue</item>
-        <item name="chipColor">@color/menu_chip_background</item>
-        <item name="solidColorChip">true</item>
-        <item name="verticalInset">@dimen/menu_chip_vertical_inset</item>
+    <style name="OutlinedButton" parent="TextButton" tools:ignore="UnusedResources">
+        <item name="borderWidth">@dimen/button_outlined_border_width</item>
+        <item name="borderColor">?attr/globalOutlinedButtonBorderColor</item>
     </style>
 
     <!-- Used by Chrome and Content -->
@@ -242,35 +196,7 @@
         <item name="android:textColor">@color/default_text_color_disabled_dark</item>
     </style>
 
-    <!-- Inverse text styles -->
-    <!-- Text styles used on dark background on light theme, and light background on dark theme. -->
-    <style name="TextAppearance.Headline.Primary.Baseline.Inverse" tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/default_text_color_inverse</item>
-    </style>
-    <style name="TextAppearance.TextMediumThick.Primary.Baseline.Inverse" tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/default_text_color_inverse</item>
-    </style>
-    <style name="TextAppearance.TextMedium.Primary.Baseline.Inverse" tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/default_text_color_inverse</item>
-    </style>
-    <style name="TextAppearance.TextSmall.Primary.Baseline.Inverse" tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/default_text_color_inverse</item>
-    </style>
-
     <!-- Blue And Button Text Styles -->
-    <style name="TextAppearance.TextLarge.Blue">
-        <item name="android:textColor">@color/blue_when_enabled</item>
-    </style>
-    <style name="TextAppearance.TextMedium.Blue">
-        <item name="android:textColor">@color/blue_when_enabled</item>
-    </style>
-    <style name="TextAppearance.TextMediumThick.Blue">
-        <item name="android:textColor">@color/blue_when_enabled</item>
-    </style>
-    <style name="TextAppearance.TextSmall.Blue">
-        <item name="android:textColor">@color/blue_when_enabled</item>
-    </style>
-
     <style name="TextAppearance.TextMediumThick.Green">
         <item name="android:textColor">@color/default_green</item>
     </style>
@@ -280,41 +206,50 @@
 
     <style name="TextAppearance.Button.Text.Blue" parent="TextAppearance.TextAccentMediumThick"
         tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/blue_when_enabled</item>
+        <item name="android:textColor">@color/blue_when_enabled_list</item>
     </style>
     <style name="TextAppearance.Button.Text.Blue.Dark" parent="TextAppearance.TextAccentMediumThick"
         tools:ignore="UnusedResources">
         <item name="android:textColor">@color/blue_when_enabled_dark</item>
     </style>
     <style name="TextAppearance.Button.Text.Filled" parent="TextAppearance.TextAccentMediumThick">
-        <item name="android:textColor">@color/default_text_color_on_accent1_list</item>
+        <item name="android:textColor">@color/default_text_color_on_accent1_baseline_list</item>
     </style>
     <style name="TextAppearance.Button.Text.Inverse" parent="TextAppearance.TextAccentMediumThick"
         tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/default_text_color_on_accent1_list</item>
+        <item name="android:textColor">@color/default_text_color_on_accent1_baseline_list</item>
     </style>
     <style name="TextAppearance.MenuChip.Text.Blue" parent="TextAppearance.Button.Text.Blue">
        <item name="android:textSize">@dimen/text_size_small</item>
     </style>
 
-    <!-- Blue Non Adaptive Text Styles -->
-    <style name="TextAppearance.TextMedium.Blue.Light" tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/default_icon_color_blue_light</item>
-    </style>
-    <style name="TextAppearance.TextMediumThick.Blue.Light" tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/default_icon_color_blue_light</item>
+    <!-- Blue Non Adaptive button text styles -->
+    <style name="TextAppearance.Button.Text.Filled.Baseline.Dark" parent="TextAppearance.TextAccentMediumThick">
+        <item name="android:textColor">@color/default_text_color_on_accent1_dark</item>
     </style>
 
-    <style name="TextAppearance.TextLarge.Blue.Dark" tools:ignore="UnusedResources">
+    <!-- Blue Non Adaptive Text Styles -->
+    <style name="TextAppearance.TextMedium.Blue.Baseline.Light" parent="TextAppearance.TextMedium">
+        <item name="android:textColor">@color/default_icon_color_blue_light</item>
+    </style>
+    <style name="TextAppearance.TextMediumThick.Blue.Baseline.Light"
+        parent="TextAppearance.TextMediumThick" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_icon_color_blue_light</item>
+    </style>
+    <style name="TextAppearance.TextLarge.Blue.Baseline.Dark" parent="TextAppearance.TextLarge"
+        tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_icon_color_blue_dark</item>
     </style>
-    <style name="TextAppearance.TextMedium.Blue.Dark" tools:ignore="UnusedResources">
+    <style name="TextAppearance.TextMedium.Blue.Baseline.Dark" parent="TextAppearance.TextMedium"
+        tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_icon_color_blue_dark</item>
     </style>
-    <style name="TextAppearance.TextSmall.Blue.Dark" tools:ignore="UnusedResources">
+    <style name="TextAppearance.TextSmall.Blue.Baseline.Dark" parent="TextAppearance.TextSmall"
+        tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_icon_color_blue_dark</item>
     </style>
-    <style name="TextAppearance.TextMediumThick.Blue.Dark" tools:ignore="UnusedResources">
+    <style name="TextAppearance.TextMediumThick.Blue.Baseline.Dark"
+        parent="TextAppearance.TextMediumThick" tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_icon_color_blue_dark</item>
     </style>
 
@@ -359,12 +294,9 @@
         <item name="android:textSize">@dimen/text_size_small</item>
     </style>
 
-    <!-- Chip Text Styles -->
-    <style name="TextAppearance.ChipText" parent="TextAppearance.TextAccentMediumThick">
-        <item name="android:textColor">@color/chip_text_color_secondary</item>
-    </style>
-    <style name="TextAppearance.ChipHint" parent="TextAppearance.TextAccentMediumThick">
-        <item name="android:textColor">@color/chip_text_color_secondary</item>
+    <!-- Toast UI -->
+    <style name="TextAppearance.Toast" parent="TextAppearance.TextSmall">
+        <item name="android:textColor">@color/default_text_color_light</item>
     </style>
 
     <!-- Dividers -->
@@ -381,6 +313,10 @@
         <item name="android:layout_height">match_parent</item>
         <item name="android:background">?android:attr/listDivider</item>
         <item name="android:importantForAccessibility">no</item>
+    </style>
+
+    <style name="ThemeOverlay.UI.SelectionHandle" parent="">
+        <item name="colorControlActivated">@color/default_control_color_active_baseline</item>
     </style>
 
 </resources>

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,14 +12,18 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/no_destructor.h"
 #include "components/embedder_support/android/simple_factory_key/simple_factory_key_handle.h"
 #include "components/image_fetcher/core/cache/image_cache.h"
+#include "components/image_fetcher/core/features.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/image_fetcher/core/image_fetcher_metrics_reporter.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/image_fetcher/image_fetcher_service_provider.h"
 #include "components/image_fetcher/jni_headers/ImageFetcherBridge_jni.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image.h"
 
@@ -56,6 +60,11 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           "This feature allows many different Chrome features to fetch/cache "
           "images and thus there is no Chrome-wide policy to disable it."
       })");
+
+data_decoder::DataDecoder* GetDataDecoder() {
+  static base::NoDestructor<data_decoder::DataDecoder> data_decoder;
+  return data_decoder.get();
+}
 
 }  // namespace
 
@@ -97,6 +106,8 @@ void ImageFetcherBridge::FetchImageData(
     params.set_hold_for_expiration_interval(
         base::Minutes(j_expiration_interval_mins));
   }
+  if (base::FeatureList::IsEnabled(features::kBatchImageDecoding))
+    params.set_data_decoder(GetDataDecoder());
 
   // We can skip transcoding here because this method is used in java as
   // ImageFetcher.fetchGif, which decodes the data in a Java-only library.
@@ -118,6 +129,8 @@ void ImageFetcherBridge::FetchImage(
     const jint j_image_fetcher_config,
     const JavaParamRef<jstring>& j_url,
     const JavaParamRef<jstring>& j_client_name,
+    const jint j_frame_width,
+    const jint j_frame_height,
     const jint j_expiration_interval_mins,
     const JavaParamRef<jobject>& j_callback) {
   ScopedJavaGlobalRef<jobject> callback(j_callback);
@@ -128,10 +141,13 @@ void ImageFetcherBridge::FetchImage(
       base::android::ConvertJavaStringToUTF8(j_client_name);
 
   ImageFetcherParams params(kTrafficAnnotation, client_name);
+  params.set_frame_size(gfx::Size(j_frame_width, j_frame_height));
   if (j_expiration_interval_mins > 0) {
     params.set_hold_for_expiration_interval(
         base::Minutes(j_expiration_interval_mins));
   }
+  if (base::FeatureList::IsEnabled(features::kBatchImageDecoding))
+    params.set_data_decoder(GetDataDecoder());
 
   SimpleFactoryKey* key =
       simple_factory_key::SimpleFactoryKeyFromJavaHandle(j_simple_factory_key);
@@ -208,11 +224,13 @@ void JNI_ImageFetcherBridge_FetchImage(
     const jint j_image_fetcher_config,
     const JavaParamRef<jstring>& j_url,
     const JavaParamRef<jstring>& j_client_name,
+    const jint j_frame_width,
+    const jint j_frame_height,
     const jint j_expiration_interval_mins,
     const JavaParamRef<jobject>& j_callback) {
-  ImageFetcherBridge::FetchImage(j_env, j_simple_factory_key,
-                                 j_image_fetcher_config, j_url, j_client_name,
-                                 j_expiration_interval_mins, j_callback);
+  ImageFetcherBridge::FetchImage(
+      j_env, j_simple_factory_key, j_image_fetcher_config, j_url, j_client_name,
+      j_frame_width, j_frame_height, j_expiration_interval_mins, j_callback);
 }
 
 // static

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,14 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/test/test_views.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_class_properties.h"
 
 class OverflowViewTest : public testing::Test {
@@ -101,9 +103,9 @@ class OverflowViewTest : public testing::Test {
   static constexpr gfx::Size kPreferredSize2{55, 50};
   static constexpr gfx::Size kMinimumSize2{25, 30};
   std::unique_ptr<views::View> parent_view_;
-  OverflowView* overflow_view_ = nullptr;
-  views::StaticSizedView* primary_view_ = nullptr;
-  views::StaticSizedView* indicator_view_ = nullptr;
+  raw_ptr<OverflowView> overflow_view_ = nullptr;
+  raw_ptr<views::StaticSizedView> primary_view_ = nullptr;
+  raw_ptr<views::StaticSizedView> indicator_view_ = nullptr;
 };
 
 constexpr gfx::Size OverflowViewTest::kDefaultParentSize;
@@ -115,7 +117,7 @@ constexpr gfx::Size OverflowViewTest::kMinimumSize2;
 TEST_F(OverflowViewTest, SizesNoFlexRules) {
   Init(kMinimumSize, kPreferredSize, kMinimumSize2, kPreferredSize2);
   const gfx::Size expected_min(
-      kMinimumSize2.width(),
+      std::min(kMinimumSize2.width(), kMinimumSize.width()),
       std::max(kMinimumSize.height(), kMinimumSize2.height()));
   EXPECT_EQ(expected_min, overflow_view_->GetMinimumSize());
   EXPECT_EQ(kPreferredSize, overflow_view_->GetPreferredSize());
@@ -124,10 +126,10 @@ TEST_F(OverflowViewTest, SizesNoFlexRules) {
 TEST_F(OverflowViewTest, SizesNoFlexRulesIndicatorIsLarger) {
   Init(kMinimumSize2, kPreferredSize2, kMinimumSize, kPreferredSize);
   const gfx::Size expected_min(
-      kMinimumSize.width(),
+      std::min(kMinimumSize2.width(), kMinimumSize.width()),
       std::max(kMinimumSize.height(), kMinimumSize2.height()));
   EXPECT_EQ(expected_min, overflow_view_->GetMinimumSize());
-  EXPECT_EQ(kPreferredSize, overflow_view_->GetPreferredSize());
+  EXPECT_EQ(kPreferredSize2, overflow_view_->GetPreferredSize());
   EXPECT_EQ(kPreferredSize.height(), overflow_view_->GetHeightForWidth(200));
 }
 
@@ -136,7 +138,7 @@ TEST_F(OverflowViewTest, SizesNoFlexRulesVertical) {
   overflow_view_->SetOrientation(views::LayoutOrientation::kVertical);
   const gfx::Size expected_min(
       std::max(kMinimumSize.width(), kMinimumSize2.width()),
-      kMinimumSize2.height());
+      std::min(kMinimumSize2.height(), kMinimumSize.height()));
   EXPECT_EQ(expected_min, overflow_view_->GetMinimumSize());
   EXPECT_EQ(kPreferredSize, overflow_view_->GetPreferredSize());
 }
@@ -146,9 +148,9 @@ TEST_F(OverflowViewTest, SizesNoFlexRulesIndicatorIsLargerVertical) {
   overflow_view_->SetOrientation(views::LayoutOrientation::kVertical);
   const gfx::Size expected_min(
       std::max(kMinimumSize.width(), kMinimumSize2.width()),
-      kMinimumSize.height());
+      std::min(kMinimumSize.height(), kMinimumSize2.height()));
   EXPECT_EQ(expected_min, overflow_view_->GetMinimumSize());
-  EXPECT_EQ(kPreferredSize, overflow_view_->GetPreferredSize());
+  EXPECT_EQ(kPreferredSize2, overflow_view_->GetPreferredSize());
   EXPECT_EQ(kPreferredSize.height(), overflow_view_->GetHeightForWidth(200));
 }
 
@@ -165,7 +167,7 @@ class OverflowViewLayoutTest : public OverflowViewTest {
 
   void Resize(gfx::Size size) {
     parent_view_->SetSize(size);
-    parent_view_->Layout();
+    views::test::RunScheduledLayout(parent_view_.get());
   }
 
   void SizeToPreferredSize() { parent_view_->SizeToPreferredSize(); }
@@ -222,7 +224,6 @@ TEST_F(OverflowViewLayoutTest, SizeToPreferredSizeIndicatorSmallerThanPrimary) {
 TEST_F(OverflowViewLayoutTest, SizeToPreferredSizeIndicatorLargerThanPrimary) {
   SizeToPreferredSize();
   gfx::Size expected = kPrimaryPreferredSize;
-  expected.SetToMax(kIndicatorPreferredSize);
   EXPECT_EQ(gfx::Rect(expected), primary_bounds());
   EXPECT_FALSE(indicator_visible());
 }
@@ -263,19 +264,19 @@ TEST_F(OverflowViewLayoutTest, Alignment) {
   Resize(size);
 
   overflow_view_->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
-  parent_view_->Layout();
+  views::test::RunScheduledLayout(parent_view_.get());
   EXPECT_EQ(gfx::Rect(gfx::Point(0, 0), kPrimaryPreferredSize),
             primary_bounds());
   EXPECT_FALSE(indicator_visible());
 
   overflow_view_->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
-  parent_view_->Layout();
+  views::test::RunScheduledLayout(parent_view_.get());
   EXPECT_EQ(gfx::Rect(gfx::Point(0, 5), kPrimaryPreferredSize),
             primary_bounds());
   EXPECT_FALSE(indicator_visible());
 
   overflow_view_->SetCrossAxisAlignment(views::LayoutAlignment::kEnd);
-  parent_view_->Layout();
+  views::test::RunScheduledLayout(parent_view_.get());
   EXPECT_EQ(gfx::Rect(gfx::Point(0, 10), kPrimaryPreferredSize),
             primary_bounds());
   EXPECT_FALSE(indicator_visible());
@@ -285,18 +286,18 @@ TEST_F(OverflowViewLayoutTest, Alignment) {
   Resize(size);
 
   overflow_view_->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
-  parent_view_->Layout();
+  views::test::RunScheduledLayout(parent_view_.get());
   EXPECT_EQ(gfx::Rect(gfx::Point(0, 0), kPrimaryMinimumSize), primary_bounds());
   EXPECT_FALSE(indicator_visible());
 
   overflow_view_->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
-  parent_view_->Layout();
+  views::test::RunScheduledLayout(parent_view_.get());
   EXPECT_EQ(gfx::Rect(gfx::Point(0, -5), kPrimaryMinimumSize),
             primary_bounds());
   EXPECT_FALSE(indicator_visible());
 
   overflow_view_->SetCrossAxisAlignment(views::LayoutAlignment::kEnd);
-  parent_view_->Layout();
+  views::test::RunScheduledLayout(parent_view_.get());
   EXPECT_EQ(gfx::Rect(gfx::Point(0, -10), kPrimaryMinimumSize),
             primary_bounds());
   EXPECT_FALSE(indicator_visible());
@@ -340,18 +341,18 @@ TEST_F(OverflowViewLayoutTest, AlignmentVertical) {
   Resize(size);
 
   overflow_view_->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
-  parent_view_->Layout();
+  views::test::RunScheduledLayout(parent_view_.get());
   EXPECT_EQ(gfx::Rect(gfx::Point(), kPrimaryPreferredSize), primary_bounds());
   EXPECT_FALSE(indicator_visible());
 
   overflow_view_->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
-  parent_view_->Layout();
+  views::test::RunScheduledLayout(parent_view_.get());
   EXPECT_EQ(gfx::Rect(gfx::Point(5, 0), kPrimaryPreferredSize),
             primary_bounds());
   EXPECT_FALSE(indicator_visible());
 
   overflow_view_->SetCrossAxisAlignment(views::LayoutAlignment::kEnd);
-  parent_view_->Layout();
+  views::test::RunScheduledLayout(parent_view_.get());
   EXPECT_EQ(gfx::Rect(gfx::Point(10, 0), kPrimaryPreferredSize),
             primary_bounds());
   EXPECT_FALSE(indicator_visible());
@@ -361,18 +362,18 @@ TEST_F(OverflowViewLayoutTest, AlignmentVertical) {
   Resize(size);
 
   overflow_view_->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
-  parent_view_->Layout();
+  views::test::RunScheduledLayout(parent_view_.get());
   EXPECT_EQ(gfx::Rect(gfx::Point(0, 0), kPrimaryMinimumSize), primary_bounds());
   EXPECT_FALSE(indicator_visible());
 
   overflow_view_->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
-  parent_view_->Layout();
+  views::test::RunScheduledLayout(parent_view_.get());
   EXPECT_EQ(gfx::Rect(gfx::Point(-5, 0), kPrimaryMinimumSize),
             primary_bounds());
   EXPECT_FALSE(indicator_visible());
 
   overflow_view_->SetCrossAxisAlignment(views::LayoutAlignment::kEnd);
-  parent_view_->Layout();
+  views::test::RunScheduledLayout(parent_view_.get());
   EXPECT_EQ(gfx::Rect(gfx::Point(-10, 0), kPrimaryMinimumSize),
             primary_bounds());
   EXPECT_FALSE(indicator_visible());

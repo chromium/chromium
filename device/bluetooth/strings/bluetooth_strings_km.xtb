@@ -2,32 +2,17 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="km">
 <translation id="1412802024419177173">ម៉ូឌឹម (<ph name="ADDRESS" />)</translation>
-<translation id="1426891891566455573"><ph name="DEVICE_NAME" />, កណ្តុរ</translation>
-<translation id="2162295688984026195"><ph name="DEVICE_NAME" />, ទាំងក្ដារចុច និង​កណ្ដុរ</translation>
 <translation id="2616803374438260326">ក្តារចុច/កណ្តុរ (<ph name="ADDRESS" />)</translation>
-<translation id="2624917159090553505"><ph name="DEVICE_NAME" />, ឧបករណ៍​សម្រាប់​ភ្ជាប់ជាមួយ​កុំព្យូទ័រ</translation>
-<translation id="2894380829637873837"><ph name="DEVICE_NAME" />, ថេប្លេត</translation>
-<translation id="3036527976720628348"><ph name="DEVICE_NAME" />, ទូរសព្ទ</translation>
 <translation id="3273951168350045122">ក្តារចុច (<ph name="ADDRESS" />)</translation>
-<translation id="3689300613247337921"><ph name="DEVICE_NAME" />, កុំព្យូទ័រ</translation>
 <translation id="4287283380557401002">ប្រព័ន្ធសម្លេងរថយន្ត (<ph name="ADDRESS" />)</translation>
 <translation id="430326050669417502">ដងបញ្ជា (<ph name="ADDRESS" />)</translation>
-<translation id="4698630591226285015"><ph name="DEVICE_NAME" />, ឧបករណ៍​សំឡេង</translation>
-<translation id="4986357476502426173"><ph name="DEVICE_NAME" />, ឧបករណ៍​វីដេអូ</translation>
 <translation id="5271696982761495740">ថេប្លេត (<ph name="ADDRESS" />)</translation>
 <translation id="5376363957846771741">ឧបករណ៍ដែលមិនស្គាល់ និងមិនមានការគាំទ្រ (<ph name="ADDRESS" />)</translation>
-<translation id="571460437990229974"><ph name="DEVICE_NAME_AND_TYPE" /> <ph name="CONNECTION_STATUS" /></translation>
-<translation id="5716052956047449618"><ph name="DEVICE_NAME" />, ម៉ូដឹម</translation>
-<translation id="6459740836740815150"><ph name="DEVICE_NAME" />, ឧបករណ៍​សំឡេង​របស់​រថយន្ត</translation>
-<translation id="6542922424766292144"><ph name="DEVICE_NAME" />, ក្ដារចុច</translation>
 <translation id="654594702871184195">ប្រព័ន្ធសម្លេង (<ph name="ADDRESS" />)</translation>
 <translation id="6744468237221042970">កុំព្យូទ័រ (<ph name="ADDRESS" />)</translation>
-<translation id="7220023250700248346"><ph name="DEVICE_NAME" />, ដងបញ្ជា</translation>
 <translation id="7501330106833014351">ដៃហ្គេម (<ph name="ADDRESS" />)</translation>
-<translation id="8613368722576151038"><ph name="DEVICE_NAME" />, ដៃហ្គេម</translation>
 <translation id="8866374292072238753">វីដេអូ (<ph name="ADDRESS" />)</translation>
 <translation id="8952558712545617651">កណ្តុរ (<ph name="ADDRESS" />)</translation>
-<translation id="8961448405689538648"><ph name="DEVICE_NAME" />, ប្រភេទ​ឧបករណ៍​ដែលមិនស្គាល់</translation>
 <translation id="907431882454731668">ឧបករណ៍​សម្រាប់​ភ្ជាប់​ជាមួយ​កុំព្យូទ័រ (<ph name="ADDRESS" />)</translation>
 <translation id="978248992969828584">ទូរស័ព្ទ (<ph name="ADDRESS" />)</translation>
 </translationbundle>

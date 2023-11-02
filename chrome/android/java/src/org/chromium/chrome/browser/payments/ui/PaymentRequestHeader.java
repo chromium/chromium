@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,8 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeSemanticColorUtils;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
@@ -33,8 +33,7 @@ public class PaymentRequestHeader extends FrameLayout {
     public PaymentRequestHeader(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
-        mBackgroundColor =
-                ApiCompatibilityUtils.getColor(getResources(), R.color.payment_request_bg);
+        mBackgroundColor = ChromeSemanticColorUtils.getPaymentRequestBg(context);
     }
 
     @Override
@@ -69,9 +68,8 @@ public class PaymentRequestHeader extends FrameLayout {
                 !ColorUtils.shouldUseLightForegroundOnBackground(mBackgroundColor);
         ChromeAutocompleteSchemeClassifier chromeAutocompleteSchemeClassifier =
                 new ChromeAutocompleteSchemeClassifier(profile);
-        OmniboxUrlEmphasizer.emphasizeUrl(url, mContext.getResources(),
-                chromeAutocompleteSchemeClassifier, securityLevel, false /* isInternalPage */,
-                useDarkColors, true /* emphasizeHttpsScheme */);
+        OmniboxUrlEmphasizer.emphasizeUrl(url, mContext, chromeAutocompleteSchemeClassifier,
+                securityLevel, useDarkColors, true /* emphasizeHttpsScheme */);
         chromeAutocompleteSchemeClassifier.destroy();
         hostName.setText(url);
 

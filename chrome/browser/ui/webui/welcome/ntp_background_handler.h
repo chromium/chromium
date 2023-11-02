@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,9 +22,9 @@ class NtpBackgroundHandler : public content::WebUIMessageHandler {
   void RegisterMessages() override;
 
   // Callbacks for JS APIs.
-  void HandleClearBackground(const base::ListValue* args);
-  void HandleGetBackgrounds(const base::ListValue* args);
-  void HandleSetBackground(const base::ListValue* args);
+  void HandleClearBackground(const base::Value::List& args);
+  void HandleGetBackgrounds(const base::Value::List& args);
+  void HandleSetBackground(const base::Value::List& args);
 };
 
 }  // namespace welcome

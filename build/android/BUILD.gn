@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -27,23 +27,83 @@ if (enable_java_templates) {
     use_final_fields = false
   }
 
-  java_library("build_config_java") {
-    supports_android = true
-    srcjar_deps = [ ":build_config_gen" ]
-    jar_excluded_patterns = [ "*/build/BuildConfig.class" ]
+  generate_build_config_srcjar("build_config_for_testing_gen") {
+    use_final_fields = false
+    testonly = true
   }
 
   write_native_libraries_java("native_libraries_gen") {
     use_final_fields = false
   }
 
-  android_library("native_libraries_java") {
-    srcjar_deps = [ ":native_libraries_gen" ]
+  java_library("build_java") {
+    supports_android = true
+    srcjar_deps = [
+      ":build_config_gen",
+      ":native_libraries_gen",
+    ]
+    sources = [
+      "java/src/org/chromium/build/annotations/AlwaysInline.java",
+      "java/src/org/chromium/build/annotations/CheckDiscard.java",
+      "java/src/org/chromium/build/annotations/DoNotClassMerge.java",
+      "java/src/org/chromium/build/annotations/DoNotInline.java",
+      "java/src/org/chromium/build/annotations/IdentifierNameString.java",
+      "java/src/org/chromium/build/annotations/MainDex.java",
+      "java/src/org/chromium/build/annotations/MockedInTests.java",
+      "java/src/org/chromium/build/annotations/UsedByReflection.java",
+    ]
+
+    jar_excluded_patterns = [ "*/build/BuildConfig.class" ]
 
     # New version of NativeLibraries.java (with the actual correct values) will
     # be created when creating an apk.
-    jar_excluded_patterns = [ "*/NativeLibraries.class" ]
+    jar_excluded_patterns += [ "*/NativeLibraries.class" ]
+
+    proguard_configs = [ "chromium_annotations.flags" ]
   }
+
+  # Not all //build embedders pull in junit_binary deps that live in //third_party.
+  if (build_with_chromium) {
+    android_assets("junit_test_assets") {
+      testonly = true
+
+      # We just need any file here, so use the test itself.
+      sources = [ "junit/src/org/chromium/build/AndroidAssetsTest.java" ]
+    }
+    android_resources("junit_test_resources") {
+      testonly = true
+      sources = [ "junit/res/values/strings.xml" ]
+      mergeable_android_manifests = [ "junit/AndroidManifest_mergetest.xml" ]
+    }
+    robolectric_binary("build_junit_tests") {
+      # Test has no JNI, so skip JNI Generator step.
+      generate_final_jni = false
+      resources_package = "org.chromium.build"
+      sources = [
+        "junit/src/org/chromium/build/AndroidAssetsTest.java",
+        "junit/src/org/chromium/build/IncrementalJavacTest.java",
+      ]
+      deps = [
+        ":junit_test_assets",
+        ":junit_test_resources",
+        "//build/android/test/incremental_javac_gn:no_signature_change_prebuilt_java",
+        "//third_party/junit",
+      ]
+    }
+  }
+}
+
+# TODO(go/turn-down-test-results): Remove once we turn down
+# test-results.appspot.com
+python_library("test_result_presentations_py") {
+  pydeps_file = "pylib/results/presentation/test_results_presentation.pydeps"
+  data = [
+    "//build/android/pylib/results/presentation/template",
+    "//build/android/pylib/results/presentation/javascript/main_html.js",
+    "//third_party/catapult/third_party/gsutil/",
+    "//third_party/jinja2/debug.py",
+    "//third_party/six",
+  ]
 }
 
 python_library("devil_chromium_py") {
@@ -77,24 +137,38 @@ python_library("apk_operations_py") {
   deps = [ ":apk_installer_data" ]
 }
 
-python_library("test_runner_py") {
+group("test_runner_py") {
+  testonly = true
+  deps = [
+    ":test_runner_core_py",
+    ":test_runner_device_support",
+  ]
+}
+
+python_library("test_runner_core_py") {
   testonly = true
   pydeps_file = "test_runner.pydeps"
   data = [
     "pylib/gtest/filter/",
     "pylib/instrumentation/render_test.html.jinja",
     "test_wrapper/logdog_wrapper.py",
+    "//third_party/requests/",
+  ]
+  data_deps = [ ":logdog_wrapper_py" ]
+}
+
+group("test_runner_device_support") {
+  testonly = true
+  data = [
     "${android_sdk_build_tools}/aapt",
     "${android_sdk_build_tools}/dexdump",
     "${android_sdk_build_tools}/lib64/libc++.so",
     "${android_sdk_build_tools}/split-select",
     "${android_sdk_root}/platform-tools/adb",
-    "//third_party/requests/",
   ]
   data_deps = [
     ":apk_installer_data",
     ":devil_chromium_py",
-    ":logdog_wrapper_py",
     ":stack_tools",
   ]
 
@@ -109,7 +183,7 @@ python_library("test_runner_py") {
 
   # Proguard is needed only when using apks (rather than native executables).
   if (enable_java_templates) {
-    deps = [ "//build/android/stacktrace:java_deobfuscate" ]
+    data_deps += [ "//build/android/stacktrace:java_deobfuscate" ]
   }
 }
 

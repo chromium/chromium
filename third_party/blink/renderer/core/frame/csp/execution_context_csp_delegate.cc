@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/events/security_policy_violation_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -20,11 +20,13 @@
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/report.h"
 #include "third_party/blink/renderer/core/frame/reporting_context.h"
+#include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/ping_loader.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
+#include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -106,7 +108,7 @@ void ExecutionContextCSPDelegate::AddInsecureRequestPolicy(
     // WorkerGlobalScope::Url() before it's ready. https://crbug.com/861564
     // This should be safe, because the insecure navigations set is not used
     // in non-Document contexts.
-    if (window && !Url().Host().IsEmpty()) {
+    if (window && !Url().Host().empty()) {
       uint32_t hash = Url().Host().Impl()->GetHash();
       security_context.AddInsecureNavigationUpgrade(hash);
       if (auto* frame = window->GetFrame()) {
@@ -120,7 +122,7 @@ void ExecutionContextCSPDelegate::AddInsecureRequestPolicy(
 
 std::unique_ptr<SourceLocation>
 ExecutionContextCSPDelegate::GetSourceLocation() {
-  return SourceLocation::Capture(execution_context_);
+  return CaptureSourceLocation(execution_context_);
 }
 
 absl::optional<uint16_t> ExecutionContextCSPDelegate::GetStatusCode() {
@@ -151,7 +153,7 @@ void ExecutionContextCSPDelegate::DispatchViolationEvent(
   execution_context_->GetTaskRunner(TaskType::kNetworking)
       ->PostTask(
           FROM_HERE,
-          WTF::Bind(
+          WTF::BindOnce(
               &ExecutionContextCSPDelegate::DispatchViolationEventInternal,
               WrapPersistent(this), WrapPersistent(&violation_data),
               WrapPersistent(element)));
@@ -217,6 +219,11 @@ void ExecutionContextCSPDelegate::DisableEval(const String& error_message) {
   execution_context_->DisableEval(error_message);
 }
 
+void ExecutionContextCSPDelegate::SetWasmEvalErrorMessage(
+    const String& error_message) {
+  execution_context_->SetWasmEvalErrorMessage(error_message);
+}
+
 void ExecutionContextCSPDelegate::ReportBlockedScriptExecutionToInspector(
     const String& directive_text) {
   probe::ScriptExecutionBlockedByCSP(execution_context_, directive_text);
@@ -232,8 +239,10 @@ void ExecutionContextCSPDelegate::DidAddContentSecurityPolicies(
   if (!frame)
     return;
 
-  // Record what source was used to find main frame CSP.
-  if (frame->IsMainFrame()) {
+  // Record what source was used to find main frame CSP. Do not record
+  // this for fence frame roots since they will never become an
+  // outermost main frame, but we do wish to record this for portals.
+  if (frame->IsMainFrame() && !frame->IsInFencedFrameTree()) {
     for (const auto& policy : policies) {
       switch (policy->header->source) {
         case network::mojom::ContentSecurityPolicySource::kHTTP:
@@ -241,9 +250,6 @@ void ExecutionContextCSPDelegate::DidAddContentSecurityPolicies(
           break;
         case network::mojom::ContentSecurityPolicySource::kMeta:
           Count(WebFeature::kMainFrameCSPViaMeta);
-          break;
-        case network::mojom::ContentSecurityPolicySource::kOriginPolicy:
-          Count(WebFeature::kMainFrameCSPViaOriginPolicy);
           break;
       }
     }
@@ -282,11 +288,11 @@ void ExecutionContextCSPDelegate::DispatchViolationEventInternal(
 
   if (auto* document = GetDocument()) {
     if (element && element->isConnected() && element->GetDocument() == document)
-      element->EnqueueEvent(event, TaskType::kInternalDefault);
+      element->DispatchEvent(event, "ExecutionContextCSPDelegate::DispatchViolationEventInternal");
     else
-      document->EnqueueEvent(event, TaskType::kInternalDefault);
+      document->DispatchEvent(event, "ExecutionContextCSPDelegate::DispatchViolationEventInternal");
   } else if (auto* scope = DynamicTo<WorkerGlobalScope>(*execution_context_)) {
-    scope->EnqueueEvent(event, TaskType::kInternalDefault);
+    scope->DispatchEvent(event, "ExecutionContextCSPDelegate::DispatchViolationEventInternal");
   }
 }
 

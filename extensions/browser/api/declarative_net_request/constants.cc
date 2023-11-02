@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,6 +42,8 @@ const char kErrorInvalidTransformScheme[] =
     "values are: [*].";
 const char kErrorQueryAndTransformBothSpecified[] =
     "Rule with id * cannot specify both \"*\" and \"*\" keys.";
+const char kErrorDomainsAndInitiatorDomainsBothSpecified[] =
+    "Rule with id * cannot use deprecated field \"*\". Use \"*\" instead.";
 const char kErrorJavascriptRedirect[] =
     "Rule with id * specifies an incorrect value for the \"*\" key. Redirects "
     "to javascript urls are not supported.";
@@ -122,6 +124,10 @@ const char kTabNotFoundError[] = "No tab with id: *.";
 const char kIncrementActionCountWithoutUseAsBadgeTextError[] =
     "Cannot increment action count unless displaying action count as badge "
     "text.";
+
+const char kInvalidTestURLError[] = "Invalid test request URL.";
+const char kInvalidTestInitiatorError[] = "Invalid test request initiator.";
+const char kInvalidTestTabIdError[] = "Invalid test request tab ID.";
 
 const char kIndexAndPersistRulesTimeHistogram[] =
     "Extensions.DeclarativeNetRequest.IndexAndPersistRulesTime";

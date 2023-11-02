@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "content/browser/cookie_store/cookie_store_manager.h"
@@ -95,7 +96,7 @@ class CookieStoreSync {
   }
 
  private:
-  blink::mojom::CookieStore* cookie_store_service_;
+  raw_ptr<blink::mojom::CookieStore> cookie_store_service_;
 };
 
 const char kExampleScope[] = "https://example.com/a/";
@@ -145,7 +146,7 @@ class CookieStoreWorkerTestHelper : public EmbeddedWorkerTestHelper {
     }
 
    private:
-    CookieStoreWorkerTestHelper* const worker_helper_;
+    const raw_ptr<CookieStoreWorkerTestHelper> worker_helper_;
   };
 
   std::unique_ptr<FakeServiceWorker> CreateServiceWorker() override {
@@ -164,7 +165,7 @@ class CookieStoreWorkerTestHelper : public EmbeddedWorkerTestHelper {
 
  private:
   // Set by WaitForActivateEvent(), used in OnActivateEvent().
-  base::RunLoop* quit_on_activate_ = nullptr;
+  raw_ptr<base::RunLoop> quit_on_activate_ = nullptr;
 
   // Collects the changes reported to OnCookieChangeEvent().
   std::vector<net::CookieChangeInfo> changes_;
@@ -218,7 +219,8 @@ class CookieStoreManagerTest
               << blink::ServiceWorkerStatusToString(status);
           run_loop.Quit();
         }),
-        /*requesting_frame_id=*/GlobalRenderFrameHostId());
+        /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+        PolicyContainerPolicies());
     run_loop.Run();
     if (!success)
       return kInvalidRegistrationId;
@@ -306,20 +308,22 @@ class CookieStoreManagerTest
     return SetCanonicalCookie(
         *net::CanonicalCookie::CreateUnsafeCookieForTesting(
             name, value, domain, path, base::Time(), base::Time(), base::Time(),
-            /* secure = */ true,
-            /* httponly = */ false, net::CookieSameSite::NO_RESTRICTION,
-            net::COOKIE_PRIORITY_DEFAULT, /* same_party = */ false));
+            base::Time(),
+            /*secure=*/true,
+            /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
+            net::COOKIE_PRIORITY_DEFAULT, /*same_party=*/false));
   }
 
   bool DeleteCookie(const char* name, const char* domain, const char* path) {
     return SetCanonicalCookie(
         *net::CanonicalCookie::CreateUnsafeCookieForTesting(
-            name, /* value = */ "", domain, path, /* creation = */ base::Time(),
-            /* expiration = */ base::Time::Min(),
-            /* last_access = */ base::Time(),
-            /* secure = */ true, /* httponly = */ false,
+            name, /*value=*/"", domain, path, /*creation=*/base::Time(),
+            /*expiration=*/base::Time::Min(),
+            /*last_access=*/base::Time(),
+            /*last_update=*/base::Time(),
+            /*secure=*/true, /*httponly=*/false,
             net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
-            /* same_party = */ false));
+            /*same_party=*/false));
   }
 
   // Designates a closure for preparing the cookie store for the current test.
@@ -1561,10 +1565,10 @@ TEST_P(CookieStoreManagerTest, HttpOnlyCookieChange) {
   ASSERT_TRUE(
       SetCanonicalCookie(*net::CanonicalCookie::CreateUnsafeCookieForTesting(
           "cookie-name-1", "cookie-value-1", "example.com", "/", base::Time(),
-          base::Time(), base::Time(),
-          /* secure = */ true,
-          /* httponly = */ true, net::CookieSameSite::NO_RESTRICTION,
-          net::COOKIE_PRIORITY_DEFAULT, /* same_party = */ false)));
+          base::Time(), base::Time(), base::Time(),
+          /*secure=*/true,
+          /*httponly=*/true, net::CookieSameSite::NO_RESTRICTION,
+          net::COOKIE_PRIORITY_DEFAULT, /*same_party=*/false)));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(0u, worker_test_helper_->changes().size());
 
@@ -1572,10 +1576,10 @@ TEST_P(CookieStoreManagerTest, HttpOnlyCookieChange) {
   ASSERT_TRUE(
       SetCanonicalCookie(*net::CanonicalCookie::CreateUnsafeCookieForTesting(
           "cookie-name-2", "cookie-value-2", "example.com", "/", base::Time(),
-          base::Time(), base::Time(),
-          /* secure = */ true,
-          /* httponly = */ false, net::CookieSameSite::NO_RESTRICTION,
-          net::COOKIE_PRIORITY_DEFAULT, /* same_party = */ false)));
+          base::Time(), base::Time(), base::Time(),
+          /*secure=*/true,
+          /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
+          net::COOKIE_PRIORITY_DEFAULT, /*same_party=*/false)));
   task_environment_.RunUntilIdle();
 
   ASSERT_EQ(1u, worker_test_helper_->changes().size());
@@ -1618,10 +1622,10 @@ TEST_P(CookieStoreManagerTest, HttpOnlyCookieChangeLegacy) {
   ASSERT_TRUE(
       SetCanonicalCookie(*net::CanonicalCookie::CreateUnsafeCookieForTesting(
           "cookie-name-1", "cookie-value-1", "legacy.com", "/", base::Time(),
-          base::Time(), base::Time(),
-          /* secure = */ false,
-          /* httponly = */ true, net::CookieSameSite::NO_RESTRICTION,
-          net::COOKIE_PRIORITY_DEFAULT, /* same_party = */ false)));
+          base::Time(), base::Time(), base::Time(),
+          /*secure=*/false,
+          /*httponly=*/true, net::CookieSameSite::NO_RESTRICTION,
+          net::COOKIE_PRIORITY_DEFAULT, /*same_party=*/false)));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(0u, worker_test_helper_->changes().size());
 
@@ -1629,10 +1633,10 @@ TEST_P(CookieStoreManagerTest, HttpOnlyCookieChangeLegacy) {
   ASSERT_TRUE(
       SetCanonicalCookie(*net::CanonicalCookie::CreateUnsafeCookieForTesting(
           "cookie-name-2", "cookie-value-2", "legacy.com", "/", base::Time(),
-          base::Time(), base::Time(),
-          /* secure = */ false,
-          /* httponly = */ false, net::CookieSameSite::NO_RESTRICTION,
-          net::COOKIE_PRIORITY_DEFAULT, /* same_party = */ false)));
+          base::Time(), base::Time(), base::Time(),
+          /*secure=*/false,
+          /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
+          net::COOKIE_PRIORITY_DEFAULT, /*same_party=*/false)));
   task_environment_.RunUntilIdle();
 
   ASSERT_EQ(1u, worker_test_helper_->changes().size());

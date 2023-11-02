@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,13 +27,11 @@ class PLATFORM_EXPORT WebContentDecryptionModuleAccessImpl
       WebContentDecryptionModuleAccess* cdm_access);
 
   static std::unique_ptr<WebContentDecryptionModuleAccessImpl> Create(
-      const WebString& key_system,
       const WebSecurityOrigin& security_origin,
       const WebMediaKeySystemConfiguration& configuration,
       const media::CdmConfig& cdm_config,
       const base::WeakPtr<WebEncryptedMediaClientImpl>& client);
   WebContentDecryptionModuleAccessImpl(
-      const WebString& key_system,
       const WebSecurityOrigin& security_origin,
       const WebMediaKeySystemConfiguration& configuration,
       const media::CdmConfig& cdm_config,
@@ -53,7 +51,6 @@ class PLATFORM_EXPORT WebContentDecryptionModuleAccessImpl
   bool UseHardwareSecureCodecs() const override;
 
  private:
-  const WebString key_system_;
   const WebSecurityOrigin security_origin_;
   const WebMediaKeySystemConfiguration configuration_;
   const media::CdmConfig cdm_config_;

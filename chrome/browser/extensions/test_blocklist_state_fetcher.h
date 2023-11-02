@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/blocklist_state_fetcher.h"
 #include "chrome/common/safe_browsing/crx_info.pb.h"
 
@@ -32,7 +33,7 @@ class TestBlocklistStateFetcher {
   bool HandleFetcher(const std::string& id);
 
  private:
-  BlocklistStateFetcher* fetcher_;
+  raw_ptr<BlocklistStateFetcher> fetcher_;
 
   std::map<std::string, ClientCRXListInfoResponse_Verdict> verdicts_;
 

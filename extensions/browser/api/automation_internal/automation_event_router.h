@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,9 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
+#include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
 #include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/browser/render_process_host.h"
@@ -63,6 +64,9 @@ class AutomationEventRouter : public content::RenderProcessHostObserver,
       int listener_process_id,
       content::WebContents* web_contents);
 
+  // Undoes the Register call above. May result in disabling of automation.
+  void UnregisterListenerWithDesktopPermission(int lsitener_process_id);
+
   // The following two methods should only be called by Lacros.
   void NotifyAllAutomationExtensionsGone();
   void NotifyExtensionListenerAdded();
@@ -102,10 +106,9 @@ class AutomationEventRouter : public content::RenderProcessHostObserver,
     ~AutomationListener() override;
 
     // content:WebContentsObserver:
-    void DidFinishNavigation(
-        content::NavigationHandle* navigation_handle) override;
+    void PrimaryPageChanged(content::Page& page) override;
 
-    AutomationEventRouter* router;
+    raw_ptr<AutomationEventRouter> router;
     ExtensionId extension_id;
     int process_id;
     bool desktop;
@@ -152,12 +155,12 @@ class AutomationEventRouter : public content::RenderProcessHostObserver,
   content::NotificationRegistrar registrar_;
   std::vector<std::unique_ptr<AutomationListener>> listeners_;
 
-  content::BrowserContext* active_context_;
+  raw_ptr<content::BrowserContext> active_context_;
 
   // The caller of RegisterRemoteRouter is responsible for ensuring that this
   // pointer is valid. The remote router must be unregistered with
   // RegisterRemoteRouter(nullptr) before it is destroyed.
-  AutomationEventRouterInterface* remote_router_ = nullptr;
+  raw_ptr<AutomationEventRouterInterface> remote_router_ = nullptr;
 
   base::ScopedMultiSourceObservation<content::RenderProcessHost,
                                      content::RenderProcessHostObserver>

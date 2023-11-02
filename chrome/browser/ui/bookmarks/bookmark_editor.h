@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
@@ -24,6 +26,9 @@ class BookmarkModel;
 // bookmark editor dialog.
 class BookmarkEditor {
  public:
+  // A callback which is run when clicking on the Save button in the editor.
+  using OnSaveCallback = base::OnceClosure;
+
   // An enumeration of the possible configurations offered.
   enum Configuration {
     // If Configuration is SHOW_TREE, a tree is shown allowing the user to
@@ -92,11 +97,11 @@ class BookmarkEditor {
     const Type type;
 
     // If type == EXISTING_NODE this gives the existing node.
-    const bookmarks::BookmarkNode* existing_node = nullptr;
+    raw_ptr<const bookmarks::BookmarkNode> existing_node = nullptr;
 
     // If type == NEW_URL or type == NEW_FOLDER this gives the initial parent
     // node to place the new node in.
-    const bookmarks::BookmarkNode* parent_node = nullptr;
+    raw_ptr<const bookmarks::BookmarkNode> parent_node = nullptr;
 
     // If type == NEW_URL or type == NEW_FOLDER this gives the index to insert
     // the new node at.
@@ -117,7 +122,8 @@ class BookmarkEditor {
   static void Show(gfx::NativeWindow parent_window,
                    Profile* profile,
                    const EditDetails& details,
-                   Configuration configuration);
+                   Configuration configuration,
+                   OnSaveCallback on_save_callback = base::DoNothing());
 
   // Modifies a bookmark node (assuming that there's no magic that needs to be
   // done regarding moving from one folder to another).  If a new node is

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,12 +17,25 @@ class Profile;
 
 namespace ash {
 namespace full_restore {
-class ArcWindowHandler;
+class ArcGhostWindowHandler;
+class FullRestoreAppLaunchHandlerArcAppBrowserTest;
 }  // namespace full_restore
 
 namespace app_restore {
 
 class ArcAppLaunchHandler;
+
+namespace {
+
+enum class LauncherType {
+  kFullRestore,
+  kWindowPredictor,
+  kDeskTemplate,
+};
+
+using LauncherTag = std::pair<LauncherType, int32_t>;
+
+}  // namespace
 
 // The AppRestoreArcTaskHandler class observes ArcAppListPrefs, and calls
 // app restore clients to update the ARC app launch info when a task is created
@@ -41,19 +54,30 @@ class AppRestoreArcTaskHandler : public KeyedService,
   ~AppRestoreArcTaskHandler() override;
 
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
-  full_restore::ArcWindowHandler* window_handler() {
+  full_restore::ArcGhostWindowHandler* window_handler() {
     return window_handler_.get();
   }
 #endif
 
-  ArcAppLaunchHandler* desks_templates_arc_app_launch_handler() {
-    return desks_templates_arc_app_launch_handler_.get();
-  }
-  ArcAppLaunchHandler* full_restore_arc_app_launch_handler() {
-    return full_restore_arc_app_launch_handler_.get();
-  }
+  // Check if the AppId existed in any arc app launch handler restore queue.
+  // When different launch handler which corresponding to different restore
+  // purpose trying to restore the same ARC app, it will be confusing ARC that
+  // which window info should be applied.
+  bool IsAppPendingRestore(const std::string& arc_app_id) const;
+
+  // Get or create full restore arc app launch handler.
+  ArcAppLaunchHandler* GetFullRestoreArcAppLaunchHandler();
+
+  // Get or create window predictor arc app launch handler by `launch_id`.
+  ArcAppLaunchHandler* GetWindowPredictorArcAppLaunchHandler(int32_t launch_id);
+
+  // Get or create desk template arc app launch handler by `launch_id`.
+  ArcAppLaunchHandler* GetDeskTemplateArcAppLaunchHandler(int32_t launch_id);
+  void ClearDeskTemplateArcAppLaunchHandler(int32_t launch_id);
 
   // ArcAppListPrefs::Observer.
+  void OnAppStatesChanged(const std::string& id,
+                          const ArcAppListPrefs::AppInfo& app_info) override;
   void OnTaskCreated(int32_t task_id,
                      const std::string& package_name,
                      const std::string& activity,
@@ -75,21 +99,32 @@ class AppRestoreArcTaskHandler : public KeyedService,
   // Invoked when ChromeShelfController is created.
   void OnShelfReady();
 
- private:
   // KeyedService:
   void Shutdown() override;
+
+ private:
+  friend class ash::full_restore::FullRestoreAppLaunchHandlerArcAppBrowserTest;
+
+  ArcAppLaunchHandler* CreateOrGetArcAppLaunchHandler(LauncherTag launcher_tag,
+                                                      bool call_init_callback);
 
   base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>
       arc_prefs_observer_{this};
 
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
-  std::unique_ptr<full_restore::ArcWindowHandler> window_handler_;
+  std::unique_ptr<full_restore::ArcGhostWindowHandler> window_handler_;
 #endif
 
-  // The ArcAppLaunchHandlers, one for each feature that wants to launch ARC
-  // apps.
-  std::unique_ptr<ArcAppLaunchHandler> desks_templates_arc_app_launch_handler_;
-  std::unique_ptr<ArcAppLaunchHandler> full_restore_arc_app_launch_handler_;
+  // Maps LauncherTag to ArcAppLaunchHandlers.
+  std::map<LauncherTag, std::unique_ptr<ArcAppLaunchHandler>>
+      arc_app_launch_handlers_;
+
+  // These cache the readiness status of the subsystems needed to launch ARC
+  // apps. They are used when new handlers are dynamically created so that the
+  // handlers can learn the status of these systems.
+  bool arc_play_store_enabled_ = false;
+  bool shelf_ready_ = false;
+  bool app_connection_ready_ = false;
 };
 
 }  // namespace app_restore

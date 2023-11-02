@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,9 @@
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/signin/about_signin_internals_factory.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
+#include "ios/chrome/browser/url/chrome_url_constants.h"
 #include "ios/web/public/webui/web_ui_ios.h"
 #include "ios/web/public/webui/web_ui_ios_data_source.h"
 
@@ -59,16 +59,16 @@ SignInInternalsHandlerIOS::~SignInInternalsHandlerIOS() {
 }
 
 void SignInInternalsHandlerIOS::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getSigninInfo",
       base::BindRepeating(&SignInInternalsHandlerIOS::HandleGetSignInInfo,
                           base::Unretained(this)));
 }
 
 void SignInInternalsHandlerIOS::HandleGetSignInInfo(
-    const base::ListValue* args) {
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+    const base::Value::List& args) {
+  CHECK_GE(args.size(), 1u);
+  std::string callback_id = args[0].GetString();  // CHECKs if non-string.
   base::Value callback(callback_id);
   base::Value success(true);
 
@@ -80,7 +80,7 @@ void SignInInternalsHandlerIOS::HandleGetSignInInfo(
 
   if (!about_signin_internals) {
     base::Value empty;
-    std::vector<const base::Value*> return_args{&callback, &success, &empty};
+    base::ValueView return_args[] = {callback, success, empty};
     web_ui()->CallJavascriptFunction("cr.webUIResponse", return_args);
     return;
   }
@@ -90,8 +90,8 @@ void SignInInternalsHandlerIOS::HandleGetSignInInfo(
   // empty in incognito mode. Alternatively, we could force about:signin to
   // open in non-incognito mode always (like about:settings for ex.).
   about_signin_internals->AddSigninObserver(this);
-  const base::Value status = about_signin_internals->GetSigninStatus();
-  std::vector<const base::Value*> return_args{&callback, &success, &status};
+  const base::Value::Dict status = about_signin_internals->GetSigninStatus();
+  base::ValueView return_args[] = {callback, success, status};
   web_ui()->CallJavascriptFunction("cr.webUIResponse", return_args);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForBrowserState(browser_state);
@@ -104,15 +104,16 @@ void SignInInternalsHandlerIOS::HandleGetSignInInfo(
   }
 }
 
-void SignInInternalsHandlerIOS::OnSigninStateChanged(const base::Value* info) {
+void SignInInternalsHandlerIOS::OnSigninStateChanged(
+    const base::Value::Dict& info) {
   base::Value event_name("signin-info-changed");
-  std::vector<const base::Value*> args{&event_name, info};
+  base::ValueView args[] = {event_name, info};
   web_ui()->CallJavascriptFunction("cr.webUIListenerCallback", args);
 }
 
 void SignInInternalsHandlerIOS::OnCookieAccountsFetched(
-    const base::Value* info) {
+    const base::Value::Dict& info) {
   base::Value event_name("update-cookie-accounts");
-  std::vector<const base::Value*> args{&event_name, info};
+  base::ValueView args[] = {event_name, info};
   web_ui()->CallJavascriptFunction("cr.webUIListenerCallback", args);
 }

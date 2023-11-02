@@ -399,20 +399,33 @@ interesting attributes supported today.
   extreme caution, because it can lead to deadlocks otherwise.
 
 * **`[Default]`**:
-  The `Default` attribute may be used to specify an enumerator value that
-  will be used if an `Extensible` enumeration does not deserialize to a known
-  value on the receiver side, i.e. the sender is using a newer version of the
-  enum. This allows unknown values to be mapped to a well-defined value that can
-  be appropriately handled.
+  The `Default` attribute may be used to specify an enumerator value or union
+  field that will be used if an `Extensible` enumeration or union does not
+  deserialize to a known value on the receiver side, i.e. the sender is using a
+  newer version of the enum or union. This allows unknown values to be mapped to
+  a well-defined value that can be appropriately handled.
+
+  Note: The `Default` field for a union must be of nullable or integral type.
+  When a union is defaulted to this field, the field takes on the default value
+  for its type: null for nullable types, and zero/false for integral types.
 
 * **`[Extensible]`**:
-  The `Extensible` attribute may be specified for any enum definition. This
-  essentially disables builtin range validation when receiving values of the
-  enum type in a message, allowing older bindings to tolerate unrecognized
-  values from newer versions of the enum.
+  The `Extensible` attribute may be specified for any enum or union definition.
+  For enums, this essentially disables builtin range validation when receiving
+  values of the enum type in a message, allowing older bindings to tolerate
+  unrecognized values from newer versions of the enum.
 
-  Note: in the future, an `Extensible` enumeration will require that a `Default`
-  enumerator value also be specified.
+  If an enum value within an extensible enum definition is affixed with the
+  `Default` attribute, out-of-range values for the enum will deserialize to that
+  default value. Only one enum value may be designated as the `Default`.
+
+  Similarly, a union marked `Extensible` will deserialize to its `Default` field
+  when an unrecognized field is received. Extensible unions MUST specify exactly
+  one `Default` field, and the field must be of nullable or integral type. When
+  defaulted to this field, the value is always null/zero/false as appropriate.
+
+  An `Extensible` enumeration REQUIRES that a `Default` value be specified,
+  so all new extensible enums should specify one.
 
 * **`[Native]`**:
   The `Native` attribute may be specified for an empty struct declaration to
@@ -425,7 +438,10 @@ interesting attributes supported today.
 * **`[MinVersion=N]`**:
   The `MinVersion` attribute is used to specify the version at which a given
   field, enum value, interface method, or method parameter was introduced.
-  See [Versioning](#Versioning) for more details.
+  See [Versioning](#Versioning) for more details. `MinVersion` does not apply
+  to interfaces, structs or enums, but to the fields of those types.
+  `MinVersion` is not a module-global value, but it is ok to pretend it is by
+  skipping versions when adding fields or parameters.
 
 * **`[Stable]`**:
   The `Stable` attribute specifies that a given mojom type or interface
@@ -471,6 +487,30 @@ interesting attributes supported today.
   applies to `C++` bindings. `value` should match a constant defined in an
   imported `sandbox.mojom.Sandbox` enum (for Chromium this is
   `//sandbox/policy/mojom/sandbox.mojom`), such as `kService`.
+
+* **`[RequireContext=enum]`**:
+  The `RequireContext` attribute is used in Chromium to tag interfaces that
+  should be passed (as remotes or receivers) only to privileged process
+  contexts. The process context must be an enum that is imported into the
+  mojom that defines the tagged interface. `RequireContext` may be used in
+  future to DCHECK or CHECK if remotes are made available in contexts that
+  conflict with the one provided in the interface definition. Process contexts
+  are not the same as the sandbox a process is running in, but will reflect
+  the set of capabilities provided to the service.
+
+* **`[AllowedContext=enum]`**:
+  The `AllowedContext` attribute is used in Chromium to tag methods that pass
+  remotes or receivers of interfaces that are marked with a `RequireContext`
+  attribute. The enum provided on the method must be equal or better (lower
+  numerically) than the one required on the interface being passed. At present
+  failing to specify an adequate `AllowedContext` value will cause mojom
+  generation to fail at compile time. In future DCHECKs or CHECKs might be
+  added to enforce that method is only called from a process context that meets
+  the given `AllowedContext` value. The enum must of the same type as that
+  specified in the interface's `RequireContext` attribute. Adding an
+  `AllowedContext` attribute to a method is a strong indication that you need
+   a detailed security review of your design - please reach out to the security
+   team.
 
 ## Generated Code For Target Languages
 

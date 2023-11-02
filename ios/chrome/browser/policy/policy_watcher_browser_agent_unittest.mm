@@ -1,36 +1,39 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/policy/policy_watcher_browser_agent.h"
+#import "ios/chrome/browser/policy/policy_watcher_browser_agent.h"
 
+#import "base/mac/backup_util.h"
+#import "base/mac/foundation_util.h"
+#import "base/path_service.h"
 #import "base/test/ios/wait_util.h"
-#include "build/build_config.h"
+#import "build/build_config.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
-#include "components/sync/base/pref_names.h"
+#import "components/sync/base/pref_names.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/policy/policy_util.h"
-#include "ios/chrome/browser/policy/policy_watcher_browser_agent_observer_bridge.h"
-#import "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/policy/policy_watcher_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/prefs/browser_prefs.h"
-#include "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/policy_change_commands.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/main/test/fake_scene_state.h"
-#include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/web/public/test/web_task_environment.h"
-#include "testing/platform_test.h"
-#include "third_party/ocmock/OCMock/OCMock.h"
-#include "third_party/ocmock/gtest_support.h"
+#import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -68,7 +71,9 @@ class PolicyWatcherBrowserAgentTest : public PlatformTest {
     app_state_ = [[AppState alloc] initWithBrowserLauncher:nil
                                         startupInformation:nil
                                        applicationDelegate:nil];
-    scene_state_ = [[FakeSceneState alloc] initWithAppState:app_state_];
+    scene_state_ =
+        [[FakeSceneState alloc] initWithAppState:app_state_
+                                    browserState:chrome_browser_state_.get()];
     scene_state_.activationLevel = SceneActivationLevelForegroundActive;
     SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
   }
@@ -196,7 +201,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, CommandIfSignedIn) {
   id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
   agent_->Initialize(mockHandler);
 
-  OCMExpect([mockHandler showPolicySignoutPrompt]);
+  OCMExpect([mockHandler showForceSignedOutPrompt]);
 
   // Action: disable browser sign-in.
   GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
@@ -230,7 +235,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, NoCommandIfNotActive) {
   GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
                               static_cast<int>(BrowserSigninMode::kDisabled));
 
-  EXPECT_TRUE(scene_state_.appState.shouldShowPolicySignoutPrompt);
+  EXPECT_TRUE(scene_state_.appState.shouldShowForceSignOutPrompt);
   EXPECT_FALSE(authentication_service->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
 }
@@ -264,7 +269,8 @@ TEST_F(PolicyWatcherBrowserAgentTest, SignOutIfPolicyChangedAtColdStart) {
                                                startupInformation:nil
                                               applicationDelegate:nil];
   FakeSceneState* scene_state =
-      [[FakeSceneState alloc] initWithAppState:app_state];
+      [[FakeSceneState alloc] initWithAppState:app_state
+                                  browserState:chrome_browser_state_.get()];
   scene_state.activationLevel = SceneActivationLevelForegroundActive;
   SceneStateBrowserAgent::CreateForBrowser(browser.get(), scene_state);
 
@@ -273,7 +279,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, SignOutIfPolicyChangedAtColdStart) {
       signin::ConsentLevel::kSignin));
 
   id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
-  OCMExpect([mockHandler showPolicySignoutPrompt]);
+  OCMExpect([mockHandler showForceSignedOutPrompt]);
   agent->Initialize(mockHandler);
 
   EXPECT_OCMOCK_VERIFY(mockHandler);
@@ -311,7 +317,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, UINotShownWhileSignOut) {
   // update.
   agent_->SignInUIDismissed();
 
-  OCMExpect([mockHandler showPolicySignoutPrompt]);
+  OCMExpect([mockHandler showForceSignedOutPrompt]);
 
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(authentication_service->HasPrimaryIdentity(
@@ -330,14 +336,14 @@ TEST_F(PolicyWatcherBrowserAgentTest, CommandSentWhenUIIsDismissed) {
 
   // Strict protocol: method calls will fail until the method is stubbed.
   id mockHandler = OCMStrictProtocolMock(@protocol(PolicyChangeCommands));
-  OCMExpect([mockHandler showPolicySignoutPrompt]);
+  OCMExpect([mockHandler showForceSignedOutPrompt]);
 
   agent_->Initialize(mockHandler);
 
   EXPECT_OCMOCK_VERIFY(mockHandler);
 
   // Reset the expectation for the SignInUIDismissed call.
-  OCMExpect([mockHandler showPolicySignoutPrompt]);
+  OCMExpect([mockHandler showForceSignedOutPrompt]);
 
   agent_->SignInUIDismissed();
 
@@ -366,30 +372,33 @@ TEST_F(PolicyWatcherBrowserAgentTest, AlertIfSyncDisabledChanges) {
   AppState* app_state = [[AppState alloc] initWithBrowserLauncher:nil
                                                startupInformation:nil
                                               applicationDelegate:nil];
-  FakeSceneState* scene_state =
-      [[FakeSceneState alloc] initWithAppState:app_state];
-  scene_state.activationLevel = SceneActivationLevelForegroundActive;
-  SceneStateBrowserAgent::CreateForBrowser(browser.get(), scene_state);
+  @autoreleasepool {
+    FakeSceneState* scene_state =
+        [[FakeSceneState alloc] initWithAppState:app_state
+                                    browserState:chrome_browser_state_.get()];
+    scene_state.activationLevel = SceneActivationLevelForegroundActive;
+    SceneStateBrowserAgent::CreateForBrowser(browser.get(), scene_state);
 
-  id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
-  OCMExpect([mockHandler showSyncDisabledAlert]);
-  agent->Initialize(mockHandler);
+    id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
+    OCMExpect([mockHandler showSyncDisabledPrompt]);
+    agent->Initialize(mockHandler);
 
-  // Update the pref.
-  browser_->GetBrowserState()->GetPrefs()->SetBoolean(
-      syncer::prefs::kSyncManaged, true);
+    // Update the pref.
+    browser_->GetBrowserState()->GetPrefs()->SetBoolean(
+        syncer::prefs::kSyncManaged, true);
 
-  EXPECT_OCMOCK_VERIFY(mockHandler);
-  EXPECT_TRUE([standard_defaults boolForKey:kSyncDisabledAlertShownKey]);
+    EXPECT_OCMOCK_VERIFY(mockHandler);
+    EXPECT_TRUE([standard_defaults boolForKey:kSyncDisabledAlertShownKey]);
 
-  [[mockHandler reject] showSyncDisabledAlert];
+    [[mockHandler reject] showSyncDisabledPrompt];
 
-  // Update the pref.
-  browser_->GetBrowserState()->GetPrefs()->SetBoolean(
-      syncer::prefs::kSyncManaged, false);
+    // Update the pref.
+    browser_->GetBrowserState()->GetPrefs()->SetBoolean(
+        syncer::prefs::kSyncManaged, false);
 
-  EXPECT_OCMOCK_VERIFY(mockHandler);
-  EXPECT_FALSE([standard_defaults boolForKey:kSyncDisabledAlertShownKey]);
+    EXPECT_OCMOCK_VERIFY(mockHandler);
+    EXPECT_FALSE([standard_defaults boolForKey:kSyncDisabledAlertShownKey]);
+  }
 }
 
 // Tests that the handler is called and the alert shown at startup as expected.
@@ -414,24 +423,88 @@ TEST_F(PolicyWatcherBrowserAgentTest, AlertIfSyncDisabledChangedAtColdStart) {
   AppState* app_state = [[AppState alloc] initWithBrowserLauncher:nil
                                                startupInformation:nil
                                               applicationDelegate:nil];
-  FakeSceneState* scene_state =
-      [[FakeSceneState alloc] initWithAppState:app_state];
-  scene_state.activationLevel = SceneActivationLevelForegroundActive;
-  SceneStateBrowserAgent::CreateForBrowser(browser.get(), scene_state);
+  @autoreleasepool {
+    FakeSceneState* scene_state =
+        [[FakeSceneState alloc] initWithAppState:app_state
+                                    browserState:chrome_browser_state_.get()];
+    scene_state.activationLevel = SceneActivationLevelForegroundActive;
+    SceneStateBrowserAgent::CreateForBrowser(browser.get(), scene_state);
+
+    id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
+    OCMExpect([mockHandler showSyncDisabledPrompt]);
+    agent->Initialize(mockHandler);
+
+    base::RunLoop().RunUntilIdle();
+
+    EXPECT_OCMOCK_VERIFY(mockHandler);
+    EXPECT_TRUE([standard_defaults boolForKey:kSyncDisabledAlertShownKey]);
+
+    [[mockHandler reject] showSyncDisabledPrompt];
+
+    // Update the pref.
+    browser_->GetBrowserState()->GetPrefs()->SetBoolean(
+        syncer::prefs::kSyncManaged, false);
+
+    EXPECT_OCMOCK_VERIFY(mockHandler);
+    EXPECT_FALSE([standard_defaults boolForKey:kSyncDisabledAlertShownKey]);
+  }
+}
+
+// Tests that disabling the backup-allowed preference marks the app container
+// as excluded from backup, and enabling the preference clears this exclusion.
+TEST_F(PolicyWatcherBrowserAgentTest, BackupPreventionChanged) {
+  id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
+  agent_->Initialize(mockHandler);
+  base::FilePath storage_dir = base::mac::GetUserLibraryPath();
+
+  // Ensure that backups are allowed initially.
+  ASSERT_TRUE(base::mac::ClearBackupExclusion(storage_dir));
+
+  // Disallow backups.
+  browser_->GetBrowserState()->GetPrefs()->SetBoolean(
+      prefs::kAllowChromeDataInBackups, false);
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(base::mac::GetBackupExclusion(storage_dir));
+
+  // Allow backups.
+  browser_->GetBrowserState()->GetPrefs()->SetBoolean(
+      prefs::kAllowChromeDataInBackups, true);
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(base::mac::GetBackupExclusion(storage_dir));
+}
+
+// Tests that disabling the backup-allowed preference marks the app container
+// as excluded from backup at startup.
+TEST_F(PolicyWatcherBrowserAgentTest, BackupDisallowedAtColdStart) {
+  base::FilePath storage_dir = base::mac::GetUserLibraryPath();
+
+  // Ensure that backups are allowed initially.
+  ASSERT_TRUE(base::mac::ClearBackupExclusion(storage_dir));
+
+  // Disallow backups
+  browser_->GetBrowserState()->GetPrefs()->SetBoolean(
+      prefs::kAllowChromeDataInBackups, false);
 
   id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
-  OCMExpect([mockHandler showSyncDisabledAlert]);
-  agent->Initialize(mockHandler);
+  agent_->Initialize(mockHandler);
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(base::mac::GetBackupExclusion(storage_dir));
+}
 
-  EXPECT_OCMOCK_VERIFY(mockHandler);
-  EXPECT_TRUE([standard_defaults boolForKey:kSyncDisabledAlertShownKey]);
+// Tests that enabling the backup-allowed preference marks the app container
+// as no longer excluded from backup at startup.
+TEST_F(PolicyWatcherBrowserAgentTest, BackupAllowedAtColdStart) {
+  base::FilePath storage_dir = base::mac::GetUserLibraryPath();
 
-  [[mockHandler reject] showSyncDisabledAlert];
+  // Ensure that backups are disallowed initially.
+  ASSERT_TRUE(base::mac::SetBackupExclusion(storage_dir));
 
-  // Update the pref.
+  // Allow backups
   browser_->GetBrowserState()->GetPrefs()->SetBoolean(
-      syncer::prefs::kSyncManaged, false);
+      prefs::kAllowChromeDataInBackups, true);
 
-  EXPECT_OCMOCK_VERIFY(mockHandler);
-  EXPECT_FALSE([standard_defaults boolForKey:kSyncDisabledAlertShownKey]);
+  id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
+  agent_->Initialize(mockHandler);
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(base::mac::GetBackupExclusion(storage_dir));
 }

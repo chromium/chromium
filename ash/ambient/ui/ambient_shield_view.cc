@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include <array>
 
 #include "ash/ambient/ui/ambient_view_ids.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/gfx/canvas.h"
@@ -118,7 +118,8 @@ void AmbientShieldView::InitLayout() {
   for (auto* view : {top, bottom})
     view->SetProperty(views::kFlexBehaviorKey, kScaleUnbounded);
 
-  bool dark_mode = AshColorProvider::Get()->IsDarkModeEnabled();
+  // TODO(b/223270660): Listen for dark/light mode changes.
+  bool dark_mode = DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
   const auto& colors = dark_mode ? kDarkModeColors : kLightModeColors;
 
   top->SetBackground(views::CreateSolidBackground(colors.front()));

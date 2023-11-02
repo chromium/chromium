@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,8 +48,9 @@ TEST(WebTaskRunnerTest, PostCancellableTaskTest) {
 
   // Run without cancellation.
   int count = 0;
-  TaskHandle handle = PostCancellableTask(
-      *task_runner, FROM_HERE, WTF::Bind(&Increment, WTF::Unretained(&count)));
+  TaskHandle handle =
+      PostCancellableTask(*task_runner, FROM_HERE,
+                          WTF::BindOnce(&Increment, WTF::Unretained(&count)));
   EXPECT_EQ(0, count);
   EXPECT_TRUE(handle.IsActive());
   task_runner->RunUntilIdle();
@@ -58,7 +59,8 @@ TEST(WebTaskRunnerTest, PostCancellableTaskTest) {
 
   count = 0;
   handle = PostDelayedCancellableTask(
-      *task_runner, FROM_HERE, WTF::Bind(&Increment, WTF::Unretained(&count)),
+      *task_runner, FROM_HERE,
+      WTF::BindOnce(&Increment, WTF::Unretained(&count)),
       base::Milliseconds(1));
   EXPECT_EQ(0, count);
   EXPECT_TRUE(handle.IsActive());
@@ -68,7 +70,8 @@ TEST(WebTaskRunnerTest, PostCancellableTaskTest) {
 
   count = 0;
   handle = PostNonNestableCancellableTask(
-      *task_runner, FROM_HERE, WTF::Bind(&Increment, WTF::Unretained(&count)));
+      *task_runner, FROM_HERE,
+      WTF::BindOnce(&Increment, WTF::Unretained(&count)));
   EXPECT_EQ(0, count);
   EXPECT_TRUE(handle.IsActive());
   task_runner->RunUntilIdle();
@@ -77,7 +80,8 @@ TEST(WebTaskRunnerTest, PostCancellableTaskTest) {
 
   count = 0;
   handle = PostNonNestableDelayedCancellableTask(
-      *task_runner, FROM_HERE, WTF::Bind(&Increment, WTF::Unretained(&count)),
+      *task_runner, FROM_HERE,
+      WTF::BindOnce(&Increment, WTF::Unretained(&count)),
       base::Milliseconds(1));
   EXPECT_EQ(0, count);
   EXPECT_TRUE(handle.IsActive());
@@ -87,8 +91,9 @@ TEST(WebTaskRunnerTest, PostCancellableTaskTest) {
 
   // Cancel a task.
   count = 0;
-  handle = PostCancellableTask(*task_runner, FROM_HERE,
-                               WTF::Bind(&Increment, WTF::Unretained(&count)));
+  handle =
+      PostCancellableTask(*task_runner, FROM_HERE,
+                          WTF::BindOnce(&Increment, WTF::Unretained(&count)));
   handle.Cancel();
   EXPECT_EQ(0, count);
   EXPECT_FALSE(handle.IsActive());
@@ -97,7 +102,8 @@ TEST(WebTaskRunnerTest, PostCancellableTaskTest) {
 
   count = 0;
   handle = PostDelayedCancellableTask(
-      *task_runner, FROM_HERE, WTF::Bind(&Increment, WTF::Unretained(&count)),
+      *task_runner, FROM_HERE,
+      WTF::BindOnce(&Increment, WTF::Unretained(&count)),
       base::Milliseconds(1));
   handle.Cancel();
   EXPECT_EQ(0, count);
@@ -107,7 +113,8 @@ TEST(WebTaskRunnerTest, PostCancellableTaskTest) {
 
   count = 0;
   handle = PostNonNestableCancellableTask(
-      *task_runner, FROM_HERE, WTF::Bind(&Increment, WTF::Unretained(&count)));
+      *task_runner, FROM_HERE,
+      WTF::BindOnce(&Increment, WTF::Unretained(&count)));
   handle.Cancel();
   EXPECT_EQ(0, count);
   EXPECT_FALSE(handle.IsActive());
@@ -116,7 +123,8 @@ TEST(WebTaskRunnerTest, PostCancellableTaskTest) {
 
   count = 0;
   handle = PostNonNestableDelayedCancellableTask(
-      *task_runner, FROM_HERE, WTF::Bind(&Increment, WTF::Unretained(&count)),
+      *task_runner, FROM_HERE,
+      WTF::BindOnce(&Increment, WTF::Unretained(&count)),
       base::Milliseconds(1));
   handle.Cancel();
   EXPECT_EQ(0, count);
@@ -129,7 +137,7 @@ TEST(WebTaskRunnerTest, PostCancellableTaskTest) {
     count = 0;
     TaskHandle handle2 =
         PostCancellableTask(*task_runner, FROM_HERE,
-                            WTF::Bind(&Increment, WTF::Unretained(&count)));
+                            WTF::BindOnce(&Increment, WTF::Unretained(&count)));
     EXPECT_TRUE(handle2.IsActive());
   }
   EXPECT_EQ(0, count);
@@ -138,17 +146,19 @@ TEST(WebTaskRunnerTest, PostCancellableTaskTest) {
 
   // The task should be cancelled when another TaskHandle is assigned on it.
   count = 0;
-  handle = PostCancellableTask(*task_runner, FROM_HERE,
-                               WTF::Bind(&Increment, WTF::Unretained(&count)));
-  handle = PostCancellableTask(*task_runner, FROM_HERE, WTF::Bind([] {}));
+  handle =
+      PostCancellableTask(*task_runner, FROM_HERE,
+                          WTF::BindOnce(&Increment, WTF::Unretained(&count)));
+  handle = PostCancellableTask(*task_runner, FROM_HERE, WTF::BindOnce([] {}));
   EXPECT_EQ(0, count);
   task_runner->RunUntilIdle();
   EXPECT_EQ(0, count);
 
   // Self assign should be nop.
   count = 0;
-  handle = PostCancellableTask(*task_runner, FROM_HERE,
-                               WTF::Bind(&Increment, WTF::Unretained(&count)));
+  handle =
+      PostCancellableTask(*task_runner, FROM_HERE,
+                          WTF::BindOnce(&Increment, WTF::Unretained(&count)));
 #if defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wself-move"
@@ -163,10 +173,10 @@ TEST(WebTaskRunnerTest, PostCancellableTaskTest) {
 
   // handle->isActive() should switch to false before the task starts running.
   bool is_active = false;
-  handle =
-      PostCancellableTask(*task_runner, FROM_HERE,
-                          WTF::Bind(&GetIsActive, WTF::Unretained(&is_active),
-                                    WTF::Unretained(&handle)));
+  handle = PostCancellableTask(
+      *task_runner, FROM_HERE,
+      WTF::BindOnce(&GetIsActive, WTF::Unretained(&is_active),
+                    WTF::Unretained(&handle)));
   EXPECT_TRUE(handle.IsActive());
   task_runner->RunUntilIdle();
   EXPECT_FALSE(is_active);
@@ -178,8 +188,9 @@ TEST(WebTaskRunnerTest, CancellationCheckerTest) {
       base::MakeRefCounted<scheduler::FakeTaskRunner>();
 
   int count = 0;
-  TaskHandle handle = PostCancellableTask(
-      *task_runner, FROM_HERE, WTF::Bind(&Increment, WTF::Unretained(&count)));
+  TaskHandle handle =
+      PostCancellableTask(*task_runner, FROM_HERE,
+                          WTF::BindOnce(&Increment, WTF::Unretained(&count)));
   EXPECT_EQ(0, count);
 
   // TaskHandle::isActive should detect the deletion of posted task.
@@ -193,10 +204,10 @@ TEST(WebTaskRunnerTest, CancellationCheckerTest) {
 
   count = 0;
   CancellationTestHelper helper;
-  handle =
-      PostCancellableTask(*task_runner, FROM_HERE,
-                          WTF::Bind(&CancellationTestHelper::IncrementCounter,
-                                    helper.GetWeakPtr()));
+  handle = PostCancellableTask(
+      *task_runner, FROM_HERE,
+      WTF::BindOnce(&CancellationTestHelper::IncrementCounter,
+                    helper.GetWeakPtr()));
   EXPECT_EQ(0, helper.Counter());
 
   // The cancellation of the posted task should be propagated to TaskHandle.

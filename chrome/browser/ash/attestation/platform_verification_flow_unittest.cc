@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,19 +8,19 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "chrome/browser/ash/attestation/fake_certificate.h"
 #include "chrome/browser/ash/attestation/platform_verification_flow.h"
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/profiles/profile_impl.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/attestation/mock_attestation_flow.h"
-#include "chromeos/dbus/attestation/attestation.pb.h"
-#include "chromeos/dbus/attestation/fake_attestation_client.h"
-#include "chromeos/dbus/attestation/interface.pb.h"
+#include "chromeos/ash/components/attestation/fake_certificate.h"
+#include "chromeos/ash/components/attestation/mock_attestation_flow.h"
+#include "chromeos/ash/components/dbus/attestation/attestation.pb.h"
+#include "chromeos/ash/components/dbus/attestation/fake_attestation_client.h"
+#include "chromeos/ash/components/dbus/attestation/interface.pb.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -69,13 +69,11 @@ class PlatformVerificationFlowTest : public ::testing::Test {
       : certificate_status_(ATTESTATION_SUCCESS),
         fake_certificate_index_(0),
         result_(PlatformVerificationFlow::INTERNAL_ERROR) {
-    ::chromeos::AttestationClient::InitializeFake();
+    AttestationClient::InitializeFake();
   }
-  ~PlatformVerificationFlowTest() override {
-    ::chromeos::AttestationClient::Shutdown();
-  }
+  ~PlatformVerificationFlowTest() override { AttestationClient::Shutdown(); }
 
-  void SetUp() {
+  void SetUp() override {
     // Create a verifier for tests to call.
     verifier_ = new PlatformVerificationFlow(
         &mock_attestation_flow_, AttestationClient::Get(), &fake_delegate_);
@@ -102,8 +100,8 @@ class PlatformVerificationFlowTest : public ::testing::Test {
     // Configure the mock AttestationFlow to call FakeGetCertificate.
     EXPECT_CALL(mock_attestation_flow_,
                 GetCertificate(PROFILE_CONTENT_PROTECTION_CERTIFICATE,
-                               account_id, kTestID, _, _, _))
-        .WillRepeatedly(WithArgs<5>(
+                               account_id, kTestID, _, _, _, _))
+        .WillRepeatedly(WithArgs<6>(
             Invoke(this, &PlatformVerificationFlowTest::FakeGetCertificate)));
 
     const std::string expected_key_name =
@@ -212,7 +210,7 @@ TEST_F(PlatformVerificationFlowTest, ChallengeSigningError) {
 }
 
 TEST_F(PlatformVerificationFlowTest, DBusFailure) {
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->ConfigureEnrollmentPreparationsStatus(::attestation::STATUS_DBUS_ERROR);
   verifier_->ChallengePlatformKey(mock_user_manager_.GetActiveUser(), kTestID,
@@ -222,7 +220,7 @@ TEST_F(PlatformVerificationFlowTest, DBusFailure) {
 }
 
 TEST_F(PlatformVerificationFlowTest, AttestationServiceInternalError) {
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->ConfigureEnrollmentPreparationsStatus(
           ::attestation::STATUS_UNEXPECTED_DEVICE_ERROR);
@@ -343,9 +341,8 @@ TEST_F(PlatformVerificationFlowTest, UnsupportedMode) {
 }
 
 TEST_F(PlatformVerificationFlowTest, AttestationNotPrepared) {
-  chromeos::AttestationClient::Get()
-      ->GetTestInterface()
-      ->ConfigureEnrollmentPreparations(false);
+  AttestationClient::Get()->GetTestInterface()->ConfigureEnrollmentPreparations(
+      false);
   verifier_->ChallengePlatformKey(mock_user_manager_.GetActiveUser(), kTestID,
                                   kTestChallenge, CreateChallengeCallback());
   base::RunLoop().RunUntilIdle();

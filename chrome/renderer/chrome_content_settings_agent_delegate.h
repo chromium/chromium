@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,7 +40,6 @@ class ChromeContentSettingsAgentDelegate
   absl::optional<bool> AllowReadFromClipboard() override;
   absl::optional<bool> AllowWriteToClipboard() override;
   absl::optional<bool> AllowMutationEvents() override;
-  void PassiveInsecureContentFound(const blink::WebURL&) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ChromeContentSettingsAgentDelegateBrowserTest,

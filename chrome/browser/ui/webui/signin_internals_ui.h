@@ -1,11 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_INTERNALS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_INTERNALS_UI_H_
 
-#include "base/compiler_specific.h"
 #include "base/values.h"
 #include "components/signin/core/browser/about_signin_internals.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -35,13 +34,13 @@ class SignInInternalsHandler : public content::WebUIMessageHandler,
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;
 
-  void HandleGetSignInInfo(const base::ListValue* args);
+  void HandleGetSignInInfo(const base::Value::List& args);
 
   // AboutSigninInternals::Observer::OnSigninStateChanged implementation.
-  void OnSigninStateChanged(const base::Value* info) override;
+  void OnSigninStateChanged(const base::Value::Dict& info) override;
 
   // Notification that the cookie accounts are ready to be displayed.
-  void OnCookieAccountsFetched(const base::Value* info) override;
+  void OnCookieAccountsFetched(const base::Value::Dict& info) override;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_INTERNALS_UI_H_

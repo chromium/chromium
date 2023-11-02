@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -88,10 +88,9 @@ class AutofillProfileValidatorTest : public testing::Test {
 
   void OnValidated(const AutofillProfile* profile) {
     // Make sure the profile has the expected validity state.
-    for (auto expectation : expected_validity_) {
-      EXPECT_EQ(expectation.second,
-                profile->GetValidityState(expectation.first,
-                                          AutofillDataModel::CLIENT));
+    for (const auto& [field_type, validity_state] : expected_validity_) {
+      EXPECT_EQ(validity_state, profile->GetValidityState(
+                                    field_type, AutofillDataModel::CLIENT));
     }
   }
 

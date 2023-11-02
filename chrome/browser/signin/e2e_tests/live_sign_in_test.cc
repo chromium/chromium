@@ -1,7 +1,8 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
@@ -60,8 +61,8 @@ class SignInTestObserver : public IdentityManager::Observer,
   explicit SignInTestObserver(IdentityManager* identity_manager,
                               AccountReconcilor* reconcilor)
       : identity_manager_(identity_manager), reconcilor_(reconcilor) {
-    identity_manager_observation_.Observe(identity_manager_);
-    account_reconcilor_observation_.Observe(reconcilor_);
+    identity_manager_observation_.Observe(identity_manager_.get());
+    account_reconcilor_observation_.Observe(reconcilor_.get());
   }
   ~SignInTestObserver() override = default;
 
@@ -171,8 +172,8 @@ class SignInTestObserver : public IdentityManager::Observer,
         primary_account_id);
   }
 
-  signin::IdentityManager* const identity_manager_;
-  AccountReconcilor* const reconcilor_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
+  const raw_ptr<AccountReconcilor> reconcilor_;
   base::ScopedObservation<IdentityManager, IdentityManager::Observer>
       identity_manager_observation_{this};
   base::ScopedObservation<AccountReconcilor, AccountReconcilor::Observer>
@@ -183,6 +184,38 @@ class SignInTestObserver : public IdentityManager::Observer,
   int expected_signed_in_accounts_ = 0;
   PrimarySyncAccountWait primary_sync_account_wait_ =
       PrimarySyncAccountWait::kNotWait;
+};
+
+// Helper class to wait until all accounts have been removed from the
+// `IdentityManager`.
+class AccountsRemovedWaiter : public signin::IdentityManager::Observer {
+ public:
+  explicit AccountsRemovedWaiter(signin::IdentityManager* identity_manager)
+      : identity_manager_(identity_manager) {
+    DCHECK(identity_manager_);
+  }
+
+  void Wait() {
+    if (identity_manager_->GetAccountsWithRefreshTokens().empty())
+      return;
+    observation_.Observe(identity_manager_.get());
+    run_loop_.Run();
+  }
+
+ private:
+  void OnRefreshTokenRemovedForAccount(
+      const CoreAccountId& account_id) override {
+    if (!identity_manager_->GetAccountsWithRefreshTokens().empty())
+      return;
+    observation_.Reset();
+    run_loop_.Quit();
+  }
+
+  base::RunLoop run_loop_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      observation_{this};
 };
 
 // Observer class allowing to wait for account capabilities to be known.
@@ -204,7 +237,8 @@ class AccountCapabilitiesObserver : public IdentityManager::Observer {
 
   // This should be called only once per AccountCapabilitiesObserver instance.
   void WaitForAllCapabilitiesToBeKnown(CoreAccountId account_id) {
-    DCHECK(identity_manager_observation_.IsObservingSource(identity_manager_));
+    DCHECK(identity_manager_observation_.IsObservingSource(
+        identity_manager_.get()));
     AccountInfo info =
         identity_manager_->FindExtendedAccountInfoByAccountId(account_id);
     if (info.capabilities.AreAllCapabilitiesKnown())
@@ -216,7 +250,7 @@ class AccountCapabilitiesObserver : public IdentityManager::Observer {
   }
 
  private:
-  IdentityManager* identity_manager_ = nullptr;
+  raw_ptr<IdentityManager> identity_manager_ = nullptr;
   CoreAccountId account_id_;
   base::RunLoop run_loop_;
   base::ScopedObservation<IdentityManager, IdentityManager::Observer>
@@ -240,15 +274,16 @@ class LiveSignInTest : public signin::test::LiveTest {
 
   void SignInFromWeb(const TestAccount& test_account,
                      int previously_signed_in_accounts) {
-    AddTabAtIndex(0, GaiaUrls::GetInstance()->add_account_url(),
-                  ui::PageTransition::PAGE_TRANSITION_TYPED);
+    ASSERT_TRUE(AddTabAtIndex(0, GaiaUrls::GetInstance()->add_account_url(),
+                              ui::PageTransition::PAGE_TRANSITION_TYPED));
     SignInFromCurrentPage(test_account, previously_signed_in_accounts);
   }
 
   void SignInFromSettings(const TestAccount& test_account,
                           int previously_signed_in_accounts) {
     GURL settings_url("chrome://settings");
-    AddTabAtIndex(0, settings_url, ui::PageTransition::PAGE_TRANSITION_TYPED);
+    ASSERT_TRUE(AddTabAtIndex(0, settings_url,
+                              ui::PageTransition::PAGE_TRANSITION_TYPED));
     auto* settings_tab = browser()->tab_strip_model()->GetActiveWebContents();
     EXPECT_TRUE(content::ExecuteScript(
         settings_tab,
@@ -280,14 +315,15 @@ class LiveSignInTest : public signin::test::LiveTest {
 
   void SignOutFromWeb() {
     SignInTestObserver observer(identity_manager(), account_reconcilor());
-    AddTabAtIndex(0, GaiaUrls::GetInstance()->service_logout_url(),
-                  ui::PageTransition::PAGE_TRANSITION_TYPED);
+    ASSERT_TRUE(AddTabAtIndex(0, GaiaUrls::GetInstance()->service_logout_url(),
+                              ui::PageTransition::PAGE_TRANSITION_TYPED));
     observer.WaitForAccountChanges(0, PrimarySyncAccountWait::kNotWait);
   }
 
   void TurnOffSync() {
     GURL settings_url("chrome://settings");
-    AddTabAtIndex(0, settings_url, ui::PageTransition::PAGE_TRANSITION_TYPED);
+    ASSERT_TRUE(AddTabAtIndex(0, settings_url,
+                              ui::PageTransition::PAGE_TRANSITION_TYPED));
     SignInTestObserver observer(identity_manager(), account_reconcilor());
     auto* settings_tab = browser()->tab_strip_model()->GetActiveWebContents();
     EXPECT_TRUE(content::ExecuteScript(
@@ -480,9 +516,13 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_TurnOffSyncWhenPaused) {
           primary_account.account_id));
 
   TurnOffSync();
-  EXPECT_TRUE(identity_manager()->GetAccountsWithRefreshTokens().empty());
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+
+  // Wait until the signin manager clears the invalid token.
+  AccountsRemovedWaiter accounts_removed_waiter(identity_manager());
+  accounts_removed_waiter.Wait();
+  EXPECT_TRUE(identity_manager()->GetAccountsWithRefreshTokens().empty());
 }
 
 // This test can pass. Marked as manual because it TIMED_OUT on Win7.
@@ -497,7 +537,8 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CancelSyncWithWebAccount) {
 
   SignInTestObserver observer(identity_manager(), account_reconcilor());
   GURL settings_url("chrome://settings");
-  AddTabAtIndex(0, settings_url, ui::PageTransition::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0, settings_url,
+                            ui::PageTransition::PAGE_TRANSITION_TYPED));
   auto* settings_tab = browser()->tab_strip_model()->GetActiveWebContents();
   std::string start_syncing_script = base::StringPrintf(
       "settings.SyncBrowserProxyImpl.getInstance()."

@@ -87,7 +87,7 @@ void IDBParseKeyPath(const String& key_path,
                      IDBKeyPathParseError& error) {
   // IDBKeyPath ::= EMPTY_STRING | identifier ('.' identifier)*
 
-  if (key_path.IsEmpty()) {
+  if (key_path.empty()) {
     error = kIDBKeyPathParseErrorNone;
     return;
   }
@@ -147,7 +147,7 @@ bool IDBKeyPath::IsValid() const {
       return IDBIsValidKeyPath(string_);
 
     case mojom::IDBKeyPathType::Array:
-      if (array_.IsEmpty())
+      if (array_.empty())
         return false;
       for (const auto& element : array_) {
         if (!IDBIsValidKeyPath(element))

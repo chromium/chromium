@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,7 @@
 
 #include <cstdint>
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 // Defines what thread executes a StarScan task.
 enum class Context {
@@ -26,7 +25,6 @@ enum class SimdSupport : uint8_t {
   kNEON,
 };
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_STARSCAN_FWD_H_

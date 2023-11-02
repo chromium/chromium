@@ -1,11 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef REMOTING_HOST_CHROMEOS_MOUSE_CURSOR_MONITOR_AURA_H_
 #define REMOTING_HOST_CHROMEOS_MOUSE_CURSOR_MONITOR_AURA_H_
 
-#include "base/macros.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/gfx/geometry/point.h"

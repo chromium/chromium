@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,7 @@
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_gles2_interface.h"
 #include "components/viz/test/test_gpu_memory_buffer_manager.h"
+#include "components/viz/test/test_raster_interface.h"
 
 namespace viz {
 class BeginFrameSource;
@@ -44,13 +45,15 @@ class FakeLayerTreeFrameSink : public LayerTreeFrameSink {
 
     // Calls a function on both the compositor and worker context.
     template <typename... Args>
-    Builder& AllContexts(void (viz::TestGLES2Interface::*fn)(Args...),
-                         Args... args) {
+    Builder& AllContexts(
+        void (viz::TestGLES2Interface::*compositor_fn)(Args...),
+        void (viz::TestRasterInterface::*worker_fn)(Args...),
+        Args... args) {
       DCHECK(compositor_context_provider_);
-      DCHECK(worker_context_provider_);
-      (compositor_context_provider_->UnboundTestContextGL()->*fn)(
+      (compositor_context_provider_->UnboundTestContextGL()->*compositor_fn)(
           std::forward<Args>(args)...);
-      (worker_context_provider_->UnboundTestContextGL()->*fn)(
+      DCHECK(worker_context_provider_);
+      (worker_context_provider_->UnboundTestRasterInterface()->*worker_fn)(
           std::forward<Args>(args)...);
 
       return *this;
@@ -89,26 +92,10 @@ class FakeLayerTreeFrameSink : public LayerTreeFrameSink {
         viz::TestContextProvider::CreateWorker()));
   }
 
-  static std::unique_ptr<FakeLayerTreeFrameSink> Create3dForGpuRasterization(
-      int max_msaa_samples = -1,
-      bool msaa_is_slow = false) {
+  static std::unique_ptr<FakeLayerTreeFrameSink> Create3dForGpuRasterization() {
     return Builder()
-        .AllContexts(&viz::TestGLES2Interface::set_gpu_rasterization, true)
-        .AllContexts(&viz::TestGLES2Interface::set_msaa_is_slow, msaa_is_slow)
-        .AllContexts(&viz::TestGLES2Interface::SetMaxSamples, max_msaa_samples)
-        .Build();
-  }
-
-  static std::unique_ptr<FakeLayerTreeFrameSink> Create3dForOopRasterization(
-      int max_msaa_samples = -1,
-      bool msaa_is_slow = false) {
-    // TODO(enne): this should really use a TestRasterInterface.
-    // It's very fake to use "supports oop raster" on a gles2 interface.
-    return Builder()
-        .AllContexts(&viz::TestGLES2Interface::set_gpu_rasterization, true)
-        .AllContexts(&viz::TestGLES2Interface::set_supports_oop_raster, true)
-        .AllContexts(&viz::TestGLES2Interface::set_msaa_is_slow, msaa_is_slow)
-        .AllContexts(&viz::TestGLES2Interface::SetMaxSamples, max_msaa_samples)
+        .AllContexts(&viz::TestGLES2Interface::set_gpu_rasterization,
+                     &viz::TestRasterInterface::set_gpu_rasterization, true)
         .Build();
   }
 
@@ -120,8 +107,7 @@ class FakeLayerTreeFrameSink : public LayerTreeFrameSink {
   bool BindToClient(LayerTreeFrameSinkClient* client) override;
   void DetachFromClient() override;
   void SubmitCompositorFrame(viz::CompositorFrame frame,
-                             bool hit_test_data_changed,
-                             bool show_hit_test_borders) override;
+                             bool hit_test_data_changed) override;
   void DidNotProduceFrame(const viz::BeginFrameAck& ack,
                           FrameSkippedReason reason) override;
   void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,

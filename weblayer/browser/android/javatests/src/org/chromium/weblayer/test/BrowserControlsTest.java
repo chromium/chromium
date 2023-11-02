@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -304,6 +304,46 @@ public class BrowserControlsTest {
         });
     }
 
+    @MinWebLayerVersion(100)
+    @Test
+    @SmallTest
+    public void testEventBelowView() throws Exception {
+        createActivityWithTopView();
+        InstrumentationActivity activity = mActivityTestRule.getActivity();
+        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
+        View topContents = activity.getTopContentsContainer();
+
+        View fragmentView = TestThreadUtils.runOnUiThreadBlocking(
+                () -> { return mActivityTestRule.getFragment().getView(); });
+
+        // Move by the size of the top-controls.
+        EventUtils.simulateDragFromCenterOfView(
+                activity.getWindow().getDecorView(), 0, -mTopViewHeight);
+
+        // Moving should collapse the top-controls to their min height and change the page height.
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(topContents.getVisibility(), Matchers.is(View.INVISIBLE));
+        });
+        // Click to stop any flings.
+        TestTouchUtils.singleClickView(instrumentation, activity.getWindow().getDecorView());
+        TestTouchUtils.sleepForDoubleTapTimeout(instrumentation);
+
+        // Record when page is clicked.
+        mActivityTestRule.executeScriptSync(
+                "var didClick = false; document.onclick = (e) => { didClick = true; };",
+                true /* useSeparateIsolate */);
+
+        // Click the area inside where top control would be if it's not hidden.
+        TestTouchUtils.singleClickView(instrumentation, fragmentView, 0, mTopViewHeight / 2);
+        TestTouchUtils.sleepForDoubleTapTimeout(instrumentation);
+
+        // Wait until page sees click.
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            boolean didClick = mActivityTestRule.executeScriptAndExtractBoolean("didClick");
+            Criteria.checkThat(didClick, Matchers.is(true));
+        });
+    }
+
     // Disabled on L bots due to unexplained flakes. See crbug.com/1035894.
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
     @Test
@@ -393,6 +433,7 @@ public class BrowserControlsTest {
     //
     // Disabled on L bots due to unexplained flakes. See crbug.com/1035894.
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
+    @DisabledTest(message = "https://crbug.com/1319870")
     @Test
     @SmallTest
     public void testAlertDoesntShowTopControlsIfOnlyExpandTopControlsAtPageTop() throws Exception {

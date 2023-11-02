@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,15 @@ namespace storage {
 namespace features {
 
 // Enables persistent Filesystem API in incognito mode.
-const base::Feature kEnablePersistentFilesystemInIncognito{
-    "EnablePersistentFilesystemInIncognito", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kEnablePersistentFilesystemInIncognito,
+             "EnablePersistentFilesystemInIncognito",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Creates FileSystemContexts in incognito mode. This is used to run web tests
 // in incognito mode to ensure feature parity for FileSystemAccessAccessHandles.
-const base::Feature kIncognitoFileSystemContextForTesting{
-    "IncognitoFileSystemContextForTesting", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kIncognitoFileSystemContextForTesting,
+             "IncognitoFileSystemContextForTesting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
 

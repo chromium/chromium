@@ -1,13 +1,12 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <iterator>
 
-#include "base/macros.h"
+#include "base/ranges/algorithm.h"
 #include "device/gamepad/gamepad_id_list.h"
 #include "device/gamepad/gamepad_standard_mappings.h"
 
@@ -102,7 +101,7 @@ void MapperXboxOneS2016Firmware(const Gamepad& input, Gamepad* mapped) {
   mapped->axes_length = AXIS_INDEX_COUNT;
 }
 
-void MapperXboxSeriesX(const Gamepad& input, Gamepad* mapped) {
+void MapperXboxBluetooth(const Gamepad& input, Gamepad* mapped) {
   *mapped = input;
   mapped->buttons[BUTTON_INDEX_PRIMARY] = input.buttons[0];
   mapped->buttons[BUTTON_INDEX_SECONDARY] = input.buttons[1];
@@ -117,11 +116,19 @@ void MapperXboxSeriesX(const Gamepad& input, Gamepad* mapped) {
   mapped->buttons[BUTTON_INDEX_LEFT_THUMBSTICK] = input.buttons[13];
   mapped->buttons[BUTTON_INDEX_RIGHT_THUMBSTICK] = input.buttons[14];
   mapped->buttons[BUTTON_INDEX_META] = input.buttons[12];
-  mapped->buttons[XBOX_SERIES_X_BUTTON_SHARE] = input.buttons[15];
   mapped->axes[AXIS_INDEX_RIGHT_STICK_X] = input.axes[2];
   mapped->axes[AXIS_INDEX_RIGHT_STICK_Y] = input.axes[5];
   DpadFromAxis(mapped, input.axes[9]);
 
+  mapped->buttons_length = BUTTON_INDEX_COUNT;
+  mapped->axes_length = AXIS_INDEX_COUNT;
+}
+
+void MapperXboxSeriesXBluetooth(const Gamepad& input, Gamepad* mapped) {
+  MapperXboxBluetooth(input, mapped);
+  // Xbox Wireless Controller Model 1914 has an extra Share button not present
+  // on other Xbox controllers. Map Share to the next button index after Meta.
+  mapped->buttons[XBOX_SERIES_X_BUTTON_SHARE] = input.buttons[15];
   mapped->buttons_length = XBOX_SERIES_X_BUTTON_COUNT;
   mapped->axes_length = AXIS_INDEX_COUNT;
 }
@@ -710,10 +717,63 @@ void MapperHoripadSwitch(const Gamepad& input, Gamepad* mapped) {
   mapped->axes_length = AXIS_INDEX_COUNT;
 }
 
+void MapperDjiFpv(const Gamepad& input, Gamepad* mapped) {
+  enum DjiFpvAxis {
+    kDjiFpvAxisGimbalDial = AXIS_INDEX_COUNT,
+    kDjiFpvAxisFlightModeSwitch,
+    kDjiFpvAxisC2Switch,
+    kDjiFpvAxisCount,
+  };
+
+  // DJI FPV Remote Controller 2 incorrectly reports the logical bounds for its
+  // control stick and gimbal dial axes as [-1024,+1024] when the actual bounds
+  // are [-660,+660].
+  constexpr double kDjiFpvAxisScale = 1024.0 / 660.0;
+
+  double flight_mode_axis;
+  if (input.buttons[6].pressed)
+    flight_mode_axis = -1.0;
+  else if (input.buttons[7].pressed)
+    flight_mode_axis = 1.0;
+  else
+    flight_mode_axis = 0.0;
+
+  double c2_axis;
+  if (input.buttons[4].pressed)
+    c2_axis = 0.0;
+  else if (input.buttons[5].pressed)
+    c2_axis = -1.0;
+  else
+    c2_axis = 1.0;
+
+  *mapped = input;
+  mapped->buttons[BUTTON_INDEX_PRIMARY] = NullButton();
+  mapped->buttons[BUTTON_INDEX_SECONDARY] = NullButton();
+  mapped->buttons[BUTTON_INDEX_TERTIARY] = NullButton();
+  mapped->buttons[BUTTON_INDEX_QUATERNARY] = NullButton();
+  mapped->buttons[BUTTON_INDEX_LEFT_SHOULDER] =
+      input.buttons[2];  // Flight Pause/RTH
+  mapped->buttons[BUTTON_INDEX_RIGHT_SHOULDER] =
+      input.buttons[3];  // Shutter/Record
+  mapped->buttons[BUTTON_INDEX_LEFT_TRIGGER] = NullButton();
+  mapped->buttons[BUTTON_INDEX_RIGHT_TRIGGER] = input.buttons[1];  // Start/Stop
+  mapped->buttons[BUTTON_INDEX_BACK_SELECT] = input.buttons[0];    // C1
+  mapped->axes[AXIS_INDEX_LEFT_STICK_X] = input.axes[3] * kDjiFpvAxisScale;
+  mapped->axes[AXIS_INDEX_LEFT_STICK_Y] = -input.axes[2] * kDjiFpvAxisScale;
+  mapped->axes[AXIS_INDEX_RIGHT_STICK_X] = input.axes[0] * kDjiFpvAxisScale;
+  mapped->axes[AXIS_INDEX_RIGHT_STICK_Y] = -input.axes[1] * kDjiFpvAxisScale;
+  mapped->axes[kDjiFpvAxisGimbalDial] = input.axes[4] * kDjiFpvAxisScale;
+  mapped->axes[kDjiFpvAxisFlightModeSwitch] = flight_mode_axis;
+  mapped->axes[kDjiFpvAxisC2Switch] = c2_axis;
+
+  mapped->buttons_length = 9;
+  mapped->axes_length = kDjiFpvAxisCount;
+}
+
 constexpr struct MappingData {
   GamepadId gamepad_id;
   GamepadStandardMappingFunction function;
-} AvailableMappings[] = {
+} kAvailableMappings[] = {
     // PowerA Wireless Controller - Nintendo GameCube style
     {GamepadId::kPowerALicPro, MapperSwitchPro},
     // Snakebyte iDroid:con
@@ -740,8 +800,6 @@ constexpr struct MappingData {
     {GamepadId::kMicrosoftProduct02ea, MapperXbox360Gamepad},
     // Xbox One S (Bluetooth)
     {GamepadId::kMicrosoftProduct02fd, MapperXboxOneS2016Firmware},
-    // Xbox Series X (Bluetooth)
-    {GamepadId::kMicrosoftProduct0b13, MapperXboxSeriesX},
     // Xbox 360 Wireless
     {GamepadId::kMicrosoftProduct0719, MapperXbox360Gamepad},
     // Xbox One Elite 2 (USB)
@@ -752,6 +810,14 @@ constexpr struct MappingData {
     {GamepadId::kMicrosoftProduct0b0a, MapperXbox360Gamepad},
     // Xbox Adaptive Controller (Bluetooth)
     {GamepadId::kMicrosoftProduct0b0c, MapperXboxOneBluetooth},
+    // Xbox Series X (Bluetooth)
+    {GamepadId::kMicrosoftProduct0b13, MapperXboxSeriesXBluetooth},
+    // Xbox One S (Bluetooth)
+    {GamepadId::kMicrosoftProduct0b20, MapperXboxBluetooth},
+    // Xbox Adaptive (Bluetooth)
+    {GamepadId::kMicrosoftProduct0b21, MapperXboxBluetooth},
+    // Xbox Elite Series 2 (Bluetooth)
+    {GamepadId::kMicrosoftProduct0b22, MapperXboxBluetooth},
     // Logitech F310, D mode
     {GamepadId::kLogitechProductc216, MapperDirectInputStyle},
     // Logitech F510, D mode
@@ -806,6 +872,8 @@ constexpr struct MappingData {
     {GamepadId::kOnLiveProduct100a, MapperOnLiveWireless},
     // OUYA Controller
     {GamepadId::kOuyaProduct0001, MapperOUYA},
+    // DJI FPV Remote Controller 2
+    {GamepadId::kDjiProduct1020, MapperDjiFpv},
     // SCUF Vantage, SCUF Vantage 2
     {GamepadId::kScufProduct7725, MapperDualshock4},
     // boom PSX+N64 USB Converter
@@ -825,13 +893,10 @@ GamepadStandardMappingFunction GetGamepadStandardMappingFunction(
     GamepadBusType bus_type) {
   GamepadId gamepad_id =
       GamepadIdList::Get().GetGamepadId(product_name, vendor_id, product_id);
-  const MappingData* begin = std::begin(AvailableMappings);
-  const MappingData* end = std::end(AvailableMappings);
-  const auto* find_it = std::find_if(begin, end, [=](const MappingData& item) {
-    return gamepad_id == item.gamepad_id;
-  });
+  const auto* find_it = base::ranges::find(kAvailableMappings, gamepad_id,
+                                           &MappingData::gamepad_id);
   GamepadStandardMappingFunction mapper =
-      (find_it == end) ? nullptr : find_it->function;
+      (find_it == std::end(kAvailableMappings)) ? nullptr : find_it->function;
 
   // The Switch Joy-Con Charging Grip allows a pair of Joy-Cons to be docked
   // with the grip and used over USB as a single composite gamepad. The Nintendo

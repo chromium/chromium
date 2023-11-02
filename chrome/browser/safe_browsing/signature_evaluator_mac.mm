@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,7 +66,7 @@ void ExtractSignatureInfo(const base::FilePath& path,
                           ClientDownloadRequest_SignatureInfo* signature) {
   scoped_refptr<BinaryFeatureExtractor> bfe = new BinaryFeatureExtractor();
 
-  // TODO(kerrnel): if Chrome ever opts into the OS X "kill" semantics, this
+  // If Chrome ever opts into the OS X "kill" semantics, this
   // call has to change. `ExtractImageFeatures` maps the file, which will
   // cause Chrome to be killed before it can report on the invalid file.
   // This call will need to read(2) the binary into a buffer.
@@ -155,10 +155,10 @@ bool MacSignatureEvaluator::GetRelativePathComponent(
   if (!parent.IsParent(child))
     return false;
 
-  std::vector<base::FilePath::StringType> parent_components;
-  std::vector<base::FilePath::StringType> child_components;
-  parent.GetComponents(&parent_components);
-  child.GetComponents(&child_components);
+  std::vector<base::FilePath::StringType> parent_components =
+      parent.GetComponents();
+  std::vector<base::FilePath::StringType> child_components =
+      child.GetComponents();
 
   size_t i = 0;
   while (i < parent_components.size() &&

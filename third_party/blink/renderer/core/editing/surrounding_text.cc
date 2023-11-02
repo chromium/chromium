@@ -99,7 +99,10 @@ SurroundingText::SurroundingText(const EphemeralRange& range,
       EphemeralRange(Position::FirstPositionInNode(*root_element)
                          .ParentAnchoredEquivalent(),
                      start_position),
-      TextIteratorBehavior::Builder().SetStopsOnFormControls(true).Build());
+      TextIteratorBehavior::Builder()
+          .SetStopsOnFormControls(true)
+          .SetEmitsPunctuationForReplacedElements(true)
+          .Build());
   if (!backwards_iterator.AtEnd())
     backwards_iterator.Advance(half_max_length);
 
@@ -136,7 +139,7 @@ wtf_size_t SurroundingText::EndOffsetInTextContent() const {
 }
 
 bool SurroundingText::IsEmpty() const {
-  return text_content_.IsEmpty();
+  return text_content_.empty();
 }
 
 }  // namespace blink

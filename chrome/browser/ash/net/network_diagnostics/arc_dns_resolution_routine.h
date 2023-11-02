@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,10 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/mojom/net.mojom.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_routine.h"
-#include "components/arc/mojom/net.mojom.h"
-#include "components/arc/session/arc_bridge_service.h"
 
 namespace ash {
 namespace network_diagnostics {
@@ -20,8 +20,8 @@ namespace network_diagnostics {
 // and returns the result.
 class ArcDnsResolutionRoutine : public NetworkDiagnosticsRoutine {
  public:
-  using RunArcDnsResolutionCallback =
-      mojom::NetworkDiagnosticsRoutines::RunArcDnsResolutionCallback;
+  using RunArcDnsResolutionCallback = chromeos::network_diagnostics::mojom::
+      NetworkDiagnosticsRoutines::RunArcDnsResolutionCallback;
 
   ArcDnsResolutionRoutine();
   ArcDnsResolutionRoutine(const ArcDnsResolutionRoutine&) = delete;
@@ -29,7 +29,7 @@ class ArcDnsResolutionRoutine : public NetworkDiagnosticsRoutine {
   ~ArcDnsResolutionRoutine() override;
 
   // NetworkDiagnosticsRoutine:
-  mojom::RoutineType Type() override;
+  chromeos::network_diagnostics::mojom::RoutineType Type() override;
   void Run() override;
   void AnalyzeResultsAndExecuteCallback() override;
 
@@ -49,7 +49,8 @@ class ArcDnsResolutionRoutine : public NetworkDiagnosticsRoutine {
   void OnQueryComplete(arc::mojom::ArcDnsResolutionTestResultPtr result);
 
   std::vector<std::string> hostnames_to_resolve_dns_;
-  std::vector<mojom::ArcDnsResolutionProblem> problems_;
+  std::vector<chromeos::network_diagnostics::mojom::ArcDnsResolutionProblem>
+      problems_;
   bool successfully_resolved_hostnames_ = true;
   bool failed_to_get_arc_service_manager_ = false;
   bool failed_to_get_net_instance_service_for_dns_resolution_test_ = false;

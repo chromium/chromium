@@ -122,7 +122,7 @@ with different configurations. To create a build directory which builds Chrome
 for Android, run:
 
 ```shell
-$ gn gen --args='target_os="android" is_chromecast=true' out/Default
+$ gn gen --args='target_os="android" is_cast_android=true' out/Default
 ```
 
 * You only have to run this once for each new build directory, Ninja will

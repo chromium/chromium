@@ -52,3 +52,5 @@ pub const MSG_DONTROUTE: ::c_int = 0;
 pub const MSG_WAITALL: ::c_int = 0;
 pub const MSG_MORE: ::c_int = 0;
 pub const MSG_NOSIGNAL: ::c_int = 0;
+
+pub use crate::unix::newlib::generic::{sigset_t, stat};

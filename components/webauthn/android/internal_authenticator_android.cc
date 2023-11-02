@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,7 @@ using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
+using base::android::ToJavaArrayOfByteArray;
 
 InternalAuthenticatorAndroid::InternalAuthenticatorAndroid(
     content::RenderFrameHost* render_frame_host)
@@ -116,6 +117,31 @@ void InternalAuthenticatorAndroid::
                                                                            obj);
 }
 
+bool InternalAuthenticatorAndroid::IsGetMatchingCredentialIdsSupported() {
+  JNIEnv* env = AttachCurrentThread();
+  JavaRef<jobject>& obj = GetJavaObject();
+  DCHECK(!obj.is_null());
+
+  return Java_InternalAuthenticator_isGetMatchingCredentialIdsSupported(env,
+                                                                        obj);
+}
+
+void InternalAuthenticatorAndroid::GetMatchingCredentialIds(
+    const std::string& relying_party_id,
+    const std::vector<std::vector<uint8_t>>& credential_ids,
+    bool require_third_party_payment_bit,
+    webauthn::GetMatchingCredentialIdsCallback callback) {
+  JNIEnv* env = AttachCurrentThread();
+  JavaRef<jobject>& obj = GetJavaObject();
+  DCHECK(!obj.is_null());
+
+  get_matching_credential_ids_callback_ = std::move(callback);
+  Java_InternalAuthenticator_getMatchingCredentialIds(
+      env, obj, ConvertUTF8ToJavaString(env, relying_party_id),
+      ToJavaArrayOfByteArray(env, std::move(credential_ids)),
+      require_third_party_payment_bit);
+}
+
 void InternalAuthenticatorAndroid::Cancel() {
   JNIEnv* env = AttachCurrentThread();
   JavaRef<jobject>& obj = GetJavaObject();
@@ -143,9 +169,13 @@ void InternalAuthenticatorAndroid::InvokeMakeCredentialResponse(
         buf_in, buf_size, &response);
   }
 
+  DCHECK_NE(
+      status,
+      static_cast<int>(
+          blink::mojom::AuthenticatorStatus::ERROR_WITH_DOM_EXCEPTION_DETAILS));
   std::move(make_credential_response_callback_)
       .Run(static_cast<blink::mojom::AuthenticatorStatus>(status),
-           std::move(response));
+           std::move(response), /*dom_exception_details=*/nullptr);
 }
 
 void InternalAuthenticatorAndroid::InvokeGetAssertionResponse(
@@ -163,9 +193,13 @@ void InternalAuthenticatorAndroid::InvokeGetAssertionResponse(
         buf_in, buf_size, &response);
   }
 
+  DCHECK_NE(
+      status,
+      static_cast<int>(
+          blink::mojom::AuthenticatorStatus::ERROR_WITH_DOM_EXCEPTION_DETAILS));
   std::move(get_assertion_response_callback_)
       .Run(static_cast<blink::mojom::AuthenticatorStatus>(status),
-           std::move(response));
+           std::move(response), /*dom_exception_details=*/nullptr);
 }
 
 void InternalAuthenticatorAndroid::
@@ -173,6 +207,15 @@ void InternalAuthenticatorAndroid::
         JNIEnv* env,
         jboolean is_uvpaa) {
   std::move(is_uvpaa_callback_).Run(static_cast<bool>(is_uvpaa));
+}
+
+void InternalAuthenticatorAndroid::InvokeGetMatchingCredentialIdsResponse(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobjectArray>& credential_ids_array) {
+  std::vector<std::vector<uint8_t>> credential_ids;
+  JavaArrayOfByteArrayToBytesVector(env, credential_ids_array, &credential_ids);
+  std::move(get_matching_credential_ids_callback_)
+      .Run(std::move(credential_ids));
 }
 
 JavaRef<jobject>& InternalAuthenticatorAndroid::GetJavaObject() {

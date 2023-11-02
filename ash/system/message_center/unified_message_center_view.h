@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/message_center/message_center_scroll_bar.h"
 #include "ash/system/message_center/unified_message_list_view.h"
+#include "base/memory/scoped_refptr.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
@@ -36,7 +37,7 @@ class UnifiedSystemTrayModel;
 class UnifiedSystemTrayView;
 
 // Note: This enum represents the current animation state for
-// UnifiedMessageCenterView. There is an equivalent animation state emum in
+// UnifiedMessageCenterView. There is an equivalent animation state enum in
 // the child UnifiedMessageListView. The animations for these two views can
 // occur simultaneously or independently, so states for both views are tracked
 // separately.
@@ -62,7 +63,7 @@ class ASH_EXPORT UnifiedMessageCenterView
       public gfx::AnimationDelegate {
  public:
   UnifiedMessageCenterView(UnifiedSystemTrayView* parent,
-                           UnifiedSystemTrayModel* model,
+                           scoped_refptr<UnifiedSystemTrayModel> model,
                            UnifiedMessageCenterBubble* bubble);
 
   UnifiedMessageCenterView(const UnifiedMessageCenterView&) = delete;
@@ -73,6 +74,11 @@ class ASH_EXPORT UnifiedMessageCenterView
   // Initializes the `UnifiedMessageListView` with existing notifications.
   // Should be called after ctor.
   void Init();
+
+  // Calls the notification bar `Update` function with the current unpinned,
+  // pinned and stacked notification counts. Returns true if the state of the
+  // bar has changed.
+  bool UpdateNotificationBar();
 
   // Sets the maximum height that the view can take.
   // TODO(tengs): The layout of this view is heavily dependant on this max
@@ -108,9 +114,9 @@ class ASH_EXPORT UnifiedMessageCenterView
   // Relinquish focus and transfer it to the quick settings widget.
   void FocusOut(bool reverse);
 
-  // Set the first child view to be focused when focus is acquired.
-  // This is the first visible child unless reverse is true, in which case
-  // it is the last visible child.
+  // Set the first notification view to be focused when focus is acquired.
+  // This is the oldest notification if `reverse` is `true`. Otherwise, if
+  // `reverse` is `false`, this is the newest notification.
   void FocusEntered(bool reverse);
 
   // Expand message center to show all notifications and stacked notification
@@ -128,6 +134,9 @@ class ASH_EXPORT UnifiedMessageCenterView
 
   // Returns true if the notification bar is visible.
   bool IsNotificationBarVisible() const;
+
+  // Returns true if the scroll bar is visible.
+  bool IsScrollBarVisible() const;
 
   // views::View:
   void AddedToWidget() override;
@@ -178,7 +187,7 @@ class ASH_EXPORT UnifiedMessageCenterView
   View* GetLastFocusableChild();
 
   UnifiedSystemTrayView* const parent_;
-  UnifiedSystemTrayModel* const model_;
+  scoped_refptr<UnifiedSystemTrayModel> model_;
   UnifiedMessageCenterBubble* const message_center_bubble_;
   StackedNotificationBar* const notification_bar_;
   views::ScrollBar* scroll_bar_;

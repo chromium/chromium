@@ -1,0 +1,38 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Configuration for a generic x86 android-19 AVD.
+
+emulator_package {
+  package_name: "chromium/third_party/android_sdk/public/emulator"
+  version: "qI9liK4Dm1fguyeCE5zsfgvu154CZZ8XTk7JEhcw21MC"  # 31.2.7
+  dest_path: "generic_android19"
+}
+
+system_image_package {
+  package_name: "chromium/third_party/android_sdk/public/system-images/android-19/google_apis/x86"
+  version: "rMCEYumdWz5Lil1xTCx22Nrn30jgKLBKl-pWaIKdVYQC"  # 40
+  dest_path: "generic_android19"
+}
+system_image_name: "system-images;android-19;google_apis;x86"
+
+avd_package {
+  package_name: "chromium/third_party/android_sdk/public/avds/android-19/google_apis/x86"
+  dest_path: "generic_android19"
+}
+avd_name: "android_19_google_apis_x86"
+
+avd_settings {
+  screen {
+    density: 480
+    height: 1920
+    width: 1080
+  }
+  # Tests can run into low memory issue with the default ram size 1024MB
+  # Incease to 2048MB, which is the same as that on Nexus 5
+  ram_size: 2048
+  sdcard {
+    size: "1G"
+  }
+}

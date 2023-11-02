@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -148,8 +148,8 @@ class ChromeURLDataManagerWebUITrustedTypesTest
       public testing::WithParamInterface<const char*> {
  public:
   ChromeURLDataManagerWebUITrustedTypesTest() {
-    std::vector<base::Feature> enabled_features;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+    std::vector<base::test::FeatureRef> enabled_features;
+#if !BUILDFLAG(IS_CHROMEOS)
     if (GetParam() == std::string("chrome://welcome"))
       enabled_features.push_back(welcome::kForceEnabled);
 #endif
@@ -205,9 +205,8 @@ IN_PROC_BROWSER_TEST_P(ChromeURLDataManagerWebUITrustedTypesTest,
 // This list was derived from chrome://about. :)
 static constexpr const char* const kChromeUrls[] = {
     "chrome://accessibility",
-    // TODO(crbug.com/1114074): DCHECK failure when opening
-    // chrome://appcache-internals.
-    // "chrome://appcache-internals",
+    "chrome://apc-internals",
+    "chrome://attribution-internals",
     "chrome://autofill-internals",
     "chrome://blob-internals",
     "chrome://bookmarks",
@@ -215,14 +214,12 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://components",
     "chrome://connection-help",
     "chrome://connection-monitoring-detected",
-    "chrome://conversion-internals",
     "chrome://crashes",
     "chrome://credits",
     "chrome://device-log",
     "chrome://dino",
     // TODO(crbug.com/1113446): Test failure due to excessive output.
     // "chrome://discards",
-    "chrome://domain-reliability-internals",
     "chrome://download-internals",
     "chrome://downloads",
     "chrome://extensions",
@@ -288,7 +285,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://web-app-internals",
     "chrome://webrtc-internals",
     "chrome://webrtc-logs",
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     "chrome://explore-sites-internals",
     "chrome://internals/notifications",
     "chrome://internals/query-tiles",
@@ -298,7 +295,6 @@ static constexpr const char* const kChromeUrls[] = {
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     "chrome://account-manager-error",
-    "chrome://account-manager-welcome",
     "chrome://account-migration-welcome",
     "chrome://add-supervision",
     // TODO(crbug.com/1102129): DCHECK failure in
@@ -319,10 +315,10 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://linux-proxy-config",
     "chrome://multidevice-setup",
     "chrome://network",
-    "chrome://oobe",
     "chrome://os-credits",
     "chrome://os-settings",
     "chrome://power",
+    "chrome://projector",
     "chrome://proximity-auth/proximity_auth.html",
     "chrome://set-time",
     "chrome://slow",
@@ -331,21 +327,23 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://sys-internals",
     "chrome-untrusted://terminal",
 #endif
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
     "chrome://apps",
     "chrome://browser-switch",
+    "chrome://welcome",
 #endif
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     "chrome://signin-email-confirmation",
-    "chrome://welcome",
 #endif
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
     "chrome://sandbox",
     "chrome://nacl",
+#endif
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_LACROS)
     // TODO(https://crbug.com/1219651): this test is flaky on mac.
     "chrome://bluetooth-internals",
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     "chrome://conflicts",
 #endif
 };

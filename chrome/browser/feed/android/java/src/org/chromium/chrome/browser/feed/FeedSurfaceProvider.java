@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.feed;
 
 import android.graphics.Canvas;
 import android.view.View;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
@@ -48,4 +50,15 @@ public interface FeedSurfaceProvider {
      * Captures the contents of this provider into the specified output.
      */
     void captureThumbnail(Canvas canvas);
+
+    /**
+     * @return The surface's FeedReliabilityLogger which may be null.
+     */
+    @Nullable
+    FeedReliabilityLogger getReliabilityLogger();
+
+    /**
+     * Reloads the contents.
+     */
+    void reload();
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,14 @@ struct MyVector {
   MyVector(const MyVector&);
   MyVector(MyVector&&);
 };
+
+template <class T>
+struct TrivialTemplate {
+  TrivialTemplate();
+};
+
+template <typename T>
+using AliasTemplate = T;
 
 // Note: this should warn for an implicit copy constructor too, but currently
 // doesn't, due to a plugin bug.
@@ -127,6 +135,126 @@ class FourStringsWarns {
   std::string four_;
 };
 
+class TrivialTemplateDoesNotWarn {
+ public:
+  TrivialTemplateDoesNotWarn() = default;
+  ~TrivialTemplateDoesNotWarn() = default;
+
+ private:
+  TrivialTemplate<int> foo_;
+};
+
+class NineTrivialTemplatesDoesNotWarn {
+ public:
+  NineTrivialTemplatesDoesNotWarn() = default;
+  ~NineTrivialTemplatesDoesNotWarn() = default;
+
+ private:
+  TrivialTemplate<int> one_;
+  TrivialTemplate<int> two_;
+  TrivialTemplate<int> three_;
+  TrivialTemplate<int> four_;
+  TrivialTemplate<int> five_;
+  TrivialTemplate<int> six_;
+  TrivialTemplate<int> seven_;
+  TrivialTemplate<int> eight_;
+  TrivialTemplate<int> nine_;
+};
+
+class TenTrivialTemplatesWarns {
+ public:
+  TenTrivialTemplatesWarns() = default;
+  ~TenTrivialTemplatesWarns() = default;
+
+ private:
+  TrivialTemplate<int> one_;
+  TrivialTemplate<int> two_;
+  TrivialTemplate<int> three_;
+  TrivialTemplate<int> four_;
+  TrivialTemplate<int> five_;
+  TrivialTemplate<int> six_;
+  TrivialTemplate<int> seven_;
+  TrivialTemplate<int> eight_;
+  TrivialTemplate<int> nine_;
+  TrivialTemplate<int> ten_;
+};
+
+class TrivialAliasTemplateDoesNotWarn {
+ public:
+  TrivialAliasTemplateDoesNotWarn() = default;
+  ~TrivialAliasTemplateDoesNotWarn() = default;
+
+ private:
+  AliasTemplate<int> one_;
+};
+
+class NineTrivialAliasTemplatesDoesNotWarn {
+ public:
+  NineTrivialAliasTemplatesDoesNotWarn() = default;
+  ~NineTrivialAliasTemplatesDoesNotWarn() = default;
+
+ private:
+  AliasTemplate<int> one_;
+  AliasTemplate<int> two_;
+  AliasTemplate<int> three_;
+  AliasTemplate<int> four_;
+  AliasTemplate<int> five_;
+  AliasTemplate<int> six_;
+  AliasTemplate<int> seven_;
+  AliasTemplate<int> eight_;
+  AliasTemplate<int> nine_;
+};
+
+class TenTrivialAliasTemplatesWarns {
+ public:
+  TenTrivialAliasTemplatesWarns() = default;
+  ~TenTrivialAliasTemplatesWarns() = default;
+
+ private:
+  AliasTemplate<int> one_;
+  AliasTemplate<int> two_;
+  AliasTemplate<int> three_;
+  AliasTemplate<int> four_;
+  AliasTemplate<int> five_;
+  AliasTemplate<int> six_;
+  AliasTemplate<int> seven_;
+  AliasTemplate<int> eight_;
+  AliasTemplate<int> nine_;
+  AliasTemplate<int> ten_;
+};
+
+class NonTrivialAliasTemplateDoesNotWarn {
+ public:
+  NonTrivialAliasTemplateDoesNotWarn() = default;
+  ~NonTrivialAliasTemplateDoesNotWarn() = default;
+
+ private:
+  AliasTemplate<std::string> one_;
+};
+
+class ThreeNonTrivialAliasTemplatesDoesNotWarn {
+ public:
+  ThreeNonTrivialAliasTemplatesDoesNotWarn() = default;
+  ~ThreeNonTrivialAliasTemplatesDoesNotWarn() = default;
+
+ private:
+  AliasTemplate<std::string> one_;
+  AliasTemplate<std::string> two_;
+  AliasTemplate<std::string> three_;
+};
+
+class FourNonTrivialAliasTemplatesWarns {
+ public:
+  FourNonTrivialAliasTemplatesWarns() = default;
+  ~FourNonTrivialAliasTemplatesWarns() = default;
+
+ private:
+  AliasTemplate<std::string> one_;
+  AliasTemplate<std::string> two_;
+  AliasTemplate<std::string> three_;
+  AliasTemplate<std::string> four_;
+};
+
 class CheckedPtrDoesNotWarn {
  public:
   CheckedPtrDoesNotWarn() = default;
@@ -213,6 +341,50 @@ class TenRawPtrWarns {
   raw_ptr<TenRawPtrWarns> eight_;
   raw_ptr<TenRawPtrWarns> nine_;
   raw_ptr<TenRawPtrWarns> ten_;
+};
+
+class RawRefDoesNotWarn {
+ public:
+  RawRefDoesNotWarn() = default;
+  ~RawRefDoesNotWarn() = default;
+
+ private:
+  raw_ref<RawRefDoesNotWarn> foo_;
+};
+
+class NineRawRefDoesNotWarn {
+ public:
+  NineRawRefDoesNotWarn() = default;
+  ~NineRawRefDoesNotWarn() = default;
+
+ private:
+  raw_ref<NineRawRefDoesNotWarn> one_;
+  raw_ref<NineRawRefDoesNotWarn> two_;
+  raw_ref<NineRawRefDoesNotWarn> three_;
+  raw_ref<NineRawRefDoesNotWarn> four_;
+  raw_ref<NineRawRefDoesNotWarn> five_;
+  raw_ref<NineRawRefDoesNotWarn> six_;
+  raw_ref<NineRawRefDoesNotWarn> seven_;
+  raw_ref<NineRawRefDoesNotWarn> eight_;
+  raw_ref<NineRawRefDoesNotWarn> nine_;
+};
+
+class TenRawRefWarns {
+ public:
+  TenRawRefWarns() = default;
+  ~TenRawRefWarns() = default;
+
+ private:
+  raw_ref<TenRawRefWarns> one_;
+  raw_ref<TenRawRefWarns> two_;
+  raw_ref<TenRawRefWarns> three_;
+  raw_ref<TenRawRefWarns> four_;
+  raw_ref<TenRawRefWarns> five_;
+  raw_ref<TenRawRefWarns> six_;
+  raw_ref<TenRawRefWarns> seven_;
+  raw_ref<TenRawRefWarns> eight_;
+  raw_ref<TenRawRefWarns> nine_;
+  raw_ref<TenRawRefWarns> ten_;
 };
 
 #endif  // MISSING_CTOR_H_

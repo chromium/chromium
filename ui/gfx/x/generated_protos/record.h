@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -97,21 +97,44 @@ class COMPONENT_EXPORT(X11) Record {
   };
 
   struct Range8 {
+    bool operator==(const Range8& other) const {
+      return first == other.first && last == other.last;
+    }
+
     uint8_t first{};
     uint8_t last{};
   };
 
   struct Range16 {
+    bool operator==(const Range16& other) const {
+      return first == other.first && last == other.last;
+    }
+
     uint16_t first{};
     uint16_t last{};
   };
 
   struct ExtRange {
+    bool operator==(const ExtRange& other) const {
+      return major == other.major && minor == other.minor;
+    }
+
     Range8 major{};
     Range16 minor{};
   };
 
   struct Range {
+    bool operator==(const Range& other) const {
+      return core_requests == other.core_requests &&
+             core_replies == other.core_replies &&
+             ext_requests == other.ext_requests &&
+             ext_replies == other.ext_replies &&
+             delivered_events == other.delivered_events &&
+             device_events == other.device_events && errors == other.errors &&
+             client_started == other.client_started &&
+             client_died == other.client_died;
+    }
+
     Range8 core_requests{};
     Range8 core_replies{};
     ExtRange ext_requests{};
@@ -124,6 +147,10 @@ class COMPONENT_EXPORT(X11) Record {
   };
 
   struct ClientInfo {
+    bool operator==(const ClientInfo& other) const {
+      return client_resource == other.client_resource && ranges == other.ranges;
+    }
+
     ClientSpec client_resource{};
     std::vector<Range> ranges{};
   };
@@ -131,6 +158,8 @@ class COMPONENT_EXPORT(X11) Record {
   struct BadContextError : public x11::Error {
     uint16_t sequence{};
     uint32_t invalid_record{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };

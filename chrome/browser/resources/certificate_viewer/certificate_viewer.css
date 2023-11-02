@@ -1,4 +1,4 @@
-/* Copyright 2012 The Chromium Authors. All rights reserved.
+/* Copyright 2012 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
@@ -20,22 +20,12 @@ h3 {
   margin-top: 17px;
 }
 
-#usages-title {
-  /* Workaround until webkit bug https://bugs.webkit.org/show_bug.cgi?id=80537
-   * is resolved. */
-  padding-top: 17px;
-}
-
 #tabbox {
   height: 100%;
+  overflow: auto;
   width: 100%;
 }
 
-#tabpanels {
-  overflow: auto;
-}
-
-#usages,
 #cert-field-value {
   padding-inline-start: 15px;
   white-space: pre-wrap;
@@ -54,7 +44,6 @@ h3 {
   display: table-row;
 }
 
-#usages,
 .groups > div > div {
   color: #616161;
   line-height: 18px;
@@ -72,7 +61,9 @@ h3 {
 }
 
 /* Used so that 100% width within tabpanel will correspond to usable space. */
-tabpanel {
+div[slot='panel'] {
+  height: 100%;
+  overflow: auto;
   position: relative;
 }
 
@@ -84,49 +75,44 @@ tabpanel {
   width: 100%;
 }
 
-/* The minimum heights defined for the three sections are calculated based on
- * the percentage of rendered height at 100% scaling. The dialog height is
- * defined in CertificateViewerDialog::GetDialogSize. */
-#hierarchy-section {
-  height: 20%;
-  min-height: 117px;
-  top: 0;
+#hierarchy {
+  /* Cert hierarchy tree should be 3 lines tall and does not grow. */
+  flex: 0;
+  min-height: calc(3 * var(--cr-tree-row-line-height));
 }
 
-#cert-fields-section {
-  height: 50%;
-  min-height: 294px;
+#cert-fields {
+  /* Cert fields tree should be minimum 3 lines tall and grows 2.9x as fast
+   * as the field value text box. */
+  flex: 2.9;
+  min-height: calc(3 * var(--cr-tree-row-line-height));
 }
 
-#cert-field-value-section {
-  bottom: 0;
-  height: 30%;
-  min-height: 126px;
+#cert-field-value {
+  flex: 1;
+  margin-block-end: 10px;
+  /* Minimum height enough for 3 lines of text. */
+  min-height: 48px;
 }
 
 .section-contents {
   background: #fff;
   border: 1px solid #c8c8c8;
-  flex: 1 1 auto;
   /* Scrolling should be enabled on all tree views and value field. */
   overflow: auto;
 }
 
-.tree-row[selected] {
-  background-color: #f0f0f0;
-  background-image: none;
-}
-
-.tree-item > .tree-row {
-  border: 0;
-  border-radius: 0;
-  line-height: 29px;
+html {
+  --cr-tree-row-selected-color: #f0f0f0;
+  --cr-tree-row-selected-image: none;
+  --cr-tree-row-border: 0;
+  --cr-tree-row-border-radius: 0;
+  --cr-tree-row-line-height: 29px;
 }
 
 #export {
   float: right;
   margin-bottom: 20px;
   margin-inline-start: 1px;
-  margin-top: 10px;
 }
 

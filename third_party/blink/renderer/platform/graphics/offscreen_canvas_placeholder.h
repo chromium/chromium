@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,13 +25,11 @@ class PLATFORM_EXPORT OffscreenCanvasPlaceholder {
  public:
   ~OffscreenCanvasPlaceholder();
 
-  virtual void SetOffscreenCanvasResource(scoped_refptr<CanvasResource>,
+  virtual void SetOffscreenCanvasResource(scoped_refptr<CanvasResource>&&,
                                           viz::ResourceId resource_id);
   void SetOffscreenCanvasDispatcher(
       base::WeakPtr<CanvasResourceDispatcher>,
       scoped_refptr<base::SingleThreadTaskRunner>);
-
-  void ReleaseOffscreenCanvasFrame();
 
   void SetSuspendOffscreenCanvasAnimation(bool);
 
@@ -60,7 +58,6 @@ class PLATFORM_EXPORT OffscreenCanvasPlaceholder {
   scoped_refptr<CanvasResource> placeholder_frame_;
   base::WeakPtr<CanvasResourceDispatcher> frame_dispatcher_;
   scoped_refptr<base::SingleThreadTaskRunner> frame_dispatcher_task_runner_;
-  viz::ResourceId placeholder_frame_resource_id_ = viz::kInvalidResourceId;
 
   enum {
     kNoPlaceholderId = -1,

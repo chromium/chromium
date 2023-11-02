@@ -1,53 +1,56 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/safe_browsing/chrome_password_protection_service.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/feature_list.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
-#include "base/notreached.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/time/time.h"
-#include "components/keyed_service/core/service_access_type.h"
-#include "components/omnibox/common/omnibox_features.h"
-#include "components/password_manager/core/browser/insecure_credentials_helper.h"
-#include "components/password_manager/core/browser/ui/password_check_referrer.h"
-#include "components/prefs/pref_service.h"
-#include "components/safe_browsing/core/browser/user_population.h"
-#include "components/safe_browsing/core/browser/verdict_cache_manager.h"
-#include "components/safe_browsing/core/common/features.h"
-#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/safe_browsing/core/common/safebrowsing_constants.h"
-#include "components/safe_browsing/core/common/utils.h"
-#include "components/safe_browsing/ios/browser/password_protection/password_protection_request_ios.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/strings/grit/components_strings.h"
-#include "components/sync/base/model_type.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/sync/protocol/user_event_specifics.pb.h"
-#include "components/sync_user_events/user_event_service.h"
-#include "components/variations/service/variations_service.h"
-#import "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/history/history_service_factory.h"
-#include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
-#import "ios/chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "ios/chrome/browser/safe_browsing/user_population_helper.h"
+#import "base/command_line.h"
+#import "base/feature_list.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "base/notreached.h"
+#import "base/ranges/algorithm.h"
+#import "base/strings/utf_string_conversions.h"
+#import "base/time/time.h"
+#import "components/keyed_service/core/service_access_type.h"
+#import "components/omnibox/common/omnibox_features.h"
+#import "components/password_manager/core/browser/insecure_credentials_helper.h"
+#import "components/password_manager/core/browser/ui/password_check_referrer.h"
+#import "components/prefs/pref_service.h"
+#import "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
+#import "components/safe_browsing/core/browser/user_population.h"
+#import "components/safe_browsing/core/browser/verdict_cache_manager.h"
+#import "components/safe_browsing/core/common/features.h"
+#import "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#import "components/safe_browsing/core/common/safebrowsing_constants.h"
+#import "components/safe_browsing/core/common/utils.h"
+#import "components/safe_browsing/ios/browser/password_protection/password_protection_request_ios.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/strings/grit/components_strings.h"
+#import "components/sync/base/model_type.h"
+#import "components/sync/driver/sync_service.h"
+#import "components/sync/protocol/user_event_specifics.pb.h"
+#import "components/sync_user_events/user_event_service.h"
+#import "components/variations/service/variations_service.h"
+#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/history/history_service_factory.h"
+#import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
+#import "ios/chrome/browser/safe_browsing/user_population_helper.h"
 #import "ios/chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
-#include "ios/chrome/browser/signin/identity_manager_factory.h"
-#include "ios/chrome/browser/sync/ios_user_event_service_factory.h"
-#include "ios/chrome/browser/sync/sync_service_factory.h"
-#include "ios/web/public/navigation/navigation_item.h"
-#include "ios/web/public/navigation/navigation_manager.h"
-#include "ios/web/public/thread/web_thread.h"
+#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/ios_user_event_service_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/components/security_interstitials/safe_browsing/safe_browsing_service.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "url/gurl.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -94,7 +97,7 @@ bool HasArtificialCachedVerdict() {
   return !phishing_url_string.empty();
 }
 
-// Given a |web_state|, returns a timestamp of its last committed
+// Given a `web_state`, returns a timestamp of its last committed
 // navigation.
 int64_t GetLastCommittedNavigationTimestamp(web::WebState* web_state) {
   if (!web_state)
@@ -138,20 +141,21 @@ std::unique_ptr<UserEventSpecifics> GetUserEventSpecifics(
 ChromePasswordProtectionService::ChromePasswordProtectionService(
     SafeBrowsingService* sb_service,
     ChromeBrowserState* browser_state,
+    history::HistoryService* history_service,
+    safe_browsing::SafeBrowsingMetricsCollector*
+        safe_browsing_metrics_collector,
     ChangePhishedCredentialsCallback add_phished_credentials,
     ChangePhishedCredentialsCallback remove_phished_credentials)
     : safe_browsing::PasswordProtectionService(
           sb_service->GetDatabaseManager(),
           sb_service->GetURLLoaderFactory(),
-          ios::HistoryServiceFactory::GetForBrowserState(
-              browser_state,
-              ServiceAccessType::EXPLICIT_ACCESS),
+          history_service,
           /*pref_service=*/nullptr,
           /*token_fetcher=*/nullptr,
           browser_state->IsOffTheRecord(),
           /*identity_manager=*/nullptr,
           /*try_token_fetch=*/false,
-          /*metrics_collector=*/nullptr),
+          safe_browsing_metrics_collector),
       browser_state_(browser_state),
       add_phished_credentials_(std::move(add_phished_credentials)),
       remove_phished_credentials_(std::move(remove_phished_credentials)) {}
@@ -234,7 +238,8 @@ void ChromePasswordProtectionService::MaybeReportPasswordReuseDetected(
     safe_browsing::PasswordProtectionRequest* request,
     const std::string& username,
     PasswordType password_type,
-    bool is_phishing_url) {
+    bool is_phishing_url,
+    bool warning_shown) {
   // Enterprise reporting extension not yet supported in iOS.
 }
 
@@ -392,14 +397,13 @@ AccountInfo ChromePasswordProtectionService::GetAccountInfoForUsername(
     return AccountInfo();
   std::vector<CoreAccountInfo> signed_in_accounts =
       identity_manager->GetAccountsWithRefreshTokens();
-  auto account_iterator =
-      std::find_if(signed_in_accounts.begin(), signed_in_accounts.end(),
-                   [username](const auto& account) {
-                     return password_manager::AreUsernamesSame(
-                         account.email,
-                         /*is_username1_gaia_account=*/true, username,
-                         /*is_username2_gaia_account=*/true);
-                   });
+  auto account_iterator = base::ranges::find_if(
+      signed_in_accounts, [username](const auto& account) {
+        return password_manager::AreUsernamesSame(
+            account.email,
+            /*is_username1_gaia_account=*/true, username,
+            /*is_username2_gaia_account=*/true);
+      });
   if (account_iterator == signed_in_accounts.end())
     return AccountInfo();
 

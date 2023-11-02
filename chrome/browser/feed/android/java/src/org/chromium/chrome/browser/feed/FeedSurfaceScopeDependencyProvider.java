@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,19 +25,13 @@ class FeedSurfaceScopeDependencyProvider implements SurfaceScopeDependencyProvid
     private final Activity mActivity;
     private final Context mActivityContext;
     private final boolean mDarkMode;
-    private final LoggingEnabledDelegate mLoggingEnabledDelegate;
     private final ObserverList<SurfaceHeaderOffsetObserver> mObserverList = new ObserverList<>();
 
-    public interface LoggingEnabledDelegate {
-        boolean isLoggingEnabledForCurrentStream();
-    }
-
-    public FeedSurfaceScopeDependencyProvider(Activity activity, Context activityContext,
-            boolean darkMode, LoggingEnabledDelegate loggingEnabledDelegate) {
+    public FeedSurfaceScopeDependencyProvider(
+            Activity activity, Context activityContext, boolean darkMode) {
         mActivityContext = FeedProcessScopeDependencyProvider.createFeedContext(activityContext);
         mDarkMode = darkMode;
         mActivity = activity;
-        mLoggingEnabledDelegate = loggingEnabledDelegate;
     }
 
     @Override
@@ -69,12 +63,6 @@ class FeedSurfaceScopeDependencyProvider implements SurfaceScopeDependencyProvid
             default:
                 return AutoplayPreference.AUTOPLAY_ON_WIFI_ONLY;
         }
-    }
-
-    @Override
-    public boolean isActivityLoggingEnabled() {
-        assert ThreadUtils.runningOnUiThread();
-        return mLoggingEnabledDelegate.isLoggingEnabledForCurrentStream();
     }
 
     @Override

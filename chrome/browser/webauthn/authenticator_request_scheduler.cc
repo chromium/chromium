@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,6 +47,11 @@ class ActiveRequestWeakHolder : public base::SupportsUserData::Data {
 std::unique_ptr<ChromeAuthenticatorRequestDelegate>
 AuthenticatorRequestScheduler::CreateRequestDelegate(
     content::RenderFrameHost* render_frame_host) {
+  // RenderFrameHosts which are not exposed to the user can't create
+  // authenticator request delegate.
+  if (!render_frame_host->IsActive())
+    return nullptr;
+
   auto* const web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
   auto* const active_request_holder =

@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/layer_impl.h"
@@ -53,7 +54,8 @@ class CC_EXPORT PictureLayerImpl
 
   // LayerImpl overrides.
   const char* LayerTypeAsString() const override;
-  std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
+  std::unique_ptr<LayerImpl> CreateLayerImpl(
+      LayerTreeImpl* tree_impl) const override;
   void PushPropertiesTo(LayerImpl* layer) override;
   void AppendQuads(viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override;
@@ -107,7 +109,10 @@ class CC_EXPORT PictureLayerImpl
 
   void SetNearestNeighbor(bool nearest_neighbor);
 
-  void SetDirectlyCompositedImageSize(absl::optional<gfx::Size>);
+  void SetDirectlyCompositedImageDefaultRasterScale(
+      const gfx::Vector2dF& scale);
+  // TODO(crbug.com/1196414): Support 2D scales in directly composited images.
+  void SetDirectlyCompositedImageDefaultRasterScale(float scale);
 
   size_t GPUMemoryUsageInBytes() const override;
 
@@ -172,10 +177,12 @@ class CC_EXPORT PictureLayerImpl
   }
 
   void AddLastAppendQuadsTilingForTesting(PictureLayerTiling* tiling) {
-    last_append_quads_tilings_.push_back(tiling);
+    last_append_quads_tilings_.push_back(tiling->tile_id);
   }
 
  protected:
+  friend class RasterizeAndRecordBenchmarkImpl;
+
   PictureLayerImpl(LayerTreeImpl* tree_impl, int id);
   PictureLayerTiling* AddTiling(const gfx::AxisTransform2d& contents_transform);
   void RemoveAllTilings();
@@ -191,18 +198,12 @@ class CC_EXPORT PictureLayerImpl
   // Returns false if raster translation is not applicable.
   bool CalculateRasterTranslation(gfx::Vector2dF& raster_translation) const;
   void CleanUpTilingsOnActiveLayer(
-      const std::vector<PictureLayerTiling*>& used_tilings);
+      const std::vector<int>& used_tilings);
   float MinimumContentsScale() const;
   float MaximumContentsScale() const;
   void UpdateViewportRectForTilePriorityInContentSpace();
   PictureLayerImpl* GetRecycledTwinLayer() const;
   bool ShouldDirectlyCompositeImage(float raster_scale) const;
-
-  // Returns the default raster scale used for current layer bounds and directly
-  // composited image size. To avoid re-raster on scale changes, this may be
-  // different than the used raster scale, see: |RecalculateRasterScales()| and
-  // |CalculateDirectlyCompositedImageRasterScale()|.
-  float GetDefaultDirectlyCompositedImageRasterScale() const;
 
   // Returns the raster scale that should be used for a directly composited
   // image. This takes into account the ideal contents scale to ensure we don't
@@ -213,7 +214,7 @@ class CC_EXPORT PictureLayerImpl
 
   void SanityCheckTilingState() const;
 
-  void GetDebugBorderProperties(SkColor* color, float* width) const override;
+  void GetDebugBorderProperties(SkColor4f* color, float* width) const override;
   void GetAllPrioritizedTilesForTracing(
       std::vector<PrioritizedTile>* prioritized_tiles) const override;
   void AsValueInto(base::trace_event::TracedValue* dict) const override;
@@ -235,12 +236,11 @@ class CC_EXPORT PictureLayerImpl
       bool raster_translation_aligns_pixels) const;
   void UpdateCanUseLCDText(bool raster_translation_aligns_pixels);
 
-  // TODO(crbug.com/1114504): For now this checks the immediate transform node
-  // only. The callers may actually want to know if this layer or ancestor has
-  // will change transform.
-  bool HasWillChangeTransformHint() const;
+  // Whether the transform node for this layer, or any ancestor transform
+  // node, has a will-change hint for one of the transform properties.
+  bool AffectedByWillChangeTransformHint() const;
 
-  PictureLayerImpl* twin_layer_ = nullptr;
+  raw_ptr<PictureLayerImpl> twin_layer_ = nullptr;
 
   std::unique_ptr<PictureLayerTilingSet> tilings_ =
       CreatePictureLayerTilingSet();
@@ -292,19 +292,20 @@ class CC_EXPORT PictureLayerImpl
   // false after raster scale update.
   bool raster_source_size_changed_ : 1;
 
+  bool directly_composited_image_default_raster_scale_changed_ : 1;
+
   LCDTextDisallowedReason lcd_text_disallowed_reason_ =
       LCDTextDisallowedReason::kNone;
 
-  // The intrinsic size of the directly composited image. A directly composited
-  // image is an image which is the only thing drawn into a layer. In these
-  // cases we attempt to raster the image at its intrinsic size.
-  absl::optional<gfx::Size> directly_composited_image_size_;
-
-  // The default raster source scale for a directly composited image, the last
-  // time raster scales were calculated. This will be the same as
-  // |raster_source_scale_| if no adjustments were made in
+  // If this scale is not zero, it indicates that this layer is a directly
+  // composited image layer (i.e. the only thing drawn into this layer is an
+  // image). The rasterized pixels will be the same as the image's original
+  // pixels if this scale is used as the raster scale.
+  // To avoid re-raster on scale changes, this may be different than the used
+  // raster scale, see: |RecalculateRasterScales()| and
   // |CalculateDirectlyCompositedImageRasterScale()|.
-  float directly_composited_image_initial_raster_scale_ = 0.f;
+  // TODO(crbug.com/1196414): Support 2D scales in directly composited images.
+  float directly_composited_image_default_raster_scale_ = 0;
 
   // Use this instead of |visible_layer_rect()| for tiling calculations. This
   // takes external viewport and transform for tile priority into account.
@@ -314,10 +315,8 @@ class CC_EXPORT PictureLayerImpl
 
   // List of tilings that were used last time we appended quads. This can be
   // used as an optimization not to remove tilings if they are still being
-  // drawn. Note that accessing this vector should only be done in the context
-  // of comparing pointers, since objects pointed to are not guaranteed to
-  // exist.
-  std::vector<PictureLayerTiling*> last_append_quads_tilings_;
+  // drawn.
+  std::vector<int> last_append_quads_tilings_;
 
   // The set of PaintWorkletInputs that are part of this PictureLayerImpl, and
   // their painted results (if any). During commit, Blink hands us a set of

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 
 import org.chromium.chrome.browser.browserservices.PostMessageHandler;
-import org.chromium.chrome.browser.browserservices.verification.OriginVerifier;
+import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.components.embedder_support.util.Origin;
 
 /**
@@ -73,7 +73,7 @@ class MockPostMessageHandler {
     private void onOriginVerified(String packageName, Origin origin, boolean result) {
         if (!result) return;
         initializeWithPostMessageUri(
-                OriginVerifier.getPostMessageUriFromVerifiedOrigin(packageName, origin));
+                ChromeOriginVerifier.getPostMessageUriFromVerifiedOrigin(packageName, origin));
     }
 
     private Uri getPostMessageUriForTesting() {

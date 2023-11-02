@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -124,7 +124,7 @@ public class TabObserverRegistrar implements TabModelObserver, DestroyObserver {
     }
 
     @Override
-    public void didCloseTab(int tabId, boolean incognito) {
+    public void onFinishingTabClosure(Tab tab) {
         // We don't need to remove the Tab Observers since it's closed.
         // TODO(peconn): Do we really want to remove the *global* PageLoadMetrics observers here?
         removePageLoadMetricsObservers();
@@ -147,7 +147,7 @@ public class TabObserverRegistrar implements TabModelObserver, DestroyObserver {
 
     private void addPageLoadMetricsObservers() {
         for (PageLoadMetrics.Observer observer : mPageLoadMetricsObservers) {
-            PageLoadMetrics.addObserver(observer);
+            PageLoadMetrics.addObserver(observer, false);
         }
     }
 

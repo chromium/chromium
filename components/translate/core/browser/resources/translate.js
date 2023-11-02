@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,7 +40,7 @@ cr.googleTranslate = (function() {
     'TRANSLATION_TIMEOUT': 7,
     'UNEXPECTED_SCRIPT_ERROR': 8,
     'BAD_ORIGIN': 9,
-    'SCRIPT_LOAD_ERROR': 10
+    'SCRIPT_LOAD_ERROR': 10,
   };
 
   /**
@@ -51,7 +51,7 @@ cr.googleTranslate = (function() {
   const TRANSLATE_ERROR_TO_ERROR_CODE_MAP = {
     0: ERROR['NONE'],
     1: ERROR['TRANSLATION_ERROR'],
-    2: ERROR['UNSUPPORTED_LANGUAGE']
+    2: ERROR['UNSUPPORTED_LANGUAGE'],
   };
 
   /**
@@ -361,7 +361,7 @@ cr.googleTranslate = (function() {
           'key': translateApiKey,
           'serverParams': serverParams,
           'timeInfo': gtTimeInfo,
-          'useSecureConnection': true
+          'useSecureConnection': true,
         });
         translateApiKey = undefined;
         serverParams = undefined;
@@ -427,6 +427,6 @@ cr.googleTranslate = (function() {
         new Function(this.responseText).call(window);
       };
       xhr.send();
-    }
+    },
   };
 })();

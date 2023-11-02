@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -218,15 +218,11 @@ TEST(PasswordFormMetricsRecorder, SubmittedFormType) {
     // Expectations:
     // Expectation for PasswordManager.SubmittedFormType:
     int expected_submitted_form_type;
-    // Expectation for PasswordManager.SubmittedNonSecureFormType:
-    int expected_submitted_non_secure_form_type;
   } kTests[] = {
-      {false, PasswordFormMetricsRecorder::SubmittedFormType::kUnspecified, 0,
-       0},
-      {true, PasswordFormMetricsRecorder::SubmittedFormType::kUnspecified, 0,
-       0},
-      {false, PasswordFormMetricsRecorder::SubmittedFormType::kLogin, 1, 1},
-      {true, PasswordFormMetricsRecorder::SubmittedFormType::kLogin, 1, 0},
+      {false, PasswordFormMetricsRecorder::SubmittedFormType::kUnspecified, 0},
+      {true, PasswordFormMetricsRecorder::SubmittedFormType::kUnspecified, 0},
+      {false, PasswordFormMetricsRecorder::SubmittedFormType::kLogin, 1},
+      {true, PasswordFormMetricsRecorder::SubmittedFormType::kLogin, 1},
   };
   for (const auto& test : kTests) {
     SCOPED_TRACE(testing::Message()
@@ -257,15 +253,6 @@ TEST(PasswordFormMetricsRecorder, SubmittedFormType) {
                                          test.expected_submitted_form_type);
     } else {
       histogram_tester.ExpectTotalCount("PasswordManager.SubmittedFormType", 0);
-    }
-
-    if (test.expected_submitted_non_secure_form_type) {
-      histogram_tester.ExpectBucketCount(
-          "PasswordManager.SubmittedNonSecureFormType", test.form_type,
-          test.expected_submitted_non_secure_form_type);
-    } else {
-      histogram_tester.ExpectTotalCount(
-          "PasswordManager.SubmittedNonSecureFormType", 0);
     }
   }
 }
@@ -1116,7 +1103,7 @@ TEST(PasswordFormMetricsRecorder, FilledValueMatchesSavedUsernameAndPassword) {
            PasswordFormMetricsRecorder::FillingAssistance::kAutomatic});
 }
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 struct FillingSourceTestCase {
   std::vector<TestCaseFieldInfo> fields;
 

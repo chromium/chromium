@@ -1,16 +1,22 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.merchant_viewer;
 
+import android.text.format.DateUtils;
+
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.messages.DismissReason;
+import org.chromium.components.ukm.UkmRecorder;
+import org.chromium.content_public.browser.WebContents;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -19,6 +25,13 @@ import java.lang.annotation.RetentionPolicy;
  * Metrics util class for merchant trust.
  */
 public class MerchantTrustMetrics {
+    @VisibleForTesting
+    public static String MESSAGE_IMPACT_BROWSING_TIME_HISTOGRAM =
+            "MerchantTrust.MessageImpact.BrowsingTime";
+    @VisibleForTesting
+    public static String MESSAGE_IMPACT_NAVIGATION_COUNT_HISTOGRAM =
+            "MerchantTrust.MessageImpact.NavigationCount";
+
     /**
      * The reason why we clear the prepared message.
      *
@@ -74,6 +87,12 @@ public class MerchantTrustMetrics {
     private long mBottomSheetPeekedNanoseconds;
     private long mBottomSheetHalfOpenedNanoseconds;
     private long mBottomSheetFullyOpenedNanoseconds;
+
+    // Metrics for message impact on user browsing.
+    private long mMessageVisibleNsForBrowsingTime;
+    private int mNavigationCountAfterMessageShown;
+    private double mMessageStarRating;
+    private String mCurrentHost;
 
     /** Records metrics when the message is prepared. */
     public void recordMetricsForMessagePrepared() {
@@ -269,5 +288,102 @@ public class MerchantTrustMetrics {
     public void recordMetricsForBottomSheetOpenedSource(@BottomSheetOpenedSource int source) {
         RecordHistogram.recordEnumeratedHistogram("MerchantTrust.BottomSheet.OpenSource", source,
                 BottomSheetOpenedSource.MAX_VALUE + 1);
+    }
+
+    /** Start recording message impact on user browsing time and navigation times. */
+    public void startRecordingMessageImpact(String hostName, double starRating) {
+        mMessageVisibleNsForBrowsingTime = System.nanoTime();
+        mNavigationCountAfterMessageShown = 0;
+        mCurrentHost = hostName;
+        mMessageStarRating = starRating;
+    }
+
+    /** Update the message impact data. */
+    public void updateRecordingMessageImpact(String hostName) {
+        if (mCurrentHost != null) {
+            if (mCurrentHost.equals(hostName)) {
+                mNavigationCountAfterMessageShown++;
+            } else {
+                finishRecordingMessageImpact();
+            }
+        }
+    }
+
+    /** Finish recording message impact for this host and reset the data. */
+    public void finishRecordingMessageImpact() {
+        if (mCurrentHost != null) {
+            long browsingTime = (System.nanoTime() - mMessageVisibleNsForBrowsingTime)
+                    / TimeUtils.NANOSECONDS_PER_MILLISECOND;
+            RecordHistogram.recordCustomTimesHistogram(MESSAGE_IMPACT_BROWSING_TIME_HISTOGRAM,
+                    browsingTime, 10, DateUtils.MINUTE_IN_MILLIS * 10, 50);
+            RecordHistogram.recordCustomTimesHistogram(
+                    MESSAGE_IMPACT_BROWSING_TIME_HISTOGRAM + getStarRatingSuffixForMessageImpact(),
+                    browsingTime, 10, DateUtils.MINUTE_IN_MILLIS * 10, 50);
+
+            RecordHistogram.recordCount100Histogram(
+                    MESSAGE_IMPACT_NAVIGATION_COUNT_HISTOGRAM, mNavigationCountAfterMessageShown);
+            RecordHistogram.recordCount100Histogram(MESSAGE_IMPACT_NAVIGATION_COUNT_HISTOGRAM
+                            + getStarRatingSuffixForMessageImpact(),
+                    mNavigationCountAfterMessageShown);
+        }
+        mMessageVisibleNsForBrowsingTime = 0;
+        mNavigationCountAfterMessageShown = 0;
+        mCurrentHost = null;
+        mMessageStarRating = 0.0;
+    }
+
+    /**
+     * To better analyze the message impact, we add a suffix to each histogram based on the shown
+     * star rating.
+     */
+    private String getStarRatingSuffixForMessageImpact() {
+        // Only keep one decimal to avoid inaccurate double value such as 4.49999.
+        double ratingValue = Math.round(mMessageStarRating * 10) / 10.0;
+        String ratingSuffix;
+        if (ratingValue >= 4.5) {
+            ratingSuffix = "AboveFourPointFive";
+        } else if (ratingValue >= 4.0) {
+            ratingSuffix = "AboveFour";
+        } else if (ratingValue >= 3.0) {
+            ratingSuffix = "AboveThree";
+        } else if (ratingValue >= 2.0) {
+            ratingSuffix = "AboveTwo";
+        } else {
+            ratingSuffix = "BelowTwo";
+        }
+        return ".Rating" + ratingSuffix;
+    }
+
+    /** Record ukm when merchant trust data is available. */
+    public void recordUkmOnDataAvailable(@Nullable WebContents webContents) {
+        recordBooleanUkm(webContents, "Shopping.MerchantTrust.DataAvailable", "DataAvailable");
+    }
+
+    /** Record ukm when merchant trust message is displayed. */
+    public void recordUkmOnMessageSeen(@Nullable WebContents webContents) {
+        recordBooleanUkm(webContents, "Shopping.MerchantTrust.MessageSeen", "HasOccurred");
+    }
+
+    /** Record ukm when merchant trust message is clicked. */
+    public void recordUkmOnMessageClicked(@Nullable WebContents webContents) {
+        recordBooleanUkm(webContents, "Shopping.MerchantTrust.MessageClicked", "HasOccurred");
+    }
+
+    /** Record ukm when store info row in trusted surface is displayed. */
+    public void recordUkmOnRowSeen(@Nullable WebContents webContents) {
+        recordBooleanUkm(webContents, "Shopping.MerchantTrust.RowSeen", "HasOccurred");
+    }
+
+    /** Record ukm when store info row in trusted surface is clicked. */
+    public void recordUkmOnRowClicked(@Nullable WebContents webContents) {
+        recordBooleanUkm(webContents, "Shopping.MerchantTrust.RowClicked", "HasOccurred");
+    }
+
+    private void recordBooleanUkm(
+            @Nullable WebContents webContents, String eventName, String metricsName) {
+        if (webContents != null) {
+            new UkmRecorder.Bridge().recordEventWithBooleanMetric(
+                    webContents, eventName, metricsName);
+        }
     }
 }

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,15 +9,17 @@
 #include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/views/examples/examples_color_mixer.h"
 #include "ui/views/examples/examples_window.h"
 #include "ui/views/examples/examples_window_with_content.h"
 #include "ui/views_content_client/views_content_client.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "sandbox/mac/seatbelt_exec.h"
+#include "ui/display/screen.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
 #include "content/public/app/sandbox_helper_win.h"
 #include "sandbox/win/src/sandbox_types.h"
@@ -27,7 +29,7 @@ namespace {
 
 void OnResourcesLoaded() {
   base::FilePath views_examples_resources_pak_path;
-  CHECK(base::PathService::Get(base::DIR_MODULE,
+  CHECK(base::PathService::Get(base::DIR_ASSETS,
                                &views_examples_resources_pak_path));
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
       views_examples_resources_pak_path.AppendASCII(
@@ -56,21 +58,29 @@ void ShowContentExampleWindow(ui::ViewsContentClient* views_content_client,
 
 }  // namespace
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE, wchar_t*, int) {
+  base::CommandLine::Init(0, nullptr);
   sandbox::SandboxInterfaceInfo sandbox_info = {nullptr};
   content::InitializeSandboxInfo(&sandbox_info);
   ui::ViewsContentClient views_content_client(instance, &sandbox_info);
 #else
 int main(int argc, const char** argv) {
   base::CommandLine::Init(argc, argv);
+
+#if BUILDFLAG(IS_MAC)
+  display::ScopedNativeScreen desktop_screen;
+#endif
+  ui::ColorProviderManager::Get().AppendColorProviderInitializer(
+      base::BindRepeating(&views::examples::AddExamplesColorMixers));
+
   ui::ViewsContentClient views_content_client(argc, argv);
 #endif
 
   if (views::examples::CheckCommandLineUsage())
     return 0;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   // ViewsContentClient expects a const char** argv and
   // CreateFromArgumentsResult expects a regular char** argv. Given this is a

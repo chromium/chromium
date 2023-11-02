@@ -1,13 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_AMBIENT_UI_GLANCEABLE_INFO_VIEW_H_
 #define ASH_AMBIENT_UI_GLANCEABLE_INFO_VIEW_H_
 
-#include "ash/ambient/model/ambient_backend_model.h"
-#include "ash/ambient/model/ambient_backend_model_observer.h"
+#include "ash/ambient/model/ambient_weather_model.h"
+#include "ash/ambient/model/ambient_weather_model_observer.h"
 #include "base/scoped_observation.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -17,19 +18,18 @@ class Label;
 
 namespace ash {
 
-namespace tray {
-class TimeView;
-}
-
 class AmbientViewDelegate;
+class TimeView;
 
 // Container for displaying a glanceable clock and weather info.
 class GlanceableInfoView : public views::View,
-                           public AmbientBackendModelObserver {
+                           public AmbientWeatherModelObserver {
  public:
   METADATA_HEADER(GlanceableInfoView);
 
-  explicit GlanceableInfoView(AmbientViewDelegate* delegate);
+  GlanceableInfoView(AmbientViewDelegate* delegate,
+                     int time_font_size_dip,
+                     SkColor time_temperature_font_color);
   GlanceableInfoView(const GlanceableInfoView&) = delete;
   GlanceableInfoView& operator=(const GlanceableInfoView&) = delete;
   ~GlanceableInfoView() override;
@@ -37,7 +37,7 @@ class GlanceableInfoView : public views::View,
   // views::View:
   void OnThemeChanged() override;
 
-  // AmbientBackendModelObserver:
+  // AmbientWeatherModelObserver:
   void OnWeatherInfoUpdated() override;
 
   void Show();
@@ -48,7 +48,7 @@ class GlanceableInfoView : public views::View,
   std::u16string GetTemperatureText() const;
 
   // View for the time info. Owned by the view hierarchy.
-  ash::tray::TimeView* time_view_ = nullptr;
+  TimeView* time_view_ = nullptr;
 
   // Views for weather icon and temperature.
   views::ImageView* weather_condition_icon_ = nullptr;
@@ -57,8 +57,11 @@ class GlanceableInfoView : public views::View,
   // Owned by |AmbientController|.
   AmbientViewDelegate* const delegate_ = nullptr;
 
-  base::ScopedObservation<AmbientBackendModel, AmbientBackendModelObserver>
-      scoped_backend_model_observer_{this};
+  const int time_font_size_dip_;
+  const SkColor time_temperature_font_color_;
+
+  base::ScopedObservation<AmbientWeatherModel, AmbientWeatherModelObserver>
+      scoped_weather_model_observer_{this};
 };
 
 }  // namespace ash

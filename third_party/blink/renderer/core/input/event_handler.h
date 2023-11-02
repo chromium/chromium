@@ -28,6 +28,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
@@ -47,13 +48,15 @@
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/geometry/layout_point.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
-#include "ui/base/cursor/cursor.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink-forward.h"
+
+namespace ui {
+class Cursor;
+}
 
 namespace blink {
 
@@ -100,9 +103,8 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
 
   HitTestResult HitTestResultAtLocation(
       const HitTestLocation&,
-      HitTestRequest::HitTestRequestType hit_type =
-          HitTestRequest::kReadOnly | HitTestRequest::kActive |
-          HitTestRequest::kRetargetForInert,
+      HitTestRequest::HitTestRequestType hit_type = HitTestRequest::kReadOnly |
+                                                    HitTestRequest::kActive,
       const LayoutObject* stop_node = nullptr,
       bool no_lifecycle_update = false);
 
@@ -130,15 +132,15 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
 
   void ResizeScrollableAreaDestroyed();
 
-  FloatPoint LastKnownMousePositionInRootFrame() const;
-  FloatPoint LastKnownMouseScreenPosition() const;
+  gfx::PointF LastKnownMousePositionInRootFrame() const;
+  gfx::PointF LastKnownMouseScreenPosition() const;
 
   gfx::Point DragDataTransferLocationForTesting();
 
   // Performs a logical scroll that chains, crossing frames, starting from
   // the given node or a reasonable default (focus/last clicked).
   bool BubblingScroll(mojom::blink::ScrollDirection,
-                      ScrollGranularity,
+                      ui::ScrollGranularity,
                       Node* starting_node = nullptr);
 
   WebInputEventResult HandleMouseMoveEvent(
@@ -205,7 +207,7 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
                                            const HitTestResult&,
                                            gfx::Point& target_point,
                                            Node*& target_node);
-  void CacheTouchAdjustmentResult(uint32_t, FloatPoint);
+  void CacheTouchAdjustmentResult(uint32_t, gfx::PointF);
 
   // Dispatch a context menu event. If |override_target_element| is provided,
   // the context menu event will use that, so that the browser-generated context
@@ -264,6 +266,8 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
     return *event_handler_registry_;
   }
 
+  GestureManager& GetGestureManager() const { return *gesture_manager_; }
+
   void AnimateSnapFling(base::TimeTicks monotonic_time);
 
   void RecomputeMouseHoverStateIfNeeded();
@@ -279,6 +283,8 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
   void UpdateCursor();
 
   Element* GetElementUnderMouse();
+
+  Element* CurrentTouchDownElement();
 
  private:
   WebInputEventResult HandleMouseMoveOrLeaveEvent(
@@ -344,20 +350,12 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
 
   bool PassMousePressEventToScrollbar(MouseEventWithHitTestResults&);
 
-  void DefaultSpaceEventHandler(KeyboardEvent*);
-  void DefaultBackspaceEventHandler(KeyboardEvent*);
-  void DefaultTabEventHandler(KeyboardEvent*);
-  void DefaultEscapeEventHandler(KeyboardEvent*);
-  void DefaultArrowEventHandler(mojom::blink::FocusType, KeyboardEvent*);
-
   // |last_scrollbar_under_mouse_| is set when the mouse moves off of a
   // scrollbar, and used to notify it of MouseUp events to release mouse
   // capture.
   void UpdateLastScrollbarUnderMouse(Scrollbar*, bool);
 
   WebInputEventResult HandleGestureShowPress();
-
-  bool ShouldBrowserControlsConsumeScroll(FloatSize) const;
 
   bool RootFrameTrackedActivePointerInCurrentFrame(PointerId pointer_id) const;
 
@@ -370,7 +368,8 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
       const HitTestRequest& request,
       const WebMouseEvent& mev);
 
-  IntRect GetFocusedElementRectForNonLocatedContextMenu(
+  // Returned rect is in local root frame coordinates.
+  gfx::Rect GetFocusedElementRectForNonLocatedContextMenu(
       Element* focused_element);
 
   // NOTE: If adding a new field to this class please ensure that it is

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/timer.h"
 
 namespace blink {
@@ -49,9 +50,12 @@ class CORE_EXPORT MediaCustomControlsFullscreenDetector final
   bool IsVideoOrParentFullscreen();
   void ReportEffectivelyFullscreen(bool);
   static bool IsFullscreenVideoOfDifferentRatioForTesting(
-      const IntSize& video_size,
-      const IntSize& viewport_size,
-      const IntSize& intersection_size);
+      const gfx::Size& video_size,
+      const gfx::Size& viewport_size,
+      const gfx::Size& intersection_size);
+
+  void UpdateDominantAndFullscreenStatus(bool is_dominant_visible_content,
+                                         bool is_effectively_fullscreen);
 
   // `video_element_` owns |this|.
   Member<HTMLVideoElement> video_element_;

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.SmallTest;
 
@@ -31,6 +32,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
 
 import java.util.Arrays;
 
@@ -113,7 +115,7 @@ public class NativeViewListRendererTest {
         mRenderer.unbind();
         assertNull(view.getAdapter());
         assertNull(view.getLayoutManager());
-        verify(mRenderer, times(1)).notifyItemRangeRemoved(0, 3);
+        verify(mRenderer, times(1)).onItemRangeRemoved(0, 3);
     }
 
     @Test
@@ -122,7 +124,7 @@ public class NativeViewListRendererTest {
                 Arrays.asList(new NtpListContentManager.FeedContent[] {
                         createContent("1"), createContent("2"), createContent("3")}));
         mRenderer.bind(mManager);
-        verify(mRenderer, times(1)).notifyItemRangeInserted(0, 3);
+        verify(mRenderer, times(1)).onItemRangeInserted(0, 3);
     }
 
     @Test
@@ -131,7 +133,7 @@ public class NativeViewListRendererTest {
         mManager.addContents(0,
                 Arrays.asList(new NtpListContentManager.FeedContent[] {
                         createContent("1"), createContent("2"), createContent("3")}));
-        verify(mRenderer, times(1)).notifyItemRangeInserted(0, 3);
+        verify(mRenderer, times(1)).onItemRangeInserted(0, 3);
     }
 
     @Test
@@ -142,7 +144,7 @@ public class NativeViewListRendererTest {
         mRenderer.bind(mManager);
 
         mManager.removeContents(1, 2);
-        verify(mRenderer, times(1)).notifyItemRangeRemoved(1, 2);
+        verify(mRenderer, times(1)).onItemRangeRemoved(1, 2);
     }
 
     @Test
@@ -153,7 +155,7 @@ public class NativeViewListRendererTest {
         mRenderer.bind(mManager);
 
         mRenderer.unbind();
-        verify(mRenderer, times(1)).notifyItemRangeRemoved(0, 3);
+        verify(mRenderer, times(1)).onItemRangeRemoved(0, 3);
     }
 
     @Test
@@ -166,7 +168,7 @@ public class NativeViewListRendererTest {
         mManager.updateContents(1,
                 Arrays.asList(new NtpListContentManager.FeedContent[] {
                         createContent("a"), createContent("b")}));
-        verify(mRenderer, times(1)).notifyItemRangeChanged(1, 2);
+        verify(mRenderer, times(1)).onItemRangeChanged(1, 2);
     }
 
     @Test
@@ -177,12 +179,38 @@ public class NativeViewListRendererTest {
         mRenderer.bind(mManager);
 
         mManager.moveContent(2, 1);
-        verify(mRenderer, times(1)).notifyItemMoved(2, 1);
+        verify(mRenderer, times(1)).onItemMoved(2, 1);
     }
 
     private NtpListContentManager.FeedContent createContent(String text) {
         TextView v = new AppCompatTextView(mContext);
         v.setText(text);
         return new NtpListContentManager.NativeViewContent(0, v.toString(), v);
+    }
+
+    @Test
+    public void testGetListLayoutHelper() {
+        mManager.addContents(0,
+                Arrays.asList(new NtpListContentManager.FeedContent[] {
+                        createContent("1"), createContent("2"), createContent("3")}));
+        mRenderer.bind(mManager);
+
+        ListLayoutHelper helper = mRenderer.getListLayoutHelper();
+        LinearLayoutManager expectedLayoutManager =
+                (LinearLayoutManager) mRenderer.getListViewForTest().getLayoutManager();
+        assertEquals(expectedLayoutManager.findFirstVisibleItemPosition(),
+                helper.findFirstVisibleItemPosition());
+        assertEquals(expectedLayoutManager.findLastVisibleItemPosition(),
+                helper.findLastVisibleItemPosition());
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testLayoutHelperSetSpanCount() {
+        mManager.addContents(0,
+                Arrays.asList(new NtpListContentManager.FeedContent[] {
+                        createContent("1"), createContent("2"), createContent("3")}));
+        mRenderer.bind(mManager);
+
+        mRenderer.getListLayoutHelper().setSpanCount(3);
     }
 }

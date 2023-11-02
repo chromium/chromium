@@ -1,9 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/ime/ime_feature_pod_controller.h"
 
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/keyboard/ui/keyboard_util.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -74,12 +75,13 @@ FeaturePodButton* IMEFeaturePodController::CreateButton() {
   return button_;
 }
 
-void IMEFeaturePodController::OnIconPressed() {
-  tray_controller_->ShowIMEDetailedView();
+QsFeatureCatalogName IMEFeaturePodController::GetCatalogName() {
+  return QsFeatureCatalogName::kIME;
 }
 
-SystemTrayItemUmaType IMEFeaturePodController::GetUmaType() const {
-  return SystemTrayItemUmaType::UMA_IME;
+void IMEFeaturePodController::OnIconPressed() {
+  TrackDiveInUMA();
+  tray_controller_->ShowIMEDetailedView();
 }
 
 void IMEFeaturePodController::OnIMERefresh() {

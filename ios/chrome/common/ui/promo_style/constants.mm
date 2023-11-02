@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,16 +10,20 @@
 #endif
 
 NSString* const kPromoStyleTitleAccessibilityIdentifier =
-    @"kPromoStyleTitleAccessibilityIdentifier";
+    @"PromoStyleTitleAccessibilityIdentifier";
 NSString* const kPromoStyleSubtitleAccessibilityIdentifier =
-    @"kPromoStyleSubtitleAccessibilityIdentifier";
+    @"PromoStyleSubtitleAccessibilityIdentifier";
+NSString* const kPromoStyleReadMoreActionAccessibilityIdentifier =
+    @"PromoStyleReadMoreActionAccessibilityIdentifier";
 NSString* const kPromoStylePrimaryActionAccessibilityIdentifier =
-    @"kPromoStylePrimaryActionAccessibilityIdentifier";
+    @"PromoStylePrimaryActionAccessibilityIdentifier";
 NSString* const kPromoStyleSecondaryActionAccessibilityIdentifier =
-    @"kPromoStyleSecondaryActionAccessibilityIdentifier";
+    @"PromoStyleSecondaryActionAccessibilityIdentifier";
 NSString* const kPromoStyleTertiaryActionAccessibilityIdentifier =
-    @"kPromoStyleTertiaryActionAccessibilityIdentifier";
+    @"PromoStyleTertiaryActionAccessibilityIdentifier";
 NSString* const kPromoStyleLearnMoreActionAccessibilityIdentifier =
-    @"kPromoStyleLearnMoreActionAccessibilityIdentifier";
+    @"PromoStyleLearnMoreActionAccessibilityIdentifier";
+NSString* const kPromoStyleDisclaimerViewAccessibilityIdentifier =
+    @"PromoStyleDisclaimerViewAccessibilityIdentifier";
 NSString* const kPromoStyleScrollViewAccessibilityIdentifier =
-    @"kPromoStyleScrollViewAccessibilityIdentifier";
+    @"PromoStyleScrollViewAccessibilityIdentifier";

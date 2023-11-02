@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,6 @@ class CSPContextTest : public CSPContext {
   }
 
   void SanitizeDataForUseInCspViolation(
-      bool is_redirect,
       CSPDirectiveName directive,
       GURL* blocked_url,
       network::mojom::SourceLocation* source_location) const override {
@@ -333,6 +332,27 @@ TEST(CSPContextTest, CheckCSPDisposition) {
       CSPContext::CHECK_ENFORCED_CSP, false));
   ASSERT_EQ(1u, context.violations().size());
   EXPECT_EQ(console_message_a, context.violations()[0]->console_message);
+}
+
+TEST(CSPContextTest, BlockedDespiteWildcard) {
+  CSPContextTest context;
+  auto policies = ParseContentSecurityPolicies(
+      "frame-src *", mojom::ContentSecurityPolicyType::kEnforce,
+      mojom::ContentSecurityPolicySource::kMeta,
+      GURL("https://www.example.org"));
+
+  EXPECT_FALSE(context.IsAllowedByCsp(policies, CSPDirectiveName::FrameSrc,
+                                      GURL("data:text/html,<html></html>"),
+                                      GURL(), false, false, SourceLocation(),
+                                      CSPContext::CHECK_ALL_CSP, false));
+  EXPECT_EQ(context.violations().size(), 1u);
+  EXPECT_EQ(context.violations()[0]->console_message,
+            "Refused to frame 'data:text/html,<html></html>' because it "
+            "violates the following Content Security Policy directive: "
+            "\"frame-src *\". Note that '*' matches only URLs with network "
+            "schemes ('http', 'https', 'ws', 'wss'), or URLs whose scheme "
+            "matches `self`'s scheme. The scheme 'data:' must be added "
+            "explicitly.\n");
 }
 
 }  // namespace network

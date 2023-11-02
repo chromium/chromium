@@ -1,0 +1,21 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_fuchsia)
+
+# Only allow use by CastRunner, WebEngineShell, and CastStreamingShell targets.
+visibility = [
+  "//fuchsia_web/runners:cast_runner_core",
+  "//fuchsia_web/shell/*",
+]
+
+source_set("cast_streaming") {
+  sources = [ "cast_streaming.cc" ]
+  public = [ "cast_streaming.h" ]
+  data = [ "data/receiver.html" ]
+  deps = [
+    "//base",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
+  ]
+}

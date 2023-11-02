@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,6 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/unguessable_token.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
-#include "content/common/content_export.h"
 #include "media/base/supported_video_decoder_config.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
 #include "media/mojo/mojom/video_decoder.mojom.h"
@@ -54,7 +53,7 @@ namespace content {
 // the |task_runner_|, as provided during construction.
 // |context_provider| should not support locking and will be bound to
 // |task_runner_| where all the operations on the context should also happen.
-class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
+class GpuVideoAcceleratorFactoriesImpl
     : public media::GpuVideoAcceleratorFactories,
       public viz::ContextLostObserver {
  public:
@@ -67,14 +66,16 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
       const scoped_refptr<viz::ContextProviderCommandBuffer>& context_provider,
       bool enable_video_gpu_memory_buffers,
       bool enable_media_stream_gpu_memory_buffers,
-      bool enable_video_accelerator,
+      bool enable_video_decode_accelerator,
+      bool enable_video_encode_accelerator,
       mojo::PendingRemote<media::mojom::InterfaceFactory>
           interface_factory_remote,
       mojo::PendingRemote<media::mojom::VideoEncodeAcceleratorProvider>
           vea_provider_remote);
 
   // media::GpuVideoAcceleratorFactories implementation.
-  bool IsGpuVideoAcceleratorEnabled() override;
+  bool IsGpuVideoDecodeAcceleratorEnabled() override;
+  bool IsGpuVideoEncodeAcceleratorEnabled() override;
   void GetChannelToken(
       gpu::mojom::GpuChannel::GetChannelTokenCallback cb) override;
   int32_t GetCommandBufferRouteId() override;
@@ -160,7 +161,8 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
       const scoped_refptr<viz::ContextProviderCommandBuffer>& context_provider,
       bool enable_gpu_memory_buffer_video_frames_for_video,
       bool enable_gpu_memory_buffer_video_frames_for_media_stream,
-      bool enable_video_accelerator,
+      bool enable_video_decode_accelerator,
+      bool enable_video_encode_accelerator,
       mojo::PendingRemote<media::mojom::InterfaceFactory>
           interface_factory_remote,
       mojo::PendingRemote<media::mojom::VideoEncodeAcceleratorProvider>
@@ -209,7 +211,8 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
   const bool enable_video_gpu_memory_buffers_;
   const bool enable_media_stream_gpu_memory_buffers_;
   // Whether video acceleration encoding/decoding should be enabled.
-  const bool video_accelerator_enabled_;
+  const bool video_decode_accelerator_enabled_;
+  const bool video_encode_accelerator_enabled_;
 
   gfx::ColorSpace rendering_color_space_;
 

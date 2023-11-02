@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,15 @@
 
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "ash/components/phonehub/phone_hub_manager.h"
+#include "ash/webui/eche_app_ui/feature_status.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "base/callback.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+
+namespace gfx {
+class Image;
+}  //  namespace gfx
 
 namespace ash {
 namespace eche_app {
@@ -53,26 +58,37 @@ class LaunchAppHelper {
       const absl::optional<std::u16string>& title,
       const absl::optional<std::u16string>& message,
       std::unique_ptr<NotificationInfo> info)>;
-
+  using CloseNotificationFunction =
+      base::RepeatingCallback<void(const std::string& notification_id)>;
   using LaunchEcheAppFunction = base::RepeatingCallback<void(
       const absl::optional<int64_t>& notification_id,
       const std::string& package_name,
       const std::u16string& visible_name,
-      const absl::optional<int64_t>& user_id)>;
+      const absl::optional<int64_t>& user_id,
+      const gfx::Image& icon)>;
 
-  using CloseEcheAppFunction = base::RepeatingCallback<void()>;
+  // Enum representing potential reasons why an app is forbidden to launch.
+  enum class AppLaunchProhibitedReason {
+    // Launching app is allowed.
+    kNotProhibited = 0,
+
+    // Launching app is not allowed because it requires the user to enable the
+    // screen lock.
+    kDisabledByScreenLock = 1,
+  };
 
   LaunchAppHelper(phonehub::PhoneHubManager* phone_hub_manager,
                   LaunchEcheAppFunction launch_eche_app_function,
-                  CloseEcheAppFunction close_eche_app_function,
-                  LaunchNotificationFunction launch_notification_function);
+                  LaunchNotificationFunction launch_notification_function,
+                  CloseNotificationFunction close_notification_function);
   virtual ~LaunchAppHelper();
 
   LaunchAppHelper(const LaunchAppHelper&) = delete;
   LaunchAppHelper& operator=(const LaunchAppHelper&) = delete;
 
   // Exposed virtual for testing.
-  virtual bool IsAppLaunchAllowed() const;
+  virtual LaunchAppHelper::AppLaunchProhibitedReason
+  CheckAppLaunchProhibitedReason(FeatureStatus status) const;
 
   // Exposed virtual for testing.
   // The notification could be generated from webUI or native layer, for the
@@ -81,28 +97,29 @@ class LaunchAppHelper {
                                 const absl::optional<std::u16string>& message,
                                 std::unique_ptr<NotificationInfo> info) const;
 
+  // Exposed virtual for testing.
+  // Close the notifiication according to id
+  virtual void CloseNotification(const std::string& notification_id) const;
+
+  // Exposed virtual for testing.
+  // Show the native toast message.
+  virtual void ShowToast(const std::u16string& text) const;
+
   void LaunchEcheApp(absl::optional<int64_t> notification_id,
                      const std::string& package_name,
                      const std::u16string& visible_name,
-                     const absl::optional<int64_t>& user_id) const;
-
-  void CloseEcheApp() const;
+                     const absl::optional<int64_t>& user_id,
+                     const gfx::Image& icon) const;
 
  private:
+  bool IsScreenLockRequired() const;
   phonehub::PhoneHubManager* phone_hub_manager_;
   LaunchEcheAppFunction launch_eche_app_function_;
-  CloseEcheAppFunction close_eche_app_function_;
   LaunchNotificationFunction launch_notification_function_;
+  CloseNotificationFunction close_notification_function_;
 };
 
 }  // namespace eche_app
 }  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-namespace eche_app {
-using ::ash::eche_app::LaunchAppHelper;
-}  // namespace eche_app
-}  // namespace chromeos
 
 #endif  // ASH_WEBUI_ECHE_APP_UI_LAUNCH_APP_HELPER_H_

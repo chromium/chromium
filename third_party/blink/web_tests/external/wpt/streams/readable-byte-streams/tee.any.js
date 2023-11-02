@@ -1,20 +1,9 @@
-// META: global=window,worker,jsshell
+// META: global=window,worker
 // META: script=../resources/rs-utils.js
 // META: script=../resources/test-utils.js
 // META: script=../resources/recording-streams.js
 // META: script=../resources/rs-test-templates.js
 'use strict';
-
-function assert_typed_array_equals(actual, expected, message) {
-  const prefix = message === undefined ? '' : `${message} `;
-  assert_equals(typeof actual, 'object', `${prefix}type is object`);
-  assert_equals(actual.constructor, expected.constructor, `${prefix}constructor`);
-  assert_equals(actual.byteOffset, expected.byteOffset, `${prefix}byteOffset`);
-  assert_equals(actual.byteLength, expected.byteLength, `${prefix}byteLength`);
-  assert_equals(actual.buffer.byteLength, expected.buffer.byteLength, `${prefix}buffer.byteLength`);
-  assert_array_equals([...actual], [...expected], `${prefix}contents`);
-  assert_array_equals([...new Uint8Array(actual.buffer)], [...new Uint8Array(expected.buffer)], `${prefix}buffer contents`);
-}
 
 test(() => {
 

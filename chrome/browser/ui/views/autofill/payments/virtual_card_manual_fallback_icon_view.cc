@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,8 @@ VirtualCardManualFallbackIconView::VirtualCardManualFallbackIconView(
     : PageActionIconView(command_updater,
                          IDC_VIRTUAL_CARD_MANUAL_FALLBACK,
                          icon_label_bubble_delegate,
-                         delegate) {}
+                         delegate,
+                         "VirtualCardManualFallback") {}
 
 VirtualCardManualFallbackIconView::~VirtualCardManualFallbackIconView() =
     default;

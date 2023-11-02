@@ -1,7 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package org.chromium.chrome.browser.sync.settings;
+
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -29,6 +31,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncService;
@@ -50,8 +53,8 @@ public class SyncSettingsUtils {
     private static final String MY_ACCOUNT_URL = "https://myaccount.google.com/smartlink/home";
     private static final String TAG = "SyncSettingsUtils";
 
-    @IntDef({SyncError.NO_ERROR, SyncError.ANDROID_SYNC_DISABLED, SyncError.AUTH_ERROR,
-            SyncError.PASSPHRASE_REQUIRED, SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING,
+    @IntDef({SyncError.NO_ERROR, SyncError.AUTH_ERROR, SyncError.PASSPHRASE_REQUIRED,
+            SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING,
             SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS,
             SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING,
             SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS,
@@ -59,15 +62,14 @@ public class SyncSettingsUtils {
     @Retention(RetentionPolicy.SOURCE)
     public @interface SyncError {
         int NO_ERROR = -1;
-        int ANDROID_SYNC_DISABLED = 0;
-        int AUTH_ERROR = 1;
-        int PASSPHRASE_REQUIRED = 2;
-        int TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING = 3;
-        int TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS = 4;
-        int TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING = 5;
-        int TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS = 6;
-        int CLIENT_OUT_OF_DATE = 7;
-        int SYNC_SETUP_INCOMPLETE = 8;
+        int AUTH_ERROR = 0;
+        int PASSPHRASE_REQUIRED = 1;
+        int TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING = 2;
+        int TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS = 3;
+        int TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING = 4;
+        int TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS = 5;
+        int CLIENT_OUT_OF_DATE = 6;
+        int SYNC_SETUP_INCOMPLETE = 7;
         int OTHER_ERRORS = 128;
     }
 
@@ -79,10 +81,6 @@ public class SyncSettingsUtils {
         SyncService syncService = SyncService.get();
         if (syncService == null) {
             return SyncError.NO_ERROR;
-        }
-
-        if (!syncService.isSyncAllowedByPlatform()) {
-            return SyncError.ANDROID_SYNC_DISABLED;
         }
 
         if (!syncService.isSyncRequested()) {
@@ -135,10 +133,10 @@ public class SyncSettingsUtils {
      */
     public static String getSyncErrorHint(Context context, @SyncError int error) {
         switch (error) {
-            case SyncError.ANDROID_SYNC_DISABLED:
-                return context.getString(R.string.hint_android_sync_disabled);
             case SyncError.AUTH_ERROR:
-                return context.getString(R.string.hint_sync_auth_error);
+                return ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES)
+                        ? context.getString(R.string.hint_sync_auth_error_modern)
+                        : context.getString(R.string.hint_sync_auth_error);
             case SyncError.CLIENT_OUT_OF_DATE:
                 return context.getString(
                         R.string.hint_client_out_of_date, BuildInfo.getInstance().hostPackageLabel);
@@ -169,7 +167,6 @@ public class SyncSettingsUtils {
      */
     public static String getSyncErrorCardTitle(Context context, @SyncError int error) {
         switch (error) {
-            case SyncError.ANDROID_SYNC_DISABLED:
             case SyncError.AUTH_ERROR:
             case SyncError.CLIENT_OUT_OF_DATE:
             case SyncError.OTHER_ERRORS:
@@ -191,8 +188,6 @@ public class SyncSettingsUtils {
     public static @Nullable String getSyncErrorCardButtonLabel(
             Context context, @SyncError int error) {
         switch (error) {
-            case SyncError.ANDROID_SYNC_DISABLED:
-                return context.getString(R.string.android_sync_disabled_error_card_button);
             case SyncError.AUTH_ERROR:
             case SyncError.OTHER_ERRORS:
                 // Both these errors should be resolved by signing the user again.
@@ -231,10 +226,6 @@ public class SyncSettingsUtils {
             return context.getString(R.string.sync_off);
         }
 
-        if (!syncService.isSyncAllowedByPlatform()) {
-            return context.getString(R.string.sync_android_system_sync_disabled);
-        }
-
         if (syncService.isSyncDisabledByEnterprisePolicy()) {
             return context.getString(R.string.sync_is_disabled_by_administrator);
         }
@@ -256,7 +247,7 @@ public class SyncSettingsUtils {
             return context.getString(R.string.sync_error_generic);
         }
 
-        if (!syncService.isSyncRequested()) {
+        if (!syncService.isSyncRequested() || syncService.getSelectedTypes().isEmpty()) {
             return context.getString(R.string.sync_data_types_off);
         }
 
@@ -319,7 +310,8 @@ public class SyncSettingsUtils {
         }
 
         SyncService syncService = SyncService.get();
-        if (syncService == null || !syncService.isSyncRequested()) {
+        if (syncService == null || !syncService.isSyncRequested()
+                || syncService.getSelectedTypes().isEmpty()) {
             return AppCompatResources.getDrawable(context, R.drawable.ic_sync_off_48dp);
         }
         if (syncService.isSyncDisabledByEnterprisePolicy()) {
@@ -411,6 +403,12 @@ public class SyncSettingsUtils {
                 (pendingIntent)
                         -> {
                     try {
+                        // startIntentSenderForResult() will fail if the fragment is
+                        // already gone, see crbug.com/1362141.
+                        if (!fragment.isAdded()) {
+                            return;
+                        }
+
                         fragment.startIntentSenderForResult(pendingIntent.getIntentSender(),
                                 requestCode,
                                 /* fillInIntent */ null, /* flagsMask */ 0,

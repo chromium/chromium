@@ -1,0 +1,19 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://www.w3.org/TR/webnn/
+
+enum MLOperandType {
+  "float32",
+  "float16",
+  "int32",
+  "uint32",
+  "int8",
+  "uint8"
+};
+
+dictionary MLOperandDescriptor {
+  required MLOperandType type;
+  sequence<[EnforceRange] unsigned long> dimensions;
+};

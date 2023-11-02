@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -158,6 +158,8 @@ std::vector<GroupMatch> GroupsMatchingInput(
   FuzzyFinder finder(input);
   std::vector<gfx::Range> ranges;
   TabGroupModel* model = browser->tab_strip_model()->group_model();
+  if (!model)
+    return results;
   // For empty input, use this to preserve TabGroupModel's ordering, which is
   // arbitrary but still helpful to keep consistent across calls and surfaces.
   double ordering_score = .95;

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,9 +47,10 @@ IN_PROC_BROWSER_TEST_F(HungRendererNavigationTest,
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   TabDialogs::FromWebContents(active_web_contents)
-      ->ShowHungRendererDialog(
-          active_web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget(),
-          base::DoNothing());
+      ->ShowHungRendererDialog(active_web_contents->GetPrimaryMainFrame()
+                                   ->GetRenderViewHost()
+                                   ->GetWidget(),
+                               base::DoNothing());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("b.com", "/title2.html")));
   // Expect that the dialog has been dismissed.

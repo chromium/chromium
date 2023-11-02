@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,8 +26,6 @@ ParsedParams::~ParsedParams() = default;
 
 absl::optional<ParsedParams> ParseWebPluginParams(
     const blink::WebPluginParams& params) {
-  // Keep in sync with `OutOfProcessInstance::Init()`.
-  // TODO(crbug.com/1232152): Don't have two implementations.
   ParsedParams result;
   for (size_t i = 0; i < params.attribute_names.size(); ++i) {
     if (params.attribute_names[i] == "src") {

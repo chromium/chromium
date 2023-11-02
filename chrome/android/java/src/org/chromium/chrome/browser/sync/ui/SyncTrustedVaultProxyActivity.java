@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -100,7 +100,6 @@ public class SyncTrustedVaultProxyActivity extends AsyncInitializationActivity {
         assert mUserActionTrigger != -1;
 
         try {
-            // TODO(crbug.com/1090704): check getSavedInstanceState() before sending the intent.
             startIntentSenderForResult(proxiedIntent.getIntentSender(), mRequestCode,
                     /* fillInIntent */ null, /* flagsMask */ 0,
                     /* flagsValues */ 0, /* extraFlags */ 0,

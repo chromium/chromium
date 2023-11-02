@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,8 @@
 #include "media/base/video_frame_pool.h"
 #include "media/base/video_util.h"
 #include "media/cast/cast_environment.h"
+#include "media/cast/common/encoded_frame.h"
+#include "media/cast/common/openscreen_conversion_helpers.h"
 #include "third_party/libvpx/source/libvpx/vpx/vp8dx.h"
 #include "third_party/libvpx/source/libvpx/vpx/vpx_decoder.h"
 #include "third_party/libyuv/include/libyuv/convert.h"
@@ -65,7 +67,7 @@ class VideoDecoder::ImplBase
       return;
     }
     decoded_frame->set_timestamp(
-        encoded_frame->rtp_timestamp.ToTimeDelta(kVideoFrequency));
+        ToTimeDelta(encoded_frame->rtp_timestamp, kVideoFrequency));
 
     std::unique_ptr<FrameEvent> decode_event(new FrameEvent());
     decode_event->timestamp = cast_environment_->Clock()->NowTicks();
@@ -110,8 +112,6 @@ class VideoDecoder::Vp8Impl final : public VideoDecoder::ImplBase {
       return;
 
     vpx_codec_dec_cfg_t cfg = {0};
-    // TODO(miu): Revisit this for typical multi-core desktop use case.  This
-    // feels like it should be 4 or 8.
     cfg.threads = 1;
 
     DCHECK(vpx_codec_get_caps(vpx_codec_vp8_dx()) & VPX_CODEC_CAP_POSTPROC);
@@ -158,16 +158,17 @@ class VideoDecoder::Vp8Impl final : public VideoDecoder::ImplBase {
         video_frame_pool_.CreateFrame(PIXEL_FORMAT_I420, frame_size,
                                       gfx::Rect(frame_size), frame_size,
                                       base::TimeDelta());
-    libyuv::I420Copy(image->planes[VPX_PLANE_Y], image->stride[VPX_PLANE_Y],
-                     image->planes[VPX_PLANE_U], image->stride[VPX_PLANE_U],
-                     image->planes[VPX_PLANE_V], image->stride[VPX_PLANE_V],
-                     decoded_frame->visible_data(media::VideoFrame::kYPlane),
-                     decoded_frame->stride(media::VideoFrame::kYPlane),
-                     decoded_frame->visible_data(media::VideoFrame::kUPlane),
-                     decoded_frame->stride(media::VideoFrame::kUPlane),
-                     decoded_frame->visible_data(media::VideoFrame::kVPlane),
-                     decoded_frame->stride(media::VideoFrame::kVPlane),
-                     frame_size.width(), frame_size.height());
+    libyuv::I420Copy(
+        image->planes[VPX_PLANE_Y], image->stride[VPX_PLANE_Y],
+        image->planes[VPX_PLANE_U], image->stride[VPX_PLANE_U],
+        image->planes[VPX_PLANE_V], image->stride[VPX_PLANE_V],
+        decoded_frame->GetWritableVisibleData(media::VideoFrame::kYPlane),
+        decoded_frame->stride(media::VideoFrame::kYPlane),
+        decoded_frame->GetWritableVisibleData(media::VideoFrame::kUPlane),
+        decoded_frame->stride(media::VideoFrame::kUPlane),
+        decoded_frame->GetWritableVisibleData(media::VideoFrame::kVPlane),
+        decoded_frame->stride(media::VideoFrame::kVPlane), frame_size.width(),
+        frame_size.height());
     return decoded_frame;
   }
 
@@ -175,7 +176,6 @@ class VideoDecoder::Vp8Impl final : public VideoDecoder::ImplBase {
   vpx_codec_ctx_t context_;
 };
 
-#ifndef OFFICIAL_BUILD
 // A fake video decoder that always output 2x2 black frames.
 class VideoDecoder::FakeImpl final : public VideoDecoder::ImplBase {
  public:
@@ -209,23 +209,19 @@ class VideoDecoder::FakeImpl final : public VideoDecoder::ImplBase {
 
   int last_decoded_id_;
 };
-#endif
 
 VideoDecoder::VideoDecoder(
     const scoped_refptr<CastEnvironment>& cast_environment,
     Codec codec)
     : cast_environment_(cast_environment) {
   switch (codec) {
-#ifndef OFFICIAL_BUILD
     case CODEC_VIDEO_FAKE:
       impl_ = new FakeImpl(cast_environment);
       break;
-#endif
     case CODEC_VIDEO_VP8:
       impl_ = new Vp8Impl(cast_environment);
       break;
     case CODEC_VIDEO_H264:
-      // TODO(miu): Need implementation.
       NOTIMPLEMENTED();
       break;
     default:

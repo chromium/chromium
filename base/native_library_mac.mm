@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -65,10 +65,8 @@ NativeLibrary LoadNativeLibraryWithOptions(const FilePath& library_path,
     return native_lib;
   }
   ScopedCFTypeRef<CFURLRef> url(CFURLCreateFromFileSystemRepresentation(
-      kCFAllocatorDefault,
-      (const UInt8*)library_path.value().c_str(),
-      library_path.value().length(),
-      true));
+      kCFAllocatorDefault, (const UInt8*)library_path.value().c_str(),
+      checked_cast<CFIndex>(library_path.value().length()), true));
   if (!url)
     return nullptr;
   CFBundleRef bundle = CFBundleCreate(kCFAllocatorDefault, url.get());

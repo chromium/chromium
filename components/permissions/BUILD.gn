@@ -1,10 +1,12 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# TODO(698985): Make `permissions_common` source_set.
+# TODO(crbug.com/1327384): Make `permissions_common` source_set.
 component("permissions_common") {
   sources = [
+    "constants.cc",
+    "constants.h",
     "features.cc",
     "features.h",
     "permission_request_enums.h",
@@ -25,8 +27,6 @@ source_set("permissions") {
     "chooser_controller.h",
     "chooser_title_util.cc",
     "chooser_title_util.h",
-    "constants.cc",
-    "constants.h",
     "contexts/accessibility_permission_context.cc",
     "contexts/accessibility_permission_context.h",
     "contexts/bluetooth_chooser_context.cc",
@@ -37,10 +37,10 @@ source_set("permissions") {
     "contexts/clipboard_read_write_permission_context.h",
     "contexts/clipboard_sanitized_write_permission_context.cc",
     "contexts/clipboard_sanitized_write_permission_context.h",
-    "contexts/font_access_permission_context.cc",
-    "contexts/font_access_permission_context.h",
     "contexts/geolocation_permission_context.cc",
     "contexts/geolocation_permission_context.h",
+    "contexts/local_fonts_permission_context.cc",
+    "contexts/local_fonts_permission_context.h",
     "contexts/midi_permission_context.cc",
     "contexts/midi_permission_context.h",
     "contexts/midi_sysex_permission_context.cc",
@@ -55,6 +55,12 @@ source_set("permissions") {
     "contexts/wake_lock_permission_context.h",
     "contexts/webxr_permission_context.cc",
     "contexts/webxr_permission_context.h",
+    "contexts/window_management_permission_context.cc",
+    "contexts/window_management_permission_context.h",
+    "notification_permission_review_service.cc",
+    "notification_permission_review_service.h",
+    "notifications_engagement_service.cc",
+    "notifications_engagement_service.h",
     "object_permission_context_base.cc",
     "object_permission_context_base.h",
     "permission_actions_history.cc",
@@ -76,6 +82,8 @@ source_set("permissions") {
     "permission_request_id.h",
     "permission_request_manager.cc",
     "permission_request_manager.h",
+    "permission_request_queue.cc",
+    "permission_request_queue.h",
     "permission_result.cc",
     "permission_result.h",
     "permission_ui_selector.cc",
@@ -96,6 +104,8 @@ source_set("permissions") {
     "request_type.h",
     "switches.cc",
     "switches.h",
+    "unused_site_permissions_service.cc",
+    "unused_site_permissions_service.h",
   ]
   deps = [
     "//base",
@@ -143,10 +153,17 @@ source_set("permissions") {
       "android/bluetooth_scanning_prompt_android.cc",
       "android/bluetooth_scanning_prompt_android.h",
       "android/bluetooth_scanning_prompt_android_delegate.h",
-      "android/permission_dialog_delegate.cc",
-      "android/permission_dialog_delegate.h",
-      "android/permission_prompt_android.cc",
-      "android/permission_prompt_android.h",
+      "android/permission_prompt/permission_dialog.cc",
+      "android/permission_prompt/permission_dialog.h",
+      "android/permission_prompt/permission_dialog_delegate.cc",
+      "android/permission_prompt/permission_dialog_delegate.h",
+      "android/permission_prompt/permission_message.cc",
+      "android/permission_prompt/permission_message.h",
+      "android/permission_prompt/permission_prompt_android.cc",
+      "android/permission_prompt/permission_prompt_android.h",
+      "android/permission_prompt/permission_prompt_android_factory.cc",
+      "android/permission_prompt/permission_prompt_infobar.cc",
+      "android/permission_prompt/permission_prompt_infobar.h",
       "android/permissions_android_feature_list.cc",
       "android/permissions_android_feature_list.h",
       "contexts/geolocation_permission_context_android.cc",
@@ -158,6 +175,7 @@ source_set("permissions") {
       "//components/infobars/core",
       "//components/location/android:location_settings_dialog_enums_java",
       "//components/location/android:settings",
+      "//components/messages/android:android",
       "//components/permissions/android:jni_headers",
       "//components/permissions/android:native",
       "//components/prefs",
@@ -194,6 +212,8 @@ source_set("test_support") {
     "test/object_permission_context_base_mock_permission_observer.h",
     "test/permission_request_observer.cc",
     "test/permission_request_observer.h",
+    "test/permission_test_util.cc",
+    "test/permission_test_util.h",
     "test/test_permissions_client.cc",
     "test/test_permissions_client.h",
   ]
@@ -231,6 +251,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "chooser_title_util_unittest.cc",
     "contexts/camera_pan_tilt_zoom_permission_context_unittest.cc",
     "contexts/geolocation_permission_context_unittest.cc",
     "contexts/midi_permission_context_unittest.cc",
@@ -245,7 +266,9 @@ source_set("unit_tests") {
     "permission_decision_auto_blocker_unittest.cc",
     "permission_manager_unittest.cc",
     "permission_request_manager_unittest.cc",
+    "permission_request_queue_unittest.cc",
     "permission_uma_util_unittest.cc",
+    "unused_site_permissions_service_unittest.cc",
   ]
   if (!is_android) {
     sources += [
@@ -254,7 +277,8 @@ source_set("unit_tests") {
     ]
   }
   if (is_android) {
-    sources += [ "android/permission_dialog_delegate_unittest.cc" ]
+    sources +=
+        [ "android/permission_prompt/permission_dialog_delegate_unittest.cc" ]
   }
   deps = [
     ":permissions",
@@ -267,6 +291,8 @@ source_set("unit_tests") {
     "//components/content_settings/core/browser",
     "//components/keyed_service/content",
     "//components/prefs:test_support",
+    "//components/strings:components_strings_grit",
+    "//components/sync_preferences:test_support",
     "//components/ukm:test_support",
     "//components/ukm/content",
     "//components/variations",

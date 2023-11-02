@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,8 @@
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_util.h"
+#include "third_party/skia/include/gpu/vk/GrVkMemoryAllocator.h"
+#include "third_party/skia/include/gpu/vk/GrVkTypes.h"
 
 namespace gpu {
 
@@ -29,7 +31,7 @@ class GrVkMemoryAllocatorImpl : public GrVkMemoryAllocator {
 
  private:
   VkResult allocateImageMemory(VkImage image,
-                               AllocationPropertyFlags flags,
+                               uint32_t flags,
                                GrVkBackendMemory* backend_memory) override {
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("gpu.vulkan.vma"),
                  "GrVkMemoryAllocatorImpl::allocateMemoryForImage");
@@ -42,17 +44,17 @@ class GrVkMemoryAllocatorImpl : public GrVkMemoryAllocator {
     info.pool = VK_NULL_HANDLE;
     info.pUserData = nullptr;
 
-    if (AllocationPropertyFlags::kDedicatedAllocation & flags) {
+    if (kDedicatedAllocation_AllocationPropertyFlag & flags) {
       info.flags |= VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
     }
 
-    if (AllocationPropertyFlags::kLazyAllocation & flags) {
+    if (kLazyAllocation_AllocationPropertyFlag & flags) {
       // If the caller asked for lazy allocation then they already set up the
       // VkImage for it so we must require the lazy property.
       info.requiredFlags |= VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT;
     }
 
-    if (AllocationPropertyFlags::kProtected & flags) {
+    if (kProtected_AllocationPropertyFlag & flags) {
       info.requiredFlags |= VK_MEMORY_PROPERTY_PROTECTED_BIT;
     }
 
@@ -66,7 +68,7 @@ class GrVkMemoryAllocatorImpl : public GrVkMemoryAllocator {
 
   VkResult allocateBufferMemory(VkBuffer buffer,
                                 BufferUsage usage,
-                                AllocationPropertyFlags flags,
+                                uint32_t flags,
                                 GrVkBackendMemory* backend_memory) override {
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("gpu.vulkan.vma"),
                  "GrVkMemoryAllocatorImpl::allocateMemoryForBuffer");
@@ -98,16 +100,16 @@ class GrVkMemoryAllocatorImpl : public GrVkMemoryAllocator {
         break;
     }
 
-    if (AllocationPropertyFlags::kDedicatedAllocation & flags) {
+    if (kDedicatedAllocation_AllocationPropertyFlag & flags) {
       info.flags |= VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
     }
 
-    if ((AllocationPropertyFlags::kLazyAllocation & flags) &&
+    if ((kLazyAllocation_AllocationPropertyFlag & flags) &&
         BufferUsage::kGpuOnly == usage) {
       info.preferredFlags |= VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT;
     }
 
-    if (AllocationPropertyFlags::kPersistentlyMapped & flags) {
+    if (kPersistentlyMapped_AllocationPropertyFlag & flags) {
       SkASSERT(BufferUsage::kGpuOnly != usage);
       info.flags |= VMA_ALLOCATION_CREATE_MAPPED_BIT;
     }

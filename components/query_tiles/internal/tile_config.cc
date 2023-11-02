@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -93,7 +93,7 @@ constexpr double kDefaultMinimumTileScoreForNewFrontTiles = 0.9;
 constexpr int kDefaultNumTrendingTilesToDisplay = 2;
 
 // Default number of impressions a trending tile to be displayed .
-constexpr int kDefaultMaxTrendingTileImpressions = 2;
+constexpr int kDefaultMaxTrendingTileImpressions = 1;
 
 // Default position to start shuffling unclicked tile.
 constexpr int kDefaultTileShufflePosition = 2;
@@ -110,12 +110,17 @@ const char kQueryTilesSingleTierExperimentTag[] = "\"maxLevels\": \"1\"";
 const char kQueryTilesEnableTrendingExperimentTag[] =
     "\"enableTrending\": \"true\"";
 
-// Json Experiment tag for getting more trending queries.
-const char kQueryTilesMoreTrendingExperimentTag[] =
-    "\"maxTrendingQueries\": \"10\"";
-
 // Json Experiment tag for ranking tiles on server based on client context.
 const char kQueryTilesRankTilesExperimentTag[] = "\"rankTiles\": \"true\"";
+
+// Default Json experiment tag for IN and NG.
+constexpr char kDefaultExperimentTagForINAndNG[] =
+    "{maxLevels : 1, enableTrending : true, maxTrendingQueries : 8}";
+
+// Default Json experiment tag for JP.
+constexpr char kDefaultExperimentTagForJP[] =
+    "{maxLevels : 1, rankTiles : true, enableTrending : true, "
+    "maxTrendingQueries : 8, disableEntityTranslation: true}";
 
 const GURL BuildGetQueryTileURL(const GURL& base_url, const char* path) {
   GURL::Replacements replacements;
@@ -150,7 +155,7 @@ bool TileConfig::GetIsUnMeteredNetworkRequired() {
 }
 
 // static
-std::string TileConfig::GetExperimentTag() {
+std::string TileConfig::GetExperimentTag(const std::string& country_code) {
   std::vector<std::string> experiment_tag;
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kQueryTilesSingleTier)) {
@@ -163,11 +168,6 @@ std::string TileConfig::GetExperimentTag() {
   }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kQueryTilesMoreTrending)) {
-    experiment_tag.emplace_back(kQueryTilesMoreTrendingExperimentTag);
-  }
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kQueryTilesRankTiles)) {
     experiment_tag.emplace_back(kQueryTilesRankTilesExperimentTag);
   }
@@ -176,8 +176,20 @@ std::string TileConfig::GetExperimentTag() {
     return "{" + base::JoinString(experiment_tag, ",") + "}";
   }
 
-  return base::GetFieldTrialParamValueByFeature(features::kQueryTiles,
-                                                kExperimentTagKey);
+  std::string tag = base::GetFieldTrialParamValueByFeature(
+      features::kQueryTiles, kExperimentTagKey);
+  if (tag.empty() &&
+      !base::FeatureList::IsEnabled(
+          query_tiles::features::kQueryTilesDisableCountryOverride) &&
+      features::IsQueryTilesEnabledForCountry(country_code)) {
+    if (base::EqualsCaseInsensitiveASCII(country_code, "IN") ||
+        base::EqualsCaseInsensitiveASCII(country_code, "NG")) {
+      return kDefaultExperimentTagForINAndNG;
+    } else if (base::EqualsCaseInsensitiveASCII(country_code, "JP")) {
+      return kDefaultExperimentTagForJP;
+    }
+  }
+  return tag;
 }
 
 // static

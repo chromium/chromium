@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@ import java.util.Map;
  * Navigation object will be created and that same object will be used in all
  * of the NavigationCallback methods.
  */
-public class Navigation extends IClientNavigation.Stub {
+class Navigation extends IClientNavigation.Stub {
     private final INavigation mNavigationImpl;
 
     // Constructor for test mocking.
@@ -329,7 +329,10 @@ public class Navigation extends IClientNavigation.Stub {
     /**
      * Sets the user-agent string that applies to the current navigation. This user-agent is not
      * sticky, it applies to this navigation only (and any redirects or resources that are loaded).
-     * This method may only be called from {@link NavigationCallback.onNavigationStarted}.
+     * This method may only be called from {@link NavigationCallback.onNavigationStarted}.  Setting
+     * this to a non empty string will cause will cause the User-Agent Client Hint header values and
+     * the values returned by `navigator.userAgentData` to be empty for requests this override is
+     * applied to.
      *
      * Note that this user agent won't be sent again if the frame html is fetched again due to a
      * user reloading the page, navigating back and forth etc... when this fetch couldn't be cached
@@ -358,9 +361,9 @@ public class Navigation extends IClientNavigation.Stub {
      * * changing window.location.href
      * * redirect via the <meta http-equiv="refresh"> tag
      * * using window.history.pushState
+     * * window.history.forward() or window.history.back()
      *
-     * This method returns false for navigations initiated by the WebLayer API, including using
-     *  window.history.forward() or window.history.back().
+     * This method returns false for navigations initiated by the WebLayer API.
      *
      * @return Whether the navigation was initiated by the page.
      */
@@ -448,7 +451,7 @@ public class Navigation extends IClientNavigation.Stub {
         }
     }
 
-    /*
+    /**
      * Returns the Page object this navigation is occurring for.
      * This method may only be called in (1) {@link NavigationCallback.onNavigationCompleted} or
      * (2) {@link NavigationCallback.onNavigationFailed} when {@link Navigation#isErrorPage}
@@ -487,6 +490,23 @@ public class Navigation extends IClientNavigation.Stub {
         }
         try {
             return mNavigationImpl.getNavigationEntryOffset();
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
+    /**
+     * Returns true if the navigation response was fetched from the cache.
+     *
+     * @since 102
+     */
+    public boolean wasFetchedFromCache() {
+        ThreadCheck.ensureOnUiThread();
+        if (WebLayer.getSupportedMajorVersionInternal() < 102) {
+            throw new UnsupportedOperationException();
+        }
+        try {
+            return mNavigationImpl.wasFetchedFromCache();
         } catch (RemoteException e) {
             throw new APICallException(e);
         }

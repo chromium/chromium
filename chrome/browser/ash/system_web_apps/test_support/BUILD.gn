@@ -1,0 +1,83 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/buildflags.gni")
+
+assert(is_chromeos_ash)
+
+# This test_support library doesn't use extensions. It must not depend on
+# //chrome/test:test_support_ui as it is depended upon by those targets.
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "test_system_web_app_installation.cc",
+    "test_system_web_app_installation.h",
+    "test_system_web_app_manager.cc",
+    "test_system_web_app_manager.h",
+    "test_system_web_app_url_data_source.cc",
+    "test_system_web_app_url_data_source.h",
+    "test_system_web_app_web_ui_controller_factory.cc",
+    "test_system_web_app_web_ui_controller_factory.h",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//base/test:test_support",
+    "//chrome/app:command_ids",
+    "//chrome/app/theme:chrome_unscaled_resources_grit",
+    "//chrome/browser",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/ash/system_web_apps/types",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//components/crx_file",
+    "//components/keyed_service/content",
+    "//components/services/app_service/public/cpp:app_types",
+    "//components/services/app_service/public/cpp:app_update",
+    "//components/services/app_service/public/cpp:app_url_handling",
+    "//components/services/app_service/public/cpp:protocol_handling",
+    "//components/services/app_service/public/cpp:types",
+    "//components/sync:test_support",
+    "//components/sync_preferences:test_support",
+    "//components/webapps/browser",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/webui",
+  ]
+}
+
+# Browsertest base classes that depend on //chrome/test:test_support_ui. Must
+# be separate from :test_support because that is depended upon by
+# //chrome/test:test_support_ui.
+source_set("test_support_ui") {
+  testonly = true
+
+  sources = [
+    "system_web_app_browsertest_base.cc",
+    "system_web_app_browsertest_base.h",
+    "system_web_app_integration_test.cc",
+    "system_web_app_integration_test.h",
+  ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    "//chrome/browser",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/ash/system_web_apps/test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/test:test_support_ui",
+    "//components/services/app_service/public/cpp:types",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//url",
+  ]
+}

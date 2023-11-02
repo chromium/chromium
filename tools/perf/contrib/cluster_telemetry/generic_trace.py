@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -37,21 +37,36 @@ class _GenericTraceMeasurement(legacy_page_test.LegacyPageTest):
     with tab.browser.platform.tracing_controller.StopTracing() as trace_builder:
       trace_data = trace_builder.AsData()
     measurements = defaultdict(list)
+    duration_events = defaultdict(list)
+    duration_measurements = defaultdict(list)
     for trace in trace_data.GetTracesFor(trace_data_module.CHROME_TRACE_PART):
       for event in trace['traceEvents']:
         # We collect data from duration begin, complete, instant and count
         # events. See benchmark documentation for details.
-        if event['ph'] not in ('B', 'X', 'I', 'C'):
+        if event['ph'] not in ('B', 'E', 'X', 'I', 'C'):
           continue
         if self._trace_names and event['name'] not in self._trace_names:
           continue
+        event_name = '/'.join([event['cat'], event['name']])
+        if event['ph'] == 'B':
+          duration_events[event_name].append(int(event['ts']))
+        elif event['ph'] == 'E':
+          elapsed = int(event['ts']) - duration_events[event_name].pop()
+          value_name = '/'.join([event_name, 'elapsed'])
+          duration_measurements[value_name].append(elapsed)
+        elif event['ph'] == 'X':
+          elapsed = int(event['dur'])
+          value_name = '/'.join([event_name, 'elapsed'])
+          duration_measurements[value_name].append(elapsed)
         for arg_name, arg_value in event.get('args', {}).items():
           if not isinstance(arg_value, int):
             continue
-          value_name = '/'.join([event['cat'], event['name'], arg_name])
+          value_name = '/'.join([event_name, arg_name])
           measurements[value_name].append(arg_value)
     for name, value in measurements.items():
       results.AddMeasurement(name, 'count', value)
+    for name, value in duration_measurements.items():
+      results.AddMeasurement(name, 'us', value)
 
 
 class _GenericTraceBenchmark(perf_benchmark.PerfBenchmark):

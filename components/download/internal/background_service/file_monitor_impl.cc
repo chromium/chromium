@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -105,7 +105,7 @@ void FileMonitorImpl::Initialize(InitCallback callback) {
   base::PostTaskAndReplyWithResult(
       file_thread_task_runner_.get(), FROM_HERE,
       base::BindOnce(&InitializeAndCreateDownloadDirectory, download_file_dir_),
-      base::BindOnce(std::move(callback)));
+      std::move(callback));
 }
 
 void FileMonitorImpl::DeleteUnknownFiles(
@@ -159,7 +159,7 @@ void FileMonitorImpl::HardRecover(InitCallback callback) {
   base::PostTaskAndReplyWithResult(
       file_thread_task_runner_.get(), FROM_HERE,
       base::BindOnce(&HardRecoverOnFileThread, download_file_dir_),
-      base::BindOnce(std::move(callback)));
+      std::move(callback));
 }
 
 }  // namespace download

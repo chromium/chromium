@@ -1,4 +1,4 @@
-#!/usr/bin/python -u
+#!/usr/bin/env python
 #
 # generate a tester program for the API
 #
@@ -8,7 +8,7 @@ import string
 try:
     import libxml2
 except:
-    print "libxml2 python bindings not available, skipping testapi.c generation"
+    print("libxml2 python bindings not available, skipping testapi.c generation")
     sys.exit(0)
 
 if len(sys.argv) > 1:
@@ -21,8 +21,6 @@ else:
 #
 skipped_modules = [ "SAX", "xlink", "threads", "globals",
   "xmlmemory", "xmlversion", "xmlexports",
-  #deprecated
-  "DOCBparser",
 ]
 
 #
@@ -43,7 +41,6 @@ modules_defines = {
     "xmlregexp" : "LIBXML_REGEXP_ENABLED",
     "xmlautomata" : "LIBXML_AUTOMATA_ENABLED",
     "xmlsave" : "LIBXML_OUTPUT_ENABLED",
-    "DOCBparser" : "LIBXML_DOCB_ENABLED",
     "xmlmodule" : "LIBXML_MODULES_ENABLED",
     "pattern" : "LIBXML_PATTERN_ENABLED",
     "schematron" : "LIBXML_SCHEMATRON_ENABLED",
@@ -58,11 +55,6 @@ function_defines = {
     "xmlSAX2StartElement" : "LIBXML_SAX1_ENABLED",
     "xmlSAXDefaultVersion" : "LIBXML_SAX1_ENABLED",
     "UTF8Toisolat1" : "LIBXML_OUTPUT_ENABLED",
-    "xmlCleanupPredefinedEntities": "LIBXML_LEGACY_ENABLED",
-    "xmlInitializePredefinedEntities": "LIBXML_LEGACY_ENABLED",
-    "xmlSetFeature": "LIBXML_LEGACY_ENABLED",
-    "xmlGetFeature": "LIBXML_LEGACY_ENABLED",
-    "xmlGetFeaturesList": "LIBXML_LEGACY_ENABLED",
     "xmlIOParseDTD": "LIBXML_VALID_ENABLED",
     "xmlParseDTD": "LIBXML_VALID_ENABLED",
     "xmlParseDoc": "LIBXML_SAX1_ENABLED",
@@ -99,7 +91,6 @@ function_defines = {
     "xmlSprintfElementContent": "LIBXML_OUTPUT_ENABLED",
     "xmlValidGetPotentialChildren" : "LIBXML_VALID_ENABLED",
     "xmlValidGetValidElements" : "LIBXML_VALID_ENABLED",
-    "docbDefaultSAXHandlerInit" : "LIBXML_DOCB_ENABLED",
     "xmlTextReaderPreservePattern" : "LIBXML_PATTERN_ENABLED",
 }
 
@@ -161,6 +152,16 @@ skipped_functions = [
 "xmlParseXMLDecl", "xmlParseTextDecl", "xmlParseMisc",
 "xmlParseExternalSubset", "xmlParserHandlePEReference",
 "xmlSkipBlankChars",
+# Legacy
+"xmlCleanupPredefinedEntities", "xmlInitializePredefinedEntities",
+"xmlSetFeature", "xmlGetFeature", "xmlGetFeaturesList",
+# location sets
+"xmlXPtrLocationSetAdd",
+"xmlXPtrLocationSetCreate",
+"xmlXPtrLocationSetDel",
+"xmlXPtrLocationSetMerge",
+"xmlXPtrLocationSetRemove",
+"xmlXPtrWrapLocationSet",
 ]
 
 #
@@ -227,7 +228,7 @@ extra_post_call = {
           if (old != NULL) {
               xmlUnlinkNode(old);
               xmlFreeNode(old) ; old = NULL ; }
-	  ret_val = NULL;""",
+\t  ret_val = NULL;""",
    "xmlTextMerge": 
        """if ((first != NULL) && (first->type != XML_TEXT_NODE)) {
               xmlUnlinkNode(second);
@@ -236,7 +237,7 @@ extra_post_call = {
        """if ((ret_val != NULL) && (ret_val != ncname) &&
               (ret_val != prefix) && (ret_val != memory))
               xmlFree(ret_val);
-	  ret_val = NULL;""",
+\t  ret_val = NULL;""",
    "xmlNewDocElementContent":
        """xmlFreeDocElementContent(doc, ret_val); ret_val = NULL;""",
    "xmlDictReference": "xmlDictFree(dict);",
@@ -268,29 +269,29 @@ modules = []
 def is_skipped_module(name):
     for mod in skipped_modules:
         if mod == name:
-	    return 1
+            return 1
     return 0
 
 def is_skipped_function(name):
     for fun in skipped_functions:
         if fun == name:
-	    return 1
+            return 1
     # Do not test destructors
-    if string.find(name, 'Free') != -1:
+    if name.find('Free') != -1:
         return 1
     return 0
 
 def is_skipped_memcheck(name):
     for fun in skipped_memcheck:
         if fun == name:
-	    return 1
+            return 1
     return 0
 
 missing_types = {}
 def add_missing_type(name, func):
     try:
         list = missing_types[name]
-	list.append(func)
+        list.append(func)
     except:
         missing_types[name] = [func]
 
@@ -310,7 +311,7 @@ def add_missing_functions(name, module):
     missing_functions_nr = missing_functions_nr + 1
     try:
         list = missing_functions[module]
-	list.append(name)
+        list.append(name)
     except:
         missing_functions[module] = [name]
 
@@ -319,45 +320,45 @@ def add_missing_functions(name, module):
 #
 
 def type_convert(str, name, info, module, function, pos):
-#    res = string.replace(str, "    ", " ")
-#    res = string.replace(str, "   ", " ")
-#    res = string.replace(str, "  ", " ")
-    res = string.replace(str, " *", "_ptr")
-#    res = string.replace(str, "*", "_ptr")
-    res = string.replace(res, " ", "_")
+#    res = str.replace("    ", " ")
+#    res = str.replace("   ", " ")
+#    res = str.replace("  ", " ")
+    res = str.replace(" *", "_ptr")
+#    res = str.replace("*", "_ptr")
+    res = res.replace(" ", "_")
     if res == 'const_char_ptr':
-        if string.find(name, "file") != -1 or \
-           string.find(name, "uri") != -1 or \
-           string.find(name, "URI") != -1 or \
-           string.find(info, "filename") != -1 or \
-           string.find(info, "URI") != -1 or \
-           string.find(info, "URL") != -1:
-	    if string.find(function, "Save") != -1 or \
-	       string.find(function, "Create") != -1 or \
-	       string.find(function, "Write") != -1 or \
-	       string.find(function, "Fetch") != -1:
-	        return('fileoutput')
-	    return('filepath')
+        if name.find("file") != -1 or \
+           name.find("uri") != -1 or \
+           name.find("URI") != -1 or \
+           info.find("filename") != -1 or \
+           info.find("URI") != -1 or \
+           info.find("URL") != -1:
+            if function.find("Save") != -1 or \
+               function.find("Create") != -1 or \
+               function.find("Write") != -1 or \
+               function.find("Fetch") != -1:
+                return('fileoutput')
+            return('filepath')
     if res == 'void_ptr':
         if module == 'nanoftp' and name == 'ctx':
-	    return('xmlNanoFTPCtxtPtr')
+            return('xmlNanoFTPCtxtPtr')
         if function == 'xmlNanoFTPNewCtxt' or \
-	   function == 'xmlNanoFTPConnectTo' or \
-	   function == 'xmlNanoFTPOpen':
-	    return('xmlNanoFTPCtxtPtr')
+           function == 'xmlNanoFTPConnectTo' or \
+           function == 'xmlNanoFTPOpen':
+            return('xmlNanoFTPCtxtPtr')
         if module == 'nanohttp' and name == 'ctx':
-	    return('xmlNanoHTTPCtxtPtr')
-	if function == 'xmlNanoHTTPMethod' or \
-	   function == 'xmlNanoHTTPMethodRedir' or \
-	   function == 'xmlNanoHTTPOpen' or \
-	   function == 'xmlNanoHTTPOpenRedir':
-	    return('xmlNanoHTTPCtxtPtr');
+            return('xmlNanoHTTPCtxtPtr')
+        if function == 'xmlNanoHTTPMethod' or \
+           function == 'xmlNanoHTTPMethodRedir' or \
+           function == 'xmlNanoHTTPOpen' or \
+           function == 'xmlNanoHTTPOpenRedir':
+            return('xmlNanoHTTPCtxtPtr');
         if function == 'xmlIOHTTPOpen':
-	    return('xmlNanoHTTPCtxtPtr')
-	if string.find(name, "data") != -1:
-	    return('userdata')
-	if string.find(name, "user") != -1:
-	    return('userdata')
+            return('xmlNanoHTTPCtxtPtr')
+        if name.find("data") != -1:
+            return('userdata')
+        if name.find("user") != -1:
+            return('userdata')
     if res == 'xmlDoc_ptr':
         res = 'xmlDocPtr'
     if res == 'xmlNode_ptr':
@@ -366,18 +367,18 @@ def type_convert(str, name, info, module, function, pos):
         res = 'xmlDictPtr'
     if res == 'xmlNodePtr' and pos != 0:
         if (function == 'xmlAddChild' and pos == 2) or \
-	   (function == 'xmlAddChildList' and pos == 2) or \
+           (function == 'xmlAddChildList' and pos == 2) or \
            (function == 'xmlAddNextSibling' and pos == 2) or \
            (function == 'xmlAddSibling' and pos == 2) or \
            (function == 'xmlDocSetRootElement' and pos == 2) or \
            (function == 'xmlReplaceNode' and pos == 2) or \
            (function == 'xmlTextMerge') or \
-	   (function == 'xmlAddPrevSibling' and pos == 2):
-	    return('xmlNodePtr_in');
+           (function == 'xmlAddPrevSibling' and pos == 2):
+            return('xmlNodePtr_in');
     if res == 'const xmlBufferPtr':
         res = 'xmlBufferPtr'
     if res == 'xmlChar_ptr' and name == 'name' and \
-       string.find(function, "EatName") != -1:
+       function.find("EatName") != -1:
         return('eaten_name')
     if res == 'void_ptr*':
         res = 'void_ptr_ptr'
@@ -393,7 +394,7 @@ def type_convert(str, name, info, module, function, pos):
         res = 'debug_FILE_ptr';
     if res == 'int' and name == 'options':
         if module == 'parser' or module == 'xmlreader':
-	    res = 'parseroptions'
+            res = 'parseroptions'
 
     return res
 
@@ -402,38 +403,35 @@ known_param_types = []
 def is_known_param_type(name):
     for type in known_param_types:
         if type == name:
-	    return 1
+            return 1
     return name[-3:] == 'Ptr' or name[-4:] == '_ptr'
 
 def generate_param_type(name, rtype):
     global test
     for type in known_param_types:
         if type == name:
-	    return
+            return
     for type in generated_param_types:
         if type == name:
-	    return
+            return
 
     if name[-3:] == 'Ptr' or name[-4:] == '_ptr':
         if rtype[0:6] == 'const ':
-	    crtype = rtype[6:]
-	else:
-	    crtype = rtype
+            crtype = rtype[6:]
+        else:
+            crtype = rtype
 
         define = 0
-	if modules_defines.has_key(module):
-	    test.write("#ifdef %s\n" % (modules_defines[module]))
-	    define = 1
+        if module in modules_defines:
+            test.write("#ifdef %s\n" % (modules_defines[module]))
+            define = 1
         test.write("""
 #define gen_nb_%s 1
-static %s gen_%s(int no ATTRIBUTE_UNUSED, int nr ATTRIBUTE_UNUSED) {
-    return(NULL);
-}
-static void des_%s(int no ATTRIBUTE_UNUSED, %s val ATTRIBUTE_UNUSED, int nr ATTRIBUTE_UNUSED) {
-}
-""" % (name, crtype, name, name, rtype))
+#define gen_%s(no, nr) NULL
+#define des_%s(no, val, nr)
+""" % (name, name, name))
         if define == 1:
-	    test.write("#endif\n\n")
+            test.write("#endif\n\n")
         add_generated_param_type(name)
 
 #
@@ -445,7 +443,7 @@ known_return_types = []
 def is_known_return_type(name):
     for type in known_return_types:
         if type == name:
-	    return 1
+            return 1
     return 0
 
 #
@@ -471,7 +469,7 @@ def compare_and_save():
         try:
             os.system("rm testapi.c; mv testapi.c.new testapi.c")
         except:
-	    os.system("mv testapi.c.new testapi.c")
+            os.system("mv testapi.c.new testapi.c")
         print("Updated testapi.c")
     else:
         print("Generated testapi.c is identical")
@@ -481,17 +479,17 @@ while line != "":
     if line == "/* CUT HERE: everything below that line is generated */\n":
         break;
     if line[0:15] == "#define gen_nb_":
-        type = string.split(line[15:])[0]
-	known_param_types.append(type)
+        type = line[15:].split()[0]
+        known_param_types.append(type)
     if line[0:19] == "static void desret_":
-        type = string.split(line[19:], '(')[0]
-	known_return_types.append(type)
+        type = line[19:].split('(')[0]
+        known_return_types.append(type)
     test.write(line)
     line = input.readline()
 input.close()
 
 if line == "":
-    print "Could not find the CUT marker in testapi.c skipping generation"
+    print("Could not find the CUT marker in testapi.c skipping generation")
     test.close()
     sys.exit(0)
 
@@ -505,7 +503,7 @@ test.write("/* CUT HERE: everything below that line is generated */\n")
 #
 doc = libxml2.readFile(srcPref + 'doc/libxml2-api.xml', None, 0)
 if doc == None:
-    print "Failed to load doc/libxml2-api.xml"
+    print("Failed to load doc/libxml2-api.xml")
     sys.exit(1)
 ctxt = doc.xpathNewContext()
 
@@ -519,9 +517,9 @@ for arg in args:
     mod = arg.xpathEval('string(../@file)')
     func = arg.xpathEval('string(../@name)')
     if (mod not in skipped_modules) and (func not in skipped_functions):
-	type = arg.xpathEval('string(@type)')
-	if not argtypes.has_key(type):
-	    argtypes[type] = func
+        type = arg.xpathEval('string(@type)')
+        if type not in argtypes:
+            argtypes[type] = func
 
 # similarly for return types
 rettypes = {}
@@ -531,8 +529,8 @@ for ret in rets:
     func = ret.xpathEval('string(../@name)')
     if (mod not in skipped_modules) and (func not in skipped_functions):
         type = ret.xpathEval('string(@type)')
-	if not rettypes.has_key(type):
-	    rettypes[type] = func
+        if type not in rettypes:
+            rettypes[type] = func
 
 #
 # Generate constructors and return type handling for all enums
@@ -549,49 +547,49 @@ for enum in enums:
         continue;
     define = 0
 
-    if argtypes.has_key(name) and is_known_param_type(name) == 0:
-	values = ctxt.xpathEval("/api/symbols/enum[@type='%s']" % name)
-	i = 0
-	vals = []
-	for value in values:
-	    vname = value.xpathEval('string(@name)')
-	    if vname == None:
-		continue;
-	    i = i + 1
-	    if i >= 5:
-		break;
-	    vals.append(vname)
-	if vals == []:
-	    print "Didn't find any value for enum %s" % (name)
-	    continue
-	if modules_defines.has_key(module):
-	    test.write("#ifdef %s\n" % (modules_defines[module]))
-	    define = 1
-	test.write("#define gen_nb_%s %d\n" % (name, len(vals)))
-	test.write("""static %s gen_%s(int no, int nr ATTRIBUTE_UNUSED) {\n""" %
-	           (name, name))
-	i = 1
-	for value in vals:
-	    test.write("    if (no == %d) return(%s);\n" % (i, value))
-	    i = i + 1
-	test.write("""    return(0);
+    if (name in argtypes) and is_known_param_type(name) == 0:
+        values = ctxt.xpathEval("/api/symbols/enum[@type='%s']" % name)
+        i = 0
+        vals = []
+        for value in values:
+            vname = value.xpathEval('string(@name)')
+            if vname == None:
+                continue;
+            i = i + 1
+            if i >= 5:
+                break;
+            vals.append(vname)
+        if vals == []:
+            print("Didn't find any value for enum %s" % (name))
+            continue
+        if module in modules_defines:
+            test.write("#ifdef %s\n" % (modules_defines[module]))
+            define = 1
+        test.write("#define gen_nb_%s %d\n" % (name, len(vals)))
+        test.write("""static %s gen_%s(int no, int nr ATTRIBUTE_UNUSED) {\n""" %
+                   (name, name))
+        i = 1
+        for value in vals:
+            test.write("    if (no == %d) return(%s);\n" % (i, value))
+            i = i + 1
+        test.write("""    return(0);
 }
 
 static void des_%s(int no ATTRIBUTE_UNUSED, %s val ATTRIBUTE_UNUSED, int nr ATTRIBUTE_UNUSED) {
 }
 
 """ % (name, name));
-	known_param_types.append(name)
+        known_param_types.append(name)
 
     if (is_known_return_type(name) == 0) and (name in rettypes):
-	if define == 0 and modules_defines.has_key(module):
-	    test.write("#ifdef %s\n" % (modules_defines[module]))
-	    define = 1
+        if define == 0 and (module in modules_defines):
+            test.write("#ifdef %s\n" % (modules_defines[module]))
+            define = 1
         test.write("""static void desret_%s(%s val ATTRIBUTE_UNUSED) {
 }
 
 """ % (name, name))
-	known_return_types.append(name)
+        known_return_types.append(name)
     if define == 1:
         test.write("#endif\n\n")
 
@@ -615,9 +613,9 @@ for file in headers:
     # do not test deprecated APIs
     #
     desc = file.xpathEval('string(description)')
-    if string.find(desc, 'DEPRECATED') != -1:
-        print "Skipping deprecated interface %s" % name
-	continue;
+    if desc.find('DEPRECATED') != -1:
+        print("Skipping deprecated interface %s" % name)
+        continue;
 
     test.write("#include <libxml/%s.h>\n" % name)
     modules.append(name)
@@ -679,7 +677,7 @@ def generate_test(module, node):
     # and store the information for the generation
     #
     try:
-	args = node.xpathEval("arg")
+        args = node.xpathEval("arg")
     except:
         args = []
     t_args = []
@@ -687,37 +685,37 @@ def generate_test(module, node):
     for arg in args:
         n = n + 1
         rtype = arg.xpathEval("string(@type)")
-	if rtype == 'void':
-	    break;
-	info = arg.xpathEval("string(@info)")
-	nam = arg.xpathEval("string(@name)")
+        if rtype == 'void':
+            break;
+        info = arg.xpathEval("string(@info)")
+        nam = arg.xpathEval("string(@name)")
         type = type_convert(rtype, nam, info, module, name, n)
-	if is_known_param_type(type) == 0:
-	    add_missing_type(type, name);
-	    no_gen = 1
+        if is_known_param_type(type) == 0:
+            add_missing_type(type, name);
+            no_gen = 1
         if (type[-3:] == 'Ptr' or type[-4:] == '_ptr') and \
-	    rtype[0:6] == 'const ':
-	    crtype = rtype[6:]
-	else:
-	    crtype = rtype
-	t_args.append((nam, type, rtype, crtype, info))
+            rtype[0:6] == 'const ':
+            crtype = rtype[6:]
+        else:
+            crtype = rtype
+        t_args.append((nam, type, rtype, crtype, info))
     
     try:
-	rets = node.xpathEval("return")
+        rets = node.xpathEval("return")
     except:
         rets = []
     t_ret = None
     for ret in rets:
         rtype = ret.xpathEval("string(@type)")
-	info = ret.xpathEval("string(@info)")
+        info = ret.xpathEval("string(@info)")
         type = type_convert(rtype, 'return', info, module, name, 0)
-	if rtype == 'void':
-	    break
-	if is_known_return_type(type) == 0:
-	    add_missing_type(type, name);
-	    no_gen = 1
-	t_ret = (type, rtype, info)
-	break
+        if rtype == 'void':
+            break
+        if is_known_return_type(type) == 0:
+            add_missing_type(type, name);
+            no_gen = 1
+        t_ret = (type, rtype, info)
+        break
 
     if no_gen == 0:
         for t_arg in t_args:
@@ -733,7 +731,7 @@ test_%s(void) {
 
     if no_gen == 1:
         add_missing_functions(name, module)
-	test.write("""
+        test.write("""
     /* missing type support */
     return(test_ret);
 }
@@ -742,22 +740,22 @@ test_%s(void) {
         return
 
     try:
-	conds = node.xpathEval("cond")
-	for cond in conds:
-	    test.write("#if %s\n" % (cond.get_content()))
-	    nb_cond = nb_cond + 1
+        conds = node.xpathEval("cond")
+        for cond in conds:
+            test.write("#if %s\n" % (cond.get_content()))
+            nb_cond = nb_cond + 1
     except:
         pass
 
     define = 0
-    if function_defines.has_key(name):
+    if name in function_defines:
         test.write("#ifdef %s\n" % (function_defines[name]))
-	define = 1
+        define = 1
     
     # Declare the memory usage counter
     no_mem = is_skipped_memcheck(name)
     if no_mem == 0:
-	test.write("    int mem_base;\n");
+        test.write("    int mem_base;\n");
 
     # Declare the return value
     if t_ret != None:
@@ -766,29 +764,29 @@ test_%s(void) {
     # Declare the arguments
     for arg in t_args:
         (nam, type, rtype, crtype, info) = arg;
-	# add declaration
-	test.write("    %s %s; /* %s */\n" % (crtype, nam, info))
-	test.write("    int n_%s;\n" % (nam))
+        # add declaration
+        test.write("    %s %s; /* %s */\n" % (crtype, nam, info))
+        test.write("    int n_%s;\n" % (nam))
     test.write("\n")
 
     # Cascade loop on of each argument list of values
     for arg in t_args:
         (nam, type, rtype, crtype, info) = arg;
-	#
-	test.write("    for (n_%s = 0;n_%s < gen_nb_%s;n_%s++) {\n" % (
-	           nam, nam, type, nam))
+        #
+        test.write("    for (n_%s = 0;n_%s < gen_nb_%s;n_%s++) {\n" % (
+                   nam, nam, type, nam))
     
     # log the memory usage
     if no_mem == 0:
-	test.write("        mem_base = xmlMemBlocks();\n");
+        test.write("        mem_base = xmlMemBlocks();\n");
 
     # prepare the call
     i = 0;
     for arg in t_args:
         (nam, type, rtype, crtype, info) = arg;
-	#
-	test.write("        %s = gen_%s(n_%s, %d);\n" % (nam, type, nam, i))
-	i = i + 1;
+        #
+        test.write("        %s = gen_%s(n_%s, %d);\n" % (nam, type, nam, i))
+        i = i + 1;
 
     # add checks to avoid out-of-bounds array access
     i = 0;
@@ -797,7 +795,7 @@ test_%s(void) {
         # assume that "size", "len", and "start" parameters apply to either
         # the nearest preceding or following char pointer
         if type == "int" and (nam == "size" or nam == "len" or nam == "start"):
-            for j in range(i - 1, -1, -1) + range(i + 1, len(t_args)):
+            for j in (list(range(i - 1, -1, -1)) + list(range(i + 1, len(t_args)))):
                 (bnam, btype) = t_args[j][:2]
                 if btype == "const_char_ptr" or btype == "const_xmlChar_ptr":
                     test.write(
@@ -806,42 +804,42 @@ test_%s(void) {
                         "            continue;\n"
                         % (bnam, nam, bnam))
                     break
-	i = i + 1;
+        i = i + 1;
 
     # do the call, and clanup the result
-    if extra_pre_call.has_key(name):
-	test.write("        %s\n"% (extra_pre_call[name]))
+    if name in extra_pre_call:
+        test.write("        %s\n"% (extra_pre_call[name]))
     if t_ret != None:
-	test.write("\n        ret_val = %s(" % (name))
-	need = 0
-	for arg in t_args:
-	    (nam, type, rtype, crtype, info) = arg
-	    if need:
-	        test.write(", ")
-	    else:
-	        need = 1
-	    if rtype != crtype:
-	        test.write("(%s)" % rtype)
-	    test.write("%s" % nam);
-	test.write(");\n")
-	if extra_post_call.has_key(name):
-	    test.write("        %s\n"% (extra_post_call[name]))
-	test.write("        desret_%s(ret_val);\n" % t_ret[0])
+        test.write("\n        ret_val = %s(" % (name))
+        need = 0
+        for arg in t_args:
+            (nam, type, rtype, crtype, info) = arg
+            if need:
+                test.write(", ")
+            else:
+                need = 1
+            if rtype != crtype:
+                test.write("(%s)" % rtype)
+            test.write("%s" % nam);
+        test.write(");\n")
+        if name in extra_post_call:
+            test.write("        %s\n"% (extra_post_call[name]))
+        test.write("        desret_%s(ret_val);\n" % t_ret[0])
     else:
-	test.write("\n        %s(" % (name));
-	need = 0;
-	for arg in t_args:
-	    (nam, type, rtype, crtype, info) = arg;
-	    if need:
-	        test.write(", ")
-	    else:
-	        need = 1
-	    if rtype != crtype:
-	        test.write("(%s)" % rtype)
-	    test.write("%s" % nam)
-	test.write(");\n")
-	if extra_post_call.has_key(name):
-	    test.write("        %s\n"% (extra_post_call[name]))
+        test.write("\n        %s(" % (name));
+        need = 0;
+        for arg in t_args:
+            (nam, type, rtype, crtype, info) = arg;
+            if need:
+                test.write(", ")
+            else:
+                need = 1
+            if rtype != crtype:
+                test.write("(%s)" % rtype)
+            test.write("%s" % nam)
+        test.write(");\n")
+        if name in extra_post_call:
+            test.write("        %s\n"% (extra_post_call[name]))
 
     test.write("        call_tests++;\n");
 
@@ -849,32 +847,32 @@ test_%s(void) {
     i = 0;
     for arg in t_args:
         (nam, type, rtype, crtype, info) = arg;
-	# This is a hack to prevent generating a destructor for the
-	# 'input' argument in xmlTextReaderSetup.  There should be
-	# a better, more generic way to do this!
-	if string.find(info, 'destroy') == -1:
-	    test.write("        des_%s(n_%s, " % (type, nam))
-	    if rtype != crtype:
-	        test.write("(%s)" % rtype)
-	    test.write("%s, %d);\n" % (nam, i))
-	i = i + 1;
+        # This is a hack to prevent generating a destructor for the
+        # 'input' argument in xmlTextReaderSetup.  There should be
+        # a better, more generic way to do this!
+        if info.find('destroy') == -1:
+            test.write("        des_%s(n_%s, " % (type, nam))
+            if rtype != crtype:
+                test.write("(%s)" % rtype)
+            test.write("%s, %d);\n" % (nam, i))
+        i = i + 1;
 
     test.write("        xmlResetLastError();\n");
     # Check the memory usage
     if no_mem == 0:
-	test.write("""        if (mem_base != xmlMemBlocks()) {
+        test.write("""        if (mem_base != xmlMemBlocks()) {
             printf("Leak of %%d blocks found in %s",
-	           xmlMemBlocks() - mem_base);
-	    test_ret++;
+\t           xmlMemBlocks() - mem_base);
+\t    test_ret++;
 """ % (name));
-	for arg in t_args:
-	    (nam, type, rtype, crtype, info) = arg;
-	    test.write("""            printf(" %%d", n_%s);\n""" % (nam))
-	test.write("""            printf("\\n");\n""")
-	test.write("        }\n")
+        for arg in t_args:
+            (nam, type, rtype, crtype, info) = arg;
+            test.write("""            printf(" %%d", n_%s);\n""" % (nam))
+        test.write("""            printf("\\n");\n""")
+        test.write("        }\n")
 
     for arg in t_args:
-	test.write("    }\n")
+        test.write("    }\n")
 
     test.write("    function_tests++;\n")
     #
@@ -882,7 +880,7 @@ test_%s(void) {
     #
     while nb_cond > 0:
         test.write("#endif\n")
-	nb_cond = nb_cond -1
+        nb_cond = nb_cond -1
     if define == 1:
         test.write("#endif\n")
 
@@ -900,10 +898,10 @@ test_%s(void) {
 for module in modules:
     # gather all the functions exported by that module
     try:
-	functions = ctxt.xpathEval("/api/symbols/function[@file='%s']" % (module))
+        functions = ctxt.xpathEval("/api/symbols/function[@file='%s']" % (module))
     except:
-        print "Failed to gather functions from module %s" % (module)
-	continue;
+        print("Failed to gather functions from module %s" % (module))
+        continue;
 
     # iterate over all functions in the module generating the test
     i = 0
@@ -923,14 +921,14 @@ test_%s(void) {
     # iterate over all functions in the module generating the call
     for function in functions:
         name = function.xpathEval('string(@name)')
-	if is_skipped_function(name):
-	    continue
-	test.write("    test_ret += test_%s();\n" % (name))
+        if is_skipped_function(name):
+            continue
+        test.write("    test_ret += test_%s();\n" % (name))
 
     # footer
     test.write("""
     if (test_ret != 0)
-	printf("Module %s: %%d errors\\n", test_ret);
+\tprintf("Module %s: %%d errors\\n", test_ret);
     return(test_ret);
 }
 """ % (module))
@@ -948,7 +946,7 @@ test.write("""    return(0);
 }
 """);
 
-print "Generated test for %d modules and %d functions" %(len(modules), nb_tests)
+print("Generated test for %d modules and %d functions" %(len(modules), nb_tests))
 
 compare_and_save()
 
@@ -960,11 +958,8 @@ for missing in missing_types.keys():
     n = len(missing_types[missing])
     missing_list.append((n, missing))
 
-def compare_missing(a, b):
-    return b[0] - a[0]
-
-missing_list.sort(compare_missing)
-print "Missing support for %d functions and %d types see missing.lst" % (missing_functions_nr, len(missing_list))
+missing_list.sort(key=lambda a: a[0])
+print("Missing support for %d functions and %d types see missing.lst" % (missing_functions_nr, len(missing_list)))
 lst = open("missing.lst", "w")
 lst.write("Missing support for %d types" % (len(missing_list)))
 lst.write("\n")
@@ -974,9 +969,9 @@ for miss in missing_list:
     for n in missing_types[miss[1]]:
         i = i + 1
         if i > 5:
-	    lst.write(" ...")
-	    break
-	lst.write(" %s" % (n))
+            lst.write(" ...")
+            break
+        lst.write(" %s" % (n))
     lst.write("\n")
 lst.write("\n")
 lst.write("\n")

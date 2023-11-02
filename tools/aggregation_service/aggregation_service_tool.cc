@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,12 +16,14 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
+#include "base/strings/abseil_string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/default_clock.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/public/test/test_aggregation_service.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -31,32 +33,35 @@ namespace {
 
 absl::optional<content::TestAggregationService::Operation> ConvertToOperation(
     const std::string& operation_string) {
-  if (operation_string == "hierarchical-histogram")
-    return content::TestAggregationService::Operation::kHierarchicalHistogram;
+  if (operation_string == "histogram")
+    return content::TestAggregationService::Operation::kHistogram;
 
   return absl::nullopt;
 }
 
-absl::optional<content::TestAggregationService::ProcessingType>
-ConvertToProcessingType(const std::string& processing_type_string) {
-  if (processing_type_string == "two-party")
-    return content::TestAggregationService::ProcessingType::kTwoParty;
-  if (processing_type_string == "single-server")
-    return content::TestAggregationService::ProcessingType::kSingleServer;
+absl::optional<content::TestAggregationService::AggregationMode>
+ConvertToAggregationMode(const std::string& aggregation_mode_string) {
+  if (aggregation_mode_string == "tee-based")
+    return content::TestAggregationService::AggregationMode::kTeeBased;
+  if (aggregation_mode_string == "experimental-poplar")
+    return content::TestAggregationService::AggregationMode::
+        kExperimentalPoplar;
+  if (aggregation_mode_string == "default")
+    return content::TestAggregationService::AggregationMode::kDefault;
 
   return absl::nullopt;
 }
 
 }  // namespace
 
-OriginKeyFile::OriginKeyFile(url::Origin origin, std::string key_file)
-    : origin(std::move(origin)), key_file(std::move(key_file)) {}
+UrlKeyFile::UrlKeyFile(GURL url, std::string key_file)
+    : url(std::move(url)), key_file(std::move(key_file)) {}
 
-OriginKeyFile::OriginKeyFile(const OriginKeyFile& other) = default;
+UrlKeyFile::UrlKeyFile(const UrlKeyFile& other) = default;
 
-OriginKeyFile& OriginKeyFile::operator=(const OriginKeyFile& other) = default;
+UrlKeyFile& UrlKeyFile::operator=(const UrlKeyFile& other) = default;
 
-OriginKeyFile::~OriginKeyFile() = default;
+UrlKeyFile::~UrlKeyFile() = default;
 
 AggregationServiceTool::AggregationServiceTool()
     : agg_service_(content::TestAggregationService::Create(
@@ -70,15 +75,15 @@ void AggregationServiceTool::SetDisablePayloadEncryption(bool should_disable) {
 }
 
 bool AggregationServiceTool::SetPublicKeys(
-    const std::vector<OriginKeyFile>& key_files) {
-  // Send each origin's specified public keys to the tool's storage.
+    const std::vector<UrlKeyFile>& key_files) {
+  // Send each url's specified public keys to the tool's storage.
   for (const auto& key_file : key_files) {
-    if (!network::IsOriginPotentiallyTrustworthy(key_file.origin)) {
-      LOG(ERROR) << "Invalid processing origin: " << key_file.origin;
+    if (!network::IsUrlPotentiallyTrustworthy(key_file.url)) {
+      LOG(ERROR) << "Invalid processing url: " << key_file.url;
       return false;
     }
 
-    if (!SetPublicKeysFromFile(key_file.origin, key_file.key_file))
+    if (!SetPublicKeysFromFile(key_file.url, key_file.key_file))
       return false;
   }
 
@@ -86,32 +91,19 @@ bool AggregationServiceTool::SetPublicKeys(
 }
 
 bool AggregationServiceTool::SetPublicKeysFromFile(
-    const url::Origin& origin,
+    const GURL& url,
     const std::string& json_file_path) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::FilePath json_file(base::UTF8ToWide(json_file_path));
 #else
   base::FilePath json_file(json_file_path);
 #endif
 
-  if (!base::PathExists(json_file)) {
-    LOG(ERROR) << "aggregation_service_tool failed to open file: "
-               << json_file.value() << ".";
-    return false;
-  }
-
-  std::string json_string;
-  if (!base::ReadFileToString(json_file, &json_string)) {
-    LOG(ERROR) << "aggregation_service_tool failed to read file: "
-               << json_file.value() << ".";
-    return false;
-  }
-
   bool succeeded = false;
 
   base::RunLoop run_loop;
   agg_service_->SetPublicKeys(
-      origin, json_string,
+      url, json_file,
       base::BindOnce(
           [](base::OnceClosure quit, bool& succeeded_out, bool succeeded_in) {
             succeeded_out = succeeded_in;
@@ -123,15 +115,18 @@ bool AggregationServiceTool::SetPublicKeysFromFile(
   return succeeded;
 }
 
-base::Value::DictStorage AggregationServiceTool::AssembleReport(
+base::Value::Dict AggregationServiceTool::AssembleReport(
     std::string operation_str,
     std::string bucket_str,
     std::string value_str,
-    std::string processing_type_str,
+    std::string aggregation_mode_str,
     url::Origin reporting_origin,
-    std::string privacy_budget_key,
-    std::vector<url::Origin> processing_origins) {
-  base::Value::DictStorage result;
+    std::vector<GURL> processing_urls,
+    bool is_debug_mode_enabled,
+    base::Value::Dict additional_fields,
+    std::string api_version,
+    std::string api_identifier) {
+  base::Value::Dict result;
 
   absl::optional<content::TestAggregationService::Operation> operation =
       ConvertToOperation(operation_str);
@@ -140,22 +135,22 @@ base::Value::DictStorage AggregationServiceTool::AssembleReport(
     return result;
   }
 
-  int bucket = 0;
-  if (!base::StringToInt(bucket_str, &bucket) || bucket < 0) {
+  absl::uint128 bucket;
+  if (!base::StringToUint128(bucket_str, &bucket)) {
     LOG(ERROR) << "Invalid bucket: " << bucket_str;
     return result;
   }
 
-  int value = 0;
+  int value;
   if (!base::StringToInt(value_str, &value) || value < 0) {
     LOG(ERROR) << "Invalid value: " << value_str;
     return result;
   }
 
-  absl::optional<content::TestAggregationService::ProcessingType>
-      processing_type = ConvertToProcessingType(processing_type_str);
-  if (!processing_type.has_value()) {
-    LOG(ERROR) << "Invalid processing type: " << processing_type_str;
+  absl::optional<content::TestAggregationService::AggregationMode>
+      aggregation_mode = ConvertToAggregationMode(aggregation_mode_str);
+  if (!aggregation_mode.has_value()) {
+    LOG(ERROR) << "Invalid aggregation mode: " << aggregation_mode_str;
     return result;
   }
 
@@ -165,16 +160,17 @@ base::Value::DictStorage AggregationServiceTool::AssembleReport(
   }
 
   content::TestAggregationService::AssembleRequest request(
-      operation.value(), bucket, value, processing_type.value(),
-      std::move(reporting_origin), std::move(privacy_budget_key),
-      std::move(processing_origins));
+      operation.value(), bucket, value, aggregation_mode.value(),
+      std::move(reporting_origin), std::move(processing_urls),
+      is_debug_mode_enabled, std::move(additional_fields),
+      std::move(api_version), std::move(api_identifier));
 
   base::RunLoop run_loop;
   agg_service_->AssembleReport(
       std::move(request),
       base::BindOnce(
-          [](base::OnceClosure quit, base::Value::DictStorage& result_out,
-             base::Value::DictStorage result_in) {
+          [](base::OnceClosure quit, base::Value::Dict& result_out,
+             base::Value::Dict result_in) {
             result_out = std::move(result_in);
             std::move(quit).Run();
           },

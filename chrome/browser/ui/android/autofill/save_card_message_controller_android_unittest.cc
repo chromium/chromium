@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/android/autofill/save_card_controller_metrics_android.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
 #include "components/strings/grit/components_strings.h"
@@ -25,6 +26,11 @@ namespace {
 constexpr char16_t kDefaultUrl[] = u"http://example.com";
 static const char kServerPrefix[] = "Autofill.CreditCardMessage.Server";
 static const char kLocalPrefix[] = "Autofill.CreditCardMessage.Local";
+static const char kDialogPrefix[] = "Autofill.CreditCardMessage.DialogPrompt";
+static const char kLocalResultPrefix[] =
+    "Autofill.CreditCardSaveFlowResult.Local";
+static const char kServerResultPrefix[] =
+    "Autofill.CreditCardSaveFlowResult.Server";
 }  // namespace
 
 class SaveCardMessageControllerAndroidTest
@@ -91,9 +97,9 @@ class SaveCardMessageControllerAndroidTest
     controller_.DialogDismissed(env);
   }
 
-  void OnLegalMessageLinkClicked() {
+  void OnLinkClicked() {
     JNIEnv* env = base::android::AttachCurrentThread();
-    controller_.OnLegalMessageLinkClicked(
+    controller_.OnLinkClicked(
         env, base::android::JavaParamRef<jstring>(
                  env, base::android::ConvertUTF16ToJavaString(env, u"").obj()));
   }
@@ -141,7 +147,7 @@ void SaveCardMessageControllerAndroidTest::EnqueueMessage(
     AutofillClient::SaveCreditCardOptions options) {
   EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage);
   EXPECT_EQ(nullptr, GetMessageWrapper());
-  controller_.Show(web_contents(), options, CreditCard(), {}, u"",
+  controller_.Show(web_contents(), options, CreditCard(), {}, u"", u"",
                    std::move(upload_save_card_prompt_callback),
                    std::move(local_save_card_prompt_callback));
 }
@@ -154,7 +160,7 @@ void SaveCardMessageControllerAndroidTest::EnqueueAnotherMessage(
   EXPECT_NE(nullptr, GetMessageWrapper());
   EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage);
   controller_.Show(web_contents(), AutofillClient::SaveCreditCardOptions(),
-                   CreditCard(), {}, u"",
+                   CreditCard(), {}, u"", u"",
                    std::move(upload_save_card_prompt_callback),
                    std::move(local_save_card_prompt_callback));
 }
@@ -195,6 +201,9 @@ TEST_F(SaveCardMessageControllerAndroidTest, DismissOnPrimaryButtonClickLocal) {
   DismissMessage();
   histogram_tester.ExpectBucketCount(kLocalPrefix, MessageMetrics::kAccepted,
                                      1);
+  histogram_tester.ExpectBucketCount(
+      kLocalResultPrefix,
+      autofill_metrics::SaveCreditCardPromptResult::kAccepted, 1);
 }
 
 TEST_F(SaveCardMessageControllerAndroidTest,
@@ -220,6 +229,9 @@ TEST_F(SaveCardMessageControllerAndroidTest,
   histogram_tester.ExpectBucketCount(
       base::StrCat({kLocalPrefix, ".FromDynamicChangeForm"}),
       MessageMetrics::kDenied, 1);
+  histogram_tester.ExpectBucketCount(
+      kLocalResultPrefix, autofill_metrics::SaveCreditCardPromptResult::kDenied,
+      1);
 }
 
 TEST_F(SaveCardMessageControllerAndroidTest,
@@ -245,6 +257,9 @@ TEST_F(SaveCardMessageControllerAndroidTest,
   histogram_tester.ExpectBucketCount(
       base::StrCat({kLocalPrefix, ".FromNonFocusableForm"}),
       MessageMetrics::kDenied, 1);
+  histogram_tester.ExpectBucketCount(
+      kLocalResultPrefix, autofill_metrics::SaveCreditCardPromptResult::kDenied,
+      1);
 }
 
 TEST_F(SaveCardMessageControllerAndroidTest,
@@ -266,6 +281,9 @@ TEST_F(SaveCardMessageControllerAndroidTest,
   ExpectDismiss();
   EnqueueAnotherMessage({}, mock_local_callback_receiver2.Get());
   histogram_tester.ExpectBucketCount(kLocalPrefix, MessageMetrics::kIgnored, 1);
+  histogram_tester.ExpectBucketCount(
+      kLocalResultPrefix,
+      autofill_metrics::SaveCreditCardPromptResult::kIgnored, 1);
   DismissMessage();
 }
 
@@ -280,6 +298,9 @@ TEST_F(SaveCardMessageControllerAndroidTest, IgnoreMessageLocal) {
   EnqueueMessage({}, mock_local_callback_receiver.Get(), {});
   DismissMessage(messages::DismissReason::TIMER);
   histogram_tester.ExpectBucketCount(kLocalPrefix, MessageMetrics::kIgnored, 1);
+  histogram_tester.ExpectBucketCount(
+      kLocalResultPrefix,
+      autofill_metrics::SaveCreditCardPromptResult::kIgnored, 1);
 }
 
 // --- server save test ---
@@ -349,6 +370,9 @@ TEST_F(SaveCardMessageControllerAndroidTest,
   histogram_tester.ExpectBucketCount(
       base::StrCat({kServerPrefix, ".FromDynamicChangeForm"}),
       MessageMetrics::kDenied, 1);
+  histogram_tester.ExpectBucketCount(
+      kServerResultPrefix,
+      autofill_metrics::SaveCreditCardPromptResult::kDenied, 1);
 }
 
 TEST_F(SaveCardMessageControllerAndroidTest,
@@ -373,6 +397,9 @@ TEST_F(SaveCardMessageControllerAndroidTest,
   histogram_tester.ExpectBucketCount(
       base::StrCat({kServerPrefix, ".FromNonFocusableForm"}),
       MessageMetrics::kDenied, 1);
+  histogram_tester.ExpectBucketCount(
+      kServerResultPrefix,
+      autofill_metrics::SaveCreditCardPromptResult::kDenied, 1);
 }
 
 // 3. Accept Dialog UI
@@ -389,6 +416,7 @@ TEST_F(SaveCardMessageControllerAndroidTest,
       mock_upload_callback_receiver,
       Run(AutofillClient::SaveCardOfferUserDecision::kAccepted, testing::_));
   // Triggering dialog will dismiss the message.
+  TriggerPrimaryButtonClick();
   DismissMessage(messages::DismissReason::PRIMARY_ACTION);
   OnNameConfirmed();
   EXPECT_EQ(nullptr, GetMessageWrapper());
@@ -401,6 +429,19 @@ TEST_F(SaveCardMessageControllerAndroidTest,
       MessageMetrics::kAccepted, 1);
   histogram_tester.ExpectBucketCount(kServerPrefix, MessageMetrics::kAccepted,
                                      1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kDialogPrefix, ".RequestingCardholderName"}),
+      MessageDialogPromptMetrics::kAccepted, 1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat(
+          {kDialogPrefix, ".RequestingCardholderName", ".DidClickLinks"}),
+      MessageDialogPromptMetrics::kAccepted, 0);
+  histogram_tester.ExpectBucketCount(
+      kServerResultPrefix,
+      autofill_metrics::SaveCreditCardPromptResult::kAccepted, 1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kServerResultPrefix, ".RequestingCardholderName"}),
+      autofill_metrics::SaveCreditCardPromptResult::kAccepted, 1);
 }
 
 TEST_F(SaveCardMessageControllerAndroidTest, DismissOnConfirmDateAcceptUpload) {
@@ -414,6 +455,7 @@ TEST_F(SaveCardMessageControllerAndroidTest, DismissOnConfirmDateAcceptUpload) {
   EXPECT_CALL(
       mock_upload_callback_receiver,
       Run(AutofillClient::SaveCardOfferUserDecision::kAccepted, testing::_));
+  TriggerPrimaryButtonClick();
   // Triggering dialog will dismiss the message.
   DismissMessage(messages::DismissReason::PRIMARY_ACTION);
   OnDateConfirmed();
@@ -427,6 +469,49 @@ TEST_F(SaveCardMessageControllerAndroidTest, DismissOnConfirmDateAcceptUpload) {
       MessageMetrics::kAccepted, 1);
   histogram_tester.ExpectBucketCount(kServerPrefix, MessageMetrics::kAccepted,
                                      1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kDialogPrefix, ".RequestingExpirationDate"}),
+      MessageDialogPromptMetrics::kAccepted, 1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat(
+          {kDialogPrefix, ".RequestingExpirationDate", ".DidClickLinks"}),
+      MessageDialogPromptMetrics::kAccepted, 0);
+  histogram_tester.ExpectBucketCount(
+      kServerResultPrefix,
+      autofill_metrics::SaveCreditCardPromptResult::kAccepted, 1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kServerResultPrefix, ".RequestingExpirationDate"}),
+      autofill_metrics::SaveCreditCardPromptResult::kAccepted, 1);
+}
+
+TEST_F(SaveCardMessageControllerAndroidTest,
+       DismissOnConfirmLegalLinesAcceptUpload) {
+  base::MockOnceCallback<void(AutofillClient::SaveCardOfferUserDecision,
+                              const AutofillClient::UserProvidedCardDetails&)>
+      mock_upload_callback_receiver;
+  base::HistogramTester histogram_tester;
+  AutofillClient::SaveCreditCardOptions options;
+  options.has_multiple_legal_lines = true;
+  EnqueueMessage(mock_upload_callback_receiver.Get(), {}, options);
+  EXPECT_CALL(
+      mock_upload_callback_receiver,
+      Run(AutofillClient::SaveCardOfferUserDecision::kAccepted, testing::_));
+  // Triggering dialog will dismiss the message.
+  DismissMessage(messages::DismissReason::PRIMARY_ACTION);
+  OnDateConfirmed();
+  EXPECT_EQ(nullptr, GetMessageWrapper());
+  histogram_tester.ExpectBucketCount(kServerPrefix, MessageMetrics::kShown, 1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kServerPrefix, ".WithMultipleLegalLines"}),
+      MessageMetrics::kShown, 1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kServerPrefix, ".WithMultipleLegalLines"}),
+      MessageMetrics::kAccepted, 1);
+  histogram_tester.ExpectBucketCount(kServerPrefix, MessageMetrics::kAccepted,
+                                     1);
+  histogram_tester.ExpectBucketCount(
+      kServerResultPrefix,
+      autofill_metrics::SaveCreditCardPromptResult::kAccepted, 1);
 }
 
 // 4. Decline Dialog UI
@@ -438,13 +523,83 @@ TEST_F(SaveCardMessageControllerAndroidTest, DismissOnPromoDismissedUpload) {
   EnqueueMessage(mock_upload_callback_receiver.Get(), {}, {});
   EXPECT_CALL(
       mock_upload_callback_receiver,
-      Run(AutofillClient::SaveCardOfferUserDecision::kDeclined, testing::_));
+      Run(AutofillClient::SaveCardOfferUserDecision::kIgnored, testing::_));
+  TriggerPrimaryButtonClick();
   // Triggering dialog will dismiss the message.
   DismissMessage(messages::DismissReason::PRIMARY_ACTION);
   OnConfirmationDialogDismissed();
   EXPECT_EQ(nullptr, GetMessageWrapper());
   histogram_tester.ExpectBucketCount(kServerPrefix, MessageMetrics::kShown, 1);
-  histogram_tester.ExpectBucketCount(kServerPrefix, MessageMetrics::kDenied, 1);
+  histogram_tester.ExpectBucketCount(kServerPrefix, MessageMetrics::kIgnored,
+                                     1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kDialogPrefix, ".ConfirmInfo"}),
+      MessageDialogPromptMetrics::kIgnored, 1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kDialogPrefix, ".ConfirmInfo", ".DidClickLinks"}),
+      MessageDialogPromptMetrics::kIgnored, 0);
+  histogram_tester.ExpectBucketCount(
+      kServerResultPrefix,
+      autofill_metrics::SaveCreditCardPromptResult::kInteractedAndIgnored, 1);
+}
+
+TEST_F(SaveCardMessageControllerAndroidTest,
+       DismissOnPromoDismissedUploadRecordedPreperly) {
+  // Decline dialog first.
+  base::MockOnceCallback<void(AutofillClient::SaveCardOfferUserDecision,
+                              const AutofillClient::UserProvidedCardDetails&)>
+      mock_upload_callback_receiver;
+  base::HistogramTester histogram_tester;
+  EnqueueMessage(mock_upload_callback_receiver.Get(), {}, {});
+  EXPECT_CALL(
+      mock_upload_callback_receiver,
+      Run(AutofillClient::SaveCardOfferUserDecision::kIgnored, testing::_));
+  TriggerPrimaryButtonClick();
+  // Triggering dialog will dismiss the message.
+  DismissMessage(messages::DismissReason::PRIMARY_ACTION);
+  OnConfirmationDialogDismissed();
+  EXPECT_EQ(nullptr, GetMessageWrapper());
+  histogram_tester.ExpectBucketCount(kServerPrefix, MessageMetrics::kShown, 1);
+  histogram_tester.ExpectBucketCount(kServerPrefix, MessageMetrics::kIgnored,
+                                     1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kDialogPrefix, ".ConfirmInfo"}),
+      MessageDialogPromptMetrics::kIgnored, 1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kDialogPrefix, ".ConfirmInfo", ".DidClickLinks"}),
+      MessageDialogPromptMetrics::kIgnored, 0);
+  histogram_tester.ExpectBucketCount(
+      kServerResultPrefix,
+      autofill_metrics::SaveCreditCardPromptResult::kInteractedAndIgnored, 1);
+
+  // Trigger another message and dismiss it to test that no more dialog
+  // related metric is record.
+  base::MockOnceCallback<void(AutofillClient::SaveCardOfferUserDecision,
+                              const AutofillClient::UserProvidedCardDetails&)>
+      mock_upload_callback_receiver2;
+  EnqueueMessage(mock_upload_callback_receiver2.Get(), {}, {});
+  EXPECT_CALL(
+      mock_upload_callback_receiver2,
+      Run(AutofillClient::SaveCardOfferUserDecision::kIgnored, testing::_));
+  DismissMessage(messages::DismissReason::TIMER);
+  EXPECT_EQ(nullptr, GetMessageWrapper());
+  histogram_tester.ExpectBucketCount(kServerPrefix, MessageMetrics::kShown, 2);
+  histogram_tester.ExpectBucketCount(kServerPrefix, MessageMetrics::kIgnored,
+                                     2);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kDialogPrefix, ".ConfirmInfo"}),
+      MessageDialogPromptMetrics::kIgnored, 1);  // expect no change.
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kDialogPrefix, ".ConfirmInfo", ".DidClickLinks"}),
+      MessageDialogPromptMetrics::kIgnored, 0);  // expect no change.
+  histogram_tester.ExpectBucketCount(
+      kServerResultPrefix,
+      autofill_metrics::SaveCreditCardPromptResult::kInteractedAndIgnored,
+      1);  // expect no change.
+  histogram_tester.ExpectBucketCount(
+      kServerResultPrefix,
+      autofill_metrics::SaveCreditCardPromptResult::kIgnored,
+      1);  // new change.
 }
 
 // -- Others --
@@ -462,7 +617,7 @@ TEST_F(SaveCardMessageControllerAndroidTest, DialogRestoredOnTabSwitching) {
 
   // Triggering dialog will dismiss the message.
   DismissMessage(messages::DismissReason::PRIMARY_ACTION);
-  OnLegalMessageLinkClicked();
+  OnLinkClicked();
   EXPECT_TRUE(IsRestoreRequired());
   OnWebContentsFocused();
   OnDateConfirmed();
@@ -478,6 +633,19 @@ TEST_F(SaveCardMessageControllerAndroidTest, DialogRestoredOnTabSwitching) {
       MessageMetrics::kAccepted, 1);
   histogram_tester.ExpectBucketCount(kServerPrefix, MessageMetrics::kAccepted,
                                      1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kDialogPrefix, ".RequestingExpirationDate"}),
+      MessageDialogPromptMetrics::kAccepted, 1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat(
+          {kDialogPrefix, ".RequestingExpirationDate", ".DidClickLinks"}),
+      MessageDialogPromptMetrics::kAccepted, 1);
+  histogram_tester.ExpectBucketCount(
+      kServerResultPrefix,
+      autofill_metrics::SaveCreditCardPromptResult::kAccepted, 1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kServerResultPrefix, ".RequestingExpirationDate"}),
+      autofill_metrics::SaveCreditCardPromptResult::kAccepted, 1);
 }
 
 TEST_F(SaveCardMessageControllerAndroidTest,
@@ -501,6 +669,15 @@ TEST_F(SaveCardMessageControllerAndroidTest,
   EnqueueAnotherMessage(mock_upload_callback_receiver2.Get(), {});
   histogram_tester.ExpectBucketCount(kServerPrefix, MessageMetrics::kIgnored,
                                      1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kDialogPrefix, ".RequestingExpirationDate"}),
+      MessageDialogPromptMetrics::kIgnored, 0);
+  histogram_tester.ExpectBucketCount(
+      kServerResultPrefix,
+      autofill_metrics::SaveCreditCardPromptResult::kIgnored, 1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kServerResultPrefix, ".RequestingExpirationDate"}),
+      autofill_metrics::SaveCreditCardPromptResult::kIgnored, 0);
   DismissMessage();
 }
 
@@ -514,6 +691,15 @@ TEST_F(SaveCardMessageControllerAndroidTest, IgnoreMessageUpload) {
   DismissMessage(messages::DismissReason::TIMER);
   histogram_tester.ExpectBucketCount(kServerPrefix, MessageMetrics::kIgnored,
                                      1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kDialogPrefix, ".RequestingExpirationDate"}),
+      MessageDialogPromptMetrics::kIgnored, 0);
+  histogram_tester.ExpectBucketCount(
+      kServerResultPrefix,
+      autofill_metrics::SaveCreditCardPromptResult::kIgnored, 1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kServerResultPrefix, ".RequestingExpirationDate"}),
+      autofill_metrics::SaveCreditCardPromptResult::kIgnored, 0);
 }
 
 }  // namespace autofill

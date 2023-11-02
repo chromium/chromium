@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,7 +34,9 @@ void TableCellPainter::PaintContainerBackgroundBehindCell(
       !layout_table_cell_.FirstChild())
     return;
 
-  ScopedPaintState paint_state(layout_table_cell_, paint_info);
+  ScopedPaintState paint_state(
+      layout_table_cell_, paint_info,
+      /*painting_legacy_table_part_in_ancestor_layer*/ true);
   auto paint_rect =
       PaintRectNotIncludingVisualOverflow(paint_state.PaintOffset());
   PaintBackground(paint_state.GetPaintInfo(), paint_rect, background_object);
@@ -59,7 +61,7 @@ void TableCellPainter::PaintBackground(const PaintInfo& paint_info,
     if (should_clip) {
       PhysicalRect clip_rect(paint_rect.offset, layout_table_cell_.Size());
       clip_rect.Expand(layout_table_cell_.BorderInsets());
-      paint_info.context.Clip(PixelSnappedIntRect(clip_rect));
+      paint_info.context.Clip(ToPixelSnappedRect(clip_rect));
     }
     BackgroundImageGeometry geometry(layout_table_cell_, &background_object);
     BoxModelObjectPainter(layout_table_cell_)
@@ -94,7 +96,7 @@ void TableCellPainter::PaintBoxDecorationBackground(
     paint_rect.Expand(layout_table_cell_.BorderBoxOutsets());
     client = &layout_table_cell_.GetScrollableArea()
                   ->GetScrollingBackgroundDisplayItemClient();
-    visual_rect = ToGfxRect(EnclosingIntRect(paint_rect));
+    visual_rect = ToEnclosingRect(paint_rect);
   } else {
     paint_rect = PaintRectNotIncludingVisualOverflow(paint_offset);
     visual_rect = BoxPainter(layout_table_cell_).VisualRect(paint_offset);

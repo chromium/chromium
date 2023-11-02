@@ -46,20 +46,20 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/probe/async_task_id.h"
+#include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/modules/indexed_db_names.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_database.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_name_and_version.h"
-#include "third_party/blink/renderer/modules/indexeddb/idb_tracing.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_callbacks.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_callbacks_impl.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_transaction.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -73,9 +73,9 @@ class WebIDBGetDBNamesCallbacksImpl : public WebIDBCallbacks {
   explicit WebIDBGetDBNamesCallbacksImpl(
       ScriptPromiseResolver* promise_resolver)
       : promise_resolver_(promise_resolver) {
-    probe::AsyncTaskScheduled(
+    async_task_context_.Schedule(
         ExecutionContext::From(promise_resolver_->GetScriptState()),
-        indexed_db_names::kIndexedDB, &async_task_id_);
+        indexed_db_names::kIndexedDB);
   }
 
   ~WebIDBGetDBNamesCallbacksImpl() override {
@@ -86,8 +86,7 @@ class WebIDBGetDBNamesCallbacksImpl : public WebIDBCallbacks {
     if (!script_state->ContextIsValid())
       return;
 
-    probe::AsyncTaskCanceled(ExecutionContext::From(script_state),
-                             &async_task_id_);
+    async_task_context_.Cancel();
     promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kUnknownError,
         "An unexpected shutdown occured before the "
@@ -103,7 +102,7 @@ class WebIDBGetDBNamesCallbacksImpl : public WebIDBCallbacks {
 
     probe::AsyncTask async_task(
         ExecutionContext::From(promise_resolver_->GetScriptState()),
-        &async_task_id_, "error");
+        &async_task_context_, "error");
     promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kUnknownError,
         "The databases() promise was rejected."));
@@ -129,7 +128,7 @@ class WebIDBGetDBNamesCallbacksImpl : public WebIDBCallbacks {
 
     async_task_.emplace(
         ExecutionContext::From(promise_resolver_->GetScriptState()),
-        &async_task_id_, "success");
+        &async_task_context_, "success");
     promise_resolver_->Resolve(name_and_version_list);
     // Note: Resolve may cause |this| to be deleted.  async_task_ will be
     // completed in the destructor.
@@ -166,6 +165,11 @@ class WebIDBGetDBNamesCallbacksImpl : public WebIDBCallbacks {
     NOTREACHED();
   }
 
+  void SuccessArrayArray(
+      Vector<Vector<mojom::blink::IDBReturnValuePtr>> all_values) override {
+    NOTREACHED();
+  }
+
   void SuccessInteger(int64_t value) override { NOTREACHED(); }
 
   void Success() override { NOTREACHED(); }
@@ -198,7 +202,7 @@ class WebIDBGetDBNamesCallbacksImpl : public WebIDBCallbacks {
   void DetachRequestFromCallback() override { NOTREACHED(); }
 
  private:
-  probe::AsyncTaskId async_task_id_;
+  probe::AsyncTaskContext async_task_context_;
   absl::optional<probe::AsyncTask> async_task_;
   Persistent<ScriptPromiseResolver> promise_resolver_;
 };
@@ -223,20 +227,27 @@ void IDBFactory::SetFactoryForTesting(
   factory_ = std::move(factory);
 }
 
+void IDBFactory::SetFactory(
+    mojo::PendingRemote<mojom::blink::IDBFactory> factory,
+    ExecutionContext* execution_context) {
+  DCHECK(!factory_);
+
+  mojo::PendingRemote<mojom::blink::FeatureObserver> feature_observer;
+  execution_context->GetBrowserInterfaceBroker().GetInterface(
+      feature_observer.InitWithNewPipeAndPassReceiver());
+
+  task_runner_ = execution_context->GetTaskRunner(TaskType::kDatabaseAccess);
+  factory_.Bind(std::move(factory), task_runner_);
+  feature_observer_.Bind(std::move(feature_observer), task_runner_);
+}
+
 mojo::Remote<mojom::blink::IDBFactory>& IDBFactory::GetFactory(
     ExecutionContext* execution_context) {
   if (!factory_) {
     mojo::PendingRemote<mojom::blink::IDBFactory> factory;
     execution_context->GetBrowserInterfaceBroker().GetInterface(
         factory.InitWithNewPipeAndPassReceiver());
-
-    mojo::PendingRemote<mojom::blink::FeatureObserver> feature_observer;
-    execution_context->GetBrowserInterfaceBroker().GetInterface(
-        feature_observer.InitWithNewPipeAndPassReceiver());
-
-    task_runner_ = execution_context->GetTaskRunner(TaskType::kDatabaseAccess);
-    factory_.Bind(std::move(factory), task_runner_);
-    feature_observer_.Bind(std::move(feature_observer), task_runner_);
+    SetFactory(std::move(factory), execution_context);
   }
   return factory_;
 }
@@ -324,7 +335,7 @@ IDBOpenDBRequest* IDBFactory::OpenInternal(ScriptState* script_state,
                                            const String& name,
                                            int64_t version,
                                            ExceptionState& exception_state) {
-  IDB_TRACE1("IDBFactory::open", "name", name.Utf8());
+  TRACE_EVENT1("IndexedDB", "IDBFactory::open", "name", name.Utf8());
   IDBRequest::AsyncTraceState metrics("IDBFactory::open");
   DCHECK(version >= 1 || version == IDBDatabaseMetadata::kNoVersion);
   if (!IsContextValid(ExecutionContext::From(script_state)))
@@ -402,7 +413,7 @@ IDBOpenDBRequest* IDBFactory::DeleteDatabaseInternal(
     const String& name,
     ExceptionState& exception_state,
     bool force_close) {
-  IDB_TRACE1("IDBFactory::deleteDatabase", "name", name.Utf8());
+  TRACE_EVENT1("IndexedDB", "IDBFactory::deleteDatabase", "name", name.Utf8());
   IDBRequest::AsyncTraceState metrics("IDBFactory::deleteDatabase");
   if (!IsContextValid(ExecutionContext::From(script_state)))
     return nullptr;

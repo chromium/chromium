@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,7 +45,7 @@ const SkColor kColors[] = {
     SkColorSetRGB(0xFF, 0xDE, 0xAD),
 };
 const int kAlpha = 0x60;
-const int kMaxPaths = base::size(kColors);
+const int kMaxPaths = std::size(kColors);
 const int kReducedScale = 10;
 
 const char* GetTouchEventLabel(ui::EventType type) {

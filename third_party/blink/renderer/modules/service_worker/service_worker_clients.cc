@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_client.mojom-blink.h"
@@ -19,7 +18,7 @@
 #include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_window_client.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -121,7 +120,7 @@ ScriptPromise ServiceWorkerClients::get(ScriptState* script_state,
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   global_scope->GetServiceWorkerHost()->GetClient(
-      id, WTF::Bind(&DidGetClient, WrapPersistent(resolver)));
+      id, WTF::BindOnce(&DidGetClient, WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
@@ -138,7 +137,7 @@ ScriptPromise ServiceWorkerClients::matchAll(
   global_scope->GetServiceWorkerHost()->GetClients(
       mojom::blink::ServiceWorkerClientQueryOptions::New(
           options->includeUncontrolled(), GetClientType(options->type())),
-      WTF::Bind(&DidGetClients, WrapPersistent(resolver)));
+      WTF::BindOnce(&DidGetClients, WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
@@ -152,7 +151,7 @@ ScriptPromise ServiceWorkerClients::claim(ScriptState* script_state) {
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   global_scope->GetServiceWorkerHost()->ClaimClients(
-      WTF::Bind(&DidClaim, WrapPersistent(resolver)));
+      WTF::BindOnce(&DidClaim, WrapPersistent(resolver)));
   return resolver->Promise();
 }
 

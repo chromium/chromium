@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 import("//build/config/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
+import("//v8/gni/v8.gni")
 
 # root BUILD depends on this target. Needed for package discovery
 group("fuzzers") {
@@ -69,11 +70,6 @@ fuzzer_test("url_parse_proto_fuzzer") {
     "//third_party/libprotobuf-mutator",
     "//url:url",
   ]
-}
-
-fuzzer_test("usrsctp_fuzzer") {
-  sources = [ "usrsctp_fuzzer.cc" ]
-  deps = [ "//third_party/usrsctp" ]
 }
 
 fuzzer_test("libsrtp_fuzzer") {
@@ -216,87 +212,105 @@ fuzzer_test("v8_regexp_builtins_fuzzer") {
   environment_variables = [ "AFL_DRIVER_DONT_DEFER=1" ]
 }
 
-fuzzer_test("v8_multi_return_fuzzer") {
-  sources = []
-  deps = [ "//v8:multi_return_fuzzer" ]
-  asan_options = [
-    "allow_user_segv_handler=1",
-    "handle_sigtrap=1",
-  ]
-  msan_options = [ "handle_sigtrap=1" ]
-  ubsan_options = [
-    "handle_sigtrap=1",
-    "handle_segv=1",
-  ]
-  environment_variables = [ "AFL_DRIVER_DONT_DEFER=1" ]
-}
+if (v8_enable_webassembly) {
+  fuzzer_test("v8_multi_return_fuzzer") {
+    sources = []
+    deps = [ "//v8:multi_return_fuzzer" ]
+    asan_options = [
+      "allow_user_segv_handler=1",
+      "handle_sigtrap=1",
+    ]
+    msan_options = [ "handle_sigtrap=1" ]
+    ubsan_options = [
+      "handle_sigtrap=1",
+      "handle_segv=1",
+    ]
+    environment_variables = [ "AFL_DRIVER_DONT_DEFER=1" ]
+  }
 
-fuzzer_test("v8_wasm_code_fuzzer") {
-  sources = []
-  deps = [ "//v8:wasm_code_fuzzer" ]
-  libfuzzer_options = [ "max_len=500" ]
-  asan_options = [
-    "allow_user_segv_handler=1",
-    "handle_sigtrap=1",
-  ]
-  msan_options = [ "handle_sigtrap=1" ]
-  ubsan_options = [
-    "handle_sigtrap=1",
-    "handle_segv=1",
-  ]
-  environment_variables = [ "AFL_DRIVER_DONT_DEFER=1" ]
-}
+  fuzzer_test("v8_wasm_code_fuzzer") {
+    sources = []
+    deps = [ "//v8:wasm_code_fuzzer" ]
+    libfuzzer_options = [ "max_len=500" ]
+    asan_options = [
+      "allow_user_segv_handler=1",
+      "handle_sigtrap=1",
+    ]
+    msan_options = [ "handle_sigtrap=1" ]
+    ubsan_options = [
+      "handle_sigtrap=1",
+      "handle_segv=1",
+    ]
+    environment_variables = [ "AFL_DRIVER_DONT_DEFER=1" ]
+  }
 
-fuzzer_test("v8_wasm_compile_fuzzer") {
-  sources = []
-  deps = [ "//v8:wasm_compile_fuzzer" ]
-  libfuzzer_options = [ "max_len=500" ]
-  asan_options = [
-    "allow_user_segv_handler=1",
-    "handle_sigtrap=1",
-  ]
-  msan_options = [ "handle_sigtrap=1" ]
-  ubsan_options = [
-    "handle_sigtrap=1",
-    "handle_segv=1",
-  ]
-  environment_variables = [ "AFL_DRIVER_DONT_DEFER=1" ]
-}
+  fuzzer_test("v8_wasm_compile_fuzzer") {
+    sources = []
+    deps = [ "//v8:wasm_compile_fuzzer" ]
+    libfuzzer_options = [ "max_len=500" ]
+    asan_options = [
+      "allow_user_segv_handler=1",
+      "handle_sigtrap=1",
+    ]
+    msan_options = [ "handle_sigtrap=1" ]
+    ubsan_options = [
+      "handle_sigtrap=1",
+      "handle_segv=1",
+    ]
+    environment_variables = [ "AFL_DRIVER_DONT_DEFER=1" ]
+  }
 
-fuzzer_test("v8_wasm_fuzzer") {
-  sources = []
-  deps = [ "//v8:wasm_fuzzer" ]
-  dict = "dicts/v8_wasm.dict"
-  seed_corpus = "//v8/test/fuzzer/wasm_corpus/"
-  libfuzzer_options = [ "max_len=500" ]
-  asan_options = [
-    "allow_user_segv_handler=1",
-    "handle_sigtrap=1",
-  ]
-  msan_options = [ "handle_sigtrap=1" ]
-  ubsan_options = [
-    "handle_sigtrap=1",
-    "handle_segv=1",
-  ]
-  environment_variables = [ "AFL_DRIVER_DONT_DEFER=1" ]
-}
+  fuzzer_test("v8_wasm_fuzzer") {
+    sources = []
+    deps = [ "//v8:wasm_fuzzer" ]
+    dict = "dicts/v8_wasm.dict"
+    seed_corpus = "//v8/test/fuzzer/wasm_corpus/"
+    libfuzzer_options = [ "max_len=500" ]
+    asan_options = [
+      "allow_user_segv_handler=1",
+      "handle_sigtrap=1",
+    ]
+    msan_options = [ "handle_sigtrap=1" ]
+    ubsan_options = [
+      "handle_sigtrap=1",
+      "handle_segv=1",
+    ]
+    environment_variables = [ "AFL_DRIVER_DONT_DEFER=1" ]
+  }
 
-fuzzer_test("v8_wasm_async_fuzzer") {
-  sources = []
-  deps = [ "//v8:wasm_async_fuzzer" ]
-  dict = "dicts/v8_wasm.dict"
-  seed_corpus = "//v8/test/fuzzer/wasm_corpus/"
-  libfuzzer_options = [ "max_len=500" ]
-  asan_options = [
-    "allow_user_segv_handler=1",
-    "handle_sigtrap=1",
-  ]
-  msan_options = [ "handle_sigtrap=1" ]
-  ubsan_options = [
-    "handle_sigtrap=1",
-    "handle_segv=1",
-  ]
-  environment_variables = [ "AFL_DRIVER_DONT_DEFER=1" ]
+  fuzzer_test("v8_wasm_async_fuzzer") {
+    sources = []
+    deps = [ "//v8:wasm_async_fuzzer" ]
+    dict = "dicts/v8_wasm.dict"
+    seed_corpus = "//v8/test/fuzzer/wasm_corpus/"
+    libfuzzer_options = [ "max_len=500" ]
+    asan_options = [
+      "allow_user_segv_handler=1",
+      "handle_sigtrap=1",
+    ]
+    msan_options = [ "handle_sigtrap=1" ]
+    ubsan_options = [
+      "handle_sigtrap=1",
+      "handle_segv=1",
+    ]
+    environment_variables = [ "AFL_DRIVER_DONT_DEFER=1" ]
+  }
+
+  fuzzer_test("v8_wasm_streaming_fuzzer") {
+    sources = []
+    deps = [ "//v8:wasm_streaming_fuzzer" ]
+    libfuzzer_options = [ "max_len=500" ]
+    asan_options = [
+      "allow_user_segv_handler=1",
+      "handle_sigtrap=1",
+    ]
+    msan_options = [ "handle_sigtrap=1" ]
+    ubsan_options = [
+      "handle_sigtrap=1",
+      "handle_segv=1",
+    ]
+    environment_variables = [ "AFL_DRIVER_DONT_DEFER=1" ]
+  }
 }
 
 fuzzer_test("convert_woff2ttf_fuzzer") {

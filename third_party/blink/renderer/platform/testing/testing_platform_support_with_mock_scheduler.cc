@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
@@ -23,7 +24,7 @@ TestingPlatformSupportWithMockScheduler::
   sequence_manager_ = sequence_manager.get();
 
   scheduler_ = std::make_unique<scheduler::MainThreadSchedulerImpl>(
-      std::move(sequence_manager), absl::nullopt);
+      std::move(sequence_manager));
   main_thread_overrider_ = std::make_unique<ScopedMainThreadOverrider>(
       scheduler_->CreateMainThread());
   // Set the work batch size to one so TakePendingTasks behaves as expected.

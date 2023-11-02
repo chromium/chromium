@@ -1,23 +1,34 @@
 <style include="cr-shared-style shimless-rma-shared">
-  iron-icon {
-    width: 300px;
-    height: 200px;
+  #navigationButtonWrapper {
+    bottom: var(--header-footer-height);
+    position: absolute;
+  }
+
+  #continue {
+    margin-inline-end: 8px;
   }
 </style>
 
-<base-page orientation="column">
-  <div slot="header">
-    <!-- TODO(gavindodd): Update text for i18n -->
-    <h1>Restock mainboard</h1>
-    <p>Choose to shutdown and restock mainboard or continue to finalize this
-      device.
-    </p>
-    <cr-button id="shutdown" on-click="onShutdownButtonClicked_">
-      Shutdown
-    </cr-button>
+<base-page>
+  <div slot="left-pane">
+    <h1 tabindex="-1">[[i18n('restockTitleText')]]</h1>
+    <div class="instructions">[[i18n('restockInstructionsText')]]</div>
+    <div id="navigationButtonWrapper">
+      <cr-button id="continue" class="action-button"
+          on-click="onRestockContinueButtonClicked_"
+          disabled="[[allButtonsDisabled]]">
+        [[i18n('restockContinueButtonText')]]
+      </cr-button>
+      <cr-button id="shutdown" on-click="onShutdownButtonClicked_"
+          disabled="[[allButtonsDisabled]]">
+        [[i18n('restockShutdownButtonText')]]
+      </cr-button>
+    </div>
   </div>
-  <div slot="body">
-    <!-- TODO(gavindodd): Replace with real image -->
-    <iron-icon icon="shimless:shimless-placeholder"></iron-icon>
+  <div slot="right-pane">
+    <div class="illustration-wrapper" aria-hidden="true">
+      <img class="illustration" src="illustrations/repair_start.svg"
+          alt="[[i18n('repairStartAltText')]]">
+    </div>
   </div>
 </base-page>

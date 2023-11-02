@@ -64,10 +64,16 @@ void LayoutListItem::StyleDidChange(StyleDifference diff,
   if (old_style && (StyleRef().ListStyleType() ||
                     (current_image && !current_image->ErrorOccurred()))) {
     // The old_style check makes sure we don't enter here when attaching the
-    // LayoutObject. Check that this happens during style recalc.
+    // LayoutObject.
     DCHECK(GetDocument().InStyleRecalc());
     DCHECK(!GetDocument().GetStyleEngine().InRebuildLayoutTree());
-    NotifyOfSubtreeChange();
+    // We may enter here when propagating writing-mode and direction from body
+    // to the root element after layout tree rebuild. Skip NotifyOfSubtreeChange
+    // for that case.
+    if (GetDocument().documentElement() != GetNode() ||
+        GetDocument().GetStyleEngine().NeedsStyleRecalc()) {
+      NotifyOfSubtreeChange();
+    }
   }
 
   LayoutObject* marker = Marker();
@@ -232,8 +238,8 @@ void ForceLogicalHeight(LayoutObject& layout_object, const Length& height) {
   scoped_refptr<ComputedStyle> new_style =
       ComputedStyle::Clone(layout_object.StyleRef());
   new_style->SetLogicalHeight(height);
-  layout_object.SetModifiedStyleOutsideStyleRecalc(
-      std::move(new_style), LayoutObject::ApplyStyleChanges::kNo);
+  layout_object.SetStyle(std::move(new_style),
+                         LayoutObject::ApplyStyleChanges::kNo);
 }
 
 }  // namespace

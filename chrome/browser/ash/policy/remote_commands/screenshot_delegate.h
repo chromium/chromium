@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,14 +33,14 @@ class ScreenshotDelegate : public DeviceCommandScreenshotJob::Delegate {
   bool IsScreenshotAllowed() override;
   void TakeSnapshot(gfx::NativeWindow window,
                     const gfx::Rect& source_rect,
-                    ui::GrabWindowSnapshotAsyncPNGCallback callback) override;
+                    OnScreenshotTakenCallback upload) override;
   std::unique_ptr<UploadJob> CreateUploadJob(
       const GURL& upload_url,
       UploadJob::Delegate* delegate) override;
 
  private:
-  void StoreScreenshot(ui::GrabWindowSnapshotAsyncPNGCallback callback,
-                       scoped_refptr<base::RefCountedMemory> png_data);
+  void OnScreenshotTaken(OnScreenshotTakenCallback callback,
+                         scoped_refptr<base::RefCountedMemory> png_data);
 
   base::WeakPtrFactory<ScreenshotDelegate> weak_ptr_factory_{this};
 };

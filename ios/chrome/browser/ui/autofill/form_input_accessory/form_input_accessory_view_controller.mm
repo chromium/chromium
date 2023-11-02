@@ -1,20 +1,21 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_view_controller.h"
 
-#include "base/mac/foundation_util.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/metrics/user_metrics.h"
-#include "components/autofill/core/common/autofill_features.h"
+#import "base/mac/foundation_util.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/metrics/user_metrics.h"
+#import "components/autofill/core/common/autofill_features.h"
 #import "ios/chrome/browser/autofill/form_suggestion_client.h"
-#import "ios/chrome/browser/autofill/form_suggestion_view.h"
+#import "ios/chrome/browser/ui/autofill/features.h"
+#import "ios/chrome/browser/ui/autofill/form_input_accessory/branding_view_controller.h"
+#import "ios/chrome/browser/ui/autofill/form_input_accessory/form_suggestion_view.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_accessory_view_controller.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
-#include "ui/base/device_form_factor.h"
+#import "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -24,7 +25,18 @@
     FormSuggestionViewDelegate,
     ManualFillAccessoryViewControllerDelegate>
 
-// The leading view with the suggestions in FormInputAccessoryView.
+// The leading view that contains the branding and form suggestions.
+@property(nonatomic, strong) UIStackView* leadingView;
+
+// Whether the branding logo should be present; it should be hidden when
+// autofill branding is disabled, or when there are no suggestions or mandatory
+// fill buttons in the form input accessory.
+@property(nonatomic, readonly, getter=isBrandingVisible) BOOL brandingVisible;
+
+// The view controller to show the branding logo.
+@property(nonatomic, strong) BrandingViewController* brandingViewController;
+
+// The view with the suggestions in FormInputAccessoryView.
 @property(nonatomic, strong) FormSuggestionView* formSuggestionView;
 
 // The manual fill accessory view controller to add at the end of the
@@ -62,6 +74,7 @@
         manualFillAccessoryViewControllerDelegate;
     _manualFillAccessoryViewController =
         [[ManualFillAccessoryViewController alloc] initWithDelegate:self];
+    [self addChildViewController:_manualFillAccessoryViewController];
   }
   return self;
 }
@@ -71,15 +84,27 @@
 
   FormInputAccessoryView* formInputAccessoryView =
       [[FormInputAccessoryView alloc] init];
+
+  // Sets up leading view.
+  self.leadingView = [[UIStackView alloc] init];
+  self.leadingView.axis = UILayoutConstraintAxisHorizontal;
+  if (self.brandingVisible) {
+    [self addChildViewController:self.brandingViewController];
+    self.brandingViewController.delegate = self.brandingViewControllerDelegate;
+    [self.leadingView addArrangedSubview:self.brandingViewController.view];
+    [self.brandingViewController didMoveToParentViewController:self];
+  }
+  [self.leadingView addArrangedSubview:self.formSuggestionView];
+
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     [formInputAccessoryView
-        setUpWithLeadingView:self.formSuggestionView
+        setUpWithLeadingView:self.leadingView
           customTrailingView:self.manualFillAccessoryViewController.view];
   } else {
     formInputAccessoryView.accessibilityViewIsModal = YES;
     self.formSuggestionView.trailingView =
         self.manualFillAccessoryViewController.view;
-    [formInputAccessoryView setUpWithLeadingView:self.formSuggestionView
+    [formInputAccessoryView setUpWithLeadingView:self.leadingView
                               navigationDelegate:self.navigationDelegate];
     formInputAccessoryView.nextButton.enabled = self.formInputNextButtonEnabled;
     formInputAccessoryView.previousButton.enabled =
@@ -108,6 +133,30 @@
 - (void)showAccessorySuggestions:(NSArray<FormSuggestion*>*)suggestions {
   [self createFormSuggestionViewIfNeeded];
   [self.formSuggestionView updateSuggestions:suggestions];
+  [self updateBrandingVisibility];
+}
+
+- (void)animateSuggestionLabel {
+  [self.formSuggestionView animateSuggestionLabel];
+}
+
+#pragma mark - Getter
+
+- (BOOL)isBrandingVisible {
+  if (autofill::features::GetAutofillBrandingType() ==
+      autofill::features::AutofillBrandingType::kDisabled) {
+    return NO;
+  }
+  return !(self.manualFillAccessoryViewController.allButtonsHidden &&
+           self.formSuggestionView.suggestions.count == 0);
+}
+
+- (BrandingViewController*)brandingViewController {
+  if (!_brandingViewController) {
+    DCHECK(self.brandingVisible);
+    _brandingViewController = [[BrandingViewController alloc] init];
+  }
+  return _brandingViewController;
 }
 
 #pragma mark - Setters
@@ -116,18 +165,21 @@
   _passwordButtonHidden = passwordButtonHidden;
   self.manualFillAccessoryViewController.passwordButtonHidden =
       passwordButtonHidden;
+  [self updateBrandingVisibility];
 }
 
 - (void)setAddressButtonHidden:(BOOL)addressButtonHidden {
   _addressButtonHidden = addressButtonHidden;
   self.manualFillAccessoryViewController.addressButtonHidden =
       addressButtonHidden;
+  [self updateBrandingVisibility];
 }
 
 - (void)setCreditCardButtonHidden:(BOOL)creditCardButtonHidden {
   _creditCardButtonHidden = creditCardButtonHidden;
   self.manualFillAccessoryViewController.creditCardButtonHidden =
       creditCardButtonHidden;
+  [self updateBrandingVisibility];
 }
 
 - (void)setFormInputNextButtonEnabled:(BOOL)formInputNextButtonEnabled {
@@ -147,12 +199,23 @@
       _formInputPreviousButtonEnabled;
 }
 
+- (void)setBrandingViewControllerDelegate:
+    (id<BrandingViewControllerDelegate>)delegate {
+  _brandingViewControllerDelegate = delegate;
+  if (self.brandingVisible) {
+    // If the branding view controller is created previously without the
+    // delegate, attach it.
+    self.brandingViewController.delegate = delegate;
+  }
+}
+
 #pragma mark - Private
 
 // Resets this view to its original state. Can be animated.
 - (void)resetAnimated:(BOOL)animated {
   [self.formSuggestionView resetContentInsetAndDelegateAnimated:animated];
   [self.manualFillAccessoryViewController resetAnimated:animated];
+  [self updateBrandingVisibility];
 }
 
 // Create formSuggestionView if not done yet.
@@ -160,6 +223,28 @@
   if (!self.formSuggestionView) {
     self.formSuggestionView = [[FormSuggestionView alloc] init];
     self.formSuggestionView.formSuggestionViewDelegate = self;
+    self.formSuggestionView.layoutGuideCenter = self.layoutGuideCenter;
+    self.formSuggestionView.translatesAutoresizingMaskIntoConstraints = NO;
+  }
+}
+
+// Show or hide branding when the number of suggestions and/or buttons changes.
+- (void)updateBrandingVisibility {
+  if (self.brandingVisible) {
+    self.brandingViewController.delegate = self.brandingViewControllerDelegate;
+    UIView* branding = self.brandingViewController.view;
+    if (branding.superview == nil) {
+      [self addChildViewController:self.brandingViewController];
+      [self.leadingView insertArrangedSubview:branding atIndex:0];
+      [self.brandingViewController didMoveToParentViewController:self];
+    }
+  } else if (self.leadingView.subviews.count ==
+             2) {  // Branding button and form suggestions view.
+    UIView* branding = self.brandingViewController.view;
+    DCHECK_EQ(branding, self.leadingView.arrangedSubviews[0]);
+    [self.brandingViewController willMoveToParentViewController:nil];
+    [branding removeFromSuperview];
+    [self.brandingViewController removeFromParentViewController];
   }
 }
 

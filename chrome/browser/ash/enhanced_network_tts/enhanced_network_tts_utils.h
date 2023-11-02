@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/enhanced_network_tts/mojom/enhanced_network_tts.mojom.h"
 #include "base/values.h"
+#include "chromeos/ash/components/enhanced_network_tts/mojom/enhanced_network_tts.mojom.h"
 
 namespace ash {
 namespace enhanced_network_tts {
@@ -39,7 +39,7 @@ mojom::TtsResponsePtr GetResultOnError(const mojom::TtsRequestError error_code);
 // Unpack the JSON audio data from the server response. The data corresponds to
 // the text piece that has the |start_index| in the original input utterance.
 // |last_request| indicates if this is the last JSON data we expect.
-mojom::TtsResponsePtr UnpackJsonResponse(const base::Value& json_data,
+mojom::TtsResponsePtr UnpackJsonResponse(const base::Value::List& list_data,
                                          const int start_index,
                                          const bool last_request);
 

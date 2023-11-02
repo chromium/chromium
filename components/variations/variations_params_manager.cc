@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,16 +24,18 @@ const char kGroupTesting[] = "Testing";
 
 base::FieldTrial* CreateFieldTrialWithParams(
     const std::string& trial_name,
+    const std::string& trial_group_name,
     const std::map<std::string, std::string>& param_values) {
-  AssociateVariationParams(trial_name, kGroupTesting, param_values);
-  return base::FieldTrialList::CreateFieldTrial(trial_name, kGroupTesting);
+  AssociateVariationParams(trial_name, trial_group_name, param_values);
+  return base::FieldTrialList::CreateFieldTrial(trial_name, trial_group_name);
 }
 
 }  // namespace
 
 VariationParamsManager::VariationParamsManager()
-    : field_trial_list_(new base::FieldTrialList(nullptr)),
-      scoped_feature_list_(new base::test::ScopedFeatureList()) {}
+    : scoped_feature_list_(new base::test::ScopedFeatureList()) {
+  scoped_feature_list_->InitWithEmptyFeatureAndFieldTrialLists();
+}
 
 VariationParamsManager::VariationParamsManager(
     const std::string& trial_name,
@@ -56,18 +58,29 @@ VariationParamsManager::~VariationParamsManager() {
   ClearAllVariationParams();
 }
 
+// static
 void VariationParamsManager::SetVariationParams(
     const std::string& trial_name,
     const std::map<std::string, std::string>& param_values) {
-  CreateFieldTrialWithParams(trial_name, param_values);
+  CreateFieldTrialWithParams(trial_name, kGroupTesting, param_values);
+}
+
+// static
+void VariationParamsManager::SetVariationParams(
+    const std::string& trial_name,
+    const std::string& trial_group_name,
+    const std::map<std::string, std::string>& param_values) {
+  CreateFieldTrialWithParams(trial_name, trial_group_name, param_values);
 }
 
 void VariationParamsManager::SetVariationParamsWithFeatureAssociations(
     const std::string& trial_name,
     const std::map<std::string, std::string>& param_values,
     const std::set<std::string>& associated_features) {
+  scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+
   base::FieldTrial* field_trial =
-      CreateFieldTrialWithParams(trial_name, param_values);
+      CreateFieldTrialWithParams(trial_name, kGroupTesting, param_values);
 
   std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
   for (const std::string& feature_name : associated_features) {
@@ -89,39 +102,7 @@ void VariationParamsManager::ClearAllVariationParams() {
   // When the scoped feature list is destroyed, it puts back the original
   // feature list that was there when InitWithFeatureList() was called.
   scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-  // Ensure the destructor is called properly, so it can be freshly recreated.
-  field_trial_list_.reset();
-  field_trial_list_ = std::make_unique<base::FieldTrialList>(nullptr);
-}
-
-// static
-void VariationParamsManager::AppendVariationParams(
-    const std::string& trial_name,
-    const std::string& trial_group_name,
-    const std::map<std::string, std::string>& param_values,
-    base::CommandLine* command_line) {
-  // Register the trial group.
-  command_line->AppendSwitchASCII(
-      ::switches::kForceFieldTrials,
-      EscapeValue(trial_name) + "/" + EscapeValue(trial_group_name));
-
-  // Associate |param_values| with the trial group.
-  std::string params_arg =
-      EscapeValue(trial_name) + "." + EscapeValue(trial_group_name) + ":";
-  bool first = true;
-  for (const auto& param : param_values) {
-    // Separate each |param|.
-    if (!first)
-      params_arg += "/";
-    first = false;
-
-    // Append each |param|.
-    const std::string& name = param.first;
-    const std::string& value = param.second;
-    params_arg += EscapeValue(name) + "/" + EscapeValue(value);
-  }
-  command_line->AppendSwitchASCII(variations::switches::kForceFieldTrialParams,
-                                  params_arg);
+  scoped_feature_list_->InitWithEmptyFeatureAndFieldTrialLists();
 }
 
 }  // namespace testing

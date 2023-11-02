@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,13 +39,6 @@ namespace {
 // Returns the file system context associated with the specified `profile`.
 storage::FileSystemContext* GetFileSystemContext(Profile* profile) {
   return file_manager::util::GetFileManagerFileSystemContext(profile);
-}
-
-// Returns the file system operation runner associated with the specified
-// `profile`.
-storage::FileSystemOperationRunner* GetFileSystemOperationRunner(
-    Profile* profile) {
-  return GetFileSystemContext(profile)->operation_runner();
 }
 
 // Creates a mojo data pipe with the provided `content`.
@@ -245,7 +238,7 @@ class FileChangeServiceTest : public BrowserWithTestWindowTest {
  private:
   // BrowserWithTestWindowTest:
   TestingProfile* CreateProfile() override {
-    constexpr char kPrimaryProfileName[] = "primary_profile";
+    constexpr char kPrimaryProfileName[] = "primary_profile@test";
     return CreateProfileWithName(kPrimaryProfileName);
   }
 
@@ -268,7 +261,7 @@ TEST_F(FileChangeServiceTest, CreatesServiceInstancesPerProfile) {
   ASSERT_TRUE(primary_profile_service);
 
   // `FileChangeService` should be created as needed for additional profiles.
-  constexpr char kSecondaryProfileName[] = "secondary_profile";
+  constexpr char kSecondaryProfileName[] = "secondary_profile@test";
   auto* secondary_profile = CreateProfileWithName(kSecondaryProfileName);
   auto* secondary_profile_service = factory->GetService(secondary_profile);
   ASSERT_TRUE(secondary_profile_service);

@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright 2015 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -30,12 +30,6 @@ extra_trybots = [
     {
         "mastername": "luci.chromium.try",
         "buildernames": ["android_optional_gpu_tests_rel"]
-    },
-    # Include the ANGLE tryservers which run the WebGL conformance tests
-    # in some non-default configurations.
-    {
-        "mastername": "luci.chromium.try",
-        "buildernames": ["linux-angle-rel"]
     },
 ]
 

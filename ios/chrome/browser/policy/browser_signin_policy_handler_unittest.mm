@@ -1,24 +1,24 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/policy/browser_signin_policy_handler.h"
+#import "ios/chrome/browser/policy/browser_signin_policy_handler.h"
 
 #import <Foundation/Foundation.h>
 
-#include "base/command_line.h"
-#include "components/policy/core/browser/policy_error_map.h"
+#import "base/command_line.h"
+#import "components/policy/core/browser/policy_error_map.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
-#include "components/policy/core/common/policy_map.h"
-#include "components/policy/core/common/schema.h"
-#include "components/prefs/pref_value_map.h"
-#include "components/signin/public/base/signin_pref_names.h"
-#include "ios/chrome/browser/chrome_switches.h"
-#include "ios/chrome/browser/policy/policy_util.h"
-#include "ios/chrome/browser/pref_names.h"
-#include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
+#import "components/policy/core/common/policy_map.h"
+#import "components/policy/core/common/schema.h"
+#import "components/prefs/pref_value_map.h"
+#import "components/signin/public/base/signin_pref_names.h"
+#import "ios/chrome/browser/flags/chrome_switches.h"
+#import "ios/chrome/browser/policy/policy_util.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

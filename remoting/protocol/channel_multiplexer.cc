@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -21,8 +21,7 @@
 #include "remoting/protocol/message_serialization.h"
 #include "remoting/protocol/p2p_stream_socket.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 const int kChannelIdUnknown = -1;
@@ -90,12 +89,12 @@ class ChannelMultiplexer::MuxChannel {
   int DoRead(const scoped_refptr<net::IOBuffer>& buffer, int buffer_len);
 
  private:
-  ChannelMultiplexer* multiplexer_;
+  raw_ptr<ChannelMultiplexer> multiplexer_;
   std::string name_;
   int send_id_;
   bool id_sent_;
   int receive_id_;
-  MuxSocket* socket_;
+  raw_ptr<MuxSocket> socket_;
   std::list<std::unique_ptr<PendingPacket>> pending_packets_;
 };
 
@@ -123,7 +122,7 @@ class ChannelMultiplexer::MuxSocket : public P2PStreamSocket {
       const net::NetworkTrafficAnnotationTag& traffic_annotation) override;
 
  private:
-  MuxChannel* channel_;
+  raw_ptr<MuxChannel> channel_;
 
   int base_channel_error_ = net::OK;
 
@@ -473,5 +472,4 @@ void ChannelMultiplexer::DoWrite(
                 traffic_annotation);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

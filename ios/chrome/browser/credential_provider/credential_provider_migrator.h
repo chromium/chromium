@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@
                    passwordStore;
 - (instancetype)init NS_UNAVAILABLE;
 
-// Starts migration from the temporal store to the password store. |completion|
+// Starts migration from the temporal store to the password store. `completion`
 // is called with any error that could have happened. Migration happens in a
 // background thread.
 - (void)startMigrationWithCompletion:(void (^)(BOOL success,

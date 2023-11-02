@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "ash/constants/tray_background_view_catalog.h"
 #include "ash/focus_cycler.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/public/cpp/session/session_observer.h"
@@ -29,6 +30,8 @@
 #include "ash/system/tray/tray_event_filter.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
+#include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/time/time.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -36,11 +39,14 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/color/color_id.h"
+#include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/interpolated_transform.h"
@@ -82,11 +88,21 @@ const float kAnimationBounceScaleFactor = 0.5;
 // TrayBackgroundView.
 const base::TimeDelta kShowAnimationDelayMs = base::Milliseconds(100);
 
+// Number of active requests to disable CloseBubble().
+int g_disable_close_bubble_on_window_activated = 0;
+
+constexpr char kFadeInAnimationSmoothnessHistogramName[] =
+    "Ash.StatusArea.TrayBackgroundView.FadeIn";
+constexpr char kBounceInAnimationSmoothnessHistogramName[] =
+    "Ash.StatusArea.TrayBackgroundView.BounceIn";
+constexpr char kHideAnimationSmoothnessHistogramName[] =
+    "Ash.StatusArea.TrayBackgroundView.Hide";
+
 // Switches left and right insets if RTL mode is active.
 void MirrorInsetsIfNecessary(gfx::Insets* insets) {
   if (base::i18n::IsRTL()) {
-    insets->Set(insets->top(), insets->right(), insets->bottom(),
-                insets->left());
+    *insets = gfx::Insets::TLBR(insets->top(), insets->right(),
+                                insets->bottom(), insets->left());
   }
 }
 
@@ -100,11 +116,13 @@ gfx::Insets GetMirroredBackgroundInsets(bool is_shelf_horizontal) {
       -ash::ShelfConfig::Get()->status_area_hit_region_padding();
 
   if (is_shelf_horizontal) {
-    insets.Set(secondary_padding, primary_padding, secondary_padding,
-               primary_padding + ash::kTraySeparatorWidth);
+    insets =
+        gfx::Insets::TLBR(secondary_padding, primary_padding, secondary_padding,
+                          primary_padding + ash::kTraySeparatorWidth);
   } else {
-    insets.Set(primary_padding, secondary_padding,
-               primary_padding + ash::kTraySeparatorWidth, secondary_padding);
+    insets = gfx::Insets::TLBR(primary_padding, secondary_padding,
+                               primary_padding + ash::kTraySeparatorWidth,
+                               secondary_padding);
   }
   MirrorInsetsIfNecessary(&insets);
   return insets;
@@ -125,8 +143,8 @@ class HighlightPathGenerator : public views::HighlightPathGenerator {
   // HighlightPathGenerator:
   absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
     gfx::RectF bounds(tray_background_view_->GetBackgroundBounds());
-    bounds.Inset(insets_);
-    return gfx::RRectF(bounds, ShelfConfig::Get()->control_border_radius());
+    bounds.Inset(gfx::InsetsF(insets_));
+    return gfx::RRectF(bounds, tray_background_view_->GetRoundedCorners());
   }
 
  private:
@@ -200,16 +218,21 @@ class TrayBackgroundView::TrayBackgroundViewSessionChangeHandler
 ////////////////////////////////////////////////////////////////////////////////
 // TrayBackgroundView
 
-TrayBackgroundView::TrayBackgroundView(Shelf* shelf)
+TrayBackgroundView::TrayBackgroundView(
+    Shelf* shelf,
+    TrayBackgroundViewCatalogName catalog_name,
+    RoundedCornerBehavior corner_behavior)
     // Note the ink drop style is ignored.
     : ActionableView(TrayPopupInkDropStyle::FILL_BOUNDS),
       shelf_(shelf),
-      tray_container_(new TrayContainer(shelf)),
+      catalog_name_(catalog_name),
+      tray_container_(new TrayContainer(shelf, this)),
       is_active_(false),
       separator_visible_(true),
       visible_preferred_(false),
       show_with_virtual_keyboard_(false),
       show_when_collapsed_(true),
+      corner_behavior_(corner_behavior),
       widget_observer_(new TrayWidgetObserver(this)),
       handler_(new TrayBackgroundViewSessionChangeHandler(this)) {
   DCHECK(shelf_);
@@ -224,11 +247,10 @@ TrayBackgroundView::TrayBackgroundView(Shelf* shelf)
   SetLayoutManager(std::make_unique<views::FillLayout>());
   SetInstallFocusRingOnFocus(true);
 
-  views::FocusRing* const focus_ring = views::FocusRing::Get(this);
-  focus_ring->SetColor(AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor));
-  focus_ring->SetPathGenerator(std::make_unique<HighlightPathGenerator>(
-      this, kTrayBackgroundFocusPadding));
+  views::FocusRing::Get(this)->SetPathGenerator(
+      std::make_unique<HighlightPathGenerator>(this,
+                                               kTrayBackgroundFocusPadding));
+  views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
   SetFocusPainter(nullptr);
 
   views::HighlightPathGenerator::Install(
@@ -245,6 +267,11 @@ TrayBackgroundView::TrayBackgroundView(Shelf* shelf)
 
   // Start the tray items not visible, because visibility changes are animated.
   views::View::SetVisible(false);
+}
+
+void TrayBackgroundView::SetPressedCallback(
+    base::RepeatingCallback<void(const ui::Event& event)> pressed_callback) {
+  pressed_callback_ = std::move(pressed_callback);
 }
 
 TrayBackgroundView::~TrayBackgroundView() {
@@ -274,7 +301,12 @@ void TrayBackgroundView::InitializeBubbleAnimations(
 void TrayBackgroundView::SetVisiblePreferred(bool visible_preferred) {
   if (visible_preferred_ == visible_preferred)
     return;
+
   visible_preferred_ = visible_preferred;
+  base::UmaHistogramEnumeration(
+      visible_preferred_ ? "Ash.StatusArea.TrayBackgroundView.Shown"
+                         : "Ash.StatusArea.TrayBackgroundView.Hidden",
+      catalog_name_);
   StartVisibilityAnimation(GetEffectiveVisibility());
 
   // We need to update which trays overflow after showing or hiding a tray.
@@ -286,6 +318,51 @@ void TrayBackgroundView::SetVisiblePreferred(bool visible_preferred) {
 
 bool TrayBackgroundView::IsShowingMenu() const {
   return context_menu_runner_ && context_menu_runner_->IsRunning();
+}
+
+void TrayBackgroundView::SetRoundedCornerBehavior(
+    RoundedCornerBehavior corner_behavior) {
+  corner_behavior_ = corner_behavior;
+  UpdateBackground();
+}
+
+gfx::RoundedCornersF TrayBackgroundView::GetRoundedCorners() {
+  const float radius = ShelfConfig::Get()->control_border_radius();
+  if (shelf_->IsHorizontalAlignment()) {
+    gfx::RoundedCornersF start_rounded = {
+        radius, kUnifiedTrayNonRoundedSideRadius,
+        kUnifiedTrayNonRoundedSideRadius, radius};
+    gfx::RoundedCornersF end_rounded = {kUnifiedTrayNonRoundedSideRadius,
+                                        radius, radius,
+                                        kUnifiedTrayNonRoundedSideRadius};
+    switch (corner_behavior_) {
+      case kNotRounded:
+        return {
+            kUnifiedTrayNonRoundedSideRadius, kUnifiedTrayNonRoundedSideRadius,
+            kUnifiedTrayNonRoundedSideRadius, kUnifiedTrayNonRoundedSideRadius};
+      case kAllRounded:
+        return {radius, radius, radius, radius};
+      case kStartRounded:
+        return base::i18n::IsRTL() ? end_rounded : start_rounded;
+      case kEndRounded:
+        return base::i18n::IsRTL() ? start_rounded : end_rounded;
+    }
+  }
+
+  switch (corner_behavior_) {
+    case kNotRounded:
+      return {
+          kUnifiedTrayNonRoundedSideRadius, kUnifiedTrayNonRoundedSideRadius,
+          kUnifiedTrayNonRoundedSideRadius, kUnifiedTrayNonRoundedSideRadius};
+    case kAllRounded:
+      return {radius, radius, radius, radius};
+    case kStartRounded:
+      return {radius, radius, kUnifiedTrayNonRoundedSideRadius,
+              kUnifiedTrayNonRoundedSideRadius};
+    case kEndRounded:
+      return {kUnifiedTrayNonRoundedSideRadius,
+              kUnifiedTrayNonRoundedSideRadius, radius, radius};
+  }
 }
 
 void TrayBackgroundView::StartVisibilityAnimation(bool visible) {
@@ -339,6 +416,18 @@ base::ScopedClosureRunner TrayBackgroundView::DisableShowAnimation() {
       weak_factory_.GetWeakPtr()));
 }
 
+base::ScopedClosureRunner
+TrayBackgroundView::DisableCloseBubbleOnWindowActivated() {
+  ++g_disable_close_bubble_on_window_activated;
+  return base::ScopedClosureRunner(
+      base::BindOnce([]() { --g_disable_close_bubble_on_window_activated; }));
+}
+
+// static
+bool TrayBackgroundView::ShouldCloseBubbleOnWindowActivated() {
+  return g_disable_close_bubble_on_window_activated == 0;
+}
+
 void TrayBackgroundView::UpdateStatusArea(bool should_log_visible_pod_count) {
   auto* status_area_widget = shelf_->GetStatusAreaWidget();
   if (status_area_widget) {
@@ -367,7 +456,7 @@ void TrayBackgroundView::ShowContextMenuForViewImpl(
   if (!context_menu_model_)
     return;
 
-  const int run_types = views::MenuRunner::USE_TOUCHABLE_LAYOUT |
+  const int run_types = views::MenuRunner::USE_ASH_SYS_UI_LAYOUT |
                         views::MenuRunner::CONTEXT_MENU |
                         views::MenuRunner::FIXED_ANCHOR;
   context_menu_runner_ = std::make_unique<views::MenuRunner>(
@@ -432,6 +521,8 @@ std::unique_ptr<ui::Layer> TrayBackgroundView::RecreateLayer() {
 void TrayBackgroundView::OnThemeChanged() {
   ActionableView::OnThemeChanged();
   UpdateBackground();
+  layer()->SetColor(
+      ShelfConfig::Get()->GetShelfControlButtonColor(GetWidget()));
   StyleUtil::ConfigureInkDropAttributes(this, StyleUtil::kBaseColor |
                                                   StyleUtil::kInkDropOpacity |
                                                   StyleUtil::kHighlightOpacity);
@@ -450,8 +541,6 @@ TrayBubbleView* TrayBackgroundView::GetBubbleView() {
 views::Widget* TrayBackgroundView::GetBubbleWidget() const {
   return nullptr;
 }
-
-void TrayBackgroundView::CloseBubble() {}
 
 void TrayBackgroundView::ShowBubble() {}
 
@@ -474,14 +563,15 @@ void TrayBackgroundView::UpdateAfterStatusAreaCollapseChange() {
 
 void TrayBackgroundView::BubbleResized(const TrayBubbleView* bubble_view) {}
 
+void TrayBackgroundView::OnAnyBubbleVisibilityChanged(
+    views::Widget* bubble_widget,
+    bool visible) {}
+
 void TrayBackgroundView::UpdateBackground() {
-  const float radius = ShelfConfig::Get()->control_border_radius();
-  gfx::RoundedCornersF rounded_corners = {radius, radius, radius, radius};
-  layer()->SetRoundedCornerRadius(rounded_corners);
+  layer()->SetRoundedCornerRadius(GetRoundedCorners());
   layer()->SetIsFastRoundedCorner(true);
   layer()->SetBackgroundBlur(
       ShelfConfig::Get()->GetShelfControlButtonBlurRadius());
-  layer()->SetColor(ShelfConfig::Get()->GetShelfControlButtonColor());
   layer()->SetClipRect(GetBackgroundBounds());
 }
 
@@ -500,6 +590,14 @@ void TrayBackgroundView::FadeInAnimation() {
     transform.Translate(width(), 0.0f);
   else
     transform.Translate(0.0f, height());
+
+  ui::AnimationThroughputReporter reporter(
+      layer()->GetAnimator(),
+      metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
+        DCHECK(0 <= smoothness && smoothness <= 100);
+        base::UmaHistogramPercentage(kFadeInAnimationSmoothnessHistogramName,
+                                     smoothness);
+      })));
 
   views::AnimationBuilder()
       .SetPreemptionStrategy(
@@ -552,15 +650,23 @@ void TrayBackgroundView::BounceInAnimation() {
   initial_scale.Scale3d(kAnimationBounceScaleFactor,
                         kAnimationBounceScaleFactor, 1);
 
-  gfx::Transform initial_state =
-      gfx::TransformAboutPivot(GetLocalBounds().CenterPoint(), initial_scale);
+  const gfx::Transform initial_state = gfx::TransformAboutPivot(
+      gfx::RectF(GetLocalBounds()).CenterPoint(), initial_scale);
 
   gfx::Transform scale_about_pivot = gfx::TransformAboutPivot(
-      GetLocalBounds().CenterPoint(), gfx::Transform());
+      gfx::RectF(GetLocalBounds()).CenterPoint(), gfx::Transform());
   scale_about_pivot.Translate(bounce_up_location);
 
   gfx::Transform move_down;
   move_down.Translate(bounce_down_location);
+
+  ui::AnimationThroughputReporter reporter(
+      layer()->GetAnimator(),
+      metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
+        DCHECK(0 <= smoothness && smoothness <= 100);
+        base::UmaHistogramPercentage(kBounceInAnimationSmoothnessHistogramName,
+                                     smoothness);
+      })));
 
   views::AnimationBuilder()
       .SetPreemptionStrategy(
@@ -600,8 +706,16 @@ void TrayBackgroundView::HideAnimation() {
   gfx::Transform scale;
   scale.Scale3d(kAnimationBounceScaleFactor, kAnimationBounceScaleFactor, 1);
 
-  gfx::Transform scale_about_pivot =
-      gfx::TransformAboutPivot(GetLocalBounds().CenterPoint(), scale);
+  const gfx::Transform scale_about_pivot = gfx::TransformAboutPivot(
+      gfx::RectF(GetLocalBounds()).CenterPoint(), scale);
+
+  ui::AnimationThroughputReporter reporter(
+      layer()->GetAnimator(),
+      metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
+        DCHECK(0 <= smoothness && smoothness <= 100);
+        base::UmaHistogramPercentage(kHideAnimationSmoothnessHistogramName,
+                                     smoothness);
+      })));
 
   views::AnimationBuilder()
       .SetPreemptionStrategy(
@@ -644,11 +758,11 @@ gfx::Insets TrayBackgroundView::GetBubbleAnchorInsets() const {
   gfx::Insets tray_bg_insets = GetInsets();
   if (shelf_->alignment() == ShelfAlignment::kBottom ||
       shelf_->alignment() == ShelfAlignment::kBottomLocked) {
-    return gfx::Insets(-tray_bg_insets.top(), anchor_insets.left(),
-                       -tray_bg_insets.bottom(), anchor_insets.right());
+    return gfx::Insets::TLBR(-tray_bg_insets.top(), anchor_insets.left(),
+                             -tray_bg_insets.bottom(), anchor_insets.right());
   } else {
-    return gfx::Insets(anchor_insets.top(), -tray_bg_insets.left(),
-                       anchor_insets.bottom(), -tray_bg_insets.right());
+    return gfx::Insets::TLBR(anchor_insets.top(), -tray_bg_insets.left(),
+                             anchor_insets.bottom(), -tray_bg_insets.right());
   }
 }
 
@@ -665,6 +779,14 @@ gfx::Rect TrayBackgroundView::GetBackgroundBounds() const {
 }
 
 bool TrayBackgroundView::PerformAction(const ui::Event& event) {
+  base::UmaHistogramEnumeration("Ash.StatusArea.TrayBackgroundView.Pressed",
+                                catalog_name_);
+  // `pressed_callback_` can be provided to override default press handling.
+  if (pressed_callback_) {
+    pressed_callback_.Run(event);
+    return true;
+  }
+
   if (GetBubbleWidget())
     CloseBubble();
   else
@@ -714,7 +836,7 @@ gfx::Insets TrayBackgroundView::GetBackgroundInsets() const {
   insets += local_contents_insets;
 
   if (Shell::Get()->IsInTabletMode() && ShelfConfig::Get()->is_in_app()) {
-    insets += gfx::Insets(
+    insets += gfx::Insets::VH(
         ShelfConfig::Get()->in_app_control_button_height_inset(), 0);
   }
 
@@ -724,8 +846,12 @@ gfx::Insets TrayBackgroundView::GetBackgroundInsets() const {
 bool TrayBackgroundView::GetEffectiveVisibility() {
   // When the virtual keyboard is visible, the effective visibility of the view
   // is solely determined by |show_with_virtual_keyboard_|.
-  if (Shell::Get()->system_tray_model()->virtual_keyboard()->visible())
+  if (Shell::Get()
+          ->system_tray_model()
+          ->virtual_keyboard()
+          ->arc_keyboard_visible()) {
     return show_with_virtual_keyboard_;
+  }
 
   if (!visible_preferred_)
     return false;
@@ -742,6 +868,10 @@ bool TrayBackgroundView::GetEffectiveVisibility() {
     return show_when_collapsed_;
 
   return true;
+}
+
+bool TrayBackgroundView::CacheBubbleViewForHide() const {
+  return false;
 }
 
 BEGIN_METADATA(TrayBackgroundView, ActionableView)

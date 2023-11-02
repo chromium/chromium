@@ -1,9 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/eol_notification.h"
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/i18n/time_formatting.h"
@@ -19,7 +20,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -64,14 +65,11 @@ bool EolNotification::ShouldShowEolNotification() {
 EolNotification::EolNotification(Profile* profile)
     : clock_(base::DefaultClock::GetInstance()), profile_(profile) {}
 
-EolNotification::~EolNotification() {}
+EolNotification::~EolNotification() = default;
 
 void EolNotification::CheckEolInfo() {
-  UpdateEngineClient* update_engine_client =
-      DBusThreadManager::Get()->GetUpdateEngineClient();
-
   // Request the Eol Info.
-  update_engine_client->GetEolInfo(base::BindOnce(
+  UpdateEngineClient::Get()->GetEolInfo(base::BindOnce(
       &EolNotification::OnEolInfo, weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -127,15 +125,15 @@ void EolNotification::CreateNotification(base::Time eol_date, base::Time now) {
     // Notifies user that updates will stop occurring at a month and year.
     notification = CreateSystemNotification(
         message_center::NOTIFICATION_TYPE_SIMPLE, kEolNotificationId,
-        l10n_util::GetStringFUTF16(
-            IDS_PENDING_EOL_NOTIFICATION_TITLE,
-            TimeFormatMonthAndYear(eol_date,
-                                   /*time_zone=*/icu::TimeZone::getGMT())),
+        l10n_util::GetStringFUTF16(IDS_PENDING_EOL_NOTIFICATION_TITLE,
+                                   TimeFormatMonthAndYearForTimeZone(
+                                       eol_date, icu::TimeZone::getGMT())),
         l10n_util::GetStringFUTF16(IDS_PENDING_EOL_NOTIFICATION_MESSAGE,
                                    ui::GetChromeOSDeviceName()),
         std::u16string() /* display_source */, GURL(kEolNotificationId),
         message_center::NotifierId(
-            message_center::NotifierType::SYSTEM_COMPONENT, kEolNotificationId),
+            message_center::NotifierType::SYSTEM_COMPONENT, kEolNotificationId,
+            NotificationCatalogName::kPendingEOL),
         data,
         base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
             weak_ptr_factory_.GetWeakPtr()),
@@ -153,7 +151,8 @@ void EolNotification::CreateNotification(base::Time eol_date, base::Time now) {
                                    ui::GetChromeOSDeviceName()),
         std::u16string() /* display_source */, GURL(kEolNotificationId),
         message_center::NotifierId(
-            message_center::NotifierType::SYSTEM_COMPONENT, kEolNotificationId),
+            message_center::NotifierType::SYSTEM_COMPONENT, kEolNotificationId,
+            NotificationCatalogName::kEOL),
         data,
         base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
             weak_ptr_factory_.GetWeakPtr()),

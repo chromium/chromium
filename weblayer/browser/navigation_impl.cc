@@ -1,27 +1,29 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "weblayer/browser/navigation_impl.h"
 
+#include "build/build_config.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "weblayer/browser/navigation_ui_data_impl.h"
 #include "weblayer/browser/page_impl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "components/embedder_support/android/util/web_resource_response.h"
 #include "weblayer/browser/java/jni/NavigationImpl_jni.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 using base::android::AttachCurrentThread;
 using base::android::ScopedJavaLocalRef;
 #endif
@@ -38,7 +40,7 @@ NavigationImpl::NavigationImpl(content::NavigationHandle* navigation_handle)
 }
 
 NavigationImpl::~NavigationImpl() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (java_navigation_) {
     Java_NavigationImpl_onNativeDestroyed(AttachCurrentThread(),
                                           java_navigation_);
@@ -46,7 +48,7 @@ NavigationImpl::~NavigationImpl() {
 #endif
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 ScopedJavaLocalRef<jstring> NavigationImpl::GetUri(JNIEnv* env) {
   return ScopedJavaLocalRef<jstring>(
       base::android::ConvertUTF8ToJavaString(env, GetURL().spec()));
@@ -137,6 +139,10 @@ jint NavigationImpl::GetNavigationEntryOffset(JNIEnv* env) {
   return GetNavigationEntryOffset();
 }
 
+jboolean NavigationImpl::WasFetchedFromCache(JNIEnv* env) {
+  return WasFetchedFromCache();
+}
+
 void NavigationImpl::SetResponse(
     std::unique_ptr<embedder_support::WebResourceResponse> response) {
   response_ = std::move(response);
@@ -178,6 +184,10 @@ Page* NavigationImpl::GetPage() {
 
 int NavigationImpl::GetNavigationEntryOffset() {
   return navigation_handle_->GetNavigationEntryOffset();
+}
+
+bool NavigationImpl::WasFetchedFromCache() {
+  return navigation_handle_->WasResponseCached();
 }
 
 GURL NavigationImpl::GetURL() {
@@ -298,7 +308,7 @@ GURL NavigationImpl::GetReferrer() {
   return navigation_handle_->GetReferrer().url;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 static jboolean JNI_NavigationImpl_IsValidRequestHeaderName(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& name) {

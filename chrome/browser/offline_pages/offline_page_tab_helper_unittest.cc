@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -27,6 +28,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace {
 
@@ -105,8 +107,8 @@ class OfflinePageTabHelperTest : public content::RenderViewHostTestHarness {
   }
 
  private:
-  OfflinePageTabHelper* tab_helper_;   // Owned by WebContents.
-  PrefetchService* prefetch_service_;  // Keyed Service.
+  raw_ptr<OfflinePageTabHelper> tab_helper_;   // Owned by WebContents.
+  raw_ptr<PrefetchService> prefetch_service_;  // Keyed Service.
   std::unique_ptr<content::NavigationSimulator> navigation_simulator_;
 
   base::WeakPtrFactory<OfflinePageTabHelperTest> weak_ptr_factory_{this};
@@ -147,7 +149,8 @@ void OfflinePageTabHelperTest::SimulateOfflinePageLoad(
     const GURL& mhtml_url,
     base::Time mhtml_creation_time,
     MHTMLLoadResult load_result) {
-  tab_helper()->SetCurrentTargetFrameForTest(web_contents()->GetMainFrame());
+  tab_helper()->SetCurrentTargetFrameForTest(
+      web_contents()->GetPrimaryMainFrame());
 
   // Simulate navigation
   CreateNavigationSimulator(GURL("file://foo"));
@@ -282,7 +285,7 @@ TEST_F(OfflinePageTabHelperTest, UntrustedOfflinePageForFileUrl) {
             tab_helper()->offline_header().reason);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(OfflinePageTabHelperTest,
        UntrustedOfflinePageForContentUrlWithMultipartRelatedType) {
   CreateNavigationSimulator(GURL("content://foo"));
@@ -395,7 +398,8 @@ TEST_F(OfflinePageTabHelperTest, TestNotifyMhtmlPageLoadAttempted_Untrusted) {
   GURL mhtml_url("https://www.example.com");
   base::HistogramTester histogram_tester;
 
-  tab_helper()->SetCurrentTargetFrameForTest(web_contents()->GetMainFrame());
+  tab_helper()->SetCurrentTargetFrameForTest(
+      web_contents()->GetPrimaryMainFrame());
 
   // Simulate navigation
   CreateNavigationSimulator(GURL("file://foo"));
@@ -440,8 +444,8 @@ TEST_F(OfflinePageTabHelperTest, OfflinePageIsNotStoredInBackForwardCache) {
   SimulateOfflinePageLoad(kTestUrl, kTestMhtmlCreationTime,
                           MHTMLLoadResult::kSuccess);
 
-  int process_id = web_contents()->GetMainFrame()->GetProcess()->GetID();
-  int main_frame_id = web_contents()->GetMainFrame()->GetRoutingID();
+  int process_id = web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
+  int main_frame_id = web_contents()->GetPrimaryMainFrame()->GetRoutingID();
 
   // Navigate away.
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
@@ -450,6 +454,73 @@ TEST_F(OfflinePageTabHelperTest, OfflinePageIsNotStoredInBackForwardCache) {
       process_id, main_frame_id,
       back_forward_cache::DisabledReason(
           back_forward_cache::DisabledReasonId::kOfflinePage)));
+}
+
+class OfflinePageTabHelperFencedFrameTest : public OfflinePageTabHelperTest {
+ public:
+  OfflinePageTabHelperFencedFrameTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
+  }
+  ~OfflinePageTabHelperFencedFrameTest() override = default;
+
+  content::RenderFrameHost* CreateFencedFrame(
+      content::RenderFrameHost* parent) {
+    content::RenderFrameHost* fenced_frame =
+        content::RenderFrameHostTester::For(parent)->AppendFencedFrame();
+    return fenced_frame;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(OfflinePageTabHelperFencedFrameTest, DoNotRecordMetricsInFencedFrame) {
+  const GURL kTestUrl("http://mystery.site/foo.html");
+  CreateNavigationSimulator(kTestUrl);
+  navigation_simulator()->Start();
+
+  // Simulate offline interceptor loading an offline page instead.
+  OfflinePageItem offlinePage(kTestUrl, 0, ClientId(), base::FilePath(), 0);
+  OfflinePageHeader offlineHeader;
+  tab_helper()->SetOfflinePage(
+      offlinePage, offlineHeader,
+      OfflinePageTrustedState::TRUSTED_AS_IN_INTERNAL_DIR,
+      true /* is_offline_preview */);
+  navigation_simulator()->SetContentsMimeType("multipart/related");
+  navigation_simulator()->Commit();
+
+  // Ensure that the offline page exists via an offline preview item.
+  const OfflinePageItem* offline_page_item =
+      tab_helper()->GetOfflinePreviewItem();
+  EXPECT_NE(offline_page_item, nullptr);
+
+  EXPECT_EQ(1, metrics()->app_startup_count_);
+  EXPECT_EQ(0, metrics()->successful_online_navigations_count_);
+  EXPECT_EQ(1, metrics()->successful_offline_navigations_count_);
+  EXPECT_EQ(0, metrics()->report_stats_count_);
+
+  // Create a fenced frame.
+  content::RenderFrameHostTester::For(main_rfh())
+      ->InitializeRenderFrameIfNeeded();
+  content::RenderFrameHost* fenced_frame_rfh = CreateFencedFrame(main_rfh());
+  GURL kFencedFrameUrl("https://fencedframe.com");
+  std::unique_ptr<content::NavigationSimulator> navigation_simulator =
+      content::NavigationSimulator::CreateRendererInitiated(kFencedFrameUrl,
+                                                            fenced_frame_rfh);
+  navigation_simulator->Commit();
+  EXPECT_TRUE(fenced_frame_rfh->IsFencedFrameRoot());
+
+  // The offline preview item should not be cleared by the fenced frame's
+  // navigation and should be same as |offline_page_item|.
+  EXPECT_EQ(tab_helper()->GetOfflinePreviewItem(), offline_page_item);
+
+  // The existing metric values should not be changed after navigating in the
+  // fenced frame.
+  EXPECT_EQ(1, metrics()->app_startup_count_);
+  EXPECT_EQ(0, metrics()->successful_online_navigations_count_);
+  EXPECT_EQ(1, metrics()->successful_offline_navigations_count_);
+  EXPECT_EQ(0, metrics()->report_stats_count_);
 }
 
 }  // namespace

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,6 +40,7 @@ class ASH_EXPORT SelectToSpeakSpeedBubbleController
   friend class SelectToSpeakSpeedBubbleControllerTest;
 
   // TrayBubbleView::Delegate:
+  std::u16string GetAccessibleNameForBubble() override;
   void BubbleViewDestroyed() override;
 
   // ::wm::ActivationChangeObserver:

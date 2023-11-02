@@ -1,10 +1,9 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/password_reuse_detection_manager.h"
 
-#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/simple_test_clock.h"
@@ -46,7 +45,9 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               (metrics_util::PasswordType,
                const std::string&,
                const std::vector<MatchingReusedCredential>&,
-               bool),
+               bool,
+               uint64_t,
+               const std::string&),
               (override));
 };
 
@@ -78,7 +79,7 @@ TEST_F(PasswordReuseDetectionManagerTest, CheckReuseCalled) {
       .WillRepeatedly(testing::Return(&reuse_manager_));
   PasswordReuseDetectionManager manager(&client_);
 
-  for (size_t test = 0; test < base::size(gurls); ++test) {
+  for (size_t test = 0; test < std::size(gurls); ++test) {
     manager.DidNavigateMainFrame(gurls[test]);
     for (size_t i = 0; i < input[test].size(); ++i) {
       std::u16string expected_input = input[test].substr(0, i + 1);
@@ -145,7 +146,7 @@ TEST_F(PasswordReuseDetectionManagerTest, NoReuseCheckingAfterReuseFound) {
 
   // Simulate that reuse found.
   manager.OnReuseCheckDone(true, 0ul, absl::nullopt, {{"https://example.com"}},
-                           0);
+                           0, std::string(), 0);
 
   // Expect no checking of reuse.
   EXPECT_CALL(reuse_manager_, CheckReuse(_, _, _)).Times(0);
@@ -190,7 +191,7 @@ TEST_F(PasswordReuseDetectionManagerTest, CheckReuseCalledOnPaste) {
       .WillRepeatedly(testing::Return(&reuse_manager_));
   PasswordReuseDetectionManager manager(&client_);
 
-  for (size_t test = 0; test < base::size(gurls); ++test) {
+  for (size_t test = 0; test < std::size(gurls); ++test) {
     manager.DidNavigateMainFrame(gurls[test]);
     std::u16string expected_input = input[test];
     if (expected_input.size() > kMaxNumberOfCharactersToStore)
@@ -232,13 +233,15 @@ TEST_F(PasswordReuseDetectionManagerTest,
   // CheckProtectedPasswordEntry should get called once, and the reused
   // credentials get used reported once in this call.
   EXPECT_CALL(client_,
-              CheckProtectedPasswordEntry(_, _, reused_credentials, _));
+              CheckProtectedPasswordEntry(_, _, reused_credentials, _, _, _));
   manager.OnReuseCheckDone(/*is_reuse_found=*/true, /*password_length=*/10,
                            /*reused_protected_password_hash=*/absl::nullopt,
-                           reused_credentials, /*saved_passwords=*/1);
+                           reused_credentials, /*saved_passwords=*/1,
+                           /*domain=*/std::string(),
+                           /*reused_password_hash=*/0);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordReuseDetectionManagerTest,
        CheckReusedCalledWithUncommittedText) {
   EXPECT_CALL(client_, GetPasswordReuseManager())

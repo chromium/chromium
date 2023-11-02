@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,24 +15,24 @@
 
 namespace base {
 
-// All the functions below expect that the value for the given key in
+// All the functions below expect that the value for the given path in
 // the given dictionary equals the given expected value.
 
 void ExpectDictBooleanValue(bool expected_value,
-                            const Value& value,
-                            const std::string& key);
+                            const Value::Dict& dict,
+                            StringPiece path);
 
 void ExpectDictIntegerValue(int expected_value,
-                            const Value& value,
-                            const std::string& key);
+                            const Value::Dict& dict,
+                            StringPiece path);
 
-void ExpectDictStringValue(const std::string& expected_value,
-                           const Value& value,
-                           const std::string& key);
+void ExpectDictStringValue(StringPiece expected_value,
+                           const Value::Dict& dict,
+                           StringPiece path);
 
 void ExpectDictValue(const Value& expected_value,
-                     const Value& value,
-                     const std::string& key);
+                     const Value::Dict& dict,
+                     StringPiece path);
 
 void ExpectStringValue(const std::string& expected_str, const Value& actual);
 
@@ -62,6 +62,10 @@ class IsJsonMatcher {
                        testing::MatchResultListener* listener) const;
   bool MatchAndExplain(const base::Value& value,
                        testing::MatchResultListener* listener) const;
+  bool MatchAndExplain(const base::Value::Dict& dict,
+                       testing::MatchResultListener* listener) const;
+  bool MatchAndExplain(const base::Value::List& list,
+                       testing::MatchResultListener* listener) const;
   void DescribeTo(std::ostream* os) const;
   void DescribeNegationTo(std::ostream* os) const;
 
@@ -84,10 +88,16 @@ inline testing::PolymorphicMatcher<IsJsonMatcher> IsJson(const T& value) {
   return testing::MakePolymorphicMatcher(IsJsonMatcher(value));
 }
 
-// Parses |json| as JSON, allowing trailing commas, and returns the resulting
-// value.  If |json| fails to parse, causes an EXPECT failure and returns the
+// Parses `json` as JSON, allowing trailing commas, and returns the resulting
+// value.  If `json` fails to parse, causes an EXPECT failure and returns the
 // Null Value.
 Value ParseJson(StringPiece json);
+
+// Just like ParseJson(), except returns Dicts/Lists. If `json` fails to parse
+// or is not of the expected type, causes an EXPECT failure and returns an empty
+// container.
+Value::Dict ParseJsonDict(StringPiece json);
+Value::List ParseJsonList(StringPiece json);
 
 // DEPRECATED.
 // Parses |json| as JSON, allowing trailing commas, and returns the

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <stddef.h>
 
 #include "base/check_op.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 namespace base {
 namespace internal {
@@ -35,7 +35,7 @@ class StackMarker {
 
  private:
   const size_t max_depth_;
-  size_t* const depth_;
+  const raw_ptr<size_t> depth_;
 };
 
 }  // namespace internal

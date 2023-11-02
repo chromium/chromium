@@ -44,7 +44,7 @@ function dc_onopen() {
 }
 
 async function connect_pcs(pc_a, pc_b) {
-  pc_a.onicecandiate = function(event) {
+  pc_a.onicecandidate = function(event) {
     if (event.candidate) {
       pc_b.addIceCandidate(event.candidate);
     }

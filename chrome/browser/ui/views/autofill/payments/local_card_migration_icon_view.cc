@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,14 +29,10 @@ LocalCardMigrationIconView::LocalCardMigrationIconView(
     : PageActionIconView(command_updater,
                          IDC_MIGRATE_LOCAL_CREDIT_CARD_FOR_PAGE,
                          icon_label_bubble_delegate,
-                         page_action_icon_delegate) {
+                         page_action_icon_delegate,
+                         "LocalCardMigration") {
   SetID(VIEW_ID_MIGRATE_LOCAL_CREDIT_CARD_BUTTON);
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillCreditCardUploadFeedback)) {
-    InstallLoadingIndicator();
-  } else {
-    SetUpForInOutAnimation();
-  }
+  SetUpForInOutAnimation();
 }
 
 LocalCardMigrationIconView::~LocalCardMigrationIconView() {}
@@ -87,32 +83,16 @@ void LocalCardMigrationIconView::UpdateImpl() {
         // Disable the credit card icon so it does not update if user clicks
         // on it.
         SetEnabled(false);
-        if (base::FeatureList::IsEnabled(
-                features::kAutofillCreditCardUploadFeedback)) {
-          SetIsLoading(/*is_loading=*/true);
-        } else {
-          AnimateIn(IDS_AUTOFILL_LOCAL_CARD_MIGRATION_ANIMATION_LABEL);
-        }
+        AnimateIn(IDS_AUTOFILL_LOCAL_CARD_MIGRATION_ANIMATION_LABEL);
         break;
       }
       case LocalCardMigrationFlowStep::MIGRATION_FINISHED: {
-        if (base::FeatureList::IsEnabled(
-                features::kAutofillCreditCardUploadFeedback)) {
-          SetIsLoading(/*is_loading=*/false);
-        } else {
-          UnpauseAnimation();
-        }
+        UnpauseAnimation();
         SetEnabled(true);
         break;
       }
       case LocalCardMigrationFlowStep::MIGRATION_FAILED: {
-        if (base::FeatureList::IsEnabled(
-                features::kAutofillCreditCardUploadFeedback)) {
-          UpdateIconImage();
-          SetIsLoading(/*is_loading=*/false);
-        } else {
-          UnpauseAnimation();
-        }
+        UnpauseAnimation();
         SetEnabled(true);
         break;
       }

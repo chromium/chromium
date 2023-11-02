@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -45,6 +44,7 @@ class AudioSourceInterface;
 
 namespace blink {
 
+class LocalFrame;
 class WebLocalFrame;
 class WebRtcAudioRendererSource;
 
@@ -97,9 +97,9 @@ class MODULES_EXPORT WebRtcAudioRenderer
   };
 
   enum State {
-    UNINITIALIZED,
-    PLAYING,
-    PAUSED,
+    kUninitialized,
+    kPlaying,
+    kPaused,
   };
 
   WebRtcAudioRenderer() = delete;
@@ -107,7 +107,7 @@ class MODULES_EXPORT WebRtcAudioRenderer
   WebRtcAudioRenderer(
       const scoped_refptr<base::SingleThreadTaskRunner>& signaling_thread,
       MediaStreamDescriptor* media_stream_descriptor,
-      WebLocalFrame* web_frame,
+      WebLocalFrame& web_frame,
       const base::UnguessableToken& session_id,
       const String& device_id,
       base::RepeatingCallback<void()> on_render_error_callback);
@@ -311,12 +311,8 @@ class MODULES_EXPORT WebRtcAudioRenderer
 
   void EnableSpeechRecognition();
 
-  // The WebLocalFrame in which the audio is rendered into |sink_|.
-  //
-  // TODO(crbug.com/704136): Replace |source_internal_frame_| with regular
-  // fields once this header file moves to blink/renderer.
-  class InternalFrame;
-  std::unique_ptr<InternalFrame> source_internal_frame_;
+  // The LocalFrame in which the audio is rendered into |sink_|.
+  WeakPersistent<LocalFrame> source_frame_;
 
   const base::UnguessableToken session_id_;
 

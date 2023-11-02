@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="30dp"
+    android:layout_centerVertical="true">
+        <TextView
+            android:id="@+id/link_to_data_origin_dialog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/autofill_assistant_bottombar_horizontal_spacing"
+            android:layout_marginEnd="@dimen/autofill_assistant_bottombar_horizontal_spacing"
+            android:padding="8dp"
+            android:gravity="center_vertical"
+            />
+</RelativeLayout>

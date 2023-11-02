@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -35,7 +34,7 @@ const char* const kDriveFsNativeMessageHostOrigins[] = {
 };
 
 constexpr size_t kDriveFsNativeMessageHostOriginsSize =
-    base::size(kDriveFsNativeMessageHostOrigins);
+    std::size(kDriveFsNativeMessageHostOrigins);
 
 class DriveFsNativeMessageHost : public extensions::NativeMessageHost,
                                  public drivefs::mojom::NativeMessagingPort {

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "components/drive/drive_uploader.h"
 #include "components/drive/service/fake_drive_service.h"
 
@@ -88,8 +89,8 @@ class FakeDriveServiceHelper {
   base::FilePath temp_dir_;
 
   // Not own.
-  drive::FakeDriveService* fake_drive_service_;
-  drive::DriveUploaderInterface* drive_uploader_;
+  raw_ptr<drive::FakeDriveService> fake_drive_service_;
+  raw_ptr<drive::DriveUploaderInterface> drive_uploader_;
 
   std::string sync_root_folder_title_;
 };

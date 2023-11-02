@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -20,14 +20,14 @@ def ListAllDepsPaths(deps_file):
     given deps file, and all of its sub-dependencies. This amounts to
     the keys of the 'deps' dictionary.
   """
-  deps = {}
-  deps_includes = {}
-
   chrome_root = os.path.dirname(__file__)
   while os.path.basename(chrome_root) != 'src':
     chrome_root = os.path.abspath(os.path.join(chrome_root, '..'))
 
-  exec (open(deps_file).read())  # pylint: disable=exec-used
+  loaded = {}
+  exec(open(deps_file).read(), globals(), loaded)  # pylint: disable=exec-used
+  deps = loaded.get('deps', {})
+  deps_includes = loaded.get('deps_includes', {})
 
   deps_paths = list(deps.keys())
 

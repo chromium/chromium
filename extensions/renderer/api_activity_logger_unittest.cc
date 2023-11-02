@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -67,9 +67,8 @@ TEST_F(ActivityLoggerTest, DontCrashOnUnconvertedValues) {
       .WillOnce([&](const ExtensionId& extension_id, const ActivityLogCallType,
                     const ExtensionHostMsg_APIActionOrEvent_Params& params) {
         EXPECT_EQ("someApiMethod", params.api_call);
-        ASSERT_EQ(1u, params.arguments.GetList().size());
-        EXPECT_EQ(base::Value::Type::NONE,
-                  params.arguments.GetList()[0].type());
+        ASSERT_EQ(1u, params.arguments.size());
+        EXPECT_EQ(base::Value::Type::NONE, params.arguments[0].type());
       });
 
   APIActivityLogger::LogAPICall(ipc_sender.get(), context, "someApiMethod",

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,11 +49,11 @@ class PluralStringHandlerTest : public testing::Test {
 TEST_F(PluralStringHandlerTest, PluralString) {
   // base::RunLoop run_loop;
   const int call_data_count_before_call = web_ui_.call_data().size();
-  base::ListValue args;
+  base::Value::List args;
   args.Append(kHandlerFunctionName);
   args.Append("editButtonLabel");
   args.Append(/*count=*/2);
-  web_ui_.HandleReceivedMessage("getPluralString", &args);
+  web_ui_.HandleReceivedMessage("getPluralString", args);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(call_data_count_before_call + 1u, web_ui_.call_data().size());
@@ -67,11 +67,11 @@ TEST_F(PluralStringHandlerTest, PluralString) {
 
 TEST_F(PluralStringHandlerTest, SingularString) {
   const int call_data_count_before_call = web_ui_.call_data().size();
-  base::ListValue args;
+  base::Value::List args;
   args.Append(kHandlerFunctionName);
   args.Append("editButtonLabel");
   args.Append(/*count=*/1);
-  web_ui_.HandleReceivedMessage("getPluralString", &args);
+  web_ui_.HandleReceivedMessage("getPluralString", args);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(call_data_count_before_call + 1u, web_ui_.call_data().size());
@@ -81,6 +81,17 @@ TEST_F(PluralStringHandlerTest, SingularString) {
   EXPECT_EQ("handlerFunctionName", call_data.arg1()->GetString());
   EXPECT_TRUE(/*success=*/call_data.arg2()->GetBool());
   EXPECT_EQ("Edit file", call_data.arg3()->GetString());
+}
+
+TEST_F(PluralStringHandlerTest, InvalidPluralStringRequest) {
+  base::Value::List args;
+  args.Append(kHandlerFunctionName);
+  args.Append(/*name=*/"invalidKey");
+  args.Append(/*count=*/2);
+  web_ui_.HandleReceivedMessage("getPluralString", args);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(0u, web_ui_.call_data().size());
 }
 
 }  // namespace ash

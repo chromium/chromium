@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -212,9 +212,10 @@ public interface Tab extends TabLifecycle {
      * Loads the tab if it's not loaded (e.g. because it was killed in background).
      * This will trigger a regular load for tabs with pending lazy first load (tabs opened in
      * background on low-memory devices).
+     * @param caller The caller of this method.
      * @return true iff the Tab handled the request.
      */
-    boolean loadIfNeeded();
+    boolean loadIfNeeded(int caller);
 
     /**
      * Reloads the current page content.
@@ -271,14 +272,6 @@ public interface Tab extends TabLifecycle {
      * Goes to the navigation entry after the current one.
      */
     void goForward();
-
-    /**
-     * Set whether the TabState representing this Tab has been updated.
-     * This method will ultimately be deprecated when the migration
-     * to CriticalPersistedTabData is complete.
-     * @param isDirty Whether the Tab's state has changed.
-     */
-    void setIsTabStateDirty(boolean isTabStateDirty);
 
     /**
      * Set whether {@link Tab} metadata (specifically all {@link PersistedTabData})

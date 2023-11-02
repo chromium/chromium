@@ -41,14 +41,11 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
-
-// TODO(crbug.com/940846): Consider using double-type without casting and
-// DoublePoint & DoubleRect instead of FloatPoint & FloatRect.
 
 void CanvasPath::closePath() {
   if (UNLIKELY(path_.IsEmpty()))
@@ -253,14 +250,14 @@ float AdjustEndAngle(float start_angle, float end_angle, bool anticlockwise) {
   return new_end_angle;
 }
 
-inline void LineToFloatPoint(CanvasPath* path, const FloatPoint& p) {
+inline void LineTo(CanvasPath* path, const gfx::PointF& p) {
   path->lineTo(p.x(), p.y());
 }
 
-inline FloatPoint GetPointOnEllipse(float radius_x,
-                                    float radius_y,
-                                    float theta) {
-  return FloatPoint(radius_x * cosf(theta), radius_y * sinf(theta));
+inline gfx::PointF GetPointOnEllipse(float radius_x,
+                                     float radius_y,
+                                     float theta) {
+  return gfx::PointF(radius_x * cosf(theta), radius_y * sinf(theta));
 }
 
 void CanonicalizeAngle(float* start_angle, float* end_angle) {
@@ -331,14 +328,16 @@ void DegenerateEllipse(CanvasPath* path,
   DCHECK((anticlockwise && (start_angle - end_angle) >= 0) ||
          (!anticlockwise && (end_angle - start_angle) >= 0));
 
-  FloatPoint center(x, y);
+  gfx::PointF center(x, y);
   AffineTransform rotation_matrix;
   rotation_matrix.RotateRadians(rotation);
   // First, if the object's path has any subpaths, then the method must add a
   // straight line from the last point in the subpath to the start point of the
   // arc.
-  LineToFloatPoint(path, center + rotation_matrix.MapPoint(GetPointOnEllipse(
-                                      radius_x, radius_y, start_angle)));
+  LineTo(path, center + rotation_matrix
+                            .MapPoint(GetPointOnEllipse(radius_x, radius_y,
+                                                        start_angle))
+                            .OffsetFromOrigin());
   if (UNLIKELY((!radius_x && !radius_y) || start_angle == end_angle))
     return;
 
@@ -349,21 +348,25 @@ void DegenerateEllipse(CanvasPath* path,
     for (float angle = start_angle - fmodf(start_angle, kPiOverTwoFloat) +
                        kPiOverTwoFloat;
          angle < end_angle; angle += kPiOverTwoFloat) {
-      LineToFloatPoint(
-          path, center + rotation_matrix.MapPoint(
-                             GetPointOnEllipse(radius_x, radius_y, angle)));
+      LineTo(path, center + rotation_matrix
+                                .MapPoint(GetPointOnEllipse(radius_x, radius_y,
+                                                            angle))
+                                .OffsetFromOrigin());
     }
   } else {
     for (float angle = start_angle - fmodf(start_angle, kPiOverTwoFloat);
          angle > end_angle; angle -= kPiOverTwoFloat) {
-      LineToFloatPoint(
-          path, center + rotation_matrix.MapPoint(
-                             GetPointOnEllipse(radius_x, radius_y, angle)));
+      LineTo(path, center + rotation_matrix
+                                .MapPoint(GetPointOnEllipse(radius_x, radius_y,
+                                                            angle))
+                                .OffsetFromOrigin());
     }
   }
 
-  LineToFloatPoint(path, center + rotation_matrix.MapPoint(GetPointOnEllipse(
-                                      radius_x, radius_y, end_angle)));
+  LineTo(path, center + rotation_matrix
+                            .MapPoint(GetPointOnEllipse(radius_x, radius_y,
+                                                        end_angle))
+                            .OffsetFromOrigin());
 }
 
 }  // namespace
@@ -491,7 +494,7 @@ void CanvasPath::rect(double double_x,
         CanvasOps::kRect, double_x, double_y, double_width, double_height);
   }
 
-  path_.AddRect(FloatRect(x, y, width, height));
+  path_.AddRect(gfx::PointF(x, y), gfx::PointF(x + width, y + height));
 }
 
 void CanvasPath::roundRect(
@@ -508,6 +511,7 @@ void CanvasPath::roundRect(
     exception_state.ThrowRangeError(
         String::Number(num_radii) +
         " radii provided. Between one and four radii are necessary.");
+    return;
   }
 
   float x = base::saturated_cast<float>(double_x);
@@ -523,7 +527,7 @@ void CanvasPath::roundRect(
   // TODO(crbug.com/1234113): Instrument new canvas APIs.
   identifiability_study_helper_.set_encountered_skipped_ops();
 
-  FloatSize r[num_radii];
+  gfx::SizeF r[num_radii];
   for (int i = 0; i < num_radii; ++i) {
     switch (radii[i]->GetContentType()) {
       case V8UnionDOMPointInitOrUnrestrictedDouble::ContentType::
@@ -536,13 +540,15 @@ void CanvasPath::roundRect(
         if (UNLIKELY(r_x < 0.0f)) {
           exception_state.ThrowRangeError(
               "X-radius value " + String::Number(r_x) + " is negative.");
+          return;
         }
         if (UNLIKELY(r_y < 0.0f)) {
           exception_state.ThrowRangeError(
               "Y-radius value " + String::Number(r_y) + " is negative.");
+          return;
         }
-        r[i] = FloatSize(base::saturated_cast<float>(p->x()),
-                         base::saturated_cast<float>(p->y()));
+        r[i] = gfx::SizeF(base::saturated_cast<float>(p->x()),
+                          base::saturated_cast<float>(p->y()));
         break;
       }
       case V8UnionDOMPointInitOrUnrestrictedDouble::ContentType::
@@ -554,8 +560,9 @@ void CanvasPath::roundRect(
         if (UNLIKELY(a < 0.0f)) {
           exception_state.ThrowRangeError("Radius value " + String::Number(a) +
                                           " is negative.");
+          return;
         }
-        r[i] = FloatSize(a, a);
+        r[i] = gfx::SizeF(a, a);
         break;
       }
     }
@@ -564,11 +571,11 @@ void CanvasPath::roundRect(
   if (UNLIKELY(width == 0) || UNLIKELY(height == 0)) {
     // AddRoundRect does not handle flat rects, correctly.  But since there are
     // no rounded corners on a flat rect, we can just use AddRect.
-    path_.AddRect(FloatRect(x, y, width, height));
+    path_.AddRect(gfx::PointF(x, y), gfx::PointF(x + width, y + height));
     return;
   }
 
-  FloatSize corner_radii[4];  // row-wise ordering
+  gfx::SizeF corner_radii[4];  // row-wise ordering
   switch (num_radii) {
     case 1:
       corner_radii[0] = corner_radii[1] = corner_radii[2] = corner_radii[3] =
@@ -596,12 +603,9 @@ void CanvasPath::roundRect(
     clockwise = false;
     x += width;
     width = -width;
-    FloatSize tmp = corner_radii[1];
-    corner_radii[1] = corner_radii[0];
-    corner_radii[0] = tmp;
-    tmp = corner_radii[3];
-    corner_radii[3] = corner_radii[2];
-    corner_radii[2] = tmp;
+    using std::swap;
+    swap(corner_radii[0], corner_radii[1]);
+    swap(corner_radii[2], corner_radii[3]);
   }
 
   if (UNLIKELY(height < 0)) {
@@ -609,19 +613,29 @@ void CanvasPath::roundRect(
     clockwise = !clockwise;
     y += height;
     height = -height;
-    FloatSize tmp = corner_radii[2];
-    corner_radii[2] = corner_radii[0];
-    corner_radii[0] = tmp;
-    tmp = corner_radii[3];
-    corner_radii[3] = corner_radii[1];
-    corner_radii[1] = tmp;
+    using std::swap;
+    swap(corner_radii[0], corner_radii[2]);
+    swap(corner_radii[1], corner_radii[3]);
   }
 
-  FloatRect rect(x, y, width, height);
+  gfx::RectF rect(x, y, width, height);
   path_.AddRoundedRect(FloatRoundedRect(rect, corner_radii[0], corner_radii[1],
                                         corner_radii[2], corner_radii[3]),
                        clockwise);
   path_.MoveTo(gfx::PointF(x, y));
+}
+
+void CanvasPath::roundRect(
+    double double_x,
+    double double_y,
+    double double_width,
+    double double_height,
+    const Member<V8UnionDOMPointInitOrUnrestrictedDouble>& radius,
+    ExceptionState& exception_state) {
+  const auto radii =
+      HeapVector<Member<V8UnionDOMPointInitOrUnrestrictedDouble>>(1, radius);
+  roundRect(double_x, double_y, double_width, double_height, radii,
+            exception_state);
 }
 
 void CanvasPath::Trace(Visitor* visitor) const {

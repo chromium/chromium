@@ -1,6 +1,8 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+import {InstanceChecker} from '../common/instance_checker.js';
 
 import {Autoclick} from './autoclick/autoclick.js';
 import {Dictation} from './dictation/dictation.js';
@@ -112,6 +114,7 @@ export class AccessibilityCommon {
     if (details.value && !this.dictation_) {
       this.dictation_ = new Dictation();
     } else if (!details.value && this.dictation_) {
+      this.dictation_.onDictationDisabled();
       this.dictation_ = null;
     }
   }
@@ -119,4 +122,4 @@ export class AccessibilityCommon {
 
 InstanceChecker.closeExtraInstances();
 // Initialize the AccessibilityCommon extension.
-window.accessibilityCommon = new AccessibilityCommon();
+globalThis.accessibilityCommon = new AccessibilityCommon();

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/containers/adapters.h"
 #include "base/guid.h"
 #include "components/bookmarks/browser/url_and_title.h"
+#include "components/bookmarks/common/url_load_stats.h"
 
 namespace bookmarks {
 
@@ -23,7 +24,7 @@ namespace {
 // calling site.
 void AddStatsForBookmarksWithSameUrl(
     std::vector<const BookmarkNode*>* bookmarks_with_same_url,
-    UrlIndex::Stats* stats) {
+    UrlLoadStats* stats) {
   if (bookmarks_with_same_url->size() <= 1)
     return;
 
@@ -84,7 +85,7 @@ std::unique_ptr<BookmarkNode> UrlIndex::Remove(BookmarkNode* node,
   base::AutoLock url_lock(url_lock_);
   RemoveImpl(node, removed_urls);
   BookmarkNode* parent = node->parent();
-  return parent->Remove(static_cast<size_t>(parent->GetIndexOf(node)));
+  return parent->Remove(parent->GetIndexOf(node).value());
 }
 
 void UrlIndex::SetUrl(BookmarkNode* node, const GURL& url) {
@@ -126,9 +127,9 @@ bool UrlIndex::HasBookmarks() const {
   return !nodes_ordered_by_url_set_.empty();
 }
 
-UrlIndex::Stats UrlIndex::ComputeStats() const {
+UrlLoadStats UrlIndex::ComputeStats() const {
   base::AutoLock url_lock(url_lock_);
-  UrlIndex::Stats stats;
+  UrlLoadStats stats;
   stats.total_url_bookmark_count = nodes_ordered_by_url_set_.size();
 
   if (stats.total_url_bookmark_count <= 1)
@@ -143,9 +144,12 @@ UrlIndex::Stats UrlIndex::ComputeStats() const {
       bookmarks_with_same_url.clear();
     }
 
+    stats.avg_num_days_since_added +=
+        (base::Time::Now() - (*i)->date_added()).InDays();
     bookmarks_with_same_url.push_back(*i);
   }
 
+  stats.avg_num_days_since_added /= nodes_ordered_by_url_set_.size();
   AddStatsForBookmarksWithSameUrl(&bookmarks_with_same_url, &stats);
   return stats;
 }

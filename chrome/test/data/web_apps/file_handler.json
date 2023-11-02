@@ -1,0 +1,14 @@
+{
+  "name": "Web app with file handlers",
+  "start_url": "file_handler_index.html",
+  "display": "standalone",
+  "file_handlers": [
+    {
+      "action": "file_handler_action.html",
+      "name": "Plain Text",
+      "accept": {
+        "text/plain": [".txt"]
+      }
+    }
+  ]
+}

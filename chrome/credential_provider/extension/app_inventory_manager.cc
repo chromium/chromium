@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -228,7 +228,7 @@ base::Value AppInventoryManager::GetInstalledWin32Apps() {
         std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
 
     wchar_t display_name[256];
-    ULONG display_length = base::size(display_name);
+    ULONG display_length = std::size(display_name);
     HRESULT hr =
         GetMachineRegString(regPath, std::wstring(kAppDisplayNameRegistryKey),
                             display_name, &display_length);
@@ -237,7 +237,7 @@ base::Value AppInventoryManager::GetInstalledWin32Apps() {
                                  base::WideToUTF8(display_name));
 
       wchar_t display_version[256];
-      ULONG version_length = base::size(display_version);
+      ULONG version_length = std::size(display_version);
       hr = GetMachineRegString(regPath,
                                std::wstring(kAppDisplayVersionRegistryKey),
                                display_version, &version_length);
@@ -247,7 +247,7 @@ base::Value AppInventoryManager::GetInstalledWin32Apps() {
       }
 
       wchar_t publisher[256];
-      ULONG publisher_length = base::size(publisher);
+      ULONG publisher_length = std::size(publisher);
       hr = GetMachineRegString(regPath, std::wstring(kAppPublisherRegistryKey),
                                publisher, &publisher_length);
       if (hr == S_OK) {

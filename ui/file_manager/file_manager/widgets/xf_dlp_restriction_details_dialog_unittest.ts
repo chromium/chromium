@@ -1,0 +1,368 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import './xf_dlp_restriction_details_dialog.js';
+
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
+import {installMockChrome} from '../common/js/mock_chrome.js';
+
+import {XfDlpRestrictionDetailsDialog} from './xf_dlp_restriction_details_dialog.js';
+
+/**
+ * Creates new <xf-dlp-restriction-details-dialog> element for each test.
+ */
+export function setUp() {
+  document.body.innerHTML = '<xf-dlp-restriction-details-dialog>' +
+      '</xf-dlp-restriction-details-dialog>';
+
+  // Mock LoadTimeData strings.
+  loadTimeData.resetForTesting({
+    'DLP_RESTRICTION_DETAILS_TITLE': 'Administrator policy',
+    'DLP_RESTRICTION_DETAILS_MESSAGE': 'This file is confidential and subject' +
+        'to administrator policy.',
+    'DLP_RESTRICTION_DETAILS_BLOCK': 'Administrator policy prevents:',
+    'DLP_RESTRICTION_DETAILS_WARN': 'Administrator policy doesn\'t recommend:',
+    'DLP_RESTRICTION_DETAILS_REPORT': 'Administrator monitors:',
+    'DLP_RESTRICTION_DETAILS_FILE_ACCESS': 'File access by $1',
+    'DLP_RESTRICTION_DETAILS_FILE_ACCESS_ALL': 'File access by all urls',
+    'DLP_RESTRICTION_DETAILS_FILE_ACCESS_ALL_EXCEPT':
+        'File access by all urls except $1',
+    'DLP_RESTRICTION_DETAILS_FILE_TRANSFER': 'File transfer to $1',
+    'DRIVE_DIRECTORY_LABEL': 'Google Drive',
+    'DLP_COMPONENT_REMOVABLE': 'removable storage',
+    'DLP_COMPONENT_LINUX': 'Linux',
+    'DLP_COMPONENT_PLAY': 'Play',
+    'DLP_COMPONENT_VM': 'virtual machine',
+  });
+
+  const mockChrome = {
+    fileManagerPrivate: {
+      DlpLevel:
+          {BLOCK: 'block', WARN: 'warn', REPORT: 'report', ALLOW: 'allow'},
+      VolumeType: {
+        DRIVE: 'drive',
+        REMOVABLE: 'removable',
+        CROSTINI: 'crostini',
+        ANDROID_FILES: 'android_files',
+        GUEST_OS: 'guest_os',
+      },
+    },
+    runtime: {},
+  };
+  installMockChrome(mockChrome);
+}
+
+/** Returns the <xf-dlp-restriction-details-dialog> element. */
+function getDialog(): XfDlpRestrictionDetailsDialog {
+  const dialog = document.querySelector('xf-dlp-restriction-details-dialog')!;
+  assertNotEquals(dialog, null);
+  assertNotEquals('none', window.getComputedStyle(dialog).display);
+  assertFalse(dialog.hasAttribute('hidden'));
+  return dialog;
+}
+
+/** Returns the block details span element of the dialog. */
+function getBlockDetails(): HTMLSpanElement {
+  const details = getDialog().shadowRoot!.querySelector('#block-details')! as
+      HTMLSpanElement;
+  assertNotEquals(details, null);
+  return details;
+}
+
+/** Returns the warn details span element of the dialog. */
+function getWarnDetails(): HTMLSpanElement {
+  const details = getDialog().shadowRoot!.querySelector('#warn-details')! as
+      HTMLSpanElement;
+  assertNotEquals(details, null);
+  return details;
+}
+
+/** Returns the report details span element of the dialog. */
+function getReportDetails(): HTMLSpanElement {
+  const details = getDialog().shadowRoot!.querySelector('#report-details')! as
+      HTMLSpanElement;
+  assertNotEquals(details, null);
+  return details;
+}
+
+/**
+ * Checks that the surronding list element for `level` is not hidden and returns
+ * the `destinations` label of the dialog.
+ * @level DLP level used to get the right elements. One of 'block', 'warn',
+ * 'report'.
+ * @destinations One of 'urls' or 'components'.
+ */
+function getDestinationsLabelForLevel(
+    level: string, destinations: string): HTMLLabelElement {
+  assertFalse(
+      getDialog().shadowRoot!.querySelector(`#${level}-li-${
+          destinations}`)!.hasAttribute('hidden'));
+  return getDialog().shadowRoot!.querySelector(`#${level}-${destinations}`)! as
+      HTMLLabelElement;
+}
+
+/**
+ * Checks that the "block-li-urls" element is not hidden and returns the
+ * corresponding "block-urls" label of the dialog.
+ */
+function getBlockUrls() {
+  return getDestinationsLabelForLevel('block', 'urls');
+}
+
+/**
+ * Checks that the "warn-li-urls" element is not hidden and returns the
+ * corresponding "warn-urls" label of the dialog.
+ */
+function getWarnUrls() {
+  return getDestinationsLabelForLevel('warn', 'urls');
+}
+
+/**
+ * Checks that the "report-li-urls" element is not hidden and returns the
+ * corresponding "report-urls" label of the dialog.
+ */
+function getReportUrls() {
+  return getDestinationsLabelForLevel('report', 'urls');
+}
+
+/**
+ * Checks that the "block-li-components" element is not hidden and returns the
+ * corresponding "block-components" label of the dialog.
+ */
+function getBlockComponents() {
+  return getDestinationsLabelForLevel('block', 'components');
+}
+
+/**
+ * Checks that the "warn-li-components" element is not hidden and returns the
+ * corresponding "warn-components" label of the dialog.
+ */
+function getWarnComponents() {
+  return getDestinationsLabelForLevel('warn', 'components');
+}
+
+/**
+ * Checks that the "report-li-components" element is not hidden and returns the
+ * corresponding "report-components" label of the dialog.
+ */
+function getReportComponents() {
+  return getDestinationsLabelForLevel('report', 'components');
+}
+
+/** Closes the dialog. */
+function close() {
+  const crDialog =
+      getDialog().shadowRoot!.querySelector('#dialog') as CrDialogElement;
+  crDialog.close();
+}
+
+/**
+ * Tests that only the URL section for the block section is shown.
+ */
+export async function testBlockUrls(done: () => void) {
+  const dialog = getDialog();
+  const blockDetails = getBlockDetails();
+  assertTrue(blockDetails.hasAttribute('hidden'));
+
+  const details: chrome.fileManagerPrivate.DlpRestrictionDetails[] = [{
+    level: chrome.fileManagerPrivate.DlpLevel.BLOCK,
+    urls: ['https://external.com', 'https://example.com'],
+    components: [],
+  }];
+  dialog.showDlpRestrictionDetailsDialog(details);
+  assertFalse(blockDetails.hasAttribute('hidden'));
+  assertFalse(
+      blockDetails.querySelector('#block-li-urls')!.hasAttribute('hidden'));
+  assertEquals(
+      blockDetails.querySelector('#block-urls')!.textContent,
+      'File access by https://external.com, https://example.com');
+  // Components should still be hidden.
+  assertTrue(blockDetails.querySelector('#block-li-components')!.hasAttribute(
+      'hidden'));
+
+  // Other restriction levels should still be hidden.
+  assertTrue(getWarnDetails().hasAttribute('hidden'));
+  assertTrue(getReportDetails().hasAttribute('hidden'));
+
+  done();
+}
+
+/**
+ * Tests that wildcard is shown as "all urls", any other specific URLs
+ * listed along the wildcard are ignored, and components are not affected by the
+ * wildcard.
+ */
+export async function testBlockAllUrls(done: () => void) {
+  const dialog = getDialog();
+  const blockDetails = getBlockDetails();
+  assertTrue(blockDetails.hasAttribute('hidden'));
+
+  const details: chrome.fileManagerPrivate.DlpRestrictionDetails[] = [{
+    level: chrome.fileManagerPrivate.DlpLevel.BLOCK,
+    urls: ['https://external.com', '*'],
+    components: ['drive'],
+  }];
+  dialog.showDlpRestrictionDetailsDialog(details);
+  assertFalse(blockDetails.hasAttribute('hidden'));
+  assertEquals(getBlockUrls().textContent, 'File access by all urls');
+  assertEquals(
+      getBlockComponents().textContent, 'File transfer to Google Drive');
+
+  // Other restriction levels should still be hidden.
+  assertTrue(getWarnDetails().hasAttribute('hidden'));
+  assertTrue(getReportDetails().hasAttribute('hidden'));
+
+  done();
+}
+
+/**
+ * Tests that wildcard is shown as "all urls except..." if there are some URLs
+ * with a higher restriction level.
+ */
+export async function testBlockAllUrlsExcept(done: () => void) {
+  const dialog = getDialog();
+  const blockDetails = getBlockDetails();
+  assertTrue(blockDetails.hasAttribute('hidden'));
+
+  const details: chrome.fileManagerPrivate.DlpRestrictionDetails[] = [
+    {
+      level: chrome.fileManagerPrivate.DlpLevel.BLOCK,
+      urls: ['*'],
+      components: [],
+    },
+    {
+      level: chrome.fileManagerPrivate.DlpLevel.ALLOW,
+      urls: ['https://internal.com'],
+      components: [],
+    },
+  ];
+  dialog.showDlpRestrictionDetailsDialog(details);
+  assertFalse(blockDetails.hasAttribute('hidden'));
+  assertEquals(
+      getBlockUrls().textContent,
+      'File access by all urls except https://internal.com');
+  // Components should still be hidden.
+  assertTrue(blockDetails.querySelector('#block-li-components')!.hasAttribute(
+      'hidden'));
+
+  // Other restriction levels should still be hidden.
+  assertTrue(getWarnDetails().hasAttribute('hidden'));
+  assertTrue(getReportDetails().hasAttribute('hidden'));
+
+  done();
+}
+
+/**
+ * Tests that only the components section for the block section is shown.
+ */
+export async function testBlockComponents(done: () => void) {
+  const dialog = getDialog();
+  const blockDetails = getBlockDetails();
+  assertTrue(blockDetails.hasAttribute('hidden'));
+
+  const details: chrome.fileManagerPrivate.DlpRestrictionDetails[] = [{
+    level: chrome.fileManagerPrivate.DlpLevel.BLOCK,
+    urls: [],
+    components: ['drive', 'removable'],
+  }];
+  dialog.showDlpRestrictionDetailsDialog(details);
+  assertFalse(blockDetails.hasAttribute('hidden'));
+  // Urls should still be hidden.
+  assertTrue(
+      blockDetails.querySelector('#block-li-urls')!.hasAttribute('hidden'));
+  assertEquals(
+      getBlockComponents().textContent,
+      'File transfer to Google Drive, removable storage');
+
+  // Other restriction levels should still be hidden.
+  assertTrue(getWarnDetails().hasAttribute('hidden'));
+  assertTrue(getReportDetails().hasAttribute('hidden'));
+
+  done();
+}
+
+/**
+ * Tests that showing the dialog multiple times in a row still shows correct
+ * data.
+ */
+export async function testMultipleDialogs(done: () => void) {
+  const dialog = getDialog();
+  const blockDetails = getBlockDetails();
+  const warnDetails = getWarnDetails();
+  const reportDetails = getReportDetails();
+  assertTrue(blockDetails.hasAttribute('hidden'));
+
+
+  const details1: chrome.fileManagerPrivate.DlpRestrictionDetails[] = [{
+    level: chrome.fileManagerPrivate.DlpLevel.BLOCK,
+    urls: ['https://external.com'],
+    components: ['drive'],
+  }];
+  dialog.showDlpRestrictionDetailsDialog(details1);
+  assertFalse(blockDetails.hasAttribute('hidden'));
+  assertEquals(
+      getBlockUrls().textContent, 'File access by https://external.com');
+  assertEquals(
+      getBlockComponents().textContent, 'File transfer to Google Drive');
+
+  // Other restriction levels should still be hidden.
+  assertTrue(warnDetails.hasAttribute('hidden'));
+  assertTrue(reportDetails.hasAttribute('hidden'));
+
+  close();
+
+  const details2: chrome.fileManagerPrivate.DlpRestrictionDetails[] = [
+    {
+      level: chrome.fileManagerPrivate.DlpLevel.WARN,
+      urls: ['https://example.com'],
+      components: ['drive', 'removable'],
+    },
+    {
+      level: chrome.fileManagerPrivate.DlpLevel.REPORT,
+      urls: ['https://external.com'],
+      components: [],
+    },
+  ];
+  dialog.showDlpRestrictionDetailsDialog(details2);
+  assertFalse(warnDetails.hasAttribute('hidden'));
+  assertEquals(getWarnUrls().textContent, 'File access by https://example.com');
+  assertEquals(
+      getWarnComponents().textContent,
+      'File transfer to Google Drive, removable storage');
+  assertFalse(reportDetails.hasAttribute('hidden'));
+  assertEquals(
+      getReportUrls().textContent, 'File access by https://external.com');
+  assertTrue(reportDetails.querySelector('#report-li-components')!.hasAttribute(
+      'hidden'));
+
+  // Block section should now be hidden.
+  assertTrue(blockDetails.hasAttribute('hidden'));
+
+  close();
+
+  const details3: chrome.fileManagerPrivate.DlpRestrictionDetails[] = [
+    {
+      level: chrome.fileManagerPrivate.DlpLevel.REPORT,
+      urls: [],
+      components: ['drive', 'removable'],
+    },
+  ];
+  dialog.showDlpRestrictionDetailsDialog(details3);
+  // Report urls should now be hidden.
+  assertFalse(reportDetails.hasAttribute('hidden'));
+  assertTrue(
+      reportDetails.querySelector('#report-li-urls')!.hasAttribute('hidden'));
+  assertEquals(
+      getReportComponents().textContent,
+      'File transfer to Google Drive, removable storage');
+
+  // Block and warn sections should now be hidden.
+  assertTrue(blockDetails.hasAttribute('hidden'));
+  assertTrue(warnDetails.hasAttribute('hidden'));
+
+  done();
+}

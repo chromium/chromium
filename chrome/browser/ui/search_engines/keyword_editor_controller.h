@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 
 #include <memory>
 #include <string>
+
+#include "base/memory/raw_ptr.h"
 
 class Profile;
 class TemplateURL;
@@ -42,9 +44,9 @@ class KeywordEditorController {
   // Return true if the given |url| can be made the default.
   bool CanMakeDefault(const TemplateURL* url) const;
 
-  // Return true if the given |url| can be removed. A `url` can be removed if it
-  // is a normal entry (non-extension) and is not a prepopulated or default
-  // search engine.
+  // Return true if the given `url` can be removed. A `url` can be removed if it
+  // is a normal entry (non-extension) and is not the current default search
+  // engine or a starter pack engine.
   bool CanRemove(const TemplateURL* url) const;
 
   // Return true if the given `url` can be activated. A `url` can be activated
@@ -52,9 +54,13 @@ class KeywordEditorController {
   bool CanActivate(const TemplateURL* url) const;
 
   // Return true if the given `url` can be deactivated. A `url` can be
-  // deactivated if it is currently active and is not a prepopulated or default
-  // search engine.
+  // deactivated if it is currently active and is not a prepopulated engine or
+  // the current default search engine.
   bool CanDeactivate(const TemplateURL* url) const;
+
+  // Return true if the user should be asked to confirm before deleting the
+  // given `url`.
+  bool ShouldConfirmDeletion(const TemplateURL* url) const;
 
   // Remove the TemplateURL at the specified index in the TableModel.
   void RemoveTemplateURL(int index);
@@ -81,7 +87,7 @@ class KeywordEditorController {
   }
 
  private:
-  TemplateURLService* url_model_;
+  raw_ptr<TemplateURLService> url_model_;
 
   // Model for the TableView.
   std::unique_ptr<TemplateURLTableModel> table_model_;

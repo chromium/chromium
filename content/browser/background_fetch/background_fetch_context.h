@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -90,6 +90,7 @@ class CONTENT_EXPORT BackgroundFetchContext
                   blink::mojom::BackgroundFetchOptionsPtr options,
                   const SkBitmap& icon,
                   blink::mojom::BackgroundFetchUkmDataPtr ukm_data,
+                  RenderProcessHost* rph,
                   RenderFrameHostImpl* rfh,
                   const net::IsolationInfo& isolation_info,
                   blink::mojom::BackgroundFetchService::FetchCallback callback);

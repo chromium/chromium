@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/per_web_ui_browser_interface_broker.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -29,7 +30,7 @@ class InterfaceRegistrationHelper {
     // binder_map.
     binder_initializers_->push_back(
         base::BindRepeating([](WebUIBinderMap* binder_map) {
-          binder_map->Add(base::BindRepeating(
+          binder_map->Add<Interface>(base::BindRepeating(
               [](WebUIController* controller,
                  mojo::PendingReceiver<Interface> receiver) {
                 auto* concrete_controller = controller->GetAs<ControllerType>();
@@ -44,7 +45,7 @@ class InterfaceRegistrationHelper {
   }
 
  private:
-  std::vector<BinderInitializer>* binder_initializers_;
+  raw_ptr<std::vector<BinderInitializer>> binder_initializers_;
 };
 
 // Maintains a mapping from WebUIController::Type to a list of interfaces

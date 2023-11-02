@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,6 @@
 #include "third_party/blink/renderer/modules/webcodecs/video_decoder.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -37,6 +36,9 @@ DEFINE_TEXT_PROTO_FUZZER(
     return page_holder.release();
   }();
 
+  // Request a full GC upon returning.
+  auto scoped_gc = MakeScopedGarbageCollectionRequest();
+
   //
   // NOTE: GC objects that need to survive iterations of the loop below
   // must be Persistent<>!
@@ -53,14 +55,16 @@ DEFINE_TEXT_PROTO_FUZZER(
         ToScriptStateForMainWorld(&page_holder->GetFrame());
     ScriptState::Scope scope(script_state);
 
-    Persistent<FakeFunction> error_function =
-        FakeFunction::Create(script_state, "error");
+    Persistent<ScriptFunction> error_function =
+        MakeGarbageCollected<ScriptFunction>(
+            script_state, MakeGarbageCollected<FakeFunction>("error"));
     Persistent<V8WebCodecsErrorCallback> error_callback =
-        V8WebCodecsErrorCallback::Create(error_function->Bind());
-    Persistent<FakeFunction> output_function =
-        FakeFunction::Create(script_state, "output");
+        V8WebCodecsErrorCallback::Create(error_function->V8Function());
+    Persistent<ScriptFunction> output_function =
+        MakeGarbageCollected<ScriptFunction>(
+            script_state, MakeGarbageCollected<FakeFunction>("output"));
     Persistent<V8VideoFrameOutputCallback> output_callback =
-        V8VideoFrameOutputCallback::Create(output_function->Bind());
+        V8VideoFrameOutputCallback::Create(output_function->V8Function());
 
     Persistent<VideoDecoderInit> video_decoder_init =
         MakeGarbageCollected<VideoDecoderInit>();
@@ -110,15 +114,6 @@ DEFINE_TEXT_PROTO_FUZZER(
       }
     }
   }
-
-  // Request a V8 GC. Oilpan will be invoked by the GC epilogue.
-  //
-  // Multiple GCs may be required to ensure everything is collected (due to
-  // a chain of persistent handles), so some objects may not be collected until
-  // a subsequent iteration. This is slow enough as is, so we compromise on one
-  // major GC, as opposed to the 5 used in V8GCController for unit tests.
-  V8PerIsolateData::MainThreadIsolate()->RequestGarbageCollectionForTesting(
-      v8::Isolate::kFullGarbageCollection);
 }
 
 }  // namespace blink

@@ -1,7 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// This file is also checked by ESLint, and some of the property in the
+// settings doesn't follow naming convention.
+/* eslint-disable @typescript-eslint/naming-convention */
 // From
 // https://github.com/google/eslint-config-google/blob/b8ba12f58a4d71ee1f66b504a59bfe8de381ab4b/index.js#L20
 const googleRules = {
@@ -199,21 +202,21 @@ const googleRules = {
     'error',
     2,
     {
-      'CallExpression': {
-        'arguments': 2,
+      CallExpression: {
+        arguments: 2,
       },
-      'FunctionDeclaration': {
-        'body': 1,
-        'parameters': 2,
+      FunctionDeclaration: {
+        body: 1,
+        parameters: 2,
       },
-      'FunctionExpression': {
-        'body': 1,
-        'parameters': 2,
+      FunctionExpression: {
+        body: 1,
+        parameters: 2,
       },
-      'MemberExpression': 2,
-      'ObjectExpression': 1,
-      'SwitchCase': 1,
-      'ignoredNodes': [
+      MemberExpression: 2,
+      ObjectExpression: 1,
+      SwitchCase: 1,
+      ignoredNodes: [
         'ConditionalExpression',
       ],
     },
@@ -273,9 +276,11 @@ const googleRules = {
     'error',
     {
       // Quote the keys to make clang-format format it correctly.
+      /* eslint-disable quote-props */
       'var': 'never',
       'let': 'never',
       'const': 'never',
+      /* eslint-enable quote-props */
     },
   ],
   // 'one-var-declaration-per-line': 'off',
@@ -356,57 +361,66 @@ const googleRules = {
   // 'template-curly-spacing': 'off',
   'yield-star-spacing': ['error', 'after'],
 };
+/* eslint-enable @typescript-eslint/naming-convention */
+
+// https://github.com/eslint/eslint/issues/8769
+// Hack node module system so that eslint-plugin-cca resolves to local module.
+/* global require */
+/* eslint-disable-next-line @typescript-eslint/no-var-requires */
+const m = require('module');
+const originalResolve = m._resolveFilename;
+m._resolveFilename = (request, ...args) => {
+  if (request === 'eslint-plugin-cca') {
+    return require.resolve('./eslint_plugin');
+  } else {
+    return originalResolve.call(m, request, ...args);
+  }
+};
 
 const typescriptEslintDir =
     '../../../../third_party/node/node_modules/@typescript-eslint';
 
 /* global module */
 module.exports = {
-  'root': true,
-  'env': {
-    'browser': true,
-    'es2020': true,
-    'webextensions': true,
+  root: true,
+  env: {
+    browser: true,
+    es2020: true,
+    webextensions: true,
   },
-  'parserOptions': {
-    'ecmaVersion': 2020,
-    'sourceType': 'module',
+  parserOptions: {
+    ecmaVersion: 2020,
+    sourceType: 'module',
   },
-  'extends': 'eslint:recommended',
-  'globals': {
-    'arc': 'readable',
-    'chromeosCamera': 'readable',
-    'cros': 'readable',
-    'trustedTypes': 'readable',
-    'BarcodeDetector': 'readable',
-    'FileSystemFileHandle': 'readable',
-    'FileSystemDirectoryHandle': 'readable',
-    'IdleDetector': 'readable',
-
-    // TODO(b/172879638): Remove this once we have
-    // https://github.com/sindresorhus/globals/pull/171 merged in ESLint and
-    // Chromium.
-    'OffscreenCanvasRenderingContext2D': 'readable',
-
-    // TODO(b/168894537): Remove this once we have
-    // https://github.com/sindresorhus/globals/pull/175 merged in ESlint and
-    // Chromium.
-    'OverconstrainedError': 'readable',
-
-    // TODO(b/190689433): Remove this once we have
-    // https://github.com/sindresorhus/globals/pull/178 merged in ESlint and
-    // Chromium.
-    'CSSNumericValue': 'readable',
-    'CSSRotate': 'readable',
-    'CSSScale': 'readable',
-    'CSSTransformValue': 'readable',
-    'CSSTranslate': 'readable',
-    'CSSUnitValue': 'readable',
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:jsdoc/recommended',
+  ],
+  settings: {
+    jsdoc: {
+      tagNamePreference: {
+        returns: 'return',
+        // go/tsstyle#omit-comments-that-are-redundant-with-typescript
+        default: false,
+        enum: false,
+        implements: false,
+        interface: false,
+        override: false,
+        private: false,
+        protected: false,
+        template: false,
+        type: false,
+        typedef: false,
+      },
+    },
   },
+  parser: `${typescriptEslintDir}/parser`,
+  plugins: ['@typescript-eslint', 'jsdoc', 'eslint-plugin-cca'],
   // Generally, the rules should be compatible to both bundled and the newest
   // stable eslint, so it's easier to upgrade and develop without the full
   // Chromium tree.
-  'rules': Object.assign({}, googleRules, {
+  rules: Object.assign({}, googleRules, {
     'curly': ['error', 'multi-line', 'consistent'],
     'eqeqeq': 'error',
     'no-console': ['error', {allow: ['warn', 'error']}],
@@ -416,11 +430,296 @@ module.exports = {
     // code should be formatted properly by clang-format, as we required
     // `git cl format --js` before uploading.
     'indent': 'off',
+
+    // To resolve the conflict with clang-format.
+    'generator-star-spacing': [
+      'error',
+      {
+        named: 'after',
+        anonymous: 'neither',
+        method: 'both',
+      },
+    ],
+
+    // This doesn't work well with TypeScript files. The alternate
+    // @typescript-eslint/no-unused-vars that works with TypeScript files is
+    // enabled in @typescript-eslint/recommended.
+    'no-unused-vars': 'off',
+
+    // Use eslint-plugin-jsdoc instead of ESLint builtin valid-jsdoc /
+    // require-jsdoc, since it has better flexibility on not requiring types
+    // for jsdoc, and is also recommended on the ESLint rule page.
+    'valid-jsdoc': 'off',
+    'require-jsdoc': 'off',
+
+    // This is not useful since ES6 and contradicts to
+    // go/tsstyle#function-declarations.
+    'no-inner-declarations': 'off',
+
+    // go/tsstyle#omit-comments-that-are-redundant-with-typescript
+    'jsdoc/no-types': 'error',
+    'jsdoc/require-jsdoc': [
+      'error',
+      {
+        publicOnly: true,
+      },
+    ],
+    'jsdoc/require-param': 'off',
+    'jsdoc/require-param-type': 'off',
+    'jsdoc/require-returns': 'off',
+    'jsdoc/require-returns-type': 'off',
+    'jsdoc/require-yields': 'off',
+
+    'jsdoc/multiline-blocks': [
+      'error',
+      {
+        noSingleLineBlocks: true,
+      },
+    ],
+    'jsdoc/no-bad-blocks': 'error',
+    'jsdoc/no-defaults': 'error',
+    'jsdoc/no-multi-asterisks': [
+      'error',
+      {
+        allowWhitespace: true,
+      },
+    ],
+    'jsdoc/require-asterisk-prefix': 'error',
+    'jsdoc/require-description-complete-sentence': [
+      'error',
+      {
+        abbreviations: ['e.g.'],
+      },
+    ],
+
+    // go/tsstyle states that no variable should have _ as prefix/suffix, but
+    // there's no better alternative for unused function parameters. Since the
+    // convention for noUnusedParameters for TypeScript is also leading
+    // underscore, we use the same ignore pattern here.  See b/173108529 and
+    // g/typescript-style/uOfKsoxxWEY/HCgzNfAFAwAJ for other discussions.
+    '@typescript-eslint/no-unused-vars': [
+      'error',
+      {
+        varsIgnorePattern: '^_',
+        argsIgnorePattern: '^_',
+      },
+    ],
+
+    'no-restricted-syntax': [
+      'error',
+      // Disallow parseInt. (go/tsstyle#type-coercion)
+      {
+        selector: 'CallExpression[callee.name="parseInt"]',
+        message: 'parseInt are not allowed, use Number() instead. ' +
+            '(go/tsstyle#type-coercion)',
+      },
+      // Disallow Array constructor. (go/tsstyle#array-constructor)
+      {
+        selector: 'NewExpression[callee.name="Array"], ' +
+            'CallExpression[callee.name="Array"]',
+        message: 'Array constructor are not allowed. ' +
+            '(go/tsstyle#array-constructor)',
+      },
+      // Disallow calling Error without new. (go/tsstyle#exceptions)
+      {
+        selector: 'CallExpression[callee.name="Error"]',
+        message: 'Error constructor should be called with new Error(...). ' +
+            '(go/tsstyle#exceptions)',
+      },
+      // Disallow for (... in ...). (go/tsstyle#iterating-objects)
+      {
+        selector: 'ForInStatement',
+        message: 'for (... in ...) is not allowed. ' +
+            '(go/tsstyle#iterating-objects)',
+      },
+      // Disallow 'Interface' as identifier suffix. (go/tsstyle#naming-style)
+      {
+        selector: 'Identifier[name=/.*Interface/]',
+        message: 'Don\'t use "Interface" as identifier suffix. ' +
+            '(go/tsstyle#naming-style)',
+      },
+      // Disallow forEach. (go/tsstyle#iterating-containers)
+      {
+        selector: 'CallExpression[callee.property.name="forEach"]',
+        message: 'forEach are not allowed. (go/tsstyle#iterating-containers)',
+      },
+      // Disallow function() {...}. (go/tsstyle#function-declarations)
+      {
+        selector: ':not(:matches(MethodDefinition, Property))' +
+            ' > FunctionExpression:not([id])',
+        message: 'Use named function or arrow function instead. ' +
+            '(go/tsstyle#function-declarations)',
+      },
+      // Disallow local function declaration with arrow function without
+      // accessing this. This might have some false negative if the "this" is
+      // accessed deep inside the function in another scope, but should be
+      // rare. (go/tsstyle#function-declarations)
+      {
+        selector: 'VariableDeclarator:not(:has(.id[typeAnnotation]))' +
+            ' > ArrowFunctionExpression.init:not(:has(ThisExpression))',
+        message: 'Use named function to declare local function. ' +
+            '(go/tsstyle#function-declarations)',
+      },
+      // Disallow private fields. (go/tsstyle#private-fields)
+      {
+        selector: 'TSPrivateIdentifier',
+        message: 'Private fields are not allowed. (go/tsstyle#private-fields)',
+      },
+      // Disallow explicit boolean coercions in condition.
+      // (go/tsstyle#type-coercion-implicit)
+      {
+        selector: ':matches(IfStatement, WhileStatement)' +
+            ' > UnaryExpression.test[operator="!"]' +
+            ' > UnaryExpression.argument[operator="!"]',
+        message: 'Explicit boolean coercion is not needed in conditions. ' +
+            '(go/tsstyle#type-coercion-implicit)',
+      },
+    ],
+
+    '@typescript-eslint/naming-convention': [
+      'error',
+      {
+        selector: 'default',
+        format: ['camelCase'],
+      },
+      {
+        selector: 'variable',
+        format: ['camelCase', 'UPPER_CASE'],
+      },
+      {
+        selector: 'typeLike',
+        format: ['PascalCase'],
+      },
+      {
+        selector: 'enumMember',
+        format: ['UPPER_CASE'],
+      },
+      {
+        selector: 'parameter',
+        modifiers: ['unused'],
+        format: ['camelCase'],
+        leadingUnderscore: 'allow',
+      },
+    ],
+
+    // This is covered by @typescript-eslint/naming-convention.
+    'camelcase': 'off',
+
+    // go/tsstyle#arrayt-type
+    '@typescript-eslint/array-type': [
+      'error',
+      {
+        default: 'array-simple',
+      },
+    ],
+
+    // go/tsstyle#type-assertions-syntax
+    // go/tsstyle#type-assertions-and-object-literals
+    '@typescript-eslint/consistent-type-assertions': [
+      'error',
+      {
+        assertionStyle: 'as',
+        objectLiteralTypeAssertions: 'never',
+      },
+    ],
+
+    // go/tsstyle#interfaces-vs-type-aliases
+    '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
+
+    // go/tsstyle#import-export-type
+    '@typescript-eslint/consistent-type-imports': [
+      'error',
+      {
+        prefer: 'no-type-imports',
+      },
+    ],
+
+    'quote-props': ['error', 'consistent-as-needed'],
+
+    // go/tsstyle#visibility
+    '@typescript-eslint/explicit-member-accessibility': [
+      'error',
+      {
+        accessibility: 'no-public',
+      },
+    ],
+
+    // go/tsstyle#member-property-declarations
+    '@typescript-eslint/member-delimiter-style': [
+      'error',
+      {
+        multiline: {
+          delimiter: 'comma',
+          requireLast: true,
+        },
+        singleline: {
+          delimiter: 'comma',
+          requireLast: false,
+        },
+        multilineDetection: 'last-member',
+        overrides: {
+          interface: {
+            multiline: {
+              delimiter: 'semi',
+              requireLast: true,
+            },
+            singleline: {
+              delimiter: 'semi',
+              requireLast: true,
+            },
+          },
+        },
+      },
+    ],
+
+    '@typescript-eslint/prefer-optional-chain': 'error',
+
+    '@typescript-eslint/sort-type-union-intersection-members': 'error',
+
+    'comma-dangle': 'off',
+    '@typescript-eslint/comma-dangle': ['error', 'always-multiline'],
+
+    '@typescript-eslint/lines-between-class-members': 'error',
+
+    '@typescript-eslint/no-unused-expressions': 'error',
+
+    'cca/parameter-comment-format': 'error',
+
+    'cca/generic-parameter-on-declaration-type': 'error',
+
+    'cca/todo-format': 'error',
+
+    // go/tsstyle#constructors
+    'new-parens': 'error',
+
+    // go/tsstyle#assignment-in-control-statements
+    'no-cond-assign': 'error',
+
+    // go/tsstyle#switch-statements
+    'default-case': 'error',
+
+    // go/tsstyle#return-types
+    '@typescript-eslint/explicit-module-boundary-types': 'error',
   }),
-  'overrides': [{
-    'files': ['**/*.ts'],
-    'plugins': ['@typescript-eslint'],
-    'parser': `${typescriptEslintDir}/parser`,
-    'extends': ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
+  overrides: [{
+    files: ['**/*.ts'],
+    parserOptions: {
+      // eslint-disable-next-line no-undef
+      tsconfigRootDir: __dirname,
+      project: './tsconfig_base.json',
+    },
+    rules: {
+      // go/tsstyle#use-readonly
+      '@typescript-eslint/prefer-readonly': 'error',
+
+      '@typescript-eslint/require-array-sort-compare': 'error',
+
+      '@typescript-eslint/prefer-nullish-coalescing': 'error',
+
+      // go/tsstyle#optimization-compatibility-for-property-access
+      '@typescript-eslint/dot-notation': 'error',
+
+      '@typescript-eslint/return-await': 'error',
+    },
   }],
 };

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -69,6 +69,11 @@ public class SecurityButtonAnimationDelegate {
         mSecurityButtonHideAnimator.playSequentially(fadeOut, translateLeft);
     }
 
+    /** {@see SecurityButtonAnimationDelegate#updateSecurityButton(int, boolean, boolean)} */
+    public void updateSecurityButton(int securityIconResource, boolean animate) {
+        updateSecurityButton(securityIconResource, animate, /*isActualResourceChange*/ true);
+    }
+
     /**
      * Based on |securityIconResource|, updates the security status icon.
      * @param securityIconResource The updated resource to be assigned to the security status icon.
@@ -76,15 +81,18 @@ public class SecurityButtonAnimationDelegate {
      * |securityIconResource| is null, the icon is animated to the left and faded out; otherwise,
      * the icon is animated to the right and faded in. If false, the updates are performed
      * immediately without animation.
+     * @param isActualResourceChange If the resource id is different from what was previously set.
      */
-    public void updateSecurityButton(int securityIconResource, boolean animate) {
+    public void updateSecurityButton(
+            int securityIconResource, boolean animate, boolean isActualResourceChange) {
         if (securityIconResource == 0) {
             // No icon to display.
             mSecurityButton.setImageDrawable(null);
             hideSecurityButton(animate);
         } else {
-            // ImageView#setImageResource is no-op if given resource is the current one.
-            mSecurityButton.setImageResource(securityIconResource);
+            if (isActualResourceChange) {
+                mSecurityButton.setImageResource(securityIconResource);
+            }
             showSecurityButton(animate);
         }
     }
@@ -123,5 +131,10 @@ public class SecurityButtonAnimationDelegate {
             // Directly update to end state without animation.
             mSecurityButtonHideAnimator.end();
         }
+    }
+
+    /** Returns whether an animation is currently running. */
+    public boolean isInAnimation() {
+        return mSecurityButtonHideAnimator.isStarted() || mSecurityButtonShowAnimator.isStarted();
     }
 }

@@ -1,14 +1,14 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ppapi/proxy/tcp_socket_resource_base.h"
 
 #include <cstring>
+#include <iterator>
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "ppapi/c/pp_bool.h"
 #include "ppapi/c/pp_errors.h"
@@ -37,10 +37,10 @@ TCPSocketResourceBase::TCPSocketResourceBase(Connection connection,
       version_(version) {
   local_addr_.size = 0;
   memset(local_addr_.data, 0,
-         base::size(local_addr_.data) * sizeof(*local_addr_.data));
+         std::size(local_addr_.data) * sizeof(*local_addr_.data));
   remote_addr_.size = 0;
   memset(remote_addr_.data, 0,
-         base::size(remote_addr_.data) * sizeof(*remote_addr_.data));
+         std::size(remote_addr_.data) * sizeof(*remote_addr_.data));
 }
 
 TCPSocketResourceBase::TCPSocketResourceBase(

@@ -1,18 +1,39 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 /**
  * @fileoverview Polymer element wrapping gaia styled input form for login/oobe.
+ *
+ * A simple input form with a button. Being used for typing email or password.
+ * User should put one or more <gaia-input slot="inputs">s inside.
+ *
+ * Example:
+ *   <gaia-input-form button-text="Submit">
+ *     <gaia-input slot="inputs" label="Email" type="email"></gaia-input>
+ *     <gaia-input slot="inputs" label="Password" type="password"></gaia-input>
+ *     <gaia-input slot="inputs" label="OTP"></gaia-input>
+ *   </gaia-input-form>
+ *
+ * Attributes:
+ *   'button-text' - text on the button.
+ * Methods:
+ *   'reset' - resets all the inputs to the initial state.
+ * Events:
+ *   'submit' - fired on button click or "Enter" press inside input field.
+ *
  */
 
-/* #js_imports_placeholder */
+import './common_styles/common_styles.m.js';
+import './gaia_button.js';
+
+import {dom, html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * @constructor
  * @extends {PolymerElement}
  */
-const GaiaInputFormBase = Polymer.mixinBehaviors([], Polymer.Element);
+const GaiaInputFormBase = mixinBehaviors([], PolymerElement);
 
 /**
  * @typedef {{
@@ -26,7 +47,9 @@ class GaiaInputForm extends GaiaInputFormBase {
     return 'gaia-input-form';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {
     return {
@@ -38,7 +61,7 @@ class GaiaInputForm extends GaiaInputFormBase {
       buttonText: {
         type: String,
         value: '',
-      }
+      },
     };
   }
 
@@ -66,15 +89,17 @@ class GaiaInputForm extends GaiaInputFormBase {
    * @return {!Array<!Node>}
    */
   getInputs_() {
-    return Polymer.dom(this.$.inputs).getDistributedNodes();
+    return dom(this.$.inputs).getDistributedNodes();
   }
 
   /** @private */
   onKeyDown_(e) {
-    if (e.keyCode != 13 || this.$.button.disabled)
+    if (e.keyCode != 13 || this.$.button.disabled) {
       return;
-    if (this.getInputs_().indexOf(e.target) == -1)
+    }
+    if (this.getInputs_().indexOf(e.target) == -1) {
       return;
+    }
     this.onButtonClicked_();
   }
 
@@ -85,7 +110,7 @@ class GaiaInputForm extends GaiaInputFormBase {
   getControls_() {
     var controls = this.getInputs_();
     controls.push(this.$.button);
-    return controls.concat(Polymer.dom(this).querySelectorAll('gaia-button'));
+    return controls.concat(dom(this).querySelectorAll('gaia-button'));
   }
 
   /** @private */

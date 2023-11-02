@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -77,7 +78,7 @@ class SandboxedDMGAnalyzerTest : public testing::Test {
     }
 
     base::OnceClosure next_closure_;
-    safe_browsing::ArchiveAnalyzerResults* results_;
+    raw_ptr<safe_browsing::ArchiveAnalyzerResults> results_;
   };
 
   content::BrowserTaskEnvironment task_environment_;
@@ -86,6 +87,83 @@ class SandboxedDMGAnalyzerTest : public testing::Test {
 TEST_F(SandboxedDMGAnalyzerTest, AnalyzeDMG) {
   base::FilePath path;
   ASSERT_NO_FATAL_FAILURE(path = GetFilePath("mach_o_in_dmg.dmg"));
+
+  safe_browsing::ArchiveAnalyzerResults results;
+  AnalyzeFile(path, &results);
+
+  EXPECT_TRUE(results.success);
+  EXPECT_TRUE(results.has_executable);
+  EXPECT_EQ(2, results.archived_binary.size());
+
+  bool got_executable = false, got_dylib = false;
+  for (const auto& binary : results.archived_binary) {
+    const std::string& file_name = binary.file_basename();
+    const google::protobuf::RepeatedPtrField<
+        safe_browsing::ClientDownloadRequest_MachOHeaders>& headers =
+        binary.image_headers().mach_o_headers();
+
+    EXPECT_EQ(safe_browsing::ClientDownloadRequest_DownloadType_MAC_EXECUTABLE,
+              binary.download_type());
+
+    if (file_name.find("executablefat") != std::string::npos) {
+      got_executable = true;
+      ASSERT_EQ(2, headers.size());
+
+      const safe_browsing::ClientDownloadRequest_MachOHeaders& arch32 =
+          headers.Get(0);
+      EXPECT_EQ(15, arch32.load_commands().size());
+      EXPECT_EQ(MH_MAGIC, *reinterpret_cast<const uint32_t*>(
+                              arch32.mach_header().c_str()));
+
+      const safe_browsing::ClientDownloadRequest_MachOHeaders& arch64 =
+          headers.Get(1);
+      EXPECT_EQ(15, arch64.load_commands().size());
+      EXPECT_EQ(MH_MAGIC_64, *reinterpret_cast<const uint32_t*>(
+                                 arch64.mach_header().c_str()));
+
+      const std::string& sha256_bytes = binary.digests().sha256();
+      std::string actual_sha256 =
+          base::HexEncode(sha256_bytes.c_str(), sha256_bytes.size());
+      EXPECT_EQ(
+          "E462FF752FF9D84E34D843E5D46E2012ADCBD48540A8473FB794B286A389B945",
+          actual_sha256);
+    } else if (file_name.find("lib64.dylib") != std::string::npos) {
+      got_dylib = true;
+      ASSERT_EQ(1, headers.size());
+
+      const safe_browsing::ClientDownloadRequest_MachOHeaders& arch =
+          headers.Get(0);
+      EXPECT_EQ(13, arch.load_commands().size());
+      EXPECT_EQ(MH_MAGIC_64,
+                *reinterpret_cast<const uint32_t*>(arch.mach_header().c_str()));
+
+      const std::string& sha256_bytes = binary.digests().sha256();
+      std::string actual_sha256 =
+          base::HexEncode(sha256_bytes.c_str(), sha256_bytes.size());
+      EXPECT_EQ(
+          "2012CE4987B0FA4A5D285DF7E810560E841CFAB3054BC19E1AAB345F862A6C4E",
+          actual_sha256);
+    } else {
+      ADD_FAILURE() << "Unexpected result file " << binary.file_basename();
+    }
+  }
+
+  EXPECT_TRUE(got_executable);
+  EXPECT_TRUE(got_dylib);
+
+  ASSERT_EQ(1, results.detached_code_signatures.size());
+  const safe_browsing::ClientDownloadRequest_DetachedCodeSignature
+      detached_signature = results.detached_code_signatures.Get(0);
+  EXPECT_EQ(
+      "Mach-O in DMG/shell-script.app/Contents/_CodeSignature/CodeSignature",
+      detached_signature.file_name());
+  EXPECT_EQ(1842u, detached_signature.contents().size());
+}
+
+TEST_F(SandboxedDMGAnalyzerTest, AnalyzeDMGNoPartitionName) {
+  base::FilePath path;
+  ASSERT_NO_FATAL_FAILURE(
+      path = GetFilePath("mach_o_in_dmg_no_partition_name.dmg"));
 
   safe_browsing::ArchiveAnalyzerResults results;
   AnalyzeFile(path, &results);

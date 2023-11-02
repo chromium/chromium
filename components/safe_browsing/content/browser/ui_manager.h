@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -107,12 +107,8 @@ class SafeBrowsingUIManager : public BaseUIManager {
     virtual history::HistoryService* GetHistoryService(
         content::BrowserContext* browser_context) = 0;
 
-    // Gets the PingManager. This may be null.
-    virtual PingManager* GetPingManagerIfExists() = 0;
-
-    // Gets the URLLoaderFactory attached to |browser_context|. Guaranteed to be
-    // non-null if GetPingManagerIfExists() is non-null.
-    virtual scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory(
+    // Gets the PingManager.
+    virtual PingManager* GetPingManager(
         content::BrowserContext* browser_context) = 0;
 
     // Returns true if metrics reporting is enabled.
@@ -144,10 +140,11 @@ class SafeBrowsingUIManager : public BaseUIManager {
   // on UI thread. If shutdown is true, the manager is disabled permanently.
   void Stop(bool shutdown);
 
-  // Called on the IO thread by the ThreatDetails with the serialized
-  // protocol buffer, so the service can send it over.
-  void SendSerializedThreatDetails(content::BrowserContext* browser_context,
-                                   const std::string& serialized) override;
+  // Called on the IO thread by the ThreatDetails with the report, so the
+  // service can send it over.
+  void SendThreatDetails(
+      content::BrowserContext* browser_context,
+      std::unique_ptr<ClientSafeBrowsingReportRequest> report) override;
 
   // Calls |BaseUIManager::OnBlockingPageDone()| and triggers
   // |OnSecurityInterstitialProceeded| event if |proceed| is true.

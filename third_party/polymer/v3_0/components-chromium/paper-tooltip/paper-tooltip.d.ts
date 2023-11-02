@@ -118,7 +118,7 @@ interface PaperTooltipElement extends LegacyElementMixin, HTMLElement {
    * that your animationConfig has the exact format below.
    */
   animationConfig: object|null|undefined;
-  _showing: boolean|null|undefined;
+  _showing: boolean;
   hostAttributes: object|null;
 
   /**

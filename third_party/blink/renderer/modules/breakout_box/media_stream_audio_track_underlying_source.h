@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,7 +56,7 @@ class MODULES_EXPORT MediaStreamAudioTrackUnderlyingSource
   void DisconnectFromTrack();
   void OnSourceTransferStarted(
       scoped_refptr<base::SequencedTaskRunner> transferred_runner,
-      TransferredAudioDataQueueUnderlyingSource* source);
+      CrossThreadPersistent<TransferredAudioDataQueueUnderlyingSource> source);
 
   // Only used to prevent the gargabe collector from reclaiming the media
   // stream track processor that created |this|.

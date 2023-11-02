@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,6 +30,7 @@ class DrmFramebuffer : public base::RefCountedThreadSafe<DrmFramebuffer> {
     uint32_t format = DRM_FORMAT_XRGB8888;
     uint64_t modifier = DRM_FORMAT_MOD_INVALID;
     std::vector<uint64_t> preferred_modifiers;
+    bool is_original_buffer = true;
     uint32_t width = 0;
     uint32_t height = 0;
     size_t num_planes = 0;
@@ -46,7 +47,8 @@ class DrmFramebuffer : public base::RefCountedThreadSafe<DrmFramebuffer> {
       scoped_refptr<DrmDevice> drm_device,
       const GbmBuffer* buffer,
       const gfx::Size& framebuffer_size,
-      std::vector<uint64_t> preferred_modifiers = std::vector<uint64_t>());
+      std::vector<uint64_t> preferred_modifiers = std::vector<uint64_t>(),
+      bool is_original_buffer = true);
 
   DrmFramebuffer(scoped_refptr<DrmDevice> drm_device,
                  uint32_t framebuffer_id,
@@ -55,7 +57,8 @@ class DrmFramebuffer : public base::RefCountedThreadSafe<DrmFramebuffer> {
                  uint32_t opaque_framebuffer_pixel_format,
                  uint64_t format_modifier,
                  std::vector<uint64_t> preferred_modifiers,
-                 const gfx::Size& size);
+                 const gfx::Size& size,
+                 bool is_original_buffer);
 
   // ID allocated by the KMS API when the buffer is registered (via the handle).
   uint32_t framebuffer_id() const { return framebuffer_id_; }
@@ -72,6 +75,12 @@ class DrmFramebuffer : public base::RefCountedThreadSafe<DrmFramebuffer> {
   uint32_t framebuffer_pixel_format() const {
     return framebuffer_pixel_format_;
   }
+
+  // Returns true if this was the original buffer and false if this is a buffer
+  // specifically created for DRM testing. The original buffer will have the
+  // original modifiers which makes the testing more accurate than a buffer that
+  // was created with default modifiers.
+  uint32_t is_original_buffer() const { return is_original_buffer_; }
 
   // Returns FourCC format that should be used to schedule this buffer for
   // scanout when used as an opaque buffer.
@@ -109,6 +118,8 @@ class DrmFramebuffer : public base::RefCountedThreadSafe<DrmFramebuffer> {
   const uint32_t opaque_framebuffer_id_;
   const uint32_t opaque_framebuffer_pixel_format_;
   const uint64_t format_modifier_;
+
+  bool is_original_buffer_ = true;
   // List of modifiers passed at the creation of a bo with modifiers. If the bo
   // was created without modifiers, the vector is empty.
   const std::vector<uint64_t> preferred_modifiers_;

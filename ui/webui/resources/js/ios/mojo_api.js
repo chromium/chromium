@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,8 +56,8 @@ Mojo.bindInterface = function(interfaceName, requestHandle) {
     name: 'Mojo.bindInterface',
     args: {
       interfaceName: interfaceName,
-      requestHandle: requestHandle.takeNativeHandle_()
-    }
+      requestHandle: requestHandle.takeNativeHandle_(),
+    },
   });
 };
 
@@ -134,8 +134,8 @@ MojoHandle.prototype.watch = function(signals, callback) {
     args: {
       handle: this.nativeHandle_,
       signals: signalsValue,
-      callbackId: Mojo.internal.watchCallbacksHolder.getNextCallbackId()
-    }
+      callbackId: Mojo.internal.watchCallbacksHolder.getNextCallbackId(),
+    },
   });
   Mojo.internal.watchCallbacksHolder.addWatchCallback(watchId, callback);
 
@@ -151,6 +151,14 @@ MojoHandle.prototype.watch = function(signals, callback) {
  * @return {!MojoResult} Result code.
  */
 MojoHandle.prototype.writeMessage = function(buffer, handles) {
+  let base64EncodedBuffer;
+  if (buffer instanceof Uint8Array) {
+    // calls from mojo_bindings.js
+    base64EncodedBuffer = _Uint8ArrayToBase64(buffer);
+  } else if (buffer instanceof ArrayBuffer) {
+    // calls from mojo/public/js/bindings.js
+    base64EncodedBuffer = _arrayBufferToBase64(buffer);
+  }
   const nativeHandles = handles.map(function(handle) {
     return handle.takeNativeHandle_();
   });
@@ -158,9 +166,9 @@ MojoHandle.prototype.writeMessage = function(buffer, handles) {
     name: 'MojoHandle.writeMessage',
     args: {
       handle: this.nativeHandle_,
-      buffer: buffer,
+      buffer: base64EncodedBuffer,
       handles: nativeHandles,
-    }
+    },
   });
 };
 
@@ -202,7 +210,7 @@ const MojoWatcher = function(watchId) {
 MojoWatcher.prototype.cancel = function() {
   Mojo.internal.sendMessage(
       {name: 'MojoWatcher.cancel', args: {watchId: this.watchId_}});
-  Mojo.internal.watchCallbacksHolder.removeWatchCallback(watchId);
+  Mojo.internal.watchCallbacksHolder.removeWatchCallback(this.watchId_);
 };
 
 // -----------------------------------------------------------------------------
@@ -296,6 +304,29 @@ Mojo.internal.watchCallbacksHolder = (function() {
     callCallback: callCallback,
     getNextCallbackId: getNextCallbackId,
     addWatchCallback: addWatchCallback,
-    removeWatchCallback: removeWatchCallback
+    removeWatchCallback: removeWatchCallback,
   };
 })();
+
+/**
+ * Base64-encode an ArrayBuffer
+ * @param {ArrayBuffer} buffer
+ * @return {String}
+ */
+function _arrayBufferToBase64(buffer) {
+  return _Uint8ArrayToBase64(new Uint8Array(buffer));
+}
+
+/**
+ * Base64-encode an Uint8Array
+ * @param {Uint8Array} buffer
+ * @return {String}
+ */
+function _Uint8ArrayToBase64(bytes) {
+  let binary = '';
+  const numBytes = bytes.byteLength;
+  for (let i = 0; i < numBytes; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return window.btoa(binary);
+}

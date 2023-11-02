@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,11 +38,6 @@ base::test::ScopedFeatureList::FeatureAndParams probability_zero{
     features::kHappinessTrackingSurveysForDesktopSettings,
     {{"probability", "0.000"}}};
 base::test::ScopedFeatureList::FeatureAndParams probability_one{
-    features::kHappinessTrackingSurveysForDesktopSettings,
-    {{"probability", "1.000"},
-     {"survey", kHatsSurveyTriggerSettings},
-     {"en_site_id", "test_site_id"}}};
-base::test::ScopedFeatureList::FeatureAndParams settings_probability_one{
     features::kHappinessTrackingSurveysForDesktopSettings,
     {{"probability", "1.000"},
      {"survey", kHatsSurveyTriggerSettings},
@@ -128,9 +123,7 @@ class HatsServiceProbabilityOne : public HatsServiceBrowserTestBase {
       delete;
 
  protected:
-  HatsServiceProbabilityOne()
-      : HatsServiceBrowserTestBase(
-            {probability_one, settings_probability_one}) {}
+  HatsServiceProbabilityOne() : HatsServiceBrowserTestBase({probability_one}) {}
 
   ~HatsServiceProbabilityOne() override = default;
 

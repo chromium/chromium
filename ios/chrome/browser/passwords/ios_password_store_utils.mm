@@ -1,18 +1,22 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/passwords/ios_password_store_utils.h"
 
-#include "base/bind.h"
-#include "components/keyed_service/core/service_access_type.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
-#include "components/password_manager/core/browser/store_metrics_reporter.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/passwords/ios_chrome_password_reuse_manager_factory.h"
-#include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
-#include "ios/chrome/browser/signin/identity_manager_factory.h"
-#include "ios/chrome/browser/sync/sync_service_factory.h"
+#import <AuthenticationServices/AuthenticationServices.h>
+
+#import "base/bind.h"
+#import "base/metrics/histogram_functions.h"
+#import "components/keyed_service/core/service_access_type.h"
+#import "components/password_manager/core/browser/password_manager_util.h"
+#import "components/password_manager/core/browser/password_store_interface.h"
+#import "components/password_manager/core/browser/store_metrics_reporter.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/passwords/ios_chrome_password_reuse_manager_factory.h"
+#import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
+#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -55,9 +59,7 @@ class StoreMetricReporterHelper : public base::SupportsUserData::Data {
             browser_state_);
     PrefService* pref_service = browser_state_->GetPrefs();
 
-    // StoreMetricsReporter will delay the actual reporting by 30 seconds, to
-    // ensure it doesn't happen during the "hot phase" of Chrome startup.
-    auto metrics_reporter = std::make_unique<
+    metrics_reporter_ = std::make_unique<
         password_manager::StoreMetricsReporter>(
         profile_store, /*account_store=*/nullptr, sync_service,
         identity_manager, pref_service, password_reuse_manager,
@@ -65,10 +67,45 @@ class StoreMetricReporterHelper : public base::SupportsUserData::Data {
         base::BindOnce(
             &StoreMetricReporterHelper::RemoveInstanceFromBrowserStateUserData,
             weak_ptr_factory_.GetWeakPtr()));
+
+    [ASCredentialIdentityStore.sharedStore
+        getCredentialIdentityStoreStateWithCompletion:^(
+            ASCredentialIdentityStoreState* state) {
+          // The completion handler sent to ASCredentialIdentityStore is
+          // executed on a background thread. Putting it back onto the main
+          // thread to handle the logging that requires access to the Chrome
+          // browser state.
+          dispatch_async(dispatch_get_main_queue(), ^{
+            BOOL enabled = state.isEnabled;
+            LogIfCredentialProviderEnabled(pref_service, enabled);
+          });
+        }];
   }
 
   void RemoveInstanceFromBrowserStateUserData() {
     browser_state_->RemoveUserData(kPasswordStoreMetricsReporterKey);
+  }
+
+  // Logs if the user had enabled the credential provider in their iOS settings
+  // at startup. Also if the value has changed since the last launch, log the
+  // new value.
+  void LogIfCredentialProviderEnabled(PrefService* pref_service, BOOL enabled) {
+    base::UmaHistogramBoolean("IOS.CredentialExtension.IsEnabled.Startup",
+                              enabled);
+    if (pref_service) {
+      // The value stored on the last app startup.
+      bool is_credential_provider_enabled =
+          password_manager_util::IsCredentialProviderEnabledOnStartup(
+              pref_service);
+      // If the value changed since last launch, store the new value and log
+      // that the value has changed.
+      if (enabled != is_credential_provider_enabled) {
+        password_manager_util::SetCredentialProviderEnabledOnStartup(
+            pref_service, enabled);
+        base::UmaHistogramBoolean(
+            "IOS.CredentialExtension.StatusDidChangeTo.Startup", enabled);
+      }
+    }
   }
 
   ChromeBrowserState* const browser_state_;

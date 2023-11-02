@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -29,6 +29,7 @@ load("@stdlib//internal/graph.star", "graph")
 load("@stdlib//internal/luci/common.star", "keys")
 load("./args.star", "args")
 load("./branches.star", "branches")
+load("./nodes.star", "nodes")
 
 defaults = args.defaults(
     header = None,
@@ -36,15 +37,11 @@ defaults = args.defaults(
     refs = None,
 )
 
-def _console_view_ordering_graph_key(console_name):
-    return graph.key("@chromium", "", "console_view_ordering", console_name)
+_CONSOLE_VIEW_ORDERING = nodes.create_unscoped_node_type("console_view_ordering")
+_OVERVIEW_CONSOLE_ORDERING = nodes.create_unscoped_node_type("overview_console_ordering")
 
-def _overview_console_view_ordering_graph_key(console_name):
-    return graph.key("@chromium", "", "overview_console_view_ordering", console_name)
-
-def _console_view_ordering_impl(ctx, *, console_name, ordering):
-    key = _console_view_ordering_graph_key(console_name)
-    graph.add_node(key, props = {
+def _console_view_ordering_impl(_ctx, *, console_name, ordering):
+    key = _CONSOLE_VIEW_ORDERING.add(console_name, props = {
         "ordering": ordering,
     })
     graph.add_edge(keys.project(), key)
@@ -52,9 +49,8 @@ def _console_view_ordering_impl(ctx, *, console_name, ordering):
 
 _console_view_ordering = lucicfg.rule(impl = _console_view_ordering_impl)
 
-def _overview_console_view_ordering_impl(ctx, *, console_name, top_level_ordering):
-    key = _overview_console_view_ordering_graph_key(console_name)
-    graph.add_node(key, props = {
+def _overview_console_view_ordering_impl(_ctx, *, console_name, top_level_ordering):
+    key = _OVERVIEW_CONSOLE_ORDERING.add(console_name, props = {
         "top_level_ordering": top_level_ordering,
     })
     graph.add_edge(keys.project(), key)
@@ -134,8 +130,7 @@ def _get_console_ordering(console_name):
       given name or None if the name does not refer to a console_view with
       an ordering.
     """
-    graph_key = _console_view_ordering_graph_key(console_name)
-    node = graph.node(graph_key)
+    node = _CONSOLE_VIEW_ORDERING.get(console_name)
     return node.props.ordering if node != None else None
 
 def _get_console_view_key_fn(console_name):
@@ -163,9 +158,7 @@ def _get_overview_console_view_key_fn(console_name):
       with the given name or None if the name does not refer to an
       overview_console_view.
     """
-    overview_console_ordering = graph.node(
-        _overview_console_view_ordering_graph_key(console_name),
-    )
+    overview_console_ordering = _OVERVIEW_CONSOLE_ORDERING.get(console_name)
     if overview_console_ordering == None:
         return None
 
@@ -273,7 +266,7 @@ def console_view(*, name, branch_selector = branches.MAIN, ordering = None, **kw
         ordering = ordering or {},
     )
 
-def overview_console_view(*, name, top_level_ordering, branch_selector = branches.MAIN, **kwargs):
+def overview_console_view(*, name, top_level_ordering, **kwargs):
     """Create an overview console view.
 
     An overview console view is a console view that contains a subset of
@@ -292,9 +285,6 @@ def overview_console_view(*, name, top_level_ordering, branch_selector = branche
         name does not appear in the list will be sorted lexicographically
         by the console name and appear after entries whose console does
         appear in the list.
-      branch_selector - A branch selector value controlling whether the
-        console view definition is executed. See branches.star for
-        more information.
       kwargs - Additional keyword arguments to forward on to
         `luci.console_view`. The header and repo arguments support
          module-level defaults.
@@ -358,7 +348,7 @@ def _get_list_view_key_fn(console_name):
         return None
     return lambda b: b.name
 
-def _sorted_list_view_impl(ctx, *, console_name):
+def _sorted_list_view_impl(_ctx, *, console_name):
     key = _sorted_list_view_graph_key(console_name)
     graph.add_node(key)
     graph.add_edge(keys.project(), key)

@@ -1,33 +1,38 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
-#include "base/bind.h"
+#import "base/bind.h"
 #import "base/mac/foundation_util.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "components/strings/grit/components_strings.h"
+#import "components/strings/grit/components_strings.h"
+#import "components/url_param_filter/core/features.h"
+#import "components/url_param_filter/core/url_param_filter_test_helper.h"
+#import "ios/chrome/browser/metrics/metrics_app_interface.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 #import "ios/chrome/browser/ui/fullscreen/test/fullscreen_app_interface.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/chrome_xcui_actions.h"
+#import "ios/chrome/test/earl_grey/scoped_block_popups_pref.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/disabled_test_macros.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#include "ios/web/common/features.h"
-#include "ios/web/public/test/element_selector.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
-#include "url/gurl.h"
+#import "ios/web/common/features.h"
+#import "ios/web/public/test/element_selector.h"
+#import "net/http/http_util.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "net/test/embedded_test_server/http_request.h"
+#import "net/test/embedded_test_server/http_response.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -41,10 +46,10 @@ using chrome_test_util::SystemSelectionCalloutCopyButton;
 using chrome_test_util::WebViewMatcher;
 
 namespace {
-// Directory containing the |kLogoPagePath| and |kLogoPageImageSourcePath|
+// Directory containing the `kLogoPagePath` and `kLogoPageImageSourcePath`
 // resources.
 // const char kServerFilesDir[] = "ios/testing/data/http_server_files/";
-// Path to a page containing the chromium logo and the text |kLogoPageText|.
+// Path to a page containing the chromium logo and the text `kLogoPageText`.
 const char kLogoPagePath[] = "/chromium_logo_page.html";
 // Path to the chromium logo.
 const char kLogoPageImageSourcePath[] = "/chromium_logo.png";
@@ -79,6 +84,35 @@ const char kInitialPageHtml[] =
 const char kInitialPageDestinationLinkId[] = "link";
 // The text of the link to the destination page.
 const char kInitialPageDestinationLinkText[] = "link";
+
+// URL to a page with a link to the destination page.
+const char kDecoratedLinkSourcePageUrl[] = "/scenarioContextMenuDecoratedLink";
+// HTML content of a page with a link to the destination page.
+const char kDecoratedLinkSourcePageHtml[] =
+    "<html><head><meta name='viewport' content='width=device-width, "
+    "initial-scale=1.0, maximum-scale=1.0, user-scalable=no' /></head><body><a "
+    "style='margin-left:150px' href='/destination?clid=123&nice_param=456' "
+    "id='link'>"
+    "decorated link</a></body></html>";
+// Destination link with decorated parameters.
+const char kDecoratedDestinationLink[] = "/destination?clid=123&nice_param=456";
+// HTML content of a page that is navigated to via link with decoration.
+const char kDecoratedDestinationPageHtml[] =
+    "<html><head><meta name='viewport' content='width=device-width, "
+    "initial-scale=1.0, maximum-scale=1.0, user-scalable=no' "
+    "/></head><body><script>document.title='new doc'</script>"
+    "<center><span id=\"message\">Decorated destination!</span></center>"
+    "</body></html>";
+// Destination link with decorated parameters removed.
+const char kFilteredDestinationLink[] = "/destination?nice_param=456";
+// HTML content of a page that is navigated to via link with decoration
+// filtered.
+const char kFilteredDestinationPageHtml[] =
+    "<html><head><meta name='viewport' content='width=device-width, "
+    "initial-scale=1.0, maximum-scale=1.0, user-scalable=no' "
+    "/></head><body><script>document.title='new doc'</script>"
+    "<center><span id=\"message\">Filtered destination!</span></center>"
+    "</body></html>";
 
 // URL to a page with a link with a javascript: scheme.
 const char kJavaScriptPageUrl[] = "/scenarionContextMenuJavaScript";
@@ -120,7 +154,25 @@ const char kLongTruncationPageUrl[] = "/longTruncation";
 
 NSString* const kShortLinkHref = @"/destination";
 
-NSString* const kShortImgTitile = @"Chromium logo with a short title";
+NSString* const kShortImgTitle = @"Chromium logo with a short title";
+
+const char kLinkImagePageUrl[] = "/imageLink";
+
+// Template HTML value image test. (Use NSString for easier format printing and
+// matching).
+// Template params:
+//    [0] NSString - link href.
+//    [1] char[]   - link element ID.
+//    [2] NSString - image title
+//    [3] char[]   - image element ID.
+NSString* const kLinkImageHtml =
+    @"<html><head><meta name='viewport' content='width=device-width, "
+     "initial-scale=1.0, maximum-scale=1.0, user-scalable=no' "
+     "/></head><body><p style='margin-bottom:50px'>Image that is also a "
+     "link.</p>"
+     "<p><a style='margin-left:150px' href='%@' id='%s'><img "
+     "src='chromium_logo.png' title='%@' id='%s'/></a></p>"
+     "</body></html>";
 
 // Long titles should be > 100 chars to test truncation.
 NSString* const kLongLinkHref =
@@ -162,7 +214,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   } else if (request.relative_url == kShortTruncationPageUrl) {
     NSString* content = [NSString
         stringWithFormat:kTruncationTestPageTemplateHtml, kShortLinkHref,
-                         kInitialPageDestinationLinkId, kShortImgTitile,
+                         kInitialPageDestinationLinkId, kShortImgTitle,
                          kLogoPageChromiumImageId];
     http_response->set_content(base::SysNSStringToUTF8(content));
   } else if (request.relative_url == kLongTruncationPageUrl) {
@@ -175,6 +227,18 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
     http_response->set_content(kJavaScriptPageHtml);
   } else if (request.relative_url == kMagnetPageUrl) {
     http_response->set_content(kMagnetPageHtml);
+  } else if (request.relative_url == kLinkImagePageUrl) {
+    NSString* content =
+        [NSString stringWithFormat:kLinkImageHtml, kShortLinkHref,
+                                   kInitialPageDestinationLinkId,
+                                   kShortImgTitle, kLogoPageChromiumImageId];
+    http_response->set_content(base::SysNSStringToUTF8(content));
+  } else if (request.relative_url == kDecoratedLinkSourcePageUrl) {
+    http_response->set_content(kDecoratedLinkSourcePageHtml);
+  } else if (request.relative_url == kDecoratedDestinationLink) {
+    http_response->set_content(kDecoratedDestinationPageHtml);
+  } else if (request.relative_url == kFilteredDestinationLink) {
+    http_response->set_content(kFilteredDestinationPageHtml);
   } else {
     return nullptr;
   }
@@ -182,7 +246,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   return std::move(http_response);
 }
 
-// Long presses on |element_id| to trigger context menu.
+// Long presses on `element_id` to trigger context menu.
 void LongPressElement(const char* element_id) {
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
       performAction:chrome_test_util::LongPressElementForContextMenu(
@@ -197,7 +261,7 @@ void ClearContextMenu() {
       performAction:grey_tapAtPoint(CGPointMake(0, 0))];
 }
 
-// Taps on |context_menu_item_button| context menu item.
+// Taps on `context_menu_item_button` context menu item.
 void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
   [[EarlGrey selectElementWithMatcher:context_menu_item_button]
       assertWithMatcher:grey_notNil()];
@@ -208,7 +272,10 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
 }  // namespace
 
 // Context menu tests for Chrome.
-@interface ContextMenuTestCase : ChromeTestCase
+@interface ContextMenuTestCase : ChromeTestCase {
+  std::unique_ptr<ScopedBlockPopupsPref> _blockPopupsPref;
+}
+
 @end
 
 @implementation ContextMenuTestCase
@@ -221,18 +288,10 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
   return config;
 }
 
-+ (void)setUpForTestCase {
-  [super setUpForTestCase];
-  [ChromeEarlGrey setContentSettings:CONTENT_SETTING_ALLOW];
-}
-
-+ (void)tearDown {
-  [ChromeEarlGrey setContentSettings:CONTENT_SETTING_DEFAULT];
-  [super tearDown];
-}
-
 - (void)setUp {
   [super setUp];
+  _blockPopupsPref =
+      std::make_unique<ScopedBlockPopupsPref>(CONTENT_SETTING_ALLOW);
   self.testServer->RegisterRequestHandler(
       base::BindRepeating(&StandardResponse));
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -315,7 +374,7 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
   pointOnImage.y = topInset + 25.0;
   pointOnImage.x = [ChromeEarlGrey webStateWebViewSize].width / 2.0;
 
-  // Duration should match |kContextMenuLongPressDuration| as defined in
+  // Duration should match `kContextMenuLongPressDuration` as defined in
   // web_view_actions.mm.
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
       performAction:grey_longPressAtPointWithDuration(pointOnImage, 1.0)];
@@ -342,14 +401,14 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
 }
 
 // Tests context menu title truncation cases.
-- (void)testContextMenuTtitleTruncation {
+- (void)testContextMenuTitleTruncation {
   const GURL shortTtileURL = self.testServer->GetURL(kShortTruncationPageUrl);
   [ChromeEarlGrey loadURL:shortTtileURL];
   [ChromeEarlGrey waitForPageToFinishLoading];
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
 
   LongPressElement(kLogoPageChromiumImageId);
-  [[EarlGrey selectElementWithMatcher:grey_text(kShortImgTitile)]
+  [[EarlGrey selectElementWithMatcher:grey_text(kShortImgTitle)]
       assertWithMatcher:grey_notNil()];
   ClearContextMenu();
 
@@ -383,7 +442,6 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
       assertWithMatcher:grey_notNil()];
   ClearContextMenu();
 }
-
 // Tests that system touches are cancelled when the context menu is shown.
 - (void)testContextMenuCancelSystemTouchesMetric {
   const GURL pageURL = self.testServer->GetURL(kLogoPagePath);
@@ -424,7 +482,7 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
       assertWithMatcher:grey_notNil()];
 
   // TODO(crbug.com/1233056): Tap to dismiss the system selection callout
-  // buttons so tearDown doesn't hang when |disabler| goes out of scope.
+  // buttons so tearDown doesn't hang when `disabler` goes out of scope.
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
       performAction:grey_tap()];
 }
@@ -449,12 +507,9 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
       // Tap the tools menu to dismiss the popover.
       [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuButton()]
           performAction:grey_tap()];
-    } else if (web::features::UseWebViewNativeContextMenuSystem()) {
-      // Tap the drop shadow to dismiss the popover.
-      chrome_test_util::TapAtOffsetOf(nil, 0, CGVectorMake(0.5, 0.95));
-    } else {
-      TapOnContextMenuButton(chrome_test_util::CancelButton());
     }
+    // Tap the drop shadow to dismiss the popover.
+    chrome_test_util::TapAtOffsetOf(nil, 0, CGVectorMake(0.5, 0.95));
 
     // Make sure the context menu disappeared.
     ConditionBlock condition = ^{
@@ -493,28 +548,18 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
                                    IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB)]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::ButtonWithAccessibilityLabelId(
-                     web::features::UseWebViewNativeContextMenuSystem()
-                         ? IDS_IOS_OPEN_IN_INCOGNITO_ACTION_TITLE
-                         : IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWINCOGNITOTAB)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_OPEN_IN_INCOGNITO_ACTION_TITLE)]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
                                    IDS_IOS_CONTENT_CONTEXT_ADDTOREADINGLIST)]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::ButtonWithAccessibilityLabelId(
-                     web::features::UseWebViewNativeContextMenuSystem()
-                         ? IDS_IOS_COPY_LINK_ACTION_TITLE
-                         : IDS_IOS_CONTENT_CONTEXT_COPY)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_COPY_LINK_ACTION_TITLE)]
       assertWithMatcher:grey_sufficientlyVisible()];
-  if (![ChromeEarlGrey isIPadIdiom] &&
-      !web::features::UseWebViewNativeContextMenuSystem()) {
-    [[EarlGrey selectElementWithMatcher:
-                   chrome_test_util::ButtonWithAccessibilityLabelId(IDS_CANCEL)]
-        assertWithMatcher:grey_sufficientlyVisible()];
-  }
 }
 
 // Checks that "open in new window" shows up on a long press of a url link
@@ -589,11 +634,9 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
   LongPressElement(kInitialPageDestinationLinkId);
 
   // Check the different buttons.
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::ButtonWithAccessibilityLabelId(
-                     web::features::UseWebViewNativeContextMenuSystem()
-                         ? IDS_IOS_COPY_LINK_ACTION_TITLE
-                         : IDS_IOS_CONTENT_CONTEXT_COPY)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_COPY_LINK_ACTION_TITLE)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Make sure that the open action is not displayed.
@@ -611,12 +654,250 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
   LongPressElement(kInitialPageDestinationLinkId);
 
   // Check the different buttons.
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::ButtonWithAccessibilityLabelId(
-                     web::features::UseWebViewNativeContextMenuSystem()
-                         ? IDS_IOS_COPY_LINK_ACTION_TITLE
-                         : IDS_IOS_CONTENT_CONTEXT_COPY)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_COPY_LINK_ACTION_TITLE)]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+@end
+
+@interface FilterWhenEnteringIncognitoDisabled : ChromeTestCase {
+  std::unique_ptr<ScopedBlockPopupsPref> _blockPopupsPref;
+}
+
+@end
+
+@implementation FilterWhenEnteringIncognitoDisabled
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+
+  config.features_disabled.push_back(
+      url_param_filter::features::kIncognitoParamFilterEnabled);
+  return config;
+}
+
+- (void)setUp {
+  [super setUp];
+  _blockPopupsPref =
+      std::make_unique<ScopedBlockPopupsPref>(CONTENT_SETTING_ALLOW);
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&StandardResponse));
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+}
+
+// Checks that a decorated link isn't filtered when "Open in Incognito" is
+// pressed and the kIncognitoParamFilterEnabled feature is disabled.
+- (void)testOpenIncognitoLinkDoesntFilterUrlTestCase {
+  // Loads url in first window.
+  const GURL initialURL = self.testServer->GetURL(kDecoratedLinkSourcePageUrl);
+  [ChromeEarlGrey loadURL:initialURL inWindowWithNumber:0];
+
+  [ChromeEarlGrey waitForWebStateContainingText:kInitialPageDestinationLinkText
+                             inWindowWithNumber:0];
+
+  // Display the context menu.
+  LongPressElement(kInitialPageDestinationLinkId);
+
+  // Open link in Incognito.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::OpenLinkInIncognitoButton()]
+      performAction:grey_tap()];
+
+  // Assert that "clid" was not filtered from the loaded URL.
+  [ChromeEarlGrey waitForWebStateContainingText:"Decorated destination!"
+                             inWindowWithNumber:0];
+  GREYAssertEqual([ChromeEarlGrey webStateLastCommittedURL],
+                  self.testServer->GetURL(kDecoratedDestinationLink),
+                  @"URL was filtered when it shouldn't have been");
+}
+
+@end
+
+// The IncognitoParamFilterExperiment feature is enabled, but the should_filter
+// param is false. The expected behavior is that params aren't be filtered from
+// URLs, but metrics are logged.
+@interface FilterWhenEnteringIncognitoPartiallyEnabled : ChromeTestCase {
+  std::unique_ptr<ScopedBlockPopupsPref> _blockPopupsPref;
+}
+
+@end
+
+@implementation FilterWhenEnteringIncognitoPartiallyEnabled
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.additional_args.push_back(
+      "--enable-features=" +
+      std::string(
+          url_param_filter::features::kIncognitoParamFilterEnabled.name) +
+      ":should_filter/false");
+  return config;
+}
+
+- (void)setUp {
+  [super setUp];
+  _blockPopupsPref =
+      std::make_unique<ScopedBlockPopupsPref>(CONTENT_SETTING_ALLOW);
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&StandardResponse));
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Failed to set up histogram tester.");
+  // Set 127.0.0.1,clid as a (site,param) source classification for Url Param
+  // Filtering.
+  std::string test_contents =
+      url_param_filter::CreateSerializedUrlParamFilterClassificationForTesting(
+          {{"127.0.0.1", {"clid"}}}, {}, {"default"});
+  [ChromeEarlGrey setUrlParamClassifications:test_contents];
+}
+
+- (void)tearDown {
+  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                @"Cannot reset histogram tester.");
+  [super tearDown];
+  [ChromeEarlGrey resetUrlParamClassifications];
+}
+
+// Checks that a decorated link isn't filtered when "Open in Incognito" is
+// pressed and the kIncognitoParamFilterEnabled feature is disabled.
+- (void)testOpenIncognitoLinkDoesntFilterUrlTestCase {
+  // Loads url in first window.
+  const GURL initialURL = self.testServer->GetURL(kDecoratedLinkSourcePageUrl);
+  [ChromeEarlGrey loadURL:initialURL inWindowWithNumber:0];
+
+  [ChromeEarlGrey waitForWebStateContainingText:kInitialPageDestinationLinkText
+                             inWindowWithNumber:0];
+
+  // Display the context menu.
+  LongPressElement(kInitialPageDestinationLinkId);
+
+  // Open link in Incognito.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::OpenLinkInIncognitoButton()]
+      performAction:grey_tap()];
+
+  // Assert that "clid" was not filtered from the loaded URL.
+  [ChromeEarlGrey waitForWebStateContainingText:"Decorated destination!"
+                             inWindowWithNumber:0];
+  GREYAssertEqual([ChromeEarlGrey webStateLastCommittedURL],
+                  self.testServer->GetURL(kDecoratedDestinationLink),
+                  @"URL was filtered when it shouldn't have been");
+
+  // Reload the page once.
+  [ChromeEarlGrey reloadAndWaitForCompletion:true];
+
+  // Close the tab to check that the tab helper logged metrics when destroyed.
+  [ChromeEarlGrey closeCurrentTab];
+
+  // Ensure that UMA was logged correctly.
+  NSError* error = [MetricsAppInterface
+      expectUniqueSampleWithCount:1
+                        forBucket:net::HttpUtil::MapStatusCodeForHistogram(200)
+                     forHistogram:
+                         @"Navigation.CrossOtr.ContextMenu.ResponseCode"];
+  if (error) {
+    GREYFail([error description]);
+  }
+  error = [MetricsAppInterface
+      expectTotalCount:1
+          forHistogram:@"Navigation.CrossOtr.ContextMenu.RefreshCount"];
+  if (error) {
+    GREYFail([error description]);
+  }
+}
+
+@end
+
+@interface FilterWhenEnteringIncognitoFullyEnabled : ChromeTestCase {
+  std::unique_ptr<ScopedBlockPopupsPref> _blockPopupsPref;
+}
+
+@end
+
+@implementation FilterWhenEnteringIncognitoFullyEnabled
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.additional_args.push_back(
+      "--enable-features=" +
+      std::string(
+          url_param_filter::features::kIncognitoParamFilterEnabled.name) +
+      ":should_filter/true");
+  return config;
+}
+
+- (void)setUp {
+  [super setUp];
+  _blockPopupsPref =
+      std::make_unique<ScopedBlockPopupsPref>(CONTENT_SETTING_ALLOW);
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&StandardResponse));
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Failed to set up histogram tester.");
+  // Set 127.0.0.1,clid as a (site,param) source classification for Url Param
+  // Filtering.
+  std::string test_contents =
+      url_param_filter::CreateSerializedUrlParamFilterClassificationForTesting(
+          {{"127.0.0.1", {"clid"}}}, {}, {"default"});
+  [ChromeEarlGrey setUrlParamClassifications:test_contents];
+}
+
+- (void)tearDown {
+  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                @"Cannot reset histogram tester.");
+  [super tearDown];
+  [ChromeEarlGrey resetUrlParamClassifications];
+}
+
+// Checks that a decorated link is filtered when "Open in Incognito" is pressed
+// and the kIncognitoParamFilterEnabled feature is enabled.
+- (void)testOpenIncognitoLinkDoesFilterUrlTestCase {
+  // Loads url in first window.
+  const GURL initialURL = self.testServer->GetURL(kDecoratedLinkSourcePageUrl);
+  [ChromeEarlGrey loadURL:initialURL inWindowWithNumber:0];
+
+  [ChromeEarlGrey waitForWebStateContainingText:kInitialPageDestinationLinkText
+                             inWindowWithNumber:0];
+
+  // Display the context menu.
+  LongPressElement(kInitialPageDestinationLinkId);
+
+  // Open link in new window.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::OpenLinkInIncognitoButton()]
+      performAction:grey_tap()];
+
+  // Assert that "clid" was filtered from the loaded URL.
+  [ChromeEarlGrey waitForWebStateContainingText:"Filtered destination!"
+                             inWindowWithNumber:0];
+  GREYAssertEqual([ChromeEarlGrey webStateLastCommittedURL],
+                  self.testServer->GetURL(kFilteredDestinationLink),
+                  @"URL wasn't filtered when it should've been");
+
+  // Reload the page once.
+  [ChromeEarlGrey reloadAndWaitForCompletion:true];
+
+  // Close the tab to check that the tab helper logged metrics when destroyed.
+  [ChromeEarlGrey closeCurrentTab];
+
+  // Ensure that UMA was logged correctly.
+  NSError* error = [MetricsAppInterface
+      expectUniqueSampleWithCount:1
+                        forBucket:net::HttpUtil::MapStatusCodeForHistogram(200)
+                     forHistogram:
+                         @"Navigation.CrossOtr.ContextMenu.ResponseCode"];
+  if (error) {
+    GREYFail([error description]);
+  }
+  error = [MetricsAppInterface
+      expectTotalCount:1
+          forHistogram:@"Navigation.CrossOtr.ContextMenu.RefreshCount"];
+  if (error) {
+    GREYFail([error description]);
+  }
 }
 
 @end

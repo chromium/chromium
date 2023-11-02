@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_config.h"
 #include "components/feedback/feedback_util.h"
@@ -24,6 +25,15 @@ int g_next_trace_id = 1;
 // Name of the file to store the tracing data as.
 const base::FilePath::CharType kTracingFilename[] =
     FILE_PATH_LITERAL("tracing.json");
+
+scoped_refptr<base::RefCountedString> CompressTraceData(
+    std::unique_ptr<std::string> trace_data) {
+  std::string output_val;
+  feedback_util::ZipString(base::FilePath(kTracingFilename), *trace_data,
+                           &output_val);
+  return base::RefCountedString::TakeString(&output_val);
+}
+
 }  // namespace
 
 ContentTracingManager::ContentTracingManager() {
@@ -47,10 +57,12 @@ int ContentTracingManager::RequestTrace() {
 
   current_trace_id_ = g_next_trace_id;
   ++g_next_trace_id;
+
   content::TracingController::GetInstance()->StopTracing(
       content::TracingController::CreateStringEndpoint(
           base::BindOnce(&ContentTracingManager::OnTraceDataCollected,
                          weak_ptr_factory_.GetWeakPtr())));
+
   return current_trace_id_;
 }
 
@@ -105,17 +117,23 @@ void ContentTracingManager::OnTraceDataCollected(
   if (!current_trace_id_)
     return;
 
-  std::string output_val;
-  feedback_util::ZipString(base::FilePath(kTracingFilename), *trace_data,
-                           &output_val);
+  // Compress the trace data in a separate thread because the operation involves
+  // blocking calls.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&CompressTraceData, std::move(trace_data)),
+      base::BindOnce(&ContentTracingManager::OnTraceDataCompressed,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
 
-  scoped_refptr<base::RefCountedString> output(
-      base::RefCountedString::TakeString(&output_val));
+void ContentTracingManager::OnTraceDataCompressed(
+    scoped_refptr<base::RefCountedString> compressed_data) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  trace_data_[current_trace_id_] = output;
+  trace_data_[current_trace_id_] = compressed_data;
 
   if (trace_callback_)
-    std::move(trace_callback_).Run(output);
+    std::move(trace_callback_).Run(compressed_data);
 
   current_trace_id_ = 0;
 

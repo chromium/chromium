@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,10 +18,15 @@ namespace blink {
 
 class GraphicsContext;
 
-class CommitCycleScope : public PaintController::CycleScope {
+class PaintControllerCycleScopeForTest : public PaintControllerCycleScope {
  public:
-  explicit CommitCycleScope(PaintController& controller)
-      : PaintController::CycleScope(controller, true) {}
+  explicit PaintControllerCycleScopeForTest(PaintController& controller)
+      : PaintControllerCycleScope(controller, /*record_debug_info*/ true) {}
+};
+
+class CommitCycleScope : public PaintControllerCycleScopeForTest {
+ public:
+  using PaintControllerCycleScopeForTest::PaintControllerCycleScopeForTest;
   ~CommitCycleScope() {
     for (auto* controller : controllers_)
       controller->CommitNewDisplayItems();
@@ -45,7 +50,7 @@ class PaintControllerTestBase : public testing::Test {
     if (DrawingRecorder::UseCachedDrawingIfPossible(context, client, type))
       return;
     DrawingRecorder recorder(context, client, type, bounds);
-    context.DrawRect(IntRect(bounds), AutoDarkMode::Disabled());
+    context.DrawRect(bounds, AutoDarkMode::Disabled());
   }
 
  protected:

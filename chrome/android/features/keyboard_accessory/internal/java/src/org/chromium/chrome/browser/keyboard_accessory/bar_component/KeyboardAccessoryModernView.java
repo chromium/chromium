@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,7 @@ import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
+import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.ui.widget.ViewRectProvider;
 
@@ -148,12 +149,14 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
 
     @Override
     void setVisible(boolean visible) {
+        TraceEvent.begin("KeyboardAccessoryModernView#setVisible");
         super.setVisible(visible);
         if (visible) {
             mBarItemsView.post(mBarItemsView::invalidateItemDecorations);
             // Animate the suggestions only if the bar wasn't visible already.
             if (getVisibility() != View.VISIBLE) animateSuggestionArrival();
         }
+        TraceEvent.end("KeyboardAccessoryModernView#setVisible");
     }
 
     @Override
@@ -195,10 +198,12 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
     }
 
     void setKeyboardToggleVisibility(boolean hasActiveTab) {
+        TraceEvent.begin("KeyboardAccessoryModernView#setKeyboardToggleVisibility");
         mKeyboardToggle.setVisibility(hasActiveTab ? VISIBLE : GONE);
         mSheetTitle.setVisibility(hasActiveTab ? VISIBLE : GONE);
         mBarItemsView.setVisibility(hasActiveTab ? GONE : VISIBLE);
         if (!hasActiveTab) mBarItemsView.post(mBarItemsView::invalidateItemDecorations);
+        TraceEvent.end("KeyboardAccessoryModernView#setKeyboardToggleVisibility");
     }
 
     void setSheetTitle(String title) {

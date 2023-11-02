@@ -1,0 +1,60 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/compiled_action.gni")
+
+# Helper template to define an action that convert string identifiers to
+# their numerical value in plist files.
+#
+# Arguments
+#     source
+#         string, path to the property list file that needs to be converted.
+#
+#     output
+#         string, path to the generated property list file.
+#
+#     headers
+#         list of strings corresponding to the path of all grit generated
+#         headers that needs to be loaded to get the definition of the
+#         string identifiers mapping.
+#
+#     deps
+#         list of target labels.
+#
+template("substitute_strings_identifier") {
+  assert(defined(invoker.source),
+         "source needs to be defined for ${target_name}")
+  assert(defined(invoker.output),
+         "output needs to be defined for ${target_name}")
+  assert(defined(invoker.headers),
+         "headers needs to be defined for ${target_name}")
+
+  compiled_action(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "testonly",
+                             "deps",
+                             "public_deps",
+                             "visibility",
+                           ])
+
+    tool = "//ios/chrome/tools/strings:substitute_strings_identifier"
+    inputs = [ invoker.source ] + invoker.headers
+    outputs = [ invoker.output ]
+
+    args = [
+      "-i",
+      rebase_path(invoker.source, root_build_dir),
+      "-o",
+      rebase_path(invoker.output, root_build_dir),
+    ]
+
+    foreach(_header, invoker.headers) {
+      args += [
+        "-I",
+        rebase_path(_header, root_build_dir),
+      ]
+    }
+  }
+}

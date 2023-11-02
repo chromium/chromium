@@ -1,10 +1,8 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import {GlitchType, reportGlitch} from './glitch.js';
-
-(function() {
 
 /**
  * This variable is checked in several integration and unit tests, to make sure
@@ -71,34 +69,4 @@ console.assert = (() => {
     }
     return orig.apply(this, [condition].concat(args.join('\n')));
   };
-})();
-
-/**
- * Wraps the function to use it as a callback, adding:
- *  - Stack trace of wrapping time, which better reveals the call site.
- *  - Bind this object
- *
- * @param {Object=} thisObject Object to be used as this.
- * @param {...*} bindArgs Arguments to be bound with the wrapped function.
- * @return {function(...)} Wrapped function.
- */
-Function.prototype.wrap = function(thisObject, ...bindArgs) {
-  const func = this;
-  const bindStack = (new Error('Stack trace before async call')).stack;
-  if (thisObject === undefined) {
-    thisObject = null;
-  }
-  return function wrappedCallback(...args) {
-    try {
-      const finalArgs = bindArgs.concat(args);
-      return func.apply(thisObject, finalArgs);
-    } catch (e) {
-      // Log current exception and the stack for the binding time.
-      console.error(
-          e.stack || e,
-          'Exception happened in callback which was bound at:', bindStack);
-      throw e;
-    }
-  };
-};
 })();

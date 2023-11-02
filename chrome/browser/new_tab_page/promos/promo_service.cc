@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,12 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/observer_list.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -31,6 +34,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
 
 namespace {
 
@@ -41,8 +45,38 @@ const char kNewTabPromosApiPath[] = "/async/newtab_promos";
 
 const char kXSSIResponsePreamble[] = ")]}'";
 
+constexpr char kWarningSymbol[] =
+    "data:image/"
+    "svg+xml;base64,"
+    "PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9Ii01IC"
+    "01IDU4IDU4IiBmaWxsPSIjZmRkNjMzIj48cGF0aCBkPSJNMiA0Mmg0NEwyNCA0IDIgNDJ6"
+    "bTI0LTZoLTR2LTRoNHY0em0wLThoLTR2LThoNHY4eiIvPjwvc3ZnPg==";
+constexpr char kFakePromo[] = R"({
+  "update": {
+    "promos": {
+      "middle": "test",
+      "middle_announce_payload": {
+        "hidden": false,
+        "part": [{
+          "image": {
+            "image_url": "%s",
+            "target": "command:%s"
+          }
+        },{
+          "link": {
+            "url": "command:%s",
+            "text": "Test command: %s"
+          }
+        }]
+      },
+      "id": "test%s"
+    }
+  }
+})";
+
 bool CanBlockPromos() {
-  return base::FeatureList::IsEnabled(ntp_features::kDismissPromos);
+  return base::FeatureList::IsEnabled(
+      ntp_features::kNtpMiddleSlotPromoDismissal);
 }
 
 GURL GetGoogleBaseUrl() {
@@ -58,7 +92,8 @@ GURL GetApiUrl() {
 }
 
 // Parses an update proto from |value|. Will return false if |value| is not of
-// the form: {"update":{"promos":{"middle": ""}}}, and true otherwise.
+// the form: {"update":{"promos":{"middle_announce_payload": ""}}}, and true
+// otherwise.
 // Additionally, there can be a "log_url" or "id" field in the promo. Those are
 // populated if found. They're not set for emergency promos. |data| will never
 // be absl::nullopt if top level dictionary keys of "update" and "promos" are
@@ -68,20 +103,20 @@ bool JsonToPromoData(const base::Value& value,
                      absl::optional<PromoData>* data) {
   *data = absl::nullopt;
 
-  const base::DictionaryValue* dict = nullptr;
-  if (!value.GetAsDictionary(&dict)) {
+  if (!value.is_dict()) {
     DVLOG(1) << "Parse error: top-level dictionary not found";
     return false;
   }
+  const base::Value::Dict& dict = value.GetDict();
 
-  const base::DictionaryValue* update = nullptr;
-  if (!dict->GetDictionary("update", &update)) {
+  const base::Value::Dict* update = dict.FindDict("update");
+  if (!update) {
     DVLOG(1) << "Parse error: no update";
     return false;
   }
 
-  const base::DictionaryValue* promos = nullptr;
-  if (!update->GetDictionary("promos", &promos)) {
+  const base::Value::Dict* promos = update->FindDict("promos");
+  if (!promos) {
     DVLOG(1) << "Parse error: no promos";
     return false;
   }
@@ -89,22 +124,18 @@ bool JsonToPromoData(const base::Value& value,
   PromoData result;
   *data = result;
 
-  std::string middle;
-  if (!promos->GetString("middle", &middle)) {
-    DVLOG(1) << "No middle promo";
+  const base::Value::Dict* middle_announce_payload =
+      promos->FindDict("middle_announce_payload");
+  if (!middle_announce_payload) {
+    DVLOG(1) << "No middle announce payload";
     return false;
   }
+  JSONStringValueSerializer serializer(&result.middle_slot_json);
+  serializer.Serialize(*middle_announce_payload);
 
-  const base::Value* middle_announce_payload = promos->FindKeyOfType(
-      "middle_announce_payload", base::Value::Type::DICTIONARY);
-  if (middle_announce_payload) {
-    JSONStringValueSerializer serializer(&result.middle_slot_json);
-    serializer.Serialize(*middle_announce_payload);
-  }
-
-  std::string log_url;
+  const std::string* maybe_log_url = promos->FindString("log_url");
   // Emergency promos don't have these, so it's OK if this key is missing.
-  promos->GetString("log_url", &log_url);
+  std::string log_url = maybe_log_url ? *maybe_log_url : std::string();
 
   GURL promo_log_url;
   if (!log_url.empty())
@@ -112,14 +143,16 @@ bool JsonToPromoData(const base::Value& value,
 
   std::string promo_id;
   if (CanBlockPromos()) {
-    if (!promos->GetString("id", &promo_id))
+    const std::string* maybe_promo_id = promos->FindString("id");
+    if (maybe_promo_id)
+      promo_id = *maybe_promo_id;
+    else
       net::GetValueForKeyInQuery(promo_log_url, "id", &promo_id);
   }
 
   // Emergency promos may not have IDs, which is OK. They also can't be
   // dismissed (because of this).
 
-  result.promo_html = middle;
   result.promo_log_url = promo_log_url;
   result.promo_id = promo_id;
 
@@ -138,6 +171,30 @@ PromoService::PromoService(
 PromoService::~PromoService() = default;
 
 void PromoService::Refresh() {
+  std::string command_id;
+  // Replace the promo URL with "command:<id>" if such a command ID is set
+  // via the feature params.
+  // If fake data is being used, we set the command_id to 7, which corresponds
+  // to kNoOpCommand in
+  // ui/webui/resources/js/browser_command/browser_command.mojom
+  if (base::GetFieldTrialParamValueByFeature(
+          ntp_features::kNtpMiddleSlotPromoDismissal,
+          ntp_features::kNtpMiddleSlotPromoDismissalParam) == "fake") {
+    command_id = base::NumberToString(
+        static_cast<int>(browser_command::mojom::Command::kNoOpCommand));
+  } else {
+    command_id = base::GetFieldTrialParamValueByFeature(
+        features::kPromoBrowserCommands, features::kBrowserCommandIdParam);
+  }
+
+  if (!command_id.empty()) {
+    auto fake_promo_json = std::make_unique<std::string>(base::StringPrintf(
+        kFakePromo, kWarningSymbol, command_id.c_str(), command_id.c_str(),
+        command_id.c_str(), command_id.c_str()));
+    OnLoadDone(std::move(fake_promo_json));
+    return;
+  }
+
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("promo_service", R"(
         semantics {
@@ -200,8 +257,8 @@ void PromoService::OnLoadDone(std::unique_ptr<std::string> response_body) {
 
 void PromoService::OnJsonParsed(
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.value) {
-    DVLOG(1) << "Parsing JSON failed: " << *result.error;
+  if (!result.has_value()) {
+    DVLOG(1) << "Parsing JSON failed: " << result.error();
     PromoDataLoaded(Status::FATAL_ERROR, absl::nullopt);
     return;
   }
@@ -209,7 +266,7 @@ void PromoService::OnJsonParsed(
   absl::optional<PromoData> data;
   PromoService::Status status;
 
-  if (JsonToPromoData(*result.value, &data)) {
+  if (JsonToPromoData(*result, &data)) {
     bool is_blocked = IsBlockedAfterClearingExpired(data->promo_id);
     if (is_blocked)
       data = PromoData();
@@ -234,6 +291,10 @@ void PromoService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kNtpPromoBlocklist);
 }
 
+const absl::optional<PromoData>& PromoService::promo_data() const {
+  return promo_data_;
+}
+
 void PromoService::AddObserver(PromoServiceObserver* observer) {
   observers_.AddObserver(observer);
 }
@@ -248,16 +309,31 @@ void PromoService::BlocklistPromo(const std::string& promo_id) {
     return;
   }
 
-  DictionaryPrefUpdate update(profile_->GetPrefs(), prefs::kNtpPromoBlocklist);
+  ScopedDictPrefUpdate update(profile_->GetPrefs(), prefs::kNtpPromoBlocklist);
   double now = base::Time::Now().ToDeltaSinceWindowsEpoch().InSecondsF();
-  update->SetDoubleKey(promo_id, now);
+  update->Set(promo_id, now);
 
+  // Check if the promo id to be blocked is the same as the promo id of the
+  // current promo being served.
   if (promo_data_ && promo_data_->promo_id == promo_id) {
     promo_data_ = PromoData();
     promo_status_ = Status::OK_BUT_BLOCKED;
     NotifyObservers();
     // TODO(crbug.com/1003508): hide promos on existing, already-opened NTPs.
   }
+}
+
+void PromoService::UndoBlocklistPromo(const std::string& promo_id) {
+  if (promo_id.empty()) {
+    return;
+  }
+
+  ScopedDictPrefUpdate update(profile_->GetPrefs(), prefs::kNtpPromoBlocklist);
+  update->Remove(promo_id);
+
+  // Refresh promo service since cached promo data was cleared in
+  // BlocklistPromo(), which is called before UndoBlocklistPromo().
+  Refresh();
 }
 
 void PromoService::PromoDataLoaded(Status status,
@@ -290,9 +366,8 @@ bool PromoService::IsBlockedAfterClearingExpired(
 
   std::vector<std::string> expired_ids;
 
-  for (auto blocked : profile_->GetPrefs()
-                          ->GetDictionary(prefs::kNtpPromoBlocklist)
-                          ->DictItems()) {
+  for (auto blocked :
+       profile_->GetPrefs()->GetDict(prefs::kNtpPromoBlocklist)) {
     if (!blocked.second.is_double() || blocked.second.GetDouble() < expired)
       expired_ids.emplace_back(blocked.first);
     else if (!found && blocked.first == promo_id)
@@ -300,10 +375,10 @@ bool PromoService::IsBlockedAfterClearingExpired(
   }
 
   if (!expired_ids.empty()) {
-    DictionaryPrefUpdate update(profile_->GetPrefs(),
+    ScopedDictPrefUpdate update(profile_->GetPrefs(),
                                 prefs::kNtpPromoBlocklist);
     for (const std::string& key : expired_ids)
-      update->RemoveKey(key);
+      update->Remove(key);
   }
 
   return found;

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -19,13 +19,6 @@ gen-bundle \
   -primaryURL https://test.example.org/ \
   -dir web_bundle_browsertest/ \
   -o web_bundle_browsertest_b2.wbn
-
-gen-bundle \
-  -version b1 \
-  -baseURL https://test.example.org/ \
-  -primaryURL https://test.example.org/ \
-  -dir web_bundle_browsertest/ \
-  -o web_bundle_browsertest_b1.wbn
 
 # Generate a base WBN which will used to generate broken WBN.
 # This WBN must contains 3 entries:
@@ -54,24 +47,16 @@ xxd -p broken_bundle_base_b2.wbn |
   xxd -r -p > broken_bundle_broken_script_entry_b2.wbn
 
 gen-bundle \
-  -version b1 \
+  -version b2 \
+  -har foo_url.har \
+  -primaryURL foo://bar/ \
+  -o foo_primary_url_bundle_b2.wbn
+
+gen-bundle \
+  -version b2 \
+  -har foo_url.har \
   -primaryURL https://test.example.org/ \
-  -har variants_test.har \
-  -o variants_test_b1.wbn
-
-# Generate a WBN which will be used as a cross origin bundle.
-gen-bundle \
-  -version b1 \
-  -har cross_origin.har \
-  -primaryURL https://cross-origin.test/web_bundle/resource.json \
-  -o cross_origin_b1.wbn
-
-# Generate a WBN which will be used as a same origin bundle.
-gen-bundle \
-  -version b1 \
-  -har same_origin.har \
-  -primaryURL https://same-origin.test/web_bundle/resource.json \
-  -o same_origin_b1.wbn
+  -o foo_base_url_bundle_b2.wbn
 
 # Generate a WBN which will be used as a cross origin bundle.
 gen-bundle \
@@ -84,18 +69,6 @@ gen-bundle \
   -version b2 \
   -har same_origin.har \
   -o same_origin_b2.wbn
-
-# Generate a WBN which includes urn:uuid resources.
-gen-bundle \
-  -version b1 \
-  -har urn-uuid.har \
-  -primaryURL urn:uuid:429fcc4e-0696-4bad-b099-ee9175f023ae \
-  -o urn-uuid.wbn
-
-# Update Content-Length header in urn-uuid.wbn.mock-http-headers.
-(cat cross_origin_b2.wbn.mock-http-headers; \
- echo Content-Length: `wc -c <urn-uuid.wbn`) \
-    > urn-uuid.wbn.mock-http-headers
 
 # Generate a WBN which includes uuid-in-package resources.
 gen-bundle \

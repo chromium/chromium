@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,13 +15,11 @@
 #include <utility>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "net/base/host_port_pair.h"
-#include "net/ssl/ssl_client_cert_type.h"
+#include "net/cert/test_root_certs.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
@@ -30,6 +28,7 @@ namespace net {
 
 class AddressList;
 class ScopedPortException;
+class ScopedTestRoot;
 class X509Certificate;
 
 // The base class of Test server implementation.
@@ -37,12 +36,8 @@ class BaseTestServer {
  public:
   typedef std::pair<std::string, std::string> StringPair;
 
-  // Following types represent protocol schemes. See also
-  // http://www.iana.org/assignments/uri-schemes.html
   enum Type {
     TYPE_BASIC_AUTH_PROXY,
-    TYPE_HTTP,
-    TYPE_HTTPS,
     TYPE_WS,
     TYPE_WSS,
     TYPE_PROXY,
@@ -84,31 +79,6 @@ class BaseTestServer {
       CERT_TEST_NAMES,
     };
 
-    // NOTE: the values of these enumerators are passed to the the Python test
-    // server. Do not change them.
-    enum TLSIntolerantLevel {
-      TLS_INTOLERANT_NONE = 0,
-      TLS_INTOLERANT_ALL = 1,     // Intolerant of all TLS versions.
-      TLS_INTOLERANT_TLS1_1 = 2,  // Intolerant of TLS 1.1 or higher.
-      TLS_INTOLERANT_TLS1_2 = 3,  // Intolerant of TLS 1.2 or higher.
-      TLS_INTOLERANT_TLS1_3 = 4,  // Intolerant of TLS 1.3 or higher.
-    };
-
-    // Values which control how the server reacts in response to a ClientHello
-    // it is intolerant of.
-    enum TLSIntoleranceType {
-      TLS_INTOLERANCE_ALERT = 0,  // Send a handshake_failure alert.
-      TLS_INTOLERANCE_CLOSE = 1,  // Close the connection.
-      TLS_INTOLERANCE_RESET = 2,  // Send a TCP reset.
-    };
-
-    enum TLSMaxVersion {
-      TLS_MAX_VERSION_DEFAULT = 0,
-      TLS_MAX_VERSION_TLS1_0 = 1,
-      TLS_MAX_VERSION_TLS1_1 = 2,
-      TLS_MAX_VERSION_TLS1_2 = 3,
-    };
-
     // Initialize a new SSLOptions using CERT_OK as the certificate.
     SSLOptions();
 
@@ -135,33 +105,6 @@ class BaseTestServer {
     // from each certificate will be added to the certificate_authorities
     // field of the CertificateRequest.
     std::vector<base::FilePath> client_authorities;
-
-    // If |request_client_certificate| is true, an optional list of
-    // SSLClientCertType values to populate the certificate_types field of the
-    // CertificateRequest.
-    std::vector<SSLClientCertType> client_cert_types;
-
-    // If not TLS_INTOLERANT_NONE, the server will abort any handshake that
-    // negotiates an intolerant TLS version in order to test version fallback.
-    TLSIntolerantLevel tls_intolerant = TLS_INTOLERANT_NONE;
-
-    // If |tls_intolerant| is not TLS_INTOLERANT_NONE, how the server reacts to
-    // an intolerant TLS version.
-    TLSIntoleranceType tls_intolerance_type = TLS_INTOLERANCE_ALERT;
-
-    // The maximum TLS version to support.
-    TLSMaxVersion tls_max_version = TLS_MAX_VERSION_DEFAULT;
-
-    // Whether to send a fatal alert immediately after completing the handshake.
-    bool alert_after_handshake = false;
-
-    // If true, sends the TLS 1.3 to TLS 1.2 downgrade signal in the ServerHello
-    // random.
-    bool simulate_tls13_downgrade = false;
-
-    // If true, sends the TLS 1.2 to TLS 1.1 downgrade signal in the ServerHello
-    // random.
-    bool simulate_tls12_downgrade = false;
   };
 
   // Initialize a TestServer.
@@ -174,7 +117,7 @@ class BaseTestServer {
   BaseTestServer& operator=(const BaseTestServer&) = delete;
 
   // Starts the server blocking until the server is ready.
-  bool Start() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Start();
 
   // Start the test server without blocking. Use this if you need multiple test
   // servers (such as WebSockets and HTTP, or HTTP and HTTPS). You must call
@@ -190,11 +133,11 @@ class BaseTestServer {
   //   RunMyTest();
   //
   // Returns true on success.
-  virtual bool StartInBackground() WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual bool StartInBackground() = 0;
 
   // Block until the test server is ready. Returns true on success. See
   // StartInBackground() documentation for more information.
-  virtual bool BlockUntilStarted() WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual bool BlockUntilStarted() = 0;
 
   // Returns the host port pair used by current Python based test server only
   // if the server is started.
@@ -203,7 +146,7 @@ class BaseTestServer {
   const base::FilePath& document_root() const { return document_root_; }
   const base::Value& server_data() const;
   std::string GetScheme() const;
-  bool GetAddressList(AddressList* address_list) const WARN_UNUSED_RESULT;
+  [[nodiscard]] bool GetAddressList(AddressList* address_list) const;
 
   GURL GetURL(const std::string& path) const;
   GURL GetURL(const std::string& hostname,
@@ -221,10 +164,7 @@ class BaseTestServer {
       const std::vector<StringPair>& text_to_replace,
       std::string* replacement_path);
 
-  static bool UsingSSL(Type type) {
-    return type == BaseTestServer::TYPE_HTTPS ||
-           type == BaseTestServer::TYPE_WSS;
-  }
+  static bool UsingSSL(Type type) { return type == BaseTestServer::TYPE_WSS; }
 
   // Enable HTTP basic authentication. Currently this only works for TYPE_WS and
   // TYPE_WSS.
@@ -238,11 +178,11 @@ class BaseTestServer {
   }
 
   // Registers the test server's certs for the current process.
-  static void RegisterTestCerts();
+  [[nodiscard]] static ScopedTestRoot RegisterTestCerts();
 
   // Marks the root certificate of an HTTPS test server as trusted for
   // the duration of tests.
-  bool LoadTestRootCert() const WARN_UNUSED_RESULT;
+  [[nodiscard]] bool LoadTestRootCert();
 
   // Returns the certificate that the server is using.
   scoped_refptr<X509Certificate> GetCertificate() const;
@@ -262,7 +202,7 @@ class BaseTestServer {
   void SetPort(uint16_t port);
 
   // Set up internal status when the server is started.
-  bool SetupWhenServerStarted() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool SetupWhenServerStarted();
 
   // Clean up internal status when starting to stop server.
   void CleanUpWhenStoppingServer();
@@ -276,18 +216,15 @@ class BaseTestServer {
   // different from the local port set in |host_port_pair_|, specifically when
   // using RemoteTestServer (which proxies connections from 127.0.0.1 to a
   // different IP). Returns true on success.
-  bool SetAndParseServerData(const std::string& server_data,
-                             int* port) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool SetAndParseServerData(const std::string& server_data,
+                                           int* port);
 
-  // Generates a DictionaryValue with the arguments for launching the external
-  // Python test server.
-  bool GenerateArguments(base::DictionaryValue* arguments) const
-    WARN_UNUSED_RESULT;
-
-  // Subclasses can override this to add arguments that are specific to their
-  // own test servers.
-  virtual bool GenerateAdditionalArguments(
-      base::DictionaryValue* arguments) const WARN_UNUSED_RESULT;
+  // Returns a base::Value::Dict with the arguments for launching the external
+  // Python test server, in the form of
+  // { argument-name: argument-value, ... }
+  //
+  // Returns nullopt if an invalid configuration is specified.
+  absl::optional<base::Value::Dict> GenerateArguments() const;
 
  private:
   void Init(const std::string& host);
@@ -298,6 +235,8 @@ class BaseTestServer {
   // Directory that contains the SSL certificates.
   base::FilePath certificates_dir_;
 
+  ScopedTestRoot scoped_test_root_;
+
   // Address on which the tests should connect to the server. With
   // RemoteTestServer it may be different from the address on which the server
   // listens on.
@@ -306,8 +245,7 @@ class BaseTestServer {
   // Holds the data sent from the server (e.g., port number).
   absl::optional<base::Value> server_data_;
 
-  // If |type_| is TYPE_HTTPS or TYPE_WSS, the TLS settings to use for the test
-  // server.
+  // If |UsingSSL(type_)|, the TLS settings to use for the test server.
   SSLOptions ssl_options_;
 
   Type type_;

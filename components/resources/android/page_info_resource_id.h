@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,8 @@ DECLARE_RESOURCE_ID(IDR_PAGEINFO_BAD, R.drawable.omnibox_not_secure_warning)
 
 // PageInfoUI colors, used in ConnectionInfoView
 // Good:
-DECLARE_RESOURCE_ID(IDR_PAGEINFO_GOOD_COLOR, R.color.default_icon_color)
+DECLARE_RESOURCE_ID(IDR_PAGEINFO_GOOD_COLOR,
+                    R.color.default_icon_color_tint_list)
 // Warning:
 DECLARE_RESOURCE_ID(IDR_PAGEINFO_WARNING_COLOR,
                     R.color.default_icon_color_accent1_tint_list)

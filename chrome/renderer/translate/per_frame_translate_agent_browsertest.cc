@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/test/base/chrome_render_view_test.h"
@@ -13,7 +14,6 @@
 #include "components/translate/content/renderer/per_frame_translate_agent.h"
 #include "components/translate/core/common/translate_constants.h"
 #include "content/public/renderer/render_frame.h"
-#include "content/public/renderer/render_view.h"
 #include "extensions/common/constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -84,7 +84,7 @@ class PerFrameTranslateAgent : public translate::PerFrameTranslateAgent {
 
   bool GetPageTranslatedResult(std::string* source_lang,
                                std::string* target_lang,
-                               translate::TranslateErrors::Type* error) {
+                               translate::TranslateErrors* error) {
     if (!page_translated_)
       return false;
     if (source_lang)
@@ -124,7 +124,7 @@ class PerFrameTranslateAgent : public translate::PerFrameTranslateAgent {
   void OnPageTranslated(bool cancelled,
                         const std::string& source_lang,
                         const std::string& translated_lang,
-                        translate::TranslateErrors::Type error_type) {
+                        translate::TranslateErrors error_type) {
     page_translated_ = true;
     trans_result_cancelled_ = cancelled;
     trans_result_source_lang_ = source_lang;
@@ -141,7 +141,7 @@ class PerFrameTranslateAgent : public translate::PerFrameTranslateAgent {
   bool trans_result_cancelled_;
   absl::optional<std::string> trans_result_source_lang_;
   absl::optional<std::string> trans_result_translated_lang_;
-  translate::TranslateErrors::Type trans_result_error_type_;
+  translate::TranslateErrors trans_result_error_type_;
 };
 
 class PerFrameTranslateAgentBrowserTest : public ChromeRenderViewTest {
@@ -183,12 +183,13 @@ TEST_F(PerFrameTranslateAgentBrowserTest, TranslateLibNeverReady) {
 
   EXPECT_CALL(*translate_agent_, GetErrorCode())
       .Times(AtLeast(5))
-      .WillRepeatedly(Return(translate::TranslateErrors::NONE));
+      .WillRepeatedly(
+          Return(base::to_underlying(translate::TranslateErrors::NONE)));
 
   translate_agent_->CallTranslateFrame("en", "fr", std::string());
   base::RunLoop().RunUntilIdle();
 
-  translate::TranslateErrors::Type error;
+  translate::TranslateErrors error;
   ASSERT_TRUE(
       translate_agent_->GetPageTranslatedResult(nullptr, nullptr, &error));
   EXPECT_EQ(translate::TranslateErrors::TRANSLATION_TIMEOUT, error);
@@ -208,7 +209,7 @@ TEST_F(PerFrameTranslateAgentBrowserTest, TranslateSuccess) {
       .WillOnce(Return(true));
 
   EXPECT_CALL(*translate_agent_, GetErrorCode())
-      .WillOnce(Return(translate::TranslateErrors::NONE));
+      .WillOnce(Return(base::to_underlying(translate::TranslateErrors::NONE)));
 
   EXPECT_CALL(*translate_agent_, StartTranslation()).WillOnce(Return(true));
 
@@ -230,7 +231,7 @@ TEST_F(PerFrameTranslateAgentBrowserTest, TranslateSuccess) {
 
   std::string received_source_lang;
   std::string received_target_lang;
-  translate::TranslateErrors::Type error;
+  translate::TranslateErrors error;
   ASSERT_TRUE(translate_agent_->GetPageTranslatedResult(
       &received_source_lang, &received_target_lang, &error));
   EXPECT_EQ(source_lang, received_source_lang);
@@ -263,7 +264,8 @@ TEST_F(PerFrameTranslateAgentBrowserTest, TranslateFailure) {
       .WillRepeatedly(Return(false));
 
   EXPECT_CALL(*translate_agent_, GetErrorCode())
-      .WillOnce(Return(translate::TranslateErrors::TRANSLATION_ERROR));
+      .WillOnce(Return(
+          base::to_underlying(translate::TranslateErrors::TRANSLATION_ERROR)));
 
   // V8 call for performance monitoring should be ignored.
   EXPECT_CALL(*translate_agent_, ExecuteScriptAndGetDoubleResult(_)).Times(2);
@@ -271,7 +273,7 @@ TEST_F(PerFrameTranslateAgentBrowserTest, TranslateFailure) {
   translate_agent_->CallTranslateFrame("en", "fr", std::string());
   base::RunLoop().RunUntilIdle();
 
-  translate::TranslateErrors::Type error;
+  translate::TranslateErrors error;
   ASSERT_TRUE(
       translate_agent_->GetPageTranslatedResult(nullptr, nullptr, &error));
   EXPECT_EQ(translate::TranslateErrors::TRANSLATION_ERROR, error);
@@ -305,7 +307,7 @@ TEST_F(PerFrameTranslateAgentBrowserTest, UndefinedSourceLang) {
                                        std::string());
   base::RunLoop().RunUntilIdle();
 
-  translate::TranslateErrors::Type error;
+  translate::TranslateErrors error;
   std::string source_lang;
   std::string target_lang;
   ASSERT_TRUE(translate_agent_->GetPageTranslatedResult(&source_lang,
@@ -346,7 +348,7 @@ TEST_F(PerFrameTranslateAgentBrowserTest, MultipleSimilarTranslations) {
 
   std::string received_source_lang;
   std::string received_target_lang;
-  translate::TranslateErrors::Type error;
+  translate::TranslateErrors error;
   ASSERT_TRUE(translate_agent_->GetPageTranslatedResult(
       &received_source_lang, &received_target_lang, &error));
   EXPECT_EQ(source_lang, received_source_lang);
@@ -382,7 +384,7 @@ TEST_F(PerFrameTranslateAgentBrowserTest, MultipleDifferentTranslations) {
 
   std::string received_source_lang;
   std::string received_target_lang;
-  translate::TranslateErrors::Type error;
+  translate::TranslateErrors error;
   ASSERT_TRUE(translate_agent_->GetPageTranslatedResult(
       &received_source_lang, &received_target_lang, &error));
   EXPECT_EQ(source_lang, received_source_lang);

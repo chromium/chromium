@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,8 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 
 namespace {
@@ -49,7 +51,6 @@ TestNetworkQualityEstimator::TestNetworkQualityEstimator(
     : NetworkQualityEstimator(
           std::make_unique<NetworkQualityEstimatorParams>(variation_params),
           NetLog::Get()),
-      current_network_type_(NetworkChangeNotifier::CONNECTION_UNKNOWN),
       embedded_test_server_(base::FilePath(kTestFilePath)),
       suppress_notifications_for_testing_(suppress_notifications_for_testing) {
   SetUseLocalHostRequestsForTesting(allow_local_host_requests_for_tests);
@@ -59,7 +60,6 @@ TestNetworkQualityEstimator::TestNetworkQualityEstimator(
 TestNetworkQualityEstimator::TestNetworkQualityEstimator(
     std::unique_ptr<NetworkQualityEstimatorParams> params)
     : NetworkQualityEstimator(std::move(params), NetLog::Get()),
-      current_network_type_(NetworkChangeNotifier::CONNECTION_UNKNOWN),
       embedded_test_server_(base::FilePath(kTestFilePath)),
       suppress_notifications_for_testing_(false) {}
 
@@ -72,12 +72,12 @@ void TestNetworkQualityEstimator::RunOneRequest() {
   }
 
   TestDelegate test_delegate;
-  TestURLRequestContext context(true);
-  context.set_network_quality_estimator(this);
-  context.Init();
+  auto builder = CreateTestURLRequestContextBuilder();
+  builder->set_network_quality_estimator(this);
+  auto context = builder->Build();
   std::unique_ptr<URLRequest> request(
-      context.CreateRequest(GetEchoURL(), DEFAULT_PRIORITY, &test_delegate,
-                            TRAFFIC_ANNOTATION_FOR_TESTS));
+      context->CreateRequest(GetEchoURL(), DEFAULT_PRIORITY, &test_delegate,
+                             TRAFFIC_ANNOTATION_FOR_TESTS));
   request->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED);
   request->Start();
   base::RunLoop().Run();

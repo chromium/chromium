@@ -19,6 +19,12 @@
     <cr-link-row class="hr" id="displayRow" label="$i18n{displayTitle}"
         on-click="onDisplayTap_"
         role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
+    <template is="dom-if" if="[[showAudioInfo_]]">
+      <cr-link-row class="hr" id="audioRow" label="$i18n{audioTitle}"
+          on-click="onAudioTap_"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+    </template>
     <cr-link-row class="hr" hidden="[[hideStorageInfo_]]" id="storageRow"
         label="$i18n{storageTitle}" on-click="onStorageTap_"
         role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
@@ -34,7 +40,8 @@
       <settings-pointers prefs="{{prefs}}"
           has-mouse="[[hasMouse_]]"
           has-pointing-stick="[[hasPointingStick_]]"
-          has-touchpad="[[hasTouchpad_]]">
+          has-touchpad="[[hasTouchpad_]]"
+          has-haptic-touchpad="[[hasHapticTouchpad_]]">
       </settings-pointers>
     </settings-subpage>
   </template>
@@ -52,6 +59,11 @@
   <template is="dom-if" route-path="/display">
     <settings-subpage page-title="$i18n{displayTitle}">
       <settings-display prefs="{{prefs}}"></settings-display>
+    </settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/audio">
+    <settings-subpage page-title="$i18n{audioTitle}">
+      <settings-audio show-audio-info="[[showAudioInfo_]]"></settings-audio>
     </settings-subpage>
   </template>
   <template is="dom-if" route-path="/storage">

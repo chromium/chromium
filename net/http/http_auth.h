@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,15 @@
 
 #include "net/base/auth.h"
 #include "net/base/net_export.h"
-#include "net/http/http_util.h"
 
 template <class T> class scoped_refptr;
 
 namespace base {
 class Value;
+}
+
+namespace url {
+class SchemeHostPort;
 }
 
 namespace net {
@@ -26,7 +29,7 @@ class HttpAuthHandlerFactory;
 class HttpResponseHeaders;
 class HostResolver;
 class NetLogWithSource;
-class NetworkIsolationKey;
+class NetworkAnonymizationKey;
 class SSLInfo;
 
 // Utility class for http authentication.
@@ -125,8 +128,8 @@ class NET_EXPORT_PRIVATE HttpAuth {
   struct Identity {
     Identity();
 
-    IdentitySource source;
-    bool invalid;
+    IdentitySource source = IDENT_SRC_NONE;
+    bool invalid = true;
     AuthCredentials credentials;
   };
 
@@ -165,8 +168,9 @@ class NET_EXPORT_PRIVATE HttpAuth {
   //
   // |disabled_schemes| is the set of schemes that we should not use.
   //
-  // |origin| is used by the NTLM and Negotiation authentication scheme to
-  // construct the service principal name. It is ignored by other schemes.
+  // |scheme_host_port| is used by the NTLM and Negotiation authentication
+  // scheme to construct the service principal name. It is ignored by other
+  // schemes.
   //
   // |ssl_info| is passed through to the scheme specific authentication handlers
   // to use as appropriate.
@@ -174,9 +178,9 @@ class NET_EXPORT_PRIVATE HttpAuth {
       HttpAuthHandlerFactory* http_auth_handler_factory,
       const HttpResponseHeaders& response_headers,
       const SSLInfo& ssl_info,
-      const NetworkIsolationKey& network_isolation_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       Target target,
-      const GURL& origin,
+      const url::SchemeHostPort& scheme_host_port,
       const std::set<Scheme>& disabled_schemes,
       const NetLogWithSource& net_log,
       HostResolver* host_resolver,

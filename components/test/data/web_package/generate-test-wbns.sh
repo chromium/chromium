@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -36,10 +36,16 @@ gen-bundle \
   -o 24_responses.wbn
 
 sign-bundle \
-  -i hello_b1.wbn \
+  -i hello_b2.wbn \
   -certificate $sxg_test_data_dir/test.example.org.public.pem.cbor \
   -privateKey $sxg_test_data_dir/prime256v1.key \
   -date $signature_date \
   -expire 168h \
   -validityUrl https://test.example.org/resource.validity.msg \
-  -o hello_signed_b1.wbn
+  -o hello_vouched_subsets.wbn
+
+sign-bundle \
+  -i simple_b2.wbn \
+  -signType integrityblock \
+  -privateKey signed_web_bundle_private_key.pem \
+  -o simple_b2_signed.wbn

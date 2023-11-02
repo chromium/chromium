@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,11 +14,13 @@
 #include <linux/videodev2.h>
 
 #include "base/containers/queue.h"
+#include "base/containers/small_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "media/base/decoder_status.h"
 #include "media/gpu/chromeos/image_processor_backend.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/v4l2/v4l2_device.h"
@@ -47,7 +49,7 @@ class MEDIA_GPU_EXPORT V4L2ImageProcessorBackend
       size_t num_buffers,
       const PortConfig& input_config,
       const PortConfig& output_config,
-      const std::vector<OutputMode>& preferred_output_modes,
+      OutputMode output_mode,
       VideoRotation relative_rotation,
       ErrorCB error_cb,
       scoped_refptr<base::SequencedTaskRunner> backend_task_runner);
@@ -73,11 +75,13 @@ class MEDIA_GPU_EXPORT V4L2ImageProcessorBackend
   // Returns a vector of supported output formats in fourcc.
   static std::vector<uint32_t> GetSupportedOutputFormats();
 
-  // Gets output allocated size and number of planes required by the device
-  // for conversion from |input_pixelformat| with |input_size| to
-  // |output_pixelformat| with expected |output_size|.
-  // On success, returns true with adjusted |output_size| and |num_planes|.
-  // On failure, returns false without touching |output_size| and |num_planes|.
+  // Gets |output_size| and |num_planes|] required by the device for conversion
+  // from |input_pixelformat| with |input_size| to |output_pixelformat| with
+  // expected |output_size|. On success, returns true with adjusted
+  // |output_size| and |num_planes|. On failure, returns false without touching
+  // |output_size| and |num_planes|.
+  // TODO(b/191450183): Remove |output_size| and assert
+  // DCHECK_EQ(input_size, output_size) inside the body.
   static bool TryOutputFormat(uint32_t input_pixelformat,
                               uint32_t output_pixelformat,
                               const gfx::Size& input_size,
@@ -103,16 +107,6 @@ class MEDIA_GPU_EXPORT V4L2ImageProcessorBackend
     scoped_refptr<VideoFrame> output_frame;
     size_t output_buffer_id;
   };
-
-  static std::unique_ptr<ImageProcessorBackend> CreateWithOutputMode(
-      scoped_refptr<V4L2Device> device,
-      size_t num_buffers,
-      const PortConfig& input_config,
-      const PortConfig& output_config,
-      const OutputMode& preferred_output_modes,
-      VideoRotation relative_rotation,
-      ErrorCB error_cb,
-      scoped_refptr<base::SequencedTaskRunner> backend_task_runner);
 
   V4L2ImageProcessorBackend(
       scoped_refptr<base::SequencedTaskRunner> backend_task_runner,
@@ -141,12 +135,8 @@ class MEDIA_GPU_EXPORT V4L2ImageProcessorBackend
   bool EnqueueOutputRecord(JobRecord* job_record, V4L2WritableBufferRef buffer);
   bool CreateInputBuffers();
   bool CreateOutputBuffers();
-  // Specify |visible_rect| to v4l2 |type| queue.
-  bool ApplyCrop(const gfx::Rect& visible_rect, enum v4l2_buf_type type);
-  // Reconfigure |size| and |visible_rect| to v4l2 |type| queue.
-  bool ReconfigureV4L2Format(const gfx::Size& size,
-                             const gfx::Rect& visible_rect,
-                             enum v4l2_buf_type type);
+  // Reconfigure the |type| queue for |size|.
+  bool ReconfigureV4L2Format(const gfx::Size& size, enum v4l2_buf_type type);
 
   // Callback of VideoFrame destruction. Since VideoFrame destruction
   // callback might be executed on any sequence, we use a thunk to post the
@@ -186,6 +176,9 @@ class MEDIA_GPU_EXPORT V4L2ImageProcessorBackend
   // Sequence and its checker used to poll the V4L2 for events only.
   scoped_refptr<base::SingleThreadTaskRunner> poll_task_runner_;
   SEQUENCE_CHECKER(poll_sequence_checker_);
+
+  base::small_map<std::map<base::TimeDelta, std::unique_ptr<ScopedDecodeTrace>>>
+      buffer_tracers_ GUARDED_BY_CONTEXT(backend_sequence_checker_);
 
   // WeakPtr bound to |backend_task_runner_|.
   base::WeakPtr<V4L2ImageProcessorBackend> backend_weak_this_;

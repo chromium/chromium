@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,7 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/style/typography.h"
 
 namespace {
 
@@ -36,7 +37,7 @@ WebAppOriginText::WebAppOriginText(Browser* browser) {
   label_ = std::make_unique<views::Label>(
                browser->app_controller()->GetLaunchFlashText(),
                ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
-               ChromeTextStyle::STYLE_EMPHASIZED)
+               views::style::STYLE_EMPHASIZED)
                .release();
   label_->SetElideBehavior(gfx::ELIDE_HEAD);
   label_->SetSubpixelRenderingEnabled(false);
@@ -49,7 +50,7 @@ WebAppOriginText::WebAppOriginText(Browser* browser) {
   label_->layer()->GetAnimator()->AddObserver(this);
   label_->layer()->GetAnimator()->set_preemption_strategy(
       ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-  AddChildView(label_);
+  AddChildView(label_.get());
 
   // Clip child views to this view.
   SetPaintToLayer();
@@ -105,7 +106,7 @@ void WebAppOriginText::OnLayerAnimationEnded(
 
 void WebAppOriginText::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kApplication;
-  node_data->SetName(label_->GetText());
+  node_data->SetNameChecked(label_->GetText());
 }
 
 BEGIN_METADATA(WebAppOriginText, views::View)

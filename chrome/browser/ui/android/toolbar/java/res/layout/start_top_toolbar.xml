@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2019 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2019 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarView
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -13,15 +15,6 @@
     android:clickable="true"
     android:visibility="gone">
 
-    <org.chromium.chrome.browser.toolbar.HomeButton
-        android:id="@+id/home_button_on_tab_switcher"
-        style="@style/ToolbarButton"
-        android:layout_centerVertical="true"
-        android:contentDescription="@string/accessibility_toolbar_btn_home"
-        android:src="@drawable/btn_toolbar_home"
-        android:visibility="gone"
-        app:tint="@color/default_icon_color_tint_list" />
-
     <ViewStub
         android:id="@+id/incognito_tabs_stub"
         android:inflatedId="@+id/incognito_toggle_tabs"
@@ -31,17 +24,13 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="4dp"/>
 
-    <ImageView
+    <org.chromium.chrome.browser.logo.LogoView
         android:id="@+id/logo"
-        android:layout_width="wrap_content"
-        android:layout_height="32dp"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:scaleType="centerInside"
-        android:clickable="false"
-        android:adjustViewBounds="true"
         android:visibility="gone"
-        android:contentDescription="@null"/>
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -57,7 +46,7 @@
             android:scaleType="center"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
-            app:tint="?attr/default_icon_color"
+            app:tint="@macro/default_icon_color"
             app:srcCompat="@drawable/new_tab_icon"
             android:contentDescription="@string/accessibility_toolbar_btn_new_tab"/>
         <TextView
@@ -81,6 +70,7 @@
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/identity_disc_button"
         android:layout_toStartOf="@+id/menu_anchor"
+        android:layout_marginStart="@dimen/identity_disc_button_margin_start"
         android:paddingStart="@dimen/start_surface_toolbar_button_padding_to_button"
         android:paddingEnd="@dimen/start_surface_toolbar_button_padding_to_button"
         style="@style/ToolbarButton"

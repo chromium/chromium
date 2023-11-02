@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 
 #include "base/values.h"
 #include "extensions/browser/api/system_display/display_info_provider.h"
+#include "extensions/browser/mock_screen.h"
 #include "extensions/common/api/system_display.h"
 
 namespace extensions {
@@ -71,11 +72,11 @@ class MockDisplayInfoProvider : public DisplayInfoProvider {
 
  private:
   // DisplayInfoProvider override.
-  // Update the content of the |unit| obtained for |display| using
-  // platform specific method.
+  // Update the content of each unit in `units` obtained from the corresponding
+  // display in `displays` using a platform specific method.
   void UpdateDisplayUnitInfoForPlatform(
-      const display::Display& display,
-      extensions::api::system_display::DisplayUnitInfo* unit) override;
+      const std::vector<display::Display>& displays,
+      DisplayUnitInfoList& units) const override;
 
   std::unique_ptr<base::DictionaryValue> set_info_value_;
   std::string set_info_display_id_;
@@ -84,6 +85,8 @@ class MockDisplayInfoProvider : public DisplayInfoProvider {
   std::set<std::string> overscan_adjusted_;
 
   bool native_touch_calibration_success_ = false;
+
+  MockScreen screen_;
 
   api::system_display::MirrorMode mirror_mode_ =
       api::system_display::MIRROR_MODE_OFF;

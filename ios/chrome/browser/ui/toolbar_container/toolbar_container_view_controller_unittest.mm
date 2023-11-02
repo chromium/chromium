@@ -1,18 +1,17 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_container_view_controller.h"
 
-#include <algorithm>
-#include <vector>
+#import <algorithm>
+#import <vector>
 
-#include "base/cxx17_backports.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_collapsing.h"
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_height_range.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest/include/gtest/gtest.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -42,7 +41,7 @@ typedef NS_ENUM(NSUInteger, ToolbarContainerTestConfig) {
   kCollapsingSafeInset = 1 << 2,
   kToolbarContainerConfigMax = 1 << 3,
 };
-// Returns a string version of |frame| to use for error printing.
+// Returns a string version of `frame` to use for error printing.
 std::string GetFrameString(CGRect frame) {
   return base::SysNSStringToUTF8(NSStringFromCGRect(frame));
 }
@@ -149,7 +148,7 @@ class ToolbarContainerViewControllerTest
       toolbar_height_range =
           HeightRange(kNonCollapsingToolbarHeight, kNonCollapsingToolbarHeight);
     }
-    // Add kToolbarCount toolbars with |toolbar_height_range|.
+    // Add kToolbarCount toolbars with `toolbar_height_range`.
     height_ranges_ =
         std::vector<HeightRange>(kToolbarCount, toolbar_height_range);
     NSMutableArray* toolbars = [NSMutableArray array];
@@ -167,7 +166,7 @@ class ToolbarContainerViewControllerTest
     view_controller_.collapsesSafeArea = HasCollapsingSafeInset();
   }
 
-  // Returns the total height range for the toolbar view at |index|, accounting
+  // Returns the total height range for the toolbar view at `index`, accounting
   // for both the toolbar expansion and the collapsing safe area inset.
   HeightRange GetTotalToolbarHeightRange(NSUInteger index) {
     HeightRange height_range = height_ranges_[index];
@@ -208,14 +207,14 @@ class ToolbarContainerViewControllerTest
     }
   }
 
-  // Returns the toolbar view at |index|.
+  // Returns the toolbar view at `index`.
   TestToolbarView* GetToolbarView(NSUInteger index) {
     return static_cast<TestToolbarViewController*>(
                view_controller_.toolbars[index])
         .toolbarView;
   }
 
-  // Returns the progress value for the toolbar at |index| for the current stack
+  // Returns the progress value for the toolbar at `index` for the current stack
   // progress.
   CGFloat GetToolbarProgress(NSUInteger index) {
     // Calculate the start progress.
@@ -237,7 +236,7 @@ class ToolbarContainerViewControllerTest
     return progress;
   }
 
-  // Returns the expected frame for the toolbar at |index| at the current stack
+  // Returns the expected frame for the toolbar at `index` at the current stack
   // progress.
   CGRect GetExpectedToolbarFrame(NSUInteger index) {
     const HeightRange& height_range = GetTotalToolbarHeightRange(index);
@@ -294,7 +293,7 @@ TEST_P(ToolbarContainerViewControllerTest, VerifyStackLayoutForProgresses) {
   EXPECT_EQ(CGRectGetHeight(container_view().bounds), GetExpectedStackHeight());
   // Set the stack progress to the progress values in kStackProgressValues and
   // verify the toolbar frames for each of these stack progress values.
-  for (size_t index = 0; index < base::size(kStackProgressValues); ++index) {
+  for (size_t index = 0; index < std::size(kStackProgressValues); ++index) {
     SetStackProgress(kStackProgressValues[index]);
     CheckToolbarFrames();
   }

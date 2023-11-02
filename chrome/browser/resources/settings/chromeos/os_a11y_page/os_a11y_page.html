@@ -16,16 +16,64 @@
     <settings-toggle-button id="optionsInMenuToggle"
         hidden="[[isKioskModeActive_]]"
         label="$i18n{optionsInMenuLabel}"
+        sub-label="$i18n{optionsInMenuDescription}"
         pref="{{prefs.settings.a11y.enable_menu}}"
         deep-link-focus-id$="[[Setting.kA11yQuickSettings]]">
     </settings-toggle-button>
     <div class="hr" hidden="[[isKioskModeActive_]]"></div>
-    <cr-link-row id="subpage-trigger"
+    <template is="dom-if"
+        if="[[isAccessibilityOSSettingsVisibilityEnabled_]]">
+      <cr-link-row id="text-to-speech-page-trigger"
+          label="$i18n{textToSpeechLinkTitle}"
+          on-click="onTextToSpeechTap_"
+          sub-label="$i18n{textToSpeechLinkDescription}"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+      <div class="hr"></div>
+      <cr-link-row id="display-and-magnification-page-trigger"
+          label="$i18n{displayAndMagnificationLinkTitle}"
+          on-click="onDisplayAndMagnificationTap_"
+          sub-label="$i18n{displayAndMagnificationLinkDescription}"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+      <div class="hr"></div>
+      <cr-link-row id="keyboard-and-text-input-page-trigger"
+          label="$i18n{keyboardAndTextInputLinkTitle}"
+          on-click="onKeyboardAndTextInputTap_"
+          sub-label="$i18n{keyboardAndTextInputLinkDescription}"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+      <div class="hr"></div>
+      <cr-link-row id="cursor-and-touchpad-page-trigger"
+          label="$i18n{cursorAndTouchpadLinkTitle}"
+          on-click="onCursorAndTouchpadTap_"
+          sub-label="$i18n{cursorAndTouchpadLinkDescription}"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+      <div class="hr"></div>
+      <cr-link-row id="audio-and-captions-page-trigger"
+          label="$i18n{audioAndCaptionsLinkTitle}"
+          on-click="onAudioAndCaptionsTap_"
+          sub-label="$i18n{audioAndCaptionsLinkDescription}"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+    </template>
+    <template is="dom-if" if="[[!isAccessibilityOSSettingsVisibilityEnabled_]]">
+      <cr-link-row id="subpage-trigger"
         label="$i18n{manageAccessibilityFeatures}"
         on-click="onManageAccessibilityFeaturesTap_"
         sub-label="$i18n{moreFeaturesLinkDescription}"
         role-description="$i18n{subpageArrowRoleDescription}">
-    </cr-link-row>
+      </cr-link-row>
+    </template>
+    <template is="dom-if"
+        if="[[shouldShowAdditionalFeaturesLink_(isKioskModeActive_, isGuest_)]]">
+      <cr-link-row
+          id="additionalFeaturesLink" class="hr"
+          label="$i18n{additionalFeaturesTitle}"
+          on-click="onAdditionalFeaturesClick_" external>
+      </cr-link-row>
+    </template>
   </div>
 
   <template is="dom-if" route-path="/manageAccessibility">
@@ -33,6 +81,36 @@
         hide-close-button="[[isKioskModeActive_]]">
       <settings-manage-a11y-page prefs="{{prefs}}">
       </settings-manage-a11y-page>
+    </settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/textToSpeech">
+    <settings-subpage page-title="$i18n{textToSpeechLinkTitle}">
+      <settings-text-to-speech-page prefs="{{prefs}}">
+      </settings-text-to-speech-page>
+    </settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/displayAndMagnification">
+    <settings-subpage page-title="$i18n{displayAndMagnificationLinkTitle}">
+      <settings-display-and-magnification-page prefs="{{prefs}}">
+      </settings-display-and-magnification-page>
+    </settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/keyboardAndTextInput">
+    <settings-subpage page-title="$i18n{keyboardAndTextInputLinkTitle}">
+      <settings-keyboard-and-text-input-page prefs="{{prefs}}">
+      </settings-keyboard-and-text-input-page>
+    </settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/cursorAndTouchpad">
+    <settings-subpage page-title="$i18n{cursorAndTouchpadLinkTitle}">
+      <settings-cursor-and-touchpad-page prefs="{{prefs}}">
+      </settings-cursor-and-touchpad-page>
+    </settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/audioAndCaptions">
+    <settings-subpage page-title="$i18n{audioAndCaptionsLinkTitle}">
+      <settings-audio-and-captions-page prefs="{{prefs}}">
+      </settings-audio-and-captions-page>
     </settings-subpage>
   </template>
   <template is="dom-if" route-path="/manageAccessibility/tts">

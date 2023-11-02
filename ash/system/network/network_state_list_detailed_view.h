@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,13 +22,12 @@ class Button;
 namespace ash {
 class TrayNetworkStateModel;
 
-namespace tray {
-
 bool CanNetworkConnect(
     chromeos::network_config::mojom::ConnectionStateType connection_state,
     chromeos::network_config::mojom::NetworkType type,
     chromeos::network_config::mojom::ActivationStateType activation_state,
-    bool is_connectable);
+    bool is_connectable,
+    std::string sim_eid);
 
 // Exported for tests.
 class ASH_EXPORT NetworkStateListDetailedView
@@ -126,7 +125,6 @@ class ASH_EXPORT NetworkStateListDetailedView
   base::WeakPtrFactory<NetworkStateListDetailedView> weak_ptr_factory_{this};
 };
 
-}  // namespace tray
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_NETWORK_NETWORK_STATE_LIST_DETAILED_VIEW_H_

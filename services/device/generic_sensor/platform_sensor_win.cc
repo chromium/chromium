@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "services/device/public/cpp/generic_sensor/sensor_traits.h"
 
 namespace device {
@@ -75,7 +76,7 @@ bool PlatformSensorWin::CheckSensorConfiguration(
 
 PlatformSensorWin::~PlatformSensorWin() {
   sensor_reader_->SetClient(nullptr);
-  sensor_thread_runner_->DeleteSoon(FROM_HERE, sensor_reader_);
+  sensor_thread_runner_->DeleteSoon(FROM_HERE, sensor_reader_.get());
 }
 
 }  // namespace device

@@ -32,7 +32,7 @@
 
 namespace blink {
 
-CanvasGradient::CanvasGradient(const FloatPoint& p0, const FloatPoint& p1)
+CanvasGradient::CanvasGradient(const gfx::PointF& p0, const gfx::PointF& p1)
     : gradient_(
           Gradient::CreateLinear(p0,
                                  p1,
@@ -45,9 +45,9 @@ CanvasGradient::CanvasGradient(const FloatPoint& p0, const FloatPoint& p1)
   }
 }
 
-CanvasGradient::CanvasGradient(const FloatPoint& p0,
+CanvasGradient::CanvasGradient(const gfx::PointF& p0,
                                float r0,
-                               const FloatPoint& p1,
+                               const gfx::PointF& p1,
                                float r1)
     : gradient_(
           Gradient::CreateRadial(p0,
@@ -67,7 +67,7 @@ CanvasGradient::CanvasGradient(const FloatPoint& p0,
 
 // CanvasRenderingContext2D.createConicGradient only takes one angle argument
 // it makes sense to make that rotation here and always make the angles 0 -> 2pi
-CanvasGradient::CanvasGradient(float startAngle, const FloatPoint& center)
+CanvasGradient::CanvasGradient(float startAngle, const gfx::PointF& center)
     : gradient_(
           Gradient::CreateConic(center,
                                 startAngle,
@@ -88,7 +88,7 @@ void CanvasGradient::addColorStop(double value,
     return;
   }
 
-  Color color = 0;
+  Color color = Color::kTransparent;
   if (!ParseColorOrCurrentColor(color, color_string, nullptr /*canvas*/)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
                                       "The value provided ('" + color_string +

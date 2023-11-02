@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,10 @@ class PrerenderHandle {
  public:
   PrerenderHandle() = default;
   virtual ~PrerenderHandle() = default;
+  // Returns the initial URL that is passed to PrerenderHostRegistry for
+  // starting a prerendering page.
+  virtual GURL GetInitialPrerenderingUrl() = 0;
+  virtual base::WeakPtr<PrerenderHandle> GetWeakPtr() = 0;
 };
 
 }  // namespace content

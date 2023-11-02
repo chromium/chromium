@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,21 +7,19 @@
  * the background context (background page or options page).
  *
  */
+import {BridgeConstants} from '../common/bridge_constants.js';
+import {BridgeHelper} from '../common/bridge_helper.js';
 
-goog.provide('ChromeVoxPrefs');
-goog.provide('RichTextSpeechStyle');
-
-goog.require('ConsoleTts');
-goog.require('EventStreamLogger');
-goog.require('ChromeVox');
-goog.require('ExtensionBridge');
+import {ConsoleTts} from './console_tts.js';
+import {EventStreamLogger} from './logging/event_stream_logger.js';
+import {LogUrlWatcher} from './logging/log_url_watcher.js';
 
 /**
  * This object has default values of preferences and contains the common
  * code for working with preferences shared by the Options and Background
  * pages.
  */
-ChromeVoxPrefs = class {
+export class ChromeVoxPrefs {
   constructor() {
     let lastRunVersion = localStorage['lastRunVersion'];
     if (!lastRunVersion) {
@@ -42,30 +40,27 @@ ChromeVoxPrefs = class {
     // Default per session sticky to off.
     localStorage['sticky'] = false;
 
-    this.init(loadExistingSettings);
+    this.init();
   }
 
   /**
    * Merge the default values of all known prefs with what's found in
    * localStorage.
-   * @param {boolean} pullFromLocalStorage or not to pull prefs from local
-   * storage. True if we want to respect changes the user has already made
-   * to prefs, false if we want to overwrite them. Set false if we've made
-   * changes to keyboard shortcuts and need to make sure they aren't
-   * overridden by the old keymap in local storage.
    */
-  init(pullFromLocalStorage) {
+  init() {
     // Set the default value of any pref that isn't already in localStorage.
     for (const pref in ChromeVoxPrefs.DEFAULT_PREFS) {
       if (localStorage[pref] === undefined) {
         localStorage[pref] = ChromeVoxPrefs.DEFAULT_PREFS[pref];
       }
     }
+    this.enableOrDisableLogUrlWatcher_();
   }
 
   /**
    * Get the prefs (not including keys).
-   * @return {Object} A map of all prefs except the key map from localStorage.
+   * @return {Object<string, string>} A map of all prefs except the key map from
+   *     localStorage.
    */
   getPrefs() {
     const prefs = {};
@@ -79,7 +74,7 @@ ChromeVoxPrefs = class {
   /**
    * Set the value of a pref.
    * @param {string} key The pref key.
-   * @param {Object|string|boolean} value The new value of the pref.
+   * @param {Object|string|number|boolean} value The new value of the pref.
    */
   setPref(key, value) {
     if (localStorage[key] !== value) {
@@ -99,8 +94,19 @@ ChromeVoxPrefs = class {
     } else if (key === 'enableEventStreamLogging') {
       EventStreamLogger.instance.notifyEventStreamFilterChangedAll(value);
     }
+    this.enableOrDisableLogUrlWatcher_();
   }
-};
+
+  enableOrDisableLogUrlWatcher_() {
+    for (const pref of Object.values(ChromeVoxPrefs.loggingPrefs)) {
+      if (localStorage[pref]) {
+        LogUrlWatcher.create();
+        return;
+      }
+    }
+    LogUrlWatcher.destroy();
+  }
+}
 
 
 /**
@@ -117,7 +123,7 @@ ChromeVoxPrefs.DEFAULT_PREFS = {
   'brailleSideBySide': true,
   'brailleTableType': 'brailleTable8',
   'brailleTable6': 'en-UEB-g2',
-  'brailleTable8': 'en-US-comp8',
+  'brailleTable8': 'en-nabcc',
   'capitalStrategy': 'increasePitch',
   'cvoxKey': '',
   'enableBrailleLogging': false,
@@ -191,7 +197,7 @@ ChromeVoxPrefs.DEFAULT_PREFS = {
   'textChanged': true,
   'textSelectionChanged': true,
   'treeChanged': true,
-  'valueInTextFieldChanged': true
+  'valueInTextFieldChanged': true,
 };
 
 
@@ -205,3 +211,16 @@ ChromeVoxPrefs.loggingPrefs = {
 
 /** @type {!ChromeVoxPrefs} */
 ChromeVoxPrefs.instance = new ChromeVoxPrefs();
+
+BridgeHelper.registerHandler(
+    BridgeConstants.ChromeVoxPrefs.TARGET,
+    BridgeConstants.ChromeVoxPrefs.Action.GET_PREFS,
+    () => ChromeVoxPrefs.instance.getPrefs());
+BridgeHelper.registerHandler(
+    BridgeConstants.ChromeVoxPrefs.TARGET,
+    BridgeConstants.ChromeVoxPrefs.Action.SET_LOGGING_PREFS,
+    (key, value) => ChromeVoxPrefs.instance.setLoggingPrefs(key, value));
+BridgeHelper.registerHandler(
+    BridgeConstants.ChromeVoxPrefs.TARGET,
+    BridgeConstants.ChromeVoxPrefs.Action.SET_PREF,
+    (key, value) => ChromeVoxPrefs.instance.setPref(key, value));

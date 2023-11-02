@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,12 @@
 
 #include <algorithm>
 #include <atomic>
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_math.h"
 #include "base/threading/sequence_local_storage_slot.h"
@@ -27,6 +27,8 @@
 #include "mojo/public/cpp/bindings/lib/message_fragment.h"
 #include "mojo/public/cpp/bindings/lib/unserialized_message_context.h"
 
+#include "base/record_replay.h"
+
 namespace mojo {
 
 namespace {
@@ -35,7 +37,7 @@ base::LazyInstance<
     base::SequenceLocalStorageSlot<internal::MessageDispatchContext*>>::Leaky
     g_sls_message_dispatch_context = LAZY_INSTANCE_INITIALIZER;
 
-void DoNotifyBadMessage(Message message, const std::string& error) {
+void DoNotifyBadMessage(Message message, base::StringPiece error) {
   message.NotifyBadMessage(error);
 }
 
@@ -117,7 +119,7 @@ void CreateSerializedMessageObject(uint32_t name,
   if (handles) {
     // Handle ownership has been taken by MojoAppendMessageData.
     for (size_t i = 0; i < handles->size(); ++i)
-      ignore_result(handles->at(i).release());
+      std::ignore = handles->at(i).release();
   }
 
   internal::Buffer payload_buffer(handle.get(), total_size, buffer,
@@ -148,7 +150,7 @@ void SerializeUnserializedContext(MojoMessageHandle message,
 
   // Finalize the serialized message state and release ownership back to the
   // caller.
-  ignore_result(new_message.TakeMojoMessage().release());
+  std::ignore = new_message.TakeMojoMessage().release();
 }
 
 void DestroyUnserializedContext(uintptr_t context) {
@@ -286,7 +288,7 @@ Message::Message(base::span<const uint8_t> payload,
 
   // Handle ownership has been taken by MojoAppendMessageData.
   for (auto& handle : handles)
-    ignore_result(handle.release());
+    std::ignore = handle.release();
 
   payload_buffer_ = internal::Buffer(buffer, payload.size(), payload.size());
   std::copy(payload.begin(), payload.end(),
@@ -425,12 +427,14 @@ ScopedMessageHandle Message::TakeMojoMessage() {
   return handle;
 }
 
-void Message::NotifyBadMessage(const std::string& error) {
+void Message::NotifyBadMessage(base::StringPiece error) {
   DCHECK(handle_.is_valid());
   mojo::NotifyBadMessage(handle_.get(), error);
 }
 
 void Message::SerializeHandles(AssociatedGroupController* group_controller) {
+  recordreplay::Assert("[RUN-1569] Message::SerializeHandles Start");
+
   if (mutable_handles()->empty() &&
       mutable_associated_endpoint_handles()->empty()) {
     // No handles attached, so no extra serialization work.
@@ -441,6 +445,8 @@ void Message::SerializeHandles(AssociatedGroupController* group_controller) {
     // Attaching only non-associated handles is easier since we don't have to
     // modify the message header. Faster path for that.
     bool attached = payload_buffer_.AttachHandles(mutable_handles());
+
+    recordreplay::Assert("[RUN-1569] Message::SerializeHandles #2 %d", attached);
 
     // TODO(crbug.com/1239934): Relax this assertion or fail more gracefully.
     CHECK(attached);
@@ -508,11 +514,15 @@ bool Message::DeserializeAssociatedEndpointHandles(
   bool result = true;
   for (uint32_t i = 0; i < num_ids; ++i) {
     auto handle = group_controller->CreateLocalEndpointHandle(ids[i]);
-    if (IsValidInterfaceId(ids[i]) && !handle.is_valid()) {
+    if (IsValidInterfaceId(ids[i]) && !handle.is_valid()) { 
       // |ids[i]| itself is valid but handle creation failed. In that case, mark
       // deserialization as failed but continue to deserialize the rest of
       // handles.
       result = false;
+
+      // https://linear.app/replay/issue/RUN-1228
+      recordreplay::Assert("[RUN-1228] MessageWrapper::DeserializeAssociatedEndpointHandles %u id=%u",
+        i, ids[i]);
     }
 
     endpoint_handles.push_back(std::move(handle));
@@ -591,7 +601,7 @@ bool PassThroughFilter::Accept(Message* message) {
   return true;
 }
 
-void ReportBadMessage(const std::string& error) {
+void ReportBadMessage(base::StringPiece error) {
   internal::MessageDispatchContext* context =
       internal::MessageDispatchContext::current();
   DCHECK(context);

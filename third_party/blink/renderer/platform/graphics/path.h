@@ -42,13 +42,13 @@
 
 namespace gfx {
 class PointF;
+class RectF;
 class Vector2dF;
 }
 
 namespace blink {
 
 class AffineTransform;
-class FloatRect;
 class StrokeData;
 
 enum PathElementType {
@@ -169,7 +169,12 @@ class PLATFORM_EXPORT Path {
               float radius,
               float start_angle,
               float end_angle);
-  void AddRect(const FloatRect&);
+
+  void AddRect(const gfx::RectF&);
+  // Use this form if the rect is defined by locations of a pair of opposite
+  // corners, where |origin| may not be the top-left corner.
+  void AddRect(const gfx::PointF& origin, const gfx::PointF& opposite_point);
+
   void AddEllipse(const gfx::PointF&,
                   float radius_x,
                   float radius_y,
@@ -187,8 +192,8 @@ class PLATFORM_EXPORT Path {
   const SkPath& GetSkPath() const { return path_; }
 
   void Apply(void* info, PathApplierFunction) const;
-  void Transform(const AffineTransform&);
-  void Transform(const TransformationMatrix&);
+  Path& Transform(const AffineTransform&);
+  Path& Transform(const TransformationMatrix&);
 
   bool SubtractPath(const Path&);
 
@@ -205,15 +210,6 @@ class PLATFORM_EXPORT Path {
   SkPath StrokePath(const StrokeData&, float stroke_precision) const;
 
   SkPath path_;
-};
-
-class PLATFORM_EXPORT RefCountedPath : public blink::Path,
-                                       public RefCounted<RefCountedPath> {
-  USING_FAST_MALLOC(RefCountedPath);
-
- public:
-  template <typename... Args>
-  RefCountedPath(Args&&... args) : blink::Path(std::forward<Args>(args)...) {}
 };
 
 // Only used for DCHECKs

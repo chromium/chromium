@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -168,9 +168,9 @@ class DiscreteSet {
     return is_universal_ || base::Contains(elements_, value);
   }
 
-  bool IsEmpty() const { return !is_universal_ && elements_.IsEmpty(); }
+  bool IsEmpty() const { return !is_universal_ && elements_.empty(); }
 
-  bool HasExplicitElements() const { return !elements_.IsEmpty(); }
+  bool HasExplicitElements() const { return !elements_.empty(); }
 
   DiscreteSet Intersection(const DiscreteSet& other) const {
     if (is_universal_)

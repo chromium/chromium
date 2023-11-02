@@ -1,4 +1,4 @@
-// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,16 +7,15 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "base/win/scoped_handle.h"
-#include "sandbox/win/src/restricted_token_utils.h"
 
 namespace sandbox {
+enum class JobLevel;
 
 // Handles the creation of job objects based on a security profile.
 // Sample usage:
 //   Job job;
-//   job.Init(JOB_LOCKDOWN, nullptr);  //no job name
+//   job.Init(JobLevel::kLockdown, nullptr);  //no job name
 //   job.AssignProcessToJob(process_handle);
 class Job {
  public:
@@ -53,13 +52,14 @@ class Job {
   // the error.
   DWORD UserHandleGrantAccess(HANDLE handle);
 
-  // Revokes ownership to the job handle and returns it.
-  // If the object is not yet initialized, it returns an invalid handle.
-  base::win::ScopedHandle Take();
+  // True if the job has been initialized and has a valid handle.
+  bool IsValid();
 
-  // Updates the active process limit for |job_handle|.
-  static DWORD SetActiveProcessLimit(base::win::ScopedHandle* job_handle,
-                                     DWORD processes);
+  // If the object is not yet initialized, returns nullptr.
+  HANDLE GetHandle();
+
+  // Updates the active process limit.
+  DWORD SetActiveProcessLimit(DWORD processes);
 
  private:
   // Handle to the job referenced by the object.

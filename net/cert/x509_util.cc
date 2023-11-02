@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -20,11 +21,11 @@
 #include "crypto/sha2.h"
 #include "net/base/hash_value.h"
 #include "net/cert/asn1_util.h"
-#include "net/cert/internal/cert_errors.h"
-#include "net/cert/internal/name_constraints.h"
-#include "net/cert/internal/parse_certificate.h"
-#include "net/cert/internal/parse_name.h"
-#include "net/cert/internal/signature_algorithm.h"
+#include "net/cert/pki/cert_errors.h"
+#include "net/cert/pki/name_constraints.h"
+#include "net/cert/pki/parse_certificate.h"
+#include "net/cert/pki/parse_name.h"
+#include "net/cert/pki/signature_algorithm.h"
 #include "net/cert/x509_certificate.h"
 #include "net/der/encode_values.h"
 #include "net/der/input.h"
@@ -37,9 +38,9 @@
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #include "third_party/boringssl/src/include/openssl/stack.h"
 
-namespace net {
+#include "base/record_replay.h"
 
-namespace x509_util {
+namespace net::x509_util {
 
 namespace {
 
@@ -78,6 +79,21 @@ const EVP_MD* ToEVP(DigestAlgorithm alg) {
   }
   return nullptr;
 }
+
+class BufferPoolSingleton {
+ public:
+  BufferPoolSingleton() : pool_(CRYPTO_BUFFER_POOL_new()) {}
+  CRYPTO_BUFFER_POOL* pool() { return pool_; }
+
+ private:
+  // The singleton is leaky, so there is no need to use a smart pointer.
+  raw_ptr<CRYPTO_BUFFER_POOL> pool_;
+};
+
+base::LazyInstance<BufferPoolSingleton>::Leaky g_buffer_pool_singleton =
+    LAZY_INSTANCE_INITIALIZER;
+
+}  // namespace
 
 // Adds an X.509 Name with the specified distinguished name to |cbb|.
 bool AddName(CBB* cbb, base::StringPiece name) {
@@ -148,21 +164,6 @@ bool AddName(CBB* cbb, base::StringPiece name) {
   return true;
 }
 
-class BufferPoolSingleton {
- public:
-  BufferPoolSingleton() : pool_(CRYPTO_BUFFER_POOL_new()) {}
-  CRYPTO_BUFFER_POOL* pool() { return pool_; }
-
- private:
-  // The singleton is leaky, so there is no need to use a smart pointer.
-  CRYPTO_BUFFER_POOL* pool_;
-};
-
-base::LazyInstance<BufferPoolSingleton>::Leaky g_buffer_pool_singleton =
-    LAZY_INSTANCE_INITIALIZER;
-
-}  // namespace
-
 bool CBBAddTime(CBB* cbb, base::Time time) {
   der::GeneralizedTime generalized_time;
   if (!der::EncodeTimeAsGeneralizedTime(time, &generalized_time))
@@ -195,25 +196,32 @@ bool GetTLSServerEndPointChannelBinding(const X509Certificate& certificate,
   der::BitString signature_value;
   if (!ParseCertificate(der::Input(der_encoded_certificate),
                         &tbs_certificate_tlv, &signature_algorithm_tlv,
-                        &signature_value, nullptr))
+                        &signature_value, nullptr)) {
     return false;
-
-  std::unique_ptr<SignatureAlgorithm> signature_algorithm =
-      SignatureAlgorithm::Create(signature_algorithm_tlv, nullptr);
-  if (!signature_algorithm)
+  }
+  absl::optional<SignatureAlgorithm> signature_algorithm =
+      ParseSignatureAlgorithm(signature_algorithm_tlv, nullptr);
+  if (!signature_algorithm) {
     return false;
+  }
 
+  absl::optional<net::DigestAlgorithm> binding_digest =
+      GetTlsServerEndpointDigestAlgorithm(*signature_algorithm);
+  if (!binding_digest) {
+    return false;
+  }
   const EVP_MD* digest_evp_md = nullptr;
-  switch (signature_algorithm->digest()) {
+  switch (binding_digest.value()) {
     case net::DigestAlgorithm::Md2:
     case net::DigestAlgorithm::Md4:
-      // Shouldn't be reachable.
-      digest_evp_md = nullptr;
-      break;
-
-    // Per RFC 5929 section 4.1, MD5 and SHA1 map to SHA256.
     case net::DigestAlgorithm::Md5:
     case net::DigestAlgorithm::Sha1:
+      // Legacy digests are not supported, and
+      // `GetTlsServerEndpointDigestAlgorithm` internally maps MD5 and SHA-1 to
+      // SHA-256.
+      NOTREACHED();
+      break;
+
     case net::DigestAlgorithm::Sha256:
       digest_evp_md = EVP_sha256();
       break;
@@ -272,7 +280,7 @@ Extension::Extension(base::span<const uint8_t> in_oid,
                      bool in_critical,
                      base::span<const uint8_t> in_contents)
     : oid(in_oid), critical(in_critical), contents(in_contents) {}
-Extension::~Extension() {}
+Extension::~Extension() = default;
 Extension::Extension(const Extension&) = default;
 
 bool CreateSelfSignedCert(EVP_PKEY* key,
@@ -373,14 +381,16 @@ CRYPTO_BUFFER_POOL* GetBufferPool() {
   return g_buffer_pool_singleton.Get().pool();
 }
 
-bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBuffer(const uint8_t* data,
-                                                  size_t length) {
+bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBuffer(
+    base::span<const uint8_t> data) {
+  recordreplay::Assert("[RUN-1489-1494] CreateCryptoBuffer A %zu", data.size());
   return bssl::UniquePtr<CRYPTO_BUFFER>(
-      CRYPTO_BUFFER_new(data, length, GetBufferPool()));
+      CRYPTO_BUFFER_new(data.data(), data.size(), GetBufferPool()));
 }
 
 bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBuffer(
     const base::StringPiece& data) {
+  recordreplay::Assert("[RUN-1489-1494] CreateCryptoBuffer B %zu", data.size());
   return bssl::UniquePtr<CRYPTO_BUFFER>(
       CRYPTO_BUFFER_new(reinterpret_cast<const uint8_t*>(data.data()),
                         data.size(), GetBufferPool()));
@@ -388,6 +398,7 @@ bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBuffer(
 
 bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBufferFromStaticDataUnsafe(
     base::span<const uint8_t> data) {
+  recordreplay::Assert("[RUN-1489-1494] CreateCryptoBuffer C %zu", data.size());
   return bssl::UniquePtr<CRYPTO_BUFFER>(
       CRYPTO_BUFFER_new_from_static_data_unsafe(data.data(), data.size(),
                                                 GetBufferPool()));
@@ -489,13 +500,14 @@ bool SignatureVerifierInitWithCertificate(
   }
 
   // The key usage extension, if present, must assert the digitalSignature bit.
-  if (tbs.has_extensions) {
+  if (tbs.extensions_tlv) {
     std::map<der::Input, ParsedExtension> extensions;
-    if (!ParseExtensions(tbs.extensions_tlv, &extensions)) {
+    if (!ParseExtensions(tbs.extensions_tlv.value(), &extensions)) {
       return false;
     }
     ParsedExtension key_usage_ext;
-    if (ConsumeExtension(KeyUsageOid(), &extensions, &key_usage_ext)) {
+    if (ConsumeExtension(der::Input(kKeyUsageOid), &extensions,
+                         &key_usage_ext)) {
       der::BitString key_usage;
       if (!ParseKeyUsage(key_usage_ext.value, &key_usage) ||
           !key_usage.AssertsBit(KEY_USAGE_BIT_DIGITAL_SIGNATURE)) {
@@ -509,7 +521,7 @@ bool SignatureVerifierInitWithCertificate(
       base::make_span(tbs.spki_tlv.UnsafeData(), tbs.spki_tlv.Length()));
 }
 
-bool HasSHA1Signature(const CRYPTO_BUFFER* cert_buffer) {
+bool HasRsaPkcs1Sha1Signature(const CRYPTO_BUFFER* cert_buffer) {
   der::Input tbs_certificate_tlv;
   der::Input signature_algorithm_tlv;
   der::BitString signature_value;
@@ -520,14 +532,12 @@ bool HasSHA1Signature(const CRYPTO_BUFFER* cert_buffer) {
     return false;
   }
 
-  std::unique_ptr<SignatureAlgorithm> signature_algorithm =
-      SignatureAlgorithm::Create(signature_algorithm_tlv, /*errors=*/nullptr);
-  if (!signature_algorithm)
-    return false;
+  absl::optional<SignatureAlgorithm> signature_algorithm =
+      ParseSignatureAlgorithm(signature_algorithm_tlv,
+                              /*errors=*/nullptr);
 
-  return signature_algorithm->digest() == net::DigestAlgorithm::Sha1;
+  return signature_algorithm &&
+         *signature_algorithm == SignatureAlgorithm::kRsaPkcs1Sha1;
 }
 
-}  // namespace x509_util
-
-}  // namespace net
+}  // namespace net::x509_util

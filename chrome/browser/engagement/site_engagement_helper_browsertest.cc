@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/profiles/profile.h"
@@ -76,14 +77,14 @@ class SiteEngagementHelperBrowserTest : public InProcessBrowserTest {
   void SetInputTrackerPauseTimer(SiteEngagementService::Helper* helper) {
     input_tracker_timer_ = new TestOneShotTimer;
     helper->input_tracker_.SetPauseTimerForTesting(
-        base::WrapUnique(input_tracker_timer_));
+        base::WrapUnique(input_tracker_timer_.get()));
   }
 
   // Set a pause timer on the media tracker for test purposes.
   void SetMediaTrackerPauseTimer(SiteEngagementService::Helper* helper) {
     media_tracker_timer_ = new TestOneShotTimer;
     helper->media_tracker_.SetPauseTimerForTesting(
-        base::WrapUnique(media_tracker_timer_));
+        base::WrapUnique(media_tracker_timer_.get()));
   }
 
   bool IsInputTrackerTimerRestarted(SiteEngagementService::Helper* helper) {
@@ -104,8 +105,8 @@ class SiteEngagementHelperBrowserTest : public InProcessBrowserTest {
   content::test::PrerenderTestHelper prerender_helper_;
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
   base::HistogramTester histogram_tester_;
-  TestOneShotTimer* input_tracker_timer_;
-  TestOneShotTimer* media_tracker_timer_;
+  raw_ptr<TestOneShotTimer> input_tracker_timer_;
+  raw_ptr<TestOneShotTimer> media_tracker_timer_;
 };
 
 // Tests if SiteEngagementHelper checks the primary main frame in the
@@ -232,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(SiteEngagementHelperBrowserTest,
   EXPECT_TRUE(host_observer.was_activated());
 
   EXPECT_TRUE(
-      content::ExecJs(web_contents()->GetMainFrame(), "attemptPlay();"));
+      content::ExecJs(web_contents()->GetPrimaryMainFrame(), "attemptPlay();"));
 
   tester.WaitForEngagementEvent(EngagementType::kMediaVisible);
   EXPECT_EQ(tester.last_updated_type(), EngagementType::kMediaVisible);

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,7 +34,7 @@ SwapPromise::DidNotSwapAction LatencyInfoSwapPromise::DidNotSwap(
   return DidNotSwapAction::BREAK_PROMISE;
 }
 
-int64_t LatencyInfoSwapPromise::TraceId() const {
+int64_t LatencyInfoSwapPromise::GetTraceId() const {
   return latency_.trace_id();
 }
 
@@ -47,11 +47,11 @@ void LatencyInfoSwapPromise::OnCommit() {
               [this](perfetto::EventContext ctx) {
                 ChromeLatencyInfo* latency_info =
                     ctx.event()->set_chrome_latency_info();
-                latency_info->set_trace_id(TraceId());
+                latency_info->set_trace_id(GetTraceId());
                 latency_info->set_step(
                     ChromeLatencyInfo::STEP_HANDLE_INPUT_EVENT_MAIN_COMMIT);
                 tracing::FillFlowEvent(ctx, TrackEvent::LegacyEvent::FLOW_INOUT,
-                                       TraceId());
+                                       GetTraceId());
               });
 }
 

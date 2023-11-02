@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/text_resource_decoder_options.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -63,6 +64,17 @@ String TextResource::DecodedText() const {
   for (const auto& span : *Data())
     builder.Append(decoder_->Decode(span.data(), span.size()));
   builder.Append(decoder_->Flush());
+  return builder.ToString();
+}
+
+String TextResource::RawText() const {
+  CHECK(RuntimeEnabledFeatures::ExperimentalWebSnapshotsEnabled());
+
+  DCHECK(Data());
+
+  StringBuilder builder;
+  for (const auto& span : *Data())
+    builder.Append(String(span.data(), span.size()));
   return builder.ToString();
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,18 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 
 namespace password_manager {
+
+namespace {
+
+bool IsFacetValidForAffiliation(const FacetURI& facet) {
+  return facet.IsValidAndroidFacetURI() ||
+         (facet.IsValidWebFacetURI() &&
+          (base::FeatureList::IsEnabled(
+               features::kFillingAcrossAffiliatedWebsites) ||
+           base::FeatureList::IsEnabled(features::kPasswordsGrouping)));
+}
+
+}  // namespace
 
 // static
 constexpr base::TimeDelta AffiliatedMatchHelper::kInitializationDelayOnStartup;
@@ -67,7 +79,7 @@ void AffiliatedMatchHelper::DoDeferredInitialization() {
   // Must start observing for changes at the same time as when the snapshot is
   // taken to avoid inconsistencies due to any changes taking place in-between.
   password_store_->AddObserver(this);
-  password_store_->GetAllLogins(this);
+  password_store_->GetAllLogins(weak_ptr_factory_.GetWeakPtr());
 }
 
 void AffiliatedMatchHelper::CompleteGetAffiliatedAndroidAndWebRealms(
@@ -139,21 +151,28 @@ void AffiliatedMatchHelper::OnLoginsChanged(
 
 void AffiliatedMatchHelper::OnLoginsRetained(
     PasswordStoreInterface* /*store*/,
-    const std::vector<PasswordForm>& retained_passwords) {}
+    const std::vector<PasswordForm>& retained_passwords) {
+  std::vector<FacetURI> facets;
+  for (const auto& form : retained_passwords) {
+    FacetURI facet_uri =
+        FacetURI::FromPotentiallyInvalidSpec(form.signon_realm);
+    if (IsFacetValidForAffiliation(facet_uri))
+      facets.push_back(std::move(facet_uri));
+  }
+  affiliation_service_->KeepPrefetchForFacets(std::move(facets));
+}
 
 void AffiliatedMatchHelper::OnGetPasswordStoreResults(
     std::vector<std::unique_ptr<PasswordForm>> results) {
+  std::vector<FacetURI> facets;
   for (const auto& form : results) {
     FacetURI facet_uri =
         FacetURI::FromPotentiallyInvalidSpec(form->signon_realm);
-    if (facet_uri.IsValidAndroidFacetURI())
-      affiliation_service_->Prefetch(facet_uri, base::Time::Max());
-
-    if (facet_uri.IsValidWebFacetURI() &&
-        base::FeatureList::IsEnabled(
-            password_manager::features::kFillingAcrossAffiliatedWebsites))
-      affiliation_service_->Prefetch(facet_uri, base::Time::Max());
+    if (IsFacetValidForAffiliation(facet_uri))
+      facets.push_back(std::move(facet_uri));
   }
+  affiliation_service_->KeepPrefetchForFacets(facets);
+  affiliation_service_->TrimUnusedCache(std::move(facets));
 }
 
 }  // namespace password_manager

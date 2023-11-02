@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,9 @@
 
 #include <string>
 
+#include "ash/wm/window_state.h"
+#include "ash/wm/window_util.h"
+#include "base/base64.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
@@ -24,11 +27,11 @@
 
 namespace borealis {
 
-namespace {
-
-// Borealis windows are created with app/startup ids beginning with this.
 const char kBorealisWindowPrefix[] = "org.chromium.borealis.";
+const char kFullscreenClientShellId[] = "org.chromium.borealis.wmclass.steam";
+const char kBorealisClientSuffix[] = "wmclass.Steam";
 
+namespace {
 // Anonymous apps do not have a CrOS-standard app_id (i.e. one registered with
 // the GuestOsRegistryService), so to identify them we prepend this.
 const char kBorealisAnonymousPrefix[] = "borealis_anon:";
@@ -51,10 +54,9 @@ const std::string* GetWindowId(const aura::Window* window) {
 std::string BorealisIdToAppId(Profile* profile, unsigned borealis_id) {
   for (const auto& item :
        guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile)
-           ->GetRegisteredApps(guest_os::GuestOsRegistryService::VmType::
-                                   ApplicationList_VmType_BOREALIS)) {
+           ->GetRegisteredApps(guest_os::VmType::BOREALIS)) {
     absl::optional<int> app_id = GetBorealisAppId(item.second.Exec());
-    if (app_id && app_id.value() == borealis_id) {
+    if (app_id && app_id.value() == static_cast<int>(borealis_id)) {
       return item.first;
     }
   }
@@ -91,11 +93,6 @@ std::string WindowToAppId(Profile* profile, const aura::Window* window) {
   return kBorealisAnonymousPrefix + *GetWindowId(window);
 }
 
-bool IsAnonymousAppId(const std::string& app_id) {
-  return base::StartsWith(app_id, kBorealisAnonymousPrefix,
-                          base::CompareCase::SENSITIVE);
-}
-
 }  // namespace
 
 // static
@@ -108,7 +105,44 @@ bool BorealisWindowManager::IsBorealisWindow(const aura::Window* window) {
 
 // static
 bool BorealisWindowManager::IsBorealisWindowId(const std::string& window_id) {
-  return base::StartsWith(window_id, kBorealisWindowPrefix);
+  return base::StartsWith(window_id, borealis::kBorealisWindowPrefix);
+}
+
+// static
+bool BorealisWindowManager::ShouldNewWindowBeMinimized(
+    const std::string& window_id) {
+  // Only borealis client windows should be minimized.
+  if (!base::EndsWith(window_id, borealis::kBorealisClientSuffix,
+                      base::CompareCase::SENSITIVE)) {
+    return false;
+  }
+
+  // We only need to create windows as minimized when the active window is a
+  // borealis window in fullscreen.
+  aura::Window* active_window = ash::window_util::GetActiveWindow();
+  if (!active_window || !IsBorealisWindow(active_window))
+    return false;
+
+  const std::string* active_window_id = GetWindowId(active_window);
+  if (!active_window_id)
+    return false;
+
+  auto* window_state = ash::WindowState::Get(active_window);
+  if (!window_state || !window_state->IsFullscreen())
+    return false;
+
+  // If the fullscreen window is the borealis client, then we allow windows to
+  // take focus.
+  if (*active_window_id == borealis::kFullscreenClientShellId)
+    return false;
+
+  return true;
+}
+
+// static
+bool BorealisWindowManager::IsAnonymousAppId(const std::string& app_id) {
+  return base::StartsWith(app_id, kBorealisAnonymousPrefix,
+                          base::CompareCase::SENSITIVE);
 }
 
 BorealisWindowManager::BorealisWindowManager(Profile* profile)
@@ -162,7 +196,7 @@ std::string BorealisWindowManager::GetShelfAppId(aura::Window* window) {
 
 void BorealisWindowManager::OnInstanceUpdate(
     const apps::InstanceUpdate& update) {
-  aura::Window* window = update.InstanceKey().GetEnclosingAppWindow();
+  aura::Window* window = update.Window();
   if (!IsBorealisWindow(window))
     return;
   if (update.IsCreation()) {

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,8 @@ class ScriptMessage;
 
 namespace fuzzer {
 
-// Converts a |ScriptMessageProto| to |ScriptMessage|. Logs fields in message
-// when |LPM_DUMP_NATIVE_INPUT| is in environment for easier debugging.
+// Converts a `ScriptMessageProto` to `ScriptMessage`. Logs fields in message
+// when `LPM_DUMP_NATIVE_INPUT` is in environment for easier debugging.
 std::unique_ptr<web::ScriptMessage> ProtoToScriptMessage(
     const web::ScriptMessageProto& proto);
 }  // namespace fuzzer

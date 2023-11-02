@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,14 +16,14 @@ namespace net {
 void ReportingBrowsingDataRemover::RemoveBrowsingData(
     ReportingCache* cache,
     uint64_t data_type_mask,
-    const base::RepeatingCallback<bool(const GURL&)>& origin_filter) {
+    const base::RepeatingCallback<bool(const url::Origin&)>& origin_filter) {
   if ((data_type_mask & DATA_TYPE_REPORTS) != 0) {
     std::vector<const ReportingReport*> all_reports;
     cache->GetReports(&all_reports);
 
     std::vector<const ReportingReport*> reports_to_remove;
     for (const ReportingReport* report : all_reports) {
-      if (origin_filter.Run(report->url))
+      if (origin_filter.Run(url::Origin::Create(report->url)))
         reports_to_remove.push_back(report);
     }
 
@@ -32,7 +32,7 @@ void ReportingBrowsingDataRemover::RemoveBrowsingData(
 
   if ((data_type_mask & DATA_TYPE_CLIENTS) != 0) {
     for (const url::Origin& origin : cache->GetAllOrigins()) {
-      if (origin_filter.Run(origin.GetURL()))
+      if (origin_filter.Run(origin))
         cache->RemoveClientsForOrigin(origin);
     }
   }

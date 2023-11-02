@@ -31,58 +31,23 @@
 #include "third_party/blink/renderer/core/css/font_face_cache.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/platform/fonts/generic_font_family_settings.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
 
 class FontDescription;
 class FontFamily;
 
+// `CSSFontSelector` is owned by `StyleEngine`. There is derived class
+// ` PopupMenuCSSFontSelector`.
 class CORE_EXPORT CSSFontSelector : public CSSFontSelectorBase {
  public:
   explicit CSSFontSelector(const TreeScope&);
   ~CSSFontSelector() override;
 
   unsigned Version() const override { return font_face_cache_->Version(); }
-
-  void ReportSuccessfulFontFamilyMatch(
-      const AtomicString& font_family_name) override;
-
-  void ReportFailedFontFamilyMatch(
-      const AtomicString& font_family_name) override;
-
-  void ReportSuccessfulLocalFontMatch(const AtomicString& font_name) override;
-
-  void ReportFailedLocalFontMatch(const AtomicString& font_name) override;
-
-  void ReportFontLookupByUniqueOrFamilyName(
-      const AtomicString& name,
-      const FontDescription& font_description,
-      SimpleFontData* resulting_font_data) override;
-
-  void ReportFontLookupByUniqueNameOnly(
-      const AtomicString& name,
-      const FontDescription& font_description,
-      SimpleFontData* resulting_font_data,
-      bool is_loading_fallback = false) override;
-
-  void ReportFontLookupByFallbackCharacter(
-      UChar32 fallback_character,
-      FontFallbackPriority fallback_priority,
-      const FontDescription& font_description,
-      SimpleFontData* resulting_font_data) override;
-
-  void ReportLastResortFallbackFontLookup(
-      const FontDescription& font_description,
-      SimpleFontData* resulting_font_data) override;
-
-  void ReportNotDefGlyph() const override;
-
-  void ReportEmojiSegmentGlyphCoverage(unsigned num_clusters,
-                                       unsigned num_broken_clusters) override;
 
   scoped_refptr<FontData> GetFontData(const FontDescription&,
                                       const FontFamily&) override;
@@ -114,15 +79,20 @@ class CORE_EXPORT CSSFontSelector : public CSSFontSelectorBase {
   void Trace(Visitor*) const override;
 
  protected:
-  UseCounter* GetUseCounter() override;
   void DispatchInvalidationCallbacks(FontInvalidationReason);
+
+  // `CSSFontSelectorBase` overrides
+  bool IsAlive() const override;
+  FontMatchingMetrics* GetFontMatchingMetrics() const override;
+  UseCounter* GetUseCounter() const override;
 
  private:
   // TODO(Oilpan): Ideally this should just be a traced Member but that will
   // currently leak because ComputedStyle and its data are not on the heap.
   // See crbug.com/383860 for details.
   WeakMember<const TreeScope> tree_scope_;
-  HeapHashSet<WeakMember<FontSelectorClient>> clients_;
+  HeapHashSet<WeakMember<FontSelectorClient>, WTF::MemberHashRecordReplayId<FontSelectorClient>> clients_;
+  HeapHashSet<Member<FontSelectorClient>> record_replay_strong_clients_;
 };
 
 }  // namespace blink

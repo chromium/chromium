@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -38,18 +37,13 @@
 
 namespace device {
 
-// The 10.13 SDK deprecates the CBCentralManagerState enum, but marks the
-// replacement enum with limited availability, making it unusable. API methods
-// now return the new enum, so to compare enum values the new enum must be cast.
-// Wrap this in a function to obtain the state via a call to [manager state] to
-// avoid code that would use the replacement enum and trigger warnings.
-CBCentralManagerState GetCBManagerState(CBCentralManager* manager);
-
 class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterMac
     : public BluetoothAdapter,
       public BluetoothDiscoveryManagerMac::Observer,
       public BluetoothLowEnergyDiscoveryManagerMac::Observer {
  public:
+  using DevicesInfo = std::map<std::string, std::string>;
+
   static scoped_refptr<BluetoothAdapterMac> CreateAdapter();
   static scoped_refptr<BluetoothAdapterMac> CreateAdapterForTest(
       std::string name,
@@ -98,6 +92,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterMac
       AdvertisementErrorCallback error_callback) override;
   BluetoothLocalGattService* GetGattService(
       const std::string& identifier) const override;
+  DeviceList GetDevices() override;
+  ConstDeviceList GetDevices() const override;
 
   // BluetoothDiscoveryManagerMac::Observer overrides:
   void ClassicDeviceFound(IOBluetoothDevice* device) override;
@@ -130,8 +126,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterMac
   void RemovePairingDelegateInternal(
       device::BluetoothDevice::PairingDelegate* pairing_delegate) override;
 
-  void UpdateKnownLowEnergyDevices(
-      std::map<std::string, std::string> updated_low_energy_device_info);
+  void UpdateKnownLowEnergyDevices(DevicesInfo updated_low_energy_device_info);
 
  private:
   // Struct bundling information about the state of the HostController.
@@ -318,7 +313,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterMac
 
   // Map of UUID formatted device identifiers of paired Bluetooth devices and
   // corresponding device address.
-  std::map<std::string, std::string> low_energy_devices_info_;
+  DevicesInfo low_energy_devices_info_;
 
   base::WeakPtrFactory<BluetoothAdapterMac> weak_ptr_factory_{this};
 };

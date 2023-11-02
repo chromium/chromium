@@ -1,16 +1,16 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_VALUE_STORE_VALUE_STORE_FRONTEND_H_
 #define COMPONENTS_VALUE_STORE_VALUE_STORE_FRONTEND_H_
 
-#include <memory>
 #include <string>
 
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -23,13 +23,14 @@ class ValueStoreFactory;
 // A frontend for a LeveldbValueStore, for use on the UI thread.
 class ValueStoreFrontend {
  public:
-  using ReadCallback = base::OnceCallback<void(std::unique_ptr<base::Value>)>;
+  using ReadCallback = base::OnceCallback<void(absl::optional<base::Value>)>;
 
   ValueStoreFrontend(
       const scoped_refptr<ValueStoreFactory>& store_factory,
       const base::FilePath& directory,
       const std::string& uma_client_name,
-      const scoped_refptr<base::SequencedTaskRunner>& task_runner);
+      const scoped_refptr<base::SequencedTaskRunner>& origin_task_runner,
+      const scoped_refptr<base::SequencedTaskRunner>& file_task_runner);
   ~ValueStoreFrontend();
   ValueStoreFrontend(const ValueStoreFrontend&) = delete;
   ValueStoreFrontend& operator=(const ValueStoreFrontend&) = delete;
@@ -39,7 +40,7 @@ class ValueStoreFrontend {
   void Get(const std::string& key, ReadCallback callback);
 
   // Sets a value with the given key.
-  void Set(const std::string& key, std::unique_ptr<base::Value> value);
+  void Set(const std::string& key, base::Value value);
 
   // Removes the value with the given key.
   void Remove(const std::string& key);
@@ -51,7 +52,10 @@ class ValueStoreFrontend {
   // on the FILE thread.
   scoped_refptr<Backend> backend_;
 
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  // The task runner on which to fire callbacks.
+  scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
+
+  scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
 };
 
 }  // namespace value_store

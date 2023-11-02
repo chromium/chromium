@@ -1,8 +1,8 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
 import {GetSsrcFromReport, SsrcInfoManager} from './ssrc_info_manager.js';
 
@@ -39,14 +39,35 @@ export class StatsTable {
 
     if (['outbound-rtp', 'inbound-rtp'].includes(report.type)
         && report.stats.values) {
-      // Show codec for inbound-rtp and outbound-rtp.
-      const codecIndex = report.stats.values.indexOf('[codec]');
+      let summary = report.type + ' (';
+      // Show mid, rid and codec for inbound-rtp and outbound-rtp.
+      // Note: values is an array [key1, val1, key2, val2, ...] so searching
+      // for a certain key needs to ensure it does not collide with a value.
+      const midIndex = report.stats.values.findIndex((value, index) => {
+        return value === 'mid' && index % 2 === 0;
+      });
+      if (midIndex !== -1) {
+        const midInfo = report.stats.values[midIndex + 1];
+        summary += 'mid=' + midInfo + ', ';
+      }
+      const ridIndex = report.stats.values.findIndex((value, index) => {
+        return value === 'rid' && index % 2 === 0;
+      });
+      if (ridIndex !== -1) {
+        const ridInfo = report.stats.values[ridIndex + 1];
+        summary += 'rid=' + ridInfo + ', ';
+      }
+
+      const codecIndex = report.stats.values.findIndex((value, index) => {
+        return value === '[codec]' && index % 2 === 0;
+      });
       if (codecIndex !== -1) {
         const codecInfo = report.stats.values[codecIndex + 1].split(' ')[0];
-        // Update the summary.
-        statsTable.parentElement.firstElementChild.innerText =
-          report.id + ' (' + report.type + ', ' + codecInfo + ')';
+        summary += codecInfo + ', ';
       }
+      // Update the summary.
+      statsTable.parentElement.firstElementChild.innerText =
+        summary + 'id=' + report.id + ')';
     }
 
     if (report.stats) {
@@ -108,7 +129,7 @@ export class StatsTable {
       container.appendChild(details);
 
       const summary = document.createElement('summary');
-      summary.textContent = report.id + ' (' + report.type + ')';
+      summary.textContent = report.type + ' (id=' + report.id + ')';
       details.appendChild(summary);
 
       table = document.createElement('table');

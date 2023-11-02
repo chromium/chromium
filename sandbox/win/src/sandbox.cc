@@ -1,4 +1,4 @@
-// Copyright (c) 2006-2008 The Chromium Authors. All rights reserved.
+// Copyright 2006-2008 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,18 +41,7 @@ TargetServices* SandboxFactory::GetTargetServices() {
 
 }  // namespace sandbox
 
-// Allow calling to SetInterceptionHint from any loaded DLL.
-extern "C" {
-
 // Allows querying for whether the current process has been sandboxed.
-__declspec(dllexport) bool IsSandboxedProcess() {
+extern "C" bool __declspec(dllexport) IsSandboxedProcess() {
   return !!sandbox::g_shared_section;
 }
-
-__declspec(dllexport) sandbox::TargetServicesBase* GetMainTargetServices() {
-  if (!sandbox::g_shared_section)
-    return nullptr;
-  return sandbox::TargetServicesBase::GetInstance();
-}
-
-}  // extern "C"

@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/accelerated_widget_mac/ca_transaction_observer.h"
 
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
@@ -94,9 +95,8 @@ void CATransactionCoordinator::PostCommitHandler() {
   auto* clock = base::DefaultTickClock::GetInstance();
   const base::TimeTicks deadline = clock->NowTicks() + kPostCommitTimeout;
   while (true) {
-    bool continue_waiting = std::any_of(
-        post_commit_observers_.begin(), post_commit_observers_.end(),
-        std::mem_fn(&PostCommitObserver::ShouldWaitInPostCommit));
+    bool continue_waiting = base::ranges::any_of(
+        post_commit_observers_, &PostCommitObserver::ShouldWaitInPostCommit);
     if (!continue_waiting)
       break;  // success
 

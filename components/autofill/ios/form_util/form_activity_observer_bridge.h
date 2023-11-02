@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,6 @@
     didSubmitDocumentWithFormNamed:(const std::string&)formName
                           withData:(const std::string&)formData
                     hasUserGesture:(BOOL)hasUserGesture
-                   formInMainFrame:(BOOL)formInMainFrame
                            inFrame:(web::WebFrame*)frame;
 
 // Invoked by FormActivityObserverBridge::FormRemoved.
@@ -61,8 +60,7 @@ class FormActivityObserverBridge : public FormActivityObserver {
                          web::WebFrame* sender_frame,
                          const std::string& form_name,
                          const std::string& form_data,
-                         bool has_user_gesture,
-                         bool form_in_main_frame) override;
+                         bool has_user_gesture) override;
 
   void FormRemoved(web::WebState* web_state,
                    web::WebFrame* sender_frame,

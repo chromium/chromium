@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/signaling/signal_strategy.h"
 
@@ -51,8 +51,8 @@ class FtlHostChangeNotificationListener : public SignalStrategy::Listener {
  private:
   void OnHostDeleted();
 
-  Listener* listener_;
-  SignalStrategy* signal_strategy_;
+  raw_ptr<Listener> listener_;
+  raw_ptr<SignalStrategy> signal_strategy_;
   base::WeakPtrFactory<FtlHostChangeNotificationListener> weak_factory_{this};
 };
 

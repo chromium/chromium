@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,9 @@
 
 #include "base/check.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/weak_ptr.h"
+#include "base/run_loop.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/mock_callback.h"
 #include "build/build_config.h"
 #include "components/feedback/feedback_data.h"
@@ -78,6 +81,9 @@ class MockFeedbackPrivateDelegate : public ShellFeedbackPrivateDelegate {
               FetchExtraLogs,
               (scoped_refptr<feedback::FeedbackData>, FetchExtraLogsCallback),
               (const, override));
+  void GetLacrosHistograms(GetHistogramsCallback callback) override {
+    std::move(callback).Run(std::string());
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
@@ -93,8 +99,10 @@ class FeedbackServiceTest : public ApiUnitTest {
     mock_uploader_ = std::make_unique<StrictMock<MockFeedbackUploader>>(
         /*is_off_the_record=*/false, scoped_temp_dir_.GetPath(),
         test_shared_loader_factory_);
+    base::WeakPtr<feedback::FeedbackUploader> wkptr_uploader =
+        base::AsWeakPtr(mock_uploader_.get());
     feedback_data_ =
-        base::MakeRefCounted<FeedbackData>(mock_uploader_.get(), nullptr);
+        base::MakeRefCounted<FeedbackData>(std::move(wkptr_uploader), nullptr);
   }
 
   ~FeedbackServiceTest() override = default;
@@ -120,8 +128,10 @@ class FeedbackServiceTest : public ApiUnitTest {
 
     auto feedback_service = base::MakeRefCounted<FeedbackService>(
         browser_context(), mock_delegate.get());
+    base::RunLoop run_loop;
     feedback_service->SendFeedback(params, feedback_data_, mock_callback.Get());
-
+    base::ThreadPoolInstance::Get()->FlushForTesting();
+    run_loop.RunUntilIdle();
     EXPECT_EQ(1u, feedback_data_->sys_info()->count(kFakeKey));
   }
 

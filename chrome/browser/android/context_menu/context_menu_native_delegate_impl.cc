@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "chrome/browser/image_decoder/image_decoder.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "components/embedder_support/android/contextmenu/context_menu_builder.h"
+#include "components/lens/lens_metadata.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "ui/gfx/android/java_bitmap.h"
@@ -76,7 +77,8 @@ void OnRetrieveImageForShare(
     const JavaRef<jobject>& jcallback,
     const std::vector<uint8_t>& thumbnail_data,
     const gfx::Size& original_size,
-    const std::string& image_extension) {
+    const std::string& image_extension,
+    const std::vector<lens::mojom::LatencyLogPtr>) {
   JNIEnv* env = base::android::AttachCurrentThread();
   auto j_data = base::android::ToJavaByteArray(env, thumbnail_data);
   auto j_extension =
@@ -92,7 +94,8 @@ void OnRetrieveImageForContextMenu(
     const JavaRef<jobject>& jcallback,
     const std::vector<uint8_t>& thumbnail_data,
     const gfx::Size& original_size,
-    const std::string& filename_extension) {
+    const std::string& filename_extension,
+    const std::vector<lens::mojom::LatencyLogPtr>) {
   ContextMenuImageRequest::Start(jcallback, thumbnail_data);
 }
 
@@ -121,7 +124,7 @@ void ContextMenuNativeDelegateImpl::SearchForImage(
     return;
 
   CoreTabHelper::FromWebContents(web_contents_)
-      ->SearchByImageInNewTab(render_frame_host, context_menu_params_->src_url);
+      ->SearchByImage(render_frame_host, context_menu_params_->src_url);
 }
 
 void ContextMenuNativeDelegateImpl::RetrieveImageForShare(

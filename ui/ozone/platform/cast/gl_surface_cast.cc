@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromecast/base/cast_features.h"
@@ -42,9 +43,11 @@ base::TimeDelta GetVSyncInterval() {
 
 namespace ui {
 
-GLSurfaceCast::GLSurfaceCast(gfx::AcceleratedWidget widget,
+GLSurfaceCast::GLSurfaceCast(gl::GLDisplayEGL* display,
+                             gfx::AcceleratedWidget widget,
                              GLOzoneEglCast* parent)
     : NativeViewGLSurfaceEGL(
+          display,
           parent->GetNativeWindow(),
           std::make_unique<gfx::FixedVSyncProvider>(base::TimeTicks(),
                                                     GetVSyncInterval())),
@@ -64,7 +67,8 @@ bool GLSurfaceCast::SupportsSwapBuffersWithBounds() {
 
 gfx::SwapResult GLSurfaceCast::SwapBuffersWithBounds(
     const std::vector<gfx::Rect>& rects,
-    PresentationCallback callback) {
+    PresentationCallback callback,
+    gl::FrameData data) {
   DCHECK(supports_swap_buffer_with_bounds_);
 
   // TODO(halliwell): Request new EGL extension so we're not abusing
@@ -77,8 +81,8 @@ gfx::SwapResult GLSurfaceCast::SwapBuffersWithBounds(
     rects_data[i * 4 + 3] = rects[i].height();
   }
 
-  return NativeViewGLSurfaceEGL::SwapBuffersWithDamage(rects_data,
-                                                       std::move(callback));
+  return NativeViewGLSurfaceEGL::SwapBuffersWithDamage(
+      rects_data, std::move(callback), std::move(data));
 }
 
 bool GLSurfaceCast::Resize(const gfx::Size& size,
@@ -107,7 +111,7 @@ EGLConfig GLSurfaceCast::GetConfig() {
                                EGL_SURFACE_TYPE,
                                EGL_WINDOW_BIT,
                                EGL_NONE};
-    config_ = ChooseEGLConfig(GetDisplay(), config_attribs);
+    config_ = ChooseEGLConfig(GetEGLDisplay(), config_attribs);
   }
   return config_;
 }

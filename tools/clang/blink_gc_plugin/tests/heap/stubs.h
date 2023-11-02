@@ -1,19 +1,12 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef HEAP_STUBS_H_
 #define HEAP_STUBS_H_
 
-#include "stddef.h"
-
-#define WTF_MAKE_FAST_ALLOCATED                 \
-    public:                                     \
-    void* operator new(size_t, void* p);        \
-    void* operator new[](size_t, void* p);      \
-    void* operator new(size_t size);            \
-    private:                                    \
-    typedef int __thisIsHereToForceASemicolonAfterThisMacro
+#include <stddef.h>
+#include <stdint.h>
 
 namespace WTF {
 
@@ -221,7 +214,19 @@ class BasicCrossThreadPersistent : public PersistentBase {
 }  // namespace internal
 
 template <typename T>
-class GarbageCollected {};
+class GarbageCollected {
+ public:
+  void* operator new(size_t, void* location) { return location; }
+
+ private:
+  void* operator new(size_t) = delete;
+  void* operator new[](size_t) = delete;
+};
+
+template <typename T, typename... Args>
+T* MakeGarbageCollected(int, Args&&... args) {
+  return new (reinterpret_cast<void*>(0x87654321)) T(args...);
+}
 
 class GarbageCollectedMixin {
  public:
@@ -261,6 +266,10 @@ using Visitor = cppgc::Visitor;
 
 template <typename T>
 using GarbageCollected = cppgc::GarbageCollected<T>;
+template <typename T, typename... Args>
+T* MakeGarbageCollected(Args&&... args) {
+  return cppgc::MakeGarbageCollected<T>(0, args...);
+}
 
 using GarbageCollectedMixin = cppgc::GarbageCollectedMixin;
 
@@ -290,7 +299,20 @@ class Visitor {
   void Trace(const T&);
 };
 
-template<typename T> class GarbageCollected { };
+template <typename T>
+class GarbageCollected {
+ public:
+  void* operator new(size_t, void* location) { return location; }
+
+ private:
+  void* operator new(size_t) = delete;
+  void* operator new[](size_t) = delete;
+};
+
+template <typename T, typename... Args>
+T* MakeGarbageCollected(Args&&... args) {
+  return new (reinterpret_cast<void*>(0x87654321)) T(args...);
+}
 
 class GarbageCollectedMixin {
  public:
@@ -304,6 +326,9 @@ public:
     operator T*() const { return 0; }
     T* operator->() const { return 0; }
     bool operator!() const { return false; }
+
+   private:
+    uint32_t compressed;
 };
 
 template<typename T> class WeakMember {
@@ -345,26 +370,20 @@ public:
 
 using namespace WTF;
 
-#define DISALLOW_NEW()                 \
- private:                              \
-  void* operator new(size_t) = delete; \
-  void* operator new(size_t, void*) = delete;
+#define DISALLOW_NEW()                                            \
+ public:                                                          \
+  void* operator new(size_t, void* location) { return location; } \
+                                                                  \
+ private:                                                         \
+  void* operator new(size_t) = delete
 
-#define STACK_ALLOCATED()                                                \
- public:                                                                 \
-  using IsStackAllocatedTypeMarker [[maybe_unused]] = int;               \
-                                                                         \
- private:                                                                \
-  __attribute__((annotate("blink_stack_allocated"))) void* operator new( \
-      size_t) = delete;                                                  \
-  void* operator new(size_t, void*) = delete;
-
-#define DISALLOW_NEW_EXCEPT_PLACEMENT_NEW() \
- public:                                    \
-  void* operator new(size_t, void*);        \
-                                            \
- private:                                   \
-  void* operator new(size_t) = delete;
+#define STACK_ALLOCATED()                                  \
+ public:                                                   \
+  using IsStackAllocatedTypeMarker [[maybe_unused]] = int; \
+                                                           \
+ private:                                                  \
+  void* operator new(size_t) = delete;                     \
+  void* operator new(size_t, void*) = delete
 
 #define GC_PLUGIN_IGNORE(bug) \
   __attribute__((annotate("blink_gc_plugin_ignore")))

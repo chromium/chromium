@@ -36,7 +36,7 @@
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
@@ -116,7 +116,7 @@ static unsigned MakePresentationAttributeCacheKey(
     result.attributes_and_values.push_back(
         std::make_pair(attr.LocalName().Impl(), attr.Value()));
   }
-  if (result.attributes_and_values.IsEmpty())
+  if (result.attributes_and_values.empty())
     return 0;
   // Attribute order doesn't matter. Sort for easy equality comparison.
   std::sort(result.attributes_and_values.begin(),

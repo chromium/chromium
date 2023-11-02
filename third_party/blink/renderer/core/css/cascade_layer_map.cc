@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,6 @@
 #include "third_party/blink/renderer/core/css/rule_set.h"
 
 namespace blink {
-
-const unsigned CascadeLayerMap::kImplicitOuterLayerOrder =
-    std::numeric_limits<unsigned>::max();
-
 namespace {
 
 using CanonicalLayerMap =
@@ -32,12 +28,10 @@ void AddLayers(CascadeLayer* canonical_layer,
   }
 }
 
-void ComputeLayerOrder(const CascadeLayer& layer,
-                       unsigned& next,
-                       LayerOrderMap& layer_order_map) {
+void ComputeLayerOrder(CascadeLayer& layer, unsigned& next) {
   for (const auto& sub_layer : layer.GetDirectSubLayers())
-    ComputeLayerOrder(*sub_layer, next, layer_order_map);
-  layer_order_map.insert(&layer, next++);
+    ComputeLayerOrder(*sub_layer, next);
+  layer.SetOrder(next++);
 }
 
 }  // namespace
@@ -55,20 +49,20 @@ CascadeLayerMap::CascadeLayerMap(const ActiveStyleSheetVector& sheets) {
   }
 
   unsigned next = 0;
-  LayerOrderMap canonical_layer_order_map;
-  ComputeLayerOrder(*canonical_root_layer, next, canonical_layer_order_map);
+  ComputeLayerOrder(*canonical_root_layer, next);
 
-  canonical_layer_order_map.Set(canonical_root_layer, kImplicitOuterLayerOrder);
+  canonical_root_layer->SetOrder(kImplicitOuterLayerOrder);
+  canonical_root_layer_ = canonical_root_layer;
 
   for (const auto& iter : canonical_layer_map) {
     const CascadeLayer* layer_from_sheet = iter.key;
     const CascadeLayer* canonical_layer = iter.value;
-    unsigned layer_order = canonical_layer_order_map.at(canonical_layer);
+    unsigned layer_order = canonical_layer->GetOrder().value();
     layer_order_map_.insert(layer_from_sheet, layer_order);
 
 #if DCHECK_IS_ON()
     // The implicit outer layer is placed above all explicit layers.
-    if (canonical_layer != canonical_root_layer)
+    if (canonical_layer != canonical_root_layer_)
       DCHECK_LT(layer_order, kImplicitOuterLayerOrder);
 #endif
   }
@@ -81,8 +75,13 @@ int CascadeLayerMap::CompareLayerOrder(const CascadeLayer* lhs,
   return lhs_order < rhs_order ? -1 : (lhs_order > rhs_order ? 1 : 0);
 }
 
+const CascadeLayer* CascadeLayerMap::GetRootLayer() const {
+  return canonical_root_layer_;
+}
+
 void CascadeLayerMap::Trace(blink::Visitor* visitor) const {
   visitor->Trace(layer_order_map_);
+  visitor->Trace(canonical_root_layer_);
 }
 
 }  // namespace blink

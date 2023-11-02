@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,47 +24,56 @@ class CORE_EXPORT NGBoxFragment final : public NGFragment {
     return To<NGPhysicalBoxFragment>(physical_fragment_);
   }
 
+  bool IsWritingModeEqual() const {
+    return writing_direction_.GetWritingMode() ==
+           physical_fragment_.Style().GetWritingMode();
+  }
+
+  static LayoutUnit SynthesizedBaseline(FontBaseline baseline_type,
+                                        bool is_flipped_lines,
+                                        LayoutUnit block_size) {
+    if (baseline_type == kAlphabeticBaseline)
+      return is_flipped_lines ? LayoutUnit() : block_size;
+
+    return block_size / 2;
+  }
+
   absl::optional<LayoutUnit> FirstBaseline() const {
-    if (writing_direction_.GetWritingMode() !=
-        physical_fragment_.Style().GetWritingMode())
+    if (!IsWritingModeEqual())
       return absl::nullopt;
 
-    return PhysicalBoxFragment().Baseline();
+    auto baseline = PhysicalBoxFragment().FirstBaseline();
+    if (baseline && physical_fragment_.IsScrollContainer())
+      baseline = std::max(LayoutUnit(), std::min(*baseline, BlockSize()));
+
+    return baseline;
   }
 
   LayoutUnit FirstBaselineOrSynthesize(FontBaseline baseline_type) const {
     if (auto first_baseline = FirstBaseline())
       return *first_baseline;
 
-    if (baseline_type == kAlphabeticBaseline)
-      return BlockSize();
-
-    return BlockSize() / 2;
+    return SynthesizedBaseline(
+        baseline_type, writing_direction_.IsFlippedLines(), BlockSize());
   }
 
-  // Returns the baseline for this fragment wrt. the parent writing mode. Will
-  // return a null baseline if:
-  //  - The fragment has no baseline.
-  //  - The writing modes differ.
-  absl::optional<LayoutUnit> Baseline() const {
-    if (writing_direction_.GetWritingMode() !=
-        physical_fragment_.Style().GetWritingMode())
+  absl::optional<LayoutUnit> LastBaseline() const {
+    if (!IsWritingModeEqual())
       return absl::nullopt;
 
-    if (auto last_baseline = PhysicalBoxFragment().LastBaseline())
-      return last_baseline;
+    auto baseline = PhysicalBoxFragment().LastBaseline();
+    if (baseline && physical_fragment_.IsScrollContainer())
+      baseline = std::max(LayoutUnit(), std::min(*baseline, BlockSize()));
 
-    return PhysicalBoxFragment().Baseline();
+    return baseline;
   }
 
-  LayoutUnit BaselineOrSynthesize(FontBaseline baseline_type) const {
-    if (auto baseline = Baseline())
-      return *baseline;
+  LayoutUnit LastBaselineOrSynthesize(FontBaseline baseline_type) const {
+    if (auto last_baseline = LastBaseline())
+      return *last_baseline;
 
-    if (baseline_type == kAlphabeticBaseline)
-      return BlockSize();
-
-    return BlockSize() / 2;
+    return SynthesizedBaseline(
+        baseline_type, writing_direction_.IsFlippedLines(), BlockSize());
   }
 
   // Compute baseline metrics (ascent/descent) for this box.

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,12 +25,9 @@
 #include "media/cast/test/utility/video_utility.h"
 #include "ui/gfx/geometry/size.h"
 
-// TODO(miu): Figure out why _mkdir() and _rmdir() are missing when compiling
-// third_party/ffmpeg/libavformat/os_support.h (lines 182, 183).
-// http://crbug.com/572986
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <direct.h>
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 #include "media/ffmpeg/ffmpeg_common.h"
 #include "media/ffmpeg/ffmpeg_decoding_loop.h"
 #include "media/ffmpeg/ffmpeg_deleters.h"
@@ -78,10 +75,11 @@ FakeMediaSource::FakeMediaSource(
     const FrameSenderConfig& video_config,
     bool keep_frames)
     : task_runner_(task_runner),
-      output_audio_params_(AudioParameters::AUDIO_PCM_LINEAR,
-                           media::GuessChannelLayout(audio_config.channels),
-                           audio_config.rtp_timebase,
-                           audio_config.rtp_timebase / kAudioPacketsPerSecond),
+      output_audio_params_(
+          AudioParameters::AUDIO_PCM_LINEAR,
+          media::ChannelLayoutConfig::Guess(audio_config.channels),
+          audio_config.rtp_timebase,
+          audio_config.rtp_timebase / kAudioPacketsPerSecond),
       video_config_(video_config),
       keep_frames_(keep_frames),
       variable_frame_size_mode_(false),
@@ -179,11 +177,9 @@ void FakeMediaSource::SetSourceFile(const base::FilePath& video_file,
       audio_stream_index_ = static_cast<int>(i);
       av_audio_context_ = std::move(av_codec_context);
       source_audio_params_.Reset(
-          AudioParameters::AUDIO_PCM_LINEAR, layout,
-          av_audio_context_->sample_rate,
+          AudioParameters::AUDIO_PCM_LINEAR,
+          {layout, av_audio_context_->channels}, av_audio_context_->sample_rate,
           av_audio_context_->sample_rate / kAudioPacketsPerSecond);
-      source_audio_params_.set_channels_for_discrete(
-          av_audio_context_->channels);
       CHECK(source_audio_params_.IsValid());
       LOG(INFO) << "Source file has audio.";
       audio_decoding_loop_ =
@@ -431,11 +427,10 @@ void FakeMediaSource::Rewind() {
 }
 
 ScopedAVPacket FakeMediaSource::DemuxOnePacket(bool* audio) {
-  ScopedAVPacket packet = MakeScopedAVPacket();
+  auto packet = ScopedAVPacket::Allocate();
   if (av_read_frame(av_format_context_, packet.get()) < 0) {
     VLOG(1) << "Failed to read one AVPacket.";
-    packet.reset();
-    return packet;
+    return {};
   }
 
   int stream_index = static_cast<int>(packet->stream_index);
@@ -446,7 +441,7 @@ ScopedAVPacket FakeMediaSource::DemuxOnePacket(bool* audio) {
   } else {
     // Ignore unknown packet.
     LOG(INFO) << "Unknown packet.";
-    packet.reset();
+    return {};
   }
   return packet;
 }

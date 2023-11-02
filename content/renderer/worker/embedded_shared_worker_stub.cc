@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "content/public/common/network_service_util.h"
 #include "content/renderer/content_security_policy_util.h"
+#include "content/renderer/policy_container_util.h"
 #include "content/renderer/worker/fetch_client_settings_object_helpers.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/common/features.h"
@@ -35,7 +36,9 @@ EmbeddedSharedWorkerStub::EmbeddedSharedWorkerStub(
     blink::mojom::SharedWorkerInfoPtr info,
     const blink::SharedWorkerToken& token,
     const url::Origin& constructor_origin,
+    bool is_constructor_secure_context,
     const std::string& user_agent,
+    const std::string& full_user_agent,
     const std::string& reduced_user_agent,
     const blink::UserAgentMetadata& ua_metadata,
     bool pause_on_start,
@@ -51,6 +54,7 @@ EmbeddedSharedWorkerStub::EmbeddedSharedWorkerStub(
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
         pending_subresource_loader_factory_bundle,
     blink::mojom::ControllerServiceWorkerInfoPtr controller_info,
+    blink::mojom::PolicyContainerPtr policy_container,
     mojo::PendingRemote<blink::mojom::SharedWorkerHost> host,
     mojo::PendingReceiver<blink::mojom::SharedWorker> receiver,
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
@@ -117,15 +121,16 @@ EmbeddedSharedWorkerStub::EmbeddedSharedWorkerStub(
       token, info->url, info->options->type, info->options->credentials,
       blink::WebString::FromUTF8(info->options->name),
       blink::WebSecurityOrigin(constructor_origin),
-      blink::WebString::FromUTF8(user_agent),
+      is_constructor_secure_context, blink::WebString::FromUTF8(user_agent),
+      blink::WebString::FromUTF8(full_user_agent),
       blink::WebString::FromUTF8(reduced_user_agent), ua_metadata,
       ToWebContentSecurityPolicies(std::move(info->content_security_policies)),
-      info->creation_address_space,
       FetchClientSettingsObjectFromMojomToWeb(
           info->outside_fetch_client_settings_object),
       devtools_worker_token, std::move(content_settings),
       std::move(browser_interface_broker), pause_on_start,
       std::move(worker_main_script_load_params),
+      ToWebPolicyContainer(std::move(policy_container)),
       std::move(web_worker_fetch_context), std::move(host), this,
       ukm_source_id);
 

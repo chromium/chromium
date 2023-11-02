@@ -1,10 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/policy/handlers/lock_to_single_user_manager.h"
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -14,9 +13,10 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
-#include "chromeos/login/session/session_termination_manager.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 
 using RebootOnSignOutPolicy =
@@ -30,8 +30,8 @@ namespace policy {
 
 namespace {
 
-chromeos::ConciergeClient* GetConciergeClient() {
-  return chromeos::ConciergeClient::Get();
+ash::ConciergeClient* GetConciergeClient() {
+  return ash::ConciergeClient::Get();
 }
 
 LockToSingleUserManager* g_lock_to_single_user_manager_instance;
@@ -124,7 +124,7 @@ void LockToSingleUserManager::OnVmStarting() {
 }
 
 void LockToSingleUserManager::AddVmStartingObservers(user_manager::User* user) {
-  Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+  Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
 
   crostini::CrostiniManager::GetForProfile(profile)->AddVmStartingObserver(
       this);
@@ -142,7 +142,7 @@ void LockToSingleUserManager::LockToSingleUser() {
           user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId());
   RebootOnSignOutRequest request;
   request.mutable_account_id()->CopyFrom(account_id);
-  chromeos::CryptohomeMiscClient::Get()->LockToSingleUserMountUntilReboot(
+  ash::CryptohomeMiscClient::Get()->LockToSingleUserMountUntilReboot(
       request,
       base::BindOnce(
           &LockToSingleUserManager::OnLockToSingleUserMountUntilRebootDone,
@@ -164,7 +164,7 @@ void LockToSingleUserManager::OnLockToSingleUserMountUntilRebootDone(
       reply->error() == user_data_auth::CRYPTOHOME_ERROR_PCR_ALREADY_EXTENDED) {
     // The device is locked to single user on TPM level. Update the cache in
     // SessionTerminationManager, so that it triggers reboot on sign out.
-    chromeos::SessionTerminationManager::Get()->SetDeviceLockedToSingleUser();
+    ash::SessionTerminationManager::Get()->SetDeviceLockedToSingleUser();
   } else {
     LOG(ERROR) << "Signing out user: failed to lock device to single user: "
                << reply->error();

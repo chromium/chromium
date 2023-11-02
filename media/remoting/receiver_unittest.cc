@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,11 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "components/cast_streaming/public/remoting_proto_enum_utils.h"
+#include "components/cast_streaming/public/remoting_proto_utils.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/media_util.h"
 #include "media/base/mock_filters.h"
@@ -16,8 +19,6 @@
 #include "media/base/test_helpers.h"
 #include "media/base/video_decoder_config.h"
 #include "media/remoting/mock_receiver_controller.h"
-#include "media/remoting/proto_enum_utils.h"
-#include "media/remoting/proto_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -80,8 +81,9 @@ class MockSender {
         break;
       }
       case openscreen::cast::RpcMessage::RPC_RC_ONBUFFERINGSTATECHANGE: {
-        absl::optional<BufferingState> state = ToMediaBufferingState(
-            message->rendererclient_onbufferingstatechange_rpc().state());
+        absl::optional<BufferingState> state =
+            cast_streaming::remoting::ToMediaBufferingState(
+                message->rendererclient_onbufferingstatechange_rpc().state());
         if (state.has_value())
           OnBufferingStateChange(state.value());
         break;
@@ -99,7 +101,8 @@ class MockSender {
         const openscreen::cast::AudioDecoderConfig pb_audio_config =
             audio_config_message->audio_decoder_config();
         AudioDecoderConfig out_audio_config;
-        ConvertProtoToAudioDecoderConfig(pb_audio_config, &out_audio_config);
+        cast_streaming::remoting::ConvertProtoToAudioDecoderConfig(
+            pb_audio_config, &out_audio_config);
         DCHECK(out_audio_config.IsValidConfig());
         OnAudioConfigChange(out_audio_config);
         break;
@@ -111,7 +114,8 @@ class MockSender {
         const openscreen::cast::VideoDecoderConfig pb_video_config =
             video_config_message->video_decoder_config();
         VideoDecoderConfig out_video_config;
-        ConvertProtoToVideoDecoderConfig(pb_video_config, &out_video_config);
+        cast_streaming::remoting::ConvertProtoToVideoDecoderConfig(
+            pb_video_config, &out_video_config);
         DCHECK(out_video_config.IsValidConfig());
 
         OnVideoConfigChange(out_video_config);
@@ -200,7 +204,7 @@ class MockSender {
   }
 
  private:
-  RpcMessenger* const rpc_messenger_;
+  const raw_ptr<RpcMessenger> rpc_messenger_;
   const int rpc_handle_;
   const int remote_handle_;
 };
@@ -296,12 +300,12 @@ class ReceiverTest : public ::testing::Test {
   int receiver_renderer_handle_ = RpcMessenger::kInvalidHandle;
 
   MockMediaResource mock_media_resource_;
-  MockRenderer* mock_renderer_ = nullptr;
+  raw_ptr<MockRenderer> mock_renderer_ = nullptr;
   std::unique_ptr<MockSender> mock_sender_;
 
-  RpcMessenger* rpc_messenger_ = nullptr;
-  MockRemotee* mock_remotee_;
-  MockReceiverController* mock_controller_ = nullptr;
+  raw_ptr<RpcMessenger> rpc_messenger_ = nullptr;
+  raw_ptr<MockRemotee> mock_remotee_;
+  raw_ptr<MockReceiverController> mock_controller_ = nullptr;
   std::unique_ptr<Receiver> receiver_;
 
   base::WeakPtrFactory<ReceiverTest> weak_factory_{this};
@@ -334,8 +338,8 @@ TEST_F(ReceiverTest, InitializeBeforeRpcInitialize) {
 
   EXPECT_CALL(*mock_renderer_,
               OnInitialize(&mock_media_resource_, receiver_.get(), _))
-      .WillOnce(RunOnceCallback<2>(PipelineStatus::PIPELINE_OK));
-  EXPECT_CALL(*this, OnRendererInitialized(PipelineStatus::PIPELINE_OK))
+      .WillOnce(RunOnceCallback<2>(PIPELINE_OK));
+  EXPECT_CALL(*this, OnRendererInitialized(HasStatusCode(PIPELINE_OK)))
       .Times(1);
   EXPECT_CALL(*mock_sender_, InitializeCallback(true)).Times(1);
 
@@ -352,8 +356,8 @@ TEST_F(ReceiverTest, InitializeAfterRpcInitialize) {
 
   EXPECT_CALL(*mock_renderer_,
               OnInitialize(&mock_media_resource_, receiver_.get(), _))
-      .WillOnce(RunOnceCallback<2>(PipelineStatus::PIPELINE_OK));
-  EXPECT_CALL(*this, OnRendererInitialized(PipelineStatus::PIPELINE_OK))
+      .WillOnce(RunOnceCallback<2>(PIPELINE_OK));
+  EXPECT_CALL(*this, OnRendererInitialized(HasStatusCode(PIPELINE_OK)))
       .Times(1);
   EXPECT_CALL(*mock_sender_, InitializeCallback(true)).Times(1);
 
@@ -423,7 +427,7 @@ TEST_F(ReceiverTest, RendererClientInterface) {
 
   // OnError
   EXPECT_CALL(*mock_sender_, OnFatalError()).Times(1);
-  receiver_->OnError(PipelineStatus::AUDIO_RENDERER_ERROR);
+  receiver_->OnError(AUDIO_RENDERER_ERROR);
   task_environment_.RunUntilIdle();
 
   // OnAudioConfigChange

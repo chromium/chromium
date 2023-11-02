@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/component_export.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -21,9 +22,12 @@ struct COMPONENT_EXPORT(ICON_TYPES) IconKey {
   IconKey(IconKey&&) = default;
   IconKey& operator=(IconKey&&) = default;
 
-  bool operator==(const IconKey& other) const;
-
   ~IconKey();
+
+  bool operator==(const IconKey& other) const;
+  bool operator!=(const IconKey& other) const;
+
+  std::unique_ptr<IconKey> Clone() const;
 
   // A timeline value for icons that do not change.
   static const uint64_t kDoesNotChangeOverTime;
@@ -45,20 +49,22 @@ struct COMPONENT_EXPORT(ICON_TYPES) IconKey {
   // For example, if an app is disabled for some reason (so that its icon is
   // grayed out), this would result in a different timeline even though the
   // app's version is unchanged.
-  uint64_t timeline;
+  uint64_t timeline = 0;
 
   // If non-zero (or equivalently, not equal to kInvalidResourceId), the
   // compressed icon is compiled into the Chromium binary as a statically
   // available, int-keyed resource.
-  int32_t resource_id;
+  int32_t resource_id = kInvalidResourceId;
 
   // A bitmask of icon post-processing effects, such as desaturation to gray
   // and rounding the corners.
-  uint32_t icon_effects;
+  uint32_t icon_effects = 0;
 
   // When adding new fields, also update the IconLoader::Key type in
   // components/services/app_service/public/cpp/icon_loader.*
 };
+
+using IconKeyPtr = std::unique_ptr<IconKey>;
 
 enum class IconType {
   // Sentinel value used in error cases.
@@ -114,23 +120,6 @@ apps::mojom::IconType ConvertIconTypeToMojomIconType(IconType icon_type);
 
 COMPONENT_EXPORT(ICON_TYPES)
 IconType ConvertMojomIconTypeToIconType(apps::mojom::IconType mojom_icon_type);
-
-COMPONENT_EXPORT(ICON_TYPES)
-apps::mojom::IconValuePtr ConvertIconValueToMojomIconValue(
-    IconValuePtr icon_value);
-
-COMPONENT_EXPORT(ICON_TYPES)
-IconValuePtr ConvertMojomIconValueToIconValue(
-    apps::mojom::IconValuePtr mojom_icon_value);
-
-COMPONENT_EXPORT(ICON_TYPES)
-base::OnceCallback<void(IconValuePtr)> IconValueToMojomIconValueCallback(
-    base::OnceCallback<void(apps::mojom::IconValuePtr)> callback);
-
-COMPONENT_EXPORT(ICON_TYPES)
-base::OnceCallback<void(apps::mojom::IconValuePtr)>
-MojomIconValueToIconValueCallback(
-    base::OnceCallback<void(IconValuePtr)> callback);
 
 }  // namespace apps
 

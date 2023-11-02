@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 
 #include "base/profiler/stack_buffer.h"
 #include "base/profiler/suspendable_thread_delegate.h"
+
+#include "base/record_replay.h"
 
 namespace base {
 
@@ -26,6 +28,11 @@ bool StackCopierSuspend::CopyStack(StackBuffer* stack_buffer,
                                    TimeTicks* timestamp,
                                    RegisterContext* thread_context,
                                    Delegate* delegate) {
+  // Threads can't be suspended for stack sampling when recording/replaying.
+  if (recordreplay::IsRecordingOrReplaying("no-stack-sampling")) {
+    return false;
+  }
+
   const uintptr_t top = thread_delegate_->GetStackBaseAddress();
   uintptr_t bottom = 0;
   const uint8_t* stack_copy_bottom = nullptr;

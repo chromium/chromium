@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -109,7 +109,7 @@ void WebProcessMemoryDump::TakeAllDumpsFrom(
   // 2) Move and transfer the ownership of the WebMemoryAllocatorDump wrappers.
   const size_t expected_final_size =
       memory_allocator_dumps_.size() + other->memory_allocator_dumps_.size();
-  while (!other->memory_allocator_dumps_.IsEmpty()) {
+  while (!other->memory_allocator_dumps_.empty()) {
     auto first_entry = other->memory_allocator_dumps_.begin();
     base::trace_event::MemoryAllocatorDump* memory_allocator_dump =
         first_entry->key;
@@ -118,7 +118,7 @@ void WebProcessMemoryDump::TakeAllDumpsFrom(
         other->memory_allocator_dumps_.Take(memory_allocator_dump));
   }
   DCHECK_EQ(expected_final_size, memory_allocator_dumps_.size());
-  DCHECK(other->memory_allocator_dumps_.IsEmpty());
+  DCHECK(other->memory_allocator_dumps_.empty());
 }
 
 void WebProcessMemoryDump::AddOwnershipEdge(

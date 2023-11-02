@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ class ASH_EXPORT DictationNudge : public SystemNudge {
 
  protected:
   // SystemNudge:
-  std::unique_ptr<views::View> CreateLabelView() const override;
+  std::unique_ptr<SystemNudgeLabel> CreateLabelView() const override;
   const gfx::VectorIcon& GetIcon() const override;
   std::u16string GetAccessibilityText() const override;
 

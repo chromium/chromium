@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -114,7 +115,7 @@ class SigninErrorHandlerTest : public BrowserWithTestWindowTest {
  private:
   std::unique_ptr<content::TestWebUI> web_ui_;
   std::unique_ptr<SigninErrorUI> signin_error_ui_;
-  TestingSigninErrorHandler* handler_;  // Not owned.
+  raw_ptr<TestingSigninErrorHandler> handler_;  // Not owned.
 };
 
 TEST_F(SigninErrorHandlerTest, InBrowserHandleLearnMore) {
@@ -122,12 +123,12 @@ TEST_F(SigninErrorHandlerTest, InBrowserHandleLearnMore) {
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   EXPECT_EQ(1, tab_strip_model->count());
   EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
-            tab_strip_model->GetActiveWebContents()->GetURL());
+            tab_strip_model->GetActiveWebContents()->GetVisibleURL());
 
   // Open learn more
   CreateHandlerInBrowser();
-  base::ListValue args;
-  handler()->HandleLearnMore(&args);
+  base::Value::List args;
+  handler()->HandleLearnMore(args);
 
   // Dialog should be closed now.
   EXPECT_TRUE(handler()->browser_modal_dialog_did_close());
@@ -135,7 +136,7 @@ TEST_F(SigninErrorHandlerTest, InBrowserHandleLearnMore) {
   // Verify that the learn more URL was opened.
   EXPECT_EQ(2, tab_strip_model->count());
   EXPECT_EQ(GURL(kSigninErrorLearnMoreUrl),
-            tab_strip_model->GetActiveWebContents()->GetURL());
+            tab_strip_model->GetActiveWebContents()->GetVisibleURL());
 }
 
 TEST_F(SigninErrorHandlerTest, InBrowserHandleLearnMoreAfterBrowserRemoved) {
@@ -143,15 +144,15 @@ TEST_F(SigninErrorHandlerTest, InBrowserHandleLearnMoreAfterBrowserRemoved) {
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   EXPECT_EQ(1, tab_strip_model->count());
   EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
-            tab_strip_model->GetActiveWebContents()->GetURL());
+            tab_strip_model->GetActiveWebContents()->GetVisibleURL());
 
   // Inform the handler that the browser was removed;
   CreateHandlerInBrowser();
   handler()->OnBrowserRemoved(browser());
 
   // Open learn more
-  base::ListValue args;
-  handler()->HandleLearnMore(&args);
+  base::Value::List args;
+  handler()->HandleLearnMore(args);
 
   // Dialog is not closed if the browser was removed.
   EXPECT_FALSE(handler()->browser_modal_dialog_did_close());
@@ -159,13 +160,13 @@ TEST_F(SigninErrorHandlerTest, InBrowserHandleLearnMoreAfterBrowserRemoved) {
   // Verify that the learn more URL was not opened as the browser was removed.
   EXPECT_EQ(1, tab_strip_model->count());
   EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
-            tab_strip_model->GetActiveWebContents()->GetURL());
+            tab_strip_model->GetActiveWebContents()->GetVisibleURL());
 }
 
 TEST_F(SigninErrorHandlerTest, InBrowserTestConfirm) {
   CreateHandlerInBrowser();
-  base::ListValue args;
-  handler()->HandleConfirm(&args);
+  base::Value::List args;
+  handler()->HandleConfirm(args);
 
   // Confirm simply closes the dialog.
   EXPECT_TRUE(handler()->browser_modal_dialog_did_close());
@@ -173,8 +174,8 @@ TEST_F(SigninErrorHandlerTest, InBrowserTestConfirm) {
 
 TEST_F(SigninErrorHandlerTest, InProfilePickerTestConfirm) {
   CreateHandlerInProfilePicker();
-  base::ListValue args;
-  handler()->HandleConfirm(&args);
+  base::Value::List args;
+  handler()->HandleConfirm(args);
 
   // Confirm simply closes the dialog.
   EXPECT_TRUE(handler()->profile_picker_force_signin_dialog_did_close());

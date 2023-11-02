@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,8 +34,6 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
 
-namespace chrome {
-
 namespace {
 
 void AutoConfirmDialog(base::OnceCallback<void(bool)> callback) {
@@ -55,6 +53,8 @@ void AutoConfirmDialog(base::OnceCallback<void(bool)> callback) {
 
 }  // namespace
 
+namespace extensions {
+
 void ShowExtensionInstallFrictionDialog(
     content::WebContents* contents,
     base::OnceCallback<void(bool)> callback) {
@@ -72,12 +72,9 @@ void ShowExtensionInstallFrictionDialog(
       ->Show();
 }
 
-}  // namespace chrome
+}  // namespace extensions
 
 namespace {
-
-// NOTE: This should be a shared constant, but none exist at the moment.
-constexpr int kWarningIconSize = 24;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -136,9 +133,6 @@ ExtensionInstallFrictionDialogView::ExtensionInstallFrictionDialogView(
   scroll_view->ClipHeightTo(
       0, provider->GetDistanceMetric(
              views::DISTANCE_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT));
-
-  chrome::RecordDialogCreation(
-      chrome::DialogIdentifier::EXTENSION_INSTALL_FRICTION);
 }
 
 std::unique_ptr<views::StyledLabel>
@@ -186,9 +180,9 @@ ExtensionInstallFrictionDialogView::~ExtensionInstallFrictionDialogView() {
 
 // override
 ui::ImageModel ExtensionInstallFrictionDialogView::GetWindowIcon() {
-  return ui::ImageModel::FromVectorIcon(vector_icons::kGppMaybeIcon,
-                                        ui::kColorAlertMediumSeverity,
-                                        kWarningIconSize);
+  return ui::ImageModel::FromVectorIcon(
+      vector_icons::kGppMaybeIcon, ui::kColorAlertMediumSeverity,
+      extension_misc::EXTENSION_ICON_SMALLISH);
 }
 
 void ExtensionInstallFrictionDialogView::OnLearnMoreLinkClicked() {

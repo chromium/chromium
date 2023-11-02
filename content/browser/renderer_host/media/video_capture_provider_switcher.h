@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,7 @@ namespace content {
 // Routes requests for media devices, e.g. cameras, to
 // |media_device_capture_provider| and for all other types of capture, e.g.
 // screen or tab capture, to the given |other_types_capture_provider|.
-class CONTENT_EXPORT VideoCaptureProviderSwitcher
-    : public VideoCaptureProvider {
+class VideoCaptureProviderSwitcher : public VideoCaptureProvider {
  public:
   VideoCaptureProviderSwitcher(
       std::unique_ptr<VideoCaptureProvider> media_device_capture_provider,

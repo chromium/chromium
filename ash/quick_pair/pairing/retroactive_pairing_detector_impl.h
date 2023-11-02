@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,15 @@
 
 #include "ash/quick_pair/pairing/retroactive_pairing_detector.h"
 
+#include "ash/public/cpp/session/session_controller.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/quick_pair/common/account_key_failure.h"
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/common/protocol.h"
 #include "ash/quick_pair/message_stream/message_stream.h"
 #include "ash/quick_pair/message_stream/message_stream_lookup.h"
 #include "ash/quick_pair/pairing/pairer_broker.h"
+#include "ash/quick_pair/proto/fastpair.pb.h"
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -39,7 +42,8 @@ class RetroactivePairingDetectorImpl final
       public device::BluetoothAdapter::Observer,
       public PairerBroker::Observer,
       public MessageStreamLookup::Observer,
-      public MessageStream::Observer {
+      public MessageStream::Observer,
+      public SessionObserver {
  public:
   RetroactivePairingDetectorImpl(PairerBroker* pairer_broker,
                                  MessageStreamLookup* message_stream_lookup);
@@ -67,6 +71,9 @@ class RetroactivePairingDetectorImpl final
     std::string model_id;
     std::string ble_address;
   };
+
+  // SessionObserver:
+  void OnLoginStatusChanged(LoginStatus login_status) override;
 
   // device::BluetoothAdapter::Observer
   void DevicePairedChanged(device::BluetoothAdapter* adapter,
@@ -105,9 +112,22 @@ class RetroactivePairingDetectorImpl final
   // needed for retroactive pairing, and notifies observers.
   void CheckPairingInformation(const std::string& device_address);
 
+  // FastPairRepository::IsDeviceSavedToAccount callback
+  void AttemptRetroactivePairing(const std::string& classic_address,
+                                 bool is_device_saved_to_account);
+
+  // FastPairRepository::CheckOptInStatus callback
+  void OnCheckOptInStatus(const std::string& model_id,
+                          const std::string& ble_address,
+                          const std::string& classic_address,
+                          nearby::fastpair::OptInStatus status);
+
   // Converts a Bluetooth device to a Fast Pair Device and notifies observers
   // that a device has been found to retroactively pair to.
   void NotifyDeviceFound(const std::string& model_id,
+                         const std::string& ble_address,
+                         const std::string& classic_address);
+  void VerifyDeviceFound(const std::string& model_id,
                          const std::string& ble_address,
                          const std::string& classic_address);
 
@@ -131,17 +151,25 @@ class RetroactivePairingDetectorImpl final
   base::flat_map<std::string, RetroactivePairingInformation>
       device_pairing_information_;
 
+  // Helps us keep track of whether the RetroactivePairingDetector has already
+  // been instantiated when we get a logged-in event from the SessionObserver
+  // so we can determine if we need to instantiate the objects.
+  bool retroactive_pairing_detector_instatiated_ = false;
+
+  PairerBroker* pairer_broker_ = nullptr;
   MessageStreamLookup* message_stream_lookup_ = nullptr;
   scoped_refptr<device::BluetoothAdapter> adapter_;
   base::ObserverList<RetroactivePairingDetector::Observer> observers_;
 
-  base::ScopedObservation<MessageStreamLookup, MessageStreamLookup::Observer>
-      message_stream_lookup_observation_{this};
+  base::ScopedObservation<SessionController, SessionObserver>
+      shell_observation_{this};
   base::ScopedObservation<device::BluetoothAdapter,
                           device::BluetoothAdapter::Observer>
       adapter_observation_{this};
   base::ScopedObservation<PairerBroker, PairerBroker::Observer>
       pairer_broker_observation_{this};
+  base::ScopedObservation<MessageStreamLookup, MessageStreamLookup::Observer>
+      message_stream_lookup_observation_{this};
   base::WeakPtrFactory<RetroactivePairingDetectorImpl> weak_ptr_factory_{this};
 };
 

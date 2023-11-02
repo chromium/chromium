@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,20 @@
  * @fileoverview Polymer element for TPM error screen.
  */
 
-/* #js_imports_placeholder */
+import '//resources/cr_elements/cr_shared_vars.css.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../../components/oobe_icons.m.js';
+import '../../components/buttons/oobe_text_button.m.js';
+import '../../components/common_styles/common_styles.m.js';
+import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+import '../../components/dialogs/oobe_adaptive_dialog.m.js';
+
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
+import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+
 
 /**
  * UI state for the dialog.
@@ -25,9 +38,8 @@ const tpmUIState = {
  * @implements {LoginScreenBehaviorInterface}
  * @implements {MultiStepBehaviorInterface}
  */
-const TPMErrorMessageElementBase = Polymer.mixinBehaviors(
-    [OobeI18nBehavior, MultiStepBehavior, LoginScreenBehavior],
-    Polymer.Element);
+const TPMErrorMessageElementBase = mixinBehaviors(
+    [OobeI18nBehavior, MultiStepBehavior, LoginScreenBehavior], PolymerElement);
 
 /**
  * @typedef {{
@@ -41,7 +53,9 @@ class TPMErrorMessage extends TPMErrorMessageElementBase {
     return 'tpm-error-message-element';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {}
 
@@ -51,9 +65,7 @@ class TPMErrorMessage extends TPMErrorMessageElementBase {
 
   ready() {
     super.ready();
-    this.initializeLoginScreen('TPMErrorMessageScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('TPMErrorMessageScreen');
   }
 
   /** @override */
@@ -79,15 +91,6 @@ class TPMErrorMessage extends TPMErrorMessageElementBase {
    */
   setStep(step) {
     this.setUIStep(step);
-  }
-
-  /**
-   * @param {string} locale
-   * @return {string}
-   * @private
-   */
-  getTPMOwnedFailureContent_(locale) {
-    return this.i18nAdvanced('errorTPMOwnedContent');
   }
 
   onRestartTap_() {

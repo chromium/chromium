@@ -1,11 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "extensions/renderer/extension_throttle_entry.h"
@@ -218,7 +216,7 @@ TEST_F(ExtensionThrottleEntryTest, IsEntryReallyOutdated) {
       TimeAndBool(now_ - lifetime, true, __LINE__),
       TimeAndBool(now_ - (lifetime + kFiveMs), true, __LINE__)};
 
-  for (unsigned int i = 0; i < base::size(test_values); ++i) {
+  for (unsigned int i = 0; i < std::size(test_values); ++i) {
     entry_->set_exponential_backoff_release_time(test_values[i].time);
     EXPECT_EQ(entry_->IsEntryOutdated(), test_values[i].result)
         << "Test case #" << i << " line " << test_values[i].line << " failed";
@@ -302,7 +300,7 @@ TEST(ExtensionThrottleManagerTest, IsUrlStandardised) {
       GurlAndString(GURL("http://www.example.com:1234/"),
                     std::string("http://www.example.com:1234/"), __LINE__)};
 
-  for (unsigned int i = 0; i < base::size(test_values); ++i) {
+  for (unsigned int i = 0; i < std::size(test_values); ++i) {
     std::string temp = manager.GetIdFromUrl(test_values[i].url);
     EXPECT_EQ(temp, test_values[i].result)
         << "Test case #" << i << " line " << test_values[i].line << " failed";

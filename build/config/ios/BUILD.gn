@@ -1,12 +1,9 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# TODO(crbug.com/1259122): Remove //build/config/sanitizers/sanitizers.gni when
-# Chromium Clang ship with a catalyst version of the compiler runtime.
-
 import("//build/config/ios/ios_sdk.gni")
-import("//build/config/sanitizers/sanitizers.gni")
+import("//build/toolchain/apple/toolchain.gni")
 import("//build/toolchain/goma.gni")
 import("//build/toolchain/rbe.gni")
 import("//build/toolchain/toolchain.gni")
@@ -111,52 +108,9 @@ config("runtime_library") {
     ]
   }
 
-  if (enable_ios_bitcode) {
-    if (is_debug) {
-      common_flags += [ "-fembed-bitcode-marker" ]
-    } else {
-      common_flags += [ "-fembed-bitcode" ]
-    }
-  }
-
   asmflags = common_flags
   cflags = common_flags
   ldflags = common_flags
-
-  # TODO(crbug.com/1223481): Temporarily use a different
-  # libclang_rt.iossim.a for arm64 simulator builds. This can be
-  # removed when an arm64 slice is added to upstream Clang.
-  if (target_environment == "simulator" && current_cpu == "arm64") {
-    assert(xcode_version_int == 1300)
-    ldflags += [
-      "-lSystem",
-      rebase_path("$ios_toolchains_path/usr/lib/clang/13.0.0/" +
-                      "lib/darwin/libclang_rt.iossim.a",
-                  root_build_dir),
-      "-nodefaultlibs",
-    ]
-  }
-
-  # TODO(crbug.com/1259122): Temporarily use a different libclang_rt.osx.a
-  # for catalyst build. This can be removed when a catalyst slice is added
-  # to upstream Clang.
-  if (target_environment == "catalyst") {
-    assert(xcode_version_int == 1300)
-    ldflags += [
-      "-lSystem",
-      rebase_path("$ios_toolchains_path/usr/lib/clang/13.0.0/" +
-                      "lib/darwin/libclang_rt.osx.a",
-                  root_build_dir),
-      "-nodefaultlibs",
-    ]
-
-    # UBSAn runtime library is also required when using libfuzzer.
-    if (use_libfuzzer) {
-      ldflags += [ rebase_path("$ios_toolchains_path/usr/lib/clang/13.0.0/" +
-                                   "lib/darwin/libclang_rt.ubsan_osx.a",
-                               root_build_dir) ]
-    }
-  }
 }
 
 config("ios_executable_flags") {
@@ -197,23 +151,41 @@ config("ios_dynamic_flags") {
 
   # The path to the Swift compatibility libraries (required to run code built
   # with version N of the SDK on older version of the OS) is relative to the
-  # toolchains directory and changes with the environment.
-  _swift_compatibility_libs_dir_prefix = "$ios_toolchains_path/usr/lib/swift"
+  # toolchains directory and changes with the environment when using the
+  # system toolchain. When using the hermetic swift toolchain instead, those
+  # libraries are relative to $swift_toolchain_path.
+  if (swift_toolchain_path == "") {
+    _swift_compatibility_libs_prefix = ios_toolchains_path
+  } else {
+    _swift_compatibility_libs_prefix = swift_toolchain_path
+  }
+
   if (target_environment == "simulator") {
-    _swift_compatibility_libs_dir =
-        "$_swift_compatibility_libs_dir_prefix/iphonesimulator"
+    _swift_compatibility_libs_suffix = "iphonesimulator"
   } else if (target_environment == "device") {
-    _swift_compatibility_libs_dir =
-        "$_swift_compatibility_libs_dir_prefix/iphoneos"
+    _swift_compatibility_libs_suffix = "iphoneos"
   } else if (target_environment == "catalyst") {
-    _swift_compatibility_libs_dir =
-        "$_swift_compatibility_libs_dir_prefix/maccatalyst"
+    # The Swift compatibility libraries have changed location starting with
+    # Xcode 13.0, so check the version of Xcode when deciding which path to
+    # use.
+    if (xcode_version_int >= 1300) {
+      _swift_compatibility_libs_suffix = "macosx"
+    } else {
+      _swift_compatibility_libs_suffix = "maccatalyst"
+    }
   }
 
   lib_dirs = [
     "$ios_sdk_path/usr/lib/swift",
-    _swift_compatibility_libs_dir,
+    "$_swift_compatibility_libs_prefix/usr/lib/swift/" +
+        "$_swift_compatibility_libs_suffix",
   ]
+
+  # When building for catalyst, some Swift support libraries are in a
+  # different directory which needs to be added to the search path.
+  if (target_environment == "catalyst") {
+    lib_dirs += [ "$ios_sdk_path/System/iOSSupport/usr/lib/swift" ]
+  }
 }
 
 config("ios_shared_library_flags") {
@@ -229,20 +201,30 @@ config("disable_implicit_retain_self_warning") {
 }
 
 config("xctest_config") {
-  # Use -iframework for XCTest.framework so that the compiler will treat it as a
-  # system framework and ignore warnings in XCTest framework headers.
+  # Add some directories to the system framework search path to make
+  # them available to the compiler while silencing warnings in the
+  # framework headers. This is required for XCTest.
   common_flags = [
     "-iframework",
     rebase_path("$ios_sdk_platform_path/Developer/Library/Frameworks",
                 root_build_dir),
+    "-iframework",
+    rebase_path("$ios_sdk_path/Developer/Library/Frameworks", root_build_dir),
   ]
   cflags = common_flags
   ldflags = common_flags
+  swiftflags = common_flags
 
+  include_dirs = [ "$ios_sdk_platform_path/Developer/usr/lib" ]
+  lib_dirs = [ "$ios_sdk_platform_path/Developer/usr/lib" ]
   frameworks = [
     "Foundation.framework",
     "XCTest.framework",
   ]
+}
+
+config("enable_swift_cxx_interop") {
+  swiftflags = [ "-enable-cxx-interop" ]
 }
 
 group("xctest") {

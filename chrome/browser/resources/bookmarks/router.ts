@@ -1,14 +1,15 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'chrome://resources/polymer/v3_0/iron-location/iron-location.js';
 import 'chrome://resources/polymer/v3_0/iron-location/iron-query-params.js';
 
-import {Debouncer, html, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Debouncer, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {selectFolder, setSearchTerm} from './actions.js';
 import {BOOKMARKS_BAR_ID} from './constants.js';
+import {getTemplate} from './router.html.js';
 import {StoreClientMixin} from './store_client_mixin.js';
 
 const BookmarksRouterElementBase = StoreClientMixin(PolymerElement);
@@ -24,7 +25,7 @@ export class BookmarksRouterElement extends BookmarksRouterElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -64,7 +65,7 @@ export class BookmarksRouterElement extends BookmarksRouterElementBase {
     ];
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.watch('selectedId_', state => state.selectedFolder);
     this.watch('searchTerm_', state => state.search.term);
@@ -93,7 +94,7 @@ export class BookmarksRouterElement extends BookmarksRouterElementBase {
     }
   }
 
-  private onQueryChanged_(current: (string|null), previous: (string|null)) {
+  private onQueryChanged_(_current: (string|null), previous: (string|null)) {
     if (previous !== undefined) {
       this.urlQuery_ = this.query_;
     }

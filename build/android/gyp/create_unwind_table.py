@@ -1,17 +1,23 @@
 #!/usr/bin/env python3
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Creates a table of unwind information in Android Chrome's bespoke format."""
 
 import abc
+import argparse
+import collections
 import enum
+import json
 import logging
 import re
-import collections
 import struct
+import subprocess
+import sys
 from typing import (Dict, Iterable, List, NamedTuple, Sequence, TextIO, Tuple,
                     Union)
+
+from util import build_utils
 
 _STACK_CFI_INIT_REGEX = re.compile(
     r'^STACK CFI INIT ([0-9a-f]+) ([0-9a-f]+) (.+)$')
@@ -172,7 +178,7 @@ def EncodeStackPointerUpdate(offset: int) -> bytes:
         instruction_code | ((min(abs_offset, 0x100) - 4) >> 2)
     ]
     # For vsp increments of 0x104-0x200 we use 00xxxxxx twice.
-    if abs_offset > 0x104:
+    if abs_offset >= 0x104:
       instructions.append(instruction_code | ((abs_offset - 0x100 - 4) >> 2))
     try:
       return EncodeAsBytes(*instructions)
@@ -608,22 +614,21 @@ REFUSE_TO_UNWIND: Tuple[EncodedAddressUnwind, ...] = (EncodedAddressUnwind(
     complete_instruction_sequence=bytes([0b10000000, 0b00000000])), )
 
 
-def EncodeFunctionUnwinds(function_unwinds: Iterable[FunctionUnwind]
+def EncodeFunctionUnwinds(function_unwinds: Iterable[FunctionUnwind],
+                          text_section_start_address: int
                           ) -> Iterable[EncodedFunctionUnwind]:
   """Encodes the unwind state for all functions defined in the binary.
 
   This function
   - sorts the collection of `FunctionUnwind`s by address.
   - fills in gaps between functions with trivial unwind.
-  - fills the space in the space in last page after last function with refuse
+  - fills the space in the last page after last function with refuse to unwind.
+  - fills the space in the first page before the first function with refuse
     to unwind.
-
-  Note:
-    This function assumes that min function start address is the text section
-    start address.
 
   Args:
     function_unwinds: An iterable of function unwind states.
+    text_section_start_address: The address of .text section in ELF file.
 
   Returns:
     The encoded function unwind states with no gaps between functions, ordered
@@ -650,9 +655,14 @@ def EncodeFunctionUnwinds(function_unwinds: Iterable[FunctionUnwind]
   sorted_function_unwinds: List[FunctionUnwind] = sorted(
       function_unwinds, key=lambda function_unwind: function_unwind.address)
 
-  text_section_start_address: int = sorted_function_unwinds[0].address
+  if sorted_function_unwinds[0].address > text_section_start_address:
+    yield EncodedFunctionUnwind(page_number=0,
+                                page_offset=0,
+                                address_unwinds=REFUSE_TO_UNWIND)
+
   prev_func_end_address: int = sorted_function_unwinds[0].address
 
+  gaps = 0
   for unwind in sorted_function_unwinds:
     assert prev_func_end_address <= unwind.address, (
         'Detected overlap between functions.')
@@ -661,6 +671,7 @@ def EncodeFunctionUnwinds(function_unwinds: Iterable[FunctionUnwind]
       # Gaps between functions are typically filled by regions of thunks which
       # do not alter the stack pointer. Filling these gaps with TRIVIAL_UNWIND
       # is the appropriate unwind strategy.
+      gaps += 1
       yield EncodedFunctionUnwind(GetPageNumber(prev_func_end_address),
                                   GetPageOffset(prev_func_end_address),
                                   TRIVIAL_UNWIND)
@@ -676,6 +687,9 @@ def EncodeFunctionUnwinds(function_unwinds: Iterable[FunctionUnwind]
                                 GetPageOffset(prev_func_end_address),
                                 REFUSE_TO_UNWIND)
 
+  logging.info('%d/%d gaps between functions filled with trivial unwind.', gaps,
+               len(sorted_function_unwinds))
+
 
 def EncodeFunctionOffsetTable(
     encoded_address_unwind_sequences: Iterable[
@@ -684,7 +698,7 @@ def EncodeFunctionOffsetTable(
 ) -> Tuple[bytes, Dict[Tuple[EncodedAddressUnwind, ...], int]]:
   """Encodes the function offset table.
 
-  The function offset table maps local address_offset from function
+  The function offset table maps local instruction offset from function
   start to the location in the unwind instruction table.
 
   Args:
@@ -709,8 +723,13 @@ def EncodeFunctionOffsetTable(
 
     offsets[sequence] = len(function_offset_table)
     for address_offset, complete_instruction_sequence in sequence:
-      function_offset_table += Uleb128Encode(address_offset) + Uleb128Encode(
-          unwind_instruction_table_offsets[complete_instruction_sequence])
+      # Note: address_offset is the number of bytes from one address to another,
+      # while the instruction_offset is the number of 2-byte instructions
+      # from one address to another.
+      instruction_offset = address_offset >> 1
+      function_offset_table += (
+          Uleb128Encode(instruction_offset) + Uleb128Encode(
+              unwind_instruction_table_offsets[complete_instruction_sequence]))
 
   return bytes(function_offset_table), offsets
 
@@ -869,8 +888,8 @@ def GenerateUnwinds(function_cfis: Iterable[FunctionCfi],
         epilogues_seen += 1
         break
 
-      logging.info('unrecognized CFI: %x %s.' %
-                   (address_cfi.address, address_cfi.unwind_instructions))
+      logging.info('unrecognized CFI: %x %s.', address_cfi.address,
+                   address_cfi.unwind_instructions)
 
     if address_unwinds:
       # We expect that the unwind information for every function starts with a
@@ -996,3 +1015,76 @@ def GenerateUnwindTables(
 
   return (page_table, function_table, function_offset_table,
           unwind_instruction_table)
+
+
+def ReadTextSectionStartAddress(readobj_path: str, libchrome_path: str) -> int:
+  """Reads the .text section start address of libchrome ELF.
+
+  Arguments:
+    readobj_path: Path to llvm-obj binary.
+    libchrome_path: Path to libchrome binary.
+
+  Returns:
+    The text section start address as a number.
+  """
+  proc = subprocess.Popen(
+      [readobj_path, '--sections', '--elf-output-style=JSON', libchrome_path],
+      stdout=subprocess.PIPE,
+      encoding='ascii')
+
+  elfs = json.loads(proc.stdout.read())[0]
+  assert len(elfs) == 1
+  sections = list(elfs.values())[0]['Sections']
+
+  return next(s['Section']['Address'] for s in sections
+              if s['Section']['Name']['Value'] == '.text')
+
+
+def main():
+  build_utils.InitLogging('CREATE_UNWIND_TABLE_DEBUG')
+  parser = argparse.ArgumentParser(description=__doc__)
+  parser.add_argument('--input_path',
+                      help='Path to the unstripped binary.',
+                      required=True,
+                      metavar='FILE')
+  parser.add_argument('--output_path',
+                      help='Path to unwind info binary output.',
+                      required=True,
+                      metavar='FILE')
+  parser.add_argument('--dump_syms_path',
+                      required=True,
+                      help='The path of the dump_syms binary.',
+                      metavar='FILE')
+  parser.add_argument('--readobj_path',
+                      required=True,
+                      help='The path of the llvm-readobj binary.',
+                      metavar='FILE')
+
+  args = parser.parse_args()
+  proc = subprocess.Popen(['./' + args.dump_syms_path, args.input_path, '-v'],
+                          stdout=subprocess.PIPE,
+                          encoding='ascii')
+
+  function_cfis = ReadFunctionCfi(proc.stdout)
+  function_unwinds = GenerateUnwinds(function_cfis, parsers=ALL_PARSERS)
+  encoded_function_unwinds = EncodeFunctionUnwinds(
+      function_unwinds,
+      ReadTextSectionStartAddress(args.readobj_path, args.input_path))
+  (page_table, function_table, function_offset_table,
+   unwind_instruction_table) = GenerateUnwindTables(encoded_function_unwinds)
+  unwind_info: bytes = EncodeUnwindInfo(page_table, function_table,
+                                        function_offset_table,
+                                        unwind_instruction_table)
+
+  if proc.wait():
+    logging.critical('dump_syms exited with return code %d', proc.returncode)
+    sys.exit(proc.returncode)
+
+  with open(args.output_path, 'wb') as f:
+    f.write(unwind_info)
+
+  return 0
+
+
+if __name__ == '__main__':
+  sys.exit(main())

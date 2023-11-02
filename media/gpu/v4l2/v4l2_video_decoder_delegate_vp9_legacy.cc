@@ -1,17 +1,17 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp9_legacy.h"
 
-#include <type_traits>
-
+// Must come before linux/media/vp9-ctrls-legacy.h.
 #include <linux/videodev2.h>
-#include <string.h>
 
 #include <linux/media/vp9-ctrls-legacy.h>
+#include <string.h>
 
-#include "base/cxx17_backports.h"
+#include <type_traits>
+
 #include "base/logging.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_decode_surface.h"
@@ -82,8 +82,8 @@ void FillV4L2VP9SegmentationParams(
           std::extent<decltype(v4l2_segm_params->feature_enabled[0])>() ==
               std::extent<decltype(vp9_segm_params.feature_enabled[0])>(),
       "feature_enabled arrays must be of same size");
-  for (size_t i = 0; i < base::size(v4l2_segm_params->feature_enabled); ++i) {
-    for (size_t j = 0; j < base::size(v4l2_segm_params->feature_enabled[i]);
+  for (size_t i = 0; i < std::size(v4l2_segm_params->feature_enabled); ++i) {
+    for (size_t j = 0; j < std::size(v4l2_segm_params->feature_enabled[i]);
          ++j) {
       v4l2_segm_params->feature_enabled[i][j] =
           vp9_segm_params.feature_enabled[i][j];
@@ -187,13 +187,13 @@ class V4L2VP9Picture : public VP9Picture {
 V4L2VideoDecoderDelegateVP9Legacy::V4L2VideoDecoderDelegateVP9Legacy(
     V4L2DecodeSurfaceHandler* surface_handler,
     V4L2Device* device)
-    : surface_handler_(surface_handler), device_(device) {
+    : surface_handler_(surface_handler),
+      device_(device),
+      device_needs_compressed_header_parsed_(
+          device->IsCtrlExposed(V4L2_CID_MPEG_VIDEO_VP9_ENTROPY)) {
   DCHECK(surface_handler_);
 
-  device_needs_frame_context_ =
-      device_->IsCtrlExposed(V4L2_CID_MPEG_VIDEO_VP9_ENTROPY);
-
-  DVLOG_IF(1, device_needs_frame_context_)
+  DVLOG_IF(1, device_needs_compressed_header_parsed_)
       << "Device requires frame context parsing";
 }
 
@@ -278,7 +278,7 @@ DecodeStatus V4L2VideoDecoderDelegateVP9Legacy::SubmitDecode(
 
   struct v4l2_ctrl_vp9_decode_param v4l2_decode_param;
   memset(&v4l2_decode_param, 0, sizeof(v4l2_decode_param));
-  DCHECK_EQ(kVp9NumRefFrames, base::size(v4l2_decode_param.ref_frames));
+  DCHECK_EQ(kVp9NumRefFrames, std::size(v4l2_decode_param.ref_frames));
 
   std::vector<scoped_refptr<V4L2DecodeSurface>> ref_surfaces;
   for (size_t i = 0; i < kVp9NumRefFrames; ++i) {
@@ -298,7 +298,7 @@ DecodeStatus V4L2VideoDecoderDelegateVP9Legacy::SubmitDecode(
                     std::extent<decltype(frame_hdr->ref_frame_idx)>(),
                 "active reference frame array sizes mismatch");
 
-  for (size_t i = 0; i < base::size(frame_hdr->ref_frame_idx); ++i) {
+  for (size_t i = 0; i < std::size(frame_hdr->ref_frame_idx); ++i) {
     uint8_t idx = frame_hdr->ref_frame_idx[i];
     if (idx >= kVp9NumRefFrames)
       return DecodeStatus::kFail;
@@ -332,7 +332,7 @@ DecodeStatus V4L2VideoDecoderDelegateVP9Legacy::SubmitDecode(
   // Defined outside of the if() clause below as it must remain valid until
   // the call to SubmitExtControls().
   struct v4l2_ctrl_vp9_entropy v4l2_entropy;
-  if (device_needs_frame_context_) {
+  if (device_needs_compressed_header_parsed_) {
     memset(&v4l2_entropy, 0, sizeof(v4l2_entropy));
     FillV4L2Vp9EntropyContext(frame_hdr->initial_frame_context,
                               &v4l2_entropy.initial_entropy_ctx);
@@ -375,10 +375,9 @@ DecodeStatus V4L2VideoDecoderDelegateVP9Legacy::SubmitDecode(
 
 bool V4L2VideoDecoderDelegateVP9Legacy::OutputPicture(
     scoped_refptr<VP9Picture> pic) {
-  // TODO(crbug.com/647725): Insert correct color space.
   surface_handler_->SurfaceReady(VP9PictureToV4L2DecodeSurface(pic.get()),
                                  pic->bitstream_id(), pic->visible_rect(),
-                                 VideoColorSpace());
+                                 pic->get_colorspace());
   return true;
 }
 
@@ -411,8 +410,13 @@ bool V4L2VideoDecoderDelegateVP9Legacy::GetFrameContext(
   return true;
 }
 
-bool V4L2VideoDecoderDelegateVP9Legacy::IsFrameContextRequired() const {
-  return device_needs_frame_context_;
+bool V4L2VideoDecoderDelegateVP9Legacy::NeedsCompressedHeaderParsed() const {
+  return device_needs_compressed_header_parsed_;
+}
+
+bool V4L2VideoDecoderDelegateVP9Legacy::SupportsContextProbabilityReadback()
+    const {
+  return true;
 }
 
 scoped_refptr<V4L2DecodeSurface>

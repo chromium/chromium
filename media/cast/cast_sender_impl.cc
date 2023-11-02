@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "media/base/video_frame.h"
-#include "media/cast/sender/video_frame_factory.h"
+#include "media/cast/common/video_frame_factory.h"
 
 namespace media {
 namespace cast {

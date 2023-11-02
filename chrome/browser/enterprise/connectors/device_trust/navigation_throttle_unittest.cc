@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,19 @@
 
 #include <memory>
 
+#include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
+#include "chrome/browser/enterprise/connectors/device_trust/fake_device_trust_connector_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/mock_device_trust_service.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -31,10 +37,10 @@ using ::testing::Return;
 
 namespace {
 
-base::Value::ListStorage GetTrustedUrls() {
-  base::Value::ListStorage trusted_urls;
-  trusted_urls.push_back(base::Value("https://www.example.com"));
-  trusted_urls.push_back(base::Value("example2.example.com"));
+base::Value::List GetTrustedUrls() {
+  base::Value::List trusted_urls;
+  trusted_urls.Append("https://www.example.com");
+  trusted_urls.Append("example2.example.com");
   return trusted_urls;
 }
 
@@ -56,21 +62,24 @@ namespace enterprise_connectors {
 
 class DeviceTrustNavigationThrottleTest : public testing::Test {
  public:
-  DeviceTrustNavigationThrottleTest() : trusted_urls_(GetTrustedUrls()) {}
+  DeviceTrustNavigationThrottleTest() = default;
 
   void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(kDeviceTrustConnectorEnabled);
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
 
+    fake_connector_ = std::make_unique<FakeDeviceTrustConnectorService>(
+        profile_.GetTestingPrefService());
+    fake_connector_->Initialize();
+
+    fake_connector_->update_policy(GetTrustedUrls());
+
+    EXPECT_CALL(mock_device_trust_service_, Watches(_))
+        .WillRepeatedly(Invoke(
+            [this](const GURL& url) { return fake_connector_->Watches(url); }));
     EXPECT_CALL(mock_device_trust_service_, IsEnabled())
         .WillRepeatedly(Return(true));
-    EXPECT_CALL(mock_device_trust_service_,
-                RegisterTrustedUrlPatternsChangedCallback(_))
-        .WillOnce([this](base::RepeatingCallback<void(const base::ListValue&)>
-                             callback) {
-          callback.Run(trusted_urls_);
-          return base::CallbackListSubscription();
-        });
   }
 
   std::unique_ptr<DeviceTrustNavigationThrottle> CreateThrottle(
@@ -81,17 +90,18 @@ class DeviceTrustNavigationThrottleTest : public testing::Test {
 
   content::WebContents* web_contents() const { return web_contents_.get(); }
   content::RenderFrameHost* main_frame() const {
-    return web_contents()->GetMainFrame();
+    return web_contents()->GetPrimaryMainFrame();
   }
 
  protected:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::ScopedFeatureList scoped_feature_list_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   TestingProfile profile_;
   std::unique_ptr<content::WebContents> web_contents_;
   test::MockDeviceTrustService mock_device_trust_service_;
-  base::ListValue trusted_urls_;
+  std::unique_ptr<FakeDeviceTrustConnectorService> fake_connector_;
 };
 
 TEST_F(DeviceTrustNavigationThrottleTest, ExpectHeaderDeviceTrustOnRequest) {
@@ -100,6 +110,16 @@ TEST_F(DeviceTrustNavigationThrottleTest, ExpectHeaderDeviceTrustOnRequest) {
   EXPECT_CALL(test_handle,
               SetRequestHeader("X-Device-Trust", "VerifiedAccess"));
   auto throttle = CreateThrottle(&test_handle);
+  EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest().action());
+}
+
+TEST_F(DeviceTrustNavigationThrottleTest, NullService) {
+  content::MockNavigationHandle test_handle(GURL("https://www.example.com/"),
+                                            main_frame());
+  EXPECT_CALL(test_handle, SetRequestHeader("X-Device-Trust", "VerifiedAccess"))
+      .Times(0);
+  auto throttle =
+      std::make_unique<DeviceTrustNavigationThrottle>(nullptr, &test_handle);
   EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest().action());
 }
 
@@ -124,6 +144,8 @@ TEST_F(DeviceTrustNavigationThrottleTest, BuildChallengeResponseFromHeader) {
               BuildChallengeResponse(kChallenge, _));
 
   EXPECT_EQ(NavigationThrottle::DEFER, throttle->WillStartRequest().action());
+
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace enterprise_connectors

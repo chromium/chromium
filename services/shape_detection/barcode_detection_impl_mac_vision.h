@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/shape_detection/barcode_detection_impl_mac_vision_api.h"
@@ -27,8 +26,7 @@ namespace shape_detection {
 
 // This class is the implementation of Barcode Detection based on Mac OS Vision
 // framework (https://developer.apple.com/documentation/vision).
-class API_AVAILABLE(macos(10.13)) BarcodeDetectionImplMacVision
-    : public mojom::BarcodeDetection {
+class BarcodeDetectionImplMacVision : public mojom::BarcodeDetection {
  public:
   static bool IsBlockedMacOSVersion();
 

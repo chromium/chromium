@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Tests for subprocess_utils."""
 
 import os
+import pathlib
 import subprocess
 import unittest
 
@@ -28,6 +29,14 @@ class TestRunCommand(unittest.TestCase):
         expected_cwd = '/usr/local/bin'
 
         pwd_output = subprocess_utils.run_command(['pwd'], cwd=expected_cwd)
+
+        self.assertEqual(expected_cwd, pwd_output)
+
+    def test_run_command_custom_cwd_path(self):
+        expected_cwd = '/usr/local/bin'
+
+        pwd_output = subprocess_utils.run_command(
+            ['pwd'], cwd=pathlib.Path(expected_cwd).resolve(strict=True))
 
         self.assertEqual(expected_cwd, pwd_output)
 

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
 #include "third_party/blink/renderer/modules/websockets/websocket_channel.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -45,7 +46,7 @@ WebSocketCommon::ConnectResult WebSocketCommon::Connect(
       mojom::blink::InsecureRequestPolicy::kLeaveInsecureRequestsAlone;
 
   if (upgrade_insecure_requests_set && url_.Protocol() == "ws" &&
-      !network::IsUrlPotentiallyTrustworthy(url_)) {
+      !network::IsUrlPotentiallyTrustworthy(GURL(url_))) {
     UseCounter::Count(
         execution_context,
         WebFeature::kUpgradeInsecureRequestsUpgradedRequestWebsocket);
@@ -112,7 +113,7 @@ WebSocketCommon::ConnectResult WebSocketCommon::Connect(
   }
 
   String protocol_string;
-  if (!protocols.IsEmpty())
+  if (!protocols.empty())
     protocol_string = JoinStrings(protocols, kWebSocketSubprotocolSeparator);
 
   if (!channel->Connect(url_, protocol_string)) {
@@ -156,7 +157,7 @@ void WebSocketCommon::CloseInternal(int code,
               String::Number(kMaxReasonSizeInBytes) + " bytes.");
       return;
     }
-    if (!reason.IsEmpty() && !reason.Is8Bit()) {
+    if (!reason.empty() && !reason.Is8Bit()) {
       DCHECK_GT(utf8.size(), 0u);
       // reason might contain unpaired surrogates. Reconstruct it from
       // utf8.
@@ -168,9 +169,10 @@ void WebSocketCommon::CloseInternal(int code,
     return;
   if (state_ == kConnecting) {
     state_ = kClosing;
-    channel->Fail("WebSocket is closed before the connection is established.",
-                  mojom::ConsoleMessageLevel::kWarning,
-                  std::make_unique<SourceLocation>(String(), 0, 0, nullptr));
+    channel->Fail(
+        "WebSocket is closed before the connection is established.",
+        mojom::ConsoleMessageLevel::kWarning,
+        std::make_unique<SourceLocation>(String(), String(), 0, 0, nullptr));
     return;
   }
   state_ = kClosing;
@@ -197,7 +199,7 @@ inline bool WebSocketCommon::IsValidSubprotocolCharacter(UChar character) {
 }
 
 bool WebSocketCommon::IsValidSubprotocolString(const String& protocol) {
-  if (protocol.IsEmpty())
+  if (protocol.empty())
     return false;
   for (wtf_size_t i = 0; i < protocol.length(); ++i) {
     if (!IsValidSubprotocolCharacter(protocol[i]))

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,14 @@ namespace content {
 
 void RenderMediaEventHandler::SendQueuedMediaEvents(
     std::vector<media::MediaLogRecord> events_to_send) {
+  for (auto& record : events_to_send)
+    record.id = log_id_;
   GetMediaInternalRecordLogRemote().Log(events_to_send);
 }
 
-RenderMediaEventHandler::RenderMediaEventHandler() {
+RenderMediaEventHandler::RenderMediaEventHandler(
+    media::MediaPlayerLoggingID player_id)
+    : log_id_(player_id) {
   DCHECK(RenderThread::Get())
       << "RenderMediaEventHandler must be constructed on the render thread";
 }

@@ -13,8 +13,7 @@ Are you a Google employee? See
 ## System requirements
 
 * A 64-bit Mac running 11.3 or later.
-* [Xcode](https://developer.apple.com/xcode) 13.0 or higher.
-* The current version of the JDK (required for the Closure compiler).
+* [Xcode](https://developer.apple.com/xcode) 13.1 or higher.
 
 ## Install `depot_tools`
 
@@ -117,7 +116,7 @@ solutions = [
       "name": "setup_gn",
       "pattern": ".",
       "action": [
-        "python",
+        "python3",
         "src/ios/build/tools/setup-gn.py",
       ]
     }],
@@ -189,8 +188,8 @@ to share files and configurations while the `group.${prefix}.common` is shared
 with Chromium and other applications from the same organisation and can be used
 to send commands to Chromium.
 
-`${prefix}.chrome.ios.dev.CredentialProviderExtension` needs the AutoFill 
-Credential Provider Entitlement, which corresponds to the key 
+`${prefix}.chrome.ios.dev.CredentialProviderExtension` needs the AutoFill
+Credential Provider Entitlement, which corresponds to the key
 `com.apple.developer.authentication-services.autofill-credential-provider`
 Please refer to Apple's documentation on how to set this up.
 

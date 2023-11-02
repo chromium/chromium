@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
@@ -36,7 +35,7 @@ int g_max_sockets_per_pool[] = {
   256   // WEBSOCKET_SOCKET_POOL
 };
 
-static_assert(base::size(g_max_sockets_per_pool) ==
+static_assert(std::size(g_max_sockets_per_pool) ==
                   HttpNetworkSession::NUM_SOCKET_POOL_TYPES,
               "max sockets per pool length mismatch");
 
@@ -53,7 +52,7 @@ int g_max_sockets_per_group[] = {
     255  // WEBSOCKET_SOCKET_POOL
 };
 
-static_assert(base::size(g_max_sockets_per_group) ==
+static_assert(std::size(g_max_sockets_per_group) ==
                   HttpNetworkSession::NUM_SOCKET_POOL_TYPES,
               "max sockets per group length mismatch");
 
@@ -65,7 +64,7 @@ int g_max_sockets_per_proxy_server[] = {
   kDefaultMaxSocketsPerProxyServer   // WEBSOCKET_SOCKET_POOL
 };
 
-static_assert(base::size(g_max_sockets_per_proxy_server) ==
+static_assert(std::size(g_max_sockets_per_proxy_server) ==
                   HttpNetworkSession::NUM_SOCKET_POOL_TYPES,
               "max sockets per proxy server length mismatch");
 
@@ -95,7 +94,7 @@ int InitSocketPoolHelper(
     const SSLConfig& ssl_config_for_proxy,
     bool is_for_websockets,
     PrivacyMode privacy_mode,
-    NetworkIsolationKey network_isolation_key,
+    NetworkAnonymizationKey network_anonymization_key,
     SecureDnsPolicy secure_dns_policy,
     const SocketTag& socket_tag,
     const NetLogWithSource& net_log,
@@ -115,9 +114,9 @@ int InitSocketPoolHelper(
                                    session->params().testing_fixed_https_port);
   }
 
-  ClientSocketPool::GroupId connection_group(std::move(endpoint), privacy_mode,
-                                             std::move(network_isolation_key),
-                                             secure_dns_policy);
+  ClientSocketPool::GroupId connection_group(
+      std::move(endpoint), privacy_mode, std::move(network_anonymization_key),
+      secure_dns_policy);
   scoped_refptr<ClientSocketPool::SocketParams> socket_params =
       CreateSocketParams(connection_group, proxy_info.proxy_server(),
                          ssl_config_for_origin, ssl_config_for_proxy);
@@ -134,9 +133,9 @@ int InitSocketPoolHelper(
                              : absl::optional<NetworkTrafficAnnotationTag>(
                                    proxy_info.traffic_annotation());
   if (num_preconnect_streams) {
-    pool->RequestSockets(connection_group, std::move(socket_params),
-                         proxy_annotation, num_preconnect_streams, net_log);
-    return OK;
+    return pool->RequestSockets(connection_group, std::move(socket_params),
+                                proxy_annotation, num_preconnect_streams,
+                                std::move(callback), net_log);
   }
 
   return socket_handle->Init(connection_group, std::move(socket_params),
@@ -229,7 +228,7 @@ int InitSocketHandleForHttpRequest(
     const SSLConfig& ssl_config_for_origin,
     const SSLConfig& ssl_config_for_proxy,
     PrivacyMode privacy_mode,
-    NetworkIsolationKey network_isolation_key,
+    NetworkAnonymizationKey network_anonymization_key,
     SecureDnsPolicy secure_dns_policy,
     const SocketTag& socket_tag,
     const NetLogWithSource& net_log,
@@ -241,8 +240,8 @@ int InitSocketHandleForHttpRequest(
       std::move(endpoint), request_load_flags, request_priority, session,
       proxy_info, ssl_config_for_origin, ssl_config_for_proxy,
       false /* is_for_websockets */, privacy_mode,
-      std::move(network_isolation_key), secure_dns_policy, socket_tag, net_log,
-      0, socket_handle, HttpNetworkSession::NORMAL_SOCKET_POOL,
+      std::move(network_anonymization_key), secure_dns_policy, socket_tag,
+      net_log, 0, socket_handle, HttpNetworkSession::NORMAL_SOCKET_POOL,
       std::move(callback), proxy_auth_callback);
 }
 
@@ -255,7 +254,7 @@ int InitSocketHandleForWebSocketRequest(
     const SSLConfig& ssl_config_for_origin,
     const SSLConfig& ssl_config_for_proxy,
     PrivacyMode privacy_mode,
-    NetworkIsolationKey network_isolation_key,
+    NetworkAnonymizationKey network_anonymization_key,
     const NetLogWithSource& net_log,
     ClientSocketHandle* socket_handle,
     CompletionOnceCallback callback,
@@ -274,23 +273,26 @@ int InitSocketHandleForWebSocketRequest(
       std::move(endpoint), request_load_flags, request_priority, session,
       proxy_info, ssl_config_for_origin, ssl_config_for_proxy,
       true /* is_for_websockets */, privacy_mode,
-      std::move(network_isolation_key), SecureDnsPolicy::kAllow, SocketTag(),
-      net_log, 0, socket_handle, HttpNetworkSession::WEBSOCKET_SOCKET_POOL,
-      std::move(callback), proxy_auth_callback);
+      std::move(network_anonymization_key), SecureDnsPolicy::kAllow,
+      SocketTag(), net_log, 0, socket_handle,
+      HttpNetworkSession::WEBSOCKET_SOCKET_POOL, std::move(callback),
+      proxy_auth_callback);
 }
 
-int PreconnectSocketsForHttpRequest(url::SchemeHostPort endpoint,
-                                    int request_load_flags,
-                                    RequestPriority request_priority,
-                                    HttpNetworkSession* session,
-                                    const ProxyInfo& proxy_info,
-                                    const SSLConfig& ssl_config_for_origin,
-                                    const SSLConfig& ssl_config_for_proxy,
-                                    PrivacyMode privacy_mode,
-                                    NetworkIsolationKey network_isolation_key,
-                                    SecureDnsPolicy secure_dns_policy,
-                                    const NetLogWithSource& net_log,
-                                    int num_preconnect_streams) {
+int PreconnectSocketsForHttpRequest(
+    url::SchemeHostPort endpoint,
+    int request_load_flags,
+    RequestPriority request_priority,
+    HttpNetworkSession* session,
+    const ProxyInfo& proxy_info,
+    const SSLConfig& ssl_config_for_origin,
+    const SSLConfig& ssl_config_for_proxy,
+    PrivacyMode privacy_mode,
+    NetworkAnonymizationKey network_anonymization_key,
+    SecureDnsPolicy secure_dns_policy,
+    const NetLogWithSource& net_log,
+    int num_preconnect_streams,
+    CompletionOnceCallback callback) {
   // QUIC proxies are currently not supported through this method.
   DCHECK(!proxy_info.is_quic());
 
@@ -302,9 +304,10 @@ int PreconnectSocketsForHttpRequest(url::SchemeHostPort endpoint,
   return InitSocketPoolHelper(
       std::move(endpoint), request_load_flags, request_priority, session,
       proxy_info, ssl_config_for_origin, ssl_config_for_proxy,
-      false /* force_tunnel */, privacy_mode, std::move(network_isolation_key),
-      secure_dns_policy, SocketTag(), net_log, num_preconnect_streams, nullptr,
-      HttpNetworkSession::NORMAL_SOCKET_POOL, CompletionOnceCallback(),
+      false /* force_tunnel */, privacy_mode,
+      std::move(network_anonymization_key), secure_dns_policy, SocketTag(),
+      net_log, num_preconnect_streams, nullptr,
+      HttpNetworkSession::NORMAL_SOCKET_POOL, std::move(callback),
       ClientSocketPool::ProxyAuthCallback());
 }
 

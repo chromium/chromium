@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,7 +55,7 @@ class TestPasswordManagerClient
   PasswordStoreInterface* GetProfilePasswordStore() const override;
   const PasswordManager* GetPasswordManager() const override;
   url::Origin GetLastCommittedOrigin() const override;
-  // Stores |manager| into |manager_|. Save() should be
+  // Stores `manager` into `manager_`. Save() should be
   // called manually in test. To put expectation on this function being called,
   // use PromptUserToSavePasswordPtr.
   bool PromptUserToSaveOrUpdatePassword(

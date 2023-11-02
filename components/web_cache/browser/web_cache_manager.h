@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -139,8 +139,14 @@ class WebCacheManager : public content::RenderProcessHostCreationObserver,
   // each renderer is permitted to consume for its cache.
   typedef std::list<Allocation> AllocationStrategy;
 
+  struct WebCacheInfo {
+    WebCacheInfo();
+    ~WebCacheInfo();
+    mojo::Remote<mojom::WebCache> service;
+    uint64_t last_capacity;
+  };
   // The key is the unique id of every render process host.
-  typedef std::map<int, mojo::Remote<mojom::WebCache>> WebCacheServicesMap;
+  typedef std::map<int, WebCacheInfo> WebCacheServicesMap;
 
   // This class is a singleton.  Do not instantiate directly. Call GetInstance()
   // instead.
@@ -244,6 +250,9 @@ class WebCacheManager : public content::RenderProcessHostCreationObserver,
   // Inactive renderers are those renderers that have been inactive more
   // recently than they have been active.
   std::set<int> inactive_renderers_;
+
+  // True if a delayed call to ReviseAllocationStrategy() is pending.
+  bool callback_pending_ = false;
 
   // Maps every renderer_id with its corresponding
   // mojo::Remote<mojom::WebCache>.

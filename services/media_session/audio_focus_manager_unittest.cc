@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/adapters.h"
 #include "base/run_loop.h"
 #include "base/test/power_monitor_test.h"
 #include "base/test/task_environment.h"
@@ -67,10 +68,9 @@ class AudioFocusManagerTest
 
   AudioFocusManager::RequestId GetAudioFocusedSession() {
     const auto audio_focus_requests = GetRequests();
-    for (auto iter = audio_focus_requests.rbegin();
-         iter != audio_focus_requests.rend(); ++iter) {
-      if ((*iter)->audio_focus_type == mojom::AudioFocusType::kGain)
-        return (*iter)->request_id.value();
+    for (const auto& request : base::Reversed(audio_focus_requests)) {
+      if (request->audio_focus_type == mojom::AudioFocusType::kGain)
+        return request->request_id.value();
     }
     return base::UnguessableToken::Null();
   }

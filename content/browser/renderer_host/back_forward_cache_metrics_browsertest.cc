@@ -1,10 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -23,6 +23,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
@@ -31,6 +32,7 @@
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 
 using base::Bucket;
@@ -100,6 +102,31 @@ class BackForwardCacheMetricsBrowserTestBase : public ContentBrowserTest,
     navigation_ids_.push_back(navigation_handle->GetNavigationId());
   }
 
+  void NavigateAndWaitForDisablingFeature(
+      const GURL& url,
+      blink::scheduler::WebSchedulerTrackedFeature feature) {
+    base::RunLoop run_loop;
+    current_frame_host()
+        ->SetBackForwardCacheDisablingFeaturesCallbackForTesting(
+            base::BindLambdaForTesting(
+                [&run_loop, feature](
+                    blink::scheduler::WebSchedulerTrackedFeatures features) {
+                  if (features.Has(feature) && run_loop.running())
+                    run_loop.Quit();
+                }));
+    EXPECT_TRUE(NavigateToURL(shell(), url));
+    run_loop.Run();
+
+    EXPECT_EQ(base::Difference(
+                  current_frame_host()->GetBackForwardCacheDisablingFeatures(),
+                  kFeaturesToIgnore),
+              blink::scheduler::WebSchedulerTrackedFeatures(feature));
+
+    // Close the web contents to ensure that no new notifications arrive to the
+    // function local callback above after this function has returned.
+    web_contents()->Close();
+  }
+
   std::vector<int64_t> navigation_ids_;
 
  private:
@@ -114,11 +141,11 @@ class BackForwardCacheMetricsBrowserTest
     if (GetParam() == BackForwardCacheStatus::kEnabled) {
       // Enable BackForwardCache.
       feature_list_.InitWithFeaturesAndParameters(
-          {{features::kBackForwardCache, {{"enable_same_site", "true"}}},
+          {{features::kBackForwardCache, {}},
            {kBackForwardCacheNoTimeEviction, {}}},
           // Allow BackForwardCache for all devices regardless of their memory.
           {features::kBackForwardCacheMemoryControls});
-      DCHECK(IsSameSiteBackForwardCacheEnabled());
+      DCHECK(IsBackForwardCacheEnabled());
     } else {
       feature_list_.InitAndDisableFeature(features::kBackForwardCache);
       DCHECK(!IsBackForwardCacheEnabled());
@@ -272,12 +299,25 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, CloneAndGoBack) {
 
   // First two new navigations happen in the original tab.
   // The third navigation reloads the tab for the cloned WebContents.
-  // The fourth goes back, but the metrics are not recorded due to it being
-  // cloned and the metrics objects missing.
-  // The last two navigations, however, should have metrics.
+  // The fourth goes back, and records an empty entry because its
+  // NavigationEntry was cloned and the metrics objects was empty.
+  // The last two navigations records non-empty entries.
   EXPECT_THAT(recorder.GetEntries("HistoryNavigation", {last_navigation_id}),
-              testing::ElementsAre(UkmEntry{id5, {{last_navigation_id, id3}}},
+              testing::ElementsAre(UkmEntry{id4, {}},
+                                   UkmEntry{id5, {{last_navigation_id, id3}}},
                                    UkmEntry{id6, {{last_navigation_id, id4}}}));
+
+  // Ensure that for the first navigation, we record "session restored" as one
+  // of the NotRestoredReasons, which is added by the metrics recording code.
+  std::string not_restored_reasons = "BackForwardCache.NotRestoredReasons";
+  std::vector<ukm::TestAutoSetUkmRecorder::HumanReadableUkmMetrics>
+      recorded_not_restored_reasons =
+          recorder.FilteredHumanReadableMetricForEntry("HistoryNavigation",
+                                                       not_restored_reasons);
+  ASSERT_EQ(recorded_not_restored_reasons.size(), 3u);
+  EXPECT_EQ(recorded_not_restored_reasons[0][not_restored_reasons],
+            1 << static_cast<int>(
+                BackForwardCacheMetrics::NotRestoredReason::kSessionRestored));
 }
 
 // Confirms that UKMs are not recorded on reloading.
@@ -609,25 +649,22 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, DedicatedWorker) {
-  ukm::TestAutoSetUkmRecorder recorder;
+  // This test should only run if the feature is disabled.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kBackForwardCacheDedicatedWorker))
+    return;
 
+  ukm::TestAutoSetUkmRecorder recorder;
   const GURL url(embedded_test_server()->GetURL(
       "/back_forward_cache/page_with_dedicated_worker.html"));
 
-  EXPECT_TRUE(NavigateToURL(shell(), url));
-
-  EXPECT_EQ(
-      base::Difference(static_cast<WebContentsImpl*>(shell()->web_contents())
-                           ->GetMainFrame()
-                           ->GetBackForwardCacheDisablingFeatures(),
-                       kFeaturesToIgnore),
-      blink::scheduler::WebSchedulerTrackedFeatures(
-          blink::scheduler::WebSchedulerTrackedFeature::
-              kDedicatedWorkerOrWorklet));
+  NavigateAndWaitForDisablingFeature(
+      url,
+      blink::scheduler::WebSchedulerTrackedFeature::kDedicatedWorkerOrWorklet);
 }
 
 // TODO(https://crbug.com/154571): Shared workers are not available on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_SharedWorker DISABLED_SharedWorker
 #else
 #define MAYBE_SharedWorker SharedWorker
@@ -636,15 +673,8 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, MAYBE_SharedWorker) {
   const GURL url(embedded_test_server()->GetURL(
       "/back_forward_cache/page_with_shared_worker.html"));
 
-  EXPECT_TRUE(NavigateToURL(shell(), url));
-
-  EXPECT_EQ(
-      base::Difference(static_cast<WebContentsImpl*>(shell()->web_contents())
-                           ->GetMainFrame()
-                           ->GetBackForwardCacheDisablingFeatures(),
-                       kFeaturesToIgnore),
-      blink::scheduler::WebSchedulerTrackedFeatures(
-          blink::scheduler::WebSchedulerTrackedFeature::kSharedWorker));
+  NavigateAndWaitForDisablingFeature(
+      url, blink::scheduler::WebSchedulerTrackedFeature::kSharedWorker);
 }
 
 IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, Geolocation) {
@@ -652,7 +682,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, Geolocation) {
   EXPECT_TRUE(NavigateToURL(shell(), url1));
 
   RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetMainFrame());
+      shell()->web_contents()->GetPrimaryMainFrame());
   EXPECT_EQ("success", EvalJs(main_frame, R"(
     new Promise(resolve => {
       navigator.geolocation.getCurrentPosition(
@@ -948,7 +978,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsPrerenderingBrowserTest,
   prerender_helper()->NavigatePrimaryPage(prerender_url);
   // Makes sure that the page is activated from the prerendering.
   EXPECT_TRUE(host_observer.was_activated());
-  EXPECT_TRUE(WaitForRenderFrameReady(web_contents()->GetMainFrame()));
+  EXPECT_TRUE(WaitForRenderFrameReady(web_contents()->GetPrimaryMainFrame()));
 
   EXPECT_TRUE(NavigateToURL(shell(), url2));
 
@@ -973,6 +1003,58 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsPrerenderingBrowserTest,
               testing::ElementsAre(FeatureUsage{id5, 0, 0, 0}));
 }
 
+class BackForwardCacheMetricsFencedFrameBrowserTest
+    : public BackForwardCacheMetricsBrowserTest {
+ public:
+  BackForwardCacheMetricsFencedFrameBrowserTest() = default;
+  ~BackForwardCacheMetricsFencedFrameBrowserTest() override = default;
+
+  test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_test_helper_;
+  }
+
+ private:
+  test::FencedFrameTestHelper fenced_frame_test_helper_;
+};
+
+// Tests that fenced frame navigation doesn't have BackForwardCacheMetrics.
+IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsFencedFrameBrowserTest,
+                       FenceFrameNavigation) {
+  ukm::TestAutoSetUkmRecorder recorder;
+
+  const GURL url1(embedded_test_server()->GetURL("/title1.html"));
+  const GURL fenced_frame_url1(
+      embedded_test_server()->GetURL("/fenced_frames/title1.html"));
+  const GURL url2(embedded_test_server()->GetURL("/title2.html"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+
+  auto* fenced_frame = fenced_frame_test_helper().CreateFencedFrame(
+      web_contents()->GetPrimaryMainFrame(), fenced_frame_url1);
+  NavigationEntryImpl* fenced_frame_entry = FrameTreeNode::From(fenced_frame)
+                                                ->frame_tree()
+                                                ->controller()
+                                                .GetLastCommittedEntry();
+  EXPECT_EQ(fenced_frame_entry->back_forward_cache_metrics(), nullptr);
+
+  EXPECT_TRUE(NavigateToURL(shell(), url2));
+  // Navigate back to `url1`.
+  ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
+
+  // The navigations observed should be:
+  // 1) url1
+  // 2) fenced_frame_url1
+  // 3) url2
+  // 4) url1 (back navigation)
+
+  ASSERT_EQ(navigation_ids_.size(), static_cast<size_t>(4));
+  ukm::SourceId id4 = ToSourceId(navigation_ids_[3]);
+
+  // We should only record metrics for the last navigation.
+  EXPECT_THAT(GetFeatureUsageMetrics(&recorder),
+              testing::ElementsAre(FeatureUsage{id4, 0, 0, 0}));
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          BackForwardCacheMetricsBrowserTest,
                          testing::ValuesIn({BackForwardCacheStatus::kDisabled,
@@ -980,6 +1062,12 @@ INSTANTIATE_TEST_SUITE_P(All,
                          BackForwardCacheMetricsBrowserTest::DescribeParams);
 INSTANTIATE_TEST_SUITE_P(All,
                          BackForwardCacheMetricsPrerenderingBrowserTest,
+                         testing::ValuesIn({BackForwardCacheStatus::kDisabled,
+                                            BackForwardCacheStatus::kEnabled}),
+                         BackForwardCacheMetricsBrowserTest::DescribeParams);
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         BackForwardCacheMetricsFencedFrameBrowserTest,
                          testing::ValuesIn({BackForwardCacheStatus::kDisabled,
                                             BackForwardCacheStatus::kEnabled}),
                          BackForwardCacheMetricsBrowserTest::DescribeParams);

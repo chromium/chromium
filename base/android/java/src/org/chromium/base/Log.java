@@ -1,10 +1,12 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.base;
 
-import org.chromium.base.annotations.CheckDiscard;
+import org.chromium.build.annotations.AlwaysInline;
+import org.chromium.build.annotations.CheckDiscard;
+import org.chromium.build.annotations.DoNotInline;
 
 import java.util.Locale;
 
@@ -39,9 +41,6 @@ public class Log {
     /** Convenience property, same as {@link android.util.Log#WARN}. */
     public static final int WARN = android.util.Log.WARN;
 
-    private static final String sTagPrefix = "cr_";
-    private static final String sDeprecatedTagPrefix = "cr.";
-
     private Log() {
         // Static only access
     }
@@ -59,18 +58,12 @@ public class Log {
      * Returns a normalized tag that will be in the form: "cr_foo". This function is called by the
      * various Log overrides. If using {@link #isLoggable(String, int)}, you might want to call it
      * to get the tag that will actually be used.
-     * @see #sTagPrefix
      */
+    @AlwaysInline
     public static String normalizeTag(String tag) {
-        if (tag.startsWith(sTagPrefix)) return tag;
-
-        // TODO(dgn) simplify this once 'cr.' is out of the repo (http://crbug.com/533072)
-        int unprefixedTagStart = 0;
-        if (tag.startsWith(sDeprecatedTagPrefix)) {
-            unprefixedTagStart = sDeprecatedTagPrefix.length();
-        }
-
-        return sTagPrefix + tag.substring(unprefixedTagStart, tag.length());
+        // @AlwaysInline makes sense because this method is almost always called with a string
+        // literal as a parameter, so inlining causes the .concat() to happen at build-time.
+        return "cr_" + tag;
     }
 
     /**
@@ -115,10 +108,11 @@ public class Log {
 
         Throwable tr = getThrowableToLog(args);
         String message = formatLogWithStack(messageTemplate, tr, args);
+        tag = normalizeTag(tag);
         if (tr != null) {
-            android.util.Log.v(normalizeTag(tag), message, tr);
+            android.util.Log.v(tag, message, tr);
         } else {
-            android.util.Log.v(normalizeTag(tag), message);
+            android.util.Log.v(tag, message);
         }
     }
 
@@ -138,10 +132,11 @@ public class Log {
 
         Throwable tr = getThrowableToLog(args);
         String message = formatLogWithStack(messageTemplate, tr, args);
+        tag = normalizeTag(tag);
         if (tr != null) {
-            android.util.Log.d(normalizeTag(tag), message, tr);
+            android.util.Log.d(tag, message, tr);
         } else {
-            android.util.Log.d(normalizeTag(tag), message);
+            android.util.Log.d(tag, message);
         }
     }
 
@@ -158,11 +153,30 @@ public class Log {
     public static void i(String tag, String messageTemplate, Object... args) {
         Throwable tr = getThrowableToLog(args);
         String message = formatLog(messageTemplate, tr, args);
+        tag = normalizeTag(tag);
         if (tr != null) {
-            android.util.Log.i(normalizeTag(tag), message, tr);
+            android.util.Log.i(tag, message, tr);
         } else {
-            android.util.Log.i(normalizeTag(tag), message);
+            android.util.Log.i(tag, message);
         }
+    }
+
+    // Overloads to avoid varargs overhead.
+    @AlwaysInline
+    public static void i(String tag, String message) {
+        android.util.Log.i(normalizeTag(tag), message);
+    }
+    @AlwaysInline
+    public static void i(String tag, String message, Throwable t) {
+        android.util.Log.i(normalizeTag(tag), message, t);
+    }
+    @DoNotInline
+    public static void i(String tag, String messageTemplate, Object o) {
+        i(tag, messageTemplate, new Object[] {o});
+    }
+    @DoNotInline
+    public static void i(String tag, String messageTemplate, Object o1, Object o2) {
+        i(tag, messageTemplate, new Object[] {o1, o2});
     }
 
     /**
@@ -178,11 +192,30 @@ public class Log {
     public static void w(String tag, String messageTemplate, Object... args) {
         Throwable tr = getThrowableToLog(args);
         String message = formatLog(messageTemplate, tr, args);
+        tag = normalizeTag(tag);
         if (tr != null) {
-            android.util.Log.w(normalizeTag(tag), message, tr);
+            android.util.Log.w(tag, message, tr);
         } else {
-            android.util.Log.w(normalizeTag(tag), message);
+            android.util.Log.w(tag, message);
         }
+    }
+
+    // Overloads to avoid varargs overhead.
+    @AlwaysInline
+    public static void w(String tag, String message) {
+        android.util.Log.w(normalizeTag(tag), message);
+    }
+    @AlwaysInline
+    public static void w(String tag, String message, Throwable t) {
+        android.util.Log.w(normalizeTag(tag), message, t);
+    }
+    @DoNotInline
+    public static void w(String tag, String messageTemplate, Object o) {
+        w(tag, messageTemplate, new Object[] {o});
+    }
+    @DoNotInline
+    public static void w(String tag, String messageTemplate, Object o1, Object o2) {
+        w(tag, messageTemplate, new Object[] {o1, o2});
     }
 
     /**
@@ -198,11 +231,30 @@ public class Log {
     public static void e(String tag, String messageTemplate, Object... args) {
         Throwable tr = getThrowableToLog(args);
         String message = formatLog(messageTemplate, tr, args);
+        tag = normalizeTag(tag);
         if (tr != null) {
-            android.util.Log.e(normalizeTag(tag), message, tr);
+            android.util.Log.e(tag, message, tr);
         } else {
-            android.util.Log.e(normalizeTag(tag), message);
+            android.util.Log.e(tag, message);
         }
+    }
+
+    // Overloads to avoid varargs overhead.
+    @AlwaysInline
+    public static void e(String tag, String message) {
+        android.util.Log.e(normalizeTag(tag), message);
+    }
+    @AlwaysInline
+    public static void e(String tag, String message, Throwable t) {
+        android.util.Log.e(normalizeTag(tag), message, t);
+    }
+    @DoNotInline
+    public static void e(String tag, String messageTemplate, Object o) {
+        e(tag, messageTemplate, new Object[] {o});
+    }
+    @DoNotInline
+    public static void e(String tag, String messageTemplate, Object o1, Object o2) {
+        e(tag, messageTemplate, new Object[] {o1, o2});
     }
 
     /**
@@ -222,10 +274,11 @@ public class Log {
     public static void wtf(String tag, String messageTemplate, Object... args) {
         Throwable tr = getThrowableToLog(args);
         String message = formatLog(messageTemplate, tr, args);
+        tag = normalizeTag(tag);
         if (tr != null) {
-            android.util.Log.wtf(normalizeTag(tag), message, tr);
+            android.util.Log.wtf(tag, message, tr);
         } else {
-            android.util.Log.wtf(normalizeTag(tag), message);
+            android.util.Log.wtf(tag, message);
         }
     }
 

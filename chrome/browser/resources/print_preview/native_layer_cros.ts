@@ -1,39 +1,33 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 import {Cdd} from './data/cdd.js';
-import {ProvisionalDestinationInfo} from './data/local_parsers.js';
-import {PrinterStatus, PrinterStatusReason} from './data/printer_status_cros.js';
+import {ExtensionDestinationInfo} from './data/local_parsers.js';
+import {PrinterStatus} from './data/printer_status_cros.js';
 
-export type PrinterSetupResponse = {
-  printerId: string,
-  capabilities: Cdd,
-};
+export interface PrinterSetupResponse {
+  printerId: string;
+  capabilities: Cdd;
+}
 
-export type PrintServer = {
-  id: string,
-  name: string,
-};
+export interface PrintServer {
+  id: string;
+  name: string;
+}
 
-export type PrintServersConfig = {
-  printServers: PrintServer[],
-  isSingleServerFetchingMode: boolean,
-};
+export interface PrintServersConfig {
+  printServers: PrintServer[];
+  isSingleServerFetchingMode: boolean;
+}
 
 /**
  * An interface to the Chrome OS platform specific part of the native Chromium
  * printing system layer.
  */
 export interface NativeLayerCros {
-  /**
-   * Requests access token for cloud print requests for DEVICE origin.
-   */
-  getAccessToken(): Promise<string>;
-
   /**
    * Requests the destination's end user license information. Returns a promise
    * that will be resolved with the destination's EULA URL if obtained
@@ -48,7 +42,7 @@ export interface NativeLayerCros {
    * @param provisionalDestinationId
    */
   grantExtensionPrinterAccess(provisionalDestinationId: string):
-      Promise<ProvisionalDestinationInfo>;
+      Promise<ExtensionDestinationInfo>;
 
   /**
    * Requests that Chrome perform printer setup for the given printer.
@@ -59,16 +53,6 @@ export interface NativeLayerCros {
    * Sends a request to the printer with id |printerId| for its current status.
    */
   requestPrinterStatusUpdate(printerId: string): Promise<PrinterStatus>;
-
-  /**
-   * Records the histogram to capture the printer status of the current
-   * destination and whether the user chose to print or cancel.
-   * @param statusReason Current destination printer status
-   * @param didUserAttemptPrint True if user printed, false if user canceled.
-   */
-  recordPrinterStatusHistogram(
-      statusReason: PrinterStatusReason|null,
-      didUserAttemptPrint: boolean): void;
 
   /**
    * Records the histogram to capture if the retried printer status was
@@ -90,10 +74,6 @@ export interface NativeLayerCros {
 }
 
 export class NativeLayerCrosImpl implements NativeLayerCros {
-  getAccessToken() {
-    return sendWithPromise('getAccessToken');
-  }
-
   getEulaUrl(destinationId: string) {
     return sendWithPromise('getEulaUrl', destinationId);
   }
@@ -109,30 +89,6 @@ export class NativeLayerCrosImpl implements NativeLayerCros {
 
   requestPrinterStatusUpdate(printerId: string) {
     return sendWithPromise('requestPrinterStatus', printerId);
-  }
-
-  recordPrinterStatusHistogram(
-      statusReason: PrinterStatusReason|null, didUserAttemptPrint: boolean) {
-    if (statusReason === null) {
-      return;
-    }
-
-    let histogram;
-    switch (statusReason) {
-      case (PrinterStatusReason.UNKNOWN_REASON):
-        histogram =
-            'PrintPreview.PrinterStatus.AttemptedPrintWithUnknownStatus';
-        break;
-      case (PrinterStatusReason.NO_ERROR):
-        histogram = 'PrintPreview.PrinterStatus.AttemptedPrintWithGoodStatus';
-        break;
-      default:
-        histogram = 'PrintPreview.PrinterStatus.AttemptedPrintWithErrorStatus';
-        break;
-    }
-    chrome.send(
-        'metricsHandler:recordBooleanHistogram',
-        [histogram, didUserAttemptPrint]);
   }
 
   recordPrinterStatusRetrySuccessHistogram(retrySuccessful: boolean) {

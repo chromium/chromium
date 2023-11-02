@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,7 +43,7 @@ FileManagerPrivateInternalGetVolumeRootFunction::Run() {
   const auto process_id = source_process_id();
   // Read-only permisisons.
   policy->GrantReadFile(process_id, volume->mount_path());
-  if (params->options.writable.get() && *params->options.writable.get()) {
+  if (params->options.writable.value_or(false)) {
     // Additional write permissions.
     policy->GrantCreateReadWriteFile(process_id, volume->mount_path());
     policy->GrantCopyInto(process_id, volume->mount_path());
@@ -58,7 +58,8 @@ FileManagerPrivateInternalGetVolumeRootFunction::Run() {
   DCHECK(backend);
   file_manager::util::FileDefinition fd;
   if (!backend->GetVirtualPath(volume->mount_path(), &fd.virtual_path)) {
-    return RespondNow(Error("Volume with ID '*' not found", volume_id));
+    return RespondNow(
+        Error("Cannot get virtual path for volume with ID '*'", volume_id));
   }
 
   // Grant the caller right rights to crack URLs based on the virtual path.
@@ -81,8 +82,7 @@ void FileManagerPrivateInternalGetVolumeRootFunction::OnRequestDone(
     Respond(Error("Failed to resolve volume's root directory: *",
                   base::NumberToString(entry_definition.error)));
   } else {
-    Respond(OneArgument(base::Value::FromUniquePtrValue(
-        ConvertEntryDefinitionToValue(entry_definition))));
+    Respond(WithArguments(ConvertEntryDefinitionToValue(entry_definition)));
   }
 }
 

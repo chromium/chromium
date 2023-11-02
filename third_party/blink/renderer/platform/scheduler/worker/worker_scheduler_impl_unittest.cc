@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/cpu_time_budget_pool.h"
@@ -39,7 +40,7 @@ void AppendToVectorTestTask(Vector<String>* vector, String value) {
   vector->push_back(value);
 }
 
-void RunChainedTask(scoped_refptr<base::sequence_manager::TaskQueue> task_queue,
+void RunChainedTask(scoped_refptr<NonMainThreadTaskQueue> task_queue,
                     int count,
                     base::TimeDelta duration,
                     scoped_refptr<base::TestMockTimeTaskRunner> environment,
@@ -53,7 +54,7 @@ void RunChainedTask(scoped_refptr<base::sequence_manager::TaskQueue> task_queue,
 
   // Add a delay of 50ms to ensure that wake-up based throttling does not affect
   // us.
-  task_queue->task_runner()->PostDelayedTask(
+  task_queue->GetTaskRunnerWithDefaultTaskType()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&RunChainedTask, task_queue, count - 1, duration,
                      environment, base::Unretained(tasks)),
@@ -132,8 +133,8 @@ class WorkerSchedulerImplTest : public testing::Test {
                     const String& task_descriptor,
                     TaskType task_type) {
     worker_scheduler_->GetTaskRunner(task_type)->PostTask(
-        FROM_HERE, WTF::Bind(&AppendToVectorTestTask,
-                             WTF::Unretained(run_order), task_descriptor));
+        FROM_HERE, WTF::BindOnce(&AppendToVectorTestTask,
+                                 WTF::Unretained(run_order), task_descriptor));
   }
 
  protected:
@@ -160,7 +161,7 @@ TEST_F(WorkerSchedulerImplTest, TestPostTasks) {
   PostTestTask(&run_order, "T4", TaskType::kInternalTest);
   PostTestTask(&run_order, "T5", TaskType::kInternalTest);
   RunUntilIdle();
-  EXPECT_TRUE(run_order.IsEmpty());
+  EXPECT_TRUE(run_order.empty());
 
   worker_scheduler_.reset();
 }
@@ -231,8 +232,10 @@ TEST_F(WorkerSchedulerImplTest, ThrottleWorkerScheduler_RunThrottledTasks) {
 
   Vector<base::TimeTicks> tasks;
 
-  worker_scheduler_->ThrottleableTaskQueue()->task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&RunChainedTask,
+  worker_scheduler_->ThrottleableTaskQueue()
+      ->GetTaskRunnerWithDefaultTaskType()
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(&RunChainedTask,
                                 worker_scheduler_->ThrottleableTaskQueue(), 5,
                                 base::TimeDelta(), mock_task_runner_,
                                 base::Unretained(&tasks)));
@@ -262,8 +265,10 @@ TEST_F(WorkerSchedulerImplTest,
 
   Vector<base::TimeTicks> tasks;
 
-  worker_scheduler_->ThrottleableTaskQueue()->task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&RunChainedTask,
+  worker_scheduler_->ThrottleableTaskQueue()
+      ->GetTaskRunnerWithDefaultTaskType()
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(&RunChainedTask,
                                 worker_scheduler_->ThrottleableTaskQueue(), 5,
                                 base::Milliseconds(100), mock_task_runner_,
                                 base::Unretained(&tasks)));

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,8 @@ import android.os.Bundle;
 
 import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.password_check.PasswordCheckBridge.PasswordCheckObserver;
+import org.chromium.chrome.browser.password_manager.PasswordChangeSuccessTrackerBridge;
+import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 /**
@@ -39,7 +41,11 @@ class PasswordCheckImpl implements PasswordCheck, PasswordCheckObserver {
                 PasswordCheckFragmentView.PASSWORD_CHECK_REFERRER, passwordCheckReferrer);
         mSettingsLauncher.launchSettingsActivity(
                 context, PasswordCheckFragmentView.class, fragmentArgs);
-        mPasswordCheckBridge.refreshScripts();
+        // Scripts are fetched before opening safety check, so there is no need to fetch them again
+        // here.
+        if (passwordCheckReferrer != PasswordCheckReferrer.SAFETY_CHECK) {
+            mPasswordCheckBridge.refreshScripts();
+        }
     }
 
     @Override
@@ -155,5 +161,22 @@ class PasswordCheckImpl implements PasswordCheck, PasswordCheckObserver {
     @Override
     public boolean areScriptsRefreshed() {
         return mPasswordCheckBridge.areScriptsRefreshed();
+    }
+
+    @Override
+    public void fetchScripts() {
+        mPasswordCheckBridge.refreshScripts();
+    }
+
+    @Override
+    public void onAutomatedPasswordChangeStarted(CompromisedCredential credential) {
+        PasswordChangeSuccessTrackerBridge.onAutomatedPasswordChangeStarted(
+                credential.getAssociatedUrl(), credential.getUsername());
+    }
+
+    @Override
+    public void onManualPasswordChangeStarted(CompromisedCredential credential) {
+        PasswordChangeSuccessTrackerBridge.onManualPasswordChangeStarted(
+                credential.getAssociatedUrl(), credential.getUsername());
     }
 }

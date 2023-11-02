@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -149,7 +149,7 @@ gfx::Transform InkDropHighlight::CalculateTransform() const {
   transform.Translate(-layer_offset.x(), -layer_offset.y());
 
   // Add subpixel correction to the transform.
-  transform.ConcatTransform(
+  transform.PostConcat(
       GetTransformSubpixelCorrection(transform, layer_->device_scale_factor()));
 
   return transform;

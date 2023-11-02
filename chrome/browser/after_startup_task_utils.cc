@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/process/process.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/performance_manager/performance_manager_impl.h"
@@ -19,14 +20,12 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "ui/views/linux_ui/linux_ui.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/login/ui/login_display_host.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 using content::BrowserThread;
@@ -105,9 +104,10 @@ void SetBrowserStartupIsComplete() {
   if (IsBrowserStartupComplete())
     return;
 
+  TRACE_EVENT0("startup", "SetBrowserStartupIsComplete");
   g_startup_complete_flag.Get().Set();
-#if defined(OS_MAC) || defined(OS_WIN) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
   // Process::Current().CreationTime() is not available on all platforms.
   const base::Time process_creation_time =
       base::Process::Current().CreationTime();
@@ -115,24 +115,14 @@ void SetBrowserStartupIsComplete() {
     UMA_HISTOGRAM_LONG_TIMES("Startup.AfterStartupTaskDelayedUntilTime",
                              base::Time::Now() - process_creation_time);
   }
-#endif  // defined(OS_MAC) || defined(OS_WIN) || defined(OS_LINUX) ||
-        // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
   UMA_HISTOGRAM_COUNTS_10000("Startup.AfterStartupTaskCount",
                              g_after_startup_tasks.Get().size());
   for (AfterStartupTask* queued_task : g_after_startup_tasks.Get())
     ScheduleTask(base::WrapUnique(queued_task));
   g_after_startup_tasks.Get().clear();
   g_after_startup_tasks.Get().shrink_to_fit();
-
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Make sure we complete the startup notification sequence, or launchers will
-  // get confused by not receiving the expected message from the main process.
-  views::LinuxUI* linux_ui = views::LinuxUI::instance();
-  if (linux_ui)
-    linux_ui->NotifyWindowManagerStartupComplete();
-#endif
 }
 
 // Observes the first visible page load and sets the startup complete
@@ -153,6 +143,11 @@ class StartupObserver
   StartupObserver() = default;
 
   void OnStartupComplete() {
+    if (!performance_manager::PerformanceManagerImpl::IsAvailable()) {
+      // Already shutting down before startup finished. Do not notify.
+      return;
+    }
+
     // This should only be called once.
     if (!startup_complete_) {
       startup_complete_ = true;
@@ -174,7 +169,8 @@ class StartupObserver
 
   // PageNodeObserver overrides
   void OnLoadingStateChanged(
-      const performance_manager::PageNode* page_node) override {
+      const performance_manager::PageNode* page_node,
+      performance_manager::PageNode::LoadingState previous_state) override {
     // Only interested in visible PageNodes
     if (page_node->IsVisible()) {
       if (page_node->GetLoadingState() ==
@@ -222,10 +218,10 @@ void StartupObserver::Start() {
 void AfterStartupTaskUtils::StartMonitoringStartup() {
   // For Android, startup completion is signaled via
   // AfterStartupTaskUtils.java. We do not use the StartupObserver.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // For Lacros, there may not be a Browser created at startup.
-  if (chromeos::LacrosService::Get()->init_params()->initial_browser_action ==
+  if (chromeos::BrowserParamsProxy::Get()->InitialBrowserAction() ==
       crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&SetBrowserStartupIsComplete));
@@ -233,8 +229,19 @@ void AfterStartupTaskUtils::StartMonitoringStartup() {
   }
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // If we are on a login screen which does not expect WebUI to be loaded,
+  // Browser won't be created at startup.
+  if (ash::LoginDisplayHost::default_host() &&
+      !ash::LoginDisplayHost::default_host()->IsWebUIStarted()) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&SetBrowserStartupIsComplete));
+    return;
+  }
+#endif
+
   StartupObserver::Start();
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Add failsafe timeout
   content::GetUIThreadTaskRunner({})->PostDelayedTask(

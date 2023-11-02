@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,6 +29,8 @@ void MockIMEEngineHandler::FocusIn(const InputContext& input_context) {
     ++focus_in_call_count_;
 }
 
+void MockIMEEngineHandler::OnTouch(ui::EventPointerType pointerType) {}
+
 void MockIMEEngineHandler::FocusOut() {
   if (last_text_input_context_.type != ui::TEXT_INPUT_TYPE_NONE)
     ++focus_out_call_count_;
@@ -55,6 +57,9 @@ void MockIMEEngineHandler::ProcessKeyEvent(const ui::KeyEvent& key_event,
 void MockIMEEngineHandler::SetCompositionBounds(
     const std::vector<gfx::Rect>& bounds) {}
 
+void MockIMEEngineHandler::SetCaretBounds(
+    const gfx::Rect& caret_bounds) {}
+
 ui::VirtualKeyboardController*
 MockIMEEngineHandler::GetVirtualKeyboardController() const {
   return nullptr;
@@ -79,6 +84,10 @@ void MockIMEEngineHandler::SetSurroundingText(const std::u16string& text,
 void MockIMEEngineHandler::SetMirroringEnabled(bool mirroring_enabled) {}
 
 void MockIMEEngineHandler::SetCastingEnabled(bool casting_enabled) {}
+
+bool MockIMEEngineHandler::IsReadyForTesting() {
+  return true;
+}
 
 const std::string& MockIMEEngineHandler::GetActiveComponentId() const {
   return active_component_id_;

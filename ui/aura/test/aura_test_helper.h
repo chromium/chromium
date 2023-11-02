@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/wm/core/wm_state.h"
@@ -25,6 +26,7 @@ class WindowTreeHost;
 
 namespace client {
 class CaptureClient;
+class CursorShapeClient;
 class DefaultCaptureClient;
 class FocusClient;
 class ScreenPositionClient;
@@ -81,7 +83,7 @@ class AuraTestHelper {
   std::unique_ptr<wm::WMState> wm_state_ = std::make_unique<wm::WMState>();
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_mode_;
   std::unique_ptr<Env> env_;
-  ui::ContextFactory* context_factory_to_restore_ = nullptr;
+  raw_ptr<ui::ContextFactory> context_factory_to_restore_ = nullptr;
   std::unique_ptr<ui::TestContextFactories> context_factories_;
   std::unique_ptr<TestScreen> test_screen_;
   std::unique_ptr<WindowTreeHost> host_;
@@ -89,6 +91,7 @@ class AuraTestHelper {
   std::unique_ptr<client::DefaultCaptureClient> capture_client_;
   std::unique_ptr<TestWindowParentingClient> parenting_client_;
   std::unique_ptr<client::ScreenPositionClient> screen_position_client_;
+  std::unique_ptr<client::CursorShapeClient> cursor_shape_client_;
 };
 
 }  // namespace test

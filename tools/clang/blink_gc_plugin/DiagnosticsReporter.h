@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -88,6 +88,8 @@ class DiagnosticsReporter {
   void VariantUsedWithGC(const clang::Expr* expr,
                          const clang::CXXRecordDecl* variant,
                          const clang::CXXRecordDecl* gc_type);
+  void MemberOnStack(const clang::VarDecl* var);
+  void AdditionalPadding(const clang::RecordDecl* var, size_t padding);
 
  private:
   clang::DiagnosticBuilder ReportDiagnostic(
@@ -143,6 +145,8 @@ class DiagnosticsReporter {
   unsigned diag_iterator_to_gc_managed_collection_note_;
   unsigned diag_trace_method_of_stack_allocated_parent_;
   unsigned diag_member_in_stack_allocated_class_;
+  unsigned diag_member_on_stack_;
+  unsigned diag_additional_padding_;
 
   unsigned diag_unique_ptr_used_with_gc_;
   unsigned diag_optional_field_used_with_gc_;

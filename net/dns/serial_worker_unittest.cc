@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,20 +9,43 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/check.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/simple_test_tick_clock.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
+#include "net/base/backoff_entry.h"
 #include "net/test/test_with_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
 
 namespace {
+constexpr base::TimeDelta kBackoffInitialDelay = base::Milliseconds(100);
+constexpr int kBackoffMultiplyFactor = 2;
+constexpr int kMaxRetries = 3;
+
+static const BackoffEntry::Policy kTestBackoffPolicy = {
+    0,  // Number of initial errors to ignore without backoff.
+    static_cast<int>(
+        kBackoffInitialDelay
+            .InMilliseconds()),  // Initial delay for backoff in ms.
+    kBackoffMultiplyFactor,      // Factor to multiply for exponential backoff.
+    0,                           // Fuzzing percentage.
+    static_cast<int>(
+        base::Seconds(1).InMilliseconds()),  // Maximum time to delay requests
+                                             // in ms: 1 second.
+    -1,                                      // Don't discard entry.
+    false  // Don't use initial delay unless the last was an error.
+};
 
 class SerialWorkerTest : public TestWithTaskEnvironment {
  public:
@@ -44,24 +67,27 @@ class SerialWorkerTest : public TestWithTaskEnvironment {
       }
 
      private:
-      SerialWorkerTest* test_;
+      raw_ptr<SerialWorkerTest> test_;
     };
 
-    explicit TestSerialWorker(SerialWorkerTest* t) : test_(t) {}
+    explicit TestSerialWorker(SerialWorkerTest* t)
+        : SerialWorker(/*max_number_of_retries=*/kMaxRetries,
+                       &kTestBackoffPolicy),
+          test_(t) {}
     ~TestSerialWorker() override = default;
 
     std::unique_ptr<SerialWorker::WorkItem> CreateWorkItem() override {
       return std::make_unique<TestWorkItem>(test_);
     }
 
-    void OnWorkFinished(
+    bool OnWorkFinished(
         std::unique_ptr<SerialWorker::WorkItem> work_item) override {
-      ASSERT_TRUE(test_);
-      test_->OnWorkFinished();
+      CHECK(test_);
+      return test_->OnWorkFinished();
     }
 
    private:
-    SerialWorkerTest* test_;
+    raw_ptr<SerialWorkerTest> test_;
   };
 
   SerialWorkerTest(const SerialWorkerTest&) = delete;
@@ -75,6 +101,7 @@ class SerialWorkerTest : public TestWithTaskEnvironment {
       EXPECT_FALSE(work_running_) << "`DoWork()` is not called serially!";
       work_running_ = true;
     }
+    num_work_calls_observed_++;
     BreakNow("OnWork");
     {
       base::ScopedAllowBaseSyncPrimitivesForTesting
@@ -101,11 +128,12 @@ class SerialWorkerTest : public TestWithTaskEnvironment {
       CompleteFollowup();
   }
 
-  void OnWorkFinished() {
+  bool OnWorkFinished() {
     EXPECT_TRUE(task_runner_->BelongsToCurrentThread());
     EXPECT_EQ(output_value_, input_value_);
     ++work_finished_calls_;
     BreakNow("OnWorkFinished");
+    return on_work_finished_should_report_success_;
   }
 
  protected:
@@ -135,13 +163,12 @@ class SerialWorkerTest : public TestWithTaskEnvironment {
   }
 
   SerialWorkerTest()
-      : input_value_(0),
-        output_value_(-1),
+      : TestWithTaskEnvironment(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         work_allowed_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                       base::WaitableEvent::InitialState::NOT_SIGNALED),
         work_called_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
-                     base::WaitableEvent::InitialState::NOT_SIGNALED),
-        work_running_(false) {}
+                     base::WaitableEvent::InitialState::NOT_SIGNALED) {}
 
   // Helpers for tests.
 
@@ -172,16 +199,19 @@ class SerialWorkerTest : public TestWithTaskEnvironment {
   }
 
   // Input value read on WorkerPool.
-  int input_value_;
+  int input_value_ = 0;
   // Output value written on WorkerPool.
-  int output_value_;
+  int output_value_ = -1;
+  // The number of times we saw an OnWork call.
+  int num_work_calls_observed_ = 0;
+  bool on_work_finished_should_report_success_ = true;
 
   // read is called on WorkerPool so we need to synchronize with it.
   base::WaitableEvent work_allowed_;
   base::WaitableEvent work_called_;
 
   // Protected by read_lock_. Used to verify that read calls are serialized.
-  bool work_running_;
+  bool work_running_ = false;
   base::Lock work_lock_;
 
   int work_finished_calls_ = 0;
@@ -194,7 +224,7 @@ class SerialWorkerTest : public TestWithTaskEnvironment {
       std::make_unique<TestSerialWorker>(this);
 
   std::string breakpoint_;
-  base::RunLoop* run_loop_ = nullptr;
+  raw_ptr<base::RunLoop> run_loop_ = nullptr;
 
   bool followup_immediately_ = true;
   base::OnceClosure followup_closure_;
@@ -331,7 +361,7 @@ TEST_F(SerialWorkerTest, CancelDuringWork) {
   worker_->Cancel();
   UnblockWork();
 
-  base::RunLoop().RunUntilIdle();
+  RunUntilIdle();
   EXPECT_EQ(breakpoint_, "OnWork");
 
   EXPECT_EQ(work_finished_calls_, 0);
@@ -351,7 +381,7 @@ TEST_F(SerialWorkerTest, CancelDuringFollowup) {
   worker_->Cancel();
   CompleteFollowup();
 
-  base::RunLoop().RunUntilIdle();
+  RunUntilIdle();
   EXPECT_EQ(breakpoint_, "OnFollowup");
 
   EXPECT_EQ(work_finished_calls_, 0);
@@ -368,7 +398,7 @@ TEST_F(SerialWorkerTest, DeleteDuringWork) {
   worker_.reset();
   UnblockWork();
 
-  base::RunLoop().RunUntilIdle();
+  RunUntilIdle();
   EXPECT_EQ(breakpoint_, "OnWork");
 
   EXPECT_EQ(work_finished_calls_, 0);
@@ -388,10 +418,124 @@ TEST_F(SerialWorkerTest, DeleteDuringFollowup) {
   worker_.reset();
   CompleteFollowup();
 
-  base::RunLoop().RunUntilIdle();
+  RunUntilIdle();
   EXPECT_EQ(breakpoint_, "OnFollowup");
 
   EXPECT_EQ(work_finished_calls_, 0);
+
+  // No more tasks should remain.
+  EXPECT_TRUE(base::CurrentThread::Get()->IsIdleForTesting());
+}
+
+TEST_F(SerialWorkerTest, RetryAndThenSucceed) {
+  ASSERT_EQ(0, worker_->GetBackoffEntryForTesting().failure_count());
+
+  // Induce a failure.
+  on_work_finished_should_report_success_ = false;
+  ++input_value_;
+  worker_->WorkNow();
+  RunUntilBreak("OnWork");
+  UnblockWork();
+  RunUntilBreak("OnFollowup");
+  RunUntilBreak("OnWorkFinished");
+
+  // Confirm it failed and that a retry was scheduled.
+  ASSERT_EQ(1, worker_->GetBackoffEntryForTesting().failure_count());
+  EXPECT_EQ(kBackoffInitialDelay,
+            worker_->GetBackoffEntryForTesting().GetTimeUntilRelease());
+
+  // Make the subsequent attempt succeed.
+  on_work_finished_should_report_success_ = true;
+
+  RunUntilBreak("OnWork");
+  UnblockWork();
+  RunUntilBreak("OnFollowup");
+  RunUntilBreak("OnWorkFinished");
+  ASSERT_EQ(0, worker_->GetBackoffEntryForTesting().failure_count());
+
+  EXPECT_EQ(2, num_work_calls_observed_);
+
+  // No more tasks should remain.
+  EXPECT_TRUE(base::CurrentThread::Get()->IsIdleForTesting());
+}
+
+TEST_F(SerialWorkerTest, ExternalWorkRequestResetsRetryState) {
+  ASSERT_EQ(0, worker_->GetBackoffEntryForTesting().failure_count());
+
+  // Induce a failure.
+  on_work_finished_should_report_success_ = false;
+  ++input_value_;
+  worker_->WorkNow();
+  RunUntilBreak("OnWork");
+  UnblockWork();
+  RunUntilBreak("OnFollowup");
+  RunUntilBreak("OnWorkFinished");
+
+  // Confirm it failed and that a retry was scheduled.
+  ASSERT_EQ(1, worker_->GetBackoffEntryForTesting().failure_count());
+  EXPECT_TRUE(worker_->GetRetryTimerForTesting().IsRunning());
+  EXPECT_EQ(kBackoffInitialDelay,
+            worker_->GetBackoffEntryForTesting().GetTimeUntilRelease());
+  on_work_finished_should_report_success_ = true;
+
+  // The retry state should be reset before we see OnWorkFinished.
+  worker_->WorkNow();
+  ASSERT_EQ(0, worker_->GetBackoffEntryForTesting().failure_count());
+  EXPECT_FALSE(worker_->GetRetryTimerForTesting().IsRunning());
+  EXPECT_EQ(base::TimeDelta(),
+            worker_->GetBackoffEntryForTesting().GetTimeUntilRelease());
+  RunUntilBreak("OnWork");
+  UnblockWork();
+  RunUntilBreak("OnFollowup");
+  RunUntilBreak("OnWorkFinished");
+
+  // No more tasks should remain.
+  EXPECT_TRUE(base::CurrentThread::Get()->IsIdleForTesting());
+}
+
+TEST_F(SerialWorkerTest, MultipleFailureExponentialBackoff) {
+  ASSERT_EQ(0, worker_->GetBackoffEntryForTesting().failure_count());
+
+  // Induce a failure.
+  on_work_finished_should_report_success_ = false;
+  ++input_value_;
+  worker_->WorkNow();
+  RunUntilBreak("OnWork");
+  UnblockWork();
+  RunUntilBreak("OnFollowup");
+  RunUntilBreak("OnWorkFinished");
+
+  for (int retry_attempt_count = 1; retry_attempt_count <= kMaxRetries;
+       retry_attempt_count++) {
+    // Confirm it failed and that a retry was scheduled.
+    ASSERT_EQ(retry_attempt_count,
+              worker_->GetBackoffEntryForTesting().failure_count());
+    EXPECT_TRUE(worker_->GetRetryTimerForTesting().IsRunning());
+    base::TimeDelta expected_backoff_delay;
+    if (retry_attempt_count == 1) {
+      expected_backoff_delay = kBackoffInitialDelay;
+    } else {
+      expected_backoff_delay = kBackoffInitialDelay * kBackoffMultiplyFactor *
+                               (retry_attempt_count - 1);
+    }
+    EXPECT_EQ(expected_backoff_delay,
+              worker_->GetBackoffEntryForTesting().GetTimeUntilRelease())
+        << "retry_attempt_count=" << retry_attempt_count;
+
+    // |on_work_finished_should_report_success_| is still false, so the retry
+    // will fail too
+    RunUntilBreak("OnWork");
+    UnblockWork();
+    RunUntilBreak("OnFollowup");
+    RunUntilBreak("OnWorkFinished");
+  }
+
+  // The last retry attempt resets the retry state.
+  ASSERT_EQ(0, worker_->GetBackoffEntryForTesting().failure_count());
+  EXPECT_FALSE(worker_->GetRetryTimerForTesting().IsRunning());
+  EXPECT_EQ(base::TimeDelta(),
+            worker_->GetBackoffEntryForTesting().GetTimeUntilRelease());
+  on_work_finished_should_report_success_ = true;
 
   // No more tasks should remain.
   EXPECT_TRUE(base::CurrentThread::Get()->IsIdleForTesting());

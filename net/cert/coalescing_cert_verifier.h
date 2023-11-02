@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "net/base/net_export.h"
 #include "net/cert/cert_verifier.h"
 
@@ -71,9 +70,9 @@ class NET_EXPORT CoalescingCertVerifier : public CertVerifier {
 
   std::unique_ptr<CertVerifier> verifier_;
 
-  uint32_t config_id_;
-  uint64_t requests_;
-  uint64_t inflight_joins_;
+  uint32_t config_id_ = 0;
+  uint64_t requests_ = 0;
+  uint64_t inflight_joins_ = 0;
 };
 
 }  // namespace net

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,6 +40,11 @@ const char kGaiaOfflineSigninTimeLimitDays[] = "gaia.offline_signin_time_limit";
 // preference is cleared. The time is expressed as the serialization obtained
 // from PrefService::SetTime().
 const char kGaiaLastOnlineSignInTime[] = "gaia.last_online_sign_in_time";
+
+// Indicates that consolidated consent screen was shown. Used to show new terms
+// for reven board users after update from CloudReady to Flex.
+const char kRevenOobeConsolidatedConsentAccepted[] =
+    "RevenOobeConsolidatedConsentAccepted";
 
 // Indicates the amount of time for which a user authenticated via SAML can use
 // offline authentication against a cached password before being forced to go
@@ -104,6 +109,30 @@ const char kOobeComplete[] = "OobeComplete";
 
 // The name of the screen that has to be shown if OOBE has been interrupted.
 const char kOobeScreenPending[] = "OobeScreenPending";
+
+// Boolean pref to hold guest metrics consent captured during guest OOBE. Guest
+// OOBE should only be triggered for guest sessions without a device owner. This
+// pref is used to hold that consent across browser restart.
+const char kOobeGuestMetricsEnabled[] = "oobe.guest_metrics_enabled";
+
+// Boolean pref whether guest user went through ToS screen before starting the
+// session. If so, kOobeGuestMetricsEnabled will be loaded as the metrics
+// consent for the session.
+const char kOobeGuestAcceptedTos[] = "oobe.guest_accepted_tos";
+
+// Indicates that the reven board was updated from CloudReady to Flex.
+const char kOobeRevenUpdatedToFlex[] = "OobeRevenUpdatedToFlex";
+
+// This pref should be true if there was a language change from the UI,
+// it's value will be written into the OOBE.WelcomeScreen.UserChangedLocale
+// metric when we exit the WelcomeScreen.
+const char kOobeLocaleChangedOnWelcomeScreen[] =
+    "OobeLocaleChangedOnWelcomeScreen";
+
+// A string pref containing url parameter name which can be used on SAML IdP web
+// page to autofill the username field.
+const char kUrlParameterToAutofillSAMLUsername[] =
+    "saml.UrlParameterToAutofillSAMLUsername";
 
 }  // namespace prefs
 }  // namespace ash

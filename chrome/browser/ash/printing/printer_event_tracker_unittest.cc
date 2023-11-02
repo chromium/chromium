@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -172,7 +172,7 @@ TEST_F(PrinterEventTrackerTest, InstalledPrinterUserPpd) {
 
 TEST_F(PrinterEventTrackerTest, InstalledUsbPrinter) {
   tracker_.set_logging(true);
-  chromeos::PrinterDetector::DetectedPrinter usb_printer;
+  PrinterDetector::DetectedPrinter usb_printer;
   usb_printer.ppd_search_data.usb_vendor_id = kVendorId;
   usb_printer.ppd_search_data.usb_product_id = kProductId;
   usb_printer.ppd_search_data.usb_manufacturer = kUsbManufacturer;
@@ -229,7 +229,7 @@ TEST_F(PrinterEventTrackerTest, AbandonedNetworkPrinter) {
 TEST_F(PrinterEventTrackerTest, AbandonedUsbPrinter) {
   tracker_.set_logging(true);
 
-  chromeos::PrinterDetector::DetectedPrinter usb_printer;
+  PrinterDetector::DetectedPrinter usb_printer;
   usb_printer.ppd_search_data.usb_vendor_id = kVendorId;
   usb_printer.ppd_search_data.usb_product_id = kProductId;
   usb_printer.ppd_search_data.usb_manufacturer = kUsbManufacturer;

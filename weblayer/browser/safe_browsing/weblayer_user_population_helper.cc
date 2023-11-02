@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@ safe_browsing::ChromeUserPopulation GetUserPopulationForBrowserContext(
       browser_context_impl->pref_service(),
       browser_context_impl->IsOffTheRecord(),
       /*is_history_sync_enabled=*/false,
+      /*is_signed_in=*/false,
       /*is_under_advanced_protection=*/false,
       /*browser_policy_connector=*/nullptr,
       /*num_profiles=*/absl::optional<size_t>(),

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,11 +20,11 @@ namespace blink {
 
 namespace {
 
-Node* GeneratingNodeForObject(const LayoutBoxModelObject& box_model) {
+Node* GetNode(const LayoutBoxModelObject& box_model) {
   Node* node = nullptr;
   const LayoutObject* layout_object = &box_model;
   for (; layout_object && !node; layout_object = layout_object->Parent()) {
-    node = layout_object->GeneratingNode();
+    node = layout_object->GetNode();
   }
   return node;
 }
@@ -51,19 +51,17 @@ LayoutSize LogicalOffsetOnLine(const InlineFlowBox& flow_box) {
 
 BoxModelObjectPainter::BoxModelObjectPainter(const LayoutBoxModelObject& box,
                                              const InlineFlowBox* flow_box)
-    : BoxPainterBase(&box.GetDocument(),
-                     box.StyleRef(),
-                     GeneratingNodeForObject(box)),
+    : BoxPainterBase(&box.GetDocument(), box.StyleRef(), GetNode(box)),
       box_model_(box),
       flow_box_(flow_box) {}
 
 void BoxModelObjectPainter::PaintTextClipMask(
     const PaintInfo& paint_info,
-    const IntRect& mask_rect,
+    const gfx::Rect& mask_rect,
     const PhysicalOffset& paint_offset,
     bool object_has_multiple_boxes) {
-  PaintInfo mask_paint_info(paint_info.context, CullRect(ToGfxRect(mask_rect)),
-                            PaintPhase::kTextClip, kGlobalPaintNormalPhase, 0);
+  PaintInfo mask_paint_info(paint_info.context, CullRect(mask_rect),
+                            PaintPhase::kTextClip);
   mask_paint_info.SetFragmentID(paint_info.FragmentID());
   if (flow_box_) {
     LayoutSize local_offset = ToLayoutSize(flow_box_->Location());
@@ -94,16 +92,14 @@ PhysicalRect BoxModelObjectPainter::AdjustRectForScrolledContent(
     const PhysicalRect& rect) {
   if (!info.is_clipped_with_local_scrolling)
     return rect;
-
-  const auto& this_box = To<LayoutBox>(box_model_);
-  if (BoxDecorationData::IsPaintingBackgroundInContentsSpace(paint_info,
-                                                             this_box))
+  if (paint_info.IsPaintingBackgroundInContentsSpace())
     return rect;
 
   GraphicsContext& context = paint_info.context;
   // Clip to the overflow area.
   // TODO(chrishtr): this should be pixel-snapped.
-  context.Clip(FloatRect(this_box.OverflowClipRect(rect.offset)));
+  const auto& this_box = To<LayoutBox>(box_model_);
+  context.Clip(gfx::RectF(this_box.OverflowClipRect(rect.offset)));
 
   // Adjust the paint rect to reflect a scrolled content box with borders at
   // the ends.
@@ -145,16 +141,6 @@ BoxPainterBase::FillLayerInfo BoxModelObjectPainter::GetFillLayerInfo(
       box_model_.IsScrollContainer(), color, bg_layer, bleed_avoidance,
       respect_orientation, sides_to_include, box_model_.IsLayoutInline(),
       is_painting_background_in_contents_space);
-}
-
-bool BoxModelObjectPainter::IsPaintingBackgroundInContentsSpace(
-    const PaintInfo& paint_info) const {
-  if (!box_model_.IsBox())
-    return false;
-
-  const auto& this_box = To<LayoutBox>(box_model_);
-  return BoxDecorationData::IsPaintingBackgroundInContentsSpace(paint_info,
-                                                                this_box);
 }
 
 }  // namespace blink

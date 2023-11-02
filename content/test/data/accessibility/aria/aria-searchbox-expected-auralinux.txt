@@ -1,3 +1,3 @@
-[document web] caret_offset=0
+[document web]
 ++[entry] selectable-text xml-roles:searchbox caret_offset=0
 ++++[static] name='<newline>    ARIA role searchbox.<newline>  ' caret_offset=0

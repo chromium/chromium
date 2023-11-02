@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,15 +42,16 @@ class BookmarkCodec {
   // Encodes the model to a JSON value. This is invoked to encode the contents
   // of the bookmark bar model and is currently a convenience to invoking Encode
   // that takes the bookmark bar node and other folder node.
-  base::Value Encode(BookmarkModel* model,
-                     const std::string& sync_metadata_str);
+  base::Value Encode(BookmarkModel* model, std::string sync_metadata_str);
 
   // Encodes the bookmark bar and other folders returning the JSON value.
-  base::Value Encode(const BookmarkNode* bookmark_bar_node,
-                     const BookmarkNode* other_folder_node,
-                     const BookmarkNode* mobile_folder_node,
-                     const BookmarkNode::MetaInfoMap* model_meta_info_map,
-                     const std::string& sync_metadata_str);
+  base::Value Encode(
+      const BookmarkNode* bookmark_bar_node,
+      const BookmarkNode* other_folder_node,
+      const BookmarkNode* mobile_folder_node,
+      const BookmarkNode::MetaInfoMap* model_meta_info_map,
+      const BookmarkNode::MetaInfoMap* model_unsynced_meta_info_map,
+      std::string sync_metadata_str);
 
   // Decodes the previously encoded value to the specified nodes as well as
   // setting |max_node_id| to the greatest node id. Returns true on success,
@@ -79,6 +80,11 @@ class BookmarkCodec {
     return model_meta_info_map_;
   }
 
+  // Return the unsynced meta info of bookmark model root.
+  const BookmarkNode::MetaInfoMap& model_unsynced_meta_info_map() const {
+    return model_unsynced_meta_info_map_;
+  }
+
   // Returns whether the IDs were reassigned during decoding. Always returns
   // false after encoding.
   bool ids_reassigned() const { return ids_reassigned_; }
@@ -89,7 +95,7 @@ class BookmarkCodec {
 
   // Names of the various keys written to the Value.
   static const char kRootsKey[];
-  static const char kRootFolderNameKey[];
+  static const char kBookmarkBarFolderNameKey[];
   static const char kOtherBookmarkFolderNameKey[];
   static const char kMobileBookmarkFolderNameKey[];
   static const char kVersionKey[];
@@ -103,9 +109,11 @@ class BookmarkCodec {
   static const char kDateModifiedKey[];
   static const char kChildrenKey[];
   static const char kMetaInfo[];
+  static const char kUnsyncedMetaInfo[];
   // Allows the BookmarkClient to read and a write a string blob from the JSON
   // file. That string captures the bookmarks sync metadata.
   static const char kSyncMetadata[];
+  static const char kDateLastUsed[];
 
   // Possible values for kTypeKey.
   static const char kTypeURL[];
@@ -150,6 +158,11 @@ class BookmarkCodec {
   // nullptr.
   bool DecodeMetaInfo(const base::Value& value,
                       BookmarkNode::MetaInfoMap* meta_info_map);
+
+  // Decodes the unsynced meta info from the supplied value. meta_info_map must
+  // not be nullptr.
+  bool DecodeUnsyncedMetaInfo(const base::Value& value,
+                              BookmarkNode::MetaInfoMap* meta_info_map);
 
   // Decodes the meta info from the supplied sub-node dictionary. The values
   // found will be inserted in meta_info_map with the given prefix added to the
@@ -208,6 +221,9 @@ class BookmarkCodec {
 
   // Meta info set on bookmark model root.
   BookmarkNode::MetaInfoMap model_meta_info_map_;
+
+  // Unsynced meta info set on bookmark model root.
+  BookmarkNode::MetaInfoMap model_unsynced_meta_info_map_;
 };
 
 }  // namespace bookmarks

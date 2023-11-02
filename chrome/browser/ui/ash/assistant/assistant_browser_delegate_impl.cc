@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,29 +10,34 @@
 #include "ash/public/cpp/assistant/assistant_interface_binder.h"
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
 #include "ash/public/cpp/network_config_service.h"
+#include "ash/public/cpp/new_window_delegate.h"
+#include "base/command_line.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ash/assistant/assistant_util.h"
-#include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/crosapi/url_handler_ash.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/ash/assistant/assistant_context_util.h"
 #include "chrome/browser/ui/ash/assistant/assistant_setup.h"
 #include "chrome/browser/ui/ash/assistant/device_actions_delegate_impl.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
-#include "chromeos/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
+#include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
+#include "chrome/common/webui_url_constants.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
+#include "chromeos/ash/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
+#include "chromeos/crosapi/cpp/gurl_os_handler_utils.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/media_session_service.h"
 #include "content/public/browser/network_service_instance.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/common/content_switches.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-#include "chromeos/services/libassistant/public/mojom/service.mojom.h"
+#include "chromeos/ash/services/libassistant/public/mojom/service.mojom.h"
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 
 AssistantBrowserDelegateImpl::AssistantBrowserDelegateImpl() {
@@ -42,8 +47,8 @@ AssistantBrowserDelegateImpl::AssistantBrowserDelegateImpl() {
   DCHECK(session_manager->sessions().empty());
   session_manager->AddObserver(this);
 
-  notification_registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
-                              content::NotificationService::AllSources());
+  subscription_ = browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
+      &AssistantBrowserDelegateImpl::OnAppTerminating, base::Unretained(this)));
 }
 
 AssistantBrowserDelegateImpl::~AssistantBrowserDelegateImpl() {
@@ -54,7 +59,7 @@ AssistantBrowserDelegateImpl::~AssistantBrowserDelegateImpl() {
 
 void AssistantBrowserDelegateImpl::MaybeInit(Profile* profile) {
   if (assistant::IsAssistantAllowedForProfile(profile) !=
-      chromeos::assistant::AssistantAllowedState::ALLOWED) {
+      ash::assistant::AssistantAllowedState::ALLOWED) {
     return;
   }
 
@@ -74,7 +79,7 @@ void AssistantBrowserDelegateImpl::MaybeInit(Profile* profile) {
   device_actions_ = std::make_unique<DeviceActions>(
       std::make_unique<DeviceActionsDelegateImpl>());
 
-  service_ = std::make_unique<chromeos::assistant::Service>(
+  service_ = std::make_unique<ash::assistant::Service>(
       profile->GetURLLoaderFactory()->Clone(),
       IdentityManagerFactory::GetForProfile(profile));
   service_->Init();
@@ -89,24 +94,15 @@ void AssistantBrowserDelegateImpl::MaybeStartAssistantOptInFlow() {
   assistant_setup_->MaybeStartAssistantOptInFlow();
 }
 
-void AssistantBrowserDelegateImpl::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(chrome::NOTIFICATION_APP_TERMINATING, type);
+void AssistantBrowserDelegateImpl::OnAppTerminating() {
   if (!initialized_)
     return;
 
-  chromeos::assistant::AssistantService::Get()->Shutdown();
-}
-
-void AssistantBrowserDelegateImpl::RequestAssistantStructure(
-    RequestAssistantStructureCallback callback) {
-  RequestAssistantStructureForActiveBrowserWindow(std::move(callback));
+  ash::assistant::AssistantService::Get()->Shutdown();
 }
 
 void AssistantBrowserDelegateImpl::OnAssistantStatusChanged(
-    chromeos::assistant::AssistantStatus new_status) {
+    ash::assistant::AssistantStatus new_status) {
   ash::AssistantState::Get()->NotifyStatusChanged(new_status);
 }
 
@@ -132,8 +128,8 @@ void AssistantBrowserDelegateImpl::RequestAudioStreamFactory(
 }
 
 void AssistantBrowserDelegateImpl::RequestAudioDecoderFactory(
-    mojo::PendingReceiver<
-        chromeos::assistant::mojom::AssistantAudioDecoderFactory> receiver) {
+    mojo::PendingReceiver<ash::assistant::mojom::AssistantAudioDecoderFactory>
+        receiver) {
   content::ServiceProcessHost::Launch(
       std::move(receiver),
       content::ServiceProcessHost::Options()
@@ -159,12 +155,33 @@ void AssistantBrowserDelegateImpl::RequestNetworkConfig(
   ash::GetNetworkConfigService(std::move(receiver));
 }
 
+void AssistantBrowserDelegateImpl::OpenUrl(GURL url) {
+  if (crosapi::browser_util::IsLacrosPrimaryBrowser() &&
+      ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(
+          crosapi::gurl_os_handler_utils::SanitizeAshURL(url))) {
+    // Note that the unsanitized URL is passed to OpenUrl here, since OpenUrl
+    // internally does sanitization again if needed, but CanHandleUrl requires
+    // a sanitized URL to be passed in.
+    crosapi::UrlHandlerAsh().OpenUrl(url);
+  } else {
+    // The new tab should be opened with a user activation since the user
+    // interacted with the Assistant to open the url. |in_background| describes
+    // the relationship between |url| and Assistant UI, not the browser. As
+    // such, the browser will always be instructed to open |url| in a new
+    // browser tab and Assistant UI state will be updated downstream to respect
+    // |in_background|.
+    ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+        url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+        ash::NewWindowDelegate::Disposition::kNewForegroundTab);
+  }
+}
+
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 void AssistantBrowserDelegateImpl::RequestLibassistantService(
-    mojo::PendingReceiver<chromeos::libassistant::mojom::LibassistantService>
+    mojo::PendingReceiver<ash::libassistant::mojom::LibassistantService>
         receiver) {
   content::ServiceProcessHost::Launch<
-      chromeos::libassistant::mojom::LibassistantService>(
+      ash::libassistant::mojom::LibassistantService>(
       std::move(receiver), content::ServiceProcessHost::Options()
                                .WithDisplayName("Libassistant Service")
                                .Pass());
@@ -191,14 +208,14 @@ void AssistantBrowserDelegateImpl::OnUserSessionStarted(bool is_primary_user) {
   // Disable the handling for browser tests to prevent the Assistant being
   // enabled unexpectedly.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (is_primary_user && !chromeos::switches::ShouldSkipOobePostLogin() &&
+  if (is_primary_user && !ash::switches::ShouldSkipOobePostLogin() &&
       !command_line->HasSwitch(switches::kBrowserTest)) {
     MaybeStartAssistantOptInFlow();
   }
 }
 
 void AssistantBrowserDelegateImpl::OnAssistantFeatureAllowedChanged(
-    chromeos::assistant::AssistantAllowedState allowed_state) {
+    ash::assistant::AssistantAllowedState allowed_state) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
 
   MaybeInit(profile);

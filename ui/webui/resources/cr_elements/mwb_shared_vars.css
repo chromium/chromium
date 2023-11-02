@@ -1,0 +1,41 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=vars
+ * #import=./cr_shared_vars.css.js
+ * #css_wrapper_metadata_end */
+
+html {
+  --mwb-background-color: white;
+  --mwb-icon-button-fill-color: var(--google-grey-700);
+  --mwb-icon-button-focus-ring-color: var(--google-blue-600);
+  --mwb-icon-button-hover-background-color: rgba(var(--google-grey-900-rgb), 0.1);
+  --mwb-icon-size: 16px;
+  --mwb-item-height: 56px;
+  --mwb-list-item-horizontal-margin: 16px;
+  --mwb-list-item-hover-background-color: rgba(var(--google-grey-900-rgb), 0.1);
+  --mwb-list-item-selected-background-color: rgba(var(--google-grey-900-rgb), 0.14);
+  --mwb-list-section-title-font-size: 11px;
+  --mwb-list-section-title-height: 40px;
+  --mwb-primary-text-font-size: 13px;
+  --mwb-scrollbar-thumb-color: var(--google-grey-300);
+  --mwb-scrollbar-thumb-hover-color: var(--google-grey-500);
+  --mwb-scrollbar-track-color: var(--mwb-background-color);
+  --mwb-scrollbar-width: 4px;
+  --mwb-secondary-text-font-size: 12px;
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    --mwb-background-color: var(--google-grey-900);
+    --mwb-icon-button-fill-color: var(--google-grey-300);
+    --mwb-icon-button-focus-ring-color: var(--google-blue-300);
+    --mwb-icon-button-hover-background-color: rgba(255, 255, 255, 0.1);
+    --mwb-list-item-hover-background-color: rgb(55, 56, 58); /* #37383a */
+    --mwb-list-item-selected-background-color: rgb(68, 69, 71); /* #444547 */
+    --mwb-scrollbar-thumb-color: var(--google-grey-500);
+    --mwb-scrollbar-thumb-hover-color: var(--google-grey-300);
+  }
+}

@@ -12,8 +12,13 @@ specific_include_rules = {
     "prefetched_signed_exchange_manager.cc": [
         "+services/network/public/cpp/resource_request.h"
     ],
+    "resource_load_observer_for_worker.cc": [
+        "+services/network/public/cpp/ip_address_space_util.h",
+    ],
 }
 include_rules = [
+  "+base/containers/flat_map.h",
+  "+base/features.h",
   "+base/no_destructor.h",
   "+services/network/public/cpp/client_hints.h",
 ]

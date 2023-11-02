@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,17 +10,23 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/autofill/content/browser/form_forest.h"
 #include "components/autofill/content/browser/form_forest_test_api.h"
 #include "components/autofill/content/browser/form_forest_util_inl.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-shared.h"
 
 using FrameData = autofill::internal::FormForest::FrameData;
 using FrameDataSet =
@@ -145,6 +151,7 @@ auto CreateFieldTypeMap(const FormData& form) {
 // A profile is a 6-bit integer, whose bits indicate different values of first
 // and last name, credit card number, expiration month, expiration year, CVC.
 using Profile = base::StrongAlias<struct ProfileTag, size_t>;
+using ::autofill::test::WithoutValues;
 
 // Fills the fields 0..5 of |form| with data according to |profile|, the
 // fields 6..11 with |profile|+1, etc.
@@ -161,13 +168,6 @@ FormData WithValues(FormData& form, Profile profile = Profile(0)) {
     form.fields[6 * i + 4].value = bitset.test(4) ? u"2083" : u"2087";
     form.fields[6 * i + 5].value = bitset.test(5) ? u"123" : u"456";
   }
-  return form;
-}
-
-// Clears the values of all fields in |form|.
-FormData WithoutValues(FormData form) {
-  for (FormFieldData& field : form.fields)
-    field.value.clear();
   return form;
 }
 
@@ -271,7 +271,7 @@ std::vector<std::vector<T>> FlattenedPermutations(
 class MockContentAutofillDriver : public ContentAutofillDriver {
  public:
   explicit MockContentAutofillDriver(content::RenderFrameHost* rfh)
-      : ContentAutofillDriver(rfh) {}
+      : ContentAutofillDriver(rfh, /*autofill_router=*/nullptr) {}
 
   LocalFrameToken token() { return Token(render_frame_host()); }
 
@@ -299,9 +299,25 @@ class MockContentAutofillDriver : public ContentAutofillDriver {
 // RemoteFrameTokens.)
 class FormForestTest : public content::RenderViewHostTestHarness {
  public:
-  // The frame's permissions policy affects which fields may be filled (see
+  // "Shared-autofill" may be enabled or disabled per frame for certain origins.
+  // The enum constants correspond to the following permission policies:
+  // - kDefault is the default policy, which enables shared-autofill on the
+  //   main frame origin.
+  // - kSharedAutofill explicitly enables shared-autofill on a (child-) frame
+  //   for its current origin.
+  // - kNoSharedAutofill explicitly disables shared-autofill on a frame for all
+  //   origins.
+  // Child frames inherit the policy from their parents.
+  // "Shared-autofill" restricts cross-origin filling (see
   // FormForest::GetBrowserFormOfRendererForm() for details).
-  enum class Policy { kNone, kSharedAutofill };
+  enum class Policy { kDefault, kSharedAutofill, kNoSharedAutofill };
+
+  explicit FormForestTest(bool relax_shared_autofill = false) {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kAutofillSharedAutofill,
+        {{features::kAutofillSharedAutofillRelaxedParam.name,
+          relax_shared_autofill ? "true" : "false"}});
+  }
 
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
@@ -314,9 +330,22 @@ class FormForestTest : public content::RenderViewHostTestHarness {
   }
 
  protected:
-  MockContentAutofillDriver* NavigateMainFrame(const GURL& url) {
-    content::NavigationSimulator::CreateBrowserInitiated(url, web_contents())
-        ->Commit();
+  MockContentAutofillDriver* NavigateMainFrame(
+      const GURL& url,
+      Policy policy = Policy::kDefault) {
+    auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
+        url, web_contents());
+    switch (policy) {
+      case Policy::kDefault:
+        break;
+      case Policy::kSharedAutofill:
+        simulator->SetPermissionsPolicyHeader(AllowSharedAutofill(Origin(url)));
+        break;
+      case Policy::kNoSharedAutofill:
+        simulator->SetPermissionsPolicyHeader(DisallowSharedAutofill());
+        break;
+    }
+    simulator->Commit();
     return GetOrCreateDriver(main_rfh());
   }
 
@@ -327,20 +356,43 @@ class FormForestTest : public content::RenderViewHostTestHarness {
       const GURL& url,
       Policy policy,
       base::StringPiece name) {
-    auto permissions =
-        policy != Policy::kSharedAutofill
-            ? blink::ParsedPermissionsPolicy()
-            : blink::ParsedPermissionsPolicy(
-                  {blink::ParsedPermissionsPolicyDeclaration(
-                      blink::mojom::PermissionsPolicyFeature::kSharedAutofill,
-                      {Origin(url)}, false, false)});
+    blink::ParsedPermissionsPolicy declared_policy;
+    switch (policy) {
+      case Policy::kDefault:
+        declared_policy = {};
+        break;
+      case Policy::kSharedAutofill:
+        declared_policy = AllowSharedAutofill(Origin(url));
+        break;
+      case Policy::kNoSharedAutofill:
+        declared_policy = DisallowSharedAutofill();
+        break;
+    }
     content::RenderFrameHost* rfh =
         content::RenderFrameHostTester::For(parent->render_frame_host())
-            ->AppendChildWithPolicy(std::string(name), permissions);
+            ->AppendChildWithPolicy(static_cast<std::string>(name),
+                                    declared_policy);
     return NavigateFrame(rfh, url);
   }
 
  private:
+  // Explicitly allows shared-autofill on |origin|.
+  static blink::ParsedPermissionsPolicy AllowSharedAutofill(
+      url::Origin origin) {
+    return {blink::ParsedPermissionsPolicyDeclaration(
+        blink::mojom::PermissionsPolicyFeature::kSharedAutofill,
+        {blink::OriginWithPossibleWildcards(origin,
+                                            /*has_subdomain_wildcard=*/false)},
+        false, false)};
+  }
+
+  // Explicitly disallows shared-autofill on all origins.
+  static blink::ParsedPermissionsPolicy DisallowSharedAutofill() {
+    return {blink::ParsedPermissionsPolicyDeclaration(
+        blink::mojom::PermissionsPolicyFeature::kSharedAutofill, {}, false,
+        false)};
+  }
+
   MockContentAutofillDriver* NavigateFrame(content::RenderFrameHost* rfh,
                                            const GURL& url) {
     rfh = content::NavigationSimulator::NavigateAndCommitFromDocument(url, rfh);
@@ -357,6 +409,8 @@ class FormForestTest : public content::RenderViewHostTestHarness {
     return it->second.get();
   }
 
+  base::test::ScopedFeatureList feature_list_;
+  test::AutofillEnvironment autofill_environment_;
   std::map<content::RenderFrameHost*,
            std::unique_ptr<MockContentAutofillDriver>>
       autofill_drivers_;
@@ -376,7 +430,7 @@ class FormForestTestWithMockedTree : public FormForestTest {
     // MockFormForest().
     std::string url = "";
     std::vector<FormInfo> forms = {};
-    FormForestTest::Policy policy = FormForestTest::Policy::kNone;
+    FormForestTest::Policy policy = FormForestTest::Policy::kDefault;
     // The index of the last field from the parent form that precedes this
     // frame. This is analogous to FormData::child_frames[i].predecessor.
     int field_predecessor = std::numeric_limits<int>::max();
@@ -393,6 +447,10 @@ class FormForestTestWithMockedTree : public FormForestTest {
     size_t begin = 0;
     size_t count = base::dynamic_extent;
   };
+
+  explicit FormForestTestWithMockedTree(bool relax_shared_autofill = false)
+      : FormForestTest(
+            /*relax_shared_autofill=*/relax_shared_autofill) {}
 
   void TearDown() override {
     mocked_forms_.Reset();
@@ -414,12 +472,12 @@ class FormForestTestWithMockedTree : public FormForestTest {
                  : (!parent_driver ? kMainUrl : kIframeUrl));
     MockContentAutofillDriver* driver =
         !parent_driver
-            ? NavigateMainFrame(url)
+            ? NavigateMainFrame(url, frame_info.policy)
             : CreateAndNavigateChildFrame(parent_driver, url, frame_info.policy,
                                           frame_info.name);
     if (!frame_info.name.empty()) {
       CHECK(!base::Contains(drivers_, frame_info.name));
-      drivers_.emplace(std::string(frame_info.name), driver);
+      drivers_.emplace(frame_info.name, driver);
     }
 
     std::vector<FormData> forms;
@@ -508,7 +566,7 @@ class FormForestTestWithMockedTree : public FormForestTest {
     // Copy fields to the root.
     auto IsRoot = [this](FormSpan fs) {
       MockContentAutofillDriver* d = driver(fs.form);
-      return d->IsInMainFrame() || d->is_sub_root();
+      return d->IsInAnyMainFrame() || d->is_sub_root();
     };
     auto it = base::ranges::find_if(form_fields, IsRoot);
     CHECK(it != form_fields.end());
@@ -559,7 +617,7 @@ class FormForestTestWithMockedTree : public FormForestTest {
   }
 
   FormData& GetFlattenedForm(base::StringPiece form_name) {
-    CHECK(driver(form_name)->IsInMainFrame() ||
+    CHECK(driver(form_name)->IsInAnyMainFrame() ||
           driver(form_name)->is_sub_root());
     auto it = forms_.find(form_name);
     CHECK(it != forms_.end()) << form_name;
@@ -1356,15 +1414,21 @@ INSTANTIATE_TEST_SUITE_P(FormForestTest,
 // Tests of FormForest::GetRendererFormsOfBrowserForm().
 
 class FormForestTestUnflatten : public FormForestTestWithMockedTree {
+ public:
+  explicit FormForestTestUnflatten(bool relax_shared_autofill = false)
+      : FormForestTestWithMockedTree(
+            /*relax_shared_autofill=*/relax_shared_autofill) {}
+
  protected:
   // The subject of this test fixture.
   std::vector<FormData> GetRendererFormsOfBrowserForm(
       base::StringPiece form_name,
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) {
-    return flattened_forms_.GetRendererFormsOfBrowserForm(
-        WithValues(GetFlattenedForm(form_name)), triggered_origin,
-        field_type_map);
+    return flattened_forms_
+        .GetRendererFormsOfBrowserForm(WithValues(GetFlattenedForm(form_name)),
+                                       triggered_origin, field_type_map)
+        .renderer_forms;
   }
 
   auto FieldTypeMap(base::StringPiece form_name) {
@@ -1480,8 +1544,9 @@ TEST_F(FormForestTestUnflatten, InterruptedSameOriginPolicy) {
               UnorderedArrayEquals(expectation));
 }
 
-// Tests that (only) non-sensitive fields are filled cross-origin into the main
-// frame's origin.
+// Tests that (only) non-sensitive fields are filled across origin into the main
+// frame's origin (since the main frame has the shared-autofill policy by
+// default).
 TEST_F(FormForestTestUnflatten, MainOriginPolicy) {
   MockFormForest(
       {.url = kMainUrl,
@@ -1504,10 +1569,38 @@ TEST_F(FormForestTestUnflatten, MainOriginPolicy) {
               UnorderedArrayEquals(expectation));
 }
 
+// Tests that no fields are filled across origin into frames where
+// shared-autofill is disabled (not even into non-sensitive fields).
+TEST_F(FormForestTestUnflatten, MainOriginPolicyWithoutSharedAutofill) {
+  MockFormForest(
+      {.url = kMainUrl,
+       .forms = {{.name = "main",
+                  .frames = {{.url = kMainUrl, .forms = {{.name = "child1"}}},
+                             {.url = kIframeUrl,
+                              .forms = {{.name = "child2"}}}}}},
+       .policy = Policy::kNoSharedAutofill});
+  MockFlattening({{"main"}, {"child1"}, {"child2"}});
+  std::vector<FormData> expectation = {
+      WithoutValues(GetMockedForm("main")),
+      WithoutValues(GetMockedForm("child1")),
+      WithValues(GetMockedForm("child2"), Profile(2))};
+  EXPECT_THAT(GetRendererFormsOfBrowserForm("main", Origin(kIframeUrl),
+                                            FieldTypeMap("main")),
+              UnorderedArrayEquals(expectation));
+}
+
 // Fixture for the shared-autofill policy tests.
+// The parameter controls the value of relax_shared_autofill.
 class FormForestTestUnflattenSharedAutofillPolicy
-    : public FormForestTestUnflatten {
+    : public FormForestTestUnflatten,
+      public ::testing::WithParamInterface<bool> {
  public:
+  FormForestTestUnflattenSharedAutofillPolicy()
+      : FormForestTestUnflatten(
+            /*relax_shared_autofill=*/relax_shared_autofill()) {}
+
+  bool relax_shared_autofill() const { return GetParam(); }
+
   void SetUp() override {
     FormForestTestUnflatten::SetUp();
     MockFormForest(
@@ -1524,7 +1617,7 @@ class FormForestTestUnflattenSharedAutofillPolicy
 };
 
 // Tests filling into frames with shared-autofill policy from the main origin.
-TEST_F(FormForestTestUnflattenSharedAutofillPolicy, FromMainOrigin) {
+TEST_P(FormForestTestUnflattenSharedAutofillPolicy, FromMainOrigin) {
   MockFlattening({{"main"}, {"disallowed"}, {"allowed"}});
   std::vector<FormData> expectation = {
       WithValues(GetMockedForm("main"), Profile(0)),
@@ -1535,12 +1628,18 @@ TEST_F(FormForestTestUnflattenSharedAutofillPolicy, FromMainOrigin) {
 }
 
 // Tests filling into frames with shared-autofill policy from the main origin.
-TEST_F(FormForestTestUnflattenSharedAutofillPolicy, FromOtherOrigin) {
+TEST_P(FormForestTestUnflattenSharedAutofillPolicy, FromOtherOrigin) {
   MockFlattening({{"main"}, {"disallowed"}, {"allowed"}});
-  std::vector<FormData> expectation = {
-      WithoutValues(GetMockedForm("main")),
-      WithValues(GetMockedForm("disallowed"), Profile(1)),
-      WithoutValues(GetMockedForm("allowed"))};
+  std::vector<FormData> expectation;
+  if (!relax_shared_autofill()) {
+    expectation = {WithoutValues(GetMockedForm("main")),
+                   WithValues(GetMockedForm("disallowed"), Profile(1)),
+                   WithoutValues(GetMockedForm("allowed"))};
+  } else {
+    expectation = {WithValues(GetMockedForm("main"), Profile(0)),
+                   WithValues(GetMockedForm("disallowed"), Profile(1)),
+                   WithValues(GetMockedForm("allowed"), Profile(2))};
+  }
   EXPECT_THAT(GetRendererFormsOfBrowserForm("main", Origin(kOtherUrl), {}),
               UnorderedArrayEquals(expectation));
 }
@@ -1549,8 +1648,8 @@ TEST_F(FormForestTestUnflattenSharedAutofillPolicy, FromOtherOrigin) {
 TEST(FormForestTest, FrameDataComparator) {
   FrameData::CompareByFrameToken less;
   std::unique_ptr<FrameData> null;
-  auto x = std::make_unique<FrameData>(test::GetLocalFrameToken());
-  auto xx = std::make_unique<FrameData>(test::GetLocalFrameToken());
+  auto x = std::make_unique<FrameData>(test::MakeLocalFrameToken());
+  auto xx = std::make_unique<FrameData>(test::MakeLocalFrameToken());
   auto y = std::make_unique<FrameData>(
       LocalFrameToken(base::UnguessableToken::Deserialize(
           x->frame_token->GetHighForSerialization() + 1,
@@ -1614,6 +1713,10 @@ TEST_P(ForEachInSetDifferenceTest, Test) {
   EXPECT_THAT(diff, ElementsAreArray(GetParam().diff));
   EXPECT_EQ(num_equals_calls_, GetParam().expected_comparisons);
 }
+
+INSTANTIATE_TEST_SUITE_P(FormForestTest,
+                         FormForestTestUnflattenSharedAutofillPolicy,
+                         testing::Bool());
 
 INSTANTIATE_TEST_SUITE_P(
     FormForestTest,

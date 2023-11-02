@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_SCRIPTED_IDLE_TASK_CONTROLLER_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_idle_request_callback.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/idle_deadline.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
-#include "third_party/blink/renderer/core/probe/async_task_id.h"
+#include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -31,10 +33,20 @@ class IdleTask : public GarbageCollected<IdleTask>, public NameClient {
   const char* NameInHeapSnapshot() const override { return "IdleTask"; }
   ~IdleTask() override = default;
   virtual void invoke(IdleDeadline*) = 0;
-  probe::AsyncTaskId* async_task_id() { return &async_task_id_; }
+  probe::AsyncTaskContext* async_task_context() { return &async_task_context_; }
 
  private:
-  probe::AsyncTaskId async_task_id_;
+  probe::AsyncTaskContext async_task_context_;
+
+ public:
+  IdleTask() : NameClient() {
+    record_replay_id_ = recordreplay::NewIdMainThread("IdleTask");
+    recordreplay::Assert("[RUN-1335-1456] IdleTask::IdleTask %d",
+                         record_replay_id_);
+  }
+  int RecordReplayId() const { return record_replay_id_; }
+ private:
+  int record_replay_id_ = 0;
 };
 
 // |V8IdleTask| is the adapter class for the conversion from

@@ -1,11 +1,9 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef REMOTING_CLIENT_AUDIO_AUDIO_PLAYBACK_SINK_H_
 #define REMOTING_CLIENT_AUDIO_AUDIO_PLAYBACK_SINK_H_
-
-#include "base/macros.h"
 
 namespace remoting {
 

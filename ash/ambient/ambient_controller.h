@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,18 @@
 #define ASH_AMBIENT_AMBIENT_CONTROLLER_H_
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "ash/ambient/ambient_access_token_controller.h"
 #include "ash/ambient/ambient_photo_controller.h"
 #include "ash/ambient/ambient_view_delegate_impl.h"
 #include "ash/ambient/model/ambient_backend_model.h"
+#include "ash/ambient/model/ambient_backend_model_observer.h"
 #include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/ash_export.h"
 #include "ash/assistant/model/assistant_interaction_model_observer.h"
+#include "ash/constants/ambient_animation_theme.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/session/session_controller_impl.h"
@@ -28,9 +31,11 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/fingerprint.mojom.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/base/user_activity/user_activity_observer.h"
 #include "ui/events/event_handler.h"
@@ -41,9 +46,12 @@ class PrefRegistrySimple;
 
 namespace ash {
 
+class AmbientAnimationProgressTracker;
 class AmbientBackendController;
 class AmbientContainerView;
+class AmbientMultiScreenMetricsRecorder;
 class AmbientPhotoController;
+class AmbientWeatherController;
 
 // Class to handle all ambient mode functionalities.
 class ASH_EXPORT AmbientController
@@ -85,7 +93,7 @@ class ASH_EXPORT AmbientController
 
   // fingerprint::mojom::FingerprintObserver:
   void OnAuthScanDone(
-      device::mojom::ScanResult scan_result,
+      const device::mojom::FingerprintMessagePtr msg,
       const base::flat_map<std::string, std::vector<std::string>>& matches)
       override;
   void OnSessionFailed() override {}
@@ -123,6 +131,7 @@ class ASH_EXPORT AmbientController
   std::unique_ptr<views::Widget> CreateWidget(aura::Window* container);
 
   AmbientBackendModel* GetAmbientBackendModel();
+  AmbientWeatherModel* GetAmbientWeatherModel();
 
   AmbientBackendController* ambient_backend_controller() {
     return ambient_backend_controller_.get();
@@ -132,9 +141,18 @@ class ASH_EXPORT AmbientController
     return ambient_photo_controller_.get();
   }
 
+  AmbientWeatherController* ambient_weather_controller() {
+    return ambient_weather_controller_.get();
+  }
+
   AmbientUiModel* ambient_ui_model() { return &ambient_ui_model_; }
 
   AmbientViewDelegate* ambient_view_delegate() { return &delegate_; }
+
+  void set_backend_controller_for_testing(
+      std::unique_ptr<AmbientBackendController> backend_controller) {
+    ambient_backend_controller_ = std::move(backend_controller);
+  }
 
  private:
   friend class AmbientAshTestBase;
@@ -156,13 +174,11 @@ class ASH_EXPORT AmbientController
 
   void StartRefreshingImages();
   void StopRefreshingImages();
+  AmbientAnimationTheme GetCurrentTheme() const;
 
   // Invoked when the auto-show timer in |InactivityMonitor| gets fired after
   // device being inactive for a specific amount of time.
   void OnAutoShowTimeOut();
-
-  void set_backend_controller_for_testing(
-      std::unique_ptr<AmbientBackendController> photo_client);
 
   // Creates (if not created) and acquires |wake_lock_|. Unbalanced call
   // without subsequently |ReleaseWakeLock| will have no effect.
@@ -178,6 +194,8 @@ class ASH_EXPORT AmbientController
   void OnLockScreenInactivityTimeoutPrefChanged();
   void OnLockScreenBackgroundTimeoutPrefChanged();
   void OnPhotoRefreshIntervalPrefChanged();
+  void OnAnimationThemePrefChanged();
+  void OnAnimationPlaybackSpeedChanged();
 
   AmbientAccessTokenController* access_token_controller_for_testing() {
     return &access_token_controller_;
@@ -189,6 +207,9 @@ class ASH_EXPORT AmbientController
   AmbientAccessTokenController access_token_controller_;
   std::unique_ptr<AmbientBackendController> ambient_backend_controller_;
   std::unique_ptr<AmbientPhotoController> ambient_photo_controller_;
+  std::unique_ptr<AmbientWeatherController> ambient_weather_controller_;
+  std::unique_ptr<AmbientAnimationProgressTracker>
+      ambient_animation_progress_tracker_;
 
   // Monitors the device inactivity and controls the auto-show of ambient.
   base::OneShotTimer inactivity_timer_;
@@ -230,6 +251,13 @@ class ASH_EXPORT AmbientController
   // Set to the off value in |ScreenIdleState| when ScreenIdleState() is
   // called. Used to prevent Ambient mode starting after screen is off.
   bool is_screen_off_ = false;
+
+  // Not set until the AmbientAnimationTheme is initially read from pref
+  // storage when ambient mode is enabled.
+  absl::optional<AmbientAnimationTheme> current_theme_from_pref_;
+
+  std::unique_ptr<AmbientMultiScreenMetricsRecorder>
+      multi_screen_metrics_recorder_;
 
   base::WeakPtrFactory<AmbientController> weak_ptr_factory_{this};
 };

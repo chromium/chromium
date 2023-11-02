@@ -1,17 +1,18 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-executable("test_rust_exe") {
+import("//build/rust/rust_executable.gni")
+
+rust_executable("test_rust_exe") {
   crate_root = "main.rs"
+  sources = [ "main.rs" ]
   deps = [
-    "//build/rust/tests/test_mixed_source_set:test_mixed_source_set_rs",
-    "//build/rust/tests/test_rlib_crate",
-    "//build/rust/tests/test_rust_source_set",
-    "//build/rust/tests/test_rust_source_set_non_standard_arrangement",
+    "//build/rust/tests/test_mixed_static_library",
+    "//build/rust/tests/test_proc_macro_crate",
+    "//build/rust/tests/test_rlib_crate:target1",
+    "//build/rust/tests/test_rust_static_library",
+    "//build/rust/tests/test_rust_static_library_non_standard_arrangement",
   ]
-  rustflags = [
-    "--edition",
-    "2018",
-  ]
+  build_native_rust_unit_tests = true
 }

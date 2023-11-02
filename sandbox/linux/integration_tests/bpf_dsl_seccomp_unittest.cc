@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
@@ -112,7 +112,7 @@ class VerboseAPITestingPolicy : public Policy {
   }
 
  private:
-  int* counter_ptr_;
+  raw_ptr<int> counter_ptr_;
 };
 
 SANDBOX_TEST(SandboxBPF, DISABLE_ON_TSAN(VerboseAPITesting)) {
@@ -182,7 +182,12 @@ bool IsSyscallForTestHarness(int sysno) {
   // ASan and MSan don't need any of these for normal operation, but they
   // require at least mmap & munmap to print a report if an error is detected.
   // ASan requires sigaltstack.
-  if (sysno == kMMapNr || sysno == __NR_munmap || sysno == __NR_pipe ||
+  if (sysno == kMMapNr || sysno == __NR_munmap ||
+#if !defined(__aarch64__)
+      sysno == __NR_pipe ||
+#else
+      sysno == __NR_pipe2 ||
+#endif
       sysno == __NR_sigaltstack) {
     return true;
   }
@@ -250,7 +255,7 @@ class DenylistNanosleepTrapPolicy : public Policy {
   }
 
  private:
-  int* aux_;
+  raw_ptr<int> aux_;
 };
 
 BPF_TEST(SandboxBPF,
@@ -566,7 +571,7 @@ class GreyListedPolicy : public Policy {
   }
 
  private:
-  int* aux_;
+  raw_ptr<int> aux_;
 };
 
 BPF_TEST(SandboxBPF, GreyListedPolicy, GreyListedPolicy, int /* (*BPF_AUX) */) {
@@ -800,7 +805,7 @@ ResultExpr SimpleCondTestPolicy::EvaluateSyscall(int sysno) const {
 #if defined(__NR_open)
     case __NR_open:
       flags_argument_position = 1;
-      FALLTHROUGH;
+      [[fallthrough]];
 #endif
     case __NR_openat: {  // open can be a wrapper for openat(2).
       if (sysno == __NR_openat)
@@ -921,10 +926,12 @@ class EqualityStressTest {
     struct Tests {
       uint32_t k_value;            // Value to compare syscall arg against.
       int err;                     // If non-zero, errno value to return.
-      struct ArgValue* arg_value;  // Otherwise, more args needs inspecting.
+      raw_ptr<struct ArgValue>
+          arg_value;  // Otherwise, more args needs inspecting.
     }* tests;
     int err;                     // If none of the tests passed, this is what
-    struct ArgValue* arg_value;  // we'll return (this is the "else" branch).
+    raw_ptr<struct ArgValue>
+        arg_value;  // we'll return (this is the "else" branch).
   };
 
   bool IsReservedSyscall(int sysno) {
@@ -1152,7 +1159,7 @@ class EqualityStressTestPolicy : public Policy {
   }
 
  private:
-  EqualityStressTest* aux_;
+  raw_ptr<EqualityStressTest> aux_;
 };
 
 BPF_TEST(SandboxBPF,
@@ -2084,7 +2091,7 @@ SANDBOX_TEST(SandboxBPF, DISABLE_ON_TSAN(SeccompRetTrace)) {
 }
 
 // Android does not expose pread64 nor pwrite64.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 bool FullPwrite64(int fd, const char* buffer, size_t count, off64_t offset) {
   while (count > 0) {
@@ -2165,7 +2172,7 @@ BPF_TEST_C(SandboxBPF, Pread64, TrapPread64Policy) {
   BPF_ASSERT(pread_64_was_forwarded);
 }
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void* TsyncApplyToTwoThreadsFunc(void* cond_ptr) {
   base::WaitableEvent* event = static_cast<base::WaitableEvent*>(cond_ptr);

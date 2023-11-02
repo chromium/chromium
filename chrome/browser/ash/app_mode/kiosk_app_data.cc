@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,13 +53,8 @@ bool ignore_kiosk_app_data_load_failures_for_testing = false;
 
 // Returns true for valid kiosk app manifest.
 bool IsValidKioskAppManifest(const extensions::Manifest& manifest) {
-  bool kiosk_enabled;
-  if (manifest.GetBoolean(extensions::manifest_keys::kKioskEnabled,
-                          &kiosk_enabled)) {
-    return kiosk_enabled;
-  }
-
-  return false;
+  return manifest.FindBoolPath(extensions::manifest_keys::kKioskEnabled)
+      .value_or(false);
 }
 
 std::string ValueToString(const base::Value& value) {
@@ -230,15 +225,15 @@ class KioskAppData::WebstoreDataParser
     }
 
     std::string required_platform_version;
-    if (manifest.HasPath(
-            extensions::manifest_keys::kKioskRequiredPlatformVersion) &&
-        (!manifest.GetString(
-             extensions::manifest_keys::kKioskRequiredPlatformVersion,
-             &required_platform_version) ||
-         !extensions::KioskModeInfo::IsValidPlatformVersion(
-             required_platform_version))) {
-      ReportFailure();
-      return;
+    if (const base::Value* temp = manifest.FindPath(
+            extensions::manifest_keys::kKioskRequiredPlatformVersion)) {
+      if (!temp->is_string() ||
+          !extensions::KioskModeInfo::IsValidPlatformVersion(
+              temp->GetString())) {
+        ReportFailure();
+        return;
+      }
+      required_platform_version = temp->GetString();
     }
 
     if (client_)
@@ -379,18 +374,22 @@ network::mojom::URLLoaderFactory* KioskAppData::GetURLLoaderFactory() {
 
 bool KioskAppData::LoadFromCache() {
   PrefService* local_state = g_browser_process->local_state();
-  const base::DictionaryValue* dict =
-      local_state->GetDictionary(dictionary_name());
+  const base::Value::Dict& dict = local_state->GetDict(dictionary_name());
 
-  if (!LoadFromDictionary(*dict))
+  if (!LoadFromDictionary(dict))
     return false;
 
   const std::string app_key = std::string(kKeyApps) + '.' + app_id();
   const std::string required_platform_version_key =
       app_key + '.' + kKeyRequiredPlatformVersion;
 
-  return dict->GetString(required_platform_version_key,
-                         &required_platform_version_);
+  const std::string* maybe_required_platform_version =
+      dict.FindStringByDottedPath(required_platform_version_key);
+  if (!maybe_required_platform_version)
+    return false;
+
+  required_platform_version_ = *maybe_required_platform_version;
+  return true;
 }
 
 void KioskAppData::SetCache(const std::string& name,
@@ -408,15 +407,15 @@ void KioskAppData::SetCache(const std::string& name,
   SaveIcon(icon, cache_dir);
 
   PrefService* local_state = g_browser_process->local_state();
-  DictionaryPrefUpdate dict_update(local_state, dictionary_name());
+  ScopedDictPrefUpdate dict_update(local_state, dictionary_name());
   SaveToDictionary(dict_update);
 
   const std::string app_key = std::string(kKeyApps) + '.' + app_id();
   const std::string required_platform_version_key =
       app_key + '.' + kKeyRequiredPlatformVersion;
 
-  dict_update->SetString(required_platform_version_key,
-                         required_platform_version);
+  dict_update->SetByDottedPath(required_platform_version_key,
+                               required_platform_version);
 }
 
 void KioskAppData::OnExtensionIconLoaded(const gfx::Image& icon) {
@@ -483,17 +482,17 @@ void KioskAppData::OnWebstoreRequestFailure(const std::string& extension_id) {
 void KioskAppData::OnWebstoreResponseParseSuccess(
     const std::string& extension_id,
     std::unique_ptr<base::DictionaryValue> webstore_data) {
-  std::string id;
-  if (!webstore_data.get()->GetString(kIdKey, &id)) {
+  const std::string* id = webstore_data->GetDict().FindString(kIdKey);
+  if (!id) {
     LOG(ERROR) << "Webstore response error (" << kIdKey
                << "): " << ValueToString(*webstore_data.get());
     OnWebstoreResponseParseFailure(extension_id, kInvalidWebstoreResponseError);
     return;
   }
-  if (extension_id != id) {
+  if (extension_id != *id) {
     LOG(ERROR) << "Webstore response error (" << kIdKey
                << "): " << ValueToString(*webstore_data.get());
-    LOG(ERROR) << "Received extension id " << id
+    LOG(ERROR) << "Received extension id " << *id
                << " does not equal expected extension id " << extension_id;
     OnWebstoreResponseParseFailure(extension_id, kInvalidWebstoreResponseError);
     return;
@@ -502,15 +501,15 @@ void KioskAppData::OnWebstoreResponseParseSuccess(
   webstore_fetcher_.reset();
 
   std::string manifest;
-  if (!CheckResponseKeyValue(id, webstore_data.get(), kManifestKey, &manifest))
+  if (!CheckResponseKeyValue(*id, webstore_data.get(), kManifestKey, &manifest))
     return;
 
-  if (!CheckResponseKeyValue(id, webstore_data.get(), kLocalizedNameKey,
+  if (!CheckResponseKeyValue(*id, webstore_data.get(), kLocalizedNameKey,
                              &name_))
     return;
 
   std::string icon_url_string;
-  if (!CheckResponseKeyValue(id, webstore_data.get(), kIconUrlKey,
+  if (!CheckResponseKeyValue(*id, webstore_data.get(), kIconUrlKey,
                              &icon_url_string))
     return;
 
@@ -540,12 +539,14 @@ bool KioskAppData::CheckResponseKeyValue(const std::string& extension_id,
                                          const base::DictionaryValue* response,
                                          const char* key,
                                          std::string* value) {
-  if (!response->GetString(key, value)) {
+  const std::string* value_ptr = response->FindStringKey(key);
+  if (!value_ptr) {
     LOG(ERROR) << "Webstore response error (" << key
                << "): " << ValueToString(*response);
     OnWebstoreResponseParseFailure(extension_id, kInvalidWebstoreResponseError);
     return false;
   }
+  *value = *value_ptr;
   return true;
 }
 

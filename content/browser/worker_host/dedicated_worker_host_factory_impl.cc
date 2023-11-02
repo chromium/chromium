@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "content/browser/worker_host/dedicated_worker_service_impl.h"
 #include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
@@ -45,7 +46,7 @@ DedicatedWorkerHostFactoryImpl::DedicatedWorkerHostFactoryImpl(
     GlobalRenderFrameHostId ancestor_render_frame_host_id,
     const blink::StorageKey& creator_storage_key,
     const net::IsolationInfo& isolation_info,
-    const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+    network::mojom::ClientSecurityStatePtr creator_client_security_state,
     base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter,
     base::WeakPtr<CrossOriginEmbedderPolicyReporter> ancestor_coep_reporter)
     : worker_process_id_(worker_process_id),
@@ -54,12 +55,13 @@ DedicatedWorkerHostFactoryImpl::DedicatedWorkerHostFactoryImpl(
       ancestor_render_frame_host_id_(ancestor_render_frame_host_id),
       creator_storage_key_(creator_storage_key),
       isolation_info_(isolation_info),
-      cross_origin_embedder_policy_(cross_origin_embedder_policy),
+      creator_client_security_state_(std::move(creator_client_security_state)),
       creator_coep_reporter_(std::move(creator_coep_reporter)),
       ancestor_coep_reporter_(std::move(ancestor_coep_reporter)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK((creator_render_frame_host_id_ && !creator_worker_token_) ||
-         (!creator_render_frame_host_id_ && creator_worker_token_));
+  DCHECK_NE(creator_render_frame_host_id_.has_value(),
+            creator_worker_token_.has_value());
+  DCHECK(creator_client_security_state_);
 }
 
 DedicatedWorkerHostFactoryImpl::~DedicatedWorkerHostFactoryImpl() = default;
@@ -69,17 +71,19 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHost(
     const GURL& script_url,
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker> broker_receiver,
     mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost> host_receiver,
-    base::OnceCallback<void(const network::CrossOriginEmbedderPolicy&)>
-        callback) {
+    CreateWorkerHostCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // Always invoke the callback first. If we don't, even if we exit with a
+  // Always invoke the callback. If we don't, even if we exit with a
   // mojo::ReportBadMessage, the callback will explode as it is torn down.
   // Ideally we'd have a handle to our binding and we'd manually close it
   // before returning, letting the callback die without being run.
-  std::move(callback).Run(cross_origin_embedder_policy_);
+  DCHECK(callback);
 
   if (base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker)) {
+    std::move(callback).Run(
+        creator_client_security_state_->cross_origin_embedder_policy,
+        /*back_forward_cache_controller_host=*/mojo::NullRemote());
     mojo::ReportBadMessage("DWH_INVALID_WORKER_CREATION");
     return;
   }
@@ -88,22 +92,37 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHost(
   auto* worker_process_host = RenderProcessHost::FromID(worker_process_id_);
   auto* service =
       GetDedicatedWorkerServiceImplForRenderProcessHost(worker_process_host);
-  if (!service)
+  if (!service) {
+    std::move(callback).Run(
+        creator_client_security_state_->cross_origin_embedder_policy,
+        /*back_forward_cache_controller_host=*/mojo::NullRemote());
     return;
+  }
 
   if (service->HasToken(token)) {
+    std::move(callback).Run(
+        creator_client_security_state_->cross_origin_embedder_policy,
+        /*back_forward_cache_controller_host=*/mojo::NullRemote());
     mojo::ReportBadMessage("DWH_INVALID_WORKER_TOKEN");
     return;
   }
 
+  network::CrossOriginEmbedderPolicy cross_origin_embedder_policy =
+      creator_client_security_state_->cross_origin_embedder_policy;
+
   auto* host = new DedicatedWorkerHost(
       service, token, worker_process_host, creator_render_frame_host_id_,
       creator_worker_token_, ancestor_render_frame_host_id_,
-      creator_storage_key_, isolation_info_, cross_origin_embedder_policy_,
+      creator_storage_key_, isolation_info_,
+      std::move(creator_client_security_state_),
       std::move(creator_coep_reporter_), std::move(ancestor_coep_reporter_),
       std::move(host_receiver));
   host->BindBrowserInterfaceBrokerReceiver(std::move(broker_receiver));
   host->MaybeCountWebFeature(script_url);
+
+  std::move(callback).Run(
+      cross_origin_embedder_policy,
+      host->BindAndPassRemoteForBackForwardCacheControllerHost());
 }
 
 // PlzDedicatedWorker:
@@ -141,7 +160,8 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
   auto* host = new DedicatedWorkerHost(
       service, token, worker_process_host, creator_render_frame_host_id_,
       creator_worker_token_, ancestor_render_frame_host_id_,
-      creator_storage_key_, isolation_info_, cross_origin_embedder_policy_,
+      creator_storage_key_, isolation_info_,
+      std::move(creator_client_security_state_),
       std::move(creator_coep_reporter_), std::move(ancestor_coep_reporter_),
       pending_remote_host.InitWithNewPipeAndPassReceiver());
   mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker;

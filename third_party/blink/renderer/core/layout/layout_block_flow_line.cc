@@ -54,16 +54,14 @@ class ExpansionOpportunities {
  public:
   ExpansionOpportunities() : total_opportunities_(0) {}
 
-  void AddRunWithExpansions(BidiRun& run,
-                            bool& is_after_expansion,
-                            TextJustify text_justify) {
+  void AddRunWithExpansions(BidiRun& run, bool& is_after_expansion) {
     LineLayoutText text = LineLayoutText(run.line_layout_item_);
     unsigned opportunities_in_run;
     if (text.Is8Bit()) {
       opportunities_in_run = Character::ExpansionOpportunityCount(
           {text.Characters8() + run.start_,
            static_cast<size_t>(run.stop_ - run.start_)},
-          run.box_->Direction(), is_after_expansion, text_justify);
+          run.box_->Direction(), is_after_expansion);
     } else if (run.line_layout_item_.IsCombineText()) {
       // Justfication applies to before and after the combined text as if
       // it is an ideographic character, and is prohibited inside the
@@ -74,7 +72,7 @@ class ExpansionOpportunities {
       opportunities_in_run = Character::ExpansionOpportunityCount(
           {text.Characters16() + run.start_,
            static_cast<size_t>(run.stop_ - run.start_)},
-          run.box_->Direction(), is_after_expansion, text_justify);
+          run.box_->Direction(), is_after_expansion);
     }
     runs_with_expansions_.push_back(opportunities_in_run);
     total_opportunities_ += opportunities_in_run;
@@ -553,12 +551,12 @@ static inline void SetLogicalWidthForTextRun(
     hyphen_width = LayoutUnit(layout_text.HyphenWidth(font, run->Direction()));
 
   float measured_width = 0;
-  FloatRect glyph_bounds;
+  gfx::RectF glyph_bounds;
 
   bool kerning_is_enabled =
       font.GetFontDescription().GetTypesettingFeatures() & kKerning;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // FIXME: Having any font feature settings enabled can lead to selection gaps
   // on Chromium-mac. https://bugs.webkit.org/show_bug.cgi?id=113418
   bool can_use_cached_word_measurements =
@@ -594,12 +592,12 @@ static inline void SetLogicalWidthForTextRun(
             layout_text.CharacterAt(word_measurement.start_offset) == ' ')
           measured_width += layout_text.StyleRef().WordSpacing();
       } else {
-        FloatRect word_glyph_bounds = word_measurement.glyph_bounds;
+        gfx::RectF word_glyph_bounds = word_measurement.glyph_bounds;
         word_glyph_bounds.Offset(measured_width, 0);
         glyph_bounds.Union(word_glyph_bounds);
         measured_width += word_measurement.width;
       }
-      if (!word_measurement.fallback_fonts.IsEmpty()) {
+      if (!word_measurement.fallback_fonts.empty()) {
         HashSet<const SimpleFontData*>::const_iterator end =
             word_measurement.fallback_fonts.end();
         for (HashSet<const SimpleFontData*>::const_iterator it =
@@ -633,7 +631,7 @@ static inline void SetLogicalWidthForTextRun(
   glyph_overflow.SetFromBounds(glyph_bounds, font, measured_width);
 
   run->box_->SetLogicalWidth(LayoutUnit(measured_width) + hyphen_width);
-  if (!fallback_fonts.IsEmpty()) {
+  if (!fallback_fonts.empty()) {
     DCHECK(run->box_->IsText());
     GlyphOverflowAndFallbackFontsMap::ValueType* it =
         text_box_data_map
@@ -641,8 +639,8 @@ static inline void SetLogicalWidthForTextRun(
                     std::make_pair(Vector<const SimpleFontData*>(),
                                    GlyphOverflow()))
             .stored_value;
-    DCHECK(it->value.first.IsEmpty());
-    CopyToVector(fallback_fonts, it->value.first);
+    DCHECK(it->value.first.empty());
+    it->value.first.assign(fallback_fonts);
     run->box_->Parent()->ClearDescendantsHaveSameLineHeightAndBaseline();
   }
   if (!glyph_overflow.IsApproximatelyZero()) {
@@ -708,7 +706,7 @@ void LayoutBlockFlow::UpdateLogicalWidthForAlignment(
         }
         break;
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     case ETextAlign::kStart:
       if (direction == TextDirection::kLtr) {
         UpdateLogicalWidthForLeftAlignedBlock(
@@ -772,10 +770,7 @@ void LayoutBlockFlow::ComputeInlineDirectionPositionsForLine(
   NOT_DESTROYED();
   bool is_first_line =
       line_info.IsFirstLine() && CanContainFirstFormattedLine();
-  bool is_after_hard_line_break =
-      line_box->PrevRootBox() && line_box->PrevRootBox()->EndsWithBreak();
-  IndentTextOrNot indent_text =
-      RequiresIndent(is_first_line, is_after_hard_line_break, StyleRef());
+  IndentTextOrNot indent_text = RequiresIndent(is_first_line);
   LayoutUnit line_logical_left;
   LayoutUnit line_logical_right;
   LayoutUnit available_logical_width;
@@ -818,7 +813,6 @@ BidiRun* LayoutBlockFlow::ComputeInlineDirectionPositionsForSegment(
   ExpansionOpportunities expansions;
   LayoutObject* previous_object = nullptr;
   ETextAlign text_align = line_info.GetTextAlign();
-  TextJustify text_justify = StyleRef().GetTextJustify();
 
   BidiRun* r = first_run;
   wtf_size_t word_measurements_index = 0;
@@ -832,11 +826,10 @@ BidiRun* LayoutBlockFlow::ComputeInlineDirectionPositionsForSegment(
     }
     if (r->line_layout_item_.IsText()) {
       LineLayoutText rt(r->line_layout_item_);
-      if (text_align == ETextAlign::kJustify && r != trailing_space_run &&
-          text_justify != TextJustify::kNone) {
+      if (text_align == ETextAlign::kJustify && r != trailing_space_run) {
         if (!is_after_expansion)
           To<InlineTextBox>(r->box_.Get())->SetCanHaveLeadingExpansion(true);
-        expansions.AddRunWithExpansions(*r, is_after_expansion, text_justify);
+        expansions.AddRunWithExpansions(*r, is_after_expansion);
       }
 
       if (rt.TextLength()) {
@@ -1083,7 +1076,7 @@ void LayoutBlockFlow::AppendFloatsToLastLine(
     }
     layout_state.SetFloatIndex(layout_state.FloatIndex() + 1);
   }
-  layout_state.SetLastFloat(!floating_object_set.IsEmpty()
+  layout_state.SetLastFloat(!floating_object_set.empty()
                                 ? floating_object_set.back().Get()
                                 : nullptr);
 }
@@ -1109,7 +1102,6 @@ void LayoutBlockFlow::LayoutRunsAndFloatsInRange(
   LayoutUnit deleted_line_old_offset = LayoutUnit::Min();
 
   LineBreaker line_breaker(LineLayoutBlockFlow(this));
-
 
   while (!end_of_line.AtEnd()) {
     // The runs from the previous line should have been cleaned up.
@@ -2141,7 +2133,7 @@ RootInlineBox* LayoutBlockFlow::DetermineStartPosition(
         pagination_delta -= curr->PaginationStrut();
         AdjustLinePositionForPagination(*curr, pagination_delta);
         if (pagination_delta) {
-          if (ContainsFloats() || !layout_state.Floats().IsEmpty()) {
+          if (ContainsFloats() || !layout_state.Floats().empty()) {
             // FIXME: Do better eventually.  For now if we ever shift because of
             // pagination and floats are present just go to a full layout.
             layout_state.MarkForFullLayout();
@@ -2208,7 +2200,7 @@ RootInlineBox* LayoutBlockFlow::DetermineStartPosition(
   }
 
   unsigned num_clean_floats = 0;
-  if (!layout_state.Floats().IsEmpty()) {
+  if (!layout_state.Floats().empty()) {
     // Restore floats from clean lines.
     RootInlineBox* line = FirstRootBox();
     while (line != curr) {
@@ -2480,10 +2472,10 @@ void LayoutBlockFlow::AddVisualOverflowFromInlineChildren() {
     To<LayoutInline>(o).AddOutlineRectsForContinuations(
         outline_rects, PhysicalOffset(),
         style.OutlineRectsShouldIncludeBlockVisualOverflow());
-    if (!outline_rects.IsEmpty()) {
+    if (!outline_rects.empty()) {
       PhysicalRect outline_bounds = UnionRect(outline_rects);
-      outline_bounds.Inflate(
-          LayoutUnit(OutlinePainter::OutlineOutsetExtent(style)));
+      outline_bounds.Inflate(LayoutUnit(OutlinePainter::OutlineOutsetExtent(
+          style, OutlineInfo::GetFromStyle(style))));
       outline_bounds_of_all_continuations.Unite(outline_bounds);
     }
   }
@@ -2503,33 +2495,8 @@ void LayoutBlockFlow::AddLayoutOverflowFromInlineChildren() {
   if (HasNonVisibleOverflow() && !end_padding && GetNode() &&
       IsRootEditableElement(*GetNode()) &&
       StyleRef().IsLeftToRightDirection()) {
-    if (const NGPhysicalBoxFragment* fragment = CurrentFragment()) {
-      if (const NGFragmentItems* items = fragment->Items()) {
-        for (NGInlineCursor cursor(*fragment, *items); cursor;
-             cursor.MoveToNextSkippingChildren()) {
-          if (!cursor.Current().IsLineBox())
-            continue;
-          const NGFragmentItem& child = *cursor.CurrentItem();
-          LogicalRect logical_rect =
-              fragment->ConvertChildToLogical(child.RectInContainerFragment());
-          logical_rect.size.inline_size += 1;
-          AddLayoutOverflow(
-              fragment->ConvertChildToPhysical(logical_rect).ToLayoutRect());
-        }
-        return;
-      }
-      // Note: Paint fragment for this block isn't set yet.
-      for (const NGLink& child : fragment->Children()) {
-        if (!child->IsLineBox())
-          continue;
-        LogicalRect logical_rect = fragment->ConvertChildToLogical(
-            PhysicalRect(child.Offset(), child->Size()));
-        logical_rect.size.inline_size += 1;
-        AddLayoutOverflow(
-            fragment->ConvertChildToPhysical(logical_rect).ToLayoutRect());
-      }
-      return;
-    }
+    DCHECK(!IsLayoutNGObject());
+    // TODO(layout-dev): Explain why we add a pixel.
     end_padding = LayoutUnit(1);
   }
 

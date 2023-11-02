@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,7 @@
 #include "printing/backend/cups_ipp_constants.h"
 #include "printing/backend/cups_ipp_helper.h"
 #include "printing/backend/cups_printer.h"
+#include "printing/buildflags/buildflags.h"
 #include "printing/metafile.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
@@ -44,32 +45,26 @@ bool IsUriSecure(base::StringPiece uri) {
          base::StartsWith(uri, "usb:") || base::StartsWith(uri, "ippusb:");
 }
 
-// Returns a new char buffer which is a null-terminated copy of `value`.  The
-// caller owns the returned string.
-char* DuplicateString(base::StringPiece value) {
-  char* dst = new char[value.size() + 1];
-  value.copy(dst, value.size());
-  dst[value.size()] = '\0';
-  return dst;
-}
-
-ScopedCupsOption ConstructOption(base::StringPiece name,
-                                 base::StringPiece value) {
+ScopedCupsOption ConstructOption(std::string name, std::string value) {
   // ScopedCupsOption frees the name and value buffers on deletion
-  ScopedCupsOption option = ScopedCupsOption(new cups_option_t);
-  option->name = DuplicateString(name);
-  option->value = DuplicateString(value);
-  return option;
+  cups_option_t* cups_option = nullptr;
+  int num_options = 0;
+  // Use cupsAddOption so that the pair of malloc and free are used.
+  num_options =
+      cupsAddOption(name.c_str(), value.c_str(), num_options, &cups_option);
+  DCHECK(cups_option);
+  DCHECK_EQ(num_options, 1);
+  return ScopedCupsOption(cups_option);
 }
 
-base::StringPiece GetCollateString(bool collate) {
+std::string GetCollateString(bool collate) {
   return collate ? kCollated : kUncollated;
 }
 
 // Given an integral `value` expressed in PWG units (1/100 mm), returns
 // the same value expressed in device units.
 int PwgUnitsToDeviceUnits(int value, float micrometers_per_device_unit) {
-  return ConvertUnitDouble(value, micrometers_per_device_unit, 10);
+  return ConvertUnitFloat(value, micrometers_per_device_unit, 10);
 }
 
 // Given a `media_size`, the specification of the media's `margins`, and
@@ -103,8 +98,7 @@ gfx::Rect RepresentPrintableArea(const gfx::Size& media_size,
 
 void SetPrintableArea(PrintSettings* settings,
                       const PrintSettings::RequestedMedia& media,
-                      const CupsPrinter::CupsMediaMargins& margins,
-                      bool flip) {
+                      const CupsPrinter::CupsMediaMargins& margins) {
   if (!media.size_microns.IsEmpty()) {
     float device_microns_per_device_unit =
         static_cast<float>(kMicronsPerInch) / settings->device_units_per_inch();
@@ -114,7 +108,8 @@ void SetPrintableArea(PrintSettings* settings,
 
     gfx::Rect paper_rect = RepresentPrintableArea(
         paper_size, margins, device_microns_per_device_unit);
-    settings->SetPrinterPrintableArea(paper_size, paper_rect, flip);
+    settings->SetPrinterPrintableArea(paper_size, paper_rect,
+                                      /*landscape_needs_flip=*/true);
   }
 }
 
@@ -193,8 +188,14 @@ std::vector<ScopedCupsOption> SettingsToCupsOptions(
 
 // static
 std::unique_ptr<PrintingContext> PrintingContext::CreateImpl(
-    Delegate* delegate) {
-  return std::make_unique<PrintingContextChromeos>(delegate);
+    Delegate* delegate,
+    bool skip_system_calls) {
+  auto context = std::make_unique<PrintingContextChromeos>(delegate);
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  if (skip_system_calls)
+    context->set_skip_system_calls();
+#endif
+  return context;
 }
 
 // static
@@ -262,7 +263,7 @@ mojom::ResultCode PrintingContextChromeos::UseDefaultSettings() {
 
   CupsPrinter::CupsMediaMargins margins =
       printer_->GetMediaMarginsByName(paper.vendor_id);
-  SetPrintableArea(settings_.get(), media, margins, true /* flip landscape */);
+  SetPrintableArea(settings_.get(), media, margins);
 
   return mojom::ResultCode::kSuccess;
 }
@@ -292,10 +293,8 @@ gfx::Size PrintingContextChromeos::GetPdfPaperSizeDeviceUnits() {
 }
 
 mojom::ResultCode PrintingContextChromeos::UpdatePrinterSettings(
-    bool external_preview,
-    bool show_system_dialog,
-    int page_count) {
-  DCHECK(!show_system_dialog);
+    const PrinterSettings& printer_settings) {
+  DCHECK(!printer_settings.show_system_dialog);
 
   if (InitializeDevice(base::UTF16ToUTF8(settings_->device_name())) !=
       mojom::ResultCode::kSuccess) {
@@ -325,7 +324,7 @@ mojom::ResultCode PrintingContextChromeos::UpdatePrinterSettings(
 
   CupsPrinter::CupsMediaMargins margins =
       printer_->GetMediaMarginsByName(media.vendor_id);
-  SetPrintableArea(settings_.get(), media, margins, true);
+  SetPrintableArea(settings_.get(), media, margins);
   cups_options_ = SettingsToCupsOptions(*settings_);
   send_user_info_ = settings_->send_user_info();
   if (send_user_info_) {
@@ -356,6 +355,9 @@ mojom::ResultCode PrintingContextChromeos::NewDocument(
     const std::u16string& document_name) {
   DCHECK(!in_print_job_);
   in_print_job_ = true;
+
+  if (skip_system_calls())
+    return mojom::ResultCode::kSuccess;
 
   std::string converted_name;
   if (send_user_info_) {
@@ -394,26 +396,24 @@ mojom::ResultCode PrintingContextChromeos::NewDocument(
   return mojom::ResultCode::kSuccess;
 }
 
-mojom::ResultCode PrintingContextChromeos::NewPage() {
+mojom::ResultCode PrintingContextChromeos::PrintDocument(
+    const MetafilePlayer& metafile,
+    const PrintSettings& settings,
+    uint32_t num_pages) {
   if (abort_printing_)
     return mojom::ResultCode::kCanceled;
-
   DCHECK(in_print_job_);
 
-  // Intentional No-op.
+#if defined(USE_CUPS)
+  std::vector<char> buffer;
+  if (!metafile.GetDataAsVector(&buffer))
+    return mojom::ResultCode::kFailed;
 
-  return mojom::ResultCode::kSuccess;
-}
-
-mojom::ResultCode PrintingContextChromeos::PageDone() {
-  if (abort_printing_)
-    return mojom::ResultCode::kCanceled;
-
-  DCHECK(in_print_job_);
-
-  // Intentional No-op.
-
-  return mojom::ResultCode::kSuccess;
+  return StreamData(buffer);
+#else
+  NOTREACHED();
+  return mojom::ResultCode::kFailed;
+#endif  // defined(USE_CUPS)
 }
 
 mojom::ResultCode PrintingContextChromeos::DocumentDone() {

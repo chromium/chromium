@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,9 @@
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "ui/gfx/geometry/quad_f.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
@@ -45,6 +45,8 @@ void PaintTimingVisualizer::RecordObject(const LayoutObject& object,
   DCHECK(object.GetFrame());
   value->SetString("frame", String::FromUTF8(ToTraceValue(object.GetFrame())));
   value->SetBoolean("is_in_main_frame", object.GetFrame()->IsMainFrame());
+  value->SetBoolean("is_in_outermost_main_frame",
+                    object.GetFrame()->IsOutermostMainFrame());
   if (object.GetNode())
     value->SetInteger("dom_node_id", DOMNodeIds::IdForNode(object.GetNode()));
 }
@@ -59,18 +61,17 @@ void PaintTimingVisualizer::DumpTextDebuggingRect(const LayoutObject& object,
   DumpTrace(std::move(value));
 }
 
-void PaintTimingVisualizer::DumpImageDebuggingRect(
-    const LayoutObject& object,
-    const gfx::RectF& rect,
-    const ImageResourceContent& cached_image) {
+void PaintTimingVisualizer::DumpImageDebuggingRect(const LayoutObject& object,
+                                                   const gfx::RectF& rect,
+                                                   bool is_loaded,
+                                                   const KURL& url) {
   std::unique_ptr<TracedValue> value = std::make_unique<TracedValue>();
   RecordObject(object, value);
   RecordRects(gfx::ToRoundedRect(rect), value);
   value->SetBoolean("is_image", true);
   value->SetBoolean("is_svg", object.IsSVG());
-  value->SetBoolean("is_image_loaded", cached_image.IsLoaded());
-  value->SetString("image_url",
-                   String(cached_image.Url().StrippedForUseAsReferrer()));
+  value->SetBoolean("is_image_loaded", is_loaded);
+  value->SetString("image_url", url.StrippedForUseAsReferrer());
   DumpTrace(std::move(value));
 }
 
@@ -83,11 +84,11 @@ void PaintTimingVisualizer::RecordMainFrameViewport(
     LocalFrameView& frame_view) {
   if (!need_recording_viewport)
     return;
-  if (!frame_view.GetFrame().IsMainFrame())
+  if (!frame_view.GetFrame().IsOutermostMainFrame())
     return;
   ScrollableArea* scrollable_area = frame_view.GetScrollableArea();
   DCHECK(scrollable_area);
-  gfx::Rect viewport_rect = ToGfxRect(scrollable_area->VisibleContentRect());
+  gfx::Rect viewport_rect = scrollable_area->VisibleContentRect();
 
   FloatClipRect float_clip_visual_rect((gfx::RectF(viewport_rect)));
   gfx::RectF float_visual_rect =

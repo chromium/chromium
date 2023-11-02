@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/sync_socket.h"
@@ -69,11 +70,9 @@ class MockAudioOutputIPC : public AudioOutputIPC {
                void(AudioOutputIPCDelegate* delegate,
                     const base::UnguessableToken& session_id,
                     const std::string& device_id));
-  MOCK_METHOD3(
-      CreateStream,
-      void(AudioOutputIPCDelegate* delegate,
-           const AudioParameters& params,
-           const absl::optional<base::UnguessableToken>& processing_id));
+  MOCK_METHOD2(CreateStream,
+               void(AudioOutputIPCDelegate* delegate,
+                    const AudioParameters& params));
   MOCK_METHOD0(PlayStream, void());
   MOCK_METHOD0(PauseStream, void());
   MOCK_METHOD0(FlushStream, void());
@@ -108,7 +107,7 @@ class AudioOutputDeviceTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   AudioParameters default_audio_parameters_;
   StrictMock<MockRenderCallback> callback_;
-  MockAudioOutputIPC* audio_output_ipc_;  // owned by audio_device_
+  raw_ptr<MockAudioOutputIPC> audio_output_ipc_;  // owned by audio_device_
   scoped_refptr<AudioOutputDevice> audio_device_;
   OutputDeviceStatus device_status_;
 
@@ -124,7 +123,7 @@ class AudioOutputDeviceTest : public testing::Test {
 AudioOutputDeviceTest::AudioOutputDeviceTest()
     : device_status_(OUTPUT_DEVICE_STATUS_ERROR_INTERNAL) {
   default_audio_parameters_.Reset(AudioParameters::AUDIO_PCM_LINEAR,
-                                  CHANNEL_LAYOUT_STEREO, 48000, 1024);
+                                  ChannelLayoutConfig::Stereo(), 48000, 1024);
   SetDevice(kDefaultDeviceId);
 }
 
@@ -140,7 +139,8 @@ void AudioOutputDeviceTest::CreateDevice(const std::string& device_id,
 
   audio_output_ipc_ = new NiceMock<MockAudioOutputIPC>();
   audio_device_ = new AudioOutputDevice(
-      base::WrapUnique(audio_output_ipc_), task_env_.GetMainThreadTaskRunner(),
+      base::WrapUnique(audio_output_ipc_.get()),
+      task_env_.GetMainThreadTaskRunner(),
       AudioSinkParameters(base::UnguessableToken(), device_id), timeout);
 }
 
@@ -175,7 +175,7 @@ void AudioOutputDeviceTest::ReceiveAuthorization(OutputDeviceStatus status) {
 
 void AudioOutputDeviceTest::StartAudioDevice() {
   if (device_status_ == OUTPUT_DEVICE_STATUS_OK)
-    EXPECT_CALL(*audio_output_ipc_, CreateStream(audio_device_.get(), _, _));
+    EXPECT_CALL(*audio_output_ipc_, CreateStream(audio_device_.get(), _));
   else
     EXPECT_CALL(callback_, OnRenderError());
 
@@ -297,7 +297,8 @@ TEST_F(AudioOutputDeviceTest, AuthorizationFailsBeforeInitialize_NoError) {
   StopAudioDevice();
   audio_output_ipc_ = new NiceMock<MockAudioOutputIPC>();
   audio_device_ = new AudioOutputDevice(
-      base::WrapUnique(audio_output_ipc_), task_env_.GetMainThreadTaskRunner(),
+      base::WrapUnique(audio_output_ipc_.get()),
+      task_env_.GetMainThreadTaskRunner(),
       AudioSinkParameters(base::UnguessableToken(), kDefaultDeviceId),
       kAuthTimeout);
   EXPECT_CALL(

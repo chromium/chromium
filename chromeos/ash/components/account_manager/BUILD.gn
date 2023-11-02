@@ -1,0 +1,20 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+
+component("account_manager") {
+  sources = [
+    "account_manager_factory.cc",
+    "account_manager_factory.h",
+  ]
+
+  public_deps = [ "//components/account_manager_core:account_manager_core" ]
+
+  deps = [ "//base" ]
+
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_ACCOUNT_MANAGER_IMPL" ]
+}

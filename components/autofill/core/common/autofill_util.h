@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,10 @@
 #include <string>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "url/gurl.h"
-
-namespace base {
-struct Feature;
-}
 
 namespace autofill {
 
@@ -70,7 +67,7 @@ void SetCheckStatus(FormFieldData* form_field_data,
 // Considers any ASCII whitespace character as a possible separator.
 // Also ignores empty tokens, resulting in a collapsing of whitespace.
 std::vector<std::string> LowercaseAndTokenizeAttributeString(
-    const std::string& attribute);
+    base::StringPiece attribute);
 
 // Returns true if and only if the field value has no character except the
 // formatting characters. This means that the field value is a formatting string

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/scoped_visibility_tracker.h"
+#include "url/gurl.h"
 
 namespace content {
 class WebContents;
@@ -31,6 +32,33 @@ class FrameMetadata;
 struct UserInitiatedInfo;
 struct PageRenderData;
 struct NormalizedCLSData;
+
+// Represents the page's visibility at a specific timing.
+enum class PageVisibility {
+  kNotInitialized = 0,
+  kForeground = 1,
+  kBackground = 2,
+  kMaxValue = kBackground,
+};
+
+// Represents the page's state of prerendering.
+//
+// TODO(crbug.com/1348097): Remove kActivatedNoActivationStart if possible.
+enum class PrerenderingState {
+  // Not prerenedered
+  kNoPrerendering = 0,
+  // Prerendered before activation
+  kInPrerendering = 1,
+  // Prerendered and activated, but `PageLoadTiming.activation_start` is not
+  // arrived
+  //
+  // In many cases, PageLoadMetricsObservers can regard this state
+  // kInPrerendering.
+  kActivatedNoActivationStart = 2,
+  // Prerendered and activated
+  kActivated = 3,
+  kMaxValue = kActivated,
+};
 
 // This class tracks global state for the page load that should be accessible
 // from any PageLoadMetricsObserver.
@@ -83,10 +111,18 @@ class PageLoadMetricsObserverDelegate {
 
   // True if the page load started in the foreground.
   virtual bool StartedInForeground() const = 0;
+  // Page's visibility at activation.
+  virtual PageVisibility GetVisibilityAtActivation() const = 0;
 
   // True if the page load was a prerender, that was later activated by a
   // navigation that started in the foreground.
   virtual bool WasPrerenderedThenActivatedInForeground() const = 0;
+  // The prerendering state.
+  virtual PrerenderingState GetPrerenderingState() const = 0;
+  // True iff the page is prerendered and activation_start is not yet arrived.
+  bool IsInPrerenderingBeforeActivationStart() const;
+  // Returns activation start if activation start was arrived, or nullopt.
+  virtual absl::optional<base::TimeDelta> GetActivationStart() const = 0;
 
   // Whether the page load was initiated by a user.
   virtual const UserInitiatedInfo& GetUserInitiatedInfo() const = 0;
@@ -168,6 +204,12 @@ class PageLoadMetricsObserverDelegate {
   // being deprecated.
   virtual const LargestContentfulPaintHandler&
   GetExperimentalLargestContentfulPaintHandler() const = 0;
+
+  // Returns the current soft navigation count - https://bit.ly/soft-navigation
+  // Soft navigations are JS-driven same-document navigations that are using the
+  // history API or the new Navigation API, triggered by a user gesture and
+  // meaningfully modify the DOM, replacing the previous content with new one.
+  virtual uint32_t GetSoftNavigationCount() const = 0;
 
   // UKM source ID for the current page load. For prerendered page loads, this
   // returns ukm::kInvalidSourceId until activation navigation.

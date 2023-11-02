@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -43,6 +44,20 @@ ThirdPartyMetricsObserver::ThirdPartyInfo::ThirdPartyInfo() = default;
 ThirdPartyMetricsObserver::ThirdPartyInfo::ThirdPartyInfo(
     const ThirdPartyInfo&) = default;
 
+const char* ThirdPartyMetricsObserver::GetObserverName() const {
+  static const char kName[] = "ThirdPartyMetricsObserver";
+  return kName;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+ThirdPartyMetricsObserver::OnFencedFramesStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // FrameReceivedUserActivation, OnLoadedResource, OnCookies{Read|Change}, and
+  // OnStorageAccessed need the observer-side forwarding.
+  return FORWARD_OBSERVING;
+}
+
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 ThirdPartyMetricsObserver::FlushMetricsOnAppEnterBackground(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
@@ -58,7 +73,7 @@ void ThirdPartyMetricsObserver::FrameReceivedUserActivation(
   auto* third_party_info = GetThirdPartyInfo(
       render_frame_host->GetLastCommittedURL(),
       content::WebContents::FromRenderFrameHost(render_frame_host)
-          ->GetMainFrame()
+          ->GetPrimaryMainFrame()
           ->GetLastCommittedURL(),
       is_third_party);
 
@@ -84,9 +99,8 @@ void ThirdPartyMetricsObserver::OnLoadedResource(
     return;
   }
 
-  third_party_font_loaded_ =
-      !IsSameSite(GetDelegate().GetUrl(),
-                  extra_request_complete_info.origin_of_final_url.GetURL());
+  third_party_font_loaded_ = !IsSameSite(
+      GetDelegate().GetUrl(), extra_request_complete_info.final_url.GetURL());
 }
 
 void ThirdPartyMetricsObserver::OnCookiesRead(
@@ -174,7 +188,7 @@ void ThirdPartyMetricsObserver::RecordUseCounters(
   // Report the feature usage if there's anything to report.
   if (third_party_storage_features.size() > 0) {
     page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
-        GetDelegate().GetWebContents()->GetMainFrame(),
+        GetDelegate().GetWebContents()->GetPrimaryMainFrame(),
         std::move(third_party_storage_features));
   }
 }
@@ -225,7 +239,7 @@ void ThirdPartyMetricsObserver::OnTimingUpdate(
 
   // Filter out first-party frames.
   content::RenderFrameHost* top_frame =
-      GetDelegate().GetWebContents()->GetMainFrame();
+      GetDelegate().GetWebContents()->GetPrimaryMainFrame();
   if (!top_frame)
     return;
 

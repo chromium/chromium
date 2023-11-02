@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "build/build_config.h"
 #include "ui/views/examples/animated_image_view_example.h"
 #include "ui/views/examples/animation_example.h"
 #include "ui/views/examples/ax_example.h"
@@ -18,6 +19,7 @@
 #include "ui/views/examples/colored_dialog_example.h"
 #include "ui/views/examples/colors_example.h"
 #include "ui/views/examples/combobox_example.h"
+#include "ui/views/examples/designer_example.h"
 #include "ui/views/examples/dialog_example.h"
 #include "ui/views/examples/fade_animation.h"
 #include "ui/views/examples/flex_layout_example.h"
@@ -45,6 +47,10 @@
 #include "ui/views/examples/vector_example.h"
 #include "ui/views/examples/widget_example.h"
 
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA)
+#include "ui/views/examples/color_chooser_example.h"
+#endif
+
 namespace views {
 namespace examples {
 
@@ -59,9 +65,13 @@ ExampleVector CreateExamples(ExampleVector extra_examples) {
   examples.push_back(std::make_unique<ButtonExample>());
   examples.push_back(std::make_unique<ButtonStickerSheet>());
   examples.push_back(std::make_unique<CheckboxExample>());
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA)
+  examples.push_back(std::make_unique<ColorChooserExample>());
+#endif
   examples.push_back(std::make_unique<ColoredDialogExample>());
   examples.push_back(std::make_unique<ColorsExample>());
   examples.push_back(std::make_unique<ComboboxExample>());
+  examples.push_back(std::make_unique<DesignerExample>());
   examples.push_back(std::make_unique<DialogExample>());
   examples.push_back(std::make_unique<FadeAnimationExample>());
   examples.push_back(std::make_unique<FlexLayoutExample>());

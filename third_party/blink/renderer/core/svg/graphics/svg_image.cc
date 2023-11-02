@@ -29,6 +29,8 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
@@ -53,17 +55,18 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
+#include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg/animation/smil_time_container.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_chrome_client.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_preserve_aspect_ratio.h"
+#include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
 #include "third_party/blink/renderer/core/svg/svg_fe_image_element.h"
 #include "third_party/blink/renderer/core/svg/svg_image_element.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -73,9 +76,14 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
 
@@ -86,11 +94,9 @@ using TaskRunnerHandle = scheduler::WebResourceLoadingTaskRunnerHandle;
 class FailingLoader final : public WebURLLoader {
  public:
   explicit FailingLoader(
-      std::unique_ptr<TaskRunnerHandle> freezable_task_runner_handle,
-      std::unique_ptr<TaskRunnerHandle> unfreezable_task_runner_handle)
-      : freezable_task_runner_handle_(std::move(freezable_task_runner_handle)),
-        unfreezable_task_runner_handle_(
-            std::move(unfreezable_task_runner_handle)) {}
+      std::unique_ptr<TaskRunnerHandle> freezable_task_runner_handle)
+      : freezable_task_runner_handle_(std::move(freezable_task_runner_handle)) {
+  }
   ~FailingLoader() override = default;
 
   // WebURLLoader implementation:
@@ -129,7 +135,6 @@ class FailingLoader final : public WebURLLoader {
 
  private:
   const std::unique_ptr<TaskRunnerHandle> freezable_task_runner_handle_;
-  const std::unique_ptr<TaskRunnerHandle> unfreezable_task_runner_handle_;
 };
 
 class FailingLoaderFactory final : public WebURLLoaderFactory {
@@ -144,10 +149,14 @@ class FailingLoaderFactory final : public WebURLLoaderFactory {
       WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
       override {
     return std::make_unique<FailingLoader>(
-        std::move(freezable_task_runner_handle),
-        std::move(unfreezable_task_runner_handle));
+        std::move(freezable_task_runner_handle));
   }
 };
+
+bool HasSmilAnimations(const Document& document) {
+  const SVGDocumentExtensions* extensions = document.SvgExtensions();
+  return extensions && extensions->HasSmilAnimations();
+}
 
 }  // namespace
 
@@ -194,8 +203,10 @@ SVGImage::SVGImage(ImageObserver* observer, bool is_multipart)
       // smaller granularity. There is an active effort to mitigate
       // this which is called "Memory Cache Per Context"
       // (https://crbug.com/1127971).
-      agent_group_scheduler_(
-          Thread::MainThread()->Scheduler()->CreateAgentGroupScheduler()),
+      agent_group_scheduler_(Thread::MainThread()
+                                 ->Scheduler()
+                                 ->ToMainThreadScheduler()
+                                 ->CreateAgentGroupScheduler()),
       has_pending_timeline_rewind_(false) {}
 
 SVGImage::~SVGImage() {
@@ -203,6 +214,11 @@ SVGImage::~SVGImage() {
 
   if (frame_client_)
     frame_client_->ClearImage();
+
+  // Leak the agent_group_scheduler_ when removed during GC.
+  // See https://linear.app/replay/issue/RUN-2056#comment-f827701f.
+  if (recordreplay::AreEventsDisallowed("~SVGImage"))
+    agent_group_scheduler_.release();
 
   if (page_) {
     // It is safe to allow UA events within this scope, because event
@@ -285,17 +301,17 @@ bool SVGImage::CurrentFrameHasSingleSecurityOrigin() const {
   return true;
 }
 
-IntSize SVGImage::SizeWithConfig(SizeConfig) const {
-  return RoundedIntSize(intrinsic_size_);
+gfx::Size SVGImage::SizeWithConfig(SizeConfig) const {
+  return ToRoundedSize(intrinsic_size_);
 }
 
 static float ResolveWidthForRatio(float height,
-                                  const FloatSize& intrinsic_ratio) {
+                                  const gfx::SizeF& intrinsic_ratio) {
   return height * intrinsic_ratio.width() / intrinsic_ratio.height();
 }
 
 static float ResolveHeightForRatio(float width,
-                                   const FloatSize& intrinsic_ratio) {
+                                   const gfx::SizeF& intrinsic_ratio) {
   return width * intrinsic_ratio.height() / intrinsic_ratio.width();
 }
 
@@ -312,11 +328,11 @@ bool SVGImage::GetIntrinsicSizingInfo(
   return true;
 }
 
-FloatSize SVGImage::ConcreteObjectSize(
-    const FloatSize& default_object_size) const {
+gfx::SizeF SVGImage::ConcreteObjectSize(
+    const gfx::SizeF& default_object_size) const {
   IntrinsicSizingInfo intrinsic_sizing_info;
   if (!GetIntrinsicSizingInfo(intrinsic_sizing_info))
-    return FloatSize();
+    return gfx::SizeF();
 
   // https://www.w3.org/TR/css3-images/#default-sizing
   if (intrinsic_sizing_info.has_width && intrinsic_sizing_info.has_height)
@@ -332,22 +348,23 @@ FloatSize SVGImage::ConcreteObjectSize(
 
   if (intrinsic_sizing_info.has_width) {
     if (intrinsic_sizing_info.aspect_ratio.IsEmpty()) {
-      return FloatSize(intrinsic_sizing_info.size.width(),
-                       default_object_size.height());
+      return gfx::SizeF(intrinsic_sizing_info.size.width(),
+                        default_object_size.height());
     }
-    return FloatSize(intrinsic_sizing_info.size.width(),
-                     ResolveHeightForRatio(intrinsic_sizing_info.size.width(),
-                                           intrinsic_sizing_info.aspect_ratio));
+    return gfx::SizeF(
+        intrinsic_sizing_info.size.width(),
+        ResolveHeightForRatio(intrinsic_sizing_info.size.width(),
+                              intrinsic_sizing_info.aspect_ratio));
   }
 
   if (intrinsic_sizing_info.has_height) {
     if (intrinsic_sizing_info.aspect_ratio.IsEmpty()) {
-      return FloatSize(default_object_size.width(),
-                       intrinsic_sizing_info.size.height());
+      return gfx::SizeF(default_object_size.width(),
+                        intrinsic_sizing_info.size.height());
     }
-    return FloatSize(ResolveWidthForRatio(intrinsic_sizing_info.size.height(),
-                                          intrinsic_sizing_info.aspect_ratio),
-                     intrinsic_sizing_info.size.height());
+    return gfx::SizeF(ResolveWidthForRatio(intrinsic_sizing_info.size.height(),
+                                           intrinsic_sizing_info.aspect_ratio),
+                      intrinsic_sizing_info.size.height());
   }
 
   if (!intrinsic_sizing_info.aspect_ratio.IsEmpty()) {
@@ -358,66 +375,73 @@ FloatSize SVGImage::ConcreteObjectSize(
     float solution_width = ResolveWidthForRatio(
         default_object_size.height(), intrinsic_sizing_info.aspect_ratio);
     if (solution_width <= default_object_size.width())
-      return FloatSize(solution_width, default_object_size.height());
+      return gfx::SizeF(solution_width, default_object_size.height());
 
     float solution_height = ResolveHeightForRatio(
         default_object_size.width(), intrinsic_sizing_info.aspect_ratio);
-    return FloatSize(default_object_size.width(), solution_height);
+    return gfx::SizeF(default_object_size.width(), solution_height);
   }
 
   return default_object_size;
 }
 
-SVGImage::DrawInfo::DrawInfo(const FloatSize& container_size,
+SVGImage::DrawInfo::DrawInfo(const gfx::SizeF& container_size,
                              float zoom,
                              const KURL& url,
                              bool is_dark_mode_enabled)
     : container_size_(container_size),
-      rounded_container_size_(RoundedIntSize(container_size)),
+      rounded_container_size_(gfx::ToRoundedSize(container_size)),
       zoom_(zoom),
       url_(url),
       is_dark_mode_enabled_(is_dark_mode_enabled) {}
 
-FloatSize SVGImage::DrawInfo::CalculateResidualScale() const {
-  return FloatSize(rounded_container_size_.width() / container_size_.width(),
-                   rounded_container_size_.height() / container_size_.height());
+gfx::SizeF SVGImage::DrawInfo::CalculateResidualScale() const {
+  return gfx::SizeF(
+      rounded_container_size_.width() / container_size_.width(),
+      rounded_container_size_.height() / container_size_.height());
 }
 
 void SVGImage::DrawForContainer(const DrawInfo& draw_info,
                                 cc::PaintCanvas* canvas,
-                                const PaintFlags& flags,
-                                const FloatRect& dst_rect,
-                                const FloatRect& src_rect) {
-  FloatRect unzoomed_src = src_rect;
+                                const cc::PaintFlags& flags,
+                                const gfx::RectF& dst_rect,
+                                const gfx::RectF& src_rect) {
+  gfx::RectF unzoomed_src = src_rect;
   unzoomed_src.Scale(1 / draw_info.Zoom());
 
   // Compensate for the container size rounding by adjusting the source rect.
-  FloatSize residual_scale = draw_info.CalculateResidualScale();
-  unzoomed_src.set_size(unzoomed_src.size().ScaledBy(residual_scale.width(),
-                                                     residual_scale.height()));
+  gfx::SizeF residual_scale = draw_info.CalculateResidualScale();
+  unzoomed_src.set_size(gfx::ScaleSize(
+      unzoomed_src.size(), residual_scale.width(), residual_scale.height()));
 
   DrawInternal(draw_info, canvas, flags, dst_rect, unzoomed_src);
 }
 
 PaintImage SVGImage::PaintImageForCurrentFrame() {
-  const DrawInfo draw_info(FloatSize(intrinsic_size_), 1, NullURL(), false);
+  const DrawInfo draw_info(gfx::SizeF(intrinsic_size_), 1, NullURL(), false);
   auto builder = CreatePaintImageBuilder();
   PopulatePaintRecordForCurrentFrameForContainer(draw_info, builder);
   return builder.TakePaintImage();
 }
 
+void SVGImage::SetPreferredColorScheme(
+    mojom::blink::PreferredColorScheme preferred_color_scheme) {
+  if (page_) {
+    page_->GetSettings().SetPreferredColorScheme(preferred_color_scheme);
+  }
+}
+
 void SVGImage::DrawPatternForContainer(const DrawInfo& draw_info,
                                        GraphicsContext& context,
                                        const cc::PaintFlags& base_flags,
-                                       const FloatRect& dst_rect,
+                                       const gfx::RectF& dst_rect,
                                        const ImageTilingInfo& tiling_info) {
   // Tile adjusted for scaling/stretch.
-  FloatRect tile(tiling_info.image_rect);
-  tile.Scale(tiling_info.scale.width(), tiling_info.scale.height());
+  gfx::RectF tile = tiling_info.image_rect;
+  tile.Scale(tiling_info.scale.x(), tiling_info.scale.y());
 
   // Expand the tile to account for repeat spacing.
-  FloatRect spaced_tile(tile);
-  spaced_tile.Expand(tiling_info.spacing);
+  gfx::RectF spaced_tile(tile.origin(), tile.size() + tiling_info.spacing);
 
   SkMatrix pattern_transform;
   pattern_transform.setTranslate(tiling_info.phase.x() + spaced_tile.x(),
@@ -431,24 +455,24 @@ void SVGImage::DrawPatternForContainer(const DrawInfo& draw_info,
     // spacing area.
     if (!tiling_info.spacing.IsZero())
       builder->Context().Clip(tile);
-    DrawForContainer(draw_info, builder->Context().Canvas(), PaintFlags(), tile,
-                     tiling_info.image_rect);
+    DrawForContainer(draw_info, builder->Context().Canvas(), cc::PaintFlags(),
+                     tile, tiling_info.image_rect);
   }
 
   sk_sp<PaintShader> tile_shader = PaintShader::MakePaintRecord(
-      builder->EndRecording(), spaced_tile, SkTileMode::kRepeat,
-      SkTileMode::kRepeat, &pattern_transform);
+      builder->EndRecording(), gfx::RectFToSkRect(spaced_tile),
+      SkTileMode::kRepeat, SkTileMode::kRepeat, &pattern_transform);
 
   // If the shader could not be instantiated (e.g. non-invertible matrix),
   // draw transparent.
   // Note: we can't simply bail, because of arbitrary blend mode.
-  PaintFlags flags = base_flags;
+  cc::PaintFlags flags = base_flags;
   flags.setColor(tile_shader ? SK_ColorBLACK : SK_ColorTRANSPARENT);
   flags.setShader(std::move(tile_shader));
   // Reset filter quality.
   flags.setFilterQuality(cc::PaintFlags::FilterQuality::kNone);
 
-  context.DrawRect(dst_rect, flags,
+  context.DrawRect(gfx::RectFToSkRect(dst_rect), flags,
                    PaintAutoDarkMode(DarkModeFilter::ElementRole::kSVG,
                                      draw_info.IsDarkModeEnabled()));
 
@@ -459,13 +483,14 @@ void SVGImage::PopulatePaintRecordForCurrentFrameForContainer(
     const DrawInfo& draw_info,
     PaintImageBuilder& builder) {
   PaintRecorder recorder;
-  const FloatSize size(draw_info.ContainerSize().ScaledBy(draw_info.Zoom()));
-  const IntRect dest_rect(gfx::Point(), RoundedIntSize(size));
-  cc::PaintCanvas* canvas = recorder.beginRecording(dest_rect);
-  DrawForContainer(draw_info, canvas, PaintFlags(), FloatRect(dest_rect),
-                   FloatRect(FloatPoint(), size));
-  builder.set_paint_record(recorder.finishRecordingAsPicture(),
-                           ToGfxRect(dest_rect),
+  const gfx::SizeF size =
+      gfx::ScaleSize(draw_info.ContainerSize(), draw_info.Zoom());
+  const gfx::Rect dest_rect(gfx::ToRoundedSize(size));
+  cc::PaintCanvas* canvas =
+      recorder.beginRecording(gfx::RectToSkRect(dest_rect));
+  DrawForContainer(draw_info, canvas, cc::PaintFlags(), gfx::RectF(dest_rect),
+                   gfx::RectF(size));
+  builder.set_paint_record(recorder.finishRecordingAsPicture(), dest_rect,
                            PaintImage::GetNextContentId());
 
   builder.set_completion_state(
@@ -475,7 +500,7 @@ void SVGImage::PopulatePaintRecordForCurrentFrameForContainer(
 }
 
 bool SVGImage::ApplyShaderInternal(const DrawInfo& draw_info,
-                                   PaintFlags& flags,
+                                   cc::PaintFlags& flags,
                                    const SkMatrix& local_matrix) {
   if (draw_info.ContainerSize().IsEmpty())
     return false;
@@ -483,7 +508,8 @@ bool SVGImage::ApplyShaderInternal(const DrawInfo& draw_info,
   if (!record)
     return false;
 
-  const FloatRect bounds(FloatPoint(), draw_info.ContainerSize());
+  const SkRect bounds =
+      SkRect::MakeSize(gfx::SizeFToSkSize(draw_info.ContainerSize()));
   flags.setShader(PaintShader::MakePaintRecord(
       std::move(record), bounds, SkTileMode::kClamp, SkTileMode::kClamp,
       &local_matrix));
@@ -494,22 +520,21 @@ bool SVGImage::ApplyShaderInternal(const DrawInfo& draw_info,
   return true;
 }
 
-bool SVGImage::ApplyShader(PaintFlags& flags,
+bool SVGImage::ApplyShader(cc::PaintFlags& flags,
                            const SkMatrix& local_matrix,
-                           const FloatRect& dst_rect,
-                           const FloatRect& src_rect,
+                           const gfx::RectF& src_rect,
                            const ImageDrawOptions& draw_options) {
-  const DrawInfo draw_info(FloatSize(intrinsic_size_), 1, NullURL(),
+  const DrawInfo draw_info(gfx::SizeF(intrinsic_size_), 1, NullURL(),
                            draw_options.apply_dark_mode);
   return ApplyShaderInternal(draw_info, flags, local_matrix);
 }
 
 bool SVGImage::ApplyShaderForContainer(const DrawInfo& draw_info,
-                                       PaintFlags& flags,
+                                       cc::PaintFlags& flags,
                                        const SkMatrix& local_matrix) {
   // Compensate for the container size rounding.
-  FloatSize residual_scale =
-      draw_info.CalculateResidualScale().ScaledBy(draw_info.Zoom());
+  gfx::SizeF residual_scale =
+      gfx::ScaleSize(draw_info.CalculateResidualScale(), draw_info.Zoom());
   auto adjusted_local_matrix = local_matrix;
   adjusted_local_matrix.preScale(residual_scale.width(),
                                  residual_scale.height());
@@ -517,11 +542,11 @@ bool SVGImage::ApplyShaderForContainer(const DrawInfo& draw_info,
 }
 
 void SVGImage::Draw(cc::PaintCanvas* canvas,
-                    const PaintFlags& flags,
-                    const FloatRect& dst_rect,
-                    const FloatRect& src_rect,
+                    const cc::PaintFlags& flags,
+                    const gfx::RectF& dst_rect,
+                    const gfx::RectF& src_rect,
                     const ImageDrawOptions& draw_options) {
-  const DrawInfo draw_info(FloatSize(intrinsic_size_), 1, NullURL(),
+  const DrawInfo draw_info(gfx::SizeF(intrinsic_size_), 1, NullURL(),
                            draw_options.apply_dark_mode);
   DrawInternal(draw_info, canvas, flags, dst_rect, src_rect);
 }
@@ -537,7 +562,7 @@ sk_sp<PaintRecord> SVGImage::PaintRecordForCurrentFrame(
   if (LayoutSVGRoot* layout_root = LayoutRoot())
     layout_root->SetContainerSize(RoundedLayoutSize(draw_info.ContainerSize()));
   LocalFrameView* view = GetFrame()->View();
-  const IntSize rounded_container_size = draw_info.RoundedContainerSize();
+  const gfx::Size rounded_container_size = draw_info.RoundedContainerSize();
   view->Resize(rounded_container_size);
   page_->GetVisualViewport().SetSize(rounded_container_size);
 
@@ -554,26 +579,11 @@ sk_sp<PaintRecord> SVGImage::PaintRecordForCurrentFrame(
 
   page_->GetSettings().SetForceDarkModeEnabled(draw_info.IsDarkModeEnabled());
 
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    view->UpdateAllLifecyclePhases(DocumentUpdateReason::kSVGImage);
-    return view->GetPaintRecord();
-  }
-
-  // TODO(crbug.com/1203406): This works around the bug. We may want to find
-  // and fix the root cause, or do nothing until pre-CAP code is removed.
-  if (!view->GetLayoutView() || !view->GetLayoutView()->Compositor())
-    return nullptr;
-
-  view->UpdateAllLifecyclePhasesExceptPaint(DocumentUpdateReason::kSVGImage);
-  PaintController::CycleScope cycle_scope(*paint_controller_,
-                                          view->PaintDebugInfoEnabled());
-
-  auto* builder = MakeGarbageCollected<PaintRecordBuilder>(*paint_controller_);
-  view->PaintOutsideOfLifecycle(builder->Context(), kGlobalPaintNormalPhase);
-  return builder->EndRecording();
+  view->UpdateAllLifecyclePhases(DocumentUpdateReason::kSVGImage);
+  return view->GetPaintRecord();
 }
 
-static bool DrawNeedsLayer(const PaintFlags& flags) {
+static bool DrawNeedsLayer(const cc::PaintFlags& flags) {
   if (SkColorGetA(flags.getColor()) < 255)
     return true;
 
@@ -587,9 +597,9 @@ static bool DrawNeedsLayer(const PaintFlags& flags) {
 
 void SVGImage::DrawInternal(const DrawInfo& draw_info,
                             cc::PaintCanvas* canvas,
-                            const PaintFlags& flags,
-                            const FloatRect& dst_rect,
-                            const FloatRect& unzoomed_src_rect) {
+                            const cc::PaintFlags& flags,
+                            const gfx::RectF& dst_rect,
+                            const gfx::RectF& unzoomed_src_rect) {
   sk_sp<PaintRecord> record = PaintRecordForCurrentFrame(draw_info);
   if (!record)
     return;
@@ -597,15 +607,16 @@ void SVGImage::DrawInternal(const DrawInfo& draw_info,
   {
     PaintCanvasAutoRestore ar(canvas, false);
     if (DrawNeedsLayer(flags)) {
-      SkRect layer_rect = dst_rect;
+      SkRect layer_rect = gfx::RectFToSkRect(dst_rect);
       canvas->saveLayer(&layer_rect, &flags);
     }
     // We can only draw the entire frame, clipped to the rect we want. So
     // compute where the top left of the image would be if we were drawing
     // without clipping, and translate accordingly.
     canvas->save();
-    canvas->clipRect(EnclosingIntRect(dst_rect));
-    canvas->concat(SkMatrix::RectToRect(unzoomed_src_rect, dst_rect));
+    canvas->clipRect(gfx::RectToSkRect(gfx::ToEnclosingRect(dst_rect)));
+    canvas->concat(SkMatrix::RectToRect(gfx::RectFToSkRect(unzoomed_src_rect),
+                                        gfx::RectFToSkRect(dst_rect)));
     canvas->drawPicture(std::move(record));
     canvas->restore();
   }
@@ -669,8 +680,8 @@ bool SVGImage::MaybeAnimated() {
   SVGSVGElement* root_element = RootElement();
   if (!root_element)
     return false;
-  return root_element->TimeContainer()->HasAnimations() ||
-         root_element->GetDocument().Timeline().HasPendingUpdates();
+  const Document& document = root_element->GetDocument();
+  return HasSmilAnimations(document) || document.Timeline().HasPendingUpdates();
 }
 
 void SVGImage::ServiceAnimations(
@@ -743,7 +754,7 @@ SVGImageChromeClient& SVGImage::ChromeClientForTesting() {
 
 void SVGImage::UpdateUseCounters(const Document& document) const {
   if (SVGSVGElement* root_element = RootElement()) {
-    if (root_element->TimeContainer()->HasAnimations()) {
+    if (HasSmilAnimations(root_element->GetDocument())) {
       document.CountUse(WebFeature::kSVGSMILAnimationInImageRegardlessOfCache);
     }
   }
@@ -764,8 +775,9 @@ void SVGImage::LoadCompleted() {
       // to make LoadEventFinished() true when AsyncLoadCompleted() is called.
       GetFrame()
           ->GetTaskRunner(TaskType::kInternalLoading)
-          ->PostTask(FROM_HERE, WTF::Bind(&SVGImage::NotifyAsyncLoadCompleted,
-                                          scoped_refptr<SVGImage>(this)));
+          ->PostTask(FROM_HERE,
+                     WTF::BindOnce(&SVGImage::NotifyAsyncLoadCompleted,
+                                   scoped_refptr<SVGImage>(this)));
       break;
 
     case kDataChangedNotStarted:
@@ -789,6 +801,8 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
 
   if (!all_data_received)
     return page_ ? kSizeAvailable : kSizeUnavailable;
+
+  SCOPED_BLINK_UMA_HISTOGRAM_TIMER_HIGHRES("Blink.SVGImage.DataChanged");
 
   CHECK(!page_);
 
@@ -819,7 +833,7 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
     // Because this page is detached, it can't get default font settings
     // from the embedder. Copy over font settings so we have sensible
     // defaults. These settings are fixed and will not update if changed.
-    if (!Page::OrdinaryPages().IsEmpty()) {
+    if (!Page::OrdinaryPages().empty()) {
       Settings& default_settings =
           (*Page::OrdinaryPages().begin())->GetSettings();
       page->GetSettings().GetGenericFontFamilySettings() =
@@ -835,6 +849,8 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
 
       page->GetSettings().SetImageAnimationPolicy(
           default_settings.GetImageAnimationPolicy());
+      page->GetSettings().SetPrefersReducedMotion(
+          default_settings.GetPrefersReducedMotion());
 
       // Also copy the preferred-color-scheme to ensure a responsiveness to
       // dark/light color schemes.
@@ -856,7 +872,8 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
         FrameInsertType::kInsertInConstructor, LocalFrameToken(), nullptr,
         nullptr);
     frame->SetView(MakeGarbageCollected<LocalFrameView>(*frame));
-    frame->Init(/*opener=*/nullptr, /*policy_container=*/nullptr);
+    frame->Init(/*opener=*/nullptr, DocumentToken(),
+                /*policy_container=*/nullptr, StorageKey());
   }
 
   // SVG Images will always synthesize a viewBox, if it's not available, and
@@ -895,7 +912,7 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
     return kSizeUnavailable;
 
   // Set the concrete object size before a container size is available.
-  intrinsic_size_ = RoundedLayoutSize(ConcreteObjectSize(FloatSize(
+  intrinsic_size_ = RoundedLayoutSize(ConcreteObjectSize(gfx::SizeF(
       LayoutReplaced::kDefaultWidth, LayoutReplaced::kDefaultHeight)));
 
   if (load_state_ == kWaitingForAsyncLoadCompletion)

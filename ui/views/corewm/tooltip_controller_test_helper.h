@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/views/corewm/tooltip_controller.h"
 #include "ui/views/corewm/tooltip_state_manager.h"
 #include "ui/views/view.h"
@@ -54,7 +55,7 @@ class TooltipControllerTestHelper {
   void MockWindowActivated(aura::Window* window, bool active);
 
  private:
-  TooltipController* controller_;
+  raw_ptr<TooltipController> controller_;
 };
 
 // Trivial View subclass that lets you set the tooltip text.

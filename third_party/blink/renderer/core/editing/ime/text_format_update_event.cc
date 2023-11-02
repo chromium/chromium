@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,14 +12,17 @@
 namespace blink {
 
 TextFormatUpdateEvent::TextFormatUpdateEvent(
-    const TextFormatUpdateEventInit* dict) {
-  if (dict->hasTextFormats())
-    text_formats_ = dict->textFormats();
+    const AtomicString& type,
+    const TextFormatUpdateEventInit* initializer)
+    : Event(type, initializer) {
+  if (initializer->hasTextFormats())
+    text_formats_ = initializer->textFormats();
 }
 
 TextFormatUpdateEvent::TextFormatUpdateEvent(
+    const AtomicString& type,
     HeapVector<Member<TextFormat>>& text_formats)
-    : Event(event_type_names::kTextformatupdate,
+    : Event(type,
             Bubbles::kNo,
             Cancelable::kYes,
             ComposedMode::kComposed,
@@ -27,8 +30,9 @@ TextFormatUpdateEvent::TextFormatUpdateEvent(
       text_formats_(text_formats) {}
 
 TextFormatUpdateEvent* TextFormatUpdateEvent::Create(
-    const TextFormatUpdateEventInit* dict) {
-  return MakeGarbageCollected<TextFormatUpdateEvent>(dict);
+    const AtomicString& type,
+    const TextFormatUpdateEventInit* initializer) {
+  return MakeGarbageCollected<TextFormatUpdateEvent>(type, initializer);
 }
 
 TextFormatUpdateEvent::~TextFormatUpdateEvent() = default;

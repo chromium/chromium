@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,14 @@ class RenderViewContextMenu;
 
 class ContextMenuNotificationObserver {
  public:
-  // Wait for a context menu to be shown, and then execute |command_to_execute|.
-  explicit ContextMenuNotificationObserver(int command_to_execute);
+  // Wait for a context menu to be shown, and then execute |command_to_execute|
+  // with specified |event_flags|. Also executes |callback| after executing the
+  // command if provided.
+  explicit ContextMenuNotificationObserver(
+      int command_to_execute,
+      int event_flags = 0,
+      base::OnceCallback<void(RenderViewContextMenu*)> callback =
+          base::NullCallbackAs<void(RenderViewContextMenu*)>());
 
   ContextMenuNotificationObserver(const ContextMenuNotificationObserver&) =
       delete;
@@ -30,6 +36,8 @@ class ContextMenuNotificationObserver {
   void ExecuteCommand(RenderViewContextMenu* context_menu);
 
   int command_to_execute_;
+  int event_flags_;
+  base::OnceCallback<void(RenderViewContextMenu*)> callback_;
 };
 
 class ContextMenuWaiter {

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,22 +9,19 @@
 #include "base/memory/ptr_util.h"
 #include "base/observer_list.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/values.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/components/multidevice/remote_device_test_util.h"
-#include "chromeos/network/network_connect.h"
+#include "chromeos/ash/components/multidevice/remote_device_test_util.h"
+#include "chromeos/ash/components/network/network_connect.h"
+
+namespace ash::tether {
 
 namespace {
+
 const int kTestNetworkSignalStrength = 50;
-}  // namespace
-
-namespace chromeos {
-
-namespace tether {
-
-namespace {
 
 const char kTetherSettingsSubpage[] = "networks?type=Tether";
 
@@ -41,17 +38,17 @@ class TetherNotificationPresenterTest : public BrowserWithTestWindowTest {
 
     // NetworkConnect:
     void DisconnectFromNetworkId(const std::string& network_id) override {}
-    void SetTechnologyEnabled(const chromeos::NetworkTypePattern& technology,
+    void SetTechnologyEnabled(const NetworkTypePattern& technology,
                               bool enabled_state) override {}
     void ShowMobileSetup(const std::string& network_id) override {}
     void ShowCarrierAccountDetail(const std::string& network_id) override {}
-    void ConfigureNetworkIdAndConnect(
-        const std::string& network_id,
-        const base::DictionaryValue& shill_properties,
-        bool shared) override {}
-    void CreateConfigurationAndConnect(base::DictionaryValue* shill_properties,
+    void ShowPortalSignin(const std::string& network_id) override {}
+    void ConfigureNetworkIdAndConnect(const std::string& network_id,
+                                      const base::Value& shill_properties,
+                                      bool shared) override {}
+    void CreateConfigurationAndConnect(base::Value* shill_properties,
                                        bool shared) override {}
-    void CreateConfiguration(base::DictionaryValue* shill_properties,
+    void CreateConfiguration(base::Value* shill_properties,
                              bool shared) override {}
 
     void ConnectToNetworkId(const std::string& network_id) override {
@@ -523,6 +520,4 @@ TEST_F(TetherNotificationPresenterTest,
       1u /* num_expected_button_tapped_single_host_nearby */);
 }
 
-}  // namespace tether
-
-}  // namespace chromeos
+}  // namespace ash::tether

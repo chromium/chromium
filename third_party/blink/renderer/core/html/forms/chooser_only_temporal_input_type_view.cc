@@ -34,7 +34,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -76,6 +76,10 @@ void ChooserOnlyTemporalInputTypeView::HandleDOMActivateEvent(Event& event) {
   OpenPopupView();
 }
 
+ControlPart ChooserOnlyTemporalInputTypeView::AutoAppearance() const {
+  return kMenulistPart;
+}
+
 void ChooserOnlyTemporalInputTypeView::OpenPopupView() {
   DateTimeChooserParameters parameters;
   if (GetElement().SetupDateTimeChooserParameters(parameters)) {
@@ -107,7 +111,7 @@ void ChooserOnlyTemporalInputTypeView::UpdateView() {
     display_value = GetElement().SuggestedValue();
   else
     display_value = input_type_->VisibleValue();
-  if (display_value.IsEmpty()) {
+  if (display_value.empty()) {
     // Need to put something to keep text baseline.
     display_value = " ";
   }
@@ -136,7 +140,7 @@ Element& ChooserOnlyTemporalInputTypeView::OwnerElement() const {
 void ChooserOnlyTemporalInputTypeView::DidChooseValue(const String& value) {
   if (will_be_destroyed_)
     return;
-  GetElement().setValue(value,
+  GetElement().SetValue(value,
                         TextFieldEventBehavior::kDispatchInputAndChangeEvent);
 }
 
@@ -145,7 +149,7 @@ void ChooserOnlyTemporalInputTypeView::DidChooseValue(double value) {
     return;
   DCHECK(std::isfinite(value) || std::isnan(value));
   if (std::isnan(value)) {
-    GetElement().setValue(g_empty_string,
+    GetElement().SetValue(g_empty_string,
                           TextFieldEventBehavior::kDispatchInputAndChangeEvent);
   } else {
     GetElement().setValueAsNumber(

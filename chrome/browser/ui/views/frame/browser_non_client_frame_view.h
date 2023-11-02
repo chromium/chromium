@@ -1,10 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NON_CLIENT_FRAME_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NON_CLIENT_FRAME_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
@@ -45,7 +46,7 @@ class BrowserNonClientFrameView : public views::NonClientFrameView,
   // Called when BrowserView creates all it's child views.
   virtual void OnBrowserViewInitViewsComplete();
 
-  // Called on Mac after the browser window is fullscreened or unfullscreened.
+  // Called after the browser window is fullscreened or unfullscreened.
   virtual void OnFullscreenStateChanged();
 
   // Returns whether the caption buttons are drawn at the leading edge (i.e. the
@@ -102,16 +103,11 @@ class BrowserNonClientFrameView : public views::NonClientFrameView,
 
   // Returns the color of the browser frame, which is also the color of the
   // tabstrip background.
-  SkColor GetFrameColor(BrowserFrameActiveState active_state =
-                            BrowserFrameActiveState::kUseCurrent) const;
+  virtual SkColor GetFrameColor(BrowserFrameActiveState active_state) const;
 
   // Called by BrowserView to signal the frame color has changed and needs
   // to be repainted.
   virtual void UpdateFrameColor();
-
-  // Returns COLOR_TOOLBAR_TOP_SEPARATOR[,_INACTIVE] depending on the activation
-  // state of the window.
-  SkColor GetToolbarTopSeparatorColor() const;
 
   // For non-transparent windows, returns the background tab image resource ID
   // if the image has been customized, directly or indirectly, by the theme.
@@ -130,6 +126,10 @@ class BrowserNonClientFrameView : public views::NonClientFrameView,
 
   // Set the visibility of the window controls overlay toggle button.
   void SetWindowControlsOverlayToggleVisible(bool visible);
+
+  // Updates the visibility of the title bar based on the visibility of the
+  // borderless mode.
+  void UpdateBorderlessModeEnabled();
 
   // views::NonClientFrameView:
   using views::NonClientFrameView::ShouldPaintAsActive;
@@ -184,23 +184,22 @@ class BrowserNonClientFrameView : public views::NonClientFrameView,
   }
 
  private:
-  // views::NonClientFrameView:
-#if defined(OS_WIN)
-  int GetSystemMenuY() const override;
-#endif
+#if BUILDFLAG(IS_WIN)
+  // ui::EventHandler:
+  void OnGestureEvent(ui::GestureEvent* event) override;
 
-  // Get the |frame_| theme provider since it should be non-null even before
-  // we're added to the view hierarchy.
-  const ui::ThemeProvider* GetFrameThemeProvider() const;
+  // views::NonClientFrameView:
+  int GetSystemMenuY() const override;
+#endif  // BUILDFLAG(IS_WIN)
 
   // The frame that hosts this view.
-  BrowserFrame* const frame_;
+  const raw_ptr<BrowserFrame> frame_;
 
   // The BrowserView hosted within this View.
-  BrowserView* const browser_view_;
+  const raw_ptr<BrowserView> browser_view_;
 
   // Menu button and page status icons. Only used by web-app windows.
-  WebAppFrameToolbarView* web_app_frame_toolbar_ = nullptr;
+  raw_ptr<WebAppFrameToolbarView> web_app_frame_toolbar_ = nullptr;
 
   base::CallbackListSubscription paint_as_active_subscription_ =
       frame_->RegisterPaintAsActiveChangedCallback(

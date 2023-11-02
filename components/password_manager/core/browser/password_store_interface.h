@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "components/keyed_service/core/refcounted_keyed_service.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
@@ -14,6 +15,7 @@
 
 namespace syncer {
 class ProxyModelTypeControllerDelegate;
+class SyncService;
 }  // namespace syncer
 
 namespace password_manager {
@@ -61,7 +63,9 @@ class PasswordStoreInterface : public RefcountedKeyedService {
   virtual bool IsAbleToSavePasswords() const = 0;
 
   // Adds the given PasswordForm to the secure password store asynchronously.
-  virtual void AddLogin(const PasswordForm& form) = 0;
+  // `completion` will be run after the form is added.
+  virtual void AddLogin(const PasswordForm& form,
+                        base::OnceClosure completion = base::DoNothing()) = 0;
 
   // Updates the matching PasswordForm in the secure password store (async).
   // If any of the primary key fields (signon_realm, url, username_element,
@@ -89,54 +93,56 @@ class PasswordStoreInterface : public RefcountedKeyedService {
       const base::RepeatingCallback<bool(const GURL&)>& url_filter,
       base::Time delete_begin,
       base::Time delete_end,
-      base::OnceClosure completion,
+      base::OnceClosure completion = base::NullCallback(),
       base::OnceCallback<void(bool)> sync_completion =
           base::NullCallback()) = 0;
 
-  // Removes all logins created in the given date range. If `completion` is not
-  // null, it will be run after deletions have been completed and notification
-  // have been sent out. If any logins were removed 'true' will be passed to a
-  // completion, 'false' otherwise.
+  // Removes all logins created in the given date range. `completion` is run
+  // after deletions have been completed and notifications have been sent out.
+  // If any logins were removed 'true' will be passed to `completion`, 'false'
+  // otherwise.
   virtual void RemoveLoginsCreatedBetween(
       base::Time delete_begin,
       base::Time delete_end,
-      base::OnceCallback<void(bool)> completion) = 0;
+      base::OnceCallback<void(bool)> completion = base::NullCallback()) = 0;
 
   // Sets the 'skip_zero_click' flag for all credentials that match
   // `origin_filter`. `completion` will be run after these modifications are
   // completed and notifications are sent out.
   virtual void DisableAutoSignInForOrigins(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
-      base::OnceClosure completion) = 0;
+      base::OnceClosure completion = base::NullCallback()) = 0;
 
   // Unblocklists the login with `form_digest` by deleting all the corresponding
   // blocklisted entries. If `completion` is not null, it will be run after
   // deletions have been completed. Should be called on the UI thread.
-  virtual void Unblocklist(const PasswordFormDigest& form_digest,
-                           base::OnceClosure completion) = 0;
+  virtual void Unblocklist(
+      const PasswordFormDigest& form_digest,
+      base::OnceClosure completion = base::NullCallback()) = 0;
 
   // Searches for a matching PasswordForm, and notifies `consumer` on
   // completion.
   // TODO(crbug.com/1217070): Use a smart pointer for consumer.
   virtual void GetLogins(const PasswordFormDigest& form,
-                         PasswordStoreConsumer* consumer) = 0;
+                         base::WeakPtr<PasswordStoreConsumer> consumer) = 0;
 
   // Gets the complete list of non-blocklist PasswordForms.`consumer` will be
   // notified on completion.
   // TODO(crbug.com/1217070): Use a smart pointer for consumer.
-  virtual void GetAutofillableLogins(PasswordStoreConsumer* consumer) = 0;
+  virtual void GetAutofillableLogins(
+      base::WeakPtr<PasswordStoreConsumer> consumer) = 0;
 
   // Gets the complete list of PasswordForms (regardless of their blocklist
   // status) and notify `consumer` on completion.
   // TODO(crbug.com/1217070): Use a smart pointer for consumer.
-  virtual void GetAllLogins(PasswordStoreConsumer* consumer) = 0;
+  virtual void GetAllLogins(base::WeakPtr<PasswordStoreConsumer> consumer) = 0;
 
   // Gets the complete list of PasswordForms, regardless of their blocklist
   // status. Also fills in affiliation and branding information for Android
   // credentials.
   // TODO(crbug.com/1217070): Use a smart pointer for consumer.
   virtual void GetAllLoginsWithAffiliationAndBrandingInformation(
-      PasswordStoreConsumer* consumer) = 0;
+      base::WeakPtr<PasswordStoreConsumer> consumer) = 0;
 
   // Adds an observer to be notified when the password store data changes.
   virtual void AddObserver(Observer* observer) = 0;
@@ -154,6 +160,11 @@ class PasswordStoreInterface : public RefcountedKeyedService {
   // interact with PasswordSyncBridge. Must be called from the UI thread.
   virtual std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegate() = 0;
+
+  // Propagates successful initialization of SyncService to reolve circular
+  // dependency during PasswordStore creation. |sync_service| may not
+  // have started yet but its preferences can already be queried.
+  virtual void OnSyncServiceInitialized(syncer::SyncService* sync_service) = 0;
 
   // Tests only can retrieve the backend.
   virtual PasswordStoreBackend* GetBackendForTesting() = 0;

@@ -1,12 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/dialogs/completion_block_util.h"
 
-#include <ostream>
+#import <ostream>
 
-#include "base/notreached.h"
+#import "base/notreached.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -60,7 +60,7 @@ using completion_block_util::DecidePolicyCallback;
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
-// Executes |_callback|.
+// Executes `_callback`.
 - (void)executeCallback;
 
 @end
@@ -99,7 +99,7 @@ using completion_block_util::DecidePolicyCallback;
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
-// Executes |_callback| with |confirmed|.
+// Executes `_callback` with `confirmed`.
 - (void)executeCallbackWithConfirmation:(BOOL)confirmed;
 
 @end
@@ -138,7 +138,7 @@ using completion_block_util::DecidePolicyCallback;
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
-// Executes |_callback| with |input|.
+// Executes `_callback` with `input`.
 - (void)executeCallbackWithInput:(NSString*)input;
 
 @end
@@ -177,7 +177,7 @@ using completion_block_util::DecidePolicyCallback;
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
-// Executes |_callback| with |user| and |password|.
+// Executes `_callback` with `user` and `password`.
 - (void)executeCallbackWithUser:(NSString*)user password:(NSString*)password;
 
 @end
@@ -216,7 +216,7 @@ using completion_block_util::DecidePolicyCallback;
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
-// Executes |_callback| with |shouldContinue|.
+// Executes `_callback` with `shouldContinue`.
 - (void)executeCallbackToConinue:(BOOL)shouldContinue;
 
 @end

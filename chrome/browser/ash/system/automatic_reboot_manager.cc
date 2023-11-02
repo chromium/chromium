@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,20 +27,19 @@
 #include "base/path_service.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/tick_clock.h"
+#include "base/time/time.h"
+#include "base/timer/wall_clock_timer.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 
@@ -53,6 +52,7 @@ const int kMinRebootUptimeMs = 60 * 60 * 1000;     // 1 hour.
 const int kLoginManagerIdleTimeoutMs = 60 * 1000;  // 60 seconds.
 const int kGracePeriodMs = 24 * 60 * 60 * 1000;    // 24 hours.
 const int kOneKilobyte = 1 << 10;                  // 1 kB in bytes.
+const int kResumeRebootDelayMs = 100;
 
 base::TimeDelta ReadTimeDeltaFromFile(const base::FilePath& path) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
@@ -80,7 +80,7 @@ void SaveUpdateRebootNeededUptime() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   base::FilePath update_reboot_needed_uptime_file;
-  CHECK(base::PathService::Get(chromeos::FILE_UPDATE_REBOOT_NEEDED_UPTIME,
+  CHECK(base::PathService::Get(FILE_UPDATE_REBOOT_NEEDED_UPTIME,
                                &update_reboot_needed_uptime_file));
   const base::TimeDelta last_update_reboot_needed_uptime =
       ReadTimeDeltaFromFile(update_reboot_needed_uptime_file);
@@ -88,7 +88,7 @@ void SaveUpdateRebootNeededUptime() {
     return;
 
   base::FilePath uptime_file;
-  CHECK(base::PathService::Get(chromeos::FILE_UPTIME, &uptime_file));
+  CHECK(base::PathService::Get(FILE_UPTIME, &uptime_file));
   const base::TimeDelta uptime = ReadTimeDeltaFromFile(uptime_file);
   if (uptime.is_zero())
     return;
@@ -133,9 +133,9 @@ struct SystemEventTimes {
 
 SystemEventTimes GetSystemEventTimes() {
   base::FilePath uptime_file;
-  CHECK(base::PathService::Get(chromeos::FILE_UPTIME, &uptime_file));
+  CHECK(base::PathService::Get(FILE_UPTIME, &uptime_file));
   base::FilePath update_reboot_needed_uptime_file;
-  CHECK(base::PathService::Get(chromeos::FILE_UPDATE_REBOOT_NEEDED_UPTIME,
+  CHECK(base::PathService::Get(FILE_UPDATE_REBOOT_NEEDED_UPTIME,
                                &update_reboot_needed_uptime_file));
   return SystemEventTimes(
       ReadTimeDeltaFromFile(uptime_file),
@@ -144,8 +144,10 @@ SystemEventTimes GetSystemEventTimes() {
 
 }  // namespace internal
 
-AutomaticRebootManager::AutomaticRebootManager(const base::TickClock* clock)
-    : clock_(clock) {
+AutomaticRebootManager::AutomaticRebootManager(
+    const base::Clock* clock,
+    const base::TickClock* tick_clock)
+    : clock_(clock), tick_clock_(tick_clock) {
   local_state_registrar_.Init(g_browser_process->local_state());
   local_state_registrar_.Add(
       prefs::kUptimeLimit,
@@ -155,11 +157,12 @@ AutomaticRebootManager::AutomaticRebootManager(const base::TickClock* clock)
       prefs::kRebootAfterUpdate,
       base::BindRepeating(&AutomaticRebootManager::Reschedule,
                           base::Unretained(this)));
-  notification_registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
-      content::NotificationService::AllSources());
+  on_app_terminating_subscription_ =
+      browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
+          &AutomaticRebootManager::OnAppTerminating, base::Unretained(this)));
 
-  PowerManagerClient::Get()->AddObserver(this);
-  DBusThreadManager::Get()->GetUpdateEngineClient()->AddObserver(this);
+  chromeos::PowerManagerClient::Get()->AddObserver(this);
+  UpdateEngineClient::Get()->AddObserver(this);
 
   // If no user is logged in, a reboot may be performed whenever the user is
   // idle. Start listening for user activity to determine whether the user is
@@ -185,8 +188,8 @@ AutomaticRebootManager::~AutomaticRebootManager() {
   for (auto& observer : observers_)
     observer.WillDestroyAutomaticRebootManager();
 
-  PowerManagerClient::Get()->RemoveObserver(this);
-  DBusThreadManager::Get()->GetUpdateEngineClient()->RemoveObserver(this);
+  chromeos::PowerManagerClient::Get()->RemoveObserver(this);
+  UpdateEngineClient::Get()->RemoveObserver(this);
   if (ui::UserActivityDetector::Get())
     ui::UserActivityDetector::Get()->RemoveObserver(this);
 }
@@ -207,7 +210,15 @@ bool AutomaticRebootManager::WaitForInitForTesting(
 }
 
 void AutomaticRebootManager::SuspendDone(base::TimeDelta sleep_duration) {
-  MaybeReboot(true);
+  // Ignore session to allow rebooting kiosk apps on resume. In case the session
+  // is a user session, there is an additional check in the Reboot method below.
+  // We post a delayed task to ensure that we run any due grace timers and
+  // update |reboot_requested_| flag before we try to reboot.
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&AutomaticRebootManager::MaybeReboot,
+                     base::Unretained(this), true),
+      base::Milliseconds(kResumeRebootDelayMs));
 }
 
 void AutomaticRebootManager::UpdateStatusChanged(
@@ -226,7 +237,7 @@ void AutomaticRebootManager::UpdateStatusChanged(
                               base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
                              base::BindOnce(&SaveUpdateRebootNeededUptime));
 
-  update_reboot_needed_time_ = clock_->NowTicks();
+  update_reboot_needed_time_ = tick_clock_->NowTicks();
 
   Reschedule();
 }
@@ -257,18 +268,6 @@ void AutomaticRebootManager::OnUserSessionStarted(bool is_primary_user) {
   login_screen_idle_timer_.reset();
 }
 
-void AutomaticRebootManager::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(type, chrome::NOTIFICATION_APP_TERMINATING);
-  if (session_manager::SessionManager::Get()->IsSessionStarted()) {
-    // The browser is terminating during a session, either because the session
-    // is ending or because the browser is being restarted.
-    MaybeReboot(true);
-  }
-}
-
 // static
 void AutomaticRebootManager::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kUptimeLimit, 0);
@@ -279,18 +278,19 @@ void AutomaticRebootManager::Init(
     const internal::SystemEventTimes& system_event_times) {
   initialized_.Signal();
 
-  const base::TimeDelta offset = clock_->NowTicks() - base::TimeTicks::Now();
+  const base::TimeDelta offset =
+      tick_clock_->NowTicks() - base::TimeTicks::Now();
   if (system_event_times.boot_time) {
-    // Convert the time at which the device was booted to |clock_| ticks.
+    // Convert the time at which the device was booted to |tick_clock_| ticks.
     boot_time_ = *system_event_times.boot_time + offset;
   }
   if (system_event_times.update_reboot_needed_time) {
-    // Convert the time at which a reboot became necessary to |clock_| ticks.
+    // Convert the time at which a reboot became necessary to |tick_clock_|
+    // ticks.
     update_reboot_needed_time_ =
         *system_event_times.update_reboot_needed_time + offset;
   } else {
-    UpdateStatusChanged(
-        DBusThreadManager::Get()->GetUpdateEngineClient()->GetLastStatus());
+    UpdateStatusChanged(UpdateEngineClient::Get()->GetLastStatus());
   }
 
   Reschedule();
@@ -339,7 +339,8 @@ void AutomaticRebootManager::Reschedule() {
   // Safeguard against reboot loops: Ensure that the uptime after which a reboot
   // is actually requested and the grace period begins is never less than
   // |kMinRebootUptimeMs|.
-  const base::TimeTicks now = clock_->NowTicks();
+  const base::TimeTicks now = tick_clock_->NowTicks();
+  const base::Time wall_clock_now = clock_->Now();
   const base::TimeTicks grace_start_time =
       std::max(reboot_request_time,
                *boot_time_ + base::Milliseconds(kMinRebootUptimeMs));
@@ -347,10 +348,13 @@ void AutomaticRebootManager::Reschedule() {
   // Set up a timer for the start of the grace period. If the grace period
   // started in the past, the timer is still used with its delay set to zero.
   if (!grace_start_timer_)
-    grace_start_timer_ = std::make_unique<base::OneShotTimer>();
-  VLOG(1) << "Scheduling reboot attempt in " << (grace_start_time - now);
+    grace_start_timer_ =
+        std::make_unique<base::WallClockTimer>(clock_, tick_clock_);
+  VLOG(1) << "Scheduling reboot attempt at "
+          << wall_clock_now + (grace_start_time - now);
   grace_start_timer_->Start(
-      FROM_HERE, std::max(grace_start_time - now, base::TimeDelta()),
+      FROM_HERE,
+      wall_clock_now + std::max(grace_start_time - now, base::TimeDelta()),
       base::BindOnce(&AutomaticRebootManager::RequestReboot,
                      base::Unretained(this)));
 
@@ -359,10 +363,13 @@ void AutomaticRebootManager::Reschedule() {
   // Set up a timer for the end of the grace period. If the grace period ended
   // in the past, the timer is still used with its delay set to zero.
   if (!grace_end_timer_)
-    grace_end_timer_ = std::make_unique<base::OneShotTimer>();
-  VLOG(1) << "Scheduling unconditional reboot in " << (grace_end_time - now);
+    grace_end_timer_ =
+        std::make_unique<base::WallClockTimer>(clock_, tick_clock_);
+  VLOG(1) << "Scheduling unconditional reboot at "
+          << wall_clock_now + (grace_end_time - now);
   grace_end_timer_->Start(
-      FROM_HERE, std::max(grace_end_time - now, base::TimeDelta()),
+      FROM_HERE,
+      wall_clock_now + std::max(grace_end_time - now, base::TimeDelta()),
       base::BindOnce(&AutomaticRebootManager::Reboot, base::Unretained(this)));
 }
 
@@ -403,8 +410,16 @@ void AutomaticRebootManager::Reboot() {
   grace_start_timer_.reset();
   grace_end_timer_.reset();
   VLOG(1) << "Rebooting immediately.";
-  PowerManagerClient::Get()->RequestRestart(
+  chromeos::PowerManagerClient::Get()->RequestRestart(
       power_manager::REQUEST_RESTART_OTHER, "automatic reboot manager");
+}
+
+void AutomaticRebootManager::OnAppTerminating() {
+  if (session_manager::SessionManager::Get()->IsSessionStarted()) {
+    // The browser is terminating during a session, either because the session
+    // is ending or because the browser is being restarted.
+    MaybeReboot(true);
+  }
 }
 
 }  // namespace system

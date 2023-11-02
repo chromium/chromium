@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """
@@ -8,7 +8,6 @@ violate the rules described in Web IDL https://webidl.spec.whatwg.org/.
 Each rule class must inherit RuleBase.
 """
 
-import web_idl
 from validator.framework import target
 from validator.framework import RuleBase
 
@@ -19,6 +18,7 @@ _web_idl_extended_attributes_applicable_to_types = [
     "LegacyNullToEmptyString",
 ]
 _blink_specific_extended_attributes_applicable_to_types = [
+    "BufferSourceTypeNoSizeLimit",
     "FlexibleArrayBufferView",
     "StringContext",
     # "TreatNullAs" is the old version of "LegacyNullToEmptyString".

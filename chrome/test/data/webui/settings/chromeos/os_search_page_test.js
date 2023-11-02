@@ -1,16 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-// #import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {waitAfterNextRender} from 'chrome://test/test_util.js';
-// clang-format on
+import {assertEquals, assertTrue} from '../../chai_assert.js';
 
 suite('OSSearchPageTests', function() {
   /** @type {?SettingsSearchPageElement} */
@@ -22,23 +19,26 @@ suite('OSSearchPageTests', function() {
     });
     page = document.createElement('os-settings-search-page');
     document.body.appendChild(page);
-    Polymer.dom.flush();
+    flush();
   });
 
   teardown(function() {
     page.remove();
-    settings.Router.getInstance().resetRouteForTesting();
+    Router.getInstance().resetRouteForTesting();
   });
 
   test('Deep link to preferred search engine', async () => {
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', '600');
-    settings.Router.getInstance().navigateTo(
-        settings.routes.OS_SEARCH, params);
+    Router.getInstance().navigateTo(routes.OS_SEARCH, params);
 
+    const browserSearchSettingsLink =
+        page.shadowRoot.querySelector('settings-search-engine')
+            .shadowRoot.querySelector('#browserSearchSettingsLink');
     const deepLinkElement =
-        page.$$('settings-search-engine').$$('#searchSelectionDialogButton');
-    await test_util.waitAfterNextRender(deepLinkElement);
+        browserSearchSettingsLink.shadowRoot.querySelector('cr-icon-button');
+    assertTrue(!!deepLinkElement);
+    await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
         'Preferred search dropdown should be focused for settingId=600.');

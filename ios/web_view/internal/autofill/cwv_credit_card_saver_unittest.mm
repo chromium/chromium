@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/compiler_specific.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
@@ -83,14 +82,13 @@ TEST_F(CWVCreditCardSaverTest, Ignore) {
                 decision);
           });
 
-  CWVCreditCardSaver* credit_card_saver =
+  [[maybe_unused]] CWVCreditCardSaver* credit_card_saver =
       [[CWVCreditCardSaver alloc] initWithCreditCard:credit_card
                                          saveOptions:options
                                    legalMessageLines:{}
                                   savePromptCallback:std::move(callback)];
   // Force -[CWVCreditCardSaver dealloc].
   credit_card_saver = nil;
-  ALLOW_UNUSED_LOCAL(credit_card_saver);
 
   EXPECT_TRUE(callback_called);
 }

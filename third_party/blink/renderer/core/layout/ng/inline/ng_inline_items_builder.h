@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -144,6 +144,7 @@ class NGInlineItemsBuilderTemplate {
   bool ShouldAbort() const { return false; }
 
   // Functions change |LayoutObject| states.
+  bool ShouldUpdateLayoutObject() const;
   void ClearInlineFragment(LayoutObject*);
   void ClearNeedsLayout(LayoutObject*);
   void UpdateShouldCreateBoxFragment(LayoutInline*);
@@ -176,9 +177,9 @@ class NGInlineItemsBuilderTemplate {
   struct BoxInfo {
     DISALLOW_NEW();
 
+    const ComputedStyle& style;
     unsigned item_index;
     bool should_create_box_fragment;
-    bool may_have_margin_;
     FontHeight text_metrics;
 
     BoxInfo(unsigned item_index, const NGInlineItem& item);
@@ -254,6 +255,10 @@ CORE_EXPORT bool
 NGInlineItemsBuilderTemplate<NGOffsetMappingBuilder>::AppendTextReusing(
     const NGInlineNodeData&,
     LayoutText*);
+
+template <>
+CORE_EXPORT bool NGInlineItemsBuilderTemplate<
+    NGOffsetMappingBuilder>::ShouldUpdateLayoutObject() const;
 
 template <>
 CORE_EXPORT void

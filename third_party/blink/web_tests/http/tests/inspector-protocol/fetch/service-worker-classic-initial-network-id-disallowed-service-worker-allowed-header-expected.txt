@@ -1,0 +1,7 @@
+Tests Service Worker (classic) Initial Registration emits Network Events for disallowed by Service-Worker-Allowed header
+==== INITIAL service worker request ====
+Registration Result: FAILURE: SecurityError: Failed to register a ServiceWorker for scope ('http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-workers/') with script ('http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-workers/worker.php?service_worker_allowed_header=%2Ffoo'): The path of the provided scope ('/inspector-protocol/fetch/resources/service-workers/') is not under the max scope allowed (set by Service-Worker-Allowed: '/foo'). Adjust the scope, move the Service Worker script, or use the Service-Worker-Allowed HTTP header to allow the scope.
+requestWillBeSent url: http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-workers/worker.php?service_worker_allowed_header=%2Ffoo
+responseReceived status: 200
+requestIds match: true
+

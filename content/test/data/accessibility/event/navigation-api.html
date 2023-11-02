@@ -1,0 +1,43 @@
+<!--
+@AURALINUX-DENY:STATE-CHANGE:DEFUNCT:TRUE*
+-->
+<!DOCTYPE html>
+<!-- https://github.com/wicg/navigation-api -->
+<title>Starting title</title>
+
+<main>
+  <p>Starting content</p>
+</main>
+
+<script>
+window.startSecondPass = undefined;
+
+navigation.addEventListener("navigate", ev => {
+  ev.intercept({ handler: doTransition });
+});
+
+async function doTransition() {
+  // Emulate a server round trip which only finishes once the accessibility
+  // test harness says the first pass has settled down.
+  //
+  // In a typical single-page app this would actually be `await fetch(...)` to
+  // get the data used below.
+  await new Promise(r => { window.startSecondPass = r; });
+
+  // Use the "data we got back from the server" to update the document.
+  document.title = "Ending title";
+  document.querySelector("main").innerHTML = `<p>Ending content</p>`;
+}
+
+let goPass = 1;
+window.go = () => {
+  if (goPass === 1) {
+    location.href = "this-will-be-converted-to-a-same-document-navigation.html";
+    ++goPass;
+    return true;
+  }
+
+  window.startSecondPass();
+  return false;
+};
+</script>

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/features.h"
@@ -46,10 +47,36 @@ CriticalClientHintsThrottle::CriticalClientHintsThrottle(
   LogCriticalCHStatus(CriticalCHRestart::kNavigationStarted);
 }
 
+CriticalClientHintsThrottle::~CriticalClientHintsThrottle() = default;
+
+void CriticalClientHintsThrottle::WillStartRequest(
+    network::ResourceRequest* request,
+    bool* defer) {
+  response_url_ = request->url;
+  initial_request_headers_ = request->headers;
+}
+
 void CriticalClientHintsThrottle::BeforeWillProcessResponse(
     const GURL& response_url,
     const network::mojom::URLResponseHead& response_head,
     bool* defer) {
+  DCHECK_EQ(response_url, response_url_);
+  MaybeRestartWithHints(response_head);
+}
+
+void CriticalClientHintsThrottle::BeforeWillRedirectRequest(
+    net::RedirectInfo* redirect_info,
+    const network::mojom::URLResponseHead& response_head,
+    bool* defer,
+    std::vector<std::string>* to_be_removed_request_headers,
+    net::HttpRequestHeaders* modified_request_headers,
+    net::HttpRequestHeaders* modified_cors_exempt_request_headers) {
+  MaybeRestartWithHints(response_head);
+  response_url_ = redirect_info->new_url;
+}
+
+void CriticalClientHintsThrottle::MaybeRestartWithHints(
+    const network::mojom::URLResponseHead& response_head) {
   if (!base::FeatureList::IsEnabled(features::kCriticalClientHint))
     return;
 
@@ -58,11 +85,23 @@ void CriticalClientHintsThrottle::BeforeWillProcessResponse(
       !response_head.parsed_headers->critical_ch)
     return;
 
+  url::Origin response_origin = url::Origin::Create(response_url_);
+
+  // Only restart once per-Origin (per navigation)
+  if (restarted_origins_.contains(response_origin))
+    return;
+
+  if (!ShouldAddClientHints(
+          response_origin, FrameTreeNode::GloballyFindByID(frame_tree_node_id_),
+          client_hint_delegate_)) {
+    return;
+  }
+
   // Ensure that only hints in the accept-ch header are examined
   blink::EnabledClientHints hints;
   for (const WebClientHintsType hint :
        response_head.parsed_headers->accept_ch.value())
-    hints.SetIsEnabled(response_url, /*third_party_url=*/nullptr,
+    hints.SetIsEnabled(response_url_, /*third_party_url=*/absl::nullopt,
                        response_head.headers.get(), hint, true);
 
   std::vector<WebClientHintsType> critical_hints;
@@ -76,38 +115,27 @@ void CriticalClientHintsThrottle::BeforeWillProcessResponse(
 
   LogCriticalCHStatus(CriticalCHRestart::kHeaderPresent);
 
-  // TODO(crbug.com/1228536): This isn't really used, just in the other call to
-  // the same function. A refactor is probably in order.
-  net::HttpRequestHeaders modified_headers;
-  if (ShouldRestartWithHints(response_url, critical_hints, modified_headers)) {
-    LogCriticalCHStatus(CriticalCHRestart::kNavigationRestarted);
-    ParseAndPersistAcceptCHForNavigation(
-        response_url, response_head.parsed_headers, response_head.headers.get(),
-        context_, client_hint_delegate_,
-        FrameTreeNode::GloballyFindByID(frame_tree_node_id_));
-    delegate_->RestartWithURLResetAndFlags(/*additional_load_flags=*/0);
-  }
-}
-
-bool CriticalClientHintsThrottle::ShouldRestartWithHints(
-    const GURL& response_url,
-    const std::vector<WebClientHintsType>& hints,
-    net::HttpRequestHeaders& modified_headers) {
   FrameTreeNode* frame_tree_node =
       FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
 
-  if (!AreCriticalHintsMissing(response_url, frame_tree_node,
-                               client_hint_delegate_, hints)) {
-    return false;
+  if (!AreCriticalHintsMissing(response_origin, frame_tree_node,
+                               client_hint_delegate_, critical_hints)) {
+    return;
   }
 
-  client_hint_delegate_->SetAdditionalClientHints(hints);
+  ParseAndPersistAcceptCHForNavigation(response_origin,
+                                       response_head.parsed_headers,
+                                       response_head.headers.get(), context_,
+                                       client_hint_delegate_, frame_tree_node);
+  restarted_origins_.insert(response_origin);
+
+  net::HttpRequestHeaders modified_headers;
   // TODO(crbug.com/1195034): If the frame tree node doesn't have an associated
   // navigation_request (e.g. a service worker request) it might not override
   // the user agent correctly.
   if (frame_tree_node) {
     AddNavigationRequestClientHintsHeaders(
-        response_url, &modified_headers, context_, client_hint_delegate_,
+        response_origin, &modified_headers, context_, client_hint_delegate_,
         frame_tree_node->navigation_request()->is_overriding_user_agent(),
         frame_tree_node,
         frame_tree_node->navigation_request()
@@ -115,10 +143,18 @@ bool CriticalClientHintsThrottle::ShouldRestartWithHints(
             .frame_policy.container_policy);
   } else {
     AddPrefetchNavigationRequestClientHintsHeaders(
-        response_url, &modified_headers, context_, client_hint_delegate_,
+        response_origin, &modified_headers, context_, client_hint_delegate_,
         /*is_ua_override_on=*/false, /*is_javascript_enabled=*/true);
   }
-  client_hint_delegate_->ClearAdditionalClientHints();
-  return true;
+
+  // If a client hint header is not in the original request,
+  // restart the request.
+  for (auto modified_header : modified_headers.GetHeaderVector()) {
+    if (!initial_request_headers_.HasHeader(modified_header.key)) {
+      LogCriticalCHStatus(CriticalCHRestart::kNavigationRestarted);
+      delegate_->RestartWithURLResetAndFlags(/*additional_load_flags=*/0);
+      return;
+    }
+  }
 }
 }  // namespace content

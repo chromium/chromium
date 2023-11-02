@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,8 +46,6 @@ ScopedJavaLocalRef<jbyteArray> ToJavaSerializedAnyMetadata(
   // We do not expect the following metadatas to be populated for optimization
   // types getting called from Java.
   DCHECK(!optimization_metadata.loading_predictor_metadata());
-  DCHECK(!optimization_metadata.public_image_metadata());
-  DCHECK(!optimization_metadata.performance_hints_metadata());
 
   if (optimization_metadata.any_metadata()) {
     std::string serialized;

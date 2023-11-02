@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,16 @@
 #include <memory>
 #include <utility>
 
+#include "base/callback.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/password_manager/ios/password_manager_ios_util.h"
+#import "ios/web_view/internal/app/application_context.h"
 #import "ios/web_view/internal/passwords/web_view_account_password_store_factory.h"
+#import "ios/web_view/internal/passwords/web_view_password_change_success_tracker_factory.h"
 #import "ios/web_view/internal/passwords/web_view_password_manager_log_router_factory.h"
 #import "ios/web_view/internal/passwords/web_view_password_requirements_service_factory.h"
 #import "ios/web_view/internal/passwords/web_view_password_reuse_manager_factory.h"
@@ -62,10 +65,13 @@ WebViewPasswordManagerClient::Create(web::WebState* web_state,
   password_manager::PasswordRequirementsService* requirements_service =
       WebViewPasswordRequirementsServiceFactory::GetForBrowserState(
           browser_state, ServiceAccessType::EXPLICIT_ACCESS);
+  password_manager::PasswordChangeSuccessTracker* password_change_tracker =
+      WebViewPasswordChangeSuccessTrackerFactory::GetForBrowserState(
+          browser_state, ServiceAccessType::EXPLICIT_ACCESS);
   return std::make_unique<ios_web_view::WebViewPasswordManagerClient>(
       web_state, sync_service, browser_state->GetPrefs(), identity_manager,
       std::move(log_manager), profile_store.get(), account_store.get(),
-      reuse_manager, requirements_service);
+      reuse_manager, requirements_service, password_change_tracker);
 }
 
 WebViewPasswordManagerClient::WebViewPasswordManagerClient(
@@ -77,7 +83,8 @@ WebViewPasswordManagerClient::WebViewPasswordManagerClient(
     PasswordStoreInterface* profile_store,
     PasswordStoreInterface* account_store,
     password_manager::PasswordReuseManager* reuse_manager,
-    password_manager::PasswordRequirementsService* requirements_service)
+    password_manager::PasswordRequirementsService* requirements_service,
+    password_manager::PasswordChangeSuccessTracker* password_change_tracker)
     : web_state_(web_state),
       sync_service_(sync_service),
       pref_service_(pref_service),
@@ -92,6 +99,7 @@ WebViewPasswordManagerClient::WebViewPasswordManagerClient(
           base::BindRepeating(&WebViewPasswordManagerClient::GetSyncService,
                               base::Unretained(this))),
       requirements_service_(requirements_service),
+      password_change_tracker_(password_change_tracker),
       helper_(this) {
   saving_passwords_enabled_.Init(
       password_manager::prefs::kCredentialsEnableService, GetPrefs());
@@ -139,11 +147,11 @@ void WebViewPasswordManagerClient::ShowManualFallbackForSaving(
     std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
     bool has_generated_password,
     bool is_update) {
-  NOTIMPLEMENTED();
+  // No op. We only show save dialogues after successful form submissions.
 }
 
 void WebViewPasswordManagerClient::HideManualFallbackForSaving() {
-  NOTIMPLEMENTED();
+  // No op. We only show save dialogues after successful form submissions.
 }
 
 void WebViewPasswordManagerClient::FocusedInputChanged(
@@ -181,6 +189,15 @@ PrefService* WebViewPasswordManagerClient::GetPrefs() const {
   return pref_service_;
 }
 
+PrefService* WebViewPasswordManagerClient::GetLocalStatePrefs() const {
+  return ApplicationContext::GetInstance()->GetLocalState();
+}
+
+const syncer::SyncService* WebViewPasswordManagerClient::GetSyncService()
+    const {
+  return sync_service_;
+}
+
 PasswordStoreInterface* WebViewPasswordManagerClient::GetProfilePasswordStore()
     const {
   return profile_store_;
@@ -199,6 +216,11 @@ WebViewPasswordManagerClient::GetPasswordReuseManager() const {
 password_manager::PasswordScriptsFetcher*
 WebViewPasswordManagerClient::GetPasswordScriptsFetcher() {
   return nullptr;
+}
+
+password_manager::PasswordChangeSuccessTracker*
+WebViewPasswordManagerClient::GetPasswordChangeSuccessTracker() {
+  return password_change_tracker_;
 }
 
 void WebViewPasswordManagerClient::NotifyUserAutoSignin(
@@ -229,7 +251,9 @@ void WebViewPasswordManagerClient::NotifyUserCredentialsWereLeaked(
     password_manager::CredentialLeakType leak_type,
     const GURL& origin,
     const std::u16string& username) {
-  [bridge_ showPasswordBreachForLeakType:leak_type URL:origin];
+  [bridge_ showPasswordBreachForLeakType:leak_type
+                                     URL:origin
+                                username:username];
 }
 
 bool WebViewPasswordManagerClient::IsSavingAndFillingEnabled(
@@ -256,8 +280,7 @@ WebViewPasswordManagerClient::GetStoreResultFilter() const {
   return &credentials_filter_;
 }
 
-const autofill::LogManager* WebViewPasswordManagerClient::GetLogManager()
-    const {
+autofill::LogManager* WebViewPasswordManagerClient::GetLogManager() {
   return log_manager_.get();
 }
 
@@ -307,10 +330,6 @@ bool WebViewPasswordManagerClient::IsAutofillAssistantUIVisible() const {
   return false;
 }
 
-const syncer::SyncService* WebViewPasswordManagerClient::GetSyncService() {
-  return sync_service_;
-}
-
 safe_browsing::PasswordProtectionService*
 WebViewPasswordManagerClient::GetPasswordProtectionService() const {
   // TODO(crbug.com/1148229): Enable PhishGuard in web_view.
@@ -322,7 +341,9 @@ void WebViewPasswordManagerClient::CheckProtectedPasswordEntry(
     const std::string& username,
     const std::vector<password_manager::MatchingReusedCredential>&
         matching_reused_credentials,
-    bool password_field_exists) {
+    bool password_field_exists,
+    uint64_t reused_password_hash,
+    const std::string& domain) {
   // TODO(crbug.com/1147967): Enable PhishGuard in web_view.
 }
 

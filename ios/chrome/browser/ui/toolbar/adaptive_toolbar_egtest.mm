@@ -1,28 +1,27 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/bind.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/strings/grit/components_strings.h"
+#import "base/bind.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_app_interface.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
-#include "ios/testing/earl_grey/disabled_test_macros.h"
 #import "ios/testing/earl_grey/disabled_test_macros.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#include "ios/web/common/features.h"
-#include "ios/web/public/test/element_selector.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "ios/web/common/features.h"
+#import "ios/web/public/test/element_selector.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "net/test/embedded_test_server/http_request.h"
+#import "net/test/embedded_test_server/http_response.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -127,7 +126,7 @@ id<GREYMatcher> VisibleInSecondaryToolbar() {
       grey_sufficientlyVisible(), nil);
 }
 
-// Checks that the element designated by |matcher| is |visible| in the primary
+// Checks that the element designated by `matcher` is `visible` in the primary
 // toolbar.
 void CheckVisibleInPrimaryToolbar(id<GREYMatcher> matcher, BOOL visible) {
   id<GREYMatcher> assertionMatcher = visible ? grey_notNil() : grey_nil();
@@ -137,7 +136,7 @@ void CheckVisibleInPrimaryToolbar(id<GREYMatcher> matcher, BOOL visible) {
       assertWithMatcher:assertionMatcher];
 }
 
-// Checks that the element designed by |matcher| is |visible| in the secondary
+// Checks that the element designed by `matcher` is `visible` in the secondary
 // toolbar.
 void CheckVisibleInSecondaryToolbar(id<GREYMatcher> matcher, BOOL visible) {
   id<GREYMatcher> assertionMatcher = visible ? grey_notNil() : grey_nil();
@@ -167,8 +166,8 @@ UITraitCollection* RotateOrChangeTraitCollection(
   }
 }
 
-// Checks that the element associated with |matcher| is visible in the toolbar
-// defined by |visibility|.
+// Checks that the element associated with `matcher` is visible in the toolbar
+// defined by `visibility`.
 void CheckVisibilityInToolbar(id<GREYMatcher> matcher,
                               ButtonVisibility visibility) {
   CheckVisibleInPrimaryToolbar(matcher, visibility == ButtonVisibilityPrimary);
@@ -273,7 +272,7 @@ void CheckButtonsVisibilityIPad() {
 }
 
 // Check that the button displayed are the ones which should be displayed in the
-// environment described by |traitCollection| and with |omniboxFocused|.
+// environment described by `traitCollection` and with `omniboxFocused`.
 void CheckToolbarButtonVisibility(UITraitCollection* traitCollection,
                                   BOOL omniboxFocused) {
   CheckOmniboxVisibility(omniboxFocused);
@@ -491,9 +490,7 @@ UIViewController* TopPresentedViewController() {
                         true /* menu should appear */)];
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::StaticTextWithAccessibilityLabelId(
-                     web::features::UseWebViewNativeContextMenuSystem()
-                         ? IDS_IOS_OPEN_IN_INCOGNITO_ACTION_TITLE
-                         : IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWINCOGNITOTAB)]
+                     IDS_IOS_OPEN_IN_INCOGNITO_ACTION_TITLE)]
       performAction:grey_tap()];
 
   // Check the buttons status.

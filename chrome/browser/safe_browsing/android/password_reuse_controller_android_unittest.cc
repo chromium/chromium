@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,8 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
@@ -81,14 +79,7 @@ TEST_F(PasswordReuseControllerAndroidTest, VerifyButtonText) {
               controller->GetPrimaryButtonText());
     ASSERT_EQ(std::u16string(), controller->GetSecondaryButtonText());
   }
-
   {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatures(
-        {safe_browsing::
-             kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid},
-        {});
-
     password_type.set_account_type(ReusedPasswordAccountType::SAVED_PASSWORD);
     password_type.set_is_account_syncing(false);
 
@@ -100,46 +91,7 @@ TEST_F(PasswordReuseControllerAndroidTest, VerifyButtonText) {
         l10n_util::GetStringUTF16(IDS_PAGE_INFO_IGNORE_PASSWORD_WARNING_BUTTON),
         controller->GetSecondaryButtonText());
   }
-
   {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatures(
-        {safe_browsing::
-             kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid},
-        {});
-
-    password_type.set_account_type(ReusedPasswordAccountType::GMAIL);
-    password_type.set_is_account_syncing(true);
-
-    controller->SetReusedPasswordAccountTypeForTesting(password_type);
-
-    ASSERT_EQ(l10n_util::GetStringUTF16(IDS_CLOSE),
-              controller->GetPrimaryButtonText());
-    ASSERT_EQ(std::u16string(), controller->GetSecondaryButtonText());
-  }
-
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatures(
-        {safe_browsing::kPasswordProtectionForSignedInUsers},
-        {safe_browsing::
-             kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid});
-
-    password_type.set_account_type(ReusedPasswordAccountType::SAVED_PASSWORD);
-    password_type.set_is_account_syncing(false);
-
-    controller->SetReusedPasswordAccountTypeForTesting(password_type);
-
-    ASSERT_EQ(l10n_util::GetStringUTF16(IDS_CLOSE),
-              controller->GetPrimaryButtonText());
-    ASSERT_EQ(std::u16string(), controller->GetSecondaryButtonText());
-  }
-
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatures(
-        {safe_browsing::kPasswordProtectionForSignedInUsers}, {});
-
     password_type.set_account_type(ReusedPasswordAccountType::GMAIL);
     password_type.set_is_account_syncing(true);
 
@@ -151,15 +103,7 @@ TEST_F(PasswordReuseControllerAndroidTest, VerifyButtonText) {
         l10n_util::GetStringUTF16(IDS_PAGE_INFO_IGNORE_PASSWORD_WARNING_BUTTON),
         controller->GetSecondaryButtonText());
   }
-
   {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatures(
-        {safe_browsing::
-             kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid,
-         safe_browsing::kPasswordProtectionForSignedInUsers},
-        {});
-
     ReusedPasswordAccountType empty_reused_password;
     controller->SetReusedPasswordAccountTypeForTesting(empty_reused_password);
 
@@ -167,95 +111,7 @@ TEST_F(PasswordReuseControllerAndroidTest, VerifyButtonText) {
               controller->GetPrimaryButtonText());
     ASSERT_EQ(std::u16string(), controller->GetSecondaryButtonText());
   }
-
   {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatures(
-        {safe_browsing::
-             kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid,
-         safe_browsing::kPasswordProtectionForSignedInUsers},
-        {});
-
-    password_type.set_account_type(ReusedPasswordAccountType::SAVED_PASSWORD);
-    password_type.set_is_account_syncing(false);
-
-    controller->SetReusedPasswordAccountTypeForTesting(password_type);
-
-    ASSERT_EQ(l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHECK_PASSWORDS_BUTTON),
-              controller->GetPrimaryButtonText());
-    ASSERT_EQ(
-        l10n_util::GetStringUTF16(IDS_PAGE_INFO_IGNORE_PASSWORD_WARNING_BUTTON),
-        controller->GetSecondaryButtonText());
-  }
-
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatures(
-        {safe_browsing::
-             kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid,
-         safe_browsing::kPasswordProtectionForSignedInUsers},
-        {});
-
-    password_type.set_account_type(ReusedPasswordAccountType::GMAIL);
-    password_type.set_is_account_syncing(true);
-
-    controller->SetReusedPasswordAccountTypeForTesting(password_type);
-
-    ASSERT_EQ(l10n_util::GetStringUTF16(IDS_PAGE_INFO_PROTECT_ACCOUNT_BUTTON),
-              controller->GetPrimaryButtonText());
-    ASSERT_EQ(
-        l10n_util::GetStringUTF16(IDS_PAGE_INFO_IGNORE_PASSWORD_WARNING_BUTTON),
-        controller->GetSecondaryButtonText());
-  }
-
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatures(
-        {safe_browsing::
-             kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid,
-         safe_browsing::kPasswordProtectionForSignedInUsers},
-        {});
-
-    password_type.set_account_type(ReusedPasswordAccountType::SAVED_PASSWORD);
-    password_type.set_is_account_syncing(false);
-
-    controller->SetReusedPasswordAccountTypeForTesting(password_type);
-
-    ASSERT_EQ(l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHECK_PASSWORDS_BUTTON),
-              controller->GetPrimaryButtonText());
-    ASSERT_EQ(
-        l10n_util::GetStringUTF16(IDS_PAGE_INFO_IGNORE_PASSWORD_WARNING_BUTTON),
-        controller->GetSecondaryButtonText());
-  }
-
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatures(
-        {safe_browsing::
-             kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid,
-         safe_browsing::kPasswordProtectionForSignedInUsers},
-        {});
-
-    password_type.set_account_type(ReusedPasswordAccountType::GMAIL);
-    password_type.set_is_account_syncing(true);
-
-    controller->SetReusedPasswordAccountTypeForTesting(password_type);
-
-    ASSERT_EQ(l10n_util::GetStringUTF16(IDS_PAGE_INFO_PROTECT_ACCOUNT_BUTTON),
-              controller->GetPrimaryButtonText());
-    ASSERT_EQ(
-        l10n_util::GetStringUTF16(IDS_PAGE_INFO_IGNORE_PASSWORD_WARNING_BUTTON),
-        controller->GetSecondaryButtonText());
-  }
-
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatures(
-        {safe_browsing::
-             kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid,
-         safe_browsing::kPasswordProtectionForSignedInUsers},
-        {});
-
     password_type.set_account_type(ReusedPasswordAccountType::GMAIL);
     password_type.set_is_account_syncing(false);
 
@@ -267,6 +123,24 @@ TEST_F(PasswordReuseControllerAndroidTest, VerifyButtonText) {
   }
 
   delete controller;
+}
+
+TEST_F(PasswordReuseControllerAndroidTest, WebContentDestroyed) {
+  base::HistogramTester histograms;
+  ReusedPasswordAccountType password_type;
+
+  MakeController(
+      nullptr, password_type,
+      base::BindOnce(
+          &PasswordReuseControllerAndroidTest::AssertWarningActionEquality,
+          base::Unretained(this), WarningAction::IGNORE_WARNING));
+
+  DeleteContents();
+  // This histogram is logged in the destructor of the controller. If it is
+  // logged, it indicates that the controller is properly destroyed after the
+  // WebContents is destroyed.
+  histograms.ExpectTotalCount("PasswordProtection.ModalWarningDialogLifetime",
+                              /*count=*/1);
 }
 
 }  // namespace safe_browsing

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,8 @@
 #include "components/exo/client_controlled_shell_surface.h"
 #include "components/exo/input_method_surface.h"
 #include "components/exo/notification_surface.h"
+#include "components/exo/seat.h"
+#include "components/exo/seat_observer.h"
 #include "components/exo/surface.h"
 #include "components/exo/toast_surface.h"
 #include "components/exo/wayland/wayland_display_observer.h"
@@ -26,14 +28,16 @@ using chromeos::WindowStateType;
 class WaylandRemoteOutput : public WaylandDisplayObserver {
  public:
   WaylandRemoteOutput(wl_resource* resource,
-                      WaylandRemoteOutputEventMapping event_mapping)
-      : resource_(resource), event_mapping_(event_mapping) {}
+                      WaylandRemoteOutputEventMapping event_mapping,
+                      WaylandDisplayHandler* display_handler);
   WaylandRemoteOutput(const WaylandRemoteOutput&) = delete;
   WaylandRemoteOutput& operator=(const WaylandRemoteOutput&) = delete;
+  ~WaylandRemoteOutput() override;
 
   // Overridden from WaylandDisplayObserver:
   bool SendDisplayMetrics(const display::Display& display,
                           uint32_t changed_metrics) override;
+  void OnOutputDestroyed() override;
 
  private:
   wl_resource* const resource_;
@@ -41,12 +45,15 @@ class WaylandRemoteOutput : public WaylandDisplayObserver {
   bool initial_config_sent_ = false;
 
   WaylandRemoteOutputEventMapping const event_mapping_;
+
+  WaylandDisplayHandler* display_handler_;
 };
 
 // Implements remote shell interface and monitors workspace state needed
 // for the remote shell interface.
 class WaylandRemoteShell : public ash::TabletModeObserver,
-                           public display::DisplayObserver {
+                           public display::DisplayObserver,
+                           public SeatObserver {
  public:
   using OutputResourceProvider = base::RepeatingCallback<wl_resource*(int64_t)>;
 
@@ -84,10 +91,13 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
   void SetUseDefaultScaleCancellation(bool use_default_scale);
 
   void OnRemoteSurfaceDestroyed(wl_resource* resource);
+
   // Overridden from display::DisplayObserver:
+  void OnWillProcessDisplayChanges() override;
+  void OnDidProcessDisplayChanges() override;
   void OnDisplayAdded(const display::Display& new_display) override;
   void OnDisplayRemoved(const display::Display& old_display) override;
-
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
 
@@ -96,9 +106,16 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
   void OnTabletModeEnding() override;
   void OnTabletModeEnded() override;
 
+  // Overridden from SeatObserver:
+  void OnSurfaceFocused(Surface* gained_focus,
+                        Surface* lost_focus,
+                        bool has_focused_surface) override;
+
   WaylandRemoteShellEventMapping const event_mapping_;
 
  private:
+  friend class WaylandRemoteShellTest;
+
   void ScheduleSendDisplayMetrics(int delay_ms);
 
   // Returns the transform that a display's output is currently adjusted for.
@@ -156,13 +173,18 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
   // in v2 this is always false.
   bool use_default_scale_cancellation_;
 
+  bool in_display_update_;
   bool needs_send_display_metrics_ = true;
 
   int layout_mode_ = ZCR_REMOTE_SHELL_V1_LAYOUT_MODE_WINDOWED;
 
   base::flat_map<wl_resource*, BoundsChangeData> pending_bounds_changes_;
 
+  bool last_has_focused_client_ = false;
+
   display::ScopedDisplayObserver display_observer_{this};
+
+  Seat* const seat_;
 
   base::WeakPtrFactory<WaylandRemoteShell> weak_ptr_factory_{this};
 

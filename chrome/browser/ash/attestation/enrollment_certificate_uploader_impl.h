@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,10 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/enrollment_certificate_uploader.h"
-// TODO(https://crbug.com/1164001): forward declare AttestationFlow
-// after //chromeos/attestation is moved to ash.
-#include "chromeos/attestation/attestation_flow.h"
-#include "chromeos/dbus/constants/attestation_constants.h"
+#include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 
 namespace policy {
 class CloudPolicyClient;
@@ -24,6 +21,8 @@ class CloudPolicyClient;
 
 namespace ash {
 namespace attestation {
+
+class AttestationFlow;
 
 // A class which uploads enterprise enrollment certificates.
 class EnrollmentCertificateUploaderImpl : public EnrollmentCertificateUploader {

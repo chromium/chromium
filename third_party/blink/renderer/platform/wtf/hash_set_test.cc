@@ -192,7 +192,7 @@ TEST(HashSetTest, HashSetOwnPtr) {
 
   set.clear();
   EXPECT_TRUE(deleted2);
-  EXPECT_TRUE(set.IsEmpty());
+  EXPECT_TRUE(set.empty());
 
   deleted1 = false;
   deleted2 = false;
@@ -217,7 +217,7 @@ TEST(HashSetTest, HashSetOwnPtr) {
     own_ptr1 = inner_set.Take(ptr1);
     EXPECT_EQ(1UL, inner_set.size());
     own_ptr2 = inner_set.TakeAny();
-    EXPECT_TRUE(inner_set.IsEmpty());
+    EXPECT_TRUE(inner_set.empty());
   }
   EXPECT_FALSE(deleted1);
   EXPECT_FALSE(deleted2);
@@ -250,7 +250,7 @@ TEST(HashSetTest, HashSetRefPtr) {
 
   set.erase(raw_ptr);
   EXPECT_TRUE(is_deleted);
-  EXPECT_TRUE(set.IsEmpty());
+  EXPECT_TRUE(set.empty());
   EXPECT_EQ(1, DummyRefCounted::ref_invokes_count_);
 }
 
@@ -383,7 +383,7 @@ HashSet<int> ReturnOneTwoThreeSet() {
 
 TEST(HashSetTest, InitializerList) {
   HashSet<int> empty({});
-  EXPECT_TRUE(empty.IsEmpty());
+  EXPECT_TRUE(empty.empty());
 
   HashSet<int> one({1});
   EXPECT_EQ(1u, one.size());
@@ -401,7 +401,7 @@ TEST(HashSetTest, InitializerList) {
   one_two_three.insert(9999);
 
   empty = {};
-  EXPECT_TRUE(empty.IsEmpty());
+  EXPECT_TRUE(empty.empty());
 
   one = {1};
   EXPECT_EQ(1u, one.size());

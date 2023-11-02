@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,10 +18,10 @@
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
-#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
@@ -45,6 +45,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/browser/updater/extension_downloader_test_helper.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/file_util.h"
@@ -61,7 +62,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
-#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
+#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #endif
@@ -75,14 +76,6 @@ constexpr char kServedDirName[] = "served";
 constexpr char kCrxFileNameTemplate[] = "%s-%s.crx";
 // Template for the file name of a served update manifest file.
 constexpr char kUpdateManifestFileNameTemplate[] = "%s.xml";
-// Template for the update manifest contents.
-constexpr char kUpdateManifestTemplate[] =
-    R"(<?xml version='1.0' encoding='UTF-8'?>
-       <gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>
-         <app appid='$1'>
-           <updatecheck codebase='$2' version='$3' />
-         </app>
-       </gupdate>)";
 
 // Implements waiting until the given extension appears in the
 // force-installation pref.
@@ -100,7 +93,7 @@ class ForceInstallPrefObserver final {
   void OnPrefChanged();
   bool IsForceInstallPrefSet() const;
 
-  PrefService* const pref_service_;
+  const raw_ptr<PrefService> pref_service_;
   const std::string pref_name_;
   const extensions::ExtensionId extension_id_;
   PrefChangeRegistrar pref_change_registrar_;
@@ -169,7 +162,7 @@ class ForceInstallWaiter final {
 
   const ExtensionForceInstallMixin::WaitMode wait_mode_;
   const extensions::ExtensionId extension_id_;
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
   std::unique_ptr<ForceInstallPrefObserver> force_install_pref_observer_;
   std::unique_ptr<extensions::TestExtensionRegistryObserver> registry_observer_;
   std::unique_ptr<extensions::ExtensionHostTestHelper>
@@ -254,10 +247,10 @@ std::string GetServedCrxFileName(const extensions::ExtensionId& extension_id,
 std::string GenerateUpdateManifest(const extensions::ExtensionId& extension_id,
                                    const base::Version& extension_version,
                                    const GURL& crx_url) {
-  return base::ReplaceStringPlaceholders(
-      kUpdateManifestTemplate,
-      {extension_id, crx_url.spec(), extension_version.GetString()},
-      /*offsets=*/nullptr);
+  return extensions::CreateUpdateManifest(
+      {extensions::UpdateManifestItem(extension_id)
+           .codebase(crx_url.spec())
+           .version(extension_version.GetString())});
 }
 
 bool ParseExtensionManifestData(const base::FilePath& extension_dir_path,
@@ -274,15 +267,15 @@ bool ParseExtensionManifestData(const base::FilePath& extension_dir_path,
                   << extension_dir_path.value() << ": " << error_message;
     return false;
   }
-  std::string version_string;
-  if (!extension_manifest->GetString(extensions::manifest_keys::kVersion,
-                                     &version_string)) {
+  const std::string* version_string = extension_manifest->GetDict().FindString(
+      extensions::manifest_keys::kVersion);
+  if (!version_string) {
     ADD_FAILURE() << "Failed to load extension version from "
                   << extension_dir_path.value()
                   << ": manifest key missing or has wrong type";
     return false;
   }
-  *extension_version = base::Version(version_string);
+  *extension_version = base::Version(*version_string);
   if (!extension_version->IsValid()) {
     ADD_FAILURE() << "Failed to load extension version from "
                   << extension_dir_path.value() << ": bad format";
@@ -345,9 +338,9 @@ void UpdatePolicyViaMockPolicyProvider(
           .Clone();
   policy::PolicyMap::Entry* const existing_entry =
       policy_map.GetMutable(policy::key::kExtensionInstallForcelist);
-  if (existing_entry) {
+  if (existing_entry && existing_entry->value(base::Value::Type::LIST)) {
     // Append to the existing policy.
-    existing_entry->value()->Append(policy_item_value);
+    existing_entry->value(base::Value::Type::LIST)->Append(policy_item_value);
   } else {
     // Set the new policy value.
     base::Value policy_value(base::Value::Type::LIST);
@@ -385,10 +378,10 @@ void UpdatePolicyViaDevicePolicyCrosTestHelper(
   device_policy_cros_test_helper->RefreshDevicePolicy();
 }
 
-void UpdatePolicyViaLocalPolicyMixin(
+void UpdatePolicyViaEmbeddedPolicyMixin(
     const extensions::ExtensionId& extension_id,
     const GURL& update_manifest_url,
-    ash::LocalPolicyTestServerMixin* local_policy_mixin,
+    ash::EmbeddedPolicyTestServerMixin* policy_test_server_mixin,
     policy::UserPolicyBuilder* user_policy_builder,
     const std::string& account_id,
     const std::string& policy_type,
@@ -400,12 +393,9 @@ void UpdatePolicyViaLocalPolicyMixin(
           MakeForceInstallPolicyItemValue(extension_id, update_manifest_url));
   user_policy_builder->Build();
 
-  if (!local_policy_mixin->server()->UpdatePolicy(
-          policy_type, account_id,
-          user_policy_builder->payload().SerializeAsString())) {
-    ADD_FAILURE() << "Local policy test server update failed";
-    return;
-  }
+  policy_test_server_mixin->UpdatePolicy(
+      policy_type, account_id,
+      user_policy_builder->payload().SerializeAsString());
 
   base::RunLoop run_loop;
   g_browser_process->policy_service()->RefreshPolicies(run_loop.QuitClosure());
@@ -485,25 +475,25 @@ void ExtensionForceInstallMixin::InitWithDevicePolicyCrosTestHelper(
   device_policy_cros_test_helper_ = device_policy_cros_test_helper;
 }
 
-void ExtensionForceInstallMixin::InitWithLocalPolicyMixin(
+void ExtensionForceInstallMixin::InitWithEmbeddedPolicyMixin(
     Profile* profile,
-    ash::LocalPolicyTestServerMixin* local_policy_mixin,
+    ash::EmbeddedPolicyTestServerMixin* policy_test_server_mixin,
     policy::UserPolicyBuilder* user_policy_builder,
     const std::string& account_id,
     const std::string& policy_type) {
-  DCHECK(local_policy_mixin);
+  DCHECK(policy_test_server_mixin);
   DCHECK(user_policy_builder);
   DCHECK(!account_id.empty());
   DCHECK(!policy_type.empty());
   DCHECK(!initialized_) << "Init already called";
   DCHECK(!profile_);
-  DCHECK(!local_policy_mixin_);
+  DCHECK(!policy_test_server_mixin_);
   DCHECK(!user_policy_builder_);
   DCHECK(account_id_.empty());
   DCHECK(policy_type_.empty());
   initialized_ = true;
   profile_ = profile;
-  local_policy_mixin_ = local_policy_mixin;
+  policy_test_server_mixin_ = policy_test_server_mixin;
   user_policy_builder_ = user_policy_builder;
   account_id_ = account_id;
   policy_type_ = policy_type;
@@ -836,11 +826,11 @@ bool ExtensionForceInstallMixin::UpdatePolicy(
                                               device_policy_cros_test_helper_);
     return true;
   }
-  if (local_policy_mixin_) {
+  if (policy_test_server_mixin_) {
     bool success = false;
-    UpdatePolicyViaLocalPolicyMixin(extension_id, update_manifest_url,
-                                    local_policy_mixin_, user_policy_builder_,
-                                    account_id_, policy_type_, &success);
+    UpdatePolicyViaEmbeddedPolicyMixin(
+        extension_id, update_manifest_url, policy_test_server_mixin_,
+        user_policy_builder_, account_id_, policy_type_, &success);
     return success;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

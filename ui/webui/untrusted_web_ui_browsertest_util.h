@@ -1,36 +1,20 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_WEBUI_UNTRUSTED_WEB_UI_BROWSERTEST_UTIL_H_
 #define UI_WEBUI_UNTRUSTED_WEB_UI_BROWSERTEST_UTIL_H_
 
+#include "content/public/browser/webui_config.h"
 #include "content/public/test/web_ui_browsertest_util.h"
-#include "ui/webui/untrusted_web_ui_controller.h"
-#include "ui/webui/untrusted_web_ui_controller_factory.h"
-#include "ui/webui/webui_config.h"
+
+namespace content {
+class WebUIController;
+}
 
 namespace ui {
 
-class TestUntrustedWebUIControllerFactory
-    : public ui::UntrustedWebUIControllerFactory {
- public:
-  TestUntrustedWebUIControllerFactory();
-  ~TestUntrustedWebUIControllerFactory() override;
-
-  void add_web_ui_config(std::unique_ptr<ui::WebUIConfig> config) {
-    const std::string host = config->host();
-    configs_.insert(std::make_pair(host, std::move(config)));
-  }
-
- protected:
-  const WebUIConfigMap& GetWebUIConfigMap() override;
-
- private:
-  WebUIConfigMap configs_;
-};
-
-class TestUntrustedWebUIConfig : public ui::WebUIConfig {
+class TestUntrustedWebUIConfig : public content::WebUIConfig {
  public:
   explicit TestUntrustedWebUIConfig(base::StringPiece host);
   TestUntrustedWebUIConfig(
@@ -42,15 +26,6 @@ class TestUntrustedWebUIConfig : public ui::WebUIConfig {
       content::WebUI* web_ui) override;
 
   const content::TestUntrustedDataSourceHeaders headers_;
-};
-
-class TestUntrustedWebUIController : public ui::UntrustedWebUIController {
- public:
-  TestUntrustedWebUIController(
-      content::WebUI* web_ui,
-      const std::string& host,
-      const content::TestUntrustedDataSourceHeaders& headers);
-  ~TestUntrustedWebUIController() override;
 };
 
 }  // namespace ui

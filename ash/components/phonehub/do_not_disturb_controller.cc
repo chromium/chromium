@@ -1,10 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/components/phonehub/do_not_disturb_controller.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 DoNotDisturbController::DoNotDisturbController() = default;
@@ -25,4 +25,4 @@ void DoNotDisturbController::NotifyDndStateChanged() {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

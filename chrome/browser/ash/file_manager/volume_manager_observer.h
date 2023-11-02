@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,17 +7,18 @@
 
 #include <string>
 
-#include "chromeos/dbus/cros_disks/cros_disks_client.h"
+#include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 
-namespace chromeos {
+namespace ash {
 namespace disks {
 class Disk;
 }  // namespace disks
-}  // namespace chromeos
+}  // namespace ash
 
 namespace file_manager {
 
 class Volume;
+class VolumeManager;
 
 // Observer interface of volume related events.
 class VolumeManagerObserver {
@@ -25,10 +26,10 @@ class VolumeManagerObserver {
   virtual ~VolumeManagerObserver() = default;
 
   // Fired when a new disk is added.
-  virtual void OnDiskAdded(const chromeos::disks::Disk& disk, bool mounting) {}
+  virtual void OnDiskAdded(const ash::disks::Disk& disk, bool mounting) {}
 
   // Fired when a disk is removed.
-  virtual void OnDiskRemoved(const chromeos::disks::Disk& disk) {}
+  virtual void OnDiskRemoved(const ash::disks::Disk& disk) {}
 
   // Fired when a new device is added.
   virtual void OnDeviceAdded(const std::string& device_path) {}
@@ -37,11 +38,11 @@ class VolumeManagerObserver {
   virtual void OnDeviceRemoved(const std::string& device_path) {}
 
   // Fired when a volume is mounted.
-  virtual void OnVolumeMounted(chromeos::MountError error_code,
+  virtual void OnVolumeMounted(ash::MountError error_code,
                                const Volume& volume) {}
 
   // Fired when a volume is unmounted.
-  virtual void OnVolumeUnmounted(chromeos::MountError error_code,
+  virtual void OnVolumeUnmounted(ash::MountError error_code,
                                  const Volume& volume) {}
 
   // Fired when formatting a device is started (or failed to start).
@@ -73,6 +74,9 @@ class VolumeManagerObserver {
   virtual void OnRenameCompleted(const std::string& device_path,
                                  const std::string& device_label,
                                  bool success) {}
+
+  // Fired when the observed VolumeManager is starting to shut down.
+  virtual void OnShutdownStart(VolumeManager* volume_manager) {}
 };
 
 }  // namespace file_manager

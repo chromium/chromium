@@ -1,11 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "cc/trees/frame_rate_estimator.h"
 
-#include "base/cxx17_backports.h"
 #include "base/test/test_simple_task_runner.h"
+#include "base/time/time.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -82,10 +82,10 @@ TEST_F(FrameRateEstimatorTest, RafAtHalfFps) {
   const base::TimeDelta kIntervalForHalfFps =
       viz::BeginFrameArgs::DefaultInterval() * 2;
   base::TimeTicks time;
-  for (size_t i = 0; i <= base::size(kIntervals); ++i) {
+  for (size_t i = 0; i <= std::size(kIntervals); ++i) {
     estimator_->WillDraw(time);
     EXPECT_EQ(kIntervalForHalfFps, estimator_->GetPreferredInterval());
-    if (i < base::size(kIntervals))
+    if (i < std::size(kIntervals))
       time += kIntervals[i];
   }
 }

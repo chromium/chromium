@@ -1,10 +1,13 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/views/controls/button/radio_button.h"
 
+#include "base/auto_reset.h"
 #include "base/check.h"
+#include "base/ranges/algorithm.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -42,12 +45,22 @@ void RadioButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 View* RadioButton::GetSelectedViewForGroup(int group) {
   Views views;
   GetViewsInGroupFromParent(group, &views);
-  const auto i =
-      std::find_if(views.cbegin(), views.cend(), [](const auto* view) {
-        // Why don't we check the runtime type like is done in SetChecked()?
-        return static_cast<const RadioButton*>(view)->GetChecked();
-      });
+  const auto i = base::ranges::find_if(views, [](const auto* view) {
+    // Why don't we check the runtime type like is done in SetChecked()?
+    return static_cast<const RadioButton*>(view)->GetChecked();
+  });
   return (i == views.cend()) ? nullptr : *i;
+}
+
+bool RadioButton::HandleAccessibleAction(const ui::AXActionData& action_data) {
+  if (action_data.action == ax::mojom::Action::kFocus) {
+    if (IsAccessibilityFocusable()) {
+      base::AutoReset<bool> reset(&select_on_focus_, false);
+      RequestFocus();
+      return true;
+    }
+  }
+  return Checkbox::HandleAccessibleAction(action_data);
 }
 
 bool RadioButton::IsGroupFocusTraversable() const {
@@ -58,7 +71,8 @@ bool RadioButton::IsGroupFocusTraversable() const {
 
 void RadioButton::OnFocus() {
   Checkbox::OnFocus();
-  SetChecked(true);
+  if (select_on_focus_)
+    SetChecked(true);
 }
 
 void RadioButton::OnThemeChanged() {
@@ -71,8 +85,7 @@ void RadioButton::RequestFocusFromEvent() {
   // Take focus only if another radio button in the group has focus.
   Views views;
   GetViewsInGroupFromParent(GetGroup(), &views);
-  if (std::any_of(views.begin(), views.end(),
-                  [](View* v) { return v->HasFocus(); }))
+  if (base::ranges::any_of(views, [](View* v) { return v->HasFocus(); }))
     RequestFocus();
 }
 

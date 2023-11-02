@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define NET_SSL_CLIENT_CERT_STORE_NSS_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "net/base/net_export.h"
 #include "net/ssl/client_cert_store.h"
 
@@ -23,10 +22,9 @@ class SSLCertRequestInfo;
 
 class NET_EXPORT ClientCertStoreNSS : public ClientCertStore {
  public:
-  typedef base::RepeatingCallback<crypto::CryptoModuleBlockingPasswordDelegate*(
-      const HostPortPair& /* server */)>
-      PasswordDelegateFactory;
-
+  using PasswordDelegateFactory =
+      base::RepeatingCallback<crypto::CryptoModuleBlockingPasswordDelegate*(
+          const HostPortPair& /* server */)>;
   using CertFilter = base::RepeatingCallback<bool(CERTCertificate*)>;
 
   explicit ClientCertStoreNSS(

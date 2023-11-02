@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,36 @@
 #include <utility>
 
 #include "base/auto_reset.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "printing/backend/win_helper.h"
+#include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_settings_initializer_win.h"
 #include "skia/ext/skia_utils_win.h"
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+#include "printing/printing_features.h"
+#endif
+
 namespace printing {
+
+HWND PrintingContextSystemDialogWin::GetWindow() {
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  if (features::kEnableOopPrintDriversJobPrint.Get()) {
+    // Delving through the view tree to get to root window happens separately
+    // in the browser process (i.e., not in `PrintingContextSystemDialogWin`)
+    // before sending the identified window owner to the Print Backend service.
+    // This means that this call is happening in the service, and thus should
+    // just use the parent view as-is instead of looking for the root window.
+    // TODO(crbug.com/809738)  Pursue having a service-level instantiation of
+    // `PrintingContextSystemDialogWin` for this behavior.  That would ensure
+    // this logic would be compile-time driven and only invoked by the service.
+    return reinterpret_cast<HWND>(delegate_->GetParentView());
+  }
+#endif
+  return GetRootWindow(delegate_->GetParentView());
+}
 
 PrintingContextSystemDialogWin::PrintingContextSystemDialogWin(
     Delegate* delegate)
@@ -30,7 +51,7 @@ void PrintingContextSystemDialogWin::AskUserForSettings(
     PrintSettingsCallback callback) {
   DCHECK(!in_print_job_);
 
-  HWND window = GetRootWindow(delegate_->GetParentView());
+  HWND window = GetWindow();
   DCHECK(window);
 
   // Show the OS-dependent dialog box.
@@ -59,7 +80,7 @@ void PrintingContextSystemDialogWin::AskUserForSettings(
     ranges[0].nFromPage = 1;
     ranges[0].nToPage = max_pages;
     dialog_options.nPageRanges = 1;
-    dialog_options.nMaxPageRanges = base::size(ranges);
+    dialog_options.nMaxPageRanges = std::size(ranges);
     dialog_options.nMinPage = 1;
     dialog_options.nMaxPage = max_pages;
     dialog_options.lpPageRanges = ranges;
@@ -147,12 +168,10 @@ mojom::ResultCode PrintingContextSystemDialogWin::ParseDialogResultEx(
     const PRINTDLGEX& dialog_options) {
   // If the user clicked OK or Apply then Cancel, but not only Cancel.
   if (dialog_options.dwResultAction != PD_RESULT_CANCEL) {
-    // Start fresh, but preserve is_modifiable and GDI print setting.
+    // Start fresh, but preserve is_modifiable print setting.
     bool is_modifiable = settings_->is_modifiable();
-    bool print_text_with_gdi = settings_->print_text_with_gdi();
     ResetSettings();
     settings_->set_is_modifiable(is_modifiable);
-    settings_->set_print_text_with_gdi(print_text_with_gdi);
 
     DEVMODE* dev_mode = NULL;
     if (dialog_options.hDevMode) {

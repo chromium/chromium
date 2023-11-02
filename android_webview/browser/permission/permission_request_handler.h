@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "url/gurl.h"
@@ -69,7 +69,7 @@ class PermissionRequestHandler : public content::WebContentsObserver {
   // Return true if |origin| were preauthorized to access |resources|.
   bool Preauthorized(const GURL& origin, int64_t resources);
 
-  PermissionRequestHandlerClient* client_;
+  raw_ptr<PermissionRequestHandlerClient> client_;
 
   // A list of ongoing requests.
   std::vector<base::WeakPtr<AwPermissionRequest>> requests_;

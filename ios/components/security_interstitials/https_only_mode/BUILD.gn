@@ -1,0 +1,66 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("https_only_mode") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "https_only_mode_blocking_page.h",
+    "https_only_mode_blocking_page.mm",
+    "https_only_mode_container.h",
+    "https_only_mode_container.mm",
+    "https_only_mode_controller_client.h",
+    "https_only_mode_controller_client.mm",
+    "https_only_mode_error.h",
+    "https_only_mode_error.mm",
+    "https_upgrade_service.h",
+    "https_upgrade_service.mm",
+  ]
+  deps = [
+    ":feature",
+    "//base",
+    "//components/keyed_service/core:core",
+    "//components/security_interstitials/core",
+    "//ios/components/security_interstitials",
+    "//ios/web/public:public",
+    "//ios/web/public/navigation",
+    "//net",
+    "//services/metrics/public/cpp:metrics_cpp",
+  ]
+}
+
+source_set("feature") {
+  sources = [
+    "feature.cc",
+    "feature.h",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("test_util") {
+  sources = [
+    "https_upgrade_test_util.cc",
+    "https_upgrade_test_util.h",
+  ]
+  deps = [
+    ":https_only_mode",
+    "//base",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "https_only_mode_blocking_page_unittest.mm" ]
+  deps = [
+    ":https_only_mode",
+    ":test_util",
+    "//base/test:test_support",
+    "//components/security_interstitials/core",
+    "//ios/web/public",
+    "//ios/web/public/test",
+    "//net",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//testing/gtest",
+  ]
+}

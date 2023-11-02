@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,10 @@
 
 #import <WebKit/WebKit.h>
 
-#include "base/ios/ios_util.h"
+#import "base/ios/ios_util.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
-#include "ios/web/public/js_messaging/java_script_feature_util.h"
+#import "ios/web/public/js_messaging/java_script_feature_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -22,7 +22,7 @@ namespace {
 const char kWebJavaScriptFeatureManagerKeyName[] =
     "web_java_script_feature_manager";
 
-// Adds common features to |world|.
+// Adds common features to `world`.
 void AddSharedCommonFeatures(web::JavaScriptContentWorld* world) {
   // The scripts defined by these features were previously hardcoded into
   // js_compile.gni and are assumed to always exist by other feature javascript
@@ -58,19 +58,23 @@ JavaScriptFeatureManager* JavaScriptFeatureManager::FromBrowserState(
   return feature_manager;
 }
 
+JavaScriptContentWorld*
+JavaScriptFeatureManager::GetPageContentWorldForBrowserState(
+    BrowserState* browser_state) {
+  DCHECK(browser_state);
+  JavaScriptFeatureManager* feature_manager = FromBrowserState(browser_state);
+  return feature_manager->page_content_world_.get();
+}
+
 void JavaScriptFeatureManager::ConfigureFeatures(
     std::vector<JavaScriptFeature*> features) {
-  page_content_world_ =
-      std::make_unique<JavaScriptContentWorld>(browser_state_);
+  page_content_world_ = std::make_unique<JavaScriptContentWorld>(
+      browser_state_, WKContentWorld.pageWorld);
   AddSharedCommonFeatures(page_content_world_.get());
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
-  if (@available(iOS 14, *)) {
-    isolated_world_ = std::make_unique<JavaScriptContentWorld>(
-        browser_state_, WKContentWorld.defaultClientWorld);
-    AddSharedCommonFeatures(isolated_world_.get());
-  }
-#endif  // defined(__IPHONE14_0)
+  isolated_world_ = std::make_unique<JavaScriptContentWorld>(
+      browser_state_, WKContentWorld.defaultClientWorld);
+  AddSharedCommonFeatures(isolated_world_.get());
 
   for (JavaScriptFeature* feature : features) {
     if (isolated_world_ &&

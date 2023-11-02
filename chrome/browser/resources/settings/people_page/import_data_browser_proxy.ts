@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,16 +10,16 @@ import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
  * An object describing a source browser profile that may be imported.
  * The structure of this data must be kept in sync with C++ ImportDataHandler.
  */
-export type BrowserProfile = {
-  name: string,
-  index: number,
-  profileName: string,
-  history: boolean,
-  favorites: boolean,
-  passwords: boolean,
-  search: boolean,
-  autofillFormData: boolean,
-};
+export interface BrowserProfile {
+  name: string;
+  index: number;
+  profileName: string;
+  history: boolean;
+  favorites: boolean;
+  passwords: boolean;
+  search: boolean;
+  autofillFormData: boolean;
+}
 
 /**
  * These string values must be kept in sync with the C++ ImportDataHandler.
@@ -35,7 +35,7 @@ export interface ImportDataBrowserProxy {
   /**
    * Returns the source profiles available for importing from other browsers.
    */
-  initializeImportDialog(): Promise<Array<BrowserProfile>>;
+  initializeImportDialog(): Promise<BrowserProfile[]>;
 
   /**
    * Starts importing data for the specified source browser profile. The C++

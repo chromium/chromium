@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,7 +41,7 @@ void DevToolsSettings::Register(const std::string& name,
           ? prefs::kDevToolsPreferences
           : GetDictionaryNameForSyncedPrefs();
   const std::string* settings_value =
-      prefs->GetDictionary(dictionary_to_remove_from)->FindStringKey(name);
+      prefs->GetDict(dictionary_to_remove_from).FindString(name);
   if (!settings_value) {
     return;
   }
@@ -51,30 +51,46 @@ void DevToolsSettings::Register(const std::string& name,
   // Settings already moved to the synced dictionary on a different device have
   // precedence.
   const std::string* already_synced_value =
-      prefs->GetDictionary(dictionary_to_insert_into)->FindStringKey(name);
+      prefs->GetDict(dictionary_to_insert_into).FindString(name);
   if (dictionary_to_insert_into == prefs::kDevToolsPreferences ||
       !already_synced_value) {
-    DictionaryPrefUpdate insert_update(profile_->GetPrefs(),
+    ScopedDictPrefUpdate insert_update(profile_->GetPrefs(),
                                        dictionary_to_insert_into);
-    insert_update.Get()->SetKey(name, base::Value(*settings_value));
+    insert_update->Set(name, *settings_value);
   }
 
-  DictionaryPrefUpdate remove_update(profile_->GetPrefs(),
+  ScopedDictPrefUpdate remove_update(profile_->GetPrefs(),
                                      dictionary_to_remove_from);
-  remove_update.Get()->RemoveKey(name);
+  remove_update->Remove(name);
 }
 
 base::Value DevToolsSettings::Get() {
-  base::Value settings(base::Value::Type::DICTIONARY);
+  base::Value::Dict settings;
 
   PrefService* prefs = profile_->GetPrefs();
-  settings.SetBoolKey(kSyncDevToolsPreferencesFrontendName,
-                      prefs->GetBoolean(prefs::kDevToolsSyncPreferences));
-  settings.MergeDictionary(prefs->GetDictionary(prefs::kDevToolsPreferences));
-  settings.MergeDictionary(
-      prefs->GetDictionary(GetDictionaryNameForSyncedPrefs()));
+  // DevTools expects any kind of preference to be a string. Parsing is
+  // happening on the frontend.
+  settings.Set(
+      kSyncDevToolsPreferencesFrontendName,
+      prefs->GetBoolean(prefs::kDevToolsSyncPreferences) ? "true" : "false");
+  settings.Merge(prefs->GetDict(prefs::kDevToolsPreferences).Clone());
+  settings.Merge(prefs->GetDict(GetDictionaryNameForSyncedPrefs()).Clone());
 
-  return settings;
+  return base::Value(std::move(settings));
+}
+
+absl::optional<base::Value> DevToolsSettings::Get(const std::string& name) {
+  PrefService* prefs = profile_->GetPrefs();
+  if (name == kSyncDevToolsPreferencesFrontendName) {
+    // DevTools expects any kind of preference to be a string. Parsing is
+    // happening on the frontend.
+    bool result = prefs->GetBoolean(prefs::kDevToolsSyncPreferences);
+    return base::Value(result ? "true" : "false");
+  }
+  const char* dict_name = GetDictionaryNameForSettingsName(name);
+  const base::Value::Dict& dict = prefs->GetDict(dict_name);
+  const base::Value* value = dict.Find(name);
+  return value ? absl::optional<base::Value>(value->Clone()) : absl::nullopt;
 }
 
 void DevToolsSettings::Set(const std::string& name, const std::string& value) {
@@ -84,9 +100,9 @@ void DevToolsSettings::Set(const std::string& name, const std::string& value) {
     return;
   }
 
-  DictionaryPrefUpdate update(profile_->GetPrefs(),
+  ScopedDictPrefUpdate update(profile_->GetPrefs(),
                               GetDictionaryNameForSettingsName(name));
-  update.Get()->SetKey(name, base::Value(value));
+  update->Set(name, value);
 }
 
 void DevToolsSettings::Remove(const std::string& name) {
@@ -96,23 +112,20 @@ void DevToolsSettings::Remove(const std::string& name) {
     return;
   }
 
-  DictionaryPrefUpdate update(profile_->GetPrefs(),
+  ScopedDictPrefUpdate update(profile_->GetPrefs(),
                               GetDictionaryNameForSettingsName(name));
-  update.Get()->RemoveKey(name);
+  update->Remove(name);
 }
 
 void DevToolsSettings::Clear() {
   profile_->GetPrefs()->SetBoolean(prefs::kDevToolsSyncPreferences,
                                    kSyncDevToolsPreferencesDefault);
-  DictionaryPrefUpdate unsynced_update(profile_->GetPrefs(),
-                                       prefs::kDevToolsPreferences);
-  unsynced_update.Get()->Clear();
-  DictionaryPrefUpdate sync_enabled_update(
-      profile_->GetPrefs(), prefs::kDevToolsSyncedPreferencesSyncEnabled);
-  sync_enabled_update.Get()->Clear();
-  DictionaryPrefUpdate sync_disabled_update(
-      profile_->GetPrefs(), prefs::kDevToolsSyncedPreferencesSyncDisabled);
-  sync_disabled_update.Get()->Clear();
+  profile_->GetPrefs()->SetDict(prefs::kDevToolsPreferences,
+                                base::Value::Dict());
+  profile_->GetPrefs()->SetDict(prefs::kDevToolsSyncedPreferencesSyncEnabled,
+                                base::Value::Dict());
+  profile_->GetPrefs()->SetDict(prefs::kDevToolsSyncedPreferencesSyncDisabled,
+                                base::Value::Dict());
 }
 
 const char* DevToolsSettings::GetDictionaryNameForSettingsName(
@@ -152,9 +165,9 @@ void DevToolsSettings::DevToolsSyncPreferencesChanged() {
       sync_enabled ? prefs::kDevToolsSyncedPreferencesSyncDisabled
                    : prefs::kDevToolsSyncedPreferencesSyncEnabled;
 
-  DictionaryPrefUpdate target_update(profile_->GetPrefs(), target_dictionary);
-  target_update.Get()->MergeDictionary(
-      profile_->GetPrefs()->GetDictionary(source_dictionary));
-  DictionaryPrefUpdate source_update(profile_->GetPrefs(), source_dictionary);
-  source_update.Get()->Clear();
+  ScopedDictPrefUpdate source_update(profile_->GetPrefs(), source_dictionary);
+  ScopedDictPrefUpdate target_update(profile_->GetPrefs(), target_dictionary);
+  base::Value::Dict source_dict;
+  std::swap(source_dict, *source_update);
+  target_update->Merge(std::move(source_dict));
 }

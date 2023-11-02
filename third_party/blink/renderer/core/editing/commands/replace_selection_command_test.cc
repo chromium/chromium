@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -92,8 +92,8 @@ bool SetTextAutosizingMultiplier(Document* document, float multiplier) {
           ComputedStyle::Clone(layout_object->StyleRef());
       modified_style->SetTextAutosizingMultiplier(multiplier);
       EXPECT_EQ(multiplier, modified_style->TextAutosizingMultiplier());
-      layout_object->SetModifiedStyleOutsideStyleRecalc(
-          std::move(modified_style), LayoutObject::ApplyStyleChanges::kNo);
+      layout_object->SetStyle(std::move(modified_style),
+                              LayoutObject::ApplyStyleChanges::kNo);
       multiplier_set = true;
     }
   }
@@ -181,7 +181,7 @@ TEST_F(ReplaceSelectionCommandTest, SmartPlainTextPaste) {
 
   EXPECT_TRUE(command.Apply());
   // Smart paste inserts a space before pasted text.
-  EXPECT_EQ(u8"<div contenteditable>abc<div>def XYZ|</div></div>",
+  EXPECT_EQ("<div contenteditable>abc<div>def XYZ|</div></div>",
             GetSelectionTextFromBody());
 }
 
@@ -203,7 +203,7 @@ TEST_F(ReplaceSelectionCommandTest, TableAndImages) {
 
   // Should not crash
   EXPECT_TRUE(command.Apply());
-  EXPECT_EQ("<table> <tbody><img><img></tbody><br><img>|<br> </table>",
+  EXPECT_EQ("<table> <tbody><img><img>|</tbody><br> </table>",
             GetSelectionTextFromBody());
 }
 

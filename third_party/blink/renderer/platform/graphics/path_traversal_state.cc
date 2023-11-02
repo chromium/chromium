@@ -162,7 +162,7 @@ static float CurveLength(PathTraversalState& traversal_state, CurveType curve) {
       curve = curve_stack.back();
       curve_stack.pop_back();
     }
-  } while (!curve_stack.IsEmpty());
+  } while (!curve_stack.empty());
 
   return total_length;
 }

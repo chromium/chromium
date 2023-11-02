@@ -1,8 +1,8 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// <if expr="lacros">
+// <if expr="chromeos_lacros">
 export {AccountSelectionLacrosElement} from './profile_creation_flow/account_selection_lacros.js';
 // </if>
 export {LocalProfileCustomizationElement} from './profile_creation_flow/local_profile_customization.js';

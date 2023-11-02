@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,23 +10,19 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
+#include "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-forward.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/core_oobe_handler.h"
-#include "chromeos/services/cellular_setup/public/mojom/esim_manager.mojom-forward.h"
-#include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom-forward.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"  // nogncheck
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
-
-namespace base {
-class DictionaryValue;
-}  // namespace base
 
 namespace content {
 class WebUIDataSource;
@@ -36,7 +32,6 @@ namespace chromeos {
 class NetworkStateInformer;
 class OobeDisplayChooser;
 class SigninScreenHandler;
-class SigninScreenHandlerDelegate;
 
 // A custom WebUI that defines datasource for out-of-box-experience (OOBE) UI:
 // - welcome screen (setup language/keyboard/network).
@@ -45,16 +40,14 @@ class SigninScreenHandlerDelegate;
 class OobeUI : public ui::MojoWebUIController {
  public:
   // List of known types of OobeUI. Type added as path in chrome://oobe url, for
-  // example chrome://oobe/login.
+  // example chrome://oobe/gaia-signin.
   static const char kAppLaunchSplashDisplay[];
   static const char kGaiaSigninDisplay[];
-  static const char kLockDisplay[];
-  static const char kLoginDisplay[];
   static const char kOobeDisplay[];
 
   class Observer {
    public:
-    Observer() {}
+    Observer() = default;
 
     Observer(const Observer&) = delete;
 
@@ -64,7 +57,7 @@ class OobeUI : public ui::MojoWebUIController {
     virtual void OnDestroyingOobeUI() = 0;
 
    protected:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
   OobeUI(content::WebUI* web_ui, const GURL& url);
@@ -78,7 +71,7 @@ class OobeUI : public ui::MojoWebUIController {
   ErrorScreen* GetErrorScreen();
 
   // Collects localized strings from the owned handlers.
-  void GetLocalizedStrings(base::DictionaryValue* localized_strings);
+  base::Value::Dict GetLocalizedStrings();
 
   // Initializes the handlers.
   void InitializeHandlers();
@@ -86,18 +79,10 @@ class OobeUI : public ui::MojoWebUIController {
   // Called when the screen has changed.
   void CurrentScreenChanged(OobeScreenId screen);
 
-  bool IsScreenInitialized(OobeScreenId screen);
-
   bool IsJSReady(base::OnceClosure display_is_ready_callback);
 
   // Shows or hides OOBE UI elements.
   void ShowOobeUI(bool show);
-
-  // Shows the signin screen.
-  void ShowSigninScreen(SigninScreenHandlerDelegate* delegate);
-
-  // Forwards an accelerator to the webui to be handled.
-  void ForwardAccelerator(std::string accelerator_name);
 
   gfx::NativeView GetNativeView();
 
@@ -126,11 +111,6 @@ class OobeUI : public ui::MojoWebUIController {
   // Re-evaluate OOBE display placement.
   void OnDisplayConfigurationChanged();
 
-  // Notify WebUI of the user count on the views login screen.
-  void SetLoginUserCount(int user_count);
-
-  void OnSystemTrayBubbleShown();
-
   // Find a *View instance provided by a given *Handler type.
   //
   // This is the same as GetHandler() except the return type is limited to the
@@ -156,13 +136,13 @@ class OobeUI : public ui::MojoWebUIController {
   // Instantiates implementor of the mojom::MultiDeviceSetup mojo interface
   // passing the pending receiver that will be internally bound.
   void BindInterface(
-      mojo::PendingReceiver<multidevice_setup::mojom::MultiDeviceSetup>
+      mojo::PendingReceiver<ash::multidevice_setup::mojom::MultiDeviceSetup>
           receiver);
   // Instantiates implementor of the mojom::PrivilegedHostDeviceSetter mojo
   // interface passing the pending receiver that will be internally bound.
   void BindInterface(
       mojo::PendingReceiver<
-          multidevice_setup::mojom::PrivilegedHostDeviceSetter> receiver);
+          ash::multidevice_setup::mojom::PrivilegedHostDeviceSetter> receiver);
   // Instantiates implementor of the mojom::CrosNetworkConfig mojo
   // interface passing the pending receiver that will be internally bound.
   void BindInterface(
@@ -172,10 +152,9 @@ class OobeUI : public ui::MojoWebUIController {
   // Instantiates implementor of the mojom::ESimManager mojo interface
   // passing the pending receiver that will be internally bound.
   void BindInterface(
-      mojo::PendingReceiver<cellular_setup::mojom::ESimManager> receiver);
+      mojo::PendingReceiver<ash::cellular_setup::mojom::ESimManager> receiver);
 
-  static void AddOobeComponents(content::WebUIDataSource* source,
-                                const base::DictionaryValue& localized_strings);
+  static void AddOobeComponents(content::WebUIDataSource* source);
 
   bool ready() const { return ready_; }
 
@@ -186,6 +165,10 @@ class OobeUI : public ui::MojoWebUIController {
   // Configures all the relevant screen shandlers and resources for OOBE/Login
   // display type.
   void ConfigureOobeDisplay();
+
+  // Updates default scaling for CfM devices.
+  void UpScaleOobe();
+  bool ShouldUpScaleOobe();
 
   // Type of UI.
   std::string display_type_;
@@ -208,10 +191,13 @@ class OobeUI : public ui::MojoWebUIController {
   std::unique_ptr<ErrorScreen> error_screen_;
 
   // Id of the current oobe/login screen.
-  OobeScreenId current_screen_ = OobeScreen::SCREEN_UNKNOWN;
+  OobeScreenId current_screen_ = ash::OOBE_SCREEN_UNKNOWN;
 
   // Id of the previous oobe/login screen.
-  OobeScreenId previous_screen_ = OobeScreen::SCREEN_UNKNOWN;
+  OobeScreenId previous_screen_ = ash::OOBE_SCREEN_UNKNOWN;
+
+  // Id of display that was already scaled for CfM devices.
+  int64_t upscaled_display_id_ = -1;
 
   // Flag that indicates whether JS part is fully loaded and ready to accept
   // calls.
@@ -224,10 +210,6 @@ class OobeUI : public ui::MojoWebUIController {
   base::ObserverList<Observer>::Unchecked observer_list_;
 
   std::unique_ptr<OobeDisplayChooser> oobe_display_chooser_;
-
-  // Store the deferred JS calls before the screen handler instance is
-  // initialized.
-  std::unique_ptr<JSCallsContainer> js_calls_container_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

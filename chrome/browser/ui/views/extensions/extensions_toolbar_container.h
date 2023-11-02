@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -26,16 +27,19 @@
 class Browser;
 class ExtensionsToolbarButton;
 class ToolbarActionViewController;
+class ExtensionsTabbedMenuCoordinator;
 
 // Container for extensions shown in the toolbar. These include pinned
 // extensions and extensions that are 'popped out' transitively to show dialogs
 // or be called out to the user.
-class ExtensionsToolbarContainer : public ToolbarIconContainerView,
-                                   public ExtensionsContainer,
-                                   public TabStripModelObserver,
-                                   public ToolbarActionsModel::Observer,
-                                   public ToolbarActionView::Delegate,
-                                   public views::WidgetObserver {
+class ExtensionsToolbarContainer
+    : public ToolbarIconContainerView,
+      public ExtensionsContainer,
+      public TabStripModelObserver,
+      public ToolbarActionsModel::Observer,
+      public ToolbarActionView::Delegate,
+      public views::WidgetObserver,
+      public extensions::PermissionsManager::Observer {
  public:
   METADATA_HEADER(ExtensionsToolbarContainer);
 
@@ -65,6 +69,11 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
 
   static void SetOnVisibleCallbackForTesting(base::OnceClosure callback);
 
+  ExtensionsTabbedMenuCoordinator*
+  GetExtensionsTabbedMenuCoordinatorForTesting() {
+    return extensions_tabbed_menu_coordinator_.get();
+  }
+
   explicit ExtensionsToolbarContainer(
       Browser* browser,
       DisplayMode display_mode = DisplayMode::kNormal);
@@ -81,6 +90,11 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
 
   // Gets the extension menu button for the toolbar.
   ExtensionsToolbarButton* GetExtensionsButton() const;
+
+  // Gets the extensions toolbar controls.
+  ExtensionsToolbarControls* GetExtensionsToolbarControls() const {
+    return extensions_controls_;
+  }
 
   // Get the view corresponding to the extension |id|, if any.
   ToolbarActionView* GetViewForId(const std::string& id);
@@ -107,6 +121,13 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
     return extension_with_open_context_menu_id_;
   }
 
+  // Updates the flex layout rules for the extension toolbar container to have
+  // views::MinimumFlexSizeRule::kPreferred when WindowControlsOverlay (WCO) is
+  // toggled on for PWAs. Otherwise the extensions icon does not stay visible as
+  // it is not considered for during the calculation of the preferred size of
+  // it's parent (in the case of WCO PWAs, WebAppFrameToolbarView).
+  void WindowControlsOverlayEnabledChanged(bool enabled);
+
   // ToolbarIconContainerView:
   void UpdateAllIcons() override;
   bool GetDropFormats(int* formats,
@@ -116,10 +137,10 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   void OnDragEntered(const ui::DropTargetEvent& event) override;
   int OnDragUpdated(const ui::DropTargetEvent& event) override;
   void OnDragExited() override;
-  ui::mojom::DragOperation OnPerformDrop(
-      const ui::DropTargetEvent& event) override;
   views::View::DropCallback GetDropCallback(
       const ui::DropTargetEvent& event) override;
+  void OnMouseExited(const ui::MouseEvent& event) override;
+  void OnMouseMoved(const ui::MouseEvent& event) override;
 
   // ExtensionsContainer:
   ToolbarActionViewController* GetActionForId(
@@ -136,15 +157,16 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   void HideActivePopup() override;
   bool CloseOverflowMenuIfOpen() override;
   void PopOutAction(ToolbarActionViewController* action,
-                    bool is_sticky,
                     base::OnceClosure closure) override;
-  bool ShowToolbarActionPopupForAPICall(const std::string& action_id) override;
+  bool ShowToolbarActionPopupForAPICall(const std::string& action_id,
+                                        ShowPopupCallback callback) override;
   void ShowToolbarActionBubble(
-      std::unique_ptr<ToolbarActionsBarBubbleDelegate> bubble) override;
-  void ShowToolbarActionBubbleAsync(
       std::unique_ptr<ToolbarActionsBarBubbleDelegate> bubble) override;
   void ToggleExtensionsMenu() override;
   bool HasAnyExtensions() const override;
+  void UpdateToolbarActionHoverCard(
+      ToolbarActionView* action_view,
+      ToolbarActionHoverCardUpdateType update_type) override;
 
   // ToolbarActionView::Delegate:
   content::WebContents* GetCurrentWebContents() override;
@@ -160,6 +182,8 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
                            const gfx::Point& p) override;
 
  private:
+  friend class ToolbarActionHoverCardBubbleViewUITest;
+
   // A struct representing the position and action being dragged.
   struct DropInfo;
 
@@ -167,9 +191,21 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   // are associated with. This is used to keep track of icons that are popped
   // out due to a widget showing (or being queued to show).
   struct AnchoredWidget {
-    views::Widget* widget;
+    raw_ptr<views::Widget> widget;
     std::string extension_id;
   };
+
+  // Check if the ExtensionsMenuView or ExtensionsTabbedMenuView is showing.
+  // TODO(crbug.com/1279986): This method will be removed once
+  // ExtensionsTabbedMenu is fully rolled out and we will call directly into the
+  // ExtensionsTabbedMenuCoordinator.
+  bool IsExtensionsMenuShowing() const;
+
+  // // Hides the currently-showing ExtensionsMenuView or
+  // ExtensionsTabbedMenuView, if it exists. TODO(crbug.com/1279986): This
+  // method will be removed once ExtensionsTabbedMenu is fully rolled out and we
+  // will call directly into the ExtensionsTabbedMenuCoordinator.
+  void HideExtensionsMenu();
 
   // Determines whether an action must be visible (i.e. cannot be hidden for any
   // reason). Returns true if the action is popped out or has an attached
@@ -237,8 +273,12 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   void OnToolbarModelInitialized() override;
   void OnToolbarPinnedActionsChanged() override;
 
+  // PermissionsManager::Observer:
+  void OnUserPermissionsSettingsChanged(
+      const extensions::PermissionsManager::UserPermissionsSettings& settings)
+      override;
+
   // views::WidgetObserver:
-  void OnWidgetClosing(views::Widget* widget) override;
   void OnWidgetDestroying(views::Widget* widget) override;
 
   // Moves the dragged extension `action_id`.
@@ -252,17 +292,30 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   void DragDropCleanup(
       const ToolbarActionsModel::ActionId& dragged_extension_id);
 
-  Browser* const browser_;
-  ToolbarActionsModel* const model_;
+  const raw_ptr<Browser> browser_;
+  const raw_ptr<ToolbarActionsModel> model_;
+
   base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
       model_observation_{this};
+  base::ScopedObservation<extensions::PermissionsManager,
+                          extensions::PermissionsManager::Observer>
+      permissions_manager_observation_{this};
+
+  // Coordinator to show and hide the ExtensionsTabbedMenuView.
+  std::unique_ptr<ExtensionsTabbedMenuCoordinator>
+      extensions_tabbed_menu_coordinator_;
+
   // TODO(emiliapaz): Remove `extensions_button_` once
-  // `features::kExtensionsMenuAccessControl` experiment is released.
+  // `extensions_features::kExtensionsMenuAccessControl` experiment is released.
   // Exactly one of `extensions_button_ and `extensions_controls_` is created;
   // the other is null.
-  ExtensionsToolbarButton* const extensions_button_;
-  ExtensionsToolbarControls* const extensions_controls_;
+  const raw_ptr<ExtensionsToolbarButton> extensions_button_;
+  const raw_ptr<ExtensionsToolbarControls> extensions_controls_;
   DisplayMode display_mode_;
+
+  // Controller for showing the toolbar action hover card.
+  std::unique_ptr<ToolbarActionHoverCardController>
+      action_hover_card_controller_;
 
   // TODO(pbos): Create actions and icons only for pinned pinned / popped out
   // actions (lazily). Currently code expects GetActionForId() to return
@@ -272,9 +325,9 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   // View for every action, does not imply pinned or currently shown.
   ToolbarIcons icons_;
   // Popped-out extension, if any.
-  ToolbarActionViewController* popped_out_action_ = nullptr;
+  raw_ptr<ToolbarActionViewController> popped_out_action_ = nullptr;
   // The action that triggered the current popup, if any.
-  ToolbarActionViewController* popup_owner_ = nullptr;
+  raw_ptr<ToolbarActionViewController> popup_owner_ = nullptr;
   // Extension with an open context menu, if any.
   absl::optional<extensions::ExtensionId> extension_with_open_context_menu_id_;
 

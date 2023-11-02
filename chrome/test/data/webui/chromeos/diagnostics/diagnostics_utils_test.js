@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {NetworkType, RoutineType} from 'chrome://diagnostics/diagnostics_types.js';
 import {convertKibToGibDecimalString, getNetworkCardTitle, getRoutineGroups, getSignalStrength, getSubnetMaskFromRoutingPrefix, setDisplayStateInTitleForTesting} from 'chrome://diagnostics/diagnostics_utils.js';
+import {NetworkType} from 'chrome://diagnostics/network_health_provider.mojom-webui.js';
 import {RoutineGroup} from 'chrome://diagnostics/routine_group.js';
+import {RoutineType} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
@@ -62,9 +63,9 @@ export function diagnosticsUtilsTestSuite() {
 
   test('AllRoutineGroupsPresent', () => {
     loadTimeData.overrideValues({enableArcNetworkDiagnostics: true});
-    let isArcEnabled = loadTimeData.getBoolean('enableArcNetworkDiagnostics');
-    let routineGroups = getRoutineGroups(NetworkType.kWiFi, isArcEnabled);
-    let [
+    const isArcEnabled = loadTimeData.getBoolean('enableArcNetworkDiagnostics');
+    const routineGroups = getRoutineGroups(NetworkType.kWiFi, isArcEnabled);
+    const [
       localNetworkGroup,
        nameResolutionGroup,
        wifiGroup,
@@ -89,19 +90,19 @@ export function diagnosticsUtilsTestSuite() {
   });
 
   test('NetworkTypeIsNotWiFi', () => {
-    let isArcEnabled = loadTimeData.getBoolean('enableArcNetworkDiagnostics');
-    let routineGroups = getRoutineGroups(NetworkType.kEthernet, isArcEnabled);
+    const isArcEnabled = loadTimeData.getBoolean('enableArcNetworkDiagnostics');
+    const routineGroups = getRoutineGroups(NetworkType.kEthernet, isArcEnabled);
     // WiFi group should be missing.
     assertEquals(routineGroups.length, 3);
-    let groupNames = routineGroups.map(group => group.groupName);
+    const groupNames = routineGroups.map(group => group.groupName);
     assertFalse(groupNames.includes('wifiGroupLabel'));
   });
 
   test('ArcRoutinesDisabled', () => {
     loadTimeData.overrideValues({enableArcNetworkDiagnostics: false});
-    let isArcEnabled = loadTimeData.getBoolean('enableArcNetworkDiagnostics');
-    let routineGroups = getRoutineGroups(NetworkType.kEthernet, isArcEnabled);
-    let [localNetworkGroup, nameResolutionGroup, internetConnectivityGroup] =
+    const isArcEnabled = loadTimeData.getBoolean('enableArcNetworkDiagnostics');
+    const routineGroups = getRoutineGroups(NetworkType.kEthernet, isArcEnabled);
+    const [localNetworkGroup, nameResolutionGroup, internetConnectivityGroup] =
         routineGroups;
     assertFalse(
         nameResolutionGroup.routines.includes(RoutineType.kArcDnsResolution));

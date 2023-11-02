@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,6 @@
 #include "media/base/limits.h"
 
 namespace media {
-
-namespace {
-constexpr size_t kVP8NumFramesActive = 4;
-}
 
 VP8Decoder::VP8Accelerator::VP8Accelerator() {}
 
@@ -190,14 +186,20 @@ uint8_t VP8Decoder::GetBitDepth() const {
   return 8u;
 }
 
+VideoChromaSampling VP8Decoder::GetChromaSampling() const {
+  // VP8 decoder currently does not rely on chroma sampling format for
+  // creating/reconfiguring decoder, so return an unknown format.
+  return VideoChromaSampling::kUnknown;
+}
+
 size_t VP8Decoder::GetRequiredNumOfPictures() const {
   constexpr size_t kPicsInPipeline = limits::kMaxVideoFrames + 1;
-  return kVP8NumFramesActive + kPicsInPipeline;
+  return kNumVp8ReferenceBuffers + kPicsInPipeline;
 }
 
 size_t VP8Decoder::GetNumReferenceFrames() const {
   // Maximum number of reference frames.
-  return kVP8NumFramesActive;
+  return kNumVp8ReferenceBuffers;
 }
 
 }  // namespace media

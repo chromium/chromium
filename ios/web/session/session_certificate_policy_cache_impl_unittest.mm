@@ -1,23 +1,22 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/web/session/session_certificate_policy_cache_impl.h"
 
-#include "base/bind.h"
-#include "base/task/post_task.h"
+#import "base/bind.h"
 #import "base/test/ios/wait_util.h"
-#include "ios/web/public/security/certificate_policy_cache.h"
+#import "ios/web/public/security/certificate_policy_cache.h"
 #import "ios/web/public/session/crw_session_certificate_policy_cache_storage.h"
-#include "ios/web/public/test/fakes/fake_browser_state.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "ios/web/public/thread/web_task_traits.h"
-#include "ios/web/public/thread/web_thread.h"
-#include "net/cert/x509_certificate.h"
-#include "net/test/cert_test_util.h"
-#include "net/test/test_data_directory.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "ios/web/public/test/fakes/fake_browser_state.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
+#import "net/cert/x509_certificate.h"
+#import "net/test/cert_test_util.h"
+#import "net/test/test_data_directory.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -27,7 +26,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForJSCompletionTimeout;
 
 namespace {
-// Synchronously checks |cache| for the specified cert and returns the judgment.
+// Synchronously checks `cache` for the specified cert and returns the judgment.
 web::CertPolicy::Judgment GetJudgmenet(
     const scoped_refptr<web::CertificatePolicyCache>& cache,
     const scoped_refptr<net::X509Certificate>& cert,
@@ -37,10 +36,11 @@ web::CertPolicy::Judgment GetJudgmenet(
   __block web::CertPolicy::Judgment judgement =
       web::CertPolicy::Judgment::UNKNOWN;
   __block bool completed = false;
-  base::PostTask(FROM_HERE, {web::WebThread::IO}, base::BindOnce(^{
-                   completed = true;
-                   judgement = cache->QueryPolicy(cert.get(), host, status);
-                 }));
+  web::GetIOThreadTaskRunner({})->PostTask(FROM_HERE, base::BindOnce(^{
+                                             completed = true;
+                                             judgement = cache->QueryPolicy(
+                                                 cert.get(), host, status);
+                                           }));
   EXPECT_TRUE(WaitUntilConditionOrTimeout(1.0, ^{
     return completed;
   }));

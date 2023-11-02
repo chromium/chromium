@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,6 +50,9 @@ class Vp9Decoder : public VideoDecoder {
   // VP9-specific data.
   const std::unique_ptr<Vp9Parser> vp9_parser_;
   std::vector<scoped_refptr<SharedVASurface>> ref_frames_;
+
+  // Parser for the IVF stream to decode.
+  const std::unique_ptr<IvfParser> ivf_parser_;
 };
 
 }  // namespace vaapi_test

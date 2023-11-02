@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,16 +8,11 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/callback_forward.h"
 #include "base/files/scoped_file.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_offer_base.h"
 #include "ui/ozone/public/platform_clipboard.h"
-
-namespace wl {
-struct Serial;
-}
 
 namespace ui {
 
@@ -45,10 +40,9 @@ class WaylandDataDeviceBase {
   // Returns MIME types given by the current data offer.
   const std::vector<std::string>& GetAvailableMimeTypes() const;
 
-  // Asynchronously reads selection data for the specified |mime_type| and
-  // delivers the result, if any, through |callback|.
-  bool ReadSelectionData(const std::string& mime_type,
-                         PlatformClipboard::RequestDataClosure callback);
+  // Synchronously reads and returns selection data with |mime_type| format.
+  // TODO(crbug.com/443355): Drop once Clipboard API becomes async.
+  PlatformClipboard::Data ReadSelectionData(const std::string& mime_type);
 
  protected:
   WaylandConnection* connection() const { return connection_; }
@@ -73,8 +67,6 @@ class WaylandDataDeviceBase {
 
   void NotifySelectionOffer(WaylandDataOfferBase* offer) const;
 
-  absl::optional<wl::Serial> GetSerialForSelection() const;
-
  private:
   // wl_callback_listener callback
   static void DeferredReadCallback(void* data,
@@ -87,7 +79,7 @@ class WaylandDataDeviceBase {
 
   // Used to call out to WaylandConnection once clipboard data has been
   // successfully read.
-  WaylandConnection* const connection_;
+  const raw_ptr<WaylandConnection> connection_;
 
   // Offer that holds the most-recent clipboard selection, or null if no
   // clipboard data is available.

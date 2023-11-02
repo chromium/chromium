@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "net/http/http_status_code.h"
 #include "url/gurl.h"
@@ -201,9 +200,17 @@ class FakeGaia {
   // Returns the is_device_owner param from the reauth URL if any.
   const std::string& is_device_owner() { return is_device_owner_; }
 
+  // Returns the rart param from the embedded setup URL if any.
+  const std::string& reauth_request_token() { return reauth_request_token_; }
+
   // Returns the fake server's URL that browser tests can visit to trigger a
   // RemoveLocalAccount event.
-  GURL GetDummyRemoveLocalAccountURL(const std::string& gaia_id) const;
+  GURL GetFakeRemoveLocalAccountURL(const std::string& gaia_id) const;
+
+  void SetFakeSamlContinueResponse(
+      const std::string& fake_saml_continue_response) {
+    fake_saml_continue_response_ = fake_saml_continue_response;
+  }
 
  protected:
   // HTTP handler for /MergeSession.
@@ -282,7 +289,7 @@ class FakeGaia {
       net::test_server::BasicHttpResponse* http_response);
   void HandleSSO(const net::test_server::HttpRequest& request,
                  net::test_server::BasicHttpResponse* http_response);
-  void HandleDummySAMLContinue(
+  void HandleFakeSAMLContinue(
       const net::test_server::HttpRequest& request,
       net::test_server::BasicHttpResponse* http_response);
   void HandleAuthToken(const net::test_server::HttpRequest& request,
@@ -310,7 +317,7 @@ class FakeGaia {
   // HTTP handler for /OAuth/Multilogin.
   void HandleMultilogin(const net::test_server::HttpRequest& request,
                         net::test_server::BasicHttpResponse* http_response);
-  void HandleDummyRemoveLocalAccount(
+  void HandleFakeRemoveLocalAccount(
       const net::test_server::HttpRequest& request,
       net::test_server::BasicHttpResponse* http_response);
 
@@ -337,6 +344,7 @@ class FakeGaia {
   RequestHandlerMap request_handlers_;
   ErrorResponseMap error_responses_;
   std::string embedded_setup_chromeos_response_;
+  std::string fake_saml_continue_response_;
   SamlAccountIdpMap saml_account_idp_map_;
   SamlDomainRedirectUrlMap saml_domain_url_map_;
   bool issue_oauth_code_cookie_;
@@ -345,6 +353,7 @@ class FakeGaia {
   std::string prefilled_email_;
   std::string is_supervised_;
   std::string is_device_owner_;
+  std::string reauth_request_token_;
   GaiaAuthConsumer::ReAuthProofTokenStatus next_reauth_status_ =
       GaiaAuthConsumer::ReAuthProofTokenStatus::kSuccess;
   GURL embedded_setup_chromeos_iframe_url_;

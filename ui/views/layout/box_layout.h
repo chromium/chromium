@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/view.h"
@@ -206,11 +207,11 @@ class VIEWS_EXPORT BoxLayout : public LayoutManager {
     gfx::Size GetPreferredSize() const;
     void SetBoundsRect(const gfx::Rect& bounds);
     View* view() const { return view_; }
-    bool visible() const;
+    bool VisibleToLayout() const;
 
    private:
-    View* view_ = nullptr;
-    const BoxLayout* layout_ = nullptr;
+    raw_ptr<View, DanglingUntriaged> view_ = nullptr;
+    raw_ptr<const BoxLayout> layout_ = nullptr;
     gfx::Insets margins_;
   };
 
@@ -351,7 +352,7 @@ class VIEWS_EXPORT BoxLayout : public LayoutManager {
   bool collapse_margins_spacing_;
 
   // The view that this BoxLayout is managing the layout for.
-  views::View* host_ = nullptr;
+  raw_ptr<views::View> host_ = nullptr;
 };
 
 }  // namespace views

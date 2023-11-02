@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <type_traits>
 
+#include "base/check.h"
 #include "base/types/strong_alias.h"
 #include "base/unguessable_token.h"
 
@@ -23,12 +24,14 @@ class TokenType : public StrongAlias<TypeMarker, UnguessableToken> {
 
  public:
   TokenType() : Super(UnguessableToken::Create()) {}
-  // The parameter |unused| is here to prevent multiple definitions of a
-  // single argument constructor. This is only needed during the migration to
-  // strongly typed frame tokens.
-  explicit TokenType(const UnguessableToken& token) : Super(token) {}
-  TokenType(const TokenType& token) : Super(token.value()) {}
-  TokenType(TokenType&& token) noexcept : Super(token.value()) {}
+  explicit TokenType(const UnguessableToken& token) : Super(token) {
+    // Disallow attempts to force a null UnguessableToken into a strongly-typed
+    // token. Allowing in-place nullability of UnguessableToken was a design
+    // mistake; do not propagate that mistake here as well.
+    CHECK(!token.is_empty());
+  }
+  TokenType(const TokenType& token) = default;
+  TokenType(TokenType&& token) noexcept = default;
   TokenType& operator=(const TokenType& token) = default;
   TokenType& operator=(TokenType&& token) noexcept = default;
 

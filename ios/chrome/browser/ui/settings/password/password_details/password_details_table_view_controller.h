@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 @protocol PasswordDetailsHandler;
 @protocol PasswordDetailsTableViewControllerDelegate;
 @protocol ReauthenticationProtocol;
+@protocol SnackbarCommands;
 
 // Denotes the credential type that is being displayed by the view controller.
 typedef NS_ENUM(NSInteger, CredentialType) {
@@ -29,7 +30,10 @@ typedef NS_ENUM(NSInteger, CredentialType) {
                                        PasswordDetailsConsumer>
 
 // The designated initializer.
+// `syncingUserEmail` stores the user email if the user is authenticated amd
+// syncing passwords.
 - (instancetype)initWithCredentialType:(CredentialType)credentialType
+                      syncingUserEmail:(NSString*)syncingUserEmail
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
@@ -44,9 +48,11 @@ typedef NS_ENUM(NSInteger, CredentialType) {
 @property(nonatomic, weak) id<PasswordDetailsTableViewControllerDelegate>
     delegate;
 
-// Dispatcher for this ViewController.
-@property(nonatomic, weak) id<ApplicationCommands, BrowserCommands>
-    commandsHandler;
+// ApplicationCommands handler.
+@property(nonatomic, weak) id<ApplicationCommands> applicationCommandsHandler;
+
+// SnackbarCommands handler.
+@property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
 
 // Module containing the reauthentication mechanism for interactions
 // with password.

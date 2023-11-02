@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,11 +14,11 @@ namespace mojo {
 template <>
 struct StructTraits<extensions::mojom::EventFilteringInfoDataView,
                     extensions::EventFilteringInfo> {
-  static absl::optional<GURL> url(
+  static const absl::optional<GURL>& url(
       const extensions::EventFilteringInfo& filtering_info) {
     return filtering_info.url;
   }
-  static absl::optional<std::string> service_type(
+  static const absl::optional<std::string>& service_type(
       const extensions::EventFilteringInfo& filtering_info) {
     return filtering_info.service_type;
   }
@@ -27,9 +27,9 @@ struct StructTraits<extensions::mojom::EventFilteringInfoDataView,
     return filtering_info.instance_id.has_value();
   }
   static int instance_id(const extensions::EventFilteringInfo& filtering_info) {
-    return filtering_info.instance_id.value();
+    return filtering_info.instance_id.value_or(0);
   }
-  static absl::optional<std::string> window_type(
+  static const absl::optional<std::string>& window_type(
       const extensions::EventFilteringInfo& filtering_info) {
     return filtering_info.window_type;
   }
@@ -39,7 +39,7 @@ struct StructTraits<extensions::mojom::EventFilteringInfoDataView,
   }
   static int window_exposed_by_default(
       const extensions::EventFilteringInfo& filtering_info) {
-    return filtering_info.window_exposed_by_default.value();
+    return filtering_info.window_exposed_by_default.value_or(0);
   }
 
   static bool Read(extensions::mojom::EventFilteringInfoDataView data,

@@ -1,4 +1,4 @@
-// Copyright 2015 The Crashpad Authors. All rights reserved.
+// Copyright 2015 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,19 +17,25 @@
 #include <errno.h>
 #include <sys/stat.h>
 
+#include "base/logging.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "test/errors.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#endif
 
 namespace crashpad {
 namespace test {
 
 bool FileExists(const base::FilePath& path) {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   struct stat st;
   int rv = lstat(path.value().c_str(), &st);
   static constexpr char stat_function[] = "lstat";
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   struct _stat st;
   int rv = _wstat(path.value().c_str(), &st);
   static constexpr char stat_function[] = "_wstat";
@@ -44,12 +50,30 @@ bool FileExists(const base::FilePath& path) {
   return true;
 }
 
+bool RemoveFileIfExists(const base::FilePath& path) {
+#if BUILDFLAG(IS_POSIX)
+  if (unlink(path.value().c_str()) != 0 && errno != ENOENT) {
+    PLOG(ERROR) << "unlink " << path.value();
+    return false;
+  }
+#elif BUILDFLAG(IS_WIN)
+  if (!DeleteFile(path.value().c_str()) &&
+      GetLastError() != ERROR_FILE_NOT_FOUND) {
+    PLOG(ERROR) << "DeleteFile " << base::WideToUTF8(path.value());
+    return false;
+  }
+#else
+#error "Not implemented"
+#endif
+  return true;
+}
+
 FileOffset FileSize(const base::FilePath& path) {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   struct stat st;
   int rv = lstat(path.value().c_str(), &st);
   static constexpr char stat_function[] = "lstat";
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   struct _stati64 st;
   int rv = _wstati64(path.value().c_str(), &st);
   static constexpr char stat_function[] = "_wstati64";

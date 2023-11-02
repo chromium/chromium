@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -97,9 +97,9 @@ AdaptiveQuietNotificationPermissionUiEnabler::Factory::GetInstance() {
 }
 
 AdaptiveQuietNotificationPermissionUiEnabler::Factory::Factory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "AdaptiveQuietNotificationPermissionUiEnabler",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(HostContentSettingsMapFactory::GetInstance());
 }
 
@@ -110,12 +110,6 @@ AdaptiveQuietNotificationPermissionUiEnabler::Factory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new AdaptiveQuietNotificationPermissionUiEnabler(
       static_cast<Profile*>(context));
-}
-
-content::BrowserContext*
-AdaptiveQuietNotificationPermissionUiEnabler::Factory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }
 
 // AdaptiveQuietNotificationPermissionUiEnabler ------------------------------

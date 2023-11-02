@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -232,25 +232,6 @@ TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheInvalidOuterType) {
   loader_->DidReceiveResponse(WrappedResourceResponse(response_));
 
   // The serialized metadata was rejected due to an invalid outer type.
-  EXPECT_FALSE(resource_->CodeCacheSize());
-}
-
-TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheInvalidInnerType) {
-  CommonSetup();
-
-  std::vector<uint8_t> cache_data{2, 3, 4, 5, 6};
-  controller_->Respond(
-      base::Time(),
-      mojo_base::BigBuffer(MakeSerializedCodeCacheData(
-          cache_data, {}, 0, CachedMetadataHandler::kSingleEntryWithHash,
-          CachedMetadataHandler::kSourceKeyedMap)));
-
-  // Nothing has changed yet because the content response hasn't arrived yet.
-  EXPECT_FALSE(resource_->CodeCacheSize());
-
-  loader_->DidReceiveResponse(WrappedResourceResponse(response_));
-
-  // The serialized metadata was rejected due to an invalid inner type.
   EXPECT_FALSE(resource_->CodeCacheSize());
 }
 

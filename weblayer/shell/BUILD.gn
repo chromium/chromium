@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -146,7 +146,6 @@ repack("support_pak") {
     "$root_gen_dir/components/strings/components_chromium_strings_en-US.pak",
     "$root_gen_dir/components/strings/components_locale_settings_en-US.pak",
     "$root_gen_dir/components/strings/components_strings_en-US.pak",
-    "$root_gen_dir/content/app/resources/content_resources_100_percent.pak",
     "$root_gen_dir/content/content_resources.pak",
     "$root_gen_dir/content/dev_ui_content_resources.pak",
     "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
@@ -156,8 +155,8 @@ repack("support_pak") {
     "$root_gen_dir/third_party/blink/public/strings/blink_strings_en-US.pak",
     "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
     "$root_gen_dir/ui/resources/webui_generated_resources.pak",
-    "$root_gen_dir/ui/resources/webui_resources.pak",
     "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
+    "$root_gen_dir/ui/strings/ax_strings_en-US.pak",
     "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
     "$root_gen_dir/weblayer/weblayer_resources.pak",
   ]
@@ -167,7 +166,6 @@ repack("support_pak") {
     "//components/strings",
     "//content:content_resources",
     "//content:dev_ui_content_resources",
-    "//content/app/resources",
     "//mojo/public/js:resources",
     "//net:net_resources",
     "//third_party/blink/public:resources",
@@ -208,10 +206,6 @@ repack("pak") {
 }
 
 if (is_android) {
-  group("weblayer_shell") {
-    testonly = true
-    deps = [ "//weblayer/shell/android:weblayer_shell_apk" ]
-  }
   group("weblayer_support") {
     testonly = true
     deps = [ "//weblayer/shell/android:weblayer_support_apk" ]

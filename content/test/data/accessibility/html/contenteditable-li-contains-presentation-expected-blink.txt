@@ -1,7 +1,7 @@
 rootWebArea isLineBreakingObject=true
 ++genericContainer ignored isLineBreakingObject=true
 ++++genericContainer ignored isLineBreakingObject=true
-++++++genericContainer multiline value='text in span in presentational paragraph in li<newline><newline>A list item with both a br and<newline>an inner p role=presentation' isLineBreakingObject=true
+++++++genericContainer multiline value='1. text in span in presentational paragraph in li<newline>2. A list item with both a br and<newline>an inner p role=presentation' isLineBreakingObject=true
 ++++++++list isLineBreakingObject=true
 ++++++++++listItem isLineBreakingObject=true
 ++++++++++++listMarker name='1. ' nextOnLineId=inlineTextBox:"text in span in presentational paragraph in li"

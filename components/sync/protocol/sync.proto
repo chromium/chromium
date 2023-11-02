@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -24,17 +24,6 @@ import "components/sync/protocol/get_updates_caller_info.proto";
 import "components/sync/protocol/sync_entity.proto";
 import "components/sync/protocol/sync_enums.proto";
 import "components/sync/protocol/sharing_message_specifics.proto";
-
-// Used for inspecting how long we spent performing operations in different
-// backends. All times must be in millis.
-message ProfilingData {
-  optional int64 meta_data_write_time = 1;
-  optional int64 file_data_write_time = 2;
-  optional int64 user_lookup_time = 3;
-  optional int64 meta_data_read_time = 4;
-  optional int64 file_data_read_time = 5;
-  optional int64 total_request_time = 6;
-}
 
 // This message contains diagnostic information used to correlate
 // commit-related traffic with extensions-related mutations to the
@@ -68,7 +57,12 @@ message ClientConfigParams {
   // Indicates that the client is not aware of any other active clients
   // interested in the committed data types. This flag shows that it is not
   // necessary to send invalidations for the committed data. A client is
-  // considered active if it's DeviceInfo has updated recent enough.
+  // considered active if it's DeviceInfo has updated recent enough. This flag
+  // does not take into account whether standalone invalidations are enabled (as
+  // opposed to |single_client_with_standalone_invalidations|). However, it's
+  // set depending on interested data types of other devices, e.g. if there are
+  // other devices but they are not interested in SESSION data type, and current
+  // commit request contains only SESSION, it will be set to true.
   optional bool single_client = 4;
 
   // A list of FCM registration tokens which are obtained from other clients.
@@ -80,10 +74,40 @@ message ClientConfigParams {
   // 2. There are too many active devices and the list would have too many
   // items.
   // 3. An empty list could also mean that the current client is the only
-  // client. This case should be covered by the |single_client| field instead
-  // (otherwise it could be mixed up with older clients). The server doesn't
-  // have to use this field and can ignore it.
+  // client. This case should be covered by the
+  // |single_client_with_standalone_invalidations| field instead (otherwise it
+  // could be mixed up with older clients). The server doesn't have to use this
+  // field and can ignore it. Note that this list does not take into account
+  // interested data types from the other clients.
   repeated string devices_fcm_registration_tokens = 5;
+
+  // Similar to |single_client| but takes into account only clients with enabled
+  // sync standalone invalidations. When set to true, there are no other clients
+  // with sync standalone invalidations interested in the committing types and
+  // hence it's not necessary to send out standalone invalidations (it may still
+  // be necessary to send out invalidations using the legacy system, see
+  // |single_client| instead).
+  // Introduced in M105.
+  optional bool single_client_with_standalone_invalidations = 6;
+
+  // Similar to |devices_fcm_registration_tokens| but takes into account clients
+  // which are subscribed to the data types which are committed in current
+  // commit request.
+  // A list of FCM registration tokens which are obtained from other clients.
+  // This list is used by the server to send invalidations to all other clients.
+  // If the list is empty, the server should treat this as "there is no
+  // information about other clients". In practice, this happens by the next
+  // causes:
+  // 1. This is the old client which doesn't set this field.
+  // 2. There are too many active devices and the list would have too many
+  // items.
+  // 3. An empty list could also mean that the current client is the only
+  // client. This case should be covered by the
+  // |single_client_with_standalone_invalidations| field instead (otherwise it
+  // could be mixed up with older clients). The server doesn't have to use this
+  // field and can ignore it.
+  // Introduced in M105.
+  repeated string fcm_registration_tokens_for_interested_clients = 7;
 }
 
 message CommitMessage {
@@ -114,9 +138,6 @@ message CommitMessage {
 }
 
 message GetUpdatesMessage {
-  reserved 1;
-  reserved "from_timestamp";
-
   // Indicates the reason for the GetUpdatesMessage.
   // This was *mostly* deprecated in M29.  GetUpdatesOrigin is the new way to
   // encode the reason for the GetUpdates request, but some parts of the server
@@ -127,11 +148,6 @@ message GetUpdatesMessage {
 
   // Indicates whether related folders should be fetched.
   optional bool fetch_folders = 3 [default = true];
-
-  // Client-requested limit on the maximum number of updates to return at once.
-  // The server may opt to return fewer updates than this amount, but it should
-  // not return more.
-  optional int32 batch_size = 5;
 
   // Per-datatype progress marker.
   //
@@ -173,8 +189,12 @@ message GetUpdatesMessage {
   // Set of optional per-client datatype contexts.
   repeated DataTypeContext client_contexts = 11;
 
+  reserved 1;
+  reserved "from_timestamp";
   reserved 4;
   reserved "requested_types";
+  reserved 5;
+  reserved "batch_size";
 }
 
 // Message from a client asking the server to clear its data. This causes the
@@ -219,7 +239,8 @@ message ClientStatus {
   // is set.  The client may not assume that any particular action will be
   // taken.  There is no guarantee the problem will be addressed in a reasonable
   // amount of time.
-  optional bool hierarchy_conflict_detected = 1;
+  // TODO(crbug.com/1315573): Deprecated in M103.
+  optional bool hierarchy_conflict_detected = 1 [deprecated = true];
 
   // Whether the client has full sync (or, sync the feature) enabled or not.
   optional bool is_sync_feature_enabled = 2;
@@ -231,7 +252,7 @@ message ClientToServerMessage {
   // be derived from access token in case of auth error.
   required string share = 1;
 
-  optional int32 protocol_version = 2 [default = 90];
+  optional int32 protocol_version = 2 [default = 99];
   enum Contents {
     COMMIT = 1;
     GET_UPDATES = 2;
@@ -369,9 +390,6 @@ message GetUpdatesResponse {
   // |from_progress_marker| value for that datatype, the client should
   // interpret this to mean "no change from the previous state" and retain its
   // previous progress-marker value for that datatype.
-  //
-  // Progress markers in the context of a response will never have the
-  // |timestamp_token_for_migration| field set.
   repeated DataTypeProgressMarker new_progress_marker = 5;
 
   // The current encryption keys associated with this account. Will be set if
@@ -416,7 +434,8 @@ message ClientToServerResponse {
   optional string store_birthday = 6;
 
   optional ClientCommand client_command = 7;
-  optional ProfilingData profiling_data = 8;
+  reserved 8;
+  reserved "profiling_data";
   reserved 9;
   reserved 10;
   reserved "stream_metadata";

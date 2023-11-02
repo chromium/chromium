@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<input id="target" type="text">
+
+<script>
+test(() => {
+  assert_own_property(window, 'internals', 'This test requires window.internals');
+
+  // Force layout update
+  document.body.offsetLeft;
+
+  target.focus();
+  target.type = "password";
+
+  // Spellchecker updates layout, which resets focus, which requests spellcheck.
+  while (internals.idleTimeSpellCheckerState(document) !== 'Inactive')
+    internals.runIdleTimeSpellChecker(document);
+
+  // Shouldn't crash
+}, "Should not crash if spellchecker attempts to re-entry");
+</script>

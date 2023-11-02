@@ -1,0 +1,2 @@
+android.webkit.WebView focusable focused scrollable
+++android.widget.CheckBox role_description='checkbox' checkable clickable

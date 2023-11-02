@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Test analysis functions for the testing framework.
@@ -74,7 +74,7 @@ def compare_and_print_tests_to_remove_and_add(
                 tests_added_to_partition.add(test.id)
             filename = partition.generate_browsertest_filepath(platforms)
             print(f"\n\nAdd this following tests to {filename}:\n")
-            for test in tests_to_add:
+            for test in tests_to_add_partition:
                 print(test.generate_browsertest(partition) + "\n")
 
         # All remaining tests go into the default partition

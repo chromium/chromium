@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,8 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/toast_data.h"
+#include "ash/constants/notifier_catalogs.h"
+#include "ash/public/cpp/system/toast_data.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -18,6 +19,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "base/command_line.h"
+#include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -50,7 +52,6 @@ constexpr base::TimeDelta kLabelAnimationDelay = base::Milliseconds(167);
 
 // Toast data.
 constexpr char kAppCannotSnapToastId[] = "split_view_app_cannot_snap";
-constexpr int kAppCannotSnapToastDurationMs = 2500;
 
 // Gets the duration, tween type and delay before animation based on |type|.
 void GetAnimationValuesForType(
@@ -350,16 +351,16 @@ void MaybeRestoreSplitView(bool refresh_snapped_windows) {
 
       switch (WindowState::Get(window)->GetStateType()) {
         case WindowStateType::kPrimarySnapped:
-          if (!split_view_controller->left_window()) {
-            split_view_controller->SnapWindow(window,
-                                              SplitViewController::LEFT);
+          if (!split_view_controller->primary_window()) {
+            split_view_controller->SnapWindow(
+                window, SplitViewController::SnapPosition::kPrimary);
           }
           break;
 
         case WindowStateType::kSecondarySnapped:
-          if (!split_view_controller->right_window()) {
-            split_view_controller->SnapWindow(window,
-                                              SplitViewController::RIGHT);
+          if (!split_view_controller->secondary_window()) {
+            split_view_controller->SnapWindow(
+                window, SplitViewController::SnapPosition::kSecondary);
           }
           break;
 
@@ -373,14 +374,15 @@ void MaybeRestoreSplitView(bool refresh_snapped_windows) {
     }
   }
 
-  // Ensure that overview mode is active if and only if there is a window
-  // snapped to one side but no window snapped to the other side.
+  // Ensure that overview mode is active if there is a window snapped to one of
+  // the sides. Ensure overview mode is not active if there are two snapped
+  // windows.
   OverviewController* overview_controller = Shell::Get()->overview_controller();
   SplitViewController::State state = split_view_controller->state();
-  if (state == SplitViewController::State::kLeftSnapped ||
-      state == SplitViewController::State::kRightSnapped) {
+  if (state == SplitViewController::State::kPrimarySnapped ||
+      state == SplitViewController::State::kSecondarySnapped) {
     overview_controller->StartOverview(OverviewStartAction::kSplitView);
-  } else {
+  } else if (state == SplitViewController::State::kBothSnapped) {
     overview_controller->EndOverview(OverviewEndAction::kSplitView);
   }
 }
@@ -399,10 +401,12 @@ bool ShouldAllowSplitView() {
 }
 
 void ShowAppCannotSnapToast() {
-  Shell::Get()->toast_manager()->Show(ToastData(
-      kAppCannotSnapToastId,
-      l10n_util::GetStringUTF16(IDS_ASH_SPLIT_VIEW_CANNOT_SNAP),
-      kAppCannotSnapToastDurationMs, absl::optional<std::u16string>()));
+  Shell::Get()->toast_manager()->Show(
+      ToastData(kAppCannotSnapToastId, ToastCatalogName::kAppCannotSnap,
+                l10n_util::GetStringUTF16(IDS_ASH_SPLIT_VIEW_CANNOT_SNAP),
+                ToastData::kDefaultToastDuration,
+                /*visible_on_lock_screen=*/false,
+                /*has_dismiss_button=*/true));
 }
 
 SplitViewController::SnapPosition GetSnapPositionForLocation(
@@ -414,7 +418,7 @@ SplitViewController::SnapPosition GetSnapPositionForLocation(
     int horizontal_edge_inset,
     int vertical_edge_inset) {
   if (!ShouldAllowSplitView())
-    return SplitViewController::NONE;
+    return SplitViewController::SnapPosition::kNone;
 
   const bool horizontal = SplitViewController::IsLayoutHorizontal(root_window);
   const bool right_side_up = SplitViewController::IsLayoutPrimary(root_window);
@@ -424,30 +428,35 @@ SplitViewController::SnapPosition GetSnapPositionForLocation(
   const gfx::Rect work_area(
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
           root_window));
-  SplitViewController::SnapPosition snap_position = SplitViewController::NONE;
+  SplitViewController::SnapPosition snap_position =
+      SplitViewController::SnapPosition::kNone;
   if (horizontal) {
     gfx::Rect area(work_area);
-    area.Inset(horizontal_edge_inset, 0);
+    area.Inset(gfx::Insets::VH(0, horizontal_edge_inset));
     if (location_in_screen.x() <= area.x()) {
-      snap_position = right_side_up ? SplitViewController::LEFT
-                                    : SplitViewController::RIGHT;
+      snap_position = right_side_up
+                          ? SplitViewController::SnapPosition::kPrimary
+                          : SplitViewController::SnapPosition::kSecondary;
     } else if (location_in_screen.x() >= area.right() - 1) {
-      snap_position = right_side_up ? SplitViewController::RIGHT
-                                    : SplitViewController::LEFT;
+      snap_position = right_side_up
+                          ? SplitViewController::SnapPosition::kSecondary
+                          : SplitViewController::SnapPosition::kPrimary;
     }
   } else {
     gfx::Rect area(work_area);
-    area.Inset(0, vertical_edge_inset);
+    area.Inset(gfx::Insets::VH(vertical_edge_inset, 0));
     if (location_in_screen.y() <= area.y()) {
-      snap_position = right_side_up ? SplitViewController::LEFT
-                                    : SplitViewController::RIGHT;
+      snap_position = right_side_up
+                          ? SplitViewController::SnapPosition::kPrimary
+                          : SplitViewController::SnapPosition::kSecondary;
     } else if (location_in_screen.y() >= area.bottom() - 1) {
-      snap_position = right_side_up ? SplitViewController::RIGHT
-                                    : SplitViewController::LEFT;
+      snap_position = right_side_up
+                          ? SplitViewController::SnapPosition::kSecondary
+                          : SplitViewController::SnapPosition::kPrimary;
     }
   }
 
-  if (snap_position == SplitViewController::NONE)
+  if (snap_position == SplitViewController::SnapPosition::kNone)
     return snap_position;
 
   // To avoid accidental snap, the window needs to be dragged inside
@@ -458,7 +467,7 @@ SplitViewController::SnapPosition GetSnapPositionForLocation(
   // from edge.
   bool drag_end_near_edge = false;
   gfx::Rect area(work_area);
-  area.Inset(snap_distance_from_edge, snap_distance_from_edge);
+  area.Inset(snap_distance_from_edge);
   if (horizontal ? location_in_screen.x() < area.x() ||
                        location_in_screen.x() > area.right()
                  : location_in_screen.y() < area.y() ||
@@ -474,7 +483,7 @@ SplitViewController::SnapPosition GetSnapPositionForLocation(
         SplitViewController::IsPhysicalLeftOrTop(snap_position, root_window);
     if ((is_left_or_top && primary_axis_distance > -minimum_drag_distance) ||
         (!is_left_or_top && primary_axis_distance < minimum_drag_distance)) {
-      snap_position = SplitViewController::NONE;
+      snap_position = SplitViewController::SnapPosition::kNone;
     }
   }
 
@@ -491,7 +500,7 @@ SplitViewController::SnapPosition GetSnapPosition(
     int horizontal_edge_inset,
     int vertical_edge_inset) {
   if (!SplitViewController::Get(root_window)->CanSnapWindow(window)) {
-    return SplitViewController::NONE;
+    return SplitViewController::SnapPosition::kNone;
   }
 
   absl::optional<gfx::Point> initial_location_in_current_screen = absl::nullopt;

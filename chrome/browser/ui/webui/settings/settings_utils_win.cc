@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/path_service.h"
-#include "base/task/post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
@@ -104,13 +103,11 @@ void OpenConnectionDialogCallback() {
                SW_SHOWNORMAL);
 }
 
-void ShowNetworkProxySettings(content::WebContents* web_contents) {
+void ShowNetworkProxySettings(content::WebContents* /*web_contents*/) {
   if (base::win::GetVersion() >= base::win::Version::WIN10) {
     // See
     // https://docs.microsoft.com/en-us/windows/uwp/launch-resume/launch-settings-app#network--internet
-    platform_util::OpenExternal(
-        Profile::FromBrowserContext(web_contents->GetBrowserContext()),
-        GURL("ms-settings:network-proxy"));
+    platform_util::OpenExternal(GURL("ms-settings:network-proxy"));
   } else {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},

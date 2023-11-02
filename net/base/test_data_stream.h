@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 
 // This is a class for generating an infinite stream of data which can be
 // verified independently to be the correct stream of data.
+
+#include "base/memory/raw_ptr.h"
 
 namespace net {
 
@@ -35,7 +37,7 @@ class TestDataStream {
   int index_;
   int bytes_remaining_;
   char buffer_[16];
-  char* buffer_ptr_;
+  raw_ptr<char> buffer_ptr_;
 };
 
 }  // namespace net

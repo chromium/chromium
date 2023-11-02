@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -37,7 +37,19 @@ source_set("networking_private") {
 
   public_deps = [ "//extensions/browser:browser_sources" ]
 
-  if ((is_linux || is_chromeos_lacros) && use_dbus) {
+  if (is_chromeos_lacros) {
+    sources = default_sources + [
+                "lacros_networking_private_observer.cc",
+                "lacros_networking_private_observer.h",
+                "networking_private_event_router_nonchromeos.cc",
+                "networking_private_lacros.cc",
+                "networking_private_lacros.h",
+              ]
+    deps += [
+      "//chromeos/crosapi/mojom",
+      "//chromeos/lacros",
+    ]
+  } else if (is_linux && use_dbus) {
     sources = default_sources + [
                 "network_config_dbus_constants_linux.cc",
                 "network_config_dbus_constants_linux.h",
@@ -61,8 +73,10 @@ source_set("networking_private") {
                 "networking_private_event_router_chromeos.cc",
               ]
     deps += [
+      "//chromeos/ash/components/network",
+      "//chromeos/ash/components/network/portal_detector",
+      "//chromeos/components/onc",
       "//chromeos/login/login_state",
-      "//chromeos/network",
       "//components/proxy_config",
     ]
   } else {

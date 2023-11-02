@@ -1,14 +1,15 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.display_cutout;
 
-import android.annotation.TargetApi;
 import android.graphics.Rect;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 import android.view.WindowManager.LayoutParams;
+
+import androidx.annotation.RequiresApi;
 
 import org.hamcrest.Matchers;
 import org.json.JSONException;
@@ -42,7 +43,7 @@ import java.util.concurrent.TimeoutException;
  *
  * @param <T> The type of {@link ChromeActivity} to use for the test.
  */
-@TargetApi(Build.VERSION_CODES.P)
+@RequiresApi(Build.VERSION_CODES.P)
 public class DisplayCutoutTestRule<T extends ChromeActivity> extends ChromeActivityTestRule<T> {
     /** These are the two test safe areas with and without the test cutout. */
     public static final Rect TEST_SAFE_AREA_WITH_CUTOUT = new Rect(10, 20, 30, 40);

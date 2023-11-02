@@ -1,0 +1,73 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+option optimize_for = LITE_RUNTIME;
+
+package crash.anr.proto;
+
+option java_package = "org.chromium.components.crash.anr";
+
+// This is a proto copied from the source code of the crash server to ensure we
+// have the correct format to upload.
+message AnrData {
+  // Name of the activity which is not responding.
+  // Chrome does not use this right now.
+  // optional string activity = 1;
+
+  // Description of the operation that timed out.
+  // Chrome does not put a useful value in here, but must include it to be
+  // processed.
+  optional string cause = 2;  // required
+
+  // Type of ANR, parsed from the cause.
+  // Chrome does not use this right now.
+  // optional string cause_type = 10;
+
+  // This is the android app component (declared in the manifest) that is
+  // experiencing the ANR. It could be extracted form the "ANR cause" or it
+  // could be the activity (for input dispatching timeout cases - in which
+  // case it's not parsed from the cause).
+  //
+  // For instance, for the following ANR cause:
+  //   "Broadcast of Intent { act=com.nativedroid.sa.sdk.tick flg=0x10
+  //    cmp=com.android.appkeyguard/cnuunh.myimpj.yhYjQqAheTNUaYGL
+  //    (has extras) }"
+  //
+  // The android app component is:
+  //   "com.android.appkeyguard/cnuunh.myimpj.yhYjQqAheTNUaYGL".
+  // Chrome does not use this right now.
+  // optional string component = 9;
+
+  // A message created for the developer by ActivityManagerService during an
+  // ANR. It contains additional info such as the CPU stats.
+  // Chrome does not use this right now.
+  // optional string extra = 3;
+
+  // Stack traces for all the threads that were running on the device. If
+  // deobfuscation is enabled, these stack_traces will be deobfuscated during
+  // the preprocessing phase.
+  optional string stack_traces = 4;
+
+  // The parsed stack traces for easier processing.
+  // This parsing is performed upstream and this field is already parsed when
+  // passing to crash.
+  // Chrome does not use this right now.
+  // repeated string parsed_stack_traces = 5;
+
+  // The stack trace of the main thread (starting from the status line)
+  // of the process that is not responsive according to
+  // MobileData.package_data.process_name.
+  optional string main_thread_stack_trace = 6;
+
+  // The state of the main thread of the process that is not responsive,
+  // parsed from the stacktrace (e.g. "NATIVE", "SUSPENDED", "WAIT").
+  // This field is populated during server side processing from
+  // main_thread_stack_trace.
+  // Chrome does not use this right now.
+  // optional string main_thread_state = 7;
+
+  // Preamble of anr report.
+  optional string preamble = 8;
+}

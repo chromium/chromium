@@ -1,10 +1,11 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/common/extensions/sync_helper.h"
 
 #include "base/logging.h"
+#include "components/app_constants/constants.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/behavior_feature.h"
@@ -43,10 +44,6 @@ bool IsSyncable(const Extension* extension) {
     return false;
   }
 
-  // Boomkark extensions are deprecated. See crbug.com/1065748
-  if (extension->from_bookmark())
-    return false;
-
   switch (extension->GetType()) {
     case Manifest::TYPE_EXTENSION:
     case Manifest::TYPE_HOSTED_APP:
@@ -78,7 +75,7 @@ bool IsSyncableComponentExtension(const Extension* extension) {
   if (!Manifest::IsComponentLocation(extension->location()))
     return false;
   return (extension->id() == extensions::kWebStoreAppId) ||
-         (extension->id() == extension_misc::kChromeAppId);
+         (extension->id() == app_constants::kChromeAppId);
 }
 
 }  // namespace sync_helper

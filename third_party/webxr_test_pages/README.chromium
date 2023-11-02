@@ -29,19 +29,77 @@ Local Modifications:
 
 Instructions:
 
-In order to serve the samples locally, few steps are required:
+In order to serve the samples locally, a few steps are required:
 
-1. Copy contents of src/chrome/test/data/xr/webxr_samples/media into
-   src/third_party/webxr_test_pages/webxr-samples/media
+1. Most samples use images and glTF objects that are stored separately. To make
+   these available, copy the contents of
+     src/chrome/test/data/xr/webxr_samples/media/
+   into a new directory:
+     src/third_party/webxr_test_pages/webxr-samples/media/
+   You can skip this step if you are testing the 'barebones' samples.
 
-2. Serve files, for example by running
+2. Serve files using a local web server, for example by running
    `python -m SimpleHTTPServer <port number>` in
-   src/third_party/webxr_test_pages/webxr-samples
+   src/third_party/webxr_test_pages/webxr-samples/
 
 3. If you are having trouble with the python server such as it being unreliable
    serving media like the gltf files, try using "npm serve".
    To install: `sudo npm install -g serve`
-   To run: `serve .` in src/third_party/webxr_test_pages/webxr-samples
+   To run: `serve .` in src/third_party/webxr_test_pages/webxr-samples/
+
+4. For testing on an Android phone, open chrome://inspect/?tracing#devices
+   and ensure that your phone is visible. The phone must have USB debugging enabled.
+   Then enable port forwarding for your local web server's port. This makes
+   the local web server available on the phone at the address
+   http://localhost/<port number>, for example http://localhost/8080/
+   See https://developer.chrome.com/docs/devtools/remote-debugging/
+   for more detailed instructions.
+
+
+The following instructions explain how to update the public copy of the repository
+which is stored in a Google cloud bucket. To verify if you have sufficient
+access to the cloud bucket:
+
+1. Run:
+     gsutil.py ls -d gs://chromium-webxr-test
+
+3. If you get authentication errors such as this one:
+     Your credentials are invalid. For more help, see "gsutil help creds", or re-run the gsutil config command (see "gsutil help config").
+   Try running:
+     gsutil.py config
+   and authenticate using your google.com identity. Use project ID 0.
+   WARNING: make sure to use gsutil.py (note .py suffix) from depot_tools. Your
+   computer may have a separate copy of gsutil from the google-cloud-sdk
+   package which is NOT equivalent.
+
+
+To publish a temporary copy in a cloud bucket:
+
+This step isn't needed for routine changes, but can be useful in case you want
+to test a change as served from the cloud bucket before submitting the change.
+
+1. Copy the current workspace content to a temporary bucket. Use a unique
+   name, not starting with rREVISION to avoid confusion with the normal snapshots
+     python3 ./update_bucket.py  -v --direct-publish-samples-source=webxr-samples --direct-publish-samples-dest=tmp-klausw-cr3924689
+
+2. Access your change at the corresponding bucket location:
+     https://storage.googleapis.com/chromium-webxr-test/tmp-klausw-cr3924689/index.html
+
+3. When done, go to the cloud console at
+     https://pantheon.corp.google.com/storage/browser/chromium-webxr-test
+   and delete the temporary bucket.
+
+
+To publish samples for the current tip of tree (after your change was submitted):
+
+1. Ensure that you have a clean checkout of third_party/webxr_test_pages/ with
+   no local changes.
+
+2. From the webxr_test_pages directory, run:
+     python3 update-bucket.py
+   You can add the --dry-run flag to check the proposed action before making changes,
+   and/or --verbose for additional detail.
+
 
 To publish samples for OT:
 
@@ -51,7 +109,6 @@ To publish samples for OT:
 2. Serve <dest-folder> locally and make sure everything works.
 
 3. python update_bucket.py --direct-publish-samples-source=<dest-folder> --direct-publish-samples-dest=<bucket-dest-subfolder>
-
 
 
 To create a Google Cloud WebXR-Samples bucket:

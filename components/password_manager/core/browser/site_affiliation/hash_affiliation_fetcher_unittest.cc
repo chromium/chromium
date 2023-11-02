@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -307,7 +307,7 @@ TEST_F(HashAffiliationFetcherTest, ChangePasswordInfoIsReturnedIfPresent) {
 
   ASSERT_EQ(1u, result->groupings.size());
   EXPECT_THAT(
-      result->groupings[0],
+      result->groupings[0].facets,
       testing::UnorderedElementsAre(
           Facet{
               .uri = FacetURI::FromCanonicalSpec(kExampleWebFacet1URI),
@@ -376,6 +376,37 @@ TEST_F(HashAffiliationFetcherTest, DuplicateEquivalenceClassesAreIgnored) {
   EXPECT_THAT(result->affiliations[0],
               testing::UnorderedElementsAre(
                   Facet{FacetURI::FromCanonicalSpec(kExampleWebFacet1URI)},
+                  Facet{FacetURI::FromCanonicalSpec(kExampleWebFacet2URI)},
+                  Facet{FacetURI::FromCanonicalSpec(kExampleAndroidFacetURI)}));
+}
+
+TEST_F(HashAffiliationFetcherTest, NonRequestedEquivalenceClassesAreIgnored) {
+  affiliation_pb::LookupAffiliationResponse test_response;
+  // Equivalence class that was not requested and was added to affiliation
+  // response because of some error (for example hash collision.)
+  affiliation_pb::Affiliation* eq_class1 = test_response.add_affiliation();
+  eq_class1->add_facet()->set_id(kExampleWebFacet1URI);
+  affiliation_pb::Affiliation* eq_class2 = test_response.add_affiliation();
+  eq_class2->add_facet()->set_id(kExampleWebFacet2URI);
+  eq_class2->add_facet()->set_id(kExampleAndroidFacetURI);
+
+  std::vector<FacetURI> requested_uris;
+  requested_uris.push_back(FacetURI::FromCanonicalSpec(kExampleWebFacet2URI));
+
+  SetupSuccessfulResponse(test_response.SerializeAsString());
+  testing::StrictMock<MockAffiliationFetcherDelegate> mock_delegate;
+  HashAffiliationFetcher fetcher(test_shared_loader_factory(), &mock_delegate);
+  std::unique_ptr<AffiliationFetcherDelegate::Result> result;
+  EXPECT_CALL(mock_delegate, OnFetchSucceeded(&fetcher, testing::_))
+      .WillOnce(MoveArg<1>(&result));
+  fetcher.StartRequest(requested_uris, {});
+  WaitForResponse();
+
+  ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(&mock_delegate));
+
+  ASSERT_EQ(1u, result->affiliations.size());
+  EXPECT_THAT(result->affiliations[0],
+              testing::UnorderedElementsAre(
                   Facet{FacetURI::FromCanonicalSpec(kExampleWebFacet2URI)},
                   Facet{FacetURI::FromCanonicalSpec(kExampleAndroidFacetURI)}));
 }
@@ -503,7 +534,7 @@ TEST_F(HashAffiliationFetcherTest, FailOnNetworkError) {
   WaitForResponse();
 }
 
-TEST_F(HashAffiliationFetcherTest, FetchTimeMetric) {
+TEST_F(HashAffiliationFetcherTest, MetricsWhenSuccess) {
   base::HistogramTester histogram_tester;
   std::vector<FacetURI> requested_uris = {
       FacetURI::FromCanonicalSpec(kExampleWebFacet1URI)};
@@ -519,7 +550,81 @@ TEST_F(HashAffiliationFetcherTest, FetchTimeMetric) {
   WaitForResponse();
 
   histogram_tester.ExpectTotalCount(
-      "PasswordManager.AffiliationFetcher.FetchTime", 1);
+      "PasswordManager.AffiliationFetcher.FetchTime.Success", 1);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.AffiliationFetcher.ResponseSize.Success", 1);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.AffiliationFetcher.FetchTime.Malformed", 0);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.AffiliationFetcher.ResponseSize.Malformed", 0);
+}
+
+TEST_F(HashAffiliationFetcherTest, MetricsWhenFailed) {
+  base::HistogramTester histogram_tester;
+  const char kMalformedResponse[] = "This is not a protocol buffer!";
+
+  std::vector<FacetURI> uris;
+  uris.push_back(FacetURI::FromCanonicalSpec(kExampleWebFacet1URI));
+
+  SetupSuccessfulResponse(kMalformedResponse);
+  testing::StrictMock<MockAffiliationFetcherDelegate> mock_delegate;
+  HashAffiliationFetcher fetcher(test_shared_loader_factory(), &mock_delegate);
+  std::unique_ptr<AffiliationFetcherDelegate::Result> result;
+  EXPECT_CALL(mock_delegate, OnMalformedResponse(&fetcher));
+  fetcher.StartRequest(uris, {});
+  WaitForResponse();
+
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.AffiliationFetcher.FetchTime.Success", 0);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.AffiliationFetcher.ResponseSize.Success", 0);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.AffiliationFetcher.FetchTime.Malformed", 1);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.AffiliationFetcher.ResponseSize.Malformed", 1);
+}
+
+TEST_F(HashAffiliationFetcherTest, GroupBrandingInfoIsReturnedIfPresent) {
+  affiliation_pb::LookupAffiliationResponse test_response;
+
+  affiliation_pb::FacetGroup* eq_class_1 = test_response.add_group();
+  affiliation_pb::Facet* facet_1 = eq_class_1->add_facet();
+  facet_1->set_id(kExampleAndroidFacetURI);
+  auto group_branding_info =
+      std::make_unique<affiliation_pb::GroupBrandingInfo>();
+  group_branding_info->set_name(kExampleAndroidPlayName);
+  group_branding_info->set_icon_url(kExampleAndroidIconURL);
+  eq_class_1->set_allocated_group_branding_info(group_branding_info.release());
+
+  affiliation_pb::FacetGroup* eq_class_2 = test_response.add_group();
+  affiliation_pb::Facet* facet_2 = eq_class_2->add_facet();
+  facet_2->set_id(kExampleWebFacet1URI);
+
+  AffiliationFetcherInterface::RequestInfo request_info{.branding_info = true};
+
+  std::vector<FacetURI> requested_uris = {
+      FacetURI::FromCanonicalSpec(kExampleWebFacet1URI),
+      FacetURI::FromCanonicalSpec(kExampleAndroidFacetURI)};
+
+  SetupSuccessfulResponse(test_response.SerializeAsString());
+  testing::StrictMock<MockAffiliationFetcherDelegate> mock_delegate;
+  HashAffiliationFetcher fetcher(test_shared_loader_factory(), &mock_delegate);
+  std::unique_ptr<AffiliationFetcherDelegate::Result> result;
+  EXPECT_CALL(mock_delegate, OnFetchSucceeded(&fetcher, testing::_))
+      .WillOnce(MoveArg<1>(&result));
+  fetcher.StartRequest(requested_uris, request_info);
+  WaitForResponse();
+
+  ASSERT_NO_FATAL_FAILURE(
+      VerifyRequestPayload(ComputeHashes(requested_uris), request_info));
+  ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(&mock_delegate));
+
+  ASSERT_EQ(2u, result->groupings.size());
+  EXPECT_THAT(result->groupings[0].branding_info,
+              testing::Eq(FacetBrandingInfo{kExampleAndroidPlayName,
+                                            GURL(kExampleAndroidIconURL)}));
+  EXPECT_THAT(result->groupings[1].branding_info,
+              testing::Eq(FacetBrandingInfo()));
 }
 
 }  // namespace password_manager

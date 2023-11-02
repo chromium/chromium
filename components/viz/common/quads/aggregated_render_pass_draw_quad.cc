@@ -1,4 +1,4 @@
-// Copyright 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,27 @@ AggregatedRenderPassDrawQuad::AggregatedRenderPassDrawQuad(
     const AggregatedRenderPassDrawQuad& other) = default;
 
 AggregatedRenderPassDrawQuad::~AggregatedRenderPassDrawQuad() = default;
+
+bool AggregatedRenderPassDrawQuad::Equals(
+    const AggregatedRenderPassDrawQuad& other) const {
+  DCHECK(shared_quad_state);
+
+  return render_pass_id == other.render_pass_id &&
+         // RenderPassDrawQuadInternal
+         mask_uv_rect == other.mask_uv_rect &&
+         mask_texture_size == other.mask_texture_size &&
+         filters_scale == other.filters_scale &&
+         filters_origin == other.filters_origin &&
+         tex_coord_rect == other.tex_coord_rect &&
+         backdrop_filter_quality == other.backdrop_filter_quality &&
+         force_anti_aliasing_off == other.force_anti_aliasing_off &&
+         intersects_damage_under == other.intersects_damage_under &&
+         // DrawQuad. Skip resources.ids[kMaskResourceIdIndex].
+         material == other.material && rect == other.rect &&
+         visible_rect == other.visible_rect &&
+         needs_blending == other.needs_blending &&
+         shared_quad_state->Equals(*other.shared_quad_state);
+}
 
 void AggregatedRenderPassDrawQuad::SetNew(
     const SharedQuadState* shared_quad_state,
@@ -40,6 +61,29 @@ void AggregatedRenderPassDrawQuad::SetNew(
          mask_resource_id, mask_uv_rect, mask_texture_size, filters_scale,
          filters_origin, tex_coord_rect, force_anti_aliasing_off,
          backdrop_filter_quality, intersects_damage_under);
+}
+
+void AggregatedRenderPassDrawQuad::SetAll(
+    const AggregatedRenderPassDrawQuad& other) {
+  render_pass_id = other.render_pass_id;
+
+  // DrawQuad
+  DrawQuad::SetAll(other.shared_quad_state,
+                   DrawQuad::Material::kAggregatedRenderPass, other.rect,
+                   other.visible_rect, other.needs_blending);
+  resources.ids[kMaskResourceIdIndex] =
+      other.resources.ids[kMaskResourceIdIndex];
+  resources.count = other.resources.count;
+
+  // RenderPassDrawQuadInternal
+  mask_uv_rect = other.mask_uv_rect;
+  mask_texture_size = other.mask_texture_size;
+  filters_scale = other.filters_scale;
+  filters_origin = other.filters_origin;
+  tex_coord_rect = other.tex_coord_rect;
+  force_anti_aliasing_off = other.force_anti_aliasing_off;
+  backdrop_filter_quality = other.backdrop_filter_quality;
+  intersects_damage_under = other.intersects_damage_under;
 }
 
 void AggregatedRenderPassDrawQuad::SetAll(

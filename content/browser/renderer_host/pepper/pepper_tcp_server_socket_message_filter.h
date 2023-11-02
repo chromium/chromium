@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -28,7 +28,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/network/firewall_hole.h"
+#include "chromeos/ash/components/network/firewall_hole.h"
 #include "content/public/browser/browser_thread.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -143,16 +143,16 @@ class CONTENT_EXPORT PepperTCPServerSocketMessageFilter
   void OpenFirewallHole(const ppapi::host::ReplyMessageContext& context,
                         const net::IPEndPoint& local_addr);
   void OnFirewallHoleOpened(const ppapi::host::ReplyMessageContext& context,
-                            std::unique_ptr<chromeos::FirewallHole> hole);
+                            std::unique_ptr<ash::FirewallHole> hole);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Following fields are initialized and used only on the IO thread.
   // Non-owning ptr.
-  BrowserPpapiHostImpl* host_;
+  raw_ptr<BrowserPpapiHostImpl> host_;
   // Non-owning ptr.
-  ppapi::host::PpapiHost* ppapi_host_;
+  raw_ptr<ppapi::host::PpapiHost> ppapi_host_;
   // Non-owning ptr.
-  ContentBrowserPepperHostFactory* factory_;
+  raw_ptr<ContentBrowserPepperHostFactory> factory_;
   PP_Instance instance_;
 
   State state_;
@@ -161,8 +161,7 @@ class CONTENT_EXPORT PepperTCPServerSocketMessageFilter
   PP_NetAddress_Private bound_addr_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<chromeos::FirewallHole,
-                  content::BrowserThread::DeleteOnUIThread>
+  std::unique_ptr<ash::FirewallHole, content::BrowserThread::DeleteOnUIThread>
       firewall_hole_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

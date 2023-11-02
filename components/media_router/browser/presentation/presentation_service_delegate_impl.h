@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
@@ -114,9 +115,8 @@ class PresentationServiceDelegateImpl
           state_changed_cb) override;
 
   // WebContentsPresentationManager implementation.
-  void AddObserver(WebContentsPresentationManager::Observer* observer) override;
-  void RemoveObserver(
-      WebContentsPresentationManager::Observer* observer) override;
+  void AddObserver(content::PresentationObserver* observer) override;
+  void RemoveObserver(content::PresentationObserver* observer) override;
   bool HasDefaultPresentationRequest() const override;
   const content::PresentationRequest& GetDefaultPresentationRequest()
       const override;
@@ -127,7 +127,7 @@ class PresentationServiceDelegateImpl
   base::WeakPtr<WebContentsPresentationManager> GetWeakPtr() override;
 
   // Returns the WebContents that owns this instance.
-  content::WebContents* web_contents() const { return web_contents_; }
+  content::WebContents* web_contents() { return &GetWebContents(); }
 
   bool HasScreenAvailabilityListenerForTest(
       int render_process_id,
@@ -203,9 +203,9 @@ class PresentationServiceDelegateImpl
       const content::GlobalRenderFrameHostId& render_frame_host_id,
       const std::string& presentation_id) const;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Returns true if auto-join requests should be cancelled for |origin|.
-  bool ShouldCancelAutoJoinForOrigin(const url::Origin& origin) const;
+  bool ShouldCancelAutoJoinForOrigin(const url::Origin& origin);
 #endif
 
   // Ensures that |connection| contains a valid pair of
@@ -230,16 +230,13 @@ class PresentationServiceDelegateImpl
           state_changed_cb,
       const content::PresentationConnectionStateChangeInfo& info);
 
-  // References to the WebContents that owns this instance, and associated
-  // browser profile's MediaRouter instance.
-  content::WebContents* const web_contents_;
-  MediaRouter* router_;
+  // Reference to the associated browser profile's MediaRouter instance.
+  raw_ptr<MediaRouter> router_;
 
   // References to the observers listening for changes to the default
   // presentation and presentation MediaRoutes associated with the
   // WebContents.
-  base::ObserverList<WebContentsPresentationManager::Observer>
-      presentation_observers_;
+  base::ObserverList<content::PresentationObserver> presentation_observers_;
 
   // Default presentation request for the owning WebContents.
   absl::optional<content::PresentationRequest> default_presentation_request_;

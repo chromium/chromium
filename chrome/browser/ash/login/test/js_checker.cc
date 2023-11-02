@@ -1,9 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/test/js_checker.h"
 
+#include "base/callback_helpers.h"
 #include "base/json/string_escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
@@ -95,8 +96,9 @@ void JSChecker::Evaluate(const std::string& expression) {
 void JSChecker::ExecuteAsync(const std::string& expression) {
   CHECK(web_contents_);
   std::string new_script = expression + ";";
-  web_contents_->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
-      base::UTF8ToUTF16(new_script));
+  web_contents_->GetPrimaryMainFrame()
+      ->ExecuteJavaScriptWithUserGestureForTests(base::UTF8ToUTF16(new_script),
+                                                 base::NullCallback());
 }
 
 bool JSChecker::GetBool(const std::string& expression) {
@@ -435,6 +437,16 @@ void JSChecker::ExpectElementContainsText(
   EXPECT_TRUE(std::string::npos != message.find(content));
 }
 
+void JSChecker::ExpectDialogOpen(
+    std::initializer_list<base::StringPiece> element_ids) {
+  ExpectAttributeEQ("open", element_ids, true);
+}
+
+void JSChecker::ExpectDialogClosed(
+    std::initializer_list<base::StringPiece> element_ids) {
+  ExpectAttributeEQ("open", element_ids, false);
+}
+
 void JSChecker::ExpectElementValue(
     const std::string& value,
     std::initializer_list<base::StringPiece> element_ids) {
@@ -455,6 +467,12 @@ void JSChecker::TapOnPath(
     std::initializer_list<base::StringPiece> element_ids) {
   ExpectVisiblePath(element_ids);
   Evaluate(GetOobeElementPath(element_ids) + ".click()");
+}
+
+void JSChecker::TapOnPathAsync(
+    std::initializer_list<base::StringPiece> element_ids) {
+  ExpectVisiblePath(element_ids);
+  ExecuteAsync(GetOobeElementPath(element_ids) + ".click()");
 }
 
 void JSChecker::TapOn(const std::string& element_id) {
@@ -521,6 +539,12 @@ void JSChecker::SelectElementInPath(
   Evaluate(js);
 }
 
+bool JSChecker::IsVisible(
+    std::initializer_list<base::StringPiece> element_ids) {
+  bool is_hidden = GetBool(test::GetOobeElementPath(element_ids) + ".hidden");
+  return !is_hidden;
+}
+
 JSChecker OobeJS() {
   return JSChecker(LoginDisplayHost::default_host()->GetOobeWebContents());
 }
@@ -556,14 +580,6 @@ std::string GetAttributeExpression(
   result.append(".");
   result.append(attribute);
   return result;
-}
-
-std::unique_ptr<TestConditionWaiter> CreateOobeScreenWaiter(
-    const std::string& oobe_screen_id) {
-  std::string js = "Oobe.getInstance().currentScreen.id=='$ScreenId'";
-  base::ReplaceSubstringsAfterOffset(&js, 0, "$ScreenId", oobe_screen_id);
-  std::string description = "OOBE Screen is " + oobe_screen_id;
-  return OobeJS().CreateWaiterWithDescription(js, description);
 }
 
 }  // namespace test

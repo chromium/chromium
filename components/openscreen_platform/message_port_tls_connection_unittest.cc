@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 #include <queue>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "components/cast/message_port/message_port.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -53,7 +54,7 @@ class MockTaskRunner : public openscreen::TaskRunner {
                void(Task, openscreen::Clock::duration));
   MOCK_METHOD0(IsRunningOnTaskRunner, bool());
 
-  void PostPackagedTask(Task task) {
+  void PostPackagedTask(Task task) override {
     tasks_.push(std::move(task));
     PostTask();
   }
@@ -88,9 +89,9 @@ class MessagePortTlsConnectionTest : public testing::Test {
 
  protected:
   std::unique_ptr<MessagePortTlsConnection> connection_;
-  cast_api_bindings::MessagePort::Receiver* connection_as_receiver_;
+  raw_ptr<cast_api_bindings::MessagePort::Receiver> connection_as_receiver_;
 
-  MockMessagePort* message_port_;
+  raw_ptr<MockMessagePort> message_port_;
   StrictMock<MockTlsConnectionClient> client_;
   StrictMock<MockTaskRunner> task_runner_;
 };

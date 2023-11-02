@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "content/public/browser/notification_source.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 
 namespace content {
 
@@ -27,7 +27,7 @@ class Source<gfx::NativeWindow> : public content::NotificationSource {
 
   gfx::NativeWindow operator->() const { return ptr(); }
   gfx::NativeWindow ptr() const {
-    return static_cast<gfx::NativeWindow>(const_cast<void*>(ptr_));
+    return static_cast<gfx::NativeWindow>(const_cast<void*>(ptr_.get()));
   }
 };
 

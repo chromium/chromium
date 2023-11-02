@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,7 @@ ThrottledOfflineContentProvider::ThrottledOfflineContentProvider(
       update_queued_(false),
       wrapped_provider_(provider) {
   DCHECK(wrapped_provider_);
-  observation_.Observe(wrapped_provider_);
+  observation_.Observe(wrapped_provider_.get());
 }
 
 ThrottledOfflineContentProvider::~ThrottledOfflineContentProvider() = default;
@@ -109,12 +109,6 @@ void ThrottledOfflineContentProvider::RenameItem(const ContentId& id,
                                                  const std::string& name,
                                                  RenameCallback callback) {
   wrapped_provider_->RenameItem(id, name, std::move(callback));
-}
-
-void ThrottledOfflineContentProvider::ChangeSchedule(
-    const ContentId& id,
-    absl::optional<OfflineItemSchedule> schedule) {
-  wrapped_provider_->ChangeSchedule(id, std::move(schedule));
 }
 
 void ThrottledOfflineContentProvider::OnItemsAdded(

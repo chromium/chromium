@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,12 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/mojom/file_system.mojom-forward.h"
+#include "ash/components/arc/session/connection_observer.h"
+#include "ash/components/arc/volume_mounter/arc_volume_mounter_bridge.h"
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "components/arc/mojom/file_system.mojom-forward.h"
-#include "components/arc/session/connection_observer.h"
-#include "components/arc/volume_mounter/arc_volume_mounter_bridge.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace base {
@@ -57,17 +57,19 @@ class ArcFileSystemWatcherService
   void OnConnectionClosed() override;
 
   // ArcVolumeMounterBridge::Delegate overrides.
+  bool IsWatchingFileSystemChanges() override;
   void StartWatchingRemovableMedia(const std::string& fs_uuid,
                                    const std::string& mount_path,
                                    base::OnceClosure callback) override;
-
   void StopWatchingRemovableMedia(const std::string& mount_path) override;
 
  private:
   class FileSystemWatcher;
 
   void StartWatchingFileSystem();
-  void StopWatchingFileSystem(base::OnceClosure);
+  void StopWatchingFileSystem();
+
+  void OnMyFilesWatcherStarted();
 
   void TriggerSendAllMountEvents() const;
 
@@ -79,6 +81,8 @@ class ArcFileSystemWatcherService
 
   content::BrowserContext* const context_;
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
+
+  bool watching_file_system_changes_ = false;
 
   std::unique_ptr<FileSystemWatcher> myfiles_watcher_;
   // A map from mount path to watcher.

@@ -1,0 +1,32 @@
+caption: Ads setting for sites with intrusive ads
+default: 1
+desc: |-
+  Unless <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME">SafeBrowsingEnabled</ph> is set to False, then setting <ph name="ADS_SETTINGS_FOR_INTRUSIVE_ADS_SITES_POLICY_NAME">AdsSettingForIntrusiveAdsSites</ph> to 1 or leaving it unset allows ads on all sites.
+
+        Setting the policy to 2 blocks ads on sites with intrusive ads.
+example_value: 1
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Allow ads on all sites
+  name: AllowAds
+  value: 1
+- caption: Do not allow ads on sites with intrusive ads
+  name: BlockAds
+  value: 2
+owners:
+- shivanisha@chromium.org
+- csharrison@chromium.org
+schema:
+  enum:
+  - 1
+  - 2
+  type: integer
+supported_on:
+- chrome.*:65-
+- chrome_os:65-
+tags: []
+type: int-enum

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,13 @@
 
 #include <utility>
 
+#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "ash/components/arc/mojom/protected_buffer_manager.mojom.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/bind.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/components/cdm_factory_daemon/cdm_factory_daemon_proxy_ash.h"
-#include "components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "components/arc/mojom/protected_buffer_manager.mojom.h"
-#include "components/arc/session/arc_bridge_service.h"
 #include "content/public/browser/gpu_service_registry.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 

@@ -1,29 +1,27 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/content_suggestions/new_tab_page_app_interface.h"
 
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#include "components/ntp_snippets/content_suggestion.h"
-#include "components/ntp_snippets/content_suggestions_service.h"
-#include "components/ntp_snippets/mock_content_suggestions_provider.h"
-#include "components/search_engines/template_url.h"
-#include "components/search_engines/template_url_service.h"
-#include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/notification_promo.h"
-#include "ios/chrome/browser/ntp_snippets/ios_chrome_content_suggestions_service_factory.h"
-#include "ios/chrome/browser/ntp_snippets/ios_chrome_content_suggestions_service_factory_util.h"
-#include "ios/chrome/browser/search_engines/template_url_service_factory.h"
-#include "ios/chrome/browser/system_flags.h"
-#include "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "components/ntp_snippets/content_suggestion.h"
+#import "components/ntp_snippets/content_suggestions_service.h"
+#import "components/ntp_snippets/mock_content_suggestions_provider.h"
+#import "components/search_engines/template_url.h"
+#import "components/search_engines/template_url_service.h"
+#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/flags/system_flags.h"
+#import "ios/chrome/browser/ntp_snippets/ios_chrome_content_suggestions_service_factory.h"
+#import "ios/chrome/browser/ntp_snippets/ios_chrome_content_suggestions_service_factory_util.h"
+#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_provider_test_singleton.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_test_utils.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "net/base/mac/url_conversions.h"
@@ -32,7 +30,7 @@
 #error "This file requires ARC support."
 #endif
 
-using content_suggestions::searchFieldWidth;
+using content_suggestions::SearchFieldWidth;
 using ntp_snippets::AdditionalSuggestionsHelper;
 using ntp_snippets::Category;
 using ntp_snippets::CategoryStatus;
@@ -46,8 +44,8 @@ using testing::Invoke;
 using testing::WithArg;
 
 namespace {
-// Returns a suggestion created from the |category|, |suggestion_id| and the
-// |url|.
+// Returns a suggestion created from the `category`, `suggestion_id` and the
+// `url`.
 ContentSuggestion CreateSuggestion(Category category,
                                    std::string suggestion_id,
                                    GURL url) {
@@ -161,26 +159,10 @@ ContentSuggestion CreateSuggestion(Category category,
   }
 }
 
-+ (void)setWhatsNewPromoToMoveToDock {
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  [defaults setInteger:experimental_flags::WHATS_NEW_MOVE_TO_DOCK_TIP
-                forKey:@"WhatsNewPromoStatus"];
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
-  ios::NotificationPromo::MigrateUserPrefs(local_state);
-}
-
-+ (void)resetWhatsNewPromo {
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  [defaults setInteger:experimental_flags::WHATS_NEW_DEFAULT
-                forKey:@"WhatsNewPromoStatus"];
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
-  ios::NotificationPromo::MigrateUserPrefs(local_state);
-}
-
 + (CGFloat)searchFieldWidthForCollectionWidth:(CGFloat)collectionWidth
                               traitCollection:
                                   (UITraitCollection*)traitCollection {
-  return content_suggestions::searchFieldWidth(collectionWidth,
+  return content_suggestions::SearchFieldWidth(collectionWidth,
                                                traitCollection);
 }
 

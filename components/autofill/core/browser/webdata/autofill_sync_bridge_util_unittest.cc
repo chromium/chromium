@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,13 @@
 
 #include <vector>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
@@ -19,9 +21,10 @@
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/sync/base/client_tag_hash.h"
-#include "components/sync/engine/entity_data.h"
 #include "components/sync/protocol/autofill_offer_specifics.pb.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
+#include "components/sync/protocol/autofill_wallet_usage_specifics.pb.h"
+#include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -271,29 +274,30 @@ TEST_F(AutofillSyncBridgeUtilTest, OfferSpecificsFromOfferData) {
   AutofillOfferData offer_data = test::GetCardLinkedOfferData1();
   SetAutofillOfferSpecificsFromOfferData(offer_data, &offer_specifics);
 
-  EXPECT_EQ(offer_specifics.id(), offer_data.offer_id);
-  EXPECT_EQ(offer_specifics.offer_details_url(), offer_data.offer_details_url);
+  EXPECT_EQ(offer_specifics.id(), offer_data.GetOfferId());
+  EXPECT_EQ(offer_specifics.offer_details_url(),
+            offer_data.GetOfferDetailsUrl());
   EXPECT_EQ(offer_specifics.offer_expiry_date(),
-            (offer_data.expiry - base::Time::UnixEpoch()).InSeconds());
+            (offer_data.GetExpiry() - base::Time::UnixEpoch()).InSeconds());
   EXPECT_EQ(offer_specifics.merchant_domain().size(),
-            (int)offer_data.merchant_origins.size());
+            (int)offer_data.GetMerchantOrigins().size());
   for (int i = 0; i < offer_specifics.merchant_domain().size(); i++) {
     EXPECT_EQ(offer_specifics.merchant_domain(i),
-              offer_data.merchant_origins[i].spec());
+              offer_data.GetMerchantOrigins()[i].spec());
   }
   EXPECT_EQ(offer_specifics.display_strings().value_prop_text(),
-            offer_data.display_strings.value_prop_text);
-#if defined(OS_ANDROID) || defined(OS_IOS)
+            offer_data.GetDisplayStrings().value_prop_text);
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   EXPECT_EQ(offer_specifics.display_strings().see_details_text_mobile(),
-            offer_data.display_strings.see_details_text);
+            offer_data.GetDisplayStrings().see_details_text);
   EXPECT_EQ(offer_specifics.display_strings().usage_instructions_text_mobile(),
-            offer_data.display_strings.usage_instructions_text);
+            offer_data.GetDisplayStrings().usage_instructions_text);
 #else
   EXPECT_EQ(offer_specifics.display_strings().see_details_text_desktop(),
-            offer_data.display_strings.see_details_text);
+            offer_data.GetDisplayStrings().see_details_text);
   EXPECT_EQ(offer_specifics.display_strings().usage_instructions_text_desktop(),
-            offer_data.display_strings.usage_instructions_text);
-#endif  // defined(OS_ANDROID) || defined(OS_IOS)
+            offer_data.GetDisplayStrings().usage_instructions_text);
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
 // Test to ensure the card-linked offer-specific fields from an
@@ -304,16 +308,16 @@ TEST_F(AutofillSyncBridgeUtilTest, OfferSpecificsFromCardLinkedOfferData) {
   SetAutofillOfferSpecificsFromOfferData(offer_data, &offer_specifics);
 
   EXPECT_TRUE(offer_specifics.percentage_reward().percentage() ==
-                  offer_data.offer_reward_amount ||
+                  offer_data.GetOfferRewardAmount() ||
               offer_specifics.fixed_amount_reward().amount() ==
-                  offer_data.offer_reward_amount);
+                  offer_data.GetOfferRewardAmount());
   EXPECT_EQ(offer_specifics.card_linked_offer_data().instrument_id().size(),
-            (int)offer_data.eligible_instrument_id.size());
+            (int)offer_data.GetEligibleInstrumentIds().size());
   for (int i = 0;
        i < offer_specifics.card_linked_offer_data().instrument_id().size();
        i++) {
     EXPECT_EQ(offer_specifics.card_linked_offer_data().instrument_id(i),
-              offer_data.eligible_instrument_id[i]);
+              offer_data.GetEligibleInstrumentIds()[i]);
   }
 }
 
@@ -325,7 +329,7 @@ TEST_F(AutofillSyncBridgeUtilTest, OfferSpecificsFromPromoCodeOfferData) {
   SetAutofillOfferSpecificsFromOfferData(offer_data, &offer_specifics);
 
   EXPECT_EQ(offer_specifics.promo_code_offer_data().promo_code(),
-            offer_data.promo_code);
+            offer_data.GetPromoCode());
 }
 
 // Ensures that the ShouldResetAutofillWalletData function works correctly, if
@@ -343,7 +347,8 @@ TEST_F(AutofillSyncBridgeUtilTest,
   new_offer_data.push_back(data1);
   EXPECT_FALSE(AreAnyItemsDifferent(old_offer_data, new_offer_data));
 
-  new_offer_data.at(0).offer_id += 456;
+  new_offer_data.at(0).SetOfferIdForTesting(new_offer_data.at(0).GetOfferId() +
+                                            456);
   EXPECT_TRUE(AreAnyItemsDifferent(old_offer_data, new_offer_data));
 }
 
@@ -415,6 +420,25 @@ TEST_F(AutofillSyncBridgeUtilTest, IsOfferSpecificsValid) {
   // Expects promo code offer specifics without promo code to be invalid.
   specifics.mutable_promo_code_offer_data()->clear_promo_code();
   EXPECT_FALSE(IsOfferSpecificsValid(specifics));
+}
+
+// Test to ensure that Wallet Usage Data for virtual card retrieval is correctly
+// converted to AutofillWalletUsageSpecifics.
+TEST_F(AutofillSyncBridgeUtilTest, WalletUsageSpecificsFromWalletUsageData) {
+  sync_pb::AutofillWalletUsageSpecifics usage_specifics;
+  AutofillWalletUsageData usage_data =
+      test::GetAutofillWalletUsageDataForVirtualCard();
+  SetAutofillWalletUsageSpecificsFromAutofillWalletUsageData(usage_data,
+                                                             &usage_specifics);
+
+  EXPECT_EQ(usage_specifics.virtual_card_usage_data().instrument_id(),
+            usage_data.virtual_card_usage_data().instrument_id.value());
+  EXPECT_EQ(usage_specifics.virtual_card_usage_data().virtual_card_last_four(),
+            usage_data.virtual_card_usage_data().virtual_card_last_four);
+  EXPECT_EQ(usage_specifics.virtual_card_usage_data().merchant_url(),
+            usage_data.virtual_card_usage_data().merchant_origin.Serialize());
+  EXPECT_EQ(usage_specifics.virtual_card_usage_data().merchant_app_package(),
+            usage_data.virtual_card_usage_data().merchant_app_package);
 }
 
 }  // namespace

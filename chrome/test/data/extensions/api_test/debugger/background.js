@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -130,13 +130,12 @@ chrome.test.getConfig(config => chrome.test.runTests([
 
       function onDetach(from, reason) {
         chrome.debugger.onDetach.removeListener(onDetach);
+        chrome.debugger.attach(
+            debuggee, protocolVersion, fail('Cannot access a chrome:// URL'));
         chrome.test.assertTrue(responded);
         chrome.test.assertEq(debuggee.tabId, from.tabId);
         chrome.test.assertEq("target_closed", reason);
-        chrome.tabs.remove(tab.id, function() {
-          chrome.test.assertNoLastError();
-          chrome.test.succeed();
-        });
+        chrome.tabs.remove(tab.id, pass())
       }
 
       chrome.test.assertNoLastError();

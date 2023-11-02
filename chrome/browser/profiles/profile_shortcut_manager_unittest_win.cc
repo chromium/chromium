@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,9 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/test/scoped_path_override.h"
@@ -47,7 +47,8 @@ class ProfileShortcutManagerTest : public testing::Test {
   }
 
   void SetUp() override {
-    ProfileShortcutManagerWin::DisableUnpinningForUnitTests();
+    ProfileShortcutManagerWin::DisableUnpinningForTests();
+    ProfileShortcutManagerWin::DisableOutOfProcessShortcutOpsForTests();
     TestingBrowserProcess* browser_process =
         TestingBrowserProcess::GetGlobal();
     profile_manager_ = std::make_unique<TestingProfileManager>(browser_process);
@@ -278,7 +279,8 @@ class ProfileShortcutManagerTest : public testing::Test {
         base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()}).get(),
         location,
         base::BindOnce(&ShellUtil::CreateOrUpdateShortcut, shortcut_location,
-                       properties, ShellUtil::SHELL_SHORTCUT_CREATE_ALWAYS),
+                       properties, ShellUtil::SHELL_SHORTCUT_CREATE_ALWAYS,
+                       /*pinned=*/nullptr),
         base::BindOnce([](bool succeeded) { EXPECT_TRUE(succeeded); }));
     task_environment_.RunUntilIdle();
   }
@@ -353,7 +355,7 @@ class ProfileShortcutManagerTest : public testing::Test {
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<ProfileShortcutManager> profile_shortcut_manager_;
-  ProfileAttributesStorage* profile_attributes_storage_;
+  raw_ptr<ProfileAttributesStorage> profile_attributes_storage_;
   base::ScopedPathOverride fake_user_desktop_;
   base::ScopedPathOverride fake_system_desktop_;
   std::u16string profile_1_name_;
@@ -407,21 +409,6 @@ TEST_F(ProfileShortcutManagerTest, ShortcutFlags) {
       profile_manager_->profiles_dir().Append(kProfileName);
   EXPECT_EQ(L"--profile-directory=\"" + kProfileName + L"\"",
             profiles::internal::CreateProfileShortcutFlags(profile_path));
-}
-
-// Test ensures that the incognito switch and parent profile are added when
-// creating profile shortcut flags for incognito mode.
-TEST_F(ProfileShortcutManagerTest, IncognitoShortcutFlags) {
-  const std::wstring kProfileName = L"MyProfileX";
-  const base::FilePath profile_path =
-      profile_manager_->profiles_dir().Append(kProfileName);
-  const std::wstring shortcut_flags =
-      profiles::internal::CreateProfileShortcutFlags(profile_path,
-                                                     /*incognito=*/true);
-  EXPECT_NE(
-      shortcut_flags.find(L"--profile-directory=\"" + kProfileName + L"\""),
-      shortcut_flags.size());
-  EXPECT_NE(shortcut_flags.find(L"--incognito"), shortcut_flags.size());
 }
 
 TEST_F(ProfileShortcutManagerTest, DesktopShortcutsCreate) {
@@ -1136,4 +1123,59 @@ TEST_F(ProfileShortcutManagerTest, ShortcutsForProfilesWithIdenticalNames) {
   // Only profile3 exists. There should be a single profile shortcut only.
   EXPECT_FALSE(base::PathExists(profile_3_shortcut_path));
   ValidateSingleProfileShortcut(FROM_HERE, profile_3_path_);
+}
+
+TEST_F(ProfileShortcutManagerTest, GetPinnedShortcutsForProfile) {
+  // Create shortcuts in DIR_TASKBAR_PINS and sub-dirs of
+  // DIR_IMPLICIT_APP_SHORTCUTS for the desired profile, and one for a different
+  // profile, and check that GetPinnedShortcutsForProfile returns the ones for
+  // the desired profile.
+  base::FilePath chrome_exe;
+  std::set<base::FilePath> expected_files;
+  ASSERT_TRUE(base::PathService::Get(base::FILE_EXE, &chrome_exe));
+  base::ScopedPathOverride override_taskbar_pin{base::DIR_TASKBAR_PINS};
+  base::ScopedPathOverride override_implicit_apps{
+      base::DIR_IMPLICIT_APP_SHORTCUTS};
+  base::FilePath taskbar_pinned;
+  base::FilePath implicit_apps;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_TASKBAR_PINS, &taskbar_pinned));
+  ASSERT_TRUE(
+      base::PathService::Get(base::DIR_IMPLICIT_APP_SHORTCUTS, &implicit_apps));
+  base::win::ShortcutProperties properties;
+  std::wstring command_line =
+      profiles::internal::CreateProfileShortcutFlags(profile_1_path_);
+  properties.set_arguments(command_line);
+  properties.set_target(chrome_exe);
+  base::FilePath shortcut_path =
+      taskbar_pinned.Append(L"Shortcut 1").AddExtension(installer::kLnkExt);
+  ASSERT_TRUE(base::win::CreateOrUpdateShortcutLink(
+      shortcut_path, properties, base::win::ShortcutOperation::kCreateAlways));
+  expected_files.insert(shortcut_path);
+
+  base::FilePath implicit_apps_subdir;
+
+  // Create a subdirectory of implicit apps dir and create a shortcut with the
+  // desired profile.
+  base::CreateTemporaryDirInDir(implicit_apps, L"pre", &implicit_apps_subdir);
+  shortcut_path =
+      taskbar_pinned.Append(L"Shortcut 2").AddExtension(installer::kLnkExt);
+  ASSERT_TRUE(base::win::CreateOrUpdateShortcutLink(
+      shortcut_path, properties, base::win::ShortcutOperation::kCreateAlways));
+  expected_files.insert(shortcut_path);
+
+  // Create a shortcut using a different profile in the taskbar pinned dir.
+  // This should not be returned by GetPinnedShortCutsForProfile.
+  command_line =
+      profiles::internal::CreateProfileShortcutFlags(profile_2_path_);
+  properties.set_arguments(command_line);
+  shortcut_path =
+      taskbar_pinned.Append(L"Shortcut 3").AddExtension(installer::kLnkExt);
+  ASSERT_TRUE(base::win::CreateOrUpdateShortcutLink(
+      shortcut_path, properties, base::win::ShortcutOperation::kCreateAlways));
+
+  std::vector<base::FilePath> pinned_shortcuts =
+      profiles::internal::GetPinnedShortCutsForProfile(profile_1_path_);
+  EXPECT_EQ(pinned_shortcuts.size(), 2U);
+  EXPECT_TRUE(expected_files.find(pinned_shortcuts[0]) != expected_files.end());
+  EXPECT_TRUE(expected_files.find(pinned_shortcuts[1]) != expected_files.end());
 }

@@ -1,18 +1,18 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_WM_CORE_BASE_FOCUS_RULES_H_
 #define UI_WM_CORE_BASE_FOCUS_RULES_H_
 
-#include "base/compiler_specific.h"
+#include "base/component_export.h"
 #include "ui/wm/core/focus_rules.h"
 
 namespace wm {
 
 // A set of basic focus and activation rules. Specializations should most likely
 // subclass this and call up to these methods rather than reimplementing them.
-class WM_CORE_EXPORT BaseFocusRules : public FocusRules {
+class COMPONENT_EXPORT(UI_WM) BaseFocusRules : public FocusRules {
  public:
   BaseFocusRules(const BaseFocusRules&) = delete;
   BaseFocusRules& operator=(const BaseFocusRules&) = delete;

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ namespace site_engagement {
 // All methods should be used on the UI thread.
 class ImportantSitesUtil {
  public:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   static const int kMaxImportantSites = 5;
 #else
   static const int kMaxImportantSites = 10;
@@ -79,7 +79,7 @@ class ImportantSitesUtil {
       Profile* profile,
       size_t max_results);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Return the top |<=max_results| important registrable domains that have an
   // associated installed app. |max_results| is assumed to be small.
   static std::vector<ImportantDomainInfo> GetInstalledRegisterableDomains(

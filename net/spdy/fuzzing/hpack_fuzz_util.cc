@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 
 #include "base/rand_util.h"
 #include "base/sys_byteorder.h"
-#include "net/third_party/quiche/src/spdy/core/hpack/hpack_constants.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/hpack/hpack_constants.h"
 
 namespace spdy {
 
@@ -38,7 +38,7 @@ using std::map;
 HpackFuzzUtil::GeneratorContext::GeneratorContext() = default;
 HpackFuzzUtil::GeneratorContext::~GeneratorContext() = default;
 
-HpackFuzzUtil::Input::Input() : offset(0) {}
+HpackFuzzUtil::Input::Input() = default;
 HpackFuzzUtil::Input::~Input() = default;
 
 HpackFuzzUtil::FuzzerContext::FuzzerContext() = default;

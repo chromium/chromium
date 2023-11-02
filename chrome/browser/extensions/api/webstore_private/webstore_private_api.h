@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_delegate.h"
 #include "chrome/browser/extensions/active_install_data.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
@@ -21,7 +22,7 @@
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 // TODO(https://crbug.com/1060801): Here and elsewhere, possibly switch build
-// flag to #if defined(OS_CHROMEOS)
+// flag to #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
 #include "chrome/browser/ui/supervised_user/parent_permission_dialog.h"
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -50,8 +51,11 @@ class WebstorePrivateApi {
       Profile* profile,
       const std::string& extension_id);
 
-  // Clear the pending approvals. This should be used for testing only.
+  // Clear the pending approvals. This should only be used for testing.
   static void ClearPendingApprovalsForTesting();
+
+  // Get the count of pending approvals. This should only be used for testing.
+  static int GetPendingApprovalsCountForTesting();
 };
 
 class WebstorePrivateBeginInstallWithManifest3Function
@@ -135,7 +139,7 @@ class WebstorePrivateBeginInstallWithManifest3Function
 
   std::unique_ptr<Params> params_;
 
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
   std::unique_ptr<ScopedActiveInstall> scoped_active_install_;
 
@@ -384,24 +388,6 @@ class WebstorePrivateGetExtensionStatusFunction : public ExtensionFunction {
                         data_decoder::DataDecoder::ValueOrError result);
 
   // ExtensionFunction:
-  ExtensionFunction::ResponseAction Run() override;
-};
-
-class WebstorePrivateRequestExtensionFunction : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("webstorePrivate.requestExtension",
-                             WEBSTOREPRIVATE_REQUESTEXTENSION)
-  WebstorePrivateRequestExtensionFunction();
-
-  WebstorePrivateRequestExtensionFunction(
-      const WebstorePrivateRequestExtensionFunction&) = delete;
-  WebstorePrivateRequestExtensionFunction& operator=(
-      const WebstorePrivateRequestExtensionFunction&) = delete;
-
- private:
-  ~WebstorePrivateRequestExtensionFunction() override;
-
-  // Extensionfunction:
   ExtensionFunction::ResponseAction Run() override;
 };
 

@@ -1,9 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_FLAGS_UI_FLAGS_UI_CONSTANTS_H_
 #define COMPONENTS_FLAGS_UI_FLAGS_UI_CONSTANTS_H_
+
+#include "build/build_config.h"
 
 namespace flags_ui {
 
@@ -11,7 +13,7 @@ namespace flags_ui {
 // Must match the resource file names.
 extern const char kFlagsJS[];
 extern const char kFlagsCSS[];
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 extern const char kFlagsSVG[];
 #endif
 
@@ -21,7 +23,7 @@ extern const char kEnableExperimentalFeature[];
 extern const char kRequestExperimentalFeatures[];
 extern const char kSetOriginListFlag[];
 extern const char kResetAllFlags[];
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 extern const char kCrosUrlFlagsRedirect[];
 #endif
 extern const char kRestartBrowser[];

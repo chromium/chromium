@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <cstring>
 
 #include "base/check.h"
-#include "chromeos/components/multidevice/logging/logging.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "components/prefs/pref_service.h"
 #include "crypto/random.h"
 
@@ -26,6 +26,7 @@ EcheUidProvider::~EcheUidProvider() = default;
 
 void EcheUidProvider::GetUid(
     base::OnceCallback<void(const std::string&)> callback) {
+  PA_LOG(INFO) << "echeapi EcheUidProvider GetUid";
   if (!uid_.empty()) {
     std::move(callback).Run(uid_);
     return;

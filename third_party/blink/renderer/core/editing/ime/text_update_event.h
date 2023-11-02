@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,13 +32,16 @@ class CORE_EXPORT TextUpdateEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  TextUpdateEvent(const TextUpdateEventInit* dict);
-  TextUpdateEvent(const String& update_text,
+  TextUpdateEvent(const AtomicString& type,
+                  const TextUpdateEventInit* initializer);
+  TextUpdateEvent(const AtomicString& type,
+                  const String& update_text,
                   uint32_t update_range_start,
                   uint32_t update_range_end,
                   uint32_t new_selection_start,
                   uint32_t new_selection_end);
-  static TextUpdateEvent* Create(const TextUpdateEventInit* dict);
+  static TextUpdateEvent* Create(const AtomicString& type,
+                                 const TextUpdateEventInit* initializer);
   ~TextUpdateEvent() override;
 
   String updateText() const;

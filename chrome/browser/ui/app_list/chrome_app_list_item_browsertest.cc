@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,9 @@
 
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerators.h"
+#include "ash/public/cpp/test/app_list_test_api.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
@@ -62,7 +64,9 @@ class ChromeAppListItemTest : public InProcessBrowserTest {
   void ShowLauncherAppsGrid() {
     EXPECT_FALSE(client_->GetAppListWindow());
     ash::AcceleratorController::Get()->PerformActionIfEnabled(
-        ash::TOGGLE_APP_LIST_FULLSCREEN, {});
+        ash::TOGGLE_APP_LIST, {});
+    ash::AppListTestApi().WaitForBubbleWindow(
+        /*wait_for_opening_animation=*/false);
     EXPECT_TRUE(client_->GetAppListWindow());
   }
 
@@ -129,7 +133,8 @@ IN_PROC_BROWSER_TEST_F(ChromeAppListItemTest, FolderIconLoad) {
     TestChromeAppListItem* app_item = app_item_ptr.get();
     apps.push_back(app_item);
 
-    model_updater_->AddItemToFolder(std::move(app_item_ptr), kFakeFolderId);
+    model_updater_->AddAppItemToFolder(std::move(app_item_ptr), kFakeFolderId,
+                                       /*add_from_local=*/true);
     model_updater_->SetItemName(app_item->id(), app_name);
 
     // No icon loading on creating an app item.
@@ -149,7 +154,8 @@ IN_PROC_BROWSER_TEST_F(ChromeAppListItemTest, FolderIconLoad) {
   auto app_item_ptr = std::make_unique<TestChromeAppListItem>(
       profile(), "AnotherAppId", model_updater_);
   TestChromeAppListItem* app_item = app_item_ptr.get();
-  model_updater_->AddItemToFolder(std::move(app_item_ptr), kFakeFolderId);
+  model_updater_->AddAppItemToFolder(std::move(app_item_ptr), kFakeFolderId,
+                                     /*add_from_local=*/true);
   model_updater_->SetItemName(app_item->id(), "AnotherApp");
 
   // Icon load happens synchronously when UI is visible.

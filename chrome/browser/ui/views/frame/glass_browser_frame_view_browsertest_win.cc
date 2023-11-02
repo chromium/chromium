@@ -1,37 +1,133 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/frame/glass_browser_frame_view.h"
 
+#include <tuple>
+
 #include "base/bind.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/glass_browser_caption_button_container.h"
-#include "chrome/browser/ui/views/frame/windows_10_caption_button.h"
+#include "chrome/browser/ui/views/frame/windows_caption_button.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
+#include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/views/view_utils.h"
+
+class GlassBrowserFrameViewTest : public InProcessBrowserTest {
+ public:
+  GlassBrowserFrameViewTest() = default;
+  GlassBrowserFrameViewTest(const GlassBrowserFrameViewTest&) = delete;
+  GlassBrowserFrameViewTest& operator=(const GlassBrowserFrameViewTest&) =
+      delete;
+  ~GlassBrowserFrameViewTest() override = default;
+
+ protected:
+  GlassBrowserFrameView* GetGlassBrowserFrameView() {
+    auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+    views::NonClientFrameView* frame_view =
+        browser_view->GetWidget()->non_client_view()->frame_view();
+
+    if (!views::IsViewClass<GlassBrowserFrameView>(frame_view))
+      return nullptr;
+    return static_cast<GlassBrowserFrameView*>(frame_view);
+  }
+
+  const WindowsCaptionButton* GetMaximizeButton() {
+    auto* glass_frame_view = GetGlassBrowserFrameView();
+    if (!glass_frame_view)
+      return nullptr;
+    auto* caption_button_container =
+        glass_frame_view->caption_button_container_for_testing();
+    return static_cast<const WindowsCaptionButton*>(
+        caption_button_container->GetViewByID(VIEW_ID_MAXIMIZE_BUTTON));
+  }
+};
+
+// Test that in touch mode, the maximize button is enabled for a non-maximized
+// window.
+IN_PROC_BROWSER_TEST_F(GlassBrowserFrameViewTest,
+                       NonMaximizedTouchMaximizeButtonState) {
+  ui::TouchUiController::TouchUiScoperForTesting touch_ui_scoper_{true};
+  auto* maximize_button = GetMaximizeButton();
+  if (!maximize_button)
+    GTEST_SKIP();
+
+  EXPECT_TRUE(maximize_button->GetVisible());
+  EXPECT_TRUE(maximize_button->GetEnabled());
+}
+
+// Test that in touch mode, the maximize button is disabled and not visible for
+// a maximized window.
+IN_PROC_BROWSER_TEST_F(GlassBrowserFrameViewTest,
+                       MaximizedTouchMaximizeButtonState) {
+  ui::TouchUiController::TouchUiScoperForTesting touch_ui_scoper_{true};
+  auto* glass_frame_view = GetGlassBrowserFrameView();
+  if (!glass_frame_view)
+    GTEST_SKIP();
+
+  glass_frame_view->frame()->Maximize();
+
+  auto* maximize_button = GetMaximizeButton();
+
+  // Button isn't visible, and should be disabled.
+  EXPECT_FALSE(maximize_button->GetEnabled());
+  EXPECT_FALSE(maximize_button->GetVisible());
+}
+
+// Test that in non touch mode, the maximize button is enabled for a
+// non-maximized window.
+IN_PROC_BROWSER_TEST_F(GlassBrowserFrameViewTest,
+                       NonTouchNonMaximizedMaximizeButtonState) {
+  ui::TouchUiController::TouchUiScoperForTesting touch_ui_scoper_{false};
+  auto* maximize_button = GetMaximizeButton();
+  if (!maximize_button)
+    GTEST_SKIP();
+
+  EXPECT_TRUE(maximize_button->GetVisible());
+  EXPECT_TRUE(maximize_button->GetEnabled());
+}
+
+// Test that in non touch mode, the maximize button is enabled and not visible
+// for a maximized window.
+IN_PROC_BROWSER_TEST_F(GlassBrowserFrameViewTest,
+                       NonTouchMaximizedMaximizeButtonState) {
+  ui::TouchUiController::TouchUiScoperForTesting touch_ui_scoper_{false};
+  auto* glass_frame_view = GetGlassBrowserFrameView();
+  if (!glass_frame_view)
+    GTEST_SKIP();
+
+  glass_frame_view->frame()->Maximize();
+
+  auto* maximize_button = GetMaximizeButton();
+  EXPECT_FALSE(maximize_button->GetVisible());
+  EXPECT_TRUE(maximize_button->GetEnabled());
+}
 
 class WebAppGlassBrowserFrameViewTest : public InProcessBrowserTest {
  public:
@@ -55,7 +151,7 @@ class WebAppGlassBrowserFrameViewTest : public InProcessBrowserTest {
   // TODO(https://crbug.com/863278): Force Aero glass on Windows 7 for this
   // test.
   bool InstallAndLaunchWebApp() {
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = GetStartURL();
     web_app_info->scope = GetStartURL().GetWithoutFilename();
     if (theme_color_)
@@ -84,10 +180,10 @@ class WebAppGlassBrowserFrameViewTest : public InProcessBrowserTest {
   }
 
   absl::optional<SkColor> theme_color_ = SK_ColorBLUE;
-  Browser* app_browser_ = nullptr;
-  BrowserView* browser_view_ = nullptr;
-  GlassBrowserFrameView* glass_frame_view_ = nullptr;
-  WebAppFrameToolbarView* web_app_frame_toolbar_ = nullptr;
+  raw_ptr<Browser> app_browser_ = nullptr;
+  raw_ptr<BrowserView> browser_view_ = nullptr;
+  raw_ptr<GlassBrowserFrameView> glass_frame_view_ = nullptr;
+  raw_ptr<WebAppFrameToolbarView> web_app_frame_toolbar_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewTest, ThemeColor) {
@@ -102,9 +198,9 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewTest, NoThemeColor) {
   if (!InstallAndLaunchWebApp())
     return;
 
-  EXPECT_EQ(glass_frame_view_->GetTitlebarColor(),
-            ThemeProperties::GetDefaultColor(
-                ThemeProperties::COLOR_FRAME_ACTIVE, false));
+  EXPECT_EQ(
+      glass_frame_view_->GetTitlebarColor(),
+      browser()->window()->GetColorProvider()->GetColor(ui::kColorFrameActive));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewTest, MaximizedLayout) {
@@ -112,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewTest, MaximizedLayout) {
     return;
 
   glass_frame_view_->frame()->Maximize();
-  static_cast<views::View*>(glass_frame_view_)->Layout();
+  RunScheduledLayouts();
 
   DCHECK_GT(glass_frame_view_->window_title_for_testing()->x(), 0);
   DCHECK_GE(glass_frame_view_->web_app_frame_toolbar_for_testing()->y(), 0);
@@ -123,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewTest, RTLTopRightHitTest) {
   if (!InstallAndLaunchWebApp())
     return;
 
-  static_cast<views::View*>(glass_frame_view_)->Layout();
+  RunScheduledLayouts();
 
   // Avoid the top right resize corner.
   constexpr int kInset = 10;
@@ -194,11 +290,11 @@ class WebAppGlassBrowserFrameViewWindowControlsOverlayTest
 
     std::vector<blink::mojom::DisplayMode> display_overrides = {
         blink::mojom::DisplayMode::kWindowControlsOverlay};
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->display_mode = blink::mojom::DisplayMode::kStandalone;
-    web_app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
+    web_app_info->user_display_mode = web_app::UserDisplayMode::kStandalone;
     web_app_info->title = u"A Web App";
     web_app_info->display_override = display_overrides;
 
@@ -240,11 +336,11 @@ class WebAppGlassBrowserFrameViewWindowControlsOverlayTest
     web_app_frame_toolbar_helper_.SetupGeometryChangeCallback(web_contents);
     browser_view_->ToggleWindowControlsOverlayEnabled();
     content::TitleWatcher title_watcher(web_contents, u"ongeometrychange");
-    ignore_result(title_watcher.WaitAndGetTitle());
+    std::ignore = title_watcher.WaitAndGetTitle();
   }
 
-  BrowserView* browser_view_ = nullptr;
-  GlassBrowserFrameView* glass_frame_view_ = nullptr;
+  raw_ptr<BrowserView> browser_view_ = nullptr;
+  raw_ptr<GlassBrowserFrameView> glass_frame_view_ = nullptr;
   WebAppFrameToolbarTestHelper web_app_frame_toolbar_helper_;
 
  private:
@@ -293,13 +389,13 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
 
   auto* caption_button_container =
       glass_frame_view_->caption_button_container_for_testing();
-  auto* minimize_button = static_cast<const Windows10CaptionButton*>(
+  auto* minimize_button = static_cast<const WindowsCaptionButton*>(
       caption_button_container->GetViewByID(VIEW_ID_MINIMIZE_BUTTON));
-  auto* maximize_button = static_cast<const Windows10CaptionButton*>(
+  auto* maximize_button = static_cast<const WindowsCaptionButton*>(
       caption_button_container->GetViewByID(VIEW_ID_MAXIMIZE_BUTTON));
-  auto* restore_button = static_cast<const Windows10CaptionButton*>(
+  auto* restore_button = static_cast<const WindowsCaptionButton*>(
       caption_button_container->GetViewByID(VIEW_ID_RESTORE_BUTTON));
-  auto* close_button = static_cast<const Windows10CaptionButton*>(
+  auto* close_button = static_cast<const WindowsCaptionButton*>(
       caption_button_container->GetViewByID(VIEW_ID_CLOSE_BUTTON));
 
   // Verify tooltip text was first empty.
@@ -350,4 +446,23 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
 
   // Verify the component clears when the feature is turned off.
   EXPECT_EQ(glass_frame_view_->NonClientHitTest(kPoint), HTCLOSE);
+}
+
+// Regression test for https://crbug.com/1286896.
+IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
+                       TitlebarLayoutAfterUpdateWindowTitle) {
+  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
+    return;
+
+  browser_view_->ToggleWindowControlsOverlayEnabled();
+  glass_frame_view_->GetWidget()->LayoutRootViewIfNecessary();
+  glass_frame_view_->UpdateWindowTitle();
+
+  WebAppFrameToolbarView* web_app_frame_toolbar =
+      glass_frame_view_->web_app_frame_toolbar_for_testing();
+
+  // Verify that the center container doesn't consume space by expecting the
+  // right container to consume the full width of the WebAppFrameToolbarView.
+  EXPECT_EQ(web_app_frame_toolbar->width(),
+            web_app_frame_toolbar->get_right_container_for_testing()->width());
 }

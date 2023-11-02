@@ -1,53 +1,30 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
 
-java_prebuilt("android-all-4.4_r1-robolectric-r2_java") {
-  enable_bytecode_checks = false
+group("robolectric_runtime_jars") {
   testonly = true
-  jar_path = "lib/android-all-4.4_r1-robolectric-r2.jar"
+  data = [
+    "//third_party/robolectric/lib/android-all-instrumented-4.4_r1-robolectric-r2-i4.jar",
+    "//third_party/robolectric/lib/android-all-instrumented-5.0.2_r3-robolectric-r0-i4.jar",
+    "//third_party/robolectric/lib/android-all-instrumented-6.0.1_r3-robolectric-r1-i4.jar",
+    "//third_party/robolectric/lib/android-all-instrumented-7.0.0_r1-robolectric-r1-i4.jar",
+    "//third_party/robolectric/lib/android-all-instrumented-7.1.0_r7-robolectric-r1-i4.jar",
+    "//third_party/robolectric/lib/android-all-instrumented-8.0.0_r4-robolectric-r1-i4.jar",
+    "//third_party/robolectric/lib/android-all-instrumented-8.1.0-robolectric-4611349-i4.jar",
+    "//third_party/robolectric/lib/android-all-instrumented-9-robolectric-4913185-2-i4.jar",
+    "//third_party/robolectric/lib/android-all-instrumented-10-robolectric-5803371-i4.jar",
+    "//third_party/robolectric/lib/android-all-instrumented-11-robolectric-6757853-i4.jar",
+    "//third_party/robolectric/lib/android-all-instrumented-12-robolectric-7732740-i4.jar",
+    "//third_party/robolectric/lib/android-all-instrumented-12.1-robolectric-8229987-i4.jar",
+  ]
 }
 
-java_prebuilt("android-all-5.0.2_r3-robolectric-r0_java") {
-  enable_bytecode_checks = false
-  testonly = true
-  jar_path = "lib/android-all-5.0.2_r3-robolectric-r0.jar"
-}
-
-java_prebuilt("android-all-6.0.1_r3-robolectric-r1_java") {
-  enable_bytecode_checks = false
-  testonly = true
-  jar_path = "lib/android-all-6.0.1_r3-robolectric-r1.jar"
-}
-
-java_prebuilt("android-all-7.1.0_r7-robolectric-r1_java") {
-  enable_bytecode_checks = false
-  testonly = true
-  jar_path = "lib/android-all-7.1.0_r7-robolectric-r1.jar"
-}
-
-java_prebuilt("android-all-8.0.0_r4-robolectric-r1_java") {
-  enable_bytecode_checks = false
-  testonly = true
-  jar_path = "lib/android-all-8.0.0_r4-robolectric-r1.jar"
-}
-
-java_prebuilt("android-all-8.1.0-robolectric-4611349_java") {
-  enable_bytecode_checks = false
-  testonly = true
-  jar_path = "lib/android-all-8.1.0-robolectric-4611349.jar"
-}
-
-java_prebuilt("android-all-9-robolectric-4913185-2_java") {
-  enable_bytecode_checks = false
-  testonly = true
-  jar_path = "lib/android-all-9-robolectric-4913185-2.jar"
-}
-
-java_prebuilt("android-all-10-robolectric-5803371_java") {
-  enable_bytecode_checks = false
-  testonly = true
-  jar_path = "lib/android-all-10-robolectric-5803371.jar"
+# Robolectric tests compile against the robolectric sdk. This should be kept in
+# sync with the latest version in //third_party/android_sdk.
+android_system_java_prebuilt("robolectric_test_sdk_java") {
+  jar_path =
+      "//third_party/robolectric/lib/android-all-12.1-robolectric-8229987.jar"
 }

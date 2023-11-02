@@ -1,8 +1,8 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/ios/ios_util.h"
+#import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
@@ -14,9 +14,9 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
-#include "net/test/embedded_test_server/request_handler_util.h"
+#import "net/test/embedded_test_server/http_request.h"
+#import "net/test/embedded_test_server/http_response.h"
+#import "net/test/embedded_test_server/request_handler_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -39,23 +39,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryTitle(
                              "</title></head><body>" +
                              request.GetURL().query() + "</body></html>");
   return std::move(http_response);
-}
-
-// Returns a matcher that matches anything, but also fills |value| with the
-// accessbilityValue of the matched view.
-id<GREYMatcher> GetAccessibilityValue(__strong NSString** value) {
-  GREYMatchesBlock matches = ^BOOL(UIView* view) {
-    if (value) {
-      *value = view.accessibilityValue;
-    }
-    return YES;
-  };
-  GREYDescribeToBlock describe = ^void(id<GREYDescription> description) {
-    [description appendText:@"View is correct"];
-  };
-
-  return [[GREYElementMatcherBlock alloc] initWithMatchesBlock:matches
-                                              descriptionBlock:describe];
 }
 
 }  // namespace
@@ -125,37 +108,15 @@ id<GREYMatcher> GetAccessibilityValue(__strong NSString** value) {
   [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGrey waitForWebStateContainingText:"Hello"];
 
-  // Save the text in the location bar because the hider view should have the
-  // same text.
-  NSString* locationBarAccessibilityValue;
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_kindOfClassName(
-                                              @"LocationBarSteadyButton"),
-                                          grey_minimumVisiblePercent(1), nil)]
-      assertWithMatcher:GetAccessibilityValue(&locationBarAccessibilityValue)];
-
   // Swipe down twice to reveal the thumb strip.
   [[EarlGrey selectElementWithMatcher:PrimaryToolbar()]
       performAction:grey_swipeSlowInDirection(kGREYDirectionDown)];
   [[EarlGrey selectElementWithMatcher:PrimaryToolbar()]
       performAction:grey_swipeSlowInDirection(kGREYDirectionDown)];
 
-  // Make sure that the hider view is visible, and the toolbar is not.
+  // Make sure that the toolbar is not visible.
   [[EarlGrey selectElementWithMatcher:grey_allOf(PrimaryToolbar(), nil)]
       assertWithMatcher:grey_notVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(@"BrowserViewHiderView")]
-      assertWithMatcher:grey_notNil()];
-
-  // Make sure that the text on the hider view is the location bar text.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_kindOfClassName(
-                                       @"LocationBarSteadyView"),
-                                   grey_descendant(grey_accessibilityValue(
-                                       locationBarAccessibilityValue)),
-                                   grey_minimumVisiblePercent(1), nil)]
-      assertWithMatcher:grey_notNil()];
 }
 
 // Tests that scrolling the web content can open and close the thumb strip.

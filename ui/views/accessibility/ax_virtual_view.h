@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,9 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate_base.h"
@@ -40,6 +42,10 @@ class View;
 class ViewAccessibility;
 class ViewAXPlatformNodeDelegate;
 
+namespace test {
+class AXVirtualViewTest;
+}  // namespace test
+
 // Implements a virtual view that is used only for accessibility.
 //
 // Some composite widgets such as tree and table views may utilize lightweight
@@ -66,11 +72,11 @@ class VIEWS_EXPORT AXVirtualView : public ui::AXPlatformNodeDelegateBase {
   // Adds |view| as a child of this virtual view, optionally at |index|.
   // We take ownership of our children.
   void AddChildView(std::unique_ptr<AXVirtualView> view);
-  void AddChildViewAt(std::unique_ptr<AXVirtualView> view, int index);
+  void AddChildViewAt(std::unique_ptr<AXVirtualView> view, size_t index);
 
-  // Moves |view| to the specified |index|. A negative value for |index| moves
+  // Moves |view| to the specified |index|. A too-large value for |index| moves
   // |view| to the end.
-  void ReorderChildView(AXVirtualView* view, int index);
+  void ReorderChildView(AXVirtualView* view, size_t index);
 
   // Removes this virtual view from its parent, which could either be a virtual
   // or a real view. Hands ownership of this view back to the caller.
@@ -105,9 +111,9 @@ class VIEWS_EXPORT AXVirtualView : public ui::AXPlatformNodeDelegateBase {
   // is also this AXVirtualView.
   bool Contains(const AXVirtualView* view) const;
 
-  // Returns the index of |view|, or -1 if |view| is not a child of this virtual
-  // view.
-  int GetIndexOf(const AXVirtualView* view) const;
+  // Returns the index of |view|, or nullopt if |view| is not a child of this
+  // virtual view.
+  absl::optional<size_t> GetIndexOf(const AXVirtualView* view) const;
 
   //
   // Other methods.
@@ -135,8 +141,8 @@ class VIEWS_EXPORT AXVirtualView : public ui::AXPlatformNodeDelegateBase {
   //   necessarily reflect the internal descendant tree. (An ignored node means
   //   that the node should not be exposed to the platform.)
   const ui::AXNodeData& GetData() const override;
-  int GetChildCount() const override;
-  gfx::NativeViewAccessible ChildAtIndex(int index) override;
+  size_t GetChildCount() const override;
+  gfx::NativeViewAccessible ChildAtIndex(size_t index) override;
   gfx::NativeViewAccessible GetNSWindow() override;
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
   gfx::NativeViewAccessible GetParent() const override;
@@ -188,13 +194,14 @@ class VIEWS_EXPORT AXVirtualView : public ui::AXPlatformNodeDelegateBase {
   // track when an AXVirtualViewWrapper is deleted.
   friend class AXAuraObjCache;
   friend class AXVirtualViewWrapper;
+  friend class views::test::AXVirtualViewTest;
 
   // Internal class name.
   static const char kViewClassName[];
 
   // The AXAuraObjCache associated with our wrapper, if any. This is
   // called by friend classes AXAuraObjCache and AXVirtualViewWrapper.
-  void set_cache(AXAuraObjCache* cache) { ax_aura_obj_cache_ = cache; }
+  void set_cache(AXAuraObjCache* cache);
 
   // Sets the parent ViewAccessibility if the parent is a real View and not an
   // AXVirtualView. It is invalid to set both |parent_view_| and
@@ -206,22 +213,22 @@ class VIEWS_EXPORT AXVirtualView : public ui::AXPlatformNodeDelegateBase {
 
   // We own this, but it is reference-counted on some platforms so we can't use
   // a unique_ptr. It is destroyed in the destructor.
-  ui::AXPlatformNode* ax_platform_node_;
+  raw_ptr<ui::AXPlatformNode> ax_platform_node_;
 
   // Weak. Owns us if not nullptr.
   // Either |parent_view_| or |virtual_parent_view_| should be set but not both.
-  ViewAccessibility* parent_view_ = nullptr;
+  raw_ptr<ViewAccessibility> parent_view_ = nullptr;
 
   // Weak. Owns us if not nullptr.
   // Either |parent_view_| or |virtual_parent_view_| should be set but not both.
-  AXVirtualView* virtual_parent_view_ = nullptr;
+  raw_ptr<AXVirtualView> virtual_parent_view_ = nullptr;
 
   // We own our children.
   AXVirtualViews children_;
 
   // The AXAuraObjCache that owns the AXVirtualViewWrapper associated with
   // this object, if any.
-  AXAuraObjCache* ax_aura_obj_cache_ = nullptr;
+  raw_ptr<AXAuraObjCache> ax_aura_obj_cache_ = nullptr;
 
   ui::AXUniqueId unique_id_;
   ui::AXNodeData custom_data_;

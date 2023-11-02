@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "url/gurl.h"
@@ -47,8 +48,8 @@ TEST(OSExchangeDataProviderNonBackedTest, CloneTest) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   original.MarkOriginatedFromRenderer();
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-  url::Origin origin(url::Origin::Create(GURL("www.example.com")));
-  original.SetSource(std::make_unique<DataTransferEndpoint>(origin));
+  GURL url("www.example.com");
+  original.SetSource(std::make_unique<DataTransferEndpoint>(url));
 
   std::unique_ptr<OSExchangeDataProvider> copy = original.Clone();
   std::u16string copy_string;
@@ -88,7 +89,7 @@ TEST(OSExchangeDataProviderNonBackedTest, CloneTest) {
   DataTransferEndpoint* data_endpoint = copy->GetSource();
   EXPECT_TRUE(data_endpoint);
   EXPECT_TRUE(data_endpoint->IsUrlType());
-  EXPECT_EQ(origin, *data_endpoint->origin());
+  EXPECT_EQ(url, *data_endpoint->GetURL());
 }
 
 TEST(OSExchangeDataProviderNonBackedTest, FileNameCloneTest) {

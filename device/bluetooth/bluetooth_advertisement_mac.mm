@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 namespace device {
 
 BluetoothAdvertisementMac::BluetoothAdvertisementMac(
-    std::unique_ptr<BluetoothAdvertisement::UUIDList> service_uuids,
+    absl::optional<BluetoothAdvertisement::UUIDList> service_uuids,
     BluetoothAdapter::CreateAdvertisementCallback success_callback,
     BluetoothAdapter::AdvertisementErrorCallback error_callback,
     BluetoothLowEnergyAdvertisementManagerMac* advertisement_manager)

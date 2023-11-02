@@ -34,6 +34,8 @@
 #include "third_party/blink/renderer/core/frame/user_activation.h"
 #include "third_party/blink/renderer/core/html/portal/html_portal_element.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/to_v8.h"
+#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 
 namespace blink {
 
@@ -154,13 +156,14 @@ MessageEvent::MessageEvent(scoped_refptr<SerializedScriptValue> data,
   RegisterAmountOfExternallyAllocatedMemory();
 }
 
-MessageEvent::MessageEvent(scoped_refptr<SerializedScriptValue> data,
-                           const String& origin,
-                           const String& last_event_id,
-                           EventTarget* source,
-                           Vector<MessagePortChannel> channels,
-                           UserActivation* user_activation,
-                           bool delegate_payment_request)
+MessageEvent::MessageEvent(
+    scoped_refptr<SerializedScriptValue> data,
+    const String& origin,
+    const String& last_event_id,
+    EventTarget* source,
+    Vector<MessagePortChannel> channels,
+    UserActivation* user_activation,
+    mojom::blink::DelegatedCapability delegated_capability)
     : Event(event_type_names::kMessage, Bubbles::kNo, Cancelable::kNo),
       data_type_(kDataTypeSerializedScriptValue),
       data_as_serialized_script_value_(
@@ -170,7 +173,7 @@ MessageEvent::MessageEvent(scoped_refptr<SerializedScriptValue> data,
       source_(source),
       channels_(std::move(channels)),
       user_activation_(user_activation),
-      delegate_payment_request_(delegate_payment_request) {
+      delegated_capability_(delegated_capability) {
   DCHECK(IsValidSource(source_.Get()));
   RegisterAmountOfExternallyAllocatedMemory();
 }
@@ -219,6 +222,7 @@ MessageEvent* MessageEvent::Create(const AtomicString& type,
         "The optional 'source' property is neither a Window nor MessagePort.");
     return nullptr;
   }
+
   return MakeGarbageCollected<MessageEvent>(type, initializer);
 }
 
@@ -241,7 +245,7 @@ void MessageEvent::initMessageEvent(const AtomicString& type,
   origin_ = origin;
   last_event_id_ = last_event_id;
   source_ = source;
-  if (ports.IsEmpty()) {
+  if (ports.empty()) {
     ports_ = nullptr;
   } else {
     ports_ = MakeGarbageCollected<MessagePortArray>();
@@ -250,16 +254,17 @@ void MessageEvent::initMessageEvent(const AtomicString& type,
   is_ports_dirty_ = true;
 }
 
-void MessageEvent::initMessageEvent(const AtomicString& type,
-                                    bool bubbles,
-                                    bool cancelable,
-                                    scoped_refptr<SerializedScriptValue> data,
-                                    const String& origin,
-                                    const String& last_event_id,
-                                    EventTarget* source,
-                                    MessagePortArray* ports,
-                                    UserActivation* user_activation,
-                                    bool delegate_payment_request) {
+void MessageEvent::initMessageEvent(
+    const AtomicString& type,
+    bool bubbles,
+    bool cancelable,
+    scoped_refptr<SerializedScriptValue> data,
+    const String& origin,
+    const String& last_event_id,
+    EventTarget* source,
+    MessagePortArray* ports,
+    UserActivation* user_activation,
+    mojom::blink::DelegatedCapability delegated_capability) {
   if (IsBeingDispatched())
     return;
 
@@ -275,7 +280,7 @@ void MessageEvent::initMessageEvent(const AtomicString& type,
   ports_ = ports;
   is_ports_dirty_ = true;
   user_activation_ = user_activation;
-  delegate_payment_request_ = delegate_payment_request;
+  delegated_capability_ = delegated_capability;
   RegisterAmountOfExternallyAllocatedMemory();
 }
 
@@ -306,6 +311,8 @@ void MessageEvent::initMessageEvent(const AtomicString& type,
 ScriptValue MessageEvent::data(ScriptState* script_state) {
   is_data_dirty_ = false;
 
+  recordreplay::Assert("[RUN-1618] MessageEvent::data %d", (int)data_type_);
+
   v8::Isolate* isolate = script_state->GetIsolate();
   v8::Local<v8::Value> value;
   switch (data_type_) {
@@ -321,6 +328,8 @@ ScriptValue MessageEvent::data(ScriptState* script_state) {
       break;
 
     case MessageEvent::kDataTypeSerializedScriptValue:
+      recordreplay::Assert("[RUN-1618] MessageEvent::data #1 %d", !!data_as_serialized_script_value_);
+
       if (data_as_serialized_script_value_) {
         // The data is put on the V8 GC heap here, and therefore the V8 GC does
         // the accounting from here on. We unregister the registered memory to

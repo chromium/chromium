@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,8 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/nearby_sharing/nearby_connection_impl.h"
 #include "chrome/browser/nearby_sharing/nearby_file_handler.h"
-#include "chromeos/services/nearby/public/cpp/nearby_process_manager.h"
-#include "chromeos/services/nearby/public/mojom/nearby_connections.mojom.h"
+#include "chromeos/ash/services/nearby/public/cpp/nearby_process_manager.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_connections.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
@@ -27,8 +27,9 @@ class NearbyConnectionsManagerImpl
       public location::nearby::connections::mojom::ConnectionLifecycleListener,
       public location::nearby::connections::mojom::PayloadListener {
  public:
-  explicit NearbyConnectionsManagerImpl(
-      chromeos::nearby::NearbyProcessManager* process_manager);
+  NearbyConnectionsManagerImpl(
+      ash::nearby::NearbyProcessManager* process_manager,
+      const std::string& service_id);
   ~NearbyConnectionsManagerImpl() override;
   NearbyConnectionsManagerImpl(const NearbyConnectionsManagerImpl&) = delete;
   NearbyConnectionsManagerImpl& operator=(const NearbyConnectionsManagerImpl&) =
@@ -121,7 +122,7 @@ class NearbyConnectionsManagerImpl
   void OnConnectionRequested(const std::string& endpoint_id,
                              ConnectionsStatus status);
   void OnNearbyProcessStopped(
-      chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason
+      ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason
           shutdown_reason);
   location::nearby::connections::mojom::NearbyConnections*
   GetNearbyConnections();
@@ -135,9 +136,8 @@ class NearbyConnectionsManagerImpl
   absl::optional<Medium> GetUpgradedMedium(
       const std::string& endpoint_id) const;
 
-  chromeos::nearby::NearbyProcessManager* process_manager_;
-  std::unique_ptr<
-      chromeos::nearby::NearbyProcessManager::NearbyProcessReference>
+  ash::nearby::NearbyProcessManager* process_manager_;
+  std::unique_ptr<ash::nearby::NearbyProcessManager::NearbyProcessReference>
       process_reference_;
   NearbyFileHandler file_handler_;
   IncomingConnectionListener* incoming_connection_listener_ = nullptr;
@@ -165,6 +165,8 @@ class NearbyConnectionsManagerImpl
   base::flat_set<std::string> requested_bwu_endpoint_ids_;
   // For metrics. A map of endpoint_id to current upgraded medium.
   base::flat_map<std::string, Medium> current_upgraded_mediums_;
+
+  const std::string service_id_;
 
   mojo::Receiver<EndpointDiscoveryListener> endpoint_discovery_listener_{this};
   mojo::ReceiverSet<ConnectionLifecycleListener>

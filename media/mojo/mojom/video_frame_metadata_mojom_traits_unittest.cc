@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,12 +66,13 @@ TEST_F(VideoFrameMetadataStructTraitsTest, EmptyMetadata) {
   EXPECT_FALSE(metadata_out.capture_update_rect.has_value());
   EXPECT_FALSE(metadata_out.transformation.has_value());
   EXPECT_FALSE(metadata_out.allow_overlay);
-  EXPECT_FALSE(metadata_out.copy_mode.has_value());
+  EXPECT_FALSE(metadata_out.copy_required);
   EXPECT_FALSE(metadata_out.end_of_stream);
   EXPECT_FALSE(metadata_out.texture_owner);
   EXPECT_FALSE(metadata_out.wants_promotion_hint);
   EXPECT_FALSE(metadata_out.protected_video);
   EXPECT_FALSE(metadata_out.hw_protected);
+  EXPECT_FALSE(metadata_out.is_webgpu_compatible);
   EXPECT_FALSE(metadata_out.power_efficient);
   EXPECT_FALSE(metadata_out.read_lock_fences_enabled);
   EXPECT_FALSE(metadata_out.interactive_content);
@@ -108,16 +109,15 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
   // VideoTransformation
   metadata_in.transformation = VideoTransformation(VIDEO_ROTATION_90, true);
 
-  // VideoFrameMetadata::CopyMode
-  metadata_in.copy_mode = VideoFrameMetadata::CopyMode::kCopyToNewTexture;
-
   // bools
   metadata_in.allow_overlay = true;
+  metadata_in.copy_required = true;
   metadata_in.end_of_stream = true;
   metadata_in.texture_owner = true;
   metadata_in.wants_promotion_hint = true;
   metadata_in.protected_video = true;
   metadata_in.hw_protected = true;
+  metadata_in.is_webgpu_compatible = true;
   metadata_in.power_efficient = true;
   metadata_in.read_lock_fences_enabled = true;
   metadata_in.interactive_content = true;
@@ -156,13 +156,15 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
   EXPECT_EQ(metadata_in.capture_update_rect, metadata_out.capture_update_rect);
   EXPECT_EQ(metadata_in.transformation, metadata_out.transformation);
   EXPECT_EQ(metadata_in.allow_overlay, metadata_out.allow_overlay);
-  EXPECT_EQ(metadata_in.copy_mode, metadata_out.copy_mode);
+  EXPECT_EQ(metadata_in.copy_required, metadata_out.copy_required);
   EXPECT_EQ(metadata_in.end_of_stream, metadata_out.end_of_stream);
   EXPECT_EQ(metadata_in.texture_owner, metadata_out.texture_owner);
   EXPECT_EQ(metadata_in.wants_promotion_hint,
             metadata_out.wants_promotion_hint);
   EXPECT_EQ(metadata_in.protected_video, metadata_out.protected_video);
   EXPECT_EQ(metadata_in.hw_protected, metadata_out.hw_protected);
+  EXPECT_EQ(metadata_in.is_webgpu_compatible,
+            metadata_out.is_webgpu_compatible);
   EXPECT_EQ(metadata_in.power_efficient, metadata_out.power_efficient);
   EXPECT_EQ(metadata_in.read_lock_fences_enabled,
             metadata_out.read_lock_fences_enabled);

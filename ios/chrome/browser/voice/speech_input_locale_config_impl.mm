@@ -1,18 +1,18 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/voice/speech_input_locale_config_impl.h"
+#import "ios/chrome/browser/voice/speech_input_locale_config_impl.h"
 
 #import <Foundation/Foundation.h>
 
-#include "base/containers/contains.h"
-#include "base/mac/bundle_locations.h"
-#include "base/mac/foundation_util.h"
-#include "base/mac/scoped_cftyperef.h"
-#include "base/strings/string_split.h"
-#include "base/strings/sys_string_conversions.h"
-#include "ios/chrome/browser/voice/speech_input_locale_match.h"
+#import "base/containers/contains.h"
+#import "base/mac/bundle_locations.h"
+#import "base/mac/foundation_util.h"
+#import "base/mac/scoped_cftyperef.h"
+#import "base/strings/string_split.h"
+#import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/voice/speech_input_locale_match.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -20,7 +20,7 @@
 
 namespace {
 
-// Returns the language portion of |locale_code|.
+// Returns the language portion of `locale_code`.
 std::string GetLanguageComponentForLocaleCode(const std::string& locale_code) {
   std::vector<std::string> tokens = base::SplitString(
       locale_code, "-", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
@@ -32,7 +32,7 @@ std::string GetLanguageComponentForLocaleCode(const std::string& locale_code) {
 // Use "en-US" as a default value.
 const char kEnglishUS[] = "en-US";
 
-// Converts |locale| to its canonical form and returns it as a std::string.
+// Converts `locale` to its canonical form and returns it as a std::string.
 std::string GetCanonicalLocaleForLocale(NSString* locale_code) {
   std::string locale = base::SysNSStringToUTF8(
       [NSLocale canonicalLocaleIdentifierFromString:locale_code]);
@@ -127,12 +127,12 @@ std::string SpeechInputLocaleConfigImpl::GetDefaultLocaleCode() const {
   NSLocale* current_locale = [NSLocale currentLocale];
   NSLocale* lang_pref_locale = [NSLocale
       localeWithLocaleIdentifier:[[NSLocale preferredLanguages] firstObject]];
-  // Prioritize the language portion of |language_pref_locale|.
+  // Prioritize the language portion of `language_pref_locale`.
   NSString* language = [lang_pref_locale objectForKey:NSLocaleLanguageCode];
   if (!language.length)
     language = [current_locale objectForKey:NSLocaleLanguageCode];
   DCHECK(language.length);
-  // Prioritize the country portion of |current_locale|.
+  // Prioritize the country portion of `current_locale`.
   NSString* country = [current_locale objectForKey:NSLocaleCountryCode];
   if (!country.length)
     country = [lang_pref_locale objectForKey:NSLocaleCountryCode];
@@ -144,7 +144,7 @@ std::string SpeechInputLocaleConfigImpl::GetDefaultLocaleCode() const {
 void SpeechInputLocaleConfigImpl::InitializeAvailableLocales(
     NSArray<VoiceSearchLanguage*>* languages) {
   for (VoiceSearchLanguage* language in languages) {
-    // Store the InputLocale in |available_locales_|.
+    // Store the InputLocale in `available_locales_`.
     std::string locale_code = GetCanonicalLocaleForLocale(language.identifier);
     DCHECK(locale_code.length());
     voice::SpeechInputLocale locale;
@@ -154,7 +154,7 @@ void SpeechInputLocaleConfigImpl::InitializeAvailableLocales(
     // Store the index of the InputLocale.
     size_t locale_index = available_locales_.size() - 1;
     locale_indices_for_codes_[locale_code] = locale_index;
-    // Store a mapping from |language.localizationPreference| to the locale.
+    // Store a mapping from `language.localizationPreference` to the locale.
     std::string localization_preference =
         GetCanonicalLocaleForLocale(language.localizationPreference);
     if (localization_preference.length())

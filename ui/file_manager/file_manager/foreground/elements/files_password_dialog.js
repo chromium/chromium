@@ -1,6 +1,8 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -57,9 +59,11 @@ export class FilesPasswordDialog extends HTMLElement {
 
     /**
      * Password dialog.
-     * @private {!CrDialogElement}
+     * TODO(https://crbug.com/1353205): This type should be CrDialogElement, and
+     * an import of that type from cr_dialog.js should be added to this file.
+     * @private {!HTMLElement}
      */
-    this.dialog_ = /** @type {!CrDialogElement} */
+    this.dialog_ = /** @type {!HTMLElement} */
         (this.shadowRoot.querySelector('#password-dialog'));
     this.dialog_.consumeKeydownEvent = true;
 
@@ -120,7 +124,7 @@ export class FilesPasswordDialog extends HTMLElement {
           this.input_.invalid = false;
         }
         this.showModal_(filename);
-        this.input_.focus();
+        this.input_.inputElement.select();
       });
     } finally {
       mutexUnlock();

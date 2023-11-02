@@ -1,15 +1,20 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/webui/eche_app_ui/apps_access_manager.h"
 
+#include "ash/components/phonehub/multidevice_feature_access_manager.h"
 #include "ash/webui/eche_app_ui/proto/exo_messages.pb.h"
 #include "base/memory/ptr_util.h"
-#include "chromeos/components/multidevice/logging/logging.h"
+#include "base/metrics/histogram_functions.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 
 namespace ash {
 namespace eche_app {
+
+using AccessStatus =
+    ash::phonehub::MultideviceFeatureAccessManager::AccessStatus;
 
 AppsAccessManager::AppsAccessManager() = default;
 
@@ -18,6 +23,10 @@ AppsAccessManager::~AppsAccessManager() = default;
 std::unique_ptr<AppsAccessSetupOperation>
 AppsAccessManager::AttemptAppsAccessSetup(
     AppsAccessSetupOperation::Delegate* delegate) {
+  base::UmaHistogramEnumeration(
+      "Eche.Onboarding.UserAction",
+      OnboardingUserActionMetric::kUserActionStartClicked);
+
   // Should only be able to start the setup process if apps access is
   // available but not yet granted.
   if (GetAccessStatus() != AccessStatus::kAvailableButNotGranted)
@@ -72,19 +81,6 @@ void AppsAccessManager::OnSetupOperationDeleted(int operation_id) {
 
   if (id_to_operation_map_.empty())
     PA_LOG(INFO) << "Apps access setup operation has ended.";
-}
-
-std::ostream& operator<<(std::ostream& stream,
-                         AppsAccessManager::AccessStatus status) {
-  switch (status) {
-    case AppsAccessManager::AccessStatus::kAvailableButNotGranted:
-      stream << "[Access available but not granted]";
-      break;
-    case AppsAccessManager::AccessStatus::kAccessGranted:
-      stream << "[Access granted]";
-      break;
-  }
-  return stream;
 }
 
 }  // namespace eche_app

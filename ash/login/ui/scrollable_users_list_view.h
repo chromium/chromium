@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -82,7 +82,8 @@ class ASH_EXPORT ScrollableUsersListView : public views::ScrollView,
 
  private:
   struct GradientParams {
-    static GradientParams BuildForStyle(LoginDisplayStyle style);
+    static GradientParams BuildForStyle(LoginDisplayStyle style,
+                                        views::View* view);
 
     // Start color for drawing linear gradient.
     SkColor color_from = SK_ColorTRANSPARENT;

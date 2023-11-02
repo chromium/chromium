@@ -63,7 +63,7 @@ void xcorr_kernel_sse(
 #define xcorr_kernel(x, y, sum, len, arch) \
     ((void)arch, xcorr_kernel_sse(x, y, sum, len))
 
-#elif (defined(OPUS_X86_MAY_HAVE_SSE4_1) && defined(FIXED_POINT)) || (defined(OPUS_X86_MAY_HAVE_SSE) && !defined(FIXED_POINT))
+#elif defined(OPUS_HAVE_RTCD) &&  ((defined(OPUS_X86_MAY_HAVE_SSE4_1) && defined(FIXED_POINT)) || (defined(OPUS_X86_MAY_HAVE_SSE) && !defined(FIXED_POINT)))
 
 extern void (*const XCORR_KERNEL_IMPL[OPUS_ARCHMASK + 1])(
                     const opus_val16 *x,
@@ -115,8 +115,8 @@ opus_val32 celt_inner_prod_sse(
     ((void)arch, celt_inner_prod_sse(x, y, N))
 
 
-#elif ((defined(OPUS_X86_MAY_HAVE_SSE4_1) || defined(OPUS_X86_MAY_HAVE_SSE2)) && defined(FIXED_POINT)) || \
-    (defined(OPUS_X86_MAY_HAVE_SSE) && !defined(FIXED_POINT))
+#elif defined(OPUS_HAVE_RTCD) && (((defined(OPUS_X86_MAY_HAVE_SSE4_1) || defined(OPUS_X86_MAY_HAVE_SSE2)) && defined(FIXED_POINT)) || \
+    (defined(OPUS_X86_MAY_HAVE_SSE) && !defined(FIXED_POINT)))
 
 extern opus_val32 (*const CELT_INNER_PROD_IMPL[OPUS_ARCHMASK + 1])(
                     const opus_val16 *x,

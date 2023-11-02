@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,15 @@
 
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/types/pass_key.h"
+#include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
+#include "third_party/blink/renderer/modules/mediasource/attachment_creation_pass_key_provider.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_public.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
@@ -29,7 +35,7 @@ std::ostream& operator<<(
 
 CrossThreadMediaSourceAttachment::CrossThreadMediaSourceAttachment(
     MediaSource* media_source,
-    base::PassKey<URLMediaSource> /* passkey */)
+    AttachmentCreationPassKeyProvider::PassKey /* passkey */)
     : registered_media_source_(media_source),
       // To use scheduling priority that is the same as postMessage, we use
       // kPostedMessage here instead of, say, kMediaElementEvent.
@@ -56,8 +62,8 @@ CrossThreadMediaSourceAttachment::~CrossThreadMediaSourceAttachment() {
 
 void CrossThreadMediaSourceAttachment::NotifyDurationChanged(
     MediaSourceTracer* /* tracer */,
-    double /* duration */) {
-  DVLOG(1) << __func__ << " this=" << this << " (no-op)";
+    double new_duration) {
+  DVLOG(1) << __func__ << " this=" << this << ", new_duration=" << new_duration;
 
   attachment_state_lock_.AssertAcquired();
 
@@ -68,11 +74,17 @@ void CrossThreadMediaSourceAttachment::NotifyDurationChanged(
   DCHECK(!IsMainThread());
   DCHECK(worker_runner_->BelongsToCurrentThread());
 
-  // While the duration value of the attached media element is only updated upon
-  // a notification of the change hopping threads from the demuxer through the
-  // pipeline, a side effect of a duration change is a potentially new value for
-  // the buffered and seekable ranges, so we send updated values here, too.
-  SendUpdatedInfoToMainThreadCache();
+  // Changing the duration has side effect of potentially new values for the
+  // buffered and seekable ranges. Furthermore, duration-changed notification of
+  // the media element, when attached cross-thread, needs to be done in a posted
+  // task's dispatch (to both mitigate high-res timer creation by apps, and to
+  // not require locks in the media element itself.) Finally, when that task is
+  // executed on the main thread, the way of updating the media element's
+  // duration correctly depends upon the element's current readyState. In short,
+  // send updated values and indicate that the recipient on the main thread also
+  // needs to correctly update the element's duration.
+  SendUpdatedInfoToMainThreadCacheInternal(/* has_duration */ true,
+                                           new_duration);
 }
 
 base::TimeDelta CrossThreadMediaSourceAttachment::GetRecentMediaTime(
@@ -175,7 +187,7 @@ void CrossThreadMediaSourceAttachment::RemoveTracksFromMediaElementInternal(
   DCHECK(!IsMainThread());
   DCHECK(worker_runner_->BelongsToCurrentThread());
 
-  DCHECK(!track_ids.IsEmpty());
+  DCHECK(!track_ids.empty());
 
   // Detachment might have started, and could lead to MSE teardown calling us.
   // In such case, media element must forget all its tracks directly (see
@@ -216,10 +228,10 @@ void CrossThreadMediaSourceAttachment::RemoveTracksFromMediaElementOnMainThread(
     TrackAddRemovalType track_type,
     Vector<String> track_ids,
     bool enqueue_change_event) {
-  DCHECK(!track_ids.IsEmpty());
+  DCHECK(!track_ids.empty());
 
   {
-    MutexLocker lock(attachment_state_lock_);
+    base::AutoLock lock(attachment_state_lock_);
 
     DCHECK(IsMainThread());
     DCHECK(main_runner_->BelongsToCurrentThread());
@@ -343,7 +355,7 @@ void CrossThreadMediaSourceAttachment::AddTrackToMediaElementOnMainThread(
     String label,
     String language,
     bool enable_or_select) {
-  MutexLocker lock(attachment_state_lock_);
+  base::AutoLock lock(attachment_state_lock_);
 
   DCHECK(IsMainThread());
   DCHECK(main_runner_->BelongsToCurrentThread());
@@ -437,7 +449,7 @@ bool CrossThreadMediaSourceAttachment::FullyAttachedOrSameThread(
 bool CrossThreadMediaSourceAttachment::RunExclusively(
     bool abort_if_not_fully_attached,
     RunExclusivelyCB cb) {
-  MutexLocker lock(attachment_state_lock_);
+  base::AutoLock lock(attachment_state_lock_);
 
   // We must only be used by the MSE API on the worker thread.
   DCHECK(!IsMainThread());
@@ -479,8 +491,13 @@ void CrossThreadMediaSourceAttachment::Unregister() {
   // races attempted usage of the object URL (or |registered_media_source_|
   // here).
   {
-    MutexLocker lock(attachment_state_lock_);
+    base::AutoLock lock(attachment_state_lock_);
     DCHECK(registered_media_source_);
+
+    // MSE-in-Worker using MediaSourceHandle for attachment does NOT use object
+    // URLs, so we must not be called if MediaSourceHandle feature is enabled.
+    DCHECK(!RuntimeEnabledFeatures::MediaSourceInWorkersUsingHandleEnabled(
+        registered_media_source_->GetExecutionContext()));
 
     // The only expected caller is a MediaSourceRegistryImpl on the main thread
     // (or possibly on the worker thread, if MediaSourceInWorkers is enabled).
@@ -505,7 +522,7 @@ CrossThreadMediaSourceAttachment::StartAttachingToMediaElement(
   DCHECK(success);
 
   {
-    MutexLocker lock(attachment_state_lock_);
+    base::AutoLock lock(attachment_state_lock_);
 
     // There should not be the ability for a previous (or current) element's
     // context to have been destroyed (main thread), yet us being called again
@@ -516,10 +533,21 @@ CrossThreadMediaSourceAttachment::StartAttachingToMediaElement(
     // Prevent sequential re-use of this attachment for multiple successful
     // attachments. See declaration of |have_ever_attached_|.
     if (have_ever_attached_) {
-      DVLOG(1) << __func__ << " this=" << this << ", element=" << element
-               << ": failed: reuse of MediaSource object URL by disabling "
-                  "RevokeMediaSourceObjectURLOnAttach is not supported for "
-                  "MSE-in-Workers";
+      if (RuntimeEnabledFeatures::MediaSourceInWorkersUsingHandleEnabled(
+              element->GetExecutionContext())) {
+        // With current restrictions on ability to only ever obtain at most one
+        // MediaSourceHandle per MediaSource and only allow loading to succeed
+        // at most once per each MediaSourceHandle, fail if there is attempt to
+        // reuse either in a load.
+        DVLOG(1) << __func__ << " this=" << this << ", element=" << element
+                 << ": failed: reuse of MediaSource for more than one load "
+                    "is not supported for MSE-in-Workers";
+      } else {
+        DVLOG(1) << __func__ << " this=" << this << ", element=" << element
+                 << ": failed: reuse of MediaSource object URL by disabling "
+                    "RevokeMediaSourceObjectURLOnAttach is not supported for "
+                    "MSE-in-Workers";
+      }
       *success = false;
       return nullptr;
     }
@@ -595,7 +623,7 @@ void CrossThreadMediaSourceAttachment::CompleteAttachingToMediaElement(
   DCHECK(web_media_source);
 
   {
-    MutexLocker lock(attachment_state_lock_);
+    base::AutoLock lock(attachment_state_lock_);
 
     // Called only by the media element on main thread.
     DCHECK(IsMainThread());
@@ -633,7 +661,7 @@ void CrossThreadMediaSourceAttachment::
   DCHECK(web_media_source);
 
   {
-    MutexLocker lock(attachment_state_lock_);
+    base::AutoLock lock(attachment_state_lock_);
 
     DCHECK(!IsMainThread());
     DCHECK(worker_runner_->BelongsToCurrentThread());
@@ -679,7 +707,7 @@ void CrossThreadMediaSourceAttachment::
 }
 
 void CrossThreadMediaSourceAttachment::Close(MediaSourceTracer* /* tracer */) {
-  MutexLocker lock(attachment_state_lock_);
+  base::AutoLock lock(attachment_state_lock_);
   DVLOG(1) << __func__ << " this=" << this;
 
   // Note, this method may be called either explicitly to detach a loading
@@ -714,7 +742,7 @@ void CrossThreadMediaSourceAttachment::Close(MediaSourceTracer* /* tracer */) {
 }
 
 void CrossThreadMediaSourceAttachment::CloseOnWorkerThread() {
-  MutexLocker lock(attachment_state_lock_);
+  base::AutoLock lock(attachment_state_lock_);
 
   DCHECK(!IsMainThread());
   DCHECK(worker_runner_->BelongsToCurrentThread());
@@ -761,7 +789,7 @@ void CrossThreadMediaSourceAttachment::CloseOnWorkerThread() {
 
 WebTimeRanges CrossThreadMediaSourceAttachment::BufferedInternal(
     MediaSourceTracer* /* tracer */) const {
-  MutexLocker lock(attachment_state_lock_);
+  base::AutoLock lock(attachment_state_lock_);
 
   // Called only by the media element on main thread.
   DCHECK(IsMainThread());
@@ -801,7 +829,7 @@ WebTimeRanges CrossThreadMediaSourceAttachment::BufferedInternal(
 
 WebTimeRanges CrossThreadMediaSourceAttachment::SeekableInternal(
     MediaSourceTracer* /* tracer */) const {
-  MutexLocker lock(attachment_state_lock_);
+  base::AutoLock lock(attachment_state_lock_);
 
   // Called only by the media element on main thread.
   DCHECK(IsMainThread());
@@ -843,7 +871,7 @@ WebTimeRanges CrossThreadMediaSourceAttachment::SeekableInternal(
 void CrossThreadMediaSourceAttachment::OnTrackChanged(
     MediaSourceTracer* /* tracer */,
     TrackBase* track) {
-  MutexLocker lock(attachment_state_lock_);
+  base::AutoLock lock(attachment_state_lock_);
 
   // Called only by the media element on main thread.
   DCHECK(IsMainThread());
@@ -857,7 +885,7 @@ void CrossThreadMediaSourceAttachment::OnElementTimeUpdate(double time) {
   DVLOG(1) << __func__ << " this=" << this << ", time=" << time;
 
   {
-    MutexLocker lock(attachment_state_lock_);
+    base::AutoLock lock(attachment_state_lock_);
 
     // Called only by the media element on main thread.
     DCHECK(IsMainThread());
@@ -881,7 +909,7 @@ void CrossThreadMediaSourceAttachment::OnElementTimeUpdate(double time) {
 void CrossThreadMediaSourceAttachment::UpdateWorkerThreadTimeCache(
     base::TimeDelta time) {
   {
-    MutexLocker lock(attachment_state_lock_);
+    base::AutoLock lock(attachment_state_lock_);
     DCHECK(!IsMainThread());
     DCHECK(worker_runner_->BelongsToCurrentThread());
 
@@ -900,7 +928,7 @@ void CrossThreadMediaSourceAttachment::OnElementError() {
   DVLOG(1) << __func__ << " this=" << this;
 
   {
-    MutexLocker lock(attachment_state_lock_);
+    base::AutoLock lock(attachment_state_lock_);
 
     // Called only by the media element on main thread.
     DCHECK(IsMainThread());
@@ -916,7 +944,7 @@ void CrossThreadMediaSourceAttachment::OnElementError() {
 }
 
 void CrossThreadMediaSourceAttachment::HandleElementErrorOnWorkerThread() {
-  MutexLocker lock(attachment_state_lock_);
+  base::AutoLock lock(attachment_state_lock_);
   DCHECK(!IsMainThread());
   DCHECK(worker_runner_->BelongsToCurrentThread());
 
@@ -929,7 +957,7 @@ void CrossThreadMediaSourceAttachment::HandleElementErrorOnWorkerThread() {
 }
 
 void CrossThreadMediaSourceAttachment::OnElementContextDestroyed() {
-  MutexLocker lock(attachment_state_lock_);
+  base::AutoLock lock(attachment_state_lock_);
 
   // Called only by the media element on main thread.
   DCHECK(IsMainThread());
@@ -957,6 +985,13 @@ void CrossThreadMediaSourceAttachment::
 }
 
 void CrossThreadMediaSourceAttachment::SendUpdatedInfoToMainThreadCache() {
+  // No explicit duration update was done by application in this case.
+  SendUpdatedInfoToMainThreadCacheInternal(false, 0);
+}
+
+void CrossThreadMediaSourceAttachment::SendUpdatedInfoToMainThreadCacheInternal(
+    bool has_new_duration,
+    double new_duration) {
   attachment_state_lock_.AssertAcquired();
   VerifyCalledWhileContextsAliveForDebugging();
   DCHECK(main_runner_);
@@ -968,7 +1003,7 @@ void CrossThreadMediaSourceAttachment::SendUpdatedInfoToMainThreadCache() {
   DCHECK(worker_runner_->BelongsToCurrentThread());
 
   // TODO(https://crbug.com/878133): Consider coalescing frequent calls to this
-  // using a timer.
+  // using a timer, except when |has_new_duration| is true.
 
   // Here, since we are in scope of |lock| holding |attachment_state_lock_|, we
   // can correctly acquire an ExclusiveKey to give to MediaSource so it can know
@@ -983,13 +1018,15 @@ void CrossThreadMediaSourceAttachment::SendUpdatedInfoToMainThreadCache() {
       CrossThreadBindOnce(
           &CrossThreadMediaSourceAttachment::UpdateMainThreadInfoCache,
           WTF::RetainedRef(this), std::move(new_buffered),
-          std::move(new_seekable)));
+          std::move(new_seekable), has_new_duration, new_duration));
 }
 
 void CrossThreadMediaSourceAttachment::UpdateMainThreadInfoCache(
     WebTimeRanges new_buffered,
-    WebTimeRanges new_seekable) {
-  MutexLocker lock(attachment_state_lock_);
+    WebTimeRanges new_seekable,
+    bool has_new_duration,
+    double new_duration) {
+  base::AutoLock lock(attachment_state_lock_);
 
   DCHECK(IsMainThread());
   DCHECK(main_runner_->BelongsToCurrentThread());
@@ -1016,6 +1053,31 @@ void CrossThreadMediaSourceAttachment::UpdateMainThreadInfoCache(
 
   cached_buffered_ = std::move(new_buffered);
   cached_seekable_ = std::move(new_seekable);
+
+  if (has_new_duration) {
+    // We may need to let the media element know duration has changed. Whether
+    // we do this needs to be conditioned upon the media element's current
+    // readyState.
+    if (attached_element_->getReadyState() == HTMLMediaElement::kHaveNothing) {
+      DVLOG(1) << __func__ << " this=" << this
+               << ": new_duration=" << new_duration
+               << " and media element readyState is HAVE_NOTHING";
+      // Explicitly notify the media element of the updated duration. This
+      // happens when app sets MediaSource duration before the pipeline has
+      // reached HAVE_METADATA.
+      bool request_seek = attached_element_->currentTime() > new_duration;
+      attached_element_->DurationChanged(new_duration, request_seek);
+      return;
+    }
+
+    // The pipeline will deliver explicit duration changed notifications to the
+    // element at and after the transition to HAVE_METADATA, including when the
+    // app sets MediaSource duration in those cases, so don't deliver any extra
+    // notification to the element here.
+    DVLOG(1) << __func__ << " this=" << this
+             << ": new_duration=" << new_duration
+             << " and media element readyState is beyond HAVE_NOTHING (no-op)";
+  }
 }
 
 void CrossThreadMediaSourceAttachment::

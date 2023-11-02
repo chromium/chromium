@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,9 +51,14 @@
   }
 
   function printDetails(result) {
-    const customFormatters = {};
-    for (let name of ['runtimeModelInternal', 'runtimeAgent'])
-      customFormatters[name] = 'formatAsTypeNameOrNull';
-    TestRunner.dump(result, customFormatters);
+    if (result.error) {
+      TestRunner.addResult(`Error: ${result.error}`);
+    } else {
+      TestRunner.addResult('Result:');
+      TestRunner.addResult(`  Description: ${result.object.description}`);
+      TestRunner.addResult(`  Value:       ${result.object.value}`);
+      TestRunner.addResult(`  Type:        ${result.object.type}`);
+
+    }
   }
 })();

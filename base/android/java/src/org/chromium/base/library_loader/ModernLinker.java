@@ -1,16 +1,20 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.base.library_loader;
 
-import android.os.SystemClock;
-
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.base.TimeUtils.UptimeMillisTimer;
 import org.chromium.base.annotations.JniIgnoreNatives;
 import org.chromium.base.metrics.RecordHistogram;
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 import javax.annotation.concurrent.GuardedBy;
 
@@ -29,11 +33,58 @@ class ModernLinker extends Linker {
     private static final String DETAILED_LOAD_TIME_HISTOGRAM_PREFIX =
             "ChromiumAndroidLinker.ModernLinkerDetailedLoadTime.";
 
+    private static final String DETAILED_LOAD_TIME_HISTOGRAM_PREFIX_BLKIO_CGROUP =
+            "ChromiumAndroidLinker.ModernLinkerDetailedLoadTimeByBlkioCgroup.";
+
+    private static final String SUFFIX_UNKNOWN = "Unknown";
+
+    private static final String SELF_CGROUP_FILE_NAME = "/proc/self/cgroup";
+
     ModernLinker() {}
 
     @Override
     protected boolean keepMemoryReservationUntilLoad() {
         return true;
+    }
+
+    private static String extractBlkioCgroupFromLine(String line) {
+        // The contents of /proc/self/cgroup for a background app looks like this:
+        // 5:schedtune:/background
+        // 4:memory:/
+        // 3:cpuset:/background
+        // 2:cpu:/system
+        // 1:blkio:/background
+        // 0::/uid_10179/pid_11869
+        //
+        // For a foreground app the relevant line looks like this:
+        // 1:blkio:/
+        int blkioStartsAt = line.indexOf(":blkio:");
+        if (blkioStartsAt == -1) return "";
+        return line.substring(blkioStartsAt + 7);
+    }
+
+    private String readBackgroundStateFromCgroups() {
+        String groupName = null;
+        try (BufferedReader reader = new BufferedReader(
+                     new InputStreamReader(new FileInputStream(SELF_CGROUP_FILE_NAME)));) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                groupName = extractBlkioCgroupFromLine(line);
+                if (!groupName.equals("")) break;
+            }
+            if (groupName == null || groupName.equals("")) return SUFFIX_UNKNOWN;
+        } catch (IOException e) {
+            Log.e(TAG, "IOException while reading %s", SELF_CGROUP_FILE_NAME);
+            return SUFFIX_UNKNOWN;
+        }
+        if (groupName.equals("/")) {
+            return "Foreground";
+        }
+        if (groupName.equals("/background")) {
+            return "Background";
+        }
+        Log.e(TAG, "blkio cgroup with unexpected name: '%s'", groupName);
+        return SUFFIX_UNKNOWN;
     }
 
     @Override
@@ -45,8 +96,12 @@ class ModernLinker extends Linker {
         }
         assert mState == State.INITIALIZED; // Only one successful call.
 
+        // Determine whether library loading starts in a foreground or a background cgroup for the
+        // 'blkio' controller.
+        String backgroundStateBeforeLoad = readBackgroundStateFromCgroups();
+
         // Load or declare fallback to System.loadLibrary.
-        long beforeLoadMs = SystemClock.uptimeMillis();
+        UptimeMillisTimer timer = new UptimeMillisTimer();
         String libFilePath = System.mapLibraryName(library);
         boolean performedModernLoad = true;
         if (relroMode == RelroSharingMode.NO_SHARING) {
@@ -64,9 +119,26 @@ class ModernLinker extends Linker {
             // Done loading the library, but using an externally provided RELRO may happen later.
             mState = State.DONE;
         }
+
+        // The app can change the bg/fg state while loading the native library, but mostly only
+        // once. To reduce the likelihood of a foreground sample to be affected by partially
+        // backgrounded state, move the mixed samples to a separate category. The data collected may
+        // help proving this hypothesis: "The ModernLinker is not a lot slower than the system
+        // linker when running in foreground".
+        String backgroundStateAfterLoad = readBackgroundStateFromCgroups();
+        if (!backgroundStateBeforeLoad.equals(backgroundStateAfterLoad)) {
+            if (backgroundStateBeforeLoad.equals(SUFFIX_UNKNOWN)
+                    || backgroundStateAfterLoad.equals(SUFFIX_UNKNOWN)) {
+                backgroundStateBeforeLoad = SUFFIX_UNKNOWN;
+            } else {
+                backgroundStateBeforeLoad = "Mixed";
+            }
+        }
+
         if (performedModernLoad) {
-            recordDetailedLoadTimeSince(
-                    beforeLoadMs, relroMode == RelroSharingMode.PRODUCE ? "Produce" : "Consume");
+            recordDetailedLoadTimeSince(timer,
+                    relroMode == RelroSharingMode.PRODUCE ? "Produce" : "Consume",
+                    backgroundStateBeforeLoad);
         }
 
         // Load the library a second time, in order to keep using lazy JNI registration. When
@@ -76,19 +148,24 @@ class ModernLinker extends Linker {
         //
         // This is not wasteful though, as libraries are reference-counted, and as a consequence the
         // library is not really loaded a second time, and we keep relocation sharing.
-        long beforeSystemLoadMs = SystemClock.uptimeMillis();
+        timer = new UptimeMillisTimer();
         try {
             System.loadLibrary(library);
         } catch (UnsatisfiedLinkError e) {
             resetAndThrow("Failed at System.loadLibrary()");
         }
         recordDetailedLoadTimeSince(
-                beforeSystemLoadMs, performedModernLoad ? "Second" : "NoSharing");
+                timer, performedModernLoad ? "Second" : "NoSharing", backgroundStateBeforeLoad);
     }
 
-    private void recordDetailedLoadTimeSince(long sinceMs, String suffix) {
+    private void recordDetailedLoadTimeSince(
+            UptimeMillisTimer timer, String suffix, String backgroundStateSuffix) {
+        long durationMs = timer.getElapsedMillis();
         RecordHistogram.recordTimesHistogram(
-                DETAILED_LOAD_TIME_HISTOGRAM_PREFIX + suffix, SystemClock.uptimeMillis() - sinceMs);
+                DETAILED_LOAD_TIME_HISTOGRAM_PREFIX + suffix, durationMs);
+        RecordHistogram.recordTimesHistogram(DETAILED_LOAD_TIME_HISTOGRAM_PREFIX_BLKIO_CGROUP
+                        + suffix + "." + backgroundStateSuffix,
+                durationMs);
     }
 
     // Loads the library via ModernLinker for later consumption of the RELRO region, throws on
@@ -133,8 +210,10 @@ class ModernLinker extends Linker {
             Log.i(TAG, "Received mRemoteLibInfo: mLoadAddress=0x%x, mLoadSize=%d",
                     mRemoteLibInfo.mLoadAddress, mRemoteLibInfo.mLoadSize);
         }
-        getModernLinkerJni().useRelros(mRemoteLibInfo);
-        mRemoteLibInfo.close();
+        if (mLocalLibInfo == null) return;
+        getModernLinkerJni().useRelros(mLocalLibInfo.mLoadAddress, mRemoteLibInfo);
+        // *Not* closing the RELRO FD after using it because the FD may need to be transferred to
+        // another process after this point.
         if (DEBUG) Log.i(TAG, "Immediate RELRO availability: %b", relroAvailableImmediately);
         RecordHistogram.recordBooleanHistogram(
                 "ChromiumAndroidLinker.RelroAvailableImmediately", relroAvailableImmediately);
@@ -151,11 +230,21 @@ class ModernLinker extends Linker {
         throw new UnsatisfiedLinkError(message);
     }
 
+    public static void reportDlopenExtTime(long millis) {
+        RecordHistogram.recordTimesHistogram(
+                "ChromiumAndroidLinker.ModernLinkerDlopenExtTime", millis);
+    }
+
+    public static void reportIteratePhdrTime(long millis) {
+        RecordHistogram.recordTimesHistogram(
+                "ChromiumAndroidLinker.ModernLinkerIteratePhdrTime", millis);
+    }
+
     // Intentionally omitting @NativeMethods because generation of the stubs it requires (as
     // GEN_JNI.java) is disabled by the @JniIgnoreNatives.
     interface Natives {
         boolean loadLibrary(String libFilePath, LibInfo libInfo, boolean spawnRelroRegion);
-        boolean useRelros(LibInfo libInfo);
+        boolean useRelros(long localLoadAddress, LibInfo remoteLibInfo);
         int getRelroSharingResult();
     }
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/guid.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/signin/internal/identity_manager/account_fetcher_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/gaia_cookie_manager_service.h"
@@ -22,7 +23,7 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #endif
@@ -31,7 +32,7 @@
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate_android.h"
 #include "components/signin/public/android/test_support_jni_headers/AccountManagerFacadeUtil_jni.h"
 #endif
@@ -40,7 +41,7 @@ namespace signin {
 
 namespace {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 // Whether identity_test_utils uses `AccountManagerFacade` or
 // `ProfileOAuth2TokenService` for managing credentials.
 bool ShouldUseAccountManagerFacade(IdentityManager* identity_manager) {
@@ -54,7 +55,7 @@ bool ShouldUseAccountManagerFacade(IdentityManager* identity_manager) {
   return true;
 #endif
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Helper function that updates the refresh token for |account_id| to
 // |new_token|. Before updating the refresh token, blocks until refresh tokens
@@ -83,7 +84,7 @@ void UpdateRefreshTokenForAccount(
       run_loop.QuitClosure());
 
   // TODO(crbug.com/1226041): simplify this when all Lacros Profiles use Mirror.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   if (ShouldUseAccountManagerFacade(identity_manager)) {
     const AccountInfo& account_info =
         account_tracker_service->GetAccountInfo(account_id);
@@ -94,7 +95,7 @@ void UpdateRefreshTokenForAccount(
     GetAccountManagerFacade(identity_manager)
         ->UpsertAccountForTesting(account, new_token);
   } else
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   {
     token_service->UpdateCredentials(account_id, new_token);
   }
@@ -151,10 +152,24 @@ void WaitForRefreshTokensLoaded(IdentityManager* identity_manager) {
   DCHECK(identity_manager->AreRefreshTokensLoaded());
 }
 
+absl::optional<signin::ConsentLevel> GetPrimaryAccountConsentLevel(
+    IdentityManager* identity_manager) {
+  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    return absl::nullopt;
+  }
+
+  return identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)
+             ? signin::ConsentLevel::kSync
+             : signin::ConsentLevel::kSignin;
+}
+
 CoreAccountInfo SetPrimaryAccount(IdentityManager* identity_manager,
                                   const std::string& email,
                                   ConsentLevel consent_level) {
-  DCHECK(!identity_manager->HasPrimaryAccount(consent_level));
+  DCHECK(
+      !identity_manager->HasPrimaryAccount(consent_level) ||
+      (identity_manager->GetPrimaryAccountInfo(consent_level).email != email &&
+       consent_level == ConsentLevel::kSignin));
 
   AccountInfo account_info =
       EnsureAccountExists(identity_manager->GetAccountTrackerService(), email);
@@ -162,13 +177,7 @@ CoreAccountInfo SetPrimaryAccount(IdentityManager* identity_manager,
 
   PrimaryAccountManager* primary_account_manager =
       identity_manager->GetPrimaryAccountManager();
-  switch (consent_level) {
-    case ConsentLevel::kSync:
-      primary_account_manager->SetSyncPrimaryAccountInfo(account_info);
-      break;
-    case ConsentLevel::kSignin:
-      primary_account_manager->SetUnconsentedPrimaryAccountInfo(account_info);
-  }
+  primary_account_manager->SetPrimaryAccountInfo(account_info, consent_level);
 
   DCHECK(identity_manager->HasPrimaryAccount(consent_level));
   DCHECK_EQ(account_info.gaia,
@@ -248,12 +257,6 @@ void ClearPrimaryAccount(IdentityManager* identity_manager) {
   // synchronously with IdentityManager.
   NOTREACHED();
 #else
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  DCHECK_NE(identity_manager->GetAccountConsistency(),
-            AccountConsistencyMethod::kMirror);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   if (!identity_manager->HasPrimaryAccount(ConsentLevel::kSignin))
     return;
 
@@ -277,6 +280,25 @@ void ClearPrimaryAccount(IdentityManager* identity_manager) {
   if (wait_for_primary_acount_cleared_notification)
     run_loop.Run();
 #endif
+}
+
+void WaitForPrimaryAccount(IdentityManager* identity_manager,
+                           ConsentLevel consent_level,
+                           const CoreAccountId& account_id) {
+  if (identity_manager->GetPrimaryAccountId(consent_level) == account_id)
+    return;
+
+  base::RunLoop run_loop;
+  TestIdentityManagerObserver primary_account_observer(identity_manager);
+  primary_account_observer.SetOnPrimaryAccountChangedCallback(base::BindOnce(
+      [](IdentityManager* identity_manager, ConsentLevel consent_level,
+         const CoreAccountId& account_id, base::RunLoop* run_loop,
+         PrimaryAccountChangeEvent event) {
+        if (identity_manager->GetPrimaryAccountId(consent_level) == account_id)
+          run_loop->Quit();
+      },
+      identity_manager, consent_level, account_id, &run_loop));
+  run_loop.Run();
 }
 
 AccountInfo MakeAccountAvailable(IdentityManager* identity_manager,
@@ -364,7 +386,7 @@ void RemoveRefreshTokenForAccount(IdentityManager* identity_manager,
       run_loop.QuitClosure());
 
   // TODO(crbug.com/1226041): simplify this when all Lacros Profiles use Mirror.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   if (ShouldUseAccountManagerFacade(identity_manager)) {
     const AccountInfo& account_info =
         identity_manager->GetAccountTrackerService()->GetAccountInfo(
@@ -373,7 +395,7 @@ void RemoveRefreshTokenForAccount(IdentityManager* identity_manager,
         ->RemoveAccountForTesting(account_manager::AccountKey{
             account_info.gaia, account_manager::AccountType::kGaia});
   } else
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   {
     identity_manager->GetTokenService()->RevokeCredentials(account_id);
   }
@@ -486,7 +508,7 @@ void EnableAccountCapabilitiesFetches(IdentityManager* identity_manager) {
       ->EnableAccountCapabilitiesFetcherForTest(true);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void SetUpMockAccountManagerFacade() {
   Java_AccountManagerFacadeUtil_setUpMockFacade(
       base::android::AttachCurrentThread());
@@ -506,21 +528,21 @@ void SimulateSuccessfulFetchOfAccountInfo(IdentityManager* identity_manager,
                                           const std::string& given_name,
                                           const std::string& locale,
                                           const std::string& picture_url) {
-  base::DictionaryValue user_info;
-  user_info.SetString("id", gaia);
-  user_info.SetString("email", email);
-  user_info.SetString("hd", hosted_domain);
-  user_info.SetString("name", full_name);
-  user_info.SetString("given_name", given_name);
-  user_info.SetString("locale", locale);
-  user_info.SetString("picture", picture_url);
+  base::Value::Dict user_info;
+  user_info.Set("id", gaia);
+  user_info.Set("email", email);
+  user_info.Set("hd", hosted_domain);
+  user_info.Set("name", full_name);
+  user_info.Set("given_name", given_name);
+  user_info.Set("locale", locale);
+  user_info.Set("picture", picture_url);
 
   AccountTrackerService* account_tracker_service =
       identity_manager->GetAccountTrackerService();
-  account_tracker_service->SetAccountInfoFromUserInfo(account_id, &user_info);
+  account_tracker_service->SetAccountInfoFromUserInfo(account_id, user_info);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 account_manager::AccountManagerFacade* GetAccountManagerFacade(
     IdentityManager* identity_manager) {
   return identity_manager->GetAccountManagerFacade();

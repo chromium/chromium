@@ -1,19 +1,18 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 
-#include "base/mac/foundation_util.h"
-#include "base/strings/sys_string_conversions.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
+#import "base/mac/foundation_util.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/settings/elements/elements_constants.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -80,9 +79,6 @@ NSAttributedString* SecondaryMessage(NSString* enterpriseName,
 
 @interface EnterpriseInfoPopoverViewController ()
 
-// YES if it is presented by a UIButton.
-@property(nonatomic, assign) BOOL isPresentingFromButton;
-
 @end
 
 @implementation EnterpriseInfoPopoverViewController
@@ -105,15 +101,12 @@ NSAttributedString* SecondaryMessage(NSString* enterpriseName,
                  enterpriseName:(NSString*)enterpriseName
          isPresentingFromButton:(BOOL)isPresentingFromButton
                addLearnMoreLink:(BOOL)addLearnMoreLink {
-  self = [super
+  return [super
       initWithPrimaryAttributedString:PrimaryMessage(message)
             secondaryAttributedString:SecondaryMessage(enterpriseName,
                                                        addLearnMoreLink)
-                                 icon:[UIImage imageNamed:kEnterpriseIconName]];
-  if (self) {
-    _isPresentingFromButton = isPresentingFromButton;
-  }
-  return self;
+                                 icon:[UIImage imageNamed:kEnterpriseIconName]
+               isPresentingFromButton:isPresentingFromButton];
 }
 
 #pragma mark - UIViewController
@@ -121,17 +114,6 @@ NSAttributedString* SecondaryMessage(NSString* enterpriseName,
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.view.accessibilityIdentifier = kEnterpriseInfoBubbleViewId;
-}
-
-#pragma mark - UIPopoverPresentationControllerDelegate
-
-- (void)popoverPresentationControllerDidDismissPopover:
-    (UIPopoverPresentationController*)popoverPresentationController {
-  if (self.isPresentingFromButton) {
-    UIButton* buttonView = base::mac::ObjCCastStrict<UIButton>(
-        popoverPresentationController.sourceView);
-    buttonView.enabled = YES;
-  }
 }
 
 @end

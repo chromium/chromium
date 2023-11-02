@@ -1,9 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <stdint.h>
 
+#include "base/command_line.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -32,9 +33,15 @@ constexpr char kBaseFilename[] = "audio_debug";
 // "/tmp/.com.google.Chrome.Z6UC3P.12345.aec_dump.1".
 base::FilePath GetExpectedAecDumpFileName(const base::FilePath& base_file_path,
                                           int renderer_pid) {
-  return base_file_path.AddExtensionASCII(base::NumberToString(renderer_pid))
-      .AddExtensionASCII("aec_dump")
-      .AddExtensionASCII(base::NumberToString(kExpectedConsumerId));
+  return media::IsChromeWideEchoCancellationEnabled()
+             ? base_file_path
+                   .AddExtensionASCII(base::NumberToString(kExpectedConsumerId))
+                   .AddExtensionASCII("aecdump")
+             : base_file_path
+                   .AddExtensionASCII(base::NumberToString(renderer_pid))
+                   .AddExtensionASCII("aec_dump")
+                   .AddExtensionASCII(
+                       base::NumberToString(kExpectedConsumerId));
 }
 
 // Get the file names of the recordings. The name will be
@@ -84,7 +91,7 @@ class WebRtcAudioDebugRecordingsBrowserTest
   ~WebRtcAudioDebugRecordingsBrowserTest() override {}
 };
 
-#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // Renderer crashes under Android ASAN: https://crbug.com/408496.
 // Renderer crashes under Android: https://crbug.com/820934.
 // Failures on Android M. https://crbug.com/535728.
@@ -154,7 +161,8 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
   // Two files are expected, one for each peer in the call.
   std::vector<base::FilePath> output_files =
       GetRecordingFileNames(FILE_PATH_LITERAL("output"), base_file_path);
-  EXPECT_EQ(output_files.size(), 2u);
+  EXPECT_EQ(output_files.size(),
+            media::IsChromeWideEchoCancellationEnabled() ? 1u : 2u);
   for (const base::FilePath& file_path : output_files) {
     file_size = 0;
     EXPECT_TRUE(base::GetFileSize(file_path, &file_size));
@@ -163,8 +171,12 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
   }
 
   // Verify that the expected AEC dump file exists and contains some data.
-  base::ProcessId render_process_id =
-      shell()->web_contents()->GetMainFrame()->GetProcess()->GetProcess().Pid();
+  base::ProcessId render_process_id = shell()
+                                          ->web_contents()
+                                          ->GetPrimaryMainFrame()
+                                          ->GetProcess()
+                                          ->GetProcess()
+                                          .Pid();
   base::FilePath file_path =
       GetExpectedAecDumpFileName(base_file_path, render_process_id);
   EXPECT_TRUE(base::PathExists(file_path));
@@ -181,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
 // TODO(grunell): Add test for multiple dumps when re-use of
 // MediaStreamAudioProcessor in AudioCapturer has been removed.
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Renderer crashes under Android ASAN: https://crbug.com/408496.
 // Renderer crashes under Android: https://crbug.com/820934.
 #define MAYBE_CallWithAudioDebugRecordingsEnabledThenDisabled \

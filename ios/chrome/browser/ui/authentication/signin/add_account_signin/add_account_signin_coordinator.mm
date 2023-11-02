@@ -1,11 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_coordinator.h"
 
 #import "components/signin/public/identity_manager/identity_manager.h"
-#include "components/strings/grit/components_strings.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
@@ -21,7 +21,7 @@
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity_interaction_manager.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -77,10 +77,10 @@ using signin_metrics::PromoAction;
                  completion:(ProceduralBlock)completion {
   if (self.userSigninCoordinator) {
     DCHECK(!self.addAccountSigninManager);
-    // When interrupting |self.userSigninCoordinator|,
-    // |self.userSigninCoordinator.signinCompletion| is called. This callback
-    // is in charge to call |[self runCompletionCallbackWithSigninResult:
-    // completionInfo:].
+    // When interrupting `self.userSigninCoordinator`,
+    // `self.userSigninCoordinator.signinCompletion` is called. This callback
+    // is in charge to call `[self runCompletionCallbackWithSigninResult:
+    // completionInfo:]`.
     [self.userSigninCoordinator interruptWithAction:action
                                          completion:completion];
     return;
@@ -154,15 +154,15 @@ using signin_metrics::PromoAction;
 
 - (void)addAccountSigninManagerFinishedWithSigninResult:
             (SigninCoordinatorResult)signinResult
-                                               identity:
-                                                   (ChromeIdentity*)identity {
+                                               identity:(id<SystemIdentity>)
+                                                            identity {
   if (!self.addAccountSigninManager) {
     // The AddAccountSigninManager callback might be called after the
     // interrupt method. If this is the case, the AddAccountSigninCoordinator
     // is already stopped. This call can be ignored.
     return;
   }
-  // Add account is done, we don't need |self.AddAccountSigninManager|
+  // Add account is done, we don't need `self.AddAccountSigninManager`
   // anymore.
   self.addAccountSigninManager = nil;
   if (signinResult == SigninCoordinatorResultInterrupted) {
@@ -190,7 +190,7 @@ using signin_metrics::PromoAction;
 // Continues the sign-in workflow according to the sign-in intent
 - (void)continueAddAccountFlowWithSigninResult:
             (SigninCoordinatorResult)signinResult
-                                      identity:(ChromeIdentity*)identity {
+                                      identity:(id<SystemIdentity>)identity {
   switch (self.signinIntent) {
     case AddAccountSigninIntentReauthPrimaryAccount: {
       [self presentUserConsentWithIdentity:identity];
@@ -231,10 +231,10 @@ using signin_metrics::PromoAction;
 
 // Runs callback completion on finishing the add account flow.
 - (void)addAccountDoneWithSigninResult:(SigninCoordinatorResult)signinResult
-                              identity:(ChromeIdentity*)identity {
+                              identity:(id<SystemIdentity>)identity {
   DCHECK(!self.alertCoordinator);
   DCHECK(!self.userSigninCoordinator);
-  // |identity| is set, only and only if the sign-in is successful.
+  // `identity` is set, only and only if the sign-in is successful.
   DCHECK(((signinResult == SigninCoordinatorResultSuccess) && identity) ||
          ((signinResult != SigninCoordinatorResultSuccess) && !identity));
   SigninCompletionInfo* completionInfo =
@@ -243,8 +243,8 @@ using signin_metrics::PromoAction;
                                completionInfo:completionInfo];
 }
 
-// Presents the user consent screen with |identity| pre-selected.
-- (void)presentUserConsentWithIdentity:(ChromeIdentity*)identity {
+// Presents the user consent screen with `identity` pre-selected.
+- (void)presentUserConsentWithIdentity:(id<SystemIdentity>)identity {
   // The UserSigninViewController is presented on top of the currently displayed
   // view controller.
   self.userSigninCoordinator = [SigninCoordinator
@@ -264,6 +264,18 @@ using signin_metrics::PromoAction;
                                         identity:signinCompletionInfo.identity];
       };
   [self.userSigninCoordinator start];
+}
+
+#pragma mark - NSObject
+
+- (NSString*)description {
+  return [NSString
+      stringWithFormat:@"<%@: %p, signinIntent: %lu, accessPoint: %d, "
+                       @"userSigninCoordinator: %p, addAccountSigninManager: "
+                       @"%p, alertCoordinator: %p>",
+                       self.class.description, self, self.signinIntent,
+                       self.accessPoint, self.userSigninCoordinator,
+                       self.addAccountSigninManager, self.alertCoordinator];
 }
 
 @end

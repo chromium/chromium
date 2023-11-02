@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,20 +7,22 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "base/callback_helpers.h"
-#include "chrome/browser/ash/crostini/crostini_terminal.h"
+#include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_terminal.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/events/event_constants.h"
 
 namespace {
@@ -64,18 +66,18 @@ class AppShortcutShelfItemControllerBrowserTest : public InProcessBrowserTest {
   }
 
   void InstallApp() {
-    web_app::WebAppProvider::GetForTest(browser()->profile())
-        ->system_web_app_manager()
-        .InstallSystemAppsForTesting();
+    ash::SystemWebAppManager::GetForTest(browser()->profile())
+        ->InstallSystemAppsForTesting();
 
-    app_id_ = *web_app::GetAppIdForSystemWebApp(
-        browser()->profile(), web_app::SystemAppType::TERMINAL);
+    app_id_ = *ash::GetAppIdForSystemWebApp(browser()->profile(),
+                                            ash::SystemWebAppType::TERMINAL);
     app_shelf_id_ = ash::ShelfID(app_id_);
     PinAppWithIDToShelf(app_id_);
   }
 
   Browser* LaunchApp() {
-    crostini::LaunchTerminal(browser()->profile());
+    guest_os::LaunchTerminal(browser()->profile(), display::kInvalidDisplayId,
+                             crostini::DefaultContainerId());
     return Waiter::WaitForNewBrowser();
   }
 
@@ -146,25 +148,25 @@ IN_PROC_BROWSER_TEST_F(AppShortcutShelfItemControllerBrowserTest,
 
   EXPECT_EQ(0u, GetAppMenuItems(ui::EF_SHIFT_DOWN).size());
 
-  // Launch an app window.
+  // Launch an app window. Terminal includes pinned home tab, and Linux tab.
   Browser* app_browser0 = LaunchApp();
-  EXPECT_EQ(1u, GetAppMenuItems(ui::EF_SHIFT_DOWN).size());
+  EXPECT_EQ(2u, GetAppMenuItems(ui::EF_SHIFT_DOWN).size());
 
   // Launch a new app window.
   Browser* app_browser1 = LaunchApp();
-  EXPECT_EQ(2u, GetAppMenuItems(ui::EF_SHIFT_DOWN).size());
+  EXPECT_EQ(4u, GetAppMenuItems(ui::EF_SHIFT_DOWN).size());
 
-  // Open a new app tab in an existing app browser. There are 3 tab items.
+  // Open a new app tab in an existing app browser.
   chrome::NewTab(app_browser1);
-  EXPECT_EQ(3u, GetAppMenuItems(ui::EF_SHIFT_DOWN).size());
+  EXPECT_EQ(5u, GetAppMenuItems(ui::EF_SHIFT_DOWN).size());
 
-  // Clicking the second item in the menu should activate the first tab in the
+  // Clicking the third item in the menu should activate the first tab in the
   // second window.
   app_browser1->tab_strip_model()->ActivateTabAt(1);
   app_browser1->window()->Minimize();
   GetAppMenuItems(ui::EF_SHIFT_DOWN);
   GetShelfItemDelegate()->ExecuteCommand(/*from_context_menu=*/false,
-                                         /*command_id=*/1, ui::EF_NONE,
+                                         /*command_id=*/2, ui::EF_NONE,
                                          display::kInvalidDisplayId);
   EXPECT_TRUE(app_browser1->window()->IsActive());
   EXPECT_TRUE(app_browser1->tab_strip_model()->active_index() == 0);
@@ -177,9 +179,9 @@ IN_PROC_BROWSER_TEST_F(AppShortcutShelfItemControllerBrowserTest,
                                          display::kInvalidDisplayId);
 
   // Shift-clicking on a item should close it.
-  EXPECT_EQ(2u, GetAppMenuItems(ui::EF_SHIFT_DOWN).size());
+  EXPECT_EQ(3u, GetAppMenuItems(ui::EF_SHIFT_DOWN).size());
   GetShelfItemDelegate()->ExecuteCommand(/*from_context_menu=*/false,
                                          /*command_id=*/0, ui::EF_SHIFT_DOWN,
                                          display::kInvalidDisplayId);
-  EXPECT_EQ(1u, GetAppMenuItems(ui::EF_SHIFT_DOWN).size());
+  EXPECT_EQ(2u, GetAppMenuItems(ui::EF_SHIFT_DOWN).size());
 }

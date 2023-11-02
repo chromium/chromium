@@ -32,7 +32,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_CACHED_METADATA_H_
 
 #include <stdint.h>
+
+#include "base/check_op.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -59,21 +62,23 @@ class PLATFORM_EXPORT CachedMetadata : public RefCounted<CachedMetadata> {
   static scoped_refptr<CachedMetadata> Create(uint32_t data_type_id,
                                               const uint8_t* data,
                                               size_t size) {
-    return base::AdoptRef(
-        new CachedMetadata(data_type_id, data, SafeCast<wtf_size_t>(size)));
+    return base::AdoptRef(new CachedMetadata(
+        data_type_id, data, base::checked_cast<wtf_size_t>(size)));
   }
 
-  static Vector<uint8_t> GetSerializedData(uint32_t data_type_id,
-                                           const uint8_t* data,
-                                           size_t size) {
+  // Returns a Vector containing the header of serialized metadata.
+  // Callers should append the body to the Vector to get the full serialized
+  // metadata.
+  // The actual body size can be different from `estimated_body_size`.
+  static Vector<uint8_t> GetSerializedDataHeader(
+      uint32_t data_type_id,
+      wtf_size_t estimated_body_size) {
     Vector<uint8_t> vector;
-    vector.ReserveInitialCapacity(kCachedMetaDataStart +
-                                  SafeCast<wtf_size_t>(size));
+    vector.ReserveInitialCapacity(kCachedMetaDataStart + estimated_body_size);
     uint32_t marker = CachedMetadataHandler::kSingleEntry;
     vector.Append(reinterpret_cast<const uint8_t*>(&marker), sizeof(uint32_t));
     vector.Append(reinterpret_cast<const uint8_t*>(&data_type_id),
                   sizeof(uint32_t));
-    vector.Append(data, SafeCast<wtf_size_t>(size));
     return vector;
   }
 
@@ -116,7 +121,8 @@ class PLATFORM_EXPORT CachedMetadata : public RefCounted<CachedMetadata> {
     return buffer_.size() ? buffer_.data() : vector_.data();
   }
   uint32_t RawSize() const {
-    return buffer_.size() ? SafeCast<uint32_t>(buffer_.size()) : vector_.size();
+    return buffer_.size() ? base::checked_cast<uint32_t>(buffer_.size())
+                          : vector_.size();
   }
 
   // Since the serialization format supports random access, storing it in

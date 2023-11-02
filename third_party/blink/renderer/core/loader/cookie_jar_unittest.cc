@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -82,6 +82,12 @@ TEST_F(CookieJarTest, CookiesEnabledHistogram) {
     histogram.ExpectTotalCount("Blink.CookiesEnabledTime.ManagerRequested", 0);
     histogram.ExpectTotalCount("Blink.CookiesEnabledTime.ManagerAvailable", 1);
   }
+}
+
+TEST_F(CookieJarTest, CookieTruncatingChar) {
+  V8TestingScope scope;
+  GetDocument()->setCookie("foo=\0bar", scope.GetExceptionState());
+  GetDocument()->IsUseCounted(WebFeature::kCookieWithTruncatingChar);
 }
 
 }  // namespace

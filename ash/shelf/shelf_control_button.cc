@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,10 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shelf/shelf_button_delegate.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
@@ -41,8 +43,8 @@ class ShelfControlButtonHighlightPathGenerator
     visual_bounds.ClampToCenteredSize(
         gfx::SizeF(shelf_config->control_size(), shelf_config->control_size()));
     if (Shell::Get()->IsInTabletMode() && shelf_config->is_in_app()) {
-      visual_bounds.Inset(0,
-                          shelf_config->in_app_control_button_height_inset());
+      visual_bounds.Inset(gfx::InsetsF::VH(
+          shelf_config->in_app_control_button_height_inset(), 0));
     }
     return gfx::RRectF(visual_bounds, shelf_config->control_border_radius());
   }
@@ -56,19 +58,17 @@ ShelfControlButton::ShelfControlButton(
     : ShelfButton(shelf, shelf_button_delegate) {
   SetHasInkDropActionOnClick(true);
   SetInstallFocusRingOnFocus(true);
+  views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
   views::HighlightPathGenerator::Install(
       this, std::make_unique<ShelfControlButtonHighlightPathGenerator>());
-  views::FocusRing::Get(this)->SetColor(
-      ShelfConfig::Get()->shelf_focus_border_color());
-  SetFocusPainter(nullptr);
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 }
 
 ShelfControlButton::~ShelfControlButton() = default;
 
-gfx::Point ShelfControlButton::GetCenterPoint() const {
-  return GetLocalBounds().CenterPoint();
+gfx::PointF ShelfControlButton::GetCenterPoint() const {
+  return gfx::RectF(GetLocalBounds()).CenterPoint();
 }
 
 const char* ShelfControlButton::GetClassName() const {
@@ -82,7 +82,7 @@ gfx::Size ShelfControlButton::CalculatePreferredSize() const {
 
 void ShelfControlButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   ShelfButton::GetAccessibleNodeData(node_data);
-  node_data->SetName(GetAccessibleName());
+  node_data->SetNameChecked(GetAccessibleName());
 }
 
 void ShelfControlButton::PaintButtonContents(gfx::Canvas* canvas) {
@@ -93,7 +93,7 @@ void ShelfControlButton::PaintBackground(gfx::Canvas* canvas,
                                          const gfx::Rect& bounds) {
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setColor(ShelfConfig::Get()->GetShelfControlButtonColor());
+  flags.setColor(ShelfConfig::Get()->GetShelfControlButtonColor(GetWidget()));
   canvas->DrawRoundRect(bounds, ShelfConfig::Get()->control_border_radius(),
                         flags);
 }

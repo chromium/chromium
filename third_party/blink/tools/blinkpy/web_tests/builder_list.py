@@ -46,7 +46,7 @@ class BuilderList(object):
                 port version specifier like "Mac10.15" and and a valid build
                 type specifier like "Release".
             "is_try_builder": Whether the builder is a trybot.
-            "master": The master name of the builder. It is deprecated, but still required
+            "main": The main name of the builder. It is deprecated, but still required
                 by test-results.appspot.com API."
             "has_webdriver_tests": Whether webdriver_tests_suite runs on this builder.
 
@@ -61,6 +61,26 @@ class BuilderList(object):
             assert 'port_name' in builders_dict[builder]
             assert ('android' in specifiers or
                     len(builders_dict[builder]['specifiers']) == 2)
+        self._flag_spec_to_port = self._find_ports_for_flag_specific_options()
+
+    def __repr__(self):
+        return 'BuilderList(%s)' % self._builders
+
+    def _find_ports_for_flag_specific_options(self):
+        flag_spec_to_port = {}
+        for builder_name, builder in self._builders.items():
+            port_name = self.port_name_for_builder_name(builder_name)
+            for step_name in self.step_names_for_builder(builder_name):
+                option = self.flag_specific_option(builder_name, step_name)
+                if not option:
+                    continue
+                maybe_port_name = flag_spec_to_port.get(option)
+                if maybe_port_name and maybe_port_name != port_name:
+                    raise ValueError(
+                        'Flag-specific suite %r can only run on one port, got: '
+                        '%r, %r' % (option, maybe_port_name, port_name))
+                flag_spec_to_port[option] = port_name
+        return flag_spec_to_port
 
     @staticmethod
     def load_default_builder_list(filesystem):
@@ -82,6 +102,34 @@ class BuilderList(object):
     def all_flag_specific_try_builder_names(self, flag_specific):
         return self.filter_builders(is_try=True, flag_specific=flag_specific)
 
+    def try_bots_with_cq_mirror(self):
+        """Returns a sorted list of (try_builder_names, cq_mirror_builder_names).
+
+        When all steps in a blink-rel trybot exist in a cq trybot and the port
+        name matches, we say that blink-rel trybot has a cq mirror, and thus
+        there is no need to trigger both the blink-rel trybot and its cq mirror.
+
+        As of today, this should return:
+        [("linux-blink-rel", "linux-rel"),
+         ("mac12.0-blink-rel", "mac-rel"),
+         ("win10.20h2-blink-rel", "win10_chromium_x64_rel_ng")]
+        """
+        rv = []
+        all_blink_rel_trybots = sorted(
+            set(self.all_try_builder_names()) -
+            set(self.all_cq_try_builder_names()))
+        for builder_name in all_blink_rel_trybots:
+            step_names = set(self.step_names_for_builder(builder_name))
+            for cq_builder_name in self.all_cq_try_builder_names():
+                if (self.port_name_for_builder_name(cq_builder_name) !=
+                        self.port_name_for_builder_name(builder_name)):
+                    continue
+                cq_step_names = self.step_names_for_builder(cq_builder_name)
+                if step_names.issubset(cq_step_names):
+                    rv.append((builder_name, cq_builder_name))
+                    break
+        return rv
+
     def all_continuous_builder_names(self):
         return self.filter_builders(is_try=False)
 
@@ -95,23 +143,27 @@ class BuilderList(object):
         exclude_specifiers = _lower_specifiers(exclude_specifiers or {})
         include_specifiers = _lower_specifiers(include_specifiers or {})
         builders = []
-        for b in self._builders:
+        for b, builder in self._builders.items():
             builder_specifiers = _lower_specifiers(
-                self._builders[b].get('specifiers', {}))
+                builder.get('specifiers', {}))
+            flag_specific_suites = {
+                step.get('flag_specific')
+                for step in builder.get('steps', {}).values()
+            }
             if flag_specific:
-                if (flag_specific == '*' and
-                        not self._builders[b].get('flag_specific', None)):
+                if flag_specific == '*' and not any(flag_specific_suites):
                     # Skip non flag_specific builders
                     continue
-                if (flag_specific != '*' and
-                        self._builders[b].get('flag_specific', None) != flag_specific):
-                    # Skip if not an exact match
+                if (flag_specific != '*'
+                        and flag_specific not in flag_specific_suites):
+                    # Skip if none of the steps has an exact match
                     continue
-            if is_try and self._builders[b].get('is_try_builder', False) != is_try:
+            if is_try and builder.get('is_try_builder', False) != is_try:
                 continue
-            if is_cq and self._builders[b].get('is_cq_builder', False) != is_cq:
+            if is_cq and builder.get('is_cq_builder', False) != is_cq:
                 continue
-            if ((not is_cq and not is_try) and self._builders[b].get('is_try_builder', False)):
+            if ((not is_cq and not is_try)
+                    and builder.get('is_try_builder', False)):
                 continue
             if builder_specifiers & exclude_specifiers:
                 continue
@@ -127,8 +179,8 @@ class BuilderList(object):
     def bucket_for_builder(self, builder_name):
         return self._builders[builder_name].get('bucket', '')
 
-    def master_for_builder(self, builder_name):
-        return self._builders[builder_name].get('master', '')
+    def main_for_builder(self, builder_name):
+        return self._builders[builder_name].get('main', '')
 
     def has_webdriver_tests_for_builder(self, builder_name):
         return self._builders[builder_name].get('has_webdriver_tests')
@@ -136,11 +188,17 @@ class BuilderList(object):
     def port_name_for_builder_name(self, builder_name):
         return self._builders[builder_name]['port_name']
 
+    def port_name_for_flag_specific_option(self, option):
+        return self._flag_spec_to_port[option]
+
     def specifiers_for_builder(self, builder_name):
         return self._builders[builder_name]['specifiers']
 
-    def step_name_for_builder(self, builder_name):
-        return self._builders[builder_name].get('step_name', None)
+    def _steps(self, builder_name):
+        return self._builders[builder_name].get('steps', {})
+
+    def step_names_for_builder(self, builder_name):
+        return sorted(self._steps(builder_name))
 
     def is_try_server_builder(self, builder_name):
         return self._builders[builder_name].get('is_try_builder', False)
@@ -148,11 +206,20 @@ class BuilderList(object):
     def is_wpt_builder(self, builder_name):
         return 'wpt' in builder_name
 
-    def is_flag_specific_builder(self, builder_name):
-        return self._builders[builder_name].get('flag_specific', None) != None
+    def flag_specific_option(self, builder_name, step_name):
+        steps = self._steps(builder_name)
+        # TODO(crbug/1291020): We cannot validate the step name here because
+        # some steps are retrieved from the results server instead of read from
+        # 'builders.json'. Once all the steps are in the config, we can allow
+        # bad step names to raise an exception.
+        return steps.get(step_name, {}).get('flag_specific')
 
-    def flag_specific_option(self, builder_name):
-        return self._builders[builder_name].get('flag_specific', None)
+    def flag_specific_options_for_port_name(self, port_name):
+        return {
+            option
+            for option, port in self._flag_spec_to_port.items()
+            if port == port_name
+        }
 
     def platform_specifier_for_builder(self, builder_name):
         return self.specifiers_for_builder(builder_name)[0]

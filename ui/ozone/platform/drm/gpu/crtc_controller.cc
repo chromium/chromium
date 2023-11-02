@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "base/trace_event/traced_value.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
@@ -86,12 +87,13 @@ void CrtcController::MoveCursor(const gfx::Point& location) {
   drm_->MoveCursor(crtc_, location);
 }
 
-void CrtcController::AsValueInto(base::trace_event::TracedValue* value) const {
-  value->SetInteger("crtc_id", crtc_);
-  value->SetInteger("connector", connector_);
-  {
-    auto mode_dict = value->BeginDictionaryScoped("mode");
-    DrmAsValueIntoHelper(state_.mode, value);
-  }
+void CrtcController::WriteIntoTrace(perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
+
+  dict.Add("crtc_id", crtc_);
+  dict.Add("connector", connector_);
+
+  DrmWriteIntoTraceHelper(state_.mode, dict.AddItem("mode"));
 }
+
 }  // namespace ui

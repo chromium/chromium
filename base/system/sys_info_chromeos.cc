@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <sys/utsname.h>
 
-#include "base/cxx17_backports.h"
 #include "base/environment.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -117,7 +116,7 @@ class ChromeOSVersionInfo {
     }
     // Parse the version from the first matching recognized version key.
     std::string version;
-    for (size_t i = 0; i < base::size(kLinuxStandardBaseVersionKeys); ++i) {
+    for (size_t i = 0; i < std::size(kLinuxStandardBaseVersionKeys); ++i) {
       std::string key = kLinuxStandardBaseVersionKeys[i];
       if (GetLsbReleaseValue(key, &version) && !version.empty())
         break;
@@ -136,7 +135,7 @@ class ChromeOSVersionInfo {
     // Check release name for Chrome OS.
     std::string release_name;
     if (GetLsbReleaseValue(kChromeOsReleaseNameKey, &release_name)) {
-      for (size_t i = 0; i < base::size(kChromeOsReleaseNames); ++i) {
+      for (size_t i = 0; i < std::size(kChromeOsReleaseNames); ++i) {
         if (release_name == kChromeOsReleaseNames[i]) {
           is_running_on_chromeos_ = true;
           break;
@@ -263,6 +262,27 @@ void SysInfo::CrashIfChromeOSNonTestImage() {
 
   // Crash if can't find test-image marker in the release track.
   CHECK_NE(track.find(kTestImageRelease), std::string::npos);
+}
+
+SysInfo::HardwareInfo SysInfo::GetHardwareInfoSync() {
+  HardwareInfo info;
+  // Manufacturer of ChromeOS device is always Google so hardcode it.
+  info.manufacturer = "Google";
+  if (IsRunningOnChromeOS()) {
+    // Read the model name from cros-configfs.
+    constexpr char kModelNamePath[] = "/run/chromeos-config/v1/name";
+    constexpr size_t kMaxStringSize = 100u;
+    std::string data;
+    if (ReadFileToStringWithMaxSize(FilePath(kModelNamePath), &data,
+                                    kMaxStringSize)) {
+      TrimWhitespaceASCII(data, TrimPositions::TRIM_ALL, &info.model);
+    }
+    DCHECK(IsStringUTF8(info.model));
+  } else {
+    // Fake model name on chromeos linux-emulator (for both linux/ash).
+    info.model = "linux-emulator";
+  }
+  return info;
 }
 
 }  // namespace base

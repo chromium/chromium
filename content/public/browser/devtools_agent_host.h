@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,6 +45,7 @@ class ServiceWorkerContext;
 class CONTENT_EXPORT DevToolsAgentHost
     : public base::RefCounted<DevToolsAgentHost> {
  public:
+  static const char kTypeTab[];
   static const char kTypePage[];
   static const char kTypeFrame[];
   static const char kTypeDedicatedWorker[];
@@ -67,6 +68,12 @@ class CONTENT_EXPORT DevToolsAgentHost
   // Returns DevToolsAgentHost that can be used for inspecting |web_contents|.
   // A new DevToolsAgentHost will be created if it does not exist.
   static scoped_refptr<DevToolsAgentHost> GetOrCreateFor(
+      WebContents* web_contents);
+
+  // Similar to the above, but returns a DevToolsAgentHost representing 'tab'
+  // target. Unlike the one for RenderFrame, this will remain the same through
+  // all possible transitions of underlying frame trees.
+  static scoped_refptr<DevToolsAgentHost> GetOrCreateForTab(
       WebContents* web_contents);
 
   // Returns true iff an instance of DevToolsAgentHost for the |web_contents|

@@ -1,20 +1,15 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/history_clusters/core/ranking_cluster_finalizer.h"
 
+#include "base/containers/adapters.h"
 #include "components/history_clusters/core/on_device_clustering_util.h"
 
 namespace history_clusters {
 
 namespace {
-
-bool IsCanonicalVisit(const base::flat_set<history::VisitID>& duplicate_ids,
-                      const history::ClusterVisit& visit) {
-  return duplicate_ids.find(visit.annotated_visit.visit_row.visit_id) ==
-         duplicate_ids.end();
-}
 
 // See https://en.wikipedia.org/wiki/Smoothstep.
 float clamp(float x, float lowerlimit, float upperlimit) {
@@ -41,25 +36,16 @@ RankingClusterFinalizer::~RankingClusterFinalizer() = default;
 
 void RankingClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
   base::flat_map<history::VisitID, VisitScores> url_visit_scores;
-  const base::flat_set<history::VisitID>& duplicate_visit_ids =
-      CalculateAllDuplicateVisitsForCluster(cluster);
 
-  CalculateVisitDurationScores(cluster, url_visit_scores, duplicate_visit_ids);
-  CalculateVisitAttributeScoring(cluster, url_visit_scores,
-                                 duplicate_visit_ids);
-  ComputeFinalVisitScores(cluster, url_visit_scores, duplicate_visit_ids);
+  CalculateVisitDurationScores(cluster, url_visit_scores);
+  CalculateVisitAttributeScoring(cluster, url_visit_scores);
+  ComputeFinalVisitScores(cluster, url_visit_scores);
 }
 
 void RankingClusterFinalizer::CalculateVisitAttributeScoring(
     history::Cluster& cluster,
-    base::flat_map<history::VisitID, VisitScores>& url_visit_scores,
-    const base::flat_set<history::VisitID>& duplicate_visit_ids) {
-  for (auto visit_it = cluster.visits.rbegin();
-       visit_it != cluster.visits.rend(); ++visit_it) {
-    auto& visit = *visit_it;
-    if (!IsCanonicalVisit(duplicate_visit_ids, visit)) {
-      continue;
-    }
+    base::flat_map<history::VisitID, VisitScores>& url_visit_scores) {
+  for (const history::ClusterVisit& visit : base::Reversed(cluster.visits)) {
     auto it = url_visit_scores.find(visit.annotated_visit.visit_row.visit_id);
     if (it == url_visit_scores.end()) {
       auto visit_score = VisitScores();
@@ -74,11 +60,13 @@ void RankingClusterFinalizer::CalculateVisitAttributeScoring(
       it->second.set_bookmarked();
     }
 
-    // Check if the visit is a search results page. For now, we approximate this
-    // if the normalized URL is not the same as the original URL since result
-    // pages from the default search engine are all we normalize.
-    if (visit.normalized_url != visit.annotated_visit.url_row.url()) {
+    // Check if the visit contained a search query.
+    if (!visit.annotated_visit.content_annotations.search_terms.empty()) {
       it->second.set_is_srp();
+    }
+
+    if (!visit.annotated_visit.url_row.title().empty()) {
+      it->second.set_has_page_title();
     }
 
     // Additional/future attribute checks go here.
@@ -87,8 +75,7 @@ void RankingClusterFinalizer::CalculateVisitAttributeScoring(
 
 void RankingClusterFinalizer::CalculateVisitDurationScores(
     history::Cluster& cluster,
-    base::flat_map<history::VisitID, VisitScores>& url_visit_scores,
-    const base::flat_set<history::VisitID>& duplicate_visit_ids) {
+    base::flat_map<history::VisitID, VisitScores>& url_visit_scores) {
   // |max_visit_duration| and |max_foreground_duration| must be > 0 for
   // reshaping between 0 and 1.
   base::TimeDelta max_visit_duration = base::Seconds(1);
@@ -105,12 +92,7 @@ void RankingClusterFinalizer::CalculateVisitDurationScores(
           visit.annotated_visit.context_annotations.total_foreground_duration;
     }
   }
-  for (auto visit_it = cluster.visits.rbegin();
-       visit_it != cluster.visits.rend(); ++visit_it) {
-    auto& visit = *visit_it;
-    if (!IsCanonicalVisit(duplicate_visit_ids, visit)) {
-      continue;
-    }
+  for (const history::ClusterVisit& visit : base::Reversed(cluster.visits)) {
     float visit_duration_score =
         Smoothstep(0.0f, max_visit_duration.InSecondsF(),
                    visit.annotated_visit.visit_row.visit_duration.InSecondsF());
@@ -136,25 +118,10 @@ void RankingClusterFinalizer::CalculateVisitDurationScores(
 
 void RankingClusterFinalizer::ComputeFinalVisitScores(
     history::Cluster& cluster,
-    base::flat_map<history::VisitID, VisitScores>& url_visit_scores,
-    const base::flat_set<history::VisitID>& duplicate_visit_ids) {
+    base::flat_map<history::VisitID, VisitScores>& url_visit_scores) {
   float max_score = -1.0;
-  for (auto visit_it = cluster.visits.rbegin();
-       visit_it != cluster.visits.rend(); ++visit_it) {
-    auto& visit = *visit_it;
-
-    // Only canonical visits should have scores > 0.0.
-    if (!IsCanonicalVisit(duplicate_visit_ids, visit)) {
-      // Check that no individual scores have been given a visit that is not
-      // canonical a score.
-      DCHECK(url_visit_scores.find(visit.annotated_visit.visit_row.visit_id) ==
-             url_visit_scores.end());
-      visit.score = 0.0;
-      continue;
-    }
-
+  for (history::ClusterVisit& visit : base::Reversed(cluster.visits)) {
     // Determine the max score to use for normalizing all the scores.
-    auto visit_url = visit.normalized_url;
     auto visit_scores_it =
         url_visit_scores.find(visit.annotated_visit.visit_row.visit_id);
     if (visit_scores_it != url_visit_scores.end()) {
@@ -167,11 +134,9 @@ void RankingClusterFinalizer::ComputeFinalVisitScores(
   if (max_score <= 0.0)
     return;
 
-  // Now normalize the score by `max_score` so they values are all between 0
+  // Now normalize the score by `max_score` so the values are all between 0
   // and 1.
-  for (auto visit_it = cluster.visits.rbegin();
-       visit_it != cluster.visits.rend(); ++visit_it) {
-    auto& visit = *visit_it;
+  for (history::ClusterVisit& visit : base::Reversed(cluster.visits)) {
     visit.score = visit.score / max_score;
   }
 }

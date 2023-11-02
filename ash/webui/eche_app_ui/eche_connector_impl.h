@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,11 @@
 
 #include "ash/webui/eche_app_ui/eche_connector.h"
 
+#include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
+#include "ash/webui/eche_app_ui/eche_connection_scheduler.h"
 #include "ash/webui/eche_app_ui/eche_feature_status_provider.h"
 #include "ash/webui/eche_app_ui/feature_status_provider.h"
 #include "base/containers/queue.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
 
 namespace ash {
 namespace eche_app {
@@ -20,27 +20,38 @@ namespace eche_app {
 // messages if the connection is not yet ready), and disconnects (dropping all
 // pending messages) when requested.
 class EcheConnectorImpl : public EcheConnector,
-                          public FeatureStatusProvider::Observer {
+                          public FeatureStatusProvider::Observer,
+                          public secure_channel::ConnectionManager::Observer {
  public:
-  EcheConnectorImpl(EcheFeatureStatusProvider* eche_feature_status_provider,
-                    secure_channel::ConnectionManager* connection_manager);
+  EcheConnectorImpl(FeatureStatusProvider* eche_feature_status_provider,
+                    secure_channel::ConnectionManager* connection_manager,
+                    EcheConnectionScheduler* connection_scheduler);
   ~EcheConnectorImpl() override;
 
-  void SendMessage(const std::string& message) override;
+  void SendMessage(const proto::ExoMessage message) override;
   void Disconnect() override;
   void SendAppsSetupRequest() override;
   void GetAppsAccessStateRequest() override;
   void AttemptNearbyConnection() override;
+  int GetMessageCount();
 
  private:
   // FeatureStatusProvider::Observer:
   void OnFeatureStatusChanged() override;
 
-  void FlushQueue();
+  // secure_channel::ConnectionManager::Observer:
+  void OnConnectionStatusChanged() override;
 
-  EcheFeatureStatusProvider* eche_feature_status_provider_;
+  void QueueMessageWhenDisabled(const proto::ExoMessage message);
+  bool IsMessageAllowedWhenDisabled(const proto::ExoMessage message);
+  void MaybeFlushQueue();
+  void FlushQueue();
+  void FlushQueueWhenDisabled();
+
+  FeatureStatusProvider* eche_feature_status_provider_;
   secure_channel::ConnectionManager* connection_manager_;
-  base::queue<std::string> message_queue_;
+  EcheConnectionScheduler* connection_scheduler_;
+  base::queue<proto::ExoMessage> message_queue_;
 };
 
 }  // namespace eche_app

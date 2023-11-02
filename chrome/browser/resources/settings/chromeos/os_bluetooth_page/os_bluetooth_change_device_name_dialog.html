@@ -6,7 +6,7 @@
   [slot='button-container'] {
     display: flex;
     justify-content: flex-end;
-    margin: 18px 0 6px 0;
+    margin: 40px 0 20px 0;
     padding-top: 0;
   }
 
@@ -14,8 +14,12 @@
     color: var(--cros-text-color-alert);
   }
 
+  #inputContainer {
+    margin-top: 24px;
+  }
+
   #inputInfo {
-    background-color: var(--cros-bg-color);
+    background-color: var(--cros-bg-color-elevation-3);
     color: var(--cros-text-color-secondary);
     display: flex;
     font-size: var(--cr-form-field-label-font-size);
@@ -24,17 +28,8 @@
     line-height: var(--cr-form-field-label-line-height);
     padding-top: 8px;
     position: absolute;
-    top: 100px;
+    top: 128px;
     width: 280px;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    #inputInfo {
-      /* Note: In dark mode, cr-dialog applies a linear-gradient() to add a 4%
-       * white layer on top of the fully opaque background-color. */
-      background-image: linear-gradient(rgba(255, 255, 255, 0.04),
-                                        rgba(255, 255, 255, 0.04));
-    }
   }
 
   #inputSubtitle {

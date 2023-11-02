@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,6 +47,14 @@ void WmFlingHandler::OnAnimationStep(base::TimeTicks timestamp) {
       fling_curve_->ComputeScrollOffset(timestamp, &offset, &fling_velocity_);
   offset.Scale(1 / kFlingScaleDown);
 
+  // The below `on_step_callback_` (which is bound to
+  // `WindowCycleView::OnFlingStep()`) will trigger a
+  // `WindowCycleView::Layout()`, which in turn can trigger an `OnFlingEnd()`
+  // leading to the destruction of `this` while still in the middle of this
+  // function. Here we use a `WeakPtr` to detect this and early exit and skip
+  // the rest this function to avoid a UAF. https://crbug.com/1350558.
+  auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
+
   // Note that order matters here. We want to stop flinging if the API for fling
   // says to finish or if the user of this class wants to stop. Notify the user
   // even if the API says to stop flinging as it still produces an usable
@@ -55,6 +63,9 @@ void WmFlingHandler::OnAnimationStep(base::TimeTicks timestamp) {
                        fling_last_offset_ ? offset.x() - fling_last_offset_->x()
                                           : offset.x()) &&
                    continue_fling;
+
+  if (!weak_ptr)
+    return;
 
   fling_last_offset_ = absl::make_optional(offset);
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,8 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_piece.h"
 #include "components/cbor/values.h"
 #include "device/fido/attested_credential_data.h"
 #include "device/fido/fido_constants.h"
@@ -63,8 +63,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorData {
   ~AuthenticatorData();
 
   // Replaces device AAGUID in attested credential data section with zeros.
+  // Returns true if the AAGUID was modified or false if it was already zeros.
   // https://w3c.github.io/webauthn/#attested-credential-data
-  void DeleteDeviceAaguid();
+  bool DeleteDeviceAaguid();
+
+  // EraseExtension deletes the named extension. It returns true iff the
+  // extension was present.
+  bool EraseExtension(base::StringPiece name);
 
   // Produces a byte array consisting of:
   // * hash(relying_party_id / appid)

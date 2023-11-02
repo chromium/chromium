@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,13 +11,16 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/api/file_system.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "extensions/browser/api/file_system/consent_provider.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace extensions {
 class ExtensionPrefs;
@@ -172,9 +175,9 @@ class FileSystemChooseEntryFunction : public FileSystemEntryFunction {
   static void BuildFileTypeInfo(
       ui::SelectFileDialog::FileTypeInfo* file_type_info,
       const base::FilePath::StringType& suggested_extension,
-      const AcceptOptions* accepts,
-      const bool* accepts_all_types);
-  static void BuildSuggestion(const std::string* opt_name,
+      const absl::optional<AcceptOptions>& accepts,
+      const absl::optional<bool>& accepts_all_types);
+  static void BuildSuggestion(const absl::optional<std::string>& opt_name,
                               base::FilePath* suggested_name,
                               base::FilePath::StringType* suggested_extension);
 
@@ -249,34 +252,7 @@ class FileSystemRestoreEntryFunction : public FileSystemEntryFunction {
   ResponseAction Run() override;
 };
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-// Stub for non Chrome OS operating systems.
-class FileSystemRequestFileSystemFunction : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("fileSystem.requestFileSystem",
-                             FILESYSTEM_REQUESTFILESYSTEM)
-
- protected:
-  ~FileSystemRequestFileSystemFunction() override;
-
-  // ExtensionFunction overrides.
-  ExtensionFunction::ResponseAction Run() override;
-};
-
-// Stub for non Chrome OS operating systems.
-class FileSystemGetVolumeListFunction : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("fileSystem.getVolumeList",
-                             FILESYSTEM_GETVOLUMELIST)
-
- protected:
-  ~FileSystemGetVolumeListFunction() override;
-
-  // ExtensionFunction overrides.
-  ExtensionFunction::ResponseAction Run() override;
-};
-
-#else
+#if BUILDFLAG(IS_CHROMEOS)
 // Requests a file system for the specified volume id.
 class FileSystemRequestFileSystemFunction : public ExtensionFunction {
  public:
@@ -295,6 +271,8 @@ class FileSystemRequestFileSystemFunction : public ExtensionFunction {
   // access.
   void OnGotFileSystem(const std::string& id, const std::string& path);
   void OnError(const std::string& error);
+
+  std::unique_ptr<ConsentProvider> consent_provider_;
 };
 
 // Requests a list of available volumes.
@@ -313,8 +291,36 @@ class FileSystemGetVolumeListFunction : public ExtensionFunction {
  private:
   void OnGotVolumeList(const std::vector<api::file_system::Volume>& volumes);
   void OnError(const std::string& error);
+
+  std::unique_ptr<ConsentProvider> consent_provider_;
 };
-#endif
+#else   // BUILDFLAG(IS_CHROMEOS)
+// Stub for non Chrome OS operating systems.
+class FileSystemRequestFileSystemFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileSystem.requestFileSystem",
+                             FILESYSTEM_REQUESTFILESYSTEM)
+
+ protected:
+  ~FileSystemRequestFileSystemFunction() override;
+
+  // ExtensionFunction overrides.
+  ExtensionFunction::ResponseAction Run() override;
+};
+
+// Stub for non Chrome OS operating systems.
+class FileSystemGetVolumeListFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileSystem.getVolumeList",
+                             FILESYSTEM_GETVOLUMELIST)
+
+ protected:
+  ~FileSystemGetVolumeListFunction() override;
+
+  // ExtensionFunction overrides.
+  ExtensionFunction::ResponseAction Run() override;
+};
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions
 

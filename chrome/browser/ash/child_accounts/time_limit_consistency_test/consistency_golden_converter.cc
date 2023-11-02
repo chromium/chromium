@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,7 +63,7 @@ const char* ConvertGoldenDayToProcessorDay(ConsistencyGoldenEffectiveDay day) {
 
 }  // namespace
 
-base::Value ConvertGoldenInputToProcessorInput(
+base::Value::Dict ConvertGoldenInputToProcessorInput(
     const ConsistencyGoldenInput& input) {
   // Random date representing the last time the policies were updated,
   // used whenever the last_updated field is not specified in the input proto.
@@ -75,7 +75,7 @@ base::Value ConvertGoldenInputToProcessorInput(
                               input.usage_limit_resets_at().minute())
           : kDefaultResetsAt;
 
-  base::Value policy = utils::CreateTimeLimitPolicy(resets_at);
+  base::Value::Dict policy = utils::CreateTimeLimitPolicy(resets_at);
 
   /* Begin Window Limits data */
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -49,7 +49,7 @@ message SyncEnums {
     // configuration and is once again syncing with the server.
     CONFIGURE_COMPLETE = 12;
     // A new cryptographer bootstrap token was generated.
-    BOOTSTRAP_TOKEN_UPDATED = 13;
+    DEPRECATED_BOOTSTRAP_TOKEN_UPDATED = 13;
     // Cryptographer needs trusted vault decryption keys.
     TRUSTED_VAULT_KEY_REQUIRED = 14;
     // Cryptographer no longer needs trusted vault decryption keys.
@@ -148,6 +148,22 @@ message SyncEnums {
     TYPE_OTHER = 5;
     TYPE_PHONE = 6;
     TYPE_TABLET = 7;
+  }
+
+  // Types of browsers; used for history-related data types.
+  enum BrowserType {
+    BROWSER_TYPE_UNKNOWN = 0;
+    TYPE_TABBED = 1;      // A normal tabbed window.
+    TYPE_POPUP = 2;       // A popup window.
+    TYPE_CUSTOM_TAB = 3;  // A custom tab within an app.
+  }
+
+  // The "password state" is the presence/absence of a password field on a
+  // website; used for history-related data types.
+  enum PasswordState {
+    PASSWORD_STATE_UNKNOWN = 0;
+    NO_PASSWORD_FIELD = 1;
+    HAS_PASSWORD_FIELD = 2;
   }
 
   // This is the successor to GetUpdatesSource.  It merges the "normal mode"

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,15 +39,10 @@ class AppSettingsModelTypeController
   // DataTypeController:
   void LoadModels(const syncer::ConfigureContext& configure_context,
                   const ModelLoadCallback& model_load_callback) override;
-  PreconditionState GetPreconditionState() const override;
 
  private:
-  // Callback for changes to the OS sync feature enabled pref.
-  void OnUserPrefChanged();
-
   Profile* const profile_;
   syncer::SyncService* const sync_service_;
-  PrefChangeRegistrar pref_registrar_;
 };
 
 #endif  // CHROME_BROWSER_ASH_SYNC_APP_SETTINGS_MODEL_TYPE_CONTROLLER_H_

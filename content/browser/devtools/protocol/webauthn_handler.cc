@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -155,12 +155,13 @@ void WebAuthnHandler::Wire(UberDispatcher* dispatcher) {
   WebAuthn::Dispatcher::wire(dispatcher, this);
 }
 
-Response WebAuthnHandler::Enable() {
+Response WebAuthnHandler::Enable(Maybe<bool> enable_ui) {
   if (!frame_host_)
     return Response::ServerError(kDevToolsNotAttached);
 
   AuthenticatorEnvironmentImpl::GetInstance()->EnableVirtualAuthenticatorFor(
-      frame_host_->frame_tree_node());
+      frame_host_->frame_tree_node(),
+      enable_ui.fromMaybe(/*default_value=*/false));
   return Response::Success();
 }
 
@@ -202,6 +203,7 @@ Response WebAuthnHandler::AddVirtualAuthenticator(
 
   bool has_large_blob = options->GetHasLargeBlob(/*default=*/false);
   bool has_cred_blob = options->GetHasCredBlob(/*default=*/false);
+  bool has_min_pin_length = options->GetHasMinPinLength(/*default=*/false);
   bool has_resident_key = options->GetHasResidentKey(/*default=*/false);
 
   if (has_large_blob && !has_resident_key)
@@ -209,7 +211,7 @@ Response WebAuthnHandler::AddVirtualAuthenticator(
 
   if ((protocol != device::ProtocolVersion::kCtap2 ||
        ctap2_version < device::Ctap2Version::kCtap2_1) &&
-      (has_large_blob || has_cred_blob)) {
+      (has_large_blob || has_cred_blob || has_min_pin_length)) {
     return Response::InvalidParams(kRequiresCtap2_1);
   }
 
@@ -234,6 +236,7 @@ Response WebAuthnHandler::AddVirtualAuthenticator(
           options->GetHasUserVerification(/*default=*/false);
       virt_auth_options->has_large_blob = has_large_blob;
       virt_auth_options->has_cred_blob = has_cred_blob;
+      virt_auth_options->has_min_pin_length = has_min_pin_length;
       break;
     case device::ProtocolVersion::kUnknown:
       NOTREACHED();

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_utils.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -62,16 +63,24 @@ BrowserNonClientFrameViewMac::BrowserNonClientFrameViewMac(
     BrowserFrame* frame,
     BrowserView* browser_view)
     : BrowserNonClientFrameView(frame, browser_view) {
-  show_fullscreen_toolbar_.Init(
-      prefs::kShowFullscreenToolbar, browser_view->GetProfile()->GetPrefs(),
-      base::BindRepeating(&BrowserNonClientFrameViewMac::UpdateFullscreenTopUI,
-                          base::Unretained(this)));
-  if (!base::FeatureList::IsEnabled(features::kImmersiveFullscreen)) {
+  if (web_app::AppBrowserController::IsWebApp(browser_view->browser())) {
+    auto* provider =
+        web_app::WebAppProvider::GetForWebApps(browser_view->GetProfile());
+    always_show_toolbar_in_fullscreen_observation_.Observe(
+        &provider->registrar());
+  } else {
+    show_fullscreen_toolbar_.Init(
+        prefs::kShowFullscreenToolbar, browser_view->GetProfile()->GetPrefs(),
+        base::BindRepeating(
+            &BrowserNonClientFrameViewMac::UpdateFullscreenTopUI,
+            base::Unretained(this)));
+  }
+  if (!browser_view->UsesImmersiveFullscreenMode()) {
     fullscreen_toolbar_controller_.reset(
         [[FullscreenToolbarController alloc] initWithBrowserView:browser_view]);
     [fullscreen_toolbar_controller_
         setToolbarStyle:GetUserPreferredToolbarStyle(
-                            *show_fullscreen_toolbar_)];
+                            AlwaysShowToolbarInFullscreen())];
   }
 
   if (browser_view->GetIsWebAppType()) {
@@ -107,19 +116,18 @@ BrowserNonClientFrameViewMac::~BrowserNonClientFrameViewMac() {
 // BrowserNonClientFrameViewMac, BrowserNonClientFrameView implementation:
 
 void BrowserNonClientFrameViewMac::OnFullscreenStateChanged() {
-  if (base::FeatureList::IsEnabled(features::kImmersiveFullscreen)) {
+  if (browser_view()->UsesImmersiveFullscreenMode()) {
     browser_view()->immersive_mode_controller()->SetEnabled(
         browser_view()->IsFullscreen());
     return;
   }
   if (browser_view()->IsFullscreen()) {
-    ToggleWebAppFrameToolbarViewVisibility();
-
     [fullscreen_toolbar_controller_ enterFullscreenMode];
   } else {
     // Exiting tab fullscreen requires updating Top UI.
     // Called from here so we can capture exiting tab fullscreen both by
     // pressing 'ESC' key and by clicking green traffic light button.
+
     UpdateFullscreenTopUI();
     [fullscreen_toolbar_controller_ exitFullscreenMode];
   }
@@ -127,10 +135,7 @@ void BrowserNonClientFrameViewMac::OnFullscreenStateChanged() {
 }
 
 bool BrowserNonClientFrameViewMac::CaptionButtonsOnLeadingEdge() const {
-  // In OSX 10.11, caption buttons always get drawn on the left side of the
-  // browser frame instead of the leading edge. This causes a discrepancy in
-  // RTL mode.
-  return !base::i18n::IsRTL() || base::mac::IsAtLeastOS10_12();
+  return true;
 }
 
 gfx::Rect BrowserNonClientFrameViewMac::GetBoundsForTabStripRegion(
@@ -147,9 +152,9 @@ gfx::Rect BrowserNonClientFrameViewMac::GetBoundsForTabStripRegion(
   if (!frame()->IsFullscreen()) {
     const int kCaptionWidth = base::mac::IsAtMostOS10_15() ? 70 : 85;
     if (CaptionButtonsOnLeadingEdge())
-      bounds.Inset(gfx::Insets(0, kCaptionWidth, 0, 0));
+      bounds.Inset(gfx::Insets::TLBR(0, kCaptionWidth, 0, 0));
     else
-      bounds.Inset(gfx::Insets(0, 0, 0, kCaptionWidth));
+      bounds.Inset(gfx::Insets::TLBR(0, 0, 0, kCaptionWidth));
   }
 
   return bounds;
@@ -177,6 +182,12 @@ int BrowserNonClientFrameViewMac::GetTopInset(bool restored) const {
                                 kResizeHandleHeight);
   }
 
+  // Immersive fullscreen attaches the tab strip to the title bar, no need to
+  // calculate the y_offset below.
+  if (browser_view()->UsesImmersiveFullscreenMode()) {
+    return top_inset;
+  }
+
   // Calculate the y offset for the tab strip because in fullscreen mode the tab
   // strip may need to move under the slide down menu bar.
   CGFloat y_offset = TopUIFullscreenYOffset();
@@ -201,7 +212,7 @@ int BrowserNonClientFrameViewMac::GetThemeBackgroundXInset() const {
 }
 
 void BrowserNonClientFrameViewMac::UpdateFullscreenTopUI() {
-  if (base::FeatureList::IsEnabled(features::kImmersiveFullscreen))
+  if (browser_view()->UsesImmersiveFullscreenMode())
     return;
 
   FullscreenToolbarStyle old_style =
@@ -216,12 +227,10 @@ void BrowserNonClientFrameViewMac::UpdateFullscreenTopUI() {
     browser_view()->HideDownloadShelf();
     new_style = FullscreenToolbarStyle::TOOLBAR_NONE;
   } else {
-    new_style = GetUserPreferredToolbarStyle(*show_fullscreen_toolbar_);
+    new_style = GetUserPreferredToolbarStyle(AlwaysShowToolbarInFullscreen());
     browser_view()->UnhideDownloadShelf();
   }
   [fullscreen_toolbar_controller_ setToolbarStyle:new_style];
-
-  ToggleWebAppFrameToolbarViewVisibility();
 
   if (![fullscreen_toolbar_controller_ isInFullscreen] ||
       old_style == new_style)
@@ -238,6 +247,15 @@ void BrowserNonClientFrameViewMac::UpdateFullscreenTopUI() {
     // requires a re-layout when in fullscreen and shown.
     if (web_app_frame_toolbar() && !ShouldHideTopUIForFullscreen())
       InvalidateLayout();
+  }
+}
+
+void BrowserNonClientFrameViewMac::OnAlwaysShowToolbarInFullscreenChanged(
+    const web_app::AppId& app_id,
+    bool show) {
+  if (web_app::AppBrowserController::IsForWebApp(browser_view()->browser(),
+                                                 app_id)) {
+    UpdateFullscreenTopUI();
   }
 }
 
@@ -270,7 +288,20 @@ void BrowserNonClientFrameViewMac::OnThemeChanged() {
 // BrowserNonClientFrameViewMac, views::NonClientFrameView implementation:
 
 gfx::Rect BrowserNonClientFrameViewMac::GetBoundsForClientView() const {
-  return bounds();
+  // Because of the z-ordering of our child views (the client view is positioned
+  // over the non-client frame view), if the client view ever overlaps the frame
+  // view visually (as it does for the browser window), then NSAccessibility
+  // accessibilityHitTest will not be able to find the window controls, such as
+  // WebAppFrameToolbarView.
+  // TODO(crbug/1361945): Make accessibilityHitTest support the window controls
+  // overlay mode.
+  gfx::Rect client_view_bounds = bounds();
+  int top_inset = (browser_view()->IsWindowControlsOverlayEnabled() ||
+                   browser_view()->IsImmersiveModeEnabled())
+                      ? 0
+                      : GetTopInset(false);
+  client_view_bounds.Inset(gfx::Insets::TLBR(top_inset, 0, 0, 0));
+  return client_view_bounds;
 }
 
 gfx::Rect BrowserNonClientFrameViewMac::GetWindowBoundsForClientBounds(
@@ -373,6 +404,18 @@ void BrowserNonClientFrameViewMac::AddedToWidget() {
   }
 }
 
+void BrowserNonClientFrameViewMac::PaintChildren(const views::PaintInfo& info) {
+  // In immersive fullscreen, the browser view's top container relies on the
+  // non-client frame view to paint the frame (see comment in
+  // TopContainerView::PaintChildren). We want the frame view to paint *only*
+  // the frame but not its child (i.e. the BrowserView).
+  // TODO(kerenzhu): we need this workaround due to the design of NonClientView,
+  // that the frame part is not an independent child view. If it is an
+  // independent view, overriding PaintChildren() will not be necessary.
+  if (!browser_view()->immersive_mode_controller()->IsRevealed())
+    BrowserNonClientFrameView::PaintChildren(info);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserNonClientFrameViewMac, protected:
 
@@ -384,7 +427,7 @@ void BrowserNonClientFrameViewMac::OnPaint(gfx::Canvas* canvas) {
     return;
   }
 
-  SkColor frame_color = GetFrameColor();
+  SkColor frame_color = GetFrameColor(BrowserFrameActiveState::kUseCurrent);
   canvas->DrawColor(frame_color);
 
   if (window_title_) {
@@ -470,7 +513,7 @@ int BrowserNonClientFrameViewMac::TopUIFullscreenYOffset() const {
   CGFloat title_bar_height =
       NSHeight([NSWindow frameRectForContentRect:NSZeroRect
                                        styleMask:NSWindowStyleMaskTitled]);
-  if (base::FeatureList::IsEnabled(features::kImmersiveFullscreen))
+  if (browser_view()->UsesImmersiveFullscreenMode())
     return menu_bar_height == 0 ? 0 : menu_bar_height + title_bar_height;
   return [[fullscreen_toolbar_controller_ menubarTracker] menubarFraction] *
          (menu_bar_height + title_bar_height);
@@ -522,24 +565,25 @@ gfx::Rect BrowserNonClientFrameViewMac::GetCaptionButtonPlaceholderBounds(
     bool is_rtl,
     const gfx::Size& frame,
     int y,
-    int width,
-    int extra_padding) {
+    int width) {
+  gfx::Rect bounds(0, y, width, frame.height());
   if (is_rtl)
-    return gfx::Rect(frame.width() - width, y, width, frame.height());
-  else {
-    // Add extra width to caption_button_placeholder_container_overlay_ so the
-    // maximize button does not look like it is touching the border of the
-    // overlay and there is padding between the two.
-    return gfx::Rect(0, y, width + extra_padding, frame.height());
-  }
+    bounds.set_x(frame.width() - bounds.width());
+
+  return bounds;
 }
 
 void BrowserNonClientFrameViewMac::LayoutWindowControlsOverlay() {
   const bool is_rtl = CaptionButtonsOnLeadingEdge() && base::i18n::IsRTL();
   const gfx::Size frame(width(), GetTopInset(false));
+
+  // Pad the width of caption_button_placeholder_container so the button on the
+  // inner edge doesn't look like it's touching the overlay, but rather has a
+  // little bit of space between them.
   gfx::Rect caption_button_container_bounds = GetCaptionButtonPlaceholderBounds(
-      is_rtl, frame, 0, kFramePaddingLeft,
-      kFrameExtraPaddingForWindowControlsOverlay);
+      is_rtl, frame, 0,
+      kFramePaddingLeft + kFrameExtraPaddingForWindowControlsOverlay);
+
   gfx::Rect web_app_frame_toolbar_available_bounds =
       GetWebAppFrameToolbarAvailableBounds(
           is_rtl, frame, 0, caption_button_container_bounds.width());
@@ -562,7 +606,7 @@ void BrowserNonClientFrameViewMac::LayoutWindowControlsOverlay() {
     const int overlay_height = GetTopInset(false);
     gfx::Rect bounding_rect;
 
-    if (CaptionButtonsOnLeadingEdge() && base::i18n::IsRTL()) {
+    if (is_rtl) {
       bounding_rect =
           gfx::Rect(caption_button_placeholder_container_->size().width() +
                         web_app_frame_toolbar()->size().width(),
@@ -580,13 +624,21 @@ void BrowserNonClientFrameViewMac::LayoutWindowControlsOverlay() {
 
     web_contents->UpdateWindowControlsOverlay(bounding_rect);
   }
+
+  // WebAppFrameToolbarView visible property needs to be explicitly shown based
+  // on the fullscreen preference and also after exiting fullscreen. Otherwise
+  // upon exiting fullscreen when the toolbar is set to be hidden, the
+  // WebAppFrameToolbarView does not get added back. See crbug.com/1351179.
+  web_app_frame_toolbar()->SetVisible(
+      browser_view()->IsFullscreen() ? !ShouldHideTopUIForFullscreen() : true);
 }
 
 void BrowserNonClientFrameViewMac::
     UpdateCaptionButtonPlaceholderContainerBackground() {
   if (caption_button_placeholder_container_) {
     caption_button_placeholder_container_->SetBackground(
-        views::CreateSolidBackground(GetFrameColor()));
+        views::CreateSolidBackground(
+            GetFrameColor(BrowserFrameActiveState::kUseCurrent)));
   }
 }
 
@@ -604,9 +656,12 @@ void BrowserNonClientFrameViewMac::AddRoutingForWindowControlsOverlayViews() {
               kWebAppFrameToolbar);
 }
 
-void BrowserNonClientFrameViewMac::ToggleWebAppFrameToolbarViewVisibility() {
-  if (browser_view()->IsWindowControlsOverlayEnabled()) {
-    web_app_frame_toolbar()->SetVisible(!ShouldHideTopUIForFullscreen());
-    InvalidateLayout();
+bool BrowserNonClientFrameViewMac::AlwaysShowToolbarInFullscreen() const {
+  if (web_app::AppBrowserController::IsWebApp(browser_view()->browser())) {
+    web_app::AppBrowserController* controller =
+        browser_view()->browser()->app_controller();
+    return controller->AlwaysShowToolbarInFullscreen();
+  } else {
+    return *show_fullscreen_toolbar_;
   }
 }

@@ -41,7 +41,6 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
-#include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
@@ -57,8 +56,9 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/websockets/close_event.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/known_ports.h"
@@ -81,22 +81,22 @@ DOMWebSocket::EventQueue::~EventQueue() = default;
 void DOMWebSocket::EventQueue::Dispatch(Event* event) {
   switch (state_) {
     case kActive:
-      DCHECK(events_.IsEmpty());
-      target_->DispatchEvent(*event);
+      DCHECK(events_.empty());
+      target_->DispatchEvent(*event, "DOMWebSocket::EventQueue::Dispatch");
       break;
     case kPaused:
     case kUnpausePosted:
       events_.push_back(event);
       break;
     case kStopped:
-      DCHECK(events_.IsEmpty());
+      DCHECK(events_.empty());
       // Do nothing.
       break;
   }
 }
 
 bool DOMWebSocket::EventQueue::IsEmpty() const {
-  return events_.IsEmpty();
+  return events_.empty();
 }
 
 void DOMWebSocket::EventQueue::Pause() {
@@ -113,8 +113,8 @@ void DOMWebSocket::EventQueue::Unpause() {
   state_ = kUnpausePosted;
   target_->GetExecutionContext()
       ->GetTaskRunner(TaskType::kWebSocket)
-      ->PostTask(FROM_HERE,
-                 WTF::Bind(&EventQueue::UnpauseTask, WrapWeakPersistent(this)));
+      ->PostTask(FROM_HERE, WTF::BindOnce(&EventQueue::UnpauseTask,
+                                          WrapWeakPersistent(this)));
 }
 
 void DOMWebSocket::EventQueue::ContextDestroyed() {
@@ -135,15 +135,15 @@ void DOMWebSocket::EventQueue::DispatchQueuedEvents() {
 
   HeapDeque<Member<Event>> events;
   events.Swap(events_);
-  while (!events.IsEmpty()) {
+  while (!events.empty()) {
     if (state_ == kStopped || state_ == kPaused || state_ == kUnpausePosted)
       break;
     DCHECK_EQ(state_, kActive);
-    target_->DispatchEvent(*events.TakeFirst());
+    target_->DispatchEvent(*events.TakeFirst(), "DOMWebSocket::EventQueue::DispatchQueuedEvents");
     // |this| can be stopped here.
   }
   if (state_ == kPaused || state_ == kUnpausePosted) {
-    while (!events_.IsEmpty())
+    while (!events_.empty())
       events.push_back(events_.TakeFirst());
     events.Swap(events_);
   }
@@ -289,8 +289,9 @@ void DOMWebSocket::PostBufferedAmountUpdateTask() {
   buffered_amount_update_task_pending_ = true;
   GetExecutionContext()
       ->GetTaskRunner(TaskType::kWebSocket)
-      ->PostTask(FROM_HERE, WTF::Bind(&DOMWebSocket::BufferedAmountUpdateTask,
-                                      WrapWeakPersistent(this)));
+      ->PostTask(FROM_HERE,
+                 WTF::BindOnce(&DOMWebSocket::BufferedAmountUpdateTask,
+                               WrapWeakPersistent(this)));
 }
 
 void DOMWebSocket::BufferedAmountUpdateTask() {

@@ -1,12 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_ISOLATION_INFO_MOJOM_TRAITS_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_ISOLATION_INFO_MOJOM_TRAITS_H_
 
+#include "base/feature_list.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
+#include "net/base/features.h"
 #include "net/base/isolation_info.h"
 #include "net/cookies/site_for_cookies.h"
 #include "services/network/public/cpp/schemeful_site_mojom_traits.h"
@@ -42,7 +44,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
 
   static const absl::optional<url::Origin>& frame_origin(
       const net::IsolationInfo& input) {
-    return input.frame_origin();
+    return base::FeatureList::IsEnabled(
+               net::features::kForceIsolationInfoFrameOriginToTopLevelFrame)
+               ? input.top_frame_origin()
+               : input.frame_origin();
   }
 
   static const absl::optional<base::UnguessableToken>& nonce(
@@ -55,7 +60,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     return input.site_for_cookies();
   }
 
-  static const absl::optional<std::set<net::SchemefulSite>> party_context(
+  static const absl::optional<std::set<net::SchemefulSite>>& party_context(
       const net::IsolationInfo& input) {
     return input.party_context_;
   }

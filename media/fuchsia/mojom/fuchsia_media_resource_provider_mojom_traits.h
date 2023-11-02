@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,24 +6,26 @@
 #define MEDIA_FUCHSIA_MOJOM_FUCHSIA_MEDIA_RESOURCE_PROVIDER_MOJOM_TRAITS_H_
 
 #include <fuchsia/media/cpp/fidl.h>
+#include <fuchsia/media/drm/cpp/fidl.h>
 
-#include "fuchsia/mojom/fidl_interface_request_mojom_traits.h"
+#include "mojo/public/cpp/base/fuchsia/fidl_interface_request_mojom_traits.h"
 
 namespace mojo {
 
 template <>
-struct StructTraits<media::mojom::AudioConsumerRequestDataView,
-                    fidl::InterfaceRequest<fuchsia::media::AudioConsumer>>
+struct StructTraits<
+    media::mojom::CdmRequestDataView,
+    fidl::InterfaceRequest<fuchsia::media::drm::ContentDecryptionModule>>
     : public FidlInterfaceRequestStructTraits<
-          media::mojom::AudioConsumerRequestDataView,
-          fuchsia::media::AudioConsumer> {};
+          media::mojom::CdmRequestDataView,
+          fuchsia::media::drm::ContentDecryptionModule> {};
 
 template <>
-struct StructTraits<media::mojom::AudioCapturerRequestDataView,
-                    fidl::InterfaceRequest<fuchsia::media::AudioCapturer>>
+struct StructTraits<media::mojom::StreamProcessorRequestDataView,
+                    fidl::InterfaceRequest<fuchsia::media::StreamProcessor>>
     : public FidlInterfaceRequestStructTraits<
-          media::mojom::AudioCapturerRequestDataView,
-          fuchsia::media::AudioCapturer> {};
+          media::mojom::StreamProcessorRequestDataView,
+          fuchsia::media::StreamProcessor> {};
 
 }  // namespace mojo
 

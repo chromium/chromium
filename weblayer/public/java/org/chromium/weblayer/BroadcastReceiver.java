@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@ import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 /**
  * Listens to events from WebLayer-spawned notifications.
  */
-public class BroadcastReceiver extends android.content.BroadcastReceiver {
+class BroadcastReceiver extends android.content.BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         try {

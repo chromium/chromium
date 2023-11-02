@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,8 +42,7 @@ class TileBackgroundTask : public BackgroundTask {
   bool OnStopTask(const TaskParameters& task_params) override;
 
   // Function to call TileService to start fetch query tiles.
-  void StartFetchTask(SimpleFactoryKey* key,
-                      bool is_from_reduced_mode,
+  void StartFetchTask(content::BrowserContext* browser_context,
                       TaskFinishedCallback callback);
 
   // Cached Callback to invoke.

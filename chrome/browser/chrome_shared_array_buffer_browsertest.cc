@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -117,7 +117,8 @@ IN_PROC_BROWSER_TEST_F(ChromeSharedArrayBufferBrowserTest,
   GURL sub_url = embedded_test_server()->GetURL("a.com", "/empty.html");
 
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
-  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* main_document =
+      web_contents()->GetPrimaryMainFrame();
 
   EXPECT_TRUE(content::ExecJs(main_document, content::JsReplace(R"(
     g_sab_size = new Promise(resolve => {
@@ -148,7 +149,8 @@ IN_PROC_BROWSER_TEST_F(ChromeSharedArrayBufferBrowserTest, NoPolicyNoSharing) {
   GURL sub_url = embedded_test_server()->GetURL("a.com", "/empty.html");
 
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
-  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* main_document =
+      web_contents()->GetPrimaryMainFrame();
 
   EXPECT_TRUE(content::ExecJs(web_contents(), content::JsReplace(R"(
     g_sab_size = new Promise(resolve => {

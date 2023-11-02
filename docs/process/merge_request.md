@@ -106,6 +106,9 @@ following questions and answer them in a comment on the issue:
   experiments active in any release channels?
 5. [Chrome OS only]: Was the change reviewed and approved by the
   [Eng Prod Representative](https://goto.google.com/cros-engprodcomponents)?
+6. If this merge addresses a major issue in the stable channel, does it require
+   manual verification by the test team? If so, please describe required
+   testing.
 
 ## Monitoring merge requests
 
@@ -156,28 +159,34 @@ ASAP so that it can be included in the next release built from the branch; if
 you don't merge your cherry-pick soon after approval, it will eventually be
 rejected for merge.
 
+Once the cherry-pick has landed a bot will apply the *merge-merged-##* label if
+the commit references the issue. If for some reason the commit did not
+reference the issue, add the *Merge-Merged-##* label to the issue. After the
+merge is completed the *Merge-Approved-##* label should be manually removed.
+
 ### Using Gerrit UI
 
-Select the "More" button in the Gerrit UI, then choose "Cherry Pick". When
+Select the "..." button in the Gerrit UI, then choose "Cherry Pick". When
 prompted for a branch, enter *refs/branch-heads/####*, where #### corresponds
 to the release branch you are merging to (available on
-[Chromium Dash](https://chromiumdash.appspot.com/branches)).
+[Chromium Dash](https://chromiumdash.appspot.com/branches) in the "Chromium"
+column).
 
-Once the cherry-pick CL is prepared, you can have it approved and landed by
-adding Rubber Stamper (rubber-stamper@appspot.gserviceaccount.com) as a
-reviewer and setting Auto-Submit+1;the Rubber Stamper bot will approve and
-submit the CL to CQ on your behalf.
-
-*Note: the Rubber Stamper does not provide OWNERS approval, and only works
-within 7 days of the original change; Googlers can learn more
-[here](https://goto.google.com/rubber-stamper-user-guide).*
+Once the cherry-pick CL is prepared, you can bypass code review (but not
+OWNERS approval) within 7 days of the original change by adding the Rubber
+Stamper bot (rubber-stamper@appspot.gserviceaccount.com) as a reviewer. If the
+CL meets the
+[Rubber Stamper criteria](https://chromium.googlesource.com/infra/infra/+/refs/heads/main/go/src/infra/appengine/rubber-stamper/README.md),
+the bot will vote *Bot-Commit+1* to bypass code review. If the CL is marked
+*Auto-Submit+1*, the bot will also submit the CL to the CQ on your behalf.
 
 ### Using git
 
 The commands below should set up your environment to be able to successfully
 upload a cherry-pick to a release branch, where *####* corresponds to the
 release branch you are merging to (available on
-[Chromium Dash](https://chromiumdash.appspot.com/branches)):
+[Chromium Dash](https://chromiumdash.appspot.com/branches) in the "Chromium"
+column):
 
 ```
 $ gclient sync --with_branch_heads

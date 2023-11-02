@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/metrics/field_trial_params.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -22,8 +23,8 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -189,15 +190,17 @@ int OmniboxMatchCellView::GetTextIndent() {
   return ui::TouchUiController::Get()->touch_ui() ? 51 : 47;
 }
 
+// static
+bool OmniboxMatchCellView::IsTwoLineLayout(const AutocompleteMatch& match) {
+  return match.answer || match.type == AutocompleteMatchType::CALCULATOR ||
+         !match.image_url.is_empty();
+}
+
 void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
                                          const AutocompleteMatch& match) {
-  is_rich_suggestion_ = match.answer ||
-                        match.type == AutocompleteMatchType::CALCULATOR ||
-                        !match.image_url.is_empty();
   is_search_type_ = AutocompleteMatch::IsSearchType(match.type);
-
   // Decide layout style once before Layout, while match data is available.
-  const bool two_line = is_rich_suggestion_;
+  const bool two_line = IsTwoLineLayout(match);
   layout_style_ = two_line ? LayoutStyle::TWO_LINE_SUGGESTION
                            : LayoutStyle::ONE_LINE_SUGGESTION;
 
@@ -206,20 +209,23 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
                                     : separator_view_->GetPreferredSize());
 
   // Set up the small icon.
-  icon_view_->SetSize(is_rich_suggestion_ ? gfx::Size()
-                                          : icon_view_->GetPreferredSize());
+  icon_view_->SetSize(two_line ? gfx::Size() : icon_view_->GetPreferredSize());
 
   const auto apply_vector_icon = [=](const gfx::VectorIcon& vector_icon) {
-    const auto& icon = gfx::CreateVectorIcon(vector_icon, SK_ColorWHITE);
+    const auto* color_provider = GetColorProvider();
+    const auto& icon = gfx::CreateVectorIcon(
+        vector_icon,
+        color_provider->GetColor(kColorOmniboxAnswerIconForeground));
     answer_image_view_->SetImageSize(
         gfx::Size(kAnswerImageSize, kAnswerImageSize));
     answer_image_view_->SetImage(
         gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
-            kAnswerImageSize / 2, gfx::kGoogleBlue600, icon));
+            kAnswerImageSize / 2,
+            color_provider->GetColor(kColorOmniboxAnswerIconBackground), icon));
   };
   if (match.type == AutocompleteMatchType::CALCULATOR) {
     apply_vector_icon(omnibox::kAnswerCalculatorIcon);
-  } else if (!is_rich_suggestion_) {
+  } else if (!two_line) {
     answer_image_view_->SetImage(gfx::ImageSkia());
     answer_image_view_->SetSize(gfx::Size());
   } else {
@@ -234,7 +240,8 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
             AutocompleteMatch::AnswerTypeToAnswerIcon(match.answer->type()));
       }
     } else {
-      SkColor color = result_view->GetColor(OmniboxPart::RESULTS_BACKGROUND);
+      SkColor color = GetColorProvider()->GetColor(
+          GetOmniboxBackgroundColorId(result_view->GetThemeState()));
       content::ParseHexColorString(match.image_dominant_color, &color);
       color = SkColorSetA(color, 0x40);  // 25% transparency (arbitrary).
       constexpr gfx::Size size(kEntityImageSize, kEntityImageSize);
@@ -271,8 +278,8 @@ gfx::Insets OmniboxMatchCellView::GetInsets() const {
   const int vertical_margin = ChromeLayoutProvider::Get()->GetDistanceMetric(
       single_line ? DISTANCE_OMNIBOX_CELL_VERTICAL_PADDING
                   : DISTANCE_OMNIBOX_TWO_LINE_CELL_VERTICAL_PADDING);
-  return gfx::Insets(vertical_margin, OmniboxMatchCellView::kMarginLeft,
-                     vertical_margin, OmniboxMatchCellView::kMarginRight);
+  return gfx::Insets::TLBR(vertical_margin, OmniboxMatchCellView::kMarginLeft,
+                           vertical_margin, OmniboxMatchCellView::kMarginRight);
 }
 
 void OmniboxMatchCellView::Layout() {
@@ -284,7 +291,7 @@ void OmniboxMatchCellView::Layout() {
   int y = child_area.y();
   const int row_height = child_area.height();
   views::ImageView* const image_view =
-      (two_line && is_rich_suggestion_) ? answer_image_view_ : icon_view_;
+      two_line ? answer_image_view_.get() : icon_view_.get();
   image_view->SetBounds(x, y, OmniboxMatchCellView::kImageBoundsWidth,
                         row_height);
 

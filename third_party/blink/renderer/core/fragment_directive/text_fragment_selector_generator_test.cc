@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,9 +22,9 @@
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_handler.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
-#include "third_party/blink/renderer/core/testing/scoped_fake_ukm_recorder.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/testing/scoped_fake_ukm_recorder.h"
 
 using LinkGenerationError = shared_highlighting::LinkGenerationError;
 
@@ -91,28 +91,26 @@ class TextFragmentSelectorGeneratorTest : public SimTest {
     bool callback_called = false;
     String selector;
     auto lambda = [](bool& callback_called, String& selector,
-                     const TextFragmentSelector& generated_selector) {
+                     const TextFragmentSelector& generated_selector,
+                     shared_highlighting::LinkGenerationError error) {
       selector = generated_selector.ToString();
       callback_called = true;
     };
     auto callback =
-        WTF::Bind(lambda, std::ref(callback_called), std::ref(selector));
-    GetTextFragmentSelectorGenerator()->Generate(
-        *MakeGarbageCollected<RangeInFlatTree>(
-            ToPositionInFlatTree(selected_start),
-            ToPositionInFlatTree(selected_end)),
-        std::move(callback));
+        WTF::BindOnce(lambda, std::ref(callback_called), std::ref(selector));
+    CreateGenerator()->Generate(*MakeGarbageCollected<RangeInFlatTree>(
+                                    ToPositionInFlatTree(selected_start),
+                                    ToPositionInFlatTree(selected_end)),
+                                std::move(callback));
     base::RunLoop().RunUntilIdle();
 
     EXPECT_TRUE(callback_called);
     return selector;
   }
 
-  TextFragmentSelectorGenerator* GetTextFragmentSelectorGenerator() {
-    return GetDocument()
-        .GetFrame()
-        ->GetTextFragmentHandler()
-        ->GetTextFragmentSelectorGenerator();
+  TextFragmentSelectorGenerator* CreateGenerator() {
+    return MakeGarbageCollected<TextFragmentSelectorGenerator>(
+        GetDocument().GetFrame());
   }
 
  protected:
@@ -123,6 +121,16 @@ class TextFragmentSelectorGeneratorTest : public SimTest {
   base::HistogramTester histogram_tester_;
   ScopedFakeUkmRecorder scoped_ukm_recorder_;
   int generate_call_count_ = 0;
+
+  struct ScopedExactTextMaxCharsOverride {
+    explicit ScopedExactTextMaxCharsOverride(int value) {
+      TextFragmentSelectorGenerator::OverrideExactTextMaxCharsForTesting(value);
+    }
+
+    ~ScopedExactTextMaxCharsOverride() {
+      TextFragmentSelectorGenerator::OverrideExactTextMaxCharsForTesting(-1);
+    }
+  };
 };
 
 // Basic exact selector case.
@@ -160,6 +168,26 @@ TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector) {
 
   VerifySelector(selected_start, selected_end,
                  "First%20paragraph%20text%20that%20is");
+}
+
+// A single long word will return an exact selection, even if it would normally
+// exceed the max chars for exact threshold.
+TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector_Long) {
+  ScopedExactTextMaxCharsOverride force_range_generation(10);
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <div>Test page</div>
+    <p id='first'>first_texts_and_last</p>
+  )HTML");
+  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  const auto& selected_start = Position(first_paragraph, 0);
+  const auto& selected_end = Position(first_paragraph, 20);
+  ASSERT_EQ("first_texts_and_last",
+            PlainText(EphemeralRange(selected_start, selected_end)));
+
+  VerifySelector(selected_start, selected_end, "first_texts_and_last");
 }
 
 // Exact selector test where selection contains nested <i> node.
@@ -637,6 +665,28 @@ TEST_F(TextFragmentSelectorGeneratorTest, RangeSelector_RangeNotUnique) {
                  "First-,paragraph,text,-Second%20paragraph");
 }
 
+// When selecting multiple short non block nodes, ensure range is produced
+// correctly.
+TEST_F(TextFragmentSelectorGeneratorTest,
+       RangeSelector_RangeMultipleNonBlockNodes) {
+  // This ensures that a range selector is created instead of an exact text
+  // selector.
+  ScopedExactTextMaxCharsOverride force_range_generation(4);
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <span id='foo'>foo</span> <span id='bar'>bar</span>
+  )HTML");
+  Node* foo = GetDocument().getElementById("foo")->firstChild();
+  Node* bar = GetDocument().getElementById("bar")->firstChild();
+  const auto& selected_start = Position(foo, 0);
+  const auto& selected_end = Position(bar, 3);
+  ASSERT_EQ("foo bar", PlainText(EphemeralRange(selected_start, selected_end)));
+
+  VerifySelector(selected_start, selected_end, "foo,bar");
+}
+
 // When using all the selected text for the range is not enough for unique
 // match, context should be added, but only prefxi and no suffix is available.
 TEST_F(TextFragmentSelectorGeneratorTest,
@@ -659,32 +709,74 @@ TEST_F(TextFragmentSelectorGeneratorTest,
   VerifySelector(selected_start, selected_end, "Second-,paragraph,text");
 }
 
-// When no range end is available it should return empty selector.
-// There is no range end available because there is no word break in the second
-// half of the selection.
-TEST_F(TextFragmentSelectorGeneratorTest, RangeSelector_NoRangeEnd) {
+// Check the case with long word for range end.
+TEST_F(TextFragmentSelectorGeneratorTest, RangeSelector_LongWord) {
+  ScopedExactTextMaxCharsOverride force_range_generation(4);
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
     <!DOCTYPE html>
     <div>Test page</div>
-    <p id='first'>First paragraph text text text text text text text
-    text text text text text text text text text text text text text
-    text text text text text text text text_text_text_text_text_text_text_text_text_text_text_text_text_text_text_text_text_text_text_text_text_text_text_text_text_text_text_text_and_last_text</p>
+    <p id='first'>First second third fourth fifth sixth text_text_text_text_text_text_text_text_text_text_text_text_text_and_last_text</p>
   )HTML");
   Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
   const auto& selected_start = Position(first_paragraph, 0);
-  const auto& selected_end = Position(first_paragraph, 312);
+  const auto& selected_end = Position(first_paragraph, 116);
   ASSERT_EQ(
-      "First paragraph text text text text text text text \
-text text text text text text text text text text text text text \
-text text text text text text text text_text_text_text_text_text_\
-text_text_text_text_text_text_text_text_text_text_text_text_text_\
+      "First second third fourth fifth sixth text_text_text_text_\
 text_text_text_text_text_text_text_text_text_and_last_text",
       PlainText(EphemeralRange(selected_start, selected_end)));
 
-  VerifySelectorFails(selected_start, selected_end,
-                      LinkGenerationError::kNoRange);
+  VerifySelector(selected_start, selected_end,
+                 "First%20second%20third,fifth%20sixth%20text_text_text_text_"
+                 "text_text_text_text_text_text_text_text_text_and_last_text");
+}
+
+// The generator tries to include at least 3 words from the start and end of a
+// range. This test ensures that the number of words used is reduced if there
+// are fewer than 6 words in the selection, preventing the start and end
+// overlaping.
+TEST_F(TextFragmentSelectorGeneratorTest,
+       RangeSelector_OverlapFailOnFirstAttempt) {
+  ScopedExactTextMaxCharsOverride force_range_generation(10);
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <div>Test page</div>
+    <p id='first'>one two three four five</p>
+  )HTML");
+  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  const auto& selected_start = Position(first_paragraph, 0);
+  const auto& selected_end = Position(first_paragraph, 23);
+  ASSERT_EQ("one two three four five",
+            PlainText(EphemeralRange(selected_start, selected_end)));
+
+  VerifySelector(selected_start, selected_end, "one%20two,four%20five");
+}
+
+// When range start and end overlap on second or later attempt it should stop
+// adding range and start adding context.
+TEST_F(TextFragmentSelectorGeneratorTest, RangeSelector_OverlapNeedsContext) {
+  ScopedExactTextMaxCharsOverride force_range_generation(30);
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <div>Test page</div>
+    <p id='first'>First paragraph text one two three four five six seven eight nine ten
+    end of first paragraph</p>
+    <p id='second'>Second paragraph text one two three four five six seven eight nine ten
+    end of second paragraph</p>
+  )HTML");
+  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  const auto& selected_start = Position(first_paragraph, 21);
+  const auto& selected_end = Position(first_paragraph, 69);
+  ASSERT_EQ("one two three four five six seven eight nine ten",
+            PlainText(EphemeralRange(selected_start, selected_end)));
+  VerifySelector(selected_start, selected_end,
+                 "First%20paragraph%20text-,one%20two%20three%20four%20five,"
+                 "six%20seven%20eight%20nine%20ten,-end%20of%20first");
 }
 
 // Selection should be autocompleted to contain full words.
@@ -1247,47 +1339,94 @@ TEST_F(TextFragmentSelectorGeneratorTest, RangeBeginsOnShadowHost) {
   VerifySelector(start, end, "the%20quick,-brown%20fox%20jumped");
 }
 
-// Basic test case for |GetNextTextBlock|.
-TEST_F(TextFragmentSelectorGeneratorTest, GetPreviousTextBlock) {
+// Checks selection in multiline paragraph.
+TEST_F(TextFragmentSelectorGeneratorTest, Multiline_paragraph) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
     <!DOCTYPE html>
-    <p id='first'>First paragraph text</p>
+  <p id ='p'>
+  first paragraph line<br>second paragraph line
+  </p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
-  const auto& start = Position(first_paragraph, 16);
-  const auto& end = Position(first_paragraph, 20);
-  ASSERT_EQ("text", PlainText(EphemeralRange(start, end)));
+  Node* p = GetDocument().getElementById("p");
+  const auto& start = Position(p->firstChild(), 0);
+  const auto& end = Position(p->lastChild(), 24);
+  ASSERT_EQ("first paragraph line\nsecond paragraph line",
+            PlainText(EphemeralRange(start, end)));
 
-  EXPECT_EQ("First paragraph",
-            GetTextFragmentSelectorGenerator()->GetPreviousTextBlockForTesting(
-                start));
+  VerifySelector(start, end,
+                 "first%20paragraph%20line%0Asecond%20paragraph%20line");
 }
 
-// Check the case when available prefix contains collapsible space.
-TEST_F(TextFragmentSelectorGeneratorTest, GetPreviousTextBlock_ExtraSpace) {
+// Checks selection in multiline paragraph.
+TEST_F(TextFragmentSelectorGeneratorTest, Nbsp_before_suffix) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
     <!DOCTYPE html>
-    <p id='first'>First
-
-         paragraph text</p>
+  <p id ='p1'>first paragraph line.&nbsp;</p>
+  <p id ='p2'>&nbsp;second paragraph line.</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
-  const auto& start = Position(first_paragraph, 26);
-  const auto& end = Position(first_paragraph, 30);
-  ASSERT_EQ("text", PlainText(EphemeralRange(start, end)));
+  Node* p = GetDocument().getElementById("p1");
+  const auto& start = Position(p->firstChild(), 16);
+  const auto& end = Position(p->firstChild(), 21);
+  ASSERT_EQ("line.", PlainText(EphemeralRange(start, end)));
 
-  EXPECT_EQ("First paragraph",
-            GetTextFragmentSelectorGenerator()->GetPreviousTextBlockForTesting(
-                start));
+  VerifySelector(start, end,
+                 "first%20paragraph-,line.,-second%20paragraph%20line");
 }
 
-// Check the case when available prefix complete text content of the previous
+// Checks selection in multiline paragraph.
+TEST_F(TextFragmentSelectorGeneratorTest, Nbsp_before_prefix) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+  <p id ='p1'>first paragraph line.&nbsp;    </p>
+  <p id ='p2'>&nbsp;    second paragraph line.</p>
+  )HTML");
+  Node* p = GetDocument().getElementById("p2");
+  const auto& start = Position(p->firstChild(), 5);
+  const auto& end = Position(p->firstChild(), 11);
+  ASSERT_EQ("second", PlainText(EphemeralRange(start, end)));
+
+  VerifySelector(start, end,
+                 "first%20paragraph%20line.-,second,-paragraph%20line.");
+}
+
+// Checks that after adding max number of range words it will correctly add
+// context.
+TEST_F(TextFragmentSelectorGeneratorTest, ContextAfterMaxRange) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+  <p>Eletelephony</p>
+  <p id = 'p1'>There was an elephant who tried to use a_telephant</p>
+  <p id = 'p2'>I mean an elephone who tried to use a_telephone</p>
+  <p>There was an elephant who tried to use a_telephant</p>
+  <p>I mean an elephone who tried to use a_telephone</p>
+  )HTML");
+
+  Node* p1 = GetDocument().getElementById("p1");
+  Node* p2 = GetDocument().getElementById("p2");
+  const auto& start = Position(p1->firstChild(), 0);
+  const auto& end = Position(p2->firstChild(), 47);
+  ASSERT_EQ(
+      "There was an elephant who tried to use a_telephant\n\nI mean an "
+      "elephone who tried to use a_telephone",
+      PlainText(EphemeralRange(start, end)));
+
+  VerifySelector(start, end,
+                 "Eletelephony-,There%20was%20an%20elephant%20who%20tried%20to%"
+                 "20use%20a_telephant,I%20mean%20an%20elephone%20who%20tried%"
+                 "20to%20use%20a_telephone,-There%20was%20an");
+}
+
+// Check the case when available prefix is the text content of the previous
 // block.
-TEST_F(TextFragmentSelectorGeneratorTest, GetPreviousTextBlock_PrevNode) {
+TEST_F(TextFragmentSelectorGeneratorTest, GetPreviousTextEndPosition_PrevNode) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1296,158 +1435,65 @@ TEST_F(TextFragmentSelectorGeneratorTest, GetPreviousTextBlock_PrevNode) {
     <p id='second'>Second paragraph text</p>
   )HTML");
   Node* second_paragraph = GetDocument().getElementById("second")->firstChild();
-  const auto& start = Position(second_paragraph, 0);
-  const auto& end = Position(second_paragraph, 6);
-  ASSERT_EQ("Second", PlainText(EphemeralRange(start, end)));
+  const auto& start = PositionInFlatTree(second_paragraph, 0);
+  const auto& end = PositionInFlatTree(second_paragraph, 6);
+  ASSERT_EQ("Second", PlainText(EphemeralRangeInFlatTree(start, end)));
 
-  EXPECT_EQ("First paragraph text",
-            GetTextFragmentSelectorGenerator()->GetPreviousTextBlockForTesting(
-                start));
-}
-
-// Check the case when there is a commented block between selection and the
-// available prefix.
-TEST_F(TextFragmentSelectorGeneratorTest,
-       GetPreviousTextBlock_PrevNode_WithComment) {
-  SimRequest request("https://example.com/test.html", "text/html");
-  LoadURL("https://example.com/test.html");
-  request.Complete(R"HTML(
-    <!DOCTYPE html>
-    <p id='first'>First paragraph text</p>
-    <!--
-      multiline comment that should be ignored.
-    //-->
-    <p id='second'>Second paragraph text</p>
-  )HTML");
-  Node* second_paragraph = GetDocument().getElementById("second")->firstChild();
-  const auto& start = Position(second_paragraph, 0);
-  const auto& end = Position(second_paragraph, 6);
-  ASSERT_EQ("Second", PlainText(EphemeralRange(start, end)));
-
-  EXPECT_EQ("First paragraph text",
-            GetTextFragmentSelectorGenerator()->GetPreviousTextBlockForTesting(
-                start));
+  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  const auto& expected_position =
+      ToPositionInFlatTree(Position::LastPositionInNode(*first_paragraph));
+  EXPECT_EQ(expected_position,
+            CreateGenerator()->GetPreviousTextEndPosition(start));
 }
 
 // Check the case when available prefix is a text node outside of selection
 // block.
-TEST_F(TextFragmentSelectorGeneratorTest, GetPreviousTextBlock_PrevTextNode) {
+TEST_F(TextFragmentSelectorGeneratorTest,
+       GetPreviousTextEndPosition_PrevTextNode) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
     <!DOCTYPE html>
-    text
-    <p id='first'>First paragraph text</p>
+    text<p id='first'>First paragraph text</p>
   )HTML");
   Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
-  const auto& start = Position(first_paragraph, 0);
-  const auto& end = Position(first_paragraph, 5);
-  ASSERT_EQ("First", PlainText(EphemeralRange(start, end)));
+  const auto& start = PositionInFlatTree(first_paragraph, 0);
+  const auto& end = PositionInFlatTree(first_paragraph, 5);
+  ASSERT_EQ("First", PlainText(EphemeralRangeInFlatTree(start, end)));
 
-  EXPECT_EQ("text",
-            GetTextFragmentSelectorGenerator()->GetPreviousTextBlockForTesting(
-                start));
+  Node* node = GetDocument().getElementById("first")->previousSibling();
+  const auto& expected_position =
+      ToPositionInFlatTree(Position::LastPositionInNode(*node));
+  EXPECT_EQ(expected_position,
+            CreateGenerator()->GetPreviousTextEndPosition(start));
 }
 
 // Check the case when available prefix is a parent node text content outside of
 // selection block.
-TEST_F(TextFragmentSelectorGeneratorTest, GetPreviousTextBlock_ParentNode) {
+TEST_F(TextFragmentSelectorGeneratorTest,
+       GetPreviousTextEndPosition_ParentNode) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
     <!DOCTYPE html>
-    <div>nested
-    <p id='first'>First paragraph text</p></div>
+    <div id='div'>nested<p id='first'>First paragraph text</p></div>
   )HTML");
   Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
-  const auto& start = Position(first_paragraph, 0);
-  const auto& end = Position(first_paragraph, 5);
-  ASSERT_EQ("First", PlainText(EphemeralRange(start, end)));
+  const auto& start = PositionInFlatTree(first_paragraph, 0);
+  const auto& end = PositionInFlatTree(first_paragraph, 5);
+  ASSERT_EQ("First", PlainText(EphemeralRangeInFlatTree(start, end)));
 
-  EXPECT_EQ("nested",
-            GetTextFragmentSelectorGenerator()->GetPreviousTextBlockForTesting(
-                start));
-}
-
-// Check the case when available prefix contains non-block tag(e.g. <b>).
-TEST_F(TextFragmentSelectorGeneratorTest, GetPreviousTextBlock_NestedTextNode) {
-  SimRequest request("https://example.com/test.html", "text/html");
-  LoadURL("https://example.com/test.html");
-  request.Complete(R"HTML(
-    <!DOCTYPE html>
-    <p id='first'>First <b>bold text</b> paragraph text</p>
-  )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->lastChild();
-  const auto& start = Position(first_paragraph, 11);
-  const auto& end = Position(first_paragraph, 15);
-  ASSERT_EQ("text", PlainText(EphemeralRange(start, end)));
-
-  EXPECT_EQ("First bold text paragraph",
-            GetTextFragmentSelectorGenerator()->GetPreviousTextBlockForTesting(
-                start));
-}
-
-// Check the case when available prefix is collected until nested block.
-TEST_F(TextFragmentSelectorGeneratorTest, GetPreviousTextBlock_NestedBlock) {
-  SimRequest request("https://example.com/test.html", "text/html");
-  LoadURL("https://example.com/test.html");
-  request.Complete(R"HTML(
-    <!DOCTYPE html>
-    <div id='first'>First <div id='div'>div</div> paragraph text</div>
-  )HTML");
-  Node* first_paragraph = GetDocument().getElementById("div")->nextSibling();
-  const auto& start = Position(first_paragraph, 11);
-  const auto& end = Position(first_paragraph, 15);
-  ASSERT_EQ("text", PlainText(EphemeralRange(start, end)));
-
-  EXPECT_EQ("paragraph",
-            GetTextFragmentSelectorGenerator()->GetPreviousTextBlockForTesting(
-                start));
-}
-
-// Check the case when available prefix includes non-block element but stops at
-// nested block.
-TEST_F(TextFragmentSelectorGeneratorTest,
-       GetPreviousTextBlock_NestedBlockInNestedText) {
-  SimRequest request("https://example.com/test.html", "text/html");
-  LoadURL("https://example.com/test.html");
-  request.Complete(R"HTML(
-    <!DOCTYPE html>
-    <div id='first'>First <b><div id='div'>div</div>bold</b> paragraph text</div>
-  )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->lastChild();
-  const auto& start = Position(first_paragraph, 11);
-  const auto& end = Position(first_paragraph, 15);
-  ASSERT_EQ("text", PlainText(EphemeralRange(start, end)));
-
-  EXPECT_EQ("bold paragraph",
-            GetTextFragmentSelectorGenerator()->GetPreviousTextBlockForTesting(
-                start));
-}
-
-// Check the case when available prefix includes invisible block.
-TEST_F(TextFragmentSelectorGeneratorTest,
-       GetPreviousTextBlock_NestedInvisibleBlock) {
-  SimRequest request("https://example.com/test.html", "text/html");
-  LoadURL("https://example.com/test.html");
-  request.Complete(R"HTML(
-    <!DOCTYPE html>
-    <div id='first'>First <div id='div' style='display:none'>invisible</div> paragraph text</div>
-  )HTML");
-  Node* first_paragraph = GetDocument().getElementById("div")->nextSibling();
-  const auto& start = Position(first_paragraph, 0);
-  const auto& end = Position(first_paragraph, 10);
-  ASSERT_EQ("paragraph", PlainText(EphemeralRange(start, end)));
-
-  EXPECT_EQ("First",
-            GetTextFragmentSelectorGenerator()->GetPreviousTextBlockForTesting(
-                start));
+  Node* node = GetDocument().getElementById("div")->firstChild();
+  const auto& expected_position =
+      ToPositionInFlatTree(Position::LastPositionInNode(*node));
+  EXPECT_EQ(expected_position,
+            CreateGenerator()->GetPreviousTextEndPosition(start));
 }
 
 // Check the case when previous node is used for available prefix when selection
 // is not at index=0 but there is only space before it.
 TEST_F(TextFragmentSelectorGeneratorTest,
-       GetPreviousTextBlock_SpacesBeforeSelection) {
+       GetPreviousTextEndPosition_SpacesBeforeSelection) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1458,19 +1504,21 @@ TEST_F(TextFragmentSelectorGeneratorTest,
     </p>
   )HTML");
   Node* second_paragraph = GetDocument().getElementById("second")->firstChild();
-  const auto& start = Position(second_paragraph, 6);
-  const auto& end = Position(second_paragraph, 13);
-  ASSERT_EQ("Second", PlainText(EphemeralRange(start, end)));
+  const auto& start = PositionInFlatTree(second_paragraph, 6);
+  const auto& end = PositionInFlatTree(second_paragraph, 13);
+  ASSERT_EQ("Second", PlainText(EphemeralRangeInFlatTree(start, end)));
 
-  EXPECT_EQ("First paragraph text",
-            GetTextFragmentSelectorGenerator()->GetPreviousTextBlockForTesting(
-                start));
+  Node* node = GetDocument().getElementById("first")->firstChild();
+  const auto& expected_position =
+      ToPositionInFlatTree(Position::LastPositionInNode(*node));
+  EXPECT_EQ(expected_position,
+            CreateGenerator()->GetPreviousTextEndPosition(start));
 }
 
 // Check the case when previous node is used for available prefix when selection
 // is not at index=0 but there is only invisible block.
 TEST_F(TextFragmentSelectorGeneratorTest,
-       GetPreviousTextBlock_InvisibleBeforeSelection) {
+       GetPreviousTextEndPosition_InvisibleBeforeSelection) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1485,59 +1533,42 @@ TEST_F(TextFragmentSelectorGeneratorTest,
   )HTML");
   Node* second_paragraph =
       GetDocument().getElementById("invisible")->nextSibling();
-  const auto& start = Position(second_paragraph, 6);
-  const auto& end = Position(second_paragraph, 13);
-  ASSERT_EQ("Second", PlainText(EphemeralRange(start, end)));
+  const auto& start = PositionInFlatTree(second_paragraph, 6);
+  const auto& end = PositionInFlatTree(second_paragraph, 13);
+  ASSERT_EQ("Second", PlainText(EphemeralRangeInFlatTree(start, end)));
 
-  EXPECT_EQ("First paragraph text",
-            GetTextFragmentSelectorGenerator()->GetPreviousTextBlockForTesting(
-                start));
+  Node* node = GetDocument().getElementById("first")->firstChild();
+  const auto& expected_position =
+      ToPositionInFlatTree(Position::LastPositionInNode(*node));
+  EXPECT_EQ(expected_position,
+            CreateGenerator()->GetPreviousTextEndPosition(start));
 }
 
-// Similar test for suffix.
-
-// Basic test case for |GetNextTextBlock|.
-TEST_F(TextFragmentSelectorGeneratorTest, GetNextTextBlock) {
+// Check the case when available prefix complete text content of the previous
+// block.
+TEST_F(TextFragmentSelectorGeneratorTest,
+       GetPreviousTextEndPosition_NoPrevious) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
     <!DOCTYPE html>
     <p id='first'>First paragraph text</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
-  const auto& start = Position(first_paragraph, 0);
-  const auto& end = Position(first_paragraph, 5);
-  ASSERT_EQ("First", PlainText(EphemeralRange(start, end)));
+  Node* second_paragraph = GetDocument().getElementById("first")->firstChild();
+  const auto& start = PositionInFlatTree(second_paragraph, 0);
+  const auto& end = PositionInFlatTree(second_paragraph, 5);
+  ASSERT_EQ("First", PlainText(EphemeralRangeInFlatTree(start, end)));
 
-  EXPECT_EQ(
-      "paragraph text",
-      GetTextFragmentSelectorGenerator()->GetNextTextBlockForTesting(end));
+  PositionInFlatTree expected_position;
+  EXPECT_EQ(expected_position,
+            CreateGenerator()->GetPreviousTextEndPosition(start));
 }
 
-// Check the case when available suffix contains collapsible space.
-TEST_F(TextFragmentSelectorGeneratorTest, GetNextTextBlock_ExtraSpace) {
-  SimRequest request("https://example.com/test.html", "text/html");
-  LoadURL("https://example.com/test.html");
-  request.Complete(R"HTML(
-    <!DOCTYPE html>
-    <p id='first'>First paragraph
-
-
-     text</p>
-  )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
-  const auto& start = Position(first_paragraph, 0);
-  const auto& end = Position(first_paragraph, 5);
-  ASSERT_EQ("First", PlainText(EphemeralRange(start, end)));
-
-  EXPECT_EQ(
-      "paragraph text",
-      GetTextFragmentSelectorGenerator()->GetNextTextBlockForTesting(end));
-}
+// Similar test for suffix.
 
 // Check the case when available suffix is complete text content of the next
 // block.
-TEST_F(TextFragmentSelectorGeneratorTest, GetNextTextBlock_NextNode) {
+TEST_F(TextFragmentSelectorGeneratorTest, GetNextTextStartPosition_NextNode) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1546,19 +1577,22 @@ TEST_F(TextFragmentSelectorGeneratorTest, GetNextTextBlock_NextNode) {
     <p id='second'>Second paragraph text</p>
   )HTML");
   Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
-  const auto& start = Position(first_paragraph, 0);
-  const auto& end = Position(first_paragraph, 20);
-  ASSERT_EQ("First paragraph text", PlainText(EphemeralRange(start, end)));
+  const auto& start = PositionInFlatTree(first_paragraph, 0);
+  const auto& end = PositionInFlatTree(first_paragraph, 20);
+  ASSERT_EQ("First paragraph text",
+            PlainText(EphemeralRangeInFlatTree(start, end)));
 
-  EXPECT_EQ(
-      "Second paragraph text",
-      GetTextFragmentSelectorGenerator()->GetNextTextBlockForTesting(end));
+  Node* node = GetDocument().getElementById("second")->firstChild();
+  const auto& expected_position =
+      ToPositionInFlatTree(Position::FirstPositionInNode(*node));
+  EXPECT_EQ(expected_position,
+            CreateGenerator()->GetNextTextStartPosition(end));
 }
 
 // Check the case when there is a commented block between selection and the
 // available suffix.
 TEST_F(TextFragmentSelectorGeneratorTest,
-       GetNextTextBlock_NextNode_WithComment) {
+       GetNextTextStartPosition_NextNode_WithComment) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1570,133 +1604,67 @@ TEST_F(TextFragmentSelectorGeneratorTest,
     <p id='second'>Second paragraph text</p>
   )HTML");
   Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
-  const auto& start = Position(first_paragraph, 0);
-  const auto& end = Position(first_paragraph, 20);
-  ASSERT_EQ("First paragraph text", PlainText(EphemeralRange(start, end)));
+  const auto& start = PositionInFlatTree(first_paragraph, 0);
+  const auto& end = PositionInFlatTree(first_paragraph, 20);
+  ASSERT_EQ("First paragraph text",
+            PlainText(EphemeralRangeInFlatTree(start, end)));
 
-  EXPECT_EQ(
-      "Second paragraph text",
-      GetTextFragmentSelectorGenerator()->GetNextTextBlockForTesting(end));
+  Node* node = GetDocument().getElementById("second")->firstChild();
+  const auto& expected_position =
+      ToPositionInFlatTree(Position::FirstPositionInNode(*node));
+  EXPECT_EQ(expected_position,
+            CreateGenerator()->GetNextTextStartPosition(end));
 }
 
 // Check the case when available suffix is a text node outside of selection
 // block.
-TEST_F(TextFragmentSelectorGeneratorTest, GetNextTextBlock_NextTextNode) {
+TEST_F(TextFragmentSelectorGeneratorTest,
+       GetNextTextStartPosition_NextTextNode) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
     <!DOCTYPE html>
-    <p id='first'>First paragraph text</p>
-    text
+    <p id='first'>First paragraph text</p>text
   )HTML");
   Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
-  const auto& start = Position(first_paragraph, 0);
-  const auto& end = Position(first_paragraph, 20);
-  ASSERT_EQ("First paragraph text", PlainText(EphemeralRange(start, end)));
+  const auto& start = PositionInFlatTree(first_paragraph, 0);
+  const auto& end = PositionInFlatTree(first_paragraph, 20);
+  ASSERT_EQ("First paragraph text",
+            PlainText(EphemeralRangeInFlatTree(start, end)));
 
-  EXPECT_EQ(
-      "text",
-      GetTextFragmentSelectorGenerator()->GetNextTextBlockForTesting(end));
+  Node* node = GetDocument().getElementById("first")->nextSibling();
+  const auto& expected_position =
+      ToPositionInFlatTree(Position::FirstPositionInNode(*node));
+  EXPECT_EQ(expected_position,
+            CreateGenerator()->GetNextTextStartPosition(end));
 }
 
 // Check the case when available suffix is a parent node text content outside of
 // selection block.
-TEST_F(TextFragmentSelectorGeneratorTest, GetNextTextBlock_ParentNode) {
+TEST_F(TextFragmentSelectorGeneratorTest, GetNextTextStartPosition_ParentNode) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
     <!DOCTYPE html>
-    <div><p id='first'>First paragraph text</p> nested</div>
+    <div id='div'><p id='first'>First paragraph text</p>nested</div>
   )HTML");
   Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
-  const auto& start = Position(first_paragraph, 0);
-  const auto& end = Position(first_paragraph, 20);
-  ASSERT_EQ("First paragraph text", PlainText(EphemeralRange(start, end)));
+  const auto& start = PositionInFlatTree(first_paragraph, 0);
+  const auto& end = PositionInFlatTree(first_paragraph, 20);
+  ASSERT_EQ("First paragraph text",
+            PlainText(EphemeralRangeInFlatTree(start, end)));
 
-  EXPECT_EQ(
-      "nested",
-      GetTextFragmentSelectorGenerator()->GetNextTextBlockForTesting(end));
-}
-
-// Check the case when available suffix contains non-block tag(e.g. <b>).
-TEST_F(TextFragmentSelectorGeneratorTest, GetNextTextBlock_NestedTextNode) {
-  SimRequest request("https://example.com/test.html", "text/html");
-  LoadURL("https://example.com/test.html");
-  request.Complete(R"HTML(
-    <!DOCTYPE html>
-    <p id='first'>First <b>bold text</b> paragraph text</p>
-  )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
-  const auto& start = Position(first_paragraph, 0);
-  const auto& end = Position(first_paragraph, 5);
-  ASSERT_EQ("First", PlainText(EphemeralRange(start, end)));
-
-  EXPECT_EQ(
-      "bold text paragraph text",
-      GetTextFragmentSelectorGenerator()->GetNextTextBlockForTesting(end));
-}
-
-// Check the case when available suffix is collected until nested block.
-TEST_F(TextFragmentSelectorGeneratorTest, GetNextTextBlock_NestedBlock) {
-  SimRequest request("https://example.com/test.html", "text/html");
-  LoadURL("https://example.com/test.html");
-  request.Complete(R"HTML(
-    <!DOCTYPE html>
-    <div id='first'>First paragraph <div id='div'>div</div> text</div>
-  )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
-  const auto& start = Position(first_paragraph, 0);
-  const auto& end = Position(first_paragraph, 5);
-  ASSERT_EQ("First", PlainText(EphemeralRange(start, end)));
-
-  EXPECT_EQ(
-      "paragraph",
-      GetTextFragmentSelectorGenerator()->GetNextTextBlockForTesting(end));
-}
-
-// Check the case when available suffix includes non-block element but stops at
-// nested block.
-TEST_F(TextFragmentSelectorGeneratorTest,
-       GetNextTextBlock_NestedBlockInNestedText) {
-  SimRequest request("https://example.com/test.html", "text/html");
-  LoadURL("https://example.com/test.html");
-  request.Complete(R"HTML(
-    <!DOCTYPE html>
-    <div id='first'>First <b>bold<div id='div'>div</div></b> paragraph text</div>
-  )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
-  const auto& start = Position(first_paragraph, 0);
-  const auto& end = Position(first_paragraph, 5);
-  ASSERT_EQ("First", PlainText(EphemeralRange(start, end)));
-
-  EXPECT_EQ(
-      "bold",
-      GetTextFragmentSelectorGenerator()->GetNextTextBlockForTesting(end));
-}
-
-// Check the case when available suffix includes invisible block.
-TEST_F(TextFragmentSelectorGeneratorTest,
-       GetNextTextBlock_NestedInvisibleBlock) {
-  SimRequest request("https://example.com/test.html", "text/html");
-  LoadURL("https://example.com/test.html");
-  request.Complete(R"HTML(
-    <!DOCTYPE html>
-    <div id='first'>First <div id='div' style='display:none'>invisible</div> paragraph text</div>
-  )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
-  const auto& start = Position(first_paragraph, 0);
-  const auto& end = Position(first_paragraph, 5);
-  ASSERT_EQ("First", PlainText(EphemeralRange(start, end)));
-
-  EXPECT_EQ(
-      "paragraph text",
-      GetTextFragmentSelectorGenerator()->GetNextTextBlockForTesting(end));
+  Node* node = GetDocument().getElementById("div")->lastChild();
+  const auto& expected_position =
+      ToPositionInFlatTree(Position::FirstPositionInNode(*node));
+  EXPECT_EQ(expected_position,
+            CreateGenerator()->GetNextTextStartPosition(end));
 }
 
 // Check the case when next node is used for available suffix when selection is
 // not at last index but there is only space after it.
 TEST_F(TextFragmentSelectorGeneratorTest,
-       GetNextTextBlock_SpacesAfterSelection) {
+       GetNextTextStartPosition_SpacesAfterSelection) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1704,24 +1672,24 @@ TEST_F(TextFragmentSelectorGeneratorTest,
     <p id='first'>
       First paragraph text
     </p>
-    <p id='second'>
-      Second paragraph text
-    </p>
+    <p id='second'>Second paragraph text</p>
   )HTML");
   Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
-  const auto& start = Position(first_paragraph, 23);
-  const auto& end = Position(first_paragraph, 27);
-  ASSERT_EQ("text", PlainText(EphemeralRange(start, end)));
+  const auto& start = PositionInFlatTree(first_paragraph, 23);
+  const auto& end = PositionInFlatTree(first_paragraph, 27);
+  ASSERT_EQ("text", PlainText(EphemeralRangeInFlatTree(start, end)));
 
-  EXPECT_EQ(
-      "Second paragraph text",
-      GetTextFragmentSelectorGenerator()->GetNextTextBlockForTesting(end));
+  Node* node = GetDocument().getElementById("second")->firstChild();
+  const auto& expected_position =
+      ToPositionInFlatTree(Position::FirstPositionInNode(*node));
+  EXPECT_EQ(expected_position,
+            CreateGenerator()->GetNextTextStartPosition(end));
 }
 
 // Check the case when next node is used for available suffix when selection is
 // not at last index but there is only invisible block after it.
 TEST_F(TextFragmentSelectorGeneratorTest,
-       GetNextTextBlock_InvisibleAfterSelection) {
+       GetNextTextStartPosition_InvisibleAfterSelection) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1732,57 +1700,38 @@ TEST_F(TextFragmentSelectorGeneratorTest,
         invisible text
       </div>
     </div>
-    <p id='second'>
-      Second paragraph text
-    </p>
+    <p id='second'>Second paragraph text</p>
   )HTML");
   Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
-  const auto& start = Position(first_paragraph, 23);
-  const auto& end = Position(first_paragraph, 27);
-  ASSERT_EQ("text", PlainText(EphemeralRange(start, end)));
+  const auto& start = PositionInFlatTree(first_paragraph, 23);
+  const auto& end = PositionInFlatTree(first_paragraph, 27);
+  ASSERT_EQ("text", PlainText(EphemeralRangeInFlatTree(start, end)));
 
-  EXPECT_EQ(
-      "Second paragraph text",
-      GetTextFragmentSelectorGenerator()->GetNextTextBlockForTesting(end));
+  Node* node = GetDocument().getElementById("second")->firstChild();
+  const auto& expected_position =
+      ToPositionInFlatTree(Position::FirstPositionInNode(*node));
+  EXPECT_EQ(expected_position,
+            CreateGenerator()->GetNextTextStartPosition(end));
 }
 
-// Check the case when previous node is used for available prefix when selection
-// is not at last index but there is only invisible block. Invisible block
-// contains another block which also should be invisible.
-TEST_F(TextFragmentSelectorGeneratorTest,
-       GetNextTextBlock_InvisibleAfterSelection_WithNestedInvisible) {
+// Check the case when available suffix is a text node outside of selection
+// block.
+TEST_F(TextFragmentSelectorGeneratorTest, GetNextTextStartPosition_NoNextNode) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
     <!DOCTYPE html>
-    <div id='first'>
-      First paragraph text
-      <div id='invisible' style='display:none'>
-        invisible text
-        <div>
-          nested invisible text
-        </div
-      </div>
-    </div>
-    <p id='second'>
-      Second paragraph text
-      <div id='invisible' style='display:none'>
-        invisible text
-        <div>
-          nested invisible text
-        </div
-      </div>
-    </p>
-    test
+    <p id='first'>First paragraph text</p>
   )HTML");
   Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
-  const auto& start = Position(first_paragraph, 23);
-  const auto& end = Position(first_paragraph, 27);
-  ASSERT_EQ("text", PlainText(EphemeralRange(start, end)));
+  const auto& start = PositionInFlatTree(first_paragraph, 0);
+  const auto& end = PositionInFlatTree(first_paragraph, 20);
+  ASSERT_EQ("First paragraph text",
+            PlainText(EphemeralRangeInFlatTree(start, end)));
 
-  EXPECT_EQ(
-      "Second paragraph text",
-      GetTextFragmentSelectorGenerator()->GetNextTextBlockForTesting(end));
+  PositionInFlatTree expected_position;
+  EXPECT_EQ(expected_position,
+            CreateGenerator()->GetNextTextStartPosition(end));
 }
 
 TEST_F(TextFragmentSelectorGeneratorTest, BeforeAndAfterAnchor) {
@@ -1802,14 +1751,8 @@ TEST_F(TextFragmentSelectorGeneratorTest, BeforeAndAfterAnchor) {
 }
 
 // Check the case when GetPreviousTextBlock is an EOL node from Shadow Root.
-// SharedHighlightingLayoutObjectFix feature disabled does not ensures that the
-// next previous non-empty visible text has a layout object. See
-// crbug.com/1233762 for more context.
 TEST_F(TextFragmentSelectorGeneratorTest,
-       GetPreviousTextBlock_ShouldCrashWithNoLayoutObject) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      shared_highlighting::kSharedHighlightingLayoutObjectFix);
+       GetPreviousTextEndPosition_ShouldSkipNodesWithNoLayoutObject) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1820,52 +1763,97 @@ TEST_F(TextFragmentSelectorGeneratorTest,
       GetDocument().getElementById("host1")->AttachShadowRootInternal(
           ShadowRootType::kOpen);
   shadow1.setInnerHTML(R"HTML(
+    <p id='p'>Right click the link below to experience a crash:</p>
     <style>
           :host {display: contents;}
     </style>
-    <p>Right click the link below to experience a crash:</p>
     <a href="/foo" id='first'>I crash</a>
   )HTML");
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
   EXPECT_FALSE(GetDocument().View()->NeedsLayout());
   Node* first_paragraph = shadow1.getElementById("first")->firstChild();
-  const auto& start = Position(first_paragraph, 0);
-  EXPECT_DEATH(
-      GetTextFragmentSelectorGenerator()->GetPreviousTextBlockForTesting(start),
-      "");
+  const auto& start = PositionInFlatTree(first_paragraph, 0);
+
+  Node* node = shadow1.getElementById("p")->firstChild();
+  const auto& expected_position =
+      ToPositionInFlatTree(Position::LastPositionInNode(*node));
+  EXPECT_EQ(expected_position,
+            CreateGenerator()->GetPreviousTextEndPosition(start));
 }
 
-// Check the case when GetPreviousTextBlock is an EOL node from Shadow Root.
-// SharedHighlightingLayoutObjectFix feature enabled ensures that the next
-// previous non-empty visible text node has a layout object. See
-// crbug.com/1233762 for more context.
-TEST_F(TextFragmentSelectorGeneratorTest,
-       GetPreviousTextBlock_ShouldSkipNodesWithNoLayoutObject) {
+// Tests that the generator fails gracefully if the layout subtree is removed
+// while we're operating on it. Reproduction for https://crbug.com/1313253.
+TEST_F(TextFragmentSelectorGeneratorTest, RemoveLayoutObjectAsync) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
+
+  // This test case relies on the initial try of 'p p p-,Foo,-s s s' being
+  // non-unique. This forces the generator to try expanding the context after
+  // the initial asynchronous search finishes. Before that happens, the current
+  // node's LayoutObject is removed.
   request.Complete(R"HTML(
     <!DOCTYPE html>
-    <div id="host1"></div>
+    <p>p p p p</p>
+    <p id='target'>Foo s s s p p p Foo s s s</p>
+    <p>More text to so context expansion doesn't abort due to reaching end</p>
   )HTML");
-  ShadowRoot& shadow1 =
-      GetDocument().getElementById("host1")->AttachShadowRootInternal(
-          ShadowRootType::kOpen);
-  shadow1.setInnerHTML(R"HTML(
-    <style>
-          :host {display: contents;}
-    </style>
-    <p>Right click the link below to experience a crash:</p>
-    <a href="/foo" id='first'>I crash</a>
-  )HTML");
-  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_FALSE(GetDocument().View()->NeedsLayout());
-  Node* first_paragraph = shadow1.getElementById("first")->firstChild();
-  const auto& start = Position(first_paragraph, 0);
-  EXPECT_EQ("Right click the link below to experience a crash:",
-            GetTextFragmentSelectorGenerator()->GetPreviousTextBlockForTesting(
-                start));
+  // Select the first instance of "Foo"
+  Element* target = GetDocument().getElementById("target");
+
+  Node* text = target->firstChild();
+  const auto& selected_start = Position(text, 0);
+  const auto& selected_end = Position(text, 3);
+  ASSERT_EQ("Foo", PlainText(EphemeralRange(selected_start, selected_end)));
+
+  String selector;
+  bool finished = false;
+  auto lambda = [](bool& callback_called, String& selector,
+                   const TextFragmentSelector& generated_selector,
+                   shared_highlighting::LinkGenerationError error) {
+    selector = generated_selector.ToString();
+    callback_called = true;
+  };
+  auto callback = WTF::BindOnce(lambda, std::ref(finished), std::ref(selector));
+
+  TextFragmentSelectorGenerator* generator = CreateGenerator();
+  generator->Generate(*MakeGarbageCollected<RangeInFlatTree>(
+                          ToPositionInFlatTree(selected_start),
+                          ToPositionInFlatTree(selected_end)),
+                      std::move(callback));
+
+  // This test intends to test what happens when the layout tree is mutated
+  // while the generator is waiting for the next asynchronous step. Thus, the
+  // generator must still be running at this point for this test to be valid.
+  ASSERT_FALSE(finished);
+
+  // The TestCandidate state is the async break point in the generator, this
+  // will post a task in AsyncFindBuffer to perform the text search on the
+  // document. We'll mutate the layout tree while this task isn't run yet so
+  // that when it run and returns to the generator we ensure neither touches
+  // the removed layout tree.
+  EXPECT_EQ(generator->state_,
+            TextFragmentSelectorGenerator::SelectorState::kTestCandidate);
+
+  generator->did_find_match_callback_for_testing_ = WTF::BindOnce(
+      [](Element* target, bool is_unique) {
+        EXPECT_FALSE(is_unique);
+
+        // Set display:none should remove the layout object associated with the
+        // range the generator is currently targeting.
+        EXPECT_TRUE(target->GetLayoutObject());
+        target->setAttribute(html_names::kStyleAttr,
+                             AtomicString("display:none"));
+        target->GetDocument().UpdateStyleAndLayoutTree();
+        target->GetDocument().View()->UpdateStyleAndLayout();
+        EXPECT_FALSE(target->GetLayoutObject());
+      },
+      WrapWeakPersistent(target));
+
+  // Pump tasks to continue generator operation now.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(finished);
 }
 
 }  // namespace blink

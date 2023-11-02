@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -142,6 +142,58 @@ TEST(FakePowerManagerClientTest, AmbientColorSupport) {
   EXPECT_TRUE(client.SupportsAmbientColor());
   client.set_supports_ambient_color(false);
   EXPECT_FALSE(client.SupportsAmbientColor());
+}
+
+TEST(FakePowerManagerClientTest, UpdatePowerPropertiesWithNullTest) {
+  // Checking to verify when UpdatePowerProperties is called,
+  // |props_| values are updated.
+  FakePowerManagerClient client;
+  power_manager::PowerSupplyProperties props;
+
+  SetTestProperties(&props);
+  client.UpdatePowerProperties(props);
+
+  ASSERT_TRUE(client.GetLastStatus().has_value());
+  EXPECT_EQ(kInitialBatteryPercent, client.GetLastStatus()->battery_percent());
+  EXPECT_TRUE(client.GetLastStatus()->is_calculating_battery_time());
+  EXPECT_EQ(kInitialBatteryState, client.GetLastStatus()->battery_state());
+  EXPECT_EQ(kInitialExternalPower, client.GetLastStatus()->external_power());
+
+  client.UpdatePowerProperties(absl::nullopt);
+
+  EXPECT_FALSE(client.GetLastStatus().has_value());
+}
+
+TEST(FakePowerManagerClientTest,
+     UpdatePowerPropertiesWithNullWillNotNotifyObserversTest) {
+  FakePowerManagerClient client;
+  TestObserver test_observer;
+
+  // Test adding observer.
+  client.AddObserver(&test_observer);
+  EXPECT_TRUE(client.HasObserver(&test_observer));
+
+  // Test if NotifyObservers() sends the correct values to |observer|.
+  // Check number of times NotifyObservers() is called.
+  power_manager::PowerSupplyProperties props;
+  SetTestProperties(&props);
+  client.UpdatePowerProperties(props);
+
+  EXPECT_EQ(1, test_observer.num_power_changed());
+  EXPECT_EQ(kInitialBatteryPercent, test_observer.props().battery_percent());
+  EXPECT_TRUE(test_observer.props().is_calculating_battery_time());
+  EXPECT_EQ(kInitialBatteryState, test_observer.props().battery_state());
+  EXPECT_EQ(kInitialExternalPower, test_observer.props().external_power());
+
+  // Check when update power properties with null,
+  // the observer isn't notified and the props from observer doesn't change.
+  client.UpdatePowerProperties(absl::nullopt);
+
+  EXPECT_EQ(1, test_observer.num_power_changed());
+  EXPECT_EQ(kInitialBatteryPercent, test_observer.props().battery_percent());
+  EXPECT_TRUE(test_observer.props().is_calculating_battery_time());
+  EXPECT_EQ(kInitialBatteryState, test_observer.props().battery_state());
+  EXPECT_EQ(kInitialExternalPower, test_observer.props().external_power());
 }
 
 }  // namespace chromeos

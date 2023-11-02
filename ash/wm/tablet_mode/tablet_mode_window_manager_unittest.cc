@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -897,24 +897,24 @@ TEST_F(TabletModeWindowManagerTest, PersistPreMinimizedShowState) {
   window_state->Maximize();
   window_state->Minimize();
   EXPECT_EQ(ui::SHOW_STATE_MAXIMIZED,
-            window->GetProperty(aura::client::kPreMinimizedShowStateKey));
+            window->GetProperty(aura::client::kRestoreShowStateKey));
 
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   window_state->Unminimize();
   // Check that pre-minimized window show state is not cleared due to
   // unminimizing in tablet mode.
   EXPECT_EQ(ui::SHOW_STATE_MAXIMIZED,
-            window->GetProperty(aura::client::kPreMinimizedShowStateKey));
+            window->GetProperty(aura::client::kRestoreShowStateKey));
   window_state->Minimize();
   EXPECT_EQ(ui::SHOW_STATE_MAXIMIZED,
-            window->GetProperty(aura::client::kPreMinimizedShowStateKey));
+            window->GetProperty(aura::client::kRestoreShowStateKey));
 
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
   window_state->Unminimize();
   EXPECT_TRUE(window_state->IsMaximized());
 }
 
-// Tests unminimizing in tablet mode and then existing tablet mode should have
+// Tests unminimizing in tablet mode and then exiting tablet mode should have
 // pre-minimized window show state.
 TEST_F(TabletModeWindowManagerTest, UnminimizeInTabletMode) {
   // Tests restoring to maximized show state.
@@ -937,6 +937,20 @@ TEST_F(TabletModeWindowManagerTest, UnminimizeInTabletMode) {
   window_state->Unminimize();
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
   EXPECT_EQ(gfx::Rect(10, 10, 100, 100), window->GetBoundsInScreen());
+}
+
+// Tests that if we minimize a snapped window, it is snapped upon unminimizing.
+TEST_F(TabletModeWindowManagerTest, UnminimizeSnapInTabletMode) {
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  std::unique_ptr<aura::Window> window = CreateAppWindow();
+  auto* window_state = WindowState::Get(window.get());
+  WindowSnapWMEvent event(WM_EVENT_SNAP_PRIMARY);
+  window_state->OnWMEvent(&event);
+  ASSERT_TRUE(window_state->IsSnapped());
+
+  window_state->Minimize();
+  window_state->Unminimize();
+  EXPECT_TRUE(window_state->IsSnapped());
 }
 
 // Check that a full screen window remains full screen upon entering maximize
@@ -1652,7 +1666,7 @@ TEST_F(TabletModeWindowManagerTest, ClamshellTabletTransitionTest) {
 
   // 5. Clamshell -> Tablet. If the window is snapped, it will be carried over
   // to splitview in tablet mode.
-  const WMEvent event(WM_EVENT_SNAP_PRIMARY);
+  const WindowSnapWMEvent event(WM_EVENT_SNAP_PRIMARY);
   WindowState::Get(window.get())->OnWMEvent(&event);
   EXPECT_TRUE(WindowState::Get(window.get())->IsSnapped());
   // After transition, we should be in single split screen.
@@ -1680,9 +1694,10 @@ TEST_F(TabletModeWindowManagerTest, ClamshellTabletTransitionTest) {
 
   // 8. Tablet -> Clamshell. If tablet splitscreen is active with two snapped
   // windows, the two windows will remain snapped in clamshell mode.
-  split_view_controller()->SnapWindow(window.get(), SplitViewController::LEFT);
-  split_view_controller()->SnapWindow(window2.get(),
-                                      SplitViewController::RIGHT);
+  split_view_controller()->SnapWindow(
+      window.get(), SplitViewController::SnapPosition::kPrimary);
+  split_view_controller()->SnapWindow(
+      window2.get(), SplitViewController::SnapPosition::kSecondary);
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
   EXPECT_FALSE(overview_controller->InOverviewSession());
   DestroyTabletModeWindowManager();
@@ -1724,7 +1739,7 @@ TEST_F(TabletModeWindowManagerTest,
   OverviewController* overview_controller = Shell::Get()->overview_controller();
 
   // First test 1 window case.
-  const WMEvent left_snap_event(WM_EVENT_SNAP_PRIMARY);
+  const WindowSnapWMEvent left_snap_event(WM_EVENT_SNAP_PRIMARY);
   WindowState::Get(window.get())->OnWMEvent(&left_snap_event);
   const gfx::Rect left_snapped_bounds =
       gfx::Rect(1200 / 2, 800 - ShelfConfig::Get()->shelf_size());
@@ -1746,7 +1761,7 @@ TEST_F(TabletModeWindowManagerTest,
   std::unique_ptr<aura::Window> window2(
       CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
   WindowState::Get(window.get())->OnWMEvent(&left_snap_event);
-  const WMEvent right_snap_event(WM_EVENT_SNAP_SECONDARY);
+  const WindowSnapWMEvent right_snap_event(WM_EVENT_SNAP_SECONDARY);
   WindowState::Get(window2.get())->OnWMEvent(&right_snap_event);
   // Change their bounds horizontally and then enter tablet mode.
   window->SetBounds(gfx::Rect(400, left_snapped_bounds.height()));
@@ -1805,6 +1820,89 @@ TEST_F(TabletModeWindowManagerTest, HomeLauncherVisibilityTest) {
 
   EXPECT_FALSE(overview_controller->InOverviewSession());
   EXPECT_TRUE(home_screen_window->TargetVisibility());
+}
+
+// Test the basic restore behavior in tablet mode. Different with the restore
+// behavior in clamshell mode, a window can not be restored to kNormal window
+// state if it's maximizable.
+TEST_F(TabletModeWindowManagerTest, BasicRestoreBehaviors) {
+  TabletModeWindowManager* manager = CreateTabletModeWindowManager();
+  EXPECT_TRUE(manager);
+  gfx::Rect rect(10, 10, 200, 50);
+  std::unique_ptr<aura::Window> window(
+      CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
+
+  WindowState* window_state = WindowState::Get(window.get());
+  EXPECT_TRUE(window_state->IsMaximized());
+
+  // Restoring a maximized window in tablet mode will still keep it in maximized
+  // state.
+  window_state->Restore();
+  EXPECT_TRUE(window_state->IsMaximized());
+
+  // Transition to kPrimarySnapped window state.
+  const WindowSnapWMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
+  window_state->OnWMEvent(&snap_left);
+  // Restoring a snapped window in tablet mode will change the window back to
+  // maximized window state.
+  window_state->Restore();
+  EXPECT_TRUE(window_state->IsMaximized());
+
+  // Transition to kFullscreen window state.
+  const WMEvent fullscreen_event(WM_EVENT_FULLSCREEN);
+  window_state->OnWMEvent(&fullscreen_event);
+  // Restoring a fullscreen window in tablet mode will change the window back to
+  // maximized window state.
+  window_state->Restore();
+  EXPECT_TRUE(window_state->IsMaximized());
+
+  // Transition to kMinimized window state.
+  const WMEvent minimized_event(WM_EVENT_MINIMIZE);
+  window_state->OnWMEvent(&minimized_event);
+  window_state->Restore();
+  EXPECT_TRUE(window_state->IsMaximized());
+
+  // Transition to kPrimarySnapped first and then to kFullscreen and then try to
+  // restore it.
+  window_state->OnWMEvent(&snap_left);
+  window_state->OnWMEvent(&fullscreen_event);
+  window_state->Restore();
+  EXPECT_TRUE(window_state->IsSnapped());
+
+  // Minimize and then restore it will still restore the window back to snapped
+  // window state.
+  window_state->OnWMEvent(&minimized_event);
+  window_state->Restore();
+  EXPECT_TRUE(window_state->IsSnapped());
+}
+
+TEST_F(TabletModeWindowManagerTest, NonMaximizableWindowRestore) {
+  TabletModeWindowManager* manager = CreateTabletModeWindowManager();
+  EXPECT_TRUE(manager);
+
+  gfx::Rect rect(10, 10, 200, 50);
+  gfx::Size max_size(300, 200);
+  std::unique_ptr<aura::Window> window(CreateNonMaximizableWindow(
+      aura::client::WINDOW_TYPE_NORMAL, rect, max_size));
+
+  WindowState* window_state = WindowState::Get(window.get());
+  EXPECT_FALSE(window_state->IsMaximized());
+  EXPECT_EQ(window_state->GetStateType(), WindowStateType::kNormal);
+
+  const WMEvent maximize_event(WM_EVENT_MAXIMIZE);
+  window_state->OnWMEvent(&maximize_event);
+  EXPECT_EQ(window_state->GetStateType(), WindowStateType::kNormal);
+
+  const WMEvent fullscreen_event(WM_EVENT_FULLSCREEN);
+  window_state->OnWMEvent(&fullscreen_event);
+  EXPECT_EQ(window_state->GetStateType(), WindowStateType::kFullscreen);
+
+  window_state->Restore();
+  EXPECT_EQ(window_state->GetStateType(), WindowStateType::kNormal);
+
+  // Restoring a kNormal window will keep it in the same kNormal state.
+  window_state->Restore();
+  EXPECT_EQ(window_state->GetStateType(), WindowStateType::kNormal);
 }
 
 }  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,19 +34,83 @@ void SearchResult::SetIcon(const IconInfo& icon) {
     observer.OnMetadataChanged();
 }
 
-size_t SearchResult::IconDimension() const {
-  return metadata_->icon.dimension.value_or(
-      SharedAppListConfig::instance().search_list_icon_dimension());
-}
-
 void SearchResult::SetChipIcon(const gfx::ImageSkia& chip_icon) {
   metadata_->chip_icon = chip_icon;
   for (auto& observer : observers_)
     observer.OnMetadataChanged();
 }
 
-void SearchResult::set_title(const std::u16string& title) {
+void SearchResult::SetTitle(const std::u16string& title) {
   metadata_->title = title;
+  for (auto& observer : observers_)
+    observer.OnMetadataChanged();
+}
+
+void SearchResult::SetTitleTags(const Tags& tags) {
+  metadata_->title_tags = tags;
+  for (auto& observer : observers_)
+    observer.OnMetadataChanged();
+}
+
+void SearchResult::SetTitleTextVector(const TextVector& vector) {
+  metadata_->title_vector = vector;
+  for (auto& observer : observers_)
+    observer.OnMetadataChanged();
+}
+
+void SearchResult::SetMultilineTitle(bool multiline_title) {
+  DCHECK(metadata_->title_vector.size() <= 1 || !multiline_title);
+  metadata_->multiline_title = multiline_title;
+  for (auto& observer : observers_)
+    observer.OnMetadataChanged();
+}
+
+void SearchResult::SetDetails(const std::u16string& details) {
+  metadata_->details = details;
+  for (auto& observer : observers_)
+    observer.OnMetadataChanged();
+}
+
+void SearchResult::SetDetailsTags(const Tags& tags) {
+  metadata_->details_tags = tags;
+  for (auto& observer : observers_)
+    observer.OnMetadataChanged();
+}
+
+void SearchResult::SetDetailsTextVector(const TextVector& vector) {
+  DCHECK(vector.size() <= 1 || !metadata_->multiline_details);
+  metadata_->details_vector = vector;
+  for (auto& observer : observers_)
+    observer.OnMetadataChanged();
+}
+
+void SearchResult::SetMultilineDetails(bool multiline_details) {
+  DCHECK(metadata_->details_vector.size() <= 1 || !multiline_details);
+  metadata_->multiline_details = multiline_details;
+  for (auto& observer : observers_)
+    observer.OnMetadataChanged();
+}
+
+void SearchResult::SetBigTitleTextVector(const TextVector& vector) {
+  metadata_->big_title_vector = vector;
+  for (auto& observer : observers_)
+    observer.OnMetadataChanged();
+}
+
+void SearchResult::SetBigTitleSuperscriptTextVector(const TextVector& vector) {
+  metadata_->big_title_superscript_vector = vector;
+  for (auto& observer : observers_)
+    observer.OnMetadataChanged();
+}
+
+void SearchResult::SetKeyboardShortcutTextVector(const TextVector& vector) {
+  metadata_->keyboard_shortcut_vector = vector;
+  for (auto& observer : observers_)
+    observer.OnMetadataChanged();
+}
+
+void SearchResult::SetAccessibleName(const std::u16string& name) {
+  metadata_->accessible_name = name;
   for (auto& observer : observers_)
     observer.OnMetadataChanged();
 }

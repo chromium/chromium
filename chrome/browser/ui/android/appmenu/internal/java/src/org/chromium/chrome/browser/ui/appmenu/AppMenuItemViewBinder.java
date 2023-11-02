@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorRes;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.graphics.drawable.DrawableCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.browser.ui.appmenu.internal.R;
@@ -109,12 +110,14 @@ class AppMenuItemViewBinder {
             PropertyModel buttonModel = null;
             boolean checkable = false;
             boolean checked = false;
+            boolean buttonEnabled = true;
             Drawable subIcon = null;
 
             if (subList.size() == 2) {
                 buttonModel = subList.get(1).model;
                 checkable = buttonModel.get(AppMenuItemProperties.CHECKABLE);
                 checked = buttonModel.get(AppMenuItemProperties.CHECKED);
+                buttonEnabled = buttonModel.get(AppMenuItemProperties.ENABLED);
                 subIcon = buttonModel.get(AppMenuItemProperties.ICON);
             }
 
@@ -125,12 +128,21 @@ class AppMenuItemViewBinder {
                 checkbox.setChecked(checked);
                 ApiCompatibilityUtils.setImageTintList(checkbox,
                         AppCompatResources.getColorStateList(
-                                checkbox.getContext(), R.color.checkbox_tint));
+                                checkbox.getContext(), R.color.selection_control_button_tint_list));
                 setupMenuButton(checkbox, buttonModel, appMenuClickHandler);
             } else if (subIcon != null) {
                 // Display an icon alongside the MenuItem.
                 checkbox.setVisibility(View.GONE);
                 button.setVisibility(View.VISIBLE);
+                if (!buttonEnabled) {
+                    // Only grey out the icon when disabled. When the menu is enabled, use the
+                    // icon's original color.
+                    Drawable icon = buttonModel.get(AppMenuItemProperties.ICON);
+                    DrawableCompat.setTintList(icon,
+                            AppCompatResources.getColorStateList(button.getContext(),
+                                    R.color.default_icon_color_secondary_tint_list));
+                    buttonModel.set(AppMenuItemProperties.ICON, icon);
+                }
                 setupImageButton(button, buttonModel, appMenuClickHandler);
             } else {
                 // Display just the label of the MenuItem.
@@ -169,12 +181,12 @@ class AppMenuItemViewBinder {
                 setupImageButton(buttons[i], iconList.get(i).model, appMenuClickHandler);
             }
 
-            view.setTag(
-                    R.id.menu_item_enter_anim_id, AppMenuUtil.buildIconItemEnterAnimator(buttons));
+            boolean isMenuIconAtStart = model.get(AppMenuItemProperties.MENU_ICON_AT_START);
+            view.setTag(R.id.menu_item_enter_anim_id,
+                    AppMenuUtil.buildIconItemEnterAnimator(buttons, isMenuIconAtStart));
 
             // Tint action bar's background.
-            view.setBackgroundDrawable(ApiCompatibilityUtils.getDrawable(
-                    view.getContext().getResources(), R.drawable.menu_action_bar_bg));
+            view.setBackgroundResource(R.drawable.menu_action_bar_bg);
 
             view.setEnabled(false);
         }

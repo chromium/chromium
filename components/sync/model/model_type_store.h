@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,13 @@
 
 #include "base/callback.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_store_base.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
+
+class MetadataBatch;
 
 // ModelTypeStore is leveldb backed store for model type's data, metadata and
 // global metadata.

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,21 +7,22 @@
  * 'crostini-extra-containers' is the settings extras containers subpage for
  * Crostini.
  */
-import '//resources/cr_elements/icons.m.js';
-import '//resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
-import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './crostini_extra_containers_create_dialog.js';
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
+import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
-import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {assert} from '//resources/js/assert.m.js';
-import {loadTimeData} from '//resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from '//resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {hexColorToSkColor} from 'chrome://resources/js/color_utils.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {ContainerInfo, GuestId} from '../guest_os/guest_os_browser_proxy.js';
 
-import {ContainerId, ContainerInfo, CrostiniBrowserProxy, CrostiniBrowserProxyImpl, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM} from './crostini_browser_proxy.js';
+import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM} from './crostini_browser_proxy.js';
 
 /**
  * @constructor
@@ -43,7 +44,6 @@ class ExtraContainersElement extends ExtraContainersElementBase {
 
   static get properties() {
     return {
-
       showCreateContainerDialog_: {
         type: Boolean,
         value: false,
@@ -51,11 +51,39 @@ class ExtraContainersElement extends ExtraContainersElementBase {
 
       allContainers_: {
         type: Array,
-        value: [],
+        notify: true,
+        value() {
+          return [];
+        },
       },
 
       lastMenuContainerInfo_: {
         type: Object,
+      },
+
+      /**
+       * Whether the export import buttons should be enabled. Initially false
+       * until status has been confirmed.
+       * @private {boolean}
+       */
+      enableButtons_: {
+        type: Boolean,
+        computed:
+            'isEnabledButtons_(installerShowing_, exportImportInProgress_)',
+      },
+
+      /** @private */
+      installerShowing_: {
+        type: Boolean,
+        value: false,
+      },
+
+      // TODO(b/231890242): Disable delete and stop buttons when a container is
+      // being exported or imported.
+      /** @private */
+      exportImportInProgress_: {
+        type: Boolean,
+        value: false,
       },
     };
   }
@@ -67,6 +95,9 @@ class ExtraContainersElement extends ExtraContainersElementBase {
      * @private {?ContainerInfo}
      */
     this.lastMenuContainerInfo_ = null;
+
+    /** @private {!CrostiniBrowserProxy} */
+    this.browserProxy_ = CrostiniBrowserProxyImpl.getInstance();
   }
 
   /** @override */
@@ -74,14 +105,30 @@ class ExtraContainersElement extends ExtraContainersElementBase {
     super.ready();
     this.addWebUIListener(
         'crostini-container-info', (infos) => this.onContainerInfo_(infos));
-    CrostiniBrowserProxyImpl.getInstance().requestContainerInfo();
+    this.browserProxy_.requestContainerInfo();
+  }
+
+  /** @override */
+  connectedCallback() {
+    super.connectedCallback();
+    this.addWebUIListener(
+        'crostini-export-import-operation-status-changed', inProgress => {
+          this.exportImportInProgress_ = inProgress;
+        });
+    this.addWebUIListener(
+        'crostini-installer-status-changed', installerShowing => {
+          this.installerShowing_ = installerShowing;
+        });
+
+    this.browserProxy_.requestCrostiniExportImportOperationStatus();
+    this.browserProxy_.requestCrostiniInstallerStatus();
   }
 
   /**
    * @param {!Array<!ContainerInfo>} containerInfos
    */
   onContainerInfo_(containerInfos) {
-    this.allContainers_ = containerInfos;
+    this.set('allContainers_', containerInfos);
   }
 
   /**
@@ -106,11 +153,11 @@ class ExtraContainersElement extends ExtraContainersElementBase {
    */
   onContainerMenuClick_(event) {
     const id =
-        /** @type {ContainerId} */ (event.currentTarget['dataContainerId']);
+        /** @type {GuestId} */ (event.currentTarget['dataContainerId']);
     this.lastMenuContainerInfo_ = this.allContainers_.find(
         e => e.id.vm_name === id.vm_name &&
             e.id.container_name === id.container_name);
-    this.getContainerMenu_().showAt(/** @type {!Element} */ (event.target));
+    this.getContainerMenu_().showAt(/** @type {!HTMLElement} */ (event.target));
   }
 
   /**
@@ -119,8 +166,7 @@ class ExtraContainersElement extends ExtraContainersElementBase {
    */
   onDeleteContainerClick_(event) {
     if (this.lastMenuContainerInfo_) {
-      CrostiniBrowserProxyImpl.getInstance().deleteContainer(
-          this.lastMenuContainerInfo_.id);
+      this.browserProxy_.deleteContainer(this.lastMenuContainerInfo_.id);
     }
     this.closeContainerMenu_();
   }
@@ -131,10 +177,45 @@ class ExtraContainersElement extends ExtraContainersElementBase {
    */
   onStopContainerClick_(event) {
     if (this.lastMenuContainerInfo_) {
-      CrostiniBrowserProxyImpl.getInstance().stopContainer(
+      this.browserProxy_.stopContainer(this.lastMenuContainerInfo_.id);
+    }
+    this.closeContainerMenu_();
+  }
+
+  /**
+   * @param {!Event} event
+   * @private
+   */
+  onExportContainerClick_(event) {
+    if (this.lastMenuContainerInfo_) {
+      this.browserProxy_.exportCrostiniContainer(
           this.lastMenuContainerInfo_.id);
     }
     this.closeContainerMenu_();
+  }
+
+  /**
+   * @param {!Event} event
+   * @private
+   */
+  onImportContainerClick_(event) {
+    if (this.lastMenuContainerInfo_) {
+      this.browserProxy_.importCrostiniContainer(
+          this.lastMenuContainerInfo_.id);
+    }
+    this.closeContainerMenu_();
+  }
+
+  /**
+   * @param {!Event} event
+   * @private
+   */
+  onContainerColorChange_(event) {
+    const containerId =
+        /** @type {GuestId} */ (event.currentTarget['dataContainerId']);
+
+    this.browserProxy_.setContainerBadgeColor(
+        containerId, hexColorToSkColor(event.target.value));
   }
 
   /**
@@ -159,7 +240,7 @@ class ExtraContainersElement extends ExtraContainersElementBase {
    * @private
    */
   getContainerMenu_() {
-    return /** @type {!CrActionMenuElement}*/ (this.$.containerMenu.get());
+    return /** @type {!CrActionMenuElement} */ (this.$.containerMenu.get());
   }
 
   /**
@@ -170,6 +251,15 @@ class ExtraContainersElement extends ExtraContainersElementBase {
     assert(menu.open && this.lastMenuContainerInfo_);
     menu.close();
     this.lastMenuContainerInfo_ = null;
+  }
+
+  /**
+   * @param {!Boolean} installerShowing
+   * @param {!Boolean} exportImportInProgress
+   * @private
+   */
+  isEnabledButtons_(installerShowing, exportImportInProgress) {
+    return !(installerShowing || exportImportInProgress);
   }
 }
 

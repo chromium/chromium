@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/layout/ng/svg/ng_svg_text_layout_attributes_builder.h"
 
 #include "base/containers/adapters.h"
+#include "base/ranges/algorithm.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
@@ -134,23 +135,23 @@ class LayoutAttributesStack final {
   // or EmptyValue().
 
   float X() const {
-    auto it = std::find_if(stack_.rbegin(), stack_.rend(),
-                           [](const auto& attrs) { return attrs->HasX(); });
+    auto it = base::ranges::find_if(base::Reversed(stack_),
+                                    &LayoutAttributesIterator::HasX);
     return it != stack_.rend() ? (*it)->X() : SVGCharacterData::EmptyValue();
   }
   float Y() const {
-    auto it = std::find_if(stack_.rbegin(), stack_.rend(),
-                           [](const auto& attrs) { return attrs->HasY(); });
+    auto it = base::ranges::find_if(base::Reversed(stack_),
+                                    &LayoutAttributesIterator::HasY);
     return it != stack_.rend() ? (*it)->Y() : SVGCharacterData::EmptyValue();
   }
   float Dx() const {
-    auto it = std::find_if(stack_.rbegin(), stack_.rend(),
-                           [](const auto& attrs) { return attrs->HasDx(); });
+    auto it = base::ranges::find_if(base::Reversed(stack_),
+                                    &LayoutAttributesIterator::HasDx);
     return it != stack_.rend() ? (*it)->Dx() : SVGCharacterData::EmptyValue();
   }
   float Dy() const {
-    auto it = std::find_if(stack_.rbegin(), stack_.rend(),
-                           [](const auto& attrs) { return attrs->HasDy(); });
+    auto it = base::ranges::find_if(base::Reversed(stack_),
+                                    &LayoutAttributesIterator::HasDy);
     return it != stack_.rend() ? (*it)->Dy() : SVGCharacterData::EmptyValue();
   }
 

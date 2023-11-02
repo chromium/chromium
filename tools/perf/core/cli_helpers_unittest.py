@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -78,6 +78,15 @@ class CLIHelpersTest(unittest.TestCase):
         cli_helpers.Ask('Ready?', {'foo': True, 'bar': False}, default='bar'))
     print_mock.assert_called_once_with(
         '\033[96mReady? [BAR/foo] \033[0m', end=' ')
+
+  @mock.patch('core.cli_helpers.input')
+  # https://crbug.com/938575.
+  @decorators.Disabled('chromeos')
+  def testAskWithCustomAnswersAndCaps(self, input_mock):
+    input_mock.side_effect = ['Foo/Bar/Baz']
+    self.assertEqual(
+        cli_helpers.Ask('Ready?', ["Foo/Bar/Baz", "other"]),
+        'Foo/Bar/Baz')
 
   @mock.patch(BUILTIN_MODULE + '.print')
   @mock.patch('core.cli_helpers.input')

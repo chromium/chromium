@@ -144,8 +144,9 @@ void test1d(int nfft,int isinverse,int arch)
 
 int main(int argc,char ** argv)
 {
+    int arch;
     ALLOC_STACK;
-    int arch = opus_select_arch();
+    arch = opus_select_arch();
 
     if (argc>1) {
         int k;

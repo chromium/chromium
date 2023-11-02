@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,6 +51,10 @@ class ViewElement : public views::ViewObserver, public UIElementWithMetaData {
   ui::Layer* GetLayer() const override;
 
  private:
+  // Clears children and rebuilds ViewElement subtree from scratch. Called if an
+  // inconsistency is detected between the current tree and the tree of the
+  // backing view.
+  void RebuildTree();
   views::View* view_;
   base::ScopedObservation<views::View, views::ViewObserver> observer_{this};
 };

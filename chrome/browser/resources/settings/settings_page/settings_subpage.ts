@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,26 +8,29 @@
  * the subpage title, a search field and a back icon.
  */
 
-import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_search_field/cr_search_field.js';
-import '//resources/cr_elements/icons.m.js';
-import '//resources/cr_elements/shared_style_css.m.js';
+import '//resources/cr_elements/icons.html.js';
+import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
-import '../settings_shared_css.js';
+import '../settings_shared.css.js';
+import '../site_favicon.js';
 
 import {CrSearchFieldElement} from '//resources/cr_elements/cr_search_field/cr_search_field.js';
 import {FindShortcutMixin, FindShortcutMixinInterface} from '//resources/cr_elements/find_shortcut_mixin.js';
-import {assert} from '//resources/js/assert.m.js';
-import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
-import {I18nMixin, I18nMixinInterface} from '//resources/js/i18n_mixin.js';
-import {listenOnce} from '//resources/js/util.m.js';
+import {assert} from '//resources/js/assert_ts.js';
+import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
+import {I18nMixin, I18nMixinInterface} from '//resources/cr_elements/i18n_mixin.js';
+import {listenOnce} from '//resources/js/util.js';
 import {IronResizableBehavior} from '//resources/polymer/v3_0/iron-resizable-behavior/iron-resizable-behavior.js';
-import {afterNextRender, html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
+import {afterNextRender, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {Route, RouteObserverMixin, Router} from '../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 import {getSettingIdParameter} from '../setting_id_param_util.js';
+
+import {getTemplate} from './settings_subpage.html.js';
 
 export interface SettingsSubpageElement {
   $: {
@@ -38,8 +41,10 @@ export interface SettingsSubpageElement {
 const SettingsSubpageElementBase =
     mixinBehaviors(
         [IronResizableBehavior],
-        RouteObserverMixin(FindShortcutMixin(I18nMixin(PolymerElement)))) as
-    {new (): PolymerElement & FindShortcutMixinInterface & I18nMixinInterface};
+        RouteObserverMixin(FindShortcutMixin(I18nMixin(PolymerElement)))) as {
+      new (): PolymerElement & FindShortcutMixinInterface & I18nMixinInterface &
+          RouteObserverMixinInterface,
+    };
 
 export class SettingsSubpageElement extends SettingsSubpageElementBase {
   static get is() {
@@ -50,7 +55,11 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
     return {
       pageTitle: String,
 
+      /** Setting this will display the icon at the given URL. */
       titleIcon: String,
+
+      /** Setting this will display the favicon of the website. */
+      faviconSiteUrl: String,
 
       learnMoreUrl: String,
 
@@ -114,6 +123,7 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
 
   pageTitle: string;
   titleIcon: string;
+  faviconSiteUrl: string;
   learnMoreUrl: string;
   searchLabel: string;
   searchTerm: string;
@@ -129,11 +139,11 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
   constructor() {
     super();
 
-    // Override FindShortcutBehavior property.
+    // Override FindShortcutMixin property.
     this.findShortcutListenOnAttach = false;
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     if (this.searchLabel) {
@@ -144,7 +154,7 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
     }
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     if (this.eventTracker_) {
@@ -162,7 +172,8 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
     return new Promise(resolve => {
       listenOnce(this, 'dom-change', () => {
         searchField = this.shadowRoot!.querySelector('cr-search-field');
-        resolve(assert(searchField!));
+        assert(!!searchField);
+        resolve(searchField);
       });
     });
   }
@@ -194,7 +205,7 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
     afterNextRender(this, () => focusWithoutInk(this.$.closeButton));
   }
 
-  currentRouteChanged(newRoute: Route, oldRoute: Route|null) {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
     this.active_ = this.getAttribute('route-path') === newRoute.path;
     if (this.active_ && this.searchLabel && this.preserveSearchTerm) {
       this.getSearchField_().then(() => this.restoreSearchInput_());
@@ -270,8 +281,8 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
     return this.i18n('subpageBackButtonAriaRoleDescription', this.pageTitle);
   }
 
-  // Override FindShortcutBehavior methods.
-  handleFindShortcut(modalContextOpen: boolean) {
+  // Override FindShortcutMixin methods.
+  override handleFindShortcut(modalContextOpen: boolean) {
     if (modalContextOpen) {
       return false;
     }
@@ -279,14 +290,20 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
     return true;
   }
 
-  // Override FindShortcutBehavior methods.
-  searchInputHasFocus() {
+  // Override FindShortcutMixin methods.
+  override searchInputHasFocus() {
     const field = this.shadowRoot!.querySelector('cr-search-field')!;
     return field.getSearchInput() === field.shadowRoot!.activeElement;
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-subpage': SettingsSubpageElement;
   }
 }
 

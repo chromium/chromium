@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,11 @@
 
 #include <vector>
 
+#include "ash/components/arc/mojom/file_system.mojom.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
-#include "components/arc/mojom/file_system.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
@@ -138,7 +138,8 @@ class SelectFileDialogHolder {
                           const ui::SelectFileDialog::FileTypeInfo* file_types,
                           int task_id,
                           const std::string& search_query,
-                          bool show_android_picker_apps);
+                          bool show_android_picker_apps,
+                          bool use_media_store_filter);
 
   virtual void ExecuteJavaScript(
       const std::string& script,

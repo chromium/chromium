@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,11 @@
 
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
+#include "chrome/browser/ui/startup/startup_types.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -18,8 +20,11 @@ struct SessionStartupPref;
 
 namespace base {
 class CommandLine;
-class FilePath;
 }  // namespace base
+
+namespace extensions {
+class ExtensionRegistry;
+}  // namespace extensions
 
 // Provides the sets of tabs to be shown at startup for given sets of policy.
 // For instance, this class answers the question, "which tabs, if any, need to
@@ -38,13 +43,14 @@ class StartupTabProvider {
   virtual StartupTabs GetDistributionFirstRunTabs(
       StartupBrowserCreator* browser_creator) const = 0;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Returns a "welcome back" tab to be shown if requested for a specific
   // launch.
-  virtual StartupTabs GetWelcomeBackTabs(Profile* profile,
-                                         StartupBrowserCreator* browser_creator,
-                                         bool process_startup) const = 0;
-#endif  // defined(OS_WIN)
+  virtual StartupTabs GetWelcomeBackTabs(
+      Profile* profile,
+      StartupBrowserCreator* browser_creator,
+      chrome::startup::IsProcessStartup process_startup) const = 0;
+#endif  // BUILDFLAG(IS_WIN)
 
   // Checks for the presence of a trigger indicating the need to offer a Profile
   // Reset on this profile. Returns any tabs which should be shown accordingly.
@@ -74,16 +80,34 @@ class StartupTabProvider {
   virtual StartupTabs GetCommandLineTabs(const base::CommandLine& command_line,
                                          const base::FilePath& cur_dir,
                                          Profile* profile) const = 0;
+
+  // Indicates whether the command line arguments includes tabs to be opened on
+  // startup.
+  //
+  // A `CommandLineTabsPresent::kUnknown` value means that we are not able to
+  // fully parse some arguments, the definitive result can be obtained by
+  // calling `GetCommandLineTabs()` and passing a `Profile`.
+  virtual CommandLineTabsPresent HasCommandLineTabs(
+      const base::CommandLine& command_line,
+      const base::FilePath& cur_dir) const = 0;
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Returns the URLs given via the crosapi BrowserInitParams with
   // kOpenWindowWithUrls action.
   virtual StartupTabs GetCrosapiTabs() const = 0;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Returns tabs related to the What's New UI (if applicable).
   virtual StartupTabs GetNewFeaturesTabs(bool whats_new_enabled) const = 0;
-#endif  // !defined(OS_ANDROID)
+
+  // Returns tabs required for the Privacy Sandbox confirmation dialog. If a
+  // suitable tab is present in |other_startup_tabs| no tab is returned,
+  // otherwise a suitable tab based on |profile| is returned.
+  virtual StartupTabs GetPrivacySandboxTabs(
+      Profile* profile,
+      const StartupTabs& other_startup_tabs) const = 0;
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 class StartupTabProviderImpl : public StartupTabProvider {
@@ -93,7 +117,7 @@ class StartupTabProviderImpl : public StartupTabProvider {
     bool has_seen_welcome_page = false;
     bool is_signin_allowed = false;
     bool is_signed_in = false;
-    bool is_supervised_user = false;
+    bool is_child_account = false;
     bool is_force_signin_enabled = false;
   };
 
@@ -155,9 +179,17 @@ class StartupTabProviderImpl : public StartupTabProvider {
   static StartupTabs GetPostCrashTabsForState(
       bool has_incompatible_applications);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Determines if the what's new page should be shown.
   static StartupTabs GetNewFeaturesTabsForState(bool whats_new_enabled);
+
+  // Determines whether an additional tab to display the Privacy Sandbox
+  // confirmation dialog over is required, and if so, the URL of that tab.
+  // |ntp_url| must be the final NTP location, and not the generic new tab url.
+  static StartupTabs GetPrivacySandboxTabsForState(
+      extensions::ExtensionRegistry* extension_registry,
+      const GURL& ntp_url,
+      const StartupTabs& other_startup_tabs);
 #endif
 
   // Gets the URL for the Welcome page. If |use_later_run_variant| is true, a
@@ -178,11 +210,12 @@ class StartupTabProviderImpl : public StartupTabProvider {
   // StartupTabProvider:
   StartupTabs GetOnboardingTabs(Profile* profile) const override;
 
-#if defined(OS_WIN)
-  StartupTabs GetWelcomeBackTabs(Profile* profile,
-                                 StartupBrowserCreator* browser_creator,
-                                 bool process_startup) const override;
-#endif  // defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
+  StartupTabs GetWelcomeBackTabs(
+      Profile* profile,
+      StartupBrowserCreator* browser_creator,
+      chrome::startup::IsProcessStartup process_startup) const override;
+#endif  // BUILDFLAG(IS_WIN)
 
   StartupTabs GetDistributionFirstRunTabs(
       StartupBrowserCreator* browser_creator) const override;
@@ -198,14 +231,40 @@ class StartupTabProviderImpl : public StartupTabProvider {
   StartupTabs GetCommandLineTabs(const base::CommandLine& command_line,
                                  const base::FilePath& cur_dir,
                                  Profile* profile) const override;
+  CommandLineTabsPresent HasCommandLineTabs(
+      const base::CommandLine& command_line,
+      const base::FilePath& cur_dir) const override;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   StartupTabs GetCrosapiTabs() const override;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   StartupTabs GetNewFeaturesTabs(bool whats_new_enabled) const override;
-#endif  // !defined(OS_ANDROID)
+  StartupTabs GetPrivacySandboxTabs(
+      Profile* profile,
+      const StartupTabs& other_startup_tabs) const override;
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+ private:
+  struct ParsedCommandLineTabArg {
+    // Indicates whether a tab URL could be parsed from the argument.
+    CommandLineTabsPresent tab_parsed = CommandLineTabsPresent::kUnknown;
+
+    // URL for the tab to be created from this argument, will be populated when
+    // `tab_parsed` is `CommandLineTabsPresent::kYes`.
+    GURL tab_url;
+  };
+
+  // Parses a command line argument to extract a `ParsedCommandLineTabArg`
+  //
+  // Note that it is possible that we detect that a tab can be created, but
+  // can't parse the URL. In that case we return an empty one. `maybe_profile`
+  // should be provided for better accuracy in the parsing.
+  static ParsedCommandLineTabArg ParseTabFromCommandLineArg(
+      base::FilePath::StringPieceType arg,
+      const base::FilePath& cur_dir,
+      Profile* maybe_profile);
 };
 
 #endif  // CHROME_BROWSER_UI_STARTUP_STARTUP_TAB_PROVIDER_H_

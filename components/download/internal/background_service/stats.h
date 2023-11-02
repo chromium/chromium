@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -141,8 +141,10 @@ void LogServiceApiAction(DownloadClient client, ServiceApiAction action);
 void LogStartDownloadResult(DownloadClient client,
                             DownloadParams::StartResult result);
 
-// Logs download completion event, download time, and the file size.
-void LogDownloadCompletion(CompletionType type, uint64_t file_size_bytes);
+// Logs download completion event, and the file size.
+void LogDownloadCompletion(DownloadClient client,
+                           CompletionType type,
+                           uint64_t file_size_bytes);
 
 // Logs various pause reasons for download. The reasons are not mutually
 // exclusive.

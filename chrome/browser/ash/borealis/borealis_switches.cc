@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 namespace borealis {
 namespace switches {
 
-// Stores additional options to be used when launching borealis. Format should
-// be "-<switch>=<value>;..."". Switches and what they do are documented in
-// chrome/browser/ash/borealis/borealis_launch_options.h
+// Allows passing a BorealisLaunchOptions string to the chrome process, which
+// will be stored in the kExtraLaunchOptions. For the format, see the
+// documentation in chrome/browser/ash/borealis/borealis_launch_options.h.
 const char kLaunchOptions[] = "borealis-launch-options";
 
 }  // namespace switches

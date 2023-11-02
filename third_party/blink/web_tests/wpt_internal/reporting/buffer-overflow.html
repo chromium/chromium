@@ -23,7 +23,7 @@ async_test(function(test) {
   for (var i = 0; i != 110; ++i) {
     causeIntervention();
   }
-  window.webkitStorageInfo;
+  webkitRequestAnimationFrame(() => {});
 
   observer3.observe();
   observer3.disconnect();

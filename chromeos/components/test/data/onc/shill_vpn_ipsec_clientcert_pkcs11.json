@@ -1,0 +1,15 @@
+{
+   "GUID": "{84391467-dd8b-4c66-9b52-860583038351}",
+   "L2TPIPsec.ClientCertID": "123456abcdef",
+   "L2TPIPsec.ClientCertSlot": "1",
+   "L2TPIPsec.PIN": "111111",
+   "L2TPIPsec.Password": "some password",
+   "L2TPIPsec.User": "hans",
+   "Name": "TestIpsecVPN",
+   "Provider.Host": "terminus.muc",
+   "Provider.Type": "l2tpipsec",
+   "ProxyConfig": "{\"mode\":\"direct\"}",
+   "SaveCredentials": true,
+   "StaticIPConfig": {},
+   "Type": "vpn",
+}

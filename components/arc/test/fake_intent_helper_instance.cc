@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,7 +61,11 @@ void FakeIntentHelperInstance::AddPreferredApp(const std::string& package_name,
 
 void FakeIntentHelperInstance::SetVerifiedLinks(
     const std::vector<std::string>& package_names,
-    bool always_open) {}
+    bool always_open) {
+  for (const auto& package : package_names) {
+    verified_links_[package] = always_open;
+  }
+}
 
 void FakeIntentHelperInstance::HandleIntent(mojom::IntentInfoPtr intent,
                                             mojom::ActivityNamePtr activity) {

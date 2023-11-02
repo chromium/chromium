@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,23 +6,22 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_MANIFEST_UPDATE_TASK_H_
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/web_applications/web_app_icon_downloader.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-struct WebApplicationInfo;
 
 namespace webapps {
 struct InstallableData;
+enum class InstallResultCode;
 }
 
 namespace web_app {
@@ -36,7 +35,6 @@ class OsIntegrationManager;
 
 enum class AppIdentityUpdate;
 enum class IconsDownloadedResult;
-enum class InstallResultCode;
 
 struct IconDiff;
 
@@ -74,19 +72,22 @@ enum IconDiffResult : uint32_t {
   // below).
   ONE_OR_MORE_ICONS_CHANGED = 1 << 2,
 
-  // Only one icon is changing. This flag is only set if the diff process is
-  // allowed to continue to the end (doesn't stop as soon as it finds a change).
-  SINGLE_ICON_CHANGED = 1 << 3,
-
-  // Two or more icons are changing. This flag is only set if the diff process
-  // is allowed to continue to the end (doesn't stop as soon as it finds a
+  // The launcher icon is changing. Note: that the launcher icon size is
+  // platform-specific and that this flag is only set if the diff process is
+  // allowed to continue to the end (doesn't stop as soon as it finds a
   // change).
-  MULTIPLE_ICONS_CHANGED = 1 << 4,
+  LAUNCHER_ICON_CHANGED = 1 << 3,
 
-  // And icon has changed, but it was a generated icon that changed. This flag
+  // The launcher icon is changing. Note: that the install icon size is
+  // platform-specific and that this flag is only set if the diff process is
+  // allowed to continue to the end (doesn't stop as soon as it finds a
+  // change).
+  INSTALL_ICON_CHANGED = 1 << 4,
+
+  // An icon, other than the launcher/install icon changed. Note: that this flag
   // is only set if the diff process is allowed to continue to the end (doesn't
   // stop as soon as it finds a change).
-  GENERATED_ICON_CHANGED = 1 << 5,
+  UNIMPORTANT_ICON_CHANGED = 1 << 5,
 };
 
 // A structure to keep track of the differences found while comparing icons
@@ -105,13 +106,13 @@ struct IconDiff {
 
   // Returns true iff an icon change was detected (not matter how
   // insignificant).
-  bool mismatch() { return diff_results != NO_CHANGE_DETECTED; }
+  bool mismatch() const { return diff_results != NO_CHANGE_DETECTED; }
 
   // Returns true iff the mismatch should result in app identity dlg being
   // shown.
-  bool supported_for_app_identity_check() {
-    return diff_results == SINGLE_ICON_CHANGED ||
-           diff_results == (SINGLE_ICON_CHANGED | GENERATED_ICON_CHANGED);
+  bool requires_app_identity_check() const {
+    return ((diff_results & LAUNCHER_ICON_CHANGED) != 0) ||
+           ((diff_results & INSTALL_ICON_CHANGED) != 0);
   }
 
   // Keeps track of all the differences discovered in the icon set.
@@ -144,18 +145,15 @@ IconDiff HaveIconBitmapsChanged(
 //
 // High level check procedure:
 //  - Wait for page to load.
-//  - Load the page's manifest. Bail if none found.
+//  - Load the page's manifest. Abort if none found.
 //  - Check a hard coded set of manifest fields for differences to what's stored
-//    locally. Bail if no differences.
-//  - Ignore changes to the app name (needs user approval to prevent phishing).
-//  - Ignore changes to the start_url (this would change the app's ID which
-//    would play havoc with device sync, we need to decouple the app ID from
-//    start_url to enable start_url updating).
+//    locally. Abort if no differences.
+//  - Check if the app ID has changed, abort if so.
+//  - Require user confirmation for changes to the app name.
 //  - Wait for all app windows to be closed.
 //  - Reinstall the web app using the fetched data.
 class ManifestUpdateTask final
-    : public base::SupportsWeakPtr<ManifestUpdateTask>,
-      public content::WebContentsObserver {
+    : public base::SupportsWeakPtr<ManifestUpdateTask> {
  public:
   using UpdatePendingCallback = base::OnceCallback<void(const GURL& url)>;
   using StoppedCallback = base::OnceCallback<void(const ManifestUpdateTask&,
@@ -170,29 +168,23 @@ class ManifestUpdateTask final
 
   ManifestUpdateTask(const GURL& url,
                      const AppId& app_id,
-                     content::WebContents* web_contents,
+                     base::WeakPtr<content::WebContents> web_contents,
                      StoppedCallback stopped_callback,
-                     bool hang_for_testing,
-                     const WebAppRegistrar& registrar,
-                     const WebAppIconManager& icon_manager,
+                     WebAppRegistrar& registrar,
+                     WebAppIconManager& icon_manager,
                      WebAppUiManager* ui_manager,
                      WebAppInstallFinalizer* install_finalizer,
                      OsIntegrationManager& os_integration_manager,
                      WebAppSyncBridge* sync_bridge);
 
-  ~ManifestUpdateTask() override;
+  ~ManifestUpdateTask();
 
   const GURL& url() const { return url_; }
   const AppId& app_id() const { return app_id_; }
-
-  // content::WebContentsObserver:
-  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
-                     const GURL& validated_url) override;
-  void WebContentsDestroyed() override;
+  void Start();
 
  private:
   enum class Stage {
-    kPendingPageLoad,
     kPendingInstallableData,
     kPendingIconDownload,
     kPendingIconReadFromDisk,
@@ -202,7 +194,14 @@ class ManifestUpdateTask final
     kPendingInstallation,
     kPendingAssociationsUpdate,
   };
-
+  // We perform this check for the following Stages:
+  // kPendingInstallableData
+  // kPendingIconDownload
+  // kPendingIconReadFromDisk
+  // kPendingAppIdentityCheck
+  // For all other stages, we no longer need to observe the web_contents
+  // and the upgrade can proceed as expected.
+  bool IsWebContentsDestroyed();
   void OnDidGetInstallableData(const webapps::InstallableData& data);
   bool IsUpdateNeededForManifest() const;
   void LoadAndCheckIconContents();
@@ -225,20 +224,21 @@ class ManifestUpdateTask final
   void UpdateAfterWindowsClose();
   void OnAllAppWindowsClosed();
   void OnExistingIconsRead(IconBitmaps icon_bitmaps);
-  void OnInstallationComplete(
-      const AppId& app_id,
-      InstallResultCode code);
+  void OnInstallationComplete(const AppId& app_id,
+                              webapps::InstallResultCode code,
+                              OsHooksErrors os_hooks_errors);
   void DestroySelf(ManifestUpdateResult result);
 
-  const WebAppRegistrar& registrar_;
-  const WebAppIconManager& icon_manager_;
+  base::WeakPtr<content::WebContents> web_contents_;
+  WebAppRegistrar& registrar_;
+  WebAppIconManager& icon_manager_;
   WebAppUiManager& ui_manager_;
   WebAppInstallFinalizer& install_finalizer_;
   OsIntegrationManager& os_integration_manager_;
-  WebAppSyncBridge* sync_bridge_ = nullptr;
+  raw_ptr<WebAppSyncBridge> sync_bridge_ = nullptr;
 
   Stage stage_;
-  absl::optional<WebApplicationInfo> web_application_info_;
+  absl::optional<WebAppInstallInfo> install_info_;
   absl::optional<WebAppIconDownloader> icon_downloader_;
 
   // Two KeepAlive objects, to make sure in progress manifest updates survive
@@ -249,11 +249,10 @@ class ManifestUpdateTask final
   const GURL url_;
   const AppId app_id_;
   StoppedCallback stopped_callback_;
-  bool hang_for_testing_ = false;
   bool app_identity_update_allowed_ = false;
 
 #if DCHECK_IS_ON()
-  bool* destructor_called_ptr_ = nullptr;
+  raw_ptr<bool> destructor_called_ptr_ = nullptr;
 #endif
 };
 

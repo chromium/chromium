@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,19 +12,20 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/mount_test_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/cast_config_controller_media_router.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
@@ -102,7 +103,8 @@ class FakeSelectFileDialog : public ui::SelectFileDialog {
                       int file_type_index,
                       const base::FilePath::StringType& default_extension,
                       gfx::NativeWindow owning_window,
-                      void* params) override {
+                      void* params,
+                      const GURL* caller) override {
     listener_->FileSelected(drivefs_root_.Append("root/test_dir"), 0, nullptr);
   }
 
@@ -359,8 +361,7 @@ class FileSystemExtensionApiTestBase : public extensions::ExtensionApiTest {
     extensions::ResultCatcher catcher;
 
     const Extension* file_browser = LoadExtensionAsComponentWithManifest(
-        test_data_dir_.AppendASCII(filebrowser_path),
-        filebrowser_manifest);
+        test_data_dir_.AppendASCII(filebrowser_path), filebrowser_manifest);
     if (!file_browser) {
       message_ = "Could not create file browser";
       return false;
@@ -414,7 +415,7 @@ class LocalFileSystemExtensionApiTest : public FileSystemExtensionApiTestBase {
         kLocalMountPointName, storage::kFileSystemTypeLocal,
         storage::FileSystemMountOption(), mount_point_dir_));
     VolumeManager::Get(profile())->AddVolumeForTesting(
-        mount_point_dir_, VOLUME_TYPE_TESTING, chromeos::DEVICE_TYPE_UNKNOWN,
+        mount_point_dir_, VOLUME_TYPE_TESTING, ash::DeviceType::kUnknown,
         false /* read_only */);
   }
 
@@ -444,7 +445,7 @@ class RestrictedFileSystemExtensionApiTest
         kRestrictedMountPointName, storage::kFileSystemTypeRestrictedLocal,
         storage::FileSystemMountOption(), mount_point_dir_));
     VolumeManager::Get(profile())->AddVolumeForTesting(
-        mount_point_dir_, VOLUME_TYPE_TESTING, chromeos::DEVICE_TYPE_UNKNOWN,
+        mount_point_dir_, VOLUME_TYPE_TESTING, ash::DeviceType::kUnknown,
         true /* read_only */);
   }
 
@@ -491,9 +492,9 @@ class DriveFileSystemExtensionApiTest : public FileSystemExtensionApiTestBase {
   drive::DriveIntegrationService* CreateDriveIntegrationService(
       Profile* profile) {
     // Ignore signin and lock screen apps profile.
-    if (profile->GetPath() == chromeos::ProfileHelper::GetSigninProfileDir() ||
+    if (profile->GetPath() == ash::ProfileHelper::GetSigninProfileDir() ||
         profile->GetPath() ==
-            chromeos::ProfileHelper::GetLockScreenAppProfilePath()) {
+            ash::ProfileHelper::GetLockScreenAppProfilePath()) {
       return nullptr;
     }
 
@@ -519,8 +520,8 @@ class DriveFileSystemExtensionApiTest : public FileSystemExtensionApiTestBase {
 };
 
 // Tests for Drive file systems in multi-profile setting.
-class MultiProfileDriveFileSystemExtensionApiTest :
-    public FileSystemExtensionApiTestBase {
+class MultiProfileDriveFileSystemExtensionApiTest
+    : public FileSystemExtensionApiTestBase {
  public:
   MultiProfileDriveFileSystemExtensionApiTest() = default;
 
@@ -529,7 +530,7 @@ class MultiProfileDriveFileSystemExtensionApiTest :
     // Don't require policy for our sessions - this is required because
     // this test creates a secondary profile synchronously, so we need to
     // let the policy code know not to expect cached policy.
-    command_line->AppendSwitchASCII(chromeos::switches::kProfileRequiresPolicy,
+    command_line->AppendSwitchASCII(ash::switches::kProfileRequiresPolicy,
                                     "false");
   }
 
@@ -541,10 +542,8 @@ class MultiProfileDriveFileSystemExtensionApiTest :
                                        kSecondProfileGiaId),
         kSecondProfileHash, false);
     // Set up the secondary profile.
-    base::FilePath profile_dir =
-        user_data_directory.Append(
-            chromeos::ProfileHelper::GetUserProfileDir(
-                kSecondProfileHash).BaseName());
+    base::FilePath profile_dir = user_data_directory.Append(
+        ash::ProfileHelper::GetUserProfileDir(kSecondProfileHash).BaseName());
     second_profile_ =
         g_browser_process->profile_manager()->GetProfile(profile_dir);
 
@@ -574,9 +573,9 @@ class MultiProfileDriveFileSystemExtensionApiTest :
   drive::DriveIntegrationService* CreateDriveIntegrationService(
       Profile* profile) {
     // Ignore signin and lock screen apps profile.
-    if (profile->GetPath() == chromeos::ProfileHelper::GetSigninProfileDir() ||
+    if (profile->GetPath() == ash::ProfileHelper::GetSigninProfileDir() ||
         profile->GetPath() ==
-            chromeos::ProfileHelper::GetLockScreenAppProfilePath()) {
+            ash::ProfileHelper::GetLockScreenAppProfilePath()) {
       return nullptr;
     }
 
@@ -650,8 +649,8 @@ class LocalAndDriveFileSystemExtensionApiTest
         kLocalMountPointName, storage::kFileSystemTypeLocal,
         storage::FileSystemMountOption(), local_mount_point_dir_));
     VolumeManager::Get(profile())->AddVolumeForTesting(
-        local_mount_point_dir_, VOLUME_TYPE_TESTING,
-        chromeos::DEVICE_TYPE_UNKNOWN, false /* read_only */);
+        local_mount_point_dir_, VOLUME_TYPE_TESTING, ash::DeviceType::kUnknown,
+        false /* read_only */);
     test_util::WaitUntilDriveMountPointIsAdded(profile());
   }
 
@@ -660,9 +659,9 @@ class LocalAndDriveFileSystemExtensionApiTest
   drive::DriveIntegrationService* CreateDriveIntegrationService(
       Profile* profile) {
     // Ignore signin and lock screen apps profile.
-    if (profile->GetPath() == chromeos::ProfileHelper::GetSigninProfileDir() ||
+    if (profile->GetPath() == ash::ProfileHelper::GetSigninProfileDir() ||
         profile->GetPath() ==
-            chromeos::ProfileHelper::GetLockScreenAppProfilePath()) {
+            ash::ProfileHelper::GetLockScreenAppProfilePath()) {
       return nullptr;
     }
 
@@ -705,9 +704,8 @@ class FileSystemExtensionApiTestWithApps
   void SetUpOnMainThread() override {
     Profile* profile = browser()->profile();
     file_manager::test::AddDefaultComponentExtensionsOnMainThread(profile);
-    web_app::WebAppProvider::GetForTest(profile)
-        ->system_web_app_manager()
-        .InstallSystemAppsForTesting();
+    ash::SystemWebAppManager::GetForTest(profile)
+        ->InstallSystemAppsForTesting();
     LocalFileSystemExtensionApiTest::SetUpOnMainThread();
   }
 
@@ -743,46 +741,42 @@ IN_PROC_BROWSER_TEST_F(FileSystemExtensionApiTestWithApps, OpenGalleryForPng) {
 // LocalFileSystemExtensionApiTests.
 //
 
-IN_PROC_BROWSER_TEST_F(LocalFileSystemExtensionApiTest,
-                       DISABLED_FileSystemOperations) {
+IN_PROC_BROWSER_TEST_F(LocalFileSystemExtensionApiTest, FileSystemOperations) {
   EXPECT_TRUE(RunFileSystemExtensionApiTest(
       "file_browser/filesystem_operations_test",
-      FILE_PATH_LITERAL("manifest.json"),
-      "",
-      FLAGS_NONE)) << message_;
+      FILE_PATH_LITERAL("manifest.json"), "", FLAGS_NONE))
+      << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(LocalFileSystemExtensionApiTest, FileWatch) {
-  EXPECT_TRUE(RunFileSystemExtensionApiTest(
-      "file_browser/file_watcher_test",
-      FILE_PATH_LITERAL("manifest.json"),
-      "",
-      FLAGS_NONE)) << message_;
+// TODO(crbug.com/1296001): Test is flaky.
+IN_PROC_BROWSER_TEST_F(LocalFileSystemExtensionApiTest, DISABLED_FileWatch) {
+  EXPECT_TRUE(RunFileSystemExtensionApiTest("file_browser/file_watcher_test",
+                                            FILE_PATH_LITERAL("manifest.json"),
+                                            "", FLAGS_NONE))
+      << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(LocalFileSystemExtensionApiTest, FileBrowserHandlers) {
   EXPECT_TRUE(RunFileSystemExtensionApiTest(
-      "file_browser/handler_test_runner",
-      FILE_PATH_LITERAL("manifest.json"),
-      "file_browser/file_browser_handler",
-      FLAGS_USE_FILE_HANDLER)) << message_;
+      "file_browser/handler_test_runner", FILE_PATH_LITERAL("manifest.json"),
+      "file_browser/file_browser_handler", FLAGS_USE_FILE_HANDLER))
+      << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(LocalFileSystemExtensionApiTest,
                        FileBrowserHandlersLazy) {
   EXPECT_TRUE(RunFileSystemExtensionApiTest(
-      "file_browser/handler_test_runner",
-      FILE_PATH_LITERAL("manifest.json"),
+      "file_browser/handler_test_runner", FILE_PATH_LITERAL("manifest.json"),
       "file_browser/file_browser_handler_lazy",
-      FLAGS_USE_FILE_HANDLER | FLAGS_LAZY_FILE_HANDLER)) << message_;
+      FLAGS_USE_FILE_HANDLER | FLAGS_LAZY_FILE_HANDLER))
+      << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(LocalFileSystemExtensionApiTest, AppFileHandler) {
   EXPECT_TRUE(RunFileSystemExtensionApiTest(
-      "file_browser/handler_test_runner",
-      FILE_PATH_LITERAL("manifest.json"),
-      "file_browser/app_file_handler",
-      FLAGS_USE_FILE_HANDLER)) << message_;
+      "file_browser/handler_test_runner", FILE_PATH_LITERAL("manifest.json"),
+      "file_browser/app_file_handler", FLAGS_USE_FILE_HANDLER))
+      << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(LocalFileSystemExtensionApiTest, DefaultFileHandler) {
@@ -799,9 +793,8 @@ IN_PROC_BROWSER_TEST_F(RestrictedFileSystemExtensionApiTest,
                        FileSystemOperations) {
   EXPECT_TRUE(RunFileSystemExtensionApiTest(
       "file_browser/filesystem_operations_test",
-      FILE_PATH_LITERAL("manifest.json"),
-      "",
-      FLAGS_NONE)) << message_;
+      FILE_PATH_LITERAL("manifest.json"), "", FLAGS_NONE))
+      << message_;
 }
 
 //
@@ -812,43 +805,38 @@ IN_PROC_BROWSER_TEST_F(DriveFileSystemExtensionApiTest,
                        DISABLED_FileSystemOperations) {
   EXPECT_TRUE(RunFileSystemExtensionApiTest(
       "file_browser/filesystem_operations_test",
-      FILE_PATH_LITERAL("manifest.json"),
-      "",
-      FLAGS_NONE)) << message_;
+      FILE_PATH_LITERAL("manifest.json"), "", FLAGS_NONE))
+      << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(DriveFileSystemExtensionApiTest, FileWatch) {
-  EXPECT_TRUE(RunFileSystemExtensionApiTest(
-      "file_browser/file_watcher_test",
-      FILE_PATH_LITERAL("manifest.json"),
-      "",
-      FLAGS_NONE)) << message_;
+IN_PROC_BROWSER_TEST_F(DriveFileSystemExtensionApiTest, DISABLED_FileWatch) {
+  EXPECT_TRUE(RunFileSystemExtensionApiTest("file_browser/file_watcher_test",
+                                            FILE_PATH_LITERAL("manifest.json"),
+                                            "", FLAGS_NONE))
+      << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(DriveFileSystemExtensionApiTest, FileBrowserHandlers) {
   EXPECT_TRUE(RunFileSystemExtensionApiTest(
-      "file_browser/handler_test_runner",
-      FILE_PATH_LITERAL("manifest.json"),
-      "file_browser/file_browser_handler",
-      FLAGS_USE_FILE_HANDLER)) << message_;
+      "file_browser/handler_test_runner", FILE_PATH_LITERAL("manifest.json"),
+      "file_browser/file_browser_handler", FLAGS_USE_FILE_HANDLER))
+      << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(DriveFileSystemExtensionApiTest, Search) {
   // Configure the drive service to return only one search result at a time
   // to simulate paginated searches.
-  EXPECT_TRUE(RunFileSystemExtensionApiTest(
-      "file_browser/drive_search_test",
-      FILE_PATH_LITERAL("manifest.json"),
-      "",
-      FLAGS_NONE)) << message_;
+  EXPECT_TRUE(RunFileSystemExtensionApiTest("file_browser/drive_search_test",
+                                            FILE_PATH_LITERAL("manifest.json"),
+                                            "", FLAGS_NONE))
+      << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(DriveFileSystemExtensionApiTest, AppFileHandler) {
   EXPECT_TRUE(RunFileSystemExtensionApiTest(
-      "file_browser/handler_test_runner",
-      FILE_PATH_LITERAL("manifest.json"),
-      "file_browser/app_file_handler",
-      FLAGS_USE_FILE_HANDLER)) << message_;
+      "file_browser/handler_test_runner", FILE_PATH_LITERAL("manifest.json"),
+      "file_browser/app_file_handler", FLAGS_USE_FILE_HANDLER))
+      << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(DriveFileSystemExtensionApiTest, RetainEntry) {
@@ -856,29 +844,25 @@ IN_PROC_BROWSER_TEST_F(DriveFileSystemExtensionApiTest, RetainEntry) {
       drivefs_root_.GetPath().Append("drive-user")));
   EXPECT_TRUE(RunFileSystemExtensionApiTest("file_browser/retain_entry",
                                             FILE_PATH_LITERAL("manifest.json"),
-                                            "",
-                                            FLAGS_NONE))
+                                            "", FLAGS_NONE))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(MultiProfileDriveFileSystemExtensionApiTest,
                        CrossProfileCopy) {
-  EXPECT_TRUE(RunFileSystemExtensionApiTest(
-      "file_browser/multi_profile_copy",
-      FILE_PATH_LITERAL("manifest.json"),
-      "",
-      FLAGS_NONE)) << message_;
+  EXPECT_TRUE(RunFileSystemExtensionApiTest("file_browser/multi_profile_copy",
+                                            FILE_PATH_LITERAL("manifest.json"),
+                                            "", FLAGS_NONE))
+      << message_;
 }
 
 //
 // LocalAndDriveFileSystemExtensionApiTests.
 IN_PROC_BROWSER_TEST_F(LocalAndDriveFileSystemExtensionApiTest,
                        AppFileHandlerMulti) {
-  EXPECT_TRUE(
-      RunFileSystemExtensionApiTest("file_browser/app_file_handler_multi",
-                                    FILE_PATH_LITERAL("manifest.json"),
-                                    "",
-                                    FLAGS_NONE))
+  EXPECT_TRUE(RunFileSystemExtensionApiTest(
+      "file_browser/app_file_handler_multi", FILE_PATH_LITERAL("manifest.json"),
+      "", FLAGS_NONE))
       << message_;
 }
 }  // namespace

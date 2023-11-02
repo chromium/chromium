@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@ class VIZ_COMMON_EXPORT SurfaceDrawQuad : public DrawQuad {
               const gfx::Rect& rect,
               const gfx::Rect& visible_rect,
               const SurfaceRange& range,
-              SkColor background_color,
+              SkColor4f background_color,
               bool stretch_content);
 
   void SetAll(const SharedQuadState* shared_quad_state,
@@ -32,13 +32,13 @@ class VIZ_COMMON_EXPORT SurfaceDrawQuad : public DrawQuad {
               const gfx::Rect& visible_rect,
               bool needs_blending,
               const SurfaceRange& range,
-              SkColor background_color,
+              SkColor4f background_color,
               bool stretch_content,
               bool reflection,
               bool merge);
 
   SurfaceRange surface_range;
-  SkColor default_background_color = SK_ColorWHITE;
+  SkColor4f default_background_color = SkColors::kWhite;
   bool stretch_content_to_fill_bounds = false;
   bool is_reflection = false;
   // If true, allows this surface to be merged into the embedding surface,

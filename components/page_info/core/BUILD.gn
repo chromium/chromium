@@ -1,0 +1,70 @@
+import("//third_party/protobuf/proto_library.gni")
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
+proto_library("proto") {
+  proto_in_dir = "//"
+  sources = [ "proto/about_this_site_metadata.proto" ]
+
+  deps = [ "//components/optimization_guide/proto:optimization_guide_proto" ]
+}
+
+if (is_android) {
+  proto_java_library("proto_java") {
+    proto_path = "//"
+    sources = [ "proto/about_this_site_metadata.proto" ]
+
+    deps = [
+      "//components/optimization_guide/proto:optimization_guide_proto_java",
+    ]
+  }
+}
+
+static_library("core") {
+  sources = [
+    "about_this_site_service.cc",
+    "about_this_site_service.h",
+    "about_this_site_validation.cc",
+    "about_this_site_validation.h",
+    "features.cc",
+    "features.h",
+    "page_info_history_data_source.cc",
+    "page_info_history_data_source.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/history/core/browser",
+    "//components/keyed_service/core",
+    "//components/optimization_guide/core",
+    "//components/page_info/core:proto",
+    "//components/strings:components_strings_grit",
+    "//net:net",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//ui/base:base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "about_this_site_service_unittest.cc",
+    "about_this_site_validation_unittest.cc",
+    "page_info_history_data_source_unittest.cc",
+  ]
+
+  deps = [
+    ":core",
+    ":proto",
+    "//base",
+    "//base/test:test_support",
+    "//components/history/core/browser",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//testing/gtest",
+    "//url:url",
+  ]
+}

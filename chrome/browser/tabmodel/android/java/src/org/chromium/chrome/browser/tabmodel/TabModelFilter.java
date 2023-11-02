@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,8 @@ import java.util.List;
 public abstract class TabModelFilter implements TabModelObserver, TabList {
     private static final List<Tab> sEmptyRelatedTabList =
             Collections.unmodifiableList(new ArrayList<Tab>());
+    private static final List<Integer> sEmptyRelatedTabIds =
+            Collections.unmodifiableList(new ArrayList<Integer>());
     private TabModel mTabModel;
     protected ObserverList<TabModelObserver> mFilteredObservers = new ObserverList<>();
     private boolean mTabRestoreCompleted;
@@ -98,6 +100,23 @@ public abstract class TabModelFilter implements TabModelObserver, TabList {
         List<Tab> relatedTab = new ArrayList<>();
         relatedTab.add(tab);
         return Collections.unmodifiableList(relatedTab);
+    }
+
+    /**
+     * Any of the concrete class can override and define a relationship that links a {@link Tab} to
+     * a list of related {@link Tab}s. By default, this returns an unmodifiable list that only
+     * contains the given id. Note that the meaning of related can vary
+     * depending on the filter being applied.
+     * @param tabId Id of the {@link Tab} try to relate with.
+     * @return An unmodifiable list of id that relate with the given tab id.
+     */
+    @NonNull
+    public List<Integer> getRelatedTabIds(int tabId) {
+        Tab tab = TabModelUtils.getTabById(getTabModel(), tabId);
+        if (tab == null) return sEmptyRelatedTabIds;
+        List<Integer> relatedTabIds = new ArrayList<>();
+        relatedTabIds.add(tabId);
+        return Collections.unmodifiableList(relatedTabIds);
     }
 
     /**
@@ -210,24 +229,24 @@ public abstract class TabModelFilter implements TabModelObserver, TabList {
     }
 
     @Override
-    public void willCloseTab(Tab tab, boolean animate) {
+    public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
         closeTab(tab);
         for (TabModelObserver observer : mFilteredObservers) {
-            observer.willCloseTab(tab, animate);
+            observer.willCloseTab(tab, animate, didCloseAlone);
         }
     }
 
     @Override
-    public void didCloseTab(Tab tab) {
+    public void onFinishingTabClosure(Tab tab) {
         for (TabModelObserver observer : mFilteredObservers) {
-            observer.didCloseTab(tab);
+            observer.onFinishingTabClosure(tab);
         }
     }
 
     @Override
-    public void didCloseTab(int tabId, boolean incognito) {
+    public void onFinishingMultipleTabClosure(List<Tab> tabs) {
         for (TabModelObserver observer : mFilteredObservers) {
-            observer.didCloseTab(tabId, incognito);
+            observer.onFinishingMultipleTabClosure(tabs);
         }
     }
 
@@ -261,6 +280,13 @@ public abstract class TabModelFilter implements TabModelObserver, TabList {
     }
 
     @Override
+    public void multipleTabsPendingClosure(List<Tab> tabs, boolean isAllTabs) {
+        for (TabModelObserver observer : mFilteredObservers) {
+            observer.multipleTabsPendingClosure(tabs, isAllTabs);
+        }
+    }
+
+    @Override
     public void tabClosureUndone(Tab tab) {
         addTab(tab);
         reorder();
@@ -277,16 +303,23 @@ public abstract class TabModelFilter implements TabModelObserver, TabList {
     }
 
     @Override
-    public void multipleTabsPendingClosure(List<Tab> tabs, boolean isAllTabs) {
+    public void willCloseAllTabs(boolean incognito) {
         for (TabModelObserver observer : mFilteredObservers) {
-            observer.multipleTabsPendingClosure(tabs, isAllTabs);
+            observer.willCloseAllTabs(incognito);
         }
     }
 
     @Override
-    public void allTabsClosureCommitted() {
+    public void allTabsClosureUndone() {
         for (TabModelObserver observer : mFilteredObservers) {
-            observer.allTabsClosureCommitted();
+            observer.allTabsClosureUndone();
+        }
+    }
+
+    @Override
+    public void allTabsClosureCommitted(boolean isIncognito) {
+        for (TabModelObserver observer : mFilteredObservers) {
+            observer.allTabsClosureCommitted(isIncognito);
         }
     }
 

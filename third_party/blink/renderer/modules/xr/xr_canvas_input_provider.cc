@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ namespace {
 
 class XRCanvasInputEventListener : public NativeEventListener {
  public:
-  XRCanvasInputEventListener(XRCanvasInputProvider* input_provider)
+  explicit XRCanvasInputEventListener(XRCanvasInputProvider* input_provider)
       : input_provider_(input_provider) {}
 
   void Invoke(ExecutionContext* execution_context, Event* event) override {

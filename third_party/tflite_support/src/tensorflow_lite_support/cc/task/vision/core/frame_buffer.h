@@ -22,12 +22,12 @@ limitations under the License.
 #include <utility>
 #include <vector>
 
-#include "absl/memory/memory.h"
-#include "absl/status/status.h"
-#include "absl/strings/str_cat.h"
-#include "absl/time/clock.h"
-#include "absl/time/time.h"
-#include "absl/types/optional.h"
+#include "absl/memory/memory.h"    // from @com_google_absl
+#include "absl/status/status.h"    // from @com_google_absl
+#include "absl/strings/str_cat.h"  // from @com_google_absl
+#include "absl/time/clock.h"       // from @com_google_absl
+#include "absl/time/time.h"        // from @com_google_absl
+#include "absl/types/optional.h"   // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/integral_types.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
 
@@ -74,7 +74,16 @@ namespace vision {
 class FrameBuffer {
  public:
   // Colorspace formats.
-  enum class Format { kRGBA, kRGB, kNV12, kNV21, kYV12, kYV21, kGRAY };
+  enum class Format {
+    kRGBA,
+    kRGB,
+    kNV12,
+    kNV21,
+    kYV12,
+    kYV21,
+    kGRAY,
+    kUNKNOWN
+  };
 
   // Stride information.
   struct Stride {
@@ -85,6 +94,13 @@ class FrameBuffer {
     // pixels in bytes. It may be larger than the size of a single pixel to
     // account for interleaved image data or padded formats.
     int pixel_stride_bytes;
+
+    bool operator==(const Stride& other) const {
+      return row_stride_bytes == other.row_stride_bytes &&
+             pixel_stride_bytes == other.pixel_stride_bytes;
+    }
+
+    bool operator!=(const Stride& other) const { return !operator==(other); }
   };
 
   // YUV data structure.
@@ -240,6 +256,24 @@ class FrameBuffer {
         format_(format),
         orientation_(orientation),
         timestamp_(timestamp) {}
+
+  // Copy constructor.
+  //
+  // FrameBuffer does not take ownership of the backing buffer. The copy
+  // constructor behaves the same way to only copy the buffer pointer and not
+  // take ownership of the backing buffer.
+  FrameBuffer(const FrameBuffer& frame_buffer) {
+    planes_.clear();
+    for (int i = 0; i < frame_buffer.plane_count(); i++) {
+      planes_.push_back(
+          FrameBuffer::Plane{.buffer = frame_buffer.plane(i).buffer,
+                             .stride = frame_buffer.plane(i).stride});
+    }
+    dimension_ = frame_buffer.dimension();
+    format_ = frame_buffer.format();
+    orientation_ = frame_buffer.orientation();
+    timestamp_ = frame_buffer.timestamp();
+  }
 
   // Returns number of planes.
   int plane_count() const { return planes_.size(); }

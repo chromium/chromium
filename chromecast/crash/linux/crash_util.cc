@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,18 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "build/chromecast_buildflags.h"
+#include "chromecast/base/chromecast_switches.h"
 #include "chromecast/base/path_utils.h"
 #include "chromecast/base/process_utils.h"
 #include "chromecast/base/version.h"
+#include "chromecast/chromecast_buildflags.h"
 #include "chromecast/crash/app_state_tracker.h"
 #include "chromecast/crash/linux/dummy_minidump_generator.h"
 #include "chromecast/crash/linux/minidump_writer.h"
@@ -25,6 +29,11 @@ namespace {
 const char kDumpStateSuffix[] = ".txt.gz";
 const char kMinidumpsDir[] = "minidumps";
 const size_t kMaxFilesInMinidumpsDir = 22;  // 10 crashes
+
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
+// Crash product name for Core web runtime.
+constexpr const char kCoreRuntimeCrashProductName[] = "CastCoreRuntime";
+#endif  // BUILDFLAG(ENABLE_CAST_RECEIVER)
 
 // This can be set to a callback for testing. This allows us to inject a fake
 // dumpstate routine to avoid calling an executable during an automated test.
@@ -52,12 +61,24 @@ bool CrashUtil::HasSpaceToCollectCrash() {
 // static
 bool CrashUtil::CollectDumpstate(const base::FilePath& minidump_path,
                                  base::FilePath* dumpstate_path) {
+  std::string dumpstate_bin_path;
+  base::FilePath result =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+          switches::kDumpstateBinPath);
+
+  // In case of CastCore + Chrome runtime, dumpstate path is passed to runtime
+  // through command line. If that's missing, then it's likely not a Chromium
+  // runtime build and fall back to the default path.
+  if (!result.empty()) {
+    dumpstate_bin_path = result.value();
+  } else {
+    LOG(WARNING)
+        << "Dumpstate path is missing in command line, using the default path";
+    dumpstate_bin_path = chromecast::GetBinPathASCII("dumpstate").value();
+  }
+
   std::vector<std::string> argv = {
-      chromecast::GetBinPathASCII("dumpstate").value(),
-      "-w",
-      "crash-request",
-      "-z",
-      "-o",
+      dumpstate_bin_path,   "-w", "crash-request", "-z", "-o",
       minidump_path.value() /* dumpstate appends ".txt.gz" to the filename */
   };
 
@@ -97,6 +118,12 @@ bool CrashUtil::RequestUploadCrashDump(
       AppStateTracker::GetLastLaunchedApp(), CAST_BUILD_RELEASE,
       CAST_BUILD_INCREMENTAL, "", /* reason */
       AppStateTracker::GetStadiaSessionId());
+
+// Set crash product name for Core runtime. If not set, defaults to "Eureka".
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
+  params.crash_product_name = kCoreRuntimeCrashProductName;
+#endif  // BUILDFLAG(ENABLE_CAST_RECEIVER)
+
   DummyMinidumpGenerator minidump_generator(existing_minidump_path);
 
   base::FilePath filename = base::FilePath(existing_minidump_path).BaseName();

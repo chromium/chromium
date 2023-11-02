@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,14 +24,14 @@ ClockSkewTool::ClockSkewTool() {
 
   features_.InitAndEnableFeatureWithParameters(
       network_time::kNetworkTimeServiceQuerying,
-      {
-          // Guarantee that the `NetworkTimeTracker::ShouldIssueTimeQuery` will
-          // not choose to rate-limit our requested queries.
-          {"RandomQueryProbability", "1.0"},
-          {"FetchBehavior", "background-and-on-demand"},
-          {"CheckTimeInterval", "10s"},
-          {"BackoffInterval", "1s"},
-      });
+      {// Guarantee that the `NetworkTimeTracker::ShouldIssueTimeQuery` will
+       // not choose to rate-limit our requested queries.
+       {"RandomQueryProbability", "1.0"},
+       {"FetchBehavior", "background-and-on-demand"},
+       {"CheckTimeInterval", "10s"},
+       {"BackoffInterval", "10s"},
+       {"ClockDriftSamples", "2"},
+       {"ClockDriftSamplesDistance", "2s"}});
 
   network_time::NetworkTimeTracker::RegisterPrefs(pref_service_.registry());
 

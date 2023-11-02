@@ -38,7 +38,7 @@ Local Modifications:
 Name: Typescript Compiler
 Short Name: typescript
 URL: https://www.npmjs.com/package/typescript
-Version: 4.2.3
+Version: 4.6.3
 License: Apache 2.0
 Security Critical: No. The compiler is not shipped with Chrome but code compiled using it is.
 
@@ -52,10 +52,26 @@ Local Modifications:
 (none)
 
 
+Name: Type Definition for D3 library
+Short Name: @types/d3
+URL: https://www.npmjs.com/package/@types/d3
+Version: 5.16.0
+License: MIT
+Security Critical: No. The types are only used when type checking the discards
+page.
+
+Description:
+This package contains type definitions for d3.
+
+Local Modifications:
+See chromium_d3_types_index.patch, which is used to reduce the types to only
+the necessary parts of the library:
+d3-drag, d3-force, d3-scale-chromatic, d3-selection, d3-transition.
+
 Name: Type Definition for W3C MediaStream Recording
 Short Name: @types/dom-mediacapture-record
 URL: https://www.npmjs.com/package/@types/dom-mediacapture-record
-Version: 1.0.10
+Version: 1.0.11
 License: MIT
 Security Critical: No. The types are only used when type checking in Chrome OS.
 
@@ -70,7 +86,7 @@ Local Modifications:
 Name: Type Definition for CSS Typed OM Level 1
 Short Name: @types/w3c-css-typed-object-model-level-1
 URL: https://www.npmjs.com/package/@types/w3c-css-typed-object-model-level-1
-Version: 20180410.0.3
+Version: 20180410.0.4
 License: MIT
 Security Critical: No. The types are only used when type checking in Chrome OS.
 
@@ -100,7 +116,7 @@ Local Modifications:
 Name: Type Definition for webrtc
 Short Name: @types/webrtc
 URL: https://www.npmjs.com/package/@types/webrtc
-Version: 0.0.29
+Version: 0.0.31
 License: MIT
 Security Critical: No. The types are only used when type checking in Chrome OS.
 
@@ -125,3 +141,126 @@ Universal)
 
 Local Modifications:
 (none)
+
+
+Name: Type Definition for OffscreenCanvas
+Short Name: @types/offscreencanvas
+URL: https://www.npmjs.com/package/@types/offscreencanvas
+Version: 2019.6.4
+License: MIT
+Security Critical: No. The types are only used when type checking in Chrome OS.
+
+Description:
+This package contains type definitions for offscreencanvas-browser
+(https://html.spec.whatwg.org/multipage/canvas.html#the-offscreencanvas-interface).
+
+Local Modifications:
+(none)
+
+
+Name: ESLint JSDoc Plugin
+Short Name: eslint-plugin-jsdoc
+URL: https://www.npmjs.com/package/eslint-plugin-jsdoc
+Version: 37.5.1
+License: BSD-3-Clause
+Security Critical: No. The ESLint checks are not shipped with Chrome and code are only linted with it.
+
+Description:
+JSDoc linting rules for ESLint.
+
+Local Modifications:
+(none)
+
+
+Name: ESLint Plugin TypeScript
+Short Name: @typescript-eslint/eslint-plugin
+URL: https://www.npmjs.com/package/@typescript-eslint/eslint-plugin
+Version: 5.12.0
+License: BSD-2-Clause
+Security Critical: No. The ESLint checks are not shipped with Chrome and code are only linted with it.
+
+Description:
+An ESLint plugin which provides lint rules for TypeScript codebases.
+
+Local Modifications:
+(none)
+
+
+Name: TypeScript ESLint Parser
+Short Name: @typescript-eslint/parser
+URL: https://www.npmjs.com/package/@typescript-eslint/parser
+Version: 5.12.0
+License: BSD-2-Clause
+Security Critical: No. The ESLint checks are not shipped with Chrome and code are only linted with it.
+
+Description:
+An ESLint parser which leverages TypeScript ESTree to allow for ESLint to lint
+TypeScript source code.
+
+Local Modifications:
+(none)
+
+
+Name: Type Definition for Trusted Types
+Short Name: @types/trusted-types
+URL: https://www.npmjs.com/package/@types/trusted-types
+Version: 1.0.6
+License: MIT
+Security Critical: No. The types are only used when type checking the Web
+Trusted Types:
+
+Description:
+This package contains type definitions for Web Trusted Types.
+https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/trusted-types
+
+Local Modifications:
+(none)
+
+
+Name: Type Definition for FileSystem API
+Short Name: @types/filesystem
+URL: https://www.npmjs.com/package/@types/filesystem
+Version: 0.0.32
+License: MIT
+Security Critical: No. The types are only used when type checking the Web
+FileSystem API.
+
+Description:
+This package contains type definitions for Web FileSystem API.
+https://developer.mozilla.org/en-US/docs/Web/API/FileSystem
+
+Local Modifications:
+(none)
+
+
+Name: Type Definition for FileWriter API
+Short Name: @types/filewriter
+URL: https://www.npmjs.com/package/@types/filewriter
+Version: 0.0.29
+License: MIT
+Security Critical: No. The types are only used when type checking the Web
+FileWriter API.
+
+Description:
+This package contains type definitions for Web FileWriter API. This is a
+dependency for the @types/filesystem.
+https://developer.mozilla.org/en-US/docs/Web/API/FileSystemFileEntry/createWriter
+
+Local Modifications:
+(none)
+
+Name: HTML Minifier
+Short Name: html-minifier
+URL: https://www.npmjs.com/package/html-minifier
+Version: 4.0.0
+License: MIT
+Security Critical: No, as html-minifier itself is only used during build time.
+It does affect the contents of shipped HTML files though.
+
+Description:
+HTMLMinifier is a highly configurable, well-tested, JavaScript-based HTML
+minifier.
+
+Local Modifications:
+Removed uglify-js dependency since we don't plan to use the --minify-js flag in
+Chromium.

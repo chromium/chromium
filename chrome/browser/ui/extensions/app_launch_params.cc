@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,10 +18,10 @@ apps::AppLaunchParams CreateAppLaunchParamsUserContainer(
     Profile* profile,
     const extensions::Extension* extension,
     WindowOpenDisposition disposition,
-    apps::mojom::LaunchSource launch_source) {
+    apps::LaunchSource launch_source) {
   // Look up the app preference to find out the right launch container. Default
   // is to launch as a regular tab.
-  apps::mojom::LaunchContainer container =
+  apps::LaunchContainer container =
       extensions::GetLaunchContainer(ExtensionPrefs::Get(profile), extension);
   return apps::AppLaunchParams(extension->id(), container, disposition,
                                launch_source);
@@ -31,9 +31,9 @@ apps::AppLaunchParams CreateAppLaunchParamsWithEventFlags(
     Profile* profile,
     const extensions::Extension* extension,
     int event_flags,
-    apps::mojom::LaunchSource launch_source,
+    apps::LaunchSource launch_source,
     int64_t display_id) {
-  apps::mojom::LaunchContainer fallback_container =
+  apps::LaunchContainer fallback_container =
       extensions::GetLaunchContainer(ExtensionPrefs::Get(profile), extension);
   return apps::CreateAppIdLaunchParamsWithEventFlags(
       extension->id(), event_flags, launch_source, display_id,

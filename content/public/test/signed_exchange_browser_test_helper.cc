@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread_restrictions.h"
 #include "content/browser/web_package/signed_exchange_utils.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -93,7 +92,9 @@ bool SignedExchangeBrowserTestHelper::OnInterceptCallback(
   const auto it = interceptor_data_path_map_.find(params->url_request.url);
   if (it == interceptor_data_path_map_.end())
     return false;
-  URLLoaderInterceptor::WriteResponse(it->second, params->client.get());
+  URLLoaderInterceptor::WriteResponse(
+      it->second, params->client.get(), /*headers=*/nullptr,
+      absl::optional<net::SSLInfo>(), params->url_request.url);
   return true;
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/viz/service/display/software_output_device_client.h"
 #include "components/viz/service/viz_service_export.h"
@@ -78,9 +79,13 @@ class VIZ_SERVICE_EXPORT SoftwareOutputDevice {
 
   virtual int MaxFramesPending() const;
 
+  // Returns true if we are allowed to adopt a size different from the
+  // platform's proposed surface size.
+  virtual bool SupportsOverridePlatformSize() const;
+
  protected:
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  SoftwareOutputDeviceClient* client_ = nullptr;
+  raw_ptr<SoftwareOutputDeviceClient> client_ = nullptr;
   gfx::Size viewport_pixel_size_;
   gfx::Rect damage_rect_;
   sk_sp<SkSurface> surface_;

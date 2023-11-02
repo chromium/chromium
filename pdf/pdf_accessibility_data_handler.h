@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,14 +21,13 @@ class PdfAccessibilityDataHandler {
   virtual ~PdfAccessibilityDataHandler() = default;
 
   virtual void SetAccessibilityViewportInfo(
-      const AccessibilityViewportInfo& viewport_info) = 0;
-  virtual void SetAccessibilityDocInfo(
-      const AccessibilityDocInfo& doc_info) = 0;
+      AccessibilityViewportInfo viewport_info) = 0;
+  virtual void SetAccessibilityDocInfo(AccessibilityDocInfo doc_info) = 0;
   virtual void SetAccessibilityPageInfo(
-      const AccessibilityPageInfo& page_info,
-      const std::vector<AccessibilityTextRunInfo>& text_runs,
-      const std::vector<AccessibilityCharInfo>& chars,
-      const AccessibilityPageObjects& page_objects) = 0;
+      AccessibilityPageInfo page_info,
+      std::vector<AccessibilityTextRunInfo> text_runs,
+      std::vector<AccessibilityCharInfo> chars,
+      AccessibilityPageObjects page_objects) = 0;
 };
 
 }  // namespace chrome_pdf

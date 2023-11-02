@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,6 +35,11 @@ class ChromeExtensionFrameHost : public ExtensionFrameHost {
                           GetAppInstallStateCallback callback) override;
   void WatchedPageChange(
       const std::vector<std::string>& css_selectors) override;
+  void DetailedConsoleMessageAdded(
+      const std::u16string& message,
+      const std::u16string& source,
+      const StackTrace& stack_trace,
+      blink::mojom::ConsoleMessageLevel level) override;
 };
 
 }  // namespace extensions

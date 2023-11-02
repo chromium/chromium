@@ -1,16 +1,17 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/first_run/sync/sync_screen_coordinator.h"
 
-#import "components/sync/driver/mock_sync_service.h"
+#import "components/sync/test/mock_sync_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
+#import "ios/chrome/browser/sync/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
@@ -18,24 +19,18 @@
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/web/public/test/web_task_environment.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
-#include "third_party/ocmock/OCMock/OCMock.h"
+#import "testing/gmock/include/gmock/gmock.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-namespace {
-std::unique_ptr<KeyedService> CreateMockSyncService(
-    web::BrowserState* context) {
-  return std::make_unique<syncer::MockSyncService>();
-}
-}  // namespace
 
 // This class provides a hook for platform-specific operations across
 // SyncScreenCoordinator unit tests.
@@ -55,9 +50,7 @@ class SyncScreenCoordinatorTest : public PlatformTest {
         SyncSetupServiceFactory::GetInstance(),
         base::BindRepeating(&SyncSetupServiceMock::CreateKeyedService));
     browser_state_ = builder.Build();
-    WebStateList* web_state_list = nullptr;
-    browser_ =
-        std::make_unique<TestBrowser>(browser_state_.get(), web_state_list);
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     PolicyWatcherBrowserAgent::CreateForBrowser(browser_.get());
 
     sync_setup_service_mock_ = static_cast<SyncSetupServiceMock*>(
@@ -91,6 +84,7 @@ class SyncScreenCoordinatorTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   AuthenticationServiceFake* auth_service_ = nullptr;
@@ -116,7 +110,7 @@ TEST_F(SyncScreenCoordinatorTest, TestStart) {
 // Tests that calling the delegate immidiately to stop the coordinator when
 // there's no user identity.
 TEST_F(SyncScreenCoordinatorTest, TestStartWithoutIdentity) {
-  OCMExpect([delegate_ willFinishPresenting]);
+  OCMExpect([delegate_ screenWillFinishPresenting]);
   [coordinator_ start];
 
   EXPECT_OCMOCK_VERIFY(delegate_);
@@ -134,7 +128,7 @@ TEST_F(SyncScreenCoordinatorTest, TestStartWithSyncActivated) {
 
   auth_service_->SignIn(identity);
 
-  OCMExpect([delegate_ willFinishPresenting]);
+  OCMExpect([delegate_ screenWillFinishPresenting]);
   [coordinator_ start];
 
   EXPECT_OCMOCK_VERIFY(delegate_);
@@ -153,7 +147,7 @@ TEST_F(SyncScreenCoordinatorTest, TestStartWithSyncPolicyDisabled) {
 
   auth_service_->SignIn(identity);
 
-  OCMExpect([delegate_ willFinishPresenting]);
+  OCMExpect([delegate_ screenWillFinishPresenting]);
   [coordinator_ start];
 
   EXPECT_OCMOCK_VERIFY(delegate_);

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -203,7 +203,7 @@ void RunShaderCallback(DecoderClient* client,
 
   std::string key;
   base::Base64Encode(sha_string, &key);
-  client->CacheShader(key, shader);
+  client->CacheBlob(gpu::GpuDiskCacheType::kGlShaders, key, shader);
 }
 
 bool ProgramBinaryExtensionsAvailable() {
@@ -251,11 +251,11 @@ std::vector<uint8_t> DecompressData(const std::vector<uint8_t>& data,
 }
 
 bool CompressProgramBinaries() {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   return false;
-#else   // !defined(OS_ANDROID)
+#else   // !BUILDFLAG(IS_ANDROID)
   return base::SysInfo::IsLowEndDevice();
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace

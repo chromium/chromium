@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -16,7 +17,6 @@
 #include "base/values.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "extensions/browser/api_test_utils.h"
 #endif
@@ -60,7 +60,7 @@ TEST_F(LoginStateApiUnittest, GetProfileType_UserProfile) {
 // Test that |loginState.getProfileType()| returns |SIGNIN_PROFILE| for
 // extensions running in the signin profile.
 TEST_F(LoginStateApiUnittest, GetProfileType_SigninProfile) {
-  // |chromeos::ProfileHelper::GetSigninProfile()| cannot be used as the
+  // |ash::ProfileHelper::GetSigninProfile()| cannot be used as the
   // |TestingProfileManager| set up by |BrowserWithTestWindowTest| has an empty
   // user data directory.
   TestingProfile::Builder builder;
@@ -82,18 +82,7 @@ class LoginStateApiAshUnittest : public LoginStateApiUnittest {
 
   ~LoginStateApiAshUnittest() override = default;
 
-  void SetUp() override {
-    // |session_manager::SessionManager| is not initialized by default.
-    // This sets up the static instance of |SessionManager| so
-    // |session_manager::SessionManager::Get()| will return this particular
-    // instance.
-    session_manager_ = std::make_unique<session_manager::SessionManager>();
-
-    LoginStateApiUnittest::SetUp();
-  }
-
- protected:
-  std::unique_ptr<session_manager::SessionManager> session_manager_;
+  void SetUp() override { LoginStateApiUnittest::SetUp(); }
 };
 
 // Test that calling |loginState.getSessionState()| returns the correctly mapped
@@ -110,10 +99,13 @@ TEST_F(LoginStateApiAshUnittest, GetSessionState) {
       {session_manager::SessionState::LOGIN_SECONDARY, "IN_LOGIN_SCREEN"},
       {session_manager::SessionState::ACTIVE, "IN_SESSION"},
       {session_manager::SessionState::LOCKED, "IN_LOCK_SCREEN"},
+      {session_manager::SessionState::RMA, "IN_RMA_SCREEN"},
   };
 
   for (const auto& test : kTestCases) {
-    session_manager_->SetSessionState(test.session_state);
+    // SessionManager is created by
+    // |AshTestHelper::bluetooth_config_test_helper()|.
+    session_manager::SessionManager::Get()->SetSessionState(test.session_state);
     auto function = base::MakeRefCounted<LoginStateGetSessionStateFunction>();
     std::unique_ptr<base::Value> result =
         RunFunctionAndReturnValue(function.get(), "[]");

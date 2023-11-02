@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,96 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/sequence_checker.h"
 #include "components/component_updater/component_installer.h"
+#include "net/net_buildflags.h"
+#include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 
 namespace component_updater {
 
+// The service that does the heavy lifting to install the PKI metadata
+// component.
+class PKIMetadataComponentInstallerService final {
+ public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called after the CT Log list data is configured.
+    virtual void OnCTLogListConfigured() {}
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+    // Called after the Chrome Root Store data was configured.
+    virtual void OnChromeRootStoreConfigured() {}
+#endif
+  };
+
+  // Returns the live server instance, creating it if it does not exist.
+  static PKIMetadataComponentInstallerService* GetInstance();
+
+  PKIMetadataComponentInstallerService();
+  ~PKIMetadataComponentInstallerService() = delete;
+
+  // Sets the PKI metadata configuration on the current network service. This is
+  // a no-op if the component is not ready.
+  // Reconfiguring happens on an asynchronous task.
+  void ReconfigureAfterNetworkRestart();
+
+  // Configure Chrome Root Store data. This is separate from
+  // ReconfigureAfterNetworkRestart because Chrome Root Store updates don't
+  // go through the network service.
+  void ConfigureChromeRootStore();
+
+  // Called when the component is ready to be installed.
+  void OnComponentReady(base::FilePath install_dir);
+
+  // Writes arbitrary data to the CT config component.
+  [[nodiscard]] bool WriteCTDataForTesting(const base::FilePath& path,
+                                           const std::string& contents);
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  [[nodiscard]] bool WriteCRSDataForTesting(const base::FilePath& path,
+                                            const std::string& contents);
+#endif
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
+ private:
+  // Updates the network service CT list with the component delivered data.
+  // |ct_config_bytes| should be a serialized CTLogList proto message.
+  void UpdateNetworkServiceCTListOnUI(const std::string& ct_config_bytes);
+
+  // Updates the network service pins list with the component delivered data.
+  // |kp_config_bytes| should be a serialized KPConfig proto message.
+  void UpdateNetworkServiceKPListOnUI(const std::string& kp_config_bytes);
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  // Updates cert verifiers with the component delivered Chrome Root Store
+  // data. |chrome_root_store_bytes| should be a serialized
+  // chrome_root_store.RootStore proto message.
+  void UpdateChromeRootStoreOnUI(const std::string& chrome_root_store_bytes);
+
+  // Notifies all observers that the Chrome Root Store data has been
+  // configured.
+  void NotifyChromeRootStoreConfigured();
+#endif
+
+  // Notifies all observers that the CT Log list data has been configured.
+  void NotifyCTLogListConfigured();
+
+  // The install folder path. An empty path if the component is not ready.
+  base::FilePath install_dir_;
+  base::ObserverList<Observer> observers_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<PKIMetadataComponentInstallerService> weak_factory_{
+      this};
+};
+
 // Component installer policy for the PKIMetadata component. This component
 // includes any dynamically updateable needed for PKI policies enforcement.
-// Initially this contains the Certificate Transparency log list.
 class PKIMetadataComponentInstallerPolicy : public ComponentInstallerPolicy {
  public:
   PKIMetadataComponentInstallerPolicy();
@@ -24,6 +107,11 @@ class PKIMetadataComponentInstallerPolicy : public ComponentInstallerPolicy {
   PKIMetadataComponentInstallerPolicy operator=(
       const PKIMetadataComponentInstallerPolicy&) = delete;
   ~PKIMetadataComponentInstallerPolicy() override;
+
+  // Converts a protobuf repeated bytes array to an array of uint8_t arrays.
+  // Exposed for testing.
+  static std::vector<std::vector<uint8_t>> BytesArrayFromProtoBytes(
+      google::protobuf::RepeatedPtrField<std::string> proto_bytes);
 
  private:
   // ComponentInstallerPolicy methods:
@@ -42,10 +130,6 @@ class PKIMetadataComponentInstallerPolicy : public ComponentInstallerPolicy {
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
-
-  // Updates the network service with the component delivered data.
-  // |ct_config_bytes| should be a serialized CTLogList proto message.
-  void UpdateNetworkServiceOnUI(const std::string& ct_config_bytes);
 };
 
 void MaybeRegisterPKIMetadataComponent(ComponentUpdateService* cus);

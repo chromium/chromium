@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,7 +55,7 @@ class SadTabViewInteractiveUITest : public InProcessBrowserTest {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     content::RenderProcessHost* process =
-        web_contents->GetMainFrame()->GetProcess();
+        web_contents->GetPrimaryMainFrame()->GetProcess();
     content::RenderProcessHostWatcher crash_observer(
         process, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
     process->Shutdown(content::RESULT_CODE_KILLED);
@@ -132,7 +132,7 @@ class SadTabViewInteractiveUITest : public InProcessBrowserTest {
   }
 };
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Focusing or input is not completely working on Mac: http://crbug.com/824418
 #define MAYBE_SadTabKeyboardAccessibility DISABLED_SadTabKeyboardAccessibility
 #else
@@ -203,7 +203,9 @@ IN_PROC_BROWSER_TEST_F(SadTabViewInteractiveUITest,
   // Switch back to the first tab.
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   EXPECT_EQ(1, tab_strip_model->active_index());
-  tab_strip_model->ActivateTabAt(0, {TabStripModel::GestureType::kOther});
+  tab_strip_model->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_EQ(0, tab_strip_model->active_index());
   content::WebContents* web_contents = tab_strip_model->GetActiveWebContents();
   EXPECT_TRUE(web_contents->IsCrashed());
@@ -215,7 +217,9 @@ IN_PROC_BROWSER_TEST_F(SadTabViewInteractiveUITest,
   EXPECT_FALSE(web_contents->IsCrashed());
 
   // Switch to the second tab, reload it too.
-  tab_strip_model->ActivateTabAt(1, {TabStripModel::GestureType::kOther});
+  tab_strip_model->ActivateTabAt(
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   web_contents = tab_strip_model->GetActiveWebContents();
   EXPECT_TRUE(web_contents->IsCrashed());
   ClickOnActionButtonInSadTab();

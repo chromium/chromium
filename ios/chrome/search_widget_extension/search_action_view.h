@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,12 @@
 #import "ios/chrome/common/ui/elements/highlight_button.h"
 
 // View for an action to launch the app from the widget. Represented as a
-// circular icon and a label. When tapped it calls |actionSelector| in |target|.
+// circular icon and a label. When tapped it calls `actionSelector` in `target`.
 @interface SearchActionView : HighlightButton
 
-// Designated initializer, creates the action view with a |target| and
-// |selector| to act on. The image with name |imageName| is shown in the
-// circular icon. The |title| is shown beneath the icon.
+// Designated initializer, creates the action view with a `target` and
+// `selector` to act on. The image with name `imageName` is shown in the
+// circular icon. The `title` is shown beneath the icon.
 - (instancetype)initWithActionTarget:(id)target
                       actionSelector:(SEL)actionSelector
                                title:(NSString*)title

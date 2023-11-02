@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,14 +70,14 @@ class MockLaunchedVideoCaptureDevice : public LaunchedVideoCaptureDevice {
                void(media::VideoCaptureDevice::TakePhotoCallback* callback));
   MOCK_METHOD0(MaybeSuspendDevice, void());
   MOCK_METHOD0(ResumeDevice, void());
-  MOCK_METHOD2(Crop,
+  MOCK_METHOD3(Crop,
                void(const base::Token& crop_id,
+                    uint32_t crop_version,
                     base::OnceCallback<void(media::mojom::CropRequestResult)>));
   MOCK_METHOD0(RequestRefreshFrame, void());
   MOCK_METHOD2(DoSetDesktopCaptureWindowId,
                void(gfx::NativeViewId window_id, base::OnceClosure* done_cb));
-  MOCK_METHOD2(OnUtilizationReport,
-               void(int frame_feedback_id, media::VideoCaptureFeedback));
+  MOCK_METHOD1(OnUtilizationReport, void(media::VideoCaptureFeedback));
 
   void GetPhotoState(
       media::VideoCaptureDevice::GetPhotoStateCallback callback) override {

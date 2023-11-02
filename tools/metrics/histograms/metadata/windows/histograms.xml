@@ -1,5 +1,5 @@
 <!--
-Copyright 2020 The Chromium Authors. All rights reserved.
+Copyright 2020 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
@@ -22,29 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="FileOperations">
-  <variant name=".DeleteFile.NonRecursive" summary="">
-    <obsolete>
-      Removed in M95.
-    </obsolete>
-  </variant>
-  <variant name=".DeleteFile.Recursive" summary="">
-    <obsolete>
-      Removed in M95.
-    </obsolete>
-  </variant>
-</variants>
-
-<histogram name="Windows.ApplockerRunning" enum="Boolean" expires_after="M83">
-  <owner>forshaw@chromium.org</owner>
-  <owner>wfh@chromium.org</owner>
-  <summary>
-    Records if the APPID driver is running which indicates Applocker is enabled
-    and running. This does not guarantee that Applocker is configured to enforce
-    any rules. Reported once per browser session, on startup.
-  </summary>
-</histogram>
-
 <histogram name="Windows.CetAvailable" enum="BooleanAvailable"
     expires_after="2022-12-01">
   <owner>ajgo@chromium.org</owner>
@@ -57,7 +34,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.CetEnabled" enum="BooleanEnabled"
-    expires_after="2022-12-01">
+    expires_after="2023-02-12">
   <owner>ajgo@chromium.org</owner>
   <owner>wfh@chromium.org</owner>
   <summary>
@@ -68,86 +45,40 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Windows.ChromeDllPrefetchResult" enum="FilePrefetchResult"
-    expires_after="2022-04-24">
-  <owner>brucedawson@chromium.org</owner>
+<histogram name="Windows.CreateOrUpdateShortcuts.Result"
+    enum="CreateOrUpdateShortcutsResult" expires_after="2022-11-26">
+  <owner>davidbienvenu@chromium.org</owner>
   <owner>jessemckenna@google.com</owner>
   <summary>
-    The result of prefetching chrome.dll on Windows, including whether a
-    fallback to slow prefetch took place, and why if so.
+    The result of creating or updating a Windows shortcut out of process.
+    Recorded when Chrome creates or updates a Windows shortcut using
+    shell_integration::win::CreateOrUpdateShortcuts, e.g., when a profile is
+    added.
   </summary>
 </histogram>
 
-<histogram name="Windows.ComputeNativeWindowOcclusionTime" units="microseconds"
-    expires_after="M83">
+<histogram name="Windows.DragEventsAfterPress" units="events"
+    expires_after="2022-08-01">
   <obsolete>
-    Removed 11/2020. As of June 15, 2020, data indicates that computing
-    occlusion is fast enough at all percentiles.
+    We stopped emitting this stat on 07/14/22 in crrev.com/c/3761201.
   </obsolete>
-  <owner>fdoray@chromium.org</owner>
-  <summary>
-    The amount of CPU time a call to ComputeNativeWindowOcclusionStatus() takes.
-  </summary>
-</histogram>
-
-<histogram name="Windows.FileDeleteLastRetryError" enum="WinGetLastError"
-    expires_after="2022-05-01">
-  <owner>grt@chromium.org</owner>
   <owner>davidbienvenu@chromium.org</owner>
+  <owner>jessemckenna@google.com</owner>
   <summary>
-    Last File deletion error in DeleteFileWithRetry when no retry succeeded,
-    because we exceeded the retry count.
-  </summary>
-</histogram>
-
-<histogram name="Windows.FileDeleteRetryCount" units="attempts"
-    expires_after="2022-04-10">
-  <owner>grt@chromium.org</owner>
-  <owner>davidbienvenu@chromium.org</owner>
-  <summary>
-    The number of retries needed to successfully delete a file from
-    GetDeleteFileCallback. 0 means it succeeded the first time, 9 means it never
-    succeeded.
-  </summary>
-</histogram>
-
-<histogram name="Windows.FilesystemError{FileOperations}"
-    enum="WinGetLastError" expires_after="M81">
-  <obsolete>
-    Removed in M95.
-  </obsolete>
-  <owner>grt@chromium.org</owner>
-  <summary>
-    The Windows error code relating to a failed attempt to operate on a file or
-    a directory. {FileOperations}
-  </summary>
-  <token key="FileOperations" variants="FileOperations">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
-</histogram>
-
-<histogram name="Windows.GetVersionExVersion" enum="WindowsVersion"
-    expires_after="never">
-  <obsolete>
-    Removed 10/2020 as this histogram has been replaced by the synthetic
-    histogram Windows.WindowsVersion generated from Windows.PatchLevel.
-  </obsolete>
-<!-- expires-never: Needed to measure Windows ecosystem. -->
-
-  <owner>wfh@chromium.org</owner>
-  <owner>brucedawson@chromium.org</owner>
-  <summary>
-    The Windows version (base::win::Version) as reported by GetVersionEx(). This
-    is queried shortly after startup.
+    The number of drag events after a press event before we got a mouse move to
+    0, 0 that is more than 200 pixels away from the current cursor position.
+    This will be used to change the detection of spurious 0,0 move move events
+    to a much smaller value (e.g., 20 pixels) but with the addition of a check
+    that we've only received a few mouse move events, once we've determined the
+    distribution of the number of drag events we receive before the 0,0 mouse
+    move events. Recorded in HWNDMessageHandler::HandleMouseEventInternal when
+    we see a mouse drag to 0,0 that is more than 200 pixels from the cursor
+    position.
   </summary>
 </histogram>
 
 <histogram name="Windows.HasHighResolutionTimeTicks" enum="Boolean"
-    expires_after="2021-12-19">
+    expires_after="2023-12-19">
   <owner>brucedawson@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
@@ -157,7 +88,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.HighResolutionTimerUsage" units="%"
-    expires_after="2022-04-24">
+    expires_after="2023-03-05">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -168,8 +99,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.HypervPresent" enum="BooleanEnabled"
-    expires_after="2022-05-01">
+    expires_after="2023-06-01">
   <owner>rkc@chromium.org</owner>
+  <owner>vnagarnaik@google.com</owner>
   <owner>rockot@chromium.org</owner>
   <summary>
     Whether Hyper-V is enabled on this machine. Logged shortly after startup.
@@ -177,15 +109,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Windows.InspectModule.ConnectionError"
-    enum="BooleanConnectionError" expires_after="M81">
-  <owner>pmonette@chromium.org</owner>
+<histogram name="Windows.InstallerPinUnpinned" enum="IsPinnedToTaskbarResult"
+    expires_after="2023-08-31">
+  <owner>davidbienvenu@chromium.org</owner>
+  <owner>jessemckenna@chromium.org</owner>
   <summary>
-    Whether connection error has happened for the UtilWin service. Every time a
-    connection is made to the service, a &quot;false&quot; value is reported to
-    provide a baseline. Every time a mojo connection error happens, a
-    &quot;true&quot; value is reported, which typically means the utility
-    process crashed.
+    Records whether or not the user unpinned Chrome after the installer pinned
+    Chrome, on Win10+. Recorded when Chrome checks if Chrome is pinned to the
+    taskbar, on startup. This check is currently done on 1% of startups. Records
+    true if the installer pinned Chrome, and it's no longer pinned, false if the
+    installer pinned Chrome and it's still pinned. The unpin is only recorded at
+    most once per user, whereas the still pinned state is recorded on every
+    launch that checks if Chrome is pinned to the taskbar.
   </summary>
 </histogram>
 
@@ -211,33 +146,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Windows.IsPinnedToTaskbar2" enum="BooleanError"
-    expires_after="M87">
-  <owner>pmonette@chromium.org</owner>
-  <owner>chrdavis@microsoft.com</owner>
+<histogram name="Windows.Launch.TaskbarInstallerPinned" enum="Boolean"
+    expires_after="2023-08-23">
+  <owner>davidbienvenu@chromium.org</owner>
+  <owner>jessemckenna@google.com</owner>
   <summary>
-    Indicates whether Chrome is pinned to the Windows taskbar for the current
-    user. Recorded shortly after startup. This is different from
-    Windows.IsPinnedToTaskbar in that we do not check if the pin to taskbar verb
-    is available on the shortcut and only relies on the shortcut existing in the
-    User Pinned folder.
+    Whether or not the taskbar shortcut Chrome was launched from was pinned by
+    the installer. Recorded when Chrome is launched from the taskbar, and the
+    install was done after the installer started pinning Chrome to the taskbar
+    for Windows 10+.
   </summary>
 </histogram>
 
-<histogram name="Windows.Kernel32Version" enum="WindowsVersion"
-    expires_after="never">
-  <obsolete>
-    Removed 10/2020 as this histogram has been replaced by the synthetic
-    histogram Windows.WindowsVersionKernel32 generated from
-    Windows.PatchLevelKernel32.
-  </obsolete>
-<!-- expires-never: Needed to measure Windows ecosystem. -->
-
-  <owner>wfh@chromium.org</owner>
-  <owner>brucedawson@chromium.org</owner>
+<histogram name="Windows.MakeChromeDefaultDirectly.Result"
+    enum="DefaultDirectAttemptResult" expires_after="M109">
+  <owner>robliao@chromium.org</owner>
+  <owner>davidbienvenu@chromium.org</owner>
   <summary>
-    The Windows version (base::win::Version) as reported by VerQueryValue() on
-    kernel32.dll. This is queried shortly after startup.
+    Records the outcome of attempting to set the default directly. Recorded when
+    a request to make Chrome default is received and is eligible for the direct
+    path.
   </summary>
 </histogram>
 
@@ -251,45 +179,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Windows.ModuleInspector.ReadCacheResult"
-    enum="InspectionResultsCacheReadResult" expires_after="M78">
-  <owner>chrisha@chromium.org</owner>
-  <owner>pmonette@chromium.org</owner>
-  <summary>
-    The result of reading the InspectionResultsCache from disk. The cache is
-    read once at startup when the ModuleInspector needs it.
-  </summary>
-</histogram>
-
-<histogram name="Windows.ModuleInspector.WriteCacheResult"
-    enum="BooleanSuccess" expires_after="M78">
-  <owner>chrisha@chromium.org</owner>
-  <owner>pmonette@chromium.org</owner>
-  <summary>
-    The result of writing the InspectionResultsCache to disk. This is done every
-    time the ModuleDatabase becomes idle.
-  </summary>
-</histogram>
-
-<histogram name="Windows.NativeWindowVisibility{NativeWindowVisibility}"
-    units="windows" expires_after="2021-02-01">
+<histogram name="Windows.OnCurrentWorkspaceCached" enum="BooleanCacheHit"
+    expires_after="2023-02-12">
   <owner>davidbienvenu@chromium.org</owner>
-  <owner>fdoray@chromium.org</owner>
+  <owner>sky@chromium.org</owner>
   <summary>
-    The number of Chrome browser windows in a given visibility state. This is
-    computed using ComputeNativeWindowOcclusionStatus() and is recorded every 10
-    minutes. {NativeWindowVisibility}
+    Indicates if the current workspace state of a window is cached or not. If
+    it's known that the window is on the current workspace or not, then we can
+    avoid the COM method call IsWindowOnCurrentVirtualDesktop. This is recorded
+    in BrowserView::IsOnCurrentWorkspace. In general, the state should almost
+    always be cached.
   </summary>
-  <token key="NativeWindowVisibility">
-    <variant name=""/>
-    <variant name=".Hidden"
-        summary="The native window is not visible because it is in a
-                 minimized window"/>
-    <variant name=".Occluded"
-        summary="The native window is fully covered by other windows"/>
-    <variant name=".Visible"
-        summary="The native window is visible or partially visible."/>
-  </token>
 </histogram>
 
 <histogram name="Windows.OOPSelectFileDialog.ProcessError" enum="BooleanError"
@@ -300,6 +200,18 @@ chromium-metrics-reviews@google.com.
     shell handler process. This is usually caused by a crash in the utility
     process. This is logged every time SelectFile() function is called and the
     WinOOPSelectFileDialog feature is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Windows.ParallelDllLoadingEnabled" enum="BooleanEnabled"
+    expires_after="never">
+<!-- expires-never: Needed to measure third party incompatibilities on Windows which could happen at any time. -->
+
+  <owner>forshaw@chromium.org</owner>
+  <owner>wfh@chromium.org</owner>
+  <summary>
+    Records whether or not parallel DLL loading is enabled for the browser
+    process executable. This is recorded once per browser session, on startup.
   </summary>
 </histogram>
 
@@ -349,28 +261,10 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Windows.PostOperationState{FileOperations}"
-    enum="PostOperationState" expires_after="M81">
-  <obsolete>
-    Removed in M95.
-  </obsolete>
-  <owner>grt@chromium.org</owner>
-  <summary>
-    The state of an item in the filesystem following an operation on it.
-    {FileOperations}
-  </summary>
-  <token key="FileOperations" variants="FileOperations">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
-</histogram>
-
 <histogram name="Windows.ProcessorFamily" enum="ProcessorFamily"
-    expires_after="2022-05-01">
+    expires_after="2023-06-01">
   <owner>rkc@chromium.org</owner>
+  <owner>vnagarnaik@google.com</owner>
   <owner>rockot@chromium.org</owner>
   <summary>
     The processor family type. Logged shortly after startup. The value is
@@ -381,8 +275,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.ProcessorVirtualizationFirmwareEnabled"
-    enum="BooleanEnabled" expires_after="2022-04-24">
+    enum="BooleanEnabled" expires_after="2023-06-01">
   <owner>rkc@chromium.org</owner>
+  <owner>vnagarnaik@google.com</owner>
   <owner>rockot@chromium.org</owner>
   <summary>
     Whether virtualization has been enabled in the system firmware. Logged
@@ -390,60 +285,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Windows.ServiceStatus.SSP" units="WindowsServiceStatus"
-    expires_after="2021-12-12">
-  <obsolete>
-    Removed in M96.
-  </obsolete>
-  <owner>wfh@chromium.org</owner>
-  <owner>ajgo@chromium.org</owner>
-  <summary>
-    This records whether any SSP/AD providers are registered on the system. If
-    there are any then this typically means the network sandbox cannot
-    successfully engage. Recorded each time the browser attempts to start the
-    network service process. This metric is only recorded on Windows 10+.
-  </summary>
-</histogram>
-
-<histogram name="Windows.Tablet" enum="BooleanTablet" expires_after="M77">
-  <owner>zturner@chromium.org</owner>
-  <summary>Count of browser launches from a Windows tablet pc.</summary>
-</histogram>
-
-<histogram name="Windows.TmpFileDeleter.FailCount" units="files"
-    expires_after="2021-08-09">
-  <obsolete>
-    Removed in M94.
-  </obsolete>
-  <owner>grt@chromium.org</owner>
-  <owner>etiennep@chromium.org</owner>
-  <summary>
-    The number of files failed to be deleted in a single directory by the
-    browser process's tmp file deleter on Windows. These are files that were
-    left behind on previous runs when third-party software interfered with
-    Chrome's ability to delete its own temporary files. No value is emitted for
-    a directory if no delete attempts are made. Otherwise, the fail count will
-    be zero or more.
-  </summary>
-</histogram>
-
-<histogram name="Windows.TmpFileDeleter.SuccessCount" units="files"
-    expires_after="2021-08-09">
-  <obsolete>
-    Removed in M94.
-  </obsolete>
-  <owner>grt@chromium.org</owner>
-  <owner>etiennep@chromium.org</owner>
-  <summary>
-    The number of files deleted in a single directory by the browser process's
-    tmp file deleter on Windows. These are files that were left behind on
-    previous runs when third-party software interfered with Chrome's ability to
-    delete its own temporary files. No value is emitted for a directory if no
-    delete attempts are made. Otherwise, the success count will be zero or more.
-  </summary>
-</histogram>
-
-<histogram name="Windows.TouchDrag.Success" units="BooleanSuccess"
+<histogram name="Windows.TouchDrag.Success" enum="BooleanSuccess"
     expires_after="2021-12-01">
   <owner>davidbienvenu@chromium.org</owner>
   <owner>dfried@chromium.org</owner>
@@ -460,7 +302,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.UnpinShortcut.ProcessError" enum="BooleanError"
-    expires_after="2022-04-24">
+    expires_after="2023-03-30">
   <owner>davidbienvenu@chromium.org</owner>
   <owner>grt@chromium.org</owner>
   <summary>

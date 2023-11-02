@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -172,7 +172,7 @@ class MediaCapabilitiesTestWithConfigType
 };
 
 // Fails on Linux and Chrome OS: http://crbug.com/1220321.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CommonVideoDecodeTypes DISABLED_CommonVideoDecodeTypes
 #else
 #define MAYBE_CommonVideoDecodeTypes CommonVideoDecodeTypes
@@ -372,7 +372,7 @@ IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
 }
 
 // Fails on Linux and Chrome OS: http://crbug.com/1220321.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_VideoTypesWithDynamicRange DISABLED_VideoTypesWithDynamicRange
 #else
 #define MAYBE_VideoTypesWithDynamicRange VideoTypesWithDynamicRange

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -324,7 +324,7 @@ gfx::Transform FloodFillInkDropRipple::CalculateTransform(
   transform.Translate(-drawn_center_offset.x(), -drawn_center_offset.y());
 
   // Add subpixel correction to the transform.
-  transform.ConcatTransform(GetTransformSubpixelCorrection(
+  transform.PostConcat(GetTransformSubpixelCorrection(
       transform, painted_layer_.device_scale_factor()));
 
   return transform;

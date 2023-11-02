@@ -1,0 +1,16 @@
+{
+  "NetworkConfigurations": [
+    {
+      "GUID": "policy_cellular",
+      "Type": "Cellular",
+      "Name": "Managed cellular",
+      "Cellular": {
+        "SMDPAddress": "1$SMDP.GSMA.COM$00000-00000-00000-000-0001"
+      }
+    }
+  ],
+  "GlobalNetworkConfiguration": {
+    "AllowCellularSimLock": false
+  },
+  "Type": "UnencryptedConfiguration"
+}

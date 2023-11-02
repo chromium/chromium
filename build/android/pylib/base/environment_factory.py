@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -23,12 +23,13 @@ def CreateEnvironment(args, output_manager, error_func):
       if args.avd_config:
         if not local_emulator_environment:
           error_func('emulator environment requested but not available.')
+          raise RuntimeError('error_func must call exit inside.')
         return local_emulator_environment.LocalEmulatorEnvironment(
             args, output_manager, error_func)
       return local_device_environment.LocalDeviceEnvironment(
           args, output_manager, error_func)
-    else:
-      return local_machine_environment.LocalMachineEnvironment(
-          args, output_manager, error_func)
+    return local_machine_environment.LocalMachineEnvironment(
+        args, output_manager, error_func)
 
   error_func('Unable to create %s environment.' % args.environment)
+  raise RuntimeError('error_func must call exit inside.')

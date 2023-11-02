@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 
 #include "base/containers/linked_list.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -182,20 +182,20 @@ class NET_EXPORT_PRIVATE MemEntryImpl final
 
   std::string key_;
   std::vector<char> data_[kNumStreams];  // User data.
-  uint32_t ref_count_;
+  uint32_t ref_count_ = 0;
 
   int64_t child_id_;     // The ID of a child entry.
-  int child_first_pos_;  // The position of the first byte in a child
-                         // entry. 0 here is beginning of child, not of
-                         // the entire file.
+  int child_first_pos_ = 0;  // The position of the first byte in a child
+                             // entry. 0 here is beginning of child, not of
+                             // the entire file.
   // Pointer to the parent entry, or nullptr if this entry is a parent entry.
-  MemEntryImpl* parent_;
+  raw_ptr<MemEntryImpl> parent_;
   std::unique_ptr<EntryMap> children_;
 
   base::Time last_modified_;
   base::Time last_used_;
   base::WeakPtr<MemBackendImpl> backend_;  // Back pointer to the cache.
-  bool doomed_;               // True if this entry was removed from the cache.
+  bool doomed_ = false;  // True if this entry was removed from the cache.
 
   net::NetLogWithSource net_log_;
 };

@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,8 @@ enum SignInAttemptStatus {
   ATTEMPTED,
   // Sign-in was not shown because it was disabled by policy.
   SKIPPED_BY_POLICY,
+  // Sign-in is not supported (Chromium).
+  NOT_SUPPORTED,
 };
 
 // The different First Run Chrome Login outcomes for users. This is mapped to
@@ -46,6 +48,8 @@ enum SignInStatus {
   SENTINEL_CREATION_FAILED,
   // Sign-in was skipped because it is disabled by policy.
   SIGNIN_SKIPPED_POLICY,
+  // Sign-in is not supported (Chromium).
+  SIGNIN_NOT_SUPPORTED,
   // Number of First Run states.
   SIGNIN_SIZE
 };
@@ -76,32 +80,83 @@ enum ExternalLaunch {
 // TODO(crbug.com/1189815): Add welcome stage and record metrics.
 enum FirstRunStage {
   // The first run experience has started.
-  kStart,
+  kStart = 0,
   // The first run experience has completed.
-  kComplete,
+  kComplete = 1,
   // Sync screen is shown.
-  kSyncScreenStart,
+  kSyncScreenStart = 2,
   // Sync screen is closed with sync.
-  kSyncScreenCompletionWithSync,
+  kSyncScreenCompletionWithSync = 3,
   // Sync screen is closed without sync.
-  kSyncScreenCompletionWithoutSync,
+  kSyncScreenCompletionWithoutSync = 4,
   // Sync screen is closed when user taps on advance sync settings button.
-  kSyncScreenCompletionWithSyncSettings,
+  // Deprecated. This is not used anymore.
+  kSyncScreenCompletionWithSyncSettings = 5,
   // SignIn screen is shown.
-  kSignInScreenStart,
+  kSignInScreenStart = 6,
   // SignIn screen is closed with sign in.
-  kSignInScreenCompletionWithSignIn,
+  kSignInScreenCompletionWithSignIn = 7,
   // SignIn screen is closed without sign in.
-  kSignInScreenCompletionWithoutSignIn,
+  kSignInScreenCompletionWithoutSignIn = 8,
   // Default browser screen is shown.
-  kDefaultBrowserScreenStart,
+  kDefaultBrowserScreenStart = 9,
   // Default browser screen is closed with opening Settings.app.
-  kDefaultBrowserScreenCompletionWithSettings,
+  kDefaultBrowserScreenCompletionWithSettings = 10,
   // Default browser screen is closed without opening Settings.app.
-  kDefaultBrowserScreenCompletionWithoutSettings,
+  kDefaultBrowserScreenCompletionWithoutSettings = 11,
+  // Welcome+SignIn screen is shown.
+  kWelcomeAndSigninScreenStart = 12,
+  // Welcome+SignIn screen is closed with sign in.
+  kWelcomeAndSigninScreenCompletionWithSignIn = 13,
+  // Welcome+SignIn screen is closed without sign in.
+  kWelcomeAndSigninScreenCompletionWithoutSignIn = 14,
+  // Sync screen is shown.
+  kTangibleSyncScreenStart = 15,
+  // Sync screen is closed with sync.
+  kTangibleSyncScreenCompletionWithSync = 16,
+  // Sync screen is closed without sync.
+  kTangibleSyncScreenCompletionWithoutSync = 17,
   // Max value of the first run experience stages.
   // kMaxValue should share the value of the highest enumerator.
-  kMaxValue = kDefaultBrowserScreenCompletionWithoutSettings,
+  kMaxValue = kTangibleSyncScreenCompletionWithoutSync,
+};
+
+// The different type of screens of the first run experience. This is mapped to
+// the variants of the metric IOS.FirstRun.ScrollButtonVisible.* in of
+// `tools/metrics/histograms/metadata/ios/histograms.xml`.
+enum FirstRunScreenType {
+  // The new FRE screen that instructs the user to set default browser to
+  // Chrome.
+  kDefaultBrowserPromoScreen,
+  // The screen that asks the user to sign in when no stored account is
+  // detected, with a footer shown at the bottom. Displayed when MICe is enabled
+  // without the welcome screen (2-steps MICe FRE), or when forced sign-in is
+  // enabled.
+  kSignInScreenWithFooter,
+  // The screen that asks the user to sign in a stored account, with a footer
+  // shown at the bottom. Displayed when MICe is enabled without the welcome
+  // screen (2-steps MICe FRE), or when forced sign-in is enabled.
+  kSignInScreenWithFooterAndIdentityPicker,
+  // The screen that asks the user to sign in a stored account, but with no
+  // footer shown at the bottom. Displayed when MICe is enabled with the welcome
+  // screen (3-steps MICe FRE).
+  kSignInScreenWithIdentityPicker,
+  // The screen that asks the user to sign in when no stored account is
+  // detected, but with no footer shown at the bottom. Displayed when MICe is
+  // enabled with the welcome screen (3-steps MICe FRE).
+  kSignInScreenWithoutFooterOrIdentityPicker,
+  // The screen that asks the user to turn on sync while no account picker is
+  // present. Displayed when MICe is enabled or when no account is detected.
+  kSyncScreenWithoutIdentityPicker,
+  // The screen that asks the user to turn on sync while showing an account
+  // picker. Displayed when MICe is disabled and an account is detected.
+  kSyncScreenWithIdentityPicker,
+  // Welcome screen without UMA checkbox. Displayed when MICe is enabled.
+  kWelcomeScreenWithoutUMACheckbox,
+  // Welcome screen with UMA checkbox. Displayed when MICe is disabled.
+  kWelcomeScreenWithUMACheckbox,
+  // The tangible sync screen that asks the user to turn on sync.
+  kTangibleSyncScreen,
 };
 
 }  // namespace first_run

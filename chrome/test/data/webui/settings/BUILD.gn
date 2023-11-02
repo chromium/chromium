@@ -1,7 +1,8 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
@@ -10,167 +11,192 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 preprocessed_files = [
   "about_page_tests.ts",
   "appearance_page_test.ts",
+  "autofill_page_test.ts",
+  "battery_page_test.ts",
   "clear_browsing_data_test.ts",
+  "cookies_page_test.ts",
   "downloads_page_test.ts",
+  "password_check_test.ts",
+  "password_edit_dialog_test.ts",
+  "password_view_test.ts",
+  "people_page_test.ts",
+  "people_page_sync_page_test.ts",
+  "performance_page_test.ts",
+  "personalization_options_test.ts",
   "privacy_page_test.ts",
-  "route_tests.js",
+  "route_tests.ts",
   "security_page_test.ts",
+  "settings_menu_test.ts",
   "settings_toggle_button_tests.ts",
+  "site_list_entry_tests.ts",
+  "sync_account_control_test.ts",
   "test_about_page_browser_proxy.ts",
   "test_lifetime_browser_proxy.ts",
   "test_sync_browser_proxy.ts",
 ]
 
+if (is_mac) {
+  preprocessed_files += [ "passkey_edit_dialog_test.ts" ]
+}
+
+if (!is_chromeos_ash) {
+  preprocessed_files += [
+    "test_languages_browser_proxy.ts",
+    "spell_check_page_tests.ts",
+    "languages_page_metrics_test_browser.ts",
+    "translate_page_metrics_test_browser.ts",
+    "spell_check_page_metrics_test_browser.ts",
+  ]
+}
+
 # Test files that do not require preprocessing. If adding // <if expr> to any
 # file below, move it to the list above.
 non_preprocessed_files = [
-  "a11y/about_a11y_test.js",
-  "a11y/accessibility_a11y_test.js",
-  "a11y/basic_a11y_test.js",
-  "a11y/manage_profile_a11y_test.js",
-  "a11y/passwords_a11y_test.js",
-  "a11y/sign_out_a11y_test.js",
-  "advanced_page_test.js",
-  "all_sites_tests.js",
+  "a11y/about_a11y_test.ts",
+  "a11y/accessibility_a11y_test.ts",
+  "a11y/basic_a11y_test.ts",
+  "a11y/manage_profile_a11y_test.ts",
+  "a11y/passwords_a11y_test.ts",
+  "a11y/sign_out_a11y_test.ts",
+  "advanced_page_test.ts",
+  "all_sites_tests.ts",
   "appearance_fonts_page_test.ts",
-  "autofill_page_test.js",
-  "autofill_section_test.js",
+  "autofill_section_test.ts",
   "avatar_icon_test.ts",
-  "basic_page_test.js",
-  "category_default_setting_tests.js",
-  "category_setting_exceptions_tests.js",
+  "basic_page_test.ts",
+  "category_default_setting_tests.ts",
+  "category_setting_exceptions_tests.ts",
   "checkbox_tests.ts",
-  "chooser_exception_list_entry_tests.js",
-  "chooser_exception_list_tests.js",
+  "chooser_exception_list_entry_tests.ts",
+  "chooser_exception_list_tests.ts",
   "collapse_radio_button_tests.ts",
   "controlled_button_tests.ts",
   "controlled_radio_button_tests.ts",
-  "cookies_page_test.ts",
   "do_not_track_toggle_test.ts",
   "dropdown_menu_tests.ts",
   "extension_controlled_indicator_tests.ts",
-  "fake_language_settings_private.js",
-  "fake_settings_private.js",
+  "fake_settings_private.ts",
   "help_page_test.ts",
   "idle_load_tests.ts",
-  "languages_page_metrics_test_browser.js",
-  "languages_page_tests.js",
-  "languages_subpage_details_tests.js",
-  "languages_subpage_tests.js",
-  "multi_store_exception_entry_test.js",
-  "multi_store_password_ui_entry_test.js",
   "on_startup_page_tests.ts",
-  "password_check_test.js",
-  "password_edit_dialog_test.js",
-  "passwords_and_autofill_fake_data.js",
-  "passwords_device_section_test.js",
-  "passwords_export_test.js",
-  "passwords_section_test.js",
-  "payments_section_interactive_test.js",
-  "payments_section_test.js",
-  "people_page_sync_controls_test.js",
-  "people_page_sync_page_interactive_test.js",
-  "people_page_sync_page_test.js",
-  "people_page_test.js",
-  "personalization_options_test.js",
+  "passwords_and_autofill_fake_data.ts",
+  "passwords_device_section_test.ts",
+  "passwords_export_dialog_test.ts",
+  "passwords_import_dialog_test.ts",
+  "passwords_section_test.ts",
+  "payments_section_interactive_test.ts",
+  "payments_section_test.ts",
+  "people_page_sync_controls_test.ts",
+  "people_page_sync_page_interactive_test.ts",
   "prefs_test_cases.ts",
-  "prefs_tests.js",
-  "pref_util_tests.js",
-  "privacy_review_page_test.js",
-  "privacy_sandbox_test.js",
-  "protocol_handlers_tests.js",
-  "recent_site_permissions_test.js",
-  "reset_page_test.js",
-  "reset_profile_banner_test.js",
+  "prefs_tests.ts",
+  "pref_util_tests.ts",
+  "privacy_guide_page_test.ts",
+  "privacy_sandbox_test.ts",
+  "protocol_handlers_tests.ts",
+  "recent_site_permissions_test.ts",
+  "reset_page_test.ts",
+  "reset_profile_banner_test.ts",
+  "review_notification_permissions_test.ts",
   "safety_check_page_test.ts",
+  "safety_check_permissions_test.ts",
+  "safety_check_test_utils.ts",
   "search_engines_page_test.ts",
   "search_page_test.ts",
-  "search_settings_test.js",
+  "search_settings_test.ts",
   "secure_dns_interactive_test.ts",
   "secure_dns_test.ts",
-  "security_keys_subpage_test.js",
-  "settings_animated_pages_test.js",
-  "settings_category_default_radio_group_tests.js",
-  "settings_main_test.js",
-  "settings_menu_interactive_ui_test.js",
-  "settings_menu_test.js",
+  "security_keys_subpage_test.ts",
+  "security_keys_phones_subpage_test.ts",
+  "settings_animated_pages_test.ts",
+  "settings_category_default_radio_group_tests.ts",
+  "settings_main_test.ts",
+  "settings_menu_interactive_ui_test.ts",
   "settings_page_test_util.ts",
+  "settings_performance_menu_test.ts",
   "settings_slider_tests.ts",
-  "settings_subpage_test.js",
+  "settings_subpage_test.ts",
   "settings_textarea_tests.ts",
-  "settings_ui_tests.js",
-  "site_data_details_subpage_tests.js",
-  "site_data_test.js",
-  "site_details_permission_tests.js",
-  "site_details_tests.js",
-  "site_entry_tests.js",
-  "site_favicon_test.js",
-  "site_list_entry_tests.js",
-  "site_list_tests.js",
-  "site_settings_page_test.js",
+  "settings_ui_tests.ts",
+  "site_details_permission_tests.ts",
+  "site_details_tests.ts",
+  "site_entry_tests.ts",
+  "site_favicon_test.ts",
+  "site_list_tests.ts",
+  "site_settings_page_test.ts",
   "startup_urls_page_test.ts",
-  "sync_account_control_test.js",
   "sync_test_util.ts",
+  "tab_discard_exception_dialog_test.ts",
+  "test_autofill_assistant_browser_proxy.ts",
   "test_clear_browsing_data_browser_proxy.ts",
   "test_extension_control_browser_proxy.ts",
   "test_hats_browser_proxy.ts",
-  "test_languages_browser_proxy.js",
-  "test_local_data_browser_proxy.ts",
   "test_metrics_browser_proxy.ts",
   "test_open_window_proxy.ts",
-  "test_password_manager_proxy.js",
+  "test_password_manager_proxy.ts",
+  "test_performance_browser_proxy.ts",
+  "test_performance_metrics_proxy.ts",
   "test_privacy_page_browser_proxy.ts",
-  "test_profile_info_browser_proxy.js",
+  "test_profile_info_browser_proxy.ts",
   "test_reset_browser_proxy.ts",
   "test_search_engines_browser_proxy.ts",
   "test_site_settings_prefs_browser_proxy.ts",
   "test_util.ts",
-  "zoom_levels_tests.js",
+  "zoom_levels_tests.ts",
 ]
 
-if (!is_chromeos_ash && !is_chromeos_lacros) {
+if (!is_chromeos) {
   non_preprocessed_files += [
     "default_browser_test.ts",
-    "import_data_dialog_test.js",
-    "system_page_tests.js",
+    "import_data_dialog_test.ts",
+    "system_page_tests.ts",
   ]
 } else {
-  non_preprocessed_files += [ "passwords_section_test_cros.js" ]
+  non_preprocessed_files += [ "passwords_section_test_cros.ts" ]
 }
 
 if (!is_mac && !is_chromeos_ash) {
-  non_preprocessed_files += [
-    "a11y/edit_dictionary_a11y_test.js",
-    "edit_dictionary_page_test.js",
-  ]
+  non_preprocessed_files += [ "edit_dictionary_page_test.ts" ]
 }
 
 if (is_chromeos_ash) {
   non_preprocessed_files += [
-    "people_page_test_cros.js",
-    "site_list_tests_cros.js",
+    "people_page_test_cros.ts",
+    "site_list_tests_cros.ts",
     "test_android_info_browser_proxy.ts",
   ]
 } else {
   non_preprocessed_files += [
-    "languages_tests.js",
-    "metrics_reporting_tests.js",
-    "people_page_manage_profile_test.js",
+    "fake_language_settings_private.ts",
+    "translate_page_tests.ts",
+    "languages_page_tests.ts",
+    "languages_tests.ts",
+    "metrics_reporting_tests.ts",
+    "people_page_manage_profile_test.ts",
+    "relaunch_confirmation_dialog_test.ts",
+    "test_languages_settings_metrics_proxy.ts",
   ]
 }
 
-if (is_win && is_chrome_branded) {
-  non_preprocessed_files += [
-    "chrome_cleanup_page_test.js",
-    "incompatible_applications_page_test.js",
-    "safety_check_chrome_cleaner_test.js",
-    "test_chrome_cleanup_proxy.ts",
-  ]
+if (is_win || is_mac) {
+  non_preprocessed_files += [ "passkeys_subpage_test.ts" ]
+}
+
+if (is_win) {
+  if (is_chrome_branded) {
+    non_preprocessed_files += [
+      "chrome_cleanup_page_test.ts",
+      "incompatible_applications_page_test.ts",
+      "safety_check_chrome_cleaner_test.ts",
+      "test_chrome_cleanup_proxy.ts",
+    ]
+  }
 }
 
 preprocessed_folder = "$target_gen_dir/preprocessed"
 
 preprocess_if_expr("preprocess") {
+  defines = chrome_grit_defines
   in_folder = "./"
   out_folder = preprocessed_folder
   in_files = preprocessed_files
@@ -179,14 +205,6 @@ preprocess_if_expr("preprocess") {
 copy("copy") {
   sources = non_preprocessed_files
   outputs = [ "$preprocessed_folder/{{source_target_relative}}" ]
-}
-
-generate_grd("build_grdp") {
-  grd_prefix = "webui_settings"
-  out_grd = "$target_gen_dir/resources.grdp"
-  deps = [ ":build_ts" ]
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-  resource_path_prefix = "settings"
 }
 
 ts_library("build_ts") {
@@ -208,12 +226,29 @@ ts_library("build_ts") {
     "//tools/typescript/definitions/language_settings_private.d.ts",
     "//tools/typescript/definitions/management.d.ts",
     "//tools/typescript/definitions/passwords_private.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
     "//tools/typescript/definitions/settings_private.d.ts",
   ]
-  deps = [ "//chrome/browser/resources/settings:build_ts" ]
+  if (is_chromeos) {
+    definitions +=
+        [ "//tools/typescript/definitions/quick_unlock_private.d.ts" ]
+  }
+  deps = [
+    "..:build_ts",
+    "//chrome/browser/resources/settings:build_ts",
+  ]
+
   extra_deps = [
     ":copy",
     ":preprocess",
-    "..:generate_definitions",
   ]
+}
+
+generate_grd("build_grdp") {
+  grd_prefix = "webui_settings"
+  out_grd = "$target_gen_dir/resources.grdp"
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  resource_path_prefix = "settings"
 }

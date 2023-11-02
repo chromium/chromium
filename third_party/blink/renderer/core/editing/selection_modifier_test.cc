@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,7 +48,41 @@ TEST_F(SelectionModifierTest, MoveForwardByWordNone) {
   EXPECT_EQ(SelectionInDOMTree(), modifier.Selection().AsSelection());
 }
 
+// http://crbug.com/1300781
 TEST_F(SelectionModifierTest, MoveByLineBlockInInline) {
+  LoadAhem();
+  InsertStyleElement(
+      "div {"
+      "font: 10px/20px Ahem;"
+      "padding: 10px;"
+      "writing-mode: horizontal-tb;"
+      "}"
+      "b { background: orange; }");
+  const SelectionInDOMTree selection =
+      SetSelectionTextToBody("<div>ab|c<b><p>ABC</p><p>DEF</p>def</b></div>");
+  SelectionModifier modifier(GetFrame(), selection);
+
+  EXPECT_EQ("<div>abc<b><p>AB|C</p><p>DEF</p>def</b></div>",
+            MoveForwardByLine(modifier));
+  EXPECT_EQ("<div>abc<b><p>ABC</p><p>DE|F</p>def</b></div>",
+            MoveForwardByLine(modifier));
+  EXPECT_EQ("<div>abc<b><p>ABC</p><p>DEF</p>de|f</b></div>",
+            MoveForwardByLine(modifier));
+
+  EXPECT_EQ("<div>abc<b><p>ABC</p><p>DE|F</p>def</b></div>",
+            MoveBackwardByLine(modifier));
+  EXPECT_EQ("<div>abc<b><p>AB|C</p><p>DEF</p>def</b></div>",
+            MoveBackwardByLine(modifier));
+  EXPECT_EQ("<div>ab|c<b><p>ABC</p><p>DEF</p>def</b></div>",
+            MoveBackwardByLine(modifier));
+}
+
+TEST_F(SelectionModifierTest, MoveByLineBlockInInlineCulled) {
+  // |LayoutNGBlockInInline| prevents the inline box from culling. This test is
+  // exactly the same as |MoveByLineBlockInInline| above.
+  if (RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled())
+    return;
+
   LoadAhem();
   InsertStyleElement(
       "div {"
@@ -407,6 +441,30 @@ TEST_F(SelectionModifierTest, PositionDisconnectedInFlatTree2) {
                 GetSelectionTextFromBody(modifier.Selection().AsSelection()));
     }
   }
+}
+
+// For https://crbug.com/1312704
+TEST_F(SelectionModifierTest, OptgroupAndTable) {
+  InsertStyleElement(
+      "optgroup, table { display: inline-table; }"
+      "table { appearance:button; }");
+  SelectionModifier modifier(
+      GetFrame(), SetSelectionTextToBody(
+                      "<optgroup>^</optgroup>|<table><td></td></table>"));
+  EXPECT_TRUE(modifier.Modify(SelectionModifyAlteration::kExtend,
+                              SelectionModifyDirection::kForward,
+                              TextGranularity::kLine));
+
+  const SelectionInDOMTree& selection = modifier.Selection().AsSelection();
+  EXPECT_EQ(
+      "<optgroup></optgroup><table><tbody><tr><td></td></tr></tbody></table>",
+      GetSelectionTextFromBody(selection));
+
+  Element* optgroup = GetDocument().QuerySelector("optgroup");
+  ShadowRoot* shadow_root = optgroup->GetShadowRoot();
+  Element* label = shadow_root->getElementById("optgroup-label");
+  EXPECT_EQ(Position(label, 0), selection.Base());
+  EXPECT_EQ(Position(shadow_root, 1), selection.Extent());
 }
 
 }  // namespace blink

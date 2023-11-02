@@ -149,14 +149,9 @@ expect_css_supports_fails = (member_name, member_css_name, member_value, element
 expect_css_media_fails = (feature_name) => {
   let media_feature_string = make_css_media_feature_string(feature_name);
   assert_false(window.matchMedia(media_feature_string).matches);
+  assert_false(window.matchMedia(`not (${media_feature_string})`).matches);
 
   assert_equals(getComputedStyle(document.documentElement).opacity, "1");
-
-  let media_list = document.styleSheets[0].media;
-  media_list.appendMedium(media_feature_string);
-  assert_true(media_list.mediaText.indexOf("not all") !== -1);
-  media_list.mediaText = media_feature_string;
-  assert_true(media_list.mediaText.indexOf("not all") !== -1);
 }
 
 // These tests verify that any gated parts of the API are not available.
@@ -232,17 +227,18 @@ expect_failure_invalid_os = (skip_worker) => {
   if (!skip_worker) {
     fetch_tests_from_worker(new Worker('resources/invalid-os-worker.js'));
   }
-}
+};
 
 // These tests verify that any gated parts of the API are not available for a
 // third-party trial.
-expect_failure_third_party = (skip_worker) => {
+expect_failure_third_party = async (skip_worker) => {
   test(() => {
     expect_member_fails('thirdPartyAttribute');
   }, 'Third-party attribute should not exist, with trial disabled');
 
   if (!skip_worker) {
-    fetch_tests_from_worker(new Worker('resources/third-party-disabled-worker.js'));
+    await fetch_tests_from_worker(
+        new Worker('resources/third-party-disabled-worker.js'));
   }
 };
 

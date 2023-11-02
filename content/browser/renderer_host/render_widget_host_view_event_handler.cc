@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "components/viz/common/features.h"
-#include "content/browser/renderer_host/hit_test_debug_key_event_observer.h"
 #include "content/browser/renderer_host/input/touch_selection_controller_client_aura.h"
 #include "content/browser/renderer_host/overscroll_controller.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
@@ -38,7 +37,7 @@
 #include "ui/gfx/delegated_ink_point.h"
 #include "ui/touch_selection/touch_selection_controller.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -53,7 +52,7 @@ namespace {
 // of the border area, in percentage of the corresponding dimension.
 const int kMouseLockBorderPercentage = 15;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // A callback function for EnumThreadWindows to enumerate and dismiss
 // any owned popup windows.
 BOOL CALLBACK DismissOwnedPopups(HWND window, LPARAM arg) {
@@ -68,7 +67,7 @@ BOOL CALLBACK DismissOwnedPopups(HWND window, LPARAM arg) {
 
   return TRUE;
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 bool IsFractionalScaleFactor(float scale_factor) {
   return (scale_factor - static_cast<int>(scale_factor)) > 0;
@@ -77,7 +76,7 @@ bool IsFractionalScaleFactor(float scale_factor) {
 // We don't mark these as handled so that they're sent back to the
 // DefWindowProc so it can generate WM_APPCOMMAND as necessary.
 bool ShouldGenerateAppCommand(const ui::MouseEvent* event) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return (event->native_event().message == WM_NCXBUTTONUP);
 #else
   return false;
@@ -121,10 +120,7 @@ RenderWidgetHostViewEventHandler::RenderWidgetHostViewEventHandler(
       host_(host),
       host_view_(host_view),
       delegate_(delegate),
-      mouse_wheel_phase_handler_(host_view),
-      debug_observer_(features::IsVizHitTestingDebugEnabled()
-                          ? std::make_unique<HitTestDebugKeyEventObserver>(host)
-                          : nullptr) {}
+      mouse_wheel_phase_handler_(host_view) {}
 
 RenderWidgetHostViewEventHandler::~RenderWidgetHostViewEventHandler() {
   DCHECK(!mouse_locked_);
@@ -282,7 +278,7 @@ void RenderWidgetHostViewEventHandler::HandleMouseWheelEvent(
   DCHECK(event);
   DCHECK_EQ(event->type(), ui::ET_MOUSEWHEEL);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!mouse_locked_) {
     // We get mouse wheel/scroll messages even if we are not in the foreground.
     // So here we check if we have any owned popup windows in the foreground and
@@ -331,7 +327,7 @@ void RenderWidgetHostViewEventHandler::OnMouseEvent(ui::MouseEvent* event) {
   // breaks drop-down lists which means something is incorrectly setting
   // event->handled to true (http://crbug.com/577983).
 
-  if (mouse_locked_ && !window_->GetHost()->SupportsMouseLock()) {
+  if (mouse_locked_) {
     HandleMouseEventWhileLocked(event);
     return;
   }
@@ -403,7 +399,7 @@ void RenderWidgetHostViewEventHandler::OnScrollEvent(ui::ScrollEvent* event) {
   TRACE_EVENT0("input", "RenderWidgetHostViewBase::OnScrollEvent");
   const bool should_route_event = ShouldRouteEvents();
   if (event->type() == ui::ET_SCROLL) {
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
     // TODO(ananta)
     // Investigate if this is true for Windows 8 Metro ASH as well.
     if (event->finger_count() != 2)
@@ -600,7 +596,7 @@ bool RenderWidgetHostViewEventHandler::CanRendererHandleEvent(
   if (event->type() == ui::ET_MOUSE_EXITED) {
     if (mouse_locked || selection_popup)
       return false;
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     // Don't forward the mouse leave message which is received when the context
     // menu is displayed by the page. This confuses the page and causes state
     // changes.
@@ -610,7 +606,7 @@ bool RenderWidgetHostViewEventHandler::CanRendererHandleEvent(
     return true;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Renderer cannot handle WM_XBUTTON or NC events.
   switch (event->native_event().message) {
     case WM_XBUTTONDOWN:
@@ -663,9 +659,9 @@ void RenderWidgetHostViewEventHandler::ForwardMouseEventToParent(
 
   // Take a copy of |event|, to avoid ConvertLocationToTarget mutating the
   // event.
-  std::unique_ptr<ui::Event> event_copy = ui::Event::Clone(*event);
+  std::unique_ptr<ui::Event> event_copy = event->Clone();
   ui::MouseEvent* mouse_event = static_cast<ui::MouseEvent*>(event_copy.get());
-  mouse_event->ConvertLocationToTarget(window_, window_->parent());
+  mouse_event->ConvertLocationToTarget(window_.get(), window_->parent());
   window_->parent()->delegate()->OnMouseEvent(mouse_event);
   if (mouse_event->handled())
     event->SetHandled();
@@ -706,9 +702,8 @@ void RenderWidgetHostViewEventHandler::HandleMouseEventWhileLocked(
     // If we receive non client mouse messages while we are in the locked state
     // it probably means that the mouse left the borders of our window and
     // needs to be moved back to the center.
-    if (event->flags() & ui::EF_IS_NON_CLIENT) {
-      // TODO(jonross): ideally this would not be done for mus
-      // (crbug.com/621412)
+    if ((event->flags() & ui::EF_IS_NON_CLIENT) &&
+        !window_->GetHost()->SupportsMouseLock()) {
       MoveCursorToCenter(event);
       return;
     }
@@ -817,7 +812,7 @@ void RenderWidgetHostViewEventHandler::MoveCursorToCenter(
   gfx::Point center(gfx::Rect(window_->bounds().size()).CenterPoint());
   gfx::Point center_in_screen(window_->GetBoundsInScreen().CenterPoint());
   window_->MoveCursorTo(center);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // TODO(crbug.com/781182): Set the global position when move cursor to center.
   // This is a workaround for a bug from Windows update 16299, and should be
   // remove once the bug is fixed in OS. When consolidate_movement_ flag is
@@ -878,7 +873,7 @@ bool RenderWidgetHostViewEventHandler::ShouldMoveToCenter(
     gfx::PointF mouse_screen_position) {
   // Do not need to move to center in unadjusted movement mode as
   // the movement value are directly from OS.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (mouse_locked_unadjusted_movement_)
     return false;
 #endif

@@ -242,7 +242,13 @@ MIDIOutput::MIDIOutput(MIDIAccess* access,
                        const String& name,
                        const String& version,
                        PortState state)
-    : MIDIPort(access, id, manufacturer, name, kTypeOutput, version, state),
+    : MIDIPort(access,
+               id,
+               manufacturer,
+               name,
+               MIDIPortType::kOutput,
+               version,
+               state),
       port_index_(port_index) {}
 
 MIDIOutput::~MIDIOutput() = default;
@@ -317,7 +323,7 @@ void MIDIOutput::DidOpen(bool opened) {
         base::checked_cast<wtf_size_t>(data.first->length()), data.second);
   }
   queued_data.clear();
-  DCHECK(pending_data_.IsEmpty());
+  DCHECK(pending_data_.empty());
 }
 
 void MIDIOutput::Trace(Visitor* visitor) const {

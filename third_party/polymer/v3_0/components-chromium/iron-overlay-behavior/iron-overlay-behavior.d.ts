@@ -23,7 +23,7 @@ interface IronOverlayBehaviorImpl {
   /**
    * True if the overlay is currently displayed.
    */
-  opened: boolean|null|undefined;
+  opened: boolean;
 
   /**
    * True if the overlay was canceled when it was last closed.

@@ -1,12 +1,14 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/display/cursor_window_controller.h"
 
 #include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
+#include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
+#include "ash/color_enhancement/color_enhancement_controller.h"
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -25,8 +27,8 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/aura/window_event_dispatcher.h"
-#include "ui/base/cursor/cursors_aura.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/layout.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/display/display.h"
@@ -38,6 +40,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/cursors_aura.h"
 
 namespace ash {
 namespace {
@@ -147,9 +150,20 @@ bool CursorWindowController::ShouldEnableCursorCompositing() {
   if (is_cursor_motion_blur_enabled_)
     return true;
 
-  auto* session = CaptureModeController::Get()->capture_mode_session();
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceShowCursor)) {
+    return false;
+  }
+
+  auto* controller = CaptureModeController::Get();
+  auto* session = controller->capture_mode_session();
   if (session && session->is_drag_in_progress()) {
     // To ensure the cursor is aligned with the dragged region.
+    return true;
+  }
+
+  if (controller->camera_controller()->is_drag_in_progress()) {
+    // To ensure the cursor is aligned with the dragged camera preview.
     return true;
   }
 
@@ -190,6 +204,11 @@ bool CursorWindowController::ShouldEnableCursorCompositing() {
                               displays_ctm_support);
     if (displays_ctm_support != DisplayColorManager::DisplayCtmSupport::kAll)
       return true;
+  }
+
+  if (shell->color_enhancement_controller()
+          ->ShouldEnableCursorCompositingForSepia()) {
+    return true;
   }
 
   return prefs->GetBoolean(prefs::kAccessibilityLargeCursorEnabled) ||
@@ -247,6 +266,14 @@ void CursorWindowController::SetDisplay(const display::Display& display) {
   UpdateCursorImage();
 }
 
+void CursorWindowController::OnDockedMagnifierResizingStateChanged(
+    bool is_active) {
+  const int container_id = is_active ? kShellWindowId_DockedMagnifierContainer
+                                     : kShellWindowId_MouseCursorContainer;
+  SetContainer(
+      RootWindowController::ForWindow(container_)->GetContainer(container_id));
+}
+
 void CursorWindowController::UpdateLocation() {
   if (!cursor_window_)
     return;
@@ -274,6 +301,10 @@ void CursorWindowController::SetCursorSize(ui::CursorSize cursor_size) {
 void CursorWindowController::SetVisibility(bool visible) {
   visible_ = visible;
   UpdateCursorVisibility();
+}
+
+const aura::Window* CursorWindowController::GetContainerForTest() const {
+  return container_;
 }
 
 void CursorWindowController::SetContainer(aura::Window* container) {
@@ -343,7 +374,7 @@ void CursorWindowController::UpdateCursorImage() {
     hot_point_in_physical_pixels = cursor_.custom_hotspot();
   } else {
     int resource_id;
-    if (!ui::GetCursorDataFor(cursor_size_, cursor_.type(), cursor_scale,
+    if (!wm::GetCursorDataFor(cursor_size_, cursor_.type(), cursor_scale,
                               &resource_id, &hot_point_in_physical_pixels)) {
       return;
     }

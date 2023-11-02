@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -100,7 +100,7 @@ class AndroidSharedVrPageState(_SharedVrPageState):
   def _RemoveSystemVrCore(self):
     # Import done here since importing Devil on Windows breaks the Telemetry
     # unittests.
-    from devil.android import forwarder # pylint: disable=import-error
+    from devil.android import forwarder  # pylint: disable=import-error,import-outside-toplevel
     # Close the existing network controller since RemoveSystemPackages could
     # potentially reboot the device, which breaks the existing port forwarding
     # and makes it impossible to cleanly re-establish it if the network
@@ -162,8 +162,8 @@ class AndroidSharedVrPageState(_SharedVrPageState):
                      'gvr-android-sdk', 'test-apks', 'vr_keyboard',
                      'vr_keyboard_current.apk'))
 
-  def WillRunStory(self, page):
-    super(AndroidSharedVrPageState, self).WillRunStory(page)
+  def WillRunStory(self, story):
+    super(AndroidSharedVrPageState, self).WillRunStory(story)
     if not self._finder_options.disable_screen_reset:
       self._CycleScreen()
 
@@ -230,8 +230,8 @@ class WindowsSharedVrPageState(_SharedVrPageState):
                 self._finder_options, self._possible_browser)
     self._desktop_runtime.Setup()
 
-  def WillRunStory(self, page):
-    super(WindowsSharedVrPageState, self).WillRunStory(page)
+  def WillRunStory(self, story):
+    super(WindowsSharedVrPageState, self).WillRunStory(story)
     self._desktop_runtime.WillRunStory()
 
   def TearDownState(self):

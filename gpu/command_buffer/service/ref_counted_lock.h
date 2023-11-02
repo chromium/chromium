@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,18 +15,20 @@ namespace gpu {
 class GPU_GLES2_EXPORT RefCountedLock
     : public base::RefCountedThreadSafe<RefCountedLock> {
  public:
-  RefCountedLock() = default;
+  RefCountedLock();
 
   // Disallow copy and assign.
   RefCountedLock(const RefCountedLock&) = delete;
   RefCountedLock& operator=(const RefCountedLock&) = delete;
 
-  base::Lock* GetDrDcLockPtr() { return &lock_; }
-  void AssertAcquired() { lock_.AssertAcquired(); }
+  virtual base::Lock* GetDrDcLockPtr();
+  virtual void AssertAcquired();
+
+ protected:
+  virtual ~RefCountedLock();
 
  private:
   friend class base::RefCountedThreadSafe<RefCountedLock>;
-  ~RefCountedLock() = default;
 
   base::Lock lock_;
 };

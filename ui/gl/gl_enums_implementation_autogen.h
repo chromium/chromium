@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -613,10 +613,6 @@ static const GLEnums::EnumToString enum_to_string_table[] = {
         "GL_RELATIVE_SMOOTH_QUADRATIC_CURVE_TO_NV",
     },
     {
-        0x1,
-        "GL_CA_LAYER_EDGE_LEFT_CHROMIUM",
-    },
-    {
         0x10,
         "GL_SMOOTH_CUBIC_CURVE_TO_NV",
     },
@@ -861,10 +857,6 @@ static const GLEnums::EnumToString enum_to_string_table[] = {
         "GL_EXTENSIONS",
     },
     {
-        0x2,
-        "GL_CA_LAYER_EDGE_RIGHT_CHROMIUM",
-    },
-    {
         0x20,
         "GL_GLYPH_VERTICAL_BEARING_X_BIT_NV",
     },
@@ -965,20 +957,12 @@ static const GLEnums::EnumToString enum_to_string_table[] = {
         "GL_CONTEXT_LOST",
     },
     {
-        0x4,
-        "GL_CA_LAYER_EDGE_BOTTOM_CHROMIUM",
-    },
-    {
         0x40,
         "GL_GLYPH_VERTICAL_BEARING_Y_BIT_NV",
     },
     {
         0x40000000,
         "GL_MULTISAMPLE_BUFFER_BIT6_QCOM",
-    },
-    {
-        0x6000,
-        "GL_SCANOUT_CHROMIUM",
     },
     {
         0x6003,
@@ -1035,10 +1019,6 @@ static const GLEnums::EnumToString enum_to_string_table[] = {
     {
         0x78FD,
         "GL_RGB_YCBCR_P010_CHROMIUM",
-    },
-    {
-        0x8,
-        "GL_CA_LAYER_EDGE_TOP_CHROMIUM",
     },
     {
         0x80,
@@ -5301,30 +5281,6 @@ static const GLEnums::EnumToString enum_to_string_table[] = {
         "GL_BIND_GENERATES_RESOURCE_CHROMIUM",
     },
     {
-        0x9245,
-        "GL_OVERLAY_TRANSFORM_NONE_CHROMIUM",
-    },
-    {
-        0x9246,
-        "GL_OVERLAY_TRANSFORM_FLIP_HORIZONTAL_CHROMIUM",
-    },
-    {
-        0x9247,
-        "GL_OVERLAY_TRANSFORM_FLIP_VERTICAL_CHROMIUM",
-    },
-    {
-        0x9248,
-        "GL_OVERLAY_TRANSFORM_ROTATE_90_CHROMIUM",
-    },
-    {
-        0x9249,
-        "GL_OVERLAY_TRANSFORM_ROTATE_180_CHROMIUM",
-    },
-    {
-        0x924A,
-        "GL_OVERLAY_TRANSFORM_ROTATE_270_CHROMIUM",
-    },
-    {
         0x9250,
         "GL_SHADER_BINARY_DMP",
     },
@@ -6788,6 +6744,10 @@ static const GLEnums::EnumToString enum_to_string_table[] = {
     {
         0x96A2,
         "GL_FRAMEBUFFER_FETCH_NONCOHERENT_QCOM",
+    },
+    {
+        0x96BA,
+        "GL_RGBX8_ANGLE",
     },
     {
         0xC0,

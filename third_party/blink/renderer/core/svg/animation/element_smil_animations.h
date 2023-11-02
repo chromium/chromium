@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_ANIMATION_ELEMENT_SMIL_ANIMATIONS_H_
 
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
@@ -25,7 +25,7 @@ class ElementSMILAnimations : public GarbageCollected<ElementSMILAnimations> {
 
   void AddAnimation(const QualifiedName& attribute, SVGAnimationElement*);
   void RemoveAnimation(const QualifiedName& attribute, SVGAnimationElement*);
-  bool HasAnimations() const { return !sandwiches_.IsEmpty(); }
+  bool HasAnimations() const { return !sandwiches_.empty(); }
 
   bool Apply(SMILTime elapsed);
 

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,8 @@
 
 #include <memory>
 #include <string>
+
+#include "base/memory/raw_ptr.h"
 
 namespace safe_browsing {
 namespace dmg {
@@ -85,7 +87,7 @@ class HFSIterator {
   uint32_t block_size() const { return volume_header_.blockSize; }
   ReadStream* stream() const { return stream_; }
 
-  ReadStream* const stream_;  // The stream backing the filesystem.
+  const raw_ptr<ReadStream> stream_;  // The stream backing the filesystem.
   HFSPlusVolumeHeader volume_header_;
   std::unique_ptr<HFSForkReadStream>
       catalog_file_;  // Data of the catalog file.

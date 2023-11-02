@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,7 +33,7 @@ class GoogleLogoService : public search_provider_logos::LogoServiceImpl {
 
   using LogoServiceImpl::GetLogo;
 
-  // |LogoService::GetLogo| does everything on callbacks, and iOS needs to load
+  // `LogoService::GetLogo` does everything on callbacks, and iOS needs to load
   // the logo immediately on page load. This caches the SkBitmap so we can
   // immediately load. This prevents showing the google logo on every new tab
   // page and immediately animating to the logo. Only one SkBitmap is cached per

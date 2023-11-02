@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,38 +11,34 @@
 
 namespace blink {
 
-namespace {
-
-absl::optional<PhysicalAxes> QueriedAxes(String string) {
-  auto set = MediaQuerySet::Create(string, nullptr);
-  if (!set)
-    return absl::nullopt;
-  return set->QueriedAxes();
-}
-
-}  // namespace
-
 typedef struct {
   const char* input;
   const char* output;
 } MediaQuerySetTestCase;
 
-static void TestMediaQuery(MediaQuerySetTestCase test,
-                           MediaQuerySet& query_set) {
-  StringBuilder output;
+// If `unknown_substitute` is non-null, then any unknown queries are
+// substituted with that string.
+static void TestMediaQuery(const char* input,
+                           const char* output,
+                           MediaQuerySet& query_set,
+                           String unknown_substitute = String()) {
+  StringBuilder actual;
   wtf_size_t j = 0;
   while (j < query_set.QueryVector().size()) {
-    String query_text = query_set.QueryVector()[j]->CssText();
-    output.Append(query_text);
+    const MediaQuery& query = *query_set.QueryVector()[j];
+    if (!unknown_substitute.IsNull() && query.HasUnknown())
+      actual.Append(unknown_substitute);
+    else
+      actual.Append(query.CssText());
     ++j;
     if (j >= query_set.QueryVector().size())
       break;
-    output.Append(", ");
+    actual.Append(", ");
   }
-  if (test.output)
-    ASSERT_EQ(test.output, output.ToString());
+  if (output)
+    ASSERT_EQ(output, actual.ToString());
   else
-    ASSERT_EQ(test.input, output.ToString());
+    ASSERT_EQ(input, actual.ToString());
 }
 
 TEST(MediaQuerySetTest, Basic) {
@@ -189,7 +185,9 @@ TEST(MediaQuerySetTest, Basic) {
       {"only and", "not all"},
       {"only only", "not all"},
       {"only or", "not all"},
-      {"not (orientation)", "not all"},
+      {"layer", "not all"},
+      {"not layer", "not all"},
+      {"not (orientation)", nullptr},
       {"only (orientation)", "not all"},
       {"(max-width: 800px()), (max-width: 800px)",
        "not all, (max-width: 800px)"},
@@ -225,14 +223,170 @@ TEST(MediaQuerySetTest, Basic) {
       {"all an[isdfs bla())(]icalc(i)(())), (max-width: 600px)", "not all"},
       {"all an[isdfs bla())(]icalc(i)(()))], (max-width: 800px)",
        "not all, (max-width: 800px)"},
-      {nullptr, nullptr}  // Do not remove the terminator line.
+      {"(inline-size > 0px)", "not all"},
+      {"(min-inline-size: 0px)", "not all"},
+      {"(max-inline-size: 0px)", "not all"},
+      {"(block-size > 0px)", "not all"},
+      {"(min-block-size: 0px)", "not all"},
+      {"(max-block-size: 0px)", "not all"},
   };
 
-  for (unsigned i = 0; test_cases[i].input; ++i) {
-    SCOPED_TRACE(test_cases[i].input);
-    scoped_refptr<MediaQuerySet> query_set =
-        MediaQuerySet::Create(test_cases[i].input, nullptr);
-    TestMediaQuery(test_cases[i], *query_set);
+  for (const MediaQuerySetTestCase& test : test_cases) {
+    SCOPED_TRACE(String(test.input));
+    // This test was originally written for mediaqueries-3, and does not
+    // differentiate between real parse errors ("not all") and queries which
+    // have parts which match the <general-enclosed> production.
+    TestMediaQuery(test.input, test.output,
+                   *MediaQuerySet::Create(test.input, nullptr), "not all");
+  }
+}
+
+TEST(MediaQuerySetTest, CSSMediaQueries4) {
+  ScopedCSSMediaQueries4ForTest media_queries_4_flag(true);
+
+  MediaQuerySetTestCase test_cases[] = {
+      {"(width: 100px) or (width: 200px)", nullptr},
+      {"(width: 100px)or (width: 200px)", "(width: 100px) or (width: 200px)"},
+      {"(width: 100px) or (width: 200px) or (color)", nullptr},
+      {"screen and (width: 100px) or (width: 200px)", "not all"},
+      {"(height: 100px) and (width: 100px) or (width: 200px)", "not all"},
+      {"(height: 100px) or (width: 100px) and (width: 200px)", "not all"},
+      {"((width: 100px))", nullptr},
+      {"(((width: 100px)))", nullptr},
+      {"(   (   (width: 100px) ) )", "(((width: 100px)))"},
+      {"(width: 100px) or ((width: 200px) or (width: 300px))", nullptr},
+      {"(width: 100px) and ((width: 200px) or (width: 300px))", nullptr},
+      {"(width: 100px) or ((width: 200px) and (width: 300px))", nullptr},
+      {"(width: 100px) or ((width: 200px) and (width: 300px)) and (width: "
+       "400px)",
+       "not all"},
+      {"(width: 100px) and ((width: 200px) and (width: 300px)) or (width: "
+       "400px)",
+       "not all"},
+      {"(width: 100px) or ((width: 200px) and (width: 300px)) or (width: "
+       "400px)",
+       nullptr},
+      {"(width: 100px) and ((width: 200px) and (width: 300px)) and (width: "
+       "400px)",
+       nullptr},
+      {"not (width: 100px)", nullptr},
+      {"(width: 100px) and (not (width: 200px))", nullptr},
+      {"(width: 100px) and not (width: 200px)", "not all"},
+      {"(width < 100px)", nullptr},
+      {"(width <= 100px)", nullptr},
+      {"(width > 100px)", nullptr},
+      {"(width >= 100px)", nullptr},
+      {"(width = 100px)", nullptr},
+      {"(100px < width)", nullptr},
+      {"(100px <= width)", nullptr},
+      {"(100px > width)", nullptr},
+      {"(100px >= width)", nullptr},
+      {"(100px = width)", nullptr},
+      {"(100px < width < 200px)", nullptr},
+      {"(100px <= width <= 200px)", nullptr},
+      {"(100px < width <= 200px)", nullptr},
+      {"(100px <= width < 200px)", nullptr},
+      {"(200px > width > 100px)", nullptr},
+      {"(200px >= width >= 100px)", nullptr},
+      {"(200px > width >= 100px)", nullptr},
+      {"(200px >= width > 100px)", nullptr},
+      {"(not (width < 100px)) and (height > 200px)", nullptr},
+      {"(width<100px)", "(width < 100px)"},
+      {"(width>=100px)", "(width >= 100px)"},
+      {"(width=100px)", "(width = 100px)"},
+      {"(200px>=width > 100px)", "(200px >= width > 100px)"},
+      {"(200px>=width>100px)", "(200px >= width > 100px)"},
+  };
+
+  for (const MediaQuerySetTestCase& test : test_cases) {
+    SCOPED_TRACE(String(test.input));
+    TestMediaQuery(test.input, test.output,
+                   *MediaQuerySet::Create(test.input, nullptr), "<unknown>");
+  }
+}
+
+// https://drafts.csswg.org/mediaqueries-4/#typedef-general-enclosed
+TEST(MediaQuerySetTest, GeneralEnclosed) {
+  ScopedCSSMediaQueries4ForTest media_queries_4_flag(true);
+
+  const char* unknown_cases[] = {
+      "()",
+      "( )",
+      "(1)",
+      "( 1 )",
+      "(1px)",
+      "(unknown)",
+      "(unknown: 50kg)",
+      "unknown()",
+      "unknown(1)",
+      "(a b c)",
+      "(width <> height)",
+      "( a! b; )",
+      "not screen and (unknown)",
+      "not all and (unknown)",
+      "not all and (width) and (unknown)",
+      "not all and (not ((width) or (unknown)))",
+      "(width: 100px) or (max-width: 50%)",
+      "(width: 100px) or ((width: 200px) and (width: 300px) or (width: "
+      "400px))",
+      "(width: 100px) or ((width: 200px) or (width: 300px) and (width: "
+      "400px))",
+      "(width < 50%)",
+      "(width < 100px nonsense)",
+      "(100px nonsense < 100px)",
+      "(width == 100px)",
+      "(width << 100px)",
+      "(width <> 100px)",
+      "(100px == width)",
+      "(100px < = width)",
+      "(100px > = width)",
+      "(100px==width)",
+      "(100px , width)",
+      "(100px,width)",
+      "(100px ! width)",
+      "(1px < width > 2px)",
+      "(1px > width < 2px)",
+      "(1px <= width > 2px)",
+      "(1px > width <= 2px)",
+      "(1px = width = 2px)",
+      "(min-width < 10px)",
+      "(max-width < 10px)",
+      "(10px < min-width)",
+      "(10px < min-width < 20px)",
+      "(100px ! width < 200px)",
+      "(100px < width ! 200px)",
+      "(100px <)",
+      "(100px < )",
+      "(100px < width <)",
+      "(100px < width < )",
+      "(50% < width < 200px)",
+      "(100px < width < 50%)",
+      "(100px nonsense < width < 200px)",
+      "(100px < width < 200px nonsense)",
+      "(100px < width : 200px)",
+  };
+
+  for (const char* input : unknown_cases) {
+    SCOPED_TRACE(String(input));
+    TestMediaQuery(input, input, *MediaQuerySet::Create(input, nullptr));
+
+    // When we parse something as <general-enclosed>, we'll serialize whatever
+    // was specified, so it's not clear if we took the <general-enclosed> path
+    // during parsing or not. In order to verify this, run the same test again,
+    // substituting unknown queries with
+    // "<unknown>".
+    TestMediaQuery(input, "<unknown>", *MediaQuerySet::Create(input, nullptr),
+                   "<unknown>");
+  }
+
+  const char* invalid_cases[] = {
+      "(])",
+      "(url(as'df))",
+  };
+
+  for (const char* input : invalid_cases) {
+    SCOPED_TRACE(String(input));
+    TestMediaQuery(input, "not all", *MediaQuerySet::Create(input, nullptr));
   }
 }
 
@@ -241,6 +395,7 @@ TEST(MediaQuerySetTest, BehindRuntimeFlag) {
   ScopedMediaQueryNavigationControlsForTest navigation_controls_flag(false);
   ScopedCSSFoldablesForTest foldables_flag(false);
   ScopedDevicePostureForTest device_posture_flag(false);
+  ScopedCSSMediaQueries4ForTest media_queries_4_flag(false);
 
   // The first string represents the input string, the second string represents
   // the output string.
@@ -256,29 +411,27 @@ TEST(MediaQuerySetTest, BehindRuntimeFlag) {
       {"(horizontal-viewport-segments: 1)", "not all"},
       {"(vertical-viewport-segments: 1)", "not all"},
       {"(device-posture:none)", "not all"},
-      {nullptr, nullptr}  // Do not remove the terminator line.
+      {"(width: 100px) or (width: 200px)", "not all"},
+      {"((width: 100px))", "not all"},
+      {"not (orientation)", "not all"},
+      {"(width < 10px)", "not all"},
+      {"(width <= 10px)", "not all"},
+      {"(width = 10px)", "not all"},
+      {"(width > 10px)", "not all"},
+      {"(width >= 10px)", "not all"},
+      {"(10px < width)", "not all"},
+      {"(10px < width < 20px)", "not all"},
+      {"()", "not all"},
+      {"(unknown)", "not all"},
+      {"unknown()", "not all"},
+      {"(1px)", "not all"},
   };
 
-  for (unsigned i = 0; test_cases[i].input; ++i) {
-    scoped_refptr<MediaQuerySet> query_set =
-        MediaQuerySet::Create(test_cases[i].input, nullptr);
-    TestMediaQuery(test_cases[i], *query_set);
+  for (const MediaQuerySetTestCase& test : test_cases) {
+    SCOPED_TRACE(String(test.input));
+    TestMediaQuery(test.input, test.output,
+                   *MediaQuerySet::Create(test.input, nullptr));
   }
-}
-
-TEST(MediaQuerySetTest, QueriedAxes) {
-  EXPECT_EQ(PhysicalAxes(kPhysicalAxisNone), QueriedAxes("(color)"));
-  EXPECT_EQ(PhysicalAxes(kPhysicalAxisHorizontal), QueriedAxes("(width)"));
-  EXPECT_EQ(PhysicalAxes(kPhysicalAxisVertical), QueriedAxes("(height)"));
-  EXPECT_EQ(PhysicalAxes(kPhysicalAxisBoth), QueriedAxes("(width), (height)"));
-  EXPECT_EQ(PhysicalAxes(kPhysicalAxisVertical),
-            QueriedAxes("(color), (height)"));
-  EXPECT_EQ(PhysicalAxes(kPhysicalAxisBoth),
-            QueriedAxes("(width) and (height)"));
-  EXPECT_EQ(PhysicalAxes(kPhysicalAxisBoth),
-            QueriedAxes("(color) and (width) and (height)"));
-  EXPECT_EQ(PhysicalAxes(kPhysicalAxisVertical),
-            QueriedAxes("not screen and (height)"));
 }
 
 }  // namespace blink

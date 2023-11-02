@@ -39,10 +39,10 @@
 #include "third_party/blink/renderer/core/editing/markers/active_suggestion_marker_list_impl.h"
 #include "third_party/blink/renderer/core/editing/markers/composition_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/composition_marker_list_impl.h"
+#include "third_party/blink/renderer/core/editing/markers/custom_highlight_marker.h"
+#include "third_party/blink/renderer/core/editing/markers/custom_highlight_marker_list_impl.h"
 #include "third_party/blink/renderer/core/editing/markers/grammar_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/grammar_marker_list_impl.h"
-#include "third_party/blink/renderer/core/editing/markers/highlight_marker.h"
-#include "third_party/blink/renderer/core/editing/markers/highlight_marker_list_impl.h"
 #include "third_party/blink/renderer/core/editing/markers/sorted_document_marker_list_editor.h"
 #include "third_party/blink/renderer/core/editing/markers/spelling_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/spelling_marker_list_impl.h"
@@ -82,8 +82,8 @@ DocumentMarker::MarkerTypeIndex MarkerTypeToMarkerIndex(
       return DocumentMarker::kSuggestionMarkerIndex;
     case DocumentMarker::kTextFragment:
       return DocumentMarker::kTextFragmentMarkerIndex;
-    case DocumentMarker::kHighlight:
-      return DocumentMarker::kHighlightMarkerIndex;
+    case DocumentMarker::kCustomHighlight:
+      return DocumentMarker::kCustomHighlightMarkerIndex;
   }
 
   NOTREACHED();
@@ -106,8 +106,8 @@ DocumentMarkerList* CreateListForType(DocumentMarker::MarkerType type) {
       return MakeGarbageCollected<TextMatchMarkerListImpl>();
     case DocumentMarker::kTextFragment:
       return MakeGarbageCollected<TextFragmentMarkerListImpl>();
-    case DocumentMarker::kHighlight:
-      return MakeGarbageCollected<HighlightMarkerListImpl>();
+    case DocumentMarker::kCustomHighlight:
+      return MakeGarbageCollected<CustomHighlightMarkerListImpl>();
   }
 
   NOTREACHED();
@@ -160,7 +160,7 @@ bool DocumentMarkerController::PossiblyHasMarkers(
 
 inline bool DocumentMarkerController::PossiblyHasMarkers(
     DocumentMarker::MarkerTypes types) const {
-  DCHECK(!markers_.IsEmpty() ||
+  DCHECK(!markers_.empty() ||
          possibly_existing_marker_types_ == DocumentMarker::MarkerTypes(0));
   return possibly_existing_marker_types_.Intersects(types);
 }
@@ -260,15 +260,15 @@ void DocumentMarkerController::AddTextFragmentMarker(
   });
 }
 
-void DocumentMarkerController::AddHighlightMarker(
+void DocumentMarkerController::AddCustomHighlightMarker(
     const EphemeralRange& range,
     const String& highlight_name,
     const Member<Highlight> highlight) {
   DCHECK(!document_->NeedsLayoutTreeUpdate());
   AddMarkerInternal(
       range, [highlight_name, highlight](int start_offset, int end_offset) {
-        return MakeGarbageCollected<HighlightMarker>(start_offset, end_offset,
-                                                     highlight_name, highlight);
+        return MakeGarbageCollected<CustomHighlightMarker>(
+            start_offset, end_offset, highlight_name, highlight);
       });
 }
 
@@ -282,7 +282,7 @@ void DocumentMarkerController::RemoveMarkers(
   for (; !marked_text.AtEnd(); marked_text.Advance()) {
     if (!PossiblyHasMarkers(marker_types))
       return;
-    DCHECK(!markers_.IsEmpty());
+    DCHECK(!markers_.empty());
     const Node& node = marked_text.CurrentContainer();
     auto* text_node = DynamicTo<Text>(node);
     if (!text_node)
@@ -305,7 +305,7 @@ void DocumentMarkerController::RemoveMarkersInRange(
 
 void DocumentMarkerController::AddMarkerInternal(
     const EphemeralRange& range,
-    std::function<DocumentMarker*(int, int)> create_marker_from_offsets,
+    base::FunctionRef<DocumentMarker*(int, int)> create_marker_from_offsets,
     const TextIteratorBehavior& iterator_behavior) {
   DocumentMarkerGroup* new_marker_group =
       MakeGarbageCollected<DocumentMarkerGroup>();
@@ -374,7 +374,7 @@ void DocumentMarkerController::MoveMarkers(const Text& src_node,
 
   if (!PossiblyHasMarkers(DocumentMarker::MarkerTypes::All()))
     return;
-  DCHECK(!markers_.IsEmpty());
+  DCHECK(!markers_.empty());
 
   MarkerLists* const src_markers = FindMarkers(&src_node);
   if (!src_markers)
@@ -424,7 +424,7 @@ void DocumentMarkerController::RemoveMarkersInternal(
 
   if (!PossiblyHasMarkers(marker_types))
     return;
-  DCHECK(!(markers_.IsEmpty()));
+  DCHECK(!(markers_.empty()));
 
   MarkerLists* const markers = FindMarkers(&text);
   if (!markers)
@@ -465,7 +465,7 @@ void DocumentMarkerController::RemoveMarkersInternal(
 
   if (empty_lists_count == DocumentMarker::kMarkerTypeIndexesCount) {
     markers_.erase(&text);
-    if (markers_.IsEmpty()) {
+    if (markers_.empty()) {
       possibly_existing_marker_types_ = DocumentMarker::MarkerTypes();
       SetDocument(nullptr);
     }
@@ -785,70 +785,83 @@ DocumentMarkerVector DocumentMarkerController::Markers() const {
   return result;
 }
 
-DocumentMarkerVector DocumentMarkerController::ComputeMarkersToPaint(
+DocumentMarkerVector
+DocumentMarkerController::CustomHighlightMarkersNotOverlapping(
     const Text& text) const {
-  DocumentMarkerVector markers_to_paint;
+  // Fix overlapping CustomHighlightMarkers that share the same highlight name
+  // so their intersections are not painted twice. Note:
+  // DocumentMarkerController::MarkersFor() returns markers sorted by start
+  // offset.
+  DocumentMarkerVector custom_highlight_markers = MarkersFor(
+      text, DocumentMarker::MarkerTypes(DocumentMarker::kCustomHighlight));
+  DocumentMarkerVector result{};
+  using NameToCustomHighlightMarkerMap =
+      HashMap<String, Member<CustomHighlightMarker>, StringHash>;
+  NameToCustomHighlightMarkerMap name_to_last_custom_highlight_marker_seen;
 
-  // Fix overlapping HighlightMarkers that share the same highlight name so
-  // their intersections are not painted twice.
-  // Note: DocumentMarkerController::MarkersFor() returns markers sorted by
-  // start offset.
-  DocumentMarkerVector highlight_markers =
-      MarkersFor(text, DocumentMarker::MarkerTypes(DocumentMarker::kHighlight));
-  HeapVector<Member<HighlightMarker>> highlight_markers_not_overlapping;
-  using NameToHighlightMarkerMap =
-      HashMap<String, Member<HighlightMarker>, StringHash>;
-  NameToHighlightMarkerMap name_to_last_highlight_marker_seen;
+  for (const auto& current_marker : custom_highlight_markers) {
+    CustomHighlightMarker* current_custom_highlight_marker =
+        To<CustomHighlightMarker>(current_marker.Get());
 
-  for (const auto& current_marker : highlight_markers) {
-    HighlightMarker* current_highlight_marker =
-        To<HighlightMarker>(current_marker.Get());
-
-    NameToHighlightMarkerMap::AddResult insert_result =
-        name_to_last_highlight_marker_seen.insert(
-            current_highlight_marker->GetHighlightName(),
-            current_highlight_marker);
+    NameToCustomHighlightMarkerMap::AddResult insert_result =
+        name_to_last_custom_highlight_marker_seen.insert(
+            current_custom_highlight_marker->GetHighlightName(),
+            current_custom_highlight_marker);
 
     if (!insert_result.is_new_entry) {
-      HighlightMarker* stored_highlight_marker =
+      CustomHighlightMarker* stored_custom_highlight_marker =
           insert_result.stored_value->value;
-      if (current_highlight_marker->StartOffset() >=
-          stored_highlight_marker->EndOffset()) {
+      if (current_custom_highlight_marker->StartOffset() >=
+          stored_custom_highlight_marker->EndOffset()) {
         // Markers don't intersect, so the stored one is fine to be painted.
-        highlight_markers_not_overlapping.push_back(stored_highlight_marker);
-        insert_result.stored_value->value = current_highlight_marker;
+        result.push_back(stored_custom_highlight_marker);
+        insert_result.stored_value->value = current_custom_highlight_marker;
       } else {
         // Markers overlap, so expand the stored marker to cover both and
         // discard the current one.
-        stored_highlight_marker->SetEndOffset(
-            std::max(stored_highlight_marker->EndOffset(),
-                     current_highlight_marker->EndOffset()));
+        stored_custom_highlight_marker->SetEndOffset(
+            std::max(stored_custom_highlight_marker->EndOffset(),
+                     current_custom_highlight_marker->EndOffset()));
       }
     }
   }
 
-  for (const auto& name_to_highlight_marker_iterator :
-       name_to_last_highlight_marker_seen) {
-    highlight_markers_not_overlapping.push_back(
-        name_to_highlight_marker_iterator.value.Get());
+  for (const auto& name_to_custom_highlight_marker_iterator :
+       name_to_last_custom_highlight_marker_seen) {
+    result.push_back(name_to_custom_highlight_marker_iterator.value.Get());
   }
 
+  return result;
+}
+
+DocumentMarkerVector DocumentMarkerController::ComputeMarkersToPaint(
+    const Text& text) const {
   HighlightRegistry* highlight_registry =
       document_->domWindow()->Supplementable<LocalDOMWindow>::
           RequireSupplement<HighlightRegistry>();
-  std::sort(highlight_markers_not_overlapping.begin(),
-            highlight_markers_not_overlapping.end(),
-            [highlight_registry](const Member<HighlightMarker>& marker1,
-                                 const Member<HighlightMarker>& marker2) {
-              return highlight_registry->CompareOverlayStackingPosition(
-                         marker1->GetHighlightName(), marker1->GetHighlight(),
-                         marker2->GetHighlightName(),
-                         marker2->GetHighlight()) ==
-                     HighlightRegistry::OverlayStackingPosition::
-                         kOverlayStackingPositionBelow;
-            });
+  DocumentMarker::MarkerTypes excluded_highlight_pseudos =
+      RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled()
+          ? DocumentMarker::MarkerTypes::HighlightPseudos()
+          : DocumentMarker::MarkerTypes();
+  DocumentMarkerVector markers_to_paint{};
 
-  markers_to_paint.AppendVector(highlight_markers_not_overlapping);
+  if (!RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled()) {
+    DocumentMarkerVector custom_highlight_markers =
+        CustomHighlightMarkersNotOverlapping(text);
+    std::sort(custom_highlight_markers.begin(), custom_highlight_markers.end(),
+              [highlight_registry](const Member<DocumentMarker>& marker1,
+                                   const Member<DocumentMarker>& marker2) {
+                auto* custom1 = To<CustomHighlightMarker>(marker1.Get());
+                auto* custom2 = To<CustomHighlightMarker>(marker2.Get());
+                return highlight_registry->CompareOverlayStackingPosition(
+                           custom1->GetHighlightName(), custom1->GetHighlight(),
+                           custom2->GetHighlightName(),
+                           custom2->GetHighlight()) ==
+                       HighlightRegistry::OverlayStackingPosition::
+                           kOverlayStackingPositionBelow;
+              });
+    markers_to_paint = custom_highlight_markers;
+  }
 
   // We don't render composition or spelling markers that overlap suggestion
   // markers.
@@ -856,19 +869,22 @@ DocumentMarkerVector DocumentMarkerController::ComputeMarkersToPaint(
   // start offset.
   const DocumentMarkerVector& suggestion_markers =
       MarkersFor(text, DocumentMarker::MarkerTypes::Suggestion());
-  if (suggestion_markers.IsEmpty()) {
+  if (suggestion_markers.empty()) {
     // If there are no suggestion markers, we can return early as a minor
     // performance optimization.
     markers_to_paint.AppendVector(MarkersFor(
-        text, DocumentMarker::MarkerTypes::AllBut(DocumentMarker::MarkerTypes(
-                  DocumentMarker::kSuggestion | DocumentMarker::kHighlight))));
+        text, DocumentMarker::MarkerTypes::AllBut(
+                  DocumentMarker::MarkerTypes(DocumentMarker::kSuggestion |
+                                              DocumentMarker::kCustomHighlight))
+                  .Subtract(excluded_highlight_pseudos)));
     return markers_to_paint;
   }
 
   const DocumentMarkerVector& markers_overridden_by_suggestion_markers =
       MarkersFor(text,
                  DocumentMarker::MarkerTypes(DocumentMarker::kComposition |
-                                             DocumentMarker::kSpelling));
+                                             DocumentMarker::kSpelling)
+                     .Subtract(excluded_highlight_pseudos));
 
   Vector<unsigned> suggestion_starts;
   Vector<unsigned> suggestion_ends;
@@ -916,9 +932,12 @@ DocumentMarkerVector DocumentMarkerController::ComputeMarkersToPaint(
   markers_to_paint.AppendVector(suggestion_markers);
 
   markers_to_paint.AppendVector(MarkersFor(
-      text, DocumentMarker::MarkerTypes::AllBut(DocumentMarker::MarkerTypes(
-                DocumentMarker::kComposition | DocumentMarker::kSpelling |
-                DocumentMarker::kSuggestion | DocumentMarker::kHighlight))));
+      text,
+      DocumentMarker::MarkerTypes::AllBut(
+          DocumentMarker::MarkerTypes(
+              DocumentMarker::kComposition | DocumentMarker::kSpelling |
+              DocumentMarker::kSuggestion | DocumentMarker::kCustomHighlight))
+          .Subtract(excluded_highlight_pseudos)));
 
   return markers_to_paint;
 }
@@ -927,15 +946,15 @@ bool DocumentMarkerController::PossiblyHasTextMatchMarkers() const {
   return PossiblyHasMarkers(DocumentMarker::kTextMatch);
 }
 
-Vector<IntRect> DocumentMarkerController::LayoutRectsForTextMatchMarkers() {
+Vector<gfx::Rect> DocumentMarkerController::LayoutRectsForTextMatchMarkers() {
   DCHECK(!document_->View()->NeedsLayout());
   DCHECK(!document_->NeedsLayoutTreeUpdate());
 
-  Vector<IntRect> result;
+  Vector<gfx::Rect> result;
 
   if (!PossiblyHasMarkers(DocumentMarker::kTextMatch))
     return result;
-  DCHECK(!(markers_.IsEmpty()));
+  DCHECK(!(markers_.empty()));
 
   // outer loop: process each node
   MarkerMap::iterator end = markers_.end();
@@ -986,7 +1005,7 @@ void DocumentMarkerController::InvalidateRectsForAllTextMatchMarkers() {
 }
 
 void DocumentMarkerController::DidProcessMarkerMap(const LivenessBroker&) {
-  if (markers_.IsEmpty())
+  if (markers_.empty())
     Clear();
 }
 
@@ -1007,7 +1026,7 @@ void DocumentMarkerController::RemoveMarkersForNode(
     DocumentMarker::MarkerTypes marker_types) {
   if (!PossiblyHasMarkers(marker_types))
     return;
-  DCHECK(!markers_.IsEmpty());
+  DCHECK(!markers_.empty());
 
   MarkerMap::iterator iterator = markers_.find(&text);
   if (iterator != markers_.end())
@@ -1078,7 +1097,7 @@ void DocumentMarkerController::RemoveSuggestionMarkerByType(
     const SuggestionMarker::SuggestionType& type) {
   if (!PossiblyHasMarkers(DocumentMarker::kSuggestion))
     return;
-  DCHECK(!markers_.IsEmpty());
+  DCHECK(!markers_.empty());
 
   for (const auto& node_markers : markers_) {
     MarkerLists* markers = node_markers.value;
@@ -1107,7 +1126,7 @@ void DocumentMarkerController::RemoveMarkersOfTypes(
     DocumentMarker::MarkerTypes marker_types) {
   if (!PossiblyHasMarkers(marker_types))
     return;
-  DCHECK(!markers_.IsEmpty());
+  DCHECK(!markers_.empty());
 
   HeapVector<Member<const Text>> nodes_with_markers;
   CopyKeysToVector(markers_, nodes_with_markers);
@@ -1164,7 +1183,7 @@ void DocumentMarkerController::RemoveMarkersFromList(
 
   if (node_can_be_removed) {
     markers_.erase(iterator);
-    if (markers_.IsEmpty()) {
+    if (markers_.empty()) {
       possibly_existing_marker_types_ = DocumentMarker::MarkerTypes();
       SetDocument(nullptr);
     }
@@ -1175,7 +1194,7 @@ void DocumentMarkerController::RepaintMarkers(
     DocumentMarker::MarkerTypes marker_types) {
   if (!PossiblyHasMarkers(marker_types))
     return;
-  DCHECK(!markers_.IsEmpty());
+  DCHECK(!markers_.empty());
 
   // outer loop: process each markered Text in the document
   for (auto& iterator : markers_) {
@@ -1197,7 +1216,7 @@ bool DocumentMarkerController::SetTextMatchMarkersActive(
   if (!PossiblyHasMarkers(DocumentMarker::kTextMatch))
     return false;
 
-  DCHECK(!markers_.IsEmpty());
+  DCHECK(!markers_.empty());
 
   const Node* const start_container =
       range.StartPosition().ComputeContainerNode();
@@ -1283,7 +1302,7 @@ void DocumentMarkerController::DidUpdateCharacterData(CharacterData* node,
                                                       unsigned new_length) {
   if (!PossiblyHasMarkers(DocumentMarker::MarkerTypes::All()))
     return;
-  DCHECK(!markers_.IsEmpty());
+  DCHECK(!markers_.empty());
   auto* text_node = DynamicTo<Text>(node);
   if (!text_node)
     return;

@@ -1,22 +1,23 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/password/password_issues_table_view_controller.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/strings/utf_string_conversions.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/ui/settings/password/password_issue_with_form.h"
+#import "base/strings/utf_string_conversions.h"
+#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/ui/settings/password/password_issue.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues_presenter.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
-#include "ios/chrome/grit/ios_chromium_strings.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -26,7 +27,7 @@
 // presenter methods are called correctly.
 @interface FakePasswordIssuesPresenter : NSObject <PasswordIssuesPresenter>
 
-@property(nonatomic) id<PasswordIssue> presentedPassword;
+@property(nonatomic) PasswordIssue* presentedPassword;
 
 @end
 
@@ -35,7 +36,7 @@
 - (void)dismissPasswordIssuesTableViewController {
 }
 
-- (void)presentPasswordIssueDetails:(id<PasswordIssue>)password {
+- (void)presentPasswordIssueDetails:(PasswordIssue*)password {
   _presentedPassword = password;
 }
 
@@ -71,7 +72,9 @@ class PasswordIssuesTableViewControllerTest
     form.scheme = password_manager::PasswordForm::Scheme::kHtml;
     NSMutableArray* passwords = [[NSMutableArray alloc] init];
     [passwords
-        addObject:[[PasswordIssueWithForm alloc] initWithPasswordForm:form]];
+        addObject:[[PasswordIssue alloc]
+                      initWithCredential:password_manager::CredentialUIEntry(
+                                             form)]];
 
     PasswordIssuesTableViewController* passwords_controller =
         static_cast<PasswordIssuesTableViewController*>(controller());
@@ -101,7 +104,7 @@ TEST_F(PasswordIssuesTableViewControllerTest, TestPasswordIssue) {
   EXPECT_EQ(1, NumberOfSections());
 
   EXPECT_EQ(1, NumberOfItemsInSection(0));
-  CheckTextCellTextAndDetailText(@"example.com", @"test@egmail.com", 0, 0);
+  CheckURLCellTitleAndDetailText(@"example.com", @"test@egmail.com", 0, 0);
 }
 
 // Test verifies tapping item triggers function in presenter.

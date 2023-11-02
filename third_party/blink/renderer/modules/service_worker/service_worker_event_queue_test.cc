@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,16 +35,18 @@ class MockEvent {
   void EnqueueTo(ServiceWorkerEventQueue* event_queue) {
     event_id_ = event_queue->NextEventId();
     event_queue->EnqueueNormal(
-        *event_id_, WTF::Bind(&MockEvent::Start, weak_factory_.GetWeakPtr()),
-        WTF::Bind(&MockEvent::Abort, weak_factory_.GetWeakPtr()),
+        *event_id_,
+        WTF::BindOnce(&MockEvent::Start, weak_factory_.GetWeakPtr()),
+        WTF::BindOnce(&MockEvent::Abort, weak_factory_.GetWeakPtr()),
         absl::nullopt);
   }
 
   void EnqueuePendingTo(ServiceWorkerEventQueue* event_queue) {
     event_id_ = event_queue->NextEventId();
     event_queue->EnqueuePending(
-        *event_id_, WTF::Bind(&MockEvent::Start, weak_factory_.GetWeakPtr()),
-        WTF::Bind(&MockEvent::Abort, weak_factory_.GetWeakPtr()),
+        *event_id_,
+        WTF::BindOnce(&MockEvent::Start, weak_factory_.GetWeakPtr()),
+        WTF::BindOnce(&MockEvent::Abort, weak_factory_.GetWeakPtr()),
         absl::nullopt);
   }
 
@@ -52,16 +54,18 @@ class MockEvent {
                                   base::TimeDelta custom_timeout) {
     event_id_ = event_queue->NextEventId();
     event_queue->EnqueueNormal(
-        *event_id_, WTF::Bind(&MockEvent::Start, weak_factory_.GetWeakPtr()),
-        WTF::Bind(&MockEvent::Abort, weak_factory_.GetWeakPtr()),
+        *event_id_,
+        WTF::BindOnce(&MockEvent::Start, weak_factory_.GetWeakPtr()),
+        WTF::BindOnce(&MockEvent::Abort, weak_factory_.GetWeakPtr()),
         custom_timeout);
   }
 
   void EnqueueOfflineTo(ServiceWorkerEventQueue* event_queue) {
     event_id_ = event_queue->NextEventId();
     event_queue->EnqueueOffline(
-        *event_id_, WTF::Bind(&MockEvent::Start, weak_factory_.GetWeakPtr()),
-        WTF::Bind(&MockEvent::Abort, weak_factory_.GetWeakPtr()),
+        *event_id_,
+        WTF::BindOnce(&MockEvent::Start, weak_factory_.GetWeakPtr()),
+        WTF::BindOnce(&MockEvent::Abort, weak_factory_.GetWeakPtr()),
         absl::nullopt);
   }
 
@@ -69,8 +73,9 @@ class MockEvent {
                                          base::TimeDelta custom_timeout) {
     event_id_ = event_queue->NextEventId();
     event_queue->EnqueueOffline(
-        *event_id_, WTF::Bind(&MockEvent::Start, weak_factory_.GetWeakPtr()),
-        WTF::Bind(&MockEvent::Abort, weak_factory_.GetWeakPtr()),
+        *event_id_,
+        WTF::BindOnce(&MockEvent::Start, weak_factory_.GetWeakPtr()),
+        WTF::BindOnce(&MockEvent::Abort, weak_factory_.GetWeakPtr()),
         custom_timeout);
   }
 
@@ -80,7 +85,7 @@ class MockEvent {
     event_id_ = event_queue->NextEventId();
     event_queue->EnqueuePending(
         *event_id_,
-        WTF::Bind(
+        WTF::BindOnce(
             [](ServiceWorkerEventQueue* event_queue, MockEvent* event,
                String tag, Vector<String>* out_tags, int /* event id */) {
               event->EnqueueTo(event_queue);
@@ -415,7 +420,7 @@ TEST_F(ServiceWorkerEventQueueTest, RunPendingTasksWithZeroIdleTimerDelay) {
   Vector<String> handled_tasks;
   event1.EnqueuePendingDispatchingEventTo(&event_queue, "1", &handled_tasks);
   event2.EnqueuePendingDispatchingEventTo(&event_queue, "2", &handled_tasks);
-  EXPECT_TRUE(handled_tasks.IsEmpty());
+  EXPECT_TRUE(handled_tasks.empty());
 
   // Start a new event. EnqueueEvent() should run the pending tasks.
   MockEvent event;

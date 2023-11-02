@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/update_required_screen_handler.h"
 
@@ -28,9 +27,6 @@ class FakeUpdateRequiredScreenHandler : public UpdateRequiredView {
 
  private:
   void Show() override {}
-  void Hide() override {}
-  void Bind(ash::UpdateRequiredScreen* screen) override {}
-  void Unbind() override {}
 
   void SetIsConnected(bool connected) override {}
   void SetUpdateProgressUnavailable(bool unavailable) override {}

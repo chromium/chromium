@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@ public:
   size_t CommandCount() const;
 
   // Returns the list of executed draw commands.
-  const base::ListValue& Commands() const;
+  const base::Value::List& Commands() const;
 
   // Return the recorded render time (milliseconds) for a draw command index.
   double GetTime(size_t index);
@@ -73,7 +73,7 @@ private:
 
   class AutoOp;
 
-  base::ListValue op_records_;
+  base::Value::List op_records_;
 };
 
 }

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -208,5 +208,13 @@ public final class TestWebLayer {
 
     public void grantLocationPermission(String url) throws RemoteException {
         mITestWebLayer.grantLocationPermission(url);
+    }
+
+    public void setTextScaling(Profile profile, float value) throws RemoteException {
+        mITestWebLayer.setTextScaling(profile.getIProfile(), value);
+    }
+
+    public boolean getForceEnableZoom(Profile profile) throws RemoteException {
+        return mITestWebLayer.getForceEnableZoom(profile.getIProfile());
     }
 }

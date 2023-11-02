@@ -1,9 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_VIEWS_TEST_COMBOBOX_TEST_API_H_
 #define UI_VIEWS_TEST_COMBOBOX_TEST_API_H_
+
+#include "base/memory/raw_ptr.h"
 
 namespace gfx {
 class Size;
@@ -39,7 +41,7 @@ class ComboboxTestApi {
   ui::MenuModel* menu_model();
 
  private:
-  Combobox* combobox_;
+  raw_ptr<Combobox> combobox_;
 };
 
 }  // namespace test

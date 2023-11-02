@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -72,16 +72,8 @@ class CardUnmaskAuthenticationSelectionDialogBrowserTest
 };
 
 // Ensures the UI can be shown.
-#if defined(OS_WIN)
-// Triggering logic required for Windows OS runs: https://crbug.com/1254686
-#define MAYBE_InvokeUi_CardUnmaskAuthSelectionDialogDisplays \
-  DISABLED_InvokeUi_CardUnmaskAuthSelectionDialogDisplays
-#else
-#define MAYBE_InvokeUi_CardUnmaskAuthSelectionDialogDisplays \
-  InvokeUi_CardUnmaskAuthSelectionDialogDisplays
-#endif
 IN_PROC_BROWSER_TEST_F(CardUnmaskAuthenticationSelectionDialogBrowserTest,
-                       MAYBE_InvokeUi_CardUnmaskAuthSelectionDialogDisplays) {
+                       InvokeUi_CardUnmaskAuthSelectionDialogDisplays) {
   base::HistogramTester histogram_tester;
   InitChallengeOptions();
   ShowAndVerifyUi();
@@ -90,15 +82,8 @@ IN_PROC_BROWSER_TEST_F(CardUnmaskAuthenticationSelectionDialogBrowserTest,
 }
 
 // Ensures closing tab while dialog being visible is correctly handled.
-#if defined(OS_WIN)
-// Triggering logic required for Windows OS runs: https://crbug.com/1254686
-#define MAYBE_CanCloseTabWhileDialogShowing \
-  DISABLED_CanCloseTabWhileDialogShowing
-#else
-#define MAYBE_CanCloseTabWhileDialogShowing CanCloseTabWhileDialogShowing
-#endif
 IN_PROC_BROWSER_TEST_F(CardUnmaskAuthenticationSelectionDialogBrowserTest,
-                       MAYBE_CanCloseTabWhileDialogShowing) {
+                       CanCloseTabWhileDialogShowing) {
   base::HistogramTester histogram_tester;
   InitChallengeOptions();
   ShowUi("");
@@ -115,16 +100,8 @@ IN_PROC_BROWSER_TEST_F(CardUnmaskAuthenticationSelectionDialogBrowserTest,
 }
 
 // Ensures closing browser while dialog being visible is correctly handled.
-#if defined(OS_WIN)
-// Triggering logic required for Windows OS runs: https://crbug.com/1254686
-#define MAYBE_CanCloseBrowserWhileDialogShowing \
-  DISABLED_CanCloseBrowserWhileDialogShowing
-#else
-#define MAYBE_CanCloseBrowserWhileDialogShowing \
-  CanCloseBrowserWhileDialogShowing
-#endif
 IN_PROC_BROWSER_TEST_F(CardUnmaskAuthenticationSelectionDialogBrowserTest,
-                       MAYBE_CanCloseBrowserWhileDialogShowing) {
+                       CanCloseBrowserWhileDialogShowing) {
   base::HistogramTester histogram_tester;
   InitChallengeOptions();
   ShowUi("");
@@ -140,17 +117,9 @@ IN_PROC_BROWSER_TEST_F(CardUnmaskAuthenticationSelectionDialogBrowserTest,
       1);
 }
 
-#if defined(OS_WIN)
-// Triggering logic required for Windows OS runs: https://crbug.com/1254686
-#define MAYBE_CanceledByUserAfterSelectionResultsMetricsLoggedAsExpected \
-  DISABLED_CanceledByUserAfterSelectionResultsMetricsLoggedAsExpected
-#else
-#define MAYBE_CanceledByUserAfterSelectionResultsMetricsLoggedAsExpected \
-  CanceledByUserAfterSelectionResultsMetricsLoggedAsExpected
-#endif
 IN_PROC_BROWSER_TEST_F(
     CardUnmaskAuthenticationSelectionDialogBrowserTest,
-    MAYBE_CanceledByUserAfterSelectionResultsMetricsLoggedAsExpected) {
+    CanceledByUserAfterSelectionResultsMetricsLoggedAsExpected) {
   base::HistogramTester histogram_tester;
   InitChallengeOptions();
   ShowUi("");

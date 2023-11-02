@@ -1,7 +1,7 @@
 {
   "name": "chrome.extension.settings_override",
   "version": "0.1",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "description": "end-to-end browser test for chrome.settings_override API",
   "chrome_settings_overrides": {
     "homepage": "http://www.homepage.__MSG_url_domain__/?param=__PARAM__",

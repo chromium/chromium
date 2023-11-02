@@ -1,17 +1,15 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import './strings.m.js';
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import './parent_access_ui.mojom-lite.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebviewManager} from 'chrome://resources/js/webview_manager.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ParentAccessController} from './parent_access_controller.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-const parentAccessUIHandler =
-    parentAccessUi.mojom.ParentAccessUIHandler.getRemote();
+import {ParentAccessController} from './parent_access_controller.js';
+import {GetOAuthTokenStatus, ParentAccessServerMessageType} from './parent_access_ui.mojom-webui.js';
+import {getParentAccessUIHandler} from './parent_access_ui_handler.js';
+import {WebviewManager} from './webview_manager.js';
 
 /**
  * List of URL hosts that can be requested by the webview. The
@@ -25,9 +23,22 @@ const ALLOWED_HOSTS = [
   'google.com',
 ];
 
-Polymer({
-  is: 'parent-access-ui',
-  _template: html`{__html_template__}`,
+class ParentAccessUi extends PolymerElement {
+  constructor() {
+    super();
+    this.webview_manager_ = null;
+    this.server = null;
+    this.parentAccessUIHandler = getParentAccessUIHandler();
+  }
+
+  static get is() {
+    return 'parent-access-ui';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
   /**
    * Returns whether the provided request should be allowed.
    * @param {string} url Request that is issued by the webview.
@@ -50,7 +61,7 @@ Polymer({
             requestUrl.host.endsWith(allowedHost));
 
     return requestIsHttps && requestIsInAllowedHosts;
-  },
+  }
 
   /**
    * Returns whether the provided request should receive auth headers.
@@ -66,14 +77,15 @@ Polymer({
     // broadly that strictly necessary for the widget to function, thereby
     // minimizing the attack surface for the token.
     return requestUrl.host === webviewUrl.host;
-  },
+  }
 
   /** @override */
   ready() {
+    super.ready();
     this.configureUi().then(
         () => {/* success */},
         origin => {/* TODO(b/200187536): show error page. */});
-  },
+  }
 
   async configureUi() {
     /**
@@ -83,9 +95,8 @@ Polymer({
 
     const eventOriginFilter = loadTimeData.getString('eventOriginFilter');
 
-    const oauthFetchResult = await parentAccessUIHandler.getOAuthToken();
-    if (oauthFetchResult.status !=
-        parentAccessUi.mojom.GetOAuthTokenStatus.kSuccess) {
+    const oauthFetchResult = await this.parentAccessUIHandler.getOAuthToken();
+    if (oauthFetchResult.status != GetOAuthTokenStatus.kSuccess) {
       // TODO(b/200187536): show error page.
       return;
     }
@@ -113,31 +124,56 @@ Polymer({
     this.server =
         new ParentAccessController(webview, url.toString(), eventOriginFilter);
 
-    let parentAccessResult = await Promise.race([
-      this.server.whenParentAccessResult(),
-      this.server.whenInitializationError()
-    ]);
 
-    // Notify ParentAccessUIHandler that we received a result.
-    const decodedParentAccessResult =
-        await parentAccessUIHandler.onParentAccessResult(parentAccessResult);
+    // What follows is the main message handling loop.  The received base64
+    // encoded proto messages are passed to c++ handler for proto decoding
+    // before they are handled. When the following while loop terminates, the
+    // flow will either proceed to the next steps, or show a terminal error.
+    let lastServerMessageType = ParentAccessServerMessageType.kIgnore;
 
-    switch (decodedParentAccessResult.status) {
-      case parentAccessUi.mojom.ParentAccessResultStatus.kParentVerified:
-        this.dispatchEvent(new CustomEvent('show-after', {
-          bubbles: true,
-          composed: true,
-        }));
-        break;
+    while (lastServerMessageType === ParentAccessServerMessageType.kIgnore) {
+      const parentAccessCallback = await Promise.race([
+        this.server.whenParentAccessCallbackReceived(),
+        this.server.whenInitializationError(),
+      ]);
 
-      // ConsentDeclined result status is not currently supported, so show an
-      // error.
-      case parentAccessUi.mojom.ParentAccessResultStatus.kConsentDeclined:
-      case parentAccessUi.mojom.ParentAccessResultStatus.kError:
-      default:
+      // Notify ParentAccessUIHandler that we received a ParentAccessCallback.
+      // The handler will attempt to parse the callback and return the status.
+      const parentAccessServerMessage =
+          await this.parentAccessUIHandler.onParentAccessCallbackReceived(
+              parentAccessCallback);
+
+      // If the parentAccessCallback couldn't be parsed, then an initialization
+      // or communication error occurred between the ParentAccessController and
+      // the server.
+      if (!(parentAccessServerMessage instanceof Object)) {
+        console.error('Error initializing ParentAccessController');
         // TODO(b/200187536): show error page
         break;
-    }
+      }
 
-  },
-});
+      lastServerMessageType = parentAccessServerMessage.message.type;
+
+      switch (lastServerMessageType) {
+        case ParentAccessServerMessageType.kParentVerified:
+          this.dispatchEvent(new CustomEvent('show-after', {
+            bubbles: true,
+            composed: true,
+          }));
+          break;
+
+        case ParentAccessServerMessageType.kError:
+          // TODO(b/200187536): show error page
+          break;
+
+        case ParentAccessServerMessageType.kIgnore:
+          continue;
+
+        default:
+          // TODO(b/200187536): show error page
+          break;
+      }
+    }
+  }
+}
+customElements.define(ParentAccessUi.is, ParentAccessUi);

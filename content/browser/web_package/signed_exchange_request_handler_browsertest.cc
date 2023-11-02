@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,12 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
-#include "base/task/post_task.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -42,6 +42,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
+#include "content/public/common/network_service_util.h"
 #include "content/public/common/page_type.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -62,9 +63,11 @@
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/ct_policy_status.h"
 #include "net/cert/mock_cert_verifier.h"
+#include "net/cert/test_root_certs.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/transport_security_state.h"
+#include "net/http/transport_security_state_test_util.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -167,10 +170,6 @@ class SignedExchangeRequestHandlerBrowserTestBase
     : public CertVerifierBrowserTest {
  public:
   SignedExchangeRequestHandlerBrowserTestBase() {
-    // This installs "root_ca_cert.pem" from which our test certificates are
-    // created. (Needed for the tests that use real certificate, i.e.
-    // RealCertVerifier)
-    net::EmbeddedTestServer::RegisterTestCerts();
     feature_list_.InitWithFeatures({features::kSignedHTTPExchange}, {});
   }
 
@@ -211,6 +210,23 @@ class SignedExchangeRequestHandlerBrowserTestBase
     sxg_test_helper_.InstallMockCertChainInterceptor();
   }
 
+  // Make the MockCertVerifier treat the signed exchange's certificate
+  // "prime256v1-sha256.public.pem" as valid for "test.example.org", but
+  // issued by a known root.
+  void InstallMockCertByKnownRoot() {
+    scoped_refptr<net::X509Certificate> original_cert =
+        SignedExchangeBrowserTestHelper::LoadCertificate();
+    net::CertVerifyResult dummy_result;
+    dummy_result.verified_cert = original_cert;
+    dummy_result.cert_status = net::OK;
+    dummy_result.ocsp_result.response_status = net::OCSPVerifyResult::PROVIDED;
+    dummy_result.ocsp_result.revocation_status =
+        net::OCSPRevocationStatus::GOOD;
+    dummy_result.is_issued_by_known_root = true;
+    mock_cert_verifier()->AddResultForCertAndHost(
+        original_cert, "test.example.org", dummy_result, net::OK);
+  }
+
   void SetAcceptLangs(const std::string langs) {
     client_.SetAcceptLangs(langs);
     StoragePartitionImpl* partition =
@@ -229,29 +245,17 @@ class SignedExchangeRequestHandlerBrowserTestBase
   MockContentBrowserClient client_;
 
  private:
-  ContentBrowserClient* original_client_ = nullptr;
+  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
 
   base::test::ScopedFeatureList feature_list_;
   SignedExchangeBrowserTestHelper sxg_test_helper_;
 };
 
 class SignedExchangeRequestHandlerBrowserTest
-    : public testing::WithParamInterface<
-          std::tuple<bool /* use_prefetch */,
-                     bool /* sxg_subresource_prefetch_enabled */>>,
+    : public testing::WithParamInterface<bool>,
       public SignedExchangeRequestHandlerBrowserTestBase {
  public:
-  SignedExchangeRequestHandlerBrowserTest() {
-    std::tie(use_prefetch_, sxg_subresource_prefetch_enabled_) = GetParam();
-    std::vector<base::Feature> enable_features;
-    std::vector<base::Feature> disabled_features;
-    if (sxg_subresource_prefetch_enabled_) {
-      enable_features.push_back(features::kSignedExchangeSubresourcePrefetch);
-    } else {
-      disabled_features.push_back(features::kSignedExchangeSubresourcePrefetch);
-    }
-    feature_list_.InitWithFeatures(enable_features, disabled_features);
-  }
+  SignedExchangeRequestHandlerBrowserTest() { use_prefetch_ = GetParam(); }
 
   SignedExchangeRequestHandlerBrowserTest(
       const SignedExchangeRequestHandlerBrowserTest&) = delete;
@@ -262,9 +266,6 @@ class SignedExchangeRequestHandlerBrowserTest
 
  protected:
   bool UsePrefetch() const { return use_prefetch_; }
-  bool SXGPrefetchCacheIsEnabled() const {
-    return sxg_subresource_prefetch_enabled_;
-  }
 
   void MaybeTriggerPrefetchSXG(const GURL& url, bool expect_success) {
     if (!UsePrefetch())
@@ -277,7 +278,7 @@ class SignedExchangeRequestHandlerBrowserTest
     EXPECT_TRUE(NavigateToURL(shell(), prefetch_html_url));
     EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 
-    if (SXGPrefetchCacheIsEnabled() && expect_success)
+    if (expect_success)
       WaitUntilSXGIsCached(url);
   }
 
@@ -307,7 +308,7 @@ class SignedExchangeRequestHandlerBrowserTest
   void WaitUntilSXGIsCached(const GURL& url) {
     scoped_refptr<PrefetchedSignedExchangeCache> cache =
         static_cast<RenderFrameHostImpl*>(
-            shell()->web_contents()->GetMainFrame())
+            shell()->web_contents()->GetPrimaryMainFrame())
             ->EnsurePrefetchedSignedExchangeCache();
 
     if (cache->GetExchanges().find(url) != cache->GetExchanges().end())
@@ -321,12 +322,9 @@ class SignedExchangeRequestHandlerBrowserTest
   }
 
   bool use_prefetch_ = false;
-  bool sxg_subresource_prefetch_enabled_ = false;
-  base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
-                       DISABLED_Simple) {
+IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest, Simple) {
   InstallMockCert();
   InstallMockCertChainInterceptor();
 
@@ -380,32 +378,22 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
   // Wait for the previous page's RFH to be deleted (if it changed) so that the
   // histograms will get updated.
   inactive_rfh_deletion_observer_->Wait();
-  histogram_tester_.ExpectUniqueSample(
-      kLoadResultHistogram, SignedExchangeLoadResult::kSuccess,
-      (UsePrefetch() && !SXGPrefetchCacheIsEnabled()) ? 2 : 1);
+  histogram_tester_.ExpectUniqueSample(kLoadResultHistogram,
+                                       SignedExchangeLoadResult::kSuccess, 1);
   histogram_tester_.ExpectTotalCount(
-      "SignedExchange.Time.CertificateFetch.Success",
-      (UsePrefetch() && !SXGPrefetchCacheIsEnabled()) ? 2 : 1);
+      "SignedExchange.Time.CertificateFetch.Success", 1);
   if (UsePrefetch()) {
     histogram_tester_.ExpectUniqueSample(kPrefetchResultHistogram,
                                          SignedExchangeLoadResult::kSuccess, 1);
-    if (SXGPrefetchCacheIsEnabled()) {
-      histogram_tester_.ExpectTotalCount("PrefetchedSignedExchangeCache.Count",
-                                         1);
-    } else {
-      histogram_tester_.ExpectUniqueSample(
-          "SignedExchange.Prefetch.Recall.30Seconds", true, 1);
-      histogram_tester_.ExpectUniqueSample(
-          "SignedExchange.Prefetch.Precision.30Seconds", true, 1);
-    }
+    histogram_tester_.ExpectTotalCount("PrefetchedSignedExchangeCache.Count",
+                                       1);
   } else {
     histogram_tester_.ExpectUniqueSample(
         "SignedExchange.Prefetch.Recall.30Seconds", false, 1);
   }
 }
 
-IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
-                       DISABLED_VariantMatch) {
+IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest, VariantMatch) {
   SetAcceptLangs("en-US,fr");
   InstallUrlInterceptor(
       GURL("https://cert.example.org/cert.msg"),
@@ -438,10 +426,9 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
   // Wait for the previous page's RFH to be deleted (if it changed) so that the
   // histograms will get updated.
   inactive_rfh_deletion_observer_->Wait();
-  histogram_tester_.ExpectUniqueSample(
-      kLoadResultHistogram, SignedExchangeLoadResult::kSuccess,
-      (UsePrefetch() && !SXGPrefetchCacheIsEnabled()) ? 2 : 1);
-  if ((UsePrefetch() && SXGPrefetchCacheIsEnabled())) {
+  histogram_tester_.ExpectUniqueSample(kLoadResultHistogram,
+                                       SignedExchangeLoadResult::kSuccess, 1);
+  if (UsePrefetch()) {
     histogram_tester_.ExpectTotalCount("PrefetchedSignedExchangeCache.Count",
                                        1);
   }
@@ -676,10 +663,95 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest, CertNotFound) {
       "SignedExchange.Time.CertificateFetch.Failure", UsePrefetch() ? 2 : 1);
 }
 
+IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
+                       VaryCookieSxgUsed) {
+  InstallUrlInterceptor(
+      GURL("https://cert.example.org/cert.msg"),
+      "content/test/data/sxg/test.example.org.public.pem.cbor");
+  InstallMockCert();
+
+  embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url =
+      embedded_test_server()->GetURL("/sxg/test.example.org_vary_cookie.sxg");
+  MaybeTriggerPrefetchSXG(url, true);
+
+  if (!UsePrefetch()) {
+    // Need to be in a page to execute JavaScript to trigger renderer initiated
+    // navigation.
+    EXPECT_TRUE(
+        NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
+  }
+
+  std::u16string title = u"https://test.example.org/test/";
+  TitleWatcher title_watcher(shell()->web_contents(), title);
+  // PrefetchedSignedExchangeCache is used only for renderer initiated
+  // navigation. So use JavaScript to trigger renderer initiated navigation.
+  EXPECT_TRUE(
+      ExecJs(shell()->web_contents(),
+             base::StringPrintf("location.href = '%s';", url.spec().c_str())));
+  EXPECT_EQ(title, title_watcher.WaitAndGetTitle());
+
+  histogram_tester_.ExpectUniqueSample(kLoadResultHistogram,
+                                       SignedExchangeLoadResult::kSuccess, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
+                       VaryCookieSxgNotUsed) {
+  InstallUrlInterceptor(
+      GURL("https://cert.example.org/cert.msg"),
+      "content/test/data/sxg/test.example.org.public.pem.cbor");
+  InstallUrlInterceptor(GURL("https://test.example.org/test/"),
+                        "content/test/data/sxg/fallback.html");
+  InstallMockCert();
+
+  embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  SetCookie(shell()->web_contents()->GetBrowserContext(),
+            GURL("https://test.example.org/test/"), "milk=1");
+
+  GURL url =
+      embedded_test_server()->GetURL("/sxg/test.example.org_vary_cookie.sxg");
+  MaybeTriggerPrefetchSXG(url, true);
+
+  if (!UsePrefetch()) {
+    // Need to be in a page to execute JavaScript to trigger renderer initiated
+    // navigation.
+    EXPECT_TRUE(
+        NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
+  }
+
+  std::u16string title = u"Fallback URL response";
+  TitleWatcher title_watcher(shell()->web_contents(), title);
+  // PrefetchedSignedExchangeCache is used only for renderer initiated
+  // navigation. So use JavaScript to trigger renderer initiated navigation.
+  EXPECT_TRUE(
+      ExecJs(shell()->web_contents(),
+             base::StringPrintf("location.href = '%s';", url.spec().c_str())));
+  EXPECT_EQ(title, title_watcher.WaitAndGetTitle());
+
+  if (UsePrefetch()) {
+    // kSuccess is recorded for successful prefetch, and
+    // kHadCookieForCookielessOnlySXG is recorded by not being used for actual
+    // navigation.
+    histogram_tester_.ExpectBucketCount(kLoadResultHistogram,
+                                        SignedExchangeLoadResult::kSuccess, 1);
+    histogram_tester_.ExpectBucketCount(
+        kLoadResultHistogram,
+        SignedExchangeLoadResult::kHadCookieForCookielessOnlySXG, 1);
+    histogram_tester_.ExpectTotalCount(kLoadResultHistogram, 2);
+  } else {
+    histogram_tester_.ExpectUniqueSample(
+        kLoadResultHistogram,
+        SignedExchangeLoadResult::kHadCookieForCookielessOnlySXG, 1);
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          SignedExchangeRequestHandlerBrowserTest,
-                         ::testing::Combine(::testing::Bool(),
-                                            ::testing::Bool()));
+                         ::testing::Bool());
 
 class SignedExchangeRequestHandlerDownloadBrowserTest
     : public SignedExchangeRequestHandlerBrowserTestBase {
@@ -711,7 +783,7 @@ class SignedExchangeRequestHandlerDownloadBrowserTest
     }
 
    private:
-    DownloadManager* manager_;
+    raw_ptr<DownloadManager> manager_;
     base::RunLoop run_loop_;
     GURL url_;
     std::string content_disposition_;
@@ -810,6 +882,10 @@ class SignedExchangeRequestHandlerRealCertVerifierBrowserTest
   SignedExchangeRequestHandlerRealCertVerifierBrowserTest() {
     // Use "real" CertVerifier.
     disable_mock_cert_verifier();
+    // This installs "root_ca_cert.pem" from which our test certificates are
+    // created. (Needed for the tests that use real certificate, i.e.
+    // RealCertVerifier)
+    scoped_test_root_ = net::EmbeddedTestServer::RegisterTestCerts();
   }
   void SetUp() override {
     SignedExchangeHandler::SetShouldIgnoreCertValidityPeriodErrorForTesting(
@@ -821,11 +897,14 @@ class SignedExchangeRequestHandlerRealCertVerifierBrowserTest
     SignedExchangeHandler::SetShouldIgnoreCertValidityPeriodErrorForTesting(
         false);
   }
+
+ private:
+  net::ScopedTestRoot scoped_test_root_;
 };
 
 // If this fails with ERR_CERT_DATE_INVALID, try to regenerate test data
 // by running generate-test-certs.sh and generate-test-sxgs.sh in
-// src/content/test/data/sxg.
+// src/content/test/data/sxg. See https://crbug.com/1279652.
 IN_PROC_BROWSER_TEST_F(SignedExchangeRequestHandlerRealCertVerifierBrowserTest,
                        Basic) {
   InstallUrlInterceptor(
@@ -1347,7 +1426,7 @@ class SignedExchangeExpectCTReportBrowserTest
   SignedExchangeExpectCTReportBrowserTest() {
     feature_list_.InitWithFeatures(
         // enabled_features
-        {net::TransportSecurityState::kDynamicExpectCTFeature,
+        {net::kDynamicExpectCTFeature,
          net::features::kPartitionExpectCTStateByNetworkIsolationKey,
          // These last two are not strictly necessary, but make this test more
          // robust against enabling NetworkIsolationKeys everywhere.
@@ -1394,20 +1473,8 @@ class SignedExchangeExpectCTReportBrowserTest
     mock_cert_verifier()->AddResultForCert(report_server_.GetCertificate(),
                                            ssl_server_result, net::OK);
 
-    // Make the MockCertVerifier treat the signed exchange's certificate
-    // "prime256v1-sha256.public.pem" as valid for "test.example.org", but
-    // issued by a known root, which should cause a CT failure.
-    scoped_refptr<net::X509Certificate> original_cert =
-        SignedExchangeBrowserTestHelper::LoadCertificate();
-    net::CertVerifyResult dummy_result;
-    dummy_result.verified_cert = original_cert;
-    dummy_result.cert_status = net::OK;
-    dummy_result.ocsp_result.response_status = net::OCSPVerifyResult::PROVIDED;
-    dummy_result.ocsp_result.revocation_status =
-        net::OCSPRevocationStatus::GOOD;
-    dummy_result.is_issued_by_known_root = true;
-    mock_cert_verifier()->AddResultForCertAndHost(
-        original_cert, "test.example.org", dummy_result, net::OK);
+    // Use a mock cert issued by a known root, which should cause a CT failure.
+    InstallMockCertByKnownRoot();
     InstallMockCertChainInterceptor();
 
     // Set up server used to serve the signed exchange.
@@ -1415,31 +1482,33 @@ class SignedExchangeExpectCTReportBrowserTest
     ASSERT_TRUE(embedded_test_server()->Start());
 
     // All tests fetch or prefetch the signed exchange for use in a main frame
-    // load. This being the case, The NetworkIsolationKey used to load top-level
-    // signed exchanges (and thus used to check for Expect-CT information) is
-    // the NetworkIsolationKey of the site that serves the signed exchange, not
-    // the origin of the resource the signed exchange contains. Set up reports
-    // for both NetworkIsolationKeys, so can catch the wrong one being used for
-    // the report or the case NIKs are being ignored.
+    // load. This being the case, The NetworkAnonymizationKey used to load
+    // top-level signed exchanges (and thus used to check for Expect-CT
+    // information) is the NetworkAnonymizationKey of the site that serves the
+    // signed exchange, not the origin of the resource the signed exchange
+    // contains. Set up reports for both NetworkAnonymizationKeys, so can catch
+    // the wrong one being used for the report or the case NIKs are being
+    // ignored.
 
-    url::Origin correct_report_origin =
-        url::Origin::Create(embedded_test_server()->base_url());
-    net::NetworkIsolationKey correct_network_isolation_key(
-        correct_report_origin, correct_report_origin);
+    net::SchemefulSite correct_report_site =
+        net::SchemefulSite(embedded_test_server()->base_url());
+    net::NetworkAnonymizationKey correct_network_anonymization_key(
+        correct_report_site, correct_report_site);
     SetExpectCtUrl("test.example.org", correct_report_uri(),
-                   correct_network_isolation_key);
+                   correct_network_anonymization_key);
 
-    url::Origin incorrect_report_origin =
-        url::Origin::Create(sxg_validity_url());
-    net::NetworkIsolationKey incorrect_network_isolation_key(
-        incorrect_report_origin, incorrect_report_origin);
+    net::SchemefulSite incorrect_report_site =
+        net::SchemefulSite(sxg_validity_url());
+    net::NetworkAnonymizationKey incorrect_network_anonymization_key(
+        incorrect_report_site, incorrect_report_site);
     SetExpectCtUrl("test.example.org", incorrect_sxg_validity_report_uri(),
-                   incorrect_network_isolation_key);
+                   incorrect_network_anonymization_key);
   }
 
-  void SetExpectCtUrl(const std::string& domain,
-                      const GURL& report_uri,
-                      const net::NetworkIsolationKey& network_isolation_key) {
+  void SetExpectCtUrl(
+      const std::string& domain,
+      const GURL& report_uri,
+      const net::NetworkAnonymizationKey& network_anonymization_key) {
     base::RunLoop run_loop;
     network::mojom::NetworkContext* network_context =
         shell()
@@ -1449,7 +1518,7 @@ class SignedExchangeExpectCTReportBrowserTest
             ->GetNetworkContext();
     network_context->AddExpectCT(
         domain, base::Time::Now() + base::Days(1) /* expiry */,
-        true /* enforce */, report_uri, network_isolation_key,
+        true /* enforce */, report_uri, network_anonymization_key,
         base::BindLambdaForTesting([&](bool success) {
           EXPECT_TRUE(success);
           run_loop.Quit();
@@ -1500,17 +1569,17 @@ class SignedExchangeExpectCTReportBrowserTest
  private:
   // Prefix used for all reports.
   const char* kReportPathPrefix = "/report/";
-  // Prefix used for reports made using correct NetworkIsolationKey.
+  // Prefix used for reports made using correct NetworkAnonymizationKey.
   const char* kCorrectReportPath = "/report/correct-nik";
   // Prefix used for reports made using sxg_url_validity_url()'s
-  // NetworkIsolationKey, which is not correct.
+  // NetworkAnonymizationKey, which is not correct.
   const char* kIncorrectSxgValidityReportPath =
       "/report/incorrect-sxg-validity-nik";
-  // Prefix used for reports made using another incorrect NetworkIsolationKey,
-  // set by the test.
+  // Prefix used for reports made using another incorrect
+  // NetworkAnonymizationKey, set by the test.
   const char* kOtherIncorrectReportPath = "/report/other-incorrect-nik";
 
-  // URI used for reports that use the correct NetworkIsolationKey for the
+  // URI used for reports that use the correct NetworkAnonymizationKey for the
   // report.
   GURL correct_report_uri() const {
     return report_server_.GetURL(kCorrectReportPath);
@@ -1547,7 +1616,8 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeExpectCTReportBrowserTest,
     // ERR_NAME_NOT_RESOLVED.
     NavigationHandleObserver observer(shell()->web_contents(), sxg_url());
     EXPECT_FALSE(NavigateToURL(shell(), sxg_url()));
-    EXPECT_EQ(sxg_validity_url(), shell()->web_contents()->GetURL());
+    EXPECT_EQ(sxg_validity_url(),
+              shell()->web_contents()->GetLastCommittedURL());
     EXPECT_EQ(net::ERR_NAME_NOT_RESOLVED, observer.net_error_code());
   }
 
@@ -1565,16 +1635,16 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeExpectCTReportBrowserTest,
   // fetched from 127.0.0.1.
   const char kPrefetcherHost[] = "prefetch-origin.test";
 
-  // Set up reports for the kPrefetcherHost's NetworkIsolationKey. This NIK
+  // Set up reports for the kPrefetcherHost's NetworkAnonymizationKey. This NIK
   // should not be used by the request for the signed exchange, so use an
   // incorrect reporting URL. This will make the test give a more useful error
   // on failure, instead of just hanging.
-  url::Origin other_incorrect_report_origin =
-      url::Origin::Create(embedded_test_server()->GetURL(kPrefetcherHost, "/"));
-  net::NetworkIsolationKey other_incorrect_network_isolation_key(
-      other_incorrect_report_origin, other_incorrect_report_origin);
+  net::SchemefulSite other_incorrect_report_site =
+      net::SchemefulSite(embedded_test_server()->GetURL(kPrefetcherHost, "/"));
+  net::NetworkAnonymizationKey other_incorrect_network_anonymization_key(
+      other_incorrect_report_site, other_incorrect_report_site);
   SetExpectCtUrl("test.example.org", other_incorrect_report_uri(),
-                 other_incorrect_network_isolation_key);
+                 other_incorrect_network_anonymization_key);
 
   const GURL prefetch_html_url = embedded_test_server()->GetURL(
       kPrefetcherHost,
@@ -1589,8 +1659,7 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeExpectCTReportBrowserTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          SignedExchangeExpectCTReportBrowserTest,
-                         ::testing::Combine(::testing::Bool(),
-                                            ::testing::Bool()));
+                         ::testing::Bool());
 
 #if BUILDFLAG(ENABLE_REPORTING)
 
@@ -1685,7 +1754,7 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeReportingBrowserTest,
   GURL report_url = ssl_server_.GetURL(kReportPath);
 
   // Get Report-To and NEL information for the server that serves the signed
-  // exchange. The same site is also used for the NetworkIsolationKey. This
+  // exchange. The same site is also used for the NetworkAnonymizationKey. This
   // should result in sending a report to that server a request for that signed
   // exchange fails with a certificate error.
   {
@@ -1724,7 +1793,8 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeReportingBrowserTest,
     // ERR_NAME_NOT_RESOLVED.
     NavigationHandleObserver observer(shell()->web_contents(), sxg_url());
     EXPECT_FALSE(NavigateToURL(shell(), sxg_url()));
-    EXPECT_EQ(sxg_validity_url(), shell()->web_contents()->GetURL());
+    EXPECT_EQ(sxg_validity_url(),
+              shell()->web_contents()->GetLastCommittedURL());
     EXPECT_EQ(net::ERR_NAME_NOT_RESOLVED, observer.net_error_code());
   }
 
@@ -1737,9 +1807,116 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeReportingBrowserTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          SignedExchangeReportingBrowserTest,
-                         ::testing::Combine(::testing::Bool(),
-                                            ::testing::Bool()));
+                         ::testing::Bool());
 
 #endif  // BUILDFLAG(ENABLE_REPORTING)
+
+class SignedExchangePKPBrowserTest
+    : public SignedExchangeRequestHandlerBrowserTest {
+ public:
+  SignedExchangePKPBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        net::features::kStaticKeyPinningEnforcement);
+  }
+  void SetUpOnMainThread() override {
+    SignedExchangeRequestHandlerBrowserTest::SetUpOnMainThread();
+
+    // Make all attempts to connect to the domain the SXG is for fail with a DNS
+    // error. Without this, they're fail with ERR_NOT_IMPLEMENTED. Making
+    // requests fail with ERR_NAME_NOT_RESOLVED instead better matches what
+    // happens in production.
+    host_resolver()->AddSimulatedFailure("test.example.org");
+
+    // Use a mock cert issued by a known root, so that PKP violation will not be
+    // bypassed. It also causes a CT failure, but PKP error takes precedence.
+    InstallMockCertByKnownRoot();
+    InstallMockCertChainInterceptor();
+
+    embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
+    EXPECT_TRUE(embedded_test_server()->Start());
+    EnableStaticPins(embedded_test_server()->port());
+  }
+
+  void TearDownOnMainThread() override {
+    if (IsOutOfProcessNetworkService()) {
+      mojo::ScopedAllowSyncCallForTesting allow_sync_call;
+
+      mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
+      GetNetworkService()->BindTestInterface(
+          network_service_test.BindNewPipeAndPassReceiver());
+      network_service_test->SetTransportSecurityStateSource(0);
+    } else {
+      RunOnIOThreadBlocking(
+          base::BindOnce(&SignedExchangePKPBrowserTest::CleanUpOnIOThread,
+                         base::Unretained(this)));
+    }
+    SignedExchangeRequestHandlerBrowserTest::TearDownOnMainThread();
+  }
+
+  void EnableStaticPins(int reporting_port) {
+    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
+    StoragePartition* partition = shell()
+                                      ->web_contents()
+                                      ->GetBrowserContext()
+                                      ->GetDefaultStoragePartition();
+    partition->GetNetworkContext()->EnableStaticKeyPinningForTesting();
+    partition->FlushNetworkInterfaceForTesting();
+
+    if (IsOutOfProcessNetworkService()) {
+      mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
+      GetNetworkService()->BindTestInterface(
+          network_service_test.BindNewPipeAndPassReceiver());
+      network_service_test->SetTransportSecurityStateSource(reporting_port);
+    } else {
+      // TODO(https://crbug.com/1008175):  This code is not threadsafe, as the
+      // network stack does not run on the IO thread. Ideally, the
+      // NetworkServiceTest object would be set up in-process on the network
+      // service's thread, and this path would be removed.
+      RunOnIOThreadBlocking(base::BindOnce(
+          &SignedExchangePKPBrowserTest::SetTransportSecurityStateSourceOnIO,
+          base::Unretained(this), reporting_port));
+    }
+  }
+
+ private:
+  void RunOnIOThreadBlocking(base::OnceClosure task) {
+    base::RunLoop run_loop;
+    GetIOThreadTaskRunner({})->PostTaskAndReply(FROM_HERE, std::move(task),
+                                                run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  void SetTransportSecurityStateSourceOnIO(int reporting_port) {
+    transport_security_state_source_ =
+        std::make_unique<net::ScopedTransportSecurityStateSource>(
+            reporting_port);
+  }
+
+  void CleanUpOnIOThread() { transport_security_state_source_.reset(); }
+
+  // Only used when NetworkService is disabled. Accessed on IO thread.
+  std::unique_ptr<net::ScopedTransportSecurityStateSource>
+      transport_security_state_source_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(SignedExchangePKPBrowserTest, PKPViolation) {
+  GURL sxg_url =
+      embedded_test_server()->GetURL("/sxg/test.example.org_test.sxg");
+  GURL fallback_url("https://test.example.org/test/");
+
+  MaybeTriggerPrefetchSXG(sxg_url, false);
+
+  NavigationHandleObserver observer(shell()->web_contents(), sxg_url);
+  EXPECT_FALSE(NavigateToURL(shell(), sxg_url));
+  EXPECT_EQ(fallback_url, shell()->web_contents()->GetLastCommittedURL());
+  EXPECT_EQ(net::ERR_NAME_NOT_RESOLVED, observer.net_error_code());
+  histogram_tester_.ExpectUniqueSample(
+      kLoadResultHistogram, SignedExchangeLoadResult::kPKPViolationError,
+      UsePrefetch() ? 2 : 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(All, SignedExchangePKPBrowserTest, ::testing::Bool());
 
 }  // namespace content

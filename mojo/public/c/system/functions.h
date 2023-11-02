@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,6 @@
 #ifndef MOJO_PUBLIC_C_SYSTEM_FUNCTIONS_H_
 #define MOJO_PUBLIC_C_SYSTEM_FUNCTIONS_H_
 
-#include <stddef.h>
-#include <stdint.h>
-
-#include "mojo/public/c/system/invitation.h"
 #include "mojo/public/c/system/system_export.h"
 #include "mojo/public/c/system/types.h"
 

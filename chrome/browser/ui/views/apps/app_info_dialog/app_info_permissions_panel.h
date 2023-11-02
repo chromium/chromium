@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,12 +50,12 @@ class AppInfoPermissionsPanel : public AppInfoPanel {
 
   int GetRetainedFileCount() const;
   std::u16string GetRetainedFileHeading() const;
-  const std::vector<std::u16string> GetRetainedFilePaths() const;
+  std::vector<std::u16string> GetRetainedFilePaths() const;
   void RevokeFilePermissions();
 
   int GetRetainedDeviceCount() const;
   std::u16string GetRetainedDeviceHeading() const;
-  const std::vector<std::u16string> GetRetainedDevices() const;
+  std::vector<std::u16string> GetRetainedDevices() const;
   void RevokeDevicePermissions();
 };
 

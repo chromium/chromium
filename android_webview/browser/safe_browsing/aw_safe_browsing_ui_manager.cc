@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "android_webview/browser/aw_content_browser_client.h"
+#include "android_webview/browser/safe_browsing/aw_ping_manager_factory.h"
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_blocking_page.h"
 #include "android_webview/common/aw_paths.h"
 #include "base/bind.h"
@@ -18,7 +19,6 @@
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/safe_browsing/content/browser/safe_browsing_network_context.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
-#include "components/safe_browsing/core/browser/ping_manager.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -36,11 +36,6 @@ using content::WebContents;
 namespace android_webview {
 
 namespace {
-
-std::string GetProtocolConfigClientName() {
-  // Return a webview specific client name, see crbug.com/732373 for details.
-  return "android_webview";
-}
 
 network::mojom::NetworkContextParamsPtr CreateDefaultNetworkContextParams() {
   network::mojom::NetworkContextParamsPtr network_context_params =
@@ -110,23 +105,14 @@ int AwSafeBrowsingUIManager::GetErrorUiType(
   return client->GetErrorUiType();
 }
 
-void AwSafeBrowsingUIManager::SendSerializedThreatDetails(
+void AwSafeBrowsingUIManager::SendThreatDetails(
     content::BrowserContext* browser_context,
-    const std::string& serialized) {
+    std::unique_ptr<safe_browsing::ClientSafeBrowsingReportRequest> report) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!ping_manager_) {
-    // Lazy creation of ping manager, needs to happen on IO thread.
-    ping_manager_ = ::safe_browsing::PingManager::Create(
-        safe_browsing::GetV4ProtocolConfig(GetProtocolConfigClientName(),
-                                           false /* disable_auto_update */));
-  }
-
-  if (!serialized.empty()) {
-    DVLOG(1) << "Sending serialized threat details";
-    ping_manager_->ReportThreatDetails(network_context_->GetURLLoaderFactory(),
-                                       serialized);
-  }
+  DVLOG(1) << "Sending threat details";
+  safe_browsing::AwPingManagerFactory::GetForBrowserContext(browser_context)
+      ->ReportThreatDetails(std::move(report));
 }
 
 safe_browsing::BaseBlockingPage*
@@ -152,6 +138,11 @@ void AwSafeBrowsingUIManager::CreateURLLoaderFactoryForIO(
   url_loader_factory_params->is_corb_enabled = false;
   network_context_->GetNetworkContext()->CreateURLLoaderFactory(
       std::move(receiver), std::move(url_loader_factory_params));
+}
+
+scoped_refptr<network::SharedURLLoaderFactory>
+AwSafeBrowsingUIManager::GetURLLoaderFactory() {
+  return network_context_->GetURLLoaderFactory();
 }
 
 }  // namespace android_webview

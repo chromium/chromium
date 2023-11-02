@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -919,14 +919,14 @@ TEST_P(GLES2DecoderTest2, ShaderSourceBucketInvalidHeader) {
   const char kSource0[] = "hello";
   const char* kSource[] = {kSource0};
   const char kValidStrEnd = 0;
-  const GLsizei kCount = static_cast<GLsizei>(base::size(kSource));
+  const GLsizei kCount = static_cast<GLsizei>(std::size(kSource));
   const GLsizei kTests[] = {
       kCount + 1,
       0,
       std::numeric_limits<GLsizei>::max(),
       -1,
   };
-  for (size_t ii = 0; ii < base::size(kTests); ++ii) {
+  for (size_t ii = 0; ii < std::size(kTests); ++ii) {
     SetBucketAsCStrings(kBucketId, 1, kSource, kTests[ii], kValidStrEnd);
     cmds::ShaderSourceBucket cmd;
     cmd.Init(client_shader_id_, kBucketId);
@@ -1221,14 +1221,14 @@ TEST_P(GLES3DecoderTest2, TransformFeedbackVaryingsBucketInvalidHeader) {
   const char kSource0[] = "hello";
   const char* kSource[] = {kSource0};
   const char kValidStrEnd = 0;
-  const GLsizei kCount = static_cast<GLsizei>(base::size(kSource));
+  const GLsizei kCount = static_cast<GLsizei>(std::size(kSource));
   const GLsizei kTests[] = {
       kCount + 1,
       0,
       std::numeric_limits<GLsizei>::max(),
       -1,
   };
-  for (size_t ii = 0; ii < base::size(kTests); ++ii) {
+  for (size_t ii = 0; ii < std::size(kTests); ++ii) {
     SetBucketAsCStrings(kBucketId, 1, kSource, kTests[ii], kValidStrEnd);
     cmds::TransformFeedbackVaryingsBucket cmd;
     cmd.Init(client_program_id_, kBucketId, GL_INTERLEAVED_ATTRIBS);

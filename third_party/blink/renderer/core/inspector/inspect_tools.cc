@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,11 +27,13 @@
 #include "third_party/blink/renderer/core/inspector/node_content_visibility_state.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/ng/flex/layout_ng_flexible_box.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/cursors.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 #include "third_party/inspector_protocol/crdtp/json.h"
+#include "ui/gfx/geometry/point_conversions.h"
 
 namespace blink {
 
@@ -82,17 +84,17 @@ Node* HoveredNodeForPoint(LocalFrame* frame,
 Node* HoveredNodeForEvent(LocalFrame* frame,
                           const WebGestureEvent& event,
                           bool ignore_pointer_events_none) {
-  return HoveredNodeForPoint(
-      frame, RoundedIntPoint(FloatPoint(event.PositionInRootFrame())),
-      ignore_pointer_events_none);
+  return HoveredNodeForPoint(frame,
+                             gfx::ToRoundedPoint(event.PositionInRootFrame()),
+                             ignore_pointer_events_none);
 }
 
 Node* HoveredNodeForEvent(LocalFrame* frame,
                           const WebMouseEvent& event,
                           bool ignore_pointer_events_none) {
-  return HoveredNodeForPoint(
-      frame, RoundedIntPoint(FloatPoint(event.PositionInRootFrame())),
-      ignore_pointer_events_none);
+  return HoveredNodeForPoint(frame,
+                             gfx::ToRoundedPoint(event.PositionInRootFrame()),
+                             ignore_pointer_events_none);
 }
 
 Node* HoveredNodeForEvent(LocalFrame* frame,
@@ -100,7 +102,7 @@ Node* HoveredNodeForEvent(LocalFrame* frame,
                           bool ignore_pointer_events_none) {
   WebPointerEvent transformed_point = event.WebPointerEventInRootFrame();
   return HoveredNodeForPoint(
-      frame, RoundedIntPoint(FloatPoint(transformed_point.PositionInWidget())),
+      frame, gfx::ToRoundedPoint(transformed_point.PositionInWidget()),
       ignore_pointer_events_none);
 }
 
@@ -225,7 +227,13 @@ bool SearchingForNodeTool::HandleMouseMove(const WebMouseEvent& event) {
   if (node && node->IsShadowRoot())
     node = node->ParentOrShadowHostNode();
 
-  if (!node)
+  // Keep last behavior if Ctrl + Alt(Gr) key is being pressed.
+  bool hold_selected_node =
+      (event.GetModifiers() &
+       (WebInputEvent::kAltKey | WebInputEvent::kAltGrKey)) &&
+      (event.GetModifiers() &
+       (WebInputEvent::kControlKey | WebInputEvent::kMetaKey));
+  if (!node || hold_selected_node)
     return true;
 
   std::tie(node, content_visibility_state_) =
@@ -252,8 +260,13 @@ bool SearchingForNodeTool::HandleMouseMove(const WebMouseEvent& event) {
                   (WebInputEvent::kControlKey | WebInputEvent::kMetaKey);
 
   contrast_info_ = FetchContrast(node);
-  if (hovered_node_changed)
+  if (hovered_node_changed) {
+    if (auto* flexbox =
+            DynamicTo<LayoutNGFlexibleBox>(node->GetLayoutObject())) {
+      flexbox->SetNeedsLayoutForDevtools();
+    }
     NodeHighlightRequested(node);
+  }
   return true;
 }
 
@@ -306,7 +319,7 @@ void SearchingForNodeTool::NodeHighlightRequested(Node* node) {
 
 QuadHighlightTool::QuadHighlightTool(InspectorOverlayAgent* overlay,
                                      OverlayFrontend* frontend,
-                                     std::unique_ptr<FloatQuad> quad,
+                                     std::unique_ptr<gfx::QuadF> quad,
                                      Color color,
                                      Color outline_color)
     : InspectTool(overlay, frontend),
@@ -346,6 +359,9 @@ NodeHighlightTool::NodeHighlightTool(
   std::tie(node_, content_visibility_state_) =
       DetermineContentVisibilityState(node);
   contrast_info_ = FetchContrast(node_);
+  if (auto* flexbox = DynamicTo<LayoutNGFlexibleBox>(node->GetLayoutObject())) {
+    flexbox->SetNeedsLayoutForDevtools();
+  }
 }
 
 String NodeHighlightTool::GetOverlayName() {
@@ -385,7 +401,7 @@ void NodeHighlightTool::DrawNode() {
 }
 
 void NodeHighlightTool::DrawMatchingSelector() {
-  if (selector_list_.IsEmpty() || !node_)
+  if (selector_list_.empty() || !node_)
     return;
   DummyExceptionStateForTesting exception_state;
   ContainerNode* query_base = node_->ContainingShadowRoot();
@@ -476,14 +492,14 @@ bool PersistentTool::HideOnMouseMove() {
 void PersistentTool::Draw(float scale) {
   for (auto& entry : grid_node_highlights_) {
     std::unique_ptr<protocol::Value> highlight =
-        InspectorGridHighlight(entry.first.Get(), *(entry.second));
+        InspectorGridHighlight(entry.key, *(entry.value));
     if (!highlight)
       continue;
     overlay_->EvaluateInOverlay("drawGridHighlight", std::move(highlight));
   }
   for (auto& entry : flex_container_configs_) {
     std::unique_ptr<protocol::Value> highlight =
-        InspectorFlexContainerHighlight(entry.first.Get(), *(entry.second));
+        InspectorFlexContainerHighlight(entry.key, *(entry.value));
     if (!highlight)
       continue;
     overlay_->EvaluateInOverlay("drawFlexContainerHighlight",
@@ -491,7 +507,7 @@ void PersistentTool::Draw(float scale) {
   }
   for (auto& entry : scroll_snap_configs_) {
     std::unique_ptr<protocol::Value> highlight =
-        InspectorScrollSnapHighlight(entry.first.Get(), *(entry.second));
+        InspectorScrollSnapHighlight(entry.key, *(entry.value));
     if (!highlight)
       continue;
     overlay_->EvaluateInOverlay("drawScrollSnapHighlight",
@@ -499,17 +515,15 @@ void PersistentTool::Draw(float scale) {
   }
   for (auto& entry : container_query_configs_) {
     std::unique_ptr<protocol::Value> highlight =
-        InspectorContainerQueryHighlight(entry.first.Get(), *(entry.second));
+        InspectorContainerQueryHighlight(entry.key, *(entry.value));
     if (!highlight)
       continue;
     overlay_->EvaluateInOverlay("drawContainerQueryHighlight",
                                 std::move(highlight));
   }
-  for (wtf_size_t i = 0; i < isolated_element_configs_.size(); ++i) {
-    auto& entry = isolated_element_configs_.at(i);
+  for (auto& entry : isolated_element_configs_) {
     std::unique_ptr<protocol::Value> highlight =
-        InspectorIsolatedElementHighlight(entry.first.Get(), *(entry.second),
-                                          i);
+        InspectorIsolatedElementHighlight(entry.key, *(entry.value));
     if (!highlight)
       continue;
     overlay_->EvaluateInOverlay("drawIsolatedElementHighlight",
@@ -547,9 +561,11 @@ void PersistentTool::Dispatch(const ScriptValue& message,
 
   Element* element = nullptr;
   if (highlight_type == "isolatedElement") {
-    if (index < static_cast<int>(isolated_element_configs_.size()) &&
-        index >= 0) {
-      element = isolated_element_configs_.at(index).first.Get();
+    for (auto& entry : isolated_element_configs_) {
+      if (entry.value->highlight_index == index) {
+        element = entry.key;
+        break;
+      }
     }
   }
 
@@ -570,7 +586,7 @@ PersistentTool::GetGridInspectorHighlightsAsJson() const {
       protocol::ListValue::create();
   for (auto& entry : grid_node_highlights_) {
     std::unique_ptr<protocol::Value> highlight =
-        InspectorGridHighlight(entry.first.Get(), *(entry.second));
+        InspectorGridHighlight(entry.key, *(entry.value));
     if (!highlight)
       continue;
     highlights->pushValue(std::move(highlight));
@@ -581,6 +597,15 @@ PersistentTool::GetGridInspectorHighlightsAsJson() const {
     result->setValue("gridHighlights", std::move(highlights));
   }
   return result;
+}
+
+void PersistentTool::Trace(Visitor* visitor) const {
+  InspectTool::Trace(visitor);
+  visitor->Trace(grid_node_highlights_);
+  visitor->Trace(flex_container_configs_);
+  visitor->Trace(scroll_snap_configs_);
+  visitor->Trace(container_query_configs_);
+  visitor->Trace(isolated_element_configs_);
 }
 
 // SourceOrderTool -----------------------------------------------------------
@@ -798,8 +823,8 @@ void ScreenshotTool::Dispatch(const ScriptValue& message,
     scale = frame->GetPage()->PageScaleFactor();
     if (const RootFrameViewport* root_frame_viewport =
             frame->View()->GetRootFrameViewport()) {
-      gfx::Vector2d scroll_offset = ToGfxVector2d(FlooredIntSize(
-          root_frame_viewport->LayoutViewport().GetScrollOffset()));
+      gfx::Vector2d scroll_offset = gfx::ToFlooredVector2d(
+          root_frame_viewport->LayoutViewport().GetScrollOffset());
       // Accunt for the layout scroll (different from viewport scroll offset).
       p1 += scroll_offset;
       p2 += scroll_offset;
@@ -812,8 +837,8 @@ void ScreenshotTool::Dispatch(const ScriptValue& message,
   p2 = gfx::ScaleToRoundedPoint(p2, dp_to_dip);
 
   // Points are in device independent pixels (dip) now.
-  IntRect rect =
-      UnionRectsEvenIfEmpty(IntRect(p1, IntSize()), IntRect(p2, IntSize()));
+  gfx::Rect rect = UnionRectsEvenIfEmpty(gfx::Rect(p1, gfx::Size()),
+                                         gfx::Rect(p2, gfx::Size()));
   frontend_->screenshotRequested(protocol::Page::Viewport::create()
                                      .setX(rect.x())
                                      .setY(rect.y())

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/value_iterators.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -121,17 +122,16 @@ class HostZoomMapBrowserTest : public InProcessBrowserTest {
 
   std::vector<std::string> GetHostsWithZoomLevelsFromPrefs() {
     PrefService* prefs = browser()->profile()->GetPrefs();
-    const base::DictionaryValue* dictionaries =
-        prefs->GetDictionary(prefs::kPartitionPerHostZoomLevels);
-    const base::DictionaryValue* values = NULL;
+    const base::Value::Dict& dictionaries =
+        prefs->GetDict(prefs::kPartitionPerHostZoomLevels);
     std::string partition_key =
         ChromeZoomLevelPrefs::GetPartitionKeyForTesting(base::FilePath());
-    dictionaries->GetDictionary(partition_key, &values);
+    const base::Value::Dict* values =
+        dictionaries.FindDictByDottedPath(partition_key);
     std::vector<std::string> results;
     if (values) {
-      for (base::DictionaryValue::Iterator it(*values);
-           !it.IsAtEnd(); it.Advance())
-        results.push_back(it.key());
+      for (const auto key_value_pair : *values)
+        results.push_back(key_value_pair.first);
     }
     return results;
   }

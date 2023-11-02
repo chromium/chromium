@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/version.h"
@@ -140,8 +141,8 @@ class ContentVerifyJobUnittest : public ExtensionsTest {
     auto run_content_read_step = [](ContentVerifyJob* verify_job,
                                     std::string* resource_contents) {
       // Simulate serving |resource_contents| from |resource_path|.
-      verify_job->Read(base::data(*resource_contents),
-                       resource_contents->size(), MOJO_RESULT_OK);
+      verify_job->Read(std::data(*resource_contents), resource_contents->size(),
+                       MOJO_RESULT_OK);
       verify_job->Done();
     };
 
@@ -252,7 +253,7 @@ class ContentVerifyJobUnittest : public ExtensionsTest {
 
   scoped_refptr<InfoMap> extension_info_map_;
   scoped_refptr<ContentVerifier> content_verifier_;
-  MockContentVerifierDelegate* content_verifier_delegate_ =
+  raw_ptr<MockContentVerifierDelegate> content_verifier_delegate_ =
       nullptr;  // Owned by |content_verifier_|.
   content::TestBrowserContext testing_context_;
 };

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_validation_errors.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/modules/credentialmanager/authenticator_assertion_response.h"
-#include "third_party/blink/renderer/modules/credentialmanager/credential_manager_type_converters.h"
-#include "third_party/blink/renderer/modules/credentialmanager/public_key_credential.h"
+#include "third_party/blink/renderer/modules/credentialmanagement/authenticator_assertion_response.h"
+#include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_type_converters.h"
+#include "third_party/blink/renderer/modules/credentialmanagement/public_key_credential.h"
 #include "third_party/blink/renderer/modules/payments/payment_address.h"
 #include "third_party/blink/renderer/modules/payments/payment_state_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -42,13 +42,13 @@ v8::Local<v8::Value> BuildDetails(
         secure_payment_confirmation->credential_info->id,
         DOMArrayBuffer::Create(static_cast<const void*>(info->raw_id.data()),
                                info->raw_id.size()),
-        authenticator_response, secure_payment_confirmation->has_transport,
-        secure_payment_confirmation->transport,
+        authenticator_response,
+        secure_payment_confirmation->authenticator_attachment,
         AuthenticationExtensionsClientOutputs::Create());
     return result->Wrap(script_state).ToLocalChecked();
   }
 
-  if (json.IsEmpty()) {
+  if (json.empty()) {
     return V8ObjectBuilder(script_state).V8Value();
   }
 

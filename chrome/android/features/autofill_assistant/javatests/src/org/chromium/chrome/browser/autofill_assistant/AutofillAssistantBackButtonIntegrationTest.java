@@ -1,13 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.autofill_assistant;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
-import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
@@ -29,7 +26,6 @@ import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUi
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
 import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCssSelector;
 
-import androidx.annotation.Nullable;
 import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
 
@@ -41,11 +37,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.ClientSettingsProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.ClientSettingsProto.BackButtonSettings;
-import org.chromium.chrome.browser.autofill_assistant.proto.ClientSettingsProto.IntegrationTestSettings;
 import org.chromium.chrome.browser.autofill_assistant.proto.ElementAreaProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ElementAreaProto.Rectangle;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto;
@@ -59,6 +51,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.components.autofill_assistant.R;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -85,18 +78,8 @@ public class AutofillAssistantBackButtonIntegrationTest {
 
     private void startAutofillAssistantOnTab(
             String pageToLoad, AutofillAssistantTestScript... scripts) {
-        startAutofillAssistantOnTab(pageToLoad, null, scripts);
-    }
-
-    private void startAutofillAssistantOnTab(String pageToLoad,
-            @Nullable ClientSettingsProto settings, AutofillAssistantTestScript... scripts) {
-        AutofillAssistantTestService testService;
-        if (settings != null) {
-            testService = new AutofillAssistantTestService(Arrays.asList(scripts), settings);
-        } else {
-            testService = new AutofillAssistantTestService(Arrays.asList(scripts));
-        }
-        startAutofillAssistant(mTestRule.getActivity(), testService, getURL(pageToLoad));
+        startAutofillAssistant(mTestRule.getActivity(),
+                new AutofillAssistantTestService(Arrays.asList(scripts)), getURL(pageToLoad));
     }
 
     @Test
@@ -161,92 +144,6 @@ public class AutofillAssistantBackButtonIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1220329")
-    public void backButtonWithSettingsShowsErrorMessageAndDestroysAutofillAssistantUi()
-            throws Exception {
-        ChromeTabUtils.loadUrlOnUiThread(
-                mTestRule.getActivity().getActivityTab(), getURL(TEST_PAGE_B));
-
-        SelectorProto element = toCssSelector("#profile_name");
-
-        ArrayList<ActionProto> list = new ArrayList<>();
-        list.add(ActionProto.newBuilder()
-                         .setShowCast(ShowCastProto.newBuilder()
-                                              .setElementToPresent(element)
-                                              .setTouchableElementArea(
-                                                      ElementAreaProto.newBuilder().addTouchable(
-                                                              Rectangle.newBuilder().addElements(
-                                                                      element))))
-                         .build());
-        list.add(ActionProto.newBuilder()
-                         .setTell(TellProto.newBuilder().setMessage("Tell"))
-                         .build());
-        list.add(ActionProto.newBuilder()
-                         .setPrompt(PromptProto.newBuilder().addChoices(
-                                 PromptProto.Choice.newBuilder()))
-                         .build());
-
-        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                SupportedScriptProto.newBuilder()
-                        .setPath(TEST_PAGE_A)
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
-                        .build(),
-                list);
-        startAutofillAssistantOnTab(TEST_PAGE_B,
-                ClientSettingsProto.newBuilder()
-                        .setIntegrationTestSettings(
-                                IntegrationTestSettings.newBuilder()
-                                        .setDisableHeaderAnimations(true)
-                                        .setDisableCarouselChangeAnimations(true))
-                        .setBackButtonSettings(BackButtonSettings.newBuilder()
-                                                       .setMessage("Back button pressed")
-                                                       .setUndoLabel("Undo"))
-                        .build(),
-                script);
-
-        waitUntilViewMatchesCondition(withText("Tell"), isCompletelyDisplayed());
-
-        // Force the keyboard to open.
-        tapElement(mTestRule, "profile_name");
-        waitUntilKeyboardMatchesCondition(mTestRule, /* isShowing= */ true);
-
-        // First press on back button closes the keyboard.
-        Espresso.pressBack();
-        waitUntilKeyboardMatchesCondition(mTestRule, /* isShowing= */ false);
-        onView(withText("Tell")).check(matches(isCompletelyDisplayed()));
-
-        // Second press on back button shows error message.
-        Espresso.pressBack();
-        waitUntilViewMatchesCondition(withText("Back button pressed"), isCompletelyDisplayed());
-        waitUntilViewMatchesCondition(withText("Undo"), isDisplayed());
-        assertThat(
-                ChromeTabUtils.getUrlOnUiThread(mTestRule.getActivity().getActivityTab()).getSpec(),
-                is(getURL(TEST_PAGE_B)));
-
-        // Undo should get back to the prompt state.
-        onView(withText("Undo")).perform(click());
-        waitUntilViewMatchesCondition(withText("Tell"), isCompletelyDisplayed());
-
-        // Repeating second press on back button should show error message.
-        Espresso.pressBack();
-        waitUntilViewMatchesCondition(withText("Back button pressed"), isCompletelyDisplayed());
-        waitUntilViewMatchesCondition(withText("Undo"), isDisplayed());
-        assertThat(
-                ChromeTabUtils.getUrlOnUiThread(mTestRule.getActivity().getActivityTab()).getSpec(),
-                is(getURL(TEST_PAGE_B)));
-
-        // Third press on back button destroys Autofill UI and navigates back.
-        Espresso.pressBack();
-        waitUntilViewAssertionTrue(withId(R.id.autofill_assistant), doesNotExist(), 3000L);
-        waitUntil(
-                ()
-                        -> ChromeTabUtils.getUrlOnUiThread(mTestRule.getActivity().getActivityTab())
-                                   .getSpec()
-                                   .equals(getURL(TEST_PAGE_A)));
-    }
-
-    @Test
-    @MediumTest
     public void backButtonInStoppedAutofillAssistantState() {
         ChromeTabUtils.loadUrlOnUiThread(
                 mTestRule.getActivity().getActivityTab(), getURL(TEST_PAGE_B));
@@ -279,67 +176,6 @@ public class AutofillAssistantBackButtonIntegrationTest {
                         -> ChromeTabUtils.getUrlOnUiThread(mTestRule.getActivity().getActivityTab())
                                    .getSpec()
                                    .equals(getURL(TEST_PAGE_A)));
-    }
-
-    @Test
-    @MediumTest
-    public void navigationAfterBackButtonDestroysAutofillAssistantUi() {
-        ChromeTabUtils.loadUrlOnUiThread(
-                mTestRule.getActivity().getActivityTab(), getURL(TEST_PAGE_B));
-
-        SelectorProto element = toCssSelector("#profile_name");
-
-        ArrayList<ActionProto> list = new ArrayList<>();
-        list.add(ActionProto.newBuilder()
-                         .setShowCast(ShowCastProto.newBuilder()
-                                              .setElementToPresent(element)
-                                              .setTouchableElementArea(
-                                                      ElementAreaProto.newBuilder().addTouchable(
-                                                              Rectangle.newBuilder().addElements(
-                                                                      element))))
-                         .build());
-        list.add(ActionProto.newBuilder()
-                         .setTell(TellProto.newBuilder().setMessage("Tell"))
-                         .build());
-        list.add(ActionProto.newBuilder()
-                         .setPrompt(PromptProto.newBuilder().addChoices(
-                                 PromptProto.Choice.newBuilder()))
-                         .build());
-
-        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                SupportedScriptProto.newBuilder()
-                        .setPath(TEST_PAGE_A)
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
-                        .build(),
-                list);
-        startAutofillAssistantOnTab(TEST_PAGE_B,
-                ClientSettingsProto.newBuilder()
-                        .setIntegrationTestSettings(
-                                IntegrationTestSettings.newBuilder()
-                                        .setDisableHeaderAnimations(true)
-                                        .setDisableCarouselChangeAnimations(true))
-                        .setBackButtonSettings(BackButtonSettings.newBuilder()
-                                                       .setMessage("Back button pressed")
-                                                       .setUndoLabel("Undo"))
-                        .build(),
-                script);
-
-        waitUntilViewMatchesCondition(withText("Tell"), isCompletelyDisplayed());
-
-        // First press on back button shows error message.
-        Espresso.pressBack();
-        waitUntilViewMatchesCondition(withText("Back button pressed"), isCompletelyDisplayed());
-        waitUntilViewMatchesCondition(withText("Undo"), isDisplayed());
-        assertThat(
-                ChromeTabUtils.getUrlOnUiThread(mTestRule.getActivity().getActivityTab()).getSpec(),
-                is(getURL(TEST_PAGE_B)));
-
-        // Navigation destroys the Autofill Assistant UI.
-        onView(withId(org.chromium.chrome.R.id.url_bar))
-                .perform(click(), typeText(getURL(TEST_PAGE_A)));
-        onView(withId(org.chromium.chrome.R.id.url_bar)).perform(pressImeActionButton());
-        waitUntilViewAssertionTrue(
-                withId(R.id.autofill_assistant), doesNotExist(), DEFAULT_MAX_TIME_TO_POLL);
     }
 
     @Test

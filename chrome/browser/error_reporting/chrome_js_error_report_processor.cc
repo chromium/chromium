@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
@@ -19,6 +20,7 @@
 #include "base/time/default_clock.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/crash/content/browser/error_reporting/javascript_error_report.h"
 #include "components/crash/core/app/client_upload_info.h"
 #include "components/crash/core/app/crashpad.h"
@@ -29,7 +31,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
-#include "net/base/escape.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
@@ -44,7 +45,7 @@ constexpr char kRegularTabbedWindow[] = "REGULAR_TABBED";
 constexpr char kWebAppWindow[] = "WEB_APP";
 constexpr char kSystemWebAppWindow[] = "SYSTEM_WEB_APP";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 // Give up if crash_reporter hasn't finished in this long.
 constexpr base::TimeDelta kMaximumWaitForCrashReporter = base::Minutes(1);
 #endif
@@ -92,7 +93,7 @@ std::string MapWindowTypeToString(WindowType window_type) {
 
 ChromeJsErrorReportProcessor::ChromeJsErrorReportProcessor()
     :
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
       maximium_wait_for_crash_reporter_(kMaximumWaitForCrashReporter),
 #endif
       clock_(base::DefaultClock::GetInstance()) {
@@ -107,7 +108,7 @@ ChromeJsErrorReportProcessor::CheckConsentAndRedact(
     JavaScriptErrorReport error_report) {
   // Consent is handled at the OS level by crash_reporter so we don't need to
   // check it here for Chrome OS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_CHROMEOS)
   if (!crash_reporter::GetClientCollectStatsConsent()) {
     return absl::nullopt;
   }
@@ -138,7 +139,7 @@ ChromeJsErrorReportProcessor::GetPlatformInfo() {
 
   // TODO(https://crbug.com/1121816): Get correct product_name for non-POSIX
   // platforms.
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   crash_reporter::GetClientProductNameAndVersion(&info.product_name,
                                                  &info.version, &info.channel);
 #endif
@@ -179,8 +180,8 @@ void ChromeJsErrorReportProcessor::OnConsentCheckCompleted(
       error_report->version.empty() ? platform.version : error_report->version;
 
   ParameterMap params;
-  params["prod"] = net::EscapeQueryParamValue(product, /*use_plus=*/false);
-  params["ver"] = net::EscapeQueryParamValue(version, /*use_plus=*/false);
+  params["prod"] = base::EscapeQueryParamValue(product, /*use_plus=*/false);
+  params["ver"] = base::EscapeQueryParamValue(version, /*use_plus=*/false);
   params["type"] = "JavascriptError";
   params["error_message"] = error_report->message;
   params["browser"] = "Chrome";
@@ -192,7 +193,7 @@ void ChromeJsErrorReportProcessor::OnConsentCheckCompleted(
   params["build_time_millis"] = base::NumberToString(build_time);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   // base::SysInfo::OperatingSystemName() returns "Linux" on ChromeOS devices.
   params["os"] = "ChromeOS";
 #else
@@ -343,7 +344,7 @@ void ChromeJsErrorReportProcessor::SendErrorReport(
   base::ScopedClosureRunner callback_runner(std::move(completion_callback));
 
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory;
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_CHROMEOS)
   // loader_factory must be created on UI thread. Get it now while we still
   // know the browser_context pointer is valid.
   loader_factory = browser_context->GetDefaultStoragePartition()

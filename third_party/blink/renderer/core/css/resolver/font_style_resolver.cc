@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,8 +22,9 @@ FontDescription FontStyleResolver::ComputeFont(
   CSSToLengthConversionData::FontSizes fontSizes(10, 10, &font, 1);
   CSSToLengthConversionData::ViewportSize viewportSize(0, 0);
   CSSToLengthConversionData::ContainerSizes container_sizes;
-  CSSToLengthConversionData conversionData(nullptr, fontSizes, viewportSize,
-                                           container_sizes, 1);
+  CSSToLengthConversionData conversionData(
+      nullptr, nullptr, WritingMode::kHorizontalTb, fontSizes, viewportSize,
+      container_sizes, 1);
 
   // CSSPropertyID::kFontSize
   if (property_set.HasProperty(CSSPropertyID::kFontSize)) {

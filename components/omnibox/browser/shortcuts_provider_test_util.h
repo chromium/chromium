@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,6 +66,14 @@ void RunShortcutsProviderTest(
     scoped_refptr<ShortcutsProvider> provider,
     const std::u16string text,
     bool prevent_inline_autocomplete,
+    const std::vector<ExpectedURLAndAllowedToBeDefault>& expected_urls,
+    std::string expected_top_result,
+    std::u16string top_result_inline_autocompletion);
+
+// Like above, but with a custom `input`.
+void RunShortcutsProviderTest(
+    scoped_refptr<ShortcutsProvider> provider,
+    const AutocompleteInput& input,
     const std::vector<ExpectedURLAndAllowedToBeDefault>& expected_urls,
     std::string expected_top_result,
     std::u16string top_result_inline_autocompletion);

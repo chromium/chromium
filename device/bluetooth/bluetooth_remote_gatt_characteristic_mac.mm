@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -87,12 +87,12 @@ BluetoothRemoteGattCharacteristicMac::~BluetoothRemoteGattCharacteristicMac() {
   destructor_called_ = true;
   if (HasPendingRead()) {
     std::move(read_characteristic_value_callback_)
-        .Run(BluetoothGattService::GATT_ERROR_FAILED,
+        .Run(BluetoothGattService::GattErrorCode::kFailed,
              /*value=*/std::vector<uint8_t>());
   }
   if (HasPendingWrite()) {
     std::move(write_characteristic_value_callbacks_.second)
-        .Run(BluetoothGattService::GATT_ERROR_FAILED);
+        .Run(BluetoothGattService::GattErrorCode::kFailed);
   }
 }
 
@@ -137,16 +137,17 @@ void BluetoothRemoteGattCharacteristicMac::ReadRemoteCharacteristic(
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
-                       BluetoothGattService::GATT_ERROR_NOT_PERMITTED,
+                       BluetoothGattService::GattErrorCode::kNotPermitted,
                        /*value=*/std::vector<uint8_t>()));
     return;
   }
   if (destructor_called_ || HasPendingRead() || HasPendingWrite()) {
     DVLOG(1) << *this << ": Characteristic read already in progress.";
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  BluetoothGattService::GATT_ERROR_IN_PROGRESS,
-                                  /*value=*/std::vector<uint8_t>()));
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       BluetoothGattService::GattErrorCode::kInProgress,
+                       /*value=*/std::vector<uint8_t>()));
     return;
   }
   DVLOG(1) << *this << ": Read characteristic.";
@@ -164,7 +165,7 @@ void BluetoothRemoteGattCharacteristicMac::WriteRemoteCharacteristic(
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(error_callback),
-                       BluetoothGattService::GATT_ERROR_IN_PROGRESS));
+                       BluetoothGattService::GattErrorCode::kInProgress));
     return;
   }
   DVLOG(1) << *this << ": Write characteristic.";
@@ -203,7 +204,7 @@ void BluetoothRemoteGattCharacteristicMac::DeprecatedWriteRemoteCharacteristic(
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(error_callback),
-                       BluetoothGattService::GATT_ERROR_NOT_PERMITTED));
+                       BluetoothGattService::GattErrorCode::kNotPermitted));
     return;
   }
   if (destructor_called_ || HasPendingRead() || HasPendingWrite()) {
@@ -211,7 +212,7 @@ void BluetoothRemoteGattCharacteristicMac::DeprecatedWriteRemoteCharacteristic(
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(error_callback),
-                       BluetoothGattService::GATT_ERROR_IN_PROGRESS));
+                       BluetoothGattService::GattErrorCode::kInProgress));
     return;
   }
   DVLOG(1) << *this << ": Write characteristic.";
@@ -280,7 +281,7 @@ void BluetoothRemoteGattCharacteristicMac::DidUpdateValue(NSError* error) {
       DVLOG(1) << *this
                << ": Bluetooth error while reading for characteristic, domain: "
                << BluetoothAdapterMac::String(error)
-               << ", error code: " << error_code;
+               << ", error code: " << static_cast<int>(error_code);
       std::move(read_callback)
           .Run(error_code,
                /*value=*/std::vector<uint8_t>());
@@ -321,7 +322,8 @@ void BluetoothRemoteGattCharacteristicMac::DidWriteValue(NSError* error) {
       GetCBPeripheral().state != CBPeripheralStateConnected) {
     std::pair<base::OnceClosure, ErrorCallback> callbacks;
     callbacks.swap(write_characteristic_value_callbacks_);
-    std::move(callbacks.second).Run(BluetoothGattService::GATT_ERROR_FAILED);
+    std::move(callbacks.second)
+        .Run(BluetoothGattService::GattErrorCode::kFailed);
     return;
   }
 
@@ -342,7 +344,7 @@ void BluetoothRemoteGattCharacteristicMac::DidWriteValue(NSError* error) {
     DVLOG(1) << *this
              << ": Bluetooth error while writing for characteristic, error: "
              << BluetoothAdapterMac::String(error)
-             << ", error code: " << error_code;
+             << ", error code: " << static_cast<int>(error_code);
     std::move(callbacks.second).Run(error_code);
     return;
   }
@@ -371,7 +373,7 @@ void BluetoothRemoteGattCharacteristicMac::DidUpdateNotificationState(
              << ": Bluetooth error while modifying notification state for "
                 "characteristic, error: "
              << BluetoothAdapterMac::String(error)
-             << ", error code: " << error_code;
+             << ", error code: " << static_cast<int>(error_code);
     std::move(reentrant_safe_callbacks.second).Run(error_code);
     return;
   }

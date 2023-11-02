@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -170,13 +170,6 @@ static const uint16_t kTypeNSEC = 47;
 static const uint16_t kTypeHttps = 65;
 static const uint16_t kTypeANY = 255;
 
-// Experimental DNS record types pending IANA assignment.
-//
-// The INTEGRITY RR type exists purely for measuring how the DNS ecosystem
-// handles new RR types.
-// https://docs.google.com/document/d/14eCqVyT_3MSj7ydqNFl1Yl0yg1fs6g24qmYUUdi5V-k/edit?usp=sharing
-static const uint16_t kExperimentalTypeIntegrity = 65521;
-
 // DNS reply codes (RCODEs).
 //
 // https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#dns-parameters-6
@@ -190,7 +183,8 @@ static const uint8_t kRcodeREFUSED = 5;
 // DNS EDNS(0) option codes (OPT)
 //
 // https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#dns-parameters-11
-static const uint16_t kEdnsPadding = 12;
+static constexpr uint16_t kEdnsPadding = 12;
+static constexpr uint16_t kEdnsExtendedDnsError = 15;
 
 // DNS header flags.
 //
@@ -202,7 +196,7 @@ static const uint16_t kFlagTC = 0x200;  // Truncated - server flag.
 
 // SVCB/HTTPS ServiceParamKey
 //
-// IANA registration pending. Values from draft-ietf-dnsop-svcb-https-02.
+// IANA registration pending. Values from draft-ietf-dnsop-svcb-https-08.
 static constexpr uint16_t kHttpsServiceParamKeyMandatory = 0;
 static constexpr uint16_t kHttpsServiceParamKeyAlpn = 1;
 static constexpr uint16_t kHttpsServiceParamKeyNoDefaultAlpn = 2;
@@ -210,6 +204,9 @@ static constexpr uint16_t kHttpsServiceParamKeyPort = 3;
 static constexpr uint16_t kHttpsServiceParamKeyIpv4Hint = 4;
 static constexpr uint16_t kHttpsServiceParamKeyEchConfig = 5;
 static constexpr uint16_t kHttpsServiceParamKeyIpv6Hint = 6;
+
+// draft-ietf-dnsop-svcb-https-08#section-9
+inline constexpr char kHttpsServiceDefaultAlpn[] = "http/1.1";
 
 }  // namespace dns_protocol
 

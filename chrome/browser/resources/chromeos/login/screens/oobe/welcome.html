@@ -1,12 +1,14 @@
-<!-- Copyright 2016 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2016 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_shared_vars.css.html">
+<link rel="import" href="chrome://resources/ash/common/i18n_behavior.html">
 <link rel="import" href="chrome://resources/html/load_time_data.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 
@@ -79,7 +81,7 @@
       }
 
       #oobeAdvancedOptionsScreen .advanced-option-subtitle {
-        color: var(--google-grey-refresh-700);
+        color: var(--google-grey-700);
       }
     </style>
     <oobe-welcome-dialog id="welcomeScreen" role="dialog" for-step="greeting"
@@ -89,6 +91,7 @@
         on-accessibility-button-clicked="onWelcomeAccessibilityButtonClicked_"
         on-timezone-button-clicked="onWelcomeTimezoneButtonClicked_"
         on-next-button-clicked="onWelcomeNextButtonClicked_"
+        on-quick-start-clicked="onQuickStartButtonClicked_"
         on-enable-debugging-clicked="onEnableDebuggingClicked_"
         on-launch-advanced-options="onWelcomeLaunchAdvancedOptions_"
         on-chromevox-hint-accepted="onChromeVoxHintAccepted_"
@@ -104,13 +107,11 @@
         [[i18nDynamic(locale, 'languageSectionTitle')]]
       </h1>
       <p slot="subtitle">
-        <template is="dom-if" if="[[shouldShowLanguageSectionSubtitle_]]">
-          [[i18nDynamic(locale, 'languageSectionHint')]]
-          <a id="languagesLearnMore" class="oobe-local-link" is="action-link"
-              on-click="onLanguageLearnMoreLinkClicked_">
-            [[i18nDynamic(locale, 'learnMore')]]
-          </a>
-        </template>
+        [[i18nDynamic(locale, 'languageSectionHint')]]
+        <a id="languagesLearnMore" class="oobe-local-link" is="action-link"
+            on-click="onLanguageLearnMoreLinkClicked_">
+          [[i18nDynamic(locale, 'learnMore')]]
+        </a>
       </p>
       <div id="setup-container" slot="content" class="landscape-header-aligned">
         <div id="languageDropdownContainer"

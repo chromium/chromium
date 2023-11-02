@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,8 +59,7 @@ std::map<GURL, std::vector<TimestampedSetting>> GetAllSettingsForProfile(
     auto exceptions_for_type = site_settings::GetSiteExceptionsForContentType(
         content_settings_map, content_type);
     for (const auto& e : exceptions_for_type) {
-      auto last_modified = content_settings_map->GetSettingLastModifiedDate(
-          e.primary_pattern, e.secondary_pattern, content_type);
+      auto last_modified = e.metadata.last_modified;
       if (last_modified.is_null()) {
         continue;
       }
@@ -68,7 +67,7 @@ std::map<GURL, std::vector<TimestampedSetting>> GetAllSettingsForProfile(
           GURL(e.primary_pattern.ToString()).DeprecatedGetOriginAsURL();
       results[origin].emplace_back(
           last_modified, content_type,
-          content_settings::ValueToContentSetting(&e.setting_value),
+          content_settings::ValueToContentSetting(e.setting_value),
           site_settings::SiteSettingSource::kPreference);
     }
 

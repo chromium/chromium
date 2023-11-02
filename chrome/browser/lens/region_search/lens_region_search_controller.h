@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_LENS_REGION_SEARCH_LENS_REGION_SEARCH_CONTROLLER_H_
 #define CHROME_BROWSER_LENS_REGION_SEARCH_LENS_REGION_SEARCH_CONTROLLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/image_editor/screenshot_flow.h"
 #include "chrome/browser/lens/metrics/lens_metrics.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -67,6 +68,10 @@ class LensRegionSearchController : public content::WebContentsObserver {
   // the capture has been completed.
   void OnCaptureCompleted(const image_editor::ScreenshotCaptureResult& result);
 
+  // Returns whether the overlay and instruction bubble are both visible. If
+  // either of the UI elements is not visible, returns false.
+  bool IsOverlayUIVisibleForTesting();
+
  private:
   void RecordCaptureResult(lens::LensRegionSearchCaptureResult result);
 
@@ -84,9 +89,9 @@ class LensRegionSearchController : public content::WebContentsObserver {
 
   std::unique_ptr<image_editor::ScreenshotFlow> screenshot_flow_;
 
-  Browser* browser_ = nullptr;
+  raw_ptr<Browser> browser_ = nullptr;
 
-  views::Widget* bubble_widget_ = nullptr;
+  raw_ptr<views::Widget> bubble_widget_ = nullptr;
 
   base::WeakPtr<LensRegionSearchController> weak_this_;
 

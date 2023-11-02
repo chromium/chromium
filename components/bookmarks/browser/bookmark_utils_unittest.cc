@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,14 +10,15 @@
 #include <utility>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -33,9 +34,7 @@ class BookmarkUtilsTest : public testing::Test,
                           public BaseBookmarkModelObserver {
  public:
   BookmarkUtilsTest()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI),
-        grouped_changes_beginning_count_(0),
-        grouped_changes_ended_count_(0) {}
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
 
   BookmarkUtilsTest(const BookmarkUtilsTest&) = delete;
   BookmarkUtilsTest& operator=(const BookmarkUtilsTest&) = delete;
@@ -43,11 +42,11 @@ class BookmarkUtilsTest : public testing::Test,
   ~BookmarkUtilsTest() override {}
 
 // Copy and paste is not yet supported on iOS. http://crbug.com/228147
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   void TearDown() override {
     ui::Clipboard::DestroyClipboardForCurrentThread();
   }
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
   // Certain user actions require multiple changes to the bookmark model,
   // however these modifications need to be atomic for the undo framework. The
@@ -58,11 +57,13 @@ class BookmarkUtilsTest : public testing::Test,
                                 int expected_ended_count) {
     // The undo framework is not used under Android.  Thus the group change
     // events will not be fired and so should not be tested for Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     EXPECT_EQ(grouped_changes_beginning_count_, expected_beginning_count);
     EXPECT_EQ(grouped_changes_ended_count_, expected_ended_count);
 #endif
   }
+
+  base::HistogramTester* histogram() { return &histogram_; }
 
  private:
   // BaseBookmarkModelObserver:
@@ -79,8 +80,9 @@ class BookmarkUtilsTest : public testing::Test,
   // Clipboard requires a full TaskEnvironment.
   base::test::TaskEnvironment task_environment_;
 
-  int grouped_changes_beginning_count_;
-  int grouped_changes_ended_count_;
+  int grouped_changes_beginning_count_{0};
+  int grouped_changes_ended_count_{0};
+  base::HistogramTester histogram_;
 };
 
 TEST_F(BookmarkUtilsTest, GetBookmarksMatchingPropertiesWordPhraseQuery) {
@@ -225,7 +227,7 @@ TEST_F(BookmarkUtilsTest, GetBookmarksMatchingPropertiesConjunction) {
                                                &query.url, &query.title};
 
   // Test two fields matching.
-  for (size_t i = 0; i < base::size(fields); i++) {
+  for (size_t i = 0; i < std::size(fields); i++) {
     std::unique_ptr<std::u16string> original_value(fields[i]->release());
     GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
     ASSERT_EQ(1U, nodes.size());
@@ -235,7 +237,7 @@ TEST_F(BookmarkUtilsTest, GetBookmarksMatchingPropertiesConjunction) {
   }
 
   // Test two fields matching with one non-matching field.
-  for (size_t i = 0; i < base::size(fields); i++) {
+  for (size_t i = 0; i < std::size(fields); i++) {
     std::unique_ptr<std::u16string> original_value(fields[i]->release());
     *fields[i] = std::make_unique<std::u16string>(u"fjdkslafjkldsa");
     GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
@@ -246,7 +248,7 @@ TEST_F(BookmarkUtilsTest, GetBookmarksMatchingPropertiesConjunction) {
 }
 
 // Copy and paste is not yet supported on iOS. http://crbug.com/228147
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 TEST_F(BookmarkUtilsTest, DISABLED_PasteBookmarkFromURL) {
   std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
   const std::u16string url_text = u"http://www.google.com/";
@@ -278,7 +280,7 @@ TEST_F(BookmarkUtilsTest, DISABLED_PasteBookmarkFromURL) {
 }
 
 // TODO(https://crbug.com/1010182): Fix flakes and re-enable this test.
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_CopyPaste DISABLED_CopyPaste
 #else
 #define MAYBE_CopyPaste CopyPaste
@@ -374,7 +376,7 @@ TEST_F(BookmarkUtilsTest, DISABLED_CopyPasteMetaInfo) {
   EXPECT_EQ("someothervalue", value);
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 // http://crbug.com/396472
 #define MAYBE_CutToClipboard DISABLED_CutToClipboard
 #else
@@ -406,7 +408,7 @@ TEST_F(BookmarkUtilsTest, MAYBE_CutToClipboard) {
 }
 
 // Test is flaky on Mac and LaCros: crbug.com/1236362
-#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_PasteNonEditableNodes DISABLED_PasteNonEditableNodes
 #else
 #define MAYBE_PasteNonEditableNodes PasteNonEditableNodes
@@ -434,7 +436,7 @@ TEST_F(BookmarkUtilsTest, MAYBE_PasteNonEditableNodes) {
   EXPECT_FALSE(upcast->CanBeEditedByUser(managed_node));
   EXPECT_FALSE(CanPasteFromClipboard(model.get(), managed_node));
 }
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 TEST_F(BookmarkUtilsTest, GetParentForNewNodes) {
   std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
@@ -502,6 +504,8 @@ TEST_F(BookmarkUtilsTest, CloneMetaInfo) {
   EXPECT_EQ("somevalue", value);
   EXPECT_TRUE(clone->GetMetaInfo("someotherkey", &value));
   EXPECT_EQ("someothervalue", value);
+  histogram()->ExpectTotalCount("Bookmarks.Clone.NumCloned", 1);
+  histogram()->ExpectBucketCount("Bookmarks.Clone.NumCloned", 1, 1);
 }
 
 // Verifies that meta info fields in the non cloned set are not copied when

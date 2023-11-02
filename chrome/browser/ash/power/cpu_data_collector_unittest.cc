@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/power/cpu_data_collector.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
 
 namespace ash {
 namespace {

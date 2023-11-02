@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,12 @@ import static org.mockito.Mockito.verify;
 
 import android.animation.Animator;
 import android.app.Activity;
+import android.view.LayoutInflater;
 
 import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -27,25 +30,32 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
+import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.components.messages.MessageStateHandler.Position;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
-import org.chromium.ui.test.util.DummyUiActivity;
+
+import java.util.Collections;
 
 /**
  * Tests for {@link SingleActionMessage}.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class SingleActionMessageTest {
     @ClassRule
     public static DisableAnimationsTestRule sDisableAnimationsRule =
             new DisableAnimationsTestRule();
     @ClassRule
-    public static BaseActivityTestRule<DummyUiActivity> sActivityTestRule =
-            new BaseActivityTestRule<>(DummyUiActivity.class);
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     private static Activity sActivity;
 
@@ -56,7 +66,7 @@ public class SingleActionMessageTest {
         }
 
         @Override
-        public long get(long extension) {
+        public long get(int id, long extension) {
             return mDuration;
         }
     }
@@ -84,6 +94,14 @@ public class SingleActionMessageTest {
         mDismissCallback = new CallbackHelper();
         mPrimaryActionCallback = new CallbackHelper();
         mSecondaryActionCallback = new CallbackHelper();
+        FeatureList.setTestFeatures(Collections.singletonMap(
+                MessageFeatureList.MESSAGES_FOR_ANDROID_STACKING_ANIMATION, false));
+    }
+
+    @After
+    public void tearDownTest() {
+        FeatureList.setTestFeatures(Collections.singletonMap(
+                MessageFeatureList.MESSAGES_FOR_ANDROID_STACKING_ANIMATION, false));
     }
 
     @Test
@@ -95,15 +113,15 @@ public class SingleActionMessageTest {
                 new SingleActionMessage(container, model, mEmptyDismissCallback,
                         () -> 0, new MockDurationProvider(0L), mAnimatorStartCallback);
         final MessageBannerCoordinator messageBanner = Mockito.mock(MessageBannerCoordinator.class);
-        final MessageBannerView view = new MessageBannerView(sActivity, null);
+        final MessageBannerView view = createMessageBannerView(container);
         view.setId(R.id.message_banner);
         message.setMessageBannerForTesting(messageBanner);
         message.setViewForTesting(view);
-        message.show();
+        message.show(Position.INVISIBLE, Position.FRONT);
         Assert.assertEquals(
                 "Message container should have one message view after the message is shown.", 1,
                 container.getChildCount());
-        message.hide(true, () -> {});
+        message.hide(Position.FRONT, Position.INVISIBLE, true);
         // Let's pretend the animation ended, and the mediator called the callback as a result.
         final ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
         verify(messageBanner).hide(anyBoolean(), runnableCaptor.capture());
@@ -151,10 +169,52 @@ public class SingleActionMessageTest {
         MessageContainer container = new MessageContainer(sActivity, null);
         PropertyModel m1 = createBasicSingleActionMessageModel();
         PropertyModel m2 = createBasicSingleActionMessageModel();
-        final MessageBannerView view1 = new MessageBannerView(sActivity, null);
-        final MessageBannerView view2 = new MessageBannerView(sActivity, null);
+        final MessageBannerView view1 = createMessageBannerView(container);
+        final MessageBannerView view2 = createMessageBannerView(container);
         createAndShowSingleActionMessage(container, m1, view1);
         createAndShowSingleActionMessage(container, m2, view2);
+    }
+
+    @Test
+    @MediumTest
+    public void testAddAndRemoveSingleActionMessage_withStacking() {
+        FeatureList.setTestFeatures(Collections.singletonMap(
+                MessageFeatureList.MESSAGES_FOR_ANDROID_STACKING_ANIMATION, true));
+        MessageContainer container = new MessageContainer(sActivity, null);
+        PropertyModel m1 = createBasicSingleActionMessageModel();
+        PropertyModel m2 = createBasicSingleActionMessageModel();
+        final MessageBannerView view1 = createMessageBannerView(container);
+        final MessageBannerView view2 = createMessageBannerView(container);
+        createAndShowSingleActionMessage(container, m1, view1, Position.INVISIBLE, Position.FRONT);
+        createAndShowSingleActionMessage(container, m2, view2, Position.FRONT, Position.BACK);
+        Assert.assertTrue("front view's elevation " + view1.getElevation()
+                        + " should be larger than the back one " + view2.getElevation(),
+                view1.getElevation() > view2.getElevation());
+
+        PropertyModel m3 = createBasicSingleActionMessageModel();
+        final MessageBannerView view3 = createMessageBannerView(container);
+        container.removeMessage(view1);
+        createAndShowSingleActionMessage(container, m3, view3, Position.INVISIBLE, Position.FRONT);
+        Assert.assertTrue("front view's elevation " + view3.getElevation()
+                        + " should be larger than the back one " + view2.getElevation(),
+                view3.getElevation() > view2.getElevation());
+    }
+
+    @Test(expected = IllegalStateException.class)
+    @MediumTest
+    public void testAddMultipleSingleActionMessage_withStacking() {
+        FeatureList.setTestFeatures(Collections.singletonMap(
+                MessageFeatureList.MESSAGES_FOR_ANDROID_STACKING_ANIMATION, true));
+        MessageContainer container = new MessageContainer(sActivity, null);
+        PropertyModel m1 = createBasicSingleActionMessageModel();
+        PropertyModel m2 = createBasicSingleActionMessageModel();
+        PropertyModel m3 = createBasicSingleActionMessageModel();
+        final MessageBannerView view1 = createMessageBannerView(container);
+        final MessageBannerView view2 = createMessageBannerView(container);
+        final MessageBannerView view3 = createMessageBannerView(container);
+        createAndShowSingleActionMessage(container, m1, view1, Position.INVISIBLE, Position.FRONT);
+        createAndShowSingleActionMessage(container, m2, view2, Position.FRONT, Position.BACK);
+        createAndShowSingleActionMessage(container, m3, view3, Position.FRONT, Position.BACK);
     }
 
     @Test
@@ -162,7 +222,7 @@ public class SingleActionMessageTest {
     public void testPrimaryActionCallbackInvokedOnce() {
         MessageContainer container = new MessageContainer(sActivity, null);
         PropertyModel model = createBasicSingleActionMessageModel();
-        final MessageBannerView view = new MessageBannerView(sActivity, null);
+        final MessageBannerView view = createMessageBannerView(container);
         SingleActionMessage message = createAndShowSingleActionMessage(container, model, view);
         executeAndVerifyRepeatedButtonClicks(true, model, message, view);
     }
@@ -172,9 +232,32 @@ public class SingleActionMessageTest {
     public void testSecondaryActionCallbackInvokedOnce() {
         MessageContainer container = new MessageContainer(sActivity, null);
         PropertyModel model = createBasicSingleActionMessageModel();
-        final MessageBannerView view = new MessageBannerView(sActivity, null);
+        final MessageBannerView view = createMessageBannerView(container);
         SingleActionMessage message = createAndShowSingleActionMessage(container, model, view);
         executeAndVerifyRepeatedButtonClicks(false, model, message, view);
+    }
+
+    @Test
+    @SmallTest
+    public void testMessageShouldShowDefault() {
+        MessageContainer container = new MessageContainer(sActivity, null);
+        PropertyModel model = createBasicSingleActionMessageModel();
+        final MessageBannerView view = createMessageBannerView(container);
+        SingleActionMessage message = createAndShowSingleActionMessage(container, model, view);
+        Assert.assertTrue("#shouldShow should be true by default.", message.shouldShow());
+    }
+
+    @Test
+    @SmallTest
+    public void testMessageShouldNotShow() {
+        MessageContainer container = new MessageContainer(sActivity, null);
+        PropertyModel model = createBasicSingleActionMessageModel();
+        model.set(MessageBannerProperties.ON_STARTED_SHOWING, () -> false);
+        final MessageBannerView view = createMessageBannerView(container);
+        SingleActionMessage message = createAndShowSingleActionMessage(container, model, view);
+        Assert.assertFalse(
+                "#shouldShow should be false when the ON_STARTED_SHOWING supplier returns false.",
+                message.shouldShow());
     }
 
     private void executeAndVerifyRepeatedButtonClicks(boolean isPrimaryButtonClickedFirst,
@@ -202,17 +285,29 @@ public class SingleActionMessageTest {
                 expectedSecondaryActionCallbackCount, mSecondaryActionCallback.getCallCount());
     }
 
-    private SingleActionMessage createAndShowSingleActionMessage(
-            MessageContainer container, PropertyModel model, MessageBannerView view) {
+    private SingleActionMessage createAndShowSingleActionMessage(MessageContainer container,
+            PropertyModel model, MessageBannerView view, @Position int from, @Position int to) {
         SingleActionMessage message =
                 new SingleActionMessage(container, model, mEmptyDismissCallback,
                         () -> 0, new MockDurationProvider(0L), mAnimatorStartCallback);
         final MessageBannerCoordinator messageBanner = Mockito.mock(MessageBannerCoordinator.class);
         view.setId(R.id.message_banner);
+        PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
         message.setMessageBannerForTesting(messageBanner);
         message.setViewForTesting(view);
-        message.show();
+        message.show(from, to);
         return message;
+    }
+
+    private SingleActionMessage createAndShowSingleActionMessage(
+            MessageContainer container, PropertyModel model, MessageBannerView view) {
+        return createAndShowSingleActionMessage(
+                container, model, view, Position.INVISIBLE, Position.FRONT);
+    }
+
+    private MessageBannerView createMessageBannerView(MessageContainer container) {
+        return (MessageBannerView) LayoutInflater.from(container.getContext())
+                .inflate(R.layout.message_banner_view, container, false);
     }
 
     private PropertyModel createBasicSingleActionMessageModel() {
@@ -224,7 +319,10 @@ public class SingleActionMessageTest {
                         ApiCompatibilityUtils.getDrawable(
                                 sActivity.getResources(), android.R.drawable.ic_menu_add))
                 .with(MessageBannerProperties.ON_PRIMARY_ACTION,
-                        () -> { mPrimaryActionCallback.notifyCalled(); })
+                        () -> {
+                            mPrimaryActionCallback.notifyCalled();
+                            return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
+                        })
                 .with(MessageBannerProperties.ON_SECONDARY_ACTION,
                         () -> { mSecondaryActionCallback.notifyCalled(); })
                 .with(MessageBannerProperties.ON_TOUCH_RUNNABLE, () -> {})

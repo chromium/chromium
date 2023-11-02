@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/observer_list.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/notification_details.h"
@@ -98,7 +99,7 @@ void RulesCacheDelegate::Init(RulesRegistry* registry) {
 }
 
 void RulesCacheDelegate::UpdateRules(const std::string& extension_id,
-                                     base::Value value) {
+                                     base::Value::List value) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!browser_context_)
     return;
@@ -110,8 +111,7 @@ void RulesCacheDelegate::UpdateRules(const std::string& extension_id,
     return;
   }
 
-  DCHECK(value.is_list());
-  has_nonempty_ruleset_ = !value.GetList().empty();
+  has_nonempty_ruleset_ = !value.empty();
   for (auto& observer : observers_)
     observer.OnUpdateRules();
 
@@ -126,7 +126,7 @@ void RulesCacheDelegate::UpdateRules(const std::string& extension_id,
   StateStore* store = ExtensionSystem::Get(browser_context_)->rules_store();
   if (store) {
     store->SetExtensionValue(extension_id, storage_key_,
-                             std::make_unique<base::Value>(std::move(value)));
+                             base::Value(std::move(value)));
   }
 }
 
@@ -212,7 +212,7 @@ void RulesCacheDelegate::ReadFromStorage(const std::string& extension_id) {
 
 void RulesCacheDelegate::ReadFromStorageCallback(
     const std::string& extension_id,
-    std::unique_ptr<base::Value> value) {
+    absl::optional<base::Value> value) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_EQ(Type::kPersistent, type_);
   content::BrowserThread::GetTaskRunnerForThread(rules_registry_thread_)

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -107,11 +107,11 @@ UpdateServiceInternalProxy::UpdateServiceInternalProxy(UpdaterScope scope)
 
 void UpdateServiceInternalProxy::Run(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
 
   __block base::OnceClosure block_callback = std::move(callback);
   auto reply = ^() {
-    callback_runner_->PostTask(FROM_HERE,
-                               base::BindOnce(std::move(block_callback)));
+    callback_runner_->PostTask(FROM_HERE, std::move(block_callback));
   };
 
   [client_ performTasksWithReply:reply];
@@ -120,11 +120,11 @@ void UpdateServiceInternalProxy::Run(base::OnceClosure callback) {
 void UpdateServiceInternalProxy::InitializeUpdateService(
     base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
 
   __block base::OnceClosure block_callback = std::move(callback);
   auto reply = ^() {
-    callback_runner_->PostTask(FROM_HERE,
-                               base::BindOnce(std::move(block_callback)));
+    callback_runner_->PostTask(FROM_HERE, std::move(block_callback));
   };
 
   [client_ performInitializeUpdateServiceWithReply:reply];

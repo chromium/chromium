@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -210,8 +210,17 @@ void ThrowExceptionInRunLoopWithoutProcessor() {
   exit(1);
 }
 
+// Under LSAN this dies from leaking the run loop instead of how we expect it to
+// die, so the exit code is wrong.
+#if defined(LEAK_SANITIZER)
+#define MAYBE_ThrowExceptionInRunLoopWithoutProcessor \
+  DISABLED_ThrowExceptionInRunLoopWithoutProcessor
+#else
+#define MAYBE_ThrowExceptionInRunLoopWithoutProcessor \
+  ThrowExceptionInRunLoopWithoutProcessor
+#endif
 // Tests basic exception handling when the preprocessor is disabled.
-TEST(ExceptionProcessorTest, ThrowExceptionInRunLoopWithoutProcessor) {
+TEST(ExceptionProcessorTest, MAYBE_ThrowExceptionInRunLoopWithoutProcessor) {
   ::testing::FLAGS_gtest_death_test_style = "threadsafe";
   EXPECT_EXIT(ThrowExceptionInRunLoopWithoutProcessor(),
               [](int exit_code) -> bool {

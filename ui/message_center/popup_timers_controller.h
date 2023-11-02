@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_observer.h"
@@ -69,7 +70,7 @@ class MESSAGE_CENTER_EXPORT PopupTimersController
 
  private:
   // Weak, global.
-  MessageCenter* message_center_;
+  raw_ptr<MessageCenter> message_center_;
 
   // The PopupTimerCollection contains all the managed timers by their ID.
   using PopupTimerCollection =

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,8 @@
 #include <set>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
+#include "base/strings/string_piece.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager_base.h"
@@ -25,6 +27,10 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   FakeUserManager& operator=(const FakeUserManager&) = delete;
 
   ~FakeUserManager() override;
+
+  // Returns the fake username hash for testing.
+  // Valid AccountId must be used, otherwise DCHECKed.
+  static std::string GetFakeUsernameHash(const AccountId& account_id);
 
   // Create and add a new user. Created user is not affiliated with the domain,
   // that owns the device.
@@ -126,11 +132,11 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   bool IsGuestSessionAllowed() const override;
   bool IsGaiaUserAllowed(const User& user) const override;
   bool IsUserAllowed(const User& user) const override;
+  bool AreEphemeralUsersEnabled() const override;
   void UpdateLoginState(const User* active_user,
                         const User* primary_user,
                         bool is_current_user_owner) const override;
   bool GetPlatformKnownUserId(const std::string& user_email,
-                              const std::string& gaia_id,
                               AccountId* out_account_id) const override;
   void AsyncRemoveCryptohome(const AccountId& account_id) const override;
   bool IsDeprecatedSupervisedAccountId(
@@ -143,7 +149,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   bool IsValidDefaultUserImageId(int image_index) const override;
 
   // UserManagerBase overrides:
-  bool AreEphemeralUsersEnabled() const override;
   void SetEphemeralUsersEnabled(bool enabled) override;
   const std::string& GetApplicationLocale() const override;
   PrefService* GetLocalState() const override;
@@ -159,10 +164,10 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   void OnUserRemoved(const AccountId& account_id) override {}
 
  protected:
-  User* primary_user_;
+  raw_ptr<User> primary_user_;
 
   // Can be set by set_local_state().
-  PrefService* local_state_ = nullptr;
+  raw_ptr<PrefService> local_state_ = nullptr;
 
   // If set this is the active user. If empty, the first created user is the
   // active user.

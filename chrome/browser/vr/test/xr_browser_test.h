@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/environment.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -21,7 +22,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -152,7 +153,8 @@ class XrBrowserTestBase : public InProcessBrowserTest {
   void AssertNoJavaScriptErrors(content::WebContents* web_contents);
 
   Browser* browser() {
-    return browser_ == nullptr ? InProcessBrowserTest::browser() : browser_;
+    return browser_ == nullptr ? InProcessBrowserTest::browser()
+                               : browser_.get();
   }
 
   void SetBrowser(Browser* browser) { browser_ = browser; }
@@ -210,14 +212,14 @@ class XrBrowserTestBase : public InProcessBrowserTest {
 
  protected:
   std::unique_ptr<base::Environment> env_;
-  std::vector<base::Feature> enable_features_;
-  std::vector<base::Feature> disable_features_;
+  std::vector<base::test::FeatureRef> enable_features_;
+  std::vector<base::test::FeatureRef> disable_features_;
   std::vector<std::string> append_switches_;
   std::vector<std::string> enable_blink_features_;
   std::vector<XrTestRequirement> runtime_requirements_;
   std::unordered_set<std::string> ignored_requirements_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   HWND hwnd_;
 #endif
 
@@ -232,7 +234,7 @@ class XrBrowserTestBase : public InProcessBrowserTest {
   // HTML files, initializing and starting the server if necessary.
   net::EmbeddedTestServer* GetEmbeddedServer();
 
-  Browser* browser_ = nullptr;
+  raw_ptr<Browser> browser_ = nullptr;
   std::unique_ptr<net::EmbeddedTestServer> server_;
   base::test::ScopedFeatureList scoped_feature_list_;
   bool test_skipped_at_startup_ = false;

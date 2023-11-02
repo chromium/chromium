@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@ MockPrintJobHistoryService::MockPrintJobHistoryService() = default;
 MockPrintJobHistoryService::~MockPrintJobHistoryService() = default;
 
 void MockPrintJobHistoryService::SavePrintJobProto(
-    const chromeos::printing::proto::PrintJobInfo& print_job_info) {
+    const printing::proto::PrintJobInfo& print_job_info) {
   for (auto& observer : observers_) {
     observer.OnPrintJobFinished(print_job_info);
   }

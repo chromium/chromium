@@ -1,11 +1,16 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.content.browser;
 
+import static org.chromium.content_public.browser.HostZoomMap.SYSTEM_FONT_SCALE;
+
+import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.content_public.browser.HostZoomMap;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -21,8 +26,9 @@ public class HostZoomMapImpl {
      * @param webContents   WebContents to update
      * @param newZoomLevel  double - new zoom level
      */
-    public static void setZoomLevel(WebContents webContents, double newZoomLevel) {
-        HostZoomMapImplJni.get().setZoomLevel(webContents, newZoomLevel);
+    public static void setZoomLevel(
+            WebContents webContents, double newZoomLevel, double adjustedZoomLevel) {
+        HostZoomMapImplJni.get().setZoomLevel(webContents, newZoomLevel, adjustedZoomLevel);
     }
 
     /**
@@ -34,9 +40,35 @@ public class HostZoomMapImpl {
         return HostZoomMapImplJni.get().getZoomLevel(webContents);
     }
 
+    /**
+     * Set the default zoom level for a given browser context handle (e.g. Profile).
+     * @param context       BrowserContextHandle to update default for.
+     * @param newDefaultZoomLevel   double, new default value.
+     */
+    public static void setDefaultZoomLevel(
+            BrowserContextHandle context, double newDefaultZoomLevel) {
+        HostZoomMapImplJni.get().setDefaultZoomLevel(context, newDefaultZoomLevel);
+    }
+
+    /**
+     * Get the default zoom level for a given browser context handle (e.g. Profile).
+     * @param context       BrowserContextHandle to get default for.
+     * @return double       default zoom level.
+     */
+    public static double getDefaultZoomLevel(BrowserContextHandle context) {
+        return HostZoomMapImplJni.get().getDefaultZoomLevel(context);
+    }
+
+    @CalledByNative
+    public static double getAdjustedZoomLevel(double zoomLevel) {
+        return HostZoomMap.adjustZoomLevel(zoomLevel, SYSTEM_FONT_SCALE);
+    }
+
     @NativeMethods
-    interface Natives {
-        void setZoomLevel(WebContents webContents, double newZoomLevel);
+    public interface Natives {
+        void setZoomLevel(WebContents webContents, double newZoomLevel, double adjustedZoomLevel);
         double getZoomLevel(WebContents webContents);
+        void setDefaultZoomLevel(BrowserContextHandle context, double newDefaultZoomLevel);
+        double getDefaultZoomLevel(BrowserContextHandle context);
     }
 }

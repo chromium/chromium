@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -23,16 +22,16 @@
 #include "headless/lib/browser/policy/headless_mode_policy.h"
 #include "headless/lib/browser/policy/headless_policies.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/registry.h"
 #include "components/policy/core/common/policy_loader_win.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include <CoreFoundation/CoreFoundation.h>
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/policy/core/common/policy_loader_mac.h"
 #include "components/policy/core/common/preferences_mac.h"
-#elif defined(OS_POSIX) && !defined(OS_ANDROID)
+#elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 #include "components/policy/core/common/config_dir_policy_loader.h"  // nogncheck http://crbug.com/1227148
 #endif
 
@@ -49,7 +48,9 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       base::BindRepeating(&GetChromePolicyDetails),
       /*allow_future_policies=*/false);
 
+#if !BUILDFLAG(IS_CHROMEOS)
   handlers->AddHandler(std::make_unique<HeadlessModePolicyHandler>());
+#endif
 
   handlers->AddHandler(
       std::make_unique<URLBlocklistPolicyHandler>(key::kURLBlocklist));
@@ -98,7 +99,7 @@ ConfigurationPolicyProvider*
 HeadlessBrowserPolicyConnector::GetPlatformProvider() {
   ConfigurationPolicyProvider* provider =
       BrowserPolicyConnectorBase::GetPolicyProviderForTesting();
-  return provider ? provider : platform_provider_;
+  return provider ? provider : platform_provider_.get();
 }
 
 std::vector<std::unique_ptr<policy::ConfigurationPolicyProvider>>
@@ -119,14 +120,15 @@ HeadlessBrowserPolicyConnector::CreatePolicyProviders() {
 
 std::unique_ptr<ConfigurationPolicyProvider>
 HeadlessBrowserPolicyConnector::CreatePlatformProvider() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::unique_ptr<AsyncPolicyLoader> loader(PolicyLoaderWin::Create(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
-      &platform_management_service_, kRegistryChromePolicyKey));
+      policy::PlatformManagementService::GetInstance(),
+      kRegistryChromePolicyKey));
   return std::make_unique<AsyncPolicyProvider>(GetSchemaRegistry(),
                                                std::move(loader));
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Explicitly watch the "com.google.Chrome" bundle ID, no matter what this
   // app's bundle ID actually is. All channels of Chrome should obey the same
@@ -143,7 +145,7 @@ HeadlessBrowserPolicyConnector::CreatePlatformProvider() {
       new MacPreferences(), bundle_id);
   return std::make_unique<AsyncPolicyProvider>(GetSchemaRegistry(),
                                                std::move(loader));
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   // The following should match chrome::DIR_POLICY_FILES definition in
   // chrome/common/chrome_paths.cc
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

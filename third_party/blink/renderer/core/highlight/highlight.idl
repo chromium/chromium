@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,4 +16,8 @@ enum HighlightType {
   setlike<AbstractRange>;
   attribute long priority;
   attribute HighlightType type;
+  // TODO(crbug.com/1344319): Inherit from EventTarget
+  [RuntimeEnabled = HighlightPointerEvents] void addEventListener(DOMString type, EventListener? listener, optional (AddEventListenerOptions or boolean) options);
+  [RuntimeEnabled = HighlightPointerEvents] void removeEventListener(DOMString type, EventListener? listener, optional (EventListenerOptions or boolean) options);
+  [ImplementedAs=dispatchEventForBindings, RaisesException, RuntimeCallStatsCounter=EventTargetDispatchEvent, RuntimeEnabled = HighlightPointerEvents] boolean dispatchEvent(Event event);
 };

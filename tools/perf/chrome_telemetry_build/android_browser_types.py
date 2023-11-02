@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -37,6 +37,7 @@ else:
       '_android_clank_monochrome',
       '_android_clank_monochrome_64_32_bundle',
       '_android_clank_monochrome_bundle',
+      '_android_clank_trichrome_chrome_google_64_32_bundle',
       '_android_clank_trichrome_bundle',
       '_android_clank_trichrome_webview',
       '_android_clank_trichrome_webview_bundle',

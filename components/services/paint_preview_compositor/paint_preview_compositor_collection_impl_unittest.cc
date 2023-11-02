@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -129,12 +129,12 @@ TEST(PaintPreviewCompositorCollectionTest, MemoryPressure) {
     EXPECT_TRUE(collection.is_bound());
     EXPECT_TRUE(collection.is_connected());
 
-    // Critial will kill process.
+    // Critial will not kill process as browser side will do this.
     collection_instance.OnMemoryPressure(
         base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
     task_environment.RunUntilIdle();
     EXPECT_TRUE(collection.is_bound());
-    EXPECT_FALSE(collection.is_connected());
+    EXPECT_TRUE(collection.is_connected());
   }
   task_environment.RunUntilIdle();
 }

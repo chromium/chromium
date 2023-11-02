@@ -34,6 +34,7 @@
 #include <utility>
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_window.h"
+#include "third_party/blink/renderer/core/frame/dom_window.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
@@ -85,8 +86,9 @@ void RemoteWindowProxy::DisposeContext(Lifecycle next_status,
 }
 
 void RemoteWindowProxy::Initialize() {
-  TRACE_EVENT1("v8", "RemoteWindowProxy::initialize", "isMainWindow",
-               GetFrame()->IsMainFrame());
+  TRACE_EVENT2("v8", "RemoteWindowProxy::Initialize", "IsMainFrame",
+               GetFrame()->IsMainFrame(), "IsOutermostMainFrame",
+               GetFrame()->IsOutermostMainFrame());
   ScriptForbiddenScope::AllowUserAgentScript allow_script;
 
   v8::HandleScope handle_scope(GetIsolate());

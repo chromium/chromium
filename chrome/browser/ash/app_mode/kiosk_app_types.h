@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,6 +39,9 @@ class KioskAppId {
   KioskAppId(KioskAppType type, const std::string& app_id);
   KioskAppId(KioskAppType type, const AccountId& account_id);
 };
+
+// Overload << operator to allow logging of KioskAppId.
+std::ostream& operator<<(std::ostream& stream, const KioskAppId& app_id);
 
 }  // namespace ash
 

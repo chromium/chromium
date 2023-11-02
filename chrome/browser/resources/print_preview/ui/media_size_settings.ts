@@ -1,15 +1,16 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './print_preview_shared_css.js';
+import './print_preview_shared.css.js';
 import './settings_section.js';
 import './settings_select.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {MediaSizeCapability, SelectOption} from '../data/cdd.js';
+import {MediaSizeCapability} from '../data/cdd.js';
 
+import {getTemplate} from './media_size_settings.html.js';
 import {SettingsMixin} from './settings_mixin.js';
 
 const PrintPreviewMediaSizeSettingsElementBase = SettingsMixin(PolymerElement);
@@ -21,7 +22,7 @@ export class PrintPreviewMediaSizeSettingsElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -57,6 +58,12 @@ export class PrintPreviewMediaSizeSettingsElement extends
     const defaultOption = this.capability.option.find(o => !!o.is_default) ||
         this.capability.option[0];
     this.setSetting('mediaSize', defaultOption);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-media-size-settings': PrintPreviewMediaSizeSettingsElement;
   }
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/files/scoped_file.h"
 #include "build/build_config.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -132,10 +131,10 @@ GLImageNativePixmap::GLImageNativePixmap(const gfx::Size& size,
     : GLImageEGL(size),
       format_(format),
       plane_(plane),
-      has_image_flush_external_(
-          gl::GLSurfaceEGL::HasEGLExtension("EGL_EXT_image_flush_external")),
-      has_image_dma_buf_export_(
-          gl::GLSurfaceEGL::HasEGLExtension("EGL_MESA_image_dma_buf_export")) {}
+      has_image_flush_external_(gl::GLSurfaceEGL::GetGLDisplayEGL()
+                                    ->ext->b_EGL_EXT_image_flush_external),
+      has_image_dma_buf_export_(gl::GLSurfaceEGL::GetGLDisplayEGL()
+                                    ->ext->b_EGL_MESA_image_dma_buf_export) {}
 
 GLImageNativePixmap::~GLImageNativePixmap() {}
 
@@ -156,12 +155,49 @@ bool GLImageNativePixmap::Initialize(scoped_refptr<gfx::NativePixmap> pixmap) {
     attrs.push_back(EGL_LINUX_DRM_FOURCC_EXT);
     attrs.push_back(FourCC(format_));
 
+    if (format_ == gfx::BufferFormat::YUV_420_BIPLANAR ||
+        format_ == gfx::BufferFormat::YVU_420) {
+      // TODO(b/233667677): Since https://crrev.com/c/3855381, the only NV12
+      // quads that we allow to be promoted to overlays are those that don't use
+      // the BT.2020 primaries and that don't use full range. Furthermore, since
+      // https://crrev.com/c/2336347, we force the DRM/KMS driver to use BT.601
+      // with limited range. Therefore, for compositing purposes, we need to a)
+      // use EGL_ITU_REC601_EXT for any video frames that might be promoted to
+      // overlays - we shouldn't use EGL_ITU_REC709_EXT because we might then
+      // see a slight difference in compositing vs. overlays (note that the
+      // BT.601 and BT.709 primaries are close to each other, so this shouldn't
+      // be a huge correctness issue, though we'll need to address this at some
+      // point); b) use EGL_ITU_REC2020_EXT for BT.2020 frames in order to
+      // composite them correctly (and we won't need to worry about a difference
+      // in compositing vs. overlays in this case since those frames won't be
+      // promoted to overlays). We'll need to revisit this once we plumb the
+      // color space and range to DRM/KMS.
+      attrs.push_back(EGL_YUV_COLOR_SPACE_HINT_EXT);
+      switch (color_space_.GetMatrixID()) {
+        case gfx::ColorSpace::MatrixID::BT2020_NCL:
+          attrs.push_back(EGL_ITU_REC2020_EXT);
+          break;
+        default:
+          attrs.push_back(EGL_ITU_REC601_EXT);
+      }
+
+      attrs.push_back(EGL_SAMPLE_RANGE_HINT_EXT);
+      switch (color_space_.GetRangeID()) {
+        case gfx::ColorSpace::RangeID::FULL:
+          attrs.push_back(EGL_YUV_FULL_RANGE_EXT);
+          break;
+        default:
+          attrs.push_back(EGL_YUV_NARROW_RANGE_EXT);
+      }
+    }
+
     if (plane_ == gfx::BufferPlane::DEFAULT) {
       const EGLint kLinuxDrmModifiers[] = {EGL_DMA_BUF_PLANE0_MODIFIER_LO_EXT,
                                            EGL_DMA_BUF_PLANE1_MODIFIER_LO_EXT,
                                            EGL_DMA_BUF_PLANE2_MODIFIER_LO_EXT};
-      bool has_dma_buf_import_modifier = gl::GLSurfaceEGL::HasEGLExtension(
-          "EGL_EXT_image_dma_buf_import_modifiers");
+      bool has_dma_buf_import_modifier =
+          gl::GLSurfaceEGL::GetGLDisplayEGL()
+              ->ext->b_EGL_EXT_image_dma_buf_import_modifiers;
 
       for (size_t attrs_plane = 0; attrs_plane < pixmap->GetNumberOfPlanes();
            ++attrs_plane) {
@@ -177,7 +213,7 @@ bool GLImageNativePixmap::Initialize(scoped_refptr<gfx::NativePixmap> pixmap) {
         uint64_t modifier = pixmap->GetBufferFormatModifier();
         if (has_dma_buf_import_modifier &&
             modifier != gfx::NativePixmapHandle::kNoModifier) {
-          DCHECK(attrs_plane < base::size(kLinuxDrmModifiers));
+          DCHECK(attrs_plane < std::size(kLinuxDrmModifiers));
           attrs.push_back(kLinuxDrmModifiers[attrs_plane]);
           attrs.push_back(modifier & 0xffffffff);
           attrs.push_back(kLinuxDrmModifiers[attrs_plane] + 1);
@@ -203,8 +239,16 @@ bool GLImageNativePixmap::Initialize(scoped_refptr<gfx::NativePixmap> pixmap) {
                                 &attrs[0])) {
       return false;
     }
+    did_initialize_ = true;
   }
 
+  pixmap_ = pixmap;
+  return true;
+}
+
+bool GLImageNativePixmap::InitializeForOverlay(
+    scoped_refptr<gfx::NativePixmap> pixmap) {
+  DCHECK(!pixmap_);
   pixmap_ = pixmap;
   return true;
 }
@@ -224,9 +268,13 @@ bool GLImageNativePixmap::InitializeFromTexture(uint32_t texture_id) {
       reinterpret_cast<EGLContext>(current_context->GetHandle());
   DCHECK_NE(context_handle, EGL_NO_CONTEXT);
 
-  return GLImageEGL::Initialize(context_handle, EGL_GL_TEXTURE_2D_KHR,
-                                reinterpret_cast<EGLClientBuffer>(texture_id),
-                                nullptr);
+  if (!GLImageEGL::Initialize(context_handle, EGL_GL_TEXTURE_2D_KHR,
+                              reinterpret_cast<EGLClientBuffer>(texture_id),
+                              nullptr)) {
+    return false;
+  }
+  did_initialize_ = true;
+  return true;
 }
 
 gfx::NativePixmapHandle GLImageNativePixmap::ExportHandle() {
@@ -248,9 +296,9 @@ gfx::NativePixmapHandle GLImageNativePixmap::ExportHandle() {
   int num_planes = 0;
   EGLuint64KHR modifiers = 0;
 
-  if (!eglExportDMABUFImageQueryMESA(GLSurfaceEGL::GetHardwareDisplay(),
-                                     egl_image_, &fourcc, &num_planes,
-                                     &modifiers)) {
+  if (!eglExportDMABUFImageQueryMESA(
+          GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay(), egl_image_, &fourcc,
+          &num_planes, &modifiers)) {
     LOG(ERROR) << "Error querying EGLImage: " << ui::GetLastEGLErrorString();
     return gfx::NativePixmapHandle();
   }
@@ -275,19 +323,20 @@ gfx::NativePixmapHandle GLImageNativePixmap::ExportHandle() {
     }
   }
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   // TODO(crbug.com/852011): Implement image handle export on Fuchsia.
   NOTIMPLEMENTED();
   return gfx::NativePixmapHandle();
-#else   // defined(OS_FUCHSIA)
+#else   // BUILDFLAG(IS_FUCHSIA)
   std::vector<int> fds(num_planes);
   std::vector<EGLint> strides(num_planes);
   std::vector<EGLint> offsets(num_planes);
 
   // It is specified for eglExportDMABUFImageMESA that the app is responsible
   // for closing any fds retrieved.
-  if (!eglExportDMABUFImageMESA(GLSurfaceEGL::GetHardwareDisplay(), egl_image_,
-                                &fds[0], &strides[0], &offsets[0])) {
+  if (!eglExportDMABUFImageMESA(GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay(),
+                                egl_image_, &fds[0], &strides[0],
+                                &offsets[0])) {
     LOG(ERROR) << "Error exporting EGLImage: " << ui::GetLastEGLErrorString();
     return gfx::NativePixmapHandle();
   }
@@ -308,7 +357,7 @@ gfx::NativePixmapHandle GLImageNativePixmap::ExportHandle() {
   }
 
   return handle;
-#endif  // !defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 }
 
 unsigned GLImageNativePixmap::GetInternalFormat() {
@@ -319,7 +368,13 @@ unsigned GLImageNativePixmap::GetDataType() {
   return gl::BufferFormatToGLDataType(format_);
 }
 
+bool GLImageNativePixmap::BindTexImage(unsigned target) {
+  DCHECK(did_initialize_);
+  return GLImageEGL::BindTexImage(target);
+}
+
 bool GLImageNativePixmap::CopyTexImage(unsigned target) {
+  DCHECK(did_initialize_);
   if (egl_image_ != EGL_NO_IMAGE_KHR)
     return false;
 
@@ -341,7 +396,7 @@ void GLImageNativePixmap::Flush() {
   if (!has_image_flush_external_)
     return;
 
-  EGLDisplay display = gl::GLSurfaceEGL::GetHardwareDisplay();
+  EGLDisplay display = gl::GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay();
   const EGLAttrib attribs[] = {
       EGL_NONE,
   };

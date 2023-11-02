@@ -1,9 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/files/file_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
@@ -223,21 +224,21 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
       test_data_dir_.AppendASCII("extension_resource_request_policy")
           .AppendASCII("hosted_app")));
 
-  ASSERT_TRUE(
-      RunExtensionTest("extension_resource_request_policy/extension2/",
-                       {.page_url = "can_load_icons_from_hosted_apps.html"}))
+  ASSERT_TRUE(RunExtensionTest(
+      "extension_resource_request_policy/extension2/",
+      {.extension_url = "can_load_icons_from_hosted_apps.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest, Audio) {
   EXPECT_TRUE(RunExtensionTest("extension_resource_request_policy/extension2",
-                               {.page_url = "audio.html"}))
+                               {.extension_url = "audio.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest, Video) {
   EXPECT_TRUE(RunExtensionTest("extension_resource_request_policy/extension2",
-                               {.page_url = "video.html"}))
+                               {.extension_url = "video.html"}))
       << message_;
 }
 
@@ -337,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
   GURL accessible_url = extension->GetResourceURL("/test.png");
   EXPECT_EQ(accessible_url, result);
   EXPECT_EQ(accessible_url,
-            web_contents->GetMainFrame()->GetLastCommittedURL());
+            web_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
 
   GURL nonaccessible_linked_resource(embedded_test_server()->GetURL(
       "/extensions/api_test/extension_resource_request_policy/"
@@ -351,7 +352,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
             controller.GetLastCommittedEntry()->GetPageType());
   EXPECT_EQ("chrome-error://chromewebdata/", result);
   GURL invalid_url("chrome-extension://invalid/");
-  EXPECT_EQ(invalid_url, web_contents->GetMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(invalid_url,
+            web_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
 
   // Redirects can sometimes occur before the load event, so use a
   // UrlLoadObserver instead of blocking waiting for two load events.
@@ -407,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest, Iframe) {
       .AppendASCII("inaccessible")));
   EXPECT_TRUE(
       RunExtensionTest("extension_resource_request_policy/web_accessible",
-                       {.page_url = "iframe.html"}))
+                       {.extension_url = "iframe.html"}))
       << message_;
 }
 
@@ -433,7 +435,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
   EXPECT_NE(private_page, web_contents->GetLastCommittedURL());
   std::string content;
   EXPECT_TRUE(ExecuteScriptAndExtractString(
-      ChildFrameAt(web_contents->GetMainFrame(), 0),
+      ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0),
       "domAutomationController.send(document.body.innerText)", &content));
 
   // The iframe should not load |private_page|, which is not web-accessible.
@@ -477,7 +479,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
 
   // That should not have been allowed.
   EXPECT_NE(url::Origin::Create(target_url).GetURL(),
-            ChildFrameAt(web_contents->GetMainFrame(), 0)
+            ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0)
                 ->GetLastCommittedOrigin()
                 .GetURL());
 }

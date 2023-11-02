@@ -1,9 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/enterprise/signals/client_certificate_fetcher.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -76,18 +77,17 @@ class ClientCertificateFetcherTest : public testing::Test {
     return net::FakeClientCertIdentityListFromCertificateList(client_certs_);
   }
 
-  void SetPolicyValueInContentSettings(
-      const std::vector<base::Value>& filters) {
+  void SetPolicyValueInContentSettings(base::Value::List filters) {
     HostContentSettingsMap* m =
         HostContentSettingsMapFactory::GetForProfile(profile());
 
-    std::unique_ptr<base::DictionaryValue> root =
-        std::make_unique<base::DictionaryValue>();
-    root->SetKey("filters", base::Value(std::move(filters)));
+    base::Value::Dict root;
+    root.Set("filters", std::move(filters));
 
     m->SetWebsiteSettingDefaultScope(
         GURL(kRequestingUrl), GURL(),
-        ContentSettingsType::AUTO_SELECT_CERTIFICATE, std::move(root));
+        ContentSettingsType::AUTO_SELECT_CERTIFICATE,
+        base::Value(std::move(root)));
   }
 
   base::Value CreateFilterValue(const std::string& issuer,
@@ -118,7 +118,7 @@ class ClientCertificateFetcherTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile> profile_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
 
   std::vector<scoped_refptr<net::X509Certificate>> client_certs_;
@@ -164,10 +164,10 @@ TEST_F(ClientCertificateFetcherTest, ReturnsFirstCertIfMatching) {
   std::unique_ptr<MockClientCertStore> cert_store =
       std::make_unique<MockClientCertStore>();
 
-  std::vector<base::Value> filters;
-  filters.push_back(CreateFilterValue("", "Client Cert A"));
+  base::Value::List filters;
+  filters.Append(CreateFilterValue("", "Client Cert A"));
 
-  SetPolicyValueInContentSettings(filters);
+  SetPolicyValueInContentSettings(std::move(filters));
 
   // Keep a raw pointer to simulate running the callback.
   MockClientCertStore* cert_store_ptr = cert_store.get();
@@ -193,10 +193,10 @@ TEST_F(ClientCertificateFetcherTest, ReturnsSecondCertIfMatching) {
   std::unique_ptr<MockClientCertStore> cert_store =
       std::make_unique<MockClientCertStore>();
 
-  std::vector<base::Value> filters;
-  filters.push_back(CreateFilterValue("E CA", ""));
+  base::Value::List filters;
+  filters.Append(CreateFilterValue("E CA", ""));
 
-  SetPolicyValueInContentSettings(filters);
+  SetPolicyValueInContentSettings(std::move(filters));
 
   // Keep a raw pointer to simulate running the callback.
   MockClientCertStore* cert_store_ptr = cert_store.get();
@@ -222,10 +222,10 @@ TEST_F(ClientCertificateFetcherTest, ReturnsNoCertIfNoFiltersMatch) {
   std::unique_ptr<MockClientCertStore> cert_store =
       std::make_unique<MockClientCertStore>();
 
-  std::vector<base::Value> filters;
-  filters.push_back(CreateFilterValue("E CA", "Bad Subject"));
+  base::Value::List filters;
+  filters.Append(CreateFilterValue("E CA", "Bad Subject"));
 
-  SetPolicyValueInContentSettings(filters);
+  SetPolicyValueInContentSettings(std::move(filters));
 
   // Keep a raw pointer to simulate running the callback.
   MockClientCertStore* cert_store_ptr = cert_store.get();

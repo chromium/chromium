@@ -1,8 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/public/test/fake_frame_widget.h"
+
+#include "build/build_config.h"
 
 namespace content {
 
@@ -21,7 +23,7 @@ void FakeFrameWidget::SetTextDirection(base::i18n::TextDirection direction) {
   text_direction_ = direction;
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void FakeFrameWidget::GetStringAtPoint(const gfx::Point& point_in_local_root,
                                        GetStringAtPointCallback callback) {
   std::move(callback).Run(nullptr, gfx::Point());

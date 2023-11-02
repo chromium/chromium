@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -19,7 +19,6 @@ source_set("common") {
   ]
 
   deps = [
-    ":mojo_shared_buffer_video_frame",
     "//base",
     "//gpu/ipc/common",
     "//media",
@@ -31,22 +30,6 @@ source_set("common") {
   ]
 }
 
-# This is a separate target so that //media/mojo/mojom can depend on it
-# without creating a cycle.
-source_set("mojo_shared_buffer_video_frame") {
-  sources = [
-    "mojo_shared_buffer_video_frame.cc",
-    "mojo_shared_buffer_video_frame.h",
-  ]
-
-  deps = [
-    "//base",
-    "//media",
-    "//mojo/public/cpp/system",
-    "//ui/gfx/geometry",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
 
@@ -54,7 +37,6 @@ source_set("unit_tests") {
     "media_type_converters_unittest.cc",
     "mojo_data_pipe_read_write_unittest.cc",
     "mojo_decoder_buffer_converter_unittest.cc",
-    "mojo_shared_buffer_video_frame_unittest.cc",
   ]
 
   deps = [

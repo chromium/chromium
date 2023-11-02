@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,8 @@ namespace io_task {
 class DeleteIOTask : public IOTask {
  public:
   DeleteIOTask(std::vector<storage::FileSystemURL> file_urls,
-               scoped_refptr<storage::FileSystemContext> file_system_context);
+               scoped_refptr<storage::FileSystemContext> file_system_context,
+               bool show_notification = true);
   ~DeleteIOTask() override;
 
   // Starts the delete.

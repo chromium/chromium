@@ -1,210 +1,82 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/common/features.gni")
-import("//tools/grit/grit_rule.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_js.gni")
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
-import("../tools/optimize_webui.gni")
+import("//chrome/browser/resources/tools/build_webui.gni")
+import("//extensions/buildflags/buildflags.gni")
 
-preprocess_folder = "preprocessed"
-
-if (optimize_webui) {
-  build_manifest = "build_manifest.json"
-
-  optimize_webui("build") {
-    host = "history"
-    js_module_in_files = [
-      "history.js",
-      "lazy_load.js",
-    ]
-    input = rebase_path("$target_gen_dir/tsc", root_build_dir)
-    js_out_files = [
-      "history.rollup.js",
-      "lazy_load.rollup.js",
-      "shared.rollup.js",
-    ]
-    out_manifest = "$target_gen_dir/$build_manifest"
-
-    deps = [
-      ":build_ts",
-      "//ui/webui/resources:preprocess",
-    ]
-    excludes = [
-      "chrome://resources/js/cr.m.js",
-      "chrome://resources/mojo/mojo/public/js/bindings.js",
-    ]
-  }
-}
-
-generate_grd("build_grd") {
+build_webui("build") {
   grd_prefix = "history"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
-  input_files = [
+
+  static_files = [
     "history.html",
-    "images/journeys.svg",
     "images/list.svg",
     "images/sign_in_promo_dark.svg",
     "images/sign_in_promo.svg",
   ]
-  input_files_base_dir = rebase_path(".", "//")
 
-  if (optimize_webui) {
-    deps = [ ":build" ]
-    manifest_files = [ "$target_gen_dir/$build_manifest" ]
-    resource_path_rewrites = [
-      "history.rollup.js|history.js",
-      "lazy_load.rollup.js|lazy_load.js",
-    ]
-  } else {
-    deps = [ ":build_ts" ]
-    manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-  }
-}
+  # Files holding a Polymer element definition and have an equivalent .html file.
+  web_component_files = [
+    "app.ts",
+    "history_item.ts",
+    "history_list.ts",
+    "history_toolbar.ts",
+    "router.ts",
+    "side_bar.ts",
+    "synced_device_card.ts",
+    "synced_device_manager.ts",
+  ]
 
-preprocess_if_expr("preprocess") {
-  in_folder = "./"
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [
+  non_web_component_files = [
     "browser_service.ts",
     "constants.ts",
     "externs.ts",
-    "history_clusters/browser_proxy.ts",
-    "history_clusters/metrics_proxy.ts",
-    "history_clusters/open_window_proxy.ts",
     "history.ts",
     "lazy_load.ts",
     "query_manager.ts",
     "searched_label.ts",
   ]
-}
 
-preprocess_if_expr("preprocess_generated") {
-  deps = [ ":web_components" ]
-  in_folder = target_gen_dir
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [
-    "app.ts",
-    "history_clusters/cluster.ts",
-    "history_clusters/clusters.ts",
-    "history_clusters/page_favicon.ts",
-    "history_clusters/search_query.ts",
-    "history_clusters/shared_style.ts",
-    "history_clusters/shared_vars.ts",
-    "history_clusters/top_visit.ts",
-    "history_clusters/url_visit.ts",
-    "history_item.ts",
-    "history_list.ts",
-    "history_toolbar.ts",
-    "router.ts",
-    "shared_icons.ts",
-    "shared_style.ts",
-    "shared_vars.ts",
-    "side_bar.ts",
-    "synced_device_card.ts",
-    "synced_device_manager.ts",
+  # Files that are passed as input to css_to_wrapper().
+  css_files = [
+    "shared_style.css",
+    "shared_vars.css",
   ]
-}
 
-grit("resources") {
-  defines = chrome_grit_defines
+  icons_html_files = [ "shared_icons.html" ]
 
-  # These arguments are needed since the grd is generated at build time.
-  enable_input_discovery_for_gn_analyze = false
-  source = "$target_gen_dir/history_resources.grd"
-  deps = [ ":build_grd" ]
-
-  outputs = [
-    "grit/history_resources.h",
-    "grit/history_resources_map.cc",
-    "grit/history_resources_map.h",
-    "history_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chrome"
-}
-
-html_to_js("web_components_local") {
-  js_files = [
-    "app.ts",
-    "history_item.ts",
-    "history_list.ts",
-    "history_toolbar.ts",
-    "router.ts",
-    "shared_icons.ts",
-    "shared_style.ts",
-    "shared_vars.ts",
-    "side_bar.ts",
-    "synced_device_card.ts",
-    "synced_device_manager.ts",
-  ]
-}
-
-group("web_components") {
-  public_deps = [
-    ":web_components_local",
-    "history_clusters:web_components",
-  ]
-}
-
-ts_library("build_ts") {
-  root_dir = "$target_gen_dir/$preprocess_folder"
-  out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "tsconfig_base.json"
-  in_files = [
-    "app.ts",
-    "browser_service.ts",
-    "constants.ts",
-    "externs.ts",
-    "history_clusters/browser_proxy.ts",
-    "history_clusters/cluster.ts",
-    "history_clusters/clusters.ts",
-    "history_clusters/history_clusters.mojom-webui.js",
-    "history_clusters/metrics_proxy.ts",
-    "history_clusters/open_window_proxy.ts",
-    "history_clusters/page_favicon.ts",
-    "history_clusters/search_query.ts",
-    "history_clusters/shared_style.ts",
-    "history_clusters/shared_vars.ts",
-    "history_clusters/top_visit.ts",
-    "history_clusters/url_visit.ts",
-    "history_item.ts",
-    "history_list.ts",
-    "history_toolbar.ts",
-    "history.ts",
-    "lazy_load.ts",
-    "query_manager.ts",
-    "router.ts",
-    "searched_label.ts",
-    "shared_icons.ts",
-    "shared_style.ts",
-    "shared_vars.ts",
-    "side_bar.ts",
-    "synced_device_card.ts",
-    "synced_device_manager.ts",
-  ]
-  deps = [
-    "//third_party/polymer/v3_0:library",
-    "//ui/webui/resources:library",
-    "//ui/webui/resources/mojo:library",
-  ]
-  definitions = [
+  ts_composite = true
+  ts_definitions = [
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
   ]
-  extra_deps = [
-    ":copy_history_clusters_mojom",
-    ":preprocess",
-    ":preprocess_generated",
-  ]
-}
 
-copy("copy_history_clusters_mojom") {
-  sources = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/history_clusters/history_clusters.mojom-webui.js" ]
-  outputs = [
-    "$target_gen_dir/$preprocess_folder/history_clusters/{{source_file_part}}",
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/cr_components/history_clusters:build_ts",
+    "//ui/webui/resources/mojo:library",
   ]
-  deps = [ "//chrome/browser/ui/webui/history_clusters:mojo_bindings_webui_js" ]
+
+  optimize = optimize_webui
+  if (optimize) {
+    optimize_webui_host = "history"
+    optimize_webui_out_files = [
+      "history.rollup.js",
+      "lazy_load.rollup.js",
+      "shared.rollup.js",
+    ]
+    optimize_webui_in_files = [
+      "history.js",
+      "lazy_load.js",
+    ]
+    optimize_webui_excludes = [
+      "chrome://resources/js/cr.m.js",
+      "chrome://resources/mojo/mojo/public/js/bindings.js",
+    ]
+    optimize_webui_resource_paths_rewrites = [
+      "history.rollup.js|history.js",
+      "lazy_load.rollup.js|lazy_load.js",
+    ]
+  }
 }

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define EXTENSIONS_RENDERER_ACTIVITY_LOG_CONVERTER_STRATEGY_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "v8/include/v8-forward.h"
 

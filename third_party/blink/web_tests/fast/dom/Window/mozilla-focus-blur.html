@@ -90,16 +90,13 @@ function test5()
 
     w.addEventListener('focus', handler, false);
 
-    focusWithUserGesture(w);
-
-    roundTripToBrowser().then(() => {
-        w.removeEventListener('focus', handler, false);
-
-        log(!fail, 'The last opened window should be able to get focus');
-
+    w.addEventListener('focus', () => {
+        log(true, 'The last opened window should be able to get focus');
         w.close();
         originatingWindow.setTimeout(finished, 0);
-    });
+    }, true);
+
+    focusWithUserGesture(w);
 }
 
 function finished() {

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,12 +24,15 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
+#include "content/shell/browser/shell_content_browser_client.h"
 #include "content/shell/browser/shell_content_index_provider.h"
 #include "content/shell/browser/shell_download_manager_delegate.h"
+#include "content/shell/browser/shell_federated_permission_context.h"
 #include "content/shell/browser/shell_paths.h"
 #include "content/shell/browser/shell_permission_manager.h"
 #include "content/shell/common/shell_switches.h"
 #include "content/test/mock_background_sync_controller.h"
+#include "content/test/mock_reduce_accept_language_controller_delegate.h"
 
 namespace content {
 
@@ -86,6 +89,8 @@ void ShellBrowserContext::InitWhileIOAllowed() {
         path_ = base::MakeAbsoluteFilePath(path_);
       if (!path_.empty()) {
         FinishInitWhileIOAllowed();
+        base::PathService::OverrideAndCreateIfNeeded(
+            SHELL_DIR_USER_DATA, path_, /*is_absolute=*/true, /*create=*/false);
         return;
       }
     } else {
@@ -189,6 +194,40 @@ ContentIndexProvider* ShellBrowserContext::GetContentIndexProvider() {
   if (!content_index_provider_)
     content_index_provider_ = std::make_unique<ShellContentIndexProvider>();
   return content_index_provider_.get();
+}
+
+FederatedIdentityApiPermissionContextDelegate*
+ShellBrowserContext::GetFederatedIdentityApiPermissionContext() {
+  if (!federated_permission_context_)
+    federated_permission_context_ =
+        std::make_unique<ShellFederatedPermissionContext>();
+  return federated_permission_context_.get();
+}
+
+FederatedIdentitySharingPermissionContextDelegate*
+ShellBrowserContext::GetFederatedIdentitySharingPermissionContext() {
+  if (!federated_permission_context_)
+    federated_permission_context_ =
+        std::make_unique<ShellFederatedPermissionContext>();
+  return federated_permission_context_.get();
+}
+
+FederatedIdentityActiveSessionPermissionContextDelegate*
+ShellBrowserContext::GetFederatedIdentityActiveSessionPermissionContext() {
+  if (!federated_permission_context_)
+    federated_permission_context_ =
+        std::make_unique<ShellFederatedPermissionContext>();
+  return federated_permission_context_.get();
+}
+
+ReduceAcceptLanguageControllerDelegate*
+ShellBrowserContext::GetReduceAcceptLanguageControllerDelegate() {
+  if (!reduce_accept_lang_controller_delegate_) {
+    reduce_accept_lang_controller_delegate_ =
+        std::make_unique<MockReduceAcceptLanguageControllerDelegate>(
+            GetShellLanguage());
+  }
+  return reduce_accept_lang_controller_delegate_.get();
 }
 
 }  // namespace content

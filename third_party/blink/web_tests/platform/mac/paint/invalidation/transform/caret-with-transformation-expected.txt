@@ -4,11 +4,46 @@
       "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFFFF",
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "Caret",
+      "position": [350, 0],
+      "bounds": [1, 18],
+      "contentsOpaque": true,
       "invalidations": [
-        [345, 211, 11, 17],
-        [42, 36, 11, 17]
+        [0, 0, 1, 18]
+      ],
+      "transform": 2
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV",
+      "position": [-2, -2],
+      "bounds": [788, 22],
+      "contentsOpaqueForText": true,
+      "transform": 2
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
       ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [0.866025403784439, 0.5, 0, 0],
+        [-0.5, 0.866025403784439, 0, 0],
+        [0, 0, 1, 0],
+        [-13.3974596215561, 223.205080756888, 0, 1]
+      ],
+      "origin": [392, 9]
     }
   ]
 }

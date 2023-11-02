@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,11 @@
 #define ASH_COMPONENTS_PHONEHUB_FAKE_NOTIFICATION_INTERACTION_HANDLER_H_
 
 #include <stdint.h>
+
 #include "ash/components/phonehub/notification.h"
 #include "ash/components/phonehub/notification_interaction_handler.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class FakeNotificationInteractionHandler
@@ -39,6 +40,6 @@ class FakeNotificationInteractionHandler
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_FAKE_NOTIFICATION_INTERACTION_HANDLER_H_

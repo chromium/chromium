@@ -1,7 +1,8 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {RectUtil} from '../../common/rect_util.js';
 import {FocusRingManager} from '../focus_ring_manager.js';
 import {SwitchAccess} from '../switch_access.js';
 import {SAConstants, SwitchAccessMenuAction} from '../switch_access_constants.js';
@@ -180,7 +181,7 @@ export class SAChildNode {
    * @return {boolean}
    */
   isValidAndVisible() {
-    return this.valid_ && !!this.location;
+    return this.valid_ && Boolean(this.location);
   }
 
   /**
@@ -329,8 +330,8 @@ export class SARootNode {
   /** @return {!chrome.accessibilityPrivate.ScreenRect} */
   get location() {
     const children = this.children_.filter(
-        (c) => !c.ignoreWhenComputingUnionOfBoundingBoxes());
-    const childLocations = children.map((c) => c.location);
+        c => !c.ignoreWhenComputingUnionOfBoundingBoxes());
+    const childLocations = children.map(c => c.location);
     return RectUtil.unionAll(childLocations);
   }
 
@@ -395,7 +396,7 @@ export class SARootNode {
     // Must have one interesting child whose location is important.
     return this.children_
                .filter(
-                   (child) =>
+                   child =>
                        !(child.ignoreWhenComputingUnionOfBoundingBoxes()) &&
                        child.isValidAndVisible())
                .length >= 1;
@@ -403,8 +404,7 @@ export class SARootNode {
 
   /** @return {SAChildNode} */
   firstValidChild() {
-    const children =
-        this.children_.filter((child) => child.isValidAndVisible());
+    const children = this.children_.filter(child => child.isValidAndVisible());
     return children.length > 0 ? children[0] : null;
   }
 
@@ -419,7 +419,7 @@ export class SARootNode {
 
   /** Called when a group should recalculate its children. */
   refreshChildren() {
-    this.children = this.children.filter((child) => child.isValidAndVisible());
+    this.children = this.children.filter(child => child.isValidAndVisible());
   }
 
   /** Called when the group's children may have changed. */

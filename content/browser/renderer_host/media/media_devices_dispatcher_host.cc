@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/task_runner_util.h"
 #include "build/build_config.h"
 #include "content/browser/media/media_devices_permission_checker.h"
@@ -35,6 +35,10 @@
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "url/origin.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "content/browser/media/capture/crop_id_web_contents_helper.h"
+#endif
 
 using blink::mojom::MediaDeviceType;
 
@@ -65,6 +69,11 @@ ToVectorAudioInputDeviceCapabilitiesPtr(
 }
 
 }  // namespace
+
+struct MediaDevicesDispatcherHost::AudioInputCapabilitiesRequest {
+  MediaDeviceSaltAndOrigin salt_and_origin;
+  GetAudioInputCapabilitiesCallback client_callback;
+};
 
 // static
 void MediaDevicesDispatcherHost::Create(
@@ -106,6 +115,7 @@ MediaDevicesDispatcherHost::MediaDevicesDispatcherHost(
       media_stream_manager_(media_stream_manager),
       num_pending_audio_input_parameters_(0) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK(media_stream_manager_);
 }
 
 MediaDevicesDispatcherHost::~MediaDevicesDispatcherHost() {
@@ -165,19 +175,37 @@ void MediaDevicesDispatcherHost::GetVideoInputCapabilities(
 }
 
 void MediaDevicesDispatcherHost::GetAllVideoInputDeviceFormats(
-    const std::string& device_id,
+    const std::string& hashed_device_id,
     GetAllVideoInputDeviceFormatsCallback client_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  GetVideoInputDeviceFormats(device_id, false /* try_in_use_first */,
-                             std::move(client_callback));
+
+  auto scoped_trace = ScopedMediaStreamTrace::CreateIfEnabled(__func__);
+  base::PostTaskAndReplyWithResult(
+      GetUIThreadTaskRunner({}).get(), FROM_HERE,
+      base::BindOnce(media_stream_manager_->media_devices_manager()
+                         ->salt_and_origin_callback(),
+                     render_process_id_, render_frame_id_),
+      base::BindOnce(&MediaDevicesDispatcherHost::GetVideoInputDeviceFormats,
+                     weak_factory_.GetWeakPtr(), hashed_device_id,
+                     false /* try_in_use_first */, std::move(client_callback),
+                     std::move(scoped_trace)));
 }
 
 void MediaDevicesDispatcherHost::GetAvailableVideoInputDeviceFormats(
-    const std::string& device_id,
+    const std::string& hashed_device_id,
     GetAvailableVideoInputDeviceFormatsCallback client_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  GetVideoInputDeviceFormats(device_id, true /* try_in_use_first */,
-                             std::move(client_callback));
+
+  auto scoped_trace = ScopedMediaStreamTrace::CreateIfEnabled(__func__);
+  base::PostTaskAndReplyWithResult(
+      GetUIThreadTaskRunner({}).get(), FROM_HERE,
+      base::BindOnce(media_stream_manager_->media_devices_manager()
+                         ->salt_and_origin_callback(),
+                     render_process_id_, render_frame_id_),
+      base::BindOnce(&MediaDevicesDispatcherHost::GetVideoInputDeviceFormats,
+                     weak_factory_.GetWeakPtr(), hashed_device_id,
+                     true /* try_in_use_first */, std::move(client_callback),
+                     std::move(scoped_trace)));
 }
 
 void MediaDevicesDispatcherHost::GetAudioInputCapabilities(
@@ -267,24 +295,52 @@ void MediaDevicesDispatcherHost::SetCaptureHandleConfig(
             if (!rfhi || !rfhi->IsActive()) {
               return;
             }
-            if (rfhi != rfhi->GetMainFrame()) {
+            if (rfhi->GetParentOrOuterDocument()) {
               // Would be overkill to add thread-hopping just to support a test,
               // so we execute directly.
               bad_message::ReceivedBadMessage(render_process_id,
                                               bad_message::MDDH_NOT_TOP_LEVEL);
+              return;
             }
             rfhi->delegate()->SetCaptureHandleConfig(std::move(config));
           },
           render_process_id_, render_frame_id_, std::move(config)));
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void MediaDevicesDispatcherHost::CloseFocusWindowOfOpportunity(
     const std::string& label) {
   media_stream_manager_->SetCapturedDisplaySurfaceFocus(
       label, /*focus=*/true,
       /*is_from_microtask=*/true,
       /*is_from_timer=*/false);
+}
+
+void MediaDevicesDispatcherHost::ProduceCropId(ProduceCropIdCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          [](int render_process_id, int render_frame_id) {
+            RenderFrameHostImpl* const rfh =
+                RenderFrameHostImpl::FromID(render_process_id, render_frame_id);
+            if (!rfh || !rfh->IsActive()) {
+              return std::string();  // Might have been asynchronously closed.
+            }
+
+            WebContents* const web_contents =
+                WebContents::FromRenderFrameHost(rfh->GetMainFrame());
+            DCHECK(web_contents);
+
+            // No-op if already created.
+            CropIdWebContentsHelper::CreateForWebContents(web_contents);
+
+            return CropIdWebContentsHelper::FromWebContents(web_contents)
+                ->ProduceCropId();
+          },
+          render_process_id_, render_frame_id_),
+      std::move(callback));
 }
 #endif
 
@@ -354,60 +410,50 @@ void MediaDevicesDispatcherHost::FinalizeGetVideoInputCapabilities(
 }
 
 void MediaDevicesDispatcherHost::GetVideoInputDeviceFormats(
-    const std::string& device_id,
+    const std::string& hashed_device_id,
     bool try_in_use_first,
-    GetVideoInputDeviceFormatsCallback client_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  base::PostTaskAndReplyWithResult(
-      GetUIThreadTaskRunner({}).get(), FROM_HERE,
-      base::BindOnce(media_stream_manager_->media_devices_manager()
-                         ->salt_and_origin_callback(),
-                     render_process_id_, render_frame_id_),
-      base::BindOnce(
-          &MediaDevicesDispatcherHost::EnumerateVideoDevicesForFormats,
-          weak_factory_.GetWeakPtr(), std::move(client_callback), device_id,
-          try_in_use_first));
-}
-
-void MediaDevicesDispatcherHost::EnumerateVideoDevicesForFormats(
     GetVideoInputDeviceFormatsCallback client_callback,
-    const std::string& device_id,
-    bool try_in_use_first,
+    std::unique_ptr<ScopedMediaStreamTrace> scoped_trace,
     const MediaDeviceSaltAndOrigin& salt_and_origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  media_stream_manager_->video_capture_manager()->EnumerateDevices(
+  if (scoped_trace)
+    scoped_trace->AddStep(__func__);
+  MediaStreamManager::SendMessageToNativeLog(base::StringPrintf(
+      "MDDH::GetVideoInputDeviceFormats({hashed_device_id=%s}, "
+      "{try_in_use_first=%s})",
+      hashed_device_id.c_str(), try_in_use_first ? "true" : "false"));
+  MediaStreamManager::GetMediaDeviceIDForHMAC(
+      blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+      salt_and_origin.device_id_salt, salt_and_origin.origin, hashed_device_id,
+      base::SequencedTaskRunnerHandle::Get(),
       base::BindOnce(
-          &MediaDevicesDispatcherHost::FinalizeGetVideoInputDeviceFormats,
-          weak_factory_.GetWeakPtr(), std::move(client_callback), device_id,
-          try_in_use_first, salt_and_origin.device_id_salt,
-          salt_and_origin.origin));
+          &MediaDevicesDispatcherHost::GetVideoInputDeviceFormatsWithRawId,
+          weak_factory_.GetWeakPtr(), hashed_device_id, try_in_use_first,
+          std::move(client_callback), std::move(scoped_trace)));
 }
 
-void MediaDevicesDispatcherHost::FinalizeGetVideoInputDeviceFormats(
-    GetVideoInputDeviceFormatsCallback client_callback,
-    const std::string& device_id,
+void MediaDevicesDispatcherHost::GetVideoInputDeviceFormatsWithRawId(
+    const std::string& hashed_device_id,
     bool try_in_use_first,
-    const std::string& device_id_salt,
-    const url::Origin& security_origin,
-    const media::VideoCaptureDeviceDescriptors& device_descriptors) {
+    GetVideoInputDeviceFormatsCallback client_callback,
+    std::unique_ptr<ScopedMediaStreamTrace> scoped_trace,
+    const absl::optional<std::string>& raw_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  for (const auto& descriptor : device_descriptors) {
-    if (DoesMediaDeviceIDMatchHMAC(device_id_salt, security_origin, device_id,
-                                   descriptor.device_id)) {
-      std::move(client_callback)
-          .Run(media_stream_manager_->media_devices_manager()
-                   ->GetVideoInputFormats(descriptor.device_id,
-                                          try_in_use_first));
-      return;
-    }
+  if (scoped_trace)
+    scoped_trace->AddStep(__func__);
+  if (!raw_id) {
+    // TODO(https://crbug.com/1337706): return an error.
+    MediaStreamManager::SendMessageToNativeLog(
+        base::StringPrintf("MDDH::GetVideoInputDeviceFormats: Failed to find "
+                           "raw device id for '%s'",
+                           hashed_device_id.c_str()));
+    std::move(client_callback).Run(media::VideoCaptureFormats());
+    return;
   }
-  std::move(client_callback).Run(media::VideoCaptureFormats());
+  std::move(client_callback)
+      .Run(media_stream_manager_->media_devices_manager()->GetVideoInputFormats(
+          *raw_id, try_in_use_first));
 }
-
-struct MediaDevicesDispatcherHost::AudioInputCapabilitiesRequest {
-  MediaDeviceSaltAndOrigin salt_and_origin;
-  GetAudioInputCapabilitiesCallback client_callback;
-};
 
 void MediaDevicesDispatcherHost::GetDefaultAudioInputDeviceID(
     GetAudioInputCapabilitiesCallback client_callback,
@@ -533,7 +579,7 @@ void MediaDevicesDispatcherHost::SetCaptureHandleConfigCallbackForTesting(
         void(int, int, blink::mojom::CaptureHandleConfigPtr)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(!capture_handle_config_callback_for_testing_);
-  capture_handle_config_callback_for_testing_ = callback;
+  capture_handle_config_callback_for_testing_ = std::move(callback);
 }
 
 }  // namespace content

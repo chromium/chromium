@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -28,6 +28,7 @@ import collections
 import json
 import logging
 import os
+import shutil
 import subprocess
 import sys
 
@@ -35,10 +36,6 @@ _SRC_ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), '..',
                                           '..'))
 sys.path.append(os.path.join(_SRC_ROOT, 'build', 'android'))
 from pylib import constants
-
-_AUTONINJA_PATH = os.path.join(_SRC_ROOT, 'third_party', 'depot_tools',
-                               'autoninja')
-_NINJA_PATH = os.path.join(_SRC_ROOT, 'third_party', 'depot_tools', 'ninja')
 
 _VALID_TYPES = (
     'android_apk',
@@ -52,25 +49,38 @@ _VALID_TYPES = (
     'java_annotation_processor',
     'java_binary',
     'java_library',
-    'junit_binary',
+    'robolectric_binary',
     'system_java_library',
 )
 
 
-def _run_ninja(output_dir, args):
+def _resolve_ninja(cmd):
+  # Prefer the version on PATH, but fallback to known version if PATH doesn't
+  # have one (e.g. on bots).
+  if shutil.which(cmd) is None:
+    return os.path.join(_SRC_ROOT, 'third_party', 'depot_tools', cmd)
+  return cmd
+
+
+def _run_ninja(output_dir, args, quiet=False):
   cmd = [
-      _AUTONINJA_PATH,
+      _resolve_ninja('autoninja'),
       '-C',
       output_dir,
   ]
   cmd.extend(args)
   logging.info('Running: %r', cmd)
-  subprocess.run(cmd, check=True, stdout=sys.stderr)
+  if quiet:
+    subprocess.run(cmd, check=True, capture_output=True)
+  else:
+    subprocess.run(cmd, check=True, stdout=sys.stderr)
 
 
 def _query_for_build_config_targets(output_dir):
   # Query ninja rather than GN since it's faster.
-  cmd = [_NINJA_PATH, '-C', output_dir, '-t', 'targets']
+  # Use ninja rather than autoninja to avoid extra output if user has set the
+  # NINJA_SUMMARIZE_BUILD environment variable.
+  cmd = [_resolve_ninja('ninja'), '-C', output_dir, '-t', 'targets']
   logging.info('Running: %r', cmd)
   ninja_output = subprocess.run(cmd,
                                 check=True,
@@ -87,7 +97,7 @@ def _query_for_build_config_targets(output_dir):
   return ret
 
 
-class _TargetEntry(object):
+class _TargetEntry:
   def __init__(self, gn_target):
     assert gn_target.startswith('//'), f'{gn_target} does not start with //'
     assert ':' in gn_target, f'Non-root {gn_target} required'
@@ -167,12 +177,13 @@ def main():
                       action='store_true',
                       help='Restrict to targets that have proguard enabled')
   parser.add_argument('-v', '--verbose', default=0, action='count')
+  parser.add_argument('-q', '--quiet', default=0, action='count')
   args = parser.parse_args()
 
   args.build |= bool(args.type or args.proguard_enabled or args.print_types
                      or args.stats)
 
-  logging.basicConfig(level=logging.WARNING - (10 * args.verbose),
+  logging.basicConfig(level=logging.WARNING + 10 * (args.quiet - args.verbose),
                       format='%(levelname).1s %(relativeCreated)6d %(message)s')
 
   if args.output_directory:
@@ -186,7 +197,8 @@ def main():
 
   if args.build:
     logging.warning('Building %d .build_config.json files...', len(entries))
-    _run_ninja(output_dir, [e.ninja_build_config_target for e in entries])
+    _run_ninja(output_dir, [e.ninja_build_config_target for e in entries],
+               quiet=args.quiet)
 
   if args.type:
     entries = [e for e in entries if e.get_type() in args.type]

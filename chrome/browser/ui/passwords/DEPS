@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/password_manager/services/csv_password/public/mojom",
+  "+components/device_reauth",
+]

@@ -1,9 +1,12 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+
 #include "base/files/file_path.h"
 #include "content/public/browser/file_system_access_permission_context.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-shared.h"
 
 #ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FAKE_FILE_SYSTEM_ACCESS_PERMISSION_CONTEXT_H_
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FAKE_FILE_SYSTEM_ACCESS_PERMISSION_CONTEXT_H_
@@ -17,6 +20,8 @@ namespace content {
 class FakeFileSystemAccessPermissionContext
     : public content::FileSystemAccessPermissionContext {
  public:
+  static constexpr char16_t kPickerTitle[] = u"Choose something";
+
   FakeFileSystemAccessPermissionContext();
   ~FakeFileSystemAccessPermissionContext() override;
 
@@ -32,13 +37,14 @@ class FakeFileSystemAccessPermissionContext
       HandleType handle_type,
       UserAction user_action) override;
 
-  void ConfirmSensitiveDirectoryAccess(
+  void ConfirmSensitiveEntryAccess(
       const url::Origin& origin,
       PathType path_type,
       const base::FilePath& path,
       HandleType handle_type,
+      UserAction user_action,
       GlobalRenderFrameHostId frame_id,
-      base::OnceCallback<void(SensitiveDirectoryResult)> callback) override;
+      base::OnceCallback<void(SensitiveEntryResult)> callback) override;
 
   void PerformAfterWriteChecks(
       std::unique_ptr<FileSystemAccessWriteItem> item,
@@ -61,7 +67,12 @@ class FakeFileSystemAccessPermissionContext
   // Retrieves a path which was earlier specified via SetWellKnownDirectoryPath.
   // Otherwise, returns an empty path.
   base::FilePath GetWellKnownDirectoryPath(
-      blink::mojom::WellKnownDirectory directory) override;
+      blink::mojom::WellKnownDirectory directory,
+      const url::Origin& origin) override;
+
+  // Returns `kPickerTitle`.
+  std::u16string GetPickerTitle(
+      const blink::mojom::FilePickerOptionsPtr& options) override;
 
  private:
   std::map<std::string, PathInfo> id_pathinfo_map_;

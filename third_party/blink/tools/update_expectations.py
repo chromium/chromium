@@ -1,6 +1,6 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 #
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -14,4 +14,6 @@ if __name__ == "__main__":
     HOST = host.Host()
     RETURN_CODE = update_expectations.main(
         HOST, BotTestExpectationsFactory(HOST.builders), sys.argv[1:])
+    RETURN_CODE |= update_expectations.main(
+        HOST, BotTestExpectationsFactory(HOST.builders, 'blink_wpt_tests'), sys.argv[1:])
     sys.exit(RETURN_CODE)

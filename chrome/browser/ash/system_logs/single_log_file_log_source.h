@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@ class Time;
 
 namespace system_logs {
 
-// Gathers log data from a single source.
+// Gathers log data from a single source, possibly incrementally.
 class SingleLogFileLogSource : public SystemLogsSource {
  public:
   enum class SupportedSource {
@@ -106,8 +106,18 @@ class SingleLogFileLogSource : public SystemLogsSource {
   // Path to system log file directory.
   base::FilePath log_file_dir_path_;
 
-  // The maximum size of a read from the system log file.
+  // The maximum size of a read from |file_|.
   size_t max_read_size_;
+
+  // Keeps track of how much data has been read or skipped from |file_|.
+  size_t file_cursor_position_;
+
+  // Handle for reading the log file that is source of logging data.
+  base::File file_;
+
+  // File system inode value that was associated with |log_file_path_| when it
+  // was originally opened for reading.
+  ino_t file_inode_;
 
   base::WeakPtrFactory<SingleLogFileLogSource> weak_ptr_factory_{this};
 };

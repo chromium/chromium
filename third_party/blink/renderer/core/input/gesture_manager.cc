@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
+#include "ui/gfx/geometry/point_conversions.h"
 
 #if BUILDFLAG(ENABLE_UNHANDLED_TAP)
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -73,6 +74,7 @@ void GestureManager::Clear() {
 void GestureManager::ResetLongTapContextMenuStates() {
   gesture_context_menu_deferred_ = false;
   long_press_position_in_root_frame_ = gfx::PointF();
+  drag_in_progress_ = false;
 }
 
 void GestureManager::Trace(Visitor* visitor) const {
@@ -85,8 +87,7 @@ void GestureManager::Trace(Visitor* visitor) const {
 
 HitTestRequest::HitTestRequestType GestureManager::GetHitTypeForGestureType(
     WebInputEvent::Type type) {
-  HitTestRequest::HitTestRequestType hit_type =
-      HitTestRequest::kTouchEvent | HitTestRequest::kRetargetForInert;
+  HitTestRequest::HitTestRequestType hit_type = HitTestRequest::kTouchEvent;
   switch (type) {
     case WebInputEvent::Type::kGestureShowPress:
     case WebInputEvent::Type::kGestureTapUnconfirmed:
@@ -100,6 +101,7 @@ HitTestRequest::HitTestRequestType GestureManager::GetHitTypeForGestureType(
     case WebInputEvent::Type::kGestureTap:
       return hit_type | HitTestRequest::kRelease;
     case WebInputEvent::Type::kGestureTapDown:
+    case WebInputEvent::Type::kGestureShortPress:
     case WebInputEvent::Type::kGestureLongPress:
     case WebInputEvent::Type::kGestureLongTap:
     case WebInputEvent::Type::kGestureTwoFingerTap:
@@ -115,15 +117,11 @@ WebInputEventResult GestureManager::HandleGestureEventInFrame(
     const GestureEventWithHitTestResults& targeted_event) {
   DCHECK(!targeted_event.Event().IsScrollEvent());
 
-  // Remove all tap down touch id, pointer id pairs that have a
-  // lower touch id than the targeted event's primary_unique_touch_event_id
-  // because all gesture sequences prior to the current one have been already
-  // handled.
-  while (!recent_pointerdown_pointer_ids_.empty() &&
-         recent_pointerdown_pointer_ids_.front().first <
-             targeted_event.Event().primary_unique_touch_event_id) {
-    recent_pointerdown_pointer_ids_.pop_front();
-  }
+  frame_->LocalFrameRoot()
+      .GetEventHandler()
+      .GetGestureManager()
+      .ClearOldPointerDownIds(
+          targeted_event.Event().primary_unique_touch_event_id);
 
   Node* event_target = targeted_event.GetHitTestResult().InnerNode();
   const WebGestureEvent& gesture_event = targeted_event.Event();
@@ -136,7 +134,7 @@ WebInputEventResult GestureManager::HandleGestureEventInFrame(
         event_target->GetDocument().domWindow(), gesture_event);
     if (gesture_dom_event) {
       DispatchEventResult gesture_dom_event_result =
-          event_target->DispatchEvent(*gesture_dom_event);
+          event_target->DispatchEvent(*gesture_dom_event, "GestureManager::HandleGestureEventInFrame");
       if (gesture_dom_event_result != DispatchEventResult::kNotCanceled) {
         DCHECK(gesture_dom_event_result !=
                DispatchEventResult::kCanceledByEventHandler);
@@ -153,6 +151,8 @@ WebInputEventResult GestureManager::HandleGestureEventInFrame(
       return HandleGestureTap(targeted_event);
     case WebInputEvent::Type::kGestureShowPress:
       return HandleGestureShowPress();
+    case WebInputEvent::Type::kGestureShortPress:
+      return HandleGestureShortPress(targeted_event);
     case WebInputEvent::Type::kGestureLongPress:
       return HandleGestureLongPress(targeted_event);
     case WebInputEvent::Type::kGestureLongTap:
@@ -167,6 +167,16 @@ WebInputEventResult GestureManager::HandleGestureEventInFrame(
   }
 
   return WebInputEventResult::kNotHandled;
+}
+
+void GestureManager::ClearOldPointerDownIds(
+    uint32_t primary_unique_touch_event_id) {
+  DCHECK(frame_->IsLocalRoot());
+  while (!recent_pointerdown_pointer_ids_.empty() &&
+         recent_pointerdown_pointer_ids_.front().first <
+             primary_unique_touch_event_id) {
+    recent_pointerdown_pointer_ids_.pop_front();
+  }
 }
 
 bool GestureManager::GestureContextMenuDeferred() const {
@@ -198,7 +208,7 @@ WebInputEventResult GestureManager::HandleGestureTap(
   // We use the adjusted position so the application isn't surprised to see a
   // event with co-ordinates outside the target's bounds.
   gfx::Point adjusted_point = frame_view->ConvertFromRootFrame(
-      FlooredIntPoint(gesture_event.PositionInRootFrame()));
+      gfx::ToFlooredPoint(gesture_event.PositionInRootFrame()));
 
   const unsigned modifiers = gesture_event.GetModifiers();
 
@@ -230,16 +240,19 @@ WebInputEventResult GestureManager::HandleGestureTap(
             DocumentUpdateReason::kHitTest))
       return WebInputEventResult::kNotHandled;
     adjusted_point = frame_view->ConvertFromRootFrame(
-        FlooredIntPoint(gesture_event.PositionInRootFrame()));
+        gfx::ToFlooredPoint(gesture_event.PositionInRootFrame()));
     current_hit_test = event_handling_util::HitTestResultInFrame(
         frame_, HitTestLocation(adjusted_point), hit_type);
   }
 
   // Capture data for showUnhandledTapUIIfNeeded.
   gfx::Point tapped_position =
-      FlooredIntPoint(gesture_event.PositionInRootFrame());
+      gfx::ToFlooredPoint(gesture_event.PositionInRootFrame());
   Node* tapped_node = current_hit_test.InnerNode();
   Element* tapped_element = current_hit_test.InnerElement();
+  LocalFrame::NotifyUserActivation(
+      tapped_node ? tapped_node->GetDocument().GetFrame() : nullptr,
+      mojom::blink::UserActivationNotificationType::kInteraction);
 
   mouse_event_manager_->SetClickElement(tapped_element);
 
@@ -338,6 +351,8 @@ WebInputEventResult GestureManager::HandleGestureTap(
       current_hit_test.InnerNodeFrame()) {
     current_hit_test.InnerNodeFrame()->View()->UpdateLifecycleToPrePaintClean(
         DocumentUpdateReason::kHitTest);
+    current_hit_test = event_handling_util::HitTestResultInFrame(
+        frame_, HitTestLocation(adjusted_point), hit_type);
     if (TextFragmentHandler::IsOverTextFragment(current_hit_test) &&
         event_result == WebInputEventResult::kNotHandled) {
       return SendContextMenuEventForGesture(targeted_event);
@@ -356,10 +371,27 @@ WebInputEventResult GestureManager::HandleGestureTap(
         frame_->GetPage()->GetVisualViewport().RootFrameToViewport(
             tapped_position);
     ShowUnhandledTapUIIfNeeded(dom_tree_changed, style_changed, tapped_node,
-                               tapped_element, tapped_position_in_viewport);
+                               tapped_position_in_viewport);
   }
 
   return event_result;
+}
+
+WebInputEventResult GestureManager::HandleGestureShortPress(
+    const GestureEventWithHitTestResults& targeted_event) {
+  drag_in_progress_ = false;
+  // TODO(crbug.com/1299010): When TouchDragAndContextMenu is enabled, we want
+  // to start drag here at short-press and open context-menu later at
+  // long-press.  However, on Android an ACTION_CANCEL event is fired on
+  // drag-start, and occcasionally that happens before long-press gesture
+  // timeout which causes GestureRecognizer to suppress long-press detection.
+  if (RuntimeEnabledFeatures::TouchDragAndContextMenuEnabled() &&
+      RuntimeEnabledFeatures::TouchDragOnShortPressEnabled()) {
+    drag_in_progress_ =
+        mouse_event_manager_->HandleDragDropIfPossible(targeted_event);
+  }
+  return drag_in_progress_ ? WebInputEventResult::kHandledSystem
+                           : WebInputEventResult::kNotHandled;
 }
 
 WebInputEventResult GestureManager::HandleGestureLongPress(
@@ -373,37 +405,45 @@ WebInputEventResult GestureManager::HandleGestureLongPress(
 
   long_press_position_in_root_frame_ = gesture_event.PositionInRootFrame();
   HitTestLocation location(frame_->View()->ConvertFromRootFrame(
-      FlooredIntPoint(long_press_position_in_root_frame_)));
+      gfx::ToFlooredPoint(long_press_position_in_root_frame_)));
   HitTestResult hit_test_result =
       frame_->GetEventHandler().HitTestResultAtLocation(location);
 
   gesture_context_menu_deferred_ = false;
 
-  bool hit_test_contains_links = hit_test_result.URLElement() ||
-                                 !hit_test_result.AbsoluteImageURL().IsNull() ||
-                                 !hit_test_result.AbsoluteMediaURL().IsNull();
-  if (!hit_test_contains_links &&
-      mouse_event_manager_->HandleDragDropIfPossible(targeted_event)) {
-    gesture_context_menu_deferred_ = true;
-    return WebInputEventResult::kHandledSystem;
+  if (RuntimeEnabledFeatures::TouchDragAndContextMenuEnabled()) {
+    if (!RuntimeEnabledFeatures::TouchDragOnShortPressEnabled()) {
+      drag_in_progress_ =
+          mouse_event_manager_->HandleDragDropIfPossible(targeted_event);
+    }
+  } else if (frame_->GetSettings() &&
+             frame_->GetSettings()->GetTouchDragDropEnabled() &&
+             frame_->View()) {
+    bool hit_test_contains_links =
+        hit_test_result.URLElement() ||
+        !hit_test_result.AbsoluteImageURL().IsNull() ||
+        !hit_test_result.AbsoluteMediaURL().IsNull();
+    if (!hit_test_contains_links &&
+        mouse_event_manager_->HandleDragDropIfPossible(targeted_event)) {
+      gesture_context_menu_deferred_ = true;
+      return WebInputEventResult::kHandledSystem;
+    }
   }
 
   Node* inner_node = hit_test_result.InnerNode();
-  if (inner_node && inner_node->GetLayoutObject() &&
+  if (!drag_in_progress_ && inner_node && inner_node->GetLayoutObject() &&
       selection_controller_->HandleGestureLongPress(hit_test_result)) {
     mouse_event_manager_->FocusDocumentView();
   }
 
   if (frame_->GetSettings() &&
       frame_->GetSettings()->GetShowContextMenuOnMouseUp()) {
+    // TODO(https://crbug.com/1290905): Prevent a contextmenu after a
+    // finger-drag when TouchDragAndContextMenu is enabled.
     gesture_context_menu_deferred_ = true;
     return WebInputEventResult::kNotHandled;
   }
 
-  // For touch pointer interactions, pointerup is an activation triggering
-  // event.  A long-press gesture doesn't fire a pointerup event (fires a
-  // pointercancel instead), but for compat reasons we need user activation
-  // here.
   LocalFrame::NotifyUserActivation(
       inner_node ? inner_node->GetDocument().GetFrame() : nullptr,
       mojom::blink::UserActivationNotificationType::kInteraction);
@@ -484,7 +524,7 @@ WebInputEventResult GestureManager::SendContextMenuEventForGesture(
   if (!suppress_mouse_events_from_gestures_ && frame_->View()) {
     HitTestRequest request(HitTestRequest::kActive);
     PhysicalOffset document_point(frame_->View()->ConvertFromRootFrame(
-        FlooredIntPoint(targeted_event.Event().PositionInRootFrame())));
+        gfx::ToFlooredPoint(targeted_event.Event().PositionInRootFrame())));
     MouseEventWithHitTestResults mev =
         frame_->GetDocument()->PerformMouseEventHitTest(request, document_point,
                                                         mouse_event);
@@ -503,7 +543,7 @@ WebInputEventResult GestureManager::HandleGestureShowPress() {
   LocalFrameView* view = frame_->View();
   if (!view)
     return WebInputEventResult::kNotHandled;
-  const LocalFrameView::ScrollableAreaSet* areas = view->ScrollableAreas();
+  const LocalFrameView::ScrollableAreaSet* areas = view->UserScrollableAreas();
   if (!areas)
     return WebInputEventResult::kNotHandled;
   for (PaintLayerScrollableArea* scrollable_area : *areas) {
@@ -517,11 +557,9 @@ void GestureManager::ShowUnhandledTapUIIfNeeded(
     bool dom_tree_changed,
     bool style_changed,
     Node* tapped_node,
-    Element* tapped_element,
     const gfx::Point& tapped_position_in_viewport) {
 #if BUILDFLAG(ENABLE_UNHANDLED_TAP)
   WebNode web_node(tapped_node);
-  // TODO(donnd): roll in ML-identified signals for suppression once identified.
   bool should_trigger = !dom_tree_changed && !style_changed &&
                         tapped_node->IsTextNode() &&
                         !web_node.IsContentEditable() &&
@@ -534,22 +572,9 @@ void GestureManager::ShowUnhandledTapUIIfNeeded(
     frame_->GetBrowserInterfaceBroker().GetInterface(
         provider.BindNewPipeAndPassReceiver());
 
-    // Extract text run-length.
-    int text_run_length = 0;
-    if (tapped_element)
-      text_run_length = tapped_element->textContent().length();
-
-    int font_size = 0;
-    // Extract text characteristics from the computed style of the tapped node.
-    if (const ComputedStyle* style = tapped_node->GetComputedStyle())
-      font_size = style->FontSize();
-
-    // TODO(donnd): get the text color and style and return,
-    // e.g. style->GetFontWeight() to return bold.  Need italic, color, etc.
-
     // Notify the Browser.
-    auto tapped_info = mojom::blink::UnhandledTapInfo::New(
-        tapped_position_in_viewport, font_size, text_run_length);
+    auto tapped_info =
+        mojom::blink::UnhandledTapInfo::New(tapped_position_in_viewport);
     provider->ShowUnhandledTapUIIfNeeded(std::move(tapped_info));
   }
 #endif  // BUILDFLAG(ENABLE_UNHANDLED_TAP)
@@ -557,6 +582,19 @@ void GestureManager::ShowUnhandledTapUIIfNeeded(
 
 void GestureManager::NotifyPointerEventHandled(
     const WebPointerEvent& web_pointer_event) {
+  DCHECK(frame_->IsLocalRoot() || (web_pointer_event.pointer_type !=
+                                   WebPointerProperties::PointerType::kTouch));
+  // TODO(https://crbug.com/449649): Fix the DCHECK after moving all event
+  // handling state to local-frame-root.
+  //
+  // We need to assert that this method is called for top frame only.  But for
+  // mouse-like pointer events (which comes from mice or hoverable pens), this
+  // method gets called AFTER the events are routed to a subframe (e.g. from
+  // |EventHandler|'s |HandleMouseMoveOrLeaveEvent()| to
+  // |PassMouseMoveEventToSubframe()| to |HandlePointerEvent()| to this method).
+  // Because such events don't affect gestures, we are ignoring the unexpected
+  // calls to this method for the time being until the bigger problem is fixed.
+
   if (web_pointer_event.GetType() != WebInputEvent::Type::kPointerDown)
     return;
   PointerId pointer_id =
@@ -578,6 +616,13 @@ void GestureManager::NotifyPointerEventHandled(
 
 PointerId GestureManager::GetPointerIdFromWebGestureEvent(
     const WebGestureEvent& gesture_event) const {
+  if (!frame_->IsLocalRoot()) {
+    return frame_->LocalFrameRoot()
+        .GetEventHandler()
+        .GetGestureManager()
+        .GetPointerIdFromWebGestureEvent(gesture_event);
+  }
+
   // When tests send Tap, LongTap, LongPress, TwoFingerTap directly
   // (e.g. from eventSender) there is no primary_unique_touch_event_id
   // populated.
@@ -599,4 +644,5 @@ PointerId GestureManager::GetPointerIdFromWebGestureEvent(
   NOTREACHED();
   return PointerEventFactory::kInvalidId;
 }
+
 }  // namespace blink

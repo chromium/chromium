@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
 #include "chrome/browser/safe_browsing/chrome_ui_manager_delegate.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
+#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/incident_reporting/incident_reporting_service.h"
 #include "chrome/browser/safe_browsing/services_delegate.h"
 #include "chrome/common/url_constants.h"
@@ -85,11 +86,30 @@ SafeBrowsingUIManager* TestSafeBrowsingService::CreateUIManager() {
   return SafeBrowsingService::CreateUIManager();
 }
 
-void TestSafeBrowsingService::SendSerializedDownloadReport(
-    Profile* profile,
-    const std::string& report) {
-  serialized_download_report_ = report;
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+bool TestSafeBrowsingService::SendDownloadReport(
+    download::DownloadItem* download,
+    ClientSafeBrowsingReportRequest::ReportType report_type,
+    bool did_proceed,
+    absl::optional<bool> show_download_in_folder) {
+  auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
+  report->set_type(report_type);
+  report->set_download_verdict(
+      DownloadProtectionService::GetDownloadProtectionVerdict(download));
+  report->set_url(download->GetURL().spec());
+  report->set_did_proceed(did_proceed);
+  if (show_download_in_folder) {
+    report->set_show_download_in_folder(show_download_in_folder.value());
+  }
+
+  std::string token = DownloadProtectionService::GetDownloadPingToken(download);
+  if (!token.empty()) {
+    report->set_token(token);
+  }
+  report->SerializeToString(&serialized_download_report_);
+  return true;
 }
+#endif
 
 const scoped_refptr<SafeBrowsingDatabaseManager>&
 TestSafeBrowsingService::database_manager() const {
@@ -205,9 +225,11 @@ TestSafeBrowsingUIManager::TestSafeBrowsingUIManager(
           std::move(blocking_page_factory),
           GURL(chrome::kChromeUINewTabURL)) {}
 
-void TestSafeBrowsingUIManager::SendSerializedThreatDetails(
+void TestSafeBrowsingUIManager::SendThreatDetails(
     content::BrowserContext* browser_context,
-    const std::string& serialized) {
+    std::unique_ptr<ClientSafeBrowsingReportRequest> report) {
+  std::string serialized;
+  report->SerializeToString(&serialized);
   details_.push_back(serialized);
 }
 

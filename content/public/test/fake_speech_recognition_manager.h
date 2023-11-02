@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_TEST_FAKE_SPEECH_RECOGNITION_MANAGER_H_
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/speech_recognition_event_listener.h"
 #include "content/public/browser/speech_recognition_manager.h"
 #include "content/public/browser/speech_recognition_session_config.h"
@@ -52,7 +53,7 @@ class FakeSpeechRecognitionManager : public SpeechRecognitionManager,
   void SendFakeResponse(bool end_recognition,
                         base::OnceClosure on_fake_response_sent);
 
-  void SetFakeResult(const std::string& result);
+  void SetFakeResult(const std::string& result, bool is_final);
 
   void SendFakeError(base::OnceClosure on_fake_error_sent);
 
@@ -97,10 +98,11 @@ class FakeSpeechRecognitionManager : public SpeechRecognitionManager,
   void OnFakeErrorSent();
 
   int session_id_;
-  SpeechRecognitionEventListener* listener_;
+  raw_ptr<SpeechRecognitionEventListener> listener_;
   SpeechRecognitionSessionConfig session_config_;
   SpeechRecognitionSessionContext session_ctx_;
   std::string fake_result_;
+  bool is_final_ = true;
   std::string grammar_;
   bool did_cancel_all_ = false;
   bool should_send_fake_response_ = true;
@@ -110,7 +112,7 @@ class FakeSpeechRecognitionManager : public SpeechRecognitionManager,
   base::OnceClosure recognition_ended_closure_;
   base::OnceClosure on_fake_response_sent_closure_;
   base::OnceClosure on_fake_error_sent_closure_;
-  SpeechRecognitionManagerDelegate* delegate_ = nullptr;  // Not owned.
+  raw_ptr<SpeechRecognitionManagerDelegate> delegate_ = nullptr;  // Not owned.
 };
 
 }  // namespace content

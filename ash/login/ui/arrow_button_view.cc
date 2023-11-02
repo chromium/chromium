@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,13 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/color_util.h"
 #include "base/time/time.h"
 #include "cc/paint/paint_flags.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animation_sequence.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/gfx/animation/multi_animation.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
@@ -34,13 +37,26 @@ constexpr const int kBorderForFocusRingDp = 3;
 // How long does a single step of the loading animation take - i.e., the time it
 // takes for the arc to grow from a point to a full circle.
 constexpr base::TimeDelta kLoadingAnimationStepDuration = base::Seconds(2);
+// Size that transform animation will scale view up by.
+constexpr SkScalar kTransformScaleSize = 1.2;
+// How long a single scale up step of the transform animation takes.
+constexpr base::TimeDelta kTransformScaleUpDuration = base::Milliseconds(500);
+// How long a single scale down step of the transform animation takes.
+constexpr base::TimeDelta kTransformScaleDownDuration =
+    base::Milliseconds(1350);
+// Time delay in between scaling up and down in the middle of transform
+// animation cycle.
+constexpr base::TimeDelta kTransformScaleDelayDuration =
+    base::Milliseconds(150);
+// Time delay in between each full cycle of the repeating transform animation.
+constexpr base::TimeDelta kTransformDelayDuration = base::Milliseconds(1000);
 
 void PaintLoadingArc(gfx::Canvas* canvas,
                      const gfx::Rect& bounds,
                      double loading_fraction) {
   gfx::Rect oval = bounds;
   // Inset to make sure the whole arc is inside the visible rect.
-  oval.Inset(/*horizontal=*/1, /*vertical=*/1);
+  oval.Inset(gfx::Insets::VH(/*vertical=*/1, /*horizontal=*/1));
 
   SkPath path;
   path.arcTo(RectToSkRect(oval), /*startAngle=*/-90,
@@ -59,7 +75,7 @@ void PaintLoadingArc(gfx::Canvas* canvas,
 
 ArrowButtonView::ArrowButtonView(PressedCallback callback, int size)
     : LoginButton(std::move(callback)) {
-  SetBorder(views::CreateEmptyBorder(gfx::Insets(kBorderForFocusRingDp)));
+  SetBorder(views::CreateEmptyBorder(kBorderForFocusRingDp));
   SetPreferredSize(gfx::Size(size + 2 * kBorderForFocusRingDp,
                              size + 2 * kBorderForFocusRingDp));
   SetFocusBehavior(FocusBehavior::ALWAYS);
@@ -67,6 +83,8 @@ ArrowButtonView::ArrowButtonView(PressedCallback callback, int size)
   // Layer rendering is needed for animation.
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
+  layer()->GetAnimator()->set_preemption_strategy(
+      ui::LayerAnimator::PreemptionStrategy::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
 
   views::FocusRing::Get(this)->SetPathGenerator(
       std::make_unique<views::FixedSizeCircleHighlightPathGenerator>(
@@ -81,8 +99,12 @@ void ArrowButtonView::PaintButtonContents(gfx::Canvas* canvas) {
   // Draw background.
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive));
+  if (background_color_) {
+    flags.setColor(*background_color_);
+  } else {
+    flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
+        AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive));
+  }
   flags.setStyle(cc::PaintFlags::kFill_Style);
   canvas->DrawCircle(gfx::PointF(rect.CenterPoint()), rect.width() / 2, flags);
 
@@ -97,15 +119,62 @@ void ArrowButtonView::PaintButtonContents(gfx::Canvas* canvas) {
 void ArrowButtonView::OnThemeChanged() {
   LoginButton::OnThemeChanged();
   auto* color_provider = AshColorProvider::Get();
-  const SkColor icon_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonIconColor);
+  SkColor icon_color;
+  if (icon_color_) {
+    icon_color = *icon_color_;
+  } else {
+    icon_color = color_provider->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kButtonIconColor);
+  }
   SetImage(views::Button::STATE_NORMAL,
            gfx::CreateVectorIcon(kLockScreenArrowIcon, kArrowIconSizeDp,
                                  icon_color));
-  SetImage(
-      views::Button::STATE_DISABLED,
-      gfx::CreateVectorIcon(kLockScreenArrowIcon, kArrowIconSizeDp,
-                            AshColorProvider::GetDisabledColor(icon_color)));
+  SetImage(views::Button::STATE_DISABLED,
+           gfx::CreateVectorIcon(kLockScreenArrowIcon, kArrowIconSizeDp,
+                                 ColorUtil::GetDisabledColor(icon_color)));
+}
+
+void ArrowButtonView::RunTransformAnimation() {
+  StopAnimating();
+
+  auto transform_sequence = std::make_unique<ui::LayerAnimationSequence>();
+
+  // Translate by |center_offset| so that the view scales outward from center
+  // point.
+  auto center_offset = gfx::Vector2d(CalculatePreferredSize().width() / 2.0,
+                                     CalculatePreferredSize().height() / 2.0);
+  gfx::Transform transform;
+  transform.Translate(center_offset);
+  // Make view larger.
+  transform.Scale(/*x=*/kTransformScaleSize, /*y=*/kTransformScaleSize);
+  transform.Translate(-center_offset);
+  auto element = ui::LayerAnimationElement::CreateTransformElement(
+      transform, kTransformScaleUpDuration);
+  element->set_tween_type(gfx::Tween::Type::ACCEL_40_DECEL_20);
+  transform_sequence->AddElement(std::move(element));
+
+  element = ui::LayerAnimationElement::CreatePauseElement(
+      0, kTransformScaleDelayDuration);
+  transform_sequence->AddElement(std::move(element));
+
+  // Make view original size again.
+  element = ui::LayerAnimationElement::CreateTransformElement(
+      gfx::Transform(), kTransformScaleDownDuration);
+  element->set_tween_type(gfx::Tween::Type::FAST_OUT_SLOW_IN_3);
+  transform_sequence->AddElement(std::move(element));
+
+  element =
+      ui::LayerAnimationElement::CreatePauseElement(0, kTransformDelayDuration);
+  transform_sequence->AddElement(std::move(element));
+
+  transform_sequence->set_is_repeating(true);
+
+  // Animator takes ownership of transform_sequence.
+  layer()->GetAnimator()->StartAnimation(transform_sequence.release());
+}
+
+void ArrowButtonView::StopAnimating() {
+  layer()->GetAnimator()->StopAnimating();
 }
 
 void ArrowButtonView::EnableLoadingAnimation(bool enabled) {

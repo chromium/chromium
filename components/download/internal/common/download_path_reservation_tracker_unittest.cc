@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,9 +26,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/download/internal/common/android/download_collection_bridge.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using testing::AnyNumber;
 using testing::Return;
@@ -99,7 +99,7 @@ DownloadPathReservationTrackerTest::DownloadPathReservationTrackerTest() =
 void DownloadPathReservationTrackerTest::SetUp() {
   ASSERT_TRUE(test_download_dir_.CreateUniqueTempDir());
   set_default_download_path(test_download_dir_.GetPath());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Initialize the global file name map for testing.
   if (DownloadCollectionBridge::ShouldPublishDownload(
           GetPathInDownloadsDirectory(FILE_PATH_LITERAL("foo.txt")))) {
@@ -215,7 +215,7 @@ void DownloadPathReservationTrackerTest::CreateReservation(
   if (result != PathValidationResult::PATH_NOT_WRITABLE)
     EXPECT_TRUE(IsPathInUse(path));
   EXPECT_EQ(expected_result, result);
-  EXPECT_EQ(expected_reserved_path.value(), reserved_path.value());
+  EXPECT_EQ(expected_reserved_path, reserved_path);
 }
 
 }  // namespace
@@ -280,12 +280,12 @@ TEST_F(DownloadPathReservationTrackerTest, ConflictingFiles) {
   base::FilePath path1(
       GetPathInDownloadsDirectory(FILE_PATH_LITERAL("foo (1).txt")));
   bool use_download_collection = false;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (DownloadCollectionBridge::ShouldPublishDownload(path)) {
     use_download_collection = true;
     DownloadCollectionBridge::AddExistingFileNameForTesting(path.BaseName());
   }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
   if (!use_download_collection) {
     // Create a file at |path|, and a .crdownload file at |path1|.
     ASSERT_EQ(0, base::WriteFile(path, "", 0));
@@ -314,12 +314,12 @@ TEST_F(DownloadPathReservationTrackerTest, ConflictingFiles_Overwrite) {
   base::FilePath path(
       GetPathInDownloadsDirectory(FILE_PATH_LITERAL("foo.txt")));
   bool use_download_collection = false;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (DownloadCollectionBridge::ShouldPublishDownload(path)) {
     use_download_collection = true;
     DownloadCollectionBridge::AddExistingFileNameForTesting(path.BaseName());
   }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
   if (!use_download_collection) {
     // Create a file at |path|.
     ASSERT_EQ(0, base::WriteFile(path, "", 0));
@@ -341,12 +341,12 @@ TEST_F(DownloadPathReservationTrackerTest, ConflictWithSource) {
   base::FilePath path(
       GetPathInDownloadsDirectory(FILE_PATH_LITERAL("foo.txt")));
   bool use_download_collection = false;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (DownloadCollectionBridge::ShouldPublishDownload(path)) {
     use_download_collection = true;
     DownloadCollectionBridge::AddExistingFileNameForTesting(path.BaseName());
   }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
   if (!use_download_collection) {
     ASSERT_EQ(0, base::WriteFile(path, "", 0));
   }
@@ -505,17 +505,24 @@ TEST_F(DownloadPathReservationTrackerTest, UnresolvedConflicts) {
     SetDownloadItemState(item.get(), DownloadItem::COMPLETE);
 }
 
+#if BUILDFLAG(IS_FUCHSIA)
+// TODO(crbug.com/1314073): Re-enable when UnwriteableDirectory works on
+// Fuchsia.
+#define MAYBE_UnwriteableDirectory DISABLED_UnwriteableDirectory
+#else
+#define MAYBE_UnwriteableDirectory UnwriteableDirectory
+#endif
 // If the target directory is unwriteable, then callback should be notified that
 // verification failed.
-TEST_F(DownloadPathReservationTrackerTest, UnwriteableDirectory) {
+TEST_F(DownloadPathReservationTrackerTest, MAYBE_UnwriteableDirectory) {
   std::unique_ptr<MockDownloadItem> item = CreateDownloadItem(1);
   base::FilePath path(
       GetPathInDownloadsDirectory(FILE_PATH_LITERAL("foo.txt")));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // This test is only valid works if download collection is not used.
   if (DownloadCollectionBridge::ShouldPublishDownload(path))
     return;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   base::FilePath dir(path.DirName());
   ASSERT_FALSE(IsPathInUse(path));
 
@@ -549,11 +556,11 @@ TEST_F(DownloadPathReservationTrackerTest, UnwriteableDirectory) {
 TEST_F(DownloadPathReservationTrackerTest, CreateDefaultDownloadPath) {
   base::FilePath path(
       GetPathInDownloadsDirectory(FILE_PATH_LITERAL("foo/foo.txt")));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // This test is only valid works if download collection is not used.
   if (DownloadCollectionBridge::ShouldPublishDownload(path))
     return;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   base::FilePath dir(path.DirName());
   ASSERT_FALSE(base::DirectoryExists(dir));
 
@@ -615,20 +622,20 @@ TEST_F(DownloadPathReservationTrackerTest, UpdatesToTargetPath) {
 
 // Tests for long name truncation. On other platforms automatic truncation
 // is not performed (yet).
-#if defined(OS_WIN) || defined(OS_APPLE) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(DownloadPathReservationTrackerTest, BasicTruncation) {
   int real_max_length =
       base::GetMaximumPathComponentLength(default_download_path());
   ASSERT_NE(-1, real_max_length);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const size_t max_length = real_max_length - strlen(":Zone.Identifier");
 #else
   // TODO(kinaba): the current implementation leaves spaces for appending
   // ".crdownload". So take it into account. Should be removed in the future.
   const size_t max_length = real_max_length - 11;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   std::unique_ptr<MockDownloadItem> item = CreateDownloadItem(1);
   base::FilePath path(GetLongNamePathInDownloadsDirectory(
@@ -655,11 +662,11 @@ TEST_F(DownloadPathReservationTrackerTest, TruncationConflict) {
   int real_max_length =
       base::GetMaximumPathComponentLength(default_download_path());
   ASSERT_NE(-1, real_max_length);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const size_t max_length = real_max_length - strlen(":Zone.Identifier");
 #else
   const size_t max_length = real_max_length - 11;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   std::unique_ptr<MockDownloadItem> item = CreateDownloadItem(1);
   base::FilePath path(GetLongNamePathInDownloadsDirectory(
@@ -694,11 +701,11 @@ TEST_F(DownloadPathReservationTrackerTest, TruncationFail) {
   int real_max_length =
       base::GetMaximumPathComponentLength(default_download_path());
   ASSERT_NE(-1, real_max_length);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const size_t max_length = real_max_length - strlen(":Zone.Identifier");
 #else
   const size_t max_length = real_max_length - 11;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   std::unique_ptr<MockDownloadItem> item = CreateDownloadItem(1);
   base::FilePath path(GetPathInDownloadsDirectory(

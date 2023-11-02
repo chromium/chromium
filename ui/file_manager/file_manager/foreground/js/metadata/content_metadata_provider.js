@@ -1,10 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import {ImageLoaderClient} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/image_loader_client.js';
 import {LoadImageRequest, LoadImageResponseStatus} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 
 import {FileType} from '../../../common/js/file_type.js';
 import {util} from '../../../common/js/util.js';
@@ -50,7 +50,7 @@ export class ContentMetadataProvider extends MetadataProvider {
     this.dispatcher_ = this.createSharedWorker_(opt_messagePort);
     this.dispatcher_.onmessage = this.onMessage_.bind(this);
     this.dispatcher_.onmessageerror = (error) => {
-      console.error('ContentMetadataProvider worker msg error:', error);
+      console.warn('ContentMetadataProvider worker msg error:', error);
     };
     this.dispatcher_.postMessage({verb: 'init'});
     this.dispatcher_.start();
@@ -77,7 +77,7 @@ export class ContentMetadataProvider extends MetadataProvider {
 
     const worker = new SharedWorker(script, options);
     worker.onerror = () => {
-      console.error(
+      console.warn(
           'Error to initialize the ContentMetadataProvider ' +
           'SharedWorker: ' + script);
     };

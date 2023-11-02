@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/find_bar/find_bar_state.h"
 #include "chrome/browser/ui/find_bar/find_bar_state_factory.h"
@@ -33,10 +34,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
-#include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/events/event.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
@@ -81,18 +80,18 @@ class FindBarMatchCountLabel : public views::Label {
   }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
+    node_data->role = ax::mojom::Role::kStatus;
     if (!last_result_) {
       node_data->SetNameExplicitlyEmpty();
     } else if (last_result_->number_of_matches() < 1) {
-      node_data->SetName(
+      node_data->SetNameChecked(
           l10n_util::GetStringUTF16(IDS_ACCESSIBLE_FIND_IN_PAGE_NO_RESULTS));
     } else {
-      node_data->SetName(l10n_util::GetStringFUTF16(
+      node_data->SetNameChecked(l10n_util::GetStringFUTF16(
           IDS_ACCESSIBLE_FIND_IN_PAGE_COUNT,
           base::FormatNumber(last_result_->active_match_ordinal()),
           base::FormatNumber(last_result_->number_of_matches())));
     }
-    node_data->role = ax::mojom::Role::kStatus;
   }
 
   void SetResult(const find_in_page::FindNotificationDetails& result) {
@@ -141,20 +140,20 @@ FindBarView::FindBarView(FindBarHost* host) {
   // that will add up to the right spacing amounts.
 
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
-  const gfx::Insets horizontal_margin(
+  const auto horizontal_margin = gfx::Insets::VH(
       0,
       provider->GetDistanceMetric(DISTANCE_UNRELATED_CONTROL_HORIZONTAL) / 2);
   const gfx::Insets vector_button =
       provider->GetInsetsMetric(views::INSETS_VECTOR_IMAGE_BUTTON);
-  const gfx::Insets vector_button_horizontal_margin(
-      0, horizontal_margin.left() - vector_button.left(), 0,
-      horizontal_margin.right() - vector_button.right());
-  const gfx::Insets toast_control_vertical_margin(
+  const auto vector_button_horizontal_margin =
+      gfx::Insets::TLBR(0, horizontal_margin.left() - vector_button.left(), 0,
+                        horizontal_margin.right() - vector_button.right());
+  const auto toast_control_vertical_margin = gfx::Insets::VH(
       provider->GetDistanceMetric(DISTANCE_TOAST_CONTROL_VERTICAL), 0);
-  const gfx::Insets toast_label_vertical_margin(
+  const auto toast_label_vertical_margin = gfx::Insets::VH(
       provider->GetDistanceMetric(DISTANCE_TOAST_LABEL_VERTICAL), 0);
-  const gfx::Insets image_button_margins(toast_control_vertical_margin +
-                                         vector_button_horizontal_margin);
+  const auto image_button_margins =
+      toast_control_vertical_margin + vector_button_horizontal_margin;
 
   views::Builder<FindBarView>(this)
       .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
@@ -184,6 +183,7 @@ FindBarView::FindBarView(FindBarHost* host) {
           views::Builder<views::Separator>()
               .CopyAddressTo(&separator_)
               .SetCanProcessEventsWithinSubtree(false)
+              .SetColorId(kColorFindBarSeparator)
               .SetProperty(views::kMarginsKey,
                            gfx::Insets(toast_control_vertical_margin +
                                        horizontal_margin)),
@@ -335,8 +335,8 @@ gfx::Size FindBarView::CalculatePreferredSize() const {
 
 void FindBarView::FocusAndSelectAll() {
   find_text_->RequestFocus();
-#if !defined(OS_WIN)
-  GetWidget()->GetInputMethod()->ShowVirtualKeyboardIfEnabled();
+#if !BUILDFLAG(IS_WIN)
+  GetWidget()->GetInputMethod()->SetVirtualKeyboardVisibilityIfEnabled(true);
 #endif
   if (!find_text_->GetText().empty())
     find_text_->SelectAll(true);
@@ -441,12 +441,9 @@ void FindBarView::UpdateMatchCountAppearance(bool no_match) {
 
 void FindBarView::OnThemeChanged() {
   views::View::OnThemeChanged();
-  const ui::ColorProvider* color_provider = GetColorProvider();
-  SkColor bg_color = SkColorSetA(
-      color_provider->GetColor(ui::kColorTextfieldBackground), 0xFF);
   auto border = std::make_unique<views::BubbleBorder>(
       views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW,
-      bg_color);
+      kColorFindBarBackground);
 
   border->SetCornerRadius(views::LayoutProvider::Get()->GetCornerRadiusMetric(
       views::Emphasis::kMedium));
@@ -454,21 +451,24 @@ void FindBarView::OnThemeChanged() {
   SetBackground(std::make_unique<views::BubbleBackground>(border.get()));
   SetBorder(std::move(border));
 
-  const SkColor base_foreground_color =
-      color_provider->GetColor(ui::kColorTextfieldForeground);
-
-  match_count_text_->SetBackgroundColor(bg_color);
+  const ui::ColorProvider* color_provider = GetColorProvider();
+  match_count_text_->SetBackgroundColor(
+      color_provider->GetColor(kColorFindBarBackground));
   match_count_text_->SetEnabledColor(
-      SkColorSetA(base_foreground_color, gfx::kGoogleGreyAlpha700));
-  separator_->SetColor(
-      SkColorSetA(base_foreground_color, gfx::kGoogleGreyAlpha300));
+      color_provider->GetColor(kColorFindBarMatchCount));
 
-  views::SetImageFromVectorIcon(
-      find_previous_button_, vector_icons::kCaretUpIcon, base_foreground_color);
-  views::SetImageFromVectorIcon(find_next_button_, vector_icons::kCaretDownIcon,
-                                base_foreground_color);
-  views::SetImageFromVectorIcon(close_button_, vector_icons::kCloseRoundedIcon,
-                                base_foreground_color);
+  const SkColor fg_color = color_provider->GetColor(kColorFindBarButtonIcon);
+  const SkColor fg_disabled_color =
+      color_provider->GetColor(kColorFindBarButtonIconDisabled);
+  views::SetImageFromVectorIconWithColor(find_previous_button_,
+                                         vector_icons::kCaretUpIcon, fg_color,
+                                         fg_disabled_color);
+  views::SetImageFromVectorIconWithColor(find_next_button_,
+                                         vector_icons::kCaretDownIcon, fg_color,
+                                         fg_disabled_color);
+  views::SetImageFromVectorIconWithColor(close_button_,
+                                         vector_icons::kCloseRoundedIcon,
+                                         fg_color, fg_disabled_color);
 }
 
 BEGIN_METADATA(FindBarView, views::View)

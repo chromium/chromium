@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/shelf/shelf_observer.h"
 #include "ash/shell_observer.h"
 #include "ui/compositor/throughput_tracker.h"
@@ -32,6 +33,7 @@ class Shelf;
 class ASH_EXPORT AshMessagePopupCollection
     : public message_center::MessagePopupCollection,
       public ShelfObserver,
+      public TabletModeObserver,
       public display::DisplayObserver,
       public views::WidgetObserver,
       public message_center::MessageView::Observer {
@@ -75,6 +77,10 @@ class ASH_EXPORT AshMessagePopupCollection
   void AnimationFinished() override;
   message_center::MessagePopupView* CreatePopup(
       const message_center::Notification& notification) override;
+
+  // TabletModeObserver:
+  void OnTabletModeStarted() override;
+  void OnTabletModeEnded() override;
 
   // Returns the current tray bubble height or 0 if there is no bubble.
   int tray_bubble_height_for_test() const { return tray_bubble_height_; }

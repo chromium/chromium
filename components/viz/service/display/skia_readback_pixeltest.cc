@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,18 +17,21 @@
 #include "cc/test/pixel_test.h"
 #include "cc/test/pixel_test_utils.h"
 #include "cc/test/resource_provider_test_utils.h"
+#include "components/viz/common/frame_sinks/blit_request.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/frame_sinks/copy_output_util.h"
+#include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/service/display_embedder/skia_output_surface_impl.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
+#include "components/viz/test/buildflags.h"
 #include "components/viz/test/gl_scaler_test_util.h"
 #include "components/viz/test/paths.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
-#include "gpu/command_buffer/service/shared_image_manager.h"
-#include "gpu/command_buffer/service/shared_image_representation.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/khronos/GLES2/gl2ext.h"
@@ -42,6 +45,14 @@
 
 namespace viz {
 namespace {
+
+constexpr float kAvgAbsoluteErrorLimit = 8.f;
+constexpr int kMaxAbsoluteErrorLimit = 32;
+
+cc::FuzzyPixelComparator GetDefaultFuzzyPixelComparator() {
+  return cc::FuzzyPixelComparator(false, 100.f, 0.f, kAvgAbsoluteErrorLimit,
+                                  kMaxAbsoluteErrorLimit, 0);
+}
 
 base::FilePath GetTestFilePath(const base::FilePath::CharType* basename) {
   base::FilePath test_dir;
@@ -98,7 +109,7 @@ void ReadbackTextureOnGpuThread(gpu::SharedImageManager* shared_image_manager,
   std::vector<GrBackendSemaphore> end_semaphores;
 
   auto scoped_write = representation->BeginScopedWriteAccess(
-      /*final_msaa_count=*/0, surface_props, &begin_semaphores, &end_semaphores,
+      /*final_msaa_count=*/1, surface_props, &begin_semaphores, &end_semaphores,
       gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);
 
   auto* surface = scoped_write->surface();
@@ -145,14 +156,17 @@ void ReadbackNV12Planes(TestGpuServiceHolder* gpu_service_holder,
                         SkBitmap& out_chroma_planes) {
   base::WaitableEvent wait;
 
-  gpu_service_holder->ScheduleGpuTask(base::BindLambdaForTesting(
+  // Some shared image implementations don't allow concurrent read/write to
+  // a same image. At this point, compositor GPU thread might be reading the
+  // image so it's better we issue the readback on the compositor GPU thread to
+  // avoid contention.
+  gpu_service_holder->ScheduleCompositorGpuTask(base::BindLambdaForTesting(
       [&out_luma_plane, &out_chroma_planes, &result, &wait, &texture_size]() {
         auto* shared_image_manager = TestGpuServiceHolder::GetInstance()
                                          ->gpu_service()
                                          ->shared_image_manager();
         auto* context_state = TestGpuServiceHolder::GetInstance()
-                                  ->gpu_service()
-                                  ->GetContextState()
+                                  ->GetCompositorGpuThreadSharedContextState()
                                   .get();
 
         ReadbackTextureOnGpuThread(shared_image_manager, context_state,
@@ -296,7 +310,6 @@ class SkiaReadbackPixelTest : public cc::PixelTest {
       SurfaceDamageRectList surface_damage_rect_list;
       pass_list.push_back(std::move(pass));
 
-      renderer_->DecideRenderPassAllocationsForFrame(pass_list);
       renderer_->DrawFrame(
           &pass_list, 1.0f, gfx::Size(bitmap.width(), bitmap.height()),
           gfx::DisplayColorSpaces(), std::move(surface_damage_rect_list));
@@ -353,13 +366,12 @@ class SkiaReadbackPixelTest : public cc::PixelTest {
     DCHECK(sii);
     gpu::Mailbox mailbox = sii->CreateSharedImage(
         format, size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
-        kPremul_SkAlphaType, gpu::SHARED_IMAGE_USAGE_DISPLAY, pixels);
+        kPremul_SkAlphaType, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, pixels);
     gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
 
-    TransferableResource gl_resource = TransferableResource::MakeGL(
-        mailbox, GL_LINEAR, GL_TEXTURE_2D, sync_token, size,
+    TransferableResource gl_resource = TransferableResource::MakeGpu(
+        mailbox, GL_LINEAR, GL_TEXTURE_2D, sync_token, size, format,
         /*is_overlay_candidate=*/false);
-    gl_resource.format = format;
     auto release_callback =
         base::BindOnce(&DeleteSharedImage, child_context_provider_, mailbox);
     return child_resource_provider_->ImportResource(
@@ -392,9 +404,7 @@ class SkiaReadbackPixelTestRGBA : public SkiaReadbackPixelTest,
   }
 };
 
-// Test that SkiaRenderer readback works correctly. This test will use the
-// default readback implementation for the platform, which is either the legacy
-// GLRendererCopier or the new Skia readback API.
+// Test that SkiaRenderer RGBA readback works correctly.
 TEST_P(SkiaReadbackPixelTestRGBA, ExecutesCopyRequest) {
   // Generates a RenderPass which contains one quad that spans the full output.
   // The quad has our source image, so the framebuffer should contain the source
@@ -459,9 +469,7 @@ class SkiaReadbackPixelTestNV12
   }
 };
 
-// Test that SkiaRenderer readback works correctly. This test will use the
-// default readback implementation for the platform, which is either the legacy
-// GLRendererCopier or the new Skia readback API.
+// Test that SkiaRenderer NV12 readback works correctly.
 TEST_P(SkiaReadbackPixelTestNV12, ExecutesCopyRequest) {
   // Generates a RenderPass which contains one quad that spans the full output.
   // The quad has our source image, so the framebuffer should contain the source
@@ -541,18 +549,11 @@ TEST_P(SkiaReadbackPixelTestNV12, ExecutesCopyRequest) {
       GLScalerTestUtil::CopyAndConvertToRGBA(GetExpectedOutputBitmap());
   GLScalerTestUtil::ConvertRGBABitmapToYUV(&expected);
 
-  constexpr float kAvgAbsoluteErrorLimit = 16.f;
-  constexpr int kMaxAbsoluteErrorLimit = 128;
-  if (!cc::MatchesBitmap(
-          actual, expected,
-          cc::FuzzyPixelComparator(false, 100.f, 0.f, kAvgAbsoluteErrorLimit,
-                                   kMaxAbsoluteErrorLimit, 0))) {
-    ADD_FAILURE();
-    return;
-  }
+  EXPECT_TRUE(
+      cc::MatchesBitmap(actual, expected, GetDefaultFuzzyPixelComparator()));
 }
 
-#if !defined(OS_ANDROID) || !defined(ARCH_CPU_X86_FAMILY)
+#if !BUILDFLAG(IS_ANDROID_EMULATOR)
 INSTANTIATE_TEST_SUITE_P(
     ,
     SkiaReadbackPixelTestNV12,
@@ -571,7 +572,8 @@ GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(SkiaReadbackPixelTestNV12);
 
 class SkiaReadbackPixelTestNV12WithBlit
     : public SkiaReadbackPixelTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<
+          std::tuple<bool, LetterboxingBehavior, bool>> {
  public:
   CopyOutputResult::Destination RequestDestination() const {
     return CopyOutputResult::Destination::kNativeTextures;
@@ -582,13 +584,20 @@ class SkiaReadbackPixelTestNV12WithBlit
   }
 
   void SetUp() override {
-    SkiaReadbackPixelTest::SetUpReadbackPixeltest(GetParam());
+    SkiaReadbackPixelTest::SetUpReadbackPixeltest(std::get<0>(GetParam()));
   }
+
+  LetterboxingBehavior GetLetterboxingBehavior() const {
+    return std::get<1>(GetParam());
+  }
+
+  // Test parameter that will return `true` if we'll claim that the textures we
+  // create come from GpuMemoryBuffer, `false` otherwise. This exercises a
+  // different code path in SkiaRenderer.
+  bool populates_gpu_memory_buffer() const { return std::get<2>(GetParam()); }
 };
 
-// Test that SkiaRenderer readback works correctly. This test will use the
-// default readback implementation for the platform, which is either the legacy
-// GLRendererCopier or the new Skia readback API.
+// Test that SkiaRenderer NV12 readback works correctly using existing textures.
 TEST_P(SkiaReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
   const gfx::Rect result_selection = GetRequestArea();
 
@@ -624,14 +633,13 @@ TEST_P(SkiaReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
       << " The test case expects the blit region's origin to be even for NV12 "
          "blit requests";
 
-  const SkColor rgba_red = SkColorSetARGB(0xff, 0xff, 0, 0);
-  const SkColor yuv_red = GLScalerTestUtil::ConvertRGBAColorToYUV(rgba_red);
+  const SkColor4f yuv_red = {0.245331, 0.399356, 0.939216, 1.0};
 
   const std::vector<uint8_t> luma_pattern = {
-      static_cast<uint8_t>(SkColorGetR(yuv_red))};
+      static_cast<uint8_t>(yuv_red.fR * 255.0f)};
   const std::vector<uint8_t> chromas_pattern = {
-      static_cast<uint8_t>(SkColorGetG(yuv_red)),
-      static_cast<uint8_t>(SkColorGetB(yuv_red))};
+      static_cast<uint8_t>(yuv_red.fG * 255.0f),
+      static_cast<uint8_t>(yuv_red.fB * 255.0f)};
 
   std::array<gpu::MailboxHolder, CopyOutputResult::kMaxPlanes> mailboxes;
   for (size_t i = 0; i < CopyOutputResult::kNV12MaxPlanes; ++i) {
@@ -652,7 +660,7 @@ TEST_P(SkiaReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
         child_context_provider_->SharedImageInterface()->CreateSharedImage(
             resource_format, plane_size, gfx::ColorSpace::CreateREC709(),
             kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-            gpu::SHARED_IMAGE_USAGE_DISPLAY, pixels);
+            gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, pixels);
     DCHECK(!mailboxes[i].mailbox.IsZero());
   }
 
@@ -668,8 +676,9 @@ TEST_P(SkiaReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
 
         request.set_result_selection(result_selection);
 
-        request.set_blit_request(
-            BlitRequest(destination_subregion.origin(), mailboxes));
+        request.set_blit_request(BlitRequest(
+            destination_subregion.origin(), GetLetterboxingBehavior(),
+            mailboxes, populates_gpu_memory_buffer()));
       }));
 
   // Check that a result was produced and is of the expected rect/size.
@@ -715,7 +724,18 @@ TEST_P(SkiaReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
   // The textures that we passed in to BlitRequest contained NV12 plane data for
   // an all-red image, let's re-create such a bitmap:
   SkBitmap expected = GLScalerTestUtil::AllocateRGBABitmap(source_size);
-  expected.eraseColor(rgba_red);
+
+  if (GetLetterboxingBehavior() == LetterboxingBehavior::kLetterbox) {
+    // We have requested the results to be letterboxed, so everything that
+    // CopyOutputRequest is not populating w/ render pass contents should be
+    // black:
+    expected.eraseColor(SK_ColorBLACK);
+  } else {
+    // We have requested the results to not be letterboxed, so everything that
+    // CopyOutputRequest is not populating w/ render pass will have original
+    // contents (red in our case):
+    expected.eraseColor(SK_ColorRED);
+  }
 
   // Blit request should "stitch" the pixels from the source image into a
   // sub-region of caller-provided texture - let's write our expected pixels
@@ -726,22 +746,20 @@ TEST_P(SkiaReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
   // Now let's convert it to YUV so we can compare with the result:
   GLScalerTestUtil::ConvertRGBABitmapToYUV(&expected);
 
-  constexpr float kAvgAbsoluteErrorLimit = 16.f;
-  constexpr int kMaxAbsoluteErrorLimit = 128;
-  if (!cc::MatchesBitmap(
-          actual, expected,
-          cc::FuzzyPixelComparator(false, 100.f, 0.f, kAvgAbsoluteErrorLimit,
-                                   kMaxAbsoluteErrorLimit, 0))) {
-    ADD_FAILURE();
-    return;
-  }
+  EXPECT_TRUE(
+      cc::MatchesBitmap(actual, expected, GetDefaultFuzzyPixelComparator()));
 }
 
-#if !defined(OS_ANDROID) || !defined(ARCH_CPU_X86_FAMILY)
-INSTANTIATE_TEST_SUITE_P(,
-                         SkiaReadbackPixelTestNV12WithBlit,
-                         // Result scaling: Scale by half?
-                         testing::Values(true, false));
+#if !BUILDFLAG(IS_ANDROID_EMULATOR)
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SkiaReadbackPixelTestNV12WithBlit,
+    testing::Combine(
+        testing::Bool(),  // Result scaling: Scale by half?
+        testing::Values(LetterboxingBehavior::kDoNotLetterbox,
+                        LetterboxingBehavior::kLetterbox),
+        testing::Bool()  // Should behave as if COR is populating a GMB?
+        ));
 #else
 // Don't instantiate the NV12 tests when run on Android emulator, they won't
 // work since the SkiaRenderer currently does not support CopyOutputRequests

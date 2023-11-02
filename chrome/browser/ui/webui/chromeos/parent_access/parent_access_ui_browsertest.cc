@@ -1,13 +1,15 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <map>
 #include <string>
 
+#include "base/functional/callback_helpers.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_browsertest_base.h"
+#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_dialog.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/google/core/common/google_util.h"
@@ -21,10 +23,18 @@ using ParentAccessUIBrowserTest = ParentAccessChildUserBrowserTestBase;
 
 // Test cases for ParentAccessUI class
 IN_PROC_BROWSER_TEST_F(ParentAccessUIBrowserTest, URLParameters) {
-  // Open the Parent Access WebUI URL.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(chrome::kChromeUIParentAccessURL)));
-  EXPECT_TRUE(content::WaitForLoadStop(contents()));
+  // Show the parent access dialog.
+  ParentAccessDialogProvider provider;
+  ParentAccessDialogProvider::ShowError error = provider.Show(
+      parent_access_ui::mojom::ParentAccessParams::New(
+          parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess,
+          parent_access_ui::mojom::FlowTypeParams::NewWebApprovalsParams(
+              parent_access_ui::mojom::WebApprovalsParams::New())),
+      base::DoNothing());
+
+  // Verify dialog is showing.
+  ASSERT_EQ(error, ParentAccessDialogProvider::ShowError::kNone);
+  EXPECT_TRUE(content::WaitForLoadStop(GetContents()));
 
   GURL webview_url = GetParentAccessUI()->GetWebContentURLForTesting();
   ASSERT_TRUE(webview_url.has_query());

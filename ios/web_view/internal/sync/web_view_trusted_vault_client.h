@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,6 +35,7 @@ class WebViewTrustedVaultClient : public syncer::TrustedVaultClient {
                                 const std::vector<uint8_t>& public_key,
                                 int method_type_hint,
                                 base::OnceClosure callback) override;
+  void ClearDataForAccount(const CoreAccountInfo& account_info) override;
 
   // Not copyable or movable
   WebViewTrustedVaultClient(const WebViewTrustedVaultClient&) = delete;

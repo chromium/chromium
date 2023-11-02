@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_SYSTEM_TRAY_TRAY_CONTAINER_H_
 #define ASH_SYSTEM_TRAY_TRAY_CONTAINER_H_
 
+#include "ash/system/tray/tray_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
@@ -15,12 +16,13 @@ class Border;
 
 namespace ash {
 class Shelf;
+class TrayBackgroundView;
 
 // Base class for tray containers. Sets the border and layout. The container
 // auto-resizes the widget when necessary.
 class TrayContainer : public views::View {
  public:
-  explicit TrayContainer(Shelf* shelf);
+  TrayContainer(Shelf* shelf, TrayBackgroundView* tray_background_view);
 
   TrayContainer(const TrayContainer&) = delete;
   TrayContainer& operator=(const TrayContainer&) = delete;
@@ -35,9 +37,11 @@ class TrayContainer : public views::View {
   void UpdateLayout();
 
   void SetMargin(int main_axis_margin, int cross_axis_margin);
+  void SetSpacingBetweenChildren(int space_dip);
 
  protected:
   // views::View:
+  void OnPaint(gfx::Canvas* canvas) override;
   void ChildPreferredSizeChanged(views::View* child) override;
   void ChildVisibilityChanged(View* child) override;
   void ViewHierarchyChanged(
@@ -52,6 +56,7 @@ class TrayContainer : public views::View {
     gfx::Rect anchor_bounds_in_screen;
     int main_axis_margin = 0;
     int cross_axis_margin = 0;
+    int spacing_between_children = 0;
 
     bool operator==(const LayoutInputs& other) const {
       return shelf_alignment_is_horizontal ==
@@ -60,12 +65,16 @@ class TrayContainer : public views::View {
                  other.status_area_hit_region_padding &&
              anchor_bounds_in_screen == other.anchor_bounds_in_screen &&
              main_axis_margin == other.main_axis_margin &&
-             cross_axis_margin == other.cross_axis_margin;
+             cross_axis_margin == other.cross_axis_margin &&
+             spacing_between_children == other.spacing_between_children;
     }
   };
 
   // Collects the inputs for layout.
   LayoutInputs GetLayoutInputs() const;
+
+  // views::View:
+  void OnThemeChanged() override;
 
   // The set of inputs that impact this widget's layout. The assumption is that
   // this widget needs a relayout if, and only if, one or more of these has
@@ -81,9 +90,11 @@ class TrayContainer : public views::View {
   std::unique_ptr<views::BoxLayout> layout_manager_;
 
   Shelf* const shelf_;
+  TrayBackgroundView* const tray_background_view_;
 
   int main_axis_margin_ = 0;
   int cross_axis_margin_ = 0;
+  int spacing_between_children_ = kUnifiedTraySpacingBetweenIcons;
 };
 
 }  // namespace ash

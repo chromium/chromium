@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -35,9 +35,6 @@ config("internal_config") {
     "BORINGSSL_NO_STATIC_INITIALIZER",
     "OPENSSL_SMALL",
   ]
-  if (is_posix || is_fuchsia) {
-    defines += [ "_XOPEN_SOURCE=700" ]
-  }
 }
 
 config("no_asm_config") {
@@ -71,16 +68,16 @@ if (is_win && !is_msan && current_cpu != "arm64") {
     if (is_msan) {
       public_configs = [ ":no_asm_config" ]
     } else if (current_cpu == "x64") {
-      if (is_mac) {
-        sources += crypto_sources_mac_x86_64
+      if (is_apple) {
+        sources += crypto_sources_apple_x86_64
       } else if (is_linux || is_chromeos || is_android) {
         sources += crypto_sources_linux_x86_64
       } else {
         public_configs = [ ":no_asm_config" ]
       }
     } else if (current_cpu == "x86") {
-      if (is_mac) {
-        sources += crypto_sources_mac_x86
+      if (is_apple) {
+        sources += crypto_sources_apple_x86
       } else if (is_linux || is_chromeos || is_android) {
         sources += crypto_sources_linux_x86
       } else {
@@ -89,8 +86,8 @@ if (is_win && !is_msan && current_cpu != "arm64") {
     } else if (current_cpu == "arm") {
       if (is_linux || is_chromeos || is_android) {
         sources += crypto_sources_linux_arm
-      } else if (is_ios) {
-        sources += crypto_sources_ios_arm
+      } else if (is_apple) {
+        sources += crypto_sources_apple_arm
       } else {
         public_configs = [ ":no_asm_config" ]
       }
@@ -98,9 +95,7 @@ if (is_win && !is_msan && current_cpu != "arm64") {
       if (is_linux || is_chromeos || is_android) {
         sources += crypto_sources_linux_aarch64
       } else if (is_apple) {
-        # TODO(davidben): Rename all the file lists, etc., upstream from mac
-        # and ios to apple.
-        sources += crypto_sources_ios_aarch64
+        sources += crypto_sources_apple_aarch64
       } else if (is_win) {
         sources += crypto_sources_win_aarch64
       } else {
@@ -136,6 +131,13 @@ component("boringssl") {
   if (!is_debug && !optimize_for_size) {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]
+  }
+
+  if (is_linux && is_component_build) {
+    version_script = "boringssl.map"
+    inputs = [ version_script ]
+    ldflags = [ "-Wl,--version-script=" +
+                rebase_path(version_script, root_build_dir) ]
   }
 }
 
@@ -181,7 +183,7 @@ if (build_with_chromium) {
 
     if (is_fuchsia) {
       additional_manifest_fragments =
-          [ "//build/config/fuchsia/test/network_capabilities.test-cmx" ]
+          [ "//build/config/fuchsia/test/network.shard.test-cml" ]
     }
   }
 

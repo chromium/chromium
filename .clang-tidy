@@ -1,6 +1,9 @@
 ---
+  # TODO(crbug.com/1282228): reenable google-readability-casting once it no
+  # longer has as many false-positives.
   Checks:          '-*,
                     bugprone-argument-comment,
+                    bugprone-assert-side-effect,
                     bugprone-dangling-handle,
                     bugprone-inaccurate-erase,
                     bugprone-string-constructor,
@@ -9,8 +12,8 @@
                     bugprone-use-after-move,
                     google-build-explicit-make-pair,
                     google-explicit-constructor,
-                    google-readability-casting,
                     modernize-avoid-bind,
+                    modernize-concat-nested-namespaces,
                     modernize-loop-convert,
                     modernize-make-shared,
                     modernize-make-unique,
@@ -28,11 +31,17 @@
                     modernize-use-transparent-functors,
                     readability-redundant-member-init'
   CheckOptions:
+    - key:          bugprone-assert-side-effect.AssertMacros
+      value:        assert,DCHECK
     - key:          bugprone-dangling-handle.HandleClasses
       value:        ::std::basic_string_view;::std::span;::absl::string_view;::base::BasicStringPiece;::base::span
     - key:          bugprone-string-constructor.StringNames
-      value:        ::std::basic_string;::std::basic_string_view;::base::BasicStringPiece
+      value:        ::std::basic_string;::std::basic_string_view;::base::BasicStringPiece;::absl::string_view
     - key:          modernize-use-default-member-init.UseAssignment
+      value:        1
+    # crbug.com/1342136, crbug.com/1343915: At times, this check makes
+    # suggestions that break builds. Safe mode allows us to sidestep that.
+    - key:          modernize-use-transparent-functors.SafeMode
       value:        1
     # This relaxes modernize-use-emplace in some cases; we might want to make it
     # more aggressive in the future. See discussion on

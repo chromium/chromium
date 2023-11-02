@@ -1,0 +1,112 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/node/node.gni")
+
+declare_args() {
+  # A global setting to disable script optimization and minification. This
+  # is intended to be used to make debugging the injected JavaScript easier.
+  minify_scripts = true
+}
+
+# Defines a target that bundles one or more JavaScript input files, optionally
+# minimizes it, then copies it to the application resources directory.
+#
+# Variables
+#   primary_script:
+#     The primary JavaScript file.
+#
+#   sources:
+#     The full list of source scripts including |primary_script| and others
+#     referenced from within |primary_script|. Listing all these files here
+#     ensures this target is rebuilt if any of the files are changed.
+#
+#   output_name (optional):
+#     The name of the exported value or namespace. For more details, see
+#     https://rollupjs.org/guide/en/#outputname
+#
+#   deps (optional):
+#     The dependent targets which produce typescript compiler manifest files.
+#     These manifest files will be used to resolve script imports.
+
+template("optimize_js") {
+  assert(defined(invoker.sources), "sources must be set")
+  assert(defined(invoker.primary_script), "primary_script must be set")
+
+  _primary_script_found_in_sources = false
+  foreach(_source, invoker.sources) {
+    assert(get_path_info(_source, "extension") == "js",
+           "all sources must be .js files")
+    if (_source == invoker.primary_script) {
+      _primary_script_found_in_sources = true
+    }
+  }
+  assert(_primary_script_found_in_sources,
+         "primary_script must be listed in sources")
+
+  optimize_target_name = target_name + "_optimize"
+  _target_name = target_name
+  node(optimize_target_name) {
+    visibility = [ ":$_target_name" ]
+
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "sources",
+                             "testonly",
+                           ])
+
+    script = "//ios/web/public/js_messaging/optimize_js.py"
+
+    inputs =
+        [ "//ios/web/public/js_messaging/rollup_plugin_src_path_resolver.js" ]
+
+    output_js_file_name = get_path_info(invoker.primary_script, "file")
+    output_js_file = "$target_gen_dir/" + output_js_file_name
+
+    outputs = [ output_js_file ]
+
+    args = [
+      "--primary-script",
+      rebase_path(invoker.primary_script, root_build_dir),
+      "--js-out-file",
+      rebase_path(output_js_file, root_build_dir),
+    ]
+
+    if (!minify_scripts) {
+      args += [ "--skip-minification" ]
+    }
+
+    if (defined(invoker.output_name)) {
+      args += [
+        "--output-name",
+        invoker.output_name,
+      ]
+    }
+
+    if (defined(invoker.deps)) {
+      args += [ "--path-mapping-manifests" ]
+      foreach(_dep, invoker.deps) {
+        _dep_gen_dir =
+            rebase_path(get_label_info(_dep, "target_gen_dir"), root_build_dir)
+        name = get_label_info(_dep, "name")
+        args += [ "$_dep_gen_dir/$name.manifest" ]
+      }
+    }
+  }
+
+  # copy the output file to the bundle data
+  bundle_data(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "testonly",
+                             "visibility",
+                           ])
+
+    public_deps = [ ":$optimize_target_name" ]
+
+    sources = get_target_outputs(":$optimize_target_name")
+    outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+  }
+}

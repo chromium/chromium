@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -17,16 +17,24 @@ static_library("minidump_uploader") {
   deps = [
     ":minidump_uploader_jni_headers",
     "//base",
+    "//components/crash/android:anr_skipped_reason",
+    "//components/version_info",
+    "//components/version_info/android:channel_getter",
     "//third_party/crashpad/crashpad/client",
     "//third_party/crashpad/crashpad/handler",
     "//third_party/crashpad/crashpad/snapshot",
     "//third_party/crashpad/crashpad/util",
+    "//third_party/crashpad/crashpad/util:net",
   ]
 }
 
 android_library("minidump_uploader_java") {
   deps = [
     "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
+    "//components/crash/android:anr_collector_java",
+    "//net/android:net_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 
@@ -67,13 +75,13 @@ android_library("minidump_uploader_java_test_support") {
   ]
 }
 
-android_library("minidump_uploader_javatests") {
-  testonly = true
+robolectric_library("minidump_uploader_javatests") {
   deps = [
     ":minidump_uploader_java",
     ":minidump_uploader_java_test_support",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base:base_junit_test_support",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",

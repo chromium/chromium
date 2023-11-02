@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -145,7 +145,7 @@ static NSDictionary<NSString*, NSNumber*>* const kOfflineReasonL10nId = @{
     [[_labelView bottomAnchor]
         constraintEqualToAnchor:safeAreaLayoutGuide.bottomAnchor],
 
-    // Put titleLable and statusLable symmetrically around centerY.
+    // Put titleLabel and statusLabel symmetrically around centerY.
     [[_titleLabel leadingAnchor]
         constraintEqualToAnchor:[_labelView leadingAnchor]],
     [[_titleLabel trailingAnchor]

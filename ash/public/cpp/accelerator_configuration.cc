@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,8 @@
 
 namespace ash {
 
-AcceleratorConfiguration::AcceleratorConfiguration(AcceleratorSource source)
+AcceleratorConfiguration::AcceleratorConfiguration(
+    ash::mojom::AcceleratorSource source)
     : source_(source) {}
 
 AcceleratorConfiguration::~AcceleratorConfiguration() = default;
@@ -16,22 +17,35 @@ AcceleratorConfiguration::~AcceleratorConfiguration() = default;
 void AcceleratorConfiguration::AddAcceleratorsUpdatedCallback(
     AcceleratorsUpdatedCallback callback) {
   callbacks_.push_back(callback);
+
+  // If there is a stored cache, notify event immediately.
+  if (!accelerator_mapping_cache_.empty()) {
+    NotifyAcceleratorsUpdated();
+  }
 }
 
 void AcceleratorConfiguration::RemoveAcceleratorsUpdatedCallback(
     AcceleratorsUpdatedCallback callback) {
-  const auto it = base::ranges::find_if(
-      callbacks_, [callback](const auto& o) { return o == callback; });
+  const auto it = base::ranges::find(callbacks_, callback);
   if (it == callbacks_.end())
     return;
 
   callbacks_.erase(it);
 }
 
-void AcceleratorConfiguration::NotifyAcceleratorsUpdated(
-    const std::multimap<AcceleratorAction, AcceleratorInfo>& accelerators) {
+void AcceleratorConfiguration::UpdateAccelerators(
+    const std::map<AcceleratorActionId, std::vector<AcceleratorInfo>>&
+        accelerators) {
+  // Update local cache everything an observable event is fired.
+  accelerator_mapping_cache_ = accelerators;
+
+  NotifyAcceleratorsUpdated();
+}
+
+void AcceleratorConfiguration::NotifyAcceleratorsUpdated() {
   for (auto& cb : callbacks_) {
-    cb.Run(source_, accelerators);
+    cb.Run(source_, accelerator_mapping_cache_);
   }
 }
+
 }  // namespace ash

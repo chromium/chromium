@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,9 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/bluetooth_scanning_prompt.h"
 
 namespace content {
@@ -18,14 +19,14 @@ class RenderFrameHost;
 class WebBluetoothServiceImpl;
 
 // Class that interacts with a prompt.
-class CONTENT_EXPORT BluetoothDeviceScanningPromptController final {
+class BluetoothDeviceScanningPromptController final {
  public:
   // |web_bluetooth_service_| service that owns this class.
   // |render_frame_host| should be the RenderFrameHost that owns the
   // |web_bluetooth_service_|.
   BluetoothDeviceScanningPromptController(
       WebBluetoothServiceImpl* web_bluetooth_service,
-      RenderFrameHost* render_frame_host);
+      RenderFrameHost& render_frame_host);
   ~BluetoothDeviceScanningPromptController();
 
   void ShowPermissionPrompt();
@@ -40,9 +41,9 @@ class CONTENT_EXPORT BluetoothDeviceScanningPromptController final {
 
  private:
   // The WebBluetoothServiceImpl that owns this instance.
-  WebBluetoothServiceImpl* const web_bluetooth_service_;
+  const raw_ptr<WebBluetoothServiceImpl> web_bluetooth_service_;
   // The RenderFrameHost that owns |web_bluetooth_service_|.
-  RenderFrameHost* const render_frame_host_;
+  const raw_ref<RenderFrameHost> render_frame_host_;
 
   // The currently opened BluetoothScanningPrompt.
   std::unique_ptr<BluetoothScanningPrompt> prompt_;

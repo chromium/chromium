@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 
 #include "base/feature_list.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/assist_ranker/proto/ranker_model.pb.h"
@@ -42,8 +41,8 @@ class TranslateRankerImplTest : public ::testing::Test {
   TranslateRankerImplTest& operator=(const TranslateRankerImplTest&) = delete;
 
   // Initializes the explicitly |enabled| and |disabled| features for this test.
-  void InitFeatures(const std::initializer_list<base::Feature>& enabled,
-                    const std::initializer_list<base::Feature>& disabled);
+  void InitFeatures(const std::vector<base::test::FeatureRef>& enabled,
+                    const std::vector<base::test::FeatureRef>& disabled);
 
   // Returns a TranslateRankerImpl object with |threshold| for testing. The
   // returned ranker is configured with an empty cache path and URL and will not
@@ -86,8 +85,8 @@ class TranslateRankerImplTest : public ::testing::Test {
 TranslateRankerImplTest::TranslateRankerImplTest() = default;
 
 void TranslateRankerImplTest::InitFeatures(
-    const std::initializer_list<base::Feature>& enabled,
-    const std::initializer_list<base::Feature>& disabled) {
+    const std::vector<base::test::FeatureRef>& enabled,
+    const std::vector<base::test::FeatureRef>& disabled) {
   scoped_feature_list_.InitWithFeatures(enabled, disabled);
 }
 

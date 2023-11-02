@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,46 +32,23 @@ perfetto::TraceConfig::DataSource* AddDataSourceConfig(
     const std::string& json_agent_label_filter) {
   auto* data_source = perfetto_config->add_data_sources();
   auto* source_config = data_source->mutable_config();
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  if (!strcmp(name, tracing::mojom::kTraceEventDataSourceName)) {
-    source_config->set_name("track_event");
-  } else {
-    source_config->set_name(name);
-  }
-#else
   source_config->set_name(name);
-#endif
   source_config->set_target_buffer(0);
+
   auto* chrome_config = source_config->mutable_chrome_config();
   chrome_config->set_trace_config(chrome_config_string);
   chrome_config->set_privacy_filtering_enabled(privacy_filtering_enabled);
   chrome_config->set_convert_to_legacy_json(convert_to_legacy_json);
   chrome_config->set_client_priority(client_priority);
-
   if (!json_agent_label_filter.empty())
     chrome_config->set_json_agent_label_filter(json_agent_label_filter);
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   if (!strcmp(name, tracing::mojom::kTraceEventDataSourceName)) {
+    source_config->set_name("track_event");
     base::trace_event::TraceConfig base_config(chrome_config_string);
-    perfetto::protos::gen::TrackEventConfig te_cfg;
-    // If no categories are explicitly enabled, enable the default ones.
-    // Otherwise only matching categories are enabled.
-    if (!base_config.category_filter().included_categories().empty())
-      te_cfg.add_disabled_categories("*");
-    for (const auto& excluded :
-         base_config.category_filter().excluded_categories()) {
-      te_cfg.add_disabled_categories(excluded);
-    }
-    for (const auto& included :
-         base_config.category_filter().included_categories()) {
-      te_cfg.add_enabled_categories(included);
-    }
-    for (const auto& disabled :
-         base_config.category_filter().disabled_categories()) {
-      te_cfg.add_enabled_categories(disabled);
-    }
-    source_config->set_track_event_config_raw(te_cfg.SerializeAsString());
+    source_config->set_track_event_config_raw(
+        base_config.ToPerfettoTrackEventConfigRaw(privacy_filtering_enabled));
   }
 #endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
@@ -123,8 +100,7 @@ void AddDataSourceConfigs(
   if (!privacy_filtering_enabled) {
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || \
-    (BUILDFLAG(IS_CHROMECAST) && defined(OS_LINUX))
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CASTOS)
     if (source_names.empty() ||
         source_names.count(tracing::mojom::kSystemTraceDataSourceName) == 1) {
       AddDataSourceConfig(
@@ -152,6 +128,13 @@ void AddDataSourceConfigs(
                         chrome_config_string, privacy_filtering_enabled,
                         convert_to_legacy_json, client_priority,
                         json_agent_label_filter);
+  }
+
+  if (source_names.count(tracing::mojom::kSamplerProfilerSourceName) == 1) {
+    AddDataSourceConfig(
+        perfetto_config, tracing::mojom::kSamplerProfilerSourceName,
+        chrome_config_string, privacy_filtering_enabled, convert_to_legacy_json,
+        client_priority, json_agent_label_filter);
   }
 
   if (stripped_config.IsCategoryGroupEnabled(

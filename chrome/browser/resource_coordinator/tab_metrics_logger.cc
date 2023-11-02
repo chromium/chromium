@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -90,7 +90,7 @@ void PopulateTabFeaturesFromPageMetrics(
 void PopulateTabFeaturesFromWebContents(content::WebContents* web_contents,
                                         tab_ranker::TabFeatures* tab_features) {
   tab_features->has_before_unload_handler =
-      web_contents->GetMainFrame()->GetSuddenTerminationDisablerState(
+      web_contents->GetPrimaryMainFrame()->GetSuddenTerminationDisablerState(
           blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler);
   tab_features->has_form_entry =
       FormInteractionTabHelper::FromWebContents(web_contents)

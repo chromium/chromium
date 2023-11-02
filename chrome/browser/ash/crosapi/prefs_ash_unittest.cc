@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,7 +50,7 @@ class PrefsAshTest : public testing::Test {
 
   void SetUp() override { ASSERT_TRUE(testing_profile_manager_.SetUp()); }
 
-  PrefService* local_state() {
+  TestingPrefServiceSimple* local_state() {
     return testing_profile_manager_.local_state()->Get();
   }
   ProfileManager* profile_manager() {
@@ -68,6 +68,29 @@ class PrefsAshTest : public testing::Test {
       TestingBrowserProcess::GetGlobal()};
 };
 
+void GetExtensionPrefWithControl(mojo::Remote<mojom::Prefs>& prefs_remote,
+                                 mojom::PrefPath path,
+                                 base::Value* get_value,
+                                 mojom::PrefControlState* get_control) {
+  prefs_remote->GetExtensionPrefWithControl(
+      path, base::BindLambdaForTesting([&](absl::optional<base::Value> value,
+                                           mojom::PrefControlState control) {
+        *get_value = std::move(*value);
+        *get_control = control;
+      }));
+  prefs_remote.FlushForTesting();
+}
+
+void GetPref(mojo::Remote<mojom::Prefs>& prefs_remote,
+             mojom::PrefPath path,
+             base::Value* get_value) {
+  prefs_remote->GetPref(
+      path, base::BindLambdaForTesting([&](absl::optional<base::Value> value) {
+        *get_value = std::move(*value);
+      }));
+  prefs_remote.FlushForTesting();
+}
+
 TEST_F(PrefsAshTest, LocalStatePrefs) {
   local_state()->SetBoolean(metrics::prefs::kMetricsReportingEnabled, false);
   PrefsAsh prefs_ash(profile_manager(), local_state());
@@ -78,10 +101,7 @@ TEST_F(PrefsAshTest, LocalStatePrefs) {
 
   // Get returns value.
   base::Value get_value;
-  prefs_remote->GetPref(
-      path, base::BindLambdaForTesting([&](absl::optional<base::Value> value) {
-        get_value = std::move(*value);
-      }));
+  GetPref(prefs_remote, path, &get_value);
   prefs_remote.FlushForTesting();
   EXPECT_FALSE(get_value.GetBool());
 
@@ -101,7 +121,7 @@ TEST_F(PrefsAshTest, LocalStatePrefs) {
   EXPECT_TRUE(observer1->value_->GetBool());
   EXPECT_TRUE(prefs_ash.local_state_registrar_.IsObserved(
       metrics::prefs::kMetricsReportingEnabled));
-  EXPECT_EQ(1, prefs_ash.observers_[path].size());
+  EXPECT_EQ(1u, prefs_ash.observers_[path].size());
 
   // Multiple observers is ok.
   auto observer2 = std::make_unique<TestObserver>();
@@ -109,7 +129,7 @@ TEST_F(PrefsAshTest, LocalStatePrefs) {
                             observer2->receiver_.BindNewPipeAndPassRemote());
   prefs_remote.FlushForTesting();
   EXPECT_TRUE(observer2->value_->GetBool());
-  EXPECT_EQ(2, prefs_ash.observers_[path].size());
+  EXPECT_EQ(2u, prefs_ash.observers_[path].size());
 
   // Observer should be notified when value changes.
   local_state()->SetBoolean(metrics::prefs::kMetricsReportingEnabled, false);
@@ -120,10 +140,10 @@ TEST_F(PrefsAshTest, LocalStatePrefs) {
   // Disconnect should remove PrefChangeRegistrar.
   observer1.reset();
   prefs_remote.FlushForTesting();
-  EXPECT_EQ(1, prefs_ash.observers_[path].size());
+  EXPECT_EQ(1u, prefs_ash.observers_[path].size());
   observer2.reset();
   prefs_remote.FlushForTesting();
-  EXPECT_EQ(0, prefs_ash.observers_[path].size());
+  EXPECT_EQ(0u, prefs_ash.observers_[path].size());
   EXPECT_FALSE(prefs_ash.local_state_registrar_.IsObserved(
       metrics::prefs::kMetricsReportingEnabled));
 }
@@ -140,28 +160,17 @@ TEST_F(PrefsAshTest, LocalStatePref_SystemTracing) {
   // Get returns value.
   base::Value get_value;
   // Tests the default pref value.
-  prefs_remote->GetPref(
-      path, base::BindLambdaForTesting([&](absl::optional<base::Value> value) {
-        get_value = std::move(*value);
-      }));
-  prefs_remote.FlushForTesting();
+  GetPref(prefs_remote, path, &get_value);
   EXPECT_TRUE(get_value.GetBool());
 
   // Tests the GetPref() method.
   local_state()->SetBoolean(pref_name, false);
-  prefs_remote->GetPref(
-      path, base::BindLambdaForTesting([&](absl::optional<base::Value> value) {
-        get_value = std::move(*value);
-      }));
+  GetPref(prefs_remote, path, &get_value);
   prefs_remote.FlushForTesting();
   EXPECT_FALSE(get_value.GetBool());
 
   local_state()->SetBoolean(pref_name, true);
-  prefs_remote->GetPref(
-      path, base::BindLambdaForTesting([&](absl::optional<base::Value> value) {
-        get_value = std::move(*value);
-      }));
-  prefs_remote.FlushForTesting();
+  GetPref(prefs_remote, path, &get_value);
   EXPECT_TRUE(get_value.GetBool());
 
   // Tests observing pref changes.
@@ -190,11 +199,7 @@ TEST_F(PrefsAshTest, ProfilePrefs) {
 
   // Get returns value.
   base::Value get_value;
-  prefs_remote->GetPref(
-      path, base::BindLambdaForTesting([&](absl::optional<base::Value> value) {
-        get_value = std::move(*value);
-      }));
-  prefs_remote.FlushForTesting();
+  GetPref(prefs_remote, path, &get_value);
   EXPECT_FALSE(get_value.GetBool());
 
   // Set updates value.
@@ -234,6 +239,120 @@ TEST_F(PrefsAshTest, GetUnknown) {
                             observer.receiver_.BindNewPipeAndPassRemote());
   prefs_remote.FlushForTesting();
   EXPECT_FALSE(observer.value_.has_value());
+}
+
+TEST_F(PrefsAshTest, GetWithControlUnknown) {
+  Profile* const profile = CreateProfile();
+  PrefsAsh prefs_ash(profile_manager(), local_state());
+  prefs_ash.OnPrimaryProfileReadyForTesting(profile);
+  mojo::Remote<mojom::Prefs> prefs_remote;
+  prefs_ash.BindReceiver(prefs_remote.BindNewPipeAndPassReceiver());
+  mojom::PrefPath path = mojom::PrefPath::kUnknown;
+
+  // Get for an unknown value returns absl::nullopt.
+  bool has_value = true;
+  mojom::PrefControlState get_control;
+  prefs_remote->GetExtensionPrefWithControl(
+      path, base::BindLambdaForTesting([&](absl::optional<base::Value> value,
+                                           mojom::PrefControlState control) {
+        has_value = value.has_value();
+        get_control = control;
+      }));
+  prefs_remote.FlushForTesting();
+  EXPECT_FALSE(has_value);
+  EXPECT_EQ(get_control, mojom::PrefControlState::kDefaultUnknown);
+}
+
+TEST_F(PrefsAshTest, ExtensionPrefsControllable) {
+  local_state()->registry()->RegisterBooleanPref(
+      ash::prefs::kDockedMagnifierEnabled, false);
+
+  Profile* const profile = CreateProfile();
+  PrefService* const profile_prefs = profile->GetPrefs();
+  PrefsAsh prefs_ash(profile_manager(), local_state());
+  prefs_ash.OnPrimaryProfileReadyForTesting(profile);
+
+  profile_prefs->SetBoolean(ash::prefs::kDockedMagnifierEnabled, true);
+
+  mojo::Remote<mojom::Prefs> prefs_remote;
+  prefs_ash.BindReceiver(prefs_remote.BindNewPipeAndPassReceiver());
+  mojom::PrefPath path = mojom::PrefPath::kDockedMagnifierEnabled;
+
+  // Get returns value.
+  base::Value get_value;
+  GetPref(prefs_remote, path, &get_value);
+  EXPECT_TRUE(get_value.GetBool());
+
+  // GetWithControl shows this can be controlled by lacros because extensions
+  // have higher precedence than profile prefs.
+  mojom::PrefControlState get_control;
+  GetExtensionPrefWithControl(prefs_remote, path, &get_value, &get_control);
+
+  EXPECT_EQ(get_control, mojom::PrefControlState::kLacrosExtensionControllable);
+  EXPECT_TRUE(get_value.GetBool());
+}
+
+TEST_F(PrefsAshTest, ExtensionPrefsGetSetClear) {
+  local_state()->registry()->RegisterBooleanPref(
+      ash::prefs::kDockedMagnifierEnabled, false);
+
+  Profile* const profile = CreateProfile();
+  PrefsAsh prefs_ash(profile_manager(), local_state());
+  prefs_ash.OnPrimaryProfileReadyForTesting(profile);
+
+  mojo::Remote<mojom::Prefs> prefs_remote;
+  prefs_ash.BindReceiver(prefs_remote.BindNewPipeAndPassReceiver());
+  mojom::PrefPath path = mojom::PrefPath::kDockedMagnifierEnabled;
+
+  prefs_remote->SetPref(path, base::Value(true), base::DoNothing());
+  prefs_remote.FlushForTesting();
+
+  base::Value get_value;
+  mojom::PrefControlState get_control;
+
+  GetExtensionPrefWithControl(prefs_remote, path, &get_value, &get_control);
+
+  // Controlled by lacros as it was set above.
+  EXPECT_EQ(get_control, mojom::PrefControlState::kLacrosExtensionControlled);
+  EXPECT_TRUE(get_value.GetBool());
+
+  // Clear Extension controlled pref.
+  prefs_remote->ClearExtensionControlledPref(path, base::DoNothing());
+  prefs_remote.FlushForTesting();
+
+  GetExtensionPrefWithControl(prefs_remote, path, &get_value, &get_control);
+
+  // Controllable by lacros, as it was unset above. No longer enabled as it
+  // was cleared.
+  EXPECT_EQ(get_control, mojom::PrefControlState::kLacrosExtensionControllable);
+  EXPECT_FALSE(get_value.GetBool());
+}
+
+TEST_F(PrefsAshTest, ExtensionPrefsClearNonExtensionPref) {
+  local_state()->registry()->RegisterBooleanPref(
+      ash::prefs::kAccessibilitySpokenFeedbackEnabled, false);
+
+  Profile* const profile = CreateProfile();
+  PrefService* const profile_prefs = profile->GetPrefs();
+  PrefsAsh prefs_ash(profile_manager(), local_state());
+  prefs_ash.OnPrimaryProfileReadyForTesting(profile);
+
+  profile_prefs->SetBoolean(ash::prefs::kAccessibilitySpokenFeedbackEnabled,
+                            true);
+
+  mojo::Remote<mojom::Prefs> prefs_remote;
+  prefs_ash.BindReceiver(prefs_remote.BindNewPipeAndPassReceiver());
+  // Note this is the non-extension PrefPath.
+  mojom::PrefPath path = mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled;
+
+  // Does nothing since this is not an extension controlled pref.
+  prefs_remote->ClearExtensionControlledPref(path, base::DoNothing());
+  prefs_remote.FlushForTesting();
+
+  // Get returns value.
+  base::Value get_value;
+  GetPref(prefs_remote, path, &get_value);
+  EXPECT_TRUE(get_value.GetBool());
 }
 
 }  // namespace crosapi

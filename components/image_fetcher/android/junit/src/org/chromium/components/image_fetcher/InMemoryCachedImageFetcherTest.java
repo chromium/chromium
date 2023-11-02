@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -192,8 +192,8 @@ public class InMemoryCachedImageFetcherTest {
 
     @Test
     public void testEncodeCacheKey() {
-        Assert.assertEquals(
-                "url/100/200", mInMemoryCachedImageFetcher.encodeCacheKey("url", 100, 200));
+        Assert.assertEquals("url/1/100/200",
+                mInMemoryCachedImageFetcher.encodeCacheKey("url", /*shouldResize=*/true, 100, 200));
     }
 
     @Test

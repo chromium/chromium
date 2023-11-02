@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -99,15 +99,15 @@ class MediaStreamVideoTrackTest
  protected:
   virtual void InitializeSource() {
     source_ = nullptr;
-    mock_source_ = new MockMediaStreamVideoSource(
+    auto mock_source = std::make_unique<MockMediaStreamVideoSource>(
         media::VideoCaptureFormat(
             gfx::Size(kMockSourceWidth, kMockSourceHeight), 30.0,
             media::PIXEL_FORMAT_I420),
         false);
+    mock_source_ = mock_source.get();
     source_ = MakeGarbageCollected<MediaStreamSource>(
         "dummy_source_id", MediaStreamSource::kTypeVideo, "dummy_source_name",
-        false /* remote */);
-    source_->SetPlatformSource(base::WrapUnique(mock_source_));
+        false /* remote */, std::move(mock_source));
   }
 
   // Create a track that's associated with |mock_source_|.
@@ -141,15 +141,15 @@ class MediaStreamVideoTrackTest
 
   void UpdateVideoSourceToRespondToRequestRefreshFrame() {
     source_ = nullptr;
-    mock_source_ = new MockMediaStreamVideoSource(
+    auto mock_source = std::make_unique<MockMediaStreamVideoSource>(
         media::VideoCaptureFormat(
             gfx::Size(kMockSourceWidth, kMockSourceHeight), 30.0,
             media::PIXEL_FORMAT_I420),
         true);
+    mock_source_ = mock_source.get();
     source_ = MakeGarbageCollected<MediaStreamSource>(
         "dummy_source_id", MediaStreamSource::kTypeVideo, "dummy_source_name",
-        false /* remote */);
-    source_->SetPlatformSource(base::WrapUnique(mock_source_));
+        false /* remote */, std::move(mock_source));
   }
 
   void DepleteIOCallbacks() {
@@ -420,6 +420,98 @@ TEST_P(MediaStreamVideoTrackTest, PropagatesContentHintType) {
   sink.ConnectToTrack(track);
   MediaStreamVideoTrack::From(track)->SetContentHint(GetParam());
   EXPECT_EQ(sink.content_hint(), GetParam());
+  sink.DisconnectFromTrack();
+}
+
+TEST_F(MediaStreamVideoTrackTest, DeliversFramesWithCurrentCropVersion) {
+  InitializeSource();
+  MockMediaStreamVideoSink sink;
+
+  // Track is initialized with crop version 5.
+  EXPECT_CALL(*mock_source(), GetCropVersion).WillOnce(Return(5));
+  WebMediaStreamTrack track = CreateTrack();
+  sink.ConnectToTrack(track);
+
+  scoped_refptr<media::VideoFrame> frame =
+      media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400));
+  // Frame with current crop version should be delivered.
+  frame->metadata().crop_version = 5;
+  EXPECT_CALL(*mock_source(), OnFrameDropped).Times(0);
+  DeliverVideoFrameAndWaitForRenderer(std::move(frame), &sink);
+
+  sink.DisconnectFromTrack();
+}
+
+TEST_F(MediaStreamVideoTrackTest,
+       DropsOldFramesWhenInitializedWithNewerCropVersion) {
+  InitializeSource();
+  MockMediaStreamVideoSink sink;
+
+  // Track is initialized with crop version 5.
+  EXPECT_CALL(*mock_source(), GetCropVersion).WillOnce(Return(5));
+  WebMediaStreamTrack track = CreateTrack();
+  sink.ConnectToTrack(track);
+
+  scoped_refptr<media::VideoFrame> frame =
+      media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400));
+  // Old crop version delivered after construction.
+  frame->metadata().crop_version = 4;
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_source(),
+              OnFrameDropped(
+                  media::VideoCaptureFrameDropReason::kCropVersionNotCurrent))
+      .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
+  mock_source()->DeliverVideoFrame(std::move(frame));
+  run_loop.Run();
+
+  sink.DisconnectFromTrack();
+}
+
+TEST_F(MediaStreamVideoTrackTest, DropsOldFramesAfterCropVersionChanges) {
+  InitializeSource();
+  MockMediaStreamVideoSink sink;
+
+  // Track is initialized with crop version 5.
+  EXPECT_CALL(*mock_source(), GetCropVersion).WillOnce(Return(5));
+  WebMediaStreamTrack track = CreateTrack();
+  sink.ConnectToTrack(track);
+
+  // Crop version updated to 6.
+  mock_source()->DeliverNewCropVersion(6);
+
+  scoped_refptr<media::VideoFrame> frame =
+      media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400));
+  frame->metadata().crop_version = 5;  // No longer current version.
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_source(),
+              OnFrameDropped(
+                  media::VideoCaptureFrameDropReason::kCropVersionNotCurrent))
+      .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
+  mock_source()->DeliverVideoFrame(std::move(frame));
+  run_loop.Run();
+
+  sink.DisconnectFromTrack();
+}
+
+TEST_F(MediaStreamVideoTrackTest, DeliversNewFramesAfterCropVersionChanges) {
+  InitializeSource();
+  MockMediaStreamVideoSink sink;
+
+  // Track is initialized with crop version 5.
+  EXPECT_CALL(*mock_source(), GetCropVersion).WillOnce(Return(5));
+  WebMediaStreamTrack track = CreateTrack();
+  sink.ConnectToTrack(track);
+
+  // Crop version updated to 6.
+  mock_source()->DeliverNewCropVersion(6);
+
+  scoped_refptr<media::VideoFrame> frame =
+      media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400));
+  // Frame with current crop version should be delivered.
+  frame->metadata().crop_version = 6;
+  EXPECT_CALL(*mock_source(), OnFrameDropped).Times(0);
+  DeliverVideoFrameAndWaitForRenderer(std::move(frame), &sink);
+
   sink.DisconnectFromTrack();
 }
 

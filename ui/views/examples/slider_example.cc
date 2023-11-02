@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,7 +61,7 @@ void SliderExample::SliderValueChanged(Slider* sender,
                                        float old_value,
                                        SliderChangeReason reason) {
   auto* const label =
-      (sender == slider_default_) ? label_default_ : label_minimal_;
+      (sender == slider_default_) ? label_default_.get() : label_minimal_.get();
   label->SetText(base::ASCIIToUTF16(base::StringPrintf("%.3lf", value)));
 }
 

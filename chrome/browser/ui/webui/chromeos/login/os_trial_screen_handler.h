@@ -1,11 +1,12 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_OS_TRIAL_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_OS_TRIAL_SCREEN_HANDLER_H_
 
-#include "chrome/browser/ash/login/screens/consolidated_consent_screen.h"
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
 namespace ash {
 class OsTrialScreen;
@@ -15,20 +16,15 @@ namespace chromeos {
 
 // Interface for dependency injection between OsTrialScreen and its
 // WebUI representation.
-class OsTrialScreenView {
+class OsTrialScreenView : public base::SupportsWeakPtr<OsTrialScreenView> {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"os-trial"};
+  inline constexpr static StaticOobeScreenId kScreenId{"os-trial",
+                                                       "OsTrialScreen"};
 
   virtual ~OsTrialScreenView() = default;
 
   // Shows the contents of the screen.
   virtual void Show() = 0;
-
-  // Binds |screen| to the view.
-  virtual void Bind(ash::OsTrialScreen* screen) = 0;
-
-  // Unbinds the screen from the view.
-  virtual void Unbind() = 0;
 };
 
 class OsTrialScreenHandler : public BaseScreenHandler,
@@ -36,7 +32,7 @@ class OsTrialScreenHandler : public BaseScreenHandler,
  public:
   using TView = OsTrialScreenView;
 
-  explicit OsTrialScreenHandler(JSCallsContainer* js_calls_container);
+  OsTrialScreenHandler();
   OsTrialScreenHandler(const OsTrialScreenHandler&) = delete;
   OsTrialScreenHandler& operator=(const OsTrialScreenHandler&) = delete;
   ~OsTrialScreenHandler() override;
@@ -45,14 +41,9 @@ class OsTrialScreenHandler : public BaseScreenHandler,
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void Initialize() override;
 
   // OsTrialScreenView:
   void Show() override;
-  void Bind(ash::OsTrialScreen* screen) override;
-  void Unbind() override;
-
-  ash::OsTrialScreen* screen_ = nullptr;
 };
 
 }  // namespace chromeos

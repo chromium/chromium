@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,10 +6,10 @@ import("//build/config/ui.gni")
 
 source_set("host") {
   sources = [
+    "gpu_disk_cache.cc",
+    "gpu_disk_cache.h",
     "gpu_memory_buffer_support.cc",
     "gpu_memory_buffer_support.h",
-    "shader_disk_cache.cc",
-    "shader_disk_cache.h",
   ]
 
   deps = [

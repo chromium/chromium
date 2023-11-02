@@ -1,14 +1,15 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/sessions/exit_type_service_factory.h"
 
+#include "base/no_destructor.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/pref_names.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_service.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -28,20 +29,17 @@ ExitTypeServiceFactory* ExitTypeServiceFactory::GetInstance() {
 }
 
 ExitTypeServiceFactory::ExitTypeServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "ExitTypeServiceFactory",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("ExitTypeServiceFactory",
+                                 ProfileSelections::BuildForRegularProfile()) {}
 
 ExitTypeServiceFactory::~ExitTypeServiceFactory() = default;
 
 KeyedService* ExitTypeServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  if (!profile->IsRegularProfile())
-    return nullptr;
-    // TODO(sky): is this necessary?
+  // TODO(sky): is this necessary?
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::ProfileHelper::IsSigninProfile(profile))
+  if (ash::ProfileHelper::IsSigninProfile(profile))
     return nullptr;
 #endif
   return new ExitTypeService(profile);

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,29 +7,25 @@
 #include <memory>
 
 #include "base/callback_helpers.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
-#include "components/policy/core/common/features.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace policy {
 
 TEST(ClientDataDelegateDesktopTest,
      FillRegisterBrowserRequest_BrowserDeviceIdentifier) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::win::ScopedCOMInitializer com_initializer;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   base::test::TaskEnvironment task_environment;
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kUploadBrowserDeviceIdentifier);
 
   ClientDataDelegateDesktop client_data_delegate;
   enterprise_management::RegisterBrowserRequest request;
@@ -43,27 +39,6 @@ TEST(ClientDataDelegateDesktopTest,
             expected_browser_device_identifier->computer_name());
   EXPECT_EQ(request.browser_device_identifier().serial_number(),
             expected_browser_device_identifier->serial_number());
-}
-
-TEST(ClientDataDelegateDesktopTest,
-     FillRegisterBrowserRequest_NoBrowserDeviceIdentifier) {
-#if defined(OS_WIN)
-  base::win::ScopedCOMInitializer com_initializer;
-#endif  // defined(OS_WIN)
-
-  base::test::TaskEnvironment task_environment;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kUploadBrowserDeviceIdentifier);
-
-  ClientDataDelegateDesktop client_data_delegate;
-  enterprise_management::RegisterBrowserRequest request;
-  client_data_delegate.FillRegisterBrowserRequest(&request, base::DoNothing());
-  task_environment.RunUntilIdle();
-
-  EXPECT_EQ(request.machine_name(), GetMachineName());
-  EXPECT_TRUE(request.browser_device_identifier().computer_name().empty());
-  EXPECT_TRUE(request.browser_device_identifier().serial_number().empty());
 }
 
 }  // namespace policy

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/content_settings/common/content_settings_manager.mojom.h"
@@ -92,10 +91,6 @@ class ChromeRenderThreadObserver : public content::RenderThreadObserver,
   // render process is running.
   static const chrome::mojom::DynamicParams& GetDynamicParams();
 
-  // Returns a pointer to the content setting rules owned by
-  // |ChromeRenderThreadObserver|.
-  const RendererContentSettingRules* content_setting_rules() const;
-
   visitedlink::VisitedLinkReader* visited_link_reader() {
     return visited_link_reader_.get();
   }
@@ -127,8 +122,6 @@ class ChromeRenderThreadObserver : public content::RenderThreadObserver,
       mojo::PendingRemote<content_settings::mojom::ContentSettingsManager>
           content_settings_manager) override;
   void SetConfiguration(chrome::mojom::DynamicParamsPtr params) override;
-  void SetContentSettingRules(
-      const RendererContentSettingRules& rules) override;
   void OnRendererConfigurationAssociatedRequest(
       mojo::PendingAssociatedReceiver<chrome::mojom::RendererConfiguration>
           receiver);
@@ -136,7 +129,6 @@ class ChromeRenderThreadObserver : public content::RenderThreadObserver,
   static bool is_incognito_process_;
   std::unique_ptr<blink::WebResourceRequestSenderDelegate>
       resource_request_sender_delegate_;
-  RendererContentSettingRules content_setting_rules_;
   mojo::Remote<content_settings::mojom::ContentSettingsManager>
       content_settings_manager_;
 

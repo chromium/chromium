@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,6 +46,7 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/checked_math.h"
 #include "base/strings/string_util.h"
 #include "net/base/features.h"
 #include "net/cookies/cookie_constants.h"
@@ -187,9 +188,6 @@ ParsedCookie::ParsedCookie(const std::string& cookie_line,
 
   // Status should indicate exclusion if the resulting ParsedCookie is invalid.
   DCHECK(IsValid() || !status_out->IsInclude());
-
-  if (IsValid())
-    RecordCookieAttributeValueLengthHistograms();
 }
 
 ParsedCookie::~ParsedCookie() = default;
@@ -310,8 +308,6 @@ bool ParsedCookie::SetPath(const std::string& path) {
 }
 
 bool ParsedCookie::SetDomain(const std::string& domain) {
-  UMA_HISTOGRAM_BOOLEAN("Cookie.EmptyDomain.SetDomain",
-                        domain == std::string());
   return SetString(&domain_index_, kDomainTokenName, domain);
 }
 
@@ -765,25 +761,12 @@ void ParsedCookie::ParseTokenValuePairs(const std::string& cookie_line,
 }
 
 void ParsedCookie::SetupAttributes() {
-  // For UMA_HISTOGRAMS below
-  int domain_count =
-      std::count_if(pairs_.begin(), pairs_.end(),
-                    [](const std::pair<std::string, std::string>& pair) {
-                      return pair.first == kDomainTokenName;
-                    });
   // We skip over the first token/value, the user supplied one.
   for (size_t i = 1; i < pairs_.size(); ++i) {
     if (pairs_[i].first == kPathTokenName) {
       path_index_ = i;
     } else if (pairs_[i].first == kDomainTokenName) {
-      UMA_HISTOGRAM_BOOLEAN(
-          "Cookie.EmptyDomain.SetupAttributes.Single",
-          (domain_count == 1) && (pairs_[i].second == std::string()));
-      UMA_HISTOGRAM_BOOLEAN(
-          "Cookie.EmptyDomain.SetupAttributes.Multiple",
-          (domain_count > 1) && (pairs_[i].second == std::string()));
-      if (pairs_[i].second != "")
-        domain_index_ = i;
+      domain_index_ = i;
     } else if (pairs_[i].first == kExpiresTokenName) {
       expires_index_ = i;
     } else if (pairs_[i].first == kMaxAgeTokenName) {
@@ -890,17 +873,6 @@ void ParsedCookie::ClearAttributePair(size_t index) {
       --(*attribute_index);
   }
   pairs_.erase(pairs_.begin() + index);
-}
-
-void ParsedCookie::RecordCookieAttributeValueLengthHistograms() const {
-  DCHECK(IsValid());
-  // These all max out at 4096 total. (See ParsedCookie::kMaxCookieSize.)
-  UMA_HISTOGRAM_COUNTS_10000("Cookie.Length.NameAndValue",
-                             Name().length() + Value().length());
-  UMA_HISTOGRAM_COUNTS_10000("Cookie.Length.Domain",
-                             HasDomain() ? Domain().length() : 0);
-  UMA_HISTOGRAM_COUNTS_10000("Cookie.Length.Path",
-                             HasPath() ? Path().length() : 0);
 }
 
 }  // namespace net

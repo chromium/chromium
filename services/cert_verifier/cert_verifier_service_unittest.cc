@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,10 @@
 #include <tuple>
 
 #include "base/callback_helpers.h"
+#include "base/containers/adapters.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -25,6 +26,7 @@
 #include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/cert_verifier.h"
+#include "net/cert/cert_verify_proc.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/x509_certificate.h"
 #include "net/log/net_log.h"
@@ -35,6 +37,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
+namespace net {
+class CertNetFetcher;
+class ChromeRootStoreData;
+}  // namespace net
+
 namespace cert_verifier {
 namespace {
 const int kExpectedNetError = net::ERR_CERT_INVALID;
@@ -44,7 +51,7 @@ scoped_refptr<net::X509Certificate> GetTestCert() {
   return net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
 }
 
-class DummyCertVerifier : public net::CertVerifier {
+class DummyCertVerifier : public net::CertVerifierWithUpdatableProc {
  public:
   struct DummyRequest : public net::CertVerifier::Request {
     ~DummyRequest() override {
@@ -52,7 +59,7 @@ class DummyCertVerifier : public net::CertVerifier {
         std::move(cancel_cb).Run();
     }
 
-    net::CertVerifyResult* verify_result;
+    raw_ptr<net::CertVerifyResult> verify_result;
     net::CompletionOnceCallback callback;
 
     base::OnceClosure cancel_cb;
@@ -96,6 +103,9 @@ class DummyCertVerifier : public net::CertVerifier {
     return net::ERR_IO_PENDING;
   }
   void SetConfig(const Config& config) override { config_ = config; }
+  void UpdateChromeRootStoreData(
+      scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
+      const net::ChromeRootStoreData* root_store_data) override {}
 
   void RespondToRequest(const net::CertVerifier::RequestParams& params) {
     auto it = dummy_requests_.find(params);
@@ -186,7 +196,7 @@ class CertVerifierServiceTest : public PlatformTest {
   CertVerifierServiceTest()
       : dummy_cv_(new DummyCertVerifier),
         cv_service_(new internal::CertVerifierServiceImpl(
-            base::WrapUnique(dummy_cv_),
+            base::WrapUnique(dummy_cv_.get()),
             cv_service_remote_.BindNewPipeAndPassReceiver(),
             /*cert_net_fetcher=*/nullptr)) {}
 
@@ -231,8 +241,8 @@ class CertVerifierServiceTest : public PlatformTest {
     task_environment_.RunUntilIdle();
 
     if (!sync) {  // For fun, complete the requests in reverse order.
-      for (auto it = request_infos.rbegin(); it != request_infos.rend(); ++it) {
-        RequestInfo& info = *it;
+
+      for (auto& info : base::Reversed(request_infos)) {
         ASSERT_FALSE(info.dummy_cv_request->is_completed);
         dummy_cv()->RespondToRequest(info.request_params);
       }
@@ -263,8 +273,8 @@ class CertVerifierServiceTest : public PlatformTest {
   base::test::TaskEnvironment task_environment_;
 
   mojo::Remote<mojom::CertVerifierService> cv_service_remote_;
-  DummyCertVerifier* dummy_cv_;
-  internal::CertVerifierServiceImpl* cv_service_;
+  raw_ptr<DummyCertVerifier> dummy_cv_;
+  raw_ptr<internal::CertVerifierServiceImpl> cv_service_;
 };
 }  // namespace
 

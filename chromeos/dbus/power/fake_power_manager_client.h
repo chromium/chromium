@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,6 +58,9 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   int num_wake_notification_calls() const {
     return num_wake_notification_calls_;
   }
+  int num_increase_keyboard_brightness_calls() const {
+    return num_increase_keyboard_brightness_calls_;
+  }
   int num_pending_suspend_readiness_callbacks() const {
     return num_pending_suspend_readiness_callbacks_;
   }
@@ -86,6 +89,9 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
                                             int level) {
     peripheral_battery_refresh_levels_[address] = level;
   }
+  void set_restart_callback(base::OnceClosure callback) {
+    restart_callback_ = std::move(callback);
+  }
 
   // PowerManagerClient overrides:
   void AddObserver(Observer* observer) override;
@@ -102,6 +108,9 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   void IncreaseKeyboardBrightness() override;
   void GetKeyboardBrightnessPercent(
       DBusMethodCallback<double> callback) override;
+  void SetKeyboardBacklightToggledOff(bool toggled_off) override;
+  void GetKeyboardBacklightToggledOff(
+      DBusMethodCallback<bool> callback) override;
   const absl::optional<power_manager::PowerSupplyProperties>& GetLastStatus()
       override;
   void RequestStatusUpdate() override;
@@ -142,6 +151,9 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   void SetExternalDisplayALSBrightness(bool enabled) override;
   void GetExternalDisplayALSBrightness(
       DBusMethodCallback<bool> callback) override;
+  void ChargeNowForAdaptiveCharging() override;
+  void GetChargeHistoryForAdaptiveCharging(
+      DBusMethodCallback<power_manager::ChargeHistoryState> callback) override;
 
   // Pops the first report from |video_activity_reports_|, returning whether the
   // activity was fullscreen or not. There must be at least one report.
@@ -177,7 +189,7 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
 
   // Updates |props_| and notifies observers of its changes.
   void UpdatePowerProperties(
-      const power_manager::PowerSupplyProperties& power_props);
+      absl::optional<power_manager::PowerSupplyProperties> power_props);
 
   // The PowerAPI requests system wake lock asynchronously. Test can run a
   // RunLoop and set the quit closure by this function to make sure the wake
@@ -189,6 +201,10 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   // Returns whether the screen brightness change was applied - this will
   // return false if there are no pending brightness changes.
   bool ApplyPendingScreenBrightnessChange();
+
+  // Set |charge_history_|
+  void SetChargeHistoryForAdaptiveCharging(
+      const power_manager::ChargeHistoryState& charge_history);
 
   // Returns time ticks from boot including time ticks spent during sleeping.
   base::TimeTicks GetCurrentBootTime();
@@ -239,6 +255,7 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   int num_set_is_projecting_calls_ = 0;
   int num_set_backlights_forced_off_calls_ = 0;
   int num_wake_notification_calls_ = 0;
+  int num_increase_keyboard_brightness_calls_ = 0;
 
   // Number of pending suspend readiness callbacks.
   int num_pending_suspend_readiness_callbacks_ = 0;
@@ -312,6 +329,9 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   // If non-empty, called by SetPowerPolicy().
   base::OnceClosure power_policy_quit_closure_;
 
+  // Callback that will be run, if set, when RequestRestart() is called.
+  base::OnceClosure restart_callback_;
+
   // If non-empty, called by NotifyUserActivity().
   base::RepeatingClosure user_activity_callback_;
 
@@ -326,16 +346,14 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
 
   bool external_display_als_brightness_enabled_ = false;
 
+  // Charge history returned by GetChargeHistoryForAdaptiveCharging()
+  power_manager::ChargeHistoryState charge_history_;
+
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<FakePowerManagerClient> weak_ptr_factory_{this};
 };
 
 }  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::FakePowerManagerClient;
-}
 
 #endif  // CHROMEOS_DBUS_POWER_FAKE_POWER_MANAGER_CLIENT_H_

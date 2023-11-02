@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,6 +58,16 @@ float GetNextMagnifierScaleValue(int delta_index,
   const int new_scale_index = current_index + delta_index;
   const float new_scale = std::pow(kMagnificationScaleFactor, new_scale_index);
   return base::clamp(new_scale, min_scale, max_scale);
+}
+
+gfx::Rect GetViewportWidgetBoundsInRoot(aura::Window* root,
+                                        float screen_height_divisor) {
+  DCHECK(root);
+  DCHECK(root->IsRootWindow());
+
+  auto root_bounds = root->GetBoundsInRootWindow();
+  root_bounds.set_height(root_bounds.height() / screen_height_divisor);
+  return root_bounds;
 }
 
 void MaybeUpdateActiveMagnifierFocus(const gfx::Point& point_in_screen) {

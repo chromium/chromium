@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,7 +59,8 @@ class ContentSettingBubbleModelMediaStreamTest : public InProcessBrowserTest {
     content::WebContents* web_contents = GetActiveTab();
 
     // Create a bubble with the given camera and microphone access state.
-    PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame())
+    PageSpecificContentSettings::GetForFrame(
+        web_contents->GetPrimaryMainFrame())
         ->OnMediaStreamPermissionSet(web_contents->GetLastCommittedURL(), state,
                                      std::string(), std::string(),
                                      std::string(), std::string());

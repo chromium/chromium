@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
@@ -46,7 +47,7 @@ class TestScreen : public display::ScreenBase {
   }
 
  private:
-  display::Screen* previous_screen_;
+  raw_ptr<display::Screen> previous_screen_;
 };
 
 }  // namespace
@@ -121,7 +122,7 @@ void WindowSizerTestUtil::GetWindowBounds(const gfx::Rect& monitor1_bounds,
       std::move(provider), passed_in, browser, out_bounds, &ignored);
 }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Passing null for the browser parameter of GetWindowBounds makes the test skip
@@ -320,7 +321,7 @@ TEST(WindowSizerTestCommon, AdjustFitSize) {
     gfx::Rect window_bounds;
     WindowSizerTestUtil::GetWindowBounds(
         p1024x768, p1024x768, gfx::Rect(), gfx::Rect(), gfx::Rect(), DEFAULT,
-        NULL, gfx::Rect(-10, -10, 1024 + 20, 768 + 20), &window_bounds);
+        nullptr, gfx::Rect(-10, -10, 1024 + 20, 768 + 20), &window_bounds);
     EXPECT_EQ("0,0 1024x768", window_bounds.ToString());
   }
 
@@ -328,9 +329,9 @@ TEST(WindowSizerTestCommon, AdjustFitSize) {
     gfx::Rect window_bounds;
     WindowSizerTestUtil::GetWindowBounds(
         p1024x768, p1024x768, gfx::Rect(), gfx::Rect(), gfx::Rect(), DEFAULT,
-        NULL, gfx::Rect(1020, 700, 100, 100), &window_bounds);
+        nullptr, gfx::Rect(1020, 700, 100, 100), &window_bounds);
     EXPECT_EQ("924,668 100x100", window_bounds.ToString());
   }
 }
 
-#endif  // defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)

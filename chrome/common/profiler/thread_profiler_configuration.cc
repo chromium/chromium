@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/profiler/process_type.h"
 #include "chrome/common/profiler/thread_profiler_platform_configuration.h"
+#include "chrome/common/profiler/unwind_util.h"
 #include "components/version_info/version_info.h"
 
 namespace {
@@ -197,18 +198,12 @@ ThreadProfilerConfiguration::GenerateBrowserProcessConfiguration(
   if (!platform_configuration.IsSupported(release_channel))
     return absl::nullopt;
 
-  using RuntimeModuleState =
-      ThreadProfilerPlatformConfiguration::RuntimeModuleState;
-  switch (platform_configuration.GetRuntimeModuleState(release_channel)) {
-    case RuntimeModuleState::kModuleAbsentButAvailable:
-      platform_configuration.RequestRuntimeModuleInstall();
-      FALLTHROUGH;
-    case RuntimeModuleState::kModuleNotAvailable:
-      return kProfileDisabledModuleNotInstalled;
-
-    case RuntimeModuleState::kModuleNotRequired:
-    case RuntimeModuleState::kModulePresent:
-      break;
+  // We pass `version_info::Channel::UNKNOWN` instead of `absl::nullopt` here
+  // because `AreUnwindPrerequisitesAvailable` accounts for official build
+  // status internally.
+  if (!AreUnwindPrerequisitesAvailable(
+          release_channel.value_or(version_info::Channel::UNKNOWN))) {
+    return kProfileDisabledModuleNotInstalled;
   }
 
   ThreadProfilerPlatformConfiguration::RelativePopulations

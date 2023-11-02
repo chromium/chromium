@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -209,8 +209,8 @@ std::unique_ptr<ReceiverResponse> ReceiverResponse::Parse(
   switch (response->type_) {
     case ResponseType::ANSWER:
       response->answer_ = std::make_unique<openscreen::cast::Answer>();
-      if (!openscreen::cast::Answer::ParseAndValidate(
-              root_node["answer"], response->answer_.get())) {
+      if (!openscreen::cast::Answer::TryParse(root_node["answer"],
+                                              response->answer_.get())) {
         response->valid_ = false;
       }
       break;

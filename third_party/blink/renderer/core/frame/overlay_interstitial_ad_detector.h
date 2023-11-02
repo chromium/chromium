@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -53,23 +53,23 @@ class CORE_EXPORT OverlayInterstitialAdDetector {
       const OverlayInterstitialAdDetector&) = delete;
   ~OverlayInterstitialAdDetector() = default;
 
-  void MaybeFireDetection(LocalFrame* main_frame);
+  void MaybeFireDetection(LocalFrame* outermost_main_frame);
 
  private:
-  void OnPopupDetected(LocalFrame* main_frame, bool is_ad);
+  void OnPopupDetected(LocalFrame* outermost_main_frame, bool is_ad);
 
   bool started_detection_ = false;
   bool content_has_been_stable_ = false;
 
   // The following members are valid only when |started_detection_| is true.
   base::Time last_detection_time_;
-  IntSize last_detection_main_frame_size_;
+  gfx::Size last_detection_outermost_main_frame_size_;
 
   DOMNodeId candidate_id_;
   bool candidate_is_ad_ = false;
 
   // The following members are valid only when |candidate_| is not nullptr.
-  int candidate_start_main_frame_scroll_offset_ = 0;
+  int candidate_start_outermost_main_frame_scroll_position_ = 0;
 
   // The node id of the last element that was detected as unqualified to be an
   // overlay pop-up. We compare any potential candidate with the last

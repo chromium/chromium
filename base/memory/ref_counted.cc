@@ -1,10 +1,11 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/memory/ref_counted.h"
 
 #include <limits>
+#include <ostream>
 #include <type_traits>
 
 #include "base/threading/thread_collision_warner.h"
@@ -67,7 +68,7 @@ void RefCountedBase::ReleaseImpl() const {
 }
 #endif
 
-#if !defined(ARCH_CPU_X86_FAMILY)
+#if !(defined(ARCH_CPU_X86_FAMILY) || defined(__ARM_FEATURE_ATOMICS))
 bool RefCountedThreadSafeBase::Release() const {
   return ReleaseImpl();
 }

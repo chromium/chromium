@@ -1,13 +1,14 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/webui/eche_app_ui/eche_notification_click_handler.h"
 
 #include "ash/components/phonehub/phone_hub_manager.h"
-#include "ash/constants/ash_features.h"
+#include "ash/root_window_controller.h"
+#include "ash/shell.h"
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
-#include "chromeos/components/multidevice/logging/logging.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 
 namespace ash {
 namespace eche_app {
@@ -38,16 +39,24 @@ EcheNotificationClickHandler::~EcheNotificationClickHandler() {
 void EcheNotificationClickHandler::HandleNotificationClick(
     int64_t notification_id,
     const phonehub::Notification::AppMetadata& app_metadata) {
-  if (launch_app_helper_->IsAppLaunchAllowed()) {
-    launch_app_helper_->LaunchEcheApp(
-        notification_id, app_metadata.package_name,
-        app_metadata.visible_app_name, app_metadata.user_id);
-  } else {
-    launch_app_helper_->ShowNotification(
-        /* title= */ absl::nullopt, /* message= */ absl::nullopt,
-        std::make_unique<LaunchAppHelper::NotificationInfo>(
-            LaunchAppHelper::NotificationInfo::Category::kNative,
-            LaunchAppHelper::NotificationInfo::NotificationType::kScreenLock));
+  const LaunchAppHelper::AppLaunchProhibitedReason prohibited_reason =
+      launch_app_helper_->CheckAppLaunchProhibitedReason(
+          feature_status_provider_->GetStatus());
+  switch (prohibited_reason) {
+    case LaunchAppHelper::AppLaunchProhibitedReason::kNotProhibited:
+      launch_app_helper_->LaunchEcheApp(
+          notification_id, app_metadata.package_name,
+          app_metadata.visible_app_name, app_metadata.user_id,
+          app_metadata.icon);
+      break;
+    case LaunchAppHelper::AppLaunchProhibitedReason::kDisabledByScreenLock:
+      launch_app_helper_->ShowNotification(
+          app_metadata.visible_app_name, /* message= */ absl::nullopt,
+          std::make_unique<LaunchAppHelper::NotificationInfo>(
+              LaunchAppHelper::NotificationInfo::Category::kNative,
+              LaunchAppHelper::NotificationInfo::NotificationType::
+                  kScreenLock));
+      break;
   }
 }
 
@@ -65,11 +74,6 @@ void EcheNotificationClickHandler::OnFeatureStatusChanged() {
   } else if (is_click_handler_set_ && !clickable) {
     handler_->RemoveNotificationClickHandler(this);
     is_click_handler_set_ = false;
-    if (NeedClose(feature_status_provider_->GetStatus()) &&
-        !base::FeatureList::IsEnabled(features::kEcheSWADebugMode)) {
-      PA_LOG(INFO) << "Close Eche app window";
-      launch_app_helper_->CloseEcheApp();
-    }
   }
 }
 
@@ -79,11 +83,5 @@ bool EcheNotificationClickHandler::IsClickable(FeatureStatus status) {
          status == FeatureStatus::kConnected;
 }
 
-// Checks FeatureStatus that eche feature is not able to use.
-bool EcheNotificationClickHandler::NeedClose(FeatureStatus status) {
-  return status == FeatureStatus::kIneligible ||
-         status == FeatureStatus::kDisabled ||
-         status == FeatureStatus::kDependentFeature;
-}
 }  // namespace eche_app
 }  // namespace ash

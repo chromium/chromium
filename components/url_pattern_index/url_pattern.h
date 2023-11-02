@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,6 +43,7 @@ class UrlPattern {
     base::StringPiece spec() const { return spec_; }
     base::StringPiece GetLowerCaseSpec() const;
     url::Component host() const { return host_; }
+    base::StringPiece GetStringHost() const;
 
    private:
     // The url spec.

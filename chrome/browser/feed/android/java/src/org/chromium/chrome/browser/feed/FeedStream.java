@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,18 +7,19 @@ package org.chromium.chrome.browser.feed;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.app.Activity;
+import android.os.SystemClock;
+import android.util.DisplayMetrics;
 import android.util.TypedValue;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Function;
@@ -32,12 +33,9 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.feed.sections.SectionType;
-import org.chromium.chrome.browser.feed.sort_ui.SortChipProperties;
-import org.chromium.chrome.browser.feed.sort_ui.SortView;
-import org.chromium.chrome.browser.feed.sort_ui.SortViewBinder;
-import org.chromium.chrome.browser.feed.v2.ContentOrder;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionRequestStatus;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -49,26 +47,32 @@ import org.chromium.chrome.browser.xsurface.FeedActionsHandler;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger.StreamType;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
+import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
+import org.chromium.chrome.browser.xsurface.LoggingParameters;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler;
+import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler.OpenMode;
 import org.chromium.chrome.browser.xsurface.SurfaceScope;
+import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.components.feed.proto.FeedUiProto;
+import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverLaunchResult;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
-import org.chromium.ui.modelutil.ListModel;
-import org.chromium.ui.modelutil.ListModelChangeProcessor;
-import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -78,6 +82,7 @@ import java.util.Map;
 @JNINamespace("feed::android")
 public class FeedStream implements Stream {
     private static final String TAG = "FeedStream";
+    private static final String SPACER_KEY = "Spacer";
 
     Function<String, GURL> mMakeGURL = url -> new GURL(url);
 
@@ -92,55 +97,116 @@ public class FeedStream implements Stream {
         }
 
         @Override
-        public void navigateTab(String url, View actionSourceView) {
+        public void openUrl(@OpenMode int openMode, String url, OpenUrlOptions options) {
             assert ThreadUtils.runningOnUiThread();
-            FeedStreamJni.get().reportOpenAction(mNativeFeedStream, FeedStream.this,
-                    mMakeGURL.apply(url), getSliceIdFromView(actionSourceView));
-
-            openSuggestionUrl(url, WindowOpenDisposition.CURRENT_TAB);
+            switch (openMode) {
+                case OpenMode.UNKNOWN:
+                case OpenMode.SAME_TAB:
+                    FeedStreamJni.get().reportOpenAction(mNativeFeedStream, FeedStream.this,
+                            mMakeGURL.apply(url), getSliceIdFromView(options.actionSourceView()),
+                            OpenActionType.DEFAULT);
+                    openSuggestionUrl(url, WindowOpenDisposition.CURRENT_TAB, /*inGroup=*/false);
+                    break;
+                case OpenMode.NEW_TAB:
+                    FeedStreamJni.get().reportOpenAction(mNativeFeedStream, FeedStream.this,
+                            mMakeGURL.apply(url), getSliceIdFromView(options.actionSourceView()),
+                            OpenActionType.NEW_TAB);
+                    openSuggestionUrl(
+                            url, WindowOpenDisposition.NEW_BACKGROUND_TAB, /*inGroup=*/false);
+                    break;
+                case OpenMode.INCOGNITO_TAB:
+                    FeedStreamJni.get().reportOtherUserAction(mNativeFeedStream, FeedStream.this,
+                            FeedUserActionType.TAPPED_OPEN_IN_NEW_INCOGNITO_TAB);
+                    openSuggestionUrl(url, WindowOpenDisposition.OFF_THE_RECORD, /*inGroup=*/false);
+                    break;
+                case OpenMode.DOWNLOAD_LINK:
+                    FeedStreamJni.get().reportOtherUserAction(
+                            mNativeFeedStream, FeedStream.this, FeedUserActionType.TAPPED_DOWNLOAD);
+                    mActionDelegate.downloadPage(url);
+                    break;
+                case OpenMode.READ_LATER:
+                    FeedStreamJni.get().reportOtherUserAction(mNativeFeedStream, FeedStream.this,
+                            FeedUserActionType.TAPPED_ADD_TO_READING_LIST);
+                    mActionDelegate.addToReadingList(options.getTitle(), url);
+                    break;
+                case OpenMode.THANK_CREATOR:
+                    FeedStreamJni.get().reportOtherUserAction(mNativeFeedStream, FeedStream.this,
+                            FeedUserActionType.TAPPED_CROW_BUTTON);
+                    mActionDelegate.openCrow(url);
+                    break;
+                case OpenMode.NEW_TAB_IN_GROUP:
+                    FeedStreamJni.get().reportOpenAction(mNativeFeedStream, FeedStream.this,
+                            mMakeGURL.apply(url), getSliceIdFromView(options.actionSourceView()),
+                            OpenActionType.NEW_TAB_IN_GROUP);
+                    openSuggestionUrl(url, WindowOpenDisposition.NEW_BACKGROUND_TAB,
+                            /*inGroup=*/true);
+                    break;
+            }
 
             // Attempts to load more content if needed.
             maybeLoadMore();
         }
 
+        // Deprecated in favor of openUrl(), will be removed once internal references are removed.
+        @Override
+        public void navigateTab(String url, View actionSourceView) {
+            openUrl(OpenMode.SAME_TAB, url, new OpenUrlOptions() {
+                @Override
+                public View actionSourceView() {
+                    return actionSourceView;
+                }
+            });
+        }
+
+        // Deprecated in favor of openUrl(), will be removed once internal references are removed.
         @Override
         public void navigateNewTab(String url, View actionSourceView) {
-            assert ThreadUtils.runningOnUiThread();
-            FeedStreamJni.get().reportOpenInNewTabAction(mNativeFeedStream, FeedStream.this,
-                    mMakeGURL.apply(url), getSliceIdFromView(actionSourceView));
-
-            openSuggestionUrl(url, WindowOpenDisposition.NEW_BACKGROUND_TAB);
-
-            // Attempts to load more content if needed.
-            maybeLoadMore();
+            openUrl(OpenMode.NEW_TAB, url, new OpenUrlOptions() {
+                @Override
+                public View actionSourceView() {
+                    return actionSourceView;
+                }
+            });
         }
 
+        // Deprecated in favor of openUrl(), will be removed once internal references are removed.
         @Override
         public void navigateIncognitoTab(String url) {
-            assert ThreadUtils.runningOnUiThread();
-            FeedStreamJni.get().reportOtherUserAction(mNativeFeedStream, FeedStream.this,
-                    FeedUserActionType.TAPPED_OPEN_IN_NEW_INCOGNITO_TAB);
-
-            openSuggestionUrl(url, WindowOpenDisposition.OFF_THE_RECORD);
-
-            // Attempts to load more content if needed.
-            maybeLoadMore();
+            openUrl(OpenMode.INCOGNITO_TAB, url, new OpenUrlOptions() {});
         }
 
+        // Deprecated in favor of openUrl(), will be removed once internal references are removed.
         @Override
         public void downloadLink(String url) {
-            assert ThreadUtils.runningOnUiThread();
-            FeedStreamJni.get().reportOtherUserAction(
-                    mNativeFeedStream, FeedStream.this, FeedUserActionType.TAPPED_DOWNLOAD);
-            mActionDelegate.downloadPage(url);
+            openUrl(OpenMode.DOWNLOAD_LINK, url, new OpenUrlOptions() {});
         }
 
+        // Deprecated in favor of openUrl(), will be removed once internal references are removed.
         @Override
         public void addToReadingList(String title, String url) {
-            assert ThreadUtils.runningOnUiThread();
-            FeedStreamJni.get().reportOtherUserAction(mNativeFeedStream, FeedStream.this,
-                    FeedUserActionType.TAPPED_ADD_TO_READING_LIST);
-            mActionDelegate.addToReadingList(title, url);
+            openUrl(OpenMode.READ_LATER, url, new OpenUrlOptions() {
+                @Override
+                public String getTitle() {
+                    return title;
+                }
+            });
+        }
+
+        // Deprecated in favor of openUrl(), will be removed once internal references are removed.
+        @Override
+        public void navigateCrow(String url) {
+            openUrl(OpenMode.THANK_CREATOR, url, new OpenUrlOptions() {});
+        }
+
+        // Deprecated in favor of openUrl(), will be removed once internal references are removed.
+        @Override
+        public void navigateNewTabInGroup(String url, View actionSourceView) {
+            openUrl(OpenMode.NEW_TAB_IN_GROUP, url, new OpenUrlOptions() {
+                @Override
+                public View actionSourceView() {
+                    return actionSourceView;
+                }
+            });
         }
 
         @Override
@@ -151,9 +217,32 @@ public class FeedStream implements Stream {
             FeedStreamJni.get().reportOtherUserAction(
                     mNativeFeedStream, FeedStream.this, FeedUserActionType.OPENED_CONTEXT_MENU);
 
+            // Remember the currently focused view so that we can get back to it once the bottom
+            // sheet is closed. This is to fix the problem that the last focused view is not
+            // restored after opening and closing the bottom sheet.
+            mLastFocusedView = mActivity.getCurrentFocus();
+            // If the talkback is enabled, also remember the accessibility focused view, which may
+            // be different from the focused view, so that we can get back to it once the bottom
+            // sheet is closed.
+            mLastAccessibilityFocusedView = findAccessibilityFocus(actionSourceView);
+
             // Make a sheetContent with the view.
             mBottomSheetContent = new CardMenuBottomSheetContent(view);
             mBottomSheetOriginatingSliceId = getSliceIdFromView(actionSourceView);
+            mBottomSheetController.addObserver(new EmptyBottomSheetObserver() {
+                @Override
+                public void onSheetClosed(@StateChangeReason int reason) {
+                    if (mLastFocusedView != null) {
+                        mLastFocusedView.requestFocus();
+                        mLastFocusedView = null;
+                    }
+                    if (mLastAccessibilityFocusedView != null) {
+                        mLastAccessibilityFocusedView.sendAccessibilityEvent(
+                                AccessibilityEvent.TYPE_VIEW_FOCUSED);
+                        mLastAccessibilityFocusedView = null;
+                    }
+                }
+            });
             mBottomSheetController.requestShowContent(mBottomSheetContent, true);
         }
 
@@ -162,15 +251,78 @@ public class FeedStream implements Stream {
             FeedStream.this.dismissBottomSheet();
         }
 
-        private void openSuggestionUrl(String url, int disposition) {
+        /**
+         * Search the view hierarchy to find the accessibility focused view.
+         */
+        private View findAccessibilityFocus(View view) {
+            if (view == null || view.isAccessibilityFocused()) return view;
+            if (!(view instanceof ViewGroup)) return null;
+            ViewGroup viewGroup = (ViewGroup) view;
+            for (int i = 0; i < viewGroup.getChildCount(); ++i) {
+                View childView = viewGroup.getChildAt(i);
+                View focusedView = findAccessibilityFocus(childView);
+                if (focusedView != null) return focusedView;
+            }
+            return null;
+        }
+
+        @Override
+        public void updateUserProfileOnLinkClick(String url, List<Long> entityMids) {
+            assert ThreadUtils.runningOnUiThread();
+            long[] entityArray = new long[entityMids.size()];
+            for (int i = 0; i < entityMids.size(); ++i) {
+                entityArray[i] = entityMids.get(i);
+            }
+            FeedStreamJni.get().updateUserProfileOnLinkClick(
+                    mNativeFeedStream, mMakeGURL.apply(url), entityArray);
+        }
+
+        @Override
+        public void updateWebFeedFollowState(WebFeedFollowUpdate update) {
+            byte[] webFeedId;
+            try {
+                webFeedId = update.webFeedName().getBytes("UTF8");
+            } catch (UnsupportedEncodingException e) {
+                Log.i(TAG, "Invalid webFeedName", e);
+                return;
+            }
+            if (update.isFollow()) {
+                WebFeedBridge.followFromId(
+                        webFeedId, update.isDurable(), update.webFeedChangeReason(), results -> {
+                            WebFeedFollowUpdate.Callback callback = update.callback();
+                            if (callback != null) {
+                                callback.requestComplete(results.requestStatus
+                                        == WebFeedSubscriptionRequestStatus.SUCCESS);
+                            }
+                        });
+            } else {
+                WebFeedBridge.unfollow(
+                        webFeedId, update.isDurable(), update.webFeedChangeReason(), results -> {
+                            WebFeedFollowUpdate.Callback callback = update.callback();
+                            if (callback != null) {
+                                callback.requestComplete(results.requestStatus
+                                        == WebFeedSubscriptionRequestStatus.SUCCESS);
+                            }
+                        });
+            }
+        }
+
+        private void openSuggestionUrl(String url, int disposition, boolean inGroup) {
             boolean inNewTab = (disposition == WindowOpenDisposition.NEW_BACKGROUND_TAB
                     || disposition == WindowOpenDisposition.OFF_THE_RECORD);
+
+            if (disposition != WindowOpenDisposition.NEW_BACKGROUND_TAB
+                    && mLaunchReliabilityLogger != null
+                    && mLaunchReliabilityLogger.isLaunchInProgress()) {
+                mLaunchReliabilityLogger.logLaunchFinished(SystemClock.elapsedRealtimeNanos(),
+                        DiscoverLaunchResult.CARD_TAPPED.getNumber());
+            }
             // This postTask is necessary so that other click-handlers have a chance
             // to run before we begin navigating. On start surface, navigation immediately
             // triggers unbind, which can break event handling.
             PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
                 mActionDelegate.openSuggestionUrl(disposition,
-                        new LoadUrlParams(url, PageTransition.AUTO_BOOKMARK),
+                        new LoadUrlParams(url, PageTransition.AUTO_BOOKMARK), inGroup,
                         ()
                                 -> FeedStreamJni.get().reportPageLoaded(
                                         mNativeFeedStream, FeedStream.this, inNewTab),
@@ -186,6 +338,9 @@ public class FeedStream implements Stream {
     class FeedActionsHandlerImpl implements FeedActionsHandler {
         private static final int SNACKBAR_DURATION_MS_SHORT = 4000;
         private static final int SNACKBAR_DURATION_MS_LONG = 10000;
+        // This is based on the menu animation time (218ms) from BottomSheet.java.
+        // It is private to an internal target, so we can't link, to it here.
+        private static final int MENU_DISMISS_TASK_DELAY = 318;
 
         @VisibleForTesting
         static final String FEEDBACK_REPORT_TYPE =
@@ -194,9 +349,10 @@ public class FeedStream implements Stream {
         static final String XSURFACE_CARD_URL = "Card URL";
 
         @Override
-        public void processThereAndBackAgainData(byte[] data) {
+        public void processThereAndBackAgainData(byte[] data, LoggingParameters loggingParameters) {
             assert ThreadUtils.runningOnUiThread();
-            FeedStreamJni.get().processThereAndBackAgain(mNativeFeedStream, FeedStream.this, data);
+            FeedStreamJni.get().processThereAndBackAgain(mNativeFeedStream, FeedStream.this, data,
+                    FeedLoggingParameters.convertToProto(loggingParameters).toByteArray());
         }
 
         @Override
@@ -204,9 +360,6 @@ public class FeedStream implements Stream {
             assert ThreadUtils.runningOnUiThread();
             FeedStreamJni.get().reportOtherUserAction(
                     mNativeFeedStream, FeedStream.this, FeedUserActionType.TAPPED_SEND_FEEDBACK);
-
-            // Make sure the bottom sheet is dismissed before we take a snapshot.
-            dismissBottomSheet();
 
             Profile profile = Profile.getLastUsedRegularProfile();
             if (profile == null) {
@@ -217,11 +370,19 @@ public class FeedStream implements Stream {
 
             Map<String, String> feedContext = convertNameFormat(productSpecificDataMap);
 
+            // We want to hide the bottom sheet before sending feedback so the snapshot doesn't show
+            // the menu covering the article.  However the menu is animating down, we need to wait
+            // for the animation to finish.  We post a task to wait for the duration of the
+            // animation, then call send feedback.
+
             // FEEDBACK_REPORT_TYPE: Reports for Chrome mobile must have a contextTag of the form
             // com.chrome.feed.USER_INITIATED_FEEDBACK_REPORT, or they will be discarded for not
             // matching an allow list rule.
-            mHelpAndFeedbackLauncher.showFeedback(
-                    mActivity, profile, url, FEEDBACK_REPORT_TYPE, feedContext);
+            PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT,
+                    ()
+                            -> mHelpAndFeedbackLauncher.showFeedback(
+                                    mActivity, profile, url, FEEDBACK_REPORT_TYPE, feedContext),
+                    MENU_DISMISS_TASK_DELAY);
         }
 
         @Override
@@ -298,27 +459,56 @@ public class FeedStream implements Stream {
         }
 
         @Override
-        public void reportNoticeCreated(String key) {
+        public void reportInfoCardTrackViewStarted(int type) {
             assert ThreadUtils.runningOnUiThread();
-            FeedStreamJni.get().reportNoticeCreated(mNativeFeedStream, FeedStream.this, key);
+            FeedStreamJni.get().reportInfoCardTrackViewStarted(
+                    mNativeFeedStream, FeedStream.this, type);
         }
 
         @Override
-        public void reportNoticeViewed(String key) {
+        public void reportInfoCardViewed(int type, int minimumViewIntervalSeconds) {
             assert ThreadUtils.runningOnUiThread();
-            FeedStreamJni.get().reportNoticeViewed(mNativeFeedStream, FeedStream.this, key);
+            FeedStreamJni.get().reportInfoCardViewed(
+                    mNativeFeedStream, FeedStream.this, type, minimumViewIntervalSeconds);
         }
 
         @Override
-        public void reportNoticeOpenAction(String key) {
+        public void reportInfoCardClicked(int type) {
             assert ThreadUtils.runningOnUiThread();
-            FeedStreamJni.get().reportNoticeOpenAction(mNativeFeedStream, FeedStream.this, key);
+            FeedStreamJni.get().reportInfoCardClicked(mNativeFeedStream, FeedStream.this, type);
         }
 
         @Override
-        public void reportNoticeDismissed(String key) {
+        public void reportInfoCardDismissedExplicitly(int type) {
             assert ThreadUtils.runningOnUiThread();
-            FeedStreamJni.get().reportNoticeDismissed(mNativeFeedStream, FeedStream.this, key);
+            FeedStreamJni.get().reportInfoCardDismissedExplicitly(
+                    mNativeFeedStream, FeedStream.this, type);
+        }
+
+        @Override
+        public void resetInfoCardStates(int type) {
+            assert ThreadUtils.runningOnUiThread();
+            FeedStreamJni.get().resetInfoCardStates(mNativeFeedStream, FeedStream.this, type);
+        }
+
+        private @StreamType int feedIdentifierToType(@FeedIdentifier int fid) {
+            switch (fid) {
+                case FeedIdentifier.MAIN_FEED:
+                    return StreamType.FOR_YOU;
+                case FeedIdentifier.FOLLOWING_FEED:
+                    return StreamType.WEB_FEED;
+            }
+            return StreamType.UNSPECIFIED;
+        }
+
+        @Override
+        public void invalidateContentCacheFor(@FeedIdentifier int feedToInvalidate) {
+            @StreamType
+            int feedKindToInvalidate = feedIdentifierToType(feedToInvalidate);
+            if (feedKindToInvalidate != StreamType.UNSPECIFIED) {
+                FeedStreamJni.get().invalidateContentCacheFor(
+                        mNativeFeedStream, FeedStream.this, feedKindToInvalidate);
+            }
         }
 
         // Since the XSurface client strings are slightly different than the Feed strings, convert
@@ -373,7 +563,7 @@ public class FeedStream implements Stream {
     private final long mNativeFeedStream;
     private final ObserverList<ContentChangedListener> mContentChangedListeners =
             new ObserverList<>();
-    private final boolean mIsInterestFeed;
+    private final int mStreamKind;
     // Various helpers/controllers.
     private ShareHelperWrapper mShareHelper;
     private SnackbarManager mSnackManager;
@@ -381,6 +571,7 @@ public class FeedStream implements Stream {
     private WindowAndroid mWindowAndroid;
     private final FeedAutoplaySettingsDelegate mFeedAutoplaySettingsDelegate;
     private UnreadContentObserver mUnreadContentObserver;
+    FeedContentFirstLoadWatcher mFeedContentFirstLoadWatcher;
 
     // For loading more content.
     private int mAccumulatedDySinceLastLoadMore;
@@ -395,6 +586,7 @@ public class FeedStream implements Stream {
     private final Map<String, Object> mHandlersMap;
     private RotationObserver mRotationObserver;
     private FeedReliabilityLoggingBridge mReliabilityLoggingBridge;
+    private FeedLaunchReliabilityLogger mLaunchReliabilityLogger;
 
     // Things valid only when bound.
     private @Nullable RecyclerView mRecyclerView;
@@ -414,9 +606,8 @@ public class FeedStream implements Stream {
     private final BottomSheetController mBottomSheetController;
     private BottomSheetContent mBottomSheetContent;
     private String mBottomSheetOriginatingSliceId;
-
-    // Sort options drawer.
-    private View mSortView;
+    private View mLastFocusedView;
+    private View mLastAccessibilityFocusedView;
 
     /**
      * Creates a new Feed Stream.
@@ -426,7 +617,7 @@ public class FeedStream implements Stream {
      * @param isPlaceholderShown Whether the placeholder is shown initially.
      * @param windowAndroid The {@link WindowAndroid} this is shown on.
      * @param shareDelegateSupplier The supplier for {@link ShareDelegate} for sharing actions.
-     * @param isInterestFeed Whether this stream is for interest feed (true) or web feed (false).
+     * @param streamKind Kind of stream data this feed stream serves.
      * @param feedAutoplaySettingsDelegate The delegate to invoke autoplay settings.
      * @param actionDelegate Implements some Feed actions.
      * @param helpAndFeedbackLauncher A HelpAndFeedbackLauncher.
@@ -434,13 +625,14 @@ public class FeedStream implements Stream {
     public FeedStream(Activity activity, SnackbarManager snackbarManager,
             BottomSheetController bottomSheetController, boolean isPlaceholderShown,
             WindowAndroid windowAndroid, Supplier<ShareDelegate> shareDelegateSupplier,
-            boolean isInterestFeed, FeedAutoplaySettingsDelegate feedAutoplaySettingsDelegate,
-            FeedActionDelegate actionDelegate, HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
+            int streamKind, FeedAutoplaySettingsDelegate feedAutoplaySettingsDelegate,
+            FeedActionDelegate actionDelegate, HelpAndFeedbackLauncher helpAndFeedbackLauncher,
+            FeedContentFirstLoadWatcher feedContentFirstLoadWatcher) {
         this.mActivity = activity;
-        mIsInterestFeed = isInterestFeed;
+        mStreamKind = streamKind;
         mReliabilityLoggingBridge = new FeedReliabilityLoggingBridge();
         mNativeFeedStream = FeedStreamJni.get().init(
-                this, isInterestFeed, mReliabilityLoggingBridge.getNativePtr());
+                this, streamKind, mReliabilityLoggingBridge.getNativePtr());
 
         mBottomSheetController = bottomSheetController;
         mShareHelper = new ShareHelperWrapper(windowAndroid, shareDelegateSupplier);
@@ -450,6 +642,7 @@ public class FeedStream implements Stream {
         mWindowAndroid = windowAndroid;
         mFeedAutoplaySettingsDelegate = feedAutoplaySettingsDelegate;
         mRotationObserver = new RotationObserver();
+        mFeedContentFirstLoadWatcher = feedContentFirstLoadWatcher;
 
         mHandlersMap = new HashMap<>();
         mHandlersMap.put(SurfaceActionsHandler.KEY, new FeedSurfaceActionsHandler(actionDelegate));
@@ -479,43 +672,18 @@ public class FeedStream implements Stream {
                 mScrollReporter.trackScroll(dx, dy);
             }
         };
+
         // Only watch for unread content on the web feed, not for-you feed.
         // Sort options only available for web feed right now.
-        if (!isInterestFeed && ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED_SORT)) {
+        if (streamKind == StreamKind.FOLLOWING) {
             mUnreadContentObserver = new UnreadContentObserver(/*isWebFeed=*/true);
-
-            @ContentOrder
-            int currentSort = FeedServiceBridge.getContentOrderForWebFeed();
-
-            mSortView = LayoutInflater.from(activity).inflate(R.layout.feed_options_panel, null);
-            SortView chipView = mSortView.findViewById(R.id.button_bar);
-            ListModel<PropertyModel> sortModel = new ListModel<>();
-            ListModelChangeProcessor<ListModel<PropertyModel>, SortView, Void> processor =
-                    new ListModelChangeProcessor<>(sortModel, chipView, new SortViewBinder());
-            sortModel.addObserver(processor);
-
-            sortModel.add(
-                    createSortModel(ContentOrder.REVERSE_CHRON, R.string.latest, currentSort));
-
-            sortModel.add(createSortModel(
-                    ContentOrder.GROUPED, R.string.feed_sort_publisher, currentSort));
         }
     }
 
-    private PropertyModel createSortModel(
-            @ContentOrder int order, @StringRes int stringResource, @ContentOrder int currentSort) {
-        return new PropertyModel.Builder(SortChipProperties.ALL_KEYS)
-                .with(SortChipProperties.NAME_KEY,
-                        mActivity.getResources().getString(stringResource))
-                .with(SortChipProperties.ON_SELECT_CALLBACK_KEY,
-                        () -> FeedServiceBridge.setContentOrderForWebFeed(order))
-                .with(SortChipProperties.IS_INITIALLY_SELECTED_KEY, currentSort == order)
-                .build();
-    }
-
     @Override
-    public View getOptionsView() {
-        return mSortView;
+    public boolean supportsOptions() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED_SORT)
+                && mStreamKind == StreamKind.FOLLOWING;
     }
 
     @Override
@@ -527,9 +695,9 @@ public class FeedStream implements Stream {
     }
 
     @Override
-    @SectionType
-    public int getSectionType() {
-        return mIsInterestFeed ? SectionType.FOR_YOU_FEED : SectionType.WEB_FEED;
+    @StreamKind
+    public int getStreamKind() {
+        return mStreamKind;
     }
 
     @Override
@@ -541,17 +709,17 @@ public class FeedStream implements Stream {
     public void bind(RecyclerView rootView, NtpListContentManager manager,
             FeedScrollState savedInstanceState, SurfaceScope surfaceScope,
             HybridListRenderer renderer, FeedLaunchReliabilityLogger launchReliabilityLogger,
-            int headerCount) {
-        launchReliabilityLogger.sendPendingEvents(
-                mIsInterestFeed ? StreamType.FOR_YOU : StreamType.WEB_FEED,
+            int headerCount, boolean shouldScrollToTop) {
+        mLaunchReliabilityLogger = launchReliabilityLogger;
+        launchReliabilityLogger.sendPendingEvents(getStreamType(),
                 FeedStreamJni.get().getSurfaceId(mNativeFeedStream, FeedStream.this));
         launchReliabilityLogger.logFeedReloading(System.nanoTime());
         mReliabilityLoggingBridge.setLogger(launchReliabilityLogger);
 
         mScrollStateToRestore = savedInstanceState;
         manager.setHandlers(mHandlersMap);
-        mSliceViewTracker =
-                new FeedSliceViewTracker(rootView, manager, new FeedStream.ViewTrackerObserver());
+        mSliceViewTracker = new FeedSliceViewTracker(rootView, manager,
+                renderer.getListLayoutHelper(), new FeedStream.ViewTrackerObserver());
         mSliceViewTracker.bind();
 
         rootView.addOnScrollListener(mMainScrollListener);
@@ -569,6 +737,15 @@ public class FeedStream implements Stream {
             // Set recyclerView as transparent until first batch of articles are loaded. Before
             // that, the placeholder is shown.
             mRecyclerView.getBackground().setAlpha(0);
+        }
+
+        // Add a spacer to allow us to scroll the feed to the top.  On a bind,
+        // we scroll the Following feed to the top (but not the For You feed).
+        if (isOnboardingEnabled() && shouldScrollToTop) {
+            ArrayList<NtpListContentManager.FeedContent> list = new ArrayList<>();
+            addSpacer(list);
+            updateContentsInPlace(list);
+            scrollFeedToTop();
         }
 
         FeedStreamJni.get().surfaceOpened(mNativeFeedStream, FeedStream.this);
@@ -599,14 +776,7 @@ public class FeedStream implements Stream {
         // Remove Feed content from the content manager. Add spacer if needed.
         ArrayList<NtpListContentManager.FeedContent> list = new ArrayList<>();
         if (shouldPlaceSpacer) {
-            if (mSpacerViewContent == null) {
-                FrameLayout spacerView = new FrameLayout(mActivity);
-                mSpacerViewContent = new NtpListContentManager.NativeViewContent(
-                        getLateralPaddingsPx(), "Spacer", spacerView);
-                spacerView.setLayoutParams(new FrameLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            }
-            list.add(mSpacerViewContent);
+            addSpacer(list);
         }
         updateContentsInPlace(list);
 
@@ -641,39 +811,6 @@ public class FeedStream implements Stream {
     @Override
     public void removeOnContentChangedListener(ContentChangedListener listener) {
         mContentChangedListeners.removeObserver(listener);
-    }
-
-    // TODO(chili): extract these uma-record methods to somewhere else - FeedLogger.java?
-    @Override
-    public void toggledArticlesListVisible(boolean visible) {
-        FeedStreamJni.get().reportOtherUserAction(mNativeFeedStream, FeedStream.this,
-                visible ? FeedUserActionType.TAPPED_TURN_ON : FeedUserActionType.TAPPED_TURN_OFF);
-    }
-
-    @Override
-    public void recordActionManageInterests() {
-        FeedStreamJni.get().reportOtherUserAction(
-                mNativeFeedStream, FeedStream.this, FeedUserActionType.TAPPED_MANAGE_INTERESTS);
-    }
-    @Override
-    public void recordActionManageActivity() {
-        FeedStreamJni.get().reportOtherUserAction(
-                mNativeFeedStream, FeedStream.this, FeedUserActionType.TAPPED_MANAGE_ACTIVITY);
-    }
-    @Override
-    public void recordActionManageReactions() {
-        FeedStreamJni.get().reportOtherUserAction(
-                mNativeFeedStream, FeedStream.this, FeedUserActionType.TAPPED_MANAGE_REACTIONS);
-    }
-    @Override
-    public void recordActionLearnMore() {
-        FeedStreamJni.get().reportOtherUserAction(
-                mNativeFeedStream, FeedStream.this, FeedUserActionType.TAPPED_LEARN_MORE);
-    }
-
-    @Override
-    public boolean isActivityLoggingEnabled() {
-        return FeedStreamJni.get().isActivityLoggingEnabled(mNativeFeedStream, this);
     }
 
     @Override
@@ -766,6 +903,11 @@ public class FeedStream implements Stream {
         return maybeLoadMore(mLoadMoreTriggerLookahead);
     }
 
+    /** returns true if we can use the onboarding feature. */
+    boolean isOnboardingEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED_ONBOARDING);
+    }
+
     /**
      * Attempts to load more content if it can be triggered.
      * @param lookaheadTrigger The threshold of off-screen cards below which the feed should attempt
@@ -779,7 +921,7 @@ public class FeedStream implements Stream {
             return false;
         }
         // Checks if loading more can be triggered.
-        LinearLayoutManager layoutManager = (LinearLayoutManager) mRecyclerView.getLayoutManager();
+        LayoutManager layoutManager = mRecyclerView.getLayoutManager();
         if (layoutManager == null) {
             return false;
         }
@@ -795,7 +937,7 @@ public class FeedStream implements Stream {
         // beyond the end of the feed. This can occur if maybeLoadMore() is called during a feed
         // swap, after the feed items have been cleared, but before the view has finished updating
         // (which happens asynchronously).
-        int lastVisibleItem = layoutManager.findLastVisibleItemPosition();
+        int lastVisibleItem = mRenderer.getListLayoutHelper().findLastVisibleItemPosition();
         if (totalItemCount < lastVisibleItem) {
             return false;
         }
@@ -809,7 +951,7 @@ public class FeedStream implements Stream {
         // Starts to load more content if not yet.
         if (!mIsLoadingMoreContent) {
             mIsLoadingMoreContent = true;
-            FeedUma.recordFeedLoadMoreTrigger(getSectionType(), totalItemCount, numItemsRemaining);
+            FeedUma.recordFeedLoadMoreTrigger(getStreamKind(), totalItemCount, numItemsRemaining);
             // The native loadMore() call may immediately result in onStreamUpdated(), which can
             // result in a crash if maybeLoadMore() is being called in response to certain events.
             // Use postTask to avoid this.
@@ -823,8 +965,23 @@ public class FeedStream implements Stream {
     }
 
     /**
-     * Called when the stream update content is available. The content will get passed to UI
+     * Adds a spacer into the recycler view at the current position. If there is no spacer, we can't
+     * scroll to the top, the scrolling  code won't go past the end of the content.
      */
+    void addSpacer(List list) {
+        if (mSpacerViewContent == null) {
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            mActivity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+            FrameLayout spacerView = new FrameLayout(mActivity);
+            mSpacerViewContent = new NtpListContentManager.NativeViewContent(
+                    getLateralPaddingsPx(), SPACER_KEY, spacerView);
+            spacerView.setLayoutParams(new FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, displayMetrics.heightPixels));
+        }
+        list.add(mSpacerViewContent);
+    }
+
+    /** Called when the stream update content is available. The content will get passed to UI */
     @CalledByNative
     void onStreamUpdated(byte[] data) {
         // There should be no updates while the surface is closed. If the surface was recently
@@ -841,6 +998,9 @@ public class FeedStream implements Stream {
 
         mLastFetchTimeMs = streamUpdate.getFetchTimeMs();
 
+        FeedLoggingParameters loggingParameters =
+                new FeedLoggingParameters(streamUpdate.getLoggingParameters());
+
         // Invalidate the saved scroll state if the content in the feed has changed.
         // Don't do anything if mLastFetchTimeMs is unset.
         if (mScrollStateToRestore != null && mLastFetchTimeMs != 0) {
@@ -854,6 +1014,8 @@ public class FeedStream implements Stream {
             mRenderer.update(state.getXsurfaceSharedState().toByteArray());
         }
 
+        boolean foundNewContent = false;
+
         // Builds the new list containing:
         // * existing headers
         // * both new and existing contents
@@ -862,22 +1024,43 @@ public class FeedStream implements Stream {
                 streamUpdate.getUpdatedSlicesList()) {
             if (sliceUpdate.hasSlice()) {
                 NtpListContentManager.FeedContent content =
-                        createContentFromSlice(sliceUpdate.getSlice());
+                        createContentFromSlice(sliceUpdate.getSlice(), loggingParameters);
                 if (content != null) {
                     newContentList.add(content);
+                    if (!content.isNativeView()) {
+                        foundNewContent = true;
+                    }
                 }
             } else {
                 String existingSliceId = sliceUpdate.getSliceId();
                 int position = mContentManager.findContentPositionByKey(existingSliceId);
                 if (position != -1) {
                     newContentList.add(mContentManager.getContent(position));
+                    if (!mContentManager.getContent(position).isNativeView()) {
+                        foundNewContent = true;
+                    }
                 }
+                // We intentionially don't add the spacer back in. The spacer has a key SPACER_KEY,
+                // not a slice id.
             }
         }
-        updateContentsInPlace(newContentList);
 
-        // TODO(iwells): Look into alternatives to View.post() that specifically wait for rendering.
+        // If there was empty space left on the screen, add the spacer back in.  Since card size has
+        // not yet been calculated, we use an approximation of adding the spacer if two or less
+        // items are in the recycler view.
+        if (isOnboardingEnabled() && newContentList.size() <= 2) {
+            addSpacer(newContentList);
+        }
+
+        updateContentsInPlace(newContentList);
         mRecyclerView.post(mReliabilityLoggingBridge::onStreamUpdateFinished);
+
+        // If we have new content, and the new content callback is set, then call it, and clear the
+        // callback.
+        if (mFeedContentFirstLoadWatcher != null && foundNewContent) {
+            mFeedContentFirstLoadWatcher.nonNativeContentLoaded(mStreamKind);
+            mFeedContentFirstLoadWatcher = null;
+        }
 
         // If all of the cards fit on the screen, load more content. The view
         // may not be scrollable, preventing the user from otherwise triggering
@@ -885,11 +1068,12 @@ public class FeedStream implements Stream {
         maybeLoadMore(/*lookaheadTrigger=*/0);
     }
 
-    private NtpListContentManager.FeedContent createContentFromSlice(FeedUiProto.Slice slice) {
+    private NtpListContentManager.FeedContent createContentFromSlice(
+            FeedUiProto.Slice slice, LoggingParameters loggingParameters) {
         String sliceId = slice.getSliceId();
         if (slice.hasXsurfaceSlice()) {
-            return new NtpListContentManager.ExternalViewContent(
-                    sliceId, slice.getXsurfaceSlice().getXsurfaceFrame().toByteArray());
+            return new NtpListContentManager.ExternalViewContent(sliceId,
+                    slice.getXsurfaceSlice().getXsurfaceFrame().toByteArray(), loggingParameters);
         } else if (slice.hasLoadingSpinnerSlice()) {
             // If the placeholder is shown, spinner is not needed.
             if (mIsPlaceholderShown) {
@@ -904,7 +1088,7 @@ public class FeedStream implements Stream {
                     getLateralPaddingsPx(), sliceId, R.layout.feed_spinner);
         }
         assert slice.hasZeroStateSlice();
-        if (!mIsInterestFeed) {
+        if (mStreamKind == StreamKind.FOLLOWING) {
             return new NtpListContentManager.NativeViewContent(
                     getLateralPaddingsPx(), sliceId, R.layout.following_empty_state);
         }
@@ -930,6 +1114,19 @@ public class FeedStream implements Stream {
         }
     }
 
+    private @StreamType int getStreamType() {
+        switch (mStreamKind) {
+            case StreamKind.FOR_YOU:
+                return StreamType.FOR_YOU;
+            case StreamKind.FOLLOWING:
+                return StreamType.WEB_FEED;
+            case StreamKind.CHANNEL:
+                return StreamType.CHANNEL;
+            default:
+                return StreamType.UNSPECIFIED;
+        }
+    }
+
     /**
      * Restores the scroll state serialized to |savedInstanceState|.
      * @return true if the scroll state was restored, or if the state could never be restored.
@@ -946,11 +1143,25 @@ public class FeedStream implements Stream {
         // spinner.
         if (mContentManager.getContent(state.lastPosition).isNativeView()) return false;
 
-        LinearLayoutManager layoutManager = (LinearLayoutManager) mRecyclerView.getLayoutManager();
-        if (layoutManager != null) {
-            layoutManager.scrollToPositionWithOffset(state.position, state.offset);
+        ListLayoutHelper layoutHelper = mRenderer.getListLayoutHelper();
+        if (layoutHelper != null) {
+            layoutHelper.scrollToPositionWithOffset(state.position, state.offset);
         }
         return true;
+    }
+
+    /** Scrolls a feed to the top. */
+    public void scrollFeedToTop() {
+        if (!isOnboardingEnabled()) return;
+
+        // Scroll to the first position, which should be the tab header.
+        ListLayoutHelper layoutHelper = mRenderer.getListLayoutHelper();
+        if (layoutHelper != null) {
+            int omnibarHeight = (int) (mActivity.getResources().getDimensionPixelSize(
+                    R.dimen.toolbar_height_no_shadow));
+            layoutHelper.scrollToPositionWithOffset(/*position=*/mHeaderCount - 1,
+                    /*offset=*/omnibarHeight);
+        }
     }
 
     private void notifyContentChange() {
@@ -1028,11 +1239,26 @@ public class FeedStream implements Stream {
         return mMainScrollListener;
     }
 
+    @VisibleForTesting
+    UnreadContentObserver getUnreadContentObserverForTest() {
+        return mUnreadContentObserver;
+    }
+
     // Scroll state can't be restored until enough items are added to the recycler view adapter.
     // Attempts to restore scroll state every time new items are added to the adapter.
     class RestoreScrollObserver extends RecyclerView.AdapterDataObserver {
         @Override
         public void onItemRangeInserted(int positionStart, int itemCount) {
+            restoreScrollStateIfNeeded();
+        }
+
+        // This is the triggering event when FeedReplaceAll experiment is on.
+        @Override
+        public void onChanged() {
+            restoreScrollStateIfNeeded();
+        }
+
+        private void restoreScrollStateIfNeeded() {
             if (mScrollStateToRestore != null) {
                 if (restoreScrollState(mScrollStateToRestore)) {
                     mScrollStateToRestore = null;
@@ -1087,7 +1313,8 @@ public class FeedStream implements Stream {
         }
     }
 
-    private class UnreadContentObserver extends FeedServiceBridge.UnreadContentObserver {
+    @VisibleForTesting
+    class UnreadContentObserver extends FeedServiceBridge.UnreadContentObserver {
         ObservableSupplierImpl<Boolean> mHasUnreadContent = new ObservableSupplierImpl<>();
 
         UnreadContentObserver(boolean isWebFeed) {
@@ -1109,21 +1336,24 @@ public class FeedStream implements Stream {
     @NativeMethods
     @VisibleForTesting
     public interface Natives {
-        long init(FeedStream caller, boolean isForYou, long nativeFeedReliabilityLoggingBridge);
-        boolean isActivityLoggingEnabled(long nativeFeedStream, FeedStream caller);
+        long init(FeedStream caller, @StreamKind int streamKind,
+                long nativeFeedReliabilityLoggingBridge);
+        long initWebFeed(
+                FeedStream caller, byte[] webFeedId, long nativeFeedReliabilityLoggingBridge);
         void reportFeedViewed(long nativeFeedStream, FeedStream caller);
         void reportSliceViewed(long nativeFeedStream, FeedStream caller, String sliceId);
         void reportPageLoaded(long nativeFeedStream, FeedStream caller, boolean inNewTab);
-        void reportOpenAction(long nativeFeedStream, FeedStream caller, GURL url, String sliceId);
-        void reportOpenInNewTabAction(
-                long nativeFeedStream, FeedStream caller, GURL url, String sliceId);
+        void reportOpenAction(long nativeFeedStream, FeedStream caller, GURL url, String sliceId,
+                @OpenActionType int openActionType);
         void reportOtherUserAction(
                 long nativeFeedStream, FeedStream caller, @FeedUserActionType int userAction);
         void reportStreamScrolled(long nativeFeedStream, FeedStream caller, int distanceDp);
         void reportStreamScrollStart(long nativeFeedStream, FeedStream caller);
+        void updateUserProfileOnLinkClick(long nativeFeedStream, GURL url, long[] mids);
         void loadMore(long nativeFeedStream, FeedStream caller, Callback<Boolean> callback);
         void manualRefresh(long nativeFeedStream, FeedStream caller, Callback<Boolean> callback);
-        void processThereAndBackAgain(long nativeFeedStream, FeedStream caller, byte[] data);
+        void processThereAndBackAgain(
+                long nativeFeedStream, FeedStream caller, byte[] data, byte[] loggingParameters);
         int executeEphemeralChange(long nativeFeedStream, FeedStream caller, byte[] data);
         void commitEphemeralChange(long nativeFeedStream, FeedStream caller, int changeId);
         void discardEphemeralChange(long nativeFeedStream, FeedStream caller, int changeId);
@@ -1131,9 +1361,13 @@ public class FeedStream implements Stream {
         void surfaceClosed(long nativeFeedStream, FeedStream caller);
         int getSurfaceId(long nativeFeedStream, FeedStream caller);
         long getLastFetchTimeMs(long nativeFeedStream, FeedStream caller);
-        void reportNoticeCreated(long nativeFeedStream, FeedStream caller, String key);
-        void reportNoticeViewed(long nativeFeedStream, FeedStream caller, String key);
-        void reportNoticeOpenAction(long nativeFeedStream, FeedStream caller, String key);
-        void reportNoticeDismissed(long nativeFeedStream, FeedStream caller, String key);
+        void reportInfoCardTrackViewStarted(long nativeFeedStream, FeedStream caller, int type);
+        void reportInfoCardViewed(
+                long nativeFeedStream, FeedStream caller, int type, int minimumViewIntervalSeconds);
+        void reportInfoCardClicked(long nativeFeedStream, FeedStream caller, int type);
+        void reportInfoCardDismissedExplicitly(long nativeFeedStream, FeedStream caller, int type);
+        void resetInfoCardStates(long nativeFeedStream, FeedStream caller, int type);
+        void invalidateContentCacheFor(
+                long nativeFeedStream, FeedStream caller, @StreamType int feedToInvalidate);
     }
 }

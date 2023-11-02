@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <memory>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
@@ -27,7 +27,6 @@ class SingleThreadTaskRunner;
 
 namespace gpu {
 class GpuChannel;
-class ImageFactory;
 class SyncPointClientState;
 
 // Processes incoming image decode requests from renderers: it schedules the
@@ -66,8 +65,6 @@ class GPU_IPC_SERVICE_EXPORT ImageDecodeAcceleratorStub
   // used.
   void Shutdown();
 
-  void SetImageFactoryForTesting(ImageFactory* image_factory);
-
  private:
   friend class base::RefCountedThreadSafe<ImageDecodeAcceleratorStub>;
   ~ImageDecodeAcceleratorStub();
@@ -90,17 +87,15 @@ class GPU_IPC_SERVICE_EXPORT ImageDecodeAcceleratorStub
       std::unique_ptr<ImageDecodeAcceleratorWorker::DecodeResult> result);
 
   // The object to which the actual decoding can be delegated.
-  ImageDecodeAcceleratorWorker* worker_ = nullptr;
+  raw_ptr<ImageDecodeAcceleratorWorker> worker_ = nullptr;
 
   base::Lock lock_;
-  GpuChannel* channel_ GUARDED_BY(lock_) = nullptr;
+  raw_ptr<GpuChannel> channel_ GUARDED_BY(lock_) = nullptr;
   SequenceId sequence_ GUARDED_BY(lock_);
   scoped_refptr<SyncPointClientState> sync_point_client_state_
       GUARDED_BY(lock_);
   base::queue<std::unique_ptr<ImageDecodeAcceleratorWorker::DecodeResult>>
       pending_completed_decodes_ GUARDED_BY(lock_);
-
-  ImageFactory* external_image_factory_for_testing_ = nullptr;
 
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;

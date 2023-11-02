@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,8 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_EXTENSIONS_BOOKMARK_APP_UTIL_H_
 
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "extensions/common/constants.h"
 
 namespace content {
@@ -33,7 +34,7 @@ bool BookmarkAppIsLocallyInstalled(const ExtensionPrefs* prefs,
 bool IsInNavigationScopeForLaunchUrl(const GURL& launch_url, const GURL& url);
 
 struct LaunchContainerAndType {
-  extensions::LaunchContainer launch_container;
+  apps::LaunchContainer launch_container;
   extensions::LaunchType launch_type;
 };
 

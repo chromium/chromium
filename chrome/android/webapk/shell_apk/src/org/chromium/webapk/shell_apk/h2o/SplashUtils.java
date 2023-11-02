@@ -1,16 +1,15 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.webapk.shell_apk.h2o;
-
-import static org.chromium.webapk.shell_apk.h2o.SplashActivity.isAtLeastS;
 
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.os.Build;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -98,8 +97,9 @@ public class SplashUtils {
             Context context, int splashWidth, int splashHeight, int maxSizeBytes) {
         if (splashWidth <= 0 || splashHeight <= 0) return null;
 
-        View splashView = isAtLeastS() ? SplashUtilsForS.createSplashView(context)
-                                       : createSplashView(context);
+        View splashView = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                ? SplashUtilsForS.createSplashView(context)
+                : createSplashView(context);
 
         splashView.measure(View.MeasureSpec.makeMeasureSpec(splashWidth, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(splashHeight, View.MeasureSpec.EXACTLY));

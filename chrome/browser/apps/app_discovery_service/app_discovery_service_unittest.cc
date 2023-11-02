@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/test/bind.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service_factory.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_util.h"
@@ -55,6 +56,7 @@ class AppDiscoveryServiceTest : public testing::Test {
  protected:
   Profile* profile() { return &profile_; }
   TestFetcher* test_fetcher() { return test_fetcher_.get(); }
+  base::CallbackListSubscription subscription_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -69,14 +71,17 @@ TEST_F(AppDiscoveryServiceTest, GetAppsFromFetcherNoExtras) {
 
   std::vector<Result> fake_results;
   fake_results.emplace_back(
-      Result(AppSource::kPlay, kTestAppId, kTestAppTitle, nullptr));
+      Result(AppSource::kTestSource, kTestAppId, kTestAppTitle, nullptr));
   test_fetcher()->SetResults(std::move(fake_results));
 
   app_discovery_service->GetApps(
-      ResultType::kRecommendedArcApps,
-      base::BindLambdaForTesting([this](std::vector<Result> results) {
+      ResultType::kTestType,
+      base::BindLambdaForTesting([this](const std::vector<Result>& results,
+                                        DiscoveryError error) {
+        EXPECT_EQ(error, DiscoveryError::kSuccess);
         EXPECT_EQ(results.size(), 1u);
-        CheckResult(results[0], AppSource::kPlay, kTestAppId, kTestAppTitle);
+        CheckResult(results[0], AppSource::kTestSource, kTestAppId,
+                    kTestAppTitle);
         EXPECT_FALSE(results[0].GetSourceExtras());
       }));
 }
@@ -91,14 +96,16 @@ TEST_F(AppDiscoveryServiceTest, GetArcAppsFromFetcher) {
   auto play_extras = std::make_unique<PlayExtras>(
       kTestPlayAppPackageName, kTestIconUrl, kTestPlayAppCategory,
       kTestPlayAppDescription, kTestPlayAppContentRating, kTestIconUrl, true,
-      false, false);
+      false, false, false);
   fake_results.emplace_back(Result(AppSource::kPlay, kTestAppId, kTestAppTitle,
                                    std::move(play_extras)));
   test_fetcher()->SetResults(std::move(fake_results));
 
   app_discovery_service->GetApps(
-      ResultType::kRecommendedArcApps,
-      base::BindLambdaForTesting([this](std::vector<Result> results) {
+      ResultType::kTestType,
+      base::BindLambdaForTesting([this](const std::vector<Result>& results,
+                                        DiscoveryError error) {
+        EXPECT_EQ(error, DiscoveryError::kSuccess);
         GURL kTestIconUrl(kTestPlayAppIconUrl);
         EXPECT_EQ(results.size(), 1u);
         CheckResult(results[0], AppSource::kPlay, kTestAppId, kTestAppTitle);
@@ -114,7 +121,34 @@ TEST_F(AppDiscoveryServiceTest, GetArcAppsFromFetcher) {
         EXPECT_EQ(play_extras->GetHasInAppPurchases(), true);
         EXPECT_EQ(play_extras->GetWasPreviouslyInstalled(), false);
         EXPECT_EQ(play_extras->GetContainsAds(), false);
+        EXPECT_EQ(play_extras->GetOptimizedForChrome(), false);
       }));
+}
+
+TEST_F(AppDiscoveryServiceTest, RegisterForUpdates) {
+  auto* app_discovery_service =
+      AppDiscoveryServiceFactory::GetForProfile(profile());
+  EXPECT_TRUE(app_discovery_service);
+
+  std::vector<Result> fake_results;
+  fake_results.emplace_back(
+      Result(AppSource::kTestSource, kTestAppId, kTestAppTitle, nullptr));
+
+  bool update_verified = false;
+  subscription_ = app_discovery_service->RegisterForAppUpdates(
+      ResultType::kTestType,
+      base::BindLambdaForTesting(
+          [this, &update_verified](const std::vector<Result>& results) {
+            EXPECT_EQ(results.size(), 1u);
+            CheckResult(results[0], AppSource::kTestSource, kTestAppId,
+                        kTestAppTitle);
+            EXPECT_FALSE(results[0].GetSourceExtras());
+            update_verified = true;
+          }));
+
+  EXPECT_FALSE(update_verified);
+  test_fetcher()->SetResults(std::move(fake_results));
+  EXPECT_TRUE(update_verified);
 }
 
 }  // namespace apps

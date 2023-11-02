@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ class MODULES_EXPORT VideoFrameAttachment
   ~VideoFrameAttachment() override = default;
 
   bool IsLockedToAgentCluster() const override {
-    return !frame_handles_.IsEmpty();
+    return !frame_handles_.empty();
   }
 
   size_t size() const { return frame_handles_.size(); }

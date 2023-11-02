@@ -15,9 +15,10 @@
       const input = document.createElement('input');
       label.appendChild(input);
       iframe.appendChild(label);
-
-      document.title = 'done';
-    }, 50);
+      setTimeout(() => {
+        document.title = 'done';
+      }, 250);
+    }, 250);
   });
 </script>
 

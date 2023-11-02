@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/json/json_reader.h"
-#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/synchronization/condition_variable.h"
@@ -22,7 +21,6 @@
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/auction_v8_inspector_util.h"
 #include "v8/include/v8-inspector.h"
-#include "v8/include/v8-locker.h"
 
 namespace auction_worklet {
 
@@ -58,9 +56,8 @@ TestChannel::Event TestChannel::RunCommandAndWaitForResult(
   return WaitForEvent(base::BindRepeating(
       [](int call_id, const Event& event) {
         return event.type == Event::Type::Response &&
-               event.call_id == call_id &&
-               event.value.FindIntKey("id").has_value() &&
-               event.value.FindIntKey("id").value() == call_id;
+               event.call_id == call_id && event.value.is_dict() &&
+               event.value.GetDict().FindInt("id") == call_id;
       },
       call_id));
 }
@@ -93,7 +90,7 @@ TestChannel::Event TestChannel::WaitForMethodNotification(
           return false;
 
         const std::string* candidate_method =
-            event.value.FindStringKey("method");
+            event.value.GetDict().FindString("method");
         return (candidate_method && *candidate_method == method);
       },
       method));
@@ -157,43 +154,11 @@ void TestChannel::RunCommandOnV8Thread(int call_id,
   CHECK(
       v8_inspector::V8InspectorSession::canDispatchMethod(ToStringView(method)))
       << method << " " << payload;
-  // Need v8 locker, isolate access.
+  // Need isolate access.
   AuctionV8Helper::FullIsolateScope v8_scope(v8_helper_.get());
 
   // Send over the JSON message; we don't deal with CBOR in this fixture.
   v8_inspector_session_->dispatchProtocolMessage(ToStringView(payload));
-}
-
-int AllocContextGroupIdAndWait(scoped_refptr<AuctionV8Helper> v8_helper) {
-  int result = AuctionV8Helper::kNoDebugContextGroupId;
-  base::RunLoop run_loop;
-  v8_helper->v8_runner()->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](scoped_refptr<AuctionV8Helper> v8_helper,
-                        int& out_result, base::OnceClosure done_closure) {
-                       out_result =
-                           v8_helper->AllocContextGroupIdAndSetResumeCallback(
-                               base::OnceClosure());
-                       std::move(done_closure).Run();
-                     },
-                     v8_helper, std::ref(result), run_loop.QuitClosure()));
-  run_loop.Run();
-  CHECK_NE(AuctionV8Helper::kNoDebugContextGroupId, result);
-  return result;
-}
-
-void FreeContextGroupIdAndWait(scoped_refptr<AuctionV8Helper> v8_helper,
-                               int context_group_id) {
-  base::RunLoop run_loop;
-  v8_helper->v8_runner()->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](scoped_refptr<AuctionV8Helper> v8_helper,
-                        int context_group_id, base::OnceClosure done_closure) {
-                       v8_helper->FreeContextGroupId(context_group_id);
-                       std::move(done_closure).Run();
-                     },
-                     v8_helper, context_group_id, run_loop.QuitClosure()));
-  run_loop.Run();
 }
 
 ScopedInspectorSupport::ScopedInspectorSupport(AuctionV8Helper* v8_helper)
@@ -232,12 +197,7 @@ TestChannel* ScopedInspectorSupport::ConnectDebuggerSession(
 
 ScopedInspectorSupport::V8State::V8State() = default;
 ScopedInspectorSupport::V8State::~V8State() {
-  // Need lock before deleting the `inspector_sessions_`.
-  {
-    v8::Locker locker(v8_helper_->isolate());
-    inspector_sessions_.clear();
-  }
-
+  inspector_sessions_.clear();
   output_channels_.clear();
 
   // Delete inspector after `inspector_sessions_`, before `inspector_client`_
@@ -258,7 +218,8 @@ void ScopedInspectorSupport::ConnectDebuggerSessionOnV8Thread(
   *result = test_channel.get();
 
   auto session = v8_state_->v8_helper_->inspector()->connect(
-      context_group_id, test_channel.get(), v8_inspector::StringView());
+      context_group_id, test_channel.get(), v8_inspector::StringView(),
+      v8_inspector::V8Inspector::kFullyTrusted);
   test_channel->SetInspectorSession(session.get());
   v8_state_->output_channels_.push_back(std::move(test_channel));
   v8_state_->inspector_sessions_.push_back(std::move(session));

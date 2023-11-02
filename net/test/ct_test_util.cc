@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,9 +19,7 @@
 #include "net/cert/signed_tree_head.h"
 #include "net/cert/x509_certificate.h"
 
-namespace net {
-
-namespace ct {
+namespace net::ct {
 
 namespace {
 
@@ -211,7 +209,7 @@ std::string GetTestPublicKeyId() {
 
 void GetX509CertSCT(scoped_refptr<SignedCertificateTimestamp>* sct_ref) {
   CHECK(sct_ref != nullptr);
-  *sct_ref = new SignedCertificateTimestamp();
+  *sct_ref = base::MakeRefCounted<SignedCertificateTimestamp>();
   SignedCertificateTimestamp *const sct(sct_ref->get());
   sct->version = ct::SignedCertificateTimestamp::V1;
   sct->log_id = HexDecode(kTestKeyId);
@@ -228,7 +226,7 @@ void GetX509CertSCT(scoped_refptr<SignedCertificateTimestamp>* sct_ref) {
 
 void GetPrecertSCT(scoped_refptr<SignedCertificateTimestamp>* sct_ref) {
   CHECK(sct_ref != nullptr);
-  *sct_ref = new SignedCertificateTimestamp();
+  *sct_ref = base::MakeRefCounted<SignedCertificateTimestamp>();
   SignedCertificateTimestamp *const sct(sct_ref->get());
   sct->version = ct::SignedCertificateTimestamp::V1;
   sct->log_id = HexDecode(kTestKeyId);
@@ -407,6 +405,4 @@ bool CheckForSCTOrigin(const SignedCertificateTimestampAndStatusList& scts,
   return false;
 }
 
-}  // namespace ct
-
-}  // namespace net
+}  // namespace net::ct

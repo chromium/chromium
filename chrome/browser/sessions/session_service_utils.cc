@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,9 @@ sessions::SessionWindow::WindowType WindowTypeForBrowserType(
     case Browser::TYPE_NORMAL:
       return sessions::SessionWindow::TYPE_NORMAL;
     case Browser::TYPE_POPUP:
+      return sessions::SessionWindow::TYPE_POPUP;
+    case Browser::TYPE_PICTURE_IN_PICTURE:
+      // For now, picture in picture windows can be treated like popups.
       return sessions::SessionWindow::TYPE_POPUP;
     case Browser::TYPE_APP:
       return sessions::SessionWindow::TYPE_APP;

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,8 @@
 
 namespace media {
 namespace cast {
+
+struct EncodedFrame;
 
 typedef std::map<uint16_t, std::vector<uint8_t>> PacketMap;
 

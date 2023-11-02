@@ -1,0 +1,39 @@
+<link rel="stylesheet" href="../demo.css">
+<style>
+  cr-tabs,
+  iron-pages {
+    width: 100%;
+  }
+
+  .tab-contents {
+    align-items: center;
+    display: flex;
+    height: 150px;
+    justify-content: center;
+  }
+</style>
+
+<h1>cr-tabs</h1>
+<div class="demos">
+  <cr-tabs tab-names="[[tabNames_]]" selected="{{selectedTabIndex_}}"></cr-tabs>
+  <iron-pages selected="[[selectedTabIndex_]]">
+    <template is="dom-repeat" items="[[tabNames_]]" as="tabName">
+      <div class="tab-contents">
+        [[tabName]] contents
+      </div>
+    </template>
+  </iron-pages>
+</div>
+
+<div class="demos">
+  <div class="row">
+    <cr-button on-click="onAddClick_">Add</cr-button>
+    <cr-button on-click="onAddAt1Click_">Add at 1</cr-button>
+    <cr-button on-click="onSelectAt1Click_">Select at 1</cr-button>
+  </div>
+</div>
+
+<div>
+  Tab Count: [[tabNames_.length]],
+  Selected Tab: [[selectedTabIndex_]]
+</div>

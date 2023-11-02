@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_service_factory.h"
 #include "components/prefs/pref_value_store.h"
 
@@ -51,7 +52,7 @@ class PrefServiceSyncableFactory : public PrefServiceFactory {
       scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry);
 
  private:
-  PrefModelAssociatorClient* pref_model_associator_client_ = nullptr;
+  raw_ptr<PrefModelAssociatorClient> pref_model_associator_client_ = nullptr;
 };
 
 }  // namespace sync_preferences

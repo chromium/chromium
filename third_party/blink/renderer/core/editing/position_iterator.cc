@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/editing/position_iterator.h"
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 
@@ -234,7 +235,7 @@ void PositionIteratorAlgorithm<Strategy>::Increment() {
       ++offsets_in_anchor_node_[depth_to_anchor_node_];
     node_after_position_in_anchor_ =
         Strategy::NextSibling(*node_after_position_in_anchor_);
-    offset_in_anchor_ = 0;
+    offset_in_anchor_ = offsets_in_anchor_node_[depth_to_anchor_node_];
   }
 }
 
@@ -345,8 +346,8 @@ void PositionIteratorAlgorithm<Strategy>::Decrement() {
   --depth_to_anchor_node_;
   if (offsets_in_anchor_node_[depth_to_anchor_node_] != kInvalidOffset)
     return;
-  offsets_in_anchor_node_[depth_to_anchor_node_] =
-      Strategy::Index(*node_after_position_in_anchor_);
+  offset_in_anchor_ = Strategy::Index(*node_after_position_in_anchor_);
+  offsets_in_anchor_node_[depth_to_anchor_node_] = offset_in_anchor_;
 }
 
 template <typename Strategy>

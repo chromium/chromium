@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,25 @@
 #include "ios/chrome/browser/history/history_client_impl.h"
 
 namespace ios {
+
+namespace {
+
+std::unique_ptr<KeyedService> BuildHistoryService(web::BrowserState* context) {
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(context);
+  std::unique_ptr<history::HistoryService> history_service(
+      new history::HistoryService(
+          std::make_unique<HistoryClientImpl>(
+              ios::BookmarkModelFactory::GetForBrowserState(browser_state)),
+          nullptr));
+  if (!history_service->Init(history::HistoryDatabaseParamsForPath(
+          browser_state->GetStatePath()))) {
+    return nullptr;
+  }
+  return history_service;
+}
+
+}  // namespace
 
 // static
 history::HistoryService* HistoryServiceFactory::GetForBrowserState(
@@ -58,6 +77,12 @@ HistoryServiceFactory* HistoryServiceFactory::GetInstance() {
   return instance.get();
 }
 
+// static
+HistoryServiceFactory::TestingFactory
+HistoryServiceFactory::GetDefaultFactory() {
+  return base::BindRepeating(&BuildHistoryService);
+}
+
 HistoryServiceFactory::HistoryServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "HistoryService",
@@ -70,18 +95,7 @@ HistoryServiceFactory::~HistoryServiceFactory() {
 
 std::unique_ptr<KeyedService> HistoryServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  std::unique_ptr<history::HistoryService> history_service(
-      new history::HistoryService(
-          std::make_unique<HistoryClientImpl>(
-              ios::BookmarkModelFactory::GetForBrowserState(browser_state)),
-          nullptr));
-  if (!history_service->Init(history::HistoryDatabaseParamsForPath(
-          browser_state->GetStatePath()))) {
-    return nullptr;
-  }
-  return history_service;
+  return BuildHistoryService(context);
 }
 
 web::BrowserState* HistoryServiceFactory::GetBrowserStateToUse(

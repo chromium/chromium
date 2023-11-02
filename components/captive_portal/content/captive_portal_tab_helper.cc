@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,7 @@ CaptivePortalTabHelper::CaptivePortalTabHelper(
         open_login_tab_callback)
 
     : content::WebContentsObserver(web_contents),
-      navigation_handle_(nullptr),
+      content::WebContentsUserData<CaptivePortalTabHelper>(*web_contents),
       tab_reloader_(new CaptivePortalTabReloader(captive_portal_service,
                                                  web_contents,
                                                  open_login_tab_callback)),

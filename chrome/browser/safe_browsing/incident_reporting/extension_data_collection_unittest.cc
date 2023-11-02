@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -59,9 +60,9 @@ class ExtensionTestingProfile : public TestingProfile {
   void SetInstallSignature(extensions::InstallSignature signature);
 
  private:
-  TestingProfile* profile_;
-  extensions::ExtensionService* extension_service_;
-  extensions::ExtensionPrefs* extension_prefs_;
+  raw_ptr<TestingProfile> profile_;
+  raw_ptr<extensions::ExtensionService> extension_service_;
+  raw_ptr<extensions::ExtensionPrefs> extension_prefs_;
 };
 
 ExtensionTestingProfile::ExtensionTestingProfile(TestingProfile* profile)
@@ -175,7 +176,6 @@ class ExtensionDataCollectionTest : public testing::Test {
         profile_name, std::move(prefs),
         base::UTF8ToUTF16(profile_name),  // user_name
         0,                                // avatar_id
-        std::string(),                    // supervised_user_id
         TestingProfile::TestingFactories());
 
     auto testing_profile = std::make_unique<ExtensionTestingProfile>(profile);

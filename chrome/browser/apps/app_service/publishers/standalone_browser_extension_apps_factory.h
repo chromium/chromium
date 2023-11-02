@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_STANDALONE_BROWSER_EXTENSION_APPS_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -14,27 +14,54 @@ namespace apps {
 
 class StandaloneBrowserExtensionApps;
 
-// Singleton that owns all StandaloneBrowserExtensionApps publisher and
-// associates them with Profiles.
-class StandaloneBrowserExtensionAppsFactory
-    : public BrowserContextKeyedServiceFactory {
+// Singleton that owns all StandaloneBrowserExtensionApps publisher for
+// Chrome Apps and associates them with Profiles.
+class StandaloneBrowserExtensionAppsFactoryForApp
+    : public ProfileKeyedServiceFactory {
  public:
   static StandaloneBrowserExtensionApps* GetForProfile(Profile* profile);
 
-  static StandaloneBrowserExtensionAppsFactory* GetInstance();
+  static StandaloneBrowserExtensionAppsFactoryForApp* GetInstance();
 
   static void ShutDownForTesting(content::BrowserContext* context);
 
  private:
   friend struct base::DefaultSingletonTraits<
-      StandaloneBrowserExtensionAppsFactory>;
+      StandaloneBrowserExtensionAppsFactoryForApp>;
 
-  StandaloneBrowserExtensionAppsFactory();
-  StandaloneBrowserExtensionAppsFactory(
-      const StandaloneBrowserExtensionAppsFactory&) = delete;
-  StandaloneBrowserExtensionAppsFactory& operator=(
-      const StandaloneBrowserExtensionAppsFactory&) = delete;
-  ~StandaloneBrowserExtensionAppsFactory() override = default;
+  StandaloneBrowserExtensionAppsFactoryForApp();
+  StandaloneBrowserExtensionAppsFactoryForApp(
+      const StandaloneBrowserExtensionAppsFactoryForApp&) = delete;
+  StandaloneBrowserExtensionAppsFactoryForApp& operator=(
+      const StandaloneBrowserExtensionAppsFactoryForApp&) = delete;
+  ~StandaloneBrowserExtensionAppsFactoryForApp() override = default;
+
+  // BrowserContextKeyedServiceFactory overrides.
+  KeyedService* BuildServiceInstanceFor(
+      content::BrowserContext* context) const override;
+};
+
+// Singleton that owns all StandaloneBrowserExtensionApps publisher for
+// Extensions and associates them with Profiles.
+class StandaloneBrowserExtensionAppsFactoryForExtension
+    : public ProfileKeyedServiceFactory {
+ public:
+  static StandaloneBrowserExtensionApps* GetForProfile(Profile* profile);
+
+  static StandaloneBrowserExtensionAppsFactoryForExtension* GetInstance();
+
+  static void ShutDownForTesting(content::BrowserContext* context);
+
+ private:
+  friend struct base::DefaultSingletonTraits<
+      StandaloneBrowserExtensionAppsFactoryForExtension>;
+
+  StandaloneBrowserExtensionAppsFactoryForExtension();
+  StandaloneBrowserExtensionAppsFactoryForExtension(
+      const StandaloneBrowserExtensionAppsFactoryForExtension&) = delete;
+  StandaloneBrowserExtensionAppsFactoryForExtension& operator=(
+      const StandaloneBrowserExtensionAppsFactoryForExtension&) = delete;
+  ~StandaloneBrowserExtensionAppsFactoryForExtension() override = default;
 
   // BrowserContextKeyedServiceFactory overrides.
   KeyedService* BuildServiceInstanceFor(

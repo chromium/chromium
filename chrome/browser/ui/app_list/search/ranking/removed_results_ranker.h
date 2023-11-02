@@ -1,16 +1,20 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_REMOVED_RESULTS_RANKER_H_
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_REMOVED_RESULTS_RANKER_H_
 
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/app_list/search/ranking/persistent_proto.h"
+#include "base/files/file_path.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/app_list/search/ranking/ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/removed_results.pb.h"
+#include "chrome/browser/ui/app_list/search/util/persistent_proto.h"
+
+class Profile;
 
 namespace app_list {
+class FileSuggestKeyedService;
 
 // A ranker which removes results which have previously been marked for removal
 // from the launcher search results list.
@@ -27,25 +31,26 @@ class RemovedResultsRanker : public Ranker {
   RemovedResultsRanker& operator=(const RemovedResultsRanker&) = delete;
 
   // Ranker:
-  void Rank(ResultsMap& results,
-            CategoriesMap& categories,
-            ProviderType provider) override;
+  void UpdateResultRanks(ResultsMap& results, ProviderType provider) override;
 
   void Remove(ChromeSearchResult* result) override;
 
-  // Returns whether result removal requests for results from type |provider|
-  // should be delegated to the result, as opposed to handled by this class.
-  // Currently this returns true in one case:
-  //   1) Omnibox results, whose removal requests are handled by the omnibox
-  //      autocomplete controller. The Omnibox is unique amongst our search
-  //      providers in that it has a backend which supports result removal.
-  static bool ShouldDelegateToResult(ProviderType provider);
-
  private:
-  // How long to wait until writing any |proto_| updates to disk.
-  base::TimeDelta write_delay_ = base::Seconds(30);
+  friend class RemovedResultsRankerTest;
 
-  PersistentProto<RemovedResultsProto> proto_;
+  FileSuggestKeyedService* GetFileSuggestKeyedService();
+
+  // Whether the ranker has finished reading from disk.
+  bool initialized() const { return proto_->initialized(); }
+
+  // How long to wait until writing any |proto_| updates to disk.
+  base::TimeDelta write_delay_;
+
+  Profile* const profile_;
+
+  // TODO(https://crbug.com/1368833): after this issue gets fixed, the ranker
+  // should own a proto that contains only non-file result ids.
+  PersistentProto<RemovedResultsProto>* const proto_;
 };
 
 }  // namespace app_list

@@ -75,11 +75,34 @@ void LayoutTreeBuilderForElement::CreateLayoutObject() {
     return;
   if (!parent_layout_object->CanHaveChildren())
     return;
+
+  // If we are in the top layer and the parent layout object without top layer
+  // adjustment can't have children, then don't render.
+  // https://github.com/w3c/csswg-drafts/issues/6939#issuecomment-1016671534
+  if (node_->IsInTopLayer() && context_.parent &&
+      !context_.parent->CanHaveChildren() &&
+      node_->GetPseudoId() != kPseudoIdBackdrop) {
+    return;
+  }
+
   if (node_->IsPseudoElement() &&
       !CanHaveGeneratedChildren(*parent_layout_object))
     return;
   if (!node_->LayoutObjectIsNeeded(*style_))
     return;
+
+  // Table internals require the same writing-mode and direction for
+  // the whole table.
+  const ComputedStyle& parent_style = parent_layout_object->StyleRef();
+  if (style_->IsDisplayTableInternalType() &&
+      style_->GetWritingDirection() != parent_style.GetWritingDirection()) {
+    scoped_refptr<ComputedStyle> new_style = ComputedStyle::Clone(*style_);
+    new_style->SetWritingMode(parent_style.GetWritingMode());
+    new_style->SetDirection(parent_style.Direction());
+    new_style->SetTextOrientation(parent_style.GetTextOrientation());
+    new_style->UpdateFontOrientation();
+    style_ = std::move(new_style);
+  }
 
   LayoutObject* new_layout_object = node_->CreateLayoutObject(*style_, legacy_);
   if (!new_layout_object)
@@ -160,9 +183,10 @@ void LayoutTreeBuilderForText::CreateLayoutObject() {
   if (nullable_wrapper_style)
     style = nullable_wrapper_style.get();
 
-  LegacyLayout legacy_layout = layout_object_parent->ForceLegacyLayout()
-                                   ? LegacyLayout::kForce
-                                   : LegacyLayout::kAuto;
+  LegacyLayout legacy_layout =
+      layout_object_parent->ForceLegacyLayoutForChildren()
+          ? LegacyLayout::kForce
+          : LegacyLayout::kAuto;
   LayoutText* new_layout_object =
       node_->CreateTextLayoutObject(*style, legacy_layout);
   if (!layout_object_parent->IsChildAllowed(new_layout_object, *style)) {

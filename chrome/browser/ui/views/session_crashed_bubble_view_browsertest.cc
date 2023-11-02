@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -36,7 +37,7 @@ class SessionCrashedBubbleViewTest : public DialogBrowserTest {
   }
 
  protected:
-  views::BubbleDialogDelegate* crash_bubble_;
+  raw_ptr<views::BubbleDialogDelegate> crash_bubble_;
 };
 
 IN_PROC_BROWSER_TEST_F(SessionCrashedBubbleViewTest,
@@ -51,8 +52,16 @@ IN_PROC_BROWSER_TEST_F(SessionCrashedBubbleViewTest,
 
 // Regression test for https://crbug.com/1042010, it should be possible to focus
 // the bubble with the "focus dialog" hotkey combination (Alt+Shift+A).
+// TODO(https://crbug.com/1350659): Flaky on mac-12-arm64-rel.
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64) && defined(NDEBUG)
+#define MAYBE_CanFocusBubbleWithFocusDialogHotkey \
+  DISABLED_CanFocusBubbleWithFocusDialogHotkey
+#else
+#define MAYBE_CanFocusBubbleWithFocusDialogHotkey \
+  CanFocusBubbleWithFocusDialogHotkey
+#endif
 IN_PROC_BROWSER_TEST_F(SessionCrashedBubbleViewTest,
-                       CanFocusBubbleWithFocusDialogHotkey) {
+                       MAYBE_CanFocusBubbleWithFocusDialogHotkey) {
   ShowUi("SessionCrashedBubble");
 
   views::FocusManager* focus_manager =
@@ -69,8 +78,14 @@ IN_PROC_BROWSER_TEST_F(SessionCrashedBubbleViewTest,
 
 // Regression test for https://crbug.com/1042010, it should be possible to focus
 // the bubble with the "rotate pane focus" (F6) hotkey.
+// TODO(crbug.com/1343849): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CanFocusBubbleWithRotatePaneFocusHotkey DISABLED_CanFocusBubbleWithRotatePaneFocusHotkey
+#else
+#define MAYBE_CanFocusBubbleWithRotatePaneFocusHotkey CanFocusBubbleWithRotatePaneFocusHotkey
+#endif
 IN_PROC_BROWSER_TEST_F(SessionCrashedBubbleViewTest,
-                       CanFocusBubbleWithRotatePaneFocusHotkey) {
+                       MAYBE_CanFocusBubbleWithRotatePaneFocusHotkey) {
   ShowUi("SessionCrashedBubble");
   views::FocusManager* focus_manager =
       crash_bubble_->GetWidget()->GetFocusManager();

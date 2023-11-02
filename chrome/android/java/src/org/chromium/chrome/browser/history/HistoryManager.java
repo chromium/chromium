@@ -1,14 +1,23 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.history;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Rect;
+import android.text.TextUtils;
+import android.transition.AutoTransition;
+import android.transition.Scene;
+import android.transition.Transition;
+import android.transition.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -17,29 +26,56 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.ViewHolder;
+
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayout.OnTabSelectedListener;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.history_clusters.ClusterVisit;
+import org.chromium.chrome.browser.history_clusters.HistoryClustersCoordinator;
+import org.chromium.chrome.browser.history_clusters.HistoryClustersDelegate;
+import org.chromium.chrome.browser.history_clusters.QueryState;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
+import org.chromium.components.browser_ui.widget.DateDividedAdapter.DateViewHolder;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.SearchDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.profile_metrics.BrowserProfileType;
+import org.chromium.components.search_engines.TemplateUrl;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.Clipboard;
+import org.chromium.url.GURL;
 
+import java.io.Serializable;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Combines and manages the different UI components of browsing history.
@@ -48,6 +84,7 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
                                        SearchDelegate, SnackbarController,
                                        HistoryContentManager.Observer {
     private static final String METRICS_PREFIX = "Android.HistoryPage.";
+    static final String HISTORY_CLUSTERS_VISIBLE_PREF = "history_clusters.visible";
 
     // Keep consistent with the UMA constants on the WebUI history page (history/constants.js).
     private static final int UMA_MAX_BUCKET_VALUE = 1000;
@@ -58,16 +95,31 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
     // UMA_MAX_BUCKET_VALUE and UMA_MAX_SUBSET_BUCKET_VALUE, and adds +1
     // for overflow. How do we keep that in sync with this code?
     private static final int UMA_BUCKET_COUNT = 11;
+    private static final int HISTORY_TAB_INDEX = 0;
+    private static final int JOURNEYS_TAB_INDEX = 1;
 
     private final Activity mActivity;
     private final boolean mIsIncognito;
     private final boolean mIsSeparateActivity;
+    private final HistoryProvider mHistoryProvider;
+    private final ObservableSupplierImpl<Boolean> mShowHistoryClustersToggleSupplier =
+            new ObservableSupplierImpl<>();
+    private ViewGroup mRootView;
+    private ViewGroup mContentView;
     private SelectableListLayout<HistoryItem> mSelectableListLayout;
     private HistoryContentManager mContentManager;
     private SelectionDelegate<HistoryItem> mSelectionDelegate;
     private HistoryManagerToolbar mToolbar;
     private TextView mEmptyView;
     private final SnackbarManager mSnackbarManager;
+    private @Nullable HistoryClustersCoordinator mHistoryClustersCoordinator;
+    private final ObservableSupplierImpl<Boolean> mShouldShowPrivacyDisclaimerSupplier =
+            new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Boolean> mShouldShowClearBrowsingDataSupplier =
+            new ObservableSupplierImpl<>();
+    private final PrefService mPrefService;
+    private @Nullable TabLayout mHistoryTabToggle;
+    private @Nullable TabLayout mJourneysTabToggle;
 
     private boolean mIsSearching;
 
@@ -80,20 +132,158 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
      * @param isIncognito Whether the incognito tab model is currently selected.
      * @param tabSupplier Supplies the current tab, null if the history UI will be shown in a
      *                    separate activity.
+     * @param showHistoryClustersImmediately Whether the Journeys (history clusters) UI should be
+     *         shown immediately instead of the normal history UI.
+     * @param historyClustersQuery The preset query that the Journeys UI should use.
+     * @param historyProvider Provider of methods for querying and managing browsing history.
      */
     @SuppressWarnings("unchecked") // mSelectableListLayout
     public HistoryManager(@NonNull Activity activity, boolean isSeparateActivity,
             @NonNull SnackbarManager snackbarManager, boolean isIncognito,
-            @Nullable Supplier<Tab> tabSupplier) {
+            @Nullable Supplier<Tab> tabSupplier, boolean showHistoryClustersImmediately,
+            String historyClustersQuery, HistoryProvider historyProvider) {
         mActivity = activity;
         mIsSeparateActivity = isSeparateActivity;
         mSnackbarManager = snackbarManager;
         mIsIncognito = isIncognito;
+        mHistoryProvider = historyProvider;
+        mPrefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
 
         recordUserAction("Show");
         // If incognito placeholder is shown, we don't need to create History UI elements.
         if (shouldShowIncognitoPlaceholder()) {
+            mRootView = getIncognitoHistoryPlaceholderView();
             return;
+        }
+
+        mRootView = new FrameLayout(mActivity);
+
+        boolean historyClustersPrefIsManaged =
+                mPrefService.isManagedPreference(HISTORY_CLUSTERS_VISIBLE_PREF);
+        boolean historyClustersEnabled =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.HISTORY_JOURNEYS)
+                && !(historyClustersPrefIsManaged
+                        && !mPrefService.getBoolean(HISTORY_CLUSTERS_VISIBLE_PREF));
+        if (historyClustersEnabled) {
+            HistoryClustersDelegate historyClustersDelegate = new HistoryClustersDelegate() {
+                @Override
+                public boolean isSeparateActivity() {
+                    return isSeparateActivity;
+                }
+
+                @Override
+                public Tab getTab() {
+                    return tabSupplier.get();
+                }
+
+                @Override
+                public Intent getHistoryActivityIntent() {
+                    return null;
+                }
+
+                @Override
+                public <SerializableList extends List<String> & Serializable> Intent
+                getOpenUrlIntent(GURL gurl, boolean inIncognito, boolean createNewTab,
+                        boolean inTabGroup, @Nullable SerializableList additionalUrls) {
+                    Intent intent =
+                            mContentManager.getOpenUrlIntent(gurl, inIncognito, createNewTab);
+                    if (additionalUrls != null) {
+                        intent.putExtra(IntentHandler.EXTRA_ADDITIONAL_URLS, additionalUrls);
+                        intent.putExtra(
+                                IntentHandler.EXTRA_OPEN_ADDITIONAL_URLS_IN_TAB_GROUP, inTabGroup);
+                    }
+
+                    return intent;
+                }
+
+                @Override
+                public ViewGroup getToggleView(ViewGroup parent) {
+                    return buildToggleView(parent, JOURNEYS_TAB_INDEX);
+                }
+
+                @Override
+                public TabCreator getTabCreator(boolean isIncognito) {
+                    return new TabDelegate(isIncognito);
+                }
+
+                @Nullable
+                @Override
+                public ViewGroup getPrivacyDisclaimerView(ViewGroup parent) {
+                    ViewGroup viewGroup =
+                            mContentManager.getAdapter().getPrivacyDisclaimerContainer(parent);
+                    viewGroup.findViewById(R.id.privacy_disclaimer_bottom_space)
+                            .setVisibility(View.GONE);
+                    return viewGroup;
+                }
+
+                @Nullable
+                @Override
+                public ObservableSupplier<Boolean> shouldShowPrivacyDisclaimerSupplier() {
+                    return mShouldShowPrivacyDisclaimerSupplier;
+                }
+
+                @Override
+                public void toggleInfoHeaderVisibility() {
+                    HistoryManager.this.toggleInfoHeaderVisibility();
+                }
+
+                @Override
+                public boolean hasOtherFormsOfBrowsingHistory() {
+                    return mContentManager.hasPrivacyDisclaimers();
+                }
+
+                @Nullable
+                @Override
+                public ViewGroup getClearBrowsingDataView(ViewGroup parent) {
+                    return mContentManager.getAdapter().getClearBrowsingDataButtonContainer(parent);
+                }
+
+                @Nullable
+                @Override
+                public ObservableSupplier<Boolean> shouldShowClearBrowsingDataSupplier() {
+                    return mShouldShowClearBrowsingDataSupplier;
+                }
+
+                @Override
+                public void markVisitForRemoval(ClusterVisit clusterVisit) {
+                    HistoryItem item = new HistoryItem(clusterVisit.getRawUrl(), null, null,
+                            clusterVisit.getTimestamp(), new long[] {clusterVisit.getTimestamp()},
+                            false);
+                    mHistoryProvider.markItemForRemoval(item);
+                    for (int i = 0; i < clusterVisit.getDuplicateVisits().size(); i++) {
+                        ClusterVisit.DuplicateVisit duplicateVisit =
+                                clusterVisit.getDuplicateVisits().get(i);
+                        item = new HistoryItem(duplicateVisit.getUrl(), null, null,
+                                duplicateVisit.getTimestamp(),
+                                new long[] {duplicateVisit.getTimestamp()}, false);
+                        mHistoryProvider.markItemForRemoval(item);
+                    }
+                }
+
+                @Override
+                public void removeMarkedItems() {
+                    mHistoryProvider.removeItems();
+                }
+
+                @Override
+                public String getSearchEmptyString() {
+                    return HistoryManager.this.getSearchEmptyString();
+                }
+
+                @Override
+                public void onOptOut() {
+                    onHistoryClustersOptOutChanged(false);
+                }
+
+                @Override
+                public boolean areTabGroupsEnabled() {
+                    return TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mActivity);
+                }
+            };
+
+            mHistoryClustersCoordinator = new HistoryClustersCoordinator(
+                    Profile.getLastUsedRegularProfile(), activity, TemplateUrlServiceFactory.get(),
+                    historyClustersDelegate, ChromeAccessibilityUtil.get(), mSnackbarManager);
         }
 
         // 1. Create selectable components.
@@ -108,9 +298,14 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
                 ChromePreferenceKeys.HISTORY_SHOW_HISTORY_INFO, true);
         mContentManager = new HistoryContentManager(mActivity, this, isSeparateActivity,
                 isIncognito, shouldShowInfoHeader, /* shouldShowClearData */ true,
-                /* hostName */ null, mSelectionDelegate, tabSupplier);
+                /* hostName */ null, mSelectionDelegate, tabSupplier,
+                mShowHistoryClustersToggleSupplier,
+                (vg) -> buildToggleView(vg, HISTORY_TAB_INDEX), historyProvider);
         mSelectableListLayout.initializeRecyclerView(
                 mContentManager.getAdapter(), mContentManager.getRecyclerView());
+
+        mShouldShowPrivacyDisclaimerSupplier.set(shouldShowInfoHeader);
+        mShouldShowClearBrowsingDataSupplier.set(mContentManager.getShouldShowClearData());
 
         // 3. Initialize toolbar.
         mToolbar = (HistoryManagerToolbar) mSelectableListLayout.initializeToolbar(
@@ -120,16 +315,141 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
         mToolbar.initializeSearchView(this, R.string.history_manager_search, R.id.search_menu_id);
         mToolbar.setInfoMenuItem(R.id.info_menu_id);
         mToolbar.updateInfoMenuItem(shouldShowInfoButton(), shouldShowInfoHeaderIfAvailable());
+        if (historyClustersEnabled) {
+            boolean historyClustersVisible = mPrefService.getBoolean(HISTORY_CLUSTERS_VISIBLE_PREF);
+            mShowHistoryClustersToggleSupplier.set(historyClustersVisible);
+            mToolbar.getMenu()
+                    .findItem(R.id.optout_menu_id)
+                    .setVisible(true)
+                    .setTitle(historyClustersVisible
+                                    ? R.string.history_clusters_disable_menu_item_label
+                                    : R.string.history_clusters_enable_menu_item_label);
+            // In the unlikely event history clusters is force enabled by policy, remove the menu
+            // option to turn it off.
+            if (historyClustersPrefIsManaged) {
+                mToolbar.getMenu().removeItem(R.id.optout_menu_id);
+            }
+        } else {
+            mToolbar.getMenu().removeItem(R.id.optout_menu_id);
+        }
 
         // 4. Width constrain the SelectableListLayout.
         mSelectableListLayout.configureWideDisplayStyle();
 
         // 5. Initialize empty view.
-        mEmptyView = mSelectableListLayout.initializeEmptyView(
-                R.string.history_manager_empty, R.string.history_manager_no_results);
+        mEmptyView = mSelectableListLayout.initializeEmptyView(R.string.history_manager_empty);
 
         // 6. Load items.
-        mContentManager.initialize();
+        mContentManager.startLoadingItems();
+
+        if (showHistoryClustersImmediately) {
+            mContentView = mHistoryClustersCoordinator.getActivityContentView();
+            QueryState queryState = TextUtils.isEmpty(historyClustersQuery)
+                    ? QueryState.forQueryless()
+                    : QueryState.forQuery(historyClustersQuery, getSearchEmptyString());
+            mHistoryClustersCoordinator.setInitialQuery(queryState);
+        } else {
+            mContentView = mSelectableListLayout;
+        }
+        mRootView.addView(mContentView);
+    }
+
+    private void onHistoryClustersOptOutChanged(boolean isVisible) {
+        mPrefService.setBoolean(HISTORY_CLUSTERS_VISIBLE_PREF, isVisible);
+        if (isVisible) {
+            mToolbar.getMenu()
+                    .findItem(R.id.optout_menu_id)
+                    .setTitle(R.string.history_clusters_disable_menu_item_label);
+            mShowHistoryClustersToggleSupplier.set(true);
+        } else {
+            mToolbar.getMenu()
+                    .findItem(R.id.optout_menu_id)
+                    .setTitle(R.string.history_clusters_enable_menu_item_label);
+            if (isHistoryClustersUIShowing()) {
+                swapContentView();
+            }
+            mShowHistoryClustersToggleSupplier.set(false);
+        }
+    }
+
+    private ViewGroup buildToggleView(ViewGroup parent, int selectedIndex) {
+        ViewGroup viewGroup = (ViewGroup) LayoutInflater.from(mActivity).inflate(
+                R.layout.history_toggle, parent, false);
+
+        TabLayout tabLayout = viewGroup.findViewById(R.id.history_toggle_tab_layout);
+        TabLayout.Tab selectedTab = tabLayout.getTabAt(selectedIndex);
+        tabLayout.selectTab(selectedTab);
+
+        if (selectedIndex == HISTORY_TAB_INDEX) {
+            mHistoryTabToggle = tabLayout;
+        } else {
+            assert selectedIndex == JOURNEYS_TAB_INDEX;
+            mJourneysTabToggle = tabLayout;
+        }
+
+        tabLayout.addOnTabSelectedListener(new OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                if (tab != selectedTab) {
+                    swapContentView();
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {}
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {}
+        });
+
+        TabLayout.Tab firstTab = tabLayout.getTabAt(0);
+        TabLayout.Tab secondTab = tabLayout.getTabAt(1);
+        int leftPadding = firstTab.view.getPaddingLeft();
+        firstTab.view.setPadding(leftPadding, 0, leftPadding, 0);
+        secondTab.view.setPadding(leftPadding, 0, leftPadding, 0);
+
+        // The TabLayout is too short for the minimum touch target size (48dp) so we expand the true
+        // touch target by adding a CompositeTouchDelegate. This will route touch events from the
+        // full 48dp band to the correct tab.
+        CompositeTouchDelegate compositeTouchDelegate = new CompositeTouchDelegate(viewGroup);
+        viewGroup.setTouchDelegate(compositeTouchDelegate);
+        firstTab.view.addOnLayoutChangeListener(
+                (view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom)
+                        -> updateTouchDelegate(
+                                compositeTouchDelegate, view, tabLayout, new AtomicReference<>()));
+        secondTab.view.addOnLayoutChangeListener(
+                (view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom)
+                        -> updateTouchDelegate(
+                                compositeTouchDelegate, view, tabLayout, new AtomicReference<>()));
+        return viewGroup;
+    }
+
+    private void updateTouchDelegate(CompositeTouchDelegate compositeTouchDelegate, View tabView,
+            View tabLayout, AtomicReference<TouchDelegate> touchDelegateRef) {
+        Rect tabBounds = getTabViewBoundsRelativeToGrandparent(tabView, tabLayout);
+        int addedTouchTargetHeight = tabView.getResources().getDimensionPixelSize(
+                R.dimen.history_toggle_added_touch_target_height);
+        tabBounds.top -= addedTouchTargetHeight;
+        tabBounds.bottom += addedTouchTargetHeight;
+
+        TouchDelegate oldTouchDelegate = touchDelegateRef.get();
+        if (oldTouchDelegate != null) {
+            compositeTouchDelegate.removeDelegateForDescendantView(oldTouchDelegate);
+        }
+
+        TouchDelegate newTouchDelegate = new TouchDelegate(tabBounds, tabView);
+        compositeTouchDelegate.addDelegateForDescendantView(newTouchDelegate);
+        touchDelegateRef.set(newTouchDelegate);
+    }
+
+    /**
+     * Gets the bounds of a TabView relative to its grandparent by offsetting its HitRect by the
+     * position of its parent TabLayout.
+     */
+    private Rect getTabViewBoundsRelativeToGrandparent(View tabView, View tabLayout) {
+        Rect tabBounds = new Rect();
+        tabView.getHitRect(tabBounds);
+        tabBounds.offset(tabLayout.getLeft(), tabLayout.getTop());
+        return tabBounds;
     }
 
     /**
@@ -149,7 +469,6 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
             return true;
         } else if (item.getItemId() == R.id.selection_mode_open_in_new_tab) {
             openItemsInNewTabs(mSelectionDelegate.getSelectedItemsAsList(), false);
-            mSelectionDelegate.clearSelection();
             return true;
         } else if (item.getItemId() == R.id.selection_mode_copy_link) {
             recordUserActionWithOptionalSearch("CopyLink");
@@ -162,7 +481,6 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
             return true;
         } else if (item.getItemId() == R.id.selection_mode_open_in_incognito) {
             openItemsInNewTabs(mSelectionDelegate.getSelectedItemsAsList(), true);
-            mSelectionDelegate.clearSelection();
             return true;
         } else if (item.getItemId() == R.id.selection_mode_delete_menu_id) {
             recordUserActionWithOptionalSearch("RemoveSelected");
@@ -186,31 +504,51 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
                         R.string.multiple_history_items_deleted, numItemsRemoved));
             }
 
+            notifyHistoryClustersCoordinatorOfDeletion();
+
             return true;
         } else if (item.getItemId() == R.id.search_menu_id) {
             mContentManager.removeHeader();
-            mToolbar.showSearchView();
-            mSelectableListLayout.onStartSearch();
+            mToolbar.showSearchView(true);
+            String searchEmptyString = getSearchEmptyString();
+            mSelectableListLayout.onStartSearch(searchEmptyString);
             recordUserAction("Search");
             mIsSearching = true;
             return true;
         } else if (item.getItemId() == R.id.info_menu_id) {
-            boolean shouldShowInfoHeader =
-                    !mContentManager.getShouldShowPrivacyDisclaimersIfAvailable();
-            SharedPreferencesManager.getInstance().writeBoolean(
-                    ChromePreferenceKeys.HISTORY_SHOW_HISTORY_INFO, shouldShowInfoHeader);
-            mToolbar.updateInfoMenuItem(shouldShowInfoButton(), shouldShowInfoHeader);
-            mContentManager.updatePrivacyDisclaimers(shouldShowInfoHeader);
+            toggleInfoHeaderVisibility();
+        } else if (item.getItemId() == R.id.optout_menu_id) {
+            onHistoryClustersOptOutChanged(!mPrefService.getBoolean(HISTORY_CLUSTERS_VISIBLE_PREF));
+            return true;
         }
         return false;
+    }
+
+    private void toggleInfoHeaderVisibility() {
+        boolean shouldShowInfoHeader =
+                !mContentManager.getShouldShowPrivacyDisclaimersIfAvailable();
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.HISTORY_SHOW_HISTORY_INFO, shouldShowInfoHeader);
+        mToolbar.updateInfoMenuItem(shouldShowInfoButton(), shouldShowInfoHeader);
+        mContentManager.updatePrivacyDisclaimers(shouldShowInfoHeader);
+        mShouldShowPrivacyDisclaimerSupplier.set(shouldShowInfoHeader);
+    }
+
+    private String getSearchEmptyString() {
+        String defaultSearchEngineName = null;
+        TemplateUrl dseTemplateUrl =
+                TemplateUrlServiceFactory.get().getDefaultSearchEngineTemplateUrl();
+        if (dseTemplateUrl != null) defaultSearchEngineName = dseTemplateUrl.getShortName();
+        return defaultSearchEngineName == null
+                ? mActivity.getString(R.string.history_manager_no_results_no_dse)
+                : mActivity.getString(R.string.history_manager_no_results, defaultSearchEngineName);
     }
 
     /**
      * @return The view that shows the main browsing history UI.
      */
     public ViewGroup getView() {
-        return shouldShowIncognitoPlaceholder() ? getIncognitoHistoryPlaceholderView()
-                                                : mSelectableListLayout;
+        return mRootView;
     }
 
     private boolean shouldShowIncognitoPlaceholder() {
@@ -237,6 +575,66 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
         return placeholderView;
     }
 
+    private void swapContentView() {
+        boolean toHistoryClusters;
+        if (shouldShowIncognitoPlaceholder()) {
+            return;
+        } else if (isHistoryClustersUIShowing()) {
+            toHistoryClusters = false;
+            mHistoryClustersCoordinator.onToggled(false);
+            mContentView = mSelectableListLayout;
+            mContentManager.startLoadingItems();
+            // Each page of content has a distinct TabLayout with independent selection state, but
+            // should only ever display the selected tab corresponding to the owning page. i.e. Page
+            // X's TabLayout should always show Tab X as selected. This means the selection state
+            // becomes incorrect when toggling away. If this toggle field is not null, that means
+            // we're coming back to an existing TabLayout that needs to have its selected tab reset.
+            // Note that this cannot easily be done at selection time because there's a race
+            // somewhere. Resetting at the last second seems to be more consistent.
+            if (mHistoryTabToggle != null) {
+                mHistoryTabToggle.selectTab(mHistoryTabToggle.getTabAt(HISTORY_TAB_INDEX));
+            }
+        } else {
+            assert mHistoryClustersCoordinator
+                    != null : "swapContentView() shouldn't be called if HistoryClusters is off";
+            toHistoryClusters = true;
+            mContentView = mHistoryClustersCoordinator.getActivityContentView();
+            mHistoryClustersCoordinator.onToggled(true);
+            if (mJourneysTabToggle != null) {
+                mJourneysTabToggle.selectTab(mJourneysTabToggle.getTabAt(JOURNEYS_TAB_INDEX));
+            }
+        }
+
+        Transition transition = makeContentSwapTransition(toHistoryClusters);
+        Scene scene = new Scene(mRootView, mContentView);
+        TransitionManager.go(scene, transition);
+        mContentView.requestFocus();
+    }
+
+    private Transition makeContentSwapTransition(boolean toHistoryClusters) {
+        Transition transition = new AutoTransition();
+        transition.addTarget(SelectableItemView.class);
+        if (!toHistoryClusters) {
+            HistoryAdapter adapter = mContentManager.getAdapter();
+            RecyclerView recyclerView = mContentManager.getRecyclerView();
+            int lastVisiblePosition = ((LinearLayoutManager) recyclerView.getLayoutManager())
+                                              .findLastVisibleItemPosition();
+            for (int i = 0; i < adapter.getItemCount() && i <= lastVisiblePosition; i++) {
+                ViewHolder vh = recyclerView.findViewHolderForAdapterPosition(i);
+                if (vh instanceof DateViewHolder) {
+                    transition.addTarget(vh.itemView);
+                }
+            }
+        }
+
+        return transition;
+    }
+
+    private boolean isHistoryClustersUIShowing() {
+        return mHistoryClustersCoordinator != null
+                && mContentView == mHistoryClustersCoordinator.getActivityContentView();
+    }
+
     /**
      * Called when the activity/native page is destroyed.
      */
@@ -245,8 +643,14 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
             // If Incognito placeholder is shown no need to call any destroy method.
             return;
         }
-        mSelectableListLayout.onDestroyed();
-        mContentManager.onDestroyed();
+        if (mHistoryClustersCoordinator != null) {
+            mHistoryClustersCoordinator.destroy();
+        }
+
+        if (mSelectableListLayout != null) {
+            mSelectableListLayout.onDestroyed();
+            mContentManager.onDestroyed();
+        }
     }
 
     /**
@@ -255,10 +659,13 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
      * @return True if manager handles this event, false if it decides to ignore.
      */
     public boolean onBackPressed() {
-        if (shouldShowIncognitoPlaceholder()) {
+        if (shouldShowIncognitoPlaceholder() || mSelectableListLayout == null) {
             // If Incognito placeholder is shown, the back press should handled by HistoryActivity.
             return false;
+        } else if (isHistoryClustersUIShowing()) {
+            return mHistoryClustersCoordinator.onBackPressed();
         }
+
         return mSelectableListLayout.onBackPressed();
     }
 
@@ -281,11 +688,16 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
 
     private void openItemsInNewTabs(List<HistoryItem> items, boolean isIncognito) {
         recordUserActionWithOptionalSearch("OpenSelected" + (isIncognito ? "Incognito" : ""));
+        mContentManager.openItemsInNewTab(items, isIncognito);
 
         for (HistoryItem item : items) {
-            mContentManager.openUrl(item.getUrl(), isIncognito, true);
             recordOpenedItemMetrics(item);
         }
+    }
+
+    private void notifyHistoryClustersCoordinatorOfDeletion() {
+        if (mHistoryClustersCoordinator == null) return;
+        mHistoryClustersCoordinator.onHistoryDeletedExternally();
     }
 
     /**
@@ -395,6 +807,8 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
         if (mSelectionDelegate.isItemSelected(item)) {
             mSelectionDelegate.toggleSelectionForItem(item);
         }
+
+        notifyHistoryClustersCoordinatorOfDeletion();
     }
 
     // HistoryContentManager.Observer
@@ -411,12 +825,21 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
     @Override
     public void onPrivacyDisclaimerHasChanged() {
         mToolbar.updateInfoMenuItem(shouldShowInfoButton(), shouldShowInfoHeaderIfAvailable());
+        mShouldShowPrivacyDisclaimerSupplier.set(
+                mContentManager.getShouldShowPrivacyDisclaimersIfAvailable());
     }
 
     // HistoryContentManager.Observer
     @Override
     public void onUserAccountStateChanged() {
         mToolbar.onSignInStateChange();
+        mShouldShowClearBrowsingDataSupplier.set(mContentManager.getShouldShowClearData());
+    }
+
+    // HistoryContentManager.Observer
+    @Override
+    public void onHistoryDeletedExternally() {
+        notifyHistoryClustersCoordinatorOfDeletion();
     }
 
     @VisibleForTesting
@@ -437,5 +860,11 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
     @VisibleForTesting
     HistoryManagerToolbar getToolbarForTests() {
         return mToolbar;
+    }
+
+    @VisibleForTesting
+    @Nullable
+    HistoryClustersCoordinator getHistoryClustersCoordinatorForTests() {
+        return mHistoryClustersCoordinator;
     }
 }

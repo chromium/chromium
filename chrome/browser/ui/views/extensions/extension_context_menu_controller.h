@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "ui/views/context_menu_controller.h"
 
 class ToolbarActionViewController;
@@ -21,7 +23,9 @@ class MenuRunner;
 class ExtensionContextMenuController : public views::ContextMenuController {
  public:
   explicit ExtensionContextMenuController(
-      ToolbarActionViewController* controller);
+      ToolbarActionViewController* controller,
+      extensions::ExtensionContextMenuModel::ContextMenuSource
+          context_menu_source);
 
   ExtensionContextMenuController(const ExtensionContextMenuController&) =
       delete;
@@ -53,10 +57,13 @@ class ExtensionContextMenuController : public views::ContextMenuController {
 
   // The root MenuItemView for the context menu, or null if no menu is being
   // shown. This is used for testing.
-  views::MenuItemView* menu_ = nullptr;
+  raw_ptr<views::MenuItemView> menu_ = nullptr;
 
   // This controller contains the data for the extension's context menu.
-  ToolbarActionViewController* const controller_;
+  const raw_ptr<ToolbarActionViewController> controller_;
+
+  // Location where the context menu is open from.
+  extensions::ExtensionContextMenuModel::ContextMenuSource context_menu_source_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_CONTEXT_MENU_CONTROLLER_H_

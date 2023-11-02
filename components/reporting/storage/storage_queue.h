@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
@@ -52,11 +53,6 @@ enum class StorageQueueOperationKind {
 // sequencing id to be eliminated.
 class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
  public:
-  // Callback type for UploadInterface provider for this queue.
-  using AsyncStartUploaderCb = base::RepeatingCallback<void(
-      UploaderInterface::UploadReason,
-      UploaderInterface::UploaderInterfaceResultCb)>;
-
   // Creates StorageQueue instance with the specified options, and returns it
   // with the |completion_cb| callback. |async_start_upload_cb| is a factory
   // callback that instantiates UploaderInterface every time the queue starts
@@ -64,11 +60,14 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   // near future - upon explicit Flush request).
   static void Create(
       const QueueOptions& options,
-      AsyncStartUploaderCb async_start_upload_cb,
+      UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
       scoped_refptr<EncryptionModuleInterface> encryption_module,
       scoped_refptr<CompressionModule> compression_module,
       base::OnceCallback<void(StatusOr<scoped_refptr<StorageQueue>>)>
           completion_cb);
+
+  StorageQueue(const StorageQueue& other) = delete;
+  StorageQueue& operator=(const StorageQueue& other) = delete;
 
   // Wraps and serializes Record (taking ownership of it), encrypts and writes
   // the resulting blob into the StorageQueue (the last file of it) with the
@@ -80,14 +79,19 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   // WriteMetadata, DeleteOutdatedMetadata.
   void Write(Record record, base::OnceCallback<void(Status)> completion_cb);
 
-  // Confirms acceptance of the records up to |sequencing_id| (inclusively).
-  // All records with sequencing ids <= this one can be removed from
-  // the StorageQueue, and can no longer be uploaded.
-  // If |force| is false (which is used in most cases), |sequencing_id| is
-  // only accepted if no higher ids were confirmed before; otherwise it is
-  // accepted unconditionally.
+  // Confirms acceptance of the records up to
+  // |sequence_information.sequencing_id()| (inclusively), if the
+  // |sequence_information.generation_id()| matches. All records with sequencing
+  // ids <= this one can be removed from the Storage, and can no longer be
+  // uploaded. In order to reset to the very first record (seq_id=0)
+  // |sequence_information.sequencing_id()| should be set to -1.
+  // If |force| is false (which is used in most cases),
+  // |sequence_information.sequencing_id()| is only accepted if no higher ids
+  // were confirmed before; otherwise it is accepted unconditionally.
+  // |sequence_information.priority()| is ignored - should have been used
+  // by Storage when selecting the queue.
   // Helper methods: RemoveConfirmedData.
-  void Confirm(absl::optional<int64_t> sequencing_id,
+  void Confirm(SequenceInformation sequence_information,
                bool force,
                base::OnceCallback<void(Status)> completion_cb);
 
@@ -122,9 +126,6 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   // Access queue options.
   const QueueOptions& options() const { return options_; }
 
-  StorageQueue(const StorageQueue& other) = delete;
-  StorageQueue& operator=(const StorageQueue& other) = delete;
-
  protected:
   virtual ~StorageQueue();
 
@@ -146,12 +147,20 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
     // space) returns status.
     static StatusOr<scoped_refptr<SingleFile>> Create(
         const base::FilePath& filename,
-        int64_t size);
+        int64_t size,
+        scoped_refptr<ResourceInterface> memory_resource,
+        scoped_refptr<ResourceInterface> disk_space_resource);
+
+    // Returns the file sequence ID (the first sequence ID in the file) if the
+    // sequence ID can be extracted from the extension. Otherwise, returns an
+    // error status.
+    static StatusOr<int64_t> GetFileSequenceIdFromPath(
+        const base::FilePath& file_name);
 
     Status Open(bool read_only);  // No-op if already opened.
     void Close();                 // No-op if not opened.
 
-    Status Delete();
+    void DeleteWarnIfFailed();
 
     // Attempts to read |size| bytes from position |pos| and returns
     // reference to the data that were actually read (no more than |size|).
@@ -185,7 +194,10 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
     friend class base::RefCountedThreadSafe<SingleFile>;
 
     // Private constructor, called by factory method only.
-    SingleFile(const base::FilePath& filename, int64_t size);
+    SingleFile(const base::FilePath& filename,
+               int64_t size,
+               scoped_refptr<ResourceInterface> memory_resource,
+               scoped_refptr<ResourceInterface> disk_space_resource);
 
     // Flag (valid for opened file only): true if file was opened for reading
     // only, false otherwise.
@@ -195,6 +207,9 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
     uint64_t size_ = 0;  // tracked internally rather than by filesystem
 
     std::unique_ptr<base::File> handle_;  // Set only when opened/created.
+
+    scoped_refptr<ResourceInterface> memory_resource_;
+    scoped_refptr<ResourceInterface> disk_space_resource_;
 
     // When reading the file, this is the buffer and data positions.
     // If the data is read sequentially, buffered portions are reused
@@ -211,12 +226,12 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   // Private constructor, to be called by Create factory method only.
   StorageQueue(scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner,
                const QueueOptions& options,
-               AsyncStartUploaderCb async_start_upload_cb,
+               UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
                scoped_refptr<EncryptionModuleInterface> encryption_module,
                scoped_refptr<CompressionModule> compression_module);
 
   // Initializes the object by enumerating files in the assigned directory
-  // and determines the sequencing information of the last record.
+  // and determines the sequence information of the last record.
   // Must be called once and only once after construction.
   // Returns OK or error status, if anything failed to initialize.
   // Called once, during initialization.
@@ -279,13 +294,13 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   // Adds used metadata file to the set.
   Status RestoreMetadata(base::flat_set<base::FilePath>* used_files_set);
 
-  // Delete all files except those listed in the set.
+  // Delete all files except those listed in |used_file_set|.
   void DeleteUnusedFiles(
-      const base::flat_set<base::FilePath>& used_files_setused_files_set);
+      const base::flat_set<base::FilePath>& used_files_set) const;
 
   // Helper method for Write(): deletes meta files up to, but not including
   // |sequencing_id_to_keep|. Any errors are ignored.
-  void DeleteOutdatedMetadata(int64_t sequencing_id_to_keep);
+  void DeleteOutdatedMetadata(int64_t sequencing_id_to_keep) const;
 
   // Helper method for Write(): composes record header and writes it to the
   // file, followed by data. Stores record digest in the queue, increments
@@ -323,8 +338,13 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
 
   // Sequential task runner for all activities in this StorageQueue
   // (must be first member in class).
-  scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
   SEQUENCE_CHECKER(storage_queue_sequence_checker_);
+
+  // Dedicated sequence task runner for low priority actions (which make
+  // no impact on the main activity - e.g., deletion of the outdated metafiles).
+  // Serializeing them should reduce their impact.
+  const scoped_refptr<base::SequencedTaskRunner> low_priority_task_runner_;
 
   // Immutable options, stored at the time of creation.
   const QueueOptions options_;
@@ -377,7 +397,7 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   base::RepeatingTimer upload_timer_;
 
   // Upload provider callback.
-  const AsyncStartUploaderCb async_start_upload_cb_;
+  const UploaderInterface::AsyncStartUploaderCb async_start_upload_cb_;
 
   // Encryption module.
   scoped_refptr<EncryptionModuleInterface> encryption_module_;

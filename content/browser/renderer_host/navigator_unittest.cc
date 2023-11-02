@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
@@ -15,7 +14,6 @@
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigation_request_info.h"
-#include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_frame_host_manager.h"
 #include "content/browser/site_info.h"
 #include "content/browser/site_instance_impl.h"
@@ -91,8 +89,7 @@ class NavigatorTest : public RenderViewHostImplTestHarness {
       SiteInstance* candidate_instance) {
     return static_cast<SiteInstanceImpl*>(
         rfhm->ConvertToSiteInstance(
-                descriptor, static_cast<SiteInstanceImpl*>(candidate_instance),
-                false /* is_speculative */)
+                descriptor, static_cast<SiteInstanceImpl*>(candidate_instance))
             .get());
   }
 
@@ -399,15 +396,15 @@ TEST_F(NavigatorTest,
   // RFHI that navigation2 depends on.
   navigation2->Redirect(kUrl2);
   EXPECT_FALSE(GetSpeculativeRenderFrameHost(node));
-  EXPECT_TRUE(node->navigation_request()->associated_site_instance_type() ==
-              NavigationRequest::AssociatedSiteInstanceType::CURRENT);
+  EXPECT_TRUE(node->navigation_request()->associated_rfh_type() ==
+              NavigationRequest::AssociatedRenderFrameHostType::CURRENT);
 
   navigation2->ReadyToCommit();
   EXPECT_EQ(1u, raw_runner->NumPendingTasks());
   EXPECT_TRUE(navigation2->IsDeferred());
   EXPECT_TRUE(GetSpeculativeRenderFrameHost(node));
-  EXPECT_EQ(node->navigation_request()->associated_site_instance_type(),
-            NavigationRequest::AssociatedSiteInstanceType::SPECULATIVE);
+  EXPECT_EQ(node->navigation_request()->associated_rfh_type(),
+            NavigationRequest::AssociatedRenderFrameHostType::SPECULATIVE);
 
   // Abort the initial navigation.
   navigation1->AbortFromRenderer();
@@ -573,10 +570,11 @@ TEST_F(NavigatorTest, NoContent) {
   auto response = network::mojom::URLResponseHead::New();
   const char kNoContentHeaders[] = "HTTP/1.1 204 No Content\0\0";
   response->headers = new net::HttpResponseHeaders(
-      std::string(kNoContentHeaders, base::size(kNoContentHeaders)));
+      std::string(kNoContentHeaders, std::size(kNoContentHeaders)));
   GetLoaderForNavigationRequest(main_request)
       ->CallOnResponseStarted(std::move(response),
-                              mojo::ScopedDataPipeConsumerHandle());
+                              mojo::ScopedDataPipeConsumerHandle(),
+                              absl::nullopt);
 
   // There should be no pending nor speculative RenderFrameHost; the navigation
   // was aborted.
@@ -598,10 +596,11 @@ TEST_F(NavigatorTest, NoContent) {
   response = network::mojom::URLResponseHead::New();
   const char kResetContentHeaders[] = "HTTP/1.1 205 Reset Content\0\0";
   response->headers = new net::HttpResponseHeaders(
-      std::string(kResetContentHeaders, base::size(kResetContentHeaders)));
+      std::string(kResetContentHeaders, std::size(kResetContentHeaders)));
   GetLoaderForNavigationRequest(main_request)
       ->CallOnResponseStarted(std::move(response),
-                              mojo::ScopedDataPipeConsumerHandle());
+                              mojo::ScopedDataPipeConsumerHandle(),
+                              absl::nullopt);
 
   // There should be no pending nor speculative RenderFrameHost; the navigation
   // was aborted.
@@ -1512,7 +1511,7 @@ TEST_F(NavigatorTest, PermissionsPolicyNewChild) {
 
   // Simulate the navigation triggered by inserting a child frame into a page.
   TestRenderFrameHost* subframe_rfh =
-      contents()->GetMainFrame()->AppendChild("child");
+      contents()->GetPrimaryMainFrame()->AppendChild("child");
   NavigationSimulator::NavigateAndCommitFromDocument(kUrl2, subframe_rfh);
 
   const blink::PermissionsPolicy* subframe_permissions_policy =
@@ -1525,27 +1524,27 @@ TEST_F(NavigatorTest, TwoNavigationsRacingCommit) {
   const GURL kUrl1("http://www.chromium.org/");
   const GURL kUrl2("http://www.chromium.org/Home");
 
-  EXPECT_EQ(0u, contents()->GetMainFrame()->navigation_requests_.size());
+  EXPECT_EQ(0u, contents()->GetPrimaryMainFrame()->navigation_requests_.size());
 
   // Have the first navigation reach ReadyToCommit.
   auto first_navigation =
       NavigationSimulator::CreateBrowserInitiated(kUrl1, contents());
   first_navigation->ReadyToCommit();
-  EXPECT_EQ(1u, contents()->GetMainFrame()->navigation_requests_.size());
+  EXPECT_EQ(1u, contents()->GetPrimaryMainFrame()->navigation_requests_.size());
 
   // A second navigation starts and reaches ReadyToCommit.
   auto second_navigation =
       NavigationSimulator::CreateBrowserInitiated(kUrl1, contents());
   second_navigation->ReadyToCommit();
-  EXPECT_EQ(2u, contents()->GetMainFrame()->navigation_requests_.size());
+  EXPECT_EQ(2u, contents()->GetPrimaryMainFrame()->navigation_requests_.size());
 
   // The first navigation commits.
   first_navigation->Commit();
-  EXPECT_EQ(1u, contents()->GetMainFrame()->navigation_requests_.size());
+  EXPECT_EQ(1u, contents()->GetPrimaryMainFrame()->navigation_requests_.size());
 
   // The second navigation commits.
   second_navigation->Commit();
-  EXPECT_EQ(0u, contents()->GetMainFrame()->navigation_requests_.size());
+  EXPECT_EQ(0u, contents()->GetPrimaryMainFrame()->navigation_requests_.size());
 }
 
 }  // namespace content

@@ -39,7 +39,7 @@
 #include "third_party/blink/renderer/modules/speech/speech_recognition_error_event.h"
 #include "third_party/blink/renderer/modules/speech/speech_recognition_event.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -65,7 +65,7 @@ void SpeechRecognition::start(ExceptionState& exception_state) {
   receiver_.Bind(
       session_client.InitWithNewPipeAndPassReceiver(),
       GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI));
-  receiver_.set_disconnect_handler(WTF::Bind(
+  receiver_.set_disconnect_handler(WTF::BindOnce(
       &SpeechRecognition::OnConnectionError, WrapWeakPersistent(this)));
 
   controller_->Start(
@@ -106,8 +106,7 @@ void SpeechRecognition::ResultRetrieved(
   // Add the new results to the previous final results.
   HeapVector<Member<SpeechRecognitionResult>> aggregated_results =
       std::move(final_results_);
-  aggregated_results.ReserveCapacity(aggregated_results.size() +
-                                     results.size());
+  aggregated_results.reserve(aggregated_results.size() + results.size());
 
   for (const auto& result : results) {
     HeapVector<Member<SpeechRecognitionAlternative>> alternatives;
@@ -137,39 +136,39 @@ void SpeechRecognition::ResultRetrieved(
   // We dispatch an event with (1) + (2) + (3).
   DispatchEvent(*SpeechRecognitionEvent::CreateResult(
       aggregated_results.size() - results.size(),
-      std::move(aggregated_results)));
+      std::move(aggregated_results)), "SpeechRecognition::ResultRetrieved");
 }
 
 void SpeechRecognition::ErrorOccurred(
     mojom::blink::SpeechRecognitionErrorPtr error) {
   if (error->code == mojom::blink::SpeechRecognitionErrorCode::kNoMatch) {
-    DispatchEvent(*SpeechRecognitionEvent::CreateNoMatch(nullptr));
+    DispatchEvent(*SpeechRecognitionEvent::CreateNoMatch(nullptr), "SpeechRecognition::ErrorOccurred #1");
   } else {
     // TODO(primiano): message?
-    DispatchEvent(*SpeechRecognitionErrorEvent::Create(error->code, String()));
+    DispatchEvent(*SpeechRecognitionErrorEvent::Create(error->code, String()), "SpeechRecognition::ErrorOccurred #2");
   }
 }
 
 void SpeechRecognition::Started() {
-  DispatchEvent(*Event::Create(event_type_names::kStart));
+  DispatchEvent(*Event::Create(event_type_names::kStart), "SpeechRecognition::Started");
 }
 
 void SpeechRecognition::AudioStarted() {
-  DispatchEvent(*Event::Create(event_type_names::kAudiostart));
+  DispatchEvent(*Event::Create(event_type_names::kAudiostart), "SpeechRecognition::AudioStarted");
 }
 
 void SpeechRecognition::SoundStarted() {
-  DispatchEvent(*Event::Create(event_type_names::kSoundstart));
-  DispatchEvent(*Event::Create(event_type_names::kSpeechstart));
+  DispatchEvent(*Event::Create(event_type_names::kSoundstart), "SpeechRecognition::SoundStarted #1");
+  DispatchEvent(*Event::Create(event_type_names::kSpeechstart), "SpeechRecognition::SoundStarted #2");
 }
 
 void SpeechRecognition::SoundEnded() {
-  DispatchEvent(*Event::Create(event_type_names::kSpeechend));
-  DispatchEvent(*Event::Create(event_type_names::kSoundend));
+  DispatchEvent(*Event::Create(event_type_names::kSpeechend), "SpeechRecognition::SoundEnded #1");
+  DispatchEvent(*Event::Create(event_type_names::kSoundend), "SpeechRecognition::SoundEnded #2");
 }
 
 void SpeechRecognition::AudioEnded() {
-  DispatchEvent(*Event::Create(event_type_names::kAudioend));
+  DispatchEvent(*Event::Create(event_type_names::kAudioend), "SpeechRecognition::AudioEnded");
 }
 
 void SpeechRecognition::Ended() {
@@ -177,7 +176,7 @@ void SpeechRecognition::Ended() {
   stopping_ = false;
   session_.reset();
   receiver_.reset();
-  DispatchEvent(*Event::Create(event_type_names::kEnd));
+  DispatchEvent(*Event::Create(event_type_names::kEnd), "SpeechRecognition::Ended");
 }
 
 const AtomicString& SpeechRecognition::InterfaceName() const {
@@ -197,7 +196,7 @@ bool SpeechRecognition::HasPendingActivity() const {
 }
 
 void SpeechRecognition::PageVisibilityChanged() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (!GetPage()->IsPageVisible())
     abort();
 #endif

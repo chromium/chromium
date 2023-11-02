@@ -1,10 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/style/style_variables.h"
 
-#include "third_party/blink/renderer/core/style/data_equivalency.h"
+#include "base/memory/values_equivalent.h"
 
 namespace blink {
 
@@ -18,7 +18,7 @@ bool IsEqual(const OptionalData& a, const OptionalData& b) {
     return false;
   if (!a.has_value())
     return true;
-  return DataEquivalent(a.value(), b.value());
+  return base::ValuesEquivalent(a.value(), b.value());
 }
 
 bool IsEqual(const OptionalValue& a, const OptionalValue& b) {
@@ -26,7 +26,7 @@ bool IsEqual(const OptionalValue& a, const OptionalValue& b) {
     return false;
   if (!a.has_value())
     return true;
-  return DataEquivalent(a.value(), b.value());
+  return base::ValuesEquivalent(a.value(), b.value());
 }
 
 }  // namespace
@@ -44,22 +44,34 @@ StyleVariables& StyleVariables::operator=(const StyleVariables& other) {
 }
 
 bool StyleVariables::operator==(const StyleVariables& other) const {
-  if (data_.size() != other.data_.size())
+  if (data_.size() != other.data_.size() ||
+      values_->size() != other.values_->size())
     return false;
+
+  if (equality_cache_partner_ == &other &&
+      other.equality_cache_partner_ == this) {
+    DCHECK_EQ(equality_cached_result_, other.equality_cached_result_);
+    return equality_cached_result_;
+  }
+
+  equality_cache_partner_ = &other;
+  other.equality_cache_partner_ = this;
 
   for (const auto& pair : data_) {
-    if (!IsEqual(GetData(pair.key), other.GetData(pair.key)))
+    if (!IsEqual(GetData(pair.key), other.GetData(pair.key))) {
+      equality_cached_result_ = other.equality_cached_result_ = false;
       return false;
+    }
   }
-
-  if (values_->size() != other.values_->size())
-    return false;
 
   for (const auto& pair : *values_) {
-    if (!IsEqual(GetValue(pair.key), other.GetValue(pair.key)))
+    if (!IsEqual(GetValue(pair.key), other.GetValue(pair.key))) {
+      equality_cached_result_ = other.equality_cached_result_ = false;
       return false;
+    }
   }
 
+  equality_cached_result_ = other.equality_cached_result_ = true;
   return true;
 }
 
@@ -82,14 +94,16 @@ StyleVariables::OptionalValue StyleVariables::GetValue(
 void StyleVariables::SetData(const AtomicString& name,
                              scoped_refptr<CSSVariableData> data) {
   data_.Set(name, std::move(data));
+  equality_cache_partner_ = nullptr;
 }
 
 void StyleVariables::SetValue(const AtomicString& name, const CSSValue* value) {
   values_->Set(name, value);
+  equality_cache_partner_ = nullptr;
 }
 
 bool StyleVariables::IsEmpty() const {
-  return data_.IsEmpty() && values_->IsEmpty();
+  return data_.empty() && values_->empty();
 }
 
 void StyleVariables::CollectNames(HashSet<AtomicString>& names) const {

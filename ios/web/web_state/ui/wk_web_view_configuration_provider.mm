@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,22 +6,22 @@
 
 #import <Foundation/Foundation.h>
 #import <WebKit/WebKit.h>
-#include <vector>
+#import <vector>
 
-#include "base/check.h"
-#include "base/ios/ios_util.h"
-#include "base/memory/ptr_util.h"
-#include "base/notreached.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/safe_browsing/core/common/features.h"
-#include "ios/web/common/features.h"
+#import "base/check.h"
+#import "base/ios/ios_util.h"
+#import "base/memory/ptr_util.h"
+#import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/safe_browsing/core/common/features.h"
+#import "ios/web/common/features.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
-#include "ios/web/js_messaging/java_script_feature_util_impl.h"
+#import "ios/web/js_messaging/java_script_feature_util_impl.h"
 #import "ios/web/js_messaging/page_script_util.h"
 #import "ios/web/js_messaging/web_frames_manager_java_script_feature.h"
 #import "ios/web/navigation/session_restore_java_script_feature.h"
-#include "ios/web/public/browser_state.h"
-#include "ios/web/public/web_client.h"
+#import "ios/web/public/browser_state.h"
+#import "ios/web/public/web_client.h"
 #import "ios/web/web_state/ui/wk_content_rule_list_provider.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider_observer.h"
 #import "ios/web/webui/crw_web_ui_scheme_handler.h"
@@ -77,7 +77,7 @@ WKWebViewConfigurationProvider::WKWebViewConfigurationProvider(
     BrowserState* browser_state)
     : browser_state_(browser_state),
       content_rule_list_provider_(
-          std::make_unique<WKContentRuleListProvider>(browser_state)) {}
+          std::make_unique<WKContentRuleListProvider>()) {}
 
 WKWebViewConfigurationProvider::~WKWebViewConfigurationProvider() = default;
 
@@ -110,10 +110,7 @@ void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
     // displayed and also prevents the iOS 13 ContextMenu delegate methods
     // from being called.
     // https://github.com/WebKit/webkit/blob/1233effdb7826a5f03b3cdc0f67d713741e70976/Source/WebKit/UIProcess/API/Cocoa/WKWebViewConfiguration.mm#L307
-    BOOL enable_webkit_long_press_actions =
-        !web::GetWebClient()->EnableLongPressAndForceTouchHandling();
-    [configuration_ setValue:@(enable_webkit_long_press_actions)
-                      forKey:@"longPressActionsEnabled"];
+    [configuration_ setValue:@(NO) forKey:@"longPressActionsEnabled"];
   } @catch (NSException* exception) {
     NOTREACHED() << "Error setting value for longPressActionsEnabled";
   }
@@ -123,6 +120,14 @@ void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
   // only works for devices in certain locales. Disable this feature since
   // Chrome uses Google-provided Safe Browsing.
   [[configuration_ preferences] setFraudulentWebsiteWarningEnabled:NO];
+
+#if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
+  if (@available(iOS 16.0, *)) {
+    if (base::FeatureList::IsEnabled(features::kEnableFullscreenAPI)) {
+      [[configuration_ preferences] setElementFullscreenEnabled:YES];
+    }
+  }
+#endif  // defined(__IPHONE_16_0)
 
   [configuration_ setAllowsInlineMediaPlayback:YES];
   // setJavaScriptCanOpenWindowsAutomatically is required to support popups.

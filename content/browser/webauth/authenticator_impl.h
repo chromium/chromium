@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,27 +15,9 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 
-namespace base {
-class OneShotTimer;
-}
-
-namespace device {
-
-struct PlatformAuthenticatorInfo;
-struct CtapGetAssertionRequest;
-class FidoRequestHandlerBase;
-
-enum class FidoReturnCode : uint8_t;
-
-}  // namespace device
-
-namespace url {
-class Origin;
-}
-
 namespace content {
 
-class AuthenticatorCommon;
+class AuthenticatorCommonImpl;
 class RenderFrameHost;
 
 // Implementation of the public Authenticator interface.
@@ -46,6 +28,11 @@ class CONTENT_EXPORT AuthenticatorImpl
       RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::Authenticator> receiver);
 
+  static void CreateForTesting(
+      RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<blink::mojom::Authenticator> receiver,
+      std::unique_ptr<AuthenticatorCommonImpl> authenticator_common_impl);
+
   AuthenticatorImpl(const AuthenticatorImpl&) = delete;
   AuthenticatorImpl& operator=(const AuthenticatorImpl&) = delete;
 
@@ -53,16 +40,17 @@ class CONTENT_EXPORT AuthenticatorImpl
   friend class AuthenticatorImplTest;
   friend class AuthenticatorImplRequestDelegateTest;
 
-  AuthenticatorImpl(RenderFrameHost* render_frame_host,
-                    mojo::PendingReceiver<blink::mojom::Authenticator> receiver,
-                    std::unique_ptr<AuthenticatorCommon> authenticator_common);
+  AuthenticatorImpl(
+      RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<blink::mojom::Authenticator> receiver,
+      std::unique_ptr<AuthenticatorCommonImpl> authenticator_common_impl);
   ~AuthenticatorImpl() override;
 
-  AuthenticatorCommon* get_authenticator_common_for_testing() {
-    return authenticator_common_.get();
+  AuthenticatorCommonImpl* get_authenticator_common_impl_for_testing() {
+    return authenticator_common_impl_.get();
   }
 
-  // mojom:Authenticator
+  // mojom::Authenticator
   void MakeCredential(
       blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
       MakeCredentialCallback callback) override;
@@ -70,9 +58,11 @@ class CONTENT_EXPORT AuthenticatorImpl
                     GetAssertionCallback callback) override;
   void IsUserVerifyingPlatformAuthenticatorAvailable(
       IsUserVerifyingPlatformAuthenticatorAvailableCallback callback) override;
+  void IsConditionalMediationAvailable(
+      IsConditionalMediationAvailableCallback callback) override;
   void Cancel() override;
 
-  std::unique_ptr<AuthenticatorCommon> authenticator_common_;
+  std::unique_ptr<AuthenticatorCommonImpl> authenticator_common_impl_;
 
   // Owns pipes to this Authenticator from |render_frame_host_|.
   mojo::Receiver<blink::mojom::Authenticator> receiver_{this};

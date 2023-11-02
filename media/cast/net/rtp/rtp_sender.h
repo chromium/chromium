@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include <memory>
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "media/cast/cast_environment.h"
@@ -25,6 +26,8 @@
 
 namespace media {
 namespace cast {
+
+struct EncodedFrame;
 
 // This object is only called from the main cast thread.
 // This class handles splitting encoded audio and video frames into packets and
@@ -75,7 +78,7 @@ class RtpSender {
   RtpPacketizerConfig config_;
   PacketStorage storage_;
   std::unique_ptr<RtpPacketizer> packetizer_;
-  PacedSender* const transport_;
+  const raw_ptr<PacedSender> transport_;
   scoped_refptr<base::SingleThreadTaskRunner> transport_task_runner_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.

@@ -71,7 +71,7 @@ void BMPImageDecoder::Decode(bool only_size) {
     SetFailed();
   // If we're done decoding the image, we don't need the BMPImageReader
   // anymore.  (If we failed, |reader_| has already been cleared.)
-  else if (!frame_buffer_cache_.IsEmpty() &&
+  else if (!frame_buffer_cache_.empty() &&
            (frame_buffer_cache_.front().GetStatus() ==
             ImageFrame::kFrameComplete))
     reader_.reset();
@@ -89,7 +89,7 @@ bool BMPImageDecoder::DecodeHelper(bool only_size) {
     reader_->SetData(data_.get());
   }
 
-  if (!frame_buffer_cache_.IsEmpty())
+  if (!frame_buffer_cache_.empty())
     reader_->SetBuffer(&frame_buffer_cache_.front());
 
   return reader_->DecodeBMP(only_size);

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,8 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "remoting/base/util.h"
 #include "remoting/codec/video_decoder.h"
 #include "remoting/codec/video_encoder.h"
@@ -167,9 +167,9 @@ class VideoDecoderTester {
  private:
   bool strict_;
   DesktopRegion expected_region_;
-  VideoDecoder* decoder_;
+  raw_ptr<VideoDecoder> decoder_;
   std::unique_ptr<DesktopFrame> frame_;
-  DesktopFrame* expected_frame_;
+  raw_ptr<DesktopFrame> expected_frame_;
 };
 
 // The VideoEncoderTester provides a hook for retrieving the data, and passing
@@ -198,7 +198,7 @@ class VideoEncoderTester {
   }
 
  private:
-  VideoDecoderTester* decoder_tester_;
+  raw_ptr<VideoDecoderTester> decoder_tester_;
   int data_available_;
 };
 
@@ -227,8 +227,8 @@ void TestVideoEncoder(VideoEncoder* encoder, bool strict) {
 
   VideoEncoderTester tester;
 
-  for (size_t xi = 0; xi < base::size(kSizes); ++xi) {
-    for (size_t yi = 0; yi < base::size(kSizes); ++yi) {
+  for (size_t xi = 0; xi < std::size(kSizes); ++xi) {
+    for (size_t yi = 0; yi < std::size(kSizes); ++yi) {
       DesktopSize size(kSizes[xi], kSizes[yi]);
       std::unique_ptr<DesktopFrame> frame = PrepareFrame(size);
       for (const DesktopRegion& region : MakeTestRegionLists(size)) {

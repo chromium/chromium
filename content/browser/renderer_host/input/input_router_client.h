@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include "cc/input/touch_action.h"
 #include "content/browser/renderer_host/event_with_latency_info.h"
-#include "content/common/content_export.h"
+#include "content/browser/scheduler/browser_ui_thread_scheduler.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
@@ -20,7 +20,7 @@ struct DidOverscrollParams;
 
 namespace content {
 
-class CONTENT_EXPORT InputRouterClient {
+class InputRouterClient {
  public:
   virtual ~InputRouterClient() {}
 
@@ -40,6 +40,11 @@ class CONTENT_EXPORT InputRouterClient {
   // Called each time a WebInputEvent ACK IPC is received.
   virtual void DecrementInFlightEventCount(
       blink::mojom::InputEventResultSource ack_source) = 0;
+
+  // Called each time the browser UI scheduler should be notified of a scroll
+  // state update.
+  virtual void NotifyUISchedulerOfScrollStateUpdate(
+      BrowserUIThreadScheduler::ScrollState scroll_state) = 0;
 
   // Called when the router has received an overscroll notification from the
   // renderer.

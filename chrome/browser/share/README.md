@@ -13,7 +13,7 @@ Related directories:
 
 * [//chrome/browser/sharing](../sharing): contains a different subset of
   sharing-related functionality for historical reasons. Eventually these
-  directories should be merged.
+  directories should be merged
 * [//chrome/android/java/src/org/chromium/chrome/browser/share](../../android/java/src/org/chromium/chrome/browser/share):
   pre-modularization share code, or share code that is too entwined with
   ChromeActivity to easily move

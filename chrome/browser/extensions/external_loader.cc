@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,11 +42,21 @@ void ExternalLoader::LoadFinished(
     owner_->SetPrefs(std::move(prefs));
 }
 
+void ExternalLoader::LoadFinishedWithDict(base::Value::Dict prefs) {
+  LoadFinished(base::DictionaryValue::From(
+      base::Value::ToUniquePtrValue(base::Value(std::move(prefs)))));
+}
+
 void ExternalLoader::OnUpdated(
     std::unique_ptr<base::DictionaryValue> updated_prefs) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (owner_)
     owner_->UpdatePrefs(std::move(updated_prefs));
+}
+
+void ExternalLoader::OnUpdatedWithDict(base::Value::Dict updated_prefs) {
+  OnUpdated(base::DictionaryValue::From(
+      base::Value::ToUniquePtrValue(base::Value(std::move(updated_prefs)))));
 }
 
 }  // namespace extensions

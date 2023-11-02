@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,15 +10,15 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/breadcrumbs/core/breadcrumb_manager.h"
 #include "components/breadcrumbs/core/breadcrumb_manager_observer.h"
+#include "components/breadcrumbs/core/breadcrumbs_status.h"
 #include "components/breadcrumbs/core/crash_reporter_breadcrumb_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace breadcrumbs {
-
-class BreadcrumbManager;
-class BreadcrumbManagerKeyedService;
 
 // The filesize for the file at |breadcrumbs_file_path_|. The file will always
 // be this constant size because it is accessed using a memory mapped file. The
@@ -32,17 +32,11 @@ constexpr size_t kPersistedFilesizeInBytes = kMaxDataLength * 2;
 // application sessions.
 class BreadcrumbPersistentStorageManager : public BreadcrumbManagerObserver {
  public:
-  // Breadcrumbs will be stored in a file in |directory|. If
-  // |old_breadcrumbs_file_path| and |old_breadcrumbs_temp_file_path| are
-  // provided, the files at those paths will be migrated to the new filenames
-  // for breadcrumb files (only needed on iOS, which previously used different
-  // filenames).
+  // Observes the BreadcrumbManager and stores observed breadcrumb events to a
+  // file in `directory`.
   explicit BreadcrumbPersistentStorageManager(
       const base::FilePath& directory,
-      const absl::optional<base::FilePath>& old_breadcrumbs_file_path =
-          absl::nullopt,
-      const absl::optional<base::FilePath>& old_breadcrumbs_temp_file_path =
-          absl::nullopt);
+      base::RepeatingCallback<bool()> is_metrics_enabled_callback);
   ~BreadcrumbPersistentStorageManager() override;
   BreadcrumbPersistentStorageManager(
       const BreadcrumbPersistentStorageManager&) = delete;
@@ -53,22 +47,14 @@ class BreadcrumbPersistentStorageManager : public BreadcrumbManagerObserver {
   void GetStoredEvents(
       base::OnceCallback<void(std::vector<std::string>)> callback);
 
-  // Starts observing |manager| for events. Existing events will be persisted
-  // immediately.
-  void MonitorBreadcrumbManager(BreadcrumbManager* manager);
-  // Starts observing |service| for events. Existing events will be persisted
-  // immediately.
-  void MonitorBreadcrumbManagerService(BreadcrumbManagerKeyedService* service);
-
-  // Stops observing |manager|.
-  void StopMonitoringBreadcrumbManager(BreadcrumbManager* manager);
-  // Stops observing |service|.
-  void StopMonitoringBreadcrumbManagerService(
-      BreadcrumbManagerKeyedService* service);
-
  private:
-  // Sets |current_mapped_file_position_| to |file_size|;
-  void SetCurrentMappedFilePosition(size_t file_size);
+  // Returns whether metrics consent has been provided and the persistent
+  // storage manager can therefore create its breadcrumbs files. Deletes any
+  // existing breadcrumbs files if consent has been revoked.
+  bool CheckForFileConsent();
+
+  // Initializes |file_position_| to |file_size| and writes any events so far.
+  void InitializeFilePosition(size_t file_size);
 
   // Writes |pending_breadcrumbs_| to |breadcrumbs_file_| if it fits, otherwise
   // rewrites the file. NOTE: Writing may be delayed if the file has recently
@@ -82,21 +68,16 @@ class BreadcrumbPersistentStorageManager : public BreadcrumbManagerObserver {
       const std::vector<std::string> pending_breadcrumbs,
       std::vector<std::string> existing_events);
 
-  // Writes events from observed managers to |breadcrumbs_file_|, overwriting
+  // Writes events from BreadcrumbManager to `breadcrumbs_file_`, overwriting
   // any existing persisted breadcrumbs.
   void RewriteAllExistingBreadcrumbs();
 
   // Writes breadcrumbs stored in |pending_breadcrumbs_| to |breadcrumbs_file_|.
   void WritePendingBreadcrumbs();
 
-  // Writes |event| to |breadcrumbs_file_|.
-  // NOTE: Writing may be delayed if the file has recently been written into.
-  void WriteEvent(const std::string& event);
-
   // BreadcrumbManagerObserver
-  void EventAdded(BreadcrumbManager* manager,
-                  const std::string& event) override;
-  void OldEventsRemoved(BreadcrumbManager* manager) override;
+  void EventAdded(const std::string& event) override;
+  void OldEventsRemoved() override;
 
   // Individual breadcrumbs that have not yet been written to disk.
   std::string pending_breadcrumbs_;
@@ -108,6 +89,16 @@ class BreadcrumbPersistentStorageManager : public BreadcrumbManagerObserver {
   // A timer to delay writing to disk too often.
   base::OneShotTimer write_timer_;
 
+  // TODO(crbug.com/1327267): Remove these counters once crash is understood.
+  // The number of times the breadcrumbs file has been written to. Counts from
+  // the perspective of the main thread, i.e., a write is counted at the time
+  // that a task to write is posted.
+  size_t write_counter_ = 0;
+  // The value of `write_counter_` when the file was last fully rewritten, i.e.,
+  // replaced by the temp file. Intended to investigate whether replacing the
+  // breadcrumbs file can sometimes cause a crash on the next write attempt.
+  size_t write_counter_at_last_full_rewrite_ = 0;
+
   // The path to the file for storing persisted breadcrumbs.
   const base::FilePath breadcrumbs_file_path_;
 
@@ -117,7 +108,11 @@ class BreadcrumbPersistentStorageManager : public BreadcrumbManagerObserver {
   // The current size of breadcrumbs written to |breadcrumbs_file_path_|.
   // NOTE: The optional will not have a value until the size of the existing
   // file, if any, is retrieved.
-  absl::optional<size_t> current_mapped_file_position_;
+  absl::optional<size_t> file_position_;
+
+  // Used to check whether the user has consented to metrics reporting.
+  // Breadcrumbs should only be written to persistent storage if true.
+  base::RepeatingCallback<bool()> is_metrics_enabled_callback_;
 
   // The SequencedTaskRunner on which File IO operations are performed.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

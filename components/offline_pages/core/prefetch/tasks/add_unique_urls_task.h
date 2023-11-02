@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/task/task.h"
 
@@ -46,9 +47,9 @@ class AddUniqueUrlsTask : public Task {
   void OnUrlsAdded(Result result);
 
   // Dispatcher to call back to with results. Not owned.
-  PrefetchDispatcher* prefetch_dispatcher_;
+  raw_ptr<PrefetchDispatcher> prefetch_dispatcher_;
   // Prefetch store to execute against. Not owned.
-  PrefetchStore* prefetch_store_;
+  raw_ptr<PrefetchStore> prefetch_store_;
   std::string name_space_;
   std::vector<PrefetchURL> prefetch_urls_;
 

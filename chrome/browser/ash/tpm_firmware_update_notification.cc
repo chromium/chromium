@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
@@ -84,7 +85,8 @@ void OnAvailableUpdateModes(Profile* profile,
           std::u16string(), GURL(kTPMFirmwareUpdateNotificationId),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kTPMFirmwareUpdateNotificationId),
+              kTPMFirmwareUpdateNotificationId,
+              NotificationCatalogName::kTPMFirmwareUpdate),
           message_center::RichNotificationData(),
           base::MakeRefCounted<TPMFirmwareUpdateNotificationDelegate>(profile),
           gfx::kNoneIcon,

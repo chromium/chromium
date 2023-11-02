@@ -1,32 +1,40 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
-import {ReimagingProvisioningPageElement} from 'chrome://shimless-rma/reimaging_provisioning_page.js';
-import {ProvisioningStatus} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {PROVISIONING_ERROR_CODE_PREFIX, ReimagingProvisioningPage} from 'chrome://shimless-rma/reimaging_provisioning_page.js';
+import {ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
+import {ProvisioningError, ProvisioningStatus, RmadErrorCode} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.js';
 
 export function reimagingProvisioningPageTest() {
-  /** @type {?ReimagingProvisioningPageElement} */
+  /**
+   * ShimlessRma is needed to handle the 'transition-state' event used
+   * when handling calibration overall progress signals.
+   * @type {?ShimlessRma}
+   */
+  let shimlessRmaComponent = null;
+
+  /** @type {?ReimagingProvisioningPage} */
   let component = null;
 
   /** @type {?FakeShimlessRmaService} */
   let service = null;
 
-  suiteSetup(() => {
+  setup(() => {
+    document.body.innerHTML = '';
     service = new FakeShimlessRmaService();
     setShimlessRmaServiceForTesting(service);
   });
 
-  setup(() => {
-    document.body.innerHTML = '';
-  });
-
   teardown(() => {
+    shimlessRmaComponent.remove();
+    shimlessRmaComponent = null;
     component.remove();
     component = null;
     service.reset();
@@ -38,7 +46,12 @@ export function reimagingProvisioningPageTest() {
   function initializeWaitForProvisioningPage() {
     assertFalse(!!component);
 
-    component = /** @type {!ReimagingProvisioningPageElement} */ (
+    shimlessRmaComponent =
+        /** @type {!ShimlessRma} */ (document.createElement('shimless-rma'));
+    assertTrue(!!shimlessRmaComponent);
+    document.body.appendChild(shimlessRmaComponent);
+
+    component = /** @type {!ReimagingProvisioningPage} */ (
         document.createElement('reimaging-provisioning-page'));
     assertTrue(!!component);
     document.body.appendChild(component);
@@ -46,61 +59,83 @@ export function reimagingProvisioningPageTest() {
     return flushTasks();
   }
 
-  test('WaitForManualWpDisablePageInitializes', async () => {
-    await initializeWaitForProvisioningPage();
-    const provisioningComponent =
-        component.shadowRoot.querySelector('#provisioningDeviceStatus');
-    assertFalse(provisioningComponent.hidden);
-  });
-
-  test('ProvisioningStartingDisablesNext', async () => {
-    await initializeWaitForProvisioningPage();
-
-    let savedResult;
-    let savedError;
-    component.onNextButtonClick()
-        .then((result) => savedResult = result)
-        .catch((error) => savedError = error);
-    await flushTasks();
-
-    assertTrue(savedError instanceof Error);
-    assertEquals(savedError.message, 'Provisioning is not complete.');
-    assertEquals(savedResult, undefined);
-  });
-
-  test('ProvisioningInProgressDisablesNext', async () => {
-    await initializeWaitForProvisioningPage();
-    service.triggerProvisioningObserver(ProvisioningStatus.kInProgress, 0.5, 0);
-    await flushTasks();
-
-    let savedResult;
-    let savedError;
-    component.onNextButtonClick()
-        .then((result) => savedResult = result)
-        .catch((error) => savedError = error);
-    await flushTasks();
-
-    assertTrue(savedError instanceof Error);
-    assertEquals(savedError.message, 'Provisioning is not complete.');
-    assertEquals(savedResult, undefined);
-  });
-
-  test('ProvisioningEnablesNext', async () => {
+  test('ProvisioningCompleteTransitionsState', async () => {
     const resolver = new PromiseResolver();
     await initializeWaitForProvisioningPage();
-    service.triggerProvisioningObserver(ProvisioningStatus.kComplete, 1.0, 0);
-    await flushTasks();
+
+    let provisioningComplete = false;
     service.provisioningComplete = () => {
+      provisioningComplete = true;
       return resolver.promise;
     };
 
-    let expectedResult = {foo: 'bar'};
-    let savedResult;
-    component.onNextButtonClick().then((result) => savedResult = result);
-    // Resolve to a distinct result to confirm it was not modified.
-    resolver.resolve(expectedResult);
+    service.triggerProvisioningObserver(
+        ProvisioningStatus.kComplete, /* progress= */ 1.0,
+        /* error= */ ProvisioningError.kUnknown,
+        /* delayMs= */ 0);
     await flushTasks();
 
-    assertDeepEquals(savedResult, expectedResult);
+    assertTrue(provisioningComplete);
+  });
+
+  test('ProvisioningFailedWpError', async () => {
+    const resolver = new PromiseResolver();
+    await initializeWaitForProvisioningPage();
+
+    const wpEnabledDialog =
+        component.shadowRoot.querySelector('#wpEnabledDialog');
+    assertTrue(!!wpEnabledDialog);
+    assertFalse(wpEnabledDialog.open);
+
+    let callCount = 0;
+    service.retryProvisioning = () => {
+      callCount++;
+      return resolver.promise;
+    };
+
+    service.triggerProvisioningObserver(
+        ProvisioningStatus.kFailedBlocking, 1.0, ProvisioningError.kWpEnabled,
+        0);
+    await flushTasks();
+
+    assertTrue(wpEnabledDialog.open);
+
+    const tryAgainButton =
+        component.shadowRoot.querySelector('#tryAgainButton');
+    tryAgainButton.click();
+
+    assertFalse(wpEnabledDialog.open);
+    assertEquals(1, callCount);
+  });
+
+  test('ProvisioningFailedNonWpError', async () => {
+    await initializeWaitForProvisioningPage();
+
+    let hardwareErrorEventFired = false;
+    const expectedProvisoningError = ProvisioningError.kInternal;
+
+    const eventHandler = (event) => {
+      hardwareErrorEventFired = true;
+      assertEquals(
+          RmadErrorCode.kProvisioningFailed, event.detail.rmadErrorCode);
+      assertEquals(
+          PROVISIONING_ERROR_CODE_PREFIX + expectedProvisoningError,
+          event.detail.fatalErrorCode);
+    };
+    component.addEventListener('fatal-hardware-error', eventHandler);
+
+    const wpEnabledDialog =
+        component.shadowRoot.querySelector('#wpEnabledDialog');
+    assertTrue(!!wpEnabledDialog);
+    assertFalse(wpEnabledDialog.open);
+
+    service.triggerProvisioningObserver(
+        ProvisioningStatus.kFailedBlocking, 1.0, expectedProvisoningError, 0);
+    await flushTasks();
+
+    assertFalse(wpEnabledDialog.open);
+    assertTrue(hardwareErrorEventFired);
+
+    component.removeEventListener('fatal-hardware-error', eventHandler);
   });
 }

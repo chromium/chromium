@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,6 @@
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/chrome_version_service.h"
-#include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -65,7 +64,7 @@ class HelpAppNotificationControllerTest : public BrowserWithTestWindowTest {
     std::unique_ptr<TestingProfile> profile = CreateRegularProfile();
     ChromeVersionService::SetVersion(profile->GetPrefs(),
                                      version_info::GetVersionNumber());
-    profile->SetSupervisedUserId(supervised_users::kChildAccountSUID);
+    profile->SetIsSupervisedProfile();
     return profile;
   }
 
@@ -94,8 +93,7 @@ class HelpAppNotificationControllerTest : public BrowserWithTestWindowTest {
         base::Unretained(this)));
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {features::kHelpAppDiscoverTab,
-         features::kHelpAppDiscoverTabNotificationAllChannels,
+        {features::kHelpAppDiscoverTabNotificationAllChannels,
          features::kReleaseNotesNotificationAllChannels},
         /*disabled_features=*/{});
     pref_service_ = CreatePrefServiceAndRegisterPrefs();

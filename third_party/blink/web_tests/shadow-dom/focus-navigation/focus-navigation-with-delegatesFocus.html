@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../resources/js-test.js"></script>
+<script src="../../fast/dom/shadow/resources/shadow-dom.js"></script>
+</head>
+<body>
+<p>This tests TAB focus navigation with delegatesFocus flag on shadow hosts</p>
+<pre id="console"></pre>
+<div id="sandbox"></div>
+<script>
+function prepareDOMTree(parent, mode, tabindex, delegatesFocus) {
+    parent.innerHTML = '';
+    parent.appendChild(
+        createDOM('div', {'id': 'testform'},
+            createDOM('input', {'id': 'input-before'}),
+            createDOM('div', {'id': 'host-div'},
+                createShadowRoot(
+                    {'mode': mode,
+                     'delegatesFocus': delegatesFocus},
+                    createDOM('input', {'id': 'inner-input'}))),
+            createDOM('input', {'id': 'input-after'})));
+
+    if (tabindex !== null)
+        parent.querySelector('#host-div').tabIndex = tabindex;
+
+}
+
+var hostDiv;
+var sandbox = document.getElementById('sandbox');
+
+function test1(mode) {
+    debug('(1/8) Testing tab navigation order without tabindex and delegatesFocus=false');
+    prepareDOMTree(sandbox, mode, null, false);
+    hostDiv = document.getElementById('host-div');
+    shouldBe('internals.shadowRoot(hostDiv).delegatesFocus', 'false');
+    shouldBe('hostDiv.tabIndex', '-1');
+
+    expectedOrder = [
+      'input-before',
+      'host-div/inner-input',
+      'input-after'
+    ];
+
+    testFocusNavigationForward(expectedOrder);
+    expectedOrder.reverse();
+    testFocusNavigationBackward(expectedOrder);
+}
+
+function test2(mode) {
+    debug('(2/8) Testing tab navigation order without tabindex and delegatesFocus=true');
+    prepareDOMTree(sandbox, mode, null, true);
+    hostDiv = document.getElementById('host-div');
+    shouldBe('internals.shadowRoot(hostDiv).delegatesFocus', 'true');
+    shouldBe('hostDiv.tabIndex', '-1');
+
+    var expectedOrder = [
+      'input-before',
+      'host-div/inner-input',
+      'input-after'
+    ];
+
+    testFocusNavigationForward(expectedOrder);
+    expectedOrder.reverse();
+    testFocusNavigationBackward(expectedOrder);
+}
+
+function test3(mode) {
+    debug('(3/8) Testing tab navigation order with tabindex=0 and delegatesFocus=false');
+    prepareDOMTree(sandbox, mode, 0, false);
+    hostDiv = document.getElementById('host-div');
+    shouldBe('internals.shadowRoot(hostDiv).delegatesFocus', 'false');
+    shouldBeEqualToString('hostDiv.getAttribute("tabindex")', '0');
+
+    expectedOrder = [
+      'input-before',
+      'host-div',
+      'host-div/inner-input',
+      'input-after'
+    ];
+
+    testFocusNavigationForward(expectedOrder);
+    expectedOrder.reverse();
+    testFocusNavigationBackward(expectedOrder);
+}
+
+function test4(mode) {
+    debug('(4/8)Testing tab navigation order with tabindex=0 and delegatesFocus=true');
+    prepareDOMTree(sandbox, mode, 0, true);
+    hostDiv = document.getElementById('host-div');
+    shouldBe('internals.shadowRoot(hostDiv).delegatesFocus', 'true');
+    shouldBeEqualToString('hostDiv.getAttribute("tabindex")', '0');
+
+    expectedOrder = [
+      'input-before',
+      // 'host-div', // should skip host when delegatesFocus=true
+      'host-div/inner-input',
+      'input-after'
+    ];
+
+    testFocusNavigationForward(expectedOrder);
+    expectedOrder.reverse();
+    testFocusNavigationBackward(expectedOrder);
+}
+
+function test5(mode) {
+    debug('(5/8) Testing tab navigation order with tabindex=-1 and delegatesFocus=false');
+    prepareDOMTree(sandbox, mode, -1, false);
+    hostDiv = document.getElementById('host-div');
+    shouldBe('internals.shadowRoot(hostDiv).delegatesFocus', 'false');
+    shouldBeEqualToString('hostDiv.getAttribute("tabindex")', '-1');
+
+    expectedOrder = [
+      'input-before',
+      'input-after'
+    ];
+
+    testFocusNavigationForward(expectedOrder);
+    expectedOrder.reverse();
+    testFocusNavigationBackward(expectedOrder);
+}
+
+function test6(mode) {
+    debug('(6/8) Testing tab navigation order with tabindex=-1 and delegatesFocus=true');
+    prepareDOMTree(sandbox, mode, -1, true);
+    hostDiv = document.getElementById('host-div');
+    shouldBe('internals.shadowRoot(hostDiv).delegatesFocus', 'true');
+    shouldBeEqualToString('hostDiv.getAttribute("tabindex")', '-1');
+
+    expectedOrder = [
+      'input-before',
+      // 'host-div/inner-input', // The whole shadow tree should be skipped
+      'input-after'
+    ];
+
+    testFocusNavigationForward(expectedOrder);
+    expectedOrder.reverse();
+    testFocusNavigationBackward(expectedOrder);
+}
+
+function test7(mode) {
+    debug('(7/8) Testing tab navigation order with tabindex=1 and delegatesFocus=false');
+    prepareDOMTree(sandbox, mode, 1, false);
+    hostDiv = document.getElementById('host-div');
+    shouldBe('internals.shadowRoot(hostDiv).delegatesFocus', 'false');
+    shouldBeEqualToString('hostDiv.getAttribute("tabindex")', '1');
+
+    expectedOrder = [
+      'input-before',
+      'input-after',
+      'host-div',
+      'host-div/inner-input'
+    ];
+
+    testFocusNavigationForward(expectedOrder);
+    expectedOrder.reverse();
+    testFocusNavigationBackward(expectedOrder);
+}
+
+function test8(mode) {
+    debug('(8/8) Testing tab navigation order with tabindex=1 and delegatesFocus=true');
+    prepareDOMTree(sandbox, mode, 1, true);
+    hostDiv = document.getElementById('host-div');
+    shouldBe('internals.shadowRoot(hostDiv).delegatesFocus', 'true');
+    shouldBeEqualToString('hostDiv.getAttribute("tabindex")', '1');
+
+    expectedOrder = [
+      'input-before',
+      'input-after',
+      // 'host-div', // should skip host when delegatesFocus=true
+      'host-div/inner-input'
+    ];
+
+    testFocusNavigationForward(expectedOrder);
+    expectedOrder.reverse();
+    testFocusNavigationBackward(expectedOrder);
+}
+
+function test() {
+    debug('Testing shadow host with possible combinations of mode, tabindex and delegatesFocus');
+
+    test1('open');
+    test2('open');
+    test3('open');
+    test4('open');
+    test5('open');
+    test6('open');
+    test7('open');
+    test8('open');
+
+    test1('closed');
+    test2('closed');
+    test3('closed');
+    test4('closed');
+    test5('closed');
+    test6('closed');
+    test7('closed');
+    test8('closed');
+}
+
+function run_tests() {
+    if (!window.eventSender) {
+        testFailed('');
+        return;
+    }
+
+    test();
+
+    debug('Test finished.');
+}
+
+run_tests();
+</script>
+</body>
+</html>

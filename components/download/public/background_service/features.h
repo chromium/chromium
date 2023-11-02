@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@ namespace download {
 
 // Used to set configuration of download service through Finch. This is not used
 // to turn on/off the feature.
-extern const base::Feature kDownloadServiceFeature;
+BASE_DECLARE_FEATURE(kDownloadServiceFeature);
 
 }  // namespace download
 

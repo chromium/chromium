@@ -1,0 +1,65 @@
+env:
+  FORCE_COLOR: 1
+  GIT_TERMINAL_PROMPT: 0
+
+steps:
+  - label: "Build chromium - Linux"
+    key: "build-chromium-linux-x86_64"
+    timeout_in_minutes: 60
+    plugins:
+      - thedyrt/skip-checkout#v0.1.1:
+          cd: /home/ubuntu/chromium/src
+    command: "node replay_build_scripts/update-all-repos.mjs && docker build -t chromium-build-new - < Dockerfile.build && git status && node buildLinux.mjs && node replay_build_scripts/upload_build_artifacts.mjs"
+    env:
+      GOMA_SERVER_HOST: simpsonite.goma.engflow.com
+      GOMACTL_USE_PROXY: false
+      RECORD_REPLAY_BACKEND_DIR: /home/ubuntu/backend
+    agents:
+      - "runtimeType=chromiumbuild"
+      - "os=linux"
+      - "queue=runtime"
+    artifact_paths:
+      - "build_id/linux/x86_64/**"
+  - label: "Build chromium - Mac (x86)"
+    key: "build-chromium-mac-x86_64"
+    timeout_in_minutes: 60
+    plugins:
+      - thedyrt/skip-checkout#v0.1.1:
+          cd: /Users/administrator/chromium/src
+    command: "node replay_build_scripts/update-all-repos.mjs && node buildMac.mjs &&  node replay_build_scripts/upload_build_artifacts.mjs"
+    env:
+      GOMA_SERVER_HOST: simpsonite.goma.engflow.com
+      GOMACTL_USE_PROXY: false
+      RECORD_REPLAY_BACKEND_DIR: /Users/administrator/backend
+    agents:
+      - "runtimeType=chromiumbuild"
+      - "os=macos"
+      - "queue=runtime"
+    artifact_paths:
+      - "build_id/macOS/x86_64/**"
+  - label: "Build chromium - Mac (arm64)"
+    key: "build-chromium-mac-arm64"
+    timeout_in_minutes: 60
+    plugins:
+      - thedyrt/skip-checkout#v0.1.1:
+          cd: /Users/administrator/chromium/src
+    command: "node replay_build_scripts/update-all-repos.mjs && node buildMac.mjs &&  node replay_build_scripts/upload_build_artifacts.mjs"
+    env:
+      GOMA_SERVER_HOST: simpsonite.goma.engflow.com
+      GOMACTL_USE_PROXY: false
+      REPLAY_BUILD_ARM: true
+      RECORD_REPLAY_BACKEND_DIR: /Users/administrator/backend
+    agents:
+      - "runtimeType=chromiumbuild"
+      - "os=macos"
+      - "queue=runtime"
+    artifact_paths:
+      - "build_id/macOS/arm64/**"
+  - trigger: "testing-runtime-e2e"
+    label: ":hammer: Trigger Runtime Tests"
+    depends_on:
+      - "build-chromium-mac-arm64"
+    build:
+      branch: "toshok/mac-arm-investigation"
+      env:
+        CHROMIUM_BUILD_ID: "${BUILDKITE_BUILD_ID}"

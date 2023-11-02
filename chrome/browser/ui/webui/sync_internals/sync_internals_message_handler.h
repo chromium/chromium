@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,39 +41,39 @@ class SyncInternalsMessageHandler : public content::WebUIMessageHandler,
 
   // Fires an event to send updated data to the About page and registers
   // observers to notify the page upon updates.
-  void HandleRequestDataAndRegisterForUpdates(const base::ListValue* args);
+  void HandleRequestDataAndRegisterForUpdates(const base::Value::List& args);
 
   // Fires an event to send the list of types back to the page.
-  void HandleRequestListOfTypes(const base::ListValue* args);
+  void HandleRequestListOfTypes(const base::Value::List& args);
 
   // Fires an event to send the initial state of the "include specifics" flag.
-  void HandleRequestIncludeSpecificsInitialState(const base::ListValue* args);
+  void HandleRequestIncludeSpecificsInitialState(const base::Value::List& args);
 
   // Handler for getAllNodes message.  Needs a |request_id| argument.
-  void HandleGetAllNodes(const base::ListValue* args);
+  void HandleGetAllNodes(const base::Value::List& args);
 
   // Handler for setting internal state of if specifics should be included in
   // protocol events when sent to be displayed.
-  void HandleSetIncludeSpecifics(const base::ListValue* args);
+  void HandleSetIncludeSpecifics(const base::Value::List& args);
 
   // Handler for writeUserEvent message.
-  void HandleWriteUserEvent(const base::ListValue* args);
+  void HandleWriteUserEvent(const base::Value::List& args);
 
   // Handler for requestStart message.
-  void HandleRequestStart(const base::ListValue* args);
+  void HandleRequestStart(const base::Value::List& args);
 
   // Handler for requestStopKeepData message.
-  void HandleRequestStopKeepData(const base::ListValue* args);
+  void HandleRequestStopKeepData(const base::Value::List& args);
 
   // Handler for requestStopClearData message.
-  void HandleRequestStopClearData(const base::ListValue* args);
+  void HandleRequestStopClearData(const base::Value::List& args);
 
   // Handler for triggerRefresh message.
-  void HandleTriggerRefresh(const base::ListValue* args);
+  void HandleTriggerRefresh(const base::Value::List& args);
 
   // Callback used in GetAllNodes.
   void OnReceivedAllNodes(const std::string& callback_id,
-                          std::unique_ptr<base::ListValue> nodes);
+                          base::Value::List nodes);
 
   // syncer::SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;
@@ -86,9 +86,8 @@ class SyncInternalsMessageHandler : public content::WebUIMessageHandler,
 
  protected:
   using AboutSyncDataDelegate =
-      base::RepeatingCallback<std::unique_ptr<base::DictionaryValue>(
-          syncer::SyncService* service,
-          const std::string& channel)>;
+      base::RepeatingCallback<base::Value::Dict(syncer::SyncService* service,
+                                                const std::string& channel)>;
 
   // Constructor used for unit testing to override dependencies.
   explicit SyncInternalsMessageHandler(

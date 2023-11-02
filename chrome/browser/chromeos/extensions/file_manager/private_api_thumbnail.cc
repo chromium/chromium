@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,7 +31,10 @@
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkData.h"
+#include "third_party/skia/include/core/SkEncodedImageFormat.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace extensions {
@@ -117,7 +120,7 @@ FileManagerPrivateGetThumbnailFunction::
 
 void FileManagerPrivateGetThumbnailFunction::SendEncodedThumbnail(
     std::string thumbnail_data_url) {
-  Respond(OneArgument(base::Value(std::move(thumbnail_data_url))));
+  Respond(WithArguments(std::move(thumbnail_data_url)));
 }
 
 FileManagerPrivateInternalGetDriveThumbnailFunction::
@@ -177,7 +180,7 @@ FileManagerPrivateInternalGetDriveThumbnailFunction::Run() {
 void FileManagerPrivateInternalGetDriveThumbnailFunction::GotThumbnail(
     const absl::optional<std::vector<uint8_t>>& data) {
   if (!data) {
-    Respond(OneArgument(base::Value("")));
+    Respond(WithArguments(""));
     return;
   }
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -331,7 +334,7 @@ void FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::
   }
 
   if (!metadata.supports_thumbnail) {
-    Respond(OneArgument(base::Value("")));
+    Respond(WithArguments(""));
     return;
   }
 

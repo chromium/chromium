@@ -1,17 +1,17 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/web/invalid_url_tab_helper.h"
 
-#include "base/strings/sys_string_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/net/protocol_handler_util.h"
-#include "net/base/data_url.h"
+#import "net/base/data_url.h"
 #import "net/base/mac/url_conversions.h"
-#include "net/base/net_errors.h"
-#include "net/http/http_response_headers.h"
-#include "ui/base/page_transition_types.h"
-#include "url/url_constants.h"
+#import "net/base/net_errors.h"
+#import "net/http/http_response_headers.h"
+#import "ui/base/page_transition_types.h"
+#import "url/url_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

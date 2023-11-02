@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,16 +6,17 @@
 #define UI_VIEWS_INTERACTION_ELEMENT_TRACKER_VIEWS_H_
 
 #include <map>
-#include <memory>
 #include <vector>
 
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/strings/string_piece_forward.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/views_export.h"
-#include "ui/views/widget/widget.h"
-#include "ui/views/widget/widget_observer.h"
 
 namespace views {
 
@@ -33,14 +34,14 @@ class VIEWS_EXPORT TrackedElementViews : public ui::TrackedElement {
   View* view() { return view_; }
   const View* view() const { return view_; }
 
-  DECLARE_ELEMENT_TRACKER_METADATA()
+  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
 
  private:
-  View* const view_;
+  const raw_ptr<View> view_;
 };
 
 // Manages TrackedElements associated with View objects.
-class VIEWS_EXPORT ElementTrackerViews : private WidgetObserver {
+class VIEWS_EXPORT ElementTrackerViews {
  public:
   using ViewList = std::vector<View*>;
 
@@ -81,6 +82,12 @@ class VIEWS_EXPORT ElementTrackerViews : private WidgetObserver {
   // and that (if present) the element is a View; will DCHECK/crash otherwise.
   View* GetUniqueView(ui::ElementIdentifier id, ui::ElementContext context);
 
+  // Convenience method that calls GetUniqueView() and then safely converts the
+  // result to `T`, which must be a View subclass with metadata. Fails if a View
+  // is found but is not of the expected subtype.
+  template <class T>
+  T* GetUniqueViewAs(ui::ElementIdentifier id, ui::ElementContext context);
+
   // Returns the first View with the given `id` in the given `context`; null if
   // none is found. Ignores all other Views and any matching elements that are
   // not Views.
@@ -89,6 +96,13 @@ class VIEWS_EXPORT ElementTrackerViews : private WidgetObserver {
   // there's more than one.
   View* GetFirstMatchingView(ui::ElementIdentifier id,
                              ui::ElementContext context);
+
+  // Convenience method that calls GetFirstMatchingView() and then safely
+  // converts the result to `T`, which must be a view subclass with metadata.
+  // Fails if a View is found but is not of the expected subtype.
+  template <class T>
+  T* GetFirstMatchingViewAs(ui::ElementIdentifier id,
+                            ui::ElementContext context);
 
   // Returns a list of all visible Views with identifier `id` in `context`.
   // The list may be empty. Ignores any non-Views elements which might match.
@@ -99,6 +113,17 @@ class VIEWS_EXPORT ElementTrackerViews : private WidgetObserver {
   // Order is not guaranteed. Ignores any non-Views elements with the same
   // identifier.
   ViewList GetAllMatchingViewsInAnyContext(ui::ElementIdentifier id);
+
+  // Returns a widget that matches the given context. A valid
+  // TrackedElementViews must exist within the widget.
+  Widget* GetWidgetForContext(ui::ElementContext context);
+
+  // ----------
+  // Notifies listeners that a specific custom event has occurred for the given
+  // view. Calls GetElementForView(view, true) under the hood; returns false if
+  // an element cannot be found or created for the view (e.g. in the case where
+  // it is not visible or associated with a widget).
+  bool NotifyCustomEvent(ui::CustomElementEventType event_type, View* view);
 
   // ----------
   // The following methods are used by View and derived classes to send events
@@ -119,27 +144,53 @@ class VIEWS_EXPORT ElementTrackerViews : private WidgetObserver {
 
  private:
   friend class base::NoDestructor<ElementTrackerViews>;
+  FRIEND_TEST_ALL_PREFIXES(ElementTrackerViewsTest, CleansUpWidgetTrackers);
   class ElementDataViews;
+  class WidgetTracker;
 
   ElementTrackerViews();
-  ~ElementTrackerViews() override;
-
-  // WidgetObserver:
-  void OnWidgetVisibilityChanged(Widget* widget, bool visible) override;
-  void OnWidgetDestroying(Widget* widget) override;
+  ~ElementTrackerViews();
 
   // We do not get notified at the View level if a view's widget has not yet
   // been shown. We need this notification to know when the view is actually
   // visible to the user. So if a view is added to the trakcer or is added to
   // a widget, and its widget is not visible, we watch it until it is (or it is
   // destroyed).
-  void MaybeObserveWidget(Widget* widget);
+  void MaybeTrackWidget(Widget* widget);
 
-  std::map<ui::ElementIdentifier, std::unique_ptr<ElementDataViews>>
-      element_data_;
-  base::ScopedMultiSourceObservation<Widget, WidgetObserver> widget_observer_{
-      this};
+  // Keep track of widgets for which we've received an
+  // OnWidgetVisibilityChanged(true) event for but which are still reporting
+  // IsVisible() = false. This happens because visibility of native window in
+  // Aura is not exactly synced with our event reporting.
+  bool IsWidgetVisible(const Widget* widget) const;
+
+  std::map<ui::ElementIdentifier, ElementDataViews> element_data_;
+  std::map<const Widget*, WidgetTracker> widget_trackers_;
 };
+
+// Template implementations.
+
+template <class T>
+T* ElementTrackerViews::GetUniqueViewAs(ui::ElementIdentifier id,
+                                        ui::ElementContext context) {
+  views::View* const view = GetUniqueView(id, context);
+  if (!view)
+    return nullptr;
+  T* const result = views::AsViewClass<T>(view);
+  DCHECK(result);
+  return result;
+}
+
+template <class T>
+T* ElementTrackerViews::GetFirstMatchingViewAs(ui::ElementIdentifier id,
+                                               ui::ElementContext context) {
+  views::View* const view = GetFirstMatchingView(id, context);
+  if (!view)
+    return nullptr;
+  T* const result = views::AsViewClass<T>(view);
+  DCHECK(result);
+  return result;
+}
 
 }  // namespace views
 

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,18 @@
 #include <algorithm>
 
 #include "base/files/memory_mapped_file.h"
+#include "base/memory/shared_memory_mapping.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "mojo/public/c/system/data_pipe.h"
 #include "net/base/net_errors.h"
+
+#if BUILDFLAG(IS_POSIX)
+#include <sys/mman.h>
+
+#include "base/threading/scoped_blocking_call.h"
+#endif
 
 namespace safe_browsing {
 
@@ -23,6 +30,71 @@ constexpr int64_t kMaxSize = 32 * 1024;
 
 }  // namespace
 
+#if BUILDFLAG(IS_POSIX)
+bool MultipartDataPipeGetter::InternalMemoryMappedFile::Initialize(
+    base::File file) {
+  if (IsValid())
+    return false;
+
+  file_ = std::move(file);
+
+  if (!DoInitialize()) {
+    CloseHandles();
+    return false;
+  }
+
+  return true;
+}
+
+bool MultipartDataPipeGetter::InternalMemoryMappedFile::DoInitialize() {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
+  int64_t file_len = file_.GetLength();
+  if (file_len < 0) {
+    DPLOG(ERROR) << "fstat " << file_.GetPlatformFile();
+    return false;
+  }
+  if (!base::IsValueInRangeForNumericType<size_t>(file_len))
+    return false;
+  length_ = static_cast<size_t>(file_len);
+
+  data_ = static_cast<uint8_t*>(mmap(nullptr, length_, PROT_READ, MAP_SHARED,
+                                     file_.GetPlatformFile(), 0));
+  if (data_ == MAP_FAILED) {
+    // Retry with MAP_PRIVATE mode.
+    // Some file systems do not support MAP_SHARED. Here, it is acceptable to
+    // use MAP_PRIVATE instead. Note: For MAP_PRIVATE, it is unspecified whether
+    // changes to the underlying file are carried through to the mapped region
+    // after the mmap call.
+    data_ = static_cast<uint8_t*>(mmap(nullptr, length_, PROT_READ, MAP_PRIVATE,
+                                       file_.GetPlatformFile(), 0));
+  }
+
+  if (data_ == MAP_FAILED) {
+    DPLOG(ERROR) << "Upload failure: The creation of a memory mapped file "
+                    "failed for file "
+                 << file_.GetPlatformFile();
+    return false;
+  }
+
+  return true;
+}
+
+void MultipartDataPipeGetter::InternalMemoryMappedFile::CloseHandles() {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
+  if (data_ != nullptr)
+    munmap(data_, length_);
+  file_.Close();
+
+  data_ = nullptr;
+  length_ = 0;
+}
+
+#endif  // BUILDFLAG(IS_POSIX)
+
 // static
 std::unique_ptr<MultipartDataPipeGetter> MultipartDataPipeGetter::Create(
     const std::string& boundary,
@@ -31,7 +103,7 @@ std::unique_ptr<MultipartDataPipeGetter> MultipartDataPipeGetter::Create(
   if (!file.IsValid())
     return nullptr;
 
-  auto mm_file = std::make_unique<base::MemoryMappedFile>();
+  auto mm_file = std::make_unique<InternalMemoryMappedFile>();
   if (!mm_file->Initialize(std::move(file)))
     return nullptr;
 
@@ -39,16 +111,54 @@ std::unique_ptr<MultipartDataPipeGetter> MultipartDataPipeGetter::Create(
                                                    std::move(mm_file));
 }
 
+// static
+std::unique_ptr<MultipartDataPipeGetter> MultipartDataPipeGetter::Create(
+    const std::string& boundary,
+    const std::string& metadata,
+    base::ReadOnlySharedMemoryRegion page) {
+  if (!page.IsValid())
+    return nullptr;
+
+  base::ReadOnlySharedMemoryMapping mapping = page.Map();
+  if (!mapping.IsValid())
+    return nullptr;
+
+  return std::make_unique<MultipartDataPipeGetter>(boundary, metadata,
+                                                   std::move(mapping));
+}
+
 MultipartDataPipeGetter::MultipartDataPipeGetter(
     const std::string& boundary,
     const std::string& metadata,
-    std::unique_ptr<base::MemoryMappedFile> file)
-    : file_(std::move(file)) {
+    std::unique_ptr<InternalMemoryMappedFile> file)
+    : MultipartDataPipeGetter(boundary,
+                              metadata,
+                              std::move(file),
+                              base::ReadOnlySharedMemoryMapping()) {
+  file_data_pipe_ = true;
+  CHECK(file_->IsValid());
+}
+
+MultipartDataPipeGetter::MultipartDataPipeGetter(
+    const std::string& boundary,
+    const std::string& metadata,
+    base::ReadOnlySharedMemoryMapping page)
+    : MultipartDataPipeGetter(boundary, metadata, nullptr, std::move(page)) {
+  file_data_pipe_ = false;
+  CHECK(page_.IsValid());
+}
+
+MultipartDataPipeGetter::MultipartDataPipeGetter(
+    const std::string& boundary,
+    const std::string& metadata,
+    std::unique_ptr<InternalMemoryMappedFile> file,
+    base::ReadOnlySharedMemoryMapping page)
+    : file_(std::move(file)), page_(std::move(page)) {
   metadata_ = base::StrCat({"--", boundary, "\r\n", kDataContentType,
                             "\r\n\r\n", metadata, "\r\n--", boundary, "\r\n",
                             kDataContentType, "\r\n\r\n"});
+
   last_boundary_ = base::StrCat({"\r\n--", boundary, "--\r\n"});
-  CHECK(file_->IsValid());
 }
 
 MultipartDataPipeGetter::~MultipartDataPipeGetter() = default;
@@ -81,7 +191,8 @@ void MultipartDataPipeGetter::Reset() {
   write_position_ = 0;
 }
 
-std::unique_ptr<base::MemoryMappedFile> MultipartDataPipeGetter::ReleaseFile() {
+std::unique_ptr<MultipartDataPipeGetter::InternalMemoryMappedFile>
+MultipartDataPipeGetter::ReleaseFile() {
   return std::move(file_);
 }
 
@@ -101,9 +212,18 @@ void MultipartDataPipeGetter::Write() {
       return;
   }
 
-  int64_t data_end = metadata_end + file_->length();
+  int64_t data_end = metadata_end;
+  if (is_file_data_pipe()) {
+    data_end += file_->length();
+  } else {
+    DCHECK(is_page_data_pipe());
+    data_end += page_.size();
+  }
+
   if (metadata_end <= write_position_ && write_position_ < data_end) {
-    if (!WriteFileData())
+    if (is_file_data_pipe() && !WriteFileData())
+      return;
+    if (is_page_data_pipe() && !WritePageData())
       return;
   }
 
@@ -149,6 +269,14 @@ bool MultipartDataPipeGetter::WriteFileData() {
                file_offset);
 }
 
+bool MultipartDataPipeGetter::WritePageData() {
+  int64_t page_offset = write_position_ - metadata_.size();
+  CHECK_GE(page_offset, 0);
+  CHECK_LT(page_offset, static_cast<int64_t>(page_.size()));
+
+  return Write(page_.GetMemoryAs<char>(), page_.size(), page_offset);
+}
+
 bool MultipartDataPipeGetter::Write(const char* data,
                                     int64_t full_size,
                                     int64_t offset) {
@@ -178,7 +306,21 @@ bool MultipartDataPipeGetter::Write(const char* data,
 }
 
 int64_t MultipartDataPipeGetter::FullSize() {
-  return metadata_.size() + file_->length() + last_boundary_.size();
+  int64_t size = metadata_.size() + last_boundary_.size();
+  if (is_file_data_pipe()) {
+    return size + file_->length();
+  } else {
+    DCHECK(is_page_data_pipe());
+    return size + page_.size();
+  }
+}
+
+bool MultipartDataPipeGetter::is_file_data_pipe() const {
+  return file_data_pipe_;
+}
+
+bool MultipartDataPipeGetter::is_page_data_pipe() const {
+  return !file_data_pipe_;
 }
 
 }  // namespace safe_browsing

@@ -1,8 +1,9 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
+#include <tuple>
 
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
@@ -14,7 +15,7 @@
 #include "chrome/browser/navigation_predictor/navigation_predictor.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
-#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
 #include "chrome/browser/ui/browser.h"
@@ -748,13 +749,10 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorFencedFrameBrowserTest,
   EXPECT_EQ(2u, anchor_entries.size());
 
   // Create a fenced frame.
-  content::RenderFrameHost* fenced_frame_host =
-      fenced_frame_test_helper().CreateFencedFrame(
-          web_contents()->GetMainFrame(), url);
-
-  // Navigate the fenced frame.
-  fenced_frame_test_helper().NavigateFrameInFencedFrameTree(fenced_frame_host,
-                                                            url);
+  const GURL& fenced_frame_url =
+      test_server()->GetURL("/fenced_frames/simple_page_with_anchors.html");
+  std::ignore = fenced_frame_test_helper().CreateFencedFrame(
+      web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
 
   // Make sure the fenced frame doesn't log any anchors.
   anchor_entries = test_ukm_recorder->GetEntriesByName(AnchorEntry::kEntryName);

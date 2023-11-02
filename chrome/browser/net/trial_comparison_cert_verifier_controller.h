@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -75,7 +76,7 @@ class TrialComparisonCertVerifierController
  private:
   void RefreshState();
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   PrefChangeRegistrar pref_change_registrar_;
 
   mojo::ReceiverSet<

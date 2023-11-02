@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -38,7 +39,7 @@ class TestMenuRunnerHandler : public MenuRunnerHandler {
   }
 
  private:
-  int* show_counter_;
+  raw_ptr<int> show_counter_;
 };
 
 }  // namespace

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,6 +63,9 @@ class CameraAppUIDelegate {
   virtual void MonitorFileDeletion(
       const std::string& name,
       base::OnceCallback<void(FileMonitorResult)> callback) = 0;
+
+  // Maybe triggers HaTS survey for the camera app if all the conditions match.
+  virtual void MaybeTriggerSurvey() = 0;
 };
 
 }  // namespace ash

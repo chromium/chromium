@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -326,9 +326,8 @@ TEST_F(FaviconCacheTest, ExpireNullFaviconsByHistory) {
   std::move(favicon_service_a_site_response_)
       .Run(favicon_base::FaviconImageResult());
 
-  cache_.OnURLVisited(nullptr /* history_service */, ui::PAGE_TRANSITION_LINK,
-                      history::URLRow(kUrlA), history::RedirectList(),
-                      base::Time::Now());
+  cache_.OnURLVisited(nullptr /* history_service */, history::URLRow(kUrlA),
+                      history::VisitRow());
 
   // Now the empty favicon should have been expired and we expect our second
   // call to the mock underlying FaviconService.

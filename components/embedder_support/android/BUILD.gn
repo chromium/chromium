@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -21,7 +21,7 @@ android_library("browser_context_java") {
 
 android_library("simple_factory_key_java") {
   sources = [ "java/src/org/chromium/components/embedder_support/simple_factory_key/SimpleFactoryKeyHandle.java" ]
-  deps = [ "//base:base_java" ]
+  deps = [ "//base:jni_java" ]
 }
 
 generate_jni("simple_factory_key_jni_headers") {
@@ -41,7 +41,10 @@ static_library("simple_factory_key") {
 }
 
 android_library("application_java") {
-  deps = [ "//base:base_java" ]
+  deps = [
+    "//base:base_java",
+    "//build/android:build_java",
+  ]
   sources = [
     "java/src/org/chromium/components/embedder_support/application/ClassLoaderContextWrapperFactory.java",
     "java/src/org/chromium/components/embedder_support/application/FirebaseConfig.java",
@@ -60,6 +63,8 @@ android_library("util_java") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   deps = [
     "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_main_dex_java",
     "//net/android:net_java",
@@ -141,7 +146,8 @@ android_library("content_view_java") {
 
 android_library("view_java") {
   deps = [
-    "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//content/public/android:content_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
@@ -203,6 +209,8 @@ android_library("web_contents_delegate_java") {
   deps = [
     ":web_contents_delegate_java_resources",
     "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
@@ -252,7 +260,7 @@ generate_jni("context_menu_jni_headers") {
 
 android_library("context_menu_java") {
   deps = [
-    "//base:base_java",
+    "//base:jni_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/blink/public:blink_headers_java",
@@ -267,7 +275,7 @@ android_library("native_java_unittests_java") {
   testonly = true
   deps = [
     ":util_java",
-    "//base:base_java",
+    "//base:jni_java",
     "//third_party/junit",
   ]
   sources = [ "native_java_unittests/src/org/chromium/components/embedder_support/util/InputStreamUnittest.java" ]
@@ -282,28 +290,18 @@ generate_jni("native_j_unittests_jni_headers") {
   sources = [ "native_java_unittests/src/org/chromium/components/embedder_support/util/InputStreamUnittest.java" ]
 }
 
-android_library("junit_test_support") {
-  # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
-  bypass_platform_checks = true
-  testonly = true
+robolectric_library("junit_test_support") {
   sources = [ "junit/src/org/chromium/components/embedder_support/util/ShadowUrlUtilities.java" ]
-  deps = [
-    ":util_java",
-    "//third_party/android_deps:robolectric_all_java",
-  ]
+  deps = [ ":util_java" ]
 }
 
-java_library("components_embedder_support_junit_tests") {
-  # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
-  bypass_platform_checks = true
-  testonly = true
+robolectric_library("components_embedder_support_junit_tests") {
   sources = [
     "junit/src/org/chromium/components/embedder_support/util/OriginTest.java",
   ]
   deps = [
     ":util_java",
     "//base:base_junit_test_support",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
   ]
@@ -314,6 +312,7 @@ android_library("embedder_support_javatests") {
 
   sources = [
     "javatests/src/org/chromium/components/embedder_support/delegate/ColorPickerDialogRenderTest.java",
+    "javatests/src/org/chromium/components/embedder_support/util/UrlConstantsTest.java",
     "javatests/src/org/chromium/components/embedder_support/util/UrlUtilitiesUnitTest.java",
   ]
   deps = [

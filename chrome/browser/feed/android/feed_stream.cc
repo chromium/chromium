@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,13 +13,15 @@
 #include "base/android/jni_string.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/feed/android/feed_reliability_logging_bridge.h"
-#include "chrome/browser/feed/android/feed_service_factory.h"
 #include "chrome/browser/feed/android/jni_headers/FeedStream_jni.h"
+#include "chrome/browser/feed/android/jni_translation.h"
+#include "chrome/browser/feed/feed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/feed/core/proto/v2/ui.pb.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/feed_service.h"
+#include "components/feed/core/v2/public/stream_type.h"
 #include "components/variations/variations_ids_provider.h"
 #include "url/android/gurl_android.h"
 
@@ -34,19 +36,33 @@ namespace android {
 
 static jlong JNI_FeedStream_Init(JNIEnv* env,
                                  const JavaParamRef<jobject>& j_this,
-                                 jboolean is_for_you_stream,
+                                 jint stream_kind,
                                  jlong native_feed_reliability_logging_bridge) {
   return reinterpret_cast<intptr_t>(
-      new FeedStream(j_this, is_for_you_stream,
+      new FeedStream(j_this, stream_kind, std::string(),
                      reinterpret_cast<FeedReliabilityLoggingBridge*>(
                          native_feed_reliability_logging_bridge)));
 }
 
+static jlong JNI_FeedStream_InitWebFeed(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_this,
+    const JavaParamRef<jbyteArray>& j_web_feed_id,
+    jlong native_feed_reliability_logging_bridge) {
+  std::string web_feed_id;
+  base::android::JavaByteArrayToString(env, j_web_feed_id, &web_feed_id);
+  return reinterpret_cast<intptr_t>(new FeedStream(
+      j_this, static_cast<jint>(StreamKind::kChannel), web_feed_id,
+      reinterpret_cast<FeedReliabilityLoggingBridge*>(
+          native_feed_reliability_logging_bridge)));
+}
+
 FeedStream::FeedStream(const JavaRef<jobject>& j_this,
-                       jboolean is_for_you_stream,
+                       jint stream_kind,
+                       std::string web_feed_id,
                        FeedReliabilityLoggingBridge* reliability_logging_bridge)
-    : ::feed::FeedStreamSurface(is_for_you_stream ? kForYouStream
-                                                  : kWebFeedStream),
+    : ::feed::FeedStreamSurface(StreamType(static_cast<StreamKind>(stream_kind),
+                                           std::move(web_feed_id))),
       feed_stream_api_(nullptr),
       reliability_logging_bridge_(reliability_logging_bridge) {
   java_ref_.Reset(j_this);
@@ -118,12 +134,14 @@ void FeedStream::ManualRefresh(JNIEnv* env,
 void FeedStream::ProcessThereAndBackAgain(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jbyteArray>& data) {
+    const JavaParamRef<jbyteArray>& data,
+    const JavaParamRef<jbyteArray>& logging_parameters) {
   if (!feed_stream_api_)
     return;
   std::string data_string;
   base::android::JavaByteArrayToString(env, data, &data_string);
-  feed_stream_api_->ProcessThereAndBackAgain(data_string);
+  feed_stream_api_->ProcessThereAndBackAgain(
+      data_string, ToNativeLoggingParameters(env, logging_parameters));
 }
 
 int FeedStream::ExecuteEphemeralChange(JNIEnv* env,
@@ -170,46 +188,31 @@ void FeedStream::SurfaceClosed(JNIEnv* env, const JavaParamRef<jobject>& obj) {
   }
 }
 
-bool FeedStream::IsActivityLoggingEnabled(JNIEnv* env,
-                                          const JavaParamRef<jobject>& obj) {
-  // Currently, the UI side isn't able to query streams independently for their
-  // logging activity state, and they will always ask for kForYouStream.
-  //
-  // We expect logging state to be in the same state for both streams, but we
-  // won't have this information if the stream isn't yet loaded.
-  // For this reason, we consider logging enabled as 'true' if it's enabled for
-  // either stream type.
-  // TODO(crbug.com/1262376): Improve this.
-
-  return feed_stream_api_ &&
-         (feed_stream_api_->IsActivityLoggingEnabled(kForYouStream) ||
-          feed_stream_api_->IsActivityLoggingEnabled(kWebFeedStream));
-}
-
 void FeedStream::ReportOpenAction(JNIEnv* env,
                                   const JavaParamRef<jobject>& obj,
                                   const JavaParamRef<jobject>& j_url,
-                                  const JavaParamRef<jstring>& slice_id) {
+                                  const JavaParamRef<jstring>& slice_id,
+                                  int action_type) {
   if (!feed_stream_api_)
     return;
   std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_url);
   feed_stream_api_->ReportOpenAction(
       url ? *url : GURL(), GetStreamType(),
-      base::android::ConvertJavaStringToUTF8(env, slice_id));
+      base::android::ConvertJavaStringToUTF8(env, slice_id),
+      static_cast<OpenActionType>(action_type));
 }
 
-void FeedStream::ReportOpenInNewTabAction(
+void FeedStream::UpdateUserProfileOnLinkClick(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& j_url,
-    const JavaParamRef<jstring>& slice_id) {
+    const base::android::JavaParamRef<jobject>& j_url,
+    const base::android::JavaParamRef<jlongArray>& entity_mids) {
   if (!feed_stream_api_)
     return;
   std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_url);
-
-  feed_stream_api_->ReportOpenInNewTabAction(
-      url ? *url : GURL(), GetStreamType(),
-      base::android::ConvertJavaStringToUTF8(env, slice_id));
+  std::vector<int64_t> entities_mids_vector;
+  base::android::JavaLongArrayToInt64Vector(env, entity_mids,
+                                            &entities_mids_vector);
+  feed_stream_api_->UpdateUserProfileOnLinkClick(*url, entities_mids_vector);
 }
 
 void FeedStream::ReportSliceViewed(JNIEnv* env,
@@ -272,40 +275,59 @@ jlong FeedStream::GetLastFetchTimeMs(
   return feed_stream_api_->GetLastFetchTime(GetStreamType()).ToDoubleT() * 1000;
 }
 
-void FeedStream::ReportNoticeCreated(JNIEnv* env,
-                                     const JavaParamRef<jobject>& obj,
-                                     const JavaParamRef<jstring>& key) {
+void FeedStream::ReportInfoCardTrackViewStarted(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    int info_card_type) {
   if (!feed_stream_api_)
     return;
-  feed_stream_api_->ReportNoticeCreated(
-      GetStreamType(), base::android::ConvertJavaStringToUTF8(env, key));
+  feed_stream_api_->ReportInfoCardTrackViewStarted(GetStreamType(),
+                                                   info_card_type);
 }
 
-void FeedStream::ReportNoticeViewed(JNIEnv* env,
-                                    const JavaParamRef<jobject>& obj,
-                                    const JavaParamRef<jstring>& key) {
+void FeedStream::ReportInfoCardViewed(JNIEnv* env,
+                                      const JavaParamRef<jobject>& obj,
+                                      int info_card_type,
+                                      int minimum_view_interval_seconds) {
   if (!feed_stream_api_)
     return;
-  feed_stream_api_->ReportNoticeViewed(
-      GetStreamType(), base::android::ConvertJavaStringToUTF8(env, key));
+  feed_stream_api_->ReportInfoCardViewed(GetStreamType(), info_card_type,
+                                         minimum_view_interval_seconds);
 }
 
-void FeedStream::ReportNoticeOpenAction(JNIEnv* env,
-                                        const JavaParamRef<jobject>& obj,
-                                        const JavaParamRef<jstring>& key) {
-  if (!feed_stream_api_)
-    return;
-  feed_stream_api_->ReportNoticeOpenAction(
-      GetStreamType(), base::android::ConvertJavaStringToUTF8(env, key));
-}
-
-void FeedStream::ReportNoticeDismissed(JNIEnv* env,
+void FeedStream::ReportInfoCardClicked(JNIEnv* env,
                                        const JavaParamRef<jobject>& obj,
-                                       const JavaParamRef<jstring>& key) {
+                                       int info_card_type) {
   if (!feed_stream_api_)
     return;
-  feed_stream_api_->ReportNoticeDismissed(
-      GetStreamType(), base::android::ConvertJavaStringToUTF8(env, key));
+  feed_stream_api_->ReportInfoCardClicked(GetStreamType(), info_card_type);
+}
+
+void FeedStream::ReportInfoCardDismissedExplicitly(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    int info_card_type) {
+  if (!feed_stream_api_)
+    return;
+  feed_stream_api_->ReportInfoCardDismissedExplicitly(GetStreamType(),
+                                                      info_card_type);
+}
+
+void FeedStream::ResetInfoCardStates(JNIEnv* env,
+                                     const JavaParamRef<jobject>& obj,
+                                     int info_card_type) {
+  if (!feed_stream_api_)
+    return;
+  feed_stream_api_->ResetInfoCardStates(GetStreamType(), info_card_type);
+}
+
+void FeedStream::InvalidateContentCacheFor(JNIEnv* env,
+                                           const JavaParamRef<jobject>& obj,
+                                           jint stream_kind) {
+  if (!feed_stream_api_)
+    return;
+  feed_stream_api_->InvalidateContentCacheFor(
+      (static_cast<StreamKind>(stream_kind)));
 }
 
 }  // namespace android

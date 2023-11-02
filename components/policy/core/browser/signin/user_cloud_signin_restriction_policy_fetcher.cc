@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,15 @@
 #include <set>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
+#include "base/json/json_reader.h"
+#include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/proto/secure_connect.pb.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -26,9 +32,9 @@ namespace policy {
 namespace {
 
 const char kAuthorizationHeaderFormat[] = "Bearer %s";
-const char kProtobufferContentType[] = "application/x-protobuf";
+const char kJsonContentType[] = "application/json";
 const char kSecureConnectApiGetManagedAccountsSigninRestrictionsUrl[] =
-    "https://secureconnect-pa.googleapis.com/"
+    "https://secureconnect-pa.clients6.google.com/"
     "v1:getManagedAccountsSigninRestriction";
 
 std::unique_ptr<network::SimpleURLLoader> CreateUrlLoader(
@@ -44,7 +50,7 @@ std::unique_ptr<network::SimpleURLLoader> CreateUrlLoader(
       net::HttpRequestHeaders::kAuthorization,
       base::StringPrintf(kAuthorizationHeaderFormat, access_token.c_str()));
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kContentType,
-                                      kProtobufferContentType);
+                                      kJsonContentType);
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   auto url_loader =
       network::SimpleURLLoader::Create(std::move(resource_request), annotation);
@@ -68,6 +74,14 @@ void UserCloudSigninRestrictionPolicyFetcher::
         signin::IdentityManager* identity_manager,
         const CoreAccountId& account_id,
         base::OnceCallback<void(const std::string&)> callback) {
+  if (!base::FeatureList::IsEnabled(
+          features::kEnableUserCloudSigninRestrictionPolicyFetcher)) {
+    cancelable_callback_.Reset(std::move(callback));
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(cancelable_callback_.callback(), std::string()));
+    return;
+  }
   // base::Unretained is safe here because the callback is called in the
   // lifecycle of `this`.
   FetchAccessToken(
@@ -90,7 +104,7 @@ void UserCloudSigninRestrictionPolicyFetcher::FetchAccessToken(
   // `this`.
   access_token_fetcher_ = identity_manager->CreateAccessTokenFetcherForAccount(
       account_id, /*oauth_consumer_name=*/"cloud_policy", /*scopes=*/
-      {GaiaConstants::kGoogleUserInfoProfile},
+      {GaiaConstants::kSecureConnectOAuth2Scope},
       base::BindOnce(
           &UserCloudSigninRestrictionPolicyFetcher::OnFetchAccessTokenResult,
           base::Unretained(this), std::move(callback)),
@@ -143,7 +157,7 @@ void UserCloudSigninRestrictionPolicyFetcher::
   url_loader_->DownloadToString(
       url_loader_factory_for_testing_ == nullptr
           ? url_loader_factory_.get()
-          : url_loader_factory_for_testing_,
+          : url_loader_factory_for_testing_.get(),
       base::BindOnce(&UserCloudSigninRestrictionPolicyFetcher::
                          OnManagedAccountsSigninRestrictionResult,
                      base::Unretained(this), std::move(callback)),
@@ -157,14 +171,24 @@ void UserCloudSigninRestrictionPolicyFetcher::
   std::string restriction;
   std::unique_ptr<network::SimpleURLLoader> url_loader = std::move(url_loader_);
 
-  // TODO (crbug/1261474): Add metrics for the failure rate.
   GoogleServiceAuthError error = GoogleServiceAuthError::AuthErrorNone();
+  absl::optional<int> response_code;
+  if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers)
+    response_code = url_loader->ResponseInfo()->headers->response_code();
+
+  if (response_code)
+    base::UmaHistogramSparse(
+        "Enterprise.ProfileSeparation.DasherPolicyFetch.HttpResponse",
+        response_code.value());
+
+  base::UmaHistogramSparse(
+      "Enterprise.ProfileSeparation.DasherPolicyFetch.NetworkError",
+      url_loader->NetError());
   if (url_loader->NetError() != net::OK) {
-    if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers) {
-      int response_code = url_loader->ResponseInfo()->headers->response_code();
+    if (response_code) {
       LOG(WARNING)
           << "ManagedAccountsSigninRestriction request failed with HTTP code: "
-          << response_code;
+          << response_code.value();
     } else {
       error =
           GoogleServiceAuthError::FromConnectionError(url_loader->NetError());
@@ -174,14 +198,12 @@ void UserCloudSigninRestrictionPolicyFetcher::
     }
   }
 
-  if (error.state() == GoogleServiceAuthError::NONE) {
-    enterprise_management::GetManagedAccountsSigninRestrictionResponse response;
-    if (response_body && response.ParseFromString(*response_body) &&
-        (!response.has_has_error() || !response.has_error())) {
-      restriction = response.policy_value();
-    } else {
+  if (error.state() == GoogleServiceAuthError::NONE && response_body) {
+    auto result = base::JSONReader::Read(*response_body, base::JSON_PARSE_RFC);
+    if (result && result->FindStringKey("policyValue"))
+      restriction = *result->FindStringKey("policyValue");
+    else
       LOG(WARNING) << "Failed to ManagedAccountsSigninRestriction response";
-    }
   }
 
   std::move(callback).Run(std::move(restriction));

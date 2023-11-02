@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -112,6 +112,9 @@ public class MediaNotificationController {
     @VisibleForTesting
     public Throttler mThrottler;
 
+    /**
+     * Helper class to prevent spamming notification updates.
+     */
     @VisibleForTesting
     public static class Throttler {
         @VisibleForTesting
@@ -328,28 +331,28 @@ public class MediaNotificationController {
         mActionToButtonInfo = new SparseArray<>();
 
         mActionToButtonInfo.put(MediaSessionAction.PLAY,
-                new MediaButtonInfo(R.drawable.ic_play_arrow_white_36dp,
+                new MediaButtonInfo(R.drawable.ic_play_arrow_white_24dp,
                         R.string.accessibility_play, ACTION_PLAY, MEDIA_ACTION_PLAY));
         mActionToButtonInfo.put(MediaSessionAction.PAUSE,
-                new MediaButtonInfo(R.drawable.ic_pause_white_36dp, R.string.accessibility_pause,
+                new MediaButtonInfo(R.drawable.ic_pause_white_24dp, R.string.accessibility_pause,
                         ACTION_PAUSE, MEDIA_ACTION_PAUSE));
         mActionToButtonInfo.put(MediaSessionAction.STOP,
-                new MediaButtonInfo(R.drawable.ic_stop_white_36dp, R.string.accessibility_stop,
+                new MediaButtonInfo(R.drawable.ic_stop_white_24dp, R.string.accessibility_stop,
                         ACTION_STOP, MEDIA_ACTION_STOP));
         mActionToButtonInfo.put(MediaSessionAction.PREVIOUS_TRACK,
-                new MediaButtonInfo(R.drawable.ic_skip_previous_white_36dp,
+                new MediaButtonInfo(R.drawable.ic_skip_previous_white_24dp,
                         R.string.accessibility_previous_track, ACTION_PREVIOUS_TRACK,
                         MEDIA_ACTION_PREVIOUS_TRACK));
         mActionToButtonInfo.put(MediaSessionAction.NEXT_TRACK,
-                new MediaButtonInfo(R.drawable.ic_skip_next_white_36dp,
+                new MediaButtonInfo(R.drawable.ic_skip_next_white_24dp,
                         R.string.accessibility_next_track, ACTION_NEXT_TRACK,
                         MEDIA_ACTION_NEXT_TRACK));
         mActionToButtonInfo.put(MediaSessionAction.SEEK_FORWARD,
-                new MediaButtonInfo(R.drawable.ic_fast_forward_white_36dp,
+                new MediaButtonInfo(R.drawable.ic_fast_forward_white_24dp,
                         R.string.accessibility_seek_forward, ACTION_SEEK_FORWARD,
                         MEDIA_ACTION_SEEK_FORWARD));
         mActionToButtonInfo.put(MediaSessionAction.SEEK_BACKWARD,
-                new MediaButtonInfo(R.drawable.ic_fast_rewind_white_36dp,
+                new MediaButtonInfo(R.drawable.ic_fast_rewind_white_24dp,
                         R.string.accessibility_seek_backward, ACTION_SEEK_BACKWARD,
                         MEDIA_ACTION_SEEK_BACKWARD));
 
@@ -476,8 +479,13 @@ public class MediaNotificationController {
         if (mService == null) {
             updateMediaSession();
             updateNotificationBuilder();
-            ForegroundServiceUtils.getInstance().startForegroundService(
-                    mDelegate.createServiceIntent());
+            // This is not allowed from the background, and there is no workaround on S+.  Just
+            // catch the exception, and `mService` will remain null for us to try again later.
+            try {
+                ForegroundServiceUtils.getInstance().startForegroundService(
+                        mDelegate.createServiceIntent());
+            } catch (RuntimeException e) {
+            }
         } else {
             updateNotification(false, false);
         }
@@ -599,9 +607,19 @@ public class MediaNotificationController {
             NotificationManagerProxy manager = new NotificationManagerProxyImpl(getContext());
             manager.notify(notification);
         } else if (!finishedForegroundingService) {
-            ForegroundServiceUtils.getInstance().startForeground(mService,
-                    mMediaNotificationInfo.id, notification.getNotification(),
-                    0 /*foregroundServiceType*/);
+            // We did not foreground the service and update the notification above, so we should do
+            // so here.  On S and later, we cannot foreground the service if we're not currently
+            // in the foreground, and on Q and later the background activity start restrictions
+            // prevent us from launching a trampoline to fix it.  Try it, and see if it works.  If
+            // not, then update the notification and leave the service in the background.
+            try {
+                ForegroundServiceUtils.getInstance().startForeground(mService,
+                        mMediaNotificationInfo.id, notification.getNotification(),
+                        0 /*foregroundServiceType*/);
+            } catch (RuntimeException e) {
+                NotificationManagerProxy manager = new NotificationManagerProxyImpl(getContext());
+                manager.notify(notification);
+            }
         }
         if (shouldLogNotification) {
             mDelegate.logNotificationShown(notification);
@@ -864,7 +882,8 @@ public class MediaNotificationController {
     /**
      * Compute the actions to be shown in CompactView media notification.
      *
-     * The method assumes PLAY and PAUSE cannot coexist.
+     * The method assumes PLAY and PAUSE cannot coexist. This method also assumes that it is only
+     * called when at least play or pause is supported.
      *
      * Actions in pairs are preferred if there are more actions than |COMPACT_VIEW_ACTIONS_COUNT|.
      */
@@ -882,18 +901,14 @@ public class MediaNotificationController {
             return actionsArray;
         }
 
-        if (actions.contains(MediaSessionAction.STOP)) {
-            List<Integer> compactActions = new ArrayList<>();
-            if (actions.contains(MediaSessionAction.PLAY)) {
-                compactActions.add(actions.indexOf(MediaSessionAction.PLAY));
-            }
-            compactActions.add(actions.indexOf(MediaSessionAction.STOP));
-            return CollectionUtil.integerListToIntArray(compactActions);
-        }
+        // The rest of this method is broken if |COMPACT_VIEW_ACTIONS_COUNT| changes from 3.
+        assert COMPACT_VIEW_ACTIONS_COUNT == 3;
 
-        int[] actionsArray = new int[COMPACT_VIEW_ACTIONS_COUNT];
+        // If we have both PREVIOUS_TRACK and NEXT_TRACK, then show those with PLAY or PAUSE in the
+        // middle.
         if (actions.contains(MediaSessionAction.PREVIOUS_TRACK)
                 && actions.contains(MediaSessionAction.NEXT_TRACK)) {
+            int[] actionsArray = new int[COMPACT_VIEW_ACTIONS_COUNT];
             actionsArray[0] = actions.indexOf(MediaSessionAction.PREVIOUS_TRACK);
             if (actions.contains(MediaSessionAction.PLAY)) {
                 actionsArray[1] = actions.indexOf(MediaSessionAction.PLAY);
@@ -904,17 +919,33 @@ public class MediaNotificationController {
             return actionsArray;
         }
 
-        assert actions.contains(MediaSessionAction.SEEK_BACKWARD)
-                && actions.contains(MediaSessionAction.SEEK_FORWARD);
-        actionsArray[0] = actions.indexOf(MediaSessionAction.SEEK_BACKWARD);
-        if (actions.contains(MediaSessionAction.PLAY)) {
-            actionsArray[1] = actions.indexOf(MediaSessionAction.PLAY);
-        } else {
-            actionsArray[1] = actions.indexOf(MediaSessionAction.PAUSE);
+        // If we have both SEEK_FORWARD and SEEK_BACKWARD, then show those with PLAY or PAUSE in the
+        // middle.
+        if (actions.contains(MediaSessionAction.SEEK_BACKWARD)
+                && actions.contains(MediaSessionAction.SEEK_FORWARD)) {
+            int[] actionsArray = new int[COMPACT_VIEW_ACTIONS_COUNT];
+            actionsArray[0] = actions.indexOf(MediaSessionAction.SEEK_BACKWARD);
+            if (actions.contains(MediaSessionAction.PLAY)) {
+                actionsArray[1] = actions.indexOf(MediaSessionAction.PLAY);
+            } else {
+                actionsArray[1] = actions.indexOf(MediaSessionAction.PAUSE);
+            }
+            actionsArray[2] = actions.indexOf(MediaSessionAction.SEEK_FORWARD);
+            return actionsArray;
         }
-        actionsArray[2] = actions.indexOf(MediaSessionAction.SEEK_FORWARD);
 
-        return actionsArray;
+        // Only show STOP with PLAY and not with PAUSE.
+        List<Integer> compactActions = new ArrayList<>();
+        if (actions.contains(MediaSessionAction.PAUSE)) {
+            compactActions.add(actions.indexOf(MediaSessionAction.PAUSE));
+        } else {
+            compactActions.add(actions.indexOf(MediaSessionAction.PLAY));
+            if (actions.contains(MediaSessionAction.STOP)) {
+                compactActions.add(actions.indexOf(MediaSessionAction.STOP));
+            }
+        }
+
+        return CollectionUtil.integerListToIntArray(compactActions);
     }
 
     private static Context getContext() {

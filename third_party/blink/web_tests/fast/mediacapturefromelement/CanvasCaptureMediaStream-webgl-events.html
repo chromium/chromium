@@ -8,6 +8,20 @@
 <p id="description"></p>
 <div id="console"></div>
 <canvas id="canvas_source"></canvas>
+<script id="vshader" type="x-shader/x-vertex">
+  attribute vec4 vPosition;
+  void main()
+  {
+      gl_Position = vPosition;
+  }
+</script>
+
+<script id="fshader" type="x-shader/x-fragment">
+  void main()
+  {
+      gl_FragColor = vec4(1.0,0.0,0.0,1.0);
+  }
+</script>
 <script>
 description("Exercises the potential events on CanvasCaptureMediaStream.");
 
@@ -62,20 +76,6 @@ if (stream) {
   playMediaStream();
 }
 
-</script>
-<script id="vshader" type="x-shader/x-vertex">
-  attribute vec4 vPosition;
-  void main()
-  {
-      gl_Position = vPosition;
-  }
-</script>
-
-<script id="fshader" type="x-shader/x-fragment">
-  void main()
-  {
-      gl_FragColor = vec4(1.0,0.0,0.0,1.0);
-  }
 </script>
 </body>
 </html>

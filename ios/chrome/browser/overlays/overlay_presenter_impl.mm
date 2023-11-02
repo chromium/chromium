@@ -1,16 +1,16 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/overlays/overlay_presenter_impl.h"
 
-#include "base/check_op.h"
-#include "base/memory/ptr_util.h"
-#include "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
+#import "base/check_op.h"
+#import "base/memory/ptr_util.h"
+#import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/public/overlay_presentation_context.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter_observer.h"
-#include "ios/chrome/browser/overlays/public/overlay_request.h"
-#include "ios/chrome/browser/overlays/public/overlay_request_support.h"
+#import "ios/chrome/browser/overlays/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/public/overlay_request_support.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -94,7 +94,7 @@ void OverlayPresenterImpl::SetPresentationContext(
 
   presentation_context_ = presentation_context;
 
-  // Reset |presenting| since it was tracking the status for the previous
+  // Reset `presenting` since it was tracking the status for the previous
   // delegate's presentation context.
   presenting_ = false;
   presented_request_ = nullptr;
@@ -214,7 +214,7 @@ void OverlayPresenterImpl::PresentOverlayForActiveRequest() {
     return;
 
   // Presentation cannot occur if the context is currently unable to show the UI
-  // for |request|.  Attempt to prepare the presentation context for |request|.
+  // for `request`.  Attempt to prepare the presentation context for `request`.
   if (!presentation_context_->CanShowUIForRequest(request)) {
     presentation_context_->PrepareToShowOverlayUI(request);
     return;
@@ -277,7 +277,7 @@ void OverlayPresenterImpl::OverlayWasDismissed(
 
   // When the presenter has been replaced as the delegate of the active
   // OverlayRequestQueue, observers are notified of DidHideOverlay() and
-  // |presented_request_| is reset early. Thus, there is no need to do any
+  // `presented_request_` is reset early. Thus, there is no need to do any
   // dismissal bookkeeping since the request has been removed.
   if (detached_queue_replaced_delegate_) {
     presenting_ = false;
@@ -291,8 +291,8 @@ void OverlayPresenterImpl::OverlayWasDismissed(
   DCHECK_EQ(presented_request_, request);
 
   // Pop the request for overlays dismissed by the user.  The check against
-  // |removed_request_awaiting_dismissal_| prevents the queue's front request
-  // from being popped if this dismissal was caused by |request|'s removal from
+  // `removed_request_awaiting_dismissal_` prevents the queue's front request
+  // from being popped if this dismissal was caused by `request`'s removal from
   // the queue.
   if (reason == OverlayDismissalReason::kUserInteraction && queue &&
       request != removed_request_awaiting_dismissal_.get()) {
@@ -306,7 +306,7 @@ void OverlayPresenterImpl::OverlayWasDismissed(
   presenting_ = false;
   presented_request_ = nullptr;
   // The OverlayPresenter remains as the delegate for
-  // |detached_presenting_request_queue_| to ensure that |presented_request_| is
+  // `detached_presenting_request_queue_` to ensure that `presented_request_` is
   // not deleted before the dismissal of its UI is finished.  Since the UI is
   // now being dismissed, this reference is not needed anymore.
   detached_presenting_request_queue_ = nullptr;
@@ -317,8 +317,8 @@ void OverlayPresenterImpl::OverlayWasDismissed(
       observer.DidHideOverlay(this, request);
   }
 
-  // Now that observers have been notified that the UI for |request| was hidden,
-  // |removed_request_awaiting_dismissal_| can be reset since the request no
+  // Now that observers have been notified that the UI for `request` was hidden,
+  // `removed_request_awaiting_dismissal_` can be reset since the request no
   // longer needs to be kept alive.
   removed_request_awaiting_dismissal_ = nullptr;
 
@@ -362,8 +362,8 @@ void OverlayPresenterImpl::WebStateRemovedFromBrowser(
   OverlayRequestQueueImpl* queue = GetQueueForWebState(web_state);
   queue->RemoveObserver(this);
   // Only reset the delegate if there isn't a currently presented overlay or
-  // |presented_request_|'s WebState is not the WebState being removed. This
-  // will allow the presenter to extend the lifetime of |presented_request_| if
+  // `presented_request_`'s WebState is not the WebState being removed. This
+  // will allow the presenter to extend the lifetime of `presented_request_` if
   // it is removed from the queue before its dismissal finishes.
   if (!presented_request_ ||
       presented_request_->GetQueueWebState() != web_state) {
@@ -421,9 +421,9 @@ void OverlayPresenterImpl::OverlayRequestQueueWillReplaceDelegate(
     OverlayRequestQueueImpl* queue) {
   if (!presented_request_ || presented_request_ != queue->front_request())
     return;
-  // If |presented_request_| is in the queue that is replacing this presenter
+  // If `presented_request_` is in the queue that is replacing this presenter
   // as the delegate, it is no longer possible to extend the lifetime of
-  // |presented_request_|. Thus, call DidHideOverlay while it is still valid
+  // `presented_request_`. Thus, call DidHideOverlay while it is still valid
   // and reset its reference.
   for (auto& observer : observers_) {
     if (observer.GetRequestSupport(this)->IsRequestSupported(
@@ -441,7 +441,7 @@ void OverlayPresenterImpl::OverlayRequestQueueWillReplaceDelegate(
 void OverlayPresenterImpl::RequestAddedToQueue(OverlayRequestQueueImpl* queue,
                                                OverlayRequest* request,
                                                size_t index) {
-  // If |request| is not active, there is no need to trigger any presentation.
+  // If `request` is not active, there is no need to trigger any presentation.
   if (request != GetActiveRequest())
     return;
 
@@ -452,20 +452,20 @@ void OverlayPresenterImpl::RequestAddedToQueue(OverlayRequestQueueImpl* queue,
     return;
   }
 
-  // |request| is the new active request, but overlay UI is already
+  // `request` is the new active request, but overlay UI is already
   // presented.  This occurs when:
-  // 1. |request| is added after |presented_request_| is cancelled, but
+  // 1. `request` is added after `presented_request_` is cancelled, but
   //    before its UI is finished being dismissed,
-  // 2. |request| is added immediately after a WebState activation, but
+  // 2. `request` is added immediately after a WebState activation, but
   //    before the overlay UI from the previously active WebState's front
   //    request is finished being dismissed, or
-  // 3. |request| is inserted to the front of the active WebState's request
+  // 3. `request` is inserted to the front of the active WebState's request
   //    queue.
   //
   // For scenarios (1) and (2), the UI is already in the process of being
-  // dismissed, and |request|'s UI will be presented when that dismissal
+  // dismissed, and `request`'s UI will be presented when that dismissal
   // finishes.  For scenario (3), the UI for the presented request needs to
-  // be hidden so that the UI for |request| can be presented.
+  // be hidden so that the UI for `request` can be presented.
   bool should_dismiss_for_inserted_request =
       presented_request_ && queue->size() > 1 &&
       queue->GetRequest(/*index=*/1) == presented_request_;

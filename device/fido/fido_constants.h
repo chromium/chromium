@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -338,7 +338,6 @@ COMPONENT_EXPORT(DEVICE_FIDO) extern const char kPlatformDeviceMapKey[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kEntityIdMapKey[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kEntityNameMapKey[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kDisplayNameMapKey[];
-COMPONENT_EXPORT(DEVICE_FIDO) extern const char kIconUrlMapKey[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kCredentialTypeMapKey[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kCredentialAlgorithmMapKey[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kCredentialManagementMapKey[];
@@ -451,6 +450,19 @@ COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionHmacSecret[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionCredProtect[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionLargeBlobKey[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionCredBlob[];
+COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionMinPINLength[];
+COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionDevicePublicKey[];
+
+// Map keys for the device public key extension.
+COMPONENT_EXPORT(DEVICE_FIDO)
+extern const char kDevicePublicKeyAttestationKey[];
+COMPONENT_EXPORT(DEVICE_FIDO)
+extern const char kDevicePublicKeyAttestationFormatsKey[];
+COMPONENT_EXPORT(DEVICE_FIDO) extern const char kDevicePublicKeyAAGUIDKey[];
+COMPONENT_EXPORT(DEVICE_FIDO) extern const char kDevicePublicKeyDPKKey[];
+COMPONENT_EXPORT(DEVICE_FIDO) extern const char kDevicePublicKeyScopeKey[];
+COMPONENT_EXPORT(DEVICE_FIDO) extern const char kDevicePublicKeyNonceKey[];
+COMPONENT_EXPORT(DEVICE_FIDO) extern const char kDevicePublicKeyEPKey[];
 
 // Maximum number of seconds the browser waits for Bluetooth authenticator to
 // send packets that advertises that the device is in pairing mode before
@@ -490,6 +502,16 @@ enum class PINUVAuthProtocol : uint8_t {
 enum class FidoRequestType : uint8_t {
   kMakeCredential = 0,
   kGetAssertion = 1,
+};
+
+// CableRequestType enumerates the types of connections that caBLE cares about.
+// Unlike `FidoRequestType`, caBLE cares about the difference between making
+// a discoverable and non-discoverable credential because this is flagged in
+// the QR code.
+enum class CableRequestType {
+  kMakeCredential,
+  kDiscoverableMakeCredential,
+  kGetAssertion,
 };
 
 }  // namespace device

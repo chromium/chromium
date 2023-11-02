@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,20 +6,20 @@
 
 emulator_package {
   package_name: "chromium/third_party/android_sdk/public/emulator"
-  version: "Dogc_gNCYNb3fIG-ovlMkV5EhjaYwdA_Jw9goUpl3A8C"  # 30.7.5
-  dest_path: ".emulator_sdk"
+  version: "0EgkhrUNQp2T1opBdG5kmtrz6b-fKKwfeivwy73nGicC"  # 31.3.10
+  dest_path: "generic_android28"
 }
 
 system_image_package {
   package_name: "chromium/third_party/android_sdk/public/system-images/android-28/google_apis/x86"
-  version: "6Su449q7w5pa__QFk2yDsRT-xWiiDRLLJ3uPiQtJquoC"  # 12
-  dest_path: ".emulator_sdk"
+  version: "-PkJpelLvoEn9KP6hZN0bdgnJrdRHbKkPWmrxWcMDGsC"  # R12, PSR1.180720.122
+  dest_path: "generic_android28"
 }
 system_image_name: "system-images;android-28;google_apis;x86"
 
 avd_package {
   package_name: "chromium/third_party/android_sdk/public/avds/android-28/google_apis/x86"
-  dest_path: ".android"
+  dest_path: "generic_android28"
 }
 avd_name: "android_28_google_apis_x86"
 
@@ -33,4 +33,13 @@ avd_settings {
     key: "GLESDynamicVersion"
     value: "on"
   }
+}
+
+min_sdk: 28
+install_privileged_apk_partition: "/system"
+
+additional_apk {
+  package_name: "chrome_internal/third_party/google3/apks/gmscore/x86"
+  version: "LxrVLIW7QvPUWrYcfuX-gMseZmY_9JupJ5w-eTiTXNsC"
+  dest_path: "generic_android28/gmscore_apks"
 }

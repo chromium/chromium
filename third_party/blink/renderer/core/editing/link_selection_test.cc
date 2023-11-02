@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -176,7 +176,7 @@ class LinkSelectionTest : public LinkSelectionTestBase {
 
 TEST_F(LinkSelectionTest, MouseDragWithoutAltAllowNoLinkSelection) {
   EmulateMouseDrag(left_point_in_link_, right_point_in_link_, 0);
-  EXPECT_TRUE(GetSelectionText().IsEmpty());
+  EXPECT_TRUE(GetSelectionText().empty());
 }
 
 TEST_F(LinkSelectionTest, MouseDragWithAltAllowSelection) {
@@ -261,7 +261,7 @@ TEST_F(LinkSelectionTest, SingleClickWithAltStartsDownloadWhenTextSelected) {
   const auto& selection_rect = range_to_select->BoundingBox();
   main_frame_->MoveRangeSelection(selection_rect.origin(),
                                   selection_rect.bottom_right());
-  EXPECT_FALSE(GetSelectionText().IsEmpty());
+  EXPECT_FALSE(GetSelectionText().empty());
 
   EmulateMouseClick(left_point_in_link_, WebMouseEvent::Button::kLeft,
                     WebInputEvent::kAltKey);
@@ -315,13 +315,13 @@ class LinkSelectionClickEventsTest : public LinkSelectionTestBase {
     testing::InSequence s;
     EXPECT_CALL(*event_handler, Invoke(_, _)).Times(1);
 
-    const auto& elem_bounds = element.BoundsInViewport();
+    const auto& elem_bounds = element.BoundsInWidget();
     const int click_count = double_click_event ? 2 : 1;
     EmulateMouseClick(elem_bounds.CenterPoint(), WebMouseEvent::Button::kLeft,
                       0, click_count);
 
     if (double_click_event) {
-      EXPECT_EQ(element.innerText().IsEmpty(), GetSelectionText().IsEmpty());
+      EXPECT_EQ(element.innerText().empty(), GetSelectionText().empty());
     }
   }
 };

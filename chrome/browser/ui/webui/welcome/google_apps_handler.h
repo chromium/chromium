@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,8 +37,8 @@ class GoogleAppsHandler : public content::WebUIMessageHandler {
   void RegisterMessages() override;
 
   // Callbacks for JS APIs.
-  void HandleCacheGoogleAppIcon(const base::ListValue* args);
-  void HandleGetGoogleAppsList(const base::ListValue* args);
+  void HandleCacheGoogleAppIcon(const base::Value::List& args);
+  void HandleGetGoogleAppsList(const base::Value::List& args);
 
  private:
   std::vector<BookmarkItem> google_apps_;

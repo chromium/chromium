@@ -1,27 +1,28 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "ash/host/ash_window_tree_host_platform.h"
 
+#include "ash/host/ash_window_tree_host_delegate.h"
 #include "ash/test/ash_test_base.h"
-
 #include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/events/devices/stylus_state.h"
 #include "ui/ozone/public/input_controller.h"
 #include "ui/ozone/public/ozone_platform.h"
+#include "ui/platform_window/stub/stub_window.h"
 
 namespace ash {
 
-class AshWindowTreeHostPlatformTest : public AshTestBase {
- public:
-  AshWindowTreeHostPlatformTest() = default;
-  ~AshWindowTreeHostPlatformTest() override = default;
-};
+namespace {
 
 class TestInputController : public ui::InputController {
  public:
   TestInputController() = default;
+  TestInputController(const TestInputController&) = delete;
+  TestInputController& operator=(const TestInputController&) = delete;
   ~TestInputController() override = default;
 
   // InputController:
@@ -45,6 +46,11 @@ class TestInputController : public ui::InputController {
   void GetAutoRepeatRate(base::TimeDelta* delay,
                          base::TimeDelta* interval) override {}
   void SetCurrentLayoutByName(const std::string& layout_name) override {}
+  void SetKeyboardKeyBitsMapping(
+      base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) override {}
+  std::vector<uint64_t> GetKeyboardKeyBits(int id) override {
+    return std::vector<uint64_t>();
+  }
   void SetTouchEventLoggingEnabled(bool enabled) override {
     NOTIMPLEMENTED_LOG_ONCE();
   }
@@ -65,6 +71,11 @@ class TestInputController : public ui::InputController {
   void SetPointingStickSensitivity(int value) override {}
   void SetPointingStickPrimaryButtonRight(bool right) override {}
   void SetPointingStickAcceleration(bool enabled) override {}
+  void SetGamepadKeyBitsMapping(
+      base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) override {}
+  std::vector<uint64_t> GetGamepadKeyBits(int id) override {
+    return std::vector<uint64_t>();
+  }
   void SetTouchpadAcceleration(bool enabled) override {}
   void SetTouchpadScrollAcceleration(bool enabled) override {}
   void SetTapToClickPaused(bool state) override {}
@@ -107,8 +118,38 @@ class TestInputController : public ui::InputController {
   bool acceleration_suspended_ = false;
 };
 
+class FakeAshWindowTreeHostDelegate : public AshWindowTreeHostDelegate {
+ public:
+  FakeAshWindowTreeHostDelegate() = default;
+  FakeAshWindowTreeHostDelegate(const FakeAshWindowTreeHostDelegate&) = delete;
+  FakeAshWindowTreeHostDelegate& operator=(
+      const FakeAshWindowTreeHostDelegate&) = delete;
+  ~FakeAshWindowTreeHostDelegate() override = default;
+
+  const display::Display* GetDisplayById(int64_t display_id) const override {
+    return nullptr;
+  }
+  void SetCurrentEventTargeterSourceHost(aura::WindowTreeHost*) override {}
+};
+
+}  // namespace
+
+class AshWindowTreeHostPlatformTest : public AshTestBase {
+ public:
+  AshWindowTreeHostPlatformTest() = default;
+  AshWindowTreeHostPlatformTest(const AshWindowTreeHostPlatformTest&) = delete;
+  AshWindowTreeHostPlatformTest& operator=(
+      const AshWindowTreeHostPlatformTest&) = delete;
+  ~AshWindowTreeHostPlatformTest() override = default;
+};
+
 TEST_F(AshWindowTreeHostPlatformTest, UnadjustedMovement) {
-  AshWindowTreeHostPlatform host;
+  FakeAshWindowTreeHostDelegate fake_delegate;
+  auto stub = std::make_unique<ui::StubWindow>(gfx::Rect());
+  auto* stub_ptr = stub.get();
+  AshWindowTreeHostPlatform host(std::move(stub), &fake_delegate);
+  stub_ptr->InitDelegate(&host, false);
+
   auto test_input_controller = std::make_unique<TestInputController>();
   host.input_controller_ = test_input_controller.get();
 

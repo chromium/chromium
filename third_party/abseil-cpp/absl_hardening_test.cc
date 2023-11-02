@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -67,8 +67,8 @@ TEST(AbslHardeningTest, Span) {
   EXPECT_DEATH_IF_SUPPORTED(span[10], "");
 
   std::vector<int> v1 = {1, 2, 3, 4};
-  EXPECT_DEATH_IF_SUPPORTED(absl::MakeSpan(&v1[2], &v[0]), "");
-  EXPECT_DEATH_IF_SUPPORTED(absl::MakeConstSpan(&v1[2], &v[0]), "");
+  EXPECT_DEATH_IF_SUPPORTED(absl::MakeSpan(&v1[2], &v1[0]), "");
+  EXPECT_DEATH_IF_SUPPORTED(absl::MakeConstSpan(&v1[2], &v1[0]), "");
 }
 
 TEST(AbslHardeningTest, Variant) {

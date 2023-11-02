@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,17 +23,17 @@ Event::Event(scoped_refptr<base::RefCountedMemory> event_bytes,
              Connection* connection) {
   auto* xcb_event = reinterpret_cast<xcb_generic_event_t*>(
       const_cast<uint8_t*>(event_bytes->data()));
+  uint8_t response_type = xcb_event->response_type & ~kSendEventMask;
+  send_event_ = xcb_event->response_type & kSendEventMask;
   sequence_ = xcb_event->full_sequence;
   // KeymapNotify events are the only events that don't have a sequence.
-  if ((xcb_event->response_type & ~kSendEventMask) !=
-      KeymapNotifyEvent::opcode) {
+  if (response_type != KeymapNotifyEvent::opcode) {
     // On the wire, events are 32 bytes except for generic events which are
     // trailed by additional data.  XCB inserts an extended 4-byte sequence
     // between the 32-byte event and the additional data, so we need to shift
     // the additional data over by 4 bytes so the event is back in its wire
     // format, which is what Xlib and XProto are expecting.
-    if ((xcb_event->response_type & ~kSendEventMask) ==
-        GeGenericEvent::opcode) {
+    if (response_type == GeGenericEvent::opcode) {
       auto* ge = reinterpret_cast<xcb_ge_event_t*>(xcb_event);
       constexpr size_t ge_length = sizeof(xcb_raw_generic_event_t);
       constexpr size_t offset = sizeof(ge->full_sequence);
@@ -59,25 +59,28 @@ Event::Event(scoped_refptr<base::RefCountedMemory> event_bytes,
   ReadEvent(this, connection, &buf);
 }
 
-Event::Event(Event&& event) {
-  memcpy(this, &event, sizeof(Event));
+Event::Event(Event&& event)
+    : send_event_(event.send_event_),
+      sequence_(event.sequence_),
+      type_id_(event.type_id_),
+      event_(std::move(event.event_)),
+      window_(event.window_) {
   memset(&event, 0, sizeof(Event));
 }
 
 Event& Event::operator=(Event&& event) {
-  Dealloc();
-  memcpy(this, &event, sizeof(Event));
+  send_event_ = event.send_event_;
+  sequence_ = event.sequence_;
+  type_id_ = event.type_id_;
+  //`window_` is owned by `event_`. Set it to nullptr before calling
+  //`event.reset()` to avoid holding a dangling ptr.
+  window_ = nullptr;
+  event_.reset();
+  event_ = std::move(event.event_);
+  window_ = event.window_;
   memset(&event, 0, sizeof(Event));
   return *this;
 }
 
-Event::~Event() {
-  Dealloc();
-}
-
-void Event::Dealloc() {
-  if (deleter_)
-    deleter_(event_);
-}
-
+Event::~Event() = default;
 }  // namespace x11

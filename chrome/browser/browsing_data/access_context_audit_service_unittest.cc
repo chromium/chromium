@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/i18n/time_formatting.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -31,6 +32,7 @@
 #include "content/public/test/test_storage_partition.h"
 #include "services/network/test/test_cookie_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace {
 
@@ -41,10 +43,9 @@ void CheckContainsCookieRecord(
     url::Origin top_frame_origin,
     base::Time last_access_time,
     const std::vector<AccessContextAuditDatabase::AccessRecord>& records) {
-  EXPECT_NE(
-      std::find_if(
-          records.begin(), records.end(),
-          [=](const AccessContextAuditDatabase::AccessRecord& record) {
+  EXPECT_TRUE(
+      base::ranges::any_of(
+          records, [=](const AccessContextAuditDatabase::AccessRecord& record) {
             return record.type ==
                        AccessContextAuditDatabase::StorageAPIType::kCookie &&
                    record.top_frame_origin == top_frame_origin &&
@@ -53,8 +54,7 @@ void CheckContainsCookieRecord(
                    record.path == cookie->Path() &&
                    record.last_access_time == last_access_time &&
                    record.is_persistent == cookie->IsPersistent();
-          }),
-      records.end());
+          }));
 }
 
 // Checks that info in |record| matches storage API access defined by
@@ -65,15 +65,12 @@ void CheckContainsStorageAPIRecord(
     url::Origin top_frame_origin,
     base::Time last_access_time,
     const std::vector<AccessContextAuditDatabase::AccessRecord>& records) {
-  EXPECT_NE(
-      std::find_if(records.begin(), records.end(),
-                   [=](const AccessContextAuditDatabase::AccessRecord& record) {
-                     return record.type == type &&
-                            record.origin == storage_origin &&
-                            record.top_frame_origin == top_frame_origin &&
-                            record.last_access_time == last_access_time;
-                   }),
-      records.end());
+  EXPECT_TRUE(base::ranges::any_of(
+      records, [=](const AccessContextAuditDatabase::AccessRecord& record) {
+        return record.type == type && record.origin == storage_origin &&
+               record.top_frame_origin == top_frame_origin &&
+               record.last_access_time == last_access_time;
+      }));
 }
 
 }  // namespace
@@ -175,10 +172,10 @@ class AccessContextAuditServiceTest : public testing::Test {
   scoped_refptr<base::UpdateableSequencedTaskRunner> task_runner_;
   std::vector<AccessContextAuditDatabase::AccessRecord> records_;
 
-  virtual std::vector<base::Feature> enabled_features() {
+  virtual std::vector<base::test::FeatureRef> enabled_features() {
     return {features::kClientStorageAccessContextAuditing};
   }
-  virtual std::vector<base::Feature> disabled_features() {
+  virtual std::vector<base::test::FeatureRef> disabled_features() {
     return {browsing_data::features::kEnableRemovingAllThirdPartyCookies};
   }
 };
@@ -381,7 +378,7 @@ TEST_F(AccessContextAuditServiceTest, OriginKeyedStorageDeleted) {
   const auto kTestStorageType1 =
       AccessContextAuditDatabase::StorageAPIType::kWebDatabase;
   const auto kTestStorageType2 =
-      AccessContextAuditDatabase::StorageAPIType::kAppCache;
+      AccessContextAuditDatabase::StorageAPIType::kIndexedDB;
   const url::Origin kTestOrigin1 =
       url::Origin::Create(GURL("https://example.com"));
   const url::Origin kTestOrigin2 =
@@ -551,7 +548,7 @@ TEST_F(AccessContextAuditServiceTest, TimeRangeHistoryDeletion) {
   const auto kTestStorageType1 =
       AccessContextAuditDatabase::StorageAPIType::kWebDatabase;
   const auto kTestStorageType2 =
-      AccessContextAuditDatabase::StorageAPIType::kAppCache;
+      AccessContextAuditDatabase::StorageAPIType::kIndexedDB;
 
   clock()->SetNow(base::Time::Now());
   service()->SetClockForTesting(clock());
@@ -690,9 +687,9 @@ TEST_F(AccessContextAuditServiceTest, SessionOnlyRecords) {
   ASSERT_EQ(0u, records.size());
 }
 
-TEST_F(AccessContextAuditServiceTest, OnOriginDataCleared) {
+TEST_F(AccessContextAuditServiceTest, OnStorageKeyDataCleared) {
   // Check that providing parameters with varying levels of specificity to the
-  // OnOriginDataCleared function all clear data correctly.
+  // OnStorageKeyDataCleared function all clear data correctly.
   auto kTopFrameOrigin = url::Origin::Create(GURL("https://example.com"));
   auto kTestOrigin1 = url::Origin::Create(GURL("https://test1.com"));
   auto kTestOrigin2 = url::Origin::Create(GURL("https://test2.com"));
@@ -703,7 +700,7 @@ TEST_F(AccessContextAuditServiceTest, OnOriginDataCleared) {
   const auto kTestStorageType2 =
       AccessContextAuditDatabase::StorageAPIType::kIndexedDB;
   const auto kTestStorageType3 =
-      AccessContextAuditDatabase::StorageAPIType::kAppCache;
+      AccessContextAuditDatabase::StorageAPIType::kCacheStorage;
 
   clock()->SetNow(base::Time());
   service()->SetClockForTesting(clock());
@@ -724,10 +721,12 @@ TEST_F(AccessContextAuditServiceTest, OnOriginDataCleared) {
   EXPECT_EQ(3U, GetAllAccessRecords().size());
 
   // Provide all parameters such that TestOrigin1's record is removed.
-  auto origin_matcher = base::BindLambdaForTesting(
-      [&](const url::Origin& origin) { return origin == kTestOrigin1; });
-  service()->OnOriginDataCleared(
-      content::StoragePartition::REMOVE_DATA_MASK_WEBSQL, origin_matcher,
+  auto storage_key_matcher =
+      base::BindLambdaForTesting([&](const blink::StorageKey& storage_key) {
+        return storage_key == blink::StorageKey(kTestOrigin1);
+      });
+  service()->OnStorageKeyDataCleared(
+      content::StoragePartition::REMOVE_DATA_MASK_WEBSQL, storage_key_matcher,
       base::Time() + base::Minutes(50), base::Time() + base::Minutes(80));
 
   auto records = GetAllAccessRecords();
@@ -738,7 +737,7 @@ TEST_F(AccessContextAuditServiceTest, OnOriginDataCleared) {
                                 kTopFrameOrigin, kAccessTime2, records);
 
   // Provide more generalised parameters that target TestOrigin2's record.
-  service()->OnOriginDataCleared(
+  service()->OnStorageKeyDataCleared(
       content::StoragePartition::REMOVE_DATA_MASK_ALL, base::NullCallback(),
       base::Time() + base::Minutes(80), base::Time() + base::Minutes(130));
 
@@ -749,7 +748,7 @@ TEST_F(AccessContextAuditServiceTest, OnOriginDataCleared) {
 
   // Provide broadest possible parameters which should result in the final
   // record being removed.
-  service()->OnOriginDataCleared(
+  service()->OnStorageKeyDataCleared(
       content::StoragePartition::REMOVE_DATA_MASK_ALL, base::NullCallback(),
       base::Time(), base::Time::Max());
 
@@ -879,11 +878,13 @@ class AccessContextAuditThirdPartyDataClearingTest
     EXPECT_TRUE(records[0].top_frame_origin.opaque());
   }
 
-  std::vector<base::Feature> enabled_features() override {
+  std::vector<base::test::FeatureRef> enabled_features() override {
     return {features::kClientStorageAccessContextAuditing,
             browsing_data::features::kEnableRemovingAllThirdPartyCookies};
   }
-  std::vector<base::Feature> disabled_features() override { return {}; }
+  std::vector<base::test::FeatureRef> disabled_features() override {
+    return {};
+  }
 };
 
 // Test that when we enable user controls to clear third-party data, we do not

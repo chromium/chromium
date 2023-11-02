@@ -1,22 +1,15 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import test_util
+
 from absl import app
-
-
-def getElementFromShadowRoot(driver, element, selector):
-  if element is None:
-    return None
-  else:
-    return driver.execute_script(
-        "return arguments[0].shadowRoot.querySelector(arguments[1])", element,
-        selector)
+from test_util import create_chrome_webdriver
+from test_util import getElementFromShadowRoot
 
 
 def main(argv):
-  driver = test_util.create_chrome_webdriver()
+  driver = create_chrome_webdriver()
   driver.get("chrome://settings/passwords")
 
   # The settings is nested within multiple shadow doms - extract it.

@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
-#include "components/security_state/core/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -92,6 +91,7 @@ class SecureOriginAllowlistBrowsertest
     }
 
     policy::PolicyMap values;
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
     values.Set((variant == TestVariant::kPolicyOld ||
                 variant == TestVariant::kPolicyOldAndNew)
                    ? policy::key::kUnsafelyTreatInsecureOriginAsSecure
@@ -105,6 +105,11 @@ class SecureOriginAllowlistBrowsertest
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                  policy::POLICY_SOURCE_CLOUD, std::move(other_urls), nullptr);
     }
+#else
+    values.Set(policy::key::kOverrideSecurityRestrictionsOnInsecureOrigin,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, std::move(urls), nullptr);
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
     provider_.UpdateChromePolicy(values);
   }
@@ -129,7 +134,7 @@ INSTANTIATE_TEST_SUITE_P(SecureOriginAllowlistBrowsertest,
                                          TestVariant::kCommandline,
 // The legacy policy isn't defined on ChromeOS or Android, so skip tests that
 // use it on those platforms.
-#if !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
                                          TestVariant::kPolicyOld,
                                          TestVariant::kPolicyOldAndNew,
 #endif

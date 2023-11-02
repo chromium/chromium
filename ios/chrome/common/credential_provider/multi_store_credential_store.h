@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 // support saving data to disk.
 @interface MultiStoreCredentialStore : NSObject <CredentialStore>
 
-// Initializes the store. |stores| are used as data providers. If 2, or more,
+// Initializes the store. `stores` are used as data providers. If 2, or more,
 // credentials share the same unique identifier, the first stores will take
 // precedence.
 - (instancetype)initWithStores:(NSArray<id<CredentialStore>>*)stores

@@ -1,12 +1,14 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/page_load_metrics/browser/observers/back_forward_cache_page_load_metrics_observer.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "components/page_load_metrics/browser/fake_page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_content_test_harness.h"
+#include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
@@ -20,6 +22,7 @@ using content::Visibility;
 using page_load_metrics::FakePageLoadMetricsObserverDelegate;
 using page_load_metrics::PageLoadMetricsObserverDelegate;
 using ukm::builders::HistoryNavigation;
+using ukm::builders::UserPerceivedPageVisit;
 
 class BackForwardCachePageLoadMetricsObserverTest
     : public page_load_metrics::PageLoadMetricsObserverContentTestHarness {
@@ -27,6 +30,9 @@ class BackForwardCachePageLoadMetricsObserverTest
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) override {
     auto observer = std::make_unique<BackForwardCachePageLoadMetricsObserver>();
     observer_ = observer.get();
+    // TODO(crbug.com/1265307): Remove this when removing the DCHECK for lack of
+    // page end metric logging from the back forward page load metrics observer.
+    observer_->logged_page_end_metrics_ = true;
     tracker->AddObserver(std::move(observer));
   }
 
@@ -46,6 +52,9 @@ class BackForwardCachePageLoadMetricsObserverTest
     observer_with_fake_delegate_->has_ever_entered_back_forward_cache_ = true;
     observer_with_fake_delegate_->back_forward_cache_navigation_ids_.push_back(
         123456);
+    // TODO(crbug.com/1265307): Remove this when removing the DCHECK for lack of
+    // page end metric logging from the back forward page load metrics observer.
+    observer_with_fake_delegate_->logged_page_end_metrics_ = true;
     test_clock_ = std::make_unique<base::SimpleTestTickClock>();
     test_clock_->SetNowTicks(base::TimeTicks() + base::Milliseconds(25000));
   }
@@ -99,8 +108,12 @@ class BackForwardCachePageLoadMetricsObserverTest
 
   void SetObserverHidden() { observer_with_fake_delegate_->was_hidden_ = true; }
 
+  // TODO(crbug.com/1265307): Remove this when removing the DCHECK for lack of
+  // page end metric logging from the back forward page load metrics observer.
+  void SetPageEndReasonLogged() { observer_->logged_page_end_metrics_ = true; }
+
   page_load_metrics::mojom::PageLoadTiming timing_;
-  BackForwardCachePageLoadMetricsObserver* observer_;
+  raw_ptr<BackForwardCachePageLoadMetricsObserver> observer_;
 
   // |observer_with_fake_delegate_| is an observer set up with |fake_delegate_|
   // as its PageLoadMetricsObserverDelegate. This is for unit tests where it's
@@ -120,10 +133,11 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest,
   navigation_handle_.set_is_served_from_bfcache(true);
 
   tester()->SimulateMetadataUpdate(NonAmpMetadata(),
-                                   web_contents()->GetMainFrame());
+                                   web_contents()->GetPrimaryMainFrame());
   observer_->OnRestoreFromBackForwardCache(timing_, &navigation_handle_);
 
   AssertHistoryNavigationRecordedAmpNavigation(false);
+  SetPageEndReasonLogged();
 }
 
 TEST_F(BackForwardCachePageLoadMetricsObserverTest,
@@ -131,10 +145,11 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest,
   navigation_handle_.set_is_served_from_bfcache(true);
 
   tester()->SimulateMetadataUpdate(AmpMetadata(),
-                                   web_contents()->GetMainFrame());
+                                   web_contents()->GetPrimaryMainFrame());
   observer_->OnRestoreFromBackForwardCache(timing_, &navigation_handle_);
 
   AssertHistoryNavigationRecordedAmpNavigation(true);
+  SetPageEndReasonLogged();
 }
 
 TEST_F(BackForwardCachePageLoadMetricsObserverTest,
@@ -142,7 +157,7 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest,
   navigation_handle_.set_is_served_from_bfcache(false);
 
   tester()->SimulateMetadataUpdate(NonAmpMetadata(),
-                                   web_contents()->GetMainFrame());
+                                   web_contents()->GetPrimaryMainFrame());
 
   // Since there was no call to observer_->OnRestoreFromBackForwardCache, there
   // should be no HistoryNavigation UKM entry.
@@ -485,4 +500,97 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest,
             result_metrics[1].begin()->first);
   EXPECT_EQ(page_load_metrics::PageEndReason::END_NEW_NAVIGATION,
             result_metrics[1].begin()->second);
+}
+
+TEST_F(BackForwardCachePageLoadMetricsObserverTest, TestLogsNonCWVPageVisit) {
+  auto fake_bfcache_restore =
+      PageLoadMetricsObserverDelegate::BackForwardCacheRestore(
+          /*was_in_foreground=*/true, base::TimeTicks());
+  fake_delegate_->AddBackForwardCacheRestore(fake_bfcache_restore);
+  observer_with_fake_delegate_->ShouldObserveMimeType("fake-mime-type");
+  auto& test_ukm_recorder = tester()->test_ukm_recorder();
+  auto result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      UserPerceivedPageVisit::kEntryName,
+      UserPerceivedPageVisit::kNotCountedForCoreWebVitalsName);
+  EXPECT_EQ(1U, result_metrics.size());
+  EXPECT_EQ(UserPerceivedPageVisit::kNotCountedForCoreWebVitalsName,
+            result_metrics[0].begin()->first);
+  EXPECT_TRUE(result_metrics[0].begin()->second);
+
+  observer_with_fake_delegate_->ShouldObserveMimeType("text/html");
+  result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      UserPerceivedPageVisit::kEntryName,
+      UserPerceivedPageVisit::kNotCountedForCoreWebVitalsName);
+  // The metric being tested here indicates whether or not logs should be
+  // ignored when counting logs towards Core Web Vitals. Either the metric being
+  // present and false, or the metric being absent completely, means the logs
+  // shouldn't be counted.
+  // We've just indicated that these logs *should* be counted.
+  // So if the result metrics size is still 1, this test has passed, and if the
+  // result metrics are of size 2, the new value should be false.
+  if (result_metrics.size() > 1) {
+    EXPECT_EQ(2U, result_metrics.size());
+    EXPECT_EQ(UserPerceivedPageVisit::kNotCountedForCoreWebVitalsName,
+              result_metrics[1].begin()->first);
+    EXPECT_FALSE(result_metrics[1].begin()->second);
+  }
+}
+
+TEST_F(BackForwardCachePageLoadMetricsObserverTest, TestLogsUserInitiated) {
+  auto& test_ukm_recorder = tester()->test_ukm_recorder();
+  auto fake_bfcache_restore =
+      PageLoadMetricsObserverDelegate::BackForwardCacheRestore(
+          /*was_in_foreground=*/true, base::TimeTicks());
+  fake_delegate_->AddBackForwardCacheRestore(fake_bfcache_restore);
+
+  fake_delegate_->user_initiated_info_ =
+      page_load_metrics::UserInitiatedInfo::NotUserInitiated();
+  observer_with_fake_delegate_->OnComplete(timing_);
+
+  auto result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      UserPerceivedPageVisit::kEntryName,
+      UserPerceivedPageVisit::kUserInitiatedName);
+  EXPECT_EQ(1U, result_metrics.size());
+  EXPECT_EQ(UserPerceivedPageVisit::kUserInitiatedName,
+            result_metrics[0].begin()->first);
+  EXPECT_FALSE(result_metrics[0].begin()->second);
+
+  // Browser initiated; this is always considered user initiated.
+  fake_delegate_->user_initiated_info_ =
+      page_load_metrics::UserInitiatedInfo::BrowserInitiated();
+  observer_with_fake_delegate_->OnComplete(timing_);
+
+  result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      UserPerceivedPageVisit::kEntryName,
+      UserPerceivedPageVisit::kUserInitiatedName);
+  EXPECT_EQ(2U, result_metrics.size());
+  EXPECT_EQ(UserPerceivedPageVisit::kUserInitiatedName,
+            result_metrics[1].begin()->first);
+  EXPECT_TRUE(result_metrics[1].begin()->second);
+
+  // Renderer initiated, with user input, considered user initiated.
+  fake_delegate_->user_initiated_info_ =
+      page_load_metrics::UserInitiatedInfo::RenderInitiated(true, true);
+  observer_with_fake_delegate_->OnComplete(timing_);
+
+  result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      UserPerceivedPageVisit::kEntryName,
+      UserPerceivedPageVisit::kUserInitiatedName);
+  EXPECT_EQ(3U, result_metrics.size());
+  EXPECT_EQ(UserPerceivedPageVisit::kUserInitiatedName,
+            result_metrics[2].begin()->first);
+  EXPECT_TRUE(result_metrics[2].begin()->second);
+
+  // Renderer initiated, without user input, not considered user initiated.
+  fake_delegate_->user_initiated_info_ =
+      page_load_metrics::UserInitiatedInfo::RenderInitiated(false, false);
+  observer_with_fake_delegate_->OnComplete(timing_);
+
+  result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      UserPerceivedPageVisit::kEntryName,
+      UserPerceivedPageVisit::kUserInitiatedName);
+  EXPECT_EQ(4U, result_metrics.size());
+  EXPECT_EQ(UserPerceivedPageVisit::kUserInitiatedName,
+            result_metrics[3].begin()->first);
+  EXPECT_FALSE(result_metrics[3].begin()->second);
 }

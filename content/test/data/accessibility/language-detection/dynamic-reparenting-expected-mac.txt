@@ -1,6 +1,6 @@
 AXWebArea AXLanguage='fr-FR'
-++AXList AXLanguage='fr-FR'
-++AXList AXLanguage='fr-FR'
+++AXList AXSubrole=AXContentList AXLanguage='fr-FR'
+++AXList AXSubrole=AXContentList AXLanguage='fr-FR'
 ++++AXGroup AXLanguage='fr-FR'
 ++++++AXListMarker AXLanguage='fr-FR' AXValue='%E2%80%A2 '
 ++++++AXStaticText AXLanguage='fr-FR' AXValue='Placeholder listitem'

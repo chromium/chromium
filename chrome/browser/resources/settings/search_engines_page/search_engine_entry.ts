@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,17 +6,18 @@
  * @fileoverview 'settings-search-engine-entry' is a component for showing a
  * search engine with its name, domain and query URL.
  */
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import '../controls/extension_controlled_indicator.js';
-import './search_engine_entry_css.js';
-import '../settings_shared_css.js';
+import './search_engine_entry.css.js';
+import '../settings_shared.css.js';
 import '../site_favicon.js';
 
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './search_engine_entry.html.js';
 import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl} from './search_engines_browser_proxy.js';
 
 export interface SettingsSearchEngineEntryElement {
@@ -33,7 +34,7 @@ export class SettingsSearchEngineEntryElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -44,18 +45,11 @@ export class SettingsSearchEngineEntryElement extends PolymerElement {
 
       showQueryUrl: {type: Boolean, value: false, reflectToAttribute: true},
 
-      isActiveSearchEnginesFlagEnabled: Boolean,
 
       isDefault: {
         reflectToAttribute: true,
         type: Boolean,
-        computed: 'computeIsDefault_(engine)'
-      },
-
-      disableMenuButton: {
-        reflectToAttribute: true,
-        type: Boolean,
-        computed: 'computeDisableMenuButton_(engine)'
+        computed: 'computeIsDefault_(engine)',
       },
 
     };
@@ -64,9 +58,7 @@ export class SettingsSearchEngineEntryElement extends PolymerElement {
   engine: SearchEngine;
   showShortcut: boolean;
   showQueryUrl: boolean;
-  isActiveSearchEnginesFlagEnabled: boolean;
   isDefault: boolean;
-  disableMenuButton: boolean;
   private browserProxy_: SearchEnginesBrowserProxy =
       SearchEnginesBrowserProxyImpl.getInstance();
 
@@ -78,34 +70,49 @@ export class SettingsSearchEngineEntryElement extends PolymerElement {
     return this.engine.default;
   }
 
-  private computeDisableMenuButton_(): boolean {
-    return this.isActiveSearchEnginesFlagEnabled && this.engine.default;
-  }
-
-  private onDeleteTap_() {
-    this.browserProxy_.removeSearchEngine(this.engine.modelIndex);
+  private onDeleteTap_(e: Event) {
+    e.preventDefault();
     this.closePopupMenu_();
+
+    if (!this.engine.shouldConfirmDeletion) {
+      this.browserProxy_.removeSearchEngine(this.engine.modelIndex);
+      return;
+    }
+
+    const dots =
+        this.shadowRoot!.querySelector('cr-icon-button.icon-more-vert');
+    assert(dots);
+
+    this.dispatchEvent(new CustomEvent('delete-search-engine', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        engine: this.engine,
+        anchorElement: dots,
+      },
+    }));
   }
 
   private onDotsTap_() {
-    this.shadowRoot!.querySelector('cr-action-menu')!.showAt(
-        assert(this.shadowRoot!.querySelector('cr-icon-button.icon-more-vert')!
-               ),
-        {
-          anchorAlignmentY: AnchorAlignment.AFTER_END,
-        });
+    const dots = this.shadowRoot!.querySelector<HTMLElement>(
+        'cr-icon-button.icon-more-vert');
+    assert(dots);
+    this.shadowRoot!.querySelector('cr-action-menu')!.showAt(dots, {
+      anchorAlignmentY: AnchorAlignment.AFTER_END,
+    });
   }
 
   private onEditTap_(e: Event) {
     e.preventDefault();
     this.closePopupMenu_();
+    const anchor = this.shadowRoot!.querySelector('cr-icon-button');
+    assert(anchor);
     this.dispatchEvent(new CustomEvent('edit-search-engine', {
       bubbles: true,
       composed: true,
       detail: {
         engine: this.engine,
-        anchorElement:
-            assert(this.shadowRoot!.querySelector('cr-icon-button')!),
+        anchorElement: anchor,
       },
     }));
   }

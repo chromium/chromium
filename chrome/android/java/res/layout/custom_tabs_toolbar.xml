@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2015 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2015 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -39,7 +41,7 @@
             android:visibility="invisible"
             app:tint="@color/default_icon_color_tint_list" />
         <view
-            class="org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar$InterceptTouchLayout"
+            class="org.chromium.chrome.browser.customtabs.features.toolbar.InterceptTouchLayout"
             android:id="@+id/title_url_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -58,21 +60,17 @@
                 android:paddingEnd="@dimen/toolbar_edge_padding"
                 style="@style/TextAppearance.TextLarge.Primary"
                 android:visibility="gone" />
-            <LinearLayout
+
+            <org.chromium.chrome.browser.omnibox.UrlBarApi26
+                android:id="@+id/url_bar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom" >
-
-                <org.chromium.chrome.browser.omnibox.UrlBarApi26
-                    android:id="@+id/url_bar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@null"
-                    android:inputType="none"
-                    android:singleLine="true"
-                    android:paddingEnd="@dimen/toolbar_edge_padding"
-                    style="@style/TextAppearance.TextSmall.Primary" />
-            </LinearLayout>
+                android:background="@null"
+                android:inputType="none"
+                android:singleLine="true"
+                android:paddingEnd="@dimen/toolbar_edge_padding"
+                android:layout_gravity="bottom"
+                style="@style/TextAppearance.TextSmall.Primary" />
         </view>
     </FrameLayout>
     <LinearLayout

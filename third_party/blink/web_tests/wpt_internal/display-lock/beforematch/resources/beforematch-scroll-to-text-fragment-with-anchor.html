@@ -4,8 +4,8 @@
 <!-- This test is navigated to with the fragment #bar:~:text=foo -->
 
 <body>
-  <div id=foo>foo</div>
-  <div id=bar>bar</div>
+  <div id=foo hidden=until-found>foo</div>
+  <div id=bar hidden=until-found>bar</div>
   <script>
     window.beforematchFiredOnFoo = false;
     foo.addEventListener('beforematch', () => {

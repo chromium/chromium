@@ -1,0 +1,9 @@
+EVENT_OBJECT_STATECHANGE on <#document> role=ROLE_SYSTEM_DOCUMENT name="Starting title" value~=[doc-url] FOCUSED,FOCUSABLE
+=== Start Continuation ===
+EVENT_OBJECT_HIDE on <p> role=ROLE_SYSTEM_GROUPING
+EVENT_OBJECT_REORDER on <main> role=ROLE_SYSTEM_GROUPING
+EVENT_OBJECT_SHOW on <p> role=ROLE_SYSTEM_GROUPING
+EVENT_OBJECT_STATECHANGE on <#document> role=ROLE_SYSTEM_DOCUMENT name="Ending title" value~=[doc-url] FOCUSED,FOCUSABLE
+IA2_EVENT_DOCUMENT_LOAD_COMPLETE on <#document> role=ROLE_SYSTEM_DOCUMENT name="Ending title" value~=[doc-url] FOCUSED,FOCUSABLE
+IA2_EVENT_TEXT_INSERTED on <main> role=ROLE_SYSTEM_GROUPING new_text={'<obj>' start=0 end=1}
+IA2_EVENT_TEXT_REMOVED on <main> role=ROLE_SYSTEM_GROUPING old_text={'<obj>' start=0 end=1}

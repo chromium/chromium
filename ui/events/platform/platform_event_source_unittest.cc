@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -90,7 +90,7 @@ class TestPlatformEventDispatcher : public PlatformEventDispatcher {
 
  private:
   int id_;
-  std::vector<int>* list_;
+  raw_ptr<std::vector<int>> list_;
   uint32_t post_dispatch_action_;
 };
 
@@ -119,7 +119,7 @@ class TestPlatformEventObserver : public PlatformEventObserver {
 
  private:
   int id_;
-  std::vector<int>* list_;
+  raw_ptr<std::vector<int>> list_;
 };
 
 class PlatformEventTest : public testing::Test {
@@ -175,8 +175,8 @@ TEST_F(PlatformEventTest, DispatcherOrder) {
   }
   std::unique_ptr<PlatformEvent> event = CreatePlatformEvent();
   source()->Dispatch(*event);
-  ASSERT_EQ(base::size(sequence), list_dispatcher.size());
-  EXPECT_EQ(std::vector<int>(sequence, sequence + base::size(sequence)),
+  ASSERT_EQ(std::size(sequence), list_dispatcher.size());
+  EXPECT_EQ(std::vector<int>(sequence, sequence + std::size(sequence)),
             list_dispatcher);
 }
 
@@ -233,8 +233,8 @@ TEST_F(PlatformEventTest, ObserverOrder) {
   }
   std::unique_ptr<PlatformEvent> event = CreatePlatformEvent();
   source()->Dispatch(*event);
-  ASSERT_EQ(base::size(sequence), list_observer.size());
-  EXPECT_EQ(std::vector<int>(sequence, sequence + base::size(sequence)),
+  ASSERT_EQ(std::size(sequence), list_observer.size());
+  EXPECT_EQ(std::vector<int>(sequence, sequence + std::size(sequence)),
             list_observer);
 }
 
@@ -248,7 +248,7 @@ TEST_F(PlatformEventTest, DispatcherAndObserverOrder) {
   std::unique_ptr<PlatformEvent> event = CreatePlatformEvent();
   source()->Dispatch(*event);
   const int expected[] = {10, 20, 12, 23};
-  EXPECT_EQ(std::vector<int>(expected, expected + base::size(expected)), list);
+  EXPECT_EQ(std::vector<int>(expected, expected + std::size(expected)), list);
 }
 
 // Tests that an overridden dispatcher receives events before the default

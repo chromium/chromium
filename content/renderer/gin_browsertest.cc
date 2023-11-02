@@ -1,10 +1,9 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/command_line.h"
 #include "content/public/test/render_view_test.h"
-#include "content/renderer/render_view_impl.h"
 #include "gin/handle.h"
 #include "gin/per_isolate_data.h"
 #include "gin/wrappable.h"

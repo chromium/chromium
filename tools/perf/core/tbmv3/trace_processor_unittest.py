@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -15,6 +15,7 @@ RUN_METHOD = 'core.tbmv3.trace_processor._RunTraceProcessor'
 
 
 class TraceProcessorTestCase(unittest.TestCase):
+
   def setUp(self):
     self.temp_dir = tempfile.mkdtemp()
     self.trace_path = self.CreateEmptyProtoTrace()
@@ -39,8 +40,8 @@ class TraceProcessorTestCase(unittest.TestCase):
 
   def testConvertProtoTraceToJson(self):
     with mock.patch(RUN_METHOD):
-      trace_processor.ConvertProtoTraceToJson(
-          self.tp_path, '/path/to/proto', '/path/to/json')
+      trace_processor.ConvertProtoTraceToJson(self.tp_path, '/path/to/proto',
+                                              '/path/to/json')
 
   def testRunMetricNoRepeated(self):
     metric_output = """
@@ -63,8 +64,8 @@ class TraceProcessorTestCase(unittest.TestCase):
     with mock.patch('core.tbmv3.trace_processor.METRICS_PATH', self.temp_dir):
       with mock.patch(RUN_METHOD) as run_patch:
         run_patch.return_value = metric_output
-        histograms = trace_processor.RunMetric(
-            self.tp_path, '/path/to/proto', 'dummy_metric')
+        histograms = trace_processor.RunMetric(self.tp_path, '/path/to/proto',
+                                               'dummy_metric')
 
     foo_hist = histograms.GetHistogramNamed('dummy::foo')
     self.assertEqual(foo_hist.unit, 'count_biggerIsBetter')
@@ -72,7 +73,6 @@ class TraceProcessorTestCase(unittest.TestCase):
 
     bar_hists = histograms.GetHistogramsNamed('dummy::bar')
     self.assertEqual(len(bar_hists), 0)
-
 
   def testRunMetricRepeated(self):
     metric_output = """
@@ -104,8 +104,8 @@ class TraceProcessorTestCase(unittest.TestCase):
     with mock.patch('core.tbmv3.trace_processor.METRICS_PATH', self.temp_dir):
       with mock.patch(RUN_METHOD) as run_patch:
         run_patch.return_value = metric_output
-        histograms = trace_processor.RunMetric(
-            self.tp_path, '/path/to/proto', 'dummy_metric')
+        histograms = trace_processor.RunMetric(self.tp_path, '/path/to/proto',
+                                               'dummy_metric')
 
     foo_hist = histograms.GetHistogramNamed('dummy::foo')
     self.assertEqual(foo_hist.unit, 'count_biggerIsBetter')
@@ -137,8 +137,8 @@ class TraceProcessorTestCase(unittest.TestCase):
       with mock.patch(RUN_METHOD) as run_patch:
         run_patch.return_value = metric_output
         with self.assertRaises(trace_processor.InvalidTraceProcessorOutput):
-          trace_processor.RunMetric(
-              self.tp_path, '/path/to/proto', 'dummy_metric')
+          trace_processor.RunMetric(self.tp_path, '/path/to/proto',
+                                    'dummy_metric')
 
   def testMarkedNotRepeatedButValueIsList(self):
     metric_output = """
@@ -161,8 +161,8 @@ class TraceProcessorTestCase(unittest.TestCase):
       with mock.patch(RUN_METHOD) as run_patch:
         run_patch.return_value = metric_output
         with self.assertRaises(trace_processor.InvalidTraceProcessorOutput):
-          trace_processor.RunMetric(
-              self.tp_path, '/path/to/proto', 'dummy_metric')
+          trace_processor.RunMetric(self.tp_path, '/path/to/proto',
+                                    'dummy_metric')
 
   def testRunMetricEmpty(self):
     metric_output = '{}'
@@ -323,3 +323,16 @@ class TraceProcessorTestCase(unittest.TestCase):
 
     expected_output = [{'int_value': '0', 'str_value': None}]
     self.assertEqual(query_output, expected_output)
+
+  def testWithInterferingEnvironmentVariables(self):
+    os.environ['PERFETTO_SYMBOLIZER_MODE'] = 'placeholder'
+    os.environ['PERFETTO_BINARY_PATH'] = 'placeholder'
+
+    sql_query = 'SELECT int_value, str_value FROM metadata LIMIT 1'
+    try:
+      trace_processor.RunQuery(None, self.trace_path, sql_query)
+    except Exception as error:
+      self.fail('Unexpected trace_processor error: {}'.format(error))
+    finally:
+      os.environ.pop('PERFETTO_BINARY_PATH', None)
+      os.environ.pop('PERFETTO_SYMBOLIZER_MODE', None)

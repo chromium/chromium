@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,10 +36,8 @@ class MEDIA_EXPORT CdmAuxiliaryHelper : public CdmAllocator,
                                         public CdmDocumentService {
  public:
   CdmAuxiliaryHelper();
-
   CdmAuxiliaryHelper(const CdmAuxiliaryHelper&) = delete;
   CdmAuxiliaryHelper& operator=(const CdmAuxiliaryHelper&) = delete;
-
   ~CdmAuxiliaryHelper() override;
 
   // Callback to report the size of file read by cdm::FileIO created by |this|.
@@ -71,10 +69,11 @@ class MEDIA_EXPORT CdmAuxiliaryHelper : public CdmAllocator,
                          ChallengePlatformCB callback) override;
   void GetStorageId(uint32_t version, StorageIdCB callback) override;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void GetMediaFoundationCdmData(GetMediaFoundationCdmDataCB callback) override;
   void SetCdmClientToken(const std::vector<uint8_t>& client_token) override;
-#endif  // defined(OS_WIN)
+  void OnCdmEvent(CdmEvent event, HRESULT hresult) override;
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 }  // namespace media

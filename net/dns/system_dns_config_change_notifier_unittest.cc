@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "net/base/ip_address.h"
@@ -114,7 +114,7 @@ class SystemDnsConfigChangeNotifierTest : public TestWithTaskEnvironment {
   scoped_refptr<base::SequencedTaskRunner> notifier_task_runner_;
   std::unique_ptr<SystemDnsConfigChangeNotifier> notifier_;
   // Owned by |notifier_|.
-  TestDnsConfigService* test_config_service_;
+  raw_ptr<TestDnsConfigService> test_config_service_;
 };
 
 TEST_F(SystemDnsConfigChangeNotifierTest, ReceiveNotification) {

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/api/file_system/saved_files_service_interface.h"
@@ -104,7 +105,7 @@ class SavedFilesService : public extensions::SavedFilesServiceInterface,
 
   std::map<std::string, std::unique_ptr<SavedFiles>>
       extension_id_to_saved_files_;
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext> context_;
 
   base::ScopedObservation<extensions::ExtensionHostRegistry,
                           extensions::ExtensionHostRegistry::Observer>

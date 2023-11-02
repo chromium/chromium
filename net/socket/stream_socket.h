@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,9 @@
 #include <stdint.h>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/dns/public/resolve_error_info.h"
-#include "net/socket/connection_attempts.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/socket.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -29,7 +27,7 @@ class NET_EXPORT StreamSocket : public Socket {
  public:
   using BeforeConnectCallback = base::RepeatingCallback<int()>;
 
-  ~StreamSocket() override {}
+  ~StreamSocket() override = default;
 
   // Sets a callback to be invoked before establishing a connection. This allows
   // setting options, like receive and send buffer size, when they will take
@@ -132,16 +130,6 @@ class NET_EXPORT StreamSocket : public Socket {
   // does not support SSL.
   virtual void GetSSLCertRequestInfo(
       SSLCertRequestInfo* cert_request_info) const;
-
-  // Overwrites |out| with the connection attempts made in the process of
-  // connecting this socket.
-  virtual void GetConnectionAttempts(ConnectionAttempts* out) const = 0;
-
-  // Clears the socket's list of connection attempts.
-  virtual void ClearConnectionAttempts() = 0;
-
-  // Adds |attempts| to the socket's list of connection attempts.
-  virtual void AddConnectionAttempts(const ConnectionAttempts& attempts) = 0;
 
   // Returns the total number of number bytes read by the socket. This only
   // counts the payload bytes. Transport headers are not counted. Returns

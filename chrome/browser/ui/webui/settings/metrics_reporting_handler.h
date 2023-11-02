@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include <memory>
 
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
-#include "components/policy/core/common/policy_service.h"
 #include "components/prefs/pref_member.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -44,21 +43,16 @@ class MetricsReportingHandler : public SettingsPageUIHandler {
  protected:
   // Handler for "getMetricsReporting" message. No arguments. Protected for
   // testing.
-  void HandleGetMetricsReporting(const base::ListValue* args);
+  void HandleGetMetricsReporting(const base::Value::List& args);
 
  private:
   // Describes the state of metrics reporting in a base::DictionaryValue.
   // Friends with ChromeMetricsServiceAccessor.
-  std::unique_ptr<base::DictionaryValue> CreateMetricsReportingDict();
+  base::Value::Dict CreateMetricsReportingDict();
 
   // Handler for "setMetricsReportingEnabled" message. Passed a single,
   // |enabled| boolean argument.
-  void HandleSetMetricsReportingEnabled(const base::ListValue* args);
-
-  // Called when the policies that affect whether metrics reporting is managed
-  // change.
-  void OnPolicyChanged(const base::Value* current_policy,
-                       const base::Value* previous_policy);
+  void HandleSetMetricsReportingEnabled(const base::Value::List& args);
 
   // Called when the local state pref controlling metrics reporting changes.
   void OnPrefChanged(const std::string& pref_name);
@@ -69,10 +63,6 @@ class MetricsReportingHandler : public SettingsPageUIHandler {
   // Used to track pref changes that affect whether metrics reporting is
   // enabled.
   std::unique_ptr<BooleanPrefMember> pref_member_;
-
-  // Used to track policy changes that affect whether metrics reporting is
-  // enabled or managed.
-  std::unique_ptr<policy::PolicyChangeRegistrar> policy_registrar_;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // The metrics reporting interface in ash-chrome.

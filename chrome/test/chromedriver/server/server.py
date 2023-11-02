@@ -1,4 +1,4 @@
-# Copyright 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,8 +8,7 @@ import socket
 import subprocess
 import threading
 import time
-
-from six.moves import urllib
+import urllib
 
 def terminate_process(proc):
   """Terminates the process.
@@ -80,7 +79,7 @@ class Server(object):
       if time.time() > max_time:
         self._process.poll()
         if self._process.returncode is None:
-          print( 'ChromeDriver process still running, but not responding')
+          print('ChromeDriver process still running, but not responding')
         else:
           print('ChromeDriver process exited with return code %d'
                 % self._process.returncode)

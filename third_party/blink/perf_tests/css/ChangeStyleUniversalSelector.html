@@ -11,7 +11,7 @@
         PerfTestRunner.measureTime({
             description: "Measures the performance of the universal selector.",
             run: function() {
-                var rule = applyCSSRule("* { color: red; }");
+                var rule = applyCSSRule("* { cursor: crosshair; }");
                 forceStyleRecalc(document.body);
                 rule.remove();
                 forceStyleRecalc(document.body);

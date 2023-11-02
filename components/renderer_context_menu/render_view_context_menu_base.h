@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/renderer_context_menu/context_menu_content_type.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
@@ -123,6 +124,9 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
   content::WebContents* GetWebContents() const override;
   content::BrowserContext* GetBrowserContext() const override;
 
+  // May return nullptr if the frame was deleted while the menu was open.
+  content::RenderFrameHost* GetRenderFrameHost() const;
+
  protected:
   friend class RenderViewContextMenuTest;
   friend class RenderViewContextMenuPrefsTest;
@@ -148,7 +152,7 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
   virtual void RecordUsedItem(int id) = 0;
 
   // Increments histogram value for visible context menu item specified by |id|.
-  virtual void RecordShownItem(int id) = 0;
+  virtual void RecordShownItem(int id, bool is_submenu) = 0;
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   virtual void HandleAuthorizeAllPlugins() = 0;
@@ -159,9 +163,7 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
 
   // TODO(oshima): Remove this.
   virtual void AppendPlatformEditableItems() {}
-
-  // May return nullptr if the frame was deleted while the menu was open.
-  content::RenderFrameHost* GetRenderFrameHost() const;
+  virtual void ExecOpenInReadAnything() = 0;
 
   bool IsCustomItemChecked(int id) const;
   bool IsCustomItemEnabled(int id) const;
@@ -181,8 +183,8 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
                                bool started_from_context_menu);
 
   content::ContextMenuParams params_;
-  content::WebContents* const source_web_contents_;
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::WebContents> source_web_contents_;
+  const raw_ptr<content::BrowserContext> browser_context_;
 
   ui::SimpleMenuModel menu_model_;
 

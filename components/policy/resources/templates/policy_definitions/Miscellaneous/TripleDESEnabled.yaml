@@ -1,0 +1,33 @@
+caption: Enable 3DES cipher suites in TLS
+default: null
+deprecated: true
+desc: "Warning: 3DES will be completely removed from <ph name=\"PRODUCT_NAME\">$1<ex>Google\
+  \ Chrome</ex></ph> in version 95 (around October 2021) and this policy will stop\
+  \ working then.\n\n      If the policy is set to true, then 3DES cipher suites in\
+  \ TLS will be enabled. If it is set to false, they will be disabled. If the policy\
+  \ is unset, 3DES cipher suites are disabled by default. This policy may be used\
+  \ to temporarily retain compatibility with an outdated server. This is a stopgap\
+  \ measure and the server should be reconfigured.\n      "
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: false
+items:
+- caption: 3DES cipher suites will be enabled in TLS
+  value: true
+- caption: 3DES cipher suites will be disabled in TLS
+  value: false
+- caption: Use the default setting for 3DES cipher suites in TLS
+  value: null
+owners:
+- file://net/ssl/OWNERS
+- davidben@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:92-96
+- chrome_os:92-96
+- android:92-96
+tags:
+- system-security
+type: main

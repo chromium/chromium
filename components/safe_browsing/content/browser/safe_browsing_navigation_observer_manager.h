@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,16 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 #include "url/gurl.h"
 
@@ -23,6 +26,7 @@ class PrefService;
 
 namespace content {
 class NavigationHandle;
+struct GlobalRenderFrameHostId;
 }
 
 namespace safe_browsing {
@@ -69,7 +73,7 @@ struct NavigationEventList {
 
   // Finds the index of the most recent navigation event that navigated to
   // |target_url| and  its associated |target_main_frame_url| in the tab with
-  // ID |target_tab_id|. Returns -1 if event is not found.
+  // ID |target_tab_id|. Returns an empty optional if event is not found.
   // If navigation happened in the main frame, |target_url| and
   // |target_main_frame_url| are the same.
   // If |target_url| is empty, we use its main frame url (a.k.a.
@@ -89,12 +93,22 @@ struct NavigationEventList {
   // In this case, FindNavigationEvent() will think url2 in Window B is the
   // referrer of about::blank in Window C since this navigation is more recent.
   // However, it does not prevent us to attribute url1 in Window A as the cause
-  // of all these navigations. Returns -1 if an event is not found.
-  size_t FindNavigationEvent(const base::Time& last_event_timestamp,
-                             const GURL& target_url,
-                             const GURL& target_main_frame_url,
-                             SessionID target_tab_id,
-                             size_t start_index);
+  // of all these navigations. Returns an empty optional if an event is not
+  // found.
+  //
+  // If an |outermost_main_frame_id| is supplied, the function attempts to find
+  // a navigation event per the logic described above with the additional
+  // constraint that the |outermost_main_frame_id| match. If there is no such
+  // event, it will return the first main frame event that matches the other
+  // criteria. And if there is still no matching event, the function will return
+  // an empty optional.
+  absl::optional<size_t> FindNavigationEvent(
+      const base::Time& last_event_timestamp,
+      const GURL& target_url,
+      const GURL& target_main_frame_url,
+      SessionID target_tab_id,
+      const content::GlobalRenderFrameHostId& outermost_main_frame_id,
+      size_t start_index);
 
   // Finds the the navigation event in the |pending_navigation_events_| map that
   // has the same destination URL as the |target_url|. If there are multiple
@@ -221,6 +235,8 @@ class SafeBrowsingNavigationObserverManager : public ReferrerChainProvider,
   AttributionResult IdentifyReferrerChainByEventURL(
       const GURL& event_url,
       SessionID event_tab_id,  // Invalid if tab id is unknown or not available.
+      const content::GlobalRenderFrameHostId&
+          event_outermost_main_frame_id,  // Can also be Invalid.
       int user_gesture_count_limit,
       ReferrerChain* out_referrer_chain) override;
 
@@ -238,14 +254,14 @@ class SafeBrowsingNavigationObserverManager : public ReferrerChainProvider,
       int user_gesture_count_limit,
       ReferrerChain* out_referrer_chain) override;
 
-  // Based on the |web_contents| associated with an event, traces back the
+  // Based on the |render_frame_host| associated with an event, traces back the
   // observed NavigationEvents in |navigation_event_list_| to identify the
   // sequence of navigations leading to the event hosting page, with the
   // coverage limited to |user_gesture_count_limit| number of user gestures.
   // Then converts these identified NavigationEvents into ReferrerChainEntrys
   // and appends them to |out_referrer_chain|.
-  AttributionResult IdentifyReferrerChainByWebContents(
-      content::WebContents* web_contents,
+  AttributionResult IdentifyReferrerChainByRenderFrameHost(
+      content::RenderFrameHost* render_frame_host,
       int user_gesture_count_limit,
       ReferrerChain* out_referrer_chain) override;
 
@@ -260,6 +276,8 @@ class SafeBrowsingNavigationObserverManager : public ReferrerChainProvider,
   AttributionResult IdentifyReferrerChainByHostingPage(
       const GURL& initiating_frame_url,
       const GURL& initiating_main_frame_url,
+      const content::GlobalRenderFrameHostId&
+          initiating_outermost_main_frame_id,
       SessionID tab_id,
       bool has_user_gesture,
       int user_gesture_count_limit,
@@ -286,6 +304,11 @@ class SafeBrowsingNavigationObserverManager : public ReferrerChainProvider,
   void AppendRecentNavigations(size_t recent_navigation_count,
                                ReferrerChain* out_referrer_chain);
 
+ protected:
+  NavigationEventList* navigation_event_list() {
+    return &navigation_event_list_;
+  }
+
  private:
   friend class TestNavigationObserverManager;
   friend class SBNavigationObserverBrowserTest;
@@ -301,10 +324,6 @@ class SafeBrowsingNavigationObserverManager : public ReferrerChainProvider,
   typedef std::unordered_map<content::WebContents*, base::Time> UserGestureMap;
   typedef std::unordered_map<std::string, std::vector<ResolvedIPAddress>>
       HostToIpMap;
-
-  NavigationEventList* navigation_event_list() {
-    return &navigation_event_list_;
-  }
 
   HostToIpMap* host_to_ip_map() { return &host_to_ip_map_; }
 
@@ -377,7 +396,7 @@ class SafeBrowsingNavigationObserverManager : public ReferrerChainProvider,
   HostToIpMap host_to_ip_map_;
 
   // Unowned object used for getting preference settings.
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
 
   base::OneShotTimer cleanup_timer_;
 };

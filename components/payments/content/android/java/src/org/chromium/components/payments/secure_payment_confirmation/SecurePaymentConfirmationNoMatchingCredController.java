@@ -1,10 +1,12 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package org.chromium.components.payments.secure_payment_confirmation;
 
 import android.content.Context;
 import android.view.View;
+
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -28,6 +30,7 @@ public class SecurePaymentConfirmationNoMatchingCredController {
     private final WebContents mWebContents;
     private Runnable mHider;
     private Runnable mResponseCallback;
+    private Runnable mOptOutCallback;
     private SecurePaymentConfirmationNoMatchingCredView mView;
 
     private final BottomSheetObserver mBottomSheetObserver = new EmptyBottomSheetObserver() {
@@ -35,7 +38,7 @@ public class SecurePaymentConfirmationNoMatchingCredController {
         public void onSheetStateChanged(int newState, int reason) {
             switch (newState) {
                 case BottomSheetController.SheetState.HIDDEN:
-                    hide();
+                    close();
                     break;
             }
         }
@@ -127,8 +130,22 @@ public class SecurePaymentConfirmationNoMatchingCredController {
         mWebContents = webContents;
     }
 
-    /** Hides the SPC No Matching Credential UI. */
-    public void hide() {
+    /** Closes the SPC No Matching Credential UI. */
+    public void close() {
+        if (mResponseCallback != null) {
+            mResponseCallback.run();
+            mResponseCallback = null;
+        }
+
+        if (mHider == null) return;
+        mHider.run();
+        mHider = null;
+    }
+
+    public void optOut() {
+        assert mOptOutCallback != null;
+        mOptOutCallback.run();
+
         if (mHider == null) return;
         mHider.run();
         mHider = null;
@@ -137,18 +154,23 @@ public class SecurePaymentConfirmationNoMatchingCredController {
     /**
      * Shows the SPC No Matching Credential UI.
      *
-     * @param callback Invoked when users respond to the UI.
+     * @param responseCallback Invoked when users respond to the UI.
+     * @param optOutCallback Invoked if the user elects to opt out on the UI.
+     * @param showOptOut Whether to display the opt out UX to the user.
+     * @param rpId The relying party ID of the SPC credential.
+     * @return whether or not the UI was successfully shown.
      */
-    public void show(Runnable callback) {
-        if (mHider != null) return;
+    public boolean show(
+            Runnable responseCallback, Runnable optOutCallback, boolean showOptOut, String rpId) {
+        if (mHider != null) return false;
 
         WindowAndroid windowAndroid = mWebContents.getTopLevelNativeWindow();
-        if (windowAndroid == null) return;
+        if (windowAndroid == null) return false;
         Context context = windowAndroid.getContext().get();
-        if (context == null) return;
+        if (context == null) return false;
 
         BottomSheetController bottomSheet = BottomSheetControllerProvider.from(windowAndroid);
-        if (bottomSheet == null) return;
+        if (bottomSheet == null) return false;
 
         bottomSheet.addObserver(mBottomSheetObserver);
 
@@ -156,19 +178,38 @@ public class SecurePaymentConfirmationNoMatchingCredController {
                 mWebContents.getVisibleUrl().getOrigin().getSpec(),
                 SchemeDisplay.OMIT_CRYPTOGRAPHIC);
 
-        mView = new SecurePaymentConfirmationNoMatchingCredView(context, origin, this::hide);
+        mView = new SecurePaymentConfirmationNoMatchingCredView(
+                context, origin, rpId, showOptOut, this::close, this::optOut);
 
         mHider = () -> {
-            if (mResponseCallback != null) {
-                mResponseCallback.run();
-                mResponseCallback = null;
-            }
             bottomSheet.removeObserver(mBottomSheetObserver);
             bottomSheet.hideContent(/*content=*/mBottomSheetContent, /*animate=*/true);
         };
 
-        mResponseCallback = callback;
+        mResponseCallback = responseCallback;
+        mOptOutCallback = showOptOut ? optOutCallback : null;
 
-        if (!bottomSheet.requestShowContent(mBottomSheetContent, /*animate=*/true)) hide();
+        if (!bottomSheet.requestShowContent(mBottomSheetContent, /*animate=*/true)) {
+            close();
+            return false;
+        }
+        return true;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    public SecurePaymentConfirmationNoMatchingCredView getView() {
+        return mView;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    public boolean isHidden() {
+        return mHider == null;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    public boolean optOutForTest() {
+        if (mOptOutCallback == null) return false;
+        optOut();
+        return true;
     }
 }

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,19 +7,22 @@
 
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 
+class Profile;
+
 namespace enterprise_reporting {
 
 // Android implementation of the ReportScheduler delegate.
 class ReportSchedulerAndroid : public ReportScheduler::Delegate {
  public:
   ReportSchedulerAndroid();
+  explicit ReportSchedulerAndroid(Profile* profile);
   ReportSchedulerAndroid(const ReportSchedulerAndroid&) = delete;
   ReportSchedulerAndroid& operator=(const ReportSchedulerAndroid&) = delete;
 
   ~ReportSchedulerAndroid() override;
 
   // ReportScheduler::Delegate implementation.
-  PrefService* GetLocalState() override;
+  PrefService* GetPrefService() override;
   void StartWatchingUpdatesIfNeeded(base::Time last_upload,
                                     base::TimeDelta upload_interval) override;
   void StopWatchingUpdates() override;
@@ -27,6 +30,12 @@ class ReportSchedulerAndroid : public ReportScheduler::Delegate {
   void StartWatchingExtensionRequestIfNeeded() override;
   void StopWatchingExtensionRequest() override;
   void OnExtensionRequestUploaded() override;
+  policy::DMToken GetProfileDMToken() override;
+  std::string GetProfileClientId() override;
+
+ private:
+  raw_ptr<Profile> profile_;
+  raw_ptr<PrefService> prefs_;
 };
 
 }  // namespace enterprise_reporting

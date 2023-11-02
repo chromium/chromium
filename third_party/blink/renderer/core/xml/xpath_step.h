@@ -75,13 +75,13 @@ class Step final : public ParseNode {
 
     NodeTest(const NodeTest& o)
         : kind_(o.kind_), data_(o.data_), namespace_uri_(o.namespace_uri_) {
-      DCHECK(o.merged_predicates_.IsEmpty());
+      DCHECK(o.merged_predicates_.empty());
     }
     NodeTest& operator=(const NodeTest& o) {
       kind_ = o.kind_;
       data_ = o.data_;
       namespace_uri_ = o.namespace_uri_;
-      DCHECK(o.merged_predicates_.IsEmpty());
+      DCHECK(o.merged_predicates_.empty());
       return *this;
     }
     void Trace(Visitor* visitor) const { visitor->Trace(merged_predicates_); }

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 // Implements the notification access setup flow. This flow involves:
@@ -69,7 +69,7 @@ class NotificationAccessSetupOperation {
     virtual ~Delegate() = default;
 
     // Called when status of the setup flow has changed.
-    virtual void OnStatusChange(Status new_status) = 0;
+    virtual void OnNotificationStatusChange(Status new_status) = 0;
   };
 
   NotificationAccessSetupOperation(const NotificationAccessSetupOperation&) =
@@ -79,12 +79,12 @@ class NotificationAccessSetupOperation {
   virtual ~NotificationAccessSetupOperation();
 
  private:
-  friend class NotificationAccessManager;
+  friend class MultideviceFeatureAccessManager;
 
   NotificationAccessSetupOperation(Delegate* delegate,
                                    base::OnceClosure destructor_callback);
 
-  void NotifyStatusChanged(Status new_status);
+  void NotifyNotificationStatusChanged(Status new_status);
 
   absl::optional<Status> current_status_;
   const base::TimeTicks start_timestamp_ = base::TimeTicks::Now();
@@ -96,6 +96,13 @@ std::ostream& operator<<(std::ostream& stream,
                          NotificationAccessSetupOperation::Status status);
 
 }  // namespace phonehub
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos {
+namespace phonehub {
+using ::ash::phonehub::NotificationAccessSetupOperation;
+}
 }  // namespace chromeos
 
 #endif  // ASH_COMPONENTS_PHONEHUB_NOTIFICATION_ACCESS_SETUP_OPERATION_H_

@@ -1,10 +1,11 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_AURA_TEST_WINDOW_TEST_API_H_
 #define UI_AURA_TEST_WINDOW_TEST_API_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window.h"
 
 namespace aura {
@@ -26,7 +27,7 @@ class WindowTestApi {
   void SetOcclusionState(aura::Window::OcclusionState state);
 
  private:
-  Window* window_;
+  raw_ptr<Window> window_;
 };
 
 }  // namespace test

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -94,13 +94,57 @@ VisitContentModelAnnotations::VisitContentModelAnnotations(
     const VisitContentModelAnnotations&) = default;
 VisitContentModelAnnotations::~VisitContentModelAnnotations() = default;
 
+// static
+void VisitContentModelAnnotations::MergeCategoryIntoVector(
+    const Category& category,
+    std::vector<Category>* categories) {
+  DCHECK(categories);
+  for (auto& this_category : *categories) {
+    // If this visit already has the category, upgrade the weight.
+    if (category.id == this_category.id) {
+      this_category.weight = std::max(this_category.weight, category.weight);
+      return;
+    }
+  }
+
+  // Append the category since it wasn't found in our existing `categories`.
+  categories->push_back(category);
+}
+
+void VisitContentModelAnnotations::MergeFrom(
+    const VisitContentModelAnnotations& other) {
+  // To be conservative, we use the lesser of the two visibility scores, but
+  // ignore sentinel values (which are negative).
+  if (other.visibility_score >= 0 &&
+      other.visibility_score < visibility_score) {
+    visibility_score = other.visibility_score;
+  }
+
+  for (auto& other_category : other.categories) {
+    MergeCategoryIntoVector(other_category, &categories);
+  }
+  for (auto& other_entity : other.entities) {
+    MergeCategoryIntoVector(other_entity, &entities);
+  }
+}
+
 VisitContentAnnotations::VisitContentAnnotations(
     VisitContentAnnotationFlags annotation_flags,
     VisitContentModelAnnotations model_annotations,
-    const std::vector<std::string>& related_searches)
+    const std::vector<std::string>& related_searches,
+    const GURL& search_normalized_url,
+    const std::u16string& search_terms,
+    const std::string& alternative_title,
+    const std::string& page_language,
+    PasswordState password_state)
     : annotation_flags(annotation_flags),
       model_annotations(model_annotations),
-      related_searches(related_searches) {}
+      related_searches(related_searches),
+      search_normalized_url(search_normalized_url),
+      search_terms(search_terms),
+      alternative_title(alternative_title),
+      page_language(page_language),
+      password_state(password_state) {}
 VisitContentAnnotations::VisitContentAnnotations() = default;
 VisitContentAnnotations::VisitContentAnnotations(
     const VisitContentAnnotations&) = default;

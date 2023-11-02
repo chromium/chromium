@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ namespace web_app {
 WebAppMetrics* WebAppMetricsFactory::GetForProfile(Profile* profile) {
   return static_cast<WebAppMetrics*>(
       WebAppMetricsFactory::GetInstance()->GetServiceForBrowserContext(
-          profile, /*create_service=*/true));
+          profile, /*create=*/true));
 }
 
 // static

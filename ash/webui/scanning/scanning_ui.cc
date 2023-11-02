@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,17 +9,16 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "ash/grit/ash_scanning_app_resources.h"
-#include "ash/grit/ash_scanning_app_resources_map.h"
 #include "ash/webui/common/backend/accessibility_features.h"
 #include "ash/webui/common/mojom/accessibility_features.mojom.h"
+#include "ash/webui/grit/ash_scanning_app_resources.h"
+#include "ash/webui/grit/ash_scanning_app_resources_map.h"
 #include "ash/webui/scanning/mojom/scanning.mojom.h"
 #include "ash/webui/scanning/scanning_app_delegate.h"
 #include "ash/webui/scanning/scanning_metrics_handler.h"
 #include "ash/webui/scanning/url_constants.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
-#include "base/memory/ptr_util.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -27,7 +26,6 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/resources/grit/webui_generated_resources.h"
-#include "ui/resources/grit/webui_resources.h"
 
 namespace ash {
 
@@ -126,7 +124,6 @@ void AddScanningAppStrings(content::WebUIDataSource* html_source) {
       {"scannerDropdownLabel", IDS_SCANNING_APP_SCANNER_DROPDOWN_LABEL},
       {"scannersLoadingText", IDS_SCANNING_APP_SCANNERS_LOADING_TEXT},
       {"scanningImagesAriaLabel", IDS_SCANNING_APP_SCANNING_IMAGES_ARIA_LABEL},
-      {"searchablePdfOptionText", IDS_SCANNING_APP_SEARCHABLE_PDF_OPTION_TEXT},
       {"selectFolderOption", IDS_SCANNING_APP_SELECT_FOLDER_OPTION},
       {"showInFolderButtonLabel", IDS_SCANNING_APP_SHOW_IN_FOLDER_BUTTON_LABEL},
       {"sourceDropdownLabel", IDS_SCANNING_APP_SOURCE_DROPDOWN_LABEL},
@@ -152,15 +149,6 @@ void AddScanningAppPluralStrings(ScanningHandler* handler) {
     handler->AddStringToPluralMap(str.name, str.id);
 }
 
-void AddFeatureFlags(content::WebUIDataSource* html_source) {
-  html_source->AddBoolean(
-      "scanAppMultiPageScanEnabled",
-      base::FeatureList::IsEnabled(chromeos::features::kScanAppMultiPageScan));
-  html_source->AddBoolean(
-      "scanAppSearchablePdfEnabled",
-      base::FeatureList::IsEnabled(chromeos::features::kScanAppSearchablePdf));
-}
-
 }  // namespace
 
 ScanningUI::ScanningUI(
@@ -169,19 +157,21 @@ ScanningUI::ScanningUI(
     std::unique_ptr<ScanningAppDelegate> scanning_app_delegate)
     : ui::MojoWebUIController(web_ui, true /* enable_chrome_send */),
       bind_pending_receiver_callback_(std::move(callback)) {
-  auto html_source = base::WrapUnique(
-      content::WebUIDataSource::Create(kChromeUIScanningAppHost));
+  content::WebUIDataSource* html_source =
+      content::WebUIDataSource::CreateAndAdd(
+          web_ui->GetWebContents()->GetBrowserContext(),
+          kChromeUIScanningAppHost);
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources chrome://test 'self';");
+      "script-src chrome://resources chrome://test chrome://webui-test "
+      "'self';");
   html_source->DisableTrustedTypesCSP();
 
   accessibility_features_ = std::make_unique<AccessibilityFeatures>();
 
   const auto resources =
       base::make_span(kAshScanningAppResources, kAshScanningAppResourcesSize);
-  SetUpWebUIDataSource(html_source.get(), resources,
-                       IDR_SCANNING_APP_INDEX_HTML);
+  SetUpWebUIDataSource(html_source, resources, IDR_SCANNING_APP_INDEX_HTML);
 
   html_source->AddResourcePath("scanning.mojom-lite.js",
                                IDR_SCANNING_MOJO_LITE_JS);
@@ -190,9 +180,7 @@ ScanningUI::ScanningUI(
   html_source->AddResourcePath("accessibility_features.mojom-lite.js",
                                IDR_ACCESSIBILITY_FEATURES_MOJO_LITE_JS);
 
-  AddFeatureFlags(html_source.get());
-
-  AddScanningAppStrings(html_source.get());
+  AddScanningAppStrings(html_source);
 
   auto handler =
       std::make_unique<ScanningHandler>(std::move(scanning_app_delegate));
@@ -200,8 +188,6 @@ ScanningUI::ScanningUI(
 
   web_ui->AddMessageHandler(std::move(handler));
   web_ui->AddMessageHandler(std::make_unique<ScanningMetricsHandler>());
-  content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
-                                html_source.release());
 }
 
 ScanningUI::~ScanningUI() = default;

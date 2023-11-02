@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,6 +63,7 @@ void WebIDBTransaction::Put(int64_t object_store_id,
 
   size_t arg_size =
       value->DataSize() + primary_key->SizeEstimate() + index_keys_size;
+
   if (arg_size >= max_put_value_size_) {
     callbacks->Error(
         mojom::blink::IDBException::kUnknownError,
@@ -73,10 +74,18 @@ void WebIDBTransaction::Put(int64_t object_store_id,
   }
 
   callbacks->SetState(nullptr, transaction_id_);
+
+  mojo::internal::AutoRecordReplayAssertBufferAllocations rraba(
+      "RUN-1806-2265");
+
   transaction_->Put(object_store_id, std::move(value), std::move(primary_key),
                     put_mode, std::move(index_keys),
-                    WTF::Bind(&WebIDBTransaction::PutCallback,
-                              WTF::Unretained(this), std::move(callbacks)));
+                    WTF::BindOnce(&WebIDBTransaction::PutCallback,
+                                  WTF::Unretained(this), std::move(callbacks)));
+
+  recordreplay::Assert(
+      "[RUN-1806-2265] WebIDBTransaction::Put %lld %lld %zu",
+      transaction_id_, object_store_id, arg_size);
 }
 
 void WebIDBTransaction::PutCallback(

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,8 @@ class ImageSkia;
 }
 
 namespace ui {
+
+class KeyEvent;
 
 // Platform-specific general util functions that didn't find their way to any
 // other existing utilities, but they are required to be accessed outside
@@ -46,6 +48,9 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformUtils {
   // affect tests.
   virtual std::unique_ptr<ScopedDisableClientSideDecorationsForTest>
   DisableClientSideDecorationsForTest() = 0;
+
+  // Called when it is found that a KeyEvent is not consumed.
+  virtual void OnUnhandledKeyEvent(const KeyEvent& key_event) = 0;
 };
 
 }  // namespace ui

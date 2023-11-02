@@ -1,0 +1,20 @@
+import("//build/config/chromeos/ui_mode.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions)
+assert(is_chromeos)
+
+source_set("constants") {
+  sources = [
+    "controlled_pref_mapping.cc",
+    "controlled_pref_mapping.h",
+  ]
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chrome/common:constants",
+  ]
+  if (is_chromeos_ash) {
+    deps += [ "//ash/constants" ]
+  }
+}

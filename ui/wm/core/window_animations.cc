@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -57,6 +58,9 @@ class HidingWindowAnimationObserverBase : public aura::WindowObserver {
  public:
   explicit HidingWindowAnimationObserverBase(aura::Window* window)
       : window_(window) {
+    window_->SetProperty(
+        kWindowHidingAnimationCountKey,
+        window_->GetProperty(kWindowHidingAnimationCountKey) + 1);
     window_->AddObserver(this);
   }
 
@@ -66,8 +70,13 @@ class HidingWindowAnimationObserverBase : public aura::WindowObserver {
       const HidingWindowAnimationObserverBase&) = delete;
 
   ~HidingWindowAnimationObserverBase() override {
-    if (window_)
-      window_->RemoveObserver(this);
+    if (!window_)
+      return;
+    window_->RemoveObserver(this);
+    window_->SetProperty(
+        kWindowHidingAnimationCountKey,
+        window_->GetProperty(kWindowHidingAnimationCountKey) - 1);
+    DCHECK_GE(window_->GetProperty(kWindowHidingAnimationCountKey), 0);
   }
 
   // aura::WindowObserver:
@@ -122,7 +131,6 @@ class HidingWindowAnimationObserverBase : public aura::WindowObserver {
       AnimationHost* animation_host = GetAnimationHost(window_);
       if (animation_host)
         animation_host->OnWindowHidingAnimationCompleted();
-      window_->RemoveObserver(this);
     }
     delete this;
   }
@@ -136,7 +144,7 @@ class HidingWindowAnimationObserverBase : public aura::WindowObserver {
     window_ = nullptr;
   }
 
-  aura::Window* window_;
+  raw_ptr<aura::Window> window_;
 
   // The owner of detached layers.
   std::unique_ptr<ui::LayerTreeOwner> layer_owner_;
@@ -240,10 +248,7 @@ gfx::Rect GetLayerWorldBoundsAfterTransform(ui::Layer* layer,
   gfx::Transform in_world = transform;
   GetTransformRelativeToRoot(layer, &in_world);
 
-  gfx::RectF transformed = gfx::RectF(layer->bounds());
-  in_world.TransformRect(&transformed);
-
-  return gfx::ToEnclosingRect(transformed);
+  return in_world.MapRect(layer->bounds());
 }
 
 // Augment the host window so that the enclosing bounds of the full

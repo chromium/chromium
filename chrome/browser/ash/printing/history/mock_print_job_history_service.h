@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,8 +19,7 @@ class MockPrintJobHistoryService : public PrintJobHistoryService {
 
   // This method doesn't save print job to the persistent storage.
   // It should be used only for testing to notify observers.
-  void SavePrintJobProto(
-      const chromeos::printing::proto::PrintJobInfo& print_job_info);
+  void SavePrintJobProto(const printing::proto::PrintJobInfo& print_job_info);
 
   MOCK_METHOD(void,
               GetPrintJobs,

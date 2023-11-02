@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MEDIA_AUDIO_AUDIO_THREAD_HANG_MONITOR_H_
 #define MEDIA_AUDIO_AUDIO_THREAD_HANG_MONITOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "media/audio/audio_manager.h"
 
 #include <atomic>
@@ -126,7 +127,7 @@ class MEDIA_EXPORT AudioThreadHangMonitor final {
   void DumpWithoutCrashing();
   void TerminateCurrentProcess();
 
-  const base::TickClock* const clock_;
+  const raw_ptr<const base::TickClock> clock_;
 
   // This flag is set to false on the monitor sequence and then set to true on
   // the audio thread to indicate that the audio thread is alive.

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -169,7 +169,7 @@ class DISABLED_PaymentRequestShippingAddressEditorTest
         dialog_view()->GetViewByID(EditorViewController::GetInputFieldViewId(
             autofill::ADDRESS_HOME_COUNTRY)));
     DCHECK(country_combobox);
-    int selected_country_row = country_combobox->GetSelectedRow();
+    size_t selected_country_row = country_combobox->GetSelectedRow().value();
     autofill::CountryComboboxModel* country_model =
         static_cast<autofill::CountryComboboxModel*>(
             country_combobox->GetModel());
@@ -187,7 +187,7 @@ class DISABLED_PaymentRequestShippingAddressEditorTest
     autofill::CountryComboboxModel* country_model =
         static_cast<autofill::CountryComboboxModel*>(
             country_combobox->GetModel());
-    int i = 0;
+    size_t i = 0;
     for (; i < country_model->GetItemCount(); i++) {
       if (country_model->GetItemAt(i) == country_name)
         break;
@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   SetRegionDataLoader(&test_region_data_loader_);
 
   // No shipping profiles are available.
-  PaymentRequest* request = GetPaymentRequests(GetActiveWebContents()).front();
+  PaymentRequest* request = GetPaymentRequests().front();
   EXPECT_EQ(0U, request->state()->shipping_profiles().size());
   EXPECT_EQ(nullptr, request->state()->selected_shipping_profile());
 
@@ -254,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   SetRegionDataLoader(&test_region_data_loader_);
 
   // No shipping profiles are available.
-  PaymentRequest* request = GetPaymentRequests(GetActiveWebContents()).front();
+  PaymentRequest* request = GetPaymentRequests().front();
   EXPECT_EQ(0U, request->state()->shipping_profiles().size());
   EXPECT_EQ(nullptr, request->state()->selected_shipping_profile());
 
@@ -340,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
                                /*accept_empty_phone_number=*/false);
 
   // One shipping profile is available and selected.
-  PaymentRequest* request = GetPaymentRequests(GetActiveWebContents()).front();
+  PaymentRequest* request = GetPaymentRequests().front();
   EXPECT_EQ(1UL, request->state()->shipping_profiles().size());
   EXPECT_EQ(request->state()->shipping_profiles().back(),
             request->state()->selected_shipping_profile());
@@ -364,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
       dialog_view()->GetViewByID(EditorViewController::GetInputFieldViewId(
           autofill::ADDRESS_HOME_COUNTRY)));
   ASSERT_NE(nullptr, country_combobox);
-  ASSERT_EQ(0, country_combobox->GetSelectedRow());
+  ASSERT_EQ(0u, country_combobox->GetSelectedRow());
   autofill::CountryComboboxModel* country_model =
       static_cast<autofill::CountryComboboxModel*>(
           country_combobox->GetModel());
@@ -390,11 +390,11 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
           static_cast<autofill::RegionComboboxModel*>(
               region_combobox->GetModel());
       if (use_regions1) {
-        ASSERT_EQ(2, region_model->GetItemCount());
+        ASSERT_EQ(2u, region_model->GetItemCount());
         EXPECT_EQ(u"---", region_model->GetItemAt(0));
         EXPECT_EQ(u"region1a", region_model->GetItemAt(1));
       } else {
-        ASSERT_EQ(3, region_model->GetItemCount());
+        ASSERT_EQ(3u, region_model->GetItemCount());
         EXPECT_EQ(u"---", region_model->GetItemAt(0));
         EXPECT_EQ(u"region2a", region_model->GetItemAt(1));
         EXPECT_EQ(u"region2b", region_model->GetItemAt(2));
@@ -437,8 +437,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
         dialog_view()->GetViewByID(EditorViewController::GetInputFieldViewId(
             autofill::ADDRESS_HOME_COUNTRY)));
     DCHECK(country_combobox);
-    EXPECT_EQ(country_index,
-              static_cast<size_t>(country_combobox->GetSelectedRow()));
+    EXPECT_EQ(country_index, country_combobox->GetSelectedRow().value());
     country_model = static_cast<autofill::CountryComboboxModel*>(
         country_combobox->GetModel());
     ASSERT_EQ(num_countries, country_model->countries().size());
@@ -553,7 +552,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   SetRegionDataLoader(&test_region_data_loader_);
 
   // One shipping address is available, but it's not selected.
-  PaymentRequest* request = GetPaymentRequests(GetActiveWebContents()).front();
+  PaymentRequest* request = GetPaymentRequests().front();
   EXPECT_EQ(1U, request->state()->shipping_profiles().size());
   EXPECT_EQ(nullptr, request->state()->selected_shipping_profile());
 
@@ -1200,7 +1199,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
                                 DialogViewID::SHIPPING_ADDRESS_SHEET_LIST_VIEW);
 
   ClickOnBackArrow();
-  PaymentRequest* request = GetPaymentRequests(GetActiveWebContents()).front();
+  PaymentRequest* request = GetPaymentRequests().front();
   EXPECT_EQ(u"", request->state()->shipping_profiles()[0]->GetInfo(
                      autofill::ADDRESS_HOME_COUNTRY, kLocale));
 }
@@ -1213,7 +1212,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   SetRegionDataLoader(&test_region_data_loader_);
 
   // No shipping profiles are available.
-  PaymentRequest* request = GetPaymentRequests(GetActiveWebContents()).front();
+  PaymentRequest* request = GetPaymentRequests().front();
   EXPECT_EQ(0U, request->state()->shipping_profiles().size());
   EXPECT_EQ(nullptr, request->state()->selected_shipping_profile());
 

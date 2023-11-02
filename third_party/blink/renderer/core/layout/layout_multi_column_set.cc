@@ -736,7 +736,6 @@ void LayoutMultiColumnSet::FinishLayoutFromNG() {
                        /* logical_top */ LayoutUnit(), computed_values);
   SetLogicalHeight(computed_values.extent_);
   ComputeLayoutOverflow(computed_values.extent_);
-  initial_height_calculated_ = false;
 }
 
 }  // namespace blink

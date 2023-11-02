@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <fuzzer/FuzzedDataProvider.h>
 
+#include "sandbox/win/src/broker_services.h"
 #include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/policy_engine_params.h"
 #include "sandbox/win/src/sandbox_policy.h"
@@ -18,25 +19,35 @@ constexpr size_t maxParams = 2;
 
 // This fills policies with rules based on the current
 // renderer sandbox in Chrome.
-scoped_refptr<sandbox::PolicyBase> InitPolicy() {
-  scoped_refptr<sandbox::PolicyBase> policy(new sandbox::PolicyBase);
-  policy->Release();
+std::unique_ptr<sandbox::PolicyBase> InitPolicy() {
+  auto policy = std::make_unique<sandbox::PolicyBase>("");
+  auto* config = policy->GetConfig();
 
-  policy->AddRule(sandbox::TargetPolicy::SUBSYS_WIN32K_LOCKDOWN,
-                  sandbox::TargetPolicy::FAKE_USER_GDI_INIT, nullptr);
+  auto result = config->AddRule(sandbox::SubSystem::kWin32kLockdown,
+                                sandbox::Semantics::kFakeGdiInit, nullptr);
+  if (result != sandbox::SBOX_ALL_OK)
+    return nullptr;
 
-  policy->AddRule(sandbox::TargetPolicy::SUBSYS_FILES,
-                  sandbox::TargetPolicy::FILES_ALLOW_ANY,
-                  L"\\??\\pipe\\chrome.*");
+  result = config->AddRule(sandbox::SubSystem::kFiles,
+                           sandbox::Semantics::kFilesAllowAny,
+                           L"\\??\\pipe\\chrome.*");
+  if (result != sandbox::SBOX_ALL_OK)
+    return nullptr;
 
-  policy->AddRule(sandbox::TargetPolicy::SUBSYS_NAMED_PIPES,
-                  sandbox::TargetPolicy::NAMEDPIPES_ALLOW_ANY,
-                  L"\\\\.\\pipe\\chrome.nacl.*");
+  result = config->AddRule(sandbox::SubSystem::kNamedPipes,
+                           sandbox::Semantics::kNamedPipesAllowAny,
+                           L"\\\\.\\pipe\\chrome.nacl.*");
+  if (result != sandbox::SBOX_ALL_OK)
+    return nullptr;
 
-  policy->AddRule(sandbox::TargetPolicy::SUBSYS_NAMED_PIPES,
-                  sandbox::TargetPolicy::NAMEDPIPES_ALLOW_ANY,
-                  L"\\\\.\\pipe\\chrome.sync.*");
+  result = config->AddRule(sandbox::SubSystem::kNamedPipes,
+                           sandbox::Semantics::kNamedPipesAllowAny,
+                           L"\\\\.\\pipe\\chrome.sync.*");
+  if (result != sandbox::SBOX_ALL_OK)
+    return nullptr;
 
+  sandbox::BrokerServicesBase::FreezeTargetConfigForTesting(
+      policy->GetConfig());
   return policy;
 }
 
@@ -53,7 +64,7 @@ struct FakeCountedParameterSetBase {
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   FakeCountedParameterSetBase params;
 
-  static scoped_refptr<sandbox::PolicyBase> policy = InitPolicy();
+  static std::unique_ptr<sandbox::PolicyBase> policy = InitPolicy();
 
   if (size < 20)
     return 0;

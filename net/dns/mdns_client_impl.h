@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,8 +16,9 @@
 #include "base/cancelable_callback.h"
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
@@ -44,13 +45,13 @@ class MDnsSocketFactoryImpl : public MDnsSocketFactory {
   MDnsSocketFactoryImpl(const MDnsSocketFactoryImpl&) = delete;
   MDnsSocketFactoryImpl& operator=(const MDnsSocketFactoryImpl&) = delete;
 
-  ~MDnsSocketFactoryImpl() override {}
+  ~MDnsSocketFactoryImpl() override = default;
 
   void CreateSockets(
       std::vector<std::unique_ptr<DatagramServerSocket>>* sockets) override;
 
  private:
-  NetLog* const net_log_;
+  const raw_ptr<NetLog> net_log_;
 };
 
 // A connection to the network for multicast DNS clients. It reads data into
@@ -62,7 +63,7 @@ class NET_EXPORT_PRIVATE MDnsConnection {
     // Handle an mDNS packet buffered in |response| with a size of |bytes_read|.
     virtual void HandlePacket(DnsResponse* response, int bytes_read) = 0;
     virtual void OnConnectionError(int error) = 0;
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   explicit MDnsConnection(MDnsConnection::Delegate* delegate);
@@ -98,11 +99,11 @@ class NET_EXPORT_PRIVATE MDnsConnection {
     void SendDone(int rv);
 
     std::unique_ptr<DatagramServerSocket> socket_;
-    MDnsConnection* connection_;
+    raw_ptr<MDnsConnection> connection_;
     IPEndPoint recv_addr_;
     DnsResponse response_;
     IPEndPoint multicast_addr_;
-    bool send_in_progress_;
+    bool send_in_progress_ = false;
     base::queue<std::pair<scoped_refptr<IOBuffer>, unsigned>> send_queue_;
   };
 
@@ -117,7 +118,7 @@ class NET_EXPORT_PRIVATE MDnsConnection {
   // Only socket handlers which successfully bound and started are kept.
   std::vector<std::unique_ptr<SocketHandler>> socket_handlers_;
 
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   base::WeakPtrFactory<MDnsConnection> weak_ptr_factory_{this};
 };
@@ -204,8 +205,8 @@ class NET_EXPORT_PRIVATE MDnsClientImpl : public MDnsClient {
 
     MDnsCache cache_;
 
-    base::Clock* clock_;
-    base::OneShotTimer* cleanup_timer_;
+    raw_ptr<base::Clock> clock_;
+    raw_ptr<base::OneShotTimer> cleanup_timer_;
     base::Time scheduled_cleanup_;
 
     std::unique_ptr<MDnsConnection> connection_;
@@ -241,7 +242,7 @@ class NET_EXPORT_PRIVATE MDnsClientImpl : public MDnsClient {
   Core* core() { return core_.get(); }
 
  private:
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
   std::unique_ptr<base::OneShotTimer> cleanup_timer_;
 
   std::unique_ptr<Core> core_;
@@ -286,14 +287,14 @@ class MDnsListenerImpl : public MDnsListener,
 
   uint16_t rrtype_;
   std::string name_;
-  base::Clock* clock_;
-  MDnsClientImpl* client_;
-  MDnsListener::Delegate* delegate_;
+  raw_ptr<base::Clock> clock_;
+  raw_ptr<MDnsClientImpl> client_;
+  raw_ptr<MDnsListener::Delegate> delegate_;
 
   base::Time last_update_;
   uint32_t ttl_;
-  bool started_;
-  bool active_refresh_;
+  bool started_ = false;
+  bool active_refresh_ = false;
 
   base::CancelableRepeatingClosure next_refresh_;
 };
@@ -357,9 +358,9 @@ class MDnsTransactionImpl : public base::SupportsWeakPtr<MDnsTransactionImpl>,
   std::unique_ptr<MDnsListener> listener_;
   base::CancelableOnceCallback<void()> timeout_;
 
-  MDnsClientImpl* client_;
+  raw_ptr<MDnsClientImpl> client_;
 
-  bool started_;
+  bool started_ = false;
   int flags_;
 };
 

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -354,9 +354,10 @@ TEST_F(FileSystemProviderBufferingFileStreamReaderTest, Read_WithError) {
 }
 
 TEST_F(FileSystemProviderBufferingFileStreamReaderTest, GetLength) {
-  BufferingFileStreamReader reader(std::unique_ptr<storage::FileStreamReader>(
-                                       new FakeFileStreamReader(NULL, net::OK)),
-                                   kPreloadingBufferLength, kFileSize);
+  BufferingFileStreamReader reader(
+      std::unique_ptr<storage::FileStreamReader>(
+          new FakeFileStreamReader(nullptr, net::OK)),
+      kPreloadingBufferLength, kFileSize);
 
   std::vector<int64_t> get_length_log;
   const int64_t result =

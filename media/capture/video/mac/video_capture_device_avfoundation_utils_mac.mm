@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -169,7 +169,7 @@ std::string MacFourCCToString(OSType fourcc) {
   return arr;
 }
 
-void ExtractBaseAddressAndLength(char** base_address,
+bool ExtractBaseAddressAndLength(char** base_address,
                                  size_t* length,
                                  CMSampleBufferRef sample_buffer) {
   CMBlockBufferRef block_buffer = CMSampleBufferGetDataBuffer(sample_buffer);
@@ -182,6 +182,7 @@ void ExtractBaseAddressAndLength(char** base_address,
   // Expect the (M)JPEG data to be available as a contiguous reference, i.e.
   // not covered by multiple memory blocks.
   DCHECK_EQ(length_at_offset, *length);
+  return status == noErr && length_at_offset == *length;
 }
 
 base::scoped_nsobject<NSDictionary> GetVideoCaptureDeviceNames() {

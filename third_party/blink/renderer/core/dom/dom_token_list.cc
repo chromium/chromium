@@ -34,7 +34,7 @@ namespace blink {
 namespace {
 
 bool CheckEmptyToken(const String& token, ExceptionState& exception_state) {
-  if (!token.IsEmpty())
+  if (!token.empty())
     return true;
   exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
                                     "The token provided must not be empty.");

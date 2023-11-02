@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2016 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2016 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -12,7 +14,7 @@
         android:id="@+id/action_bar_bg"
         android:layout_width="match_parent"
         android:layout_height="@dimen/selectable_list_toolbar_height"
-        android:background="@color/toolbar_background_primary" />
+        android:background="@macro/toolbar_background_primary" />
 
     <ViewStub
         android:id="@+id/action_bar_stub"

@@ -1,8 +1,14 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chromecast/common/cors_exempt_headers.h"
+
+#include <string>
+
+#include "base/containers/flat_set.h"
+#include "base/no_destructor.h"
+#include "base/stl_util.h"
 
 namespace chromecast {
 namespace {
@@ -35,6 +41,13 @@ const char* kExemptHeaders[] = {
 
 base::span<const char*> GetLegacyCorsExemptHeaders() {
   return base::span<const char*>(kExemptHeaders);
+}
+
+bool IsCorsExemptHeader(base::StringPiece header) {
+  static const base::NoDestructor<base::flat_set<std::string>>
+      exempt_header_set(kExemptHeaders,
+                        kExemptHeaders + std::size(kExemptHeaders));
+  return exempt_header_set->find(header) != exempt_header_set->end();
 }
 
 }  // namespace chromecast

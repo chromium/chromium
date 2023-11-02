@@ -1,0 +1,42 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(is_chromeos_ash)
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "system_extensions_api_browsertest.cc",
+    "system_extensions_api_browsertest.h",
+  ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    ":system_extensions_test_runner",
+    ":system_extensions_test_runner_js_data_deps",
+    "//chrome/browser/ash/system_extensions",
+    "//chrome/test:test_support",
+    "//mojo/public/js:bindings_lite",
+  ]
+
+  data = [
+    "$root_gen_dir/mojo/public/js/mojo_bindings_lite.js",
+    "//third_party/blink/web_tests/resources/testharness.js",
+    "//third_party/blink/web_tests/resources/testharness-helpers.js",
+    "//chrome/browser/ash/system_extensions/api/test_support/testharnessreport.js",
+    "//chrome/browser/ash/system_extensions/api/test_support/test_support.js",
+  ]
+}
+
+mojom("system_extensions_test_runner") {
+  testonly = true
+  sources = [ "system_extensions_test_runner.test-mojom" ]
+
+  public_deps = [ "//mojo/public/mojom/base" ]
+}

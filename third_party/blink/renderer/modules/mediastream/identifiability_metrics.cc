@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -208,7 +208,6 @@ void Visit(IdentifiableTokenBuilder& builder,
   Visit(builder, set.getAutoGainControlOr(nullptr));
   Visit(builder, set.getLatencyOr(nullptr));
   Visit(builder, set.getChannelCountOr(nullptr));
-  Visit(builder, set.getVideoKindOr(nullptr));
   Visit(builder, set.getWhiteBalanceModeOr(nullptr));
   Visit(builder, set.getExposureModeOr(nullptr));
   Visit(builder, set.getFocusModeOr(nullptr));
@@ -226,6 +225,7 @@ void Visit(IdentifiableTokenBuilder& builder,
   Visit(builder, set.getTiltOr(nullptr));
   Visit(builder, set.getZoomOr(nullptr));
   Visit(builder, set.getTorchOr(nullptr));
+  Visit(builder, set.getBackgroundBlurOr(nullptr));
 }
 
 void Visit(IdentifiableTokenBuilder& builder,
@@ -274,7 +274,7 @@ void RecordIdentifiabilityMetric(const IdentifiableSurface& surface,
                                  ExecutionContext* context,
                                  IdentifiableToken token) {
   if (surface.IsValid() && context &&
-      IdentifiabilityStudySettings::Get()->ShouldSample(surface)) {
+      IdentifiabilityStudySettings::Get()->ShouldSampleSurface(surface)) {
     IdentifiabilityMetricBuilder(context->UkmSourceID())
         .Add(surface, token)
         .Record(context->UkmRecorder());

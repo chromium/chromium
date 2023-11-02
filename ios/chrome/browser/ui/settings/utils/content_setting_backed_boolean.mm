@@ -1,14 +1,14 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/utils/content_setting_backed_boolean.h"
 
-#include "base/scoped_observation.h"
-#include "components/content_settings/core/browser/content_settings_observer.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/content_settings/core/common/content_settings.h"
-#include "components/content_settings/core/common/content_settings_types.h"
+#import "base/scoped_observation.h"
+#import "components/content_settings/core/browser/content_settings_observer.h"
+#import "components/content_settings/core/browser/host_content_settings_map.h"
+#import "components/content_settings/core/common/content_settings.h"
+#import "components/content_settings/core/common/content_settings_types.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -16,7 +16,7 @@
 
 @interface ContentSettingBackedBoolean ()
 
-// The ID of the setting in |settingsMap|.
+// The ID of the setting in `settingsMap`.
 @property(nonatomic, readonly) ContentSettingsType settingID;
 
 // Whether the boolean value reflects the state of the preference that backs it,
@@ -33,7 +33,7 @@ namespace {
 
 typedef base::ScopedObservation<HostContentSettingsMap,
                                 content_settings::Observer>
-    ContentSettingsObseration;
+    ContentSettingsObservation;
 
 class ContentSettingsObserverBridge : public content_settings::Observer {
  public:
@@ -81,7 +81,7 @@ void ContentSettingsObserverBridge::OnContentSettingChanged(
   ContentSettingsType _settingID;
   scoped_refptr<HostContentSettingsMap> _settingsMap;
   std::unique_ptr<ContentSettingsObserverBridge> _adaptor;
-  std::unique_ptr<ContentSettingsObseration> _content_settings_observer;
+  std::unique_ptr<ContentSettingsObservation> _content_settings_observer;
 }
 
 @synthesize settingID = _settingID;
@@ -89,35 +89,45 @@ void ContentSettingsObserverBridge::OnContentSettingChanged(
 @synthesize inverted = _inverted;
 @synthesize isModifyingContentSetting = _isModifyingContentSetting;
 
-- (id)initWithHostContentSettingsMap:(HostContentSettingsMap*)settingsMap
-                           settingID:(ContentSettingsType)settingID
-                            inverted:(BOOL)inverted {
+- (instancetype)initWithHostContentSettingsMap:
+                    (HostContentSettingsMap*)settingsMap
+                                     settingID:(ContentSettingsType)settingID
+                                      inverted:(BOOL)inverted {
   self = [super init];
   if (self) {
+    DCHECK(settingsMap);
     _settingID = settingID;
     _settingsMap = settingsMap;
     _inverted = inverted;
     // Listen for changes to the content setting.
     _adaptor.reset(new ContentSettingsObserverBridge(self));
     _content_settings_observer.reset(
-        new ContentSettingsObseration(_adaptor.get()));
-    _content_settings_observer->Observe(settingsMap);
+        new ContentSettingsObservation(_adaptor.get()));
+    _content_settings_observer->Observe(_settingsMap.get());
   }
   return self;
 }
 
 - (BOOL)value {
+  DCHECK(_settingsMap) << "-value must not be called after -stop";
   ContentSetting setting =
       _settingsMap->GetDefaultContentSetting(_settingID, NULL);
   return self.inverted ^ (setting == CONTENT_SETTING_ALLOW);
 }
 
 - (void)setValue:(BOOL)value {
+  DCHECK(_settingsMap) << "-setValue: must not be called after -stop";
   ContentSetting setting =
       (self.inverted ^ value) ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK;
   self.isModifyingContentSetting = YES;
   _settingsMap->SetDefaultContentSetting(_settingID, setting);
   self.isModifyingContentSetting = NO;
+}
+
+- (void)stop {
+  _content_settings_observer.reset();
+  _adaptor.reset();
+  _settingsMap = nullptr;
 }
 
 @end

@@ -1,4 +1,4 @@
-# Copyright (c) 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Pseudolocale translations for chrome."""
@@ -59,7 +59,7 @@ ACCENTED_STRINGS = {
 }
 
 NUMBERS = [
-    'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine',
+    '- one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine',
     'ten'
 ]
 PLACEHOLDER_STRING = '{PLACEHOLDER_VARIABLE}'
@@ -203,7 +203,8 @@ class Plural(Node):
   """Represents a set of options for plurals.
   eg. {VARIABLE, plural, =1 {singular} other {plural}}
   """
-  pattern = lazy_re.compile(r'^{[A-Za-z0-9_]+,\s*plural,\s*(offset:\d+\s*)?', re.S)
+  pattern = lazy_re.compile(r'^{[A-Za-z0-9_]+,\s*plural,\s*(offset:\d+\s*)?',
+                            re.S)
   after = '}'
 
   @classmethod

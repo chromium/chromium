@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <windows.h>
 #include <wrl/client.h>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_image.h"
 
@@ -46,6 +47,7 @@ class GL_EXPORT GLImageD3D : public GLImage {
 
   // GLImage implementation
   Type GetType() const override;
+  void* GetEGLImage() const override;
   BindOrCopy ShouldBindOrCopy() override;
   gfx::Size GetSize() override;
   unsigned GetInternalFormat() override;
@@ -70,8 +72,6 @@ class GL_EXPORT GLImageD3D : public GLImage {
   size_t array_slice() const { return array_slice_; }
   size_t plane_index() const { return plane_index_; }
 
-  void* egl_image() const { return egl_image_; }
-
  protected:
   const gfx::Size size_;
   const unsigned internal_format_;  // GLenum
@@ -86,7 +86,7 @@ class GL_EXPORT GLImageD3D : public GLImage {
  private:
   ~GLImageD3D() override;
 
-  void* egl_image_ = nullptr;  // EGLImageKHR
+  raw_ptr<void> egl_image_ = nullptr;  // EGLImageKHR
 };
 
 }  // namespace gl

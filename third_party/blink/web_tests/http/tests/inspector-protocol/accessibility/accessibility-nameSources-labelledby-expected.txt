@@ -1,6 +1,10 @@
 Tests name sources when used with aria-labelledby.
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 88
+    }
     domNode : div#div
     ignored : false
     name : {
@@ -32,6 +36,10 @@ Tests name sources when used with aria-labelledby.
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : button#self
     ignored : false
     name : {
@@ -89,6 +97,10 @@ Tests name sources when used with aria-labelledby.
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : button#labelledby
     ignored : false
     name : {
@@ -177,6 +189,10 @@ Tests name sources when used with aria-labelledby.
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : button#labelledbySelf
     ignored : false
     name : {
@@ -265,6 +281,10 @@ Tests name sources when used with aria-labelledby.
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : button#labelledby3
     ignored : false
     name : {
@@ -363,6 +383,10 @@ Tests name sources when used with aria-labelledby.
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : button#labelledby4
     ignored : false
     name : {
@@ -451,6 +475,10 @@ Tests name sources when used with aria-labelledby.
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : button#labelledby5
     ignored : false
     name : {
@@ -513,6 +541,10 @@ Tests name sources when used with aria-labelledby.
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : button#labelledby6
     ignored : false
     name : {
@@ -601,6 +633,10 @@ Tests name sources when used with aria-labelledby.
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : button#labelledby7
     ignored : false
     name : {
@@ -689,6 +725,10 @@ Tests name sources when used with aria-labelledby.
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : button#labelledby8
     ignored : false
     name : {
@@ -777,6 +817,10 @@ Tests name sources when used with aria-labelledby.
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : button#labelOnly
     ignored : false
     name : {
@@ -844,6 +888,10 @@ Tests name sources when used with aria-labelledby.
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : button#emptyLabel1
     ignored : false
     name : {
@@ -901,6 +949,10 @@ Tests name sources when used with aria-labelledby.
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : button#emptyLabel2
     ignored : false
     name : {
@@ -958,6 +1010,10 @@ Tests name sources when used with aria-labelledby.
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : button#labelledby9
     ignored : false
     name : {
@@ -1054,6 +1110,10 @@ Tests name sources when used with aria-labelledby.
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : button#labelledby10
     ignored : false
     name : {
@@ -1142,6 +1202,10 @@ Tests name sources when used with aria-labelledby.
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : button#labelledby11
     ignored : false
     name : {
@@ -1230,6 +1294,10 @@ Tests name sources when used with aria-labelledby.
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : button#labelledby12
     ignored : false
     name : {
@@ -1318,6 +1386,10 @@ Tests name sources when used with aria-labelledby.
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 170
+    }
     domNode : input#input1
     ignored : false
     name : {

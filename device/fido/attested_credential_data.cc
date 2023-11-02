@@ -1,13 +1,14 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "device/fido/attested_credential_data.h"
 
-#include <algorithm>
 #include <utility>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/safe_math.h"
+#include "base/ranges/algorithm.h"
 #include "components/cbor/reader.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/cbor_extract.h"
@@ -65,8 +66,11 @@ AttestedCredentialData::ConsumeFromCtapResponse(
   const cbor::Value::MapValue& public_key_map = public_key_cbor->GetMap();
 
   struct COSEKey {
-    const int64_t* alg;
-    const int64_t* kty;
+    // Both fields below are not a raw_ptr<int64_t>, because ELEMENT() treats
+    // the raw_ptr<T> as a void*, skipping AddRef() call and causing a
+    // ref-counting mismatch.
+    RAW_PTR_EXCLUSION const int64_t* alg;
+    RAW_PTR_EXCLUSION const int64_t* kty;
   } cose_key;
 
   static constexpr cbor_extract::StepOrByte<COSEKey> kSteps[] = {
@@ -216,12 +220,15 @@ AttestedCredentialData& AttestedCredentialData::operator=(
 AttestedCredentialData::~AttestedCredentialData() = default;
 
 bool AttestedCredentialData::IsAaguidZero() const {
-  return std::all_of(aaguid_.begin(), aaguid_.end(),
-                     [](uint8_t v) { return v == 0; });
+  return base::ranges::all_of(aaguid_, [](uint8_t v) { return v == 0; });
 }
 
-void AttestedCredentialData::DeleteAaguid() {
+bool AttestedCredentialData::DeleteAaguid() {
+  if (IsAaguidZero()) {
+    return false;
+  }
   std::fill(aaguid_.begin(), aaguid_.end(), 0);
+  return true;
 }
 
 std::vector<uint8_t> AttestedCredentialData::SerializeAsBytes() const {

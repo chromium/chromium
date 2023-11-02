@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ import java.lang.annotation.RetentionPolicy;
         CookieChangeCause.OVERWRITE, CookieChangeCause.EXPIRED, CookieChangeCause.EVICTED,
         CookieChangeCause.EXPIRED_OVERWRITE})
 @Retention(RetentionPolicy.SOURCE)
-public @interface CookieChangeCause {
+@interface CookieChangeCause {
     /** The cookie was inserted. */
     int INSERTED = org.chromium.weblayer_private.interfaces.CookieChangeCause.INSERTED;
     /** The cookie was changed directly by a consumer's action. */

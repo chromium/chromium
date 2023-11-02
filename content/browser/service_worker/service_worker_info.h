@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,7 +36,7 @@ struct CONTENT_EXPORT ServiceWorkerVersionInfo
   ServiceWorkerVersionInfo(
       EmbeddedWorkerStatus running_status,
       ServiceWorkerVersion::Status status,
-      ServiceWorkerVersion::FetchHandlerExistence fetch_handler_existence,
+      absl::optional<ServiceWorkerVersion::FetchHandlerType> fetch_handler_type,
       const GURL& script_url,
       const GURL& scope,
       const blink::StorageKey& storage_key,
@@ -45,13 +45,14 @@ struct CONTENT_EXPORT ServiceWorkerVersionInfo
       int process_id,
       int thread_id,
       int devtools_agent_route_id,
-      ukm::SourceId ukm_source_id);
+      ukm::SourceId ukm_source_id,
+      blink::mojom::AncestorFrameType ancestor_frame_type);
   ServiceWorkerVersionInfo(const ServiceWorkerVersionInfo& other);
   ~ServiceWorkerVersionInfo() override;
 
   EmbeddedWorkerStatus running_status;
   ServiceWorkerVersion::Status status;
-  ServiceWorkerVersion::FetchHandlerExistence fetch_handler_existence;
+  absl::optional<ServiceWorkerVersion::FetchHandlerType> fetch_handler_type;
   blink::mojom::NavigationPreloadState navigation_preload_state;
   GURL script_url;
   int thread_id;

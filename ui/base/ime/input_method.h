@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,23 +7,20 @@
 
 #include <stdint.h>
 
-
 #include "build/build_config.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
+#include "ui/base/ime/virtual_keyboard_controller.h"
 #include "ui/events/event_dispatcher.h"
 #include "ui/events/platform_event.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ui {
 
-namespace internal {
-class InputMethodDelegate;
-}  // namespace internal
-
 class VirtualKeyboardController;
 class InputMethodObserver;
 class KeyEvent;
+class ImeKeyEventDispatcher;
 class TextInputClient;
 
 // An interface implemented by an object that encapsulates a native input method
@@ -36,10 +33,10 @@ class TextInputClient;
 // - The input method should handle the key event either of the following ways:
 //   1) Send the original key down event to the focused window, which is e.g.
 //      a NativeWidgetAura (NWA) or a RenderWidgetHostViewAura (RWHVA), using
-//      internal::InputMethodDelegate::DispatchKeyEventPostIME API, then send
-//      a Char event using TextInputClient::InsertChar API to a text input
-//      client, which is, again, e.g. NWA or RWHVA, and then send the original
-//      key up event to the same window.
+//      ImeKeyEventDispatcher API, then send a Char event using
+//      TextInputClient::InsertChar API to a text input client, which is, again,
+//      e.g. NWA or RWHVA, and then send the original key up event to the same
+//      window.
 //   2) Send VKEY_PROCESSKEY event to the window using the DispatchKeyEvent API,
 //      then update IME status (e.g. composition text) using TextInputClient,
 //      and then send the original key up event to the window.
@@ -50,25 +47,29 @@ class TextInputClient;
 // ui::InputMethod and owns it.
 class InputMethod {
  public:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   typedef LRESULT NativeEventResult;
 #else
   typedef int32_t NativeEventResult;
 #endif
 
-  virtual ~InputMethod() {}
+  virtual ~InputMethod() = default;
 
-  // Sets the delegate used by this InputMethod instance. It should only be
-  // called by an object which manages the whole UI.
-  virtual void SetDelegate(internal::InputMethodDelegate* delegate) = 0;
+  // Sets the key event dispatcher used by this InputMethod instance. It should
+  // only be called by an object which manages the whole UI.
+  virtual void SetImeKeyEventDispatcher(
+      ImeKeyEventDispatcher* ime_key_event_dispatcher) = 0;
 
   // Called when the top-level system window gets keyboard focus.
   virtual void OnFocus() = 0;
 
+  // Called when there is a touch within a text field that has focus.
+  virtual void OnTouch(ui::EventPointerType pointerType) = 0;
+
   // Called when the top-level system window loses keyboard focus.
   virtual void OnBlur() = 0;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Called when the focused window receives native IME messages that are not
   // translated into other predefined event callbacks. Currently this method is
   // used only for IME functionalities specific to Windows.
@@ -106,15 +107,15 @@ class InputMethod {
   // dispatched back to the caller via
   // ui::InputMethodDelegate::DispatchKeyEventPostIME(), once it's processed by
   // the input method. It should only be called by a message dispatcher.
-  virtual ui::EventDispatchDetails DispatchKeyEvent(ui::KeyEvent* event)
-      WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual ui::EventDispatchDetails DispatchKeyEvent(
+      ui::KeyEvent* event) = 0;
 
   // Called by the focused client whenever its text input type is changed.
   // Before calling this method, the focused client must confirm or clear
   // existing composition text and call InputMethod::CancelComposition() when
   // necessary. Otherwise unexpected behavior may happen. This method has no
   // effect if the client is not the focused client.
-  virtual void OnTextInputTypeChanged(const TextInputClient* client) = 0;
+  virtual void OnTextInputTypeChanged(TextInputClient* client) = 0;
 
   // Called by the focused client whenever its caret bounds is changed.
   // This method has no effect if the client is not the focused client.
@@ -138,20 +139,22 @@ class InputMethod {
   // of IME popups is not supported.
   virtual bool IsCandidatePopupOpen() const = 0;
 
-  // Displays an on screen keyboard if enabled.
-  virtual void ShowVirtualKeyboardIfEnabled() = 0;
-
+  // Sets visibility of the virtual keyboard, if enabled already.
   virtual void SetVirtualKeyboardVisibilityIfEnabled(bool should_show) = 0;
 
   // Management of the observer list.
   virtual void AddObserver(InputMethodObserver* observer) = 0;
   virtual void RemoveObserver(InputMethodObserver* observer) = 0;
 
-  // Set screen bounds of a on-screen keyboard.
-  virtual void SetOnScreenKeyboardBounds(const gfx::Rect& new_bounds) {}
+  // Set screen bounds of the virtual keyboard.
+  virtual void SetVirtualKeyboardBounds(const gfx::Rect& new_bounds) {}
 
-  // Return the keyboard controller; used only on Windows.
+  // Return the keyboard controller.
   virtual VirtualKeyboardController* GetVirtualKeyboardController() = 0;
+
+  // Sets a keyboard controller for testing.
+  virtual void SetVirtualKeyboardControllerForTesting(
+      std::unique_ptr<VirtualKeyboardController> controller) {}
 };
 
 }  // namespace ui

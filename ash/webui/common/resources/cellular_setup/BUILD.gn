@@ -1,0 +1,230 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+assert(is_chromeos_ash, "CellularSetup UI is Chrome OS only.")
+
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+  closure_flags = default_closure_args + mojom_js_args
+
+  deps = [
+    ":activation_code_page",
+    ":activation_verification_page",
+    ":base_page",
+    ":button_bar",
+    ":cellular_eid_dialog",
+    ":cellular_setup",
+    ":cellular_setup_delegate",
+    ":cellular_types",
+    ":confirmation_code_page",
+    ":esim_flow_ui",
+    ":esim_manager_listener_behavior",
+    ":esim_manager_utils",
+    ":final_page",
+    ":mojo_interface_provider",
+    ":profile_discovery_list_item",
+    ":profile_discovery_list_page",
+    ":provisioning_page",
+    ":psim_flow_ui",
+    ":setup_loading_page",
+    ":subflow_behavior",
+    ":webview_post_util",
+  ]
+}
+
+js_library("base_page") {
+  deps = [
+    "//ash/webui/common/resources:i18n_behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("final_page") {
+  deps = [
+    ":base_page",
+    ":cellular_setup_delegate",
+    "//ash/webui/common/resources:i18n_behavior",
+  ]
+}
+
+js_library("activation_verification_page") {
+  deps = [
+    ":base_page",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_lottie/cr_lottie_externs.js" ]
+}
+
+js_library("activation_code_page") {
+  deps = [
+    ":cellular_setup_delegate",
+    ":subflow_behavior",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("confirmation_code_page") {
+  deps = [
+    "//ash/webui/common/resources:i18n_behavior",
+    "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
+  ]
+}
+
+js_library("profile_discovery_list_item") {
+  deps = [
+    "//ash/webui/common/resources:i18n_behavior",
+    "//chromeos/ash/services/cellular_setup/public/mojom:mojom_webui_js",
+    "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
+  ]
+}
+
+js_library("profile_discovery_list_page") {
+  deps = [
+    "//ash/webui/common/resources:i18n_behavior",
+    "//chromeos/ash/services/cellular_setup/public/mojom:mojom_webui_js",
+    "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
+  ]
+}
+
+js_library("mojo_interface_provider") {
+  deps = [
+    "//chromeos/ash/services/cellular_setup/public/mojom:mojom_webui_js",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+js_library("esim_manager_utils") {
+  deps = [
+    ":mojo_interface_provider",
+    "//chromeos/ash/services/cellular_setup/public/mojom:mojom_webui_js",
+  ]
+}
+
+js_library("esim_manager_listener_behavior") {
+  deps = [
+    ":mojo_interface_provider",
+    "//chromeos/ash/services/cellular_setup/public/mojom:mojom_webui_js",
+  ]
+}
+
+js_library("webview_post_util") {
+  deps = []
+  externs_list = [
+    "$externs_path/chrome_extensions.js",
+    "$externs_path/webview_tag.js",
+  ]
+}
+
+js_library("setup_loading_page") {
+  deps = [
+    ":base_page",
+    ":cellular_setup_delegate",
+    "//ui/webui/resources/js:assert",
+  ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_lottie/cr_lottie_externs.js" ]
+}
+
+js_library("provisioning_page") {
+  deps = [
+    ":base_page",
+    ":cellular_setup_delegate",
+    ":webview_post_util",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//chromeos/ash/services/cellular_setup/public/mojom:mojom_webui_js",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert",
+  ]
+  externs_list = [
+    "$externs_path/chrome_extensions.js",
+    "$externs_path/webview_tag.js",
+  ]
+}
+
+js_library("button_bar") {
+  deps = [
+    ":cellular_types",
+    "//ash/webui/common/resources:focus_without_ink_js",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("cellular_types") {
+}
+
+js_library("cellular_setup_delegate") {
+}
+
+js_library("subflow_behavior") {
+  deps = [ ":cellular_types" ]
+}
+
+js_library("psim_flow_ui") {
+  deps = [
+    ":cellular_setup_delegate",
+    ":cellular_types",
+    ":final_page",
+    ":mojo_interface_provider",
+    ":provisioning_page",
+    ":setup_loading_page",
+    ":subflow_behavior",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//chromeos/ash/services/cellular_setup/public/mojom:mojom_webui_js",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert",
+  ]
+  externs_list = [ "$externs_path/metrics_private.js" ]
+}
+
+js_library("esim_flow_ui") {
+  deps = [
+    ":activation_code_page",
+    ":activation_verification_page",
+    ":cellular_setup_delegate",
+    ":cellular_types",
+    ":confirmation_code_page",
+    ":esim_manager_utils",
+    ":final_page",
+    ":mojo_interface_provider",
+    ":profile_discovery_list_item",
+    ":profile_discovery_list_page",
+    ":subflow_behavior",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/common/resources/network:cellular_utils",
+    "//ash/webui/common/resources/network:mojo_interface_provider",
+    "//ash/webui/common/resources/network:network_listener_behavior",
+    "//chromeos/ash/services/cellular_setup/public/mojom:mojom_webui_js",
+    "//chromeos/services/network_config/public/mojom:mojom_webui_js",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert",
+  ]
+  externs_list = [ "$externs_path/metrics_private.js" ]
+}
+
+js_library("cellular_eid_dialog") {
+  deps = [
+    "//ash/webui/common/resources:i18n_behavior",
+    "//chromeos/ash/services/cellular_setup/public/mojom:mojom_webui_js",
+  ]
+}
+
+js_library("cellular_setup") {
+  deps = [
+    ":button_bar",
+    ":cellular_setup_delegate",
+    ":cellular_types",
+    ":esim_flow_ui",
+    ":psim_flow_ui",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/common/resources/network:cellular_utils",
+    "//ash/webui/common/resources/network:mojo_interface_provider",
+  ]
+}

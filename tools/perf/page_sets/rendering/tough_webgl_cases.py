@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -174,6 +174,7 @@ class MicrogameFPS(UnityPage):
 
 class LostCrypt(UnityPage):
   BASE_NAME = 'lost_crypt'
+  SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
   # pylint: disable=line-too-long
   URL = 'http://clb.confined.space/emunittest/LostCrypt_20191220_131436_wasm_release/index.html?playback'
 

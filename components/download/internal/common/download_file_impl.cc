@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
-#include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -30,10 +29,10 @@
 #include "mojo/public/c/system/types.h"
 #include "net/base/io_buffer.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/content_uri_utils.h"
 #include "components/download/internal/common/android/download_collection_bridge.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace download {
 
@@ -337,6 +336,13 @@ bool DownloadFileImpl::CalculateBytesToWrite(SourceStream* source_stream,
 
 void DownloadFileImpl::RenameAndUniquify(const base::FilePath& full_path,
                                          RenameCompletionCallback callback) {
+#if BUILDFLAG(IS_ANDROID)
+  if (full_path.IsContentUri()) {
+    DownloadInterruptReason reason = file_.Rename(full_path);
+    OnRenameComplete(full_path, std::move(callback), reason);
+    return;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
   std::unique_ptr<RenameParameters> parameters(
       new RenameParameters(UNIQUIFY, full_path, std::move(callback)));
   RenameWithRetryInternal(std::move(parameters));
@@ -358,41 +364,12 @@ void DownloadFileImpl::RenameAndAnnotate(
   RenameWithRetryInternal(std::move(parameters));
 }
 
-#if defined(OS_ANDROID)
-void DownloadFileImpl::RenameToIntermediateUri(
-    const GURL& original_url,
-    const GURL& referrer_url,
-    const base::FilePath& file_name,
-    const std::string& mime_type,
-    const base::FilePath& current_path,
-    RenameCompletionCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Create new content URI if |current_path| is not content URI
-  // or if it is already deleted.
-  base::FilePath content_path =
-      current_path.IsContentUri() && base::ContentUriExists(current_path)
-          ? current_path
-          : DownloadCollectionBridge::CreateIntermediateUriForPublish(
-                original_url, referrer_url, file_name, mime_type);
-  DownloadInterruptReason reason = DOWNLOAD_INTERRUPT_REASON_FILE_FAILED;
-  if (!content_path.empty()) {
-    reason = file_.Rename(content_path);
-    display_name_ = DownloadCollectionBridge::GetDisplayName(content_path);
-  }
-  if (display_name_.empty())
-    display_name_ = file_name;
-  OnRenameComplete(content_path, std::move(callback), reason);
-}
-
+#if BUILDFLAG(IS_ANDROID)
 void DownloadFileImpl::PublishDownload(RenameCompletionCallback callback) {
   DownloadInterruptReason reason = file_.PublishDownload();
   OnRenameComplete(file_.full_path(), std::move(callback), reason);
 }
-
-base::FilePath DownloadFileImpl::GetDisplayName() {
-  return display_name_;
-}
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 base::TimeDelta DownloadFileImpl::GetRetryDelayForFailedRename(
     int attempt_number) {

@@ -11,6 +11,14 @@
         position: absolute;
       }
 
+      @media (forced-colors: active) {
+        :host dialog {
+          /* Use border instead of box-shadow (which does not work) in Windows
+             HCM. */
+          border: var(--cr-border-hcm);
+        }
+      }
+
       :host dialog::backdrop {
         background-color: transparent;
       }
@@ -48,6 +56,14 @@
         outline: none;
       }
 
+      @media (forced-colors: active) {
+        :host ::slotted(.dropdown-item:focus) {
+          /* Use outline instead of background-color (which does not work) in
+             Windows HCM. */
+          outline: var(--cr-focus-outline-hcm);
+        }
+      }
+
       .item-wrapper {
         background: var(--cr-menu-background-sheen);
         outline: none;
@@ -56,7 +72,8 @@
     </style>
     <dialog id="dialog" part="dialog" on-close="onNativeDialogClose_"
         role="application" aria-roledescription$="[[roleDescription]]">
-      <div id="wrapper" class="item-wrapper" role="menu" tabindex="-1">
+      <div id="wrapper" class="item-wrapper" role="menu" tabindex="-1"
+          aria-label$="[[accessibilityLabel]]">
         <slot id="contentNode"></slot>
       </div>
     </dialog>

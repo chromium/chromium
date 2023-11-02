@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -85,7 +85,7 @@ class PopupCreatedObserver : public WebContentsDelegate {
                       std::unique_ptr<WebContents> new_contents,
                       const GURL& target_url,
                       WindowOpenDisposition disposition,
-                      const gfx::Rect& initial_rect,
+                      const blink::mojom::WindowFeatures& window_features,
                       bool user_gesture,
                       bool* was_blocked) override {
     callback_.Run(new_contents.get());
@@ -268,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(DocumentUserDataTest,
   // TODO(sreejakshetty): Investigate why the data is being deleted after crash
   // when BackForwardCache is enabled.
   DisableBackForwardCacheForTesting(shell()->web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -300,8 +300,8 @@ IN_PROC_BROWSER_TEST_F(DocumentUserDataTest,
   RenderFrameHostImpl* pending_rfh =
       root->render_manager()->speculative_frame_host();
   NavigationRequest* navigation_request = root->navigation_request();
-  EXPECT_EQ(navigation_request->associated_site_instance_type(),
-            NavigationRequest::AssociatedSiteInstanceType::SPECULATIVE);
+  EXPECT_EQ(navigation_request->associated_rfh_type(),
+            NavigationRequest::AssociatedRenderFrameHostType::SPECULATIVE);
   EXPECT_TRUE(pending_rfh);
 
   // 3) Get the DocumentUserData associated with the speculative
@@ -328,7 +328,8 @@ IN_PROC_BROWSER_TEST_F(DocumentUserDataTest,
 
   // 6) Let the navigation finish and make sure it has succeeded.
   manager.WaitForNavigationFinished();
-  EXPECT_EQ(url_b, web_contents()->GetMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(url_b,
+            web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
 
   // 7) Data shouldn't be cleared in this case, as state
   // |committed_speculative_rfh_before_navigation_commit_| is true during the
@@ -378,8 +379,8 @@ IN_PROC_BROWSER_TEST_F(DocumentUserDataTest,
   RenderFrameHostImpl* current_rfh =
       root->render_manager()->current_frame_host();
   NavigationRequest* navigation_request = root->navigation_request();
-  EXPECT_EQ(navigation_request->associated_site_instance_type(),
-            NavigationRequest::AssociatedSiteInstanceType::CURRENT);
+  EXPECT_EQ(navigation_request->associated_rfh_type(),
+            NavigationRequest::AssociatedRenderFrameHostType::CURRENT);
   EXPECT_TRUE(current_rfh);
   EXPECT_TRUE(current_rfh->IsActive());
 
@@ -392,7 +393,8 @@ IN_PROC_BROWSER_TEST_F(DocumentUserDataTest,
 
   // 5) Let the navigation finish and make sure it has succeeded.
   manager.WaitForNavigationFinished();
-  EXPECT_EQ(url_b, web_contents()->GetMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(url_b,
+            web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
 
   // 6) Data shouldn't be cleared in this case, as state
   // |committed_speculative_rfh_before_navigation_commit_| is true during the
@@ -473,8 +475,8 @@ IN_PROC_BROWSER_TEST_F(DocumentUserDataTest,
   RenderFrameHostImpl* pending_rfh =
       root->render_manager()->speculative_frame_host();
   NavigationRequest* navigation_request = root->navigation_request();
-  EXPECT_EQ(navigation_request->associated_site_instance_type(),
-            NavigationRequest::AssociatedSiteInstanceType::SPECULATIVE);
+  EXPECT_EQ(navigation_request->associated_rfh_type(),
+            NavigationRequest::AssociatedRenderFrameHostType::SPECULATIVE);
   EXPECT_TRUE(pending_rfh);
 
   // 3) While there is a speculative RenderFrameHost in the root FrameTreeNode,
@@ -485,7 +487,8 @@ IN_PROC_BROWSER_TEST_F(DocumentUserDataTest,
 
   // 4) Let the navigation finish and make sure it is succeeded.
   manager.WaitForNavigationFinished();
-  EXPECT_EQ(url_b, web_contents()->GetMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(url_b,
+            web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
 
   RenderFrameHostImpl* rfh_b = top_frame_host();
   EXPECT_EQ(pending_rfh, rfh_b);
@@ -507,7 +510,7 @@ IN_PROC_BROWSER_TEST_F(DocumentUserDataTest, SpeculativeRFHDeleted) {
 
   // 1) Initial state: A(B).
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
-  RenderFrameHostImpl* rfh_a = web_contents()->GetMainFrame();
+  RenderFrameHostImpl* rfh_a = web_contents()->GetPrimaryMainFrame();
   RenderFrameHostImpl* rfh_b = rfh_a->child_at(0)->current_frame_host();
 
   // Leave rfh_b in pending deletion state.
@@ -590,7 +593,7 @@ IN_PROC_BROWSER_TEST_F(DocumentUserDataTest, CheckInPendingDeletionState) {
   // "DocumentUserDataWithBackForwardCacheTest.
   //      BackForwardCacheNavigation" test.
   DisableBackForwardCacheForTesting(shell()->web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // 2) Leave both rfh_a and rfh_b in pending deletion state.
   LeaveInPendingDeletionState(rfh_a);
@@ -641,7 +644,8 @@ IN_PROC_BROWSER_TEST_F(DocumentUserDataTest, CommitSameDocumentNavigation) {
   // 3) Navigate to A#2 (same document navigation).
   EXPECT_TRUE(ExecJs(shell(), JsReplace("location = $1", url_a2.spec())));
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  EXPECT_EQ(url_a2, web_contents()->GetMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(url_a2,
+            web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
 
   // 4) Check if the DUD objects are pointing to the same instance after
   // navigation.
@@ -719,7 +723,7 @@ IN_PROC_BROWSER_TEST_F(DocumentUserDataTest, FailedNavigation) {
   // error page, disable back-forward cache to ensure that RenderFrameHost gets
   // deleted.
   DisableBackForwardCacheForTesting(shell()->web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // 3) Browser-initiated navigation to an error page.
   NavigationHandleObserver observer(shell()->web_contents(), error_url);
@@ -751,7 +755,7 @@ IN_PROC_BROWSER_TEST_F(DocumentUserDataTest, CrossSiteNavigation) {
   EXPECT_TRUE(data);
 
   DisableBackForwardCacheForTesting(shell()->web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // 3) Navigate to B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
@@ -769,7 +773,7 @@ IN_PROC_BROWSER_TEST_F(DocumentUserDataTest, SameSiteNavigation) {
   // The test assumes the previous page gets deleted after navigation. Disable
   // back-forward cache to ensure that it doesn't get preserved in the cache.
   DisableBackForwardCacheForTesting(shell()->web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // 1) Navigate to A1.
   EXPECT_TRUE(NavigateToURL(shell(), url_a1));
@@ -808,9 +812,9 @@ IN_PROC_BROWSER_TEST_F(DocumentUserDataTest, WindowOpen) {
         EXPECT_FALSE(*new_tab);
         *new_tab = web_contents;
 
-        *popup_data_id =
-            Data::GetOrCreateForCurrentDocument(web_contents->GetMainFrame())
-                ->unique_id();
+        *popup_data_id = Data::GetOrCreateForCurrentDocument(
+                             web_contents->GetPrimaryMainFrame())
+                             ->unique_id();
       },
       &popup_data_id, &new_tab));
   web_contents()->SetDelegate(&observer);
@@ -825,7 +829,8 @@ IN_PROC_BROWSER_TEST_F(DocumentUserDataTest, WindowOpen) {
 
   // 4) Expect the data to the preserved (it might have been deleted due to us
   // having a fake initial navigation for blank window.open).
-  Data* new_tab_data = Data::GetForCurrentDocument(new_tab->GetMainFrame());
+  Data* new_tab_data =
+      Data::GetForCurrentDocument(new_tab->GetPrimaryMainFrame());
   EXPECT_TRUE(new_tab_data);
   EXPECT_EQ(new_tab_data->unique_id(), popup_data_id);
 
@@ -942,7 +947,8 @@ IN_PROC_BROWSER_TEST_F(DocumentUserDataTest, AttachOnCreatingInitialFrame) {
           &observed_frame_creation));
 
   // 2) Navigate to a new page.
-  EXPECT_FALSE(shell()->web_contents()->GetMainFrame()->IsRenderFrameLive());
+  EXPECT_FALSE(
+      shell()->web_contents()->GetPrimaryMainFrame()->IsRenderFrameLive());
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   // 3) Unfortunately, user data will not be there – the reason is that we
@@ -954,8 +960,8 @@ IN_PROC_BROWSER_TEST_F(DocumentUserDataTest, AttachOnCreatingInitialFrame) {
   // in that case. In the long term, we probably should create a new
   // RenderFrameHost here.
   EXPECT_TRUE(observed_frame_creation);
-  EXPECT_FALSE(
-      Data::GetForCurrentDocument(shell()->web_contents()->GetMainFrame()));
+  EXPECT_FALSE(Data::GetForCurrentDocument(
+      shell()->web_contents()->GetPrimaryMainFrame()));
 }
 
 // Test DocumentUserData with BackForwardCache feature enabled.
@@ -1007,7 +1013,7 @@ IN_PROC_BROWSER_TEST_F(DocumentUserDataWithBackForwardCacheTest,
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
   Data* data_after_restore =
-      Data::GetForCurrentDocument(web_contents()->GetMainFrame());
+      Data::GetForCurrentDocument(web_contents()->GetPrimaryMainFrame());
   EXPECT_TRUE(data);
 
   // 6) Both the instances of Data before and after restore should point to the

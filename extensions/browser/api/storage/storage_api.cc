@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -167,7 +167,9 @@ ExtensionFunction::ResponseAction SettingsFunction::Run() {
                            storage_area_string.c_str())));
   }
 
-  observers_ = frontend->GetObservers();
+  observer_ = GetSequenceBoundSettingsChangedCallback(
+      base::SequencedTaskRunnerHandle::Get(), frontend->GetObserver());
+
   frontend->RunWithStorage(
       extension(), settings_namespace_,
       base::BindOnce(&SettingsFunction::AsyncRunWithStorage, this));
@@ -188,9 +190,7 @@ ExtensionFunction::ResponseValue SettingsFunction::UseReadResult(
   if (!result.status().ok())
     return Error(result.status().message);
 
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->Swap(&result.settings());
-  return OneArgument(base::Value::FromUniquePtrValue(std::move(dict)));
+  return OneArgument(base::Value(result.PassSettings()));
 }
 
 ExtensionFunction::ResponseValue SettingsFunction::UseWriteResult(
@@ -201,9 +201,8 @@ ExtensionFunction::ResponseValue SettingsFunction::UseWriteResult(
     return Error(result.status().message);
 
   if (!result.changes().empty()) {
-    observers_->Notify(
-        FROM_HERE, &SettingsObserver::OnSettingsChanged, extension_id(),
-        storage_area_,
+    observer_->Run(
+        extension_id(), storage_area_,
         value_store::ValueStoreChange::ToValue(result.PassChanges()));
   }
 
@@ -213,11 +212,14 @@ ExtensionFunction::ResponseValue SettingsFunction::UseWriteResult(
 void SettingsFunction::OnSessionSettingsChanged(
     std::vector<SessionStorageManager::ValueChange> changes) {
   if (!changes.empty()) {
-    scoped_refptr<SettingsObserverList> observers =
-        StorageFrontend::Get(browser_context())->GetObservers();
-    observers->Notify(FROM_HERE, &SettingsObserver::OnSettingsChanged,
-                      extension_id(), storage_area_,
-                      ValueChangeToValue(std::move(changes)));
+    SettingsChangedCallback observer =
+        StorageFrontend::Get(browser_context())->GetObserver();
+    // This used to dispatch asynchronously as a result of a
+    // ObserverListThreadSafe. Ideally, we'd just run this synchronously, but it
+    // appears at least some tests rely on the asynchronous behavior.
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(observer, extension_id(), storage_area_,
+                                  ValueChangeToValue(std::move(changes))));
   }
 }
 
@@ -261,9 +263,8 @@ ExtensionFunction::ResponseValue StorageStorageAreaGetFunction::RunWithStorage(
       if (!result.status().ok()) {
         return UseReadResult(std::move(result));
       }
-      std::unique_ptr<base::DictionaryValue> with_default_values =
-          base::Value::AsDictionaryValue(input).CreateDeepCopy();
-      with_default_values->MergeDictionary(&result.settings());
+      base::Value::Dict with_default_values = input.GetDict().Clone();
+      with_default_values.Merge(result.PassSettings());
       return UseReadResult(ValueStore::ReadResult(
           std::move(with_default_values), result.PassStatus()));
     }
@@ -390,9 +391,8 @@ ExtensionFunction::ResponseValue StorageStorageAreaSetFunction::RunWithStorage(
                "extension_id", extension_id());
   if (args().empty() || !args()[0].is_dict())
     return BadMessage();
-  const base::DictionaryValue& input =
-      base::Value::AsDictionaryValue(args()[0]);
-  return UseWriteResult(storage->Set(ValueStore::DEFAULTS, input));
+  return UseWriteResult(
+      storage->Set(ValueStore::DEFAULTS, args()[0].GetDict()));
 }
 
 ExtensionFunction::ResponseValue StorageStorageAreaSetFunction::RunInSession() {

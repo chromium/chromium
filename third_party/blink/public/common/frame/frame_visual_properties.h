@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,8 +42,8 @@ struct BLINK_COMMON_EXPORT FrameVisualProperties {
   // The size of the compositor viewport, to match the sub-frame's surface.
   gfx::Rect compositor_viewport;
 
-  // The screen's coordinate space.
-  gfx::Rect screen_space_rect;
+  // The frame's rect relative to the first ancestor local root frame.
+  gfx::Rect rect_in_local_root;
 
   // The size of the frame in its parent's coordinate space.
   gfx::Size local_frame_size;

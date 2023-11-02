@@ -1,30 +1,28 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
-import {ReimagingCalibrationSetupPageElement} from 'chrome://shimless-rma/reimaging_calibration_setup_page.js';
+import {ReimagingCalibrationSetupPage} from 'chrome://shimless-rma/reimaging_calibration_setup_page.js';
 import {CalibrationComponentStatus, CalibrationSetupInstruction, CalibrationStatus, ComponentType} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.js';
 
 export function reimagingCalibrationSetupPageTest() {
-  /** @type {?ReimagingCalibrationSetupPageElement} */
+  /** @type {?ReimagingCalibrationSetupPage} */
   let component = null;
 
   /** @type {?FakeShimlessRmaService} */
   let service = null;
 
-  suiteSetup(() => {
-    service = new FakeShimlessRmaService();
-    setShimlessRmaServiceForTesting(service);
-  });
-
   setup(() => {
     document.body.innerHTML = '';
+    service = new FakeShimlessRmaService();
+    setShimlessRmaServiceForTesting(service);
   });
 
   teardown(() => {
@@ -41,7 +39,7 @@ export function reimagingCalibrationSetupPageTest() {
     assertFalse(!!component);
     service.setGetCalibrationSetupInstructionsResult(instructions);
 
-    component = /** @type {!ReimagingCalibrationSetupPageElement} */ (
+    component = /** @type {!ReimagingCalibrationSetupPage} */ (
         document.createElement('reimaging-calibration-setup-page'));
     assertTrue(!!component);
     document.body.appendChild(component);
@@ -68,7 +66,7 @@ export function reimagingCalibrationSetupPageTest() {
       return resolver.promise;
     };
 
-    let expectedResult = {foo: 'bar'};
+    const expectedResult = {foo: 'bar'};
     let savedResult;
     component.onNextButtonClick().then((result) => savedResult = result);
     // Resolve to a distinct result to confirm it was not modified.
@@ -77,5 +75,31 @@ export function reimagingCalibrationSetupPageTest() {
 
     assertEquals(1, runCalibrationCalls);
     assertDeepEquals(savedResult, expectedResult);
+  });
+
+  test('CalibrationBase', async () => {
+    await initializeCalibrationPage(
+        CalibrationSetupInstruction
+            .kCalibrationInstructionPlaceBaseOnFlatSurface);
+
+    assertEquals(
+        loadTimeData.getString('calibrateBaseInstructionsText'),
+        component.shadowRoot.querySelector('#instructions').textContent.trim());
+    assertEquals(
+        'chrome://shimless-rma/illustrations/base_on_flat_surface.svg',
+        component.shadowRoot.querySelector('img').src);
+  });
+
+  test('CalibrationLid', async () => {
+    await initializeCalibrationPage(
+        CalibrationSetupInstruction
+            .kCalibrationInstructionPlaceLidOnFlatSurface);
+
+    assertEquals(
+        loadTimeData.getString('calibrateLidInstructionsText'),
+        component.shadowRoot.querySelector('#instructions').textContent.trim());
+    assertEquals(
+        'chrome://shimless-rma/illustrations/lid_on_flat_surface.svg',
+        component.shadowRoot.querySelector('img').src);
   });
 }

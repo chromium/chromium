@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,8 +18,8 @@
 #include "extensions/shell/browser/shell_extensions_api_client.h"
 #include "extensions/shell/test/shell_apitest.h"
 #include "extensions/test/extension_test_message_listener.h"
-#include "services/device/public/cpp/hid/fake_hid_manager.h"
 #include "services/device/public/cpp/hid/hid_report_descriptor.h"
+#include "services/device/public/cpp/test/fake_hid_manager.h"
 #include "services/device/public/mojom/hid.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -218,8 +218,8 @@ IN_PROC_BROWSER_TEST_F(HidApiTest, HidApp) {
 }
 
 IN_PROC_BROWSER_TEST_F(HidApiTest, OnDeviceAdded) {
-  ExtensionTestMessageListener load_listener("loaded", false);
-  ExtensionTestMessageListener result_listener("success", false);
+  ExtensionTestMessageListener load_listener("loaded");
+  ExtensionTestMessageListener result_listener("success");
   result_listener.set_failure_message("failure");
 
   ASSERT_TRUE(LoadApp("api_test/hid/add_event"));
@@ -236,8 +236,8 @@ IN_PROC_BROWSER_TEST_F(HidApiTest, OnDeviceAdded) {
 }
 
 IN_PROC_BROWSER_TEST_F(HidApiTest, OnDeviceRemoved) {
-  ExtensionTestMessageListener load_listener("loaded", false);
-  ExtensionTestMessageListener result_listener("success", false);
+  ExtensionTestMessageListener load_listener("loaded");
+  ExtensionTestMessageListener result_listener("success");
   result_listener.set_failure_message("failure");
 
   ASSERT_TRUE(LoadApp("api_test/hid/remove_event"));
@@ -253,17 +253,17 @@ IN_PROC_BROWSER_TEST_F(HidApiTest, OnDeviceRemoved) {
 }
 
 IN_PROC_BROWSER_TEST_F(HidApiTest, GetUserSelectedDevices) {
-  ExtensionTestMessageListener open_listener("opened_device", false);
+  ExtensionTestMessageListener open_listener("opened_device");
 
   TestExtensionsAPIClient test_api_client;
   ASSERT_TRUE(LoadApp("api_test/hid/get_user_selected_devices"));
   ASSERT_TRUE(open_listener.WaitUntilSatisfied());
 
-  ExtensionTestMessageListener remove_listener("removed", false);
+  ExtensionTestMessageListener remove_listener("removed");
   GetFakeHidManager()->RemoveDevice(kTestDeviceGuids[0]);
   ASSERT_TRUE(remove_listener.WaitUntilSatisfied());
 
-  ExtensionTestMessageListener add_listener("added", false);
+  ExtensionTestMessageListener add_listener("added");
   AddDevice(kTestDeviceGuids[0], kTestPhysicalDeviceIds[0], kTestVendorId,
             kTestProductId, true, "A");
   ASSERT_TRUE(add_listener.WaitUntilSatisfied());
@@ -301,10 +301,10 @@ device::mojom::HidDeviceInfoPtr CreateDeviceWithTwoCollections(
 IN_PROC_BROWSER_TEST_F(HidApiTest, DeviceAddedChangedRemoved) {
   constexpr char kTestGuid[] = "guid";
 
-  ExtensionTestMessageListener load_listener("loaded", false);
-  ExtensionTestMessageListener add_listener("added", true);
-  ExtensionTestMessageListener change_listener("changed", false);
-  ExtensionTestMessageListener result_listener("success", false);
+  ExtensionTestMessageListener load_listener("loaded");
+  ExtensionTestMessageListener add_listener("added", ReplyBehavior::kWillReply);
+  ExtensionTestMessageListener change_listener("changed");
+  ExtensionTestMessageListener result_listener("success");
   result_listener.set_failure_message("failure");
 
   ASSERT_TRUE(LoadApp("api_test/hid/add_change_remove"));

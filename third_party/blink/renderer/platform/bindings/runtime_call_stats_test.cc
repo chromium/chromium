@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -178,20 +178,21 @@ TEST_F(RuntimeCallStatsTest, RuntimeCallTimerScopeTest) {
   EXPECT_EQ(100, counter->GetTime().InMilliseconds());
 }
 
+static void RecursiveRCSTestHelper(int remaining_count,
+                                   RuntimeCallStatsTest& fixture,
+                                   RuntimeCallStats& stats) {
+  RuntimeCallTimerScope scope(&stats, test_counter_1_id);
+  if (remaining_count <= 0)
+    return;
+  fixture.AdvanceClock(50);
+  RecursiveRCSTestHelper(remaining_count - 1, fixture, stats);
+}
+
 TEST_F(RuntimeCallStatsTest, RecursiveFunctionWithScopeTest) {
   RuntimeCallStats stats(clock());
   RuntimeCallCounter* counter = stats.GetCounter(test_counter_1_id);
 
-  RuntimeCallStatsTest* test = this;
-  std::function<void(int)> recursive_func;
-  recursive_func = [&stats, &recursive_func, test](int x) {
-    RuntimeCallTimerScope scope(&stats, test_counter_1_id);
-    if (x <= 0)
-      return;
-    test->AdvanceClock(50);
-    recursive_func(x - 1);
-  };
-  recursive_func(5);
+  RecursiveRCSTestHelper(5, *this, stats);
 
   EXPECT_EQ(6ul, counter->GetCount());
   EXPECT_EQ(250, counter->GetTime().InMilliseconds());

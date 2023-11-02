@@ -1,0 +1,159 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file needs to be synced between,
+// - "components/ml/mojom/web_platform_model.mojom" in the chromium repo
+// - "src/platform2/ml/mojom/web_platform_model.mojom" in the chromiumos repo
+// Modifications needed are,
+// - "big_buffer.mojom" needs to be included from mojo's base folder in chrome.
+//   whereas it should be included from "ml/mojom" in chromiumos repo.
+
+module ml.model_loader.mojom;
+
+import "mojo/public/mojom/base/big_buffer.mojom";
+
+// Model formats that will be loaded. Currently only supports TfLite
+// flatbuffer.
+// TODO(honglinyu): we may also need to add the versions of the formats, or/and
+// we can add feature query interfaces to tell the supported formats and
+// versions. And how to best version the API is still an open question, see
+// https://github.com/webmachinelearning/model-loader/issues/25.
+[Stable, Extensible]
+enum ModelFormat {
+  // This means the backend should decide the model format automatically.
+  [Default] kAuto = 0,
+  kTfLite = 1,
+};
+
+// Types of devices used to do model inference.
+// Currently only supports CPU.
+[Stable, Extensible]
+enum DevicePreference {
+  // Means the backend can arbitrarily select the device.
+  [Default] kAuto = 0,
+  // Prefers running model inference on CPU.
+  kCpu = 1,
+  // Prefers running the model inference on GPU. If some of the operators can
+  // not be supported on GPU, the backend can try to select a best fallback
+  // strategy: it may run the whole graph on CPU or still run part of the OPs on
+  // GPU. We do not directly return an error in this case to avoid directly
+  // exposing user's GPU information.
+  kGpu = 2,
+};
+
+[Stable]
+struct CreateModelLoaderOptions {
+  // #Threads used in model inference.
+  // 0 means the backend can decide it automatically (e.g. equals the number of
+  // physical cores). And normally backends may have a upper cap on the number
+  // of threads a model can use. So setting a bigger number than that will have
+  // no difference.
+  uint32 num_threads@0 = 0;
+  // The format of model (e.g. "tflite").
+  ModelFormat model_format@1;
+  // The device to be used (e.g. "auto", "cpu", "gpu" etc.).
+  DevicePreference device_preference@2;
+};
+
+// Currently, the tensor type is only used to inform the user, and is not
+// meaningful to `compute()`. The `kUnknown` type just means the type is not
+// exposed in the mojo interface --- it does not mean the type is "unsupported".
+// We define this type just to avoid exposing unnecessary TfLite details from
+// the beginning. So even the type is `kUnknown`, user can still use the
+// `compute()` function by feeding in appropriate input binary buffers.
+[Stable, Extensible]
+enum DataType {
+  [Default] kUnknown = 0,
+  kInt64 = 1,
+  kUint64 = 2,
+  kFloat64 = 3,
+  kInt32 = 4,
+  kUint32 = 5,
+  kFloat32 = 6,
+  kInt16 = 7,
+  kUint16 = 8,
+  kFloat16 = 9,
+  kInt8 = 10,
+  kUint8 = 11,
+  kBool = 12,
+};
+
+// Represents the information of a tensor. The tensor infos of input and output
+// tensors are sent from ml-service to the client as a result of model loading.
+[Stable]
+struct TensorInfo {
+  // The total size of the tensor buffer in bytes. This is the most important
+  // information. Ml-service will use it to check whether the input tensor is
+  // valid.
+  uint32 byte_size@0;
+  // The type of the tensor data.
+  DataType data_type@1;
+  // The dimensions of the tensor.
+  array<uint32> dimensions@2;
+};
+
+// Represents the model information. Currently it contains the tensor info of
+// input and output tensors.
+[Stable]
+struct ModelInfo {
+  map<string, TensorInfo> input_tensor_info@0;
+  map<string, TensorInfo> output_tensor_info@1;
+};
+
+// Used by `Load()` of interface Model.
+[Stable, Extensible]
+enum LoadModelResult {
+  kOk,
+  kUnknownError,
+  // The model is invalid (e.g. the interpreter fails to parse the model).
+  kInvalidModel,
+  // The model can not be supported, e.g. some OPs are not supported.
+  kNotSupported,
+};
+
+[Stable, Extensible]
+enum CreateModelLoaderResult {
+  kOk,
+  kUnknownError,
+  // The input configuration is not supported.
+  kNotSupported,
+};
+
+// Used by `Compute()` of interface Model.
+[Stable, Extensible]
+enum ComputeResult {
+  kOk,
+  kUnknownError,
+  // There is no model that has been loaded yet.
+  kModelNotLoaded,
+  // The number of inputs is different from that required by the model.
+  kIncorrectNumberOfInputs,
+  // Some needed inputs are missing.
+  kMissingInput,
+  // The size of some input buffer is wrong.
+  kInvalidInputBufferSize,
+};
+
+// Corresponds to the `MLModelLoader` object in the WebIDL definition.
+[Stable]
+interface ModelLoader {
+  // We define this function in `Model` interface rather than in `MLService` to
+  // avoid unnecessary IPC hops of model content.
+  Load@0(mojo_base.mojom.BigBuffer model_content)
+      => (LoadModelResult result, pending_remote<Model>? remote,
+          ModelInfo? model_info);
+};
+
+// Represents a model instance. The user can use its `Compute` interface to do
+// model inferences.
+// Corresponds to the `MLModelLoaded` object in the WebIDL definition.
+[Stable]
+interface Model {
+  // The backend/frontend should already know the dimension needed for each
+  // input/output tensors. So we only need to know the buffer content of the
+  // input/output tensors.
+  Compute@0(map<string, array<uint8>> input_tensors)
+      => (ComputeResult result,
+          map<string, array<uint8>>? output_tensors);
+};

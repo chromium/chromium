@@ -32,8 +32,15 @@
     await _waitForMetadata();
     const pip_window = await video.requestPictureInPicture();
 
+    // If the video size were 0,0 then this might not be true, but it isn't.
+    if (pip_window.width == 0 || pip_window.height == 0)
+      throw '0 is not a good initial size for a PiP window';
+
     pip_window.addEventListener('resize', () => {
-      document.title = 'resized';
+      // Do not accept zero, and fail the test if so.
+      if (pip_window.width == 0 || pip_window.height == 0)
+        throw '0 is not a good updated size for a PiP window';
+      document.title = 'resized'
     }, { once: true });
 
     video.addEventListener('leavepictureinpicture', () => {

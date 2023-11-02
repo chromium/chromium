@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<link rel="manifest" href="dummy.xml" id="link">
+<script>
+  const element = document.getElementById("link");
+
+  async function test() {
+      await new Promise(resolve => setTimeout(resolve, 100));
+      element.setAttribute("disabled", "");
+      await new Promise(resolve => setTimeout(resolve, 100));
+      element.setAttribute("media", "projection");
+      await new Promise(resolve => setTimeout(resolve, 100));
+      testRunner.notifyDone();
+  }
+
+  if (window.testRunner) {
+    testRunner.dumpAsText();
+    testRunner.waitUntilDone();
+  }
+
+  test();
+
+</script>
+
+<body>
+This test should not crash.
+</body>

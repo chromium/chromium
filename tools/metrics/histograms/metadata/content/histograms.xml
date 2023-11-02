@@ -1,5 +1,5 @@
 <!--
-Copyright 2020 The Chromium Authors. All rights reserved.
+Copyright 2020 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
@@ -22,8 +22,22 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="FeedNetworkRequestType">
+  <variant name=".FeedQuery" summary="FeedQuery"/>
+  <variant name=".FollowWebFeed" summary="FollowWebFeed"/>
+  <variant name=".ListFollowedWebFeeds" summary="ListFollowedWebFeeds"/>
+  <variant name=".ListRecommendedWebFeeds" summary="ListRecommendedWebFeeds"/>
+  <variant name=".NextPage" summary="NextPage"/>
+  <variant name=".QueryBackgroundFeed" summary="QueryBackgroundFeed"/>
+  <variant name=".QueryInteractiveFeed" summary="QueryInteractiveFeed"/>
+  <variant name=".QueryNextPage" summary="QueryNextPage"/>
+  <variant name=".UnfollowWebFeed" summary="UnfollowWebFeed"/>
+  <variant name=".UploadActions" summary="UploadActions"/>
+  <variant name=".WebFeedListContents" summary="WebFeedListContents"/>
+</variants>
+
 <histogram name="ContentCapture.CaptureContentDelayTime" units="ms"
-    expires_after="2022-01-12">
+    expires_after="2022-12-01">
   <owner>michaelbai@chromium.org</owner>
   <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
   <summary>
@@ -36,24 +50,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentCapture.CaptureContentTime" units="microseconds"
-    expires_after="M87">
-  <obsolete>
-    Replaced by ContentCapture.CaptureContentTime2 since M87, the new histogram
-    records the grouping time additionally.
-  </obsolete>
-  <owner>michaelbai@chromium.org</owner>
-  <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
-  <summary>
-    The time taken to capture the on-screen content.
-
-    Note that this metrics is only recorded on clients on which a
-    high-resolution clock is available.
-  </summary>
-</histogram>
-
 <histogram name="ContentCapture.CaptureContentTime2" units="microseconds"
-    expires_after="2022-01-12">
+    expires_after="2022-12-01">
   <owner>michaelbai@chromium.org</owner>
   <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
   <summary>
@@ -65,7 +63,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentCapture.GetBoundingBox" units="microseconds"
-    expires_after="2022-01-12">
+    expires_after="2022-12-01">
   <owner>michaelbai@chromium.org</owner>
   <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
   <summary>
@@ -77,7 +75,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentCapture.SendContentTime" units="microseconds"
-    expires_after="2022-01-12">
+    expires_after="2022-12-01">
   <owner>michaelbai@chromium.org</owner>
   <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
   <summary>
@@ -88,26 +86,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentCapture.SentContentCount" units="count"
-    expires_after="2021-04-04">
-  <obsolete>
-    Replaced by ContentCapture.SentContentCount2 in M89, which uses standard
-    buckets for 10k counts rather than exact linear buckets.
-  </obsolete>
-  <owner>michaelbai@chromium.org</owner>
-  <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
-  <summary>The total number of content captures sent for a document.</summary>
-</histogram>
-
 <histogram name="ContentCapture.SentContentCount2" units="count"
-    expires_after="2022-01-12">
+    expires_after="2022-12-01">
   <owner>michaelbai@chromium.org</owner>
   <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
   <summary>The total number of content captures sent for a document.</summary>
 </histogram>
 
 <histogram name="ContentCapture.TaskDelayTimeInMs" units="ms"
-    expires_after="2022-01-12">
+    expires_after="2022-12-01">
   <owner>michaelbai@chromium.org</owner>
   <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
   <summary>
@@ -119,7 +106,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentCapture.TaskRunsPerCapture" units="runs"
-    expires_after="2022-01-12">
+    expires_after="2022-12-01">
   <owner>michaelbai@chromium.org</owner>
   <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
   <summary>
@@ -184,7 +171,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.AllowStorageAccessSync" units="ms"
-    expires_after="2022-04-03">
+    expires_after="2023-02-12">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
@@ -194,7 +181,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.DefaultAutoDarkWebContentSetting"
-    enum="ContentSetting" expires_after="2022-06-19">
+    enum="ContentSetting" expires_after="2023-02-19">
   <owner>wenyufu@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -204,21 +191,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.DefaultAutoplaySetting" enum="ContentSetting"
-    expires_after="2022-06-19">
+    expires_after="2023-02-26">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>The default autoplay setting at profile open.</summary>
 </histogram>
 
 <histogram name="ContentSettings.DefaultCookiesSetting" enum="ContentSetting"
-    expires_after="2022-06-19">
+    expires_after="2023-02-26">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>The default cookies setting at profile open.</summary>
 </histogram>
 
 <histogram name="ContentSettings.DefaultIdleDetectionSetting"
-    enum="ContentSetting" expires_after="2022-06-19">
+    enum="ContentSetting" expires_after="2022-10-23">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -227,128 +214,118 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.DefaultImagesSetting" enum="ContentSetting"
-    expires_after="2022-06-19">
+    expires_after="2022-10-23">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>The default image setting at profile open.</summary>
 </histogram>
 
 <histogram name="ContentSettings.DefaultJavaScriptSetting"
-    enum="ContentSetting" expires_after="2022-06-19">
+    enum="ContentSetting" expires_after="2023-03-05">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>The default JavaScript setting at profile open.</summary>
 </histogram>
 
 <histogram name="ContentSettings.DefaultLocationSetting" enum="ContentSetting"
-    expires_after="2022-06-19">
+    expires_after="2023-02-26">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>The default location setting at profile open.</summary>
 </histogram>
 
 <histogram name="ContentSettings.DefaultMediaStreamCameraSetting"
-    enum="ContentSetting" expires_after="2022-06-19">
+    enum="ContentSetting" expires_after="2023-03-19">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>The default camera setting at profile open.</summary>
 </histogram>
 
 <histogram name="ContentSettings.DefaultMediaStreamMicSetting"
-    enum="ContentSetting" expires_after="2022-06-19">
+    enum="ContentSetting" expires_after="2023-02-15">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>The default microphone setting at profile open.</summary>
+  <summary>
+    The default microphone setting at profile open. Warning: this histogram was
+    expired from 2022-06-19 to 2022-09-21; data may be missing.
+  </summary>
 </histogram>
 
 <histogram name="ContentSettings.DefaultMIDISysExSetting" enum="ContentSetting"
-    expires_after="2022-06-19">
+    expires_after="2023-02-15">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     The default MIDI permission setting on sysex (system exclusive) messages at
-    profile open.
+    profile open. The default microphone setting at profile open. Warning: this
+    histogram was expired from 2022-08-21 to 2022-09-21; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="ContentSettings.DefaultNotificationsSetting"
-    enum="ContentSetting" expires_after="2022-06-19">
+    enum="ContentSetting" expires_after="2023-02-26">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>The default notification setting at profile open.</summary>
 </histogram>
 
-<histogram name="ContentSettings.DefaultPluginsSetting" enum="ContentSetting"
-    expires_after="2021-06-19">
-  <obsolete>
-    Removed as of 09/2020. Flash / Plugins is deprecated.
-  </obsolete>
-  <owner>engedy@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>The default plugins setting at profile open.</summary>
-</histogram>
-
 <histogram name="ContentSettings.DefaultPopupsSetting" enum="ContentSetting"
-    expires_after="2022-06-19">
+    expires_after="2023-02-15">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>The default popups setting at profile open.</summary>
+  <summary>
+    The default popups setting at profile open. Warning: this histogram was
+    expired from 2022-08-21 to 2022-09-21; data may be missing.
+  </summary>
 </histogram>
 
 <histogram name="ContentSettings.DefaultRequestDesktopSiteSetting"
-    enum="ContentSetting" expires_after="2022-04-01">
+    enum="ContentSetting" expires_after="2023-02-26">
   <owner>shuyng@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
     The request desktop site content setting at profile open. Recorded for
-    Android only.
+    Android and iOS only.
   </summary>
 </histogram>
 
 <histogram name="ContentSettings.DefaultSoundSetting" enum="ContentSetting"
-    expires_after="2022-06-19">
+    expires_after="2023-02-15">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>The default sound setting at profile open.</summary>
 </histogram>
 
 <histogram name="ContentSettings.DefaultSubresourceFilterSetting"
-    enum="ContentSetting" expires_after="2022-06-19">
+    enum="ContentSetting" expires_after="2023-02-15">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>The default subresource filter setting at profile open</summary>
+  <summary>
+    The default subresource filter setting at profile open. Warning: this
+    histogram was expired from 2022-06-19 to 2022-09-21; data may be missing.
+  </summary>
 </histogram>
 
 <histogram name="ContentSettings.DefaultUsbGuardSetting" enum="ContentSetting"
-    expires_after="2022-06-19">
+    expires_after="2023-02-12">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>The default permission setting for WebUSB at profile open.</summary>
 </histogram>
 
 <histogram name="ContentSettings.DefaultWebBluetoothGuardSetting"
-    enum="ContentSetting" expires_after="2022-06-19">
+    enum="ContentSetting" expires_after="2023-02-15">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
-    The default permission setting for Web Bluetooth at profile open.
+    The default permission setting for Web Bluetooth at profile open. Warning:
+    this histogram was expired from 2022-08-21 to 2022-09-21; data may be
+    missing.
   </summary>
 </histogram>
 
-<histogram name="ContentSettings.EphemeralFlashPermission"
-    enum="ContentSettings.EphemeralFlashPermission" expires_after="M89">
-  <obsolete>
-    Flash / Plugins is deprecated since M87 and removed in M89.
-  </obsolete>
-  <owner>engedy@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records the number of times Flash permission is granted for a host.
-  </summary>
-</histogram>
-
-<histogram name="ContentSettings.Exceptions" units="units"
-    expires_after="never">
+<histogram name="ContentSettings.Exceptions.{ContentSettingsType}"
+    units="units" expires_after="never">
 <!-- expires-never: tracked as an important privacy metric. -->
 
   <owner>lshang@chromium.org</owner>
@@ -358,6 +335,65 @@ chromium-metrics-reviews@google.com.
     The number of user defined content setting exceptions at browser start.
     Suffixed with the name of content setting types.
   </summary>
+  <token key="ContentSettingsType">
+    <variant name="app-banner" summary="App banner exceptions"/>
+    <variant name="auto-dark-web-content"
+        summary="Auto-dark web contents exceptions"/>
+    <variant name="auto-select-certificate"
+        summary="Auto-select cert exceptions"/>
+    <variant name="automatic-downloads"
+        summary="Automatic downloads exceptions"/>
+    <variant name="autoplay" summary="Autoplay exception"/>
+    <variant name="background-sync" summary="Background sync exceptions"/>
+    <variant name="bluetooth-chooser-data" summary="Bluetooth chooser data"/>
+    <variant name="bluetooth-guard" summary="Bluetooth guard exceptions"/>
+    <variant name="client-hints" summary="Client hints"/>
+    <variant name="cookies" summary="Cookies exceptions"/>
+    <variant name="display-capture" summary="Display Capture Exceptions"/>
+    <variant name="durable-storage" summary="Durable Storage Exceptions"/>
+    <variant name="fullscreen" summary="Fullscreen exceptions"/>
+    <variant name="geolocation" summary="Geolocation exceptions"/>
+    <variant name="hid-chooser-data" summary="HID chooser data"/>
+    <variant name="images" summary="Images exceptions"/>
+    <variant name="important-site-info" summary="Important site info"/>
+    <variant name="installed-web-app-metadata"
+        summary="Installed web app metadata"/>
+    <variant name="javascript" summary="JavaScript exceptions"/>
+    <variant name="keygen" summary="Keygen exceptions"/>
+    <variant name="media-engagement" summary="Media engagement exceptions"/>
+    <variant name="media-stream-camera" summary="Camera exceptions"/>
+    <variant name="media-stream-mic" summary="Microphone exceptions"/>
+    <variant name="midi-sysex" summary="Midi exceptions"/>
+    <variant name="mixed-script" summary="Mixed script exceptions"/>
+    <variant name="mouselock" summary="Mouse lock exceptions"/>
+    <variant name="notifications" summary="Notification exceptions"/>
+    <variant name="password-protection" summary="Password protection"/>
+    <variant name="permission-autoblocking-data"
+        summary="Permission autoblocking data"/>
+    <variant name="permission-autorevocation-data"
+        summary="Permission autorevocation data"/>
+    <variant name="plugins" summary="Plugins exceptions"/>
+    <variant name="popups" summary="Popups exceptions"/>
+    <variant name="ppapi-broker" summary="Ppapi broker exceptions"/>
+    <variant name="protected-media-identifier"
+        summary="Protected media exceptions"/>
+    <variant name="protocol-handler" summary="Protocol handler exceptions"/>
+    <variant name="push-messaging" summary="Push messaging exceptions"/>
+    <variant name="request-desktop-site"
+        summary="Request desktop site exceptions"/>
+    <variant name="safe-browsing-url-check-data"
+        summary="Safe browsing url check data"/>
+    <variant name="serial-chooser-data" summary="Serial chooser data"/>
+    <variant name="site-engagement" summary="Site engagement exceptions"/>
+    <variant name="sound" summary="Sound exceptions"/>
+    <variant name="ssl-cert-decisions" summary="SSL cert decisions exceptions"/>
+    <variant name="subresource-filter" summary="Subresource filter exceptions"/>
+    <variant name="subresource-filter-data" summary="Subresource filter data"/>
+    <variant name="usb-chooser-data" summary="USB chooser data exceptions"/>
+    <variant name="webid-active-session" summary="FedCM Active Session"/>
+    <variant name="webid-request" summary="FedCM Request"/>
+    <variant name="webid-share" summary="FedCM Share"/>
+  </token>
 </histogram>
 
 <histogram name="ContentSettings.ExceptionScheme" enum="ContentSettingScheme"
@@ -409,7 +445,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.ExtensionEmbeddedSettingSet"
-    enum="ContentType" expires_after="M100">
+    enum="ContentType" expires_after="2023-05-01">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -422,7 +458,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.ExtensionNonEmbeddedSettingSet"
-    enum="ContentType" expires_after="2022-05-01">
+    enum="ContentType" expires_after="2023-05-01">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -443,17 +479,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.NumberOfExceptions" units="units"
-    expires_after="2022-04-24">
+    expires_after="2023-03-15">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     The number of user defined hostname patterns for content settings at browser
-    start.
+    start. Warning: this histogram was expired from 2022-08-28 to 2022-09-21;
+    data may be missing.
   </summary>
 </histogram>
 
 <histogram name="ContentSettings.PermissionRequested" enum="PermissionType"
-    expires_after="2022-04-17">
+    expires_after="2023-03-15">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -471,60 +508,9 @@ chromium-metrics-reviews@google.com.
     ContentSettings.PermissionsActions*, or Permissions.Prompt.*.
 
     See https://crbug.com/638076 for more details.
-  </summary>
-</histogram>
 
-<histogram name="ContentSettings.PermissionRequested_InsecureOrigin"
-    enum="PermissionType" expires_after="M90">
-  <obsolete>
-    Removed as of July 2021. No permissions are supported for insecure origins.
-  </obsolete>
-  <owner>dominickn@chromium.org</owner>
-  <owner>engedy@chromium.org</owner>
-  <owner>hkamila@chromium.org</owner>
-  <summary>
-    Number of times a given permission was requested by an insecure origin and
-    the user has the permission set to prompt (i.e. not blocked or allowed).
-
-    Note this is probably not the metric you want - it does not correspond to
-    the total number of times websites request a permission. Also, because
-    specific permissions have code that can automatically block or grant
-    permissions based on things like incognito, installed extensions etc., this
-    does also not correspond to the number of times users are prompted to allow
-    permissions.
-
-    For a better metric to track how often users are prompted, use
-    ContentSettings.PermissionsActions*.
-
-    See https://crbug.com/638076 for more details.
-  </summary>
-</histogram>
-
-<histogram name="ContentSettings.PermissionRequested_SecureOrigin"
-    enum="PermissionType" expires_after="M90">
-  <obsolete>
-    Removed as of July 2021. No permissions are supported for insecure origins.
-    So we don't need to differentiate between Secure and Insecure origins.
-    ContentSettings.PermissionRequested histogram is enough.
-  </obsolete>
-  <owner>dominickn@chromium.org</owner>
-  <owner>engedy@chromium.org</owner>
-  <owner>hkamila@chromium.org</owner>
-  <summary>
-    Number of times a given permission was requested by a secure origin and the
-    user has the permission set to prompt (i.e. not blocked or allowed).
-
-    Note this is probably not the metric you want - it does not correspond to
-    the total number of times websites request a permission. Also, because
-    specific permissions have code that can automatically block or grant
-    permissions based on things like incognito, installed extensions etc., this
-    does also not correspond to the number of times users are prompted to allow
-    permissions.
-
-    For a better metric to track how often users are prompted, use
-    ContentSettings.PermissionsActions*.
-
-    See https://crbug.com/638076 for more details.
+    Warning: this histogram was expired from 2022-06-19 to 2022-09-21; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -538,7 +524,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.Popups" enum="ContentSettingPopupAction"
-    expires_after="2022-05-08">
+    expires_after="2023-03-19">
   <owner>charleszhao@chromium.org</owner>
   <owner>lazzzis@google.com</owner>
   <owner>src/components/blocked_content/OWNERS</owner>
@@ -549,7 +535,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.Popups.BlockerActions"
-    enum="PopupBlockerAction" expires_after="M101">
+    enum="PopupBlockerAction" expires_after="2023-03-26">
   <owner>csharrison@chromium.org</owner>
   <owner>lazzzis@google.com</owner>
   <owner>src/components/blocked_content/OWNERS</owner>
@@ -615,7 +601,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.Popups.StrongBlockerActions"
-    enum="StrongPopupBlockerAction" expires_after="2022-04-24">
+    enum="StrongPopupBlockerAction" expires_after="2023-03-05">
   <owner>csharrison@chromium.org</owner>
   <summary>
     Counts of various events related to the strong popup blocker (aka abusive
@@ -624,7 +610,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ActivityLoggingEnabled" enum="Boolean"
-    expires_after="2022-05-01">
+    expires_after="2023-03-01">
   <owner>rogerm@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -633,83 +619,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.AppLifecycle.Events"
-    enum="AppLifecycleEvent" expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
+<histogram name="ContentSuggestions.Feed.BrokenNTPHierarchy"
+    enum="NTPBrokenViewHierarchyRelationship" expires_after="M107">
+  <owner>adamta@google.com</owner>
+  <owner>sczs@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
-    Android: count of app lifecycle events reported to the Feed library.
-    Recorded as these events occur; e.g. when Chrome is foregrounded,
-    backgrounded, or the user clears cached browsing data.
+    When the NTP view hierarchy is fixed upon NTP creation, this hisotgram logs
+    which part was broken. Temporary log used to gather info for
+    crbug.com/1262536.
   </summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.AppLifecycle.NumRowsForDeletion"
-    units="count" expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
+<histogram name="ContentSuggestions.Feed.CanBeShown" enum="BooleanAllowed"
+    expires_after="2023-08-01">
   <owner>harringtond@chromium.org</owner>
+  <owner>thegreenfrog@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
-    Android: number of rows present in a history deletion that's causing all
-    current suggestions to be deleted. Each row should correspond to a url that
-    is beign removed from history. Is not emitted when entire history is being
-    cleared.
-  </summary>
-</histogram>
+    Whether showing the Feed is permitted. The Feed can be shown if (A) profile
+    policies allow this, (B) the FeedAblationEnabled feature is disabled, and
+    (C) the user has not turned it off in Settings.
 
-<histogram name="ContentSuggestions.Feed.AutoplayEvent"
-    enum="FeedAutoplayEvent" expires_after="M95">
-  <obsolete>
-    Removed as of 05/2021. Replaced by ContentSuggestions.Feed.VideoPlayEvent.
-  </obsolete>
-  <owner>jianli@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: records events triggered during the video autoplay.
-  </summary>
-</histogram>
+    Note that this does not denote (A) whether the Feed is visible at the time
+    the metric is emitted or (B) whether the Feed was ever visible during the
+    browser process lifetime.
 
-<histogram name="ContentSuggestions.Feed.AvailableOffline.Opened"
-    enum="Boolean" expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    When an article on the NTP is opened by the user, records whether it is
-    available offline. When an article is available offline, it will have an
-    offline badge in the UI on the NTP. Opening the article occurs when the user
-    navigates from the NTP to the article itself, which can be either in the
-    current tab or a new tab. Note that this is independent of whether the
-    article is actually opened as an offline page or not.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.AvailableOffline.Shown" enum="Boolean"
-    expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Records whether an article on the NTP that is shown to the user was also
-    available offline. When an article is available offline, it will have an
-    offline badge in the UI. The initial offline status of the article is used
-    for this metric. While it is possible for the offline status to change while
-    the article is on screen, this metric will not be re-emitted. The criteria
-    for an article to be &quot;shown&quot; is for 2/3 of its vertical height to
-    be on screen for any amount of time.
+    iOS only. Emitted when building a MetricsLog for the current session.
   </summary>
 </histogram>
 
@@ -725,7 +661,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentAgeOnLoad.BlockingRefresh"
-    units="ms" expires_after="2022-05-01">
+    units="ms" expires_after="2023-03-01">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -739,7 +675,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentAgeOnLoad.NotRefreshed"
-    units="ms" expires_after="2022-05-01">
+    units="ms" expires_after="2023-03-01">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -762,22 +698,8 @@ chromium-metrics-reviews@google.com.
   <summary>Actions related to the feed controls.</summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.Count" units="entries"
-    expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Tracks the number of entries for the Feed storage after database perform get
-    all keys request.
-  </summary>
-</histogram>
-
 <histogram name="ContentSuggestions.Feed.DisplayStatusOnOpen"
-    enum="ContentSuggestionsDisplayStatus" expires_after="2022-04-24">
+    enum="ContentSuggestionsDisplayStatus" expires_after="2023-03-01">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -789,54 +711,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.FetchPendingSpinner.Shown"
-    enum="FeedSpinnerType" expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The type of spinner when the content suggestion shows the loading
-    spinner. This is tracked based on if the spinner is shown, not how long it
-    is visible.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.FetchPendingSpinner.VisibleDuration"
-    units="ms" expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: How long the content suggestion loading spinner is shown when a
-    loading spinner finishes showing. This is tracked based on when the spinner
-    is enabled in the UI, not how long it is actually visible on screen.
-  </summary>
-</histogram>
-
-<histogram
-    name="ContentSuggestions.Feed.FetchPendingSpinner.VisibleDurationWithoutCompleting"
-    units="ms" expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: How long the content suggestion loading spinner is shown when a
-    spinner is destroyed without completing. This is tracked based on when the
-    spinner is enabled in the UI, not how long it is actually visible on screen.
-  </summary>
-</histogram>
-
 <histogram name="ContentSuggestions.Feed.ImageFetchStatus"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-03-01">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -846,60 +722,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.InterestHeader.NotInterestedInSource"
-    units="index" expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    The position of an interest header on the NTP that the user has indicated
-    they aren't interested in the story's source.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.InterestHeader.NotInterestedInTopic"
-    units="index" expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    The position of an interest header on the NTP that the user has indicated
-    they aren't interested in the story's topic.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.InternalError"
-    enum="FeedInternalError" expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>The Feed library encountered an error at any time.</summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.LoadKeysTime" units="ms"
-    expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    The time it takes for the Feed to load all keys from the storage.
-  </summary>
-</histogram>
-
 <histogram base="true" name="ContentSuggestions.Feed.LoadStepLatency"
-    units="ms" expires_after="2022-05-01">
+    units="ms" expires_after="2023-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -913,7 +737,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.LoadStreamStatus.LoadMore"
-    enum="FeedLoadStreamStatus" expires_after="2022-05-01">
+    enum="FeedLoadStreamStatus" expires_after="2023-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -923,56 +747,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.LoadTime" units="ms"
-    expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
+<histogram
+    name="ContentSuggestions.Feed.Network.CompressedResponseSizeKB{NetworkRequestType}"
+    units="KB" expires_after="2023-03-01">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
-    The time it takes for the Feed to load entries from the storage.
+    Android: The wire size (potentially compressed) of a {NetworkRequestType}
+    network response received by the Feed's networking host. Recorded when a
+    successful response is received.
   </summary>
+  <token key="NetworkRequestType" variants="FeedNetworkRequestType">
+    <variant name="" summary="Feed"/>
+  </token>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.Network.CompressedResponseSizeKB"
-    units="KB" expires_after="2022-05-01">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The wire size (potentially compressed) of a Feed network response
-    received by the Feed's networking host. Recorded when a successful response
-    is received.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.Network.Duration" units="ms"
-    expires_after="2022-05-08">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    The duration of a network request made by the Feed component. Recorded when
-    each network request is completed. This includes the time it takes to get an
-    auth token for signed in users.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.Network.Duration.{NetworkEvent}"
-    units="ms" expires_after="2022-03-01">
+<histogram name="ContentSuggestions.Feed.Network.Duration{NetworkEvent}"
+    units="ms" expires_after="2023-03-01">
   <owner>sczs@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>The amount of time a {NetworkEvent} network event took.</summary>
-  <token key="NetworkEvent">
-    <variant name="ActionUploadFailure"/>
-    <variant name="ActionUploadSuccess"/>
-    <variant name="ArticlesFetchFailure"/>
-    <variant name="ArticlesFetchSuccess"/>
-    <variant name="MoreArticlesFetchFailure"/>
-    <variant name="MoreArticlesFetchSuccess"/>
+  <token key="NetworkEvent" variants="FeedNetworkRequestType">
+    <variant name="" summary="Feed component"/>
+    <variant name=".ActionUploadFailure" summary="ActionUploadFailure"/>
+    <variant name=".ActionUploadSuccess" summary="ActionUploadSuccess"/>
+    <variant name=".ArticlesFetchFailure" summary="ArticlesFetchFailure"/>
+    <variant name=".ArticlesFetchSuccess" summary="ArticlesFetchSuccess"/>
+    <variant name=".MoreArticlesFetchFailure"
+        summary="MoreArticlesFetchFailure"/>
+    <variant name=".MoreArticlesFetchSuccess"
+        summary="MoreArticlesFetchSuccess"/>
   </token>
 </histogram>
 
@@ -988,7 +794,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.Network.RequestStatusCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-03-01">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-03-01">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1000,7 +806,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.Network.ResponseSizeKB" units="KB"
-    expires_after="2022-05-01">
+    expires_after="2023-03-01">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1010,31 +816,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.Network.ResponseStatus"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-05-01">
+<histogram name="ContentSuggestions.Feed.Network.ResponseStatus{Type}"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-03-01">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
     The HTTP response status for a network request made by the Feed component.
   </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.Network.TokenDuration" units="ms"
-    expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    The amount of time it takes to get an access token for signed in users.
-  </summary>
+  <token key="Type" variants="FeedNetworkRequestType"/>
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.Network.TokenFetchStatus"
-    enum="GoogleServiceAuthError" expires_after="2022-05-01">
+    enum="GoogleServiceAuthError" expires_after="2023-03-01">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1045,7 +839,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.NoticeCardFulfilled" enum="Boolean"
-    expires_after="2022-05-01">
+    expires_after="2023-03-01">
   <owner>vincb@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1056,7 +850,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.NoticeCardFulfilled2" enum="Boolean"
-    expires_after="2022-04-24">
+    expires_after="2023-03-01">
   <owner>vincb@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1210,7 +1004,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.SendFeedback"
-    enum="FeedSendFeedbackType" expires_after="2022-02-01">
+    enum="FeedSendFeedbackType" expires_after="2023-03-01">
   <owner>carlosk@chromium.org</owner>
   <owner>petewil@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1225,6 +1019,24 @@ chromium-metrics-reviews@google.com.
   <summary>
     The reason for a server request from the Feed's prespective, when the
     request is started.
+  </summary>
+</histogram>
+
+<histogram name="ContentSuggestions.Feed.SessionDuration" units="ms"
+    expires_after="2023-04-10">
+  <owner>edchin@google.com</owner>
+  <owner>sczs@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    The amount of time a user spends in the feed in a single session. A session
+    is measured only by user interactions or user scrolling events in the feed.
+    Two events are considered as being within the same session if they are at
+    most 5 minutes apart from each other. A series of events is likely to
+    constitute a single session. A user opening the feed but having no
+    interaction and not scrolling is not considered a session. A user tapping an
+    article then quickly returning to the feed is considered within the same
+    session. The time between sessions by definition will be longer than 5
+    minutes.
   </summary>
 </histogram>
 
@@ -1248,8 +1060,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContentSuggestions.Feed.TimeBetweenInteractions" units="ms"
+    expires_after="2023-04-10">
+  <owner>edchin@google.com</owner>
+  <owner>sczs@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    The amount of time between user interactions or user scrolling in the feed.
+  </summary>
+</histogram>
+
+<histogram name="ContentSuggestions.Feed.TimeBetweenSessions" units="ms"
+    expires_after="2023-04-10">
+  <owner>edchin@google.com</owner>
+  <owner>sczs@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    The amount of time between user feed sessions, as defined in
+    |ContentSuggestions.Feed.SessionDuration|. This is by definition longer than
+    5 minutes.
+  </summary>
+</histogram>
+
 <histogram name="ContentSuggestions.Feed.TimeSpentInFeed" units="ms"
-    expires_after="2022-05-01">
+    expires_after="2023-03-01">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1296,8 +1130,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="ContentSuggestions.Feed.UnsignedUserPersonalization.CountValuesDuringStoreInitialization"
+    units="count" expires_after="2023-03-01">
+  <owner>tbansal@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Records count of entries in the pref store after the store is initialized
+    (which happens during the feed service intiialization). The metric is
+    recorded after the store is cleaned up and conpacted (as part of store
+    initialization).
+  </summary>
+</histogram>
+
+<histogram
+    name="ContentSuggestions.Feed.UnsignedUserPersonalization.LinkClicked"
+    units="count" expires_after="2023-03-01">
+  <owner>tbansal@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Recorded everytime when the user clicks a feed link article and an entry is
+    recorded to the user actions collector. The entry may not be recorded in
+    certain cases (not a complete list): the URL of the clicked link was not
+    valid, the MIDs was missing etc.
+  </summary>
+</histogram>
+
 <histogram name="ContentSuggestions.Feed.UploadActionsBatchStatus"
-    enum="FeedUploadActionsBatchStatus" expires_after="2022-04-03">
+    enum="FeedUploadActionsBatchStatus" expires_after="2023-03-01">
   <owner>iwells@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1307,7 +1169,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.UploadActionsStatus"
-    enum="FeedUploadActionsStatus" expires_after="2022-04-03">
+    enum="FeedUploadActionsStatus" expires_after="2023-03-01">
   <owner>iwells@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1319,7 +1181,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.UploadVisibilityLog" enum="Boolean"
-    expires_after="2022-06-01">
+    expires_after="2023-03-01">
   <owner>freedjm@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1328,7 +1190,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.UploadVisibilityLog.{LogType}"
-    enum="Boolean" expires_after="2022-06-01">
+    enum="Boolean" expires_after="2023-03-01">
   <owner>freedjm@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1341,7 +1203,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.UserActions" enum="FeedUserActionType"
-    expires_after="2022-05-01">
+    expires_after="2023-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1352,7 +1214,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.UserActions.Commands"
-    enum="FeedUserCommandType" expires_after="2022-05-01">
+    enum="FeedUserCommandType" expires_after="2023-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>sczs@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1364,7 +1226,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.UserJourney.GetMore.FailureDuration"
-    units="ms" expires_after="2022-05-01">
+    units="ms" expires_after="2023-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1375,7 +1237,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.UserJourney.GetMore.SuccessDuration"
-    units="ms" expires_after="2022-05-01">
+    units="ms" expires_after="2023-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1387,7 +1249,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.UserJourney.{Surface}.Failure"
-    enum="Boolean" expires_after="2022-03-01">
+    enum="Boolean" expires_after="2023-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1402,7 +1264,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.UserJourney.{Surface}.SuccessDuration"
-    units="ms" expires_after="2022-03-01">
+    units="ms" expires_after="2023-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1418,7 +1280,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContentSuggestions.Feed.UserJourney.{Surface}.{Status}Duration"
-    units="ms" expires_after="2022-03-01">
+    units="ms" expires_after="2023-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1439,8 +1301,20 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="ContentSuggestions.Feed.UserSettingsOnStart"
+    enum="FeedUserSettingsOnStart" expires_after="2023-03-01">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    The state of some account settings that affect Feed users. Reported once at
+    startup (to a single bucket), for all users. Note that this histogram uses
+    data cached from the last time the Feed was fetched. Android only.
+  </summary>
+</histogram>
+
 <histogram name="ContentSuggestions.Feed.VisibilityLoggingEnabled"
-    enum="Boolean" expires_after="2022-06-01">
+    enum="Boolean" expires_after="2023-03-01">
   <owner>freedjm@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1450,7 +1324,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.VisitDuration" units="ms"
-    expires_after="2022-04-10">
+    expires_after="2023-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>freedjm@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1466,77 +1340,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.VisualElement.Clicked" units="index"
-    expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The position of a clicked element in the stream not accounting for
-    header views. The top being 0. Position does not change after initial
-    layout. Specifically the position does not update if dismisses/removes are
-    performed. This is similar to NewTabPage.ContentSuggestions.Opened, but
-    records the specific elementType that was clicked.
-  </summary>
-</histogram>
-
-<histogram
-    name="ContentSuggestions.Feed.VisualElement.Clicked.TimeSinceElementFetched"
-    units="ms" expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The time since the content was made available on the device. This
-    could be the time for when this content was retrieved from the server or the
-    time the data was pushed to the device. Recorded when the user clicks the
-    element.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.VisualElement.Viewed" units="index"
-    expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The position of a viewed element in the stream not accounting for
-    header views. The top being 0. Position does not change after initial
-    layout. Specifically the position does not update if dismisses/removes are
-    performed. This is similar to NewTabPage.ContentSuggestions.Shown, but
-    records the view after it has been on the screen for 500 milliseconds of
-    time instead of on predraw.
-  </summary>
-</histogram>
-
-<histogram
-    name="ContentSuggestions.Feed.VisualElement.Viewed.TimeSinceElementFetched"
-    units="ms" expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The time since the content was made available on the device. This
-    could be the time for when this content was retrieved from the server or the
-    time the data was pushed to the device. Recorded when the element has been
-    on the screen for 500 milliseconds.
-  </summary>
-</histogram>
-
 <histogram name="ContentSuggestions.Feed.WebFeed.FollowByIdResult"
-    enum="WebFeedSubscriptionRequestStatus" expires_after="2022-07-01">
+    enum="WebFeedSubscriptionRequestStatus" expires_after="2023-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1546,32 +1351,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContentSuggestions.Feed.WebFeed.FollowCount.Engaged"
+    units="follows" expires_after="2023-03-19">
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Replaced with the ContentSuggestions.{FeedType}.FollowCount.Engaged2
+    histogram pattern because this one had a misleading name. It will be
+    effectively obsoleted in the future.
+
+    Android: The number of web feeds the user is following. Reported at most
+    once per feed visit, when the user engages (FeedEngagementType.Engaged) with
+    either the For-You or Following Feeds.
+  </summary>
+</histogram>
+
 <histogram name="ContentSuggestions.Feed.WebFeed.FollowCount.{Event}"
-    units="follows" expires_after="2022-07-01">
+    units="follows" expires_after="2023-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
     Android: The number of web feeds the user is following. Reported {Event}.
   </summary>
   <token key="Event">
-    <variant name="AfterFollow" summary="after a successful follow action."/>
-    <variant name="AfterUnfollow"
-        summary="after a successful unfollow action."/>
+    <variant name="AfterFollow" summary="after a successful follow action"/>
+    <variant name="AfterUnfollow" summary="after a successful unfollow action"/>
     <variant name="ContentShown"
         summary="after the Following feed is shown, and some content is
-                 displayed."/>
-    <variant name="Engaged"
-        summary="after the user has been recorded as FeedEngagementType
-                 'Engaged', reported at most once per day when the user
-                 interacts with either the For-You or Following Feeds."/>
+                 displayed"/>
     <variant name="NoContentShown"
         summary="after the Following Feed is shown, and no content is
-                 available for display."/>
+                 available for display"/>
   </token>
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.WebFeed.FollowUriResult"
-    enum="WebFeedSubscriptionRequestStatus" expires_after="2022-07-01">
+    enum="WebFeedSubscriptionRequestStatus" expires_after="2023-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1581,9 +1396,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContentSuggestions.Feed.WebFeed.GetRssLinksRendererTime"
+    units="microseconds" expires_after="2023-03-01">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: The time spent by the renderer main thread to collect and send back
+    to the browser process a list of RSS/Atom links embedded in a web page. This
+    is recorded every time the renderer fulfills a request for these links,
+    currently only requested by the web feeds system. This histogram is only
+    logged in platforms with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram
     name="ContentSuggestions.Feed.WebFeed.LoadedCardCount.{ContentOrder}"
-    units="index" expires_after="2022-07-01">
+    units="index" expires_after="2023-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1599,7 +1428,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.WebFeed.NewFollow.IsRecommended"
-    enum="Boolean" expires_after="2022-09-01">
+    enum="Boolean" expires_after="2023-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1629,8 +1458,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContentSuggestions.Feed.WebFeed.PageInformationRequested"
+    enum="WebFeedPageInformationRequestReason" expires_after="2023-03-01">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Records the reason why the web feeds system is requesting information from
+    the renderer process about a loaded web page.
+  </summary>
+</histogram>
+
 <histogram name="ContentSuggestions.Feed.WebFeed.PostFollowDialog.Show"
-    enum="WebFeedPostFollowDialogPresentation" expires_after="2022-07-01">
+    enum="WebFeedPostFollowDialogPresentation" expires_after="2023-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1641,7 +1481,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.WebFeed.RefreshContentOrder"
-    enum="FeedContentOrder" expires_after="2022-09-01">
+    enum="FeedContentOrder" expires_after="2023-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1652,7 +1492,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.WebFeed.RefreshRecommendedFeeds"
-    enum="WebFeedRefreshStatus" expires_after="2022-07-01">
+    enum="WebFeedRefreshStatus" expires_after="2023-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1663,7 +1503,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.WebFeed.RefreshSubscribedFeeds.{Kind}"
-    enum="WebFeedRefreshStatus" expires_after="2022-07-01">
+    enum="WebFeedRefreshStatus" expires_after="2023-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1697,8 +1537,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContentSuggestions.Feed.WebFeed.SortType" enum="FeedSortType"
+    expires_after="2023-08-15">
+  <owner>adamta@google.com</owner>
+  <owner>sczs@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>The sort type that was selected from the feed's sort menu.</summary>
+</histogram>
+
+<histogram name="ContentSuggestions.Feed.WebFeed.SortTypeWhenEngaged"
+    enum="FeedSortType" expires_after="2023-08-15">
+  <owner>adamta@google.com</owner>
+  <owner>sczs@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    The currently selected sort type when the user has engaged with the
+    Following feed.
+  </summary>
+</histogram>
+
 <histogram name="ContentSuggestions.Feed.WebFeed.UnfollowResult"
-    enum="WebFeedSubscriptionRequestStatus" expires_after="2022-07-01">
+    enum="WebFeedSubscriptionRequestStatus" expires_after="2023-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1708,50 +1567,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="ContentSuggestions.Feed.ZeroStateRefreshCompleted.ContentCount"
-    units="count" expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    How many top level features were in an initial article fetch, typically
-    clusters. Recorded when an article fetch completes and were previously in
-    zero state.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.ZeroStateRefreshCompleted.TokenCount"
-    units="count" expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    How many tokens were in an initial article fetch, typically ways to fetch
-    more articles. Recorded when an article fetch completes and were previously
-    in zero state.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.ZeroStateShown.Reason"
-    enum="FeedZeroStateShowReason" expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>The reason the zero state (no articles) is shown to a user.</summary>
-</histogram>
-
 <histogram name="ContentSuggestions.Feed.{PlayType}Video.InitializationError"
-    enum="FeedVideoInitializationError" expires_after="M96">
+    enum="FeedVideoInitializationError" expires_after="2023-01-20">
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1769,7 +1586,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.{PlayType}Video.PlayError"
-    enum="FeedVideoPlayError" expires_after="M96">
+    enum="FeedVideoPlayError" expires_after="2023-01-20">
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1784,7 +1601,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.{PlayType}Video.PlayEvent"
-    enum="FeedVideoPlayEvent" expires_after="M96">
+    enum="FeedVideoPlayEvent" expires_after="2023-01-20">
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1827,8 +1644,50 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="ContentSuggestions.{FeedType}.FollowCount.Engaged2"
+    units="follows" expires_after="2023-03-01">
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: The number of web feeds the user is following. Reported at most
+    once per feed visit, when the user engages (FeedEngagementType.Engaged,
+    non-Simple) with {FeedType}.
+  </summary>
+  <token key="FeedType">
+    <variant name="Feed" summary="the For-You feed"/>
+    <variant name="Feed.AllFeeds"
+        summary="either the For-You or Following/Web feed"/>
+    <variant name="Feed.WebFeed" summary="the Following/Web Feed"/>
+  </token>
+</histogram>
+
+<histogram name="ContentSuggestions.{FeedType}.InfoCard.{Action}"
+    enum="FeedInfoCardType" expires_after="2023-05-01">
+  <owner>jianli@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: Reports when {Action} has occurred for an info card. The type of
+    the info card was reported.
+  </summary>
+  <token key="FeedType">
+    <variant name="Feed" summary="For-You Feed"/>
+    <variant name="Feed.WebFeed" summary="Web Feed"/>
+  </token>
+  <token key="Action">
+    <variant name="Clicked" summary="clicked"/>
+    <variant name="Dismissed" summary="dismissed explicitly"/>
+    <variant name="Reset" summary="state reset"/>
+    <variant name="Started" summary="started to track view"/>
+    <variant name="Viewed" summary="viewed"/>
+  </token>
+</histogram>
+
 <histogram name="ContentSuggestions.{FeedType}.InvalidNoticeKey" enum="Boolean"
-    expires_after="2022-10-01">
+    expires_after="2023-03-01">
+  <obsolete>
+    Deprecated in 05/2022 since we removed feed notice card related codes.
+  </obsolete>
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1841,7 +1700,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.{FeedType}.LoadedCardCount" units="index"
-    expires_after="2022-07-01">
+    expires_after="2023-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1858,7 +1717,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContentSuggestions.{FeedType}.LoadMoreTrigger.NumCardsRemaining"
-    units="cards" expires_after="2022-03-01">
+    units="cards" expires_after="2023-03-01">
   <owner>rogerm@chromium.org</owner>
   <owner>dewittj@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1873,7 +1732,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.{FeedType}.LoadMoreTrigger.TotalCards"
-    units="cards" expires_after="2022-03-01">
+    units="cards" expires_after="2023-03-01">
   <owner>rogerm@chromium.org</owner>
   <owner>dewittj@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1889,7 +1748,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContentSuggestions.{FeedType}.LoadStreamStatus.BackgroundRefresh"
-    enum="FeedLoadStreamStatus" expires_after="2022-03-01">
+    enum="FeedLoadStreamStatus" expires_after="2023-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1906,7 +1765,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.{FeedType}.LoadStreamStatus.Initial"
-    enum="FeedLoadStreamStatus" expires_after="2022-03-01">
+    enum="FeedLoadStreamStatus" expires_after="2023-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1922,7 +1781,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContentSuggestions.{FeedType}.LoadStreamStatus.InitialFromStore"
-    enum="FeedLoadStreamStatus" expires_after="2022-03-01">
+    enum="FeedLoadStreamStatus" expires_after="2023-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1939,7 +1798,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.{FeedType}.LoadStreamStatus.ManualRefresh"
-    enum="FeedLoadStreamStatus" expires_after="2022-07-01">
+    enum="FeedLoadStreamStatus" expires_after="2023-03-01">
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1954,7 +1813,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContentSuggestions.{FeedType}.NoticeAcknowledgementPath.{NoticeType}"
-    enum="FeedNoticeAcknowledgementPath" expires_after="2022-10-01">
+    enum="FeedNoticeAcknowledgementPath" expires_after="2023-03-01">
+  <obsolete>
+    Deprecated in 05/2022 since we removed feed notice card related codes.
+  </obsolete>
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1972,7 +1834,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.{FeedType}.Notice{Action}.{NoticeType}"
-    enum="Boolean" expires_after="2022-10-01">
+    enum="Boolean" expires_after="2023-03-01">
+  <obsolete>
+    Deprecated in 05/2022 since we removed feed notice card related codes.
+  </obsolete>
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -2006,7 +1871,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.{FeedType}.ReachedEndOfFeed" units="index"
-    expires_after="2022-07-01">
+    expires_after="2023-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -2024,7 +1889,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.{FeedType}.SharedStateSizeKB" units="KB"
-    expires_after="2022-07-01">
+    expires_after="2023-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -2039,7 +1904,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.{FeedType}.StreamContentSizeKB" units="KB"
-    expires_after="2022-07-01">
+    expires_after="2023-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>

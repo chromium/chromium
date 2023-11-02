@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
@@ -34,6 +34,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/content/browser/password_protection/password_protection_commit_deferring_condition.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_request_content.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_test_util.h"
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
@@ -45,8 +46,10 @@
 #include "components/user_manager/user_names.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
@@ -198,6 +201,10 @@ class ChromePasswordProtectionServiceBrowserTest : public InProcessBrowserTest {
 
   signin::IdentityTestEnvironment* identity_test_env() {
     return identity_test_env_adaptor_->identity_test_env();
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
  protected:
@@ -554,10 +561,9 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
   Profile* profile = browser()->profile();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(kLoginPageUrl)));
-  ASSERT_TRUE(
-      profile->GetPrefs()
-          ->GetDictionary(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses)
-          ->DictEmpty());
+  ASSERT_TRUE(profile->GetPrefs()
+                  ->GetDict(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses)
+                  .empty());
 
   base::HistogramTester histograms;
   // Shows modal dialog on current web_contents.
@@ -572,10 +578,9 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
       request.get(), LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED,
       "unused_token", account_type);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1u,
-            profile->GetPrefs()
-                ->GetDictionary(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses)
-                ->DictSize());
+  EXPECT_EQ(1u, profile->GetPrefs()
+                    ->GetDict(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses)
+                    .size());
 
   // Opens a new browser window.
   Browser* browser2 = CreateBrowser(profile);
@@ -591,19 +596,17 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
       LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED, "unused_token",
       account_type);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(2u,
-            profile->GetPrefs()
-                ->GetDictionary(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses)
-                ->DictSize());
+  EXPECT_EQ(2u, profile->GetPrefs()
+                    ->GetDict(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses)
+                    .size());
 
   // Simulates a Gaia password change.
   SimulateGaiaPasswordChanged(service, user_manager::kStubUserEmail,
                               /*is_other_password=*/true);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(0u,
-            profile->GetPrefs()
-                ->GetDictionary(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses)
-                ->DictSize());
+  EXPECT_EQ(0u, profile->GetPrefs()
+                    ->GetDict(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses)
+                    .size());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
@@ -635,26 +638,23 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
       request.get(), LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED,
       "unused_token", account_type);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1u,
-            profile->GetPrefs()
-                ->GetDictionary(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses)
-                ->DictSize());
+  EXPECT_EQ(1u, profile->GetPrefs()
+                    ->GetDict(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses)
+                    .size());
 
   // Save the same password will not trigger OnGaiaPasswordChanged(), thus no
   // change to size of unhandled_password_reuses().
   SimulateGaiaPasswordChange("password_1");
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1u,
-            profile->GetPrefs()
-                ->GetDictionary(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses)
-                ->DictSize());
+  EXPECT_EQ(1u, profile->GetPrefs()
+                    ->GetDict(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses)
+                    .size());
   // Save a different password will clear unhandled_password_reuses().
   SimulateGaiaPasswordChange("password_2");
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(0u,
-            profile->GetPrefs()
-                ->GetDictionary(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses)
-                ->DictSize());
+  EXPECT_EQ(0u, profile->GetPrefs()
+                    ->GetDict(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses)
+                    .size());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
@@ -680,9 +680,6 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
   content::TestNavigationObserver observer(new_web_contents,
                                            /*number_of_navigations=*/1);
   observer.Wait();
-  EXPECT_THAT(histograms.GetAllSamples("PasswordProtection.InterstitialString"),
-              testing::ElementsAre(base::Bucket(2, 1)));
-
   // Clicks on "Reset Password" button.
   std::string script =
       "var node = document.getElementById('reset-password-button'); \n"
@@ -828,7 +825,6 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
   SimulateGaiaPasswordChange("password");
   ASSERT_EQ(1u, profile->GetPrefs()
                     ->GetList(password_manager::prefs::kPasswordHashDataList)
-                    ->GetList()
                     .size());
   // Turn off trigger
   profile->GetPrefs()->SetInteger(
@@ -841,7 +837,6 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
       user_manager::kStubUserEmail, /*is_gaia_password=*/true));
   EXPECT_EQ(0u, profile->GetPrefs()
                     ->GetList(password_manager::prefs::kPasswordHashDataList)
-                    ->GetList()
                     .size());
 }
 
@@ -854,7 +849,6 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
 
   ASSERT_EQ(0u, profile->GetPrefs()
                     ->GetList(password_manager::prefs::kPasswordHashDataList)
-                    ->GetList()
                     .size());
   // Configures initial password to "password_1";
   password_manager::PasswordReuseManager* reuse_manager =
@@ -868,7 +862,6 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
           CHANGED_IN_CONTENT_AREA);
   ASSERT_EQ(2u, profile->GetPrefs()
                     ->GetList(password_manager::prefs::kPasswordHashDataList)
-                    ->GetList()
                     .size());
 
   // Turn off trigger
@@ -885,35 +878,302 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
                                             /*is_gaia_password=*/true));
   EXPECT_EQ(0u, profile->GetPrefs()
                     ->GetList(password_manager::prefs::kPasswordHashDataList)
-                    ->GetList()
                     .size());
+}
+
+// Test fixture for testing the navigation deferral mechanism while a modal
+// warning dialog is being shown or potentially about to be shown.
+class ChromePasswordProtectionServiceNavigationDeferralBrowserTest
+    : public ChromePasswordProtectionServiceBrowserTest {
+ public:
+  ChromePasswordProtectionServiceNavigationDeferralBrowserTest() = default;
+  ~ChromePasswordProtectionServiceNavigationDeferralBrowserTest() override =
+      default;
+
+  scoped_refptr<PasswordProtectionRequest>
+  StartRequestWithPotentialForModalWarning() {
+    ChromePasswordProtectionService* service =
+        GetService(/*is_incognito=*/false);
+
+    const std::string kSignonRealm = "https://example.test";
+    const std::u16string kUsername = u"username1";
+    std::vector<password_manager::MatchingReusedCredential> credentials = {
+        {kSignonRealm, kUsername}};
+
+    // TODO(bokan): This issues a real request, via a URLLoader, that actually
+    // gets a response. It'd be better if this test could control the response
+    // instead of manually calling Finish.
+    service->StartRequest(GetWebContents(), GURL(), GURL(), GURL(), "",
+                          PasswordType::SAVED_PASSWORD, credentials,
+                          LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+                          true);
+    if (service->get_pending_requests_for_testing().size() != 1ul)
+      return nullptr;
+
+    return *service->get_pending_requests_for_testing().begin();
+  }
+
+  void FinishRequest(PasswordProtectionRequest* request,
+                     LoginReputationClientResponse_VerdictType verdict_type) {
+    auto verdict = std::make_unique<LoginReputationClientResponse>();
+    verdict->set_verdict_type(verdict_type);
+    request->finish_for_testing(RequestOutcome::SUCCEEDED, std::move(verdict));
+  }
+
+  PasswordProtectionCommitDeferringCondition* GetDeferringCondition(
+      PasswordProtectionRequest* request) {
+    auto* request_content =
+        static_cast<PasswordProtectionRequestContent*>(request);
+    if (request_content->get_deferred_navigations_for_testing().size() != 1ul)
+      return nullptr;
+
+    return *request_content->get_deferred_navigations_for_testing().begin();
+  }
+
+  void DismissModalDialog(WarningAction action) {
+    ReusedPasswordAccountType account_type;
+    account_type.set_account_type(ReusedPasswordAccountType::SAVED_PASSWORD);
+    GetService(/*is_incognito=*/false)
+        ->OnUserAction(GetWebContents(), account_type,
+                       RequestOutcome::SUCCEEDED,
+                       LoginReputationClientResponse::PHISHING, "unused_token",
+                       WarningUIType::MODAL_DIALOG, action);
+  }
+
+  bool RunUntilRequestDefersCommit(
+      PasswordProtectionRequest* request,
+      content::TestNavigationManager& navigation_manager) {
+    bool is_at_respose = navigation_manager.WaitForResponse();
+    CHECK(is_at_respose);
+
+    // This will run until the first yield point of the navigation which could
+    // be the PasswordProtectionCommitDeferringCondition but it may also be some
+    // other condition, or if no conditions defer it will run until the
+    // navigation finish.
+    navigation_manager.ResumeNavigation();
+
+    // If the navigation finished, fail the test.
+    EXPECT_TRUE(navigation_manager.GetNavigationHandle());
+    if (!navigation_manager.GetNavigationHandle())
+      return false;
+
+    // We must be blocked on a CommitDeferringCondition, otherwise, some new
+    // yield point was added after the response but before
+    // CommitDeferringConditions.
+    CHECK(navigation_manager.GetNavigationHandle()
+              ->IsCommitDeferringConditionDeferredForTesting());
+
+    // A PasswordProtectionCommitDeferringCondition should have been created.
+    PasswordProtectionCommitDeferringCondition* condition =
+        GetDeferringCondition(request);
+    CHECK(condition);
+
+    // If the navigation is blocked on the PasswordProtection condition then
+    // we're already done.
+    if (navigation_manager.GetNavigationHandle()
+            ->GetCommitDeferringConditionForTesting() == condition) {
+      return true;
+    }
+
+    // There could be other CommitDeferringConditions before the
+    // PasswordProtection one. Continue past them until we get to it.
+    base::RunLoop run_loop(base::RunLoop::Type::kDefault);
+    condition->register_invoke_callback_for_testing(run_loop.QuitClosure());
+    run_loop.Run();
+
+    // If the navigation finished, fail the test.
+    EXPECT_TRUE(navigation_manager.GetNavigationHandle());
+    if (!navigation_manager.GetNavigationHandle())
+      return false;
+
+    // Ensure the navigation is deferred on the condition we expect.
+    EXPECT_EQ(navigation_manager.GetNavigationHandle()
+                  ->GetCommitDeferringConditionForTesting(),
+              condition);
+    return navigation_manager.GetNavigationHandle()
+               ->GetCommitDeferringConditionForTesting() == condition;
+  }
+};
+
+// Tests that a navigation started while a modal warning is showing is deferred
+// until the modal is dismissed.
+IN_PROC_BROWSER_TEST_F(
+    ChromePasswordProtectionServiceNavigationDeferralBrowserTest,
+    ModalWarningDefersNavigation) {
+  const GURL kNextPage = embedded_test_server()->GetURL("/simple.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kLoginPageUrl)));
+
+  // Start a request for a PASSWORD_REUSE_EVENT.
+  scoped_refptr<PasswordProtectionRequest> request =
+      StartRequestWithPotentialForModalWarning();
+  ASSERT_TRUE(request);
+
+  // Finish the request so that it results in a modal warning being shown.
+  FinishRequest(request.get(), LoginReputationClientResponse::PHISHING);
+  ASSERT_TRUE(request->is_modal_warning_showing());
+
+  // Start a renderer-initiated navigation away from the current page. The
+  // navigation should be deferred.
+  content::TestNavigationManager navigation(GetWebContents(), kNextPage);
+  ASSERT_TRUE(content::ExecJs(GetWebContents()->GetPrimaryMainFrame(),
+                              content::JsReplace("location = $1", kNextPage)));
+
+  // Run the navigation until it defers on the
+  // PasswordProtectionCommitDeferringCondition.
+  ASSERT_TRUE(RunUntilRequestDefersCommit(request.get(), navigation));
+
+  // Simulate the user dismissing the dialog. The navigation should be resumed.
+  DismissModalDialog(WarningAction::IGNORE_WARNING);
+
+  navigation.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation.was_successful());
+}
+
+// Tests that a navigation started while there is a password protection request
+// that could lead to showing a modal warning will be deferred. In this case,
+// the request response determines the page is safe so the navigation should be
+// automatically resumed.
+IN_PROC_BROWSER_TEST_F(
+    ChromePasswordProtectionServiceNavigationDeferralBrowserTest,
+    PendingRequestDefersNavigationSafeResponseResumes) {
+  const GURL kNextPage = embedded_test_server()->GetURL("/simple.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kLoginPageUrl)));
+
+  // Start a request for a PASSWORD_REUSE_EVENT.
+  scoped_refptr<PasswordProtectionRequest> request =
+      StartRequestWithPotentialForModalWarning();
+  ASSERT_TRUE(request);
+
+  // Start a renderer-initiated navigation away from the current page. The
+  // navigation should be deferred.
+  content::TestNavigationManager navigation(GetWebContents(), kNextPage);
+  ASSERT_TRUE(content::ExecJs(GetWebContents()->GetPrimaryMainFrame(),
+                              content::JsReplace("location = $1", kNextPage)));
+
+  // Run the navigation until it defers on the
+  // PasswordProtectionCommitDeferringCondition.
+  ASSERT_TRUE(RunUntilRequestDefersCommit(request.get(), navigation));
+
+  // Finish the request so that the modal warning is not shown.
+  FinishRequest(request.get(), LoginReputationClientResponse::SAFE);
+  ASSERT_FALSE(request->is_modal_warning_showing());
+
+  navigation.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation.was_successful());
+}
+
+// Tests that a navigation started while there is a password protection request
+// that could lead to showing a modal warning will be deferred. In this case,
+// the request response does show a warning so the navigation should continue
+// to be deferred until the user dismisses the warning.
+IN_PROC_BROWSER_TEST_F(
+    ChromePasswordProtectionServiceNavigationDeferralBrowserTest,
+    PendingRequestDefersNavigationWarningContinuesDeferring) {
+  const GURL kNextPage = embedded_test_server()->GetURL("/simple.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kLoginPageUrl)));
+
+  // Start a request for a PASSWORD_REUSE_EVENT.
+  scoped_refptr<PasswordProtectionRequest> request =
+      StartRequestWithPotentialForModalWarning();
+  ASSERT_TRUE(request);
+
+  // Start a renderer-initiated navigation away from the current page. The
+  // navigation should be deferred.
+  content::TestNavigationManager navigation(GetWebContents(), kNextPage);
+  ASSERT_TRUE(content::ExecJs(GetWebContents()->GetPrimaryMainFrame(),
+                              content::JsReplace("location = $1", kNextPage)));
+  // Run the navigation until it defers on the
+  // PasswordProtectionCommitDeferringCondition.
+  ASSERT_TRUE(RunUntilRequestDefersCommit(request.get(), navigation));
+
+  // Finish the request so that a modal warning is shown
+  FinishRequest(request.get(), LoginReputationClientResponse::PHISHING);
+  ASSERT_TRUE(request->is_modal_warning_showing());
+  ASSERT_TRUE(navigation.GetNavigationHandle()
+                  ->IsCommitDeferringConditionDeferredForTesting());
+
+  // Simulate the user dismissing the dialog. The navigation should be resumed.
+  DismissModalDialog(WarningAction::IGNORE_WARNING);
+
+  navigation.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation.was_successful());
 }
 
 // Extends the test fixture with support for testing prerendered and
 // back/forward cached pages.
-class ChromePasswordProtectionServiceBrowserTestWithActivation
-    : public ChromePasswordProtectionServiceBrowserTest {
+class ChromePasswordProtectionServiceDeferActivationBrowserTest
+    : public ChromePasswordProtectionServiceNavigationDeferralBrowserTest {
  public:
-  ChromePasswordProtectionServiceBrowserTestWithActivation()
+  ChromePasswordProtectionServiceDeferActivationBrowserTest()
       : prerender_helper_(base::BindRepeating(
-            &ChromePasswordProtectionServiceBrowserTestWithActivation::
+            &ChromePasswordProtectionServiceDeferActivationBrowserTest::
                 GetWebContents,
             base::Unretained(this))) {
+    std::vector<base::test::ScopedFeatureList::FeatureAndParams>
+        additional_features = {{features::kBackForwardCache, {}}};
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kBackForwardCache,
-          {{"enable_same_site", "true"},
-           {"TimeToLiveInBackForwardCacheInSeconds", "3600"}}}},
-        // Allow BackForwardCache for all devices regardless of their memory.
-        {features::kBackForwardCacheMemoryControls});
+        content::DefaultEnabledBackForwardCacheParametersForTests(
+            additional_features),
+        content::DefaultDisabledBackForwardCacheParametersForTests());
   }
 
   void SetUp() override {
     prerender_helper_.SetUp(embedded_test_server());
-    ChromePasswordProtectionServiceBrowserTest::SetUp();
+    ChromePasswordProtectionServiceNavigationDeferralBrowserTest::SetUp();
   }
 
-  content::WebContents* GetWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+  // This is almost the same as the base class version but is slightly
+  // different as it must use a TestActivationManager which has different
+  // navigation timing.
+  bool RunUntilRequestDefersCommit(
+      PasswordProtectionRequest* request,
+      content::TestActivationManager& prerender_manager) {
+    bool is_at_before_checks = prerender_manager.WaitForBeforeChecks();
+    CHECK(is_at_before_checks);
+
+    // A PasswordProtectionCommitDeferringCondition should have been created
+    // for commit checks.
+    PasswordProtectionCommitDeferringCondition* condition =
+        GetDeferringCondition(request);
+    CHECK(condition);
+
+    base::RunLoop run_loop(base::RunLoop::Type::kDefault);
+    condition->register_invoke_callback_for_testing(run_loop.QuitClosure());
+
+    // This will run until the first yield point of the navigation which could
+    // be the PasswordProtectionCommitDeferringCondition but it may also be some
+    // other condition, or if no conditions defer it will run until the
+    // navigation finish.
+    prerender_manager.ResumeActivation();
+
+    // If the navigation finished, fail the test.
+    EXPECT_TRUE(prerender_manager.GetNavigationHandle());
+    if (!prerender_manager.GetNavigationHandle())
+      return false;
+
+    // If the navigation yielded on a condition before the
+    // PasswordProtectionCommitDeferringCondition, continue until it is
+    // invoked.  If ResumeActivation yielded due to the PasswordProtection
+    // condition, this will be a no-op.
+    run_loop.Run();
+
+    // If the navigation finished, fail the test.
+    EXPECT_TRUE(prerender_manager.GetNavigationHandle());
+    if (!prerender_manager.GetNavigationHandle())
+      return false;
+
+    // Ensure the navigation is deferred on the condition we expect.
+    EXPECT_EQ(prerender_manager.GetNavigationHandle()
+                  ->GetCommitDeferringConditionForTesting(),
+              condition);
+    return prerender_manager.GetNavigationHandle()
+               ->GetCommitDeferringConditionForTesting() == condition;
   }
 
  protected:
@@ -921,102 +1181,140 @@ class ChromePasswordProtectionServiceBrowserTestWithActivation
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Tests that activation of prerendered pages is disabled when there is a
+// Tests that activation of a prerendered page is deferred when there is a
 // pending PasswordProtectionRequest which might trigger a modal warning.
 // This tests the case where the prerender starts before the
 // PasswordProtectionRequest.
-// TODO(https://crbug.com/1234857): The activation should be deferred rather
-// than disallowed, like other navigations.
-IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTestWithActivation,
-                       DoNotActivatePrerenderStartedBeforeRequest) {
-  SetUpPrimaryAccountWithHostedDomain(kNoHostedDomainFound);
-  // Prepare sync account will trigger a password change.
-  ChromePasswordProtectionService* service = GetService(/*is_incognito=*/false);
-  ASSERT_TRUE(service);
+IN_PROC_BROWSER_TEST_F(
+    ChromePasswordProtectionServiceDeferActivationBrowserTest,
+    DeferActivatePrerenderStartedBeforeRequest) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(kLoginPageUrl)));
 
   // Start a prerender.
-  GURL prerender_url = embedded_test_server()->GetURL("/simple.html");
-  prerender_helper_.AddPrerender(prerender_url);
+  const GURL kPrerenderUrl = embedded_test_server()->GetURL("/simple.html");
+  prerender_helper_.AddPrerender(kPrerenderUrl);
 
-  // Start a request for a PASSWORD_REUSE_EVENT. This disables activation
-  // navigations because the throttle responsible for deferring while the
-  // request is pending cannot see the activation navigation.
-  service->StartRequest(
-      GetWebContents(), GURL(), GURL(), GURL(), "",
-      PasswordType::PASSWORD_TYPE_UNKNOWN,
-      std::vector<password_manager::MatchingReusedCredential>(),
-      LoginReputationClientRequest::PASSWORD_REUSE_EVENT, true);
+  // Start a request that could lead to showing a modal warning.
+  scoped_refptr<PasswordProtectionRequest> request =
+      StartRequestWithPotentialForModalWarning();
+  ASSERT_TRUE(request);
 
-  // Navigate to the prerendered URL. It will be loaded anew without an
-  // activation.
-  content::TestNavigationManager prerender_manager(GetWebContents(),
-                                                   prerender_url);
+  // Navigate to the prerendered URL. Ensure the activation navigation is
+  // deferred until the request finishes without showing a modal.
+  content::TestActivationManager prerender_manager(GetWebContents(),
+                                                   kPrerenderUrl);
+
   ASSERT_TRUE(
-      content::ExecJs(GetWebContents()->GetMainFrame(),
-                      content::JsReplace("location = $1", prerender_url)));
+      content::ExecJs(GetWebContents()->GetPrimaryMainFrame(),
+                      content::JsReplace("location = $1", kPrerenderUrl)));
+
+  // Run the navigation until it defers on the
+  // PasswordProtectionCommitDeferringCondition.
+  ASSERT_TRUE(RunUntilRequestDefersCommit(request.get(), prerender_manager));
+
+  // Simulate a response arriving that doesn't show the warning dialog. The
+  // activating navigation should now be allowed to complete.
+  FinishRequest(request.get(), LoginReputationClientResponse::SAFE);
+  ASSERT_FALSE(request->is_modal_warning_showing());
   prerender_manager.WaitForNavigationFinished();
-  EXPECT_FALSE(prerender_manager.was_prerendered_page_activation());
-  EXPECT_TRUE(prerender_manager.was_successful());
+  ASSERT_TRUE(prerender_manager.was_activated());
 }
 
-// Tests that activation of prerendered pages is disabled when there is a
+// Tests that activation of a prerendered page is deferred when there is a
 // pending PasswordProtectionRequest which might trigger a modal warning.
 // This tests the case where the prerender starts after the
 // PasswordProtectionRequest.
-// TODO(https://crbug.com/1234857): The activation should be deferred rather
-// than disallowed, like other navigations.
-IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTestWithActivation,
-                       DoNotActivatePrerenderStartedAfterRequest) {
-  SetUpPrimaryAccountWithHostedDomain(kNoHostedDomainFound);
-  // Prepare sync account will trigger a password change.
-  ChromePasswordProtectionService* service = GetService(/*is_incognito=*/false);
-  ASSERT_TRUE(service);
+IN_PROC_BROWSER_TEST_F(
+    ChromePasswordProtectionServiceDeferActivationBrowserTest,
+    DeferActivatePrerenderStartedAfterRequest) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(kLoginPageUrl)));
 
-  // Start a request for a PASSWORD_REUSE_EVENT. This disables activation
-  // navigations because the throttle responsible for deferring while the
-  // request is pending cannot see the activation navigation.
-  service->StartRequest(
-      GetWebContents(), GURL(), GURL(), GURL(), "",
-      PasswordType::PASSWORD_TYPE_UNKNOWN,
-      std::vector<password_manager::MatchingReusedCredential>(),
-      LoginReputationClientRequest::PASSWORD_REUSE_EVENT, true);
+  // Start a request that could lead to showing a modal warning.
+  scoped_refptr<PasswordProtectionRequest> request =
+      StartRequestWithPotentialForModalWarning();
+  ASSERT_TRUE(request);
 
-  // Start a prerender.
-  GURL prerender_url = embedded_test_server()->GetURL("/simple.html");
-  prerender_helper_.AddPrerender(prerender_url);
+  // Start a prerender; this should not be deferred since it's happening in the
+  // background.
+  const GURL kPrerenderUrl = embedded_test_server()->GetURL("/simple.html");
+  prerender_helper_.AddPrerender(kPrerenderUrl);
 
-  // Navigate to the prerendered URL. It will be loaded anew without an
-  // activation.
-  content::TestNavigationManager prerender_manager(GetWebContents(),
-                                                   prerender_url);
+  ASSERT_NE(prerender_helper_.GetHostForUrl(kPrerenderUrl),
+            content::RenderFrameHost::kNoFrameTreeNodeId);
+
+  // Navigate to the prerendered URL. Ensure the activation navigation is
+  // deferred until the request finishes without showing a modal.
+  content::TestActivationManager prerender_manager(GetWebContents(),
+                                                   kPrerenderUrl);
   ASSERT_TRUE(
-      content::ExecJs(GetWebContents()->GetMainFrame(),
-                      content::JsReplace("location = $1", prerender_url)));
+      content::ExecJs(GetWebContents()->GetPrimaryMainFrame(),
+                      content::JsReplace("location = $1", kPrerenderUrl)));
+
+  // Run the navigation until it defers on the
+  // PasswordProtectionCommitDeferringCondition.
+  ASSERT_TRUE(RunUntilRequestDefersCommit(request.get(), prerender_manager));
+
+  // Simulate a response arriving that doesn't show the warning dialog. The
+  // activating navigation should now be allowed to complete.
+  FinishRequest(request.get(), LoginReputationClientResponse::SAFE);
+  ASSERT_FALSE(request->is_modal_warning_showing());
+
   prerender_manager.WaitForNavigationFinished();
-  EXPECT_FALSE(prerender_manager.was_prerendered_page_activation());
-  EXPECT_TRUE(prerender_manager.was_successful());
+  ASSERT_TRUE(prerender_manager.was_activated());
 }
 
-// Tests that activation of back/forward cached pages is disabled when there is
-// a pending PasswordProtectionRequest which might trigger a modal warning.
-// TODO(https://crbug.com/1234857): The activation should be deferred rather
-// than disallowed, like other navigations.
-IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTestWithActivation,
-                       DoNotActivateBackForwardCache) {
-  SetUpPrimaryAccountWithHostedDomain(kNoHostedDomainFound);
+IN_PROC_BROWSER_TEST_F(
+    ChromePasswordProtectionServiceDeferActivationBrowserTest,
+    PrerenderActivationDeferredByModalWarning) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kLoginPageUrl)));
 
-  // Prepare sync account will trigger a password change.
-  ChromePasswordProtectionService* service = GetService(/*is_incognito=*/false);
-  ASSERT_TRUE(service);
+  // Start a prerender.
+  const GURL kPrerenderUrl = embedded_test_server()->GetURL("/simple.html");
+  prerender_helper_.AddPrerender(kPrerenderUrl);
 
+  // Start a request that could lead to showing a modal warning.
+  scoped_refptr<PasswordProtectionRequest> request =
+      StartRequestWithPotentialForModalWarning();
+  ASSERT_TRUE(request);
+
+  // Finish the request so that it results in a modal warning being shown.
+  FinishRequest(request.get(), LoginReputationClientResponse::PHISHING);
+  ASSERT_TRUE(request->is_modal_warning_showing());
+
+  // Navigate to the prerendered URL. Ensure the activation navigation is
+  // deferred until the request finishes without showing a modal.
+  content::TestActivationManager prerender_manager(GetWebContents(),
+                                                   kPrerenderUrl);
+
+  ASSERT_TRUE(
+      content::ExecJs(GetWebContents()->GetPrimaryMainFrame(),
+                      content::JsReplace("location = $1", kPrerenderUrl)));
+
+  // Run the navigation until it defers on the
+  // PasswordProtectionCommitDeferringCondition.
+  ASSERT_TRUE(RunUntilRequestDefersCommit(request.get(), prerender_manager));
+
+  // Simulate the user dismissing the dialog. The navigation should be resumed.
+  DismissModalDialog(WarningAction::IGNORE_WARNING);
+
+  prerender_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(prerender_manager.was_successful());
+}
+
+// Tests that activation of back/forward cached pages is not deferred if the
+// navigation is browser-initiated.
+// TODO(bokan): This is existing behavior but I wonder if it's intentional? The
+// user can't click any browser UI while the modal is up anyway...
+IN_PROC_BROWSER_TEST_F(
+    ChromePasswordProtectionServiceDeferActivationBrowserTest,
+    BrowserInitiatedBackForwardCacheActivation) {
   // Put a simple page in the back/forward cache.
-  GURL url_a = embedded_test_server()->GetURL("/simple.html");
+  const GURL kURLInBFCache = embedded_test_server()->GetURL("/simple.html");
   content::RenderFrameHost* rfh_a_raw =
-      ui_test_utils::NavigateToURL(browser(), url_a);
+      ui_test_utils::NavigateToURL(browser(), kURLInBFCache);
   content::RenderFrameHostWrapper rfh_a(rfh_a_raw);
   content::RenderFrameHost* rfh_b_raw = ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(kLoginPageUrl));
@@ -1028,20 +1326,71 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTestWithActivation,
   EXPECT_EQ(rfh_a->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
-  // Start a request for a PASSWORD_REUSE_EVENT. This disables activation
-  // navigations because the throttle responsible for deferring while the
-  // request is pending cannot see the activation navigation.
-  service->StartRequest(
-      GetWebContents(), GURL(), GURL(), GURL(), "",
-      PasswordType::PASSWORD_TYPE_UNKNOWN,
-      std::vector<password_manager::MatchingReusedCredential>(),
-      LoginReputationClientRequest::PASSWORD_REUSE_EVENT, true);
+  // Start a request that could lead to showing a modal warning.
+  scoped_refptr<PasswordProtectionRequest> request =
+      StartRequestWithPotentialForModalWarning();
+  ASSERT_TRUE(request);
 
-  // Navigate back. It will be loaded anew without an activation.
+  content::TestActivationManager prerender_manager(GetWebContents(),
+                                                   kURLInBFCache);
+
+  // Do a browser-initiated back history navigation. This should be allowed
+  // because it is browser-initiated.
   GetWebContents()->GetController().GoBack();
-  EXPECT_TRUE(content::WaitForLoadStop(GetWebContents()));
-  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
-  EXPECT_EQ(GetWebContents()->GetLastCommittedURL(), url_a);
+  ASSERT_TRUE(prerender_manager.WaitForBeforeChecks());
+
+  // The activating navigation should be unblocked.
+  prerender_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(prerender_manager.was_activated());
+}
+
+// Tests that activation of back/forward cached pages from a renderer initiated
+// history navigation is deferred while there is a pending
+// PasswordProtectionRequest which might trigger a modal warning.
+IN_PROC_BROWSER_TEST_F(
+    ChromePasswordProtectionServiceDeferActivationBrowserTest,
+    DeferRendererInitiatedBackForwardCacheActivation) {
+  // Put a simple page in the back/forward cache.
+  const GURL kURLInBFCache = embedded_test_server()->GetURL("/simple.html");
+  content::RenderFrameHost* rfh_a_raw =
+      ui_test_utils::NavigateToURL(browser(), kURLInBFCache);
+  content::RenderFrameHostWrapper rfh_a(rfh_a_raw);
+  content::RenderFrameHost* rfh_b_raw = ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kLoginPageUrl));
+  content::RenderFrameHostWrapper rfh_b(rfh_b_raw);
+
+  // Ensure that `rfh_a` is in the back/forward cache.
+  EXPECT_FALSE(rfh_a.IsRenderFrameDeleted());
+  EXPECT_NE(rfh_a.get(), rfh_b.get());
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  // Start a request that could lead to showing a modal warning.
+  scoped_refptr<PasswordProtectionRequest> request =
+      StartRequestWithPotentialForModalWarning();
+  ASSERT_TRUE(request);
+
+  // Navigate back to the URL in the BFCache. Ensure the BFCache restore is
+  // deferred until the request finishes without showing a modal.  Note: this
+  // must be a renderer-initiated history navigation. A user-initiated history
+  // navigation should not be deferred.
+  content::TestActivationManager prerender_manager(GetWebContents(),
+                                                   kURLInBFCache);
+  ASSERT_TRUE(content::ExecJs(
+      GetWebContents()->GetPrimaryMainFrame(),
+      content::JsReplace("window.history.back()", kURLInBFCache)));
+
+  // Run the navigation until it defers on the
+  // PasswordProtectionCommitDeferringCondition.
+  ASSERT_TRUE(RunUntilRequestDefersCommit(request.get(), prerender_manager));
+
+  // Finish the request so that no warning is shown.
+  FinishRequest(request.get(), LoginReputationClientResponse::SAFE);
+  ASSERT_FALSE(request->is_modal_warning_showing());
+
+  // Since no modal is showing, the activating navigation should be unblocked.
+  prerender_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(prerender_manager.was_activated());
 }
 
 }  // namespace safe_browsing

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@
 #include "ash/constants/ash_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "chrome/browser/accessibility/caption_settings_dialog.h"
 #endif
 
@@ -41,11 +41,11 @@ CaptionsHandler::~CaptionsHandler() {
 }
 
 void CaptionsHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "openSystemCaptionsDialog",
       base::BindRepeating(&CaptionsHandler::HandleOpenSystemCaptionsDialog,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "liveCaptionSectionReady",
       base::BindRepeating(&CaptionsHandler::HandleLiveCaptionSectionReady,
                           base::Unretained(this)));
@@ -62,32 +62,30 @@ void CaptionsHandler::OnJavascriptDisallowed() {
 }
 
 void CaptionsHandler::HandleLiveCaptionSectionReady(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
 }
 
 void CaptionsHandler::HandleOpenSystemCaptionsDialog(
-    const base::ListValue* args) {
-#if defined(OS_WIN) || defined(OS_MAC)
+    const base::Value::List& args) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   captions::CaptionSettingsDialog::ShowCaptionSettingsDialog();
 #endif
 }
 
-void CaptionsHandler::OnSodaInstalled() {
+void CaptionsHandler::OnSodaInstalled(speech::LanguageCode language_code) {
   if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage) &&
       soda_available_) {
+    // If multi-language is disabled and the language code received is not for
+    // Live Caption (perhaps it is downloading because another feature, such as
+    // dictation on ChromeOS, has a different language selected), then return
+    // early. We do not check for a matching language if multi-language is
+    // enabled because we show all of the languages' download status in the UI,
+    // even ones that are not currently selected.
+    if (!prefs::IsLanguageCodeForLiveCaption(language_code, prefs_))
+      return;
     speech::SodaInstaller::GetInstance()->RemoveObserver(this);
   }
-
-  FireWebUIListener("soda-download-progress-changed",
-                    base::Value(l10n_util::GetStringUTF16(
-                        IDS_SETTINGS_CAPTIONS_LIVE_CAPTION_DOWNLOAD_COMPLETE)));
-}
-
-void CaptionsHandler::OnSodaLanguagePackInstalled(
-    speech::LanguageCode language_code) {
-  if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage))
-    return;
 
   FireWebUIListener("soda-download-progress-changed",
                     base::Value(l10n_util::GetStringUTF16(
@@ -95,48 +93,71 @@ void CaptionsHandler::OnSodaLanguagePackInstalled(
                     base::Value(speech::GetLanguageName(language_code)));
 }
 
-void CaptionsHandler::OnSodaError() {
-  if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
-    prefs_->SetBoolean(prefs::kLiveCaptionEnabled, false);
+void CaptionsHandler::OnSodaInstallError(
+    speech::LanguageCode language_code,
+    speech::SodaInstaller::ErrorCode error_code) {
+  // If multi-language is disabled and the language code received is not for
+  // Live Caption (perhaps it is downloading because another feature, such as
+  // dictation on ChromeOS, has a different language selected), then return
+  // early. We do not check for a matching language if multi-language is
+  // enabled because we show all of the languages' download status in the UI,
+  // even ones that are not currently selected.
+  // Check that language code matches the selected language for Live Caption
+  // or is LanguageCode::kNone (signifying the SODA binary failed).
+  if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage) &&
+      !prefs::IsLanguageCodeForLiveCaption(language_code, prefs_) &&
+      language_code != speech::LanguageCode::kNone) {
+    return;
+  }
+
+  std::u16string error_message;
+  switch (error_code) {
+    case speech::SodaInstaller::ErrorCode::kUnspecifiedError: {
+      error_message = l10n_util::GetStringUTF16(
+          IDS_SETTINGS_CAPTIONS_LIVE_CAPTION_DOWNLOAD_ERROR);
+      break;
+    }
+    case speech::SodaInstaller::ErrorCode::kNeedsReboot: {
+      error_message = l10n_util::GetStringUTF16(
+          IDS_SETTINGS_CAPTIONS_LIVE_CAPTION_DOWNLOAD_ERROR_REBOOT_REQUIRED);
+      break;
+    }
   }
 
   FireWebUIListener("soda-download-progress-changed",
-                    base::Value(l10n_util::GetStringUTF16(
-                        IDS_SETTINGS_CAPTIONS_LIVE_CAPTION_DOWNLOAD_ERROR)),
-                    base::Value());
-}
-
-void CaptionsHandler::OnSodaLanguagePackError(
-    speech::LanguageCode language_code) {
-  if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage))
-    return;
-
-  prefs_->SetBoolean(prefs::kLiveCaptionEnabled, false);
-  FireWebUIListener("soda-download-progress-changed",
-                    base::Value(l10n_util::GetStringUTF16(
-                        IDS_SETTINGS_CAPTIONS_LIVE_CAPTION_DOWNLOAD_ERROR)),
+                    base::Value(error_message),
                     base::Value(speech::GetLanguageName(language_code)));
 }
 
-void CaptionsHandler::OnSodaProgress(int combined_progress) {
-  FireWebUIListener("soda-download-progress-changed",
-                    base::Value(l10n_util::GetStringFUTF16Int(
-                        IDS_SETTINGS_CAPTIONS_LIVE_CAPTION_DOWNLOAD_PROGRESS,
-                        combined_progress)),
-                    base::Value());
-}
-
-void CaptionsHandler::OnSodaLanguagePackProgress(
-    int language_progress,
-    speech::LanguageCode language_code) {
-  if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage))
-    return;
-
-  FireWebUIListener("soda-download-progress-changed",
-                    base::Value(l10n_util::GetStringFUTF16Int(
-                        IDS_SETTINGS_CAPTIONS_LIVE_CAPTION_DOWNLOAD_PROGRESS,
-                        language_progress)),
-                    base::Value(speech::GetLanguageName(language_code)));
+void CaptionsHandler::OnSodaProgress(speech::LanguageCode language_code,
+                                     int progress) {
+  if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage) &&
+      soda_available_) {
+    // If multi-language is disabled and the language code received is not for
+    // Live Caption (perhaps it is downloading because another feature, such as
+    // dictation on ChromeOS, has a different language selected), then return
+    // early. We do not check for a matching language if multi-language is
+    // enabled because we show all of the languages' download status in the UI,
+    // even ones that are not currently selected.
+    // Check that language code matches the selected language for Live Caption
+    // or is LanguageCode::kNone (signifying the SODA binary progress).
+    if (!prefs::IsLanguageCodeForLiveCaption(language_code, prefs_) &&
+        language_code != speech::LanguageCode::kNone) {
+      return;
+    }
+  }
+  // If the language code is kNone, this means that only the SODA binary has
+  // begun downloading. Therefore we pass the Live Caption language along to the
+  // WebUI, since that is the language which will begin downloading.
+  if (language_code == speech::LanguageCode::kNone) {
+    language_code =
+        speech::GetLanguageCode(prefs::GetLiveCaptionLanguageCode(prefs_));
+  }
+  FireWebUIListener(
+      "soda-download-progress-changed",
+      base::Value(l10n_util::GetStringFUTF16Int(
+          IDS_SETTINGS_CAPTIONS_LIVE_CAPTION_DOWNLOAD_PROGRESS, progress)),
+      base::Value(speech::GetLanguageName(language_code)));
 }
 
 }  // namespace settings

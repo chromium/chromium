@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 The Chromium Authors. All rights reserved.
+ * Copyright 2018 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the Chromium source repository LICENSE file.
  *
@@ -45,6 +45,7 @@ struct Data {
   Data(size_t s) { data.reset(new (std::nothrow) char[size = s]); }
   std::unique_ptr<char[]> data;
   size_t size;
+  std::string name;
 };
 
 Data read_file_data_or_exit(const char* name) {
@@ -66,6 +67,7 @@ Data read_file_data_or_exit(const char* name) {
     exit(1);
   }
 
+  data.name = std::string(name);
   return data;
 }
 
@@ -144,6 +146,8 @@ void zlib_compress(
   stream.avail_in = (uInt)input_size;
 
   result = deflate(&stream, Z_FINISH);
+  if (stream.avail_in > 0)
+    error_exit("compress: input was not consumed", Z_DATA_ERROR);
   if (result == Z_STREAM_END)
     output_size = stream.total_out;
   result |= deflateEnd(&stream);
@@ -193,13 +197,61 @@ void verify_equal(const char* input, size_t size, std::string* output) {
   exit(3);
 }
 
-void zlib_file(const char* name, const zlib_wrapper type, int width) {
+void check_file(const Data& file, zlib_wrapper type, int mode) {
+  printf("%s %d %s%s\n", zlib_wrapper_name(type), zlib_compression_level,
+    zlib_level_strategy_name(zlib_compression_level), file.name.c_str());
+
+  // Compress the file data.
+  std::string compressed;
+  zlib_compress(type, file.data.get(), file.size, &compressed, true);
+
+  // Output compressed data integrity check: the data crc32.
+  unsigned long check = crc32_z(0, Z_NULL, 0);
+  const Bytef* data = (const Bytef*)compressed.data();
+  static_assert(sizeof(z_size_t) == sizeof(size_t), "z_size_t size");
+  check = crc32_z(check, data, (z_size_t)compressed.size());
+
+  const size_t compressed_length = compressed.size();
+  printf("data crc32 %.8lx length %zu\n", check, compressed_length);
+
+  // Output gzip or zlib DEFLATE stream internal check data.
+  if (type == kWrapperGZIP) {
+    uint32_t prev_word, last_word;
+    data += compressed_length - 8;
+    prev_word = data[3] << 24 | data[2] << 16 | data[1] << 8 | data[0];
+    data += 4;  // last compressed data word
+    last_word = data[3] << 24 | data[2] << 16 | data[1] << 8 | data[0];
+    printf("gzip crc32 %.8x length %u\n", prev_word, last_word);
+  } else if (type == kWrapperZLIB) {
+    uint32_t last_word;
+    data += compressed_length - 4;
+    last_word = data[0] << 24 | data[1] << 16 | data[2] << 8 | data[3];
+    printf("zlib adler %.8x\n", last_word);
+  }
+
+  if (mode == 2)  // --check-binary: output compressed data.
+    fwrite(compressed.data(), compressed_length, 1, stdout);
+
+  if (fflush(stdout), ferror(stdout))
+    error_exit("check file: error writing output", 3);
+}
+
+void zlib_file(const char* name, zlib_wrapper type, int width, int check) {
   /*
    * Read the file data.
    */
-  const auto file = read_file_data_or_exit(name);
+  struct Data file = read_file_data_or_exit(name);
   const int length = static_cast<int>(file.size);
   const char* data = file.data.get();
+
+  /*
+   * Compress file: report output data checks and return.
+   */
+  if (check) {
+    file.name = file.name.substr(file.name.find_last_of("/\\") + 1);
+    check_file(file, type, check);
+    return;
+  }
 
   /*
    * Report compression strategy and file name.
@@ -311,9 +363,10 @@ void get_field_width(int argc, char* argv[], int& value) {
 }
 
 void usage_exit(const char* program) {
-  static auto* options =
-    "gzip|zlib|raw [--compression 0:9] [--huffman|--rle] [--field width]";
+  static auto* options = "gzip|zlib|raw"
+    " [--compression 0:9] [--huffman|--rle] [--field width] [--check]";
   printf("usage: %s %s files ...\n", program, options);
+  printf("zlib version: %s\n", ZLIB_VERSION);
   exit(1);
 }
 
@@ -328,18 +381,23 @@ int main(int argc, char* argv[]) {
   else
     usage_exit(argv[0]);
 
-  int file_size_field_width = 0;
+  int size_field_width = 0;
+  int file_check = 0;
 
   while (argn < argc && argv[argn][0] == '-') {
     if (get_option(argc, argv, "--compression")) {
       if (!get_compression(argc, argv, zlib_compression_level))
         usage_exit(argv[0]);
-    } else if (get_option(argc, argv, "--field")) {
-      get_field_width(argc, argv, file_size_field_width);
     } else if (get_option(argc, argv, "--huffman")) {
       zlib_strategy = Z_HUFFMAN_ONLY;
     } else if (get_option(argc, argv, "--rle")) {
       zlib_strategy = Z_RLE;
+    } else if (get_option(argc, argv, "--check")) {
+      file_check = 1;
+    } else if (get_option(argc, argv, "--check-binary")) {
+      file_check = 2;
+    } else if (get_option(argc, argv, "--field")) {
+      get_field_width(argc, argv, size_field_width);
     } else {
       usage_exit(argv[0]);
     }
@@ -348,10 +406,10 @@ int main(int argc, char* argv[]) {
   if (argn >= argc)
     usage_exit(argv[0]);
 
-  if (file_size_field_width < 6)
-    file_size_field_width = 6;
+  if (size_field_width < 6)
+    size_field_width = 6;
   while (argn < argc)
-    zlib_file(argv[argn++], type, file_size_field_width);
+    zlib_file(argv[argn++], type, size_field_width, file_check);
 
   return 0;
 }

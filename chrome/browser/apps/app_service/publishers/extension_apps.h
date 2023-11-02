@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps_base.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -22,6 +23,8 @@ class Profile;
 
 namespace apps {
 
+class PublisherHost;
+
 // An app publisher (in the App Service sense) of extension-backed apps for
 // Chrome, including Chrome Apps (platform apps and legacy packaged apps) and
 // hosted apps.
@@ -29,7 +32,7 @@ namespace apps {
 // See components/services/app_service/README.md.
 class ExtensionApps : public apps::ExtensionAppsBase {
  public:
-  explicit ExtensionApps(AppServiceProxy* proxy);
+  ExtensionApps(AppServiceProxy* proxy, AppType app_type);
   ~ExtensionApps() override;
 
   ExtensionApps(const ExtensionApps&) = delete;
@@ -41,11 +44,13 @@ class ExtensionApps : public apps::ExtensionAppsBase {
                             gfx::NativeWindow parent_window);
 
  private:
+  friend class PublisherHost;
+
   // ExtensionAppsBase overrides.
   bool Accepts(const extensions::Extension* extension) override;
   bool ShouldShownInLauncher(const extensions::Extension* extension) override;
-  std::unique_ptr<App> CreateApp(const extensions::Extension* extension,
-                                 Readiness readiness) override;
+  AppPtr CreateApp(const extensions::Extension* extension,
+                   Readiness readiness) override;
   apps::mojom::AppPtr Convert(const extensions::Extension* extension,
                               apps::mojom::Readiness readiness) override;
 };

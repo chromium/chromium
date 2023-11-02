@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,10 +16,6 @@ namespace ash {
 // not enabled. Use these functions if the |default_color| can't be found in
 // AshColorProvider. And move |default_color| to default_color_constants.h file
 // to benefit future maintenance. Exported for testing.
-ASH_EXPORT SkColor
-DeprecatedGetShieldLayerColor(AshColorProvider::ShieldLayerType type,
-                              SkColor default_color);
-ASH_EXPORT SkColor DeprecatedGetBackgroundColor(SkColor default_color);
 ASH_EXPORT SkColor
 DeprecatedGetBaseLayerColor(AshColorProvider::BaseLayerType type,
                             SkColor default_color);

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,8 +24,6 @@ var { column-count: 17179869184; }
   LayoutBlockFlow* kbd = To<LayoutBlockFlow>(GetLayoutObjectByElementId("kbd"));
   // The parent should be NG.
   ASSERT_TRUE(kbd->Parent()->IsLayoutNGBlockFlow());
-  if (!RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled())
-    ASSERT_FALSE(kbd->IsLayoutNGBlockFlow());  // Should be legacy.
   ASSERT_TRUE(kbd->CreatesNewFormattingContext());
   UpdateAllLifecyclePhasesForTest();
   GetElementById("text")->setAttribute("font-size", "100");

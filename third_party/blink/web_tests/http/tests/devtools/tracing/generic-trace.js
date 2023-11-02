@@ -1,11 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Checks DevTools timeline is capable of reading and displaying generic traces.\n`);
   Root.Runtime.experiments.enableForTest('timelineShowAllEvents');
-  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
   const rawTraceEvents = [
@@ -50,7 +50,7 @@
   ];
 
   const timeline = UI.panels.timeline;
-  const model = PerformanceTestRunner.createPerformanceModelWithEvents(rawTraceEvents);
+  const model = await PerformanceTestRunner.createPerformanceModelWithEvents(rawTraceEvents);
   timeline.setModel(model);
 
   TestRunner.addResult(`isGenericTrace: ${model.timelineModel().isGenericTrace()}\n`);

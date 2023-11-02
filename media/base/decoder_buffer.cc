@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,25 +46,15 @@ DecoderBuffer::DecoderBuffer(const uint8_t* data,
 }
 
 DecoderBuffer::DecoderBuffer(std::unique_ptr<uint8_t[]> data, size_t size)
-    : data_(std::move(data)),
-      size_(size),
-      side_data_size_(0),
-      is_key_frame_(false) {}
+    : data_(std::move(data)), size_(size) {}
 
-DecoderBuffer::DecoderBuffer(std::unique_ptr<UnalignedSharedMemory> shm,
+DecoderBuffer::DecoderBuffer(base::ReadOnlySharedMemoryMapping mapping,
                              size_t size)
-    : size_(size),
-      side_data_size_(0),
-      shm_(std::move(shm)),
-      is_key_frame_(false) {}
+    : size_(size), read_only_mapping_(std::move(mapping)) {}
 
-DecoderBuffer::DecoderBuffer(
-    std::unique_ptr<ReadOnlyUnalignedMapping> shared_mem_mapping,
-    size_t size)
-    : size_(size),
-      side_data_size_(0),
-      shared_mem_mapping_(std::move(shared_mem_mapping)),
-      is_key_frame_(false) {}
+DecoderBuffer::DecoderBuffer(base::WritableSharedMemoryMapping mapping,
+                             size_t size)
+    : size_(size), writable_mapping_(std::move(mapping)) {}
 
 DecoderBuffer::~DecoderBuffer() {
   data_.reset();
@@ -107,34 +97,33 @@ scoped_refptr<DecoderBuffer> DecoderBuffer::FromArray(
 
 // static
 scoped_refptr<DecoderBuffer> DecoderBuffer::FromSharedMemoryRegion(
-    base::subtle::PlatformSharedMemoryRegion region,
-    off_t offset,
+    base::UnsafeSharedMemoryRegion region,
+    uint64_t offset,
     size_t size) {
-  // TODO(crbug.com/795291): when clients have converted to using
-  // base::ReadOnlySharedMemoryRegion the ugly mode check below will no longer
-  // be necessary.
-  auto shm = std::make_unique<UnalignedSharedMemory>(
-      std::move(region), size,
-      region.GetMode() ==
-              base::subtle::PlatformSharedMemoryRegion::Mode::kReadOnly
-          ? true
-          : false);
-  if (size == 0 || !shm->MapAt(offset, size))
+  if (size == 0) {
     return nullptr;
-  return base::WrapRefCounted(new DecoderBuffer(std::move(shm), size));
+  }
+
+  auto mapping = region.MapAt(offset, size);
+  if (!mapping.IsValid()) {
+    return nullptr;
+  }
+  return base::WrapRefCounted(new DecoderBuffer(std::move(mapping), size));
 }
 
 // static
 scoped_refptr<DecoderBuffer> DecoderBuffer::FromSharedMemoryRegion(
     base::ReadOnlySharedMemoryRegion region,
-    off_t offset,
+    uint64_t offset,
     size_t size) {
-  std::unique_ptr<ReadOnlyUnalignedMapping> unaligned_mapping =
-      std::make_unique<ReadOnlyUnalignedMapping>(region, size, offset);
-  if (!unaligned_mapping->IsValid())
+  if (size == 0) {
     return nullptr;
-  return base::WrapRefCounted(
-      new DecoderBuffer(std::move(unaligned_mapping), size));
+  }
+  auto mapping = region.MapAt(offset, size);
+  if (!mapping.IsValid()) {
+    return nullptr;
+  }
+  return base::WrapRefCounted(new DecoderBuffer(std::move(mapping), size));
 }
 
 // static
@@ -142,7 +131,8 @@ scoped_refptr<DecoderBuffer> DecoderBuffer::CreateEOSBuffer() {
   return base::WrapRefCounted(new DecoderBuffer(NULL, 0, NULL, 0));
 }
 
-bool DecoderBuffer::MatchesForTesting(const DecoderBuffer& buffer) const {
+bool DecoderBuffer::MatchesMetadataForTesting(
+    const DecoderBuffer& buffer) const {
   if (end_of_stream() != buffer.end_of_stream())
     return false;
 
@@ -152,14 +142,7 @@ bool DecoderBuffer::MatchesForTesting(const DecoderBuffer& buffer) const {
 
   if (timestamp() != buffer.timestamp() || duration() != buffer.duration() ||
       is_key_frame() != buffer.is_key_frame() ||
-      discard_padding() != buffer.discard_padding() ||
-      data_size() != buffer.data_size() ||
-      side_data_size() != buffer.side_data_size()) {
-    return false;
-  }
-
-  if (memcmp(data(), buffer.data(), data_size()) != 0 ||
-      memcmp(side_data(), buffer.side_data(), side_data_size()) != 0) {
+      discard_padding() != buffer.discard_padding()) {
     return false;
   }
 
@@ -168,6 +151,21 @@ bool DecoderBuffer::MatchesForTesting(const DecoderBuffer& buffer) const {
 
   return decrypt_config() ? decrypt_config()->Matches(*buffer.decrypt_config())
                           : true;
+}
+
+bool DecoderBuffer::MatchesForTesting(const DecoderBuffer& buffer) const {
+  if (!MatchesMetadataForTesting(buffer))  // IN-TEST
+    return false;
+
+  // It is illegal to call any member function if eos is true.
+  if (end_of_stream())
+    return true;
+
+  DCHECK(!buffer.end_of_stream());
+  return data_size() == buffer.data_size() &&
+         side_data_size() == buffer.side_data_size() &&
+         memcmp(data(), buffer.data(), data_size()) == 0 &&
+         memcmp(side_data(), buffer.side_data(), side_data_size()) == 0;
 }
 
 std::string DecoderBuffer::AsHumanReadableString(bool verbose) const {

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/time/time.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
-#include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
-#include "components/segmentation_platform/internal/proto/types.pb.h"
+#include "components/segmentation_platform/public/proto/model_metadata.pb.h"
+#include "components/segmentation_platform/public/proto/types.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace segmentation_platform {
@@ -29,7 +30,7 @@ class MockSignalStorageConfig : public SignalStorageConfig {
 
   MOCK_METHOD(bool,
               MeetsSignalCollectionRequirement,
-              (const proto::SegmentationModelMetadata& model_metadata),
+              (const proto::SegmentationModelMetadata& model_metadata, bool),
               (override));
 
   MOCK_METHOD(void,

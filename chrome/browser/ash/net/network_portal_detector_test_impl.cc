@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,18 +8,15 @@
 
 #include "base/callback.h"
 #include "base/logging.h"
-#include "chromeos/network/network_state.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 
 namespace ash {
 
-NetworkPortalDetectorTestImpl::NetworkPortalDetectorTestImpl()
-    : strategy_id_(PortalDetectorStrategy::STRATEGY_ID_LOGIN_SCREEN) {
-}
+NetworkPortalDetectorTestImpl::NetworkPortalDetectorTestImpl() = default;
 
-NetworkPortalDetectorTestImpl::~NetworkPortalDetectorTestImpl() {
-  for (auto& observer : observers_)
-    observer.OnShutdown();
-}
+NetworkPortalDetectorTestImpl::~NetworkPortalDetectorTestImpl() = default;
 
 void NetworkPortalDetectorTestImpl::SetDefaultNetworkForTesting(
     const std::string& guid) {
@@ -42,50 +39,11 @@ void NetworkPortalDetectorTestImpl::SetDetectionResultsForTesting(
     portal_status_map_[guid] = status;
 }
 
-void NetworkPortalDetectorTestImpl::NotifyObserversForTesting() {
-  const std::string& guid = default_network_->guid();
-  CaptivePortalStatus status = CAPTIVE_PORTAL_STATUS_UNKNOWN;
-  if (default_network_ && portal_status_map_.count(guid))
-    status = portal_status_map_[guid];
-  portal_detection_in_progress_ = false;
-  for (auto& observer : observers_)
-    observer.OnPortalDetectionCompleted(default_network_.get(), status);
-}
-
 std::string NetworkPortalDetectorTestImpl::GetDefaultNetworkGuid() const {
   if (!default_network_)
     return "";
 
   return default_network_->guid();
-}
-
-void NetworkPortalDetectorTestImpl::RegisterPortalDetectionStartCallback(
-    base::OnceClosure callback) {
-  start_detection_callbacks_.push_back(std::move(callback));
-}
-
-void NetworkPortalDetectorTestImpl::AddObserver(Observer* observer) {
-  if (observer && !observers_.HasObserver(observer))
-    observers_.AddObserver(observer);
-}
-
-void NetworkPortalDetectorTestImpl::AddAndFireObserver(Observer* observer) {
-  AddObserver(observer);
-  if (!observer)
-    return;
-  if (!default_network_ ||
-      !portal_status_map_.count(default_network_->guid())) {
-    observer->OnPortalDetectionCompleted(default_network_.get(),
-                                         CAPTIVE_PORTAL_STATUS_UNKNOWN);
-  } else {
-    observer->OnPortalDetectionCompleted(
-        default_network_.get(), portal_status_map_[default_network_->guid()]);
-  }
-}
-
-void NetworkPortalDetectorTestImpl::RemoveObserver(Observer* observer) {
-  if (observer)
-    observers_.RemoveObserver(observer);
 }
 
 NetworkPortalDetector::CaptivePortalStatus
@@ -99,28 +57,16 @@ NetworkPortalDetectorTestImpl::GetCaptivePortalStatus() {
 }
 
 bool NetworkPortalDetectorTestImpl::IsEnabled() {
-  return true;
+  return enabled_;
 }
 
-void NetworkPortalDetectorTestImpl::Enable(bool start_detection) {
-}
-
-void NetworkPortalDetectorTestImpl::StartPortalDetection() {
-  if (portal_detection_in_progress_)
-    return;
-
-  portal_detection_in_progress_ = true;
-  std::vector<base::OnceClosure> callbacks =
-      std::move(start_detection_callbacks_);
-  for (auto& callback : callbacks)
-    std::move(callback).Run();
-
-  return;
-}
-
-void NetworkPortalDetectorTestImpl::SetStrategy(
-    PortalDetectorStrategy::StrategyId id) {
-  strategy_id_ = id;
+void NetworkPortalDetectorTestImpl::Enable() {
+  DVLOG(1) << "NetworkPortalDetectorTestImpl: Enabled.";
+  enabled_ = true;
+  if (NetworkHandler::IsInitialized()) {
+    NetworkHandler::Get()->network_state_handler()->SetCheckPortalList(
+        NetworkStateHandler::kDefaultCheckPortalList);
+  }
 }
 
 }  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -99,7 +99,7 @@ void DelegatedInkPointRendererSkia::FinalizePathForDraw() {
 
   std::vector<SkPoint> sk_points = GetPointsToDraw();
 
-  TRACE_EVENT_INSTANT1("viz",
+  TRACE_EVENT_INSTANT1("delegated_ink_trails",
                        "Filtered and predicted points for delegated ink trail",
                        TRACE_EVENT_SCOPE_THREAD, "points", sk_points.size());
 
@@ -140,12 +140,13 @@ void DelegatedInkPointRendererSkia::FinalizePathForDraw() {
   // presentation area so that is can't extend beyond the drawable area.
   gfx::RectF damage_rect = gfx::SkRectToRectF(path_.computeTightBounds());
   const float kRadius = metadata_->diameter() / 2.f;
-  damage_rect.Inset(-kRadius, -kRadius);
+  damage_rect.Inset(-kRadius);
   damage_rect.Intersect(metadata_->presentation_area());
 
-  TRACE_EVENT_INSTANT1(
-      "viz", "DelegatedInkPointRendererSkia::FinalizePathForDraw",
-      TRACE_EVENT_SCOPE_THREAD, "damage_rect", damage_rect.ToString());
+  TRACE_EVENT_INSTANT1("delegated_ink_trails",
+                       "DelegatedInkPointRendererSkia::FinalizePathForDraw",
+                       TRACE_EVENT_SCOPE_THREAD, "damage_rect",
+                       damage_rect.ToString());
 
   SetDamageRect(damage_rect);
 }

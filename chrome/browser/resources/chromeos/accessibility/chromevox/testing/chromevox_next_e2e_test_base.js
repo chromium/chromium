@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,27 +12,22 @@ GEN_INCLUDE(['mock_feedback.js']);
  * necessary setup to run ChromeVox Next.
  */
 ChromeVoxNextE2ETest = class extends ChromeVoxE2ETest {
-  constructor() {
+  /** @param {boolean=} opt_isCommonClass Disables ChromeVox specific code */
+  constructor(opt_isCommonClass) {
     super();
+    this.isCommonClass = opt_isCommonClass || false;
 
     if (this.runtimeDeps.length > 0) {
-      chrome.extension.getViews().forEach(function(w) {
-        this.runtimeDeps.forEach(function(dep) {
-          if (w[dep]) {
-            window[dep] = w[dep];
+      chrome.extension.getViews().forEach(view => {
+        this.runtimeDeps.forEach(dep => {
+          if (view[dep]) {
+            window[dep] = view[dep];
           }
-        }.bind(this));
-      }.bind(this));
+        });
+      });
     }
-
-    // For tests, enable announcement of events we trigger via automation.
-    DesktopAutomationHandler.announceActions = true;
 
     this.originalOutputContextValues_ = {};
-    for (const role in OutputRoleInfo) {
-      this.originalOutputContextValues_[role] =
-          OutputRoleInfo[role]['contextOrder'];
-    }
   }
 
   /** @override */
@@ -43,12 +38,13 @@ ChromeVoxNextE2ETest = class extends ChromeVoxE2ETest {
     window.doCmd = this.doCmd;
     window.doGesture = this.doGesture;
     window.Gesture = chrome.accessibilityPrivate.Gesture;
+
+    super.setUp();
   }
 
   /** @return {!MockFeedback} */
   createMockFeedback() {
-    const mockFeedback =
-        new MockFeedback(this.newCallback(), this.newCallback.bind(this));
+    const mockFeedback = new MockFeedback(this.newCallback());
     mockFeedback.install();
     return mockFeedback;
   }
@@ -73,8 +69,8 @@ ChromeVoxNextE2ETest = class extends ChromeVoxE2ETest {
     for (const key in modifiers) {
       keyEvent[key] = modifiers[key];
     }
-    keyEvent.preventDefault = _ => {};
-    keyEvent.stopPropagation = _ => {};
+    keyEvent.preventDefault = () => {};
+    keyEvent.stopPropagation = () => {};
     return keyEvent;
   }
 
@@ -85,7 +81,7 @@ ChromeVoxNextE2ETest = class extends ChromeVoxE2ETest {
    */
   doCmd(cmd) {
     return () => {
-      CommandHandler.onCommand(cmd);
+      CommandHandlerInterface.instance.onCommand(cmd);
     };
   }
 
@@ -111,14 +107,41 @@ ChromeVoxNextE2ETest = class extends ChromeVoxE2ETest {
   }
 
   /** @override */
-  runWithLoadedTree(doc, callback, opt_params = {}) {
-    callback = this.newCallback(callback);
-    const wrappedCallback = (node) => {
-      CommandHandler.onCommand('nextObject');
-      callback(node);
-    };
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    if (!this.isCommonClass) {
+      await importModule(
+          'BaseAutomationHandler',
+          '/chromevox/background/base_automation_handler.js');
+      await importModule(
+          'CommandHandler', '/chromevox/background/command_handler.js');
+      await importModule(
+          'CommandHandlerInterface',
+          '/chromevox/background/command_handler_interface.js');
+      await importModule(
+          'GestureCommandHandler',
+          '/chromevox/background/gesture_command_handler.js');
+      await importModule(
+          'OutputRoleInfo', '/chromevox/background/output/output_role_info.js');
+      await importModule(
+          'OutputContextOrder', '/chromevox/background/output/output_types.js');
+      // For tests, enable announcement of events we trigger via automation.
+      BaseAutomationHandler.announceActions = true;
 
-    super.runWithLoadedTree(doc, wrappedCallback, opt_params);
+      for (const role in OutputRoleInfo) {
+        this.originalOutputContextValues_[role] =
+            OutputRoleInfo[role]['contextOrder'];
+      }
+    }
+  }
+
+  /** @override */
+  async runWithLoadedTree(doc, opt_params = {}) {
+    const rootWebArea = await super.runWithLoadedTree(doc, opt_params);
+    if (!this.isCommonClass) {
+      CommandHandlerInterface.instance.onCommand('nextObject');
+    }
+    return rootWebArea;
   }
 
   /**

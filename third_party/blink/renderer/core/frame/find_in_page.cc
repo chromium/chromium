@@ -32,6 +32,7 @@
 
 #include <utility>
 
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_plugin.h"
@@ -40,6 +41,7 @@
 #include "third_party/blink/renderer/core/editing/finder/text_finder.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 
@@ -61,7 +63,7 @@ FindInPage::FindInPage(WebLocalFrameImpl& frame,
 void FindInPage::Find(int request_id,
                       const String& search_text,
                       mojom::blink::FindOptionsPtr options) {
-  DCHECK(!search_text.IsEmpty());
+  DCHECK(!search_text.empty());
 
   // Record the fact that we have a find-in-page request.
   frame_->GetFrame()->GetDocument()->MarkHasFindInPageRequest();
@@ -174,16 +176,6 @@ bool FindInPage::FindInternal(int identifier,
   // Unlikely, but just in case we try to find-in-page on a detached frame.
   DCHECK(frame_->GetFrame()->GetPage());
 
-  auto forced_activatable_locks = frame_->GetFrame()
-                                      ->GetDocument()
-                                      ->GetDisplayLockDocumentState()
-                                      .GetScopedForceActivatableLocks();
-
-  // Up-to-date, clean tree is required for finding text in page, since it
-  // relies on TextIterator to look over the text.
-  frame_->GetFrame()->GetDocument()->UpdateStyleAndLayout(
-      DocumentUpdateReason::kFindInPage);
-
   return EnsureTextFinder().Find(identifier, search_text, options,
                                  wrap_within_frame, active_now);
 }
@@ -223,6 +215,15 @@ int FindInPage::FindMatchMarkersVersion() const {
   return 0;
 }
 
+void FindInPage::SetClient(
+    mojo::PendingRemote<mojom::blink::FindInPageClient> remote) {
+  // TODO(crbug.com/984878): Having to call reset() to try to bind a remote that
+  // might be bound is questionable behavior and suggests code may be buggy.
+  client_.reset();
+  client_.Bind(std::move(remote));
+}
+
+#if BUILDFLAG(IS_ANDROID)
 gfx::RectF FindInPage::ActiveFindMatchRect() {
   if (GetTextFinder())
     return GetTextFinder()->ActiveFindMatchRect();
@@ -245,18 +246,10 @@ void FindInPage::ActivateNearestFindResult(int request_id,
                             true /* final_update */);
 }
 
-void FindInPage::SetClient(
-    mojo::PendingRemote<mojom::blink::FindInPageClient> remote) {
-  // TODO(crbug.com/984878): Having to call reset() to try to bind a remote that
-  // might be bound is questionable behavior and suggests code may be buggy.
-  client_.reset();
-  client_.Bind(std::move(remote));
-}
-
 void FindInPage::GetNearestFindResult(const gfx::PointF& point,
                                       GetNearestFindResultCallback callback) {
   float distance;
-  EnsureTextFinder().NearestFindMatch(FloatPoint(point), &distance);
+  EnsureTextFinder().NearestFindMatch(point, &distance);
   std::move(callback).Run(distance);
 }
 
@@ -268,6 +261,7 @@ void FindInPage::FindMatchRects(int current_version,
     rects = EnsureTextFinder().FindMatchRects();
   std::move(callback).Run(rects_version, rects, ActiveFindMatchRect());
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void FindInPage::ClearActiveFindMatch() {
   // TODO(rakina): Do collapse selection as this currently does nothing.
@@ -280,19 +274,24 @@ void WebLocalFrameImpl::SetTickmarks(const WebElement& target,
   find_in_page_->SetTickmarks(target, tickmarks);
 }
 
-void FindInPage::SetTickmarks(const WebElement& target,
-                              const WebVector<gfx::Rect>& tickmarks) {
-  Vector<IntRect> tickmarks_converted(SafeCast<wtf_size_t>(tickmarks.size()));
-  for (wtf_size_t i = 0; i < tickmarks.size(); ++i)
-    tickmarks_converted[i] = IntRect(tickmarks[i]);
-
+void FindInPage::SetTickmarks(
+    const WebElement& target,
+    const WebVector<gfx::Rect>& tickmarks_in_layout_space) {
   LayoutBox* box;
   if (target.IsNull())
     box = frame_->GetFrame()->ContentLayoutObject();
   else
     box = target.ConstUnwrap<Element>()->GetLayoutBoxForScrolling();
-  if (box)
-    box->OverrideTickmarks(std::move(tickmarks_converted));
+
+  if (!box)
+    return;
+
+  Vector<gfx::Rect> tickmarks_converted(
+      base::checked_cast<wtf_size_t>(tickmarks_in_layout_space.size()));
+  for (wtf_size_t i = 0; i < tickmarks_in_layout_space.size(); ++i)
+    tickmarks_converted[i] = tickmarks_in_layout_space[i];
+
+  box->OverrideTickmarks(std::move(tickmarks_converted));
 }
 
 TextFinder* WebLocalFrameImpl::GetTextFinder() const {
@@ -352,13 +351,23 @@ void FindInPage::ReportFindInPageMatchCount(int request_id,
                    : mojom::blink::FindMatchUpdateType::kMoreUpdatesComing);
 }
 
-void FindInPage::ReportFindInPageSelection(int request_id,
-                                           int active_match_ordinal,
-                                           const gfx::Rect& selection_rect,
-                                           bool final_update) {
+void FindInPage::ReportFindInPageSelection(
+    int request_id,
+    int active_match_ordinal,
+    const gfx::Rect& local_selection_rect,
+    bool final_update) {
   // In tests, |client_| might not be set.
   if (!client_)
     return;
+
+  float device_scale_factor = 1.f;
+  if (LocalFrame* local_frame = frame_->GetFrame()) {
+    device_scale_factor =
+        local_frame->GetPage()->GetChromeClient().WindowToViewportScalar(
+            local_frame, 1.0f);
+  }
+  auto selection_rect = gfx::ScaleToEnclosingRect(local_selection_rect,
+                                                  1.f / device_scale_factor);
   client_->SetActiveMatch(
       request_id, selection_rect, active_match_ordinal,
       final_update ? mojom::blink::FindMatchUpdateType::kFinalUpdate

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,11 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/observer_list.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/system/sys_info.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/offline_pages/core/background/offliner.h"
 #include "components/offline_pages/core/background/offliner_client.h"
@@ -503,8 +506,7 @@ void RequestCoordinator::PauseRequests(
     const std::vector<int64_t>& request_ids) {
   // Remove the paused requests from prioritized list.
   for (int64_t id : request_ids) {
-    auto it = std::find(prioritized_requests_.begin(),
-                        prioritized_requests_.end(), id);
+    auto it = base::ranges::find(prioritized_requests_, id);
     if (it != prioritized_requests_.end())
       prioritized_requests_.erase(it);
   }

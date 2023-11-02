@@ -122,9 +122,8 @@ main()
       {
         printf("\n*** An old version of libxml (%d.%d.%d) was found.\n",
                xml_major_version, xml_minor_version, xml_micro_version);
-        printf("*** You need a version of libxml newer than %d.%d.%d. The latest version of\n",
+        printf("*** You need a version of libxml newer than %d.%d.%d.\n",
            major, minor, micro);
-        printf("*** libxml is always available from ftp://ftp.xmlsoft.org.\n");
         printf("***\n");
         printf("*** If you have already installed a sufficiently new version, this error\n");
         printf("*** probably means that the wrong copy of the xml2-config shell script is\n");

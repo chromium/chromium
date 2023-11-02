@@ -1,0 +1,22 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("keystone_glue") {
+  sources = [
+    "keystone_glue.h",
+    "keystone_glue.mm",
+    "keystone_registration.h",
+    "keystone_registration.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome:strings",
+    "//chrome/app:generated_resources",
+    "//chrome/common:channel_info",
+    "//chrome/common:non_code_constants",
+    "//components/version_info",
+    "//ui/base",
+  ]
+}

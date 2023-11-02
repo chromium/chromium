@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -73,7 +74,7 @@ class MTPDeviceDelegateImplWinTest : public ChromeRenderViewHostTestHarness {
                         bool media_device);
 
   // Pointer to the storage monitor. Owned by TestingBrowserProcess.
-  TestStorageMonitorWin* monitor_;
+  raw_ptr<TestStorageMonitorWin> monitor_;
   scoped_refptr<extensions::Extension> extension_;
 
   EnsureMediaDirectoriesExists media_directories_;

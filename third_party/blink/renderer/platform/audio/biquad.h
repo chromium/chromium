@@ -30,9 +30,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_BIQUAD_H_
 
 #include <sys/types.h>
-
 #include <complex>
-
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -61,7 +59,7 @@ class PLATFORM_EXPORT Biquad final {
     has_sample_accurate_values_ = is_sample_accurate;
   }
 
-  // frequency is 0 - 1 normalized, resonance and dbGain are in decibels.
+  // frequency is 0 - 1 normalized, resonance and db_gain are in decibels.
   // Q is a unitless quality factor.
   void SetLowpassParams(int, double frequency, double resonance);
   void SetHighpassParams(int, double frequency, double resonance);
@@ -112,7 +110,7 @@ class PLATFORM_EXPORT Biquad final {
   AudioDoubleArray a1_;
   AudioDoubleArray a2_;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void ProcessFast(const float* source_p,
                    float* dest_p,
                    uint32_t frames_to_process);

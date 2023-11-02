@@ -9,7 +9,7 @@
 <translation id="1480046233931937785">क्रेडिट</translation>
 <translation id="1520828917794284345">डेस्कटॉप को सटीक आकार में बदलें</translation>
 <translation id="1546934824884762070">एक अनपेक्षित गड़बड़ी आई. कृपया इस समस्या की रिपोर्ट डेवलपर से करें.</translation>
-<translation id="1697532407822776718">आप बिल्कुल तैयार हैं!</translation>
+<translation id="1697532407822776718">आप बिलकुल तैयार हैं!</translation>
 <translation id="1742469581923031760">कनेक्ट हो रहा है...</translation>
 <translation id="177040763384871009">रिमोट डिवाइस पर क्लिक किए गए लिंकों को क्लाइंट ब्राउज़र पर खोलने की अनुमति देने के लिए, आपको "<ph name="URL_FORWARDER_NAME" />" को सिस्टम का डिफ़ॉल्ट वेब ब्राउज़र बनाना होगा.</translation>
 <translation id="177096447311351977">क्लाइंट के लिए चैनल IP: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
@@ -26,7 +26,6 @@
 <translation id="225614027745146050">आपका स्वागत है</translation>
 <translation id="2320166752086256636">कीबोर्ड छिपाएं</translation>
 <translation id="2329392777730037872">क्लाइंट के डिवाइस पर <ph name="URL" /> नहीं खोला जा सका.</translation>
-<translation id="2333212046079545895">कॉपीराइट 2021 Google LLC. सभी अधिकार सुरक्षित हैं.</translation>
 <translation id="2359808026110333948">जारी रखें</translation>
 <translation id="2366718077645204424">होस्‍ट तक पहुंचने में असमर्थ. यह संभवत:   उपयोग किए जाने वाले नेटवर्क के कॉन्फ़िगरेशन के कारण है.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  पिछली बार <ph name="RELATIVE_TIMESTAMP" /> ऑनलाइन दिखाई दिया.</translation>
@@ -37,6 +36,7 @@
 <translation id="2599300881200251572">यह सेवा Chrome दूरस्थ डेस्कटॉप क्लाइंट के इनकमिंग कनेक्शन सक्षम करती है.</translation>
 <translation id="2647232381348739934">Chromoting सेवा</translation>
 <translation id="2676780859508944670">काम कर रहा है…</translation>
+<translation id="2692522824157224199">Copyright 2022 Google LLC. सभी अधिकार सुरक्षित हैं.</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">प्रमाणीकरण करते समय कोई समस्या हुई, कृपया फिर से लॉगिन करें.</translation>
 <translation id="2803375539583399270">पिन डालें</translation>
@@ -73,10 +73,10 @@
 <translation id="4257751272692708833"><ph name="PRODUCT_NAME" /> URL Forwarder</translation>
 <translation id="4277736576214464567">एक्सेस कोड गलत है. कृपया फिर से कोशिश करें.</translation>
 <translation id="4281844954008187215">सेवा की शर्तें</translation>
+<translation id="4372650392690220936">Copyright 2022 The Chromium Authors. सभी अधिकार सुरक्षित हैं.</translation>
 <translation id="4405930547258349619">मुख्य लाइब्रेरी</translation>
 <translation id="443560535555262820">'सुलभता' प्राथमिकताएं खोलें</translation>
 <translation id="4450893287417543264">फिर से न दिखाएं</translation>
-<translation id="4512952200932940229">Copyright 2021 The Chromium Authors. सभी अधिकार सुरक्षित हैं.</translation>
 <translation id="4513946894732546136">सुझाव/राय दें</translation>
 <translation id="4563926062592110512">क्लाइंट डिसकनेक्ट किया गया: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> को सही तरीके से कॉन्फ़िगर नहीं किया गया है. अन्य डिफ़ॉल्ट वेब ब्राउज़र चुनें और यूआरएल को फ़ॉरवर्ड करने की सुविधा चालू करें.</translation>
@@ -139,7 +139,7 @@
 <translation id="7116737094673640201">Chrome दूरस्‍थ डेस्‍कटॉप में आपका स्वागत है</translation>
 <translation id="7144878232160441200">फिर से प्रयास करें</translation>
 <translation id="7312846573060934304">होस्ट ऑफ़लाइन है.</translation>
-<translation id="7319983568955948908">साझाकरण रोकें</translation>
+<translation id="7319983568955948908">शेयर करना बंद करें</translation>
 <translation id="7359298090707901886">कंप्यूटर पर यूआरएल खोलने के लिए, चुने गए ब्राउज़र का इस्तेमाल नहीं किया जा सकता.</translation>
 <translation id="7401733114166276557">Chrome दूरस्थ डेस्कटॉप</translation>
 <translation id="7434397035092923453">क्लाइंट की एक्सेस अस्वीकार की गई: <ph name="CLIENT_USERNAME" />.</translation>

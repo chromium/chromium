@@ -1,11 +1,11 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import(
-    "//chrome/browser/resources/chromeos/accessibility/common/run_jsbundler.gni")
+    "//chrome/browser/resources/chromeos/accessibility/tools/run_jsbundler.gni")
 import("//chrome/common/features.gni")
 import("//chrome/test/base/js2gtest.gni")
 import("//testing/test.gni")
@@ -27,7 +27,6 @@ run_jsbundler("switch_access_copied_files") {
   dest_dir = switch_access_dir
   sources = [
     "action_manager.js",
-    "action_recorder.js",
     "auto_scan_manager.js",
     "background.html",
     "background.js",
@@ -66,7 +65,6 @@ run_jsbundler("switch_access_copied_files") {
     "metrics.js",
     "navigator.js",
     "navigator_interface.js",
-    "node_identifier.js",
     "nodes/back_button_node.js",
     "nodes/basic_node.js",
     "nodes/combo_box_node.js",
@@ -101,7 +99,6 @@ source_set("browser_tests") {
   data = [
     "//chrome/browser/resources/chromeos/accessibility/common/",
     "//chrome/browser/resources/chromeos/accessibility/switch_access/",
-    "//ui/webui/resources/js/cr.js",
   ]
   data += js2gtest_js_libraries
 }
@@ -117,14 +114,18 @@ js2gtest("switch_access_extjs_tests") {
     "nodes/group_node_test.js",
     "nodes/tab_node_test.js",
     "point_scan_manager_test.js",
-    "saatlite/gen/saatlite_tests.js",
+
+    # TODO(1316408): Tests were broken at head. Re-enable tests when they pass.
+    # "saatlite/gen/saatlite_tests.js",
     "switch_access_predicate_test.js",
     "switch_access_test.js",
     "text_navigation_manager_test.js",
   ]
   gen_include_files = [
+    "../common/testing/accessibility_test_base.js",
     "../common/testing/assert_additions.js",
     "../common/testing/callback_helper.js",
+    "../common/testing/e2e_test_base.js",
     "switch_access_e2e_test_base.js",
     "test_utility.js",
   ]
@@ -134,7 +135,8 @@ js2gtest("switch_access_extjs_tests") {
     "//ash",
     "//ash/keyboard/ui",
     "//base",
-    "//chrome/browser/chromeos",
+    "//chrome/browser/ash",
+    "//chrome/browser/ash/crosapi",
     "//chrome/common",
     "//chromeos",
   ]
@@ -144,7 +146,6 @@ js2gtest("switch_access_extjs_tests") {
 js_type_check("closure_compile") {
   deps = [
     ":action_manager",
-    ":action_recorder",
     ":auto_scan_manager",
     ":back_button_node",
     ":background",
@@ -164,7 +165,6 @@ js_type_check("closure_compile") {
     ":modal_dialog_node",
     ":navigator",
     ":navigator_interface",
-    ":node_identifier",
     ":point_scan_manager",
     ":preference_manager",
     ":slider_node",
@@ -498,21 +498,5 @@ js_library("window_node") {
     ":switch_access_constants",
     ":switch_access_node",
   ]
-  externs_list = [ "$externs_path/automation.js" ]
-}
-
-# Accessibility sprint: Classes that assist in multistep automation.
-js_library("action_recorder") {
-  sources = [ "action_recorder.js" ]
-  deps = [
-    ":focus_ring_manager",
-    ":node_identifier",
-    ":switch_access",
-  ]
-  externs_list = [ "$externs_path/automation.js" ]
-}
-
-js_library("node_identifier") {
-  sources = [ "node_identifier.js" ]
   externs_list = [ "$externs_path/automation.js" ]
 }

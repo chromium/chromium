@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<title>CSS Highlight API Test: Inheritance is enabled for custom highlight but not for other types of highlights</title>
+<style>
+  div::highlight(div-highlight) {
+    background-color: green;
+  }
+  span::highlight(span-highlight) {
+    color: yellow;
+  }
+  div::selection {
+    background-color: yellow;
+    color: blue;
+  }
+  span::selection {
+    color: green;
+  }
+</style>
+<body>
+<div>There should be a green background color and yellow font coloe below from [ to ]:</div>
+<div id="highlight_target">[<span>Custom <strong>Highlight</strong> Inheritance</span>]</div>
+<div>There should be a selection below from [ to ], but background color only visible around 'Selection', and 'Text' and 'Sample' font color should be green:</div>
+<div id="selection_target">[<span>Text <strong>Selection</strong> Sample</span>]</div>
+<script>
+  let highlight_range = new Range();
+  const highlight_node = document.getElementById("highlight_target");
+  highlight_range.setStart(highlight_node, 1);
+  highlight_range.setEnd(highlight_node, 2);
+
+  CSS.highlights.set("div-highlight", new Highlight(highlight_range));
+  CSS.highlights.set("span-highlight", new Highlight(highlight_range));
+
+  let selection_range = new Range();
+  const selection_node = document.getElementById("selection_target");
+  selection_range.setStart(selection_node, 1);
+  selection_range.setEnd(selection_node, 2);
+  window.getSelection().addRange(selection_range);
+</script>

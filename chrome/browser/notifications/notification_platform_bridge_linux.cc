@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/bind.h"
+#include "base/callback_list.h"
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
 #include "base/environment.h"
@@ -22,17 +23,24 @@
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
 #include "base/i18n/number_formatting.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/notifications/notification_operation.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
@@ -42,13 +50,9 @@
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_service.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
-#include "net/base/escape.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "skia/ext/image_operations.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -68,6 +72,7 @@ const char kMethodGetCapabilities[] = "GetCapabilities";
 const char kMethodListActivatableNames[] = "ListActivatableNames";
 const char kMethodNameHasOwner[] = "NameHasOwner";
 const char kMethodNotify[] = "Notify";
+const char kMethodStartServiceByName[] = "StartServiceByName";
 
 // DBus signals.
 const char kSignalActionInvoked[] = "ActionInvoked";
@@ -99,6 +104,9 @@ const char kSettingsButtonId[] = "settings";
 // Max image size; specified in the FDO notification specification.
 const int kMaxImageWidth = 200;
 const int kMaxImageHeight = 100;
+
+// Time to wait for the notification service to start.
+constexpr base::TimeDelta kStartServiceTimeout = base::Seconds(1);
 
 // Notification on-screen time, in milliseconds.
 const int32_t kExpireTimeout = 25000;
@@ -156,7 +164,7 @@ int NotificationPriorityToFdoUrgency(int priority) {
       return URGENCY_CRITICAL;
     default:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case message_center::DEFAULT_PRIORITY:
       return URGENCY_NORMAL;
   }
@@ -196,6 +204,16 @@ bool ShouldAddCloseButton(const std::string& server_name,
   // so exclude versions that provide one already.
   return server_name == "cinnamon" && server_version.IsValid() &&
          server_version.CompareToWildcardString("3.8.0") < 0;
+}
+
+bool ShouldMarkPersistentNotificationsAsCritical(
+    const std::string& server_name) {
+  // Gnome-based desktops intentionally disregard the notification timeout
+  // and hide a notification automatically unless it is marked as critical.
+  // https://github.com/linuxmint/Cinnamon/issues/7179
+  // For this reason, we mark a notification that should not time out as
+  // critical unless we are on KDE Plasma which follows the notification spec.
+  return server_name != "Plasma";
 }
 
 void ForwardNotificationOperationOnUiThread(
@@ -271,9 +289,9 @@ bool CheckNotificationsNameHasOwnerOrIsActivatable(dbus::Bus* bus) {
   std::unique_ptr<dbus::Response> name_has_owner_response =
       dbus_proxy->CallMethodAndBlock(&name_has_owner_call,
                                      dbus::ObjectProxy::TIMEOUT_USE_DEFAULT);
-  dbus::MessageReader reader(name_has_owner_response.get());
+  dbus::MessageReader owner_reader(name_has_owner_response.get());
   bool owned = false;
-  if (name_has_owner_response && reader.PopBool(&owned) && owned)
+  if (name_has_owner_response && owner_reader.PopBool(&owned) && owned)
     return true;
 
   // If the service currently isn't running, maybe it is activatable.
@@ -286,7 +304,24 @@ bool CheckNotificationsNameHasOwnerOrIsActivatable(dbus::Bus* bus) {
     dbus::MessageReader reader(list_activatable_names_response.get());
     std::vector<std::string> activatable_names;
     reader.PopArrayOfStrings(&activatable_names);
-    return base::Contains(activatable_names, kFreedesktopNotificationsName);
+    if (base::Contains(activatable_names, kFreedesktopNotificationsName)) {
+      dbus::MethodCall start_service_call(DBUS_INTERFACE_DBUS,
+                                          kMethodStartServiceByName);
+      dbus::MessageWriter start_service_writer(&start_service_call);
+      start_service_writer.AppendString(kFreedesktopNotificationsName);
+      start_service_writer.AppendUint32(/*flags=*/0);
+      auto start_service_response = dbus_proxy->CallMethodAndBlock(
+          &start_service_call, kStartServiceTimeout.InMilliseconds());
+      if (!start_service_response)
+        return false;
+      dbus::MessageReader start_service_reader(start_service_response.get());
+      uint32_t start_service_reply = 0;
+      if (start_service_reader.PopUint32(&start_service_reply) &&
+          (start_service_reply == DBUS_START_REPLY_SUCCESS ||
+           start_service_reply == DBUS_START_REPLY_ALREADY_RUNNING)) {
+        return true;
+      }
+    }
   }
   return false;
 }
@@ -307,15 +342,19 @@ bool NotificationPlatformBridge::CanHandleType(
 
 class NotificationPlatformBridgeLinuxImpl
     : public NotificationPlatformBridge,
-      public content::NotificationObserver,
       public base::RefCountedThreadSafe<NotificationPlatformBridgeLinuxImpl> {
  public:
   explicit NotificationPlatformBridgeLinuxImpl(scoped_refptr<dbus::Bus> bus)
       : bus_(bus) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     task_runner_ = dbus_thread_linux::GetTaskRunner();
-    registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
-                   content::NotificationService::AllSources());
+    // base::Unretained(this) is safe here as this object owns
+    // |on_app_terminating_subscription_| and the callback won't be invoked
+    // after the subscription is destroyed.
+    on_app_terminating_subscription_ =
+        browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
+            &NotificationPlatformBridgeLinuxImpl::OnAppTerminating,
+            base::Unretained(this)));
   }
   NotificationPlatformBridgeLinuxImpl(
       const NotificationPlatformBridgeLinuxImpl&) = delete;
@@ -348,7 +387,9 @@ class NotificationPlatformBridgeLinuxImpl
     // Make a deep copy of the notification as its resources cannot safely
     // be passed between threads.
     auto notification_copy = message_center::Notification::DeepCopy(
-        notification, body_images_supported_.value(),
+        notification,
+        ThemeServiceFactory::GetForProfile(profile)->GetColorProvider(),
+        body_images_supported_.value(),
         /*include_small_image=*/false, /*include_icon_images=*/false);
 
     task_runner_->PostTask(
@@ -446,11 +487,8 @@ class NotificationPlatformBridgeLinuxImpl
     DLOG_IF(ERROR, !clean_up_on_task_runner_called_) << "Not cleaned up";
   }
 
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override {
+  void OnAppTerminating() {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    DCHECK_EQ(chrome::NOTIFICATION_APP_TERMINATING, type);
     // The browser process is about to exit.  Post the CleanUp() task
     // while we still can.
     CleanUp();
@@ -646,7 +684,7 @@ class NotificationPlatformBridgeLinuxImpl
         if (linkify_context_if_possible) {
           if (base::Contains(capabilities_, kCapabilityBodyHyperlinks)) {
             body << "<a href=\""
-                 << net::EscapeForHTML(notification->origin_url().spec())
+                 << base::EscapeForHTML(notification->origin_url().spec())
                  << "\">" << context_display_text << "</a>\n\n";
           } else {
             body << context_display_text << "\n\n";
@@ -664,14 +702,14 @@ class NotificationPlatformBridgeLinuxImpl
 
       if (notification->type() == message_center::NOTIFICATION_TYPE_MULTIPLE) {
         for (const auto& item : notification->items()) {
-          const std::string title = base::UTF16ToUTF8(item.title);
-          const std::string message = base::UTF16ToUTF8(item.message);
+          const std::string item_title = base::UTF16ToUTF8(item.title);
+          const std::string item_message = base::UTF16ToUTF8(item.message);
           // TODO(peter): Figure out the right way to internationalize
           // this for RTL languages.
           if (body_markup)
-            body << "<b>" << title << "</b> " << message << "\n";
+            body << "<b>" << item_title << "</b> " << item_message << "\n";
           else
-            body << title << " - " << message << "\n";
+            body << item_title << " - " << item_message << "\n";
         }
       } else if (notification->type() ==
                      message_center::NOTIFICATION_TYPE_IMAGE &&
@@ -680,7 +718,7 @@ class NotificationPlatformBridgeLinuxImpl
             ResizeImageToFdoMaxSize(notification->image()).As1xPNGBytes());
         if (image_file) {
           body << "<img src=\""
-               << "file://" + net::EscapePath(image_file->file_path().value())
+               << "file://" + base::EscapePath(image_file->file_path().value())
                << "\" alt=\"\"/>\n";
           data->resource_files.push_back(std::move(image_file));
         }
@@ -748,7 +786,8 @@ class NotificationPlatformBridgeLinuxImpl
     hints_writer.OpenDictEntry(&urgency_writer);
     urgency_writer.AppendString("urgency");
     uint32_t urgency =
-        notification->never_timeout()
+        notification->never_timeout() &&
+                ShouldMarkPersistentNotificationsAsCritical(server_name_)
             ? URGENCY_CRITICAL
             : NotificationPriorityToFdoUrgency(notification->priority());
     urgency_writer.AppendVariantOfUint32(urgency);
@@ -774,8 +813,8 @@ class NotificationPlatformBridgeLinuxImpl
     desktop_entry_writer.AppendVariantOfString(desktop_file.value());
     hints_writer.CloseContainer(&desktop_entry_writer);
 
-    std::unique_ptr<ResourceFile> icon_file =
-        WriteDataToTmpFile(notification->icon().As1xPNGBytes());
+    std::unique_ptr<ResourceFile> icon_file = WriteDataToTmpFile(
+        gfx::Image(notification->icon().Rasterize(nullptr)).As1xPNGBytes());
     if (icon_file) {
       for (const std::string& hint_name : {"image_path", "image-path"}) {
         dbus::MessageWriter image_path_writer(nullptr);
@@ -1109,7 +1148,7 @@ class NotificationPlatformBridgeLinuxImpl
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  content::NotificationRegistrar registrar_;
+  base::CallbackListSubscription on_app_terminating_subscription_;
 
   // State necessary for OnConnectionInitializationFinished() and
   // SetReadyCallback().
@@ -1125,7 +1164,7 @@ class NotificationPlatformBridgeLinuxImpl
 
   scoped_refptr<dbus::Bus> bus_;
 
-  dbus::ObjectProxy* notification_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> notification_proxy_ = nullptr;
 
   std::unordered_set<std::string> capabilities_;
 

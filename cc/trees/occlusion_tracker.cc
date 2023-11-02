@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -166,9 +166,9 @@ void OcclusionTracker::EnterRenderTarget(
   }
 
   size_t last_index = stack_.size() - 1;
-  gfx::Transform old_target_to_new_target_transform(
-      inverse_new_target_screen_space_transform,
-      old_target_surface->screen_space_transform());
+  gfx::Transform old_target_to_new_target_transform =
+      inverse_new_target_screen_space_transform *
+      old_target_surface->screen_space_transform();
   stack_[last_index].occlusion_from_outside_target =
       TransformSurfaceOpaqueRegion(
           stack_[last_index - 1].occlusion_from_outside_target, false,
@@ -264,7 +264,8 @@ static void ReduceOcclusionBelowSurface(
             ? 0
             : target_rect.y() - affected_area_in_target.y();
 
-    occlusion_rect.Inset(shrink_left, shrink_top, shrink_right, shrink_bottom);
+    occlusion_rect.Inset(gfx::Insets::TLBR(shrink_top, shrink_left,
+                                           shrink_bottom, shrink_right));
 
     occlusion_from_inside_target->Union(occlusion_rect);
   }
@@ -361,7 +362,7 @@ void OcclusionTracker::MarkOccludedBehindLayer(const LayerImpl* layer) {
   // otherwise be wrong is that this layer is a non-render-surface mask layer
   // with kDstIn blend mode.
   const auto* effect_node =
-      layer->layer_tree_impl()->property_trees()->effect_tree.Node(
+      layer->layer_tree_impl()->property_trees()->effect_tree().Node(
           layer->effect_tree_index());
   if (!effect_node->HasRenderSurface() &&
       !IsOccludingBlendMode(effect_node->blend_mode))

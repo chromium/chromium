@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,6 @@
 #include "base/strings/string_util_win.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -255,12 +254,8 @@ bool NativeWindowOcclusionTrackerWin::IsWindowVisibleAndFullyOpaque(
   // not displayed. explorer.exe, in particular has one that's the
   // size of the desktop. It's usually behind Chrome windows in the z-order,
   // but using a remote desktop can move it up in the z-order. So, ignore them.
-  DWORD reason;
-  if (SUCCEEDED(DwmGetWindowAttribute(hwnd, DWMWA_CLOAKED, &reason,
-                                      sizeof(reason))) &&
-      reason != 0) {
+  if (gfx::IsWindowCloaked(hwnd))
     return false;
-  }
 
   RECT win_rect;
   // Filter out windows that take up zero area. The call to GetWindowRect is one
@@ -316,6 +311,8 @@ void NativeWindowOcclusionTrackerWin::UpdateOcclusionState(
     // The window was destroyed while processing occlusion.
     if (it == hwnd_root_window_map_.end())
       continue;
+    it->second->GetHost()->set_on_current_workspace(
+        root_window_pair.second.on_current_workspace);
     // Check Window::IsVisible here, on the UI thread, because it can't be
     // checked on the occlusion calculation thread. Do this first before
     // checking screen_locked_ or display_on_ so that hidden windows remain
@@ -585,11 +582,13 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
 
     // Reset RootOcclusionState to a clean state.
     root_window_pair.second = {};
+    root_window_pair.second.on_current_workspace =
+        IsWindowOnCurrentVirtualDesktop(hwnd);
     // IsIconic() checks for a minimized window. Immediately set the state of
     // minimized windows to HIDDEN.
     if (IsIconic(hwnd)) {
       root_window_pair.second.occlusion_state = Window::OcclusionState::HIDDEN;
-    } else if (IsWindowOnCurrentVirtualDesktop(hwnd) == false) {
+    } else if (root_window_pair.second.on_current_workspace == false) {
       // If window is not on the current virtual desktop, immediately
       // set the state of the window to OCCLUDED.
       root_window_pair.second.occlusion_state =
@@ -651,10 +650,11 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
 void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
     ScheduleOcclusionCalculationIfNeeded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!occlusion_update_timer_.IsRunning())
+  if (!occlusion_update_timer_.IsRunning()) {
     occlusion_update_timer_.Start(
         FROM_HERE, kUpdateOcclusionDelay, this,
         &WindowOcclusionCalculator::ComputeNativeWindowOcclusionStatus);
+  }
 }
 
 void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
@@ -680,6 +680,16 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
     RegisterEventHooks() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(global_event_hooks_.empty());
+
+  // This helps with the case where an extension tried to foreground a window,
+  // but Windows prevented it, and the user clicks on the task bar to bring the
+  // window forward. See https://crbug.com/1137982. This is the only event I
+  // could find that always gets sent in this scenario, and isn't too common.
+  // TODO(crbug.com/1297684): See if we can make handling this event cheaper,
+  // since we typically don't need it, e.g., by using a longer timer interval
+  // for starting the occlusion calculation for this event, to batch subsequent
+  // events.
+  RegisterGlobalEventHook(EVENT_SYSTEM_CAPTUREEND, EVENT_SYSTEM_CAPTUREEND);
 
   // Detects native window move (drag) and resizing events.
   RegisterGlobalEventHook(EVENT_SYSTEM_MOVESIZESTART, EVENT_SYSTEM_MOVESIZEEND);
@@ -940,12 +950,11 @@ absl::optional<bool> NativeWindowOcclusionTrackerWin::
   if (!virtual_desktop_manager_)
     return true;
 
-  BOOL on_current_desktop;
-  if (SUCCEEDED(virtual_desktop_manager_->IsWindowOnCurrentVirtualDesktop(
-          hwnd, &on_current_desktop))) {
-    return on_current_desktop;
-  }
-  return absl::nullopt;
+  // If the window is not cloaked, it is not on another desktop.
+  if (!gfx::IsWindowCloaked(hwnd))
+    return true;
+
+  return gfx::IsWindowOnCurrentVirtualDesktop(hwnd, virtual_desktop_manager_);
 }
 
 }  // namespace aura

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
@@ -19,12 +18,15 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_encoder_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_encode_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_init.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_encoder.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_state_helper.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk.h"
@@ -32,7 +34,9 @@
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -57,20 +61,19 @@ template <typename Traits>
 EncoderBase<Traits>::EncoderBase(ScriptState* script_state,
                                  const InitType* init,
                                  ExceptionState& exception_state)
-    : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
+    : ReclaimableCodec(ReclaimableCodec::CodecType::kEncoder,
+                       ExecutionContext::From(script_state)),
       state_(V8CodecState::Enum::kUnconfigured),
       script_state_(script_state),
       trace_counter_id_(g_sequence_num_for_counters.GetNext()) {
   auto* context = ExecutionContext::From(script_state);
   callback_runner_ = context->GetTaskRunner(TaskType::kInternalMediaRealTime);
 
-  logger_ =
-      std::make_unique<CodecLogger>(GetExecutionContext(), callback_runner_);
+  logger_ = std::make_unique<CodecLogger<media::EncoderStatus>>(
+      GetExecutionContext(), callback_runner_);
 
   media::MediaLog* log = logger_->log();
-
-  log->SetProperty<media::MediaLogProperty::kFrameTitle>(
-      std::string(Traits::GetNameForDevTools()));
+  logger_->SendPlayerNameInformation(*context, Traits::GetName());
   log->SetProperty<media::MediaLogProperty::kFrameUrl>(
       GetExecutionContext()->Url().GetString().Ascii());
 
@@ -112,8 +115,7 @@ void EncoderBase<Traits>::configure(const ConfigType* config,
 
   Request* request = MakeGarbageCollected<Request>();
   request->reset_count = reset_count_;
-  if (media_encoder_ && active_config_ &&
-      state_.AsEnum() == V8CodecState::Enum::kConfigured &&
+  if (active_config_ && state_.AsEnum() == V8CodecState::Enum::kConfigured &&
       CanReconfigure(*active_config_, *parsed_config)) {
     request->type = Request::Type::kReconfigure;
   } else {
@@ -205,10 +207,6 @@ void EncoderBase<Traits>::reset(ExceptionState& exception_state) {
 
   state_ = V8CodecState(V8CodecState::Enum::kUnconfigured);
   ResetInternal();
-
-  // This codec isn't holding on to any resources, and doesn't need to be
-  // reclaimed.
-  PauseCodecReclamation();
 }
 
 template <typename Traits>
@@ -223,7 +221,10 @@ void EncoderBase<Traits>::ResetInternal() {
     if (pending_req->input)
       pending_req->input.Release()->close();
   }
-  requested_encodes_ = 0;
+  if (requested_encodes_ > 0) {
+    requested_encodes_ = 0;
+    ScheduleDequeueEvent();
+  }
   blocking_request_in_progress_ = false;
 
   // Schedule deletion of |media_encoder_| for later.
@@ -232,6 +233,10 @@ void EncoderBase<Traits>::ResetInternal() {
   // the call stack and continu executing code belonging to deleted
   // |media_encoder_|.
   callback_runner_->DeleteSoon(FROM_HERE, std::move(media_encoder_));
+
+  // This codec isn't holding on to any resources, and doesn't need to be
+  // reclaimed.
+  ReleaseCodecPressure();
 }
 
 template <typename Traits>
@@ -247,7 +252,6 @@ void EncoderBase<Traits>::HandleError(DOMException* ex) {
   state_ = V8CodecState(V8CodecState::Enum::kClosed);
 
   ResetInternal();
-  PauseCodecReclamation();
 
   // Errors are permanent. Shut everything down.
   error_callback_.Clear();
@@ -310,7 +314,7 @@ void EncoderBase<Traits>::ProcessFlush(Request* request) {
   DCHECK_EQ(request->type, Request::Type::kFlush);
 
   auto done_callback = [](EncoderBase<Traits>* self, Request* req,
-                          media::Status status) {
+                          media::EncoderStatus status) {
     DCHECK(req);
     DCHECK(req->resolver);
 
@@ -330,7 +334,7 @@ void EncoderBase<Traits>::ProcessFlush(Request* request) {
       req->resolver.Release()->Resolve();
     } else {
       self->HandleError(
-          self->logger_->MakeException("Flushing error.", status));
+          self->logger_->MakeException("Flushing error.", std::move(status)));
       req->resolver.Release()->Reject();
     }
     req->EndTracing();
@@ -342,9 +346,9 @@ void EncoderBase<Traits>::ProcessFlush(Request* request) {
   request->StartTracing();
 
   blocking_request_in_progress_ = true;
-  media_encoder_->Flush(ConvertToBaseOnceCallback(
-      CrossThreadBindOnce(done_callback, WrapCrossThreadWeakPersistent(this),
-                          WrapCrossThreadPersistent(request))));
+  media_encoder_->Flush(ConvertToBaseOnceCallback(CrossThreadBindOnce(
+      done_callback, MakeUnwrappingCrossThreadWeakHandle(this),
+      MakeUnwrappingCrossThreadHandle(request))));
 }
 
 template <typename Traits>
@@ -374,13 +378,48 @@ void EncoderBase<Traits>::TraceQueueSizes() const {
 }
 
 template <typename Traits>
+void EncoderBase<Traits>::DispatchDequeueEvent(Event* event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  probe::AsyncTask async_task(GetExecutionContext(),
+                              event->async_task_context());
+  dequeue_event_pending_ = false;
+  DispatchEvent(*event);
+}
+
+template <typename Traits>
+void EncoderBase<Traits>::ScheduleDequeueEvent() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!RuntimeEnabledFeatures::WebCodecsDequeueEventEnabled())
+    return;
+
+  if (dequeue_event_pending_)
+    return;
+  dequeue_event_pending_ = true;
+
+  Event* event = Event::Create(event_type_names::kDequeue);
+  event->SetTarget(this);
+  event->async_task_context()->Schedule(GetExecutionContext(), event->type());
+
+  callback_runner_->PostTask(
+      FROM_HERE,
+      WTF::BindOnce(&EncoderBase<Traits>::DispatchDequeueEvent,
+                    WrapWeakPersistent(this), WrapPersistent(event)));
+}
+
+template <typename Traits>
+ExecutionContext* EncoderBase<Traits>::GetExecutionContext() const {
+  return ExecutionContextLifecycleObserver::GetExecutionContext();
+}
+
+template <typename Traits>
 void EncoderBase<Traits>::Trace(Visitor* visitor) const {
   visitor->Trace(active_config_);
   visitor->Trace(script_state_);
   visitor->Trace(output_callback_);
   visitor->Trace(error_callback_);
   visitor->Trace(requests_);
-  ScriptWrappable::Trace(visitor);
+  EventTargetWithInlineData::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   ReclaimableCodec::Trace(visitor);
 }
@@ -412,13 +451,16 @@ const char* EncoderBase<Traits>::Request::TraceNameFromType() {
 }
 
 template <typename Traits>
-void EncoderBase<Traits>::Request::StartTracingVideoEncode(bool is_keyframe) {
+void EncoderBase<Traits>::Request::StartTracingVideoEncode(
+    bool is_keyframe,
+    base::TimeDelta timestamp) {
 #if DCHECK_IS_ON()
   DCHECK(!is_tracing);
   is_tracing = true;
 #endif
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(kCategory, TraceNameFromType(), this,
-                                    "key_frame", is_keyframe);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(kCategory, TraceNameFromType(), this,
+                                    "key_frame", is_keyframe, "timestamp",
+                                    timestamp);
 }
 
 template <typename Traits>

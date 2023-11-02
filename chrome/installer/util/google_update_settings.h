@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
@@ -95,14 +94,14 @@ class GoogleUpdateSettings {
   // false if the setting could not be recorded.
   static bool SetCollectStatsConsent(bool consented);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Returns the default (original) state of the "send usage stats" checkbox
   // shown to the user when they downloaded Chrome. The value is returned via
   // the out parameter |stats_consent_default|. This function returns true if
   // the default state is known and false otherwise. If false the out param
   // will not be set.
-  static bool GetCollectStatsConsentDefault(bool* stats_consent_default)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool GetCollectStatsConsentDefault(
+      bool* stats_consent_default);
 #endif
 
   // Returns the metrics client info backed up in the registry. nullptr

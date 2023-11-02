@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,35 +7,39 @@
  * the "dictionary" of custom words used for spell check.
  */
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
-import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '../prefs/prefs.js';
-import '../settings_shared_css.js';
-import '../settings_vars_css.js';
+import '../settings_shared.css.js';
+import '../settings_vars.css.js';
 
-import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
-import {flush, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {Route} from '../router.js';
 
+import {getTemplate} from './edit_dictionary_page.html.js';
 import {LanguagesBrowserProxyImpl} from './languages_browser_proxy.js';
 
 // Max valid word size defined in
 // https://cs.chromium.org/chromium/src/components/spellcheck/common/spellcheck_common.h?l=28
 const MAX_CUSTOM_DICTIONARY_WORD_BYTES = 99;
 
-interface SettingsEditDictionaryPageElement {
+export interface SettingsEditDictionaryPageElement {
   $: {
+    addWord: CrButtonElement,
     keys: IronA11yKeysElement,
-    newWord: HTMLElement,
+    newWord: CrInputElement,
+    noWordsLabel: HTMLElement,
   };
 }
 
@@ -43,14 +47,14 @@ const SettingsEditDictionaryPageElementBase =
     GlobalScrollTargetMixin(PolymerElement) as unknown as
     {new (): PolymerElement};
 
-class SettingsEditDictionaryPageElement extends
+export class SettingsEditDictionaryPageElement extends
     SettingsEditDictionaryPageElementBase {
   static get is() {
     return 'settings-edit-dictionary-page';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -84,12 +88,12 @@ class SettingsEditDictionaryPageElement extends
 
   private newWordValue_: string;
   subpageRoute: Route;
-  private words_: Array<string>;
+  private words_: string[];
   private hasWords_: boolean;
   private languageSettingsPrivate_:
       (typeof chrome.languageSettingsPrivate)|null = null;
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.languageSettingsPrivate_ =
@@ -168,8 +172,7 @@ class SettingsEditDictionaryPageElement extends
    * Handles updates to the word list. Additions are unshifted to the top
    * of the list so that users can see them easily.
    */
-  private onCustomDictionaryChanged_(
-      added: Array<string>, removed: Array<string>) {
+  private onCustomDictionaryChanged_(added: string[], removed: string[]) {
     const wasEmpty = this.words_.length === 0;
 
     for (const word of removed) {
@@ -224,6 +227,12 @@ class SettingsEditDictionaryPageElement extends
    */
   private onRemoveWordTap_(e: {model: {item: string}}) {
     this.languageSettingsPrivate_!.removeSpellcheckWord(e.model.item);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-edit-dictionary-page': SettingsEditDictionaryPageElement;
   }
 }
 

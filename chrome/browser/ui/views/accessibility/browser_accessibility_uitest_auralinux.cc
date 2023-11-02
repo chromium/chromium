@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,17 +12,23 @@
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
-#include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
 class AuraLinuxAccessibilityInProcessBrowserTest : public InProcessBrowserTest {
  protected:
-  AuraLinuxAccessibilityInProcessBrowserTest()
-      : ax_mode_setter_(ui::kAXModeComplete) {}
+  AuraLinuxAccessibilityInProcessBrowserTest() = default;
+
+  void PreRunTestOnMainThread() override {
+    ax_mode_setter_ =
+        std::make_unique<content::testing::ScopedContentAXModeSetter>(
+            ui::kAXModeComplete);
+    InProcessBrowserTest::PreRunTestOnMainThread();
+  }
 
   AuraLinuxAccessibilityInProcessBrowserTest(
       const AuraLinuxAccessibilityInProcessBrowserTest&) = delete;
@@ -32,7 +38,7 @@ class AuraLinuxAccessibilityInProcessBrowserTest : public InProcessBrowserTest {
   void VerifyEmbedRelationships();
 
  private:
-  ui::testing::ScopedAxModeSetter ax_mode_setter_;
+  std::unique_ptr<content::testing::ScopedContentAXModeSetter> ax_mode_setter_;
 };
 
 IN_PROC_BROWSER_TEST_F(AuraLinuxAccessibilityInProcessBrowserTest,
@@ -176,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(AuraLinuxAccessibilityInProcessBrowserTest,
                          ->GetNativeViewAccessible());
 
   GURL url(url::kAboutBlankURL);
-  AddTabAtIndex(0, url, ui::PAGE_TRANSITION_LINK);
+  ASSERT_TRUE(AddTabAtIndex(0, url, ui::PAGE_TRANSITION_LINK));
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
 
@@ -196,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(AuraLinuxAccessibilityInProcessBrowserTest,
 // Tests that the embedded relationship is set on the main web contents when
 // the DevTools is opened.
 // This fails on Linux : http://crbug.com/1223047
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_EmbeddedRelationshipWithDevTools \
   DISABLED_EmbeddedRelationshipWithDevTools
 #else

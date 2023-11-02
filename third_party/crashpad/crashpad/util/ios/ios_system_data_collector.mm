@@ -1,4 +1,4 @@
-// Copyright 2020 The Crashpad Authors. All rights reserved.
+// Copyright 2020 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -47,6 +47,24 @@ std::string ReadStringSysctlByName(const char* name) {
   }
 
   return value;
+}
+
+template <typename T, void (T::*M)(void)>
+void AddObserver(CFStringRef notification_name, T* observer) {
+  CFNotificationCenterAddObserver(
+      CFNotificationCenterGetLocalCenter(),
+      observer,
+      [](CFNotificationCenterRef center,
+         void* observer_vp,
+         CFNotificationName name,
+         const void* object,
+         CFDictionaryRef userInfo) {
+        T* observer = reinterpret_cast<T*>(observer_vp);
+        (observer->*M)();
+      },
+      notification_name,
+      nullptr,
+      CFNotificationSuspensionBehaviorDeliverImmediately);
 }
 
 }  // namespace
@@ -131,35 +149,30 @@ void IOSSystemDataCollector::OSVersion(int* major,
 
 void IOSSystemDataCollector::InstallHandlers() {
   // Timezone.
-  CFNotificationCenterAddObserver(
-      CFNotificationCenterGetLocalCenter(),
-      this,
-      IOSSystemDataCollector::SystemTimeZoneDidChangeNotificationHandler,
-      reinterpret_cast<CFStringRef>(NSSystemTimeZoneDidChangeNotification),
-      nullptr,
-      CFNotificationSuspensionBehaviorDeliverImmediately);
+  AddObserver<IOSSystemDataCollector,
+              &IOSSystemDataCollector::SystemTimeZoneDidChangeNotification>(
+      (__bridge CFStringRef)NSSystemTimeZoneDidChangeNotification, this);
   SystemTimeZoneDidChangeNotification();
 
   // Orientation.
-  CFNotificationCenterAddObserver(
-      CFNotificationCenterGetLocalCenter(),
-      this,
-      IOSSystemDataCollector::OrientationDidChangeNotificationHandler,
-      reinterpret_cast<CFStringRef>(UIDeviceOrientationDidChangeNotification),
-      nullptr,
-      CFNotificationSuspensionBehaviorDeliverImmediately);
+  AddObserver<IOSSystemDataCollector,
+              &IOSSystemDataCollector::OrientationDidChangeNotification>(
+      (__bridge CFStringRef)UIDeviceOrientationDidChangeNotification, this);
   OrientationDidChangeNotification();
-}
 
-// static
-void IOSSystemDataCollector::SystemTimeZoneDidChangeNotificationHandler(
-    CFNotificationCenterRef center,
-    void* observer,
-    CFStringRef name,
-    const void* object,
-    CFDictionaryRef userInfo) {
-  static_cast<IOSSystemDataCollector*>(observer)
-      ->SystemTimeZoneDidChangeNotification();
+  // Foreground/Background. Extensions shouldn't use UIApplication*.
+  if (!is_extension_) {
+    AddObserver<
+        IOSSystemDataCollector,
+        &IOSSystemDataCollector::ApplicationDidChangeActiveNotification>(
+        (__bridge CFStringRef)UIApplicationDidBecomeActiveNotification, this);
+    AddObserver<
+        IOSSystemDataCollector,
+        &IOSSystemDataCollector::ApplicationDidChangeActiveNotification>(
+        (__bridge CFStringRef)UIApplicationDidEnterBackgroundNotification,
+        this);
+    ApplicationDidChangeActiveNotification();
+  }
 }
 
 void IOSSystemDataCollector::SystemTimeZoneDidChangeNotification() {
@@ -197,20 +210,19 @@ void IOSSystemDataCollector::SystemTimeZoneDidChangeNotification() {
   }
 }
 
-// static
-void IOSSystemDataCollector::OrientationDidChangeNotificationHandler(
-    CFNotificationCenterRef center,
-    void* observer,
-    CFStringRef name,
-    const void* object,
-    CFDictionaryRef userInfo) {
-  static_cast<IOSSystemDataCollector*>(observer)
-      ->OrientationDidChangeNotification();
-}
-
 void IOSSystemDataCollector::OrientationDidChangeNotification() {
   orientation_ =
       base::saturated_cast<int>([[UIDevice currentDevice] orientation]);
+}
+
+void IOSSystemDataCollector::ApplicationDidChangeActiveNotification() {
+  dispatch_assert_queue_debug(dispatch_get_main_queue());
+  bool old_active = active_;
+  active_ = [UIApplication sharedApplication].applicationState ==
+            UIApplicationStateActive;
+  if (active_ != old_active && active_application_callback_) {
+    active_application_callback_(active_);
+  }
 }
 
 }  // namespace internal

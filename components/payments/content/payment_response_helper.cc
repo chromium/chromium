@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -171,14 +171,7 @@ void PaymentResponseHelper::GeneratePaymentResponse() {
 
   mojom::PaymentResponsePtr payment_response = mojom::PaymentResponse::New();
 
-  // Make sure that we return the method name that the merchant specified for
-  // this app: cards can be either specified through their name (e.g., "visa")
-  // or through basic-card's supportedNetworks.
-  payment_response->method_name =
-      base::FeatureList::IsEnabled(::features::kPaymentRequestBasicCard) &&
-              spec_->IsMethodSupportedThroughBasicCard(method_name_)
-          ? methods::kBasicCard
-          : method_name_;
+  payment_response->method_name = method_name_;
   payment_response->stringified_details = stringified_details_;
 
   // Shipping Address section

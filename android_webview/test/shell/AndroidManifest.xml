@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!-- Copyright 2013 The Chromium Authors. All rights reserved.
+<!-- Copyright 2013 The Chromium Authors
 
   Use of this source code is governed by a BSD-style license that can be
   found in the LICENSE file.
@@ -20,6 +20,13 @@
   <!-- Kerberos authentication -->
   <uses-permission android:name="android.permission.GET_ACCOUNTS" />
   <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+
+  <!-- Features related to permissions we request. -->
+  <!-- android.permission.CAMERA -->
+  <uses-feature android:name="android.hardware.camera" android:required="false" />
+  <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
+  <!-- android.permission.RECORD_AUDIO -->
+  <uses-feature android:name="android.hardware.microphone" android:required="false" />
 
   <application android:name="org.chromium.android_webview.shell.AwShellApplication"
       android:label="AwShellApplication"
@@ -69,6 +76,11 @@
              android:exported="false" />
     <meta-data android:name="org.chromium.content.browser.NUM_PRIVILEGED_SERVICES"
                android:value="0"/>
+    <!-- JS Execution Sandbox -->
+    <service android:name="org.chromium.android_webview.js_sandbox.service.JsSandboxService0"
+             android:process=":js_sandboxed_process0"
+             android:isolatedProcess="true"
+             android:exported="false" />
     <!-- See AwSecondBrowserProcessTest -->
     <service android:name="org.chromium.android_webview.test.SecondBrowserProcess"
              android:process=":second_browser_process"

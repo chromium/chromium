@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,7 @@
 #include <set>
 #include <string>
 
-#include "base/test/scoped_field_trial_list_resetter.h"
-
 namespace base {
-class CommandLine;
 class FieldTrialList;
 
 namespace test {
@@ -59,8 +56,18 @@ class VariationParamsManager {
   // parameter names to their values. The function creates a new trial group,
   // used only for testing. Between two calls of this function,
   // ClearAllVariationParams() has to be called.
-  void SetVariationParams(
+  static void SetVariationParams(
       const std::string& trial_name,
+      const std::map<std::string, std::string>& param_values);
+
+  // Associates |param_values| with the given |trial_name| whose trial group
+  // is |trial_group_name|. |param_values| maps parameter names to their values.
+  // The function is used only for testing. Between two calls of this function,
+  // ClearAllVariationParams() has to be called, or use base::ScopeFeatureList
+  // and move each call into its own scope.
+  static void SetVariationParams(
+      const std::string& trial_name,
+      const std::string& trial_group_name,
       const std::map<std::string, std::string>& param_values);
 
   // Like SetVariationParams(). |associated_features| lists names of features
@@ -78,22 +85,7 @@ class VariationParamsManager {
   // Clears all of the associated params.
   void ClearAllVariationParams();
 
-  // Appends command line switches to |command_line| in a way that mimics
-  // SetVariationParams.
-  //
-  // This static method is useful in situations where using
-  // VariationParamsManager directly would have resulted in initializing
-  // FieldTrialList twice (once from ChromeBrowserMainParts::SetUpFieldTrials
-  // and once from VariationParamsManager).
-  static void AppendVariationParams(
-      const std::string& trial_name,
-      const std::string& trial_group_name,
-      const std::map<std::string, std::string>& param_values,
-      base::CommandLine* command_line);
-
  private:
-  base::test::ScopedFieldTrialListResetter field_trial_list_resetter_;
-  std::unique_ptr<base::FieldTrialList> field_trial_list_;
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 

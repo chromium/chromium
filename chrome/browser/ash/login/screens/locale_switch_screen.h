@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,11 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/base/locale_util.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/locale_switch_screen_handler.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ui/webui/chromeos/login/locale_switch_screen_handler.h"
 
 namespace ash {
 
@@ -37,11 +36,9 @@ class LocaleSwitchScreen : public BaseScreen,
   static std::string GetResultString(Result result);
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
-  explicit LocaleSwitchScreen(LocaleSwitchView* view,
+  explicit LocaleSwitchScreen(base::WeakPtr<LocaleSwitchView> view,
                               const ScreenExitCallback& exit_callback);
   ~LocaleSwitchScreen() override;
-
-  void OnViewDestroyed(LocaleSwitchView* view);
 
   // signin::IdentityManager::Observer:
   void OnErrorStateOfRefreshTokenUpdatedForAccount(
@@ -54,7 +51,7 @@ class LocaleSwitchScreen : public BaseScreen,
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
-  bool MaybeSkip(WizardContext* context) override;
+  bool MaybeSkip(WizardContext& context) override;
 
   void SwitchLocale(std::string locale);
   void OnLanguageChangedCallback(
@@ -63,7 +60,7 @@ class LocaleSwitchScreen : public BaseScreen,
   void ResetState();
   void OnTimeout();
 
-  LocaleSwitchView* view_ = nullptr;
+  base::WeakPtr<LocaleSwitchView> view_ = nullptr;
 
   std::string gaia_id_;
   ScreenExitCallback exit_callback_;

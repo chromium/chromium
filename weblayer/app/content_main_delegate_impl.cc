@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "weblayer/app/content_main_delegate_impl.h"
 
 #include <iostream>
+#include <tuple>
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
@@ -14,7 +15,6 @@
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
@@ -23,6 +23,7 @@
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/translate/core/common/translate_util.h"
 #include "components/variations/variations_ids_provider.h"
+#include "content/public/app/initialize_mojo_core.h"
 #include "content/public/browser/browser_main_runner.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -30,6 +31,7 @@
 #include "content/public/common/url_constants.h"
 #include "media/base/media_switches.h"
 #include "services/network/public/cpp/features.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -42,7 +44,7 @@
 #include "weblayer/renderer/content_renderer_client_impl.h"
 #include "weblayer/utility/content_utility_client_impl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/apk_assets.h"
 #include "base/android/build_info.h"
 #include "base/android/bundle_utils.h"
@@ -62,7 +64,7 @@
 #include "weblayer/common/crash_reporter/crash_reporter_client.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include <initguid.h>
@@ -90,8 +92,8 @@ void InitLogging(MainParams* params) {
 // command line, and similarly disables each feature in |features_to_disable|
 // unless it is already set in the command line.
 void ConfigureFeaturesIfNotSet(
-    const std::vector<base::Feature>& features_to_enable,
-    const std::vector<base::Feature>& features_to_disable) {
+    const std::vector<const base::Feature*>& features_to_enable,
+    const std::vector<const base::Feature*>& features_to_disable) {
   auto* cl = base::CommandLine::ForCurrentProcess();
   std::vector<std::string> enabled_features;
   base::flat_set<std::string> feature_names_enabled_via_command_line;
@@ -118,19 +120,21 @@ void ConfigureFeaturesIfNotSet(
     disabled_features.emplace_back(f);
   }
 
-  for (const auto& feature : features_to_enable) {
-    if (!base::Contains(disabled_features, feature.name) &&
-        !base::Contains(feature_names_enabled_via_command_line, feature.name)) {
-      enabled_features.push_back(feature.name);
+  for (const auto* feature : features_to_enable) {
+    if (!base::Contains(disabled_features, feature->name) &&
+        !base::Contains(feature_names_enabled_via_command_line,
+                        feature->name)) {
+      enabled_features.push_back(feature->name);
     }
   }
   cl->AppendSwitchASCII(::switches::kEnableFeatures,
                         base::JoinString(enabled_features, ","));
 
-  for (const auto& feature : features_to_disable) {
-    if (!base::Contains(disabled_features, feature.name) &&
-        !base::Contains(feature_names_enabled_via_command_line, feature.name)) {
-      disabled_features.push_back(feature.name);
+  for (const auto* feature : features_to_disable) {
+    if (!base::Contains(disabled_features, feature->name) &&
+        !base::Contains(feature_names_enabled_via_command_line,
+                        feature->name)) {
+      disabled_features.push_back(feature->name);
     }
   }
   cl->AppendSwitchASCII(::switches::kDisableFeatures,
@@ -141,7 +145,7 @@ void ConfigureFeaturesIfNotSet(
 
 ContentMainDelegateImpl::ContentMainDelegateImpl(MainParams params)
     : params_(std::move(params)) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // On non-Android, the application start time is recorded in this constructor,
   // which runs early during application lifetime. On Android, the application
   // start time is sampled when the Java code is entered, and it is retrieved
@@ -153,11 +157,7 @@ ContentMainDelegateImpl::ContentMainDelegateImpl(MainParams params)
 
 ContentMainDelegateImpl::~ContentMainDelegateImpl() = default;
 
-bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
-  int dummy;
-  if (!exit_code)
-    exit_code = &dummy;
-
+absl::optional<int> ContentMainDelegateImpl::BasicStartupComplete() {
   // Disable features which are not currently supported in WebLayer. This allows
   // sites to do feature detection, and prevents crashes in some not fully
   // implemented features.
@@ -166,54 +166,59 @@ bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
   // This also turns off Push messaging.
   cl->AppendSwitch(::switches::kDisableNotifications);
 
-  std::vector<base::Feature> enabled_features = {
-#if defined(OS_ANDROID)
+  std::vector<const base::Feature*> enabled_features = {
+#if BUILDFLAG(IS_ANDROID)
     // Overlay promotion requires some guarantees we don't have on WebLayer
     // (e.g. ensuring fullscreen, no movement of the parent view). Given that
     // we're unsure about the benefits when used embedded in a parent app, we
     // will only promote to overlays if needed for secure videos.
-    media::kUseAndroidOverlayForSecureOnly,
+    &media::kUseAndroidOverlayForSecureOnly,
 #endif
   };
 
-  std::vector<base::Feature> disabled_features = {
+  std::vector<const base::Feature*> disabled_features = {
+    // TODO(crbug.com/1313771): Support Digital Goods API.
+    &::features::kDigitalGoodsApi,
     // TODO(crbug.com/1091212): make Notification triggers work with
     // WebLayer.
-    ::features::kNotificationTriggers,
+    &::features::kNotificationTriggers,
     // TODO(crbug.com/1091211): Support PeriodicBackgroundSync on WebLayer.
-    ::features::kPeriodicBackgroundSync,
+    &::features::kPeriodicBackgroundSync,
     // TODO(crbug.com/1174856): Support Portals.
-    blink::features::kPortals,
+    &blink::features::kPortals,
     // TODO(crbug.com/1144912): Support BackForwardCache on WebLayer.
-    ::features::kBackForwardCache,
+    &::features::kBackForwardCache,
     // TODO(crbug.com/1247836): Enable TFLite/Optimization Guide on WebLayer.
-    translate::kTFLiteLanguageDetectionEnabled,
+    &translate::kTFLiteLanguageDetectionEnabled,
+    // TODO(crbug.com/1338402): Add support for WebLayer. Disabling autofill is
+    // not yet supported.
+    &blink::features::kAnonymousIframeOriginTrial,
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // TODO(crbug.com/1131016): Support Picture in Picture API on WebLayer.
-    media::kPictureInPictureAPI,
+    &media::kPictureInPictureAPI,
 
-    ::features::kDisableDeJelly,
-    ::features::kDynamicColorGamut,
+    &::features::kDisableDeJelly,
+    &::features::kDynamicColorGamut,
 #else
     // WebOTP is supported only on Android in WebLayer.
-    ::features::kWebOTP,
+    &::features::kWebOTP,
 #endif
   };
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (base::android::BuildInfo::GetInstance()->sdk_int() >=
       base::android::SDK_VERSION_OREO) {
     enabled_features.push_back(
-        autofill::features::kAutofillExtractAllDatalists);
+        &autofill::features::kAutofillExtractAllDatalists);
     enabled_features.push_back(
-        autofill::features::kAutofillSkipComparingInferredLabels);
+        &autofill::features::kAutofillSkipComparingInferredLabels);
   }
 
   if (GetApplicationMetadataAsBoolean(
           "org.chromium.weblayer.ENABLE_LOGGING_OF_JS_CONSOLE_MESSAGES",
           /*default_value=*/false)) {
-    enabled_features.push_back(features::kLogJsConsoleMessages);
+    enabled_features.push_back(&features::kLogJsConsoleMessages);
   }
 #endif
 
@@ -222,7 +227,11 @@ bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
   // TODO(crbug.com/1097105): Support Web GPU on WebLayer.
   blink::WebRuntimeFeatures::EnableWebGPU(false);
 
-#if defined(OS_ANDROID)
+  // TODO(crbug.com/1338402): Add support for WebLayer. Disabling autofill is
+  // not yet supported.
+  blink::WebRuntimeFeatures::EnableAnonymousIframe(false);
+
+#if BUILDFLAG(IS_ANDROID)
   content::Compositor::Initialize();
 #endif
 
@@ -230,17 +239,22 @@ bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
 
   RegisterPathProvider();
 
-  return false;
+  return absl::nullopt;
 }
 
-bool ContentMainDelegateImpl::ShouldCreateFeatureList() {
-#if defined(OS_ANDROID)
-  // On android WebLayer is in charge of creating its own FeatureList.
-  return false;
+bool ContentMainDelegateImpl::ShouldCreateFeatureList(InvokedIn invoked_in) {
+#if BUILDFLAG(IS_ANDROID)
+  // On android WebLayer is in charge of creating its own FeatureList in the
+  // browser process.
+  return absl::holds_alternative<InvokedInChildProcess>(invoked_in);
 #else
   // TODO(weblayer-dev): Support feature lists on desktop.
   return true;
 #endif
+}
+
+bool ContentMainDelegateImpl::ShouldInitializeMojo(InvokedIn invoked_in) {
+  return ShouldCreateFeatureList(invoked_in);
 }
 
 variations::VariationsIdsProvider*
@@ -254,8 +268,8 @@ ContentMainDelegateImpl::CreateVariationsIdsProvider() {
 void ContentMainDelegateImpl::PreSandboxStartup() {
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if defined(ARCH_CPU_ARM_FAMILY) &&              \
-    (defined(OS_ANDROID) || defined(OS_LINUX) || \
+#if defined(ARCH_CPU_ARM_FAMILY) &&                  \
+    (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || \
      BUILDFLAG(IS_CHROMEOS_LACROS))
   // Create an instance of the CPU class to parse /proc/cpuinfo and cache
   // cpu_brand info.
@@ -284,7 +298,7 @@ void ContentMainDelegateImpl::PreSandboxStartup() {
 
   InitializeResourceBundle();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EnableCrashReporter(
       command_line.GetSwitchValueASCII(::switches::kProcessType));
   if (is_browser_process) {
@@ -295,8 +309,17 @@ void ContentMainDelegateImpl::PreSandboxStartup() {
 #endif
 }
 
-void ContentMainDelegateImpl::PostEarlyInitialization(bool is_running_tests) {
-  browser_client_->CreateFeatureListAndFieldTrials();
+absl::optional<int> ContentMainDelegateImpl::PostEarlyInitialization(
+    InvokedIn invoked_in) {
+  if (absl::holds_alternative<InvokedInBrowserProcess>(invoked_in)) {
+    browser_client_->CreateFeatureListAndFieldTrials();
+  }
+  if (!ShouldInitializeMojo(invoked_in)) {
+    // Since we've told Content not to initialize Mojo on its own, we must do it
+    // here manually.
+    content::InitializeMojoCore();
+  }
+  return absl::nullopt;
 }
 
 absl::variant<int, content::MainFunctionParams>
@@ -307,7 +330,7 @@ ContentMainDelegateImpl::RunProcess(
   if (!process_type.empty())
     return std::move(main_function_params);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // On non-Android, we can return |main_function_params| back and have the
   // caller run BrowserMain() normally.
   return std::move(main_function_params);
@@ -324,7 +347,7 @@ ContentMainDelegateImpl::RunProcess(
       main_runner->Initialize(std::move(main_function_params));
   DCHECK_LT(initialize_exit_code, 0)
       << "BrowserMainRunner::Initialize failed in MainDelegate";
-  ignore_result(main_runner.release());
+  std::ignore = main_runner.release();
   // Return 0 as BrowserMain() should not be called after this, bounce up to
   // the system message loop for ContentShell, and we're already done thanks
   // to the |ui_task| for browser tests.
@@ -333,7 +356,7 @@ ContentMainDelegateImpl::RunProcess(
 }
 
 void ContentMainDelegateImpl::InitializeResourceBundle() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
 

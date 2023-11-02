@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -104,7 +104,8 @@ Adapter::~Adapter() = default;
 
 void Adapter::Init() {
   // Deferred to Init() because it can result in a virtual method being called.
-  power_manager_client_observation_.Observe(PowerManagerClient::Get());
+  power_manager_client_observation_.Observe(
+      chromeos::PowerManagerClient::Get());
 }
 
 void Adapter::OnAmbientLightUpdated(int lux) {
@@ -665,7 +666,7 @@ void Adapter::AdjustBrightness(BrightnessChangeCause cause,
   request.set_transition(
       power_manager::SetBacklightBrightnessRequest_Transition_SLOW);
   request.set_cause(power_manager::SetBacklightBrightnessRequest_Cause_MODEL);
-  PowerManagerClient::Get()->SetScreenBrightness(request);
+  chromeos::PowerManagerClient::Get()->SetScreenBrightness(request);
 
   const base::TimeTicks brightness_change_time = tick_clock_->NowTicks();
   if (!latest_model_brightness_change_time_.is_null()) {

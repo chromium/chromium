@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
+#include "base/values.h"
 #include "components/policy/core/common/cloud/user_info_fetcher.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
@@ -46,7 +47,7 @@ class WildcardLoginChecker : public UserInfoFetcher::Delegate {
                             StatusCallback callback);
 
   // UserInfoFetcher::Delegate:
-  void OnGetUserInfoSuccess(const base::DictionaryValue* response) override;
+  void OnGetUserInfoSuccess(const base::Value::Dict& response) override;
   void OnGetUserInfoFailure(const GoogleServiceAuthError& error) override;
 
  private:

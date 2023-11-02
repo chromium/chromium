@@ -1,9 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/translate/translate_frame_binder.h"
 #include "chrome/browser/ui/browser.h"
@@ -37,7 +38,7 @@ class TestTranslateDriverBindingContentBrowserClient
     // Override binding for translate::mojom::ContentTranslateDriver.
     map->Add<translate::mojom::ContentTranslateDriver>(base::BindRepeating(
         &TestTranslateDriverBindingContentBrowserClient::BindTest,
-        base::Unretained(this)));
+        weak_factory_.GetWeakPtr()));
   }
 
   void BindTest(content::RenderFrameHost* render_frame_host,
@@ -75,6 +76,8 @@ class TestTranslateDriverBindingContentBrowserClient
  private:
   base::OnceClosure quit_on_binding_;
   std::map<content::RenderFrameHost*, bool> render_frame_binding_map_;
+  base::WeakPtrFactory<TestTranslateDriverBindingContentBrowserClient>
+      weak_factory_{this};
 };
 
 }  // namespace
@@ -183,15 +186,17 @@ IN_PROC_BROWSER_TEST_F(TranslateFrameBinderFencedFrameBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
   // Create a fenced frame.
-  const GURL fenced_frame_url = embedded_test_server()->GetURL("/title1.html");
+  const GURL fenced_frame_url =
+      embedded_test_server()->GetURL("/fenced_frames/title1.html");
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
-          web_contents()->GetMainFrame(), fenced_frame_url);
-  EXPECT_FALSE(test_browser_client.IsBound(fenced_frame_host));
-
-  fenced_frame_test_helper().NavigateFrameInFencedFrameTree(fenced_frame_host,
-                                                            fenced_frame_url);
-  // Fenced frame should keep the unbound state.
+          web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
+  base::RunLoop run_loop;
+  if (test_browser_client.WaitForBinding(fenced_frame_host,
+                                         run_loop.QuitClosure())) {
+    run_loop.Run();
+  }
+  // Fenced frame should not be bound.
   EXPECT_FALSE(test_browser_client.IsBound(fenced_frame_host));
 
   content::SetBrowserClientForTesting(old_browser_client);

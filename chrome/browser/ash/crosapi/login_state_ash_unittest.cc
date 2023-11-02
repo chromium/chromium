@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@ void EvaluateGetSessionStateResult(base::OnceClosure closure,
                                    mojom::GetSessionStateResultPtr expected,
                                    mojom::GetSessionStateResultPtr found) {
   ASSERT_EQ(expected->which(), found->which());
-  if (expected->which() == mojom::GetSessionStateResult::Tag::ERROR_MESSAGE) {
+  if (expected->which() == mojom::GetSessionStateResult::Tag::kErrorMessage) {
     ASSERT_EQ(expected->get_error_message(), found->get_error_message());
   } else {
     ASSERT_EQ(expected->get_session_state(), found->get_session_state());
@@ -36,7 +36,7 @@ class LoginStateAshTest : public testing::Test {
       : public mojom::SessionStateChangedEventObserver {
    public:
     MockSessionStateChangedEventObserver() = default;
-    ~MockSessionStateChangedEventObserver() = default;
+    ~MockSessionStateChangedEventObserver() override = default;
     MOCK_METHOD1(OnSessionStateChanged, void(mojom::SessionState state));
     mojo::Receiver<mojom::SessionStateChangedEventObserver> receiver_{this};
   };
@@ -83,14 +83,14 @@ TEST_F(LoginStateAshTest, GetSessionState) {
       {session_manager::SessionState::ACTIVE, mojom::SessionState::kInSession},
       {session_manager::SessionState::LOCKED,
        mojom::SessionState::kInLockScreen},
+      {session_manager::SessionState::RMA, mojom::SessionState::kInRmaScreen},
   };
 
   for (const auto& test : kTestCases) {
     session_manager_->SetSessionState(test.session_state);
 
     mojom::GetSessionStateResultPtr expected_result_ptr =
-        mojom::GetSessionStateResult::New();
-    expected_result_ptr->set_session_state(test.expected);
+        mojom::GetSessionStateResult::NewSessionState(test.expected);
 
     base::RunLoop run_loop;
     login_state_remote_->GetSessionState(

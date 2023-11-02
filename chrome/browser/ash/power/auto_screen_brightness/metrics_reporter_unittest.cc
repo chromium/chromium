@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,21 +40,21 @@ class MetricsReporterTest : public testing::Test {
   ~MetricsReporterTest() override = default;
 
   void SetUp() override {
-    PowerManagerClient::InitializeFake();
+    chromeos::PowerManagerClient::InitializeFake();
     MetricsReporter::RegisterLocalStatePrefs(pref_service_.registry());
   }
 
   void TearDown() override {
     reporter_.reset();
-    PowerManagerClient::Shutdown();
+    chromeos::PowerManagerClient::Shutdown();
   }
 
  protected:
   // Reinitialize |reporter_| without resetting underlying prefs. May be called
   // by tests to simulate a Chrome restart.
   void ResetReporter(MetricsReporter::DeviceClass device_class) {
-    reporter_ = std::make_unique<MetricsReporter>(PowerManagerClient::Get(),
-                                                  &pref_service_);
+    reporter_ = std::make_unique<MetricsReporter>(
+        chromeos::PowerManagerClient::Get(), &pref_service_);
     reporter_->SetDeviceClass(device_class);
   }
 

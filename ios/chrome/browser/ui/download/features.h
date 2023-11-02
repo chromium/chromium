@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,13 @@
 
 #include "base/feature_list.h"
 
-// Feature to download Vcard files.
-extern const base::Feature kDownloadVcard;
+// Kill switch for Calendar support.
+BASE_DECLARE_FEATURE(kCalendarKillSwitch);
+
+// Kill switch for Vcard support.
+BASE_DECLARE_FEATURE(kVCardKillSwitch);
+
+// Kill switch for AR support.
+BASE_DECLARE_FEATURE(kARKillSwitch);
 
 #endif  // IOS_CHROME_BROWSER_UI_DOWNLOAD_FEATURES_H_

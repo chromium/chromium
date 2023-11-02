@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -57,14 +57,24 @@ class ASH_EXPORT PowerEventObserver
 
   // chromeos::PowerManagerClient::Observer overrides:
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
-  void SuspendDone(base::TimeDelta sleep_duration) override;
+  void SuspendDoneEx(const power_manager::SuspendDone& proto) override;
+  void LidEventReceived(chromeos::PowerManagerClient::LidState state,
+                        base::TimeTicks timestamp) override;
 
   // SessionObserver overrides:
   void OnLoginStatusChanged(LoginStatus login_status) override;
   void OnLockStateChanged(bool locked) override;
 
+  // Sets whether the device is projecting (docked).  This is used in along with
+  // lid state to lock the device.
+  void SetIsProjecting(bool is_projecting);
+
  private:
   friend class PowerEventObserverTestApi;
+
+  // Locks device when lid is closed, and device is not projecting (docked), if
+  // user/policy settings configured.
+  void MaybeLockOnLidClose(bool is_projecting);
 
   enum class LockState {
     // Screen lock has not been requested, nor detected.
@@ -103,6 +113,8 @@ class ASH_EXPORT PowerEventObserver
   void OnCompositorsReadyForSuspend();
 
   LockState lock_state_ = LockState::kUnlocked;
+  chromeos::PowerManagerClient::LidState lid_state_ =
+      chromeos::PowerManagerClient::LidState::OPEN;
 
   ScopedSessionObserver session_observer_;
 

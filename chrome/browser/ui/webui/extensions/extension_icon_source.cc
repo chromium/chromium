@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -111,7 +111,7 @@ std::string ExtensionIconSource::GetSource() {
   return chrome::kChromeUIExtensionIconHost;
 }
 
-std::string ExtensionIconSource::GetMimeType(const std::string&) {
+std::string ExtensionIconSource::GetMimeType(const GURL&) {
   // We need to explicitly return a mime type, otherwise if the user tries to
   // drag the image they get no extension.
   return "image/png";
@@ -185,7 +185,7 @@ void ExtensionIconSource::FinalizeImage(const SkBitmap* image,
 
 void ExtensionIconSource::LoadDefaultImage(int request_id) {
   ExtensionIconRequest* request = GetData(request_id);
-  const SkBitmap* default_image = NULL;
+  const SkBitmap* default_image = nullptr;
 
   if (request->extension->is_app())
     default_image = GetDefaultAppImage();
@@ -219,7 +219,7 @@ void ExtensionIconSource::LoadFaviconImage(int request_id) {
       FaviconServiceFactory::GetForProfile(profile_,
                                            ServiceAccessType::EXPLICIT_ACCESS);
   // Fall back to the default icons if the service isn't available.
-  if (favicon_service == NULL) {
+  if (favicon_service == nullptr) {
     LoadDefaultImage(request_id);
     return;
   }

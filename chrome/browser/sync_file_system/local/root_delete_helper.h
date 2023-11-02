@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/files/file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -55,7 +56,7 @@ class RootDeleteHelper {
   FileStatusCallback callback_;
 
   // Not owned; owner of this instance owns it.
-  LocalFileSyncStatus* sync_status_;
+  raw_ptr<LocalFileSyncStatus> sync_status_;
 
   base::WeakPtrFactory<RootDeleteHelper> weak_factory_{this};
 };

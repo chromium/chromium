@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 /**
  * A custom binder used to bind the divider line in app menu.
  */
-class DividerLineMenuItemViewBinder implements CustomViewBinder {
+public class DividerLineMenuItemViewBinder implements CustomViewBinder {
     private static final int DIVIDER_LINE_ITEM_VIEW_TYPE = 0;
 
     @Override
@@ -27,8 +27,9 @@ class DividerLineMenuItemViewBinder implements CustomViewBinder {
 
     @Override
     public int getItemViewType(int id) {
-        return (id == R.id.divider_line_id) ? DIVIDER_LINE_ITEM_VIEW_TYPE
-                                            : CustomViewBinder.NOT_HANDLED;
+        return (id == R.id.divider_line_id || id == R.id.managed_by_divider_line_id)
+                ? DIVIDER_LINE_ITEM_VIEW_TYPE
+                : CustomViewBinder.NOT_HANDLED;
     }
 
     @Override
@@ -46,8 +47,9 @@ class DividerLineMenuItemViewBinder implements CustomViewBinder {
 
         if (key == AppMenuItemProperties.MENU_ITEM_ID) {
             int id = model.get(AppMenuItemProperties.MENU_ITEM_ID);
-            assert id == R.id.divider_line_id;
+            assert id == R.id.divider_line_id || id == R.id.managed_by_divider_line_id;
             view.setId(id);
+            view.setEnabled(false);
         }
     }
 

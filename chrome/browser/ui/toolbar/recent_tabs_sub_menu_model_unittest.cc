@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -110,7 +111,7 @@ class TestRecentTabsMenuModelDelegate : public ui::MenuModelDelegate {
   bool got_changes() const { return got_changes_; }
 
  private:
-  ui::MenuModel* model_;
+  raw_ptr<ui::MenuModel> model_;
   bool got_changes_;
 };
 
@@ -178,7 +179,7 @@ class RecentTabsSubMenuModelTest
   }
 
  private:
-  sync_sessions::SessionSyncService* session_sync_service_;
+  raw_ptr<sync_sessions::SessionSyncService> session_sync_service_;
   std::unique_ptr<syncer::ModelTypeProcessor> sync_processor_;
 };
 
@@ -197,16 +198,16 @@ TEST_F(RecentTabsSubMenuModelTest, NoTabs) {
   // 3           <separator>
   // 4           No tabs from other Devices
 
-  EXPECT_EQ(5, model.GetItemCount());
+  EXPECT_EQ(5u, model.GetItemCount());
   EXPECT_FALSE(model.IsEnabledAt(2));
   EXPECT_FALSE(model.IsEnabledAt(4));
   EXPECT_EQ(0, model.enable_count());
 
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(0));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(1));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(2));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(3));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(4));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(0));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(1));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(2));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(3));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(4));
 
   std::string url;
   std::u16string title;
@@ -241,7 +242,7 @@ TEST_F(RecentTabsSubMenuModelTest, RecentlyClosedTabsFromCurrentSession) {
   // 4           <tab for http://foo/1>
   // 5           <separator>
   // 6           No tabs from other Devices
-  EXPECT_EQ(7, model.GetItemCount());
+  EXPECT_EQ(7u, model.GetItemCount());
   EXPECT_TRUE(model.IsEnabledAt(0));
   model.ActivatedAt(0);
   EXPECT_TRUE(model.IsEnabledAt(1));
@@ -254,13 +255,13 @@ TEST_F(RecentTabsSubMenuModelTest, RecentlyClosedTabsFromCurrentSession) {
   EXPECT_EQ(3, model.enable_count());
   EXPECT_EQ(3, model.execute_count());
 
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(0));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(1));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(0));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(1));
   EXPECT_TRUE(model.GetLabelFontListAt(2));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(3));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(4));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(5));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(6));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(3));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(4));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(5));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(6));
 
   std::string url;
   std::u16string title;
@@ -275,6 +276,8 @@ TEST_F(RecentTabsSubMenuModelTest, RecentlyClosedTabsFromCurrentSession) {
 
 // Test recently closed groups with no foreign tabs.
 TEST_F(RecentTabsSubMenuModelTest, RecentlyClosedGroupsFromCurrentSession) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
   DisableSync();
 
   TabRestoreServiceFactory::GetInstance()->SetTestingFactory(
@@ -302,7 +305,7 @@ TEST_F(RecentTabsSubMenuModelTest, RecentlyClosedGroupsFromCurrentSession) {
   // 4           <group1>
   // 5           <separator>
   // 6           No tabs from other Devices
-  EXPECT_EQ(7, model.GetItemCount());
+  EXPECT_EQ(7u, model.GetItemCount());
   EXPECT_TRUE(model.IsEnabledAt(0));
   model.ActivatedAt(0);
   EXPECT_TRUE(model.IsEnabledAt(1));
@@ -310,24 +313,24 @@ TEST_F(RecentTabsSubMenuModelTest, RecentlyClosedGroupsFromCurrentSession) {
   EXPECT_TRUE(model.IsEnabledAt(3));
   EXPECT_EQ(ui::MenuModel::TYPE_SUBMENU, model.GetTypeAt(3));
   const ui::MenuModel* sub_menu_model_3 = model.GetSubmenuModelAt(3);
-  EXPECT_EQ(3, sub_menu_model_3->GetItemCount());
+  EXPECT_EQ(3u, sub_menu_model_3->GetItemCount());
   EXPECT_TRUE(model.IsEnabledAt(4));
   EXPECT_EQ(ui::MenuModel::TYPE_SUBMENU, model.GetTypeAt(4));
   const ui::MenuModel* sub_menu_model_4 = model.GetSubmenuModelAt(4);
-  EXPECT_EQ(2, sub_menu_model_4->GetItemCount());
+  EXPECT_EQ(2u, sub_menu_model_4->GetItemCount());
   model.ActivatedAt(3);
   model.ActivatedAt(4);
   EXPECT_FALSE(model.IsEnabledAt(6));
   EXPECT_EQ(3, model.enable_count());
   EXPECT_EQ(3, model.execute_count());
 
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(0));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(1));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(0));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(1));
   EXPECT_TRUE(model.GetLabelFontListAt(2));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(3));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(4));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(5));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(6));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(3));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(4));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(5));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(6));
 
   std::string url;
   std::u16string title;
@@ -408,7 +411,7 @@ TEST_F(RecentTabsSubMenuModelTest,
   // 3           <separator>
   // 4           No tabs from other Devices
 
-  EXPECT_EQ(5, model.GetItemCount());
+  EXPECT_EQ(5u, model.GetItemCount());
   EXPECT_TRUE(model.IsEnabledAt(0));
   EXPECT_EQ(ui::MenuModel::TYPE_SEPARATOR, model.GetTypeAt(1));
   EXPECT_FALSE(model.IsEnabledAt(2));
@@ -435,7 +438,7 @@ TEST_F(RecentTabsSubMenuModelTest,
 
   EXPECT_TRUE(delegate.got_changes());
 
-  EXPECT_EQ(8, model.GetItemCount());
+  EXPECT_EQ(8u, model.GetItemCount());
 
   EXPECT_TRUE(model.IsEnabledAt(0));
   model.ActivatedAt(0);
@@ -445,11 +448,11 @@ TEST_F(RecentTabsSubMenuModelTest,
   EXPECT_TRUE(model.IsEnabledAt(3));
   EXPECT_EQ(ui::MenuModel::TYPE_SUBMENU, model.GetTypeAt(3));
   const ui::MenuModel* const window_sub_menu_model = model.GetSubmenuModelAt(3);
-  EXPECT_EQ(3, window_sub_menu_model->GetItemCount());
+  EXPECT_EQ(3u, window_sub_menu_model->GetItemCount());
   EXPECT_EQ(ui::MenuModel::TYPE_SUBMENU, window_sub_menu_model->GetTypeAt(2));
   const ui::MenuModel* const group_sub_menu_model =
       window_sub_menu_model->GetSubmenuModelAt(2);
-  EXPECT_EQ(1, group_sub_menu_model->GetItemCount());
+  EXPECT_EQ(1u, group_sub_menu_model->GetItemCount());
   EXPECT_TRUE(model.IsEnabledAt(4));
   EXPECT_TRUE(model.IsEnabledAt(5));
   model.ActivatedAt(3);
@@ -460,14 +463,14 @@ TEST_F(RecentTabsSubMenuModelTest,
   EXPECT_EQ(5, model.enable_count());
   EXPECT_EQ(4, model.execute_count());
 
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(0));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(1));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(0));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(1));
   EXPECT_TRUE(model.GetLabelFontListAt(2));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(3));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(4));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(5));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(6));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(7));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(3));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(4));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(5));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(6));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(7));
 
   std::string url;
   std::u16string title;
@@ -528,7 +531,7 @@ TEST_F(RecentTabsSubMenuModelTest, OtherDevices) {
   // 11-12       <2 tabs of window 1 of session 2>
 
   TestRecentTabsSubMenuModel model(nullptr, browser());
-  EXPECT_EQ(13, model.GetItemCount());
+  EXPECT_EQ(13u, model.GetItemCount());
   model.ActivatedAt(0);
   EXPECT_TRUE(model.IsEnabledAt(0));
   model.ActivatedAt(1);
@@ -553,19 +556,19 @@ TEST_F(RecentTabsSubMenuModelTest, OtherDevices) {
   EXPECT_EQ(7, model.enable_count());
   EXPECT_EQ(10, model.execute_count());
 
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(0));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(1));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(2));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(3));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(0));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(1));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(2));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(3));
   EXPECT_TRUE(model.GetLabelFontListAt(4));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(5));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(6));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(7));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(8));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(5));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(6));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(7));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(8));
   EXPECT_TRUE(model.GetLabelFontListAt(9));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(10));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(11));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(12));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(10));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(11));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(12));
 
   std::string url;
   std::u16string title;
@@ -611,7 +614,7 @@ TEST_F(RecentTabsSubMenuModelTest, OtherDevicesDynamicUpdate) {
   // 4           No tabs from other Devices
 
   TestRecentTabsSubMenuModel model(nullptr, browser());
-  EXPECT_EQ(5, model.GetItemCount());
+  EXPECT_EQ(5u, model.GetItemCount());
   model.ActivatedAt(4);
   EXPECT_FALSE(model.IsEnabledAt(4));
 
@@ -641,7 +644,7 @@ TEST_F(RecentTabsSubMenuModelTest, OtherDevicesDynamicUpdate) {
   // 4           <section header for 1st session>
   // 5           <tab of the only window of session 0>
 
-  EXPECT_EQ(6, model.GetItemCount());
+  EXPECT_EQ(6u, model.GetItemCount());
   model.ActivatedAt(4);
   EXPECT_FALSE(model.IsEnabledAt(4));
   model.ActivatedAt(5);
@@ -679,7 +682,7 @@ TEST_F(RecentTabsSubMenuModelTest, OtherDevicesDynamicUpdate) {
   // 5           <new added tab of the only window of session 0>
   // 6           <tab of the only window of session 0>
 
-  EXPECT_EQ(7, model.GetItemCount());
+  EXPECT_EQ(7u, model.GetItemCount());
   model.ActivatedAt(4);
   EXPECT_FALSE(model.IsEnabledAt(4));
   model.ActivatedAt(5);
@@ -728,7 +731,7 @@ TEST_F(RecentTabsSubMenuModelTest, MaxSessionsAndRecency) {
   // 11          <the only tab of the only window of session 1>
 
   TestRecentTabsSubMenuModel model(nullptr, browser());
-  EXPECT_EQ(12, model.GetItemCount());
+  EXPECT_EQ(12u, model.GetItemCount());
 
   std::vector<std::u16string> tab_titles =
       recent_tabs_builder.GetTabTitlesSortedByRecency();
@@ -764,7 +767,7 @@ TEST_F(RecentTabsSubMenuModelTest, MaxTabsPerSessionAndRecency) {
   // 5-8         <4 most-recent tabs of session>
 
   TestRecentTabsSubMenuModel model(nullptr, browser());
-  EXPECT_EQ(9, model.GetItemCount());
+  EXPECT_EQ(9u, model.GetItemCount());
 
   std::vector<std::u16string> tab_titles =
       recent_tabs_builder.GetTabTitlesSortedByRecency();
@@ -792,7 +795,7 @@ TEST_F(RecentTabsSubMenuModelTest, MaxWidth) {
   // 5           <the only tab of the only window of session 1>
 
   TestRecentTabsSubMenuModel model(nullptr, browser());
-  EXPECT_EQ(6, model.GetItemCount());
+  EXPECT_EQ(6u, model.GetItemCount());
   EXPECT_EQ(-1, model.GetMaxWidthForItemAtIndex(2));
   EXPECT_NE(-1, model.GetMaxWidthForItemAtIndex(3));
   EXPECT_NE(-1, model.GetMaxWidthForItemAtIndex(4));
@@ -812,7 +815,7 @@ TEST_F(RecentTabsSubMenuModelTest, MaxWidthNoDevices) {
   // 4           No tabs from other Devices
 
   TestRecentTabsSubMenuModel model(nullptr, browser());
-  EXPECT_EQ(5, model.GetItemCount());
+  EXPECT_EQ(5u, model.GetItemCount());
   EXPECT_EQ(-1, model.GetMaxWidthForItemAtIndex(2));
   EXPECT_NE(-1, model.GetMaxWidthForItemAtIndex(3));
   EXPECT_EQ(-1, model.GetMaxWidthForItemAtIndex(4));

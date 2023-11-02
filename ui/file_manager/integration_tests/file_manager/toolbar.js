@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,8 +41,7 @@ testcase.toolbarDeleteButtonOpensDeleteConfirmDialog = async () => {
       await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.desktop]);
 
   // Select My Desktop Background.png
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, [ENTRIES.desktop.nameText]));
+  await remoteCall.waitUntilSelected(appId, ENTRIES.desktop.nameText);
 
   // Click the toolbar Delete button.
   await remoteCall.simulateUiClick(appId, '#delete-button');
@@ -85,8 +84,7 @@ testcase.toolbarDeleteButtonKeepFocus = async () => {
   await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
 
   // Select hello.txt
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, [ENTRIES.hello.nameText]));
+  await remoteCall.waitUntilSelected(appId, ENTRIES.hello.nameText);
 
   // Click the toolbar Delete button.
   await remoteCall.simulateUiClick(appId, '#delete-button');
@@ -136,8 +134,7 @@ testcase.toolbarDeleteEntry = async () => {
       appId, beforeDeletion, {ignoreLastModifiedTime: true});
 
   // Select My Desktop Background.png
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, ['My Desktop Background.png']));
+  await remoteCall.waitUntilSelected(appId, 'My Desktop Background.png');
 
   // Click delete button in the toolbar.
   if (await sendTestMessage({name: 'isTrashEnabled'}) === 'true') {
@@ -196,9 +193,7 @@ testcase.toolbarRefreshButtonWithSelection = async () => {
 };
 
 /**
- * Tests that refresh button is not shown when any of the Recent views
- * (or views built on top of them, such as the Media Views) are
- * selected.
+ * Tests that refresh button is not shown when the Recent view is selected.
  */
 testcase.toolbarRefreshButtonHiddenInRecents = async () => {
   // Open files app.
@@ -212,11 +207,40 @@ testcase.toolbarRefreshButtonHiddenInRecents = async () => {
 
   // Check that the button should be hidden.
   await remoteCall.waitForElement(appId, '#refresh-button[hidden]');
+};
 
-  // Navigate to Images.
-  await remoteCall.waitAndClickElement(
-      appId, '#directory-tree [entry-label="Images"]');
-  await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Images');
+/**
+ * Tests that refresh button is shown for non-watchable volumes.
+ */
+testcase.toolbarRefreshButtonShownForNonWatchableVolume = async () => {
+  // Open files app.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+
+  // Add files to the DocumentsProvider volume (which is non-watchable)
+  await addEntries(['documents_provider'], BASIC_LOCAL_ENTRY_SET);
+
+  // Wait for the DocumentsProvider volume to mount.
+  const documentsProviderVolumeQuery =
+      '[volume-type-icon="documents_provider"]';
+  await remoteCall.waitAndClickElement(appId, documentsProviderVolumeQuery);
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(
+      appId, '/DocumentsProvider');
+
+  // Check that refresh button is visible.
+  await remoteCall.waitForElement(appId, '#refresh-button:not([hidden])');
+};
+
+/**
+ * Tests that refresh button is hidden for watchable volumes.
+ */
+testcase.toolbarRefreshButtonHiddenForWatchableVolume = async () => {
+  // Open Files app on local Downloads.
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+
+  // It should start in Downloads.
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(
+      appId, '/My files/Downloads');
 
   // Check that the button should be hidden.
   await remoteCall.waitForElement(appId, '#refresh-button[hidden]');
@@ -256,8 +280,7 @@ testcase.toolbarMultiMenuFollowsButton = async () => {
       'overrideTasks', appId, [DOWNLOADS_FAKE_TASKS]);
 
   // Select an entry in the file list.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, [entry.nameText]));
+  await remoteCall.waitUntilSelected(appId, entry.nameText);
 
   // Click the toolbar search button.
   await remoteCall.waitAndClickElement(appId, '#search-button');
@@ -309,8 +332,7 @@ testcase.toolbarSharesheetButtonWithSelection = async () => {
   const entry = ENTRIES.hello;
 
   // Select an entry in the file list.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, [entry.nameText]));
+  await remoteCall.waitUntilSelected(appId, entry.nameText);
 
   await remoteCall.waitAndClickElement(
       appId, '#sharesheet-button:not([hidden])');
@@ -318,7 +340,7 @@ testcase.toolbarSharesheetButtonWithSelection = async () => {
   // Check invoke sharesheet is called.
   chrome.test.assertEq(
       1, await remoteCall.callRemoteTestUtil('staticFakeCounter', appId, [
-        'chrome.fileManagerPrivate.invokeSharesheet'
+        'chrome.fileManagerPrivate.invokeSharesheet',
       ]));
 
   // Remove fakes.
@@ -350,8 +372,7 @@ testcase.toolbarSharesheetContextMenuWithSelection = async () => {
   const entry = ENTRIES.hello;
 
   // Select an entry in the file list.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, [entry.nameText]));
+  await remoteCall.waitUntilSelected(appId, entry.nameText);
 
   chrome.test.assertTrue(!!await remoteCall.waitAndRightClick(
       appId, '#file-list .table-row[selected]'));
@@ -369,7 +390,7 @@ testcase.toolbarSharesheetContextMenuWithSelection = async () => {
   // Check invoke sharesheet is called.
   chrome.test.assertEq(
       1, await remoteCall.callRemoteTestUtil('staticFakeCounter', appId, [
-        'chrome.fileManagerPrivate.invokeSharesheet'
+        'chrome.fileManagerPrivate.invokeSharesheet',
       ]));
 
   // Remove fakes.

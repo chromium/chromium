@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,11 +55,9 @@ void AssistantTestApiImpl::DisableAnimations() {
 }
 
 bool AssistantTestApiImpl::IsVisible() {
-  if (!TabletMode::Get()->InTabletMode() &&
-      features::IsProductivityLauncherEnabled()) {
-    auto* bubble_view = GetAppListBubbleView();
-    // `bubble_view` is null when the bubble launcher is closed.
-    return bubble_view && bubble_view->assistant_page_->GetVisible();
+  if (!TabletMode::Get()->InTabletMode()) {
+    return Shell::Get()->app_list_controller()->IsVisible() &&
+           GetAppListBubbleView()->assistant_page_->GetVisible();
   }
   return AppListViewsHaveBeenCreated() && page_view()->GetVisible();
 }
@@ -76,8 +74,7 @@ void AssistantTestApiImpl::SendTextQuery(const std::string& query) {
 }
 
 views::View* AssistantTestApiImpl::page_view() {
-  if (!TabletMode::Get()->InTabletMode() &&
-      features::IsProductivityLauncherEnabled()) {
+  if (!TabletMode::Get()->InTabletMode()) {
     auto* bubble_view = GetAppListBubbleView();
     DCHECK(bubble_view)
         << "App list is not showing. Display the assistant UI first.";
@@ -141,9 +138,17 @@ aura::Window* AssistantTestApiImpl::root_window() {
   return Shell::Get()->GetPrimaryRootWindow();
 }
 
+void AssistantTestApiImpl::EnableAssistantAndWait() {
+  SetAssistantEnabled(true);
+  GetAssistantState()->NotifyFeatureAllowed(
+      assistant::AssistantAllowedState::ALLOWED);
+  GetAssistantState()->NotifyStatusChanged(assistant::AssistantStatus::READY);
+  WaitUntilIdle();
+}
+
 void AssistantTestApiImpl::SetAssistantEnabled(bool enabled) {
   Shell::Get()->session_controller()->GetPrimaryUserPrefService()->SetBoolean(
-      chromeos::assistant::prefs::kAssistantEnabled, enabled);
+      assistant::prefs::kAssistantEnabled, enabled);
 
   // Ensure the value has taken effect.
   ASSERT_EQ(GetAssistantState()->settings_enabled(), enabled)
@@ -154,7 +159,7 @@ void AssistantTestApiImpl::SetAssistantEnabled(bool enabled) {
 
 void AssistantTestApiImpl::SetScreenContextEnabled(bool enabled) {
   Shell::Get()->session_controller()->GetPrimaryUserPrefService()->SetBoolean(
-      chromeos::assistant::prefs::kAssistantContextEnabled, enabled);
+      assistant::prefs::kAssistantContextEnabled, enabled);
 
   // Ensure the value has taken effect.
   ASSERT_EQ(GetAssistantState()->context_enabled(), enabled)
@@ -173,9 +178,9 @@ void AssistantTestApiImpl::StartOverview() {
 }
 
 void AssistantTestApiImpl::SetConsentStatus(
-    chromeos::assistant::prefs::ConsentStatus consent_status) {
+    assistant::prefs::ConsentStatus consent_status) {
   Shell::Get()->session_controller()->GetPrimaryUserPrefService()->SetInteger(
-      chromeos::assistant::prefs::kAssistantConsentStatus, consent_status);
+      assistant::prefs::kAssistantConsentStatus, consent_status);
 
   // Ensure the value has taken effect.
   ASSERT_EQ(GetAssistantState()->consent_status(), consent_status)
@@ -191,10 +196,10 @@ void AssistantTestApiImpl::SetNumberOfSessionsWhereOnboardingShown(
 }
 
 void AssistantTestApiImpl::SetOnboardingMode(
-    chromeos::assistant::prefs::AssistantOnboardingMode onboarding_mode) {
+    assistant::prefs::AssistantOnboardingMode onboarding_mode) {
   Shell::Get()->session_controller()->GetPrimaryUserPrefService()->SetString(
-      chromeos::assistant::prefs::kAssistantOnboardingMode,
-      chromeos::assistant::prefs::ToOnboardingModeString(onboarding_mode));
+      assistant::prefs::kAssistantOnboardingMode,
+      assistant::prefs::ToOnboardingModeString(onboarding_mode));
 
   // Ensure the value has taken effect.
   ASSERT_EQ(GetAssistantState()->onboarding_mode(), onboarding_mode)
@@ -205,7 +210,7 @@ void AssistantTestApiImpl::SetOnboardingMode(
 
 void AssistantTestApiImpl::SetPreferVoice(bool value) {
   Shell::Get()->session_controller()->GetPrimaryUserPrefService()->SetBoolean(
-      chromeos::assistant::prefs::kAssistantLaunchWithMicOpen, value);
+      assistant::prefs::kAssistantLaunchWithMicOpen, value);
 
   // Ensure the value has taken effect.
   ASSERT_EQ(GetAssistantState()->launch_with_mic_open(), value)
@@ -240,7 +245,7 @@ ContentsView* AssistantTestApiImpl::contents_view() {
 
 ContentsView* AssistantTestApiImpl::contents_view_or_null() const {
   auto* app_list_view =
-      Shell::Get()->app_list_controller()->presenter()->GetView();
+      Shell::Get()->app_list_controller()->fullscreen_presenter()->GetView();
 
   if (!app_list_view)
     return nullptr;

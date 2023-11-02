@@ -16,11 +16,17 @@ A high-level overview is provided below and more information can be found here:
     clicking a mouse. See also the
     [testdriver.js extension tutorial](testdriver-extension-tutorial.md) for adding new commands.
 
-  * [idlharness.js Documentation](idlharness.md) — A library for testing
+  * [idlharness.js](idlharness.md) — A library for testing
      IDL interfaces using `testharness.js`.
 
-See [server features](server-features.md) for advanced testing features that are commonly used
-with JavaScript tests. See also the [general guidelines](general-guidelines.md) for all test types.
+  * [Message Channels](channels.md) - A way to communicate between
+    different globals, including window globals not in the same
+    browsing context group.
+
+  * [Server features](server-features.md) - Advanced testing features
+    that are commonly used with JavaScript tests.
+
+See also the [general guidelines](general-guidelines.md) for all test types.
 
 ## Window tests
 
@@ -161,6 +167,9 @@ are:
 * `jsshell`: to be run in a JavaScript shell, without access to the DOM
   (currently only supported in SpiderMonkey, and skipped in wptrunner)
 * `worker`: shorthand for the dedicated, shared, and service worker scopes
+* `shadowrealm`: runs the test code in a
+  [ShadowRealm](https://github.com/tc39/proposal-shadowrealm) context hosted in
+  an ordinary Window context; to be run at <code><var>x</var>.any.shadowrealm.html</code>
 
 To check if your test is run from a window or worker you can use the following two methods that will
 be made available by the framework:
@@ -232,7 +241,7 @@ otherwise too many tests to complete inside the timeout. For example:
 <meta name="variant" content="?2001-last">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/common/subset-tests.js">
+<script src="/common/subset-tests.js"></script>
 <script>
  const tests = [
                  { fn: t => { ... }, name: "..." },

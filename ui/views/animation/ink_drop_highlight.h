@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point.h"
@@ -135,7 +136,7 @@ class VIEWS_EXPORT InkDropHighlight {
 
   std::unique_ptr<AnimationAbortHandle> animation_abort_handle_;
 
-  InkDropHighlightObserver* observer_ = nullptr;
+  raw_ptr<InkDropHighlightObserver> observer_ = nullptr;
 };
 
 // Returns a human readable string for |animation_type|.  Useful for logging.

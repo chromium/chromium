@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_value.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -63,7 +64,8 @@ class MODULES_EXPORT IDBAny final : public GarbageCollected<IDBAny> {
     kIntegerType,
     kKeyType,
     kIDBValueType,
-    kIDBValueArrayType
+    kIDBValueArrayType,
+    kIDBValueArrayArrayType,
   };
 
   explicit IDBAny(Type);
@@ -71,6 +73,7 @@ class MODULES_EXPORT IDBAny final : public GarbageCollected<IDBAny> {
   explicit IDBAny(IDBDatabase*);
   explicit IDBAny(std::unique_ptr<IDBKey>);
   explicit IDBAny(Vector<std::unique_ptr<IDBValue>>);
+  explicit IDBAny(Vector<Vector<std::unique_ptr<IDBValue>>>);
   explicit IDBAny(std::unique_ptr<IDBValue>);
   explicit IDBAny(int64_t);
   ~IDBAny();
@@ -85,6 +88,7 @@ class MODULES_EXPORT IDBAny final : public GarbageCollected<IDBAny> {
   IDBDatabase* IdbDatabase() const;
   IDBValue* Value() const;
   const Vector<std::unique_ptr<IDBValue>>& Values() const;
+  const Vector<Vector<std::unique_ptr<IDBValue>>>& ValuesArray() const;
   int64_t Integer() const;
   const IDBKey* Key() const;
 
@@ -97,6 +101,7 @@ class MODULES_EXPORT IDBAny final : public GarbageCollected<IDBAny> {
   const std::unique_ptr<IDBKey> idb_key_;
   const std::unique_ptr<IDBValue> idb_value_;
   const Vector<std::unique_ptr<IDBValue>> idb_values_;
+  const Vector<Vector<std::unique_ptr<IDBValue>>> idb_values_array_;
   const int64_t integer_ = 0;
 };
 

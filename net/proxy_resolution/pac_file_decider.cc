@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -68,7 +68,7 @@ PacFileDataWithSource& PacFileDataWithSource::operator=(
 
 base::Value PacFileDecider::PacSource::NetLogParams(
     const GURL& effective_pac_url) const {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict;
   std::string source;
   switch (type) {
     case PacSource::WPAD_DHCP:
@@ -83,8 +83,8 @@ base::Value PacFileDecider::PacSource::NetLogParams(
       source += effective_pac_url.possibly_invalid_spec();
       break;
   }
-  dict.SetStringKey("source", source);
-  return dict;
+  dict.Set("source", source);
+  return base::Value(std::move(dict));
 }
 
 PacFileDecider::PacFileDecider(PacFileFetcher* pac_file_fetcher,
@@ -92,13 +92,8 @@ PacFileDecider::PacFileDecider(PacFileFetcher* pac_file_fetcher,
                                NetLog* net_log)
     : pac_file_fetcher_(pac_file_fetcher),
       dhcp_pac_file_fetcher_(dhcp_pac_file_fetcher),
-      current_pac_source_index_(0u),
-      pac_mandatory_(false),
-      next_state_(STATE_NONE),
-      net_log_(
-          NetLogWithSource::Make(net_log, NetLogSourceType::PAC_FILE_DECIDER)),
-      fetch_pac_bytes_(false),
-      quick_check_enabled_(true) {}
+      net_log_(NetLogWithSource::Make(net_log,
+                                      NetLogSourceType::PAC_FILE_DECIDER)) {}
 
 PacFileDecider::~PacFileDecider() {
   if (next_state_ != STATE_NONE)
@@ -288,7 +283,7 @@ int PacFileDecider::DoQuickCheck() {
       pac_file_fetcher_->GetRequestContext()->host_resolver();
   resolve_request_ = host_resolver->CreateRequest(
       HostPortPair(host, 80),
-      pac_file_fetcher_->isolation_info().network_isolation_key(), net_log_,
+      pac_file_fetcher_->isolation_info().network_anonymization_key(), net_log_,
       parameters);
 
   CompletionRepeatingCallback callback = base::BindRepeating(

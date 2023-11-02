@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <sstream>
 #include <utility>
 
+#include "ash/public/cpp/network_config_service.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -22,13 +23,20 @@
 #include "chrome/services/sharing/nearby/nearby_connections_conversions.h"
 #include "chrome/services/sharing/nearby/test_support/fake_adapter.h"
 #include "chrome/services/sharing/nearby/test_support/mock_webrtc_dependencies.h"
-#include "chromeos/services/nearby/public/mojom/nearby_decoder.mojom.h"
+#include "chromeos/ash/services/nearby/public/cpp/fake_firewall_hole_factory.h"
+#include "chromeos/ash/services/nearby/public/cpp/fake_tcp_socket_factory.h"
+#include "chromeos/ash/services/nearby/public/mojom/firewall_hole.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_decoder.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/sharing.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/tcp_socket_factory.mojom.h"
+#include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/nearby/src/cpp/core/internal/mock_service_controller_router.h"
+#include "third_party/nearby/src/connections/implementation/mock_service_controller_router.h"
 
 namespace location {
 namespace nearby {
@@ -194,20 +202,13 @@ class MockInputStream : public InputStream {
 class NearbyConnectionsTest : public testing::Test {
  public:
   NearbyConnectionsTest() {
-    auto webrtc_dependencies = mojom::WebRtcDependencies::New(
-        webrtc_dependencies_.socket_manager_.BindNewPipeAndPassRemote(),
-        webrtc_dependencies_.mdns_responder_factory_.BindNewPipeAndPassRemote(),
-        webrtc_dependencies_.ice_config_fetcher_.BindNewPipeAndPassRemote(),
-        webrtc_dependencies_.messenger_.BindNewPipeAndPassRemote());
-    auto dependencies = mojom::NearbyConnectionsDependencies::New(
-        bluetooth_adapter_.adapter_.BindNewPipeAndPassRemote(),
-        std::move(webrtc_dependencies), api::LogMessage::Severity::kInfo);
     auto service_controller_router =
         std::make_unique<testing::NiceMock<MockServiceControllerRouter>>();
     service_controller_router_ptr_ = service_controller_router.get();
+
     nearby_connections_ = std::make_unique<NearbyConnections>(
-        remote_.BindNewPipeAndPassReceiver(), std::move(dependencies),
-        /*io_task_runner=*/nullptr,
+        remote_.BindNewPipeAndPassReceiver(),
+        location::nearby::api::LogMessage::Severity::kInfo,
         base::BindOnce(&NearbyConnectionsTest::OnDisconnect,
                        base::Unretained(this)));
     nearby_connections_->SetServiceControllerRouterForTesting(
@@ -229,7 +230,7 @@ class NearbyConnectionsTest : public testing::Test {
     ClientProxy* client_proxy;
     EXPECT_CALL(*service_controller_router_ptr_, StartDiscovery)
         .WillOnce([&](ClientProxy* client, absl::string_view service_id,
-                      const ConnectionOptions& options,
+                      const DiscoveryOptions& options,
                       const DiscoveryListener& listener,
                       const ResultCallback& callback) {
           client_proxy = client;
@@ -246,7 +247,7 @@ class NearbyConnectionsTest : public testing::Test {
             EXPECT_EQ(kFastAdvertisementServiceUuid,
                       options.fast_advertisement_service_uuid);
           }
-          client->StartedDiscovery(std::string(service_id), options.strategy,
+          client->StartedDiscovery(std::string{service_id}, options.strategy,
                                    listener,
                                    /*mediums=*/{});
           callback.result_cb({Status::kAlreadyDiscovering});
@@ -280,7 +281,7 @@ class NearbyConnectionsTest : public testing::Test {
                                        std::end(kEndpointInfo));
     EXPECT_CALL(*service_controller_router_ptr_, StartAdvertising)
         .WillOnce([&](ClientProxy* client, absl::string_view service_id,
-                      const ConnectionOptions& options,
+                      const AdvertisingOptions& options,
                       const ConnectionRequestInfo& info,
                       const ResultCallback& callback) {
           client_proxy = client;
@@ -293,9 +294,20 @@ class NearbyConnectionsTest : public testing::Test {
           EXPECT_TRUE(options.enforce_topology_constraints);
           EXPECT_EQ(endpoint_info, ByteArrayToMojom(info.endpoint_info));
 
-          client_proxy->StartedAdvertising(std::string(service_id),
+          client_proxy->StartedAdvertising(std::string{service_id},
                                            options.strategy, info.listener,
                                            /*mediums=*/{});
+          ConnectionOptions connection_options{
+              .auto_upgrade_bandwidth = options.auto_upgrade_bandwidth,
+              .enforce_topology_constraints =
+                  options.enforce_topology_constraints,
+              .enable_bluetooth_listening = options.enable_bluetooth_listening,
+              .enable_webrtc_listening = options.enable_webrtc_listening,
+              .fast_advertisement_service_uuid =
+                  options.fast_advertisement_service_uuid};
+          connection_options.strategy = options.strategy;
+          connection_options.allowed = options.allowed;
+
           client_proxy->OnConnectionInitiated(
               endpoint_data.remote_endpoint_id,
               {.remote_endpoint_info =
@@ -304,7 +316,7 @@ class NearbyConnectionsTest : public testing::Test {
                .raw_authentication_token = ByteArray(
                    kRawAuthenticationToken, sizeof(kRawAuthenticationToken)),
                .is_incoming_connection = false},
-              options, info.listener, kConnectionToken);
+              connection_options, info.listener, kConnectionToken);
           callback.result_cb({Status::kSuccess});
         });
 
@@ -352,7 +364,7 @@ class NearbyConnectionsTest : public testing::Test {
             EXPECT_TRUE(options.remote_bluetooth_mac_address.Empty());
           }
           client_proxy->OnConnectionInitiated(
-              std::string(endpoint_id),
+              std::string{endpoint_id},
               {.remote_endpoint_info =
                    ByteArrayFromMojom(endpoint_data.remote_endpoint_info),
                .authentication_token = kAuthenticationToken,
@@ -389,7 +401,7 @@ class NearbyConnectionsTest : public testing::Test {
           client_proxy = client;
           EXPECT_EQ(remote_endpoint_id, endpoint_id);
           client_proxy->LocalEndpointAcceptedConnection(
-              std::string(endpoint_id), listener);
+              std::string{endpoint_id}, listener);
           client_proxy->OnConnectionAccepted(std::string(endpoint_id));
           callback.result_cb({Status::kSuccess});
         });
@@ -412,6 +424,12 @@ class NearbyConnectionsTest : public testing::Test {
   mojo::Remote<mojom::NearbyConnections> remote_;
   bluetooth::FakeAdapter bluetooth_adapter_;
   sharing::MockWebRtcDependencies webrtc_dependencies_;
+  std::unique_ptr<chromeos::network_config::CrosNetworkConfigTestHelper>
+      cros_network_config_test_helper_;
+  mojo::SelfOwnedReceiverRef<sharing::mojom::FirewallHoleFactory>
+      firewall_hole_factory_self_owned_receiver_ref_;
+  mojo::SelfOwnedReceiverRef<sharing::mojom::TcpSocketFactory>
+      tcp_socket_factory_self_owned_receiver_ref_;
   std::unique_ptr<NearbyConnections> nearby_connections_;
   testing::NiceMock<MockServiceControllerRouter>*
       service_controller_router_ptr_;
@@ -420,31 +438,6 @@ class NearbyConnectionsTest : public testing::Test {
 
 TEST_F(NearbyConnectionsTest, RemoteDisconnect) {
   remote_.reset();
-  disconnect_run_loop_.Run();
-}
-
-TEST_F(NearbyConnectionsTest, BluetoothDisconnect) {
-  bluetooth_adapter_.adapter_.reset();
-  disconnect_run_loop_.Run();
-}
-
-TEST_F(NearbyConnectionsTest, P2PSocketManagerDisconnect) {
-  webrtc_dependencies_.socket_manager_.reset();
-  disconnect_run_loop_.Run();
-}
-
-TEST_F(NearbyConnectionsTest, MdnsResponderFactoryDisconnect) {
-  webrtc_dependencies_.mdns_responder_factory_.reset();
-  disconnect_run_loop_.Run();
-}
-
-TEST_F(NearbyConnectionsTest, IceConfigFetcherDisconnect) {
-  webrtc_dependencies_.ice_config_fetcher_.reset();
-  disconnect_run_loop_.Run();
-}
-
-TEST_F(NearbyConnectionsTest, WebRtcSignalingMessengerDisconnect) {
-  webrtc_dependencies_.messenger_.reset();
   disconnect_run_loop_.Run();
 }
 
@@ -672,7 +665,7 @@ TEST_F(NearbyConnectionsTest, RequestConnectionOnBandwidthUpgrade) {
                     const ResultCallback& callback) {
         client_proxy = client;
         EXPECT_EQ(endpoint_data.remote_endpoint_id, endpoint_id);
-        client_proxy->OnBandwidthChanged(std::string(endpoint_id),
+        client_proxy->OnBandwidthChanged(std::string{endpoint_id},
                                          Medium::WEB_RTC);
         callback.result_cb({Status::kSuccess});
       });
@@ -735,7 +728,7 @@ TEST_F(NearbyConnectionsTest, RequestConnectionDisconnect) {
       .WillOnce([&](ClientProxy* client, absl::string_view endpoint_id,
                     const ResultCallback& callback) {
         EXPECT_EQ(endpoint_data.remote_endpoint_id, std::string(endpoint_id));
-        client->OnDisconnected(std::string(endpoint_id), /*notify=*/true);
+        client->OnDisconnected(std::string{endpoint_id}, /*notify=*/true);
         callback.result_cb({Status::kSuccess});
       });
 
@@ -809,7 +802,7 @@ TEST_F(NearbyConnectionsTest, SendBytesPayload) {
                     const ResultCallback& callback) {
         ASSERT_EQ(1u, endpoint_ids.size());
         EXPECT_EQ(endpoint_data.remote_endpoint_id, endpoint_ids.front());
-        EXPECT_EQ(Payload::Type::kBytes, payload.GetType());
+        EXPECT_EQ(PayloadType::kBytes, payload.GetType());
         std::string payload_bytes(payload.AsBytes());
         EXPECT_EQ(expected_payload, ByteArrayToMojom(payload.AsBytes()));
         callback.result_cb({Status::kSuccess});
@@ -854,7 +847,7 @@ TEST_F(NearbyConnectionsTest, SendBytesPayloadCancelled) {
                     const ResultCallback& callback) {
         ASSERT_EQ(1u, endpoint_ids.size());
         EXPECT_EQ(endpoint_data.remote_endpoint_id, endpoint_ids.front());
-        EXPECT_EQ(Payload::Type::kBytes, payload.GetType());
+        EXPECT_EQ(PayloadType::kBytes, payload.GetType());
         std::string payload_bytes(payload.AsBytes());
         EXPECT_EQ(expected_payload, ByteArrayToMojom(payload.AsBytes()));
         callback.result_cb({Status::kSuccess});
@@ -914,7 +907,7 @@ TEST_F(NearbyConnectionsTest, SendFilePayload) {
                     const ResultCallback& callback) {
         ASSERT_EQ(1u, endpoint_ids.size());
         EXPECT_EQ(endpoint_data.remote_endpoint_id, endpoint_ids.front());
-        EXPECT_EQ(Payload::Type::kFile, payload.GetType());
+        EXPECT_EQ(PayloadType::kFile, payload.GetType());
         InputFile* file = payload.AsFile();
         ASSERT_TRUE(file);
         ExceptionOr<ByteArray> bytes = file->Read(file->GetTotalSize());

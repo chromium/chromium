@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Verify that postmessage tasks can be properly tracked.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+</head>
+<body>
+<script>
+promise_test(t => {
+  const scriptId = scheduler.taskId;
+  const channel = new MessageChannel();
+  const {REMOTE_ORIGIN} = get_host_info();
+
+  const frame = document.createElement("iframe");
+  frame.addEventListener("load", () => {
+    frame.contentWindow.postMessage("port", "*", [channel.port2]);
+  });
+  frame.src = `${REMOTE_ORIGIN}/wpt_internal/task-tracking/resources/messageport-postmessage-iframe.html`;
+  document.body.appendChild(frame);
+
+  return new Promise((resolve, reject) => {
+    channel.port1.onmessage = e => {
+      try {
+        assert_equals(scheduler.isAncestor(e.data), "not ancestor");
+        resolve();
+      } catch(e) {
+        reject(e);
+      }
+    }
+  });
+}, "Cross-origin iframe MessagePort postMessage task properly detects its parent task.");
+
+</script>
+</body>
+</html>
+

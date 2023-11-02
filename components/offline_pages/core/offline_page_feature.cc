@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,32 +20,37 @@ const char kOfflinePagesUseTestingSnapshotDelay[] =
 
 namespace offline_pages {
 
-const base::Feature kOfflinePagesCTFeature{"OfflinePagesCT",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kOfflinePagesCTFeature,
+             "OfflinePagesCT",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kOfflinePagesLivePageSharingFeature{
-    "OfflinePagesLivePageSharing", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kOfflinePagesLivePageSharingFeature,
+             "OfflinePagesLivePageSharing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kPrefetchingOfflinePagesFeature{
-    "OfflinePagesPrefetching", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kPrefetchingOfflinePagesFeature,
+             "OfflinePagesPrefetching",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kOfflinePagesCTV2Feature{"OfflinePagesCTV2",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kOfflinePagesDescriptiveFailStatusFeature,
+             "OfflinePagesDescriptiveFailStatus",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kOfflinePagesDescriptiveFailStatusFeature{
-    "OfflinePagesDescriptiveFailStatus", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kOfflinePagesDescriptivePendingStatusFeature,
+             "OfflinePagesDescriptivePendingStatus",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kOfflinePagesDescriptivePendingStatusFeature{
-    "OfflinePagesDescriptivePendingStatus", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kOfflinePagesInDownloadHomeOpenInCctFeature,
+             "OfflinePagesInDownloadHomeOpenInCct",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kOfflinePagesInDownloadHomeOpenInCctFeature{
-    "OfflinePagesInDownloadHomeOpenInCct", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kOfflineIndicatorFeature,
+             "OfflineIndicator",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kOfflineIndicatorFeature{"OfflineIndicator",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kOfflinePagesNetworkStateLikelyUnknown{
-    "OfflinePagesNetworkStateLikelyUnknown", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kOfflinePagesNetworkStateLikelyUnknown,
+             "OfflinePagesNetworkStateLikelyUnknown",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kPrefetchingOfflinePagesExperimentsOption[] = "exp";
 
@@ -64,10 +69,6 @@ bool IsPrefetchingOfflinePagesEnabled() {
 bool ShouldUseTestingSnapshotDelay() {
   base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
   return cl->HasSwitch(kOfflinePagesUseTestingSnapshotDelay);
-}
-
-bool IsOfflinePagesCTV2Enabled() {
-  return base::FeatureList::IsEnabled(kOfflinePagesCTV2Feature);
 }
 
 bool IsOfflinePagesDescriptiveFailStatusEnabled() {

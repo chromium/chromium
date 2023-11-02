@@ -1,10 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -31,7 +32,7 @@
 #include "ui/views/widget/widget_observer.h"
 #include "ui/web_dialogs/test/test_web_dialog_delegate.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -79,9 +80,9 @@ class WebDialogBrowserTest : public InProcessBrowserTest {
 
   bool was_view_deleted() const { return !view_tracker_.view(); }
 
-  views::WebDialogView* view_ = nullptr;
+  raw_ptr<views::WebDialogView> view_ = nullptr;
   bool web_dialog_delegate_destroyed_ = false;
-  ui::test::TestWebDialogDelegate* delegate_ = nullptr;
+  raw_ptr<ui::test::TestWebDialogDelegate> delegate_ = nullptr;
 
  private:
   views::ViewTracker view_tracker_;
@@ -123,14 +124,14 @@ void WebDialogBrowserTest::SimulateEscapeKey() {
 
 // Windows has some issues resizing windows. An off by one problem, and a
 // minimum size that seems too big. See http://crbug.com/52602.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_SizeWindow DISABLED_SizeWindow
 #else
 #define MAYBE_SizeWindow SizeWindow
 #endif
 IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, MAYBE_SizeWindow) {
   bool centered_in_window = false;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On macOS 11 (and presumably later) the new mechanism for sheets, which are
   // used for window modals like this dialog, always centers them within the
   // parent window regardless of the requested origin. The size is still
@@ -286,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, CloseParentWindow) {
 }
 
 // Tests the Escape key behavior when ShouldCloseDialogOnEscape() is enabled.
-#if defined(OS_WIN) && !defined(NDEBUG)
+#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
 // Flaky on win7 tests dbg: https://crbug.com/1035439
 #define MAYBE_CloseDialogOnEscapeEnabled DISABLED_CloseDialogOnEscapeEnabled
 #else

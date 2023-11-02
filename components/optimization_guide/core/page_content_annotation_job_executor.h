@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,8 +26,10 @@ class PageContentAnnotationJobExecutor {
   // executing the job and calling its OnComplete method, then running the
   // |on_job_complete_callback| to notify the caller that the job is
   // complete.
-  void ExecuteJob(base::OnceClosure on_job_complete_callback,
-                  std::unique_ptr<PageContentAnnotationJob> job);
+  // Virtual to allow derived classes to override the default behavior, though
+  // they should still call the base implementation eventually.
+  virtual void ExecuteJob(base::OnceClosure on_job_complete_callback,
+                          std::unique_ptr<PageContentAnnotationJob> job);
 
  protected:
   // Implemented by derived classes to execute a model input.
@@ -48,6 +50,7 @@ class PageContentAnnotationJobExecutor {
   // then destroy |job|. |input| is the original input of the model execution.
   void OnSingleInputExecutionComplete(
       PageContentAnnotationJob* job,
+      size_t index,
       base::OnceClosure on_single_input_done_barrier_closure,
       const BatchAnnotationResult& output);
 

@@ -12,8 +12,6 @@ Tests that AR hit test returns results when a plane is present.
     <script>var shouldAutoCreateNonImmersiveSession = false;</script>
     <script src="../resources/webxr_boilerplate.js"></script>
     <script>
-      setup({single_test: true});
-
       const TestState = Object.freeze({
         "Initial":  0,
         "HitTestSourceRequested": 1,
@@ -32,18 +30,22 @@ Tests that AR hit test returns results when a plane is present.
         const currentSession = sessionInfo.currentSession;
 
         if(isTransientTest) {
+          console.log('Requesting transient input hit test source');
           currentSession.requestHitTestSourceForTransientInput({
             profile: "generic-touchscreen",
             offsetRay: new XRRay()
           }).then((hts) => {
+            console.log('Got transient input hit test source');
             hitTestSource = hts;
             testState = TestState.HitTestSourceAvailable;
           });
         } else {
+          console.log('Requesting hit test source');
           currentSession.requestHitTestSource({
             space: referenceSpace,
             offsetRay: new XRRay()
           }).then((hts) => {
+            console.log('Got hit test source');
             hitTestSource = hts;
             testState = TestState.HitTestSourceAvailable;
           });
@@ -52,9 +54,12 @@ Tests that AR hit test returns results when a plane is present.
         testState = TestState.HitTestSourceRequested;
 
         onARFrameCallback = (session, frame) => {
+          console.log('Got AR frame, test state: ' + testState);
           switch(testState) {
             case TestState.HitTestSourceAvailable: {
+              console.log('Ending session');
               session.end().then(() => {
+                console.log('Session ended');
                 hitTestSource.cancel();
                 testState = TestState.Done;
                 done();

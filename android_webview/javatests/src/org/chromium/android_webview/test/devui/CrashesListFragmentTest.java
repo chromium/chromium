@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,6 +40,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
 import android.widget.ImageView;
@@ -56,6 +57,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.After;
 import org.junit.Assume;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -71,7 +73,7 @@ import org.chromium.android_webview.devui.MainActivity;
 import org.chromium.android_webview.devui.R;
 import org.chromium.android_webview.devui.WebViewPackageError;
 import org.chromium.android_webview.devui.util.CrashBugUrlFactory;
-import org.chromium.android_webview.devui.util.WebViewPackageHelper;
+import org.chromium.android_webview.nonembedded_util.WebViewPackageHelper;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -79,9 +81,11 @@ import org.chromium.base.FileUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -105,6 +109,13 @@ public class CrashesListFragmentTest {
 
     @Rule
     public BaseActivityTestRule mRule = new BaseActivityTestRule<MainActivity>(MainActivity.class);
+
+    @Before
+    public void setUp() {
+        Context context = InstrumentationRegistry.getTargetContext();
+        WebViewPackageHelper.setCurrentWebViewPackageForTesting(
+                WebViewPackageHelper.getContextPackageInfo(context));
+    }
 
     @After
     public void tearDown() {
@@ -970,6 +981,10 @@ public class CrashesListFragmentTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
+    // clang-format off
+    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R,
+        message = "https://crbug.com/1292197")
+    // clang-format on
     public void testLongPressCopy() throws Throwable {
         Context context = InstrumentationRegistry.getTargetContext();
         final long systemTime = System.currentTimeMillis();
@@ -1102,12 +1117,15 @@ public class CrashesListFragmentTest {
 
         // CrashesListFragment -> FlagsFragment (Not shown)
         onView(withId(R.id.navigation_flags_ui)).perform(click());
+        ViewUtils.waitForView(withId(R.id.fragment_flags));
         onView(withId(R.id.main_error_view)).check(matches(not(isDisplayed())));
         // FlagsFragment -> HomeFragment (Not shown)
         onView(withId(R.id.navigation_home)).perform(click());
+        ViewUtils.waitForView(withId(R.id.fragment_home));
         onView(withId(R.id.main_error_view)).check(matches(not(isDisplayed())));
         // HomeFragment -> CrashesListFragment (shown again)
         onView(withId(R.id.navigation_crash_ui)).perform(click());
+        ViewUtils.waitForView(withId(R.id.fragment_crashes_list));
         onView(withId(R.id.main_error_view)).check(matches(isDisplayed()));
         onView(withId(R.id.error_text))
                 .check(matches(

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@
 // Some OS Bluetooth stacks (macOS and Android) automatically bond to a device
 // when accessing a characteristic/descriptor which requires an authenticated
 // client. For other platforms Chrome does the on-demand pairing.
-#if defined(OS_WIN) || defined(OS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #define PAIR_BLUETOOTH_ON_DEMAND() true
 #else
 #define PAIR_BLUETOOTH_ON_DEMAND() false
@@ -46,18 +46,38 @@ class RenderFrameHost;
 // class.
 class CONTENT_EXPORT BluetoothDelegate {
  public:
-  // The result of the prompt when requesting device authentication credentials
+  // The result of the prompt when requesting device pairing
   // from the user.
-  enum class DeviceCredentialsPromptResult {
+  enum class PairPromptStatus {
     kSuccess,    // Result contains user credentials.
     kCancelled,  // User cancelled, or agent cancelled on their behalf.
   };
 
-  // Callback for Bluetooth device auth credential (i.e. PIN) prompt.
-  // |result| is only valid when status is SUCCESS.
-  using CredentialsCallback =
-      base::OnceCallback<void(DeviceCredentialsPromptResult status,
-                              const std::u16string& result)>;
+  // Based on the pairing kinds defined by Windows but it also applies to any
+  // platform on which we support manual pairing through |PairingDelegate| Ref:
+  // https://docs.microsoft.com/en-us/uwp/api/windows.devices.enumeration.devicepairingkinds?view=winrt-22621
+  enum class PairingKind {
+    kConfirmOnly,
+    kConfirmPinMatch,
+    kDisplayPin,
+    kProvidePasswordCredential,
+    kProvidePin
+  };
+
+  // Struct for pairing prompt result, include |pairing_kind| or |pin| or other
+  // needed fields added in future all other fieds should be meaniningful only
+  // if |result_code| is |kSuccess|
+  struct PairPromptResult {
+    PairPromptResult() = default;
+    explicit PairPromptResult(PairPromptStatus code) : result_code(code){}
+    ~PairPromptResult() = default;
+
+    PairPromptStatus result_code = PairPromptStatus::kCancelled;
+    std::string pin;
+  };
+
+  using PairPromptCallback =
+      base::OnceCallback<void(const PairPromptResult& result)>;
 
   // An observer used to track permission revocation events for a particular
   // render frame host.
@@ -83,16 +103,19 @@ class CONTENT_EXPORT BluetoothDelegate {
       RenderFrameHost* frame,
       const BluetoothScanningPrompt::EventHandler& event_handler) = 0;
 
-  // Prompt the user (via dialog, etc.) for their Bluetooth credentials
-  // (i.e. PIN). |device_identifier| is any string the caller wants to display
+  // Prompt the user (via dialog, etc.) for pairing Bluetooth device
+  // |device_identifier| is any string the caller wants to display
   // to the user to identify the device (MAC address, name, etc.). |callback|
   // will be called with the prompt result. |callback| may be called immediately
   // from this function, for example, if a credential prompt for the given
   // |frame| is already displayed.
-  virtual void ShowDeviceCredentialsPrompt(
+  // |pairing_kind| is to determine which pairing kind of prompt to be created
+  virtual void ShowDevicePairPrompt(
       RenderFrameHost* frame,
       const std::u16string& device_identifier,
-      CredentialsCallback callback) = 0;
+      PairPromptCallback callback,
+      PairingKind pairing_kind,
+      const absl::optional<std::u16string>& pin) = 0;
 
   // This should return the WebBluetoothDeviceId that corresponds to the device
   // with |device_address| in the current |frame|. If there is not a
@@ -130,6 +153,11 @@ class CONTENT_EXPORT BluetoothDelegate {
   // the device with |device_id| through GrantServiceAccessPermission().
   // |device_id|s generated with AddScannedDevices() should return false.
   virtual bool HasDevicePermission(
+      RenderFrameHost* frame,
+      const blink::WebBluetoothDeviceId& device_id) = 0;
+
+  // Revokes |frame| access to the Bluetooth device ordered by website.
+  virtual void RevokeDevicePermissionWebInitiated(
       RenderFrameHost* frame,
       const blink::WebBluetoothDeviceId& device_id) = 0;
 

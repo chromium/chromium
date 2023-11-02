@@ -1,8 +1,10 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_chromeos, "Shimless RMA is Chrome OS only")
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Shimless RMA is ash-chrome only")
 
 static_library("shimless_rma") {
   sources = [
@@ -21,6 +23,7 @@ static_library("shimless_rma") {
     "//chromeos/strings/",
     "//content/public/browser",
     "//dbus",
+    "//ui/chromeos:chromeos",
     "//ui/chromeos/strings:strings_provider",
     "//ui/resources",
     "//ui/web_dialogs",

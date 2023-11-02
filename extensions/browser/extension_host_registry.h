@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,17 @@
 #define EXTENSIONS_BROWSER_EXTENSION_HOST_REGISTRY_H_
 
 #include <unordered_set>
+#include <vector>
 
 #include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "extensions/common/extension_id.h"
 
 class BrowserContextKeyedServiceFactory;
 
 namespace content {
 class BrowserContext;
+class RenderFrameHost;
 }
 
 namespace extensions {
@@ -109,6 +112,20 @@ class ExtensionHostRegistry : public KeyedService {
   // Called when an ExtensionHost is destroyed. Stops tracking the host and
   // notifies observers.
   void ExtensionHostDestroyed(ExtensionHost* extension_host);
+
+  // Returns the collection of ExtensionHosts associated with the specified
+  // `extension_id`.
+  // If performance ever becomes a consideration here, we can update the
+  // storage in the registry to be an unordered_map split apart by extension.
+  std::vector<ExtensionHost*> GetHostsForExtension(
+      const ExtensionId& extension_id);
+
+  // Returns the ExtensionHost for the given `render_frame_host`, if one exists.
+  // `render_frame_host` must be the primary main frame host; we do this to
+  // avoid returning an ExtensionHost for a non-extension frame within an
+  // extension document.
+  ExtensionHost* GetExtensionHostForPrimaryMainFrame(
+      content::RenderFrameHost* render_frame_host);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

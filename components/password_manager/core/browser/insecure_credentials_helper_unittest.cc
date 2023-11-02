@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,7 +54,9 @@ class InsecureCredentialsHelperTest : public testing::Test {
 
     EXPECT_CALL(*store_, GetLogins(digest, _))
         .WillOnce(testing::WithArg<1>(
-            [this](PasswordStoreConsumer* consumer) { consumer_ = consumer; }));
+            [this](base::WeakPtr<PasswordStoreConsumer> consumer) {
+              consumer_ = consumer;
+            }));
   }
 
   void SimulateStoreRepliedWithResults(
@@ -62,7 +64,8 @@ class InsecureCredentialsHelperTest : public testing::Test {
     std::vector<std::unique_ptr<PasswordForm>> results;
     for (auto& form : password_forms)
       results.push_back(std::make_unique<PasswordForm>(std::move(form)));
-    consumer_->OnGetPasswordStoreResults(std::move(results));
+    consumer_->OnGetPasswordStoreResultsOrErrorFrom(store_.get(),
+                                                    std::move(results));
   }
 
   void TearDown() override { store()->ShutdownOnUIThread(); }
@@ -71,7 +74,7 @@ class InsecureCredentialsHelperTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   scoped_refptr<MockPasswordStoreInterface> store_;
-  PasswordStoreConsumer* consumer_ = nullptr;
+  base::WeakPtr<PasswordStoreConsumer> consumer_;
 };
 
 TEST_F(InsecureCredentialsHelperTest, UpdateLoginCalledForTheRightFormAdd) {

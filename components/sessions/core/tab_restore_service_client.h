@@ -1,15 +1,17 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_SESSIONS_CORE_TAB_RESTORE_SERVICE_CLIENT_H_
 #define COMPONENTS_SESSIONS_CORE_TAB_RESTORE_SERVICE_CLIENT_H_
 
+#include <map>
 #include <memory>
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "components/sessions/core/session_id.h"
+#include "components/sessions/core/session_types.h"
 #include "components/sessions/core/sessions_export.h"
 #include "ui/base/ui_base_types.h"
 
@@ -27,7 +29,6 @@ namespace sessions {
 
 class LiveTab;
 class LiveTabContext;
-struct SessionWindow;
 
 // Callback from TabRestoreServiceClient::GetLastSession.
 // The second parameter is the id of the window that was last active.
@@ -45,11 +46,14 @@ class SESSIONS_EXPORT TabRestoreServiceClient {
   // return nullptr (e.g., if the embedder does not support LiveTabContext
   // functionality).
   virtual LiveTabContext* CreateLiveTabContext(
+      LiveTabContext* existing_context,
+      SessionWindow::WindowType type,
       const std::string& app_name,
       const gfx::Rect& bounds,
       ui::WindowShowState show_state,
       const std::string& workspace,
-      const std::string& user_title) = 0;
+      const std::string& user_title,
+      const std::map<std::string, std::string>& extra_data) = 0;
 
   // Returns the LiveTabContext instance that is associated with
   // |tab|, or null if there is no such instance.

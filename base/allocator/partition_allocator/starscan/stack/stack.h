@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,17 +7,16 @@
 
 #include <cstdint>
 
-#include "base/base_export.h"
-#include "base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 // Returns the current stack pointer.
 // TODO(bikineev,1202644): Remove this once base/stack_util.h lands.
-BASE_EXPORT NOINLINE uintptr_t* GetStackPointer();
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) PA_NOINLINE uintptr_t* GetStackPointer();
 // Returns the top of the stack using system API.
-BASE_EXPORT void* GetStackTop();
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) void* GetStackTop();
 
 // Interface for stack visitation.
 class StackVisitor {
@@ -28,7 +27,7 @@ class StackVisitor {
 // Abstraction over the stack. Supports handling of:
 // - native stack;
 // - SafeStack: https://releases.llvm.org/10.0.0/tools/clang/docs/SafeStack.html
-class BASE_EXPORT Stack final {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) Stack final {
  public:
   // Sets start of the stack.
   explicit Stack(void* stack_top);
@@ -44,7 +43,6 @@ class BASE_EXPORT Stack final {
   void* stack_top_;
 };
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_STACK_STACK_H_

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<style>
+  #svga, #svgb {
+    position: absolute;
+    overflow: visible;
+    height: 10px;
+    width: 10px;
+    top: 0;
+    left: 0;
+  }
+  #svgb {
+    margin-left: 50px;
+    margin-top: 50px;
+  }
+</style>
+
+<svg id="svga" viewBox="0 0 5 5">
+  <rect y="2100" width="25" height="50" fill="green"></rect>
+</svg>
+<svg id="svgb" viewBox="0 0 5 5">
+  <rect y="2075" width="25" height="50" fill="green"></rect>
+</svg>
+<div id="forcescroll" style="height: 6500px;"></div>
+
+<script>
+  onload = function() {
+    document.documentElement.scrollTop = 4200;
+  };
+</script>

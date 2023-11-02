@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,8 @@
 
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -18,6 +16,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -26,8 +25,6 @@ class BluetoothDisabledDetailedViewTest : public AshTestBase {
  public:
   void SetUp() override {
     AshTestBase::SetUp();
-
-    feature_list_.InitAndEnableFeature(features::kBluetoothRevamp);
 
     widget_ = CreateTestWidget();
     container_ = widget_->GetContentsView()->AddChildView(
@@ -38,7 +35,7 @@ class BluetoothDisabledDetailedViewTest : public AshTestBase {
         std::make_unique<BluetoothDisabledDetailedView>());
     static_cast<views::BoxLayout*>(container_->GetLayoutManager())
         ->SetFlexForView(bluetooth_disabled_detailed_view_, 1);
-    container_->Layout();
+    views::test::RunScheduledLayout(container_);
   }
 
   void TearDown() override {
@@ -66,7 +63,6 @@ class BluetoothDisabledDetailedViewTest : public AshTestBase {
   views::View* container() { return container_; }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<views::Widget> widget_;
   views::View* container_;
   BluetoothDisabledDetailedView* bluetooth_disabled_detailed_view_;

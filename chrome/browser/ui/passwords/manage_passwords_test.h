@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,6 +64,10 @@ class ManagePasswordsTest : public InProcessBrowserTest {
   // Put the controller, icon, and bubble into a moving-password state.
   void SetupMovingPasswords();
 
+  // Always configures a signed-in user, and when |is_enabled| is true, it also
+  // configures the Sync service to sync passwords.
+  void ConfigurePasswordSync(bool is_enabled);
+
   // Get samples for |histogram|.
   std::unique_ptr<base::HistogramSamples> GetSamples(const char* histogram);
 
@@ -79,9 +83,7 @@ class ManagePasswordsTest : public InProcessBrowserTest {
   std::unique_ptr<password_manager::PasswordFormManager> CreateFormManager();
 
   password_manager::PasswordForm password_form_;
-  password_manager::PasswordForm federated_form_;
-  autofill::FormData observed_form_;
-  autofill::FormData submitted_form_;
+  password_manager::PasswordForm insecure_credential_;
   base::HistogramTester histogram_tester_;
   password_manager::StubPasswordManagerClient client_;
   password_manager::StubPasswordManagerDriver driver_;

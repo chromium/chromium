@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -15,6 +15,7 @@ proto_library("proto_v2") {
     "v2/packing.proto",
     "v2/store.proto",
     "v2/ui.proto",
+    "v2/user_actions_store.proto",
     "v2/wire/action_diagnostic_info.proto",
     "v2/wire/action_payload.proto",
     "v2/wire/action_surface.proto",
@@ -23,6 +24,7 @@ proto_library("proto_v2") {
     "v2/wire/chrome_feed_response_metadata.proto",
     "v2/wire/chrome_fulfillment_info.proto",
     "v2/wire/client_info.proto",
+    "v2/wire/client_user_profiles.proto",
     "v2/wire/consistency_token.proto",
     "v2/wire/content_id.proto",
     "v2/wire/content_lifetime.proto",
@@ -40,6 +42,7 @@ proto_library("proto_v2") {
     "v2/wire/feed_query.proto",
     "v2/wire/feed_request.proto",
     "v2/wire/feed_response.proto",
+    "v2/wire/info_card.proto",
     "v2/wire/next_page_token.proto",
     "v2/wire/payload_metadata.proto",
     "v2/wire/reliability_logging_enums.proto",

@@ -1,0 +1,45 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=chrome://resources/cr_elements/cr_shared_style.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #include=cr-shared-style
+ * #css_wrapper_metadata_end */
+
+:host {
+  --printer-icon-side-padding: 4px;
+  --printer-icon-size: 20px;
+}
+
+select.md-select {
+  background-position: var(--printer-icon-side-padding) center,
+      calc(100% - var(--md-select-side-padding)) center;
+  background-size: var(--printer-icon-size), var(--md-arrow-width);
+  padding-inline-start: 32px;
+}
+
+:host-context([dir=rtl]) .md-select {
+  background-position-x: calc(100% - var(--printer-icon-side-padding)),
+      var(--md-select-side-padding);
+}
+
+.throbber-container {
+  align-items: center;
+  display: flex;
+  overflow: hidden;
+}
+
+.destination-additional-info,
+.destination-additional-info div {
+  height: 100%;
+  min-height: 0;
+}
+
+.destination-status {
+  color: var(--cr-secondary-text-color);
+  font-size: calc(12/13 * 1em);
+  padding: 4px 0;
+}

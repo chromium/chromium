@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -107,10 +107,10 @@ V8SchemaRegistry::~V8SchemaRegistry() {
 std::unique_ptr<NativeHandler> V8SchemaRegistry::AsNativeHandler() {
   std::unique_ptr<ScriptContext> context(
       new ScriptContext(GetOrCreateContext(v8::Isolate::GetCurrent()),
-                        NULL,  // no frame
-                        NULL,  // no extension
+                        nullptr,  // no frame
+                        nullptr,  // no extension
                         Feature::UNSPECIFIED_CONTEXT,
-                        NULL,  // no effective extension
+                        nullptr,  // no effective extension
                         Feature::UNSPECIFIED_CONTEXT));
   return std::unique_ptr<NativeHandler>(
       new SchemaRegistryNativeHandler(this, std::move(context)));
@@ -136,7 +136,7 @@ v8::Local<v8::Array> V8SchemaRegistry::GetSchemas(
 }
 
 v8::Local<v8::Object> V8SchemaRegistry::GetSchema(const std::string& api) {
-  if (schema_cache_ != NULL) {
+  if (schema_cache_ != nullptr) {
     v8::Local<v8::Object> cached_schema = schema_cache_->Get(api);
     if (!cached_schema.IsEmpty()) {
       return cached_schema;

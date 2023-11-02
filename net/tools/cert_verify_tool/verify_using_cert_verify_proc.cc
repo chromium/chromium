@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,12 +61,6 @@ void PrintCertStatus(int cert_status) {
 void PrintCertVerifyResult(const net::CertVerifyResult& result) {
   PrintDebugData(&result);
   PrintCertStatus(result.cert_status);
-  if (result.has_md2)
-    std::cout << "has_md2\n";
-  if (result.has_md4)
-    std::cout << "has_md4\n";
-  if (result.has_md5)
-    std::cout << "has_md5\n";
   if (result.has_sha1)
     std::cout << "has_sha1\n";
   if (result.has_sha1_leaf)
@@ -135,14 +129,13 @@ bool VerifyUsingCertVerifyProc(
   net::TestRootCerts* test_root_certs = net::TestRootCerts::GetInstance();
   CHECK(test_root_certs->IsEmpty());
 
+  net::ScopedTestRoot scoped_test_roots;
   if (!x509_additional_trust_anchors.empty() &&
       !cert_verify_proc->SupportsAdditionalTrustAnchors()) {
     std::cerr << "NOTE: Additional trust anchors not supported on this "
                  "platform. Using TestRootCerts instead.\n";
 
-    for (const auto& trust_anchor : x509_additional_trust_anchors)
-      test_root_certs->Add(trust_anchor.get());
-
+    scoped_test_roots.Reset(x509_additional_trust_anchors);
     x509_additional_trust_anchors.clear();
   }
 
@@ -152,9 +145,6 @@ bool VerifyUsingCertVerifyProc(
       x509_target_and_intermediates.get(), hostname,
       /*ocsp_response=*/std::string(), /*sct_list=*/std::string(), flags,
       crl_set, x509_additional_trust_anchors, &result, net::NetLogWithSource());
-
-  // Remove any temporary trust anchors.
-  test_root_certs->Clear();
 
   std::cout << "CertVerifyProc result: " << net::ErrorToShortString(rv) << "\n";
   PrintCertVerifyResult(result);

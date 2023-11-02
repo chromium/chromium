@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_AUTOFILL_MOCK_AUTOFILL_POPUP_CONTROLLER_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
@@ -23,7 +24,7 @@ class MockAutofillPopupController
       public base::SupportsWeakPtr<MockAutofillPopupController> {
  public:
   MockAutofillPopupController();
-  ~MockAutofillPopupController();
+  ~MockAutofillPopupController() override;
 
   // AutofillPopupViewDelegate
   MOCK_METHOD1(Hide, void(PopupHidingReason reason));
@@ -55,15 +56,16 @@ class MockAutofillPopupController
   }
 
   std::u16string GetSuggestionMainTextAt(int row) const override {
-    return suggestions_[row].value;
+    return suggestions_[row].main_text.value;
   }
 
   std::u16string GetSuggestionMinorTextAt(int row) const override {
     return std::u16string();
   }
 
-  const std::u16string& GetSuggestionLabelAt(int row) const override {
-    return suggestions_[row].label;
+  std::vector<std::vector<Suggestion::Text>> GetSuggestionLabelsAt(
+      int row) const override {
+    return suggestions_[row].labels;
   }
 
   base::WeakPtr<MockAutofillPopupController> GetWeakPtr() {
@@ -78,8 +80,12 @@ class MockAutofillPopupController
   MOCK_CONST_METHOD0(GetPopupType, PopupType());
 
   void set_suggestions(const std::vector<int>& ids) {
-    for (const auto& id : ids)
-      suggestions_.push_back(autofill::Suggestion("", "", "", id));
+    for (const auto& id : ids) {
+      // Accessibility requires all focusable AutofillPopupItemView to have
+      // ui::AXNodeData with non-empty names. We specify dummy values and labels
+      // to satisfy this.
+      suggestions_.emplace_back("dummy_value", "dummy_label", "", id);
+    }
   }
 
   void set_suggestions(const std::vector<Suggestion>& suggestions) {

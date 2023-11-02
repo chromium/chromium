@@ -22,7 +22,7 @@ Document Name='Action verbs'
 ++++Text Name='Div with click handler'
 ++Group
 ++++Group IsControlElement=false
-++++++Text Name='Paragraph with click handler on parent' IsControlElement=false
+++++++Text Name='Paragraph with click handler on parent'
 ++Menu Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
 ++++MenuItem Name='Menu item 1'
 ++++CheckBox Name='Menu item 2' Toggle.ToggleState='On'

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include <stdint.h>
 
 #include "base/check.h"
-#include "base/compiler_specific.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "media/base/media_switches.h"
 #include "media/cdm/api/content_decryption_module.h"
 #include "media/cdm/cdm_helpers.h"
@@ -92,9 +92,9 @@ class CdmWrapper {
   // Returns whether GetStatusForPolicy() is supported. If true, the CDM should
   // resolve or reject the promise. If false, the caller will reject the
   // promise.
-  virtual bool GetStatusForPolicy(uint32_t promise_id,
-                                  cdm::HdcpVersion min_hdcp_version)
-      WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual bool GetStatusForPolicy(
+      uint32_t promise_id,
+      cdm::HdcpVersion min_hdcp_version) = 0;
 
   virtual void CreateSessionAndGenerateRequest(uint32_t promise_id,
                                                cdm::SessionType session_type,
@@ -294,7 +294,7 @@ class CdmWrapperImpl : public CdmWrapper {
  private:
   CdmWrapperImpl(CdmInterface* cdm) : cdm_(cdm) { DCHECK(cdm_); }
 
-  CdmInterface* cdm_;
+  raw_ptr<CdmInterface> cdm_;
 };
 
 // Specialization for cdm::ContentDecryptionModule_10 methods.

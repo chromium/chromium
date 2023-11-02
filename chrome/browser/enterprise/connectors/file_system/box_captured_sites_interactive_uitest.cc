@@ -1,11 +1,14 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/enterprise/connectors/file_system/browsertest_helper.h"
 
+#include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/process/launch.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/internal/enterprise_connectors_interactive_uitest_test_accounts.h"
@@ -75,7 +78,7 @@ bool ShouldLogVerboseWprOutput() {
 }
 
 std::string FilePathToUTF8(const base::FilePath::StringType& str) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::WideToUTF8(str);
 #else
   return str;
@@ -192,7 +195,7 @@ class WebPageReplayUtil {
   }
 
   bool StartWebPageRecordServer(const base::FilePath& capture_file_path) {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
     base::FilePath script_dir;
     if (!GetWPRSupportScriptDir(&script_dir)) {
       ADD_FAILURE() << "Failed to extract the WPR support script directory!";
@@ -291,17 +294,17 @@ class WebPageReplayUtil {
             .AppendASCII("telemetry")
             .AppendASCII("bin");
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     base::FilePath wpr_executable_binary =
         base::FilePath(FILE_PATH_LITERAL("win"))
             .AppendASCII("AMD64")
             .AppendASCII("wpr.exe");
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
     base::FilePath wpr_executable_binary =
         base::FilePath(FILE_PATH_LITERAL("mac"))
             .AppendASCII("x86_64")
             .AppendASCII("wpr");
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
     base::FilePath wpr_executable_binary =
         base::FilePath(FILE_PATH_LITERAL("linux"))
             .AppendASCII("x86_64")
@@ -415,8 +418,8 @@ class DownloadManagerObserver : public content::DownloadManager::Observer {
   content::DownloadManager* download_manager() { return download_manager_; }
 
  private:
-  Browser* browser_ = nullptr;
-  content::DownloadManager* download_manager_ = nullptr;
+  raw_ptr<Browser> browser_ = nullptr;
+  raw_ptr<content::DownloadManager> download_manager_ = nullptr;
   std::vector<download::DownloadItem*> download_items_;
   base::OnceClosure stop_waiting_for_download_;
 };
@@ -449,7 +452,7 @@ class BoxCapturedSitesInteractiveTest
 
       // Disable GPU acceleration on Linux to avoid the GPU process
       // crashing, and inadvertently block page load.
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
     command_line->AppendSwitch(switches::kDisableGpu);
     command_line->AppendSwitch(switches::kDisableSoftwareRasterizer);
 #endif

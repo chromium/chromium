@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
@@ -73,6 +74,7 @@ class HoverButton : public views::LabelButton {
   // views::LabelButton:
   void SetBorder(std::unique_ptr<views::Border> b) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void PreferredSizeChanged() override;
   void OnViewBoundsChanged(View* observed_view) override;
 
   // Sets the text style of the title considering the color of the background.
@@ -80,6 +82,10 @@ class HoverButton : public views::LabelButton {
   // changed to a color that is not readable on the specified background.
   void SetTitleTextStyle(views::style::TextStyle text_style,
                          SkColor background_color);
+
+  // Set the text context and style of the subtitle.
+  void SetSubtitleTextStyle(int text_context,
+                            views::style::TextStyle text_style);
 
   // Updates the accessible name and tooltip of the button if necessary based on
   // |title_| and |subtitle_| labels.
@@ -105,13 +111,14 @@ class HoverButton : public views::LabelButton {
                            NotifyClickExecutesAction);
   FRIEND_TEST_ALL_PREFIXES(ExtensionsMenuItemViewTest,
                            UpdatesToDisplayCorrectActionTitle);
+  friend class AccountSelectionBubbleViewTest;
   friend class PageInfoBubbleViewBrowserTest;
 
-  views::StyledLabel* title_ = nullptr;
-  views::View* label_wrapper_ = nullptr;
-  views::Label* subtitle_ = nullptr;
-  views::View* icon_view_ = nullptr;
-  views::View* secondary_view_ = nullptr;
+  raw_ptr<views::StyledLabel> title_ = nullptr;
+  raw_ptr<views::View> label_wrapper_ = nullptr;
+  raw_ptr<views::Label> subtitle_ = nullptr;
+  raw_ptr<views::View> icon_view_ = nullptr;
+  raw_ptr<views::View> secondary_view_ = nullptr;
 
   base::ScopedObservation<views::View, views::ViewObserver> label_observation_{
       this};

@@ -1,10 +1,13 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_WEB_CONTENTS_WEB_CONTENTS_VIEW_CHILD_FRAME_H_
 #define CONTENT_BROWSER_WEB_CONTENTS_WEB_CONTENTS_VIEW_CHILD_FRAME_H_
 
+#include <memory>
+
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
 #include "content/browser/web_contents/web_contents_view.h"
@@ -20,7 +23,7 @@ class WebContentsViewChildFrame : public WebContentsView,
                                   public RenderViewHostDelegateView {
  public:
   WebContentsViewChildFrame(WebContentsImpl* web_contents,
-                            WebContentsViewDelegate* delegate,
+                            std::unique_ptr<WebContentsViewDelegate> delegate,
                             RenderViewHostDelegateView** delegate_view);
 
   WebContentsViewChildFrame(const WebContentsViewChildFrame&) = delete;
@@ -51,10 +54,11 @@ class WebContentsViewChildFrame : public WebContentsView,
   void RenderViewHostChanged(RenderViewHost* old_host,
                              RenderViewHost* new_host) override;
   void SetOverscrollControllerEnabled(bool enabled) override;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   bool CloseTabAfterEventTrackingIfNeeded() override;
 #endif
   void OnCapturerCountChanged() override;
+  void FullscreenStateChanged(bool is_fullscreen) override;
 
   // Backend implementation of RenderViewHostDelegateView.
   void ShowContextMenu(RenderFrameHost& render_frame_host,
@@ -62,7 +66,8 @@ class WebContentsViewChildFrame : public WebContentsView,
   void StartDragging(const DropData& drop_data,
                      blink::DragOperationsMask allowed_ops,
                      const gfx::ImageSkia& image,
-                     const gfx::Vector2d& image_offset,
+                     const gfx::Vector2d& cursor_offset,
+                     const gfx::Rect& drag_obj_rect,
                      const blink::mojom::DragEventSourceInfo& event_info,
                      RenderWidgetHostImpl* source_rwh) override;
   void UpdateDragCursor(ui::mojom::DragOperation operation) override;
@@ -81,7 +86,7 @@ class WebContentsViewChildFrame : public WebContentsView,
   RenderViewHostDelegateView* GetOuterDelegateView();
 
   // The WebContentsImpl whose contents we display.
-  WebContentsImpl* web_contents_;
+  raw_ptr<WebContentsImpl> web_contents_;
 
   // The delegate ownership is passed to WebContentsView.
   std::unique_ptr<WebContentsViewDelegate> delegate_;

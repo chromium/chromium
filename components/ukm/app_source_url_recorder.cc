@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,6 +47,11 @@ SourceId AppSourceUrlRecorder::GetSourceIdForArc(
 
 SourceId AppSourceUrlRecorder::GetSourceIdForPWA(const GURL& url) {
   return GetSourceIdForUrl(url, AppType::kPWA);
+}
+
+SourceId AppSourceUrlRecorder::GetSourceIdForBorealis(const std::string& app) {
+  GURL url("app://borealis/" + app);
+  return GetSourceIdForUrl(url, AppType::kBorealis);
 }
 
 SourceId AppSourceUrlRecorder::GetSourceIdForCrostini(

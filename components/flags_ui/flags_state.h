@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 
 namespace flags_ui {
@@ -43,12 +44,13 @@ enum {
   kOsIos = 1 << 6,
   kOsFuchsia = 1 << 7,
   kOsWebView = 1 << 8,
+  kOsLacros = 1 << 9,
 
-  kDeprecated = 1 << 9,
+  kDeprecated = 1 << 10,
 
   // Flags marked with this are internal to the flags system. Never set this on
   // a manually-added flag.
-  kFlagInfrastructure = 1 << 10,
+  kFlagInfrastructure = 1 << 11,
 };
 
 // A flag controlling the behavior of the |ConvertFlagsToSwitches| function -
@@ -113,9 +115,13 @@ class FlagsState {
   // switches corresponding to enabled entries and |features| with the set of
   // strings corresponding to enabled/disabled base::Feature states. Feature
   // names are suffixed with ":enabled" or ":disabled" depending on their state.
-  void GetSwitchesAndFeaturesFromFlags(FlagsStorage* flags_storage,
-                                       std::set<std::string>* switches,
-                                       std::set<std::string>* features) const;
+  // Also fills |variation_ids| with variation IDs to force based on
+  // flags_storage, in the format of VariationsIdsProvider::ForceVariationIds().
+  void GetSwitchesAndFeaturesFromFlags(
+      FlagsStorage* flags_storage,
+      std::set<std::string>* switches,
+      std::set<std::string>* features,
+      std::set<std::string>* variation_ids) const;
 
   bool IsRestartNeededToCommitChanges();
   void SetFeatureEntryEnabled(FlagsStorage* flags_storage,
@@ -166,8 +172,8 @@ class FlagsState {
   void GetFlagFeatureEntries(
       FlagsStorage* flags_storage,
       FlagAccess access,
-      base::Value::ListStorage& supported_entries,
-      base::Value::ListStorage& unsupported_entries,
+      base::Value::List& supported_entries,
+      base::Value::List& unsupported_entries,
       base::RepeatingCallback<bool(const FeatureEntry&)> skip_feature_entry);
 
   // Returns the value for the current platform. This is one of the values
@@ -188,11 +194,13 @@ class FlagsState {
       std::map<std::string, SwitchEntry>* name_to_switch_map) const;
 
   // Adds mapping to |name_to_switch_map| to toggle base::Feature |feature_name|
-  // to state |feature_state|.
+  // to state |feature_state|, along with the given |variation_id|, in the
+  // format of VariationsIdsProvider::ForceVariationIds().
   void AddFeatureMapping(
       const std::string& key,
       const std::string& feature_name,
       bool feature_state,
+      const std::string& variation_id,
       std::map<std::string, SwitchEntry>* name_to_switch_map) const;
 
   // Updates the switches in |command_line| by applying the modifications
@@ -215,6 +223,12 @@ class FlagsState {
       const std::map<std::string, bool>& feature_switches,
       const char* switch_name,
       bool feature_state,
+      base::CommandLine* command_line);
+
+  // Updates |command_line| by merging the value of the --force-variation-ids
+  // list with corresponding entries in |variation_ids|.
+  void MergeVariationIdsCommandLineSwitch(
+      const std::vector<std::string>& variation_ids,
       base::CommandLine* command_line);
 
   // Sanitizes |enabled_entries| to only contain entries that are defined in the
@@ -263,7 +277,7 @@ class FlagsState {
 
   // Delegate used for embedders to control display and application of flags.
   // May be null.
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 };
 
 }  // namespace flags_ui

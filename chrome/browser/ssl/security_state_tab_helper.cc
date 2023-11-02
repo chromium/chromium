@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,39 +51,22 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/networking/policy_cert_service.h"
-#include "chrome/browser/ash/policy/networking/policy_cert_service_factory.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/policy/networking/policy_cert_service.h"
+#include "chrome/browser/policy/networking/policy_cert_service_factory.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #endif
-
-namespace {
-
-void RecordSecurityLevel(
-    const security_state::VisibleSecurityState& visible_security_state,
-    security_state::SecurityLevel security_level) {
-  if (security_state::IsSchemeCryptographic(visible_security_state.url)) {
-    UMA_HISTOGRAM_ENUMERATION("Security.SecurityLevel.CryptographicScheme",
-                              security_level,
-                              security_state::SECURITY_LEVEL_COUNT);
-  } else {
-    UMA_HISTOGRAM_ENUMERATION("Security.SecurityLevel.NoncryptographicScheme",
-                              security_level,
-                              security_state::SECURITY_LEVEL_COUNT);
-  }
-}
-
-}  // namespace
 
 using password_manager::metrics_util::PasswordType;
 using safe_browsing::SafeBrowsingUIManager;
 
 SecurityStateTabHelper::SecurityStateTabHelper(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<SecurityStateTabHelper>(*web_contents) {}
 
 SecurityStateTabHelper::~SecurityStateTabHelper() {}
 
@@ -133,55 +116,34 @@ SecurityStateTabHelper::GetVisibleSecurityState() {
 
 void SecurityStateTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (navigation_handle->IsFormSubmission()) {
-    UMA_HISTOGRAM_ENUMERATION("Security.SecurityLevel.FormSubmission",
-                              GetSecurityLevel(),
-                              security_state::SECURITY_LEVEL_COUNT);
+  if (!navigation_handle->IsFormSubmission()) {
+    return;
+  }
+  UMA_HISTOGRAM_ENUMERATION("Security.SecurityLevel.FormSubmission",
+                            GetSecurityLevel(),
+                            security_state::SECURITY_LEVEL_COUNT);
+  if (navigation_handle->IsInMainFrame() &&
+      !security_state::IsSchemeCryptographic(GetVisibleSecurityState()->url)) {
     UMA_HISTOGRAM_ENUMERATION(
-        "Security.SafetyTips.FormSubmission",
-        GetVisibleSecurityState()->safety_tip_info.status);
-    if (navigation_handle->IsInMainFrame() &&
-        !security_state::IsSchemeCryptographic(
-            GetVisibleSecurityState()->url)) {
-      UMA_HISTOGRAM_ENUMERATION(
-          "Security.SecurityLevel.InsecureMainFrameFormSubmission",
-          GetSecurityLevel(), security_state::SECURITY_LEVEL_COUNT);
-    }
-
-    if (navigation_handle->GetURL().SchemeIs(url::kHttpsScheme)) {
-      ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
-      CHECK(ukm_recorder);
-      ukm::SourceId source_id =
-          ukm::ConvertToSourceId(navigation_handle->GetNavigationId(),
-                                 ukm::SourceIdType::NAVIGATION_ID);
-      ukm::builders::OmniboxSecurityIndicator_FormSubmission(source_id)
-          .SetSubmitted(true)
-          .Record(ukm_recorder);
-    }
-
-  } else if (navigation_handle->IsInMainFrame() &&
-             !security_state::IsSchemeCryptographic(
-                 GetVisibleSecurityState()->url)) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Security.SecurityLevel.InsecureMainFrameNonFormNavigation",
+        "Security.SecurityLevel.InsecureMainFrameFormSubmission",
         GetSecurityLevel(), security_state::SECURITY_LEVEL_COUNT);
+  }
+
+  if (navigation_handle->GetURL().SchemeIs(url::kHttpsScheme)) {
+    ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
+    CHECK(ukm_recorder);
+    ukm::SourceId source_id = ukm::ConvertToSourceId(
+        navigation_handle->GetNavigationId(), ukm::SourceIdType::NAVIGATION_ID);
+    ukm::builders::OmniboxSecurityIndicator_FormSubmission(source_id)
+        .SetSubmitted(true)
+        .Record(ukm_recorder);
   }
 }
 
-void SecurityStateTabHelper::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  // Ignore non-primary FrameTree navigations, subframe navigations,
-  // same-document navigations, and navigations that did not commit (e.g.
-  // HTTP/204 or file downloads).
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      navigation_handle->IsSameDocument() ||
-      !navigation_handle->HasCommitted()) {
-    return;
-  }
-
+void SecurityStateTabHelper::PrimaryPageChanged(content::Page& page) {
   net::CertStatus cert_status = GetVisibleSecurityState()->cert_status;
   if (net::IsCertStatusError(cert_status) &&
-      !navigation_handle->IsErrorPage()) {
+      !page.GetMainDocument().IsErrorDocument()) {
     // Record each time a user visits a site after having clicked through a
     // certificate warning interstitial. This is used as a baseline for
     // interstitial.ssl.did_user_revoke_decision2 in order to determine how
@@ -193,12 +155,8 @@ void SecurityStateTabHelper::DidFinishNavigation(
   MaybeShowKnownInterceptionDisclosureDialog(web_contents(), cert_status);
 }
 
-void SecurityStateTabHelper::DidChangeVisibleSecurityState() {
-  RecordSecurityLevel(*GetVisibleSecurityState(), GetSecurityLevel());
-}
-
 bool SecurityStateTabHelper::UsedPolicyInstalledCertificate() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   policy::PolicyCertService* service =
       policy::PolicyCertServiceFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
@@ -246,7 +204,7 @@ SecurityStateTabHelper::GetMaliciousContentStatus() const {
               MALICIOUS_CONTENT_STATUS_SIGNED_IN_SYNC_PASSWORD_REUSE;
         }
 #endif
-        FALLTHROUGH;
+        [[fallthrough]];
       case safe_browsing::SB_THREAT_TYPE_SIGNED_IN_NON_SYNC_PASSWORD_REUSE:
 #if BUILDFLAG(FULL_SAFE_BROWSING)
         if (safe_browsing::ChromePasswordProtectionService::
@@ -256,7 +214,7 @@ SecurityStateTabHelper::GetMaliciousContentStatus() const {
               MALICIOUS_CONTENT_STATUS_SIGNED_IN_NON_SYNC_PASSWORD_REUSE;
         }
 #endif
-        FALLTHROUGH;
+        [[fallthrough]];
       case safe_browsing::SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE:
 #if BUILDFLAG(FULL_SAFE_BROWSING)
         if (safe_browsing::ChromePasswordProtectionService::

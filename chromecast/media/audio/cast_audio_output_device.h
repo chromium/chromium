@@ -1,13 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROMECAST_MEDIA_AUDIO_CAST_AUDIO_OUTPUT_DEVICE_H_
 #define CHROMECAST_MEDIA_AUDIO_CAST_AUDIO_OUTPUT_DEVICE_H_
 
-#include <cstdint>
 #include <memory>
-#include <string>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
@@ -72,8 +70,13 @@ class CastAudioOutputDevice : public ::media::AudioRendererSink {
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   const base::SequenceBound<Internal> internal_;
 
+  // Callback to get audio data. Once set in Initialize, it won't change.
+  RenderCallback* render_callback_ = nullptr;
+
   base::Lock callback_lock_;
-  RenderCallback* render_callback_ GUARDED_BY(callback_lock_) = nullptr;
+
+  // Nullable callback that is only available before Stop.
+  RenderCallback* active_render_callback_ GUARDED_BY(callback_lock_) = nullptr;
 };
 
 }  // namespace media

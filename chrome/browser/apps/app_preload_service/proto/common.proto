@@ -1,0 +1,73 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package apps.proto;
+
+// An identical copy of this proto is maintained in the server code base.
+// http://google3/chrome/chromeos/apps_foundation/almanac/fondue/boq/api/common.proto
+// Any changes made here must also be made in the file above.
+// In the future this file will be add only, however breaking changes can be
+// be made until the interface is finalized (currently aimed for M110).
+
+// POTENTIAL APP_GROUP COMMON API
+// TODO(b/243338003): expand on this & potentially move to common API + document
+
+enum Platform {
+  PLATFORM_UNKNOWN = 0;
+  PLATFORM_WEB = 1;
+  PLATFORM_ANDROID = 2;
+}
+
+message Icon {
+  // Url to query to get the icon.
+  optional string url = 1;
+  // Size of the icon in pixels.
+  optional int32 size_in_pixels = 2;
+  // Mime type of the icon.
+  optional string mime_type = 3;
+  // Whether or not we have permission from the platform to mask the icon.
+  optional bool is_masking_allowed = 4;
+}
+
+// Every platform has its own [Platform]Extras message to store platform
+// specific metadata.
+// For Android-only metadata.
+message AndroidExtras {
+  // |package_name| and |activity_name| uniquely identify each Android app.
+  optional string package_name = 1;
+  optional string activity_name = 2;
+}
+
+// For Web-only metadata.
+message WebExtras {
+  // |start_url| and |manifest_id| uniquely identify each Android app.
+  optional string start_url = 1;
+  optional string manifest_id = 2;
+}
+
+// For fields shared across app platforms. Represents an instance of an app
+// regardless of what platform it's from.
+message AppInstance {
+  optional Platform platform = 1;
+
+  // For platform specific fields. The extras for an AppInstance should match
+  // the |platform| field above.
+  oneof extras {
+    AndroidExtras android_extras = 2;
+    WebExtras web_extras = 3;
+  }
+}
+
+// An Alamanac App Group which is a normalised unique app with multiple
+// installers.
+message AppGroup {
+  optional string uuid = 1;
+  optional string name = 2;
+  repeated Icon icons = 3;
+  repeated AppInstance app_instance = 4;
+}

@@ -184,7 +184,7 @@ Not all media capture features are listed above; here are some additional
 capture features in Chrome.  For more information about these, contact
 developers at the address below.
 
-* [Capture Handle API](http://wicg.github.io/capture-handle/)
+* [Capture Handle API](https://w3c.github.io/mediacapture-handle/identity/)
 * Tab casting to Chromecast
 * Screen casting from the ChromeOS system tray
 * Presentation API 1-UA mode

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,7 @@
 
 #include "base/pickle.h"
 
-namespace net {
-
-namespace ct {
+namespace net::ct {
 
 bool SignedCertificateTimestamp::LessThan::operator()(
     const scoped_refptr<SignedCertificateTimestamp>& lhs,
@@ -28,8 +26,7 @@ bool SignedCertificateTimestamp::LessThan::operator()(
   return lhs->version < rhs->version;
 }
 
-SignedCertificateTimestamp::SignedCertificateTimestamp()
-    : version(V1), origin(SCT_EMBEDDED) {}
+SignedCertificateTimestamp::SignedCertificateTimestamp() = default;
 
 SignedCertificateTimestamp::~SignedCertificateTimestamp() = default;
 
@@ -52,8 +49,7 @@ SignedCertificateTimestamp::CreateFromPickle(base::PickleIterator* iter) {
   int64_t timestamp;
   int hash_algorithm;
   int sig_algorithm;
-  scoped_refptr<SignedCertificateTimestamp> sct(
-      new SignedCertificateTimestamp());
+  auto sct = base::MakeRefCounted<SignedCertificateTimestamp>();
   int origin;
   // string values are set directly
   if (!(iter->ReadInt(&version) &&
@@ -78,7 +74,7 @@ SignedCertificateTimestamp::CreateFromPickle(base::PickleIterator* iter) {
   return sct;
 }
 
-SignedEntryData::SignedEntryData() : type(LOG_ENTRY_TYPE_X509) {}
+SignedEntryData::SignedEntryData() = default;
 
 SignedEntryData::~SignedEntryData() = default;
 
@@ -88,8 +84,7 @@ void SignedEntryData::Reset() {
   tbs_certificate.clear();
 }
 
-DigitallySigned::DigitallySigned()
-    : hash_algorithm(HASH_ALGO_NONE), signature_algorithm(SIG_ALGO_ANONYMOUS) {}
+DigitallySigned::DigitallySigned() = default;
 
 DigitallySigned::~DigitallySigned() = default;
 
@@ -99,6 +94,4 @@ bool DigitallySigned::SignatureParametersMatch(
   return (hash_algorithm == other_hash_algorithm) &&
          (signature_algorithm == other_signature_algorithm);
 }
-}  // namespace ct
-
-}  // namespace net
+}  // namespace net::ct

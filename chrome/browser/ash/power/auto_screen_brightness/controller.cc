@@ -1,10 +1,9 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/power/auto_screen_brightness/controller.h"
 
-#include "base/task/post_task.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/adapter.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/als_reader.h"

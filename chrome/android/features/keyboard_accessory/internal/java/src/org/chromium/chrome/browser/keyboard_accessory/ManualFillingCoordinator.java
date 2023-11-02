@@ -1,16 +1,16 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.keyboard_accessory;
 
 import android.view.View;
-import android.view.ViewStub;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
@@ -21,6 +21,7 @@ import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.DropdownPopupWindow;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -40,25 +41,28 @@ class ManualFillingCoordinator implements ManualFillingComponent {
 
     @Override
     public void initialize(WindowAndroid windowAndroid, BottomSheetController sheetController,
-            SoftKeyboardDelegate keyboardDelegate, ViewStub barStub, ViewStub sheetStub) {
+            SoftKeyboardDelegate keyboardDelegate, BackPressManager backPressManager,
+            AsyncViewStub sheetStub, AsyncViewStub barStub) {
         if (barStub == null || sheetStub == null) return; // The manual filling isn't needed.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)) {
-            barStub.setLayoutResource(R.layout.keyboard_accessory_modern);
-        } else {
-            barStub.setLayoutResource(R.layout.keyboard_accessory);
-        }
+        barStub.setLayoutResource(
+                ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
+                        ? R.layout.keyboard_accessory_modern
+                        : R.layout.keyboard_accessory);
         sheetStub.setLayoutResource(R.layout.keyboard_accessory_sheet);
+        barStub.setShouldInflateOnBackgroundThread(true);
+        sheetStub.setShouldInflateOnBackgroundThread(true);
         initialize(windowAndroid, new KeyboardAccessoryCoordinator(mMediator, barStub),
-                new AccessorySheetCoordinator(sheetStub), sheetController, keyboardDelegate,
-                new ConfirmationDialogHelper(windowAndroid.getContext()));
+                new AccessorySheetCoordinator(sheetStub), sheetController, backPressManager,
+                keyboardDelegate, new ConfirmationDialogHelper(windowAndroid.getContext()));
     }
 
     @VisibleForTesting
     void initialize(WindowAndroid windowAndroid, KeyboardAccessoryCoordinator accessoryBar,
             AccessorySheetCoordinator accessorySheet, BottomSheetController sheetController,
-            SoftKeyboardDelegate keyboardDelegate, ConfirmationDialogHelper confirmationHelper) {
+            BackPressManager backPressManager, SoftKeyboardDelegate keyboardDelegate,
+            ConfirmationDialogHelper confirmationHelper) {
         mMediator.initialize(accessoryBar, accessorySheet, windowAndroid, sheetController,
-                keyboardDelegate, confirmationHelper);
+                backPressManager, keyboardDelegate, confirmationHelper);
     }
 
     @Override
@@ -68,8 +72,18 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     }
 
     @Override
-    public boolean handleBackPress() {
-        return mMediator.handleBackPress();
+    public boolean onBackPressed() {
+        return mMediator.onBackPressed();
+    }
+
+    @Override
+    public void handleBackPress() {
+        mMediator.handleBackPress();
+    }
+
+    @Override
+    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+        return mMediator.getHandleBackPressChangedSupplier();
     }
 
     @Override

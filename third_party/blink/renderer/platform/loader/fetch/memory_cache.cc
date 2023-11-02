@@ -28,9 +28,11 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loading_log.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
@@ -47,18 +49,8 @@ static const base::TimeDelta kCMaxPruneDeferralDelay = base::Milliseconds(500);
 // again.
 static const float kCTargetPrunePercentage = .95f;
 
-MemoryCache* GetMemoryCache() {
-  DCHECK(WTF::IsMainThread());
-  if (!g_memory_cache) {
-    g_memory_cache =
-        new Persistent<MemoryCache>(MakeGarbageCollected<MemoryCache>(
-            Thread::MainThread()->GetTaskRunner()));
-  }
-  return g_memory_cache->Get();
-}
-
 MemoryCache* ReplaceMemoryCacheForTesting(MemoryCache* cache) {
-  GetMemoryCache();
+  MemoryCache::Get();
   MemoryCache* old_cache = g_memory_cache->Release();
   *g_memory_cache = cache;
   MemoryCacheDumpProvider::Instance()->SetMemoryCache(cache);
@@ -66,15 +58,31 @@ MemoryCache* ReplaceMemoryCacheForTesting(MemoryCache* cache) {
 }
 
 void MemoryCacheEntry::Trace(Visitor* visitor) const {
-  visitor->template RegisterWeakCallbackMethod<
-      MemoryCacheEntry, &MemoryCacheEntry::ClearResourceWeak>(this);
+  // Don't bother to register for tracing events if we're instrumented.
+  if (recordreplay::IsRecordingOrReplaying("leak-references", "MemoryCacheEntry")) {
+    visitor->Trace(strong_resource_);
+  } else {
+    visitor->template RegisterWeakCallbackMethod<
+        MemoryCacheEntry, &MemoryCacheEntry::ClearResourceWeak>(this);
+  }
 }
 
 void MemoryCacheEntry::ClearResourceWeak(const LivenessBroker& info) {
   if (!resource_ || info.IsHeapObjectAlive(resource_))
     return;
-  GetMemoryCache()->Remove(resource_.Get());
+  MemoryCache::Get()->Remove(resource_.Get());
   resource_.Clear();
+}
+
+// static
+MemoryCache* MemoryCache::Get() {
+  DCHECK(WTF::IsMainThread());
+  if (!g_memory_cache) {
+    g_memory_cache = new Persistent<MemoryCache>(
+        MakeGarbageCollected<MemoryCache>(Thread::MainThread()->GetTaskRunner(
+            MainThreadTaskRunnerRestricted())));
+  }
+  return g_memory_cache->Get();
 }
 
 MemoryCache::MemoryCache(
@@ -360,6 +368,8 @@ void MemoryCache::EvictResources() {
 
 void MemoryCache::Prune() {
   TRACE_EVENT0("renderer", "MemoryCache::prune()");
+
+  recordreplay::Assert("[RUN-1975-2287] MemoryCache::Prune");
 
   if (in_prune_resources_)
     return;

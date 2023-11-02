@@ -150,7 +150,7 @@ function waitForAnimationEndTimeBased(getValue) {
   })
 }
 
-function waitForEvent(eventTarget, eventName, timeoutMs = 1000) {
+function waitForEvent(eventTarget, eventName, timeoutMs = 2000) {
   return new Promise((resolve, reject) => {
     const eventListener = (evt) => {
       clearTimeout(timeout);
@@ -165,7 +165,7 @@ function waitForEvent(eventTarget, eventName, timeoutMs = 1000) {
   });
 }
 
-function waitForScrollEvent(eventTarget, timeoutMs = 1000) {
+function waitForScrollEvent(eventTarget, timeoutMs = 2000) {
   return waitForEvent(eventTarget, 'scroll', timeoutMs);
 }
 
@@ -630,6 +630,24 @@ function touchTapOn(xPosition, yPosition) {
   });
 }
 
+function touchPull(pull) {
+  const PREVENT_FLING_PAUSE = 40;
+  return new Promise(function(resolve, reject) {
+    if (window.chrome && chrome.gpuBenchmarking) {
+      chrome.gpuBenchmarking.pointerActionSequence( [
+        {source: 'touch',
+         actions: [
+            { name: 'pointerDown', x: pull.start_x, y: pull.start_y },
+            { name: 'pause', duration: PREVENT_FLING_PAUSE },
+            { name: 'pointerMove', x: pull.end_x, y: pull.end_y},
+            { name: 'pause', duration: PREVENT_FLING_PAUSE },
+        ]}], resolve);
+    } else {
+      reject('This test requires chrome.gpuBenchmarking');
+    }
+  });
+}
+
 function touchDragTo(drag) {
   const PREVENT_FLING_PAUSE = 40;
   return new Promise(function(resolve, reject) {
@@ -644,7 +662,24 @@ function touchDragTo(drag) {
             { name: 'pointerUp', x: drag.end_x, y: drag.end_y }
         ]}], resolve);
     } else {
-      reject();
+      reject('This test requires chrome.gpuBenchmarking');
+    }
+  });
+}
+
+// Trigger fling by doing pointerUp right after pointerMoves.
+function touchFling(drag) {
+  return new Promise(function(resolve, reject) {
+    if (window.chrome && chrome.gpuBenchmarking) {
+      chrome.gpuBenchmarking.pointerActionSequence( [
+        {source: 'touch',
+         actions: [
+            { name: 'pointerDown', x: drag.start_x, y: drag.start_y },
+            { name: 'pointerMove', x: drag.end_x, y: drag.end_y},
+            { name: 'pointerUp', x: drag.end_x, y: drag.end_y }
+        ]}], resolve);
+    } else {
+      reject('This test requires chrome.gpuBenchmarking');
     }
   });
 }

@@ -1,11 +1,14 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_resource_provider_cache.h"
 
+#include "base/containers/adapters.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -117,6 +120,19 @@ void WebGPURecyclableResourceCache::OnDestroyRecyclableResource(
   StartResourceCleanUpTimer();
 }
 
+WebGPURecyclableResourceCache::Resource::Resource(
+    std::unique_ptr<CanvasResourceProvider> resource_provider,
+    unsigned int timer_id,
+    int resource_size)
+    : resource_provider_(std::move(resource_provider)),
+      timer_id_(timer_id),
+      resource_size_(resource_size) {}
+
+WebGPURecyclableResourceCache::Resource::Resource(Resource&& that) noexcept =
+    default;
+
+WebGPURecyclableResourceCache::Resource::~Resource() = default;
+
 std::unique_ptr<CanvasResourceProvider>
 WebGPURecyclableResourceCache::AcquireCachedProvider(
     const ResourceCacheKey& cache_key) {
@@ -154,9 +170,9 @@ void WebGPURecyclableResourceCache::ReleaseStaleResources() {
 
   // Loop from LRU to MRU
   int stale_resource_count = 0;
-  for (auto it = unused_providers_.rbegin(); it != unused_providers_.rend();
-       ++it) {
-    if ((current_timer_id_ - it->timer_id_) < kTimerIdDeltaForDeletion) {
+  for (const auto& unused_provider : base::Reversed(unused_providers_)) {
+    if ((current_timer_id_ - unused_provider.timer_id_) <
+        kTimerIdDeltaForDeletion) {
       // These are the resources which are recycled and stay in the cache for
       // less than kCleanUpDelayInSeconds. They are not to be deleted this time.
       break;

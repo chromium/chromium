@@ -1,9 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/no_state_prefetch/renderer/prerender_observer_list.h"
 
+#include "base/memory/ptr_util.h"
+#include "base/observer_list.h"
 #include "components/no_state_prefetch/renderer/prerender_observer.h"
 #include "content/public/renderer/render_frame.h"
 

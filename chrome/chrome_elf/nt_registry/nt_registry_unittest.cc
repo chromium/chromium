@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/test/test_reg_util_win.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -629,7 +628,7 @@ TEST_F(NtRegistryTest, ApiEnumeration) {
     ASSERT_TRUE(nt::QueryRegSubkey(key_handle, i, &subkey_name));
 
     bool found = false;
-    for (size_t index = 0; index < base::size(check_names); index++) {
+    for (size_t index = 0; index < std::size(check_names); index++) {
       if (0 == subkey_name.compare(check_names[index])) {
         found = true;
         break;

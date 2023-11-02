@@ -1,5 +1,0 @@
-specific_include_rules = {
-  "AttributionReportingProvider.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/base",
-  ]
-}

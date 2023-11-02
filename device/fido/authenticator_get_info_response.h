@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,9 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "device/fido/authenticator_supported_options.h"
 #include "device/fido/fido_constants.h"
+#include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -58,6 +58,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorGetInfoResponse {
   absl::optional<uint32_t> remaining_discoverable_credentials;
   absl::optional<bool> force_pin_change;
   absl::optional<uint32_t> min_pin_length;
+  absl::optional<base::flat_set<FidoTransportProtocol>> transports;
 
   // max_cred_blob_length is the maximum size credBlob that the authenticator
   // supports per credential, or nullopt if credBlob is not supported. If

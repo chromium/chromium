@@ -1,21 +1,22 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/crostini/crostini_package_notification.h"
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
-#include "chrome/app/vector_icons/vector_icons.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/crostini/crostini_package_service.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
+#include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
-#include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -46,7 +47,7 @@ CrostiniPackageNotification::CrostiniPackageNotification(
     Profile* profile,
     NotificationType notification_type,
     PackageOperationStatus status,
-    const ContainerId& container_id,
+    const guest_os::GuestId& container_id,
     const std::u16string& app_name,
     const std::string& notification_id,
     CrostiniPackageService* package_service)
@@ -65,18 +66,20 @@ CrostiniPackageNotification::CrostiniPackageNotification(
         ->AddObserver(this);
   }
   message_center::RichNotificationData rich_notification_data;
-  rich_notification_data.vector_small_image = &kNotificationLinuxIcon;
+  rich_notification_data.vector_small_image = &ash::kNotificationLinuxIcon;
   rich_notification_data.never_timeout = true;
   rich_notification_data.accent_color = ash::kSystemNotificationColorNormal;
 
   notification_ = std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_PROGRESS, notification_id,
       std::u16string(), std::u16string(),
-      gfx::Image(),  // icon
+      ui::ImageModel(),  // icon
       notification_settings_.source,
       GURL(),  // origin_url
-      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kNotifierCrostiniPackageOperation),
+      message_center::NotifierId(
+          message_center::NotifierType::SYSTEM_COMPONENT,
+          kNotifierCrostiniPackageOperation,
+          ash::NotificationCatalogName::kCrostiniPackage),
       rich_notification_data,
       base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
           weak_ptr_factory_.GetWeakPtr()));
@@ -96,12 +99,11 @@ PackageOperationStatus CrostiniPackageNotification::GetOperationStatus() const {
 
 void CrostiniPackageNotification::OnRegistryUpdated(
     guest_os::GuestOsRegistryService* registry_service,
-    guest_os::GuestOsRegistryService::VmType vm_type,
+    guest_os::VmType vm_type,
     const std::vector<std::string>& updated_apps,
     const std::vector<std::string>& removed_apps,
     const std::vector<std::string>& inserted_apps) {
-  if (vm_type != guest_os::GuestOsRegistryService::VmType::
-                     ApplicationList_VmType_TERMINA) {
+  if (vm_type != guest_os::VmType::TERMINA) {
     return;
   }
   inserted_apps_.insert(inserted_apps.begin(), inserted_apps.end());
@@ -228,7 +230,7 @@ void CrostiniPackageNotification::UpdateProgress(
       // it becomes in infinite progress bar. Do that here because we have no
       // way to know how long this will take or how close we are to completion.
       progress_percent = -1;
-      FALLTHROUGH;
+      [[fallthrough]];
     case PackageOperationStatus::RUNNING:
       never_timeout = true;
       notification_type = message_center::NOTIFICATION_TYPE_PROGRESS;
@@ -290,8 +292,9 @@ void CrostiniPackageNotification::Click(
     return;
 
   if (app_count_ == 0) {
-    LaunchCrostiniApp(profile_, kCrostiniTerminalSystemAppId,
-                      display::Screen::GetScreen()->GetPrimaryDisplay().id());
+    LaunchTerminal(profile_,
+                   display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+                   DefaultContainerId());
   } else if (app_count_ == 1) {
     DCHECK(!app_id_.empty());
     LaunchCrostiniApp(profile_, app_id_,

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,8 @@ namespace blink {
 
 class LocalDOMWindow;
 
-// Interface exposing advanced per-screen information.
-// https://github.com/webscreens/window-placement
+// Interface exposing additional per-screen information.
+// https://w3c.github.io/window-placement/
 class MODULES_EXPORT ScreenDetailed final : public Screen {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -28,17 +28,6 @@ class MODULES_EXPORT ScreenDetailed final : public Screen {
       const display::ScreenInfo& prev,
       const display::ScreenInfo& current);
 
-  // Web-exposed interface (Screen overrides):
-  int height() const override;
-  int width() const override;
-  unsigned colorDepth() const override;
-  unsigned pixelDepth() const override;
-  int availLeft() const override;
-  int availTop() const override;
-  int availHeight() const override;
-  int availWidth() const override;
-  bool isExtended() const override;
-
   // Web-exposed interface (additional per-screen information):
   int left() const;
   int top() const;
@@ -47,16 +36,24 @@ class MODULES_EXPORT ScreenDetailed final : public Screen {
   float devicePixelRatio() const;
   String label() const;
 
-  // Not web-exposed; for internal usage only (see Screen).
-  int64_t DisplayId() const override;
-  void UpdateDisplayId(int64_t display_id) { display_id_ = display_id; }
-  bool label_idx() const { return label_idx_; }
+  // Attributes exposed for HDR canvas.
+  // https://github.com/w3c/ColorWeb-CG/blob/master/hdr_html_canvas_element.md
+  float highDynamicRangeHeadroom() const;
+  float redPrimaryX() const;
+  float redPrimaryY() const;
+  float greenPrimaryX() const;
+  float greenPrimaryY() const;
+  float bluePrimaryX() const;
+  float bluePrimaryY() const;
+  float whitePointX() const;
+  float whitePointY() const;
+
+  uint32_t label_idx() const { return label_idx_; }
   bool label_is_internal() const { return label_is_internal_; }
 
  private:
   uint32_t label_idx_;
   bool label_is_internal_;
-  int64_t display_id_;
 };
 
 }  // namespace blink

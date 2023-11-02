@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,12 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/base_paths.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -165,7 +167,7 @@ int RunChromeCleanerTestSuite(int argc,
       argc, argv,
       /*parallel_jobs=*/1U,        // Like LaunchUnitTestsSerially
       /*default_batch_limit=*/10,  // Like LaunchUnitTestsSerially
-      use_job_objects,
+      use_job_objects, base::DoNothing(),
       base::BindOnce(&base::TestSuite::Run, base::Unretained(&test_suite)));
 
   if (!IsSandboxedProcess())
@@ -365,7 +367,7 @@ ScopedTempDirNoWow64::~ScopedTempDirNoWow64() {
   // Since the temp dir was created with Wow64 disabled, it must be deleted
   // with Wow64 disabled.
   ScopedDisableWow64Redirection disable_wow64_redirection;
-  ANALYZER_ALLOW_UNUSED(Delete());
+  std::ignore = Delete();
 
   // The parent's destructor will call Delete again, without disabling Wow64,
   // which could delete a directory with the same name in SysWOW64. So make

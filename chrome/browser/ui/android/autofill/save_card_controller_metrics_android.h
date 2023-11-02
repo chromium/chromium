@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,10 +17,22 @@ enum class MessageMetrics {
   kMaxValue = kIgnored
 };
 
+enum class MessageDialogPromptMetrics {
+  kAccepted = 0,
+  kDenied = 1,
+  kIgnored = 2,
+  kMaxValue = kIgnored
+};
+
 void LogAutofillCreditCardMessageMetrics(
     MessageMetrics metric,
     bool is_uploading,
     AutofillClient::SaveCreditCardOptions options);
+
+void LogAutofillCreditCardMessageDialogPromptMetrics(
+    MessageDialogPromptMetrics metric,
+    AutofillClient::SaveCreditCardOptions options,
+    bool is_link_clicked);
 
 }  // namespace autofill
 

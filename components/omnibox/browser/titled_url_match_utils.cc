@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/history_provider.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/url_prefix.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/url_formatter/url_formatter.h"
@@ -26,11 +25,12 @@ std::u16string ConcatAncestorsTitles(
     std::vector<base::StringPiece16> ancestors) {
   return ancestors.empty()
              ? std::u16string()
-             : std::accumulate(std::next(ancestors.rbegin()), ancestors.rend(),
-                               std::u16string(*ancestors.rbegin()),
-                               [](std::u16string& a, base::StringPiece16& b) {
-                                 return a + u"/" + std::u16string(b);
-                               });
+             : std::accumulate(
+                   std::next(ancestors.rbegin()), ancestors.rend(),
+                   std::u16string(*ancestors.rbegin()),
+                   [](const std::u16string& a, const base::StringPiece16& b) {
+                     return a + u"/" + std::u16string(b);
+                   });
 }
 
 }  // namespace
@@ -68,18 +68,17 @@ AutocompleteMatch TitledUrlMatchToAutocompleteMatch(
   auto format_types = AutocompleteMatch::GetFormatTypes(
       input.parts().scheme.len > 0 || match_in_scheme, match_in_subdomain);
   const std::u16string formatted_url = url_formatter::FormatUrl(
-      url, format_types, net::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
+      url, format_types, base::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
 
-  if (OmniboxFieldTrial::kBookmarkPathsUiReplaceUrl.Get()) {
-    match.contents = path;
-  } else if (OmniboxFieldTrial::kBookmarkPathsUiDynamicReplaceUrl.Get()) {
-    match.contents = !titled_url_match.has_ancestor_match &&
-                             !titled_url_match.url_match_positions.empty()
-                         ? formatted_url
-                         : path;
-  } else {
-    match.contents = formatted_url;
-  }
+  // Display the URL only if the input matches the URL but not the path.
+  // Otherwise, display the path, even if the input matches both or neither.
+  // Except if kBookmarkPaths is disabled, in which case, always display the
+  // URL.
+  match.contents = !base::FeatureList::IsEnabled(omnibox::kBookmarkPaths) ||
+                           (!titled_url_match.has_ancestor_match &&
+                            !titled_url_match.url_match_positions.empty())
+                       ? formatted_url
+                       : path;
 
   // Bookmark classification diverges from relevance scoring. Specifically,
   // 1) All occurrences of the input contribute to relevance; e.g. for the input
@@ -98,13 +97,7 @@ AutocompleteMatch TitledUrlMatchToAutocompleteMatch(
       ACMatchClassification::MATCH | ACMatchClassification::URL,
       ACMatchClassification::URL);
 
-  if (OmniboxFieldTrial::kBookmarkPathsUiReplaceTitle.Get()) {
-    match.description = path + u"/" + title;
-  } else if (OmniboxFieldTrial::kBookmarkPathsUiAppendAfterTitle.Get()) {
-    match.description = title + u" : " + path;
-  } else {
-    match.description = title;
-  }
+  match.description = title;
 
   base::TrimWhitespace(match.description, base::TRIM_LEADING,
                        &match.description);
@@ -124,7 +117,7 @@ AutocompleteMatch TitledUrlMatchToAutocompleteMatch(
       AutocompleteInput::FormattedStringWithEquivalentMeaning(
           url,
           url_formatter::FormatUrl(url, fill_into_edit_format_types,
-                                   net::UnescapeRule::SPACES, nullptr, nullptr,
+                                   base::UnescapeRule::SPACES, nullptr, nullptr,
                                    &inline_autocomplete_offset),
           scheme_classifier, &inline_autocomplete_offset);
 
@@ -134,6 +127,10 @@ AutocompleteMatch TitledUrlMatchToAutocompleteMatch(
     match.inline_autocompletion =
         match.fill_into_edit.substr(inline_autocomplete_offset);
     match.SetAllowedToBeDefault(input);
+  }
+
+  if (provider->InKeywordMode(input)) {
+    match.from_keyword = true;
   }
 
   return match;

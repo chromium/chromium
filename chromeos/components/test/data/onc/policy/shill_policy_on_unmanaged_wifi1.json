@@ -1,0 +1,15 @@
+{
+  "Device": "/device/wifi1",
+  "GUID": "policy_wifi1",
+  "Mode": "managed",
+  "Passphrase": "user's passphrase",
+  "PassphraseRequired": false,
+  "Profile": "/profile/user1/shill",
+  "SSID": "policy_wifi1",
+  "SecurityClass": "psk",
+  "Type": "wifi",
+  "StaticIPConfig": {},
+  "UIData": "{\"onc_source\":\"user_policy\",\"user_settings\":{\"WiFi\":{\"Passphrase\":\"FAKE_CREDENTIAL_VPaJDV9x\"}}}",
+  "Visible":true,
+  "WiFi.HexSSID": "7769666931" // "wifi1"
+}

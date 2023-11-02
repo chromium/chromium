@@ -1,14 +1,14 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/elements/instruction_view.h"
 
-#import "ios/chrome/browser/ui/elements/instruction_view_constants.h"
-#include "ios/chrome/common/string_util.h"
+#import "base/check.h"
+#import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
-#include "ios/chrome/common/ui/util/dynamic_type_util.h"
+#import "ios/chrome/common/ui/util/dynamic_type_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -30,6 +30,7 @@ constexpr CGFloat kIconLabelWidth = 30;
 
 @interface InstructionView ()
 
+// The style of the instruction view.
 @property(nonatomic, assign) InstructionViewStyle style;
 
 // A list of step number labels for color reset on trait collection change.
@@ -42,9 +43,15 @@ constexpr CGFloat kIconLabelWidth = 30;
 #pragma mark - Public
 
 - (instancetype)initWithList:(NSArray<NSString*>*)instructionList
-                       style:(InstructionViewStyle)style {
+                       style:(InstructionViewStyle)style
+                       icons:(NSArray<UIImage*>*)icons {
   self = [super initWithFrame:CGRectZero];
   if (self) {
+    BOOL useIcon = icons != nil;
+    if (useIcon) {
+      DCHECK(icons.count == instructionList.count);
+    }
+
     _style = style;
     _stepNumberLabels =
         [[NSMutableArray alloc] initWithCapacity:instructionList.count];
@@ -52,13 +59,19 @@ constexpr CGFloat kIconLabelWidth = 30;
     UIStackView* stackView = [[UIStackView alloc] init];
     stackView.translatesAutoresizingMaskIntoConstraints = NO;
     stackView.axis = UILayoutConstraintAxisVertical;
+    UIView* firstBulletPoint = useIcon ? [self createIconView:icons[0]]
+                                       : [self createStepNumberView:1];
     [stackView addArrangedSubview:[self createLineInstruction:instructionList[0]
-                                                   stepNumber:1]];
+                                              bulletPointView:firstBulletPoint
+                                                        index:0]];
     for (NSUInteger i = 1; i < [instructionList count]; i++) {
+      UIView* bulletPoint = useIcon ? [self createIconView:icons[i]]
+                                    : [self createStepNumberView:i + 1];
       [stackView addArrangedSubview:[self createLineSeparator]];
       [stackView
           addArrangedSubview:[self createLineInstruction:instructionList[i]
-                                              stepNumber:i + 1]];
+                                         bulletPointView:bulletPoint
+                                                   index:i]];
     }
     [self addSubview:stackView];
     AddSameConstraints(self, stackView);
@@ -68,12 +81,17 @@ constexpr CGFloat kIconLabelWidth = 30;
             [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
         break;
       case InstructionViewStyleDefault:
-        self.backgroundColor = [UIColor colorNamed:kGrey100Color];
+        self.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
         break;
     }
     self.layer.cornerRadius = kCornerRadius;
   }
   return self;
+}
+
+- (instancetype)initWithList:(NSArray<NSString*>*)instructionList
+                       style:(InstructionViewStyle)style {
+  return [self initWithList:instructionList style:style icons:nil];
 }
 
 - (instancetype)initWithList:(NSArray<NSString*>*)instructionList {
@@ -113,73 +131,80 @@ constexpr CGFloat kIconLabelWidth = 30;
   return liner;
 }
 
-// Creates an instruction line which contain a step number and an instruction
-// text.
+// Creates an instruction line with a bullet point view followed by
+// instructions.
 - (UIView*)createLineInstruction:(NSString*)instruction
-                      stepNumber:(NSUInteger)stepNumber {
-  UIView* stepNumberView = [self createStepNumberView:stepNumber];
-  stepNumberView.translatesAutoresizingMaskIntoConstraints = NO;
-
+                 bulletPointView:(UIView*)bulletPointView
+                           index:(NSInteger)index {
   UILabel* instructionLabel = [[UILabel alloc] init];
   instructionLabel.textColor = [UIColor colorNamed:kGrey800Color];
   instructionLabel.font =
       [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
-  instructionLabel.attributedText = [self putBoldPartInString:instruction];
+
+  instructionLabel.attributedText =
+      PutBoldPartInString(instruction, UIFontTextStyleSubheadline);
   instructionLabel.numberOfLines = 0;
   instructionLabel.adjustsFontForContentSizeCategory = YES;
   instructionLabel.translatesAutoresizingMaskIntoConstraints = NO;
 
   UIView* line = [[UIView alloc] init];
-  [line addSubview:stepNumberView];
+  [line addSubview:bulletPointView];
   [line addSubview:instructionLabel];
 
+  // Add constraints for bulletPointView and instructionLabel vertical margins
+  // to make sure that they are as small as possible.
+  NSLayoutConstraint* minimunBulletPointTopMargin =
+      [bulletPointView.topAnchor constraintEqualToAnchor:line.topAnchor
+                                                constant:kVerticalMargin];
+  minimunBulletPointTopMargin.priority = UILayoutPriorityDefaultHigh;
+  NSLayoutConstraint* minimumBulletPointBottomMargin =
+      [bulletPointView.bottomAnchor constraintEqualToAnchor:line.bottomAnchor
+                                                   constant:-kVerticalMargin];
+  minimumBulletPointBottomMargin.priority = UILayoutPriorityDefaultHigh;
+  NSLayoutConstraint* minimunLabelTopMargin =
+      [instructionLabel.topAnchor constraintEqualToAnchor:line.topAnchor
+                                                 constant:kVerticalMargin];
+  minimunLabelTopMargin.priority = UILayoutPriorityDefaultHigh;
+  NSLayoutConstraint* minimumLabelBottomMargin =
+      [instructionLabel.bottomAnchor constraintEqualToAnchor:line.bottomAnchor
+                                                    constant:-kVerticalMargin];
+  minimumLabelBottomMargin.priority = UILayoutPriorityDefaultHigh;
   [NSLayoutConstraint activateConstraints:@[
-    [stepNumberView.leadingAnchor constraintEqualToAnchor:line.leadingAnchor
-                                                 constant:kLeadingMargin],
-    [stepNumberView.centerYAnchor constraintEqualToAnchor:line.centerYAnchor],
+    [bulletPointView.leadingAnchor constraintEqualToAnchor:line.leadingAnchor
+                                                  constant:kLeadingMargin],
+    [bulletPointView.centerYAnchor constraintEqualToAnchor:line.centerYAnchor],
     [instructionLabel.leadingAnchor
-        constraintEqualToAnchor:stepNumberView.trailingAnchor
+        constraintEqualToAnchor:bulletPointView.trailingAnchor
                        constant:kSpacing],
     [instructionLabel.centerYAnchor constraintEqualToAnchor:line.centerYAnchor],
-    [instructionLabel.bottomAnchor constraintEqualToAnchor:line.bottomAnchor
-                                                  constant:-kVerticalMargin],
-    [instructionLabel.topAnchor constraintEqualToAnchor:line.topAnchor
-                                               constant:kVerticalMargin],
+    minimunBulletPointTopMargin, minimumBulletPointBottomMargin,
+    minimunLabelTopMargin, minimumLabelBottomMargin,
+    [bulletPointView.bottomAnchor
+        constraintLessThanOrEqualToAnchor:line.bottomAnchor
+                                 constant:-kVerticalMargin],
+    [bulletPointView.topAnchor
+        constraintGreaterThanOrEqualToAnchor:line.topAnchor
+                                    constant:kVerticalMargin],
+    [instructionLabel.bottomAnchor
+        constraintLessThanOrEqualToAnchor:line.bottomAnchor
+                                 constant:-kVerticalMargin],
+    [instructionLabel.topAnchor
+        constraintGreaterThanOrEqualToAnchor:line.topAnchor
+                                    constant:kVerticalMargin],
     [instructionLabel.trailingAnchor constraintEqualToAnchor:line.trailingAnchor
-                                                    constant:kTrailingMargin]
+                                                    constant:-kTrailingMargin]
   ]];
 
+  line.tag = index;
+  [line
+      addGestureRecognizer:[[UITapGestureRecognizer alloc]
+                               initWithTarget:self
+                                       action:@selector
+                                       (tappedOnALineWithGestureRecognizer:)]];
+  // Don't set the accessibility traits indicating that it is tappable as we do
+  // not actually expect any action, instead, we just want to measure how many
+  // people believe it’s tappable.
   return line;
-}
-
-// Parses a string with an embedded bold part inside, delineated by
-// "BEGIN_BOLD" and "END_BOLD". Returns an attributed string with bold part.
-- (NSAttributedString*)putBoldPartInString:(NSString*)string {
-  StringWithTag parsedString =
-      ParseStringWithTag(string, instruction_view::kInstructionViewBeginBoldTag,
-                         instruction_view::kInstructionViewEndBoldTag);
-
-  NSMutableAttributedString* attributedString =
-      [[NSMutableAttributedString alloc] initWithString:parsedString.string];
-
-  UIFontDescriptor* defaultDescriptor = [UIFontDescriptor
-      preferredFontDescriptorWithTextStyle:UIFontTextStyleSubheadline];
-
-  UIFontDescriptor* boldDescriptor = [[UIFontDescriptor
-      preferredFontDescriptorWithTextStyle:UIFontTextStyleSubheadline]
-      fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
-
-  [attributedString addAttribute:NSFontAttributeName
-                           value:[UIFont fontWithDescriptor:defaultDescriptor
-                                                       size:0.0]
-                           range:NSMakeRange(0, parsedString.string.length)];
-
-  [attributedString addAttribute:NSFontAttributeName
-                           value:[UIFont fontWithDescriptor:boldDescriptor
-                                                       size:0.0]
-                           range:parsedString.range];
-
-  return attributedString;
 }
 
 // Creates a view with a round numbered label in it.
@@ -218,10 +243,17 @@ constexpr CGFloat kIconLabelWidth = 30;
 
     [labelContainer.widthAnchor constraintEqualToConstant:kIconLabelWidth],
     [labelContainer.heightAnchor
-        constraintEqualToAnchor:labelContainer.widthAnchor],
+        constraintEqualToAnchor:stepNumberLabel.heightAnchor],
   ]];
 
   return labelContainer;
+}
+
+// Creates a view with icon in it.
+- (UIView*)createIconView:(UIImage*)icon {
+  UIImageView* iconImageView = [[UIImageView alloc] initWithImage:icon];
+  iconImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  return iconImageView;
 }
 
 // Sets and update the background color of the step number label on
@@ -239,6 +271,11 @@ constexpr CGFloat kIconLabelWidth = 30;
           [UIColor colorNamed:kPrimaryBackgroundColor].CGColor;
       break;
   }
+}
+
+- (void)tappedOnALineWithGestureRecognizer:
+    (UITapGestureRecognizer*)gestureRecognizer {
+  [self.tapListener tappedOnLineNumber:gestureRecognizer.view.tag];
 }
 
 @end

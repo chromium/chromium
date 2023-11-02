@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "url/url_util.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "ui/base/clipboard/clipboard_android.h"
 #endif
 
@@ -72,12 +72,12 @@ ClipboardRecentContentGeneric::GetRecentURLFromClipboard() {
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
   ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
       ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   clipboard->ReadBookmark(&data_dst, nullptr, &gurl_string);
 #else
   clipboard->ReadAsciiText(ui::ClipboardBuffer::kCopyPaste, &data_dst,
                            &gurl_string);
-#endif  // #if defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   base::TrimWhitespaceASCII(gurl_string, base::TrimPositions::TRIM_ALL,
                             &gurl_string);
 
@@ -140,6 +140,27 @@ void ClipboardRecentContentGeneric::GetRecentImageFromClipboard(
   ui::Clipboard::GetForCurrentThread()->ReadPng(
       ui::ClipboardBuffer::kCopyPaste, &data_dst,
       base::BindOnce(&OnGetRecentImageFromClipboard, std::move(callback)));
+}
+
+absl::optional<std::set<ClipboardContentType>>
+ClipboardRecentContentGeneric::GetCachedClipboardContentTypes() {
+  if (GetClipboardContentAge() > MaximumAgeOfClipboard()) {
+    return absl::nullopt;
+  }
+
+  std::set<ClipboardContentType> clipboard_content_types;
+
+  if (HasRecentURLFromClipboard()) {
+    clipboard_content_types.insert(ClipboardContentType::URL);
+  }
+  if (HasRecentTextFromClipboard()) {
+    clipboard_content_types.insert(ClipboardContentType::Text);
+  }
+  if (HasRecentImageFromClipboard()) {
+    clipboard_content_types.insert(ClipboardContentType::Image);
+  }
+
+  return clipboard_content_types;
 }
 
 bool ClipboardRecentContentGeneric::HasRecentImageFromClipboard() {

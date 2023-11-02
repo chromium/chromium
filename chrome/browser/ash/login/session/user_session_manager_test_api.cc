@@ -1,10 +1,10 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
 
-#include "chromeos/login/auth/stub_authenticator_builder.h"
+#include "chromeos/ash/components/login/auth/stub_authenticator_builder.h"
 
 namespace ash {
 namespace test {

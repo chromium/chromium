@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/permissions/permission_actions_history_factory.h"
@@ -15,6 +16,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_uma_util.h"
+#include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -23,6 +25,7 @@
 
 namespace {
 using Decision = PredictionBasedPermissionUiSelector::Decision;
+using PredictionSource = PredictionBasedPermissionUiSelector::PredictionSource;
 }  // namespace
 
 class PredictionBasedPermissionUiSelectorTest : public testing::Test {
@@ -83,10 +86,10 @@ class PredictionBasedPermissionUiSelectorTest : public testing::Test {
 
     return actual_decision.value();
   }
+  std::unique_ptr<base::test::ScopedFeatureList> feature_list_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<base::test::ScopedFeatureList> feature_list_;
   std::unique_ptr<TestingProfile> testing_profile_;
 };
 
@@ -96,9 +99,10 @@ TEST_F(PredictionBasedPermissionUiSelectorTest,
     const char* command_line_value;
     const Decision expected_decision;
   } const kTests[] = {
-      {"very-unlikely", Decision(PredictionBasedPermissionUiSelector::
-                                     QuietUiReason::kPredictedVeryUnlikelyGrant,
-                                 Decision::ShowNoWarning())},
+      {"very-unlikely",
+       Decision(PredictionBasedPermissionUiSelector::QuietUiReason::
+                    kServicePredictedVeryUnlikelyGrant,
+                Decision::ShowNoWarning())},
       {"unlikely", Decision::UseNormalUiAndShowNoWarning()},
       {"neutral", Decision::UseNormalUiAndShowNoWarning()},
       {"likely", Decision::UseNormalUiAndShowNoWarning()},
@@ -149,7 +153,7 @@ TEST_F(PredictionBasedPermissionUiSelectorTest,
   }
 
   // Since there are 4 previous prompts, the prediction service request will be
-  // made and will return a "kPredictedVeryUnlikelyGrant" quiet reason.
+  // made and will return a "kServicePredictedVeryUnlikelyGrant" quiet reason.
   Decision notification_decision = SelectUiToUseAndGetDecision(
       &prediction_selector, permissions::RequestType::kNotifications);
 
@@ -157,11 +161,11 @@ TEST_F(PredictionBasedPermissionUiSelectorTest,
       &prediction_selector, permissions::RequestType::kGeolocation);
 
   EXPECT_EQ(PredictionBasedPermissionUiSelector::QuietUiReason::
-                kPredictedVeryUnlikelyGrant,
+                kServicePredictedVeryUnlikelyGrant,
             notification_decision.quiet_ui_reason);
 
   EXPECT_EQ(PredictionBasedPermissionUiSelector::QuietUiReason::
-                kPredictedVeryUnlikelyGrant,
+                kServicePredictedVeryUnlikelyGrant,
             geolocation_decision.quiet_ui_reason);
 }
 
@@ -210,7 +214,7 @@ TEST_F(PredictionBasedPermissionUiSelectorTest,
   notification_decision = SelectUiToUseAndGetDecision(
       &prediction_selector, permissions::RequestType::kNotifications);
   EXPECT_EQ(PredictionBasedPermissionUiSelector::QuietUiReason::
-                kPredictedVeryUnlikelyGrant,
+                kServicePredictedVeryUnlikelyGrant,
             notification_decision.quiet_ui_reason);
 
   // Geolocation still has too few actions.
@@ -224,39 +228,253 @@ TEST_F(PredictionBasedPermissionUiSelectorTest,
   notification_decision = SelectUiToUseAndGetDecision(
       &prediction_selector, permissions::RequestType::kNotifications);
   EXPECT_EQ(PredictionBasedPermissionUiSelector::QuietUiReason::
-                kPredictedVeryUnlikelyGrant,
+                kServicePredictedVeryUnlikelyGrant,
             notification_decision.quiet_ui_reason);
 
   geolocation_decision = SelectUiToUseAndGetDecision(
       &prediction_selector, permissions::RequestType::kGeolocation);
   EXPECT_EQ(PredictionBasedPermissionUiSelector::QuietUiReason::
-                kPredictedVeryUnlikelyGrant,
+                kServicePredictedVeryUnlikelyGrant,
             geolocation_decision.quiet_ui_reason);
 }
 
-TEST_F(PredictionBasedPermissionUiSelectorTest, HoldbackChanceTakesEffect) {
-  base::test::ScopedCommandLine scoped_command_line;
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      "prediction-service-mock-likelihood", "very-unlikely");
-
+TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUse) {
   PredictionBasedPermissionUiSelector prediction_selector(profile());
 
-  for (const auto type : {permissions::RequestType::kNotifications,
-                          permissions::RequestType::kGeolocation}) {
-    RecordHistoryActions(/*action_count=*/4, type);
+  // If both the quiet UIs are not available we shouldn't be able to use either
+  // of the CPSS servcies.
+  feature_list_->Reset();
+  feature_list_->InitWithFeatures(
+      {
+          features::kPermissionPredictions,
+          features::kPermissionGeolocationPredictions,
+          permissions::features::kPermissionOnDeviceNotificationPredictions,
+      },
+      {
+          features::kQuietNotificationPrompts,
+          permissions::features::kPermissionQuietChip,
+      });
+  EXPECT_EQ(PredictionSource::USE_NONE,
+            prediction_selector.GetPredictionTypeToUse(
+                permissions::RequestType::kNotifications));
+  EXPECT_EQ(PredictionSource::USE_NONE,
+            prediction_selector.GetPredictionTypeToUse(
+                permissions::RequestType::kGeolocation));
 
-    EXPECT_EQ(PredictionBasedPermissionUiSelector::QuietUiReason::
-                  kPredictedVeryUnlikelyGrant,
-              SelectUiToUseAndGetDecision(&prediction_selector, type)
-                  .quiet_ui_reason);
-  }
+  // If permission quiet chip is disabled cpss should not work for geolocation.
+  feature_list_->Reset();
+  feature_list_->InitWithFeatures(
+      {
+          features::kPermissionPredictions,
+          features::kPermissionGeolocationPredictions,
+          permissions::features::kPermissionOnDeviceNotificationPredictions,
+          features::kQuietNotificationPrompts,
+      },
+      {
+          permissions::features::kPermissionQuietChip,
+      });
+  EXPECT_EQ(PredictionSource::USE_ANY,
+            prediction_selector.GetPredictionTypeToUse(
+                permissions::RequestType::kNotifications));
+  EXPECT_EQ(PredictionSource::USE_NONE,
+            prediction_selector.GetPredictionTypeToUse(
+                permissions::RequestType::kGeolocation));
 
-  InitFeatureList("1" /* holdback_chance_string */);
+  // All CPSS related flags enabled.
+  feature_list_->Reset();
+  feature_list_->InitWithFeatures(
+      {
+          features::kPermissionPredictions,
+          features::kPermissionGeolocationPredictions,
+          permissions::features::kPermissionOnDeviceNotificationPredictions,
+          features::kQuietNotificationPrompts,
+          permissions::features::kPermissionQuietChip,
+      },
+      {});
+  EXPECT_EQ(PredictionSource::USE_ANY,
+            prediction_selector.GetPredictionTypeToUse(
+                permissions::RequestType::kNotifications));
+  // On device only works for notification permission request.
+  EXPECT_EQ(PredictionSource::USE_SERVER_SIDE,
+            prediction_selector.GetPredictionTypeToUse(
+                permissions::RequestType::kGeolocation));
 
-  for (const auto type : {permissions::RequestType::kNotifications,
-                          permissions::RequestType::kGeolocation}) {
-    EXPECT_EQ(Decision::UseNormalUi(),
-              SelectUiToUseAndGetDecision(&prediction_selector, type)
-                  .quiet_ui_reason);
-  }
+  // Server side disabled but on device enabled.
+  feature_list_->Reset();
+  feature_list_->InitWithFeatures(
+      {
+          permissions::features::kPermissionOnDeviceNotificationPredictions,
+          features::kQuietNotificationPrompts,
+          permissions::features::kPermissionQuietChip,
+      },
+      {
+          features::kPermissionPredictions,
+          features::kPermissionGeolocationPredictions,
+      });
+  EXPECT_EQ(PredictionSource::USE_ONDEVICE,
+            prediction_selector.GetPredictionTypeToUse(
+                permissions::RequestType::kNotifications));
+  EXPECT_EQ(PredictionSource::USE_NONE,
+            prediction_selector.GetPredictionTypeToUse(
+                permissions::RequestType::kGeolocation));
+
+  // Server side enabled but on device disabled.
+  feature_list_->Reset();
+  feature_list_->InitWithFeatures(
+      {
+          features::kQuietNotificationPrompts,
+          features::kPermissionGeolocationPredictions,
+          features::kPermissionPredictions,
+          permissions::features::kPermissionQuietChip,
+      },
+      {
+          permissions::features::kPermissionOnDeviceNotificationPredictions,
+      });
+  EXPECT_EQ(PredictionSource::USE_SERVER_SIDE,
+            prediction_selector.GetPredictionTypeToUse(
+                permissions::RequestType::kNotifications));
+  EXPECT_EQ(PredictionSource::USE_SERVER_SIDE,
+            prediction_selector.GetPredictionTypeToUse(
+                permissions::RequestType::kGeolocation));
+}
+
+TEST_F(PredictionBasedPermissionUiSelectorTest, HoldbackHistogramTest) {
+  PredictionBasedPermissionUiSelector prediction_selector(profile());
+  base::HistogramTester histogram_tester;
+
+  // No holdback.
+  feature_list_->Reset();
+  feature_list_->InitWithFeaturesAndParameters(
+      {
+          {features::kPermissionPredictions,
+           {{features::kPermissionPredictionsHoldbackChance.name, "0"}}},
+          {features::kPermissionGeolocationPredictions,
+           {{features::kPermissionGeolocationPredictionsHoldbackChance.name,
+             "0"}}},
+          {permissions::features::kPermissionOnDeviceNotificationPredictions,
+           {{permissions::feature_params::
+                 kPermissionOnDeviceNotificationPredictionsHoldbackChance.name,
+             "0"}}},
+      },
+      {});
+  EXPECT_EQ(false, prediction_selector.ShouldHoldBack(
+                       /*is_on_device=*/true,
+                       permissions::RequestType::kNotifications));
+  histogram_tester.ExpectBucketCount(
+      "Permissions.OnDevicePredictionService.Response.Notifications",
+      /*sample=*/false, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Permissions.PredictionService.Response.Notifications",
+      /*sample=*/false, /*expected_count=*/0);
+  histogram_tester.ExpectBucketCount(
+      "Permissions.PredictionService.Response.Geolocation",
+      /*sample=*/false, /*expected_count=*/0);
+
+  EXPECT_EQ(false, prediction_selector.ShouldHoldBack(
+                       /*is_on_device=*/false,
+                       permissions::RequestType::kNotifications));
+  histogram_tester.ExpectBucketCount(
+      "Permissions.OnDevicePredictionService.Response.Notifications",
+      /*sample=*/false, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Permissions.PredictionService.Response.Notifications",
+      /*sample=*/false, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Permissions.PredictionService.Response.Geolocation",
+      /*sample=*/false, /*expected_count=*/0);
+
+  EXPECT_EQ(false, prediction_selector.ShouldHoldBack(
+                       /*is_on_device=*/false,
+                       permissions::RequestType::kGeolocation));
+  histogram_tester.ExpectBucketCount(
+      "Permissions.OnDevicePredictionService.Response.Notifications",
+      /*sample=*/false, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Permissions.PredictionService.Response.Notifications",
+      /*sample=*/false, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Permissions.PredictionService.Response.Geolocation",
+      /*sample=*/false, /*expected_count=*/1);
+
+  // 100% Holdback chance.
+  feature_list_->Reset();
+  feature_list_->InitWithFeaturesAndParameters(
+      {
+          {features::kPermissionPredictions,
+           {{features::kPermissionPredictionsHoldbackChance.name, "1"}}},
+          {features::kPermissionGeolocationPredictions,
+           {{features::kPermissionGeolocationPredictionsHoldbackChance.name,
+             "1"}}},
+          {permissions::features::kPermissionOnDeviceNotificationPredictions,
+           {{permissions::feature_params::
+                 kPermissionOnDeviceNotificationPredictionsHoldbackChance.name,
+             "1"}}},
+      },
+      {});
+
+  EXPECT_EQ(true, prediction_selector.ShouldHoldBack(
+                      /*is_on_device=*/true,
+                      permissions::RequestType::kNotifications));
+  histogram_tester.ExpectBucketCount(
+      "Permissions.OnDevicePredictionService.Response.Notifications",
+      /*sample=*/true, /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Permissions.OnDevicePredictionService.Response.Notifications",
+      /*count=*/2);
+  histogram_tester.ExpectBucketCount(
+      "Permissions.PredictionService.Response.Notifications",
+      /*sample=*/true, /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Response.Notifications",
+      /*count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Permissions.PredictionService.Response.Geolocation",
+      /*sample=*/true, /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Response.Geolocation",
+      /*count=*/1);
+
+  EXPECT_EQ(true, prediction_selector.ShouldHoldBack(
+                      /*is_on_device=*/false,
+                      permissions::RequestType::kNotifications));
+  histogram_tester.ExpectBucketCount(
+      "Permissions.OnDevicePredictionService.Response.Notifications",
+      /*sample=*/true, /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Permissions.OnDevicePredictionService.Response.Notifications",
+      /*count=*/2);
+  histogram_tester.ExpectBucketCount(
+      "Permissions.PredictionService.Response.Notifications",
+      /*sample=*/true, /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Response.Notifications",
+      /*count=*/2);
+  histogram_tester.ExpectBucketCount(
+      "Permissions.PredictionService.Response.Geolocation",
+      /*sample=*/true, /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Response.Geolocation",
+      /*count=*/1);
+
+  EXPECT_EQ(true, prediction_selector.ShouldHoldBack(
+                      /*is_on_device=*/false,
+                      permissions::RequestType::kGeolocation));
+  histogram_tester.ExpectBucketCount(
+      "Permissions.OnDevicePredictionService.Response.Notifications",
+      /*sample=*/true, /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Permissions.OnDevicePredictionService.Response.Notifications",
+      /*count=*/2);
+  histogram_tester.ExpectBucketCount(
+      "Permissions.PredictionService.Response.Notifications",
+      /*sample=*/true, /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Response.Notifications",
+      /*count=*/2);
+  histogram_tester.ExpectBucketCount(
+      "Permissions.PredictionService.Response.Geolocation",
+      /*sample=*/true, /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Response.Geolocation",
+      /*count=*/2);
 }

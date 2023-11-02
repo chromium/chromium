@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,9 @@
 @interface SyncScreenCoordinator : InterruptibleChromeCoordinator
 
 // Initiates a SyncScreenCoordinator with
-// |navigationController| to present the view;
-// |browser| to provide the browser;
-// |delegate| to handle user action.
+// `navigationController` to present the view;
+// `browser` to provide the browser;
+// `delegate` to handle user action.
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser

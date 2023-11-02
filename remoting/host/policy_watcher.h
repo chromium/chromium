@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,18 +8,18 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/policy_service.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/registry.h"
 #endif
 
 namespace base {
-class DictionaryValue;
 class SingleThreadTaskRunner;
 }  // namespace base
 
@@ -37,7 +37,7 @@ namespace remoting {
 class PolicyWatcher : public policy::PolicyService::Observer {
  public:
   // Called first with all policies, and subsequently with any changed policies.
-  typedef base::RepeatingCallback<void(std::unique_ptr<base::DictionaryValue>)>
+  typedef base::RepeatingCallback<void(base::Value::Dict)>
       PolicyUpdatedCallback;
 
   // Called after detecting malformed policies.
@@ -70,15 +70,15 @@ class PolicyWatcher : public policy::PolicyService::Observer {
   // Return the current policies. If the policies have not yet been read, or if
   // an error occurred, the returned dictionary will be empty.  The dictionary
   // returned is the union of |platform_policies_| and |default_values_|.
-  std::unique_ptr<base::DictionaryValue> GetEffectivePolicies();
+  base::Value::Dict GetEffectivePolicies();
 
   // Return the set of policies which have been explicitly set on the machine.
   // If the policies have not yet been read, no policies have been set, or if
   // an error occurred, the returned dictionary will be empty.
-  std::unique_ptr<base::DictionaryValue> GetPlatformPolicies();
+  base::Value::Dict GetPlatformPolicies();
 
   // Return the default policy values.
-  static std::unique_ptr<base::DictionaryValue> GetDefaultPolicies();
+  static base::Value::Dict GetDefaultPolicies();
 
   // Specify a |policy_service| to borrow (on Chrome OS, from the browser
   // process). PolicyWatcher must be used on the thread on which it is created.
@@ -118,17 +118,17 @@ class PolicyWatcher : public policy::PolicyService::Observer {
   //
   // - Returns false if |dict| is invalid, e.g. contains mistyped policy values.
   // - Returns true if |dict| was valid or got normalized.
-  bool NormalizePolicies(base::DictionaryValue* dict);
+  bool NormalizePolicies(base::Value* dict);
 
   // Converts each deprecated policy to its replacement if and only if the
   // replacement policy is not set, and removes deprecated policied from dict.
-  void HandleDeprecatedPolicies(base::DictionaryValue* dict);
+  void HandleDeprecatedPolicies(base::Value::Dict* dict);
 
   // Stores |new_policies| into |effective_policies_|.  Returns dictionary with
   // items from |new_policies| that are different from the old
   // |effective_policies_|.
-  std::unique_ptr<base::DictionaryValue> StoreNewAndReturnChangedPolicies(
-      std::unique_ptr<base::DictionaryValue> new_policies);
+  base::Value::Dict StoreNewAndReturnChangedPolicies(
+      base::Value::Dict new_policies);
 
   // Signals policy error to the registered |PolicyErrorCallback|.
   void SignalPolicyError();
@@ -156,7 +156,7 @@ class PolicyWatcher : public policy::PolicyService::Observer {
                        const policy::PolicyMap& current) override;
   void OnPolicyServiceInitialized(policy::PolicyDomain domain) override;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void WatchForRegistryChanges();
 #endif
 
@@ -165,15 +165,15 @@ class PolicyWatcher : public policy::PolicyService::Observer {
 
   // The combined set of policies (|platform_policies_| + |default_values_|)
   // which define the effective policy set.
-  std::unique_ptr<base::DictionaryValue> effective_policies_;
+  base::Value::Dict effective_policies_;
 
   // The policies which have had their values explicitly set via a policy entry.
-  std::unique_ptr<base::DictionaryValue> platform_policies_;
+  base::Value::Dict platform_policies_;
 
   // The set of policy values to use if a policy has not been explicitly set.
-  std::unique_ptr<base::DictionaryValue> default_values_;
+  base::Value::Dict default_values_;
 
-  policy::PolicyService* policy_service_;
+  raw_ptr<policy::PolicyService> policy_service_;
 
   // Order of fields below is important to ensure destruction takes object
   // dependencies into account:
@@ -183,7 +183,7 @@ class PolicyWatcher : public policy::PolicyService::Observer {
   std::unique_ptr<policy::ConfigurationPolicyProvider> owned_policy_provider_;
   std::unique_ptr<policy::PolicyService> owned_policy_service_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // |policy_key_| relies on |policy_service_| to notify the host of policy
   // changes. Make sure |policy_key_| is destroyed to prevent any notifications
   // from firing while the above objects are being torn down.

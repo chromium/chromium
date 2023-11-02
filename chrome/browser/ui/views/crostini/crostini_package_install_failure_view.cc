@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -58,7 +57,6 @@ CrostiniPackageInstallFailureView::CrostiniPackageInstallFailureView(
   AddChildView(error_box);
 
   set_close_on_deactivate(true);
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::CROSTINI_FORCE_CLOSE);
 }
 
 CrostiniPackageInstallFailureView::~CrostiniPackageInstallFailureView() =

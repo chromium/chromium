@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,17 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
-#include "ash/grit/ash_help_app_resources.h"
+#include "ash/webui/grit/ash_help_app_resources.h"
 #include "ash/webui/help_app_ui/url_constants.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_styles.h"
 #include "ui/display/screen.h"
 
 namespace ash {
@@ -23,9 +26,9 @@ namespace {
 constexpr gfx::Size HELP_DEFAULT_SIZE(960, 600);
 }  // namespace
 
-std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForHelpWebApp() {
-  std::unique_ptr<WebApplicationInfo> info =
-      std::make_unique<WebApplicationInfo>();
+std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForHelpWebApp() {
+  std::unique_ptr<WebAppInstallInfo> info =
+      std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL(kChromeUIHelpAppURL);
   info->scope = GURL(kChromeUIHelpAppURL);
 
@@ -38,10 +41,21 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForHelpWebApp() {
 
       },
       *info);
-  info->theme_color = 0xffffffff;
-  info->background_color = 0xffffffff;
+
+  if (chromeos::features::IsDarkLightModeEnabled()) {
+    info->theme_color = cros_styles::ResolveColor(
+        cros_styles::ColorName::kBgColor, /*is_dark_mode=*/false);
+    info->dark_mode_theme_color = cros_styles::ResolveColor(
+        cros_styles::ColorName::kBgColor, /*is_dark_mode=*/true);
+    info->background_color = info->theme_color;
+    info->dark_mode_background_color = info->dark_mode_theme_color;
+  } else {
+    info->theme_color = 0xffffffff;
+    info->background_color = 0xffffffff;
+  }
+
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
-  info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
+  info->user_display_mode = web_app::UserDisplayMode::kStandalone;
   return info;
 }
 
@@ -54,10 +68,10 @@ gfx::Rect GetDefaultBoundsForHelpApp(Browser*) {
 }
 
 HelpAppSystemAppDelegate::HelpAppSystemAppDelegate(Profile* profile)
-    : web_app::SystemWebAppDelegate(web_app::SystemAppType::HELP,
-                                    "Help",
-                                    GURL("chrome://help-app/pwa.html"),
-                                    profile) {}
+    : ash::SystemWebAppDelegate(ash::SystemWebAppType::HELP,
+                                "Help",
+                                GURL("chrome://help-app/pwa.html"),
+                                profile) {}
 
 gfx::Rect HelpAppSystemAppDelegate::GetDefaultBounds(Browser* browser) const {
   return GetDefaultBoundsForHelpApp(browser);
@@ -75,10 +89,10 @@ std::vector<int> HelpAppSystemAppDelegate::GetAdditionalSearchTerms() const {
   return {IDS_GENIUS_APP_NAME, IDS_HELP_APP_PERKS, IDS_HELP_APP_OFFERS};
 }
 
-absl::optional<web_app::SystemAppBackgroundTaskInfo>
+absl::optional<ash::SystemWebAppBackgroundTaskInfo>
 HelpAppSystemAppDelegate::GetTimerInfo() const {
   if (base::FeatureList::IsEnabled(features::kHelpAppBackgroundPage)) {
-    return web_app::SystemAppBackgroundTaskInfo(
+    return ash::SystemWebAppBackgroundTaskInfo(
         absl::nullopt, GURL("chrome://help-app/background"),
         /*open_immediately=*/true);
   } else {
@@ -86,7 +100,7 @@ HelpAppSystemAppDelegate::GetTimerInfo() const {
   }
 }
 
-std::unique_ptr<WebApplicationInfo> HelpAppSystemAppDelegate::GetWebAppInfo()
+std::unique_ptr<WebAppInstallInfo> HelpAppSystemAppDelegate::GetWebAppInfo()
     const {
   return CreateWebAppInfoForHelpWebApp();
 }

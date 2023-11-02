@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 
@@ -58,7 +57,6 @@ public class JankReportingRunnableTest {
         startReportingRunnable.run();
 
         metricsStore.addFrameMeasurement(1_000_000L, 1_000L, 1);
-        LibraryLoader.getInstance().setLibrariesLoadedForNativeTests();
 
         JankReportingRunnable stopReportingRunnable = new JankReportingRunnable(
                 metricsStore, JankScenario.TAB_SWITCHER, /* isStartingTracking= */ false);
@@ -80,8 +78,6 @@ public class JankReportingRunnableTest {
         JankReportingRunnable startReportingRunnable = new JankReportingRunnable(
                 metricsStore, JankScenario.TAB_SWITCHER, /* isStartingTracking= */ true);
         startReportingRunnable.run();
-
-        LibraryLoader.getInstance().setLibrariesLoadedForNativeTests();
 
         JankReportingRunnable stopReportingRunnable = new JankReportingRunnable(
                 metricsStore, JankScenario.TAB_SWITCHER, /* isStartingTracking= */ false);

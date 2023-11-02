@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,15 +9,13 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/per_web_ui_browser_interface_broker.h"
 
 class GURL;
-
-namespace base {
-class ListValue;
-}
 
 namespace content {
 
@@ -40,7 +38,7 @@ class CONTENT_EXPORT WebUIController {
   // Return true if the message handling was overridden.
   virtual bool OverrideHandleWebUIMessage(const GURL& source_url,
                                           const std::string& message,
-                                          const base::ListValue& args);
+                                          const base::Value::List& args);
 
   // Called when a WebUI RenderFrame is created.  This is *not* called for every
   // page load because in some cases a RenderFrame will be reused, for example
@@ -90,7 +88,7 @@ class CONTENT_EXPORT WebUIController {
   PerWebUIBrowserInterfaceBroker* broker_for_testing() { return broker_.get(); }
 
  private:
-  WebUI* web_ui_;
+  raw_ptr<WebUI> web_ui_;
 
   // The interface broker that handles Mojo.bindInterface requests from the
   // renderer.
@@ -100,10 +98,10 @@ class CONTENT_EXPORT WebUIController {
 // This macro declares a static variable inside the class that inherits from
 // WebUIController. The address of the static variable is used as the unique
 // Type for the subclass.
-#define WEB_UI_CONTROLLER_TYPE_DECL()            \
-  static constexpr int kWebUIControllerType = 0; \
-  Type GetType() final;                          \
-  friend class content::WebUIController;         \
+#define WEB_UI_CONTROLLER_TYPE_DECL()        \
+  static const int kWebUIControllerType = 0; \
+  Type GetType() final;                      \
+  friend class content::WebUIController;     \
   friend class content::WebUIBrowserInterfaceBrokerRegistry
 
 // This macro instantiates the static variable declared by the previous macro.

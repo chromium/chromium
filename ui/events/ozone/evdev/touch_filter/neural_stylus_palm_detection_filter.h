@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,23 +64,25 @@ class COMPONENT_EXPORT(EVDEV) NeuralStylusPalmDetectionFilter
  private:
   void FindNearestNeighborsWithin(
       int neighbor_count,
+      unsigned long neighbor_min_sample_count,
       float max_distance,
       const PalmFilterStroke& stroke,
       std::vector<std::pair<float, int>>* nearest_strokes) const;
   void FindBiggestNeighborsWithin(
       int neighbor_count,
-      unsigned long min_sample_count,
+      unsigned long neighbor_min_sample_count,
       float max_distance,
       const PalmFilterStroke& stroke,
       std::vector<std::pair<float, int>>* biggest_strokes) const;
 
   bool DetectSpuriousStroke(const std::vector<float>& features,
-                            int tracking_id,
                             float threshold) const;
   // Extracts the feature vector for the specified stroke.
   std::vector<float> ExtractFeatures(int tracking_id) const;
   void AppendFeatures(const PalmFilterStroke& stroke,
                       std::vector<float>* features) const;
+  void AppendResampledFeatures(const PalmFilterStroke& stroke,
+                               std::vector<float>* features) const;
   void AppendFeaturesAsNeighbor(const PalmFilterStroke& stroke,
                                 float distance,
                                 std::vector<float>* features) const;

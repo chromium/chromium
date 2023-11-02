@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/autofill_assistant/browser/action_value.pb.h"
@@ -59,7 +60,7 @@ class SendKeyboardInputWorker : public WebControllerWorker {
   void OnKeyEventDone(const MessageDispatcher::ReplyStatus& reply_status,
                       std::unique_ptr<input::DispatchKeyEventResult> result);
 
-  DevtoolsClient* const devtools_client_;
+  const raw_ptr<DevtoolsClient> devtools_client_;
   Callback callback_;
   base::TimeDelta key_press_delay_;
   std::string frame_id_;

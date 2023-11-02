@@ -1,11 +1,11 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef GPU_COMMAND_BUFFER_CLIENT_RASTER_IMPLEMENTATION_GLES_H_
 #define GPU_COMMAND_BUFFER_CLIENT_RASTER_IMPLEMENTATION_GLES_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/client/client_font_manager.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/raster_interface.h"
@@ -79,6 +79,7 @@ class RASTER_EXPORT RasterImplementationGLES : public RasterInterface {
   void ConvertYUVAMailboxesToRGB(
       const gpu::Mailbox& dest_mailbox,
       SkYUVColorSpace planes_yuv_color_space,
+      const SkColorSpace* planes_rgb_color_space,
       SkYUVAInfo::PlaneConfig plane_config,
       SkYUVAInfo::Subsampling subsampling,
       const gpu::Mailbox yuva_plane_mailboxes[]) override;
@@ -90,11 +91,12 @@ class RASTER_EXPORT RasterImplementationGLES : public RasterInterface {
                                   const gpu::Mailbox& source_mailbox) override;
 
   // OOP-Raster
-  void BeginRasterCHROMIUM(GLuint sk_color,
+  void BeginRasterCHROMIUM(SkColor4f sk_color_4f,
                            GLboolean needs_clear,
                            GLuint msaa_sample_count,
                            MsaaMode msaa_mode,
                            GLboolean can_use_lcd_text,
+                           GLboolean visible,
                            const gfx::ColorSpace& color_space,
                            const GLbyte* mailbox) override;
   void RasterCHROMIUM(const cc::DisplayItemList* list,
@@ -123,7 +125,7 @@ class RASTER_EXPORT RasterImplementationGLES : public RasterInterface {
       const SkImageInfo& dst_info,
       GLuint dst_row_bytes,
       unsigned char* out,
-      base::OnceCallback<void(GrSurfaceOrigin, bool)> readback_done) override;
+      base::OnceCallback<void(bool)> readback_done) override;
 
   void ReadbackYUVPixelsAsync(
       const gpu::Mailbox& source_mailbox,
@@ -176,11 +178,9 @@ class RASTER_EXPORT RasterImplementationGLES : public RasterInterface {
 
  private:
   GLHelper* GetGLHelper();
-  void OnReadARGBPixelsAsync(
-      GLuint texture_id,
-      base::OnceCallback<void(GrSurfaceOrigin, bool)> callback,
-      GrSurfaceOrigin result_origin,
-      bool success);
+  void OnReadARGBPixelsAsync(GLuint texture_id,
+                             base::OnceCallback<void(bool)> callback,
+                             bool success);
   void OnReadYUVPixelsAsync(GLuint copy_texture_id,
                             base::OnceCallback<void()> on_release_mailbox,
                             base::OnceCallback<void(bool)> readback_done,
@@ -188,8 +188,8 @@ class RASTER_EXPORT RasterImplementationGLES : public RasterInterface {
   void OnReleaseMailbox(GLuint shared_texture_id,
                         base::OnceCallback<void()> release_mailbox);
 
-  gles2::GLES2Interface* gl_;
-  ContextSupport* context_support_;
+  raw_ptr<gles2::GLES2Interface> gl_;
+  raw_ptr<ContextSupport> context_support_;
   std::unique_ptr<GLHelper> gl_helper_;
   base::WeakPtrFactory<RasterImplementationGLES> weak_ptr_factory_{this};
 };

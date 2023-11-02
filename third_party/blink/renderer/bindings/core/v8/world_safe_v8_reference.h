@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -70,8 +70,8 @@ class WorldSafeV8Reference final {
       WorldSafeV8ReferenceInternal::MaybeCheckCreationContextWorld(
           *world_.get(), value);
     } else if (value->IsObject()) {
-      ScriptState* script_state =
-          ScriptState::From(value.template As<v8::Object>()->CreationContext());
+      ScriptState* script_state = ScriptState::From(
+          value.template As<v8::Object>()->GetCreationContextChecked());
       world_ = &script_state->World();
     }
   }
@@ -144,5 +144,39 @@ class WorldSafeV8Reference final {
 };
 
 }  // namespace blink
+
+namespace WTF {
+
+template <typename V8Type>
+struct VectorTraits<blink::WorldSafeV8Reference<V8Type>>
+    : VectorTraitsBase<blink::WorldSafeV8Reference<V8Type>> {
+  STATIC_ONLY(VectorTraits);
+
+  static constexpr bool kCanInitializeWithMemset =
+      VectorTraits<
+          blink::TraceWrapperV8Reference<V8Type>>::kCanInitializeWithMemset &&
+      VectorTraits<scoped_refptr<const blink::DOMWrapperWorld>>::
+          kCanInitializeWithMemset;
+  static constexpr bool kCanClearUnusedSlotsWithMemset =
+      VectorTraits<blink::TraceWrapperV8Reference<V8Type>>::
+          kCanClearUnusedSlotsWithMemset &&
+      VectorTraits<scoped_refptr<const blink::DOMWrapperWorld>>::
+          kCanClearUnusedSlotsWithMemset;
+  static constexpr bool kCanCopyWithMemcpy =
+      VectorTraits<
+          blink::TraceWrapperV8Reference<V8Type>>::kCanCopyWithMemcpy &&
+      VectorTraits<
+          scoped_refptr<const blink::DOMWrapperWorld>>::kCanCopyWithMemcpy;
+  static constexpr bool kCanMoveWithMemcpy =
+      VectorTraits<
+          blink::TraceWrapperV8Reference<V8Type>>::kCanMoveWithMemcpy &&
+      VectorTraits<
+          scoped_refptr<const blink::DOMWrapperWorld>>::kCanMoveWithMemcpy;
+
+  static constexpr bool kCanTraceConcurrently = VectorTraits<
+      blink::TraceWrapperV8Reference<V8Type>>::kCanTraceConcurrently;
+};
+
+}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_WORLD_SAFE_V8_REFERENCE_H_

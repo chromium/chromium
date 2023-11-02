@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,13 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/components/multidevice/remote_device_ref.h"
-#include "chromeos/components/multidevice/software_feature.h"
-#include "chromeos/components/multidevice/software_feature_state.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/components/multidevice/remote_device_ref.h"
+#include "chromeos/ash/components/multidevice/software_feature.h"
+#include "chromeos/ash/components/multidevice/software_feature_state.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 namespace {
 
@@ -24,7 +24,6 @@ using multidevice::RemoteDeviceRef;
 using multidevice::RemoteDeviceRefList;
 using multidevice::SoftwareFeature;
 using multidevice::SoftwareFeatureState;
-
 using multidevice_setup::mojom::Feature;
 using multidevice_setup::mojom::FeatureState;
 using multidevice_setup::mojom::HostStatus;
@@ -132,7 +131,7 @@ FeatureStatusProviderImpl::FeatureStatusProviderImpl(
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
     secure_channel::ConnectionManager* connection_manager,
     session_manager::SessionManager* session_manager,
-    PowerManagerClient* power_manager_client)
+    chromeos::PowerManagerClient* power_manager_client)
     : device_sync_client_(device_sync_client),
       multidevice_setup_client_(multidevice_setup_client),
       connection_manager_(connection_manager),
@@ -164,24 +163,12 @@ FeatureStatusProviderImpl::~FeatureStatusProviderImpl() {
 }
 
 FeatureStatus FeatureStatusProviderImpl::GetStatus() const {
+  PA_LOG(VERBOSE) << __func__ << ": status = " << *status_;
   return *status_;
 }
 
 void FeatureStatusProviderImpl::OnReady() {
   UpdateStatus();
-
-  // The status may change a few times before initialization is
-  // complete. Before the login status is recorded, all asynchronous
-  // action should be complete. Note that scheduling
-  // RecordFeatureStatusOnLogin() with BEST_EFFORT sooner (e.g in the
-  // constructor) may yield an incorrect metric, because there may be many
-  // cycles between the constructor being called and |device_sync_client_| being
-  // ready, allowing tasks posted even with BEST_EFFORT to succeed before
-  // initialization.
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&FeatureStatusProviderImpl::RecordFeatureStatusOnLogin,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void FeatureStatusProviderImpl::OnNewDevicesSynced() {
@@ -243,9 +230,6 @@ void FeatureStatusProviderImpl::UpdateStatus() {
   *status_ = computed_status;
   NotifyStatusChanged();
 
-  if (!is_login_status_metric_recorded_)
-    return;
-
   UMA_HISTOGRAM_ENUMERATION("PhoneHub.Adoption.FeatureStatusChangesSinceLogin",
                             GetStatus());
 }
@@ -301,12 +285,6 @@ bool FeatureStatusProviderImpl::IsBluetoothOn() const {
   return bluetooth_adapter_->IsPresent() && bluetooth_adapter_->IsPowered();
 }
 
-void FeatureStatusProviderImpl::RecordFeatureStatusOnLogin() {
-  UMA_HISTOGRAM_ENUMERATION("PhoneHub.Adoption.LoginFeatureStatus",
-                            GetStatus());
-  is_login_status_metric_recorded_ = true;
-}
-
 void FeatureStatusProviderImpl::SuspendImminent(
     power_manager::SuspendImminent::Reason reason) {
   PA_LOG(INFO) << "Device is suspending";
@@ -321,4 +299,4 @@ void FeatureStatusProviderImpl::SuspendDone(base::TimeDelta sleep_duration) {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

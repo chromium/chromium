@@ -1,9 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/theme_profile_key.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
@@ -18,7 +19,7 @@ class ProfileTracker : public ProfileObserver {
  public:
   explicit ProfileTracker(Profile* profile) : profile_(profile) {
     if (profile_)
-      observation_.Observe(profile_);
+      observation_.Observe(profile_.get());
   }
   ~ProfileTracker() override = default;
 
@@ -30,7 +31,7 @@ class ProfileTracker : public ProfileObserver {
   Profile* profile() { return profile_; }
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   base::ScopedObservation<Profile, ProfileObserver> observation_{this};
 };
 

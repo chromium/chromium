@@ -1,13 +1,18 @@
 <style include="diagnostics-shared">
   .device {
-    border-bottom: 1px solid var(--google-grey-200);
+    border-bottom: 1px solid var(--cros-separator-color);
     display: flex;
-    padding: 16px 20px;
+    padding: 12px 20px;
   }
 
   .device iron-icon {
-    @apply --diagnostics-card-icon;
-    margin-right: 20px;
+    --iron-icon-fill-color: var(--cros-color-prominent);
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
+    background-color: var(--cros-highlight-color);
+    border-radius: 50%;
+    margin-inline-end: 28px;
+    padding: 8px;
   }
 
   .device-body {
@@ -17,11 +22,11 @@
   }
 
   .device-name {
-    color: var(--diagnostics-data-point-title-color);
+    color: var(--cros-text-color-primary);
   }
 
   .device-description {
-    color: var(--diagnostics-data-point-subtitle-color);
+    color: var(--cros-text-color-secondary);
   }
 </style>
 <diagnostics-card-frame>

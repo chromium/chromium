@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,16 +16,14 @@ struct Color {
 
 enum Eye {
   LEFT = 1,
-  RIGHT = 2
+  RIGHT = 2,
+  NONE = 3
 };
 
-struct SubmittedFrameData {
+struct ViewData {
   Color color;
-
   Eye eye;
-
   gfx.mojom.Rect viewport;
-  gfx.mojom.Size image_size;
 };
 
 struct PoseFrameData {
@@ -102,6 +100,7 @@ enum InteractionProfileType {
   kSamsungOdyssey,
   kHPReverbG2,
   kHandSelectGrasp,
+  kViveCosmos,
   kInvalid,
 };
 
@@ -119,8 +118,11 @@ struct EventData {
 // underlying runtimes, who may make these queries/notifications synchronously.
 interface XRTestHook {
   // Notifies the test anytime the XR runtime receives a frame with the data
-  // that was submitted.
-  [Sync] OnFrameSubmitted(SubmittedFrameData frame_data) => ();
+  // that was submitted. Should only be called once per frame.
+  // frame_data is an array of all the views that are active in the frame. This
+  // is generally the left and right eye view, but may contain additional
+  // secondary views as well if secondary view configurations are enabled.
+  [Sync] OnFrameSubmitted(array<ViewData> frame_data) => ();
 
   // Called by the XR runtime to retrieve the XR device's configuration set by
   // the test.
@@ -153,6 +155,9 @@ interface XRTestHook {
 
   // Called by the OpenXR test to simulate runtime events.
   [Sync] WaitGetEventData() => (EventData data);
+
+  // Used to indicate if the Fake Runtime would allow creating any session.
+  [Sync] WaitGetCanCreateSession() => (bool can_create_session);
 };
 
 // Interface exposed by IsolatedXRService to allow browser tests to hook VR APIs

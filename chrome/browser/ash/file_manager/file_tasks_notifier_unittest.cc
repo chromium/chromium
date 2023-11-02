@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/drivefs/mojom/drivefs.mojom-test-utils.h"
-#include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/scoped_observation.h"
@@ -17,6 +15,8 @@
 #include "chrome/browser/ash/file_manager/file_tasks_observer.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-test-utils.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "components/drive/file_errors.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/fake_download_item.h"
@@ -86,7 +86,7 @@ class MockFileTasksObserver : public file_tasks::FileTasksObserver {
   MOCK_METHOD2(OnFilesOpenedImpl,
                void(const base::FilePath& path, OpenType open_type));
 
-  void OnFilesOpened(const std::vector<FileOpenEvent>& opens) {
+  void OnFilesOpened(const std::vector<FileOpenEvent>& opens) override {
     ASSERT_TRUE(!opens.empty());
     for (auto& open : opens) {
       OnFilesOpenedImpl(open.path, open.open_type);
@@ -129,13 +129,15 @@ class FileTasksNotifierTest : public testing::Test {
   FileTasksNotifierTest() = default;
 
   void SetUp() override {
-    profile_ = std::make_unique<TestingProfile>();
+    // crbug.com/1301822 Revoke external file systems before use.
+    auto* mount_points = storage::ExternalMountPoints::GetSystemInstance();
+    mount_points->RevokeAllFileSystems();
 
+    profile_ = std::make_unique<TestingProfile>();
     notifier_ = std::make_unique<FileTasksNotifierForTest>(
         profile_.get(), drivefs_receiver_.BindNewPipeAndPassRemote());
     observation_ = std::make_unique<MockFileTasksObserver>(notifier_.get());
 
-    auto* mount_points = storage::ExternalMountPoints::GetSystemInstance();
     my_files_ = util::GetMyFilesFolderForProfile(profile_.get());
     ASSERT_TRUE(base::CreateDirectory(my_files_));
     base::WriteFile(my_files_.Append("file"), "data", 4);

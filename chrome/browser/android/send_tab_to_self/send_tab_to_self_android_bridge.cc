@@ -1,25 +1,22 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <string>
 #include <vector>
 
+#include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/time/time.h"
 #include "chrome/browser/android/send_tab_to_self/android_notification_handler.h"
-#include "chrome/browser/android/send_tab_to_self/send_tab_to_self_entry_bridge.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler_registry.h"
-#include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
-#include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/share/android/jni_headers/SendTabToSelfAndroidBridge_jni.h"
 #include "chrome/browser/share/android/jni_headers/TargetDeviceInfo_jni.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
-#include "components/send_tab_to_self/send_tab_to_self_entry.h"
+#include "chrome/browser/sync/sync_service_factory.h"
+#include "components/send_tab_to_self/entry_point_display_reason.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/target_device_info.h"
@@ -40,16 +37,6 @@ namespace send_tab_to_self {
 
 namespace {
 
-ScopedJavaLocalRef<jobject> CreateJavaTargetDeviceInfo(
-    JNIEnv* env,
-    const std::string& device_name,
-    const TargetDeviceInfo& device_info) {
-  return Java_TargetDeviceInfo_createTargetDeviceInfo(
-      env, ConvertUTF8ToJavaString(env, device_name),
-      ConvertUTF8ToJavaString(env, device_info.cache_guid),
-      device_info.device_type, device_info.last_updated_timestamp.ToJavaTime());
-}
-
 SendTabToSelfModel* GetModel(const JavaParamRef<jobject>& j_profile) {
   Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
   SendTabToSelfModel* model = SendTabToSelfSyncServiceFactory::GetInstance()
@@ -60,101 +47,47 @@ SendTabToSelfModel* GetModel(const JavaParamRef<jobject>& j_profile) {
 
 }  // namespace
 
-// Populates a list of GUIDs in the model.
-static void JNI_SendTabToSelfAndroidBridge_GetAllGuids(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile,
-    const JavaParamRef<jobject>& j_guid_list_obj) {
-  SendTabToSelfModel* model = GetModel(j_profile);
-  if (!model->IsReady()) {
-    return;
-  }
-  std::vector<std::string> all_ids = model->GetAllGuids();
-  for (std::vector<std::string>::iterator it = all_ids.begin();
-       it != all_ids.end(); ++it) {
-    ScopedJavaLocalRef<jstring> j_guid = ConvertUTF8ToJavaString(env, *it);
-    Java_SendTabToSelfAndroidBridge_addToGuidList(env, j_guid_list_obj, j_guid);
-  }
-}
-
-// Populates a list of TargetDeviceInfos in the model.
-static void JNI_SendTabToSelfAndroidBridge_GetAllTargetDeviceInfos(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile,
-    const JavaParamRef<jobject>& j_device_info_list_obj) {
-  SendTabToSelfModel* model = GetModel(j_profile);
-  if (!model->IsReady()) {
-    return;
-  }
-  std::vector<TargetDeviceInfo> all_infos =
-      model->GetTargetDeviceInfoSortedList();
-  for (auto it = all_infos.begin(); it != all_infos.end(); ++it) {
-    Java_SendTabToSelfAndroidBridge_addToTargetDeviceInfoList(
-        env, j_device_info_list_obj,
-        CreateJavaTargetDeviceInfo(env, it->device_name, *it));
-  }
-}
-
-// Deletes all entries in the model.
-static void JNI_SendTabToSelfAndroidBridge_DeleteAllEntries(
+static ScopedJavaLocalRef<jobjectArray>
+JNI_SendTabToSelfAndroidBridge_GetAllTargetDeviceInfos(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile) {
+  ScopedJavaLocalRef<jclass> type = base::android::GetClass(
+      env,
+      "org/chromium/chrome/browser/share/send_tab_to_self/TargetDeviceInfo");
   SendTabToSelfModel* model = GetModel(j_profile);
   if (!model->IsReady()) {
-    return;
+    return base::android::ToTypedJavaArrayOfObjects(
+        env, std::vector<ScopedJavaLocalRef<jobject>>(), type);
   }
-  model->DeleteAllEntries();
+
+  std::vector<ScopedJavaLocalRef<jobject>> infos;
+  for (const TargetDeviceInfo& info : model->GetTargetDeviceInfoSortedList()) {
+    infos.push_back(Java_TargetDeviceInfo_build(
+        env, ConvertUTF8ToJavaString(env, info.device_name),
+        ConvertUTF8ToJavaString(env, info.cache_guid),
+        static_cast<int>(info.form_factor),
+        info.last_updated_timestamp.ToJavaTime()));
+  }
+
+  return base::android::ToTypedJavaArrayOfObjects(env, infos, type);
 }
 
-// Adds a new entry with the specified parameters. Returns the persisted
-// version which contains additional information such as GUID.
-static ScopedJavaLocalRef<jobject> JNI_SendTabToSelfAndroidBridge_AddEntry(
+// Adds a new entry with the specified parameters. Returns whether the
+// the persistent entry in the bridge was created.
+static jboolean JNI_SendTabToSelfAndroidBridge_AddEntry(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile,
     const JavaParamRef<jstring>& j_url,
     const JavaParamRef<jstring>& j_title,
-    jlong j_navigation_time,
     const JavaParamRef<jstring>& j_target_device_sync_cache_guid) {
   const std::string url = ConvertJavaStringToUTF8(env, j_url);
   const std::string title = ConvertJavaStringToUTF8(env, j_title);
   const std::string target_device_sync_cache_guid =
       ConvertJavaStringToUTF8(env, j_target_device_sync_cache_guid);
-  base::Time navigation_time = base::Time::FromJavaTime(j_navigation_time);
 
   SendTabToSelfModel* model = GetModel(j_profile);
-  if (!model->IsReady()) {
-    return nullptr;
-  }
-
-  const SendTabToSelfEntry* persisted_entry = model->AddEntry(
-      GURL(url), title, navigation_time, target_device_sync_cache_guid);
-
-  if (persisted_entry == nullptr) {
-    return nullptr;
-  }
-  return CreateJavaSendTabToSelfEntry(env, persisted_entry);
-}
-
-// Returns the entry associated with a GUID. May return nullptr if none is
-// found.
-static ScopedJavaLocalRef<jobject>
-JNI_SendTabToSelfAndroidBridge_GetEntryByGUID(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile,
-    const JavaParamRef<jstring>& j_guid) {
-  SendTabToSelfModel* model = GetModel(j_profile);
-  if (!model->IsReady()) {
-    return nullptr;
-  }
-
-  const std::string guid = ConvertJavaStringToUTF8(env, j_guid);
-  const SendTabToSelfEntry* found_entry = model->GetEntryByGUID(guid);
-
-  if (found_entry == nullptr) {
-    return nullptr;
-  }
-
-  return CreateJavaSendTabToSelfEntry(env, found_entry);
+  return model->IsReady() &&
+         model->AddEntry(GURL(url), title, target_device_sync_cache_guid);
 }
 
 // Deletes the entry associated with the passed in GUID.
@@ -181,28 +114,6 @@ static void JNI_SendTabToSelfAndroidBridge_DismissEntry(
   }
 }
 
-// Marks the entry with the associated GUID as opened.
-static void JNI_SendTabToSelfAndroidBridge_MarkEntryOpened(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile,
-    const JavaParamRef<jstring>& j_guid) {
-  SendTabToSelfModel* model = GetModel(j_profile);
-  if (model->IsReady()) {
-    const std::string guid = ConvertJavaStringToUTF8(env, j_guid);
-    model->MarkEntryOpened(guid);
-  }
-}
-
-// Returns whether the feature is available for the specified |web_contents|.
-static jboolean JNI_SendTabToSelfAndroidBridge_IsFeatureAvailable(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& j_web_contents) {
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(j_web_contents);
-
-  return ShouldOfferFeature(web_contents);
-}
-
 static void JNI_SendTabToSelfAndroidBridge_UpdateActiveWebContents(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_web_contents) {
@@ -215,6 +126,36 @@ static void JNI_SendTabToSelfAndroidBridge_UpdateActiveWebContents(
         ->GetAndroidNotificationHandlerForProfile(profile)
         ->UpdateWebContents(web_contents);
   }
+}
+
+static ScopedJavaLocalRef<jobject>
+JNI_SendTabToSelfAndroidBridge_GetEntryPointDisplayReason(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_profile,
+    const JavaParamRef<jstring>& j_url_to_share) {
+  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
+  absl::optional<send_tab_to_self::EntryPointDisplayReason> reason =
+      send_tab_to_self::GetEntryPointDisplayReason(
+          GURL(ConvertJavaStringToUTF8(env, j_url_to_share)),
+          SyncServiceFactory::GetForProfile(profile),
+          SendTabToSelfSyncServiceFactory::GetForProfile(profile),
+          profile->GetPrefs());
+
+  if (!reason) {
+    return nullptr;
+  }
+
+  // Wrap the content in a java.lang.Integer, so it can be nullable.
+  // TODO(crbug.com/1219434): Having an empty optional/null to represent the
+  // hidden entry point doesn't seem worth it after all. Make that just another
+  // value in the enum, sparing the complexity here.
+  ScopedJavaLocalRef<jclass> integer_class =
+      base::android::GetClass(env, "java/lang/Integer");
+  jmethodID constructor =
+      base::android::MethodID::Get<base::android::MethodID::TYPE_INSTANCE>(
+          env, integer_class.obj(), "<init>", "(I)V");
+  return ScopedJavaLocalRef<jobject>(
+      env, env->NewObject(integer_class.obj(), constructor, *reason));
 }
 
 }  // namespace send_tab_to_self

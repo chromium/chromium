@@ -52,14 +52,14 @@ void HTMLOptionsCollection::SupportedPropertyNames(Vector<String>& names) {
     Element* element = item(i);
     DCHECK(element);
     const AtomicString& id_attribute = element->GetIdAttribute();
-    if (!id_attribute.IsEmpty()) {
+    if (!id_attribute.empty()) {
       HashSet<AtomicString>::AddResult add_result =
           existing_names.insert(id_attribute);
       if (add_result.is_new_entry)
         names.push_back(id_attribute);
     }
     const AtomicString& name_attribute = element->GetNameAttribute();
-    if (!name_attribute.IsEmpty()) {
+    if (!name_attribute.empty()) {
       HashSet<AtomicString>::AddResult add_result =
           existing_names.insert(name_attribute);
       if (add_result.is_new_entry)

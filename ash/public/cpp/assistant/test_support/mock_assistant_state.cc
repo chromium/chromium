@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,14 @@
 namespace ash {
 
 MockAssistantState::MockAssistantState() {
-  allowed_state_ = chromeos::assistant::AssistantAllowedState::ALLOWED;
+  allowed_state_ = assistant::AssistantAllowedState::ALLOWED;
   settings_enabled_ = true;
 }
 
 MockAssistantState::~MockAssistantState() = default;
 
 void MockAssistantState::SetAllowedState(
-    chromeos::assistant::AssistantAllowedState allowed_state) {
+    assistant::AssistantAllowedState allowed_state) {
   if (allowed_state_ != allowed_state) {
     allowed_state_ = allowed_state;
     for (auto& observer : observers_)

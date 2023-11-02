@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "components/translate/core/browser/translate_client.h"
 #include "components/translate/core/browser/translate_step.h"
 #include "components/translate/core/common/translate_errors.h"
@@ -20,10 +19,14 @@
 
 class PrefService;
 
+namespace language {
+class AcceptLanguagesService;
+}
+
 namespace translate {
-class TranslateAcceptLanguages;
 class TranslatePrefs;
 class TranslateManager;
+class TranslateMetricsLogger;
 }  // namespace translate
 
 namespace web {
@@ -40,9 +43,6 @@ class ChromeIOSTranslateClient
 
   ~ChromeIOSTranslateClient() override;
 
-  // Creates a translation client tab helper and attaches it to |web_state|
-  static void CreateForWebState(web::WebState* web_state);
-
   // Helper method to return a new TranslatePrefs instance.
   static std::unique_ptr<translate::TranslatePrefs> CreateTranslatePrefs(
       PrefService* prefs);
@@ -54,7 +54,7 @@ class ChromeIOSTranslateClient
   translate::IOSTranslateDriver* GetTranslateDriver() override;
   PrefService* GetPrefs() override;
   std::unique_ptr<translate::TranslatePrefs> GetTranslatePrefs() override;
-  translate::TranslateAcceptLanguages* GetTranslateAcceptLanguages() override;
+  language::AcceptLanguagesService* GetAcceptLanguagesService() override;
   int GetInfobarIconID() const override;
   std::unique_ptr<infobars::InfoBar> CreateInfoBar(
       std::unique_ptr<translate::TranslateInfoBarDelegate> delegate)
@@ -62,17 +62,35 @@ class ChromeIOSTranslateClient
   bool ShowTranslateUI(translate::TranslateStep step,
                        const std::string& source_language,
                        const std::string& target_language,
-                       translate::TranslateErrors::Type error_type,
+                       translate::TranslateErrors error_type,
                        bool triggered_from_menu) override;
   bool IsTranslatableURL(const GURL& url) override;
   bool IsAutofillAssistantRunning() const override;
 
  private:
-  ChromeIOSTranslateClient(web::WebState* web_state);
   friend class web::WebStateUserData<ChromeIOSTranslateClient>;
+  FRIEND_TEST_ALL_PREFIXES(ChromeIOSTranslateClientTest,
+                           NewMetricsOnPageLoadCommits);
+  FRIEND_TEST_ALL_PREFIXES(ChromeIOSTranslateClientTest,
+                           NoNewMetricsOnErrorPage);
+  FRIEND_TEST_ALL_PREFIXES(ChromeIOSTranslateClientTest,
+                           PageTranslationCorrectlyUpdatesMetrics);
+
+  explicit ChromeIOSTranslateClient(web::WebState* web_state);
 
   // web::WebStateObserver implementation.
+  void DidStartNavigation(web::WebState* web_state,
+                          web::NavigationContext* navigation_context) override;
+  void DidFinishNavigation(web::WebState* web_state,
+                           web::NavigationContext* navigation_context) override;
+  void WasShown(web::WebState* web_state) override;
+  void WasHidden(web::WebState* web_state) override;
   void WebStateDestroyed(web::WebState* web_state) override;
+
+  // Triggered when the foreground page is changed by a new navigation (in
+  // DidStartNavigation) or is permanently closed (in WebStateDestroyed),
+  // similar to PageLoadMetricsObserver::OnComplete.
+  void DidPageLoadComplete();
 
   // The WebState this instance is observing. Will be null after
   // WebStateDestroyed has been called.
@@ -80,6 +98,9 @@ class ChromeIOSTranslateClient
 
   std::unique_ptr<translate::TranslateManager> translate_manager_;
   translate::IOSTranslateDriver translate_driver_;
+
+  // Metrics recorder for page load events.
+  std::unique_ptr<translate::TranslateMetricsLogger> translate_metrics_logger_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };

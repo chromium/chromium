@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,27 +56,15 @@ void DissociateMailboxForPresent(GLuint device_id,
   }
 }
 
-void RequestAdapter(uint64_t request_adapter_serial,
-                    uint32_t power_preference) {
-  webgpu::cmds::RequestAdapter* c = GetCmdSpace<webgpu::cmds::RequestAdapter>();
+void SetWebGPUExecutionContextToken(uint32_t type,
+                                    uint32_t high_high,
+                                    uint32_t high_low,
+                                    uint32_t low_high,
+                                    uint32_t low_low) {
+  webgpu::cmds::SetWebGPUExecutionContextToken* c =
+      GetCmdSpace<webgpu::cmds::SetWebGPUExecutionContextToken>();
   if (c) {
-    c->Init(request_adapter_serial, power_preference);
-  }
-}
-
-void RequestDevice(uint64_t request_device_serial,
-                   uint32_t adapter_service_id,
-                   uint32_t device_id,
-                   uint32_t device_generation,
-                   uint32_t request_device_properties_shm_id,
-                   uint32_t request_device_properties_shm_offset,
-                   uint32_t request_device_properties_size) {
-  webgpu::cmds::RequestDevice* c = GetCmdSpace<webgpu::cmds::RequestDevice>();
-  if (c) {
-    c->Init(request_device_serial, adapter_service_id, device_id,
-            device_generation, request_device_properties_shm_id,
-            request_device_properties_shm_offset,
-            request_device_properties_size);
+    c->Init(type, high_high, high_low, low_high, low_low);
   }
 }
 

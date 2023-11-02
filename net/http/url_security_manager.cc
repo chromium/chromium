@@ -1,4 +1,4 @@
-// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,15 +15,18 @@ URLSecurityManagerAllowlist::URLSecurityManagerAllowlist() = default;
 URLSecurityManagerAllowlist::~URLSecurityManagerAllowlist() = default;
 
 bool URLSecurityManagerAllowlist::CanUseDefaultCredentials(
-    const GURL& auth_origin) const {
+    const url::SchemeHostPort& auth_scheme_host_port) const {
   if (allowlist_default_.get())
-    return allowlist_default_->IsValid(auth_origin, HttpAuth::AUTH_SERVER);
+    return allowlist_default_->IsValid(auth_scheme_host_port,
+                                       HttpAuth::AUTH_SERVER);
   return false;
 }
 
-bool URLSecurityManagerAllowlist::CanDelegate(const GURL& auth_origin) const {
+bool URLSecurityManagerAllowlist::CanDelegate(
+    const url::SchemeHostPort& auth_scheme_host_port) const {
   if (allowlist_delegate_.get())
-    return allowlist_delegate_->IsValid(auth_origin, HttpAuth::AUTH_SERVER);
+    return allowlist_delegate_->IsValid(auth_scheme_host_port,
+                                        HttpAuth::AUTH_SERVER);
   return false;
 }
 

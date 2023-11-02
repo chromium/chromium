@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,16 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/browser_process.h"
-#include "chromeos/tpm/install_attributes.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
+
 ShortcutMappingPrefService::ShortcutMappingPrefService() = default;
 ShortcutMappingPrefService::~ShortcutMappingPrefService() = default;
 
 bool ShortcutMappingPrefService::IsDeviceEnterpriseManaged() const {
-  return chromeos::InstallAttributes::Get()->IsEnterpriseManaged();
+  return InstallAttributes::Get()->IsEnterpriseManaged();
 }
 
 bool ShortcutMappingPrefService::IsI18nShortcutPrefEnabled() const {

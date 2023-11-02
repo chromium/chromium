@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/media_util.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
@@ -17,7 +16,7 @@ namespace media {
 TEST(AudioDecoderConfigStructTraitsTest, Normal) {
   const uint8_t kExtraData[] = "input extra data";
   const std::vector<uint8_t> kExtraDataVector(
-      &kExtraData[0], &kExtraData[0] + base::size(kExtraData));
+      &kExtraData[0], &kExtraData[0] + std::size(kExtraData));
 
   AudioDecoderConfig input;
   input.Initialize(AudioCodec::kAAC, kSampleFormatU8, CHANNEL_LAYOUT_SURROUND,
@@ -82,17 +81,19 @@ TEST(AudioDecoderConfigStructTraitsTest, TargetOutputChannelLayout) {
                    48000, EmptyExtraData(), EncryptionScheme::kUnencrypted,
                    base::TimeDelta(), 0);
   input.set_target_output_channel_layout(CHANNEL_LAYOUT_5_1);
+  input.set_target_output_sample_format(kSampleFormatDts);
   std::vector<uint8_t> data = mojom::AudioDecoderConfig::Serialize(&input);
   AudioDecoderConfig output;
   EXPECT_TRUE(mojom::AudioDecoderConfig::Deserialize(std::move(data), &output));
   EXPECT_TRUE(output.Matches(input));
   EXPECT_EQ(output.target_output_channel_layout(), CHANNEL_LAYOUT_5_1);
+  EXPECT_EQ(output.target_output_sample_format(), kSampleFormatDts);
 }
 
 TEST(AudioDecoderConfigStructTraitsTest, AacExtraData) {
   const uint8_t kAacExtraData[] = "aac extra data";
   const std::vector<uint8_t> kAacExtraDataVector(
-      kAacExtraData, kAacExtraData + base::size(kAacExtraData));
+      kAacExtraData, kAacExtraData + std::size(kAacExtraData));
 
   AudioDecoderConfig input;
   input.Initialize(AudioCodec::kAAC, kSampleFormatU8, CHANNEL_LAYOUT_SURROUND,

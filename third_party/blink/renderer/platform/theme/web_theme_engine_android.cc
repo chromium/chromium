@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,16 +11,6 @@
 #include "ui/native_theme/native_theme.h"
 
 namespace blink {
-
-namespace {
-const int kVersionLollipop = 5;
-
-int getMajorVersion() {
-  int major, minor, bugfix;
-  base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &bugfix);
-  return major;
-}
-}  // namespace
 
 static void GetNativeThemeExtraParams(
     WebThemeEngine::Part part,
@@ -86,7 +76,7 @@ static void GetNativeThemeExtraParams(
       native_theme_extra_params->slider.zoom = extra_params->slider.zoom;
       native_theme_extra_params->slider.right_to_left =
           extra_params->slider.right_to_left;
-      FALLTHROUGH;
+      [[fallthrough]];
     case WebThemeEngine::kPartSliderThumb:
       native_theme_extra_params->slider.vertical =
           extra_params->slider.vertical;
@@ -144,15 +134,9 @@ void WebThemeEngineAndroid::GetOverlayScrollbarStyle(ScrollbarStyle* style) {
   // Android as well.
   style->fade_out_delay = base::TimeDelta();
   style->fade_out_duration = base::TimeDelta();
-  if (getMajorVersion() >= kVersionLollipop) {
-    style->thumb_thickness = 4;
-    style->scrollbar_margin = 0;
-    style->color = SkColorSetARGB(128, 64, 64, 64);
-  } else {
-    style->thumb_thickness = 3;
-    style->scrollbar_margin = 3;
-    style->color = SkColorSetARGB(128, 128, 128, 128);
-  }
+  style->thumb_thickness = 4;
+  style->scrollbar_margin = 0;
+  style->color = SkColorSetARGB(128, 64, 64, 64);
 }
 
 void WebThemeEngineAndroid::Paint(
@@ -166,9 +150,13 @@ void WebThemeEngineAndroid::Paint(
   ui::NativeTheme::ExtraParams native_theme_extra_params;
   GetNativeThemeExtraParams(part, state, extra_params,
                             &native_theme_extra_params);
+  // ColorProviders are not supported on android and there are no controls that
+  // require ColorProvider colors on the platform.
+  const ui::ColorProvider* color_provider = nullptr;
   ui::NativeTheme::GetInstanceForWeb()->Paint(
-      canvas, NativeThemePart(part), NativeThemeState(state), rect,
-      native_theme_extra_params, NativeColorScheme(color_scheme), accent_color);
+      canvas, color_provider, NativeThemePart(part), NativeThemeState(state),
+      rect, native_theme_extra_params, NativeColorScheme(color_scheme),
+      accent_color);
 }
 
 ForcedColors WebThemeEngineAndroid::GetForcedColors() const {

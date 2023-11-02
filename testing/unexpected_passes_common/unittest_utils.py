@@ -1,9 +1,12 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Helper methods for unittests."""
 
 from __future__ import print_function
+
+from typing import Any, Callable, Iterable, List, Optional, Tuple, Type
+import unittest.mock as mock
 
 from unexpected_passes_common import builders
 from unexpected_passes_common import expectations
@@ -11,7 +14,7 @@ from unexpected_passes_common import data_types
 from unexpected_passes_common import queries as queries_module
 
 
-def CreateStatsWithPassFails(passes, fails):
+def CreateStatsWithPassFails(passes: int, fails: int) -> data_types.BuildStats:
   stats = data_types.BuildStats()
   for _ in range(passes):
     stats.AddPassedBuild()
@@ -20,7 +23,7 @@ def CreateStatsWithPassFails(passes, fails):
   return stats
 
 
-def _CreateSimpleQueries(clauses):
+def _CreateSimpleQueries(clauses: Iterable[str]) -> List[str]:
   queries = []
   # Not actually a valid query since we don't specify the table, but it works.
   for c in clauses:
@@ -32,36 +35,39 @@ WHERE %s
 
 
 class SimpleFixedQueryGenerator(queries_module.FixedQueryGenerator):
-  def GetQueries(self):
+  def GetQueries(self) -> List[str]:
     return _CreateSimpleQueries(self.GetClauses())
 
 
 class SimpleSplitQueryGenerator(queries_module.SplitQueryGenerator):
-  def GetQueries(self):
+  def GetQueries(self) -> List[str]:
     return _CreateSimpleQueries(self.GetClauses())
 
 
 class SimpleBigQueryQuerier(queries_module.BigQueryQuerier):
-  def _GetQueryGeneratorForBuilder(self, _, builder_type):
+  def _GetQueryGeneratorForBuilder(self, builder: data_types.BuilderEntry
+                                   ) -> queries_module.BaseQueryGenerator:
     if not self._large_query_mode:
-      return SimpleFixedQueryGenerator(builder_type, 'AND True')
-    return SimpleSplitQueryGenerator(builder_type, ['test_id'], 200)
+      return SimpleFixedQueryGenerator(builder, 'AND True')
+    return SimpleSplitQueryGenerator(builder, ['test_id'], 200)
 
-  def _GetRelevantExpectationFilesForQueryResult(self, _):
+  def _GetRelevantExpectationFilesForQueryResult(self, _) -> None:
     return None
 
-  def _StripPrefixFromTestId(self, test_id):
+  def _StripPrefixFromTestId(self, test_id: str) -> str:
     return test_id.split('.')[-1]
 
-  def _GetActiveBuilderQuery(self, _):
+  def _GetActiveBuilderQuery(self, _, __) -> str:
     return ''
 
 
-def CreateGenericQuerier(suite=None,
-                         project=None,
-                         num_samples=None,
-                         large_query_mode=None,
-                         cls=None):
+def CreateGenericQuerier(
+    suite: Optional[str] = None,
+    project: Optional[str] = None,
+    num_samples: Optional[int] = None,
+    large_query_mode: Optional[bool] = None,
+    cls: Optional[Type[queries_module.BigQueryQuerier]] = None
+) -> queries_module.BigQueryQuerier:
   suite = suite or 'pixel'
   project = project or 'project'
   num_samples = num_samples or 5
@@ -70,7 +76,8 @@ def CreateGenericQuerier(suite=None,
   return cls(suite, project, num_samples, large_query_mode)
 
 
-def GetArgsForMockCall(call_args_list, call_number):
+def GetArgsForMockCall(call_args_list: List[tuple],
+                       call_number: int) -> Tuple[tuple, dict]:
   """Helper to more sanely get call args from a mocked method.
 
   Args:
@@ -87,7 +94,7 @@ def GetArgsForMockCall(call_args_list, call_number):
   return args, kwargs
 
 
-class FakePool(object):
+class FakePool():
   """A fake pathos.pools.ProcessPool instance.
 
   Real pools don't like being given MagicMocks, so this allows testing of
@@ -95,33 +102,38 @@ class FakePool(object):
   multiprocessing_utils.GetProcessPool().
   """
 
-  def map(self, f, inputs):
+  def map(self, f: Callable[[Any], Any], inputs: Iterable[Any]) -> List[Any]:
     retval = []
     for i in inputs:
       retval.append(f(i))
     return retval
 
-  def apipe(self, f, inputs):
+  def apipe(self, f: Callable[[Any], Any],
+            inputs: Iterable[Any]) -> 'FakeAsyncResult':
     return FakeAsyncResult(f(inputs))
 
 
-class FakeAsyncResult(object):
+class FakeAsyncResult():
   """A fake AsyncResult like the one from multiprocessing or pathos."""
 
-  def __init__(self, result):
+  def __init__(self, result: Any):
     self._result = result
 
-  def ready(self):
+  def ready(self) -> bool:
     return True
 
-  def get(self):
+  def get(self) -> Any:
     return self._result
 
 
-class FakeProcess(object):
+class FakeProcess():
   """A fake subprocess Process object."""
 
-  def __init__(self, returncode=None, stdout=None, stderr=None, finish=True):
+  def __init__(self,
+               returncode: Optional[int] = None,
+               stdout: Optional[str] = None,
+               stderr: Optional[str] = None,
+               finish: bool = True):
     if finish:
       self.returncode = returncode or 0
     else:
@@ -130,42 +142,49 @@ class FakeProcess(object):
     self.stderr = stderr or ''
     self.finish = finish
 
-  def communicate(self, _):
+  def communicate(self, _) -> Tuple[str, str]:
     return self.stdout, self.stderr
 
-  def terminate(self):
+  def terminate(self) -> None:
     if self.finish:
       raise OSError('Tried to terminate a finished process')
 
 
 class GenericBuilders(builders.Builders):
-  def _BuilderRunsTestOfInterest(self, test_map, suite):
+  #pylint: disable=useless-super-delegation
+  def __init__(self,
+               suite: Optional[str] = None,
+               include_internal_builders: bool = False):
+    super().__init__(suite, include_internal_builders)
+  #pylint: enable=useless-super-delegation
+
+  def _BuilderRunsTestOfInterest(self, _test_map) -> bool:
     return True
 
-  def GetIsolateNames(self):
+  def GetIsolateNames(self) -> dict:
     return {}
 
-  def GetFakeCiBuilders(self):
+  def GetFakeCiBuilders(self) -> dict:
     return {}
 
-  def GetNonChromiumBuilders(self):
+  def GetNonChromiumBuilders(self) -> dict:
     return {}
 
 
-def RegisterGenericBuildersImplementation():
+def RegisterGenericBuildersImplementation() -> None:
   builders.RegisterInstance(GenericBuilders())
 
 
 class GenericExpectations(expectations.Expectations):
-  def GetExpectationFilepaths(self):
+  def GetExpectationFilepaths(self) -> list:
     return []
 
-  def _GetExpectationFileTagHeader(self):
+  def _GetExpectationFileTagHeader(self, _) -> str:
     return """\
 # tags: [ linux mac win ]
 # results: [ Failure RetryOnFailure Skip Pass ]
 """
 
 
-def CreateGenericExpectations():
+def CreateGenericExpectations() -> GenericExpectations:
   return GenericExpectations()

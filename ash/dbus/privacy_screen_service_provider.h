@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chromeos/dbus/services/cros_dbus_service.h"
+#include "chromeos/ash/components/dbus/services/cros_dbus_service.h"
 #include "dbus/exported_object.h"
 
 namespace dbus {
@@ -20,9 +20,10 @@ class MethodCall;
 namespace ash {
 
 // This class exports a D-Bus service that platform daemons / userspace interact
-// with to understand the current privacy screen setting.
-class PrivacyScreenServiceProvider
-    : public chromeos::CrosDBusService::ServiceProviderInterface,
+// with to understand the current privacy screen setting. Unit test is in
+// ash/display/privacy_screen_controller_unittest.cc file.
+class ASH_EXPORT PrivacyScreenServiceProvider
+    : public CrosDBusService::ServiceProviderInterface,
       public PrivacyScreenController::Observer {
  public:
   PrivacyScreenServiceProvider();

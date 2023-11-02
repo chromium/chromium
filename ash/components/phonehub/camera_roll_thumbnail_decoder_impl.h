@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "ui/gfx/image/image.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class CameraRollThumbnailDecoderImpl : public CameraRollThumbnailDecoder {
@@ -47,6 +47,7 @@ class CameraRollThumbnailDecoderImpl : public CameraRollThumbnailDecoder {
     // decoded for the same item.
     void CompleteWithExistingImage(const gfx::Image& image);
 
+    bool is_completed() const { return is_completed_; }
     // Returns the encoded raw bytes of the thumbnail. May return an empty
     // string if the thumbnail is not sent with the camera roll item proto.
     const std::string& GetEncodedThumbnail() const;
@@ -57,6 +58,7 @@ class CameraRollThumbnailDecoderImpl : public CameraRollThumbnailDecoder {
    private:
     const proto::CameraRollItem item_proto_;
     gfx::Image decoded_thumbnail_;
+    bool is_completed_ = false;
   };
 
   // Delegate class that decodes camera roll item thumbnails. Can be overridden
@@ -81,10 +83,8 @@ class CameraRollThumbnailDecoderImpl : public CameraRollThumbnailDecoder {
   // Checks whether all requests to decode thumbnails have been completed for
   // the latest items received, and invoke the pending callback if so.
   void CheckPendingThumbnailRequests();
-  // Marks the pending requests as complete with the given result code and an
-  // empty item list when the requests are cancelled or when an error occurs.
-  void CompletePendingRequestsWithResult(
-      CameraRollThumbnailDecoder::BatchDecodeResult result);
+  // Cancels all pending requests.
+  void CancelPendingRequests();
 
   std::unique_ptr<DecoderDelegate> decoder_delegate_;
   std::vector<DecodeRequest> pending_requests_;
@@ -96,6 +96,6 @@ class CameraRollThumbnailDecoderImpl : public CameraRollThumbnailDecoder {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_CAMERA_ROLL_THUMBNAIL_DECODER_IMPL_H_

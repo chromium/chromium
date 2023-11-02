@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_NON_MAIN_THREAD_TASK_QUEUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_NON_MAIN_THREAD_TASK_QUEUE_H_
 
+#include "base/task/common/lazy_now.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -15,27 +16,29 @@
 namespace blink {
 namespace scheduler {
 
-class NonMainThreadSchedulerImpl;
+using TaskQueue = base::sequence_manager::TaskQueue;
+
+class NonMainThreadSchedulerBase;
 
 class PLATFORM_EXPORT NonMainThreadTaskQueue
-    : public base::sequence_manager::TaskQueue {
+    : public base::RefCountedThreadSafe<NonMainThreadTaskQueue> {
  public:
   // TODO(kraynov): Consider options to remove TaskQueueImpl reference here.
   NonMainThreadTaskQueue(
       std::unique_ptr<base::sequence_manager::internal::TaskQueueImpl> impl,
-      const Spec& spec,
-      NonMainThreadSchedulerImpl* non_main_thread_scheduler,
+      const TaskQueue::Spec& spec,
+      NonMainThreadSchedulerBase* non_main_thread_scheduler,
       bool can_be_throttled);
-  ~NonMainThreadTaskQueue() override;
+  ~NonMainThreadTaskQueue();
 
   void OnTaskCompleted(
       const base::sequence_manager::Task& task,
       base::sequence_manager::TaskQueue::TaskTiming* task_timing,
-      base::sequence_manager::LazyNow* lazy_now);
+      base::LazyNow* lazy_now);
 
   scoped_refptr<base::SingleThreadTaskRunner> CreateTaskRunner(
       TaskType task_type) {
-    return TaskQueue::CreateTaskRunner(static_cast<int>(task_type));
+    return task_queue_->CreateTaskRunner(static_cast<int>(task_type));
   }
 
   bool IsThrottled() const { return throttler_->IsThrottled(); }
@@ -49,7 +52,18 @@ class PLATFORM_EXPORT NonMainThreadTaskQueue
   void IncreaseThrottleRefCount();
   void DecreaseThrottleRefCount();
 
-  void ShutdownTaskQueue() override;
+  void SetQueuePriority(TaskQueue::QueuePriority priority) {
+    task_queue_->SetQueuePriority(priority);
+  }
+  TaskQueue::QueuePriority GetQueuePriority() const {
+    return task_queue_->GetQueuePriority();
+  }
+
+  std::unique_ptr<TaskQueue::QueueEnabledVoter> CreateQueueEnabledVoter() {
+    return task_queue_->CreateQueueEnabledVoter();
+  }
+
+  void ShutdownTaskQueue();
 
   // This method returns the default task runner with task type kTaskTypeNone
   // and is mostly used for tests. For most use cases, you'll want a more
@@ -57,20 +71,34 @@ class PLATFORM_EXPORT NonMainThreadTaskQueue
   // the desired task type.
   const scoped_refptr<base::SingleThreadTaskRunner>&
   GetTaskRunnerWithDefaultTaskType() const {
-    return task_runner();
+    return task_queue_->task_runner();
   }
 
   void SetWebSchedulingPriority(WebSchedulingPriority priority);
 
   void OnTaskRunTimeReported(TaskQueue::TaskTiming* task_timing);
 
+  // TODO(crbug.com/1143007): Improve MTTQ API surface so that we no longer
+  // need to expose the raw pointer to the queue.
+  TaskQueue* GetTaskQueue() { return task_queue_.get(); }
+
+  // This method returns the default task runner with task type kTaskTypeNone
+  // and is mostly used for tests. For most use cases, you'll want a more
+  // specific task runner and should use the 'CreateTaskRunner' method and pass
+  // the desired task type.
+  const scoped_refptr<base::SingleThreadTaskRunner>&
+  GetTaskRunnerWithDefaultTaskType() {
+    return task_queue_->task_runner();
+  }
+
  private:
   void OnWebSchedulingPriorityChanged();
 
+  scoped_refptr<TaskQueue> task_queue_;
   absl::optional<TaskQueueThrottler> throttler_;
 
   // Not owned.
-  NonMainThreadSchedulerImpl* non_main_thread_scheduler_;
+  NonMainThreadSchedulerBase* non_main_thread_scheduler_;
 
   // |web_scheduling_priority_| is the priority of the task queue within the web
   // scheduling API. This priority is used to determine the task queue priority.

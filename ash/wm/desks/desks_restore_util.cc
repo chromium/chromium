@@ -1,8 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/wm/desks/desks_restore_util.h"
+
+#include <tuple>
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
@@ -12,10 +14,10 @@
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/auto_reset.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/clock.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -78,9 +80,7 @@ PrefService* GetPrimaryUserPrefService() {
 // DesksController.
 bool IsValidDeskIndex(int desk_index) {
   return desk_index >= 0 &&
-         desk_index <
-             static_cast<int>(DesksController::Get()->desks().size()) &&
-         desk_index < int{desks_util::kMaxNumberOfDesks};
+         desk_index < static_cast<int>(DesksController::Get()->desks().size());
 }
 
 base::Time GetTime(int year, int month, int day_of_month, int day_of_week) {
@@ -111,8 +111,8 @@ bool IsNowInValidTimePeriod() {
 base::Time GetLocalEpoch() {
   static const base::Time local_epoch = [] {
     base::Time local_epoch;
-    ignore_result(base::Time::FromLocalExploded({2010, 1, 5, 1, 0, 0, 0, 0},
-                                                &local_epoch));
+    std::ignore = base::Time::FromLocalExploded({2010, 1, 5, 1, 0, 0, 0, 0},
+                                                &local_epoch);
     return local_epoch;
   }();
   return local_epoch;
@@ -143,26 +143,27 @@ void RestorePrimaryUserDesks() {
   if (primary_user_prefs->GetBoolean(kUserHasUsedDesksRecently))
     UMA_HISTOGRAM_BOOLEAN("Ash.Desks.UserHasUsedDesksRecently", true);
 
-  const base::ListValue* desks_names =
+  const base::Value::List& desks_names_list =
       primary_user_prefs->GetList(prefs::kDesksNamesList);
-  const base::ListValue* desks_metrics =
+  const base::Value::List& desks_metrics_list =
       primary_user_prefs->GetList(prefs::kDesksMetricsList);
 
   // First create the same number of desks.
-  const size_t restore_size = desks_names->GetList().size();
+  size_t restore_size = desks_names_list.size();
 
-  // If we don't have any restore data, or the list is corrupt for some reason,
-  // abort.
-  if (!restore_size || restore_size > desks_util::kMaxNumberOfDesks)
+  // If we don't have any restore data, abort.
+  if (restore_size == 0)
     return;
+
+  // If we have more restore data than the *current* max, clamp it. This can
+  // happen if the restore data was created when more desks were permitted.
+  restore_size = std::min(restore_size, desks_util::GetMaxNumberOfDesks());
 
   auto* desks_controller = DesksController::Get();
   while (desks_controller->desks().size() < restore_size)
     desks_controller->NewDesk(DesksCreationRemovalSource::kDesksRestore);
 
-  const auto& desks_names_list = desks_names->GetList();
-  const auto& desks_metrics_list = desks_metrics->GetList();
-  const size_t desks_metrics_list_size = desks_metrics->GetList().size();
+  const size_t desks_metrics_list_size = desks_metrics_list.size();
   const auto now = base::Time::Now();
   for (size_t index = 0; index < restore_size; ++index) {
     const std::string& desk_name = desks_names_list[index].GetString();
@@ -231,21 +232,19 @@ void RestorePrimaryUserDesks() {
   desks_controller->RestorePrimaryUserActiveDeskIndex(active_desk_index);
 
   // Restore weekly active desks metrics.
-  auto* weekly_active_desks_dict =
-      primary_user_prefs->GetDictionary(prefs::kDesksWeeklyActiveDesksMetrics);
-  if (weekly_active_desks_dict) {
-    const int report_time =
-        weekly_active_desks_dict->FindIntPath(kReportTimeKey).value_or(-1);
-    const int num_weekly_active_desks =
-        weekly_active_desks_dict->FindIntPath(kWeeklyActiveDesksKey)
-            .value_or(-1);
+  auto& weekly_active_desks_dict =
+      primary_user_prefs->GetDict(prefs::kDesksWeeklyActiveDesksMetrics);
+  const int report_time =
+      weekly_active_desks_dict.FindIntByDottedPath(kReportTimeKey).value_or(-1);
+  const int num_weekly_active_desks =
+      weekly_active_desks_dict.FindIntByDottedPath(kWeeklyActiveDesksKey)
+          .value_or(-1);
 
-    // Discard stored metrics if either are corrupted.
-    if (report_time != -1 && num_weekly_active_desks != -1) {
-      desks_controller->RestoreWeeklyActiveDesksMetrics(
-          num_weekly_active_desks,
-          base::Time::FromDeltaSinceWindowsEpoch(base::Minutes(report_time)));
-    }
+  // Discard stored metrics if either are corrupted.
+  if (report_time != -1 && num_weekly_active_desks != -1) {
+    desks_controller->RestoreWeeklyActiveDesksMetrics(
+        num_weekly_active_desks,
+        base::Time::FromDeltaSinceWindowsEpoch(base::Minutes(report_time)));
   }
 }
 
@@ -259,21 +258,21 @@ void UpdatePrimaryUserDeskNamesPrefs() {
     return;
   }
 
-  ListPrefUpdate name_update(primary_user_prefs, prefs::kDesksNamesList);
-  base::ListValue* name_pref_data = name_update.Get();
-  name_pref_data->ClearList();
+  ScopedListPrefUpdate name_update(primary_user_prefs, prefs::kDesksNamesList);
+  base::Value::List& name_pref_data = name_update.Get();
+  name_pref_data.clear();
 
   const auto& desks = DesksController::Get()->desks();
   for (const auto& desk : desks) {
     // Desks whose names were not changed by the user, are stored as empty
     // strings. They're just place holders to restore the correct desks count.
     // RestorePrimaryUserDesks() restores only non-empty desks names.
-    name_pref_data->Append(desk->is_name_set_by_user()
-                               ? base::UTF16ToUTF8(desk->name())
-                               : std::string());
+    name_pref_data.Append(desk->is_name_set_by_user()
+                              ? base::UTF16ToUTF8(desk->name())
+                              : std::string());
   }
 
-  DCHECK_EQ(name_pref_data->GetList().size(), desks.size());
+  DCHECK_EQ(name_pref_data.size(), desks.size());
 
   if (IsNowInValidTimePeriod() &&
       !primary_user_prefs->GetBoolean(kUserHasUsedDesksRecently)) {
@@ -292,35 +291,36 @@ void UpdatePrimaryUserDeskMetricsPrefs() {
   }
 
   // Save per-desk metrics.
-  ListPrefUpdate metrics_update(primary_user_prefs, prefs::kDesksMetricsList);
-  base::ListValue* metrics_pref_data = metrics_update.Get();
-  metrics_pref_data->ClearList();
+  ScopedListPrefUpdate metrics_update(primary_user_prefs,
+                                      prefs::kDesksMetricsList);
+  base::Value::List& metrics_pref_data = metrics_update.Get();
+  metrics_pref_data.clear();
 
   auto* desks_controller = DesksController::Get();
   const auto& desks = desks_controller->desks();
   for (const auto& desk : desks) {
-    base::DictionaryValue metrics_dict;
-    metrics_dict.SetInteger(
+    base::Value metrics_dict(base::Value::Type::DICTIONARY);
+    metrics_dict.SetIntKey(
         kCreationTimeKey,
         desk->creation_time().ToDeltaSinceWindowsEpoch().InMinutes());
-    metrics_dict.SetInteger(kFirstDayVisitedKey, desk->first_day_visited());
-    metrics_dict.SetInteger(kLastDayVisitedKey, desk->last_day_visited());
-    metrics_dict.SetBoolean(kInteractedWithThisWeekKey,
+    metrics_dict.SetIntKey(kFirstDayVisitedKey, desk->first_day_visited());
+    metrics_dict.SetIntKey(kLastDayVisitedKey, desk->last_day_visited());
+    metrics_dict.SetBoolKey(kInteractedWithThisWeekKey,
                             desk->interacted_with_this_week());
-    metrics_pref_data->Append(std::move(metrics_dict));
+    metrics_pref_data.Append(std::move(metrics_dict));
   }
 
-  DCHECK_EQ(metrics_pref_data->GetList().size(), desks.size());
+  DCHECK_EQ(metrics_pref_data.size(), desks.size());
 
   // Save weekly active report time.
-  DictionaryPrefUpdate weekly_active_desks_update(
+  ScopedDictPrefUpdate weekly_active_desks_update(
       primary_user_prefs, prefs::kDesksWeeklyActiveDesksMetrics);
-  weekly_active_desks_update->SetIntPath(
+  weekly_active_desks_update->SetByDottedPath(
       kReportTimeKey, desks_controller->GetWeeklyActiveReportTime()
                           .ToDeltaSinceWindowsEpoch()
                           .InMinutes());
-  weekly_active_desks_update->SetIntPath(kWeeklyActiveDesksKey,
-                                         Desk::GetWeeklyActiveDesks());
+  weekly_active_desks_update->SetByDottedPath(kWeeklyActiveDesksKey,
+                                              Desk::GetWeeklyActiveDesks());
 }
 
 void UpdatePrimaryUserActiveDeskPrefs(int active_desk_index) {

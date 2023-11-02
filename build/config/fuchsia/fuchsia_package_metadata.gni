@@ -1,0 +1,38 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_fuchsia)
+
+# Generates a metadata file under root_gen_dir which provides information about
+# a Fuchsia package.
+# Parameters:
+#   package_deps: An array of package_paths which specify the location of all
+#                 .far files that the package depends on.
+template("fuchsia_package_metadata") {
+  _pkg_dir = "$root_out_dir/gen/" + get_label_info(invoker.package, "dir") +
+             "/" + target_name
+  _pkg_path = "$_pkg_dir/${target_name}.far"
+  pkg_dep_paths = [ rebase_path(_pkg_path, root_build_dir) ]
+  if (defined(invoker.package_deps)) {
+    foreach(package_dep, invoker.package_deps) {
+      _pkg_dep_target = package_dep[0]
+      _pkg_dep_name = package_dep[1]
+      pkg_dep_path =
+          rebase_path(get_label_info(_pkg_dep_target, "target_gen_dir") + "/" +
+                          _pkg_dep_name + "/" + _pkg_dep_name + ".far",
+                      root_build_dir)
+      pkg_dep_paths += [ pkg_dep_path ]
+    }
+  }
+
+  pkg_metadata = "${target_name}_script_meta"
+  generated_file(pkg_metadata) {
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    contents = {
+      packages = pkg_dep_paths
+    }
+    output_conversion = "json"
+    outputs = [ "$root_gen_dir/package_metadata/${invoker.target_name}.meta" ]
+  }
+}

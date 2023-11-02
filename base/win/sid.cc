@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,20 +9,25 @@
 #include <sddl.h>
 #include <stdlib.h>
 
+#include <iterator>
+#include <utility>
+
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_localalloc.h"
 #include "base/win/windows_version.h"
 
+#include "base/record_replay.h"
+
 namespace base {
 namespace win {
 
 namespace {
 
-absl::optional<DWORD> WellKnownCapabilityToRid(WellKnownCapability capability) {
+absl::optional<long>  // NOLINT(runtime/int)
+WellKnownCapabilityToRid(WellKnownCapability capability) {
   switch (capability) {
     case WellKnownCapability::kInternetClient:
       return SECURITY_CAPABILITY_INTERNET_CLIENT;
@@ -127,13 +132,14 @@ absl::optional<Sid> FromSubAuthorities(
   return Sid::FromPSID(sid);
 }
 
-absl::optional<std::vector<Sid>> FromStringVector(
-    const std::vector<const wchar_t*>& strs,
-    decltype(Sid::FromSddlString)* create_sid) {
+template <typename T>
+absl::optional<std::vector<Sid>> FromVector(
+    const std::vector<T>& values,
+    absl::optional<Sid> (*create_sid)(T)) {
   std::vector<Sid> converted_sids;
-  converted_sids.reserve(strs.size());
-  for (const wchar_t* str : strs) {
-    auto sid = create_sid(str);
+  converted_sids.reserve(values.size());
+  for (T value : values) {
+    auto sid = create_sid(value);
     if (!sid)
       return absl::nullopt;
     converted_sids.push_back(std::move(*sid));
@@ -145,16 +151,20 @@ absl::optional<std::vector<Sid>> FromStringVector(
 
 Sid::Sid(const void* sid, size_t length)
     : sid_(static_cast<const char*>(sid),
-           static_cast<const char*>(sid) + length) {}
+           static_cast<const char*>(sid) + length) {
+  DCHECK(::IsValidSid(GetPSID()));
+}
 
 absl::optional<Sid> Sid::FromKnownCapability(WellKnownCapability capability) {
-  absl::optional<DWORD> capability_rid = WellKnownCapabilityToRid(capability);
+  absl::optional<long> capability_rid =  // NOLINT(runtime/int)
+      WellKnownCapabilityToRid(capability);
   if (!capability_rid)
     return absl::nullopt;
   SID_IDENTIFIER_AUTHORITY capability_authority = {
       SECURITY_APP_PACKAGE_AUTHORITY};
-  DWORD sub_authorities[] = {SECURITY_CAPABILITY_BASE_RID, *capability_rid};
-  return FromSubAuthorities(&capability_authority, size(sub_authorities),
+  DWORD sub_authorities[] = {SECURITY_CAPABILITY_BASE_RID,
+                             static_cast<DWORD>(*capability_rid)};
+  return FromSubAuthorities(&capability_authority, std::size(sub_authorities),
                             sub_authorities);
 }
 
@@ -240,6 +250,19 @@ absl::optional<Sid> Sid::FromPSID(PSID sid) {
   DCHECK(sid);
   if (!sid || !::IsValidSid(sid))
     return absl::nullopt;
+
+  // When replaying the sid pointer can't be dereferenced,
+  // so we record/replay its contents.
+  if (recordreplay::IsRecordingOrReplaying("values", "Sid")) {
+    uint32_t length = ::GetLengthSid(sid);
+    std::unique_ptr<char[]> buffer = std::make_unique<char[]>(length);
+    if (recordreplay::IsRecording()) {
+      memcpy(buffer.get(), sid, length);
+    }
+    recordreplay::RecordReplayBytes("Sid::FromPSID", buffer.get(), length);
+    return Sid(buffer.get(), length);
+  }
+
   return Sid(sid, ::GetLengthSid(sid));
 }
 
@@ -251,25 +274,6 @@ absl::optional<Sid> Sid::GenerateRandomSid() {
                             sub_authorities);
 }
 
-absl::optional<Sid> Sid::CurrentUser() {
-  // Get the current token.
-  HANDLE token = nullptr;
-  if (!::OpenProcessToken(::GetCurrentProcess(), TOKEN_QUERY, &token))
-    return absl::nullopt;
-  ScopedHandle token_scoped(token);
-
-  char user_buffer[sizeof(TOKEN_USER) + SECURITY_MAX_SID_SIZE];
-  DWORD size = sizeof(user_buffer);
-
-  if (!::GetTokenInformation(token, TokenUser, user_buffer, size, &size))
-    return absl::nullopt;
-
-  TOKEN_USER* user = reinterpret_cast<TOKEN_USER*>(user_buffer);
-  if (!user->User.Sid)
-    return absl::nullopt;
-  return Sid::FromPSID(user->User.Sid);
-}
-
 absl::optional<Sid> Sid::FromIntegrityLevel(DWORD integrity_level) {
   SID_IDENTIFIER_AUTHORITY package_authority = {
       SECURITY_MANDATORY_LABEL_AUTHORITY};
@@ -278,18 +282,30 @@ absl::optional<Sid> Sid::FromIntegrityLevel(DWORD integrity_level) {
 
 absl::optional<std::vector<Sid>> Sid::FromSddlStringVector(
     const std::vector<const wchar_t*>& sddl_sids) {
-  return FromStringVector(sddl_sids, Sid::FromSddlString);
+  return FromVector(sddl_sids, Sid::FromSddlString);
 }
 
 absl::optional<std::vector<Sid>> Sid::FromNamedCapabilityVector(
     const std::vector<const wchar_t*>& capability_names) {
-  return FromStringVector(capability_names, Sid::FromNamedCapability);
+  return FromVector(capability_names, Sid::FromNamedCapability);
+}
+
+absl::optional<std::vector<Sid>> Sid::FromKnownCapabilityVector(
+    const std::vector<WellKnownCapability>& capabilities) {
+  return FromVector(capabilities, Sid::FromKnownCapability);
+}
+
+absl::optional<std::vector<Sid>> Sid::FromKnownSidVector(
+    const std::vector<WellKnownSid>& sids) {
+  return FromVector(sids, Sid::FromKnownSid);
 }
 
 Sid::Sid(Sid&& sid) = default;
+Sid& Sid::operator=(Sid&&) = default;
 Sid::~Sid() = default;
 
 PSID Sid::GetPSID() const {
+  DCHECK(!sid_.empty());
   return const_cast<char*>(sid_.data());
 }
 
@@ -299,6 +315,22 @@ absl::optional<std::wstring> Sid::ToSddlString() const {
   if (!::ConvertSidToStringSid(GetPSID(), &sid))
     return absl::nullopt;
   return TakeLocalAlloc(sid).get();
+}
+
+Sid Sid::Clone() const {
+  return Sid(sid_.data(), sid_.size());
+}
+
+bool Sid::Equal(PSID sid) const {
+  return !!::EqualSid(GetPSID(), sid);
+}
+
+bool Sid::operator==(const Sid& sid) const {
+  return Equal(sid.GetPSID());
+}
+
+bool Sid::operator!=(const Sid& sid) const {
+  return !(operator==(sid));
 }
 
 }  // namespace win

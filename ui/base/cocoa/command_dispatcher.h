@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,8 +42,8 @@ COMPONENT_EXPORT(UI_BASE)
 // AppKit handling of an event that comes back from CommandDispatcherTarget,
 // e.g. key equivalents in the menu, or window manager commands like Cmd+`. Once
 // the event returns to the window at -preSendEvent:, handling will stop. The
-// event must be of type |NSKeyDown|, |NSKeyUp|, or |NSFlagsChanged|. Returns
-// YES if the event is handled.
+// event must be of type |NSEventTypeKeyDown|, |NSEventTypeKeyUp|, or
+// |NSEventTypeFlagsChanged|. Returns YES if the event is handled.
 - (BOOL)redispatchKeyEvent:(NSEvent*)event;
 
 // The CommandDispatchingWindow should override -[NSWindow sendEvent:] and call

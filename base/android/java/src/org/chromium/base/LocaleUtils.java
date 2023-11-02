@@ -1,10 +1,9 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.base;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -15,7 +14,6 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.VerifiesOnN;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -61,7 +59,6 @@ public class LocaleUtils {
      * @return a locale with updated language codes for Chromium, with translated modern language
      *         codes used by Chromium.
      */
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @VisibleForTesting
     public static Locale getUpdatedLocaleForChromium(Locale locale) {
         String language = locale.getLanguage();
@@ -95,7 +92,6 @@ public class LocaleUtils {
      * @return a locale with updated language codes for Android, from translated modern language
      *         codes used by Chromium.
      */
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @VisibleForTesting
     public static Locale getUpdatedLocaleForAndroid(Locale locale) {
         String language = locale.getLanguage();
@@ -170,7 +166,7 @@ public class LocaleUtils {
      * @return a well-formed IETF BCP 47 language tag with language and country code that
      *         represents this locale list.
      */
-    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(Build.VERSION_CODES.N)
     public static String toLanguageTags(LocaleList localeList) {
         ArrayList<String> newLocaleList = new ArrayList<>();
         for (int i = 0; i < localeList.size(); i++) {
@@ -288,7 +284,6 @@ public class LocaleUtils {
      * Helper class for N only code that is not validated on pre-N devices.
      */
     @RequiresApi(Build.VERSION_CODES.N)
-    @VerifiesOnN
     @VisibleForTesting
     static class ApisN {
         static void setConfigLocales(Context base, Configuration config, String language) {

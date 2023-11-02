@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,14 @@
 #include "base/bind.h"
 #include "base/i18n/message_formatter.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/autofill/payments/local_card_migration_dialog_factory.h"
 #include "chrome/browser/ui/autofill/payments/local_card_migration_dialog_state.h"
 #include "chrome/browser/ui/autofill/payments/payments_ui_constants.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/autofill/payments/migratable_card_view.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -65,7 +67,8 @@ class AutofillMigrationHeaderView : public views::ImageView {
   METADATA_HEADER(AutofillMigrationHeaderView);
   AutofillMigrationHeaderView() {
     constexpr int kImageBorderBottom = 8;
-    SetBorder(views::CreateEmptyBorder(0, 0, kImageBorderBottom, 0));
+    SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::TLBR(0, 0, kImageBorderBottom, 0)));
     SetAccessibleName(l10n_util::GetStringUTF16(
         IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME));
   }
@@ -99,11 +102,13 @@ class TipTextContainer : public views::View {
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal,
         gfx::Insets(container_insets), container_child_space));
+    SetBackground(views::CreateThemedSolidBackground(
+        kColorPaymentsFeedbackTipBackground));
 
     constexpr int kTipImageSize = 16;
     auto* lightbulb_outline_image = AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            vector_icons::kLightbulbOutlineIcon, ui::kColorAlertMediumSeverity,
+            vector_icons::kLightbulbOutlineIcon, kColorPaymentsFeedbackTipIcon,
             kTipImageSize)));
     lightbulb_outline_image->SetVerticalAlignment(
         views::ImageView::Alignment::kLeading);
@@ -122,32 +127,18 @@ class TipTextContainer : public views::View {
   // views::Label:
   void OnThemeChanged() override {
     View::OnThemeChanged();
-    const bool should_use_dark_colors = GetNativeTheme()->ShouldUseDarkColors();
 
-    // TODO(tluk): We should not be using hard coded color constants and
-    // switching colors based on the dark mode flag. We should instead
-    // systematize these into color ids and simply call GetColor() for these
-    // ids.
-    SetBackground(views::CreateSolidBackground(
-        should_use_dark_colors ? gfx::kGoogleGrey800 : gfx::kGoogleGrey050));
-
-    // Do not add the border if it is not using dark colors.
     constexpr int kTipValuePromptBorderThickness = 1;
-    SetBorder(should_use_dark_colors
-                  ? views::NullBorder()
-                  : views::CreateSolidBorder(kTipValuePromptBorderThickness,
-                                             gfx::kGoogleGrey100));
-
-    // If it is in dark mode, set the font color to GG200 since it is on a
-    // lighter shade of grey background.
+    const auto* const color_provider = GetColorProvider();
+    SetBorder(views::CreateSolidBorder(
+        kTipValuePromptBorderThickness,
+        color_provider->GetColor(kColorPaymentsFeedbackTipBorder)));
     tip_->SetEnabledColor(
-        should_use_dark_colors
-            ? gfx::kGoogleGrey200
-            : GetColorProvider()->GetColor(ui::kColorLabelForegroundSecondary));
+        color_provider->GetColor(kColorPaymentsFeedbackTipForeground));
   }
 
  private:
-  views::Label* tip_ = nullptr;
+  raw_ptr<views::Label> tip_ = nullptr;
 };
 
 BEGIN_METADATA(TipTextContainer, views::View)
@@ -179,10 +170,9 @@ std::unique_ptr<views::Label> CreateTitle(
 #else
   constexpr int kMigrationDialogTitleMarginTop = 12;
 #endif
-  title->SetBorder(views::CreateEmptyBorder(
-      /*top=*/kMigrationDialogTitleMarginTop,
-      /*left=*/kMigrationDialogInsets.left(), /*bottom=*/0,
-      /*right=*/kMigrationDialogInsets.right()));
+  title->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+      kMigrationDialogTitleMarginTop, kMigrationDialogInsets.left(), 0,
+      kMigrationDialogInsets.right())));
   title->SetFontList(gfx::FontList().Derive(kMigrationDialogTitleFontSize,
                                             gfx::Font::NORMAL,
                                             gfx::Font::Weight::NORMAL));
@@ -302,6 +292,9 @@ std::unique_ptr<views::View> CreateFeedbackContentView(
   return feedback_view;
 }
 
+// The height of the bounded legal message ScrollView.
+constexpr int kLegalMessageScrollViewHeight = 140;
+
 }  // namespace
 
 // A view composed of the main contents for local card migration dialog
@@ -326,8 +319,8 @@ class LocalCardMigrationOfferView : public views::View {
         provider->GetDistanceMetric(
             views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
     // Don't set bottom since there is a legal message view in the offer dialog.
-    contents_container->SetBorder(views::CreateEmptyBorder(
-        0, kMigrationDialogInsets.left(), 0, kMigrationDialogInsets.right()));
+    contents_container->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+        0, kMigrationDialogInsets.left(), 0, kMigrationDialogInsets.right())));
 
     const std::vector<MigratableCreditCard>& card_list =
         controller->GetCardList();
@@ -343,12 +336,18 @@ class LocalCardMigrationOfferView : public views::View {
 
     AddChildView(std::make_unique<views::Separator>());
 
-    legal_message_container_ = AddChildView(std::make_unique<LegalMessageView>(
-        controller->GetLegalMessageLines(),
+    auto* legal_message_container =
+        AddChildView(std::make_unique<views::ScrollView>());
+    legal_message_container->SetHorizontalScrollBarMode(
+        views::ScrollView::ScrollBarMode::kDisabled);
+    legal_message_container->SetContents(std::make_unique<LegalMessageView>(
+        controller->GetLegalMessageLines(), /*user_email=*/absl::nullopt,
+        /*user_avatar=*/absl::nullopt,
         base::BindRepeating(
             &LocalCardMigrationDialogController::OnLegalMessageLinkClicked,
             base::Unretained(controller_))));
-    legal_message_container_->SetBorder(
+    legal_message_container->ClipHeightTo(0, kLegalMessageScrollViewHeight);
+    legal_message_container->SetBorder(
         views::CreateEmptyBorder(kMigrationDialogInsets));
   }
 
@@ -371,13 +370,9 @@ class LocalCardMigrationOfferView : public views::View {
  private:
   friend class LocalCardMigrationDialogView;
 
-  LocalCardMigrationDialogController* controller_;
+  raw_ptr<LocalCardMigrationDialogController> controller_;
 
-  views::View* card_list_view_ = nullptr;
-
-  // The view that contains legal message and handles legal message links
-  // clicking.
-  LegalMessageView* legal_message_container_ = nullptr;
+  raw_ptr<views::View> card_list_view_ = nullptr;
 };
 
 BEGIN_METADATA(LocalCardMigrationOfferView, views::View)
@@ -385,9 +380,8 @@ ADD_READONLY_PROPERTY_METADATA(std::vector<std::string>, SelectedCardGuids)
 END_METADATA
 
 LocalCardMigrationDialogView::LocalCardMigrationDialogView(
-    LocalCardMigrationDialogController* controller,
-    content::WebContents* web_contents)
-    : controller_(controller), web_contents_(web_contents) {
+    LocalCardMigrationDialogController* controller)
+    : controller_(controller) {
   SetButtons(controller_->AllCardsInvalid()
                  ? ui::DIALOG_BUTTON_OK
                  : ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
@@ -398,8 +392,6 @@ LocalCardMigrationDialogView::LocalCardMigrationDialogView(
                      base::Unretained(this)));
   SetAcceptCallback(base::BindOnce(
       &LocalCardMigrationDialogView::OnDialogAccepted, base::Unretained(this)));
-  RegisterWindowClosingCallback(base::BindOnce(
-      &LocalCardMigrationDialogView::OnWindowClosing, base::Unretained(this)));
   // This should be a modal dialog blocking the browser since we don't want
   // users to lose progress in the migration workflow until they are done.
   SetModalType(ui::MODAL_TYPE_WINDOW);
@@ -410,18 +402,27 @@ LocalCardMigrationDialogView::LocalCardMigrationDialogView(
   SetShowCloseButton(false);
 }
 
-LocalCardMigrationDialogView::~LocalCardMigrationDialogView() {}
+LocalCardMigrationDialogView::~LocalCardMigrationDialogView() {
+  if (controller_) {
+    controller_->OnDialogClosed();
+    controller_ = nullptr;
+  }
+}
 
-void LocalCardMigrationDialogView::ShowDialog() {
+void LocalCardMigrationDialogView::ShowDialog(
+    content::WebContents& web_contents) {
   ConstructView();
   constrained_window::CreateBrowserModalDialogViews(
-      this, web_contents_->GetTopLevelNativeWindow())
+      this, web_contents.GetTopLevelNativeWindow())
       ->Show();
 }
 
 void LocalCardMigrationDialogView::CloseDialog() {
-  controller_ = nullptr;
   GetWidget()->Close();
+  if (controller_) {
+    controller_->OnDialogClosed();
+    controller_ = nullptr;
+  }
 }
 
 void LocalCardMigrationDialogView::OnDialogAccepted() {
@@ -446,13 +447,6 @@ void LocalCardMigrationDialogView::OnDialogCancelled() {
     case LocalCardMigrationDialogState::kActionRequired:
       controller_->OnViewCardsButtonClicked();
       break;
-  }
-}
-
-void LocalCardMigrationDialogView::OnWindowClosing() {
-  if (controller_) {
-    controller_->OnDialogClosed();
-    controller_ = nullptr;
   }
 }
 
@@ -538,9 +532,8 @@ std::u16string LocalCardMigrationDialogView::GetCancelButtonLabel() const {
 }
 
 LocalCardMigrationDialog* CreateLocalCardMigrationDialogView(
-    LocalCardMigrationDialogController* controller,
-    content::WebContents* web_contents) {
-  return new LocalCardMigrationDialogView(controller, web_contents);
+    LocalCardMigrationDialogController* controller) {
+  return new LocalCardMigrationDialogView(controller);
 }
 
 BEGIN_METADATA(LocalCardMigrationDialogView, views::BubbleDialogDelegateView)

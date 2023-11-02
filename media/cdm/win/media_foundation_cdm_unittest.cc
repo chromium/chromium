@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -67,6 +67,7 @@ class MediaFoundationCdmTest : public testing::Test {
                                 base::Unretained(this)),
             is_type_supported_cb_.Get(),
             store_client_token_cb_.Get(),
+            cdm_event_cb_.Get(),
             base::BindRepeating(&MockCdmClient::OnSessionMessage,
                                 base::Unretained(&cdm_client_)),
             base::BindRepeating(&MockCdmClient::OnSessionClosed,
@@ -93,6 +94,7 @@ class MediaFoundationCdmTest : public testing::Test {
 
   void InitializeAndExpectFailure() {
     can_initialize_ = false;
+    EXPECT_CALL(cdm_event_cb_, Run(CdmEvent::kCdmError, E_FAIL));
     ASSERT_FAILED(cdm_->Initialize());
   }
 
@@ -149,10 +151,6 @@ class MediaFoundationCdmTest : public testing::Test {
     EXPECT_EQ(session_id_, kSessionId);
   }
 
-  void OnCdmProxyReceived(scoped_refptr<MediaFoundationCdmProxy> mf_cdm_proxy) {
-    mf_cdm_proxy_ = std::move(mf_cdm_proxy);
-  }
-
  protected:
   base::test::TaskEnvironment task_environment_;
 
@@ -161,6 +159,7 @@ class MediaFoundationCdmTest : public testing::Test {
       is_type_supported_cb_;
   base::MockCallback<MediaFoundationCdm::StoreClientTokenCB>
       store_client_token_cb_;
+  StrictMock<base::MockCallback<MediaFoundationCdm::CdmEventCB>> cdm_event_cb_;
   ComPtr<MockMFCdm> mf_cdm_;
   ComPtr<MockMFCdmSession> mf_cdm_session_;
   ComPtr<IMFContentDecryptionModuleSessionCallbacks> mf_cdm_session_callbacks_;
@@ -488,8 +487,7 @@ TEST_F(MediaFoundationCdmTest, HardwareContextReset) {
   CreateSessionAndGenerateRequest();
 
   CdmContext* cdm_context = cdm_->GetCdmContext();
-  cdm_context->GetMediaFoundationCdmProxy(base::BindOnce(
-      &MediaFoundationCdmTest::OnCdmProxyReceived, base::Unretained(this)));
+  mf_cdm_proxy_ = cdm_context->GetMediaFoundationCdmProxy();
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(mf_cdm_proxy_);
 
@@ -508,13 +506,13 @@ TEST_F(MediaFoundationCdmTest, HardwareContextReset_InitializeFailure) {
   CreateSessionAndGenerateRequest();
 
   CdmContext* cdm_context = cdm_->GetCdmContext();
-  cdm_context->GetMediaFoundationCdmProxy(base::BindOnce(
-      &MediaFoundationCdmTest::OnCdmProxyReceived, base::Unretained(this)));
+  mf_cdm_proxy_ = cdm_context->GetMediaFoundationCdmProxy();
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(mf_cdm_proxy_);
 
   // Make the next `Initialize()` fail.
   can_initialize_ = false;
+  EXPECT_CALL(cdm_event_cb_, Run(CdmEvent::kCdmError, E_FAIL));
 
   COM_EXPECT_CALL(mf_cdm_session_, Close()).WillOnce(Return(S_OK));
   EXPECT_CALL(cdm_client_,

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,6 +30,13 @@ class CORE_EXPORT V8ThrowDOMException {
   //
   // |unsanitized_message| should be specified iff SecurityError.
   static v8::Local<v8::Value> CreateOrEmpty(
+      v8::Isolate*,
+      DOMExceptionCode,
+      const String& sanitized_message,
+      const String& unsanitized_message = String());
+
+  // Same as CreateOrEmpty, but performs CHECK for exception to not be empty.
+  static v8::Local<v8::Value> CreateOrDie(
       v8::Isolate*,
       DOMExceptionCode,
       const String& sanitized_message,

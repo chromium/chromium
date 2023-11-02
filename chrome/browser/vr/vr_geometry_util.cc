@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,10 +33,10 @@ gfx::SizeF CalculateScreenSize(const gfx::Transform& proj_matrix,
   gfx::Transform model_view_proj_matrix =
       proj_matrix * translate_transform * scale_transform;
 
-  gfx::Point3F projected_upper_right_corner(0.5f, 0.5f, 0.0f);
-  model_view_proj_matrix.TransformPoint(&projected_upper_right_corner);
-  gfx::Point3F projected_lower_left_corner(-0.5f, -0.5f, 0.0f);
-  model_view_proj_matrix.TransformPoint(&projected_lower_left_corner);
+  gfx::Point3F projected_upper_right_corner =
+      model_view_proj_matrix.MapPoint(gfx::Point3F(0.5f, 0.5f, 0.0f));
+  gfx::Point3F projected_lower_left_corner =
+      model_view_proj_matrix.MapPoint(gfx::Point3F(-0.5f, -0.5f, 0.0f));
 
   // Calculate and return the normalized size in screen space.
   return gfx::SizeF((std::abs(projected_upper_right_corner.x()) +

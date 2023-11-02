@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,8 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/task/post_task.h"
+#include "base/ranges/algorithm.h"
+#include "build/build_config.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_discovery_filter.h"
 #include "device/bluetooth/bluetooth_discovery_session_outcome.h"
@@ -21,9 +22,9 @@
 #include "device/bluetooth/test/fake_remote_gatt_characteristic.h"
 #include "device/bluetooth/test/fake_remote_gatt_service.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace bluetooth {
 
@@ -35,7 +36,7 @@ T ValueOrDefault(Optional&& opt) {
 }
 
 device::BluetoothDevice::ManufacturerDataMap ToManufacturerDataMap(
-    base::flat_map<uint8_t, std::vector<uint8_t>>&& map) {
+    base::flat_map<uint16_t, std::vector<uint8_t>>&& map) {
   return device::BluetoothDevice::ManufacturerDataMap(
       std::make_move_iterator(map.begin()), std::make_move_iterator(map.end()));
 }
@@ -197,12 +198,10 @@ void FakeCentral::SetNextGATTDiscoveryResponse(
 }
 
 bool FakeCentral::AllResponsesConsumed() {
-  return std::all_of(devices_.begin(), devices_.end(), [](const auto& e) {
+  return base::ranges::all_of(devices_, [](const auto& e) {
     // static_cast is safe because the parent class's devices_ is only
     // populated via this FakeCentral, and only with FakePeripherals.
-    FakePeripheral* fake_peripheral =
-        static_cast<FakePeripheral*>(e.second.get());
-    return fake_peripheral->AllResponsesConsumed();
+    return static_cast<FakePeripheral*>(e.second.get())->AllResponsesConsumed();
   });
 }
 
@@ -587,7 +586,7 @@ void FakeCentral::RegisterAdvertisement(
   NOTREACHED();
 }
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 void FakeCentral::SetAdvertisingInterval(
     const base::TimeDelta& min,
     const base::TimeDelta& max,
@@ -603,7 +602,7 @@ void FakeCentral::ConnectDevice(
     const std::string& address,
     const absl::optional<device::BluetoothDevice::AddressType>& address_type,
     ConnectDeviceCallback callback,
-    ErrorCallback error_callback) {
+    ConnectDeviceErrorCallback error_callback) {
   NOTREACHED();
 }
 #endif
@@ -614,7 +613,7 @@ device::BluetoothLocalGattService* FakeCentral::GetGattService(
   return nullptr;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void FakeCentral::SetServiceAllowList(const UUIDList& uuids,
                                       base::OnceClosure callback,
                                       ErrorCallback error_callback) {
@@ -633,7 +632,13 @@ device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
 FakeCentral::GetLowEnergyScanSessionHardwareOffloadingStatus() {
   return LowEnergyScanSessionHardwareOffloadingStatus::kNotSupported;
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void FakeCentral::SetStandardChromeOSAdapterName() {
+  NOTREACHED();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 base::WeakPtr<device::BluetoothAdapter> FakeCentral::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

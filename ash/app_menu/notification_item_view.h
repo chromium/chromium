@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include "ui/views/view.h"
 
 namespace gfx {
-class Image;
 class Size;
 }  // namespace gfx
 
@@ -27,6 +26,10 @@ class Label;
 class SlideOutController;
 }
 
+namespace ui {
+class ImageModel;
+}
+
 namespace ash {
 
 // The view which contains the details of a notification.
@@ -37,7 +40,7 @@ class APP_MENU_EXPORT NotificationItemView : public views::View {
       views::SlideOutControllerDelegate* slide_out_controller_delegate,
       const std::u16string& title,
       const std::u16string& message,
-      const gfx::Image& icon,
+      const ui::ImageModel& icon,
       const std::string& notification_id);
 
   NotificationItemView(const NotificationItemView&) = delete;
@@ -48,7 +51,7 @@ class APP_MENU_EXPORT NotificationItemView : public views::View {
   // Updates the contents of the view.
   void UpdateContents(const std::u16string& title,
                       const std::u16string& message,
-                      const gfx::Image& icon);
+                      const ui::ImageModel& icon);
 
   // views::View overrides:
   gfx::Size CalculatePreferredSize() const override;

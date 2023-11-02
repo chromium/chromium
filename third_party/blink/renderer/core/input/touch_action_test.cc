@@ -237,11 +237,11 @@ WebViewImpl* TouchActionTest::SetupTest(String file) {
   return web_view;
 }
 
-IntRect WindowClipRect(const LocalFrameView& frame_view) {
+gfx::Rect WindowClipRect(const LocalFrameView& frame_view) {
   PhysicalRect clip_rect(PhysicalOffset(), PhysicalSize(frame_view.Size()));
-  frame_view.GetLayoutView()->MapToVisualRectInAncestorSpace(
-      nullptr, clip_rect, 0, kDefaultVisualRectFlags);
-  return EnclosingIntRect(clip_rect);
+  frame_view.GetLayoutView()->MapToVisualRectInAncestorSpace(nullptr,
+                                                             clip_rect);
+  return ToEnclosingRect(clip_rect);
 }
 
 void TouchActionTest::RunTestOnTree(ContainerNode* root, WebView* web_view) {
@@ -284,9 +284,9 @@ void TouchActionTest::RunTestOnTree(ContainerNode* root, WebView* web_view) {
     if (!rects->length())
       continue;
     Persistent<DOMRect> r = rects->item(0);
-    FloatRect client_float_rect =
-        FloatRect(r->left(), r->top(), r->width(), r->height());
-    IntRect client_rect = EnclosedIntRect(client_float_rect);
+    gfx::RectF client_float_rect =
+        gfx::RectF(r->left(), r->top(), r->width(), r->height());
+    gfx::Rect client_rect = ToEnclosedRect(client_float_rect);
     for (int loc_idx = 0; loc_idx < 3; loc_idx++) {
       gfx::Point frame_point;
       std::stringstream context_stream;
@@ -319,7 +319,7 @@ void TouchActionTest::RunTestOnTree(ContainerNode* root, WebView* web_view) {
       LocalFrame* main_frame =
           To<LocalFrame>(WebFrame::ToCoreFrame(*web_view->MainFrame()));
       LocalFrameView* main_frame_view = main_frame->View();
-      IntRect visible_rect = WindowClipRect(*main_frame_view);
+      gfx::Rect visible_rect = WindowClipRect(*main_frame_view);
       ASSERT_TRUE(visible_rect.Contains(window_point))
           << failure_context_pos
           << " Test point not contained in visible area: " << visible_rect.x()
@@ -363,23 +363,28 @@ void TouchActionTest::RunTestOnTree(ContainerNode* root, WebView* web_view) {
           EXPECT_EQ(TouchAction::kAuto, widget->LastTouchAction())
               << failure_context_pos;
         } else if (expected_action == "none") {
-          EXPECT_EQ(TouchAction::kNone, widget->LastTouchAction())
+          EXPECT_EQ(TouchAction::kNone, widget->LastTouchAction() &
+                                            ~TouchAction::kInternalNotWritable)
               << failure_context_pos;
         } else if (expected_action == "pan-x") {
           EXPECT_EQ(TouchAction::kPanX, widget->LastTouchAction() &
-                                            ~TouchAction::kInternalPanXScrolls)
+                                            ~TouchAction::kInternalPanXScrolls &
+                                            ~TouchAction::kInternalNotWritable)
               << failure_context_pos;
         } else if (expected_action == "pan-y") {
-          EXPECT_EQ(TouchAction::kPanY, widget->LastTouchAction())
+          EXPECT_EQ(TouchAction::kPanY, widget->LastTouchAction() &
+                                            ~TouchAction::kInternalNotWritable)
               << failure_context_pos;
         } else if (expected_action == "pan-x-y") {
           EXPECT_EQ(TouchAction::kPan, widget->LastTouchAction() &
-                                           ~TouchAction::kInternalPanXScrolls)
+                                           ~TouchAction::kInternalPanXScrolls &
+                                           ~TouchAction::kInternalNotWritable)
               << failure_context_pos;
         } else if (expected_action == "manipulation") {
-          EXPECT_EQ(
-              TouchAction::kManipulation,
-              widget->LastTouchAction() & ~TouchAction::kInternalPanXScrolls)
+          EXPECT_EQ(TouchAction::kManipulation,
+                    widget->LastTouchAction() &
+                        ~TouchAction::kInternalPanXScrolls &
+                        ~TouchAction::kInternalNotWritable)
               << failure_context_pos;
         } else {
           FAIL() << "Unrecognized expected-action " << expected_action << " "
@@ -414,7 +419,7 @@ void TouchActionTest::SendTouchEvent(WebView* web_view,
     event.touch_start_or_first_touch_move = true;
 
   web_view->MainFrameWidget()->ProcessInputEventSynchronouslyForTesting(
-      WebCoalescedInputEvent(event, ui::LatencyInfo()), base::DoNothing());
+      WebCoalescedInputEvent(event, ui::LatencyInfo()));
   web_view->MainFrameWidget()->DispatchBufferedTouchEvents();
   RunPendingTasks();
 }

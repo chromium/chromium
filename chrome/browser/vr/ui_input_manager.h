@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/vr/model/controller_model.h"
 #include "chrome/browser/vr/vr_ui_export.h"
@@ -105,7 +106,7 @@ class VR_UI_EXPORT UiInputManager {
   gfx::PointF GetCapturedElementHitPoint(
       const gfx::Point3F& target_point) const;
 
-  UiScene* scene_;
+  raw_ptr<UiScene> scene_;
   int hover_target_id_ = 0;
   // TODO(mthiesse): We shouldn't have a fling target. Elements should fling
   // independently and we should only cancel flings on the relevant element

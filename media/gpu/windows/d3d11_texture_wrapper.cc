@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,12 +14,10 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
-#include "gpu/command_buffer/service/shared_image_backing_d3d.h"
+#include "gpu/command_buffer/service/shared_image/d3d_image_backing.h"
 #include "media/base/bind_to_current_loop.h"
-#include "media/base/win/hresult_status_helper.h"
 #include "media/base/win/mf_helpers.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
-#include "ui/gl/gl_image.h"
 
 namespace media {
 
@@ -29,6 +27,11 @@ bool SupportsFormat(DXGI_FORMAT dxgi_format) {
   switch (dxgi_format) {
     case DXGI_FORMAT_NV12:
     case DXGI_FORMAT_P010:
+    case DXGI_FORMAT_Y210:
+    case DXGI_FORMAT_Y410:
+    case DXGI_FORMAT_P016:
+    case DXGI_FORMAT_Y216:
+    case DXGI_FORMAT_Y416:
     case DXGI_FORMAT_B8G8R8A8_UNORM:
     case DXGI_FORMAT_R10G10B10A2_UNORM:
     case DXGI_FORMAT_R16G16B16A16_FLOAT:
@@ -40,8 +43,14 @@ bool SupportsFormat(DXGI_FORMAT dxgi_format) {
 
 size_t NumPlanes(DXGI_FORMAT dxgi_format) {
   switch (dxgi_format) {
+    case DXGI_FORMAT_Y210:
+    case DXGI_FORMAT_Y410:
+    case DXGI_FORMAT_Y216:
+    case DXGI_FORMAT_Y416:
+      return 3;
     case DXGI_FORMAT_NV12:
     case DXGI_FORMAT_P010:
+    case DXGI_FORMAT_P016:
       return 2;
     case DXGI_FORMAT_B8G8R8A8_UNORM:
     case DXGI_FORMAT_R10G10B10A2_UNORM:
@@ -85,8 +94,7 @@ D3D11Status DefaultTexture2DWrapper::AcquireKeyedMutexIfNeeded() {
   if (FAILED(hr)) {
     keyed_mutex_acquired_ = false;
     DPLOG(ERROR) << "Unable to acquire the key mutex, error: " << hr;
-    return D3D11Status(D3D11Status::Codes::kAcquireKeyedMutexFailed)
-        .AddCause(HresultToStatus(hr));
+    return {D3D11Status::Codes::kAcquireKeyedMutexFailed, hr};
   }
 
   // Key mutex has been acquired for shared resource.
@@ -105,8 +113,7 @@ D3D11Status DefaultTexture2DWrapper::ProcessTexture(
     HRESULT hr = keyed_mutex_->ReleaseSync(gpu::kDXGIKeyedMutexAcquireKey);
     if (FAILED(hr)) {
       DPLOG(ERROR) << "Unable to release the keyed mutex, error: " << hr;
-      return D3D11Status(D3D11Status::Codes::kReleaseKeyedMutexFailed)
-          .AddCause(HresultToStatus(hr));
+      return {D3D11Status::Codes::kReleaseKeyedMutexFailed, hr};
     }
 
     keyed_mutex_acquired_ = false;
@@ -148,8 +155,7 @@ D3D11Status DefaultTexture2DWrapper::Init(
       if (FAILED(hr)) {
         DPLOG(ERROR) << "Failed to get key_mutex from output resource, error "
                      << std::hex << hr;
-        return D3D11Status(D3D11Status::Codes::kGetKeyedMutexFailed)
-            .AddCause(HresultToStatus(hr));
+        return {D3D11Status::Codes::kGetKeyedMutexFailed, hr};
       }
     }
   }
@@ -209,7 +215,7 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
   // decode, and allow webgl/canvas access.
   constexpr uint32_t usage =
       gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE | gpu::SHARED_IMAGE_USAGE_GLES2 |
-      gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_DISPLAY |
+      gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
       gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
   scoped_refptr<gpu::DXGISharedHandleState> dxgi_shared_handle_state;
@@ -247,10 +253,9 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
     }
   }
 
-  auto shared_image_backings =
-      gpu::SharedImageBackingD3D::CreateFromVideoTexture(
-          mailboxes, dxgi_format, size, usage, texture, array_slice,
-          std::move(dxgi_shared_handle_state));
+  auto shared_image_backings = gpu::D3DImageBacking::CreateFromVideoTexture(
+      mailboxes, dxgi_format, size, usage, texture, array_slice,
+      std::move(dxgi_shared_handle_state));
   if (shared_image_backings.empty()) {
     std::move(on_error_cb)
         .Run(std::move(D3D11Status::Codes::kCreateSharedImageFailed));

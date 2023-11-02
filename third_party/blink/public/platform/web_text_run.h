@@ -38,7 +38,7 @@ namespace blink {
 
 class TextRun;
 
-struct WebTextRun {
+struct BLINK_PLATFORM_EXPORT WebTextRun {
   WebTextRun(const WebString& t, bool is_rtl, bool has_directional_override)
       : text(t), rtl(is_rtl), directional_override(has_directional_override) {}
   WebTextRun() : rtl(false), directional_override(false) {}
@@ -50,7 +50,7 @@ struct WebTextRun {
 #if INSIDE_BLINK
   // The resulting blink::TextRun will refer to the text in this
   // struct, so "this" must outlive the WebCore text run.
-  BLINK_PLATFORM_EXPORT operator TextRun() const;
+  operator TextRun() const;
 #endif
 };
 

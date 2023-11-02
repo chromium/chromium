@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,15 +17,15 @@
 #include "dbus/object_proxy.h"
 #include "device/bluetooth/floss/fake_floss_manager_client.h"
 #include "device/bluetooth/floss/floss_adapter_client.h"
+#include "device/bluetooth/floss/floss_advertiser_client.h"
+#include "device/bluetooth/floss/floss_lescan_client.h"
 #include "device/bluetooth/floss/floss_manager_client.h"
+#include "device/bluetooth/floss/floss_socket_manager.h"
 
 namespace floss {
 
 namespace {
-const char kFlossObjectManagerServiceName[] = "org.chromium.bluetooth.Manager";
-
 FlossDBusManager* g_floss_dbus_manager = nullptr;
-FlossDBusThreadManager* g_floss_dbus_thread_manager = nullptr;
 }  // namespace
 
 const int FlossDBusManager::kInvalidAdapter = -1;
@@ -50,9 +50,9 @@ FlossDBusManager::FlossDBusManager(dbus::Bus* bus, bool use_stubs) : bus_(bus) {
   // Sets up callbacks checking for object manager support. Object manager is
   // registered on the root object "/"
   GetSystemBus()
-      ->GetObjectProxy(kFlossObjectManagerServiceName, dbus::ObjectPath("/"))
+      ->GetObjectProxy(kManagerService, dbus::ObjectPath("/"))
       ->CallMethodWithErrorCallback(
-          &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+          &method_call, kDBusTimeoutMs,
           base::BindOnce(&FlossDBusManager::OnObjectManagerSupported,
                          weak_ptr_factory_.GetWeakPtr()),
           base::BindOnce(&FlossDBusManager::OnObjectManagerNotSupported,
@@ -68,12 +68,8 @@ void FlossDBusManager::Initialize(dbus::Bus* system_bus) {
   CHECK(!g_floss_dbus_manager);
 
   VLOG(1) << "FlossDBusManager about to initialize thread manager";
-  FlossDBusThreadManager::Initialize();
 
-  // |system_bus| is unused and we re-use the system bus connection created by
-  // FlossDBusThreadManager.
-  CreateGlobalInstance(FlossDBusThreadManager::Get()->GetSystemBus(),
-                       /*use_stubs=*/false);
+  CreateGlobalInstance(system_bus, /*use_stubs=*/false);
 }
 
 void FlossDBusManager::InitializeFake() {
@@ -142,7 +138,7 @@ void FlossDBusManager::OnObjectManagerSupported(dbus::Response* response) {
   // Initialize the manager client (which doesn't depend on any specific
   // adapter being present)
   client_bundle_->manager_client()->Init(GetSystemBus(), kManagerInterface,
-                                         std::string());
+                                         kInvalidAdapter);
 
   object_manager_support_known_ = true;
   if (object_manager_support_known_callback_) {
@@ -184,6 +180,18 @@ FlossAdapterClient* FlossDBusManager::GetAdapterClient() {
   return client_bundle_->adapter_client();
 }
 
+FlossSocketManager* FlossDBusManager::GetSocketManager() {
+  return client_bundle_->socket_manager();
+}
+
+FlossLEScanClient* FlossDBusManager::GetLEScanClient() {
+  return client_bundle_->lescan_client();
+}
+
+FlossAdvertiserClient* FlossDBusManager::GetAdvertiserClient() {
+  return client_bundle_->advertiser_client();
+}
+
 void FlossDBusManager::InitializeAdapterClients(int adapter) {
   // Clean up active adapter clients
   if (active_adapter_ != kInvalidAdapter) {
@@ -197,12 +205,15 @@ void FlossDBusManager::InitializeAdapterClients(int adapter) {
     return;
   }
 
-  dbus::ObjectPath adapter_path =
-      FlossManagerClient::GenerateAdapterPath(adapter);
-
   // Initialize any adapter clients.
   client_bundle_->adapter_client()->Init(GetSystemBus(), kAdapterService,
-                                         adapter_path.value());
+                                         active_adapter_);
+  client_bundle_->socket_manager()->Init(GetSystemBus(), kAdapterService,
+                                         active_adapter_);
+  client_bundle_->lescan_client()->Init(GetSystemBus(), kAdapterService,
+                                        active_adapter_);
+  client_bundle_->advertiser_client()->Init(GetSystemBus(), kAdapterService,
+                                            active_adapter_);
 }
 
 void FlossDBusManagerSetter::SetFlossManagerClient(
@@ -215,59 +226,20 @@ void FlossDBusManagerSetter::SetFlossAdapterClient(
   FlossDBusManager::Get()->client_bundle_->adapter_client_ = std::move(client);
 }
 
-FlossDBusThreadManager::FlossDBusThreadManager() {
-  base::Thread::Options thread_options;
-  thread_options.message_pump_type = base::MessagePumpType::IO;
-  dbus_thread_ = std::make_unique<base::Thread>("Floss D-Bus thread");
-  dbus_thread_->StartWithOptions(std::move(thread_options));
-
-  // Create the connection to the system bus.
-  dbus::Bus::Options system_bus_options;
-  system_bus_options.bus_type = dbus::Bus::SYSTEM;
-  system_bus_options.connection_type = dbus::Bus::PRIVATE;
-  system_bus_options.dbus_task_runner = dbus_thread_->task_runner();
-  system_bus_ = base::MakeRefCounted<dbus::Bus>(system_bus_options);
+void FlossDBusManagerSetter::SetFlossSocketManager(
+    std::unique_ptr<FlossSocketManager> mgr) {
+  FlossDBusManager::Get()->client_bundle_->socket_manager_ = std::move(mgr);
 }
 
-FlossDBusThreadManager::~FlossDBusThreadManager() {
-  // Shut down the bus. During the browser shutdown, it's ok to shut down
-  // the bus synchronously.
-  system_bus_->ShutdownOnDBusThreadAndBlock();
-
-  // Stop the D-Bus thread.
-  dbus_thread_->Stop();
-
-  if (!g_floss_dbus_thread_manager)
-    return;  // Called from Shutdown() or local test instance.
-
-  // There should never be both a global instance and a local instance.
-  CHECK(this == g_floss_dbus_thread_manager);
+void FlossDBusManagerSetter::SetFlossLEScanClient(
+    std::unique_ptr<FlossLEScanClient> client) {
+  FlossDBusManager::Get()->client_bundle_->lescan_client_ = std::move(client);
 }
 
-dbus::Bus* FlossDBusThreadManager::GetSystemBus() {
-  return system_bus_.get();
-}
-
-// static
-void FlossDBusThreadManager::Initialize() {
-  CHECK(!g_floss_dbus_thread_manager);
-  g_floss_dbus_thread_manager = new FlossDBusThreadManager();
-}
-
-// static
-void FlossDBusThreadManager::Shutdown() {
-  // Ensure that we only shutdown FlossDBusThreadManager once.
-  CHECK(g_floss_dbus_thread_manager);
-  delete g_floss_dbus_thread_manager;
-  g_floss_dbus_thread_manager = nullptr;
-  DVLOG(1) << "FlossDBusThreadManager Shutdown completed";
-}
-
-// static
-FlossDBusThreadManager* FlossDBusThreadManager::Get() {
-  CHECK(g_floss_dbus_thread_manager)
-      << "FlossDBusThreadManager::Get() called before Initialize()";
-  return g_floss_dbus_thread_manager;
+void FlossDBusManagerSetter::SetFlossAdvertiserClient(
+    std::unique_ptr<FlossAdvertiserClient> client) {
+  FlossDBusManager::Get()->client_bundle_->advertiser_client_ =
+      std::move(client);
 }
 
 FlossClientBundle::FlossClientBundle(bool use_stubs) : use_stubs_(use_stubs) {
@@ -288,6 +260,9 @@ void FlossClientBundle::ResetAdapterClients() {
   }
 
   adapter_client_ = FlossAdapterClient::Create();
+  socket_manager_ = FlossSocketManager::Create();
+  lescan_client_ = FlossLEScanClient::Create();
+  advertiser_client_ = FlossAdvertiserClient::Create();
 }
 
 }  // namespace floss

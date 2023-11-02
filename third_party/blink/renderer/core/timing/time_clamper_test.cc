@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -80,7 +80,7 @@ TEST(TimeClamperTest, ClampingNegativeNumbersIsConsistent) {
 TEST(TimeClamperTest, ClampingIsPerInstance) {
   TimeClamper clamper1;
   TimeClamper clamper2;
-  int64_t time_microseconds = 0;
+  int64_t time_microseconds = kIntervalInMicroseconds / 2;
   while (true) {
     if (std::abs(clamper1
                      .ClampTimeResolution(base::Microseconds(time_microseconds),

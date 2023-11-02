@@ -1,12 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/widget_kit/widget_metrics_util.h"
 
-#include "base/metrics/histogram_functions.h"
-#include "base/notreached.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/widget_kit/widget_kit_swift.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -26,7 +26,11 @@ enum class WidgetKitExtensionKind {
   kSearch = 1,
   kQuickActions = 2,
   kObsolete = 3,
-  kMaxValue = kObsolete,
+  kLockscreenLauncherSearch = 4,
+  kLockscreenLauncherIncognito = 5,
+  kLockscreenLauncherVoiceSearch = 6,
+  kLockscreenLauncherGame = 7,
+  kMaxValue = kLockscreenLauncherGame,
 };
 
 WidgetKitExtensionKind UMAKindForWidgetKind(NSString* kind) {
@@ -42,6 +46,19 @@ WidgetKitExtensionKind UMAKindForWidgetKind(NSString* kind) {
   if ([kind isEqualToString:@"QuickActionsWidget"]) {
     return WidgetKitExtensionKind::kQuickActions;
   }
+  if ([kind isEqualToString:@"LockscreenLauncherSearchWidget"]) {
+    return WidgetKitExtensionKind::kLockscreenLauncherSearch;
+  }
+  if ([kind isEqualToString:@"LockscreenLauncherIncognitoWidget"]) {
+    return WidgetKitExtensionKind::kLockscreenLauncherIncognito;
+  }
+  if ([kind isEqualToString:@"LockscreenLauncherVoiceSearchWidget"]) {
+    return WidgetKitExtensionKind::kLockscreenLauncherVoiceSearch;
+  }
+  if ([kind isEqualToString:@"LockscreenLauncherGameWidget"]) {
+    return WidgetKitExtensionKind::kLockscreenLauncherGame;
+  }
+
   NOTREACHED() << base::SysNSStringToUTF8(kind);
   return WidgetKitExtensionKind::kObsolete;
 }

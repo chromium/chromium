@@ -47,12 +47,13 @@
     // Scroll horizontally first. Ensure we scrolled the div since otherwise we
     // may pass the test vacuously. See crbug.com/801381 for the case we're
     // guarding against.
-    const expectedScroll = 10;
+    const pixelsToScroll = 10;
     const { x: pixelsToScrollX, y: pixelsToScrollY } = calculatePixelsToScroll(
-      document.scrollingElement, expectedScroll, expectedScroll
+      document.scrollingElement, pixelsToScroll, pixelsToScroll
     );
     await smoothScroll(
-      pixelsToScrollX, 50, 50, WHEEL_SOURCE_TYPE, 'right', 1000
+      pixelsToScrollX, 50, 50, WHEEL_SOURCE_TYPE, 'right', 1000,
+      false /* precise_scrolling_deltas */
     );
 
     // Wait a bit since the scroll gesture resolves when the ScrollEnd is sent
@@ -69,14 +70,18 @@
           "Sanity check, if this fails the test isn't in the correct state.");
     });
 
+    const { y: expectedScrollY } = (
+      calculateExpectedScroll(document.scrollingElement, 0, pixelsToScrollY)
+    );
     // Now scroll vertically. The scroller shouldn't have any vertical scroll
     // extent so the window should scroll.
     await smoothScroll(
-      pixelsToScrollY, 50, 50, WHEEL_SOURCE_TYPE, 'down', 1000
+      pixelsToScrollY, 50, 50, WHEEL_SOURCE_TYPE, 'down', 1000,
+      false /* precise_scrolling_deltas */
     );
     await nFrames(2);
     t.step(() => {
-      assert_approx_equals(window.scrollY, expectedScroll, 0.1);
+      assert_approx_equals(window.scrollY, expectedScrollY, 0.1);
     });
     t.done();
   }

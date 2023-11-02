@@ -1,11 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_FAVICON_LARGE_ICON_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_FAVICON_LARGE_ICON_SERVICE_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace base {
 template <typename T> struct DefaultSingletonTraits;
@@ -21,7 +21,7 @@ class LargeIconService;
 
 // Singleton that owns all LargeIconService and associates them with
 // BrowserContext instances.
-class LargeIconServiceFactory : public BrowserContextKeyedServiceFactory {
+class LargeIconServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static favicon::LargeIconService* GetForBrowserContext(
       content::BrowserContext* context);
@@ -31,6 +31,10 @@ class LargeIconServiceFactory : public BrowserContextKeyedServiceFactory {
   LargeIconServiceFactory(const LargeIconServiceFactory&) = delete;
   LargeIconServiceFactory& operator=(const LargeIconServiceFactory&) = delete;
 
+  // Returns the icon size requested from server. The returned value takes into
+  // account the state of `features::kLargeFaviconFromGoogle`.
+  static int desired_size_in_dip_for_server_requests();
+
  private:
   friend struct base::DefaultSingletonTraits<LargeIconServiceFactory>;
 
@@ -38,8 +42,6 @@ class LargeIconServiceFactory : public BrowserContextKeyedServiceFactory {
   ~LargeIconServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;

@@ -1,0 +1,35 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("cookie_util") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "cookie_util.h",
+    "cookie_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/net",
+    "//ios/web/common",
+    "//ios/web/public",
+    "//net",
+    "//net:extras",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "cookie_util_unittest.mm" ]
+  deps = [
+    ":cookie_util",
+    "//base",
+    "//base/test:test_support",
+    "//ios/net",
+    "//ios/net:test_support",
+    "//ios/web/common",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+}

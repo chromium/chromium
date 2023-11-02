@@ -1,11 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/ui_devtools/views/window_element.h"
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "components/ui_devtools/Protocol.h"
+#include "components/ui_devtools/protocol.h"
 #include "components/ui_devtools/ui_element_delegate.h"
 #include "components/ui_devtools/views/devtools_event_util.h"
 #include "components/ui_devtools/views/element_utility.h"
@@ -22,7 +23,7 @@ namespace {
 
 int GetIndexOfChildInParent(aura::Window* window) {
   const aura::Window::Windows& siblings = window->parent()->children();
-  auto it = std::find(siblings.begin(), siblings.end(), window);
+  auto it = base::ranges::find(siblings, window);
   DCHECK(it != siblings.end());
   return std::distance(siblings.begin(), it);
 }

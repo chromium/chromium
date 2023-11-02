@@ -1,12 +1,12 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 
 #import "ios/chrome/browser/main/browser.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/strings/grit/ui_strings.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "ui/strings/grit/ui_strings.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -21,7 +21,7 @@
 @property(nonatomic, readwrite, getter=isVisible) BOOL visible;
 
 // Cancel action passed using the public API.
-// It will called from the overridden block stored in the |cancelAction|
+// It will called from the overridden block stored in the `cancelAction`
 // property.
 @property(nonatomic, copy) ProceduralBlock rawCancelAction;
 

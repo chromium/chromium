@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,15 +32,15 @@ std::string GetDecorationLayoutFromGtkWindow() {
 void ParseActionString(const std::string& value,
                        GtkUi::WindowFrameAction* action) {
   if (value == "none")
-    *action = views::LinuxUI::WindowFrameAction::kNone;
+    *action = ui::LinuxUiTheme::WindowFrameAction::kNone;
   else if (value == "lower")
-    *action = views::LinuxUI::WindowFrameAction::kLower;
+    *action = ui::LinuxUiTheme::WindowFrameAction::kLower;
   else if (value == "minimize")
-    *action = views::LinuxUI::WindowFrameAction::kMinimize;
+    *action = ui::LinuxUiTheme::WindowFrameAction::kMinimize;
   else if (value == "toggle-maximize")
-    *action = views::LinuxUI::WindowFrameAction::kToggleMaximize;
+    *action = ui::LinuxUiTheme::WindowFrameAction::kToggleMaximize;
   else if (value == "menu")
-    *action = views::LinuxUI::WindowFrameAction::kMenu;
+    *action = ui::LinuxUiTheme::WindowFrameAction::kMenu;
 }
 
 }  // namespace
@@ -48,8 +48,8 @@ void ParseActionString(const std::string& value,
 SettingsProviderGtk::FrameActionSettingWatcher::FrameActionSettingWatcher(
     SettingsProviderGtk* settings_provider,
     const std::string& setting_name,
-    views::LinuxUI::WindowFrameActionSource action_type,
-    views::LinuxUI::WindowFrameAction default_action)
+    ui::LinuxUiTheme::WindowFrameActionSource action_type,
+    ui::LinuxUiTheme::WindowFrameAction default_action)
     : settings_provider_(settings_provider),
       setting_name_(setting_name),
       action_type_(action_type),
@@ -91,18 +91,18 @@ SettingsProviderGtk::SettingsProviderGtk(GtkUi* delegate)
     frame_action_setting_watchers_.push_back(
         std::make_unique<FrameActionSettingWatcher>(
             this, "gtk-titlebar-middle-click",
-            views::LinuxUI::WindowFrameActionSource::kMiddleClick,
-            views::LinuxUI::WindowFrameAction::kNone));
+            ui::LinuxUiTheme::WindowFrameActionSource::kMiddleClick,
+            ui::LinuxUiTheme::WindowFrameAction::kNone));
     frame_action_setting_watchers_.push_back(
         std::make_unique<FrameActionSettingWatcher>(
             this, "gtk-titlebar-double-click",
-            views::LinuxUI::WindowFrameActionSource::kDoubleClick,
-            views::LinuxUI::WindowFrameAction::kToggleMaximize));
+            ui::LinuxUiTheme::WindowFrameActionSource::kDoubleClick,
+            ui::LinuxUiTheme::WindowFrameAction::kToggleMaximize));
     frame_action_setting_watchers_.push_back(
         std::make_unique<FrameActionSettingWatcher>(
             this, "gtk-titlebar-right-click",
-            views::LinuxUI::WindowFrameActionSource::kRightClick,
-            views::LinuxUI::WindowFrameAction::kMenu));
+            ui::LinuxUiTheme::WindowFrameActionSource::kRightClick,
+            ui::LinuxUiTheme::WindowFrameAction::kMenu));
   } else {
     signal_id_decoration_layout_ =
         g_signal_connect_after(settings, "notify::gtk-theme-name",

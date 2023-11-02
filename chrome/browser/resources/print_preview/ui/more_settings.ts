@@ -1,17 +1,26 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/hidden_style_css.m.js';
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.m.js';
+import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '../strings.m.js';
 
-import {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.m.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MetricsContext, PrintSettingsUiBucket} from '../metrics.js';
+
+import {getTemplate} from './more_settings.html.js';
+
+interface PrintPreviewMoreSettingsElement {
+  $: {
+    label: HTMLElement,
+  };
+}
+
 
 class PrintPreviewMoreSettingsElement extends PolymerElement {
   static get is() {
@@ -19,7 +28,7 @@ class PrintPreviewMoreSettingsElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -62,6 +71,12 @@ class PrintPreviewMoreSettingsElement extends PolymerElement {
         this.settingsExpandedByUser ?
             PrintSettingsUiBucket.MORE_SETTINGS_CLICKED :
             PrintSettingsUiBucket.LESS_SETTINGS_CLICKED);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-more-settings': PrintPreviewMoreSettingsElement;
   }
 }
 

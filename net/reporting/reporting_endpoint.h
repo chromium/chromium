@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,10 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "net/base/net_export.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -23,12 +22,13 @@ namespace net {
 struct NET_EXPORT ReportingEndpointGroupKey {
   ReportingEndpointGroupKey();
 
-  ReportingEndpointGroupKey(const NetworkIsolationKey& network_isolation_key,
-                            const url::Origin& origin,
-                            const std::string& group_name);
+  ReportingEndpointGroupKey(
+      const NetworkAnonymizationKey& network_anonymization_key,
+      const url::Origin& origin,
+      const std::string& group_name);
 
   ReportingEndpointGroupKey(
-      const NetworkIsolationKey& network_isolation_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       absl::optional<base::UnguessableToken> reporting_source,
       const url::Origin& origin,
       const std::string& group_name);
@@ -51,9 +51,9 @@ struct NET_EXPORT ReportingEndpointGroupKey {
   // V1 document endpoint.
   bool IsDocumentEndpoint() const { return reporting_source.has_value(); }
 
-  // The NetworkIsolationKey the group is scoped to. Needed to prevent leaking
-  // third party contexts across sites.
-  NetworkIsolationKey network_isolation_key;
+  // The NetworkAnonymizationKey the group is scoped to. Needed to prevent
+  // leaking third party contexts across sites.
+  NetworkAnonymizationKey network_anonymization_key;
 
   // Source token for the document or worker which configured this endpoint, if
   // this was configured with the Reporting-Endpoints header. For endpoint

@@ -12,7 +12,8 @@
     {
       "name": "VerticalScrollbar",
       "position": [485, 0],
-      "bounds": [15, 600]
+      "bounds": [15, 600],
+      "contentsOpaque": true
     },
     {
       "name": "LayoutNGBlockFlow HTML",

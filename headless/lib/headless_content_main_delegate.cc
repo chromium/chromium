@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,10 +32,10 @@
 #include "headless/lib/browser/headless_browser_impl.h"
 #include "headless/lib/browser/headless_content_browser_client.h"
 #include "headless/lib/headless_crash_reporter_client.h"
-#include "headless/lib/headless_macros.h"
 #include "headless/lib/renderer/headless_content_renderer_client.h"
 #include "headless/lib/utility/headless_content_utility_client.h"
 #include "sandbox/policy/switches.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -45,26 +45,26 @@
 #include "ui/ozone/public/ozone_switches.h"
 
 #if defined(HEADLESS_USE_EMBEDDED_RESOURCES)
-#include "headless/embedded_resource_pak.h"
+#include "headless/embedded_resource_pack_data.h"     // nogncheck
+#include "headless/embedded_resource_pack_strings.h"  // nogncheck
 #endif
 
-#if defined(OS_MAC) || defined(OS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "components/crash/core/app/crashpad.h"
-#endif
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-#include "components/crash/core/app/breakpad_linux.h"
-#endif
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "components/crash/core/app/crash_switches.h"
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <signal.h>
 #endif
 
 namespace headless {
 
 namespace features {
-const base::Feature kVirtualTime{"VirtualTime",
-                                 base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kVirtualTime, "VirtualTime", base::FEATURE_DISABLED_BY_DEFAULT);
 }
 
 const base::FilePath::CharType kDefaultProfileName[] =
@@ -78,7 +78,7 @@ const int kTraceEventBrowserProcessSortIndex = -6;
 
 HeadlessContentMainDelegate* g_current_headless_content_main_delegate = nullptr;
 
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
 base::LazyInstance<HeadlessCrashReporterClient>::Leaky g_headless_crash_client =
     LAZY_INSTANCE_INITIALIZER;
 #endif
@@ -87,16 +87,14 @@ const char kLogFileName[] = "CHROME_LOG_FILE";
 const char kHeadlessCrashKey[] = "headless";
 
 void InitializeResourceBundle(const base::CommandLine& command_line) {
-  const std::string locale =
-      command_line.GetSwitchValueASCII(::switches::kLang);
-  ui::ResourceBundle::InitSharedInstanceWithLocale(
-      locale, nullptr, ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
-
-#ifdef HEADLESS_USE_EMBEDDED_RESOURCES
-  ui::ResourceBundle::GetSharedInstance().AddDataPackFromBuffer(
-      {kHeadlessResourcePak.contents, kHeadlessResourcePak.length},
+#if defined(HEADLESS_USE_EMBEDDED_RESOURCES)
+  ui::ResourceBundle::InitSharedInstanceWithBuffer(
+      {kHeadlessResourcePackStrings.contents,
+       kHeadlessResourcePackStrings.length},
       ui::kScaleFactorNone);
-
+  ui::ResourceBundle::GetSharedInstance().AddDataPackFromBuffer(
+      {kHeadlessResourcePackData.contents, kHeadlessResourcePackData.length},
+      ui::k100Percent);
 #else
   base::FilePath resource_dir;
   bool result = base::PathService::Get(base::DIR_ASSETS, &resource_dir);
@@ -105,14 +103,20 @@ void InitializeResourceBundle(const base::CommandLine& command_line) {
   // Try loading the headless library pak file first. If it doesn't exist (i.e.,
   // when we're running with the --headless switch), fall back to the browser's
   // resource pak.
-  base::FilePath headless_pak =
-      resource_dir.Append(FILE_PATH_LITERAL("headless_lib.pak"));
-  if (base::PathExists(headless_pak)) {
+  base::FilePath string_pack =
+      resource_dir.Append(FILE_PATH_LITERAL("headless_lib_strings.pak"));
+  if (base::PathExists(string_pack)) {
+    ui::ResourceBundle::InitSharedInstanceWithPakPath(string_pack);
+    base::FilePath data_pack =
+        resource_dir.Append(FILE_PATH_LITERAL("headless_lib_data.pak"));
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-        headless_pak, ui::kScaleFactorNone);
+        data_pack, ui::k100Percent);
     return;
   }
-
+  const std::string locale =
+      command_line.GetSwitchValueASCII(::switches::kLang);
+  ui::ResourceBundle::InitSharedInstanceWithLocale(
+      locale, nullptr, ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
   // Otherwise, load resources.pak, chrome_100 and chrome_200.
   base::FilePath resources_pak =
       resource_dir.Append(FILE_PATH_LITERAL("resources.pak"));
@@ -121,7 +125,7 @@ void InitializeResourceBundle(const base::CommandLine& command_line) {
   base::FilePath chrome_200_pak =
       resource_dir.Append(FILE_PATH_LITERAL("chrome_200_percent.pak"));
 
-#if defined(OS_MAC) && !defined(COMPONENT_BUILD)
+#if BUILDFLAG(IS_MAC) && !defined(COMPONENT_BUILD)
   // In non component builds, check if fall back in Resources/ folder is
   // available.
   if (!base::PathExists(resources_pak)) {
@@ -172,7 +176,7 @@ HeadlessContentMainDelegate::~HeadlessContentMainDelegate() {
   g_current_headless_content_main_delegate = nullptr;
 }
 
-bool HeadlessContentMainDelegate::BasicStartupComplete(int* exit_code) {
+absl::optional<int> HeadlessContentMainDelegate::BasicStartupComplete() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
   // Make sure all processes know that we're in headless mode.
@@ -194,25 +198,13 @@ bool HeadlessContentMainDelegate::BasicStartupComplete(int* exit_code) {
   command_line->AppendSwitchASCII(::switches::kOzonePlatform, "headless");
 #endif
 
-  if (command_line->HasSwitch(::switches::kUseGL)) {
-    std::string use_gl = command_line->GetSwitchValueASCII(switches::kUseGL);
-    if (use_gl != gl::kGLImplementationEGLName) {
-      // Headless uses a software output device which will cause us to fall back
-      // to software compositing anyway, but only after attempting and failing
-      // to initialize GPU compositing. We disable GPU compositing here
-      // explicitly to preempt this attempt.
-      command_line->AppendSwitch(::switches::kDisableGpuCompositing);
-    }
-  } else {
-    if (!options()->gl_implementation.empty()) {
-      command_line->AppendSwitchASCII(::switches::kUseGL,
-                                      options()->gl_implementation);
-      if (!options()->angle_implementation.empty()) {
-        command_line->AppendSwitchASCII(::switches::kUseANGLE,
-                                        options()->angle_implementation);
-      }
-    } else {
-      command_line->AppendSwitch(::switches::kDisableGpu);
+  if (!command_line->HasSwitch(::switches::kUseGL) &&
+      !options()->gl_implementation.empty()) {
+    command_line->AppendSwitchASCII(::switches::kUseGL,
+                                    options()->gl_implementation);
+    if (!options()->angle_implementation.empty()) {
+      command_line->AppendSwitchASCII(::switches::kUseANGLE,
+                                      options()->angle_implementation);
     }
   }
 
@@ -223,27 +215,27 @@ bool HeadlessContentMainDelegate::BasicStartupComplete(int* exit_code) {
   // in content/public/common/content_switch_dependent_feature_overrides.cc
   command_line->AppendSwitch(::blink::switches::kAllowPreCommitInput);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   command_line->AppendSwitch(
       ::switches::kDisableGpuProcessForDX12InfoCollection);
 #endif
 
   content::Profiling::ProcessStarted();
-  return false;
+  return absl::nullopt;
 }
 
 void HeadlessContentMainDelegate::InitLogging(
     const base::CommandLine& command_line) {
   const std::string process_type =
       command_line.GetSwitchValueASCII(::switches::kProcessType);
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   if (!command_line.HasSwitch(::switches::kEnableLogging))
     return;
 #else
   // Child processes in Windows are not able to initialize logging.
   if (!process_type.empty())
     return;
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
 
   logging::LoggingDestination log_mode;
   base::FilePath log_filename(FILE_PATH_LITERAL("chrome_debug.log"));
@@ -289,7 +281,13 @@ void HeadlessContentMainDelegate::InitLogging(
 
   // Otherwise we log to where the executable is.
   if (log_path.empty()) {
+#if BUILDFLAG(IS_FUCHSIA)
+    // TODO(crbug.com/1262330): Use the same solution as used for LOG_DIR.
+    // Use -1 to allow this to compile.
+    if (base::PathService::Get(-1, &log_path)) {
+#else
     if (base::PathService::Get(base::DIR_MODULE, &log_path)) {
+#endif
       log_path = log_path.Append(log_filename);
     } else {
       log_path = log_filename;
@@ -317,57 +315,50 @@ void HeadlessContentMainDelegate::InitLogging(
 
 void HeadlessContentMainDelegate::InitCrashReporter(
     const base::CommandLine& command_line) {
-  if (command_line.HasSwitch(::switches::kDisableBreakpad))
-    return;
-#if defined(OS_FUCHSIA)
-  // TODO(crbug.com/1226159): Implement this when crash reporting/Breakpad are
-  // available in Fuchsia.
-  NOTIMPLEMENTED();
-#else
-  const std::string process_type =
-      command_line.GetSwitchValueASCII(::switches::kProcessType);
-  crash_reporter::SetCrashReporterClient(g_headless_crash_client.Pointer());
-  g_headless_crash_client.Pointer()->set_crash_dumps_dir(
-      options()->crash_dumps_dir);
-
-  crash_reporter::InitializeCrashKeys();
-  crash_keys::SetSwitchesFromCommandLine(command_line, nullptr);
-
-#if defined(HEADLESS_USE_BREAKPAD)
-  if (!options()->enable_crash_reporter) {
-    DCHECK(!breakpad::IsCrashReporterEnabled());
+  if (!options()->enable_crash_reporter
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+      && !command_line.HasSwitch(crash_reporter::switches::kCrashpadHandlerPid)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  ) {
     return;
   }
-  if (process_type != switches::kZygoteProcess)
-    breakpad::InitCrashReporter(process_type);
-#elif defined(OS_MAC)
-  crash_reporter::InitializeCrashpad(process_type.empty(), process_type);
-// Avoid adding this dependency in Windows Chrome non component builds, since
-// crashpad is already enabled.
-// TODO(dvallet): Ideally we would also want to avoid this for component builds.
-#elif defined(OS_WIN)
-  // InitializeCrashpad is already called from main() on Windows, no need to
-  // call it from here.
-#endif  // defined(HEADLESS_USE_BREAKPAD)
-#endif  // defined(OS_FUCHSIA)
+
+#if BUILDFLAG(IS_FUCHSIA)
+  // TODO(crbug.com/1226159): Implement this when crash reporting is available
+  // for Fuchsia.
+  NOTIMPLEMENTED();
+#else
+  crash_reporter::SetCrashReporterClient(g_headless_crash_client.Pointer());
+  crash_reporter::InitializeCrashKeys();
+
+  const std::string process_type =
+      command_line.GetSwitchValueASCII(::switches::kProcessType);
+  if (process_type != switches::kZygoteProcess) {
+    g_headless_crash_client.Pointer()->set_crash_dumps_dir(
+        options()->crash_dumps_dir);
+#if !BUILDFLAG(IS_WIN)
+    crash_reporter::InitializeCrashpad(process_type.empty(), process_type);
+#endif  // !BUILDFLAG(IS_WIN)
+    crash_keys::SetSwitchesFromCommandLine(command_line, nullptr);
+  }
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
   // Mark any bug reports from headless mode as such.
   static crash_reporter::CrashKeyString<32> headless_key(kHeadlessCrashKey);
   headless_key.Set("true");
 }
 
-
 void HeadlessContentMainDelegate::PreSandboxStartup() {
   const base::CommandLine& command_line(
       *base::CommandLine::ForCurrentProcess());
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Windows always needs to initialize logging, otherwise you get a renderer
   // crash.
   InitLogging(command_line);
 #else
   if (command_line.HasSwitch(::switches::kEnableLogging))
     InitLogging(command_line);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   InitCrashReporter(command_line);
 
@@ -399,6 +390,7 @@ HeadlessContentMainDelegate::RunProcess(
                              "HeadlessContentMainDelegate::RunProcess";
 
   browser_runner->Run();
+  CHECK(browser_->did_shutdown());
   browser_runner->Shutdown();
   browser_.reset();
 
@@ -406,7 +398,7 @@ HeadlessContentMainDelegate::RunProcess(
   return 0;
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 void SIGTERMProfilingShutdown(int signal) {
   content::Profiling::Stop();
   struct sigaction sigact;
@@ -432,16 +424,14 @@ void HeadlessContentMainDelegate::ZygoteForked() {
   }
   const base::CommandLine& command_line(
       *base::CommandLine::ForCurrentProcess());
-  const std::string process_type =
-      command_line.GetSwitchValueASCII(::switches::kProcessType);
-  // Unconditionally try to turn on crash reporting since we do not have access
-  // to the latest browser options at this point when testing. Breakpad will
-  // bail out gracefully if the browser process hasn't enabled crash reporting.
-#if defined(HEADLESS_USE_BREAKPAD)
-  breakpad::InitCrashReporter(process_type);
-#endif
+  if (command_line.HasSwitch(crash_reporter::switches::kCrashpadHandlerPid)) {
+    const std::string process_type =
+        command_line.GetSwitchValueASCII(::switches::kProcessType);
+    crash_reporter::InitializeCrashpad(false, process_type);
+    crash_keys::SetSwitchesFromCommandLine(command_line, nullptr);
+  }
 }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 // static
 HeadlessContentMainDelegate* HeadlessContentMainDelegate::GetInstance() {
@@ -478,8 +468,11 @@ HeadlessContentMainDelegate::CreateContentUtilityClient() {
   return utility_client_.get();
 }
 
-void HeadlessContentMainDelegate::PostEarlyInitialization(
-    bool is_running_tests) {
+absl::optional<int> HeadlessContentMainDelegate::PostEarlyInitialization(
+    InvokedIn invoked_in) {
+  if (absl::holds_alternative<InvokedInChildProcess>(invoked_in))
+    return absl::nullopt;
+
   if (base::FeatureList::IsEnabled(features::kVirtualTime)) {
     // Only pass viz flags into the virtual time mode.
     const char* const switches[] = {
@@ -504,6 +497,8 @@ void HeadlessContentMainDelegate::PostEarlyInitialization(
     for (const auto* flag : switches)
       base::CommandLine::ForCurrentProcess()->AppendSwitch(flag);
   }
+
+  return absl::nullopt;
 }
 
 }  // namespace headless

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@ import androidx.annotation.StringRes;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -24,12 +25,12 @@ import org.chromium.components.permissions.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.device.geolocation.LocationProviderOverrider;
 import org.chromium.device.geolocation.MockLocationProvider;
-import org.chromium.ui.base.AndroidPermissionDelegate;
-import org.chromium.ui.base.PermissionCallback;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.permissions.AndroidPermissionDelegate;
+import org.chromium.ui.permissions.PermissionCallback;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -138,9 +139,8 @@ public class RuntimePermissionTestUtils {
      * @param testUrl The URL of the test page to load in order to run the text.
      * @param expectPermissionAllowed Whether to expect that the permissions is granted by the end
      *         of the test.
-     * @param permissionPromptAllow Whether to respond with "allow" on the Chrome permission prompt
+     * @param permissionPromptAllow Whether to "allow" or "reject" on the Chrome permission prompt
      *         (`null` means skip waiting for a permission prompt at all).
-     * @param runtimePromptResponse How to respond to the runtime prompt.
      * @param waitForMissingPermissionPrompt Whether to wait for a Chrome dialog informing the user
      *         that the Android permission is missing.
      * @param waitForUpdater Whether to wait for the test page to update the window title to confirm
@@ -149,7 +149,6 @@ public class RuntimePermissionTestUtils {
      *         skip).
      * @param missingPermissionPromptTextId The resource string id that matches the text of the
      *         missing permission prompt dialog (0 if not applicable).
-     * @param requestablePermission The Android permission(s) that will be requested by this test.
      * @throws Exception
      */
     public static void runTest(final PermissionTestRule permissionTestRule,
@@ -169,27 +168,42 @@ public class RuntimePermissionTestUtils {
         permissionTestRule.setUpUrl(testUrl);
 
         if (javascriptToExecute != null && !javascriptToExecute.isEmpty()) {
-            permissionTestRule.runJavaScriptCodeInCurrentTab(javascriptToExecute);
+            permissionTestRule.runJavaScriptCodeInCurrentTabWithGesture(javascriptToExecute);
         }
 
         if (permissionPromptAllow != null) {
-            // Wait for chrome permission dialog and accept it.
+            // A permission prompt dialog is expected. Wait for chrome to display and accept or
+            // deny.
             PermissionTestRule.waitForDialog(activity);
             PermissionTestRule.replyToDialog(permissionPromptAllow, activity);
+
+            if (waitForMissingPermissionPrompt) {
+                // Wait for Chrome to inform user that a permission is missing --> different dialog
+                final ModalDialogManager manager = TestThreadUtils.runOnUiThreadBlockingNoException(
+                        activity::getModalDialogManager);
+                waitUntilDifferentDialogIsShowing(
+                        permissionTestRule, manager.getCurrentDialogForTest());
+            }
         }
 
         if (waitForMissingPermissionPrompt) {
-            // Wait for missing permission dialog and dismiss it.
             final ModalDialogManager manager = TestThreadUtils.runOnUiThreadBlockingNoException(
                     activity::getModalDialogManager);
-            waitUntilDifferentDialogIsShowing(
-                    permissionTestRule, manager.getCurrentDialogForTest());
 
+            // Wait for the dialog that informs the user permissions are missing, when the initial 
+            // prompt is rejected or expected to not be shown.
+            if (!Boolean.TRUE.equals(permissionPromptAllow)) {
+                waitUntilDifferentDialogIsShowing(
+                        permissionTestRule, manager.getCurrentDialogForTest());
+            }
+
+            // Verify the correct missing permission string resource is displayed.
             final View dialogText = manager.getCurrentDialogForTest()
                                             .get(ModalDialogProperties.CUSTOM_VIEW)
                                             .findViewById(R.id.text);
+            String appName = BuildInfo.getInstance().hostPackageLabel;
             Assert.assertEquals(((TextView) dialogText).getText(),
-                    activity.getResources().getString(missingPermissionPromptTextId));
+                    activity.getResources().getString(missingPermissionPromptTextId, appName));
 
             TestThreadUtils.runOnUiThreadBlocking(() -> {
                 manager.getCurrentPresenterForTest().dismissCurrentDialog(

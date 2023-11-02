@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,11 @@
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/browser/android/webapk/webapk_icon_hasher.h"
 #include "components/webapps/browser/android/webapk/webapk_types.h"
-#include "third_party/skia/include/core/SkBitmap.h"
+#include "url/gurl.h"
+
+namespace base {
+class FilePath;
+}
 
 namespace webapps {
 
@@ -25,9 +29,10 @@ namespace webapps {
 // splash icon URL is unknown.
 std::unique_ptr<std::string> BuildProtoInBackground(
     const webapps::ShortcutInfo& shortcut_info,
-    const SkBitmap& primary_icon,
+    const GURL& app_key,
+    const std::string& primary_icon_data,
     bool is_primary_icon_maskable,
-    const SkBitmap& splash_icon,
+    const std::string& splash_icon_data,
     const std::string& package_name,
     const std::string& version,
     std::map<std::string, WebApkIconHasher::Icon> icon_url_to_murmur2_hash,
@@ -35,15 +40,32 @@ std::unique_ptr<std::string> BuildProtoInBackground(
     bool is_app_identity_update_supported,
     std::vector<WebApkUpdateReason> update_reasons);
 
+// Asynchronously builds the WebAPK proto on a background thread.
+// Runs |callback| on the calling thread when complete.
+void BuildProto(
+    const webapps::ShortcutInfo& shortcut_info,
+    const GURL& app_key,
+    const std::string& primary_icon_data,
+    bool is_primary_icon_maskable,
+    const std::string& splash_icon_data,
+    const std::string& package_name,
+    const std::string& version,
+    std::map<std::string, webapps::WebApkIconHasher::Icon>
+        icon_url_to_murmur2_hash,
+    bool is_manifest_stale,
+    bool is_app_identity_update_supported,
+    base::OnceCallback<void(std::unique_ptr<std::string>)> callback);
+
 // Builds the WebAPK proto for an update request and stores it to
 // |update_request_path|. Returns whether the proto was successfully written to
 // disk.
 bool StoreUpdateRequestToFileInBackground(
     const base::FilePath& update_request_path,
     const webapps::ShortcutInfo& shortcut_info,
-    const SkBitmap& primary_icon,
+    const GURL& app_key,
+    const std::string& primary_icon_data,
     bool is_primary_icon_maskable,
-    const SkBitmap& splash_icon,
+    const std::string& splash_icon_data,
     const std::string& package_name,
     const std::string& version,
     std::map<std::string, WebApkIconHasher::Icon> icon_url_to_murmur2_hash,

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,6 +43,9 @@ class VIEWS_EXPORT TypographyProvider {
 
   // Gets the line spacing.  By default this is the font height.
   virtual int GetLineHeight(int context, int style) const;
+
+  // Returns whether the given style can be used in the given context.
+  virtual bool StyleAllowedForContext(int context, int style) const;
 
   // Returns the weight that will result in the ResourceBundle returning an
   // appropriate "medium" weight for UI. This caters for systems that are known

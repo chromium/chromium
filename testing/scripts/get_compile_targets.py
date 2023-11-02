@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,7 +8,10 @@ import json
 import os
 import sys
 
-import common
+# Add src/testing/ into sys.path for importing common without pylint errors.
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+from scripts import common
 
 
 def main(argv):
@@ -33,9 +36,8 @@ def main(argv):
                     'PRESUBMIT.py',
                     'sizes_common.py',
                     'variations_seed_access_helper.py',
-                    'wpt_android_lib.py',
                     'wpt_common.py',
-                    'wpt_common_unittest.py',
+                    'run_variations_smoke_tests.py',
                     'run_performance_tests_unittest.py'):
       continue
 
@@ -52,7 +54,11 @@ def main(argv):
         return rc
 
       with open(tempfile_path) as f:
-        results[filename] = json.load(f)
+        # json.load() throws a ValueError for empty files
+        try:
+          results[filename] = json.load(f)
+        except ValueError:
+          pass
 
   with open(args.output, 'w') as f:
     json.dump(results, f)

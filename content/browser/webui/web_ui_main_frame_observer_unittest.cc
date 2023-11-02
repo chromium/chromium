@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,13 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/crash/content/browser/error_reporting/javascript_error_report.h"  // nogncheck
 #include "components/crash/content/browser/error_reporting/js_error_report_processor.h"  // nogncheck
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_ui_controller.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
@@ -24,7 +23,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 namespace content {
 
@@ -69,7 +68,7 @@ class FakeJsErrorReportProcessor : public JsErrorReportProcessor {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   JavaScriptErrorReport last_error_report_;
   int error_report_count_ = 0;
-  BrowserContext* browser_context_ = nullptr;
+  raw_ptr<BrowserContext> browser_context_ = nullptr;
 };
 
 class MockWebUIController : public WebUIController {
@@ -98,17 +97,13 @@ class WebUIMainFrameObserverTest : public RenderViewHostTestHarness {
  public:
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kSendWebUIJavaScriptErrorReports,
-        {{features::kSendWebUIJavaScriptErrorReportsSendToProductionVariation,
-          "true"}});
     site_instance_ = SiteInstance::Create(browser_context());
     SetContents(TestWebContents::Create(browser_context(), site_instance_));
     // Since we just created the web_contents() pointer with
     // TestWebContents::Create, the static_casts are safe.
     web_ui_ = std::make_unique<WebUIImpl>(
         static_cast<TestWebContents*>(web_contents()),
-        static_cast<TestWebContents*>(web_contents())->GetMainFrame());
+        static_cast<TestWebContents*>(web_contents())->GetPrimaryMainFrame());
     web_ui_->SetController(
         std::make_unique<MockWebUIController>(web_ui_.get()));
     process()->Init();
@@ -159,7 +154,6 @@ class WebUIMainFrameObserverTest : public RenderViewHostTestHarness {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   scoped_refptr<SiteInstance> site_instance_;
   std::unique_ptr<WebUIImpl> web_ui_;
   scoped_refptr<FakeJsErrorReportProcessor> processor_;
@@ -243,18 +237,6 @@ TEST_F(WebUIMainFrameObserverTest, NoProcessorDoesntCrash) {
   task_environment()->RunUntilIdle();
 }
 
-TEST_F(WebUIMainFrameObserverTest, NotSentIfFlagDisabled) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndDisableFeature(
-      features::kSendWebUIJavaScriptErrorReports);
-  NavigateToPage();
-  CallOnDidAddMessageToConsole(web_ui_->frame_host(),
-                               blink::mojom::ConsoleMessageLevel::kError,
-                               kMessage16, 5, kSourceURL16, kStackTrace16);
-  task_environment()->RunUntilIdle();
-  EXPECT_EQ(processor_->error_report_count(), 0);
-}
-
 TEST_F(WebUIMainFrameObserverTest, NotSentIfInvalidURL) {
   NavigateToPage();
   CallOnDidAddMessageToConsole(web_ui_->frame_host(),
@@ -335,8 +317,8 @@ TEST_F(WebUIMainFrameObserverTest, ErrorsNotReportedInOtherFrames) {
   NavigateToPage();
   auto another_contents =
       TestWebContents::Create(browser_context(), site_instance_);
-  CHECK(another_contents->GetMainFrame());
-  CallOnDidAddMessageToConsole(another_contents->GetMainFrame(),
+  CHECK(another_contents->GetPrimaryMainFrame());
+  CallOnDidAddMessageToConsole(another_contents->GetPrimaryMainFrame(),
                                blink::mojom::ConsoleMessageLevel::kError,
                                kMessage16, 5, kSourceURL16, kStackTrace16);
   task_environment()->RunUntilIdle();
@@ -363,4 +345,4 @@ TEST_F(WebUIMainFrameObserverTest, ErrorsNotReportedForNonChromeURLs) {
 
 }  // namespace content
 
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

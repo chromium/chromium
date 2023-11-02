@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,12 @@
 
 #include "base/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "ui/views/view.h"
 
 namespace ash {
 
-TestAshWebView::TestAshWebView() = default;
+TestAshWebView::TestAshWebView(const AshWebView::InitParams& init_params)
+    : init_params_(init_params) {}
 
 TestAshWebView::~TestAshWebView() = default;
 
@@ -44,6 +46,18 @@ void TestAshWebView::Navigate(const GURL& url) {
                        }
                      },
                      weak_factory_.GetWeakPtr()));
+}
+
+views::View* TestAshWebView::GetInitiallyFocusedView() {
+  return this;
+}
+
+void TestAshWebView::RequestFocus() {
+  focused_ = true;
+}
+
+bool TestAshWebView::HasFocus() const {
+  return focused_;
 }
 
 }  // namespace ash

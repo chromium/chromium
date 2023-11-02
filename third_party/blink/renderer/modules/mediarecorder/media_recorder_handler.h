@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,16 +7,16 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/web/modules/mediastream/encoded_video_frame.h"
 #include "third_party/blink/renderer/modules/mediarecorder/audio_track_recorder.h"
 #include "third_party/blink/renderer/modules/mediarecorder/video_track_recorder.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -67,8 +67,8 @@ class MODULES_EXPORT MediaRecorderHandler final
                   MediaStreamDescriptor* media_stream,
                   const String& type,
                   const String& codecs,
-                  int32_t audio_bits_per_second,
-                  int32_t video_bits_per_second,
+                  uint32_t audio_bits_per_second,
+                  uint32_t video_bits_per_second,
                   AudioTrackRecorder::BitrateMode audio_bitrate_mode);
 
   AudioTrackRecorder::BitrateMode AudioBitrateMode();
@@ -134,11 +134,11 @@ class MODULES_EXPORT MediaRecorderHandler final
   // Set to true if there is no MIME type configured upon Initialize()
   // and the video track's source supports encoded output, giving
   // this class the freedom to provide whatever it chooses to produce.
-  bool passthrough_enabled_;
+  bool passthrough_enabled_ = false;
 
   // Sanitized video and audio bitrate settings passed on initialize().
-  int32_t video_bits_per_second_;
-  int32_t audio_bits_per_second_;
+  uint32_t video_bits_per_second_{0};
+  uint32_t audio_bits_per_second_{0};
 
   // Video Codec and profile, VP8 is used by default.
   VideoTrackRecorder::CodecProfile video_codec_profile_;
@@ -159,7 +159,7 @@ class MODULES_EXPORT MediaRecorderHandler final
   absl::optional<media::VideoCodec> last_seen_codec_;
 
   bool invalidated_ = false;
-  bool recording_;
+  bool recording_ = false;
   // The MediaStream being recorded.
   Member<MediaStreamDescriptor> media_stream_;
   HeapVector<Member<MediaStreamComponent>> video_tracks_;

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,12 +13,11 @@
 #include "base/component_export.h"
 #include "components/cbor/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/gurl.h"
 
 namespace device {
 
-// Data structure containing a user id, an optional user name, an optional user
-// display image url, and an optional user display name as specified by the CTAP
+// Data structure containing a user id, an optional user name,
+// and an optional user display name as specified by the CTAP
 // spec. Used as required parameter type for AuthenticatorMakeCredential
 // request.
 class COMPONENT_EXPORT(DEVICE_FIDO) PublicKeyCredentialUserEntity {
@@ -30,8 +29,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) PublicKeyCredentialUserEntity {
   explicit PublicKeyCredentialUserEntity(std::vector<uint8_t> id);
   PublicKeyCredentialUserEntity(std::vector<uint8_t> id,
                                 absl::optional<std::string> name,
-                                absl::optional<std::string> display_name,
-                                absl::optional<GURL> icon_url);
+                                absl::optional<std::string> display_name);
   PublicKeyCredentialUserEntity(const PublicKeyCredentialUserEntity& other);
   PublicKeyCredentialUserEntity(PublicKeyCredentialUserEntity&& other);
   PublicKeyCredentialUserEntity& operator=(
@@ -44,7 +42,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) PublicKeyCredentialUserEntity {
   std::vector<uint8_t> id;
   absl::optional<std::string> name;
   absl::optional<std::string> display_name;
-  absl::optional<GURL> icon_url;
 };
 
 cbor::Value AsCBOR(const PublicKeyCredentialUserEntity&);

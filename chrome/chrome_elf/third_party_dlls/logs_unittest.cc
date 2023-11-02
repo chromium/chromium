@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/time/time.h"
 #include "chrome/chrome_elf/sha1/sha1.h"
@@ -39,21 +38,21 @@ TestEntry kTestLogs[] = {
 };
 
 // Be sure to test the padding/alignment issues well here.
-const std::string kTestPaths[] = {
+const char* const kTestPaths[] = {
     "1", "123", "1234", "12345", "123456", "1234567",
 };
 
 static_assert(
-    base::size(kTestLogs) == base::size(kTestPaths),
+    std::size(kTestLogs) == std::size(kTestPaths),
     "Some tests currently expect these two arrays to be the same size.");
 
 // Ensure |buffer_size| passed in is the actual bytes written by DrainLog().
 void VerifyBuffer(uint8_t* buffer, uint32_t buffer_size) {
   uint32_t total_logs = 0;
   size_t index = 0;
-  size_t array_size = base::size(kTestLogs);
+  size_t array_size = std::size(kTestLogs);
 
-  // Verify against kTestLogs/kTestPaths.  Expect 2 * base::size(kTestLogs)
+  // Verify against kTestLogs/kTestPaths.  Expect 2 * std::size(kTestLogs)
   // entries: first half are "blocked", second half are "allowed".
   LogEntry* entry = nullptr;
   uint8_t* tracker = buffer;
@@ -64,7 +63,7 @@ void VerifyBuffer(uint8_t* buffer, uint32_t buffer_size) {
     EXPECT_EQ(entry->time_date_stamp, kTestLogs[index].time_date_stamp);
 
     if (entry->path_len)
-      EXPECT_STREQ(entry->path, kTestPaths[index].c_str());
+      EXPECT_STREQ(entry->path, kTestPaths[index]);
 
     ++total_logs;
     tracker += GetLogEntrySize(entry->path_len);
@@ -125,7 +124,7 @@ TEST(ThirdParty, Logs) {
   // Init.
   ASSERT_EQ(InitLogs(), ThirdPartyStatus::kSuccess);
 
-  for (size_t i = 0; i < base::size(kTestLogs); ++i) {
+  for (size_t i = 0; i < std::size(kTestLogs); ++i) {
     // Add some blocked entries.
     LogLoadAttempt(LogType::kBlocked, kTestLogs[i].image_size,
                    kTestLogs[i].time_date_stamp, std::string());
@@ -161,7 +160,7 @@ TEST(ThirdParty, LogNotifications) {
 
   // Set up the required arguments for the test thread.
   NotificationHandlerArguments handler_data;
-  handler_data.logs_expected = base::size(kTestLogs);
+  handler_data.logs_expected = std::size(kTestLogs);
   handler_data.notification_event = std::make_unique<base::WaitableEvent>(
       base::WaitableEvent::ResetPolicy::AUTOMATIC,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
@@ -194,7 +193,7 @@ TEST(ThirdParty, BlockedLogDuplicates) {
   // Init.
   ASSERT_EQ(InitLogs(), ThirdPartyStatus::kSuccess);
 
-  for (size_t i = 0; i < base::size(kTestLogs); ++i) {
+  for (size_t i = 0; i < std::size(kTestLogs); ++i) {
     // Add some blocked entries.
     LogLoadAttempt(LogType::kBlocked, kTestLogs[i].image_size,
                    kTestLogs[i].time_date_stamp, kTestPaths[i]);
@@ -215,11 +214,11 @@ TEST(ThirdParty, BlockedLogDuplicates) {
   EXPECT_EQ(remaining_log, uint32_t{0});
 
   // Validate that all of the logs have been drained.
-  EXPECT_EQ(GetLogCount(&buffer[0], bytes_written), base::size(kTestLogs) * 2);
+  EXPECT_EQ(GetLogCount(&buffer[0], bytes_written), std::size(kTestLogs) * 2);
 
   // Now the real test.  Add the same log entries again, and expect that the
   // blocked logs will NOT be re-added and drained this time.
-  for (size_t i = 0; i < base::size(kTestLogs); ++i) {
+  for (size_t i = 0; i < std::size(kTestLogs); ++i) {
     // Add some blocked entries.
     LogLoadAttempt(LogType::kBlocked, kTestLogs[i].image_size,
                    kTestLogs[i].time_date_stamp, kTestPaths[i]);
@@ -240,7 +239,7 @@ TEST(ThirdParty, BlockedLogDuplicates) {
   EXPECT_EQ(remaining_log, uint32_t{0});
 
   // Validate that only half of the logs have been drained.
-  EXPECT_EQ(GetLogCount(&buffer[0], bytes_written), base::size(kTestLogs));
+  EXPECT_EQ(GetLogCount(&buffer[0], bytes_written), std::size(kTestLogs));
 
   DeinitLogs();
 }

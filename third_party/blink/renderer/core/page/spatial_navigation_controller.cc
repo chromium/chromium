@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation.h"
+#include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -186,7 +187,7 @@ bool SpatialNavigationController::HandleArrowKeyboardEvent(
   // suggestions.
   if (RuntimeEnabledFeatures::FocuslessSpatialNavigationEnabled()) {
     if (focused) {
-      if (HasEditableStyle(*focused) || focused->IsTextControl())
+      if (IsEditable(*focused) || focused->IsTextControl())
         return true;
     }
   }
@@ -216,7 +217,7 @@ bool SpatialNavigationController::HandleEnterKeyboardEvent(
     // convert the Enter key into click on down and press (and up) events.
     if (RuntimeEnabledFeatures::FocuslessSpatialNavigationEnabled() &&
         enter_key_down_seen_ && enter_key_press_seen_) {
-      interest_element->focus(
+      interest_element->Focus(
           FocusParams(SelectionBehaviorOnFocus::kReset,
                       mojom::blink::FocusType::kSpatialNavigation, nullptr));
       // We need enter to activate links, etc. The click should be after the
@@ -468,8 +469,8 @@ void SpatialNavigationController::MoveInterestTo(Node* next_node) {
       LayoutObject* layout_object = interest_element_->GetLayoutObject();
       DCHECK(layout_object);
 
-      layout_object->ScrollRectToVisible(
-          element->BoundingBoxForScrollIntoView(),
+      scroll_into_view_util::ScrollRectToVisible(
+          *layout_object, element->BoundingBoxForScrollIntoView(),
           ScrollAlignment::CreateScrollIntoViewParams());
     }
 
@@ -497,7 +498,7 @@ void SpatialNavigationController::MoveInterestTo(Node* next_node) {
   LocalFrame* old_frame = page_->GetFocusController().FocusedFrame();
   ClearFocusInExitedFrames(old_frame, next_node->GetDocument().GetFrame());
 
-  element->focus(FocusParams(SelectionBehaviorOnFocus::kReset,
+  element->Focus(FocusParams(SelectionBehaviorOnFocus::kReset,
                              mojom::blink::FocusType::kSpatialNavigation,
                              nullptr));
   // The focused element could be changed due to elm.focus() on focus handlers.
@@ -510,7 +511,7 @@ void SpatialNavigationController::MoveInterestTo(Node* next_node) {
 void SpatialNavigationController::DispatchMouseMoveAt(Element* element) {
   gfx::PointF event_position(-1, -1);
   if (element) {
-    event_position = ToGfxPointF(RectInViewport(*element).origin());
+    event_position = RectInViewport(*element).origin();
     event_position.Offset(1, 1);
   }
 
@@ -545,7 +546,7 @@ bool SpatialNavigationController::IsValidCandidate(
   // almost certainly don't want to actually interest it. Doing so leads to
   // issues since the document/body will likely contain most of the other
   // content on the page.
-  if (frame->IsMainFrame()) {
+  if (frame->IsOutermostMainFrame()) {
     if (IsA<HTMLHtmlElement>(element) || IsA<HTMLBodyElement>(element))
       return false;
   }
@@ -596,7 +597,7 @@ void SpatialNavigationController::FullscreenStateChanged(Element* element) {
   if (!RuntimeEnabledFeatures::FocuslessSpatialNavigationEnabled())
     return;
   if (IsA<HTMLMediaElement>(element)) {
-    element->focus(FocusParams(SelectionBehaviorOnFocus::kReset,
+    element->Focus(FocusParams(SelectionBehaviorOnFocus::kReset,
                                mojom::blink::FocusType::kSpatialNavigation,
                                nullptr));
   }

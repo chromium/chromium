@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
-#include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/origin_util.h"
 #include "content/public/renderer/render_frame_observer.h"
@@ -16,7 +15,6 @@
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/service_worker/service_worker_provider_context.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-#include "third_party/blink/public/mojom/timing/worker_timing_container.mojom.h"
 #include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -139,21 +137,6 @@ ServiceWorkerNetworkProviderForFrame::CreateURLLoader(
   if (request.GetSkipServiceWorker())
     return nullptr;
 
-  if (observer_ && observer_->render_frame()
-                       ->GetWebFrame()
-                       ->ServiceWorkerSubresourceFilterEnabled()) {
-    const std::string subresource_filter = context()->subresource_filter();
-    // If the document has a subresource filter set and the requested URL does
-    // not match it, do not intercept the request.
-    if (!subresource_filter.empty() &&
-        gurl.ref().find(subresource_filter) == std::string::npos) {
-      observer_->ReportFeatureUsage(
-          blink::mojom::WebFeature::
-              kServiceWorkerSubresourceFilterBypassedRequest);
-      return nullptr;
-    }
-  }
-
   // Record use counter for intercepting requests from opaque stylesheets.
   // TODO(crbug.com/898497): Remove this feature usage once we have enough data.
   if (observer_ && request.IsFromOriginDirtyStyleSheet()) {
@@ -189,6 +172,13 @@ ServiceWorkerNetworkProviderForFrame::GetControllerServiceWorkerMode() {
   return context()->GetControllerServiceWorkerMode();
 }
 
+blink::mojom::ServiceWorkerFetchHandlerType
+ServiceWorkerNetworkProviderForFrame::GetFetchHandlerType() {
+  if (!context())
+    return blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable;
+  return context()->GetFetchHandlerType();
+}
+
 int64_t ServiceWorkerNetworkProviderForFrame::ControllerServiceWorkerID() {
   if (!context())
     return blink::mojom::kInvalidServiceWorkerVersionId;
@@ -199,15 +189,6 @@ void ServiceWorkerNetworkProviderForFrame::DispatchNetworkQuiet() {
   if (!context())
     return;
   context()->DispatchNetworkQuiet();
-}
-
-blink::CrossVariantMojoReceiver<
-    blink::mojom::WorkerTimingContainerInterfaceBase>
-ServiceWorkerNetworkProviderForFrame::TakePendingWorkerTimingReceiver(
-    int request_id) {
-  if (!context())
-    return {};
-  return context()->TakePendingWorkerTimingReceiver(request_id);
 }
 
 void ServiceWorkerNetworkProviderForFrame::NotifyExecutionReady() {

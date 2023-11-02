@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,7 +56,7 @@ class SaveCardBubbleController {
   virtual std::u16string GetDeclineButtonText() const = 0;
 
   // Returns the account info of the signed-in user.
-  virtual const AccountInfo& GetAccountInfo() const = 0;
+  virtual const AccountInfo& GetAccountInfo() = 0;
 
   // Returns the profile.
   virtual Profile* GetProfile() const = 0;

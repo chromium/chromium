@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -17,51 +17,61 @@ and have properties set that the bootstrapper consumes. These properties enable
 the bootstrapper to apply the properties from the properties file and then
 execute the exe that was specified for the builder.
 
-To enable bootstrapping for a builder, its recipe must appear in
-_BOOTSTRAPPABLE_RECIPES. In order for an recipe to interoperate with the
-bootstrapper it must meet the following conditions:
-* chromium_bootstrap.update_gclient_config is called to update the gclient
-  config that is used for bot_update.
-* If the recipe does analysis to reduce compilation/testing, it skips analysis
-  and performs a full build if chromium_bootstrap.skip_analysis_reasons is
-  non-empty.
-
-To enable bootstrapping for a builder, set bootstrap=True in the builder
-definition.
+To enable bootstrapping for a builder, bootstrap must be set to True in its
+builder definition its and it must be using a bootstrappable recipe. See
+//recipes.star for more information on bootstrappable recipes.
 """
 
-load("@stdlib//internal/graph.star", "graph")
+load("./nodes.star", "nodes")
 load("//project.star", "settings")
 
-# builder_config.star has a generator that modifies properties, so load it first
-# to ensure that the modified properties get written out to the property files
+# builder_config.star and orchestrator.star have generators that modify
+# properties, so load them first to ensure that the modified properties get
+# written out to the property files
 load("./builder_config.star", _ = "builder_config")  # @unused
+load("./orchestrator.star", _2 = "register_orchestrator")  # @unused
 
-# A recipe can (but doesn't have to) be marked as bootstrappable if the
-# following conditions are true:
-# * chromium_bootstrap.update_gclient_config is called to update the gclient
-#   config that is used for bot_update.
-# * If the recipe does analysis to reduce compilation/testing, it skips analysis
-#   and performs a full build if chromium_bootstrap.skip_analysis_reasons is
-#   non-empty.
-_BOOTSTRAPPABLE_RECIPES = [
-    "recipe:chromium",
-    "recipe:chromium/orchestrator",
-    "recipe:chromium_trybot",
-]
+POLYMORPHIC = "POLYMORPHIC"
 
 _NON_BOOTSTRAPPED_PROPERTIES = [
+    # The led_recipes_tester recipe examines the recipe property in the input
+    # properties of the build definition retrieved using led to determine which
+    # builders' recipes are affected by the change. Bootstrapped properties
+    # won't appear in the retrieved build definition, so don't bootstrap this.
+    "recipe",
+
     # Sheriff-o-Matic queries for builder_group in the input properties to find
-    # builds for the main sheriff rotation. Bootstrapped properties don't appear
-    # in the build's input properties, so don't bootstrap this property.
+    # builds for the main sheriff rotation and Findit reads the builder_group
+    # from the input properties of an analyzed build to set the builder group
+    # for the target builder when triggering the rerun builder. Bootstrapped
+    # properties don't appear in the build's input properties, so don't
+    # bootstrap this property.
     # TODO(gbeaty) When finalized input properties are exported to BQ, remove
     # this.
     "builder_group",
+
+    # Sheriff-o-Matic will query for sheriff_rotations in the input properties
+    # to determine which sheriff rotation a build belongs to. Bootstrapped
+    # properties don't appear in the build's input properties, so don't
+    # bootstrap this property.
+    # TODO(gbeaty) When finalized input properties are exported to BQ, remove
+    # this.
     "sheriff_rotations",
 ]
 
-def _bootstrap_key(bucket_name, builder_name):
-    return graph.key("@chromium", "", "bootstrap", "{}/{}".format(bucket_name, builder_name))
+# Nodes for storing the ability of recipes to be bootstrapped
+_RECIPE_BOOTSTRAPPABILITY = nodes.create_unscoped_node_type("recipe_bootstrappability")
+
+# Nodes for storing bootstrapping information about builders
+_BOOTSTRAP = nodes.create_bucket_scoped_node_type("bootstrap")
+
+def register_recipe_bootstrappability(name, bootstrappability):
+    if bootstrappability not in (False, True, POLYMORPHIC):
+        fail("bootstrap must be one of False, True or POLYMORPHIC")
+    if bootstrappability:
+        _RECIPE_BOOTSTRAPPABILITY.add(name, props = {
+            "bootstrappability": bootstrappability,
+        })
 
 def register_bootstrap(bucket, name, bootstrap, executable):
     """Registers the bootstrap for a builder.
@@ -78,8 +88,10 @@ def register_bootstrap(bucket, name, bootstrap, executable):
     # even if an earlier revision is built (to a certain point). The bootstrap
     # property of the node will determine whether the builder's properties are
     # overwritten to actually use the bootstrapper.
-    if executable in _BOOTSTRAPPABLE_RECIPES:
-        graph.add_node(_bootstrap_key(bucket, name), props = {"bootstrap": bootstrap})
+    _BOOTSTRAP.add(bucket, name, props = {
+        "bootstrap": bootstrap,
+        "executable": executable,
+    })
 
 def _bootstrap_properties(ctx):
     """Update builder properties for bootstrapping.
@@ -113,15 +125,33 @@ def _bootstrap_properties(ctx):
         bucket_name = bucket.name
         for builder in bucket.swarming.builders:
             builder_name = builder.name
-            bootstrap_node = graph.node(_bootstrap_key(bucket_name, builder_name))
+            bootstrap_node = _BOOTSTRAP.get(bucket_name, builder_name)
             if not bootstrap_node:
                 continue
+            executable = bootstrap_node.props.executable
+            recipe_bootstrappability_node = _RECIPE_BOOTSTRAPPABILITY.get(executable)
+            if not recipe_bootstrappability_node:
+                continue
 
-            bootstrap = bootstrap_node.props.bootstrap
+            builder_properties = json.decode(builder.properties)
+            bootstrapper_args = []
 
-            properties_file = "builders/{}/{}/properties.textpb".format(bucket_name, builder_name)
-            non_bootstrapped_properties = {
-                "$bootstrap/properties": {
+            if recipe_bootstrappability_node.props.bootstrappability == POLYMORPHIC:
+                non_bootstrapped_properties = builder_properties
+
+                # TODO(gbeaty) Once all builder specs are migrated src-side,
+                # remove -properties-optional
+                bootstrapper_args = ["-polymorphic", "-properties-optional"]
+
+            else:
+                non_bootstrapped_properties = {}
+
+                for p in _NON_BOOTSTRAPPED_PROPERTIES:
+                    if p in builder_properties:
+                        non_bootstrapped_properties[p] = builder_properties[p]
+
+                properties_file = "builders/{}/{}/properties.json".format(bucket_name, builder_name)
+                non_bootstrapped_properties["$bootstrap/properties"] = {
                     "top_level_project": {
                         "repo": {
                             "host": "chromium.googlesource.com",
@@ -130,23 +160,21 @@ def _bootstrap_properties(ctx):
                         "ref": settings.ref,
                     },
                     "properties_file": "infra/config/generated/{}".format(properties_file),
-                },
-                "$bootstrap/exe": {
-                    "exe": builder.exe,
-                },
-                "led_builder_is_bootstrapped": True,
-            }
-            builder_properties = json.decode(builder.properties)
-            for p in _NON_BOOTSTRAPPED_PROPERTIES:
-                if p in builder_properties:
-                    non_bootstrapped_properties[p] = builder_properties.pop(p)
-            ctx.output[properties_file] = json.indent(json.encode(builder_properties), indent = "  ")
+                }
+                ctx.output[properties_file] = json.indent(json.encode(builder_properties), indent = "  ")
 
-            if bootstrap:
+            if bootstrap_node.props.bootstrap:
+                non_bootstrapped_properties.update({
+                    "$bootstrap/exe": {
+                        "exe": json.decode(proto.to_jsonpb(builder.exe, use_proto_names = True)),
+                    },
+                    "led_builder_is_bootstrapped": True,
+                })
+
                 builder.properties = json.encode(non_bootstrapped_properties)
 
                 builder.exe.cipd_package = "infra/chromium/bootstrapper/${platform}"
                 builder.exe.cipd_version = "latest"
-                builder.exe.cmd = ["bootstrapper"]
+                builder.exe.cmd = ["bootstrapper"] + bootstrapper_args
 
 lucicfg.generator(_bootstrap_properties)

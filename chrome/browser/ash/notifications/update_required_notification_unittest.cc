@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -22,11 +21,11 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/shill/shill_service_client.h"
-#include "chromeos/dbus/update_engine/fake_update_engine_client.h"
-#include "chromeos/network/network_handler_test_helper.h"
-#include "chromeos/tpm/stub_install_attributes.h"
+#include "chromeos/ash/components/dbus/shill/shill_service_client.h"
+#include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -61,8 +60,8 @@ class UpdateRequiredNotificationTest
   void TearDown() override;
 
   // MinimumVersionPolicyHandler::Delegate:
-  base::Version GetCurrentVersion() const;
-  bool IsUserEnterpriseManaged() const;
+  base::Version GetCurrentVersion() const override;
+  bool IsUserEnterpriseManaged() const override;
   MOCK_METHOD0(ShowUpdateRequiredScreen, void());
   MOCK_METHOD0(RestartToLoginScreen, void());
   MOCK_METHOD0(HideUpdateRequiredScreenIfShown, void());
@@ -78,7 +77,7 @@ class UpdateRequiredNotificationTest
   const MinimumVersionRequirement* GetState() const;
 
   // Set new value for policy pref.
-  void SetPolicyPref(base::Value value);
+  void SetPolicyPref(base::Value::Dict value);
 
   void VerifyUpdateRequiredNotification(const std::u16string& expected_title,
                                         const std::u16string& expected_message);
@@ -91,11 +90,9 @@ class UpdateRequiredNotificationTest
     return notification_service_.get();
   }
 
-  chromeos::FakeUpdateEngineClient* update_engine() {
-    return fake_update_engine_client_;
-  }
+  FakeUpdateEngineClient* update_engine() { return fake_update_engine_client_; }
 
-  chromeos::NetworkHandlerTestHelper* network_handler_test_helper() {
+  NetworkHandlerTestHelper* network_handler_test_helper() {
     return network_handler_test_helper_.get();
   }
 
@@ -109,13 +106,12 @@ class UpdateRequiredNotificationTest
   ScopedTestingLocalState local_state_;
   ScopedTestingCrosSettings scoped_testing_cros_settings_;
   std::unique_ptr<NotificationDisplayServiceTester> notification_service_;
-  chromeos::ScopedStubInstallAttributes scoped_stub_install_attributes_;
-  chromeos::FakeUpdateEngineClient* fake_update_engine_client_;
+  ScopedStubInstallAttributes scoped_stub_install_attributes_;
+  FakeUpdateEngineClient* fake_update_engine_client_;
   std::unique_ptr<base::Version> current_version_;
   std::unique_ptr<policy::MinimumVersionPolicyHandler>
       minimum_version_policy_handler_;
-  std::unique_ptr<chromeos::NetworkHandlerTestHelper>
-      network_handler_test_helper_;
+  std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
 };
 
 UpdateRequiredNotificationTest::UpdateRequiredNotificationTest()
@@ -126,16 +122,10 @@ UpdateRequiredNotificationTest::UpdateRequiredNotificationTest()
 }
 
 void UpdateRequiredNotificationTest::SetUp() {
-  auto fake_update_engine_client =
-      std::make_unique<chromeos::FakeUpdateEngineClient>();
-  fake_update_engine_client_ = fake_update_engine_client.get();
-  chromeos::DBusThreadManager::Initialize();
-  chromeos::DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
-      std::move(fake_update_engine_client));
-  network_handler_test_helper_ =
-      std::make_unique<chromeos::NetworkHandlerTestHelper>();
+  fake_update_engine_client_ = UpdateEngineClient::InitializeFakeForTest();
+  network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
 
-  chromeos::ShillServiceClient::TestInterface* service_test =
+  ShillServiceClient::TestInterface* service_test =
       network_handler_test_helper_->service_test();
   service_test->ClearServices();
   service_test->AddService("/service/eth", "eth" /* guid */, "eth",
@@ -157,7 +147,7 @@ void UpdateRequiredNotificationTest::SetUp() {
 void UpdateRequiredNotificationTest::TearDown() {
   minimum_version_policy_handler_.reset();
   network_handler_test_helper_.reset();
-  chromeos::DBusThreadManager::Shutdown();
+  UpdateEngineClient::Shutdown();
 }
 
 void UpdateRequiredNotificationTest::CreateMinimumVersionHandler() {
@@ -185,9 +175,9 @@ base::Version UpdateRequiredNotificationTest::GetCurrentVersion() const {
   return *current_version_;
 }
 
-void UpdateRequiredNotificationTest::SetPolicyPref(base::Value value) {
-  scoped_testing_cros_settings_.device_settings()->Set(kDeviceMinimumVersion,
-                                                       value);
+void UpdateRequiredNotificationTest::SetPolicyPref(base::Value::Dict value) {
+  scoped_testing_cros_settings_.device_settings()->Set(
+      kDeviceMinimumVersion, base::Value(std::move(value)));
 }
 
 void UpdateRequiredNotificationTest::VerifyUpdateRequiredNotification(
@@ -204,7 +194,7 @@ TEST_F(UpdateRequiredNotificationTest, NoNetworkNotifications) {
   EXPECT_TRUE(GetMinimumVersionPolicyHandler()->RequirementsAreSatisfied());
 
   // Disconnect all networks
-  chromeos::ShillServiceClient::TestInterface* service_test =
+  ShillServiceClient::TestInterface* service_test =
       network_handler_test_helper()->service_test();
   service_test->ClearServices();
 
@@ -243,7 +233,7 @@ TEST_F(UpdateRequiredNotificationTest, NoNetworkNotifications) {
 
 TEST_F(UpdateRequiredNotificationTest, MeteredNetworkNotifications) {
   // Connect to metered network
-  chromeos::ShillServiceClient::TestInterface* service_test =
+  ShillServiceClient::TestInterface* service_test =
       network_handler_test_helper()->service_test();
   service_test->ClearServices();
   service_test->AddService(kCellularServicePath,

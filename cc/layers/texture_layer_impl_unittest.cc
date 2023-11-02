@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,15 +36,15 @@ TEST(TextureLayerImplTest, VisibleOpaqueRegion) {
 
   // Verify initial conditions.
   EXPECT_FALSE(layer->contents_opaque());
-  EXPECT_EQ(0u, layer->background_color());
+  EXPECT_EQ(SkColors::kTransparent, layer->background_color());
   EXPECT_EQ(Region().ToString(), layer->VisibleOpaqueRegion().ToString());
 
   // Opaque background.
-  layer->SetBackgroundColor(SK_ColorWHITE);
+  layer->SetBackgroundColor(SkColors::kWhite);
   EXPECT_EQ(layer_region.ToString(), layer->VisibleOpaqueRegion().ToString());
 
   // Transparent background.
-  layer->SetBackgroundColor(SkColorSetARGB(100, 255, 255, 255));
+  layer->SetBackgroundColor({1.0f, 1.0f, 1.0f, 0.5f});
   EXPECT_EQ(Region().ToString(), layer->VisibleOpaqueRegion().ToString());
 }
 
@@ -54,11 +54,11 @@ TEST(TextureLayerImplTest, Occlusion) {
 
   LayerTreeImplTestBase impl;
 
-  auto resource = viz::TransferableResource::MakeGL(
+  auto resource = viz::TransferableResource::MakeGpu(
       gpu::Mailbox::Generate(), GL_LINEAR, GL_TEXTURE_2D,
       gpu::SyncToken(gpu::CommandBufferNamespace::GPU_IO,
                      gpu::CommandBufferId::FromUnsafeValue(0x234), 0x456),
-      layer_size, false /* is_overlay_candidate */);
+      layer_size, viz::RGBA_8888, false /* is_overlay_candidate */);
 
   TextureLayerImpl* texture_layer_impl = impl.AddLayer<TextureLayerImpl>();
   texture_layer_impl->SetBounds(layer_size);

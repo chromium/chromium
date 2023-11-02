@@ -6,6 +6,9 @@
 <translation id="125153950246128346">Нажмите, чтобы перейти на другую вкладку</translation>
 <translation id="1302104331113804646">Настройки отслеживания цен</translation>
 <translation id="1378979118429748177">Получать уведомления о скидках</translation>
+<translation id="1403228085774130835">Закрытые вкладки можно найти в главном меню Chrome в разделе "Недавние вкладки".</translation>
+<translation id="1455506303394048917">Связанная с ними информация будет удалена с этого устройства.</translation>
+<translation id="1499635324672558517">Закрыть все вкладки инкогнито?</translation>
 <translation id="1657719826150349398">Переместить вкладку вниз</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> вкладка}one{<ph name="TABS_COUNT_MANY" /> вкладка}few{<ph name="TABS_COUNT_MANY" /> вкладки}many{<ph name="TABS_COUNT_MANY" /> вкладок}other{<ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
 <translation id="2118649612461486615">Сведения о магазине</translation>
@@ -24,9 +27,9 @@
 <translation id="2801787514987684416">Посмотреть сведения о магазине?</translation>
 <translation id="2928243913527329289">Google | О магазине</translation>
 <translation id="2977480621796371840">Удалить из группы</translation>
+<translation id="3008554597174452548">Не отслеживать товар</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />: скидка <ph name="PRICE_DROP" /></translation>
 <translation id="3194464645767632461">оценка</translation>
-<translation id="3267416433995960648">Отключить оповещение</translation>
 <translation id="3291470810748040983">Если цена на открытой вкладке снизится, вы получите оповещение.</translation>
 <translation id="3328308545011660196">Подсказка: обнаружены похожие вкладки (<ph name="NUMBER_OF_TABS" />). Сгруппировать их?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -40,11 +43,14 @@
 <translation id="4648718555153979859">Вкладки сгруппированы здесь</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> отзыв).}one{(<ph name="REVIEWS_COUNT_MANY" /> отзыв).}few{(<ph name="REVIEWS_COUNT_MANY" /> отзыва).}many{(<ph name="REVIEWS_COUNT_MANY" /> отзывов).}other{(<ph name="REVIEWS_COUNT_MANY" /> отзыва).}}</translation>
 <translation id="4850886885716139402">Посмотреть</translation>
+<translation id="4870911314065352661">Закрыть все вкладки?</translation>
 <translation id="492284538114688557">Обнаружено снижение цены</translation>
 <translation id="5007392906805964215">Посмотреть</translation>
 <translation id="5073204694187207510">Скрыть полноэкранную сетку с вкладками</translation>
+<translation id="5076161749301278626">Показать отзывы о магазине?</translation>
 <translation id="5082793167783849073">Сравнивайте страницы быстрее, объединяя их в группы. Чтобы начать, нажмите на ссылку и удерживайте ее.</translation>
 <translation id="5490235265819901748">Группа вкладок развернута</translation>
+<translation id="5494920125229734069">Выделить все</translation>
 <translation id="5533021382642990449">Показать позже</translation>
 <translation id="5556417849629758491">Просмотр сведений о магазине, параметр вверху экрана</translation>
 <translation id="5558362125926932819">Закрыть группу вкладок. Количество вкладок в ней – <ph name="NUMBER_OF_TABS" />.</translation>
@@ -52,11 +58,14 @@
 <translation id="575494663145460764">Получать оповещения о скидках?</translation>
 <translation id="58326064309361797">Перетаскивайте вкладки, чтобы группировать их</translation>
 <translation id="5846292395804797011">Закрыть группу вкладок "<ph name="TITLE_OF_GROUP" />". Количество вкладок в ней – <ph name="NUMBER_OF_TABS" />.</translation>
+<translation id="5972844218283131174">Отменить выбор</translation>
 <translation id="6040143037577758943">Закрыть</translation>
 <translation id="6054741997831917303">Цена на этот товар недавно снизилась с <ph name="PREVIOUS_PRICE" /> до <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Выберите вкладки</translation>
 <translation id="6228793724645064692">(оценка магазина)</translation>
 <translation id="6333260925957816943">Информация об этом магазине</translation>
+<translation id="639823877092900621">{TABS_COUNT,plural, =1{Отменить группировку для <ph name="TABS_COUNT_ONE" /> выбранной вкладки}one{Отменить группировку для <ph name="TABS_COUNT_MANY" /> выбранной вкладки}few{Отменить группировку для <ph name="TABS_COUNT_MANY" /> выбранных вкладок}many{Отменить группировку для <ph name="TABS_COUNT_MANY" /> выбранных вкладок}other{Отменить группировку для <ph name="TABS_COUNT_MANY" /> выбранной вкладки}}</translation>
+<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> вкладка}one{<ph name="TABS_COUNT_MANY" /> вкладка}few{<ph name="TABS_COUNT_MANY" /> вкладки}many{<ph name="TABS_COUNT_MANY" /> вкладок}other{<ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
 <translation id="6510648526783655549">Закрыть панель вкладок</translation>
 <translation id="6549021453810473782">Посмотреть сведения о магазине</translation>
 <translation id="6562820390860419811">Переместить вкладку влево</translation>
@@ -69,6 +78,7 @@
 <translation id="7326879924029668159">Правила возврата и другая информация</translation>
 <translation id="7352298686197644113">Узнайте, какой из товаров на открытых вкладках стал дешевле.</translation>
 <translation id="753732157349120914">Переключатель вкладок</translation>
+<translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> отзыв из Google}one{<ph name="REVIEWS_COUNT_MANY" /> отзыв из Google}few{<ph name="REVIEWS_COUNT_MANY" /> отзыва из Google}many{<ph name="REVIEWS_COUNT_MANY" /> отзывов из Google}other{<ph name="REVIEWS_COUNT_MANY" /> отзыва из Google}}</translation>
 <translation id="7559245342362162951">Показать сетку с вкладками группы на весь экран</translation>
 <translation id="7792771145871471484">Подробнее.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Сгруппировать <ph name="TABS_COUNT_ONE" /> выбранную вкладку}one{Сгруппировать <ph name="TABS_COUNT_MANY" /> выбранную вкладку}few{Сгруппировать <ph name="TABS_COUNT_MANY" /> выбранные вкладки}many{Сгруппировать <ph name="TABS_COUNT_MANY" /> выбранных вкладок}other{Сгруппировать <ph name="TABS_COUNT_MANY" /> выбранных вкладки}}</translation>

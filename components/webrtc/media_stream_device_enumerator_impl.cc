@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/media_capture_devices.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 using blink::MediaStreamDevices;
 using content::BrowserThread;
@@ -49,18 +50,18 @@ void MediaStreamDeviceEnumeratorImpl::GetDefaultDevicesForBrowserContext(
     content::BrowserContext* context,
     bool audio,
     bool video,
-    MediaStreamDevices* devices) {
+    blink::mojom::StreamDevices& devices) {
   std::string default_device;
   if (audio) {
     const MediaStreamDevices& audio_devices = GetAudioCaptureDevices();
     if (!audio_devices.empty())
-      devices->push_back(audio_devices.front());
+      devices.audio_device = audio_devices.front();
   }
 
   if (video) {
     const MediaStreamDevices& video_devices = GetVideoCaptureDevices();
     if (!video_devices.empty())
-      devices->push_back(video_devices.front());
+      devices.video_device = video_devices.front();
   }
 }
 

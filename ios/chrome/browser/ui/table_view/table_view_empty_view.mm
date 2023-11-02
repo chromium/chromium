@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ namespace {
 const float kStackViewVerticalSpacing = 23.0;
 // The StackView width.
 const float kStackViewWidth = 227.0;
-// Returns |message| as an attributed string with default styling.
+// Returns `message` as an attributed string with default styling.
 NSAttributedString* GetAttributedMessage(NSString* message) {
   NSMutableParagraphStyle* paragraph_style =
       [[NSMutableParagraphStyle alloc] init];

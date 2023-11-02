@@ -1,18 +1,17 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/borealis/borealis_disk_manager_impl.h"
 
-#include <algorithm>
 #include <string>
 
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/borealis/borealis_context.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
@@ -23,8 +22,8 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/dbus/concierge/concierge_client.h"
-#include "chromeos/dbus/concierge/concierge_service.pb.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
 
 namespace borealis {
 namespace {
@@ -42,6 +41,25 @@ void EmitResizeDiskMetric(bool is_expanding,
 }  // namespace
 
 struct Nothing {};
+
+enum class DiskManagementVersion {
+  UNMANAGED,  // Disk is unmanaged.
+  CROSDISK,   // Disk is managed by crosdisk and disk manager.
+  BALLOON,    // Disk is managed by a sparse disk and ballooning.
+};
+
+// Helper function to evaluate which disk management settings to use.
+DiskManagementVersion DiskManagementVersion() {
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kBorealisStorageBallooning)) {
+    return DiskManagementVersion::BALLOON;
+  }
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kBorealisDiskManagement)) {
+    return DiskManagementVersion::CROSDISK;
+  }
+  return DiskManagementVersion::UNMANAGED;
+}
 
 constexpr int64_t kGiB = 1024 * 1024 * 1024;
 constexpr int64_t kDiskHeadroomBytes = 1 * kGiB;
@@ -77,12 +95,10 @@ struct BorealisDiskManagerImpl::BorealisDiskInfo {
 
 BorealisDiskManagerImpl::BorealisDiskManagerImpl(const BorealisContext* context)
     : context_(context),
-      request_count_(0),
+      service_(borealis::BorealisService::GetForProfile(context_->profile())),
       free_space_provider_(std::make_unique<FreeSpaceProvider>()),
       weak_factory_(this) {
-  borealis::BorealisService::GetForProfile(context_->profile())
-      ->DiskManagerDispatcher()
-      .SetDiskManagerDelegate(this);
+  service_->DiskManagerDispatcher().SetDiskManagerDelegate(this);
 }
 
 BorealisDiskManagerImpl::~BorealisDiskManagerImpl() {
@@ -90,9 +106,19 @@ BorealisDiskManagerImpl::~BorealisDiskManagerImpl() {
           chromeos::features::kBorealisDiskManagement)) {
     RecordBorealisDiskClientNumRequestsPerSessionHistogram(request_count_);
   }
-  borealis::BorealisService::GetForProfile(context_->profile())
-      ->DiskManagerDispatcher()
-      .RemoveDiskManagerDelegate(this);
+  service_->DiskManagerDispatcher().RemoveDiskManagerDelegate(this);
+}
+
+// Helper function that returns how many bytes the |available_space| would
+// need to be expanded by in order to regenreate the buffer.
+int64_t MissingBufferBytes(int64_t available_space) {
+  return std::max(int64_t(kTargetBufferBytes - available_space), int64_t(0));
+}
+
+// Helper function that returns how much space is available when excluding
+// the buffer space.
+int64_t ExcludeBufferBytes(int64_t available_space) {
+  return std::max(int64_t(available_space - kTargetBufferBytes), int64_t(0));
 }
 
 class BorealisDiskManagerImpl::BuildDiskInfo
@@ -129,7 +155,7 @@ class BorealisDiskManagerImpl::BuildDiskInfo
         ash::ProfileHelper::GetUserIdHashFromProfile(context_->profile()));
     request.set_storage_location(vm_tools::concierge::STORAGE_CRYPTOHOME_ROOT);
     request.set_vm_name(context_->vm_name());
-    chromeos::ConciergeClient::Get()->ListVmDisks(
+    ash::ConciergeClient::Get()->ListVmDisks(
         std::move(request),
         base::BindOnce(&BuildDiskInfo::HandleListVmDisksResult,
                        weak_factory_.GetWeakPtr()));
@@ -151,9 +177,8 @@ class BorealisDiskManagerImpl::BuildDiskInfo
       return;
     }
     const std::string& vm_name = context_->vm_name();
-    auto image =
-        std::find_if(response->images().begin(), response->images().end(),
-                     [&vm_name](const auto& a) { return a.name() == vm_name; });
+    auto image = base::ranges::find(response->images(), vm_name,
+                                    &vm_tools::concierge::VmDiskInfo::name);
     if (image == response->images().end()) {
       Fail(Described<BorealisGetDiskInfoResult>(
           BorealisGetDiskInfoResult::kConciergeFailed,
@@ -180,7 +205,7 @@ class BorealisDiskManagerImpl::ResizeDisk
     : public Transition<BorealisDiskInfo,
                         std::pair<BorealisDiskInfo, BorealisDiskInfo>,
                         Described<BorealisResizeDiskResult>>,
-      public chromeos::ConciergeClient::DiskImageObserver {
+      public ash::ConciergeClient::DiskImageObserver {
  public:
   explicit ResizeDisk(
       int64_t space_delta,
@@ -194,7 +219,7 @@ class BorealisDiskManagerImpl::ResizeDisk
         weak_factory_(this) {}
 
   ~ResizeDisk() override {
-    chromeos::ConciergeClient::Get()->RemoveDiskImageObserver(this);
+    ash::ConciergeClient::Get()->RemoveDiskImageObserver(this);
   }
 
   void Start(std::unique_ptr<BorealisDiskManagerImpl::BorealisDiskInfo>
@@ -267,6 +292,9 @@ class BorealisDiskManagerImpl::ResizeDisk
       if (client_request_) {
         RecordBorealisDiskClientAvailableSpaceAtRequestHistogram(
             original_disk_info_.available_space);
+        // Regenerate the buffer, if needed, by tacking it onto the existing
+        // request.
+        space_delta_ += MissingBufferBytes(original_disk_info_.available_space);
       }
       if (original_disk_info_.expandable_space < space_delta_) {
         Fail(Described<BorealisResizeDiskResult>(
@@ -300,7 +328,7 @@ class BorealisDiskManagerImpl::ResizeDisk
         ash::ProfileHelper::GetUserIdHashFromProfile(context_->profile()));
     request.set_vm_name(context_->vm_name());
     request.set_disk_size(space_delta_ + original_disk_info_.disk_size);
-    chromeos::ConciergeClient::Get()->ResizeDiskImage(
+    ash::ConciergeClient::Get()->ResizeDiskImage(
         std::move(request), base::BindOnce(&ResizeDisk::HandleResizeResponse,
                                            weak_factory_.GetWeakPtr()));
   }
@@ -316,7 +344,7 @@ class BorealisDiskManagerImpl::ResizeDisk
     } else if (response->status() ==
                vm_tools::concierge::DiskImageStatus::DISK_STATUS_IN_PROGRESS) {
       uuid_ = response->command_uuid();
-      chromeos::ConciergeClient::Get()->AddDiskImageObserver(this);
+      ash::ConciergeClient::Get()->AddDiskImageObserver(this);
     } else {
       GetUpdatedDiskInfo(
           "got an unexpected or error status from concierge when resizing: " +
@@ -325,7 +353,7 @@ class BorealisDiskManagerImpl::ResizeDisk
     }
   }
 
-  // chromeos::ConciergeClient::DiskImageObserver
+  // ash::ConciergeClient::DiskImageObserver
   void OnDiskImageProgress(
       const vm_tools::concierge::DiskImageStatusResponse& signal) override {
     if (signal.command_uuid() != uuid_) {
@@ -456,6 +484,19 @@ class BorealisDiskManagerImpl::SyncDisk
       Expected<std::unique_ptr<std::pair<BorealisDiskInfo, BorealisDiskInfo>>,
                Described<BorealisResizeDiskResult>> disk_info_or_error) {
     if (!disk_info_or_error) {
+      // Sometimes the disk size can get out of sync, so that btrfs reports that
+      // the minimum size of the disk is larger than the actual disk size. In
+      // this case we will get a kViolatesMinimumSize from trying to resize the
+      // disk. We don't want to block the startup process because of this error
+      // so we special case it as a success.
+      if (disk_info_or_error.Error().error() ==
+          BorealisResizeDiskResult::kViolatesMinimumSize) {
+        LOG(WARNING) << "disk was unable to be shrunk due to the disk "
+                        "already being smaller than the minimum size";
+        Succeed(std::make_unique<BorealisSyncDiskSizeResult>(
+            BorealisSyncDiskSizeResult::kDiskSizeSmallerThanMin));
+        return;
+      }
       Fail(Described<BorealisSyncDiskSizeResult>(
           BorealisSyncDiskSizeResult::kResizeFailed,
           "resize failed: " + disk_info_or_error.Error().description()));
@@ -488,6 +529,15 @@ void BorealisDiskManagerImpl::GetDiskInfo(
     base::OnceCallback<void(
         Expected<GetDiskInfoResponse, Described<BorealisGetDiskInfoResult>>)>
         callback) {
+  if (!base::FeatureList::IsEnabled(
+          chromeos::features::kBorealisDiskManagement)) {
+    std::move(callback).Run(
+        Expected<GetDiskInfoResponse, Described<BorealisGetDiskInfoResult>>::
+            Unexpected(Described<BorealisGetDiskInfoResult>(
+                BorealisGetDiskInfoResult::kInvalidRequest,
+                "GetDiskInfo failed: feature not enabled")));
+    return;
+  }
   auto disk_info = std::make_unique<BorealisDiskInfo>();
   request_count_++;
   if (build_disk_info_transition_) {
@@ -528,26 +578,28 @@ void BorealisDiskManagerImpl::BuildGetDiskInfoResponse(
   // disable it (after their disk has been converted to a fixed size). The
   // workaround for this is to reinstall the VM or use VMC to manually manage
   // the disk.
-  if (!base::FeatureList::IsEnabled(
+  if (base::FeatureList::IsEnabled(
           chromeos::features::kBorealisDiskManagement)) {
-    // If the flag is not active, then the disk should not be resized and the VM
-    // can only make use of what it has available.
-    response.available_bytes = disk_info_or_error.Value()->available_space;
-    response.expandable_bytes = 0;
-    response.disk_size = 0;
-  } else {
     if (disk_info_or_error.Value()->has_fixed_size) {
       response.available_bytes =
-          std::max(int64_t(disk_info_or_error.Value()->available_space -
-                           kTargetBufferBytes),
-                   int64_t(0));
+          ExcludeBufferBytes(disk_info_or_error.Value()->available_space);
     } else {
       // If the disk is still sparse, then we set the available space to 0 in
       // order to force the client to request for more space if it needs any.
       response.available_bytes = 0;
     }
-    response.expandable_bytes = disk_info_or_error.Value()->expandable_space;
+    // Space for regenerating the buffer needs to be set aside, so we mark it
+    // as non-expandable to the client in our response.
+    response.expandable_bytes =
+        disk_info_or_error.Value()->expandable_space -
+        MissingBufferBytes(disk_info_or_error.Value()->available_space);
     response.disk_size = disk_info_or_error.Value()->disk_size;
+  } else {
+    // If the flag is not active, then the disk should not be resized and the VM
+    // can only make use of what it has available.
+    response.available_bytes = disk_info_or_error.Value()->available_space;
+    response.expandable_bytes = 0;
+    response.disk_size = 0;
   }
   RecordBorealisDiskClientGetDiskInfoResultHistogram(
       BorealisGetDiskInfoResult::kSuccess);
@@ -604,6 +656,9 @@ void BorealisDiskManagerImpl::OnRequestSpaceDelta(
   int64_t delta = disk_info_or_error.Value()->second.disk_size -
                   disk_info_or_error.Value()->first.disk_size;
   if (expanding) {
+    // Exclude the space that was required to regenerate the buffer.
+    delta -=
+        MissingBufferBytes(disk_info_or_error.Value()->first.available_space);
     if (delta < target_delta) {
       EmitResizeDiskMetric(expanding,
                            BorealisResizeDiskResult::kFailedToFulfillRequest);

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/time/time.h"
 #include "ios/web/public/favicon/favicon_status.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #include "ios/web/public/navigation/referrer.h"
@@ -49,8 +50,8 @@ class NavigationItemImpl : public web::NavigationItem {
   const std::u16string& GetTitleForDisplay() const override;
   void SetTransitionType(ui::PageTransition transition_type) override;
   ui::PageTransition GetTransitionType() const override;
-  const FaviconStatus& GetFavicon() const override;
-  FaviconStatus& GetFavicon() override;
+  const FaviconStatus& GetFaviconStatus() const override;
+  void SetFaviconStatus(const FaviconStatus& favicon_status) override;
   const SSLStatus& GetSSL() const override;
   SSLStatus& GetSSL() override;
   void SetTimestamp(base::Time timestamp) override;
@@ -60,8 +61,8 @@ class NavigationItemImpl : public web::NavigationItem {
   bool HasPostData() const override;
   NSDictionary* GetHttpRequestHeaders() const override;
   void AddHttpRequestHeaders(NSDictionary* additional_headers) override;
-  void SetUpgradedToHttps() override;
-  bool IsUpgradedToHttps() const override;
+  void SetHttpsUpgradeType(HttpsUpgradeType https_upgrade_type) override;
+  HttpsUpgradeType GetHttpsUpgradeType() const override;
 
   // Serialized representation of the state object that was used in conjunction
   // with a JavaScript window.history.pushState() or
@@ -94,27 +95,27 @@ class NavigationItemImpl : public web::NavigationItem {
   void SetPostData(NSData* post_data);
   NSData* GetPostData() const;
 
-  // Removes the header for |key| from |http_request_headers_|.
+  // Removes the header for `key` from `http_request_headers_`.
   void RemoveHttpRequestHeaderForKey(NSString* key);
 
-  // Removes all http headers from |http_request_headers_|.
+  // Removes all http headers from `http_request_headers_`.
   void ResetHttpRequestHeaders();
 
   // Once a navigation item is committed, we should no longer track
   // non-persisted state, as documented on the members below.
   void ResetForCommit();
 
-  // Returns the title string to be used for a page with |url| if that page
+  // Returns the title string to be used for a page with `url` if that page
   // doesn't specify a title.
   static std::u16string GetDisplayTitleForURL(const GURL& url);
 
   // Used only by NavigationManagerImpl.  SetUntrusted() is only used for
-  // Visible or LastCommitted NavigationItems where the |url_| may be incorrect
+  // Visible or LastCommitted NavigationItems where the `url_` may be incorrect
   // due to timining problems or bugs in WKWebView.
   void SetUntrusted();
   bool IsUntrusted();
 
-  // Restores the state of the |other| navigation item in this item.
+  // Restores the state of the `other` navigation item in this item.
   void RestoreStateFromItem(NavigationItem* other);
 
 #ifndef NDEBUG
@@ -135,7 +136,7 @@ class NavigationItemImpl : public web::NavigationItem {
   std::u16string title_;
   PageDisplayState page_display_state_;
   ui::PageTransition transition_type_;
-  FaviconStatus favicon_;
+  FaviconStatus favicon_status_;
   SSLStatus ssl_;
   base::Time timestamp_;
   UserAgentType user_agent_type_;
@@ -149,11 +150,11 @@ class NavigationItemImpl : public web::NavigationItem {
 
   // The navigation initiation type of the item.  This decides whether the URL
   // should be displayed before the navigation commits.  It is cleared in
-  // |ResetForCommit| and not persisted.
+  // `ResetForCommit` and not persisted.
   web::NavigationInitiationType navigation_initiation_type_;
 
-  // Used only by NavigationManagerImpl.  |is_untrusted_| is only |true| for
-  // Visible or LastCommitted NavigationItems where the |url_| may be incorrect
+  // Used only by NavigationManagerImpl.  `is_untrusted_` is only `true` for
+  // Visible or LastCommitted NavigationItems where the `url_` may be incorrect
   // due to timining problems or bugs in WKWebView.
   bool is_untrusted_;
 
@@ -161,9 +162,8 @@ class NavigationItemImpl : public web::NavigationItem {
   // virtual URL, or title is set, this should be cleared to force a refresh.
   mutable std::u16string cached_display_title_;
 
-  // True if this navigation was typed without a scheme and its URL is using
-  // https:// as the default scheme.
-  bool is_upgraded_to_https_;
+  // Type of the HTTPS upgrade applied to this navigation, if any.
+  HttpsUpgradeType https_upgrade_type_;
 
   // Copy and assignment is explicitly allowed for this class.
 };

@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Test bounds of image map links assert_equals: expected 210 but got 315
-Harness: the test ran to completion.
-

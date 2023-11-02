@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/scoped_enable_unadjusted_mouse_events.h"
 
 namespace views {
@@ -33,7 +34,7 @@ class ScopedEnableUnadjustedMouseEventsWin
   static std::unique_ptr<ScopedEnableUnadjustedMouseEventsWin> StartMonitor(
       HWNDMessageHandler* owner);
 
-  HWNDMessageHandler* owner_;
+  raw_ptr<HWNDMessageHandler> owner_;
 };
 }  // namespace views
 

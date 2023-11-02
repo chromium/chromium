@@ -1,12 +1,12 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_WEBUI_ECHE_APP_UI_UNTRUSTED_ECHE_APP_UI_H_
 #define ASH_WEBUI_ECHE_APP_UI_UNTRUSTED_ECHE_APP_UI_H_
 
+#include "content/public/browser/webui_config.h"
 #include "ui/webui/untrusted_web_ui_controller.h"
-#include "ui/webui/webui_config.h"
 
 namespace content {
 class WebUI;
@@ -16,7 +16,7 @@ namespace ash {
 namespace eche_app {
 
 // WebUI config for chrome-untrusted://eche-app
-class UntrustedEcheAppUIConfig : public ui::WebUIConfig {
+class UntrustedEcheAppUIConfig : public content::WebUIConfig {
  public:
   UntrustedEcheAppUIConfig();
   ~UntrustedEcheAppUIConfig() override;

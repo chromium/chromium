@@ -17,6 +17,7 @@ limitations under the License.
 
 #include "tensorflow/lite/kernels/kernel_util.h"
 #include "tensorflow/lite/op_resolver.h"
+#include "tensorflow_lite_support/cc/task/core/proto/base_options_proto_inc.h"
 #include "tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h"
 #include "tensorflow_lite_support/cc/utils/jni_utils.h"
 #include "tensorflow_lite_support/java/src/native/task/text/nlclassifier/nl_classifier_jni_utils.h"
@@ -31,56 +32,65 @@ extern std::unique_ptr<OpResolver> CreateOpResolver();
 
 namespace {
 
+using ::tflite::support::utils::GetExceptionClassNameForStatusCode;
 using ::tflite::support::utils::GetMappedFileBuffer;
 using ::tflite::support::utils::JStringToString;
-using ::tflite::support::utils::kAssertionError;
 using ::tflite::support::utils::kInvalidPointer;
 using ::tflite::support::utils::ThrowException;
+using ::tflite::task::core::BaseOptions;
+using ::tflite::task::text::NLClassifierOptions;
 using ::tflite::task::text::nlclassifier::NLClassifier;
-using ::tflite::task::text::nlclassifier::NLClassifierOptions;
 using ::tflite::task::text::nlclassifier::RunClassifier;
 
-NLClassifierOptions ConvertJavaNLClassifierOptions(
-    JNIEnv* env,
-    jobject java_nl_classifier_options) {
+NLClassifierOptions ConvertToProtoOptions(JNIEnv* env,
+                                          jobject java_nl_classifier_options,
+                                          jlong base_options_handle) {
   jclass nl_classifier_options_class = env->FindClass(
       "org/tensorflow/lite/task/text/nlclassifier/"
       "NLClassifier$NLClassifierOptions");
-  jmethodID input_tensor_index_method_id =
-      env->GetMethodID(nl_classifier_options_class, "inputTensorIndex", "()I");
+  jmethodID input_tensor_index_method_id = env->GetMethodID(
+      nl_classifier_options_class, "getInputTensorIndex", "()I");
   jmethodID output_score_tensor_index_method_id = env->GetMethodID(
-      nl_classifier_options_class, "outputScoreTensorIndex", "()I");
+      nl_classifier_options_class, "getOutputScoreTensorIndex", "()I");
   jmethodID output_label_tensor_index_method_id = env->GetMethodID(
-      nl_classifier_options_class, "outputLabelTensorIndex", "()I");
-  jmethodID input_tensor_name_method_id = env->GetMethodID(
-      nl_classifier_options_class, "inputTensorName", "()Ljava/lang/String;");
+      nl_classifier_options_class, "getOutputLabelTensorIndex", "()I");
+  jmethodID input_tensor_name_method_id =
+      env->GetMethodID(nl_classifier_options_class, "getInputTensorName",
+                       "()Ljava/lang/String;");
   jmethodID output_score_tensor_name_method_id =
-      env->GetMethodID(nl_classifier_options_class, "outputScoreTensorName",
+      env->GetMethodID(nl_classifier_options_class, "getOutputScoreTensorName",
                        "()Ljava/lang/String;");
   jmethodID output_label_tensor_name_method_id =
-      env->GetMethodID(nl_classifier_options_class, "outputLabelTensorName",
+      env->GetMethodID(nl_classifier_options_class, "getOutputLabelTensorName",
                        "()Ljava/lang/String;");
 
-  return {
-      .input_tensor_index = env->CallIntMethod(java_nl_classifier_options,
-                                               input_tensor_index_method_id),
-      .output_score_tensor_index = env->CallIntMethod(
-          java_nl_classifier_options, output_score_tensor_index_method_id),
-      .output_label_tensor_index = env->CallIntMethod(
-          java_nl_classifier_options, output_label_tensor_index_method_id),
-      .input_tensor_name = JStringToString(
-          env, (jstring)env->CallObjectMethod(java_nl_classifier_options,
-                                              input_tensor_name_method_id)),
-      .output_score_tensor_name = JStringToString(
-          env,
-          (jstring)env->CallObjectMethod(java_nl_classifier_options,
-                                         output_score_tensor_name_method_id)),
-      .output_label_tensor_name = JStringToString(
-          env,
-          (jstring)env->CallObjectMethod(java_nl_classifier_options,
-                                         output_label_tensor_name_method_id)),
-  };
+  NLClassifierOptions proto_options;
+  if (base_options_handle != kInvalidPointer) {
+    // proto_options will free the previous base_options and set the new one.
+    proto_options.set_allocated_base_options(
+        reinterpret_cast<BaseOptions*>(base_options_handle));
+  }
+
+  proto_options.set_input_tensor_index(env->CallIntMethod(
+      java_nl_classifier_options, input_tensor_index_method_id));
+  proto_options.set_output_score_tensor_index(env->CallIntMethod(
+      java_nl_classifier_options, output_score_tensor_index_method_id));
+  proto_options.set_output_label_tensor_index(env->CallIntMethod(
+      java_nl_classifier_options, output_label_tensor_index_method_id));
+  proto_options.set_input_tensor_name(JStringToString(
+      env, (jstring)env->CallObjectMethod(java_nl_classifier_options,
+                                          input_tensor_name_method_id)));
+  proto_options.set_output_score_tensor_name(JStringToString(
+      env, (jstring)env->CallObjectMethod(java_nl_classifier_options,
+                                          output_score_tensor_name_method_id)));
+  proto_options.set_output_label_tensor_name(JStringToString(
+      env, (jstring)env->CallObjectMethod(java_nl_classifier_options,
+                                          output_label_tensor_name_method_id)));
+
+  return proto_options;
 }
+
+}  // namespace
 
 extern "C" JNIEXPORT void JNICALL
 Java_org_tensorflow_lite_task_text_nlclassifier_NLClassifier_deinitJni(
@@ -95,20 +105,25 @@ Java_org_tensorflow_lite_task_text_nlclassifier_NLClassifier_initJniWithByteBuff
     JNIEnv* env,
     jclass thiz,
     jobject nl_classifier_options,
-    jobject model_buffer) {
+    jobject model_buffer,
+    jlong base_options_handle) {
   auto model = GetMappedFileBuffer(env, model_buffer);
-  tflite::support::StatusOr<std::unique_ptr<NLClassifier>> status =
-      NLClassifier::CreateFromBufferAndOptions(
-          model.data(), model.size(),
-          ConvertJavaNLClassifierOptions(env, nl_classifier_options),
-          tflite::task::CreateOpResolver());
+  tflite::support::StatusOr<std::unique_ptr<NLClassifier>> classifier_or;
 
-  if (status.ok()) {
-    return reinterpret_cast<jlong>(status->release());
+  NLClassifierOptions proto_options =
+      ConvertToProtoOptions(env, nl_classifier_options, base_options_handle);
+  proto_options.mutable_base_options()->mutable_model_file()->set_file_content(
+      model.data(), model.size());
+  classifier_or = NLClassifier::CreateFromOptions(
+      proto_options, tflite::task::CreateOpResolver());
+
+  if (classifier_or.ok()) {
+    return reinterpret_cast<jlong>(classifier_or->release());
   } else {
-    ThrowException(env, kAssertionError,
-                   "Error occurred when initializing NLClassifier: %s",
-                   status.status().message().data());
+    ThrowException(
+        env, GetExceptionClassNameForStatusCode(classifier_or.status().code()),
+        "Error occurred when initializing NLClassifier: %s",
+        classifier_or.status().message().data());
     return kInvalidPointer;
   }
 }
@@ -118,17 +133,26 @@ Java_org_tensorflow_lite_task_text_nlclassifier_NLClassifier_initJniWithFileDesc
     JNIEnv* env,
     jclass thiz,
     jobject nl_classifier_options,
-    jint fd) {
-  tflite::support::StatusOr<std::unique_ptr<NLClassifier>> status =
-      NLClassifier::CreateFromFdAndOptions(
-          fd, ConvertJavaNLClassifierOptions(env, nl_classifier_options),
-          tflite::task::CreateOpResolver());
-  if (status.ok()) {
-    return reinterpret_cast<jlong>(status->release());
+    jint fd,
+    jlong base_options_handle) {
+  tflite::support::StatusOr<std::unique_ptr<NLClassifier>> classifier_or;
+
+  NLClassifierOptions proto_options =
+      ConvertToProtoOptions(env, nl_classifier_options, base_options_handle);
+  proto_options.mutable_base_options()
+      ->mutable_model_file()
+      ->mutable_file_descriptor_meta()
+      ->set_fd(fd);
+  classifier_or = NLClassifier::CreateFromOptions(
+      proto_options, tflite::task::CreateOpResolver());
+
+  if (classifier_or.ok()) {
+    return reinterpret_cast<jlong>(classifier_or->release());
   } else {
-    ThrowException(env, kAssertionError,
-                   "Error occurred when initializing NLClassifier: %s",
-                   status.status().message().data());
+    ThrowException(
+        env, GetExceptionClassNameForStatusCode(classifier_or.status().code()),
+        "Error occurred when initializing NLClassifier: %s",
+        classifier_or.status().message().data());
     return kInvalidPointer;
   }
 }
@@ -141,5 +165,3 @@ Java_org_tensorflow_lite_task_text_nlclassifier_NLClassifier_classifyNative(
     jstring text) {
   return RunClassifier(env, native_handle, text);
 }
-
-}  // namespace

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,6 +45,8 @@ class AuthenticatorRequestSheetModel {
 
   virtual bool IsActivityIndicatorVisible() const = 0;
   virtual bool IsBackButtonVisible() const = 0;
+  virtual bool ShouldFocusBackArrow() const;
+  virtual bool IsCloseButtonVisible() const;
 
   virtual bool IsCancelButtonVisible() const = 0;
   virtual std::u16string GetCancelButtonLabel() const = 0;
@@ -52,6 +54,9 @@ class AuthenticatorRequestSheetModel {
   virtual bool IsAcceptButtonVisible() const = 0;
   virtual bool IsAcceptButtonEnabled() const = 0;
   virtual std::u16string GetAcceptButtonLabel() const = 0;
+
+  virtual bool IsManageDevicesButtonVisible() const;
+  virtual bool IsOtherMechanismButtonVisible() const;
 
   virtual const gfx::VectorIcon& GetStepIllustration(
       ImageColorScheme color_scheme) const = 0;
@@ -65,6 +70,7 @@ class AuthenticatorRequestSheetModel {
   virtual void OnBack() = 0;
   virtual void OnAccept() = 0;
   virtual void OnCancel() = 0;
+  virtual void OnManageDevices();
 };
 
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_AUTHENTICATOR_REQUEST_SHEET_MODEL_H_

@@ -1,17 +1,17 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_COMPONENTS_PHONEHUB_INVALID_CONNECTION_DISCONNECTOR_H_
 #define ASH_COMPONENTS_PHONEHUB_INVALID_CONNECTION_DISCONNECTOR_H_
 
-#include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
+#include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
 
 namespace base {
 class OneShotTimer;
 }  // namespace base
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class PhoneModel;
@@ -53,6 +53,6 @@ class InvalidConnectionDisconnector
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_INVALID_CONNECTION_DISCONNECTOR_H_

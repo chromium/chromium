@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,10 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_manager.h"
@@ -20,6 +23,8 @@ const char kFailedError[] = "org.chromium.Error.Failed";
 }  // namespace
 
 namespace bluez {
+
+BluetoothAdvertisementMonitorManagerClient::Observer::~Observer() = default;
 
 BluetoothAdvertisementMonitorManagerClient::Properties::Properties(
     dbus::ObjectProxy* object_proxy,
@@ -37,7 +42,7 @@ BluetoothAdvertisementMonitorManagerClient::Properties::~Properties() = default;
 
 // The BluetoothAdvertisementMonitorManagerClient implementation used in
 // production.
-class BluetoothAdvertisementMonitorManagerClientImpl
+class BluetoothAdvertisementMonitorManagerClientImpl final
     : public BluetoothAdvertisementMonitorManagerClient,
       public dbus::ObjectManager::Interface {
  public:
@@ -96,10 +101,27 @@ class BluetoothAdvertisementMonitorManagerClientImpl
       dbus::ObjectProxy* object_proxy,
       const dbus::ObjectPath& object_path,
       const std::string& interface_name) override {
-    return new Properties(object_proxy, interface_name, base::DoNothing());
+    return new Properties(
+        object_proxy, interface_name,
+        base::BindRepeating(
+            &BluetoothAdvertisementMonitorManagerClientImpl::OnPropertyChanged,
+            weak_ptr_factory_.GetWeakPtr(), object_path));
+    ;
   }
 
   // BluetoothAdvertisementMonitorManagerClient override.
+  void AddObserver(
+      BluetoothAdvertisementMonitorManagerClient::Observer* observer) override {
+    DCHECK(observer);
+    observers_.AddObserver(observer);
+  }
+
+  void RemoveObserver(
+      BluetoothAdvertisementMonitorManagerClient::Observer* observer) override {
+    DCHECK(observer);
+    observers_.RemoveObserver(observer);
+  }
+
   Properties* GetProperties(const dbus::ObjectPath& object_path) override {
     DCHECK(object_manager_);
     return static_cast<Properties*>(object_manager_->GetProperties(
@@ -122,6 +144,20 @@ class BluetoothAdvertisementMonitorManagerClientImpl
   }
 
  private:
+  // Called by dbus::PropertySet when a property value is changed. Informs
+  // observers.
+  void OnPropertyChanged(const dbus::ObjectPath& object_path,
+                         const std::string& property_name) {
+    DVLOG(2) << "Bluetooth Advertisement Monitor Client property changed: "
+             << object_path.value() << ": " << property_name;
+
+    if (property_name ==
+        bluetooth_advertisement_monitor_manager::kSupportedFeatures) {
+      for (auto& observer : observers_)
+        observer.SupportedAdvertisementMonitorFeaturesChanged();
+    }
+  }
+
   void CallObjectProxyMethod(const dbus::ObjectPath& manager_object_path,
                              dbus::MethodCall* method_call,
                              base::OnceClosure callback,
@@ -164,7 +200,9 @@ class BluetoothAdvertisementMonitorManagerClientImpl
     std::move(error_callback).Run(error_name, error_message);
   }
 
-  dbus::ObjectManager* object_manager_ = nullptr;
+  base::ObserverList<Observer> observers_;
+
+  raw_ptr<dbus::ObjectManager> object_manager_ = nullptr;
 
   base::WeakPtrFactory<BluetoothAdvertisementMonitorManagerClientImpl>
       weak_ptr_factory_{this};

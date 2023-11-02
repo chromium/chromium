@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,183 +8,151 @@
 #include <string>
 
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/capability_access.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/intent_filter.h"
+#include "components/services/app_service/public/cpp/permission.h"
+#include "components/services/app_service/public/cpp/preferred_app.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace mojo {
 
 template <>
-struct StructTraits<crosapi::mojom::AppDataView, apps::mojom::AppPtr> {
-  static apps::mojom::AppType app_type(const apps::mojom::AppPtr& r) {
-    return r->app_type;
-  }
+struct StructTraits<crosapi::mojom::AppDataView, apps::AppPtr> {
+  static apps::AppType app_type(const apps::AppPtr& r) { return r->app_type; }
 
-  static const std::string& app_id(const apps::mojom::AppPtr& r) {
-    return r->app_id;
-  }
+  static const std::string& app_id(const apps::AppPtr& r) { return r->app_id; }
 
-  static apps::mojom::Readiness readiness(const apps::mojom::AppPtr& r) {
+  static apps::Readiness readiness(const apps::AppPtr& r) {
     return r->readiness;
   }
 
-  static const absl::optional<std::string>& name(const apps::mojom::AppPtr& r) {
+  static const absl::optional<std::string>& name(const apps::AppPtr& r) {
     return r->name;
   }
 
-  static const absl::optional<std::string>& short_name(
-      const apps::mojom::AppPtr& r) {
+  static const absl::optional<std::string>& short_name(const apps::AppPtr& r) {
     return r->short_name;
   }
 
   static const absl::optional<std::string>& publisher_id(
-      const apps::mojom::AppPtr& r) {
+      const apps::AppPtr& r) {
     return r->publisher_id;
   }
 
-  static const absl::optional<std::string>& description(
-      const apps::mojom::AppPtr& r) {
+  static const absl::optional<std::string>& description(const apps::AppPtr& r) {
     return r->description;
   }
 
-  static const absl::optional<std::string>& version(
-      const apps::mojom::AppPtr& r) {
+  static const absl::optional<std::string>& version(const apps::AppPtr& r) {
     return r->version;
   }
 
   static const std::vector<std::string>& additional_search_terms(
-      const apps::mojom::AppPtr& r) {
+      const apps::AppPtr& r) {
     return r->additional_search_terms;
   }
 
-  static const apps::mojom::IconKeyPtr& icon_key(const apps::mojom::AppPtr& r) {
-    return r->icon_key;
-  }
+  static apps::IconKeyPtr icon_key(const apps::AppPtr& r);
 
   static const absl::optional<base::Time>& last_launch_time(
-      const apps::mojom::AppPtr& r) {
+      const apps::AppPtr& r) {
     return r->last_launch_time;
   }
 
-  static const absl::optional<base::Time>& install_time(
-      const apps::mojom::AppPtr& r) {
+  static const absl::optional<base::Time>& install_time(const apps::AppPtr& r) {
     return r->install_time;
   }
 
-  static const apps::mojom::InstallReason& install_reason(
-      const apps::mojom::AppPtr& r) {
+  static const apps::InstallReason& install_reason(const apps::AppPtr& r) {
     return r->install_reason;
   }
 
-  static const absl::optional<std::string>& policy_id(
-      const apps::mojom::AppPtr& r) {
-    return r->policy_id;
+  // This method is required for Ash-Lacros backwards compatibility.
+  static absl::optional<std::string> deprecated_policy_id(
+      const apps::AppPtr& r);
+
+  static const std::vector<std::string>& policy_ids(const apps::AppPtr& r) {
+    return r->policy_ids;
   }
 
-  static const apps::mojom::OptionalBool& recommendable(
-      const apps::mojom::AppPtr& r) {
-    return r->recommendable;
-  }
+  static crosapi::mojom::OptionalBool recommendable(const apps::AppPtr& r);
 
-  static const apps::mojom::OptionalBool& searchable(
-      const apps::mojom::AppPtr& r) {
-    return r->searchable;
-  }
+  static crosapi::mojom::OptionalBool searchable(const apps::AppPtr& r);
 
-  static const apps::mojom::OptionalBool& show_in_launcher(
-      const apps::mojom::AppPtr& r) {
-    return r->show_in_launcher;
-  }
+  static crosapi::mojom::OptionalBool show_in_launcher(const apps::AppPtr& r);
 
-  static const apps::mojom::OptionalBool& show_in_shelf(
-      const apps::mojom::AppPtr& r) {
-    return r->show_in_shelf;
-  }
+  static crosapi::mojom::OptionalBool show_in_shelf(const apps::AppPtr& r);
 
-  static const apps::mojom::OptionalBool& show_in_search(
-      const apps::mojom::AppPtr& r) {
-    return r->show_in_search;
-  }
+  static crosapi::mojom::OptionalBool show_in_search(const apps::AppPtr& r);
 
-  static const apps::mojom::OptionalBool& show_in_management(
-      const apps::mojom::AppPtr& r) {
-    return r->show_in_management;
-  }
+  static crosapi::mojom::OptionalBool show_in_management(const apps::AppPtr& r);
 
-  static const apps::mojom::OptionalBool& has_badge(
-      const apps::mojom::AppPtr& r) {
-    return r->has_badge;
-  }
+  static crosapi::mojom::OptionalBool has_badge(const apps::AppPtr& r);
 
-  static const apps::mojom::OptionalBool& paused(const apps::mojom::AppPtr& r) {
-    return r->paused;
-  }
+  static crosapi::mojom::OptionalBool paused(const apps::AppPtr& r);
 
-  static const std::vector<apps::mojom::IntentFilterPtr>& intent_filters(
-      const apps::mojom::AppPtr& r) {
+  static const apps::IntentFilters& intent_filters(const apps::AppPtr& r) {
     return r->intent_filters;
   }
 
-  static const apps::mojom::WindowMode& window_mode(
-      const apps::mojom::AppPtr& r) {
+  static const apps::WindowMode& window_mode(const apps::AppPtr& r) {
     return r->window_mode;
   }
 
-  // TODO(crbug.com/1253250):
-  // Create empty permission vector because currently apps::mojom::App
-  // doesn't accept null. The permissions field should be null for
-  // no permission change after app service mojom removed.
-  static const std::vector<apps::mojom::PermissionPtr>& permissions(
-      const apps::mojom::AppPtr& r) {
+  static const apps::Permissions& permissions(const apps::AppPtr& r) {
     return r->permissions;
   }
 
-  static const apps::mojom::OptionalBool& allow_uninstall(
-      const apps::mojom::AppPtr& r) {
-    return r->allow_uninstall;
+  static crosapi::mojom::OptionalBool allow_uninstall(const apps::AppPtr& r);
+
+  static crosapi::mojom::OptionalBool handles_intents(const apps::AppPtr& r);
+
+  static const apps::Shortcuts& shortcuts(const apps::AppPtr& r) {
+    return r->shortcuts;
   }
 
-  static bool Read(crosapi::mojom::AppDataView data, apps::mojom::AppPtr* out);
+  static crosapi::mojom::OptionalBool is_platform_app(const apps::AppPtr& r);
+
+  static bool Read(crosapi::mojom::AppDataView data, apps::AppPtr* out);
 };
 
 template <>
-struct EnumTraits<crosapi::mojom::AppType, apps::mojom::AppType> {
-  static crosapi::mojom::AppType ToMojom(apps::mojom::AppType input);
-  static bool FromMojom(crosapi::mojom::AppType input,
-                        apps::mojom::AppType* output);
+struct EnumTraits<crosapi::mojom::AppType, apps::AppType> {
+  static crosapi::mojom::AppType ToMojom(apps::AppType input);
+  static bool FromMojom(crosapi::mojom::AppType input, apps::AppType* output);
 };
 
 template <>
-struct EnumTraits<crosapi::mojom::Readiness, apps::mojom::Readiness> {
-  static crosapi::mojom::Readiness ToMojom(apps::mojom::Readiness input);
+struct EnumTraits<crosapi::mojom::Readiness, apps::Readiness> {
+  static crosapi::mojom::Readiness ToMojom(apps::Readiness input);
   static bool FromMojom(crosapi::mojom::Readiness input,
-                        apps::mojom::Readiness* output);
+                        apps::Readiness* output);
 };
 
 template <>
-struct StructTraits<crosapi::mojom::IconKeyDataView, apps::mojom::IconKeyPtr> {
-  static bool IsNull(const apps::mojom::IconKeyPtr& r) { return r.is_null(); }
+struct StructTraits<crosapi::mojom::IconKeyDataView, apps::IconKeyPtr> {
+  static bool IsNull(const apps::IconKeyPtr& r) { return !r; }
 
-  static void SetToNull(apps::mojom::IconKeyPtr* r) { r->reset(); }
+  static void SetToNull(apps::IconKeyPtr* r) { r->reset(); }
 
-  static uint64_t timeline(const apps::mojom::IconKeyPtr& r) {
-    return r->timeline;
-  }
+  static uint64_t timeline(const apps::IconKeyPtr& r) { return r->timeline; }
 
-  static uint32_t icon_effects(const apps::mojom::IconKeyPtr& r) {
+  static uint32_t icon_effects(const apps::IconKeyPtr& r) {
     return r->icon_effects;
   }
 
-  static bool Read(crosapi::mojom::IconKeyDataView,
-                   apps::mojom::IconKeyPtr* out);
+  static bool Read(crosapi::mojom::IconKeyDataView, apps::IconKeyPtr* out);
 };
 
 template <>
-struct EnumTraits<crosapi::mojom::InstallReason, apps::mojom::InstallReason> {
-  static crosapi::mojom::InstallReason ToMojom(
-      apps::mojom::InstallReason input);
+struct EnumTraits<crosapi::mojom::InstallReason, apps::InstallReason> {
+  static crosapi::mojom::InstallReason ToMojom(apps::InstallReason input);
   static bool FromMojom(crosapi::mojom::InstallReason input,
-                        apps::mojom::InstallReason* output);
+                        apps::InstallReason* output);
 };
 
 template <>
@@ -196,104 +164,93 @@ struct EnumTraits<crosapi::mojom::OptionalBool, apps::mojom::OptionalBool> {
 
 template <>
 struct StructTraits<crosapi::mojom::IntentFilterDataView,
-                    apps::mojom::IntentFilterPtr> {
-  static const std::vector<apps::mojom::ConditionPtr>& conditions(
-      const apps::mojom::IntentFilterPtr& r) {
+                    apps::IntentFilterPtr> {
+  static const std::vector<apps::ConditionPtr>& conditions(
+      const apps::IntentFilterPtr& r) {
     return r->conditions;
   }
 
   static const absl::optional<std::string>& activity_name(
-      const apps::mojom::IntentFilterPtr& r) {
+      const apps::IntentFilterPtr& r) {
     return r->activity_name;
   }
 
   static const absl::optional<std::string>& activity_label(
-      const apps::mojom::IntentFilterPtr& r) {
+      const apps::IntentFilterPtr& r) {
     return r->activity_label;
   }
 
   static bool Read(crosapi::mojom::IntentFilterDataView,
-                   apps::mojom::IntentFilterPtr* out);
+                   apps::IntentFilterPtr* out);
 };
 
 template <>
-struct StructTraits<crosapi::mojom::ConditionDataView,
-                    apps::mojom::ConditionPtr> {
-  static const apps::mojom::ConditionType& condition_type(
-      const apps::mojom::ConditionPtr& r) {
+struct StructTraits<crosapi::mojom::ConditionDataView, apps::ConditionPtr> {
+  static const apps::ConditionType& condition_type(
+      const apps::ConditionPtr& r) {
     return r->condition_type;
   }
 
-  static const std::vector<apps::mojom::ConditionValuePtr>& condition_values(
-      const apps::mojom::ConditionPtr& r) {
+  static const apps::ConditionValues& condition_values(
+      const apps::ConditionPtr& r) {
     return r->condition_values;
   }
 
-  static bool Read(crosapi::mojom::ConditionDataView,
-                   apps::mojom::ConditionPtr* out);
+  static bool Read(crosapi::mojom::ConditionDataView, apps::ConditionPtr* out);
 };
 
 template <>
-struct EnumTraits<crosapi::mojom::ConditionType, apps::mojom::ConditionType> {
-  static crosapi::mojom::ConditionType ToMojom(
-      apps::mojom::ConditionType input);
+struct EnumTraits<crosapi::mojom::ConditionType, apps::ConditionType> {
+  static crosapi::mojom::ConditionType ToMojom(apps::ConditionType input);
   static bool FromMojom(crosapi::mojom::ConditionType input,
-                        apps::mojom::ConditionType* output);
+                        apps::ConditionType* output);
 };
 
 template <>
 struct StructTraits<crosapi::mojom::ConditionValueDataView,
-                    apps::mojom::ConditionValuePtr> {
-  static const std::string& value(const apps::mojom::ConditionValuePtr& r) {
+                    apps::ConditionValuePtr> {
+  static const std::string& value(const apps::ConditionValuePtr& r) {
     return r->value;
   }
 
-  static const apps::mojom::PatternMatchType& match_type(
-      const apps::mojom::ConditionValuePtr& r) {
+  static const apps::PatternMatchType& match_type(
+      const apps::ConditionValuePtr& r) {
     return r->match_type;
   }
 
   static bool Read(crosapi::mojom::ConditionValueDataView,
-                   apps::mojom::ConditionValuePtr* out);
+                   apps::ConditionValuePtr* out);
 };
 
 template <>
-struct EnumTraits<crosapi::mojom::PatternMatchType,
-                  apps::mojom::PatternMatchType> {
-  static crosapi::mojom::PatternMatchType ToMojom(
-      apps::mojom::PatternMatchType input);
+struct EnumTraits<crosapi::mojom::PatternMatchType, apps::PatternMatchType> {
+  static crosapi::mojom::PatternMatchType ToMojom(apps::PatternMatchType input);
   static bool FromMojom(crosapi::mojom::PatternMatchType input,
-                        apps::mojom::PatternMatchType* output);
+                        apps::PatternMatchType* output);
 };
 
 template <>
-struct EnumTraits<crosapi::mojom::UninstallSource,
-                  apps::mojom::UninstallSource> {
-  static crosapi::mojom::UninstallSource ToMojom(
-      apps::mojom::UninstallSource input);
+struct EnumTraits<crosapi::mojom::UninstallSource, apps::UninstallSource> {
+  static crosapi::mojom::UninstallSource ToMojom(apps::UninstallSource input);
   static bool FromMojom(crosapi::mojom::UninstallSource input,
-                        apps::mojom::UninstallSource* output);
+                        apps::UninstallSource* output);
 };
 
 template <>
 struct StructTraits<crosapi::mojom::CapabilityAccessDataView,
-                    apps::mojom::CapabilityAccessPtr> {
-  static const std::string& app_id(const apps::mojom::CapabilityAccessPtr& r) {
+                    apps::CapabilityAccessPtr> {
+  static const std::string& app_id(const apps::CapabilityAccessPtr& r) {
     return r->app_id;
   }
 
-  static const apps::mojom::OptionalBool& camera(
-      const apps::mojom::CapabilityAccessPtr& r) {
-    return r->camera;
-  }
+  static crosapi::mojom::OptionalBool camera(
+      const apps::CapabilityAccessPtr& r);
 
-  static const apps::mojom::OptionalBool& microphone(
-      const apps::mojom::CapabilityAccessPtr& r) {
-    return r->microphone;
-  }
+  static crosapi::mojom::OptionalBool microphone(
+      const apps::CapabilityAccessPtr& r);
 
   static bool Read(crosapi::mojom::CapabilityAccessDataView,
-                   apps::mojom::CapabilityAccessPtr* out);
+                   apps::CapabilityAccessPtr* out);
 };
 
 template <>
@@ -324,113 +281,123 @@ struct StructTraits<crosapi::mojom::IconValueDataView, apps::IconValuePtr> {
 };
 
 template <>
-struct EnumTraits<crosapi::mojom::WindowMode, apps::mojom::WindowMode> {
-  static crosapi::mojom::WindowMode ToMojom(apps::mojom::WindowMode input);
+struct EnumTraits<crosapi::mojom::WindowMode, apps::WindowMode> {
+  static crosapi::mojom::WindowMode ToMojom(apps::WindowMode input);
   static bool FromMojom(crosapi::mojom::WindowMode input,
-                        apps::mojom::WindowMode* output);
+                        apps::WindowMode* output);
 };
 
 template <>
-struct EnumTraits<crosapi::mojom::LaunchSource, apps::mojom::LaunchSource> {
-  static crosapi::mojom::LaunchSource ToMojom(apps::mojom::LaunchSource input);
+struct EnumTraits<crosapi::mojom::LaunchSource, apps::LaunchSource> {
+  static crosapi::mojom::LaunchSource ToMojom(apps::LaunchSource input);
   static bool FromMojom(crosapi::mojom::LaunchSource input,
-                        apps::mojom::LaunchSource* output);
+                        apps::LaunchSource* output);
 };
 
 template <>
-struct StructTraits<crosapi::mojom::PermissionDataView,
-                    apps::mojom::PermissionPtr> {
-  static apps::mojom::PermissionType permission_type(
-      const apps::mojom::PermissionPtr& r) {
+struct StructTraits<crosapi::mojom::PermissionDataView, apps::PermissionPtr> {
+  static apps::PermissionType permission_type(const apps::PermissionPtr& r) {
     return r->permission_type;
   }
 
-  static const apps::mojom::PermissionValuePtr& value(
-      const apps::mojom::PermissionPtr& r) {
+  static const apps::PermissionValuePtr& value(const apps::PermissionPtr& r) {
     return r->value;
   }
 
-  static bool is_managed(const apps::mojom::PermissionPtr& r) {
-    return r->is_managed;
-  }
+  static bool is_managed(const apps::PermissionPtr& r) { return r->is_managed; }
 
   static bool Read(crosapi::mojom::PermissionDataView,
-                   apps::mojom::PermissionPtr* out);
+                   apps::PermissionPtr* out);
 };
 
 template <>
-struct EnumTraits<crosapi::mojom::PermissionType, apps::mojom::PermissionType> {
-  static crosapi::mojom::PermissionType ToMojom(
-      apps::mojom::PermissionType input);
+struct EnumTraits<crosapi::mojom::PermissionType, apps::PermissionType> {
+  static crosapi::mojom::PermissionType ToMojom(apps::PermissionType input);
   static bool FromMojom(crosapi::mojom::PermissionType input,
-                        apps::mojom::PermissionType* output);
+                        apps::PermissionType* output);
 };
 
 template <>
-struct EnumTraits<crosapi::mojom::TriState, apps::mojom::TriState> {
-  static crosapi::mojom::TriState ToMojom(apps::mojom::TriState input);
-  static bool FromMojom(crosapi::mojom::TriState input,
-                        apps::mojom::TriState* output);
+struct EnumTraits<crosapi::mojom::TriState, apps::TriState> {
+  static crosapi::mojom::TriState ToMojom(apps::TriState input);
+  static bool FromMojom(crosapi::mojom::TriState input, apps::TriState* output);
 };
 
 template <>
 struct UnionTraits<crosapi::mojom::PermissionValueDataView,
-                   apps::mojom::PermissionValuePtr> {
+                   apps::PermissionValuePtr> {
   static crosapi::mojom::PermissionValueDataView::Tag GetTag(
-      const apps::mojom::PermissionValuePtr& r);
+      const apps::PermissionValuePtr& r);
 
-  static bool IsNull(const apps::mojom::PermissionValuePtr& r) {
-    return !r->is_bool_value() && !r->is_tristate_value();
+  static bool IsNull(const apps::PermissionValuePtr& r) {
+    return !absl::holds_alternative<bool>(r->value) &&
+           !absl::holds_alternative<apps::TriState>(r->value);
   }
 
-  static void SetToNull(apps::mojom::PermissionValuePtr* out) {}
+  static void SetToNull(apps::PermissionValuePtr* out) {}
 
-  static bool bool_value(const apps::mojom::PermissionValuePtr& r) {
-    return r->get_bool_value();
+  static bool bool_value(const apps::PermissionValuePtr& r) {
+    if (absl::holds_alternative<bool>(r->value)) {
+      return absl::get<bool>(r->value);
+    }
+    return false;
   }
 
-  static apps::mojom::TriState tristate_value(
-      const apps::mojom::PermissionValuePtr& r) {
-    return r->get_tristate_value();
+  static apps::TriState tristate_value(const apps::PermissionValuePtr& r) {
+    if (absl::holds_alternative<apps::TriState>(r->value)) {
+      return absl::get<apps::TriState>(r->value);
+    }
+    return apps::TriState::kBlock;
   }
 
   static bool Read(crosapi::mojom::PermissionValueDataView data,
-                   apps::mojom::PermissionValuePtr* out);
+                   apps::PermissionValuePtr* out);
 };
 
 template <>
 struct StructTraits<crosapi::mojom::PreferredAppDataView,
-                    apps::mojom::PreferredAppPtr> {
-  static const apps::mojom::IntentFilterPtr& intent_filter(
-      const apps::mojom::PreferredAppPtr& r) {
-    return r->intent_filter;
+                    apps::PreferredAppPtr> {
+  static apps::IntentFilterPtr intent_filter(const apps::PreferredAppPtr& r) {
+    return r->intent_filter->Clone();
   }
 
-  static const std::string& app_id(const apps::mojom::PreferredAppPtr& r) {
+  static const std::string& app_id(const apps::PreferredAppPtr& r) {
     return r->app_id;
   }
 
   static bool Read(crosapi::mojom::PreferredAppDataView,
-                   apps::mojom::PreferredAppPtr* out);
+                   apps::PreferredAppPtr* out);
 };
 
 template <>
 struct StructTraits<crosapi::mojom::PreferredAppChangesDataView,
-                    apps::mojom::PreferredAppChangesPtr> {
-  static const base::flat_map<std::string,
-                              std::vector<apps::mojom::IntentFilterPtr>>&
-  added_filters(const apps::mojom::PreferredAppChangesPtr& r) {
-    return r->added_filters;
+                    apps::PreferredAppChangesPtr> {
+  static base::flat_map<std::string, apps::IntentFilters> added_filters(
+      const apps::PreferredAppChangesPtr& r) {
+    return apps::CloneIntentFiltersMap(r->added_filters);
   }
 
-  static const base::flat_map<std::string,
-                              std::vector<apps::mojom::IntentFilterPtr>>&
-  removed_filters(const apps::mojom::PreferredAppChangesPtr& r) {
-    return r->removed_filters;
+  static base::flat_map<std::string, apps::IntentFilters> removed_filters(
+      const apps::PreferredAppChangesPtr& r) {
+    return apps::CloneIntentFiltersMap(r->removed_filters);
   }
 
   static bool Read(crosapi::mojom::PreferredAppChangesDataView,
-                   apps::mojom::PreferredAppChangesPtr* out);
+                   apps::PreferredAppChangesPtr* out);
+};
+
+template <>
+struct StructTraits<crosapi::mojom::ShortcutDataView, apps::ShortcutPtr> {
+  static const std::string& shortcut_id(const apps::ShortcutPtr& r) {
+    return r->shortcut_id;
+  }
+
+  static const std::string& name(const apps::ShortcutPtr& r) { return r->name; }
+
+  static uint8_t position(const apps::ShortcutPtr& r) { return r->position; }
+
+  static bool Read(crosapi::mojom::ShortcutDataView data,
+                   apps::ShortcutPtr* out);
 };
 
 }  // namespace mojo

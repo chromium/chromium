@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,7 @@ FirmwareUpdateAppBrowserTest.prototype = {
 
   browsePreload: 'chrome://accessory-update/test_loader.html' +
       '?module=chromeos/firmware_update/' +
-      'firmware_update_unified_test.js',
+      'firmware_update_unified_test.js&host=test',
 
   featureList: {enabled: ['ash::features::kFirmwareUpdaterApp']},
 };

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,95 +12,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
-
-TEST(WebUIMessageHandlerTest, ExtractIntegerValue) {
-  base::ListValue list;
-  int value;
-  constexpr int zero_value = 0;
-  constexpr int neg_value = -1234;
-  constexpr int pos_value = 1234;
-  static const char zero_string[] = "0";
-  static const char neg_string[] = "-1234";
-  static const char pos_string[] = "1234";
-
-  list.Append(zero_value);
-  EXPECT_TRUE(WebUIMessageHandler::ExtractIntegerValue(&list, &value));
-  EXPECT_EQ(value, zero_value);
-  list.ClearList();
-
-  list.Append(neg_value);
-  EXPECT_TRUE(WebUIMessageHandler::ExtractIntegerValue(&list, &value));
-  EXPECT_EQ(value, neg_value);
-  list.ClearList();
-
-  list.Append(pos_value);
-  EXPECT_TRUE(WebUIMessageHandler::ExtractIntegerValue(&list, &value));
-  EXPECT_EQ(value, pos_value);
-  list.ClearList();
-
-  list.Append(zero_string);
-  EXPECT_TRUE(WebUIMessageHandler::ExtractIntegerValue(&list, &value));
-  EXPECT_EQ(value, zero_value);
-  list.ClearList();
-
-  list.Append(neg_string);
-  EXPECT_TRUE(WebUIMessageHandler::ExtractIntegerValue(&list, &value));
-  EXPECT_EQ(value, neg_value);
-  list.ClearList();
-
-  list.Append(pos_string);
-  EXPECT_TRUE(WebUIMessageHandler::ExtractIntegerValue(&list, &value));
-  EXPECT_EQ(value, pos_value);
-}
-
-TEST(WebUIMessageHandlerTest, ExtractDoubleValue) {
-  base::ListValue list;
-  double value;
-  constexpr double zero_value = 0.0;
-  constexpr double neg_value = -1234.5;
-  constexpr double pos_value = 1234.5;
-  static const char zero_string[] = "0";
-  static const char neg_string[] = "-1234.5";
-  static const char pos_string[] = "1234.5";
-
-  list.Append(zero_value);
-  EXPECT_TRUE(WebUIMessageHandler::ExtractDoubleValue(&list, &value));
-  EXPECT_DOUBLE_EQ(value, zero_value);
-  list.ClearList();
-
-  list.Append(neg_value);
-  EXPECT_TRUE(WebUIMessageHandler::ExtractDoubleValue(&list, &value));
-  EXPECT_DOUBLE_EQ(value, neg_value);
-  list.ClearList();
-
-  list.Append(pos_value);
-  EXPECT_TRUE(WebUIMessageHandler::ExtractDoubleValue(&list, &value));
-  EXPECT_DOUBLE_EQ(value, pos_value);
-  list.ClearList();
-
-  list.Append(zero_string);
-  EXPECT_TRUE(WebUIMessageHandler::ExtractDoubleValue(&list, &value));
-  EXPECT_DOUBLE_EQ(value, zero_value);
-  list.ClearList();
-
-  list.Append(neg_string);
-  EXPECT_TRUE(WebUIMessageHandler::ExtractDoubleValue(&list, &value));
-  EXPECT_DOUBLE_EQ(value, neg_value);
-  list.ClearList();
-
-  list.Append(pos_string);
-  EXPECT_TRUE(WebUIMessageHandler::ExtractDoubleValue(&list, &value));
-  EXPECT_DOUBLE_EQ(value, pos_value);
-}
-
-TEST(WebUIMessageHandlerTest, ExtractStringValue) {
-  base::ListValue list;
-  static constexpr char16_t kInString[] =
-      u"The facts, though interesting, are irrelevant.";
-  list.Append(kInString);
-  std::u16string out_string = WebUIMessageHandler::ExtractStringValue(&list);
-  EXPECT_EQ(kInString, out_string);
-}
 
 class TestWebUIMessageHandler : public WebUIMessageHandler {
  public:

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 
 namespace variations {
 
-struct SyntheticTrialGroup;
+class SyntheticTrialGroup;
 
 // The key used in crash reports to indicate the number of active experiments.
 // Should match the number of entries in kExperimentListKey.

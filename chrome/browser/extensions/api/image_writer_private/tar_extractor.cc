@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
+#include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
 
 namespace extensions {
 namespace image_writer {
@@ -24,8 +24,8 @@ constexpr int kMagicOffset = 257;
 
 bool TarExtractor::IsTarFile(const base::FilePath& image_path) {
   base::File infile(image_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                                    base::File::FLAG_EXCLUSIVE_WRITE |
-                                    base::File::FLAG_SHARE_DELETE);
+                                    base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                                    base::File::FLAG_WIN_SHARE_DELETE);
   if (!infile.IsValid())
     return false;
 
@@ -111,7 +111,7 @@ void TarExtractor::ExtractChunk() {
     return;
   }
 
-  properties_.progress_callback.Run(tar_reader_.total_bytes(),
+  properties_.progress_callback.Run(tar_reader_.total_bytes().value(),
                                     tar_reader_.curr_bytes());
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(

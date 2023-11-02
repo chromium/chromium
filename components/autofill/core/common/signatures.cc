@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -68,7 +68,7 @@ uint64_t PackBytes(base::span<const uint8_t, N> bytes) {
 // If a form name was set by Chrome, we should ignore it when calculating
 // the form signature.
 std::string GetDOMFormName(const std::string& form_name) {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // In case of an empty form name, the synthetic name is created. Ignore it.
   return (StartsWith(form_name, "gChrome~form~", base::CompareCase::SENSITIVE)
               ? std::string()
@@ -102,7 +102,8 @@ FormSignature CalculateFormSignature(const FormData& form_data) {
     }
   }
 
-  std::string form_name = GetDOMFormName(UTF16ToUTF8(form_data.name));
+  std::string form_name =
+      StripDigitsIfRequired(GetDOMFormName(UTF16ToUTF8(form_data.name)));
   std::string form_string = base::StrCat(
       {scheme, "://", host, "&", form_name, form_signature_field_names});
   return FormSignature(StrToHash64Bit(form_string));
@@ -133,11 +134,11 @@ uint32_t StrToHash32Bit(base::StringPiece str) {
   return PackBytes(base::make_span(digest).subspan<0, 4>());
 }
 
-int64_t HashFormSignature(autofill::FormSignature form_signature) {
+int64_t HashFormSignature(FormSignature form_signature) {
   return static_cast<uint64_t>(form_signature.value()) % 1021;
 }
 
-int64_t HashFieldSignature(autofill::FieldSignature field_signature) {
+int64_t HashFieldSignature(FieldSignature field_signature) {
   return static_cast<uint64_t>(field_signature.value()) % 1021;
 }
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -176,14 +176,14 @@ WebViewImpl.prototype.attachWindow = function(opt_guestInstanceId) {
   // being attached to this webview, and the current one will get destroyed.
   if (opt_guestInstanceId) {
     if (this.guest.getId() == opt_guestInstanceId) {
-      return true;
+      return;
     }
     this.guest.destroy();
     this.guest = new GuestView('webview', opt_guestInstanceId);
     this.prepareForReattach();
   }
 
-  return $Function.call(GuestViewContainer.prototype.attachWindow, this);
+  $Function.call(GuestViewContainer.prototype.attachWindow, this);
 };
 
 // Shared implementation of executeScript() and insertCSS().

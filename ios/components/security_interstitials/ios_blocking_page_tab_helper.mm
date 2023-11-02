@@ -1,13 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
 
-#include "base/logging.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/values.h"
-#include "ios/components/security_interstitials/ios_security_interstitial_page.h"
+#import "base/logging.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/values.h"
+#import "ios/components/security_interstitials/ios_security_interstitial_page.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_user_data.h"

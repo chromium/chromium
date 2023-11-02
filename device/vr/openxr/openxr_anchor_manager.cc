@@ -1,8 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "device/vr/openxr/openxr_anchor_manager.h"
+
+#include <tuple>
+
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_util.h"
 
@@ -114,8 +117,9 @@ AnchorId OpenXrAnchorManager::CreateAnchor(XrPosef pose,
   if (FAILED(
           extension_helper_.ExtensionMethods().xrCreateSpatialAnchorSpaceMSFT(
               session_, &space_create_info, &anchor_space))) {
-    (void)extension_helper_.ExtensionMethods().xrDestroySpatialAnchorMSFT(
-        xr_anchor);
+    std::ignore =
+        extension_helper_.ExtensionMethods().xrDestroySpatialAnchorMSFT(
+            xr_anchor);
     return kInvalidAnchorId;
   }
 
@@ -136,8 +140,8 @@ XrSpace OpenXrAnchorManager::GetAnchorSpace(AnchorId anchor_id) const {
 
 void OpenXrAnchorManager::DestroyAnchorData(
     const AnchorData& anchor_data) const {
-  (void)xrDestroySpace(anchor_data.space);
-  (void)extension_helper_.ExtensionMethods().xrDestroySpatialAnchorMSFT(
+  std::ignore = xrDestroySpace(anchor_data.space);
+  std::ignore = extension_helper_.ExtensionMethods().xrDestroySpatialAnchorMSFT(
       anchor_data.anchor);
 }
 
@@ -189,20 +193,20 @@ OpenXrAnchorManager::GetXrLocationFromNativeOriginInformation(
     const gfx::Transform& native_origin_from_anchor,
     const std::vector<mojom::XRInputSourceStatePtr>& input_state) const {
   switch (native_origin_information.which()) {
-    case mojom::XRNativeOriginInformation::Tag::INPUT_SOURCE_SPACE_INFO:
+    case mojom::XRNativeOriginInformation::Tag::kInputSourceSpaceInfo:
       // Currently unimplemented as only anchors are supported and are never
       // created relative to input sources
       return absl::nullopt;
-    case mojom::XRNativeOriginInformation::Tag::REFERENCE_SPACE_TYPE:
+    case mojom::XRNativeOriginInformation::Tag::kReferenceSpaceType:
       return GetXrLocationFromReferenceSpace(openxr, current_stage_parameters,
                                              native_origin_information,
                                              native_origin_from_anchor);
-    case mojom::XRNativeOriginInformation::Tag::PLANE_ID:
-    case mojom::XRNativeOriginInformation::Tag::HAND_JOINT_SPACE_INFO:
-    case mojom::XRNativeOriginInformation::Tag::IMAGE_INDEX:
+    case mojom::XRNativeOriginInformation::Tag::kPlaneId:
+    case mojom::XRNativeOriginInformation::Tag::kHandJointSpaceInfo:
+    case mojom::XRNativeOriginInformation::Tag::kImageIndex:
       // Unsupported for now
       return absl::nullopt;
-    case mojom::XRNativeOriginInformation::Tag::ANCHOR_ID:
+    case mojom::XRNativeOriginInformation::Tag::kAnchorId:
       return XrLocation{
           GfxTransformToXrPose(native_origin_from_anchor),
           GetAnchorSpace(AnchorId(native_origin_information.get_anchor_id()))};

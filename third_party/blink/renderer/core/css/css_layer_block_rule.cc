@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,12 +15,16 @@ CSSLayerBlockRule::CSSLayerBlockRule(StyleRuleLayerBlock* layer_block_rule,
 
 CSSLayerBlockRule::~CSSLayerBlockRule() = default;
 
+String CSSLayerBlockRule::name() const {
+  return To<StyleRuleLayerBlock>(group_rule_.Get())->GetNameAsString();
+}
+
 String CSSLayerBlockRule::cssText() const {
   StringBuilder result;
   result.Append("@layer ");
-  String name = To<StyleRuleLayerBlock>(group_rule_.Get())->GetNameAsString();
-  if (name.length()) {
-    result.Append(name);
+  const String& layer_name = name();
+  if (layer_name.length()) {
+    result.Append(layer_name);
     result.Append(" ");
   }
   result.Append("{\n");

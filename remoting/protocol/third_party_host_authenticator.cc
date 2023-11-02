@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,7 @@
 #include "remoting/protocol/token_validator.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 ThirdPartyHostAuthenticator::ThirdPartyHostAuthenticator(
     const CreateBaseAuthenticatorCallback& create_base_authenticator_callback,
@@ -34,7 +33,7 @@ void ThirdPartyHostAuthenticator::ProcessTokenMessage(
   if (token.empty()) {
     LOG(ERROR) << "Third-party authentication protocol error: missing token.";
     token_state_ = REJECTED;
-    rejection_reason_ = PROTOCOL_ERROR;
+    rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
     std::move(resume_callback).Run();
     return;
   }
@@ -89,5 +88,4 @@ void ThirdPartyHostAuthenticator::OnThirdPartyTokenValidated(
   underlying_->ProcessMessage(message, std::move(resume_callback));
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

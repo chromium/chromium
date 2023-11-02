@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chromeos/crosapi/mojom/structured_metrics_service.mojom.h"
 #include "components/metrics/structured/event.h"
-#include "components/metrics/structured/event_base.h"
 #include "components/metrics/structured/histogram_util.h"
 #include "components/metrics/structured/recorder.h"
 
@@ -31,9 +30,7 @@ void AshStructuredMetricsRecorder::Initialize() {
     crosapi::CrosapiManager::Get()->crosapi_ash()->BindStructuredMetricsService(
         remote_.BindNewPipeAndPassReceiver());
     is_initialized_ = true;
-    LogClientInitializationSuccessful(true);
   } else {
-    LogClientInitializationSuccessful(false);
     VLOG(2) << "Initialize() called before CrosApi is initialized.";
   }
 }
@@ -43,14 +40,6 @@ void AshStructuredMetricsRecorder::RecordEvent(Event&& event) {
   std::vector<Event> events;
   events.push_back(std::move(event));
   remote_->Record(events);
-}
-
-// TODO(crbug.com/1249222): Delete this once migration is complete.
-//
-// EventBase should not be used with the mojo API and this function call
-// will be removed in the future.
-void AshStructuredMetricsRecorder::Record(EventBase&& event_base) {
-  VLOG(2) << "AshStructuredMetricsRecorder should use event.";
 }
 
 bool AshStructuredMetricsRecorder::IsReadyToRecord() const {

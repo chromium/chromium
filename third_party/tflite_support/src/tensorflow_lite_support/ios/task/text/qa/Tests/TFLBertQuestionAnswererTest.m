@@ -16,7 +16,7 @@ limitations under the License.
 
 #import <XCTest/XCTest.h>
 
-static NSString* const kContext =
+static NSString *const kContext =
     @"The role of teacher is often formal and ongoing, carried out at a school "
      "or other place of formal education. In many countries, a person who "
      "wishes to become a teacher must first obtain specified professional "
@@ -27,12 +27,12 @@ static NSString* const kContext =
      "continuing professional development. Teachers may use a lesson plan to "
      "facilitate student learning, providing a course of study which is called "
      "the curriculum.";
-static NSString* const kQuestion = @"What is a course of study called?";
-static NSString* const kAnswer = @"the curriculum.";
+static NSString *const kQuestion = @"What is a course of study called?";
+static NSString *const kAnswer = @"the curriculum.";
 
 @interface TFLBertQuestionAnswererTest : XCTestCase
-@property(nonatomic, nullable) NSString* mobileBertModelPath;
-@property(nonatomic, nullable) NSString* albertModelPath;
+@property(nonatomic, nullable) NSString *mobileBertModelPath;
+@property(nonatomic, nullable) NSString *albertModelPath;
 @end
 
 @implementation TFLBertQuestionAnswererTest
@@ -40,33 +40,32 @@ static NSString* const kAnswer = @"the curriculum.";
 
 - (void)setUp {
   [super setUp];
-  NSBundle* bundle = [NSBundle bundleForClass:[self class]];
-  self.mobileBertModelPath = [bundle pathForResource:@"mobilebert_with_metadata"
-                                              ofType:@"tflite"];
-  self.albertModelPath = [bundle pathForResource:@"albert_with_metadata"
-                                          ofType:@"tflite"];
+  NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+  self.mobileBertModelPath = [bundle pathForResource:@"mobilebert_with_metadata" ofType:@"tflite"];
+  self.albertModelPath = [bundle pathForResource:@"albert_with_metadata" ofType:@"tflite"];
 }
 
 - (void)testInitMobileBert {
-  TFLBertQuestionAnswerer* mobileBertAnswerer = [TFLBertQuestionAnswerer
-      questionAnswererWithModelPath:self.mobileBertModelPath];
+  TFLBertQuestionAnswerer* mobileBertAnswerer =
+    [TFLBertQuestionAnswerer questionAnswererWithModelPath:self.mobileBertModelPath];
 
   XCTAssertNotNil(mobileBertAnswerer);
 
   NSArray<TFLQAAnswer*>* answers =
-      [mobileBertAnswerer answerWithContext:kContext question:kQuestion];
+    [mobileBertAnswerer answerWithContext:kContext question:kQuestion];
 
   XCTAssertEqualObjects([answers[0] text], kAnswer);
 }
 
 - (void)testInitAlbert {
-  TFLBertQuestionAnswerer* albertAnswerer = [TFLBertQuestionAnswerer
-      questionAnswererWithModelPath:self.albertModelPath];
+  TFLBertQuestionAnswerer* albertAnswerer =
+    [TFLBertQuestionAnswerer questionAnswererWithModelPath:self.albertModelPath];
 
   XCTAssertNotNil(albertAnswerer);
 
-  NSArray<TFLQAAnswer*>* answers = [albertAnswerer answerWithContext:kContext
-                                                            question:kQuestion];
+  NSArray<TFLQAAnswer*>* answers =
+    [albertAnswerer answerWithContext:kContext question:kQuestion];
+
 
   XCTAssertEqualObjects([answers[0] text], kAnswer);
 }

@@ -1,14 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/signin/dice_intercepted_session_startup_helper.h"
 
-#include <algorithm>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
@@ -33,10 +33,7 @@ bool CookieInfoContains(const signin::AccountsInCookieJarInfo& cookie_info,
                         const CoreAccountId& account_id) {
   const std::vector<gaia::ListedAccount>& accounts =
       cookie_info.signed_in_accounts;
-  return std::find_if(accounts.begin(), accounts.end(),
-                      [&account_id](const gaia::ListedAccount& account) {
-                        return account.id == account_id;
-                      }) != accounts.end();
+  return base::Contains(accounts, account_id, &gaia::ListedAccount::id);
 }
 
 }  // namespace
@@ -165,7 +162,7 @@ void DiceInterceptedSessionStartupHelper::MoveTab() {
   GURL url_to_open = GURL(chrome::kChromeUINewTabURL);
   // If the intercepted web contents is still alive, close it now.
   if (web_contents_) {
-    url_to_open = web_contents_->GetURL();
+    url_to_open = web_contents_->GetLastCommittedURL();
     web_contents_->Close();
   }
 

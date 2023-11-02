@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,57 +24,6 @@ static Vector<wtf_size_t> ChunkIndices(const PendingLayer& layer) {
   for (auto it = layer.Chunks().begin(); it != layer.Chunks().end(); ++it)
     indices.push_back(it.IndexInPaintArtifact());
   return indices;
-}
-
-TEST(PendingLayerTest, MightOverlap) {
-  TestPaintArtifact artifact;
-  artifact.Chunk().Bounds(gfx::Rect(0, 0, 100, 100));
-  artifact.Chunk().Bounds(gfx::Rect(0, 0, 100, 100));
-  auto t2 = CreateTransform(t0(), TransformationMatrix().Translate(99, 0),
-                            FloatPoint3D(100, 100, 0));
-  artifact.Chunk(*t2, c0(), e0()).Bounds(gfx::Rect(0, 0, 100, 100));
-  auto t3 = CreateTransform(t0(), TransformationMatrix().Translate(100, 0),
-                            FloatPoint3D(100, 100, 0));
-  artifact.Chunk(*t3, c0(), e0()).Bounds(gfx::Rect(0, 0, 100, 100));
-  auto t4 =
-      CreateAnimatingTransform(t0(), TransformationMatrix().Translate(100, 0),
-                               FloatPoint3D(100, 100, 0));
-  artifact.Chunk(*t4, c0(), e0()).Bounds(gfx::Rect(0, 0, 100, 100));
-  PaintChunkSubset chunks(artifact.Build());
-
-  PendingLayer pending_layer(chunks, chunks.begin());
-  EXPECT_TRUE(
-      pending_layer.MightOverlap(PendingLayer(chunks, chunks.begin() + 1)));
-  EXPECT_TRUE(
-      pending_layer.MightOverlap(PendingLayer(chunks, chunks.begin() + 2)));
-  EXPECT_FALSE(
-      pending_layer.MightOverlap(PendingLayer(chunks, chunks.begin() + 3)));
-  EXPECT_TRUE(
-      pending_layer.MightOverlap(PendingLayer(chunks, chunks.begin() + 4)));
-}
-
-TEST(PendingLayerTest, MightOverlapCommonClipAncestor) {
-  auto common_clip = CreateClip(c0(), t0(), FloatRoundedRect(0, 0, 100, 100));
-  auto c1 = CreateClip(*common_clip, t0(), FloatRoundedRect(0, 100, 100, 100));
-  auto c2 = CreateClip(*common_clip, t0(), FloatRoundedRect(50, 100, 100, 100));
-  auto c3 =
-      CreateClip(*common_clip, t0(), FloatRoundedRect(100, 100, 100, 100));
-
-  TestPaintArtifact artifact;
-  artifact.Chunk(t0(), *c1, e0())
-      .Bounds(gfx::Rect(0, 100, 200, 100))
-      .Chunk(t0(), *c2, e0())
-      .Bounds(gfx::Rect(0, 100, 200, 100))
-      .Chunk(t0(), *c3, e0())
-      .Bounds(gfx::Rect(0, 100, 200, 100));
-  PaintChunkSubset chunks(artifact.Build());
-
-  PendingLayer pending_layer1(chunks, chunks.begin());
-  PendingLayer pending_layer2(chunks, chunks.begin() + 1);
-  PendingLayer pending_layer3(chunks, chunks.begin() + 2);
-  EXPECT_FALSE(pending_layer1.MightOverlap(pending_layer3));
-  EXPECT_TRUE(pending_layer1.MightOverlap(pending_layer2));
-  EXPECT_TRUE(pending_layer2.MightOverlap(pending_layer3));
 }
 
 TEST(PendingLayerTest, Merge) {
@@ -254,20 +203,6 @@ TEST(PendingLayerTest, KnownOpaque) {
   EXPECT_EQ(gfx::RectF(0, 0, 50, 60), pending_layer.BoundsForTesting());
   EXPECT_EQ(pending_layer.BoundsForTesting(),
             pending_layer.RectKnownToBeOpaque());
-}
-
-TEST(PendingLayerTest, CanNotMergeAcrossPaintArtifacts) {
-  TestPaintArtifact test_artifact_a;
-  test_artifact_a.Chunk().RectDrawing(gfx::Rect(0, 0, 100, 100), Color::kWhite);
-  PaintChunkSubset chunks_a(test_artifact_a.Build());
-  PendingLayer layer_a(chunks_a, chunks_a.begin());
-
-  TestPaintArtifact test_artifact_b;
-  test_artifact_b.Chunk().RectDrawing(gfx::Rect(0, 0, 100, 100), Color::kGray);
-  PaintChunkSubset chunks_b(test_artifact_b.Build());
-  PendingLayer layer_b(chunks_b, chunks_b.begin());
-
-  EXPECT_FALSE(layer_a.Merge(layer_b));
 }
 
 class PendingLayerTextOpaquenessTest

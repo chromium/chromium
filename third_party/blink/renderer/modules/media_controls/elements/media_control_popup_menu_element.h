@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,6 +54,7 @@ class MediaControlPopupMenuElement : public MediaControlDivElement {
   void SelectNextItem();
   void SelectPreviousitem();
   void CloseFromKeyboard();
+  void FocusPopupAnchorIfOverflowClosed();
 
   Member<EventListener> event_listener_;
   // |last_focused_element_| is used to return focus to the proper element

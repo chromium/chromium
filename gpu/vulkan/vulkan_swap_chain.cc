@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/time/time.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_fence_helper.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
@@ -59,6 +58,7 @@ bool VulkanSwapChain::Initialize(
     uint32_t min_image_count,
     VkImageUsageFlags image_usage_flags,
     VkSurfaceTransformFlagBitsKHR pre_transform,
+    VkCompositeAlphaFlagBitsKHR composite_alpha,
     std::unique_ptr<VulkanSwapChain> old_swap_chain) {
   base::AutoLock auto_lock(lock_);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -71,7 +71,7 @@ bool VulkanSwapChain::Initialize(
   device_queue_->GetFenceHelper()->ProcessCleanupTasks();
   return InitializeSwapChain(surface, surface_format, image_size,
                              min_image_count, image_usage_flags, pre_transform,
-                             std::move(old_swap_chain)) &&
+                             composite_alpha, std::move(old_swap_chain)) &&
          InitializeSwapImages(surface_format) && AcquireNextImage();
 }
 
@@ -165,6 +165,7 @@ bool VulkanSwapChain::InitializeSwapChain(
     uint32_t min_image_count,
     VkImageUsageFlags image_usage_flags,
     VkSurfaceTransformFlagBitsKHR pre_transform,
+    VkCompositeAlphaFlagBitsKHR composite_alpha,
     std::unique_ptr<VulkanSwapChain> old_swap_chain) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -184,7 +185,7 @@ bool VulkanSwapChain::InitializeSwapChain(
       .imageUsage = image_usage_flags,
       .imageSharingMode = VK_SHARING_MODE_EXCLUSIVE,
       .preTransform = pre_transform,
-      .compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
+      .compositeAlpha = composite_alpha,
       .presentMode = VK_PRESENT_MODE_FIFO_KHR,
       .clipped = VK_TRUE,
       .oldSwapchain = VK_NULL_HANDLE,
@@ -390,7 +391,14 @@ bool VulkanSwapChain::PresentBuffer(const gfx::Rect& rect) {
   };
 
   VkQueue queue = device_queue_->GetVulkanQueue();
-  auto result = vkQueuePresentKHR(queue, &present_info);
+  auto result = ({
+    static auto* kCrashKey = base::debug::AllocateCrashKeyString(
+        "inside_queue_present", base::debug::CrashKeySize::Size32);
+    base::debug::ScopedCrashKeyString scoped_crash_key(kCrashKey, "1");
+
+    vkQueuePresentKHR(queue, &present_info);
+  });
+
   if (UNLIKELY(result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)) {
     LOG(DFATAL) << "vkQueuePresentKHR() failed: " << result;
     state_ = result;
@@ -422,6 +430,9 @@ bool VulkanSwapChain::AcquireNextImage() {
   auto result = ({
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::MAY_BLOCK);
+    static auto* kCrashKey = base::debug::AllocateCrashKeyString(
+        "inside_acquire_next_image", base::debug::CrashKeySize::Size32);
+    base::debug::ScopedCrashKeyString scoped_crash_key(kCrashKey, "1");
     vkAcquireNextImageKHR(device, swap_chain_, acquire_next_image_timeout_ns_,
                           acquire_semaphore, /*fence=*/VK_NULL_HANDLE,
                           &next_image);
@@ -530,7 +541,29 @@ VulkanSwapChain::ScopedWrite::ScopedWrite(VulkanSwapChain* swap_chain)
   }
 }
 
+VulkanSwapChain::ScopedWrite::ScopedWrite(ScopedWrite&& other) {
+  *this = std::move(other);
+}
+
 VulkanSwapChain::ScopedWrite::~ScopedWrite() {
+  Reset();
+}
+
+const VulkanSwapChain::ScopedWrite& VulkanSwapChain::ScopedWrite::operator=(
+    ScopedWrite&& other) {
+  Reset();
+  std::swap(swap_chain_, other.swap_chain_);
+  std::swap(success_, other.success_);
+  std::swap(image_, other.image_);
+  std::swap(image_index_, other.image_index_);
+  std::swap(image_layout_, other.image_layout_);
+  std::swap(image_usage_, other.image_usage_);
+  std::swap(begin_semaphore_, other.begin_semaphore_);
+  std::swap(end_semaphore_, other.end_semaphore_);
+  return *this;
+}
+
+void VulkanSwapChain::ScopedWrite::Reset() {
   if (LIKELY(success_)) {
     DCHECK(begin_semaphore_ != VK_NULL_HANDLE);
     DCHECK(end_semaphore_ != VK_NULL_HANDLE);
@@ -539,6 +572,14 @@ VulkanSwapChain::ScopedWrite::~ScopedWrite() {
     DCHECK(begin_semaphore_ == VK_NULL_HANDLE);
     DCHECK(end_semaphore_ == VK_NULL_HANDLE);
   }
+  swap_chain_ = nullptr;
+  success_ = false;
+  image_ = VK_NULL_HANDLE;
+  image_index_ = 0;
+  image_layout_ = VK_IMAGE_LAYOUT_UNDEFINED;
+  image_usage_ = 0;
+  begin_semaphore_ = VK_NULL_HANDLE;
+  end_semaphore_ = VK_NULL_HANDLE;
 }
 
 }  // namespace gpu

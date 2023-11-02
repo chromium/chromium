@@ -1,4 +1,4 @@
-/* Copyright (c) 2014 The Chromium Authors. All rights reserved.
+/* Copyright 2014 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
@@ -39,25 +39,12 @@ body {
   display: flex;
   flex: auto;
   flex-direction: column;
-  font-size: 81%;
+  font-size: 13px;
   height: 100%;
   margin: 0;
   padding: 0;
   user-select: none;
   width: 100%;
-}
-
-body.files-ng {
-  font-size: 13px;
-}
-
-button:focus,
-input[type='button']:focus,
-input[type='submit']:focus,
-select:focus,
-a:focus {
-  background-color: rgba(255, 255, 255, 20%);
-  outline-color: rgb(77, 144, 254);
 }
 
 /* Drop opacity of selected rows to give a visual feedback on copy/cut
@@ -69,7 +56,7 @@ a:focus {
 /* Main part of the dialog between header and footer. */
 .dialog-container {
   align-items: stretch;
-  background-color: rgb(250, 250, 250);  /* Makes #drag-container invisible. */
+  background-color: var(--cros-bg-color);
   display: flex;
   flex: auto;
   flex-direction: row;
@@ -77,27 +64,19 @@ a:focus {
   position: relative;
 }
 
-body.files-ng .dialog-container {
-  background-color: var(--cros-bg-color);
-}
-
 /* List and grid are inside this container. */
 .dialog-main {
   align-items: stretch;
-  background: rgb(245, 245, 245);
+  background-color: inherit;
   display: flex;
   flex: auto;
   flex-direction: column;
 }
 
-body.files-ng .dialog-main {
-  background-color: inherit;
-}
-
 /* Directory tree at the left. */
 .dialog-navigation-list {
-  background-color: rgb(250, 250, 250);
-  border-inline-end: 1px solid rgba(0, 0, 0, 15%);
+  background-color: inherit;
+  border-inline-end: none;
   display: flex;
   flex: none;
   flex-direction: column;
@@ -106,11 +85,6 @@ body.files-ng .dialog-main {
   overflow: auto;
   position: relative;
   width: 240px;
-}
-
-body.files-ng .dialog-navigation-list {
-  background-color: inherit;
-  border-inline-end: none;
 }
 
 .dialog-navigation-list-contents {
@@ -136,7 +110,7 @@ html.breadcrumb-elider-expanded #directory-tree {
   overflow-y: hidden;
 }
 
-#directory-tree[files-ng] .tree-item[section-start]::before {
+#directory-tree .tree-item[section-start]::before {
   border-bottom: 1px solid var(--cros-separator-color);
   content: '';
   display: block;
@@ -144,7 +118,7 @@ html.breadcrumb-elider-expanded #directory-tree {
   width: 100%;
 }
 
-#directory-tree[files-ng] .tree-row {
+#directory-tree .tree-row {
   cursor: pointer;
   height: auto;
   padding: 4px 0;
@@ -152,7 +126,7 @@ html.breadcrumb-elider-expanded #directory-tree {
 
 #directory-tree .tree-row > .file-row {
   align-items: center;
-  border: 1px solid transparent;
+  border: 2px solid transparent;
   border-inline-start-width: 0 !important;
   border-radius: 0 20px 20px 0;
   box-sizing: border-box;
@@ -292,7 +266,7 @@ html.pointer-active #directory-tree :not(:active) {
 }
 
 html.drag-drop-active #directory-tree .tree-item.denies > .tree-row > .file-row {
-  background-color: var(--google-red-50);
+  background-color: var(--cros-highlight-color-error);
 }
 
 html.drag-drop-active #directory-tree .tree-item.accepts > .tree-row > .file-row {
@@ -300,7 +274,7 @@ html.drag-drop-active #directory-tree .tree-item.accepts > .tree-row > .file-row
 }
 
 html.focus-outline-visible #directory-tree:focus .tree-row[selected] > .file-row {
-  border: 1px solid var(--cros-focus-ring-color);
+  border: 2px solid var(--cros-focus-ring-color);
 }
 
 #directory-tree .tree-row[active] > .file-row {
@@ -350,7 +324,7 @@ html.focus-outline-visible #directory-tree:focus .tree-row[selected] > .file-row
 
 #directory-tree .tree-row > .file-row > .root-eject {
   --text-color: currentColor;
-  --hover-bg-color: rgba(0, 0, 0, 4%);
+  --hover-bg-color: var(--cros-ripple-color);
   min-width: 32px;
   padding: 0;
 }
@@ -364,11 +338,11 @@ html.col-resize #directory-tree .tree-row > .file-row > .root-eject:hover {
 }
 
 #directory-tree .tree-row > .root-eject:focus {
-  outline: 1px auto rgb(77, 144, 254);
+  outline: 1px auto var(--cros-focus-ring-color);
 }
 
 #directory-tree .tree-row > .file-row > .root-eject:focus {
-  border: 1px solid var(--google-blue-600);
+  border: 1px solid var(--cros-focus-ring-color);
 }
 
 #directory-tree .tree-row > .root-eject:active {
@@ -377,7 +351,7 @@ html.col-resize #directory-tree .tree-row > .file-row > .root-eject:hover {
 }
 
 #directory-tree .tree-row > .file-row > .root-eject:active {
-  --ink-color: rgba(0, 0, 0, 88%);
+  --ink-color: var(--cros-ripple-color);
   border-width: 0;
 }
 
@@ -388,7 +362,7 @@ html.col-resize #directory-tree .tree-row > .file-row > .root-eject:hover {
 
 /* A vertical splitter between the directory tree and the file list. It is
    a transparent area centered on the directory tree right border. */
-body.files-ng div.splitter {
+div.splitter {
   align-items: center;
   cursor: col-resize;
   display: flex;
@@ -401,9 +375,10 @@ body.files-ng div.splitter {
   z-index: 500;  /* Must be below the contextmenu (600). */
 }
 
-body.files-ng div.splitter .splitter-button {
-  --hover-bg-color: rgba(0, 0, 0, 4%);
-  --ink-color: rgba(0, 0, 0, 88%);
+div.splitter .splitter-button {
+  --hover-bg-color: var(--cros-ripple-color);
+  --ink-color: var(--cros-ripple-color);
+  --ripple-opacity: 100%;
   border: none;
   border-radius: 50%;
   cursor: col-resize;
@@ -413,87 +388,68 @@ body.files-ng div.splitter .splitter-button {
   width: 32px;
 }
 
-html.pointer-active body.files-ng div.splitter:not(.splitter-active):hover {
+html.pointer-active div.splitter:not(.splitter-active):hover {
   cursor: default;
 }
 
-body.files-ng div.splitter.splitter-active .splitter-button:hover {
+html.col-resize div.splitter:not(.splitter-active) .splitter-button:hover {
   --hover-bg-color: none;
 }
 
-html.col-resize body.files-ng div.splitter:not(.splitter-active) .splitter-button:hover {
-  --hover-bg-color: none;
-}
-
-html.pointer-active body.files-ng div.splitter:not(.splitter-active) .splitter-button:not(:active):hover {
+html.pointer-active div.splitter:not(.splitter-active) .splitter-button:not(:active):hover {
   --hover-bg-color: none;
   cursor: default;
 }
 
-body.files-ng div.splitter.splitter-active .splitter-button:not(:active) {
-  background-color: rgba(var(--google-grey-300-rgb), 88%);
+div.splitter.splitter-active .splitter-button:active:not(:hover) {
+  background-color: var(--cros-ripple-color);
 }
 
-body.files-ng div.splitter .splitter-button .icon {
+div.splitter.splitter-active .splitter-button:not(:active) {
+  background-color: var(--cros-icon-button-pressed-color);
+}
+
+div.splitter .splitter-button .icon {
   -webkit-mask-image: url(../images/common/dragger.svg);
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
+  /* TODO(crbug.com/1268206): the icon is not in disabled state */
+  background-color: var(--cros-icon-color-disabled);
   height: 20px;
   padding: 6px;
   width: 20px;
 }
 
-body.files-ng div.splitter:not(.splitter-active) .splitter-button .icon {
-  background-color: var(--google-grey-400);
-}
-
-html:not(.col-resize) body.files-ng div.splitter:not(.splitter-active) .splitter-button:hover .icon {
-  background-color: var(--google-grey-500);
-}
-
-html.pointer-active body.files-ng div.splitter:not(.splitter-active) .splitter-button:not(:active):hover .icon {
-  background-color: var(--google-grey-400);
+html.pointer-active div.splitter:not(.splitter-active) .splitter-button:not(:active):hover .icon {
   cursor: default;
-}
-
-body.files-ng div.splitter.splitter-active .splitter-button .icon {
-  background-color: var(--google-grey-500);
 }
 
 /* Breadcrumbs and things under the title but above the list view. */
 .dialog-header {
   align-items: center;
+  background: none;
+  border-bottom: 1px solid var(--cros-separator-color);
   box-sizing: border-box;
-  color: white;
+  color: var(--cros-text-color-secondary);
   display: flex;
   flex: none;
   flex-direction: row;
-  height: 48px;
-  transition: background 220ms ease;
-}
-
-.dialog-header.files-ng {
-  background: none;
-  border-bottom: 1px solid var(--cros-separator-color);
-  color: var(--cros-text-color-secondary);
   font-size: 14px;
-  height: 56px;
+  height: 57px;
   overflow: hidden;
+  transition: background 220ms ease;
 }
 
 body.check-select .dialog-header {
   border-bottom: 1px solid var(--cros-separator-color);
   border-top: 1px solid transparent;
-}
-
-body.check-select .dialog-header.files-ng {
   color: var(--cros-text-color-prominent);
 }
 
-/* Display a grey border during check-select mode if we're in a dialog. (This
+/* Display a border during check-select mode if we're in a dialog. (This
    can only happen in an open-multi-file dialog). */
 body[type='open-multi-file'].check-select .dialog-header {
-  border-top: 1px solid rgb(219, 219, 219);
+  border-top: 1px solid var(--cros-bg-color);
 }
 
 .dialog-header > .spacer {
@@ -502,32 +458,23 @@ body[type='open-multi-file'].check-select .dialog-header {
 
 .dialog-header cr-button,
 .dialog-header button {
-  border: none;
-  border-radius: 2px;
-  box-sizing: border-box;
-  cursor: pointer;
-  height: 32px;
-  margin: 0 8px;
-  min-width: 32px;
-  padding: 0;
-  position: relative;
-  text-transform: uppercase;
-  z-index: 1;
-}
-
-.dialog-header.files-ng cr-button,
-.dialog-header.files-ng button {
   --active-bg: var(--cros-ripple-color);
   --hover-bg-color: var(--cros-ripple-color);
   --ink-color: var(--cros-ripple-color);
   --ripple-opacity: 100%;
   --text-color: currentColor;
-  border: 1px solid transparent;
+  border: 2px solid transparent;
   border-radius: 18px;
+  box-sizing: border-box;
   color: var(--cros-text-color-primary);
+  cursor: pointer;
   height: 36px;
   margin: 0 6px;
   min-width: 36px;
+  padding: 0;
+  position: relative;
+  text-transform: uppercase;
+  z-index: 1;
 }
 
 html.pointer-active .dialog-header.files-ng cr-button:not(:active):hover {
@@ -543,9 +490,7 @@ html.pointer-active .dialog-header.files-ng cr-button:not(:active):hover {
 }
 
 .dialog-header.files-ng button[menu-shown] {
-  background: linear-gradient(var(--cros-ripple-color),
-                              var(--cros-ripple-color)),
-              var(--cros-ripple-color);
+  background: var(--cros-icon-button-pressed-color);
 }
 
 .dialog-header.files-ng button:not([menu-shown]):not(:active):hover {
@@ -558,18 +503,16 @@ html.pointer-active .dialog-header.files-ng button:not([menu-shown]):not(:active
 }
 
 .dialog-header.files-ng button:active {
-  background: linear-gradient(var(--cros-ripple-color),
-                              var(--cros-ripple-color)),
-              var(--cros-ripple-color);
+  background: var(--cros-icon-button-pressed-color);
 }
 
 html.focus-outline-visible .dialog-header.files-ng cr-button:not(:active):focus,
 html.focus-outline-visible .dialog-header.files-ng button:not(:active):focus {
-  border: 1px solid var(--cros-focus-ring-color);
+  border: 2px solid var(--cros-focus-ring-color);
 }
 
-.dialog-header.files-ng files-ripple,
-.dialog-header.files-ng files-toggle-ripple {
+.dialog-header files-ripple,
+.dialog-header files-toggle-ripple {
   display: none;
 }
 
@@ -578,25 +521,20 @@ body.check-select button:hover {
   color: var(--cros-text-color-primary);
 }
 
-.dialog-header .icon-button > paper-ripple,
-.dialog-header .ripples > paper-ripple {
-  color: black;
-}
-
 body.check-select .dialog-header button paper-ripple {
   color: var(--cros-text-color-primary);
 }
 
 /** Avoid highlighting if element doesn't have focus by tab (tabindex=-1)
  *  or if focusing during mouse click event ":active" pseudo-selector. */
-html.focus-outline-visible.files-ng .dialog-header
+html.focus-outline-visible .dialog-header
     .menu-button:focus:not([tabindex='-1']):not(:active) {
   background-color: transparent;
 }
 
 body.check-select .dialog-header
     .menu-button:focus:not([tabindex='-1']):not(:active) {
-  background-color: rgba(153, 153, 153, 20%);
+  background-color: var(--cros-ripple-color);
 }
 
 .dialog-header iron-icon,
@@ -641,17 +579,14 @@ html[dir='rtl'] .dialog-header button.icon-button > files-toggle-ripple {
 .dialog-header cr-button.icon-button > .icon {
   background-position: center;
   background-repeat: no-repeat;
-  height: 100%;
+  height: 48px;
   left: 0;
+  margin-inline-end: -8px;
+  margin-inline-start: -8px;
+  margin-top: -8px;
   position: absolute;
   top: 0;
-  width: 32px;
-}
-
-.dialog-header.files-ng cr-button > .icon {
-  height: 20px;
-  padding: calc(8px - 1px);
-  width: 20px;
+  width: 48px;
 }
 
 .dialog-header.files-ng #tasks {
@@ -663,8 +598,7 @@ html[dir='rtl'] .dialog-header button.icon-button > files-toggle-ripple {
 .dialog-header.files-ng cr-button > .icon,
 .dialog-header.files-ng button > .icon,
 .dialog-header.files-ng #search-box .clear,
-.dialog-header.files-ng #read-only-icon,
-.dialog-header.files-ng .breadcrumbs .separator {
+.dialog-header.files-ng #read-only-icon {
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
   background-color: currentColor;
@@ -747,12 +681,6 @@ body.check-select #view-button.thumbnail {
 
 .dialog-header.files-ng #sort-button > .icon {
   -webkit-mask-image: url(../images/files/ui/sorting_ng.svg);
-  height: 48px;
-  margin-inline-end: -7px;
-  margin-inline-start: -7px;
-  margin-top: -7px;
-  position: absolute;
-  width: 48px;
 }
 
 body.check-select #sort-button {
@@ -761,12 +689,6 @@ body.check-select #sort-button {
 
 .dialog-header.files-ng #gear-button > .icon {
   -webkit-mask-image: url(../images/files/ui/menu_ng.svg);
-  height: 48px;
-  margin-inline-end: -7px;
-  margin-inline-start: -7px;
-  margin-top: -7px;
-  position: absolute;
-  width: 48px;
 }
 body.check-select #gear-button {
   display: none;
@@ -774,155 +696,10 @@ body.check-select #gear-button {
 
 .dialog-header.files-ng #selection-menu-button > .icon {
   -webkit-mask-image: url(../images/files/ui/menu_ng.svg);
-  height: 48px;
-  margin-inline-end: -7px;
-  margin-inline-start: -7px;
-  margin-top: -7px;
-  position: absolute;
-  width: 48px;
 }
 
 body:not(.check-select) #selection-menu-button {
   display: none;
-}
-
-.cloud-import-combo-button {
-  position: relative;
-}
-
-.cloud-import-combo-button > .buttons {
-  display: flex;
-}
-
-.cloud-import-combo-button > .buttons > #cloud-import-button {
-  margin: 0;
-}
-
-.cloud-import-combo-button > .buttons > #cloud-import-details-button {
-  margin-inline-end: 0;
-}
-
-#cloud-import-details-button {
-  margin-inline-start: -10px;
-  width: 24px;
-}
-
-#cloud-import-details-button iron-icon {
-  margin: 8px 4px;
-}
-
-#cloud-import-details {
-  background-color: white;
-  border-radius: 2px;
-  box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 14%),
-              0 1px 10px 0 rgba(0, 0, 0, 12%),
-              0 2px 4px -1px rgba(0, 0, 0, 40%);
-  line-height: 1.5em;
-  position: absolute;
-  top: 42px;  /* Positioned just overlapping the top of the toolbar */
-  transition: all 200ms ease;
-  width: 270px;
-  z-index: 550;
-}
-
-/* These horizontal positions for #cloud-import-details are fallback value.
-   Usually, these positions are calculated based on the position of dropdown.
-   These fallback values will be used when the cloud import penel is shown
-   before the toolbar buttons are fully laid out. */
-html[dir='ltr'] #cloud-import-details {
-  right: 148px;  /* Positioned in relation to the cloud-import toolbar button */
-}
-
-html[dir='rtl'] #cloud-import-details {
-  left: 148px;  /* Positioned in relation to the cloud-import toolbar button */
-}
-
-#cloud-import-details.hidden {
-  opacity: 0;
-  transform: translateY(-10px);
-}
-
-#cloud-import-details .banner {
-  background-color: rgb(55, 71, 79);
-  border-radius: 2px 2px 0 0;
-  color: white;
-  padding: 20px;
-}
-
-#cloud-import-details .banner .title {
-  font-size: 122%;
-  font-weight: 500;
-  margin-bottom: 5px;
-}
-
-#cloud-import-details .main {
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-}
-
-#cloud-import-details .status {
-  display: flex;
-  flex-direction: row;
-  margin-top: .2em;
-}
-
-#cloud-import-details .status iron-icon {
-  display: block;
-  height: 16px;
-  opacity: .6;
-  width: 16px;
-}
-
-#cloud-import-details .status .content {
-  color: #646464;
-  flex: 1;
-  padding-inline-start: 10px;
-}
-
-#cloud-import-details .status .content::first-line {
-  color: #333;
-  font-size: 110%;
-}
-
-#cloud-import-details .status a[is='action-link'] {
-  color: rgb(51, 103, 214);
-}
-
-#cloud-import-details .progress {
-  background-color: #E0E0E0;
-  border-radius: 2px;
-  height: 4px;
-  margin-top: 14px;
-  width: 100%;
-}
-
-#cloud-import-details .progress .value {
-  background-color: rgb(26, 194, 34);
-  border-radius: 2px;
-  height: 4px;
-  transition: width 100ms linear;
-  width: 0;
-}
-
-#cloud-import-details cr-button {
-  --ink-color: white;
-  align-self: flex-end;
-  border: none;
-  box-shadow: none;
-  color: white;
-  font-weight: 500;
-  margin-top: 20px;
-  padding: 0;
-  text-transform: uppercase;
-}
-
-#cloud-import-details cr-button.import {
-  background-color: rgb(51, 103, 214);
-}
-
-#cloud-import-details cr-button.cancel {
-  background-color: rgb(219, 68, 55);
 }
 
 #files-selected-label {
@@ -949,13 +726,13 @@ body.check-select #files-selected-label {
 
 /* TODO(adanilo) document the calc() reason. */
 body.files-ng #cancel-selection-button {
-  border: 1px solid transparent;
+  border: 2px solid transparent;
   margin-inline-start: calc(10px + 1px);
   width: 36px;
 }
 
 html.focus-outline-visible body.files-ng #cancel-selection-button:focus:not([tabindex='-1']):not(:active) {
-  border: 1px solid var(--cros-icon-color-prominent);
+  border: 2px solid var(--cros-icon-color-prominent);
 }
 
 body.files-ng #cancel-selection-button > span#cancel-selection-label {
@@ -1050,7 +827,7 @@ body.check-select #search-box {
 }
 
 html:not(.pointer-active) .dialog-header.files-ng #search-box .clear:hover {
-  background-color: rgba(0, 0, 0, 4%);
+  background-color: var(--cros-ripple-color);
 }
 
 .dialog-header.files-ng #search-box .clear > .icon {
@@ -1085,11 +862,13 @@ html[dir='rtl'] #search-box .clear {
 
 .dialog-header.files-ng cr-toggle {
   --cr-toggle-checked-bar-color: var(--cros-switch-track-color-active);
+  /* bar color above already defines the opacity, so use 100% here */
+  --cr-toggle-checked-bar-opacity: 100%;
   --cr-toggle-checked-button-color: var(--cros-switch-knob-color-active);
   --cr-toggle-checked-ripple-color: var(--cros-focus-aura-color);
   --cr-toggle-unchecked-bar-color: var(--cros-switch-track-color-inactive);
   --cr-toggle-unchecked-button-color: var(--cros-switch-knob-color-inactive);
-  --cr-toggle-unchecked-ripple-color: var(--cros-focus-aura-color);
+  --cr-toggle-unchecked-ripple-color: var(--cros-ripple-color);
   --cr-toggle-box-shadow: var(--cros-elevation-1-shadow);
   --cr-toggle-ripple-diameter: 32px;
 }
@@ -1127,22 +906,31 @@ html.focus-outline-visible .dialog-header.files-ng cr-toggle:focus {
 /* Container for the ok/cancel buttons. */
 .dialog-footer {
   align-items: center;
-  border-top: 1px solid rgb(225, 225, 225);
+  background-color: var(--cros-bg-color);
+  border-top: 1px solid var(--cros-separator-color);
   display: flex;
   flex: none;
   flex-direction: row;
   outline: none;
-}
-
-body.files-ng .dialog-footer {
   padding: 16px 24px;
 }
 
-body.files-ng .dialog-footer #filename-input-box {
+.dialog-footer #filename-input-box {
   margin-inline-end: 16px;
   margin-inline-start: 16px;
   max-width: 320px;
   min-width: 123px;
+}
+
+.dialog-footer cr-input {
+  --cr-input-background-color: var(--cros-textfield-background-color);
+  --cr-input-border-radius: 0;
+  --cr-input-color: var(--cros-textfield-input-color);
+  --cr-input-error-color: var(--cros-textfield-label-color-error);
+  --cr-input-error-display: none;
+  --cr-input-focus-color: var(--cros-textfield-label-color-focus);
+  --cr-input-min-height: 32px;
+  width: 100%;
 }
 
 .dialog-footer .buttonbar {
@@ -1151,7 +939,7 @@ body.files-ng .dialog-footer #filename-input-box {
 }
 
 /* Copy style from paper-button for buttons on the footer. */
-body.files-ng .dialog-footer button {
+.dialog-footer button {
   border: 0;
   border-image: none;
   border-radius: 4px;
@@ -1179,12 +967,6 @@ body.files-ng .dialog-footer button {
   border-image: none;  /* Overrides the definition of common.css. */
 }
 
-.dialog-footer button:active {
-  box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 14%),
-              0 1px 10px 0 rgba(0, 0, 0, 12%),
-              0 2px 4px -1px rgba(0, 0, 0, 40%);
-}
-
 .dialog-footer cr-button,
 .dialog-footer button {
   height: 32px;
@@ -1196,42 +978,54 @@ body.files-ng .dialog-footer button {
 .dialog-footer cr-button[disabled]:hover,
 .dialog-footer button[disabled],
 .dialog-footer button[disabled]:hover {
-  background-color: rgb(234, 234, 234);
-  color: rgb(168, 168, 168);
-}
-
-body.files-ng .dialog-footer cr-button[disabled],
-body.files-ng .dialog-footer cr-button[disabled]:hover,
-body.files-ng .dialog-footer button[disabled],
-body.files-ng .dialog-footer button[disabled]:hover {
   background-color:
       var(--cros-button-background-color-primary-disabled);
   color: var(--cros-button-label-color-primary-disabled);
 }
 
-body.files-ng .dialog-footer .primary,
-body.files-ng .dialog-footer .primary:hover {
+.dialog-footer .primary {
   background-color: var(--cros-button-background-color-primary);
   color: var(--cros-button-label-color-primary);
 }
 
-body.files-ng .dialog-footer .secondary {
-  background-color: var(--cros-button-background-color-secondary);
+.dialog-footer .primary:hover {
+   background: var(--cros-button-background-color-primary-hover-preblended);
+}
+
+.dialog-footer .primary paper-ripple {
+  --paper-ripple-opacity: var(--cros-button-primary-ripple-opacity);
+  color: var(--cros-button-ripple-color-primary);
+}
+
+.dialog-footer .primary:active {
+  box-shadow: 0 1px 2px var(--cros-button-active-shadow-color-key-primary),
+              0 1px 3px var(--cros-button-active-shadow-color-ambient-primary);
+}
+
+.dialog-footer .secondary {
+  background: transparent;
   border: 1px solid var(--cros-button-stroke-color-secondary);
   color: var(--cros-button-label-color-secondary);
   margin-inline-end: 8px;
 }
 
-body.files-ng .dialog-footer .secondary:hover {
+.dialog-footer .secondary:hover {
   background: var(--cros-button-background-color-secondary-hover);
+  border: 1px solid var(--cros-button-stroke-color-secondary-hover);
 }
 
-body.files-ng .dialog-footer .select {
-  background: -webkit-image-set(
-     url(../images/common/disclosure_arrow_dk_grey_down.png) 1x,
-     url(../images/common/2x/disclosure_arrow_dk_grey_down.png) 2x) no-repeat
-     calc(100% - 10px) transparent;
-  background-color: var(--google-grey-100);
+.dialog-footer .secondary paper-ripple {
+  --paper-ripple-opacity: var(--cros-button-secondary-ripple-opacity);
+  color: var(--cros-button-ripple-color-secondary);
+}
+
+.dialog-footer .secondary:active {
+  box-shadow: 0 1px 2px var(--cros-button-active-shadow-color-key-secondary),
+              0 1px 3px var(--cros-button-active-shadow-color-ambient-secondary);
+}
+
+.dialog-footer .select {
+  background-color: var(--cros-textfield-background-color);
   border: 0;
   border-radius: 4px;
   cursor: pointer;
@@ -1244,12 +1038,24 @@ body.files-ng .dialog-footer .select {
   position: relative;
 }
 
-body.files-ng .dialog-footer div.select:not(:active):focus {
-  box-shadow: 0 0 0 2px rgba(var(--cros-focus-ring-color-rgb),
-              50%);
+.dialog-footer .select::after {
+  -webkit-mask-image: url(../images/files/ui/sort_desc.svg);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  background-color: var(--cros-icon-color-primary);
+  content: '';
+  height: 32px;
+  position: absolute;
+  right: 0;
+  width: 32px;
 }
 
-body.files-ng .dialog-footer div.select > span {
+.dialog-footer div.select:not(:active):focus {
+  box-shadow: 0 0 0 2px var(--cros-focus-ring-color);
+}
+
+.dialog-footer div.select > span {
+  color: var(--cros-text-color-primary);
   display: inline-block;
   line-height: 32px;
   max-width: 100%;
@@ -1259,11 +1065,11 @@ body.files-ng .dialog-footer div.select > span {
   white-space: nowrap;
 }
 
-body.files-ng .dialog-footer div.select > div.options {
-  background-color: white;
+.dialog-footer div.select > div.options {
+  background-color: var(--cros-bg-color-elevation-2);
   border-radius: 4px;
   bottom: calc(100% + 2px);
-  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 50%);
+  box-shadow: var(--cros-elevation-2-shadow);
   left: 0;
   min-width: max-content;
   padding: 8px 0;
@@ -1272,32 +1078,32 @@ body.files-ng .dialog-footer div.select > div.options {
   z-index: 550;
 }
 
-body.files-ng .dialog-footer div.select > div.options:not([expanded]) {
+.dialog-footer div.select > div.options:not([expanded]) {
   display: none;
 }
 
-body.files-ng .dialog-footer div.select > div.options option {
+.dialog-footer div.select > div.options option {
+  color: var(--cros-menu-label-color);
   line-height: 32px;
   min-height: 32px;
   padding: 0 12px 0 16px;
   vertical-align: middle;
 }
 
-body.files-ng .dialog-footer div.select > div.options option:hover,
-body.files-ng .dialog-footer div.select > div.options:not(:hover) option.selected {
-  background-color: rgba(0, 0, 0, 6%);
+.dialog-footer div.select > div.options option:hover,
+.dialog-footer div.select > div.options:not(:hover) option.selected {
+  background-color: var(--cros-menu-item-background-hover);
 }
 
 .dialog-footer select:hover {
   border-image: none;
 }
 
-/* Draw outline using box-shadow to make them rounded. */
-.dialog-footer .primary:focus:not(:active),
-.dialog-footer .secondary:focus:not(:active),
-.dialog-footer select:focus:not(:active),
-html.focus-outline-visible #cloud-import-details cr-button:focus {
-  box-shadow: 0 0 0 2px rgba(51, 103, 214, 50%);
+html.focus-outline-visible .dialog-footer .primary:focus,
+html.focus-outline-visible .dialog-footer .secondary:focus,
+html.focus-outline-visible .dialog-footer select:focus {
+  outline: 2px solid var(--cros-focus-ring-color);
+  outline-offset: 2px;
 }
 
 .progressable:not([progress]) .progress-bar,
@@ -1333,109 +1139,17 @@ body.check-select .breadcrumbs {
   display: none;
 }
 
-.breadcrumbs button > paper-ripple {
-  color: black;
-}
-
-.breadcrumbs > [collapsed]::before {
-  content: '...';
-}
-
-.breadcrumbs > [collapsed] .name {
-  display: none;
-}
-
-.breadcrumbs > [collapsed] {
-  box-sizing: content-box !important;
-  width: 1em;
-}
-
-/* A single directory name in the list of path breadcrumbs. */
-.breadcrumbs .breadcrumb-path {
-  box-sizing: border-box;
-  cursor: pointer;
-  flex: none;
-  font-size: 14px;
-  font-weight: 500;
-  margin: 0;
-  min-width: 0;
-  padding: 0 9px;
-  text-transform: none;
-  white-space: nowrap;
-}
-
-.breadcrumbs .breadcrumb-path:first-child {
-  /* margin-inline-start isn't proper
-     because folder names should be ltr even in RTL languages. */
-  margin-inline-start: 8px;
-}
-
-html[dir='rtl'] .breadcrumbs .breadcrumb-path:first-child {
-  margin-inline-end: 8px;
-  margin-inline-start: 0;
-}
-
-.breadcrumbs .breadcrumb-path:active {
-  color: inherit;
-}
-
-.breadcrumbs .breadcrumb-path > .name {
-  overflow: hidden;
-  position: relative;
-  text-align: initial;
-  text-overflow: ellipsis;
-  z-index: 1;
-}
-
-/* The final breadcrumb, representing the current directory. */
-.breadcrumbs .breadcrumb-path.breadcrumb-last {
-  cursor: default;
-}
-
-.dialog-header.files-ng .breadcrumbs .breadcrumb-path {
-  --text-color: currentColor;
-}
-
-.dialog-header.files-ng .breadcrumbs .breadcrumb-path.breadcrumb-last {
-  color: var(--google-grey-900);
-  --text-color: currentColor;
-}
-
-/* The > arrow between breadcrumbs. */
-.breadcrumbs .separator {
-  background: -webkit-image-set(
-      url(../images/files/ui/arrow_right_white.png) 1x,
-      url(../images/files/ui/2x/arrow_right_white.png) 2x) center no-repeat;
-  flex: none;
-  height: 16px;
-  width: 8px;
-}
-
-.dialog-header.files-ng .breadcrumbs .separator {
-  -webkit-mask-image: url(../images/files/ui/arrow_right.svg);
-}
-
-html[dir='rtl'] .breadcrumbs .separator {
-  transform: scaleX(-1);
-}
-
 /* The toolbar indicator that means the current directory is read only. */
 #read-only-indicator {
   align-items: center;
-  background-color: rgba(0, 0, 0, 20%);
+  background-color: var(--cros-highlight-color-hover);
   border-radius: 16px;
   display: flex;
   flex: none;
   height: 32px;
-  margin-inline-start: 4px;
-  padding: 0 16px;
-}
-
-body.files-ng #read-only-indicator {
-  background-color: var(--cros-highlight-color-hover);
   margin-inline-start: 12px;
-  padding-inline-end: 16px;
-  padding-inline-start: 12px;
+  padding: 0 16px;
+  padding-inline: 16px 12px;
 }
 
 body.check-select #read-only-indicator {
@@ -1471,6 +1185,42 @@ body.check-select #read-only-indicator {
   position: relative;
 }
 
+#empty-folder {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+#empty-folder > .image {
+  --empty-folder-svg-dot-color: var(--cros-illustration-color-1-shade-1);
+  --empty-folder-svg-file-color: var(--cros-illustration-secondary-color);
+  --empty-folder-svg-ellipse-color: var(--cros-illustration-color-1);
+  --empty-folder-svg-folder-color: var(--cros-illustration-color-1-shade-2);
+  margin-top: 64px;
+  text-align: center;
+}
+
+.list-view #empty-folder > .image {
+  /* The list view has a .table-header at the top, the margin-top should also
+  cover that, hence the desired margin plus the .table-header height. */
+  margin-top: calc(64px + 57px);
+}
+
+#empty-folder > .label {
+  color: var(--cros-text-color-secondary);
+  font: var(--cros-body-2-font);
+  margin-top: 16px;
+  text-align: center;
+}
+
+#empty-folder > .label > span#empty-folder-title {
+  font-weight: bold;
+}
+
 #detail-table {
   display: flex;
   flex: auto;
@@ -1486,9 +1236,9 @@ body.check-select #read-only-indicator {
 
 #file-list .drag-selection-border {
   -webkit-box-sizing: border-box;
-  background-color: rgba(255, 255, 255, 30%);
-  border: 2px solid rgba(255, 255, 255, 60%);
-  outline: 1px solid rgba(0, 0, 0, 10%);
+  background-color: rgba(var(--cros-bg-color-rgb), 30%);
+  border: 2px solid rgba(var(--cros-bg-color-rgb), 60%);
+  outline: 1px solid var(--cros-selection-outline);
   position: absolute;
   z-index: 2;
 }
@@ -1506,59 +1256,17 @@ body.check-select #read-only-indicator {
   width: 16px;
 }
 
-body.files-ng .loading-indicator {
+.loading-indicator {
   left: calc(50% - 24px);
   position: absolute;
   right: calc(50% - 24px);
   top: 64px;
 }
 
-body.files-ng .downloads-warning,
-body.files-ng .trash-warning {
-  align-items: center;
-  border-bottom: 1px solid var(--cr-separator-color, rgb(224, 224, 224));
-  display: flex;
-  flex: none;
-  flex-direction: row;
-  height: 40px;
-  opacity: 1;
-  transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1) 0s,
-              opacity 150ms ease 50ms;
-  visibility: visible;
-}
-
-body.files-ng .downloads-warning a:link,
-body.files-ng .volume-warning a:link {
-  color: var(--google-blue-600);
-}
-
-body.files-ng .downloads-warning .warning-icon {
-  -webkit-mask-image: url(../images/files/ui/warning.svg);
-  background-color: var(--google-grey-700);
-  background-size: 20px 20px;
-  flex: none;
-  height: 20px;
-  margin-inline-end: 12px;
-  margin-inline-start: 8px;
-  width: 20px;
-}
-
-body.files-ng .warning-message .link-wrapper {
-  display: inline;
-}
-
-body.files-ng .warning-message .link-wrapper > a {
-  display: inline-block;
-  outline-offset: -2px;
-  padding: 0 4px;
-  text-decoration: none;
-}
-
-body.files-ng .downloads-warning[hidden] {
-  display: flex !important;  /* Overrides [hidden] for animation. */
-  height: 0;
-  opacity: 0;
-  visibility: hidden;
+.list-view .loading-indicator {
+  /* The list view has a .table-header at the top, the top should also
+  cover that, hence the desired top plus the .table-header height. */
+  top: calc(64px + 57px);
 }
 
 @keyframes heightAnimation {
@@ -1566,42 +1274,6 @@ body.files-ng .downloads-warning[hidden] {
     display: flex;
     height: 0;
   }
-}
-
-/* Drive space warning banner. */
-body.files-ng .volume-warning {
-  align-items: center;
-  border-bottom: 1px solid var(--cr-separator-color, rgb(224, 224, 224));
-  color: white;
-  display: flex;
-  flex: none;
-  flex-direction: row;
-  font-size: 13px;
-  height: 40px;
-  opacity: 1;
-  overflow: hidden;
-  position: relative;
-  transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1) 0s,
-              opacity 150ms ease 50ms;
-  visibility: visible;
-}
-
-body.files-ng .volume-warning[hidden] {
-  border-top-width: 0;
-  display: flex !important;  /* Overrides [hidden] for animation. */
-  height: 0;
-  opacity: 0;
-  visibility: hidden;
-}
-
-body.files-ng .volume-warning .drive-icon {
-  background: white url(../images/files/ui/drive_logo.svg) no-repeat center;
-  background-size: 20px 20px;
-  flex: none;
-  height: 20px;
-  margin-inline-end: 12px;
-  margin-inline-start: 8px;
-  width: 20px;
 }
 
 body.files-ng .button-group {
@@ -1614,25 +1286,6 @@ body.files-ng .button-group {
 
 body.files-ng .button-group > a {
   text-decoration-line: none;
-}
-
-body.files-ng .volume-warning .banner-button {
-  border: 0;
-  height: 32px;
-  margin-inline-end: 8px;
-  padding-inline-end: 16px;
-  padding-inline-start: 16px;
-}
-
-body.files-ng .volume-warning .info-icon {
-  -webkit-mask-image: url(../images/files/ui/info.svg);
-  background-color: var(--cros-text-color-secondary);
-  background-size: 20px 20px;
-  flex: none;
-  height: 20px;
-  margin-inline-end: 16px;
-  margin-inline-start: 8px;
-  width: 20px;
 }
 
 body.files-ng .banner-close {
@@ -1650,32 +1303,66 @@ body.files-ng .banner-close {
      fully visible. */
   box-sizing: border-box;
   overflow-y: auto;
-  padding-bottom: 16px;
-  padding-inline-end: 2px;
-  padding-inline-start: 11px;
-  padding-top: 12px;
   width: 100%;
-}
-
-body.files-ng .thumbnail-grid {
-  padding-inline-end: 20px;
-  padding-inline-start: 16px;
 }
 
 body.files-ng grid .grid-title {
-  color: var(--google-grey-700);
+  box-sizing: border-box;
+  color: var(--cros-text-color-secondary);
   font-family: 'Roboto Medium';
   padding-inline-start: 16px;
   padding-top: 20px;
+  /* Make sure clicking this area can unselect file grids. */
+  pointer-events: none;
   width: 100%;
 }
 
-body.files-ng grid .grid-title.files {
-  padding-top: calc(20px + 16px);
+grid .grid-title.group-by-isDirectory {
+  /* Folders/Files heading doesn't have border bottom, so having a padding
+   * bottom together with grid item's margin-top will make the gap too big.
+   * To prevent that, we can treat grid item (.thumbnail-item)'s margin-top
+   * (16px) as heading's padding bottom, that's why we use the desired height
+   * to minus the margin-top value here.
+   */
+  height: calc(56px - 16px);
 }
 
-body[type='full-page'] .thumbnail-frame > .img-container {
+grid .grid-title.group-by-modificationTime {
+  border-bottom: 1px solid var(--cros-separator-color);
+  /* The desired height plus the border width. */
+  height: calc(56px + 1px);
+  padding-bottom: 16px;
+}
+
+body.files-ng .thumbnail-frame > .img-container {
   position: relative;
+}
+
+body.files-ng .thumbnail-frame > .sync-status {
+  height: 16px;
+  position: absolute;
+  right: 4px;
+  top: 4px;
+  width: 16px;
+}
+
+body.files-ng li:not([renaming]):not(.dim-offline) .thumbnail-frame > .sync-status {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 16px 16px;
+}
+
+body.files-ng li:not([renaming]):not(.dim-offline) .thumbnail-frame[data-sync-status=in_progress] > .sync-status {
+  background-image: url(../images/files/ui/in_progress_indicator.svg);
+}
+
+body.files-ng li:not([renaming]):not(.dim-offline) .thumbnail-frame[data-sync-status=error] > .sync-status {
+  background-image: url(../images/files/ui/error.svg);
+}
+
+body.files-ng li.directory .thumbnail-frame > .sync-status {
+  height: 100%;
+  top: 0;
 }
 
 html:not(.pointer-active) body[type='full-page'] .thumbnail-frame > .img-container,
@@ -1720,28 +1407,16 @@ body.files-ng .thumbnail-item .filename-label {
 
 /* Styles specific for the grid view. */
 
-.thumbnail-grid .thumbnail-item {
-  background-color: rgb(245, 245, 245);
-  height: 180px;
-  margin-inline-start: 4px;
-  margin-top: 4px;
-  overflow: hidden;
-  position: relative;
-  vertical-align: top;  /* Prevent vertical spacing for wrapped inline box. */
-  width: 180px;
-}
-
 body.files-ng .thumbnail-grid .thumbnail-item {
   background-color: inherit;
   border-radius: 4px;
   height: 160px;
   margin-inline-start: 16px;
   margin-top: 16px;
-}
-
-.thumbnail-grid .thumbnail-item.directory {
-  box-shadow: 0 1px rgba(0, 0, 0, 15%);
-  height: 40px;
+  overflow: hidden;
+  position: relative;
+  vertical-align: top;  /* Prevent vertical spacing for wrapped inline box. */
+  width: 180px;
 }
 
 body.files-ng .thumbnail-item.directory   {
@@ -1750,11 +1425,11 @@ body.files-ng .thumbnail-item.directory   {
 }
 
 body.files-ng #list-container .thumbnail-grid li {
-  border: 1px solid rgba(0, 0, 0, 14%);
+  border: 1px solid var(--cros-separator-color);
 }
 
 body.files-ng grid .thumbnail-bottom .detail-icon {
-  color: var(--google-grey-700);
+  color: var(--cros-icon-color-secondary);
   height: 40px;
   padding-inline-end: 6px;
   padding-inline-start: 6px;
@@ -1771,64 +1446,20 @@ body.files-ng grid .thumbnail-bottom .detail-icon:active {
   width: 100%;
 }
 
-.thumbnail-grid .thumbnail-item[selected],
-.thumbnail-grid .thumbnail-item.accepts {
-  background-color: rgb(221, 242, 253);
-}
-
-.thumbnail-grid .thumbnail-item[selected] .shield {
- background-color: rgba(51, 103, 214, 50%);
-
-}
-
-.thumbnail-grid .thumbnail-item[lead]:not([selected]) .shield {
-  background-color: rgba(51, 103, 214, 20%);
-}
-
-.thumbnail-grid .checkmark {
-  background-position: center;
-  background-repeat: no-repeat;
-  height: 36px;
-  margin-inline-start: 2px;
-  opacity: 0;
-  position: absolute;
-  top: 2px;
-  transition: opacity 220ms ease;
-  width: 36px;
-}
-
-body.selecting .thumbnail-grid .checkmark.inactive,
-.thumbnail-grid .thumbnail-item:hover .checkmark.inactive {
-  opacity: 0.6;
-}
-
-body.check-select .thumbnail-grid .thumbnail-item .checkmark.inactive {
-  opacity: 1;
-}
-
-body.check-select .thumbnail-grid .thumbnail-item[selected]
-    .checkmark.inactive {
-  opacity: 0;
-}
-
-body.check-select .thumbnail-grid .thumbnail-item[selected] .checkmark.active {
-  opacity: 1;
-}
-
 .thumbnail-grid .img-container {
-  background-color: rgb(230, 230, 230);
+  background-color: var(--cros-highlight-color-hover);
   height: 100%;
   width: 100%;
 }
 
 body.files-ng .thumbnail-grid .img-container {
-  color: var(--google-grey-700);
+  color: var(--cros-text-color-secondary);
   height: 120px;
 }
 
 .thumbnail-grid .img-container > .thumbnail {
   -webkit-user-drag: none;
-  background-color: rgb(230, 230, 230);
+  background-color: var(--cros-highlight-color-hover);
   background-position: center;
   background-repeat: no-repeat;
   height: 100%;
@@ -1837,48 +1468,9 @@ body.files-ng .thumbnail-grid .img-container {
   width: 100%;
 }
 
-.thumbnail-grid .shield {
-  background-color: rgba(160, 160, 160, 50%);
-  bottom: 0;
-  display: none;
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-}
-
-.thumbnail-grid:focus .shield {
-  background-color: rgba(51, 103, 214, 50%);
-}
-
-.thumbnail-grid .thumbnail-item[selected] .shield,
-.thumbnail-grid .thumbnail-item[lead] .shield {
-  display: block;
-}
-
-.thumbnail-grid .thumbnail-bottom {
-  background-color: rgba(255, 255, 255, 85%);
-  color: rgb(51, 51, 51);
-  height: 40px;
-}
-
 body.files-ng .thumbnail-grid .thumbnail-bottom {
-  background-color: white;
-  color: var(--google-grey-900);
-}
-
-.thumbnail-grid .thumbnail-item.directory .thumbnail-bottom {
-  background-color: rgb(255, 255, 255);
-}
-
-.thumbnail-grid .thumbnail-item[selected].directory .thumbnail-bottom,
-.thumbnail-grid .thumbnail-item[lead].directory .thumbnail-bottom {
-  background-color: rgb(232, 232, 232);
-}
-
-.thumbnail-grid:focus .thumbnail-item[selected].directory .thumbnail-bottom,
-.thumbnail-grid:focus .thumbnail-item[lead].directory .thumbnail-bottom {
-  background-color: rgb(232, 246, 253);
+  color: var(--cros-text-color-primary);
+  height: 40px;
 }
 
 body.files-ng .thumbnail-grid .thumbnail-item[selected] .thumbnail-bottom,
@@ -1887,7 +1479,7 @@ body.files-ng .thumbnail-grid .thumbnail-item[selected].directory
     .thumbnail-bottom,
 body.files-ng .thumbnail-grid .thumbnail-item[lead].directory
     .thumbnail-bottom {
-  background-color: var(--google-grey-100);
+  background-color: var(--cros-highlight-color-hover);
 }
 
 body.files-ng .thumbnail-grid:focus .thumbnail-item[selected] .thumbnail-bottom,
@@ -1896,7 +1488,7 @@ body.files-ng .thumbnail-grid:focus .thumbnail-item[selected].directory
     .thumbnail-bottom,
 body.files-ng .thumbnail-grid:focus .thumbnail-item[lead].directory
     .thumbnail-bottom {
-  background-color: var(--google-blue-50);
+  background-color: var(--cros-highlight-color);
 }
 
 body.check-select.files-ng .thumbnail-grid:focus .thumbnail-item[selected]
@@ -1907,7 +1499,7 @@ body.check-select.files-ng .thumbnail-grid:focus
     .thumbnail-item[selected].directory .thumbnail-bottom,
 body.check-select.files-ng .thumbnail-grid:focus .thumbnail-item[lead].directory
     .thumbnail-bottom {
-  color: var(--google-blue-600);
+  color: var(--cros-text-color-selection);
 }
 
 body.check-select.files-ng #list-container .thumbnail-grid:focus
@@ -1916,8 +1508,8 @@ body.files-ng #list-container .thumbnail-grid:focus
     .thumbnail-item[lead]:not([selected]) {
   /* 2px border: 1px via box-shadow + 1px via border, to accommodate
      the difference between regular border 1px and selected border 2px.*/
-  border-color: var(--google-blue-600);
-  box-shadow: 0 0 0 1px var(--google-blue-600);
+  border-color: var(--cros-focus-ring-color);
+  box-shadow: 0 0 0 1px var(--cros-focus-ring-color);
 }
 
 body.check-select.files-ng #list-container .thumbnail-grid
@@ -1926,13 +1518,8 @@ body.files-ng #list-container .thumbnail-grid
     .thumbnail-item[lead]:not([selected]) {
   /* 2px border: 1px via box-shadow + 1px via border, to accommodate
      the difference between regular border 1px and selected border 2px.*/
-  border-color: var(--google-grey-700);
-  box-shadow: 0 0 0 1px var(--google-grey-700);
-}
-
-body.files-ng #list-container .thumbnail-grid .thumbnail-item[lead].directory
-    .shield {
-  height: 36px;
+  border-color: var(--cros-focus-ring-color-inactive);
+  box-shadow: 0 0 0 1px var(--cros-focus-ring-color-inactive);
 }
 
 .thumbnail-grid > .spacer.folder-spacer {
@@ -1949,7 +1536,7 @@ body:not(.check-select) .thumbnail-grid.image-dominant
 }
 
 .badge {
-  background-color: white;
+  background-color: var(--cros-bg-color);
   background-position: center;
   background-repeat: no-repeat;
   border-radius: 2px;
@@ -1966,38 +1553,21 @@ html[dir='rtl'] .badge {
   right: auto;
 }
 
-.copied .badge {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/cloud_import_syncing.png) 1x,
-      url(../images/files/ui/2x/cloud_import_syncing.png) 2x);
-  display: block;
-}
-
-.imported .badge {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/service_drive.png) 1x,
-      url(../images/files/ui/2x/service_drive.png) 2x);
-  display: block;
-}
-
-.imported .filename-label,
-.copied .filename-label {
-  margin-inline-end: 14px;
-}
-
 /* Padding counterweights negative margins of items, thus eliminating scroll
    bar when it's not needed. Max height is set to fit 8 items before showing
    scroll bar. */
 body.files-ng #default-tasks-list {
-  border-top: solid 1px rgba(0, 0, 0, 14%);
+  border-top: solid 1px var(--cros-separator-color);
   height: 240px;
   margin: 16px -16px;
   margin-bottom: 12px;
   padding-top: 8px;
 }
 
-body.files-ng #default-task-dialog.bottom-shadow::after {
-  background: linear-gradient(180deg, #FFF 0, rgba(255, 255, 255, 0) 100%);
+#default-task-dialog.bottom-shadow::after {
+  background: linear-gradient(180deg,
+                              var(--cros-bg-color) 0,
+                              var(--cros-bg-color) 100%);
   bottom: 24px;
   content: '';
   height: 40px;
@@ -2008,26 +1578,42 @@ body.files-ng #default-task-dialog.bottom-shadow::after {
   width: 100%
 }
 
-body.files-ng #default-tasks-list li {
+@media (prefers-color-scheme: dark) {
+  #default-task-dialog.bottom-shadow::after {
+    background: linear-gradient(180deg,
+                                var(--cros-bg-color-elevation-2) 0,
+                                var(--cros-bg-color-elevation-2) 100%);
+  }
+}
+
+#default-tasks-list li {
   height: 40px;
   line-height: 40px;
 }
 
-body.files-ng #default-tasks-list > li > * {
+#default-tasks-list > li > .icon {
+  -webkit-mask-position: 16px center;
+  -webkit-mask-repeat: no-repeat;
   background-position: 16px center;
   background-repeat: no-repeat;
   background-size: 20px;
-  padding-inline-start: 52px;
+  height: 100%;
 }
 
-html[dir='rtl'] body.files-ng #default-tasks-list > li > * {
+#default-tasks-list > li > .label {
+  padding-inline-start: 52px;
+  position: absolute;
+}
+
+html[dir='rtl'] #default-tasks-list > li > .icon {
+  -webkit-mask-position-x: calc(100% - 16px);
   background-position-x: calc(100% - 16px);
 }
 
 body.files-ng #list-container list > li[selected],
 body.files-ng #list-container list > li:active,
 body.files-ng #list-container list > li.accepts,
-body.files-ng #list-container list:focus > li[lead] {
+body.files-ng #list-container list > li[lead] {
   background-color: var(--cros-highlight-color-hover);
   border-radius: 2px;
 }
@@ -2040,14 +1626,15 @@ body.files-ng #list-container list:focus > li[lead] {
 
 body.files-ng #default-tasks-list:focus > li[selected],
 body.files-ng #default-tasks-list > li[selected] {
-  background-color: var(--google-blue-50);
+  background-color: var(--cros-highlight-color);
   outline: none;
 }
 
 body.files-ng #default-tasks-list li[selected]::after {
-  background-image: url(../images/common/ic_selected.svg);
-  background-position: right;
-  background-repeat: no-repeat;
+  -webkit-mask-image: url(../images/common/ic_selected.svg);
+  -webkit-mask-position: right;
+  -webkit-mask-repeat: no-repeat;
+  background-color: var(--cros-icon-color-selection);
   content: ' ';
   height: 40px;
   position: absolute;
@@ -2077,12 +1664,36 @@ body.files-ng #list-container li {
   border: 1px solid transparent;
 }
 
-html.focus-outline-visible body.files-ng #list-container list:focus > li[lead] {
+/* Modify GROUP_HEADING_HEIGHT in file_table_list.js if this height changes. */
+#list-container .group-heading {
+  border-bottom: 1px solid var(--cros-separator-color);
+  box-sizing: border-box;
+  color: var(--cros-text-color-secondary);
+  font-family: 'Roboto Medium';
+  /* The desired height plus the border width. */
+  height: calc(56px + 1px);
+  padding-inline-start: 16px;
+  padding-top: 20px;
+  /* Make sure clicking this area can unselect file items. */
+  pointer-events: none;
+  width: 100%;
+}
+
+/*
+ * selector "li[lead]" is for the row just being operated on,
+ * e.g. with mouse: click/select/unselect
+ *      with keyboard: Ctrl + ArrowUp/ArrowDown to move
+ */
+body.files-ng.check-select #list-container list:focus > li[lead] {
   border: 1px solid var(--cros-focus-ring-color);
 }
 
-#list-container.nohover grid > .accepts {
-  background-color: transparent;
+body.files-ng.check-select #list-container list > li[lead] {
+  border: 1px solid var(--cros-focus-ring-color-inactive);
+}
+
+#list-container grid > .accepts {
+  background-color: var(--cros-highlight-color-hover)
 }
 
 #directory-tree .tree-item.accepts > .tree-row,
@@ -2094,7 +1705,7 @@ html.focus-outline-visible body.files-ng #list-container list:focus > li[lead] {
 @keyframes acceptsBlink {
   0% {
     background-color: transparent;
-    color: rgb(90, 90, 90);
+    color: var(--cros-ripple-color);
   }
 }
 
@@ -2155,8 +1766,7 @@ body.files-ng #list-container input.rename {
   margin-inline-end: 4px;
 }
 
-li[renaming=''] .filename-label,
-li[renaming=''] .badge {
+li[renaming=''] .filename-label {
   display: none;
 }
 
@@ -2200,18 +1810,24 @@ li[renaming=''] .badge {
 
 /* Container for a table header. */
 .table-header {
-  border-bottom: 1px solid rgb(210, 210, 210);
+  border-bottom: 1px solid var(--cros-separator-color);
   box-sizing: border-box;
+  color: var(--cros-text-color-secondary);
   flex: none;
-  height: 40px;
+  font-family: 'Roboto Medium';
+  /* The desired height plus the border bottom. */
+  height: calc(56px + 1px);
+  line-height: 20px;
 }
 
 /* Text label in a table header. */
 .table-header-label {
-  color: rgb(100, 100, 100);
-  font-weight: 500;
-  line-height: 40px;
+  color: inherit;
+  font-weight: normal;
+  line-height: 20px;
   margin: 0 10px;
+  margin-inline-end: 0;
+  margin-inline-start: 32px;
 }
 
 .table-row-cell > * {
@@ -2222,7 +1838,7 @@ li[renaming=''] .badge {
 }
 
 .table-row-cell {
-  color: rgb(100, 100, 100);
+  color: var(--cros-text-color-secondary);
 }
 
 .table-row-cell > .detail-name {
@@ -2230,7 +1846,7 @@ li[renaming=''] .badge {
 }
 
 .table-row-cell > .detail-name {
-  color: rgb(74, 74, 74);
+  color: var(--cros-text-color-primary);
 }
 
 .table-row-cell {
@@ -2254,6 +1870,20 @@ li[renaming=''] .badge {
   width: 24px;
 }
 
+/* The managed icon in the details list for DLP restricted files. */
+.dlp-managed-icon {
+  -webkit-mask-image: url(chrome://resources/images/business.svg);
+  -webkit-mask-position: right center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 16px 16px;
+  background-color: currentColor;
+  color: var(--cros-icon-color-primary);
+  height: 24px;
+  margin-inline-end: 10px;
+  margin-inline-start: auto;
+  width: 24px;
+}
+
 body.files-ng #list-container list li .detail-icon {
   color: var(--cros-icon-color-primary);
   height: 40px;
@@ -2265,7 +1895,7 @@ body.files-ng #list-container list li .detail-icon {
 #list-container li .detail-checkmark {
   background-position: center;
   background-repeat: no-repeat;
-  color: var(--google-blue-600);
+  color: var(--cros-icon-color-selection);
   height: 28px;
   isolation: isolate;
   opacity: 0;
@@ -2286,7 +1916,7 @@ body.check-select #list-container li[selected] .detail-checkmark {
 
 #list-container list li .detail-thumbnail > .thumbnail {
   -webkit-user-drag: none;
-  background-color: rgb(245, 245, 245);
+  background-color: var(--cros-highlight-color-hover);
   background-position: center;
   background-size: cover;
   border-radius: 14px;
@@ -2303,13 +1933,8 @@ body.check-select #list-container list li[selected] .detail-thumbnail
   opacity: 0;
 }
 
-#tasks-menu cr-menu-item:not(.change-default) {
-  background-position: left 10px center;
-  padding-inline-start: 32px;
-}
-
-html[dir='rtl'] #tasks-menu cr-menu-item:not(.change-default) {
-  background-position: right 10px center;
+#tasks-menu cr-menu-item.change-default .icon.start {
+  display: none;
 }
 
 #action-bar {
@@ -2442,99 +2067,15 @@ cr-menu.chrome-menu hr {
   font-size: 0;
 }
 
-div.shade {
-  /* transition: opacity 1000ms linear; */
-  background-color: rgba(255, 255, 255, 80%);
-  bottom: 0;
-  left: 0;
+body[drive='unmounted'] .dialog-container #list-container,
+body[drive='mounting'] .dialog-container #list-container,
+body[drive='error'] .dialog-container #list-container,
+body[unformatted] .dialog-container #list-container {
   opacity: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-}
-
-div.shade[fadein] {
-  opacity: 1;
-}
-
-/* Message panel for unmounted Drive */
-#unmounted-panel,
-#format-panel {
-  bottom: 0;
-  color: #333;
-  display: none;
-  left: 0;
-  padding-inline-start: 50px;
-  padding-top: 20px;
-  position: absolute;
-  right: 0;
-  top: 0;
-}
-
-body[drive='mounting'] .dialog-container #unmounted-panel,
-body[drive='error'] .dialog-container #unmounted-panel,
-body[unformatted] .dialog-container #format-panel {
-  display: block;
-}
-
-body[drive='unmounted'] .dialog-container .filelist-panel,
-body[drive='mounting'] .dialog-container .filelist-panel,
-body[drive='error'] .dialog-container .filelist-panel,
-body[unformatted] .dialog-container .filelist-panel {
-  /* Hide file list when Drive is not mounted.
-     Use opacity to avoid manual resizing.*/
-  opacity: 0;
-}
-
-#unmounted-panel > *,
-#format-panel > * {
-  align-items: center;
-  display: none;
-  flex-direction: row;
-  height: 22px;
-  justify-content: flex-start;
-  margin-bottom: 10px;
-}
-
-#unmounted-panel > .loading {
-  position: relative;
-}
-
-#unmounted-panel > .loading > .spinner-box {
-  bottom: 0;
-  position: absolute;
-  right: 100%;
-  top: 0;
-  width: 40px;
-}
-
-body[unformatted] #format-panel > .error,
-body[drive='mounting'] #unmounted-panel > .loading,
-body[drive='error'] #unmounted-panel > .error,
-#format-panel > #format-button,
-#unmounted-panel.retry-enabled > .learn-more {
-  display: flex;
-}
-
-.plain-link {
-  color: rgb(17, 85, 204);
-  cursor: pointer;
-  text-decoration: none;
 }
 
 .buttonbar > * {
   position: relative;
-}
-
-#volume-space-info-contents {
-  align-items: center;
-  display: flex;
-}
-
-#volume-space-info-contents > div {
-  display: flex;
-  flex: auto;
-  margin-inline-start: 15px;
 }
 
 #list-container .table-header-inner {
@@ -2554,24 +2095,9 @@ body.files-ng #list-container .table-header-cell:first-child {
   padding-inline-start: 0;
 }
 
-body.files-ng .table-header {
-  border-bottom: 1px solid var(--cr-separator-color, rgb(224, 224, 224));
-  color: var(--cros-text-color-secondary);
-  font-family: 'Roboto Medium';
-  height: 48px;
-  line-height: 20px;
-}
-
-body.files-ng .table-header-label {
-  color: inherit;
-  font-weight: normal;
-  line-height: 20px;
-  margin-inline-end: 0;
-  margin-inline-start: 32px;
-}
-
 body.files-ng .table-header-cell {
-  padding-bottom: 16px;
+  padding-bottom: 12px;
+  padding-top: 12px;
 }
 
 html:not(.pointer-active) body.files-ng .table-header-cell,
@@ -2584,39 +2110,43 @@ body.files-ng #list-container .table-header-cell:first-child
   margin-inline-start: 16px;
 }
 
-body.files-ng .table-header-label .sort-icon {
-  --cr-icon-button-icon-size: 16px;
-  --cr-icon-button-size: 32px;
+.table-header-label .sort-icon {
   --cr-icon-button-fill-color: var(--cros-icon-color-secondary);
+  --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-hover-background-color: var(--cros-ripple-color);
+  --cr-icon-button-size: 32px;
   border-radius: 50%;
   cursor: default;
 }
 
-html:not(.pointer-active) body.files-ng .table-header-label .sort-icon,
-body.files-ng .table-header-label .sort-icon:active {
+.table-header-label .sort-icon:active {
+  background: var(--cros-icon-button-pressed-color);
+}
+
+html:not(.pointer-active) .table-header-label .sort-icon:hover,
+.table-header-label .sort-icon:active {
   cursor: pointer;
+}
+
+.table-header-label .not-sorted .sort-icon {
+  display: none;
+}
+
+html.pointer-active .table-header-label .sort-icon:not(:active):hover,
+html.col-resize .table-header-label .sort-icon:not(:active):hover {
+  --cr-icon-button-hover-background-color: none;
 }
 
 body.files-ng .table-label-container {
   align-items: center;
   display: flex;
   height: 32px;
-  padding-top: 8px;
 }
 
 /* Text in the column header */
 body.files-ng .table-label-container > span {
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-html:not(.pointer-active) body.files-ng .table-header-label .sorted
-.sort-icon:hover {
-  background-color: rgba(0, 0, 0, 4%);
-}
-
-body.files-ng .table-header-label .not-sorted .sort-icon {
-  display: none;
 }
 
 /** Size column is aligned to right. */
@@ -2653,26 +2183,35 @@ body.files-ng .table-row-cell > * {
 body.files-ng .table-header-splitter  {
   background: none;
   height: 32px;
-  margin-top: 8px;
+  margin-top: 12px;
   width: auto;
 }
 
-body.files-ng .table-header-splitter .splitter-icon {
-  --cr-icon-button-icon-size: 32px;
-  --cr-icon-button-size: 32px;
-  --cr-icon-button-margin-start: 0px;
+.table-header-splitter .splitter-icon {
   /*
    * TODO(crbug.com/1268206): the icon is not in disabled state, a new css
    * variable needs to be created and applied here.
    */
   --cr-icon-button-fill-color: var(--cros-icon-color-disabled);
+  --cr-icon-button-hover-background-color: var(--cros-ripple-color);
+  --cr-icon-button-icon-size: 32px;
+  --cr-icon-button-margin-start: 0px;
+  --cr-icon-button-size: 32px;
   cursor: default;
   height: 32px;
 }
 
-html:not(.pointer-active) body.files-ng .table-header-splitter
-.splitter-icon:hover {
+.table-header-splitter .splitter-icon:active {
+  background: var(--cros-icon-button-pressed-color);
+}
+
+html:not(.pointer-active) .table-header-splitter .splitter-icon:hover {
   cursor: col-resize;
+}
+
+html.pointer-active .table-header-splitter .splitter-icon:not(:active):hover,
+html.col-resize .table-header-splitter .splitter-icon:not(:active):hover {
+  --cr-icon-button-hover-background-color: none;
 }
 
 body.files-ng #list-container .table-row-cell .size {
@@ -2690,7 +2229,6 @@ body.files-ng .table-row-cell:first-child > * {
 
 body.files-ng .table-row-cell .filename-label {
   color: var(--cros-text-color-primary);
-
   padding-top: 0;
 }
 
@@ -2718,7 +2256,7 @@ body.files-ng #list-container :focus li .detail-checkmark {
 }
 
 body.files-ng #list-container li .detail-checkmark {
-  color: var(--cros-icon-color-primary);
+  color: var(--cros-icon-color-secondary);
 }
 
 body.files-ng #list-container li .detail-thumbnail {
@@ -2731,7 +2269,7 @@ body.files-ng #list-container li .detail-thumbnail {
 }
 
 body.files-ng #list-container
-    li.pinned:not([renaming]):not(.dim-offline) .detail-pinned {
+    li.pinned:not([renaming]):not(.dim-offline):not(.sync-in-progress):not(.sync-error) .detail-pinned {
   -webkit-mask-image: url(../images/files/ui/offline.svg);
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
@@ -2739,6 +2277,23 @@ body.files-ng #list-container
   display: flex;
   height: 40px;
   width: 40px;
+}
+
+body.files-ng #list-container li[data-sync-status]:not([renaming]):not(.dim-offline) .detail-pinned {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 16px 16px;
+  display: flex;
+  height: 32px;
+  width: 32px;
+}
+
+body.files-ng #list-container li[data-sync-status=in_progress]:not([renaming]):not(.dim-offline) .detail-pinned {
+  background-image: url(../images/files/ui/in_progress_indicator.svg);
+}
+
+body.files-ng #list-container li[data-sync-status=error]:not([renaming]):not(.dim-offline) .detail-pinned {
+  background-image: url(../images/files/ui/error.svg);
 }
 
 #new-folder-button {
@@ -2750,7 +2305,7 @@ body.files-ng #list-container
 }
 
 .install-linux-package-details-frame {
-  border: 1px solid lightgray;
+  border: 1px solid var(--cros-separator-color);
   display: block;
   height: 150px;
   overflow: scroll;
@@ -2779,24 +2334,20 @@ body.files-ng #list-container
   white-space: pre-wrap;
 }
 
-.drive-welcome-wrapper {
-  /* drive_welcome.css will override it once loaded. */
-  display: none;
-}
-
 list.autocomplete-suggestions {
-  background-color: white;
+  background-color: var(--cros-bg-color-elevation-2);
   border-radius: 3px;
-  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 50%);
+  box-shadow: var(--cros-elevation-2-shadow);
   box-sizing: border-box;  /* To match the width with the search box's. */
-  color: rgb(90, 90, 90);
+  color: var(--cros-menu-label-color);
   flex: none;
-  margin-inline-start: -36px;
-  margin-top: 10px;
+  margin-inline-start: -47px;
+  margin-top: 7px;
   overflow: hidden;
   padding: 8px 0;
   position: fixed;
-  width: 260px !important; /* This overrides the value specified by script. */
+  /* TODO(crbug.com/1289086): Remove the hard-code with, use JS to set it. */
+  width: 286px !important; /* This overrides the value specified by script. */
   z-index: 550;
 }
 
@@ -2804,6 +2355,11 @@ list.autocomplete-suggestions > li {
   align-items: center;
   display: flex;
   height: 32px;
+}
+
+/* "search drive" row */
+list.autocomplete-suggestions > li:first-of-type {
+  color: var(--cros-text-color-secondary);
 }
 
 list.autocomplete-suggestions > li > div.detail-icon {
@@ -2819,19 +2375,19 @@ list.autocomplete-suggestions > li > div.detail-text {
 }
 
 list.autocomplete-suggestions > li > div.detail-text em {
-  color: rgb(150, 150, 150);
   font-style: normal;
 }
 
 list.autocomplete-suggestions > li > div[search-icon] {
-  background: -webkit-image-set(
-      url(../images/files/ui/search.png) 1x,
-      url(../images/files/ui/2x/search.png) 2x) center no-repeat;
+  -webkit-mask-image: url(../images/files/ui/search.svg);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  background-color: currentColor;
 }
 
 list.autocomplete-suggestions > [selected],
 list.autocomplete-suggestions > [lead] {
-  background-color: rgba(0, 0, 0, 8%);
+  background-color: var(--cros-menu-item-background-hover);
 }
 
 #gear-menu > cr-menu-item:not(.menuitem-button),
@@ -2900,68 +2456,44 @@ files-toast {
   z-index: 520;
 }
 
-/* File type filter buttons in Recents view.
-   TODO(fukino): The style is temporary. Revisit it before the feature is
-   shipped. */
+/* File type filter buttons in Recents view. */
 #file-type-filter-container {
   display: flex;
   font-size: 13px;
-  height: 30x;
-  margin-top: 5px;
+  padding: 12px 0 12px 12px;
 }
 
 .file-type-filter-button {
-  align-items: center;
-  /* don't use browser's default <button> background-color. */
-  background-color: unset;
-  border: 1px solid rgba(0, 0, 0, 10%);
+  --border-color: var(--cros-button-stroke-color-secondary);
+  --cr-button-height: 32px;
+  --hover-bg-color: var(--cros-ripple-color);
+  --hover-border-color: var(--cros-button-stroke-color-secondary);
+  --ink-color: var(--cros-ripple-color);
+  --ripple-opacity: 100%;
+  --text-color: var(--cros-text-color-secondary);
   border-radius: 20px;
-  box-sizing: border-box;
-  color: var(--google-grey-700);
-  cursor: pointer;
-  display: flex;
-  font-weight: 500;
-  height: 32px;
-  margin-inline-end: 3px;
-  margin-inline-start: 3px;
+  margin-inline: 4px;
+  min-width: auto;
   outline: none;
-  padding: 0 10px;
 }
 
 .file-type-filter-button.active {
-  background-color: rgba(var(--google-blue-600-rgb), 6%);
-  border: 1px solid transparent;
-  color: var(--google-blue-600);
+  /* Intentionally no hover color for active state. */
+  --hover-bg-color: none;
+  --ink-color: var(--cros-ripple-color-prominent);
+  --text-color: var(--cros-text-color-selection);
+  background-color: var(--cros-highlight-color);
+  border-color: transparent;
 }
 
-.file-type-filter-button:not(:active):hover {
-  background-color: rgba(0, 0, 0, 4%);
-}
-
-.file-type-filter-button.active:not(:active):hover {
-  background-color: rgba(var(--google-blue-600-rgb), 10%);
-}
-
-html.pointer-active .file-type-filter-button:not(:active):hover {
-  background-color: unset;
-  cursor: default;
-}
-
-html.pointer-active .file-type-filter-button.active:not(:active):hover {
-  background-color: rgba(var(--google-blue-600-rgb), 6%);
+html.pointer-active .file-type-filter-button:not(:active) {
+  --hover-bg-color: none;
   cursor: default;
 }
 
 html.focus-outline-visible .file-type-filter-button:focus {
-  border: 1px solid var(--google-blue-600);
-}
-
-.file-type-filter-button:active {
-  background-color: rgba(0, 0, 0, 12%);
-}
-
-.file-type-filter-button.active:active {
-  background-color: rgba(var(--google-blue-600-rgb), 16%);
+  outline: 2px solid var(--cros-focus-ring-color);
+  outline-offset: 2px;
 }
 
 /*
@@ -2986,6 +2518,7 @@ files-tooltip:not(:defined) {
 }
 
 #banners > *:not([hidden]) {
+  background-color: var(--cros-bg-color-elevation-1);
   border-radius: 8px;
   box-shadow: var(--cros-elevation-1-shadow);
   height: auto;

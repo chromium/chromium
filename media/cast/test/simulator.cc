@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,12 +54,14 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/tick_clock.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "media/base/audio_bus.h"
 #include "media/base/fake_single_thread_task_runner.h"
@@ -133,7 +135,7 @@ struct PacketProxy {
     if (receiver)
       receiver->ReceivePacket(std::move(packet));
   }
-  CastReceiver* receiver;
+  raw_ptr<CastReceiver> receiver;
 };
 
 class TransportClient : public CastTransport::Client {
@@ -162,8 +164,9 @@ class TransportClient : public CastTransport::Client {
   }
 
  private:
-  LogEventDispatcher* const log_event_dispatcher_;  // Not owned by this class.
-  PacketProxy* const packet_proxy_;                 // Not owned by this class.
+  const raw_ptr<LogEventDispatcher>
+      log_event_dispatcher_;                 // Not owned by this class.
+  const raw_ptr<PacketProxy> packet_proxy_;  // Not owned by this class.
 };
 
 // Maintains a queue of encoded video frames.
@@ -217,7 +220,7 @@ class EncodedVideoFrameTracker final : public RawEventSubscriber {
   }
 
  private:
-  FakeMediaSource* media_source_;
+  raw_ptr<FakeMediaSource> media_source_;
   CastLoggingEvent last_frame_event_type_;
   base::queue<scoped_refptr<media::VideoFrame>> video_frames_;
 };
@@ -673,7 +676,7 @@ int main(int argc, char** argv) {
   const base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
   base::FilePath media_path = cmd->GetSwitchValuePath(media::cast::kLibDir);
   if (media_path.empty()) {
-    if (!base::PathService::Get(base::DIR_MODULE, &media_path)) {
+    if (!base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &media_path)) {
       LOG(ERROR) << "Failed to load FFmpeg.";
       return 1;
     }
@@ -698,9 +701,9 @@ int main(int argc, char** argv) {
   NetworkSimulationModel model = media::cast::LoadModel(
       cmd->GetSwitchValuePath(media::cast::kModelPath));
 
-  base::DictionaryValue values;
-  values.SetBoolean("sim", true);
-  values.SetString("sim-id", sim_id);
+  base::Value values(base::Value::Type::DICTIONARY);
+  values.SetBoolKey("sim", true);
+  values.SetStringKey("sim-id", sim_id);
 
   std::string extra_data;
   base::JSONWriter::Write(values, &extra_data);

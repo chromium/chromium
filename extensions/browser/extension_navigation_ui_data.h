@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/public/browser/global_routing_id.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 
@@ -53,12 +52,17 @@ class ExtensionNavigationUIData {
   }
 
  private:
-  ExtensionNavigationUIData(content::WebContents* web_contents,
-                            int tab_id,
-                            int window_id,
-                            int frame_id,
-                            int parent_frame_id,
-                            content::GlobalRenderFrameHostId parent_routing_id);
+  ExtensionNavigationUIData(
+      content::WebContents* web_contents,
+      int tab_id,
+      int window_id,
+      int frame_id,
+      int parent_frame_id,
+      content::GlobalRenderFrameHostId parent_routing_id,
+      const ExtensionApiFrameIdMap::DocumentId& document_id,
+      const ExtensionApiFrameIdMap::DocumentId& parent_document_id,
+      api::extension_types::FrameType frame_type,
+      api::extension_types::DocumentLifecycle document_lifecycle);
 
   ExtensionApiFrameIdMap::FrameData frame_data_;
   bool is_web_view_;

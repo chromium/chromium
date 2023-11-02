@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -82,7 +82,7 @@ class SystemInfoEventRouter : public storage_monitor::RemovableStorageObserver {
   // processes cross multiple profiles. Currently only used for storage events.
   void DispatchEvent(events::HistogramValue histogram_value,
                      const std::string& event_name,
-                     std::unique_ptr<base::ListValue> args) const;
+                     base::Value::List args) const;
 
   // When true, the DisplayInfoProvider is observing for changes to the display
   // and, subsequently, dispatching on-display-changed events.
@@ -153,14 +153,15 @@ void SystemInfoEventRouter::StartOrStopDisplayEventDispatcherIfNecessary() {
   // Events should be dispatched if and only if at least one browser context has
   // the relevant listeners.
   const bool should_dispatch = !contexts_with_display_listeners_.empty();
+  DisplayInfoProvider* provider = DisplayInfoProvider::Get();
 
-  if (should_dispatch == is_dispatching_display_events_)
+  if (!provider || (should_dispatch == is_dispatching_display_events_))
     return;
 
   if (should_dispatch)
-    DisplayInfoProvider::Get()->StartObserving();
+    provider->StartObserving();
   else
-    DisplayInfoProvider::Get()->StopObserving();
+    provider->StopObserving();
 
   is_dispatching_display_events_ = should_dispatch;
 }
@@ -200,8 +201,8 @@ void SystemInfoEventRouter::OnRemovableStorageAttached(
     const storage_monitor::StorageInfo& info) {
   StorageUnitInfo unit;
   systeminfo::BuildStorageUnitInfo(info, &unit);
-  std::unique_ptr<base::ListValue> args(new base::ListValue);
-  args->Append(unit.ToValue());
+  base::Value::List args;
+  args.Append(unit.ToValue());
 
   DispatchEvent(events::SYSTEM_STORAGE_ON_ATTACHED,
                 system_storage::OnAttached::kEventName, std::move(args));
@@ -209,11 +210,11 @@ void SystemInfoEventRouter::OnRemovableStorageAttached(
 
 void SystemInfoEventRouter::OnRemovableStorageDetached(
     const storage_monitor::StorageInfo& info) {
-  std::unique_ptr<base::ListValue> args(new base::ListValue);
+  base::Value::List args;
   std::string transient_id =
       StorageMonitor::GetInstance()->GetTransientIdForDeviceId(
           info.device_id());
-  args->Append(transient_id);
+  args.Append(transient_id);
 
   DispatchEvent(events::SYSTEM_STORAGE_ON_DETACHED,
                 system_storage::OnDetached::kEventName, std::move(args));
@@ -222,7 +223,7 @@ void SystemInfoEventRouter::OnRemovableStorageDetached(
 void SystemInfoEventRouter::DispatchEvent(
     events::HistogramValue histogram_value,
     const std::string& event_name,
-    std::unique_ptr<base::ListValue> args) const {
+    base::Value::List args) const {
   ExtensionsBrowserClient::Get()->BroadcastEventToRenderers(
       histogram_value, event_name, std::move(args), false);
 }

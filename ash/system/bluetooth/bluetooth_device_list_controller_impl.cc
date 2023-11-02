@@ -1,10 +1,9 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/bluetooth/bluetooth_device_list_controller_impl.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/bluetooth/bluetooth_detailed_view.h"
 #include "ash/system/bluetooth/bluetooth_device_list_item_view.h"
@@ -16,7 +15,10 @@
 #include "ui/views/view.h"
 
 namespace ash {
+
 namespace {
+
+using bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr;
 
 // Helper function to remove |*view| from its view hierarchy, delete the view,
 // and reset the value of |*view| to be |nullptr|.
@@ -38,10 +40,8 @@ void RemoveAndResetViewIfExists(T** view) {
 }  // namespace
 
 BluetoothDeviceListControllerImpl::BluetoothDeviceListControllerImpl(
-    tray::BluetoothDetailedView* bluetooth_detailed_view)
-    : bluetooth_detailed_view_(bluetooth_detailed_view) {
-  DCHECK(ash::features::IsBluetoothRevampEnabled());
-}
+    BluetoothDetailedView* bluetooth_detailed_view)
+    : bluetooth_detailed_view_(bluetooth_detailed_view) {}
 
 BluetoothDeviceListControllerImpl::~BluetoothDeviceListControllerImpl() =
     default;
@@ -78,7 +78,7 @@ void BluetoothDeviceListControllerImpl::UpdateDeviceList(
   // order of the devices we are provided with. We use |index| to keep track of
   // the next index within the device list where a view should be placed, i.e.
   // all views before |index| are in their final position.
-  int index = 0;
+  size_t index = 0;
 
   // The list of connected devices.
   if (!connected.empty()) {
@@ -148,7 +148,7 @@ void BluetoothDeviceListControllerImpl::UpdateDeviceList(
 TriView* BluetoothDeviceListControllerImpl::CreateSubHeaderIfMissingAndReorder(
     TriView* sub_header,
     int text_id,
-    int index) {
+    size_t index) {
   if (!sub_header) {
     sub_header = bluetooth_detailed_view_->AddDeviceListSubHeader(
         gfx::kNoneIcon, text_id);
@@ -157,15 +157,19 @@ TriView* BluetoothDeviceListControllerImpl::CreateSubHeaderIfMissingAndReorder(
   return sub_header;
 }
 
-int BluetoothDeviceListControllerImpl::CreateViewsIfMissingAndReorder(
+size_t BluetoothDeviceListControllerImpl::CreateViewsIfMissingAndReorder(
     const PairedBluetoothDevicePropertiesPtrs& device_property_list,
     base::flat_map<std::string, BluetoothDeviceListItemView*>* previous_views,
-    int index) {
+    size_t index) {
   DCHECK(previous_views);
 
   BluetoothDeviceListItemView* device_view = nullptr;
 
-  for (const auto& device_properties : device_property_list) {
+  const size_t device_count = device_property_list.size();
+
+  for (size_t i = 0; i < device_count; ++i) {
+    const PairedBluetoothDevicePropertiesPtr& device_properties =
+        device_property_list.at(i);
     const std::string& device_id = device_properties->device_properties->id;
     auto it = previous_views->find(device_id);
 
@@ -177,7 +181,7 @@ int BluetoothDeviceListControllerImpl::CreateViewsIfMissingAndReorder(
     }
     device_id_to_view_map_.emplace(device_id, device_view);
 
-    device_view->UpdateDeviceProperties(device_properties);
+    device_view->UpdateDeviceProperties(i, device_count, device_properties);
     bluetooth_detailed_view_->device_list()->ReorderChildView(device_view,
                                                               index);
 

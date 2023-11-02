@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include <ostream>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/safe_browsing/core/browser/db/v4_database.h"
 #include "components/safe_browsing/core/browser/db/v4_get_hash_protocol_manager.h"
 
@@ -30,7 +31,7 @@ class TestV4Store : public V4Store {
               const base::FilePath& store_path);
   ~TestV4Store() override;
 
-  bool HasValidData() const override;
+  bool HasValidData() override;
 
   void MarkPrefixAsBad(HashPrefix prefix);
 
@@ -69,7 +70,7 @@ class TestV4DatabaseFactory : public V4DatabaseFactory {
   TestV4DatabaseFactory();
   ~TestV4DatabaseFactory() override;
 
-  std::unique_ptr<V4Database> Create(
+  std::unique_ptr<V4Database, base::OnTaskRunnerDeleter> Create(
       const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
       std::unique_ptr<StoreMap> store_map) override;
 
@@ -80,7 +81,7 @@ class TestV4DatabaseFactory : public V4DatabaseFactory {
   // test in the test fixture instantiates a new SafebrowsingService instance,
   // which instantiates a new V4LocalDatabaseManager, which instantiates a new
   // V4Database using this method so use-after-free isn't possible.
-  TestV4Database* v4_db_ = nullptr;
+  raw_ptr<TestV4Database> v4_db_ = nullptr;
 };
 
 class TestV4GetHashProtocolManager : public V4GetHashProtocolManager {
@@ -108,7 +109,7 @@ class TestV4GetHashProtocolManagerFactory
 
  private:
   // Owned by the SafeBrowsingService.
-  TestV4GetHashProtocolManager* pm_ = nullptr;
+  raw_ptr<TestV4GetHashProtocolManager> pm_ = nullptr;
 };
 
 // Returns FullHashInfo object for the basic host+path pattern for a given URL

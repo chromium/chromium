@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -107,6 +108,16 @@ class PasswordAccessoryControllerImpl
     security_level_for_testing_ = security_level;
   }
 #endif
+ protected:
+  // This constructor can also be used by |CreateForWebContentsForTesting|
+  // to inject a fake |ManualFillingController| and a fake
+  // |PasswordManagerClient|.
+  PasswordAccessoryControllerImpl(
+      content::WebContents* web_contents,
+      password_manager::CredentialCache* credential_cache,
+      base::WeakPtr<ManualFillingController> mf_controller,
+      password_manager::PasswordManagerClient* password_client,
+      PasswordDriverSupplierForFocusedFrame driver_supplier);
 
  private:
   friend class content::WebContentsUserData<PasswordAccessoryControllerImpl>;
@@ -130,16 +141,6 @@ class PasswordAccessoryControllerImpl
     // If true, manual generation will be available for the focused field.
     bool is_manual_generation_available = false;
   };
-
-  // This constructor can also be used by |CreateForWebContentsForTesting|
-  // to inject a fake |ManualFillingController| and a fake
-  // |PasswordManagerClient|.
-  PasswordAccessoryControllerImpl(
-      content::WebContents* web_contents,
-      password_manager::CredentialCache* credential_cache,
-      base::WeakPtr<ManualFillingController> mf_controller,
-      password_manager::PasswordManagerClient* password_client,
-      PasswordDriverSupplierForFocusedFrame driver_supplier);
 
   // Enables or disables saving for the focused origin. This involves removing
   // or adding blocklisted entry in the |PasswordStore|.
@@ -181,18 +182,17 @@ class PasswordAccessoryControllerImpl
   // the Bottom Sheet view is destroyed.
   void AllPasswordsSheetDismissed();
 
-  // The tab for which this class is scoped.
-  content::WebContents* web_contents_ = nullptr;
+  content::WebContents& GetWebContents() const;
 
   // Keeps track of credentials which are stored for all origins in this tab.
-  password_manager::CredentialCache* credential_cache_ = nullptr;
+  raw_ptr<password_manager::CredentialCache> credential_cache_ = nullptr;
 
   // The password accessory controller object to forward client requests to.
   base::WeakPtr<ManualFillingController> mf_controller_;
 
   // The password manager client is used to update the save passwords status
   // for the currently focused origin.
-  password_manager::PasswordManagerClient* password_client_ = nullptr;
+  raw_ptr<password_manager::PasswordManagerClient> password_client_ = nullptr;
 
   // The authenticator used to trigger a biometric re-auth before filling.
   // null, if there is no ongoing authentication.

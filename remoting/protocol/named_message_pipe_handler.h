@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -69,8 +69,9 @@ class NamedMessagePipeHandler : public MessagePipe::EventHandler {
 
   const std::string name_;
   std::unique_ptr<MessagePipe> pipe_;
-  base::ThreadChecker thread_checker_;
   bool is_connected_ = false;
+
+  THREAD_CHECKER(thread_checker_);
 };
 
 }  // namespace protocol

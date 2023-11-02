@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,11 @@
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "media/audio/audio_manager_base.h"
@@ -45,13 +47,12 @@ const int kCheckMissingCallbacksIntervalSeconds = 5;
 // data from the source.
 const int kGotDataCallbackIntervalSeconds = 1;
 
-base::ThreadPriority ThreadPriorityFromPurpose(
-    AudioInputDevice::Purpose purpose) {
+base::ThreadType ThreadTypeFromPurpose(AudioInputDevice::Purpose purpose) {
   switch (purpose) {
     case AudioInputDevice::Purpose::kUserInput:
-      return base::ThreadPriority::REALTIME_AUDIO;
+      return base::ThreadType::kRealtimeAudio;
     case AudioInputDevice::Purpose::kLoopback:
-      return base::ThreadPriority::NORMAL;
+      return base::ThreadType::kDefault;
   }
 }
 
@@ -88,7 +89,7 @@ class AudioInputDevice::AudioThreadCallback
   size_t current_segment_id_;
   uint32_t last_buffer_id_;
   std::vector<std::unique_ptr<const media::AudioBus>> audio_buses_;
-  CaptureCallback* capture_callback_;
+  raw_ptr<CaptureCallback> capture_callback_;
 
   // Used for informing AudioInputDevice that we have gotten data, i.e. the
   // stream is alive. |got_data_callback_| is run every
@@ -102,7 +103,7 @@ class AudioInputDevice::AudioThreadCallback
 AudioInputDevice::AudioInputDevice(std::unique_ptr<AudioInputIPC> ipc,
                                    Purpose purpose,
                                    DeadStreamDetection detect_dead_stream)
-    : thread_priority_(ThreadPriorityFromPurpose(purpose)),
+    : thread_type_(ThreadTypeFromPurpose(purpose)),
       enable_uma_(purpose == AudioInputDevice::Purpose::kUserInput),
       callback_(nullptr),
       ipc_(std::move(ipc)),
@@ -210,6 +211,10 @@ void AudioInputDevice::SetOutputDeviceForAec(
   TRACE_EVENT1("audio", "AudioInputDevice::SetOutputDeviceForAec",
                "output_device_id", output_device_id);
 
+  if (output_device_id_for_aec_ &&
+      *output_device_id_for_aec_ == output_device_id)
+    return;
+
   output_device_id_for_aec_ = output_device_id;
   if (state_ > CREATING_STREAM)
     ipc_->SetOutputDeviceForAec(output_device_id);
@@ -222,7 +227,7 @@ void AudioInputDevice::OnStreamCreated(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("audio", "AudioInputDevice::OnStreamCreated");
   DCHECK(shared_memory_region.IsValid());
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DCHECK(socket_handle.IsValid());
 #else
   DCHECK(socket_handle.is_valid());
@@ -254,7 +259,7 @@ void AudioInputDevice::OnStreamCreated(
 // here. See comments in AliveChecker and PowerObserverHelper for details and
 // todos.
   if (detect_dead_stream_ == DeadStreamDetection::kEnabled) {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     const bool stop_at_first_alive_notification = true;
     const bool pause_check_during_suspend = false;
 #else
@@ -281,7 +286,7 @@ void AudioInputDevice::OnStreamCreated(
       notify_alive_closure);
   audio_thread_ = std::make_unique<AudioDeviceThread>(
       audio_callback_.get(), std::move(socket_handle), "AudioInputDevice",
-      thread_priority_);
+      thread_type_);
 
   state_ = RECORDING;
   ipc_->RecordStream();

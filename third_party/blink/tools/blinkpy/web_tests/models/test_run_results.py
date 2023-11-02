@@ -28,14 +28,22 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import collections
+import enum
 import logging
 import time
+from typing import Optional
 
 from blinkpy.web_tests.models import test_expectations
 from blinkpy.web_tests.models import test_failures
 from blinkpy.web_tests.models.typ_types import ResultType
 
 _log = logging.getLogger(__name__)
+
+
+class InterruptReason(enum.Enum):
+    TOO_MANY_FAILURES = enum.auto()
+    EXTERNAL_SIGNAL = enum.auto()
+    ALL_WORKERS_FAILED = enum.auto()
 
 
 class TestRunException(Exception):
@@ -82,8 +90,11 @@ class TestRunResults(object):
             self.tests_by_expectation[expected_result] = set()
 
         self.slow_tests = set()
-        self.interrupted = False
-        self.keyboard_interrupted = False
+        self.interrupt_reason: Optional[InterruptReason] = None
+
+    @property
+    def interrupted(self) -> bool:
+        return self.interrupt_reason is not None
 
     def add(self, test_result, expected, test_is_slow):
         result_type_for_stats = test_result.type
@@ -158,6 +169,7 @@ def _interpret_test_failures(failures):
 
 
 def summarize_results(port_obj,
+                      options,
                       expectations,
                       initial_results,
                       all_retry_results,
@@ -261,6 +273,9 @@ def summarize_results(port_obj,
         test_dict['expected'] = expected
         test_dict['actual'] = ' '.join(actual)
 
+        if hasattr(options, 'shard_index'):
+            test_dict['shard'] = options.shard_index
+
         # If a flag was added then add flag specific test expectations to the per test field
         flag_exp = expectations.get_flag_expectations(test_name)
         if flag_exp:
@@ -319,6 +334,12 @@ def summarize_results(port_obj,
                         failure.text_mismatch_category()
                     break
 
+        for failure in initial_result.failures:
+            if isinstance(failure, test_failures.FailureImageHashMismatch):
+                test_dict['image_diff_stats'] = \
+                    failure.actual_driver_output.image_diff_stats
+                break
+
         # Note: is_unexpected and is_regression are intended to reflect the
         # *last* result. In the normal use case (stop retrying failures
         # once they pass), this is equivalent to saying that all of the
@@ -375,10 +396,14 @@ def summarize_results(port_obj,
     results['interrupted'] = initial_results.interrupted
     results['layout_tests_dir'] = port_obj.web_tests_dir()
     results['seconds_since_epoch'] = int(time.time())
-    results['build_number'] = port_obj.get_option('build_number')
-    results['builder_name'] = port_obj.get_option('builder_name')
-    if port_obj.get_option('order') == 'random':
-        results['random_order_seed'] = port_obj.get_option('seed')
+
+    if hasattr(options, 'build_number'):
+        results['build_number'] = options.build_number
+    if hasattr(options, 'builder_name'):
+        results['builder_name'] = options.builder_name
+    if getattr(options, 'order', None) == 'random' and hasattr(
+            options, 'seed'):
+        results['random_order_seed'] = options.seed
     results['path_delimiter'] = '/'
 
     # If there is a flag name then add the flag name field
@@ -388,7 +413,7 @@ def summarize_results(port_obj,
     # Don't do this by default since it takes >100ms.
     # It's only used for rebaselining and uploading data to the flakiness dashboard.
     results['chromium_revision'] = ''
-    if port_obj.get_option('builder_name'):
+    if getattr(options, 'builder_name', None):
         path = port_obj.repository_path()
         git = port_obj.host.git(path=path)
         if git:
@@ -400,3 +425,86 @@ def summarize_results(port_obj,
                 path)
 
     return results
+
+
+def _worker_number(worker_name):
+    return int(worker_name.split('/')[1]) if worker_name else -1
+
+
+def _test_result_as_dict(result, **kwargs):
+    ret = {
+        'test_name': result.test_name,
+        'test_run_time': result.test_run_time,
+        'has_stderr': result.has_stderr,
+        'reftest_type': result.reftest_type[:],
+        'pid': result.pid,
+        'has_repaint_overlay': result.has_repaint_overlay,
+        'crash_site': result.crash_site,
+        'retry_attempt': result.retry_attempt,
+        'type': result.type,
+        'worker_name': result.worker_name,
+        'worker_number': _worker_number(result.worker_name),
+        'shard_name': result.shard_name,
+        'start_time': result.start_time,
+        'total_run_time': result.total_run_time,
+        'test_number': result.test_number,
+        **kwargs,
+    }
+    if result.failures:
+        failures = []
+        for failure in result.failures:
+            try:
+                failures.append({'message': failure.message()})
+            except NotImplementedError:
+                failures.append({'message': type(failure).__name__})
+        ret['failures'] = failures
+    if result.failure_reason:
+        ret['failure_reason'] = {
+            'primary_error_message':
+            result.failure_reason.primary_error_message
+        }
+    for artifact_name, artifacts in result.artifacts.artifacts.items():
+        artifact_dict = ret.setdefault('artifacts', {})
+        artifact_dict.setdefault(artifact_name, []).extend(artifacts)
+    return ret
+
+
+def test_run_histories(options, expectations, initial_results,
+                       all_retry_results):
+    """Returns a dictionary containing a flattened list of all test runs, with
+    the following fields:
+        'version': a version indicator.
+        'run_histories': a list of TestResult joined with expectations info.
+        'random_order_seed': if order set to random and seed specified.
+
+    Comparing to `summarized_results` this method dumps all the running
+    histories for the tests (instead of `last_result`).
+    """
+    ret = {}
+    ret['version'] = 1
+    if getattr(options, 'order', None) == 'random' and hasattr(
+            options, 'seed'):
+        ret['random_order_seed'] = options.seed
+
+    run_histories = []
+    for test_run_results in [initial_results] + all_retry_results:
+        # all_results does not include SKIP, so we need results_by_name.
+        for test_name, result in test_run_results.results_by_name.items():
+            if result.type != ResultType.Skip:
+                continue
+            exp = expectations.get_expectations(test_name)
+            run_histories.append(
+                _test_result_as_dict(result,
+                                     expected_results=list(exp.results),
+                                     bugs=exp.reason))
+
+        # results_by_name only includes the last result, so we need all_results.
+        for result in test_run_results.all_results:
+            exp = expectations.get_expectations(result.test_name)
+            run_histories.append(
+                _test_result_as_dict(result,
+                                     expected_results=list(exp.results),
+                                     bugs=exp.reason))
+    ret['run_histories'] = run_histories
+
+    return ret

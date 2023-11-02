@@ -1,2 +1,2 @@
 # CUPS-specific code.
-per-file *cups*=skau@chromium.org
+per-file *cups*=file://chromeos/printing/OWNERS

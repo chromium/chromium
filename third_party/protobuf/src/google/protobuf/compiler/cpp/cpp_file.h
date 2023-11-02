@@ -40,11 +40,12 @@
 #include <set>
 #include <string>
 #include <vector>
+
 #include <google/protobuf/stubs/common.h>
 #include <google/protobuf/compiler/cpp/cpp_field.h>
 #include <google/protobuf/compiler/cpp/cpp_helpers.h>
-#include <google/protobuf/compiler/cpp/cpp_options.h>
 #include <google/protobuf/compiler/scc.h>
+#include <google/protobuf/compiler/cpp/cpp_options.h>
 
 namespace google {
 namespace protobuf {
@@ -82,9 +83,20 @@ class FileGenerator {
   void GeneratePBHeader(io::Printer* printer, const std::string& info_path);
   void GenerateSource(io::Printer* printer);
 
+  // The following member functions are used when the lite_implicit_weak_fields
+  // option is set. In this mode the code is organized a bit differently to
+  // promote better linker stripping of unused code. In particular, we generate
+  // one .cc file per message, one .cc file per extension, and a main pb.cc file
+  // containing everything else.
+
   int NumMessages() const { return message_generators_.size(); }
-  // Similar to GenerateSource but generates only one message
+  int NumExtensions() const { return extension_generators_.size(); }
+  // Generates the source file for one message.
   void GenerateSourceForMessage(int idx, io::Printer* printer);
+  // Generates the source file for one extension.
+  void GenerateSourceForExtension(int idx, io::Printer* printer);
+  // Generates a source file containing everything except messages and
+  // extensions.
   void GenerateGlobalSource(io::Printer* printer);
 
  private:
@@ -111,11 +123,11 @@ class FileGenerator {
   void GenerateInternalForwardDeclarations(const CrossFileReferences& refs,
                                            io::Printer* printer);
   void GenerateSourceIncludes(io::Printer* printer);
+  void GenerateSourcePrelude(io::Printer* printer);
   void GenerateSourceDefaultInstance(int idx, io::Printer* printer);
 
   void GenerateInitForSCC(const SCC* scc, const CrossFileReferences& refs,
                           io::Printer* printer);
-  void GenerateTables(io::Printer* printer);
   void GenerateReflectionInitializationCode(io::Printer* printer);
 
   // For other imports, generates their forward-declarations.
@@ -162,14 +174,6 @@ class FileGenerator {
   // generally a breaking change so we prefer the #undef approach.
   void GenerateMacroUndefs(io::Printer* printer);
 
-  bool IsSCCRepresentative(const Descriptor* d) {
-    return GetSCCRepresentative(d) == d;
-  }
-  const Descriptor* GetSCCRepresentative(const Descriptor* d) {
-    return GetSCC(d)->GetRepresentative();
-  }
-  const SCC* GetSCC(const Descriptor* d) { return scc_analyzer_.GetSCC(d); }
-
   bool IsDepWeak(const FileDescriptor* dep) const {
     if (weak_deps_.count(dep) != 0) {
       GOOGLE_CHECK(!options_.opensource_runtime);
@@ -179,7 +183,6 @@ class FileGenerator {
   }
 
   std::set<const FileDescriptor*> weak_deps_;
-  std::vector<const SCC*> sccs_;
 
   const FileDescriptor* file_;
   const Options options_;

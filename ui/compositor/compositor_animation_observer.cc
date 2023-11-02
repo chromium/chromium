@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,11 +12,16 @@
 #include "base/time/time_override.h"
 
 namespace ui {
+namespace {
+// Setting to false disable the check globally.
+bool default_check_active_duration = true;
+}  // namespace
 
-// Do not fail on SANITIZER builds as they run slow.
-#if !DCHECK_IS_ON() || defined(ADDRESS_SANITIZER) ||          \
-    defined(MEMORY_SANITIZER) || defined(THREAD_SANITIZER) || \
-    defined(LEAK_SANITIZER) || defined(UNDEFINED_SANITIZER)
+// Do not fail on builds that run slow, such as SANITIZER, debug.
+#if !DCHECK_IS_ON() || defined(ADDRESS_SANITIZER) ||           \
+    defined(MEMORY_SANITIZER) || defined(THREAD_SANITIZER) ||  \
+    defined(LEAK_SANITIZER) || defined(UNDEFINED_SANITIZER) || \
+    !defined(NDEBUG)
 #define NOTREACHED_OR_WARN() LOG(WARNING)
 #else
 #define NOTREACHED_OR_WARN() NOTREACHED()
@@ -33,7 +38,8 @@ CompositorAnimationObserver::CompositorAnimationObserver(
 CompositorAnimationObserver::~CompositorAnimationObserver() = default;
 
 void CompositorAnimationObserver::Start() {
-  start_.emplace(base::TimeTicks::Now());
+  if (default_check_active_duration && check_active_duration_)
+    start_.emplace(base::TimeTicks::Now());
 }
 
 void CompositorAnimationObserver::Check() {
@@ -56,6 +62,10 @@ void CompositorAnimationObserver::NotifyFailure() {
         << (base::TimeTicks::Now() - *start_).InSecondsF()
         << "s) location=" << location_.ToString();
   }
+}
+
+void CompositorAnimationObserver::DisableCheckActiveDuration() {
+  default_check_active_duration = false;
 }
 
 }  // namespace ui

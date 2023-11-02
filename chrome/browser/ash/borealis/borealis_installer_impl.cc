@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/borealis/borealis_installer_impl.h"
 
 #include <memory>
+#include <sstream>
 
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -20,11 +21,11 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/dbus/concierge/concierge_client.h"
-#include "chromeos/dbus/concierge/concierge_service.pb.h"
-#include "chromeos/dbus/vm_applications/apps.pb.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
+#include "chromeos/ash/components/dbus/vm_applications/apps.pb.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
 
@@ -41,7 +42,7 @@ constexpr base::TimeDelta kWaitForMainAppTimeout = base::Seconds(5);
 class BorealisInstallerImpl::Installation
     : public Transition<BorealisInstallerImpl::InstallInfo,
                         BorealisInstallerImpl::InstallInfo,
-                        BorealisInstallResult>,
+                        Described<BorealisInstallResult>>,
       public guest_os::GuestOsRegistryService::Observer {
  public:
   Installation(
@@ -59,25 +60,41 @@ class BorealisInstallerImpl::Installation
 
   base::TimeTicks start_time() { return installation_start_tick_; }
 
-  void Cancel() { Fail(BorealisInstallResult::kCancelled); }
+  void Cancel() {
+    Fail({BorealisInstallResult::kCancelled, "Installation cancelled by user"});
+  }
 
  private:
   void Start(std::unique_ptr<BorealisInstallerImpl::InstallInfo> start_instance)
       override {
     install_info_ = std::move(start_instance);
-
-    SetState(InstallingState::kInstallingDlc);
-    chromeos::DlcserviceClient::Get()->Install(
-        kBorealisDlcName,
-        base::BindOnce(&Installation::OnDlcInstallationCompleted,
-                       weak_factory_.GetWeakPtr()),
-        base::BindRepeating(&Installation::OnDlcInstallationProgressUpdated,
-                            weak_factory_.GetWeakPtr()));
+    SetState(InstallingState::kCheckingIfAllowed);
+    BorealisService::GetForProfile(profile_)->Features().IsAllowed(
+        base::BindOnce(&Installation::OnAllowedCheckCompleted,
+                       weak_factory_.GetWeakPtr()));
   }
 
   void SetState(InstallingState state) {
     update_state_callback_.Run(state);
     installing_state_ = state;
+  }
+
+  void OnAllowedCheckCompleted(BorealisFeatures::AllowStatus allow_status) {
+    if (allow_status != BorealisFeatures::AllowStatus::kAllowed) {
+      std::stringstream ss;
+      ss << "Borealis is not allowed: " << allow_status;
+      Fail({BorealisInstallResult::kBorealisNotAllowed, ss.str()});
+      return;
+    }
+    SetState(InstallingState::kInstallingDlc);
+    dlcservice::InstallRequest install_request;
+    install_request.set_id(kBorealisDlcName);
+    ash::DlcserviceClient::Get()->Install(
+        install_request,
+        base::BindOnce(&Installation::OnDlcInstallationCompleted,
+                       weak_factory_.GetWeakPtr()),
+        base::BindRepeating(&Installation::OnDlcInstallationProgressUpdated,
+                            weak_factory_.GetWeakPtr()));
   }
 
   void OnDlcInstallationProgressUpdated(double progress) {
@@ -86,7 +103,7 @@ class BorealisInstallerImpl::Installation
   }
 
   void OnDlcInstallationCompleted(
-      const chromeos::DlcserviceClient::InstallResult& install_result) {
+      const ash::DlcserviceClient::InstallResult& install_result) {
     DCHECK_EQ(installing_state_, InstallingState::kInstallingDlc);
 
     // If success, continue to the next state.
@@ -101,35 +118,33 @@ class BorealisInstallerImpl::Installation
     }
 
     // At this point, the Borealis DLC installation has failed.
-    BorealisInstallResult result = BorealisInstallResult::kDlcUnknownError;
+    Fail(DescribeDlcFailure(install_result.error));
+  }
 
-    if (install_result.error == dlcservice::kErrorInternal) {
-      LOG(ERROR) << "Something went wrong internally with DlcService.";
-      result = BorealisInstallResult::kDlcInternalError;
-    } else if (install_result.error == dlcservice::kErrorInvalidDlc) {
-      LOG(ERROR)
-          << "Borealis DLC is not supported, need to enable Borealis DLC.";
-      result = BorealisInstallResult::kDlcUnsupportedError;
-    } else if (install_result.error == dlcservice::kErrorBusy) {
-      LOG(ERROR)
-          << "Borealis DLC is not able to be installed as dlcservice is busy.";
-      result = BorealisInstallResult::kDlcBusyError;
-    } else if (install_result.error == dlcservice::kErrorNeedReboot) {
-      LOG(ERROR) << "Device has pending update and needs a reboot to use "
-                    "Borealis DLC.";
-      result = BorealisInstallResult::kDlcNeedRebootError;
-    } else if (install_result.error == dlcservice::kErrorAllocation) {
-      LOG(ERROR) << "Device needs to free space to use Borealis DLC.";
-      result = BorealisInstallResult::kDlcNeedSpaceError;
-    } else if (install_result.error == dlcservice::kErrorNoImageFound) {
-      LOG(ERROR)
-          << "Omaha could not provide an image, device may need to be updated.";
-      result = BorealisInstallResult::kDlcNeedUpdateError;
-    } else {
-      LOG(ERROR) << "Failed to install Borealis DLC: " << install_result.error;
+  Described<BorealisInstallResult> DescribeDlcFailure(
+      const std::string& error) {
+    if (error == dlcservice::kErrorInternal) {
+      return {BorealisInstallResult::kDlcInternalError,
+              "Something went wrong internally with DlcService"};
+    } else if (error == dlcservice::kErrorInvalidDlc) {
+      return {BorealisInstallResult::kDlcUnsupportedError,
+              "Borealis DLC is not supported, need to enable Borealis DLC"};
+    } else if (error == dlcservice::kErrorBusy) {
+      return {BorealisInstallResult::kDlcBusyError,
+              "Borealis DLC is not able to be installed as dlcservice is busy"};
+    } else if (error == dlcservice::kErrorNeedReboot) {
+      return {
+          BorealisInstallResult::kDlcNeedRebootError,
+          "Device has pending update and needs a reboot to use Borealis DLC"};
+    } else if (error == dlcservice::kErrorAllocation) {
+      return {BorealisInstallResult::kDlcNeedSpaceError,
+              "Device needs to free space to use Borealis DLC."};
+    } else if (error == dlcservice::kErrorNoImageFound) {
+      return {
+          BorealisInstallResult::kDlcNeedUpdateError,
+          "Omaha could not provide an image, device may need to be updated."};
     }
-
-    Fail(result);
+    return {BorealisInstallResult::kDlcUnknownError, "DLC failure: " + error};
   }
 
   // As part of its installation we perform a dry run of borealis. This ensures
@@ -147,10 +162,11 @@ class BorealisInstallerImpl::Installation
       WaitForMainApp();
       return;
     }
-    LOG(ERROR) << "Failed to start borealis (code "
-               << static_cast<int>(result.Error().error())
-               << "): " << result.Error().description();
-    Fail(BorealisInstallResult::kStartupFailed);
+    std::stringstream ss;
+    ss << "Failed to start borealis (code "
+       << static_cast<int>(result.Error().error())
+       << "): " << result.Error().description();
+    Fail({BorealisInstallResult::kStartupFailed, ss.str()});
   }
 
   void WaitForMainApp() {
@@ -159,10 +175,9 @@ class BorealisInstallerImpl::Installation
         guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_);
     apps_observation_.Observe(apps_registry);
     absl::optional<guest_os::GuestOsRegistryService::Registration> main_app =
-        apps_registry->GetRegistration(kBorealisMainAppId);
-    if (main_app.has_value() && main_app->VmType() ==
-                                    guest_os::GuestOsRegistryService::VmType::
-                                        ApplicationList_VmType_BOREALIS) {
+        apps_registry->GetRegistration(kClientAppId);
+    if (main_app.has_value() &&
+        main_app->VmType() == guest_os::VmType::BOREALIS) {
       apps_observation_.Reset();
       MainAppFound(true);
       return;
@@ -176,17 +191,16 @@ class BorealisInstallerImpl::Installation
 
   void OnRegistryUpdated(
       guest_os::GuestOsRegistryService* registry_service,
-      guest_os::GuestOsRegistryService::VmType vm_type,
+      guest_os::VmType vm_type,
       const std::vector<std::string>& updated_apps,
       const std::vector<std::string>& removed_apps,
       const std::vector<std::string>& inserted_apps) override {
-    if (vm_type != guest_os::GuestOsRegistryService::VmType::
-                       ApplicationList_VmType_BOREALIS) {
+    if (vm_type != guest_os::VmType::BOREALIS) {
       return;
     }
 
     for (const auto& app : inserted_apps) {
-      if (app == kBorealisMainAppId) {
+      if (app == kClientAppId) {
         MainAppFound(true);
         break;
       }
@@ -200,8 +214,8 @@ class BorealisInstallerImpl::Installation
       return;
     if (!found) {
       install_info_.reset();
-      LOG(ERROR) << "Failed to verify that the main app has been created";
-      Fail(BorealisInstallResult::kMainAppNotPresent);
+      Fail({BorealisInstallResult::kMainAppNotPresent,
+            "Failed to verify that the main app has been created"});
       return;
     }
     Succeed(std::move(install_info_));
@@ -246,15 +260,15 @@ class BorealisInstallerImpl::Uninstallation
     }
     // Clear the borealis apps.
     guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_)
-        ->ClearApplicationList(vm_tools::apps::ApplicationList_VmType_BOREALIS,
+        ->ClearApplicationList(vm_tools::apps::BOREALIS,
                                uninstall_info_->vm_name,
                                uninstall_info_->container_name);
 
     vm_tools::concierge::DestroyDiskImageRequest request;
     request.set_cryptohome_id(
-        chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_));
+        ash::ProfileHelper::GetUserIdHashFromProfile(profile_));
     request.set_vm_name(uninstall_info_->vm_name);
-    chromeos::ConciergeClient::Get()->DestroyDiskImage(
+    ash::ConciergeClient::Get()->DestroyDiskImage(
         std::move(request), base::BindOnce(&Uninstallation::OnDiskRemoved,
                                            weak_factory_.GetWeakPtr()));
   }
@@ -274,7 +288,7 @@ class BorealisInstallerImpl::Uninstallation
       return;
     }
 
-    chromeos::DlcserviceClient::Get()->Uninstall(
+    ash::DlcserviceClient::Get()->Uninstall(
         kBorealisDlcName, base::BindOnce(&Uninstallation::OnDlcUninstalled,
                                          weak_factory_.GetWeakPtr()));
   }
@@ -318,27 +332,17 @@ bool BorealisInstallerImpl::IsProcessing() {
 
 void BorealisInstallerImpl::Start() {
   RecordBorealisInstallNumAttemptsHistogram();
-  if (!BorealisService::GetForProfile(profile_)->Features().IsAllowed()) {
-    LOG(ERROR) << "Installation of Borealis cannot be started because "
-               << "Borealis is not allowed.";
-    OnInstallComplete(
-        Unexpected<std::unique_ptr<InstallInfo>, BorealisInstallResult>(
-            BorealisInstallResult::kBorealisNotAllowed));
-    return;
-  }
-
   if (IsProcessing()) {
-    LOG(ERROR) << "Installation of Borealis is already in progress.";
-    OnInstallComplete(
-        Unexpected<std::unique_ptr<InstallInfo>, BorealisInstallResult>(
-            BorealisInstallResult::kBorealisInstallInProgress));
+    OnInstallComplete(Installation::Result::Unexpected(Installation::ErrorState{
+        BorealisInstallResult::kBorealisInstallInProgress,
+        "Installation of Borealis is already in progress"}));
     return;
   }
 
   if (content::GetNetworkConnectionTracker()->IsOffline()) {
-    OnInstallComplete(
-        Unexpected<std::unique_ptr<InstallInfo>, BorealisInstallResult>(
-            BorealisInstallResult::kOffline));
+    OnInstallComplete(Installation::Result::Unexpected(
+        Installation::ErrorState{BorealisInstallResult::kOffline,
+                                 "Can not install Borealis while offline"}));
     return;
   }
 
@@ -419,8 +423,12 @@ void BorealisInstallerImpl::UpdateProgress(double state_progress) {
   double start_range = 0;
   double end_range = 0;
   switch (installing_state_) {
-    case InstallingState::kInstallingDlc:
+    case InstallingState::kCheckingIfAllowed:
       start_range = 0;
+      end_range = 0.1;
+      break;
+    case InstallingState::kInstallingDlc:
+      start_range = 0.1;
       end_range = 0.5;
       break;
     case InstallingState::kStartingUp:
@@ -455,11 +463,11 @@ void BorealisInstallerImpl::UpdateInstallingState(
 }
 
 void BorealisInstallerImpl::OnInstallComplete(
-    Expected<std::unique_ptr<InstallInfo>, BorealisInstallResult>
+    Expected<std::unique_ptr<InstallInfo>, Described<BorealisInstallResult>>
         result_or_error) {
   BorealisInstallResult result = result_or_error
                                      ? BorealisInstallResult::kSuccess
-                                     : result_or_error.Error();
+                                     : result_or_error.Error().error();
   // If another installation is in progress, we don't want to reset any states
   // and interfere with the process. When that process completes, it will reset
   // these states.
@@ -478,7 +486,8 @@ void BorealisInstallerImpl::OnInstallComplete(
     RecordBorealisInstallResultHistogram(result);
   }
   for (auto& observer : observers_) {
-    observer.OnInstallationEnded(result);
+    observer.OnInstallationEnded(
+        result, result_or_error ? "" : result_or_error.Error().description());
   }
 }
 

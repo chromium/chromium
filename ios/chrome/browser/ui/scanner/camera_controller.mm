@@ -1,15 +1,15 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/scanner/camera_controller.h"
 
-#include "base/check.h"
-#include "base/mac/foundation_util.h"
-#include "base/notreached.h"
-#include "base/strings/stringprintf.h"
-#include "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#include "ios/chrome/common/ios_app_bundle_id_prefix_buildflags.h"
+#import "base/check.h"
+#import "base/mac/foundation_util.h"
+#import "base/notreached.h"
+#import "base/strings/stringprintf.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ios_app_bundle_id_prefix_buildflags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -17,7 +17,7 @@
 
 @interface CameraController ()
 
-// The queue for dispatching calls to |_captureSession|.
+// The queue for dispatching calls to `_captureSession`.
 @property(nonatomic, readonly) dispatch_queue_t sessionQueue;
 // The capture session for recording video and detecting QR codes.
 @property(nonatomic, readwrite) AVCaptureSession* captureSession;
@@ -29,7 +29,7 @@
 // The current state of the camera. The state is set to CAMERA_NOT_LOADED before
 // the camera is first loaded, and afterwards it is never CAMERA_NOT_LOADED.
 @property(nonatomic, readwrite, assign) scanner::CameraState cameraState;
-// Redeclaration of |torchActive| to make the setter private.
+// Redeclaration of `torchActive` to make the setter private.
 @property(nonatomic, readwrite, assign, getter=isTorchActive) BOOL torchActive;
 // The current availability of the torch.
 @property(nonatomic, readwrite, assign, getter=isTorchAvailable)
@@ -39,14 +39,14 @@
     BOOL observingCamera;
 @property(nonatomic, readwrite, assign) CGRect viewportRect;
 
-// YES if |cameraState| is CAMERA_AVAILABLE.
+// YES if `cameraState` is CAMERA_AVAILABLE.
 - (BOOL)isCameraAvailable;
 // Starts receiving notfications about changes to the capture session and to the
 // torch properties.
 - (void)startReceivingNotifications;
 // Stops receiving all notifications.
 - (void)stopReceivingNotifications;
-// Returns the camera attached to |_captureSession|.
+// Returns the camera attached to `_captureSession`.
 - (AVCaptureDevice*)camera;
 // Returns the AVCaptureVideoOrientation to compensate for the current
 // UIInterfaceOrientation. Defaults to AVCaptureVideoOrientationPortrait.

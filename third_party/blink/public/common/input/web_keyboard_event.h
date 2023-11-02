@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,7 +40,7 @@ class BLINK_COMMON_EXPORT WebKeyboardEvent : public WebInputEvent {
 
   // The DOM key enum of the key pressed as passed by the embedder. DOM
   // key enums are defined in ui/events/keycodes/dom/dom_key_data.inc.
-  int dom_key = 0;
+  uint32_t dom_key = 0;
 
   // This identifies whether this event was tagged by the system as being a
   // "system key" event (see

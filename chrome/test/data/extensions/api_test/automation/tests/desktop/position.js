@@ -1,11 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 var allTests = [
   function testPositionType() {
     var button = rootNode.find({role: chrome.automation.RoleType.BUTTON});
-    var position = button.createPosition(0 /* offset */);
+    var position = button.createPosition(/* offset */ 0);
 
     assertEq(button, position.node);
 
@@ -22,16 +22,17 @@ var allTests = [
 
   function testBackingObjectsDiffer() {
     var childOfRoot = rootNode.lastChild;
-    var pos1 = childOfRoot.createPosition(-1);
-    var pos2 = rootNode.createPosition(-1);
+    var pos1 = childOfRoot.createPosition(/* offset */ 0);
+    var pos2 = rootNode.createPosition(/* offset */ 0);
     assertFalse(pos1.node == pos2.node, 'Nodes expected to differ');
     chrome.test.succeed();
   },
 
   function testCrossRoots() {
     chrome.automation.getDesktop(() => {
-      var rootPosition = rootNode.createPosition(-1);
+      var rootPosition = rootNode.createPosition(/* offset */ 0);
       rootPosition.moveToParentPosition();
+      assertFalse(rootPosition.isNullPosition());
       assertTrue(!!rootPosition.node);
       chrome.test.succeed();
     });

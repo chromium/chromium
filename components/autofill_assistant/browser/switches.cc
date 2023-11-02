@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,22 @@
 namespace autofill_assistant {
 namespace switches {
 
+// Enables annotating DOM when set to true.
+const char kAutofillAssistantAnnotateDom[] =
+    "autofill-assistant-enable-annotate-dom";
+
 // Disables authentication when set to false. This is only useful
 // during development, as prod instances require authentication.
 const char kAutofillAssistantAuth[] = "autofill-assistant-auth";
+
+// Sets the ECDSA public key to be used for autofill_assistant in base64.
+const char kAutofillAssistantCupPublicKeyBase64[] =
+    "autofill-assistant-cup-public-key-base64";
+
+// Sets the key version of the ECDSA public key to be used for
+// autofill_assistant.
+const char kAutofillAssistantCupKeyVersion[] =
+    "autofill-assistant-cup-key-version";
 
 // Forces first-time user experience if set to 'true'. This will overwrite the
 // AA preference by setting first time user to 'true' before each startup.
@@ -38,6 +51,9 @@ const char kAutofillAssistantServerKey[] = "autofill-assistant-key";
 
 // Overrides the default backend URL.
 const char kAutofillAssistantUrl[] = "autofill-assistant-url";
+
+// Allows for the logging of more information in JS flow if set to 'true'.
+const char kAutofillAssistantDebugMode[] = "autofill-assistant-debug-mode";
 
 }  // namespace switches
 }  // namespace autofill_assistant

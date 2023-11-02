@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@
 #include "third_party/blink/renderer/core/permissions_policy/layout_animations_policy.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 namespace {
@@ -64,7 +64,7 @@ V8UnionKeyframeEffectOptionsOrUnrestrictedDouble* CoerceEffectOptions(
 
 }  // namespace
 
-// https://drafts.csswg.org/web-animations/#dom-animatable-animate
+// https://w3.org/TR/web-animations-1/#dom-animatable-animate
 Animation* Animatable::animate(
     ScriptState* script_state,
     const ScriptValue& keyframes,
@@ -110,6 +110,7 @@ Animation* Animatable::animate(
   return animation;
 }
 
+// https://w3.org/TR/web-animations-1/#dom-animatable-animate
 Animation* Animatable::animate(ScriptState* script_state,
                                const ScriptValue& keyframes,
                                ExceptionState& exception_state) {
@@ -133,17 +134,24 @@ Animation* Animatable::animate(ScriptState* script_state,
   return element->GetDocument().Timeline().Play(effect, exception_state);
 }
 
+// https://w3.org/TR/web-animations-1/#dom-animatable-getanimations
 HeapVector<Member<Animation>> Animatable::getAnimations(
     GetAnimationsOptions* options) {
   bool use_subtree = options && options->subtree();
+  return GetAnimationsInternal(
+      GetAnimationsOptionsResolved{.use_subtree = use_subtree});
+}
+
+HeapVector<Member<Animation>> Animatable::GetAnimationsInternal(
+    GetAnimationsOptionsResolved options) {
   Element* element = GetAnimationTarget();
-  if (use_subtree)
+  if (options.use_subtree)
     element->GetDocument().UpdateStyleAndLayoutTreeForSubtree(element);
   else
     element->GetDocument().UpdateStyleAndLayoutTreeForNode(element);
 
   HeapVector<Member<Animation>> animations;
-  if (!use_subtree && !element->HasAnimations())
+  if (!options.use_subtree && !element->HasAnimations())
     return animations;
 
   for (const auto& animation :
@@ -152,7 +160,8 @@ HeapVector<Member<Animation>> Animatable::getAnimations(
     DCHECK(animation->effect());
     // TODO(gtsteel) make this use the idl properties
     Element* target = To<KeyframeEffect>(animation->effect())->EffectTarget();
-    if (element == target || (use_subtree && element->contains(target))) {
+    if (element == target ||
+        (options.use_subtree && element->contains(target))) {
       // DocumentAnimations::getAnimations should only give us animations that
       // are either current or in effect.
       DCHECK(animation->effect()->IsCurrent() ||

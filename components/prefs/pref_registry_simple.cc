@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,6 +56,12 @@ void PrefRegistrySimple::RegisterListPref(const std::string& path,
   RegisterPreference(path, std::move(default_value), flags);
 }
 
+void PrefRegistrySimple::RegisterListPref(const std::string& path,
+                                          base::Value::List default_value,
+                                          uint32_t flags) {
+  RegisterPreference(path, base::Value(std::move(default_value)), flags);
+}
+
 void PrefRegistrySimple::RegisterDictionaryPref(const std::string& path,
                                                 uint32_t flags) {
   RegisterPreference(path, base::Value(base::Value::Type::DICTIONARY), flags);
@@ -65,6 +71,12 @@ void PrefRegistrySimple::RegisterDictionaryPref(const std::string& path,
                                                 base::Value default_value,
                                                 uint32_t flags) {
   RegisterPreference(path, std::move(default_value), flags);
+}
+
+void PrefRegistrySimple::RegisterDictionaryPref(const std::string& path,
+                                                base::Value::Dict default_value,
+                                                uint32_t flags) {
+  RegisterPreference(path, base::Value(std::move(default_value)), flags);
 }
 
 void PrefRegistrySimple::RegisterInt64Pref(const std::string& path,

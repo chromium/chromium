@@ -1,9 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
-import {hasKeyModifiers} from 'chrome://resources/js/util.m.js';
+import {define as crUiDefine} from 'chrome://resources/js/cr/ui.js';
+import {hasKeyModifiers} from 'chrome://resources/js/util.js';
 
 /**
  * @fileoverview DotList implementation
@@ -49,9 +49,9 @@ DotList.prototype = {
     }
 
     let direction = 0;
-    if (e.key == 'ArrowLeft') {
+    if (e.key === 'ArrowLeft') {
       direction = -1;
-    } else if (e.key == 'ArrowRight') {
+    } else if (e.key === 'ArrowRight') {
       direction = 1;
     } else {
       return;
@@ -63,7 +63,7 @@ DotList.prototype = {
     }
     const focusIndex = Array.prototype.indexOf.call(navDots, focusDot);
     let newFocusIndex = focusIndex + direction;
-    if (focusIndex == newFocusIndex) {
+    if (focusIndex === newFocusIndex) {
       return;
     }
 
@@ -74,5 +74,5 @@ DotList.prototype = {
 
     e.stopPropagation();
     e.preventDefault();
-  }
+  },
 };

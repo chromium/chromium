@@ -1,17 +1,22 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "mojo/public/cpp/bindings/lib/buffer.h"
 
 #include <cstring>
+#include <tuple>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_math.h"
+#include "base/record_replay.h"
 #include "mojo/public/c/system/message_pipe.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
+
+namespace recordreplay {
+extern bool IsMainThread();
+}
 
 namespace mojo {
 namespace internal {
@@ -51,8 +56,32 @@ Buffer& Buffer::operator=(Buffer&& other) {
   return *this;
 }
 
+// Buffer allocations are frequent while constructing messages, so asserts are
+// only added in certain places when tracking down the reason for different
+// message sizes.
+static int gRecordReplayAssertAllocations = 0;
+static const char* gRecordReplayAssertLabel = "";
+
+AutoRecordReplayAssertBufferAllocations::AutoRecordReplayAssertBufferAllocations(const char* issueLabel) {
+  if (recordreplay::IsMainThread()) {
+    if (!gRecordReplayAssertAllocations)
+      gRecordReplayAssertLabel = issueLabel;
+    ++gRecordReplayAssertAllocations;
+  }
+}
+
+AutoRecordReplayAssertBufferAllocations::~AutoRecordReplayAssertBufferAllocations() {
+  if (recordreplay::IsMainThread())
+    --gRecordReplayAssertAllocations;
+}
+
 size_t Buffer::Allocate(size_t num_bytes) {
   const size_t aligned_num_bytes = Align(num_bytes);
+
+  if (gRecordReplayAssertAllocations && recordreplay::IsMainThread())
+    recordreplay::Assert("[%s] Buffer::Allocate %zu", gRecordReplayAssertLabel,
+                         aligned_num_bytes);
+
   const size_t new_cursor = cursor_ + aligned_num_bytes;
   if (new_cursor < cursor_ || (new_cursor > size_ && !message_.is_valid())) {
     // Either we've overflowed or exceeded a fixed capacity.
@@ -102,7 +131,7 @@ bool Buffer::AttachHandles(std::vector<ScopedHandle>* handles) {
 
   size_ = new_size;
   for (auto& handle : *handles)
-    ignore_result(handle.release());
+    std::ignore = handle.release();
   handles->clear();
   return true;
 }

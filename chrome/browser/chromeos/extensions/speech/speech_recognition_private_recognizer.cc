@@ -1,19 +1,23 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/extensions/speech/speech_recognition_private_recognizer.h"
 
+#include "base/debug/crash_logging.h"
 #include "chrome/browser/chromeos/extensions/speech/speech_recognition_private_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/network_speech_recognizer.h"
-#include "chrome/browser/speech/on_device_speech_recognizer.h"
+#include "chrome/browser/speech/speech_recognition_recognizer_client_impl.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/storage_partition.h"
+#include "media/mojo/mojom/speech_recognition_service.mojom.h"
 
 namespace {
 const char kSpeechRecognitionError[] = "A speech recognition error occurred";
+const char kSpeechRecognitionNeverStartedError[] =
+    "Speech recognition never started";
 const char kSpeechRecognitionStartError[] =
     "Speech recognition already started";
 const char kSpeechRecognitionStopError[] = "Speech recognition already stopped";
@@ -36,8 +40,9 @@ void SpeechRecognitionPrivateRecognizer::OnSpeechResult(
     bool is_final,
     const absl::optional<media::SpeechRecognitionResult>& full_result) {
   // TODO(crbug.com/1220107): NetworkSpeechRecognizer adds spaces between
-  // results, but OnDeviceSpeechRecognizer doesn't. Add behavior in
-  // OnDeviceSpeechRecognizer so it's consistent with NetworkSpeechRecognizer.
+  // results, but SpeechRecognitionRecognizerClientImpl doesn't. Add behavior in
+  // SpeechRecognitionRecognizerClientImpl so it's consistent with
+  // NetworkSpeechRecognizer.
   if (!interim_results_ && !is_final) {
     // If |interim_results_| is false, then don't handle the result unless this
     // is a final result.
@@ -49,6 +54,9 @@ void SpeechRecognitionPrivateRecognizer::OnSpeechResult(
 
 void SpeechRecognitionPrivateRecognizer::OnSpeechRecognitionStateChanged(
     SpeechRecognizerStatus new_state) {
+  // Crash keys for https://crbug.com/1296304.
+  SCOPED_CRASH_KEY_NUMBER("Accessibility", "Speech recognition state",
+                          new_state);
   SpeechRecognizerStatus next_state = new_state;
   if (new_state == SPEECH_RECOGNIZER_READY) {
     if (current_state_ == SPEECH_RECOGNIZER_OFF && speech_recognizer_) {
@@ -62,8 +70,15 @@ void SpeechRecognitionPrivateRecognizer::OnSpeechRecognitionStateChanged(
       delegate_->HandleSpeechRecognitionStopped(id_);
     }
   } else if (new_state == SPEECH_RECOGNIZER_RECOGNIZING) {
-    DCHECK(!on_start_callback_.is_null());
-    std::move(on_start_callback_).Run(/*error=*/absl::optional<std::string>());
+    if (!on_start_callback_.is_null()) {
+      std::move(on_start_callback_)
+          .Run(/*type=*/type_, /*error=*/absl::optional<std::string>());
+    } else {
+      // If we get here, we are unintentionally recognizing speech. Turn off
+      // the recognizer.
+      next_state = SPEECH_RECOGNIZER_OFF;
+      RecognizerOff();
+    }
   } else if (new_state == SPEECH_RECOGNIZER_ERROR) {
     // When a speech recognition error occurs, ask the delegate to handle both
     // error and stop events.
@@ -78,9 +93,10 @@ void SpeechRecognitionPrivateRecognizer::OnSpeechRecognitionStateChanged(
 void SpeechRecognitionPrivateRecognizer::HandleStart(
     absl::optional<std::string> locale,
     absl::optional<bool> interim_results,
-    ApiCallback callback) {
+    OnStartCallback callback) {
   if (speech_recognizer_) {
     std::move(callback).Run(
+        /*type=*/type_,
         /*error=*/absl::optional<std::string>(kSpeechRecognitionStartError));
     RecognizerOff();
     return;
@@ -90,11 +106,20 @@ void SpeechRecognitionPrivateRecognizer::HandleStart(
 
   // Choose which type of speech recognition, either on-device or network.
   Profile* profile = Profile::FromBrowserContext(context_);
-  if (OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable(locale_)) {
-    speech_recognizer_ = std::make_unique<OnDeviceSpeechRecognizer>(
-        GetWeakPtr(), profile, locale_,
-        /*recognition_mode_ime=*/true, /*enable_formatting=*/false);
+  if (SpeechRecognitionRecognizerClientImpl::
+          IsOnDeviceSpeechRecognizerAvailable(locale_)) {
+    type_ = speech::SpeechRecognitionType::kOnDevice;
+    speech_recognizer_ =
+        std::make_unique<SpeechRecognitionRecognizerClientImpl>(
+            GetWeakPtr(), profile,
+            media::mojom::SpeechRecognitionOptions::New(
+                media::mojom::SpeechRecognitionMode::kIme,
+                /*enable_formatting=*/false,
+                /*language=*/locale_,
+                /*is_server_based=*/false,
+                media::mojom::RecognizerClientType::kDictation));
   } else {
+    type_ = speech::SpeechRecognitionType::kNetwork;
     speech_recognizer_ = std::make_unique<NetworkSpeechRecognizer>(
         GetWeakPtr(),
         profile->GetDefaultStoragePartition()
@@ -104,19 +129,31 @@ void SpeechRecognitionPrivateRecognizer::HandleStart(
   }
 }
 
-void SpeechRecognitionPrivateRecognizer::HandleStop(ApiCallback callback) {
-  if (current_state_ == SPEECH_RECOGNIZER_OFF) {
-    // If speech recognition is already off, trigger the callback with an error
-    // message.
+void SpeechRecognitionPrivateRecognizer::HandleStop(OnStopCallback callback) {
+  bool has_error = false;
+  if (!on_start_callback_.is_null()) {
+    // If speech recognition never successfully started, then run the necessary
+    // callbacks with an error to avoid dangling callbacks (Chrome
+    // will crash if an extension function is destroyed and hasn't responded).
+    has_error = true;
+    std::move(on_start_callback_)
+        .Run(/*type=*/type_, /*error=*/absl::optional<std::string>(
+                 kSpeechRecognitionNeverStartedError));
     std::move(callback).Run(
         /*error=*/absl::optional<std::string>(kSpeechRecognitionStopError));
-    return;
+  } else if (current_state_ == SPEECH_RECOGNIZER_OFF) {
+    // If speech recognition is already off, run `callback` with an error
+    // message.
+    has_error = true;
+    std::move(callback).Run(
+        /*error=*/absl::optional<std::string>(kSpeechRecognitionStopError));
   }
 
   RecognizerOff();
+  if (has_error)
+    return;
 
   delegate_->HandleSpeechRecognitionStopped(id_);
-
   DCHECK(!callback.is_null());
   std::move(callback).Run(/*error=*/absl::optional<std::string>());
 }
@@ -130,7 +167,7 @@ void SpeechRecognitionPrivateRecognizer::RecognizerOff() {
 void SpeechRecognitionPrivateRecognizer::MaybeUpdateProperties(
     absl::optional<std::string> locale,
     absl::optional<bool> interim_results,
-    ApiCallback callback) {
+    OnStartCallback callback) {
   if (locale.has_value())
     locale_ = locale.value();
   if (interim_results.has_value())

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -34,8 +35,11 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_utils.h"
 
-namespace views {
-namespace test {
+#if BUILDFLAG(IS_MAC)
+#include "ui/views/controls/menu/menu_cocoa_watcher_mac.h"
+#endif
+
+namespace views::test {
 
 class MenuRunnerTest : public ViewsTestBase {
  public:
@@ -73,10 +77,27 @@ class MenuRunnerTest : public ViewsTestBase {
   MenuRunner* menu_runner() { return menu_runner_.get(); }
   Widget* owner() { return owner_.get(); }
 
+#if BUILDFLAG(IS_MAC)
+  void SetUp() override {
+    ViewsTestBase::SetUp();
+
+    // Ignore app activation notifications during tests (they make the tests
+    // flaky).
+    MenuCocoaWatcherMac::SetNotificationFilterForTesting(
+        MacNotificationFilter::IgnoreWorkspaceNotifications);
+  }
+#endif
+
   // ViewsTestBase:
   void TearDown() override {
     if (owner_)
       owner_->CloseNow();
+
+#if BUILDFLAG(IS_MAC)
+    MenuCocoaWatcherMac::SetNotificationFilterForTesting(
+        MacNotificationFilter::DontIgnoreNotifications);
+#endif
+
     ViewsTestBase::TearDown();
   }
 
@@ -93,7 +114,7 @@ class MenuRunnerTest : public ViewsTestBase {
 
  private:
   // Owned by menu_runner_.
-  views::TestMenuItemView* menu_item_view_ = nullptr;
+  raw_ptr<views::TestMenuItemView> menu_item_view_ = nullptr;
 
   std::unique_ptr<TestMenuDelegate> menu_delegate_;
   std::unique_ptr<MenuRunner> menu_runner_;
@@ -163,7 +184,7 @@ TEST_F(MenuRunnerTest, MAYBE_LatinMnemonic) {
   EXPECT_NE(nullptr, delegate->on_menu_closed_menu());
 }
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 // Tests that a key press on a non-US keyboard layout activates the correct menu
 // item. Disabled on Windows because a WM_CHAR event does not activate an item.
 TEST_F(MenuRunnerTest, NonLatinMnemonic) {
@@ -187,7 +208,7 @@ TEST_F(MenuRunnerTest, NonLatinMnemonic) {
   EXPECT_EQ(1, delegate->on_menu_closed_called());
   EXPECT_NE(nullptr, delegate->on_menu_closed_menu());
 }
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
 
 TEST_F(MenuRunnerTest, MenuItemViewShowsMnemonics) {
   if (!MenuSupportsMnemonics())
@@ -267,7 +288,7 @@ TEST_F(MenuRunnerTest, PrefixSelect) {
 
 // This test is Mac-specific: Mac is the only platform where VKEY_SPACE
 // activates menu items.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 TEST_F(MenuRunnerTest, SpaceActivatesItem) {
   if (!MenuConfig::instance().all_menus_use_prefix_selection)
     return;
@@ -292,7 +313,7 @@ TEST_F(MenuRunnerTest, SpaceActivatesItem) {
   EXPECT_EQ(1, delegate->on_menu_closed_called());
   EXPECT_NE(nullptr, delegate->on_menu_closed_menu());
 }
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 // Tests that attempting to nest a menu within a drag-and-drop menu does not
 // cause a crash. Instead the drag and drop action should be canceled, and the
@@ -342,8 +363,8 @@ class MenuLauncherEventHandler : public ui::EventHandler {
     }
   }
 
-  MenuRunner* runner_;
-  Widget* owner_;
+  raw_ptr<MenuRunner> runner_;
+  raw_ptr<Widget> owner_;
 };
 
 }  // namespace
@@ -382,7 +403,7 @@ class MenuRunnerWidgetTest : public MenuRunnerTest {
 
     event_count_view_ = new EventCountView();
     event_count_view_->SetBounds(0, 0, 300, 300);
-    widget_->GetRootView()->AddChildView(event_count_view_);
+    widget_->GetRootView()->AddChildView(event_count_view_.get());
 
     InitMenuRunner(0);
   }
@@ -393,8 +414,8 @@ class MenuRunnerWidgetTest : public MenuRunnerTest {
   }
 
  private:
-  Widget* widget_ = nullptr;
-  EventCountView* event_count_view_ = nullptr;
+  raw_ptr<Widget> widget_ = nullptr;
+  raw_ptr<EventCountView> event_count_view_ = nullptr;
   std::unique_ptr<MenuLauncherEventHandler> consumer_;
 };
 
@@ -574,7 +595,7 @@ class MenuRunnerDestructionTest : public MenuRunnerTest {
 
  private:
   // Not owned
-  ReleaseRefTestViewsDelegate* test_views_delegate_ = nullptr;
+  raw_ptr<ReleaseRefTestViewsDelegate> test_views_delegate_ = nullptr;
 };
 
 base::WeakPtr<internal::MenuRunnerImpl>
@@ -734,5 +755,4 @@ TEST_F(MenuRunnerImplTest, FocusOnMenuCloseDeleteAfterRun) {
   EXPECT_EQ(nullptr, menu_controller.controller());
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

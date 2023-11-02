@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -10,15 +10,16 @@ if (is_android) {
 
 _proto_files = [
   "call_stack_profile.proto",
-  "cast_assistant_logs.proto",
   "cast_logs.proto",
   "chrome_os_app_list_launch_event.proto",
+  "chrome_searchbox_stats.proto",
   "chrome_user_metrics_extension.proto",
+  "custom_tab_session.proto",
   "execution_context.proto",
   "extension_install.proto",
   "histogram_event.proto",
-  "memory_leak_report.proto",
   "omnibox_event.proto",
+  "omnibox_focus_type.proto",
   "omnibox_input_type.proto",
   "perf_data.proto",
   "perf_stat.proto",

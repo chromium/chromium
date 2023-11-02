@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_bus.h"
 #include "media/base/limits.h"
@@ -37,7 +38,7 @@ absl::optional<V8AudioSampleFormat> MediaFormatToBlinkFormat(
       // to kSampleFormatS32, but we do not update our labelling. It's ok to
       // treat the kSampleFormatS24 as kSampleFormatS32 until we update the
       // labelling, since our code already treats S24 as S32.
-      FALLTHROUGH;
+      [[fallthrough]];
     case media::SampleFormat::kSampleFormatS32:
       return V8AudioSampleFormat(FormatEnum::kS32);
 
@@ -60,6 +61,9 @@ absl::optional<V8AudioSampleFormat> MediaFormatToBlinkFormat(
     case media::SampleFormat::kSampleFormatEac3:
     case media::SampleFormat::kSampleFormatMpegHAudio:
     case media::SampleFormat::kUnknownSampleFormat:
+    case media::SampleFormat::kSampleFormatDts:
+    case media::SampleFormat::kSampleFormatDtsxP2:
+    case media::SampleFormat::kSampleFormatIECDts:
       return absl::nullopt;
   }
 }
@@ -151,7 +155,7 @@ AudioData::AudioData(AudioDataInit* init, ExceptionState& exception_state)
     return;
   }
 
-  auto sample_rate = static_cast<int>(init->sampleRate());
+  int sample_rate = base::saturated_cast<int>(init->sampleRate());
   if (sample_rate < media::limits::kMinSampleRate ||
       sample_rate > media::limits::kMaxSampleRate) {
     exception_state.ThrowDOMException(

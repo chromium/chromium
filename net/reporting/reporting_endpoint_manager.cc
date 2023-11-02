@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,12 +12,12 @@
 
 #include "base/check.h"
 #include "base/containers/lru_cache.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/time/tick_clock.h"
 #include "net/base/backoff_entry.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/rand_callback.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_delegate.h"
@@ -83,7 +83,7 @@ class ReportingEndpointManagerImpl : public ReportingEndpointManager {
       // This brings each match to the front of the MRU cache, so if an entry
       // frequently matches requests, it's more likely to stay in the cache.
       auto endpoint_backoff_it = endpoint_backoff_.Get(EndpointBackoffKey(
-          group_key.network_isolation_key, endpoint.info.url));
+          group_key.network_anonymization_key, endpoint.info.url));
       if (endpoint_backoff_it != endpoint_backoff_.end() &&
           endpoint_backoff_it->second->ShouldRejectRequest()) {
         continue;
@@ -112,8 +112,7 @@ class ReportingEndpointManagerImpl : public ReportingEndpointManager {
 
     int random_index = rand_callback_.Run(0, total_weight - 1);
     int weight_so_far = 0;
-    for (size_t i = 0; i < available_endpoints.size(); ++i) {
-      const ReportingEndpoint& endpoint = available_endpoints[i];
+    for (const auto& endpoint : available_endpoints) {
       weight_so_far += endpoint.info.weight;
       if (random_index < weight_so_far) {
         return endpoint;
@@ -125,10 +124,12 @@ class ReportingEndpointManagerImpl : public ReportingEndpointManager {
     return ReportingEndpoint();
   }
 
-  void InformOfEndpointRequest(const NetworkIsolationKey& network_isolation_key,
-                               const GURL& endpoint,
-                               bool succeeded) override {
-    EndpointBackoffKey endpoint_backoff_key(network_isolation_key, endpoint);
+  void InformOfEndpointRequest(
+      const NetworkAnonymizationKey& network_anonymization_key,
+      const GURL& endpoint,
+      bool succeeded) override {
+    EndpointBackoffKey endpoint_backoff_key(network_anonymization_key,
+                                            endpoint);
     // This will bring the entry to the front of the cache, if it exists.
     auto endpoint_backoff_it = endpoint_backoff_.Get(endpoint_backoff_key);
     if (endpoint_backoff_it == endpoint_backoff_.end()) {
@@ -141,12 +142,12 @@ class ReportingEndpointManagerImpl : public ReportingEndpointManager {
   }
 
  private:
-  using EndpointBackoffKey = std::pair<NetworkIsolationKey, GURL>;
+  using EndpointBackoffKey = std::pair<NetworkAnonymizationKey, GURL>;
 
-  const ReportingPolicy* const policy_;
-  const base::TickClock* const tick_clock_;
-  const ReportingDelegate* const delegate_;
-  ReportingCache* const cache_;
+  const raw_ptr<const ReportingPolicy> policy_;
+  const raw_ptr<const base::TickClock> tick_clock_;
+  const raw_ptr<const ReportingDelegate> delegate_;
+  const raw_ptr<ReportingCache> cache_;
 
   RandIntCallback rand_callback_;
 

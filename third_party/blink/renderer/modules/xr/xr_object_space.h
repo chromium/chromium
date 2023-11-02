@@ -1,9 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_OBJECT_SPACE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_OBJECT_SPACE_H_
+
+#include <string>
 
 #include "device/vr/public/mojom/vr_service.mojom-blink-forward.h"
 #include "third_party/blink/renderer/modules/xr/xr_space.h"
@@ -34,7 +36,7 @@ class XRObjectSpace final : public XRSpace {
         object_(object),
         is_stationary_(object->IsStationary()) {}
 
-  absl::optional<TransformationMatrix> MojoFromNative() override {
+  absl::optional<TransformationMatrix> MojoFromNative() const override {
     return object_->MojoFromObject();
   }
 

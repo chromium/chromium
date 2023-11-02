@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <set>
 #include <string>
 #include <unordered_set>
@@ -19,8 +18,8 @@
 #include "base/feature_list.h"
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "net/base/mime_sniffer.h"
@@ -38,8 +37,7 @@ using Decision = network::corb::ResponseAnalyzer::Decision;
 using MimeType = network::corb::CrossOriginReadBlocking::MimeType;
 using SniffingResult = network::corb::CrossOriginReadBlocking::SniffingResult;
 
-namespace network {
-namespace corb {
+namespace network::corb {
 
 namespace {
 
@@ -278,9 +276,9 @@ const auto& GetNeverSniffedMimeTypes() {
 
   // All items need to be lower-case, to support case-insensitive comparisons
   // later.
-  DCHECK(std::all_of(kNeverSniffedMimeTypes.begin(),
-                     kNeverSniffedMimeTypes.end(),
-                     [](const auto& s) { return s == base::ToLowerASCII(s); }));
+  DCHECK(base::ranges::all_of(kNeverSniffedMimeTypes, [](const auto& s) {
+    return s == base::ToLowerASCII(s);
+  }));
 
   return kNeverSniffedMimeTypes;
 }
@@ -309,31 +307,31 @@ MimeType CrossOriginReadBlocking::GetCanonicalMimeType(
   // Checking for image/svg+xml and application/dash+xml early ensures that they
   // won't get classified as MimeType::kXml by the presence of the "+xml"
   // suffix.
-  if (base::LowerCaseEqualsASCII(mime_type, kImageSvg) ||
-      base::LowerCaseEqualsASCII(mime_type, kDashVideo))
+  if (base::EqualsCaseInsensitiveASCII(mime_type, kImageSvg) ||
+      base::EqualsCaseInsensitiveASCII(mime_type, kDashVideo))
     return MimeType::kOthers;
 
   // See also https://mimesniff.spec.whatwg.org/#html-mime-type
-  if (base::LowerCaseEqualsASCII(mime_type, kTextHtml))
+  if (base::EqualsCaseInsensitiveASCII(mime_type, kTextHtml))
     return MimeType::kHtml;
 
   // See also https://mimesniff.spec.whatwg.org/#json-mime-type
   constexpr auto kCaseInsensitive = base::CompareCase::INSENSITIVE_ASCII;
-  if (base::LowerCaseEqualsASCII(mime_type, kAppJson) ||
-      base::LowerCaseEqualsASCII(mime_type, kTextJson) ||
-      base::LowerCaseEqualsASCII(mime_type, kJsonProtobuf) ||
+  if (base::EqualsCaseInsensitiveASCII(mime_type, kAppJson) ||
+      base::EqualsCaseInsensitiveASCII(mime_type, kTextJson) ||
+      base::EqualsCaseInsensitiveASCII(mime_type, kJsonProtobuf) ||
       base::EndsWith(mime_type, kJsonSuffix, kCaseInsensitive)) {
     return MimeType::kJson;
   }
 
   // See also https://mimesniff.spec.whatwg.org/#xml-mime-type
-  if (base::LowerCaseEqualsASCII(mime_type, kAppXml) ||
-      base::LowerCaseEqualsASCII(mime_type, kTextXml) ||
+  if (base::EqualsCaseInsensitiveASCII(mime_type, kAppXml) ||
+      base::EqualsCaseInsensitiveASCII(mime_type, kTextXml) ||
       base::EndsWith(mime_type, kXmlSuffix, kCaseInsensitive)) {
     return MimeType::kXml;
   }
 
-  if (base::LowerCaseEqualsASCII(mime_type, kTextPlain))
+  if (base::EqualsCaseInsensitiveASCII(mime_type, kTextPlain))
     return MimeType::kPlain;
 
   if (base::Contains(GetNeverSniffedMimeTypes(),
@@ -342,14 +340,6 @@ MimeType CrossOriginReadBlocking::GetCanonicalMimeType(
   }
 
   return MimeType::kOthers;
-}
-
-// static
-bool CrossOriginReadBlocking::IsBlockableScheme(const GURL& url) {
-  // We exclude ftp:// from here. FTP doesn't provide a Content-Type
-  // header which our policy depends on, so we cannot protect any
-  // response from FTP servers.
-  return url.SchemeIs(url::kHttpScheme) || url.SchemeIs(url::kHttpsScheme);
 }
 
 // static
@@ -390,7 +380,7 @@ SniffingResult CrossOriginReadBlocking::SniffForHTML(StringPiece data) {
     AdvancePastWhitespace(&data);
 
     SniffingResult signature_match =
-        MatchesSignature(&data, kHtmlSignatures, base::size(kHtmlSignatures),
+        MatchesSignature(&data, kHtmlSignatures, std::size(kHtmlSignatures),
                          base::CompareCase::INSENSITIVE_ASCII);
     if (signature_match != kNo)
       return signature_match;
@@ -411,7 +401,7 @@ SniffingResult CrossOriginReadBlocking::SniffForXML(base::StringPiece data) {
   // initializer.
   AdvancePastWhitespace(&data);
   static constexpr StringPiece kXmlSignatures[] = {StringPiece("<?xml")};
-  return MatchesSignature(&data, kXmlSignatures, base::size(kXmlSignatures),
+  return MatchesSignature(&data, kXmlSignatures, std::size(kXmlSignatures),
                           base::CompareCase::SENSITIVE);
 }
 
@@ -513,7 +503,7 @@ SniffingResult CrossOriginReadBlocking::SniffForFetchOnlyResource(
       StringPiece("while (1);"),
   };
   SniffingResult has_parser_breaker = MatchesSignature(
-      &data, kScriptBreakingPrefixes, base::size(kScriptBreakingPrefixes),
+      &data, kScriptBreakingPrefixes, std::size(kScriptBreakingPrefixes),
       base::CompareCase::SENSITIVE);
   if (has_parser_breaker != kNo)
     return has_parser_breaker;
@@ -704,14 +694,7 @@ CrossOriginReadBlocking::CorbResponseAnalyzer::ShouldBlockBasedOnHeaders(
   const url::Origin& initiator = request_initiator.value();
 
   // Don't block same-origin documents.
-  url::Origin target_origin = url::Origin::Create(request_url);
-  if (initiator.IsSameOriginWith(target_origin))
-    return Decision::kAllow;
-
-  // Only block documents from HTTP(S) schemes.  Checking the scheme of
-  // |target_origin| ensures that we also protect content of blob: and
-  // filesystem: URLs if their nested origins have a HTTP(S) scheme.
-  if (!IsBlockableScheme(target_origin.GetURL()))
+  if (initiator.IsSameOriginWith(request_url))
     return Decision::kAllow;
 
   // Only apply CORB to `no-cors` requests.
@@ -796,7 +779,7 @@ CrossOriginReadBlocking::CorbResponseAnalyzer::ShouldBlockBasedOnHeaders(
     case MimeType::kOthers:
       // Stylesheets shouldn't be sniffed for JSON parser breakers - see
       // https://crbug.com/809259.
-      if (base::LowerCaseEqualsASCII(response.mime_type, "text/css"))
+      if (base::EqualsCaseInsensitiveASCII(response.mime_type, "text/css"))
         return Decision::kAllow;
       return Decision::kSniffMore;
 
@@ -849,7 +832,7 @@ bool CrossOriginReadBlocking::CorbResponseAnalyzer::SupportsRangeRequests(
   if (response.headers) {
     std::string value;
     response.headers->GetNormalizedHeader("accept-ranges", &value);
-    if (!value.empty() && !base::LowerCaseEqualsASCII(value, "none")) {
+    if (!value.empty() && !base::EqualsCaseInsensitiveASCII(value, "none")) {
       return true;
     }
   }
@@ -895,13 +878,13 @@ CrossOriginReadBlocking::CorbResponseAnalyzer::GetMimeTypeBucket(
   // https://mimesniff.spec.whatwg.org/#audio-or-video-mime-type.
   if (base::StartsWith(mime_type, "audio", kCaseInsensitive) ||
       base::StartsWith(mime_type, "video", kCaseInsensitive) ||
-      base::LowerCaseEqualsASCII(mime_type, "application/ogg") ||
-      base::LowerCaseEqualsASCII(mime_type, "application/dash+xml")) {
+      base::EqualsCaseInsensitiveASCII(mime_type, "application/ogg") ||
+      base::EqualsCaseInsensitiveASCII(mime_type, "application/dash+xml")) {
     return kPublic;
   }
 
   // CSS files are assumed public and must be sent with text/css.
-  if (base::LowerCaseEqualsASCII(mime_type, "text/css")) {
+  if (base::EqualsCaseInsensitiveASCII(mime_type, "text/css")) {
     return kPublic;
   }
   return kOther;
@@ -1045,6 +1028,13 @@ bool CrossOriginReadBlocking::CorbResponseAnalyzer::
   return true;
 }
 
+ResponseAnalyzer::BlockedResponseHandling
+CrossOriginReadBlocking::CorbResponseAnalyzer::ShouldHandleBlockedResponseAs()
+    const {
+  // CORB wants blocked responses to be empty responses.
+  return ResponseAnalyzer::BlockedResponseHandling::kEmptyResponse;
+}
+
 Decision CrossOriginReadBlocking::CorbResponseAnalyzer::GetCorbDecision() {
   if (ShouldBlock())
     return Decision::kBlock;
@@ -1107,7 +1097,7 @@ bool CrossOriginReadBlocking::CorbResponseAnalyzer::HasNoSniff(
   std::string nosniff_header;
   response.headers->GetNormalizedHeader("x-content-type-options",
                                         &nosniff_header);
-  return base::LowerCaseEqualsASCII(nosniff_header, "nosniff");
+  return base::EqualsCaseInsensitiveASCII(nosniff_header, "nosniff");
 }
 
 // static
@@ -1216,5 +1206,4 @@ void CrossOriginReadBlocking::CorbResponseAnalyzer::
       supports_range_requests_);
 }
 
-}  // namespace corb
-}  // namespace network
+}  // namespace network::corb

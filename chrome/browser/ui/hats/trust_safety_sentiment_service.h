@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,10 @@
 #define CHROME_BROWSER_UI_HATS_TRUST_SAFETY_SENTIMENT_SERVICE_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -77,14 +79,25 @@ class TrustSafetySentimentService : public KeyedService,
   // determining elibigility for a survey.
 
   // These values are persisted to logs and entries should not be renumbered or
-  // reused.
+  // reused and kept up to date with TrustSafetySentimentFeatureArea in
+  // enums.xml.
   enum class FeatureArea {
     kIneligible = 0,
     kPrivacySettings = 1,
     kTrustedSurface = 2,
     kTransactions = 3,
-    kMaxValue = kTransactions,
+    kPrivacySandbox3ConsentAccept = 4,
+    kPrivacySandbox3ConsentDecline = 5,
+    kPrivacySandbox3NoticeDismiss = 6,
+    kPrivacySandbox3NoticeOk = 7,
+    kPrivacySandbox3NoticeSettings = 8,
+    kPrivacySandbox3NoticeLearnMore = 9,
+    kMaxValue = kPrivacySandbox3NoticeLearnMore,
   };
+
+  // Called when the user interacts with Privacy Sandbox 3, |feature_area|
+  // specifies what type of interaction occurred.
+  virtual void InteractedWithPrivacySandbox3(FeatureArea feature_area);
 
  private:
   friend class TrustSafetySentimentServiceTest;
@@ -101,6 +114,8 @@ class TrustSafetySentimentService : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(TrustSafetySentimentServiceTest, RanSafetyCheck);
   FRIEND_TEST_ALL_PREFIXES(TrustSafetySentimentServiceTest,
                            PrivacySettingsProductSpecificData);
+  FRIEND_TEST_ALL_PREFIXES(TrustSafetySentimentServiceTest,
+                           InteractedWithPrivacySandbox3ConsentAccept);
 
   // Struct representing a trigger (user action relevant to T&S) that previously
   // occurred, and is awaiting the appropriate eligibility steps before causing
@@ -137,7 +152,7 @@ class TrustSafetySentimentService : public KeyedService,
    private:
     void TimerComplete();
 
-    content::WebContents* web_contents_;
+    raw_ptr<content::WebContents> web_contents_;
     base::OnceCallback<void()> success_callback_;
     base::OnceCallback<void()> complete_callback_;
     base::WeakPtrFactory<SettingsWatcher> weak_ptr_factory_{this};
@@ -167,7 +182,7 @@ class TrustSafetySentimentService : public KeyedService,
 
   static bool ShouldBlockSurvey(const PendingTrigger& trigger);
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
   std::map<FeatureArea, PendingTrigger> pending_triggers_;
   std::unique_ptr<SettingsWatcher> settings_watcher_;
   std::unique_ptr<PageInfoState> page_info_state_;

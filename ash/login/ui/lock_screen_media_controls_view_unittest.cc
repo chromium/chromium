@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,8 @@
 #include "ash/login/ui/media_controls_header_view.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/power_monitor_test.h"
 #include "base/test/scoped_feature_list.h"
@@ -20,6 +22,7 @@
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_observer.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
@@ -112,6 +115,8 @@ class LockScreenMediaControlsViewTest : public LoginTestBase {
   ~LockScreenMediaControlsViewTest() override = default;
 
   void SetUp() override {
+    set_start_session(true);
+
     // Enable media controls.
     feature_list.InitAndEnableFeature(features::kLockScreenMediaControls);
 
@@ -204,10 +209,8 @@ class LockScreenMediaControlsViewTest : public LoginTestBase {
 
   views::Button* GetButtonForAction(MediaSessionAction action) const {
     const auto& buttons = media_action_buttons();
-    const auto it = std::find_if(buttons.begin(), buttons.end(),
-                                 [action](const views::Button* b) {
-                                   return b->tag() == static_cast<int>(action);
-                                 });
+    const auto it = base::ranges::find(buttons, static_cast<int>(action),
+                                       &views::Button::tag);
 
     if (it == buttons.end())
       return nullptr;
@@ -501,6 +504,21 @@ TEST_F(LockScreenMediaControlsViewTest, CloseButtonVisibility) {
   EXPECT_TRUE(media_controls_view_->IsDrawn());
   EXPECT_TRUE(close_button()->IsDrawn());
   EXPECT_FALSE(CloseButtonHasImage());
+
+  // Focusing the close button should show it.
+  views::FocusManager* focus_manager = media_controls_view_->GetFocusManager();
+  focus_manager->SetFocusedView(close_button());
+  EXPECT_EQ(close_button(), focus_manager->GetFocusedView());
+  EXPECT_TRUE(media_controls_view_->IsDrawn());
+  EXPECT_TRUE(close_button()->IsDrawn());
+  EXPECT_TRUE(CloseButtonHasImage());
+
+  // Move focus somewhere else and the close button should hide.
+  SimulateTab();
+  EXPECT_NE(close_button(), focus_manager->GetFocusedView());
+  EXPECT_TRUE(media_controls_view_->IsDrawn());
+  EXPECT_TRUE(close_button()->IsDrawn());
+  EXPECT_FALSE(CloseButtonHasImage());
 }
 
 TEST_F(LockScreenMediaControlsViewTest, CloseButtonClick) {
@@ -665,8 +683,12 @@ TEST_F(LockScreenMediaControlsViewTest, UpdateAppIcon) {
   SimulateMediaSessionChanged(
       media_session::mojom::MediaPlaybackState::kPlaying);
 
+  const bool should_use_dark_color =
+      features::IsDarkLightModeEnabled() &&
+      DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
   gfx::ImageSkia default_icon = gfx::CreateVectorIcon(
-      message_center::kProductIcon, kAppIconSize, gfx::kChromeIconGrey);
+      message_center::kProductIcon, kAppIconSize,
+      should_use_dark_color ? gfx::kGoogleGrey500 : gfx::kGoogleGrey700);
 
   // Verify that the icon is initialized to the default.
   EXPECT_TRUE(icon_view()->GetImage().BackedBySameObjectAs(default_icon));

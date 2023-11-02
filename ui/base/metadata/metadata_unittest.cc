@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,8 +59,8 @@ class MetadataTestBaseClass : public ui::metadata::MetaDataProvider,
     TriggerChangedCallback(&int_property_);
   }
   int GetIntProperty() const { return int_property_; }
-  base::CallbackListSubscription AddIntPropertyChangedCallback(
-      ui::metadata::PropertyChangedCallback callback) WARN_UNUSED_RESULT {
+  [[nodiscard]] base::CallbackListSubscription AddIntPropertyChangedCallback(
+      ui::metadata::PropertyChangedCallback callback) {
     return AddPropertyChangedCallback(&int_property_, std::move(callback));
   }
 
@@ -88,8 +88,8 @@ class MetadataTestClass : public MetadataTestBaseClass {
     TriggerChangedCallback(&float_property_);
   }
   float GetFloatProperty() const { return float_property_; }
-  base::CallbackListSubscription AddFloatPropertyChangedCallback(
-      ui::metadata::PropertyChangedCallback callback) WARN_UNUSED_RESULT {
+  [[nodiscard]] base::CallbackListSubscription AddFloatPropertyChangedCallback(
+      ui::metadata::PropertyChangedCallback callback) {
     return AddPropertyChangedCallback(&float_property_, std::move(callback));
   }
 
@@ -212,12 +212,16 @@ TEST_F(MetadataTest, TestTypeCacheContainsTestClass) {
 TEST_F(MetadataTest, TestMetaDataFile) {
   UM::ClassMetaData* metadata = MetadataTestBaseClass::MetaData();
 
+#if defined(__clang__) && defined(_MSC_VER)
+  EXPECT_EQ(metadata->file(), "ui\\base\\metadata\\metadata_unittest.cc");
+#else
   EXPECT_EQ(metadata->file(), "ui/base/metadata/metadata_unittest.cc");
+#endif
 }
 
 TEST_F(MetadataTest, TestClassPropertyMetaData) {
   ClassPropertyMetaDataTestClass test_class;
-  gfx::Insets insets1(8, 8, 8, 8), insets2 = insets1;
+  gfx::Insets insets1(8), insets2 = insets1;
 
   std::map<std::string, std::u16string> expected_kv = {
       {"kIntKey", u"-1"},

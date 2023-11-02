@@ -32,12 +32,17 @@
 
 #include <memory>
 
+// Pick up LayoutBox definition for computing the default hash.
+// FIXME remove this, see https://linear.app/replay/issue/RUN-1741
+#include "third_party/blink/renderer/core/layout/layout_box.h"
+
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/layout/shapes/shape.h"
 #include "third_party/blink/renderer/core/style/shape_value.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -132,7 +137,7 @@ class ShapeOutsideInfo final : public GarbageCollected<ShapeOutsideInfo> {
   bool IsComputingShape() const { return is_computing_shape_; }
 
   PhysicalRect ComputedShapePhysicalBoundingBox() const;
-  FloatPoint ShapeToLayoutObjectPoint(FloatPoint) const;
+  gfx::PointF ShapeToLayoutObjectPoint(gfx::PointF) const;
   const Shape& ComputedShape() const;
 
   void Trace(Visitor* visitor) const;

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,20 +31,6 @@ void FamilyUserParentalControlMetrics::OnNewDay() {
       ChildUserServiceFactory::GetForBrowserContext(profile_);
   DCHECK(child_user_service);
   child_user_service->ReportTimeLimitPolicy();
-
-  SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForProfile(profile_);
-  DCHECK(supervised_user_service);
-  // Ignores the first report during OOBE. Prefs related to web filter
-  // policy may not have been successfully sync during OOBE process, which
-  // introduces bias.
-  if (first_report_on_current_device_) {
-    first_report_on_current_device_ = false;
-  } else {
-    // Ignores reports when web filter prefs are reset to default value. It
-    // might happen during sign out.
-    supervised_user_service->ReportNonDefaultWebFilterValue();
-  }
 }
 
 }  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,7 +56,8 @@ TEST_F(FileSystemProviderOperationsAddWatcherTest, Execute) {
   util::StatusCallbackLog callback_log;
 
   AddWatcher add_watcher(
-      NULL, file_system_info_, base::FilePath(kEntryPath), true /* recursive */,
+      nullptr, file_system_info_, base::FilePath(kEntryPath),
+      true /* recursive */,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
   add_watcher.SetDispatchEventImplForTesting(
       base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
@@ -69,10 +70,10 @@ TEST_F(FileSystemProviderOperationsAddWatcherTest, Execute) {
   EXPECT_EQ(
       extensions::api::file_system_provider::OnAddWatcherRequested::kEventName,
       event->event_name);
-  base::ListValue* event_args = event->event_args.get();
-  ASSERT_EQ(1u, event_args->GetList().size());
+  const base::Value::List& event_args = event->event_args;
+  ASSERT_EQ(1u, event_args.size());
 
-  const base::Value* options_as_value = &event_args->GetList()[0];
+  const base::Value* options_as_value = &event_args[0];
   ASSERT_TRUE(options_as_value->is_dict());
 
   AddWatcherRequestedOptions options;
@@ -89,7 +90,8 @@ TEST_F(FileSystemProviderOperationsAddWatcherTest, Execute_NoListener) {
   util::StatusCallbackLog callback_log;
 
   AddWatcher add_watcher(
-      NULL, file_system_info_, base::FilePath(kEntryPath), true /* recursive */,
+      nullptr, file_system_info_, base::FilePath(kEntryPath),
+      true /* recursive */,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
   add_watcher.SetDispatchEventImplForTesting(
       base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
@@ -103,7 +105,8 @@ TEST_F(FileSystemProviderOperationsAddWatcherTest, OnSuccess) {
   util::StatusCallbackLog callback_log;
 
   AddWatcher add_watcher(
-      NULL, file_system_info_, base::FilePath(kEntryPath), true /* recursive */,
+      nullptr, file_system_info_, base::FilePath(kEntryPath),
+      true /* recursive */,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
   add_watcher.SetDispatchEventImplForTesting(
       base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
@@ -122,7 +125,8 @@ TEST_F(FileSystemProviderOperationsAddWatcherTest, OnError) {
   util::StatusCallbackLog callback_log;
 
   AddWatcher add_watcher(
-      NULL, file_system_info_, base::FilePath(kEntryPath), true /* recursive */,
+      nullptr, file_system_info_, base::FilePath(kEntryPath),
+      true /* recursive */,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
   add_watcher.SetDispatchEventImplForTesting(
       base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,

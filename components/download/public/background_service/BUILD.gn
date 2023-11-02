@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,9 +9,11 @@ if (is_android) {
 
 source_set("public") {
   sources = [
+    "background_download_service.cc",
     "background_download_service.h",
     "client.cc",
     "client.h",
+    "clients.cc",
     "clients.h",
     "download_metadata.cc",
     "download_metadata.h",

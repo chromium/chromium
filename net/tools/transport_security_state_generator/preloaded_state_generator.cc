@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,7 @@
 #include "net/tools/transport_security_state_generator/cert_util.h"
 #include "net/tools/transport_security_state_generator/spki_hash.h"
 
-namespace net {
-
-namespace transport_security_state {
+namespace net::transport_security_state {
 
 namespace {
 
@@ -131,7 +129,8 @@ PreloadedStateGenerator::~PreloadedStateGenerator() = default;
 std::string PreloadedStateGenerator::Generate(
     const std::string& preload_template,
     const TransportSecurityStateEntries& entries,
-    const Pinsets& pinsets) {
+    const Pinsets& pinsets,
+    const base::Time& timestamp) {
   std::string output = preload_template;
 
   ProcessSPKIHashes(pinsets, &output);
@@ -145,9 +144,8 @@ std::string PreloadedStateGenerator::Generate(
   std::vector<std::unique_ptr<TransportSecurityStateTrieEntry>> trie_entries;
   std::vector<huffman_trie::TrieEntry*> raw_trie_entries;
   for (const auto& entry : entries) {
-    std::unique_ptr<TransportSecurityStateTrieEntry> trie_entry(
-        new TransportSecurityStateTrieEntry(expect_ct_report_uri_map,
-                                            pinsets_map, entry.get()));
+    auto trie_entry = std::make_unique<TransportSecurityStateTrieEntry>(
+        expect_ct_report_uri_map, pinsets_map, entry.get());
     raw_trie_entries.push_back(trie_entry.get());
     trie_entries.push_back(std::move(trie_entry));
   }
@@ -182,6 +180,9 @@ std::string PreloadedStateGenerator::Generate(
 
   ReplaceTag("HSTS_TRIE_BITS", base::NumberToString(new_length), &output);
   ReplaceTag("HSTS_TRIE_ROOT", base::NumberToString(root_position), &output);
+
+  ReplaceTag("PINS_LIST_TIMESTAMP", base::NumberToString(timestamp.ToTimeT()),
+             &output);
 
   return output;
 }
@@ -309,6 +310,4 @@ void PreloadedStateGenerator::ProcessPinsets(const Pinsets& pinset,
   ReplaceTag("PINSETS", pinsets_output, tpl);
 }
 
-}  // namespace transport_security_state
-
-}  // namespace net
+}  // namespace net::transport_security_state

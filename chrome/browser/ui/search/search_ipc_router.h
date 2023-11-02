@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/common/search/instant_types.h"
@@ -17,16 +18,16 @@
 #include "chrome/common/search/search.mojom.h"
 #include "components/ntp_tiles/ntp_tile_impression.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #error "Instant is only used on desktop";
 #endif
 
 class GURL;
 
 namespace content {
+class RenderFrameHost;
 class WebContents;
 }
 
@@ -34,8 +35,7 @@ class SearchIPCRouterTest;
 
 // SearchIPCRouter is responsible for receiving and sending IPC messages between
 // the browser and the Instant page.
-class SearchIPCRouter : public content::WebContentsObserver,
-                        public search::mojom::EmbeddedSearch {
+class SearchIPCRouter : public search::mojom::EmbeddedSearch {
  public:
   // SearchIPCRouter calls its delegate in response to messages received from
   // the page.
@@ -161,7 +161,7 @@ class SearchIPCRouter : public content::WebContentsObserver,
     return embedded_search_client_factory_->GetEmbeddedSearchClient();
   }
 
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
   std::unique_ptr<Policy> policy_;
 
   // Holds the number of main frame commits executed in this tab. Used by the

@@ -1,0 +1,40 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[
+  {
+    "namespace": "metricsPrivateIndividualApis",
+    "description": "An alias of metricsPrivate, which gives individual APIs permission separately in _api_features.json",
+    "functions": [
+      {
+        "name": "recordUserAction",
+        "type": "function",
+        "description": "Records an action performed by the user.",
+        "parameters": [
+          {"name": "name", "type": "string"}
+        ]
+      },
+      {
+        "name": "recordMediumTime",
+        "type": "function",
+        "description": "Records an elapsed time of no more than 3 minutes.  The sample value is specified in milliseconds.",
+        "parameters": [
+          {"name": "metricName", "type": "string"},
+          {"name": "value", "type": "integer"}
+        ]
+      },
+      {
+        "name": "recordEnumerationValue",
+        "type": "function",
+        "description": "Records an enumeration value to the given metric. Analogous to base::UmaHistogramEnumeration(). Use recordSparseValue for sparse enums or enums not starting at 0.",
+        "parameters": [
+          {"name": "metricName", "type": "string"},
+          {"name": "value", "type": "integer"},
+          {"name": "enumSize", "type": "integer"}
+        ]
+      }
+    ],
+    "events": []
+  }
+]

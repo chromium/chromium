@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,12 @@
 
 #include "ash/components/phonehub/fake_feature_status_provider.h"
 #include "ash/components/phonehub/feature_status.h"
+#include "ash/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chromeos/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class ConnectionSchedulerImplTest : public testing::Test {
@@ -206,4 +206,4 @@ TEST_F(ConnectionSchedulerImplTest, HostsNotEligible) {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+
+#include "base/record_replay.h"
 
 namespace base {
 namespace subtle {
@@ -32,9 +34,15 @@ struct ScopedPathUnlinkerTraits {
 using ScopedPathUnlinker =
     ScopedGeneric<const FilePath*, ScopedPathUnlinkerTraits>;
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 bool CheckFDAccessMode(int fd, int expected_mode) {
   int fd_status = fcntl(fd, F_GETFL);
+
+  // RUN-1685: Ignore the fcntl result after diverging from the recording,
+  // the recorder will start returning errors and we don't want to crash the process.
+  if (recordreplay::HasDivergedFromRecording())
+    return true;
+
   if (fd_status == -1) {
     // TODO(crbug.com/838365): convert to DLOG when bug fixed.
     PLOG(ERROR) << "fcntl(" << fd << ", F_GETFL) failed";
@@ -51,26 +59,11 @@ bool CheckFDAccessMode(int fd, int expected_mode) {
 
   return true;
 }
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 }  // namespace
 
-ScopedFDPair::ScopedFDPair() = default;
-
-ScopedFDPair::ScopedFDPair(ScopedFDPair&&) = default;
-
-ScopedFDPair& ScopedFDPair::operator=(ScopedFDPair&&) = default;
-
-ScopedFDPair::~ScopedFDPair() = default;
-
-ScopedFDPair::ScopedFDPair(ScopedFD in_fd, ScopedFD in_readonly_fd)
-    : fd(std::move(in_fd)), readonly_fd(std::move(in_readonly_fd)) {}
-
-FDPair ScopedFDPair::get() const {
-  return {fd.get(), readonly_fd.get()};
-}
-
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // static
 ScopedFD PlatformSharedMemoryRegion::ExecutableRegion::CreateFD(size_t size) {
   PlatformSharedMemoryRegion region =
@@ -79,7 +72,7 @@ ScopedFD PlatformSharedMemoryRegion::ExecutableRegion::CreateFD(size_t size) {
     return region.PassPlatformHandle().fd;
   return ScopedFD();
 }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 // static
 PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
@@ -166,6 +159,13 @@ bool PlatformSharedMemoryRegion::ConvertToReadOnly() {
   CHECK_EQ(mode_, Mode::kWritable)
       << "Only writable shared memory region can be converted to read-only";
 
+  // ScopedGeneric::reset crashes when resetting e.g. the fd to an identical fd.
+  // When we're diverged from the recording this can happen because dummy file
+  // descriptors can be used, and the reset() check isn't applicable here because
+  // closing a file descriptor doesn't do anything when replaying.
+  if (recordreplay::HasDivergedFromRecording())
+    handle_.fd.reset();
+
   handle_.fd.reset(handle_.readonly_fd.release());
   mode_ = Mode::kReadOnly;
   return true;
@@ -183,33 +183,15 @@ bool PlatformSharedMemoryRegion::ConvertToUnsafe() {
   return true;
 }
 
-bool PlatformSharedMemoryRegion::MapAtInternal(off_t offset,
-                                               size_t size,
-                                               void** memory,
-                                               size_t* mapped_size) const {
-  bool write_allowed = mode_ != Mode::kReadOnly;
-  *memory = mmap(nullptr, size, PROT_READ | (write_allowed ? PROT_WRITE : 0),
-                 MAP_SHARED, handle_.fd.get(), offset);
-
-  bool mmap_succeeded = *memory && *memory != MAP_FAILED;
-  if (!mmap_succeeded) {
-    DPLOG(ERROR) << "mmap " << handle_.fd.get() << " failed";
-    return false;
-  }
-
-  *mapped_size = size;
-  return true;
-}
-
 // static
 PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
                                                               size_t size
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
                                                               ,
                                                               bool executable
 #endif
 ) {
-#if defined(OS_NACL)
+#if BUILDFLAG(IS_NACL)
   // Untrusted code can't create descriptors or handles.
   return {};
 #else
@@ -233,7 +215,7 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
   // flag.
   FilePath directory;
   if (!GetShmemTempDir(
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
           executable,
 #else
           false /* executable */,
@@ -269,8 +251,15 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
     // Also open as readonly so that we can ConvertToReadOnly().
     readonly_fd.reset(HANDLE_EINTR(open(path.value().c_str(), O_RDONLY)));
     if (!readonly_fd.is_valid()) {
-      DPLOG(ERROR) << "open(\"" << path.value() << "\", O_RDONLY) failed";
-      return {};
+      // When diverged from the recording we can't open files that weren't
+      // originally opened when recording. Make up a fake file descriptor
+      // so execution can still proceed.
+      if (recordreplay::HasDivergedFromRecording()) {
+        readonly_fd.reset(42);
+      } else {
+        DPLOG(ERROR) << "open(\"" << path.value() << "\", O_RDONLY) failed";
+        return {};
+      }
     }
   }
 
@@ -280,19 +269,22 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
 
   if (readonly_fd.is_valid()) {
     stat_wrapper_t shm_stat;
-    if (File::Fstat(shm_file.GetPlatformFile(), &shm_stat) != 0) {
+    if (File::Fstat(shm_file.GetPlatformFile(), &shm_stat) != 0 &&
+        !recordreplay::HasDivergedFromRecording()) {
       DPLOG(ERROR) << "fstat(fd) failed";
       return {};
     }
 
     stat_wrapper_t readonly_stat;
-    if (File::Fstat(readonly_fd.get(), &readonly_stat) != 0) {
+    if (File::Fstat(readonly_fd.get(), &readonly_stat) != 0 &&
+        !recordreplay::HasDivergedFromRecording()) {
       DPLOG(ERROR) << "fstat(readonly_fd) failed";
       return {};
     }
 
-    if (shm_stat.st_dev != readonly_stat.st_dev ||
-        shm_stat.st_ino != readonly_stat.st_ino) {
+    if ((shm_stat.st_dev != readonly_stat.st_dev ||
+         shm_stat.st_ino != readonly_stat.st_ino) &&
+        !recordreplay::HasDivergedFromRecording()) {
       LOG(ERROR) << "Writable and read-only inodes don't match; bailing";
       return {};
     }
@@ -301,14 +293,14 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
   return PlatformSharedMemoryRegion(
       {ScopedFD(shm_file.TakePlatformFile()), std::move(readonly_fd)}, mode,
       size, UnguessableToken::Create());
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 }
 
 bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
-    PlatformHandle handle,
+    PlatformSharedMemoryHandle handle,
     Mode mode,
     size_t size) {
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   if (!CheckFDAccessMode(handle.fd,
                          mode == Mode::kReadOnly ? O_RDONLY : O_RDWR)) {
     return false;
@@ -330,7 +322,7 @@ bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
   // We also cannot try to mmap() a region as writable and look at the return
   // status because the plugin process crashes if system mmap() fails.
   return true;
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 }
 
 PlatformSharedMemoryRegion::PlatformSharedMemoryRegion(

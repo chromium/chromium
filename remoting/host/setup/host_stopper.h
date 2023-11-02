@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,10 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "remoting/host/setup/daemon_controller.h"
 #include "remoting/host/setup/service_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
 
@@ -25,7 +27,7 @@ class HostStopper final : public ServiceClient::Delegate {
   void StopLocalHost(std::string access_token, base::OnceClosure on_done);
 
  private:
-  void OnConfigLoaded(std::unique_ptr<base::DictionaryValue> config);
+  void OnConfigLoaded(absl::optional<base::Value::Dict> config);
   void StopHost();
   void OnStopped(DaemonController::AsyncResult);
 

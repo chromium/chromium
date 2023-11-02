@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -401,10 +401,13 @@ TEST(GoogleUtilTest, YoutubeDomains) {
                                   google_util::ALLOW_SUBDOMAIN,
                                   google_util::DISALLOW_NON_STANDARD_PORTS));
 
-  // YouTube Kids
-  EXPECT_TRUE(IsYoutubeDomainUrl(GURL("http://www.youtubekids.com"),
-                                 google_util::ALLOW_SUBDOMAIN,
-                                 google_util::DISALLOW_NON_STANDARD_PORTS));
+  // YouTube Kids is not a youtube domain as it does not use the standard Google
+  // auth stack.
+  //
+  // Regression test for b/247647476
+  EXPECT_FALSE(IsYoutubeDomainUrl(GURL("http://www.youtubekids.com"),
+                                  google_util::ALLOW_SUBDOMAIN,
+                                  google_util::DISALLOW_NON_STANDARD_PORTS));
 
   // TLD checks.
   EXPECT_TRUE(IsYoutubeDomainUrl(GURL("http://www.youtube.ca"),

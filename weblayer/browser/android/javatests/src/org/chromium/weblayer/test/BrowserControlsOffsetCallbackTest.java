@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,7 +34,7 @@ import java.util.List;
  */
 @RunWith(WebLayerJUnit4ClassRunner.class)
 @CommandLineFlags.Add("enable-features=ImmediatelyHideBrowserControlsForTest")
-@DisabledTest(message = "https://crbug.com/1223953")
+@DisabledTest(message = "https://crbug.com/1315399")
 public class BrowserControlsOffsetCallbackTest {
     @Rule
     public InstrumentationActivityTestRule mActivityTestRule =

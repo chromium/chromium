@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_WIDGET_BASE_H_
 
 #include "base/time/time.h"
+#include "cc/animation/animation_timeline.h"
+#include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
 #include "cc/paint/element_id.h"
 #include "cc/trees/browser_controls_params.h"
 #include "cc/trees/paint_holding_reason.h"
@@ -24,15 +26,22 @@
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/widget/compositing/layer_tree_view_delegate.h"
+#include "third_party/blink/renderer/platform/widget/compositing/render_frame_metadata_observer_impl.h"
 #include "third_party/blink/renderer/platform/widget/input/widget_base_input_handler.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
+#include "ui/gfx/ca_layer_result.h"
 
 namespace cc {
 class AnimationHost;
+class AnimationTimeline;
 class LayerTreeHost;
 class LayerTreeSettings;
 }  // namespace cc
+
+namespace gpu {
+class GpuChannelHost;
+}
 
 namespace ui {
 class Cursor;
@@ -45,13 +54,13 @@ struct ScreenInfos;
 namespace blink {
 class ImeEventGuard;
 class LayerTreeView;
+class PageScheduler;
 class WidgetBaseClient;
 class WidgetInputHandlerManager;
 class WidgetCompositor;
 
 namespace scheduler {
-class WebAgentGroupScheduler;
-class WebRenderWidgetSchedulingState;
+class WidgetScheduler;
 }
 
 // This class is the foundational class for all widgets that blink creates.
@@ -59,8 +68,7 @@ class WebRenderWidgetSchedulingState;
 // class. For simplicity purposes this class will be a member of those classes.
 //
 // Co-orindates handled in this class can be in the "blink coordinate space"
-// which is scaled DSF baked in if UseZoomForDSF is enabled, otherwise they
-// are equivalent to DIPs.
+// which is scaled DSF baked in.
 class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
                                    public LayerTreeViewDelegate {
  public:
@@ -72,7 +80,8 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       bool hidden,
       bool never_composited,
-      bool is_for_child_local_root);
+      bool is_embedded,
+      bool is_for_scalable_page);
   ~WidgetBase() override;
 
   // Initialize the compositor. |settings| is typically null. When |settings| is
@@ -86,8 +95,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // The `frame_widget_input_handler` must be invalidated when the WidgetBase is
   // destroyed/invalidated.
   void InitializeCompositing(
-      scheduler::WebAgentGroupScheduler& agent_group_scheduler,
-      bool for_child_local_root_frame,
+      PageScheduler& page_scheduler,
       const display::ScreenInfos& screen_infos,
       const cc::LayerTreeSettings* settings,
       base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
@@ -101,6 +109,8 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // Shutdown the compositor.
   void Shutdown();
 
+  void DidFirstVisuallyNonEmptyPaint(base::TimeTicks&);
+
   // Set the compositor as visible. If |visible| is true, then the compositor
   // will request a new layer frame sink, begin producing frames from the
   // compositor scheduler, and in turn will update the document lifecycle.
@@ -109,6 +119,12 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   void AddPresentationCallback(
       uint32_t frame_token,
       base::OnceCallback<void(base::TimeTicks)> callback);
+
+#if BUILDFLAG(IS_MAC)
+  void AddCoreAnimationErrorCodeCallback(
+      uint32_t frame_token,
+      base::OnceCallback<void(gfx::CALayerResult)> callback);
+#endif
 
   // mojom::blink::Widget overrides:
   void ForceRedraw(mojom::blink::Widget::ForceRedrawCallback callback) override;
@@ -121,12 +137,10 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
                          const gfx::Rect& window_screen_rect,
                          UpdateScreenRectsCallback callback) override;
   void WasHidden() override;
-  void WasShown(base::TimeTicks show_request_timestamp,
-                bool was_evicted,
+  void WasShown(bool was_evicted,
                 mojom::blink::RecordContentToVisibleTimeRequestPtr
                     record_tab_switch_time_request) override;
   void RequestPresentationTimeForNextFrame(
-      base::TimeTicks show_request_timestamp,
       mojom::blink::RecordContentToVisibleTimeRequestPtr visible_time_request)
       override;
   void CancelPresentationTimeRequest() override;
@@ -139,8 +153,11 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
       const cc::CompositorCommitData& commit_data) override;
   void BeginMainFrame(base::TimeTicks frame_time) override;
   void OnDeferMainFrameUpdatesChanged(bool) override;
-  void OnDeferCommitsChanged(bool defer_status,
-                             cc::PaintHoldingReason reason) override;
+  void OnDeferCommitsChanged(
+      bool defer_status,
+      cc::PaintHoldingReason reason,
+      absl::optional<cc::PaintHoldingCommitTrigger> trigger) override;
+  void OnPauseRenderingChanged(bool) override;
   void DidBeginMainFrame() override;
   void RequestNewLayerTreeFrameSink(
       LayerTreeFrameSinkCallback callback) override;
@@ -168,9 +185,9 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   void ScheduleAnimationForWebTests() override;
 
   cc::AnimationHost* AnimationHost() const;
+  cc::AnimationTimeline* ScrollAnimationTimeline() const;
   cc::LayerTreeHost* LayerTreeHost() const;
-  scheduler::WebRenderWidgetSchedulingState* RendererWidgetSchedulingState()
-      const;
+  scheduler::WidgetScheduler* WidgetScheduler();
 
   mojom::blink::WidgetHost* GetWidgetHostRemote() { return widget_host_.get(); }
 
@@ -217,7 +234,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   void ForceTextInputStateUpdate();
   void RequestCompositionUpdates(bool immediate_request, bool monitor_updates);
   void UpdateCompositionInfo(bool immediate_request);
-  void SetFocus(bool enable);
+  void SetFocus(mojom::blink::FocusState focus_state);
   bool has_focus() const { return has_focus_; }
   void MouseCaptureLost();
   void CursorVisibilityChange(bool is_visible);
@@ -318,9 +335,6 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   gfx::Rect BlinkSpaceToEnclosedDIPs(const gfx::Rect& rect);
   gfx::RectF BlinkSpaceToDIPs(const gfx::RectF& rectF);
 
-  // Returns whether Zoom for DSF is enabled for the widget.
-  bool UseZoomForDsf() { return use_zoom_for_dsf_; }
-
   void BindWidgetCompositor(
       mojo::PendingReceiver<mojom::blink::WidgetCompositor> receiver);
 
@@ -360,6 +374,8 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
     return local_surface_id_from_parent_;
   }
 
+  bool is_embedded() const { return is_embedded_; }
+
  private:
   bool CanComposeInline();
   void UpdateTextInputStateInternal(bool show_virtual_keyboard,
@@ -387,12 +403,35 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // Helper to get the non-emulated device scale factor.
   float GetOriginalDeviceScaleFactor() const;
 
+  // Finishes the call to RequestNewLayerTreeFrameSink() once the
+  // |gpu_channel_host| is available.
+  // TODO(crbug.com/1278147): Clean up these parameters using either a struct or
+  // saving on WidgetBase if kEstablishGpuChannelAsync launches.
+  void FinishRequestNewLayerTreeFrameSink(
+      const KURL& url,
+      mojo::PendingReceiver<viz::mojom::blink::CompositorFrameSink>
+          compositor_frame_sink_receiver,
+      mojo::PendingRemote<viz::mojom::blink::CompositorFrameSinkClient>
+          compositor_frame_sink_client,
+      mojo::PendingReceiver<cc::mojom::blink::RenderFrameMetadataObserverClient>
+          render_frame_metadata_observer_client_receiver,
+      mojo::PendingRemote<cc::mojom::blink::RenderFrameMetadataObserver>
+          render_frame_metadata_observer_remote,
+      std::unique_ptr<RenderFrameMetadataObserverImpl>
+          render_frame_metadata_observer,
+      std::unique_ptr<cc::mojo_embedder::AsyncLayerTreeFrameSink::InitParams>
+          params,
+      LayerTreeFrameSinkCallback callback,
+      scoped_refptr<gpu::GpuChannelHost> gpu_channel_host);
+
   // Indicates that we are never visible, so never produce graphical output.
   const bool never_composited_;
-  // Indicates this is for a child local root.
-  const bool is_for_child_local_root_;
-  // When true, the device scale factor is a part of blink coordinates.
-  const bool use_zoom_for_dsf_;
+  // Indicates this is for a child local root or a nested main frame.
+  // TODO(crbug.com/1254770): revisit this for portals.
+  const bool is_embedded_ = false;
+  // Indicates that this widget is for a portal element, top level frame, or a
+  // GuestView.
+  const bool is_for_scalable_page_ = false;
   // Set true by initialize functions, used to check that only one is called.
   bool initialized_ = false;
 
@@ -405,8 +444,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
 
   std::unique_ptr<LayerTreeView> layer_tree_view_;
   scoped_refptr<WidgetInputHandlerManager> widget_input_handler_manager_;
-  std::unique_ptr<scheduler::WebRenderWidgetSchedulingState>
-      render_widget_scheduling_state_;
+  scoped_refptr<scheduler::WidgetScheduler> widget_scheduler_;
   bool has_focus_ = false;
   WidgetBaseInputHandler input_handler_{this};
   scoped_refptr<WidgetCompositor> widget_compositor_;
@@ -440,8 +478,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
 
   // Stores the current control and selection bounds of |webwidget_|
   // that are used to position the candidate window during IME composition.
-  // These are stored in DIPs if use-zoom-for-dsf is disabled and are relative
-  // to the root frame.
+  // These are stored physical pixels and are relative to the root frame.
   gfx::Rect frame_control_bounds_;
   gfx::Rect frame_selection_bounds_;
 
@@ -498,6 +535,9 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // TODO(dtapuska): Figure out if we can change this to Blink Space.
   // See https://crbug.com/1131389
   gfx::Size visible_viewport_size_in_dips_;
+
+  // The AnimationTimeline for smooth scrolls in this widget.
+  scoped_refptr<cc::AnimationTimeline> scroll_animation_timeline_;
 
   // Indicates that we shouldn't bother generated paint events.
   bool is_hidden_;

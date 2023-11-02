@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,10 @@
 #include <string>
 
 #include "base/observer_list_types.h"
+
+namespace base {
+class Value;
+}
 
 namespace content {
 class BrowserContext;
@@ -32,6 +36,9 @@ class TestApiObserver : public base::CheckedObserver {
   // If the observer will reply to |function|, returns true.
   virtual bool OnTestMessage(TestSendMessageFunction* function,
                              const std::string& message);
+
+  // Called on chrome.test.sendScriptResult().
+  virtual void OnScriptResult(const base::Value& script_result) {}
 };
 
 }  // namespace extensions

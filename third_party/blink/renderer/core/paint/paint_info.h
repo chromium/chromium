@@ -27,28 +27,20 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_INFO_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_INFO_H_
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
-// TODO(jchaffraix): Once we unify PaintBehavior and PaintLayerFlags, we should
-// move PaintLayerFlags to PaintPhase and rename it. Thus removing the need for
-// this #include
-// "third_party/blink/renderer/core/paint/paint_layer_painting_info.h"
-#include "third_party/blink/renderer/core/paint/paint_layer_painting_info.h"
+#include "third_party/blink/renderer/core/paint/paint_flags.h"
 #include "third_party/blink/renderer/core/paint/paint_phase.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
-#include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
-#include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
-
-class LayoutBoxModelObject;
 
 struct CORE_EXPORT PaintInfo {
   STACK_ALLOCATED();
@@ -57,27 +49,22 @@ struct CORE_EXPORT PaintInfo {
   PaintInfo(GraphicsContext& context,
             const CullRect& cull_rect,
             PaintPhase phase,
-            GlobalPaintFlags global_paint_flags,
-            PaintLayerFlags paint_flags,
-            const LayoutBoxModelObject* paint_container = nullptr)
+            PaintFlags paint_flags = PaintFlag::kNoFlag)
       : context(context),
         phase(phase),
         cull_rect_(cull_rect),
-        paint_container_(paint_container),
-        paint_flags_(paint_flags),
-        global_paint_flags_(global_paint_flags) {}
+        paint_flags_(paint_flags) {}
 
   PaintInfo(GraphicsContext& new_context,
             const PaintInfo& copy_other_fields_from)
       : context(new_context),
         phase(copy_other_fields_from.phase),
         cull_rect_(copy_other_fields_from.cull_rect_),
-        paint_container_(copy_other_fields_from.paint_container_),
         fragment_id_(copy_other_fields_from.fragment_id_),
-        paint_flags_(copy_other_fields_from.paint_flags_),
-        global_paint_flags_(copy_other_fields_from.global_paint_flags_) {
-    // We should never pass the flag to other PaintInfo.
+        paint_flags_(copy_other_fields_from.paint_flags_) {
+    // We should never pass these flags to other PaintInfo.
     DCHECK(!copy_other_fields_from.is_painting_background_in_contents_space);
+    DCHECK(!copy_other_fields_from.skips_background_);
   }
 
   // Creates a PaintInfo for painting descendants. See comments about the paint
@@ -95,40 +82,29 @@ struct CORE_EXPORT PaintInfo {
     return result;
   }
 
+  bool ShouldOmitCompositingInfo() const {
+    return paint_flags_ & PaintFlag::kOmitCompositingInfo;
+  }
+
   bool IsRenderingClipPathAsMaskImage() const {
-    return paint_flags_ & kPaintLayerPaintingRenderingClipPathAsMask;
+    return paint_flags_ & PaintFlag::kPaintingClipPathAsMask;
   }
   bool IsRenderingResourceSubtree() const {
-    return paint_flags_ & kPaintLayerPaintingRenderingResourceSubtree;
+    return paint_flags_ & PaintFlag::kPaintingResourceSubtree;
   }
 
-  // TODO(wangxianzhu): Rename this function to ShouldSkipBackground() for CAP.
-  bool SkipRootBackground() const {
-    return paint_flags_ & kPaintLayerPaintingSkipRootBackground;
-  }
-  void SetSkipsBackground(bool b) {
-    DCHECK(RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-    if (b)
-      paint_flags_ |= kPaintLayerPaintingSkipRootBackground;
-    else
-      paint_flags_ &= ~kPaintLayerPaintingSkipRootBackground;
-  }
+  bool ShouldSkipBackground() const { return skips_background_; }
+  void SetSkipsBackground(bool b) { skips_background_ = b; }
 
   bool ShouldAddUrlMetadata() const {
-    return global_paint_flags_ & kGlobalPaintAddUrlMetadata;
+    return paint_flags_ & PaintFlag::kAddUrlMetadata;
   }
 
   DisplayItem::Type DisplayItemTypeForClipping() const {
     return DisplayItem::PaintPhaseToClipType(phase);
   }
 
-  const LayoutBoxModelObject* PaintContainer() const {
-    return paint_container_;
-  }
-
-  GlobalPaintFlags GetGlobalPaintFlags() const { return global_paint_flags_; }
-
-  PaintLayerFlags PaintFlags() const { return paint_flags_; }
+  PaintFlags GetPaintFlags() const { return paint_flags_; }
 
   const CullRect& GetCullRect() const { return cull_rect_; }
   void SetCullRect(const CullRect& cull_rect) { cull_rect_ = cull_rect; }
@@ -136,8 +112,8 @@ struct CORE_EXPORT PaintInfo {
   bool IntersectsCullRect(
       const PhysicalRect& rect,
       const PhysicalOffset& offset = PhysicalOffset()) const {
-    return cull_rect_.Intersects(ToGfxRect(
-        EnclosingIntRect(PhysicalRect(rect.offset + offset, rect.size))));
+    return cull_rect_.Intersects(
+        ToEnclosingRect(PhysicalRect(rect.offset + offset, rect.size)));
   }
 
   void ApplyInfiniteCullRect() { cull_rect_ = CullRect::Infinite(); }
@@ -148,7 +124,7 @@ struct CORE_EXPORT PaintInfo {
 
   // Returns the fragment of the current painting object matching the current
   // layer fragment.
-  const FragmentData* LegacyFragmentToPaint(const LayoutObject& object) const {
+  const FragmentData* FragmentToPaint(const LayoutObject& object) const {
     if (fragment_id_ == WTF::kNotFound)
       return &object.FirstFragment();
     for (const auto* fragment = &object.FirstFragment(); fragment;
@@ -161,23 +137,6 @@ struct CORE_EXPORT PaintInfo {
     return nullptr;
   }
 
-  const FragmentData* FragmentToPaint(const LayoutObject& object) const {
-    if (const auto* box = DynamicTo<LayoutBox>(&object)) {
-      // We're are looking up FragmentData via LayoutObject, even though the
-      // object has NG fragments. This happens with objects that don't support
-      // fragment traversal, such as replaced content. We cannot use legacy-
-      // based lookup in such cases, as we might not have set a fragment ID to
-      // match against. Since we got here, though, it has to mean that we should
-      // paint the one and only fragment.
-      if (box->PhysicalFragmentCount()) {
-        DCHECK_EQ(box->PhysicalFragmentCount(), 1u);
-        DCHECK(!box->FirstFragment().NextFragment());
-        return &box->FirstFragment();
-      }
-    }
-    return LegacyFragmentToPaint(object);
-  }
-
   // Returns the FragmentData of the specified physical fragment. If we're
   // performing fragment traversal, it will map directly to the right
   // FragmentData. Otherwise we'll fall back to matching against the current
@@ -186,7 +145,7 @@ struct CORE_EXPORT PaintInfo {
       const NGPhysicalFragment& fragment) const {
     if (fragment_id_ == WTF::kNotFound)
       return fragment.GetFragmentData();
-    return LegacyFragmentToPaint(*fragment.GetLayoutObject());
+    return FragmentToPaint(*fragment.GetLayoutObject());
   }
 
   wtf_size_t FragmentID() const { return fragment_id_; }
@@ -194,11 +153,9 @@ struct CORE_EXPORT PaintInfo {
   void SetIsInFragmentTraversal() { fragment_id_ = WTF::kNotFound; }
 
   bool IsPaintingBackgroundInContentsSpace() const {
-    DCHECK(RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
     return is_painting_background_in_contents_space;
   }
   void SetIsPaintingBackgroundInContentsSpace(bool b) {
-    DCHECK(RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
     is_painting_background_in_contents_space = b;
   }
 
@@ -209,16 +166,11 @@ struct CORE_EXPORT PaintInfo {
     descendant_painting_blocked_ = blocked;
   }
 
-  // FIXME: Introduce setters/getters at some point. Requires a lot of changes
-  // throughout paint/.
   GraphicsContext& context;
   PaintPhase phase;
 
  private:
   CullRect cull_rect_;
-
-  // The box model object that originates the current painting.
-  const LayoutBoxModelObject* paint_container_;
 
   // The ID of the fragment that we're currently painting.
   //
@@ -228,17 +180,14 @@ struct CORE_EXPORT PaintInfo {
   // NGPhysicalFragment to FragmentData in such cases).
   wtf_size_t fragment_id_ = WTF::kNotFound;
 
-  PaintLayerFlags paint_flags_;
-  const GlobalPaintFlags global_paint_flags_;
+  const PaintFlags paint_flags_;
 
-  // For CAP only.
   bool is_painting_background_in_contents_space = false;
+  bool skips_background_ = false;
 
   // Used by display-locking.
   bool descendant_painting_blocked_ = false;
 };
-
-Image::ImageDecodingMode GetImageDecodingMode(Node*);
 
 }  // namespace blink
 

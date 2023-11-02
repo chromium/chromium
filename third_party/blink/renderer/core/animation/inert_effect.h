@@ -46,7 +46,6 @@ class CORE_EXPORT InertEffect final : public AnimationEffect {
               const Timing&,
               bool paused,
               absl::optional<AnimationTimeDelta> inherited_time,
-              absl::optional<TimelinePhase> inherited_phase,
               absl::optional<AnimationTimeDelta> timeline_duration,
               double playback_rate);
 

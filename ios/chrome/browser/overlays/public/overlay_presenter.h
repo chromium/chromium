@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,8 +18,8 @@ class OverlayPresenter {
  public:
   virtual ~OverlayPresenter() = default;
 
-  // Retrieves the OverlayPresenter for |browser| that manages overlays at
-  // |modality|, creating one if necessary.
+  // Retrieves the OverlayPresenter for `browser` that manages overlays at
+  // `modality`, creating one if necessary.
   static OverlayPresenter* FromBrowser(Browser* browser,
                                        OverlayModality modality);
 

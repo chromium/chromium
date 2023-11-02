@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -35,15 +36,12 @@ class TabGroupHeader;
 class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(TabGroupEditorBubbleView);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabGroupEditorBubbleView,
-                                         kEditorBubbleIdentifier);
 
   static constexpr int TAB_GROUP_HEADER_CXMENU_SAVE_GROUP = 13;
   static constexpr int TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP = 14;
   static constexpr int TAB_GROUP_HEADER_CXMENU_UNGROUP = 15;
   static constexpr int TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP = 16;
   static constexpr int TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW = 17;
-  static constexpr int TAB_GROUP_HEADER_CXMENU_FEEDBACK = 18;
 
   using Colors =
       std::vector<std::pair<tab_groups::TabGroupColorId, std::u16string>>;
@@ -82,11 +80,10 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
   void UngroupPressed(TabGroupHeader* header_view);
   void CloseGroupPressed();
   void MoveGroupToNewWindowPressed();
-  void SendFeedbackPressed();
 
   void OnBubbleClose();
 
-  const Browser* const browser_;
+  const raw_ptr<const Browser> browser_;
   const tab_groups::TabGroupId group_;
 
   class TitleFieldController : public views::TextfieldController {
@@ -102,7 +99,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
                         const ui::KeyEvent& key_event) override;
 
    private:
-    TabGroupEditorBubbleView* const parent_;
+    const raw_ptr<TabGroupEditorBubbleView> parent_;
   };
 
   TitleFieldController title_field_controller_;
@@ -126,13 +123,13 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
     bool stop_context_menu_propagation_;
   };
 
-  TitleField* title_field_;
+  raw_ptr<TitleField> title_field_;
 
   Colors colors_;
-  ColorPickerView* color_selector_;
+  raw_ptr<ColorPickerView> color_selector_;
 
-  views::ToggleButton* save_group_toggle_ = nullptr;
-  views::LabelButton* move_menu_item_ = nullptr;
+  raw_ptr<views::ToggleButton> save_group_toggle_ = nullptr;
+  raw_ptr<views::LabelButton> move_menu_item_ = nullptr;
 
   // If true will use the |anchor_rect_| provided in the constructor, otherwise
   // fall back to using the anchor view bounds.

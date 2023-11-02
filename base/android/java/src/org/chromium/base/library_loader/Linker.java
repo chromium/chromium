@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.ParcelFileDescriptor;
 import android.os.Parcelable;
-import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -17,6 +16,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
+import org.chromium.base.TimeUtils.UptimeMillisTimer;
 import org.chromium.base.annotations.AccessedByNative;
 import org.chromium.base.annotations.JniIgnoreNatives;
 import org.chromium.base.metrics.RecordHistogram;
@@ -311,11 +311,10 @@ abstract class Linker {
         boolean keepReservation = keepMemoryReservationUntilLoad();
         switch (preference) {
             case PreferAddress.FIND_RESERVED:
-                long startTimeMs = SystemClock.uptimeMillis();
+                UptimeMillisTimer timer = new UptimeMillisTimer();
                 boolean reservationFound =
                         getLinkerJni().findRegionReservedByWebViewZygote(mLocalLibInfo);
-                long durationMs = SystemClock.uptimeMillis() - startTimeMs;
-                saveWebviewReservationSearchStats(reservationFound, durationMs);
+                saveWebviewReservationSearchStats(reservationFound, timer.getElapsedMillis());
                 if (reservationFound) {
                     assert isNonZeroLoadAddress(mLocalLibInfo);
                     if (addressHint == 0 || addressHint == mLocalLibInfo.mLoadAddress) {
@@ -399,6 +398,40 @@ abstract class Linker {
     void setApkFilePath(String path) {}
 
     /**
+     * Tells whether atomic replacement of RELRO after library load should be performed. It is only
+     * supported by the ModernLinker. The latter should give up with RELRO on the retry that uses
+     * the RelroSharingMode.NO_SHARING.  This method should be called after loading the library.
+     */
+    @GuardedBy("mLock")
+    private boolean shouldAtomicallyReplaceRelroAfterLoad() {
+        // This is a demonstration of the unfortunate tight coupling between the Linker, and the
+        // implementation details in loadLibraryImplLocked() for each of the two subclasses.
+        // Decoupling it would be nontrivial given the reuse of |mLock| in the subclasses.
+        // Improvements of this kind will soon become unnecessary because the LegacyLinker will go
+        // away with the deprecation of the LegacyLinker in Android M.
+        if (mLinkerWasWaitingSynchronously) {
+            // The LegacyLinker was blocked waiting for |mRemoteLibInfo| to arrive, used it and
+            // nullified immediately.
+            return false;
+        }
+        if (mRemoteLibInfo != null && mState == State.DONE) {
+            // Only the ModernLinker can end up in the State.DONE while mRemoteLibInfo is not
+            // nullified yet. With an invalid load address it is impossible to locate the RELRO
+            // region in the current process. This could happen when the library loaded successfully
+            // only after the fallback to no sharing.
+            //
+            // TODO(pasko): There is no need to check for |mLoadAddress| here because in the worst
+            // case the zero address will be ignored on the native side of the
+            // atomicReplaceRelroLocked(). The takeSharedRelrosFromBundle() relies on zero addresses
+            // being ignored in native anyway. It seems the only effect of removing this check here
+            // will be extra added samples to the RelroSharingStatus2 histogram. This will be a tiny
+            // bit smoother to do after M99.
+            return mLocalLibInfo.mLoadAddress != 0;
+        }
+        return false;
+    }
+
+    /**
      * Loads the native library using a given mode.
      *
      * @param library The library name to load.
@@ -414,7 +447,7 @@ abstract class Linker {
                 Log.i(TAG, "Attempt to replace RELRO: waswaiting=%b, remotenonnull=%b, state=%d",
                         mLinkerWasWaitingSynchronously, mRemoteLibInfo != null, mState);
             }
-            if (!mLinkerWasWaitingSynchronously && mRemoteLibInfo != null && mState == State.DONE) {
+            if (shouldAtomicallyReplaceRelroAfterLoad()) {
                 atomicReplaceRelroLocked(/* relroAvailableImmediately= */ true);
             }
         } finally {
@@ -602,7 +635,7 @@ abstract class Linker {
 
         // Most likely the relocations already have been provided at this point. If not, wait until
         // takeSharedRelrosFromBundle() notifies about RELROs arrival.
-        long startTime = DEBUG ? SystemClock.uptimeMillis() : 0;
+        UptimeMillisTimer timer = DEBUG ? new UptimeMillisTimer() : null;
         while (mRemoteLibInfo == null) {
             try {
                 mLock.wait();
@@ -612,8 +645,7 @@ abstract class Linker {
         }
 
         if (DEBUG) {
-            Log.i(TAG, "Time to wait for shared RELRO: %d ms",
-                    SystemClock.uptimeMillis() - startTime);
+            Log.i(TAG, "Time to wait for shared RELRO: %d ms", timer.getElapsedMillis());
         }
     }
 

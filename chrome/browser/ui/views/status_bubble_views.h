@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/status_bubble.h"
 #include "ui/gfx/geometry/rect.h"
@@ -153,8 +153,8 @@ class StatusBubbleViews : public StatusBubble {
   // going outside the bounds of the hosting widget.
   std::unique_ptr<views::Widget> popup_;
 
-  views::View* base_view_;
-  StatusView* view_ = nullptr;
+  raw_ptr<views::View> base_view_;
+  raw_ptr<StatusView> view_ = nullptr;
 
   // Manages the expansion of a status bubble to fit a long URL.
   std::unique_ptr<StatusViewExpander> expand_view_;
@@ -169,7 +169,7 @@ class StatusBubbleViews : public StatusBubble {
   // Used for posting tasks. This is typically
   // base::ThreadTaskRunnerHandle::Get(), but may be set to something else for
   // tests.
-  base::SequencedTaskRunner* task_runner_;
+  raw_ptr<base::SequencedTaskRunner> task_runner_;
 
   // Times expansion of status bubble when URL is too long for standard width.
   base::WeakPtrFactory<StatusBubbleViews> expand_timer_factory_{this};

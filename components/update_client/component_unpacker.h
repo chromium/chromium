@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,9 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "components/update_client/update_client_errors.h"
+
+// TODO(crbug.com/1349158): Remove this class once Puffin patches are fully
+// implemented.
 
 namespace crx_file {
 enum class VerifierFormat;
@@ -117,9 +120,8 @@ class ComponentUnpacker : public base::RefCountedThreadSafe<ComponentUnpacker> {
   void EndUnzipping(bool error);
 
   // The third step is to optionally patch files - this is a no-op for full
-  // (non-differential) updates. This step is asynchronous. Returns false if an
-  // error is encountered.
-  bool BeginPatching();
+  // (non-differential) updates. This step is asynchronous.
+  void BeginPatching();
   void EndPatching(UnpackerError error, int extended_error);
 
   // The final step is to do clean-up for things that can't be tidied as we go.

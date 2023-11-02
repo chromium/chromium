@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -1039,6 +1039,19 @@ TEST(TagParserTest, CaseInsensitiveAttributeNames) {
       absl::nullopt,
       TagArgsBuilder()
           .WithApp(AppArgsBuilder("8617EE50-F91C-4DC1-B937-0969EEF59B0B")
+                       .WithAppName("TestApp")
+                       .Build())
+          .WithBundleName("TestApp")
+          .Build());
+}
+
+TEST(TagParserTest, BracesEncoding) {
+  VerifyTagParseSuccess(
+      "appguid=%7B8617EE50-F91C-4DC1-B937-0969EEF59B0B%7D&"
+      "appname=TestApp&",
+      absl::nullopt,
+      TagArgsBuilder()
+          .WithApp(AppArgsBuilder("{8617EE50-F91C-4DC1-B937-0969EEF59B0B}")
                        .WithAppName("TestApp")
                        .Build())
           .WithBundleName("TestApp")

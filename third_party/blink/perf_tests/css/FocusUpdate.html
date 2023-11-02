@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Measure :focus update for a simple color change</title>
+    <title>Measure :focus update for a simple cursor change</title>
     <script src="../resources/runner.js"></script>
     <style type="text/css">
         body { margin: 0 }
-        a { color: black; }
-        a:focus { color: red; }
+        a { cursor: pointer; }
+        a:focus { cursor: crosshair; }
     </style>
 </head>
 <body>
@@ -27,7 +27,7 @@
         var a2 = a1.nextSibling;
 
         PerfTestRunner.measureRunsPerSecond({
-        description: "Measure :focus update for a simple color change",
+        description: "Measure :focus update for a simple cursor change",
         run:function() {
             a1.focus();
             document.body.offsetTop; // Update layout for focused state.

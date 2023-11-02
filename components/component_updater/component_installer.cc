@@ -1,10 +1,14 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/component_updater/component_installer.h"
 
+#include <cstdint>
+#include <string>
+#include <tuple>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -14,10 +18,9 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
@@ -34,8 +37,13 @@
 #include "components/update_client/component_unpacker.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
+#include "components/update_client/update_query_params.h"
 #include "components/update_client/utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_APPLE)
+#include "base/mac/backup_util.h"
+#endif
 
 namespace component_updater {
 
@@ -68,21 +76,22 @@ ComponentInstaller::ComponentInstaller(
 ComponentInstaller::~ComponentInstaller() = default;
 
 void ComponentInstaller::Register(ComponentUpdateService* cus,
-                                  base::OnceClosure callback) {
+                                  base::OnceClosure callback,
+                                  base::TaskPriority task_priority) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(cus);
   Register(base::BindOnce(&ComponentUpdateService::RegisterComponent,
                           base::Unretained(cus)),
-           std::move(callback));
+           std::move(callback), task_priority);
 }
 
 void ComponentInstaller::Register(RegisterCallback register_callback,
-                                  base::OnceClosure callback) {
+                                  base::OnceClosure callback,
+                                  base::TaskPriority task_priority) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  // Some components may affect user visible features, hence USER_VISIBLE.
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+      {base::MayBlock(), task_priority,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 
   if (!installer_policy_) {
@@ -148,7 +157,7 @@ Result ComponentInstaller::InstallHelper(const base::FilePath& unpack_path,
 
   // Acquire the ownership of the |local_install_path|.
   base::ScopedTempDir install_path_owner;
-  ignore_result(install_path_owner.Set(local_install_path));
+  std::ignore = install_path_owner.Set(local_install_path);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!base::SetPosixFilePermissions(local_install_path, 0755)) {
@@ -160,6 +169,12 @@ Result ComponentInstaller::InstallHelper(const base::FilePath& unpack_path,
 
   DCHECK(!base::PathExists(unpack_path));
   DCHECK(base::PathExists(local_install_path));
+
+#if BUILDFLAG(IS_APPLE)
+  // Since components can be large and can be re-downloaded when needed, they
+  // are excluded from backups.
+  base::mac::SetBackupExclusion(local_install_path);
+#endif
 
   const Result result =
       installer_policy_->OnCustomInstall(local_manifest, local_install_path);
@@ -306,9 +321,8 @@ void ComponentInstaller::StartRegistration(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::FilePath base_dir_ = base_component_dir;
-  std::vector<base::FilePath::StringType> components;
-  installer_policy_->GetRelativeInstallDir().GetComponents(&components);
-  for (const base::FilePath::StringType& component : components) {
+  for (const base::FilePath::StringType& component :
+       installer_policy_->GetRelativeInstallDir().GetComponents()) {
     base_dir_ = base_dir_.Append(component);
     if (!base::SetPosixFilePermissions(base_dir_, 0755)) {
       PLOG(ERROR) << "SetPosixFilePermissions failed: " << base_dir.value();
@@ -344,6 +358,17 @@ void ComponentInstaller::StartRegistration(
                   << ").";
       older_paths.push_back(path);
       continue;
+    } else {
+      const base::Value::List* accept_archs =
+          manifest.GetDict().FindList("accept_arch");
+      if (accept_archs != nullptr &&
+          base::ranges::none_of(*accept_archs, [](const base::Value& v) {
+            return v.is_string() &&
+                   v.GetString() == update_client::UpdateQueryParams::GetArch();
+          })) {
+        older_paths.push_back(path);
+        continue;
+      }
     }
 
     // New valid |version| folder found!
@@ -418,23 +443,18 @@ void ComponentInstaller::FinishRegistration(
   current_version_ = registration_info->version;
   current_fingerprint_ = registration_info->fingerprint;
 
-  update_client::CrxComponent crx;
-  installer_policy_->GetHash(&crx.pk_hash);
-  crx.app_id = update_client::GetCrxIdFromPublicKeyHash(crx.pk_hash);
-  crx.installer = this;
-  crx.action_handler = action_handler_;
-  crx.version = current_version_;
-  crx.fingerprint = current_fingerprint_;
-  crx.name = installer_policy_->GetName();
-  crx.installer_attributes = installer_policy_->GetInstallerAttributes();
-  crx.requires_network_encryption =
-      installer_policy_->RequiresNetworkEncryption();
-  crx.crx_format_requirement =
-      crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF;
-  crx.supports_group_policy_enable_component_updates =
-      installer_policy_->SupportsGroupPolicyEnabledComponentUpdates();
+  std::vector<uint8_t> public_key_hash;
+  installer_policy_->GetHash(&public_key_hash);
 
-  if (!std::move(register_callback).Run(crx)) {
+  if (!std::move(register_callback)
+           .Run(ComponentRegistration(
+               update_client::GetCrxIdFromPublicKeyHash(public_key_hash),
+               installer_policy_->GetName(), public_key_hash, current_version_,
+               current_fingerprint_,
+               installer_policy_->GetInstallerAttributes(), action_handler_,
+               this, installer_policy_->RequiresNetworkEncryption(),
+               installer_policy_
+                   ->SupportsGroupPolicyEnabledComponentUpdates()))) {
     LOG(ERROR) << "Component registration failed for "
                << installer_policy_->GetName();
     if (!callback.is_null())

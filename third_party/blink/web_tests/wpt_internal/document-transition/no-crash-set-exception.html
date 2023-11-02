@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html class=reftest-wait>
+<title>Shared transitions: author styles ignored during prepare</title>
+<link rel="help" href="https://github.com/WICG/shared-element-transitions">
+<link rel="author" href="mailto:khushalsagar@chromium.org">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+div {
+  width: 100px;
+  height: 100px;
+  background: blue;
+  contain: paint;
+  page-transition-tag: shared;
+}
+
+html::page-transition,
+html::page-transition-container(shared),
+html::page-transition-image-wrapper(shared),
+html::page-transition-outgoing-image(shared),
+html::page-transition-incoming-image(shared) {
+  background: blue;
+}
+</style>
+
+<div></div>
+
+<script>
+function validate_background(pseudoString) {
+  console.log(window.getComputedStyle(document.documentElement, pseudoString));
+  return window.getComputedStyle(document.documentElement, pseudoString).style.background != 'blue';
+}
+
+promise_test(async t => {
+  return new Promise((resolve, reject) => {
+    let transition = document.createDocumentTransition();
+    transition.start(() => {
+      resolve();
+      throw 'error';
+    });
+  });
+}, "An exception thrown during a transition shouldn't crash.");
+
+</script>

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,6 +35,7 @@ const char* const kDeprecatedTypesToAllow[] = {
 };
 const char* const kDeprecatedTypesToBlock[] = {
     "plugins",
+    "ppapi-broker",
 };
 
 const char* GetForcedValueForDeprecatedSetting(base::StringPiece type) {
@@ -54,14 +55,14 @@ bool IsDeprecated(base::StringPiece type) {
 v8::Local<v8::Object> ContentSetting::Create(
     v8::Isolate* isolate,
     const std::string& property_name,
-    const base::ListValue* property_values,
+    const base::Value::List* property_values,
     APIRequestHandler* request_handler,
     APIEventHandler* event_handler,
     APITypeReferenceMap* type_refs,
     const BindingAccessChecker* access_checker) {
-  std::string pref_name;
-  CHECK(property_values->GetString(0u, &pref_name));
-  const base::Value& value_spec = property_values->GetList()[1u];
+  CHECK_GE(property_values->size(), 2u);
+  const std::string& pref_name = (*property_values)[0].GetString();
+  const base::Value& value_spec = (*property_values)[1u];
   CHECK(value_spec.is_dict());
 
   gin::Handle<ContentSetting> handle = gin::CreateHandle(
@@ -210,13 +211,14 @@ void ContentSetting::HandleFunction(const std::string& method_name,
     }
   }
 
-  parse_result.arguments_list->Insert(
+  parse_result.arguments_list->GetList().Insert(
       parse_result.arguments_list->GetList().begin(), base::Value(pref_name_));
 
   v8::Local<v8::Promise> promise = request_handler_->StartRequest(
       context, "contentSettings." + method_name,
       std::move(parse_result.arguments_list), parse_result.async_type,
-      parse_result.callback, v8::Local<v8::Function>());
+      parse_result.callback, v8::Local<v8::Function>(),
+      binding::ResultModifierFunction());
   if (!promise.IsEmpty())
     arguments->Return(promise);
 }

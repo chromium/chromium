@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,11 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -23,7 +23,6 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/base/cursor/cursor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -51,7 +50,6 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/table_layout.h"
-#include "ui/views/native_cursor.h"
 
 namespace {
 
@@ -84,8 +82,8 @@ class MediaComboboxModel : public ui::ComboboxModel {
   int GetDeviceIndex(const blink::MediaStreamDevice& device) const;
 
   // ui::ComboboxModel:
-  int GetItemCount() const override;
-  std::u16string GetItemAt(int index) const override;
+  size_t GetItemCount() const override;
+  std::u16string GetItemAt(size_t index) const override;
 
  private:
   blink::mojom::MediaStreamType type_;
@@ -185,11 +183,11 @@ int MediaComboboxModel::GetDeviceIndex(
   return 0;
 }
 
-int MediaComboboxModel::GetItemCount() const {
-  return std::max(1, static_cast<int>(GetDevices().size()));
+size_t MediaComboboxModel::GetItemCount() const {
+  return std::max(size_t{1}, GetDevices().size());
 }
 
-std::u16string MediaComboboxModel::GetItemAt(int index) const {
+std::u16string MediaComboboxModel::GetItemAt(size_t index) const {
   return GetDevices().empty()
              ? l10n_util::GetStringUTF16(IDS_MEDIA_MENU_NO_DEVICE_TITLE)
              : base::UTF8ToUTF16(GetDevices()[index].name);
@@ -220,7 +218,7 @@ class ContentSettingBubbleContents::ListItemContainer : public views::View {
   Row AddNewRowToLayout(NewRow row);
   void UpdateScrollHeight(const Row& row);
 
-  ContentSettingBubbleContents* parent_;
+  raw_ptr<ContentSettingBubbleContents> parent_;
 
   // Our controls representing list items, so we can add or remove
   // these dynamically. Each pair represents one list item.
@@ -236,7 +234,8 @@ ContentSettingBubbleContents::ListItemContainer::ListItemContainer(
 void ContentSettingBubbleContents::ListItemContainer::AddItem(
     const ContentSettingBubbleModel::ListItem& item) {
   // Padding for list items and icons.
-  static constexpr gfx::Insets kTitleDescriptionListItemInset(3, 0, 13, 0);
+  static constexpr auto kTitleDescriptionListItemInset =
+      gfx::Insets::TLBR(3, 0, 13, 0);
 
   auto item_icon = std::make_unique<views::ImageView>();
   if (item.image) {
@@ -311,7 +310,7 @@ void ContentSettingBubbleContents::ListItemContainer::ResetLayout() {
       .AddPaddingColumn(views::TableLayout::kFixedSize,
                         ChromeLayoutProvider::Get()->GetDistanceMetric(
                             views::DISTANCE_RELATED_CONTROL_HORIZONTAL))
-      .AddColumn(views::LayoutAlignment::kStart,
+      .AddColumn(views::LayoutAlignment::kStretch,
                  views::LayoutAlignment::kStretch, 1.0,
                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
   auto* scroll_view = views::ScrollView::GetScrollViewForContents(this);
@@ -331,7 +330,7 @@ void ContentSettingBubbleContents::ListItemContainer::AddRowToLayout(
 ContentSettingBubbleContents::ListItemContainer::Row
 ContentSettingBubbleContents::ListItemContainer::AddNewRowToLayout(NewRow row) {
   static_cast<views::TableLayout*>(GetLayoutManager())
-      ->AddRows(1, views::GridLayout::kFixedSize);
+      ->AddRows(1, views::TableLayout::kFixedSize);
   Row row_result;
   row_result.first = AddChildView(std::move(row.first));
   row_result.second = AddChildView(std::move(row.second));
@@ -366,9 +365,6 @@ ContentSettingBubbleContents::ContentSettingBubbleContents(
     : content::WebContentsObserver(web_contents),
       BubbleDialogDelegateView(anchor_view, arrow),
       content_setting_bubble_model_(std::move(content_setting_bubble_model)) {
-  chrome::RecordDialogCreation(
-      chrome::DialogIdentifier::CONTENT_SETTING_CONTENTS);
-
   // Although other code in this class treats content_setting_bubble_model_ as
   // though it's optional, in fact it can only become null if
   // WebContentsDestroyed() is called, which can't happen until the constructor
@@ -408,13 +404,6 @@ ContentSettingBubbleContents::~ContentSettingBubbleContents() {
 
 void ContentSettingBubbleContents::WindowClosing() {
   if (content_setting_bubble_model_) {
-    if (GetWidget()->closed_reason() ==
-            views::Widget::ClosedReason::kEscKeyPressed ||
-        GetWidget()->closed_reason() ==
-            views::Widget::ClosedReason::kCloseButtonClicked) {
-      content_setting_bubble_model_->OnBubbleDismissedByUser();
-    }
-
     content_setting_bubble_model_->CommitChanges();
   }
 }
@@ -458,14 +447,6 @@ bool ContentSettingBubbleContents::ShouldShowCloseButton() const {
   return true;
 }
 
-void ContentSettingBubbleContents::OnWidgetDestroying(views::Widget* widget) {
-  if (widget->closed_reason() == views::Widget::ClosedReason::kEscKeyPressed ||
-      widget->closed_reason() ==
-          views::Widget::ClosedReason::kCloseButtonClicked) {
-    content_setting_bubble_model_->OnBubbleDismissedByUser();
-  }
-}
-
 void ContentSettingBubbleContents::Init() {
   DCHECK(content_setting_bubble_model_);
   const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
@@ -489,8 +470,8 @@ void ContentSettingBubbleContents::Init() {
   // Layout for the item list (blocked plugins and popups).
   if (!bubble_content.list_items.empty()) {
     auto list_item_container = std::make_unique<ListItemContainer>(this);
-    list_item_container->SetBorder(
-        views::CreateEmptyBorder(0, margins().left(), 0, margins().right()));
+    list_item_container->SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::TLBR(0, margins().left(), 0, margins().right())));
     auto scroll_view = std::make_unique<views::ScrollView>();
     list_item_container_ =
         scroll_view->SetContents(std::move(list_item_container));
@@ -568,7 +549,7 @@ void ContentSettingBubbleContents::Init() {
   // LayoutRowType::FULL_WIDTH need to not have them applied to look correct.
   const int left_margin = margins().left();
   const int right_margin = margins().right();
-  set_margins(gfx::Insets(margins().top(), 0, margins().bottom(), 0));
+  set_margins(gfx::Insets::TLBR(margins().top(), 0, margins().bottom(), 0));
 
   for (LayoutRow& row : rows) {
     if (row.type != LayoutRowType::FULL_WIDTH) {
@@ -577,8 +558,8 @@ void ContentSettingBubbleContents::Init() {
                              ? provider->GetDistanceMetric(
                                    DISTANCE_SUBSECTION_HORIZONTAL_INDENT)
                              : 0);
-      row.view->SetBorder(
-          views::CreateEmptyBorder(0, row_left_margin, 0, right_margin));
+      row.view->SetBorder(views::CreateEmptyBorder(
+          gfx::Insets::TLBR(0, row_left_margin, 0, right_margin)));
     }
     AddChildView(std::move(row.view));
   }
@@ -588,9 +569,12 @@ void ContentSettingBubbleContents::Init() {
 
 void ContentSettingBubbleContents::StyleLearnMoreButton() {
   DCHECK(learn_more_button_);
-  SkColor text_color = GetColorProvider()->GetColor(ui::kColorLabelForeground);
-  views::SetImageFromVectorIcon(learn_more_button_,
-                                vector_icons::kHelpOutlineIcon, text_color);
+  const ui::ColorProvider* cp = GetColorProvider();
+  SkColor icon_color = cp->GetColor(ui::kColorIcon);
+  SkColor icon_disabled_color = cp->GetColor(ui::kColorIconDisabled);
+  views::SetImageFromVectorIconWithColor(learn_more_button_,
+                                         vector_icons::kHelpOutlineIcon,
+                                         icon_color, icon_disabled_color);
 }
 
 std::unique_ptr<views::View>
@@ -659,15 +643,7 @@ void ContentSettingBubbleContents::CustomLinkClicked() {
   GetWidget()->Close();
 }
 
-void ContentSettingBubbleContents::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !navigation_handle->HasCommitted())
-    return;
-
+void ContentSettingBubbleContents::PrimaryPageChanged(content::Page& page) {
   // Content settings are based on the main frame, so if it switches then
   // close up shop.
   GetWidget()->Close();
@@ -696,7 +672,8 @@ void ContentSettingBubbleContents::OnPerformAction(views::Combobox* combobox) {
   MediaComboboxModel* model =
       static_cast<MediaComboboxModel*>(combobox->GetModel());
   content_setting_bubble_model_->OnMediaMenuClicked(
-      model->type(), model->GetDevices()[combobox->GetSelectedIndex()].id);
+      model->type(),
+      model->GetDevices()[combobox->GetSelectedIndex().value()].id);
 }
 
 BEGIN_METADATA(ContentSettingBubbleContents, views::BubbleDialogDelegateView)

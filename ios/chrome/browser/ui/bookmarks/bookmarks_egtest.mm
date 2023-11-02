@@ -1,26 +1,27 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
-#include "base/ios/ios_util.h"
-#include "components/strings/grit/components_strings.h"
+#import "base/ios/ios_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#include "net/base/net_errors.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "net/base/net_errors.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -108,8 +109,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
       onElementWithMatcher:grey_accessibilityID(kPopupMenuToolsMenuTableViewId)]
       assertWithMatcher:grey_notNil()];
-  // After veryfing, close the ToolsMenu by tapping on its button.
-  [ChromeEarlGreyUI openToolsMenu];
+  // After veryfing, close the ToolsMenu.
+  [ChromeEarlGreyUI closeToolsMenu];
 
   // Close the opened tab.
   [ChromeEarlGrey closeCurrentTab];
@@ -184,6 +185,10 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 // shows only a snackbar.
 - (void)testKeyboardCommandsRegistered_AddBookmark {
   // Add the bookmark.
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+
+  const GURL firstURL = self.testServer->GetURL("/pony.html");
+  [ChromeEarlGrey loadURL:firstURL];
   [BookmarkEarlGreyUI starCurrentTab];
   GREYAssertTrue([ChromeEarlGrey registeredKeyCommandCount] > 0,
                  @"Some keyboard commands are registered.");
@@ -212,51 +217,6 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   GREYAssertTrue([ChromeEarlGrey registeredKeyCommandCount] == 0,
                  @"No keyboard commands are registered.");
-}
-
-// Test that swiping left to right navigate back.
-// TODO(crbug.com/768339): This test is faling on devices because
-// grey_swipeFastInDirectionWithStartPoint does not work.
-// TODO(crbug.com/978877): Fix the bug in EG and enable the test.
-// Navigate back side swipe gesture does not work on iOS13 simulator. This
-// is not specific to Bookmarks. The issue is that the gesture needs to
-// start offscreen, and EG cannot replicate that.
-- (void)DISABLED_testNavigateBackWithGesture {
-  // Disabled on iPad as there is not "navigate back" gesture.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test not applicable for iPad");
-  }
-
-  [BookmarkEarlGrey setupStandardBookmarks];
-  [BookmarkEarlGreyUI openBookmarks];
-  [BookmarkEarlGreyUI openMobileBookmarks];
-
-  // Make sure Mobile Bookmarks is not present. Also check the button Class to
-  // avoid matching the "back" NavigationBar button.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityID(@"Mobile Bookmarks"),
-                                   grey_kindOfClassName(@"UITableViewCell"),
-                                   nil)] assertWithMatcher:grey_nil()];
-
-  // Open the first folder, to be able to go back twice on the bookmarks.
-  [[EarlGrey
-      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 1")]
-      performAction:grey_tap()];
-
-  // Back twice using swipe left gesture.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBookmarkHomeTableViewIdentifier)]
-      performAction:grey_swipeFastInDirectionWithStartPoint(kGREYDirectionRight,
-                                                            0.01, 0.5)];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBookmarkHomeTableViewIdentifier)]
-      performAction:grey_swipeFastInDirectionWithStartPoint(kGREYDirectionRight,
-                                                            0.01, 0.5)];
-
-  // Check we navigated back to the Mobile Bookmarks.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Mobile Bookmarks")]
-      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests that the bookmark context bar is shown in MobileBookmarks.
@@ -836,6 +796,31 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // When the user has no bookmarks, the root view should be an empty state.
   [BookmarkEarlGreyUI verifyEmptyState];
+}
+
+// Tests that bookmarking an incognito tab actually bookmarks the
+// expected URL. Regression test for https://crbug.com/1353114.
+- (void)testBookmarkFromIncognito {
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+
+  const GURL firstURL = self.testServer->GetURL("/pony.html");
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:firstURL];
+
+  const GURL incognitoURL = self.testServer->GetURL("/destination.html");
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey loadURL:incognitoURL];
+
+  // Add the bookmark from the UI.
+  [BookmarkEarlGrey waitForBookmarkModelLoaded:YES];
+  NSString* bookmarkTitle = @"Test Page";
+  [BookmarkEarlGreyUI bookmarkCurrentTabWithTitle:@"Test Page"];
+
+  [BookmarkEarlGrey verifyExistenceOfBookmarkWithURL:base::SysUTF8ToNSString(
+                                                         incognitoURL.spec())
+                                                name:bookmarkTitle];
+  [BookmarkEarlGrey
+      verifyAbsenceOfBookmarkWithURL:base::SysUTF8ToNSString(firstURL.spec())];
 }
 
 // TODO(crbug.com/695749): Add egtests for:

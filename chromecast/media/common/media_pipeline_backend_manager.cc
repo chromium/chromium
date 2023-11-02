@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -82,6 +82,11 @@ std::unique_ptr<CmaBackend> MediaPipelineBackendManager::CreateBackend(
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   return std::make_unique<MediaPipelineBackendWrapper>(params, this,
                                                        media_resource_tracker_);
+}
+
+scoped_refptr<base::SequencedTaskRunner>
+MediaPipelineBackendManager::GetMediaTaskRunner() {
+  return media_task_runner_;
 }
 
 void MediaPipelineBackendManager::BackendDestroyed(

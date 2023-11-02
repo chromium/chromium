@@ -1,8 +1,8 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
 import("//build/config/c++/c++.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/sanitizers/sanitizers.gni")
@@ -48,10 +48,17 @@ config("compiler") {
   ]
 
   if (current_cpu == "arm64") {
-    # For outline atomics on AArch64 (can't pass this unconditionally
-    # due to unused flag warning on other targets).
+    # Reduce the page size from 65536 in order to reduce binary size slightly
+    # by shrinking the alignment gap between segments. This also causes all
+    # segments to be mapped adjacently, which breakpad relies on.
+    ldflags += [ "-Wl,-z,max-page-size=4096" ]
+  }
+
+  if (current_cpu == "arm64") {
     if (arm_control_flow_integrity == "standard") {
       cflags += [ "-mbranch-protection=standard" ]
+    } else if (arm_control_flow_integrity == "pac") {
+      cflags += [ "-mbranch-protection=pac-ret" ]
     }
   }
 
@@ -91,11 +98,6 @@ config("runtime_library") {
     libs += [ "android_support" ]
   }
 
-  # arm builds of libc++ starting in NDK r12 depend on unwind.
-  if (current_cpu == "arm") {
-    libs += [ "unwind" ]
-  }
-
   if (current_cpu == "arm" && arm_version == 6) {
     libs += [ "atomic" ]
   }
@@ -127,6 +129,27 @@ config("lld_pack_relocations") {
   ldflags = [ "-Wl,--pack-dyn-relocs=android" ]
 }
 
+config("lld_relr_relocations") {
+  # RELR supported API 30+, but supported 28+ with --use-android-relr-tags.
+  # https://android.googlesource.com/platform/bionic/+/master/android-changes-for-ndk-developers.md#relative-relocations-relr
+  ldflags = [ "-Wl,--pack-dyn-relocs=relr,--use-android-relr-tags" ]
+}
+
+config("lld_branch_target_hardening") {
+  # Config opts a shared library into BTI linker hardening. This
+  # is an opt-in config (rather than default-enabled) to avoid
+  # interfering with the V8 CFI bots (crbug.com/1334614).
+  if (current_cpu == "arm64") {
+    if (arm_control_flow_integrity == "standard") {
+      # Linking objects without GNU_PROPERTY_AARCH64_FEATURE_1_BTI
+      # in their .gnu.note section implicitly results in the final
+      # binary losing Branch Target Identification (BTI) support.
+      # Issue a warning if this happens.
+      ldflags = [ "-Wl,-z,force-bti" ]
+    }
+  }
+}
+
 # Used for instrumented build to generate the orderfile.
 config("default_orderfile_instrumentation") {
   if (use_order_profiling) {
@@ -139,10 +162,20 @@ config("default_orderfile_instrumentation") {
   }
 }
 
+config("jni_include_dir") {
+  include_dirs = [ jni_headers_dir ]
+}
+
 if (current_toolchain == default_toolchain) {
   pool("goma_javac_pool") {
     # Override action_pool when goma is enabled for javac.
     depth = 10000
+  }
+
+  # nocompile tests share output directory to avoid them all needing to rebuild
+  # things. But this also means they can't run in parallel.
+  pool("nocompile_pool") {
+    depth = 1
   }
 
   # When defined, this pool should be used instead of link_pool for command

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,12 +12,14 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/thread_annotations.h"
 #include "chrome/browser/privacy_budget/encountered_surface_tracker.h"
 #include "chrome/browser/privacy_budget/mesa_distribution.h"
 #include "chrome/browser/privacy_budget/privacy_budget_prefs.h"
+#include "chrome/browser/privacy_budget/privacy_budget_reid_score_estimator.h"
 #include "chrome/browser/privacy_budget/representative_surface_set.h"
 #include "chrome/browser/privacy_budget/surface_set_equivalence.h"
 #include "chrome/browser/privacy_budget/surface_set_valuation.h"
@@ -109,6 +111,11 @@ class IdentifiabilityStudyState {
 
   // Initializes from fields persisted in `pref_service_`.
   void InitFromPrefs();
+
+  // Checks if this surface is part of a set of surfaces we want to estimate the
+  // Reid score of. If so, stores its value for later estimation.
+  void MaybeStoreValueForComputingReidScore(blink::IdentifiableSurface surface,
+                                            blink::IdentifiableToken token);
 
   // The largest offset that we can select. At worst `seen_surfaces_` must keep
   // track of this many (+1) surfaces. This value is approximately based on the
@@ -246,7 +253,7 @@ class IdentifiabilityStudyState {
   IdentifiabilityStudyGroupSettings settings_;
 
   // `pref_service_` pointee must outlive `this`. Used for persistent state.
-  PrefService* pref_service_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
 
   // Offset of selected block. Only used when using assigned block sampling.
   //
@@ -377,6 +384,10 @@ class IdentifiabilityStudyState {
   //
   // Where kSettings is the PrivacyBudgetSettingsProvider singleton.
   EncounteredSurfaceTracker surface_encounters_;
+
+  // Keeps track of the list of surfaces for which we need to estimate the Reid
+  // score.
+  PrivacyBudgetReidScoreEstimator reid_estimator_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

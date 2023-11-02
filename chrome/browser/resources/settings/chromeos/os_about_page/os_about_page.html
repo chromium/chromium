@@ -35,8 +35,13 @@
   }
 
   iron-icon[icon='cr:error-outline'],
+  iron-icon[icon='cr:warning'],
   iron-icon[icon='os-settings:end-of-life'] {
     fill: var(--cros-icon-color-alert);
+  }
+
+  #firmwareUpdateBadge {
+    --iron-icon-fill-color: var(--cros-icon-color-secondary);
   }
 
   .settings-box .start {
@@ -56,7 +61,20 @@
       filter: invert(1);
     }
   }
+
+  .separator-firmware-updates-badge {
+    margin-inline-end: -4px;
+    margin-inline-start: 12px;
+  }
+
+  #deferredUpdateButtons {
+    min-height: unset;
+    padding-bottom: 10px;
+  }
 </style>
+<iron-media-query query="(prefers-color-scheme: dark)"
+    query-matches="{{isDarkModeActive_}}">
+</iron-media-query>
 <settings-section page-title="$i18n{aboutOsPageTitle}" section="about">
   <settings-animated-pages id="pages" section="about"
       focus-config="[[focusConfig_]]">
@@ -80,7 +98,9 @@
               icon$="[[getUpdateStatusIcon_(
                   hasEndOfLife_, currentUpdateStatusEvent_)]]"
               src="[[getThrobberSrcIfUpdating_(
-                  hasEndOfLife_, currentUpdateStatusEvent_)]]">
+                  isDarkModeActive_,
+                  hasEndOfLife_,
+                  currentUpdateStatusEvent_)]]">
           </iron-icon>
         </div>
         <div class="start padded">
@@ -98,6 +118,9 @@
               id="endOfLifeMessageContainer" hidden="[[!hasEndOfLife_]]"
               localized-string="$i18n{endOfLifeMessage}">
           </localized-link>
+          <div class="secondary" hidden="[[!hasDeferredUpdate_]]">
+            $i18n{aboutDeferredUpdate}
+          </div>
           <div class="secondary">$i18n{aboutBrowserVersion}</div>
         </div>
         <div class="separator" hidden="[[!showButtonContainer_]]"></div>
@@ -113,6 +136,18 @@
             $i18n{aboutCheckForUpdates}
           </cr-button>
         </span>
+      </div>
+      <div id="deferredUpdateButtons" class="settings-box first"
+          hidden="[[!hasDeferredUpdate_]]">
+        <div class="icon-container"></div>
+        <cr-button id="applyDeferredUpdate"
+            on-click="onApplyDeferredUpdateClick_">
+          $i18n{aboutRelaunch}
+        </cr-button>
+        <cr-button id="applyAndSetAutoUpdate"
+            on-click="onApplyAndSetAutoUpdateClick_">
+          $i18n{aboutRelaunchAndAutoUpdate}
+        </cr-button>
       </div>
       <cr-link-row
           id="aboutTPMFirmwareUpdate"
@@ -151,15 +186,30 @@
       <cr-link-row class="hr" id="reportIssue"
           on-click="onReportIssueClick_"
           hidden="[[!prefs.feedback_allowed.value]]"
-          label="$i18n{aboutReportAnIssue}" external
+          label="[[getReportIssueLabel_()]]" external
           deep-link-focus-id$="[[Setting.kReportAnIssue]]">
       </cr-link-row>
 </if>
       <cr-link-row class="hr" id="diagnostics"
           on-click="onDiagnosticsClick_"
-          hidden$="[[!showDiagnosticsApp_]]"
           label="$i18n{aboutDiagnostics}" external
           deep-link-focus-id$="[[Setting.kDiagnostics]]">
+      </cr-link-row>
+      <cr-link-row class="hr" id="firmwareUpdates"
+          on-click="onFirmwareUpdatesClick_"
+          hidden$="[[!showFirmwareUpdatesApp_]]"
+          label="$i18n{aboutFirmwareUpdates}" external using-slotted-label
+          deep-link-focus-id$="[[Setting.kFirmwareUpdates]]">
+        <iron-icon id="firmwareUpdateBadge"
+            icon$="[[getFirmwareUpdatesIcon_(firmwareUpdateCount_)]]"
+            hidden$="[[!shouldShowFirmwareUpdatesBadge_(
+              firmwareUpdateCount_)]]">
+        </iron-icon>
+        <div id="firmwareUpdateBadgeSeparator"
+            class="separator separator-firmware-updates-badge"
+            hidden$="[[!shouldShowFirmwareUpdatesBadge_(
+              firmwareUpdateCount_)]]">
+        </div>
       </cr-link-row>
       <cr-link-row class="hr" id="detailed-build-info-trigger"
           on-click="onDetailedBuildInfoClick_"
@@ -175,7 +225,8 @@
       <settings-subpage page-title="$i18n{aboutDetailedBuildInfo}">
         <settings-detailed-build-info
             eol-message-with-month-and-year=
-                "[[eolMessageWithMonthAndYear_]]">
+                "[[eolMessageWithMonthAndYear_]]"
+            prefs="{{prefs}}">
         </settings-detailed-build-info>
       </settings-subpage>
     </template>

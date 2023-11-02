@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,7 @@ SchemeMatchingResult SchemeMatches(
     const String& self_protocol) {
   DCHECK_EQ(protocol, protocol.DeprecatedLower());
   const String& scheme =
-      (source.scheme.IsEmpty() ? self_protocol : source.scheme);
+      (source.scheme.empty() ? self_protocol : source.scheme);
 
   if (scheme == protocol)
     return SchemeMatchingResult::kMatchingExact;
@@ -48,7 +48,7 @@ SchemeMatchingResult SchemeMatches(
 bool HostMatches(const network::mojom::blink::CSPSource& source,
                  const String& host) {
   if (source.is_host_wildcard) {
-    if (source.host.IsEmpty()) {
+    if (source.host.empty()) {
       // host-part = "*"
       return true;
     }
@@ -63,7 +63,7 @@ bool HostMatches(const network::mojom::blink::CSPSource& source,
 
 bool PathMatches(const network::mojom::blink::CSPSource& source,
                  const String& url_path) {
-  if (source.path.IsEmpty() || (source.path == "/" && url_path.IsEmpty()))
+  if (source.path.empty() || (source.path == "/" && url_path.empty()))
     return true;
 
   String path =
@@ -89,7 +89,7 @@ PortMatchingResult PortMatches(const network::mojom::blink::CSPSource& source,
   }
 
   bool is_scheme_http;  // needed for detecting an upgrade when the port is 0
-  is_scheme_http = source.scheme.IsEmpty()
+  is_scheme_http = source.scheme.empty()
                        ? EqualIgnoringASCIICase("http", self_protocol)
                        : EqualIgnoringASCIICase("http", source.scheme);
 
@@ -206,7 +206,7 @@ bool CSPSourceMatchesAsSelf(const network::mojom::blink::CSPSource& source,
 }
 
 bool CSPSourceIsSchemeOnly(const network::mojom::blink::CSPSource& source) {
-  return source.host.IsEmpty() && (!source.is_host_wildcard);
+  return source.host.empty() && (!source.is_host_wildcard);
 }
 
 }  // namespace blink

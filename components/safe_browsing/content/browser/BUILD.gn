@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -48,6 +48,7 @@ if (safe_browsing_mode > 0) {
       "//components/no_state_prefetch/browser",
       "//components/prefs",
       "//components/safe_browsing/content/browser/triggers",
+      "//components/safe_browsing/content/browser/web_ui",
       "//components/safe_browsing/core/browser",
       "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
       "//components/safe_browsing/core/common",
@@ -207,6 +208,7 @@ source_set("client_side_detection") {
     "//components/safe_browsing/content/browser/web_ui:web_ui",
     "//components/safe_browsing/content/common:interfaces",
     "//components/safe_browsing/core/browser:token_fetcher",
+    "//components/safe_browsing/core/browser:verdict_cache_manager",
     "//components/safe_browsing/core/browser/db:allowlist_checker_client",
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
@@ -218,6 +220,7 @@ source_set("client_side_detection") {
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/security_interstitials/content:security_interstitial_page",
     "//components/variations",
+    "//components/zoom:zoom",
     "//content/public/browser",
     "//google_apis:google_apis",
     "//net:net",
@@ -225,4 +228,12 @@ source_set("client_side_detection") {
     "//services/network/public/cpp",
     "//url:url",
   ]
+
+  if (safe_browsing_mode != 0) {
+    deps += [ "//components/safe_browsing/content/common:visual_utils" ]
+  }
+
+  if (is_android) {
+    deps += [ "//ui/android" ]
+  }
 }

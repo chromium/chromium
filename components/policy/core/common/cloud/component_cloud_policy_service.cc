@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,7 @@
 #include "components/policy/core/common/cloud/resource_cache.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/core/common/schema_map.h"
+#include "components/policy/core/common/values_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -56,7 +57,7 @@ bool ToPolicyNamespace(const std::pair<std::string, std::string>& key,
 
 }  // namespace
 
-ComponentCloudPolicyService::Delegate::~Delegate() {}
+ComponentCloudPolicyService::Delegate::~Delegate() = default;
 
 // Owns the objects that live on the background thread, and posts back to the
 // thread that the ComponentCloudPolicyService runs on whenever the policy
@@ -205,8 +206,9 @@ void ComponentCloudPolicyService::Backend::InitIfNeeded() {
   std::unique_ptr<PolicyBundle> bundle(std::make_unique<PolicyBundle>());
   bundle->CopyFrom(store_.policy());
   service_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&ComponentCloudPolicyService::SetPolicy,
-                                service_, std::move(bundle)));
+      FROM_HERE,
+      base::BindOnce(&ComponentCloudPolicyService::SetPolicy, service_,
+                     std::move(bundle), store_.GetJsonPolicyMap()));
 
   initialized_ = true;
 
@@ -236,8 +238,9 @@ void ComponentCloudPolicyService::Backend::
   std::unique_ptr<PolicyBundle> bundle(std::make_unique<PolicyBundle>());
   bundle->CopyFrom(store_.policy());
   service_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&ComponentCloudPolicyService::SetPolicy,
-                                service_, std::move(bundle)));
+      FROM_HERE,
+      base::BindOnce(&ComponentCloudPolicyService::SetPolicy, service_,
+                     std::move(bundle), store_.GetJsonPolicyMap()));
 }
 
 void ComponentCloudPolicyService::Backend::UpdateWithLastFetchedPolicy() {
@@ -312,6 +315,9 @@ ComponentCloudPolicyService::ComponentCloudPolicyService(
 ComponentCloudPolicyService::~ComponentCloudPolicyService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  for (auto& observer : observers_)
+    observer.OnComponentPolicyServiceDestruction(this);
+
   schema_registry_->RemoveObserver(this);
   core_->store()->RemoveObserver(this);
   core_->RemoveObserver(this);
@@ -331,6 +337,23 @@ void ComponentCloudPolicyService::ClearCache() {
   backend_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&Backend::ClearCache, base::Unretained(backend_.get())));
+}
+
+void ComponentCloudPolicyService::AddObserver(
+    ComponentCloudPolicyServiceObserver* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  observers_.AddObserver(observer);
+  // Pretend that the ComponentPolicyStore was updated so Backend triggers
+  // notification of all observers, including the newly added one.
+  backend_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&Backend::OnComponentCloudPolicyStoreUpdated,
+                                base::Unretained(backend_.get())));
+}
+
+void ComponentCloudPolicyService::RemoveObserver(
+    ComponentCloudPolicyServiceObserver* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  observers_.RemoveObserver(observer);
 }
 
 void ComponentCloudPolicyService::OnSchemaRegistryReady() {
@@ -483,12 +506,14 @@ void ComponentCloudPolicyService::Disconnect() {
 }
 
 void ComponentCloudPolicyService::SetPolicy(
-    std::unique_ptr<PolicyBundle> policy) {
+    std::unique_ptr<PolicyBundle> policy,
+    const ComponentPolicyMap& component_policy) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Store the current unfiltered policies.
   unfiltered_policy_ = std::move(policy);
 
+  NotifyComponentPolicyUpdated(component_policy);
   FilterAndInstallPolicy();
 }
 
@@ -508,6 +533,13 @@ void ComponentCloudPolicyService::FilterAndInstallPolicy() {
   DVLOG(1) << "Installed policy (count = "
            << std::distance(policy_.begin(), policy_.end()) << ")";
   delegate_->OnComponentCloudPolicyUpdated();
+}
+
+void ComponentCloudPolicyService::NotifyComponentPolicyUpdated(
+    const ComponentPolicyMap& component_policy) {
+  for (auto& observer : observers_) {
+    observer.OnComponentPolicyUpdated(component_policy);
+  }
 }
 
 }  // namespace policy

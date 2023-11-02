@@ -67,7 +67,7 @@ static AtomicString DefaultFontFamily(sk_sp<SkFontMgr> font_manager) {
 }
 
 static AtomicString DefaultFontFamily() {
-  if (sk_sp<SkFontMgr> font_manager = FontCache::GetFontCache()->FontManager())
+  if (sk_sp<SkFontMgr> font_manager = FontCache::Get().FontManager())
     return DefaultFontFamily(font_manager);
   return DefaultFontFamily(SkFontMgr::RefDefault());
 }
@@ -85,7 +85,16 @@ void FontCache::SetSystemFontFamily(const AtomicString&) {}
 sk_sp<SkTypeface> FontCache::CreateLocaleSpecificTypeface(
     const FontDescription& font_description,
     const char* locale_family_name) {
-  const char* bcp47 = font_description.LocaleOrDefault().LocaleForSkFontMgr();
+  // TODO(crbug.com/1252383, crbug.com/1237860, crbug.com/1233315): Skia handles
+  // "und-" by simple string matches, and falls back to the first
+  // `fallbackFor="serif"` in the `fonts.xml`. Because all non-CJK languages use
+  // "und-" in the AOSP `fonts.xml`, apply locale-specific typeface only to CJK
+  // to work around this problem.
+  const LayoutLocale& locale = font_description.LocaleOrDefault();
+  if (!locale.HasScriptForHan())
+    return nullptr;
+
+  const char* bcp47 = locale.LocaleForSkFontMgr();
   DCHECK(bcp47);
   SkFontMgr* font_manager =
       font_manager_ ? font_manager_.get() : SkFontMgr::RefDefault().get();
@@ -164,7 +173,7 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
       return fallback_postscript_name.equals(kNotoColorEmoji);
     };
 
-    if (family_name.IsEmpty() || skia_fallback_is_noto_color_emoji()) {
+    if (family_name.empty() || skia_fallback_is_noto_color_emoji()) {
       FontPlatformData* emoji_gms_core_font = GetFontPlatformData(
           font_description,
           FontFaceCreationParams(AtomicString(kNotoColorEmojiCompat)));
@@ -182,7 +191,7 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
   // Remaining case, if fallback priority is not emoij or the GMS core emoji
   // font was not found or an OEM emoji font was not to be overridden.
 
-  if (family_name.IsEmpty())
+  if (family_name.empty())
     return GetLastResortFallbackFont(font_description, kDoNotRetain);
 
   return FontDataFromFontPlatformData(
@@ -194,6 +203,7 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
 // static
 AtomicString FontCache::GetGenericFamilyNameForScript(
     const AtomicString& family_name,
+    const AtomicString& generic_family_name_fallback,
     const FontDescription& font_description) {
   // If this is a locale-specifc family name, |FontCache| can handle different
   // typefaces per locale. Let it handle.
@@ -212,7 +222,7 @@ AtomicString FontCache::GetGenericFamilyNameForScript(
   // to only when the content locale is available. crbug.com/652146
   const LayoutLocale* content_locale = font_description.Locale();
   if (!content_locale)
-    return family_name;
+    return generic_family_name_fallback;
 
   // This is a hack to use the preferred font for CJK scripts.
   // TODO(kojii): This logic disregards either generic family name
@@ -230,7 +240,7 @@ AtomicString FontCache::GetGenericFamilyNameForScript(
       break;
     default:
       // For other scripts, use the default generic family mapping logic.
-      return family_name;
+      return generic_family_name_fallback;
   }
 
   sk_sp<SkFontMgr> font_manager(SkFontMgr::RefDefault());

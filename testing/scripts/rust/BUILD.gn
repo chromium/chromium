@@ -1,0 +1,17 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This target is used in `data_deps` when generating a `bin/run_foo_unittests`
+# script (via testing/scripts/rust/generate_bash_script.py).  The `data_deps`
+# entry helps ensure that the test isolate contains not only the script, but
+# also the Python library that the script depends on.
+group("rust") {
+  data = [
+    "main_program.py",
+    "test_filtering.py",
+    "test_results.py",
+    "exe_util.py",
+    "rust_main_program.py",
+  ]
+}

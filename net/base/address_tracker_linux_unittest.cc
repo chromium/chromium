@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/multiprocess_test.h"
@@ -27,7 +28,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
@@ -35,8 +36,7 @@
 #define IFA_F_HOMEADDRESS 0x10
 #endif
 
-namespace net {
-namespace internal {
+namespace net::internal {
 namespace {
 
 const int kTestInterfaceEth = 1;
@@ -671,7 +671,7 @@ TEST_F(AddressTrackerLinuxTest, GetInterfaceName) {
 
   for (int i = 0; i < 10; i++) {
     char buf[IFNAMSIZ] = {0};
-    EXPECT_NE((const char*)NULL, original_get_interface_name_(i, buf));
+    EXPECT_NE((const char*)nullptr, original_get_interface_name_(i, buf));
   }
 }
 
@@ -697,7 +697,7 @@ TEST_F(AddressTrackerLinuxTest, NonTrackingMode) {
 }
 
 TEST_F(AddressTrackerLinuxTest, NonTrackingModeInit) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Calling Init() on Android P+ isn't supported.
   if (base::android::BuildInfo::GetInstance()->sdk_int() >=
       base::android::SDK_VERSION_P)
@@ -733,13 +733,13 @@ class GetCurrentConnectionTypeRunner
   }
 
  private:
-  AddressTrackerLinux* const tracker_;
+  const raw_ptr<AddressTrackerLinux> tracker_;
   base::WaitableEvent done_;
   base::DelegateSimpleThread thread_;
 };
 
 TEST_F(AddressTrackerLinuxTest, BroadcastInit) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Calling Init() on Android P+ isn't supported.
   if (base::android::BuildInfo::GetInstance()->sdk_int() >=
       base::android::SDK_VERSION_P)
@@ -780,7 +780,7 @@ TEST_F(AddressTrackerLinuxTest, TunnelInterfaceName) {
 // Note: consumers generally should not need to create two tracking instances of
 // `AddressTrackerLinux` in the same process.
 TEST(AddressTrackerLinuxNetlinkTest, TestInitializeTwoTrackers) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Calling Init() on Android P+ isn't supported.
   if (base::android::BuildInfo::GetInstance()->sdk_int() >=
       base::android::SDK_VERSION_P)
@@ -801,7 +801,7 @@ TEST(AddressTrackerLinuxNetlinkTest, TestInitializeTwoTrackers) {
 // These tests use `base::LaunchOptions::clone_flags` for fine-grained control
 // over the clone syscall, but the field is only defined on Linux and ChromeOS.
 // Unfortunately, this means these tests do not have coverage on Android.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // These tests require specific flag values defined in <sched.h>.
 #if defined(CLONE_NEWUSER) && defined(CLONE_NEWPID)
 
@@ -935,8 +935,7 @@ MULTIPROCESS_TEST_MAIN(ChildProcessInitializeTrackerForTesting) {
   return 0;
 }
 
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #endif  // defined(CLONE_NEWUSER) && defined(CLONE_NEWPID)
 
-}  // namespace internal
-}  // namespace net
+}  // namespace net::internal

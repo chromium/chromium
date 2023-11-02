@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,19 +15,19 @@ namespace {
 
 base::debug::CrashKeyString* GetMessagingSourceTypeCrashKey() {
   static auto* crash_key = base::debug::AllocateCrashKeyString(
-      "MessagingSource::type", base::debug::CrashKeySize::Size32);
+      "MessagingSource-type", base::debug::CrashKeySize::Size32);
   return crash_key;
 }
 
 base::debug::CrashKeyString* GetMessagingSourceExtensionIdCrashKey() {
   static auto* crash_key = base::debug::AllocateCrashKeyString(
-      "MessagingSource::extension_id", base::debug::CrashKeySize::Size64);
+      "MessagingSource-extension_id", base::debug::CrashKeySize::Size64);
   return crash_key;
 }
 
 base::debug::CrashKeyString* GetMessagingSourceNativeAppNameCrashKey() {
   static auto* crash_key = base::debug::AllocateCrashKeyString(
-      "MessagingSource::native_app_name", base::debug::CrashKeySize::Size64);
+      "MessagingSource-native_app_name", base::debug::CrashKeySize::Size64);
   return crash_key;
 }
 

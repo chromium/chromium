@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,11 +14,13 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/policy/messaging_layer/upload/network_condition_service.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_provider.h"
+#include "chromeos/ash/components/dbus/services/cros_dbus_service.h"
 #include "chromeos/dbus/missive/missive_client.h"
-#include "chromeos/dbus/services/cros_dbus_service.h"
 #include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/resources/resource_interface.h"
 #include "components/reporting/storage_selector/storage_selector.h"
 #include "dbus/exported_object.h"
 #include "dbus/message.h"
@@ -76,9 +78,15 @@ class EncryptedReportingServiceProvider
   const base::PlatformThreadId origin_thread_id_;
   const scoped_refptr<base::SingleThreadTaskRunner> origin_thread_runner_;
 
+  // Memory resource for upload requests and responses.
+  scoped_refptr<::reporting::ResourceInterface> memory_resource_;
+
   // Upload Provider.
   const std::unique_ptr<::reporting::EncryptedReportingUploadProvider>
       upload_provider_;
+
+  // Network condition service.
+  ::reporting::NetworkConditionService network_condition_service_;
 
   // Keep this last so that all weak pointers will be invalidated at the
   // beginning of destruction.

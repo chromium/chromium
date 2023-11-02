@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -84,12 +84,14 @@ class BASE_EXPORT CPU final {
   }
   bool is_running_in_vm() const { return is_running_in_vm_; }
 
+#if defined(ARCH_CPU_ARM_FAMILY)
   // The cpuinfo values for ARM cores are from the MIDR_EL1 register, a
   // bitfield whose format is described in the core-specific manuals. E.g.,
   // ARM Cortex-A57:
   // https://developer.arm.com/documentation/ddi0488/h/system-control/aarch64-register-descriptions/main-id-register--el1.
   uint8_t implementer() const { return implementer_; }
   uint32_t part_number() const { return part_number_; }
+#endif
 
   // Armv8.5-A extensions for control flow and memory safety.
 #if defined(ARCH_CPU_ARM_FAMILY)
@@ -100,11 +102,20 @@ class BASE_EXPORT CPU final {
   constexpr bool has_bti() const { return false; }
 #endif
 
+#if defined(ARCH_CPU_X86_FAMILY)
+  // Memory protection key support for user-mode pages
+  bool has_pku() const { return has_pku_; }
+#else
+  constexpr bool has_pku() const { return false; }
+#endif
+
+#if defined(ARCH_CPU_X86_FAMILY)
   IntelMicroArchitecture GetIntelMicroArchitecture() const;
+#endif
   const std::string& cpu_brand() const { return cpu_brand_; }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
-    defined(OS_AIX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_AIX)
   enum class CoreType {
     kUnknown = 0,
     kOther,
@@ -126,7 +137,7 @@ class BASE_EXPORT CPU final {
 
   struct TimeInStateEntry {
     CPU::CoreType core_type;      // type of the cores in this cluster.
-    uint32_t cluster_core_index;  // index of the first core in the cluster.
+    size_t cluster_core_index;    // index of the first core in the cluster.
     uint64_t core_frequency_khz;
     TimeDelta cumulative_time;
   };
@@ -154,8 +165,8 @@ class BASE_EXPORT CPU final {
   // cpuidle driver.
   using CoreIdleTimes = std::vector<TimeDelta>;
   static bool GetCumulativeCoreIdleTimes(CoreIdleTimes&);
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) ||
-        // defined(OS_AIX)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_AIX)
 
  private:
   // Query the processor for CPUID information.
@@ -169,8 +180,10 @@ class BASE_EXPORT CPU final {
   int stepping_ = 0;   // processor revision number
   int ext_model_ = 0;
   int ext_family_ = 0;
+#if defined(ARCH_CPU_ARM_FAMILY)
   uint32_t part_number_ = 0;  // ARM MIDR part number
   uint8_t implementer_ = 0;   // ARM MIDR implementer identifier
+#endif
   bool has_mmx_ = false;
   bool has_sse_ = false;
   bool has_sse2_ = false;
@@ -186,6 +199,9 @@ class BASE_EXPORT CPU final {
 #if defined(ARCH_CPU_ARM_FAMILY)
   bool has_mte_ = false;  // Armv8.5-A MTE (Memory Taggging Extension)
   bool has_bti_ = false;  // Armv8.5-A BTI (Branch Target Identification)
+#endif
+#if defined(ARCH_CPU_X86_FAMILY)
+  bool has_pku_ = false;
 #endif
   bool has_non_stop_time_stamp_counter_ = false;
   bool is_running_in_vm_ = false;

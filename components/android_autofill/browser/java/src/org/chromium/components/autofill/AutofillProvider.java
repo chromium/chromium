@@ -1,10 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.components.autofill;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Matrix;
 import android.graphics.Rect;
@@ -17,6 +16,7 @@ import android.view.ViewGroup;
 import android.view.ViewStructure;
 import android.view.autofill.AutofillValue;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
@@ -26,7 +26,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.annotations.VerifiesOnO;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.components.autofill_public.ViewType;
 import org.chromium.components.version_info.VersionConstants;
@@ -54,10 +53,8 @@ import java.util.ArrayList;
  * AutofillProviderAndroid is owned by the embedder-specific C++ WebContents
  * wrapper (e.g., native AwContents in //android_webview).
  *
- * VerifiesOnO since it causes class verification errors, see crbug.com/991851.
  */
-@VerifiesOnO
-@TargetApi(Build.VERSION_CODES.O)
+@RequiresApi(Build.VERSION_CODES.O)
 @JNINamespace("autofill")
 public class AutofillProvider {
     private static final String TAG = "AutofillProvider";
@@ -806,12 +803,10 @@ public class AutofillProvider {
 
     @CalledByNative
     private void onQueryDone(boolean success) {
-        if (mRequest != null) {
-            mRequest.onQueryDone(success);
-        }
+        if (mRequest == null) return;
+        mRequest.onQueryDone(success);
         mAutofillUMA.onServerTypeAvailable(
-                (success && mRequest != null) ? mRequest.mFormData : null,
-                /*afterSessionStarted*/ true);
+                success ? mRequest.mFormData : null, /*afterSessionStarted*/ true);
         mAutofillManager.onQueryDone(success);
     }
 

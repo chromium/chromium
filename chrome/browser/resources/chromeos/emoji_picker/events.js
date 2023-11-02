@@ -1,6 +1,13 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+/**
+ * @typedef {!CustomEvent<{categoryName: string}>}
+ */
+export let CategoryButtonClickEvent;
+
+export const CATEGORY_BUTTON_CLICK = 'category-button-click';
 
 /**
  * @typedef {!CustomEvent<{group: string}>}
@@ -18,18 +25,42 @@ export let EmojiButtonClickEvent;
 export const EMOJI_BUTTON_CLICK = 'emoji-button-click';
 
 /**
- * @typedef {!CustomEvent<{button: ?Element, variants: ?Element}>}
+ * TODO(b/233130994): Update the type after removing emoji-button.
+ * The current event type is used as an intermediate step for a refactor
+ * leading to the removal of emoji-button. Therefore, its current state allows
+ * keeping variants events for both emoji-button and emoji-group valid at the
+ * same time. It will be be improved after removing emoji-button.
+ */
+/**
+ * @typedef {!CustomEvent<{owner: ?Element,
+ *            variants: ?Element, baseEmoji: String}>}
  */
 export let EmojiVariantsShownEvent;
 
 export const EMOJI_VARIANTS_SHOWN = 'emoji-variants-shown';
 
 /**
- * @typedef {!CustomEvent}
+ * @typedef {!CustomEvent<{category: string}>}
  */
-export let EmojiDataLoadedEvent;
+export let CategoryDataLoadEvent;
 
-export const EMOJI_DATA_LOADED = 'emoji-data-loaded';
+/**
+ * The event that data of a category is fetched and processed for rendering.
+ * Note: this event does not indicate if rendering of the category data is
+ * completed or not.
+ */
+export const CATEGORY_DATA_LOADED = 'category-data-loaded';
+
+/**
+ * @typedef {!CustomEvent<{v2Enabled: boolean}>}
+ */
+export let EmojiPickerReadyEvent;
+
+/**
+ * The event that all the data are loaded and rendered and all the
+ * emoji-picker functionalities are ready to use.
+ */
+export const EMOJI_PICKER_READY = 'emoji-picker-ready';
 
 /**
  * @typedef {!CustomEvent}

@@ -1,12 +1,14 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.sync.ui;
 
 import static org.chromium.base.ContextUtils.getApplicationContext;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SYNC_ERROR_PROMPT_SHOWN_AT_TIME;
 
+import android.app.Activity;
 import android.content.Context;
 
 import androidx.annotation.IntDef;
@@ -14,18 +16,26 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.base.TimeUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
+import org.chromium.components.user_prefs.UserPrefs;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -42,6 +52,10 @@ public class SyncErrorPromptUtils {
     @VisibleForTesting
     public static final long MINIMAL_DURATION_BETWEEN_UI_MS =
             TimeUnit.MILLISECONDS.convert(24, TimeUnit.HOURS);
+
+    @VisibleForTesting
+    public static final long MINIMAL_DURATION_TO_PWM_ERROR_UI_MS =
+            TimeUnit.MILLISECONDS.convert(30, TimeUnit.MINUTES);
 
     @IntDef({SyncErrorPromptType.NOT_SHOWN, SyncErrorPromptType.AUTH_ERROR,
             SyncErrorPromptType.PASSPHRASE_REQUIRED, SyncErrorPromptType.SYNC_SETUP_INCOMPLETE,
@@ -84,6 +98,10 @@ public class SyncErrorPromptUtils {
 
     public static String getPrimaryButtonText(Context context, @SyncError int error) {
         switch (error) {
+            case SyncError.AUTH_ERROR:
+                return ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES)
+                        ? context.getString(R.string.password_error_sign_in_button_title)
+                        : context.getString(R.string.open_settings_button);
             case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
             case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
             case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
@@ -124,18 +142,22 @@ public class SyncErrorPromptUtils {
         }
     }
 
-    public static void onUserAccepted(@SyncErrorPromptType int type) {
+    public static void onUserAccepted(@SyncErrorPromptType int type, Activity activity) {
         switch (type) {
             case SyncErrorPromptType.NOT_SHOWN:
                 assert false;
                 return;
             case SyncErrorPromptType.AUTH_ERROR:
+                if (ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES)) {
+                    startUpdateCredentialsFlow(activity);
+                } else {
+                    openSyncSettings();
+                }
+                return;
             case SyncErrorPromptType.PASSPHRASE_REQUIRED:
             case SyncErrorPromptType.SYNC_SETUP_INCOMPLETE:
             case SyncErrorPromptType.CLIENT_OUT_OF_DATE:
-                SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-                settingsLauncher.launchSettingsActivity(getApplicationContext(),
-                        ManageSyncSettings.class, ManageSyncSettings.createArguments(false));
+                openSyncSettings();
                 return;
 
             case SyncErrorPromptType.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
@@ -156,21 +178,30 @@ public class SyncErrorPromptUtils {
         }
         long lastShownTime =
                 SharedPreferencesManager.getInstance().readLong(SYNC_ERROR_PROMPT_SHOWN_AT_TIME, 0);
-        return System.currentTimeMillis() - lastShownTime > MINIMAL_DURATION_BETWEEN_UI_MS;
+
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES)) {
+            // Since the password manager error and the sync error can be related,
+            // the sync error should be shown only if at least MINIMAL_DURATION_TO_PWM_ERROR_UI_MS
+            // have passed since the last password manager error. This condition is mirrored
+            // for the password manager error.
+            long currentTime = TimeUtils.currentTimeMillis();
+            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+            long upmErrorShownTime =
+                    Long.valueOf(prefService.getString(Pref.UPM_ERROR_UI_SHOWN_TIMESTAMP));
+            return currentTime - lastShownTime > MINIMAL_DURATION_BETWEEN_UI_MS
+                    && currentTime - upmErrorShownTime > MINIMAL_DURATION_TO_PWM_ERROR_UI_MS;
+        }
+        return TimeUtils.currentTimeMillis() - lastShownTime > MINIMAL_DURATION_BETWEEN_UI_MS;
     }
 
     public static void updateLastShownTime() {
         SharedPreferencesManager.getInstance().writeLong(
-                SYNC_ERROR_PROMPT_SHOWN_AT_TIME, System.currentTimeMillis());
+                SYNC_ERROR_PROMPT_SHOWN_AT_TIME, TimeUtils.currentTimeMillis());
     }
 
     public static void resetLastShownTime() {
         SharedPreferencesManager.getInstance().removeKey(SYNC_ERROR_PROMPT_SHOWN_AT_TIME);
-    }
-
-    public static boolean isMessageUiEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE)
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.MESSAGES_FOR_ANDROID_SYNC_ERROR);
     }
 
     public static String getSyncErrorPromptUiHistogramSuffix(@SyncErrorPromptType int type) {
@@ -239,6 +270,22 @@ public class SyncErrorPromptUtils {
                                 -> Log.w(TAG,
                                         "Error creating trusted vault recoverability intent: ",
                                         exception));
+    }
+
+    private static void openSyncSettings() {
+        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+        settingsLauncher.launchSettingsActivity(getApplicationContext(), ManageSyncSettings.class,
+                ManageSyncSettings.createArguments(false));
+    }
+
+    private static void startUpdateCredentialsFlow(Activity activity) {
+        Profile profile = Profile.getLastUsedRegularProfile();
+        final CoreAccountInfo primaryAccountInfo =
+                IdentityServicesProvider.get().getIdentityManager(profile).getPrimaryAccountInfo(
+                        ConsentLevel.SYNC);
+        assert primaryAccountInfo != null;
+        AccountManagerFacadeProvider.getInstance().updateCredentials(
+                CoreAccountInfo.getAndroidAccountFrom(primaryAccountInfo), activity, null);
     }
 
     private static CoreAccountInfo getSyncConsentedAccountInfo() {

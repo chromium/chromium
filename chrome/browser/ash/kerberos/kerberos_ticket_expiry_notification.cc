@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
@@ -69,7 +70,8 @@ void Show(Profile* profile,
       l10n_util::GetStringUTF16(IDS_KERBEROS_TICKET_EXPIRY_BUTTON);
 
   // For histogram reporting.
-  const NotifierId kNotifierId(NotifierType::SYSTEM_COMPONENT, kNotificationId);
+  const NotifierId kNotifierId(NotifierType::SYSTEM_COMPONENT, kNotificationId,
+                               NotificationCatalogName::kKerberosTicketExpiry);
 
   // No origin URL is needed since the notification comes from the system.
   const GURL kEmptyOriginUrl;

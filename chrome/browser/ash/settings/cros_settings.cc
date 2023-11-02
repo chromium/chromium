@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,18 +6,19 @@
 
 #include <stddef.h>
 
-#include "ash/components/settings/cros_settings_names.h"
-#include "ash/components/settings/system_settings_provider.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/settings/device_settings_provider.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/supervised_user_cros_settings_provider.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/settings/system_settings_provider.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
 namespace ash {
@@ -171,23 +172,24 @@ bool CrosSettings::GetString(const std::string& path,
 }
 
 bool CrosSettings::GetList(const std::string& path,
-                           const base::ListValue** out_value) const {
+                           const base::Value::List** out_value) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const base::Value* value = GetPref(path);
   if (value && value->is_list()) {
-    *out_value = &base::Value::AsListValue(*value);
+    *out_value = &value->GetList();
     return true;
   }
   return false;
 }
 
-bool CrosSettings::GetDictionary(
-    const std::string& path,
-    const base::DictionaryValue** out_value) const {
+bool CrosSettings::GetDictionary(const std::string& path,
+                                 const base::Value::Dict** out_value) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const base::Value* value = GetPref(path);
-  if (value)
-    return value->GetAsDictionary(out_value);
+  if (value && value->is_dict()) {
+    *out_value = &value->GetDict();
+    return true;
+  }
   return false;
 }
 
@@ -196,7 +198,7 @@ bool CrosSettings::IsUserAllowlisted(
     bool* wildcard_match,
     const absl::optional<user_manager::UserType>& user_type) const {
   // Skip allowlist check for tests.
-  if (chromeos::switches::ShouldSkipOobePostLogin()) {
+  if (switches::ShouldSkipOobePostLogin()) {
     return true;
   }
 
@@ -218,18 +220,18 @@ bool CrosSettings::FindEmailInList(const std::string& path,
                                    bool* wildcard_match) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const base::ListValue* list;
+  const base::Value::List* list;
   if (!GetList(path, &list)) {
     if (wildcard_match)
       *wildcard_match = false;
     return false;
   }
 
-  return FindEmailInList(list->GetList(), email, wildcard_match);
+  return FindEmailInList(*list, email, wildcard_match);
 }
 
 // static
-bool CrosSettings::FindEmailInList(const base::Value::ConstListView& list,
+bool CrosSettings::FindEmailInList(const base::Value::List& list,
                                    const std::string& email,
                                    bool* wildcard_match) {
   std::string canonicalized_email(
@@ -289,11 +291,8 @@ bool CrosSettings::AddSettingsProvider(
 std::unique_ptr<CrosSettingsProvider> CrosSettings::RemoveSettingsProvider(
     CrosSettingsProvider* provider) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = std::find_if(
-      providers_.begin(), providers_.end(),
-      [provider](const std::unique_ptr<CrosSettingsProvider>& ptr) {
-        return ptr.get() == provider;
-      });
+  auto it = base::ranges::find(providers_, provider,
+                               &std::unique_ptr<CrosSettingsProvider>::get);
   if (it != providers_.end()) {
     std::unique_ptr<CrosSettingsProvider> ptr = std::move(*it);
     providers_.erase(it);

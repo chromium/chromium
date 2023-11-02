@@ -1,23 +1,28 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CAPABILITIES_MEDIA_CAPABILITIES_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CAPABILITIES_MEDIA_CAPABILITIES_H_
 
+#include "base/gtest_prod_util.h"
+#include "base/time/time.h"
 #include "media/base/video_codecs.h"  // for media::VideoCodecProfile
 #include "media/learning/mojo/public/cpp/mojo_learning_task_controller.h"
 #include "media/learning/mojo/public/mojom/learning_task_controller.mojom-blink.h"
 #include "media/mojo/mojom/video_decode_perf_history.mojom-blink.h"
+#include "media/mojo/mojom/webrtc_video_perf.mojom-blink.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_configuration.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
+#include "third_party/blink/renderer/platform/peerconnection/webrtc_decoding_info_handler.h"
+#include "third_party/blink/renderer/platform/peerconnection/webrtc_encoding_info_handler.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 
@@ -39,6 +44,8 @@ class MODULES_EXPORT MediaCapabilities final
  public:
   static const char kLearningBadWindowThresholdParamName[];
   static const char kLearningNnrThresholdParamName[];
+  static const char kWebrtcDecodeSmoothIfPowerEfficientParamName[];
+  static const char kWebrtcEncodeSmoothIfPowerEfficientParamName[];
 
   static const char kSupplementName[];
 
@@ -75,9 +82,19 @@ class MODULES_EXPORT MediaCapabilities final
     absl::optional<bool> db_is_smooth;
     absl::optional<bool> db_is_power_efficient;
     absl::optional<bool> is_gpu_factories_supported;
+    absl::optional<bool> is_builtin_video_codec;
     base::TimeTicks request_time;
     absl::optional<IdentifiableToken> input_token;
   };
+
+  FRIEND_TEST_ALL_PREFIXES(MediaCapabilitiesTests,
+                           WebrtcDecodePowerEfficientIsSmooth);
+  FRIEND_TEST_ALL_PREFIXES(MediaCapabilitiesTests,
+                           WebrtcDecodeOverridePowerEfficientIsSmooth);
+  FRIEND_TEST_ALL_PREFIXES(MediaCapabilitiesTests,
+                           WebrtcEncodePowerEfficientIsSmooth);
+  FRIEND_TEST_ALL_PREFIXES(MediaCapabilitiesTests,
+                           WebrtcEncodeOverridePowerEfficientIsSmooth);
 
   // Lazily binds remote LearningTaskControllers for ML smoothness predictions
   // and returns whether binding succeeds. Returns true if it was already bound.
@@ -86,6 +103,10 @@ class MODULES_EXPORT MediaCapabilities final
   // Lazily binds to the VideoDecodePerfHistory service. Returns whether it was
   // successful. Returns true if it was already bound.
   bool EnsurePerfHistoryService(ExecutionContext*);
+
+  // Lazily binds to the WebrtcVideoPerfHistory service. Returns whether it was
+  // successful. Returns true if it was already bound.
+  bool EnsureWebrtcPerfHistoryService(ExecutionContext* execution_context);
 
   ScriptPromise GetEmeSupport(ScriptState*,
                               media::VideoCodec,
@@ -137,26 +158,36 @@ class MODULES_EXPORT MediaCapabilities final
       const absl::optional<::media::learning::TargetHistogram>& histogram);
 
   // Callback for GetGpuFactoriesSupport().
-  void OnGpuFactoriesSupport(int callback_id, bool is_supported);
+  void OnGpuFactoriesSupport(int callback_id,
+                             bool is_supported,
+                             media::VideoCodec video_codec);
 
   // Resolves the callback with associated |callback_id| and removes it from the
   // |pending_callback_map_|.
   void ResolveCallbackIfReady(int callback_id);
 
-  void OnWebrtcDecodingInfoSupport(int callback_id,
-                                   bool is_supported,
-                                   bool is_power_efficient);
+  void OnWebrtcSupportInfo(
+      int callback_id,
+      media::mojom::blink::WebrtcPredictionFeaturesPtr features,
+      float frames_per_second,
+      bool is_supported,
+      bool is_power_efficient);
 
-  void OnWebrtcEncodingInfoSupport(int callback_id,
-                                   bool is_supported,
-                                   bool is_power_efficient);
-
-  void ResolveWebrtcDecodingCallbackIfReady(int callback_id);
-  void ResolveWebrtcEncodingCallbackIfReady(int callback_id);
+  void OnWebrtcPerfHistoryInfo(int callback_id, bool is_smooth);
 
   // Creates a new (incremented) callback ID from |last_callback_id_| for
   // mapping in |pending_cb_map_|.
   int CreateCallbackId();
+
+  void set_webrtc_decoding_info_handler_for_test(
+      WebrtcDecodingInfoHandler* handler) {
+    webrtc_decoding_info_handler_for_test_ = handler;
+  }
+
+  void set_webrtc_encoding_info_handler_for_test(
+      WebrtcEncodingInfoHandler* handler) {
+    webrtc_encoding_info_handler_for_test_ = handler;
+  }
 
   HeapMojoRemote<media::mojom::blink::VideoDecodePerfHistory>
       decode_history_service_;
@@ -173,12 +204,21 @@ class MODULES_EXPORT MediaCapabilities final
   HeapMojoRemote<media::learning::mojom::blink::LearningTaskController>
       nnr_predictor_;
 
+  HeapMojoRemote<media::mojom::blink::WebrtcVideoPerfHistory>
+      webrtc_history_service_;
+
   // Holds the last key for callbacks in the map below. Incremented for each
   // usage.
   int last_callback_id_ = 0;
 
   // Maps a callback ID to state for pending callbacks.
   HeapHashMap<int, Member<PendingCallbackState>> pending_cb_map_;
+
+  // Makes it possible to override the WebrtcDecodingInfoHandler in tests.
+  WebrtcDecodingInfoHandler* webrtc_decoding_info_handler_for_test_ = nullptr;
+
+  // Makes it possible to override the WebrtcEncodingInfoHandler in tests.
+  WebrtcEncodingInfoHandler* webrtc_encoding_info_handler_for_test_ = nullptr;
 };
 
 }  // namespace blink

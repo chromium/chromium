@@ -1,12 +1,14 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package com.android.webview.chromium;
 
 import android.Manifest;
+import android.app.compat.CompatChanges;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Looper;
 import android.os.Process;
@@ -14,16 +16,16 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
+import android.webkit.WebSettings;
 import android.webkit.WebStorage;
 import android.webkit.WebViewDatabase;
-
-import androidx.annotation.IntDef;
 
 import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwCookieManager;
+import org.chromium.android_webview.AwDarkMode;
 import org.chromium.android_webview.AwLocaleConfig;
 import org.chromium.android_webview.AwNetworkChangeNotifierRegistrationPolicy;
 import org.chromium.android_webview.AwProxyController;
@@ -51,9 +53,10 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.BuildConfig;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.net.NetworkChangeNotifier;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ResourceBundle;
 
 /**
@@ -98,17 +101,6 @@ public class WebViewChromiumAwInit {
 
     private final WebViewChromiumFactoryProvider mFactory;
 
-    // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused.
-    @IntDef({WebViewInitType.SYNC, WebViewInitType.ASYNC, WebViewInitType.BOTH})
-    private @interface WebViewInitType {
-        int SYNC = 0;
-        int ASYNC = 1;
-        int BOTH = 2;
-        int COUNT = 3;
-    }
-
-    private boolean mIsInitializedFromUIThread;
     private boolean mIsPostedFromBackgroundThread;
 
     WebViewChromiumAwInit(WebViewChromiumFactoryProvider factory) {
@@ -157,17 +149,6 @@ public class WebViewChromiumAwInit {
                 return;
             }
 
-            @WebViewInitType
-            int type;
-            if (mIsPostedFromBackgroundThread) {
-                type = mIsInitializedFromUIThread ? WebViewInitType.BOTH : WebViewInitType.ASYNC;
-            } else {
-                type = WebViewInitType.SYNC;
-            }
-
-            RecordHistogram.recordEnumeratedHistogram(
-                    "Android.WebView.Startup.InitType", type, WebViewInitType.COUNT);
-
             final Context context = ContextUtils.getApplicationContext();
 
             JNIUtils.setClassLoader(WebViewChromiumAwInit.class.getClassLoader());
@@ -193,6 +174,28 @@ public class WebViewChromiumAwInit {
             waitUntilSetUpResources();
 
             // NOTE: Finished writing Java resources. From this point on, it's safe to use them.
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && mIsPostedFromBackgroundThread) {
+                // Try to work around the problem we're seeing with resources on Android 12. When
+                // WebView is being initialized from a background thread, it's possible that the
+                // asset path updated by WebViewFactory is no longer present by the time we get
+                // here due to something on the UI thread having caused a resource update in the
+                // app in the meantime, because WebViewFactory does not add the path persistently.
+                // So, we can try to add them again using the "better" method in WebViewDelegate.
+
+                // However, we only want to try this if the resources are actually missing, because
+                // in the past we've seen this cause apps that were working to *start* crashing.
+                // The first resource that gets accessed in startup happens during the
+                // AwBrowserProcess.start() call when trying to determine if the device is a tablet,
+                // and that's the most common place for us to crash. So, try calling that same
+                // method and see if it throws - if so then we're unlikely to make the situation
+                // any worse by trying to fix the path.
+                try {
+                    DeviceFormFactor.isTablet();
+                } catch (Resources.NotFoundException e) {
+                    mFactory.addWebViewAssetPath(context);
+                }
+            }
 
             AwBrowserProcess.configureChildProcessLauncher();
 
@@ -232,6 +235,12 @@ public class WebViewChromiumAwInit {
             }
 
             mFactory.getRunQueue().drainQueue();
+
+            if (BuildInfo.isAtLeastT()
+                            ? CompatChanges.isChangeEnabled(WebSettings.ENABLE_SIMPLIFIED_DARK_MODE)
+                            : BuildInfo.targetsAtLeastT()) {
+                AwDarkMode.enableSimplifiedDarkMode();
+            }
 
             if (CommandLine.getInstance().hasSwitch(AwSwitches.WEBVIEW_VERBOSE_LOGGING)) {
                 logCommandLineAndActiveTrials();
@@ -313,7 +322,6 @@ public class WebViewChromiumAwInit {
             // If we are currently running on the UI thread then we must do init now. If there was
             // already a task posted to the UI thread from another thread to do it, it will just
             // no-op when it runs.
-            mIsInitializedFromUIThread = true;
             startChromiumLocked();
             return;
         }
@@ -513,14 +521,18 @@ public class WebViewChromiumAwInit {
 
     // Log extra information, for debugging purposes. Do the work asynchronously to avoid blocking
     // startup.
-    private static void logCommandLineAndActiveTrials() {
-        PostTask.postTask(UiThreadTaskTraits.BEST_EFFORT, () -> {
+    private void logCommandLineAndActiveTrials() {
+        PostTask.postTask(TaskTraits.BEST_EFFORT, () -> {
             // TODO(ntfschr): CommandLine can change at any time. For simplicity, only log it
             // once during startup.
             AwContentsStatics.logCommandLineForDebugging();
             // Field trials can be activated at any time. We'll continue logging them as they're
             // activated.
             FieldTrialList.logActiveTrials();
+            // SafeMode was already determined earlier during the startup sequence, this just
+            // fetches the cached boolean state. If SafeMode was enabled, we already logged detailed
+            // information about the SafeMode config.
+            Log.i(TAG, "SafeMode enabled: " + mFactory.isSafeModeEnabled());
         });
     }
 

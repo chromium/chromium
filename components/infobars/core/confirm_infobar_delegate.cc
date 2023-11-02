@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,11 +50,20 @@ ui::ImageModel ConfirmInfoBarDelegate::GetButtonImage(
   return ui::ImageModel();
 }
 
+bool ConfirmInfoBarDelegate::GetButtonEnabled(InfoBarButton button) const {
+  return true;
+}
+
+std::u16string ConfirmInfoBarDelegate::GetButtonTooltip(
+    InfoBarButton button) const {
+  return std::u16string();
+}
+
 bool ConfirmInfoBarDelegate::OKButtonTriggersUACPrompt() const {
   return false;
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 bool ConfirmInfoBarDelegate::UseIconBackgroundTint() const {
   return true;
 }

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,16 +6,16 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/mac/foundation_util.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/notreached.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/mac/foundation_util.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/keyboard_accessory_metrics_logger.h"
 #import "components/autofill/ios/browser/suggestion_controller_java_script_feature.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
-#include "ui/base/device_form_factor.h"
+#import "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -55,8 +55,8 @@ FormInputAccessoryAction UMAActionForAssistAction(NSString* assistAction) {
 
 namespace {
 
-// Finds all views of a particular kind if class |aClass| in the subview
-// hierarchy of the given |root| view.
+// Finds all views of a particular kind if class `aClass` in the subview
+// hierarchy of the given `root` view.
 NSArray* SubviewsWithClass(UIView* root, Class aClass) {
   DCHECK(root);
   NSMutableArray* viewsToExamine = [NSMutableArray arrayWithObject:root];
@@ -74,7 +74,7 @@ NSArray* SubviewsWithClass(UIView* root, Class aClass) {
   return subviews;
 }
 
-// Returns true if |item|'s action name contains |actionName|.
+// Returns true if `item`'s action name contains `actionName`.
 BOOL ItemActionMatchesName(UIBarButtonItem* item, NSString* actionName) {
   SEL itemAction = [item action];
   if (!itemAction)
@@ -85,9 +85,9 @@ BOOL ItemActionMatchesName(UIBarButtonItem* item, NSString* actionName) {
   return [itemActionName rangeOfString:actionName].location != NSNotFound;
 }
 
-// Finds all UIToolbarItems associated with a given UIToolbar |toolbar| with
+// Finds all UIToolbarItems associated with a given UIToolbar `toolbar` with
 // action selectors with a name that contains the action name specified by
-// |actionName|.
+// `actionName`.
 NSArray* FindToolbarItemsForActionName(UIToolbar* toolbar,
                                        NSString* actionName) {
   NSMutableArray* toolbarItems = [NSMutableArray array];
@@ -101,7 +101,7 @@ NSArray* FindToolbarItemsForActionName(UIToolbar* toolbar,
 }
 
 // Finds all UIToolbarItem(s) with action selectors of the name specified by
-// |actionName| in any UIToolbars in the view hierarchy below |root|.
+// `actionName` in any UIToolbars in the view hierarchy below `root`.
 NSArray* FindDescendantToolbarItemsForActionName(UIView* root,
                                                  NSString* actionName) {
   NSMutableArray* descendants = [NSMutableArray array];
@@ -116,7 +116,7 @@ NSArray* FindDescendantToolbarItemsForActionName(UIView* root,
 }
 
 // Finds all UIBarButtonItem(s) with action selectors of the name specified by
-// |actionName| in the UITextInputAssistantItem passed.
+// `actionName` in the UITextInputAssistantItem passed.
 NSArray* FindDescendantToolbarItemsForActionName(
     UITextInputAssistantItem* inputAssistantItem,
     NSString* actionName) {

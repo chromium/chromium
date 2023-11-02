@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,9 @@
 
 #include <utility>
 
+#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/bind.h"
@@ -19,9 +22,6 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
 #include "chrome/common/extensions/api/accessibility_private.h"
 #include "chrome/common/pref_names.h"
-#include "components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/arc_service_manager.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
@@ -73,12 +73,6 @@ bool ShouldAnnounceEvent(arc::mojom::AccessibilityEventData* event_data) {
            (it->second == kToastEventSourceArcR);
   }
   return false;
-}
-
-float DeviceScaleFactorFromWindow(aura::Window* window) {
-  if (!window || !window->GetToplevelWindow())
-    return 1.0;
-  return window->GetToplevelWindow()->layer()->device_scale_factor();
 }
 
 void DispatchFocusChange(arc::mojom::AccessibilityNodeInfoData* node_data,
@@ -250,8 +244,10 @@ ArcAccessibilityHelperBridge::ArcAccessibilityHelperBridge(
 
 ArcAccessibilityHelperBridge::~ArcAccessibilityHelperBridge() = default;
 
-void ArcAccessibilityHelperBridge::SetNativeChromeVoxArcSupport(bool enabled) {
-  tree_tracker_.SetNativeChromeVoxArcSupport(enabled);
+void ArcAccessibilityHelperBridge::SetNativeChromeVoxArcSupport(
+    bool enabled,
+    SetNativeChromeVoxCallback callback) {
+  tree_tracker_.SetNativeChromeVoxArcSupport(enabled, std::move(callback));
 }
 
 bool ArcAccessibilityHelperBridge::EnableTree(const ui::AXTreeID& tree_id) {

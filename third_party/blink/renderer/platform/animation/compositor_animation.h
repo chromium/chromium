@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,6 @@ class AnimationCurve;
 namespace blink {
 
 class CompositorAnimationDelegate;
-class CompositorKeyframeModel;
 
 // A compositor representation for Animation.
 class PLATFORM_EXPORT CompositorAnimation : public cc::AnimationDelegate {
@@ -61,7 +60,7 @@ class PLATFORM_EXPORT CompositorAnimation : public cc::AnimationDelegate {
   void DetachElement();
   bool IsElementAttached() const;
 
-  void AddKeyframeModel(std::unique_ptr<CompositorKeyframeModel>);
+  void AddKeyframeModel(std::unique_ptr<cc::KeyframeModel>);
   void RemoveKeyframeModel(int keyframe_model_id);
   void PauseKeyframeModel(int keyframe_model_id, base::TimeDelta time_offset);
   void AbortKeyframeModel(int keyframe_model_id);

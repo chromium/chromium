@@ -1,6 +1,5 @@
 <!doctype html>
-<html dir="$i18n{textdirection}" lang="$i18n{language}"
-    $i18n{enableBrandingUpdateAttribute}>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
 <head>
   <base href="chrome://history">
   <meta charset="utf8">
@@ -23,8 +22,13 @@
     }
 
     body {
-      background: var(--md-background-color);
       cursor: default;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      html {
+        background: var(--md-background-color);
+      }
     }
 
     /* Minimal styling required to display app shim. TODO(dbeam): do we really

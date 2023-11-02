@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,14 @@
 
 #include "base/barrier_closure.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 
 #include "components/password_manager/core/browser/password_form_digest.h"
+#include "components/password_manager/core/browser/password_store_backend_error.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace password_manager {
 
@@ -29,6 +33,8 @@ class GetLoginsWithAffiliationsRequestHandler
     : public base::RefCounted<GetLoginsWithAffiliationsRequestHandler> {
  public:
   using LoginsResult = std::vector<std::unique_ptr<PasswordForm>>;
+  using LoginsResultOrError =
+      absl::variant<LoginsResult, PasswordStoreBackendError>;
 
   GetLoginsWithAffiliationsRequestHandler(
       const PasswordFormDigest& form,
@@ -36,7 +42,7 @@ class GetLoginsWithAffiliationsRequestHandler
       PasswordStoreInterface* store);
 
   // Returns a OnceCallback that calls 'HandleLoginsForFormReceived()'.
-  base::OnceCallback<void(LoginsResult)> LoginsForFormClosure();
+  base::OnceCallback<void(LoginsResultOrError)> LoginsForFormClosure();
 
   // Returns a OnceCallback that calls 'HandleAffiliationsReceived()'. The
   // callback returns the forms to be additionally requested from the password
@@ -46,14 +52,17 @@ class GetLoginsWithAffiliationsRequestHandler
   AffiliationsClosure();
 
   // Returns a OnceCallback that calls 'HandleAffiliatedLoginsReceived()'.
-  base::OnceCallback<void(LoginsResult)> AffiliatedLoginsClosure();
+  base::OnceCallback<void(LoginsResultOrError)> AffiliatedLoginsClosure();
 
  private:
   friend class base::RefCounted<GetLoginsWithAffiliationsRequestHandler>;
   ~GetLoginsWithAffiliationsRequestHandler();
 
-  // Appends logins to the 'results_' and calls 'forms_received_'.
-  void HandleLoginsForFormReceived(LoginsResult logins);
+  // Receives logins or an error if the backend couldn't fetch them.
+  // If it received logins, it appends them to the 'results_'. In any case,
+  // it calls 'forms_received_' to signal that it received the response from
+  // the backend.
+  void HandleLoginsForFormReceived(LoginsResultOrError logins_or_error);
 
   // From the affiliated realms returns all the forms to be additionally queried
   // in the password store. The list excludes the PSL matches because those will
@@ -61,9 +70,10 @@ class GetLoginsWithAffiliationsRequestHandler
   std::vector<PasswordFormDigest> HandleAffiliationsReceived(
       const std::vector<std::string>& realms);
 
-  // Receives all the affiliated logins from the password store.
-  void HandleAffiliatedLoginsReceived(
-      std::vector<std::unique_ptr<PasswordForm>> logins);
+  // Receives all the affiliated logins from the password store or an error,
+  // in case one occurred, processes `logins_or_error` and calls
+  // `forms_received_`.
+  void HandleAffiliatedLoginsReceived(LoginsResultOrError logins_or_error);
 
   void NotifyConsumer();
 
@@ -74,13 +84,19 @@ class GetLoginsWithAffiliationsRequestHandler
 
   base::WeakPtr<PasswordStoreConsumer> consumer_;
 
-  PasswordStoreInterface* store_;
+  raw_ptr<PasswordStoreInterface> store_;
 
   // Closure which is released after being called 2 times.
   base::RepeatingClosure forms_received_;
 
-  // PasswordForms to be sent to consumer.
-  std::vector<std::unique_ptr<PasswordForm>> results_;
+  // PasswordForms to be sent to consumer if the backend call made to retrieve
+  // them didn't result in an error. If an error was encountered, `results_`
+  // will be empty.
+  LoginsResult results_;
+
+  // Holds the error encountered by the store backend when fetching saved
+  // credentials if such an error has occurred.
+  absl::optional<PasswordStoreBackendError> backend_error_;
 };
 
 }  // namespace password_manager

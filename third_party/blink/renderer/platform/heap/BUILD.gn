@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,15 +8,13 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//testing/test.gni")
 import("//third_party/blink/public/public_features.gni")
 import("//third_party/blink/renderer/platform/platform.gni")
+import("//v8/gni/v8.gni")
 
 buildflag_header("blink_heap_buildflags") {
   header = "heap_buildflags.h"
   header_dir = "third_party/blink/renderer/platform/heap"
 
-  flags = [
-    "BLINK_HEAP_VERIFICATION=$enable_blink_heap_verification",
-    "BLINK_HEAP_YOUNG_GENERATION=$enable_blink_heap_young_generation",
-  ]
+  flags = [ "VERBOSE_PERSISTENT=$cppgc_enable_object_names" ]
 }
 
 blink_platform_sources("heap") {
@@ -33,26 +31,29 @@ blink_platform_sources("heap") {
     "collection_support/heap_linked_stack.h",
     "collection_support/heap_vector.h",
     "collection_support/heap_vector_backing.h",
+    "cross_thread_handle.h",
+    "cross_thread_handle_internal.h",
+    "cross_thread_persistent.h",
     "custom_spaces.cc",
     "custom_spaces.h",
     "disallow_new_wrapper.h",
     "forward.h",
     "garbage_collected.h",
     "gc_task_runner.h",
-    "handle.h",
-    "heap.h",
-    "heap_allocator.h",
     "heap_allocator_impl.h",
     "heap_traits.h",
     "member.h",
     "persistent.h",
     "prefinalizer.h",
+    "process_heap.cc",
     "process_heap.h",
     "self_keep_alive.h",
     "thread_local.h",
     "thread_state.cc",
     "thread_state.h",
     "thread_state_scopes.h",
+    "thread_state_storage.cc",
+    "thread_state_storage.h",
     "trace_traits.h",
     "visitor.h",
     "write_barrier.h",
@@ -117,7 +118,6 @@ test("blink_heap_unittests") {
 
   if (is_android) {
     deps += [
-      "//base:base_java",
       "//content/shell/android:content_shell_assets",
       "//net/android:net_java",
       "//ui/android:ui_full_java",
@@ -125,10 +125,14 @@ test("blink_heap_unittests") {
   }
 
   if (is_fuchsia) {
+    additional_manifest_fragments = [
+      "//build/config/fuchsia/test/test_fonts.shard.test-cml",
+      "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml",
+    ]
+
     # Oilpan reuses V8's v8::PageAllocator which generally requires JIT
     # permissions.
-    additional_manifest_fragments =
-        [ "//build/config/fuchsia/test/jit_capabilities.test-cmx" ]
+    test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
   }
 }
 
@@ -139,6 +143,7 @@ source_set("blink_heap_unittests_sources") {
     "../testing/run_all_tests.cc",
     "test/blink_gc_memory_dump_provider_test.cc",
     "test/concurrent_marking_test.cc",
+    "test/cross_thread_handle_test.cc",
     "test/heap_compact_test.cc",
     "test/heap_linked_stack_test.cc",
     "test/heap_test.cc",
@@ -148,7 +153,7 @@ source_set("blink_heap_unittests_sources") {
     "test/weakness_marking_test.cc",
   ]
 
-  if (enable_blink_heap_young_generation) {
+  if (cppgc_enable_young_generation) {
     sources += [ "test/minor_gc_test.cc" ]
   }
 
@@ -164,12 +169,17 @@ source_set("blink_heap_unittests_sources") {
     "//base/test:test_support",
     "//gin:gin",
     "//mojo/core/embedder:embedder",
-    "//skia:test_fonts",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/renderer/platform:test_support",
     "//third_party/blink/renderer/platform/wtf",
   ]
+
+  if (is_fuchsia) {
+    deps += [ "//skia:test_fonts_cfv2" ]
+  } else {
+    deps += [ "//skia:test_fonts" ]
+  }
 }
 
 test("blink_heap_perftests") {
@@ -179,7 +189,6 @@ test("blink_heap_perftests") {
 
   if (is_android) {
     deps += [
-      "//base:base_java",
       "//content/shell/android:content_shell_assets",
       "//net/android:net_java",
       "//ui/android:ui_full_java",
@@ -190,7 +199,8 @@ test("blink_heap_perftests") {
     # Oilpan reuses V8's v8::PageAllocator which generally requires JIT
     # permissions.
     additional_manifest_fragments =
-        [ "//build/config/fuchsia/test/jit_capabilities.test-cmx" ]
+        [ "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml" ]
+    test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
   }
 }
 
@@ -212,6 +222,7 @@ source_set("blink_heap_perftests_sources") {
   ]
 
   deps = [
+    "//gin:gin",
     "//testing/gtest",
     "//testing/perf",
     "//third_party/blink/renderer/platform:test_support",

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,15 +11,18 @@ BucketInfo::BucketInfo(BucketId bucket_id,
                        blink::mojom::StorageType type,
                        std::string name,
                        base::Time expiration,
-                       int64_t quota)
+                       int64_t quota,
+                       bool persistent,
+                       blink::mojom::BucketDurability durability)
     : id(std::move(bucket_id)),
       storage_key(std::move(storage_key)),
       type(type),
       name(std::move(name)),
       expiration(std::move(expiration)),
-      quota(quota) {}
+      quota(quota),
+      persistent(persistent),
+      durability(durability) {}
 
-BucketInfo::BucketInfo() = default;
 BucketInfo::~BucketInfo() = default;
 
 BucketInfo::BucketInfo(const BucketInfo&) = default;
@@ -37,6 +40,15 @@ bool operator!=(const BucketInfo& lhs, const BucketInfo& rhs) {
 
 bool operator<(const BucketInfo& lhs, const BucketInfo& rhs) {
   return lhs.id < rhs.id;
+}
+
+std::set<BucketLocator> COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT)
+    BucketInfosToBucketLocators(const std::set<BucketInfo>& bucket_infos) {
+  std::set<BucketLocator> result;
+  std::transform(bucket_infos.begin(), bucket_infos.end(),
+                 std::inserter(result, result.begin()),
+                 [](const BucketInfo& info) { return info.ToBucketLocator(); });
+  return result;
 }
 
 }  // namespace storage

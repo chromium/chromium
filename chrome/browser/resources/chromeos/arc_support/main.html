@@ -11,17 +11,16 @@
   <link rel="stylesheet" href="progressbar.css">
   <!-- TODO(crbug.com/1248474) - Remove during clean up -->
   <link rel="stylesheet" href="layout_style.css">
-  <script src="chrome://resources/js/load_time_data.js"></script>
-  <script src="chrome://resources/js/assert.js"></script>
-  <script src="chrome://resources/js/util.js"></script>
-  <script src="chrome://resources/js/i18n_template_no_process.js"></script>
-  <script src="chrome://resources/js/cr.js"></script>
-  <script src="chrome://resources/js/event_tracker.js"></script>
-  <script src="chrome://resources/js/cr/ui.js"></script>
+  <script src="chrome://resources/js/load_time_data_deprecated.js"></script>
+  <script src="chrome://resources/js/util_deprecated.js"></script>
+  <script src="i18n_template_no_process.js"></script>
+  <script src="chrome://resources/ash/common/cr.js"></script>
+  <script src="event_tracker.js"></script>
+  <script src="ui.js"></script>
   <script src="bubble.js"></script>
   <script src="bubble_button.js"></script>
   <script src="overlay.js"></script>
-  <script src="chrome://resources/js/cr/ui/focus_manager.js"></script>
+  <script src="focus_manager.js"></script>
   <script type="module" src="main.js"></script>
   <script src="arc_optin_focus_manager.js"></script>
   <script src="controlled_indicator.js"></script>
@@ -87,7 +86,7 @@
               </cr-checkbox>
             </label>
           </div>
-          <div id="pai-service-descirption">
+          <div id="pai-service-description">
             <label class="layout horizontal section-checkbox-container">
                 <p class="content-text"
                     i18n-values=".innerHTML:textPaiService"></p>

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,9 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "media/cast/common/encoded_frame.h"
 #include "media/cast/net/rtcp/rtcp_utility.h"
 #include "media/cast/test/receiver/audio_decoder.h"
 #include "media/cast/test/receiver/video_decoder.h"
@@ -162,8 +164,6 @@ void CastReceiverImpl::EmitDecodedAudioFrame(
   DCHECK(cast_environment->CurrentlyOn(CastEnvironment::MAIN));
 
   if (audio_bus.get()) {
-    // TODO(miu): This is reporting incorrect timestamp and delay.
-    // http://crbug.com/547251
     std::unique_ptr<FrameEvent> playout_event(new FrameEvent());
     playout_event->timestamp = cast_environment->Clock()->NowTicks();
     playout_event->type = FRAME_PLAYOUT;
@@ -189,8 +189,6 @@ void CastReceiverImpl::EmitDecodedVideoFrame(
   DCHECK(cast_environment->CurrentlyOn(CastEnvironment::MAIN));
 
   if (video_frame) {
-    // TODO(miu): This is reporting incorrect timestamp and delay.
-    // http://crbug.com/547251
     std::unique_ptr<FrameEvent> playout_event(new FrameEvent());
     playout_event->timestamp = cast_environment->Clock()->NowTicks();
     playout_event->type = FRAME_PLAYOUT;

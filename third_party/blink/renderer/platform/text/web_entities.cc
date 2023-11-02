@@ -37,7 +37,7 @@
 namespace blink {
 
 WebEntities::WebEntities(bool xml_entities) {
-  DCHECK(entities_map_.IsEmpty());
+  DCHECK(entities_map_.empty());
   entities_map_.Set(0x003c, "lt");
   entities_map_.Set(0x003e, "gt");
   entities_map_.Set(0x0026, "amp");

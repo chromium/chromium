@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -87,7 +87,7 @@ void SmbFsShare::Mount(SmbFsShare::MountCallback callback) {
   } else {
     mounter_ = std::make_unique<smbfs::SmbFsMounter>(
         share_url_.ToString(), mount_dir, options_, this,
-        chromeos::disks::DiskMountManager::GetInstance());
+        disks::DiskMountManager::GetInstance());
   }
   mounter_->Mount(base::BindOnce(&SmbFsShare::OnMountDone,
                                  base::Unretained(this), std::move(callback)));
@@ -146,7 +146,7 @@ void SmbFsShare::OnDeleteRecursivelyDone(base::File::Error error) {
 void SmbFsShare::Unmount(SmbFsShare::UnmountCallback callback) {
   if (unmount_pending_) {
     LOG(WARNING) << "Cannot unmount a shared that is being unmounted";
-    std::move(callback).Run(chromeos::MountError::MOUNT_ERROR_INTERNAL);
+    std::move(callback).Run(MountError::kInternal);
     return;
   }
 
@@ -157,7 +157,7 @@ void SmbFsShare::Unmount(SmbFsShare::UnmountCallback callback) {
 
   if (!host_) {
     LOG(WARNING) << "Cannot unmount as the share is already unmounted";
-    std::move(callback).Run(chromeos::MountError::MOUNT_ERROR_PATH_NOT_MOUNTED);
+    std::move(callback).Run(MountError::kPathNotMounted);
     return;
   }
 
@@ -183,7 +183,7 @@ void SmbFsShare::Unmount(SmbFsShare::UnmountCallback callback) {
 }
 
 void SmbFsShare::OnUnmountDone(SmbFsShare::UnmountCallback callback,
-                               chromeos::MountError result) {
+                               MountError result) {
   host_.reset();
 
   // Must do this *after* destroying SmbFsHost so that reentrant calls to

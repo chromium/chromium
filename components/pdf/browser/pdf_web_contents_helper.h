@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,11 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
+#include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/touch_selection_controller_client_manager.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "pdf/mojom/pdf.mojom.h"
@@ -19,6 +20,7 @@
 #include "ui/touch_selection/touch_selection_menu_runner.h"
 
 namespace content {
+class RenderWidgetHost;
 class WebContents;
 }
 
@@ -30,6 +32,7 @@ class PDFWebContentsHelperTest;
 // Per-WebContents class to handle PDF messages.
 class PDFWebContentsHelper
     : public content::WebContentsUserData<PDFWebContentsHelper>,
+      public content::RenderWidgetHostObserver,
       public mojom::PdfService,
       public ui::TouchSelectionControllerClient,
       public ui::TouchSelectionMenuClient,
@@ -47,7 +50,11 @@ class PDFWebContentsHelper
       mojo::PendingAssociatedReceiver<mojom::PdfService> pdf_service,
       content::RenderFrameHost* rfh);
 
-  // ui::TouchSelectionControllerClient :
+  // content::RenderWidgetHostObserver:
+  void RenderWidgetHostDestroyed(
+      content::RenderWidgetHost* widget_host) override;
+
+  // ui::TouchSelectionControllerClient:
   bool SupportsAnimation() const override;
   void SetNeedsAnimate() override {}
   void MoveCaret(const gfx::PointF& position) override;
@@ -71,19 +78,7 @@ class PDFWebContentsHelper
   void OnManagerWillDestroy(
       content::TouchSelectionControllerClientManager* manager) override;
 
- private:
-  friend class content::WebContentsUserData<PDFWebContentsHelper>;
-  friend class PDFWebContentsHelperTest;
-
-  PDFWebContentsHelper(content::WebContents* web_contents,
-                       std::unique_ptr<PDFWebContentsHelperClient> client);
-
-  void InitTouchSelectionClientManager();
-  gfx::PointF ConvertFromRoot(const gfx::PointF& point_f) const;
-  gfx::PointF ConvertToRoot(const gfx::PointF& point_f) const;
-  gfx::PointF ConvertHelper(const gfx::PointF& point_f, float scale) const;
-
-  // mojom::PdfService:
+  // pdf::mojom::PdfService:
   void SetListener(mojo::PendingRemote<mojom::PdfListener> listener) override;
   void HasUnsupportedFeature() override;
   void SaveUrlAs(const GURL& url,
@@ -94,13 +89,28 @@ class PDFWebContentsHelper
                         const gfx::PointF& right,
                         int32_t right_height) override;
   void SetPluginCanSave(bool can_save) override;
-  void GetPdfFindInPage(GetPdfFindInPageCallback callback) override;
 
-  content::WebContents* const web_contents_;
+ private:
+  friend class content::WebContentsUserData<PDFWebContentsHelper>;
+  friend class PDFWebContentsHelperTest;
+
+  PDFWebContentsHelper(content::WebContents* web_contents,
+                       std::unique_ptr<PDFWebContentsHelperClient> client);
+
+  void InitTouchSelectionClientManager();
+  gfx::PointF ConvertFromRoot(const gfx::PointF& point_f);
+  gfx::PointF ConvertToRoot(const gfx::PointF& point_f);
+  gfx::PointF ConvertHelper(const gfx::PointF& point_f, float scale);
+
   content::RenderFrameHostReceiverSet<mojom::PdfService> pdf_service_receivers_;
   std::unique_ptr<PDFWebContentsHelperClient> const client_;
-  content::TouchSelectionControllerClientManager*
+  raw_ptr<content::TouchSelectionControllerClientManager>
       touch_selection_controller_client_manager_ = nullptr;
+
+  // The `RenderWidgetHost` associated to the frame containing the PDF plugin.
+  // This should be null until the plugin is known to have been created; the
+  // signal comes from `SetListener()`.
+  raw_ptr<content::RenderWidgetHost> pdf_rwh_ = nullptr;
 
   // Latest selection bounds received from PDFium.
   gfx::PointF selection_left_;
@@ -110,8 +120,6 @@ class PDFWebContentsHelper
   bool has_selection_ = false;
 
   mojo::Remote<mojom::PdfListener> remote_pdf_client_;
-
-  mojo::AssociatedRemote<mojom::PdfFindInPageFactory> find_factory_remote_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

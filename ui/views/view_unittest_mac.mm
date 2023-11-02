@@ -1,8 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/views/view.h"
+
+#include "base/memory/raw_ptr.h"
 
 #import <Cocoa/Cocoa.h>
 
@@ -121,7 +123,7 @@ class ViewMacTest : public test::WidgetTest {
 
     view_ = new ThreeFingerSwipeView;
     view_->SetSize(widget_->GetClientAreaBoundsInScreen().size());
-    widget_->non_client_view()->frame_view()->AddChildView(view_);
+    widget_->non_client_view()->frame_view()->AddChildView(view_.get());
   }
 
   void TearDown() override {
@@ -130,8 +132,8 @@ class ViewMacTest : public test::WidgetTest {
   }
 
  private:
-  Widget* widget_ = nullptr;
-  ThreeFingerSwipeView* view_ = nullptr;
+  raw_ptr<Widget> widget_ = nullptr;
+  raw_ptr<ThreeFingerSwipeView> view_ = nullptr;
 };
 
 // Three-finger swipes send immediate events and they cannot be tracked.

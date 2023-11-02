@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include <map>
 #include <vector>
 
+#include "base/synchronization/lock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace blink {
@@ -27,7 +28,7 @@ class InMemoryDataAllocator : public DiskDataAllocator {
   ~InMemoryDataAllocator() override = default;
 
   std::map<int64_t, size_t> FreeChunks() {
-    MutexLocker locker(mutex_);
+    base::AutoLock locker(lock_);
 
     size_t free_size = 0;
     for (const auto& p : free_chunks_)

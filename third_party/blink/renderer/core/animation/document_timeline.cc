@@ -29,6 +29,8 @@
  */
 
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
+
+#include "cc/animation/animation_id_provider.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_document_timeline_options.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
@@ -79,8 +81,8 @@ DocumentTimeline::DocumentTimeline(Document* document,
     : AnimationTimeline(document),
       origin_time_(origin_time),
       zero_time_(base::TimeTicks() + origin_time_),
-      zero_time_initialized_(false),
-      playback_rate_(1) {
+      playback_rate_(1),
+      zero_time_initialized_(false) {
   if (!timing)
     timing_ = MakeGarbageCollected<DocumentTimelineTiming>(this);
   else
@@ -186,6 +188,8 @@ void DocumentTimeline::PauseAnimationsForTesting(
 }
 
 void DocumentTimeline::SetPlaybackRate(double playback_rate) {
+  recordreplay::Assert("[RUN-1436] DocumentTimeline::SetPlaybackRate");
+
   if (!IsActive())
     return;
   base::TimeDelta current_time = CurrentPhaseAndTime().time.value();
@@ -209,11 +213,12 @@ void DocumentTimeline::InvalidateKeyframeEffects(const TreeScope& tree_scope) {
     animation->InvalidateKeyframeEffect(tree_scope);
 }
 
-CompositorAnimationTimeline* DocumentTimeline::EnsureCompositorTimeline() {
+cc::AnimationTimeline* DocumentTimeline::EnsureCompositorTimeline() {
   if (compositor_timeline_)
     return compositor_timeline_.get();
 
-  compositor_timeline_ = std::make_unique<CompositorAnimationTimeline>();
+  compositor_timeline_ =
+      cc::AnimationTimeline::Create(cc::AnimationIdProvider::NextTimelineId());
   return compositor_timeline_.get();
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconBut
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_MENU_ID;
 
 import android.app.Activity;
+import android.graphics.Rect;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,17 +22,19 @@ import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver;
-import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver.PerformanceClass;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.ContextMenuDialog;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.MenuSourceType;
+import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.dragdrop.DragStateTracker;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -103,19 +106,44 @@ public class ContextMenuCoordinator implements ContextMenuUi {
             Callback<Integer> onItemClicked, final Runnable onMenuShown,
             final Runnable onMenuClosed, @Nullable ChipDelegate chipDelegate) {
         mOnMenuClosed = onMenuClosed;
-        final boolean isPopup =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE)
+        final boolean isDragDropEnabled =
+                ContentFeatureList.isEnabled(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU);
+        final boolean isPopup = ContextMenuUtils.forcePopupStyleEnabled()
                 || params.getSourceType() == MenuSourceType.MENU_SOURCE_MOUSE
                 || params.getOpenedFromHighlight();
         Activity activity = window.getActivity().get();
         final float density = activity.getResources().getDisplayMetrics().density;
         final float touchPointXPx = params.getTriggeringTouchXDp() * density;
         final float touchPointYPx = params.getTriggeringTouchYDp() * density;
-        int dialogTopMarginPx = ContextMenuDialog.NO_CUSTOM_MARGIN;
-        int dialogBottomMarginPx = ContextMenuDialog.NO_CUSTOM_MARGIN;
 
         final View layout = LayoutInflater.from(activity).inflate(
                 R.layout.context_menu_fullscreen_container, null);
+
+        // Calculate the rect used to display the context menu dialog.
+        Rect rect;
+        int x = (int) touchPointXPx;
+        int y = (int) (touchPointYPx + mTopContentOffsetPx);
+
+        // When context menu is a popup, the coordinates are expected to be screen coordinates as
+        // they'll be used to calculate coordinates for PopupMenu#showAtLocation. This is required
+        // for multi-window use cases as well.
+        if (isPopup) {
+            int[] layoutScreenLocation = new int[2];
+            layout.getLocationOnScreen(layoutScreenLocation);
+            x += layoutScreenLocation[0];
+            y += layoutScreenLocation[1];
+        }
+
+        // If drag drop is enabled, the context menu needs to be anchored next to the drag shadow.
+        // Otherwise, the Rect can be a single point.
+        if (isDragDropEnabled) {
+            rect = getContextMenuTriggerRectFromWeb(webContents, x, y);
+        } else {
+            rect = new Rect(x, y, x, y);
+        }
+
+        int dialogTopMarginPx = ContextMenuDialog.NO_CUSTOM_MARGIN;
+        int dialogBottomMarginPx = ContextMenuDialog.NO_CUSTOM_MARGIN;
 
         // Only display a chip if an image was selected and the menu isn't a popup.
         if (params.isImage() && chipDelegate != null && chipDelegate.isChipSupported()
@@ -140,22 +168,25 @@ public class ContextMenuCoordinator implements ContextMenuUi {
                 ? activity.getResources().getDimensionPixelSize(
                         R.dimen.context_menu_small_lateral_margin)
                 : null;
-        Integer desiredPopupContentWidth = params.getOpenedFromHighlight()
-                ? activity.getResources().getDimensionPixelSize(R.dimen.context_menu_small_width)
+        Integer desiredPopupContentWidth = null;
+        if (isDragDropEnabled) {
+            desiredPopupContentWidth = activity.getResources().getDimensionPixelSize(
+                    R.dimen.context_menu_popup_max_width);
+        } else if (params.getOpenedFromHighlight()) {
+            desiredPopupContentWidth =
+                    activity.getResources().getDimensionPixelSize(R.dimen.context_menu_small_width);
+        }
+        View webContentView = webContents.getViewAndroidDelegate() != null && isDragDropEnabled
+                ? webContents.getViewAndroidDelegate().getContainerView()
                 : null;
-        mDialog = createContextMenuDialog(activity, layout, menu, isPopup, touchPointXPx,
-                touchPointYPx, dialogTopMarginPx, dialogBottomMarginPx, popupMargin,
-                desiredPopupContentWidth);
+        mDialog = createContextMenuDialog(activity, layout, menu, isPopup, dialogTopMarginPx,
+                dialogBottomMarginPx, popupMargin, desiredPopupContentWidth, webContentView, rect);
         mDialog.setOnShowListener(dialogInterface -> onMenuShown.run());
         mDialog.setOnDismissListener(dialogInterface -> mOnMenuClosed.run());
 
         mWebContents = webContents;
-        int performanceClass = params.isAnchor()
-                ? PerformanceHintsObserver.getPerformanceClassForURL(
-                        webContents, params.getLinkUrl())
-                : PerformanceClass.PERFORMANCE_UNKNOWN;
-        mHeaderCoordinator = new ContextMenuHeaderCoordinator(activity, performanceClass, params,
-                Profile.fromWebContents(mWebContents), mNativeDelegate);
+        mHeaderCoordinator = new ContextMenuHeaderCoordinator(
+                activity, params, Profile.fromWebContents(mWebContents), mNativeDelegate);
 
         // The Integer here specifies the {@link ListItemType}.
         ModelList listItems = getItemList(
@@ -213,7 +244,13 @@ public class ContextMenuCoordinator implements ContextMenuUi {
 
             clickItem((int) id, activity, onItemClicked);
         });
-
+        // Set the fading edge for context menu. This is guarded by drag and drop feature flag, but
+        // ideally this could be enabled for all forms of context menu.
+        if (isDragDropEnabled) {
+            mListView.setVerticalFadingEdgeEnabled(true);
+            mListView.setFadingEdgeLength(activity.getResources().getDimensionPixelSize(
+                    R.dimen.context_menu_fading_edge_size));
+        }
         mWebContentsObserver = new WebContentsObserver(mWebContents) {
             @Override
             public void navigationEntryCommitted(LoadCommittedDetails details) {
@@ -240,35 +277,58 @@ public class ContextMenuCoordinator implements ContextMenuUi {
     }
 
     /**
-     * Returns the fully complete dialog based off the params and the itemGroups.
+     * Returns the fully complete dialog based off the params, the itemGroups, and related Chrome
+     * feature flags.
      *
      * @param activity Used to inflate the dialog.
      * @param layout The inflated context menu layout that will house the context menu.
      * @param view The inflated view that contains the list view.
      * @param isPopup Whether the context menu is being shown in a {@link AnchoredPopupWindow}.
-     * @param touchPointXPx The x-coordinate of the touch that triggered the context menu.
-     * @param touchPointYPx The y-coordinate of the touch that triggered the context menu.
      * @param topMarginPx An explicit top margin for the dialog, or -1 to use default
      *                    defined in XML.
      * @param bottomMarginPx An explicit bottom margin for the dialog, or -1 to use default
      *                       defined in XML.
      * @param popupMargin The margin for the popup window.
      * @param desiredPopupContentWidth The desired width for the content of the context menu.
+     * @param webContentView The web content view presented behind the context menu.
+     * @param rect Rect location where context menu is triggered. If this menu is a popup, the
+     *             coordinates are expected to be screen coordinates.
      * @return Returns a final dialog that does not have a background can be displayed using
      *         {@link AlertDialog#show()}.
      */
-    private ContextMenuDialog createContextMenuDialog(Activity activity, View layout, View view,
-            boolean isPopup, float touchPointXPx, float touchPointYPx, int topMarginPx,
-            int bottomMarginPx, @Nullable Integer popupMargin,
-            @Nullable Integer desiredPopupContentWidth) {
+    @VisibleForTesting
+    static ContextMenuDialog createContextMenuDialog(Activity activity, View layout, View view,
+            boolean isPopup, int topMarginPx, int bottomMarginPx, @Nullable Integer popupMargin,
+            @Nullable Integer desiredPopupContentWidth, @Nullable View webContentView, Rect rect) {
         // TODO(sinansahin): Refactor ContextMenuDialog as well.
-        final ContextMenuDialog dialog =
-                new ContextMenuDialog(activity, R.style.Theme_Chromium_AlertDialog, touchPointXPx,
-                        touchPointYPx, mTopContentOffsetPx, topMarginPx, bottomMarginPx, layout,
-                        view, isPopup, popupMargin, desiredPopupContentWidth);
+        boolean shouldRemoveScrim = isPopup && ContextMenuUtils.forcePopupStyleEnabled();
+        final ContextMenuDialog dialog = new ContextMenuDialog(activity,
+                R.style.ThemeOverlay_BrowserUI_AlertDialog, topMarginPx, bottomMarginPx, layout,
+                view, isPopup, shouldRemoveScrim, popupMargin, desiredPopupContentWidth,
+                webContentView, rect, ChromeAccessibilityUtil.get());
         dialog.setContentView(layout);
 
         return dialog;
+    }
+
+    @VisibleForTesting
+    static Rect getContextMenuTriggerRectFromWeb(
+            WebContents webContents, int centerX, int centerY) {
+        ViewAndroidDelegate viewAndroidDelegate = webContents.getViewAndroidDelegate();
+        if (viewAndroidDelegate != null) {
+            DragStateTracker dragStateTracker = viewAndroidDelegate.getDragStateTracker();
+            if (dragStateTracker != null && dragStateTracker.isDragStarted()) {
+                int shadowHeight = dragStateTracker.getDragShadowHeight();
+                int shadowWidth = dragStateTracker.getDragShadowWidth();
+
+                int left = centerX - shadowWidth / 2;
+                int right = centerX + shadowWidth / 2;
+                int top = centerY - shadowHeight / 2;
+                int bottom = centerY + shadowHeight / 2;
+                return new Rect(left, top, right, bottom);
+            }
+        }
+        return new Rect(centerX, centerY, centerX, centerY);
     }
 
     @VisibleForTesting
@@ -323,8 +383,8 @@ public class ContextMenuCoordinator implements ContextMenuUi {
     @VisibleForTesting
     void initializeHeaderCoordinatorForTesting(Activity activity, ContextMenuParams params,
             Profile profile, ContextMenuNativeDelegate nativeDelegate) {
-        mHeaderCoordinator = new ContextMenuHeaderCoordinator(
-                activity, PerformanceClass.PERFORMANCE_UNKNOWN, params, profile, nativeDelegate);
+        mHeaderCoordinator =
+                new ContextMenuHeaderCoordinator(activity, params, profile, nativeDelegate);
     }
 
     @VisibleForTesting
@@ -397,5 +457,15 @@ public class ContextMenuCoordinator implements ContextMenuUi {
             }
         }
         return null;
+    }
+
+    @VisibleForTesting
+    public ContextMenuDialog getDialogForTest() {
+        return mDialog;
+    }
+
+    @VisibleForTesting
+    public ContextMenuListView getListViewForTest() {
+        return mListView;
     }
 }

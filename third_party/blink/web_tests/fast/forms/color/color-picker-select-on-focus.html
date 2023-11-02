@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <script src='../../../resources/testharness.js'></script>
 <script src='../../../resources/testharnessreport.js'></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src='../../../fast/forms/resources/picker-common.js'></script>
 
 <input type=color id=colorinput value='#ffffff'>
@@ -11,9 +13,9 @@ function setTimeoutPromise() {
 }
 
 promise_test(async () => {
-  await openPickerWithPromise(document.getElementById('colorinput'));
-  popupWindow.focus();
-  const popupDocument = popupWindow.document;
+  await openPicker(document.getElementById('colorinput'));
+  internals.pagePopupWindow.focus();
+  const popupDocument = internals.pagePopupWindow.document;
 
   const hueSliderSelectionRing = popupDocument.querySelector('hue-slider > color-selection-ring');
   const rValueContainer = popupDocument.getElementById('rValueContainer');

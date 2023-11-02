@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,10 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "url/origin.h"
+
+namespace guest_os {
+class GuestOsFileWatcher;
+}
 
 namespace file_manager {
 
@@ -73,16 +77,14 @@ class FileWatcher {
       BoolCallback callback);
 
  private:
-  class CrostiniFileWatcher;
-
   // Called when a FilePathWatcher is created and started.
   // |file_path_watcher| is NULL, if the watcher wasn't started successfully.
   void OnWatcherStarted(BoolCallback callback,
                         base::FilePathWatcher* file_path_watcher);
 
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
-  base::FilePathWatcher* local_file_watcher_;
-  std::unique_ptr<CrostiniFileWatcher> crostini_file_watcher_;
+  base::FilePathWatcher* local_file_watcher_ = nullptr;
+  std::unique_ptr<guest_os::GuestOsFileWatcher> crostini_file_watcher_;
   base::FilePath virtual_path_;
   // Map of origin to counter. See the comment at AddListener() for
   // why we need to count.

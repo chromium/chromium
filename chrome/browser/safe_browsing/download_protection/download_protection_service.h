@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -19,6 +19,7 @@
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
@@ -115,8 +116,7 @@ class DownloadProtectionService {
 
   virtual void CheckPPAPIDownloadRequest(
       const GURL& requestor_url,
-      const GURL& initiating_frame_url,
-      content::WebContents* web_contents,
+      content::RenderFrameHost* initiating_frame,
       const base::FilePath& default_file_path,
       const std::vector<base::FilePath::StringType>& alternate_extensions,
       Profile* profile,
@@ -174,19 +174,27 @@ class DownloadProtectionService {
 
   double allowlist_sample_rate() const { return allowlist_sample_rate_; }
 
-  static void SetDownloadPingToken(download::DownloadItem* item,
-                                   const std::string& token);
+  static void SetDownloadProtectionData(
+      download::DownloadItem* item,
+      const std::string& token,
+      const ClientDownloadResponse::Verdict& verdict,
+      const ClientDownloadResponse::TailoredVerdict& tailored_verdict);
 
   static std::string GetDownloadPingToken(const download::DownloadItem* item);
+
+  static ClientDownloadResponse::Verdict GetDownloadProtectionVerdict(
+      const download::DownloadItem* item);
+
+  static ClientDownloadResponse::TailoredVerdict
+  GetDownloadProtectionTailoredVerdict(const download::DownloadItem* item);
 
   // Sends dangerous download opened report when download is opened or
   // shown in folder, and if the following conditions are met:
   // (1) it is a dangerous download.
   // (2) user is NOT in incognito mode.
   // (3) user is opted-in for extended reporting.
-  void MaybeSendDangerousDownloadOpenedReport(
-      const download::DownloadItem* item,
-      bool show_download_in_folder);
+  void MaybeSendDangerousDownloadOpenedReport(download::DownloadItem* item,
+                                              bool show_download_in_folder);
 
   // Called to trigger a bypass event report for |download|. This is used when
   // the async scan verdict is received for a file that was already opened by
@@ -226,6 +234,10 @@ class DownloadProtectionService {
   virtual scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory(
       content::BrowserContext* browser_context);
 
+  // Removes all pending download requests that are associated with the
+  // `browser_context`.
+  void RemovePendingDownloadRequests(content::BrowserContext* browser_context);
+
  private:
   friend class PPAPIDownloadRequest;
   friend class DownloadUrlSBClient;
@@ -248,21 +260,34 @@ class DownloadProtectionService {
   FRIEND_TEST_ALL_PREFIXES(DownloadProtectionServiceTest,
                            VerifyReferrerChainLengthForExtendedReporting);
 
-  static const void* const kDownloadPingTokenKey;
+  static const void* const kDownloadProtectionDataKey;
 
-  // Helper class for easy setting and getting token string.
-  class DownloadPingToken : public base::SupportsUserData::Data {
+  // Helper class for easy setting and getting data related to download
+  // protection. The data is only set when the server returns an unsafe verdict
+  // (i.e. not safe or unknown).
+  class DownloadProtectionData : public base::SupportsUserData::Data {
    public:
-    explicit DownloadPingToken(const std::string& token)
-        : token_string_(token) {}
+    explicit DownloadProtectionData(
+        const std::string& token,
+        const ClientDownloadResponse::Verdict& verdict,
+        const ClientDownloadResponse::TailoredVerdict& tailored_verdict)
+        : token_string_(token),
+          verdict_(verdict),
+          tailored_verdict_(tailored_verdict) {}
 
-    DownloadPingToken(const DownloadPingToken&) = delete;
-    DownloadPingToken& operator=(const DownloadPingToken&) = delete;
+    DownloadProtectionData(const DownloadProtectionData&) = delete;
+    DownloadProtectionData& operator=(const DownloadProtectionData&) = delete;
 
     std::string token_string() { return token_string_; }
+    ClientDownloadResponse::Verdict verdict() { return verdict_; }
+    ClientDownloadResponse::TailoredVerdict tailored_verdict() {
+      return tailored_verdict_;
+    }
 
    private:
     std::string token_string_;
+    ClientDownloadResponse::Verdict verdict_;
+    ClientDownloadResponse::TailoredVerdict tailored_verdict_;
   };
 
   // Cancels all requests in |download_requests_|, and empties it, releasing
@@ -299,6 +324,8 @@ class DownloadProtectionService {
   void AddReferrerChainToPPAPIClientDownloadRequest(
       content::WebContents* web_contents,
       const GURL& initiating_frame_url,
+      const content::GlobalRenderFrameHostId&
+          initiating_outermost_main_frame_id,
       const GURL& initiating_main_frame_url,
       SessionID tab_id,
       bool has_user_gesture,
@@ -309,21 +336,32 @@ class DownloadProtectionService {
 
   // Get the BinaryUploadService for the given |profile|. Virtual so it can be
   // overridden in tests.
-  virtual BinaryUploadService* GetBinaryUploadService(Profile* profile);
+  virtual BinaryUploadService* GetBinaryUploadService(
+      Profile* profile,
+      const enterprise_connectors::AnalysisSettings& settings);
 
   // Get the SafeBrowsingNavigationObserverManager for the given |web_contents|.
   SafeBrowsingNavigationObserverManager* GetNavigationObserverManager(
       content::WebContents* web_contents);
 
-  SafeBrowsingService* sb_service_;
+  // Callback when deep scanning has finished, but we may want to do the
+  // metadata check anyway.
+  void MaybeCheckMetdataAfterDeepScanning(
+      download::DownloadItem* item,
+      CheckDownloadRepeatingCallback callback,
+      DownloadCheckResult result);
+
+  raw_ptr<SafeBrowsingService> sb_service_;
   // These pointers may be NULL if SafeBrowsing is disabled.
   scoped_refptr<SafeBrowsingUIManager> ui_manager_;
   scoped_refptr<SafeBrowsingDatabaseManager> database_manager_;
 
   // Set of pending server requests for DownloadManager mediated downloads.
-  base::flat_map<CheckClientDownloadRequestBase*,
-                 std::unique_ptr<CheckClientDownloadRequestBase>>
-      download_requests_;
+  base::flat_map<
+      content::BrowserContext*,
+      base::flat_map<CheckClientDownloadRequestBase*,
+                     std::unique_ptr<CheckClientDownloadRequestBase>>>
+      context_download_requests_;
 
   // Set of pending server requests for PPAPI mediated downloads.
   base::flat_map<PPAPIDownloadRequest*, std::unique_ptr<PPAPIDownloadRequest>>

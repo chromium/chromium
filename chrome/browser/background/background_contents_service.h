@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,12 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "base/values.h"
 #include "chrome/browser/background/background_contents.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/extension_host_registry.h"
@@ -29,7 +32,6 @@ class Profile;
 
 namespace base {
 class CommandLine;
-class DictionaryValue;
 }  // namespace base
 
 namespace content {
@@ -107,7 +109,7 @@ class BackgroundContentsService
   void AddWebContents(std::unique_ptr<content::WebContents> new_contents,
                       const GURL& target_url,
                       WindowOpenDisposition disposition,
-                      const gfx::Rect& initial_rect,
+                      const blink::mojom::WindowFeatures& window_features,
                       bool* was_blocked) override;
   void OnBackgroundContentsNavigated(BackgroundContents* contents) override;
   void OnBackgroundContentsTerminated(BackgroundContents* contents) override;
@@ -131,7 +133,7 @@ class BackgroundContentsService
       bool is_new_browsing_instance,
       const std::string& frame_name,
       const std::string& application_id,
-      const content::StoragePartitionId& partition_id,
+      const content::StoragePartitionConfig& partition_config,
       content::SessionStorageNamespace* session_storage_namespace);
 
   // Removes |contents| from |contents_map_|, deleting it.
@@ -182,9 +184,8 @@ class BackgroundContentsService
 
   // Load a BackgroundContent; the settings are read from the provided
   // dictionary.
-  void LoadBackgroundContentsFromDictionary(
-      const std::string& extension_id,
-      const base::DictionaryValue* contents);
+  void LoadBackgroundContentsFromDictionary(const std::string& extension_id,
+                                            const base::Value::Dict& contents);
 
   // Load the manifest-specified BackgroundContents for all apps for the
   // profile.
@@ -233,13 +234,13 @@ class BackgroundContentsService
   // Delay (in ms) before restarting a force-installed extension that crashed.
   static int restart_delay_in_ms_;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   base::ObserverList<BackgroundContentsServiceObserver> observers_;
 
   // PrefService used to store list of background pages (or NULL if this is
   // running under an incognito profile).
-  PrefService* prefs_ = nullptr;
+  raw_ptr<PrefService> prefs_ = nullptr;
 
   // Information we track about each BackgroundContents.
   struct BackgroundContentsInfo {

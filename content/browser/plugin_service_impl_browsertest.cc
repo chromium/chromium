@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,21 +12,24 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "content/browser/ppapi_plugin_process_host.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/webplugininfo.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
+#include "ppapi/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(ENABLE_PPAPI)
+#include "content/browser/ppapi_plugin_process_host.h"
+#endif  // BUILDFLAG(ENABLE_PPAPI)
 
 namespace content {
 
 namespace {
 
-constexpr char kURL1[] = "http://google.com/";
-constexpr char kURL2[] = "http://youtube.com/";
-
+#if BUILDFLAG(ENABLE_PPAPI)
 class TestPluginClient : public PpapiPluginProcessHost::PluginClient {
  public:
   void GetPpapiChannelInfo(base::ProcessHandle* renderer_handle,
@@ -47,6 +50,7 @@ class TestPluginClient : public PpapiPluginProcessHost::PluginClient {
   base::ProcessId plugin_pid_ = 0;
   base::RunLoop* run_loop_ = nullptr;
 };
+#endif  // BUILDFLAG(ENABLE_PPAPI)
 
 }  // anonymous namespace
 
@@ -79,6 +83,7 @@ class PluginServiceImplBrowserTest : public ContentBrowserTest {
     run_loop.Run();
   }
 
+#if BUILDFLAG(ENABLE_PPAPI)
   void OpenChannelToFakePlugin(const absl::optional<url::Origin>& origin,
                                TestPluginClient* client) {
     base::RunLoop run_loop;
@@ -86,21 +91,33 @@ class PluginServiceImplBrowserTest : public ContentBrowserTest {
 
     PluginServiceImpl* service = PluginServiceImpl::GetInstance();
     service->OpenChannelToPpapiPlugin(
-        /*render_process_id=*/0, /*embedder_origin=*/url::Origin(),
-        plugin_path_, profile_dir_, origin, client);
+        /*render_process_id=*/0, plugin_path_, profile_dir_, origin, client);
     client->WaitForQuit();
     client->SetRunLoop(nullptr);
   }
+#endif  // BUILDFLAG(ENABLE_PPAPI)
 
   base::FilePath plugin_path_;
   base::FilePath profile_dir_;
 };
 
+IN_PROC_BROWSER_TEST_F(PluginServiceImplBrowserTest, GetPluginInfoByPath) {
+  RegisterFakePlugin();
+
+  PluginServiceImpl* service = PluginServiceImpl::GetInstance();
+
+  WebPluginInfo plugin_info;
+  ASSERT_TRUE(service->GetPluginInfoByPath(plugin_path_, &plugin_info));
+
+  EXPECT_EQ(plugin_path_, plugin_info.path);
+}
+
+#if BUILDFLAG(ENABLE_PPAPI)
 IN_PROC_BROWSER_TEST_F(PluginServiceImplBrowserTest, OriginLock) {
   RegisterFakePlugin();
 
-  url::Origin origin1 = url::Origin::Create(GURL(kURL1));
-  url::Origin origin2 = url::Origin::Create(GURL(kURL2));
+  url::Origin origin1 = url::Origin::Create(GURL("http://google.com/"));
+  url::Origin origin2 = url::Origin::Create(GURL("http://youtube.com/"));
 
   TestPluginClient client1;
   OpenChannelToFakePlugin(origin1, &client1);
@@ -171,5 +188,6 @@ IN_PROC_BROWSER_TEST_F(PluginServiceImplBrowserTest, NoForkBombs) {
     EXPECT_NE(base::kNullProcessId, client.plugin_pid());
   }
 }
+#endif  // BUILDFLAG(ENABLE_PPAPI)
 
 }  // namespace content

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,13 +54,15 @@ void CommanderController::OnTextChanged(const std::u16string& text,
     }
   }
 
-  // Sort by score, then alphabetically.
-  std::sort(std::begin(items), std::end(items),
-            [](const std::unique_ptr<CommandItem>& left,
-               const std::unique_ptr<CommandItem>& right) {
-              return (left->score == right->score) ? left->title < right->title
-                                                   : left->score > right->score;
-            });
+  // Sort descending by score, then alphabetically.
+  size_t max_elements = std::min(items.size(), kMaxResults);
+  std::partial_sort(
+      std::begin(items), std::begin(items) + max_elements, std::end(items),
+      [](const std::unique_ptr<CommandItem>& left,
+         const std::unique_ptr<CommandItem>& right) {
+        return (left->score == right->score) ? left->title < right->title
+                                             : left->score > right->score;
+      });
   if (items.size() > kMaxResults)
     items.resize(kMaxResults);
   current_items_ = std::move(items);

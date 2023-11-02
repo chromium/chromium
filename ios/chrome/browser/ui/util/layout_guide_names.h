@@ -1,11 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_BROWSER_UI_UTIL_LAYOUT_GUIDE_NAMES_H_
 #define IOS_CHROME_BROWSER_UI_UTIL_LAYOUT_GUIDE_NAMES_H_
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
 typedef NSString GuideName;
 
@@ -21,10 +21,7 @@ extern GuideName* const kContentAreaGuide;
 extern GuideName* const kPrimaryToolbarGuide;
 // A guide that is constrained to match the frame of the secondary toolbar.
 extern GuideName* const kSecondaryToolbarGuide;
-// A guide that is constrained to match the frame the secondary toolbar would
-// have if fullscreen was disabled.
-extern GuideName* const kSecondaryToolbarNoFullscreenGuide;
-// A guide that is constrainted to match the frame of the displayedBadge in the
+// A guide that is constrained to match the frame of the displayedBadge in the
 // Badge View.
 extern GuideName* const kBadgeOverflowMenuGuide;
 // A guide that is constrained to match the frame of the omnibox.
@@ -32,7 +29,7 @@ extern GuideName* const kOmniboxGuide;
 // A guide that is constrained to match the frame of the leading image view in
 // the omnibox.
 extern GuideName* const kOmniboxLeadingImageGuide;
-// A guide that is constrainted to match the frame of the text field in the
+// A guide that is constrained to match the frame of the text field in the
 // omnibox.
 extern GuideName* const kOmniboxTextFieldGuide;
 // A guide that is constrained to match the frame of the back button's image.
@@ -46,9 +43,6 @@ extern GuideName* const kNewTabButtonGuide;
 extern GuideName* const kTabSwitcherGuide;
 // A guide that is constrained to match the frame of the ToolsMenu button.
 extern GuideName* const kToolsMenuGuide;
-// A guide that is constrained to match the frame of the translate infobar
-// options button.
-extern GuideName* const kTranslateInfobarOptionsGuide;
 // A guide that is constrained to match the frame of the last-tapped voice
 // search button.
 extern GuideName* const kVoiceSearchButtonGuide;
@@ -61,5 +55,7 @@ extern GuideName* const kPrimaryToolbarLocationViewGuide;
 // A guide that is constrained to match the frame of the bottom toolbar in the
 // tab grid.
 extern GuideName* const kTabGridBottomToolbarGuide;
+// A guide that is constrained to match the frame of the first Autofill result.
+extern GuideName* const kAutofillFirstSuggestionGuide;
 
 #endif  // IOS_CHROME_BROWSER_UI_UTIL_LAYOUT_GUIDE_NAMES_H_

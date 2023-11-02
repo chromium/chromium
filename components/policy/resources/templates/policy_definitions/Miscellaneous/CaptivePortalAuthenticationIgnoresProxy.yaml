@@ -1,0 +1,25 @@
+caption: Captive portal authentication ignores proxy
+default_for_enterprise_users: false
+desc: |-
+  Setting the policy to Enabled lets <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> bypass any proxy for captive portal authentication. These authentication webpages, starting from the captive portal sign-in page until Chrome detects a successful internet connection, open in a separate window, ignoring all policy settings and restrictions for the current user. This policy only takes effect if a proxy is set up (by policy, extension, or the user in chrome://settings).
+
+        Setting the policy to Disabled or leaving it unset means any captive portal authentication pages are shown in a (regular) new browser tab, using the current user's proxy settings.
+example_value: true
+features:
+  can_be_recommended: false
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Allow captive portal authentication to ignore proxy settings
+  value: true
+- caption: Prevent captive portal authentication from ignoring proxy settings
+  value: false
+owners:
+- ultrotter@google.com
+- rsorokin@google.com
+schema:
+  type: boolean
+supported_on:
+- chrome_os:41-
+tags: []
+type: main

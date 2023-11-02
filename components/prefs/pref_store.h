@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,9 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
+#include "base/strings/string_piece.h"
+#include "base/values.h"
 #include "components/prefs/prefs_export.h"
-
-namespace base {
-class DictionaryValue;
-class Value;
-}
 
 // This is an abstract interface for reading and writing from/to a persistent
 // preference store, used by PrefService. An implementation using a JSON file
@@ -53,11 +50,11 @@ class COMPONENTS_PREFS_EXPORT PrefStore : public base::RefCounted<PrefStore> {
   // Get the value for a given preference |key| and stores it in |*result|.
   // |*result| is only modified if the return value is true and if |result|
   // is not NULL. Ownership of the |*result| value remains with the PrefStore.
-  virtual bool GetValue(const std::string& key,
+  virtual bool GetValue(base::StringPiece key,
                         const base::Value** result) const = 0;
 
-  // Get all the values. Never returns a null pointer.
-  virtual std::unique_ptr<base::DictionaryValue> GetValues() const = 0;
+  // Get all the values.
+  virtual base::Value::Dict GetValues() const = 0;
 
  protected:
   friend class base::RefCounted<PrefStore>;

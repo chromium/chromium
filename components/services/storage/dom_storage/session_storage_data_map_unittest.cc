@@ -1,18 +1,17 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/services/storage/dom_storage/session_storage_data_map.h"
 
 #include <map>
+#include <tuple>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -41,7 +40,7 @@ base::span<const uint8_t> MakeBytes(base::StringPiece str) {
 
 mojo::PendingRemote<blink::mojom::StorageAreaObserver> MakeStubObserver() {
   mojo::PendingRemote<blink::mojom::StorageAreaObserver> observer;
-  ignore_result(observer.InitWithNewPipeAndPassReceiver());
+  std::ignore = observer.InitWithNewPipeAndPassReceiver();
   return observer;
 }
 

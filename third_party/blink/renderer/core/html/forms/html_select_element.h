@@ -92,9 +92,21 @@ class CORE_EXPORT HTMLSelectElement final
   using Node::remove;
   void remove(int index);
 
-  String value() const;
-  void setValue(const String&, bool send_events = false);
+  String Value() const;
+  void SetValue(const String&,
+                bool send_events = false,
+                WebAutofillState = WebAutofillState::kNotFilled);
+  String valueForBinding() const { return Value(); }
+  void setValueForBinding(const String&);
+
+  // It is possible to pass WebAutofillState::kNotFilled here in case we need
+  // to simulate a reset of a <select> element.
+  void SetAutofillValue(const String& value, WebAutofillState);
+
   String SuggestedValue() const;
+  // Sets the suggested value and puts the element into
+  // WebAutofillState::kPreviewed state if the value exists, or
+  // WebAutofillState::kNotFilled otherwise.
   void SetSuggestedValue(const String&);
 
   // |options| and |selectedOptions| are not safe to be used in in
@@ -183,6 +195,8 @@ class CORE_EXPORT HTMLSelectElement final
   Element& InnerElement() const;
   AXObject* PopupRootAXObject() const;
 
+  bool IsRichlyEditableForAccessibility() const override { return false; }
+
  private:
   const AtomicString& FormControlType() const override;
 
@@ -243,7 +257,9 @@ class CORE_EXPORT HTMLSelectElement final
     kMakeOptionDirtyFlag = 1 << 2,
   };
   typedef unsigned SelectOptionFlags;
-  void SelectOption(HTMLOptionElement*, SelectOptionFlags);
+  void SelectOption(HTMLOptionElement*,
+                    SelectOptionFlags,
+                    WebAutofillState = WebAutofillState::kNotFilled);
   bool DeselectItemsWithoutValidation(
       HTMLOptionElement* element_to_exclude = nullptr);
   void ParseMultipleAttribute(const AtomicString&);
@@ -287,7 +303,6 @@ class CORE_EXPORT HTMLSelectElement final
   bool uses_menu_list_ = true;
   bool is_multiple_;
   mutable bool should_recalc_list_items_;
-  bool is_autofilled_by_preview_;
 
   Member<SelectType> select_type_;
   int index_to_select_on_cancel_;

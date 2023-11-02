@@ -23,10 +23,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TYPE_TRAITS_H_
 
 #include <cstddef>
+#include <memory>
 #include <type_traits>
 #include <utility>
 #include "base/compiler_specific.h"
-#include "base/template_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "v8/include/cppgc/type-traits.h"  // nogncheck
 
@@ -105,6 +108,59 @@ struct IsSubclassOfTemplateTypenameSizeTypename {
   static const bool value = sizeof(SubclassCheck(t_)) == sizeof(YesType);
 };
 
+template <typename T, typename = void>
+struct IsRecordReplayDeterministicHash : std::false_type {};
+
+template <typename T>
+struct IsRecordReplayDeterministicHash<
+    T,
+    std::enable_if_t<T::kIsRecordReplayDeterministicHash>> : std::true_type {};
+
+template <typename T>
+constexpr bool IsRecordReplayDeterministicHashV =
+    IsRecordReplayDeterministicHash<T>::value;
+
+template <typename T>
+struct IsPointerType : std::false_type {};
+
+template <typename T>
+struct IsPointerType<T*> : std::true_type {};
+
+template <typename T>
+struct IsPointerType<const T*> : std::true_type {};
+
+template <typename T, typename U>
+struct IsPointerType<std::unique_ptr<T, U>> : std::true_type {};
+
+template <typename T>
+struct IsPointerType<scoped_refptr<T>> : std::true_type {};
+
+template <typename T>
+struct IsPointerType<base::WeakPtr<T>> : std::true_type {};
+
+template <>
+struct IsPointerType<base::internal::WeakPtrBase> : std::true_type {};
+
+template <typename T, typename U>
+struct IsPointerType<raw_ptr<T, U>> : std::true_type {};
+
+template <typename T>
+constexpr bool IsPointerTypeV = IsPointerType<T>::value;
+
+// This is a helper template to check if iteration over a container might
+// have non-deterministic ordering due to hashing pointer values.
+//
+// Example usage:
+//   inline typename HashSet<T, U, V, W>::iterator HashSet<T, U, V, W>::begin()
+//       const {
+//     static_assert(!IsRecordReplayNonDeterministicContainerV<T, U>,
+//                   "Using non-deterministic pointer hash");
+//     return impl_.begin();
+//   }
+template <typename Key, typename Hash>
+constexpr bool IsRecordReplayNonDeterministicContainerV =
+    !IsRecordReplayDeterministicHashV<Hash> && IsPointerTypeV<Key>;
+
 template <typename T>
 struct IsTraceable : cppgc::internal::IsTraceable<T> {};
 
@@ -116,30 +172,30 @@ template <typename T>
 struct IsWeak : cppgc::internal::IsWeak<T> {};
 
 template <typename T>
-struct IsMemberType : std::integral_constant<bool, cppgc::IsMemberTypeV<T>> {};
+struct IsMemberType : std::bool_constant<cppgc::IsMemberTypeV<T>> {};
 
 template <typename T>
-struct IsWeakMemberType
-    : std::integral_constant<bool, cppgc::IsWeakMemberTypeV<T>> {};
+struct IsWeakMemberType : std::bool_constant<cppgc::IsWeakMemberTypeV<T>> {};
 
 template <typename T>
 struct IsMemberOrWeakMemberType
-    : std::integral_constant<bool,
-                             cppgc::IsMemberTypeV<T> ||
-                                 cppgc::IsWeakMemberTypeV<T>> {};
+    : std::bool_constant<cppgc::IsMemberTypeV<T> ||
+                         cppgc::IsWeakMemberTypeV<T>> {};
+
+template <typename T>
+struct IsAnyMemberType
+    : std::bool_constant<IsMemberOrWeakMemberType<T>::value ||
+                         cppgc::IsUntracedMemberTypeV<T>> {};
 
 template <typename T, typename U>
 struct IsTraceable<std::pair<T, U>>
-    : std::integral_constant<bool,
-                             IsTraceable<T>::value || IsTraceable<U>::value> {};
+    : std::bool_constant<IsTraceable<T>::value || IsTraceable<U>::value> {};
 
 // Convenience template wrapping the IsTraceableInCollection template in
 // Collection Traits. It helps make the code more readable.
 template <typename Traits>
 struct IsTraceableInCollectionTrait
-    : std::integral_constant<
-          bool,
-          Traits::template IsTraceableInCollection<>::value> {};
+    : std::bool_constant<Traits::template IsTraceableInCollection<>::value> {};
 
 enum WeakHandlingFlag {
   kNoWeakHandling,
@@ -197,9 +253,9 @@ template <typename T, typename = void>
 struct IsStackAllocatedType : std::false_type {};
 
 template <typename T>
-struct IsStackAllocatedType<
-    T,
-    base::void_t<typename T::IsStackAllocatedTypeMarker>> : std::true_type {};
+struct IsStackAllocatedType<T,
+                            std::void_t<typename T::IsStackAllocatedTypeMarker>>
+    : std::true_type {};
 
 }  // namespace WTF
 

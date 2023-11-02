@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ TEST(DisplayItemTest, DebugStringsExist) {
   for (int type = 0; type <= DisplayItem::kTypeLast; type++) {
     String debug_string =
         DisplayItem::TypeAsDebugString(static_cast<DisplayItem::Type>(type));
-    EXPECT_FALSE(debug_string.IsEmpty());
+    EXPECT_FALSE(debug_string.empty());
     EXPECT_NE("Unknown", debug_string);
   }
 }

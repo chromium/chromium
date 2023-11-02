@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,11 +18,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.Callback;
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
@@ -31,49 +28,17 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredicto
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
-import org.chromium.components.optimization_guide.proto.ModelsProto.OptimizationTarget;
-import org.chromium.ui.base.AndroidPermissionDelegate;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.chromium.components.segmentation_platform.proto.SegmentationProto.SegmentId;
+import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
 /** Unit tests for the {@code AdaptiveToolbarStatePredictor} */
-@Config(manifest = Config.NONE,
-        shadows = {AdaptiveToolbarStatePredictorTest.ShadowChromeFeatureList.class,
-                AdaptiveToolbarStatePredictorTest.ShadowVoiceRecognitionHandler.class})
+@Config(manifest = Config.NONE)
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR,
         ChromeFeatureList.SHARE_BUTTON_IN_TOP_TOOLBAR,
         ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR})
 @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
 public class AdaptiveToolbarStatePredictorTest {
-    // TODO(crbug.com/1199025): Remove this shadow.
-    @Implements(ChromeFeatureList.class)
-    static class ShadowChromeFeatureList {
-        static final Map<String, String> sParamValues = new HashMap<>();
-
-        @Implementation
-        public static String getFieldTrialParamByFeature(String feature, String paramKey) {
-            Assert.assertTrue(ChromeFeatureList.isEnabled(feature));
-            return sParamValues.getOrDefault(paramKey, "");
-        }
-
-        public static void reset() {
-            sParamValues.clear();
-        }
-    }
-
-    @Implements(VoiceRecognitionUtil.class)
-    static class ShadowVoiceRecognitionHandler {
-        static boolean sIsVoiceRecognitionEnabled;
-
-        @Implementation
-        public static boolean isVoiceSearchEnabled(
-                AndroidPermissionDelegate androidPermissionDelegate) {
-            return sIsVoiceRecognitionEnabled;
-        }
-    }
-
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
 
@@ -83,15 +48,14 @@ public class AdaptiveToolbarStatePredictorTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        LibraryLoader.getInstance().setLibrariesLoadedForNativeTests();
-        ShadowChromeFeatureList.reset();
+        VoiceRecognitionUtil.setIsVoiceSearchEnabledForTesting(true);
         AdaptiveToolbarFeatures.clearParsedParamsForTesting();
-        ShadowVoiceRecognitionHandler.sIsVoiceRecognitionEnabled = true;
     }
 
     @After
     public void tearDown() {
         AdaptiveToolbarFeatures.clearParsedParamsForTesting();
+        VoiceRecognitionUtil.setIsVoiceSearchEnabledForTesting(null);
     }
 
     @Test
@@ -103,21 +67,6 @@ public class AdaptiveToolbarStatePredictorTest {
         AdaptiveToolbarStatePredictor statePredictor = buildStatePredictor(
                 true, AdaptiveToolbarButtonVariant.VOICE, true, AdaptiveToolbarButtonVariant.SHARE);
         UiState expected = new UiState(false, AdaptiveToolbarButtonVariant.UNKNOWN,
-                AdaptiveToolbarButtonVariant.UNKNOWN, AdaptiveToolbarButtonVariant.UNKNOWN);
-        statePredictor.recomputeUiState(verifyResultCallback(expected));
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR,
-            ChromeFeatureList.VOICE_SEARCH_AUDIO_CAPTURE_POLICY})
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
-    public void
-    testWorksWithDataCollectionFeatureFlag() {
-        ShadowChromeFeatureList.sParamValues.put("mode", "always-voice");
-        AdaptiveToolbarStatePredictor statePredictor = buildStatePredictor(
-                true, AdaptiveToolbarButtonVariant.VOICE, true, AdaptiveToolbarButtonVariant.SHARE);
-        UiState expected = new UiState(true, AdaptiveToolbarButtonVariant.VOICE,
                 AdaptiveToolbarButtonVariant.UNKNOWN, AdaptiveToolbarButtonVariant.UNKNOWN);
         statePredictor.recomputeUiState(verifyResultCallback(expected));
     }
@@ -167,7 +116,7 @@ public class AdaptiveToolbarStatePredictorTest {
         AdaptiveToolbarFeatures.setDefaultSegmentForTesting(AdaptiveToolbarFeatures.SHARE);
         AdaptiveToolbarFeatures.setIgnoreSegmentationResultsForTesting(false);
 
-        ShadowVoiceRecognitionHandler.sIsVoiceRecognitionEnabled = false;
+        VoiceRecognitionUtil.setIsVoiceSearchEnabledForTesting(false);
         AdaptiveToolbarStatePredictor statePredictor = buildStatePredictor(true,
                 AdaptiveToolbarButtonVariant.UNKNOWN, true, AdaptiveToolbarButtonVariant.VOICE);
         UiState expected = new UiState(true, AdaptiveToolbarButtonVariant.SHARE,
@@ -272,22 +221,22 @@ public class AdaptiveToolbarStatePredictorTest {
 
     @Test
     @SmallTest
-    public void testOptimizationTargetToAdaptiveToolbarButtonVariantConversion() {
+    public void testSegmentIdToAdaptiveToolbarButtonVariantConversion() {
         Assert.assertEquals(AdaptiveToolbarButtonVariant.NEW_TAB,
-                AdaptiveToolbarStatePredictor.getAdaptiveToolbarButtonVariantFromOptimizationTarget(
-                        OptimizationTarget.OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB));
+                AdaptiveToolbarStatePredictor.getAdaptiveToolbarButtonVariantFromSegmentId(
+                        SegmentId.OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB));
         Assert.assertEquals(AdaptiveToolbarButtonVariant.SHARE,
-                AdaptiveToolbarStatePredictor.getAdaptiveToolbarButtonVariantFromOptimizationTarget(
-                        OptimizationTarget.OPTIMIZATION_TARGET_SEGMENTATION_SHARE));
+                AdaptiveToolbarStatePredictor.getAdaptiveToolbarButtonVariantFromSegmentId(
+                        SegmentId.OPTIMIZATION_TARGET_SEGMENTATION_SHARE));
         Assert.assertEquals(AdaptiveToolbarButtonVariant.VOICE,
-                AdaptiveToolbarStatePredictor.getAdaptiveToolbarButtonVariantFromOptimizationTarget(
-                        OptimizationTarget.OPTIMIZATION_TARGET_SEGMENTATION_VOICE));
+                AdaptiveToolbarStatePredictor.getAdaptiveToolbarButtonVariantFromSegmentId(
+                        SegmentId.OPTIMIZATION_TARGET_SEGMENTATION_VOICE));
         Assert.assertEquals(AdaptiveToolbarButtonVariant.UNKNOWN,
-                AdaptiveToolbarStatePredictor.getAdaptiveToolbarButtonVariantFromOptimizationTarget(
-                        OptimizationTarget.OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
+                AdaptiveToolbarStatePredictor.getAdaptiveToolbarButtonVariantFromSegmentId(
+                        SegmentId.OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
         Assert.assertEquals(AdaptiveToolbarButtonVariant.UNKNOWN,
-                AdaptiveToolbarStatePredictor.getAdaptiveToolbarButtonVariantFromOptimizationTarget(
-                        OptimizationTarget.OPTIMIZATION_TARGET_UNKNOWN));
+                AdaptiveToolbarStatePredictor.getAdaptiveToolbarButtonVariantFromSegmentId(
+                        SegmentId.OPTIMIZATION_TARGET_UNKNOWN));
     }
 
     private AdaptiveToolbarStatePredictor buildStatePredictor(boolean toolbarSettingsToggleEnabled,

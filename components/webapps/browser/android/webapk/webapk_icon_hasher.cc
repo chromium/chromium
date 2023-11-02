@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -188,7 +188,8 @@ void WebApkIconHasher::OnSimpleLoaderComplete(
         0,            // no max size
         false,        // normal cache policy
         base::BindOnce(&WebApkIconHasher::OnImageDownloaded,
-                       base::Unretained(this), std::move(response_body)));
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(response_body)));
     return;
   }
 

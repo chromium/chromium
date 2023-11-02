@@ -1,25 +1,23 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/util/keyboard_observer_helper.h"
 
-#include "base/check.h"
-#include "base/check_op.h"
+#import "base/check.h"
+#import "base/check_op.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
-#include "ui/base/device_form_factor.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
+#import "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-// TODO(crbug.com/974226): look into making this a singleton with multiple
-// listeners.
 @interface KeyboardObserverHelper ()
 
 // Flag that indicates if the keyboard is on screen.
-@property(nonatomic, readwrite, getter=isKeyboardOnScreen)
-    BOOL keyboardOnScreen;
+@property(nonatomic, readwrite, getter=isKeyboardVisible) BOOL keyboardVisible;
 
 // Current keyboard state.
 @property(nonatomic, readwrite, getter=getKeyboardState)
@@ -29,11 +27,49 @@
 // application lost focus in multiwindow mode.
 @property(nonatomic, weak) UIView* keyboardView;
 
+// Mutable array storing weak pointers to consumers.
+@property(nonatomic, strong) NSPointerArray* consumers;
+
 @end
 
 @implementation KeyboardObserverHelper
 
-#pragma mark - Public
+#pragma mark - Public class methods
+
++ (instancetype)sharedKeyboardObserver {
+  static KeyboardObserverHelper* sharedInstance;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    sharedInstance = [[KeyboardObserverHelper alloc] init];
+  });
+  return sharedInstance;
+}
+
+#pragma mark - Public instance methods
+
+- (void)addConsumer:(id<KeyboardObserverHelperConsumer>)consumer {
+  [self.consumers addPointer:(__bridge void*)consumer];
+  [self.consumers compact];
+}
+
+- (CGFloat)visibleKeyboardHeight {
+  if (self.keyboardState.isVisible && !self.keyboardState.isHardware &&
+      !self.keyboardState.isUndocked) {
+    // Software keyboard is visible and covers the full width of the screen
+    // (docked). Returns the keyboard + accessory height.
+    return CGRectGetHeight(self.keyboardView.frame);
+  } else if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE &&
+             self.keyboardState.isVisible && !self.keyboardState.isUndocked) {
+    // Keyboard is visible but hardware, only the accessory covers the full
+    // width of the display, the keyboard is hidden below the display. Returns
+    // the accessory's height.
+    return CurrentScreenHeight() - self.keyboardView.frame.origin.y;
+  } else {
+    return 0;
+  }
+}
+
+#pragma mark - Private instance methods
 
 - (instancetype)init {
   self = [super init];
@@ -58,9 +94,13 @@
            selector:@selector(keyboardWillDidChangeFrame:)
                name:UIKeyboardDidChangeFrameNotification
              object:nil];
+    _consumers =
+        [[NSPointerArray alloc] initWithOptions:NSPointerFunctionsWeakMemory];
   }
   return self;
 }
+
+#pragma mark - Private class methods
 
 + (UIView*)keyboardView {
   NSArray* windows = [UIApplication sharedApplication].windows;
@@ -90,14 +130,19 @@
   return nil;
 }
 
++ (UIScreen*)keyboardScreen {
+  UIView* keyboardView = [self keyboardView];
+  return keyboardView.window.screen;
+}
+
 #pragma mark - Keyboard Notifications
 
 - (void)keyboardWillShow:(NSNotification*)notification {
-  self.keyboardOnScreen = YES;
+  self.keyboardVisible = YES;
 }
 
 - (void)keyboardWillHide:(NSNotification*)notification {
-  self.keyboardOnScreen = NO;
+  self.keyboardVisible = NO;
 }
 
 - (void)keyboardWillDidChangeFrame:(NSNotification*)notification {
@@ -123,8 +168,11 @@
       keyboardView != self.keyboardView) {
     self.keyboardState = {isVisible, isUndocked, isHardware};
     self.keyboardView = keyboardView;
+    // Notify on the next cycle.
     dispatch_async(dispatch_get_main_queue(), ^{
-      [self.consumer keyboardWillChangeToState:self.keyboardState];
+      for (id<KeyboardObserverHelperConsumer> consumer in self.consumers) {
+        [consumer keyboardWillChangeToState:self.keyboardState];
+      }
     });
   }
 }

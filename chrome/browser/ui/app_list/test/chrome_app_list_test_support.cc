@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
 #include "components/crx_file/id_util.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
 namespace test {
 
@@ -56,6 +57,18 @@ void PopulateDummyAppListItems(int n) {
   AppListClientImpl* client = GetAppListClient();
   Profile* profile = client->GetCurrentAppListProfile();
   AppListModelUpdater* model_updater = GetModelUpdater(client);
+
+  // Calculate `last_position` among the existing app list items.
+  std::vector<const ChromeAppListItem*> existing_items =
+      model_updater->GetItems();
+  syncer::StringOrdinal last_position =
+      syncer::StringOrdinal::CreateInitialOrdinal();
+  for (const auto* item : existing_items) {
+    if (item->position().GreaterThan(last_position))
+      last_position = item->position();
+  }
+
+  syncer::StringOrdinal new_item_position = last_position.CreateAfter();
   for (int i = 0; i < n; ++i) {
     const std::string app_name = base::StringPrintf("app %d", i);
     const std::string app_id = crx_file::id_util::GenerateId(app_name);
@@ -64,8 +77,9 @@ void PopulateDummyAppListItems(int n) {
     auto metadata = std::make_unique<ash::AppListItemMetadata>();
     metadata->id = app_id;
     metadata->name = app_name;
-    metadata->short_name = app_name;
     metadata->icon = CreateImageSkia(i);
+    metadata->position = new_item_position;
+    new_item_position = new_item_position.CreateAfter();
     item->SetMetadata(std::move(metadata));
     model_updater->AddItem(std::move(item));
   }

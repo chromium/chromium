@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,7 +45,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #endif
@@ -496,9 +496,9 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, SpanSearchable) {
 
 // Find in a very large page.
 // TODO(crbug.com/1077855): Test is flaky on Mac debug builds.
-#if defined(OS_MAC) && !defined(NDEBUG)
+#if BUILDFLAG(IS_MAC) && !defined(NDEBUG)
 #define MAYBE_LargePage DISABLED_LargePage
-#elif defined(OS_LINUX) && (!defined(NDEBUG) || defined(ADDRESS_SANITIZER))
+#elif BUILDFLAG(IS_LINUX) && (!defined(NDEBUG) || defined(ADDRESS_SANITIZER))
 // TODO(crbug.com/1181717): Test is flaky on Linux debug builds.
 // TODO(crbug.com/1198685): Test is flaky on Linux ASAN builds.
 #define MAYBE_LargePage DISABLED_LargePage
@@ -517,9 +517,9 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, MAYBE_LargePage) {
 
 // Find a very long string in a large page.
 // TODO(crbug.com/1096911): Test is flaky on Mac debug builds and Linux asan.
-#if (defined(OS_MAC) && !defined(NDEBUG)) || defined(ADDRESS_SANITIZER)
+#if (BUILDFLAG(IS_MAC) && !defined(NDEBUG)) || defined(ADDRESS_SANITIZER)
 #define MAYBE_FindLongString DISABLED_FindLongString
-#elif defined(OS_LINUX) && !defined(NDEBUG)
+#elif BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
 // TODO(crbug.com/1181717): Test is flaky on Linux debug builds.
 #define MAYBE_FindLongString DISABLED_FindLongString
 #else
@@ -554,7 +554,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, BigString) {
 
 // Search Back and Forward on a single occurrence.
 // TODO(crbug.com/1119361): Test is flaky on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
 #define MAYBE_SingleOccurrence DISABLED_SingleOccurrence
 #else
 #define MAYBE_SingleOccurrence SingleOccurrence
@@ -965,11 +965,8 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest,
   EXPECT_TRUE(fully_visible);
 
   // Reload and make sure the find window goes away.
-  content::WindowedNotificationObserver observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::Source<NavigationController>(
-          &browser()->tab_strip_model()->GetActiveWebContents()->
-              GetController()));
+  content::LoadStopObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   observer.Wait();
   EXPECT_TRUE(GetFindBarWindowInfo(&position, &fully_visible));
@@ -1196,7 +1193,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, RestartSearchFromF3) {
 // with the last search from the same tab rather than the last overall search.
 // The only exception is if there is a global pasteboard (for example on Mac).
 // http://crbug.com/30006
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_PreferPreviousSearch DISABLED_PreferPreviousSearch
 #else
 #define MAYBE_PreferPreviousSearch PreferPreviousSearch
@@ -1455,9 +1452,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, ActivateLinkNavigatesPage) {
   EXPECT_EQ(ordinal, 1);
 
   // End the find session, click on the link.
-  content::WindowedNotificationObserver observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::Source<NavigationController>(&web_contents->GetController()));
+  content::LoadStopObserver observer(web_contents);
   find_tab_helper->StopFinding(find_in_page::SelectionAction::kActivate);
   observer.Wait();
 }
@@ -1481,8 +1476,15 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, FitWindow) {
             popup->window()->GetBounds().width());
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/1341599): Flakily crashes on Lacros.
+#define MAYBE_FindMovesOnTabClose_Issue1343052 \
+  DISABLED_FindMovesOnTabClose_Issue1343052
+#else
+#define MAYBE_FindMovesOnTabClose_Issue1343052 FindMovesOnTabClose_Issue1343052
+#endif
 IN_PROC_BROWSER_TEST_F(FindInPageControllerTest,
-                       FindMovesOnTabClose_Issue1343052) {
+                       MAYBE_FindMovesOnTabClose_Issue1343052) {
   EnsureFindBoxOpen();
   content::RunAllPendingInMessageLoop();  // Needed on Linux.
 
@@ -1527,7 +1529,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest,
 
 // Verify that if there's a global pasteboard (for example on Mac) then doing
 // a search on one tab will clear the matches label on the other tabs.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // TODO(http://crbug.com/843878): Remove the interactive UI test
 // FindBarPlatformHelperMacInteractiveUITest.GlobalPasteBoardClearMatches
 // once http://crbug.com/843878 is fixed.
@@ -1614,7 +1616,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, IncognitoFindNextSecret) {
 
 // Find text in regular window, send IDC_FIND_NEXT to incognito. It should
 // search for the first phrase.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_IncognitoFindNextShared DISABLED_IncognitoFindNextShared
 #else
 #define MAYBE_IncognitoFindNextShared IncognitoFindNextShared

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define COMPONENTS_CAST_STREAMING_BROWSER_STREAM_CONSUMER_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "media/mojo/mojom/media_types.mojom.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -38,10 +39,19 @@ class StreamConsumer final : public openscreen::cast::Receiver::Consumer {
                  mojo::ScopedDataPipeProducerHandle data_pipe,
                  FrameReceivedCB frame_received_cb,
                  base::RepeatingClosure on_new_frame);
+  StreamConsumer(StreamConsumer&& old_consumer,
+                 openscreen::cast::Receiver* receiver,
+                 mojo::ScopedDataPipeProducerHandle data_pipe);
   ~StreamConsumer() override;
 
   StreamConsumer(const StreamConsumer&) = delete;
   StreamConsumer& operator=(const StreamConsumer&) = delete;
+
+  // Informs the StreamConsumer that a new frame should be read asynchronously.
+  // Eventually, the |frame_received_cb_| will be called with the data for this
+  // frame. |no_frames_available_cb| will be called if no frames are immediately
+  // available when this callback first tries to read them.
+  void ReadFrame(base::OnceClosure no_frames_available_cb);
 
  private:
   // Maximum frame size that OnFramesReady() can accept.
@@ -54,10 +64,14 @@ class StreamConsumer final : public openscreen::cast::Receiver::Consumer {
   // Callback when |data_pipe_| can be written to again after it was full.
   void OnPipeWritable(MojoResult result);
 
+  // Processes a ready frame, if both one is ready and a read callback is
+  // pending.
+  void MaybeSendNextFrame();
+
   // openscreen::cast::Receiver::Consumer implementation.
   void OnFramesReady(int next_frame_buffer_size) override;
 
-  openscreen::cast::Receiver* const receiver_;
+  const raw_ptr<openscreen::cast::Receiver> receiver_;
   mojo::ScopedDataPipeProducerHandle data_pipe_;
   const FrameReceivedCB frame_received_cb_;
 
@@ -77,6 +91,10 @@ class StreamConsumer final : public openscreen::cast::Receiver::Consumer {
   base::TimeDelta playout_offset_ = base::TimeDelta::Max();
 
   const base::TimeDelta frame_duration_;
+
+  bool is_read_pending_ = false;
+
+  base::OnceClosure no_frames_available_cb_;
 
   // Closure called on every new frame.
   base::RepeatingClosure on_new_frame_;

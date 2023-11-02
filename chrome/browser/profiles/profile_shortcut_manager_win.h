@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
@@ -35,6 +36,11 @@ std::wstring GetShortcutFilenameForProfile(const std::u16string& profile_name);
 std::wstring GetUniqueShortcutFilenameForProfile(
     const std::u16string& profile_name,
     const std::set<base::FilePath>& excludes);
+
+// Looks through the various Windows directories that could have pinned
+// shortcuts and returns a vector of shortcuts with profile `profile_path`.
+const std::vector<base::FilePath> GetPinnedShortCutsForProfile(
+    const base::FilePath& profile_path);
 
 // This class checks that shortcut filename matches certain profile.
 class ShortcutFilenameMatcher {
@@ -80,7 +86,9 @@ class ProfileShortcutManagerWin : public ProfileShortcutManager,
     UPDATE_NON_PROFILE_SHORTCUTS,
   };
 
-  static void DisableUnpinningForUnitTests();
+  // Unit tests can't launch other processes.
+  static void DisableUnpinningForTests();
+  static void DisableOutOfProcessShortcutOpsForTests();
 
   explicit ProfileShortcutManagerWin(ProfileManager* manager);
   ProfileShortcutManagerWin(const ProfileShortcutManagerWin&) = delete;
@@ -89,8 +97,6 @@ class ProfileShortcutManagerWin : public ProfileShortcutManager,
   ~ProfileShortcutManagerWin() override;
 
   // ProfileShortcutManager implementation:
-  void CreateIncognitoProfileShortcut(
-      const base::FilePath& profile_path) override;
   void CreateOrUpdateProfileIcon(const base::FilePath& profile_path) override;
   void CreateProfileShortcut(const base::FilePath& profile_path) override;
   void RemoveProfileShortcuts(const base::FilePath& profile_path) override;
@@ -128,7 +134,7 @@ class ProfileShortcutManagerWin : public ProfileShortcutManager,
       NonProfileShortcutAction action,
       bool incognito);
 
-  ProfileManager* profile_manager_;
+  raw_ptr<ProfileManager> profile_manager_;
   // The profile icon of these profiles needs to be updated when an avatar image
   // is loaded.
   std::set<base::FilePath> profiles_with_pending_avatar_load_;

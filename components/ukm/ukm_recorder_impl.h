@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,9 +16,12 @@
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
+#include "base/observer_list_threadsafe.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
+#include "base/synchronization/lock.h"
 #include "components/ukm/ukm_entry_filter.h"
 #include "services/metrics/public/cpp/ukm_decode.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -30,11 +33,15 @@ class UkmBrowserTestBase;
 }
 
 namespace ukm {
+class Aggregate;
 class Report;
 class UkmRecorderImplTest;
+class UkmRecorderObserver;
 class UkmSource;
 class UkmTestHelper;
 class UkmUtilsForTest;
+
+COMPONENT_EXPORT(UKM_RECORDER) BASE_DECLARE_FEATURE(kUkmSamplingRateFeature);
 
 namespace debug {
 class UkmDebugDataExtractor;
@@ -47,14 +54,6 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
  public:
   UkmRecorderImpl();
   ~UkmRecorderImpl() override;
-
-  // Unconditionally attempts to create a field trial to control client side
-  // metrics/crash sampling to use as a fallback when one hasn't been
-  // provided. This is expected to occur on first-run on platforms that don't
-  // have first-run variations support. This should only be called when there is
-  // no existing field trial controlling the sampling feature.
-  static void CreateFallbackSamplingTrial(bool is_stable_channel,
-                                          base::FeatureList* feature_list);
 
   // Enables/disables recording control if data is allowed to be collected. The
   // |extensions| flag separately controls recording of chrome-extension://
@@ -95,6 +94,22 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
   // Currently only accommodates one entry filter.
   void SetEntryFilter(std::unique_ptr<UkmEntryFilter> entry_filter);
 
+  // Register an observer to be notified when a new UKM entry that comes with
+  // one of the |event_hashes| is added. This method can be called on any
+  // thread.
+  void AddUkmRecorderObserver(const base::flat_set<uint64_t>& event_hashes,
+                              UkmRecorderObserver* observer);
+
+  // Clears the given |observer| from |observers_|. This method can be called
+  // on any thread. If an observer is registered for multiple event sets, it
+  // will be removed from all the sets. If an event set no longer has any
+  // observers as a result of this call, it will be removed from |observers_|
+  // map.
+  void RemoveUkmRecorderObserver(UkmRecorderObserver* observer);
+
+  // Called when UKM allow state changed.
+  void OnUkmAllowedStateChanged(bool allowed);
+
   // Sets the sampling seed for testing purposes.
   void SetSamplingSeedForTesting(uint32_t seed) {
     // Normally the seed is set during object construction and remains
@@ -103,6 +118,8 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
     // necessary to override that.
     *const_cast<uint32_t*>(&sampling_seed_) = seed;
   }
+
+  bool recording_enabled() const { return recording_enabled_; }
 
  protected:
   // Calculates sampled in/out for a specific source/event based on internal
@@ -113,11 +130,16 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
   // Like above but uses a passed |sampling_rate| instead of internal config.
   bool IsSampledIn(int64_t source_id, uint64_t event_id, int sampling_rate);
 
-  // Cache the list of whitelisted entries from the field trial parameter.
-  void StoreWhitelistedEntries();
+  void InitDecodeMap();
 
   // Writes recordings into a report proto, and clears recordings.
   void StoreRecordingsInReport(Report* report);
+
+  // Prunes data after storing records in the report. Returns the time elapsed
+  // in seconds from the moment the newest truncated source was created to the
+  // moment it was discarded from memory, if pruning happened  due to number
+  // of sources exceeding the max threshold.
+  int PruneData(std::set<SourceId>& source_ids_seen);
 
   // Deletes Sources and Events with these source_ids.
   void PurgeSourcesAndEventsBySourceIds(
@@ -132,9 +154,11 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
   }
 
   // Keep only newest |max_kept_sources| sources when the number of sources
-  // in recordings_ exceeds this threshold. Returns the age of newest truncated
+  // in recordings_ exceeds this threshold. We only consider the set of ids
+  // contained in |pruning_set|. Returns the age of newest truncated
   // source in seconds.
-  int PruneOldSources(size_t max_kept_sources);
+  int PruneOldSources(size_t max_kept_sources,
+                      const std::set<SourceId>& pruning_set);
 
   // UkmRecorder:
   void AddEntry(mojom::UkmEntryPtr entry) override;
@@ -147,10 +171,6 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
       const UkmSource::NavigationData& navigation_data) override;
   using UkmRecorder::RecordOtherURL;
 
-  virtual bool ShouldRestrictToWhitelistedSourceIds() const;
-
-  virtual bool ShouldRestrictToWhitelistedEntries() const;
-
  private:
   friend ::metrics::UkmBrowserTestBase;
   friend ::ukm::debug::UkmDebugDataExtractor;
@@ -161,6 +181,9 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
   FRIEND_TEST_ALL_PREFIXES(UkmRecorderImplTest, PurgeExtensionRecordings);
   FRIEND_TEST_ALL_PREFIXES(UkmRecorderImplTest, WebApkSourceUrl);
   FRIEND_TEST_ALL_PREFIXES(UkmRecorderImplTest, PaymentAppScopeUrl);
+  FRIEND_TEST_ALL_PREFIXES(UkmRecorderImplTest, WebIdentityScopeUrl);
+  FRIEND_TEST_ALL_PREFIXES(UkmRecorderImplTest, ObserverNotifiedOnNewEntry);
+  FRIEND_TEST_ALL_PREFIXES(UkmRecorderImplTest, AddRemoveObserver);
 
   struct MetricAggregate {
     uint64_t total_count = 0;
@@ -168,7 +191,6 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
     double value_square_sum = 0.0;
     uint64_t dropped_due_to_limits = 0;
     uint64_t dropped_due_to_sampling = 0;
-    uint64_t dropped_due_to_whitelist = 0;
     uint64_t dropped_due_to_filter = 0;
     uint64_t dropped_due_to_unconfigured = 0;
   };
@@ -177,19 +199,35 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
     EventAggregate();
     ~EventAggregate();
 
+    // Fills the proto message from the struct.
+    void FillProto(Aggregate* proto_aggregate) const;
+
     base::flat_map<uint64_t, MetricAggregate> metrics;
     uint64_t total_count = 0;
     uint64_t dropped_due_to_limits = 0;
     uint64_t dropped_due_to_sampling = 0;
-    uint64_t dropped_due_to_whitelist = 0;
     uint64_t dropped_due_to_filter = 0;
     uint64_t dropped_due_to_unconfigured = 0;
   };
 
+  // Result for ShouldRecordUrl() method.
+  enum class ShouldRecordUrlResult {
+    kOk = 0,        // URL will be recorded and observers will be notified.
+    kObserverOnly,  // The client has opted out from uploading UKM metrics.
+                    // As a result, observers will be notified but URL will not
+                    // be recorded.
+    kDropped,       // The URL is not allowed to be recorded and will be
+                    // dropped. Observers are not nofitied either.
+  };
+
   using MetricAggregateMap = std::map<uint64_t, MetricAggregate>;
 
-  // Returns true if |sanitized_url| should be recorded.
-  bool ShouldRecordUrl(SourceId source_id, const GURL& sanitized_url) const;
+  // Marks for deletion if the |source_id| is of a certain type.
+  void MaybeMarkForDeletion(SourceId source_id);
+
+  // Returns the result whether |sanitized_url| should be recorded.
+  ShouldRecordUrlResult ShouldRecordUrl(SourceId source_id,
+                                        const GURL& sanitized_url) const;
 
   void RecordSource(std::unique_ptr<UkmSource> source);
 
@@ -203,6 +241,13 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
   // This is separated from the above to ease testing.
   void LoadExperimentSamplingParams(
       const std::map<std::string, std::string>& params);
+
+  // Called to notify interested observers about a newly added UKM entry.
+  void NotifyObserversWithNewEntry(const mojom::UkmEntry& entry);
+
+  // Helper method to notify all observers on UKM events.
+  template <typename Method, typename... Params>
+  void NotifyAllObservers(Method m, Params&&... params);
 
   // Whether recording new data is currently allowed.
   bool recording_enabled_ = false;
@@ -230,9 +275,6 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
   // Map from hashes to entry and metric names.
   ukm::builders::DecodeMap decode_map_;
 
-  // Whitelisted Entry hashes, only the ones in this set will be recorded.
-  std::set<uint64_t> whitelisted_entry_hashes_;
-
   // Sampling configurations, loaded from a field-trial.
   int default_sampling_rate_ = -1;  // -1 == not yet loaded
   base::flat_map<uint64_t, int> event_sampling_rates_;
@@ -258,10 +300,10 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
     // subset of |sources| that can be purged after next report.
     std::unordered_set<ukm::SourceId> obsolete_source_ids;
 
-    // URLs of sources that matched a whitelist url, but were not included in
+    // URLs of sources that matched a allowlist url, but were not included in
     // the report generated by the last log rotation because we haven't seen any
     // events for that source yet.
-    std::unordered_set<std::string> carryover_urls_whitelist;
+    std::unordered_set<std::string> carryover_urls_allowlist;
 
     // Aggregate information for collected event metrics.
     std::map<uint64_t, EventAggregate> event_aggregations;
@@ -297,6 +339,21 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
   // The maximum number of Entries we'll keep in memory before discarding any
   // new ones being added.
   size_t max_entries_ = 5000;
+
+  using UkmRecorderObserverList =
+      base::ObserverListThreadSafe<UkmRecorderObserver>;
+  // Map from event hashes to observers. The key is a set of event hashes that
+  // their corresponding value pair will be norified when one of those events
+  // is added. The value is a non-empty observer list whose members are
+  // observing those events.
+  using UkmRecorderObserverMap =
+      base::flat_map<base::flat_set<uint64_t> /*event_hashes*/,
+                     scoped_refptr<UkmRecorderObserverList>>;
+  // Lock used to ensure mutual exclusive access to |observers_|.
+  mutable base::Lock lock_;
+
+  // Observers that will be notified on UKM events.
+  UkmRecorderObserverMap observers_ GUARDED_BY(lock_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

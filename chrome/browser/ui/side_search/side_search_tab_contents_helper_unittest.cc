@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/side_search/side_search_config.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -20,23 +21,12 @@
 
 namespace {
 
-constexpr char kGoogleSearchURL1[] = "https://www.google.com/search?q=test1";
-constexpr char kGoogleSearchURL2[] = "https://www.google.com/search?q=test2";
-constexpr char kGoogleSearchHomePageURL[] = "https://www.google.com";
-constexpr char kNonGoogleURL[] = "https://www.test.com";
+constexpr char kSearchMatchUrl1[] = "https://www.search-url-1.com/";
+constexpr char kSearchMatchUrl2[] = "https://www.search-url-2.com/";
+constexpr char kNonMatchUrl[] = "https://www.tab-frame-url.com/";
 
-// Tests to see if `navigated_url` matches `stored_url`. We cannot directly
-// compare as the "sidesearch=1" query param may have been appended to the
-// `stored_url` to ensure Google serves the side search SRP to the chrome
-// client.
-bool DoesURLMatch(const char* navigated_url, const GURL& stored_url) {
-  return stored_url.spec().find(GURL(navigated_url).spec()) !=
-         std::string::npos;
-}
-
-bool DoesURLMatch(const char* navigated_url,
-                  const absl::optional<GURL>& stored_url) {
-  return stored_url && DoesURLMatch(navigated_url, stored_url.value());
+bool IsSearchURLMatch(const GURL& url) {
+  return url == kSearchMatchUrl1 || url == kSearchMatchUrl2;
 }
 
 }  // namespace
@@ -52,7 +42,17 @@ class SideSearchTabContentsHelperTest : public ::testing::Test {
     SideSearchTabContentsHelper::CreateForWebContents(web_contents_.get());
     helper()->SetSidePanelContentsForTesting(
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr));
-    SideSearchConfig::Get(&profile_)->set_is_side_panel_srp_available(true);
+    // Basic configuration for testing that allows navigations to URLs matching
+    // `kSearchMatchUrl1` and `kSearchMatchUrl2` to proceed within the side
+    // panel and only allows showing the side panel on non-matching pages.
+    auto* config = GetConfig();
+    config->SetShouldNavigateInSidePanelCallback(
+        base::BindRepeating(IsSearchURLMatch));
+    config->SetCanShowSidePanelForURLCallback(base::BindRepeating(
+        [](const GURL& url) { return !IsSearchURLMatch(url); }));
+    config->SetGenerateSideSearchURLCallback(
+        base::BindRepeating([](const GURL& url) { return url; }));
+    config->set_is_side_panel_srp_available(true);
     Test::SetUp();
   }
 
@@ -100,116 +100,85 @@ class SideSearchTabContentsHelperTest : public ::testing::Test {
     return SideSearchTabContentsHelper::FromWebContents(web_contents_.get());
   }
 
+  SideSearchConfig* GetConfig() { return SideSearchConfig::Get(&profile_); }
+
+  void ResetWebContents() { web_contents_.reset(); }
+
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_enabler_;
   TestingProfile profile_;
   std::unique_ptr<content::WebContents> web_contents_;
+  base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(SideSearchTabContentsHelperTest, LastSearchURLUpdatesCorrectly) {
-  // When a tab is first opened there should be no last encountered Google SRP.
-  EXPECT_FALSE(helper()->last_search_url_for_testing().has_value());
-  EXPECT_EQ(nullptr, GetLastCommittedSideContentsEntry());
+  // When a tab is first opened there should be no last encountered search URL.
+  EXPECT_FALSE(helper()->last_search_url().has_value());
+  EXPECT_TRUE(!GetLastCommittedSideContentsEntry() ||
+              GetLastCommittedSideContentsEntry()->IsInitialEntry());
 
-  // Navigating to a Google SRP should update the `last_search_url`.
-  LoadURL(kGoogleSearchURL1);
-  EXPECT_TRUE(
-      DoesURLMatch(kGoogleSearchURL1, helper()->last_search_url_for_testing()));
-  EXPECT_TRUE(DoesURLMatch(kGoogleSearchURL1,
-                           GetLastCommittedSideContentsEntry()->GetURL()));
+  // Navigating to a matching search URL should update the `last_search_url`.
+  LoadURL(kSearchMatchUrl1);
+  EXPECT_EQ(kSearchMatchUrl1, helper()->last_search_url());
+  EXPECT_EQ(kSearchMatchUrl1, GetLastCommittedSideContentsEntry()->GetURL());
 
-  // Navigating to a non-Google SRP URL should not change the `last_search_url`.
-  LoadURL(kNonGoogleURL);
-  EXPECT_TRUE(
-      DoesURLMatch(kGoogleSearchURL1, helper()->last_search_url_for_testing()));
-  EXPECT_TRUE(DoesURLMatch(kGoogleSearchURL1,
-                           GetLastCommittedSideContentsEntry()->GetURL()));
+  // Navigating to a non-matching search URL should not change the
+  // `last_search_url`.
+  LoadURL(kNonMatchUrl);
+  EXPECT_EQ(kSearchMatchUrl1, helper()->last_search_url());
+  EXPECT_EQ(kSearchMatchUrl1, GetLastCommittedSideContentsEntry()->GetURL());
 
-  // Navigating again to a Google SRP should update the `last_search_url`.
-  LoadURL(kGoogleSearchURL2);
-  EXPECT_TRUE(
-      DoesURLMatch(kGoogleSearchURL2, helper()->last_search_url_for_testing()));
-  EXPECT_TRUE(DoesURLMatch(kGoogleSearchURL2,
-                           GetLastCommittedSideContentsEntry()->GetURL()));
+  // Navigating again to a new matching search url should update the
+  // `last_search_url`.
+  LoadURL(kSearchMatchUrl2);
+  EXPECT_EQ(kSearchMatchUrl2, helper()->last_search_url());
+  EXPECT_EQ(kSearchMatchUrl2, GetLastCommittedSideContentsEntry()->GetURL());
 
-  // Going backwards to the non-Google SRP URL should not update the last search
-  // url.
+  // Going backwards to the non-matching search URL should not update the
+  // `last_search_url`.
   GoBack();
-  EXPECT_TRUE(
-      DoesURLMatch(kGoogleSearchURL2, helper()->last_search_url_for_testing()));
-  EXPECT_TRUE(DoesURLMatch(kGoogleSearchURL2,
-                           GetLastCommittedSideContentsEntry()->GetURL()));
+  EXPECT_EQ(kSearchMatchUrl2, helper()->last_search_url());
+  EXPECT_EQ(kSearchMatchUrl2, GetLastCommittedSideContentsEntry()->GetURL());
 
-  // Going back to the original Google SRP should update the `last_search_url`
-  // to that Google SRP URL.
+  // Going back to the original search URL should update the `last_search_url`.
   GoBack();
-  EXPECT_TRUE(
-      DoesURLMatch(kGoogleSearchURL1, helper()->last_search_url_for_testing()));
-  EXPECT_TRUE(DoesURLMatch(kGoogleSearchURL1,
-                           GetLastCommittedSideContentsEntry()->GetURL()));
+  EXPECT_EQ(kSearchMatchUrl1, helper()->last_search_url());
+  EXPECT_EQ(kSearchMatchUrl1, GetLastCommittedSideContentsEntry()->GetURL());
 
-  // Going forward to the non-Google URL shouldn't change the `last_search_url`.
+  // Going forward to the non-matching search URL shouldn't change the
+  // `last_search_url`.
   GoForward();
-  EXPECT_TRUE(
-      DoesURLMatch(kGoogleSearchURL1, helper()->last_search_url_for_testing()));
-  EXPECT_TRUE(DoesURLMatch(kGoogleSearchURL1,
-                           GetLastCommittedSideContentsEntry()->GetURL()));
+  EXPECT_EQ(kSearchMatchUrl1, helper()->last_search_url());
+  EXPECT_EQ(kSearchMatchUrl1, GetLastCommittedSideContentsEntry()->GetURL());
 
-  // Going forward to the Google SRP URL should update the `last_search_url` to
-  // that Google SRP URL.
+  // Going forward to the latest matching search URL should update the
+  // `last_search_url` to that latest URL.
   GoForward();
-  EXPECT_TRUE(
-      DoesURLMatch(kGoogleSearchURL2, helper()->last_search_url_for_testing()));
-  EXPECT_TRUE(DoesURLMatch(kGoogleSearchURL2,
-                           GetLastCommittedSideContentsEntry()->GetURL()));
-}
-
-TEST_F(SideSearchTabContentsHelperTest, LastSearchURLIgnoresGoogleHomePage) {
-  EXPECT_FALSE(helper()->last_search_url_for_testing().has_value());
-
-  LoadURL(kGoogleSearchURL1);
-  EXPECT_TRUE(
-      DoesURLMatch(kGoogleSearchURL1, helper()->last_search_url_for_testing()));
-  EXPECT_TRUE(DoesURLMatch(kGoogleSearchURL1,
-                           GetLastCommittedSideContentsEntry()->GetURL()));
-
-  // Navigating to the Google home page should not update the `last_search_url`.
-  LoadURL(kGoogleSearchHomePageURL);
-  EXPECT_TRUE(
-      DoesURLMatch(kGoogleSearchURL1, helper()->last_search_url_for_testing()));
-  EXPECT_TRUE(DoesURLMatch(kGoogleSearchURL1,
-                           GetLastCommittedSideContentsEntry()->GetURL()));
-
-  LoadURL(kGoogleSearchURL2);
-  EXPECT_TRUE(
-      DoesURLMatch(kGoogleSearchURL2, helper()->last_search_url_for_testing()));
-  EXPECT_TRUE(DoesURLMatch(kGoogleSearchURL2,
-                           GetLastCommittedSideContentsEntry()->GetURL()));
+  EXPECT_EQ(kSearchMatchUrl2, helper()->last_search_url());
+  EXPECT_EQ(kSearchMatchUrl2, GetLastCommittedSideContentsEntry()->GetURL());
 }
 
 TEST_F(SideSearchTabContentsHelperTest, IndicatesWhenSidePanelShouldBeShown) {
   // With no initial navigation the side panel should not be showing.
   EXPECT_FALSE(helper()->CanShowSidePanelForCommittedNavigation());
 
-  // If no previous Google SRP has been seen for this tab contents the side
-  // panel should not show.
-  LoadURL(kNonGoogleURL);
+  // If no previous matching search URL has been seen for this tab contents the
+  // side panel should not show.
+  LoadURL(kNonMatchUrl);
   EXPECT_FALSE(helper()->CanShowSidePanelForCommittedNavigation());
 
-  // The side panel should not be visible on Google SRP pages.
-  LoadURL(kGoogleSearchURL1);
+  // The side panel should not be visible on matching search pages.
+  LoadURL(kSearchMatchUrl1);
   EXPECT_FALSE(helper()->CanShowSidePanelForCommittedNavigation());
 
-  // If a Google SRP has previously been navigated to it can appear in the side
-  // panel if on a non-Google page.
-  LoadURL(kNonGoogleURL);
+  // If a matching page has previously been seen the side panel may be opened
+  // on non-matching pages.
+  LoadURL(kNonMatchUrl);
   EXPECT_TRUE(helper()->CanShowSidePanelForCommittedNavigation());
-
-  // The side panel should not appear when on the Google home page.
-  LoadURL(kGoogleSearchHomePageURL);
-  EXPECT_FALSE(helper()->CanShowSidePanelForCommittedNavigation());
 }
 
 TEST_F(SideSearchTabContentsHelperTest, ClearsSidePanelContentsWhenAsked) {
@@ -223,6 +192,69 @@ TEST_F(SideSearchTabContentsHelperTest,
   EXPECT_NE(nullptr, helper()->side_panel_contents_for_testing());
   helper()->SidePanelProcessGone();
   EXPECT_EQ(nullptr, helper()->side_panel_contents_for_testing());
+}
+
+TEST_F(SideSearchTabContentsHelperTest, ClearsInternalStateWhenConfigChanges) {
+  // When a tab is first opened there should be no last encountered search URL.
+  EXPECT_FALSE(helper()->last_search_url().has_value());
+  EXPECT_TRUE(!GetLastCommittedSideContentsEntry() ||
+              GetLastCommittedSideContentsEntry()->IsInitialEntry());
+
+  // Navigate to a search URL.
+  LoadURL(kSearchMatchUrl1);
+  EXPECT_EQ(kSearchMatchUrl1, helper()->last_search_url());
+  EXPECT_EQ(kSearchMatchUrl1, GetLastCommittedSideContentsEntry()->GetURL());
+
+  // Set the toggled bit to true.
+  helper()->set_toggled_open(true);
+
+  // Reset config state and notify observers that the config has changed.
+  GetConfig()->ResetStateAndNotifyConfigChanged();
+
+  // Check to make sure state has been reset.
+  EXPECT_FALSE(helper()->last_search_url().has_value());
+  EXPECT_FALSE(helper()->toggled_open());
+  EXPECT_EQ(nullptr, helper()->side_panel_contents_for_testing());
+}
+
+TEST_F(SideSearchTabContentsHelperTest, EmitsReturnedToSRPMetrics) {
+  // Navigating to a matching search. Then navigate to a non-matching URL and
+  // navigate back, doing so twice.
+  LoadURL(kSearchMatchUrl1);
+  LoadURL(kNonMatchUrl);
+  GoBack();
+  LoadURL(kNonMatchUrl);
+  GoBack();
+  LoadURL(kNonMatchUrl);
+
+  // Return metrics should not yet have been emitted.
+  histogram_tester().ExpectUniqueSample("SideSearch.TimesReturnedBackToSRP", 2,
+                                        0);
+
+  // Navigating to a new search URL should cause the previous metrics to have
+  // been emitted.
+  LoadURL(kSearchMatchUrl2);
+  histogram_tester().ExpectUniqueSample("SideSearch.TimesReturnedBackToSRP", 2,
+                                        1);
+
+  // Navigating to a matching search. Then navigate to a non-matching URL and
+  // navigate back, doing so three times.
+  LoadURL(kNonMatchUrl);
+  GoBack();
+  LoadURL(kNonMatchUrl);
+  GoBack();
+  LoadURL(kNonMatchUrl);
+  GoBack();
+  LoadURL(kNonMatchUrl);
+
+  // Return metrics for this interaction should not yet have been emitted.
+  histogram_tester().ExpectBucketCount("SideSearch.TimesReturnedBackToSRP", 3,
+                                       0);
+
+  // Resetting the web contents should result in these metrics being emitted.
+  ResetWebContents();
+  histogram_tester().ExpectBucketCount("SideSearch.TimesReturnedBackToSRP", 3,
+                                       1);
 }
 
 }  // namespace test

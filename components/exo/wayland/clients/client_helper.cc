@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/exo/wayland/clients/client_helper.h"
 
 #include <chrome-color-management-client-protocol.h>
+#include <content-type-v1-client-protocol.h>
 #include <input-timestamps-unstable-v1-client-protocol.h>
 #include <linux-dmabuf-unstable-v1-client-protocol.h>
 #include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
@@ -78,6 +79,8 @@ DEFAULT_DELETER(zwp_linux_surface_synchronization_v1,
 DEFAULT_DELETER(zcr_vsync_feedback_v1, zcr_vsync_feedback_v1_destroy)
 DEFAULT_DELETER(zcr_vsync_timing_v1, zcr_vsync_timing_v1_destroy)
 DEFAULT_DELETER(wl_data_device_manager, wl_data_device_manager_destroy)
+DEFAULT_DELETER(wp_content_type_manager_v1, wp_content_type_manager_v1_destroy)
+DEFAULT_DELETER(wp_content_type_v1, wp_content_type_v1_destroy)
 DEFAULT_DELETER(wp_viewporter, wp_viewporter_destroy)
 DEFAULT_DELETER(zxdg_shell_v6, zxdg_shell_v6_destroy)
 DEFAULT_DELETER(xdg_wm_base, xdg_wm_base_destroy)
@@ -91,12 +94,15 @@ DEFAULT_DELETER(zcr_gaming_input_v2, zcr_gaming_input_v2_destroy)
 DEFAULT_DELETER(zcr_keyboard_configuration_v1,
                 zcr_keyboard_configuration_v1_destroy)
 DEFAULT_DELETER(zcr_keyboard_extension_v1, zcr_keyboard_extension_v1_destroy)
+DEFAULT_DELETER(zwp_keyboard_shortcuts_inhibit_manager_v1,
+                zwp_keyboard_shortcuts_inhibit_manager_v1_destroy)
 DEFAULT_DELETER(zcr_notification_shell_v1, zcr_notification_shell_v1_destroy)
 DEFAULT_DELETER(zcr_remote_shell_v1, zcr_remote_shell_v1_destroy)
 DEFAULT_DELETER(zcr_remote_shell_v2, zcr_remote_shell_v2_destroy)
 DEFAULT_DELETER(zcr_stylus_tools_v1, zcr_stylus_tools_v1_destroy)
 DEFAULT_DELETER(zcr_text_input_extension_v1,
                 zcr_text_input_extension_v1_destroy)
+DEFAULT_DELETER(zcr_touchpad_haptics_v1, zcr_touchpad_haptics_v1_destroy)
 DEFAULT_DELETER(zwp_pointer_gestures_v1, zwp_pointer_gestures_v1_destroy)
 DEFAULT_DELETER(zwp_pointer_constraints_v1, zwp_pointer_constraints_v1_destroy)
 DEFAULT_DELETER(zwp_relative_pointer_manager_v1,
@@ -109,6 +115,10 @@ DEFAULT_DELETER(zxdg_surface_v6, zxdg_surface_v6_destroy)
 DEFAULT_DELETER(zxdg_toplevel_v6, zxdg_toplevel_v6_destroy)
 DEFAULT_DELETER(zxdg_output_manager_v1, zxdg_output_manager_v1_destroy)
 DEFAULT_DELETER(weston_test, weston_test_destroy)
+DEFAULT_DELETER(zwp_idle_inhibit_manager_v1,
+                zwp_idle_inhibit_manager_v1_destroy)
+DEFAULT_DELETER(zcr_remote_surface_v1, zcr_remote_surface_v1_destroy)
+DEFAULT_DELETER(zcr_remote_surface_v2, zcr_remote_surface_v2_destroy)
 
 #if defined(USE_GBM)
 DEFAULT_DELETER(gbm_bo, gbm_bo_destroy)

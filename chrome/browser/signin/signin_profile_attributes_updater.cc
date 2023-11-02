@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,7 @@ SigninProfileAttributesUpdater::SigninProfileAttributesUpdater(
       prefs_(prefs) {
   DCHECK(identity_manager_);
   DCHECK(profile_attributes_storage_);
-  identity_manager_observation_.Observe(identity_manager_);
+  identity_manager_observation_.Observe(identity_manager_.get());
 
   UpdateProfileAttributes();
 }

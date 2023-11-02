@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -70,8 +70,8 @@ class FileManagerPrivateInternalGetFileTasksFunction
       std::unique_ptr<std::set<base::FilePath>> path_directory_set);
 
   void OnFileTasksListed(
-      std::unique_ptr<std::vector<file_manager::file_tasks::FullTaskDescriptor>>
-          tasks);
+      std::unique_ptr<file_manager::file_tasks::ResultingTasks>
+          resulting_tasks);
 
   std::unique_ptr<app_file_handler_util::IsDirectoryCollector>
       is_directory_collector_;

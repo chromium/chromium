@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,7 +50,7 @@ bool MaybeGenerateFieldPrediction(DataAccessor* accessor,
     return false;
   prediction->may_use_prefilled_placeholder = accessor->ConsumeBit();
   const size_t prediction_idx = accessor->ConsumeNumber(3);
-  if (prediction_idx < base::size(kPasswordRelatedServerTypes)) {
+  if (prediction_idx < std::size(kPasswordRelatedServerTypes)) {
     prediction->type = kPasswordRelatedServerTypes[prediction_idx];
   } else {
     // Set random type, probably even invalid. FormParser should gracefully
@@ -147,10 +147,6 @@ autofill::FormData GenerateWithDataAccessor(
       }
     }
 
-#if defined(OS_IOS)
-    result.fields[i].unique_id =
-        result.fields[i].id_attribute + u"-" + base::NumberToString16(i);
-#endif
     if (field_params[i].same_value_field &&
         first_field_with_same_value != static_cast<int>(i)) {
       result.fields[i].value = result.fields[first_field_with_same_value].value;

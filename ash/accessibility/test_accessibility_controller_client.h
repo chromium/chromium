@@ -1,13 +1,13 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_ACCESSIBILITY_TEST_ACCESSIBILITY_CONTROLLER_CLIENT_H_
 #define ASH_ACCESSIBILITY_TEST_ACCESSIBILITY_CONTROLLER_CLIENT_H_
 
-#include "ash/components/audio/sounds.h"
 #include "ash/public/cpp/accessibility_controller_client.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
+#include "chromeos/ash/components/audio/sounds.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 

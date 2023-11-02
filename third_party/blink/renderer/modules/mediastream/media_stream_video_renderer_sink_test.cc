@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -35,12 +34,13 @@ namespace blink {
 
 class MediaStreamVideoRendererSinkTest : public testing::Test {
  public:
-  MediaStreamVideoRendererSinkTest()
-      : mock_source_(new MockMediaStreamVideoSource()) {
+  MediaStreamVideoRendererSinkTest() {
+    auto mock_source = std::make_unique<MockMediaStreamVideoSource>();
+    mock_source_ = mock_source.get();
     media_stream_source_ = MakeGarbageCollected<MediaStreamSource>(
         String::FromUTF8("dummy_source_id"), MediaStreamSource::kTypeVideo,
-        String::FromUTF8("dummy_source_name"), false /* remote */);
-    media_stream_source_->SetPlatformSource(base::WrapUnique(mock_source_));
+        String::FromUTF8("dummy_source_name"), false /* remote */,
+        std::move(mock_source));
     WebMediaStreamTrack web_track = MediaStreamVideoTrack::CreateVideoTrack(
         mock_source_, WebPlatformMediaStreamSource::ConstraintsOnceCallback(),
         true);
@@ -80,17 +80,17 @@ class MediaStreamVideoRendererSinkTest : public testing::Test {
   bool IsInStartedState() const {
     RunIOUntilIdle();
     return media_stream_video_renderer_sink_->GetStateForTesting() ==
-           MediaStreamVideoRendererSink::STARTED;
+           MediaStreamVideoRendererSink::kStarted;
   }
   bool IsInStoppedState() const {
     RunIOUntilIdle();
     return media_stream_video_renderer_sink_->GetStateForTesting() ==
-           MediaStreamVideoRendererSink::STOPPED;
+           MediaStreamVideoRendererSink::kStopped;
   }
   bool IsInPausedState() const {
     RunIOUntilIdle();
     return media_stream_video_renderer_sink_->GetStateForTesting() ==
-           MediaStreamVideoRendererSink::PAUSED;
+           MediaStreamVideoRendererSink::kPaused;
   }
 
   void OnVideoFrame(scoped_refptr<media::VideoFrame> frame) {

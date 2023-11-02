@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -85,6 +85,11 @@ FakeExternalConnector::Clone() {
   mojo::PendingRemote<external_mojo::mojom::TestExternalConnector> remote;
   child_receivers_.Add(this, remote.InitWithNewPipeAndPassReceiver());
   return std::make_unique<FakeExternalConnector>(std::move(remote));
+}
+
+mojo::PendingRemote<external_mojo::mojom::ExternalConnector>
+FakeExternalConnector::RequestConnector() {
+  return mojo::PendingRemote<external_mojo::mojom::ExternalConnector>();
 }
 
 void FakeExternalConnector::SendChromiumConnectorRequest(

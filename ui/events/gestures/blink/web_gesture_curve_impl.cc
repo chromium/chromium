@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,9 +16,9 @@
 #include "ui/events/gestures/physics_based_fling_curve.h"
 #include "ui/events/mobile_scroller.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/display/win/screen_win.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 using blink::WebGestureCurve;
 
@@ -57,10 +57,10 @@ std::unique_ptr<GestureCurve> CreateDefaultPlatformCurve(
   if (base::FeatureList::IsEnabled(features::kExperimentalFlingAnimation)) {
     gfx::Vector2dF pixels_per_inch(kDefaultPixelsPerInch,
                                    kDefaultPixelsPerInch);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     pixels_per_inch =
         display::win::ScreenWin::GetPixelsPerInch(position_in_screen);
-#endif  // define(OS_WIN)
+#endif
     return std::make_unique<PhysicsBasedFlingCurve>(
         initial_velocity, base::TimeTicks(), pixels_per_inch, boost_multiplier,
         bounding_size);

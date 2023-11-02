@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_COMMON_ANDROID_CPU_TIME_METRICS_INTERNAL_H_
 #define CONTENT_COMMON_ANDROID_CPU_TIME_METRICS_INTERNAL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 
 #include <memory>
@@ -14,6 +15,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_observer.h"
+#include "base/time/time.h"
 #include "components/power_scheduler/power_mode.h"
 #include "components/power_scheduler/power_mode_arbiter.h"
 #include "content/common/process_visibility_tracker.h"
@@ -112,7 +114,6 @@ class CONTENT_EXPORT ProcessCpuTimeMetrics
   explicit ProcessCpuTimeMetrics(power_scheduler::PowerModeArbiter* arbiter);
 
   void InitializeOnThreadPool();
-  void OnVisibilityChangedOnThreadPool(bool visible);
   void PerformFullCollectionOnThreadPool();
   void CollectHighLevelMetricsOnThreadPool();
   void ReportAverageCpuLoad(base::TimeDelta cumulative_cpu_time);
@@ -127,7 +128,7 @@ class CONTENT_EXPORT ProcessCpuTimeMetrics
       base::Seconds(5);
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  power_scheduler::PowerModeArbiter* const arbiter_;
+  const raw_ptr<power_scheduler::PowerModeArbiter> arbiter_;
 
   // Accessed on main thread.
   SEQUENCE_CHECKER(main_thread_);

@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef GPU_IPC_COMMON_GPU_PEAK_MEMORY_MOJOM_TRAITS_H_
 #define GPU_IPC_COMMON_GPU_PEAK_MEMORY_MOJOM_TRAITS_H_
 
+#include "base/notreached.h"
 #include "gpu/gpu_export.h"
 #include "gpu/ipc/common/gpu_peak_memory.h"
 #include "gpu/ipc/common/gpu_peak_memory.mojom-shared.h"

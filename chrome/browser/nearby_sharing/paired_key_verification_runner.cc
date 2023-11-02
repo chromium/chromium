@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -96,7 +96,7 @@ void PairedKeyVerificationRunner::Run(
 
   SendPairedKeyEncryptionFrame();
   frames_reader_->ReadFrame(
-      sharing::mojom::V1Frame::Tag::PAIRED_KEY_ENCRYPTION,
+      sharing::mojom::V1Frame::Tag::kPairedKeyEncryption,
       base::BindOnce(
           &PairedKeyVerificationRunner::OnReadPairedKeyEncryptionFrame,
           weak_ptr_factory_.GetWeakPtr()),
@@ -142,7 +142,7 @@ void PairedKeyVerificationRunner::OnReadPairedKeyEncryptionFrame(
   SendPairedKeyResultFrame(local_result);
 
   frames_reader_->ReadFrame(
-      sharing::mojom::V1Frame::Tag::PAIRED_KEY_RESULT,
+      sharing::mojom::V1Frame::Tag::kPairedKeyResult,
       base::BindOnce(&PairedKeyVerificationRunner::OnReadPairedKeyResultFrame,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(verification_results)),
@@ -298,6 +298,9 @@ PairedKeyVerificationRunner::VerifyPairedKeyEncryptionFrame(
   if (!certificate_->VerifySignature(
           PadPrefix(remote_prefix_, raw_token_),
           frame->get_paired_key_encryption()->signed_data)) {
+    NS_LOG(VERBOSE) << __func__
+                    << ": Unable to verify remote paired key encryption frame. "
+                       "Signature verification failed.";
     return PairedKeyVerificationResult::kFail;
   }
 

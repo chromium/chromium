@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,6 +70,15 @@ const DevicePolicyToUserPolicyMapEntry kDevicePoliciesWithPolicyOptionsMap[] = {
     {key::kDeviceLoginScreenExtensions, key::kExtensionInstallForcelist},
     {key::kDeviceLoginScreenPromptOnMultipleMatchingCertificates,
      key::kPromptOnMultipleMatchingCertificates},
+    {key::kDeviceLoginScreenContextAwareAccessSignalsAllowlist,
+     key::kContextAwareAccessSignalsAllowlist},
+
+    // key::kDeviceLoginScreenLocales maps to the ash::kDeviceLoginScreenLocales
+    // CrosSetting elsewhere. Also map it to the key::kForcedLanguages policy in
+    // the login/lock screen profile so web contents within those profiles
+    // generate a corresponding Accept-Languages header
+    // (https://crbug.com/1336382).
+    {key::kDeviceLoginScreenLocales, key::kForcedLanguages},
 };
 
 const DevicePolicyToUserPolicyMapEntry kRecommendedDevicePoliciesMap[] = {
@@ -124,19 +133,18 @@ void ApplyDevicePolicyAsRecommendedPolicy(const std::string& device_policy,
                                           const std::string& user_policy,
                                           const PolicyMap& device_policy_map,
                                           PolicyMap* user_policy_map) {
-  const base::Value* value = device_policy_map.GetValue(device_policy);
+  // It is safe to use `GetValueUnsafe()` as multiple policy types are handled.
+  const base::Value* value = device_policy_map.GetValueUnsafe(device_policy);
   ApplyValueAsRecommendedPolicy(value, user_policy, user_policy_map);
 }
 
 // Applies |value| as the mandatory value of |user_policy| in |user_policy_map|.
 // If |value| is NULL, does nothing.
-void ApplyValueAsMandatoryPolicy(const base::Value* value,
+void ApplyValueAsMandatoryPolicy(const base::Value& value,
                                  const std::string& user_policy,
                                  PolicyMap* user_policy_map) {
-  if (value) {
-    user_policy_map->Set(user_policy, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-                         POLICY_SOURCE_CLOUD, value->Clone(), nullptr);
-  }
+  user_policy_map->Set(user_policy, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                       POLICY_SOURCE_CLOUD, value.Clone(), nullptr);
 }
 
 void ApplyDevicePolicyWithPolicyOptions(const std::string& device_policy,
@@ -146,7 +154,8 @@ void ApplyDevicePolicyWithPolicyOptions(const std::string& device_policy,
   const PolicyMap::Entry* entry = device_policy_map.Get(device_policy);
   if (entry) {
     user_policy_map->Set(user_policy, entry->level, POLICY_SCOPE_USER,
-                         POLICY_SOURCE_CLOUD, entry->value()->Clone(), nullptr);
+                         POLICY_SOURCE_CLOUD, entry->value_unsafe()->Clone(),
+                         nullptr);
   }
 }
 }  // namespace
@@ -224,37 +233,36 @@ void LoginProfilePolicyProvider::UpdateFromDevicePolicy() {
                                        device_policy_map, &user_policy_map);
   }
 
-  const base::Value* value =
-      device_policy_map.GetValue(key::kDeviceLoginScreenPowerManagement);
-  const base::DictionaryValue* dict = NULL;
-  if (value && value->GetAsDictionary(&dict)) {
-    std::unique_ptr<base::DictionaryValue> policy_value(dict->DeepCopy());
-    std::string lid_close_action;
-    base::Value* screen_dim_delay_scale = NULL;
+  const base::Value* value = device_policy_map.GetValue(
+      key::kDeviceLoginScreenPowerManagement, base::Value::Type::DICT);
+  if (value) {
+    base::Value policy_value = value->Clone();
+    const std::string* lid_close_action =
+        policy_value.FindStringKey(kLidCloseAction);
 
-    if (policy_value->GetString(kLidCloseAction, &lid_close_action)) {
-      std::unique_ptr<base::Value> action = GetAction(lid_close_action);
+    if (lid_close_action) {
+      std::unique_ptr<base::Value> action = GetAction(*lid_close_action);
       if (action) {
-        ApplyValueAsMandatoryPolicy(action.get(), key::kLidCloseAction,
+        ApplyValueAsMandatoryPolicy(*action, key::kLidCloseAction,
                                     &user_policy_map);
       }
-      policy_value->RemoveKey(kLidCloseAction);
+      policy_value.RemoveKey(kLidCloseAction);
     }
 
-    if (policy_value->Get(kUserActivityScreenDimDelayScale,
-                          &screen_dim_delay_scale)) {
-      ApplyValueAsMandatoryPolicy(screen_dim_delay_scale,
+    const base::Value* screen_dim_delay_scale =
+        policy_value.FindKey(kUserActivityScreenDimDelayScale);
+    if (screen_dim_delay_scale) {
+      ApplyValueAsMandatoryPolicy(*screen_dim_delay_scale,
                                   key::kUserActivityScreenDimDelayScale,
                                   &user_policy_map);
-      policy_value->RemoveKey(kUserActivityScreenDimDelayScale);
+      policy_value.RemoveKey(kUserActivityScreenDimDelayScale);
     }
 
     // |policy_value| is expected to be a valid value for the
     // PowerManagementIdleSettings policy now.
-    if (!policy_value->DictEmpty()) {
-      ApplyValueAsMandatoryPolicy(policy_value.get(),
-                                  key::kPowerManagementIdleSettings,
-                                  &user_policy_map);
+    if (!policy_value.DictEmpty()) {
+      ApplyValueAsMandatoryPolicy(
+          policy_value, key::kPowerManagementIdleSettings, &user_policy_map);
     }
   }
 

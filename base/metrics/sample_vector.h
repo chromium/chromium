@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,8 +16,10 @@
 #include <string>
 #include <vector>
 
+#include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/bucket_ranges.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
@@ -29,9 +31,6 @@ class BucketRanges;
 
 class BASE_EXPORT SampleVectorBase : public HistogramSamples {
  public:
-  SampleVectorBase(uint64_t id,
-                   Metadata* meta,
-                   const BucketRanges* bucket_ranges);
   SampleVectorBase(const SampleVectorBase&) = delete;
   SampleVectorBase& operator=(const SampleVectorBase&) = delete;
   ~SampleVectorBase() override;
@@ -50,6 +49,13 @@ class BASE_EXPORT SampleVectorBase : public HistogramSamples {
   const BucketRanges* bucket_ranges() const { return bucket_ranges_; }
 
  protected:
+  SampleVectorBase(uint64_t id,
+                   Metadata* meta,
+                   const BucketRanges* bucket_ranges);
+  SampleVectorBase(uint64_t id,
+                   std::unique_ptr<Metadata> meta,
+                   const BucketRanges* bucket_ranges);
+
   bool AddSubtractImpl(
       SampleCountIterator* iter,
       HistogramSamples::Operator op) override;  // |op| is ADD or SUBTRACT.
@@ -106,7 +112,7 @@ class BASE_EXPORT SampleVectorBase : public HistogramSamples {
   mutable std::atomic<HistogramBase::AtomicCount*> counts_{nullptr};
 
   // Shares the same BucketRanges with Histogram object.
-  const BucketRanges* const bucket_ranges_;
+  const raw_ptr<const BucketRanges> bucket_ranges_;
 };
 
 // A sample vector that uses local memory for the counts array.
@@ -191,9 +197,9 @@ class BASE_EXPORT SampleVectorIterator : public SampleCountIterator {
  private:
   void SkipEmptyBuckets();
 
-  const HistogramBase::AtomicCount* counts_;
+  raw_ptr<const HistogramBase::AtomicCount> counts_;
   size_t counts_size_;
-  const BucketRanges* bucket_ranges_;
+  raw_ptr<const BucketRanges> bucket_ranges_;
 
   size_t index_;
 };

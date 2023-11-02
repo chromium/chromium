@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,6 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/path_utils.h"
-#include "base/cxx17_backports.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -211,7 +210,7 @@ class SandboxedHandler {
     msg.msg_name = nullptr;
     msg.msg_namelen = 0;
     msg.msg_iov = iov;
-    msg.msg_iovlen = base::size(iov);
+    msg.msg_iovlen = std::size(iov);
 
     char cmsg_buf[CMSG_SPACE(sizeof(int))];
     msg.msg_control = cmsg_buf;
@@ -631,25 +630,6 @@ class HandlerStarter {
   bool use_java_handler_ = false;
 };
 
-bool ConnectToHandler(CrashReporterClient* client, base::ScopedFD* connection) {
-  int fds[2];
-  if (socketpair(AF_UNIX, SOCK_STREAM, 0, fds) != 0) {
-    PLOG(ERROR) << "socketpair";
-    return false;
-  }
-  base::ScopedFD local_connection(fds[0]);
-  base::ScopedFD handlers_socket(fds[1]);
-
-  if (!HandlerStarter::Get()->StartHandlerForClient(
-          client, handlers_socket.get(),
-          true /* write_minidump_to_database */)) {
-    return false;
-  }
-
-  *connection = std::move(local_connection);
-  return true;
-}
-
 bool g_is_browser = false;
 
 }  // namespace
@@ -672,35 +652,6 @@ void DumpWithoutCrashing() {
     crashpad::SandboxedHandler::Get()->HandleCrashNonFatal(siginfo.si_signo,
                                                            &siginfo, &context);
   }
-}
-
-bool DumpWithoutCrashingForClient(CrashReporterClient* client) {
-  base::ScopedFD connection;
-  if (!ConnectToHandler(client, &connection)) {
-    return false;
-  }
-
-  siginfo_t siginfo;
-  siginfo.si_signo = crashpad::Signals::kSimulatedSigno;
-  siginfo.si_errno = 0;
-  siginfo.si_code = 0;
-
-  ucontext_t context;
-  crashpad::CaptureContext(&context);
-
-  crashpad::SanitizationInformation sanitization;
-  crashpad::SetSanitizationInfo(client, &sanitization);
-
-  crashpad::ExceptionInformation exception;
-  crashpad::SetExceptionInformation(&siginfo, &context, &exception);
-
-  crashpad::ExceptionHandlerProtocol::ClientInformation info;
-  crashpad::SetClientInformation(&exception, &sanitization, &info);
-
-  crashpad::ScopedPrSetDumpable set_dumpable(/* may_log= */ false);
-
-  crashpad::ExceptionHandlerClient handler_client(connection.get(), false);
-  return handler_client.RequestCrashDump(info) == 0;
 }
 
 void AllowMemoryRange(void* begin, size_t length) {

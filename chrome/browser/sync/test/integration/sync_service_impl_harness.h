@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,9 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_service_impl.h"
@@ -20,6 +22,7 @@ class Profile;
 
 namespace syncer {
 class SyncSetupInProgressHandle;
+class SyncUserSettings;
 }  // namespace syncer
 
 class SyncSigninDelegate;
@@ -38,6 +41,9 @@ class SyncServiceImplHarness {
     // Uses UI signin flow and connects to GAIA servers for authentication.
     UI_SIGNIN
   };
+
+  using SetUserSettingsCallback =
+      base::OnceCallback<void(syncer::SyncUserSettings*)>;
 
   static std::unique_ptr<SyncServiceImplHarness> Create(
       Profile* profile,
@@ -59,7 +65,7 @@ class SyncServiceImplHarness {
   // Signs out of the primary account. ChromeOS doesn't have the concept of
   // sign-out, so this only exists on other platforms.
   void SignOutPrimaryAccount();
-#endif  // !OS_CHROMEOS
+#endif
 
   // Enters/exits the "Sync paused" state, which in real life happens if a
   // syncing user signs out of the content area.
@@ -69,26 +75,32 @@ class SyncServiceImplHarness {
   // Enables and configures sync for all available datatypes. Returns true only
   // after sync has been fully initialized and authenticated, and we are ready
   // to process changes.
-  bool SetupSync();
+  // |user_settings_callback| will be called once the engine is initialized, but
+  // before actually starting sync, to give the caller a chance to modify sync
+  // settings (mostly the selected data types).
+  bool SetupSync(SetUserSettingsCallback user_settings_callback =
+                     SetUserSettingsCallback());
 
-  // Enables and configures sync only for the given |selected_types|.
+  // Enables and configures sync.
   // Does not wait for sync to be ready to process changes -- callers need to
   // ensure this by calling AwaitSyncSetupCompletion() or
   // AwaitSyncTransportActive().
+  // |user_settings_callback| will be called once the engine is initialized, but
+  // before actually starting sync, to give the caller a chance to modify sync
+  // settings (mostly the selected data types).
   // Returns true on success.
   bool SetupSyncNoWaitForCompletion(
-      syncer::UserSelectableTypeSet selected_types);
+      SetUserSettingsCallback user_settings_callback =
+          SetUserSettingsCallback());
 
   // Same as SetupSyncNoWaitForCompletion(), but also sets the given encryption
   // passphrase during setup.
   bool SetupSyncWithEncryptionPassphraseNoWaitForCompletion(
-      syncer::UserSelectableTypeSet selected_types,
       const std::string& passphrase);
 
   // Same as SetupSyncNoWaitForCompletion(), but also sets the given decryption
   // passphrase during setup.
   bool SetupSyncWithDecryptionPassphraseNoWaitForCompletion(
-      syncer::UserSelectableTypeSet selected_types,
       const std::string& passphrase);
 
   // Signals that sync setup is complete, and that PSS may begin syncing.
@@ -145,7 +157,8 @@ class SyncServiceImplHarness {
   bool AwaitSyncTransportActive();
 
   // Returns the SyncServiceImpl member of the sync client.
-  syncer::SyncServiceImpl* service() const { return service_; }
+  syncer::SyncServiceImpl* service() { return service_; }
+  const syncer::SyncServiceImpl* service() const { return service_; }
 
   // Returns the debug name for this profile. Used for logging.
   const std::string& profile_debug_name() const { return profile_debug_name_; }
@@ -187,9 +200,13 @@ class SyncServiceImplHarness {
   // |encryption_mode|.
   // If |encryption_mode| is kDecryption or kEncryption, |encryption_passphrase|
   // has to have a value which will be used to properly setup sync.
-  bool SetupSyncImpl(syncer::UserSelectableTypeSet selected_types,
-                     EncryptionSetupMode encryption_mode,
-                     const absl::optional<std::string>& encryption_passphrase);
+  // |user_settings_callback| will be called once the engine is initialized, but
+  // before actually starting sync, to give the caller a chance to modify sync
+  // settings (mostly the selected data types).
+  bool SetupSyncImpl(EncryptionSetupMode encryption_mode,
+                     const absl::optional<std::string>& encryption_passphrase,
+                     SetUserSettingsCallback user_settings_callback =
+                         SetUserSettingsCallback());
 
   // Gets detailed status from |service_| in pretty-printable form.
   std::string GetServiceStatus();
@@ -203,10 +220,10 @@ class SyncServiceImplHarness {
   bool IsSyncEnabledByUser() const;
 
   // Profile associated with this sync client.
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   // SyncServiceImpl object associated with |profile_|.
-  syncer::SyncServiceImpl* const service_;
+  const raw_ptr<syncer::SyncServiceImpl> service_;
 
   // Prevents Sync from running until configuration is complete.
   std::unique_ptr<syncer::SyncSetupInProgressHandle> sync_blocker_;

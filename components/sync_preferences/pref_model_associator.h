@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,9 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "components/sync/model/sync_data.h"
@@ -98,9 +99,9 @@ class PrefModelAssociator : public syncer::SyncableService {
   // value always takes precedence. Note that only certain preferences will
   // actually be merged, all others will return a copy of the server value. See
   // the method's implementation for details.
-  std::unique_ptr<base::Value> MergePreference(const std::string& name,
-                                               const base::Value& local_value,
-                                               const base::Value& server_value);
+  base::Value MergePreference(const std::string& name,
+                              const base::Value& local_value,
+                              const base::Value& server_value);
 
   // Fills |sync_data| with a sync representation of the preference data
   // provided.
@@ -209,7 +210,7 @@ class PrefModelAssociator : public syncer::SyncableService {
   PreferenceSet legacy_model_type_preferences_;
 
   // The PrefService we are syncing to.
-  PrefServiceSyncable* pref_service_ = nullptr;
+  raw_ptr<PrefServiceSyncable> pref_service_ = nullptr;
 
   // Sync's syncer::SyncChange handler. We push all our changes through this.
   std::unique_ptr<syncer::SyncChangeProcessor> sync_processor_;
@@ -228,9 +229,9 @@ class PrefModelAssociator : public syncer::SyncableService {
       base::ObserverList<SyncedPrefObserver>::Unchecked;
   std::unordered_map<std::string, std::unique_ptr<SyncedPrefObserverList>>
       synced_pref_observers_;
-  const PrefModelAssociatorClient* client_;  // Weak.
+  raw_ptr<const PrefModelAssociatorClient> client_;  // Weak.
 
-  PersistentPrefStore* const user_pref_store_;
+  const raw_ptr<PersistentPrefStore> user_pref_store_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

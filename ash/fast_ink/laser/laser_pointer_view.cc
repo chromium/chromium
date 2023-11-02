@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -298,7 +298,7 @@ gfx::Rect LaserPointerView::GetBoundingBox() {
   // edges and antialiasing.
   const int kOutsetForAntialiasing = 1;
   int outset = kPointInitialRadius + kOutsetForAntialiasing;
-  bounding_box.Inset(-outset, -outset);
+  bounding_box.Inset(-outset);
   return bounding_box;
 }
 

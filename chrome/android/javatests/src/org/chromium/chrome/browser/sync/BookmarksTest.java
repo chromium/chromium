@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,13 +23,14 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
+import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.sync.protocol.BookmarkSpecifics;
 import org.chromium.components.sync.protocol.SyncEntity;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -37,7 +38,6 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 /**
  * Test suite for the bookmarks sync data type.
@@ -57,7 +57,7 @@ public class BookmarksTest {
     private static final String MODIFIED_TITLE = "Chromium2";
     private static final String FOLDER_TITLE = "Tech";
 
-    private BookmarkBridge mBookmarkBridge;
+    private BookmarkModel mBookmarkModel;
 
     // A container to store bookmark information for data verification.
     private static class Bookmark {
@@ -86,10 +86,10 @@ public class BookmarksTest {
     @Before
     public void setUp() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mBookmarkBridge = new BookmarkBridge(Profile.getLastUsedRegularProfile());
-            // The BookmarkBridge needs to know how to handle partner bookmarks.
+            mBookmarkModel = new BookmarkModel(Profile.getLastUsedRegularProfile());
+            // The BookmarkModel needs to know how to handle partner bookmarks.
             // Without this call to fake that knowledge for testing, it crashes.
-            mBookmarkBridge.loadEmptyPartnerBookmarkShimForTesting();
+            mBookmarkModel.loadEmptyPartnerBookmarkShimForTesting();
         });
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         // Make sure initial state is clean.
@@ -374,7 +374,7 @@ public class BookmarksTest {
     @LargeTest
     @Feature({"Sync"})
     public void testDisabledNoDownloadBookmark() throws Exception {
-        mSyncTestRule.disableDataType(ModelType.BOOKMARKS);
+        mSyncTestRule.disableDataType(UserSelectableType.BOOKMARKS);
         addServerBookmark(TITLE, URL);
         SyncTestUtil.triggerSyncAndWaitForCompletion();
         assertClientBookmarkCount(0);
@@ -385,42 +385,34 @@ public class BookmarksTest {
     @LargeTest
     @Feature({"Sync"})
     public void testDisabledNoUploadBookmark() {
-        mSyncTestRule.disableDataType(ModelType.BOOKMARKS);
+        mSyncTestRule.disableDataType(UserSelectableType.BOOKMARKS);
         addClientBookmark(TITLE, URL);
         SyncTestUtil.triggerSyncAndWaitForCompletion();
         assertServerBookmarkCountWithName(0, TITLE);
     }
 
     private BookmarkId addClientBookmark(final String title, final GURL url) {
-        BookmarkId id =
-                TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<BookmarkId>() {
-                    @Override
-                    public BookmarkId call() {
-                        BookmarkId parentId = mBookmarkBridge.getMobileFolderId();
-                        return mBookmarkBridge.addBookmark(parentId, 0, title, url);
-                    }
-                });
+        BookmarkId id = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            BookmarkId parentId = mBookmarkModel.getMobileFolderId();
+            return mBookmarkModel.addBookmark(parentId, 0, title, url);
+        });
         Assert.assertNotNull("Failed to create bookmark.", id);
         return id;
     }
 
     private BookmarkId addClientBookmarkFolder(final String title) {
-        BookmarkId id =
-                TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<BookmarkId>() {
-                    @Override
-                    public BookmarkId call() {
-                        BookmarkId parentId = mBookmarkBridge.getMobileFolderId();
-                        return mBookmarkBridge.addFolder(parentId, 0, title);
-                    }
-                });
+        BookmarkId id = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            BookmarkId parentId = mBookmarkModel.getMobileFolderId();
+            return mBookmarkModel.addFolder(parentId, 0, title);
+        });
         Assert.assertNotNull("Failed to create bookmark folder.", id);
         return id;
     }
 
     private String getBookmarkBarGuid() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            return mBookmarkBridge.getBookmarkGuidByIdForTesting(
-                    mBookmarkBridge.getDesktopFolderId());
+            return mBookmarkModel.getBookmarkGuidByIdForTesting(
+                    mBookmarkModel.getDesktopFolderId());
         });
     }
 
@@ -447,17 +439,17 @@ public class BookmarksTest {
     }
 
     private void deleteClientBookmark(final BookmarkId id) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mBookmarkBridge.deleteBookmark(id); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mBookmarkModel.deleteBookmark(id); });
     }
 
     private void setClientBookmarkTitle(final BookmarkId id, final String title) {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mBookmarkBridge.setBookmarkTitle(id, title); });
+                () -> { mBookmarkModel.setBookmarkTitle(id, title); });
     }
 
     private void moveClientBookmark(final BookmarkId id, final BookmarkId newParentId) {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mBookmarkBridge.moveBookmark(id, newParentId, 0 /* new index */); });
+                () -> { mBookmarkModel.moveBookmark(id, newParentId, 0 /* new index */); });
     }
 
     private List<Bookmark> getClientBookmarks() {

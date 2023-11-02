@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,12 @@
 
 #include "base/callback_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller_test.h"
 #include "third_party/blink/renderer/platform/testing/paint_property_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/test_paint_artifact.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -33,13 +33,14 @@ class DisplayItemRasterInvalidatorTest : public PaintControllerTestBase,
   RasterInvalidator invalidator_;
 };
 
-class RasterInvalidationCycleScope : public PaintController::CycleScope {
+class RasterInvalidationCycleScope : public PaintControllerCycleScope {
  public:
   RasterInvalidationCycleScope(PaintController& controller,
                                RasterInvalidator& invalidator)
-      : PaintController::CycleScope(controller, true),
+      : PaintControllerCycleScope(controller, true),
         invalidator_(invalidator) {}
   ~RasterInvalidationCycleScope() {
+    ++sequence_number_;
     for (auto* controller : controllers_) {
       controller->CommitNewDisplayItems();
       invalidator_.Generate(
@@ -49,13 +50,16 @@ class RasterInvalidationCycleScope : public PaintController::CycleScope {
           // invalidation rects in the tests.
           gfx::Vector2dF(), gfx::Size(20000, 20000), PropertyTreeState::Root());
       for (auto& chunk : controller->PaintChunks())
-        chunk.properties.ClearChangedTo(PropertyTreeState::Root());
+        chunk.properties.ClearChangedToRoot(sequence_number_);
     }
   }
 
  private:
   RasterInvalidator& invalidator_;
+  static int sequence_number_;
 };
+
+int RasterInvalidationCycleScope::sequence_number_ = 1;
 
 INSTANTIATE_PAINT_TEST_SUITE_P(DisplayItemRasterInvalidatorTest);
 
@@ -351,7 +355,7 @@ TEST_P(DisplayItemRasterInvalidatorTest, NewItemInMiddle) {
 TEST_P(DisplayItemRasterInvalidatorTest, Incremental) {
   gfx::Rect initial_rect(100, 100, 100, 100);
   Persistent<FakeDisplayItemClient> clients[6];
-  for (size_t i = 0; i < base::size(clients); i++) {
+  for (size_t i = 0; i < std::size(clients); i++) {
     clients[i] =
         MakeGarbageCollected<FakeDisplayItemClient>(String::Format("%zu", i));
   }
@@ -375,7 +379,7 @@ TEST_P(DisplayItemRasterInvalidatorTest, Incremental) {
         gfx::Rect(100, 100, 150, 100), gfx::Rect(100, 100, 100, 150),
         gfx::Rect(100, 100, 150, 80),  gfx::Rect(100, 100, 80, 150),
         gfx::Rect(100, 100, 150, 150), gfx::Rect(100, 100, 80, 80)};
-    for (size_t i = 0; i < base::size(clients); i++) {
+    for (size_t i = 0; i < std::size(clients); i++) {
       clients[i]->Invalidate(PaintInvalidationReason::kIncremental);
       DrawRect(context, *clients[i], kBackgroundType,
                gfx::Rect(visual_rects[i]));

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,9 +23,9 @@ JNI_VideoTutorialServiceFactory_GetForProfile(
   if (profile_key == nullptr)
     return base::android::ScopedJavaLocalRef<jobject>();
 
-  video_tutorials::VideoTutorialService* tile_service =
+  video_tutorials::VideoTutorialService* tutorial_service =
       video_tutorials::VideoTutorialServiceFactory::GetInstance()->GetForKey(
           profile_key);
   return video_tutorials::VideoTutorialServiceBridge::
-      GetBridgeForVideoTutorialService(tile_service);
+      GetBridgeForVideoTutorialService(tutorial_service);
 }

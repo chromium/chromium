@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,8 @@
 
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_status.h"
@@ -49,8 +50,8 @@ class PLATFORM_EXPORT ResourceFetcherProperties
   virtual const FetchClientSettingsObject& GetFetchClientSettingsObject()
       const = 0;
 
-  // Returns whether this global context is a top-level frame.
-  virtual bool IsMainFrame() const = 0;
+  // Returns whether this global context is the outermost main frame.
+  virtual bool IsOutermostMainFrame() const = 0;
 
   // Returns whether a controller service worker exists and if it has a fetch
   // handler.
@@ -95,11 +96,6 @@ class PLATFORM_EXPORT ResourceFetcherProperties
   virtual const KURL& WebBundlePhysicalUrl() const = 0;
 
   virtual int GetOutstandingThrottledLimit() const = 0;
-
-  // Returns the LitePage origin the subresources such as images should be
-  // redirected to when the kSubresourceRedirect feature is enabled.
-  virtual scoped_refptr<SecurityOrigin> GetLitePageSubresourceRedirectOrigin()
-      const = 0;
 };
 
 // A delegating ResourceFetcherProperties subclass which can be retained
@@ -123,8 +119,9 @@ class PLATFORM_EXPORT DetachableResourceFetcherProperties final
     return properties_ ? properties_->GetFetchClientSettingsObject()
                        : *fetch_client_settings_object_;
   }
-  bool IsMainFrame() const override {
-    return properties_ ? properties_->IsMainFrame() : is_main_frame_;
+  bool IsOutermostMainFrame() const override {
+    return properties_ ? properties_->IsOutermostMainFrame()
+                       : is_outermost_main_frame_;
   }
   ControllerServiceWorkerMode GetControllerServiceWorkerMode() const override {
     return properties_ ? properties_->GetControllerServiceWorkerMode()
@@ -171,26 +168,19 @@ class PLATFORM_EXPORT DetachableResourceFetcherProperties final
                        : outstanding_throttled_limit_;
   }
 
-  scoped_refptr<SecurityOrigin> GetLitePageSubresourceRedirectOrigin()
-      const override {
-    return properties_ ? properties_->GetLitePageSubresourceRedirectOrigin()
-                       : litepage_subresource_redirect_origin_;
-  }
-
  private:
   // |properties_| is null if and only if detached.
   Member<const ResourceFetcherProperties> properties_;
 
   // The following members are used when detached.
   Member<const FetchClientSettingsObject> fetch_client_settings_object_;
-  bool is_main_frame_ = false;
+  bool is_outermost_main_frame_ = false;
   bool paused_ = false;
   LoaderFreezeMode freeze_mode_;
   bool load_complete_ = false;
   bool is_subframe_deprioritization_enabled_ = false;
   KURL web_bundle_physical_url_;
   int outstanding_throttled_limit_ = 0;
-  scoped_refptr<SecurityOrigin> litepage_subresource_redirect_origin_;
 };
 
 }  // namespace blink

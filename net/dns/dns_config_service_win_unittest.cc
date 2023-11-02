@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -416,7 +416,7 @@ TEST(DnsConfigServiceWinTest, AppendToMultiLabelName) {
   }
 }
 
-// Setting have_name_resolution_policy_table should set unhandled_options.
+// Setting have_name_resolution_policy_table should set `unhandled_options`.
 TEST(DnsConfigServiceWinTest, HaveNRPT) {
   AdapterInfo infos[2] = {
     { IF_TYPE_USB, IfOperStatusUp, L"connection.suffix", { "1.0.0.1" } },
@@ -443,7 +443,7 @@ TEST(DnsConfigServiceWinTest, HaveNRPT) {
   }
 }
 
-// Setting have_proxy should set unhandled_options.
+// Setting have_proxy should set `unhandled_options`.
 TEST(DnsConfigServiceWinTest, HaveProxy) {
   AdapterInfo infos[2] = {
       {IF_TYPE_USB, IfOperStatusUp, L"connection.suffix", {"1.0.0.1"}},
@@ -469,7 +469,7 @@ TEST(DnsConfigServiceWinTest, HaveProxy) {
   }
 }
 
-// Setting uses_vpn should set unhandled_options.
+// Setting uses_vpn should set `unhandled_options`.
 TEST(DnsConfigServiceWinTest, UsesVpn) {
   AdapterInfo infos[3] = {
       {IF_TYPE_USB, IfOperStatusUp, L"connection.suffix", {"1.0.0.1"}},
@@ -482,6 +482,49 @@ TEST(DnsConfigServiceWinTest, UsesVpn) {
   EXPECT_THAT(internal::ConvertSettingsToDnsConfig(settings),
               testing::Optional(testing::Field(&DnsConfig::unhandled_options,
                                                testing::IsTrue())));
+}
+
+// Setting adapter specific nameservers should set `unhandled_options`.
+TEST(DnsConfigServiceWinTest, AdapterSpecificNameservers) {
+  AdapterInfo infos[3] = {
+      {IF_TYPE_FASTETHER,
+       IfOperStatusUp,
+       L"example.com",
+       {"1.0.0.1", "fec0:0:0:ffff::2", "8.8.8.8"}},
+      {IF_TYPE_USB,
+       IfOperStatusUp,
+       L"chromium.org",
+       {"10.0.0.10", "2001:FFFF::1111"}},
+      {0},
+  };
+
+  WinDnsSystemSettings settings;
+  settings.addresses = CreateAdapterAddresses(infos);
+  EXPECT_THAT(internal::ConvertSettingsToDnsConfig(settings),
+              testing::Optional(testing::Field(&DnsConfig::unhandled_options,
+                                               testing::IsTrue())));
+}
+
+// Setting adapter specific nameservers for non operational adapter should not
+// set `unhandled_options`.
+TEST(DnsConfigServiceWinTest, AdapterSpecificNameserversForNo) {
+  AdapterInfo infos[3] = {
+      {IF_TYPE_FASTETHER,
+       IfOperStatusUp,
+       L"example.com",
+       {"1.0.0.1", "fec0:0:0:ffff::2", "8.8.8.8"}},
+      {IF_TYPE_USB,
+       IfOperStatusDown,
+       L"chromium.org",
+       {"10.0.0.10", "2001:FFFF::1111"}},
+      {0},
+  };
+
+  WinDnsSystemSettings settings;
+  settings.addresses = CreateAdapterAddresses(infos);
+  EXPECT_THAT(internal::ConvertSettingsToDnsConfig(settings),
+              testing::Optional(testing::Field(&DnsConfig::unhandled_options,
+                                               testing::IsFalse())));
 }
 
 }  // namespace

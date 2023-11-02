@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -965,7 +966,7 @@ public class OverlayPanel extends OverlayPanelAnimation
 
     @Override
     public boolean shouldHideAndroidBrowserControls() {
-        return isPanelOpened();
+        return isPanelOpened() && mCanHideAndroidBrowserControls;
     }
 
     @Override
@@ -979,5 +980,16 @@ public class OverlayPanel extends OverlayPanelAnimation
         if (!isShowing()) return false;
         closePanel(StateChangeReason.BACK_PRESS, true);
         return true;
+    }
+
+    @Override
+    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+        return isShowingSupplier();
+    }
+
+    @Override
+    public void handleBackPress() {
+        boolean ret = onBackPressed();
+        assert ret;
     }
 }

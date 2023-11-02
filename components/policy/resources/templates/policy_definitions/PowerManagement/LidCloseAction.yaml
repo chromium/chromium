@@ -1,0 +1,38 @@
+caption: Action to take when the user closes the lid
+desc: |-
+  Setting the policy specifies the action that <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> takes when the user closes the device's lid.
+
+        Leaving the policy unset means the Suspend action is taken.
+
+        Note: If the action is Suspend, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> can separately be set up to lock or not lock the screen before suspending.
+example_value: 0
+features:
+  dynamic_refresh: true
+  per_profile: false
+items:
+- caption: Suspend
+  name: LidCloseActionSuspend
+  value: 0
+- caption: Log the user out
+  name: LidCloseActionLogout
+  value: 1
+- caption: Shut down
+  name: LidCloseActionShutdown
+  value: 2
+- caption: Do nothing
+  name: LidCloseActionDoNothing
+  value: 3
+owners:
+- reinauer@google.com
+- chromeos-power@google.com
+schema:
+  enum:
+  - 0
+  - 1
+  - 2
+  - 3
+  type: integer
+supported_on:
+- chrome_os:26-
+tags: []
+type: int-enum

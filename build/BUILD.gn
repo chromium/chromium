@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,6 +7,8 @@ import("//build/config/chrome_build.gni")
 import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/args.gni")
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/util/process_version.gni")
+import("//build_overrides/build.gni")
 
 source_set("buildflag_header_h") {
   sources = [ "buildflag.h" ]
@@ -31,7 +33,15 @@ buildflag_header("branding_buildflags") {
 buildflag_header("chromecast_buildflags") {
   header = "chromecast_buildflags.h"
 
-  flags = [ "IS_CHROMECAST=$is_chromecast" ]
+  flags = [
+    "IS_CASTOS=$is_castos",
+    "IS_CAST_ANDROID=$is_cast_android",
+    "ENABLE_CAST_RECEIVER=$enable_cast_receiver",
+
+    # TODO(crbug.com/1219802): IS_CHROMECAST is deprecated and will be removed.
+    # The above flags should be used instead.
+    "IS_CHROMECAST=$is_chromecast",
+  ]
 }
 
 buildflag_header("chromeos_buildflags") {
@@ -43,21 +53,26 @@ buildflag_header("chromeos_buildflags") {
     "IS_CHROMEOS_LACROS=$is_chromeos_lacros",
     "IS_CHROMEOS_ASH=$is_chromeos_ash",
     "IS_CHROMEOS_WITH_HW_DETAILS=$is_chromeos_with_hw_details",
+    "IS_REVEN=$is_reven",
   ]
 }
 
-buildflag_header("os_buildflags") {
-  header = "os_buildflags.h"
-  flags = [
-    "IS_ANDROID=$is_android",
-    "IS_CHROMEOS=$is_chromeos",
-    "IS_FUCHSIA=$is_fuchsia",
-    "IS_IOS=$is_ios",
-    "IS_LINUX=$is_linux",
-    "IS_MAC=$is_mac",
-    "IS_NACL=$is_nacl",
-    "IS_WIN=$is_win",
-    "IS_APPLE=$is_apple",
-    "IS_POSIX=$is_posix",
-  ]
+if (build_with_chromium) {
+  group("gold_common_pytype") {
+    testonly = true
+
+    data = [ "//build/skia_gold_common/" ]
+
+    data_deps = [ "//testing:pytype_dependencies" ]
+  }
+}
+
+if (is_chromeos) {
+  process_version("version_metadata") {
+    sources = [ "//chrome/VERSION" ]
+
+    template_file = "metadata.json.in"
+    output = "$root_out_dir/metadata.json"
+    process_only = true
+  }
 }

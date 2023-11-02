@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "dbus/object_path.h"
 #include "dbus/property.h"
@@ -51,7 +52,7 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothAgentManagerClient
  private:
   // The single agent service provider we permit, owned by the application
   // using it.
-  FakeBluetoothAgentServiceProvider* service_provider_;
+  raw_ptr<FakeBluetoothAgentServiceProvider> service_provider_;
 
   // List of observers interested in event notifications from us.
   base::ObserverList<Observer>::Unchecked observers_;

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/notifications/metrics/mock_notification_metrics_logger.h"
@@ -17,13 +18,14 @@
 #include "chrome/browser/notifications/platform_notification_service_factory.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/test/base/testing_profile.h"
-#include "content/public/browser/permission_type.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/common/persistent_notification_status.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_permission_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/notifications/notification_resources.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
 using ::testing::_;
@@ -50,9 +52,10 @@ class TestingProfileWithPermissionManager : public TestingProfile {
   // Sets the notification permission status to |permission_status|.
   void SetNotificationPermissionStatus(
       blink::mojom::PermissionStatus permission_status) {
-    ON_CALL(*permission_manager_,
-            GetPermissionStatus(content::PermissionType::NOTIFICATIONS, _, _))
-        .WillByDefault(Return(permission_status));
+    ON_CALL(*permission_manager_, GetPermissionResultForOriginWithoutContext(
+                                      blink::PermissionType::NOTIFICATIONS, _))
+        .WillByDefault(Return(content::PermissionResult(
+            permission_status, content::PermissionStatusSource::UNSPECIFIED)));
   }
 
   // TestingProfile overrides:
@@ -103,7 +106,7 @@ class PersistentNotificationHandlerTest : public ::testing::Test {
   GURL origin_;
 
   // Owned by the |profile_| as a keyed service.
-  MockNotificationMetricsLogger* mock_logger_ = nullptr;
+  raw_ptr<MockNotificationMetricsLogger> mock_logger_ = nullptr;
 };
 
 TEST_F(PersistentNotificationHandlerTest, OnClick_WithoutPermission) {

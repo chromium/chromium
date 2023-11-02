@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,6 +44,8 @@ class DISPLAY_EXPORT ScreenBase : public Screen {
   void RemoveObserver(DisplayObserver* observer) override;
   void SetPanelRotationForTesting(int64_t display_id,
                                   Display::Rotation rotation) override;
+
+  bool HasDisplayObservers() const;
 
  protected:
   // Invoked when a display changed in some way, including being added.

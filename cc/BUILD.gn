@@ -1,5 +1,5 @@
-# Copyright 2014 The Chromium Authors.All rights reserved.
-# Use of this source code is governed by a BSD - style license that can be
+# Copyright 2014 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import("//build/config/sanitizers/sanitizers.gni")
 import("//gpu/vulkan/features.gni")
@@ -43,6 +43,7 @@ cc_component("cc") {
     "input/browser_controls_offset_manager_client.h",
     "input/browser_controls_state.h",
     "input/compositor_input_interfaces.h",
+    "input/input_handler.cc",
     "input/input_handler.h",
     "input/layer_selection_bound.cc",
     "input/layer_selection_bound.h",
@@ -74,14 +75,16 @@ cc_component("cc") {
     "input/snap_fling_curve.h",
     "input/snap_selection_strategy.cc",
     "input/snap_selection_strategy.h",
-    "input/threaded_input_handler.cc",
-    "input/threaded_input_handler.h",
     "input/touch_action.h",
     "layers/append_quads_data.cc",
     "layers/append_quads_data.h",
     "layers/content_layer_client.h",
     "layers/deadline_policy.cc",
     "layers/deadline_policy.h",
+    "layers/document_transition_content_layer.cc",
+    "layers/document_transition_content_layer.h",
+    "layers/document_transition_content_layer_impl.cc",
+    "layers/document_transition_content_layer_impl.h",
     "layers/draw_mode.h",
     "layers/draw_properties.cc",
     "layers/draw_properties.h",
@@ -122,18 +125,12 @@ cc_component("cc") {
     "layers/picture_layer_impl.h",
     "layers/recording_source.cc",
     "layers/recording_source.h",
-    "layers/region_capture_bounds.cc",
-    "layers/region_capture_bounds.h",
     "layers/render_surface_impl.cc",
     "layers/render_surface_impl.h",
     "layers/scrollbar_layer_base.cc",
     "layers/scrollbar_layer_base.h",
     "layers/scrollbar_layer_impl_base.cc",
     "layers/scrollbar_layer_impl_base.h",
-    "layers/shared_element_layer.cc",
-    "layers/shared_element_layer.h",
-    "layers/shared_element_layer_impl.cc",
-    "layers/shared_element_layer_impl.h",
     "layers/solid_color_layer.cc",
     "layers/solid_color_layer.h",
     "layers/solid_color_layer_impl.cc",
@@ -180,12 +177,20 @@ cc_component("cc") {
     "metrics/compositor_frame_reporting_controller.h",
     "metrics/compositor_timing_history.cc",
     "metrics/compositor_timing_history.h",
+    "metrics/custom_metrics_recorder.cc",
+    "metrics/custom_metrics_recorder.h",
     "metrics/dropped_frame_counter.cc",
     "metrics/dropped_frame_counter.h",
+    "metrics/event_latency_tracing_recorder.cc",
+    "metrics/event_latency_tracing_recorder.h",
+    "metrics/event_latency_tracker.cc",
+    "metrics/event_latency_tracker.h",
     "metrics/event_metrics.cc",
     "metrics/event_metrics.h",
     "metrics/events_metrics_manager.cc",
     "metrics/events_metrics_manager.h",
+    "metrics/frame_info.cc",
+    "metrics/frame_info.h",
     "metrics/frame_sequence_metrics.cc",
     "metrics/frame_sequence_metrics.h",
     "metrics/frame_sequence_tracker.cc",
@@ -207,6 +212,7 @@ cc_component("cc") {
     "metrics/throughput_ukm_reporter.h",
     "metrics/total_frame_counter.cc",
     "metrics/total_frame_counter.h",
+    "metrics/ukm_smoothness_data.cc",
     "metrics/ukm_smoothness_data.h",
     "metrics/video_playback_roughness_reporter.cc",
     "metrics/video_playback_roughness_reporter.h",
@@ -325,6 +331,8 @@ cc_component("cc") {
     "tiles/tile_priority.h",
     "tiles/tile_task_manager.cc",
     "tiles/tile_task_manager.h",
+    "tiles/tiles_with_resource_iterator.cc",
+    "tiles/tiles_with_resource_iterator.h",
     "tiles/tiling_set_eviction_queue.cc",
     "tiles/tiling_set_eviction_queue.h",
     "tiles/tiling_set_raster_queue_all.cc",
@@ -337,8 +345,6 @@ cc_component("cc") {
     "trees/animation_options.h",
     "trees/browser_controls_params.cc",
     "trees/browser_controls_params.h",
-    "trees/clip_expander.cc",
-    "trees/clip_expander.h",
     "trees/clip_node.cc",
     "trees/clip_node.h",
     "trees/commit_state.cc",
@@ -407,6 +413,8 @@ cc_component("cc") {
     "trees/proxy_impl.h",
     "trees/proxy_main.cc",
     "trees/proxy_main.h",
+    "trees/raster_context_provider_wrapper.cc",
+    "trees/raster_context_provider_wrapper.h",
     "trees/render_frame_metadata.cc",
     "trees/render_frame_metadata.h",
     "trees/render_frame_metadata_observer.h",
@@ -460,6 +468,8 @@ cc_component("cc") {
     "//services/metrics/public/cpp:ukm_builders",
     "//services/metrics/public/mojom",
     "//services/tracing/public/cpp:cpp",
+    "//skia:skcms",
+    "//ui/base:features",
     "//ui/events:events_base",
     "//ui/gfx",
     "//ui/gfx/animation/keyframe",
@@ -482,6 +492,8 @@ cc_test_static_library("test_support") {
     "test/fake_compositor_frame_reporting_controller.h",
     "test/fake_content_layer_client.cc",
     "test/fake_content_layer_client.h",
+    "test/fake_frame_info.cc",
+    "test/fake_frame_info.h",
     "test/fake_impl_task_runner_provider.h",
     "test/fake_layer_tree_frame_sink.cc",
     "test/fake_layer_tree_frame_sink.h",
@@ -546,13 +558,12 @@ cc_test_static_library("test_support") {
     "test/layer_tree_pixel_test.h",
     "test/layer_tree_test.cc",
     "test/layer_tree_test.h",
+    "test/lottie_test_data.cc",
     "test/lottie_test_data.h",
     "test/mock_latency_info_swap_promise_monitor.cc",
     "test/mock_latency_info_swap_promise_monitor.h",
     "test/mock_layer_tree_mutator.cc",
     "test/mock_layer_tree_mutator.h",
-    "test/mock_mutator_host.cc",
-    "test/mock_mutator_host.h",
     "test/mock_occlusion_tracker.h",
     "test/paint_op_helper.h",
     "test/pixel_comparator.cc",
@@ -725,7 +736,9 @@ cc_test("cc_unittests") {
     "metrics/compositor_frame_reporting_controller_unittest.cc",
     "metrics/compositor_timing_history_unittest.cc",
     "metrics/dropped_frame_counter_unittest.cc",
+    "metrics/event_metrics_unittest.cc",
     "metrics/events_metrics_manager_unittest.cc",
+    "metrics/frame_info_unittest.cc",
     "metrics/frame_sequence_metrics_unittest.cc",
     "metrics/frame_sequence_tracker_unittest.cc",
     "metrics/frame_sorter_unittest.cc",
@@ -762,7 +775,6 @@ cc_test("cc_unittests") {
     "resources/resource_pool_unittest.cc",
     "scheduler/scheduler_state_machine_unittest.cc",
     "scheduler/scheduler_unittest.cc",
-    "test/mock_mutator_host_unittest.cc",
     "tiles/checker_image_tracker_unittest.cc",
     "tiles/decoded_image_tracker_unittest.cc",
     "tiles/gpu_image_decode_cache_unittest.cc",
@@ -832,10 +844,11 @@ cc_test("cc_unittests") {
   ]
 
   if (skia_support_skottie) {
-    data = [ "//components/viz/test/data/" ]
     sources += [
       "paint/skottie_mru_resource_provider_unittest.cc",
       "paint/skottie_resource_metadata_unittest.cc",
+      "paint/skottie_serialization_history_unittest.cc",
+      "paint/skottie_text_property_value_unittest.cc",
       "paint/skottie_transfer_cache_entry_unittest.cc",
       "paint/skottie_wrapper_unittest.cc",
     ]
@@ -877,19 +890,30 @@ cc_test("cc_unittests") {
     "//ui/gl",
     "//ui/gl:test_support",
   ]
+
+  data = [ "//components/viz/test/data/" ]
   data_deps = [
     "//testing/buildbot/filters:cc_unittests_filters",
     "//third_party/mesa_headers",
   ]
 
+  if (is_android && enable_chrome_android_internal) {
+    data_deps += [ "//clank/build/bot/filters:cc_unittests_filters" ]
+  }
+
+  if (skia_support_skottie) {
+    data += [ "test/data/" ]
+  }
+
   if (is_fuchsia) {
+    # TODO(https://crbug.com/1185811): Investigate removing the requirement for
+    # job_policy_ambient_mark_vmo_exec for the sake of V8's allocator in tests.
+    test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
+
     additional_manifest_fragments = [
-      "//build/config/fuchsia/test/font_capabilities.test-cmx",
-
-      # TODO(crbug.com/1185811): Figure out why jit_capabilities is needed.
-      "//build/config/fuchsia/test/jit_capabilities.test-cmx",
-
-      "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
+      "//build/config/fuchsia/test/fonts.shard.test-cml",
+      "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml",
+      "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
     ]
   }
 
@@ -970,9 +994,6 @@ if (is_android) {
     # Right now, this only includes the Java switches. But if we need more Java
     # files, they should be added here as necessary.
     srcjar_deps = [ ":cc_android_java_enums_srcjar" ]
-    deps = [
-      "//base:base_java",
-      "//third_party/androidx:androidx_annotation_annotation_java",
-    ]
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
   }
 }

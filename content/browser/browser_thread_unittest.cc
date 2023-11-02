@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
@@ -20,6 +21,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/browser_process_io_thread.h"
 #include "content/browser/browser_thread_impl.h"
@@ -53,7 +55,7 @@ class SequenceManagerThreadDelegate : public base::Thread::Delegate {
     BrowserTaskExecutor::CreateForTesting(
         std::move(browser_ui_thread_scheduler),
         std::make_unique<BrowserIOThreadDelegate>());
-    BrowserTaskExecutor::EnableAllQueues();
+    BrowserTaskExecutor::OnStartupComplete();
   }
 
   SequenceManagerThreadDelegate(const SequenceManagerThreadDelegate&) = delete;
@@ -188,7 +190,7 @@ class UIThreadDestructionObserver
   const scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner_;
   const scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
   base::OnceClosure callback_;
-  bool* did_shutdown_;
+  raw_ptr<bool> did_shutdown_;
 };
 
 TEST_F(BrowserThreadTest, PostTask) {
@@ -320,7 +322,7 @@ TEST_F(BrowserThreadWithCustomSchedulerTest, PostBestEffortTask) {
 
   testing::Mock::VerifyAndClearExpectations(&regular_task);
 
-  BrowserTaskExecutor::EnableAllQueues();
+  BrowserTaskExecutor::OnStartupComplete();
   base::RunLoop run_loop;
   EXPECT_CALL(best_effort_task, Run).WillOnce(Invoke([&]() {
     run_loop.Quit();

@@ -1,0 +1,40 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(is_chromeos_ash)
+
+mojom("mojom") {
+  deps = [ "//chromeos/services/network_health/public/mojom" ]
+  sources = [
+    "cros_healthd.mojom",
+    "cros_healthd_diagnostics.mojom",
+    "cros_healthd_events.mojom",
+    "cros_healthd_probe.mojom",
+    "nullable_primitives.mojom",
+    "wilco_ec.mojom",
+  ]
+
+  public_deps = [
+    "//chromeos/ash/services/cros_healthd/private/mojom",
+    "//chromeos/services/network_health/public/mojom",
+    "//mojo/public/mojom/base",
+  ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "ash.cros_healthd_probe.mojom.CpuArchitectureEnum"
+          cpp = "::em::CpuInfo::Architecture"
+        },
+      ]
+      traits_headers = [ "cros_healthd_probe_mojom_traits.h" ]
+      traits_sources = [ "cros_healthd_probe_mojom_traits.cc" ]
+      traits_public_deps = [ "//components/policy/proto" ]
+    },
+  ]
+}

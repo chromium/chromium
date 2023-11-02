@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -131,6 +131,69 @@ TEST(NavigationMetrics, MainFrameSameDocumentHasRTLDomainTrue) {
   test.ExpectTotalCount(kMainFrameHasRTLDomainDifferentPage, 0);
   test.ExpectTotalCount(kMainFrameHasRTLDomain, 1);
   test.ExpectUniqueSample(kMainFrameHasRTLDomain, 1 /* true */, 1);
+}
+
+TEST(NavigationMetrics, RecordIDNA2008Metrics) {
+  static constexpr char kHistogram[] =
+      "Navigation.HostnameHasDeviationCharacters";
+  base::HistogramTester histograms;
+
+  // Shouldn't record metrics for non-unique hostnames.
+  RecordIDNA2008Metrics(u"faß.local");
+  histograms.ExpectTotalCount(kHistogram, 0);
+
+  // Shouldn't record deviation characters in subdomains.
+  RecordIDNA2008Metrics(u"faß.example.de");
+  histograms.ExpectTotalCount(kHistogram, 1);
+  histograms.ExpectBucketCount(kHistogram, false, 1);
+  histograms.ExpectBucketCount(kHistogram, true, 0);
+
+  // Shouldn't record deviation characters in subdomains of private registries.
+  RecordIDNA2008Metrics(u"faß.blogspot.com");
+  histograms.ExpectTotalCount(kHistogram, 2);
+  histograms.ExpectBucketCount(kHistogram, false, 2);
+  histograms.ExpectBucketCount(kHistogram, true, 0);
+
+  // Positive tests.
+  RecordIDNA2008Metrics(u"faß.de");
+  histograms.ExpectTotalCount(kHistogram, 3);
+  histograms.ExpectBucketCount(kHistogram, false, 2);
+  histograms.ExpectBucketCount(kHistogram, true, 1);
+
+  RecordIDNA2008Metrics(u"subdomain.faß.de");
+  histograms.ExpectTotalCount(kHistogram, 4);
+  histograms.ExpectBucketCount(kHistogram, false, 2);
+  histograms.ExpectBucketCount(kHistogram, true, 2);
+}
+
+// Regression test for crbug.com/1362507. Tests that the IDNA2008 metrics code
+// correctly handles hostnames with trailing dots.
+TEST(NavigationMetrics, RecordIDNA2008MetricsTrailingDots) {
+  static constexpr char kHistogram[] =
+      "Navigation.HostnameHasDeviationCharacters";
+  base::HistogramTester histograms;
+
+  // This would previously trigger the DCHECK in GetEtldPlusOne16(), or cause
+  // a crash in the std::vector::erase() call later in that function, because
+  // the canonicalized hostname has two dots and so the logic would calculate
+  // this as having three labels, but the noncanonicalized labels vector would
+  // only have two elements due to dropping the final empty string after the
+  // trailing dot.
+  RecordIDNA2008Metrics(u"googlé.com.");
+  histograms.ExpectTotalCount(kHistogram, 1);
+
+  // GetDomainAndRegistry() should return the empty string for this hostname,
+  // so no metrics will be recorded.
+  RecordIDNA2008Metrics(u"googlé.com..");
+  histograms.ExpectTotalCount(kHistogram, 1);
+
+  // Should be treated the same as the "googlé.com" case.
+  RecordIDNA2008Metrics(u".googlé.com");
+  histograms.ExpectTotalCount(kHistogram, 2);
+
+  // Should be treated the same as the "googlé.com." case.
+  RecordIDNA2008Metrics(u".googlé.com.");
+  histograms.ExpectTotalCount(kHistogram, 3);
 }
 
 }  // namespace navigation_metrics

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,26 +8,29 @@
 #include <stdint.h>
 #include <memory>
 
-#include "media/base/decode_status.h"
+#include "media/base/decoder_status.h"
 #include "media/base/media_log.h"
-#include "media/base/status.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_codec_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_webcodecs_error_callback.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/modules/webcodecs/codec_config_eval.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_logger.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_trace_names.h"
 #include "third_party/blink/renderer/modules/webcodecs/hardware_preference.h"
 #include "third_party/blink/renderer/modules/webcodecs/reclaimable_codec.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+
+namespace base {
+class SingleThreadTaskRunner;
+}
 
 namespace media {
 class GpuVideoAcceleratorFactories;
@@ -38,10 +41,9 @@ namespace blink {
 
 template <typename Traits>
 class MODULES_EXPORT DecoderTemplate
-    : public ScriptWrappable,
+    : public EventTargetWithInlineData,
       public ActiveScriptWrappable<DecoderTemplate<Traits>>,
-      public ReclaimableCodec,
-      public ExecutionContextLifecycleObserver {
+      public ReclaimableCodec {
  public:
   typedef typename Traits::ConfigType ConfigType;
   typedef typename Traits::MediaConfigType MediaConfigType;
@@ -57,13 +59,17 @@ class MODULES_EXPORT DecoderTemplate
   DecoderTemplate(ScriptState*, const InitType*, ExceptionState&);
   ~DecoderTemplate() override;
 
-  int32_t decodeQueueSize();
+  uint32_t decodeQueueSize();
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(dequeue, kDequeue)
   void configure(const ConfigType*, ExceptionState&);
   void decode(const InputType*, ExceptionState&);
   ScriptPromise flush(ExceptionState&);
   void reset(ExceptionState&);
   void close(ExceptionState&);
   String state() const { return state_; }
+
+  // EventTarget override.
+  ExecutionContext* GetExecutionContext() const override;
 
   // ExecutionContextLifecycleObserver override.
   void ContextDestroyed() override;
@@ -75,10 +81,14 @@ class MODULES_EXPORT DecoderTemplate
   void Trace(Visitor*) const override;
 
  protected:
-  // Convert a configuration to a DecoderConfig.
-  virtual CodecConfigEval MakeMediaConfig(const ConfigType& config,
-                                          MediaConfigType* out_media_config,
-                                          String* out_console_message) = 0;
+  virtual bool IsValidConfig(const ConfigType& config,
+                             String* js_error_message) = 0;
+
+  // Convert a configuration to a DecoderConfig. Returns absl::nullopt if the
+  // configuration is not supported.
+  virtual absl::optional<MediaConfigType> MakeMediaConfig(
+      const ConfigType& config,
+      String* js_error_message) = 0;
 
   // Gets the AccelerationPreference from a config.
   // If derived classes do not override this, this will default to kAllow.
@@ -91,10 +101,10 @@ class MODULES_EXPORT DecoderTemplate
   // Sets the HardwarePreference on the |decoder_|.
   // The default implementation does nothing and must be overridden by derived
   // classes if needed.
-  // Decoder
   virtual void SetHardwarePreference(HardwarePreference preference);
 
-  MediaDecoderType* decoder() { return decoder_.get(); }
+  // Virtual for UTs.
+  virtual MediaDecoderType* decoder() { return decoder_.get(); }
 
   // Convert a chunk to a DecoderBuffer. You can assume that the last
   // configuration sent to MakeMediaConfig() is the active configuration for
@@ -105,8 +115,13 @@ class MODULES_EXPORT DecoderTemplate
   // When |verify_key_frame| is true, clients are expected to verify and set the
   // DecoderBuffer::is_key_frame() value. I.e., they must process the encoded
   // data to ensure the value is actually what the chunk says it is.
-  virtual media::StatusOr<scoped_refptr<media::DecoderBuffer>>
-  MakeDecoderBuffer(const InputType& chunk, bool verify_key_frame) = 0;
+  virtual media::DecoderStatus::Or<scoped_refptr<media::DecoderBuffer>>
+  MakeInput(const InputType& chunk, bool verify_key_frame) = 0;
+
+  // Convert an output to the WebCodecs type.
+  virtual media::DecoderStatus::Or<OutputType*> MakeOutput(
+      scoped_refptr<MediaOutputType> output,
+      ExecutionContext* context) = 0;
 
  private:
   struct Request final : public GarbageCollected<Request> {
@@ -143,7 +158,7 @@ class MODULES_EXPORT DecoderTemplate
     Member<ScriptPromiseResolver> resolver;
 
     // For reporting an error at the time when a request is processed.
-    media::Status status;
+    media::DecoderStatus status;
 
     // The value of |reset_generation_| at the time of this request. Used to
     // abort pending requests following a reset().
@@ -170,9 +185,9 @@ class MODULES_EXPORT DecoderTemplate
   void Shutdown(DOMException* ex = nullptr);
 
   // Called by |decoder_|.
-  void OnInitializeDone(media::Status status);
-  void OnDecodeDone(uint32_t id, media::Status);
-  void OnFlushDone(media::Status);
+  void OnInitializeDone(media::DecoderStatus status);
+  void OnDecodeDone(uint32_t id, media::DecoderStatus);
+  void OnFlushDone(media::DecoderStatus);
   void OnResetDone();
   void OnOutput(uint32_t reset_generation, scoped_refptr<MediaOutputType>);
 
@@ -184,15 +199,23 @@ class MODULES_EXPORT DecoderTemplate
 
   void TraceQueueSizes() const;
 
+  void ScheduleDequeueEvent();
+  void DispatchDequeueEvent(Event* event);
+  bool dequeue_event_pending_ = false;
+
   Member<ScriptState> script_state_;
   Member<OutputCallbackType> output_cb_;
   Member<V8WebCodecsErrorCallback> error_cb_;
 
   HeapDeque<Member<Request>> requests_;
-  int32_t num_pending_decodes_ = 0;
+  uint32_t num_pending_decodes_ = 0;
 
   // Monotonic increasing generation counter for calls to ResetAlgorithm().
   uint32_t reset_generation_ = 0;
+
+  // Set on Shutdown(), used to generate accurate abort messages.
+  bool shutting_down_ = false;
+  bool shutting_down_due_to_error_ = false;
 
   // Which state the codec is in, determining which calls we can receive.
   V8CodecState state_;
@@ -201,7 +224,7 @@ class MODULES_EXPORT DecoderTemplate
   // Could be a configure, flush, or reset. Decodes go in |pending_decodes_|.
   Member<Request> pending_request_;
 
-  std::unique_ptr<CodecLogger> logger_;
+  std::unique_ptr<CodecLogger<media::DecoderStatus>> logger_;
 
   // Empty - GPU factories haven't been retrieved yet.
   // nullptr - We tried to get GPU factories, but acceleration is unavailable.
@@ -227,6 +250,11 @@ class MODULES_EXPORT DecoderTemplate
 
   // Keyframes are required after configure(), flush(), and reset().
   bool require_key_frame_ = true;
+
+  // Task runner for main thread.
+  scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace blink

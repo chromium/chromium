@@ -1,5 +1,5 @@
-#!/usr/bin/env vpython
-# Copyright 2021 The Chromium Authors. All rights reserved.
+#!/usr/bin/env vpython3
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Unittests for xcode_util.py."""
@@ -14,10 +14,10 @@ import test_runner_test
 import xcode_util
 
 
-_XCODEBUILD_VERSION_OUTPUT_12 = """Xcode 12.4
+_XCODEBUILD_VERSION_OUTPUT_12 = b"""Xcode 12.4
 Build version 12D4e
 """
-_XCODEBUILD_VERSION_OUTPUT_13 = """Xcode 13.0
+_XCODEBUILD_VERSION_OUTPUT_13 = b"""Xcode 13.0
 Build version 13A5155e
 """
 
@@ -189,7 +189,7 @@ class HelperFunctionTests(XcodeUtilTest):
 
   @mock.patch('subprocess.check_output', autospec=True)
   def test_using_new_mac_toolchain(self, mock_check_output):
-    mock_check_output.return_value = """
+    mock_check_output.return_value = b"""
 Mac OS / iOS toolchain management
 
 Usage:  mac_toolchain [command] [arguments]
@@ -207,7 +207,7 @@ Use "mac_toolchain help [command]" for more information about a command."""
 
   @mock.patch('subprocess.check_output', autospec=True)
   def test_using_new_legacy_toolchain(self, mock_check_output):
-    mock_check_output.return_value = """
+    mock_check_output.return_value = b"""
 Mac OS / iOS toolchain management
 
 Usage:  mac_toolchain [command] [arguments]
@@ -369,6 +369,38 @@ class MoveRuntimeTests(XcodeUtilTest):
     mock_rmtree.assert_called_with(xcode_runtime_path)
     mock_move.assert_called_with('test/path/Runtime/iOS.simruntime',
                                  xcode_runtime_path)
+
+
+  @mock.patch('shutil.rmtree', autospec=True)
+  @mock.patch('glob.glob', autospec=True)
+  def test_remove_runtimes(self, mock_glob, mock_rmtree):
+
+    mock_glob.return_value = [
+        ('test/path/Xcode.app/Contents/Developer/'
+         'Platforms/iPhoneOS.platform/Library/Developer/'
+         'CoreSimulator/Profiles/Runtimes/iOS.simruntime'),
+        ('test/path/Xcode.app/Contents/Developer/'
+         'Platforms/iPhoneOS.platform/Library/Developer/'
+         'CoreSimulator/Profiles/Runtimes/iOS 15.0.simruntime')
+    ]
+
+    xcode_util.remove_runtimes(self.xcode_app_path)
+
+    calls = [
+        mock.call(('test/path/Xcode.app/Contents/Developer/'
+                   'Platforms/iPhoneOS.platform/Library/Developer/'
+                   'CoreSimulator/Profiles/Runtimes/*.simruntime'))
+    ]
+    mock_glob.assert_has_calls(calls)
+    calls = [
+        mock.call(('test/path/Xcode.app/Contents/Developer/'
+                   'Platforms/iPhoneOS.platform/Library/Developer/'
+                   'CoreSimulator/Profiles/Runtimes/iOS.simruntime')),
+        mock.call(('test/path/Xcode.app/Contents/Developer/'
+                   'Platforms/iPhoneOS.platform/Library/Developer/'
+                   'CoreSimulator/Profiles/Runtimes/iOS 15.0.simruntime'))
+    ]
+    mock_rmtree.assert_has_calls(calls)
 
 
 class MacToolchainInvocationTests(XcodeUtilTest):

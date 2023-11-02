@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "components/value_store/value_store.h"
 #include "extensions/browser/api/storage/settings_observer.h"
@@ -30,7 +29,7 @@ namespace extensions {
 class PolicyValueStore : public value_store::ValueStore {
  public:
   PolicyValueStore(const std::string& extension_id,
-                   scoped_refptr<SettingsObserverList> observers,
+                   SequenceBoundSettingsChangedCallback observer,
                    std::unique_ptr<value_store::ValueStore> delegate);
 
   PolicyValueStore(const PolicyValueStore&) = delete;
@@ -56,7 +55,7 @@ class PolicyValueStore : public value_store::ValueStore {
                   const std::string& key,
                   const base::Value& value) override;
   WriteResult Set(WriteOptions options,
-                  const base::DictionaryValue& values) override;
+                  const base::Value::Dict& values) override;
   WriteResult Remove(const std::string& key) override;
   WriteResult Remove(const std::vector<std::string>& keys) override;
   WriteResult Clear() override;
@@ -66,7 +65,7 @@ class PolicyValueStore : public value_store::ValueStore {
 
  private:
   std::string extension_id_;
-  scoped_refptr<SettingsObserverList> observers_;
+  SequenceBoundSettingsChangedCallback observer_;
   std::unique_ptr<value_store::ValueStore> delegate_;
 };
 

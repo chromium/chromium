@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -50,7 +49,7 @@ TEST_F(SpellcheckHostMetricsTest, RecordEnabledStats) {
   histogram_tester2.ExpectBucketCount(kMetricName, 1, 1);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Failing consistently on Win7. See crbug.com/230534.
 #define MAYBE_CustomWordStats DISABLED_CustomWordStats
 #else
@@ -85,7 +84,7 @@ TEST_F(SpellcheckHostMetricsTest, RecordWordCountsDiscardsDuplicates) {
   RecordWordCountsForTesting();
 
   // Get samples for all affected histograms.
-  for (size_t i = 0; i < base::size(histogram_names); ++i)
+  for (size_t i = 0; i < std::size(histogram_names); ++i)
     histogram_tester.ExpectTotalCount(histogram_names[i], 0);
 }
 
@@ -105,7 +104,7 @@ TEST_F(SpellcheckHostMetricsTest, RecordSpellingServiceStats) {
   histogram_tester2.ExpectBucketCount(kMetricName, 1, 1);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_F(SpellcheckHostMetricsTest, RecordAcceptLanguageStats) {
   const char* const histogram_names[] = {
       "Spellcheck.Windows.ChromeLocalesSupport.Both",
@@ -119,7 +118,7 @@ TEST_F(SpellcheckHostMetricsTest, RecordAcceptLanguageStats) {
                                         expected_counts[2],
                                         expected_counts[3]});
 
-  for (size_t i = 0; i < base::size(histogram_names); ++i) {
+  for (size_t i = 0; i < std::size(histogram_names); ++i) {
     histogram_tester.ExpectTotalCount(histogram_names[i], 1);
     histogram_tester.ExpectBucketCount(histogram_names[i],
                                        static_cast<int>(expected_counts[i]), 1);
@@ -137,10 +136,10 @@ TEST_F(SpellcheckHostMetricsTest, RecordSpellcheckLanguageStats) {
   metrics()->RecordSpellcheckLanguageStats(
       {expected_counts[0], expected_counts[1], expected_counts[2], 0});
 
-  for (size_t i = 0; i < base::size(histogram_names); ++i) {
+  for (size_t i = 0; i < std::size(histogram_names); ++i) {
     histogram_tester.ExpectTotalCount(histogram_names[i], 1);
     histogram_tester.ExpectBucketCount(histogram_names[i],
                                        static_cast<int>(expected_counts[i]), 1);
   }
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)

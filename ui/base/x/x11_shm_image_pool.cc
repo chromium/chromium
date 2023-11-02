@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -85,7 +85,7 @@ bool ShouldUseMitShm(x11::Connection* connection) {
   std::string j2d_use_mitshm;
   if (env->GetVar("J2D_USE_MITSHM", &j2d_use_mitshm) &&
       (j2d_use_mitshm == "0" ||
-       base::LowerCaseEqualsASCII(j2d_use_mitshm, "false"))) {
+       base::EqualsCaseInsensitiveASCII(j2d_use_mitshm, "false"))) {
     return false;
   }
 
@@ -184,7 +184,7 @@ bool XShmImagePool::Resize(const gfx::Size& pixel_size) {
         shmctl(state.shmid, IPC_RMID, nullptr);
         return false;
       }
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
       // On Linux, a shmid can still be attached after IPC_RMID if otherwise
       // kept alive.  Detach before XShmAttach to prevent a memory leak in case
       // the process dies.
@@ -203,7 +203,7 @@ bool XShmImagePool::Resize(const gfx::Size& pixel_size) {
         return false;
       state.shmseg = shmseg;
       state.shmem_attached_to_server = true;
-#if !defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
       // The Linux-specific shmctl behavior above may not be portable, so we're
       // forced to do IPC_RMID after the server has attached to the segment.
       shmctl(state.shmid, IPC_RMID, nullptr);

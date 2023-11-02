@@ -1,14 +1,18 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
 
-#include <algorithm>
+#include <iterator>
+#include <memory>
+#include <string>
+#include <utility>
 
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
@@ -20,23 +24,28 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/new_tab_page/promos/promo_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_background_service.h"
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
-#include "chrome/browser/ui/omnibox/omnibox_theme.h"
+#include "chrome/browser/ui/side_panel/customize_chrome/customize_chrome_tab_helper.h"
+#include "chrome/browser/ui/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "chrome/browser/ui/webui/realbox/realbox.mojom.h"
+#include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -53,8 +62,10 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/theme_provider.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/native_theme.h"
@@ -62,11 +73,84 @@
 namespace {
 
 const int64_t kMaxDownloadBytes = 1024 * 1024;
+const int64_t kMaxModuleFreImpressions = 8;
+
+// Returns a list of module IDs that are eligible for HATS.
+std::vector<std::string> GetSurveyEligibleModuleIds() {
+  return base::SplitString(
+      base::GetFieldTrialParamValueByFeature(
+          features::kHappinessTrackingSurveysForDesktopNtpModules,
+          ntp_features::kNtpModulesEligibleForHappinessTrackingSurveyParam),
+      ",:;", base::WhitespaceHandling::TRIM_WHITESPACE,
+      base::SplitResult::SPLIT_WANT_NONEMPTY);
+}
+
+// Returns true if the scrim (dark gradient overlay) should be hidden for the
+// NTP's background image. This is done to fix specific GWS themes where the
+// visual impact of the scrim does not align with the artistic intent of
+// partnered artists (see crbug.com/1329556).
+// TODO(crbug.com/1320107): Remove the scrim for all GWS and custom background
+// image configurations on the NTP.
+bool ShouldHideScrim(const ThemeService* theme_service) {
+  DCHECK(theme_service);
+  const auto* theme_supplier = theme_service->GetThemeSupplier();
+  if (!theme_supplier ||
+      theme_supplier->get_theme_type() !=
+          ui::ColorProviderManager::ThemeInitializerSupplier::ThemeType::
+              kExtension) {
+    return false;
+  }
+
+  static constexpr auto kPrideThemeExtensionIdsNoScrim = base::MakeFixedFlatSet<
+      base::StringPiece>({
+      "kkdpcclippggiadgghfmkggpemadbfcj", "jogkmkalhlbppkpmjdpncmpdcinbkekh",
+      "gfkcjfbbpmldkajnebkophpelmcimglf", "mchijkgkaabamaokgcnbmjpfoagkpjfc",
+      "cdabkdaechplopdfoahhjgkbjgillcme", "depfhkphmnoonikdokgpejilanmcdonk",
+      "efiamifmcbajfehbkjemggiafognbljk", "iclkbhippclhfamkdoigedgnnfbhefpl",
+      "ckfehdejjppobbllbkjgcpaockgdigen", "figmdifbokklifinmmjcjdkkopjflhnj",
+      "nkgiaofmleojhehacfognclpmoolihko", "npkdokffjmnleabnfihminmikibdhmfa",
+      "klnkeldihpjnjoopojllmnpepbpljico", "iffdmpenldeofnlfjmbjcdmafhoekmka",
+      "mckialangcdpcdcflekinnpamfkmkobo", "gpgkmnadnanefkpfkmdeijfiobhjagfk",
+      "hhdddgombcggoeedkgelollagijjgnmo", "inneonpkbfaipkmpldnhnpefjkacjlcl",
+      "inmnnmkfonobaklbnnfgekapnhnhlnnk",
+  });
+
+  const std::string& extension_id = theme_supplier->extension_id();
+  return base::Contains(kPrideThemeExtensionIdsNoScrim, extension_id);
+}
+
+// Returns true if we should force dark foreground colors for the Google logo
+// and the One Google Bar. This is done to fix specific GWS themes where the
+// always-light logo and OGB colors do not sufficiently contrast with lighter
+// image backgrounds (see crbug.com/1329552).
+// TODO(crbug.com/1328918): Address this in a general way and extend support to
+// custom background images, not just CWS themes.
+bool ShouldForceDarkForegroundColorsForLogoAndOGB(
+    const ThemeService* theme_service) {
+  const auto* theme_supplier = theme_service->GetThemeSupplier();
+  if (!theme_supplier ||
+      theme_supplier->get_theme_type() !=
+          ui::ColorProviderManager::ThemeInitializerSupplier::ThemeType::
+              kExtension) {
+    return false;
+  }
+  static constexpr auto kPrideThemeExtensionIdsDarkForeground =
+      base::MakeFixedFlatSet<base::StringPiece>({
+          "klnkeldihpjnjoopojllmnpepbpljico",
+          "iffdmpenldeofnlfjmbjcdmafhoekmka",
+          "mckialangcdpcdcflekinnpamfkmkobo",
+      });
+
+  const std::string& extension_id = theme_supplier->extension_id();
+  return base::Contains(kPrideThemeExtensionIdsDarkForeground, extension_id);
+}
 
 new_tab_page::mojom::ThemePtr MakeTheme(
+    const ui::ColorProvider& color_provider,
     const ui::ThemeProvider* theme_provider,
     ThemeService* theme_service,
-    NtpCustomBackgroundService* ntp_custom_background_service) {
+    NtpCustomBackgroundService* ntp_custom_background_service,
+    content::WebContents* web_contents) {
   if (ntp_custom_background_service) {
     ntp_custom_background_service->RefreshBackgroundIfNeeded();
   }
@@ -76,24 +160,21 @@ new_tab_page::mojom::ThemePtr MakeTheme(
       ntp_custom_background_service
           ? ntp_custom_background_service->GetCustomBackground()
           : absl::nullopt;
-  theme->is_default = theme_service->UsingDefaultTheme();
-  theme->background_color =
-      theme_provider->GetColor(ThemeProperties::COLOR_NTP_BACKGROUND);
+  theme->background_color = color_provider.GetColor(kColorNewTabPageBackground);
   SkColor text_color;
   if (custom_background.has_value()) {
-    text_color = gfx::kGoogleGrey050;
-    most_visited->background_color = ThemeProperties::GetDefaultColor(
-        ThemeProperties::COLOR_NTP_SHORTCUT, false);
-    theme->logo_color = ThemeProperties::GetDefaultColor(
-        ThemeProperties::COLOR_NTP_LOGO, false);
+    text_color = color_provider.GetColor(kColorNewTabPageTextUnthemed);
+    most_visited->background_color = color_provider.GetColor(
+        kColorNewTabPageMostVisitedTileBackgroundUnthemed);
+    theme->logo_color =
+        color_provider.GetColor(kColorNewTabPageLogoUnthemedLight);
   } else {
-    text_color = theme_provider->GetColor(ThemeProperties::COLOR_NTP_TEXT);
+    text_color = color_provider.GetColor(kColorNewTabPageText);
     most_visited->background_color =
-        theme_provider->GetColor(ThemeProperties::COLOR_NTP_SHORTCUT);
+        color_provider.GetColor(kColorNewTabPageMostVisitedTileBackground);
     if (theme_provider->GetDisplayProperty(
             ThemeProperties::NTP_LOGO_ALTERNATE) == 1) {
-      theme->logo_color =
-          theme_provider->GetColor(ThemeProperties::COLOR_NTP_LOGO);
+      theme->logo_color = color_provider.GetColor(kColorNewTabPageLogo);
     }
   }
   most_visited->use_white_tile_icon =
@@ -157,6 +238,32 @@ new_tab_page::mojom::ThemePtr MakeTheme(
   } else {
     background_image = nullptr;
   }
+
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpRemoveScrim) &&
+      background_image) {
+    // If a background image is defined and the scrim removal flag is active
+    // disable the scrim.
+    background_image->scrim_display = "none";
+  }
+
+  // The special case handling that removes the scrim and forces dark foreground
+  // colors should only be applied when the user does not have a custom
+  // background selected and has installed a GWS theme with a bundled background
+  // image. The first condition is necessary as a custom background image can be
+  // set while a GWS theme with a bundled image is concurrently enabled (see
+  // crbug.com/1329556 and crbug.com/1329552).
+  if (base::FeatureList::IsEnabled(ntp_features::kCwsScrimRemoval) &&
+      !custom_background.has_value() &&
+      theme_provider->HasCustomImage(IDR_THEME_NTP_BACKGROUND)) {
+    if (ShouldForceDarkForegroundColorsForLogoAndOGB(theme_service)) {
+      theme->is_dark = false;
+      theme->logo_color =
+          color_provider.GetColor(kColorNewTabPageLogoUnthemedDark);
+    }
+    if (ShouldHideScrim(theme_service))
+      background_image->scrim_display = "none";
+  }
+
   theme->background_image = std::move(background_image);
   if (custom_background.has_value()) {
     theme->background_image_attribution_1 =
@@ -169,42 +276,6 @@ new_tab_page::mojom::ThemePtr MakeTheme(
   }
 
   theme->most_visited = std::move(most_visited);
-
-  auto search_box = realbox::mojom::SearchBoxTheme::New();
-  search_box->bg =
-      GetOmniboxColor(theme_provider, OmniboxPart::LOCATION_BAR_BACKGROUND);
-  search_box->icon = GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_ICON);
-  search_box->icon_selected = GetOmniboxColor(
-      theme_provider, OmniboxPart::RESULTS_ICON, OmniboxPartState::SELECTED);
-  search_box->placeholder =
-      GetOmniboxColor(theme_provider, OmniboxPart::LOCATION_BAR_TEXT_DIMMED);
-  search_box->results_bg =
-      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_BACKGROUND);
-  search_box->results_bg_hovered =
-      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_BACKGROUND,
-                      OmniboxPartState::HOVERED);
-  search_box->results_bg_selected =
-      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_BACKGROUND,
-                      OmniboxPartState::SELECTED);
-  search_box->results_dim =
-      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_TEXT_DIMMED);
-  search_box->results_dim_selected =
-      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_TEXT_DIMMED,
-                      OmniboxPartState::SELECTED);
-  search_box->results_text =
-      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_TEXT_DEFAULT);
-  search_box->results_text_selected =
-      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_TEXT_DEFAULT,
-                      OmniboxPartState::SELECTED);
-  search_box->results_url =
-      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_TEXT_URL);
-  search_box->results_url_selected =
-      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_TEXT_URL,
-                      OmniboxPartState::SELECTED);
-  search_box->text =
-      GetOmniboxColor(theme_provider, OmniboxPart::LOCATION_BAR_TEXT_DEFAULT);
-  theme->search_box = std::move(search_box);
-
   return theme;
 }
 
@@ -212,7 +283,7 @@ SkColor ParseHexColor(const std::string& color) {
   SkColor result;
   if (color.size() == 7 && color[0] == '#' &&
       base::HexStringToUInt(color.substr(1), &result)) {
-    return SkColorSetA(result, 255);
+    return SkColorSetA(result, SK_AlphaOPAQUE);
   }
   return SK_ColorTRANSPARENT;
 }
@@ -249,9 +320,9 @@ new_tab_page::mojom::ImageDoodlePtr MakeImageDoodle(
     doodle->share_button->y = share_button_y;
     doodle->share_button->icon_url = GURL(base::StringPrintf(
         "data:image/png;base64,%s", share_button_icon.c_str()));
-    doodle->share_button->background_color =
-        SkColorSetA(ParseHexColor(share_button_bg),
-                    base::clamp(share_button_opacity, 0.0, 1.0) * 255.0);
+    doodle->share_button->background_color = SkColorSetA(
+        ParseHexColor(share_button_bg),
+        base::clamp(share_button_opacity, 0.0, 1.0) * SK_AlphaOPAQUE);
   }
   if (type == search_provider_logos::LogoType::ANIMATED) {
     doodle->image_impression_log_url = cta_log_url;
@@ -268,65 +339,59 @@ new_tab_page::mojom::PromoPtr MakePromo(const PromoData& data) {
   // PromoService to base::Value. The middle-slot promo part is then reencoded
   // from base::Value to a JSON string stored in |data.middle_slot_json|.
   auto middle_slot = base::JSONReader::Read(data.middle_slot_json);
-  if (!middle_slot.has_value() ||
-      middle_slot.value().FindBoolPath("hidden").value_or(false)) {
+  if (!middle_slot.has_value())
     return nullptr;
-  }
+
+  base::Value::Dict& middle_slot_dict = middle_slot->GetDict();
+  if (middle_slot_dict.FindBoolByDottedPath("hidden").value_or(false))
+    return nullptr;
+
   auto promo = new_tab_page::mojom::Promo::New();
   promo->id = data.promo_id;
-  if (middle_slot.has_value()) {
-    auto* parts = middle_slot.value().FindListPath("part");
-    if (parts) {
-      std::vector<new_tab_page::mojom::PromoPartPtr> mojom_parts;
-      for (const base::Value& part : parts->GetList()) {
-        if (part.FindKey("image")) {
-          auto mojom_image = new_tab_page::mojom::PromoImagePart::New();
-          auto* image_url = part.FindStringPath("image.image_url");
-          if (!image_url || image_url->empty()) {
-            continue;
-          }
-          mojom_image->image_url = GURL(*image_url);
-          auto* target = part.FindStringPath("image.target");
-          if (target && !target->empty()) {
-            mojom_image->target = GURL(*target);
-          }
-          mojom_parts.push_back(
-              new_tab_page::mojom::PromoPart::NewImage(std::move(mojom_image)));
-        } else if (part.FindKey("link")) {
-          auto mojom_link = new_tab_page::mojom::PromoLinkPart::New();
-          auto* url = part.FindStringPath("link.url");
-          if (!url || url->empty()) {
-            continue;
-          }
-          mojom_link->url = GURL(*url);
-          auto* text = part.FindStringPath("link.text");
-          if (!text || text->empty()) {
-            continue;
-          }
-          mojom_link->text = *text;
-          auto* color = part.FindStringPath("link.color");
-          if (color && !color->empty()) {
-            mojom_link->color = *color;
-          }
-          mojom_parts.push_back(
-              new_tab_page::mojom::PromoPart::NewLink(std::move(mojom_link)));
-        } else if (part.FindKey("text")) {
-          auto mojom_text = new_tab_page::mojom::PromoTextPart::New();
-          auto* text = part.FindStringPath("text.text");
-          if (!text || text->empty()) {
-            continue;
-          }
-          mojom_text->text = *text;
-          auto* color = part.FindStringPath("text.color");
-          if (color && !color->empty()) {
-            mojom_text->color = *color;
-          }
-          mojom_parts.push_back(
-              new_tab_page::mojom::PromoPart::NewText(std::move(mojom_text)));
+  auto* parts = middle_slot_dict.FindList("part");
+  if (parts) {
+    std::vector<new_tab_page::mojom::PromoPartPtr> mojom_parts;
+    for (const base::Value& part : *parts) {
+      const base::Value::Dict& part_dict = part.GetDict();
+      if (part_dict.Find("image")) {
+        auto mojom_image = new_tab_page::mojom::PromoImagePart::New();
+        auto* image_url = part_dict.FindStringByDottedPath("image.image_url");
+        if (!image_url || image_url->empty()) {
+          continue;
         }
+        mojom_image->image_url = GURL(*image_url);
+        auto* target = part_dict.FindStringByDottedPath("image.target");
+        if (target && !target->empty()) {
+          mojom_image->target = GURL(*target);
+        }
+        mojom_parts.push_back(
+            new_tab_page::mojom::PromoPart::NewImage(std::move(mojom_image)));
+      } else if (part_dict.Find("link")) {
+        auto mojom_link = new_tab_page::mojom::PromoLinkPart::New();
+        auto* url = part_dict.FindStringByDottedPath("link.url");
+        if (!url || url->empty()) {
+          continue;
+        }
+        mojom_link->url = GURL(*url);
+        auto* text = part_dict.FindStringByDottedPath("link.text");
+        if (!text || text->empty()) {
+          continue;
+        }
+        mojom_link->text = *text;
+        mojom_parts.push_back(
+            new_tab_page::mojom::PromoPart::NewLink(std::move(mojom_link)));
+      } else if (part_dict.Find("text")) {
+        auto mojom_text = new_tab_page::mojom::PromoTextPart::New();
+        auto* text = part_dict.FindStringByDottedPath("text.text");
+        if (!text || text->empty()) {
+          continue;
+        }
+        mojom_text->text = *text;
+        mojom_parts.push_back(
+            new_tab_page::mojom::PromoPart::NewText(std::move(mojom_text)));
       }
-      promo->middle_slot_parts = std::move(mojom_parts);
     }
+    promo->middle_slot_parts = std::move(mojom_parts);
   }
   promo->log_url = data.promo_log_url;
   return promo;
@@ -348,37 +413,47 @@ NewTabPageHandler::NewTabPageHandler(
     NtpCustomBackgroundService* ntp_custom_background_service,
     ThemeService* theme_service,
     search_provider_logos::LogoService* logo_service,
-    const ui::ThemeProvider* theme_provider,
     content::WebContents* web_contents,
     const base::Time& ntp_navigation_start_time)
     : ntp_background_service_(
           NtpBackgroundServiceFactory::GetForProfile(profile)),
       ntp_custom_background_service_(ntp_custom_background_service),
       logo_service_(logo_service),
-      theme_provider_(theme_provider),
+      theme_provider_(webui::GetThemeProvider(web_contents)),
       theme_service_(theme_service),
       profile_(profile),
       web_contents_(web_contents),
       ntp_navigation_start_time_(ntp_navigation_start_time),
-      logger_(profile, GURL(chrome::kChromeUINewTabPageURL)),
+      logger_(profile,
+              GURL(chrome::kChromeUINewTabPageURL),
+              ntp_navigation_start_time),
       promo_service_(PromoServiceFactory::GetForProfile(profile)),
       page_{std::move(pending_page)},
       receiver_{this, std::move(pending_page_handler)} {
   CHECK(ntp_background_service_);
   CHECK(ntp_custom_background_service_);
   CHECK(logo_service_);
-  CHECK(theme_provider_);
   CHECK(theme_service_);
   CHECK(promo_service_);
   CHECK(web_contents_);
   ntp_background_service_->AddObserver(this);
   native_theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
-  theme_service_observation_.Observe(theme_service_);
+  theme_service_observation_.Observe(theme_service_.get());
   ntp_custom_background_service_observation_.Observe(
-      ntp_custom_background_service_);
-  promo_service_observation_.Observe(promo_service_);
-  page_->SetTheme(MakeTheme(theme_provider_, theme_service_,
-                            ntp_custom_background_service_));
+      ntp_custom_background_service_.get());
+  promo_service_observation_.Observe(promo_service_.get());
+  OnThemeChanged();
+  if (customize_chrome::IsSidePanelEnabled()) {
+    auto* customize_chrome_tab_helper =
+        CustomizeChromeTabHelper::FromWebContents(web_contents_);
+    // Lifetime is tied to NewTabPageUI which owns the NewTabPageHandler.
+    DCHECK(customize_chrome_tab_helper);
+    page_->CustomizeChromeSidePanelVisibilityChanged(
+        customize_chrome_tab_helper->IsCustomizeChromeEntryShowing());
+    customize_chrome_tab_helper->SetCallback(base::BindRepeating(
+        &NewTabPageHandler::NotifyCustomizeChromeSidePanelVisibilityChanged,
+        weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 NewTabPageHandler::~NewTabPageHandler() {
@@ -393,6 +468,9 @@ void NewTabPageHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kNtpDisabledModules, true);
   registry->RegisterListPref(prefs::kNtpModulesOrder, true);
   registry->RegisterBooleanPref(prefs::kNtpModulesVisible, true);
+  registry->RegisterIntegerPref(prefs::kNtpModulesShownCount, 0);
+  registry->RegisterTimePref(prefs::kNtpModulesFirstShownTime, base::Time());
+  registry->RegisterBooleanPref(prefs::kNtpModulesFreVisible, true);
 }
 
 void NewTabPageHandler::SetMostVisitedSettings(bool custom_links_enabled,
@@ -524,39 +602,20 @@ void NewTabPageHandler::ChooseLocalCustomBackground(
       nullptr);
 }
 
-void NewTabPageHandler::GetPromo(GetPromoCallback callback) {
-  // Replace the promo URL with "command:<id>" if such a command ID is set
-  // via the feature params.
-  const std::string command_id = base::GetFieldTrialParamValueByFeature(
-      features::kPromoBrowserCommands, features::kBrowserCommandIdParam);
-  if (!command_id.empty()) {
-    auto promo = new_tab_page::mojom::Promo::New();
-    std::vector<new_tab_page::mojom::PromoPartPtr> parts;
-    auto image = new_tab_page::mojom::PromoImagePart::New();
-    // Warning symbol used as the test image.
-    image->image_url = GURL(
-        "data:image/"
-        "svg+xml;base64,"
-        "PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9Ii01IC"
-        "01IDU4IDU4IiBmaWxsPSIjZmRkNjMzIj48cGF0aCBkPSJNMiA0Mmg0NEwyNCA0IDIgNDJ6"
-        "bTI0LTZoLTR2LTRoNHY0em0wLThoLTR2LThoNHY4eiIvPjwvc3ZnPg==");
-    image->target = GURL("command:" + command_id);
-    parts.push_back(new_tab_page::mojom::PromoPart::NewImage(std::move(image)));
-    auto link = new_tab_page::mojom::PromoLinkPart::New();
-    link->url = GURL("command:" + command_id);
-    link->text = "Test command: " + command_id;
-    parts.push_back(new_tab_page::mojom::PromoPart::NewLink(std::move(link)));
-    promo->middle_slot_parts = std::move(parts);
-    std::move(callback).Run(std::move(promo));
-    return;
-  }
-
-  promo_callbacks_.push_back(std::move(callback));
+void NewTabPageHandler::UpdatePromoData() {
   if (promo_service_->promo_data().has_value()) {
     OnPromoDataUpdated();
   }
   promo_load_start_time_ = base::TimeTicks::Now();
   promo_service_->Refresh();
+}
+
+void NewTabPageHandler::BlocklistPromo(const std::string& promo_id) {
+  promo_service_->BlocklistPromo(promo_id);
+}
+
+void NewTabPageHandler::UndoBlocklistPromo(const std::string& promo_id) {
+  promo_service_->UndoBlocklistPromo(promo_id);
 }
 
 void NewTabPageHandler::OnDismissModule(const std::string& module_id) {
@@ -578,13 +637,14 @@ void NewTabPageHandler::SetModulesVisible(bool visible) {
 
 void NewTabPageHandler::SetModuleDisabled(const std::string& module_id,
                                           bool disabled) {
-  ListPrefUpdate update(profile_->GetPrefs(), prefs::kNtpDisabledModules);
+  ScopedListPrefUpdate update(profile_->GetPrefs(), prefs::kNtpDisabledModules);
+  base::Value::List& list = update.Get();
   base::Value module_id_value(module_id);
   if (disabled) {
-    if (!base::Contains(update->GetList(), module_id_value))
-      update->Append(std::move(module_id_value));
+    if (!base::Contains(list, module_id_value))
+      list.Append(std::move(module_id_value));
   } else {
-    update->EraseListValue(module_id_value);
+    list.EraseValue(module_id_value);
   }
   UpdateDisabledModules();
 }
@@ -594,9 +654,9 @@ void NewTabPageHandler::UpdateDisabledModules() {
   // If the module visibility is managed by policy we either disable all modules
   // (if invisible) or no modules (if visible).
   if (!profile_->GetPrefs()->IsManagedPreference(prefs::kNtpModulesVisible)) {
-    const auto* module_ids_value =
+    const auto& module_ids_value =
         profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules);
-    for (const auto& id : module_ids_value->GetList()) {
+    for (const auto& id : module_ids_value) {
       module_ids.push_back(id.GetString());
     }
   }
@@ -605,7 +665,18 @@ void NewTabPageHandler::UpdateDisabledModules() {
       std::move(module_ids));
 }
 
-void NewTabPageHandler::OnModulesLoadedWithData() {
+void NewTabPageHandler::OnModulesLoadedWithData(
+    const std::vector<std::string>& module_ids) {
+  std::vector<std::string> survey_eligible_module_ids =
+      GetSurveyEligibleModuleIds();
+  // If none of the loaded modules are eligible for HATS, return early.
+  if (!std::any_of(module_ids.begin(), module_ids.end(),
+                   [&survey_eligible_module_ids](std::string id) {
+                     return base::Contains(survey_eligible_module_ids, id);
+                   })) {
+    return;
+  }
+
   HatsService* hats_service =
       HatsServiceFactory::GetForProfile(profile_, /*create_if_necessary=*/true);
   CHECK(hats_service);
@@ -615,21 +686,106 @@ void NewTabPageHandler::OnModulesLoadedWithData() {
 
 void NewTabPageHandler::SetModulesOrder(
     const std::vector<std::string>& module_ids) {
-  base::Value module_ids_value(base::Value::Type::LIST);
+  base::Value::List module_ids_value;
   for (const auto& module_id : module_ids) {
     module_ids_value.Append(module_id);
   }
-  profile_->GetPrefs()->Set(prefs::kNtpModulesOrder, module_ids_value);
+  profile_->GetPrefs()->SetList(prefs::kNtpModulesOrder,
+                                std::move(module_ids_value));
 }
 
 void NewTabPageHandler::GetModulesOrder(GetModulesOrderCallback callback) {
   std::vector<std::string> module_ids;
-  const auto* module_ids_value =
-      profile_->GetPrefs()->GetList(prefs::kNtpModulesOrder);
-  for (const auto& id : module_ids_value->GetList()) {
-    module_ids.push_back(id.GetString());
+
+  // First, apply order as set by the last drag&drop interaction.
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpModulesDragAndDrop)) {
+    const auto& module_ids_value =
+        profile_->GetPrefs()->GetList(prefs::kNtpModulesOrder);
+    for (const auto& id : module_ids_value) {
+      module_ids.push_back(id.GetString());
+    }
   }
+
+  // Second, append Finch order for modules _not_ ordered by drag&drop.
+  std::vector<std::string> finch_module_ids = ntp_features::GetModulesOrder();
+  std::copy_if(finch_module_ids.begin(), finch_module_ids.end(),
+               std::back_inserter(module_ids),
+               [&module_ids](const std::string& id) {
+                 return !base::Contains(module_ids, id);
+               });
+
   std::move(callback).Run(std::move(module_ids));
+}
+
+void NewTabPageHandler::IncrementModulesShownCount() {
+  const auto ntp_modules_shown_count =
+      profile_->GetPrefs()->GetInteger(prefs::kNtpModulesShownCount);
+
+  if (ntp_modules_shown_count == 0) {
+    profile_->GetPrefs()->SetTime(prefs::kNtpModulesFirstShownTime,
+                                  base::Time::Now());
+  }
+  profile_->GetPrefs()->SetInteger(prefs::kNtpModulesShownCount,
+                                   ntp_modules_shown_count + 1);
+}
+
+void NewTabPageHandler::SetModulesFreVisible(bool visible) {
+  profile_->GetPrefs()->SetBoolean(prefs::kNtpModulesFreVisible, visible);
+  page_->SetModulesFreVisibility(visible);
+}
+
+void NewTabPageHandler::UpdateModulesFreVisibility() {
+  const auto ntp_modules_shown_count =
+      profile_->GetPrefs()->GetInteger(prefs::kNtpModulesShownCount);
+  const auto ntp_modules_first_shown_time =
+      profile_->GetPrefs()->GetTime(prefs::kNtpModulesFirstShownTime);
+  auto ntp_modules_fre_visible =
+      profile_->GetPrefs()->GetBoolean(prefs::kNtpModulesFreVisible);
+
+  if (ntp_modules_fre_visible &&
+      (ntp_modules_shown_count == kMaxModuleFreImpressions ||
+       (!ntp_modules_first_shown_time.is_null() &&
+        (base::Time::Now() - ntp_modules_first_shown_time) == base::Days(1)))) {
+    LogModulesFreOptInStatus(new_tab_page::mojom::OptInStatus::kImplicitOptIn);
+  }
+
+  // Hide Modular NTP Desktop v1 First Run Experience after
+  // |kMaxModuleFreImpressions| impressions or 1 day, whichever comes first.
+  if (ntp_modules_shown_count >= kMaxModuleFreImpressions ||
+      (!ntp_modules_first_shown_time.is_null() &&
+       (base::Time::Now() - ntp_modules_first_shown_time) > base::Days(1))) {
+    ntp_modules_fre_visible = false;
+    SetModulesFreVisible(ntp_modules_fre_visible);
+  } else {
+    page_->SetModulesFreVisibility(ntp_modules_fre_visible);
+  }
+}
+
+void NewTabPageHandler::LogModulesFreOptInStatus(
+    new_tab_page::mojom::OptInStatus opt_in_status) {
+  const auto ntp_modules_shown_count =
+      profile_->GetPrefs()->GetInteger(prefs::kNtpModulesShownCount);
+  switch (opt_in_status) {
+    case new_tab_page::mojom::OptInStatus::kExplicitOptIn:
+      base::UmaHistogramExactLinear("NewTabPage.Modules.FreExplicitOptIn",
+                                    ntp_modules_shown_count,
+                                    kMaxModuleFreImpressions);
+      break;
+    case new_tab_page::mojom::OptInStatus::kImplicitOptIn:
+      base::UmaHistogramBoolean("NewTabPage.Modules.FreImplicitOptIn", true);
+      break;
+
+    case new_tab_page::mojom::OptInStatus::kOptOut:
+      base::UmaHistogramExactLinear("NewTabPage.Modules.FreOptOut",
+                                    ntp_modules_shown_count,
+                                    kMaxModuleFreImpressions);
+  }
+}
+
+void NewTabPageHandler::ShowCustomizeChromeSidePanel() {
+  auto* customize_chrome_tab_helper =
+      CustomizeChromeTabHelper::FromWebContents(web_contents_);
+  customize_chrome_tab_helper->ShowCustomizeChromeSidePanel();
 }
 
 void NewTabPageHandler::OnPromoDataUpdated() {
@@ -648,6 +804,8 @@ void NewTabPageHandler::OnPromoDataUpdated() {
       UMA_HISTOGRAM_MEDIUM_TIMES(
           "NewTabPage.Promos.RequestLatency2.SuccessWithoutPromo", duration);
     } else {
+      DCHECK(promo_service_->promo_status() !=
+             PromoService::Status::NOT_UPDATED);
       UMA_HISTOGRAM_MEDIUM_TIMES("NewTabPage.Promos.RequestLatency2.Failure",
                                  duration);
     }
@@ -655,14 +813,12 @@ void NewTabPageHandler::OnPromoDataUpdated() {
   }
 
   const auto& data = promo_service_->promo_data();
-  for (auto& callback : promo_callbacks_) {
-    if (data.has_value() && !data->promo_html.empty()) {
-      std::move(callback).Run(MakePromo(data.value()));
-    } else {
-      std::move(callback).Run(nullptr);
-    }
+  if (data.has_value() &&
+      promo_service_->promo_status() != PromoService::Status::OK_BUT_BLOCKED) {
+    page_->SetPromo(MakePromo(data.value()));
+  } else {
+    page_->SetPromo(nullptr);
   }
-  promo_callbacks_.clear();
 }
 
 void NewTabPageHandler::OnPromoServiceShuttingDown() {
@@ -827,18 +983,17 @@ void NewTabPageHandler::OnPromoLinkClicked() {
 }
 
 void NewTabPageHandler::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
-  page_->SetTheme(MakeTheme(theme_provider_, theme_service_,
-                            ntp_custom_background_service_));
+  OnThemeChanged();
 }
 
 void NewTabPageHandler::OnThemeChanged() {
-  page_->SetTheme(MakeTheme(theme_provider_, theme_service_,
-                            ntp_custom_background_service_));
+  page_->SetTheme(MakeTheme(web_contents_->GetColorProvider(), theme_provider_,
+                            theme_service_, ntp_custom_background_service_,
+                            web_contents_));
 }
 
 void NewTabPageHandler::OnCustomBackgroundImageUpdated() {
-  page_->SetTheme(MakeTheme(theme_provider_, theme_service_,
-                            ntp_custom_background_service_));
+  OnThemeChanged();
 }
 
 void NewTabPageHandler::OnNtpCustomBackgroundServiceShuttingDown() {
@@ -1041,8 +1196,7 @@ void NewTabPageHandler::Fetch(const GURL& url,
             }
           }
         })");
-  auto url_loader_factory = profile_->GetDefaultStoragePartition()
-                                ->GetURLLoaderFactoryForBrowserProcess();
+  auto url_loader_factory = profile_->GetURLLoaderFactory();
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = url;
   auto loader =
@@ -1080,25 +1234,23 @@ void NewTabPageHandler::OnLogFetchResult(OnDoodleImageRenderedCallback callback,
     return;
   }
 
-  auto* target_url_params_value = value->FindPath("ddllog.target_url_params");
+  base::Value::Dict& dict = value->GetDict();
+  auto* target_url_params_value =
+      dict.FindStringByDottedPath("ddllog.target_url_params");
   auto target_url_params =
-      target_url_params_value && target_url_params_value->is_string()
-          ? target_url_params_value->GetString()
-          : "";
+      target_url_params_value ? *target_url_params_value : "";
   auto* interaction_log_url_value =
-      value->FindPath("ddllog.interaction_log_url");
+      dict.FindStringByDottedPath("ddllog.interaction_log_url");
   auto interaction_log_url =
-      interaction_log_url_value && interaction_log_url_value->is_string()
+      interaction_log_url_value
           ? absl::optional<GURL>(
                 GURL(TemplateURLServiceFactory::GetForProfile(profile_)
                          ->search_terms_data()
                          .GoogleBaseURLValue())
-                    .Resolve(interaction_log_url_value->GetString()))
+                    .Resolve(*interaction_log_url_value))
           : absl::nullopt;
-  auto* encoded_ei_value = value->FindPath("ddllog.encoded_ei");
-  auto encoded_ei = encoded_ei_value && encoded_ei_value->is_string()
-                        ? encoded_ei_value->GetString()
-                        : "";
+  auto* encoded_ei_value = dict.FindStringByDottedPath("ddllog.encoded_ei");
+  auto encoded_ei = encoded_ei_value ? *encoded_ei_value : "";
   std::move(callback).Run(target_url_params, interaction_log_url, encoded_ei);
 }
 
@@ -1108,4 +1260,9 @@ bool NewTabPageHandler::IsCustomLinksEnabled() const {
 
 bool NewTabPageHandler::IsShortcutsVisible() const {
   return profile_->GetPrefs()->GetBoolean(ntp_prefs::kNtpShortcutsVisible);
+}
+
+void NewTabPageHandler::NotifyCustomizeChromeSidePanelVisibilityChanged(
+    bool is_open) {
+  page_->CustomizeChromeSidePanelVisibilityChanged(is_open);
 }

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "content/public/browser/browser_context.h"
+#include "base/memory/raw_ptr.h"
 #include "headless/public/headless_export.h"
 #include "headless/public/headless_web_contents.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
@@ -125,7 +125,7 @@ class HEADLESS_EXPORT HeadlessBrowserContext::Builder {
     std::string js_bindings;
   };
 
-  HeadlessBrowserImpl* browser_;
+  raw_ptr<HeadlessBrowserImpl> browser_;
   std::unique_ptr<HeadlessBrowserContextOptions> options_;
 
   std::list<MojoBindings> mojo_bindings_;

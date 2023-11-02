@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,8 +16,8 @@ namespace blink {
 //
 // This class uses a sweep line algorithm to compute the area in O(n log n) time
 // where n is the number of rects recorded by AddRect. For complex layout shift
-// regions, this is more efficient than using blink::Region, which is worst-case
-// O(n^2) from the repeated calls to Region::Unite.
+// regions, this is more efficient than using cc::Region, which is worst-case
+// O(n^2) from the repeated calls to cc::Region::Union.
 //
 // The high-level approach is described here:
 // http://jeffe.cs.illinois.edu/open/klee.html
@@ -42,7 +42,7 @@ class CORE_EXPORT LayoutShiftRegion {
   }
 
   const Vector<gfx::Rect>& GetRects() const { return rects_; }
-  bool IsEmpty() const { return rects_.IsEmpty(); }
+  bool IsEmpty() const { return rects_.empty(); }
   void Reset() { rects_.clear(); }
 
   uint64_t Area() const;

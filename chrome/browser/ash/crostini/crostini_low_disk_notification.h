@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/cicerone/cicerone_client.h"
+#include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 
 namespace message_center {
 class Notification;
@@ -26,7 +26,7 @@ namespace crostini {
 // class should be created after DBus has been initialized and destroyed before
 // DBus has been shutdown.
 // This class must be instantiated on the UI thread.
-class CrostiniLowDiskNotification : public chromeos::CiceroneClient::Observer {
+class CrostiniLowDiskNotification : public ash::CiceroneClient::Observer {
  public:
   // Registers this class as a Cicerone Observer.
   CrostiniLowDiskNotification();
@@ -38,7 +38,7 @@ class CrostiniLowDiskNotification : public chromeos::CiceroneClient::Observer {
   // Unregisters from observing events.
   ~CrostiniLowDiskNotification() override;
 
-  // chromeos::CiceroneClient::Observer override.
+  // ash::CiceroneClient::Observer override.
   void OnLowDiskSpaceTriggered(
       const vm_tools::cicerone::LowDiskSpaceTriggeredSignal& signal) override;
 

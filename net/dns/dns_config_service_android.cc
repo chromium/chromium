@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "net/android/network_library.h"
@@ -101,7 +102,7 @@ class DnsConfigServiceAndroid::ConfigReader : public SerialWorker {
     return std::make_unique<WorkItem>(dns_server_getter_);
   }
 
-  void OnWorkFinished(std::unique_ptr<SerialWorker::WorkItem>
+  bool OnWorkFinished(std::unique_ptr<SerialWorker::WorkItem>
                           serial_worker_work_item) override {
     DCHECK(serial_worker_work_item);
     DCHECK(!IsCancelled());
@@ -109,8 +110,10 @@ class DnsConfigServiceAndroid::ConfigReader : public SerialWorker {
     WorkItem* work_item = static_cast<WorkItem*>(serial_worker_work_item.get());
     if (work_item->dns_config_.has_value()) {
       service_->OnConfigRead(std::move(work_item->dns_config_).value());
+      return true;
     } else {
       LOG(WARNING) << "Failed to read DnsConfig.";
+      return false;
     }
   }
 
@@ -179,14 +182,14 @@ class DnsConfigServiceAndroid::ConfigReader : public SerialWorker {
   android::DnsServerGetter dns_server_getter_;
 
   // Raw pointer to owning DnsConfigService.
-  DnsConfigServiceAndroid* const service_;
+  const raw_ptr<DnsConfigServiceAndroid> service_;
 };
 
 DnsConfigServiceAndroid::DnsConfigServiceAndroid()
     : DnsConfigService(kFilePathHosts, kConfigChangeDelay) {
   // Allow constructing on one thread and living on another.
   DETACH_FROM_SEQUENCE(sequence_checker_);
-  dns_server_getter_ = base::BindRepeating(&android::GetDnsServers);
+  dns_server_getter_ = base::BindRepeating(&android::GetCurrentDnsServers);
 }
 
 DnsConfigServiceAndroid::~DnsConfigServiceAndroid() {

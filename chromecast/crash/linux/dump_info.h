@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chromecast/crash/linux/minidump_params.h"
 
@@ -69,7 +68,7 @@ class DumpInfo {
   //   "build_number": <build_number>
   //   "reason": <reason>
   // }
-  std::unique_ptr<base::Value> GetAsValue() const;
+  base::Value GetAsValue() const;
   const MinidumpParams& params() const { return params_; }
   bool valid() const { return valid_; }
 

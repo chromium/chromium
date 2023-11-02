@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/client/chromoting_client_runtime.h"
 #include "remoting/client/cursor_shape_stub_proxy.h"
@@ -126,7 +125,7 @@ void Core::Initialize() {
     eagl_context_ =
         [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3];
     if (!eagl_context_) {
-      LOG(WARNING) << "Failed to create GLES3 context. Atempting to create "
+      LOG(WARNING) << "Failed to create GLES3 context. Attempting to create "
                    << "GLES2 context.";
       eagl_context_ =
           [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];

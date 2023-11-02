@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -139,6 +139,7 @@ using remoting::HostListService;
 
     self.navigationItem.title =
         l10n_util::GetNSString(IDS_PRODUCT_NAME).lowercaseString;
+    [self.navigationItem setHidesBackButton:YES animated:NO];
 
     _appBarViewController.headerView.backgroundColor =
         RemotingTheme.hostListBackgroundColor;

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,18 +11,17 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/fixed_flat_map.h"
-#include "base/no_destructor.h"
 #include "chrome/browser/commerce/merchant_viewer/android/jni_headers/MerchantTrustSignalsEventStorage_jni.h"
 #include "chrome/browser/commerce/merchant_viewer/android/jni_headers/MerchantTrustSignalsEvent_jni.h"
-#include "chrome/browser/commerce/merchant_viewer/merchant_signal_db_content.pb.h"
-#include "chrome/browser/persisted_state_db/profile_proto_db_factory.h"
+#include "chrome/browser/persisted_state_db/session_proto_db_factory.h"
+#include "components/commerce/core/proto/merchant_signal_db_content.pb.h"
 #include "content/public/browser/android/browser_context_handle.h"
 
 namespace {
 
 using MerchantSignalProto = merchant_signal_db::MerchantSignalContentProto;
 using MerchantSignals =
-    std::vector<ProfileProtoDB<MerchantSignalProto>::KeyAndValue>;
+    std::vector<SessionProtoDB<MerchantSignalProto>::KeyAndValue>;
 
 void OnLoadCallbackSingleEntry(const base::android::JavaRef<jobject>& jcallback,
                                bool success,
@@ -50,7 +49,7 @@ void OnLoadCallbackMultipleEntry(
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> jlist =
       Java_MerchantTrustSignalsEvent_createEventList(env);
-  for (ProfileProtoDB<MerchantSignalProto>::KeyAndValue& kv : data) {
+  for (SessionProtoDB<MerchantSignalProto>::KeyAndValue& kv : data) {
     MerchantSignalProto proto = std::move(kv.second);
     Java_MerchantTrustSignalsEvent_createEventAndAddToList(
         env, jlist,
@@ -70,7 +69,7 @@ void OnUpdateCallback(
 }  // namespace
 
 MerchantSignalDB::MerchantSignalDB(content::BrowserContext* browser_context)
-    : proto_db_(ProfileProtoDBFactory<MerchantSignalProto>::GetInstance()
+    : proto_db_(SessionProtoDBFactory<MerchantSignalProto>::GetInstance()
                     ->GetForProfile(browser_context)) {}
 MerchantSignalDB::~MerchantSignalDB() = default;
 

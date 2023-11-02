@@ -45,7 +45,7 @@ const AtomicString& FontCache::SystemFontFamily() {
 
 // static
 void FontCache::SetSystemFontFamily(const AtomicString& family_name) {
-  DCHECK(!family_name.IsEmpty());
+  DCHECK(!family_name.empty());
   MutableSystemFontFamily() = family_name;
 }
 
@@ -76,7 +76,7 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
   if (font_manager_) {
     AtomicString family_name = GetFamilyNameForCharacter(
         font_manager_.get(), c, font_description, nullptr, fallback_priority);
-    if (family_name.IsEmpty())
+    if (family_name.empty())
       return GetLastResortFallbackFont(font_description, kDoNotRetain);
     return FontDataFromFontPlatformData(
         GetFontPlatformData(font_description,

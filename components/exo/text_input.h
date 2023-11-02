@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,32 +7,36 @@
 
 #include <string>
 
-#include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "base/i18n/rtl.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_piece.h"
+#include "components/exo/seat_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/composition_text.h"
+#include "ui/base/ime/surrounding_text_tracker.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
+#include "ui/base/ime/virtual_keyboard_controller.h"
+#include "ui/base/ime/virtual_keyboard_controller_observer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/range/range.h"
 
 namespace ui {
 class InputMethod;
-}
-
-namespace keyboard {
-class KeyboardUIController;
-}
+}  // namespace ui
 
 namespace exo {
 class Surface;
+class Seat;
 
 // This class bridges the ChromeOS input method and a text-input context.
+// It can be inactive, active, or in a pending state where Activate() was
+// called but the associated window is not focused.
 class TextInput : public ui::TextInputClient,
-                  public ash::KeyboardControllerObserver {
+                  public ui::VirtualKeyboardControllerObserver,
+                  public SeatObserver {
  public:
   class Delegate {
    public:
@@ -48,11 +52,20 @@ class TextInput : public ui::TextInputClient,
     // Called when the virtual keyboard visibility state has changed.
     virtual void OnVirtualKeyboardVisibilityChanged(bool is_visible) = 0;
 
+    // Called when the virtual keyboard's occluded bounds has changed.
+    // The bounds are in screen DIP.
+    virtual void OnVirtualKeyboardOccludedBoundsChanged(
+        const gfx::Rect& screen_bounds) = 0;
+
+    // Returns true if the server can expect a finalize_virtual_keyboard_changes
+    // request from the client.
+    virtual bool SupportsFinalizeVirtualKeyboardChanges() = 0;
+
     // Set the 'composition text' of the current text input.
     virtual void SetCompositionText(const ui::CompositionText& composition) = 0;
 
     // Commit |text| to the current text input session.
-    virtual void Commit(const std::u16string& text) = 0;
+    virtual void Commit(base::StringPiece16 text) = 0;
 
     // Set the cursor position.
     // |surrounding_text| is the current surrounding text.
@@ -87,6 +100,25 @@ class TextInput : public ui::TextInputClient,
         const gfx::Range& cursor,
         const gfx::Range& range,
         const std::vector<ui::ImeTextSpan>& ui_ime_text_spans) = 0;
+
+    // Clears all the grammar fragments in |range|.
+    // |surrounding_text| is the current surrounding text, used for utf16 to
+    // utf8 conversion.
+    virtual void ClearGrammarFragments(base::StringPiece16 surrounding_text,
+                                       const gfx::Range& range) = 0;
+
+    // Adds a new grammar marker according to |fragments|. Clients should show
+    // some visual indications such as underlining.
+    // |surrounding_text| is the current surrounding text, used for utf16 to
+    // utf8 conversion.
+    virtual void AddGrammarFragment(base::StringPiece16 surrounding_text,
+                                    const ui::GrammarFragment& fragment) = 0;
+
+    // Sets the autocorrect range from the current surrounding text offsets.
+    // Offsets in |range| is relative to the beginning of
+    // |surrounding_text|. All offsets are in UTF16, and must be valid.
+    virtual void SetAutocorrectRange(base::StringPiece16 surrounding_text,
+                                     const gfx::Range& range) = 0;
   };
 
   explicit TextInput(std::unique_ptr<Delegate> delegate);
@@ -94,10 +126,10 @@ class TextInput : public ui::TextInputClient,
   TextInput& operator=(const TextInput&) = delete;
   ~TextInput() override;
 
-  // Activates the text input context on the surface. Note that surface can be
-  // an app surface (hosted by a shell surface) or can be an independent one
-  // created by the text-input client.
-  void Activate(Surface* surface);
+  // Request to activate the text input context on the surface. Activation will
+  // occur immediately if the associated window is already focused, or
+  // otherwise when the window gains focus.
+  void Activate(Seat* seat, Surface* surface);
 
   // Deactivates the text input context.
   void Deactivate();
@@ -112,7 +144,7 @@ class TextInput : public ui::TextInputClient,
   // during the text input session.
   void Resync();
 
-  // Resets the current input method state.
+  // Resets the current input method composition state.
   void Reset();
 
   // Sets the surrounding text in the app.
@@ -129,11 +161,24 @@ class TextInput : public ui::TextInputClient,
   // Sets the bounds of the text caret, relative to the window origin.
   void SetCaretBounds(const gfx::Rect& bounds);
 
+  // Sets grammar fragment at the cursor position.
+  void SetGrammarFragmentAtCursor(
+      const absl::optional<ui::GrammarFragment>& fragment);
+
+  // Sets the autocorrect range and bounds. `autocorrect_bounds` is the
+  // bounding rect around the autocorreced text, and are relative to
+  // to the window origin.
+  void SetAutocorrectInfo(const gfx::Range& autocorrect_range,
+                          const gfx::Rect& autocorrect_bounds);
+
+  // Finalizes pending virtual keyboard requested changes.
+  void FinalizeVirtualKeyboardChanges();
+
   Delegate* delegate() { return delegate_.get(); }
 
   // ui::TextInputClient:
   void SetCompositionText(const ui::CompositionText& composition) override;
-  uint32_t ConfirmCompositionText(bool keep_selection) override;
+  size_t ConfirmCompositionText(bool keep_selection) override;
   void ClearCompositionText() override;
   void InsertText(const std::u16string& text,
                   InsertTextCursorBehavior cursor_behavior) override;
@@ -145,7 +190,7 @@ class TextInput : public ui::TextInputClient,
   bool CanComposeInline() const override;
   gfx::Rect GetCaretBounds() const override;
   gfx::Rect GetSelectionBoundingBox() const override;
-  bool GetCompositionCharacterBounds(uint32_t index,
+  bool GetCompositionCharacterBounds(size_t index,
                                      gfx::Rect* rect) const override;
   bool HasCompositionText() const override;
   ui::TextInputClient::FocusReason GetFocusReason() const override;
@@ -153,7 +198,6 @@ class TextInput : public ui::TextInputClient,
   bool GetCompositionTextRange(gfx::Range* range) const override;
   bool GetEditableSelectionRange(gfx::Range* range) const override;
   bool SetEditableSelectionRange(const gfx::Range& range) override;
-  bool DeleteRange(const gfx::Range& range) override;
   bool GetTextFromRange(const gfx::Range& range,
                         std::u16string* text) const override;
   void OnInputMethodChanged() override;
@@ -171,8 +215,8 @@ class TextInput : public ui::TextInputClient,
   gfx::Range GetAutocorrectRange() const override;
   gfx::Rect GetAutocorrectCharacterBounds() const override;
   bool SetAutocorrectRange(const gfx::Range& range) override;
-  absl::optional<ui::GrammarFragment> GetGrammarFragment(
-      const gfx::Range& range) override;
+  absl::optional<ui::GrammarFragment> GetGrammarFragmentAtCursor()
+      const override;
   bool ClearGrammarFragments(const gfx::Range& range) override;
   bool AddGrammarFragments(
       const std::vector<ui::GrammarFragment>& fragments) override;
@@ -180,28 +224,47 @@ class TextInput : public ui::TextInputClient,
       absl::optional<gfx::Rect>* control_bounds,
       absl::optional<gfx::Rect>* selection_bounds) override {}
 
-  // ash::KeyboardControllerObserver:
-  void OnKeyboardVisibilityChanged(bool is_visible) override;
+  // ui::VirtualKeyboardControllerObserver:
+  void OnKeyboardVisible(const gfx::Rect& keyboard_rect) override;
+  void OnKeyboardHidden() override;
+
+  // SeatObserver:
+  void OnSurfaceFocused(Surface* gained_focus,
+                        Surface* lost_focus,
+                        bool has_focused_surface) override;
 
  private:
   void AttachInputMethod();
   void DetachInputMethod();
+  void ResetCompositionTextCache();
+
+  bool ShouldStageVKState();
+  void SendStagedVKVisibility();
+  void SendStagedVKOccludedBounds();
 
   // Delegate to talk to actual its client.
   std::unique_ptr<Delegate> delegate_;
-  // Keyboard Controller to observe the visibility.
-  keyboard::KeyboardUIController* keyboard_ui_controller_ = nullptr;
 
   // On requesting to show Virtual Keyboard, InputMethod may not be connected.
   // So, remember the request temporarily, and then on InputMethod connection
   // show the Virtual Keyboard.
   bool pending_vk_visible_ = false;
 
-  // Window instance that this TextInput is activated against.
-  aura::Window* window_ = nullptr;
+  // |surface_| and |seat_| are non-null if and only if the TextInput is in a
+  // pending or active state, in which case the TextInput will be observing the
+  // Seat.
+  Surface* surface_ = nullptr;
+  Seat* seat_ = nullptr;
 
-  // InputMethod in Chrome OS that this TextInput is attached to.
+  // If the TextInput is active (associated window has focus) and the
+  // InputMethod is available, this is set and the TextInput will be its
+  // focused client. Otherwise, it is null and the TextInput is not attached
+  // to any InputMethod, so the TextInputClient overrides will not be called.
   ui::InputMethod* input_method_ = nullptr;
+
+  base::ScopedObservation<ui::VirtualKeyboardController,
+                          ui::VirtualKeyboardControllerObserver>
+      virtual_keyboard_observation_{this};
 
   // Cache of the current caret bounding box, sent from the client.
   gfx::Rect caret_bounds_;
@@ -212,18 +275,46 @@ class TextInput : public ui::TextInputClient,
   int flags_ = ui::TEXT_INPUT_FLAG_NONE;
   bool should_do_learning_ = true;
 
-  // Cache of the current surrounding text, sent from the client.
-  std::u16string surrounding_text_;
-
-  // Cache of the current cursor position in the surrounding text, sent from
-  // the client. Maybe "invalid" value, if not available.
-  gfx::Range cursor_pos_ = gfx::Range::InvalidRange();
-
-  // Cache of the current composition, updated from Chrome OS IME.
-  ui::CompositionText composition_;
+  // Tracks the surrounding text.
+  ui::SurroundingTextTracker surrounding_text_tracker_;
 
   // Cache of the current text input direction, update from the Chrome OS IME.
   base::i18n::TextDirection direction_ = base::i18n::UNKNOWN_DIRECTION;
+
+  // Cache of the grammar fragment at cursor position, send from Lacros side.
+  // Wayland API sends the fragment range in utf8 and what IME needs is utf16.
+  // To correctly convert the utf8 range to utf16, we need the updated
+  // surrounding text, which is not available when we receive the grammar
+  // fragment. It is guaranteed that on Lacros side, it always updates grammar
+  // fragment before updating surrounding text. So we store the utf8 fragment in
+  // |grammar_fragment_at_cursor_utf8_| when we receive it and when we receive
+  // the surrounding text update next time, we convert the utf8 fragment to
+  // utf16 fragment and store it in |grammar_fragment_at_cursor_utf16_|. When
+  // IME requests current grammar fragment, we always return the utf16 version.
+  absl::optional<ui::GrammarFragment> grammar_fragment_at_cursor_utf8_;
+  absl::optional<ui::GrammarFragment> grammar_fragment_at_cursor_utf16_;
+
+  struct AutocorrectInfo {
+    gfx::Range range;
+    gfx::Rect bounds;
+  };
+
+  // Latest autocorrect information that was sent from the Wayland client.
+  // along with the last surrounding text change.
+  AutocorrectInfo autocorrect_info_;
+
+  // Latest autocorrect information that was received without a receiving a
+  // corresponding surrounding text. Once this class receives a surrounding text
+  // update, `autocorrect_info_` will take on this pending value, if it exists.
+  absl::optional<AutocorrectInfo> pending_autocorrect_info_;
+
+  // True when client has made virtual keyboard related requests but haven't
+  // sent the virtual keyboard finalize request.
+  bool pending_vk_finalize_ = false;
+  // Holds the vk visibility to send to the client.
+  absl::optional<bool> staged_vk_visible_;
+  // Holds the vk occluded bounds to send to the client.
+  absl::optional<gfx::Rect> staged_vk_occluded_bounds_;
 };
 
 }  // namespace exo

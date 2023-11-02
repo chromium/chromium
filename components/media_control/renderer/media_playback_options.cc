@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,10 +36,11 @@ MediaPlaybackOptions::MediaPlaybackOptions(content::RenderFrame* render_frame)
   render_frame->SetRenderFrameMediaPlaybackOptions(
       renderer_media_playback_options_);
 
-  render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
-      base::BindRepeating(
-          &MediaPlaybackOptions::OnMediaPlaybackOptionsAssociatedReceiver,
-          base::Unretained(this)));
+  render_frame->GetAssociatedInterfaceRegistry()
+      ->AddInterface<components::media_control::mojom::MediaPlaybackOptions>(
+          base::BindRepeating(
+              &MediaPlaybackOptions::OnMediaPlaybackOptionsAssociatedReceiver,
+              base::Unretained(this)));
 }
 
 MediaPlaybackOptions::~MediaPlaybackOptions() {

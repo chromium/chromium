@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,11 +44,8 @@ import org.chromium.ui.resources.ResourceManager;
 public class CompositorView
         extends FrameLayout implements CompositorSurfaceManager.SurfaceManagerCallbackTarget,
                                        WindowAndroid.SelectionHandlesObserver {
-    private static final String TAG = "CompositorView";
-
     // Cache objects that should not be created every frame
     private final Rect mCacheAppRect = new Rect();
-    private final int[] mCacheViewPosition = new int[2];
 
     private CompositorSurfaceManager mCompositorSurfaceManager;
     private boolean mOverlayVideoEnabled;
@@ -66,7 +63,6 @@ public class CompositorView
     private ResourceManager mResourceManager;
 
     // Lazily populated as it is needed.
-    private View mRootActivityView;
     private WindowAndroid mWindowAndroid;
     private TabContentManager mTabContentManager;
 
@@ -83,12 +79,15 @@ public class CompositorView
 
     private boolean mRenderHostNeedsDidSwapBuffersCallback;
 
+    private boolean mHaveSwappedFramesSinceSurfaceCreated;
+
     // On P and above, toggling the screen off gets us in a state where the Surface is destroyed but
     // it is never recreated when it is turned on again. This is the only workaround that seems to
     // be working, see crbug.com/931195.
     class ScreenStateReceiverWorkaround extends BroadcastReceiver {
         // True indicates we should destroy and recreate the surface manager.
         private boolean mNeedsReset;
+        private Surface mLastDestroyedSurface;
 
         ScreenStateReceiverWorkaround() {
             IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
@@ -116,6 +115,10 @@ public class CompositorView
                 mCompositorSurfaceManager.shutDown();
                 createCompositorSurfaceManager();
             }
+        }
+
+        public void clearNeedsReset() {
+            mNeedsReset = false;
         }
     }
 
@@ -398,8 +401,29 @@ public class CompositorView
     public void surfaceRedrawNeededAsync(Runnable drawingFinished) {
         // Do not hold onto more than one draw callback, to prevent deadlock.
         // See https://crbug.com/1174273 and https://crbug.com/1223299 for more details.
+        //
+        // `drawingFinished` can, and often will, be run before this returns, since we cannot hold
+        // onto more than one (android) callback without risking a deadlock in the framework.
+        //
+        // DO NOT ADD any more callbacks from inside chrome!  This is intended to implement
+        // (indirectly) the android SurfaceHolder callback.  It is not intended as a general-purpose
+        // mechanism for chromium to wait for a swap to occur.  In particular, we have workarounds
+        // for android framework behavior here, that would be unexpected to other callers.  Also,
+        // these behaviors can change without notice as new android versions show up.
+        //
+        // If you want to find out about a swap, please add a separate mechanism to this class to do
+        // so, with more predictable semantics.
         runDrawFinishedCallback();
         mDrawingFinishedCallback = drawingFinished;
+        if (mHaveSwappedFramesSinceSurfaceCreated) {
+            // Don't hold onto the draw callback, since it can deadlock with ViewRootImpl performing
+            // traversals in some cases.  Only wait if the surface is newly created.  Android allows
+            // us to run the callback before returning; the default implementation of this method
+            // does exactly that.  While there are a few calls into this method that are not from
+            // the android framework, these are currently okay with this behavior.  Please do not
+            // add any more, as described above.
+            runDrawFinishedCallback();
+        }
         updateNeedsDidSwapBuffersCallback();
         if (mNativeCompositorView != 0) {
             CompositorViewJni.get().setNeedsComposite(mNativeCompositorView, CompositorView.this);
@@ -419,7 +443,11 @@ public class CompositorView
     public void surfaceCreated(Surface surface) {
         if (mNativeCompositorView == 0) return;
 
+        // if a requested surface is created successfully, CompositorSurfaceManager doesn't need to
+        // be reset.
+        if (mScreenStateReceiver != null) mScreenStateReceiver.clearNeedsReset();
         mFramesUntilHideBackground = 2;
+        mHaveSwappedFramesSinceSurfaceCreated = false;
         updateNeedsDidSwapBuffersCallback();
         CompositorViewJni.get().surfaceCreated(mNativeCompositorView, CompositorView.this);
         mRenderHost.onSurfaceCreated();
@@ -579,6 +607,7 @@ public class CompositorView
         if (swappedCurrentSize) {
             runDrawFinishedCallback();
         }
+        mHaveSwappedFramesSinceSurfaceCreated = true;
 
         mRenderHost.didSwapBuffers(swappedCurrentSize);
 
@@ -594,9 +623,8 @@ public class CompositorView
      * Converts the layout into compositor layers. This is to be called on every frame the layout
      * is changing.
      * @param provider               Provides the layout to be rendered.
-     * @param forRotation            Whether or not this is a special draw during a rotation.
      */
-    public void finalizeLayers(final LayoutProvider provider, boolean forRotation) {
+    public void finalizeLayers(final LayoutProvider provider) {
         TraceEvent.begin("CompositorView:finalizeLayers");
         Layout layout = provider.getActiveLayout();
         if (layout == null || mNativeCompositorView == 0) {

@@ -131,13 +131,6 @@ Code here supports presentation of the backing store drawn by the display
 compositor (typically thought of as SwapBuffers), as well as the use of
 overlays.
 
-The source code is split into two build targets,
-``components/viz/service:service`` and
-``components/viz/service:gpu_service_dependencies``. The latter is
-code that requires being run in the gpu process, thus could not work
-if the viz service is located elsewhere. This is forward-looking code
-as the viz service is moving into the gpu process always.
-
 | Can depend on:                        |
 |:--------------------------------------|
 | viz/common/*                          |
@@ -186,12 +179,6 @@ method.
 **GL**: This component implements the Mojo interfaces for allocating (and
 deallocating) gpu memory buffers, setting up a channel for the command buffer,
 etc.
-
-Similar to ``service/display_embedder`` this is split into two targets in
-the build system. Code that must run in the gpu process is compiled in
-the ``components/viz/service:gpu_service_dependencies`` build target,
-and the rest is compiled in ``components/viz/service:service``. As all
-code moves to the gpu process, these two build targets will merge.
 
 | Can depend on:        |
 |:----------------------|
@@ -250,13 +237,15 @@ to unconditionally enable a feature on a per platform basis.
 
 ### Runtime Feature Checks
 
-Never check if a feature is enabled in a hot code path as
-`base::FeatureList::IsEnabled()` has a non-trivial runtime cost (it does a map
-lookup). Ideally the feature state should be stored as a member variable in a
-long lived class.
+`base::FeatureList::IsEnabled()` caches the feature's value internally on the
+first lookup, making all subsequent lookups cheap. Thus, it is acceptable for it
+to be called in a hot code path.
 
-Resist the temptation to cache if a feature is enabled in a variable with static
-storage duration, for example:
+Note `base::ScopedFeatureList` resets/invalidates the feature's internal cache
+on initialization so that the feature's value may be controlled across test
+cases as desired. This does not hold, however, if the calling code itself
+chooses to cache the feature's value in a variable with static storage duration.
+This pattern is discouraged:
 
 ```cpp
 bool IsMyFeatureEnabled() {
@@ -265,12 +254,10 @@ bool IsMyFeatureEnabled() {
 }
 ```
 
-While this avoids repeated calls to `FeatureList::IsEnabled()` it breaks tests.
 The first time `IsMyFeatureEnabled()` is called from the test runner process the
-feature state is cached. If a later test uses `base::ScopedFeatureList` to
-change the feature state, that change will not be reflected in
-`IsMyFeatureEnabled()` and the test will (most likely) fail. Test retries in a
-new test runner process will pass, adding hidden flake and slowing down CQ.
+feature state is cached within the static `enabled` variable. If a later test
+uses `base::ScopedFeatureList` to change the feature state, that change will not
+be reflected in `IsMyFeatureEnabled()` and the test will (most likely) fail.
 
 ### Testing Viz Features
 

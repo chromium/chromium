@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,12 @@
 #include <string>
 #include <vector>
 
+#include "base/time/time.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/favicon/favicon_url.mojom-forward.h"
 #include "ui/base/page_transition_types.h"
 
 class GURL;
@@ -72,8 +74,9 @@ class WebContentsTester {
   static WebContents* CreateTestWebContents(
       const WebContents::CreateParams& params);
 
-  // Simulates the appropriate RenderView (pending if any, current otherwise)
-  // sending a navigate notification for the NavigationController pending entry.
+  // Simulates the appropriate `blink::WebView` (pending if any, current
+  // otherwise) sending a navigate notification for the NavigationController
+  // pending entry.
   virtual void CommitPendingNavigation() = 0;
 
   // Creates a pending navigation to the given URL with the default parameters
@@ -118,6 +121,14 @@ class WebContentsTester {
       const std::vector<SkBitmap>& bitmaps,
       const std::vector<gfx::Size>& original_bitmap_sizes) = 0;
 
+  // Simulates initial favicon urls set.
+  virtual void TestSetFaviconURL(
+      const std::vector<blink::mojom::FaviconURLPtr>& favicon_urls) = 0;
+
+  // Simulates favicon urls update.
+  virtual void TestUpdateFaviconURL(
+      const std::vector<blink::mojom::FaviconURLPtr>& favicon_urls) = 0;
+
   // Sets the return value of GetLastCommittedUrl() of TestWebContents.
   virtual void SetLastCommittedURL(const GURL& url) = 0;
 
@@ -150,6 +161,10 @@ class WebContentsTester {
   // Sets the last active time.
   virtual void SetLastActiveTime(base::TimeTicks last_active_time) = 0;
 
+  // Increments/decrements the number of frames with connected USB devices.
+  virtual void TestIncrementUsbActiveFrameCount() = 0;
+  virtual void TestDecrementUsbActiveFrameCount() = 0;
+
   // Increments/decrements the number of connected Bluetooth devices.
   virtual void TestIncrementBluetoothConnectedDeviceCount() = 0;
   virtual void TestDecrementBluetoothConnectedDeviceCount() = 0;
@@ -176,6 +191,12 @@ class WebContentsTester {
   // frame and returns the simulator after the navigation is started.
   virtual std::unique_ptr<NavigationSimulator> AddPrerenderAndStartNavigation(
       const GURL& url) = 0;
+  // Activates a prerendered page.
+  virtual void ActivatePrerenderedPage(const GURL& url) = 0;
+
+  // Returns the time that was set with SetTabSwitchStartTime, or a null
+  // TimeTicks if it was never called.
+  virtual base::TimeTicks GetTabSwitchStartTime() = 0;
 };
 
 }  // namespace content

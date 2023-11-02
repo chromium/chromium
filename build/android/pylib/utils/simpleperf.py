@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -108,6 +108,7 @@ def _ThreadType(thread_name):
     return 'main'
   if thread_name.startswith('RenderThread'):
     return 'render'
+  raise ValueError('got no matching thread_name')
 
 
 def _GetSpecifiedTID(device, pid, thread_specifier):
@@ -216,8 +217,10 @@ def ConvertSimpleperfToPprof(simpleperf_out_path, build_directory,
   report_path = os.path.join(script_dir, 'report.py')
   report_cmd = [sys.executable, report_path, '-i', simpleperf_out_path]
   device_lib_path = None
-  for line in subprocess.check_output(
-      report_cmd, stderr=subprocess.STDOUT).splitlines():
+  output = subprocess.check_output(report_cmd, stderr=subprocess.STDOUT)
+  if isinstance(output, bytes):
+    output = output.decode()
+  for line in output.splitlines():
     fields = line.split()
     if len(fields) < 5:
       continue

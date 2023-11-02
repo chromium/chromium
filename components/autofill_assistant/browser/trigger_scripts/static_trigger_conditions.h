@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,11 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/autofill_assistant/browser/public/password_change/website_login_manager.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
-#include "components/autofill_assistant/browser/website_login_manager.h"
 #include "url/gurl.h"
 
 namespace autofill_assistant {
@@ -23,7 +24,7 @@ class StarterPlatformDelegate;
 class StaticTriggerConditions {
  public:
   // |delegate| and |trigger_context| must outlive this instance.
-  StaticTriggerConditions(StarterPlatformDelegate* delegate,
+  StaticTriggerConditions(base::WeakPtr<StarterPlatformDelegate> delegate,
                           TriggerContext* trigger_context,
                           const GURL& deeplink_url);
   virtual ~StaticTriggerConditions();
@@ -52,8 +53,8 @@ class StaticTriggerConditions {
   // Note: this is cached to ensure that the flag value is consistent until the
   // next call to |Update|. See b/192220992.
   bool is_first_time_user_ = false;
-  StarterPlatformDelegate* delegate_ = nullptr;
-  TriggerContext* trigger_context_ = nullptr;
+  base::WeakPtr<StarterPlatformDelegate> delegate_;
+  raw_ptr<TriggerContext> trigger_context_ = nullptr;
   GURL deeplink_url_;
   base::WeakPtrFactory<StaticTriggerConditions> weak_ptr_factory_{this};
 };

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "url/url_constants.h"
 
@@ -36,8 +37,8 @@ class TabDragControllerTest : public InProcessBrowserTest {
   // Cover for TabStrip::StopAnimating(true).
   void StopAnimating(TabStrip* tab_strip);
 
-  // Adds a new tab to |browser| using provided |url| or blank. Stops animations
-  // and resets the ids of the tabs in |browser|.
+  // Adds |additional_tabs| new tabs to |browser| using the provided |url| or
+  // blank. Stops animations and resets the ids of the tabs in |browser|.
   void AddTabsAndResetBrowser(Browser* browser,
                               int additional_tabs,
                               const GURL& url = GURL(url::kAboutBlankURL));
@@ -52,7 +53,7 @@ class TabDragControllerTest : public InProcessBrowserTest {
   void SetWindowFinderForTabStrip(TabStrip* tab_strip,
                                   std::unique_ptr<WindowFinder> window_finder);
 
-  const BrowserList* browser_list;
+  raw_ptr<const BrowserList> browser_list;
 
  protected:
   void HandleGestureEvent(TabStrip* tab_strip, ui::GestureEvent* event);

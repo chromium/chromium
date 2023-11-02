@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "ash/hud_display/graph.h"
 #include "ash/hud_display/graph_page_view_base.h"
 #include "base/containers/circular_deque.h"
+#include "base/time/time.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/compositor_observer.h"
 #include "ui/views/widget/widget_observer.h"

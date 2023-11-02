@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,26 +8,27 @@ from telemetry import benchmark
 from contrib.system_health_scroll_jank import janky_story_set
 
 _BENCHMARK_UMA = [
-    'Browser.Responsiveness.JankyIntervalsPerThirtySeconds',
+    'Browser.MainThreadsCongestion',
     'Compositing.Display.DrawToSwapUs',
     'CompositorLatency.TotalLatency',
     'CompositorLatency.Type',
-    'Event.Latency.ScrollBegin.Touch.TimeToScrollUpdateSwapBegin4',
-    'Event.Latency.ScrollUpdate.Touch.TimeToScrollUpdateSwapBegin4',
-    'Event.Latency.ScrollBegin.Wheel.TimeToScrollUpdateSwapBegin4',
-    'Event.Latency.ScrollUpdate.Wheel.TimeToScrollUpdateSwapBegin4',
     'Event.Latency.ScrollJank',
     'Event.Latency.ScrollUpdate.JankyDuration',
     'Event.Latency.ScrollUpdate.JankyEvents',
     'Event.Latency.ScrollUpdate.TotalDuration',
     'Event.Latency.ScrollUpdate.TotalEvents',
+    'Event.Jank.ScrollUpdate.TotalJankyAndNonJankyDuration2',
+    'EventLatency.FirstGestureScrollUpdate.Touchscreen.TotalLatency',
+    'EventLatency.GestureScrollUpdate.Touchscreen.TotalLatency',
+    'EventLatency.FirstGestureScrollUpdate.Wheel.TotalLatency',
+    'EventLatency.GestureScrollUpdate.Wheel.TotalLatency',
     'Graphics.Smoothness.Checkerboarding.TouchScroll',
     'Graphics.Smoothness.Checkerboarding.WheelScroll',
     'Graphics.Smoothness.Jank.Compositor.TouchScroll',
     'Graphics.Smoothness.Jank.Main.TouchScroll',
-    'Graphics.Smoothness.PercentDroppedFrames.AllAnimations',
-    'Graphics.Smoothness.PercentDroppedFrames.AllInteractions',
-    'Graphics.Smoothness.PercentDroppedFrames.AllSequences',
+    'Graphics.Smoothness.PercentDroppedFrames3.AllAnimations',
+    'Graphics.Smoothness.PercentDroppedFrames3.AllInteractions',
+    'Graphics.Smoothness.PercentDroppedFrames3.AllSequences',
     'Memory.GPU.PeakMemoryUsage2.Scroll',
     'Memory.GPU.PeakMemoryUsage2.PageLoad',
 ]

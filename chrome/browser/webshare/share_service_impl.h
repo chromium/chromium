@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
@@ -16,7 +17,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/webshare/chromeos/sharesheet_client.h"
 #endif
 
@@ -44,8 +45,8 @@ class ShareServiceImpl
       content::RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::ShareService> receiver);
 
-  static bool IsDangerousFilename(base::StringPiece);
-  static bool IsDangerousMimeType(base::StringPiece);
+  static bool IsDangerousFilename(const base::FilePath& path);
+  static bool IsDangerousMimeType(base::StringPiece content_type);
 
   // blink::mojom::ShareService:
   void Share(const std::string& title,
@@ -54,6 +55,7 @@ class ShareServiceImpl
              std::vector<blink::mojom::SharedFilePtr> files,
              ShareCallback callback) override;
 
+ private:
   void OnSafeBrowsingResultReceived(
       const std::string& title,
       const std::string& text,
@@ -62,14 +64,13 @@ class ShareServiceImpl
       ShareCallback callback,
       bool is_safe);
 
- private:
-  ShareServiceImpl(content::RenderFrameHost* render_frame_host,
+  ShareServiceImpl(content::RenderFrameHost& render_frame_host,
                    mojo::PendingReceiver<blink::mojom::ShareService> receiver);
   ~ShareServiceImpl() override;
 
   absl::optional<SafeBrowsingRequest> safe_browsing_request_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   webshare::SharesheetClient sharesheet_client_;
 #endif
 

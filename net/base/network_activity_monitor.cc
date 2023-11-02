@@ -1,4 +1,4 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,18 +7,13 @@
 #include <atomic>
 #include <type_traits>
 
-namespace net {
-namespace activity_monitor {
+#include "third_party/abseil-cpp/absl/base/attributes.h"
+
+namespace net::activity_monitor {
 
 namespace {
 
-std::atomic<uint64_t> g_bytes_received{0};
-
-static_assert(
-    std::is_trivially_constructible<decltype(g_bytes_received)>::value,
-    "g_bytes_received generates a static initializer");
-static_assert(std::is_trivially_destructible<decltype(g_bytes_received)>::value,
-              "g_bytes_received generates a static destructor");
+ABSL_CONST_INIT std::atomic<uint64_t> g_bytes_received = 0;
 
 }  // namespace
 
@@ -37,5 +32,4 @@ void ResetBytesReceivedForTesting() {
   g_bytes_received = 0;
 }
 
-}  // namespace activity_monitor
-}  // namespace net
+}  // namespace net::activity_monitor

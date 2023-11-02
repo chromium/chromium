@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,12 +63,12 @@ constexpr char kOrigin[] = "origin";
 constexpr char kOriginForFavicon[] = "originForFavicon";
 constexpr char kRecentPermissions[] = "recentPermissions";
 constexpr char kSetting[] = "setting";
-constexpr char kSettingDetail[] = "settingDetail";
 constexpr char kSites[] = "sites";
 constexpr char kPolicyIndicator[] = "indicator";
 constexpr char kSource[] = "source";
 constexpr char kType[] = "type";
 constexpr char kIsEmbargoed[] = "isEmbargoed";
+constexpr char kNotificationInfoString[] = "notificationInfoString";
 
 enum class SiteSettingSource {
   kAllowlist,
@@ -84,28 +84,6 @@ enum class SiteSettingSource {
   kNumSources,
 };
 
-// Possible policy indicators that can be shown in settings.
-// Must be kept in sync with the CrPolicyIndicatorType enum located in
-// src/ui/webui/resources/cr_elements/policy/cr_policy_indicator_behavior.js
-enum class PolicyIndicatorType {
-  kDevicePolicy,
-  kExtension,
-  kNone,
-  kOwner,
-  kPrimaryUser,
-  kRecommended,
-  kUserPolicy,
-  kParent,
-  kChildRestriction,
-  kNumIndicators,
-};
-
-// Represents the managed state for a single settings control.
-struct ManagedState {
-  bool disabled = false;
-  PolicyIndicatorType indicator = PolicyIndicatorType::kNone;
-};
-
 // Returns whether a group name has been registered for the given type.
 bool HasRegisteredGroupName(ContentSettingsType type);
 
@@ -118,21 +96,11 @@ base::StringPiece ContentSettingsTypeToGroupName(ContentSettingsType type);
 // tied to particular a origin.
 const std::vector<ContentSettingsType>& GetVisiblePermissionCategories();
 
-// Returns a list of all content settings types that correspond to permissions
-// and which should be displayed in chrome://settings for the given |origin|.
-// This will not include categories that are not relevant for the given origin.
-std::vector<ContentSettingsType> GetVisiblePermissionCategoriesForOrigin(
-    Profile* profile,
-    const GURL& origin);
-
 // Converts a SiteSettingSource to its string identifier.
 std::string SiteSettingSourceToString(const SiteSettingSource source);
 
-// Converts a ManagedState to a base::Value suitable for sending to JavaScript.
-base::Value GetValueForManagedState(const ManagedState& state);
-
 // Helper function to construct a dictionary for an exception.
-std::unique_ptr<base::DictionaryValue> GetExceptionForPage(
+base::Value::Dict GetExceptionForPage(
     ContentSettingsType content_type,
     Profile* profile,
     const ContentSettingsPattern& pattern,
@@ -146,7 +114,7 @@ std::unique_ptr<base::DictionaryValue> GetExceptionForPage(
 // Helper function to construct a dictionary for a hosted app exception.
 void AddExceptionForHostedApp(const std::string& url_pattern,
                               const extensions::Extension& app,
-                              base::ListValue* exceptions);
+                              base::Value::List* exceptions);
 
 // Fills in |exceptions| with Values for the given |type| from |profile|.
 void GetExceptionsForContentType(
@@ -155,14 +123,14 @@ void GetExceptionsForContentType(
     const extensions::ExtensionRegistry* extension_registry,
     content::WebUI* web_ui,
     bool incognito,
-    base::ListValue* exceptions);
+    base::Value::List* exceptions);
 
 // Fills in object saying what the current settings is for the category (such as
 // enabled or blocked) and the source of that setting (such preference, policy,
 // or extension).
 void GetContentCategorySetting(const HostContentSettingsMap* map,
                                ContentSettingsType content_type,
-                               base::DictionaryValue* object);
+                               base::Value::Dict* object);
 
 // Retrieves the current setting for a given origin, category pair, the source
 // of that setting, and its display name, which will be different if it's an
@@ -181,7 +149,7 @@ ContentSetting GetContentSettingForOrigin(
 // for the content settings |type| mic or camera.
 void GetPolicyAllowedUrls(
     ContentSettingsType type,
-    std::vector<std::unique_ptr<base::DictionaryValue>>* exceptions,
+    std::vector<base::Value::Dict>* exceptions,
     const extensions::ExtensionRegistry* extension_registry,
     content::WebUI* web_ui,
     bool incognito);
@@ -214,23 +182,16 @@ const ChooserTypeNameEntry* ChooserTypeFromGroupName(const std::string& name);
 // * sites: Array<SiteException>
 // The structure of the SiteException objects is the same as the objects
 // returned by GetExceptionForPage().
-base::Value CreateChooserExceptionObject(
+base::Value::Dict CreateChooserExceptionObject(
     const std::u16string& display_name,
     const base::Value& object,
     const std::string& chooser_type,
     const ChooserExceptionDetails& chooser_exception_details);
 
 // Returns an array of chooser exception objects.
-base::Value GetChooserExceptionListFromProfile(
+base::Value::List GetChooserExceptionListFromProfile(
     Profile* profile,
     const ChooserTypeNameEntry& chooser_type);
-
-// Concerts a PolicyIndicatorType to its string identifier.
-std::string PolicyIndicatorTypeToString(const PolicyIndicatorType type);
-
-// Returns the appropriate indicator for the source of a preference.
-PolicyIndicatorType GetPolicyIndicatorFromPref(
-    const PrefService::Preference* pref);
 
 }  // namespace site_settings
 

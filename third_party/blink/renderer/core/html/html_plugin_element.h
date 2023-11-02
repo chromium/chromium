@@ -96,6 +96,7 @@ class CORE_EXPORT HTMLPlugInElement
 
   bool IsImageType() const;
   HTMLImageLoader* ImageLoader() const { return image_loader_.Get(); }
+  virtual bool UseFallbackContent() const;
 
  protected:
   HTMLPlugInElement(const QualifiedName& tag_name,
@@ -117,7 +118,6 @@ class CORE_EXPORT HTMLPlugInElement
       MutableCSSPropertyValueSet*) override;
 
   virtual bool HasFallbackContent() const;
-  virtual bool UseFallbackContent() const;
   // Create or update the LayoutEmbeddedContent and return it, triggering layout
   // if necessary.
   virtual LayoutEmbeddedContent* LayoutEmbeddedContentForJSBindings() const;

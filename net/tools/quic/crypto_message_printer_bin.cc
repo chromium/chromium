@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
-#include "net/third_party/quiche/src/quic/core/crypto/crypto_framer.h"
+#include "net/third_party/quiche/src/quiche/quic/core/crypto/crypto_framer.h"
 
 using quic::Perspective;
 using std::cerr;
@@ -22,7 +22,7 @@ namespace net {
 
 class CryptoMessagePrinter : public quic::CryptoFramerVisitorInterface {
  public:
-  explicit CryptoMessagePrinter() {}
+  explicit CryptoMessagePrinter() = default;
 
   void OnHandshakeMessage(
       const quic::CryptoHandshakeMessage& message) override {

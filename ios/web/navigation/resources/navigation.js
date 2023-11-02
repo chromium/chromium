@@ -1,15 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 /**
  * @fileoverview Navigation related APIs.
  */
-
-goog.provide('__crWeb.navigation');
-
-/** Beginning of anonymous object */
-(function() {
 
 /**
  * Keep the original pushState() and replaceState() methods. It's needed to
@@ -63,7 +58,10 @@ function queueNavigationEventMessage(message) {
  * called for same-document navigation.
  */
 window.history.pushState = function(stateObject, pageTitle, pageUrl) {
-  queueNavigationEventMessage({'command': 'willChangeState'});
+  queueNavigationEventMessage({
+    'command': 'willChangeState',
+    'frame_id': __gCrWeb.message.getFrameId()
+  });
 
   // JSONStringify throws an exception when given a cyclical object. This
   // internal implementation detail should not be exposed to callers of
@@ -82,12 +80,16 @@ window.history.pushState = function(stateObject, pageTitle, pageUrl) {
     'command': 'didPushState',
     'stateObject': serializedState,
     'baseUrl': document.baseURI,
-    'pageUrl': pageUrl.toString()
+    'pageUrl': pageUrl.toString(),
+    'frame_id': __gCrWeb.message.getFrameId()
   });
 };
 
 window.history.replaceState = function(stateObject, pageTitle, pageUrl) {
-  queueNavigationEventMessage({'command': 'willChangeState'});
+  queueNavigationEventMessage({
+    'command': 'willChangeState',
+    'frame_id': __gCrWeb.message.getFrameId()
+  });
 
   // JSONStringify throws an exception when given a cyclical object. This
   // internal implementation detail should not be exposed to callers of
@@ -108,7 +110,8 @@ window.history.replaceState = function(stateObject, pageTitle, pageUrl) {
     'command': 'didReplaceState',
     'stateObject': serializedState,
     'baseUrl': document.baseURI,
-    'pageUrl': pageUrl.toString()
+    'pageUrl': pageUrl.toString(),
+    'frame_id': __gCrWeb.message.getFrameId()
   });
 };
 
@@ -120,4 +123,3 @@ window.addEventListener('__gCrWebWindowIdInjected', function() {
 if (__gCrWeb.message) {
   __gCrWeb.message.invokeQueues();
 }
-}());  // End of anonymous object

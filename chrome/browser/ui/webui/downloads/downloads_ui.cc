@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -94,6 +94,7 @@ content::WebUIDataSource* CreateDownloadsUIHTMLSource(Profile* profile) {
       {"dangerSave", IDS_CONFIRM_DOWNLOAD},
       {"dangerRestore", IDS_CONFIRM_DOWNLOAD_RESTORE},
       {"dangerDiscard", IDS_DISCARD_DOWNLOAD},
+      {"dangerReview", IDS_REVIEW_DOWNLOAD},
 
       // Deep scanning strings.
       {"deepScannedSafeDesc", IDS_DEEP_SCANNED_SAFE_DESCRIPTION},
@@ -119,7 +120,7 @@ content::WebUIDataSource* CreateDownloadsUIHTMLSource(Profile* profile) {
       {"toastClearedAll", IDS_DOWNLOAD_TOAST_CLEARED_ALL},
       {"toastRemovedFromList", IDS_DOWNLOAD_TOAST_REMOVED_FROM_LIST},
       {"undo", IDS_DOWNLOAD_UNDO},
-      {"downloadAnyway", IDS_DOWNLOAD_ANYWAY}};
+  };
   source->AddLocalizedStrings(kStrings);
 
   source->AddLocalizedString("dangerDownloadDesc",
@@ -133,8 +134,6 @@ content::WebUIDataSource* CreateDownloadsUIHTMLSource(Profile* profile) {
                              IDS_BLOCK_REASON_UNWANTED_DOWNLOAD);
   source->AddLocalizedString("mixedContentDownloadDesc",
                              IDS_BLOCK_REASON_MIXED_CONTENT);
-  source->AddLocalizedString("incognitoDownloadsWarningDesc",
-                             IDS_INCOGNITO_DOWNLOAD_WARNING);
   source->AddLocalizedString("asyncScanningDownloadDesc",
                              IDS_BLOCK_REASON_DEEP_SCANNING);
   source->AddLocalizedString("accountCompromiseDownloadDesc",
@@ -154,7 +153,7 @@ content::WebUIDataSource* CreateDownloadsUIHTMLSource(Profile* profile) {
   PrefService* prefs = profile->GetPrefs();
   source->AddBoolean("allowDeletingHistory",
                      prefs->GetBoolean(prefs::kAllowDeletingBrowserHistory) &&
-                         !profile->IsSupervised());
+                         !profile->IsChild());
 
   source->AddLocalizedString("inIncognito", IDS_DOWNLOAD_IN_INCOGNITO);
 
@@ -164,11 +163,6 @@ content::WebUIDataSource* CreateDownloadsUIHTMLSource(Profile* profile) {
            profile)
            ->DelayUntilVerdict(
                enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED));
-
-  source->AddString("enableBrandingUpdateAttribute",
-                    base::FeatureList::IsEnabled(features::kWebUIBrandingUpdate)
-                        ? "enable-branding-update"
-                        : "");
 
   return source;
 }

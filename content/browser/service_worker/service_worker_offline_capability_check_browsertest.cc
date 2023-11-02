@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include "base/callback_helpers.h"
 #include "base/guid.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
@@ -614,8 +613,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerOfflineCapabilityCheckBrowserTest,
 // Sites with a service worker are identified as supporting offline capability
 // only when it returns a valid response in the offline mode.
 
+// TODO(crbug.com/1365409): Flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerOfflineCapabilityCheckBrowserTest,
-                       CheckOfflineCapability) {
+                       DISABLED_CheckOfflineCapability) {
   EXPECT_TRUE(NavigateToURL(shell(),
                             embedded_test_server()->GetURL(
                                 "/service_worker/create_service_worker.html")));

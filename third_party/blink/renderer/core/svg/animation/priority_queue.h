@@ -1,12 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_ANIMATION_PRIORITY_QUEUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_ANIMATION_PRIORITY_QUEUE_H_
 
+#include "base/check_op.h"
 #include "base/gtest_prod_util.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
@@ -45,7 +46,7 @@ class PriorityQueue {
   void ResetAllPriorities(PriorityType priority);
 
   wtf_size_t size() const { return heap_.size(); }
-  bool IsEmpty() const { return heap_.IsEmpty(); }
+  bool IsEmpty() const { return heap_.empty(); }
   const PriorityType& Min() const { return heap_.front().first; }
   ElementType* MinElement() const { return heap_.front().second; }
 

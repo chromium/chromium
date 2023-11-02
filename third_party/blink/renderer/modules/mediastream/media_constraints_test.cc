@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -94,9 +94,9 @@ TEST(MediaTrackConstraintsTest, MandatoryChecks) {
   EXPECT_FALSE(the_set.HasMandatoryOutsideSet({"width"}, found_name));
   EXPECT_TRUE(the_set.HasMandatoryOutsideSet({"height"}, found_name));
   EXPECT_EQ("width", found_name);
-  the_set.goog_payload_padding.SetExact(true);
+  the_set.echo_cancellation.SetExact(true);
   EXPECT_TRUE(the_set.HasMandatoryOutsideSet({"width"}, found_name));
-  EXPECT_EQ("googPayloadPadding", found_name);
+  EXPECT_EQ("echoCancellation", found_name);
 }
 
 TEST(MediaTrackConstraintsTest, SetToString) {
@@ -152,9 +152,8 @@ TEST(MediaTrackConstraintsTest, ConstraintsToString) {
 
 TEST(MediaTrackConstraintsTest, ConvertWebConstraintsBasic) {
   MediaConstraints input;
-  MediaTrackConstraints* output =
+  [[maybe_unused]] MediaTrackConstraints* output =
       media_constraints_impl::ConvertConstraints(input);
-  ALLOW_UNUSED_LOCAL(output);
 }
 
 TEST(MediaTrackConstraintsTest, ConvertWebSingleStringConstraint) {

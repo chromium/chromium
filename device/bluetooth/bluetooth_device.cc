@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_gatt_connection.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
@@ -309,7 +310,7 @@ bool BluetoothDevice::IsPairable() const {
   BluetoothDeviceType type = GetDeviceType();
 
   // Get the vendor part of the address: "00:11:22" for "00:11:22:33:44:55"
-  std::string vendor = GetAddress().substr(0, 8);
+  std::string vendor = GetOuiPortionOfBluetoothAddress();
 
   // Verbatim "Bluetooth Mouse", model 96674
   if (type == BluetoothDeviceType::MOUSE && vendor == "00:12:A1")
@@ -326,6 +327,18 @@ bool BluetoothDevice::IsPairable() const {
 BluetoothDevice::UUIDSet BluetoothDevice::GetUUIDs() const {
   return device_uuids_.GetUUIDs();
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void BluetoothDevice::SetIsBlockedByPolicy(bool is_blocked_by_policy) {
+  is_blocked_by_policy_ = is_blocked_by_policy;
+  GetAdapter()->NotifyDeviceIsBlockedByPolicyChanged(this,
+                                                     is_blocked_by_policy);
+}
+
+bool BluetoothDevice::IsBlockedByPolicy() const {
+  return is_blocked_by_policy_;
+}
+#endif
 
 const BluetoothDevice::ServiceDataMap& BluetoothDevice::GetServiceData() const {
   return service_data_;
@@ -446,6 +459,11 @@ std::string BluetoothDevice::GetIdentifier() const {
   return GetAddress();
 }
 
+std::string BluetoothDevice::GetOuiPortionOfBluetoothAddress() const {
+  // Get the vendor part of the address: "00:11:22" for "00:11:22:33:44:55".
+  return GetAddress().substr(0, 8);
+}
+
 void BluetoothDevice::UpdateAdvertisementData(
     int8_t rssi,
     absl::optional<uint8_t> flags,
@@ -498,7 +516,7 @@ BluetoothDevice::GetPrimaryServicesByUUID(const BluetoothUUID& service_uuid) {
   return services;
 }
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 void BluetoothDevice::SetBatteryInfo(const BatteryInfo& info) {
   if (info.percentage) {
     DCHECK_GE(info.percentage.value(), 0);
@@ -577,18 +595,22 @@ void BluetoothDevice::DidConnectGatt(absl::optional<ConnectErrorCode> error) {
 
     target_service_.reset();
 
-    for (auto& callback : create_gatt_connection_callbacks_)
+    // Callbacks may call back into this code. Move the callback list onto the
+    // stack to avoid potential re-entrancy bugs.
+    auto callbacks = std::move(create_gatt_connection_callbacks_);
+    for (auto& callback : callbacks)
       std::move(callback).Run(/*connection=*/nullptr, error.value());
-    create_gatt_connection_callbacks_.clear();
     return;
   }
 
-  for (auto& callback : create_gatt_connection_callbacks_) {
+  // Callbacks may call back into this code. Move the callback list onto the
+  // stack to avoid potential re-entrancy bugs.
+  auto callbacks = std::move(create_gatt_connection_callbacks_);
+  for (auto& callback : callbacks) {
     std::move(callback).Run(CreateBluetoothGattConnectionObject(),
                             /*error_code=*/absl::nullopt);
   }
 
-  create_gatt_connection_callbacks_.clear();
   GetAdapter()->NotifyDeviceChanged(this);
 }
 

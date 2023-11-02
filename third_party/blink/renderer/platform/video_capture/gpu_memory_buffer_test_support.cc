@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,7 +52,8 @@ FakeGpuMemoryBufferSupport::CreateGpuMemoryBufferImplFromHandle(
     gfx::BufferUsage usage,
     gpu::GpuMemoryBufferImpl::DestructionCallback callback,
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-    scoped_refptr<base::UnsafeSharedMemoryPool> pool) {
+    scoped_refptr<base::UnsafeSharedMemoryPool> pool,
+    base::span<uint8_t> premapped_memory) {
   return std::make_unique<FakeGpuMemoryBufferImpl>(size, format);
 }
 

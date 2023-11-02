@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,8 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "url/origin.h"
 
@@ -90,11 +91,7 @@ class CONTENT_EXPORT NavigationControllerAndroid {
       jboolean has_user_gesture,
       jboolean should_clear_history_list,
       jlong input_start,
-      const base::android::JavaParamRef<jstring>& source_package_name,
-      const base::android::JavaParamRef<jstring>& attribution_source_event_id,
-      const base::android::JavaParamRef<jstring>& attribution_destination,
-      const base::android::JavaParamRef<jstring>& attribution_report_to,
-      jlong attributionExpiry);
+      jlong navigation_ui_data_ptr);
   void ClearSslPreferences(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& /* obj */);
@@ -105,7 +102,8 @@ class CONTENT_EXPORT NavigationControllerAndroid {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& /* obj */,
       jboolean state,
-      jboolean reload_on_state_change);
+      jboolean reload_on_state_change,
+      jint source);
   base::android::ScopedJavaLocalRef<jobject> GetEntryAtIndex(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
@@ -151,8 +149,12 @@ class CONTENT_EXPORT NavigationControllerAndroid {
       jint index);
 
  private:
-  NavigationControllerImpl* navigation_controller_;
+  void SetUseDesktopUserAgentInternal(bool enabled,
+                                      bool reload_on_state_change);
+
+  raw_ptr<NavigationControllerImpl> navigation_controller_;
   base::android::ScopedJavaGlobalRef<jobject> obj_;
+  base::WeakPtrFactory<NavigationControllerAndroid> weak_factory_{this};
 };
 
 }  // namespace content

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,9 +27,12 @@
   X(minUniformBufferOffsetAlignment)           \
   X(minStorageBufferOffsetAlignment)           \
   X(maxVertexBuffers)                          \
+  X(maxBufferSize)                             \
   X(maxVertexAttributes)                       \
   X(maxVertexBufferArrayStride)                \
   X(maxInterStageShaderComponents)             \
+  X(maxInterStageShaderVariables)              \
+  X(maxColorAttachments)                       \
   X(maxComputeWorkgroupStorageSize)            \
   X(maxComputeInvocationsPerWorkgroup)         \
   X(maxComputeWorkgroupSizeX)                  \
@@ -60,7 +63,7 @@ GPUSupportedLimits::GPUSupportedLimits(const WGPUSupportedLimits& limits)
 }
 
 // static
-void GPUSupportedLimits::MakeUndefined(WGPUSupportedLimits* out) {
+void GPUSupportedLimits::MakeUndefined(WGPURequiredLimits* out) {
 #define X(name) \
   out->limits.name = UndefinedLimitValue<decltype(WGPULimits::name)>();
   SUPPORTED_LIMITS(X)
@@ -69,7 +72,7 @@ void GPUSupportedLimits::MakeUndefined(WGPUSupportedLimits* out) {
 
 // static
 DOMException* GPUSupportedLimits::Populate(
-    WGPUSupportedLimits* out,
+    WGPURequiredLimits* out,
     const Vector<std::pair<String, uint64_t>>& in) {
   // TODO(crbug.com/dawn/685): This loop is O(n^2) if the developer
   // passes all of the limits. It could be O(n) with a mapping of

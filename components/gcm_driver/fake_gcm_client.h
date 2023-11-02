@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/gcm_driver/gcm_client.h"
@@ -121,7 +122,7 @@ class FakeGCMClient : public GCMClient {
   void SendAcknowledgement(const std::string& app_id,
                            const std::string& message_id);
 
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
   std::string product_category_for_subtypes_;
   bool started_;
   StartMode start_mode_;

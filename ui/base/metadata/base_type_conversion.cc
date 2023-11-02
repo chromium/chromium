@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -85,7 +85,10 @@ std::u16string TypeConverter<base::TimeDelta>::ToString(
 
 std::u16string TypeConverter<gfx::Insets>::ToString(
     const gfx::Insets& source_value) {
-  return base::ASCIIToUTF16(source_value.ToString());
+  // This is different from gfx::Insets::ToString().
+  return base::ASCIIToUTF16(
+      base::StringPrintf("%d,%d,%d,%d", source_value.top(), source_value.left(),
+                         source_value.bottom(), source_value.right()));
 }
 
 std::u16string TypeConverter<gfx::Point>::ToString(
@@ -263,7 +266,7 @@ absl::optional<gfx::Insets> TypeConverter<gfx::Insets>::FromString(
       base::StringToInt(values[1], &left) &&
       base::StringToInt(values[2], &bottom) &&
       base::StringToInt(values[3], &right)) {
-    return gfx::Insets(top, left, bottom, right);
+    return gfx::Insets::TLBR(top, left, bottom, right);
   }
   return absl::nullopt;
 }

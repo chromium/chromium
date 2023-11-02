@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,7 @@ void ManagedUIHandler::InitializeInternal(content::WebUI* web_ui,
                                           content::WebUIDataSource* source,
                                           Profile* profile) {
   auto handler = std::make_unique<ManagedUIHandler>(profile);
-  source->AddLocalizedStrings(*handler->GetDataSourceUpdate());
+  source->AddLocalizedStrings(handler->GetDataSourceUpdate());
   handler->source_name_ = source->GetSource();
   web_ui->AddMessageHandler(std::move(handler));
 }
@@ -53,13 +53,14 @@ ManagedUIHandler::~ManagedUIHandler() {
 }
 
 void ManagedUIHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "observeManagedUI",
       base::BindRepeating(&ManagedUIHandler::HandleObserveManagedUI,
                           base::Unretained(this)));
 }
 
-void ManagedUIHandler::HandleObserveManagedUI(const base::ListValue* /*args*/) {
+void ManagedUIHandler::HandleObserveManagedUI(
+    const base::Value::List& /*args*/) {
   AllowJavascript();
   AddObservers();
 }
@@ -108,16 +109,13 @@ void ManagedUIHandler::RemoveObservers() {
   pref_registrar_.RemoveAll();
 }
 
-std::unique_ptr<base::DictionaryValue> ManagedUIHandler::GetDataSourceUpdate()
-    const {
-  auto update = std::make_unique<base::DictionaryValue>();
-  update->SetKey("browserManagedByOrg",
-                 base::Value(chrome::GetManagedUiWebUILabel(profile_)));
+base::Value::Dict ManagedUIHandler::GetDataSourceUpdate() const {
+  base::Value::Dict update;
+  update.Set("browserManagedByOrg", chrome::GetManagedUiWebUILabel(profile_));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  update->SetKey("deviceManagedByOrg",
-                 base::Value(chrome::GetDeviceManagedUiWebUILabel()));
+  update.Set("deviceManagedByOrg", chrome::GetDeviceManagedUiWebUILabel());
 #endif
-  update->SetKey("isManaged", base::Value(managed_));
+  update.Set("isManaged", managed_);
   return update;
 }
 

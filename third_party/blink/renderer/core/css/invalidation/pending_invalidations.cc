@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,6 +33,7 @@ void PendingInvalidations::ScheduleInvalidationSetsForNode(
       if (invalidation_set->WholeSubtreeInvalid()) {
         auto* shadow_root = DynamicTo<ShadowRoot>(node);
         auto* subtree_root = shadow_root ? &shadow_root->host() : &node;
+
         subtree_root->SetNeedsStyleRecalc(
             kSubtreeStyleChange, StyleChangeReasonForTracing::Create(
                                      style_change_reason::kStyleInvalidator));
@@ -56,8 +57,7 @@ void PendingInvalidations::ScheduleInvalidationSetsForNode(
     }
   }
 
-  if (!requires_descendant_invalidation &&
-      invalidation_lists.siblings.IsEmpty())
+  if (!requires_descendant_invalidation && invalidation_lists.siblings.empty())
     return;
 
   // For SiblingInvalidationSets we can skip scheduling if there is no
@@ -95,9 +95,9 @@ void PendingInvalidations::ScheduleInvalidationSetsForNode(
 void PendingInvalidations::ScheduleSiblingInvalidationsAsDescendants(
     const InvalidationLists& invalidation_lists,
     ContainerNode& scheduling_parent) {
-  DCHECK(invalidation_lists.descendants.IsEmpty());
+  DCHECK(invalidation_lists.descendants.empty());
 
-  if (invalidation_lists.siblings.IsEmpty())
+  if (invalidation_lists.siblings.empty())
     return;
 
   NodeInvalidationSets& pending_invalidations =
@@ -141,7 +141,7 @@ void PendingInvalidations::RescheduleSiblingInvalidationsAsDescendants(
   auto pending_invalidations_iterator =
       pending_invalidation_map_.find(&element);
   if (pending_invalidations_iterator == pending_invalidation_map_.end() ||
-      pending_invalidations_iterator->value.Siblings().IsEmpty())
+      pending_invalidations_iterator->value.Siblings().empty())
     return;
   NodeInvalidationSets& pending_invalidations =
       pending_invalidations_iterator->value;

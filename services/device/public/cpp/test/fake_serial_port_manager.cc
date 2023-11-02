@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,7 +71,9 @@ class FakeSerialPort : public mojom::SerialPort {
 
   void GetPortInfo(GetPortInfoCallback callback) override { NOTREACHED(); }
 
-  void Close(CloseCallback callback) override { std::move(callback).Run(); }
+  void Close(bool flush, CloseCallback callback) override {
+    std::move(callback).Run();
+  }
 
  private:
   mojo::Receiver<mojom::SerialPort> receiver_{this};

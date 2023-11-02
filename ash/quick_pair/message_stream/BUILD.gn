@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -18,10 +18,10 @@ source_set("message_stream") {
 
   deps = [
     "//ash/quick_pair/common",
-    "//ash/services/quick_pair",
-    "//ash/services/quick_pair/public/cpp",
-    "//ash/services/quick_pair/public/mojom",
     "//base",
+    "//chromeos/ash/services/quick_pair",
+    "//chromeos/ash/services/quick_pair/public/cpp",
+    "//chromeos/ash/services/quick_pair/public/mojom",
     "//device/bluetooth",
     "//net",
   ]
@@ -42,11 +42,11 @@ static_library("test_support") {
 
   deps = [
     "//ash/quick_pair/common",
-    "//ash/services/quick_pair",
-    "//ash/services/quick_pair/public/cpp",
-    "//ash/services/quick_pair/public/mojom",
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/services/quick_pair",
+    "//chromeos/ash/services/quick_pair/public/cpp",
+    "//chromeos/ash/services/quick_pair/public/mojom",
     "//device/bluetooth",
     "//device/bluetooth:mocks",
     "//testing/gtest",
@@ -57,7 +57,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "message_stream_lookup_unittest.cc",
+    "message_stream_lookup_impl_unittest.cc",
     "message_stream_unittest.cc",
   ]
 
@@ -65,10 +65,10 @@ source_set("unit_tests") {
     ":message_stream",
     ":test_support",
     "//ash/quick_pair/common",
-    "//ash/services/quick_pair",
-    "//ash/services/quick_pair:test_support",
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/services/quick_pair",
+    "//chromeos/ash/services/quick_pair:test_support",
     "//device/bluetooth",
     "//device/bluetooth:mocks",
     "//mojo/public/cpp/bindings",

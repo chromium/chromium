@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -21,8 +20,6 @@
 #include "crypto/rsa_private_key.h"
 #include "crypto/signature_creator.h"
 
-using RetrievePolicyResponseType =
-    chromeos::SessionManagerClient::RetrievePolicyResponseType;
 using ownership::OwnerKeyUtil;
 using ownership::PublicKey;
 
@@ -30,13 +27,16 @@ namespace em = enterprise_management;
 
 namespace ash {
 
+using RetrievePolicyResponseType =
+    SessionManagerClient::RetrievePolicyResponseType;
+
 SessionManagerOperation::SessionManagerOperation(Callback callback)
     : callback_(std::move(callback)) {}
 
 SessionManagerOperation::~SessionManagerOperation() {}
 
 void SessionManagerOperation::Start(
-    chromeos::SessionManagerClient* session_manager_client,
+    SessionManagerClient* session_manager_client,
     scoped_refptr<OwnerKeyUtil> owner_key_util,
     scoped_refptr<PublicKey> public_key) {
   session_manager_client_ = session_manager_client;
@@ -89,7 +89,7 @@ void SessionManagerOperation::ReportResult(
 }
 
 void SessionManagerOperation::EnsurePublicKey(base::OnceClosure callback) {
-  if (force_key_load_ || !public_key_ || !public_key_->is_loaded()) {
+  if (force_key_load_ || !public_key_ || public_key_->is_empty()) {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE,
         {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
@@ -107,14 +107,18 @@ void SessionManagerOperation::EnsurePublicKey(base::OnceClosure callback) {
 scoped_refptr<PublicKey> SessionManagerOperation::LoadPublicKey(
     scoped_refptr<OwnerKeyUtil> util,
     scoped_refptr<PublicKey> current_key) {
-  scoped_refptr<PublicKey> public_key(new PublicKey());
-
   // Keep already-existing public key.
-  if (current_key && current_key->is_loaded()) {
-    public_key->data() = current_key->data();
+  if (current_key && !current_key->is_empty()) {
+    return current_key->clone();
   }
-  if (!public_key->is_loaded() && util->IsPublicKeyPresent()) {
-    if (!util->ImportPublicKey(&public_key->data()))
+
+  scoped_refptr<PublicKey> public_key =
+      base::MakeRefCounted<ownership::PublicKey>(
+          /*is_persisted=*/false, /*data=*/std::vector<uint8_t>());
+
+  if (util->IsPublicKeyPresent()) {
+    public_key = util->ImportPublicKey();
+    if (!public_key || public_key->is_empty())
       LOG(ERROR) << "Failed to load public owner key.";
   }
 
@@ -126,7 +130,7 @@ void SessionManagerOperation::StorePublicKey(base::OnceClosure callback,
   force_key_load_ = false;
   public_key_ = new_key;
 
-  if (!public_key_ || !public_key_->is_loaded()) {
+  if (!public_key_ || public_key_->is_empty()) {
     ReportResult(DeviceSettingsService::STORE_KEY_UNAVAILABLE);
     return;
   }

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -174,13 +174,6 @@ TEST(WebInputEventBuilderAndroidTest, DomKeySyntheticEvent) {
 // Testing new Android keycode introduced in API 24.
 TEST(WebInputEventBuilderAndroidTest, CutCopyPasteKey) {
   JNIEnv* env = AttachCurrentThread();
-
-  // The minimum Android NDK does not provide values for these yet:
-  enum {
-    AKEYCODE_CUT = 277,
-    AKEYCODE_COPY = 278,
-    AKEYCODE_PASTE = 279,
-  };
 
   struct DomKeyTestCase {
     int key_code;

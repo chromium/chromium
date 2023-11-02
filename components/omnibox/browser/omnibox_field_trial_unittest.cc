@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,7 +50,7 @@ class OmniboxFieldTrialTest : public testing::Test {
                                            const std::string& group_name) {
     base::FieldTrial* trial = base::FieldTrialList::CreateFieldTrial(
         name, group_name);
-    trial->group();
+    trial->Activate();
     return trial;
   }
 
@@ -358,10 +358,9 @@ TEST_F(OmniboxFieldTrialTest, LocalZeroSuggestAgeThreshold) {
   base::test::ScopedFeatureList scoped_feature_list_;
 
   // The default value can be overridden.
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      {{omnibox::kOmniboxLocalZeroSuggestAgeThreshold,
-        {{OmniboxFieldTrial::kOmniboxLocalZeroSuggestAgeThresholdParam, "3"}}}},
-      {});
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      omnibox::kOmniboxLocalZeroSuggestAgeThreshold,
+      {{OmniboxFieldTrial::kOmniboxLocalZeroSuggestAgeThresholdParam, "3"}});
   base::Time age_threshold =
       OmniboxFieldTrial::GetLocalHistoryZeroSuggestAgeThreshold();
   EXPECT_EQ(3, base::TimeDelta(base::Time::Now() - age_threshold).InDays());
@@ -369,12 +368,13 @@ TEST_F(OmniboxFieldTrialTest, LocalZeroSuggestAgeThreshold) {
   // If the age threshold is not parsable to an unsigned integer, the default
   // value is used.
   scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      {{omnibox::kOmniboxLocalZeroSuggestAgeThreshold,
-        {{OmniboxFieldTrial::kOmniboxLocalZeroSuggestAgeThresholdParam, "j"}}}},
-      {});
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      omnibox::kOmniboxLocalZeroSuggestAgeThreshold,
+      {{OmniboxFieldTrial::kOmniboxLocalZeroSuggestAgeThresholdParam, "j"}});
+  const int expected_age_threshold_days = 60;
   age_threshold = OmniboxFieldTrial::GetLocalHistoryZeroSuggestAgeThreshold();
-  EXPECT_EQ(7, base::TimeDelta(base::Time::Now() - age_threshold).InDays());
+  EXPECT_EQ(expected_age_threshold_days,
+            base::TimeDelta(base::Time::Now() - age_threshold).InDays());
 }
 
 TEST_F(OmniboxFieldTrialTest, HUPNewScoringFieldTrial) {

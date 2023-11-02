@@ -1,0 +1,54 @@
+diff --git a/patches/0007-Remove-nolint-for-chromium b/patches/0007-Remove-nolint-for-chromium
+index f240de4b496c4..e69de29bb2d1d 100644
+--- a/patches/0007-Remove-nolint-for-chromium
++++ b/patches/0007-Remove-nolint-for-chromium
+@@ -1,18 +0,0 @@
+-diff --git a/src/membership_response_map_test.cc b/src/membership_response_map_test.cc
+-index 9ed303ee92ba1..778413893dea3 100644
+---- a/src/membership_response_map_test.cc
+-+++ b/src/membership_response_map_test.cc
+-@@ -28,10 +28,10 @@ using ::rlwe::testing::EqualsProto;
+- RlwePlaintextId CreateRlwePlaintextId(absl::string_view non_sensitive_id,
+-                                       absl::string_view sensitive_id) {
+-   RlwePlaintextId id;
+--  id.set_non_sensitive_id(std::string(  // NOLINT(This is for
+--      non_sensitive_id));               // Chromium compatibility)
+-+  id.set_non_sensitive_id(std::string(
+-+      non_sensitive_id));
+-   id.set_sensitive_id(
+--      std::string(sensitive_id));  // NOLINT(This is for Chromium compatibility)
+-+      std::string(sensitive_id));
+-   return id;
+- }
+- 
+diff --git a/src/internal/oprf_utils.cc b/src/internal/oprf_utils.cc
+index 053d6f3872dc6..13b6191e8df34 100644
+--- a/src/internal/oprf_utils.cc
++++ b/src/internal/oprf_utils.cc
+@@ -29,7 +29,7 @@ namespace private_membership {
+   doubly_encrypted_id.set_queried_encrypted_id(std::string(encrypted_id));
+ 
+   auto reencrypted_id =
+-      ec_cipher->ReEncrypt(std::string(encrypted_id)); // NOLINT
++      ec_cipher->ReEncrypt(std::string(encrypted_id));
+   if (!reencrypted_id.ok()) {
+     return reencrypted_id.status();
+   }
+diff --git a/src/membership_response_map_test.cc b/src/membership_response_map_test.cc
+index 9ed303ee92ba1..778413893dea3 100644
+--- a/src/membership_response_map_test.cc
++++ b/src/membership_response_map_test.cc
+@@ -28,10 +28,10 @@ using ::rlwe::testing::EqualsProto;
+ RlwePlaintextId CreateRlwePlaintextId(absl::string_view non_sensitive_id,
+                                       absl::string_view sensitive_id) {
+   RlwePlaintextId id;
+-  id.set_non_sensitive_id(std::string(  // NOLINT(This is for
+-      non_sensitive_id));               // Chromium compatibility)
++  id.set_non_sensitive_id(std::string(
++      non_sensitive_id));
+   id.set_sensitive_id(
+-      std::string(sensitive_id));  // NOLINT(This is for Chromium compatibility)
++      std::string(sensitive_id));
+   return id;
+ }
+ 

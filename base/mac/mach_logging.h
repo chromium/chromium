@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/base_export.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 
 // Use the MACH_LOG family of macros along with a mach_error_t (kern_return_t)
@@ -51,10 +50,10 @@ class BASE_EXPORT MachLogMessage : public logging::LogMessage {
 
 }  // namespace logging
 
-#if defined(NDEBUG)
-#define MACH_DVLOG_IS_ON(verbose_level) 0
-#else
+#if DCHECK_IS_ON()
 #define MACH_DVLOG_IS_ON(verbose_level) VLOG_IS_ON(verbose_level)
+#else
+#define MACH_DVLOG_IS_ON(verbose_level) 0
 #endif
 
 #define MACH_LOG_STREAM(severity, mach_err) \
@@ -98,7 +97,7 @@ class BASE_EXPORT MachLogMessage : public logging::LogMessage {
               DCHECK_IS_ON() && !(condition))   \
       << "Check failed: " #condition << ". "
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 
 namespace logging {
 
@@ -166,6 +165,6 @@ class BASE_EXPORT BootstrapLogMessage : public logging::LogMessage {
               DCHECK_IS_ON() && !(condition))             \
       << "Check failed: " #condition << ". "
 
-#endif  // !OS_IOS
+#endif  // !BUILDFLAG(IS_IOS)
 
 #endif  // BASE_MAC_MACH_LOGGING_H_

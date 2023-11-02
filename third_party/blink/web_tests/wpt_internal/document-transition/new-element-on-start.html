@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html class=reftest-wait>
+<title>Shared transitions: new element tag specified for start phase</title>
+<link rel="help" href="https://github.com/WICG/shared-element-transitions">
+<link rel="author" href="mailto:vmpstr@chromium.org">
+<link rel="match" href="new-element-on-start-ref.html">
+
+<script src="/common/reftest-wait.js"></script>
+<style>
+div {
+  width: 100px;
+  height: 100px;
+  contain: paint;
+  position: absolute;
+  top: 50px;
+}
+
+.before {
+  background: lightblue;
+  left: 50px;
+}
+.after {
+  background: black;
+  left: 200px;
+}
+.hidden {
+  background: red;
+  left: 350px;
+}
+
+html::page-transition-container(hidden) { animation-duration: 300s; }
+html::page-transition-image-wrapper(hidden) { opacity: 0; }
+
+html::page-transition-container(before) { animation-duration: 0s; }
+html::page-transition-image-wrapper(before) { filter: invert(1); }
+html::page-transition-incoming-image(before) { animation-duration: 0s; }
+html::page-transition-outgoing-image(*) { animation-duration: 0s; }
+
+html::page-transition-container(after) { animation-duration: 0s; }
+html::page-transition-image-wrapper(after) { filter: invert(1); }
+html::page-transition-incoming-image(after) { animation-duration: 0s; }
+html::page-transition-outgoing-image(after) { animation-duration: 0s; }
+
+html::page-transition-container(root) { animation: unset; opacity: 0; }
+html::page-transition { background: lightpink; }
+
+</style>
+
+<div id=before class=before></div>
+<div id=after class=after></div>
+
+<div id=hidden class=hidden></div>
+
+<script>
+async function runTest() {
+  let t = document.createDocumentTransition();
+  hidden.style.pageTransitionTag = "hidden";
+  before.style.pageTransitionTag = "before";
+  t.start(() => {
+    before.remove();
+    hidden.style.pageTransitionTag = "";
+    after.style.pageTransitionTag = "after";
+
+    requestAnimationFrame(() => requestAnimationFrame(takeScreenshot))
+  });
+}
+onload = () => requestAnimationFrame(() => requestAnimationFrame(runTest));
+</script>
+

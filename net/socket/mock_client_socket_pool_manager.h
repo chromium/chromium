@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "net/base/proxy_server.h"
 #include "net/socket/client_socket_pool_manager.h"
 #include "net/socket/client_socket_pool_manager_impl.h"
@@ -37,7 +36,7 @@ class MockClientSocketPoolManager : public ClientSocketPoolManager {
                                  const char* net_log_reason_utf8) override;
   void CloseIdleSockets(const char* net_log_reason_utf8) override;
   ClientSocketPool* GetSocketPool(const ProxyServer& proxy_server) override;
-  std::unique_ptr<base::Value> SocketPoolInfoToValue() const override;
+  base::Value SocketPoolInfoToValue() const override;
 
  private:
   using ClientSocketPoolMap =

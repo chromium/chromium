@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
@@ -38,9 +39,9 @@ void SVGMaskPainter::Paint(GraphicsContext& context,
     return;
 
   // TODO(fs): Should clip this with the bounds of the mask's PaintRecord.
-  FloatRect visual_rect = properties->MaskClip()->PaintClipRect().Rect();
+  gfx::RectF visual_rect = properties->MaskClip()->PaintClipRect().Rect();
   DrawingRecorder recorder(context, display_item_client, DisplayItem::kSVGMask,
-                           ToGfxRect(EnclosingIntRect(visual_rect)));
+                           gfx::ToEnclosingRect(visual_rect));
 
   SVGResourceClient* client = SVGResources::GetClient(layout_object);
   const ComputedStyle& style = layout_object.StyleRef();
@@ -60,7 +61,7 @@ void SVGMaskPainter::Paint(GraphicsContext& context,
     content_transformation.Translate(reference_box.x(), reference_box.y());
     content_transformation.ScaleNonUniform(reference_box.width(),
                                            reference_box.height());
-  } else if (layout_object.IsSVGForeignObject()) {
+  } else if (layout_object.IsSVGForeignObjectIncludingNG()) {
     content_transformation.Scale(style.EffectiveZoom());
   }
 

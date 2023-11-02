@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,8 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "base/run_loop.h"
-#include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -74,65 +73,46 @@ TEST_F(WebBundleParserFactoryTest, FileDataSource) {
   auto data_source = CreateFileDataSource(
       remote.InitWithNewPipeAndPassReceiver(), std::move(file));
 
-  absl::optional<std::vector<uint8_t>> result_data;
   {
-    base::RunLoop run_loop;
-    data_source->Read(
-        /*offset=*/0, test_length,
-        base::BindLambdaForTesting(
-            [&result_data,
-             &run_loop](const absl::optional<std::vector<uint8_t>>& data) {
-              result_data = data;
-              run_loop.QuitClosure().Run();
-            }));
-    run_loop.Run();
+    base::test::TestFuture<const absl::optional<std::vector<uint8_t>>&> future;
+    data_source->Read(/*offset=*/0, test_length, future.GetCallback());
+    ASSERT_TRUE(future.Get());
+    EXPECT_EQ(first16b, *future.Get());
   }
-  ASSERT_TRUE(result_data);
-  EXPECT_EQ(first16b, *result_data);
 
   {
-    base::RunLoop run_loop;
-    data_source->Read(
-        file_length - test_length, test_length,
-        base::BindLambdaForTesting(
-            [&result_data,
-             &run_loop](const absl::optional<std::vector<uint8_t>>& data) {
-              result_data = data;
-              run_loop.QuitClosure().Run();
-            }));
-    run_loop.Run();
+    base::test::TestFuture<const absl::optional<std::vector<uint8_t>>&> future;
+    data_source->Read(file_length - test_length, test_length,
+                      future.GetCallback());
+    ASSERT_TRUE(future.Get());
+    EXPECT_EQ(last16b, *future.Get());
   }
-  ASSERT_TRUE(result_data);
-  EXPECT_EQ(last16b, *result_data);
 
   {
-    base::RunLoop run_loop;
-    data_source->Read(
-        file_length - test_length, test_length + 1,
-        base::BindLambdaForTesting(
-            [&result_data,
-             &run_loop](const absl::optional<std::vector<uint8_t>>& data) {
-              result_data = data;
-              run_loop.QuitClosure().Run();
-            }));
-    run_loop.Run();
+    base::test::TestFuture<const absl::optional<std::vector<uint8_t>>&> future;
+    data_source->Read(file_length - test_length, test_length + 1,
+                      future.GetCallback());
+    ASSERT_TRUE(future.Get());
+    EXPECT_EQ(last16b, *future.Get());
   }
-  ASSERT_TRUE(result_data);
-  EXPECT_EQ(last16b, *result_data);
 
   {
-    base::RunLoop run_loop;
-    data_source->Read(
-        file_length + 1, test_length,
-        base::BindLambdaForTesting(
-            [&result_data,
-             &run_loop](const absl::optional<std::vector<uint8_t>>& data) {
-              result_data = data;
-              run_loop.QuitClosure().Run();
-            }));
-    run_loop.Run();
+    base::test::TestFuture<const absl::optional<std::vector<uint8_t>>&> future;
+    data_source->Read(file_length + 1, test_length, future.GetCallback());
+    ASSERT_FALSE(future.Get());
   }
-  ASSERT_FALSE(result_data);
+
+  {
+    base::test::TestFuture<int64_t> future;
+    data_source->Length(future.GetCallback());
+    EXPECT_EQ(file_length, future.Get());
+  }
+
+  {
+    base::test::TestFuture<bool> future;
+    data_source->IsRandomAccessContext(future.GetCallback());
+    EXPECT_TRUE(future.Get());
+  }
 }
 
 TEST_F(WebBundleParserFactoryTest, GetParserForFile) {
@@ -146,36 +126,26 @@ TEST_F(WebBundleParserFactoryTest, GetParserForFile) {
 
   mojom::BundleMetadataPtr metadata;
   {
-    base::RunLoop run_loop;
-    parser->ParseMetadata(base::BindLambdaForTesting(
-        [&metadata, &run_loop](mojom::BundleMetadataPtr parsed_metadata,
-                               mojom::BundleMetadataParseErrorPtr error) {
-          metadata = std::move(parsed_metadata);
-          run_loop.QuitClosure().Run();
-        }));
-    run_loop.Run();
+    base::test::TestFuture<mojom::BundleMetadataPtr,
+                           mojom::BundleMetadataParseErrorPtr>
+        future;
+    parser->ParseMetadata(/*offset=*/-1, future.GetCallback());
+    metadata = std::get<0>(future.Take());
   }
   ASSERT_TRUE(metadata);
   ASSERT_EQ(metadata->requests.size(), 4u);
 
   std::map<std::string, mojom::BundleResponsePtr> responses;
   for (const auto& item : metadata->requests) {
-    ASSERT_TRUE(item.second->variants_value.empty());
-    ASSERT_EQ(item.second->response_locations.size(), 1u);
-    base::RunLoop run_loop;
-    parser->ParseResponse(item.second->response_locations[0]->offset,
-                          item.second->response_locations[0]->length,
-                          base::BindLambdaForTesting(
-                              [&item, &responses, &run_loop](
-                                  mojom::BundleResponsePtr response,
-                                  mojom::BundleResponseParseErrorPtr error) {
-                                ASSERT_TRUE(response);
-                                ASSERT_FALSE(error);
-                                responses[item.first.spec()] =
-                                    std::move(response);
-                                run_loop.QuitClosure().Run();
-                              }));
-    run_loop.Run();
+    base::test::TestFuture<mojom::BundleResponsePtr,
+                           mojom::BundleResponseParseErrorPtr>
+        future;
+    parser->ParseResponse(item.second->offset, item.second->length,
+                          future.GetCallback());
+    auto [response, error] = future.Take();
+    ASSERT_TRUE(response);
+    ASSERT_FALSE(error);
+    responses[item.first.spec()] = std::move(response);
   }
   ASSERT_TRUE(responses["https://test.example.org/"]);
   EXPECT_EQ(responses["https://test.example.org/"]->response_code, 200);

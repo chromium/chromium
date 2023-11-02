@@ -34,7 +34,7 @@
       "src/src/core/ext/upb-generated",
       "src/src/core/ext/upbdefs-generated",
       "src/third_party/cares",
-      "//third_party/cares",
+      "//third_party/cares/include",
       "src/third_party/upb",
       "//third_party/abseil-cpp",
     ]
@@ -56,6 +56,8 @@
     cflags = [
       "-Wno-implicit-fallthrough",
       "-Wno-shadow",
+      "-Wno-unreachable-code-return",
+      "-Wno-unreachable-code-break",
     ]
 
     if (is_android) {
@@ -94,6 +96,7 @@
       "-Wno-string-concatenation",
       "-Wno-unreachable-code",
       "-Wno-unused-variable",
+      "-Wno-unused-result",
     ]
   }
 
@@ -136,6 +139,11 @@
   # Split the sources into 3 set of sources so that
   # sources with repeated basenames are in different sets
   def find_repeated(sources):
+    # Deduplicate the sources files in the input so the same source file
+    # don't appear in multiple sets
+    sources = set(sources)
+    # Convert sources to sorted list so the sources are split into 3 targets deterministically
+    sources = sorted(sources)
     out_sources = []
     repeated1 = []
     repeated2 = []
@@ -177,6 +185,16 @@
         'src/src/cpp/server/xds_server_credentials.cc',
         'src/src/cpp/server/xds_server_credentials.cc',
         'src/src/cpp/server/xds_server_credentials.h',
+        'src/src/core/ext/filters/rbac/rbac_filter.cc',
+        'src/src/core/ext/filters/rbac/rbac_filter.h',
+        'src/src/core/ext/filters/rbac/rbac_service_config_parser.cc',
+        'src/src/core/ext/filters/rbac/rbac_service_config_parser.h',
+        'src/src/core/lib/security/authorization/grpc_authorization_engine.cc',
+        'src/src/core/lib/security/authorization/grpc_authorization_engine.h',
+        'src/src/core/lib/security/authorization/matchers.cc',
+        'src/src/core/lib/security/authorization/matchers.h',
+        'src/src/core/lib/security/authorization/rbac_policy.cc',
+        'src/src/core/lib/security/authorization/rbac_policy.h',
     ]
     return s in file_names
 
@@ -192,8 +210,6 @@
         out_sources.append('# Disabling some default plugins.')
         out_sources.append('# "{}",'.format(s))
         out_sources.append('"plugin_registry/grpc_plugin_registry.cc",')
-      elif s == 'src/src/core/lib/gprpp/status_helper.cc':
-        out_sources.append('# "{}",'.format(s))
       elif s == 'src/src/core/lib/matchers/matchers.cc':
         # matchers are disabled to reduce binary size
         out_sources.append('# "{}",'.format(s))
@@ -318,13 +334,15 @@
           sources.append(os.path.join(root, f))
     return ["src/" + s for s in sources]
 
-  cares_sources = glob.glob('third_party/cares/cares/*.h')+ \
-    glob.glob('third_party/cares/cares/*.c')
-  cares_sources = gn_sort(["//third_party/cares/" + os.path.basename(s) for s in cares_sources])
+  cares_sources = glob.glob('third_party/cares/cares/include/*.h') + \
+    glob.glob('third_party/cares/cares/src/lib/*.c')
+  # cares is only used in chromecast. Use chromium/src/third_party/cares in chromecast
+  cares_sources = gn_sort([s.replace('third_party/cares/cares', '//third_party/cares')
+                           for s in cares_sources])
   cares_sources = [s for s in cares_sources if s not in (
-    '//third_party/cares/ahost.c',
-    '//third_party/cares/adig.c',
-    '//third_party/cares/acountry.c')]
+    '//third_party/cares/cares/src/lib/ahost.c',
+    '//third_party/cares/cares/src/lib/adig.c',
+    '//third_party/cares/cares/src/lib/acountry.c')]
 
   %>\
   <%doc>
@@ -542,6 +560,7 @@
     ]
 
     if (enable_grpc_ares) {
+      include_dirs = [ "//third_party/cares/include" ]
       sources += [
   % for src in cares_sources:
         "${src}",

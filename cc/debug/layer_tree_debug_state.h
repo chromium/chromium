@@ -1,4 +1,4 @@
-// Copyright 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,8 +47,6 @@ class CC_DEBUG_EXPORT LayerTreeDebugState {
   int slow_down_raster_scale_factor = 0;
   bool rasterize_only_visible_content = false;
   bool highlight_non_lcd_text_layers = false;
-
-  bool show_hit_test_borders = false;
 
   // This is part of the feature to show performance metrics on HUD. This
   // particular flag is set only in Blink.

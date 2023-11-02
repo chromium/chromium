@@ -1,0 +1,46 @@
+<style include="cr-shared-style iron-flex">
+
+  network-list-item {
+    align-items: center;
+  }
+
+  #container {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  #networkList {
+    height: 100%;
+  }
+
+  /* Override scrollable border-bottom-color */
+  #container[no-bottom-scroll-border] {
+    border-bottom-color: transparent;
+  }
+
+  iron-list > *:not(:first-of-type) {
+    border-top: var(--cr-separator-line);
+  }
+
+</style>
+<div id="container" class="layout vertical flex" scrollable
+    no-bottom-scroll-border$="[[noBottomScrollBorder]]">
+  <iron-list id="networkList" items="[[listItems_]]"
+      scroll-target="container" preserve-focus>
+    <template>
+      <network-list-item item="[[item]]"
+          show-technology-badge="[[showTechnologyBadge]]"
+          show-buttons="[[showButtons]]"
+          tabindex$="[[tabIndex]]"
+          focus-row-index="[[index]]"
+          iron-list-tab-index="[[tabIndex]]"
+          activation-unavailable="[[activationUnavailable]]"
+          last-focused="{{lastFocused_}}"
+          list-blurred="{{listBlurred_}}"
+          device-state="[[deviceState]]"
+          global-policy="[[globalPolicy]]"
+          disable-item="[[disabled]]">
+      </network-list-item>
+    </template>
+  </iron-list>
+</div>

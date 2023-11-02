@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,10 @@ namespace captions {
 absl::optional<ui::CaptionStyle> GetCaptionStyleFromUserSettings(
     PrefService* prefs,
     bool record_metrics);
+
+// Returns whether the Live Caption feature is supported in Chrome. This can
+// depend on e.g. Chrome feature flags, platform/OS, supported CPU instructions.
+bool IsLiveCaptionFeatureSupported();
 
 }  // namespace captions
 

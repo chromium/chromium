@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -49,7 +50,7 @@ class CheckboxTest : public ViewsTestBase {
 
  private:
   std::unique_ptr<Widget> widget_;
-  Checkbox* checkbox_ = nullptr;
+  raw_ptr<Checkbox> checkbox_ = nullptr;
 };
 
 TEST_F(CheckboxTest, AccessibilityTest) {

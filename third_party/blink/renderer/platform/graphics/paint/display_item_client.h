@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,15 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_DISPLAY_ITEM_CLIENT_H_
 
 #include "base/dcheck_is_on.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/rect.h"
+
+#include "base/record_replay.h"
 
 namespace blink {
 
@@ -26,12 +28,20 @@ class PLATFORM_EXPORT DisplayItemClient : public GarbageCollectedMixin {
   DisplayItemClient()
       : paint_invalidation_reason_(
             static_cast<uint8_t>(PaintInvalidationReason::kJustCreated)),
-        marked_for_validation_(0) {}
+        marked_for_validation_(0) {
+    record_replay_id_ = recordreplay::NewIdMainThread("DisplayItemClient");
+  }
   DisplayItemClient(const DisplayItemClient&) = delete;
   DisplayItemClient& operator=(const DisplayItemClient&) = delete;
   virtual ~DisplayItemClient() = default;
 
   DisplayItemClientId Id() const {
+    // When recording/replaying, get a deterministic key based on the pointer ID
+    // which will behave consistently when used in hashtables or comparing the
+    // keys of possibly dead clients.
+    if (recordreplay::IsRecordingOrReplaying("pointer-ids")) {
+      return record_replay_id_;
+    }
     return reinterpret_cast<DisplayItemClientId>(this);
   }
 
@@ -96,6 +106,7 @@ class PLATFORM_EXPORT DisplayItemClient : public GarbageCollectedMixin {
   friend class ObjectPaintInvalidatorTest;
   friend class PaintChunker;
   friend class PaintController;
+  friend class PaintControllerCycleScope;
 
   void MarkForValidation() const { marked_for_validation_ = 1; }
   bool IsMarkedForValidation() const { return marked_for_validation_; }
@@ -107,6 +118,9 @@ class PLATFORM_EXPORT DisplayItemClient : public GarbageCollectedMixin {
 
   mutable uint8_t paint_invalidation_reason_ : 7;
   mutable uint8_t marked_for_validation_ : 1;
+
+  // A deterministic ID is needed for Id().
+  int record_replay_id_ = 0;
 };
 
 inline bool operator==(const DisplayItemClient& client1,

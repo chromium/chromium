@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "base/time/time.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
-#include "net/dns/public/dns_over_https_server_config.h"
+#include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -48,6 +48,8 @@ struct NET_EXPORT DnsConfigOverrides {
 
   // Overriding values. See same-named fields in DnsConfig for explanations.
   absl::optional<std::vector<IPEndPoint>> nameservers;
+  absl::optional<bool> dns_over_tls_active;
+  absl::optional<std::string> dns_over_tls_hostname;
   absl::optional<std::vector<std::string>> search;
   absl::optional<bool> append_to_multi_label_name;
   absl::optional<int> ndots;
@@ -56,10 +58,9 @@ struct NET_EXPORT DnsConfigOverrides {
   absl::optional<int> doh_attempts;
   absl::optional<bool> rotate;
   absl::optional<bool> use_local_ipv6;
-  absl::optional<std::vector<DnsOverHttpsServerConfig>> dns_over_https_servers;
+  absl::optional<DnsOverHttpsConfig> dns_over_https_config;
   absl::optional<SecureDnsMode> secure_dns_mode;
   absl::optional<bool> allow_dns_over_https_upgrade;
-  absl::optional<std::vector<std::string>> disabled_upgrade_providers;
 
   // |hosts| is not supported for overriding except to clear it.
   bool clear_hosts = false;

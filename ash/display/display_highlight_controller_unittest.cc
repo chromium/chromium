@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -146,7 +146,7 @@ TEST_F(DisplayHighlightControllerTest, VisibleMixedMode) {
   // display)
   display::DisplayManager* display_manager_ptr = display_manager();
   display::DisplayIdList id_list =
-      display_manager_ptr->GetCurrentDisplayIdList();
+      display_manager_ptr->GetConnectedDisplayIdList();
   display::DisplayIdList dst_ids;
 
   dst_ids.emplace_back(id_list[1]);

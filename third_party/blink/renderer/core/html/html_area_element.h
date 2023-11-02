@@ -63,8 +63,8 @@ class CORE_EXPORT HTMLAreaElement final : public HTMLAnchorElement {
   bool IsKeyboardFocusable() const override;
   bool IsMouseFocusable() const override;
   bool IsFocusableStyle() const override;
-  void UpdateFocusAppearanceWithOptions(SelectionBehaviorOnFocus,
-                                        const FocusOptions*) override;
+  void UpdateSelectionOnFocus(SelectionBehaviorOnFocus,
+                              const FocusOptions*) override;
   void SetFocused(bool, mojom::blink::FocusType) override;
 
   enum Shape { kDefault, kPoly, kRect, kCircle };

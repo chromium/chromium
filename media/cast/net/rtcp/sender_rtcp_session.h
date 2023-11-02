@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 
 #include "base/containers/queue.h"
 #include "base/hash/hash.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "media/cast/net/cast_transport.h"
 #include "media/cast/net/pacing/paced_sender.h"
@@ -102,11 +103,11 @@ class SenderRtcpSession : public RtcpSession {
                            uint32_t last_ntp_seconds,
                            uint32_t last_ntp_fraction);
 
-  const base::TickClock* const clock_;  // Not owned.
-  PacedPacketSender* packet_sender_;    // Not owned.
+  const raw_ptr<const base::TickClock> clock_;  // Not owned.
+  raw_ptr<PacedPacketSender> packet_sender_;    // Not owned.
   const uint32_t local_ssrc_;
   const uint32_t remote_ssrc_;
-  RtcpObserver* const rtcp_observer_;  // Owned by |CastTransportImpl|.
+  const raw_ptr<RtcpObserver> rtcp_observer_;  // Owned by |CastTransportImpl|.
 
   // Computed from RTCP RRTR report.
   base::TimeTicks largest_seen_timestamp_;

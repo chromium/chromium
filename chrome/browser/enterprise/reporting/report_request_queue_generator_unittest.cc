@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,20 +19,21 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/enterprise/browser/reporting/browser_report_generator.h"
-#include "components/enterprise/browser/reporting/report_request_definition.h"
+#include "components/enterprise/browser/reporting/report_request.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "ppapi/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_android.h"
 #else
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_builder.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "content/public/browser/plugin_service.h"
@@ -54,8 +55,6 @@ const char kActiveProfileName2[] = "active_profile2";
 // move this file to components/enterprise/browser.
 class ReportRequestQueueGeneratorTest : public ::testing::Test {
  public:
-  using ReportRequest = definition::ReportRequest;
-
   ReportRequestQueueGeneratorTest()
       : profile_manager_(TestingBrowserProcess::GetGlobal()),
         browser_report_generator_(&reporting_delegate_factory_),
@@ -72,7 +71,9 @@ class ReportRequestQueueGeneratorTest : public ::testing::Test {
   void SetUp() override {
     ASSERT_TRUE(profile_manager_.SetUp());
     profile_manager_.CreateGuestProfile();
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
     profile_manager_.CreateSystemProfile();
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(ENABLE_PLUGINS)
     content::PluginService::GetInstance()->Init();
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
@@ -90,13 +91,13 @@ class ReportRequestQueueGeneratorTest : public ::testing::Test {
     return std::set<std::string>{kActiveProfileName1, kActiveProfileName2};
   }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   std::set<std::string> CreateActiveProfilesWithContent() {
     CreateActiveProfileWithContent(kActiveProfileName1);
     CreateActiveProfileWithContent(kActiveProfileName2);
     return std::set<std::string>{kActiveProfileName1, kActiveProfileName2};
   }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   void CreateIdleProfile(const std::string& profile_name) {
     ProfileAttributesInitParams params;
@@ -115,13 +116,14 @@ class ReportRequestQueueGeneratorTest : public ::testing::Test {
       const std::string& profile_name,
       std::unique_ptr<policy::PolicyService> policy_service) {
     return profile_manager_.CreateTestingProfile(
-        profile_name, {}, base::UTF8ToUTF16(profile_name), 0, {},
+        profile_name, {}, base::UTF8ToUTF16(profile_name), 0,
         IdentityTestEnvironmentProfileAdaptor::
             GetIdentityTestEnvironmentFactories(),
-        absl::nullopt, std::move(policy_service));
+        /*is_supervised_profile=*/false, absl::nullopt,
+        std::move(policy_service));
   }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void CreateActiveProfileWithContent(const std::string& profile_name) {
     TestingProfile* active_profile = CreateActiveProfile(profile_name);
 
@@ -135,17 +137,18 @@ class ReportRequestQueueGeneratorTest : public ::testing::Test {
             .SetID("abcdefghijklmnoabcdefghijklmnoab")
             .Build());
   }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   std::unique_ptr<ReportRequest> GenerateBasicRequest() {
-    auto request = std::make_unique<ReportRequest>();
+    auto request = std::make_unique<ReportRequest>(ReportType::kFull);
     base::RunLoop run_loop;
 
     browser_report_generator_.Generate(
         ReportType::kFull,
         base::BindLambdaForTesting(
             [&run_loop, &request](std::unique_ptr<em::BrowserReport> report) {
-              request->set_allocated_browser_report(report.release()),
+              request->GetDeviceReportRequest().set_allocated_browser_report(
+                  report.release()),
                   run_loop.Quit();
             }));
 
@@ -228,7 +231,7 @@ class ReportRequestQueueGeneratorTest : public ::testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   ReportingDelegateFactoryAndroid reporting_delegate_factory_;
 #else
   ReportingDelegateFactoryDesktop reporting_delegate_factory_;
@@ -244,7 +247,8 @@ TEST_F(ReportRequestQueueGeneratorTest, GenerateSingleReport) {
   auto requests = GenerateRequests(*basic_request);
   EXPECT_EQ(1u, requests.size());
 
-  VerifyProfiles(requests[0]->browser_report(), /*idle profiles*/ {},
+  VerifyProfiles(requests[0]->GetDeviceReportRequest().browser_report(),
+                 /*idle profiles*/ {},
                  /*active profiles*/ {kActiveProfileName1});
   histogram_tester()->ExpectBucketCount("Enterprise.CloudReportingRequestSize",
                                         /*report size floor to KB*/ 0, 1);
@@ -275,7 +279,7 @@ TEST_F(ReportRequestQueueGeneratorTest, ChromePoliciesCollection) {
 
   policy_map.Set("kPolicyName1", policy::POLICY_LEVEL_MANDATORY,
                  policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-                 base::Value(std::vector<base::Value>()), nullptr);
+                 base::Value(base::Value::List()), nullptr);
   policy_map.Set("kPolicyName2", policy::POLICY_LEVEL_RECOMMENDED,
                  policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_MERGED,
                  base::Value(true), nullptr);
@@ -287,7 +291,7 @@ TEST_F(ReportRequestQueueGeneratorTest, ChromePoliciesCollection) {
   auto requests = GenerateRequests(*basic_request);
   EXPECT_EQ(1u, requests.size());
 
-  auto browser_report = requests[0]->browser_report();
+  auto browser_report = requests[0]->GetDeviceReportRequest().browser_report();
   EXPECT_EQ(1, browser_report.chrome_user_profile_infos_size());
 
   auto profile_info = browser_report.chrome_user_profile_infos(0);
@@ -304,7 +308,7 @@ TEST_F(ReportRequestQueueGeneratorTest, ChromePoliciesCollection) {
 // Android has only one profile which is always `active` and no extensions. So
 // we only check a subset of desktop tests.
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 TEST_F(ReportRequestQueueGeneratorTest, GenerateReport) {
   auto idle_profile_names = CreateIdleProfiles();
@@ -312,7 +316,8 @@ TEST_F(ReportRequestQueueGeneratorTest, GenerateReport) {
   auto requests = GenerateRequests(*basic_request);
   EXPECT_EQ(1u, requests.size());
 
-  VerifyProfiles(requests[0]->browser_report(), idle_profile_names, {});
+  VerifyProfiles(requests[0]->GetDeviceReportRequest().browser_report(),
+                 idle_profile_names, {});
   histogram_tester()->ExpectBucketCount("Enterprise.CloudReportingRequestSize",
                                         /*report size floor to KB*/ 0, 1);
 }
@@ -324,8 +329,8 @@ TEST_F(ReportRequestQueueGeneratorTest, GenerateActiveProfiles) {
   auto requests = GenerateRequests(*basic_request);
   EXPECT_EQ(1u, requests.size());
 
-  VerifyProfiles(requests[0]->browser_report(), idle_profile_names,
-                 active_profile_names);
+  VerifyProfiles(requests[0]->GetDeviceReportRequest().browser_report(),
+                 idle_profile_names, active_profile_names);
   histogram_tester()->ExpectBucketCount("Enterprise.CloudReportingRequestSize",
                                         /*report size floor to KB*/ 0, 1);
 }
@@ -338,7 +343,8 @@ TEST_F(ReportRequestQueueGeneratorTest, ReportSeparation) {
 
   // Set the limitation just below the size of the report so that it needs to be
   // separated into two requests later.
-  SetAndVerifyMaximumRequestSize(requests[0]->ByteSizeLong() - 30);
+  SetAndVerifyMaximumRequestSize(
+      requests[0]->GetDeviceReportRequest().ByteSizeLong() - 30);
   requests = GenerateRequests(*basic_request);
   EXPECT_EQ(2u, requests.size());
 
@@ -356,11 +362,11 @@ TEST_F(ReportRequestQueueGeneratorTest, ReportSeparation) {
   // The first profile is activated in the first request only while the second
   // profile is activated in the second request.
   VerifyProfiles(
-      requests[0]->browser_report(),
+      requests[0]->GetDeviceReportRequest().browser_report(),
       {/* idle_profile_names */ expected_active_profiles_in_requests[1]},
       {/* active_profile_names */ expected_active_profiles_in_requests[0]});
   VerifyProfiles(
-      requests[1]->browser_report(),
+      requests[1]->GetDeviceReportRequest().browser_report(),
       {/* idle_profile_names */ expected_active_profiles_in_requests[0]},
       {/* active_profile_names */ expected_active_profiles_in_requests[1]});
   histogram_tester()->ExpectBucketCount("Enterprise.CloudReportingRequestSize",
@@ -374,7 +380,8 @@ TEST_F(ReportRequestQueueGeneratorTest, ProfileReportIsTooBig) {
   EXPECT_EQ(1u, requests.size());
 
   // Set the limitation just below the size of the report.
-  SetAndVerifyMaximumRequestSize(requests[0]->ByteSizeLong() - 30);
+  SetAndVerifyMaximumRequestSize(
+      requests[0]->GetDeviceReportRequest().ByteSizeLong() - 30);
 
   // Add a smaller Profile.
   CreateActiveProfile(kActiveProfileName2);
@@ -384,12 +391,12 @@ TEST_F(ReportRequestQueueGeneratorTest, ProfileReportIsTooBig) {
 
   // Only the second Profile is activated while the first one is too big to be
   // reported.
-  VerifyProfiles(requests[0]->browser_report(), {kActiveProfileName1},
-                 {kActiveProfileName2});
+  VerifyProfiles(requests[0]->GetDeviceReportRequest().browser_report(),
+                 {kActiveProfileName1}, {kActiveProfileName2});
   histogram_tester()->ExpectBucketCount("Enterprise.CloudReportingRequestSize",
                                         /*report size floor to KB*/ 0, 2);
 }
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace enterprise_reporting

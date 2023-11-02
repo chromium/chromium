@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,6 +28,7 @@
 #include "ash/search_box/search_box_constants.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -63,7 +64,6 @@ constexpr int kShadowElevation = 12;
 int GetPreferredHeightForAppListState(AppListView* app_list_view) {
   auto app_list_view_state = app_list_view->app_list_state();
   switch (app_list_view_state) {
-    case AppListViewState::kHalf:
     case AppListViewState::kFullscreenSearch:
       return kMaxHeightDip;
     default:
@@ -190,16 +190,15 @@ void AssistantPageView::RequestFocus() {
   if (!AssistantUiController::Get())  // May be |nullptr| in tests.
     return;
 
-  switch (AssistantUiController::Get()->GetModel()->ui_mode()) {
-    case AssistantUiMode::kLauncherEmbeddedUi:
-      if (assistant_main_view_)
-        assistant_main_view_->RequestFocus();
-      break;
-  }
+  if (assistant_main_view_)
+    assistant_main_view_->RequestFocus();
 }
 
 void AssistantPageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   View::GetAccessibleNodeData(node_data);
+
+  // A valid role must be set prior to setting the name.
+  node_data->role = ax::mojom::Role::kPane;
   node_data->SetName(l10n_util::GetStringUTF16(IDS_ASH_ASSISTANT_WINDOW));
 }
 
@@ -351,8 +350,7 @@ void AssistantPageView::AnimateYPosition(AppListViewState target_view_state,
 }
 
 void AssistantPageView::UpdatePageOpacityForState(AppListState state,
-                                                  float search_box_opacity,
-                                                  bool restore_opacity) {
+                                                  float search_box_opacity) {
   layer()->SetOpacity(search_box_opacity);
 }
 
@@ -452,47 +450,23 @@ void AssistantPageView::InitLayout() {
 
 void AssistantPageView::UpdateBackground(bool in_tablet_mode) {
   // Blur
-  if (features::IsProductivityLauncherEnabled() ||
-      (in_tablet_mode && features::IsDarkLightModeEnabled() &&
-       features::IsBackgroundBlurEnabled())) {
-    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
-  } else {
-    layer()->SetBackgroundBlur(0.0f);
-    layer()->SetBackdropFilterQuality(0.0f);
-  }
+  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
 
   // Color
-  if (features::IsProductivityLauncherEnabled()) {
-    layer()->SetColor(ColorProvider::Get()->GetBaseLayerColor(
-        ColorProvider::BaseLayerType::kTransparent80));
-  } else if (features::IsDarkLightModeEnabled()) {
-    layer()->SetColor(ColorProvider::Get()->GetShieldLayerColor(
-        features::IsBackgroundBlurEnabled()
-            ? ColorProvider::ShieldLayerType::kShield80
-            : ColorProvider::ShieldLayerType::kShield95));
-  } else {
+  const auto* color_provider =
+      GetWidget() ? GetWidget()->GetColorProvider() : nullptr;
+
+  // ColorProvide might be nullptr in tests or this function is triggered before
+  // `this` is added to the view hierarchy.
+  if (color_provider)
+    layer()->SetColor(color_provider->GetColor(kColorAshShieldAndBase80));
+  else
     layer()->SetColor(SK_ColorWHITE);
-  }
 }
 
-void AssistantPageView::MaybeUpdateAppListState(int child_height) {
-  auto* app_list_view = contents_view()->app_list_view();
-  auto* widget = app_list_view->GetWidget();
-
-  // |app_list_view| may not be initialized.
-  if (!widget || !widget->IsVisible())
-    return;
-
-  // Update app list view state for |assistant_page_view_|.
-  // Embedded Assistant Ui only has two sizes. The only state change is from
-  // |kPeeking| to |kHalf| state.
-  if (app_list_view->app_list_state() != AppListViewState::kPeeking)
-    return;
-
-  if (child_height > GetPreferredHeightForAppListState(app_list_view))
-    app_list_view->SetState(AppListViewState::kHalf);
-}
+// TODO(crbug.com/1359096): Clean up this function and its relative code path.
+void AssistantPageView::MaybeUpdateAppListState(int child_height) {}
 
 BEGIN_METADATA(AssistantPageView, views::View)
 END_METADATA

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,12 @@
 
 #include "base/check.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/themes/theme_properties.h"
-#include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_provider.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
@@ -67,21 +67,16 @@ void ProfilePickerDiceSignInToolbar::BuildToolbar(
   UpdateToolbarColor();
 }
 
-void ProfilePickerDiceSignInToolbar::ClearToolbar() {
-  RemoveAllChildViews();
-}
-
 void ProfilePickerDiceSignInToolbar::OnThemeChanged() {
   UpdateToolbarColor();
   View::OnThemeChanged();
 }
 
 void ProfilePickerDiceSignInToolbar::UpdateToolbarColor() {
-  if (!GetThemeProvider())
+  if (!GetColorProvider())
     return;
 
-  SkColor background_color =
-      GetThemeProvider()->GetColor(ThemeProperties::COLOR_TOOLBAR);
+  SkColor background_color = GetColorProvider()->GetColor(kColorToolbar);
   SetBackground(views::CreateSolidBackground(background_color));
 
   // On Mac, the WebContents is initially transparent. Set the color for the

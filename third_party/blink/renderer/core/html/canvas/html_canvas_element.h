@@ -30,8 +30,6 @@
 
 #include <memory>
 
-#include "base/memory/weak_ptr.h"
-#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -43,37 +41,32 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap_source.h"
 #include "third_party/blink/renderer/core/page/page_visibility_observer.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_2d_layer_bridge.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types_3d.h"
 #include "third_party/blink/renderer/platform/graphics/offscreen_canvas_placeholder.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/surface_layer_bridge.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/size.h"
 
 #define CanvasDefaultInterpolationQuality kInterpolationLow
-
-namespace cc {
-class Layer;
-}
 
 namespace blink {
 
 class Canvas2DLayerBridge;
 class CanvasContextCreationAttributesCore;
 class CanvasDrawListener;
+class CanvasHighDynamicRangeOptions;
 class CanvasRenderingContext;
 class CanvasRenderingContextFactory;
+class CanvasResourceProvider;
 class GraphicsContext;
 class HTMLCanvasElement;
 class ImageBitmapOptions;
-class IntSize;
 class StaticBitmapImageToVideoFrameCopier;
 
 class
@@ -110,12 +103,12 @@ class CORE_EXPORT HTMLCanvasElement final
   unsigned width() const { return Size().width(); }
   unsigned height() const { return Size().height(); }
 
-  const IntSize& Size() const override { return size_; }
+  const gfx::Size& Size() const override { return size_; }
 
   void setWidth(unsigned, ExceptionState&);
   void setHeight(unsigned, ExceptionState&);
 
-  void SetSize(const IntSize& new_size);
+  void SetSize(const gfx::Size& new_size);
 
   // Called by Document::getCSSCanvasContext as well as above getContext().
   CanvasRenderingContext* GetCanvasRenderingContext(
@@ -139,6 +132,8 @@ class CORE_EXPORT HTMLCanvasElement final
               ExceptionState& exception_state) {
     return toBlob(callback, mime_type, ScriptValue(), exception_state);
   }
+  void configureHighDynamicRange(const CanvasHighDynamicRangeOptions*,
+                                 ExceptionState&);
 
   bool IsPresentationAttribute(const QualifiedName&) const final;
   void CollectStyleForPresentationAttribute(const QualifiedName&,
@@ -149,7 +144,7 @@ class CORE_EXPORT HTMLCanvasElement final
   void AddListener(CanvasDrawListener*);
   void RemoveListener(CanvasDrawListener*);
   // Derived from OffscreenCanvasPlaceholder.
-  bool HasCanvasCapture() const final { return !listeners_.IsEmpty(); }
+  bool HasCanvasCapture() const final { return !listeners_.empty(); }
 
   // Used for rendering
   void DidDraw(const SkIRect&) override;
@@ -191,7 +186,7 @@ class CORE_EXPORT HTMLCanvasElement final
 
   CanvasResourceDispatcher* GetOrCreateResourceDispatcher() override;
 
-  bool PushFrame(scoped_refptr<CanvasResource> image,
+  bool PushFrame(scoped_refptr<CanvasResource>&& image,
                  const SkIRect& damage_rect) override;
 
   // ExecutionContextLifecycleObserver and PageVisibilityObserver implementation
@@ -203,11 +198,11 @@ class CORE_EXPORT HTMLCanvasElement final
   // CanvasImageSource implementation
   scoped_refptr<Image> GetSourceImageForCanvas(
       SourceImageStatus*,
-      const FloatSize&,
+      const gfx::SizeF&,
       const AlphaDisposition alpha_disposition = kPremultiplyAlpha) override;
   bool WouldTaintOrigin() const override;
-  FloatSize ElementSize(const FloatSize&,
-                        const RespectImageOrientationEnum) const override;
+  gfx::SizeF ElementSize(const gfx::SizeF&,
+                         const RespectImageOrientationEnum) const override;
   bool IsCanvasElement() const override { return true; }
   bool IsOpaque() const override;
   bool IsAccelerated() const override;
@@ -236,20 +231,20 @@ class CORE_EXPORT HTMLCanvasElement final
                                unaccelerated_bridge_used_for_testing = nullptr);
 
   // ImageBitmapSource implementation
-  IntSize BitmapSourceSize() const override;
+  gfx::Size BitmapSourceSize() const override;
   ScriptPromise CreateImageBitmap(ScriptState*,
-                                  absl::optional<IntRect> crop_rect,
+                                  absl::optional<gfx::Rect> crop_rect,
                                   const ImageBitmapOptions*,
                                   ExceptionState&) override;
 
   // OffscreenCanvasPlaceholder implementation.
-  void SetOffscreenCanvasResource(scoped_refptr<CanvasResource>,
+  void SetOffscreenCanvasResource(scoped_refptr<CanvasResource>&&,
                                   viz::ResourceId resource_id) override;
   void Trace(Visitor*) const override;
 
   void SetResourceProviderForTesting(std::unique_ptr<CanvasResourceProvider>,
                                      std::unique_ptr<Canvas2DLayerBridge>,
-                                     const IntSize&);
+                                     const gfx::Size&);
 
   static void RegisterRenderingContextFactory(
       std::unique_ptr<CanvasRenderingContextFactory>);
@@ -281,8 +276,10 @@ class CORE_EXPORT HTMLCanvasElement final
   }
 
   DispatchEventResult HostDispatchEvent(Event* event) override {
-    return DispatchEvent(*event);
+    return DispatchEvent(*event, "HTMLCanvasElement::HostDispatchEvent");
   }
+
+  void UpdateSuspendOffscreenCanvasAnimation();
 
   // Gets the settings of this Html Canvas Element. If there is a frame, it will
   // return the settings from the frame. If it is a frameless element it will
@@ -291,9 +288,7 @@ class CORE_EXPORT HTMLCanvasElement final
   bool IsWebGL1Enabled() const override;
   bool IsWebGL2Enabled() const override;
   bool IsWebGLBlocked() const override;
-  void SetContextCreationWasBlocked() override {
-    context_creation_was_blocked_ = true;
-  }
+  void SetContextCreationWasBlocked() override;
 
   ScriptPromise convertToBlob(ScriptState*,
                               const ImageEncodeOptions*,
@@ -356,7 +351,7 @@ class CORE_EXPORT HTMLCanvasElement final
       RasterMode raster_mode);
   void SetCanvas2DLayerBridgeInternal(std::unique_ptr<Canvas2DLayerBridge>);
 
-  void SetSurfaceSize(const IntSize&);
+  void SetSurfaceSize(const gfx::Size&);
 
   bool PaintsIntoCanvasBuffer() const;
 
@@ -379,18 +374,24 @@ class CORE_EXPORT HTMLCanvasElement final
       SourceImageStatus*,
       const AlphaDisposition alpha_disposition = kPremultiplyAlpha);
 
+  static std::pair<blink::Image*, float> BrokenCanvas(
+      float device_scale_factor);
+
+  FRIEND_TEST_ALL_PREFIXES(HTMLCanvasElementTest, BrokenCanvasHighRes);
+
   HeapHashSet<WeakMember<CanvasDrawListener>> listeners_;
 
-  IntSize size_;
+  gfx::Size size_;
 
   Member<CanvasRenderingContext> context_;
   // Used only for WebGL currently.
   bool context_creation_was_blocked_;
 
+  bool disposing_ = false;
   bool canvas_is_clear_ = true;
 
   bool ignore_reset_;
-  FloatRect dirty_rect_;
+  gfx::RectF dirty_rect_;
 
   bool origin_clean_;
   bool needs_unbuffered_input_ = false;

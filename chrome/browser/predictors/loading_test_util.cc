@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -207,7 +207,7 @@ std::ostream& operator<<(std::ostream& os, const PageRequestSummary& summary) {
 std::ostream& operator<<(std::ostream& os, const PreconnectRequest& request) {
   return os << "[" << request.origin << "," << request.num_sockets << ","
             << request.allow_credentials << ","
-            << request.network_isolation_key.ToDebugString() << "]";
+            << request.network_anonymization_key.ToDebugString() << "]";
 }
 
 std::ostream& operator<<(std::ostream& os,
@@ -281,7 +281,7 @@ bool operator==(const OriginStat& lhs, const OriginStat& rhs) {
 bool operator==(const PreconnectRequest& lhs, const PreconnectRequest& rhs) {
   return lhs.origin == rhs.origin && lhs.num_sockets == rhs.num_sockets &&
          lhs.allow_credentials == rhs.allow_credentials &&
-         lhs.network_isolation_key == rhs.network_isolation_key;
+         lhs.network_anonymization_key == rhs.network_anonymization_key;
 }
 
 bool operator==(const PreconnectPrediction& lhs,

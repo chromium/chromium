@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,9 +60,6 @@ public class EventTracker {
     public Promise<Void> addWebsiteEvent(WebsiteEvent event) {
         final Promise<Void> writePromise = new Promise<>();
         mRootPromise.then((result) -> {
-            assert result.size() == 0
-                    || event.getTimestamp() >= result.get(result.size() - 1).getTimestamp();
-
             List<WebsiteEventProtos.WebsiteEvent> eventsList = Arrays.asList(getProtoEvent(event));
             mBridge.addEvents(eventsList, (didSucceed) -> {
                 if (didSucceed) {

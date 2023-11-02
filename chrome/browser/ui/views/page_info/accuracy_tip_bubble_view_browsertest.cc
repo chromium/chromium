@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,6 +29,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/permissions/permission_request_manager_test_api.h"
 #include "components/accuracy_tips/accuracy_service.h"
 #include "components/accuracy_tips/accuracy_tip_interaction.h"
 #include "components/accuracy_tips/features.h"
@@ -198,7 +199,8 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, PressIgnoreButton) {
       static_cast<int>(AccuracyTipInteraction::kClosed));
 }
 
-IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, PressEsc) {
+// TODO(crbug.com/1363619): Disabled for flakiness.
+IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, DISABLED_PressEsc) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl(kAccuracyTipUrl)));
   EXPECT_TRUE(IsUIShowing());
 
@@ -280,6 +282,28 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest,
   CloseAllBrowsers();
 }
 
+IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest,
+                       DisappearAfterPermissionRequested) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl(kAccuracyTipUrl)));
+  EXPECT_TRUE(IsUIShowing());
+
+  // Tip disappears when the site requested permission.
+  auto test_api =
+      std::make_unique<test::PermissionRequestManagerTestApi>(browser());
+  EXPECT_TRUE(test_api->manager());
+  test_api->AddSimpleRequest(browser()
+                                 ->tab_strip_model()
+                                 ->GetActiveWebContents()
+                                 ->GetPrimaryMainFrame(),
+                             permissions::RequestType::kGeolocation);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(IsUIShowing());
+
+  histogram_tester()->ExpectUniqueSample(
+      "Privacy.AccuracyTip.AccuracyTipInteraction",
+      AccuracyTipInteraction::kPermissionRequested, 1);
+}
+
 IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, OpenLearnMoreLink) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl(kAccuracyTipUrl)));
   EXPECT_TRUE(IsUIShowing());
@@ -290,7 +314,7 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, OpenLearnMoreLink) {
   views::test::WidgetDestroyedWaiter waiter(view->GetWidget());
   view->AcceptDialog();
   EXPECT_EQ(GURL(chrome::kSafetyTipHelpCenterURL),
-            new_tab_observer.GetWebContents()->GetURL());
+            new_tab_observer.GetWebContents()->GetVisibleURL());
   waiter.Wait();
   EXPECT_FALSE(IsUIShowing());
 

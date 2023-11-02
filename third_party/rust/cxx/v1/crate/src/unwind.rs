@@ -1,26 +1,39 @@
 #![allow(missing_docs)]
 
-use std::io::{self, Write};
-use std::panic::{self, AssertUnwindSafe};
-use std::process;
+use core::mem;
 
-pub fn catch_unwind<F, R>(label: &'static str, foreign_call: F) -> R
+pub fn prevent_unwind<F, R>(label: &'static str, foreign_call: F) -> R
 where
     F: FnOnce() -> R,
 {
-    // Regarding the AssertUnwindSafe: we immediately abort on panic so it
-    // doesn't matter whether the types involved are unwind-safe. The UnwindSafe
-    // bound on catch_unwind is about ensuring nothing is in a broken state if
-    // your program plans to continue after the panic.
-    match panic::catch_unwind(AssertUnwindSafe(foreign_call)) {
-        Ok(ret) => ret,
-        Err(_) => abort(label),
-    }
+    // Goal is to make it impossible to propagate a panic across the C interface
+    // of an extern "Rust" function, which would be Undefined Behavior. We
+    // transform such panicks into a deterministic abort instead. When cxx is
+    // built in an application using panic=abort, this guard object is compiled
+    // out because its destructor is statically unreachable. When built with
+    // panic=unwind, an unwind from the foreign call will attempt to drop the
+    // guard object leading to a double panic, which is defined by Rust to
+    // abort. In no_std programs, on most platforms the current mechanism for
+    // this is for core::intrinsics::abort to invoke an invalid instruction. On
+    // Unix, the process will probably terminate with a signal like SIGABRT,
+    // SIGILL, SIGTRAP, SIGSEGV or SIGBUS. The precise behaviour is not
+    // guaranteed and not stable, but is safe.
+    let guard = Guard { label };
+
+    let ret = foreign_call();
+
+    // If we made it here, no uncaught panic occurred during the foreign call.
+    mem::forget(guard);
+    ret
 }
 
-#[cold]
-fn abort(label: &'static str) -> ! {
-    let mut stderr = io::stderr();
-    let _ = writeln!(stderr, "Error: panic in ffi function {}, aborting.", label);
-    process::abort();
+struct Guard {
+    label: &'static str,
+}
+
+impl Drop for Guard {
+    #[cold]
+    fn drop(&mut self) {
+        panic!("panic in ffi function {}, aborting.", self.label);
+    }
 }

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -122,7 +122,7 @@ public class AutofillUpstreamTest {
                         .get(0);
         PropertyModel model = MessagesTestHelper.getCurrentMessage(handler);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            model.get(MessageBannerProperties.ON_PRIMARY_ACTION).run();
+            model.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
             dispatcher.dismissMessage(model, DismissReason.PRIMARY_ACTION);
         });
     }

@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -192,9 +192,7 @@ void ScrollBar::OnGestureEvent(ui::GestureEvent* event) {
 
   if (event->type() == ui::ET_SCROLL_FLING_START) {
     scroll_status_ = ScrollStatus::kScrollInEnding;
-    if (!scroll_animator_)
-      scroll_animator_ = std::make_unique<ScrollAnimator>(this);
-    scroll_animator_->Start(
+    GetOrCreateScrollAnimator()->Start(
         IsHorizontal() ? event->details().velocity_x() : 0.f,
         IsHorizontal() ? 0.f : event->details().velocity_y());
     event->SetHandled();
@@ -381,6 +379,23 @@ void ScrollBar::ObserveScrollEvent(const ui::ScrollEvent& event) {
   }
 }
 
+ScrollAnimator* ScrollBar::GetOrCreateScrollAnimator() {
+  if (!scroll_animator_) {
+    scroll_animator_ = std::make_unique<ScrollAnimator>(this);
+    scroll_animator_->set_velocity_multiplier(fling_multiplier_);
+  }
+  return scroll_animator_.get();
+}
+
+void ScrollBar::SetFlingMultiplier(float fling_multiplier) {
+  fling_multiplier_ = fling_multiplier;
+  // `scroll_animator_` is lazily created when needed.
+  if (!scroll_animator_)
+    return;
+
+  GetOrCreateScrollAnimator()->set_velocity_multiplier(fling_multiplier_);
+}
+
 ScrollBar::ScrollBar(bool is_horiz)
     : is_horiz_(is_horiz),
       repeater_(base::BindRepeating(&ScrollBar::TrackClicked,
@@ -391,7 +406,7 @@ ScrollBar::ScrollBar(bool is_horiz)
 ///////////////////////////////////////////////////////////////////////////////
 // ScrollBar, private:
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 // static
 base::RetainingOneShotTimer* ScrollBar::GetHideTimerForTesting(
     ScrollBar* scroll_bar) {
@@ -399,8 +414,8 @@ base::RetainingOneShotTimer* ScrollBar::GetHideTimerForTesting(
 }
 #endif
 
-int ScrollBar::GetThumbSizeForTesting() {
-  return thumb_->GetSize();
+int ScrollBar::GetThumbLengthForTesting() {
+  return thumb_->GetLength();
 }
 
 void ScrollBar::ProcessPressEvent(const ui::LocatedEvent& event) {
@@ -440,7 +455,7 @@ int ScrollBar::CalculateThumbPosition(int contents_scroll_offset) const {
   // In some combination of viewport_size and contents_size_, the result of
   // simple division can be rounded and there could be 1 pixel gap even when the
   // contents scroll down to the bottom. See crbug.com/244671.
-  int thumb_max = GetTrackSize() - thumb_->GetSize();
+  int thumb_max = GetTrackSize() - thumb_->GetLength();
   if (contents_scroll_offset + viewport_size_ == contents_size_)
     return thumb_max;
   return (contents_scroll_offset * thumb_max) /
@@ -449,7 +464,7 @@ int ScrollBar::CalculateThumbPosition(int contents_scroll_offset) const {
 
 int ScrollBar::CalculateContentsOffset(float thumb_position,
                                        bool scroll_to_middle) const {
-  float thumb_size = static_cast<float>(thumb_->GetSize());
+  float thumb_size = static_cast<float>(thumb_->GetLength());
   int track_size = GetTrackSize();
   if (track_size == thumb_size)
     return 0;

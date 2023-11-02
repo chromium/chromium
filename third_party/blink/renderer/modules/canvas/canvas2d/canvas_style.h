@@ -27,9 +27,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_STYLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_STYLE_H_
 
+#include "base/check_op.h"
+#include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -46,12 +48,12 @@ class CanvasStyle final : public GarbageCollected<CanvasStyle> {
 
   String GetColorAsString() const {
     DCHECK_EQ(type_, kColorRGBA);
-    return Color(rgba_).Serialized();
+    return Color::FromRGBA32(rgba_).SerializeAsCanvasColor();
   }
   CanvasGradient* GetCanvasGradient() const { return gradient_.Get(); }
   CanvasPattern* GetCanvasPattern() const { return pattern_; }
 
-  void ApplyToFlags(PaintFlags&) const;
+  void ApplyToFlags(cc::PaintFlags&) const;
   RGBA32 PaintColor() const;
 
   bool IsEquivalentRGBA(RGBA32 rgba) const {
@@ -64,6 +66,9 @@ class CanvasStyle final : public GarbageCollected<CanvasStyle> {
   enum Type { kColorRGBA, kGradient, kImagePattern };
 
   Type type_;
+
+  // TODO(https://1351544): The CanvasStyle should be Color, not an SkColor or
+  // an SkColor4f.
   RGBA32 rgba_;
 
   Member<CanvasGradient> gradient_;

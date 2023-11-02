@@ -1,14 +1,14 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "url/gurl.h"
+
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "url/gurl.h"
 #include "url/gurl_abstract_tests.h"
 #include "url/origin.h"
 #include "url/url_canon.h"
@@ -17,19 +17,6 @@
 namespace url {
 
 namespace {
-
-template<typename CHAR>
-void SetupReplacement(
-    void (Replacements<CHAR>::*func)(const CHAR*, const Component&),
-    Replacements<CHAR>* replacements,
-    const CHAR* str) {
-  if (str) {
-    Component comp;
-    if (str[0])
-      comp.len = static_cast<int>(strlen(str));
-    (replacements->*func)(str, comp);
-  }
-}
 
 // Returns the canonicalized string for the given URL string for the
 // GURLTest.Types test.
@@ -235,7 +222,7 @@ TEST(GURLTest, IsValid) {
       "http:/path",
       "http:path",
   };
-  for (size_t i = 0; i < base::size(valid_cases); i++) {
+  for (size_t i = 0; i < std::size(valid_cases); i++) {
     EXPECT_TRUE(GURL(valid_cases[i]).is_valid())
         << "Case: " << valid_cases[i];
   }
@@ -250,7 +237,7 @@ TEST(GURLTest, IsValid) {
       "://google.com",
       "path",
   };
-  for (size_t i = 0; i < base::size(invalid_cases); i++) {
+  for (size_t i = 0; i < std::size(invalid_cases); i++) {
     EXPECT_FALSE(GURL(invalid_cases[i]).is_valid())
         << "Case: " << invalid_cases[i];
   }
@@ -359,7 +346,7 @@ TEST(GURLTest, Resolve) {
       {"file:///some/dir/", "://host", true, "file:///some/dir/://host"},
   };
 
-  for (size_t i = 0; i < base::size(resolve_cases); i++) {
+  for (size_t i = 0; i < std::size(resolve_cases); i++) {
     // 8-bit code path.
     GURL input(resolve_cases[i].base);
     GURL output = input.Resolve(resolve_cases[i].relative);
@@ -396,7 +383,7 @@ TEST(GURLTest, GetOrigin) {
       {"blob:null/guid-goes-here", ""},
       {"blob:http://origin/guid-goes-here", "" /* should be http://origin/ */},
   };
-  for (size_t i = 0; i < base::size(cases); i++) {
+  for (size_t i = 0; i < std::size(cases); i++) {
     GURL url(cases[i].input);
     GURL origin = url.DeprecatedGetOriginAsURL();
     EXPECT_EQ(cases[i].expected, origin.spec());
@@ -419,7 +406,7 @@ TEST(GURLTest, GetAsReferrer) {
     {"file:///tmp/test.html", ""},
     {"https://www.google.com", "https://www.google.com/"},
   };
-  for (size_t i = 0; i < base::size(cases); i++) {
+  for (size_t i = 0; i < std::size(cases); i++) {
     GURL url(cases[i].input);
     GURL origin = url.GetAsReferrer();
     EXPECT_EQ(cases[i].expected, origin.spec());
@@ -438,7 +425,7 @@ TEST(GURLTest, GetWithEmptyPath) {
     {"filesystem:file:///temporary/bar.html?baz=22", "filesystem:file:///temporary/"},
   };
 
-  for (size_t i = 0; i < base::size(cases); i++) {
+  for (size_t i = 0; i < std::size(cases); i++) {
     GURL url(cases[i].input);
     GURL empty_path = url.GetWithEmptyPath();
     EXPECT_EQ(cases[i].expected, empty_path.spec());
@@ -484,7 +471,7 @@ TEST(GURLTest, GetWithoutFilename) {
     {"foobar", ""},
   };
 
-  for (size_t i = 0; i < base::size(cases); i++) {
+  for (size_t i = 0; i < std::size(cases); i++) {
     GURL url(cases[i].input);
     GURL without_filename = url.GetWithoutFilename();
     EXPECT_EQ(cases[i].expected, without_filename.spec()) << i;
@@ -496,60 +483,102 @@ TEST(GURLTest, Replacements) {
   // The most important thing to do here is to check that the proper
   // canonicalizer gets called based on the scheme of the input.
   struct ReplaceCase {
+    using ApplyReplacementsFunc = GURL(const GURL&);
+
     const char* base;
-    const char* scheme;
-    const char* username;
-    const char* password;
-    const char* host;
-    const char* port;
-    const char* path;
-    const char* query;
-    const char* ref;
+    ApplyReplacementsFunc* apply_replacements;
     const char* expected;
   } replace_cases[] = {
-      {"http://www.google.com/foo/bar.html?foo#bar", nullptr, nullptr, nullptr,
-       nullptr, nullptr, "/", "", "", "http://www.google.com/"},
-      {"http://www.google.com/foo/bar.html?foo#bar", "javascript", "", "", "",
-       "", "window.open('foo');", "", "", "javascript:window.open('foo');"},
-      {"file:///C:/foo/bar.txt", "http", nullptr, nullptr, "www.google.com",
-       "99", "/foo", "search", "ref",
-       "http://www.google.com:99/foo?search#ref"},
+      {.base = "http://www.google.com/foo/bar.html?foo#bar",
+       .apply_replacements =
+           +[](const GURL& url) {
+             GURL::Replacements replacements;
+             replacements.SetPathStr("/");
+             replacements.ClearQuery();
+             replacements.ClearRef();
+             return url.ReplaceComponents(replacements);
+           },
+       .expected = "http://www.google.com/"},
+      {.base = "http://www.google.com/foo/bar.html?foo#bar",
+       .apply_replacements =
+           +[](const GURL& url) {
+             GURL::Replacements replacements;
+             replacements.SetSchemeStr("javascript");
+             replacements.ClearUsername();
+             replacements.ClearPassword();
+             replacements.ClearHost();
+             replacements.ClearPort();
+             replacements.SetPathStr("window.open('foo');");
+             replacements.ClearQuery();
+             replacements.ClearRef();
+             return url.ReplaceComponents(replacements);
+           },
+       .expected = "javascript:window.open('foo');"},
+      {.base = "file:///C:/foo/bar.txt",
+       .apply_replacements =
+           +[](const GURL& url) {
+             GURL::Replacements replacements;
+             replacements.SetSchemeStr("http");
+             replacements.SetHostStr("www.google.com");
+             replacements.SetPortStr("99");
+             replacements.SetPathStr("/foo");
+             replacements.SetQueryStr("search");
+             replacements.SetRefStr("ref");
+             return url.ReplaceComponents(replacements);
+           },
+       .expected = "http://www.google.com:99/foo?search#ref"},
 #ifdef WIN32
-      {"http://www.google.com/foo/bar.html?foo#bar", "file", "", "", "", "",
-       "c:\\", "", "", "file:///C:/"},
+      {.base = "http://www.google.com/foo/bar.html?foo#bar",
+       .apply_replacements =
+           +[](const GURL& url) {
+             GURL::Replacements replacements;
+             replacements.SetSchemeStr("file");
+             replacements.ClearUsername();
+             replacements.ClearPassword();
+             replacements.ClearHost();
+             replacements.ClearPort();
+             replacements.SetPathStr("c:\\");
+             replacements.ClearQuery();
+             replacements.ClearRef();
+             return url.ReplaceComponents(replacements);
+           },
+       .expected = "file:///C:/"},
 #endif
-      {"filesystem:http://www.google.com/foo/bar.html?foo#bar", nullptr,
-       nullptr, nullptr, nullptr, nullptr, "/", "", "",
-       "filesystem:http://www.google.com/foo/"},
+      {.base = "filesystem:http://www.google.com/foo/bar.html?foo#bar",
+       .apply_replacements =
+           +[](const GURL& url) {
+             GURL::Replacements replacements;
+             replacements.SetPathStr("/");
+             replacements.ClearQuery();
+             replacements.ClearRef();
+             return url.ReplaceComponents(replacements);
+           },
+       .expected = "filesystem:http://www.google.com/foo/"},
       // Lengthen the URL instead of shortening it, to test creation of
       // inner_url.
-      {"filesystem:http://www.google.com/foo/", nullptr, nullptr, nullptr,
-       nullptr, nullptr, "bar.html", "foo", "bar",
-       "filesystem:http://www.google.com/foo/bar.html?foo#bar"},
+      {.base = "filesystem:http://www.google.com/foo/",
+       .apply_replacements =
+           +[](const GURL& url) {
+             GURL::Replacements replacements;
+             replacements.SetPathStr("bar.html");
+             replacements.SetQueryStr("foo");
+             replacements.SetRefStr("bar");
+             return url.ReplaceComponents(replacements);
+           },
+       .expected = "filesystem:http://www.google.com/foo/bar.html?foo#bar"},
   };
 
-  for (size_t i = 0; i < base::size(replace_cases); i++) {
-    const ReplaceCase& cur = replace_cases[i];
-    GURL url(cur.base);
-    GURL::Replacements repl;
-    SetupReplacement(&GURL::Replacements::SetScheme, &repl, cur.scheme);
-    SetupReplacement(&GURL::Replacements::SetUsername, &repl, cur.username);
-    SetupReplacement(&GURL::Replacements::SetPassword, &repl, cur.password);
-    SetupReplacement(&GURL::Replacements::SetHost, &repl, cur.host);
-    SetupReplacement(&GURL::Replacements::SetPort, &repl, cur.port);
-    SetupReplacement(&GURL::Replacements::SetPath, &repl, cur.path);
-    SetupReplacement(&GURL::Replacements::SetQuery, &repl, cur.query);
-    SetupReplacement(&GURL::Replacements::SetRef, &repl, cur.ref);
-    GURL output = url.ReplaceComponents(repl);
+  for (const ReplaceCase& c : replace_cases) {
+    GURL output = c.apply_replacements(GURL(c.base));
 
-    EXPECT_EQ(replace_cases[i].expected, output.spec());
+    EXPECT_EQ(c.expected, output.spec());
 
     EXPECT_EQ(output.SchemeIsFileSystem(), output.inner_url() != NULL);
     if (output.SchemeIsFileSystem()) {
       // TODO(mmenke): inner_url()->spec() is currently the same as the spec()
       // for the GURL itself.  This should be fixed.
       // See https://crbug.com/619596
-      EXPECT_EQ(replace_cases[i].expected, output.inner_url()->spec());
+      EXPECT_EQ(c.expected, output.inner_url()->spec());
     }
   }
 }
@@ -607,7 +636,7 @@ TEST(GURLTest, PathForRequest) {
        "/foo/bar.html?query", "/temporary"},
   };
 
-  for (size_t i = 0; i < base::size(cases); i++) {
+  for (size_t i = 0; i < std::size(cases); i++) {
     GURL url(cases[i].input);
     EXPECT_EQ(cases[i].expected, url.PathForRequest());
     EXPECT_EQ(cases[i].expected, url.PathForRequestPiece());
@@ -653,7 +682,7 @@ TEST(GURLTest, EffectiveIntPort) {
     {"filesystem:file:///t/foo", PORT_UNSPECIFIED},
   };
 
-  for (size_t i = 0; i < base::size(port_tests); i++) {
+  for (size_t i = 0; i < std::size(port_tests); i++) {
     GURL url(port_tests[i].spec);
     EXPECT_EQ(port_tests[i].expected_int_port, url.EffectiveIntPort());
   }
@@ -674,7 +703,7 @@ TEST(GURLTest, IPAddress) {
     {"some random input!", false},
   };
 
-  for (size_t i = 0; i < base::size(ip_tests); i++) {
+  for (size_t i = 0; i < std::size(ip_tests); i++) {
     GURL url(ip_tests[i].spec);
     EXPECT_EQ(ip_tests[i].expected_ip, url.HostIsIPAddress());
   }
@@ -699,7 +728,7 @@ TEST(GURLTest, HostNoBrackets) {
     {"http://]/", "]", "]"},
     {"", "", ""},
   };
-  for (size_t i = 0; i < base::size(cases); i++) {
+  for (size_t i = 0; i < std::size(cases); i++) {
     GURL url(cases[i].input);
     EXPECT_EQ(cases[i].expected_host, url.host());
     EXPECT_EQ(cases[i].expected_plainhost, url.HostNoBrackets());
@@ -847,6 +876,20 @@ TEST(GURLTest, SchemeIsBlob) {
   EXPECT_FALSE(GURL("http://bar/").SchemeIsBlob());
 }
 
+TEST(GURLTest, SchemeIsLocal) {
+  EXPECT_TRUE(GURL("BLOB://BAR/").SchemeIsLocal());
+  EXPECT_TRUE(GURL("blob://bar/").SchemeIsLocal());
+  EXPECT_TRUE(GURL("DATA:TEXT/HTML,BAR").SchemeIsLocal());
+  EXPECT_TRUE(GURL("data:text/html,bar").SchemeIsLocal());
+  EXPECT_TRUE(GURL("ABOUT:BAR").SchemeIsLocal());
+  EXPECT_TRUE(GURL("about:bar").SchemeIsLocal());
+  EXPECT_TRUE(GURL("FILESYSTEM:HTTP://FOO.EXAMPLE/BAR").SchemeIsLocal());
+  EXPECT_TRUE(GURL("filesystem:http://foo.example/bar").SchemeIsLocal());
+
+  EXPECT_FALSE(GURL("http://bar/").SchemeIsLocal());
+  EXPECT_FALSE(GURL("file:///bar").SchemeIsLocal());
+}
+
 // Tests that the 'content' of the URL is properly extracted. This can be
 // complex in cases such as multiple schemes (view-source:http:) or for
 // javascript URLs. See GURL::GetContent for more details.
@@ -886,6 +929,7 @@ TEST(GURLTest, ContentForNonStandardURLs) {
   for (const auto& test : cases) {
     GURL url(test.url);
     EXPECT_EQ(test.expected, url.GetContent()) << test.url;
+    EXPECT_EQ(test.expected, url.GetContentPiece()) << test.url;
   }
 }
 

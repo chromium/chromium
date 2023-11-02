@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "crypto/openssl_util.h"
@@ -93,9 +94,6 @@ class SSLServerContextImpl::SocketImpl : public SSLServerSocket,
   NextProto GetNegotiatedProtocol() const override;
   absl::optional<base::StringPiece> GetPeerApplicationSettings() const override;
   bool GetSSLInfo(SSLInfo* ssl_info) override;
-  void GetConnectionAttempts(ConnectionAttempts* out) const override;
-  void ClearConnectionAttempts() override {}
-  void AddConnectionAttempts(const ConnectionAttempts& attempts) override {}
   int64_t GetTotalReceivedBytes() const override;
   void ApplySocketTag(const SocketTag& tag) override;
 
@@ -168,7 +166,7 @@ class SSLServerContextImpl::SocketImpl : public SSLServerSocket,
   int Init();
   void ExtractClientCert();
 
-  SSLServerContextImpl* context_;
+  raw_ptr<SSLServerContextImpl> context_;
 
   NetLogWithSource net_log_;
 
@@ -182,17 +180,17 @@ class SSLServerContextImpl::SocketImpl : public SSLServerSocket,
 
   // Used by Read function.
   scoped_refptr<IOBuffer> user_read_buf_;
-  int user_read_buf_len_;
+  int user_read_buf_len_ = 0;
 
   // Used by Write function.
   scoped_refptr<IOBuffer> user_write_buf_;
-  int user_write_buf_len_;
+  int user_write_buf_len_ = 0;
 
   // OpenSSL stuff
   bssl::UniquePtr<SSL> ssl_;
 
   // Whether we received any data in early data.
-  bool early_data_received_;
+  bool early_data_received_ = false;
 
   // StreamSocket for sending and receiving data.
   std::unique_ptr<StreamSocket> transport_socket_;
@@ -201,10 +199,10 @@ class SSLServerContextImpl::SocketImpl : public SSLServerSocket,
   // Certificate for the client.
   scoped_refptr<X509Certificate> client_cert_;
 
-  State next_handshake_state_;
-  bool completed_handshake_;
+  State next_handshake_state_ = STATE_NONE;
+  bool completed_handshake_ = false;
 
-  NextProto negotiated_protocol_;
+  NextProto negotiated_protocol_ = kProtoUnknown;
 
   base::WeakPtrFactory<SocketImpl> weak_factory_{this};
 };
@@ -214,13 +212,7 @@ SSLServerContextImpl::SocketImpl::SocketImpl(
     std::unique_ptr<StreamSocket> transport_socket)
     : context_(context),
       signature_result_(kSSLServerSocketNoPendingResult),
-      user_read_buf_len_(0),
-      user_write_buf_len_(0),
-      early_data_received_(false),
-      transport_socket_(std::move(transport_socket)),
-      next_handshake_state_(STATE_NONE),
-      completed_handshake_(false),
-      negotiated_protocol_(kProtoUnknown) {}
+      transport_socket_(std::move(transport_socket)) {}
 
 SSLServerContextImpl::SocketImpl::~SocketImpl() {
   if (ssl_) {
@@ -371,8 +363,9 @@ SSLServerContextImpl::SocketImpl::SelectCertificateCallback(
     const SSL_CLIENT_HELLO* client_hello) {
   SSLServerContextImpl::SocketImpl* socket = FromSSL(client_hello->ssl);
   const SSLServerConfig& config = socket->context_->ssl_server_config_;
-  if (!config.client_hello_callback_for_testing.is_null()) {
-    config.client_hello_callback_for_testing.Run(client_hello);
+  if (!config.client_hello_callback_for_testing.is_null() &&
+      !config.client_hello_callback_for_testing.Run(client_hello)) {
+    return ssl_select_cert_error;
   }
   return ssl_select_cert_success;
 }
@@ -578,9 +571,8 @@ bool SSLServerContextImpl::SocketImpl::GetSSLInfo(SSLInfo* ssl_info) {
   const SSL_CIPHER* cipher = SSL_get_current_cipher(ssl_.get());
   CHECK(cipher);
 
-  SSLConnectionStatusSetCipherSuite(
-      static_cast<uint16_t>(SSL_CIPHER_get_id(cipher)),
-      &ssl_info->connection_status);
+  SSLConnectionStatusSetCipherSuite(SSL_CIPHER_get_protocol_id(cipher),
+                                    &ssl_info->connection_status);
   SSLConnectionStatusSetVersion(GetNetSSLVersion(ssl_.get()),
                                 &ssl_info->connection_status);
 
@@ -591,11 +583,6 @@ bool SSLServerContextImpl::SocketImpl::GetSSLInfo(SSLInfo* ssl_info) {
                                  : SSLInfo::HANDSHAKE_FULL;
 
   return true;
-}
-
-void SSLServerContextImpl::SocketImpl::GetConnectionAttempts(
-    ConnectionAttempts* out) const {
-  out->clear();
 }
 
 int64_t SSLServerContextImpl::SocketImpl::GetTotalReceivedBytes() const {
@@ -728,7 +715,6 @@ int SSLServerContextImpl::SocketImpl::DoHandshake() {
   int net_error = OK;
   int rv = SSL_do_handshake(ssl_.get());
   if (rv == 1) {
-    completed_handshake_ = true;
     const STACK_OF(CRYPTO_BUFFER)* certs =
         SSL_get0_peer_certificates(ssl_.get());
     if (certs) {
@@ -745,6 +731,15 @@ int SSLServerContextImpl::SocketImpl::DoHandshake() {
                               alpn_len);
       negotiated_protocol_ = NextProtoFromString(proto);
     }
+
+    if (context_->ssl_server_config_.alert_after_handshake_for_testing) {
+      SSL_send_fatal_alert(ssl_.get(),
+                           context_->ssl_server_config_
+                               .alert_after_handshake_for_testing.value());
+      return ERR_FAILED;
+    }
+
+    completed_handshake_ = true;
   } else {
     int ssl_error = SSL_get_error(ssl_.get(), rv);
 
@@ -959,7 +954,7 @@ void SSLServerContextImpl::Init() {
   switch (ssl_server_config_.client_cert_type) {
     case SSLServerConfig::ClientCertType::REQUIRE_CLIENT_CERT:
       verify_mode |= SSL_VERIFY_FAIL_IF_NO_PEER_CERT;
-      FALLTHROUGH;
+      [[fallthrough]];
     case SSLServerConfig::ClientCertType::OPTIONAL_CLIENT_CERT:
       verify_mode |= SSL_VERIFY_PEER;
       SSL_CTX_set_custom_verify(ssl_ctx_.get(), verify_mode,

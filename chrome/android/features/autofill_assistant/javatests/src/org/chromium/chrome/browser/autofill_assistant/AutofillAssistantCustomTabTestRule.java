@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.autofill_assistant;
 import android.support.test.InstrumentationRegistry;
 
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
+import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 
 class AutofillAssistantCustomTabTestRule
         extends AutofillAssistantTestRule<CustomTabActivityTestRule> {
@@ -23,7 +23,7 @@ class AutofillAssistantCustomTabTestRule
     @Override
     public void startActivity() {
         getTestRule().startCustomTabActivityWithIntent(
-                CustomTabsTestUtils.createMinimalCustomTabIntent(
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                         InstrumentationRegistry.getTargetContext(),
                         getTestRule().getTestServer().getURL(HTML_DIRECTORY + mTestPage)));
     }

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,11 @@
 #include "base/files/file_util.h"
 #include "base/hash/sha1.h"
 #include "base/json/json_writer.h"
+#include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_endpoints.h"
-#include "net/base/escape.h"
 #include "net/base/mime_util.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
@@ -37,7 +36,8 @@
 
 #define LOG_PARSE_FAIL(severity, flow, result)                            \
   DLOG(severity) << "[BoxApiCallFlow] " << flow << "\nJson Parse Error: " \
-                 << (result.error ? result.error->data() : "<no error info>");
+                 << (!result.has_value() ? result.error().data()          \
+                                         : "<no error info>");
 
 #define LOG_PARSE_FAIL_IF(condition, severity, flow, result) \
   if (condition) {                                           \
@@ -103,7 +103,7 @@ base::Value CreateSingleFieldDict(const std::string& key,
 bool VerifyChunkedUploadParts(const base::Value& parts) {
   DCHECK(parts.is_dict()) << parts;
   DCHECK(parts.FindPath("parts")->is_list()) << parts;
-  auto parts_list = parts.FindPath("parts")->GetList();
+  auto parts_list = parts.FindPath("parts")->GetListDeprecated();
   DCHECK(!parts_list.empty());
   for (auto p = parts_list.begin(); p != parts_list.end(); ++p) {
     DCHECK(p->is_dict()) << parts;
@@ -119,17 +119,17 @@ using Box = enterprise_connectors::BoxApiCallFlow;
 
 bool ExtractEntriesList(const Box::ParseResult& result,
                         base::Value::ConstListView* list) {
-  if (!result.value) {
+  if (!result.has_value()) {
     return false;
   }
 
-  const base::Value* entries = result.value->FindPath("entries");
+  const base::Value* entries = result->GetDict().Find("entries");
   if (!entries || !entries->is_list()) {
     return false;
   }
 
   CHECK(list);
-  *list = entries->GetList();
+  *list = entries->GetListDeprecated();
   return true;
 }
 
@@ -230,11 +230,10 @@ void BoxApiCallFlow::ProcessApiCallFailure(
 
 // API reference: https://developer.box.com/reference/resources/client-error/
 void BoxApiCallFlow::OnFailureJsonParsed(int http_code, ParseResult result) {
-  DCHECK(result.value);
   base::Value *code = nullptr, *request_id = nullptr;
   auto response = Response{false, http_code};
-  if (result.value && (code = result.value->FindPath("code")) &&
-      (request_id = result.value->FindPath("request_id"))) {
+  if (result.has_value() && (code = result->FindPath("code")) &&
+      (request_id = result->FindPath("request_id"))) {
     response =
         MakeApiFailure(http_code, code->GetString(), request_id->GetString());
   }
@@ -321,8 +320,8 @@ void BoxGetFileFolderApiCallFlow::ProcessFailure(Response response) {
 void BoxGetFileFolderApiCallFlow::OnSuccessJsonParsed(ParseResult result) {
   std::string folder_id;
 
-  if (result.value.has_value())
-    folder_id = ExtractParentId(result.value.value());
+  if (result.has_value())
+    folder_id = ExtractParentId(*result);
 
   std::move(callback_).Run(Response{!folder_id.empty(), net::HTTP_OK},
                            folder_id);
@@ -420,15 +419,15 @@ void BoxCreateUpstreamFolderApiCallFlow::ProcessFailure(Response response) {
 void BoxCreateUpstreamFolderApiCallFlow::OnSuccessJsonParsed(
     int network_response_code,
     ParseResult result) {
-  DCHECK(result.value);
-  if (!result.value)
+  DCHECK(result.has_value());
+  if (!result.has_value())
     return OnFailureJsonParsed(network_response_code, std::move(result));
 
   std::string folder_id;
   absl::optional<base::Value> folder_info_dict;
 
   if (network_response_code == net::HTTP_CREATED) {
-    folder_info_dict = std::move(result.value);
+    folder_info_dict = std::move(*result);
   } else {
     // Right after a folder was created with a previous upload, the folder may
     // not be found via BoxFindUpstreamFolderApiCallFlow, therefore BoxUploader
@@ -436,13 +435,14 @@ void BoxCreateUpstreamFolderApiCallFlow::OnSuccessJsonParsed(
     // folder is included in the response body so can also be extracted to
     // return a folder_id.
     DCHECK_EQ(network_response_code, net::HTTP_CONFLICT);
-    std::string* box_error_code = result.value->FindStringPath("code");
+    std::string* box_error_code = result->FindStringPath("code");
     base::Value* conflict_folders_list =
-        result.value->FindListPath("context_info.conflicts");
+        result->FindListPath("context_info.conflicts");
     if (box_error_code && *box_error_code == "item_name_in_use" &&
-        conflict_folders_list && conflict_folders_list->GetList().size() > 0) {
+        conflict_folders_list &&
+        conflict_folders_list->GetListDeprecated().size() > 0) {
       folder_info_dict = absl::make_optional<base::Value>(
-          conflict_folders_list->GetList()[0].Clone());
+          conflict_folders_list->GetListDeprecated()[0].Clone());
     }
   }
 
@@ -487,24 +487,23 @@ void BoxGetCurrentUserApiCallFlow::ProcessApiCallSuccess(
 }
 
 void BoxGetCurrentUserApiCallFlow::OnJsonParsed(ParseResult result) {
-  if (!result.value.has_value()) {
+  if (!result.has_value()) {
     LOG_PARSE_FAIL(ERROR, "GetCurrentUser", result);
     std::move(callback_).Run(Response{false, net::HTTP_OK}, CreateEmptyDict());
     return;
   }
-  if (!result.value->is_dict() ||
-      !result.value->FindStringPath(kBoxEnterpriseIdFieldName) ||
-      !result.value->FindStringPath(kBoxLoginFieldName) ||
-      !result.value->FindStringPath(kBoxNameFieldName)) {
+  if (!result->is_dict() ||
+      !result->FindStringPath(kBoxEnterpriseIdFieldName) ||
+      !result->FindStringPath(kBoxLoginFieldName) ||
+      !result->FindStringPath(kBoxNameFieldName)) {
     LOG(ERROR)
         << "[BoxApiCallFlow] GetCurrentUser succeeded but "
            "response does not include all of enterprise_id, login, and name: "
-        << *result.value;
+        << *result;
     std::move(callback_).Run(Response{false, net::HTTP_OK}, CreateEmptyDict());
     return;
   }
-  std::move(callback_).Run(Response{true, net::HTTP_OK},
-                           std::move(result.value.value()));
+  std::move(callback_).Run(Response{true, net::HTTP_OK}, std::move(*result));
 }
 
 void BoxGetCurrentUserApiCallFlow::ProcessFailure(Response response) {
@@ -757,21 +756,19 @@ void BoxCreateUploadSessionApiCallFlow::ProcessFailure(Response response) {
 
 void BoxCreateUploadSessionApiCallFlow::OnSuccessJsonParsed(
     ParseResult result) {
-  LOG_PARSE_FAIL_IF(!result.value.has_value(), ERROR, "CreateUploadSession",
-                    result);
+  LOG_PARSE_FAIL_IF(!result.has_value(), ERROR, "CreateUploadSession", result);
 
   const auto http_code = net::HTTP_CREATED;
   base::Value *endpoints = nullptr, *part_size = nullptr;
-  if (result.value.has_value() &&
-      (part_size = result.value->FindPath("part_size")) &&
-      (endpoints = result.value->FindPath("session_endpoints")) &&
+  if (result.has_value() && (part_size = result->FindPath("part_size")) &&
+      (endpoints = result->FindPath("session_endpoints")) &&
       endpoints->FindPath("upload_part") && endpoints->FindPath("commit") &&
       endpoints->FindPath("abort")) {
     std::move(callback_).Run(MakeSuccess(http_code), std::move(*endpoints),
                              part_size->GetInt());
     return;
   }
-  LOG_PARSE_FAIL_IF(!result.value, ERROR, "CreateUploadSession", result);
+  LOG_PARSE_FAIL_IF(!result.has_value(), ERROR, "CreateUploadSession", result);
   ProcessFailure(MakeApiFailure(http_code, "bad_response", "parse_fail"));
 }
 
@@ -861,13 +858,13 @@ void BoxPartFileUploadApiCallFlow::ProcessFailure(Response response) {
 
 void BoxPartFileUploadApiCallFlow::OnSuccessJsonParsed(ParseResult result) {
   const auto http_code = net::HTTP_OK;
-  if (!result.value) {
+  if (!result.has_value()) {
     LOG_PARSE_FAIL(ERROR, "PartFileUpload", result);
     ProcessFailure(MakeApiFailure(http_code, "bad_response", "parse_fail"));
     return;
   }
 
-  base::Value* part = result.value->FindPath("part");
+  base::Value* part = result->FindPath("part");
   if (!part) {
     DLOG(ERROR) << "[BoxApiCallFlow] No info for uploaded part";
     ProcessFailure(MakeApiFailure(http_code, "bad_response", "parse_fail"));

@@ -756,7 +756,7 @@ class AddExpectationsTest(Base):
                             '# results: [ Failure ]\n'
                             '\n'
                             '# this is a block of expectations\n'
-                            'test [ failure ]\n')
+                            'test [ Failure ]\n')
         expectations_dict = OrderedDict()
         expectations_dict['/tmp/TestExpectations'] = ''
         expectations_dict['/tmp/TestExpectations2'] = raw_expectations
@@ -779,7 +779,7 @@ class AddExpectationsTest(Base):
                             '# results: [ Failure ]\n'
                             '\n'
                             '# this is a block of expectations\n'
-                            'test [ failure ]\n')
+                            'test [ Failure ]\n')
         expectations_dict = OrderedDict()
         expectations_dict['/tmp/TestExpectations'] = ''
         expectations_dict['/tmp/TestExpectations2'] = raw_expectations
@@ -801,7 +801,7 @@ class AddExpectationsTest(Base):
                             '# results: [ Failure ]\n'
                             '\n'
                             '# this is a block of expectations\n'
-                            'test [ failure ]\n')
+                            'test [ Failure ]\n')
         expectations_dict = OrderedDict()
         expectations_dict['/tmp/TestExpectations'] = ''
         expectations_dict['/tmp/TestExpectations2'] = raw_expectations
@@ -825,7 +825,7 @@ class AddExpectationsTest(Base):
                             '# results: [ Failure ]\n'
                             '\n'
                             '# this is a block of expectations\n'
-                            'test [ failure ]\n')
+                            'test [ Failure ]\n')
         expectations_dict = OrderedDict()
         expectations_dict['/tmp/TestExpectations'] = ''
         expectations_dict['/tmp/TestExpectations2'] = raw_expectations
@@ -848,7 +848,7 @@ class AddExpectationsTest(Base):
                             '# results: [ Failure ]\n'
                             '\n'
                             '# this is a block of expectations\n'
-                            'test [ failure ]\n')
+                            'test [ Failure ]\n')
         expectations_dict = OrderedDict()
         expectations_dict['/tmp/TestExpectations'] = ''
         expectations_dict['/tmp/TestExpectations2'] = raw_expectations
@@ -873,7 +873,7 @@ class AddExpectationsTest(Base):
                                    '# results: [ Failure ]\n'
                                    '\n'
                                    '# this is a block of expectations\n'
-                                   'test [ failure ]\n'
+                                   'test [ Failure ]\n'
                                    '\n'
                                    'test1 [ Pass ]\n'
                                    '[ Mac Release ] test2 [ Crash Failure ]\n'

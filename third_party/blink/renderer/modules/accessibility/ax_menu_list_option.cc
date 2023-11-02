@@ -25,13 +25,13 @@
 
 #include "third_party/blink/renderer/modules/accessibility/ax_menu_list_option.h"
 
-#include "skia/ext/skia_matrix_44.h"
 #include "third_party/blink/renderer/core/aom/accessible_node.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_menu_list.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_menu_list_popup.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -113,9 +113,17 @@ bool AXMenuListOption::OnNativeClickAction() {
     GetElement()->AccessKeyAction(
         SimulatedClickCreationScope::kFromAccessibility);
 
+    // It's possible that the call to `AccessKeyAction` right above modified the
+    // tree structure (e.g., by collapsing the list of options and removing them
+    // from the tree), effectively detaching the current node from the tree. In
+    // this case, `ParentObject` will now return nullptr.
+    AXObject* parent = ParentObject();
+    if (!parent)
+      return false;
+
     // Calling OnNativeClickAction on the parent select element will toggle
     // it open or closed.
-    return ParentObject()->OnNativeClickAction();
+    return parent->OnNativeClickAction();
   }
 
   return AXNodeObject::OnNativeClickAction();
@@ -145,13 +153,13 @@ bool AXMenuListOption::ComputeAccessibilityIsIgnored(
 
 void AXMenuListOption::GetRelativeBounds(
     AXObject** out_container,
-    FloatRect& out_bounds_in_container,
-    skia::Matrix44& out_container_transform,
+    gfx::RectF& out_bounds_in_container,
+    gfx::Transform& out_container_transform,
     bool* clips_children) const {
   DCHECK(!IsDetached());
   *out_container = nullptr;
-  out_bounds_in_container = FloatRect();
-  out_container_transform.setIdentity();
+  out_bounds_in_container = gfx::RectF();
+  out_container_transform.MakeIdentity();
 
   // When a <select> is collapsed, the bounds of its options are the same as
   // that of the containing <select>.

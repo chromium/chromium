@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,6 @@
 #include "third_party/blink/renderer/core/streams/transform_stream_transformer.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/microtask.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/to_v8.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
@@ -40,7 +39,7 @@ using ::testing::Return;
 
 class TransformStreamTest : public ::testing::Test {
  public:
-  TransformStreamTest() {}
+  TransformStreamTest() = default;
 
   TransformStream* Stream() const { return stream_; }
 
@@ -176,7 +175,7 @@ TEST_F(TransformStreamTest, TransformIsCalled) {
       scope.GetScriptState());
   Init(mock, scope.GetScriptState(), ASSERT_NO_EXCEPTION);
   // Need to run microtasks so the startAlgorithm promise resolves.
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
   CopyReadableAndWritableToGlobal(scope);
 
   EXPECT_CALL(*mock, Transform(_, _, _))
@@ -199,7 +198,7 @@ TEST_F(TransformStreamTest, FlushIsCalled) {
       scope.GetScriptState());
   Init(mock, scope.GetScriptState(), ASSERT_NO_EXCEPTION);
   // Need to run microtasks so the startAlgorithm promise resolves.
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
   CopyReadableAndWritableToGlobal(scope);
 
   EXPECT_CALL(*mock, Flush(_, _))
@@ -458,7 +457,7 @@ TEST_F(TransformStreamTest, WaitInTransform) {
                                    ScriptPromise::Cast(script_state, promise));
 
   // Give Transform() the opportunity to be called.
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
 
   EXPECT_FALSE(write_tester.IsFulfilled());
   EXPECT_FALSE(transformer->FlushCalled());
@@ -516,7 +515,7 @@ TEST_F(TransformStreamTest, WaitInFlush) {
                                    ScriptPromise::Cast(script_state, promise));
 
   // Give Flush() the opportunity to be called.
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
 
   EXPECT_FALSE(close_tester.IsFulfilled());
   transformer->ResolvePromise();

@@ -1,0 +1,144 @@
+<style include="history-clusters-shared-style">
+  :host {
+    align-items: center;
+    cursor: pointer;
+    display: flex;
+    min-height: 64px;
+  }
+
+  :host(:hover) {
+    background-color: var(--cr-hover-background-color);
+  }
+
+  #actionMenuButton {
+    opacity: 0; /* Hides the element while keeping it in tab order. */
+    position: absolute; /* Surrender its layout space to other elements. */
+    --cr-icon-button-margin-end: 8px;
+  }
+
+  :host(:hover) #actionMenuButton,
+  #actionMenuButton:focus-within {
+    opacity: 1;
+    position: static;
+  }
+
+  #header {
+    align-items: center;
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-between;
+    min-width: 0;
+    padding-inline-start: var(--cluster-padding-horizontal);
+    user-select: none;
+  }
+
+  :host([in-side-panel_]) #header {
+    padding-inline-start: 8px;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  #link-container {
+    align-items: center;
+    display: flex;
+    min-width: 0;
+    outline: none;
+    padding-inline-end: var(--cluster-padding-horizontal);
+  }
+
+  :host(:hover) #link-container {
+    padding-inline-end: 0;
+  }
+
+  :host-context(.focus-outline-visible) #link-container:focus {
+    box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color);
+  }
+
+  #page-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  #title-and-annotations {
+    align-items: center;
+    display: flex;
+    line-height: 2;  /* 32px */
+  }
+
+  .annotation {
+    align-items: center;
+    background-color: var(--annotation-background-color);
+    border-radius: 4px;
+    color: var(--annotation-text-color);
+    display: inline-flex;
+    flex-shrink: 0;
+    font-weight: 500;
+    margin-inline-start: 12px;
+    padding: 0 8px;
+  }
+
+  .annotation + .annotation {
+    margin-inline-start: 8px;
+  }
+
+  #title,
+  #url {
+    font-size: .875rem;  /* 14px */
+  }
+
+  :host([in-side-panel_]) #title {
+    font-size: .8125rem;  /* 13px */
+    line-height: calc(20/13);  /* 20px */
+  }
+
+  #url {
+    color: var(--url-color);
+    line-height: 1.5;  /* 24px */
+  }
+
+  :host([in-side-panel_]) #url {
+    color: var(--side-panel-url-color);
+    font-size: .75rem;  /* 12px */
+    line-height: calc(5/3);  /* 20px */
+  }
+
+  #debug-info {
+    color: var(--cr-secondary-text-color);
+  }
+</style>
+<div id="header" on-click="onClick_" on-auxclick="onAuxClick_"
+    on-keydown="onKeydown_" on-contextmenu="onContextMenu_">
+  <a id="link-container" href="[[visit.normalizedUrl.url]]">
+    <page-favicon url="[[visit.normalizedUrl]]"></page-favicon>
+    <div id="page-info">
+      <div id="title-and-annotations">
+        <span id="title" class="truncate"></span>
+        <template is="dom-repeat" items="[[annotations_]]">
+          <span class="annotation">[[item]]</span>
+        </template>
+      </div>
+      <span id="url" class="truncate"></span>
+      <span id="debug-info" hidden="[[!debugInfo_]]">[[debugInfo_]]</span>
+    </div>
+  </a>
+  <cr-icon-button id="actionMenuButton" class="icon-more-vert"
+      title$="[[i18n('actionMenuDescription')]]" aria-haspopup="menu"
+      on-click="onActionMenuButtonClick_"
+      hidden="[[!allowDeletingHistory_]]">
+  </cr-icon-button>
+</div>
+
+<cr-lazy-render id="actionMenu">
+  <template>
+    <cr-action-menu role-description="[[i18n('actionMenuDescription]]">
+      <button id="removeSelfButton" class="dropdown-item"
+          on-click="onRemoveSelfButtonClick_">
+        [[i18n('removeFromHistory')]]
+      </button>
+    </cr-action-menu>
+  </template>
+</cr-lazy-render>

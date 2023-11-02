@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="utils.js"></script>
+<title>Fenced frame content to report focus</title>
+
+<body>
+  <input id="input"></input>
+  <select id="select">
+    <option>A</option>
+    <option>B</option>
+  </select>
+
+  <script>
+    const [focus_ready_key, focus_changed_key, send_reverse_sequence] = parseKeylist();
+    var events = [];
+    var reverse = false;
+    testRunner.setBrowserHandlesFocus(true);
+
+    function addEventListeners(element, name) {
+      element.addEventListener('focus', () => {
+        events.push(name + '/focus');
+        if (reverse) {
+          eventSender.keyDown('Tab', ['shiftKey']);
+        } else {
+          test_driver.send_keys(document.documentElement, '\uE004');
+        }
+      });
+      element.addEventListener('blur', () => {
+        events.push(name + '/blur');
+      });
+    }
+    addEventListeners(document.getElementById('input'), "fencedframe_input");
+    addEventListeners(document.getElementById('select'), "fencedframe_select");
+    document.body.addEventListener('focusout', () => {
+      if (events.length == 4) {
+        writeValueToServer(focus_changed_key, events);
+        events = [];
+        if (send_reverse_sequence === 'true') {
+          reverse = !reverse;
+        }
+      }
+    });
+    writeValueToServer(focus_ready_key, 'loaded');
+  </script>
+</body>

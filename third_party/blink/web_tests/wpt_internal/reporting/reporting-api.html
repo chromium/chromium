@@ -55,7 +55,7 @@ promise_test(async () => {
   let promise = proxy.promise;
 
   // Use a deprecated feature.
-  window.webkitStorageInfo;
+  webkitRequestAnimationFrame(() => {});
 
   // Ensure the deprecation report is generated and routed to the reporting mojo
   // interface.

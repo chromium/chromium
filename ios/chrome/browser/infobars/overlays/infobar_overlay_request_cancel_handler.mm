@@ -1,14 +1,14 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_cancel_handler.h"
 
-#include "base/check.h"
-#include "base/feature_list.h"
-#include "components/infobars/core/infobar.h"
-#include "ios/chrome/browser/infobars/infobar_ios.h"
-#include "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
+#import "base/check.h"
+#import "base/feature_list.h"
+#import "components/infobars/core/infobar.h"
+#import "ios/chrome/browser/infobars/infobar_ios.h"
+#import "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 
@@ -19,8 +19,9 @@
 using infobars::InfoBar;
 using infobars::InfoBarManager;
 
-const base::Feature kInfobarRemoveCheck{"InfobarRemoveCheck",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kInfobarRemoveCheck,
+             "InfobarRemoveCheck",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #pragma mark - InfobarOverlayRequestCancelHandler
 

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,6 +40,7 @@
 
 #include "randr.h"
 
+#include <unistd.h>
 #include <xcb/xcb.h>
 #include <xcb/xcbext.h>
 
@@ -55,7 +56,10 @@ RandR::RandR(Connection* connection, const x11::QueryExtensionReply& info)
 std::string RandR::BadOutputError::ToString() const {
   std::stringstream ss_;
   ss_ << "RandR::BadOutputError{";
-  ss_ << ".sequence = " << static_cast<uint64_t>(sequence);
+  ss_ << ".sequence = " << static_cast<uint64_t>(sequence) << ", ";
+  ss_ << ".bad_value = " << static_cast<uint64_t>(bad_value) << ", ";
+  ss_ << ".minor_opcode = " << static_cast<uint64_t>(minor_opcode) << ", ";
+  ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
 }
@@ -66,6 +70,9 @@ void ReadError<RandR::BadOutputError>(RandR::BadOutputError* error_,
   auto& buf = *buffer;
 
   auto& sequence = (*error_).sequence;
+  auto& bad_value = (*error_).bad_value;
+  auto& minor_opcode = (*error_).minor_opcode;
+  auto& major_opcode = (*error_).major_opcode;
 
   // response_type
   uint8_t response_type;
@@ -78,12 +85,24 @@ void ReadError<RandR::BadOutputError>(RandR::BadOutputError* error_,
   // sequence
   Read(&sequence, &buf);
 
+  // bad_value
+  Read(&bad_value, &buf);
+
+  // minor_opcode
+  Read(&minor_opcode, &buf);
+
+  // major_opcode
+  Read(&major_opcode, &buf);
+
   DCHECK_LE(buf.offset, 32ul);
 }
 std::string RandR::BadCrtcError::ToString() const {
   std::stringstream ss_;
   ss_ << "RandR::BadCrtcError{";
-  ss_ << ".sequence = " << static_cast<uint64_t>(sequence);
+  ss_ << ".sequence = " << static_cast<uint64_t>(sequence) << ", ";
+  ss_ << ".bad_value = " << static_cast<uint64_t>(bad_value) << ", ";
+  ss_ << ".minor_opcode = " << static_cast<uint64_t>(minor_opcode) << ", ";
+  ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
 }
@@ -94,6 +113,9 @@ void ReadError<RandR::BadCrtcError>(RandR::BadCrtcError* error_,
   auto& buf = *buffer;
 
   auto& sequence = (*error_).sequence;
+  auto& bad_value = (*error_).bad_value;
+  auto& minor_opcode = (*error_).minor_opcode;
+  auto& major_opcode = (*error_).major_opcode;
 
   // response_type
   uint8_t response_type;
@@ -106,12 +128,24 @@ void ReadError<RandR::BadCrtcError>(RandR::BadCrtcError* error_,
   // sequence
   Read(&sequence, &buf);
 
+  // bad_value
+  Read(&bad_value, &buf);
+
+  // minor_opcode
+  Read(&minor_opcode, &buf);
+
+  // major_opcode
+  Read(&major_opcode, &buf);
+
   DCHECK_LE(buf.offset, 32ul);
 }
 std::string RandR::BadModeError::ToString() const {
   std::stringstream ss_;
   ss_ << "RandR::BadModeError{";
-  ss_ << ".sequence = " << static_cast<uint64_t>(sequence);
+  ss_ << ".sequence = " << static_cast<uint64_t>(sequence) << ", ";
+  ss_ << ".bad_value = " << static_cast<uint64_t>(bad_value) << ", ";
+  ss_ << ".minor_opcode = " << static_cast<uint64_t>(minor_opcode) << ", ";
+  ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
 }
@@ -122,6 +156,9 @@ void ReadError<RandR::BadModeError>(RandR::BadModeError* error_,
   auto& buf = *buffer;
 
   auto& sequence = (*error_).sequence;
+  auto& bad_value = (*error_).bad_value;
+  auto& minor_opcode = (*error_).minor_opcode;
+  auto& major_opcode = (*error_).major_opcode;
 
   // response_type
   uint8_t response_type;
@@ -134,12 +171,24 @@ void ReadError<RandR::BadModeError>(RandR::BadModeError* error_,
   // sequence
   Read(&sequence, &buf);
 
+  // bad_value
+  Read(&bad_value, &buf);
+
+  // minor_opcode
+  Read(&minor_opcode, &buf);
+
+  // major_opcode
+  Read(&major_opcode, &buf);
+
   DCHECK_LE(buf.offset, 32ul);
 }
 std::string RandR::BadProviderError::ToString() const {
   std::stringstream ss_;
   ss_ << "RandR::BadProviderError{";
-  ss_ << ".sequence = " << static_cast<uint64_t>(sequence);
+  ss_ << ".sequence = " << static_cast<uint64_t>(sequence) << ", ";
+  ss_ << ".bad_value = " << static_cast<uint64_t>(bad_value) << ", ";
+  ss_ << ".minor_opcode = " << static_cast<uint64_t>(minor_opcode) << ", ";
+  ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
 }
@@ -150,6 +199,9 @@ void ReadError<RandR::BadProviderError>(RandR::BadProviderError* error_,
   auto& buf = *buffer;
 
   auto& sequence = (*error_).sequence;
+  auto& bad_value = (*error_).bad_value;
+  auto& minor_opcode = (*error_).minor_opcode;
+  auto& major_opcode = (*error_).major_opcode;
 
   // response_type
   uint8_t response_type;
@@ -161,6 +213,15 @@ void ReadError<RandR::BadProviderError>(RandR::BadProviderError* error_,
 
   // sequence
   Read(&sequence, &buf);
+
+  // bad_value
+  Read(&bad_value, &buf);
+
+  // minor_opcode
+  Read(&minor_opcode, &buf);
+
+  // major_opcode
+  Read(&major_opcode, &buf);
 
   DCHECK_LE(buf.offset, 32ul);
 }
@@ -2494,7 +2555,7 @@ Future<void> RandR::SetCrtcGamma(const RandR::SetCrtcGammaRequest& request) {
   buf.Write(&crtc);
 
   // size
-  size = red.size();
+  size = blue.size();
   buf.Write(&size);
 
   // pad0

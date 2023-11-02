@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,47 +12,65 @@
  *   dialog is accepted or not.
  * - The dialog shows itself automatically when it is attached.
  */
-import '//resources/cr_elements/cr_button/cr_button.m.js';
-import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import '../../settings_shared_css.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import '../../settings_shared.css.js';
 
-import {loadTimeData} from '//resources/js/load_time_data.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-crostini-confirmation-dialog',
+/** @polymer */
+class SettingsCrostiniConfirmationDialogElement extends PolymerElement {
+  static get is() {
+    return 'settings-crostini-confirmation-dialog';
+  }
 
-  properties: {
-    acceptButtonText: String,
-    cancelButtonText: {
-      type: String,
-      value: loadTimeData.getString('cancel'),
-    }
-  },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  created() {
+  static get properties() {
+    return {
+      acceptButtonText: String,
+      cancelButtonText: {
+        type: String,
+        value: loadTimeData.getString('cancel'),
+      },
+    };
+  }
+
+  constructor() {
+    super();
+
     this.accepted_ = true;
-  },
+  }
 
   /** @private */
   onCancelTap_() {
     this.$.dialog.cancel();
-  },
+  }
 
   /** @private */
   onAcceptTap_() {
     this.$.dialog.close();
-  },
+  }
 
   /** @private */
   onDialogCancel_(e) {
     this.accepted_ = false;
-  },
+  }
 
   /** @private */
   onDialogClose_(e) {
     e.stopPropagation();
-    this.fire('close', {'accepted': this.accepted_});
-  },
-});
+
+    const closeEvent = new CustomEvent(
+        'close',
+        {bubbles: true, composed: true, detail: {'accepted': this.accepted_}});
+    this.dispatchEvent(closeEvent);
+  }
+}
+
+customElements.define(
+    SettingsCrostiniConfirmationDialogElement.is,
+    SettingsCrostiniConfirmationDialogElement);

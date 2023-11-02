@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,11 +17,13 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
@@ -46,10 +48,10 @@ class DevToolsIssueStorageBrowserTest : public DevToolsProtocolTest {
   }
 
   void WaitForDummyIssueNotification() {
-    std::unique_ptr<base::DictionaryValue> notification =
+    base::Value::Dict notification =
         WaitForNotification("Audits.issueAdded", true);
-    EXPECT_EQ(*(notification->FindDictPath("issue")->FindStringPath("code")),
-              protocol::Audits::InspectorIssueCodeEnum::SameSiteCookieIssue);
+    EXPECT_EQ(*notification.FindStringByDottedPath("issue.code"),
+              protocol::Audits::InspectorIssueCodeEnum::CookieIssue);
   }
 };
 
@@ -59,8 +61,7 @@ void ReportDummyIssue(RenderFrameHostImpl* rfh) {
   auto issueDetails = protocol::Audits::InspectorIssueDetails::Create();
   auto inspector_issue =
       protocol::Audits::InspectorIssue::Create()
-          .SetCode(
-              protocol::Audits::InspectorIssueCodeEnum::SameSiteCookieIssue)
+          .SetCode(protocol::Audits::InspectorIssueCodeEnum::CookieIssue)
           .SetDetails(issueDetails.Build())
           .Build();
   devtools_instrumentation::ReportBrowserInitiatedIssue(rfh,
@@ -71,41 +72,23 @@ void ReportDummyIssue(RenderFrameHostImpl* rfh) {
 
 IN_PROC_BROWSER_TEST_F(DevToolsIssueStorageBrowserTest,
                        DevToolsReceivesBrowserIssues) {
-  // 1) Navigate to about:blank.
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
-
-  // 2) Report an empty SameSite cookie issue.
+  // Report an empty SameSite cookie issue.
   ReportDummyIssue(main_frame_host());
-
-  // 3) Open DevTools.
   Attach();
-
-  // 4) Verify we haven't received any Issues yet.
-  ASSERT_TRUE(notifications_.empty());
-
-  // 5) Enable audits domain.
-  SendCommand("Audits.enable", std::make_unique<base::DictionaryValue>());
-
-  // 6) Verify we have received the SameSite issue.
+  SendCommandSync("Audits.enable");
+  // Verify we have received the SameSite issue.
   WaitForDummyIssueNotification();
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsIssueStorageBrowserTest,
                        DevToolsReceivesBrowserIssuesWhileAttached) {
-  // 1) Navigate to about:blank.
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
-
-  // 2) Open DevTools and enable Audits domain.
   Attach();
-  SendCommand("Audits.enable", std::make_unique<base::DictionaryValue>());
-
-  // 3) Verify we haven't received any Issues yet.
-  ASSERT_TRUE(notifications_.empty());
-
-  // 4) Report an empty SameSite cookie issue.
+  SendCommandSync("Audits.enable");
+  // Report an empty SameSite cookie issue.
   ReportDummyIssue(main_frame_host());
-
-  // 5) Verify we have received the SameSite issue.
+  // Verify we have received the SameSite issue.
   WaitForDummyIssueNotification();
 }
 
@@ -132,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsIssueStorageBrowserTest,
 
   // 4) Open DevTools and enable Audits domain.
   Attach();
-  SendCommand("Audits.enable", std::make_unique<base::DictionaryValue>());
+  SendCommandSync("Audits.enable");
 
   // 5) Verify we have received the SameSite issue on the main target.
   WaitForDummyIssueNotification();
@@ -153,27 +136,20 @@ IN_PROC_BROWSER_TEST_F(DevToolsIssueStorageBrowserTest,
 
   // 4) Open DevTools and enable Audits domain.
   Attach();
-  SendCommand("Audits.enable", std::make_unique<base::DictionaryValue>());
+  SendCommandSync("Audits.enable");
 
   // 5) Verify that we haven't received any notifications.
-  ASSERT_TRUE(notifications_.empty());
+  ASSERT_FALSE(HasExistingNotification());
 }
 
 class DevToolsIssueStorageWithBackForwardCacheBrowserTest
     : public DevToolsIssueStorageBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-        enabled_features;
-
     // Enable BackForwardCache, omitting this feature results in a crash.
-    std::map<std::string, std::string> params = {
-        {"TimeToLiveInBackForwardCacheInSeconds", "3600"}};
-    enabled_features.emplace_back(features::kBackForwardCache, params);
     feature_list_.InitWithFeaturesAndParameters(
-        enabled_features,
-        // Allow BackForwardCache for all devices regardless of their memory.
-        {features::kBackForwardCacheMemoryControls});
+        DefaultEnabledBackForwardCacheParametersForTests(),
+        DefaultDisabledBackForwardCacheParametersForTests());
   }
 
  protected:
@@ -208,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsIssueStorageWithBackForwardCacheBrowserTest,
 
   // 5) Open DevTools and enable Audits domain.
   Attach();
-  SendCommand("Audits.enable", std::make_unique<base::DictionaryValue>());
+  SendCommandSync("Audits.enable");
 
   // 6) Verify we have received the SameSite issue on the main target.
   WaitForDummyIssueNotification();
@@ -258,9 +234,53 @@ IN_PROC_BROWSER_TEST_F(DevToolsIssueStorageWithPrerenderBrowserTest,
 
   // 5) Open DevTools and enable Audits domain.
   Attach();
-  SendCommand("Audits.enable", std::make_unique<base::DictionaryValue>());
+  SendCommandSync("Audits.enable");
 
   // 6) Verify we have received the SameSite issue on the main target.
   WaitForDummyIssueNotification();
 }
+
+class DevToolsIssueStorageFencedFrameTest
+    : public DevToolsIssueStorageBrowserTest {
+ public:
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+
+ protected:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(DevToolsIssueStorageFencedFrameTest,
+                       DeleteFencedFrameWithIssue) {
+  // 1) Navigate to a page.
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_url = embedded_test_server()->GetURL("/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), test_url));
+
+  // 2) Create a fenced frame.
+  GURL fenced_frame_url =
+      embedded_test_server()->GetURL("/fenced_frames/title1.html");
+  content::RenderFrameHostImpl* fenced_frame_rfh =
+      static_cast<RenderFrameHostImpl*>(
+          fenced_frame_test_helper().CreateFencedFrame(
+              web_contents()->GetPrimaryMainFrame(), fenced_frame_url));
+  EXPECT_NE(nullptr, fenced_frame_rfh);
+
+  // 3) Report an empty SameSite cookie issue in the fenced frame.
+  ReportDummyIssue(fenced_frame_rfh);
+
+  // 4) Delete the fenced frame from the page. This should cause the issue to be
+  // re-assigned to the primary root frame.
+  EXPECT_TRUE(ExecJs(shell()->web_contents(),
+                     "document.querySelector('fencedframe').remove()"));
+
+  // 5) Open DevTools and enable Audits domain.
+  Attach();
+  SendCommandSync("Audits.enable");
+
+  // 6) Verify we have received the SameSite issue on the main target.
+  WaitForDummyIssueNotification();
+}
+
 }  // namespace content

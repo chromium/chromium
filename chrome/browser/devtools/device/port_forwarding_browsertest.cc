@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -101,8 +101,8 @@ IN_PROC_BROWSER_TEST_F(PortForwardingTest,
   prefs->SetBoolean(prefs::kDevToolsPortForwardingEnabled, true);
 
   base::DictionaryValue config;
-  config.SetString(
-      forwarding_port, original_url.host() + ":" + original_url.port());
+  config.SetStringKey(forwarding_port,
+                      original_url.host() + ":" + original_url.port());
   prefs->Set(prefs::kDevToolsPortForwardingConfig, config);
 
   Listener wait_for_port_forwarding(profile);
@@ -163,8 +163,8 @@ IN_PROC_BROWSER_TEST_F(PortForwardingDisconnectTest, DisconnectOnRelease) {
   prefs->SetBoolean(prefs::kDevToolsPortForwardingEnabled, true);
 
   base::DictionaryValue config;
-  config.SetString(
-      forwarding_port, original_url.host() + ":" + original_url.port());
+  config.SetStringKey(forwarding_port,
+                      original_url.host() + ":" + original_url.port());
   prefs->Set(prefs::kDevToolsPortForwardingConfig, config);
 
   std::unique_ptr<Listener> wait_for_port_forwarding(new Listener(profile));

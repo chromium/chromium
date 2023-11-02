@@ -1,6 +1,8 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include <utility>
 
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
@@ -48,7 +50,7 @@ class MockAutofillClient : public TestAutofillClient {
   ~MockAutofillClient() override = default;
 
   PrefService* GetPrefs() override {
-    return const_cast<PrefService*>(base::as_const(*this).GetPrefs());
+    return const_cast<PrefService*>(std::as_const(*this).GetPrefs());
   }
   const PrefService* GetPrefs() const override { return &prefs_; }
 
@@ -88,7 +90,7 @@ class ContentAutofillDriverBrowserTest : public InProcessBrowserTest,
         std::make_unique<testing::NiceMock<MockAutofillClient>>();
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    ASSERT_TRUE(web_contents != NULL);
+    ASSERT_TRUE(web_contents != nullptr);
     Observe(web_contents);
     prefs::RegisterProfilePrefs(autofill_client().GetPrefRegistry());
 
@@ -96,8 +98,9 @@ class ContentAutofillDriverBrowserTest : public InProcessBrowserTest,
         ContentAutofillDriverFactory::
             kContentAutofillDriverFactoryWebContentsUserDataKey);
     ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
-        web_contents, &autofill_client(), "en-US",
-        BrowserAutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER);
+        web_contents, &autofill_client(),
+        base::BindRepeating(&autofill::BrowserDriverInitHook,
+                            &autofill_client(), "en-US"));
 
     // Serve both a.com and b.com (and any other domain).
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -132,35 +135,6 @@ class ContentAutofillDriverBrowserTest : public InProcessBrowserTest,
 
     if (!navigation_handle->IsInMainFrame() && subframe_navigation_callback_) {
       std::move(subframe_navigation_callback_).Run();
-    }
-  }
-
-  void GetElementFormAndFieldData(const std::string& selector,
-                                  size_t expected_form_size) {
-    base::RunLoop run_loop;
-    ContentAutofillDriverFactory::FromWebContents(web_contents())
-        ->DriverForFrame(web_contents()->GetMainFrame())
-        ->GetAutofillAgent()
-        ->GetElementFormAndFieldDataAtIndex(
-            selector, 0,
-            base::BindOnce(
-                &ContentAutofillDriverBrowserTest::OnGetElementFormAndFieldData,
-                base::Unretained(this), run_loop.QuitClosure(),
-                expected_form_size));
-    run_loop.Run();
-  }
-
-  void OnGetElementFormAndFieldData(base::RepeatingClosure done_callback,
-                                    size_t expected_form_size,
-                                    const autofill::FormData& form_data,
-                                    const autofill::FormFieldData& form_field) {
-    std::move(done_callback).Run();
-    if (expected_form_size) {
-      ASSERT_EQ(form_data.fields.size(), expected_form_size);
-      ASSERT_FALSE(form_field.label.empty());
-    } else {
-      ASSERT_EQ(form_data.fields.size(), expected_form_size);
-      ASSERT_TRUE(form_field.label.empty());
     }
   }
 
@@ -288,26 +262,6 @@ IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
   runner->Run();
 }
 
-IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
-                       GetElementFormAndFieldData) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL(
-                     "/autofill/autofill_assistant_test_form.html")));
-
-  GetElementFormAndFieldData("#testformone #NAME_FIRST",
-                             /*expected_form_size=*/9u);
-
-  GetElementFormAndFieldData("#testformtwo #NAME_FIRST",
-                             /*expected_form_size=*/7u);
-
-  // Multiple corresponding form fields. Takes the first as an implementation
-  // detail of this test helper.
-  GetElementFormAndFieldData("#NAME_FIRST", /*expected_form_size=*/9u);
-
-  // No corresponding form field.
-  GetElementFormAndFieldData("#whatever", /*expected_form_size=*/0u);
-}
-
 class ContentAutofillDriverPrerenderBrowserTest
     : public ContentAutofillDriverBrowserTest {
  public:
@@ -330,8 +284,9 @@ IN_PROC_BROWSER_TEST_F(ContentAutofillDriverPrerenderBrowserTest,
   // Set a dummy form data to simulate to submit a form. And, OnFormSubmitted
   // method will be called upon navigation.
   ContentAutofillDriverFactory::FromWebContents(web_contents())
-      ->DriverForFrame(web_contents()->GetMainFrame())
-      ->SetFormToBeProbablySubmitted(absl::make_optional<FormData>());
+      ->DriverForFrame(web_contents()->GetPrimaryMainFrame())
+      ->renderer_events()
+      .SetFormToBeProbablySubmitted(absl::make_optional<FormData>());
 
   base::HistogramTester histogram_tester;
 

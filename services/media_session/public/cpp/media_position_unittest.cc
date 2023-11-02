@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -195,6 +195,24 @@ TEST_F(MediaPositionTest, TestEquals_SameButDifferentTime) {
   position_1.last_updated_time_ -= base::Seconds(10);
 
   EXPECT_EQ(position_1, position_2);
+}
+
+TEST_F(MediaPositionTest, TestPosition_TimeHasGoneBackwards) {
+  // This test is only valid when base::TimeTicks is not consistent across
+  // processes.
+  if (base::TimeTicks::IsConsistentAcrossProcesses())
+    return;
+
+  MediaPosition media_position(
+      /*playback_rate=*/1, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(300), /*end_of_media=*/false);
+
+  // Query with a time in the past.
+  base::TimeTicks now = base::TimeTicks::Now() - base::Seconds(1);
+  base::TimeDelta updated_position = media_position.GetPositionAtTime(now);
+
+  // It should act as if no time has passed.
+  EXPECT_EQ(updated_position.InSeconds(), 300);
 }
 
 }  // namespace media_session

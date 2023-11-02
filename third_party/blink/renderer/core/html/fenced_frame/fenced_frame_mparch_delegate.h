@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,8 +24,11 @@ class CORE_EXPORT FencedFrameMPArchDelegate
  public:
   explicit FencedFrameMPArchDelegate(HTMLFencedFrameElement* outer_element);
 
-  void DidGetInserted() override;
   void Navigate(const KURL&) override;
+  void Dispose() override;
+  void AttachLayoutTree() override;
+  bool SupportsFocus() override;
+  void FreezeFrameSize() override;
 
  private:
   mojo::AssociatedRemote<mojom::blink::FencedFrameOwnerHost> remote_;

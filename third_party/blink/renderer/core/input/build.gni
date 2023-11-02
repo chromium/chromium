@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -33,4 +33,17 @@ blink_core_sources_input = [
   "touch_event_manager.h",
   "touch_list.cc",
   "touch_list.h",
+  "widget_event_handler.cc",
+  "widget_event_handler.h",
+]
+
+blink_core_tests_input = [
+  "event_handler_test.cc",
+  "ime_on_focus_test.cc",
+  "mouse_event_manager_test.cc",
+  "overscroll_behavior_test.cc",
+  "pointer_event_manager_test.cc",
+  "scroll_snap_test.cc",
+  "touch_action_test.cc",
+  "touch_event_manager_test.cc",
 ]

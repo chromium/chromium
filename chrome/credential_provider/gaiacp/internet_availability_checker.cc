@@ -1,14 +1,13 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/credential_provider/gaiacp/internet_availability_checker.h"
 
-#include <atlbase.h>
-#include <atlcom.h>
 #include <netlistmgr.h>  // For CLSID_NetworkListManager
 #include <wrl/client.h>
 
+#include "base/win/atl.h"
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
 #include "chrome/credential_provider/gaiacp/logging.h"
 

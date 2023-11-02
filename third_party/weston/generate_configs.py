@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Creates config files for building Weston."""
@@ -8,6 +8,7 @@
 from __future__ import print_function
 
 import os
+import pathlib
 import re
 import shutil
 import subprocess
@@ -47,6 +48,10 @@ DEFAULT_BUILD_ARGS = [
     '-Dbackend-drm=false',
     '-Dbackend-default=wayland'
 ]
+
+
+def GetAbsPath(relative_path):
+    return os.path.join(BASE_DIR, relative_path)
 
 
 def PrintAndCheckCall(argv, *args, **kwargs):
@@ -100,7 +105,7 @@ def GenerateGitConfig(config_dir, env, special_args=[]):
     temp_dir = tempfile.mkdtemp()
     PrintAndCheckCall(
         MESON + DEFAULT_BUILD_ARGS + special_args + [temp_dir],
-        cwd='src',
+        cwd=GetAbsPath('src'),
         env=env)
 
     label = subprocess.check_output(["git", "describe", "--always"]).strip()
@@ -115,14 +120,14 @@ def GenerateConfig(config_dir, env, special_args=[]):
     temp_dir = tempfile.mkdtemp()
     PrintAndCheckCall(
         MESON + DEFAULT_BUILD_ARGS + special_args + [temp_dir],
-        cwd='src',
+        cwd=GetAbsPath('src'),
         env=env)
 
     CopyConfigsAndCleanup(temp_dir, config_dir)
 
 
 def ChangeConfigPath():
-    configfile = os.path.join(BASE_DIR, "config/config.h")
+    configfile = GetAbsPath("config/config.h")
     DIRS = ["BINDIR",
             "DATADIR",
             "LIBEXECDIR",
@@ -137,12 +142,12 @@ def ChangeConfigPath():
 
 
 def GenerateWestonVersion():
-    dirname = os.path.join(BASE_DIR, "version/libweston")
+    dirname = GetAbsPath("version/libweston")
     if not os.path.exists(dirname):
         os.makedirs(dirname)
-    version_op_file = os.path.join(BASE_DIR, "version/libweston/version.h")
-    configfile = os.path.join(BASE_DIR, "config/config.h")
-    version_in_file = os.path.join(BASE_DIR, "src/include/libweston/version.h.in")
+    version_op_file = GetAbsPath("version/libweston/version.h")
+    configfile = GetAbsPath("config/config.h")
+    version_in_file = GetAbsPath("src/include/libweston/version.h.in")
     version_number = "0.0.0"
     with open(configfile, 'r') as f:
         for line in f:
@@ -169,7 +174,7 @@ def GenerateWestonVersion():
 
 
 def RemoveUndesiredDefines():
-    configfile = os.path.join(BASE_DIR, "config/config.h")
+    configfile = GetAbsPath('config/config.h')
     # Weston doesn't have a meson option to avoid using memfd_create() method that was
     # introduced in GLIBC 2.27. That results in weston failing to run on Xenial based bot as
     # it has GLIBC 2.23, because this config might be generated on a system that has newer
@@ -181,8 +186,8 @@ def RemoveUndesiredDefines():
 def main():
     env = os.environ
     env['CC'] = 'clang'
-    GenerateGitConfig('version', env)
-    GenerateConfig('config', env)
+    GenerateGitConfig(GetAbsPath('version'), env)
+    GenerateConfig(GetAbsPath('config'), env)
     ChangeConfigPath()
     RemoveUndesiredDefines()
     GenerateWestonVersion()

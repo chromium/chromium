@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,10 @@
 
 #import <XCTest/XCTest.h>
 
-#include "base/command_line.h"
-#include "base/feature_list.h"
+#import "base/command_line.h"
 #import "base/ios/crb_protocol_observers.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
 #import "ios/testing/earl_grey/app_launch_manager_app_interface.h"
 #import "ios/testing/earl_grey/base_earl_grey_test_case_app_interface.h"
 #import "ios/testing/earl_grey/coverage_utils.h"
@@ -81,6 +81,18 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
   return self;
 }
 
+- (BOOL)appIsLaunched {
+  return (self.runningApplication != nil) &&
+         (self.runningApplication.state != XCUIApplicationStateNotRunning) &&
+         (self.runningApplication.state != XCUIApplicationStateUnknown);
+}
+
+- (BOOL)appIsRunning {
+  return
+      [self appIsLaunched] && (self.runningApplication.state !=
+                               XCUIApplicationStateRunningBackgroundSuspended);
+}
+
 // Makes sure the app has been started with the appropriate |arguments|.
 // In EG2, will launch the app if any of the following conditions are met:
 // * The app is not running
@@ -97,16 +109,8 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
   BOOL gracefullyKill = (relaunchPolicy == ForceRelaunchByCleanShutdown);
   BOOL runResets = (relaunchPolicy == NoForceRelaunchAndResetState);
 
-  // If app has crashed, |self.runningApplication| will be at
-  // |XCUIApplicationStateNotRunning| state and it should be relaunched with
-  // proper resets. The app also needs a relaunch if it's at
-  // |XCUIApplicationStateUnknown| state.
-  BOOL appIsRunning =
-      (self.runningApplication != nil) &&
-      (self.runningApplication.state != XCUIApplicationStateNotRunning) &&
-      (self.runningApplication.state != XCUIApplicationStateUnknown) &&
-      (self.runningApplication.state !=
-       XCUIApplicationStateRunningBackgroundSuspended);
+  // If app has crashed it should be relaunched with the proper resets.
+  BOOL appIsRunning = [self appIsRunning];
 
   // App PID change means an unknown relaunch not from AppLaunchManager, so it
   // needs a correct relaunch for setups.
@@ -161,13 +165,30 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
 
   XCUIApplication* application = [[XCUIApplication alloc] init];
   application.launchArguments = arguments;
-  [application launch];
+
+  @try {
+    [application launch];
+  } @catch (id exception) {
+    XCTAssertFalse(GREYTestApplicationDistantObject.sharedInstance
+                       .hostActiveWithAppComponent);
+  }
+
+  if (!GREYTestApplicationDistantObject.sharedInstance
+           .hostActiveWithAppComponent) {
+    NSLog(@"App has crashed on startup");
+    self.runningApplication = nil;
+    self.runningApplicationProcessIdentifier = -1;
+    self.currentLaunchArgs = nil;
+    XCTAssertFalse([self appIsLaunched]);
+    return;
+  }
 
   [CoverageUtils configureCoverageReportPath];
 
   if (self.runningApplication) {
     [self.observers appLaunchManagerDidRelaunchApp:self runResets:runResets];
   }
+
   self.runningApplication = application;
   self.runningApplicationProcessIdentifier =
       [AppLaunchManagerAppInterface processIdentifier];
@@ -180,12 +201,12 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
   NSMutableArray<NSString*>* namesToDisable = [NSMutableArray array];
   NSMutableArray<NSString*>* variations = [NSMutableArray array];
 
-  for (const base::Feature& feature : configuration.features_enabled) {
-    [namesToEnable addObject:base::SysUTF8ToNSString(feature.name)];
+  for (const auto& feature : configuration.features_enabled) {
+    [namesToEnable addObject:base::SysUTF8ToNSString(feature->name)];
   }
 
-  for (const base::Feature& feature : configuration.features_disabled) {
-    [namesToDisable addObject:base::SysUTF8ToNSString(feature.name)];
+  for (const auto& feature : configuration.features_disabled) {
+    [namesToDisable addObject:base::SysUTF8ToNSString(feature->name)];
   }
 
   for (const variations::VariationID& variation :
@@ -227,14 +248,23 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
   [self ensureAppLaunchedWithArgs:arguments
                    relaunchPolicy:configuration.relaunch_policy];
 
-  if (@available(iOS 14, *))
-    [BaseEarlGreyTestCaseAppInterface enableFastAnimation];
+  if ([self appIsLaunched]) {
+    if (@available(iOS 14, *)) {
+      [BaseEarlGreyTestCaseAppInterface enableFastAnimation];
+    }
+
+    // Wait for application to settle before continuing on with test.
+    GREYWaitForAppToIdle(@"App failed to idle BEFORE test body started.\n\n"
+                         @"**** Check that the prior test left the app in a"
+                         @"clean state. ****");
+  }
 }
 
 - (void)ensureAppLaunchedWithFeaturesEnabled:
-            (std::vector<base::Feature>)featuresEnabled
-                                    disabled:(std::vector<base::Feature>)
-                                                 featuresDisabled
+            (std::vector<base::test::FeatureRef>)featuresEnabled
+                                    disabled:
+                                        (std::vector<base::test::FeatureRef>)
+                                            featuresDisabled
                               relaunchPolicy:(RelaunchPolicy)relaunchPolicy {
   AppLaunchConfiguration config;
   config.features_enabled = std::move(featuresEnabled);

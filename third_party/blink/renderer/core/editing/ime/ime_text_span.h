@@ -49,8 +49,8 @@ class CORE_EXPORT ImeTextSpan {
   };
 
   ImeTextSpan(Type,
-              unsigned start_offset,
-              unsigned end_offset,
+              wtf_size_t start_offset,
+              wtf_size_t end_offset,
               const Color& underline_color,
               ui::mojom::ImeTextSpanThickness,
               ui::mojom::ImeTextSpanUnderlineStyle,
@@ -64,8 +64,8 @@ class CORE_EXPORT ImeTextSpan {
   explicit ImeTextSpan(const ui::ImeTextSpan&);
 
   Type GetType() const { return type_; }
-  unsigned StartOffset() const { return start_offset_; }
-  unsigned EndOffset() const { return end_offset_; }
+  wtf_size_t StartOffset() const { return start_offset_; }
+  wtf_size_t EndOffset() const { return end_offset_; }
   const Color& UnderlineColor() const { return underline_color_; }
   ui::mojom::ImeTextSpanThickness Thickness() const { return thickness_; }
   ui::mojom::ImeTextSpanUnderlineStyle UnderlineStyle() const {
@@ -86,8 +86,8 @@ class CORE_EXPORT ImeTextSpan {
 
  private:
   Type type_;
-  unsigned start_offset_;
-  unsigned end_offset_;
+  wtf_size_t start_offset_;
+  wtf_size_t end_offset_;
   Color underline_color_;
   ui::mojom::ImeTextSpanThickness thickness_;
   ui::mojom::ImeTextSpanUnderlineStyle underline_style_;

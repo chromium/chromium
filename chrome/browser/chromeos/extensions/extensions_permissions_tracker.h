@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,9 @@ class BrowserContext;
 }
 
 namespace extensions {
+
+// Returns true if the |extension_id| is allowed in managed guest sessions.
+bool IsAllowlistedForManagedGuestSession(const std::string& extension_id);
 
 // Used to track the installation of the force-installed extensions of the
 // managed-guest session to decide whether the permissions of the extensions

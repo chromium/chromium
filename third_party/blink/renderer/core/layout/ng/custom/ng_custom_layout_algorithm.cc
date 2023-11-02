@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,7 +54,7 @@ MinMaxSizesResult NGCustomLayoutAlgorithm::ComputeMinMaxSizes(
       container_builder_.InlineSize(),
       ComputeBlockSizeForFragment(
           ConstraintSpace(), Style(), BorderPadding(),
-          CalculateDefaultBlockSize(ConstraintSpace(), Node(),
+          CalculateDefaultBlockSize(ConstraintSpace(), Node(), BreakToken(),
                                     BorderScrollbarPadding()),
           container_builder_.InlineSize())};
   if (!instance->IntrinsicSizes(
@@ -78,7 +78,7 @@ MinMaxSizesResult NGCustomLayoutAlgorithm::ComputeMinMaxSizes(
   return MinMaxSizesResult(sizes, depends_on_block_constraints);
 }
 
-scoped_refptr<const NGLayoutResult> NGCustomLayoutAlgorithm::Layout() {
+const NGLayoutResult* NGCustomLayoutAlgorithm::Layout() {
   DCHECK(!IsResumingLayout(BreakToken()));
 
   if (!Node().IsCustomLayoutLoaded())
@@ -87,6 +87,8 @@ scoped_refptr<const NGLayoutResult> NGCustomLayoutAlgorithm::Layout() {
   ScriptForbiddenScope::AllowUserAgentScript allow_script;
   CustomLayoutScope scope;
 
+  // TODO(ikilpatrick): Scale inputs/outputs by effective-zoom.
+  const float effective_zoom = Style().EffectiveZoom();
   const AtomicString& name = Style().DisplayLayoutCustomName();
   const Document& document = Node().GetDocument();
   LayoutWorklet* worklet = LayoutWorklet::From(*document.domWindow());
@@ -106,7 +108,7 @@ scoped_refptr<const NGLayoutResult> NGCustomLayoutAlgorithm::Layout() {
       container_builder_.InlineSize(),
       ComputeBlockSizeForFragment(
           ConstraintSpace(), Style(), BorderPadding(),
-          CalculateDefaultBlockSize(ConstraintSpace(), Node(),
+          CalculateDefaultBlockSize(ConstraintSpace(), Node(), BreakToken(),
                                     BorderScrollbarPadding()),
           container_builder_.InlineSize())};
   if (!instance->Layout(ConstraintSpace(), document, Node(), border_box_size,
@@ -168,10 +170,12 @@ scoped_refptr<const NGLayoutResult> NGCustomLayoutAlgorithm::Layout() {
       ConstraintSpace(), Style(), BorderPadding(), auto_block_size,
       container_builder_.InitialBorderBoxSize().inline_size);
 
+  // TODO(ikilpatrick): Allow setting both the first/last baseline instead of a
+  // general baseline.
   if (fragment_result_options->hasBaseline()) {
-    LayoutUnit baseline =
-        LayoutUnit::FromDoubleRound(fragment_result_options->baseline());
-    container_builder_.SetBaseline(baseline);
+    LayoutUnit baseline = LayoutUnit::FromDoubleRound(
+        effective_zoom * fragment_result_options->baseline());
+    container_builder_.SetBaselines(baseline);
   }
 
   container_builder_.SetCustomLayoutData(std::move(fragment_result_data));
@@ -202,7 +206,7 @@ MinMaxSizesResult NGCustomLayoutAlgorithm::FallbackMinMaxSizes(
   return NGBlockLayoutAlgorithm(params_).ComputeMinMaxSizes(input);
 }
 
-scoped_refptr<const NGLayoutResult> NGCustomLayoutAlgorithm::FallbackLayout() {
+const NGLayoutResult* NGCustomLayoutAlgorithm::FallbackLayout() {
   return NGBlockLayoutAlgorithm(params_).Layout();
 }
 

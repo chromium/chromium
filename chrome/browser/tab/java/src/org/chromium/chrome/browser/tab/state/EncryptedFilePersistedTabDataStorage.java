@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,12 @@ package org.chromium.chrome.browser.tab.state;
 import android.os.SystemClock;
 
 import androidx.annotation.MainThread;
-import androidx.annotation.VisibleForTesting;
 import androidx.core.util.AtomicFile;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 
 import java.io.DataInputStream;
@@ -51,15 +49,14 @@ public class EncryptedFilePersistedTabDataStorage extends FilePersistedTabDataSt
 
     @MainThread
     @Override
-    public void save(int tabId, String dataId, Supplier<ByteBuffer> dataSupplier) {
-        save(tabId, dataId, dataSupplier, NO_OP_CALLBACK);
+    public void save(int tabId, String dataId, Serializer<ByteBuffer> serializer) {
+        save(tabId, dataId, serializer, NO_OP_CALLBACK);
     }
 
     @MainThread
     @Override
-    @VisibleForTesting
-    protected void save(
-            int tabId, String dataId, Supplier<ByteBuffer> data, Callback<Integer> callback) {
+    public void save(
+            int tabId, String dataId, Serializer<ByteBuffer> data, Callback<Integer> callback) {
         addStorageRequestAndProcessNext(
                 new EncryptedFileSaveRequest(tabId, dataId, data, callback));
     }
@@ -76,6 +73,22 @@ public class EncryptedFilePersistedTabDataStorage extends FilePersistedTabDataSt
         return new EncryptedFileRestoreRequest(tabId, dataId, null).executeSyncTask();
     }
 
+    @MainThread
+    @Override
+    public <U extends PersistedTabDataResult> U restore(
+            int tabId, String dataId, PersistedTabDataMapper<U> mapper) {
+        return new EncryptedFileRestoreAndMapRequest<U>(tabId, dataId, null, mapper)
+                .executeSyncTask();
+    }
+
+    @MainThread
+    @Override
+    public <U extends PersistedTabDataResult> void restore(
+            int tabId, String dataId, Callback<U> callback, PersistedTabDataMapper<U> mapper) {
+        addStorageRequestAndProcessNext(
+                new EncryptedFileRestoreAndMapRequest<U>(tabId, dataId, callback, mapper));
+    }
+
     /**
      * Request to save encrypted file based {@link PersistedTabData}
      */
@@ -83,18 +96,18 @@ public class EncryptedFilePersistedTabDataStorage extends FilePersistedTabDataSt
         /**
          * @param tabId identifier for the {@link Tab}
          * @param dataId identifier for the {@link PersistedTabData}
-         * @param dataSupplier {@link Supplier} containing data to be saved
+         * @param serializer {@link Serializer} containing data to be saved
          */
-        EncryptedFileSaveRequest(int tabId, String dataId, Supplier<ByteBuffer> dataSupplier,
+        EncryptedFileSaveRequest(int tabId, String dataId, Serializer<ByteBuffer> serializer,
                 Callback<Integer> callback) {
-            super(tabId, dataId, dataSupplier, callback);
+            super(tabId, dataId, serializer, callback);
         }
 
         @Override
         public Void executeSyncTask() {
-            ByteBuffer data = mDataSupplier.get();
+            ByteBuffer data = mSerializer.get();
             if (data == null) {
-                mDataSupplier = null;
+                mSerializer = null;
                 return null;
             }
             boolean success = false;
@@ -221,6 +234,26 @@ public class EncryptedFilePersistedTabDataStorage extends FilePersistedTabDataSt
             RecordHistogram.recordBooleanHistogram(
                     "Tabs.PersistedTabData.Storage.Restore." + getUmaTag(), success);
             return res == null ? null : ByteBuffer.wrap(res);
+        }
+    }
+
+    private class EncryptedFileRestoreAndMapRequest<U extends PersistedTabDataResult>
+            extends FileRestoreAndMapRequest<U> {
+        /**
+         * @param tabId identifier for the {@link Tab}
+         * @param dataId identifier for the {@link PersistedTabData}
+         * @param callback - callback to return the retrieved serialized
+         * {@link PersistedTabData} in
+         */
+        EncryptedFileRestoreAndMapRequest(
+                int tabId, String dataId, Callback<U> callback, PersistedTabDataMapper<U> mapper) {
+            super(tabId, dataId, callback, mapper);
+        }
+
+        @Override
+        public U executeSyncTask() {
+            return mMapper.map(
+                    new EncryptedFileRestoreRequest(mTabId, mDataId, null).executeSyncTask());
         }
     }
 }

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,13 +71,13 @@ void TestMediaRouteProvider::CreateRoute(const std::string& media_source,
                                          const std::string& sink_id,
                                          const std::string& presentation_id,
                                          const url::Origin& origin,
-                                         int32_t tab_id,
+                                         int32_t frame_tree_node_id,
                                          base::TimeDelta timeout,
                                          bool incognito,
                                          CreateRouteCallback callback) {
   if (!route_error_message_.empty()) {
     std::move(callback).Run(absl::nullopt, nullptr, route_error_message_,
-                            RouteRequestResult::ResultCode::UNKNOWN_ERROR);
+                            mojom::RouteRequestResultCode::UNKNOWN_ERROR);
   } else if (!delay_.is_zero()) {
     base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
@@ -85,10 +85,10 @@ void TestMediaRouteProvider::CreateRoute(const std::string& media_source,
                        GetWeakPtr(), std::move(callback)),
         delay_);
   } else {
-    DVLOG(2) << "CreateRoute with origin: " << origin << " and tab ID "
-             << tab_id;
+    DVLOG(2) << "CreateRoute with origin: " << origin
+             << " and FrameTreeNode ID " << frame_tree_node_id;
     MediaRoute route(presentation_id, MediaSource(media_source), sink_id,
-                     std::string("Test Route"), true, true);
+                     std::string("Test Route"), true);
     route.set_presentation_id(presentation_id);
     route.set_controller_type(RouteControllerType::kGeneric);
     route.set_off_the_record(incognito);
@@ -101,78 +101,49 @@ void TestMediaRouteProvider::CreateRoute(const std::string& media_source,
 
     media_router_->OnPresentationConnectionStateChanged(
         route_id, blink::mojom::PresentationConnectionState::CONNECTED);
-    media_router_->OnRoutesUpdated(kProviderId, GetMediaRoutes(), media_source,
-                                   {});
+    media_router_->OnRoutesUpdated(kProviderId, GetMediaRoutes());
     std::move(callback).Run(routes_[route_id], nullptr, absl::nullopt,
-                            RouteRequestResult::ResultCode::OK);
+                            mojom::RouteRequestResultCode::OK);
   }
 }
 
 void TestMediaRouteProvider::CreateRouteTimeOut(CreateRouteCallback callback) {
   std::move(callback).Run(absl::nullopt, nullptr, absl::nullopt,
-                          RouteRequestResult::ResultCode::TIMED_OUT);
+                          mojom::RouteRequestResultCode::TIMED_OUT);
 }
 
 void TestMediaRouteProvider::JoinRoute(const std::string& media_source,
                                        const std::string& presentation_id,
                                        const url::Origin& origin,
-                                       int32_t tab_id,
+                                       int32_t frame_tree_node_id,
                                        base::TimeDelta timeout,
                                        bool incognito,
                                        JoinRouteCallback callback) {
   if (!route_error_message_.empty()) {
     std::move(callback).Run(absl::nullopt, nullptr, route_error_message_,
-                            RouteRequestResult::UNKNOWN_ERROR);
+                            mojom::RouteRequestResultCode::UNKNOWN_ERROR);
     return;
   }
   if (!IsValidSource(media_source)) {
     std::move(callback).Run(absl::nullopt, nullptr,
                             std::string("The media source is invalid."),
-                            RouteRequestResult::UNKNOWN_ERROR);
+                            mojom::RouteRequestResultCode::UNKNOWN_ERROR);
     return;
   }
   auto pos = presentation_ids_to_routes_.find(presentation_id);
   if (pos == presentation_ids_to_routes_.end()) {
     std::move(callback).Run(absl::nullopt, nullptr,
                             std::string("Presentation does not exist."),
-                            RouteRequestResult::UNKNOWN_ERROR);
+                            mojom::RouteRequestResultCode::UNKNOWN_ERROR);
   } else if (pos->second.is_off_the_record() != incognito) {
     std::move(callback).Run(absl::nullopt, nullptr,
                             std::string("Off-the-record mismatch."),
-                            RouteRequestResult::UNKNOWN_ERROR);
+                            mojom::RouteRequestResultCode::UNKNOWN_ERROR);
   } else {
     MediaRoute& existing_route = pos->second;
     std::move(callback).Run(existing_route, nullptr,
                             std::string("Successfully joined session"),
-                            RouteRequestResult::ResultCode::OK);
-  }
-}
-
-void TestMediaRouteProvider::ConnectRouteByRouteId(
-    const std::string& media_source,
-    const std::string& route_id,
-    const std::string& presentation_id,
-    const url::Origin& origin,
-    int32_t tab_id,
-    base::TimeDelta timeout,
-    bool incognito,
-    ConnectRouteByRouteIdCallback callback) {
-  if (!IsValidSource(media_source)) {
-    std::move(callback).Run(absl::nullopt, nullptr,
-                            std::string("The media source is invalid."),
-                            RouteRequestResult::UNKNOWN_ERROR);
-    return;
-  }
-  auto pos = routes_.find(route_id);
-  if (pos == presentation_ids_to_routes_.end()) {
-    std::move(callback).Run(absl::nullopt, nullptr,
-                            std::string("Presentation does not exist."),
-                            RouteRequestResult::UNKNOWN_ERROR);
-  } else {
-    MediaRoute& existing_route = pos->second;
-    std::move(callback).Run(existing_route, nullptr,
-                            std::string("Connect route by route ID"),
-                            RouteRequestResult::ResultCode::OK);
+                            mojom::RouteRequestResultCode::OK);
   }
 }
 
@@ -181,17 +152,15 @@ void TestMediaRouteProvider::TerminateRoute(const std::string& route_id,
   auto it = routes_.find(route_id);
   if (it == routes_.end()) {
     std::move(callback).Run(std::string("Route not found in test provider"),
-                            RouteRequestResult::ROUTE_NOT_FOUND);
+                            mojom::RouteRequestResultCode::ROUTE_NOT_FOUND);
     return;
   }
   presentation_ids_to_routes_.erase(it->second.presentation_id());
   routes_.erase(it);
   media_router_->OnPresentationConnectionStateChanged(
       route_id, blink::mojom::PresentationConnectionState::TERMINATED);
-  media_router_->OnRoutesUpdated(
-      kProviderId, GetMediaRoutes(),
-      MediaRoute::GetMediaSourceIdFromMediaRouteId(route_id), {});
-  std::move(callback).Run(absl::nullopt, RouteRequestResult::OK);
+  media_router_->OnRoutesUpdated(kProviderId, GetMediaRoutes());
+  std::move(callback).Run(absl::nullopt, mojom::RouteRequestResultCode::OK);
 }
 
 void TestMediaRouteProvider::SendRouteMessage(const std::string& media_route_id,
@@ -204,9 +173,7 @@ void TestMediaRouteProvider::SendRouteMessage(const std::string& media_route_id,
         media_route_id,
         blink::mojom::PresentationConnectionCloseReason::CONNECTION_ERROR,
         "Send error. Closing connection.");
-    media_router_->OnRoutesUpdated(
-        kProviderId, GetMediaRoutes(),
-        MediaRoute::GetMediaSourceIdFromMediaRouteId(media_route_id), {});
+    media_router_->OnRoutesUpdated(kProviderId, GetMediaRoutes());
   } else {
     std::string response = "Pong: " + message;
     std::vector<mojom::RouteMessagePtr> messages;
@@ -233,11 +200,7 @@ void TestMediaRouteProvider::StartObservingMediaSinks(
 void TestMediaRouteProvider::StopObservingMediaSinks(
     const std::string& media_source) {}
 
-void TestMediaRouteProvider::StartObservingMediaRoutes(
-    const std::string& media_source) {}
-
-void TestMediaRouteProvider::StopObservingMediaRoutes(
-    const std::string& media_source) {}
+void TestMediaRouteProvider::StartObservingMediaRoutes() {}
 
 void TestMediaRouteProvider::StartListeningForRouteMessages(
     const std::string& route_id) {}
@@ -283,6 +246,10 @@ void TestMediaRouteProvider::CaptureOffScreenTab(
   offscreen_tab_ =
       std::make_unique<OffscreenTab>(this, web_contents->GetBrowserContext());
   offscreen_tab_->Start(source_urn, gfx::Size(180, 180), presentation_id);
+}
+
+bool TestMediaRouteProvider::HasRoutes() const {
+  return !routes_.empty();
 }
 
 void TestMediaRouteProvider::TearDown() {

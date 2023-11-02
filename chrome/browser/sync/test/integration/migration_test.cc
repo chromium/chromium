@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -73,22 +73,18 @@ class MigrationTest : public SyncTest {
   MigrationTest(const MigrationTest&) = delete;
   MigrationTest& operator=(const MigrationTest&) = delete;
 
-  ~MigrationTest() override {}
+  ~MigrationTest() override = default;
 
   enum TriggerMethod { MODIFY_PREF, MODIFY_BOOKMARK, TRIGGER_REFRESH };
 
-  // Set up sync for all profiles and initialize all MigrationWatchers. This
-  // helps ensure that all migration events are captured, even if they were to
-  // occur before a test calls AwaitMigration for a specific profile.
-  bool SetupSync() override {
-    if (!SyncTest::SetupSync())
-      return false;
-
+  // Initialize all MigrationWatchers. This helps ensure that all migration
+  // events are captured, even if they were to occur before a test calls
+  // AwaitMigration for a specific profile.
+  void Initialize() {
     for (int i = 0; i < num_clients(); ++i) {
       migration_watchers_.push_back(
           std::make_unique<MigrationWatcher>(GetClient(i)));
     }
-    return true;
   }
 
   syncer::ModelTypeSet GetPreferredDataTypes() {
@@ -180,19 +176,17 @@ class MigrationTest : public SyncTest {
     }
 
     // Phase 1: Trigger the migrations on the server.
-    for (MigrationList::const_iterator it = migration_list.begin();
-         it != migration_list.end(); ++it) {
-      TriggerMigrationDoneError(*it);
+    for (const syncer::ModelTypeSet& model_types : migration_list) {
+      TriggerMigrationDoneError(model_types);
     }
 
     // Phase 2: Trigger each migration individually and wait for it to
     // complete.  (Multiple migrations may be handled by each
     // migration cycle, but there's no guarantee of that, so we have
     // to trigger each migration individually.)
-    for (MigrationList::const_iterator it = migration_list.begin();
-         it != migration_list.end(); ++it) {
-      TriggerMigration(*it, trigger_method);
-      AwaitMigration(*it);
+    for (const syncer::ModelTypeSet& model_types : migration_list) {
+      TriggerMigration(model_types, trigger_method);
+      AwaitMigration(model_types);
     }
 
     // Phase 3: Wait for all clients to catch up.
@@ -212,11 +206,12 @@ class MigrationSingleClientTest : public MigrationTest {
   MigrationSingleClientTest& operator=(const MigrationSingleClientTest&) =
       delete;
 
-  ~MigrationSingleClientTest() override {}
+  ~MigrationSingleClientTest() override = default;
 
   void RunSingleClientMigrationTest(const MigrationList& migration_list,
                                     TriggerMethod trigger_method) {
     ASSERT_TRUE(SetupSync());
+    Initialize();
     RunMigrationTest(migration_list, trigger_method);
   }
 };
@@ -326,6 +321,7 @@ class MigrationTwoClientTest : public MigrationTest {
   void RunTwoClientMigrationTest(const MigrationList& migration_list,
                                  TriggerMethod trigger_method) {
     ASSERT_TRUE(SetupSync());
+    Initialize();
 
     // Make sure pref sync works before running the migration test.
     VerifyPrefSync();
@@ -372,20 +368,5 @@ IN_PROC_BROWSER_TEST_F(MigrationTwoClientTest, MigrationHellWithNigori) {
   ASSERT_EQ(MakeSet(syncer::NIGORI), migration_list.back());
   RunTwoClientMigrationTest(migration_list, MODIFY_BOOKMARK);
 }
-
-class MigrationReconfigureTest : public MigrationTwoClientTest {
- public:
-  MigrationReconfigureTest() {}
-
-  void SetUpCommandLine(base::CommandLine* cl) override {
-    AddTestSwitches(cl);
-    // Do not add optional datatypes.
-  }
-
-  MigrationReconfigureTest(const MigrationReconfigureTest&) = delete;
-  MigrationReconfigureTest& operator=(const MigrationReconfigureTest&) = delete;
-
-  ~MigrationReconfigureTest() override {}
-};
 
 }  // namespace

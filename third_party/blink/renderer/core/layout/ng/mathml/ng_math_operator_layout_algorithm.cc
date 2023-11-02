@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,7 @@ NGMathOperatorLayoutAlgorithm::NGMathOperatorLayoutAlgorithm(
       Node().IsInlineFormattingContextRoot());
 }
 
-scoped_refptr<const NGLayoutResult> NGMathOperatorLayoutAlgorithm::Layout() {
+const NGLayoutResult* NGMathOperatorLayoutAlgorithm::Layout() {
   // This algorithm can only be used for operators with a single text node,
   // which itself must contain only one glyph. We ensure that the subtree is
   // properly laid out but the glyph will actually be used to determine a
@@ -44,13 +44,11 @@ scoped_refptr<const NGLayoutResult> NGMathOperatorLayoutAlgorithm::Layout() {
   DCHECK(!child.NextSibling());
   DCHECK(!child.IsOutOfFlowPositioned());
 
-  NGInlineChildLayoutContext context;
-  NGFragmentItemsBuilder items_builder(
-      To<NGInlineNode>(child), container_builder_.GetWritingDirection());
-  container_builder_.SetItemsBuilder(&items_builder);
-  context.SetItemsBuilder(&items_builder);
-  scoped_refptr<const NGLayoutResult> child_layout_result =
-      To<NGInlineNode>(child).Layout(ConstraintSpace(), nullptr, &context);
+  NGInlineChildLayoutContext context(To<NGInlineNode>(child),
+                                     &container_builder_);
+  const NGLayoutResult* child_layout_result = To<NGInlineNode>(child).Layout(
+      ConstraintSpace(), /* break_token */ nullptr,
+      /* column_spanner_path */ nullptr, &context);
   container_builder_.AddResult(*child_layout_result, {});
 
   // https://w3c.github.io/mathml-core/#layout-of-operators
@@ -59,7 +57,7 @@ scoped_refptr<const NGLayoutResult> NGMathOperatorLayoutAlgorithm::Layout() {
   auto* element = DynamicTo<MathMLOperatorElement>(Node().GetDOMNode());
   if (element->HasBooleanProperty(MathMLOperatorElement::kStretchy)) {
     // "If the operator has the stretchy property:"
-    if (!element->GetOperatorContent().is_vertical) {
+    if (!element->IsVertical()) {
       // "If the stretch axis of the operator is inline."
       if (ConstraintSpace().HasTargetStretchInlineSize())
         operator_target_size = ConstraintSpace().TargetStretchInlineSize();
@@ -130,9 +128,8 @@ scoped_refptr<const NGLayoutResult> NGMathOperatorLayoutAlgorithm::Layout() {
 
   StretchyOperatorShaper shaper(
       GetBaseCodePoint(),
-      element->GetOperatorContent().is_vertical
-          ? OpenTypeMathStretchData::StretchAxis::Vertical
-          : OpenTypeMathStretchData::StretchAxis::Horizontal);
+      element->IsVertical() ? OpenTypeMathStretchData::StretchAxis::Vertical
+                            : OpenTypeMathStretchData::StretchAxis::Horizontal);
   StretchyOperatorShaper::Metrics metrics;
   scoped_refptr<ShapeResult> shape_result =
       shaper.Shape(&Style().GetFont(), operator_target_size, &metrics);
@@ -159,7 +156,7 @@ scoped_refptr<const NGLayoutResult> NGMathOperatorLayoutAlgorithm::Layout() {
   LayoutUnit ascent = BorderScrollbarPadding().block_start + operator_ascent;
   LayoutUnit descent = operator_descent + BorderScrollbarPadding().block_end;
   if (element->HasBooleanProperty(MathMLOperatorElement::kStretchy) &&
-      element->GetOperatorContent().is_vertical) {
+      element->IsVertical()) {
     // "The stretchy glyph is shifted towards the line-under by a value Δ so
     // that its center aligns with the center of the target"
     LayoutUnit delta = ((operator_ascent - operator_descent) -
@@ -172,7 +169,7 @@ scoped_refptr<const NGLayoutResult> NGMathOperatorLayoutAlgorithm::Layout() {
   LayoutUnit block_size = ComputeBlockSizeForFragment(
       ConstraintSpace(), Style(), BorderPadding(), intrinsic_block_size,
       container_builder_.InitialBorderBoxSize().inline_size);
-  container_builder_.SetBaseline(ascent);
+  container_builder_.SetBaselines(ascent);
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
   container_builder_.SetFragmentsTotalBlockSize(block_size);
   container_builder_.SetIsMathMLOperator();
@@ -187,7 +184,7 @@ MinMaxSizesResult NGMathOperatorLayoutAlgorithm::ComputeMinMaxSizes(
   auto* element = DynamicTo<MathMLOperatorElement>(Node().GetDOMNode());
   if (element->HasBooleanProperty(MathMLOperatorElement::kStretchy)) {
     // "If the operator has the stretchy property:"
-    if (!element->GetOperatorContent().is_vertical) {
+    if (!element->IsVertical()) {
       // "If the stretch axis of the operator is inline."
       // The spec current says we should rely on the layout algorithm of
       // § 3.2.1.1 Layout of <mtext>. Instead, we perform horizontal stretching
@@ -219,7 +216,7 @@ MinMaxSizesResult NGMathOperatorLayoutAlgorithm::ComputeMinMaxSizes(
 
 UChar32 NGMathOperatorLayoutAlgorithm::GetBaseCodePoint() const {
   return DynamicTo<MathMLOperatorElement>(Node().GetDOMNode())
-      ->GetOperatorContent()
+      ->GetTokenContent()
       .code_point;
 }
 

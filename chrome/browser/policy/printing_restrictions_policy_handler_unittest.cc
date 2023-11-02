@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@
 
 namespace policy {
 
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 class PrintingRestrictionsPolicyHandlerTest : public testing::Test {
  protected:
   void SetPolicy(base::Value value) {
@@ -128,8 +129,6 @@ TEST_F(PrintingRestrictionsPolicyHandlerTest, NoHeightInCustomSize) {
   CheckInvalidPolicy(kNoHeightInCustomSize);
 }
 
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-
 class PrintPdfAsImageRestrictionsPolicyHandlerTest : public testing::Test {
  protected:
   void SetPolicy(const std::string& policy_name, base::Value value) {
@@ -166,7 +165,7 @@ class PrintPdfAsImageRestrictionsPolicyHandlerTest : public testing::Test {
   PrefValueMap prefs_;
 };
 
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 TEST_F(PrintPdfAsImageRestrictionsPolicyHandlerTest,
        DefaultWithAvailabilityEnabled) {
   // For platforms that require PrintPdfAsImageAvailability, demonstrate that
@@ -208,9 +207,9 @@ TEST_F(PrintPdfAsImageRestrictionsPolicyHandlerTest,
 
   CheckInvalidPolicy(key::kPrintPdfAsImageDefault, default_value.Clone());
 }
-#endif  // defined(OS_WIN) || defined(OS_MAC)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 TEST_F(PrintPdfAsImageRestrictionsPolicyHandlerTest,
        DefaultWithoutAvailability) {
   // For platforms that do not require PrintPdfAsImageAvailability, demonstrate
@@ -226,7 +225,7 @@ TEST_F(PrintPdfAsImageRestrictionsPolicyHandlerTest,
   ASSERT_TRUE(value);
   EXPECT_EQ(*value, default_value);
 }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 

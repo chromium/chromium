@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -124,8 +124,15 @@ class ServiceWorkerProcessBrowserTest
 
 // Tests that a service worker started due to a navigation shares the same
 // process as the navigation.
+// Flaky on Android; see https://crbug.com/1320972.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ServiceWorkerAndPageShareProcess \
+  DISABLED_ServiceWorkerAndPageShareProcess
+#else
+#define MAYBE_ServiceWorkerAndPageShareProcess ServiceWorkerAndPageShareProcess
+#endif
 IN_PROC_BROWSER_TEST_P(ServiceWorkerProcessBrowserTest,
-                       ServiceWorkerAndPageShareProcess) {
+                       MAYBE_ServiceWorkerAndPageShareProcess) {
   // Register the service worker.
   RegisterServiceWorker();
 
@@ -143,13 +150,15 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerProcessBrowserTest,
 
 namespace {
 
-// ContentBrowserClient that skips assigning a site URL for a given URL.
+// ContentBrowserClient that skips assigning a site URL for a given scheme.
 class DontAssignSiteContentBrowserClient : public TestContentBrowserClient {
  public:
-  // Any visit to |url_to_skip| will not cause the site to be assigned to the
-  // SiteInstance.
-  explicit DontAssignSiteContentBrowserClient(const GURL& url_to_skip)
-      : url_to_skip_(url_to_skip) {}
+  // Any visit to |scheme_to_skip| will not cause the site to be assigned to the
+  // SiteInstance. This requires setting it as an empty document scheme.
+  explicit DontAssignSiteContentBrowserClient(const std::string& scheme_to_skip)
+      : scheme_to_skip_(scheme_to_skip) {
+    url::AddEmptyDocumentScheme(scheme_to_skip.c_str());
+  }
 
   DontAssignSiteContentBrowserClient(
       const DontAssignSiteContentBrowserClient&) = delete;
@@ -157,11 +166,12 @@ class DontAssignSiteContentBrowserClient : public TestContentBrowserClient {
       const DontAssignSiteContentBrowserClient&) = delete;
 
   bool ShouldAssignSiteForURL(const GURL& url) override {
-    return url != url_to_skip_;
+    return url.scheme() != scheme_to_skip_;
   }
 
  private:
-  GURL url_to_skip_;
+  std::string scheme_to_skip_;
+  url::ScopedSchemeRegistryForTests scheme_registry_;
 };
 
 }  // namespace
@@ -175,9 +185,9 @@ class DontAssignSiteContentBrowserClient : public TestContentBrowserClient {
 // https://crbug.com/1012143.
 IN_PROC_BROWSER_TEST_P(ServiceWorkerProcessBrowserTest,
                        NavigateFromUnassignedSiteInstance) {
-  // Set up a page URL that will have no site URL.
-  GURL empty_site = embedded_test_server()->GetURL("a.com", "/title1.html");
-  DontAssignSiteContentBrowserClient content_browser_client(empty_site);
+  // Set up an empty page scheme whose URLs will have no site assigned.
+  DontAssignSiteContentBrowserClient content_browser_client("siteless");
+  GURL empty_site_url = GURL("siteless://test");
   ContentBrowserClient* old_client =
       SetBrowserClientForTesting(&content_browser_client);
 
@@ -185,10 +195,10 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerProcessBrowserTest,
   RegisterServiceWorker();
 
   // Navigate to the empty site instance page.
-  ASSERT_TRUE(NavigateToURL(shell(), empty_site));
-  EXPECT_EQ(web_contents()->GetLastCommittedURL(), empty_site);
+  ASSERT_TRUE(NavigateToURL(shell(), empty_site_url));
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), empty_site_url);
   scoped_refptr<SiteInstanceImpl> site_instance =
-      web_contents()->GetMainFrame()->GetSiteInstance();
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_EQ(GURL(), site_instance->GetSiteURL());
   int page_process_id = current_frame_host()->GetProcess()->GetID();
   EXPECT_NE(page_process_id, ChildProcessHost::kInvalidUniqueID);

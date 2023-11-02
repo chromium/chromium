@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,15 @@
 #include <netinet/in.h>
 
 #include "ash/components/phonehub/util/histogram_util.h"
+#include "ash/constants/ash_features.h"
+#include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
+
 namespace {
 
 std::string SerializeMessage(proto::MessageType message_type,
@@ -50,6 +52,13 @@ void MessageSenderImpl::SendCrosState(bool notification_setting_enabled,
   proto::CrosState request;
   request.set_notification_setting(is_notification_enabled);
   request.set_camera_roll_setting(is_camera_roll_enabled);
+  if (features::IsPhoneHubMonochromeNotificationIconsEnabled()) {
+    // Updated Chromebooks should always use the new flag, but a flag is still
+    // necessary to identify end-of-support Chromebooks so the phone can know
+    // to send backwards-compatible messages.
+    request.set_notification_icon_styling(
+        proto::NotificationIconStyling::ICON_STYLE_MONOCHROME_SMALL_ICON);
+  }
 
   SendMessage(proto::MessageType::PROVIDE_CROS_STATE, &request);
 }
@@ -101,6 +110,15 @@ void MessageSenderImpl::SendShowNotificationAccessSetupRequest() {
               &request);
 }
 
+void MessageSenderImpl::SendFeatureSetupRequest(bool camera_roll,
+                                                bool notifications) {
+  proto::FeatureSetupRequest request;
+  request.set_camera_roll_setup_requested(camera_roll);
+  request.set_notification_setup_requested(notifications);
+
+  SendMessage(proto::MessageType::FEATURE_SETUP_REQUEST, &request);
+}
+
 void MessageSenderImpl::SendRingDeviceRequest(bool device_ringing_enabled) {
   proto::FindMyDeviceRingStatus ringing_enabled =
       device_ringing_enabled ? proto::FindMyDeviceRingStatus::RINGING
@@ -139,4 +157,4 @@ void MessageSenderImpl::SendMessage(
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

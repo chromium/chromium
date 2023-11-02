@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,30 +23,21 @@ class MockIdentityRequestDialogController
   MockIdentityRequestDialogController& operator=(
       const MockIdentityRequestDialogController&) = delete;
 
-  MOCK_METHOD4(ShowInitialPermissionDialog,
+  MOCK_METHOD7(ShowAccountsDialog,
                void(WebContents*,
-                    const GURL&,
-                    PermissionDialogMode,
-                    InitialApprovalCallback));
-  MOCK_METHOD4(ShowIdProviderWindow,
-               void(WebContents*,
-                    WebContents*,
-                    const GURL&,
-                    IdProviderWindowClosedCallback));
-  MOCK_METHOD0(CloseIdProviderWindow, void());
-  MOCK_METHOD3(ShowTokenExchangePermissionDialog,
-               void(content::WebContents*,
-                    const GURL&,
-                    TokenExchangeApprovalCallback));
-  MOCK_METHOD8(ShowAccountsDialog,
-               void(WebContents*,
-                    WebContents*,
-                    const GURL&,
-                    AccountList,
-                    const IdentityProviderMetadata&,
-                    const ClientIdData&,
+                    const std::string&,
+                    const absl::optional<std::string>&,
+                    const std::vector<content::IdentityProviderData>&,
                     IdentityRequestAccount::SignInMode,
-                    AccountSelectionCallback));
+                    AccountSelectionCallback,
+                    DismissCallback));
+  MOCK_METHOD0(DestructorCalled, void());
+  MOCK_METHOD5(ShowFailureDialog,
+               void(WebContents*,
+                    const std::string&,
+                    const std::string&,
+                    const absl::optional<std::string>&,
+                    DismissCallback));
 };
 
 }  // namespace content

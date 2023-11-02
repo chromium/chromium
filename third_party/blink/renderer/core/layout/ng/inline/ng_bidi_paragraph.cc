@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -67,7 +67,7 @@ unsigned NGBidiParagraph::GetLogicalRun(unsigned start,
 }
 
 void NGBidiParagraph::GetLogicalRuns(const String& text, Runs* runs) const {
-  DCHECK(runs->IsEmpty());
+  DCHECK(runs->empty());
   for (unsigned start = 0; start < text.length();) {
     UBiDiLevel level;
     unsigned end = GetLogicalRun(start, &level);

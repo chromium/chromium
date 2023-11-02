@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,13 +26,23 @@ class ASH_EXPORT DeskButtonBase : public views::LabelButton,
  public:
   METADATA_HEADER(DeskButtonBase);
 
-  explicit DeskButtonBase(const std::u16string& text);
+  // This LabelButton will include either text or image inside. Set the text
+  // of the button to `text` only if `set_text` is true, otherwise, the given
+  // `text` will only be used for the tooltip, accessible name etc of the
+  // button. If text of the button is empty, an image will be assigned to the
+  // button instead.
+  DeskButtonBase(const std::u16string& text, bool set_text);
   DeskButtonBase(const std::u16string& text,
+                 bool set_text,
                  int border_corder_radius,
                  int corner_radius);
   ~DeskButtonBase() override = default;
 
   WmHighlightItemBorder* border_ptr() { return border_ptr_; }
+
+  // views::View:
+  void OnFocus() override;
+  void OnBlur() override;
 
   // LabelButton:
   void OnPaintBackground(gfx::Canvas* canvas) override;
@@ -41,7 +51,7 @@ class ASH_EXPORT DeskButtonBase : public views::LabelButton,
   // OverviewHighlightableView:
   views::View* GetView() override;
   void MaybeActivateHighlightedView() override;
-  void MaybeCloseHighlightedView() override;
+  void MaybeCloseHighlightedView(bool primary_action) override;
   void MaybeSwapHighlightedView(bool right) override;
   void OnViewHighlighted() override;
   void OnViewUnhighlighted() override;
@@ -59,6 +69,8 @@ class ASH_EXPORT DeskButtonBase : public views::LabelButton,
  protected:
   virtual void OnButtonPressed() = 0;
 
+  virtual void UpdateBorderState();
+
   SkColor background_color_;
 
   // If true, paints a background of the button with `background_color_`. The
@@ -74,8 +86,6 @@ class ASH_EXPORT DeskButtonBase : public views::LabelButton,
 
  private:
   friend class DesksTestApi;
-
-  void UpdateBorderState();
 
   // Owned by this View via `View::border_`. This is just a convenient pointer
   // to it.

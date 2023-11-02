@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_TREE_INDEXER_H_
 #define UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_TREE_INDEXER_H_
 
+#include <map>
 #include <string>
 
 #include "base/strings/string_number_conversions.h"
@@ -21,20 +22,21 @@ namespace ui {
  * ChildrenContainer returns accessible children for an accessible node;
  * Compare is the Compare named requirements, used to compare two nodes.
  */
-template <std::string (*GetDOMId)(const gfx::NativeViewAccessible),
+template <typename AccessibilityObject,
+          std::string (*GetDOMId)(const AccessibilityObject),
           typename ChildrenContainer,
-          ChildrenContainer (*GetChildren)(const gfx::NativeViewAccessible),
-          typename Compare = std::less<gfx::NativeViewAccessible>>
+          ChildrenContainer (*GetChildren)(const AccessibilityObject),
+          typename Compare = std::less<AccessibilityObject>>
 class AX_EXPORT AXTreeIndexer final {
  public:
-  explicit AXTreeIndexer(const gfx::NativeViewAccessible node) {
+  explicit AXTreeIndexer(const AccessibilityObject node) {
     int counter = 0;
     Build(node, &counter);
   }
   virtual ~AXTreeIndexer() {}
 
   // Returns a line index in the formatted tree the node is placed at.
-  std::string IndexBy(const gfx::NativeViewAccessible node) const {
+  std::string IndexBy(const AccessibilityObject node) const {
     std::string line_index = ":unknown";
     auto iter = node_to_identifier_.find(node);
     if (iter != node_to_identifier_.end()) {
@@ -45,7 +47,7 @@ class AX_EXPORT AXTreeIndexer final {
 
   // Finds a first match either by a line number in :LINE_NUM format or by DOM
   // id.
-  gfx::NativeViewAccessible NodeBy(const std::string& identifier) const {
+  AccessibilityObject NodeBy(const std::string& identifier) const {
     for (auto& item : node_to_identifier_) {
       if (item.second.line_index == identifier ||
           item.second.id == identifier) {
@@ -56,7 +58,7 @@ class AX_EXPORT AXTreeIndexer final {
   }
 
  private:
-  void Build(const gfx::NativeViewAccessible node, int* counter) {
+  void Build(const AccessibilityObject node, int* counter) {
     const std::string id = *counter == 0 ? "document" : GetDOMId(node);
     const std::string line_index =
         std::string(1, ':') + base::NumberToString(++(*counter));
@@ -64,7 +66,7 @@ class AX_EXPORT AXTreeIndexer final {
     node_to_identifier_.insert({node, {line_index, id}});
 
     auto children = GetChildren(node);
-    for (gfx::NativeViewAccessible child in children) {
+    for (auto child : children) {
       Build(child, counter);
     }
   }
@@ -81,7 +83,7 @@ class AX_EXPORT AXTreeIndexer final {
   // Map between accessible objects and their identificators which can be a line
   // index the object is placed at in an accessible tree or its DOM id
   // attribute.
-  std::map<const gfx::NativeViewAccessible, NodeIdentifier, Compare>
+  std::map<const AccessibilityObject, NodeIdentifier, Compare>
       node_to_identifier_;
 };
 

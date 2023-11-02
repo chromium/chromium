@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -31,10 +31,12 @@ template("ios_chrome_repack_locales") {
       "${root_gen_dir}/components/strings/components_${branding_path_component}_strings_",
       "${root_gen_dir}/components/strings/components_locale_settings_",
       "${root_gen_dir}/components/strings/components_strings_",
+      "${root_gen_dir}/components/omnibox/resources/omnibox_pedal_synonyms_",
       "${root_gen_dir}/ios/chrome/ios_${branding_path_component}_strings_",
       "${root_gen_dir}/ios/chrome/ios_strings_",
       "${root_gen_dir}/third_party/libaddressinput/address_input_strings_",
       "${root_gen_dir}/ui/strings/app_locale_settings_",
+      "${root_gen_dir}/ui/strings/ax_strings_",
       "${root_gen_dir}/ui/strings/ui_strings_",
     ]
 
@@ -48,6 +50,7 @@ template("ios_chrome_repack_locales") {
     }
 
     deps = [
+      "//components/omnibox/resources:omnibox_pedal_synonyms_grit",
       "//components/strings:components_${branding_path_component}_strings",
       "//components/strings:components_locale_settings",
       "//components/strings:components_strings",
@@ -55,6 +58,7 @@ template("ios_chrome_repack_locales") {
       "//ios/chrome/app/strings:ios_strings",
       "//third_party/libaddressinput:strings",
       "//ui/strings:app_locale_settings",
+      "//ui/strings:ax_strings",
       "//ui/strings:ui_strings",
     ]
 

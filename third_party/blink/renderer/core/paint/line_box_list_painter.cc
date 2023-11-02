@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -165,7 +165,7 @@ void LineBoxListPainter::PaintBackplate(
     return;
 
   const auto& backplates = GetBackplates(paint_offset);
-  gfx::Rect visual_rect = ToGfxRect(EnclosingIntRect(UnionRect(backplates)));
+  gfx::Rect visual_rect = ToEnclosingRect(UnionRect(backplates));
   DrawingRecorder recorder(paint_info.context, layout_object,
                            DisplayItem::kForcedColorsModeBackplate,
                            visual_rect);
@@ -173,7 +173,7 @@ void LineBoxListPainter::PaintBackplate(
       layout_object.GetDocument().GetStyleEngine().ForcedBackgroundColor();
   for (const auto backplate : backplates) {
     paint_info.context.FillRect(
-        FloatRect(backplate), backplate_color,
+        gfx::RectF(backplate), backplate_color,
         PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground));
   }
 }

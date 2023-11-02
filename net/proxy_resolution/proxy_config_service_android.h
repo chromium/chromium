@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "base/android/jni_android.h"
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/net_export.h"
 #include "net/proxy_resolution/proxy_config_service.h"
@@ -36,7 +35,7 @@ class NET_EXPORT ProxyConfigServiceAndroid : public ProxyConfigService {
   // the .cc file.
   class JNIDelegate {
    public:
-    virtual ~JNIDelegate() {}
+    virtual ~JNIDelegate() = default;
 
     // Called from Java (on JNI thread) to signal that the proxy settings have
     // changed. The string and int arguments (the host/port pair for the proxy)

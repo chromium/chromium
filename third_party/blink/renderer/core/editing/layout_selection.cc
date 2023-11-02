@@ -52,7 +52,7 @@ bool ShouldUseLayoutNGTextContent(const Node& node) {
   LayoutObject* layout_object = node.GetLayoutObject();
   DCHECK(layout_object);
   if (layout_object->IsInline())
-    return layout_object->ContainingNGBlockFlow();
+    return layout_object->IsInLayoutNGInlineFormattingContext();
   if (auto* block_flow = DynamicTo<LayoutBlockFlow>(layout_object))
     return NGBlockNode::CanUseNewLayout(*block_flow);
   return false;
@@ -122,7 +122,7 @@ enum class SelectionMode {
 void LayoutSelection::AssertIsValid() const {
   const Document& document = frame_selection_->GetDocument();
   DCHECK_GE(document.Lifecycle().GetState(), DocumentLifecycle::kLayoutClean);
-  DCHECK(!document.IsSlotAssignmentOrLegacyDistributionDirty());
+  DCHECK(!document.IsSlotAssignmentDirty());
   DCHECK(!has_pending_selection_);
 }
 
@@ -212,7 +212,7 @@ struct NewPaintRangeAndSelectedNodes {
       DCHECK(selected_objects.Contains(paint_range->end_node)) << this;
       return;
     }
-    DCHECK(selected_objects.IsEmpty()) << this;
+    DCHECK(selected_objects.empty()) << this;
 #endif
   }
 
@@ -364,7 +364,7 @@ static void VisitSelectedInclusiveDescendantsOfInternal(const Node& node,
 }
 
 static inline bool IsFlatTreeClean(const Node& node) {
-  return !node.GetDocument().IsSlotAssignmentOrLegacyDistributionDirty();
+  return !node.GetDocument().IsSlotAssignmentDirty();
 }
 
 template <typename Visitor>
@@ -571,6 +571,17 @@ static SelectionState GetSelectionStateFor(
   return GetSelectionStateFor(To<LayoutText>(*position.GetLayoutObject()));
 }
 
+static SelectionState GetPaintingSelectionStateFor(
+    const LayoutText& layout_text) {
+  if (const auto* text_fragment = DynamicTo<LayoutTextFragment>(layout_text)) {
+    Node* node = text_fragment->AssociatedTextNode();
+    if (!node)
+      return SelectionState::kNone;
+    return node->GetLayoutObject()->GetSelectionStateForPaint();
+  }
+  return layout_text.GetSelectionStateForPaint();
+}
+
 bool LayoutSelection::IsSelected(const LayoutObject& layout_object) {
   if (const auto* layout_text = DynamicTo<LayoutText>(layout_object))
     return GetSelectionStateFor(*layout_text) != SelectionState::kNone;
@@ -764,7 +775,7 @@ SelectionState LayoutSelection::ComputeSelectionStateFromOffsets(
   }
 }
 
-SelectionState LayoutSelection::ComputeSelectionStateForCursor(
+SelectionState LayoutSelection::ComputePaintingSelectionStateForCursor(
     const NGInlineCursorPosition& position) const {
   if (!position)
     return SelectionState::kNone;
@@ -782,7 +793,9 @@ SelectionState LayoutSelection::ComputeSelectionStateForCursor(
   // associated with the current cursor position. This state will allow us know
   // which offset comparisons are valid, and determine if the selection
   // endpoints fall within the current cursor position.
-  SelectionState state = GetSelectionStateFor(position);
+
+  SelectionState state =
+      GetPaintingSelectionStateFor(To<LayoutText>(*position.GetLayoutObject()));
   return ComputeSelectionStateFromOffsets(state, start_offset, end_offset);
 }
 
@@ -798,6 +811,54 @@ SelectionState LayoutSelection::ComputeSelectionStateForInlineTextBox(
       LineLayoutAPIShim::ConstLayoutObjectFrom(text_box.GetLineLayoutItem()));
   SelectionState state = GetSelectionStateFor(*text);
   return ComputeSelectionStateFromOffsets(state, start_offset, end_offset);
+}
+
+static void SetSelectionStateForPaint(
+    const EphemeralRangeInFlatTree& selection) {
+  const Node* start_node = nullptr;
+  const Node* end_node = nullptr;
+  for (Node& node : selection.Nodes()) {
+    LayoutObject* const layout_object = node.GetLayoutObject();
+    if (!layout_object || !layout_object->CanBeSelectionLeaf())
+      continue;
+
+    // If there's a LayoutText without a FragmentItem, it won't be painted, so
+    // we skip the object for the purposes of determining the selection state
+    // during paint (i.e. if selection starts or ends on one of these, the
+    // adjacent node should be the one to get the actual kStart/kEnd state).
+    if (const auto* layout_text = DynamicTo<LayoutText>(layout_object)) {
+      if (!layout_text->FirstInlineFragmentItemIndex())
+        continue;
+    }
+
+    if (!start_node) {
+      DCHECK(!end_node);
+      start_node = end_node = &node;
+      continue;
+    }
+
+    if (end_node != start_node) {
+      end_node->GetLayoutObject()->SetSelectionStateForPaint(
+          SelectionState::kInside);
+    }
+    end_node = &node;
+  }
+
+  // No valid LayOutObject found.
+  if (!start_node) {
+    DCHECK(!end_node);
+    return;
+  }
+
+  if (start_node == end_node) {
+    start_node->GetLayoutObject()->SetSelectionStateForPaint(
+        SelectionState::kStartAndEnd);
+  } else {
+    start_node->GetLayoutObject()->SetSelectionStateForPaint(
+        SelectionState::kStart);
+    end_node->GetLayoutObject()->SetSelectionStateForPaint(
+        SelectionState::kEnd);
+  }
 }
 
 static NewPaintRangeAndSelectedNodes CalcSelectionRangeAndSetSelectionState(
@@ -843,6 +904,8 @@ static NewPaintRangeAndSelectedNodes CalcSelectionRangeAndSetSelectionState(
     DCHECK(!end_node);
     return {};
   }
+
+  SetSelectionStateForPaint(selection);
 
   // Compute offset. It has value iff start/end is text.
   const absl::optional<unsigned> start_offset = ComputeStartOffset(
@@ -923,10 +986,10 @@ static void VisitLayoutObjectsOf(const Node& node, Visitor* visitor) {
   visitor->Visit(layout_object);
 }
 
-IntRect LayoutSelection::AbsoluteSelectionBounds() {
+gfx::Rect LayoutSelection::AbsoluteSelectionBounds() {
   Commit();
   if (paint_range_->IsNull())
-    return IntRect();
+    return gfx::Rect();
 
   // Create a single bounding box rect that encloses the whole selection.
   class SelectionBoundsVisitor {
@@ -941,7 +1004,7 @@ IntRect LayoutSelection::AbsoluteSelectionBounds() {
   } visitor;
   VisitSelectedInclusiveDescendantsOf(frame_selection_->GetDocument(),
                                       &visitor);
-  return PixelSnappedIntRect(visitor.selected_rect);
+  return ToPixelSnappedRect(visitor.selected_rect);
 }
 
 void LayoutSelection::InvalidatePaintForSelection() {

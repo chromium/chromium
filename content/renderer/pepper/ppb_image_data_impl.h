@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
-#include "content/common/content_export.h"
 #include "ppapi/c/ppb_image_data.h"
 #include "ppapi/shared_impl/ppb_image_data_shared.h"
 #include "ppapi/shared_impl/resource.h"
@@ -23,10 +22,9 @@ class TransportDIB;
 
 namespace content {
 
-class CONTENT_EXPORT PPB_ImageData_Impl
-    : public ppapi::Resource,
-      public ppapi::PPB_ImageData_Shared,
-      public ppapi::thunk::PPB_ImageData_API {
+class PPB_ImageData_Impl : public ppapi::Resource,
+                           public ppapi::PPB_ImageData_Shared,
+                           public ppapi::thunk::PPB_ImageData_API {
  public:
   // We delegate most of our implementation to a back-end class that either uses
   // a PlatformCanvas (for most trusted stuff) or bare shared memory (for use by

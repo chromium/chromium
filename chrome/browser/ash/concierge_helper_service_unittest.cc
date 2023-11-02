@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 
 #include "base/run_loop.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/dbus/concierge/concierge_service.pb.h"
-#include "chromeos/dbus/concierge/fake_concierge_client.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
+#include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "dbus/bus.h"
 #include "dbus/object_proxy.h"
@@ -28,8 +28,8 @@ class TestConciergeClient : public FakeConciergeClient {
 
   void SetVmCpuRestriction(
       const vm_tools::concierge::SetVmCpuRestrictionRequest& request,
-      DBusMethodCallback<vm_tools::concierge::SetVmCpuRestrictionResponse>
-          callback) override {
+      chromeos::DBusMethodCallback<
+          vm_tools::concierge::SetVmCpuRestrictionResponse> callback) override {
     requests_.push_back(request);
     FakeConciergeClient::SetVmCpuRestriction(request, std::move(callback));
   }

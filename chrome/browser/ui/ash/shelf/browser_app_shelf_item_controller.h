@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@
 #include "chrome/browser/apps/app_service/browser_app_instance_observer.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
 #include "components/services/app_service/public/cpp/icon_loader.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace apps {
@@ -64,6 +64,8 @@ class BrowserAppShelfItemController : public ash::ShelfItemDelegate,
   void OnBrowserAppRemoved(const apps::BrowserAppInstance& instance) override;
 
  private:
+  using CommandToInstanceMap = base::flat_map<int, base::UnguessableToken>;
+
   // Gets a list of instances (a pair of app menu command ID and instance ID)
   // matching the predicate.
   std::vector<std::pair<int, base::UnguessableToken>> GetMatchingInstances(
@@ -71,8 +73,9 @@ class BrowserAppShelfItemController : public ash::ShelfItemDelegate,
   // Gets the command ID for this item. The item must exist.
   int GetInstanceCommand(const base::UnguessableToken& id);
 
-  void LoadAppMenuIcon();
-  void DidLoadAppMenuIcon(apps::mojom::IconValuePtr icon_value);
+  void LoadIcon(int32_t size_hint_in_dip, apps::LoadIconCallback callback);
+  void OnLoadMediumIcon(apps::IconValuePtr icon_value);
+  void OnLoadBittyIcon(apps::IconValuePtr icon_value);
 
   Profile* profile_;
   apps::BrowserAppInstanceRegistry& registry_;
@@ -82,13 +85,14 @@ class BrowserAppShelfItemController : public ash::ShelfItemDelegate,
   std::unique_ptr<ShelfContextMenu> context_menu_;
 
   std::unique_ptr<apps::IconLoader::Releaser> icon_loader_releaser_;
-  gfx::ImageSkia menu_icon_;
+  gfx::ImageSkia medium_icon_;
+  gfx::ImageSkia bitty_icon_;
 
   // Map of app menu item command IDs to instance IDs, used to maintain a stable
   // association of instances to command IDs and to order the items by launch
   // time. The set of instances is usually under 10 items so a flat map is
   // sufficient.
-  base::flat_map<int, base::UnguessableToken> command_to_instance_map_;
+  CommandToInstanceMap command_to_instance_map_;
   int last_command_id_{0};
 
   base::ScopedObservation<apps::BrowserAppInstanceRegistry,

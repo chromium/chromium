@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,7 +43,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
-import android.view.ViewStub;
 
 import androidx.annotation.Nullable;
 import androidx.test.espresso.ViewInteraction;
@@ -80,6 +79,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.autofill.AutofillSuggestion;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -87,12 +87,12 @@ import org.chromium.components.feature_engagement.TriggerDetails;
 import org.chromium.components.feature_engagement.TriggerState;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.DeferredViewStubInflationProvider;
+import org.chromium.ui.AsyncViewProvider;
+import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.DropdownItem;
 import org.chromium.ui.ViewProvider;
 import org.chromium.ui.modelutil.LazyConstructionPropertyMcp;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.widget.ChipView;
 import org.chromium.ui.widget.ChromeImageView;
 import org.chromium.url.GURL;
 
@@ -109,6 +109,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
+@SuppressWarnings("DoNotMock") // Mocks GURL
 public class KeyboardAccessoryModernViewTest {
     private static final String CUSTOM_ICON_URL = "https://www.example.com/image.png";
     private static final Bitmap TEST_CARD_ART_IMAGE =
@@ -181,6 +182,22 @@ public class KeyboardAccessoryModernViewTest {
         }
 
         @Override
+        public void setPriorityNotification(String feature) {}
+
+        @Override
+        @Nullable
+        public String getPendingPriorityNotification() {
+            return null;
+        }
+
+        @Override
+        public void registerPriorityNotificationHandler(
+                String feature, Runnable priorityNotificationHandler) {}
+
+        @Override
+        public void unregisterPriorityNotificationHandler(String feature) {}
+
+        @Override
         public boolean isInitialized() {
             return true;
         }
@@ -213,12 +230,12 @@ public class KeyboardAccessoryModernViewTest {
                             .with(OBFUSCATED_CHILD_AT_CALLBACK, unused -> {})
                             .with(SHOW_SWIPING_IPH, false)
                             .build();
-            ViewStub viewStub =
+            AsyncViewStub viewStub =
                     mActivityTestRule.getActivity().findViewById(R.id.keyboard_accessory_stub);
 
             mKeyboardAccessoryView = new ArrayBlockingQueue<>(1);
             ViewProvider<KeyboardAccessoryModernView> provider =
-                    new DeferredViewStubInflationProvider<>(viewStub);
+                    AsyncViewProvider.of(viewStub, R.id.keyboard_accessory);
             LazyConstructionPropertyMcp.create(
                     mModel, VISIBLE, provider, KeyboardAccessoryModernViewBinder::bind);
             provider.whenLoaded(mKeyboardAccessoryView::add);

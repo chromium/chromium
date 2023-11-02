@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,17 +41,19 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.chrome.autofill_assistant.R;
-import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChip;
-import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChip.Icon;
-import org.chromium.chrome.browser.autofill_assistant.header.AssistantHeaderCoordinator;
-import org.chromium.chrome.browser.autofill_assistant.header.AssistantHeaderModel;
-import org.chromium.chrome.browser.autofill_assistant.header.AssistantTtsButtonState;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
+import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.autofill_assistant.AssistantDependencies;
+import org.chromium.components.autofill_assistant.AssistantTagsForTesting;
+import org.chromium.components.autofill_assistant.R;
+import org.chromium.components.autofill_assistant.carousel.AssistantChip;
+import org.chromium.components.autofill_assistant.carousel.AssistantChip.Icon;
+import org.chromium.components.autofill_assistant.header.AssistantHeaderCoordinator;
+import org.chromium.components.autofill_assistant.header.AssistantHeaderModel;
+import org.chromium.components.autofill_assistant.header.AssistantTtsButtonState;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
@@ -89,7 +91,7 @@ public class AutofillAssistantHeaderUiTest {
     @Before
     public void setUp() {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
-                CustomTabsTestUtils.createMinimalCustomTabIntent(
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                         InstrumentationRegistry.getTargetContext(), "about:blank"));
     }
 
@@ -104,8 +106,12 @@ public class AutofillAssistantHeaderUiTest {
     /** Creates a coordinator for use in UI tests, and adds it to the global view hierarchy. */
     private AssistantHeaderCoordinator createCoordinator(AssistantHeaderModel model) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            AssistantHeaderCoordinator coordinator =
-                    new AssistantHeaderCoordinator(getActivity(), model);
+            AssistantDependencies dependencies = new AssistantDependenciesChrome(getActivity());
+            AssistantHeaderCoordinator coordinator = new AssistantHeaderCoordinator(getActivity(),
+                    model, dependencies.getAccessibilityUtil(),
+                    dependencies.createProfileImageUtilOrNull(
+                            getActivity(), R.dimen.autofill_assistant_profile_size),
+                    dependencies.createSettingsUtil());
 
             CoordinatorLayout.LayoutParams lp = new CoordinatorLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);

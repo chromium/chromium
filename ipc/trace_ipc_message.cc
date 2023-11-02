@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,9 +37,6 @@ void WriteIpcMessageIdAsProtozero(uint32_t message_id,
     case ExtensionMsgStart:
       message_class = ChromeLegacyIpc::CLASS_EXTENSION;
       break;
-    case ChromotingMsgStart:
-      message_class = ChromeLegacyIpc::CLASS_CHROMOTING;
-      break;
     case NaClHostMsgStart:
       message_class = ChromeLegacyIpc::CLASS_NACL_HOST;
       break;
@@ -48,9 +45,6 @@ void WriteIpcMessageIdAsProtozero(uint32_t message_id,
       break;
     case GinJavaBridgeMsgStart:
       message_class = ChromeLegacyIpc::CLASS_GIN_JAVA_BRIDGE;
-      break;
-    case GuestViewMsgStart:
-      message_class = ChromeLegacyIpc::CLASS_GUEST_VIEW;
       break;
     case ExtensionWorkerMsgStart:
       message_class = ChromeLegacyIpc::CLASS_EXTENSION_WORKER;

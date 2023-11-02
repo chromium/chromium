@@ -1,16 +1,16 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIASTREAM_MEDIA_STREAM_AUDIO_DELIVERER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIASTREAM_MEDIA_STREAM_AUDIO_DELIVERER_H_
 
-#include <algorithm>
-
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/trace_event.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -67,21 +67,19 @@ class MediaStreamAudioDeliverer {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     base::AutoLock auto_lock(consumers_lock_);
     const bool had_consumers =
-        !consumers_.IsEmpty() || !pending_consumers_.IsEmpty();
-    auto it = std::find(consumers_.begin(), consumers_.end(), consumer);
+        !consumers_.empty() || !pending_consumers_.empty();
+    auto it = base::ranges::find(consumers_, consumer);
     if (it != consumers_.end()) {
       consumers_.erase(it);
     } else {
-      it = std::find(pending_consumers_.begin(), pending_consumers_.end(),
-                     consumer);
+      it = base::ranges::find(pending_consumers_, consumer);
       if (it != pending_consumers_.end())
         pending_consumers_.erase(it);
     }
     SendLogMessage(
         String::Format("%s => (number of consumers: active=%u, pending=%u)",
                        __func__, consumers_.size(), pending_consumers_.size()));
-    return had_consumers && consumers_.IsEmpty() &&
-           pending_consumers_.IsEmpty();
+    return had_consumers && consumers_.empty() && pending_consumers_.empty();
   }
 
   // Returns the current list of connected Consumers. This is normally used to
@@ -123,7 +121,7 @@ class MediaStreamAudioDeliverer {
 
     // Call OnSetFormat() for all pending consumers and move them to the
     // active-delivery list.
-    if (!pending_consumers_.IsEmpty()) {
+    if (!pending_consumers_.empty()) {
       const media::AudioParameters params = GetAudioParameters();
       DCHECK(params.IsValid());
       for (Consumer* consumer : pending_consumers_)

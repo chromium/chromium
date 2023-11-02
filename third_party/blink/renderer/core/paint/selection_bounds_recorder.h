@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,13 +17,12 @@ class FrameSelection;
 class LayoutObject;
 class PaintController;
 
-// This class is used for recording painted selection bounds when
-// CompositeAfterPaint is enabled. Based on the SelectionState and provided
-// |selection_rect|, records the appropriate bounds via the paint controller.
-// These bounds are consumed at composition time by PaintArtifactCompositor and
-// pushed to the LayerTreeHost. All of the work happens in the destructor to
-// ensure this information recorded after any painting is completed, even if
-// a cached drawing is re-used.
+// This class is used for recording painted selection bounds. Based on the
+// SelectionState and provided |selection_rect|, records the appropriate bounds
+// via the paint controller. These bounds are consumed at composition time by
+// PaintArtifactCompositor and pushed to the LayerTreeHost. All of the work
+// happens in the destructor to ensure this information recorded after any
+// painting is completed, even if a cached drawing is re-used.
 class SelectionBoundsRecorder {
   STACK_ALLOCATED();
 

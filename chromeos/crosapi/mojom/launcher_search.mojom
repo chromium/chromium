@@ -1,0 +1,223 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+import "ui/gfx/image/mojom/image.mojom";
+import "url/mojom/url.mojom";
+
+[Stable, Extensible]
+enum SearchStatus {
+  // Indicates an error with the search. No results will be sent with this
+  // status, and there may or may not be further results sent.
+  [Default] kError = 0,
+  // Search session is complete and no more results will be sent. This
+  // accompanies the final set of results.
+  kDone = 1,
+  // Search session is still in progress and further results may be sent. This
+  // accompanies a set of results.
+  kInProgress = 2,
+  // Search session has been cancelled due to a newer query. No more results
+  // will be sent.
+  kCancelled = 3,
+  // The AutocompleteController is unavailable. No more results will be sent.
+  [MinVersion=1] kBackendUnavailable = 4,
+};
+
+// Enum represents the result type.
+[Stable, Extensible]
+enum SearchResultType {
+  [Default] kUnknown = 0,
+  // This represents the results come from Omnibox's AutocompleteController
+  // of the browser.
+  kOmniboxResult = 1,
+};
+
+// Struct represents search result.
+// Next min ID: 22
+// Next min version: 6
+[Stable]
+struct SearchResult {
+  // Type of the result. Used to distinguish between different types of result.
+  SearchResultType type@0;
+  // Relevance of the result. Used for scoring/ranking.
+  double relevance@1;
+  // Destination URL of the result. Used for opening the result.
+  url.mojom.Url? destination_url@2;
+  // Stripped destination URL of the result. This is computed from
+  // |destination_url| by performing processing such as stripping off "www.",
+  // converting https protocol to http, and stripping excess query parameters.
+  // The stripped URL is used for unique identification and not as an actual
+  // URL.
+  [MinVersion=2] url.mojom.Url? stripped_destination_url@14;
+
+  // The following fields represent additional information about search
+  // results. These are optional and will be filled depending on the result.
+
+  // Whether the result is an omnibox search result or not. Used for
+  // kOmniboxResult type results.
+  OptionalBool is_omnibox_search@3;
+  // Whether the result is an answer result or not. Used for kOmniboxResult
+  // type results.
+  OptionalBool is_answer@4;
+  // The Omnibox search result type as required for metrics logging. Used for
+  // kOmniboxResult type results. This defaults to kUnset.
+  [MinVersion=5] MetricsType metrics_type@20;
+  // The Omnibox subtype of the result, used for kOmniboxResult type results.
+  // This defaults to kUnset.
+  OmniboxType omnibox_type@5;
+  // The Omnibox answer subtype of the result, used for Omnibox answer results.
+  // This defaults to kUnset.
+  AnswerType answer_type@6;
+
+  // The page transition type of this result. Used for opening a result.
+  [MinVersion=2] PageTransition page_transition@15;
+
+  // The image url of the result, if any. Used to download the result image. The
+  // presence of this field defines a result as a "rich entity". We consider
+  // weather answer results with icons as a special kind of rich entity.
+  url.mojom.Url? image_url@7;
+  // Favicon of the result, if available. The presence or absence of this field
+  // is what defines a result as a "favicon-type result".
+  gfx.mojom.ImageSkia? favicon@8;
+  // Handle through which to receive asynchronously-fetched data about this
+  // search result.
+  [MinVersion=5] pending_receiver<SearchResultConsumer>? receiver@21;
+
+  // The accessibility label to use for the second image line, if one exists.
+  [MinVersion=3] mojo_base.mojom.String16? description_a11y_label@19;
+
+  // The contents of the result. Used to display the result.
+  mojo_base.mojom.String16? contents@9;
+  // Text type of the contents, if any.
+  [MinVersion=2] TextType contents_type@16;
+  // Additional contents for the result. Used to display the result.
+  mojo_base.mojom.String16? additional_contents@10;
+  // Text type of the additional contents, if any.
+  [MinVersion=2] TextType additional_contents_type@17;
+  // Description of the result. Used to display the result.
+  mojo_base.mojom.String16? description@11;
+  // Text type of the description, if any.
+  [MinVersion=2] TextType description_type@18;
+  // Additional description for the result. Used to display the result.
+  mojo_base.mojom.String16? additional_description@12;
+  // Text type of the additional description, if any.
+  TextType additional_description_type@13;
+
+  [Stable, Extensible]
+  enum OptionalBool {
+    kUnset,
+    kFalse,
+    kTrue,
+  };
+
+  // Enum representing the Omnibox result subtype.
+  [Stable, Extensible]
+  enum OmniboxType {
+    [Default] kUnset = 0,
+    kRichImageDeprecated = 1,
+    kFaviconDeprecated = 2,
+    kCalculatorDeprecated = 7,
+    kBookmark = 3,  // A special kind of domain type.
+    kDomain = 4,
+    kSearch = 5,
+    kHistory = 6,
+    [MinVersion=1] kOpenTab = 8,
+  };
+
+  // Enum representing the search result type as required for metrics logging.
+  [Stable, Extensible]
+  enum MetricsType {
+    [Default] kUnset = 0,
+    kWhatYouTyped = 1,
+    kRecentlyVisitedWebsite = 2,
+    kHistoryTitle = 3,
+    kSearchWhatYouTyped = 4,
+    kSearchHistory = 5,
+    kSearchSuggest = 6,
+    kSearchSuggestPersonalized = 7,
+    kBookmark = 8,
+    kSearchSuggestEntity = 9,
+    kNavSuggest = 10,
+    kCalculator = 11,
+  };
+
+  // Enum representing the Omnibox answer subtype.
+  [Stable, Extensible]
+  enum AnswerType {
+    [Default] kUnset = 0,
+    kDefaultAnswer = 1,
+    kWeather = 2,
+    kCurrency = 3,
+    kDictionary = 4,
+    kFinance = 5,
+    kSunrise = 6,
+    kTranslation = 7,
+    kWhenIs = 8,
+    [MinVersion=4] kCalculator = 9,
+  };
+
+  // Enum representing special text types.
+  [Stable, Extensible]
+  enum TextType {
+    [Default] kUnset = 0,
+    kPositive = 1,
+    kNegative = 2,
+    [MinVersion=2] kUrl = 3,
+  };
+
+  // Enum representing the page transition types.
+  [Stable, Extensible]
+  enum PageTransition {
+    [Default] kUnset = 0,
+    kTyped = 1,
+    kGenerated = 2,
+  };
+};
+
+// Interface to send results from lacros to ash. Implemented in ash.
+// Next min method ID: 1
+[Stable, Uuid="ce797aae-286e-4b63-b7b3-090bf5040818"]
+interface SearchResultsPublisher {
+  // Sends search result from lacros to ash. For each query, this will be called
+  // multiple times, each time it will overwrite the existing results. When all
+  // results for a query are already sent, the connection will be reset and no
+  // more results will be sent.
+  OnSearchResultsReceived@0(SearchStatus status, array<SearchResult>? result);
+};
+
+// Interface to send search queries from ash to lacros. Implemented in lacros.
+// Next min method ID: 2
+[Stable, Uuid="c2d77467-b04d-4b10-8f54-de52c3cbe30d"]
+interface SearchController {
+  // Sends search queries from ash to lacros. If a search query is called while
+  // there is an in-flight search query, the in-flight search query will be
+  // cancelled before the new search query is executed.
+  //
+  // Returns the pipe to bind to the implementation of `SearchResultsPublisher`
+  // that should receive the results of this search. Returns a new pipe each
+  // invocation so that each pipe conceptually represents a single search.
+  Search@0(mojo_base.mojom.String16 query) =>
+      (pending_associated_receiver<SearchResultsPublisher> publisher);
+};
+
+// Interface to register the search controller. Implemented in ash.
+// Next min method ID: 1
+[Stable, Uuid="1dc4306b-50af-4b43-a1f0-552e7010971e"]
+interface SearchControllerRegistry {
+  // Lacros can register the search controller to ash so that ash can
+  // start making calls.
+  RegisterSearchController@0(
+      pending_remote<SearchController> search_controller);
+};
+
+// Interface implemented by result objects to receive asynchronously-updated
+// data for one search result.
+// Next min method ID: 1
+[Stable, Uuid="d3294d1e-dadb-4bc2-a1ce-5b731f11cce1"]
+interface SearchResultConsumer {
+  // Called once with a favicon if it was successfully asynchronously fetched.
+  OnFaviconReceived@0(gfx.mojom.ImageSkia favicon);
+};

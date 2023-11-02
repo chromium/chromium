@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,26 +44,39 @@ gfx::Rect GetFullscreenWindowBoundsInParent(aura::Window* window) {
   gfx::Rect result = GetDisplayBoundsInParent(window);
   const WorkAreaInsets* const work_area_insets =
       WorkAreaInsets::ForWindow(window->GetRootWindow());
-  result.Inset(0,
-               work_area_insets->accessibility_panel_height() +
-                   work_area_insets->docked_magnifier_height(),
-               0, 0);
+  result.Inset(
+      gfx::Insets().set_top(work_area_insets->accessibility_panel_height() +
+                            work_area_insets->docked_magnifier_height()));
   return result;
 }
 
 gfx::Rect GetDisplayWorkAreaBoundsInParent(aura::Window* window) {
-  gfx::Rect result =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window).work_area();
-  ::wm::ConvertRectFromScreen(window->parent(), &result);
-  return result;
+  // If it is application window under `non_lock_screen_containers`, use
+  // `in_session_user_work_area_insets`, otherwise, use `user_work_area_insets`.
+  const aura::Window* non_lock_screen_containers = Shell::GetContainer(
+      window->GetRootWindow(), kShellWindowId_NonLockScreenContainersContainer);
+  gfx::Insets insets =
+      non_lock_screen_containers->Contains(window)
+          ? WorkAreaInsets::ForWindow(window)
+                ->in_session_user_work_area_insets()
+          : WorkAreaInsets::ForWindow(window)->user_work_area_insets();
+  gfx::Rect bounds =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window).bounds();
+  bounds.Inset(insets);
+  ::wm::ConvertRectFromScreen(window->parent(), &bounds);
+  return bounds;
 }
 
+// TODO(yongshun): Remove or consolidate this function with
+// `GetDisplayWorkAreaBoundsInParent`.
 gfx::Rect GetDisplayWorkAreaBoundsInParentForLockScreen(aura::Window* window) {
   gfx::Rect bounds = WorkAreaInsets::ForWindow(window)->user_work_area_bounds();
   ::wm::ConvertRectFromScreen(window->parent(), &bounds);
   return bounds;
 }
 
+// TODO(yongshun): Remove or consolidate this function with
+// `GetDisplayWorkAreaBoundsInParent`.
 gfx::Rect GetDisplayWorkAreaBoundsInParentForActiveDeskContainer(
     aura::Window* window) {
   aura::Window* root_window = window->GetRootWindow();
@@ -71,6 +84,8 @@ gfx::Rect GetDisplayWorkAreaBoundsInParentForActiveDeskContainer(
       desks_util::GetActiveDeskContainerForRoot(root_window));
 }
 
+// TODO(yongshun): Remove or consolidate this function with
+// `GetDisplayWorkAreaBoundsInParent`.
 gfx::Rect GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
     aura::Window* window) {
   gfx::Rect bounds =
@@ -93,14 +108,11 @@ gfx::Rect GetDisplayBoundsWithShelf(aura::Window* window) {
           ->display_configuration_controller()
           ->GetPrimaryMirroringDisplayForUnifiedDesktop();
   DCHECK_NE(shelf_display.id(), display::kInvalidDisplayId);
-  gfx::RectF shelf_display_screen_bounds(shelf_display.bounds());
 
   // Transform the bounds back to the unified host's coordinates.
   auto inverse_unified_transform =
       window->GetRootWindow()->GetHost()->GetInverseRootTransform();
-  inverse_unified_transform.TransformRect(&shelf_display_screen_bounds);
-
-  return gfx::ToEnclosingRect(shelf_display_screen_bounds);
+  return inverse_unified_transform.MapRect(shelf_display.bounds());
 }
 
 gfx::Rect SnapBoundsToDisplayEdge(const gfx::Rect& bounds,
@@ -119,13 +131,13 @@ gfx::Rect SnapBoundsToDisplayEdge(const gfx::Rect& bounds,
   gfx::Rect snapped_bounds = bounds;
   if (scaled_size_in_pixel.width() < display_size_in_pixel.width() &&
       display.bounds().right() == bounds.right()) {
-    snapped_bounds.Inset(0, 0, -1, 0);
+    snapped_bounds.Inset(gfx::Insets::TLBR(0, 0, 0, -1));
     DCHECK_GE(gfx::ScaleToEnclosedRect(snapped_bounds, dsf).right(),
               gfx::ScaleToEnclosingRect(bounds, dsf).right());
   }
   if (scaled_size_in_pixel.height() < display_size_in_pixel.height() &&
       display.bounds().bottom() == bounds.bottom()) {
-    snapped_bounds.Inset(0, 0, 0, -1);
+    snapped_bounds.Inset(gfx::Insets::TLBR(0, 0, -1, 0));
     DCHECK_GE(gfx::ScaleToEnclosedRect(snapped_bounds, dsf).bottom(),
               gfx::ScaleToEnclosingRect(bounds, dsf).bottom());
   }

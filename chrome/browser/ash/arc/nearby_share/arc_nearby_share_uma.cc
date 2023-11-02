@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,5 +28,13 @@ void UpdateNearbyShareFileStreamError(base::File::Error result) {
   // Maps to histogram enum PlatformFileError.
   base::UmaHistogramExactLinear("Arc.NearbyShare.FileStreamFailure", -result,
                                 -base::File::FILE_ERROR_MAX);
+}
+
+void UpdateNearbyShareFileStreamCompleteTime(
+    const base::TimeDelta& elapsed_time) {
+  base::UmaHistogramCustomTimes("Arc.NearbyShare.FileStreamComplete.TimeDelta",
+                                elapsed_time,
+                                /*min=*/base::Milliseconds(1),
+                                /*max=*/base::Minutes(30), /*buckets=*/50);
 }
 }  // namespace arc

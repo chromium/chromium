@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "base/callback.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
-#include "components/reporting/storage/storage_module_interface.h"
+#include "components/reporting/storage/storage_module.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,17 +21,18 @@ namespace test {
 
 TestStorageModuleStrict::TestStorageModuleStrict() {
   ON_CALL(*this, AddRecord)
-      .WillByDefault(Invoke(this, &TestStorageModule::AddRecordSuccessfully));
+      .WillByDefault(
+          Invoke(this, &TestStorageModuleStrict::AddRecordSuccessfully));
   ON_CALL(*this, Flush)
       .WillByDefault(
-          WithArg<1>(Invoke([](base::OnceCallback<void(Status)> callback) {
+          WithArg<1>(Invoke([](StorageModuleInterface::FlushCallback callback) {
             std::move(callback).Run(Status::StatusOK());
           })));
 }
 
 TestStorageModuleStrict::~TestStorageModuleStrict() = default;
 
-Record TestStorageModuleStrict::record() const {
+const Record& TestStorageModuleStrict::record() const {
   EXPECT_TRUE(record_.has_value());
   return record_.value();
 }
@@ -41,10 +42,9 @@ Priority TestStorageModuleStrict::priority() const {
   return priority_.value();
 }
 
-void TestStorageModuleStrict::AddRecordSuccessfully(
-    Priority priority,
-    Record record,
-    base::OnceCallback<void(Status)> callback) {
+void TestStorageModuleStrict::AddRecordSuccessfully(Priority priority,
+                                                    Record record,
+                                                    EnqueueCallback callback) {
   record_ = std::move(record);
   priority_ = priority;
   std::move(callback).Run(Status::StatusOK());

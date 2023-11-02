@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -76,9 +76,6 @@ class CONTROLLER_EXPORT OomInterventionImpl
   bool navigate_ads_enabled_ = false;
   bool purge_v8_memory_enabled_ = false;
   std::unique_ptr<ScopedPagePauser> pauser_;
-  OomInterventionMetrics metrics_at_intervention_;
-  int number_of_report_needed_ = 0;
-  TaskRunnerTimer<OomInterventionImpl> delayed_report_timer_;
   mojo::Receiver<mojom::blink::OomIntervention> receiver_{this};
 };
 

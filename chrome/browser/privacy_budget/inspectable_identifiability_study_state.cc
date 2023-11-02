@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,11 +35,6 @@ void InspectableIdentifiabilityStudyState::SelectAllOffsetsForTesting() {
   WriteSelectedOffsetsToPrefs();
 
   CheckInvariants();
-}
-
-bool InspectableIdentifiabilityStudyState::is_using_assigned_block_sampling()
-    const {
-  return settings_.is_using_assigned_block_sampling();
 }
 
 }  // namespace test_utils

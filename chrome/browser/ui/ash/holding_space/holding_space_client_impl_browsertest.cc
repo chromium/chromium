@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,10 +21,13 @@
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/extensions/component_loader.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_browsertest_base.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/drive/drive_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "ui/gfx/image/image_skia.h"
@@ -149,6 +152,22 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, CopyImageToClipboard) {
   }
 }
 
+// Verifies that `HoldingSpaceClient::IsDriveDisabled()` works as intended.
+IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, IsDriveDisabled) {
+  ASSERT_TRUE(HoldingSpaceController::Get());
+
+  auto* holding_space_client = HoldingSpaceController::Get()->client();
+  ASSERT_TRUE(holding_space_client);
+
+  auto* prefs = GetProfile()->GetPrefs();
+  EXPECT_EQ(holding_space_client->IsDriveDisabled(),
+            prefs->GetBoolean(drive::prefs::kDisableDrive));
+  prefs->SetBoolean(drive::prefs::kDisableDrive, true);
+  EXPECT_EQ(holding_space_client->IsDriveDisabled(), true);
+  prefs->SetBoolean(drive::prefs::kDisableDrive, false);
+  EXPECT_EQ(holding_space_client->IsDriveDisabled(), false);
+}
+
 // Verifies that `HoldingSpaceClient::OpenDownloads()` works as intended.
 IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, OpenDownloads) {
   ASSERT_TRUE(HoldingSpaceController::Get());
@@ -191,6 +210,9 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, OpenItems) {
 
   auto* holding_space_client = HoldingSpaceController::Get()->client();
   ASSERT_TRUE(holding_space_client);
+
+  // OpenItems() depends on the Files app. Install the Files SWA.
+  WaitForTestSystemAppInstall();
 
   // Verify no failures have yet been recorded.
   base::HistogramTester histogram_tester;

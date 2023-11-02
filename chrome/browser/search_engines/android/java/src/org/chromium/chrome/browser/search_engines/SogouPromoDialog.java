@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,7 +66,7 @@ public class SogouPromoDialog extends PromoDialog {
     public SogouPromoDialog(Activity activity, @NonNull Callback<Boolean> onSelectEngine,
             @Nullable Callback<Boolean> onDismissed, @NonNull SettingsLauncher settingsLauncher) {
         super(activity);
-        mSpan = new NoUnderlineClickableSpan(activity.getResources(), (widget) -> {
+        mSpan = new NoUnderlineClickableSpan(activity, (widget) -> {
             mChoice = UserChoice.SETTINGS;
             settingsLauncher.launchSettingsActivity(getContext(), SearchEngineSettings.class);
             dismiss();

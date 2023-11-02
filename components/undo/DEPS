@@ -4,14 +4,8 @@ include_rules = [
   "-content",
   "-ios",
 
-  "+components/bookmarks/browser",
+  "+components/bookmarks",
   "+components/keyed_service/core",
   "+components/strings/grit/components_strings.h",
   "+ui/base",
 ]
-
-specific_include_rules = {
-  ".*_test\.cc": [
-    "+components/bookmarks/test",
-  ],
-}

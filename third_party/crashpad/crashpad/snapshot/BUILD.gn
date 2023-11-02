@@ -1,4 +1,4 @@
-# Copyright 2015 The Crashpad Authors. All rights reserved.
+# Copyright 2015 The Crashpad Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -128,6 +128,8 @@ crashpad_static_library("snapshot") {
 
   if (crashpad_is_linux || crashpad_is_android) {
     sources += [
+      "linux/capture_memory_delegate_linux.cc",
+      "linux/capture_memory_delegate_linux.h",
       "linux/cpu_context_linux.cc",
       "linux/cpu_context_linux.h",
       "linux/debug_rendezvous.cc",
@@ -252,7 +254,6 @@ crashpad_static_library("snapshot") {
   ]
 
   if (crashpad_is_win) {
-    deps += [ "../client" ]
     cflags = [ "/wd4201" ]  # nonstandard extension used : nameless struct/union
     libs = [ "powrprof.lib" ]
   }
@@ -362,6 +363,7 @@ source_set("snapshot_test") {
 
   if (crashpad_is_ios) {
     sources += [
+      "ios/memory_snapshot_ios_intermediate_dump_test.cc",
       "ios/process_snapshot_ios_intermediate_dump_test.cc",
       "mac/cpu_context_mac_test.cc",
     ]
@@ -439,10 +441,6 @@ source_set("snapshot_test") {
     "../util",
   ]
 
-  if (crashpad_is_win) {
-    deps += [ "../client" ]
-  }
-
   if (crashpad_is_ios) {
     deps += [
       ":snapshot_test_ios_data",
@@ -491,7 +489,11 @@ source_set("snapshot_test") {
 bundle_data("snapshot_test_ios_data") {
   testonly = true
 
-  sources = [ "ios/testdata/crash-1fa088dda0adb41459d063078a0f384a0bb8eefa" ]
+  sources = [
+    "ios/testdata/crash-1fa088dda0adb41459d063078a0f384a0bb8eefa",
+    "ios/testdata/crash-5726011582644224",
+    "ios/testdata/crash-6605504629637120",
+  ]
 
   outputs = [ "{{bundle_resources_dir}}/crashpad_test_data/" +
               "{{source_root_relative_dir}}/{{source_file_part}}" ]

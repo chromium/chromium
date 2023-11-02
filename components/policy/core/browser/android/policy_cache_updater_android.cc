@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@ namespace {
 bool CanCache(PolicyErrorMap* policy_error_map,
               const std::set<std::string>& future_policies,
               const PolicyMap::const_iterator iter) {
-  return !policy_error_map->HasError(iter->first) &&
+  return !policy_error_map->HasFatalError(iter->first) &&
          future_policies.find(iter->first) == future_policies.end() &&
          !iter->second.ignored() &&
          !iter->second.HasMessage(PolicyMap::MessageType::kError);
@@ -50,8 +50,7 @@ void PolicyCacheUpdater::UpdateCache(const PolicyMap& current_policy_map) {
   PolicyMap policy_map = current_policy_map.Clone();
   PolicyErrorMap errors;
   std::set<std::string> future_policies;
-  handler_list_->ApplyPolicySettings(policy_map,
-                                     /*prefs=*/nullptr, &errors,
+  handler_list_->ApplyPolicySettings(policy_map, /*prefs=*/nullptr, &errors,
                                      /*deprecated_policies*/ nullptr,
                                      &future_policies);
   policy_map.EraseNonmatching(

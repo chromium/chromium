@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -113,7 +113,7 @@ TEST_F(H265NaluParserTest, GetCurrentSubsamplesNormal) {
   subsamples.emplace_back(5u, 20u);
   subsamples.emplace_back(11u, 0u);
   H265NaluParser parser;
-  parser.SetEncryptedStream(kStream, base::size(kStream), subsamples);
+  parser.SetEncryptedStream(kStream, std::size(kStream), subsamples);
 
   H265NALU nalu;
   EXPECT_EQ(H265NaluParser::kOk, parser.AdvanceToNextNALU(&nalu));
@@ -164,7 +164,7 @@ TEST_F(H265NaluParserTest,
   subsamples.emplace_back(5u, 24u);
   subsamples.emplace_back(19u, 0u);
   H265NaluParser parser;
-  parser.SetEncryptedStream(kStream, base::size(kStream), subsamples);
+  parser.SetEncryptedStream(kStream, std::size(kStream), subsamples);
 
   H265NALU nalu;
   EXPECT_EQ(H265NaluParser::kOk, parser.AdvanceToNextNALU(&nalu));

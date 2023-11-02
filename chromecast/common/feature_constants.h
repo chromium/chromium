@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,10 +24,6 @@ extern const char kKeyAllowInsecureContent[];
 extern const char kEnableDevMode[];
 extern const char kDevModeOrigin[];
 
-// Permit changes to accessibility control settings?
-// (color inversion, high contrast text, etc.)
-extern const char kEnableAccessibilityControls[];
-
 // Permit subscription to platform system gesture events?
 extern const char kEnableSystemGestures[];
 
@@ -50,6 +46,14 @@ extern const char kEnableAssistantMessagePipe[];
 
 // Enable a standalone demo app to control privileged features.
 extern const char kEnableDemoStandaloneMode[];
+
+// Cast Core constants for ApplicationConfig.extra_features.
+extern const char kCastCoreRendererFeatures[];
+extern const char kCastCoreEnforceFeaturePermissions[];
+extern const char kCastCoreFeaturePermissions[];
+extern const char kCastCoreFeaturePermissionOrigins[];
+extern const char kCastCoreIsAudioOnly[];
+extern const char kCastCoreIsRemoteControlMode[];
 
 }  // namespace feature
 }  // namespace chromecast

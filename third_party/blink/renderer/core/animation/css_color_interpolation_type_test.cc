@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,8 +31,27 @@ TEST(CSSColorInterpolationTypeTest, GetRGBA3) {
 
 TEST(CSSColorInterpolationTypeTest, GetRGBA4) {
   Color color(35, 140, 10, 0);
-  EXPECT_EQ(Color(MakeRGBA(0, 0, 0, 0)),
+  EXPECT_EQ(Color::FromRGBA(0, 0, 0, 0),
             CSSColorInterpolationType::GetRGBA(
                 *CSSColorInterpolationType::CreateInterpolableColor(color)));
 }
+
+TEST(CSSColorInterpolationtypeTest, RGBBounds) {
+  Color from_color(0, 0, 0, 0);
+  Color to_color(255, 255, 255, 255);
+  std::unique_ptr<InterpolableValue> from =
+      CSSColorInterpolationType::CreateInterpolableColor(from_color);
+  std::unique_ptr<InterpolableValue> to =
+      CSSColorInterpolationType::CreateInterpolableColor(to_color);
+  std::unique_ptr<InterpolableValue> result =
+      CSSColorInterpolationType::CreateInterpolableColor(to_color);
+
+  from->Interpolate(*to, 1e30, *result);
+  Color rgba = CSSColorInterpolationType::GetRGBA(*result);
+  ASSERT_EQ(255, rgba.Red());
+  ASSERT_EQ(255, rgba.Green());
+  ASSERT_EQ(255, rgba.Blue());
+  ASSERT_EQ(255, rgba.Alpha());
+}
+
 }  // namespace blink

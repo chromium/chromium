@@ -1,4 +1,4 @@
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,16 +6,26 @@ import io
 import os
 import re
 import subprocess
+import sys
+
+
+# In this file `sys.executable` is used instead of
+# `input_api.python3_executable` because on Windows
+# `input_api.python3_executable` is `vpython3.bat` whereas `sys.executable` is
+# `python.exe`. If `input_api.python3_executable` is used, we need to explicitly
+# pass `shell=True` to `subprocess.Popen()`, which is a security risk
+# (https://docs.python.org/3/library/subprocess.html#security-considerations).
+#
+# TODO: Investigate the incompatibility of `input_api.python3_executable` on
+# Windows, for this particular PRESUBMIT script.
 
 
 USE_PYTHON3 = True
 
 
-def RunCmdAndCheck(cmd, err_string, output_api, cwd=None, warning=False,
-                   shell=False):
+def RunCmdAndCheck(cmd, err_string, output_api, cwd=None, warning=False):
   results = []
   p = subprocess.Popen(cmd, cwd=cwd,
-                       shell=shell,
                        stdout=subprocess.PIPE,
                        stderr=subprocess.PIPE)
   (_, p_stderr) = p.communicate()
@@ -40,16 +50,12 @@ def RunUnittests(input_api, output_api):
     if name_parts[0:2] == ['ppapi', 'generators']:
       generator_files.append(filename)
   if generator_files != []:
-    # TODO(crbug.com/1222512): Use sys.executable instead of
-    # input_api.python_executable once idl_tests.py is py3 compatible, drop
-    # shell=True in RunCmdAndCheck.
-    cmd = [input_api.python_executable, 'idl_tests.py']
+    cmd = [sys.executable, 'idl_tests.py']
     ppapi_dir = input_api.PresubmitLocalPath()
     results.extend(RunCmdAndCheck(cmd,
                                   'PPAPI IDL unittests failed.',
                                   output_api,
-                                  os.path.join(ppapi_dir, 'generators'),
-                                  shell=input_api.is_windows))
+                                  os.path.join(ppapi_dir, 'generators')))
   return results
 
 
@@ -86,7 +92,7 @@ def CheckTODO(input_api, output_api):
         todo.append(filename)
 
   if todo:
-    return [output_api.PresubmitError(
+    return [output_api.PresubmitPromptWarning(
         'TODOs found in stable public PPAPI files:',
         long_text='\n'.join(todo))]
   return []
@@ -154,19 +160,27 @@ def CheckUpdatedNaClSDK(input_api, output_api):
   verify_ppapi_py = os.path.join(input_api.change.RepositoryRoot(),
                                  'native_client_sdk', 'src', 'build_tools',
                                  'verify_ppapi.py')
-  # TODO(crbug.com/1222512): Use sys.executable instead of
-  # input_api.python_executable once idl_tests.py is py3 compatible, drop
-  # shell=True.
-  cmd = [input_api.python_executable, verify_ppapi_py] + nacl_sdk_files
-  return RunCmdAndCheck(cmd,
-                        'PPAPI Interface modified without updating NaCl SDK.\n'
-                        '(note that some dev interfaces should not be added '
-                        'the NaCl SDK; when in doubt, ask a ppapi OWNER.\n'
-                        'To ignore a file, add it to IGNORED_FILES in '
-                        'native_client_sdk/src/build_tools/verify_ppapi.py)',
-                        output_api,
-                        warning=True,
-                        shell=input_api.is_windows)
+  # When running git cl presubmit --all this presubmit may be asked to check
+  # ~300 files, leading to a command line that is ~9,500 characters, which
+  # exceeds the Windows 8191 character cmd.exe limit and causes cryptic failures
+  # with no context. To avoid these we break the command up into smaller pieces.
+  # The error is:
+  #     The command line is too long.
+  files_per_command = 25 if input_api.is_windows else 1000
+  results = []
+  for i in range(len(nacl_sdk_files), files_per_command):
+    cmd = [sys.executable, verify_ppapi_py
+           ] + nacl_sdk_files[i:i + files_per_command]
+    results.extend(
+        RunCmdAndCheck(
+            cmd,'PPAPI Interface modified without updating NaCl SDK.\n'
+                '(note that some dev interfaces should not be added '
+                'the NaCl SDK; when in doubt, ask a ppapi OWNER.\n'
+                'To ignore a file, add it to IGNORED_FILES in '
+                'native_client_sdk/src/build_tools/verify_ppapi.py)',
+                output_api,
+                warning=True))
+  return results
 
 # Verify that changes to ppapi/thunk/interfaces_* files have a corresponding
 # change to tools/metrics/histograms/enums.xml for UMA tracking.
@@ -177,7 +191,6 @@ def CheckHistogramXml(input_api, output_api):
   files = input_api.change.AffectedFiles()
 
   INTERFACE_FILES = ('ppapi/thunk/interfaces_legacy.h',
-                     'ppapi/thunk/interfaces_ppb_private_flash.h',
                      'ppapi/thunk/interfaces_ppb_private.h',
                      'ppapi/thunk/interfaces_ppb_private_no_permissions.h',
                      'ppapi/thunk/interfaces_ppb_public_dev_channel.h',
@@ -223,9 +236,6 @@ def CheckChange(input_api, output_api):
   # These are autogenerated by the command buffer generator, they don't go
   # through idl.
   whitelist = ['ppb_opengles2', 'ppb_opengles2ext_dev']
-
-  # The PDF interface is hand-written.
-  whitelist += ['ppb_pdf', 'ppp_pdf']
 
   # Find all relevant .h and .idl files.
   for filename in files:
@@ -338,10 +348,7 @@ def CheckChange(input_api, output_api):
   #   --diff to generate a unified diff
   #   --out to pick which files to examine (only the ones in the CL)
   ppapi_dir = input_api.PresubmitLocalPath()
-  # TODO(crbug.com/1222512): Use sys.executable instead of
-  # input_api.python_executable once idl_tests.py is py3 compatible, drop
-  # shell=True in RunCmdAndCheck.
-  cmd = [input_api.python_executable, 'generator.py',
+  cmd = [sys.executable, 'generator.py',
          '--wnone', '--diff', '--test','--cgen', '--range=start,end']
 
   # Only generate output for IDL files references (as *.h or *.idl) in this CL
@@ -349,8 +356,7 @@ def CheckChange(input_api, output_api):
   cmd_results = RunCmdAndCheck(cmd,
                                'PPAPI IDL Diff detected: Run the generator.',
                                output_api,
-                               os.path.join(ppapi_dir, 'generators'),
-                               shell=input_api.is_windows)
+                               os.path.join(ppapi_dir, 'generators'))
   if cmd_results:
     results.extend(cmd_results)
 

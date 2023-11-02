@@ -27,14 +27,20 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_TOKENIZER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_TOKENIZER_H_
 
+#include "base/check_op.h"
 #include "base/memory/ptr_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_options.h"
 #include "third_party/blink/renderer/core/html/parser/html_token.h"
 #include "third_party/blink/renderer/core/html/parser/input_stream_preprocessor.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/text/segmented_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+
+struct HTMLTokenizerSnapshot;
 
 class CORE_EXPORT HTMLTokenizer {
   USING_FAST_MALLOC(HTMLTokenizer);
@@ -124,6 +130,9 @@ class CORE_EXPORT HTMLTokenizer {
     kCDATASectionEndState,
   };
 
+  void GetSnapshot(HTMLTokenizerSnapshot& snapshot) const;
+  void RestoreSnapshot(const HTMLTokenizerSnapshot& snapshot);
+
   // This function returns true if it emits a token. Otherwise, callers
   // must provide the same (in progress) token on the next call (unless
   // they call reset() first).
@@ -141,10 +150,16 @@ class CORE_EXPORT HTMLTokenizer {
     return temporary_buffer_.size() ? temporary_buffer_.size() + 2 : 0;
   }
 
-  // Updates the tokenizer's state according to the given tag name. This is
-  // an approximation of how the tree builder would update the tokenizer's
-  // state. This method is useful for approximating HTML tokenization. To
-  // get exactly the correct tokenization, you need the real tree builder.
+  // Potentially sets the tokenizer state for the given tag name. Specifically
+  // the state is set if SpeculativeStateForTag() returns a value, see it for
+  // details and caveats.
+  void UpdateStateFor(const HTMLToken& token);
+  void UpdateStateFor(html_names::HTMLTag tag);
+
+  // Returns the tokenizer state for the given tag. This is an approximation of
+  // how the tree builder would update the tokenizer's state. This method is
+  // useful for approximating HTML tokenization. To get exactly the correct
+  // tokenization, you need the real tree builder.
   //
   // The main failures in the approximation are as follows:
   //
@@ -155,7 +170,8 @@ class CORE_EXPORT HTMLTokenizer {
   //  * CDATA sections in foreign content will be tokenized as bogus comments
   //    instead of as character tokens.
   //
-  void UpdateStateFor(const String& tag_name);
+  // The return value is empty if a state change is not necessary.
+  absl::optional<State> SpeculativeStateForTag(html_names::HTMLTag tag) const;
 
   bool ForceNullCharacterReplacement() const {
     return force_null_character_replacement_;
@@ -167,7 +183,7 @@ class CORE_EXPORT HTMLTokenizer {
   bool ShouldAllowCDATA() const { return should_allow_cdata_; }
   void SetShouldAllowCDATA(bool value) { should_allow_cdata_ = value; }
 
-  State GetState() const { return state_; }
+  ALWAYS_INLINE State GetState() const { return state_; }
   void SetState(State state) { state_ = state; }
 
   inline bool ShouldSkipNullCharacters() const {
@@ -194,6 +210,8 @@ class CORE_EXPORT HTMLTokenizer {
   }
 
  private:
+  friend class HTMLTokenizerTest;
+
   inline bool ProcessEntity(SegmentedString&);
 
   // Returns true if it has skipped all the whitespaces and we still have
@@ -273,17 +291,30 @@ class CORE_EXPORT HTMLTokenizer {
   // http://www.whatwg.org/specs/web-apps/current-work/#preprocessing-the-input-stream
   InputStreamPreprocessor<HTMLTokenizer> input_stream_preprocessor_;
 
-  LiteralBuffer<UChar, 32> appropriate_end_tag_name_;
+  UCharLiteralBuffer<32> appropriate_end_tag_name_;
 
   // http://www.whatwg.org/specs/web-apps/current-work/#temporary-buffer
-  LiteralBuffer<LChar, 32> temporary_buffer_;
+  LCharLiteralBuffer<32> temporary_buffer_;
 
   // We occationally want to emit both a character token and an end tag
   // token (e.g., when lexing script). We buffer the name of the end tag
   // token here so we remember it next time we re-enter the tokenizer.
-  LiteralBuffer<LChar, 32> buffered_end_tag_name_;
+  LCharLiteralBuffer<32> buffered_end_tag_name_;
 
   HTMLParserOptions options_;
+};
+
+// Snapshot of the tokenizers state. Used by HTMLTokenProducer when it switches
+// from producing tokens in the background thread to the main thread.
+struct CORE_EXPORT HTMLTokenizerSnapshot {
+  USING_FAST_MALLOC(HTMLTokenizerSnapshot);
+
+ public:
+  HTMLTokenizer::State state;
+  String appropriate_end_tag_name;
+  String buffered_end_tag_name;
+  // NOTE: This does not include `force_null_character_replacement` and
+  // `should_allow_cdata` as they are never changed in the background tokenizer.
 };
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,15 +17,14 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
-#include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "components/viz/common/features.h"
+#include "build/chromeos_buildflags.h"
 #include "components/viz/host/gpu_host_impl.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
+#include "content/browser/gpu/gpu_disk_cache_factory.h"
 #include "content/browser/gpu/gpu_memory_buffer_manager_singleton.h"
 #include "content/browser/gpu/gpu_process_host.h"
-#include "content/browser/gpu/shader_cache_factory.h"
 #include "content/common/child_process_host_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -33,14 +32,11 @@
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
-#include "gpu/command_buffer/service/gpu_switches.h"
-#include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
 #include "gpu/ipc/common/gpu_watchdog_timeout.h"
-#include "gpu/ipc/in_process_command_buffer.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/constants.mojom.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #endif
 
@@ -48,7 +44,7 @@ namespace content {
 
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 // This is used as the stack frame to group these timeout crashes, so avoid
 // renaming it or moving the LOG(FATAL) call.
@@ -65,7 +61,7 @@ void DumpGpuStackOnProcessThread() {
   TimedOut();
 }
 
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -138,7 +134,7 @@ BrowserGpuChannelHostFactory::EstablishRequest::EstablishRequest(
       gpu_client_id_(gpu_client_id),
       gpu_client_tracing_id_(gpu_client_tracing_id),
       finished_(false),
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       main_task_runner_(ui::WindowResizeHelperMac::Get()->task_runner())
 #else
       main_task_runner_(base::ThreadTaskRunnerHandle::Get())
@@ -282,7 +278,10 @@ void BrowserGpuChannelHostFactory::CloseChannel() {
     gpu_channel_ = nullptr;
   }
 
-  gpu_memory_buffer_manager_.reset();
+  // This will unblock any other threads waiting on CreateGpuMemoryBuffer()
+  // requests. It runs before IO and thread pool threads are stopped to avoid
+  // shutdown hangs.
+  gpu_memory_buffer_manager_->Shutdown();
 }
 
 BrowserGpuChannelHostFactory::BrowserGpuChannelHostFactory()
@@ -290,36 +289,7 @@ BrowserGpuChannelHostFactory::BrowserGpuChannelHostFactory()
       gpu_client_tracing_id_(
           memory_instrumentation::mojom::kServiceTracingProcessId),
       gpu_memory_buffer_manager_(
-          new GpuMemoryBufferManagerSingleton(gpu_client_id_)) {
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableGpuShaderDiskCache)) {
-    DCHECK(GetContentClient());
-    base::FilePath cache_dir =
-        GetContentClient()->browser()->GetShaderDiskCacheDirectory();
-    if (!cache_dir.empty()) {
-      GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              &BrowserGpuChannelHostFactory::InitializeShaderDiskCacheOnIO,
-              gpu_client_id_, cache_dir));
-    }
-
-    bool use_gr_shader_cache = base::FeatureList::IsEnabled(
-                                   features::kDefaultEnableOopRasterization) ||
-                               features::IsUsingSkiaRenderer();
-    if (use_gr_shader_cache) {
-      base::FilePath gr_cache_dir =
-          GetContentClient()->browser()->GetGrShaderDiskCacheDirectory();
-      if (!gr_cache_dir.empty()) {
-        GetUIThreadTaskRunner({})->PostTask(
-            FROM_HERE,
-            base::BindOnce(
-                &BrowserGpuChannelHostFactory::InitializeGrShaderDiskCacheOnIO,
-                gr_cache_dir));
-      }
-    }
-  }
-}
+          new GpuMemoryBufferManagerSingleton(gpu_client_id_)) {}
 
 BrowserGpuChannelHostFactory::~BrowserGpuChannelHostFactory() {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
@@ -342,7 +312,7 @@ void BrowserGpuChannelHostFactory::EstablishGpuChannel(
 // task on the UI thread first, so we cannot block here.)
 scoped_refptr<gpu::GpuChannelHost>
 BrowserGpuChannelHostFactory::EstablishGpuChannelSync() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   NOTREACHED();
   return nullptr;
 #else
@@ -443,7 +413,7 @@ void BrowserGpuChannelHostFactory::GpuChannelEstablished(
 void BrowserGpuChannelHostFactory::RestartTimeout() {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
 // Only implement timeout on Android, which does not have a software fallback.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
   if (cl->HasSwitch(switches::kDisableTimeoutsForProfiling)) {
     return;
@@ -474,23 +444,7 @@ void BrowserGpuChannelHostFactory::RestartTimeout() {
 
   timeout_.Start(FROM_HERE, base::Seconds(kGpuChannelTimeoutInSeconds),
                  base::BindOnce(&DumpGpuStackOnProcessThread));
-#endif  // OS_ANDROID
-}
-
-// static
-void BrowserGpuChannelHostFactory::InitializeShaderDiskCacheOnIO(
-    int gpu_client_id,
-    const base::FilePath& cache_dir) {
-  GetShaderCacheFactorySingleton()->SetCacheInfo(gpu_client_id, cache_dir);
-  GetShaderCacheFactorySingleton()->SetCacheInfo(
-      gpu::kDisplayCompositorClientId, cache_dir);
-}
-
-// static
-void BrowserGpuChannelHostFactory::InitializeGrShaderDiskCacheOnIO(
-    const base::FilePath& cache_dir) {
-  GetShaderCacheFactorySingleton()->SetCacheInfo(gpu::kGrShaderCacheClientId,
-                                                 cache_dir);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace content

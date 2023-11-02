@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,7 @@ namespace {
 bool CheckValues(const std::string& name,
                  int minimum,
                  int maximum,
-                 uint32_t bucket_count) {
+                 size_t bucket_count) {
   if (!base::Histogram::InspectConstructionArguments(
           name, &minimum, &maximum, &bucket_count))
     return false;

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "ui/gfx/font_render_params.h"
@@ -32,10 +31,8 @@ class GFX_EXPORT PlatformFontSkia : public PlatformFont {
   PlatformFontSkia(const PlatformFontSkia&) = delete;
   PlatformFontSkia& operator=(const PlatformFontSkia&) = delete;
 
-  // Initials the default PlatformFont. Returns true if this is successful, or
-  // false if fonts resources are not available. If this returns false, the
-  // calling service should shut down.
-  static bool InitDefaultFont();
+  // Initializes the default PlatformFont.
+  static void EnsuresDefaultFontIsInitialized();
 
   // Resets and reloads the cached system font used by the default constructor.
   // This function is useful when the system font has changed, for example, when

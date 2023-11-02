@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_ACCOUNT_MANAGER_ACCOUNT_MANAGER_POLICY_CONTROLLER_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
@@ -58,16 +57,6 @@ class AccountManagerPolicyController : public KeyedService {
   // from Regular to Child or from Child to Regular on session start,
   // |type_changed| is be set to true.
   void OnChildAccountTypeChanged(bool type_changed);
-
-  // Checks if invalidation version for parental consent in EDU accounts
-  // addition has changed. If so, calls
-  // |InvalidateSecondaryAccountsOnEduConsentChange|.
-  void CheckEduCoexistenceSecondaryAccountsInvalidationVersion();
-
-  // Invalidates all secondary accounts and updates consent text version.
-  void InvalidateSecondaryAccountsOnEduConsentChange(
-      const std::string& new_invalidation_version,
-      const std::vector<::account_manager::Account>& accounts);
 
   // KeyedService implementation.
   void Shutdown() override;

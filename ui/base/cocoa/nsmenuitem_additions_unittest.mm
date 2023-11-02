@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,8 +28,8 @@ namespace {
 NSEvent* KeyEvent(const NSUInteger modifierFlags,
                   NSString* chars,
                   NSString* charsNoMods,
-                  const NSUInteger keyCode) {
-  return [NSEvent keyEventWithType:NSKeyDown
+                  const NSUInteger keyCode = 0) {
+  return [NSEvent keyEventWithType:NSEventTypeKeyDown
                           location:NSZeroPoint
                      modifierFlags:modifierFlags
                          timestamp:0.0
@@ -59,11 +59,13 @@ bool IsCommandlessCyrillicLayout(NSString* layoutId) {
          [layoutId isEqualToString:@"com.apple.keylayout.Mongolian-Cyrillic"];
 }
 
-void ExpectKeyFiresItemEq(bool result,
+void ExpectKeyFiresItemEq(bool expected_result,
                           NSEvent* key,
                           NSMenuItem* item,
                           bool compareCocoa) {
-  EXPECT_EQ(result, [item cr_firesForKeyEvent:key]) << key << '\n' << item;
+  EXPECT_EQ(expected_result, [item cr_firesForKeyEquivalentEvent:key])
+      << key << '\n'
+      << item;
 
   // Make sure that Cocoa does in fact agree with our expectations. However,
   // in some cases cocoa behaves weirdly (if you create e.g. a new event that
@@ -76,7 +78,8 @@ void ExpectKeyFiresItemEq(bool result,
     [menu setAutoenablesItems:NO];
     EXPECT_FALSE([menu performKeyEquivalent:key]);
     [menu addItem:item];
-    EXPECT_EQ(result, [menu performKeyEquivalent:key]) << key << '\n' << item;
+    EXPECT_EQ(expected_result, [menu performKeyEquivalent:key]) << key << '\n'
+                                                                << item;
   }
 }
 
@@ -90,6 +93,37 @@ void ExpectKeyDoesntFireItem(NSEvent* key,
                              NSMenuItem* item,
                              bool compareCocoa = true) {
   ExpectKeyFiresItemEq(false, key, item, compareCocoa);
+}
+
+TEST(NSMenuItemAdditionsTest, TestExtractsKeyEventModifierMask) {
+  const NSEventModifierFlags mask =
+      NSEventModifierFlagCommand | NSEventModifierFlagControl |
+      NSEventModifierFlagOption | NSEventModifierFlagShift;
+
+  // The mask returned by ModifierMaskForKeyEvent() should include
+  // NSEventModifierFlagFunction if the user holds down the function modifier
+  // key with a non-function key.
+  NSEvent* event = KeyEvent(mask | NSEventModifierFlagFunction, @"e", @"e");
+  EXPECT_EQ(mask | NSEventModifierFlagFunction, ModifierMaskForKeyEvent(event));
+
+  // The mask returned by ModifierMaskForKeyEvent() should not include
+  // NSEventModifierFlagFunction when the user presses a function key such as
+  // up arrow (the AppKit adds NSEventModifierFlagFunction to the key event's
+  // modifiers whenever the user presses a function key regardless of the state
+  // of the function modifier key).
+  unichar buffer[2];
+  buffer[0] = NSUpArrowFunctionKey;
+  buffer[1] = 0;
+  NSString* characters = [NSString stringWithCharacters:buffer length:1];
+  event = KeyEvent(NSEventModifierFlagFunction, characters, characters);
+  EXPECT_EQ(mask, ModifierMaskForKeyEvent(event));
+
+  // The mask returned by ModifierMaskForKeyEvent() should not include
+  // NSEventModifierFlagFunction if the user does not hold down the function
+  // modifier key with a non-function key.
+  const NSEventModifierFlags kNoModifiers = 0;
+  event = KeyEvent(kNoModifiers, @"a", @"a");
+  EXPECT_EQ(mask, ModifierMaskForKeyEvent(event));
 }
 
 TEST(NSMenuItemAdditionsTest, TestFiresForKeyEvent) {
@@ -160,7 +194,8 @@ TEST(NSMenuItemAdditionsTest, TestFiresForKeyEvent) {
   ExpectKeyFiresItem(key, item);
 
   // Turns out Cocoa fires "+ 100108 + 18" if you hit cmd-= and the menu only
-  // has a cmd-+ shortcut. But that's transparent for |cr_firesForKeyEvent:|.
+  // has a cmd-+ shortcut. But that's transparent for
+  // |cr_firesForKeyEquivalentEvent:|.
 
   // ctrl-3
   key = KeyEvent(0x40101, @"3", @"3", 0x14);
@@ -326,6 +361,70 @@ TEST(NSMenuItemAdditionsTest, TestFiresForKeyEvent) {
   // Change away from Command-QWERTY
   SetIsInputSourceCommandQwertyForTesting(false);
 
+  // With Dvorak Right or Left, some of the number row keys produce
+  // letters. Ensure that we ignore the key code when taking input
+  // from Dvorak RL.
+
+  const NSUInteger keyCodeForEightKey = 28;
+  key = KeyEvent(0x100110, @"8", @"8", keyCodeForEightKey);
+  item = MenuItem(@"f", NSEventModifierFlagCommand);
+  ExpectKeyDoesntFireItem(key, item);
+  item = MenuItem(@"8", NSEventModifierFlagCommand);
+  ExpectKeyFiresItem(key, item);
+
+  const NSUInteger keyCodeForNumericKeypadEightKey = 91;
+  key = KeyEvent(0x100110, @"8", @"8", keyCodeForNumericKeypadEightKey);
+  item = MenuItem(@"f", NSEventModifierFlagCommand);
+  ExpectKeyDoesntFireItem(key, item);
+  item = MenuItem(@"8", NSEventModifierFlagCommand);
+  ExpectKeyFiresItem(key, item);
+
+  const NSUInteger keyCodeForFiveKey = 23;
+  key = KeyEvent(0x100110, @"5", @"5", keyCodeForFiveKey);
+  item = MenuItem(@"f", NSEventModifierFlagCommand);
+  ExpectKeyDoesntFireItem(key, item);
+  item = MenuItem(@"5", NSEventModifierFlagCommand);
+  ExpectKeyFiresItem(key, item);
+
+  const NSUInteger keyCodeForNumericKeypadFiveKey = 87;
+  key = KeyEvent(0x100110, @"5", @"5", keyCodeForNumericKeypadFiveKey);
+  item = MenuItem(@"f", NSEventModifierFlagCommand);
+  ExpectKeyDoesntFireItem(key, item);
+  item = MenuItem(@"5", NSEventModifierFlagCommand);
+  ExpectKeyFiresItem(key, item);
+
+  SetIsInputSourceDvorakRightOrLeftForTesting(true);
+
+  // Under Dvorak Right, the eight key is the letter "f".
+  key = KeyEvent(0x100110, @"f", @"f", keyCodeForEightKey);
+  item = MenuItem(@"f", NSEventModifierFlagCommand);
+  ExpectKeyFiresItem(key, item);
+  item = MenuItem(@"8", NSEventModifierFlagCommand);
+  ExpectKeyDoesntFireItem(key, item);
+
+  // Pressing the eight key on the numeric keypad should switch tabs.
+  key = KeyEvent(0x100110, @"8", @"8", keyCodeForNumericKeypadEightKey);
+  item = MenuItem(@"f", NSEventModifierFlagCommand);
+  ExpectKeyDoesntFireItem(key, item);
+  item = MenuItem(@"8", NSEventModifierFlagCommand);
+  ExpectKeyFiresItem(key, item);
+
+  // Under Dvorak Left, the five key is the letter "f".
+  key = KeyEvent(0x100110, @"f", @"f", keyCodeForFiveKey);
+  item = MenuItem(@"f", NSEventModifierFlagCommand);
+  ExpectKeyFiresItem(key, item);
+  item = MenuItem(@"5", NSEventModifierFlagCommand);
+  ExpectKeyDoesntFireItem(key, item);
+
+  // Pressing the five key on the numeric keypad should switch tabs.
+  key = KeyEvent(0x100110, @"5", @"5", keyCodeForNumericKeypadFiveKey);
+  item = MenuItem(@"f", NSEventModifierFlagCommand);
+  ExpectKeyDoesntFireItem(key, item);
+  item = MenuItem(@"5", NSEventModifierFlagCommand);
+  ExpectKeyFiresItem(key, item);
+
+  SetIsInputSourceDvorakRightOrLeftForTesting(false);
+
   // cmd-shift-z on dvorak layout (so that we get a ':')
   key = KeyEvent(0x12010a, @";", @":", 6);
   ExpectKeyFiresItem(key, MenuItem(@":", NSEventModifierFlagCommand));
@@ -389,6 +488,18 @@ TEST(NSMenuItemAdditionsTest, TestFiresForKeyEvent) {
   key = KeyEvent(0x100108, @"é", @"é", 19);
   ExpectKeyFiresItem(key, MenuItem(@"2", NSEventModifierFlagCommand),
                      /*compareCocoa=*/false);
+
+  // In Hebrew layout, make sure Cmd-q works.
+  key = KeyEvent(0x100110, @"q", @"/", 12);
+  ExpectKeyDoesntFireItem(key, MenuItem(@"q", NSEventModifierFlagCommand),
+                          /*compareCocoa=*/false);
+
+  SetIsInputSourceCommandHebrewForTesting(true);
+
+  ExpectKeyFiresItem(key, MenuItem(@"q", NSEventModifierFlagCommand),
+                     /*compareCocoa=*/false);
+
+  SetIsInputSourceCommandHebrewForTesting(false);
 }
 
 NSString* keyCodeToCharacter(NSUInteger keyCode,
@@ -481,6 +592,77 @@ TEST(NSMenuItemAdditionsTest, TestMOnDifferentLayouts) {
     }
   }
   CFRelease(list);
+}
+
+// Tests that ModifierMaskForKeyEvent() works correctly for "flags changed"
+// events.
+TEST(NSMenuItemAdditionsTest, MMFKEHandlesFlagsChangedEvents) {
+  NSEventModifierFlags modifiers = NSEventModifierFlagCommand;
+  NSEvent* flags_changed_event =
+      [NSEvent keyEventWithType:NSEventTypeFlagsChanged
+                             location:NSZeroPoint
+                        modifierFlags:modifiers
+                            timestamp:0.0
+                         windowNumber:0
+                              context:nil
+                           characters:@""
+          charactersIgnoringModifiers:@""
+                            isARepeat:NO
+                              keyCode:0];
+
+  NSEventModifierFlags expected_flags =
+      NSEventModifierFlagCommand | NSEventModifierFlagControl |
+      NSEventModifierFlagOption | NSEventModifierFlagShift;
+  // Flags changed events don't have characters. Make sure we don't make the
+  // mistake of of assuming the event contains characters.
+  EXPECT_EQ(expected_flags, ModifierMaskForKeyEvent(flags_changed_event));
+
+  modifiers = NSEventModifierFlagFunction;
+  flags_changed_event = [NSEvent keyEventWithType:NSEventTypeFlagsChanged
+                                         location:NSZeroPoint
+                                    modifierFlags:modifiers
+                                        timestamp:0.0
+                                     windowNumber:0
+                                          context:nil
+                                       characters:@""
+                      charactersIgnoringModifiers:@""
+                                        isARepeat:NO
+                                          keyCode:0];
+
+  // Make sure, in particular, we handle flags changed for the function key.
+  // See https://crbug.com/1340934 .
+  EXPECT_EQ(expected_flags, ModifierMaskForKeyEvent(flags_changed_event));
+
+  modifiers = NSEventModifierFlagOption;
+  NSEvent* key_up_event = [NSEvent keyEventWithType:NSEventTypeKeyUp
+                                           location:NSZeroPoint
+                                      modifierFlags:modifiers
+                                          timestamp:0.0
+                                       windowNumber:0
+                                            context:nil
+                                         characters:@"a"
+                        charactersIgnoringModifiers:@"a"
+                                          isARepeat:NO
+                                            keyCode:0];
+
+  // Check that there are no issues with key up events.
+  EXPECT_EQ(expected_flags, ModifierMaskForKeyEvent(key_up_event));
+
+  modifiers = NSEventModifierFlagFunction;
+  NSEvent* empty_chars_event = [NSEvent keyEventWithType:NSEventTypeKeyDown
+                                                location:NSZeroPoint
+                                           modifierFlags:modifiers
+                                               timestamp:0.0
+                                            windowNumber:0
+                                                 context:nil
+                                              characters:@""
+                             charactersIgnoringModifiers:@""
+                                               isARepeat:NO
+                                                 keyCode:0];
+
+  // Make sure we correctly handle the situation of function key press event
+  // with no characters (dead keys).
+  EXPECT_EQ(expected_flags, ModifierMaskForKeyEvent(empty_chars_event));
 }
 
 }  // namespace

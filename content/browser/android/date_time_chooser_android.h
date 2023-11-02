@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_ANDROID_DATE_TIME_CHOOSER_ANDROID_H_
 
 #include "base/android/jni_weak_ref.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/choosers/date_time_chooser.mojom.h"
@@ -15,7 +16,7 @@
 namespace content {
 
 // Android implementation for DateTimeChooser dialogs.
-class DateTimeChooserAndroid
+class CONTENT_EXPORT DateTimeChooserAndroid
     : public blink::mojom::DateTimeChooser,
       public WebContentsUserData<DateTimeChooserAndroid> {
  public:
@@ -35,6 +36,8 @@ class DateTimeChooserAndroid
   void OpenDateTimeDialog(blink::mojom::DateTimeDialogValuePtr value,
                           OpenDateTimeDialogCallback callback) override;
 
+  void CloseDateTimeDialog() override;
+
   // Replaces the current value.
   void ReplaceDateTime(JNIEnv* env,
                        const base::android::JavaRef<jobject>&,
@@ -45,7 +48,12 @@ class DateTimeChooserAndroid
 
  private:
   friend class content::WebContentsUserData<DateTimeChooserAndroid>;
-  content::WebContents* web_contents_;
+  FRIEND_TEST_ALL_PREFIXES(DateTimeChooserBrowserTest,
+                           ResetResponseCallbackViaDisconnectionHandler);
+
+  void DismissAndDestroyJavaObject();
+
+  void OnDateTimeChooserReceiverConnectionError();
 
   OpenDateTimeDialogCallback open_date_time_response_callback_;
 

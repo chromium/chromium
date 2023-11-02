@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,19 +22,23 @@ class DlpWindowObserver : public aura::WindowObserver {
     virtual ~Delegate() = default;
 
     virtual void OnWindowOcclusionChanged(aura::Window* window) = 0;
+
+    virtual void OnWindowDestroying(aura::Window* window) = 0;
+
+    virtual void OnWindowTitleChanged(aura::Window* window) = 0;
   };
 
   DlpWindowObserver(aura::Window* window, Delegate* delegate);
+  DlpWindowObserver(const DlpWindowObserver&) = delete;
+  DlpWindowObserver& operator=(const DlpWindowObserver&) = delete;
   ~DlpWindowObserver() override;
 
   // aura::WindowObserver overrides:
   void OnWindowDestroying(aura::Window* window) override;
   void OnWindowOcclusionChanged(aura::Window* window) override;
+  void OnWindowTitleChanged(aura::Window* window) override;
 
  private:
-  DlpWindowObserver(const DlpWindowObserver&) = delete;
-  DlpWindowObserver& operator=(const DlpWindowObserver&) = delete;
-
   aura::Window* window_;
   Delegate* delegate_;
 };

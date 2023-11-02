@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ GURL GetOmahaUpdateServerURL();
 std::string GetOmahaApplicationId();
 
 // Allows setting extra attributes in the omaha request. This function can be
-// called multiple time per request. Only the attributes relevant for |element|
+// called multiple time per request. Only the attributes relevant for `element`
 // should be set.
 void SetOmahaExtraAttributes(base::StringPiece element, AttributeSetter setter);
 

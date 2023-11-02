@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,8 @@ ChildFrame::ChildFrame(
     bool offscreen_pre_raster,
     float device_scale_factor,
     CopyOutputRequestQueue copy_requests,
-    bool did_invalidate)
+    bool did_invalidate,
+    const viz::BeginFrameArgs& begin_frame_args)
     : frame_future(std::move(frame_future)),
       frame_sink_id(frame_sink_id),
       viewport_size_for_tile_priority(viewport_size_for_tile_priority),
@@ -28,7 +29,8 @@ ChildFrame::ChildFrame(
       offscreen_pre_raster(offscreen_pre_raster),
       device_scale_factor(device_scale_factor),
       copy_requests(std::move(copy_requests)),
-      did_invalidate(did_invalidate) {}
+      did_invalidate(did_invalidate),
+      begin_frame_args(begin_frame_args) {}
 
 ChildFrame::~ChildFrame() {
 }

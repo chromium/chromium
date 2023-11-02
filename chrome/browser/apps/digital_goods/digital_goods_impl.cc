@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/apps/digital_goods/digital_goods_impl.h"
 
 #include "chrome/browser/apps/digital_goods/util.h"
+#include "components/digital_goods/mojom/digital_goods.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 
 namespace {
@@ -31,7 +32,11 @@ DigitalGoodsImpl::CreateAndBind(content::RenderFrameHost* render_frame_host) {
 
 mojo::PendingRemote<payments::mojom::DigitalGoods>
 DigitalGoodsImpl::BindRequest() {
-  return receiver_.BindNewPipeAndPassRemote();
+  mojo::PendingRemote<payments::mojom::DigitalGoods> pending_remote;
+  mojo::PendingReceiver<payments::mojom::DigitalGoods> pending_receiver =
+      pending_remote.InitWithNewPipeAndPassReceiver();
+  receiver_set_.Add(this, std::move(pending_receiver));
+  return pending_remote;
 }
 
 void DigitalGoodsImpl::GetDetails(const std::vector<std::string>& item_ids,
@@ -60,38 +65,13 @@ void DigitalGoodsImpl::GetDetails(const std::vector<std::string>& item_ids,
                                     std::move(callback));
 }
 
-void DigitalGoodsImpl::Acknowledge(const std::string& purchase_token,
-                                   bool make_available_again,
-                                   AcknowledgeCallback callback) {
-  auto* digital_goods_service = GetArcDigitalGoodsBridge();
-
-  if (!digital_goods_service) {
-    std::move(callback).Run(
-        payments::mojom::BillingResponseCode::kClientAppUnavailable);
-    return;
-  }
-
-  const std::string package_name =
-      apps::GetTwaPackageName(&render_frame_host());
-  const std::string scope = apps::GetScope(&render_frame_host());
-  if (package_name.empty() || scope.empty()) {
-    LogErrorState(package_name, scope);
-    std::move(callback).Run(
-        payments::mojom::BillingResponseCode::kClientAppUnavailable);
-    return;
-  }
-
-  digital_goods_service->Acknowledge(package_name, scope, purchase_token,
-                                     make_available_again, std::move(callback));
-}
-
 void DigitalGoodsImpl::ListPurchases(ListPurchasesCallback callback) {
   auto* digital_goods_service = GetArcDigitalGoodsBridge();
 
   if (!digital_goods_service) {
     std::move(callback).Run(
         payments::mojom::BillingResponseCode::kClientAppUnavailable,
-        /*purchase_details_list=*/{});
+        /*purchase_reference_list=*/{});
     return;
   }
 
@@ -102,7 +82,7 @@ void DigitalGoodsImpl::ListPurchases(ListPurchasesCallback callback) {
     LogErrorState(package_name, scope);
     std::move(callback).Run(
         payments::mojom::BillingResponseCode::kClientAppUnavailable,
-        /*purchase_details_list=*/{});
+        /*purchase_reference_list=*/{});
     return;
   }
 
@@ -110,9 +90,59 @@ void DigitalGoodsImpl::ListPurchases(ListPurchasesCallback callback) {
                                        std::move(callback));
 }
 
+void DigitalGoodsImpl::ListPurchaseHistory(
+    ListPurchaseHistoryCallback callback) {
+  auto* digital_goods_service = GetArcDigitalGoodsBridge();
+
+  if (!digital_goods_service) {
+    std::move(callback).Run(
+        payments::mojom::BillingResponseCode::kClientAppUnavailable,
+        /*purchase_reference_list=*/{});
+    return;
+  }
+
+  const std::string package_name =
+      apps::GetTwaPackageName(&render_frame_host());
+  const std::string scope = apps::GetScope(&render_frame_host());
+  if (package_name.empty() || scope.empty()) {
+    LogErrorState(package_name, scope);
+    std::move(callback).Run(
+        payments::mojom::BillingResponseCode::kClientAppUnavailable,
+        /*purchase_reference_list=*/{});
+    return;
+  }
+
+  digital_goods_service->ListPurchaseHistory(package_name, scope,
+                                             std::move(callback));
+}
+
+void DigitalGoodsImpl::Consume(const std::string& purchase_token,
+                               ConsumeCallback callback) {
+  auto* digital_goods_service = GetArcDigitalGoodsBridge();
+
+  if (!digital_goods_service) {
+    std::move(callback).Run(
+        payments::mojom::BillingResponseCode::kClientAppUnavailable);
+    return;
+  }
+
+  const std::string package_name =
+      apps::GetTwaPackageName(&render_frame_host());
+  const std::string scope = apps::GetScope(&render_frame_host());
+  if (package_name.empty() || scope.empty()) {
+    LogErrorState(package_name, scope);
+    std::move(callback).Run(
+        payments::mojom::BillingResponseCode::kClientAppUnavailable);
+    return;
+  }
+
+  digital_goods_service->Consume(package_name, scope, purchase_token,
+                                 std::move(callback));
+}
+
 // Private methods:
 DigitalGoodsImpl::DigitalGoodsImpl(content::RenderFrameHost* rfh)
-    : content::DocumentUserData<DigitalGoodsImpl>(rfh), receiver_(this) {}
+    : content::DocumentUserData<DigitalGoodsImpl>(rfh) {}
 
 arc::ArcDigitalGoodsBridge* DigitalGoodsImpl::GetArcDigitalGoodsBridge() {
   return arc::ArcDigitalGoodsBridge::GetForBrowserContext(

@@ -57,7 +57,7 @@ test(function() {
 
 test(function() {
   var video = document.createElement('video');
-  video.src = "../../external/wpt/media/test-av-384k-44100Hz-1ch-320x240-30fps-10kfr.webm";
+  video.src = "support/test-av-384k-44100Hz-1ch-320x240-30fps-10kfr.webm";
   video.play();
   video.oncanplay = function() {
     var stream = video.captureStream();

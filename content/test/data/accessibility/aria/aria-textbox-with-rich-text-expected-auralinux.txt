@@ -1,4 +1,4 @@
-[document web] caret_offset=0
+[document web]
 ++[entry] editable multi-line selectable-text xml-roles:textbox caret_offset=0
 ++++[heading] name='TextBox1' editable
 ++++++[static] name='TextBox1' editable

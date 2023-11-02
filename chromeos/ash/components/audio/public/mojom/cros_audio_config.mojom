@@ -1,0 +1,94 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.audio_config.mojom;
+
+// Enum that corresponds with ash::AudioDeviceType.
+enum AudioDeviceType {
+  kHeadphone,
+  kMic,
+  kUsb,
+  kBluetooth,
+  kBluetoothNbMic,
+  kHdmi,
+  kInternalSpeaker,
+  kInternalMic,
+  kFrontMic,
+  kRearMic,
+  kKeyboardMic,
+  kHotword,
+  kPostDspLoopback,
+  kPostMixLoopback,
+  kLineout,
+  kAlsaLoopback,
+  kOther
+};
+
+// Represents the mute state of a user's audio device.
+enum MuteState {
+  // The device is not muted.
+  kNotMuted,
+
+  // The device is muted by the user.
+  kMutedByUser,
+
+  // The device is muted by the device policy.
+  kMutedByPolicy
+};
+
+// Represents a user's audio device.
+struct AudioDevice {
+  // Id of the audio device. Assigned to be unique each time a device is plugged
+  // in, so that the same physical device will have a different id after an
+  // unplug then replug.
+  uint64 id;
+
+  // Human-readable name of the device.
+  string display_name;
+
+  // When true, indicates that the device is currently being used. Only one
+  // output device will be active at a time, and only one input device will
+  // be active at a time.
+  bool is_active;
+
+  // The type of the device.
+  AudioDeviceType device_type;
+};
+
+// Represents the audio state of the Audio system.
+struct AudioSystemProperties {
+  // List of output devices. UI surfaces should display devices in the order
+  // indicated by this array.
+  array<AudioDevice> output_devices;
+
+  // The volume of the active output device.
+  uint8 output_volume_percent;
+
+  // The mute state of the active output device.
+  MuteState output_mute_state;
+};
+
+// Observer for changes to audio system properties.
+interface AudioSystemPropertiesObserver {
+  // Invoked whenever any property changes, including whenever a property of
+  // an audio device changes (e.g., from active to inactive).
+  OnPropertiesUpdated(AudioSystemProperties properties);
+};
+
+// Provides audio metadata and controls. Embedded in the browser process.
+//
+// Clients include:
+// * WebUI such as chrome://os-settings, implemented in JS as part of renderer
+//   processes.
+interface CrosAudioConfig {
+  // Invokes OnPropertiesUpdated() with initial set of properties when
+  // observer is first added, then again whenever properties are updated.
+  // To stop observing, disconnect |observer|.
+  ObserveAudioSystemProperties(
+    pending_remote<AudioSystemPropertiesObserver> observer);
+
+  // Sets the volume of the active output device. If |volume| is above a
+  // threshold and the device is muted, it's unmuted.
+  SetOutputVolumePercent(int8 volume);
+};

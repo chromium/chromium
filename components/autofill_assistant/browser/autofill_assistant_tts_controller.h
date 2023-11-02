@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/tts_controller.h"
 #include "content/public/browser/tts_utterance.h"
 
@@ -58,7 +59,7 @@ class AutofillAssistantTtsController : public content::UtteranceEventDelegate {
                   const std::string& error_message) override;
 
  private:
-  content::TtsController* tts_controller_ = nullptr;
+  raw_ptr<content::TtsController> tts_controller_ = nullptr;
 
   base::WeakPtr<TtsEventDelegate> tts_event_delegate_;
 };

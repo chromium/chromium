@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,6 +28,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/font.h"
@@ -57,18 +58,18 @@ namespace {
 constexpr size_t kMaxActions = 5;
 
 // Dimensions.
-constexpr gfx::Insets kMediaControlsInsets = gfx::Insets(16, 16, 16, 16);
+constexpr gfx::Insets kMediaControlsInsets = gfx::Insets(16);
 constexpr int kMediaControlsCornerRadius = 16;
 constexpr int kMinimumSourceIconSize = 16;
 constexpr int kDesiredSourceIconSize = 20;
 constexpr int kMinimumArtworkSize = 30;
 constexpr int kDesiredArtworkSize = 48;
 constexpr int kArtworkRowPadding = 16;
-constexpr gfx::Insets kArtworkRowInsets = gfx::Insets(24, 0, 9, 0);
+constexpr auto kArtworkRowInsets = gfx::Insets::TLBR(24, 0, 9, 0);
 constexpr gfx::Size kArtworkRowPreferredSize =
     gfx::Size(328, kDesiredArtworkSize);
 constexpr int kMediaButtonRowPadding = 16;
-constexpr gfx::Insets kButtonRowInsets = gfx::Insets(4, 0, 0, 0);
+constexpr auto kButtonRowInsets = gfx::Insets::TLBR(4, 0, 0, 0);
 constexpr int kPlayPauseIconSize = 40;
 constexpr int kMediaControlsIconSize = 24;
 constexpr gfx::Size kPlayPauseButtonSize = gfx::Size(72, 72);
@@ -182,6 +183,7 @@ class MediaActionButton : public views::ImageButton {
     SetAction(action, accessible_name);
 
     SetInstallFocusRingOnFocus(true);
+    views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
     login_views_utils::ConfigureRectFocusRingCircleInkDrop(
         this, views::FocusRing::Get(this), absl::nullopt);
   }
@@ -206,12 +208,14 @@ class MediaActionButton : public views::ImageButton {
 
  private:
   void UpdateIcon() {
-    views::SetImageFromVectorIcon(
+    SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kIconColorPrimary);
+    SkColor icon_disabled_color =
+        SkColorSetA(icon_color, gfx::kDisabledControlAlpha);
+    views::SetImageFromVectorIconWithColor(
         this,
         GetVectorIconForMediaAction(static_cast<MediaSessionAction>(tag())),
-        icon_size_,
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorPrimary));
+        icon_size_, icon_color, icon_disabled_color);
   }
 
   int const icon_size_;
@@ -488,14 +492,14 @@ void LockScreenMediaControlsView::OnMouseEntered(const ui::MouseEvent& event) {
   if (is_in_drag_ || contents_view_->layer()->GetAnimator()->is_animating())
     return;
 
-  header_row_->SetCloseButtonVisibility(true);
+  header_row_->SetForceShowCloseButton(true);
 }
 
 void LockScreenMediaControlsView::OnMouseExited(const ui::MouseEvent& event) {
   if (is_in_drag_ || contents_view_->layer()->GetAnimator()->is_animating())
     return;
 
-  header_row_->SetCloseButtonVisibility(false);
+  header_row_->SetForceShowCloseButton(false);
 }
 
 void LockScreenMediaControlsView::OnThemeChanged() {
@@ -644,12 +648,12 @@ void LockScreenMediaControlsView::MediaControllerImageChanged(
       break;
     }
     case media_session::mojom::MediaSessionImageType::kSourceIcon: {
-      gfx::ImageSkia session_icon =
-          gfx::ImageSkia::CreateFrom1xBitmap(converted_bitmap);
-      if (session_icon.isNull()) {
-        session_icon =
-            gfx::CreateVectorIcon(message_center::kProductIcon,
-                                  kDesiredSourceIconSize, gfx::kChromeIconGrey);
+      auto session_icon = ui::ImageModel::FromImageSkia(
+          gfx::ImageSkia::CreateFrom1xBitmap(converted_bitmap));
+      if (session_icon.IsEmpty()) {
+        session_icon = ui::ImageModel::FromVectorIcon(
+            message_center::kProductIcon, ui::kColorIcon,
+            kDesiredSourceIconSize);
       }
       header_row_->SetAppIcon(session_icon);
     }

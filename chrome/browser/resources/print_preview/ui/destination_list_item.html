@@ -1,97 +1,10 @@
-<style include="cr-hidden-style">
-  :host {
-    align-items: center;
-    cursor: default;
-    display: flex;
-    font-size: calc(12/13 * 1em);
-    min-height: var(--destination-item-height);
-    opacity: .87;
-    padding-inline-end: 2px;
-    padding-inline-start: 0;
-    vertical-align: middle;
-  }
-
-  :host > * {
-    align-items: center;
-    color: var(--cr-secondary-text-color);
-    font-size: calc(10/12 * 1em);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    vertical-align: middle;
-    white-space: nowrap;
-  }
-
-  :host > span {
-    margin-inline-start: 1em;
-  }
-
-  iron-icon {
-    --icon-margin: calc((var(--search-icon-size) - var(--iron-icon-width))/2);
-    fill: var(--google-grey-600);
-    flex: 0;
-    height: var(--iron-icon-height);
-    margin-inline-end: var(--icon-margin);
-    margin-inline-start: var(--icon-margin);
-    min-width: var(--iron-icon-width);
-    transition: opacity 150ms;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    iron-icon {
-      fill: var(--google-grey-refresh-500);
-    }
-  }
-
-  :host .name {
-    color: var(--cr-primary-text-color);
-    font-size: 1em;
-    margin-inline-start: 0;
-    /* Matches cr-input-padding-start */
-    padding-inline-start: 8px;
-  }
-
-  .extension-controlled-indicator {
-    display: flex;
-    flex: 1;
-    justify-content: flex-end;
-    min-width: 150px;
-    padding-inline-end: 8px;
-  }
-
-  .extension-icon {
-    height: 24px;
-    margin-inline-start: 1em;
-    width: 24px;
-  }
-
-  .configuring-failed-text {
-    color: var(--google-red-600);
-    font-style: italic;
-  }
-
-  :host([stale_]) :-webkit-any(iron-icon, .name, .connection-status) {
-    opacity: 0.4;
-  }
-
-<if expr="chromeos or lacros">
-  :host([is-destination-cros-local_]) .connection-status {
-    color: var(--google-red-600);
-  }
-</if>
+<style include="destination-list-item-style">
 </style>
-<iron-icon icon="[[destinationIcon_]]"></iron-icon>
+<iron-icon icon="[[destination.icon]]"></iron-icon>
 <span class="name searchable">[[destination.displayName]]</span>
 <span class="search-hint searchable" hidden="[[!searchHint_]]">
   [[searchHint_]]
 </span>
-<span class="connection-status" hidden="[[!statusText_]]">
-  [[statusText_]]
-</span>
-<a href="$i18n{gcpCertificateErrorLearnMoreURL}"
-    target="_blank" class="learn-more-link"
-    hidden$="[[!destination.shouldShowInvalidCertificateError]]">
-  $i18n{learnMore}
-</a>
 <span class="extension-controlled-indicator"
     hidden$="[[!destination.isExtension]]">
   <span class="extension-name searchable">
@@ -100,18 +13,3 @@
   <span class="extension-icon" role="button" tabindex="0"
       title="[[getExtensionPrinterTooltip_(destination)]]"></span>
 </span>
-<if expr="chromeos or lacros">
-<span class="configuring-in-progress-text"
-  hidden$="[[!checkConfigurationStatus_(statusEnum_.IN_PROGRESS,
-                                        configurationStatus_)]]">
-  $i18n{configuringInProgressText}
-  <span class="configuring-text-jumping-dots">
-    <span>.</span><span>.</span><span>.</span>
-  </span>
-</span>
-<span class="configuring-failed-text"
-  hidden$="[[!checkConfigurationStatus_(statusEnum_.FAILED,
-                                        configurationStatus_)]]">
-  $i18n{configuringFailedText}
-</span>
-</if>

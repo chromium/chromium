@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -274,8 +274,7 @@ void RecoveryComponent::FetchOnIOThread() {
     return;
   }
 
-  base::ScopedClosureRunner delete_file(
-      base::BindOnce(base::GetDeleteFileCallback(), crx_file));
+  base::ScopedClosureRunner delete_file(base::GetDeleteFileCallback(crx_file));
 
   if (!SaveHttpResponseDataToFile(crx_file, http_response.get())) {
     LOG(WARNING) << "Failed to save downloaded recovery component";

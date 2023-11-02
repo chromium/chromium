@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@
 #include "base/strings/string_split.h"
 #include "ui/accessibility/ax_base_export.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_relative_bounds.h"
 #include "ui/accessibility/ax_text_attributes.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -23,13 +24,6 @@
 namespace ui {
 
 class AXTreeID;
-
-// Defines the type used for AXNode IDs.
-using AXNodeID = int32_t;
-
-// If a node is not yet or no longer valid, its ID should have a value of
-// kInvalidAXNodeID.
-static constexpr AXNodeID kInvalidAXNodeID = 0;
 
 // Return true if |attr| should be interpreted as the id of another node
 // in the same tree.
@@ -55,7 +49,7 @@ struct AX_BASE_EXPORT AXNodeData {
 
   AXNodeData(const AXNodeData& other);
   AXNodeData(AXNodeData&& other);
-  AXNodeData& operator=(AXNodeData other);
+  AXNodeData& operator=(const AXNodeData& other);
 
   // Accessing accessibility attributes:
   //
@@ -108,7 +102,9 @@ struct AX_BASE_EXPORT AXNodeData {
   bool GetStringListAttribute(ax::mojom::StringListAttribute attribute,
                               std::vector<std::string>* value) const;
 
+  bool HasHtmlAttribute(const char* attribute) const;
   bool GetHtmlAttribute(const char* attribute, std::string* value) const;
+  std::u16string GetHtmlAttribute(const char* attribute) const;
   bool GetHtmlAttribute(const char* attribute, std::u16string* value) const;
 
   //
@@ -155,15 +151,60 @@ struct AX_BASE_EXPORT AXNodeData {
 
   // Adds the name attribute or replaces it if already present. Also sets the
   // NameFrom attribute if not already set.
+  //
+  // [[deprecated("Replaced by `SetNameChecked` and `SetNameExplicitlyEmpty`")]]
+  // See `SetNameChecked` and `SetNameExplicitlyEmpty` which have DCHECKs for
+  // conditions expected to be true, which in reality are not always true.
+  // Tracked by crbug.com/1348081.
   void SetName(const std::string& name);
+  // [[deprecated("Replaced by `SetNameChecked` and `SetNameExplicitlyEmpty`")]]
+  // See `SetNameChecked` and `SetNameExplicitlyEmpty` which have DCHECKs for
+  // conditions expected to be true, which in reality are not always true.
+  // Tracked by crbug.com/1348081.
   void SetName(const std::u16string& name);
 
-  // Allows nameless objects to pass accessibility checks.
+  // Adds the accessible name attribute or replaces it if already present, and
+  // also sets the NameFrom attribute if not already set.
+  //
+  // The value of the accessible name is a localized, end-user-consumable string
+  // which may be derived from visible information (e.g. the text on a button)
+  // or invisible information (e.g. the alternative text describing an icon).
+  // In the case of focusable objects, the name will be presented by the screen
+  // reader when that object gains focus and is critical to understanding the
+  // purpose of that object non-visually.
+  //
+  // Note that `SetNameChecked` must only be used to set a non-empty name, a
+  // condition enforced by a DCHECK. This is done to prevent UI from
+  // accidentally being given an empty name because, as a general rule, nameless
+  // controls tend to be inaccessible. However, because there can be valid
+  // reasons to remove or prevent naming of an item `SetNameExplicitlyEmpty`
+  // provides a means for developers to do so.
+  void SetNameChecked(const std::string& name);
+  void SetNameChecked(const std::u16string& name);
+
+  // Indicates this object should not have an accessible name. One use case is
+  // to prevent screen readers from speaking redundant information, for instance
+  // if the parent View has the same name as this View, causing the screen
+  // reader to speak the name twice. This function can also be used to allow
+  // focusable nameless objects to pass accessibility checks in tests, a
+  // practice that should not be applied in production code.
   void SetNameExplicitlyEmpty();
 
-  // Adds the description attribute or replaces it if already present.
+  // Adds the description attribute or replaces it if already present. Also
+  // sets the DescriptionFrom attribute if not already set. Note that
+  // `SetDescription` must only be used to set a non-empty description, a
+  // condition enforced by a DCHECK. If an object should not have an accessible
+  // description in order to improve the user experience, use
+  // `SetDescriptionExplicitlyEmpty`.
   void SetDescription(const std::string& description);
   void SetDescription(const std::u16string& description);
+
+  // Indicates this object should not have an accessible description. One use
+  // case is to prevent screen readers from speaking redundant information, for
+  // instance if a View's description comes from a tooltip whose content is
+  // similar to that View's accessible name, the screen reader presentation may
+  // be overly verbose.
+  void SetDescriptionExplicitlyEmpty();
 
   // Adds the value attribute or replaces it if already present.
   void SetValue(const std::string& value);
@@ -290,10 +331,6 @@ struct AX_BASE_EXPORT AXNodeData {
   // up/down arrow will change the value to the previous/next allowed value.
   bool IsSpinnerTextField() const;
 
-  // Helper to determine if |GetRestriction| is either ReadOnly or Disabled.
-  // By default, all nodes that can't be edited are readonly.
-  bool IsReadOnlyOrDisabled() const;
-
   // Helper to determine if the data belongs to a node that supports
   // range-based values.
   bool IsRangeValueSupported() const;
@@ -304,6 +341,9 @@ struct AX_BASE_EXPORT AXNodeData {
 
   // Return a string representation of this data, for debugging.
   virtual std::string ToString() const;
+
+  // Returns the approximate size in bytes.
+  size_t ByteSize() const;
 
   // Return a string representation of |aria-dropeffect| values, for testing
   // and debugging.

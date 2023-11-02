@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,11 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/page.h"
@@ -22,6 +24,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -62,10 +66,13 @@ class MockWebContentsDelegate : public WebContentsDelegate {
                               const std::u16string& message,
                               int32_t line_no,
                               const std::u16string& source_id) override;
+  bool IsPrerender2Supported(WebContents& web_contents) override {
+    return true;
+  }
 
  private:
-  WebContents* web_contents_;
-  ManifestBrowserTest* test_;
+  raw_ptr<WebContents, DanglingUntriaged> web_contents_;
+  raw_ptr<ManifestBrowserTest> test_;
 };
 
 class ManifestBrowserTest : public ContentBrowserTest,
@@ -127,7 +134,7 @@ class ManifestBrowserTest : public ContentBrowserTest,
     mojo::AssociatedRemote<blink::mojom::ManifestManager> remote;
     shell()
         ->web_contents()
-        ->GetMainFrame()
+        ->GetPrimaryMainFrame()
         ->GetRemoteAssociatedInterfaces()
         ->GetInterface(&remote);
     remote.FlushForTesting();
@@ -735,6 +742,124 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, UniqueOrigin) {
   EXPECT_TRUE(manifest_url().is_empty());
   EXPECT_EQ(0, GetConsoleErrorCount());
   EXPECT_EQ(0u, reported_manifest_urls().size());
+}
+
+class ManifestBrowserPrerenderingTest : public ManifestBrowserTest {
+ public:
+  ManifestBrowserPrerenderingTest()
+      : prerender_helper_(
+            base::BindRepeating(&ManifestBrowserPrerenderingTest::web_contents,
+                                base::Unretained(this))) {}
+
+  ~ManifestBrowserPrerenderingTest() override = default;
+
+ protected:
+  test::PrerenderTestHelper& prerender_helper() { return prerender_helper_; }
+
+ private:
+  test::PrerenderTestHelper prerender_helper_;
+};
+
+// Tests that GetManifest() returns an empty manifest if it's requested in
+// prerendering.
+IN_PROC_BROWSER_TEST_F(ManifestBrowserPrerenderingTest,
+                       GetManifestInPrerendering) {
+  GURL test_url =
+      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  {
+    base::RunLoop run_loop;
+    web_contents()->GetPrimaryPage().GetManifest(base::BindLambdaForTesting(
+        [&](const GURL& manifest_url, blink::mojom::ManifestPtr manifest) {
+          // Get the manifest on a primary page.
+          EXPECT_FALSE(manifest_url.is_empty());
+          EXPECT_FALSE(blink::IsEmptyManifest(*manifest));
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+
+  GURL prerender_url =
+      embedded_test_server()->GetURL("/manifest/dummy-manifest.html");
+  // Loads a page in the prerender.
+  int host_id = prerender_helper().AddPrerender(prerender_url);
+  content::RenderFrameHost* prerender_rfh =
+      prerender_helper().GetPrerenderedMainFrameHost(host_id);
+  {
+    base::RunLoop run_loop;
+    prerender_rfh->GetPage().GetManifest(base::BindLambdaForTesting(
+        [&](const GURL& manifest_url, blink::mojom::ManifestPtr manifest) {
+          // Ensure that the manifest is empty in prerendering.
+          EXPECT_TRUE(manifest_url.is_empty());
+          EXPECT_TRUE(blink::IsEmptyManifest(*manifest));
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+
+  prerender_helper().NavigatePrimaryPage(prerender_url);
+  {
+    base::RunLoop run_loop;
+    prerender_rfh->GetPage().GetManifest(base::BindLambdaForTesting(
+        [&](const GURL& manifest_url, blink::mojom::ManifestPtr manifest) {
+          // Ensure that getting the manifest works after prerendering
+          // activation.
+          EXPECT_FALSE(manifest_url.is_empty());
+          EXPECT_FALSE(blink::IsEmptyManifest(*manifest));
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+}
+
+class ManifestFencedFrameBrowserTest : public ManifestBrowserTest {
+ public:
+  ManifestFencedFrameBrowserTest() = default;
+  ~ManifestFencedFrameBrowserTest() override = default;
+
+ protected:
+  test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_test_helper_;
+  }
+
+ private:
+  test::FencedFrameTestHelper fenced_frame_test_helper_;
+};
+
+// Tests that GetManifest() returns an empty manifest if it's requested in
+// a fenced frame.
+IN_PROC_BROWSER_TEST_F(ManifestFencedFrameBrowserTest,
+                       GetManifestInFencedFrame) {
+  const GURL test_url =
+      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  const GURL fenced_frame_url =
+      embedded_test_server()->GetURL("/fenced_frames/title1.html");
+
+  content::RenderFrameHost* fenced_frame_rfh =
+      fenced_frame_test_helper().CreateFencedFrame(
+          web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
+
+  // Add a manifest to `fenced_frame_rfh`.
+  ASSERT_TRUE(ExecJs(fenced_frame_rfh,
+                     R"( var link = document.createElement('link');
+                         link.rel = 'manifest';
+                         link.href = '../manifest/dummy-manifest.json';
+                         document.head.appendChild(link);)"));
+
+  base::RunLoop run_loop;
+  fenced_frame_rfh->GetPage().GetManifest(base::BindLambdaForTesting(
+      [&](const GURL& manifest_url, blink::mojom::ManifestPtr manifest) {
+        // Even though `fenced_frame_rfh` has a manifest updated above,
+        // this should get an empty manifest since it's not a primary main
+        // frame.
+        EXPECT_TRUE(manifest_url.is_empty());
+        EXPECT_TRUE(blink::IsEmptyManifest(*manifest));
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 }
 
 } // namespace content

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "chrome/browser/component_updater/cros_component_manager.h"
 
 class BrowserProcessPlatformPart;
+class Profile;
 
 // Used to override parts of BrowserProcessPlatformParts in tests.
 class BrowserProcessPlatformPartTestApi {
@@ -29,6 +30,8 @@ class BrowserProcessPlatformPartTestApi {
   // Shuts down the cros component manager set by
   // InitializeCrosComponentManager().
   void ShutdownCrosComponentManager();
+
+  bool CanRestoreUrlsForProfile(const Profile* profile);
 
  private:
   BrowserProcessPlatformPart* const platform_part_;

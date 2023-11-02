@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -46,7 +46,7 @@ source_set("native_test_native_code") {
 android_library("native_main_runner_java") {
   testonly = true
   sources = [ "java/src/org/chromium/native_test/MainRunner.java" ]
-  deps = [ "//base:base_java" ]
+  deps = [ "//base:jni_java" ]
 }
 
 android_library("native_test_java") {
@@ -55,10 +55,11 @@ android_library("native_test_java") {
     ":native_main_runner_java",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//build/android/gtest_apk:native_test_instrumentation_test_runner_java",
     "//testing/android/reporter:reporter_java",
-    "//third_party/android_deps:android_support_v4_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
   ]
   sources = [
     "java/src/org/chromium/native_test/NativeBrowserTest.java",

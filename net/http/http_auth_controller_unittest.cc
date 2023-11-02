@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "net/base/net_errors.h"
@@ -57,7 +58,7 @@ void RunSingleRoundAuthTest(
     SchemeState scheme_state,
     const NetLogWithSource& net_log = NetLogWithSource()) {
   HttpAuthCache dummy_auth_cache(
-      false /* key_server_entries_by_network_isolation_key */);
+      false /* key_server_entries_by_network_anonymization_key */);
 
   HttpRequestInfo request;
   request.method = "GET";
@@ -69,17 +70,18 @@ void RunSingleRoundAuthTest(
       "\r\n"));
 
   HttpAuthHandlerMock::Factory auth_handler_factory;
-  HttpAuthHandlerMock* auth_handler = new HttpAuthHandlerMock();
+  auto auth_handler = std::make_unique<HttpAuthHandlerMock>();
   auth_handler->SetGenerateExpectation((run_mode == RUN_HANDLER_ASYNC),
                                        handler_rv);
-  auth_handler_factory.AddMockHandler(auth_handler, HttpAuth::AUTH_PROXY);
+  auth_handler_factory.AddMockHandler(std::move(auth_handler),
+                                      HttpAuth::AUTH_PROXY);
   auth_handler_factory.set_do_init_from_challenge(true);
   auto host_resolver = std::make_unique<MockHostResolver>();
 
   scoped_refptr<HttpAuthController> controller(
       base::MakeRefCounted<HttpAuthController>(
           HttpAuth::AUTH_PROXY, GURL("http://example.com"),
-          NetworkIsolationKey(), &dummy_auth_cache, &auth_handler_factory,
+          NetworkAnonymizationKey(), &dummy_auth_cache, &auth_handler_factory,
           host_resolver.get()));
   SSLInfo null_ssl_info;
   ASSERT_EQ(OK, controller->HandleAuthChallenge(headers, null_ssl_info, false,
@@ -146,8 +148,8 @@ TEST(HttpAuthControllerTest, Logging) {
   // There should be at least two events.
   ASSERT_GE(entries.size(), 2u);
 
-  auto begin = std::find_if(
-      entries.begin(), entries.end(), [](const NetLogEntry& e) -> bool {
+  auto begin =
+      base::ranges::find_if(entries, [](const NetLogEntry& e) {
         if (e.type != NetLogEventType::AUTH_CONTROLLER ||
             e.phase != NetLogEventPhase::BEGIN)
           return false;
@@ -162,12 +164,10 @@ TEST(HttpAuthControllerTest, Logging) {
         return true;
       });
   EXPECT_TRUE(begin != entries.end());
-  auto end = std::find_if(++begin, entries.end(),
-                          [](const NetLogEntry& e) -> bool {
-                            return e.type == NetLogEventType::AUTH_CONTROLLER &&
-                                   e.phase == NetLogEventPhase::END;
-                          });
-  EXPECT_TRUE(end != entries.end());
+  EXPECT_TRUE(std::any_of(++begin, entries.end(), [](const NetLogEntry& e) {
+    return e.type == NetLogEventType::AUTH_CONTROLLER &&
+           e.phase == NetLogEventPhase::END;
+  }));
 }
 
 // If an HttpAuthHandler indicates that it doesn't allow explicit
@@ -182,10 +182,11 @@ TEST(HttpAuthControllerTest, NoExplicitCredentialsAllowed) {
     }
 
    protected:
-    bool Init(HttpAuthChallengeTokenizer* challenge,
-              const SSLInfo& ssl_info,
-              const NetworkIsolationKey& network_isolation_key) override {
-      HttpAuthHandlerMock::Init(challenge, ssl_info, network_isolation_key);
+    bool Init(
+        HttpAuthChallengeTokenizer* challenge,
+        const SSLInfo& ssl_info,
+        const NetworkAnonymizationKey& network_anonymization_key) override {
+      HttpAuthHandlerMock::Init(challenge, ssl_info, network_anonymization_key);
       set_allows_default_credentials(true);
       set_allows_explicit_credentials(false);
       set_connection_based(true);
@@ -217,7 +218,7 @@ TEST(HttpAuthControllerTest, NoExplicitCredentialsAllowed) {
 
   NetLogWithSource dummy_log;
   HttpAuthCache dummy_auth_cache(
-      false /* key_server_entries_by_network_isolation_key */);
+      false /* key_server_entries_by_network_anonymization_key */);
   HttpRequestInfo request;
   request.method = "GET";
   request.url = GURL("http://example.com");
@@ -234,29 +235,32 @@ TEST(HttpAuthControllerTest, NoExplicitCredentialsAllowed) {
   // Handlers for the first attempt at authentication.  AUTH_SCHEME_MOCK handler
   // accepts the default identity and successfully constructs a token.
   auth_handler_factory.AddMockHandler(
-      new MockHandler(OK, HttpAuth::AUTH_SCHEME_MOCK), HttpAuth::AUTH_SERVER);
+      std::make_unique<MockHandler>(OK, HttpAuth::AUTH_SCHEME_MOCK),
+      HttpAuth::AUTH_SERVER);
   auth_handler_factory.AddMockHandler(
-      new MockHandler(ERR_UNEXPECTED, HttpAuth::AUTH_SCHEME_BASIC),
+      std::make_unique<MockHandler>(ERR_UNEXPECTED,
+                                    HttpAuth::AUTH_SCHEME_BASIC),
       HttpAuth::AUTH_SERVER);
 
   // Handlers for the second attempt.  Neither should be used to generate a
   // token.  Instead the controller should realize that there are no viable
   // identities to use with the AUTH_SCHEME_MOCK handler and fail.
   auth_handler_factory.AddMockHandler(
-      new MockHandler(ERR_UNEXPECTED, HttpAuth::AUTH_SCHEME_MOCK),
+      std::make_unique<MockHandler>(ERR_UNEXPECTED, HttpAuth::AUTH_SCHEME_MOCK),
       HttpAuth::AUTH_SERVER);
   auth_handler_factory.AddMockHandler(
-      new MockHandler(ERR_UNEXPECTED, HttpAuth::AUTH_SCHEME_BASIC),
+      std::make_unique<MockHandler>(ERR_UNEXPECTED,
+                                    HttpAuth::AUTH_SCHEME_BASIC),
       HttpAuth::AUTH_SERVER);
 
   // Fallback handlers for the second attempt.  The AUTH_SCHEME_MOCK handler
   // should be discarded due to the disabled scheme, and the AUTH_SCHEME_BASIC
   // handler should successfully be used to generate a token.
   auth_handler_factory.AddMockHandler(
-      new MockHandler(ERR_UNEXPECTED, HttpAuth::AUTH_SCHEME_MOCK),
+      std::make_unique<MockHandler>(ERR_UNEXPECTED, HttpAuth::AUTH_SCHEME_MOCK),
       HttpAuth::AUTH_SERVER);
   auth_handler_factory.AddMockHandler(
-      new MockHandler(OK, HttpAuth::AUTH_SCHEME_BASIC),
+      std::make_unique<MockHandler>(OK, HttpAuth::AUTH_SCHEME_BASIC),
       HttpAuth::AUTH_SERVER);
   auth_handler_factory.set_do_init_from_challenge(true);
 
@@ -265,7 +269,7 @@ TEST(HttpAuthControllerTest, NoExplicitCredentialsAllowed) {
   scoped_refptr<HttpAuthController> controller(
       base::MakeRefCounted<HttpAuthController>(
           HttpAuth::AUTH_SERVER, GURL("http://example.com"),
-          NetworkIsolationKey(), &dummy_auth_cache, &auth_handler_factory,
+          NetworkAnonymizationKey(), &dummy_auth_cache, &auth_handler_factory,
           host_resolver.get()));
   SSLInfo null_ssl_info;
   ASSERT_EQ(OK, controller->HandleAuthChallenge(headers, null_ssl_info, false,

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.VectorDrawable;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
@@ -52,6 +53,15 @@ public class TintedDrawable extends BitmapDrawable {
         if (mTint == tint) return;
         mTint = tint;
         updateTintColor();
+    }
+
+    /**
+     * Sets the tint color for the given Drawable for all states.
+     * @param tint The tint.
+     */
+    @Override
+    public void setTint(@ColorInt int tint) {
+        setTint(ColorStateList.valueOf(tint));
     }
 
     /**

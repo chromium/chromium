@@ -3,8 +3,6 @@
 <head>
   <title>WebRTC Automated Test</title>
   <script type="text/javascript" src="test_functions.js"></script>
-  <script type="text/javascript" src="video_detector.js"></script>
-  <script type="text/javascript" src="indexeddb.js"></script>
   <script>
   'use strict';
   var settings;
@@ -24,12 +22,20 @@
     returnToTest("capture-success");
   }
 
+  function compareErrors(expectedError) {
+    return function(error) {
+      console.log('getUserMedia error: ' + error.name, error);
+      returnToTest(error.toString() == expectedError ? "expected-error"
+                                                     : "unexpected-error");
+    }
+  }
+
   function handleError(error) {
     console.log('getUserMedia error: ' + error.name, error);
     returnToTest("capture-failure");
   }
 
-  function runGetDisplayMedia(constraints, frame) {
+  function runGetDisplayMedia(constraints, frame, expectedError) {
     if (frame == "allowedFrame" || frame == "disallowedFrame") {
       document.getElementById(frame).contentWindow.postMessage(constraints);
       // window.domAutomationController.send() called by embedded page.
@@ -37,7 +43,8 @@
     }
 
     navigator.mediaDevices.getDisplayMedia(constraints).
-      then(handleSuccess).catch(handleError);
+      then(handleSuccess).catch(expectedError ? compareErrors(expectedError)
+                                              : handleError);
   }
 
   function hasAudioTrack() {
@@ -120,7 +127,7 @@
     </tr>
     <tr>
       <td>
-        <video id="local-view" autoplay="autoplay"></video>
+        <video id="local-view" autoplay></video>
       </td>
     </tr>
   </table>

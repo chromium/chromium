@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -68,8 +68,7 @@ scoped_refptr<Hyphenation> Hyphenation::PlatformGetHyphenation(
     return nullptr;
   scoped_refptr<Hyphenation> hyphenation(
       base::AdoptRef(new HyphenationCF(locale_cf)));
-  if (locale.StartsWithIgnoringASCIICase("de"))
-    hyphenation->hyphenate_capitalized_word_ = true;
+  hyphenation->Initialize(locale);
   return hyphenation;
 }
 

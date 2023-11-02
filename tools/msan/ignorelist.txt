@@ -10,6 +10,3 @@ fun:ff_get_cpu_flags_x86
 src:*/third_party/breakpad/breakpad/src/*
 src:*/components/crash/core/app/breakpad_linux.cc
 
-# Reports from sigaltstack instrumentation. https://crbug.com/1050279
-fun:NaClSignalStackRegister
-fun:NaClSignalStackUnregister

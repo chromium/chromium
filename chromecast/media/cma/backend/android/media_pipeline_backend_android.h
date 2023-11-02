@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chromecast/public/media/media_pipeline_backend.h"
 #include "chromecast/public/media/media_pipeline_device_params.h"
@@ -29,6 +28,7 @@ class VideoDecoderNull;
 class MediaPipelineBackendAndroid : public MediaPipelineBackend {
  public:
   using RenderingDelay = AudioDecoder::RenderingDelay;
+  using AudioTrackTimestamp = AudioDecoder::AudioTrackTimestamp;
 
   explicit MediaPipelineBackendAndroid(const MediaPipelineDeviceParams& params);
 

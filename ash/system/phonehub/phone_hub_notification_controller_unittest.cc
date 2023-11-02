@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,9 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/events/event.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/message_center/message_center.h"
@@ -47,35 +49,38 @@ const char16_t kTextContent[] = u"This is a test notification";
 
 const char kNotificationCustomViewType[] = "phonehub";
 
-// Time to wait until we enable the reply button
-constexpr base::TimeDelta kWaitForEnableButton = base::Seconds(1);
+// Max notification age for it to be shown heads-up (marked as MAX_PRIORITY)
+constexpr base::TimeDelta kMaxRecentNotificationAge = base::Seconds(15);
 
-chromeos::phonehub::Notification CreateNotification(int64_t id) {
-  return chromeos::phonehub::Notification(
+// Time to wait until we enable the reply button
+constexpr base::TimeDelta kInlineReplyDisableTime = base::Seconds(1);
+
+phonehub::Notification CreateNotification(int64_t id) {
+  return phonehub::Notification(
       id,
-      chromeos::phonehub::Notification::AppMetadata(kAppName, kPackageName,
-                                                    /*icon=*/gfx::Image(),
-                                                    kUserId),
-      base::Time::Now(), chromeos::phonehub::Notification::Importance::kDefault,
-      chromeos::phonehub::Notification::Category::kConversation,
-      {{chromeos::phonehub::Notification::ActionType::kInlineReply,
+      phonehub::Notification::AppMetadata(
+          kAppName, kPackageName, /*icon=*/gfx::Image(),
+          /*icon_color=*/absl::nullopt, /*icon_is_monochrome =*/true, kUserId),
+      base::Time::Now(), phonehub::Notification::Importance::kDefault,
+      phonehub::Notification::Category::kConversation,
+      {{phonehub::Notification::ActionType::kInlineReply,
         /*action_id=*/0}},
-      chromeos::phonehub::Notification::InteractionBehavior::kOpenable, kTitle,
+      phonehub::Notification::InteractionBehavior::kOpenable, kTitle,
       kTextContent);
 }
 
-chromeos::phonehub::Notification CreateIncomingCallNotification(int64_t id) {
-  return chromeos::phonehub::Notification(
+phonehub::Notification CreateIncomingCallNotification(int64_t id) {
+  return phonehub::Notification(
       id,
-      chromeos::phonehub::Notification::AppMetadata(kAppName, kPackageName,
-                                                    /*icon=*/gfx::Image(),
-                                                    kUserId),
-      base::Time::Now(), chromeos::phonehub::Notification::Importance::kDefault,
-      chromeos::phonehub::Notification::Category::kIncomingCall,
-      {{chromeos::phonehub::Notification::ActionType::kInlineReply,
+      phonehub::Notification::AppMetadata(
+          kAppName, kPackageName,
+          /*icon=*/gfx::Image(), /*icon_color =*/absl::nullopt,
+          /*icon_is_monochrome =*/true, kUserId),
+      base::Time::Now(), phonehub::Notification::Importance::kDefault,
+      phonehub::Notification::Category::kIncomingCall,
+      {{phonehub::Notification::ActionType::kInlineReply,
         /*action_id=*/0}},
-      chromeos::phonehub::Notification::InteractionBehavior::kNone, kTitle,
-      kTextContent);
+      phonehub::Notification::InteractionBehavior::kNone, kTitle, kTextContent);
 }
 
 class PhoneHubNotificationControllerTest : public AshTestBase {
@@ -87,13 +92,17 @@ class PhoneHubNotificationControllerTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     feature_list_.InitWithFeatures(
-        {chromeos::features::kPhoneHub, chromeos::features::kEcheSWA}, {});
+        {chromeos::features::kPhoneHub, chromeos::features::kEcheSWA,
+         chromeos::features::kPhoneHubCameraRoll,
+         chromeos::features::kPhoneHubMonochromeNotificationIcons,
+         chromeos::features::kNotificationsRefresh},
+        {});
     AshTestBase::SetUp();
 
     feature_status_provider_ =
         phone_hub_manager_.fake_feature_status_provider();
     feature_status_provider_->SetStatus(
-        chromeos::phonehub::FeatureStatus::kEnabledAndConnected);
+        phonehub::FeatureStatus::kEnabledAndConnected);
 
     message_center_ = message_center::MessageCenter::Get();
 
@@ -117,11 +126,11 @@ class PhoneHubNotificationControllerTest : public AshTestBase {
  protected:
   base::test::ScopedFeatureList feature_list_;
   message_center::MessageCenter* message_center_;
-  chromeos::phonehub::FakePhoneHubManager phone_hub_manager_;
-  chromeos::phonehub::FakeNotificationManager* notification_manager_;
-  chromeos::phonehub::FakeFeatureStatusProvider* feature_status_provider_;
+  phonehub::FakePhoneHubManager phone_hub_manager_;
+  phonehub::FakeNotificationManager* notification_manager_;
+  phonehub::FakeFeatureStatusProvider* feature_status_provider_;
   PhoneHubNotificationController* controller_;
-  base::flat_set<chromeos::phonehub::Notification> fake_notifications_;
+  base::flat_set<phonehub::Notification> fake_notifications_;
 };
 
 TEST_F(PhoneHubNotificationControllerTest, AddNotifications) {
@@ -150,15 +159,16 @@ TEST_F(PhoneHubNotificationControllerTest, UpdateNotifications) {
 
   std::u16string kNewTitle = u"New title";
   std::u16string kNewTextContent = u"New text content";
-  chromeos::phonehub::Notification updated_notification(
+  phonehub::Notification updated_notification(
       kPhoneHubNotificationId1,
-      chromeos::phonehub::Notification::AppMetadata(kAppName, kPackageName,
-                                                    /*icon=*/gfx::Image(),
-                                                    kUserId),
-      base::Time::Now(), chromeos::phonehub::Notification::Importance::kDefault,
-      chromeos::phonehub::Notification::Category::kConversation,
-      {{chromeos::phonehub::Notification::ActionType::kInlineReply, 0}},
-      chromeos::phonehub::Notification::InteractionBehavior::kNone, kNewTitle,
+      phonehub::Notification::AppMetadata(
+          kAppName, kPackageName,
+          /*icon=*/gfx::Image(), /*icon_color =*/absl::nullopt,
+          /*icon_is_monochrome =*/true, kUserId),
+      base::Time::Now(), phonehub::Notification::Importance::kDefault,
+      phonehub::Notification::Category::kConversation,
+      {{phonehub::Notification::ActionType::kInlineReply, 0}},
+      phonehub::Notification::InteractionBehavior::kNone, kNewTitle,
       kNewTextContent);
 
   notification_manager_->SetNotification(updated_notification);
@@ -166,6 +176,58 @@ TEST_F(PhoneHubNotificationControllerTest, UpdateNotifications) {
   notification = FindNotification(kCrOSNotificationId1);
   EXPECT_EQ(kNewTitle, notification->title());
   EXPECT_EQ(kNewTextContent, notification->message());
+}
+
+TEST_F(PhoneHubNotificationControllerTest, UpdateNotificationsNewIconType) {
+  EXPECT_FALSE(message_center_->NotificationCount());
+  notification_manager_->SetNotificationsInternal(fake_notifications_);
+  EXPECT_EQ(4u, message_center_->NotificationCount());
+
+  auto rich_notification_data =
+      FindNotification(kCrOSNotificationId1)->rich_notification_data();
+  EXPECT_FALSE(rich_notification_data.accent_color.has_value());
+  EXPECT_TRUE(rich_notification_data.ignore_accent_color_for_small_image);
+  EXPECT_FALSE(rich_notification_data.ignore_accent_color_for_text);
+  EXPECT_TRUE(rich_notification_data.small_image_needs_additional_masking);
+
+  SkColor iconColor = SkColorSetRGB(0x12, 0x34, 0x56);
+  phonehub::Notification updated_notification(
+      kPhoneHubNotificationId1,
+      phonehub::Notification::AppMetadata(
+          kAppName, kPackageName, /*icon=*/gfx::Image(), iconColor,
+          /*icon_is_monochrome =*/true, kUserId),
+      base::Time::Now(), phonehub::Notification::Importance::kDefault,
+      phonehub::Notification::Category::kConversation,
+      {{phonehub::Notification::ActionType::kInlineReply, 0}},
+      phonehub::Notification::InteractionBehavior::kNone, kTitle, kTextContent);
+  notification_manager_->SetNotification(updated_notification);
+
+  rich_notification_data =
+      FindNotification(kCrOSNotificationId1)->rich_notification_data();
+  EXPECT_TRUE(rich_notification_data.accent_color.has_value());
+  EXPECT_EQ(iconColor, rich_notification_data.accent_color);
+  EXPECT_TRUE(rich_notification_data.ignore_accent_color_for_small_image);
+  EXPECT_FALSE(rich_notification_data.ignore_accent_color_for_text);
+  EXPECT_TRUE(rich_notification_data.small_image_needs_additional_masking);
+
+  updated_notification = phonehub::Notification(
+      kPhoneHubNotificationId1,
+      phonehub::Notification::AppMetadata(
+          kAppName, kPackageName,
+          /*icon=*/gfx::Image(), /*icon_color =*/absl::nullopt,
+          /*icon_is_monochrome =*/false, kUserId),
+      base::Time::Now(), phonehub::Notification::Importance::kDefault,
+      phonehub::Notification::Category::kConversation,
+      {{phonehub::Notification::ActionType::kInlineReply, 0}},
+      phonehub::Notification::InteractionBehavior::kNone, kTitle, kTextContent);
+  notification_manager_->SetNotification(updated_notification);
+
+  rich_notification_data =
+      FindNotification(kCrOSNotificationId1)->rich_notification_data();
+  EXPECT_FALSE(rich_notification_data.accent_color.has_value());
+  EXPECT_TRUE(rich_notification_data.ignore_accent_color_for_small_image);
+  EXPECT_FALSE(rich_notification_data.ignore_accent_color_for_text);
+  EXPECT_FALSE(rich_notification_data.small_image_needs_additional_masking);
 }
 
 TEST_F(PhoneHubNotificationControllerTest, RemoveNotifications) {
@@ -233,7 +295,7 @@ TEST_F(PhoneHubNotificationControllerTest, InlineReply) {
 }
 
 TEST_F(PhoneHubNotificationControllerTest, HandleNotificationClick) {
-  chromeos::phonehub::FakeNotificationInteractionHandler* handler =
+  phonehub::FakeNotificationInteractionHandler* handler =
       phone_hub_manager_.fake_notification_interaction_handler();
   notification_manager_->SetNotificationsInternal(fake_notifications_);
   message_center_->ClickOnNotification(kCrOSNotificationId0);
@@ -252,7 +314,7 @@ TEST_F(PhoneHubNotificationControllerTest, ClickSettings) {
 }
 
 TEST_F(PhoneHubNotificationControllerTest, NotificationDataAndImages) {
-  base::Time timestamp = base::Time::FromJsTime(12345);
+  base::Time timestamp = base::Time::Now();
 
   SkBitmap icon_bitmap;
   icon_bitmap.allocN32Pixels(32, 32);
@@ -271,15 +333,16 @@ TEST_F(PhoneHubNotificationControllerTest, NotificationDataAndImages) {
   const std::u16string expected_phone_name = u"Phone name";
   phone_hub_manager_.mutable_phone_model()->SetPhoneName(expected_phone_name);
 
-  chromeos::phonehub::Notification fake_notification(
+  phonehub::Notification fake_notification(
       kPhoneHubNotificationId0,
-      chromeos::phonehub::Notification::AppMetadata(kAppName, kPackageName,
-                                                    icon, kUserId),
-      timestamp, chromeos::phonehub::Notification::Importance::kHigh,
-      chromeos::phonehub::Notification::Category::kConversation,
-      {{chromeos::phonehub::Notification::ActionType::kInlineReply, 0}},
-      chromeos::phonehub::Notification::InteractionBehavior::kNone, kTitle,
-      kTextContent, shared_image, contact_image);
+      phonehub::Notification::AppMetadata(
+          kAppName, kPackageName, icon, /*icon_color =*/absl::nullopt,
+          /*icon_is_monochrome =*/true, kUserId),
+      timestamp, phonehub::Notification::Importance::kHigh,
+      phonehub::Notification::Category::kConversation,
+      {{phonehub::Notification::ActionType::kInlineReply, 0}},
+      phonehub::Notification::InteractionBehavior::kNone, kTitle, kTextContent,
+      shared_image, contact_image);
 
   notification_manager_->SetNotification(fake_notification);
 
@@ -297,7 +360,8 @@ TEST_F(PhoneHubNotificationControllerTest, NotificationDataAndImages) {
 
   // Note that there's a slight discrepancy between the PhoneHub and
   // notification image naming.
-  EXPECT_EQ(contact_image, cros_notification->icon());
+  EXPECT_TRUE(contact_image.AsImageSkia().BackedBySameObjectAs(
+      cros_notification->icon().Rasterize(nullptr)));
   EXPECT_EQ(icon, cros_notification->small_image());
   EXPECT_EQ(shared_image, cros_notification->image());
 }
@@ -351,7 +415,7 @@ TEST_F(PhoneHubNotificationControllerTest, ReplyBrieflyDisabled) {
   EXPECT_FALSE(reply_button->GetEnabled());
 
   // After a brief moment, it should be enabled.
-  task_environment()->FastForwardBy(kWaitForEnableButton);
+  task_environment()->FastForwardBy(kInlineReplyDisableTime);
   EXPECT_TRUE(reply_button->GetEnabled());
 }
 
@@ -371,37 +435,29 @@ TEST_F(PhoneHubNotificationControllerTest, CustomActionRowExpanded) {
   EXPECT_TRUE(notification_view->IsManuallyExpandedOrCollapsed());
 }
 
-TEST_F(PhoneHubNotificationControllerTest, DoNotReshowPopupNotification) {
-  chromeos::phonehub::Notification fake_notification(
+TEST_F(PhoneHubNotificationControllerTest, DoNotShowOldNotification) {
+  // Subtract a few extra seconds as a preemptive measure against test flakiness
+  base::Time old_timestamp =
+      (base::Time::Now() - kMaxRecentNotificationAge) - base::Seconds(5);
+  phonehub::Notification fake_notification(
       kPhoneHubNotificationId0,
-      chromeos::phonehub::Notification::AppMetadata(kAppName, kPackageName,
-                                                    /*icon=*/gfx::Image(),
-                                                    kUserId),
-      base::Time::Now(), chromeos::phonehub::Notification::Importance::kHigh,
-      chromeos::phonehub::Notification::Category::kConversation,
-      {{chromeos::phonehub::Notification::ActionType::kInlineReply, 0}},
-      chromeos::phonehub::Notification::InteractionBehavior::kNone, kTitle,
-      kTextContent);
+      phonehub::Notification::AppMetadata(
+          kAppName, kPackageName,
+          /*icon=*/gfx::Image(), /*icon_color =*/absl::nullopt,
+          /*icon_is_monochrome =*/true, kUserId),
+      old_timestamp, phonehub::Notification::Importance::kHigh,
+      phonehub::Notification::Category::kConversation,
+      {{phonehub::Notification::ActionType::kInlineReply, 0}},
+      phonehub::Notification::InteractionBehavior::kNone, kTitle, kTextContent);
 
-  // Adding the notification for the first time shows a pop-up (MAX_PRIORITY).
+  // Adding an old notification does not show a pop-up (LOW_PRIORITY).
   notification_manager_->SetNotification(fake_notification);
   auto* cros_notification = FindNotification(kCrOSNotificationId0);
   ASSERT_TRUE(cros_notification);
-  EXPECT_EQ(message_center::MAX_PRIORITY, cros_notification->priority());
+  EXPECT_EQ(message_center::LOW_PRIORITY, cros_notification->priority());
 
-  feature_status_provider_->SetStatus(
-      chromeos::phonehub::FeatureStatus::kEnabledButDisconnected);
-  feature_status_provider_->SetStatus(
-      chromeos::phonehub::FeatureStatus::kEnabledAndConnecting);
-  feature_status_provider_->SetStatus(
-      chromeos::phonehub::FeatureStatus::kUnavailableBluetoothOff);
-  feature_status_provider_->SetStatus(
-      chromeos::phonehub::FeatureStatus::kLockOrSuspended);
-  feature_status_provider_->SetStatus(
-      chromeos::phonehub::FeatureStatus::kEnabledAndConnected);
-
-  // Removing and readding the notification (e.g. across disconnects) should
-  // downgrade the priority so it doesn't pop-up again.
+  // Removing and readding the old notification (e.g. across disconnects) should
+  // not show a pop-up either.
   notification_manager_->RemoveNotification(kPhoneHubNotificationId0);
   ASSERT_FALSE(FindNotification(kCrOSNotificationId0));
   notification_manager_->SetNotification(fake_notification);
@@ -409,54 +465,50 @@ TEST_F(PhoneHubNotificationControllerTest, DoNotReshowPopupNotification) {
   ASSERT_TRUE(cros_notification);
   EXPECT_EQ(message_center::LOW_PRIORITY, cros_notification->priority());
 
-  // Disable the feature.
-  feature_status_provider_->SetStatus(
-      chromeos::phonehub::FeatureStatus::kDisabled);
-  notification_manager_->RemoveNotification(kPhoneHubNotificationId0);
-  ASSERT_FALSE(FindNotification(kCrOSNotificationId0));
-
-  // Reconnect and notification should be reshown as a pop-up.
-  feature_status_provider_->SetStatus(
-      chromeos::phonehub::FeatureStatus::kEnabledAndConnected);
-  notification_manager_->SetNotification(fake_notification);
-  cros_notification = FindNotification(kCrOSNotificationId0);
-  ASSERT_TRUE(cros_notification);
-  EXPECT_EQ(message_center::MAX_PRIORITY, cros_notification->priority());
-
-  // Update the notification with some new text, but keep the notification ID
-  // the same.
-  chromeos::phonehub::Notification modified_fake_notification(
+  // Update the notification with some new text and a recent timestamp, but keep
+  // the notification ID the same. Add a few extra seconds as a preemptive
+  // measure against test flakiness.
+  phonehub::Notification modified_fake_notification(
       kPhoneHubNotificationId0,
-      chromeos::phonehub::Notification::AppMetadata(kAppName, kPackageName,
-                                                    /*icon=*/gfx::Image(),
-                                                    kUserId),
-      base::Time::Now(), chromeos::phonehub::Notification::Importance::kHigh,
-      chromeos::phonehub::Notification::Category::kConversation,
-      {{chromeos::phonehub::Notification::ActionType::kInlineReply, 0}},
-      chromeos::phonehub::Notification::InteractionBehavior::kNone, kTitle,
-      u"New text");
+      phonehub::Notification::AppMetadata(
+          kAppName, kPackageName,
+          /*icon=*/gfx::Image(), /*icon_color =*/absl::nullopt,
+          /*icon_is_monochrome =*/true, kUserId),
+      base::Time::Now(), phonehub::Notification::Importance::kHigh,
+      phonehub::Notification::Category::kConversation,
+      {{phonehub::Notification::ActionType::kInlineReply, 0}},
+      phonehub::Notification::InteractionBehavior::kNone, kTitle, u"New text");
 
-  // Update the existingt notification; the priority should be MAX_PRIORITY, and
+  // Update the existing notification; the priority should be MAX_PRIORITY, and
   // renotify should be true.
   notification_manager_->SetNotification(modified_fake_notification);
   cros_notification = FindNotification(kCrOSNotificationId0);
   ASSERT_TRUE(cros_notification);
   EXPECT_EQ(message_center::MAX_PRIORITY, cros_notification->priority());
   EXPECT_TRUE(cros_notification->renotify());
+
+  // Removing and readding the same recent notification (e.g. across
+  // disconnects) should still show a pop-up.
+  notification_manager_->RemoveNotification(kPhoneHubNotificationId0);
+  ASSERT_FALSE(FindNotification(kCrOSNotificationId0));
+  notification_manager_->SetNotification(modified_fake_notification);
+  cros_notification = FindNotification(kCrOSNotificationId0);
+  ASSERT_TRUE(cros_notification);
+  EXPECT_EQ(message_center::MAX_PRIORITY, cros_notification->priority());
 }
 
 // Regression test for https://crbug.com/1165646.
 TEST_F(PhoneHubNotificationControllerTest, MinPriorityNotification) {
-  chromeos::phonehub::Notification fake_notification(
+  phonehub::Notification fake_notification(
       kPhoneHubNotificationId0,
-      chromeos::phonehub::Notification::AppMetadata(kAppName, kPackageName,
-                                                    /*icon=*/gfx::Image(),
-                                                    kUserId),
-      base::Time::Now(), chromeos::phonehub::Notification::Importance::kMin,
-      chromeos::phonehub::Notification::Category::kConversation,
-      {{chromeos::phonehub::Notification::ActionType::kInlineReply, 0}},
-      chromeos::phonehub::Notification::InteractionBehavior::kNone, kTitle,
-      kTextContent);
+      phonehub::Notification::AppMetadata(
+          kAppName, kPackageName,
+          /*icon=*/gfx::Image(), /*icon_color =*/absl::nullopt,
+          /*icon_is_monochrome =*/true, kUserId),
+      base::Time::Now(), phonehub::Notification::Importance::kMin,
+      phonehub::Notification::Category::kConversation,
+      {{phonehub::Notification::ActionType::kInlineReply, 0}},
+      phonehub::Notification::InteractionBehavior::kNone, kTitle, kTextContent);
 
   // Adding the notification for the first time shows a pop-up (MAX_PRIORITY),
   // even though the notification itself is Importance::kMin.
@@ -464,6 +516,39 @@ TEST_F(PhoneHubNotificationControllerTest, MinPriorityNotification) {
   auto* cros_notification = FindNotification(kCrOSNotificationId0);
   ASSERT_TRUE(cros_notification);
   EXPECT_EQ(message_center::MAX_PRIORITY, cros_notification->priority());
+}
+
+TEST_F(PhoneHubNotificationControllerTest,
+       MonochromeIconNotificationRefreshFeatureOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kPhoneHub,
+                            chromeos::features::kEcheSWA,
+                            chromeos::features::kPhoneHubCameraRoll},
+      /*disabled_features=*/{
+          chromeos::features::kPhoneHubMonochromeNotificationIcons,
+          chromeos::features::kNotificationsRefresh,
+          chromeos::features::kDarkLightMode});
+  notification_manager_->SetNotificationsInternal(fake_notifications_);
+
+  phonehub::Notification updated_notification(
+      kPhoneHubNotificationId1,
+      phonehub::Notification::AppMetadata(
+          kAppName, kPackageName,
+          /*icon=*/gfx::Image(), /*icon_color =*/absl::nullopt,
+          /*icon_is_monochrome =*/true, kUserId),
+      base::Time::Now(), phonehub::Notification::Importance::kDefault,
+      phonehub::Notification::Category::kConversation,
+      {{phonehub::Notification::ActionType::kInlineReply, 0}},
+      phonehub::Notification::InteractionBehavior::kNone, kTitle, kTextContent);
+  notification_manager_->SetNotification(updated_notification);
+
+  auto rich_notification_data =
+      FindNotification(kCrOSNotificationId1)->rich_notification_data();
+  EXPECT_FALSE(rich_notification_data.accent_color.has_value());
+  EXPECT_FALSE(rich_notification_data.ignore_accent_color_for_small_image);
+  EXPECT_TRUE(rich_notification_data.ignore_accent_color_for_text);
+  EXPECT_FALSE(rich_notification_data.small_image_needs_additional_masking);
 }
 
 }  // namespace ash

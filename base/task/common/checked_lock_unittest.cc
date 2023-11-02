@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include <stdlib.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/gtest_util.h"
@@ -46,7 +46,7 @@ class BasicLockTestThread : public SimpleThread {
     }
   }
 
-  CheckedLock* const lock_;
+  const raw_ptr<CheckedLock> lock_;
   int acquired_;
 };
 
@@ -77,7 +77,7 @@ class BasicLockAcquireAndWaitThread : public SimpleThread {
     lock_->Release();
   }
 
-  CheckedLock* const lock_;
+  const raw_ptr<CheckedLock> lock_;
   WaitableEvent lock_acquire_event_;
   WaitableEvent main_thread_continue_event_;
 };

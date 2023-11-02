@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "net/base/completion_once_callback.h"
@@ -69,7 +69,7 @@ class WebSocket {
   base::ThreadChecker thread_checker_;
 
   GURL url_;
-  WebSocketListener* listener_;
+  raw_ptr<WebSocketListener> listener_;
   State state_;
   std::unique_ptr<net::TCPClientSocket> socket_;
 

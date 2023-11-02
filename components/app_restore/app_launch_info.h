@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,9 @@
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/app_restore/tab_group_info.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
@@ -21,20 +23,20 @@ namespace app_restore {
 struct COMPONENT_EXPORT(APP_RESTORE) AppLaunchInfo {
   AppLaunchInfo(const std::string& app_id,
                 int32_t window_id,
-                apps::mojom::LaunchContainer container,
+                apps::LaunchContainer container,
                 WindowOpenDisposition disposition,
                 int64_t display_id,
                 std::vector<base::FilePath> launch_files,
-                apps::mojom::IntentPtr intent);
+                apps::IntentPtr intent);
 
   AppLaunchInfo(const std::string& app_id, int32_t window_id);
 
   AppLaunchInfo(const std::string& app_id,
-                apps::mojom::LaunchContainer container,
+                apps::LaunchContainer container,
                 WindowOpenDisposition disposition,
                 int64_t display_id,
                 std::vector<base::FilePath> launch_files,
-                apps::mojom::IntentPtr intent);
+                apps::IntentPtr intent);
 
   AppLaunchInfo(const std::string& app_id,
                 int32_t event_flags,
@@ -43,7 +45,7 @@ struct COMPONENT_EXPORT(APP_RESTORE) AppLaunchInfo {
 
   AppLaunchInfo(const std::string& app_id,
                 int32_t event_flags,
-                apps::mojom::IntentPtr intent,
+                apps::IntentPtr intent,
                 int32_t arc_session_id,
                 int64_t display_id);
 
@@ -56,20 +58,28 @@ struct COMPONENT_EXPORT(APP_RESTORE) AppLaunchInfo {
 
   ~AppLaunchInfo();
 
+  // TODO(1326250): Remove optional wrappers around vector fields.
   std::string app_id;
   absl::optional<int32_t> window_id;
   absl::optional<int32_t> event_flag;
   absl::optional<int32_t> container;
   absl::optional<int32_t> disposition;
+  absl::optional<GURL> override_url;
   absl::optional<int32_t> arc_session_id;
   absl::optional<int64_t> display_id;
   absl::optional<std::string> handler_id;
   absl::optional<std::vector<GURL>> urls;
   absl::optional<int32_t> active_tab_index;
+  absl::optional<int32_t> first_non_pinned_tab_index;
   absl::optional<std::vector<base::FilePath>> file_paths;
-  absl::optional<apps::mojom::IntentPtr> intent;
+  apps::IntentPtr intent = nullptr;
   absl::optional<bool> app_type_browser;
   absl::optional<std::string> app_name;
+  // For Browsers only, represents tab groups associated with this browser
+  // instance if there are any. This is only used in Desks Storage, tab groups
+  // in full restore are persistsed by sessions. This field is not converted to
+  // base::Value in base value conversions.
+  absl::optional<std::vector<TabGroupInfo>> tab_group_infos;
 };
 
 }  // namespace app_restore

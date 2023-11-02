@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ namespace zucchini {
 
 Abs32GapFinder::Abs32GapFinder(ConstBufferView image,
                                ConstBufferView region,
-                               const std::vector<offset_t>& abs32_locations,
+                               const std::deque<offset_t>& abs32_locations,
                                size_t abs32_width)
     : base_(image.begin()),
       region_end_(region.end()),

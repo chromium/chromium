@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,53 +25,53 @@ using base::sequence_manager::internal::TaskQueueImpl;
 
 using perfetto::protos::pbzero::ChromeTrackEvent;
 using perfetto::protos::pbzero::RendererMainThreadTaskExecution;
-
+using QueueName = ::perfetto::protos::pbzero::SequenceManagerTask::QueueName;
 // static
-const char* MainThreadTaskQueue::NameForQueueType(
+QueueName MainThreadTaskQueue::NameForQueueType(
     MainThreadTaskQueue::QueueType queue_type) {
   switch (queue_type) {
     case MainThreadTaskQueue::QueueType::kControl:
-      return "control_tq";
+      return QueueName::CONTROL_TQ;
     case MainThreadTaskQueue::QueueType::kDefault:
-      return "default_tq";
+      return QueueName::DEFAULT_TQ;
     case MainThreadTaskQueue::QueueType::kFrameLoading:
-      return "frame_loading_tq";
+      return QueueName::FRAME_LOADING_TQ;
     case MainThreadTaskQueue::QueueType::kFrameThrottleable:
-      return "frame_throttleable_tq";
+      return QueueName::FRAME_THROTTLEABLE_TQ;
     case MainThreadTaskQueue::QueueType::kFrameDeferrable:
-      return "frame_deferrable_tq";
+      return QueueName::FRAME_DEFERRABLE_TQ;
     case MainThreadTaskQueue::QueueType::kFramePausable:
-      return "frame_pausable_tq";
+      return QueueName::FRAME_PAUSABLE_TQ;
     case MainThreadTaskQueue::QueueType::kFrameUnpausable:
-      return "frame_unpausable_tq";
+      return QueueName::FRAME_UNPAUSABLE_TQ;
     case MainThreadTaskQueue::QueueType::kCompositor:
-      return "compositor_tq";
+      return QueueName::COMPOSITOR_TQ;
     case MainThreadTaskQueue::QueueType::kIdle:
-      return "idle_tq";
+      return QueueName::IDLE_TQ;
     case MainThreadTaskQueue::QueueType::kTest:
-      return "test_tq";
+      return QueueName::TEST_TQ;
     case MainThreadTaskQueue::QueueType::kFrameLoadingControl:
-      return "frame_loading_control_tq";
+      return QueueName::FRAME_LOADING_CONTROL_TQ;
     case MainThreadTaskQueue::QueueType::kV8:
-      return "v8_tq";
+      return QueueName::V8_TQ;
     case MainThreadTaskQueue::QueueType::kInput:
-      return "input_tq";
+      return QueueName::INPUT_TQ;
     case MainThreadTaskQueue::QueueType::kDetached:
-      return "detached_tq";
+      return QueueName::DETACHED_TQ;
     case MainThreadTaskQueue::QueueType::kOther:
-      return "other_tq";
+      return QueueName::OTHER_TQ;
     case MainThreadTaskQueue::QueueType::kWebScheduling:
-      return "web_scheduling_tq";
+      return QueueName::WEB_SCHEDULING_TQ;
     case MainThreadTaskQueue::QueueType::kNonWaking:
-      return "non_waking_tq";
+      return QueueName::NON_WAKING_TQ;
     case MainThreadTaskQueue::QueueType::kIPCTrackingForCachedPages:
-      return "ipc_tracking_for_cached_pages_tq";
+      return QueueName::IPC_TRACKING_FOR_CACHED_PAGES_TQ;
     case MainThreadTaskQueue::QueueType::kCount:
       NOTREACHED();
-      return nullptr;
+      return QueueName::UNKNOWN_TQ;
   }
   NOTREACHED();
-  return nullptr;
+  return QueueName::UNKNOWN_TQ;
 }
 
 // static
@@ -118,6 +118,8 @@ MainThreadTaskQueue::MainThreadTaskQueue(
       main_thread_scheduler_(main_thread_scheduler),
       agent_group_scheduler_(params.agent_group_scheduler),
       frame_scheduler_(params.frame_scheduler) {
+  // Needed for sorting in TaskQueueVoterMap.
+  recordreplay::RegisterPointer("MainThreadTaskQueue", this);
   task_queue_ = base::MakeRefCounted<TaskQueue>(std::move(impl), spec);
   // Throttling needs |should_notify_observers| to get task timing.
   DCHECK(!params.queue_traits.can_be_throttled || spec.should_notify_observers)
@@ -142,6 +144,8 @@ MainThreadTaskQueue::MainThreadTaskQueue(
 }
 
 MainThreadTaskQueue::~MainThreadTaskQueue() {
+  recordreplay::UnregisterPointer(this);
+
   DCHECK(!wake_up_budget_pool_);
 }
 
@@ -155,7 +159,7 @@ void MainThreadTaskQueue::OnTaskStarted(
 void MainThreadTaskQueue::OnTaskCompleted(
     const base::sequence_manager::Task& task,
     TaskQueue::TaskTiming* task_timing,
-    base::sequence_manager::LazyNow* lazy_now) {
+    base::LazyNow* lazy_now) {
   if (main_thread_scheduler_) {
     main_thread_scheduler_->OnTaskCompleted(weak_ptr_factory_.GetWeakPtr(),
                                             task, task_timing, lazy_now);
@@ -199,8 +203,7 @@ void MainThreadTaskQueue::DetachFromMainThreadScheduler() {
   task_queue_->SetOnTaskCompletedHandler(
       base::BindRepeating(&MainThreadSchedulerImpl::OnTaskCompleted,
                           main_thread_scheduler_->GetWeakPtr(), nullptr));
-  task_queue_->SetOnTaskPostedHandler(
-      internal::TaskQueueImpl::OnTaskPostedHandler());
+  on_ipc_task_posted_callback_handle_.reset();
   task_queue_->SetTaskExecutionTraceLogger(
       internal::TaskQueueImpl::TaskExecutionTraceLogger());
 
@@ -210,18 +213,14 @@ void MainThreadTaskQueue::DetachFromMainThreadScheduler() {
 void MainThreadTaskQueue::SetOnIPCTaskPosted(
     base::RepeatingCallback<void(const base::sequence_manager::Task&)>
         on_ipc_task_posted_callback) {
-  if (task_queue_->HasImpl()) {
-    // We use the frame_scheduler_ to track metrics so as to ensure that metrics
-    // are not tied to individual task queues.
-    task_queue_->SetOnTaskPostedHandler(on_ipc_task_posted_callback);
-  }
+  // We use the frame_scheduler_ to track metrics so as to ensure that metrics
+  // are not tied to individual task queues.
+  on_ipc_task_posted_callback_handle_ = task_queue_->AddOnTaskPostedHandler(
+      std::move(on_ipc_task_posted_callback));
 }
 
 void MainThreadTaskQueue::DetachOnIPCTaskPostedWhileInBackForwardCache() {
-  if (task_queue_->HasImpl()) {
-    task_queue_->SetOnTaskPostedHandler(
-        internal::TaskQueueImpl::OnTaskPostedHandler());
-  }
+  on_ipc_task_posted_callback_handle_.reset();
 }
 
 void MainThreadTaskQueue::ShutdownTaskQueue() {
@@ -262,16 +261,6 @@ FrameSchedulerImpl* MainThreadTaskQueue::GetFrameScheduler() const {
 void MainThreadTaskQueue::SetFrameSchedulerForTest(
     FrameSchedulerImpl* frame_scheduler) {
   frame_scheduler_ = frame_scheduler;
-}
-
-void MainThreadTaskQueue::SetNetRequestPriority(
-    net::RequestPriority net_request_priority) {
-  net_request_priority_ = net_request_priority;
-}
-
-absl::optional<net::RequestPriority> MainThreadTaskQueue::net_request_priority()
-    const {
-  return net_request_priority_;
 }
 
 void MainThreadTaskQueue::SetWebSchedulingPriority(

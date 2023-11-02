@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,8 @@
 
 #include "base/compiler_specific.h"
 #include "base/environment.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/notreached.h"
 #include "base/observer_list.h"
 #include "net/base/net_export.h"
 #include "net/base/proxy_server.h"
@@ -41,12 +41,12 @@ class NET_EXPORT_PRIVATE ProxyConfigServiceLinux : public ProxyConfigService {
     // files. Defined here so unit tests can construct worst-case inputs.
     static const size_t BUFFER_SIZE = 512;
 
-    SettingGetter() {}
+    SettingGetter() = default;
 
     SettingGetter(const SettingGetter&) = delete;
     SettingGetter& operator=(const SettingGetter&) = delete;
 
-    virtual ~SettingGetter() {}
+    virtual ~SettingGetter() = default;
 
     // Initializes the class: obtains a gconf/gsettings client, or simulates
     // one, in the concrete implementations. Returns true on success. Must be
@@ -290,7 +290,7 @@ class NET_EXPORT_PRIVATE ProxyConfigServiceLinux : public ProxyConfigService {
       const NetworkTrafficAnnotationTag& traffic_annotation);
   ProxyConfigServiceLinux(
       std::unique_ptr<base::Environment> env_var_getter,
-      SettingGetter* setting_getter,  // TODO(eroman): Use std::unique_ptr.
+      std::unique_ptr<SettingGetter> setting_getter,
       const NetworkTrafficAnnotationTag& traffic_annotation);
 
   ProxyConfigServiceLinux(const ProxyConfigServiceLinux&) = delete;

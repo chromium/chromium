@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -118,7 +118,10 @@ class BluetoothRemoteGATTCharacteristic final
     Member<ScriptPromiseResolver> resolver;  // Possibly null.
   };
 
-  BluetoothRemoteGATTServer* GetGatt() { return service_->device()->gatt(); }
+  BluetoothRemoteGATTServer* GetGatt() const {
+    return service_->device()->gatt();
+  }
+  Bluetooth* GetBluetooth() const { return device_->GetBluetooth(); }
 
   void ReadValueCallback(ScriptPromiseResolver*,
                          mojom::blink::WebBluetoothResult,

@@ -1,30 +1,46 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_MEDIA_APP_MEDIA_WEB_APP_INFO_H_
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_MEDIA_APP_MEDIA_WEB_APP_INFO_H_
 
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
+#include <string>
 
-struct WebApplicationInfo;
+#include "base/containers/flat_map.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 
-class MediaSystemAppDelegate : public web_app::SystemWebAppDelegate {
+struct WebAppInstallInfo;
+
+class MediaSystemAppDelegate : public ash::SystemWebAppDelegate {
  public:
   explicit MediaSystemAppDelegate(Profile* profile);
 
-  // web_app::SystemWebAppDelegate overrides:
-  std::unique_ptr<WebApplicationInfo> GetWebAppInfo() const override;
-  bool ShouldIncludeLaunchDirectory() const override;
+  // ash::SystemWebAppDelegate overrides:
+  std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
   bool ShouldShowInLauncher() const override;
   bool ShouldCaptureNavigations() const override;
   bool ShouldShowInSearch() const override;
   bool ShouldShowNewWindowMenuOption() const override;
   bool ShouldReuseExistingWindow() const override;
+  bool ShouldHandleFileOpenIntents() const override;
+  base::FilePath GetLaunchDirectory(
+      const apps::AppLaunchParams& params) const override;
+  Browser* LaunchAndNavigateSystemWebApp(
+      Profile* profile,
+      web_app::WebAppProvider* provider,
+      const GURL& url,
+      const apps::AppLaunchParams& params) const override;
 };
 
-// Return a WebApplicationInfo used to install the app.
-std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForMediaWebApp();
+// Return a WebAppInstallInfo used to install the app.
+std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForMediaWebApp();
+
+// Returns a snapshot of the product-specific data that is attached to HaTS for
+// the MediaApp.
+base::flat_map<std::string, std::string> HatsProductSpecificDataForMediaApp();
+
+void SetPhotosExperienceSurveyTriggerAppIdForTesting(const char* app_id);
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_MEDIA_APP_MEDIA_WEB_APP_INFO_H_

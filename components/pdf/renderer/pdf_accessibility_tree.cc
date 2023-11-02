@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,26 +7,39 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/bind.h"
+#include "base/callback.h"
 #include "base/i18n/break_iterator.h"
+#include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversion_utils.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "components/pdf/renderer/pdf_ax_action_target.h"
+#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/renderer/render_accessibility.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
-#include "content/public/renderer/render_view.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/pdf_accessibility_action_handler.h"
 #include "pdf/pdf_features.h"
-#include "third_party/blink/public/strings/grit/blink_strings.h"
+#include "third_party/blink/public/strings/grit/blink_accessibility_strings.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/null_ax_action_target.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/transform.h"
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "base/memory/weak_ptr.h"
+#include "components/services/screen_ai/public/mojom/screen_ai_service.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "ui/accessibility/accessibility_features.h"
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 namespace pdf {
 
@@ -245,8 +258,9 @@ std::string GetTextRunCharsAsUTF8(
     int char_index) {
   std::string chars_utf8;
   for (uint32_t i = 0; i < text_run.len; ++i) {
-    base::WriteUnicodeCharacter(chars[char_index + i].unicode_character,
-                                &chars_utf8);
+    base::WriteUnicodeCharacter(
+        static_cast<base_icu::UChar32>(chars[char_index + i].unicode_character),
+        &chars_utf8);
   }
   return chars_utf8;
 }
@@ -356,6 +370,41 @@ ax::mojom::Role GetRoleForButtonType(chrome_pdf::ButtonType button_type) {
   }
 }
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+class PdfOcrService {
+ public:
+  using AnnotationCallback = base::OnceCallback<void(const ui::AXTreeID&)>;
+
+  PdfOcrService() = default;
+  PdfOcrService(const PdfOcrService&) = delete;
+  PdfOcrService& operator=(const PdfOcrService&) = delete;
+  ~PdfOcrService() = default;
+
+  // Creates the connection with ScreenAI service.
+  void Initialize(content::RenderFrame& render_frame) {
+    DCHECK(!screen_ai_annotator_.is_bound());
+
+    render_frame.GetBrowserInterfaceBroker()->GetInterface(
+        screen_ai_annotator_.BindNewPipeAndPassReceiver());
+  }
+
+  // Sends the given image to ScreenAIService for processing.
+  bool ScheduleImageProcessing(const chrome_pdf::AccessibilityImageInfo& image,
+                               AnnotationCallback callback) {
+    if (!screen_ai_annotator_.is_bound())
+      return false;
+
+    screen_ai_annotator_->Annotate(image.image_data, std::move(callback));
+    return true;
+  }
+
+ private:
+  // The remote of the ScreenAI service's annotator.
+  mojo::Remote<screen_ai::mojom::ScreenAIAnnotator> screen_ai_annotator_;
+};
+
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+
 class PdfAccessibilityTreeBuilder {
  public:
   explicit PdfAccessibilityTreeBuilder(
@@ -365,6 +414,7 @@ class PdfAccessibilityTreeBuilder {
       const gfx::RectF& page_bounds,
       uint32_t page_index,
       ui::AXNodeData* page_node,
+      content::RenderFrame* render_frame,
       content::RenderAccessibility* render_accessibility,
       std::vector<std::unique_ptr<ui::AXNodeData>>* nodes,
       std::map<int32_t, chrome_pdf::PageCharacterIndex>*
@@ -394,7 +444,17 @@ class PdfAccessibilityTreeBuilder {
                                           text_runs[i].len);
       }
     }
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+    if (features::IsPdfOcrEnabled() && render_frame)
+      ocr_service_.Initialize(*render_frame);
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   }
+
+  PdfAccessibilityTreeBuilder(const PdfAccessibilityTreeBuilder&) = delete;
+  PdfAccessibilityTreeBuilder& operator=(const PdfAccessibilityTreeBuilder&) =
+      delete;
+  ~PdfAccessibilityTreeBuilder() = default;
 
   void BuildPageTree() {
     ComputeParagraphAndHeadingThresholds(text_runs_,
@@ -1071,6 +1131,18 @@ class PdfAccessibilityTreeBuilder {
     for (size_t i = current_image_index_; i < images_.size(); i++) {
       ui::AXNodeData* image_node = CreateImageNode(images_[i]);
       para_node->child_ids.push_back(image_node->id);
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+      if (features::IsPdfOcrEnabled() &&
+          !images_[i].image_data.drawsNothing()) {
+        // TODO(https://crbug.com/1278249): This call may be slow and the result
+        // may arrive after |PdfAccessibilityTreeBuilder| is destroyed. Either
+        // add waiting for the reply or change the callback.
+        ocr_service_.ScheduleImageProcessing(
+            images_[i],
+            base::BindOnce(&PdfAccessibilityTreeBuilder::OnOcrDataReceived,
+                           weak_ptr_factory_.GetWeakPtr(), image_node));
+      }
+#endif
     }
 
     if (base::FeatureList::IsEnabled(
@@ -1100,6 +1172,15 @@ class PdfAccessibilityTreeBuilder {
     }
   }
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  void OnOcrDataReceived(ui::AXNodeData* image_node,
+                         const ui::AXTreeID& ax_tree_id) {
+    VLOG(1) << "OCR data received: " << ax_tree_id.ToString();
+    // TODO(https://crbug.com/1278249): Apply received data.
+    NOTIMPLEMENTED();
+  }
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+
   std::vector<uint32_t> text_run_start_indices_;
   const std::vector<chrome_pdf::AccessibilityTextRunInfo>& text_runs_;
   const std::vector<chrome_pdf::AccessibilityCharInfo>& chars_;
@@ -1126,6 +1207,11 @@ class PdfAccessibilityTreeBuilder {
       node_id_to_annotation_info_;
   float heading_font_size_threshold_ = 0;
   float paragraph_spacing_threshold_ = 0;
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  PdfOcrService ocr_service_;
+  base::WeakPtrFactory<PdfAccessibilityTreeBuilder> weak_ptr_factory_{this};
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 };
 
 }  // namespace
@@ -1134,7 +1220,9 @@ PdfAccessibilityTree::PdfAccessibilityTree(
     content::RenderFrame* render_frame,
     chrome_pdf::PdfAccessibilityActionHandler* action_handler)
     : content::RenderFrameObserver(render_frame),
+      render_frame_(render_frame),
       action_handler_(action_handler) {
+  DCHECK(render_frame);
   DCHECK(action_handler_);
   MaybeHandleAccessibilityChange();
 }
@@ -1292,6 +1380,16 @@ bool PdfAccessibilityTree::IsDataFromPluginValid(
 }
 
 void PdfAccessibilityTree::SetAccessibilityViewportInfo(
+    chrome_pdf::AccessibilityViewportInfo viewport_info) {
+  // This call may trigger layout, and ultimately self-deletion; see
+  // crbug.com/1274376 for details.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PdfAccessibilityTree::DoSetAccessibilityViewportInfo,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(viewport_info)));
+}
+
+void PdfAccessibilityTree::DoSetAccessibilityViewportInfo(
     const chrome_pdf::AccessibilityViewportInfo& viewport_info) {
   zoom_ = viewport_info.zoom;
   scale_ = viewport_info.scale;
@@ -1318,6 +1416,16 @@ void PdfAccessibilityTree::SetAccessibilityViewportInfo(
 }
 
 void PdfAccessibilityTree::SetAccessibilityDocInfo(
+    chrome_pdf::AccessibilityDocInfo doc_info) {
+  // This call may trigger layout, and ultimately self-deletion; see
+  // crbug.com/1274376 for details.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PdfAccessibilityTree::DoSetAccessibilityDocInfo,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(doc_info)));
+}
+
+void PdfAccessibilityTree::DoSetAccessibilityDocInfo(
     const chrome_pdf::AccessibilityDocInfo& doc_info) {
   content::RenderAccessibility* render_accessibility =
       GetRenderAccessibilityIfEnabled();
@@ -1341,6 +1449,21 @@ void PdfAccessibilityTree::SetAccessibilityDocInfo(
 }
 
 void PdfAccessibilityTree::SetAccessibilityPageInfo(
+    chrome_pdf::AccessibilityPageInfo page_info,
+    std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs,
+    std::vector<chrome_pdf::AccessibilityCharInfo> chars,
+    chrome_pdf::AccessibilityPageObjects page_objects) {
+  // This call may trigger layout, and ultimately self-deletion; see
+  // crbug.com/1274376 for details.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PdfAccessibilityTree::DoSetAccessibilityPageInfo,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(page_info),
+                     std::move(text_runs), std::move(chars),
+                     std::move(page_objects)));
+}
+
+void PdfAccessibilityTree::DoSetAccessibilityPageInfo(
     const chrome_pdf::AccessibilityPageInfo& page_info,
     const std::vector<chrome_pdf::AccessibilityTextRunInfo>& text_runs,
     const std::vector<chrome_pdf::AccessibilityCharInfo>& chars,
@@ -1384,6 +1507,8 @@ void PdfAccessibilityTree::SetAccessibilityPageInfo(
   AddPageContent(page_node, page_bounds, page_index, text_runs, chars,
                  page_objects);
 
+  did_get_a_text_run_ |= !text_runs.empty();
+
   if (page_index == page_count_ - 1)
     Finish();
 }
@@ -1401,15 +1526,22 @@ void PdfAccessibilityTree::AddPageContent(
   DCHECK(render_accessibility);
   PdfAccessibilityTreeBuilder tree_builder(
       text_runs, chars, page_objects, page_bounds, page_index, page_node,
-      render_accessibility, &nodes_, &node_id_to_page_char_index_,
-      &node_id_to_annotation_info_);
+      render_frame_, render_accessibility, &nodes_,
+      &node_id_to_page_char_index_, &node_id_to_annotation_info_);
   tree_builder.BuildPageTree();
 }
 
 void PdfAccessibilityTree::Finish() {
+  content::RenderAccessibility* render_accessibility =
+      GetRenderAccessibilityIfEnabled();
+  if (!render_accessibility)
+    return;
+
   doc_node_->relative_bounds.transform = MakeTransformFromViewInfo();
 
   ui::AXTreeUpdate update;
+  update.has_tree_data = true;
+  update.tree_data.tree_id = render_accessibility->GetTreeIDForPluginHost();
   update.root_id = doc_node_->id;
   for (const auto& node : nodes_)
     update.nodes.push_back(*node);
@@ -1418,11 +1550,10 @@ void PdfAccessibilityTree::Finish() {
     LOG(FATAL) << tree_.error();
 
   UpdateAXTreeDataFromSelection();
+  render_accessibility->SetPluginTreeSource(this);
 
-  content::RenderAccessibility* render_accessibility =
-      GetRenderAccessibilityIfEnabled();
-  if (render_accessibility)
-    render_accessibility->SetPluginTreeSource(this);
+  base::UmaHistogramBoolean("Accessibility.PDF.HasAccessibleText",
+                            did_get_a_text_run_);
 }
 
 void PdfAccessibilityTree::UpdateAXTreeDataFromSelection() {
@@ -1525,8 +1656,7 @@ PdfAccessibilityTree::GetRenderAccessibilityIfEnabled() {
 
 std::unique_ptr<gfx::Transform>
 PdfAccessibilityTree::MakeTransformFromViewInfo() const {
-  double applicable_scale_factor =
-      content::RenderThread::Get()->IsUseZoomForDSF() ? scale_ : 1;
+  double applicable_scale_factor = scale_;
   auto transform = std::make_unique<gfx::Transform>();
   // `scroll_` represents the offset from which PDF content starts. It is the
   // height of the PDF toolbar and the width of sidenav in pixels if it is open.
@@ -1600,8 +1730,8 @@ const ui::AXNode* PdfAccessibilityTree::GetNull() const {
   return nullptr;
 }
 
-void PdfAccessibilityTree::SerializeNode(
-    const ui::AXNode* node, ui::AXNodeData* out_data) const {
+void PdfAccessibilityTree::SerializeNode(const ui::AXNode* node,
+                                         ui::AXNodeData* out_data) const {
   *out_data = node->data();
 }
 
@@ -1615,7 +1745,9 @@ void PdfAccessibilityTree::AccessibilityModeChanged(
   MaybeHandleAccessibilityChange();
 }
 
-void PdfAccessibilityTree::OnDestruct() {}
+void PdfAccessibilityTree::OnDestruct() {
+  render_frame_ = nullptr;
+}
 
 bool PdfAccessibilityTree::ShowContextMenu() {
   content::RenderAccessibility* render_accessibility =

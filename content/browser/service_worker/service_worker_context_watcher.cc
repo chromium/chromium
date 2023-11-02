@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/stl_util.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_version.h"
@@ -345,7 +344,7 @@ void ServiceWorkerContextWatcher::OnControlleeAdded(
     return;
   ServiceWorkerVersionInfo* version = it->second.get();
 
-  base::InsertOrAssign(version->clients, uuid, info);
+  version->clients.insert_or_assign(uuid, info);
 
   SendVersionInfo(*version);
 }

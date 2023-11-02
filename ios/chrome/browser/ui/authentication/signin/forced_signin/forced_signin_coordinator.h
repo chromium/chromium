@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,8 @@
 @interface ForcedSigninCoordinator : SigninCoordinator
 
 // Initiate the coordinator.
-// |browser| used for authentication. It must not be off the record (incognito).
-// |screenProvider| helps decide which screen to show.
+// `browser` used for authentication. It must not be off the record (incognito).
+// `screenProvider` helps decide which screen to show.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                             screenProvider:(ScreenProvider*)screenProvider

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include "base/callback_helpers.h"
 #include "base/metrics/metrics_hashes.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
-#include "components/segmentation_platform/internal/proto/types.pb.h"
+#include "components/segmentation_platform/public/proto/types.pb.h"
 
 namespace segmentation_platform {
 
@@ -19,11 +19,12 @@ UserActionSignalHandler::UserActionSignalHandler(
 }
 
 UserActionSignalHandler::~UserActionSignalHandler() {
-  base::RemoveActionCallback(action_callback_);
+  if (metrics_enabled_ && base::GetRecordActionTaskRunner())
+    base::RemoveActionCallback(action_callback_);
 }
 
 void UserActionSignalHandler::EnableMetrics(bool enable_metrics) {
-  if (metrics_enabled_ == enable_metrics)
+  if (metrics_enabled_ == enable_metrics || !base::GetRecordActionTaskRunner())
     return;
 
   metrics_enabled_ = enable_metrics;

@@ -1,10 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/updater/crash_reporter.h"
 
-#include <algorithm>
 #include <iterator>
 #include <map>
 #include <memory>
@@ -14,7 +13,9 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -31,8 +32,8 @@ namespace updater {
 namespace {
 
 crashpad::CrashpadClient& GetCrashpadClient() {
-  static crashpad::CrashpadClient crashpad_client;
-  return crashpad_client;
+  static base::NoDestructor<crashpad::CrashpadClient> crashpad_client;
+  return *crashpad_client;
 }
 
 // Returns the command line arguments to start the crash handler process with.
@@ -48,11 +49,12 @@ std::vector<std::string> MakeCrashHandlerArgs(UpdaterScope updater_scope) {
 
   // The first element in the command line arguments is the program name,
   // which must be skipped.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::vector<std::string> args;
-  std::transform(++command_line.argv().begin(), command_line.argv().end(),
-                 std::back_inserter(args),
-                 [](const auto& arg) { return base::WideToUTF8(arg); });
+  base::ranges::transform(
+      ++command_line.argv().begin(), command_line.argv().end(),
+      std::back_inserter(args),
+      [](const auto& arg) { return base::WideToUTF8(arg); });
 
   return args;
 #else
@@ -72,25 +74,23 @@ void StartCrashReporter(UpdaterScope updater_scope,
   base::PathService::Get(base::FILE_EXE, &handler_path);
 
   const absl::optional<base::FilePath> database_path =
-      GetVersionedDirectory(updater_scope);
+      GetVersionedDataDirectory(updater_scope);
   if (!database_path) {
-    LOG(DFATAL) << "Failed to get the database path.";
+    LOG(ERROR) << "Failed to get the database path.";
     return;
   }
 
   std::map<std::string, std::string> annotations;
   annotations["ver"] = version;
-  annotations["prod"] = PRODUCT_FULLNAME_STRING;
+  annotations["prod"] = CRASH_PRODUCT_NAME;
 
-  // TODO(crbug.com/1163583): use the production front end instead of staging.
   crashpad::CrashpadClient& client = GetCrashpadClient();
   if (!client.StartHandler(handler_path, *database_path,
-                           /*metrics_dir=*/base::FilePath(),
-                           CRASH_STAGING_UPLOAD_URL, annotations,
-                           MakeCrashHandlerArgs(updater_scope),
+                           /*metrics_dir=*/base::FilePath(), CRASH_UPLOAD_URL,
+                           annotations, MakeCrashHandlerArgs(updater_scope),
                            /*restartable=*/true,
                            /*asynchronous_start=*/false)) {
-    LOG(DFATAL) << "Failed to start handler.";
+    VLOG(1) << "Failed to start handler.";
     return;
   }
 
@@ -120,7 +120,7 @@ int CrashReporterMain() {
   auto argv_as_utf8 = std::make_unique<char*[]>(argv.size() + 1);
   storage.reserve(argv.size());
   for (size_t i = 0; i < argv.size(); ++i) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     storage.push_back(base::WideToUTF8(argv[i]));
 #else
     storage.push_back(argv[i]);

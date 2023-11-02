@@ -1,8 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/scheduling_metrics/total_duration_metric_reporter.h"
+
+#include "base/cpu_reduction_experiment.h"
 
 namespace scheduling_metrics {
 
@@ -30,8 +32,12 @@ TotalDurationMetricReporter::TotalDurationMetricReporter(
           kBucketCount,
           base::Histogram::kUmaTargetedHistogramFlag)) {}
 
+TotalDurationMetricReporter::~TotalDurationMetricReporter() = default;
+
 void TotalDurationMetricReporter::RecordAdditionalDuration(
     base::TimeDelta duration) {
+  if (!base::ShouldLogHistogramForCpuReductionExperiment())
+    return;
   if (reported_value_)
     negative_histogram_->Add(reported_value_->InSeconds());
   reported_value_ = reported_value_.value_or(base::TimeDelta()) + duration;

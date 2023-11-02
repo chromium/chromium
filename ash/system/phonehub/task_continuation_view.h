@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,28 +11,24 @@
 #include "ui/views/view.h"
 #include "ui/views/view_model.h"
 
-namespace chromeos {
+namespace ash {
+
 namespace phonehub {
 class UserActionRecorder;
-}  // namespace phonehub
-}  // namespace chromeos
-
-namespace ash {
+}
 
 // A view in Phone Hub bubble that allows user to pick up unfinished task left
 // off from their phone, currently only support web browsing.
-class ASH_EXPORT TaskContinuationView
-    : public views::View,
-      public chromeos::phonehub::PhoneModel::Observer {
+class ASH_EXPORT TaskContinuationView : public views::View,
+                                        public phonehub::PhoneModel::Observer {
  public:
-  TaskContinuationView(
-      chromeos::phonehub::PhoneModel* phone_model,
-      chromeos::phonehub::UserActionRecorder* user_action_recorder);
+  TaskContinuationView(phonehub::PhoneModel* phone_model,
+                       phonehub::UserActionRecorder* user_action_recorder);
   ~TaskContinuationView() override;
   TaskContinuationView(TaskContinuationView&) = delete;
   TaskContinuationView operator=(TaskContinuationView&) = delete;
 
-  // chromeos::phonehub::PhoneHubModel::Observer:
+  // phonehub::PhoneHubModel::Observer:
   void OnModelChanged() override;
 
   // views::View:
@@ -68,8 +64,8 @@ class ASH_EXPORT TaskContinuationView
   // Update the chips to display current phone status.
   void Update();
 
-  chromeos::phonehub::PhoneModel* phone_model_ = nullptr;
-  chromeos::phonehub::UserActionRecorder* user_action_recorder_ = nullptr;
+  phonehub::PhoneModel* phone_model_ = nullptr;
+  phonehub::UserActionRecorder* user_action_recorder_ = nullptr;
   TaskChipsView* chips_view_ = nullptr;
 };
 

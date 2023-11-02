@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,12 @@
 #include <set>
 #include <string>
 
+#include "ash/components/arc/mojom/policy.mojom-forward.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/ash/policy/reporting/install_event_log_collector_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
-#include "components/arc/mojom/policy.mojom-forward.h"
 
 class Profile;
 
@@ -49,6 +49,10 @@ class ArcAppInstallEventLogCollector : public InstallEventLogCollectorBase,
         std::unique_ptr<enterprise_management::AppInstallReportLogEvent>
             event) = 0;
 
+    // Uses a package's installation status to update policy success rate data.
+    virtual void UpdatePolicySuccessRate(const std::string& package,
+                                         bool success) = 0;
+
    protected:
     virtual ~Delegate() = default;
   };
@@ -78,10 +82,10 @@ class ArcAppInstallEventLogCollector : public InstallEventLogCollectorBase,
   void OnCloudDpsFailed(base::Time time,
                         const std::string& package_name,
                         arc::mojom::InstallErrorReason reason) override;
-  void OnReportDirectInstall(
+  void OnReportForceInstallMainLoopFailed(
       base::Time time,
       const std::set<std::string>& package_names) override;
-  void OnReportForceInstallMainLoopFailed(
+  void OnPlayStoreLocalPolicySet(
       base::Time time,
       const std::set<std::string>& package_names) override;
 

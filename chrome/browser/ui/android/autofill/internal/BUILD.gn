@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -16,8 +16,12 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/autofill/AuthenticatorSelectionDialogBridge.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AutofillErrorDialogBridge.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AutofillProgressDialogBridge.java",
-    "java/src/org/chromium/chrome/browser/ui/autofill/OtpVerificationDialog.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/OtpVerificationDialogBridge.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/OtpVerificationDialogCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/OtpVerificationDialogMediator.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/OtpVerificationDialogProperties.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/OtpVerificationDialogView.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/OtpVerificationDialogViewBinder.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/data/AuthenticatorOption.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/data/CardUnmaskChallengeOptionType.java",
   ]
@@ -26,6 +30,7 @@ android_library("java") {
     ":jni_headers",
     "//base:base_java",
     "//base:jni_java",
+    "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
@@ -48,10 +53,7 @@ generate_jni("jni_headers") {
   ]
 }
 
-android_library("junit") {
-  # Skip platform checks since Robolectric depends on requires_android targets.
-  bypass_platform_checks = true
-  testonly = true
+robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/autofill/AuthenticatorSelectionDialogBridgeTest.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AuthenticatorSelectionDialogTest.java",
@@ -61,7 +63,6 @@ android_library("junit") {
   ]
   deps = [
     ":java",
-    "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base/test:test_support_java",
@@ -72,6 +73,7 @@ android_library("junit") {
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",
+    "//ui/android:ui_java_test_support",
   ]
 }
 

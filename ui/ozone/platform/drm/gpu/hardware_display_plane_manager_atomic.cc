@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -186,8 +186,11 @@ bool HardwareDisplayPlaneManagerAtomic::Commit(CommitRequest commit_request,
   if (!is_testing)
     UpdateCrtcAndPlaneStatesAfterModeset(commit_request);
 
-  for (HardwareDisplayPlaneList* list : enable_planes_lists)
+  for (HardwareDisplayPlaneList* list : enable_planes_lists) {
+    if (!is_testing)
+      list->plane_list.swap(list->old_plane_list);
     list->plane_list.clear();
+  }
 
   return true;
 }
@@ -216,7 +219,7 @@ void HardwareDisplayPlaneManagerAtomic::SetAtomicPropsForCommit(
           static_cast<HardwareDisplayPlaneAtomic*>(plane);
       atomic_plane->AssignPlaneProps(
           0, 0, gfx::Rect(), gfx::Rect(), gfx::OVERLAY_TRANSFORM_NONE,
-          base::kInvalidPlatformFile, DRM_FORMAT_INVALID);
+          base::kInvalidPlatformFile, DRM_FORMAT_INVALID, false);
       atomic_plane->SetPlaneProps(atomic_request);
     }
   }
@@ -236,10 +239,10 @@ void HardwareDisplayPlaneManagerAtomic::SetAtomicPropsForCommit(
     // TODO(dnicoara): See if we can apply these properties async using
     // DRM_MODE_ATOMIC_ASYNC_UPDATE flag when committing.
     AddPropertyIfValid(atomic_request, crtc,
-                       crtc_state_[idx].properties.degamma_lut);
+                       crtc_state_[*idx].properties.degamma_lut);
     AddPropertyIfValid(atomic_request, crtc,
-                       crtc_state_[idx].properties.gamma_lut);
-    AddPropertyIfValid(atomic_request, crtc, crtc_state_[idx].properties.ctm);
+                       crtc_state_[*idx].properties.gamma_lut);
+    AddPropertyIfValid(atomic_request, crtc, crtc_state_[*idx].properties.ctm);
 #endif
 
     AddPropertyIfValid(atomic_request, crtc,
@@ -253,8 +256,6 @@ void HardwareDisplayPlaneManagerAtomic::SetAtomicPropsForCommit(
     for (auto* plane : plane_list->old_plane_list) {
       plane->set_in_use(true);
     }
-  } else {
-    plane_list->plane_list.swap(plane_list->old_plane_list);
   }
 }
 
@@ -307,6 +308,9 @@ bool HardwareDisplayPlaneManagerAtomic::Commit(
   if (release_fence)
     *release_fence = CreateMergedGpuFenceFromFDs(std::move(out_fence_fds));
 
+  if (!test_only)
+    plane_list->plane_list.swap(plane_list->old_plane_list);
+
   plane_list->plane_list.clear();
   plane_list->atomic_property_set.reset(drmModeAtomicAlloc());
   return true;
@@ -325,7 +329,7 @@ bool HardwareDisplayPlaneManagerAtomic::DisableOverlayPlanes(
           static_cast<HardwareDisplayPlaneAtomic*>(plane);
       atomic_plane->AssignPlaneProps(
           0, 0, gfx::Rect(), gfx::Rect(), gfx::OVERLAY_TRANSFORM_NONE,
-          base::kInvalidPlatformFile, DRM_FORMAT_INVALID);
+          base::kInvalidPlatformFile, DRM_FORMAT_INVALID, false);
       atomic_plane->SetPlaneProps(plane_list->atomic_property_set.get());
     }
     ret = drm_->CommitProperties(plane_list->atomic_property_set.get(),
@@ -344,15 +348,12 @@ bool HardwareDisplayPlaneManagerAtomic::SetColorCorrectionOnAllCrtcPlanes(
   ScopedDrmPropertyBlob property_blob(
       drm_->CreatePropertyBlob(ctm_blob_data.get(), sizeof(drm_color_ctm)));
 
-  const auto crtc_index = LookupCrtcIndex(crtc_id);
-  DCHECK(crtc_index.has_value());
-
   for (auto& plane : planes_) {
     HardwareDisplayPlaneAtomic* atomic_plane =
         static_cast<HardwareDisplayPlaneAtomic*>(plane.get());
 
     // This assumes planes can only belong to one crtc.
-    if (!atomic_plane->CanUseForCrtc(*crtc_index))
+    if (!atomic_plane->CanUseForCrtcId(crtc_id))
       continue;
 
     if (!atomic_plane->SetPlaneCtm(property_set.get(), property_blob->id())) {
@@ -401,7 +402,8 @@ bool HardwareDisplayPlaneManagerAtomic::SetPlaneData(
   if (!atomic_plane->AssignPlaneProps(
           crtc_id, framebuffer_id, overlay.display_bounds, src_rect,
           overlay.plane_transform, fence_fd,
-          overlay.buffer->framebuffer_pixel_format())) {
+          overlay.buffer->framebuffer_pixel_format(),
+          overlay.buffer->is_original_buffer())) {
     return false;
   }
   return true;

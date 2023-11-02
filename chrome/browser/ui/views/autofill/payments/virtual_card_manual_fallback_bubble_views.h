@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_VIEWS_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_manual_fallback_bubble_controller.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
@@ -50,7 +51,7 @@ class VirtualCardManualFallbackBubbleViews
   ui::ImageModel GetWindowIcon() override;
   std::u16string GetWindowTitle() const override;
   void WindowClosing() override;
-  void OnWidgetClosing(views::Widget* widget) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
 
   // Creates a button for the |field|. If the button is pressed, the text of it
   // will be copied to the clipboard.
@@ -63,10 +64,10 @@ class VirtualCardManualFallbackBubbleViews
   // Update the tooltips and the accessible names of the buttons.
   void UpdateButtonTooltipsAndAccessibleNames();
 
-  VirtualCardManualFallbackBubbleController* controller_;
+  // Handles user click on learn more link.
+  void LearnMoreLinkClicked();
 
-  PaymentsBubbleClosedReason closed_reason_ =
-      PaymentsBubbleClosedReason::kUnknown;
+  raw_ptr<VirtualCardManualFallbackBubbleController> controller_;
 
   // The map keeping the references to each button with card information text in
   // the bubble.

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ui/webui/chromeos/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
-#include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_state_handler.h"
-#include "chromeos/network/network_type_pattern.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_type_pattern.h"
 #include "components/onc/onc_constants.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -25,26 +25,23 @@ const char kJsApiShowNetworkDetails[] = "showNetworkDetails";
 
 namespace chromeos {
 
-NetworkDropdownHandler::NetworkDropdownHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseWebUIHandler(js_calls_container) {}
-
+NetworkDropdownHandler::NetworkDropdownHandler() = default;
 NetworkDropdownHandler::~NetworkDropdownHandler() = default;
 
 void NetworkDropdownHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {}
 
-void NetworkDropdownHandler::Initialize() {}
+void NetworkDropdownHandler::InitializeDeprecated() {}
 
 void NetworkDropdownHandler::RegisterMessages() {
   AddCallback(kJsApiLaunchInternetDetailDialog,
               &NetworkDropdownHandler::HandleLaunchInternetDetailDialog);
   AddCallback(kJsApiLaunchAddWiFiNetworkDialog,
               &NetworkDropdownHandler::HandleLaunchAddWiFiNetworkDialog);
-  AddRawCallback(kJsApiShowNetworkDetails,
-                 &NetworkDropdownHandler::HandleShowNetworkDetails);
-  AddRawCallback(kJsApiShowNetworkConfig,
-                 &NetworkDropdownHandler::HandleShowNetworkConfig);
+  AddCallback(kJsApiShowNetworkDetails,
+              &NetworkDropdownHandler::HandleShowNetworkDetails);
+  AddCallback(kJsApiShowNetworkConfig,
+              &NetworkDropdownHandler::HandleShowNetworkConfig);
 }
 
 void NetworkDropdownHandler::HandleLaunchInternetDetailDialog() {
@@ -66,11 +63,8 @@ void NetworkDropdownHandler::HandleLaunchAddWiFiNetworkDialog() {
       LoginDisplayHost::default_host()->GetNativeWindow());
 }
 
-void NetworkDropdownHandler::HandleShowNetworkDetails(
-    const base::ListValue* args) {
-  DCHECK_GE(args->GetList().size(), 2U);
-  std::string type = args->GetList()[0].GetString();
-  std::string guid = args->GetList()[1].GetString();
+void NetworkDropdownHandler::HandleShowNetworkDetails(const std::string& type,
+                                                      const std::string& guid) {
   if (type == ::onc::network_type::kCellular) {
     // Make sure Cellular is enabled.
     NetworkStateHandler* handler =
@@ -85,10 +79,7 @@ void NetworkDropdownHandler::HandleShowNetworkDetails(
       guid, LoginDisplayHost::default_host()->GetNativeWindow());
 }
 
-void NetworkDropdownHandler::HandleShowNetworkConfig(
-    const base::ListValue* args) {
-  DCHECK(!args->GetList().empty());
-  std::string guid = args->GetList()[0].GetString();
+void NetworkDropdownHandler::HandleShowNetworkConfig(const std::string& guid) {
   chromeos::InternetConfigDialog::ShowDialogForNetworkId(
       guid, LoginDisplayHost::default_host()->GetNativeWindow());
 }

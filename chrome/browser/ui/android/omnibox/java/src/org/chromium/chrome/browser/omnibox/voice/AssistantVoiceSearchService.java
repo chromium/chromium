@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@ import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,7 +30,8 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.chrome.browser.theme.ThemeUtils;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -41,7 +41,6 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
-import org.chromium.ui.util.ColorUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -66,6 +65,7 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
     static final String AGSA_VERSION_HISTOGRAM = "Assistant.VoiceSearch.AgsaVersion";
     private static final String DEFAULT_ASSISTANT_AGSA_MIN_VERSION = "11.7";
     private static final boolean DEFAULT_ASSISTANT_COLORFUL_MIC_ENABLED = false;
+    private static Boolean sAlwaysUseAssistantVoiceSearchForTesting;
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
@@ -184,6 +184,10 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
 
     /** @return Whether the user has had a chance to enable the feature. */
     public boolean needsEnabledCheck() {
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH)) {
+            return false;
+        }
         return !mSharedPrefsManager.contains(ASSISTANT_VOICE_SEARCH_ENABLED);
     }
 
@@ -191,11 +195,13 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
      * Checks if the client is eligible Assistant for voice search. It's
      * {@link canRequestAssistantVoiceSearch} with additional conditions:
      * - The feature must be enabled.
-     * - The consent flow must be accepted.
+     * - The consent flow must be accepted for personalized queries.
      */
     public boolean shouldRequestAssistantVoiceSearch() {
-        return mIsAssistantVoiceSearchEnabled && canRequestAssistantVoiceSearch()
-                && isEnabledByPreference();
+        if (sAlwaysUseAssistantVoiceSearchForTesting != null) {
+            return sAlwaysUseAssistantVoiceSearchForTesting;
+        }
+        return mIsAssistantVoiceSearchEnabled && canRequestAssistantVoiceSearch() && isEnabled();
     }
 
     /**
@@ -204,6 +210,9 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
      * conditions.
      */
     public boolean canRequestAssistantVoiceSearch() {
+        if (sAlwaysUseAssistantVoiceSearchForTesting != null) {
+            return sAlwaysUseAssistantVoiceSearchForTesting;
+        }
         return mIsAssistantVoiceSearchEnabled
                 && isDeviceEligibleForAssistant(/* returnImmediately= */ true, /* outList= */ null);
     }
@@ -219,18 +228,24 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
 
     /** @return The correct ColorStateList for the current theme. */
     public @Nullable ColorStateList getButtonColorStateList(
-            @ColorInt int primaryColor, Context context) {
+            @BrandedColorScheme int brandedColorScheme, Context context) {
         if (mShouldShowColorfulButtons) return null;
 
-        final boolean useLightColors =
-                ColorUtils.shouldUseLightForegroundOnBackground(primaryColor);
-        int id = ChromeColors.getPrimaryIconTintRes(useLightColors);
-        return AppCompatResources.getColorStateList(context, id);
+        return ThemeUtils.getThemedToolbarIconTint(context, brandedColorScheme);
     }
 
     /** Called from {@link VoiceRecognitionHandler} after the consent flow has completed. */
     public void onAssistantConsentDialogComplete(boolean useAssistant) {
         if (useAssistant) updateColorfulMicState();
+    }
+
+    /** For requests that require it - checks if the user enabled the feature. */
+    private boolean isEnabled() {
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH)) {
+            return true;
+        }
+        return isEnabledByPreference();
     }
 
     /**
@@ -279,7 +294,6 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
             if (returnImmediately) return false;
             outList.add(EligibilityFailureReason.AGSA_CANT_HANDLE_INTENT);
         }
-
         if (mGsaState.isAgsaVersionBelowMinimum(
                     mGsaState.getAgsaVersionName(), getAgsaMinVersion())) {
             if (returnImmediately) return false;
@@ -291,6 +305,7 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
             if (returnImmediately) return false;
             outList.add(EligibilityFailureReason.CHROME_NOT_GOOGLE_SIGNED);
         }
+
         if (!mExternalAuthUtils.isGoogleSigned(GSAState.PACKAGE_NAME)) {
             if (returnImmediately) return false;
             outList.add(EligibilityFailureReason.AGSA_NOT_GOOGLE_SIGNED);
@@ -301,21 +316,24 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
             outList.add(EligibilityFailureReason.NON_GOOGLE_SEARCH_ENGINE);
         }
 
-        if (!mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC)) {
-            if (returnImmediately) return false;
-            outList.add(EligibilityFailureReason.NO_CHROME_ACCOUNT);
-        }
-
+        // TODO(crbug/1344574): verify if we can support low end devices too with the new flow.
         if (SysUtils.isLowEndDevice()) {
             if (returnImmediately) return false;
             outList.add(EligibilityFailureReason.LOW_END_DEVICE);
         }
 
-        if (mIsMultiAccountCheckEnabled && doesViolateMultiAccountCheck()) {
-            if (returnImmediately) return false;
-            outList.add(EligibilityFailureReason.MULTIPLE_ACCOUNTS_ON_DEVICE);
-        }
+        if (!ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH)) {
+            if (!mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC)) {
+                if (returnImmediately) return false;
+                outList.add(EligibilityFailureReason.NO_CHROME_ACCOUNT);
+            }
 
+            if (mIsMultiAccountCheckEnabled && doesViolateMultiAccountCheck()) {
+                if (returnImmediately) return false;
+                outList.add(EligibilityFailureReason.MULTIPLE_ACCOUNTS_ON_DEVICE);
+            }
+        }
         // Either we would have failed already or we have some errors on the list.
         // Otherwise this client is eligible for assistant.
         return returnImmediately || outList.size() == 0;
@@ -458,5 +476,9 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
 
     void setMultiAccountCheckEnabledForTesting(boolean enabled) {
         mIsMultiAccountCheckEnabled = enabled;
+    }
+
+    static void setAlwaysUseAssistantVoiceSearchForTestingEnabled(Boolean enabled) {
+        sAlwaysUseAssistantVoiceSearchForTesting = enabled;
     }
 }

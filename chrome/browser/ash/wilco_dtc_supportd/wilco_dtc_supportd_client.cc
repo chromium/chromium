@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/fake_wilco_dtc_supportd_client.h"
 #include "chrome/common/chrome_features.h"
 #include "dbus/bus.h"
@@ -22,7 +21,7 @@ namespace {
 
 WilcoDtcSupportdClient* g_instance = nullptr;
 
-void OnVoidDBusMethod(VoidDBusMethodCallback callback,
+void OnVoidDBusMethod(chromeos::VoidDBusMethodCallback callback,
                       dbus::Response* response) {
   std::move(callback).Run(response != nullptr);
 }
@@ -40,9 +39,10 @@ class WilcoDtcSupportdClientImpl final : public WilcoDtcSupportdClient {
 
   // WilcoDtcSupportdClient overrides:
   void WaitForServiceToBeAvailable(
-      WaitForServiceToBeAvailableCallback callback) override;
-  void BootstrapMojoConnection(base::ScopedFD fd,
-                               VoidDBusMethodCallback callback) override;
+      chromeos::WaitForServiceToBeAvailableCallback callback) override;
+  void BootstrapMojoConnection(
+      base::ScopedFD fd,
+      chromeos::VoidDBusMethodCallback callback) override;
   void Init(dbus::Bus* bus) override;
 
  private:
@@ -56,13 +56,13 @@ WilcoDtcSupportdClientImpl::WilcoDtcSupportdClientImpl() = default;
 WilcoDtcSupportdClientImpl::~WilcoDtcSupportdClientImpl() = default;
 
 void WilcoDtcSupportdClientImpl::WaitForServiceToBeAvailable(
-    WaitForServiceToBeAvailableCallback callback) {
+    chromeos::WaitForServiceToBeAvailableCallback callback) {
   wilco_dtc_supportd_proxy_->WaitForServiceToBeAvailable(std::move(callback));
 }
 
 void WilcoDtcSupportdClientImpl::BootstrapMojoConnection(
     base::ScopedFD fd,
-    VoidDBusMethodCallback callback) {
+    chromeos::VoidDBusMethodCallback callback) {
   dbus::MethodCall method_call(
       ::diagnostics::kWilcoDtcSupportdServiceInterface,
       ::diagnostics::kWilcoDtcSupportdBootstrapMojoConnectionMethod);
@@ -94,11 +94,9 @@ WilcoDtcSupportdClient::~WilcoDtcSupportdClient() {
 // static
 void WilcoDtcSupportdClient::Initialize(dbus::Bus* bus) {
   DCHECK(bus);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (base::FeatureList::IsEnabled(::features::kWilcoDtc)) {
     (new WilcoDtcSupportdClientImpl())->Init(bus);
   }
-#endif
 }
 
 // static

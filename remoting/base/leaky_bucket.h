@@ -1,11 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef REMOTING_BASE_LEAKY_BUCKET_H_
 #define REMOTING_BASE_LEAKY_BUCKET_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 
 namespace remoting {

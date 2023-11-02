@@ -1,17 +1,20 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <string>
+#include <limits.h>
+#include <string.h>
+#include <unistd.h>
 
-#include "base/notreached.h"
+#include <string>
 
 namespace syncer {
 
 std::string GetPersonalizableDeviceNameInternal() {
-  // TODO(crbug.com/1233497): Request the name of the device from the system.
-  NOTIMPLEMENTED_LOG_ONCE();
-  return std::string("Fuchsia");
+  char hostname[HOST_NAME_MAX];
+  if (gethostname(hostname, std::size(hostname)) == 0)  // Success.
+    return std::string(hostname, strnlen(hostname, std::size(hostname)));
+  return std::string();
 }
 
 }  // namespace syncer

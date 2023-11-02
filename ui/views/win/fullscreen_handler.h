@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,10 @@ class FullscreenHandler {
 
   void set_hwnd(HWND hwnd) { hwnd_ = hwnd; }
 
-  void SetFullscreen(bool fullscreen);
+  // Set the fullscreen state. `target_display_id` indicates the display where
+  // the window should be shown fullscreen; display::kInvalidDisplayId indicates
+  // that no display was specified, so the current display may be used.
+  void SetFullscreen(bool fullscreen, int64_t target_display_id);
 
   // Informs the taskbar whether the window is a fullscreen window.
   void MarkFullscreen(bool fullscreen);
@@ -42,10 +45,13 @@ class FullscreenHandler {
   struct SavedWindowInfo {
     LONG style;
     LONG ex_style;
-    RECT window_rect;
+    RECT rect;
+    int dpi;
+    HMONITOR monitor;
+    MONITORINFO monitor_info;
   };
 
-  void SetFullscreenImpl(bool fullscreen);
+  void ProcessFullscreen(bool fullscreen, int64_t target_display_id);
 
   HWND hwnd_ = nullptr;
   bool fullscreen_ = false;

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -93,6 +93,11 @@ bool operator==(const AXTreeData& lhs, const AXTreeData& rhs) {
 
 bool operator!=(const AXTreeData& lhs, const AXTreeData& rhs) {
   return !(lhs == rhs);
+}
+
+const AXTreeData& AXTreeDataUnknown() {
+  static const AXTreeData ax_tree_data_unknown;
+  return ax_tree_data_unknown;
 }
 
 }  // namespace ui

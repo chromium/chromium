@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -92,8 +92,8 @@ class TlsProberWithFakeNetworkContextTest : public ::testing::Test {
 TEST_F(TlsProberWithFakeNetworkContextTest,
        SocketConnectedAndUpgradedSuccessfully) {
   auto fake_dns_result = std::make_unique<FakeHostResolver::DnsResult>(
-      net::OK, net::ResolveErrorInfo(net::OK),
-      net::AddressList(kFakeIPAddress));
+      net::OK, net::ResolveErrorInfo(net::OK), net::AddressList(kFakeIPAddress),
+      /*endpoint_results_with_metadata=*/absl::nullopt);
   net::Error tcp_connect_code = net::OK;
   net::Error tls_upgrade_code = net::OK;
   InitializeProberNetworkContext(std::move(fake_dns_result), tcp_connect_code,
@@ -120,7 +120,8 @@ TEST_F(TlsProberWithFakeNetworkContextTest,
 TEST_F(TlsProberWithFakeNetworkContextTest, FailedDnsLookup) {
   auto fake_dns_result = std::make_unique<FakeHostResolver::DnsResult>(
       net::ERR_NAME_NOT_RESOLVED,
-      net::ResolveErrorInfo(net::ERR_NAME_NOT_RESOLVED), net::AddressList());
+      net::ResolveErrorInfo(net::ERR_NAME_NOT_RESOLVED), net::AddressList(),
+      /*endpoint_results_with_metadata=*/absl::nullopt);
   // Neither TCP connect nor TLS upgrade should not be called in this scenario.
   InitializeProberNetworkContext(std::move(fake_dns_result),
                                  /*tcp_connect_code=*/absl::nullopt,
@@ -172,8 +173,8 @@ TEST_F(TlsProberWithFakeNetworkContextTest, MojoDisconnectDuringDnsLookup) {
 
 TEST_F(TlsProberWithFakeNetworkContextTest, FailedTcpConnection) {
   auto fake_dns_result = std::make_unique<FakeHostResolver::DnsResult>(
-      net::OK, net::ResolveErrorInfo(net::OK),
-      net::AddressList(kFakeIPAddress));
+      net::OK, net::ResolveErrorInfo(net::OK), net::AddressList(kFakeIPAddress),
+      /*endpoint_results_with_metadata=*/absl::nullopt);
   net::Error tcp_connect_code = net::ERR_CONNECTION_FAILED;
   // TLS upgrade should not be called in this scenario.
   InitializeProberNetworkContext(std::move(fake_dns_result), tcp_connect_code,
@@ -199,8 +200,8 @@ TEST_F(TlsProberWithFakeNetworkContextTest, FailedTcpConnection) {
 
 TEST_F(TlsProberWithFakeNetworkContextTest, FailedTlsUpgrade) {
   auto fake_dns_result = std::make_unique<FakeHostResolver::DnsResult>(
-      net::OK, net::ResolveErrorInfo(net::OK),
-      net::AddressList(kFakeIPAddress));
+      net::OK, net::ResolveErrorInfo(net::OK), net::AddressList(kFakeIPAddress),
+      /*endpoint_results_with_metadata=*/absl::nullopt);
   net::Error tcp_connect_code = net::OK;
   net::Error tls_upgrade_code = net::ERR_SSL_PROTOCOL_ERROR;
   InitializeProberNetworkContext(std::move(fake_dns_result), tcp_connect_code,
@@ -227,8 +228,8 @@ TEST_F(TlsProberWithFakeNetworkContextTest, FailedTlsUpgrade) {
 TEST_F(TlsProberWithFakeNetworkContextTest,
        MojoDisconnectedDuringTcpConnectionAttempt) {
   auto fake_dns_result = std::make_unique<FakeHostResolver::DnsResult>(
-      net::OK, net::ResolveErrorInfo(net::OK),
-      net::AddressList(kFakeIPAddress));
+      net::OK, net::ResolveErrorInfo(net::OK), net::AddressList(kFakeIPAddress),
+      /*endpoint_results_with_metadata=*/absl::nullopt);
   // Since the TCP connection is disconnected, no connection codes are needed.
   InitializeProberNetworkContext(std::move(fake_dns_result),
                                  /*tcp_connect_code=*/absl::nullopt,
@@ -256,8 +257,8 @@ TEST_F(TlsProberWithFakeNetworkContextTest,
 TEST_F(TlsProberWithFakeNetworkContextTest,
        MojoDisconnectedDuringTlsUpgradeAttempt) {
   auto fake_dns_result = std::make_unique<FakeHostResolver::DnsResult>(
-      net::OK, net::ResolveErrorInfo(net::OK),
-      net::AddressList(kFakeIPAddress));
+      net::OK, net::ResolveErrorInfo(net::OK), net::AddressList(kFakeIPAddress),
+      /*endpoint_results_with_metadata=*/absl::nullopt);
   net::Error tcp_connect_code = net::OK;
   // TLS upgrade attempt will fail due to disconnection. |tls_upgrade_code|
   // is only populated to correctly initialize the FakeNetworkContext instance.
@@ -286,8 +287,8 @@ TEST_F(TlsProberWithFakeNetworkContextTest,
 
 TEST_F(TlsProberWithFakeNetworkContextTest, SuccessfulTcpConnectOnly) {
   auto fake_dns_result = std::make_unique<FakeHostResolver::DnsResult>(
-      net::OK, net::ResolveErrorInfo(net::OK),
-      net::AddressList(kFakeIPAddress));
+      net::OK, net::ResolveErrorInfo(net::OK), net::AddressList(kFakeIPAddress),
+      /*endpoint_results_with_metadata=*/absl::nullopt);
   net::Error tcp_connect_code = net::OK;
   InitializeProberNetworkContext(std::move(fake_dns_result), tcp_connect_code,
                                  /*tls_upgrade_code=*/absl::nullopt);

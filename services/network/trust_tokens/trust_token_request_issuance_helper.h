@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "net/log/net_log_with_source.h"
@@ -145,6 +146,8 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
       SuitableTrustTokenOrigin top_level_origin,
       TrustTokenStore* token_store,
       const TrustTokenKeyCommitmentGetter* key_commitment_getter,
+      absl::optional<std::string> custom_key_commitment,
+      absl::optional<url::Origin> custom_issuer,
       std::unique_ptr<Cryptographer> cryptographer,
       std::unique_ptr<LocalTrustTokenOperationDelegate>
           local_operation_delegate,
@@ -267,8 +270,10 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
   // operation's execution.
   absl::optional<SuitableTrustTokenOrigin> issuer_;
   const SuitableTrustTokenOrigin top_level_origin_;
-  TrustTokenStore* const token_store_;
-  const TrustTokenKeyCommitmentGetter* const key_commitment_getter_;
+  const raw_ptr<TrustTokenStore> token_store_;
+  const raw_ptr<const TrustTokenKeyCommitmentGetter> key_commitment_getter_;
+  const absl::optional<std::string> custom_key_commitment_;
+  const absl::optional<url::Origin> custom_issuer_;
 
   mojom::TrustTokenProtocolVersion protocol_version_;
 
@@ -293,7 +298,7 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
   base::RepeatingCallback<bool(mojom::TrustTokenKeyCommitmentResult::Os)>
       is_current_os_callback_;
 
-  MetricsDelegate* const metrics_delegate_;
+  const raw_ptr<MetricsDelegate> metrics_delegate_;
 
   net::NetLogWithSource net_log_;
   absl::optional<size_t> num_obtained_tokens_;

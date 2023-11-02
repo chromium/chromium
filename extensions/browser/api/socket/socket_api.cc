@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,9 @@
 
 #include "base/bind.h"
 #include "base/containers/span.h"
+#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/network_service_instance.h"
@@ -23,6 +23,7 @@
 #include "extensions/browser/api/socket/tls_socket.h"
 #include "extensions/browser/api/socket/udp_socket.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/common/api/sockets/sockets_manifest_data.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/permissions/socket_permission.h"
@@ -30,8 +31,8 @@
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/network_interfaces.h"
-#include "net/base/network_isolation_key.h"
 #include "net/base/url_util.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/log/net_log_with_source.h"
@@ -40,6 +41,10 @@
 using extensions::mojom::APIPermissionID;
 
 namespace extensions {
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kCrOSTerminal[] = "chrome-untrusted://terminal";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
@@ -85,19 +90,19 @@ int SocketApiFunction::AddSocket(Socket* socket) {
 }
 
 Socket* SocketApiFunction::GetSocket(int api_resource_id) {
-  return manager_->Get(extension_id(), api_resource_id);
+  return manager_->Get(GetOriginId(), api_resource_id);
 }
 
 void SocketApiFunction::ReplaceSocket(int api_resource_id, Socket* socket) {
-  manager_->Replace(extension_id(), api_resource_id, socket);
+  manager_->Replace(GetOriginId(), api_resource_id, socket);
 }
 
 std::unordered_set<int>* SocketApiFunction::GetSocketIds() {
-  return manager_->GetResourceIds(extension_id());
+  return manager_->GetResourceIds(GetOriginId());
 }
 
 void SocketApiFunction::RemoveSocket(int api_resource_id) {
-  manager_->Remove(extension_id(), api_resource_id);
+  manager_->Remove(GetOriginId(), api_resource_id);
 }
 
 std::unique_ptr<SocketResourceManagerInterface>
@@ -124,17 +129,10 @@ void SocketApiFunction::OpenFirewallHole(const std::string& address,
 
     AppFirewallHoleManager* manager =
         AppFirewallHoleManager::Get(browser_context());
-    std::unique_ptr<AppFirewallHole> hole(
-        manager->Open(type, local_address.port(), extension_id()).release());
-
+    std::unique_ptr<AppFirewallHole> hole =
+        manager->Open(type, local_address.port(), GetOriginId());
     if (!hole) {
       Respond(ErrorWithCode(-1, kFirewallFailure));
-      return;
-    }
-
-    Socket* socket = GetSocket(socket_id);
-    if (!socket) {
-      Respond(ErrorWithCode(-1, kSocketNotFoundError));
       return;
     }
 
@@ -152,9 +150,46 @@ ExtensionFunction::ResponseAction SocketApiFunction::Run() {
 ExtensionFunction::ResponseValue SocketApiFunction::ErrorWithCode(
     int error_code,
     const std::string& error) {
-  std::vector<base::Value> args;
-  args.emplace_back(error_code);
+  base::Value::List args;
+  args.Append(error_code);
   return ErrorWithArguments(std::move(args), error);
+}
+
+std::string SocketApiFunction::GetOriginId() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Terminal app is the only non-extension to use sockets (crbug.com/1350479).
+  if (!extension()) {
+    auto origin = url::Origin::Create(source_url()).Serialize();
+    CHECK_EQ(origin, kCrOSTerminal);
+    return origin;
+  }
+#endif
+  return extension_id();
+}
+
+bool SocketApiFunction::CheckPermission(
+    const APIPermission::CheckParam& param) const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Terminal app is the only non-extension to use sockets (crbug.com/1350479).
+  if (!extension()) {
+    CHECK_EQ(url::Origin::Create(source_url()).Serialize(), kCrOSTerminal);
+    return true;
+  }
+#endif
+  return extension()->permissions_data()->CheckAPIPermissionWithParam(
+      APIPermissionID::kSocket, &param);
+}
+
+bool SocketApiFunction::CheckRequest(
+    const content::SocketPermissionRequest& param) const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Terminal app is the only non-extension to use sockets (crbug.com/1350479).
+  if (!extension()) {
+    CHECK_EQ(url::Origin::Create(source_url()).Serialize(), kCrOSTerminal);
+    return true;
+  }
+#endif
+  return SocketsManifestData::CheckRequest(extension(), param);
 }
 
 SocketExtensionWithDnsLookupFunction::SocketExtensionWithDnsLookupFunction() =
@@ -164,7 +199,8 @@ SocketExtensionWithDnsLookupFunction::~SocketExtensionWithDnsLookupFunction() =
     default;
 
 void SocketExtensionWithDnsLookupFunction::StartDnsLookup(
-    const net::HostPortPair& host_port_pair) {
+    const net::HostPortPair& host_port_pair,
+    net::DnsQueryType dns_query_type) {
   DCHECK(!receiver_.is_bound());
 
   browser_context()
@@ -176,14 +212,22 @@ void SocketExtensionWithDnsLookupFunction::StartDnsLookup(
   DCHECK(pending_host_resolver_);
 
   host_resolver_.Bind(std::move(pending_host_resolver_));
-  url::Origin origin = url::Origin::Create(extension_->url());
-  host_resolver_->ResolveHost(host_port_pair,
-                              net::NetworkIsolationKey(origin, origin), nullptr,
-                              receiver_.BindNewPipeAndPassRemote());
-  receiver_.set_disconnect_handler(
-      base::BindOnce(&SocketExtensionWithDnsLookupFunction::OnComplete,
-                     base::Unretained(this), net::ERR_NAME_NOT_RESOLVED,
-                     net::ResolveErrorInfo(net::ERR_FAILED), absl::nullopt));
+  url::Origin origin =
+      extension() ? extension()->origin() : url::Origin::Create(source_url());
+  network::mojom::ResolveHostParametersPtr params =
+      network::mojom::ResolveHostParameters::New();
+  params->dns_query_type = dns_query_type;
+  // Intentionally using a HostPortPair because scheme isn't specified.
+  host_resolver_->ResolveHost(
+      network::mojom::HostResolverHost::NewHostPortPair(host_port_pair),
+      net::NetworkAnonymizationKey(net::SchemefulSite(origin),
+                                   net::SchemefulSite(origin)),
+      std::move(params), receiver_.BindNewPipeAndPassRemote());
+  receiver_.set_disconnect_handler(base::BindOnce(
+      &SocketExtensionWithDnsLookupFunction::OnComplete, base::Unretained(this),
+      net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
+      /*resolved_addresses=*/absl::nullopt,
+      /*endpoint_results_with_metadata=*/absl::nullopt));
 
   // Balanced in OnComplete().
   AddRef();
@@ -192,7 +236,9 @@ void SocketExtensionWithDnsLookupFunction::StartDnsLookup(
 void SocketExtensionWithDnsLookupFunction::OnComplete(
     int result,
     const net::ResolveErrorInfo& resolve_error_info,
-    const absl::optional<net::AddressList>& resolved_addresses) {
+    const absl::optional<net::AddressList>& resolved_addresses,
+    const absl::optional<net::HostResolverEndpointResults>&
+        endpoint_results_with_metadata) {
   host_resolver_.reset();
   receiver_.reset();
   if (result == net::OK) {
@@ -216,7 +262,7 @@ ExtensionFunction::ResponseAction SocketCreateFunction::Work() {
   Socket* socket = nullptr;
   switch (params->type) {
     case extensions::api::socket::SOCKET_TYPE_TCP:
-      socket = new TCPSocket(browser_context(), extension_id());
+      socket = new TCPSocket(browser_context(), GetOriginId());
       break;
 
     case extensions::api::socket::SOCKET_TYPE_UDP: {
@@ -232,7 +278,7 @@ ExtensionFunction::ResponseAction SocketCreateFunction::Work() {
                             std::move(listener_remote));
       socket =
           new UDPSocket(std::move(udp_socket),
-                        std::move(socket_listener_receiver), extension_id());
+                        std::move(socket_listener_receiver), GetOriginId());
       break;
     }
     case extensions::api::socket::SOCKET_TYPE_NONE:
@@ -298,12 +344,12 @@ ExtensionFunction::ResponseAction SocketConnectFunction::Work() {
   }
 
   SocketPermission::CheckParam param(operation_type, hostname_, port_);
-  if (!extension()->permissions_data()->CheckAPIPermissionWithParam(
-          APIPermissionID::kSocket, &param)) {
+  if (!CheckPermission(param)) {
     return RespondNow(ErrorWithCode(-1, kPermissionError));
   }
 
-  StartDnsLookup(net::HostPortPair(hostname_, port_));
+  StartDnsLookup(net::HostPortPair(hostname_, port_),
+                 net::DnsQueryType::UNSPECIFIED);
   return RespondLater();
 }
 
@@ -341,8 +387,8 @@ ExtensionFunction::ResponseAction SocketDisconnectFunction::Work() {
     socket->Disconnect(false /* socket_destroying */);
     return RespondNow(OneArgument(base::Value()));
   } else {
-    std::vector<base::Value> args;
-    args.emplace_back();
+    base::Value::List args;
+    args.Append(base::Value());
     return RespondNow(
         ErrorWithArguments(std::move(args), kSocketNotFoundError));
   }
@@ -425,8 +471,7 @@ ExtensionFunction::ResponseAction SocketListenFunction::Work() {
     return RespondNow(ErrorWithCode(-1, kPermissionError));
   }
 
-  socket->Listen(params_->address, params_->port,
-                 params_->backlog.get() ? *params_->backlog : 5,
+  socket->Listen(params_->address, params_->port, params_->backlog.value_or(5),
                  base::BindOnce(&SocketListenFunction::OnCompleted, this));
   return RespondLater();
 }
@@ -483,7 +528,7 @@ void SocketAcceptFunction::OnAccept(
   if (result_code == net::OK) {
     Socket* client_socket =
         new TCPSocket(std::move(socket), std::move(receive_pipe_handle),
-                      std::move(send_pipe_handle), remote_addr, extension_id());
+                      std::move(send_pipe_handle), remote_addr, GetOriginId());
     result.SetIntKey(kSocketIdKey, AddSocket(client_socket));
   }
   Respond(OneArgument(std::move(result)));
@@ -506,7 +551,7 @@ ExtensionFunction::ResponseAction SocketReadFunction::Work() {
         api::socket::Read::Results::Create(info), kSocketNotFoundError));
   }
 
-  socket->Read(params->buffer_size.get() ? *params->buffer_size : 4096,
+  socket->Read(params->buffer_size.value_or(4096),
                base::BindOnce(&SocketReadFunction::OnCompleted, this));
   return RespondLater();
 }
@@ -578,7 +623,7 @@ ExtensionFunction::ResponseAction SocketRecvFromFunction::Work() {
         api::socket::RecvFrom::Results::Create(info), kSocketNotFoundError));
   }
 
-  socket->RecvFrom(params->buffer_size.get() ? *params->buffer_size : 4096,
+  socket->RecvFrom(params->buffer_size.value_or(4096),
                    base::BindOnce(&SocketRecvFromFunction::OnCompleted, this));
   return RespondLater();
 }
@@ -635,13 +680,13 @@ ExtensionFunction::ResponseAction SocketSendToFunction::Work() {
   if (socket->GetSocketType() == Socket::TYPE_UDP) {
     SocketPermission::CheckParam param(
         SocketPermissionRequest::UDP_SEND_TO, hostname_, port_);
-    if (!extension()->permissions_data()->CheckAPIPermissionWithParam(
-            APIPermissionID::kSocket, &param)) {
+    if (!CheckPermission(param)) {
       return RespondNow(ErrorWithCode(-1, kPermissionError));
     }
   }
 
-  StartDnsLookup(net::HostPortPair(hostname_, port_));
+  StartDnsLookup(net::HostPortPair(hostname_, port_),
+                 net::DnsQueryType::UNSPECIFIED);
   return RespondLater();
 }
 
@@ -686,7 +731,7 @@ ExtensionFunction::ResponseAction SocketSetKeepAliveFunction::Work() {
                            kSocketNotFoundError));
   }
   int delay = 0;
-  if (params->delay.get())
+  if (params->delay)
     delay = *params->delay;
   socket->SetKeepAlive(
       params->enable, delay,
@@ -750,17 +795,15 @@ ExtensionFunction::ResponseAction SocketGetInfoFunction::Work() {
   // that it should be closed locally.
   net::IPEndPoint peerAddress;
   if (socket->GetPeerAddress(&peerAddress)) {
-    info.peer_address =
-        std::make_unique<std::string>(peerAddress.ToStringWithoutPort());
-    info.peer_port = std::make_unique<int>(peerAddress.port());
+    info.peer_address = peerAddress.ToStringWithoutPort();
+    info.peer_port = peerAddress.port();
   }
 
   // Grab the local address as known by the OS.
   net::IPEndPoint localAddress;
   if (socket->GetLocalAddress(&localAddress)) {
-    info.local_address =
-        std::make_unique<std::string>(localAddress.ToStringWithoutPort());
-    info.local_port = std::make_unique<int>(localAddress.port());
+    info.local_address = localAddress.ToStringWithoutPort();
+    info.local_port = localAddress.port();
   }
 
   return RespondNow(ArgumentList(api::socket::GetInfo::Results::Create(info)));
@@ -818,8 +861,7 @@ ExtensionFunction::ResponseAction SocketJoinGroupFunction::Work() {
       kWildcardAddress,
       kWildcardPort);
 
-  if (!extension()->permissions_data()->CheckAPIPermissionWithParam(
-          APIPermissionID::kSocket, &param)) {
+  if (!CheckPermission(param)) {
     return RespondNow(ErrorWithCode(-1, kPermissionError));
   }
 
@@ -860,8 +902,7 @@ ExtensionFunction::ResponseAction SocketLeaveGroupFunction::Work() {
       SocketPermissionRequest::UDP_MULTICAST_MEMBERSHIP,
       kWildcardAddress,
       kWildcardPort);
-  if (!extension()->permissions_data()->CheckAPIPermissionWithParam(
-          APIPermissionID::kSocket, &param)) {
+  if (!CheckPermission(param)) {
     return RespondNow(ErrorWithCode(-1, kPermissionError));
   }
 
@@ -960,8 +1001,7 @@ ExtensionFunction::ResponseAction SocketGetJoinedGroupsFunction::Work() {
       SocketPermissionRequest::UDP_MULTICAST_MEMBERSHIP,
       kWildcardAddress,
       kWildcardPort);
-  if (!extension()->permissions_data()->CheckAPIPermissionWithParam(
-          APIPermissionID::kSocket, &param)) {
+  if (!CheckPermission(param)) {
     return RespondNow(ErrorWithCode(-1, kPermissionError));
   }
 
@@ -1001,7 +1041,7 @@ ExtensionFunction::ResponseAction SocketSecureFunction::Work() {
 
   TCPSocket* tcp_socket = static_cast<TCPSocket*>(socket);
   tcp_socket->UpgradeToTLS(
-      params_->options.get(),
+      base::OptionalToPtr(params_->options),
       base::BindOnce(&SocketSecureFunction::TlsConnectDone, this));
   return RespondLater();
 }
@@ -1022,7 +1062,7 @@ void SocketSecureFunction::TlsConnectDone(
   auto socket =
       std::make_unique<TLSSocket>(std::move(tls_socket), local_addr, peer_addr,
                                   std::move(receive_pipe_handle),
-                                  std::move(send_pipe_handle), extension_id());
+                                  std::move(send_pipe_handle), GetOriginId());
   ReplaceSocket(params_->socket_id, socket.release());
   Respond(OneArgument(base::Value(result)));
 }

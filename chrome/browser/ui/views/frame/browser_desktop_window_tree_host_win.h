@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
@@ -75,6 +76,7 @@ class BrowserDesktopWindowTreeHostWin
   views::FrameMode GetFrameMode() const override;
   bool ShouldUseNativeFrame() const override;
   bool ShouldWindowContentsBeTransparent() const override;
+  void HandleWindowMinimizedOrRestored(bool restored) override;
 
   // ProfileAttributesStorage::Observer:
   void OnProfileAvatarChanged(const base::FilePath& profile_path) override;
@@ -90,8 +92,8 @@ class BrowserDesktopWindowTreeHostWin
 
   void SetWindowIcon(bool badged);
 
-  BrowserView* browser_view_;
-  BrowserFrame* browser_frame_;
+  raw_ptr<BrowserView> browser_view_;
+  raw_ptr<BrowserFrame> browser_frame_;
 
   MinimizeButtonMetrics minimize_button_metrics_;
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,16 +8,17 @@
 
 #include "base/test/bind.h"
 #include "base/test/simple_test_clock.h"
+#include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
+#include "chrome/browser/apps/app_service/publisher_host.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
-#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_install_finalizer.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
-#include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -116,17 +118,15 @@ auto MakeActivity(const base::Time& start_time, const base::Time& end_time) {
   return time_period;
 }
 
-apps::mojom::AppPtr MakeApp(const std::string& app_id,
-                            const std::string& name,
-                            apps::mojom::Readiness readiness,
-                            const std::string& version,
-                            apps::mojom::AppType app_type) {
-  auto app = apps::mojom::App::New();
-  app->app_id = app_id;
+apps::AppPtr MakeApp(const std::string& app_id,
+                     const std::string& name,
+                     apps::Readiness readiness,
+                     const std::string& version,
+                     apps::AppType app_type) {
+  auto app = std::make_unique<apps::App>(app_type, app_id);
   app->name = name;
   app->readiness = readiness;
   app->version = version;
-  app->app_type = app_type;
   return app;
 }
 
@@ -139,19 +139,19 @@ class AppInfoGeneratorTest : public ::testing::Test {
   AppInfoGeneratorTest() = default;
 
  protected:
-  void PushApp(apps::mojom::AppPtr app) {
-    apps::mojom::AppType app_type = app->app_type;
-    std::vector<apps::mojom::AppPtr> deltas;
+  void PushApp(apps::AppPtr app) {
+    apps::AppType app_type = app->app_type;
+    std::vector<apps::AppPtr> deltas;
     deltas.push_back(std::move(app));
     GetCache().OnApps(std::move(deltas), app_type,
-                      false /* should_notify_initialized */);
+                      /*should_notify_initialized=*/false);
   }
 
   void PushApp(const std::string& app_id,
                const std::string& name,
-               apps::mojom::Readiness readiness,
+               apps::Readiness readiness,
                const std::string& version,
-               apps::mojom::AppType app_type) {
+               apps::AppType app_type) {
     PushApp(MakeApp(app_id, name, readiness, version, app_type));
   }
 
@@ -161,8 +161,7 @@ class AppInfoGeneratorTest : public ::testing::Test {
       window_ = std::make_unique<aura::Window>(nullptr);
       window_->Init(ui::LAYER_NOT_DRAWN);
       instance_ = std::make_unique<apps::Instance>(
-          app_id,
-          apps::Instance::InstanceKey::ForWindowBasedApp(window_.get()));
+          app_id, base::UnguessableToken::Create(), window_.get());
     }
 
     apps::Instance* instance() const { return instance_.get(); }
@@ -176,9 +175,7 @@ class AppInfoGeneratorTest : public ::testing::Test {
     auto clone = instance.instance()->Clone();
     clone->UpdateState(state, time);
 
-    std::vector<std::unique_ptr<apps::Instance>> deltas;
-    deltas.push_back(std::move(clone));
-    GetInstanceRegistry().OnInstances(deltas);
+    GetInstanceRegistry().OnInstance(std::move(clone));
   }
 
   std::unique_ptr<TestingProfile> CreateProfile(const AccountId& account_id,
@@ -201,24 +198,11 @@ class AppInfoGeneratorTest : public ::testing::Test {
     profile_ = CreateProfile(account_id_);
     test_clock().SetNow(MakeLocalTime("25-MAR-2020 1:30am"));
 
-    web_app::WebAppProviderFactory::GetInstance()->SetTestingFactoryAndUse(
-        profile_.get(),
-        base::BindLambdaForTesting([this](content::BrowserContext* context)
-                                       -> std::unique_ptr<KeyedService> {
-          Profile* profile = Profile::FromBrowserContext(context);
-          auto provider =
-              std::make_unique<web_app::FakeWebAppProvider>(profile);
-          auto app_registrar =
-              std::make_unique<web_app::WebAppRegistrarMutable>(profile);
-          auto system_web_app_manager =
-              std::make_unique<web_app::TestSystemWebAppManager>(profile);
+    auto* provider = web_app::FakeWebAppProvider::Get(profile_.get());
+    provider->SetRunSubsystemStartupTasks(true);
+    provider->Start();
 
-          app_registrar_ = app_registrar.get();
-          provider->SetRegistrar(std::move(app_registrar));
-          provider->SetSystemWebAppManager(std::move(system_web_app_manager));
-          provider->Start();
-          return provider;
-        }));
+    app_registrar_ = &provider->GetRegistrarMutable();
   }
 
   apps::AppRegistryCache& GetCache() {
@@ -278,6 +262,7 @@ class AppInfoGeneratorTest : public ::testing::Test {
   base::SimpleTestClock& test_clock() { return test_clock_; }
 
  private:
+  apps::ScopedOmitBorealisAppsForTesting scoped_omit_borealis_apps_for_testing_;
   apps::ScopedOmitBuiltInAppsForTesting scoped_omit_built_in_apps_for_testing_;
   apps::ScopedOmitPluginVmAppsForTesting
       scoped_omit_plugin_vm_apps_for_testing_;
@@ -295,12 +280,12 @@ class AppInfoGeneratorTest : public ::testing::Test {
 };
 
 TEST_F(AppInfoGeneratorTest, GenerateInventoryList) {
-  PushApp("a", "FirstApp", apps::mojom::Readiness::kDisabledByPolicy, "1.1",
-          apps::mojom::AppType::kArc);
-  PushApp("b", "SecondApp", apps::mojom::Readiness::kReady, "1.2",
-          apps::mojom::AppType::kExtension);
-  PushApp("c", "ThirdApp", apps::mojom::Readiness::kUninstalledByUser, "",
-          apps::mojom::AppType::kCrostini);
+  PushApp("a", "FirstApp", apps::Readiness::kDisabledByPolicy, "1.1",
+          apps::AppType::kArc);
+  PushApp("b", "SecondApp", apps::Readiness::kReady, "1.2",
+          apps::AppType::kChromeApp);
+  PushApp("c", "ThirdApp", apps::Readiness::kUninstalledByUser, "",
+          apps::AppType::kCrostini);
 
   user_manager()->LoginUser(account_id(), true);
   auto generator = GetReadyGenerator();
@@ -321,12 +306,12 @@ TEST_F(AppInfoGeneratorTest, GenerateWebApp) {
   auto generator = GetReadyGenerator();
   web_app::AppId app_id;
   {
-    auto web_app = web_app::test::CreateWebApp(GURL("http://app.com/app/path"),
-                                               web_app::Source::kDefault);
+    auto web_app = web_app::test::CreateWebApp(
+        GURL("http://app.com/app/path"), web_app::WebAppManagement::kDefault);
     app_id = web_app->app_id();
-    auto app = MakeApp(web_app->app_id(), "App",
-                       apps::mojom::Readiness::kUninstalledByUser, "",
-                       apps::mojom::AppType::kWeb);
+    auto app =
+        MakeApp(web_app->app_id(), "App", apps::Readiness::kUninstalledByUser,
+                "", apps::AppType::kWeb);
     // For web apps, |publisher_id| is set to the start URL.
     app->publisher_id = web_app->start_url().spec();
     PushApp(std::move(app));
@@ -356,12 +341,12 @@ TEST_F(AppInfoGeneratorTest, GenerateSystemWebApp) {
   auto generator = GetReadyGenerator();
   web_app::AppId app_id;
   {
-    auto web_app = web_app::test::CreateWebApp(GURL("http://app.com/app/path"),
-                                               web_app::Source::kDefault);
+    auto web_app = web_app::test::CreateWebApp(
+        GURL("http://app.com/app/path"), web_app::WebAppManagement::kDefault);
     app_id = web_app->app_id();
-    auto app = MakeApp(web_app->app_id(), "App",
-                       apps::mojom::Readiness::kUninstalledByUser, "",
-                       apps::mojom::AppType::kSystemWeb);
+    auto app =
+        MakeApp(web_app->app_id(), "App", apps::Readiness::kUninstalledByUser,
+                "", apps::AppType::kSystemWeb);
     // For system web apps, |publisher_id| is set to the start URL.
     app->publisher_id = web_app->start_url().spec();
     PushApp(std::move(app));
@@ -389,8 +374,8 @@ TEST_F(AppInfoGeneratorTest, GenerateSystemWebApp) {
 TEST_F(AppInfoGeneratorTest, MultipleInstances) {
   user_manager()->LoginUser(account_id(), true);
   auto generator = GetReadyGenerator();
-  PushApp("a", "FirstApp", apps::mojom::Readiness::kDisabledByPolicy, "1.1",
-          apps::mojom::AppType::kArc);
+  PushApp("a", "FirstApp", apps::Readiness::kDisabledByPolicy, "1.1",
+          apps::AppType::kArc);
   Instance app_instance("a");
   Instance app_instance2("a");
   test_clock().SetNow(MakeLocalTime("29-MAR-2020 1:30pm"));
@@ -415,8 +400,8 @@ TEST_F(AppInfoGeneratorTest, MultipleInstances) {
 
 TEST_F(AppInfoGeneratorTest, ShouldNotReport) {
   user_manager()->LoginUser(account_id(), true);
-  PushApp("a", "FirstApp", apps::mojom::Readiness::kDisabledByPolicy, "1.1",
-          apps::mojom::AppType::kArc);
+  PushApp("a", "FirstApp", apps::Readiness::kDisabledByPolicy, "1.1",
+          apps::AppType::kArc);
 
   auto generator = GetGenerator();
   generator->OnReportingChanged(false);
@@ -432,8 +417,8 @@ TEST_F(AppInfoGeneratorTest, UnaffiliatedUser) {
   auto unaffiliated_profile =
       CreateProfile(unaffiliated_account_id, /* is_affiliated= */ false);
   user_manager()->LoginUser(unaffiliated_account_id, true);
-  PushApp("a", "FirstApp", apps::mojom::Readiness::kDisabledByPolicy, "1.1",
-          apps::mojom::AppType::kArc);
+  PushApp("a", "FirstApp", apps::Readiness::kDisabledByPolicy, "1.1",
+          apps::AppType::kArc);
 
   auto generator = GetGenerator();
   generator->OnReportingChanged(true);
@@ -449,8 +434,8 @@ TEST_F(AppInfoGeneratorTest, SecondaryUser) {
   auto secondary_profile =
       CreateProfile(secondary_account_id, /* is_affiliated= */ true);
   user_manager()->LoginUser(secondary_account_id, true);
-  PushApp("a", "FirstApp", apps::mojom::Readiness::kDisabledByPolicy, "1.1",
-          apps::mojom::AppType::kArc);
+  PushApp("a", "FirstApp", apps::Readiness::kDisabledByPolicy, "1.1",
+          apps::AppType::kArc);
 
   auto generator = GetGenerator();
   generator->OnReportingChanged(true);
@@ -463,8 +448,8 @@ TEST_F(AppInfoGeneratorTest, SecondaryUser) {
 TEST_F(AppInfoGeneratorTest, OnReportedSuccessfully) {
   user_manager()->LoginUser(account_id(), true);
   auto generator = GetReadyGenerator();
-  PushApp("a", "FirstApp", apps::mojom::Readiness::kDisabledByPolicy, "1.1",
-          apps::mojom::AppType::kArc);
+  PushApp("a", "FirstApp", apps::Readiness::kDisabledByPolicy, "1.1",
+          apps::AppType::kArc);
   Instance app_instance("a");
   test_clock().SetNow(MakeLocalTime("29-MAR-2020 3:30pm"));
   PushAppInstance(app_instance, apps::InstanceState::kStarted);
@@ -493,8 +478,8 @@ TEST_F(AppInfoGeneratorTest, OnReportedSuccessfully) {
 TEST_F(AppInfoGeneratorTest, OnWillReport) {
   user_manager()->LoginUser(account_id(), true);
   auto generator = GetReadyGenerator();
-  PushApp("a", "FirstApp", apps::mojom::Readiness::kDisabledByPolicy, "1.1",
-          apps::mojom::AppType::kArc);
+  PushApp("a", "FirstApp", apps::Readiness::kDisabledByPolicy, "1.1",
+          apps::AppType::kArc);
   Instance app_instance("a");
   test_clock().SetNow(MakeLocalTime("29-MAR-2020 3:30pm"));
   PushAppInstance(app_instance, static_cast<apps::InstanceState>(
@@ -529,10 +514,88 @@ TEST_F(AppInfoGeneratorTest, OnWillReport) {
                                       MakeUTCTime("31-MAR-2020 8:30pm"))})));
 }
 
+TEST_F(AppInfoGeneratorTest, OnWillReport_DeviceLocked) {
+  user_manager()->LoginUser(account_id(), true);
+  auto generator = GetReadyGenerator();
+  PushApp("a", "FirstApp", apps::Readiness::kDisabledByPolicy, "1.1",
+          apps::AppType::kArc);
+  Instance app_instance("a");
+  test_clock().SetNow(MakeLocalTime("29-MAR-2020 3:00pm"));
+  PushAppInstance(app_instance, apps::InstanceState::kStarted);
+
+  test_clock().SetNow(MakeLocalTime("29-MAR-2020 4:00pm"));
+  generator->OnLocked();
+
+  test_clock().SetNow(MakeLocalTime("29-MAR-2020 5:00pm"));
+  generator->OnWillReport();
+  auto result1 = generator->Generate();
+
+  test_clock().SetNow(MakeLocalTime("29-MAR-2020 7:00pm"));
+  generator->OnUnlocked();
+
+  test_clock().SetNow(MakeLocalTime("29-MAR-2020 7:30pm"));
+  PushAppInstance(app_instance, apps::InstanceState::kDestroyed);
+  auto result2 = generator->Generate();
+
+  EXPECT_THAT(
+      result1.value(),
+      ElementsAre(EqApp("a", "FirstApp", em::AppInfo_Status_STATUS_DISABLED,
+                        "1.1", em::AppInfo_AppType_TYPE_ARC,
+                        {MakeActivity(MakeUTCTime("29-MAR-2020 12:00am"),
+                                      MakeUTCTime("29-MAR-2020 1:00am"))})));
+
+  EXPECT_THAT(
+      result2.value(),
+      ElementsAre(EqApp("a", "FirstApp", em::AppInfo_Status_STATUS_DISABLED,
+                        "1.1", em::AppInfo_AppType_TYPE_ARC,
+                        {MakeActivity(MakeUTCTime("29-MAR-2020 12:00am"),
+                                      MakeUTCTime("29-MAR-2020 1:30am"))})));
+}
+
+TEST_F(AppInfoGeneratorTest, OnResumeActive_DeviceLocked) {
+  user_manager()->LoginUser(account_id(), true);
+  auto generator = GetReadyGenerator();
+  PushApp("a", "FirstApp", apps::Readiness::kDisabledByPolicy, "1.1",
+          apps::AppType::kArc);
+  Instance app_instance("a");
+  test_clock().SetNow(MakeLocalTime("29-MAR-2020 3:00pm"));
+  PushAppInstance(app_instance, apps::InstanceState::kStarted);
+
+  test_clock().SetNow(MakeLocalTime("29-MAR-2020 4:00pm"));
+  generator->OnLocked();
+
+  auto suspend_time = MakeLocalTime("29-MAR-2020 5:00pm");
+
+  test_clock().SetNow(MakeLocalTime("29-MAR-2020 6:00pm"));
+  generator->OnResumeActive(suspend_time);
+  auto result1 = generator->Generate();
+
+  test_clock().SetNow(MakeLocalTime("29-MAR-2020 7:00pm"));
+  generator->OnUnlocked();
+
+  test_clock().SetNow(MakeLocalTime("29-MAR-2020 7:30pm"));
+  PushAppInstance(app_instance, apps::InstanceState::kDestroyed);
+  auto result2 = generator->Generate();
+
+  EXPECT_THAT(
+      result1.value(),
+      ElementsAre(EqApp("a", "FirstApp", em::AppInfo_Status_STATUS_DISABLED,
+                        "1.1", em::AppInfo_AppType_TYPE_ARC,
+                        {MakeActivity(MakeUTCTime("29-MAR-2020 12:00am"),
+                                      MakeUTCTime("29-MAR-2020 1:00am"))})));
+
+  EXPECT_THAT(
+      result2.value(),
+      ElementsAre(EqApp("a", "FirstApp", em::AppInfo_Status_STATUS_DISABLED,
+                        "1.1", em::AppInfo_AppType_TYPE_ARC,
+                        {MakeActivity(MakeUTCTime("29-MAR-2020 12:00am"),
+                                      MakeUTCTime("29-MAR-2020 1:30am"))})));
+}
+
 TEST_F(AppInfoGeneratorTest, OnLogoutOnLogin) {
   user_manager()->LoginUser(account_id(), true);
-  PushApp("a", "FirstApp", apps::mojom::Readiness::kDisabledByPolicy, "1.1",
-          apps::mojom::AppType::kArc);
+  PushApp("a", "FirstApp", apps::Readiness::kDisabledByPolicy, "1.1",
+          apps::AppType::kArc);
   auto generator = GetGenerator();
   generator->OnReportingChanged(true);
   generator->OnLogin(profile());
@@ -569,8 +632,8 @@ TEST_F(AppInfoGeneratorTest, OnLogoutOnLogin) {
 TEST_F(AppInfoGeneratorTest, OnLocked) {
   user_manager()->LoginUser(account_id(), true);
   auto generator = GetReadyGenerator();
-  PushApp("a", "FirstApp", apps::mojom::Readiness::kDisabledByPolicy, "1.1",
-          apps::mojom::AppType::kArc);
+  PushApp("a", "FirstApp", apps::Readiness::kDisabledByPolicy, "1.1",
+          apps::AppType::kArc);
   Instance app_instance("a");
   test_clock().SetNow(MakeLocalTime("29-MAR-2020 3:30pm"));
   PushAppInstance(app_instance, apps::InstanceState::kStarted);
@@ -592,8 +655,8 @@ TEST_F(AppInfoGeneratorTest, OnLocked) {
 TEST_F(AppInfoGeneratorTest, OnUnlocked) {
   user_manager()->LoginUser(account_id(), true);
   auto generator = GetReadyGenerator();
-  PushApp("a", "FirstApp", apps::mojom::Readiness::kDisabledByPolicy, "1.1",
-          apps::mojom::AppType::kArc);
+  PushApp("a", "FirstApp", apps::Readiness::kDisabledByPolicy, "1.1",
+          apps::AppType::kArc);
   Instance app_instance("a");
   test_clock().SetNow(MakeLocalTime("29-MAR-2020 3:30pm"));
   PushAppInstance(app_instance, apps::InstanceState::kStarted);
@@ -621,8 +684,8 @@ TEST_F(AppInfoGeneratorTest, OnUnlocked) {
 TEST_F(AppInfoGeneratorTest, OnResumeActive) {
   user_manager()->LoginUser(account_id(), true);
   auto generator = GetReadyGenerator();
-  PushApp("a", "FirstApp", apps::mojom::Readiness::kDisabledByPolicy, "1.1",
-          apps::mojom::AppType::kArc);
+  PushApp("a", "FirstApp", apps::Readiness::kDisabledByPolicy, "1.1",
+          apps::AppType::kArc);
   Instance app_instance("a");
   test_clock().SetNow(MakeLocalTime("29-MAR-2020 3:30pm"));
   PushAppInstance(app_instance, apps::InstanceState::kStarted);
@@ -649,10 +712,10 @@ TEST_F(AppInfoGeneratorTest, OnResumeActive) {
 
 TEST_F(AppInfoGeneratorTest, OnLoginRemoveOldUsage) {
   user_manager()->LoginUser(account_id(), true);
-  PushApp("a", "FirstApp", apps::mojom::Readiness::kDisabledByPolicy, "1.1",
-          apps::mojom::AppType::kArc);
-  PushApp("b", "SecondApp", apps::mojom::Readiness::kReady, "1.2",
-          apps::mojom::AppType::kExtension);
+  PushApp("a", "FirstApp", apps::Readiness::kDisabledByPolicy, "1.1",
+          apps::AppType::kArc);
+  PushApp("b", "SecondApp", apps::Readiness::kReady, "1.2",
+          apps::AppType::kChromeApp);
   auto max_days_past = base::Days(
       1);  // Exclude all past usage except for UTC today and yesterday.
   auto generator = GetGenerator(max_days_past);

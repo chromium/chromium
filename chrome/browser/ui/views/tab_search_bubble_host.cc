@@ -1,15 +1,18 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
 
 #include "base/bind.h"
+#include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
+#include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/event_constants.h"
@@ -50,8 +53,7 @@ TabSearchBubbleHost::TabSearchBubbleHost(views::Button* button,
       webui_bubble_manager_(button,
                             profile,
                             GURL(chrome::kChromeUITabSearchURL),
-                            IDS_ACCNAME_TAB_SEARCH,
-                            true),
+                            IDS_ACCNAME_TAB_SEARCH),
       widget_open_timer_(base::BindRepeating([](base::TimeDelta time_elapsed) {
         base::UmaHistogramMediumTimes("Tabs.TabSearch.WindowDisplayedDuration3",
                                       time_elapsed);
@@ -102,13 +104,27 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
     return false;
 
   // Close the Tab Search IPH if it is showing.
-  FeaturePromoControllerViews* controller =
-      FeaturePromoControllerViews::GetForView(button_);
+  BrowserFeaturePromoController* controller =
+      BrowserFeaturePromoController::GetForView(button_);
   if (controller)
-    controller->CloseBubble(feature_engagement::kIPHTabSearchFeature);
+    controller->EndPromo(feature_engagement::kIPHTabSearchFeature);
+
+  absl::optional<gfx::Rect> anchor;
+  if (button_->GetWidget()->IsFullscreen() && !button_->IsDrawn()) {
+    // Use a screen-coordinate anchor rect when the tabstrip's search button is
+    // not drawn, and potentially positioned offscreen, in fullscreen mode.
+    // Place the anchor similar to where the button would be in non-fullscreen
+    // mode.
+    gfx::Rect bounds = button_->GetWidget()->GetWorkAreaBoundsInScreen();
+    int offset = GetLayoutConstant(TABSTRIP_REGION_VIEW_CONTROL_PADDING);
+
+    int x = base::i18n::IsRTL() ? bounds.x() + offset : bounds.right() - offset;
+
+    anchor.emplace(gfx::Rect(x, bounds.y() + offset, 0, 0));
+  }
 
   bubble_created_time_ = base::TimeTicks::Now();
-  webui_bubble_manager_.ShowBubble();
+  webui_bubble_manager_.ShowBubble(anchor, kTabSearchBubbleElementId);
 
   auto* tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(profile_);

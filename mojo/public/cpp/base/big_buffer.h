@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -65,6 +64,12 @@ class COMPONENT_EXPORT(MOJO_BASE) BigBufferSharedMemoryRegion {
 // exposes simple |data()| and |size()| accessors akin to what common container
 // types provide. Users do not need to be concerned with the actual backing
 // storage used to implement this interface.
+//
+// SECURITY NOTE: When shmem is backing the message, it may be writable in the
+// sending process while being read in the receiving process. If a BigBuffer is
+// received from an untrustworthy process, you should make a copy of the data
+// before processing it to avoid time-of-check time-of-use (TOCTOU) bugs.
+// The |size()| of the data cannot be manipulated.
 class COMPONENT_EXPORT(MOJO_BASE) BigBuffer {
  public:
   static constexpr size_t kMaxInlineBytes = 64 * 1024;
@@ -167,7 +172,7 @@ class COMPONENT_EXPORT(MOJO_BASE) BigBufferView {
   void SetSharedMemory(internal::BigBufferSharedMemoryRegion shared_memory);
 
   // Converts to a BigBuffer which owns the viewed data. May have to copy data.
-  static BigBuffer ToBigBuffer(BigBufferView view) WARN_UNUSED_RESULT;
+  [[nodiscard]] static BigBuffer ToBigBuffer(BigBufferView view);
 
   BigBuffer::StorageType storage_type() const { return storage_type_; }
 

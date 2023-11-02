@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -131,14 +131,12 @@ public abstract class ListItem {
     /**
      * The type of the section header.
      */
-    @IntDef({SectionHeaderType.INVALID, SectionHeaderType.DATE, SectionHeaderType.JUST_NOW,
-            SectionHeaderType.SCHEDULED_LATER})
+    @IntDef({SectionHeaderType.INVALID, SectionHeaderType.DATE, SectionHeaderType.JUST_NOW})
     @Retention(RetentionPolicy.SOURCE)
     public @interface SectionHeaderType {
         int INVALID = -1;
         int DATE = 0;
         int JUST_NOW = 1;
-        int SCHEDULED_LATER = 2;
     }
 
     /** A {@link ListItem} representing a section header. */
@@ -161,8 +159,6 @@ public abstract class ListItem {
                     return hash + SECTION_HEADER_HASH_CODE_OFFSET;
                 case SectionHeaderType.JUST_NOW:
                     return StableIds.JUST_NOW_SECTION;
-                case SectionHeaderType.SCHEDULED_LATER:
-                    return StableIds.SCHEDULE_LATER_SECTION;
             }
             assert false : "Unknown section header type.";
             return -1;

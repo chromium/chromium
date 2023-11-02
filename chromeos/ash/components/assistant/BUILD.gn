@@ -1,0 +1,21 @@
+# Copyright 2018 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ash/ambient/resources/resources.gni")
+import("//build/buildflag_header.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//chromeos/ash/components/assistant/ambient.gni")
+import("//chromeos/ash/components/assistant/assistant.gni")
+
+assert(is_chromeos_ash, "Non Chrome OS builds cannot depend on //chromeos/ash")
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+
+  flags = [
+    "ENABLE_CROS_LIBASSISTANT=$enable_cros_libassistant",
+    "ENABLE_CROS_AMBIENT_MODE_BACKEND=$enable_cros_ambient_mode_backend",
+    "HAS_ASH_AMBIENT_ANIMATION_RESOURCES=$include_ash_ambient_animation_resources",
+  ]
+}

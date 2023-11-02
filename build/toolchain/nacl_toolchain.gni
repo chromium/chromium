@@ -49,7 +49,7 @@ template("nacl_toolchain") {
       # We do not support component builds with the NaCl toolchains.
       is_component_build = false
 
-      # We do not support tcmalloc in the NaCl toolchains.
+      # We do not replace the allocator when using NaCl toolchains.
       use_allocator = "none"
       use_allocator_shim = false
 

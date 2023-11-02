@@ -1,9 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {metrics} from '../../common/js/metrics.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+
 import {DirectoryModel} from './directory_model.js';
-import {CommandHandler} from './file_manager_commands.js';
 import {FileSelectionHandler} from './file_selection.js';
 import {SpinnerController} from './spinner_controller.js';
 import {ListContainer} from './ui/list_container.js';
@@ -16,12 +18,10 @@ export class ScanController {
    * @param {!DirectoryModel} directoryModel
    * @param {!ListContainer} listContainer
    * @param {!SpinnerController} spinnerController
-   * @param {!CommandHandler} commandHandler
    * @param {!FileSelectionHandler} selectionHandler
    */
   constructor(
-      directoryModel, listContainer, spinnerController, commandHandler,
-      selectionHandler) {
+      directoryModel, listContainer, spinnerController, selectionHandler) {
     /** @private @const {!DirectoryModel} */
     this.directoryModel_ = directoryModel;
 
@@ -30,9 +30,6 @@ export class ScanController {
 
     /** @private @const {!SpinnerController} */
     this.spinnerController_ = spinnerController;
-
-    /** @private @const {!CommandHandler} */
-    this.commandHandler_ = commandHandler;
 
     /** @private @const {!FileSelectionHandler} */
     this.selectionHandler_ = selectionHandler;
@@ -82,6 +79,14 @@ export class ScanController {
           'scan-started', this.directoryModel_.getCurrentDirName());
     }
 
+    const volumeInfo = this.directoryModel_.getCurrentVolumeInfo();
+    if (volumeInfo &&
+        (volumeInfo.volumeType === VolumeManagerCommon.VolumeType.DOWNLOADS ||
+         volumeInfo.volumeType === VolumeManagerCommon.VolumeType.MY_FILES)) {
+      metrics.startInterval(
+          `DirectoryListLoad.${VolumeManagerCommon.RootType.MY_FILES}`);
+    }
+
     this.listContainer_.startBatchUpdates();
     this.scanInProgress_ = true;
 
@@ -100,7 +105,7 @@ export class ScanController {
    */
   onScanCompleted_() {
     if (!this.scanInProgress_) {
-      console.error('Scan-completed event received. But scan is not started.');
+      console.warn('Scan-completed event received. But scan is not started.');
       return;
     }
 
@@ -119,6 +124,21 @@ export class ScanController {
 
     this.scanInProgress_ = false;
     this.listContainer_.endBatchUpdates();
+
+    // TODO(crbug.com/1290197): Currently we only care about the load time for
+    // local files, filter out all the other root types.
+    if (this.directoryModel_.getCurrentDirEntry()) {
+      const volumeInfo = this.directoryModel_.getCurrentVolumeInfo();
+      if (volumeInfo &&
+          (volumeInfo.volumeType === VolumeManagerCommon.VolumeType.DOWNLOADS ||
+           volumeInfo.volumeType === VolumeManagerCommon.VolumeType.MY_FILES)) {
+        const metricName =
+            `DirectoryListLoad.${VolumeManagerCommon.RootType.MY_FILES}`;
+        metrics.recordDirectoryListLoadWithTolerance(
+            metricName, this.directoryModel_.getFileList().length,
+            [10, 100, 1000], /*tolerance=*/ 0.2);
+      }
+    }
   }
 
   /**
@@ -126,7 +146,7 @@ export class ScanController {
    */
   onScanUpdated_() {
     if (!this.scanInProgress_) {
-      console.error('Scan-updated event received. But scan is not started.');
+      console.warn('Scan-updated event received. But scan is not started.');
       return;
     }
 
@@ -153,7 +173,7 @@ export class ScanController {
    */
   onScanCancelled_() {
     if (!this.scanInProgress_) {
-      console.error('Scan-cancelled event received. But scan is not started.');
+      console.warn('Scan-cancelled event received. But scan is not started.');
       return;
     }
 

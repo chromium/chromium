@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,8 @@ std::string BorealisInstaller::GetInstallingStateName(InstallingState state) {
   switch (state) {
     case InstallingState::kInactive:
       return "kInactive";
+    case InstallingState::kCheckingIfAllowed:
+      return "kCheckingIfAllowed";
     case InstallingState::kInstallingDlc:
       return "kInstallingDlc";
     case InstallingState::kStartingUp:

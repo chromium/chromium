@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,14 @@
 
 namespace features {
 
-GAMEPAD_FEATURES_EXPORT extern const base::Feature
-    kEnableGamepadButtonAxisEvents;
-GAMEPAD_FEATURES_EXPORT extern const base::Feature
-    kEnableWindowsGamingInputDataFetcher;
-GAMEPAD_FEATURES_EXPORT extern const base::Feature kRestrictGamepadAccess;
+GAMEPAD_FEATURES_EXPORT BASE_DECLARE_FEATURE(kEnableGamepadButtonAxisEvents);
+GAMEPAD_FEATURES_EXPORT BASE_DECLARE_FEATURE(
+    kEnableWindowsGamingInputDataFetcher);
+GAMEPAD_FEATURES_EXPORT BASE_DECLARE_FEATURE(kRestrictGamepadAccess);
+
+#if BUILDFLAG(IS_ANDROID)
+GAMEPAD_FEATURES_EXPORT BASE_DECLARE_FEATURE(kEnableAndroidGamepadVibration);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 GAMEPAD_FEATURES_EXPORT bool AreGamepadButtonAxisEventsEnabled();
 

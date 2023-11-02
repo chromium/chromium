@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,10 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/ui/browser_window_state.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -28,7 +28,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/app_types.h"
-#include "chrome/browser/ui/views/touch_selection_menu_runner_chromeos.h"
+#include "chrome/browser/ui/ash/touch_selection_menu_runner_chromeos.h"
 #include "chromeos/ui/frame/frame_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #endif
@@ -39,7 +39,7 @@ namespace {
 
 Profile* GetProfileForWindow(const views::Widget* window) {
   if (!window)
-    return NULL;
+    return nullptr;
   return reinterpret_cast<Profile*>(
       window->GetNativeWindowProperty(Profile::kProfileKey));
 }
@@ -88,23 +88,23 @@ void ChromeViewsDelegate::SaveWindowPlacement(const views::Widget* window,
   if (!prefs)
     return;
 
-  std::unique_ptr<DictionaryPrefUpdate> pref_update =
-      chrome::GetWindowPlacementDictionaryReadWrite(window_name, prefs);
-  base::DictionaryValue* window_preferences = pref_update->Get();
-  window_preferences->SetInteger("left", bounds.x());
-  window_preferences->SetInteger("top", bounds.y());
-  window_preferences->SetInteger("right", bounds.right());
-  window_preferences->SetInteger("bottom", bounds.bottom());
-  window_preferences->SetBoolean("maximized",
-                                 show_state == ui::SHOW_STATE_MAXIMIZED);
+  std::unique_ptr<ScopedDictPrefUpdate> pref_update;
+  base::Value::Dict& window_preferences =
+      chrome::GetWindowPlacementDictionaryReadWrite(window_name, prefs,
+                                                    pref_update);
+  window_preferences.Set("left", bounds.x());
+  window_preferences.Set("top", bounds.y());
+  window_preferences.Set("right", bounds.right());
+  window_preferences.Set("bottom", bounds.bottom());
+  window_preferences.Set("maximized", show_state == ui::SHOW_STATE_MAXIMIZED);
 
   gfx::Rect work_area(display::Screen::GetScreen()
                           ->GetDisplayNearestView(window->GetNativeView())
                           .work_area());
-  window_preferences->SetInteger("work_area_left", work_area.x());
-  window_preferences->SetInteger("work_area_top", work_area.y());
-  window_preferences->SetInteger("work_area_right", work_area.right());
-  window_preferences->SetInteger("work_area_bottom", work_area.bottom());
+  window_preferences.Set("work_area_left", work_area.x());
+  window_preferences.Set("work_area_top", work_area.y());
+  window_preferences.Set("work_area_right", work_area.right());
+  window_preferences.Set("work_area_bottom", work_area.bottom());
 }
 
 bool ChromeViewsDelegate::GetSavedWindowPlacement(
@@ -117,21 +117,17 @@ bool ChromeViewsDelegate::GetSavedWindowPlacement(
     return false;
 
   DCHECK(prefs->FindPreference(window_name));
-  const base::DictionaryValue* dictionary = prefs->GetDictionary(window_name);
-  if (!dictionary)
-    return false;
-  absl::optional<int> left = dictionary->FindIntKey("left");
-  absl::optional<int> top = dictionary->FindIntKey("top");
-  absl::optional<int> right = dictionary->FindIntKey("right");
-  absl::optional<int> bottom = dictionary->FindIntKey("bottom");
+  const base::Value::Dict& dictionary = prefs->GetDict(window_name);
+  absl::optional<int> left = dictionary.FindInt("left");
+  absl::optional<int> top = dictionary.FindInt("top");
+  absl::optional<int> right = dictionary.FindInt("right");
+  absl::optional<int> bottom = dictionary.FindInt("bottom");
   if (!left || !top || !right || !bottom)
     return false;
 
   bounds->SetRect(*left, *top, *right - *left, *bottom - *top);
 
-  bool maximized = false;
-  if (dictionary)
-    dictionary->GetBoolean("maximized", &maximized);
+  const bool maximized = dictionary.FindBool("maximized").value_or(false);
   *show_state = maximized ? ui::SHOW_STATE_MAXIMIZED : ui::SHOW_STATE_NORMAL;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

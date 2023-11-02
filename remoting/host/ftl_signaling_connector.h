@@ -1,11 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef REMOTING_HOST_FTL_SIGNALING_CONNECTOR_H_
 #define REMOTING_HOST_FTL_SIGNALING_CONNECTOR_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "net/base/backoff_entry.h"
@@ -52,7 +52,7 @@ class FtlSignalingConnector
   void TryReconnect(base::TimeDelta delay);
   void DoReconnect();
 
-  SignalStrategy* signal_strategy_;
+  raw_ptr<SignalStrategy> signal_strategy_;
   base::OnceClosure auth_failed_callback_;
 
   net::BackoffEntry backoff_;

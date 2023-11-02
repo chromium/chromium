@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -93,13 +93,6 @@ const GURL& TestContentPaymentRequestDelegate::GetLastCommittedURL() const {
   return core_delegate_.GetLastCommittedURL();
 }
 
-void TestContentPaymentRequestDelegate::DoFullCardRequest(
-    const autofill::CreditCard& credit_card,
-    base::WeakPtr<autofill::payments::FullCardRequest::ResultDelegate>
-        result_delegate) {
-  return core_delegate_.DoFullCardRequest(credit_card, result_delegate);
-}
-
 autofill::AddressNormalizer*
 TestContentPaymentRequestDelegate::GetAddressNormalizer() {
   return core_delegate_.GetAddressNormalizer();
@@ -155,6 +148,8 @@ TestContentPaymentRequestDelegate::GetPaymentUIObserver() const {
 
 void TestContentPaymentRequestDelegate::ShowNoMatchingPaymentCredentialDialog(
     const std::u16string& merchant_name,
-    base::OnceClosure response_callback) {}
+    const std::string& rp_id,
+    base::OnceClosure response_callback,
+    base::OnceClosure opt_out_callback) {}
 
 }  // namespace payments

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/file_system_quota_util.h"
@@ -42,7 +42,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackend
   void Initialize(FileSystemContext* context) override;
   void ResolveURL(const FileSystemURL& url,
                   OpenFileSystemMode mode,
-                  OpenFileSystemCallback callback) override;
+                  ResolveURLCallback callback) override;
   AsyncFileUtil* GetAsyncFileUtil(FileSystemType type) override;
   WatcherManager* GetWatcherManager(FileSystemType type) override;
   CopyOrMoveFileValidatorFactory* GetCopyOrMoveFileValidatorFactory(
@@ -78,7 +78,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackend
   CreateStorageKeyEnumerator();
 
  private:
-  SandboxFileSystemBackendDelegate* delegate_;  // Not owned.
+  raw_ptr<SandboxFileSystemBackendDelegate> delegate_;  // Not owned.
 };
 
 }  // namespace storage

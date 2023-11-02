@@ -296,14 +296,14 @@ function openCalendar() {
     var frame = document.getElementsByTagName('iframe')[0];
     frame.contentDocument.documentElement.innerHTML = '<head></head><body><div id=main>Loading...</div></body>';
 
-    includeFile('pickerCommon.css', /*isJs=*/false);
-    includeFile('suggestionPicker.css', /*isJs=*/false);
-    includeFile('calendarPicker.css', /*isJs=*/false);
+    includeFile('picker_common.css', /*isJs=*/false);
+    includeFile('suggestion_picker.css', /*isJs=*/false);
+    includeFile('calendar_picker.css', /*isJs=*/false);
 
-    includeFile('pickerCommon.js', /*isJs=*/true);
-    includeFile('suggestionPicker.js', /*isJs=*/true);
+    includeFile('picker_common.js', /*isJs=*/true);
+    includeFile('suggestion_picker.js', /*isJs=*/true);
     includeFile('month_picker.js', /*isJs=*/true);
-    includeFile('calendarPicker.js', /*isJs=*/true);
+    includeFile('calendar_picker.js', /*isJs=*/true);
 
     var pagePopupController = {
         setValueAndClosePopup: function(numValue, stringValue) {

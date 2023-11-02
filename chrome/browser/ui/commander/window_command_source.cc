@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -99,7 +99,7 @@ CommandSource::CommandResults WindowCommandSource::GetCommands(
     results.push_back(std::move(verb));
   }
   score = finder.Find(merge_title, &ranges);
-  if (score > 0) {
+  if (score > 0 && !browser->is_type_devtools()) {
     auto verb = std::make_unique<CommandItem>(merge_title, score, ranges);
     verb->command = std::make_pair(
         merge_title, base::BindRepeating(&MergeCommandsForWindowsMatching,

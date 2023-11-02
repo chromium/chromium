@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 // An AppLauncherAbuseDetector for testing.
 @interface FakeAppLauncherAbuseDetector : AppLauncherAbuseDetector
 
-// The policy returned by |-launchPolicyforURL:fromSourcePageURL:|.  Default
+// The policy returned by `-launchPolicyforURL:fromSourcePageURL:`.  Default
 // value is ExternalAppLaunchPolicyAllow.
 @property(nonatomic, assign) ExternalAppLaunchPolicy policy;
 

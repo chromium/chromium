@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,8 +21,7 @@
 namespace updater {
 
 TEST(PrefsTest, PrefsCommitPendingWrites) {
-  base::test::TaskEnvironment task_environment(
-      base::test::SingleThreadTaskEnvironment::MainThreadType::UI);
+  base::test::TaskEnvironment task_environment;
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   update_client::RegisterPrefs(pref->registry());
   auto metadata = base::MakeRefCounted<PersistedData>(pref.get());
@@ -36,8 +35,7 @@ TEST(PrefsTest, PrefsCommitPendingWrites) {
 }
 
 TEST(PrefsTest, AcquireGlobalPrefsLock_LockThenTryLockInThreadFail) {
-  base::test::TaskEnvironment task_environment(
-      base::test::SingleThreadTaskEnvironment::MainThreadType::UI);
+  base::test::TaskEnvironment task_environment;
 
   std::unique_ptr<ScopedPrefsLock> lock =
       AcquireGlobalPrefsLock(GetUpdaterScope(), base::Seconds(0));
@@ -59,8 +57,7 @@ TEST(PrefsTest, AcquireGlobalPrefsLock_LockThenTryLockInThreadFail) {
 }
 
 TEST(PrefsTest, AcquireGlobalPrefsLock_TryLockInThreadSuccess) {
-  base::test::TaskEnvironment task_environment(
-      base::test::SingleThreadTaskEnvironment::MainThreadType::UI);
+  base::test::TaskEnvironment task_environment;
 
   base::RunLoop run_loop;
   base::ThreadPool::PostTaskAndReplyWithResult(

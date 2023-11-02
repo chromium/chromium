@@ -46,7 +46,27 @@
 namespace blink {
 
 Text* Text::Create(Document& document, const String& data) {
-  return MakeGarbageCollected<Text>(document, data, kCreateText);
+  // Force the text to match when replaying, as a workaround for differences
+  // in the assigned text which cause the replay to fail as layout behavior
+  // diverges afterwards. See also Node::setTextContent.
+  String dataStr;
+  const String* dataPtr;
+  if (recordreplay::IsRecordingOrReplaying("values", "Text::Create")) {
+    std::string contents = data.Utf8();
+    size_t recordedLength = recordreplay::RecordReplayValue("Text::Create length", contents.length());
+    contents.resize(recordedLength, ' ');
+    recordreplay::RecordReplayBytes("Text::Create string", &contents[0], recordedLength);
+    dataStr = String::FromUTF8(&contents[0], recordedLength);
+    dataPtr = &dataStr;
+  } else {
+    dataPtr = &data;
+  }
+
+  return MakeGarbageCollected<Text>(document, *dataPtr, kCreateText);
+}
+
+Text* Text::Create(Document& document, String&& data) {
+  return MakeGarbageCollected<Text>(document, std::move(data), kCreateText);
 }
 
 Text* Text::CreateEditingText(Document& document, const String& data) {
@@ -125,7 +145,7 @@ Text* Text::splitText(unsigned offset, ExceptionState& exception_state) {
 
   if (GetLayoutObject()) {
     GetLayoutObject()->SetTextWithOffset(DataImpl(), 0, old_str.length());
-    if (data().IsEmpty()) {
+    if (ContainsOnlyWhitespaceOrEmpty()) {
       // To avoid |LayoutText| has empty text, we rebuild layout tree.
       SetForceReattachLayoutTree();
     }
@@ -195,7 +215,7 @@ String Text::wholeText() const {
   }
   DCHECK_EQ(result.length(), result_length);
 
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 Text* Text::ReplaceWholeText(const String& new_text) {
@@ -226,7 +246,7 @@ Text* Text::ReplaceWholeText(const String& new_text) {
     }
   }
 
-  if (new_text.IsEmpty()) {
+  if (new_text.empty()) {
     if (parent && parentNode() == parent)
       parent->RemoveChild(this, IGNORE_EXCEPTION_FOR_TESTING);
     return nullptr;
@@ -238,10 +258,6 @@ Text* Text::ReplaceWholeText(const String& new_text) {
 
 String Text::nodeName() const {
   return "#text";
-}
-
-Node::NodeType Text::getNodeType() const {
-  return kTextNode;
 }
 
 Node* Text::Clone(Document& factory, CloneChildrenFlag) const {
@@ -262,7 +278,7 @@ static inline bool CanHaveWhitespaceChildren(
     return true;
 
   if (parent.IsTable() || parent.IsTableRow() || parent.IsTableSection() ||
-      parent.IsLayoutTableCol() || parent.IsFrameSet() ||
+      parent.IsLayoutTableCol() || parent.IsFrameSetIncludingNG() ||
       parent.IsFlexibleBoxIncludingNG() || parent.IsLayoutGridIncludingNG() ||
       parent.IsSVGRoot() || parent.IsSVGContainer() || parent.IsSVGImage() ||
       parent.IsSVGShape()) {

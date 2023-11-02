@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,6 +54,16 @@ class EarlyHintsPageLoadMetricsObserverTest
     tester()->SimulateTimingUpdate(timing);
   }
 };
+
+TEST_F(EarlyHintsPageLoadMetricsObserverTest, PageType) {
+  NavigateAndCommit(GURL(kTestUrl));
+  PopulateTimingForHistograms();
+  tester()->NavigateToUntrackedUrl();
+
+  tester()->histogram_tester().ExpectUniqueSample(
+      page_load_metrics::internal::kPageLoadTrackerPageType,
+      page_load_metrics::internal::PageLoadTrackerPageType::kPrimaryPage, 1);
+}
 
 TEST_F(EarlyHintsPageLoadMetricsObserverTest, WithoutPreload) {
   NavigateAndCommit(GURL(kTestUrl));

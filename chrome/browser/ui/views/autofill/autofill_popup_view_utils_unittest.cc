@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,75 @@
 
 #include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace autofill {
+
+TEST(AutofillPopupViewUtilsTest, GetOptimalArrowSide) {
+  const gfx::Size default_preferred_size{200, 600};
+
+  struct TestCase {
+    views::BubbleArrowSide expected_arrow_side;
+    gfx::Rect content_area_bounds;
+    gfx::Rect element_bounds;
+    gfx::Size preferred_size;
+  } test_cases[]{
+      // Default case where there is enough space on all sides.
+      // In this case, the popup is placed below meaning that the arrow is on
+      // top of the popup.
+      {
+          views::BubbleArrowSide::kTop,
+          gfx::Rect(0, 0, 1000, 2000),
+          gfx::Rect(400, 0, 200, 200),
+          default_preferred_size,
+      },
+      // The popup cannot be placed below the element and needs to be placed on
+      // top, meaning the arrow is on the bottom of the popup.
+      {
+          views::BubbleArrowSide::kBottom,
+          gfx::Rect(0, 0, 1000, 1000),
+          gfx::Rect(0, 800, 200, 200),
+          default_preferred_size,
+      },
+      // There is neither enough space on top nor below the element.
+      // It should be placed on the right side meaning the arrow is on the left
+      // of the popup.
+      {
+          views::BubbleArrowSide::kLeft,
+          gfx::Rect(0, 0, 1000, 1000),
+          gfx::Rect(0, 400, 200, 200),
+          default_preferred_size,
+      },
+      // There is neither enough space on top, below nor on the right side the
+      // element. It should be placed on the left side meaning the arrow is on
+      // the right of the popup.
+      {
+          views::BubbleArrowSide::kRight,
+          gfx::Rect(0, 0, 1000, 1000),
+          gfx::Rect(700, 400, 200, 200),
+          default_preferred_size,
+      },
+      // There is not enough space on any side, but there is more space below
+      // the element than above resulting in a placement below with the arrow on
+      // top of the popup.
+      {
+          views::BubbleArrowSide::kTop,
+          gfx::Rect(0, 0, 1000, 1000),
+          gfx::Rect(0, 100, 200, 200),
+          gfx::Size(1200, 1200),
+      },
+      // There is not enough space on any side, but there is more space above
+      // the element than below resulting in a placement above with the arrow
+      // below the popup.
+      {views::BubbleArrowSide::kBottom, gfx::Rect(0, 0, 1000, 1000),
+       gfx::Rect(0, 900, 200, 200), gfx::Size(1200, 1200)}};
+
+  for (auto& test_case : test_cases) {
+    EXPECT_EQ(test_case.expected_arrow_side,
+              GetOptimalArrowSide(test_case.content_area_bounds,
+                                  test_case.element_bounds,
+                                  test_case.preferred_size));
+  }
+}
 
 TEST(AutofillPopupViewUtilsTest, CalculatePopupBounds) {
   // Define the prompt sizes.
@@ -192,31 +261,29 @@ TEST(AutofillPopupViewUtilsTest, GetAvailableHorizontalSpaceOnSideOfElement) {
   gfx::Rect content_area_bounds(100, 200, 700, 600);
   gfx::Rect element_bounds(220, 350, 200, 100);
 
-  // The minimum number of pixels the bubble should be distanced from the edge
+  // The minimum number of pixels the popup should be distanced from the edge
   // of the content area.
-  constexpr int kMinimalBubbleDistanceToContentAreaEdge = 8;
+  constexpr int kMinimalPopupDistanceToContentAreaEdge = 8;
 
   EXPECT_EQ(
       GetAvailableHorizontalSpaceOnSideOfElement(
           content_area_bounds, element_bounds, views::BubbleArrowSide::kLeft),
-      380 - kMinimalBubbleDistanceToContentAreaEdge);
+      380 - kMinimalPopupDistanceToContentAreaEdge);
   EXPECT_EQ(
       GetAvailableHorizontalSpaceOnSideOfElement(
           content_area_bounds, element_bounds, views::BubbleArrowSide::kRight),
-      120 - kMinimalBubbleDistanceToContentAreaEdge);
+      120 - kMinimalPopupDistanceToContentAreaEdge);
   EXPECT_EQ(
       GetAvailableHorizontalSpaceOnSideOfElement(
           content_area_bounds, element_bounds, views::BubbleArrowSide::kTop),
-      content_area_bounds.width() -
-          2 * kMinimalBubbleDistanceToContentAreaEdge);
+      content_area_bounds.width() - 2 * kMinimalPopupDistanceToContentAreaEdge);
   EXPECT_EQ(
       GetAvailableHorizontalSpaceOnSideOfElement(
           content_area_bounds, element_bounds, views::BubbleArrowSide::kBottom),
-      content_area_bounds.width() -
-          2 * kMinimalBubbleDistanceToContentAreaEdge);
+      content_area_bounds.width() - 2 * kMinimalPopupDistanceToContentAreaEdge);
 }
 
-TEST(AutofillPopupViewUtilsTest, IsBubblePlaceableOnSideOfElement) {
+TEST(AutofillPopupViewUtilsTest, IsPopupPlaceableOnSideOfElement) {
   // 200 pixels on top of the element.
   // 55O pixels below the element.
   // 100 pixels on the left side (BubbleArrowSide::kRight)
@@ -225,26 +292,26 @@ TEST(AutofillPopupViewUtilsTest, IsBubblePlaceableOnSideOfElement) {
   gfx::Rect element_bounds = {100, 200, 300, 50};
   gfx::Size preferred_size = {200, 300};
 
-  // The bubble fits below (BubbleArrowSide::kTop) and on the right side of the
+  // The popup fits below (BubbleArrowSide::kTop) and on the right side of the
   // element.
-  EXPECT_FALSE(IsBubblePlaceableOnSideOfElement(
+  EXPECT_FALSE(IsPopupPlaceableOnSideOfElement(
       content_area_bounds, element_bounds, preferred_size, 12,
       views::BubbleArrowSide::kBottom));
-  EXPECT_FALSE(IsBubblePlaceableOnSideOfElement(
+  EXPECT_FALSE(IsPopupPlaceableOnSideOfElement(
       content_area_bounds, element_bounds, preferred_size, 12,
       views::BubbleArrowSide::kRight));
-  EXPECT_TRUE(IsBubblePlaceableOnSideOfElement(
+  EXPECT_TRUE(IsPopupPlaceableOnSideOfElement(
       content_area_bounds, element_bounds, preferred_size, 12,
       views::BubbleArrowSide::kLeft));
-  EXPECT_TRUE(IsBubblePlaceableOnSideOfElement(
+  EXPECT_TRUE(IsPopupPlaceableOnSideOfElement(
       content_area_bounds, element_bounds, preferred_size, 12,
       views::BubbleArrowSide::kTop));
 }
 
-TEST(AutofillPopupViewUtilsTest, GetOptimalBubbleArrowSide) {
-  // For this test, we fix the content area and the bubble size.
+TEST(AutofillPopupViewUtilsTest, GetOptimalPopupArrowSide) {
+  // For this test, we fix the content area and the popup size.
   gfx::Rect content_area_bounds = {0, 0, 800, 800};
-  gfx::Size preferred_bubble_size = {200, 300};
+  gfx::Size preferred_popup_size = {200, 300};
 
   struct TestCase {
     gfx::Rect element_bounds;
@@ -257,17 +324,16 @@ TEST(AutofillPopupViewUtilsTest, GetOptimalBubbleArrowSide) {
   };
 
   for (TestCase& test_case : test_cases) {
-    EXPECT_EQ(
-        GetOptimalBubbleArrowSide(content_area_bounds, test_case.element_bounds,
-                                  preferred_bubble_size),
-        test_case.expected_arrow_side);
+    EXPECT_EQ(GetOptimalArrowSide(content_area_bounds, test_case.element_bounds,
+                                  preferred_popup_size),
+              test_case.expected_arrow_side);
   }
 }
 
-TEST(AutofillPopupViewUtilsTest, GetOptimalBubblePlacement) {
-  // For this test, the content area bounds and preferred bubble size is fixed.
+TEST(AutofillPopupViewUtilsTest, GetOptimalPopupPlacement) {
+  // For this test, the content area bounds and preferred popup size is fixed.
   const gfx::Rect kContentsAreaBounds = {0, 0, 800, 800};
-  const gfx::Size kPreferredBubbleSize = {200, 300};
+  const gfx::Size kPreferredPopupSize = {200, 300};
   const int kScrollbarWidth = 10;
   const int kMaximumPixelOffsetTowardsCenter = 120;
   const int kMaximumWidthPercentageTowardsCenter = 50;
@@ -282,21 +348,21 @@ TEST(AutofillPopupViewUtilsTest, GetOptimalBubblePlacement) {
     views::BubbleBorder::Arrow expected_arrow;
 
   } test_cases[]{
-      // The element is placed in the top left corner and the bubble should be
+      // The element is placed in the top left corner and the popup should be
       // shown
       // below the element is displaced by half the field width.
       {false,
        {0, 0, 100, 20},
        {50 - kHoriztontalPlacementOffsetToAlignArrow, 20, 200, 300},
        views::BubbleBorder::Arrow::TOP_LEFT},
-      // The element is placed in the top right corner and the bubble needs to
+      // The element is placed in the top right corner and the popup needs to
       // be moved back into the view port honoring the minimal distance to the
       // content area edge.
       {false,
        {760, 0, 100, 20},
        {592, 20, 200, 300},
        views::BubbleBorder::Arrow::TOP_LEFT},
-      // The element is placed in the top corner and the bubble should be shown
+      // The element is placed in the top corner and the popup should be shown
       // below the element, displaced by maximum of 120 pixels.
       {false,
        {0, 0, 300, 20},
@@ -305,18 +371,18 @@ TEST(AutofillPopupViewUtilsTest, GetOptimalBubblePlacement) {
         20, 200, 300},
        views::BubbleBorder::Arrow::TOP_LEFT},
       // The element is placed in the lower left corner which should create a
-      // bubble on top of the element.
+      // popup on top of the element.
       {false,
        {0, 780, 100, 20},
        {50 - kHoriztontalPlacementOffsetToAlignArrow, 480, 200, 300},
        views::BubbleBorder::Arrow::BOTTOM_LEFT},
       // Test a basic right website with an element placed on the upper
-      // right corner. The bubble should be displaced to the left.
+      // right corner. The popup should be displaced to the left.
       {true,
        {700, 0, 100, 20},
        {550 + kHoriztontalPlacementOffsetToAlignArrow, 20, 200, 300},
        views::BubbleBorder::Arrow::TOP_RIGHT},
-      // Test a field that is barely visible. This should create a bubble on the
+      // Test a field that is barely visible. This should create a popup on the
       // side.
       {false,
        {-95, 300, 100, 20},
@@ -328,12 +394,14 @@ TEST(AutofillPopupViewUtilsTest, GetOptimalBubblePlacement) {
     gfx::Rect popup_bounds;
 
     EXPECT_EQ(test_case.expected_arrow,
-              GetOptimalBubblePlacement(
+              GetOptimalPopupPlacement(
                   kContentsAreaBounds, test_case.element_bounds,
-                  kPreferredBubbleSize, test_case.right_to_left,
-                  kScrollbarWidth, kMaximumPixelOffsetTowardsCenter,
+                  kPreferredPopupSize, test_case.right_to_left, kScrollbarWidth,
+                  kMaximumPixelOffsetTowardsCenter,
                   kMaximumWidthPercentageTowardsCenter, popup_bounds));
 
     EXPECT_EQ(popup_bounds, test_case.expected_popup_bounds);
   }
 }
+
+}  // namespace autofill

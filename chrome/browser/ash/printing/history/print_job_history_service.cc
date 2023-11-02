@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,6 +30,12 @@ void PrintJobHistoryService::AddObserver(
 void PrintJobHistoryService::RemoveObserver(
     PrintJobHistoryService::Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void PrintJobHistoryService::Shutdown() {
+  for (auto& observer : observers_) {
+    observer.OnShutdown();
+  }
 }
 
 }  // namespace ash

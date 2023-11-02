@@ -107,14 +107,8 @@ Finally, run the new stories locally to make sure they work, then upload the CL 
 
 ## Record new stories
 
-Use the following command to record a story
-```
-tools/perf/record_wpr --browser-executable=out/Default/chrome desktop_ui --story-filter=<YOUR_STORY_NAME>
-```
-and the following command to upload to the cloud.
-```
-upload_to_google_storage.py --bucket chrome-partner-telemetry tools/perf/page_sets/data/desktop_ui_<YOUR_RECORDED_HASH>.wprgo
-```
+Record and upload new stories to cloud storage using
+[these instructions](https://source.chromium.org/chromium/chromium/src/+/main:tools/perf/recording_benchmarks.md).
 
 ## Query benchmark metrics from chrome perf waterfall
 

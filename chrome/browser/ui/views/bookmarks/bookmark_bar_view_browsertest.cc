@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,14 +31,9 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/features.h"
+#include "ui/events/test/test_event.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/test/button_test_api.h"
-
-class DummyEvent : public ui::Event {
- public:
-  DummyEvent() : Event(ui::ET_UNKNOWN, base::TimeTicks(), 0) {}
-  ~DummyEvent() override = default;
-};
 
 // Test suite covering the interaction between browser bookmarks and
 // `Sec-Fetch-*` headers that can't be covered by Web Platform Tests (yet).
@@ -111,7 +106,7 @@ class BookmarkBarNavigationTest : public InProcessBrowserTest {
     content::TestNavigationObserver observer(web_contents(), 1);
     views::LabelButton* button = GetBookmarkButton(0);
     views::test::ButtonTestApi clicker(button);
-    DummyEvent click_event;
+    ui::test::TestEvent click_event;
     clicker.NotifyClick(click_event);
     observer.Wait();
 
@@ -159,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBarNavigationTest, SecFetchFromEmptyTab) {
   }
 }
 
-#if defined(OS_MAC) || defined(OS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 //  TODO(crbug.com/1006033): Test flaky on Mac and Windows.
 #define MAYBE_SecFetchSiteNoneFromNonEmptyTab \
   DISABLED_SecFetchSiteNoneFromNonEmptyTab
@@ -220,8 +215,8 @@ class FakeProtocolHandlerDelegate : public ExternalProtocolHandler::Delegate {
   class FakeDefaultProtocolClientWorker
       : public shell_integration::DefaultProtocolClientWorker {
    public:
-    explicit FakeDefaultProtocolClientWorker(const std::string& protocol)
-        : DefaultProtocolClientWorker(protocol) {}
+    explicit FakeDefaultProtocolClientWorker(const GURL& url)
+        : DefaultProtocolClientWorker(url) {}
     FakeDefaultProtocolClientWorker(
         const FakeDefaultProtocolClientWorker& other) = delete;
     FakeDefaultProtocolClientWorker& operator=(
@@ -233,6 +228,8 @@ class FakeProtocolHandlerDelegate : public ExternalProtocolHandler::Delegate {
       return shell_integration::DefaultWebClientState::NOT_DEFAULT;
     }
 
+    std::u16string GetDefaultClientNameImpl() override { return u"TestApp"; }
+
     void SetAsDefaultImpl(base::OnceClosure on_finished_callback) override {
       base::SequencedTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, std::move(on_finished_callback));
@@ -241,8 +238,8 @@ class FakeProtocolHandlerDelegate : public ExternalProtocolHandler::Delegate {
 
  private:
   scoped_refptr<shell_integration::DefaultProtocolClientWorker>
-  CreateShellWorker(const std::string& protocol) override {
-    return base::MakeRefCounted<FakeDefaultProtocolClientWorker>(protocol);
+  CreateShellWorker(const GURL& url) override {
+    return base::MakeRefCounted<FakeDefaultProtocolClientWorker>(url);
   }
 
   void BlockRequest() override { FAIL(); }
@@ -257,7 +254,8 @@ class FakeProtocolHandlerDelegate : public ExternalProtocolHandler::Delegate {
       content::WebContents* web_contents,
       ui::PageTransition page_transition,
       bool has_user_gesture,
-      const absl::optional<url::Origin>& initiating_origin) override {
+      const absl::optional<url::Origin>& initiating_origin,
+      const std::u16string& program_name) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     EXPECT_TRUE(url_invoked_.is_empty());

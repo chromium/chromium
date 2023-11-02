@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,8 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "content/browser/notifications/notification_database.h"
@@ -46,6 +46,7 @@ class BlinkNotificationServiceImpl;
 class BrowserContext;
 struct NotificationDatabaseData;
 class PlatformNotificationServiceProxy;
+class RenderProcessHost;
 class ServiceWorkerContextWrapper;
 
 // Implementation of the Web Notification storage context. The public methods
@@ -76,8 +77,10 @@ class CONTENT_EXPORT PlatformNotificationContextImpl
   // Creates a BlinkNotificationServiceImpl that is owned by this context.
   // |document_url| is empty when originating from a worker.
   void CreateService(
+      RenderProcessHost* render_process_host,
       const url::Origin& origin,
       const GURL& document_url,
+      const WeakDocumentPtr& weak_document_ptr,
       mojo::PendingReceiver<blink::mojom::NotificationService> receiver);
 
   // Removes |service| from the list of owned services, for example because the
@@ -330,7 +333,7 @@ class CONTENT_EXPORT PlatformNotificationContextImpl
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
 
   base::FilePath path_;
-  BrowserContext* browser_context_;
+  raw_ptr<BrowserContext> browser_context_;
 
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
 

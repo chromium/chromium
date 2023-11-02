@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,10 +17,7 @@
 
 #include "base/component_export.h"
 #include "base/strings/string_piece.h"
-
-namespace base {
-class Value;
-}
+#include "base/values.h"
 
 namespace webui {
 
@@ -28,20 +25,20 @@ namespace webui {
 // string includes the HTML and the javascript code necessary to generate the
 // full page with support for i18n Templates.
 COMPONENT_EXPORT(UI_BASE)
-std::string GetI18nTemplateHtml(const base::StringPiece& html_template,
-                                const base::Value* json);
+std::string GetI18nTemplateHtml(base::StringPiece html_template,
+                                const base::Value::Dict& json);
 
 // A helper function that generates a string of HTML to be loaded.  The
 // string includes the HTML and the javascript code necessary to generate the
 // full page with support for both i18n Templates and JsTemplates.
 COMPONENT_EXPORT(UI_BASE)
-std::string GetTemplatesHtml(const base::StringPiece& html_template,
-                             const base::Value* json,
-                             const base::StringPiece& template_id);
+std::string GetTemplatesHtml(base::StringPiece html_template,
+                             const base::Value::Dict& json,
+                             base::StringPiece template_id);
 
 // Assigns the given json data into |loadTimeData|, without a <script> tag.
 COMPONENT_EXPORT(UI_BASE)
-void AppendJsonJS(const base::Value* json,
+void AppendJsonJS(const base::Value::Dict& json,
                   std::string* output,
                   bool from_js_module);
 

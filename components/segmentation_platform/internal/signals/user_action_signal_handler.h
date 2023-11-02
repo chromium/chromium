@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
@@ -39,7 +40,7 @@ class UserActionSignalHandler {
                     base::TimeTicks action_time);
 
   // The database storing relevant user actions.
-  SignalDatabase* db_;
+  raw_ptr<SignalDatabase> db_;
 
   // The callback registered with user metrics module that gets invoked for
   // every user action.

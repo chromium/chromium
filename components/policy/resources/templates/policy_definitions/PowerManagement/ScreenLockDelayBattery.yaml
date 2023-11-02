@@ -1,0 +1,30 @@
+caption: Screen lock delay when running on battery power
+deprecated: true
+desc: |-
+  Note that this policy is deprecated and will be removed in <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version 85. Please use <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME">ScreenLockDelays</ph> instead.
+
+            Specifies the length of time without user input after which the screen is locked when running on battery power.
+
+            When this policy is set to a value greater than zero, it specifies the length of time that the user must remain idle before <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> locks the screen.
+
+            When this policy is set to zero, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> does not lock the screen when the user becomes idle.
+
+            When this policy is unset, a default length of time is used.
+
+            The recommended way to lock the screen on idle is to enable screen locking on suspend and have <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> suspend after the idle delay. This policy should only be used when screen locking should occur a significant amount of time sooner than suspend or when suspend on idle is not desired at all.
+
+            The policy value should be specified in milliseconds. Values are clamped to be less than the idle delay.
+example_value: 600000
+features:
+  dynamic_refresh: true
+  per_profile: false
+owners:
+- reinauer@google.com
+- chromeos-power@google.com
+schema:
+  minimum: 0
+  type: integer
+supported_on:
+- chrome_os:26-
+tags: []
+type: int

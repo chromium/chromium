@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,14 @@
 
 #include <drm_fourcc.h>
 #include <algorithm>
+#include <cstdint>
 #include <memory>
 #include <set>
 #include <utility>
 
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
@@ -20,6 +22,21 @@
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane.h"
 
 namespace ui {
+
+namespace {
+
+gfx::Rect OverlayPlaneToDrmSrcRect(const DrmOverlayPlane& plane) {
+  const gfx::Size& size = plane.buffer->size();
+  gfx::RectF crop_rectf = plane.crop_rect;
+  crop_rectf.Scale(size.width(), size.height());
+  // DrmOverlayManager::CanHandleCandidate guarantees this is safe.
+  gfx::Rect crop_rect = gfx::ToNearestRect(crop_rectf);
+  // Convert to 16.16 fixed point required by the DRM overlay APIs.
+  return gfx::Rect(crop_rect.x() << 16, crop_rect.y() << 16,
+                   crop_rect.width() << 16, crop_rect.height() << 16);
+}
+
+}  // namespace
 
 HardwareDisplayPlaneList::HardwareDisplayPlaneList() {
   atomic_property_set.reset(drmModeAtomicAlloc());
@@ -36,22 +53,12 @@ HardwareDisplayPlaneList::PageFlipInfo::PageFlipInfo(
 
 HardwareDisplayPlaneList::PageFlipInfo::~PageFlipInfo() = default;
 
-void HardwareDisplayPlaneList::AsValueInto(
-    base::trace_event::TracedValue* value) const {
-  {
-    auto scoped_array = value->BeginArrayScoped("plane_list");
-    for (const auto* plane : plane_list) {
-      auto scoped_dict = value->AppendDictionaryScoped();
-      plane->AsValueInto(value);
-    }
-  }
-  {
-    auto scoped_array = value->BeginArrayScoped("old_plane_list");
-    for (const auto* plane : old_plane_list) {
-      auto scoped_dict = value->AppendDictionaryScoped();
-      plane->AsValueInto(value);
-    }
-  }
+void HardwareDisplayPlaneList::WriteIntoTrace(
+    perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
+
+  dict.Add("plane_list", plane_list);
+  dict.Add("old_plane_list", old_plane_list);
 }
 
 HardwareDisplayPlaneManager::CrtcProperties::CrtcProperties() = default;
@@ -101,20 +108,6 @@ std::unique_ptr<HardwareDisplayPlane> HardwareDisplayPlaneManager::CreatePlane(
   return std::make_unique<HardwareDisplayPlane>(id);
 }
 
-HardwareDisplayPlane* HardwareDisplayPlaneManager::FindNextUnusedPlane(
-    size_t* index,
-    uint32_t crtc_index,
-    const DrmOverlayPlane& overlay) const {
-  for (size_t i = *index; i < planes_.size(); ++i) {
-    auto* plane = planes_[i].get();
-    if (!plane->in_use() && IsCompatible(plane, overlay, crtc_index)) {
-      *index = i + 1;
-      return plane;
-    }
-  }
-  return nullptr;
-}
-
 absl::optional<int> HardwareDisplayPlaneManager::LookupCrtcIndex(
     uint32_t crtc_id) const {
   for (size_t i = 0; i < crtc_state_.size(); ++i) {
@@ -133,11 +126,22 @@ absl::optional<int> HardwareDisplayPlaneManager::LookupConnectorIndex(
   return {};
 }
 
+base::flat_set<uint32_t> HardwareDisplayPlaneManager::CrtcMaskToCrtcIds(
+    uint32_t crtc_mask) const {
+  base::flat_set<uint32_t> crtc_ids;
+  for (uint32_t idx = 0; idx < crtc_state_.size(); idx++) {
+    if (crtc_mask & (1 << idx))
+      crtc_ids.insert(crtc_state_[idx].properties.id);
+  }
+
+  return crtc_ids;
+}
+
 bool HardwareDisplayPlaneManager::IsCompatible(HardwareDisplayPlane* plane,
                                                const DrmOverlayPlane& overlay,
-                                               uint32_t crtc_index) const {
-  if (plane->type() == DRM_PLANE_TYPE_CURSOR ||
-      !plane->CanUseForCrtc(crtc_index))
+                                               uint32_t crtc_id) const {
+  if (plane->in_use() || plane->type() == DRM_PLANE_TYPE_CURSOR ||
+      !plane->CanUseForCrtcId(crtc_id))
     return false;
 
   const uint32_t format =
@@ -201,33 +205,25 @@ bool HardwareDisplayPlaneManager::AssignOverlayPlanes(
     HardwareDisplayPlaneList* plane_list,
     const DrmOverlayPlaneList& overlay_list,
     uint32_t crtc_id) {
-  auto crtc_index = LookupCrtcIndex(crtc_id);
-  if (!crtc_index) {
-    LOG(ERROR) << "Cannot find crtc " << crtc_id;
-    return false;
-  }
-
-  size_t plane_idx = 0;
+  auto hw_planes_iter = planes_.begin();
   for (const auto& plane : overlay_list) {
-    HardwareDisplayPlane* hw_plane =
-        FindNextUnusedPlane(&plane_idx, *crtc_index, plane);
+    HardwareDisplayPlane* hw_plane = nullptr;
+    for (; hw_planes_iter != planes_.end(); ++hw_planes_iter) {
+      auto* current = hw_planes_iter->get();
+      if (IsCompatible(current, plane, crtc_id)) {
+        hw_plane = current;
+        ++hw_planes_iter; // bump so we don't assign the same plane twice
+        break;
+      }
+    }
+
     if (!hw_plane) {
       RestoreCurrentPlaneList(plane_list);
       return false;
     }
 
-    gfx::Rect fixed_point_rect;
-    const gfx::Size& size = plane.buffer->size();
-    gfx::RectF crop_rectf = plane.crop_rect;
-    crop_rectf.Scale(size.width(), size.height());
-    // DrmOverlayManager::CanHandleCandidate guarantees this is safe.
-    gfx::Rect crop_rect = gfx::ToNearestRect(crop_rectf);
-    // Convert to 16.16 fixed point required by the DRM overlay APIs.
-    fixed_point_rect =
-        gfx::Rect(crop_rect.x() << 16, crop_rect.y() << 16,
-                  crop_rect.width() << 16, crop_rect.height() << 16);
-
-    if (!SetPlaneData(plane_list, hw_plane, plane, crtc_id, fixed_point_rect)) {
+    if (!SetPlaneData(plane_list, hw_plane, plane, crtc_id,
+                      OverlayPlaneToDrmSrcRect(plane))) {
       RestoreCurrentPlaneList(plane_list);
       return false;
     }
@@ -247,13 +243,8 @@ const std::vector<uint32_t>& HardwareDisplayPlaneManager::GetSupportedFormats()
 std::vector<uint64_t> HardwareDisplayPlaneManager::GetFormatModifiers(
     uint32_t crtc_id,
     uint32_t format) const {
-  auto crtc_index = LookupCrtcIndex(crtc_id);
-  if (!crtc_index) {
-    return {};
-  }
-
   for (const auto& plane : planes_) {
-    if (plane->CanUseForCrtc(*crtc_index) &&
+    if (plane->CanUseForCrtcId(crtc_id) &&
         plane->type() == DRM_PLANE_TYPE_PRIMARY) {
       return plane->ModifiersForFormat(format);
     }
@@ -517,6 +508,29 @@ void HardwareDisplayPlaneManager::UpdateCrtcAndPlaneStatesAfterModeset(
 void HardwareDisplayPlaneManager::ResetModesetStateForCrtc(uint32_t crtc_id) {
   CrtcState& crtc_state = CrtcStateForCrtcId(crtc_id);
   crtc_state.modeset_framebuffers.clear();
+}
+
+ui::HardwareCapabilities HardwareDisplayPlaneManager::GetHardwareCapabilities(
+    uint32_t crtc_id) {
+  absl::optional<std::string> driver = drm_->GetDriverName();
+  if (!driver.has_value())
+    return {.is_valid = false};
+
+  ui::HardwareCapabilities hc;
+  hc.is_valid = true;
+  hc.num_overlay_capable_planes = std::count_if(
+      planes_.begin(), planes_.end(),
+      [crtc_id](const std::unique_ptr<HardwareDisplayPlane>& plane) {
+        return plane->type() != DRM_PLANE_TYPE_CURSOR &&
+               plane->CanUseForCrtcId(crtc_id);
+      });
+  // While AMD advertises a cursor plane, it's actually a "fake" plane that the
+  // display hardware blits to the topmost plane at presentation time. If that
+  // topmost plane is scaled/translated (e.g. video), the cursor will then be
+  // transformed along with it, leading to an incorrect cursor location in the
+  // final presentation. For more info, see b/194335274.
+  hc.has_independent_cursor_plane = *driver != "amdgpu" && *driver != "radeon";
+  return hc;
 }
 
 }  // namespace ui

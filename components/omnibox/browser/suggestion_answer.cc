@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,15 +11,15 @@
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
-#include "base/values.h"
-#include "net/base/escape.h"
+#include "build/build_config.h"
 #include "url/url_constants.h"
 
-#ifdef OS_ANDROID
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_string.h"
 #include "components/omnibox/browser/jni_headers/SuggestionAnswer_jni.h"
 
@@ -35,6 +35,7 @@ static constexpr char kAnswerJsonImageLine[] = "il";
 static constexpr char kAnswerJsonText[] = "t";
 static constexpr char kAnswerJsonAdditionalText[] = "at";
 static constexpr char kAnswerJsonStatusText[] = "st";
+static constexpr char kAnswerJsonAccessibilityLabel[] = "al";
 static constexpr char kAnswerJsonTextType[] = "tt";
 static constexpr char kAnswerJsonNumLines[] = "ln";
 static constexpr char kAnswerJsonImage[] = "i";
@@ -65,19 +66,17 @@ SuggestionAnswer::TextField& SuggestionAnswer::TextField::operator=(
     TextField&&) noexcept = default;
 
 // static
-bool SuggestionAnswer::TextField::ParseTextField(const base::Value& field_json,
-                                                 TextField* text_field) {
-  if (!field_json.is_dict()) {
-    return false;
-  }
-  const std::string* text = field_json.FindStringKey(kAnswerJsonText);
-  absl::optional<int> type = field_json.FindIntKey(kAnswerJsonTextType);
+bool SuggestionAnswer::TextField::ParseTextField(
+    const base::Value::Dict& field_json,
+    TextField* text_field) {
+  const std::string* text = field_json.FindString(kAnswerJsonText);
+  absl::optional<int> type = field_json.FindInt(kAnswerJsonTextType);
   const bool parsed = text && !text->empty() && type;
   if (parsed) {
     text_field->type_ = *type;
-    text_field->text_ = net::UnescapeForHTML(base::UTF8ToUTF16(*text));
+    text_field->text_ = base::UnescapeForHTML(base::UTF8ToUTF16(*text));
 
-    absl::optional<int> num_lines = field_json.FindIntKey(kAnswerJsonNumLines);
+    absl::optional<int> num_lines = field_json.FindInt(kAnswerJsonNumLines);
     text_field->has_num_lines_ = num_lines.has_value();
     if (num_lines) {
       text_field->has_num_lines_ = true;
@@ -101,8 +100,7 @@ size_t SuggestionAnswer::TextField::EstimateMemoryUsage() const {
 
 // SuggestionAnswer::ImageLine -------------------------------------------------
 
-SuggestionAnswer::ImageLine::ImageLine()
-    : num_text_lines_(1) {}
+SuggestionAnswer::ImageLine::ImageLine() : num_text_lines_(1) {}
 SuggestionAnswer::ImageLine::ImageLine(const ImageLine& line) = default;
 SuggestionAnswer::ImageLine::ImageLine(ImageLine&&) noexcept = default;
 
@@ -111,31 +109,28 @@ SuggestionAnswer::ImageLine& SuggestionAnswer::ImageLine::operator=(
 SuggestionAnswer::ImageLine& SuggestionAnswer::ImageLine::operator=(
     ImageLine&&) noexcept = default;
 
-SuggestionAnswer::ImageLine::~ImageLine() {}
+SuggestionAnswer::ImageLine::~ImageLine() = default;
 
 // static
-bool SuggestionAnswer::ImageLine::ParseImageLine(const base::Value& line_json,
-                                                 ImageLine* image_line) {
-  if (!line_json.is_dict()) {
-    return false;
-  }
-  const base::Value* inner_json = line_json.FindKeyOfType(
-      kAnswerJsonImageLine, base::Value::Type::DICTIONARY);
-  if (!inner_json || !inner_json->is_dict()) {
+bool SuggestionAnswer::ImageLine::ParseImageLine(
+    const base::Value::Dict& line_json,
+    ImageLine* image_line) {
+  const base::Value::Dict* inner_json =
+      line_json.FindDict(kAnswerJsonImageLine);
+  if (!inner_json) {
     return false;
   }
 
-  const base::Value* fields_json =
-      inner_json->FindKeyOfType(kAnswerJsonText, base::Value::Type::LIST);
-  if (!fields_json || fields_json->GetList().empty()) {
+  const base::Value::List* fields_json = inner_json->FindList(kAnswerJsonText);
+  if (!fields_json || fields_json->empty()) {
     return false;
   }
 
   bool found_num_lines = false;
-  for (const base::Value& field_json : fields_json->GetList()) {
+  for (const base::Value& field_json : *fields_json) {
     TextField text_field;
     if (!field_json.is_dict() ||
-        !TextField::ParseTextField(field_json, &text_field)) {
+        !TextField::ParseTextField(field_json.GetDict(), &text_field)) {
       return false;
     }
 
@@ -146,40 +141,44 @@ bool SuggestionAnswer::ImageLine::ParseImageLine(const base::Value& line_json,
     }
   }
 
-  const base::Value* additional_text_json =
-      inner_json->FindKey(kAnswerJsonAdditionalText);
+  const base::Value::Dict* additional_text_json =
+      inner_json->FindDict(kAnswerJsonAdditionalText);
   if (additional_text_json) {
     image_line->additional_text_ = TextField();
-    if (!additional_text_json->is_dict() ||
-        !TextField::ParseTextField(*additional_text_json,
+    if (!TextField::ParseTextField(*additional_text_json,
                                    &image_line->additional_text_.value())) {
       return false;
     }
   }
 
-  const base::Value* status_text_json =
-      inner_json->FindKey(kAnswerJsonStatusText);
+  const base::Value::Dict* status_text_json =
+      inner_json->FindDict(kAnswerJsonStatusText);
   if (status_text_json) {
     image_line->status_text_ = TextField();
-    if (!status_text_json->is_dict() ||
-        !TextField::ParseTextField(*status_text_json,
+    if (!TextField::ParseTextField(*status_text_json,
                                    &image_line->status_text_.value())) {
       return false;
     }
   }
 
-  const base::Value* image_json = inner_json->FindKey(kAnswerJsonImage);
-  if (image_json && image_json->is_dict()) {
+  const std::string* accessibility_label =
+      inner_json->FindString(kAnswerJsonAccessibilityLabel);
+  if (accessibility_label) {
+    image_line->accessibility_label_ = base::UTF8ToUTF16(*accessibility_label);
+  }
+
+  const base::Value::Dict* image_json = inner_json->FindDict(kAnswerJsonImage);
+  if (image_json) {
     const std::string* url_string =
-        image_json->FindStringKey(kAnswerJsonImageData);
+        image_json->FindString(kAnswerJsonImageData);
     if (!url_string || url_string->empty()) {
       return false;
     }
     // If necessary, concatenate scheme and host/path using only ':' as
     // separator. This is due to the results delivering strings of the form
     // "//host/path", which is web-speak for "use the enclosing page's scheme",
-    // but not a valid path of an URL.  The GWS frontend commonly (always?)
-    // redirects to HTTPS so we just default to that here.
+    // but not a valid path of a URL. The GWS frontend commonly (always?)
+    // redirects to HTTPS, so we just default to that here.
     image_line->image_url_ =
         GURL(base::StartsWith(*url_string, "//", base::CompareCase::SENSITIVE)
                  ? (std::string(url::kHttpsScheme) + ":" + *url_string)
@@ -225,6 +224,10 @@ bool SuggestionAnswer::ImageLine::Equals(const ImageLine& line) const {
     }
   }
 
+  if (accessibility_label_ != line.accessibility_label_) {
+    return false;
+  }
+
   return image_url_ == line.image_url_;
 }
 
@@ -255,6 +258,11 @@ size_t SuggestionAnswer::ImageLine::EstimateMemoryUsage() const {
     res += base::trace_event::EstimateMemoryUsage(status_text_.value());
   } else {
     res += sizeof(TextField);
+  }
+  if (accessibility_label_) {
+    res += base::trace_event::EstimateMemoryUsage(accessibility_label_.value());
+  } else {
+    res += sizeof(std::u16string);
   }
   res += base::trace_event::EstimateMemoryUsage(image_url_);
 
@@ -298,12 +306,9 @@ SuggestionAnswer& SuggestionAnswer::operator=(SuggestionAnswer&&) noexcept =
 SuggestionAnswer::~SuggestionAnswer() = default;
 
 // static
-bool SuggestionAnswer::ParseAnswer(const base::Value& answer_json,
+bool SuggestionAnswer::ParseAnswer(const base::Value::Dict& answer_json,
                                    const std::u16string& answer_type_str,
                                    SuggestionAnswer* result) {
-  if (!answer_json.is_dict()) {
-    return false;
-  }
   int answer_type = 0;
   if (!base::StringToInt(answer_type_str, &answer_type)) {
     return false;
@@ -311,29 +316,26 @@ bool SuggestionAnswer::ParseAnswer(const base::Value& answer_json,
 
   result->set_type(answer_type);
 
-  const base::Value* lines_json =
-      answer_json.FindKeyOfType(kAnswerJsonLines, base::Value::Type::LIST);
-  if (!lines_json || lines_json->GetList().size() != 2) {
+  const base::Value::List* lines_json = answer_json.FindList(kAnswerJsonLines);
+  if (!lines_json || lines_json->size() != 2) {
     return false;
   }
 
-  const base::Value& first_line_json = lines_json->GetList()[0];
-  if (!first_line_json.is_dict() ||
-      !ImageLine::ParseImageLine(first_line_json, &result->first_line_)) {
+  const base::Value::Dict* first_line_dict = (*lines_json)[0].GetIfDict();
+  if (!first_line_dict ||
+      !ImageLine::ParseImageLine(*first_line_dict, &result->first_line_)) {
     return false;
   }
 
-  const base::Value& second_line_json = lines_json->GetList()[1];
-  if (!second_line_json.is_dict() ||
-      !ImageLine::ParseImageLine(second_line_json, &result->second_line_)) {
+  const base::Value::Dict* second_line_dict = (*lines_json)[1].GetIfDict();
+  if (!second_line_dict ||
+      !ImageLine::ParseImageLine(*second_line_dict, &result->second_line_)) {
     return false;
   }
 
   const std::string* image_url;
-  const base::Value* optional_image =
-      answer_json.FindKeyOfType("i", base::Value::Type::DICTIONARY);
-  if (optional_image && optional_image->is_dict() &&
-      (image_url = optional_image->FindStringKey("d"))) {
+  const base::Value::Dict* optional_image = answer_json.FindDict("i");
+  if (optional_image && (image_url = optional_image->FindString("d"))) {
     result->image_url_ = GURL(*image_url);
   } else {
     result->image_url_ = result->second_line_.image_url();
@@ -419,7 +421,7 @@ void SuggestionAnswer::LogAnswerUsed(
 const char SuggestionAnswer::kAnswerUsedUmaHistogramName[] =
     "Omnibox.SuggestionUsed.AnswerInSuggest";
 
-#ifdef OS_ANDROID
+#if BUILDFLAG(IS_ANDROID)
 namespace {
 
 ScopedJavaLocalRef<jobject> CreateJavaTextField(
@@ -470,4 +472,4 @@ ScopedJavaLocalRef<jobject> SuggestionAnswer::CreateJavaObject() const {
       env, static_cast<int>(type_), CreateJavaImageLine(env, &first_line_),
       CreateJavaImageLine(env, &second_line_));
 }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -65,13 +65,13 @@ typedef NS_ENUM(NSUInteger, SceneActivationLevel) {
 @property(nonatomic) BOOL incognitoContentVisible;
 
 // Window for the associated scene, if any.
-@property(nonatomic, strong) UIWindow* window;
+@property(nonatomic, readonly) UIWindow* window;
 
 // The scene object backing this scene state. It's in a 1-to-1 relationship and
 // the window scene owns this object (indirectly through scene delegate).
 @property(nonatomic, weak) UIWindowScene* scene;
 
-// Connection options of |scene|, if any, from when the scene was connected.
+// Connection options of `scene`, if any, from when the scene was connected.
 @property(nonatomic, strong) UISceneConnectionOptions* connectionOptions;
 
 // The interface provider associated with this scene.
@@ -92,14 +92,14 @@ typedef NS_ENUM(NSUInteger, SceneActivationLevel) {
 // external intent.
 @property(nonatomic, assign) BOOL startupHadExternalIntent;
 
-// URLs passed to |UIWindowSceneDelegate scene:openURLContexts:| that needs to
+// URLs passed to `UIWindowSceneDelegate scene:openURLContexts:` that needs to
 // be open next time the scene is activated.
 // Setting the property to not nil will add the new URL contexts to the set.
 // Setting the property to nil will clear the set.
 @property(nonatomic) NSSet<UIOpenURLContext*>* URLContextsToOpen;
 
 // A NSUserActivity that has been passed to
-// |UISceneDelegate scene:continueUserActivity:| and needs to be opened.
+// `UISceneDelegate scene:continueUserActivity:` and needs to be opened.
 @property(nonatomic) NSUserActivity* pendingUserActivity;
 
 // YES if the UI is enabled. The browser UI objects are available when this is
@@ -133,11 +133,11 @@ typedef NS_ENUM(NSUInteger, SceneActivationLevel) {
 // Array of all agents added to this scene state.
 - (NSArray*)connectedAgents;
 
-// Retrieves per-session preference for |key|. May return nil if the key is
+// Retrieves per-session preference for `key`. May return nil if the key is
 // not found.
 - (NSObject*)sessionObjectForKey:(NSString*)key;
 
-// Stores |object| as a per-session preference if supported by the device or
+// Stores `object` as a per-session preference if supported by the device or
 // into NSUserDefaults otherwise (old table, phone, ...).
 - (void)setSessionObject:(NSObject*)object forKey:(NSString*)key;
 

@@ -1,23 +1,30 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 /**
  * @fileoverview Handles gesture-based commands.
  */
+import {AutomationPredicate} from '../../common/automation_predicate.js';
+import {EventGenerator} from '../../common/event_generator.js';
+import {BridgeConstants} from '../common/bridge_constants.js';
+import {BridgeHelper} from '../common/bridge_helper.js';
+import {EventSourceType} from '../common/event_source_type.js';
+import {GestureCommandData, GestureGranularity} from '../common/gesture_command_data.js';
+import {QueueMode} from '../common/tts_interface.js';
 
-goog.provide('GestureCommandHandler');
+import {ChromeVoxState} from './chromevox_state.js';
+import {CommandHandlerInterface} from './command_handler_interface.js';
+import {EventSourceState} from './event_source.js';
+import {GestureInterface} from './gesture_interface.js';
+import {Output} from './output/output.js';
+import {PointerHandler} from './pointer_handler.js';
+import {UserActionMonitor} from './user_action_monitor.js';
 
-goog.require('ChromeVoxState');
-goog.require('CommandHandler');
-goog.require('EventGenerator');
-goog.require('EventSourceState');
-goog.require('GestureCommandData');
-goog.require('PointerHandler');
-
-goog.scope(function() {
 const RoleType = chrome.automation.RoleType;
 const Gesture = chrome.accessibilityPrivate.Gesture;
+
+export const GestureCommandHandler = {};
 
 /**
  * Global setting for the enabled state of this handler.
@@ -48,8 +55,7 @@ GestureCommandHandler.onAccessibilityGesture_ = function(gesture, x, y) {
 
   EventSourceState.set(EventSourceType.TOUCH_GESTURE);
 
-  const chromeVoxState = ChromeVoxState.instance;
-  const monitor = chromeVoxState ? chromeVoxState.getUserActionMonitor() : null;
+  const monitor = UserActionMonitor.instance;
   if (gesture !== Gesture.SWIPE_LEFT2 && monitor &&
       !monitor.onGesture(gesture)) {
     // UserActionMonitor returns true if this gesture should propagate.
@@ -90,7 +96,8 @@ GestureCommandHandler.onAccessibilityGesture_ = function(gesture, x, y) {
     let inMenu = false;
     let node = range.start.node;
     while (node) {
-      if (AutomationPredicate.menuItem(node)) {
+      if (AutomationPredicate.menuItem(node) ||
+          (AutomationPredicate.popUpButton(node) && node.state.expanded)) {
         inMenu = true;
         break;
       }
@@ -113,7 +120,7 @@ GestureCommandHandler.onAccessibilityGesture_ = function(gesture, x, y) {
 
   const command = commandData.command;
   if (command) {
-    CommandHandler.onCommand(command);
+    CommandHandlerInterface.instance.onCommand(command);
   }
 };
 
@@ -126,6 +133,10 @@ GestureCommandHandler.init_ = function() {
       GestureCommandHandler.onAccessibilityGesture_);
 
   GestureCommandHandler.pointerHandler_ = new PointerHandler();
+
+  GestureInterface.granularityGetter = () => GestureCommandHandler.granularity;
+  GestureInterface.granularitySetter = granularity =>
+      GestureCommandHandler.granularity = granularity;
 };
 
 /**
@@ -135,4 +146,8 @@ GestureCommandHandler.init_ = function() {
 GestureCommandHandler.granularity = GestureGranularity.LINE;
 
 GestureCommandHandler.init_();
-});  // goog.scope
+
+BridgeHelper.registerHandler(
+    BridgeConstants.GestureCommandHandler.TARGET,
+    BridgeConstants.GestureCommandHandler.Action.SET_ENABLED,
+    enabled => GestureCommandHandler.setEnabled(enabled));

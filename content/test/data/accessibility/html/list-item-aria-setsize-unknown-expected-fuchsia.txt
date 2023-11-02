@@ -1,0 +1,23 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++LIST list_size=8
+++++++++LIST_ELEMENT list_element_index=5
+++++++++++STATIC_TEXT label='Level 1, item 5 of set size unknown'
+++++++++++++UNKNOWN label='Level 1, item 5 of set size unknown'
+++++++++LIST_ELEMENT list_element_index=6
+++++++++++STATIC_TEXT label='Level 1, item 6 of set size unknown'
+++++++++++++UNKNOWN label='Level 1, item 6 of set size unknown'
+++++++++++LIST list_size=7
+++++++++++++LIST_ELEMENT list_element_index=6
+++++++++++++++STATIC_TEXT label='Level 2, item 6 of set size unknown'
+++++++++++++++++UNKNOWN label='Level 2, item 6 of set size unknown'
+++++++++++++LIST_ELEMENT list_element_index=7
+++++++++++++++STATIC_TEXT label='Level 2, item 7 of set size unknown'
+++++++++++++++++UNKNOWN label='Level 2, item 7 of set size unknown'
+++++++++LIST_ELEMENT list_element_index=7
+++++++++++STATIC_TEXT label='Level 1, item 7 of set size 2'
+++++++++++++UNKNOWN label='Level 1, item 7 of set size 2'
+++++++++LIST_ELEMENT list_element_index=8
+++++++++++STATIC_TEXT label='Level 1, item 8 of set size 3'
+++++++++++++UNKNOWN label='Level 1, item 8 of set size 3'

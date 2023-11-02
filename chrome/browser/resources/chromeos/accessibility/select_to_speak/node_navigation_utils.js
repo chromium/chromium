@@ -1,6 +1,9 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+import {AutomationUtil} from '../common/automation_util.js';
+import {constants} from '../common/constants.js';
 
 import {NodeUtils} from './node_utils.js';
 import {ParagraphUtils} from './paragraph_utils.js';
@@ -22,8 +25,6 @@ let ParagraphPred;
  * which handle lower-level calculation.
  */
 export class NodeNavigationUtils {
-  constructor() {}
-
   /**
    * Finds the nodes for the next text block in the given direction. This
    * function is based on |NodeUtils.getNextParagraph| but provides additional
@@ -85,7 +86,7 @@ export class NodeNavigationUtils {
     if (containingRoot.role === RoleType.ROOT_WEB_AREA) {
       const ancestors = AutomationUtil.getAncestors(containingRoot);
       const topRootWebArea =
-          ancestors.find((a) => a.role === RoleType.ROOT_WEB_AREA);
+          ancestors.find(a => a.role === RoleType.ROOT_WEB_AREA);
       if (topRootWebArea) {
         containingRoot = topRootWebArea;
       }
@@ -96,7 +97,7 @@ export class NodeNavigationUtils {
     }
     const nextNode = AutomationUtil.findNextNode(
         startNode, direction, NodeUtils.isValidLeafNode, {
-          root: (n) => containingRoot === n,
+          root: n => containingRoot === n,
           skipInitialSubtree: true,
         });
     if (nextNode === null) {
@@ -239,8 +240,7 @@ export class NodeNavigationUtils {
     const nodes = AutomationUtil.findAllNodes(
         node, direction,
         /* pred= */ NodeUtils.isValidLeafNode, /* opt_restrictions= */ {
-          root: (node) =>
-              node === blockParent,  // Only traverse within the block
+          root: node => node === blockParent,  // Only traverse within the block
         });
 
     // Reverse the nodes if we were traversing backward, so the returned result
@@ -276,7 +276,8 @@ export class NodeNavigationUtils {
    */
   static getNodesForNextSentence(
       currentNodeGroup, currentCharIndex, direction, pred) {
-    let nodes = [], offset;
+    let nodes = [];
+    let offset;
     if (!currentNodeGroup) {
       return {nodes, offset};
     }

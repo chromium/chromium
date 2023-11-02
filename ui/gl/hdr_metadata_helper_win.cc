@@ -1,8 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/gl/hdr_metadata_helper_win.h"
+#include "ui/gl/gpu_switching_manager.h"
 
 namespace {
 
@@ -16,26 +17,29 @@ static constexpr int kMinLuminanceFixedPoint = 10000;
 namespace gl {
 
 HDRMetadataHelperWin::HDRMetadataHelperWin(
-    const Microsoft::WRL::ComPtr<ID3D11Device>& d3d11_device) {
-  UpdateDisplayMetadata(d3d11_device);
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device)
+    : d3d11_device_(std::move(d3d11_device)) {
+  UpdateDisplayMetadata();
+  ui::GpuSwitchingManager::GetInstance()->AddObserver(this);
 }
 
-HDRMetadataHelperWin::~HDRMetadataHelperWin() = default;
+HDRMetadataHelperWin::~HDRMetadataHelperWin() {
+  ui::GpuSwitchingManager::GetInstance()->RemoveObserver(this);
+}
 
 absl::optional<DXGI_HDR_METADATA_HDR10>
 HDRMetadataHelperWin::GetDisplayMetadata() {
   return hdr_metadata_;
 }
 
-void HDRMetadataHelperWin::UpdateDisplayMetadata(
-    const Microsoft::WRL::ComPtr<ID3D11Device>& d3d11_device) {
+void HDRMetadataHelperWin::UpdateDisplayMetadata() {
   hdr_metadata_.reset();
 
-  if (!d3d11_device)
+  if (!d3d11_device_)
     return;
 
   Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
-  if (FAILED(d3d11_device.As(&dxgi_device)))
+  if (FAILED(d3d11_device_.As(&dxgi_device)))
     return;
 
   Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
@@ -43,7 +47,7 @@ void HDRMetadataHelperWin::UpdateDisplayMetadata(
     return;
 
   Microsoft::WRL::ComPtr<IDXGIFactory> dxgi_factory;
-  if (FAILED(dxgi_adapter->GetParent(__uuidof(IDXGIFactory), &dxgi_factory)))
+  if (FAILED(dxgi_adapter->GetParent(IID_PPV_ARGS(&dxgi_factory))))
     return;
 
   DXGI_OUTPUT_DESC1 desc_best{};
@@ -131,4 +135,11 @@ DXGI_HDR_METADATA_HDR10 HDRMetadataHelperWin::HDRMetadataToDXGI(
   return metadata;
 }
 
+void HDRMetadataHelperWin::OnDisplayAdded() {
+  UpdateDisplayMetadata();
+}
+
+void HDRMetadataHelperWin::OnDisplayRemoved() {
+  UpdateDisplayMetadata();
+}
 }  // namespace gl

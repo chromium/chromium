@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -79,7 +79,7 @@ void FakeSingleThreadTaskRunner::Sleep(base::TimeDelta t) {
   CHECK_LE(base::TimeDelta(), t);
   const base::TimeTicks run_until = clock_->NowTicks() + t;
 
-  while (1) {
+  while (true) {
     // Run up to 100000 tasks that were scheduled to run during the sleep
     // period. 100000 should be enough for everybody (see comments below).
     for (int i = 0; i < 100000; i++) {

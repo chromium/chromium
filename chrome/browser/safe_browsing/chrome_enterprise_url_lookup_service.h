@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -53,13 +54,14 @@ class ChromeEnterpriseRealTimeUrlLookupService
   bool CanPerformFullURLLookup() const override;
   bool CanCheckSubresourceURL() const override;
   bool CanCheckSafeBrowsingDb() const override;
+  bool CanCheckSafeBrowsingHighConfidenceAllowlist() const override;
+  bool CanSendRTSampleRequest() const override;
 
  private:
   // RealTimeUrlLookupServiceBase:
   GURL GetRealTimeLookupUrl() const override;
   net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag() const override;
   bool CanPerformFullURLLookupWithToken() const override;
-  bool CanAttachReferrerChain() const override;
   int GetReferrerUserGestureLimit() const override;
   bool CanSendPageLoadToken() const override;
   void GetAccessToken(
@@ -75,10 +77,10 @@ class ChromeEnterpriseRealTimeUrlLookupService
   double GetMinAllowedTimestampForReferrerChains() const override;
 
   // Unowned object used for checking profile based settings.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Unowned pointer to ConnectorsService, used to get a DM token.
-  enterprise_connectors::ConnectorsService* connectors_service_;
+  raw_ptr<enterprise_connectors::ConnectorsService> connectors_service_;
 
   friend class ChromeEnterpriseRealTimeUrlLookupServiceTest;
 

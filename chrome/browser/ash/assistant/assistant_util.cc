@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -23,7 +23,7 @@
 
 namespace {
 
-using chromeos::assistant::AssistantAllowedState;
+using ::ash::assistant::AssistantAllowedState;
 
 bool g_override_is_google_device = false;
 
@@ -41,7 +41,7 @@ bool IsGoogleDevice() {
 }
 
 const user_manager::User* GetUser(const Profile* profile) {
-  return chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+  return ash::ProfileHelper::Get()->GetUserByProfile(profile);
 }
 
 bool IsAssistantAllowedForUserType(const Profile* profile) {
@@ -111,7 +111,7 @@ bool IsAssistantAllowedForLocale(const Profile* profile) {
 
 bool IsAssistantDisabledByPolicy(const Profile* profile) {
   return profile->GetPrefs()->GetBoolean(
-      chromeos::assistant::prefs::kAssistantDisabledByPolicy);
+      ash::assistant::prefs::kAssistantDisabledByPolicy);
 }
 
 bool IsEmailDomainSupported(const Profile* profile) {
@@ -136,7 +136,7 @@ AssistantAllowedState IsAssistantAllowedForProfile(const Profile* profile) {
   if (!HasPrimaryAccount(profile))
     return AssistantAllowedState::DISALLOWED_BY_NONPRIMARY_USER;
 
-  if (!chromeos::ProfileHelper::IsPrimaryProfile(profile))
+  if (!ash::ProfileHelper::IsPrimaryProfile(profile))
     return AssistantAllowedState::DISALLOWED_BY_NONPRIMARY_USER;
 
   if (profile->IsOffTheRecord())

@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_MEDIA_WEBRTC_CHROME_CAMERA_PAN_TILT_ZOOM_PERMISSION_CONTEXT_DELEGATE_H_
 #define CHROME_BROWSER_MEDIA_WEBRTC_CHROME_CAMERA_PAN_TILT_ZOOM_PERMISSION_CONTEXT_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/permissions/contexts/camera_pan_tilt_zoom_permission_context.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -32,7 +33,8 @@ class ChromeCameraPanTiltZoomPermissionContextDelegate
   bool IsPermissionGrantedForExtension(const GURL& origin) const;
 #endif
 
-  content::BrowserContext* browser_context_;
+  // Unused on Android so annotated as [[maybe_unused]].
+  [[maybe_unused]] raw_ptr<content::BrowserContext> browser_context_;
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_CHROME_CAMERA_PAN_TILT_ZOOM_PERMISSION_CONTEXT_DELEGATE_H_

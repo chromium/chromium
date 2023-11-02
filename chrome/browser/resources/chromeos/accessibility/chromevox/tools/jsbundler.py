@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 '''Produces various output formats from a set of JavaScript files with
@@ -41,7 +41,7 @@ _CHROME_SOURCE = os.path.realpath(
 sys.path.insert(
     0,
     os.path.join(_CHROME_SOURCE,
-                 'third_party/devtools-frontend/src/scripts/build'))
+                 'third_party/rjsmin'))
 sys.path.insert(
     0,
     os.path.join(_CHROME_SOURCE, ('third_party/google-closure-library/' +

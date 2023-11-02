@@ -1,15 +1,16 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/web/image_fetch/image_fetch_java_script_feature.h"
 
-#include "base/base64.h"
-#include "base/values.h"
-#include "ios/chrome/browser/web/image_fetch/image_fetch_tab_helper.h"
+#import "base/base64.h"
+#import "base/no_destructor.h"
+#import "base/values.h"
+#import "ios/chrome/browser/web/image_fetch/image_fetch_tab_helper.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
-#include "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -17,7 +18,7 @@
 #endif
 
 namespace {
-const char kScriptName[] = "image_fetch_js";
+const char kScriptName[] = "image_fetch";
 const char kScriptHandlerName[] = "ImageFetchMessageHandler";
 
 ImageFetchJavaScriptFeature::Handler* GetHandlerFromWebState(

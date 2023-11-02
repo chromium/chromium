@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 #include <tuple>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/time/time.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
 #include "device/bluetooth/bluetooth_gatt_connection.h"
@@ -56,6 +56,7 @@ class Adapter : public mojom::Adapter,
   void ConnectToServiceInsecurely(
       const std::string& address,
       const device::BluetoothUUID& service_uuid,
+      bool should_unbond_on_error,
       ConnectToServiceInsecurelyCallback callback) override;
   void CreateRfcommServiceInsecurely(
       const std::string& service_name,
@@ -89,12 +90,14 @@ class Adapter : public mojom::Adapter,
     ConnectToServiceRequestDetails(const std::string& address,
                                    const device::BluetoothUUID& service_uuid,
                                    const base::Time& time_requested,
+                                   bool should_unbond_on_error,
                                    ConnectToServiceInsecurelyCallback callback);
     ~ConnectToServiceRequestDetails();
 
     std::string address;
     device::BluetoothUUID service_uuid;
     base::Time time_requested;
+    bool should_unbond_on_error;
     ConnectToServiceInsecurelyCallback callback;
   };
 
@@ -131,6 +134,8 @@ class Adapter : public mojom::Adapter,
   void OnConnectToService(int request_id,
                           scoped_refptr<device::BluetoothSocket> socket);
   void OnConnectToServiceError(int request_id, const std::string& message);
+  void OnConnectToServiceInsecurelyError(int request_id,
+                                         const std::string& error_message);
 
   void OnCreateRfcommServiceInsecurely(
       CreateRfcommServiceInsecurelyCallback callback,

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include "base/memory/singleton.h"
 #include "chrome/browser/extensions/extension_system_impl.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "extensions/browser/extension_system_provider.h"
 
 namespace extensions {
@@ -15,7 +15,7 @@ class ExtensionSystem;
 
 // BrowserContextKeyedServiceFactory for ExtensionSystemImpl::Shared.
 // Should not be used except by ExtensionSystem(Factory).
-class ExtensionSystemSharedFactory : public BrowserContextKeyedServiceFactory {
+class ExtensionSystemSharedFactory : public ProfileKeyedServiceFactory {
  public:
   ExtensionSystemSharedFactory(const ExtensionSystemSharedFactory&) = delete;
   ExtensionSystemSharedFactory& operator=(const ExtensionSystemSharedFactory&) =
@@ -34,8 +34,6 @@ class ExtensionSystemSharedFactory : public BrowserContextKeyedServiceFactory {
 
   // BrowserContextKeyedServiceFactory implementation:
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

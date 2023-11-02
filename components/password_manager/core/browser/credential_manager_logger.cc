@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ using autofill::SavePasswordProgressLogger;
 namespace password_manager {
 
 CredentialManagerLogger::CredentialManagerLogger(
-    const autofill::LogManager* log_manager)
+    autofill::LogManager* log_manager)
     : log_manager_(log_manager) {}
 
 CredentialManagerLogger::~CredentialManagerLogger() = default;
@@ -41,27 +41,27 @@ void CredentialManagerLogger::LogRequestCredential(
   for (const GURL& federation_provider : federations)
     s += SavePasswordProgressLogger::ScrubURL(federation_provider) + ", ";
 
-  log_manager_->LogTextMessage(s);
+  LOG_AF(*log_manager_) << s;
 }
 
 void CredentialManagerLogger::LogSendCredential(const url::Origin& origin,
                                                 CredentialType type) {
   std::string s("CM API send a credential: origin=" + origin.Serialize());
   s += ", CredentialType=" + CredentialTypeToString(type);
-  log_manager_->LogTextMessage(s);
+  LOG_AF(*log_manager_) << s;
 }
 
 void CredentialManagerLogger::LogStoreCredential(const url::Origin& origin,
                                                  CredentialType type) {
   std::string s("CM API save a credential: origin=" + origin.Serialize());
   s += ", CredentialType=" + CredentialTypeToString(type);
-  log_manager_->LogTextMessage(s);
+  LOG_AF(*log_manager_) << s;
 }
 
 void CredentialManagerLogger::LogPreventSilentAccess(
     const url::Origin& origin) {
   std::string s("CM API sign out: origin=" + origin.Serialize());
-  log_manager_->LogTextMessage(s);
+  LOG_AF(*log_manager_) << s;
 }
 
 }  // namespace password_manager

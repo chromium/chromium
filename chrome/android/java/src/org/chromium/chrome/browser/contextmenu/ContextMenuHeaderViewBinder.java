@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,12 @@ package org.chromium.chrome.browser.contextmenu;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver.PerformanceClass;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -61,13 +62,38 @@ class ContextMenuHeaderViewBinder {
             final boolean isVisible = model.get(ContextMenuHeaderProperties.CIRCLE_BG_VISIBLE);
             view.findViewById(R.id.circle_background)
                     .setVisibility(isVisible ? View.VISIBLE : View.INVISIBLE);
-        } else if (propertyKey == ContextMenuHeaderProperties.URL_PERFORMANCE_CLASS) {
-            @PerformanceClass
-            int performanceClass = model.get(ContextMenuHeaderProperties.URL_PERFORMANCE_CLASS);
-            view.findViewById(R.id.menu_header_performance_info)
-                    .setVisibility(performanceClass == PerformanceClass.PERFORMANCE_FAST
-                                    ? View.VISIBLE
-                                    : View.GONE);
+        } else if (propertyKey
+                == ContextMenuHeaderProperties.OVERRIDE_HEADER_IMAGE_MAX_SIZE_PIXEL) {
+            int maxSizeOverride =
+                    model.get(ContextMenuHeaderProperties.OVERRIDE_HEADER_IMAGE_MAX_SIZE_PIXEL);
+            if (ContextMenuHeaderProperties.INVALID_OVERRIDE != maxSizeOverride) {
+                View image = view.findViewById(R.id.menu_header_image);
+                LayoutParams lp = image.getLayoutParams();
+                lp.width = maxSizeOverride;
+                lp.height = maxSizeOverride;
+                image.setLayoutParams(lp);
+            }
+        } else if (propertyKey
+                == ContextMenuHeaderProperties.OVERRIDE_HEADER_CIRCLE_BG_SIZE_PIXEL) {
+            int sizeOverride =
+                    model.get(ContextMenuHeaderProperties.OVERRIDE_HEADER_CIRCLE_BG_SIZE_PIXEL);
+            if (ContextMenuHeaderProperties.INVALID_OVERRIDE != sizeOverride) {
+                View circleBg = view.findViewById(R.id.circle_background);
+                LayoutParams lp = circleBg.getLayoutParams();
+                lp.width = sizeOverride;
+                lp.height = sizeOverride;
+                circleBg.setLayoutParams(lp);
+            }
+        } else if (propertyKey
+                == ContextMenuHeaderProperties.OVERRIDE_HEADER_CIRCLE_BG_MARGIN_PIXEL) {
+            int marginOverride =
+                    model.get(ContextMenuHeaderProperties.OVERRIDE_HEADER_CIRCLE_BG_MARGIN_PIXEL);
+            if (ContextMenuHeaderProperties.INVALID_OVERRIDE != marginOverride) {
+                View circleBg = view.findViewById(R.id.circle_background);
+                MarginLayoutParams mlp = (MarginLayoutParams) circleBg.getLayoutParams();
+                mlp.setMargins(marginOverride, marginOverride, marginOverride, marginOverride);
+                circleBg.setLayoutParams(mlp);
+            }
         }
     }
 }

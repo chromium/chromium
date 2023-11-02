@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,12 +27,12 @@ export enum MarginsType {
  * Keep in sync with the C++ kSettingMargin... values in
  * printing/print_job_constants.h.
  */
-export type MarginsSetting = {
-  marginTop: number,
-  marginRight: number,
-  marginBottom: number,
-  marginLeft: number,
-};
+export interface MarginsSetting {
+  marginTop: number;
+  marginRight: number;
+  marginBottom: number;
+  marginLeft: number;
+}
 
 type MarginsObject = {
   [K in CustomMarginsOrientation]: number

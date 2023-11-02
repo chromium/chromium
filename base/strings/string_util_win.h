@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -117,7 +117,15 @@ BASE_EXPORT std::wstring ToUpperASCII(WStringPiece str);
 
 BASE_EXPORT int CompareCaseInsensitiveASCII(WStringPiece a, WStringPiece b);
 
-BASE_EXPORT bool EqualsCaseInsensitiveASCII(WStringPiece a, WStringPiece b);
+inline bool EqualsCaseInsensitiveASCII(WStringPiece a, WStringPiece b) {
+  return internal::EqualsCaseInsensitiveASCIIT(a, b);
+}
+inline bool EqualsCaseInsensitiveASCII(WStringPiece a, StringPiece b) {
+  return internal::EqualsCaseInsensitiveASCIIT(a, b);
+}
+inline bool EqualsCaseInsensitiveASCII(StringPiece a, WStringPiece b) {
+  return internal::EqualsCaseInsensitiveASCIIT(a, b);
+}
 
 BASE_EXPORT bool RemoveChars(WStringPiece input,
                              WStringPiece remove_chars,
@@ -148,9 +156,6 @@ BASE_EXPORT std::wstring CollapseWhitespace(
     bool trim_sequences_with_line_breaks);
 
 BASE_EXPORT bool ContainsOnlyChars(WStringPiece input, WStringPiece characters);
-
-BASE_EXPORT bool LowerCaseEqualsASCII(WStringPiece str,
-                                      StringPiece lowercase_ascii);
 
 BASE_EXPORT bool EqualsASCII(StringPiece16 str, StringPiece ascii);
 

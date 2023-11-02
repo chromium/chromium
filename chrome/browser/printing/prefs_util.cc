@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,19 +20,20 @@ absl::optional<gfx::Size> ParsePaperSizeDefault(const PrefService& prefs) {
   if (!prefs.HasPrefPath(prefs::kPrintingPaperSizeDefault))
     return absl::nullopt;
 
-  const base::Value* paper_size_value =
-      prefs.Get(prefs::kPrintingPaperSizeDefault);
-  if (!paper_size_value || paper_size_value->DictEmpty())
+  const base::Value::Dict& paper_size_dict =
+      prefs.GetDict(prefs::kPrintingPaperSizeDefault);
+
+  if (paper_size_dict.empty())
     return absl::nullopt;
 
-  const base::Value* custom_size =
-      paper_size_value->FindKey(kPaperSizeCustomSize);
-  if (custom_size) {
-    return gfx::Size(*custom_size->FindIntKey(kPaperSizeWidth),
-                     *custom_size->FindIntKey(kPaperSizeHeight));
+  const base::Value::Dict* custom_size_dict =
+      paper_size_dict.FindDict(kPaperSizeCustomSize);
+  if (custom_size_dict) {
+    return gfx::Size(*custom_size_dict->FindInt(kPaperSizeWidth),
+                     *custom_size_dict->FindInt(kPaperSizeHeight));
   }
 
-  const std::string* name = paper_size_value->FindStringKey(kPaperSizeName);
+  const std::string* name = paper_size_dict.FindString(kPaperSizeName);
   DCHECK(name);
   return ParsePaper(*name).size_um;
 }

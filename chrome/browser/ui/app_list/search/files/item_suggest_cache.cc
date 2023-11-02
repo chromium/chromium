@@ -1,11 +1,16 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/app_list/search/files/item_suggest_cache.h"
 
+#include <algorithm>
+#include <string>
+
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/bind.h"
+#include "base/callback_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -37,9 +42,6 @@ namespace {
 // Maximum accepted size of an ItemSuggest response. 1MB.
 constexpr int kMaxResponseSize = 1024 * 1024;
 
-// TODO(crbug.com/1034842): Investigate:
-//  - enterprise policies that should limit this traffic.
-//  - settings that should disable drive results.
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("launcher_item_suggest", R"(
       semantics {
@@ -69,6 +71,16 @@ bool IsDisabledByPolicy(const Profile* profile) {
   return profile->GetPrefs()->GetBoolean(drive::prefs::kDisableDrive);
 }
 
+base::Time GetLastRequestTime(Profile* profile) {
+  return profile->GetPrefs()->GetTime(
+      chromeos::prefs::kLauncherLastContinueRequestTime);
+}
+
+void SetLastRequestTime(Profile* profile, const base::Time& time) {
+  profile->GetPrefs()->SetTime(
+      chromeos::prefs::kLauncherLastContinueRequestTime, time);
+}
+
 //------------------
 // Metrics utilities
 //------------------
@@ -91,21 +103,21 @@ void LogLatency(base::TimeDelta latency) {
 // JSON utilities
 //---------------
 
-absl::optional<base::Value::ConstListView> GetList(const base::Value* value,
-                                                   const std::string& key) {
+const base::Value::List* GetList(const base::Value* value,
+                                 const std::string& key) {
   if (!value->is_dict())
-    return absl::nullopt;
+    return nullptr;
   const base::Value* field = value->FindListKey(key);
   if (!field)
-    return absl::nullopt;
-  return field->GetList();
+    return nullptr;
+  return &field->GetList();
 }
 
 absl::optional<std::string> GetString(const base::Value* value,
                                       const std::string& key) {
   if (!value->is_dict())
     return absl::nullopt;
-  const std::string* field = value->FindStringKey(key);
+  const std::string* field = value->GetDict().FindString(key);
   if (!field)
     return absl::nullopt;
   return *field;
@@ -119,11 +131,14 @@ absl::optional<ItemSuggestCache::Result> ConvertResult(
     const base::Value* value) {
   const auto& item_id = GetString(value, "itemId");
   const auto& display_text = GetString(value, "displayText");
+  const auto& prediction_reason = GetString(value, "predictionReason");
 
+  // Allow |prediction_reason| to be nullopt.
   if (!item_id || !display_text)
     return absl::nullopt;
 
-  return ItemSuggestCache::Result(item_id.value(), display_text.value());
+  return ItemSuggestCache::Result(item_id.value(), display_text.value(),
+                                  prediction_reason);
 }
 
 absl::optional<ItemSuggestCache::Results> ConvertResults(
@@ -134,13 +149,13 @@ absl::optional<ItemSuggestCache::Results> ConvertResults(
 
   ItemSuggestCache::Results results(suggestion_id.value());
 
-  const auto items = GetList(value, "item");
+  const auto* items = GetList(value, "item");
   if (!items) {
     // Return empty results if there are no items.
     return results;
   }
 
-  for (const auto& result_value : items.value()) {
+  for (const auto& result_value : *items) {
     auto result = ConvertResult(&result_value);
     // If any result fails conversion, fail completely and return absl::nullopt,
     // rather than just skipping this result. This makes clear the distinction
@@ -155,21 +170,26 @@ absl::optional<ItemSuggestCache::Results> ConvertResults(
 
 }  // namespace
 
-// static
-const base::Feature ItemSuggestCache::kExperiment{
-    "LauncherItemSuggest", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kLauncherItemSuggest,
+             "LauncherItemSuggest",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 constexpr base::FeatureParam<bool> ItemSuggestCache::kEnabled;
 constexpr base::FeatureParam<std::string> ItemSuggestCache::kServerUrl;
 constexpr base::FeatureParam<std::string> ItemSuggestCache::kModelName;
-constexpr base::FeatureParam<int> ItemSuggestCache::kMinMinutesBetweenUpdates;
 constexpr base::FeatureParam<bool> ItemSuggestCache::kMultipleQueriesPerSession;
+constexpr base::FeatureParam<int> ItemSuggestCache::kLongDelayMinutes;
 
-ItemSuggestCache::Result::Result(const std::string& id,
-                                 const std::string& title)
-    : id(id), title(title) {}
+ItemSuggestCache::Result::Result(
+    const std::string& id,
+    const std::string& title,
+    const absl::optional<std::string>& prediction_reason)
+    : id(id), title(title), prediction_reason(prediction_reason) {}
 
 ItemSuggestCache::Result::Result(const Result& other)
-    : id(other.id), title(other.title) {}
+    : id(other.id),
+      title(other.title),
+      prediction_reason(other.prediction_reason) {}
 
 ItemSuggestCache::Result::~Result() = default;
 
@@ -187,16 +207,18 @@ ItemSuggestCache::ItemSuggestCache(
     : made_request_(false),
       enabled_(kEnabled.Get()),
       server_url_(kServerUrl.Get()),
-      min_time_between_updates_(base::Minutes(kMinMinutesBetweenUpdates.Get())),
-      multiple_queries_per_session_(
-          app_list_features::IsSuggestedFilesEnabled() ||
-          kMultipleQueriesPerSession.Get()),
+      multiple_queries_per_session_(kMultipleQueriesPerSession.Get()),
       profile_(profile),
       url_loader_factory_(std::move(url_loader_factory)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 ItemSuggestCache::~ItemSuggestCache() = default;
+
+base::CallbackListSubscription ItemSuggestCache::RegisterCallback(
+    ItemSuggestCache::OnResultsCallback callback) {
+  return on_results_callback_list_.Add(std::move(callback));
+}
 
 absl::optional<ItemSuggestCache::Results> ItemSuggestCache::GetResults() {
   // Return a copy because a pointer to |results_| will become invalid whenever
@@ -227,14 +249,19 @@ std::string ItemSuggestCache::GetRequestBody() {
   return base::ReplaceStringPlaceholders(kRequestBody, {model}, nullptr);
 }
 
-void ItemSuggestCache::UpdateCache() {
+base::TimeDelta ItemSuggestCache::GetDelay() {
+  bool use_long_delay = profile_->GetPrefs()->GetBoolean(
+      chromeos::prefs::kLauncherUseLongContinueDelay);
+  return base::Minutes(use_long_delay ? kLongDelayMinutes.Get()
+                                      : kShortDelayMinutes);
+}
+
+void ItemSuggestCache::MaybeUpdateCache() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   update_start_time_ = base::TimeTicks::Now();
 
-  const auto& now = base::Time::Now();
-  if (now - time_of_last_update_ < min_time_between_updates_)
+  if (base::Time::Now() - GetLastRequestTime(profile_) < GetDelay())
     return;
-  time_of_last_update_ = now;
 
   // Make no requests and exit in these cases:
   // - Item suggest has been disabled via experiment.
@@ -274,6 +301,13 @@ void ItemSuggestCache::UpdateCache() {
       signin::ConsentLevel::kSync);
 }
 
+void ItemSuggestCache::UpdateCacheWithJsonForTest(
+    const std::string json_response) {
+  data_decoder::DataDecoder::ParseJsonIsolated(
+      json_response, base::BindOnce(&ItemSuggestCache::OnJsonParsed,
+                                    weak_factory_.GetWeakPtr()));
+}
+
 void ItemSuggestCache::OnTokenReceived(GoogleServiceAuthError error,
                                        signin::AccessTokenInfo token_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -286,6 +320,7 @@ void ItemSuggestCache::OnTokenReceived(GoogleServiceAuthError error,
 
   // Make a new request. This destroys any existing |url_loader_| which will
   // cancel that request if it is in-progress.
+  SetLastRequestTime(profile_, base::Time::Now());
   made_request_ = true;
   url_loader_ = MakeRequestLoader(token_info.token);
   url_loader_->SetRetryOptions(0, network::SimpleURLLoader::RETRY_NEVER);
@@ -309,6 +344,8 @@ void ItemSuggestCache::OnSuggestionsReceived(
       if (net_error == net::ERR_INSUFFICIENT_RESOURCES) {
         LogStatus(Status::kResponseTooLarge);
       } else {
+        // Note that requests ending in kNetError don't count towards
+        // ItemSuggest QPS, but the last request time is still updated.
         LogStatus(Status::kNetError);
       }
     } else {
@@ -340,7 +377,7 @@ void ItemSuggestCache::OnJsonParsed(
     data_decoder::DataDecoder::ValueOrError result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!result.value) {
+  if (!result.has_value()) {
     LogStatus(Status::kJsonParseFailure);
     return;
   }
@@ -348,15 +385,21 @@ void ItemSuggestCache::OnJsonParsed(
   // Convert the JSON value into a Results object. If the conversion fails, or
   // if the conversion contains no results, we shouldn't update the stored
   // results.
-  const auto& results = ConvertResults(&result.value.value());
+  const auto& results = ConvertResults(&*result);
   if (!results) {
     LogStatus(Status::kJsonConversionFailure);
   } else if (results->results.empty()) {
     LogStatus(Status::kNoResultsInResponse);
+    if (!results_) {
+      // Make sure that |results_| is non-null to indicate that an update was
+      // successful.
+      results_ = std::move(results.value());
+    }
   } else {
     LogStatus(Status::kOk);
     LogLatency(base::TimeTicks::Now() - update_start_time_);
     results_ = std::move(results.value());
+    on_results_callback_list_.Notify();
   }
 }
 

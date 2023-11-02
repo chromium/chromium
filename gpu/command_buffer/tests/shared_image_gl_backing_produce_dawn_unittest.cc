@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -57,10 +57,8 @@ class SharedImageGLBackingProduceDawnTest : public WebGPUTest {
 
     gl_context_ = std::make_unique<GLInProcessContext>();
     ContextResult result = gl_context_->Initialize(
-        GetGpuServiceHolder()->task_executor(), nullptr, true,
-        gpu::kNullSurfaceHandle, attributes, option.shared_memory_limits,
-        nullptr, nullptr, nullptr, nullptr,
-        base::ThreadTaskRunnerHandle::Get());
+        GetGpuServiceHolder()->task_executor(), attributes,
+        option.shared_memory_limits, /*image_factory=*/nullptr);
     ASSERT_EQ(result, ContextResult::kSuccess);
     mock_buffer_map_callback =
         std::make_unique<testing::StrictMock<MockBufferMapCallback>>();
@@ -74,13 +72,13 @@ class SharedImageGLBackingProduceDawnTest : public WebGPUTest {
 
   bool ShouldSkipTest() {
 // Windows is the only platform enabled passthrough in this test.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Skip the test if there is no GPU service holder. It is not created if
     // Dawn is not supported on the platform (Win7).
     return GetGpuServiceHolder() == nullptr;
 #else
     return true;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   }
 
   gles2::GLES2Implementation* gl() { return gl_context_->GetImplementation(); }

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@ module content.mojom;
 import "content/common/associated_interfaces.mojom";
 import "content/common/frame.mojom";
 import "content/common/native_types.mojom";
-import "content/services/shared_storage_worklet/public/mojom/shared_storage_worklet_service.mojom";
-import "mojo/public/mojom/base/unguessable_token.mojom";
+import "content/common/shared_storage_worklet_service.mojom";
+import "third_party/blink/public/mojom/frame/frame.mojom";
 import "third_party/blink/public/mojom/frame/frame_replication_state.mojom";
 import "third_party/blink/public/mojom/frame/tree_scope_type.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
@@ -62,52 +62,13 @@ interface AgentSchedulingGroup {
   // create the AgentSchedulingGroup over.
   BindAssociatedInterfaces(
     pending_associated_remote<AgentSchedulingGroupHost> remote_host,
-    pending_associated_remote<RouteProvider> remote_route_provider,
     pending_associated_receiver<RouteProvider> route_provider_receiver);
 
   // Tells the renderer to create a new view.
   CreateView(CreateViewParams params);
 
-  // Tells the renderer to destroy an existing view. This method must be called
-  // exactly once for each invocation of CreateView. |view_id| is synonymous
-  // with |routing_id|. A callback is provided so the browser receives
-  // notification the destruction is complete.
-  DestroyView(int32 view_id);
-
   // Tells the renderer to create a new RenderFrame.
   CreateFrame(CreateFrameParams params);
-
-  // Tells the renderer to create a new RenderFrameProxy.
-  //
-  // `token`: The frame token. Used to map between RemoteFrame and
-  //     RenderFrameProxyHost.
-  // `routing_id`: The legacy IPC routing ID.
-  // `opener_frame_token`: Frame token that identifies the opener frame if one
-  //     exists, or absl::nullopt otherwise.
-  // `view_routing_id`: routing ID of the RenderView for this RenderFrameProxy.
-  //     Must not be `MSG_ROUTING_NONE`.
-  // `parent_routing_id`: `MSG_ROUTING_NONE` for a top-level RenderFrameProxy;
-  //     otherwise, Identifies the parent frame of the RenderFrameProxy.
-  // `tree_scope_type`: Whether the owner element (e.g. <iframe>, <object>, et
-  //     cetera) for this frame is in the document tree or the shadow tree. This
-  //     parameter has no meaning for main frames, and any passed value will be
-  //     ignored for main frames.
-  // `devtools_frame_token`: Used for devtools instrumentation and
-  //    trace-ability. The token is shared across all frames (local or remotes)
-  //    representing the same logical frame tree node, and is used by Blink and
-  //    content to tag calls and requests for instrumentation purposes,
-  //    allowing them to be attributed to a context frame.
-  //
-  //    Must not be used to look up a RenderFrameHostImpl or
-  //    RenderFrameProxyHost in the browser process, as the token is shared,
-  //    making the mapping ambiguous and non-authoritative.
-  CreateFrameProxy(blink.mojom.RemoteFrameToken token, int32 routing_id,
-                   blink.mojom.FrameToken? opener_frame_token,
-                   int32 view_routing_id, int32 parent_routing_id,
-                   blink.mojom.TreeScopeType tree_scope_type,
-                   blink.mojom.FrameReplicationState replication_state,
-                   mojo_base.mojom.UnguessableToken devtools_frame_token,
-                   RemoteMainFrameInterfaces remote_main_frame_interfaces);
 
   // Tells the renderer process to create a thread that exclusively hosts the
   // shared storage worklet service.

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,18 +14,19 @@
 #include <iosfwd>
 
 #include "base/base_export.h"
-#include "base/macros.h"
+#include "base/message_loop/message_pump_type.h"
+#include "base/threading/platform_thread_ref.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
 #include <zircon/types.h>
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 #include <mach/mach_types.h>
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
 #include <pthread.h>
 #include <unistd.h>
 #endif
@@ -33,61 +34,22 @@
 namespace base {
 
 // Used for logging. Always an integer value.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 typedef DWORD PlatformThreadId;
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
 typedef zx_handle_t PlatformThreadId;
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 typedef mach_port_t PlatformThreadId;
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
 typedef pid_t PlatformThreadId;
 #endif
-
-// Used for thread checking and debugging.
-// Meant to be as fast as possible.
-// These are produced by PlatformThread::CurrentRef(), and used to later
-// check if we are on the same thread or not by using ==. These are safe
-// to copy between threads, but can't be copied to another process as they
-// have no meaning there. Also, the internal identifier can be re-used
-// after a thread dies, so a PlatformThreadRef cannot be reliably used
-// to distinguish a new thread from an old, dead thread.
-class PlatformThreadRef {
- public:
-#if defined(OS_WIN)
-  typedef DWORD RefType;
-#else  //  OS_POSIX
-  typedef pthread_t RefType;
-#endif
-  constexpr PlatformThreadRef() = default;
-
-  explicit constexpr PlatformThreadRef(RefType id) : id_(id) {}
-
-  bool operator==(PlatformThreadRef other) const {
-    return id_ == other.id_;
-  }
-
-  bool operator!=(PlatformThreadRef other) const { return id_ != other.id_; }
-
-  bool is_null() const {
-    return id_ == 0;
-  }
-
- private:
-  friend BASE_EXPORT std::ostream& operator<<(std::ostream& os,
-                                              const PlatformThreadRef& ref);
-
-  RefType id_ = 0;
-};
-
-BASE_EXPORT std::ostream& operator<<(std::ostream& os,
-                                     const PlatformThreadRef& ref);
 
 // Used to operate on threads.
 class PlatformThreadHandle {
  public:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   typedef void* Handle;
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   typedef pthread_t Handle;
 #endif
 
@@ -113,17 +75,54 @@ class PlatformThreadHandle {
 
 const PlatformThreadId kInvalidThreadId(0);
 
-// Valid values for priority of Thread::Options and SimpleThread::Options, and
-// SetCurrentThreadPriority(), listed in increasing order of importance.
-enum class ThreadPriority : int {
-  // Suitable for threads that shouldn't disrupt high priority work.
-  BACKGROUND,
-  // Default priority level.
-  NORMAL,
-  // Suitable for threads which generate data for the display (at ~60Hz).
-  DISPLAY,
+// Valid values for `thread_type` of Thread::Options, SimpleThread::Options,
+// and SetCurrentThreadType(), listed in increasing order of importance.
+//
+// It is up to each platform-specific implementation what these translate to.
+// Callers should avoid setting different ThreadTypes on different platforms
+// (ifdefs) at all cost, instead the platform differences should be encoded in
+// the platform-specific implementations. Some implementations may treat
+// adjacent ThreadTypes in this enum as equivalent.
+//
+// Reach out to //base/task/OWNERS (scheduler-dev@chromium.org) before changing
+// thread type assignments in your component, as such decisions affect the whole
+// of Chrome.
+//
+// Refer to PlatformThreadTest.SetCurrentThreadTypeTest in
+// platform_thread_unittest.cc for the most up-to-date state of each platform's
+// handling of ThreadType.
+enum class ThreadType : int {
+  // Suitable for threads that have the least urgency and lowest priority, and
+  // can be interrupted or delayed by other types.
+  kBackground,
+  // Suitable for threads that produce user-visible artifacts but aren't
+  // latency sensitive. The underlying platform will try to be economic
+  // in its usage of resources for this thread, if possible.
+  kResourceEfficient,
+  // Default type. The thread priority or quality of service will be set to
+  // platform default. In Chrome, this is suitable for handling user
+  // interactions (input), only display and audio can get a higher priority.
+  kDefault,
+  // Suitable for threads which are critical to compositing the foreground
+  // content.
+  kCompositing,
+  // Suitable for display critical threads.
+  kDisplayCritical,
   // Suitable for low-latency, glitch-resistant audio.
-  REALTIME_AUDIO,
+  kRealtimeAudio,
+  kMaxValue = kRealtimeAudio,
+};
+
+// Cross-platform mapping of physical thread priorities. Used by tests to verify
+// the underlying effects of SetCurrentThreadType.
+enum class ThreadPriorityForTest : int {
+  kBackground,
+  kNormal,
+  // The priority obtained via ThreadType::kDisplayCritical (and potentially
+  // other ThreadTypes).
+  kDisplay,
+  kRealtimeAudio,
+  kMaxValue = kRealtimeAudio,
 };
 
 // A namespace for low-level thread functions.
@@ -133,11 +132,13 @@ class BASE_EXPORT PlatformThread {
   // ThreadMain method will be called on the newly created thread.
   class BASE_EXPORT Delegate {
    public:
+#if BUILDFLAG(IS_APPLE)
     // The interval at which the thread expects to have work to do. Zero if
     // unknown. (Example: audio buffer duration for real-time audio.) Is used to
     // optimize the thread real-time behavior. Is called on the newly created
     // thread before ThreadMain().
     virtual TimeDelta GetRealtimePeriod();
+#endif
 
     virtual void ThreadMain() = 0;
 
@@ -163,6 +164,12 @@ class BASE_EXPORT PlatformThread {
   static PlatformThreadHandle CurrentHandle();
 
   // Yield the current thread so another thread can be scheduled.
+  //
+  // Note: this is likely not the right call to make in most situations. If this
+  // is part of a spin loop, consider base::Lock, which likely has better tail
+  // latency. Yielding the thread has different effects depending on the
+  // platform, system load, etc., and can result in yielding the CPU for less
+  // than 1us, or many tens of ms.
   static void YieldCurrentThread();
 
   // Sleeps for the specified duration (real-time; ignores time overrides).
@@ -190,26 +197,36 @@ class BASE_EXPORT PlatformThread {
   static bool Create(size_t stack_size,
                      Delegate* delegate,
                      PlatformThreadHandle* thread_handle) {
-    return CreateWithPriority(stack_size, delegate, thread_handle,
-                              ThreadPriority::NORMAL);
+    return CreateWithType(stack_size, delegate, thread_handle,
+                          ThreadType::kDefault);
   }
 
-  // CreateWithPriority() does the same thing as Create() except the priority of
-  // the thread is set based on `priority`.
-  static bool CreateWithPriority(size_t stack_size, Delegate* delegate,
-                                 PlatformThreadHandle* thread_handle,
-                                 ThreadPriority priority);
+  // CreateWithType() does the same thing as Create() except the priority and
+  // possibly the QoS of the thread is set based on `thread_type`.
+  // `pump_type_hint` must be provided if the thread will be using a
+  // MessagePumpForUI or MessagePumpForIO as this affects the application of
+  // `thread_type`.
+  static bool CreateWithType(
+      size_t stack_size,
+      Delegate* delegate,
+      PlatformThreadHandle* thread_handle,
+      ThreadType thread_type,
+      MessagePumpType pump_type_hint = MessagePumpType::DEFAULT);
 
   // CreateNonJoinable() does the same thing as Create() except the thread
   // cannot be Join()'d.  Therefore, it also does not output a
   // PlatformThreadHandle.
   static bool CreateNonJoinable(size_t stack_size, Delegate* delegate);
 
-  // CreateNonJoinableWithPriority() does the same thing as CreateNonJoinable()
-  // except the priority of the thread is set based on `priority`.
-  static bool CreateNonJoinableWithPriority(size_t stack_size,
-                                            Delegate* delegate,
-                                            ThreadPriority priority);
+  // CreateNonJoinableWithType() does the same thing as CreateNonJoinable()
+  // except the type of the thread is set based on `type`. `pump_type_hint` must
+  // be provided if the thread will be using a MessagePumpForUI or
+  // MessagePumpForIO as this affects the application of `thread_type`.
+  static bool CreateNonJoinableWithType(
+      size_t stack_size,
+      Delegate* delegate,
+      ThreadType thread_type,
+      MessagePumpType pump_type_hint = MessagePumpType::DEFAULT);
 
   // Joins with a thread created via the Create function.  This function blocks
   // the caller until the designated thread exits.  This will invalidate
@@ -220,76 +237,64 @@ class BASE_EXPORT PlatformThread {
   // and `thread_handle` is invalidated after this call.
   static void Detach(PlatformThreadHandle thread_handle);
 
-  // Returns true if SetCurrentThreadPriority() should be able to change the
-  // priority of a thread in current process from `from` to `to`.
-  static bool CanChangeThreadPriority(ThreadPriority from, ThreadPriority to);
+  // Returns true if SetCurrentThreadType() should be able to change the type
+  // of a thread in current process from `from` to `to`.
+  static bool CanChangeThreadType(ThreadType from, ThreadType to);
 
-  // Toggles the current thread's priority at runtime.
-  //
-  // A thread may not be able to raise its priority back up after lowering it if
-  // the process does not have a proper permission, e.g. CAP_SYS_NICE on Linux.
-  // A thread may not be able to lower its priority back down after raising it
-  // to DISPLAY or REALTIME_AUDIO.
-  //
-  // This function must not be called from the main thread on Mac. This is to
-  // avoid performance regressions (https://crbug.com/601270).
-  //
-  // Since changing other threads' priority is not permitted in favor of
-  // security, this interface is restricted to change only the current thread
-  // priority (https://crbug.com/399473).
-  static void SetCurrentThreadPriority(ThreadPriority priority);
+  // Declares the type of work running on the current thread. This will affect
+  // things like thread priority and thread QoS (Quality of Service) to the best
+  // of the current platform's abilities.
+  static void SetCurrentThreadType(ThreadType thread_type);
 
-  static ThreadPriority GetCurrentThreadPriority();
+  // Get the last `thread_type` set by SetCurrentThreadType, no matter if the
+  // underlying priority successfully changed or not.
+  static ThreadType GetCurrentThreadType();
 
   // Returns a realtime period provided by `delegate`.
   static TimeDelta GetRealtimePeriod(Delegate* delegate);
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  // Toggles a specific thread's priority at runtime. This can be used to
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // Toggles a specific thread's type at runtime. This can be used to
   // change the priority of a thread in a different process and will fail
   // if the calling process does not have proper permissions. The
-  // SetCurrentThreadPriority() function above is preferred in favor of
+  // SetCurrentThreadType() function above is preferred in favor of
   // security but on platforms where sandboxed processes are not allowed to
   // change priority this function exists to allow a non-sandboxed process
   // to change the priority of sandboxed threads for improved performance.
   // Warning: Don't use this for a main thread because that will change the
   // whole thread group's (i.e. process) priority.
-  static void SetThreadPriority(PlatformThreadId process_id,
-                                PlatformThreadId thread_id,
-                                ThreadPriority priority);
+  static void SetThreadType(PlatformThreadId process_id,
+                            PlatformThreadId thread_id,
+                            ThreadType thread_type);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_APPLE)
   // Signals that the feature list has been initialized which allows to check
   // the feature's value now and initialize state. This prevents race
   // conditions where the feature is being checked while it is being
   // initialized, which can cause a crash.
-  static void InitThreadPostFieldTrial();
+  static void InitFeaturesPostFieldTrial();
 #endif
 
   // Returns the default thread stack size set by chrome. If we do not
   // explicitly set default size then returns 0.
   static size_t GetDefaultThreadStackSize();
 
-#if defined(OS_APPLE)
-  // Initializes realtime threading based on kOptimizedRealtimeThreadingMac
-  // feature status.
-  static void InitializeOptimizedRealtimeThreadingFeature();
-
+#if BUILDFLAG(IS_APPLE)
   // Stores the period value in TLS.
   static void SetCurrentThreadRealtimePeriodValue(TimeDelta realtime_period);
 #endif
 
- private:
-  static void SetCurrentThreadPriorityImpl(ThreadPriority priority);
+  static ThreadPriorityForTest GetCurrentThreadPriorityForTest();
 };
 
 namespace internal {
 
-// Initializes the "ThreadPriorities" feature. The feature state is only taken
-// into account after this initialization. This initialization must be
-// synchronized with calls to PlatformThread::SetCurrentThreadPriority().
-void InitializeThreadPrioritiesFeature();
+void SetCurrentThreadType(ThreadType thread_type,
+                          MessagePumpType pump_type_hint);
+
+void SetCurrentThreadTypeImpl(ThreadType thread_type,
+                              MessagePumpType pump_type_hint);
 
 }  // namespace internal
 

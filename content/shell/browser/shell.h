@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #ifndef CONTENT_SHELL_BROWSER_SHELL_H_
@@ -45,7 +45,7 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
                            const std::string& data,
                            const GURL& base_url);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Android-only path to allow loading long data strings.
   void LoadDataAsStringWithBaseURL(const GURL& url,
                                    const std::string& data,
@@ -55,7 +55,7 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
   void Reload();
   void ReloadBypassingCache();
   void Stop();
-  void UpdateNavigationControls(bool to_different_document);
+  void UpdateNavigationControls(bool should_show_loading_ui);
   void Close();
   void ShowDevTools();
   void CloseDevTools();
@@ -99,11 +99,11 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
 
   WebContents* web_contents() const { return web_contents_.get(); }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   gfx::NativeWindow window();
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Public to be called by an ObjC bridge object.
   void ActionPerformed(int control);
   void URLEntered(const std::string& url_string);
@@ -116,12 +116,12 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
                       std::unique_ptr<WebContents> new_contents,
                       const GURL& target_url,
                       WindowOpenDisposition disposition,
-                      const gfx::Rect& initial_rect,
+                      const blink::mojom::WindowFeatures& window_features,
                       bool user_gesture,
                       bool* was_blocked) override;
   void LoadingStateChanged(WebContents* source,
-                           bool to_different_document) override;
-#if defined(OS_ANDROID)
+                           bool should_show_loading_ui) override;
+#if BUILDFLAG(IS_ANDROID)
   void SetOverlayMode(bool use_overlay_mode) override;
 #endif
   void EnterFullscreenModeForTab(
@@ -131,6 +131,12 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
   bool IsFullscreenForTabOrPending(const WebContents* web_contents) override;
   blink::mojom::DisplayMode GetDisplayMode(
       const WebContents* web_contents) override;
+#if !BUILDFLAG(IS_ANDROID)
+  void RegisterProtocolHandler(RenderFrameHost* requesting_frame,
+                               const std::string& protocol,
+                               const GURL& url,
+                               bool user_gesture) override;
+#endif
   void RequestToLockMouse(WebContents* web_contents,
                           bool user_gesture,
                           bool last_unlocked_by_target) override;
@@ -140,7 +146,7 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
                               InvalidateTypes changed_flags) override;
   JavaScriptDialogManager* GetJavaScriptDialogManager(
       WebContents* source) override;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void DidNavigatePrimaryMainFramePostCommit(WebContents* contents) override;
   bool HandleKeyboardEvent(WebContents* source,
                            const NativeWebKeyboardEvent& event) override;
@@ -157,7 +163,7 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
       base::RepeatingClosure hang_monitor_restarter) override;
   void ActivateContents(WebContents* contents) override;
   bool IsBackForwardCacheSupported() override;
-  bool IsPrerender2Supported() override;
+  bool IsPrerender2Supported(WebContents& web_contents) override;
   std::unique_ptr<content::WebContents> ActivatePortalWebContents(
       content::WebContents* predecessor_contents,
       std::unique_ptr<content::WebContents> portal_contents) override;
@@ -170,9 +176,7 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
                                          const url::Origin& origin,
                                          const GURL& resource_url) override;
   PictureInPictureResult EnterPictureInPicture(
-      content::WebContents* web_contents,
-      const viz::SurfaceId&,
-      const gfx::Size& natural_size) override;
+      content::WebContents* web_contents) override;
   bool ShouldResumeRequestsForCreatedWindow() override;
   void SetContentsBounds(WebContents* source, const gfx::Rect& bounds) override;
 
@@ -207,20 +211,17 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
   void ToggleFullscreenModeForTab(WebContents* web_contents,
                                   bool enter_fullscreen);
   // WebContentsObserver
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void LoadProgressChanged(double progress) override;
 #endif
   void TitleWasSet(NavigationEntry* entry) override;
   void RenderFrameCreated(RenderFrameHost* frame_host) override;
 
-  void OnDevToolsWebContentsDestroyed();
-
   std::unique_ptr<JavaScriptDialogManager> dialog_manager_;
 
   std::unique_ptr<WebContents> web_contents_;
 
-  std::unique_ptr<DevToolsWebContentsObserver> devtools_observer_;
-  ShellDevToolsFrontend* devtools_frontend_ = nullptr;
+  base::WeakPtr<ShellDevToolsFrontend> devtools_frontend_;
 
   bool is_fullscreen_ = false;
 

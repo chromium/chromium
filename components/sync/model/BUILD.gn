@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -15,9 +15,6 @@ static_library("model") {
     "data_batch.h",
     "data_type_activation_request.cc",
     "data_type_activation_request.h",
-    "data_type_error_handler.h",
-    "data_type_error_handler_impl.cc",
-    "data_type_error_handler_impl.h",
     "dummy_metadata_change_list.cc",
     "dummy_metadata_change_list.h",
     "entity_change.cc",
@@ -52,6 +49,7 @@ static_library("model") {
     "processor_entity_tracker.h",
     "proxy_model_type_controller_delegate.cc",
     "proxy_model_type_controller_delegate.h",
+    "string_ordinal.cc",
     "string_ordinal.h",
     "sync_change.cc",
     "sync_change.h",

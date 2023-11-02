@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@ import "sandbox/policy/mojom/sandbox.mojom";
 // Interface to the out-of-process file patcher. The file patcher runs
 // bspatch, courgette, or other utilities to apply a differential
 // patch to a file, often for the purposes of software updates.
-[ServiceSandbox=sandbox.mojom.Sandbox.kUtility]
+[ServiceSandbox=sandbox.mojom.Sandbox.kService]
 interface FilePatcher {
   // Patch |input_file| with |patch_file| using the bsdiff algorithm
   // (Courgette's version) and place the output in |output_file|.
@@ -25,6 +25,14 @@ interface FilePatcher {
   // and place the output in |output_file|.
   // Returns |result| courgette::Status::C_OK on success.
   PatchFileCourgette(
+      mojo_base.mojom.ReadOnlyFile input_file,
+      mojo_base.mojom.ReadOnlyFile patch_file,
+      mojo_base.mojom.File output_file) => (int32 result);
+
+  // Patch |input_file_path| with |patch_file_path| using the Puffin PuffPatch
+  // algorithm and place the output in |output_file_path|.
+  // Returns |result| puffin::Status::P_OK on success.
+  PatchFilePuffPatch(
       mojo_base.mojom.ReadOnlyFile input_file,
       mojo_base.mojom.ReadOnlyFile patch_file,
       mojo_base.mojom.File output_file) => (int32 result);

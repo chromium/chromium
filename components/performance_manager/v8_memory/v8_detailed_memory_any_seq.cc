@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -97,12 +98,11 @@ void V8DetailedMemoryRequestAnySeq::InitializeWrappedRequest(
     MeasurementMode mode,
     absl::optional<base::WeakPtr<ProcessNode>> process_to_measure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Can't use make_unique since this calls the private any-sequence
-  // constructor. After construction the V8DetailedMemoryRequest must only be
-  // accessed on the graph sequence.
-  request_ = base::WrapUnique(new V8DetailedMemoryRequest(
+  // After construction the V8DetailedMemoryRequest must only be accessed on
+  // the graph sequence.
+  request_ = std::make_unique<V8DetailedMemoryRequest>(
       base::PassKey<V8DetailedMemoryRequestAnySeq>(), min_time_between_requests,
-      mode, std::move(process_to_measure), weak_factory_.GetWeakPtr()));
+      mode, std::move(process_to_measure), weak_factory_.GetWeakPtr());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -167,12 +167,11 @@ void V8DetailedMemoryRequestOneShotAnySeq::InitializeWrappedRequest(
       base::SequenceBound<MeasurementCallback>(
           base::SequencedTaskRunnerHandle::Get(), std::move(callback)));
 
-  // Can't use make_unique since this calls the private any-sequence
-  // constructor. After construction the V8DetailedMemoryRequestOneShot must
-  // only be accessed on the graph sequence.
-  request_ = base::WrapUnique(new V8DetailedMemoryRequestOneShot(
+  // After construction the V8DetailedMemoryRequest must only be accessed on
+  // the graph sequence.
+  request_ = std::make_unique<V8DetailedMemoryRequestOneShot>(
       base::PassKey<V8DetailedMemoryRequestOneShotAnySeq>(),
-      std::move(process_node), std::move(wrapped_callback), mode));
+      std::move(process_node), std::move(wrapped_callback), mode);
 }
 
 // static

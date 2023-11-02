@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,8 +20,7 @@ class KerberosCredentialsManagerFactoryBrowserTest
     : public InProcessBrowserTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(
-        chromeos::switches::kIgnoreUserProfileMappingForTests);
+    command_line->AppendSwitch(switches::kIgnoreUserProfileMappingForTests);
   }
 };
 
@@ -45,11 +44,10 @@ IN_PROC_BROWSER_TEST_F(KerberosCredentialsManagerFactoryBrowserTest,
   ASSERT_NE(incognito_profile, profile);
   ASSERT_EQ(incognito_profile->GetOriginalProfile(), profile);
 
-  // Verify, that Get is not creating a new instance for incognito profile.
+  // Verify that Get returns nullptr for the incognito profile.
   KerberosCredentialsManager* manager =
-      KerberosCredentialsManagerFactory::GetExisting(profile);
-  ASSERT_TRUE(manager);
-  ASSERT_EQ(KerberosCredentialsManagerFactory::Get(incognito_profile), manager);
+      KerberosCredentialsManagerFactory::GetExisting(incognito_profile);
+  ASSERT_FALSE(manager);
 
   CloseBrowserSynchronously(incognito_browser);
 }
@@ -62,14 +60,12 @@ IN_PROC_BROWSER_TEST_F(KerberosCredentialsManagerFactoryBrowserTest,
   Profile* const other_profile = ProfileHelper::GetSigninProfile();
   ASSERT_NE(other_profile, profile);
   ASSERT_NE(other_profile->GetOriginalProfile(), profile);
-  ASSERT_TRUE(!ProfileHelper::IsPrimaryProfile(other_profile));
+  ASSERT_FALSE(ProfileHelper::IsPrimaryProfile(other_profile));
 
-  // Verify, that Get is not creating a new instance for other (non-primary)
-  // profile.
+  // Verify that Get returns nullptr for other (non-primary) profile.
   KerberosCredentialsManager* manager =
-      KerberosCredentialsManagerFactory::GetExisting(profile);
-  ASSERT_TRUE(manager);
-  ASSERT_EQ(KerberosCredentialsManagerFactory::Get(other_profile), manager);
+      KerberosCredentialsManagerFactory::GetExisting(other_profile);
+  ASSERT_FALSE(manager);
 }
 
 }  // namespace ash

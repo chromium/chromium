@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,9 +70,9 @@ class MockCertVerifier : public CertVerifier {
 
   int VerifyImpl(const RequestParams& params, CertVerifyResult* verify_result);
 
-  int default_result_;
+  int default_result_ = ERR_CERT_INVALID;
   RuleList rules_;
-  bool async_;
+  bool async_ = false;
 
   base::OnceClosureList request_list_;
 };

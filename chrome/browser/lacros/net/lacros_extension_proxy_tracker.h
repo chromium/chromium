@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_LACROS_NET_LACROS_EXTENSION_PROXY_TRACKER_H_
 #define CHROME_BROWSER_LACROS_NET_LACROS_EXTENSION_PROXY_TRACKER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class Profile;
@@ -28,7 +29,7 @@ class LacrosExtensionProxyTracker {
   void OnProxyPrefChanged(const std::string& pref_name);
 
   bool extension_proxy_active_ = false;
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   PrefChangeRegistrar proxy_prefs_registrar_;
 };
 }  // namespace net

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2020 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 <resources>
     <dimen name="page_info_favicon_size">16dp</dimen>
 
@@ -11,7 +13,6 @@
     <dimen name="page_info_popup_corners_radius">16dp</dimen>
     <dimen name="page_info_popup_button_padding_sides">8dp</dimen>
 
-    <!-- Page Zoom dimensions -->
-    <dimen name="page_zoom_min_touch_target_size">48dp</dimen>
-    <dimen name="page_zoom_control_spacing">10dp</dimen>
+    <!-- Page Info Background Elevation -->
+    <dimen name="page_info_bg_elev">@dimen/default_elevation_0</dimen>
 </resources>

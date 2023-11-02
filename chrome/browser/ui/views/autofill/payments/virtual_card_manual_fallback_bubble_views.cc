@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,15 +9,17 @@
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/payments/payments_service_url.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/table_layout.h"
 #include "ui/views/style/typography.h"
 
 namespace autofill {
@@ -63,65 +65,87 @@ VirtualCardManualFallbackBubbleViews::~VirtualCardManualFallbackBubbleViews() {
 
 void VirtualCardManualFallbackBubbleViews::Hide() {
   CloseBubble();
-  if (controller_)
-    controller_->OnBubbleClosed(closed_reason_);
+  if (controller_) {
+    controller_->OnBubbleClosed(
+        GetPaymentsBubbleClosedReasonFromWidget(GetWidget()));
+  }
   controller_ = nullptr;
 }
 
 void VirtualCardManualFallbackBubbleViews::Init() {
+  auto* const layout_provider = ChromeLayoutProvider::Get();
+  const int vertical_padding = layout_provider->GetDistanceMetric(
+      views::DISTANCE_UNRELATED_CONTROL_VERTICAL);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-      ChromeLayoutProvider::Get()->GetDistanceMetric(
-          views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
-  auto* educational_label = AddChildView(std::make_unique<views::Label>(
-      controller_->GetEducationalBodyLabel(),
-      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY));
-  educational_label->SetMultiLine(true);
-  educational_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+      vertical_padding));
+
+  std::u16string explanation = controller_->GetEducationalBodyLabel();
+  if (!explanation.empty()) {
+    auto* const explanation_label =
+        AddChildView(std::make_unique<views::StyledLabel>());
+    explanation_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    explanation_label->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
+    explanation_label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
+    explanation_label->SetText(explanation);
+
+    views::StyledLabel::RangeStyleInfo style_info =
+        views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+            &VirtualCardManualFallbackBubbleViews::LearnMoreLinkClicked,
+            weak_ptr_factory_.GetWeakPtr()));
+
+    uint32_t offset =
+        explanation.length() - controller_->GetLearnMoreLinkText().length();
+    explanation_label->AddStyleRange(
+        gfx::Range(offset,
+                   offset + controller_->GetLearnMoreLinkText().length()),
+        style_info);
+  }
 
   auto* card_information_section =
       AddChildView(std::make_unique<views::View>());
-  views::GridLayout* layout = card_information_section->SetLayoutManager(
-      std::make_unique<views::GridLayout>());
-  views::ColumnSet* column_set = layout->AddColumnSet(0);
+  card_information_section
+      ->SetLayoutManager(std::make_unique<views::TableLayout>())
+      ->AddColumn(views::LayoutAlignment::kStart,
+                  views::LayoutAlignment::kCenter,
+                  views::TableLayout::kFixedSize,
+                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddPaddingColumn(views::TableLayout::kFixedSize,
+                        layout_provider->GetDistanceMetric(
+                            views::DISTANCE_RELATED_CONTROL_HORIZONTAL))
+      .AddColumn(views::LayoutAlignment::kStart,
+                 views::LayoutAlignment::kCenter,
+                 views::TableLayout::kFixedSize,
+                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddRows(1, views::TableLayout::kFixedSize)  // Virtual card number.
+      .AddPaddingRow(views::TableLayout::kFixedSize, vertical_padding)
+      .AddRows(1, views::TableLayout::kFixedSize)  // Expiration date.
+      .AddPaddingRow(views::TableLayout::kFixedSize, vertical_padding)
+      .AddRows(1, views::TableLayout::kFixedSize)  // Cardholder name.
+      .AddPaddingRow(views::TableLayout::kFixedSize, vertical_padding)
+      .AddRows(1, views::TableLayout::kFixedSize);  // CVC.
 
-  column_set->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER,
-                        views::GridLayout::kFixedSize,
-                        views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  column_set->AddPaddingColumn(views::GridLayout::kFixedSize,
-                               ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                   views::DISTANCE_RELATED_CONTROL_HORIZONTAL));
-  column_set->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER,
-                        views::GridLayout::kFixedSize,
-                        views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-
-  // Adds a row for virtual card number.
-  layout->StartRow(views::GridLayout::kFixedSize, 0);
-  layout->AddView(
+  // Virtual card number.
+  card_information_section->AddChildView(
       CreateRowItemLabel(controller_->GetVirtualCardNumberFieldLabel()));
-  layout->AddView(CreateRowItemButtonForField(
+  card_information_section->AddChildView(CreateRowItemButtonForField(
       VirtualCardManualFallbackBubbleField::kCardNumber));
 
-  // Adds a row for expiration date.
-  layout->StartRowWithPadding(views::GridLayout::kFixedSize, 0,
-                              views::GridLayout::kFixedSize,
-                              ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                  views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
-  layout->AddView(
+  // Expiration date.
+  card_information_section->AddChildView(
       CreateRowItemLabel(controller_->GetExpirationDateFieldLabel()));
-  auto expiry_row = std::make_unique<views::View>();
+  auto* expiry_row =
+      card_information_section->AddChildView(std::make_unique<views::View>());
   expiry_row->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetMainAxisAlignment(views::LayoutAlignment::kStart)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
       .SetIgnoreDefaultMainAxisMargins(true)
       .SetCollapseMargins(true)
-      .SetDefault(views::kMarginsKey,
-                  gfx::Insets(
-                      /*vertical=*/0,
-                      /*horizontal=*/
-                      ChromeLayoutProvider::Get()->GetDistanceMetric(
-                          views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
+      .SetDefault(
+          views::kMarginsKey,
+          gfx::Insets::VH(0, layout_provider->GetDistanceMetric(
+                                 views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
   expiry_row->AddChildView(CreateRowItemButtonForField(
       VirtualCardManualFallbackBubbleField::kExpirationMonth));
   expiry_row->AddChildView(std::make_unique<views::Label>(u"/"));
@@ -129,25 +153,17 @@ void VirtualCardManualFallbackBubbleViews::Init() {
   // is for two-digit numbers
   expiry_row->AddChildView(CreateRowItemButtonForField(
       VirtualCardManualFallbackBubbleField::kExpirationYear));
-  layout->AddView(std::move(expiry_row));
 
-  // Adds a row for the cardholder name.
-  layout->StartRowWithPadding(views::GridLayout::kFixedSize, 0,
-                              views::GridLayout::kFixedSize,
-                              ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                  views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
-  layout->AddView(
+  // Cardholder name.
+  card_information_section->AddChildView(
       CreateRowItemLabel(controller_->GetCardholderNameFieldLabel()));
-  layout->AddView(CreateRowItemButtonForField(
+  card_information_section->AddChildView(CreateRowItemButtonForField(
       VirtualCardManualFallbackBubbleField::kCardholderName));
 
-  // Adds a row for CVC.
-  layout->StartRowWithPadding(views::GridLayout::kFixedSize, 0,
-                              views::GridLayout::kFixedSize,
-                              ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                  views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
-  layout->AddView(CreateRowItemLabel(controller_->GetCvcFieldLabel()));
-  layout->AddView(
+  // CVC.
+  card_information_section->AddChildView(
+      CreateRowItemLabel(controller_->GetCvcFieldLabel()));
+  card_information_section->AddChildView(
       CreateRowItemButtonForField(VirtualCardManualFallbackBubbleField::kCvc));
   UpdateButtonTooltipsAndAccessibleNames();
 }
@@ -172,20 +188,21 @@ std::u16string VirtualCardManualFallbackBubbleViews::GetWindowTitle() const {
 
 void VirtualCardManualFallbackBubbleViews::WindowClosing() {
   if (controller_) {
-    controller_->OnBubbleClosed(closed_reason_);
+    controller_->OnBubbleClosed(
+        GetPaymentsBubbleClosedReasonFromWidget(GetWidget()));
     controller_ = nullptr;
   }
 }
 
-void VirtualCardManualFallbackBubbleViews::OnWidgetClosing(
+void VirtualCardManualFallbackBubbleViews::OnWidgetDestroying(
     views::Widget* widget) {
-  LocationBarBubbleDelegateView::OnWidgetClosing(widget);
+  LocationBarBubbleDelegateView::OnWidgetDestroying(widget);
+  if (!widget->IsClosed())
+    return;
   DCHECK_NE(widget->closed_reason(),
             views::Widget::ClosedReason::kAcceptButtonClicked);
   DCHECK_NE(widget->closed_reason(),
             views::Widget::ClosedReason::kCancelButtonClicked);
-  closed_reason_ = GetPaymentsBubbleClosedReasonFromWidgetClosedReason(
-      widget->closed_reason());
 }
 
 std::unique_ptr<views::MdTextButton>
@@ -215,6 +232,13 @@ void VirtualCardManualFallbackBubbleViews::
     pair.second->SetTooltipText(tooltip);
     pair.second->SetAccessibleName(
         base::StrCat({pair.second->GetText(), u" ", tooltip}));
+  }
+}
+
+void VirtualCardManualFallbackBubbleViews::LearnMoreLinkClicked() {
+  if (controller_) {
+    controller_->OnLinkClicked(
+        autofill::payments::GetVirtualCardEnrollmentSupportUrl());
   }
 }
 

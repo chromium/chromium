@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -452,6 +452,12 @@ void BluetoothGattCharacteristicServiceProviderImpl::StartNotify(
           ? device::BluetoothGattCharacteristic::NotificationType::kIndication
           : device::BluetoothGattCharacteristic::NotificationType::
                 kNotification);
+
+  // This is temporary fix to unblock b/191129417.
+  // TODO(b/191129417); Plumb the callback up to ARC++ and add unit test.
+  std::unique_ptr<dbus::Response> response =
+      dbus::Response::FromMethodCall(method_call);
+  std::move(response_sender).Run(std::move(response));
 }
 
 void BluetoothGattCharacteristicServiceProviderImpl::StopNotify(
@@ -471,6 +477,12 @@ void BluetoothGattCharacteristicServiceProviderImpl::StopNotify(
 
   DCHECK(delegate_);
   delegate_->StopNotifications(device_path);
+
+  // This is temporary fix to unblock b/191129417.
+  // TODO(b/191129417); Plumb the callback up to ARC++ and add unit test.
+  std::unique_ptr<dbus::Response> response =
+      dbus::Response::FromMethodCall(method_call);
+  std::move(response_sender).Run(std::move(response));
 }
 
 void BluetoothGattCharacteristicServiceProviderImpl::OnExported(

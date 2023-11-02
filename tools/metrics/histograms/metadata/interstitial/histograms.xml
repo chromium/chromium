@@ -1,5 +1,5 @@
 <!--
-Copyright 2020 The Chromium Authors. All rights reserved.
+Copyright 2020 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
@@ -27,28 +27,12 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="interstitial.captive_portal"
-    enum="CaptivePortalBlockingPageEvent" expires_after="M85">
-  <obsolete>
-    Expired after M85. No longer in use.
-  </obsolete>
+    enum="CaptivePortalBlockingPageEvent" expires_after="2023-02-12">
   <owner>meacer@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
   <summary>
-    User action when the user is shown a captive portal error page.
-  </summary>
-</histogram>
-
-<histogram name="interstitial.ssl.captive_portal" enum="SSLCaptivePortal"
-    expires_after="M85">
-  <obsolete>
-    Expired after M85. No longer in use.
-  </obsolete>
-  <owner>meacer@chromium.org</owner>
-  <summary>
-    Record possible states of captive portals. This histogram is emitted
-    (possibly multiple times to different buckets) whenever a ssl interstitial
-    page is displayed and captive portal detection is enabled. The captive
-    portal technique forces a client on a network to see a special web page
-    (usually for authentication purposes) before using the internet normally.
+    User action when the user is shown a captive portal error page. NOTE: Metric
+    was expired from M85 to M97.
   </summary>
 </histogram>
 
@@ -90,44 +74,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="interstitial.ssl.clockstate.build_time" enum="ClockStates"
-    expires_after="M85">
-  <obsolete>
-    Expired after M85. No longer in use.
-  </obsolete>
-  <owner>mab@chromium.org</owner>
-  <summary>
-    State of the system clock, as inferred from the build timestamp, when an SSL
-    CERT_INVALID_DATE error is seen.
-  </summary>
-</histogram>
-
-<histogram name="interstitial.ssl.clockstate.network3"
-    enum="NetworkClockStates" expires_after="M85">
-  <obsolete>
-    Expired after M85. No longer in use.
-  </obsolete>
-  <owner>estark@chromium.org</owner>
-  <owner>mab@chromium.org</owner>
-  <summary>
-    State of the system clock, relative to network time, when an SSL
-    CERT_INVALID_DATE error is seen.
-  </summary>
-</histogram>
-
-<histogram name="interstitial.ssl.connection_type"
-    enum="ResourcePrefetchPredictorNetworkType" expires_after="M77">
-  <obsolete>
-    Expired after M77. No longer in use.
-  </obsolete>
-  <owner>felt@chromium.org</owner>
-  <owner>carlosil@chromium.org</owner>
-  <summary>
-    The histogram shows the connection types associated with SSL warnings. E.g.,
-    do more warnings occur on WiFi?
-  </summary>
-</histogram>
-
 <histogram name="interstitial.ssl.did_user_revoke_decisions2"
     enum="BooleanRevoked" expires_after="never">
 <!-- expires-never: Used for long term monitoring of security errors -->
@@ -141,18 +87,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="interstitial.ssl.visited_site_after_warning" enum="Boolean"
-    expires_after="M77">
-  <obsolete>
-    Expired after M77. No longer in use.
-  </obsolete>
-  <owner>carlosil@chromium.org</owner>
-  <summary>
-    Records when a user visits a site after clicking through a certificate
-    warning.
-  </summary>
-</histogram>
-
 <histogram name="interstitial.ssl_error_handler" enum="SSLErrorHandlerEvent"
     expires_after="never">
 <!-- expires-never: Used for long term monitoring of security errors -->
@@ -161,24 +95,6 @@ chromium-metrics-reviews@google.com.
   <owner>carlosil@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <summary>The type of action that the SSL error handler takes.</summary>
-</histogram>
-
-<histogram name="interstitial.ssl_error_handler.cert_date_error_delay"
-    units="ms" expires_after="M77">
-  <obsolete>
-    Expired after M77. No longer in use.
-  </obsolete>
-  <owner>estark@chromium.org</owner>
-  <summary>
-    When handling a certificate date error, Chrome (under certain Variations
-    Service experiments) will delay displaying the warning interstitial for up
-    to 3 seconds while querying a network time service. This histogram records
-    the amount of time for which the interstitial was delayed on this check. The
-    histogram is recorded even when a time query is not sent (for example,
-    because Chrome already had an up-to-date network timestamp that it could
-    use, or because the client is not in the experimental group that enables
-    network time queries).
-  </summary>
 </histogram>
 
 <histogram name="interstitial.ssl_error_type" enum="SSLErrorTypes"
@@ -193,93 +109,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="interstitial.ssl_nonoverridable.is_recurrent_error"
-    enum="BooleanRecurrentError" expires_after="M72">
-  <obsolete>
-    Expired after M72. No longer in use.
-  </obsolete>
-  <owner>estark@chromium.org</owner>
-  <summary>
-    Recorded when a non-overridable SSL interstitial is shown. The value is true
-    if the user has seen the same error multiple times (in which case a special
-    message is added to the interstitial).
-  </summary>
-</histogram>
-
-<histogram name="interstitial.ssl_nonoverridable.is_recurrent_error.ct_error"
-    enum="BooleanRecurrentError" expires_after="M72">
-  <obsolete>
-    Expired after M72. No longer in use.
-  </obsolete>
-  <owner>estark@chromium.org</owner>
-  <summary>
-    Recorded when a non-overridable SSL interstitial is shown for a Certificate
-    Transparency error. The value is true if the user has seen the same error
-    multiple times (in which case a special message is added to the
-    interstitial).
-  </summary>
-</histogram>
-
-<histogram name="interstitial.ssl_overridable.is_recurrent_error"
-    enum="BooleanRecurrentError" expires_after="M72">
-  <obsolete>
-    Expired after M72. No longer in use.
-  </obsolete>
-  <owner>estark@chromium.org</owner>
-  <summary>
-    Recorded when an overridable SSL interstitial is shown. The value is true if
-    the user has seen the same error multiple times (in which case a special
-    message is added to the interstitial).
-  </summary>
-</histogram>
-
-<histogram name="interstitial.ssl_overridable.is_recurrent_error.ct_error"
-    enum="BooleanRecurrentError" expires_after="M72">
-  <obsolete>
-    Expired after M72. No longer in use.
-  </obsolete>
-  <owner>estark@chromium.org</owner>
-  <summary>
-    Recorded when an overridable SSL interstitial is shown for a Certificate
-    Transparency error. The value is true if the user has seen the same error
-    multiple times (in which case a special message is added to the
-    interstitial).
-  </summary>
-</histogram>
-
-<histogram name="interstitial.ssl_recurrent_error.action"
-    enum="RecurrentErrorAction" expires_after="M72">
-  <obsolete>
-    Expired after M72. No longer in use.
-  </obsolete>
-  <owner>estark@chromium.org</owner>
-  <summary>
-    Recorded whenever the user sees or proceeds through an SSL interstitial for
-    an error that the user has seen multiple times (in which case a special
-    message is added to the interstitial).
-  </summary>
-</histogram>
-
-<histogram name="interstitial.ssl_recurrent_error.ct_error.action"
-    enum="RecurrentErrorAction" expires_after="M72">
-  <obsolete>
-    Expired after M72. No longer in use.
-  </obsolete>
-  <owner>estark@chromium.org</owner>
-  <summary>
-    Recorded whenever the user sees or proceeds through an SSL interstitial for
-    a Certificate Transparency error that the user has seen multiple times (in
-    which case a special message is added to the interstitial).
-  </summary>
-</histogram>
-
 <histogram name="interstitial.{SecurityInterstitialLookalikeType}decision"
     enum="SecurityInterstitialDecision" expires_after="never">
 <!-- expires-never: Used for long term monitoring of security errors -->
 
   <owner>estark@chromium.org</owner>
   <owner>carlosil@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     User decision when presented with a security interstitial. As of M44,
     subresource interstitials were split into their own entries. As of M52,
@@ -341,41 +177,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TypedNavigationUpgradeThrottle.Event"
-    enum="TypedNavigationUpgradeThrottleEvent" expires_after="2022-04-10">
+    enum="TypedNavigationUpgradeThrottleEvent" expires_after="2023-02-19">
   <owner>meacer@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
     Events for upgrading Default Omnibox Navigations to HTTPS feature. Recorded
     when a navigation is started by typing a domain name without a scheme and
     the URL is defaulted to HTTPS instead of HTTP.
-  </summary>
-</histogram>
-
-<histogram name="TypedNavigationUpgradeThrottle.UpgradeFailTime" units="ms"
-    expires_after="2021-08-09">
-  <obsolete>
-    Expired after 2021-08. No longer in use.
-  </obsolete>
-  <owner>meacer@chromium.org</owner>
-  <owner>trusty-transport@chromium.org</owner>
-  <summary>
-    Records the duration to detect a failed HTTPS upgrade for omnibox
-    navigations typed without a scheme (i.e. HTTP fallbacks). Only recorded when
-    the HTTPS load fails with an SSL or net error. Not recorded when the upgrade
-    timer expires. Recorded once for a redirect chain.
-  </summary>
-</histogram>
-
-<histogram name="TypedNavigationUpgradeThrottle.UpgradeSuccessTime" units="ms"
-    expires_after="2021-08-09">
-  <obsolete>
-    Expired after 2021-08. No longer in use.
-  </obsolete>
-  <owner>meacer@chromium.org</owner>
-  <owner>trusty-transport@chromium.org</owner>
-  <summary>
-    Records the duration to detect a successful HTTPS upgrade for omnibox
-    navigations typed without a scheme. Recorded once for a redirect chain.
   </summary>
 </histogram>
 

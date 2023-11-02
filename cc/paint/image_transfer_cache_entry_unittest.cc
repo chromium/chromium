@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,15 +11,19 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "cc/paint/image_transfer_cache_entry.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPixmap.h"
+#include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkYUVAPixmaps.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
@@ -33,6 +37,7 @@
 #include "ui/gl/gl_context_egl.h"
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gl_surface.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/init/create_gr_gl_interface.h"
 #include "ui/gl/init/gl_factory.h"
 
@@ -83,7 +88,8 @@ class ImageTransferCacheEntryTest
  public:
   void SetUp() override {
     // Initialize a GL GrContext for Skia.
-    surface_ = gl::init::CreateOffscreenGLSurface(gfx::Size());
+    surface_ = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(),
+                                                  gfx::Size());
     ASSERT_TRUE(surface_);
     share_group_ = base::MakeRefCounted<gl::GLShareGroup>();
     gl_context_ = base::MakeRefCounted<gl::GLContextEGL>(share_group_.get());
@@ -91,9 +97,9 @@ class ImageTransferCacheEntryTest
     ASSERT_TRUE(
         gl_context_->Initialize(surface_.get(), gl::GLContextAttribs()));
     ASSERT_TRUE(gl_context_->MakeCurrent(surface_.get()));
-    sk_sp<GrGLInterface> interface(gl::init::CreateGrGLInterface(
+    sk_sp<GrGLInterface> gl_interface(gl::init::CreateGrGLInterface(
         *gl_context_->GetVersionInfo(), false /* use_version_es2 */));
-    gr_context_ = GrDirectContext::MakeGL(std::move(interface));
+    gr_context_ = GrDirectContext::MakeGL(std::move(gl_interface));
     ASSERT_TRUE(gr_context_);
   }
 
@@ -132,8 +138,7 @@ class ImageTransferCacheEntryTest
       NOTREACHED();
       return {};
     }
-    if (std::all_of(plane_images.cbegin(), plane_images.cend(),
-                    [](sk_sp<SkImage> plane) { return !!plane; })) {
+    if (!base::Contains(plane_images, nullptr)) {
       return plane_images;
     }
     return {};
@@ -228,7 +233,7 @@ TEST_P(ImageTransferCacheEntryTest, Deserialize) {
   auto client_entry(std::make_unique<ClientImageTransferCacheEntry>(
       yuva_pixmaps.planes().data(), yuva_info.planeConfig(),
       yuva_info.subsampling(), nullptr /* decoded color space*/,
-      yuva_info.yuvColorSpace(), true /* needs_mips */));
+      yuva_info.yuvColorSpace(), true /* needs_mips */, absl::nullopt));
   uint32_t size = client_entry->SerializedSize();
   std::vector<uint8_t> data(size);
   ASSERT_TRUE(client_entry->Serialize(
@@ -378,7 +383,8 @@ TEST(ImageTransferCacheEntryTestNoYUV, CPUImageWithMips) {
   SkBitmap bitmap;
   bitmap.allocPixels(
       SkImageInfo::MakeN32Premul(gr_context->maxTextureSize() + 1, 10));
-  ClientImageTransferCacheEntry client_entry(&bitmap.pixmap(), nullptr, true);
+  ClientImageTransferCacheEntry client_entry(&bitmap.pixmap(), true,
+                                             absl::nullopt);
   std::vector<uint8_t> storage(client_entry.SerializedSize());
   client_entry.Serialize(base::make_span(storage.data(), storage.size()));
 
@@ -404,7 +410,8 @@ TEST(ImageTransferCacheEntryTestNoYUV, CPUImageAddMipsLater) {
   SkBitmap bitmap;
   bitmap.allocPixels(
       SkImageInfo::MakeN32Premul(gr_context->maxTextureSize() + 1, 10));
-  ClientImageTransferCacheEntry client_entry(&bitmap.pixmap(), nullptr, false);
+  ClientImageTransferCacheEntry client_entry(&bitmap.pixmap(), false,
+                                             absl::nullopt);
   std::vector<uint8_t> storage(client_entry.SerializedSize());
   client_entry.Serialize(base::make_span(storage.data(), storage.size()));
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,12 @@
 #include <string>
 
 #include "base/base_export.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 
 namespace base {
-
-struct Feature;
 
 // Key-value mapping type for field trial parameters.
 typedef std::map<std::string, std::string> FieldTrialParams;
@@ -230,7 +229,7 @@ struct FeatureParam<bool> {
 //         &kPerAgentSchedulingExperiments, "delay", base::TimeDelta()};
 //
 // If the parameter is not set, or set to an invalid value (as defined by
-// base::TimeDelta::FromString()), then Get() will return the default value.
+// base::TimeDeltaFromString()), then Get() will return the default value.
 template <>
 struct FeatureParam<base::TimeDelta> {
   constexpr FeatureParam(const Feature* feature,

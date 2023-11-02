@@ -1,16 +1,14 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
-
-// #import {flushTasks} from 'chrome://test/test_util.js';
-// #import {setupFakeHandler, replaceBody, isHidden} from './test_util.m.js';
-// #import {FakePageHandler} from 'chrome://os-settings/chromeos/os_settings.js';
-// clang-format on
-
 'use strict';
+
+import 'chrome://os-settings/chromeos/os_settings.js';
+
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {setupFakeHandler, replaceBody, isHidden} from './test_util.js';
+
 
 suite('<app-management-resize-lock-item>', () => {
   let resizeLockItem;
@@ -21,13 +19,16 @@ suite('<app-management-resize-lock-item>', () => {
     resizeLockItem = document.createElement('app-management-resize-lock-item');
 
     replaceBody(resizeLockItem);
-    test_util.flushTasks();
+    flushTasks();
   });
 
   test('Resize lock setting visibility', async () => {
     // Add an arc app with the default options, and make it the currently
     // selected app.
-    const defaultArcOptions = {type: apps.mojom.AppType.kArc, permissions: {}};
+    const defaultArcOptions = {
+      type: appManagement.mojom.AppType.kArc,
+      permissions: {},
+    };
     const defaultArcApp = await fakeHandler.addApp('app', defaultArcOptions);
     await fakeHandler.flushPipesForTesting();
     resizeLockItem.app = defaultArcApp;
@@ -36,7 +37,7 @@ suite('<app-management-resize-lock-item>', () => {
 
     // Enable resize lock, but it's still hidden.
     const arcOptionsWithResizeLocked = {
-      type: apps.mojom.AppType.kArc,
+      type: appManagement.mojom.AppType.kArc,
       resizeLocked: true,
     };
     const appWithResizeLocked =
@@ -47,7 +48,7 @@ suite('<app-management-resize-lock-item>', () => {
 
     // Disable resize lock again, and it's still hidden.
     const arcOptionsWithoutResizeLocked = {
-      type: apps.mojom.AppType.kArc,
+      type: appManagement.mojom.AppType.kArc,
       resizeLocked: false,
     };
     const appWithoutResizeLocked =
@@ -58,7 +59,7 @@ suite('<app-management-resize-lock-item>', () => {
 
     // Setting |hideResizeLocked| to false shows the setting.
     const arcOptionsWithHideResizeLockedFalse = {
-      type: apps.mojom.AppType.kArc,
+      type: appManagement.mojom.AppType.kArc,
       hideResizeLocked: false,
     };
     const appWithHideResizeLockedFalse =
@@ -69,7 +70,7 @@ suite('<app-management-resize-lock-item>', () => {
 
     // Setting |hideResizeLocked| back to true hides the setting.
     const arcOptionsWithHideResizeLockedTrue = {
-      type: apps.mojom.AppType.kArc,
+      type: appManagement.mojom.AppType.kArc,
       hideResizeLocked: true,
     };
     const appWithHideResizeLockedTrue =

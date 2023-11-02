@@ -1,0 +1,330 @@
+<style include="cr-icons">
+  :host {
+    --upload-dialog-background: var(--color-new-tab-page-background-override);
+    --upload-dialog-divider-line-border-top: 1px solid var(--google-grey-200);
+    --upload-dialog-divider-line-or-label-color: var(--color-new-tab-page-secondary-foreground);
+    --upload-dialog-drag-drop-background: var(--google-grey-50);
+    --upload-dialog-drag-drop-border: 1px dashed var(--google-grey-400);
+    --upload-dialog-drag-drop-title-color: var(--color-new-tab-page-secondary-foreground);
+    --upload-dialog-drag-drop-upload-text-color: var(--google-blue-700);
+    --upload-dialog-input-box-background: var(--color-new-tab-page-background-override);
+    --upload-dialog-input-box-border-color: var(--google-grey-300);
+    --upload-dialog-input-box-color: var(--google-grey-800);
+    --upload-dialog-input-box-placeholder-color: var(--google-grey-600);
+    --upload-dialog-input-submit-background: var(--color-new-tab-page-background-override);
+    --upload-dialog-input-submit-border-color: var(--google-grey-300);
+    --upload-dialog-input-submit-color: var(--google-blue-600);
+    --upload-dialog-shadow: var( --cr-elevation-3);
+    --upload-dialog-title-color: var(--google-grey-800);
+    font-family: inherit;
+    width: calc(100% + 8px);
+  }
+
+  :host([is-dragging_]),
+  :host([is-loading_]) {
+    --upload-dialog-drag-drop-background: var(--google-blue-50);
+  }
+
+  #dialog {
+    background: var(--upload-dialog-background);
+    border-radius: 22px;
+    box-shadow: var(--upload-dialog-shadow);
+    box-sizing: border-box;
+    left: unset;
+    padding: 20px;
+    position: relative;
+    right: unset;
+  }
+
+  :host-context([dir='rtl']) #closeButton {
+    left: 20px;
+    right: initial;
+  }
+
+  #closeButton {
+    align-self: flex-end;
+    cursor: pointer;
+    display: flex;
+    position: absolute;
+    right: 20px;
+    top: 15px;
+  }
+
+  #title {
+    color: var(--upload-dialog-title-color);
+    font-size: 16px;
+    letter-spacing: 0.1px;
+    line-height: 28px;
+    margin-bottom: 14px;
+    text-align: center;
+  }
+
+  #dragDropArea {
+    background: var(--upload-dialog-drag-drop-background);
+    border: var(--upload-dialog-drag-drop-border);
+    border-radius: 8px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    height: 280px;
+    padding: 20px;
+    position: relative;
+    width: 100%;
+  }
+
+  .drag-drop-title-container {
+    align-items: center;
+    display: inline-flex;
+    flex-direction: row;
+    flex-grow: 1;
+    justify-content: center;
+  }
+
+  #dragDropIllustration {
+    background: url(icons/drag_drop_illustration.svg) no-repeat center;
+    display: inline-flex;
+    height: 45px;
+    margin-inline-end: 18px;
+    vertical-align: middle;
+    width: 59px;
+  }
+
+  .drag-drop-title {
+    color: var(--upload-dialog-drag-drop-title-color);
+    font-size: 16px;
+    line-height: 25px;
+    max-width: 300px;
+  }
+
+  #dragText {
+    display: inline-block;
+    margin-inline-end: 4px;
+  }
+
+  #uploadText {
+    color: var(--upload-dialog-drag-drop-upload-text-color);
+    cursor: pointer;
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  #uploadText:focus {
+    text-decoration: underline;
+  }
+
+  #urlUploadContainer {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  #sectionDivider {
+    align-items: center;
+    display: flex;
+  }
+
+  .divider-line {
+    border-top: var(--upload-dialog-divider-line-border-top);
+    flex-grow: 1;
+    height: 0;
+  }
+
+  #orLabel {
+    color: var(--upload-dialog-divider-line-or-label-color);
+    cursor: default;
+    flex-shrink: 0;
+    font-size: 14px;
+    margin-inline-end: 20px;
+    margin-inline-start: 20px;
+  }
+
+  #inputContainer {
+    display: flex;
+    margin-top: 14px;
+  }
+
+  #inputBox {
+    background: var(--upload-dialog-input-box-background);
+    border: 1px solid var(--upload-dialog-input-box-border-color);
+    border-radius: 36px;
+    color: var(--upload-dialog-input-box-color);
+    display: inline-flex;
+    flex-grow: 1;
+    font-size: 14px;
+    height: 40px;
+    outline: none;
+    padding: 0 24px;
+    width: 100%;
+  }
+
+  #inputBox::placeholder {
+    color: var(--upload-dialog-input-box-placeholder-color);
+  }
+
+  #inputBox:hover {
+    --upload-dialog-input-box-border-color: var(--google-grey-800);
+  }
+
+  #inputBox:focus {
+    --upload-dialog-input-box-border-color: var(--google-blue-700);
+  }
+
+  #inputBox:active {
+    --upload-dialog-input-box-border-color: var(--google-blue-700);
+  }
+
+  #inputSubmit {
+    align-items: center;
+    background: var(--upload-dialog-input-submit-background);
+    border: 1px solid var(--upload-dialog-input-submit-border-color);
+    border-radius: 32px;
+    color: var(--upload-dialog-input-submit-color);
+    cursor: pointer;
+    display: inline-flex;
+    flex-shrink: 0;
+    font-size: 14px;
+    justify-content: center;
+    letter-spacing: 0.25px;
+    margin-inline-start: 8px;
+    outline: 0;
+    padding: 8px 24px;
+  }
+
+  #inputSubmit:hover {
+    --upload-dialog-input-submit-background: rgba(var(--google-blue-700), 0.08);
+    --upload-dialog-input-submit-border-color: var(--google-grey-300);
+    --upload-dialog-input-submit-color: var(--google-blue-600);
+  }
+
+  #inputSubmit:focus {
+    --upload-dialog-input-submit-background: rgba(var(--google-blue-700), 0.08);
+    --upload-dialog-input-submit-border-color: var(--google-blue-700);
+    --upload-dialog-input-submit-color: var(--google-blue-600);
+  }
+
+  #inputSubmit:active {
+    --upload-dialog-input-submit-background: rgba(var(--google-blue-700), 0.14);
+    --upload-dialog-input-submit-border-color: var(--google-grey-300);
+    --upload-dialog-input-submit-color: var(--google-blue-600);
+  }
+
+  #loadingContainer,
+  #offlineContainer {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: center;
+  }
+
+  #loadingSpinner {
+    display: block;
+    margin-bottom: 12px;
+  }
+
+  #offlineTitle {
+    color: var(--upload-dialog-title-color);
+  }
+
+  #offlineImage {
+    background: url(icons/offline_dialog.svg) no-repeat center;
+    height: 51px;
+    margin-bottom: 24px;
+    width: 55px;
+  }
+
+  #offlineSubtitle {
+    color: var(--upload-dialog-drag-drop-title-color);
+    font-size: 16px;
+    margin-top: 6px;
+  }
+
+  #offlineRetryButton {
+    margin-top: 21px;
+  }
+</style>
+
+<ntp-lens-form id="lensForm"
+               on-loading="handleFormLoading_"
+               on-error="handleFormError_">
+</ntp-lens-form>
+
+<div id="dialog" hidden$="{{isHidden_}}" tabindex="-1" lang="$i18n{language}">
+  <div id="container">
+    <cr-icon-button id="closeButton" class="icon-clear"
+        title="$i18n{lensSearchUploadDialogCloseButtonLabel}"
+        on-click="onCloseButtonClick_">
+    </cr-icon-button>
+    <div id="title">
+      $i18n{lensSearchUploadDialogTitle}
+    </div>
+    <div id="dragDropArea">
+      <!-- Normal state -->
+      <template is="dom-if" if="{{isNormal_}}">
+        <div class="drag-drop-title-container">
+          <div id="dragDropIllustration"></div>
+          <div class="drag-drop-title">
+            <span id="dragText">$i18n{lensSearchUploadDialogDragTitle}</span>
+            <span tabindex="0"
+                  role="button"
+                  id="uploadText"
+                  on-click="onUploadFileClick_">
+              $i18n{lensSearchUploadDialogUploadFileTitle}
+            </span>
+          </div>
+        </div>
+        <div id="urlUploadContainer">
+          <div id="sectionDivider">
+            <div class="divider-line"></div>
+            <div id="orLabel">$i18n{lensSearchUploadDialogOrText}</div>
+            <div class="divider-line"></div>
+          </div>
+          <div id="inputContainer">
+            <input id="inputBox" autocomplete="false" autocorrect="false"
+                placeholder="$i18n{lensSearchUploadDialogTextPlaceholder}"
+                text="text">
+            <div id="inputSubmit" tabindex="0" role="button">
+              $i18n{lensSearchUploadDialogSearchButtonLabel}
+            </div>
+          </div>
+        </div>
+      </template>
+      <!-- Dragging state -->
+      <template is="dom-if" if="{{isDragging_}}">
+        <div class="drag-drop-title-container">
+          <div class="drag-drop-title">
+            $i18n{lensSearchUploadDialogDragDropTitle}
+          </div>
+        </div>
+      </template>
+      <!-- Loading state -->
+      <template is="dom-if" if="{{isLoading_}}">
+        <div id="loadingContainer">
+          <paper-spinner-lite id="loadingSpinner" active>
+          </paper-spinner-lite>
+          <div class="drag-drop-title">
+            $i18n{lensSearchUploadDialogLoadingText}
+          </div>
+        </div>
+      </template>
+      <!-- Offline state -->
+      <template is="dom-if" if="{{isOffline_}}">
+        <div id="offlineContainer">
+          <div id="offlineImage"></div>
+          <div id="offlineTitle" class="drag-drop-title">
+            $i18n{lensSearchUploadDialogOfflineText}
+          </div>
+          <div id="offlineSubtitle">
+            $i18n{lensSearchUploadDialogOfflineSubtitleText}
+          </div>
+          <cr-button id="offlineRetryButton" class="action-button"
+              on-click="onOfflineRetryButtonClick_">
+            $i18n{lensSearchUploadDialogOfflineButtonLabel}
+          </cr-button>
+        </div>
+      </template>
+    </div>
+  </div>
+</div>

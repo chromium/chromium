@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,6 +29,7 @@
 
 #include "third_party/blink/renderer/core/css/counter_style.h"
 
+#include "base/auto_reset.h"
 #include "third_party/blink/renderer/core/css/counter_style_map.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
@@ -852,15 +853,10 @@ String CounterStyle::GenerateRepresentation(int value) const {
 
   wtf_size_t initial_length = NumGraphemeClusters(initial_representation);
 
-  // TODO(crbug.com/687225): Spec requires us to further increment
-  // |initial_length| by the length of the negative sign, but no current
-  // implementation is doing that. For backward compatibility, we don't do that
-  // for now. See https://github.com/w3c/csswg-drafts/issues/5906 for details.
-  //
-  // if (NeedsNegativeSign(value)) {
-  //  initial_length += NumGraphemeClusters(negative_prefix_);
-  //  initial_length += NumGraphemeClusters(negative_suffix_);
-  // }
+  if (NeedsNegativeSign(value)) {
+    initial_length += NumGraphemeClusters(negative_prefix_);
+    initial_length += NumGraphemeClusters(negative_suffix_);
+  }
 
   wtf_size_t pad_copies =
       pad_length_ > initial_length ? pad_length_ - initial_length : 0;
@@ -933,7 +929,7 @@ String CounterStyle::GenerateInitialRepresentation(int value) const {
 
 String CounterStyle::IndexesToString(
     const Vector<wtf_size_t>& symbol_indexes) const {
-  if (symbol_indexes.IsEmpty())
+  if (symbol_indexes.empty())
     return String();
 
   StringBuilder result;

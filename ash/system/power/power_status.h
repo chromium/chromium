@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace gfx {
@@ -196,10 +197,12 @@ class ASH_EXPORT PowerStatus : public chromeos::PowerManagerClient::Observer {
   void CalculateBatteryImageInfo(BatteryImageInfo* info) const;
 
   // Creates a new image that should be shown for the battery's current state.
-  static gfx::ImageSkia GetBatteryImage(const BatteryImageInfo& info,
-                                        int height,
-                                        SkColor bg_color,
-                                        SkColor fg_color);
+  static gfx::ImageSkia GetBatteryImage(
+      const BatteryImageInfo& info,
+      int height,
+      SkColor bg_color,
+      SkColor fg_color,
+      absl::optional<SkColor> badge_color = absl::nullopt);
 
   // Returns a string describing the current state for accessibility.
   std::u16string GetAccessibleNameString(bool full_description) const;

@@ -1,0 +1,208 @@
+<style include="common">
+  :host {
+    flex-grow: 1;
+  }
+  #container {
+    height: 100%;
+    margin-block-end: 48px;
+  }
+  #mainSettings {
+    display: grid;
+    grid-template-areas:
+      '. . toggles   . .'
+      '. . zeroState . .'
+      '. . preview   . .'
+      '. . animation . .'
+      '. . sources   . .'
+      '. . weather   . .';
+    grid-template-columns: 1fr 16px minmax(568px, 920px) 16px 1fr;
+    grid-template-rows: auto;
+  }
+  toggle-row,
+  #toggleRowPlaceholder {
+    grid-area: toggles;
+    margin: 0 8px;
+  }
+  ambient-zero-state {
+    grid-area: zeroState;
+  }
+  ambient-preview {
+    grid-area: preview;
+    margin: 20px 8px 0 8px;
+  }
+  animation-theme-list,
+  #animationThemePlaceholder {
+    grid-area: animation;
+  }
+  topic-source-list,
+  #topicSourcePlaceholder {
+    grid-area: sources;
+  }
+  ambient-weather-unit,
+  #weatherUnitPlaceholder {
+    grid-area: weather;
+  }
+  #albumsSubpage {
+    display: grid;
+    grid-template-areas:
+      '. . albums-subpage . .';
+    grid-template-columns: 1fr 16px minmax(568px, 920px) 16px 1fr;
+    grid-template-rows: auto;
+    height: 100%;
+    position: relative;
+    width: 100%;
+  }
+  albums-subpage {
+    grid-area: albums-subpage;
+  }
+  iron-list {
+    height: 100%;
+    overflow: hidden;
+    width: 100%;
+  }
+  .animation-placeholder-list {
+    width: 516px;
+  }
+  .animation-placeholder-container {
+    box-sizing: border-box;
+    overflow: hidden;
+    padding: calc(var(--personalization-app-grid-item-spacing) / 2);
+    /* Subtract 0.34px to fix subpixel rounding issues with iron-list. This
+     * ensures all grid items in a row add up to at least 1px smaller than the
+     * parent width. */
+    width: calc(100% / 3 - 0.34px);
+  }
+  .animation-item-placeholder {
+    align-items: center;
+    border-radius: var(--personalization-app-grid-item-border-radius);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: 120px;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+  }
+  .animation-item-title-placeholder {
+    margin-top: 8px;
+  }
+  div[class^='ambient-text-placeholder'] {
+    align-items: flex-start;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    padding-inline: var(--cr-section-padding) var(--cr-icon-ripple-padding);
+    position: relative;
+    width: 100%;
+  }
+  #topicSourceTextPlaceholder {
+    height: 64px;
+  }
+  #weatherUnitTextPlaceholder {
+    height: 48px;
+  }
+  .ambient-text-placeholder-0 {
+    border-bottom: 1px solid var(--cros-separator-color);
+  }
+  div[class^='ambient-text-placeholder'] > * + * {
+    margin-top: 8px;
+  }
+  .ambient-primary-text-placeholder {
+    height: 20px;
+    width: 75%;
+  }
+  .ambient-secondary-text-placeholder {
+    height: 20px;
+    width: 50%;
+  }
+</style>
+<div id="container">
+  <!-- restamp to avoid layout issues with iron-list resizing while hidden -->
+  <template is="dom-if" if="[[shouldShowMainSettings_(path)]]" restamp>
+    <div id="mainSettings">
+      <template is="dom-if" if="[[loadingAmbientMode_(ambientModeEnabled_)]]">
+        <div id="toggleRowPlaceholder" class="ambient-toggle-row-container">
+          <div class="ambient-toggle-row">
+            <div class="ambient-primary-text-placeholder placeholder"></div>
+          </div>
+        </div>
+      </template>
+      <template is="dom-if" if="[[!loadingAmbientMode_(ambientModeEnabled_)]]">
+        <toggle-row id="ambientToggleRow" checked="[[ambientModeEnabled_]]"
+            on-click="onClickAmbientModeButton_" on-change="onToggleStateChanged_">
+        </toggle-row>
+      </template>
+      <template is="dom-if" if="[[ambientModeEnabled_]]">
+        <ambient-preview></ambient-preview>
+        <template is="dom-if" if="[[loadingSettings_]]">
+          <div id="animationThemePlaceholder">
+            <h3 id="animationTitle" class="ambient-subpage-element-title" aria-hidden="true">
+              $i18n{ambientModeAnimationTitle}
+            </h3>
+            <iron-list class="animation-placeholder-list" items="[[getPlaceholders_(3)]]" grid>
+              <template>
+                <div class="animation-placeholder-container">
+                  <div class="animation-item-placeholder placeholder"></div>
+                  <div class="animation-item-title-placeholder
+                      ambient-primary-text-placeholder placeholder"></div>
+                </div>
+              </template>
+            </iron-list>
+          </div>
+          <div id="topicSourcePlaceholder">
+            <h3 id="topicSourceTitle" class="ambient-subpage-element-title" aria-hidden="true">
+              $i18n{ambientModeTopicSourceTitle}
+            </h3>
+            <iron-list items="[[getPlaceholders_(2)]]" grid>
+              <template>
+                  <div id="topicSourceTextPlaceholder" class$="{{getClassContainer_(index)}}">
+                    <div class="ambient-primary-text-placeholder placeholder"></div>
+                    <div class="ambient-secondary-text-placeholder placeholder"></div>
+                  </div>
+              </template>
+            </iron-list>
+          </div>
+          <div id="weatherUnitPlaceholder">
+            <h3 id="weatherTitle" class="ambient-subpage-element-title" aria-hidden="true">
+              $i18n{ambientModeWeatherTitle}
+            </h3>
+            <iron-list items="[[getPlaceholders_(2)]]" grid>
+              <template>
+                <div id="weatherUnitTextPlaceholder" class$="{{getClassContainer_(index)}}">
+                  <div class="ambient-secondary-text-placeholder placeholder"></div>
+                </div>
+              </template>
+            </iron-list>
+          </div>
+        </template>
+        <template is="dom-if" if="[[!loadingSettings_]]">
+          <template is="dom-if" if="[[isAmbientModeAnimationEnabled_]]">
+            <animation-theme-list
+                selected-animation-theme="[[animationTheme_]]">
+            </animation-theme-list>
+          </template>
+          <topic-source-list selected-topic-source="[[topicSource_]]"
+              has-google-photos-albums="[[hasGooglePhotosAlbums_(albums_)]]">
+          </topic-source-list>
+          <ambient-weather-unit
+              selected-temperature-unit="[[temperatureUnitToString_(temperatureUnit_)]]">
+          </ambient-weather-unit>
+        </template>
+      </template>
+      <template is="dom-if" if="[[!ambientModeEnabled_]]">
+        <ambient-zero-state id="zeroState"></ambient-zero-state>
+      </template>
+    </div>
+  </template>
+  <!-- restamp to avoid layout issues with iron-list resizing while hidden -->
+  <template is="dom-if" if="[[shouldShowAlbums_(path)]]" restamp>
+    <div id="albumsSubpage">
+      <albums-subpage topic-source="[[getTopicSource_(queryParams)]]"
+          albums="[[getAlbums_(albums_, queryParams)]]">
+      </albums-subpage>
+    </div>
+  </template>
+</div>

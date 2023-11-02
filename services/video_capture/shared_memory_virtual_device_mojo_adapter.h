@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,9 +22,8 @@ class SharedMemoryVirtualDeviceMojoAdapter
     : public mojom::SharedMemoryVirtualDevice,
       public mojom::Device {
  public:
-  SharedMemoryVirtualDeviceMojoAdapter(
-      mojo::Remote<mojom::Producer> producer,
-      bool send_buffer_handles_to_producer_as_raw_file_descriptors = false);
+  explicit SharedMemoryVirtualDeviceMojoAdapter(
+      mojo::Remote<mojom::Producer> producer);
 
   SharedMemoryVirtualDeviceMojoAdapter(
       const SharedMemoryVirtualDeviceMojoAdapter&) = delete;
@@ -52,6 +51,7 @@ class SharedMemoryVirtualDeviceMojoAdapter
                        SetPhotoOptionsCallback callback) override;
   void TakePhoto(TakePhotoCallback callback) override;
   void ProcessFeedback(const media::VideoCaptureFeedback& feedback) override;
+  void RequestRefreshFrame() override;
 
   void Stop();
 
@@ -64,7 +64,6 @@ class SharedMemoryVirtualDeviceMojoAdapter
 
   mojo::Remote<mojom::VideoFrameHandler> video_frame_handler_;
   mojo::Remote<mojom::Producer> producer_;
-  const bool send_buffer_handles_to_producer_as_raw_file_descriptors_;
   scoped_refptr<media::VideoCaptureBufferPool> buffer_pool_;
   std::vector<int> known_buffer_ids_;
   scoped_refptr<ScopedAccessPermissionMap> scoped_access_permission_map_;

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,10 +20,12 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk_subset.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/fake_display_item_client.h"
 #include "third_party/blink/renderer/platform/testing/paint_property_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 void PrintTo(const Vector<cc::PaintOpType>& ops, std::ostream* os) {
   *os << "[";
@@ -40,14 +42,14 @@ void PrintTo(const Vector<cc::PaintOpType>& ops, std::ostream* os) {
 
 void PrintTo(const cc::PaintRecord& record, std::ostream* os) {
   Vector<cc::PaintOpType> ops;
-  for (const auto* op : cc::PaintOpBuffer::Iterator(&record))
-    ops.push_back(op->GetType());
+  for (const cc::PaintOp& op : cc::PaintOpBuffer::Iterator(&record))
+    ops.push_back(op.GetType());
   PrintTo(ops, os);
 }
 
 void PrintTo(const SkRect& rect, std::ostream* os) {
   *os << (cc::PaintOp::IsUnsetRect(rect) ? "(unset)"
-                                         : blink::FloatRect(rect).ToString());
+                                         : gfx::SkRectToRectF(rect).ToString());
 }
 
 namespace blink {
@@ -73,12 +75,13 @@ class PaintRecordMatcher
                        testing::MatchResultListener* listener) const override {
     size_t index = 0;
     for (cc::PaintOpBuffer::Iterator it(&buffer); it; ++it, ++index) {
-      auto op = (*it)->GetType();
-      if (index < expected_ops_.size() && expected_ops_[index] == op)
+      cc::PaintOpType op_type = it->GetType();
+      if (index < expected_ops_.size() && expected_ops_[index] == op_type)
         continue;
 
       if (listener->IsInterested()) {
-        *listener << "unexpected op " << op << " at index " << index << ",";
+        *listener << "unexpected op " << op_type << " at index " << index
+                  << ",";
         if (index < expected_ops_.size())
           *listener << " expecting " << expected_ops_[index] << ".";
         else
@@ -105,7 +108,7 @@ class PaintRecordMatcher
 
 #define EXPECT_EFFECT_BOUNDS(x, y, width, height, op_buffer, index)         \
   do {                                                                      \
-    FloatRect bounds;                                                       \
+    SkRect bounds;                                                          \
     if (const auto* save_layer_alpha =                                      \
             (op_buffer).GetOpAtForTesting<cc::SaveLayerAlphaOp>(index)) {   \
       bounds = save_layer_alpha->bounds;                                    \
@@ -115,14 +118,14 @@ class PaintRecordMatcher
     } else {                                                                \
       FAIL() << "No SaveLayer[Alpha]Op at " << index;                       \
     }                                                                       \
-    EXPECT_EQ(FloatRect(x, y, width, height), bounds);                      \
+    EXPECT_EQ(SkRect::MakeXYWH(x, y, width, height), bounds);               \
   } while (false)
 
 #define EXPECT_TRANSFORM_MATRIX(transform, op_buffer, index)                 \
   do {                                                                       \
     const auto* concat = (op_buffer).GetOpAtForTesting<cc::ConcatOp>(index); \
     ASSERT_NE(nullptr, concat);                                              \
-    EXPECT_EQ(TransformationMatrix::ToSkM44(transform), concat->matrix);     \
+    EXPECT_EQ((transform).ToSkM44(), concat->matrix);                        \
   } while (false)
 
 #define EXPECT_TRANSLATE(x, y, op_buffer, index)               \
@@ -139,7 +142,7 @@ class PaintRecordMatcher
     const auto* clip_op =                                     \
         (op_buffer).GetOpAtForTesting<cc::ClipRectOp>(index); \
     ASSERT_NE(nullptr, clip_op);                              \
-    EXPECT_EQ(SkRect(r), clip_op->rect);                      \
+    EXPECT_EQ(gfx::RectFToSkRect(r), clip_op->rect);          \
   } while (false)
 
 #define EXPECT_ROUNDED_CLIP(r, op_buffer, index)               \
@@ -273,7 +276,7 @@ TEST_P(PaintChunksToCcLayerTest, EffectGroupingNested) {
 
 TEST_P(PaintChunksToCcLayerTest, EffectFilterGroupingNestedWithTransforms) {
   // This test verifies nested effects with transforms are grouped properly.
-  auto t1 = CreateTransform(t0(), TransformationMatrix().Scale(2.f));
+  auto t1 = CreateTransform(t0(), MakeScaleMatrix(2));
   auto t2 = Create2DTranslation(*t1, -50, -50);
   auto e1 = CreateOpacityEffect(e0(), *t2, &c0(), 0.5);
 
@@ -371,7 +374,7 @@ TEST_P(PaintChunksToCcLayerTest, ClipSpaceInversion) {
   // <div style="position:absolute; clip:rect(...)">
   //     <div style="position:fixed;">Clipped but not scroll along.</div>
   // </div>
-  auto t1 = CreateTransform(t0(), TransformationMatrix().Scale(2.f));
+  auto t1 = CreateTransform(t0(), MakeScaleMatrix(2));
   auto c1 = CreateClip(c0(), *t1, FloatRoundedRect(0.f, 0.f, 1.f, 1.f));
   TestChunks chunks;
   chunks.AddChunk(t0(), *c1, e0());
@@ -399,7 +402,7 @@ TEST_P(PaintChunksToCcLayerTest, OpacityEffectSpaceInversion) {
   //     <div style="position:absolute;">Transparent but not scroll along.</div>
   //   </div>
   // </div>
-  auto t1 = CreateTransform(t0(), TransformationMatrix().Scale(2.f));
+  auto t1 = CreateTransform(t0(), MakeScaleMatrix(2));
   auto e1 = CreateOpacityEffect(e0(), *t1, &c0(), 0.5);
   TestChunks chunks;
   chunks.AddChunk(t0(), c0(), *e1);
@@ -433,7 +436,7 @@ TEST_P(PaintChunksToCcLayerTest, FilterEffectSpaceInversion) {
   //     <div style="position:absolute;">Filtered but not scroll along.</div>
   //   </div>
   // </div>
-  auto t1 = CreateTransform(t0(), TransformationMatrix().Scale(2.f));
+  auto t1 = CreateTransform(t0(), MakeScaleMatrix(2));
   CompositorFilterOperations filter;
   filter.AppendBlurFilter(5);
   auto e1 = CreateFilterEffect(e0(), *t1, &c0(), filter);
@@ -462,7 +465,7 @@ TEST_P(PaintChunksToCcLayerTest, FilterEffectSpaceInversion) {
 TEST_P(PaintChunksToCcLayerTest, NonRootLayerSimple) {
   // This test verifies a layer with composited property state does not
   // apply properties again internally.
-  auto t1 = CreateTransform(t0(), TransformationMatrix().Scale(2.f));
+  auto t1 = CreateTransform(t0(), MakeScaleMatrix(2));
   auto c1 = CreateClip(c0(), t0(), FloatRoundedRect(0.f, 0.f, 1.f, 1.f));
   auto e1 = CreateOpacityEffect(e0(), 0.5f);
   TestChunks chunks;
@@ -479,7 +482,7 @@ TEST_P(PaintChunksToCcLayerTest, NonRootLayerSimple) {
 TEST_P(PaintChunksToCcLayerTest, NonRootLayerTransformEscape) {
   // This test verifies chunks that have a shallower transform state than the
   // layer can still be painted.
-  auto t1 = CreateTransform(t0(), TransformationMatrix().Scale(2.f));
+  auto t1 = CreateTransform(t0(), MakeScaleMatrix(2));
   auto c1 = CreateClip(c0(), t0(), FloatRoundedRect(0.f, 0.f, 1.f, 1.f));
   auto e1 = CreateOpacityEffect(e0(), 0.5f);
   TestChunks chunks;
@@ -598,8 +601,7 @@ TEST_P(PaintChunksToCcLayerTest,
 }
 
 TEST_P(PaintChunksToCcLayerTest, VisualRect) {
-  auto layer_transform =
-      CreateTransform(t0(), TransformationMatrix().Scale(20));
+  auto layer_transform = CreateTransform(t0(), MakeScaleMatrix(20));
   auto chunk_transform = Create2DTranslation(*layer_transform, 50, 100);
 
   TestChunks chunks;
@@ -725,7 +727,7 @@ TEST_P(PaintChunksToCcLayerTest, EmptyEffectsAreStored) {
 
 TEST_P(PaintChunksToCcLayerTest, CombineClips) {
   FloatRoundedRect clip_rect(0, 0, 100, 100);
-  auto t1 = CreateTransform(t0(), TransformationMatrix().Scale(2.f));
+  auto t1 = CreateTransform(t0(), MakeScaleMatrix(2));
   auto c1 = CreateClip(c0(), t0(), clip_rect);
   auto c2 = CreateClip(*c1, t0(), clip_rect);
   auto c3 = CreateClip(*c2, *t1, clip_rect);
@@ -763,10 +765,8 @@ TEST_P(PaintChunksToCcLayerTest, CombineClips) {
 TEST_P(PaintChunksToCcLayerTest, CombineClipsAcrossTransform) {
   FloatRoundedRect clip_rect(0, 0, 100, 100);
   auto identity = Create2DTranslation(t0(), 0, 0);
-  auto non_identity =
-      CreateTransform(*identity, TransformationMatrix().Scale(2));
-  auto non_invertible =
-      CreateTransform(*non_identity, TransformationMatrix().Scale(0));
+  auto non_identity = CreateTransform(*identity, MakeScaleMatrix(2));
+  auto non_invertible = CreateTransform(*non_identity, MakeScaleMatrix(0));
   EXPECT_FALSE(non_invertible->Matrix().IsInvertible());
   auto c1 = CreateClip(c0(), t0(), FloatRoundedRect(0, 0, 100, 100));
   auto c2 = CreateClip(*c1, *identity, FloatRoundedRect(50, 50, 100, 100));
@@ -797,20 +797,17 @@ TEST_P(PaintChunksToCcLayerTest, CombineClipsAcrossTransform) {
            cc::PaintOpType::Restore,     // </c3 non_identity>
            cc::PaintOpType::Restore}));  // </c1+c2>
 
-  EXPECT_CLIP(FloatRect(50, 50, 50, 50), *output, 1);
+  EXPECT_CLIP(gfx::RectF(50, 50, 50, 50), *output, 1);
   EXPECT_TRANSFORM_MATRIX(non_identity->Matrix(), *output, 3);
-  EXPECT_CLIP(FloatRect(1, 2, 3, 4), *output, 4);
+  EXPECT_CLIP(gfx::RectF(1, 2, 3, 4), *output, 4);
   EXPECT_TRANSFORM_MATRIX(non_invertible->Matrix(), *output, 6);
-  EXPECT_CLIP(FloatRect(5, 6, 7, 8), *output, 7);
+  EXPECT_CLIP(gfx::RectF(5, 6, 7, 8), *output, 7);
 }
 
 TEST_P(PaintChunksToCcLayerTest, CombineClipsWithRoundedRects) {
   FloatRoundedRect clip_rect(0, 0, 100, 100);
-  FloatSize corner(5, 5);
-  FloatRoundedRect big_rounded_clip_rect(FloatRect(0, 0, 200, 200), corner,
-                                         corner, corner, corner);
-  FloatRoundedRect small_rounded_clip_rect(FloatRect(0, 0, 100, 100), corner,
-                                           corner, corner, corner);
+  FloatRoundedRect big_rounded_clip_rect(gfx::RectF(0, 0, 200, 200), 5);
+  FloatRoundedRect small_rounded_clip_rect(gfx::RectF(0, 0, 100, 100), 5);
 
   auto c1 = CreateClip(c0(), t0(), clip_rect);
   auto c2 = CreateClip(*c1, t0(), small_rounded_clip_rect);
@@ -852,8 +849,8 @@ TEST_P(PaintChunksToCcLayerTest, CombineClipsWithRoundedRects) {
 }
 
 TEST_P(PaintChunksToCcLayerTest, ChunksSamePropertyTreeState) {
-  auto t1 = CreateTransform(t0(), TransformationMatrix().Scale(2.f));
-  auto t2 = CreateTransform(*t1, TransformationMatrix().Scale(3.f));
+  auto t1 = CreateTransform(t0(), MakeScaleMatrix(2));
+  auto t2 = CreateTransform(*t1, MakeScaleMatrix(3));
   auto c1 = CreateClip(c0(), *t1, FloatRoundedRect(0, 0, 100, 100));
 
   TestChunks chunks;
@@ -923,7 +920,7 @@ TEST_P(PaintChunksToCcLayerTest, NoOpForIdentityTransforms) {
 }
 
 TEST_P(PaintChunksToCcLayerTest, EffectsWithSameTransform) {
-  auto t1 = CreateTransform(t0(), TransformationMatrix().Scale(2));
+  auto t1 = CreateTransform(t0(), MakeScaleMatrix(2));
   auto e1 = CreateOpacityEffect(e0(), *t1, &c0(), 0.1f);
   auto e2 = CreateOpacityEffect(e0(), *t1, &c0(), 0.2f);
 
@@ -951,7 +948,7 @@ TEST_P(PaintChunksToCcLayerTest, EffectsWithSameTransform) {
 }
 
 TEST_P(PaintChunksToCcLayerTest, NestedEffectsWithSameTransform) {
-  auto t1 = CreateTransform(t0(), TransformationMatrix().Scale(2));
+  auto t1 = CreateTransform(t0(), MakeScaleMatrix(2));
   auto e1 = CreateOpacityEffect(e0(), *t1, &c0(), 0.1f);
   auto e2 = CreateOpacityEffect(*e1, *t1, &c0(), 0.2f);
 
@@ -979,10 +976,10 @@ TEST_P(PaintChunksToCcLayerTest, NestedEffectsWithSameTransform) {
 }
 
 TEST_P(PaintChunksToCcLayerTest, NoopTransformIsNotEmitted) {
-  auto t1 = CreateTransform(t0(), TransformationMatrix().Scale(2.f));
+  auto t1 = CreateTransform(t0(), MakeScaleMatrix(2));
   auto noop_t2 = TransformPaintPropertyNodeAlias::Create(*t1);
   auto noop_t3 = TransformPaintPropertyNodeAlias::Create(*noop_t2);
-  auto t4 = CreateTransform(*noop_t3, TransformationMatrix().Scale(2.f));
+  auto t4 = CreateTransform(*noop_t3, MakeScaleMatrix(2));
   auto noop_t5 = TransformPaintPropertyNodeAlias::Create(*t4);
   TestChunks chunks;
   chunks.AddChunk(t0(), c0(), e0());
@@ -1036,7 +1033,7 @@ TEST_P(PaintChunksToCcLayerTest, OnlyNoopTransformIsNotEmitted) {
 }
 
 TEST_P(PaintChunksToCcLayerTest, NoopTransformFirstThenBackToParent) {
-  auto t1 = CreateTransform(t0(), TransformationMatrix().Scale(2));
+  auto t1 = CreateTransform(t0(), MakeScaleMatrix(2));
   auto noop_t2 = TransformPaintPropertyNodeAlias::Create(*t1);
 
   TestChunks chunks;
@@ -1060,7 +1057,7 @@ TEST_P(PaintChunksToCcLayerTest, NoopTransformFirstThenBackToParent) {
 }
 
 TEST_P(PaintChunksToCcLayerTest, ClipUndoesNoopTransform) {
-  auto t1 = CreateTransform(t0(), TransformationMatrix().Scale(2));
+  auto t1 = CreateTransform(t0(), MakeScaleMatrix(2));
   auto noop_t2 = TransformPaintPropertyNodeAlias::Create(*t1);
   auto c1 = CreateClip(c0(), *t1, FloatRoundedRect(0.f, 0.f, 1.f, 1.f));
 
@@ -1088,7 +1085,7 @@ TEST_P(PaintChunksToCcLayerTest, ClipUndoesNoopTransform) {
 }
 
 TEST_P(PaintChunksToCcLayerTest, EffectUndoesNoopTransform) {
-  auto t1 = CreateTransform(t0(), TransformationMatrix().Scale(2));
+  auto t1 = CreateTransform(t0(), MakeScaleMatrix(2));
   auto noop_t2 = TransformPaintPropertyNodeAlias::Create(*t1);
   auto e1 = CreateOpacityEffect(e0(), *t1, &c0(), 0.5);
 
@@ -1214,34 +1211,6 @@ TEST_P(PaintChunksToCcLayerTest, NoopEffectDoesNotEmitItems) {
               }));
 }
 
-TEST_P(PaintChunksToCcLayerTest, AllowChunkEscapeLayerNoopEffects) {
-  // This test doesn't apply to CAP.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
-  auto e1 = CreateOpacityEffect(e0(), 0.5f);
-  auto noop_e2 = CreateOpacityEffect(*e1, 1.0f);
-  auto noop_e3 = CreateOpacityEffect(*noop_e2, 1.0f);
-  auto e4 = CreateOpacityEffect(*e1, 0.5f);
-
-  PropertyTreeState layer_state(t0(), c0(), *noop_e3);
-  TestChunks chunks;
-  chunks.AddChunk(t0(), c0(), *noop_e3);
-  chunks.AddChunk(t0(), c0(), *e4);
-
-  auto output = PaintChunksToCcLayer::Convert(
-                    chunks.Build(), layer_state, gfx::Vector2dF(),
-                    cc::DisplayItemList::kToBeReleasedAsPaintOpBuffer)
-                    ->ReleaseAsRecord();
-
-  EXPECT_THAT(*output, PaintRecordMatcher::Make({
-                           cc::PaintOpType::DrawRecord,
-                           cc::PaintOpType::SaveLayerAlpha,  // e4
-                           cc::PaintOpType::DrawRecord,
-                           cc::PaintOpType::Restore,  // end e4
-                       }));
-}
-
 TEST_P(PaintChunksToCcLayerTest, EmptyChunkRect) {
   CompositorFilterOperations filter;
   filter.AppendBlurFilter(5);
@@ -1259,16 +1228,16 @@ TEST_P(PaintChunksToCcLayerTest, EmptyChunkRect) {
   EXPECT_EFFECT_BOUNDS(0, 0, 0, 0, *output, 0);
 }
 
-static sk_sp<cc::PaintFilter> MakeFilter(FloatRect bounds) {
-  PaintFilter::CropRect rect(bounds);
+static sk_sp<cc::PaintFilter> MakeFilter(gfx::RectF bounds) {
+  PaintFilter::CropRect rect(gfx::RectFToSkRect(bounds));
   return sk_make_sp<ColorFilterPaintFilter>(
       SkColorFilters::Blend(SK_ColorBLUE, SkBlendMode::kSrc), nullptr, &rect);
 }
 
 TEST_P(PaintChunksToCcLayerTest, ReferenceFilterOnEmptyChunk) {
   CompositorFilterOperations filter;
-  filter.AppendReferenceFilter(MakeFilter(FloatRect(12, 26, 93, 84)));
-  filter.SetReferenceBox(FloatRect(11, 22, 33, 44));
+  filter.AppendReferenceFilter(MakeFilter(gfx::RectF(12, 26, 93, 84)));
+  filter.SetReferenceBox(gfx::RectF(11, 22, 33, 44));
   ASSERT_TRUE(filter.HasReferenceFilter());
   auto e1 = CreateFilterEffect(e0(), t0(), &c0(), filter);
   TestChunks chunks;
@@ -1298,12 +1267,13 @@ TEST_P(PaintChunksToCcLayerTest, ReferenceFilterOnEmptyChunk) {
 
 TEST_P(PaintChunksToCcLayerTest, ReferenceFilterOnChunkWithDrawingDisplayItem) {
   CompositorFilterOperations filter;
-  filter.AppendReferenceFilter(MakeFilter(FloatRect(7, 16, 93, 84)));
-  filter.SetReferenceBox(FloatRect(11, 22, 33, 44));
+  filter.AppendReferenceFilter(MakeFilter(gfx::RectF(7, 16, 93, 84)));
+  filter.SetReferenceBox(gfx::RectF(11, 22, 33, 44));
   ASSERT_TRUE(filter.HasReferenceFilter());
   auto e1 = CreateFilterEffect(e0(), t0(), &c0(), filter);
+  auto clip_expander = CreatePixelMovingFilterClipExpander(c0(), *e1);
   TestChunks chunks;
-  chunks.AddChunk(t0(), c0(), *e1, gfx::Rect(5, 10, 200, 300),
+  chunks.AddChunk(t0(), *clip_expander, *e1, gfx::Rect(5, 10, 200, 300),
                   gfx::Rect(10, 15, 20, 30));
 
   auto cc_list = base::MakeRefCounted<cc::DisplayItemList>(
@@ -1334,6 +1304,33 @@ TEST_P(PaintChunksToCcLayerTest, ReferenceFilterOnChunkWithDrawingDisplayItem) {
   // The effect bounds are the union of the chunk's drawable_bounds and the
   // output bounds of the filter with empty input in the filter's space.
   EXPECT_EFFECT_BOUNDS(7, 15, 93, 85, *output, 2);
+}
+
+TEST_P(PaintChunksToCcLayerTest, FilterClipExpanderUnderClip) {
+  // This tests the situation of crbug.com/1350017.
+  CompositorFilterOperations filter;
+  filter.AppendBlurFilter(10);
+  auto e1 = CreateFilterEffect(e0(), t0(), &c0(), filter);
+  auto c1 = CreateClip(c0(), t0(), FloatRoundedRect(10, 20, 30, 40));
+  auto clip_expander = CreatePixelMovingFilterClipExpander(*c1, *e1);
+  TestChunks chunks;
+  chunks.AddChunk(t0(), *clip_expander, *e1, gfx::Rect(5, 10, 200, 300),
+                  gfx::Rect(10, 15, 20, 30));
+
+  auto cc_list = base::MakeRefCounted<cc::DisplayItemList>(
+      cc::DisplayItemList::kTopLevelDisplayItemList);
+  PaintChunksToCcLayer::ConvertInto(chunks.Build(), PropertyTreeState::Root(),
+                                    gfx::Vector2dF(), *cc_list);
+  ASSERT_EQ(7u, cc_list->TotalOpCount());
+  auto output = cc_list->ReleaseAsRecord();
+  EXPECT_THAT(*output,
+              PaintRecordMatcher::Make(
+                  {cc::PaintOpType::SaveLayer,  // <e1>
+                   cc::PaintOpType::Save,
+                   cc::PaintOpType::ClipRect,    // <c1>
+                   cc::PaintOpType::DrawRecord,  // the DrawingDisplayItem
+                   cc::PaintOpType::Restore,     // </c1>
+                   cc::PaintOpType::Restore}));  // </e1>
 }
 
 TEST_P(PaintChunksToCcLayerTest,
@@ -1385,8 +1382,6 @@ TEST_P(PaintChunksToCcLayerTest, UpdateLayerPropertiesRegionCaptureDataEmpty) {
                   gfx::Rect(10, 15, 20, 30));
   PaintChunksToCcLayer::UpdateLayerProperties(*layer, PropertyTreeState::Root(),
                                               chunks.Build());
-
-  // The layer should have bounds still, but they should be empty.
   EXPECT_TRUE(layer->capture_bounds().bounds().empty());
 }
 
@@ -1409,6 +1404,64 @@ TEST_P(PaintChunksToCcLayerTest,
   const gfx::Rect actual_bounds =
       layer->capture_bounds().bounds().find(kCropId.value())->second;
   EXPECT_TRUE(actual_bounds.IsEmpty());
+}
+
+TEST_P(PaintChunksToCcLayerTest,
+       UpdateLayerPropertiesRegionCaptureDataMultipleChunks) {
+  auto layer = cc::Layer::Create();
+
+  TestChunks chunks;
+
+  // Add the first chunk with region capture bounds.
+  chunks.AddChunk(t0(), c0(), e0(), gfx::Rect(5, 10, 200, 300),
+                  gfx::Rect(10, 15, 20, 30));
+  const auto kCropId = RegionCaptureCropId(base::Token::CreateRandom());
+  const RegionCaptureData kMap{{kCropId, gfx::Rect{50, 60, 100, 200}}};
+  chunks.GetChunks()->back().region_capture_data =
+      std::make_unique<RegionCaptureData>(kMap);
+
+  // Add a second chunk with additional region capture bounds.
+  chunks.AddChunk(t0(), c0(), e0(), gfx::Rect(6, 12, 244, 366),
+                  gfx::Rect(20, 30, 40, 60));
+  const auto kSecondCropId = RegionCaptureCropId(base::Token::CreateRandom());
+  const auto kThirdCropId = RegionCaptureCropId(base::Token::CreateRandom());
+  const RegionCaptureData kSecondMap{
+      {kSecondCropId, gfx::Rect{51, 61, 101, 201}},
+      {kThirdCropId, gfx::Rect{52, 62, 102, 202}}};
+  chunks.GetChunks()->back().region_capture_data =
+      std::make_unique<RegionCaptureData>(kSecondMap);
+
+  PaintChunksToCcLayer::UpdateLayerProperties(*layer, PropertyTreeState::Root(),
+                                              chunks.Build());
+
+  EXPECT_EQ((gfx::Rect{50, 60, 100, 200}),
+            layer->capture_bounds().bounds().find(kCropId.value())->second);
+  EXPECT_EQ(
+      (gfx::Rect{51, 61, 101, 201}),
+      layer->capture_bounds().bounds().find(kSecondCropId.value())->second);
+  EXPECT_EQ(
+      (gfx::Rect{52, 62, 102, 202}),
+      layer->capture_bounds().bounds().find(kThirdCropId.value())->second);
+}
+
+TEST_P(PaintChunksToCcLayerTest, NonCompositedBackdropFilter) {
+  CompositorFilterOperations filter;
+  filter.AppendBlurFilter(5);
+  auto e1 = CreateBackdropFilterEffect(e0(), filter);
+  TestChunks chunks;
+  chunks.AddChunk(t0(), c0(), *e1, gfx::Rect(0, 0, 50, 50));
+
+  sk_sp<PaintRecord> output =
+      PaintChunksToCcLayer::Convert(
+          chunks.Build(), PropertyTreeState::Root(), gfx::Vector2dF(),
+          cc::DisplayItemList::kToBeReleasedAsPaintOpBuffer)
+          ->ReleaseAsRecord();
+  // TODO(crbug.com/1334293): For now non-composited backdrop filters are
+  // ignored.
+  EXPECT_THAT(*output,
+              PaintRecordMatcher::Make({cc::PaintOpType::SaveLayerAlpha,
+                                        cc::PaintOpType::DrawRecord,
+                                        cc::PaintOpType::Restore}));
 }
 
 }  // namespace

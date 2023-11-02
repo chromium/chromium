@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,22 +42,22 @@ public class CastContentWindowAndroid implements CastWebContentsComponent.OnComp
     @CalledByNative
     private static CastContentWindowAndroid create(long nativeCastContentWindowAndroid,
             boolean enableTouchInput, boolean isRemoteControlMode, boolean turnOnScreen,
-            String sessionId) {
+            boolean keepScreenOn, String sessionId) {
         return new CastContentWindowAndroid(nativeCastContentWindowAndroid,
                 ContextUtils.getApplicationContext(), enableTouchInput, isRemoteControlMode,
-                turnOnScreen, sessionId);
+                turnOnScreen, keepScreenOn, sessionId);
     }
 
     private CastContentWindowAndroid(long nativeCastContentWindowAndroid, final Context context,
             boolean enableTouchInput, boolean isRemoteControlMode, boolean turnOnScreen,
-            String sessionId) {
+            boolean keepScreenOn, String sessionId) {
         mNativeCastContentWindowAndroid = nativeCastContentWindowAndroid;
         mContext = context;
         Log.i(TAG,
                 "Creating new CastContentWindowAndroid(No. " + sInstanceId++
                         + ") Seesion ID: " + sessionId);
-        mComponent = new CastWebContentsComponent(
-                sessionId, this, this, enableTouchInput, isRemoteControlMode, turnOnScreen);
+        mComponent = new CastWebContentsComponent(sessionId, this, this, enableTouchInput,
+                isRemoteControlMode, turnOnScreen, keepScreenOn);
         mScreenAccess.subscribe(screenAccess -> mStartParams.subscribe(startParams -> {
             // If the app doesn't have screen access, start in headless mode, so that the web
             // content can still have a window attached. Since we have video overlay always
@@ -69,11 +69,9 @@ public class CastContentWindowAndroid implements CastWebContentsComponent.OnComp
 
     @SuppressWarnings("unused")
     @CalledByNative
-    private void createWindowForWebContents(
-            WebContents webContents, String appId, int visisbilityPriority) {
+    private void createWindowForWebContents(WebContents webContents, String appId) {
         if (DEBUG) Log.d(TAG, "createWindowForWebContents");
-        mStartParams.set(new CastWebContentsComponent.StartParams(
-                mContext, webContents, appId, visisbilityPriority));
+        mStartParams.set(new CastWebContentsComponent.StartParams(mContext, webContents, appId));
     }
 
     @SuppressWarnings("unused")
@@ -99,6 +97,12 @@ public class CastContentWindowAndroid implements CastWebContentsComponent.OnComp
 
     @SuppressWarnings("unused")
     @CalledByNative
+    private void setAllowPictureInPicture(boolean allowPictureInPicture) {
+        mComponent.setAllowPictureInPicture(allowPictureInPicture);
+    }
+
+    @SuppressWarnings("unused")
+    @CalledByNative
     private void onNativeDestroyed() {
         assert mNativeCastContentWindowAndroid != 0;
         mNativeCastContentWindowAndroid = 0;
@@ -111,30 +115,6 @@ public class CastContentWindowAndroid implements CastWebContentsComponent.OnComp
 
         if (DEBUG) Log.d(TAG, "onNativeDestroyed");
         mComponent.stop(mContext);
-    }
-
-    @SuppressWarnings("unused")
-    @CalledByNative
-    private void requestVisibilityPriority(int visisbilityPriority) {
-        if (DEBUG) Log.d(TAG, "requestVisibilityPriority visibility=" + visisbilityPriority);
-        mComponent.requestVisibilityPriority(visisbilityPriority);
-    }
-
-    @SuppressWarnings("unused")
-    @CalledByNative
-    private void requestMoveOut() {
-        if (DEBUG) Log.d(TAG, "requestMoveOut");
-        mComponent.requestMoveOut();
-    }
-
-    @SuppressWarnings("unused")
-    @CalledByNative
-    private void setHostContext(int interactionId, String conversationId) {
-        if (DEBUG) {
-            Log.d(TAG, "setInteractionid interactionId=%s; conversationID=%s", interactionId,
-                    conversationId);
-        }
-        mComponent.setHostContext(interactionId, conversationId);
     }
 
     @Override
@@ -155,25 +135,10 @@ public class CastContentWindowAndroid implements CastWebContentsComponent.OnComp
         }
     }
 
-    @Override
-    public void consumeGesture(int gestureType,
-            CastWebContentsComponent.GestureHandledCallback handledGestureCallback) {
-        if (DEBUG) Log.d(TAG, "consumeGesture type=" + gestureType);
-        if (mNativeCastContentWindowAndroid != 0) {
-            CastContentWindowAndroidJni.get().consumeGesture(mNativeCastContentWindowAndroid,
-                    CastContentWindowAndroid.this, gestureType, handledGestureCallback);
-            return;
-        }
-        handledGestureCallback.invoke(false);
-    }
-
     @NativeMethods
     interface Natives {
         void onActivityStopped(
                 long nativeCastContentWindowAndroid, CastContentWindowAndroid caller);
-        void consumeGesture(long nativeCastContentWindowAndroid, CastContentWindowAndroid caller,
-                int gestureType,
-                CastWebContentsComponent.GestureHandledCallback handledGestureCallback);
         void onVisibilityChange(long nativeCastContentWindowAndroid,
                 CastContentWindowAndroid caller, int visibilityType);
     }

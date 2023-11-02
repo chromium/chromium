@@ -15,3 +15,4 @@ A JavaScript library for manipulating documents based on data.
 
 Local Modifications:
 Added externs.js to allow the closure compiler to compile code using d3.
+Added BUILD.gn to allow other build targets to depend on d3.

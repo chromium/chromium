@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -125,10 +125,8 @@ enum PermissionsPolicyFeature {
   // Controls access to screen capture via getDisplayMedia().
   kDisplayCapture = 81,
 
-  // Controls the access to the interest cohort as well as the eligibility for
-  // the navigation history entry to be included in the interest cohort
-  // computation. (https://github.com/WICG/floc)
-  kInterestCohort = 82,
+  // [Deprecated]
+  // kInterestCohort = 82,
 
   // Controls whether Autofill may fill fields in that frame when triggered on
   // a field with the main frame's origin.
@@ -181,6 +179,50 @@ enum PermissionsPolicyFeature {
 
   // Client Hint for the full version for each brand.
   kClientHintUAFullVersionList = 93,
+
+  // Client hint for indicating that the User-Agent header contains the full
+  // user agent string.
+  //
+  // The `Sec-CH-UA-Full` header field is a temporary client hint, which
+  // will only be sent in the presence of a valid Origin Trial token.  It was
+  // introduced to enable sites to register for the deprecation UA reduction
+  // origin trial and continue to receive the full UA string for some period, once
+  // UA reduction rolls out.
+  kClientHintUAFull = 94,
+
+  // Client Hint for Sec-CH-UA-WoW64.
+  kClientHintUAWoW64 = 95,
+
+  // "browsing-topics" permissions policy that controls the use of Topics API.
+  // https://github.com/jkarlin/topics
+  kBrowsingTopics = 97,
+
+  // "interest-cohort" permissions policy that controls the use of Topics API.
+  // https://github.com/jkarlin/topics
+  kBrowsingTopicsBackwardCompatible = 98,
+
+  // Client Hint for Save-Data.
+  kClientHintSaveData = 99,
+
+  // Controls access to local fonts.
+  // https://wicg.github.io/local-font-access/#permissions-policy
+  kLocalFonts = 100,
+
+  // Controls access to Bluetooth API.
+  kBluetooth = 101,
+
+  // Controls use of FedCM API.
+  kIdentityCredentialsGet = 102,
+
+  // "shared-storage" permissions policy that controls the use of Shared Storage
+  // API.
+  kSharedStorage = 103,
+
+  // Controls use of unload handlers.
+  kUnload = 104,
+
+  // Client Hint for the preferred reduced motion.
+  kClientHintPrefersReducedMotion = 105,
 
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.

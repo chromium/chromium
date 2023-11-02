@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -56,7 +56,7 @@ void DatabaseHelper::StartFetching(FetchCallback callback) {
                     info.GetOriginIdentifier());
                 if (!HasWebScheme(origin.GetURL()))
                   continue;
-                result.emplace_back(origin, info.TotalSize(),
+                result.emplace_back(blink::StorageKey(origin), info.TotalSize(),
                                     info.LastModified());
               }
             }
@@ -109,7 +109,7 @@ void CannedDatabaseHelper::StartFetching(FetchCallback callback) {
 
   std::list<StorageUsageInfo> result;
   for (const auto& origin : pending_origins_) {
-    result.emplace_back(origin, 0, base::Time());
+    result.emplace_back(blink::StorageKey(origin), 0, base::Time());
   }
 
   content::GetUIThreadTaskRunner({})->PostTask(

@@ -1,8 +1,8 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 
 /**
  * Enumeration of measurement unit types.
@@ -12,12 +12,12 @@ export enum MeasurementSystemUnitType {
   IMPERIAL = 1,  // inches
 }
 
-type MeasurementSystemPrefs = {
-  precision: number,
-  decimalPlaces: number,
-  ptsPerUnit: number,
-  unitSymbol: string,
-};
+interface MeasurementSystemPrefs {
+  precision: number;
+  decimalPlaces: number;
+  ptsPerUnit: number;
+  unitSymbol: string;
+}
 
 export class MeasurementSystem {
   /**
@@ -98,15 +98,16 @@ export class MeasurementSystem {
 const measurementSystemPrefs:
     Map<MeasurementSystemUnitType, MeasurementSystemPrefs> = new Map([
       [
-        MeasurementSystemUnitType.METRIC, {
+        MeasurementSystemUnitType.METRIC,
+        {
           precision: 0.5,
           decimalPlaces: 1,
           ptsPerUnit: 72.0 / 25.4,
-          unitSymbol: 'mm'
-        }
+          unitSymbol: 'mm',
+        },
       ],
       [
         MeasurementSystemUnitType.IMPERIAL,
-        {precision: 0.01, decimalPlaces: 2, ptsPerUnit: 72.0, unitSymbol: '"'}
-      ]
+        {precision: 0.01, decimalPlaces: 2, ptsPerUnit: 72.0, unitSymbol: '"'},
+      ],
     ]);

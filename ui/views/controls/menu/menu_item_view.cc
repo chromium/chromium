@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,14 @@
 #include <numeric>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/containers/adapters.h"
+#include "base/containers/contains.h"
 #include "base/i18n/case_conversion.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -47,15 +52,14 @@
 #include "ui/views/controls/menu/new_badge.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/controls/separator.h"
-#include "ui/views/image_model_utils.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "ui/views/accessibility/view_accessibility.h"
-#endif  //  defined(OS_MAC)
+#endif  //  BUILDFLAG(IS_MAC)
 
 namespace views {
 
@@ -95,9 +99,6 @@ class VerticalSeparator : public Separator {
   VerticalSeparator(const VerticalSeparator&) = delete;
   VerticalSeparator& operator=(const VerticalSeparator&) = delete;
   ~VerticalSeparator() override = default;
-
-  // Separator:
-  void OnThemeChanged() override;
 };
 
 VerticalSeparator::VerticalSeparator() {
@@ -107,11 +108,11 @@ VerticalSeparator::VerticalSeparator() {
       gfx::Size(config.actionable_submenu_vertical_separator_width,
                 config.actionable_submenu_vertical_separator_height));
   SetCanProcessEventsWithinSubtree(false);
-}
-
-void VerticalSeparator::OnThemeChanged() {
-  Separator::OnThemeChanged();
-  SetColor(GetColorProvider()->GetColor(ui::kColorMenuSeparator));
+  ui::ColorId id = ui::kColorMenuSeparator;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  id = ui::kColorAshSystemUIMenuSeparator;
+#endif
+  SetColorId(id);
 }
 
 BEGIN_METADATA(VerticalSeparator, Separator)
@@ -157,15 +158,18 @@ void MenuItemView::ChildPreferredSizeChanged(View* child) {
 void MenuItemView::OnThemeChanged() {
   View::OnThemeChanged();
   // Force updating as the colors may have changed.
-  UpdateSelectionBasedState(ShouldPaintAsSelected(PaintMode::kNormal));
+  if (!IsScheduledForDeletion())
+    UpdateSelectionBasedState(ShouldPaintAsSelected(PaintMode::kNormal));
 }
 
 void MenuItemView::ViewHierarchyChanged(
     const ViewHierarchyChangedDetails& details) {
   // Whether the selection is painted may change based on the number of
   // children.
-  if (details.parent == this)
+  if (details.parent == this &&
+      update_selection_based_state_in_view_herarchy_changed_) {
     UpdateSelectionBasedStateIfChanged(PaintMode::kNormal);
+  }
 }
 
 std::u16string MenuItemView::GetTooltipText(const gfx::Point& p) const {
@@ -349,7 +353,7 @@ void MenuItemView::Cancel() {
 }
 
 MenuItemView* MenuItemView::AddMenuItemAt(
-    int index,
+    size_t index,
     int item_id,
     const std::u16string& label,
     const std::u16string& secondary_label,
@@ -359,10 +363,9 @@ MenuItemView* MenuItemView::AddMenuItemAt(
     Type type,
     ui::MenuSeparatorType separator_style) {
   DCHECK_NE(type, Type::kEmpty);
-  DCHECK_GE(index, 0);
   if (!submenu_)
     CreateSubmenu();
-  DCHECK_LE(static_cast<size_t>(index), submenu_->children().size());
+  DCHECK_LE(index, submenu_->children().size());
   if (type == Type::kSeparator) {
     submenu_->AddChildViewAt(std::make_unique<MenuSeparator>(separator_style),
                              index);
@@ -422,7 +425,7 @@ void MenuItemView::AppendSeparator() {
   AppendMenuItemImpl(0, std::u16string(), ui::ImageModel(), Type::kSeparator);
 }
 
-void MenuItemView::AddSeparatorAt(int index) {
+void MenuItemView::AddSeparatorAt(size_t index) {
   AddMenuItemAt(index, /*item_id=*/0, /*label=*/std::u16string(),
                 /*secondary_label=*/std::u16string(),
                 /*minor_text=*/std::u16string(),
@@ -436,8 +439,7 @@ MenuItemView* MenuItemView::AppendMenuItemImpl(int item_id,
                                                const std::u16string& label,
                                                const ui::ImageModel& icon,
                                                Type type) {
-  const int index =
-      submenu_ ? static_cast<int>(submenu_->children().size()) : 0;
+  const size_t index = submenu_ ? submenu_->children().size() : size_t{0};
   return AddMenuItemAt(index, item_id, label, std::u16string(),
                        std::u16string(), ui::ImageModel(), icon, type,
                        ui::NORMAL_SEPARATOR);
@@ -449,7 +451,7 @@ SubmenuView* MenuItemView::CreateSubmenu() {
 
   submenu_ = new SubmenuView(this);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // All MenuItemViews of Type kSubMenu have a respective SubmenuView.
   // However, in the Views hierarchy, this SubmenuView is not a child of the
   // MenuItemView. This confuses VoiceOver, because it expects the submenu
@@ -459,7 +461,7 @@ SubmenuView* MenuItemView::CreateSubmenu() {
       std::make_unique<AXVirtualView>();
   virtual_child->GetCustomData().role = ax::mojom::Role::kMenu;
   GetViewAccessibility().AddVirtualChildView(std::move(virtual_child));
-#endif  //  defined(OS_MAC)
+#endif  //  BUILDFLAG(IS_MAC)
 
   // Initialize the submenu indicator icon (arrow).
   submenu_arrow_image_view_ = AddChildView(std::make_unique<ImageView>());
@@ -552,19 +554,28 @@ void MenuItemView::SetIcon(const ui::ImageModel& icon) {
 }
 
 void MenuItemView::SetIconView(std::unique_ptr<ImageView> icon_view) {
-  if (icon_view_) {
-    RemoveChildViewT(icon_view_);
-    icon_view_ = nullptr;
+  {
+    // See comment in `update_selection_based_state_in_view_herarchy_changed_`
+    // as to why setting the field and explicitly calling
+    // UpdateSelectionBasedStateIfChanged() is necessary.
+    base::AutoReset setter(
+        &update_selection_based_state_in_view_herarchy_changed_, false);
+    if (icon_view_) {
+      RemoveChildViewT(icon_view_.get());
+      icon_view_ = nullptr;
+    }
+
+    if (icon_view)
+      icon_view_ = AddChildView(std::move(icon_view));
   }
 
-  if (icon_view)
-    icon_view_ = AddChildView(std::move(icon_view));
+  UpdateSelectionBasedStateIfChanged(PaintMode::kNormal);
 
   InvalidateLayout();
   SchedulePaint();
 }
 
-void MenuItemView::OnDropStatusChanged() {
+void MenuItemView::OnDropOrSelectionStatusMayHaveChanged() {
   UpdateSelectionBasedStateIfChanged(PaintMode::kNormal);
 }
 
@@ -740,7 +751,8 @@ void MenuItemView::Layout() {
       if (config.icons_in_label || type_ == Type::kCheckbox ||
           type_ == Type::kRadio)
         x = label_start_;
-      if (GetMenuController() && GetMenuController()->use_touchable_layout())
+      if (GetMenuController() &&
+          GetMenuController()->use_ash_system_ui_layout())
         x = config.touchable_item_horizontal_padding;
 
       int y =
@@ -750,7 +762,8 @@ void MenuItemView::Layout() {
 
     if (radio_check_image_view_) {
       int x = config.item_horizontal_padding;
-      if (GetMenuController() && GetMenuController()->use_touchable_layout())
+      if (GetMenuController() &&
+          GetMenuController()->use_ash_system_ui_layout())
         x = config.touchable_item_horizontal_padding;
       int y =
           (height() + GetTopMargin() - GetBottomMargin() - kMenuCheckSize) / 2;
@@ -839,16 +852,17 @@ void MenuItemView::UpdateMenuPartSizes() {
   if (has_icons_)
     icon_area_width_ = std::max(icon_area_width_, GetMaxIconViewWidth());
 
-  const bool use_touchable_layout =
-      GetMenuController() && GetMenuController()->use_touchable_layout();
+  const bool use_ash_system_ui_layout =
+      GetMenuController() && GetMenuController()->use_ash_system_ui_layout();
   label_start_ =
-      (use_touchable_layout ? config.touchable_item_horizontal_padding
-                            : config.item_horizontal_padding) +
+      (use_ash_system_ui_layout ? config.touchable_item_horizontal_padding
+                                : config.item_horizontal_padding) +
       icon_area_width_;
 
   const bool use_padding = config.always_use_icon_to_label_padding ||
                            (!config.icons_in_label && has_icons_) ||
-                           HasChecksOrRadioButtons() || use_touchable_layout;
+                           HasChecksOrRadioButtons() ||
+                           use_ash_system_ui_layout;
   int padding = use_padding ? LayoutProvider::Get()->GetDistanceMetric(
                                   DISTANCE_RELATED_LABEL_HORIZONTAL)
                             : 0;
@@ -938,7 +952,7 @@ const gfx::FontList MenuItemView::GetFontList() const {
       return *font_list;
     }
   }
-  if (GetMenuController() && GetMenuController()->use_touchable_layout())
+  if (GetMenuController() && GetMenuController()->use_ash_system_ui_layout())
     return style::GetFont(style::CONTEXT_TOUCH_MENU, style::STYLE_PRIMARY);
   return MenuConfig::instance().font_list;
 }
@@ -1094,9 +1108,10 @@ void MenuItemView::PaintBackground(gfx::Canvas* canvas,
     }
     AdjustBoundsForRTLUI(&item_bounds);
 
-    GetNativeTheme()->Paint(
-        canvas->sk_canvas(), ui::NativeTheme::kMenuItemBackground,
-        ui::NativeTheme::kHovered, item_bounds, ui::NativeTheme::ExtraParams());
+    GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(),
+                            ui::NativeTheme::kMenuItemBackground,
+                            ui::NativeTheme::kHovered, item_bounds,
+                            ui::NativeTheme::ExtraParams());
   }
 }
 
@@ -1131,8 +1146,7 @@ void MenuItemView::PaintMinorIconAndText(gfx::Canvas* canvas, SkColor color) {
   }
 
   if (!minor_icon.IsEmpty()) {
-    const gfx::ImageSkia image =
-        GetImageSkiaFromImageModel(minor_icon, GetColorProvider());
+    const gfx::ImageSkia image = minor_icon.Rasterize(GetColorProvider());
 
     int image_x = GetMirroredRect(minor_text_bounds).right() -
                   render_text->GetContentWidth() -
@@ -1148,7 +1162,7 @@ void MenuItemView::PaintMinorIconAndText(gfx::Canvas* canvas, SkColor color) {
 
 SkColor MenuItemView::GetTextColor(bool minor, bool paint_as_selected) const {
   style::TextContext context =
-      GetMenuController() && GetMenuController()->use_touchable_layout()
+      GetMenuController() && GetMenuController()->use_ash_system_ui_layout()
           ? style::CONTEXT_TOUCH_MENU
           : style::CONTEXT_MENU;
 
@@ -1267,7 +1281,7 @@ MenuItemView::MenuItemDimensions MenuItemView::CalculateDimensions() const {
 
   const gfx::FontList& font_list = GetFontList();
 
-  if (GetMenuController() && GetMenuController()->use_touchable_layout()) {
+  if (GetMenuController() && GetMenuController()->use_ash_system_ui_layout()) {
     dimensions.height = menu_config.touchable_menu_height;
 
     // For container MenuItemViews, the width components should only include the
@@ -1368,7 +1382,7 @@ int MenuItemView::GetLabelStartForThisItem() const {
   const MenuConfig& config = MenuConfig::instance();
 
   // Touchable items with icons do not respect |label_start_|.
-  if (GetMenuController() && GetMenuController()->use_touchable_layout() &&
+  if (GetMenuController() && GetMenuController()->use_ash_system_ui_layout() &&
       icon_view_) {
     return 2 * config.touchable_item_horizontal_padding +
            icon_view_->GetPreferredSize().width();
@@ -1378,9 +1392,9 @@ int MenuItemView::GetLabelStartForThisItem() const {
   if ((config.icons_in_label || type_ == Type::kCheckbox ||
        type_ == Type::kRadio) &&
       icon_view_) {
-    label_start +=
-        icon_view_->size().width() + LayoutProvider::Get()->GetDistanceMetric(
-                                         DISTANCE_RELATED_LABEL_HORIZONTAL);
+    label_start += icon_view_->GetPreferredSize().width() +
+                   LayoutProvider::Get()->GetDistanceMetric(
+                       DISTANCE_RELATED_LABEL_HORIZONTAL);
   }
 
   return label_start;
@@ -1423,6 +1437,11 @@ gfx::Insets MenuItemView::GetContainerMargins() const {
 }
 
 int MenuItemView::NonIconChildViewsCount() const {
+  // WARNING: if adding a new field that is checked here you may need to
+  // set `update_selection_based_state_in_view_herarchy_changed_` to false
+  // when setting the field and explicitly call
+  // UpdateSelectionBasedStateIfChanged(). See comment in header
+  // for details.
   return static_cast<int>(children().size()) - (icon_view_ ? 1 : 0) -
          (radio_check_image_view_ ? 1 : 0) -
          (submenu_arrow_image_view_ ? 1 : 0) - (vertical_separator_ ? 1 : 0);
@@ -1457,15 +1476,16 @@ bool MenuItemView::HasChecksOrRadioButtons() const {
     return true;
   if (!HasSubmenu())
     return false;
-  const auto menu_items = submenu_->GetMenuItems();
-  return std::any_of(
-      menu_items.cbegin(), menu_items.cend(),
-      [](const auto* item) { return item->HasChecksOrRadioButtons(); });
+  return base::ranges::any_of(submenu_->GetMenuItems(), [](const auto* item) {
+    return item->HasChecksOrRadioButtons();
+  });
 }
 
 void MenuItemView::UpdateSelectionBasedStateIfChanged(PaintMode mode) {
-  // Selection state depends upon NativeTheme.
-  if (!GetWidget())
+  // Selection state depends upon NativeTheme. Selection based state could also
+  // depend on the menu model so avoid the update if the item is scheduled to be
+  // deleted.
+  if (!GetWidget() || IsScheduledForDeletion())
     return;
 
   const bool paint_as_selected = ShouldPaintAsSelected(mode);
@@ -1506,6 +1526,12 @@ bool MenuItemView::ShouldPaintAsSelected(PaintMode mode) const {
   return (parent_menu_item_ && mode == PaintMode::kNormal && IsSelected() &&
           parent_menu_item_->GetSubmenu()->GetShowSelection(this) &&
           (NonIconChildViewsCount() == 0));
+}
+
+bool MenuItemView::IsScheduledForDeletion() const {
+  const MenuItemView* parent = GetParentMenuItem();
+  return parent && (base::Contains(parent->removed_items_, this) ||
+                    parent->IsScheduledForDeletion());
 }
 
 BEGIN_METADATA(MenuItemView, View)

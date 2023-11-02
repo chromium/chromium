@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,15 +58,14 @@ class TranslateOverlayTabHelper
     TranslateStepObserver(TranslateOverlayTabHelper* tab_helper);
     ~TranslateStepObserver() override;
 
-    // Starts observing |infobar|'s delegate, stores |infobar| for
+    // Starts observing `infobar`'s delegate, stores `infobar` for
     // TranslateDid[Start/Finish]
     void SetTranslateInfoBar(InfoBarIOS* infobar);
 
    private:
     // translate::TranslateInfoBarDelegate::Observer.
-    void OnTranslateStepChanged(
-        translate::TranslateStep step,
-        translate::TranslateErrors::Type error_type) override;
+    void OnTranslateStepChanged(translate::TranslateStep step,
+                                translate::TranslateErrors error_type) override;
     void OnTargetLanguageChanged(
         const std::string& target_language_code) override;
     bool IsDeclinedByUser() override;

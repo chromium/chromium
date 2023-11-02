@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 namespace printing {
 
 PdfNupConverterClient::PdfNupConverterClient(content::WebContents* web_contents)
-    : web_contents_(web_contents) {}
+    : content::WebContentsUserData<PdfNupConverterClient>(*web_contents) {}
 
 PdfNupConverterClient::~PdfNupConverterClient() {}
 
@@ -79,7 +79,7 @@ PdfNupConverterClient::CreatePdfNupConverterRemote() {
   mojo::Remote<mojom::PdfNupConverter> pdf_nup_converter;
   GetPrintingService()->BindPdfNupConverter(
       pdf_nup_converter.BindNewPipeAndPassReceiver());
-  pdf_nup_converter->SetWebContentsURL(web_contents_->GetLastCommittedURL());
+  pdf_nup_converter->SetWebContentsURL(GetWebContents().GetLastCommittedURL());
   return pdf_nup_converter;
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -77,9 +77,10 @@ TEST(WebRtcAudioSinkTest, CaptureTimestamp) {
   constexpr int64_t kStartCaptureTimestampMs = 12345678;
   constexpr int64_t kCaptureIntervalMs = 567;
 
-  web_media_stream_audio_sink->OnSetFormat(media::AudioParameters(
-      media::AudioParameters::AUDIO_PCM_LINEAR, media::CHANNEL_LAYOUT_STEREO,
-      kSampleRateHz, kOutputFramesPerBuffer));
+  web_media_stream_audio_sink->OnSetFormat(
+      media::AudioParameters(media::AudioParameters::AUDIO_PCM_LINEAR,
+                             media::ChannelLayoutConfig::Stereo(),
+                             kSampleRateHz, kOutputFramesPerBuffer));
   std::unique_ptr<media::AudioBus> bus =
       media::AudioBus::Create(kInputChannels, kInputFramesPerBuffer);
   bus->Zero();

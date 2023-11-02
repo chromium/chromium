@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,9 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -120,7 +121,7 @@ class AuthService::IdentityManagerObserver
     : public signin::IdentityManager::Observer {
  public:
   explicit IdentityManagerObserver(AuthService* service) : service_(service) {
-    manager_observation_.Observe(service->identity_manager_);
+    manager_observation_.Observe(service->identity_manager_.get());
   }
   ~IdentityManagerObserver() override = default;
 
@@ -136,7 +137,7 @@ class AuthService::IdentityManagerObserver
   }
 
  private:
-  AuthService* service_ = nullptr;
+  raw_ptr<AuthService> service_ = nullptr;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       manager_observation_{this};

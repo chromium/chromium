@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,10 +16,10 @@ namespace ash {
 namespace {
 
 // The number of non-Search-based accelerators.
-constexpr int kNonSearchAcceleratorsNum = 104;
+constexpr int kNonSearchAcceleratorsNum = 109;
 // The hash of non-Search-based accelerators. See HashAcceleratorData().
 constexpr char kNonSearchAcceleratorsHash[] =
-    "6b27f4e06b2cb15eb1d1597691269dbb";
+    "2cada710fecfc1ae0fa22ecad7900f16";
 
 struct Cmp {
   bool operator()(const AcceleratorData& lhs,
@@ -127,8 +127,8 @@ TEST(AcceleratorTableTest, CheckDeprecatedAccelerators) {
   for (size_t i = 0; i < kDeprecatedAcceleratorsDataLength; ++i) {
     // There must never be any duplicated actions.
     const DeprecatedAcceleratorData& data = kDeprecatedAcceleratorsData[i];
-    EXPECT_TRUE(actions.insert(data.action).second) << "Deprecated action: "
-                                                    << data.action;
+    EXPECT_TRUE(actions.insert(data.action).second)
+        << "Deprecated action: " << data.action;
 
     // The UMA histogram name must be of the format "Ash.Accelerators.*"
     std::string uma_histogram(data.uma_histogram_name);

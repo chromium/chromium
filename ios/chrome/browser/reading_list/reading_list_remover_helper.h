@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@ class ReadingListRemoverHelper : public ReadingListModelObserver {
 
   ~ReadingListRemoverHelper() override;
 
-  // Removes all Reading list items and asynchronously invoke |completion| with
+  // Removes all Reading list items and asynchronously invoke `completion` with
   // boolean indicating success or failure.
   void RemoveAllUserReadingListItemsIOS(Callback completion);
 
@@ -38,7 +38,7 @@ class ReadingListRemoverHelper : public ReadingListModelObserver {
 
  private:
   // Invoked when the reading list items have been deleted. Invoke the
-  // completion callback with |success| (invocation is asynchronous so
+  // completion callback with `success` (invocation is asynchronous so
   // the object won't be deleted immediately).
   void ReadlingListItemsRemoved(bool success);
 

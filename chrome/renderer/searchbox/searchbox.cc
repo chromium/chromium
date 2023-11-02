@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,12 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "base/types/optional_util.h"
 #include "chrome/common/search/search.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/renderer/searchbox/searchbox_extension.h"
@@ -24,7 +24,6 @@
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/url_formatter/url_fixer.h"
 #include "content/public/renderer/render_frame.h"
-#include "content/public/renderer/render_view.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
@@ -234,7 +233,7 @@ bool SearchBox::GetMostVisitedItemWithID(
 }
 
 const NtpTheme* SearchBox::GetNtpTheme() const {
-  return base::OptionalOrNullptr(theme_);
+  return base::OptionalToPtr(theme_);
 }
 
 void SearchBox::StartCapturingKeyStrokes() {

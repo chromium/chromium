@@ -1,13 +1,16 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_SERVICES_SHARED_STORAGE_WORKLET_SHARED_STORAGE_H_
 #define CONTENT_SERVICES_SHARED_STORAGE_WORKLET_SHARED_STORAGE_H_
 
-#include "content/services/shared_storage_worklet/public/mojom/shared_storage_worklet_service.mojom.h"
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
+#include "content/common/shared_storage_worklet_service.mojom.h"
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"
+#include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 
 namespace gin {
 class Arguments;
@@ -36,28 +39,41 @@ class SharedStorage final : public gin::Wrappable<SharedStorage> {
   v8::Local<v8::Object> Keys(gin::Arguments* args);
   v8::Local<v8::Object> Entries(gin::Arguments* args);
   v8::Local<v8::Promise> Length(gin::Arguments* args);
+  v8::Local<v8::Promise> RemainingBudget(gin::Arguments* args);
 
   void OnVoidOperationFinished(
       v8::Isolate* isolate,
       v8::Global<v8::Promise::Resolver> global_resolver,
+      blink::SharedStorageVoidOperation caller,
+      base::TimeTicks start_time,
       bool success,
       const std::string& error_message);
 
   void OnStringRetrievalOperationFinished(
       v8::Isolate* isolate,
       v8::Global<v8::Promise::Resolver> global_resolver,
-      bool success,
+      base::TimeTicks start_time,
+      shared_storage_worklet::mojom::SharedStorageGetStatus status,
       const std::string& error_message,
-      const std::string& result);
+      const std::u16string& result);
 
   void OnLengthOperationFinished(
       v8::Isolate* isolate,
       v8::Global<v8::Promise::Resolver> global_resolver,
+      base::TimeTicks start_time,
       bool success,
       const std::string& error_message,
       uint32_t length);
 
-  mojom::SharedStorageWorkletServiceClient* client_;
+  void OnBudgetOperationFinished(
+      v8::Isolate* isolate,
+      v8::Global<v8::Promise::Resolver> global_resolver,
+      base::TimeTicks start_time,
+      bool success,
+      const std::string& error_message,
+      double bits);
+
+  raw_ptr<mojom::SharedStorageWorkletServiceClient> client_;
 
   base::WeakPtrFactory<SharedStorage> weak_ptr_factory_{this};
 };

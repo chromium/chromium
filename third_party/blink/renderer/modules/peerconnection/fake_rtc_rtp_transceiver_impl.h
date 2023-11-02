@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -92,18 +92,14 @@ class FakeRTCRtpTransceiverImpl : public RTCRtpTransceiverPlatform {
       absl::optional<std::string> mid,
       FakeRTCRtpSenderImpl sender,
       FakeRTCRtpReceiverImpl receiver,
-      bool stopped,
       webrtc::RtpTransceiverDirection direction,
       absl::optional<webrtc::RtpTransceiverDirection> current_direction);
   ~FakeRTCRtpTransceiverImpl() override;
 
-  RTCRtpTransceiverPlatformImplementationType ImplementationType()
-      const override;
   uintptr_t Id() const override;
   String Mid() const override;
   std::unique_ptr<blink::RTCRtpSenderPlatform> Sender() const override;
   std::unique_ptr<RTCRtpReceiverPlatform> Receiver() const override;
-  bool Stopped() const override;
   webrtc::RtpTransceiverDirection Direction() const override;
   webrtc::RTCError SetDirection(
       webrtc::RtpTransceiverDirection direction) override;
@@ -122,7 +118,6 @@ class FakeRTCRtpTransceiverImpl : public RTCRtpTransceiverPlatform {
   absl::optional<std::string> mid_;
   FakeRTCRtpSenderImpl sender_;
   FakeRTCRtpReceiverImpl receiver_;
-  bool stopped_;
   webrtc::RtpTransceiverDirection direction_;
   absl::optional<webrtc::RtpTransceiverDirection> current_direction_;
 };

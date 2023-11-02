@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,6 +32,9 @@ class ASH_EXPORT SearchResultActionsView : public views::View {
   bool IsValidActionIndex(size_t action_index) const;
 
   bool IsSearchResultHoveredOrSelected() const;
+
+  // Hides search result actions until they are next updated.
+  void HideActions();
 
   // Updates the button UI upon the SearchResultView's UI state change.
   void UpdateButtonsOnStateChanged();

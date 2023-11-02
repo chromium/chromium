@@ -1,22 +1,23 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/format_macros.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
+#import "base/format_macros.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "components/content_settings/core/common/content_settings.h"
+#import "components/content_settings/core/common/content_settings.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
-#include "ios/net/url_test_util.h"
+#import "ios/chrome/test/earl_grey/scoped_block_popups_pref.h"
+#import "ios/net/url_test_util.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#include "ios/web/public/test/element_selector.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ios/web/public/test/element_selector.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -40,23 +41,18 @@ id<GREYMatcher> PopupBlocker() {
 }  // namespace
 
 // Test case for opening child windows by DOM.
-@interface WindowOpenByDOMTestCase : ChromeTestCase
+@interface WindowOpenByDOMTestCase : ChromeTestCase {
+  std::unique_ptr<ScopedBlockPopupsPref> _blockPopupsPref;
+}
+
 @end
 
 @implementation WindowOpenByDOMTestCase
 
-+ (void)setUpForTestCase {
-  [super setUpForTestCase];
-  [ChromeEarlGrey setContentSettings:CONTENT_SETTING_ALLOW];
-}
-
-+ (void)tearDown {
-  [ChromeEarlGrey setContentSettings:CONTENT_SETTING_DEFAULT];
-  [super tearDown];
-}
-
 - (void)setUp {
   [super setUp];
+  _blockPopupsPref =
+      std::make_unique<ScopedBlockPopupsPref>(CONTENT_SETTING_ALLOW);
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 
   // Open the test page. There should only be one tab open.
@@ -89,10 +85,10 @@ id<GREYMatcher> PopupBlocker() {
 
 // Tests executing script that clicks a link with target="_blank".
 - (void)testLinkWithBlankTargetWithoutUserGesture {
-  [ChromeEarlGrey setContentSettings:CONTENT_SETTING_BLOCK];
-  [ChromeEarlGrey
-      executeJavaScript:@"document.getElementById('"
-                        @"webScenarioWindowOpenRegularLink').click()"];
+  ScopedBlockPopupsPref prefSetter(CONTENT_SETTING_BLOCK);
+  [ChromeEarlGrey evaluateJavaScriptForSideEffect:
+                      @"document.getElementById('"
+                      @"webScenarioWindowOpenRegularLink').click()"];
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:PopupBlocker()];
   [ChromeEarlGrey waitForMainTabCount:1];
 }
@@ -239,7 +235,7 @@ id<GREYMatcher> PopupBlocker() {
 // Tests that popup blocking works when a popup is injected into a window before
 // its initial load is committed.
 - (void)testBlockPopupInjectedIntoOpenedWindow {
-  [ChromeEarlGrey setContentSettings:CONTENT_SETTING_BLOCK];
+  ScopedBlockPopupsPref prefSetter(CONTENT_SETTING_BLOCK);
   [ChromeEarlGrey
       tapWebStateElementWithID:@"webScenarioOpenWindowAndInjectPopup"];
   [[EarlGrey selectElementWithMatcher:PopupBlocker()]

@@ -1,8 +1,5 @@
 {
     "archives": {
-        "browse:media:earth:2020": {
-            "DEFAULT": "system_health_desktop_27ca4caf21.wprgo"
-        },
         "browse:media:flickr_infinite_scroll": {
             "DEFAULT": "system_health_desktop_057.wprgo"
         },
@@ -127,9 +124,6 @@
         "browse:tools:earth": {
             "DEFAULT": "system_health_desktop_050.wprgo"
         },
-        "browse:tools:earth:2020": {
-            "DEFAULT": "system_health_desktop_df060e3191.wprgo"
-        },
         "browse:tools:gmail-compose:2020": {
             "DEFAULT": "system_health_desktop_1d2b5dbaab.wprgo"
         },
@@ -147,6 +141,12 @@
         },
         "browse:tools:maps:2019": {
             "DEFAULT": "system_health_desktop_feb332ef0c.wprgo"
+        },
+        "browse:tools:photoshop:2021": {
+            "DEFAULT": "system_health_desktop_0cc0161711.wprgo"
+        },
+        "browse:tools:photoshop_warm:2021": {
+            "DEFAULT": "system_health_desktop_8a2268f3b3.wprgo"
         },
         "browse:tools:sheets:2019": {
             "DEFAULT": "system_health_desktop_d7b02362d8.wprgo"

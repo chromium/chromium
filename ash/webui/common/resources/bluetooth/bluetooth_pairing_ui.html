@@ -1,0 +1,55 @@
+<style>
+  #container {
+    height: 408px;
+  }
+</style>
+<div id="container">
+  <iron-pages
+      attr-for-selected="id"
+      on-cancel="onCancelClick_"
+      selected="[[selectedPageId_]]">
+    <template is="dom-if" if="[[shouldShowSubpage_(
+        SubpageId.DEVICE_SELECTION_PAGE, selectedPageId_)]]">
+      <bluetooth-pairing-device-selection-page
+          failed-pairing-device-id="[[lastFailedPairingDeviceId_]]"
+          devices="[[discoveredDevices_]]"
+          device-pending-pairing="[[devicePendingPairing_]]"
+          on-pair-device="onPairDevice_"
+          is-bluetooth-enabled="[[isBluetoothEnabled_]]"
+          should-omit-links="[[shouldOmitLinks]]"
+          id="deviceSelectionPage">
+      </bluetooth-pairing-device-selection-page>
+    </template>
+    <template is="dom-if" if="[[shouldShowSubpage_(
+        SubpageId.DEVICE_REQUEST_CODE_PAGE, selectedPageId_)]]" restamp>
+      <bluetooth-pairing-request-code-page
+          auth-type="pairingAuthType_"
+          on-request-code-entered="onRequestCodeEntered_"
+          device="[[devicePendingPairing_]]"
+          id="deviceRequestCodePage">
+      </bluetooth-pairing-request-code-page>
+    </template>
+    <template is="dom-if" if="[[shouldShowSubpage_(
+        SubpageId.DEVICE_CONFIRM_CODE_PAGE, selectedPageId_)]]" restamp>
+      <bluetooth-pairing-confirm-code-page
+          on-confirm-code="onConfirmCode_"
+          code="[[pairingCode_]]"
+          id="deviceConfirmCodePage">
+      </bluetooth-pairing-confirm-code-page>
+    </template>
+    <template is="dom-if" if="[[shouldShowSubpage_(
+        SubpageId.DEVICE_ENTER_CODE_PAGE, selectedPageId_)]]" restamp>
+      <bluetooth-pairing-enter-code-page
+          code="[[pairingCode_]]"
+          num-keys-entered="[[numKeysEntered_]]"
+          device-name="[[getDeviceName_(devicePendingPairing_.*)]]"
+          id="deviceEnterCodePage">
+      </bluetooth-pairing-enter-code-page>
+    </template>
+    <template is="dom-if" if="[[shouldShowSubpage_(
+        SubpageId.SPINNER_PAGE, selectedPageId_)]]" restamp>
+      <bluetooth-spinner-page id="spinnerPage">
+      </bluetooth-spinner-page>
+    </template>
+  </iron-pages>
+</div>

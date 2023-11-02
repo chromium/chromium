@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,6 +35,7 @@
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom-forward.h"
 #include "ui/base/ime/mojom/text_input_state.mojom.h"
 #include "ui/display/display_util.h"
 #include "ui/gfx/geometry/dip_util.h"
@@ -248,9 +249,9 @@ void RenderWidgetHostViewChildFrame::WasUnOccluded() {
 }
 
 gfx::Rect RenderWidgetHostViewChildFrame::GetViewBounds() {
-  gfx::Rect rect;
+  gfx::Rect screen_space_rect;
   if (frame_connector_) {
-    rect = frame_connector_->screen_space_rect_in_dip();
+    screen_space_rect = frame_connector_->rect_in_parent_view_in_dip();
 
     RenderWidgetHostView* parent_view =
         frame_connector_->GetParentRenderWidgetHostView();
@@ -259,16 +260,16 @@ gfx::Rect RenderWidgetHostViewChildFrame::GetViewBounds() {
     if (parent_view) {
       // Translate screen_space_rect by the parent's RenderWidgetHostView
       // offset.
-      rect.Offset(parent_view->GetViewBounds().OffsetFromOrigin());
+      screen_space_rect.Offset(parent_view->GetViewBounds().OffsetFromOrigin());
     }
     // TODO(wjmaclean): GetViewBounds is a bit of a mess. It's used to determine
     // the size of the renderer content and where to place context menus and so
     // on. We want the location of the frame in screen coordinates to place
     // popups but we want the size in local coordinates to produce the right-
     // sized CompositorFrames. https://crbug.com/928825.
-    rect.set_size(frame_connector_->local_frame_size_in_dip());
+    screen_space_rect.set_size(frame_connector_->local_frame_size_in_dip());
   }
-  return rect;
+  return screen_space_rect;
 }
 
 gfx::Size RenderWidgetHostViewChildFrame::GetVisibleViewportSize() {
@@ -497,8 +498,13 @@ void RenderWidgetHostViewChildFrame::UpdateViewportIntersection(
     host()->SetIntersectsViewport(
         !intersection_state.viewport_intersection.IsEmpty());
 
-    // Do not send viewport intersection to main frames.
-    if (!host()->owner_delegate()) {
+    // Do not send |visual_properties| to main frames.
+    DCHECK(!visual_properties.has_value() || !host()->owner_delegate());
+
+    // TODO(crbug.com/1148960): Also propagate this for portals.
+    bool is_fenced_frame =
+        host()->frame_tree()->type() == FrameTree::Type::kFencedFrame;
+    if (!host()->owner_delegate() || is_fenced_frame) {
       host()->GetAssociatedFrameWidget()->SetViewportIntersection(
           intersection_state.Clone(), visual_properties);
     }
@@ -544,7 +550,8 @@ void RenderWidgetHostViewChildFrame::StopFlingingIfNecessary(
 
 void RenderWidgetHostViewChildFrame::GestureEventAck(
     const blink::WebGestureEvent& event,
-    blink::mojom::InputEventResultState ack_result) {
+    blink::mojom::InputEventResultState ack_result,
+    blink::mojom::ScrollResultDataPtr scroll_result_data) {
   // Stop flinging if a GSU event with momentum phase is sent to the renderer
   // but not consumed.
   StopFlingingIfNecessary(event, ack_result);
@@ -553,7 +560,9 @@ void RenderWidgetHostViewChildFrame::GestureEventAck(
     return;
 
   if (event.IsTouchpadZoomEvent())
-    ProcessTouchpadZoomEventAckInRoot(event, ack_result);
+    ProcessTouchpadZoomEventAckInRoot(
+        event, ack_result,
+        scroll_result_data ? scroll_result_data.Clone() : nullptr);
 
   // GestureScrollBegin is a blocking event; It is forwarded for bubbling if
   // its ack is not consumed. For the rest of the scroll events
@@ -577,15 +586,18 @@ void RenderWidgetHostViewChildFrame::GestureEventAck(
     }
   }
 
-  frame_connector_->DidAckGestureEvent(event, ack_result);
+  frame_connector_->DidAckGestureEvent(event, ack_result,
+                                       std::move(scroll_result_data));
 }
 
 void RenderWidgetHostViewChildFrame::ProcessTouchpadZoomEventAckInRoot(
     const blink::WebGestureEvent& event,
-    blink::mojom::InputEventResultState ack_result) {
+    blink::mojom::InputEventResultState ack_result,
+    blink::mojom::ScrollResultDataPtr scroll_result_data) {
   DCHECK(event.IsTouchpadZoomEvent());
 
-  frame_connector_->ForwardAckedTouchpadZoomEvent(event, ack_result);
+  frame_connector_->ForwardAckedTouchpadZoomEvent(
+      event, ack_result, std::move(scroll_result_data));
 }
 
 void RenderWidgetHostViewChildFrame::ForwardTouchpadZoomEventIfNecessary(
@@ -690,18 +702,19 @@ const viz::LocalSurfaceId& RenderWidgetHostViewChildFrame::GetLocalSurfaceId()
 
 void RenderWidgetHostViewChildFrame::NotifyHitTestRegionUpdated(
     const viz::AggregatedHitTestRegion& region) {
-  gfx::RectF screen_rect(region.rect);
-  if (!region.transform().TransformRectReverse(&screen_rect)) {
+  absl::optional<gfx::RectF> screen_rect =
+      region.transform.InverseMapRect(gfx::RectF(region.rect));
+  if (!screen_rect) {
     last_stable_screen_rect_ = gfx::RectF();
     screen_rect_stable_since_ = base::TimeTicks::Now();
     return;
   }
-  if ((ToRoundedSize(screen_rect.size()) !=
+  if ((ToRoundedSize(screen_rect->size()) !=
        ToRoundedSize(last_stable_screen_rect_.size())) ||
-      (std::abs(last_stable_screen_rect_.x() - screen_rect.x()) +
-           std::abs(last_stable_screen_rect_.y() - screen_rect.y()) >
+      (std::abs(last_stable_screen_rect_.x() - screen_rect->x()) +
+           std::abs(last_stable_screen_rect_.y() - screen_rect->y()) >
        blink::mojom::kMaxChildFrameScreenRectMovement)) {
-    last_stable_screen_rect_ = screen_rect;
+    last_stable_screen_rect_ = *screen_rect;
     screen_rect_stable_since_ = base::TimeTicks::Now();
   }
 }
@@ -792,7 +805,7 @@ bool RenderWidgetHostViewChildFrame::IsRenderWidgetHostViewChildFrame() {
   return true;
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void RenderWidgetHostViewChildFrame::SetActive(bool active) {}
 
 void RenderWidgetHostViewChildFrame::ShowDefinitionForSelection() {
@@ -813,7 +826,7 @@ void RenderWidgetHostViewChildFrame::ShowSharePicker(
     const std::string& url,
     const std::vector<std::string>& file_paths,
     blink::mojom::ShareService::ShareCallback callback) {}
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 void RenderWidgetHostViewChildFrame::CopyFromSurface(
     const gfx::Rect& src_subrect,

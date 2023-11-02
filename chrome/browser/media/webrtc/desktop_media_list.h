@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,10 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/time/time.h"
 #include "content/public/browser/desktop_media_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
 
 class DesktopMediaListObserver;
@@ -42,6 +44,17 @@ class DesktopMediaList {
   // that shouldn't be included.
   using WebContentsFilter =
       base::RepeatingCallback<bool(content::WebContents*)>;
+
+  // Wraps a given filter to produce a new filter that excludes a given
+  // WebContents, but is otherwise identical to the original filter.
+  //
+  // Note: |excluded_web_contents| will internally be converted to a WeakPtr
+  // in order to make posting the filter safe. If that weak pointer expires,
+  // the exclusion also expires. This is safe even when the capturer/capturee
+  // are the same, because capturing itself will be rejected in that case.
+  static WebContentsFilter ExcludeWebContents(
+      WebContentsFilter filter,
+      content::WebContents* excluded_web_contents);
 
   // Struct used to represent each entry in the list.
   struct Source {
@@ -105,6 +118,30 @@ class DesktopMediaList {
   // generating in addition to its thumbnail.
   virtual void SetPreviewedSource(
       const absl::optional<content::DesktopMediaID>& id) = 0;
+
+  // Returns true if this DesktopMediaList wraps some other object (usually a
+  // DesktopCapturer), that takes responsibility for showing its own source
+  // list where the user will likely make their selection. When true, there will
+  // only be one source listed which will represent the selection made in the
+  // delegated source list.
+  // Returns false if this DesktopMediaList needs UI created for it to show its
+  // source list.
+  virtual bool IsSourceListDelegated() const = 0;
+
+  // May only be called if |IsSourceListDelegated| returns true. When called,
+  // clears any selection from the delegated source list and will cause the
+  // delegated source list to reappear if it is focused.
+  virtual void ClearDelegatedSourceListSelection() = 0;
+
+  // Notifies the list that it is now focused. This is especially important
+  // when IsSourceDelegated() returns true, as it helps to notify the delegated
+  // source list when it should be visible.
+  virtual void FocusList() = 0;
+
+  // Notifies the list that it is no longer focused. This is especially
+  // important when IsSourceDelegated() returns true, as it helps to notify the
+  // delegated source list when it should be hidden.
+  virtual void HideList() = 0;
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_MEDIA_LIST_H_

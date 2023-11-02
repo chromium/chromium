@@ -1,15 +1,17 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_RENDERER_HOST_MEDIA_SERVICE_VIDEO_CAPTURE_DEVICE_LAUNCHER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_MEDIA_SERVICE_VIDEO_CAPTURE_DEVICE_LAUNCHER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/media/ref_counted_video_source_provider.h"
 #include "content/browser/renderer_host/media/video_capture_provider.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/video_capture_device_launcher.h"
+#include "media/base/scoped_async_trace.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/video_capture/public/mojom/device_factory.mojom.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
 namespace content {
@@ -37,8 +39,6 @@ class CONTENT_EXPORT ServiceVideoCaptureDeviceLauncher
                          base::OnceClosure done_cb) override;
   void AbortLaunch() override;
 
-  void OnUtilizationReport(int frame_feedback_id, double utilization);
-
  private:
   enum class State {
     READY_TO_LAUNCH,
@@ -46,12 +46,16 @@ class CONTENT_EXPORT ServiceVideoCaptureDeviceLauncher
     DEVICE_START_ABORTING
   };
 
+  using ScopedCaptureTrace =
+      media::TypedScopedAsyncTrace<media::TraceCategory::kVideoAndImageCapture>;
+
   void OnCreatePushSubscriptionCallback(
       mojo::Remote<video_capture::mojom::VideoSource> source,
       mojo::Remote<video_capture::mojom::PushVideoStreamSubscription>
           subscription,
       base::OnceClosure connection_lost_cb,
-      video_capture::mojom::CreatePushSubscriptionResultCode result_code,
+      std::unique_ptr<ScopedCaptureTrace> scoped_trace,
+      video_capture::mojom::CreatePushSubscriptionResultCodePtr result_code,
       const media::VideoCaptureParams& params);
 
   void OnConnectionLostWhileWaitingForCallback();
@@ -59,9 +63,9 @@ class CONTENT_EXPORT ServiceVideoCaptureDeviceLauncher
   ConnectToDeviceFactoryCB connect_to_source_provider_cb_;
   scoped_refptr<RefCountedVideoSourceProvider> service_connection_;
   State state_;
-  base::SequenceChecker sequence_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
   base::OnceClosure done_cb_;
-  Callbacks* callbacks_;
+  raw_ptr<Callbacks> callbacks_;
 };
 
 }  // namespace content

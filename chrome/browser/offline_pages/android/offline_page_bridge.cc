@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,12 +21,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/android/chrome_jni_headers/OfflinePageBridge_jni.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/offline_pages/measurements/proto/system_state.pb.h"
 #include "chrome/browser/offline_pages/offline_page_mhtml_archiver.h"
 #include "chrome/browser/offline_pages/offline_page_model_factory.h"
 #include "chrome/browser/offline_pages/offline_page_tab_helper.h"
@@ -113,7 +111,7 @@ void SavePageCallback(const ScopedJavaGlobalRef<jobject>& j_callback_obj,
 void DeletePageCallback(const ScopedJavaGlobalRef<jobject>& j_callback_obj,
                         OfflinePageModel::DeletePageResult result) {
   base::android::RunIntCallbackAndroid(j_callback_obj,
-                                       static_cast<int>(result));
+                                       static_cast<int32_t>(result));
 }
 
 void SelectPageCallback(const ScopedJavaGlobalRef<jobject>& j_callback_obj,
@@ -194,6 +192,10 @@ void ValidateFileCallback(
       break;
     case offline_items_collection::LaunchLocation::DOWNLOAD_SHELF:
       NOTREACHED();
+      break;
+    case offline_items_collection::LaunchLocation::DOWNLOAD_INTERSTITIAL:
+      offline_header.reason =
+          offline_pages::OfflinePageHeader::Reason::DOWNLOAD;
       break;
   }
   offline_header.need_to_persist = true;
@@ -870,29 +872,6 @@ ScopedJavaLocalRef<jobject> OfflinePageBridge::CreateClientId(
   return Java_OfflinePageBridge_createClientId(
       env, ConvertUTF8ToJavaString(env, client_id.name_space),
       ConvertUTF8ToJavaString(env, client_id.id));
-}
-
-// static
-offline_measurements_system_state::proto::SystemStateList
-OfflinePageBridge::GetSystemStateListFromOfflineMeasurementsAsString() {
-  JNIEnv* env = base::android::AttachCurrentThread();
-
-  std::string system_state_list_str;
-  JavaByteArrayToString(
-      env,
-      Java_OfflinePageBridge_getSystemStateListFromOfflineMeasurementsAsBytes(
-          env),
-      &system_state_list_str);
-
-  offline_measurements_system_state::proto::SystemStateList system_state_list;
-  system_state_list.ParseFromString(system_state_list_str);
-  return system_state_list;
-}
-
-// static
-void OfflinePageBridge::ReportOfflineMeasurementMetricsToUma() {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_OfflinePageBridge_reportOfflineMeasurementMetricsToUmaAndClear(env);
 }
 
 }  // namespace android

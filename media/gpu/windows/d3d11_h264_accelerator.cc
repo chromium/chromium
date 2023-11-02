@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <windows.h>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -20,7 +21,6 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
-#include "ui/gl/gl_image_dxgi.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/scoped_binders.h"
 
@@ -51,7 +51,7 @@ class D3D11H264Picture : public H264Picture {
     picture->set_in_picture_use(true);
   }
 
-  D3D11PictureBuffer* picture;
+  raw_ptr<D3D11PictureBuffer> picture;
   size_t picture_index_;
 
   D3D11H264Picture* AsD3D11H264Picture() override { return this; }
@@ -564,7 +564,7 @@ bool D3D11H264Accelerator::SubmitSliceData() {
   }
 
   hr = video_context_->SubmitDecoderBuffers(video_decoder_.Get(),
-                                            base::size(buffers), buffers);
+                                            std::size(buffers), buffers);
   current_offset_ = 0;
   slice_info_.clear();
   bitstream_buffer_bytes_ = nullptr;

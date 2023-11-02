@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,6 @@
 
 history_clusters::HistoryClustersService*
 AutocompleteProviderClient::GetHistoryClustersService() {
-  return nullptr;
-}
-
-ntp_tiles::MostVisitedSites*
-AutocompleteProviderClient::GetNtpMostVisitedSites() {
   return nullptr;
 }
 
@@ -28,4 +23,9 @@ bool AutocompleteProviderClient::IsIncognitoModeAvailable() const {
 
 bool AutocompleteProviderClient::IsSharingHubAvailable() const {
   return false;
+}
+
+base::WeakPtr<AutocompleteProviderClient>
+AutocompleteProviderClient::GetWeakPtr() {
+  return nullptr;
 }

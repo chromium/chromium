@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,8 +58,10 @@ bool IsNearlyZero(float value) {
 }  // namespace
 
 TouchHandleDrawableAura::TouchHandleDrawableAura(aura::Window* parent)
-    : window_delegate_(new aura_extra::ImageWindowDelegate),
-      window_(new aura::Window(window_delegate_)),
+    : window_(
+          std::make_unique<aura::Window>(new aura_extra::ImageWindowDelegate)),
+      window_delegate_(
+          static_cast<aura_extra::ImageWindowDelegate*>(window_->delegate())),
       enabled_(false),
       alpha_(0),
       orientation_(TouchHandleOrientation::UNDEFINED) {
@@ -100,6 +102,7 @@ void TouchHandleDrawableAura::SetOrientation(TouchHandleOrientation orientation,
                                              bool mirror_vertical,
                                              bool mirror_horizontal) {
   // TODO(AviD): Implement adaptive handle orientation logic for Aura
+  DCHECK(window_delegate_);
   DCHECK(!mirror_vertical);
   DCHECK(!mirror_horizontal);
 
@@ -142,10 +145,10 @@ void TouchHandleDrawableAura::SetAlpha(float alpha) {
 
 gfx::RectF TouchHandleDrawableAura::GetVisibleBounds() const {
   gfx::RectF bounds(window_->bounds());
-  bounds.Inset(kSelectionHandlePadding,
-               kSelectionHandlePadding + kSelectionHandleVerticalVisualOffset,
-               kSelectionHandlePadding,
-               kSelectionHandlePadding);
+  bounds.Inset(gfx::InsetsF::TLBR(
+      kSelectionHandlePadding + kSelectionHandleVerticalVisualOffset,
+      kSelectionHandlePadding, kSelectionHandlePadding,
+      kSelectionHandlePadding));
   return bounds;
 }
 

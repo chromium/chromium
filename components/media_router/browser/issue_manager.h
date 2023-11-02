@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,11 @@
 
 #include <stddef.h>
 
-#include <map>
 #include <memory>
 
 #include "base/cancelable_callback.h"
-#include "base/containers/small_map.h"
+#include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -45,8 +45,11 @@ class IssueManager {
   // |issue_id|: Issue::Id of the issue to be removed.
   void ClearIssue(const Issue::Id& issue_id);
 
-  // Clears all non-blocking issues.
-  void ClearNonBlockingIssues();
+  // Clears all issues.
+  void ClearAllIssues();
+
+  // Clears the top issue if it belongs to the given sink_id.
+  void ClearTopIssueForSink(const MediaSink::Id& sink_id);
 
   // Registers an issue observer |observer|. The observer will be triggered
   // when the highest priority issue changes.
@@ -91,19 +94,17 @@ class IssueManager {
   // notified of the new top issue.
   void MaybeUpdateTopIssue();
 
-  base::small_map<std::map<Issue::Id, std::unique_ptr<Entry>>> blocking_issues_;
-  base::small_map<std::map<Issue::Id, std::unique_ptr<Entry>>>
-      non_blocking_issues_;
+  base::flat_map<Issue::Id, std::unique_ptr<Entry>> issues_map_;
 
   // IssueObserver instances are not owned by the manager.
   base::ObserverList<IssuesObserver>::Unchecked issues_observers_;
 
   // Pointer to the top Issue in |issues_|, or |nullptr| if there are no issues.
-  const Issue* top_issue_;
+  raw_ptr<const Issue> top_issue_;
 
   // The SingleThreadTaskRunner that this IssueManager runs on, and is used
   // for posting issue auto-dismissal tasks.
-  // When a non-blocking issues is added to the IssueManager, a delayed task
+  // When an issue is added to the IssueManager, a delayed task
   // will be added to remove the issue. This is done to automatically clean up
   // issues that are no longer relevant.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;

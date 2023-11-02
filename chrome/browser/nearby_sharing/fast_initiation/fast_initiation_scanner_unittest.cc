@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -176,6 +176,17 @@ TEST_F(NearbySharingFastInitiationScannerTest, AddAndRemoveDevices) {
   scan_session_delegate_->OnDeviceFound(mock_scan_session_, device_b.get());
   EXPECT_EQ(2u, devices_detected_call_count_);
   EXPECT_EQ(1u, devices_not_detected_call_count_);
+}
+
+TEST_F(NearbySharingFastInitiationScannerTest, RemoveUnknownDevice) {
+  scan_session_delegate_->OnSessionStarted(mock_scan_session_,
+                                           /*error_code=*/absl::nullopt);
+
+  // Ensure removing an unknown device is a successful no-op.
+  auto device_a = CreateMockDevice();
+  scan_session_delegate_->OnDeviceLost(mock_scan_session_, device_a.get());
+  EXPECT_EQ(0u, devices_detected_call_count_);
+  EXPECT_EQ(0u, devices_not_detected_call_count_);
 }
 
 TEST_F(NearbySharingFastInitiationScannerTest, FilterPattern) {

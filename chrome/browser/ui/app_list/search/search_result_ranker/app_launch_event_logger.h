@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_event_logger.pb.h"
 #include "extensions/browser/extension_registry.h"
@@ -86,9 +87,9 @@ class AppLaunchEventLogger {
   void EnforceLoggingPolicy();
 
   // The arc apps installed on the device.
-  const base::DictionaryValue* arc_apps_ = nullptr;
+  const base::Value::Dict* arc_apps_ = nullptr;
   // The arc packages installed on the device.
-  const base::DictionaryValue* arc_packages_ = nullptr;
+  const base::Value::Dict* arc_packages_ = nullptr;
   // The Chrome extension registry.
   extensions::ExtensionRegistry* registry_ = nullptr;
 

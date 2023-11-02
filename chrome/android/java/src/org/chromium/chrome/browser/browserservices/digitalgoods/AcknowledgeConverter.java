@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,11 +14,11 @@ import androidx.annotation.VisibleForTesting;
 import androidx.browser.trusted.TrustedWebActivityCallback;
 
 import org.chromium.base.Log;
-import org.chromium.payments.mojom.BillingResponseCode;
-import org.chromium.payments.mojom.DigitalGoods.Acknowledge_Response;
+import org.chromium.payments.mojom.DigitalGoods.Consume_Response;
 
 /**
- * A converter that deals with the parameters and result for Acknowledge calls.
+ * The "Acknowledge" command was was removed in DGAPI v2.0. It is kept around because the "Consume"
+ * command can be implemented in terms of Acknowledge when talking to older clients.
  */
 class AcknowledgeConverter {
     private static final String TAG = "DigitalGoods";
@@ -30,32 +30,35 @@ class AcknowledgeConverter {
 
     private AcknowledgeConverter() {}
 
-    static Bundle convertParams(String purchaseToken, boolean makeAvailableAgain) {
+    static Bundle convertParams(String purchaseToken) {
+        // Consume is equivalent to the old acknowledge command when make_available_again = true.
+        boolean makeAvailableAgain = true;
+
         Bundle bundle = new Bundle();
         bundle.putString(PARAM_ACKNOWLEDGE_PURCHASE_TOKEN, purchaseToken);
         bundle.putBoolean(PARAM_ACKNOWLEDGE_MAKE_AVAILABLE_AGAIN, makeAvailableAgain);
         return bundle;
     }
 
-    static TrustedWebActivityCallback convertCallback(Acknowledge_Response callback) {
+    static TrustedWebActivityCallback convertCallback(Consume_Response callback) {
         return new TrustedWebActivityCallback() {
             @Override
             public void onExtraCallback(@NonNull String callbackName, @Nullable Bundle args) {
                 if (!RESPONSE_ACKNOWLEDGE.equals(callbackName)) {
                     Log.w(TAG, "Wrong callback name given: " + callbackName + ".");
-                    returnClientAppError(callback);
+                    ConsumeConverter.returnClientAppError(callback);
                     return;
                 }
 
                 if (args == null) {
                     Log.w(TAG, "No args provided.");
-                    returnClientAppError(callback);
+                    ConsumeConverter.returnClientAppError(callback);
                     return;
                 }
 
                 if (!(args.get(RESPONSE_ACKNOWLEDGE_RESPONSE_CODE) instanceof Integer)) {
                     Log.w(TAG, "Poorly formed args provided.");
-                    returnClientAppError(callback);
+                    ConsumeConverter.returnClientAppError(callback);
                     return;
                 }
 
@@ -63,14 +66,6 @@ class AcknowledgeConverter {
                 callback.call(convertResponseCode(code, args));
             }
         };
-    }
-
-    public static void returnClientAppUnavailable(Acknowledge_Response callback) {
-        callback.call(BillingResponseCode.CLIENT_APP_UNAVAILABLE);
-    }
-
-    public static void returnClientAppError(Acknowledge_Response callback) {
-        callback.call(BillingResponseCode.CLIENT_APP_ERROR);
     }
 
     /**

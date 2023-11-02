@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
@@ -46,7 +45,7 @@ class TextEncoderStream::Transformer final : public TransformStreamTransformer {
     if (!input_resource.Prepare(script_state_->GetIsolate(), exception_state))
       return ScriptPromise();
     const String input = input_resource;
-    if (input.IsEmpty())
+    if (input.empty())
       return ScriptPromise::CastUndefined(script_state_);
 
     const absl::optional<UChar> high_surrogate = pending_high_surrogate_;
@@ -133,7 +132,7 @@ class TextEncoderStream::Transformer final : public TransformStreamTransformer {
         const UChar astral_character[2] = {high_surrogate.value(), *begin};
         // Third argument is ignored, as above.
         *prefix =
-            encoder_->Encode(astral_character, base::size(astral_character),
+            encoder_->Encode(astral_character, std::size(astral_character),
                              WTF::kNoUnencodables);
         ++begin;
         if (begin == end)

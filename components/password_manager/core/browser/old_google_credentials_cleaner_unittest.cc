@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/old_google_credentials_cleaner.h"
 
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -48,13 +49,16 @@ class OldGoogleCredentialCleanerTest : public testing::Test {
 
   void ExpectPasswords(std::vector<PasswordForm> password_forms) {
     EXPECT_CALL(*store_, GetAutofillableLogins)
-        .WillOnce(testing::WithArg<0>([password_forms](
-                                          PasswordStoreConsumer* consumer) {
-          std::vector<std::unique_ptr<PasswordForm>> results;
-          for (auto& form : password_forms)
-            results.push_back(std::make_unique<PasswordForm>(std::move(form)));
-          consumer->OnGetPasswordStoreResults(std::move(results));
-        }));
+        .WillOnce(testing::WithArg<0>(
+            [password_forms, store = store_.get()](
+                base::WeakPtr<PasswordStoreConsumer> consumer) {
+              std::vector<std::unique_ptr<PasswordForm>> results;
+              for (auto& form : password_forms)
+                results.push_back(
+                    std::make_unique<PasswordForm>(std::move(form)));
+              consumer->OnGetPasswordStoreResultsOrErrorFrom(
+                  store, std::move(results));
+            }));
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }

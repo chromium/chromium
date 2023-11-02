@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,11 +13,7 @@
 
 #include "net/base/net_export.h"
 
-namespace net {
-
-namespace android {
-
-namespace traffic_stats {
+namespace net::android::traffic_stats {
 
 // Returns true if the number of bytes transmitted since device boot is
 // available and sets |*bytes| to that value. Counts packets across all network
@@ -47,10 +43,6 @@ NET_EXPORT bool GetCurrentUidTxBytes(int64_t* bytes);
 // and UDP usage. |bytes| must not be nullptr.
 NET_EXPORT bool GetCurrentUidRxBytes(int64_t* bytes);
 
-}  // namespace traffic_stats
-
-}  // namespace android
-
-}  // namespace net
+}  // namespace net::android::traffic_stats
 
 #endif  // NET_ANDROID_TRAFFIC_STATS_H_

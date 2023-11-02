@@ -1,0 +1,297 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/clang/clang.gni")
+import("//build/config/rust.gni")
+import("//build/config/sysroot.gni")
+import("//build/rust/mixed_static_library.gni")
+
+# Template to generate and build Rust bindings for a set of C++ headers using
+# Crubit's `rs_bindings_from_cc` tool.
+#
+# This template expands to a `mixed_static_library` named "<target>_rs_api" and
+# containing the Rust side of the bindings (as well as internal C++ thunks
+# needed to support the bindings).
+#
+# The generated out/.../gen/.../<target>_rs_api.rs is machine-generated, but
+# should be fairly readable (inspecting it might be useful to discover the
+# imported bindings and their shape).
+#
+# Parameters:
+#
+#   bindings_target:
+#     The C++ target (e.g. a `source_set`) that Rust bindings should be
+#     generated for.
+#
+#   public_headers:
+#     The .h files to generate bindings for.
+#
+#     Implementation note: This doesn't just take *all* the headers of the
+#     `bindings_target`, because typically only a *subset* of headers provides
+#     the *public* API that bindings are needed for.
+#
+#     TODO(crbug.com/1329611): Internal headers should still to be included in
+#     the targets_and_headers metadata...
+#
+#   deps:
+#     Other `rs_bindings_from_cc` targets that the bindings need to depend on
+#     (e.g. because APIs in the `public_headers` refer to `struct`s declared in
+#     those other targets. Note how in the usage example below bindings for
+#     `struct Goat` are provided by `goat_rs_api`, and that therefore the
+#     bindings for the `TeleportGoat` provided by `teleport_rs_api` depend on
+#     `goat_rs_api`).
+#
+#     Oftentimes `deps` can be a copy of the `public_deps` of the
+#     `bindings_target`, but depending on targets with the suffix "_rs_api".
+#     Still, there are scenarios where `deps` don't parallel *all* entries from
+#     `public_deps`:
+#       * `public_deps` that don't expose Rust APIs (i.e. there are no
+#         "..._rs_api" targets to depend on).
+#       * `public_deps` that Crubit bindings don't depend on (dependencies that
+#          don't provide re-exportable C++ APIs, or that only provide items
+#          that are ignored by Crubit - e.g. `#define`s).
+#
+# Usage example:
+#
+#   BUILD.gn:
+#       import("//build/rust/rs_bindings_from_cc.gni")
+#       import("//build/rust/rust_executable.gni")
+#
+#       rust_executable("my_target") {
+#         crate_root = "main.rs"
+#         sources = [ "main.rs" ]
+#         deps = [ ":teleport_rs_api" ]
+#       ]
+#
+#       # This will generate "teleport_rs_api" target that provides Rust
+#       # bindings for the "teleport.h" header from the ":teleport" source
+#       # set.
+#       rs_bindings_from_cc("teleport_rs_api") {
+#         bindings_target = ":teleport"
+#         public_headers = ["teleport.h"]
+#         deps = [ ":goat_rs_api" ]  # Parallel's `public_deps` of ":teleport".
+#       }
+#
+#       source_set("teleport") {
+#         sources = [ "teleport.h", ... ]
+#         public_deps = [ ":goat" ]
+#       }
+#
+#       rs_bindings_from_cc("goat_rs_api") {
+#         bindings_target = ":goat"
+#         public_headers = ["goat.h"]
+#       }
+#       source_set("goat") {
+#         sources = [ "goat.h", ... ]
+#       }
+#
+#   teleport.h:
+#     #include "goat.h"
+#     void TeleportGoat(const Goat& goat_to_teleport);
+#
+#   goat.h:
+#     struct Goat { ... };
+#
+#   main.rs:
+#     fn main() {
+#       let g: goat_rs_api::Goat = ...;
+#       teleport_rs_api::TeleportGoat(&g);
+#     }
+#
+# Debugging and implementation notes:
+#
+# - Consider running the build while CRUBIT_DEBUG environment variable is set.
+#   This will generate additional `.ir` file and log extra information from
+#   the `run_rs_bindings_from_cc.py` script (e.g. full cmdlines for invoking
+#   `rs_bindings_from_cc`).
+#
+template("rs_bindings_from_cc") {
+  # Mandatory parameter: bindings_target.
+  assert(defined(invoker.bindings_target),
+         "Must specify the C target to make bindings for.")
+  _bindings_target = invoker.bindings_target
+
+  # Mandatory/unavoidable parameter: target_name
+  _lib_target_name = target_name
+  _base_target_name = get_label_info(_bindings_target, "name")
+  assert(_lib_target_name == "${_base_target_name}_rs_api",
+         "The convention is that bindings for `foo` are named `foo_rs_api`")
+
+  # Mandatory parameter: public_headers.
+  assert(defined(invoker.public_headers),
+         "Must specify the public C headers to make bindings for.")
+  _rebased_public_headers = []
+  foreach(hdr, invoker.public_headers) {
+    _rebased_public_headers += [ rebase_path(hdr) ]
+  }
+
+  # Optional parameter: testonly.
+  _testonly = false
+  if (defined(invoker.testonly)) {
+    _testonly = invoker.testonly
+  }
+
+  # Optional parameter: visibility.
+  if (defined(invoker.visibility)) {
+    _visibility = invoker.visibility
+  }
+
+  # Optional parameter: deps.
+  #
+  # TODO(crbug.com/1329611): Can we somehow assert that `_deps` only contains
+  # some "..._rs_api" targets crated via
+  # `mixed_static_library($_lib_target_name)` below?  foreach(dep, _deps) {
+  # assert something }
+  _deps = []
+  if (defined(invoker.deps)) {
+    _deps = invoker.deps
+  }
+
+  # Various names and paths that are shared across multiple targets defined
+  # in the template here.
+  _gen_bindings_target_name = "${_lib_target_name}_gen_bindings"
+  _gen_metadata_target_name = "${_lib_target_name}_gen_metadata"
+  _metadata_target_name = "${_lib_target_name}_metadata"
+  _metadata_path = "${target_gen_dir}/${_lib_target_name}_meta.json"
+  _rs_out_path = "${target_gen_dir}/${_lib_target_name}.rs"
+  _cc_out_path = "${target_gen_dir}/${_lib_target_name}_impl.cc"
+
+  # Calculating the --targets_and_headers snippet for the *current* target
+  # and putting it into GN's `metadata`.
+  group(_metadata_target_name) {
+    testonly = _testonly
+    visibility = [
+      ":${_gen_metadata_target_name}",
+      ":${_lib_target_name}",
+    ]
+    deps = []
+
+    metadata = {
+      # The data below corresponds to a single-target entry inside
+      # `--targets_and_headers` cmdline argument of `rs_bindings_from_cc`.
+      crubit_target_and_headers = [
+        {
+          # The `get_label_info` call below expands ":foo_rs_api" into
+          # something like "//dir/bar/baz:foo_rs_api".  Crubit assumes that
+          # there is a colon + uses the after-colon-suffix as the name of the
+          # crate.
+          t = get_label_info(":${_lib_target_name}", "label_no_toolchain")
+          h = _rebased_public_headers
+        },
+      ]
+    }
+  }
+
+  # Gathering --targets-and-headers data from *all* transitive dependencies and
+  # putting them into the file at `_metadata_path`.
+  generated_file(_gen_metadata_target_name) {
+    testonly = _testonly
+    visibility = [ ":${_gen_bindings_target_name}" ]
+
+    deps = [ ":${_metadata_target_name}" ]
+    deps += _deps
+
+    testonly = _testonly
+    outputs = [ _metadata_path ]
+    output_conversion = "json"
+    data_keys = [ "crubit_target_and_headers" ]
+
+    # `walk_keys` are used to limit how deep the transitive dependency goes.
+    # This is important, because Crubit doesn't care about all the `deps` or
+    # `public_deps` of the `_bindings_target`.  (See also the doc comment about
+    # `rs_bindings_from_cc.deps` parameter at the top of this file.)
+    walk_keys = [ "crubit_metadata_deps" ]
+  }
+
+  # Exposing the generated Rust bindings.
+  mixed_static_library(_lib_target_name) {
+    testonly = _testonly
+    if (defined(_visibility)) {
+      visibility = _visibility
+    }
+
+    sources = [ _cc_out_path ]
+    deps = _deps
+    deps += [
+      ":${_gen_bindings_target_name}",
+      ":${_metadata_target_name}",
+      "//third_party/crubit:deps_of_rs_api_impl",
+      _bindings_target,
+    ]
+
+    # Chromium already covers `chromium/src/` and `out/Release/gen` in the
+    # include path, but we need to explicitly add `out/Release` below.  This
+    # is needed, because `--public_headers` passed to Crubit use paths relative
+    # to the `out/Release` directory.  See also b/239238801.
+    include_dirs = [ root_build_dir ]
+
+    rs_sources = [ _rs_out_path ]
+    rs_crate_name = _lib_target_name
+    rs_crate_root = _rs_out_path
+    rs_deps = _deps
+    rs_deps += [
+      ":${_gen_bindings_target_name}",
+      "//third_party/crubit:deps_of_rs_api",
+    ]
+
+    metadata = {
+      crubit_metadata_deps = _deps + [ ":${_metadata_target_name}" ]
+    }
+  }
+
+  # Invoking Crubit's `rs_bindings_from_cc` tool to generate Rust bindings.
+  action(_gen_bindings_target_name) {
+    testonly = _testonly
+    if (defined(_visibility)) {
+      visibility = _visibility
+    }
+
+    script = "//build/rust/run_rs_bindings_from_cc.py"
+    inputs = [ "//third_party/rust-toolchain/bin/rs_bindings_from_cc" ]
+    sources = invoker.public_headers
+    outputs = [
+      _rs_out_path,
+      _cc_out_path,
+    ]
+
+    deps = [ ":${_gen_metadata_target_name}" ]
+    args = [
+      # Target-specific outputs:
+      "--rs_out",
+      rebase_path(_rs_out_path),
+      "--cc_out",
+      rebase_path(_cc_out_path),
+
+      # Target-specific inputs:
+      "--public_headers",
+      string_join(",", _rebased_public_headers),
+      "--targets_and_headers_from_gn",
+      rebase_path(_metadata_path),
+    ]
+
+    # Several important compiler flags come from default_compiler_configs
+    configs = default_compiler_configs
+    if (defined(invoker.configs)) {
+      configs += invoker.configs
+    }
+    args += [
+      "--",
+      "{{defines}}",
+      "{{include_dirs}}",
+      "{{cflags}}",
+
+      # This path contains important C headers (e.g. stddef.h) and {{cflags}}
+      # does not include it. Normally this path is implicitly added by clang but
+      # it does not happen for libclang.
+      #
+      # Add it last so includes from deps and configs take precedence.
+      "-isystem" + rebase_path(
+              clang_base_path + "/lib/clang/" + clang_version + "/include",
+              root_build_dir),
+
+      # Passes C comments through as rustdoc attributes.
+      "-fparse-all-comments",
+    ]
+  }
+}

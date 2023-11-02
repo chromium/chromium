@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,15 +66,14 @@ int32_t FontMessageFilter::OnResourceMessageReceived(
 int32_t FontMessageFilter::OnHostMsgGetFontFamilies(
     ppapi::host::HostMessageContext* context) {
   // OK to use "slow blocking" version since we're on the blocking pool.
-  std::unique_ptr<base::ListValue> list(GetFontList_SlowBlocking());
+  base::Value::List list(GetFontList_SlowBlocking());
 
-  base::Value::ConstListView list_view = list->GetList();
   std::string output;
-  for (const auto& i : list_view) {
+  for (const auto& i : list) {
     if (!i.is_list())
       continue;
 
-    base::Value::ConstListView cur_font = i.GetList();
+    const base::Value::List& cur_font = i.GetList();
 
     // Each entry is actually a list of (font name, localized name).
     // We only care about the regular name.

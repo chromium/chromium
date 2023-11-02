@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@ import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -22,7 +21,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
+import android.util.Size;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -55,9 +54,11 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge.OptimizationGuideCallback;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeJni;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.state.CouponPersistedTabData;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tab.state.LevelDBPersistedDataStorage;
 import org.chromium.chrome.browser.tab.state.LevelDBPersistedDataStorageJni;
@@ -65,6 +66,7 @@ import org.chromium.chrome.browser.tab.state.PersistedTabDataConfiguration;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.commerce.PriceTracking.BuyableProduct;
 import org.chromium.components.commerce.PriceTracking.PriceTrackingData;
@@ -80,9 +82,8 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.widget.ButtonCompat;
-import org.chromium.ui.widget.ChipView;
 import org.chromium.ui.widget.ChromeImageView;
 import org.chromium.url.GURL;
 
@@ -98,7 +99,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         "enable-features=" + ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study",
         "force-fieldtrials=Study/Group"})
-public class TabListViewHolderTest extends DummyUiActivityTestCase {
+public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     @Rule
     public JniMocker mMocker = new JniMocker();
 
@@ -140,6 +141,14 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
             "The price of this item recently dropped from $10 to $5.00";
     private static final GURL TEST_GURL = new GURL("https://www.google.com");
 
+    private static final String EXPECTED_COUPON_NAME = "40% Off All Shoes";
+    private static final String EXPECTED_COUPON_CODE = "SHOE40";
+    private static final String EXPECTED_COUPON_CURRENCY_CODE = null;
+    private static final long EXPECTED_COUPON_DISCOUNT_AMOUNT = 40;
+    private static final String EXPECTED_COUPON_ANNOTATION_TEXT = "40% Off";
+    private static final CouponPersistedTabData.Coupon.DiscountType EXPECTED_COUPON_DISCOUNT_TYPE =
+            CouponPersistedTabData.Coupon.DiscountType.PERCENT_OFF;
+
     private ViewGroup mTabGridView;
     private PropertyModel mGridModel;
     private PropertyModelChangeProcessor mGridMCP;
@@ -173,8 +182,9 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
     private TabListMediator.ThumbnailFetcher mMockThumbnailProvider =
             new TabListMediator.ThumbnailFetcher(new TabListMediator.ThumbnailProvider() {
                 @Override
-                public void getTabThumbnailWithCallback(int tabId, Callback<Bitmap> callback,
-                        boolean forceUpdate, boolean writeToCache) {
+                public void getTabThumbnailWithCallback(int tabId, Size thumbnailSize,
+                        Callback<Bitmap> callback, boolean forceUpdate, boolean writeToCache,
+                        boolean isSelected) {
                     Bitmap bitmap = mShouldReturnBitmap
                             ? Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
                             : null;
@@ -222,7 +232,6 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
     public void setUpTest() throws Exception {
         super.setUpTest();
         MockitoAnnotations.initMocks(this);
-        TabUiTestHelper.applyThemeOverlays(getActivity());
         ViewGroup view = new LinearLayout(getActivity());
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
@@ -298,22 +307,21 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
         doNothing().when(mCurrencyFormatterJniMock).setMaxFractionalDigits(anyLong(), anyInt());
         doReturn(1L).when(mOptimizationGuideBridgeJniMock).init();
         mMocker.mock(OptimizationGuideBridgeJni.TEST_HOOKS, mOptimizationGuideBridgeJniMock);
-        PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
+        PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
     }
 
     private void testGridSelected(ViewGroup holder, PropertyModel model) {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
-            model.set(TabProperties.IS_SELECTED, true);
-            Assert.assertNotNull(holder.getForeground());
-            model.set(TabProperties.IS_SELECTED, false);
-            Assert.assertNull(holder.getForeground());
-        } else {
-            model.set(TabProperties.IS_SELECTED, true);
-            View selectedView = holder.findViewById(R.id.selected_view_below_lollipop);
-            Assert.assertEquals(View.VISIBLE, selectedView.getVisibility());
-            model.set(TabProperties.IS_SELECTED, false);
-            Assert.assertEquals(View.GONE, selectedView.getVisibility());
-        }
+        model.set(TabProperties.IS_SELECTED, true);
+        Assert.assertTrue(TabUiTestHelper.isTabViewSelected(holder));
+        model.set(TabProperties.IS_SELECTED, false);
+        Assert.assertFalse(TabUiTestHelper.isTabViewSelected(holder));
+    }
+
+    private void tabListSelected(ViewGroup holder, PropertyModel model) {
+        model.set(TabProperties.IS_SELECTED, true);
+        Assert.assertNotNull(holder.getForeground());
+        model.set(TabProperties.IS_SELECTED, false);
+        Assert.assertNull(holder.getForeground());
     }
 
     private void testSelectableTabClickToSelect(
@@ -358,7 +366,7 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
         Assert.assertEquals(0, actionButton.getBackground().getLevel());
         Assert.assertEquals(0, actionButton.getDrawable().getAlpha());
 
-        testGridSelected(mSelectableTabListView, mSelectableModel);
+        tabListSelected(mSelectableTabListView, mSelectableModel);
         mSelectableModel.set(TabProperties.IS_SELECTED, true);
         ImageView endButton = mSelectableTabListView.findViewById(R.id.end_button);
         Assert.assertEquals(1, endButton.getBackground().getLevel());
@@ -384,13 +392,7 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
                 () -> !((ClosableTabGridView) mTabGridView).getIsAnimatingForTesting());
 
         Assert.assertEquals(View.GONE, backgroundView.getVisibility());
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            View selectedView = mTabGridView.findViewById(R.id.selected_view_below_lollipop);
-            Assert.assertEquals(View.VISIBLE, selectedView.getVisibility());
-        } else {
-            Drawable selectedDrawable = mTabGridView.getForeground();
-            Assert.assertNotNull(selectedDrawable);
-        }
+        Assert.assertTrue(TabUiTestHelper.isTabViewSelected(mTabGridView));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mGridModel.set(TabProperties.IS_SELECTED, false);
@@ -400,14 +402,7 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
         CriteriaHelper.pollUiThread(
                 () -> !((ClosableTabGridView) mTabGridView).getIsAnimatingForTesting());
         Assert.assertEquals(View.GONE, backgroundView.getVisibility());
-
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            View selectedView = mTabGridView.findViewById(R.id.selected_view_below_lollipop);
-            Assert.assertEquals(View.GONE, selectedView.getVisibility());
-        } else {
-            Drawable selectedDrawable = mTabGridView.getForeground();
-            Assert.assertNull(selectedDrawable);
-        }
+        Assert.assertFalse(TabUiTestHelper.isTabViewSelected(mTabGridView));
     }
 
     @Test
@@ -795,6 +790,101 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
         }
     }
 
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void testCouponStringCouponAvailable() {
+        setCouponsEnabledForTesting();
+        Tab tab = MockTab.createAndInitialize(1, false);
+        MockCouponPersistedTabDataFetcher fetcher = new MockCouponPersistedTabDataFetcher(tab);
+        fetcher.setCouponStrings(EXPECTED_COUPON_NAME, EXPECTED_COUPON_CODE,
+                EXPECTED_COUPON_CURRENCY_CODE, EXPECTED_COUPON_DISCOUNT_AMOUNT,
+                EXPECTED_COUPON_DISCOUNT_TYPE);
+        testCouponString(tab, fetcher, View.VISIBLE, EXPECTED_COUPON_ANNOTATION_TEXT);
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void testCouponStringCouponEmpty() {
+        setCouponsEnabledForTesting();
+        Tab tab = MockTab.createAndInitialize(1, false);
+        MockCouponPersistedTabDataFetcher fetcher = new MockCouponPersistedTabDataFetcher(tab);
+        fetcher.setEmptyCoupon();
+        testCouponString(tab, fetcher, View.GONE, null);
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void testCouponStringFetcherNull() {
+        setCouponsEnabledForTesting();
+        Tab tab = MockTab.createAndInitialize(1, false);
+        testCouponString(tab, null, View.GONE, null);
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void testCouponStringCouponThenEmpty() {
+        setCouponsEnabledForTesting();
+        Tab tab = MockTab.createAndInitialize(1, false);
+        MockCouponPersistedTabDataFetcher fetcher = new MockCouponPersistedTabDataFetcher(tab);
+        fetcher.setCouponStrings(EXPECTED_COUPON_NAME, EXPECTED_COUPON_CODE,
+                EXPECTED_COUPON_CURRENCY_CODE, EXPECTED_COUPON_DISCOUNT_AMOUNT,
+                EXPECTED_COUPON_DISCOUNT_TYPE);
+        testCouponString(tab, fetcher, View.VISIBLE, EXPECTED_COUPON_ANNOTATION_TEXT);
+        fetcher.setEmptyCoupon();
+        testCouponString(tab, fetcher, View.GONE, null);
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void testCouponStringTurnFeatureOff() {
+        Tab tab = MockTab.createAndInitialize(1, false);
+        MockCouponPersistedTabDataFetcher fetcher = new MockCouponPersistedTabDataFetcher(tab);
+        fetcher.setCouponStrings(EXPECTED_COUPON_NAME, EXPECTED_COUPON_CODE,
+                EXPECTED_COUPON_CURRENCY_CODE, EXPECTED_COUPON_DISCOUNT_AMOUNT,
+                EXPECTED_COUPON_DISCOUNT_TYPE);
+        testCouponString(tab, fetcher, View.VISIBLE, EXPECTED_COUPON_ANNOTATION_TEXT);
+        testCouponString(tab, null, View.GONE, null);
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void testCouponStringPriceDropAvailable() {
+        setCouponsEnabledForTesting();
+        Tab tab = MockTab.createAndInitialize(1, false);
+
+        MockShoppingPersistedTabDataFetcher shoppingFetcher =
+                new MockShoppingPersistedTabDataFetcher(tab);
+        shoppingFetcher.setPriceStrings(EXPECTED_PRICE_STRING, EXPECTED_PREVIOUS_PRICE_STRING);
+        testPriceString(tab, shoppingFetcher, View.VISIBLE, EXPECTED_PRICE_STRING,
+                EXPECTED_PREVIOUS_PRICE_STRING);
+
+        MockCouponPersistedTabDataFetcher couponFetcher =
+                new MockCouponPersistedTabDataFetcher(tab);
+        couponFetcher.setCouponStrings(EXPECTED_COUPON_NAME, EXPECTED_COUPON_CODE,
+                EXPECTED_COUPON_CURRENCY_CODE, EXPECTED_COUPON_DISCOUNT_AMOUNT,
+                EXPECTED_COUPON_DISCOUNT_TYPE);
+        testCouponString(tab, couponFetcher, View.GONE, null);
+    }
+
+    private void testCouponString(Tab tab, MockCouponPersistedTabDataFetcher fetcher,
+            int expectedVisibility, String expectedText) {
+        testGridSelected(mTabGridView, mGridModel);
+        CouponCardView couponCardView = mTabGridView.findViewById(R.id.coupon_info_box_outer);
+        TextView name = mTabGridView.findViewById(R.id.coupon_name);
+
+        mGridModel.set(TabProperties.COUPON_PERSISTED_TAB_DATA_FETCHER, fetcher);
+        Assert.assertEquals(expectedVisibility, couponCardView.getVisibility());
+        if (expectedVisibility == View.VISIBLE) {
+            Assert.assertEquals(expectedText, name.getText());
+        }
+    }
+
     static class MockShoppingPersistedTabData extends ShoppingPersistedTabData {
         private PriceDrop mPriceDrop;
 
@@ -838,6 +928,51 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
         }
     }
 
+    static class MockCouponPersistedTabData extends CouponPersistedTabData {
+        private Coupon mCoupon;
+
+        MockCouponPersistedTabData(Tab tab) {
+            super(tab);
+        }
+
+        public void setCoupon(String name, String promoCode, String currencyCode, long units,
+                Coupon.DiscountType type) {
+            mCoupon = new Coupon(name, promoCode, currencyCode, units, type);
+        }
+
+        @Override
+        public Coupon getCoupon() {
+            return mCoupon;
+        }
+    }
+
+    /**
+     * Mock {@link TabListMediator.CouponPersistedTabDataFetcher} for testing purposes
+     */
+    static class MockCouponPersistedTabDataFetcher
+            extends TabListMediator.CouponPersistedTabDataFetcher {
+        private CouponPersistedTabData mCouponPersistedTabData;
+        MockCouponPersistedTabDataFetcher(Tab tab) {
+            super(tab);
+        }
+
+        public void setCouponStrings(String nameString, String promoString, String currString,
+                long unitsLong, CouponPersistedTabData.Coupon.DiscountType typeDT) {
+            mCouponPersistedTabData = new MockCouponPersistedTabData(mTab);
+            ((MockCouponPersistedTabData) mCouponPersistedTabData)
+                    .setCoupon(nameString, promoString, currString, unitsLong, typeDT);
+        }
+
+        public void setEmptyCoupon() {
+            mCouponPersistedTabData = new MockCouponPersistedTabData(mTab);
+        }
+
+        @Override
+        public void fetch(Callback<CouponPersistedTabData> callback) {
+            callback.onResult(mCouponPersistedTabData);
+        }
+    }
+
     @Test
     @MediumTest
     @UiThreadTest
@@ -877,28 +1012,39 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
 
     @Test
     @MediumTest
-    @UiThreadTest
     public void testPriceDropEndToEnd() {
-        ShoppingPersistedTabData.enablePriceTrackingWithOptimizationGuideForTesting();
-        PersistedTabDataConfiguration.setUseTestConfig(true);
-        setPriceTrackingEnabledForTesting(true);
-        mockCurrencyFormatter();
-        mockUrlUtilities();
-        mockOptimizationGuideResponse(OptimizationGuideDecision.TRUE, ANY_PRICE_TRACKING_DATA);
-        MockTab tab = (MockTab) MockTab.createAndInitialize(1, false);
-        tab.setGurlOverrideForTesting(TEST_GURL);
-        tab.setIsInitialized(true);
-        CriticalPersistedTabData.from(tab).setTimestampMillis(System.currentTimeMillis());
-        TabListMediator.ShoppingPersistedTabDataFetcher fetcher =
-                new TabListMediator.ShoppingPersistedTabDataFetcher(tab, null);
-        mGridModel.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER, fetcher);
-        testGridSelected(mTabGridView, mGridModel);
-        PriceCardView priceCardView = mTabGridView.findViewById(R.id.price_info_box_outer);
-        TextView currentPrice = mTabGridView.findViewById(R.id.current_price);
-        TextView previousPrice = mTabGridView.findViewById(R.id.previous_price);
-        Assert.assertEquals(EXPECTED_PRICE, currentPrice.getText());
-        Assert.assertEquals(EXPECTED_PREVIOUS_PRICE, previousPrice.getText());
-        Assert.assertEquals(EXPECTED_CONTENT_DESCRIPTION, priceCardView.getContentDescription());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ShoppingPersistedTabData.onDeferredStartup();
+            ShoppingPersistedTabData.enablePriceTrackingWithOptimizationGuideForTesting();
+            PersistedTabDataConfiguration.setUseTestConfig(true);
+            setPriceTrackingEnabledForTesting(true);
+            mockCurrencyFormatter();
+            mockUrlUtilities();
+            mockOptimizationGuideResponse(OptimizationGuideDecision.TRUE, ANY_PRICE_TRACKING_DATA);
+            MockTab tab = (MockTab) MockTab.createAndInitialize(1, false);
+            tab.setGurlOverrideForTesting(TEST_GURL);
+            tab.setIsInitialized(true);
+            CriticalPersistedTabData.from(tab).setTimestampMillis(System.currentTimeMillis());
+            TabListMediator.ShoppingPersistedTabDataFetcher fetcher =
+                    new TabListMediator.ShoppingPersistedTabDataFetcher(tab, null);
+            mGridModel.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER, fetcher);
+            testGridSelected(mTabGridView, mGridModel);
+        });
+        CriteriaHelper.pollUiThread(
+                ()
+                        -> EXPECTED_PRICE.equals(
+                                ((TextView) mTabGridView.findViewById(R.id.current_price))
+                                        .getText()));
+        CriteriaHelper.pollUiThread(
+                ()
+                        -> EXPECTED_PREVIOUS_PRICE.equals(
+                                ((TextView) mTabGridView.findViewById(R.id.previous_price))
+                                        .getText()));
+        CriteriaHelper.pollUiThread(()
+                                            -> EXPECTED_CONTENT_DESCRIPTION.equals(
+                                                    ((PriceCardView) mTabGridView.findViewById(
+                                                             R.id.price_info_box_outer))
+                                                            .getContentDescription()));
     }
 
     private void mockCurrencyFormatter() {
@@ -956,10 +1102,16 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
 
         // Required by MockTab.
-        testValues.addFeatureFlagOverride(ChromeFeatureList.CONTINUOUS_SEARCH, true);
         testValues.addFeatureFlagOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING, true);
         testValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING,
-                PriceTrackingUtilities.PRICE_TRACKING_PARAM, String.valueOf(value));
+                PriceTrackingFeatures.PRICE_TRACKING_PARAM, String.valueOf(value));
+        FeatureList.setTestValues(testValues);
+    }
+
+    private void setCouponsEnabledForTesting() {
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+
+        testValues.addFeatureFlagOverride(ChromeFeatureList.COMMERCE_COUPONS, true);
         FeatureList.setTestValues(testValues);
     }
 }

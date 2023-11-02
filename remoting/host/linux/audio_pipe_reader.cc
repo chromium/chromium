@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 
@@ -21,7 +20,7 @@ namespace remoting {
 
 namespace {
 
-const int kSampleBytesPerSecond = AudioPipeReader::kSamplingRate *
+const int kSampleBytesPerSecond = int{AudioPipeReader::kSamplingRate} *
                                   AudioPipeReader::kChannels *
                                   AudioPipeReader::kBytesPerSample;
 
@@ -158,7 +157,7 @@ void AudioPipeReader::DoCapture() {
 
   while (pos < data.size()) {
     int read_result =
-        pipe_.ReadAtCurrentPos(base::data(data) + pos, data.size() - pos);
+        pipe_.ReadAtCurrentPos(std::data(data) + pos, data.size() - pos);
     if (read_result > 0) {
       pos += read_result;
     } else {
@@ -176,7 +175,7 @@ void AudioPipeReader::DoCapture() {
 
   // Save any incomplete samples we've read for later. Each packet should
   // contain integer number of samples.
-  int incomplete_samples_bytes = pos % (kChannels * kBytesPerSample);
+  int incomplete_samples_bytes = pos % (int{kChannels} * kBytesPerSample);
   left_over_bytes_.assign(data, pos - incomplete_samples_bytes,
                           incomplete_samples_bytes);
   data.resize(pos - incomplete_samples_bytes);

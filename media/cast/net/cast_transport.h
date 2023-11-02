@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,13 +33,10 @@
 #include "media/cast/net/rtcp/rtcp_defines.h"
 #include "net/base/ip_endpoint.h"
 
-namespace base {
-class DictionaryValue;
-}  // namespace base
-
 namespace media {
 namespace cast {
 
+struct EncodedFrame;
 struct RtcpTimeData;
 
 // Following the initialization of either audio or video an initialization
@@ -158,7 +155,7 @@ class CastTransport {
   virtual void SendRtcpFromRtpReceiver() = 0;
 
   // Set options for the PacedSender and Wifi.
-  virtual void SetOptions(const base::DictionaryValue& options) = 0;
+  virtual void SetOptions(const base::Value::Dict& options) = 0;
 };
 
 }  // namespace cast

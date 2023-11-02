@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,6 @@
 #include "components/invalidation/impl/profile_identity_provider.h"
 #include "components/invalidation/impl/profile_invalidation_provider.h"
 #include "components/invalidation/public/invalidation_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry.h"
 #include "content/public/browser/storage_partition.h"
@@ -77,12 +76,12 @@ ProfileInvalidationProvider* ProfileInvalidationProviderFactory::GetForProfile(
   // when this method is called during the creation of the sign-in profile
   // itself. Using ProfileHelper::GetSigninProfileDir() is safe because it does
   // not try to access the sign-in profile.
-  if (profile->GetPath() == chromeos::ProfileHelper::GetSigninProfileDir() ||
+  if (profile->GetPath() == ash::ProfileHelper::GetSigninProfileDir() ||
       (user_manager::UserManager::IsInitialized() &&
        user_manager::UserManager::Get()->IsLoggedInAsGuest())) {
     // The Chrome OS login and Chrome OS guest profiles do not have GAIA
     // credentials and do not support invalidation.
-    return NULL;
+    return nullptr;
   }
 #endif
   return static_cast<ProfileInvalidationProvider*>(
@@ -96,9 +95,7 @@ ProfileInvalidationProviderFactory::GetInstance() {
 }
 
 ProfileInvalidationProviderFactory::ProfileInvalidationProviderFactory()
-    : BrowserContextKeyedServiceFactory(
-          "InvalidationService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("InvalidationService") {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(gcm::GCMProfileServiceFactory::GetInstance());
 }

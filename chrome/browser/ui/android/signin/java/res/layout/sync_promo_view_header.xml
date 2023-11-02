@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2017 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:showIn="@layout/sync_promo_view_settings">
+
+    <!-- TODO(crbug.com/1319351): Rename the file to personalized_sync_promo_view_header for consistency -->
+    <ImageView
+        android:id="@+id/sync_promo_illustration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
+        android:importantForAccessibility="no"
+        app:srcCompat="@drawable/sync_promo_illustration"
+        style="@style/SyncPromoIllustrationVisibility"/>
+
+    <ImageView
+        android:id="@+id/sync_promo_image"
+        android:layout_width="@dimen/sync_promo_account_image_size"
+        android:layout_height="@dimen/sync_promo_account_image_size"
+        android:layout_gravity="center"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
+        android:importantForAccessibility="no"
+        android:scaleType="fitCenter"/>
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/sync_promo_close_button"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="top|end"
+        android:background="?attr/selectableItemBackground"
+        android:contentDescription="@string/close"
+        android:scaleType="center"
+        android:src="@drawable/btn_close"
+        android:visibility="gone"
+        app:tint="@macro/default_icon_color" />
+</merge>

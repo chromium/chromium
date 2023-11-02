@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -169,7 +169,7 @@ class TRACING_EXPORT TraceStartupConfig {
   base::FilePath result_file_;
   SessionOwner session_owner_ = SessionOwner::kTracingController;
   bool session_adopted_ = false;
-  OutputFormat output_format_ = OutputFormat::kLegacyJSON;
+  OutputFormat output_format_ = OutputFormat::kProto;
 };
 
 }  // namespace tracing

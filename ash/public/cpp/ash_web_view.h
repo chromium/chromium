@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,6 +41,16 @@ class ASH_PUBLIC_EXPORT AshWebView : public views::View {
     // If enabled, AshWebView can be minimized once we received a ash
     // synthesized back event when we're at the bottom of the stack.
     bool minimize_on_back_key = false;
+
+    // If enabled, AshWebView can record media based on the permissions
+    // requested from `MediaCaptureDevicesDispatcher`.
+    // When disabled, no media recording is allowed. It is set to `false` by
+    // default as recording media is a privacy sensitive operation.
+    bool can_record_media = false;
+
+    // If enabled, AshWebView fixes its zoom level to 1 (100%) for this
+    // AshWebView. This uses zoom level 1 regardless of default zoom level.
+    bool fix_zoom_level_to_one = false;
   };
 
   // An observer which receives AshWebView events.
@@ -63,6 +73,11 @@ class ASH_PUBLIC_EXPORT AshWebView : public views::View {
   };
 
   ~AshWebView() override;
+
+  // Returns the inner `WebView` to receive the focus. Please note that we
+  // do not want to put the focus on the actual `AshWebView` instance as it is
+  // invisible.
+  virtual views::View* GetInitiallyFocusedView() = 0;
 
   // Adds/removes the specified |observer|.
   virtual void AddObserver(Observer* observer) = 0;

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,6 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/chromevox/touch_exploration_controller.h"
 #include "ash/accessibility/ui/accessibility_focus_ring_controller_impl.h"
-#include "ash/components/audio/cras_audio_handler.h"
-#include "ash/components/audio/sounds.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/accessibility_focus_ring_info.h"
@@ -20,6 +18,8 @@
 #include "ash/wm/window_util.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/components/audio/sounds.h"
 #include "extensions/common/constants.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/aura/client/aura_constants.h"
@@ -76,13 +76,19 @@ void TouchExplorationManager::OnAccessibilityControllerShutdown() {
   Shell::Get()->accessibility_controller()->RemoveObserver(this);
 }
 
-void TouchExplorationManager::OnWindowPropertyChanged(aura::Window* winodw,
+void TouchExplorationManager::OnWindowPropertyChanged(aura::Window* window,
                                                       const void* key,
                                                       intptr_t old) {
   if (key != aura::client::kAccessibilityTouchExplorationPassThrough)
     return;
 
   UpdateTouchExplorationState();
+}
+
+void TouchExplorationManager::OnWindowDestroying(aura::Window* window) {
+  DCHECK(observing_window_ == window);
+  observing_window_->RemoveObserver(this);
+  observing_window_ = nullptr;
 }
 
 void TouchExplorationManager::SetOutputLevel(int volume) {
@@ -255,7 +261,7 @@ void TouchExplorationManager::UpdateTouchExplorationState() {
 
 bool TouchExplorationManager::VolumeAdjustSoundEnabled() {
   return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kDisableVolumeAdjustSound);
+      switches::kDisableVolumeAdjustSound);
 }
 
 }  // namespace ash

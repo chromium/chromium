@@ -1,10 +1,9 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/renderer_host/delegated_frame_host.h"
 
-#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
@@ -12,7 +11,9 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/observer_list.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -91,7 +92,7 @@ void DelegatedFrameHost::WasShown(
     compositor_->RequestPresentationTimeForNextFrame(
         tab_switch_time_recorder_.TabWasShown(
             true /* has_saved_frames */,
-            std::move(record_tab_switch_time_request), base::TimeTicks::Now()));
+            std::move(record_tab_switch_time_request)));
   }
 
   // Use the default deadline to synchronize web content with browser UI.
@@ -115,8 +116,7 @@ void DelegatedFrameHost::RequestPresentationTimeForNextFrame(
   // captured.
   compositor_->RequestPresentationTimeForNextFrame(
       tab_switch_time_recorder_.TabWasShown(true /* has_saved_frames */,
-                                            std::move(visible_time_request),
-                                            base::TimeTicks::Now()));
+                                            std::move(visible_time_request)));
 }
 
 void DelegatedFrameHost::CancelPresentationTimeRequest() {
@@ -130,7 +130,7 @@ bool DelegatedFrameHost::HasSavedFrame() const {
 
 void DelegatedFrameHost::WasHidden(HiddenCause cause) {
   tab_switch_time_recorder_.TabWasHidden();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Ignore if the native window was occluded.
   // Windows needs the frame host to display tab previews.
   if (cause == HiddenCause::kOccluded)
@@ -289,7 +289,7 @@ void DelegatedFrameHost::EmbedSurface(
 
   if (!primary_surface_id ||
       primary_surface_id->local_surface_id() != local_surface_id_) {
-#if defined(OS_WIN) || defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
     // On Windows and Linux, we would like to produce new content as soon as
     // possible or the OS will create an additional black gutter. Until we can
     // block resize on surface synchronization on these platforms, we will not
@@ -327,6 +327,21 @@ void DelegatedFrameHost::OnFirstSurfaceActivation(
 void DelegatedFrameHost::OnFrameTokenChanged(uint32_t frame_token,
                                              base::TimeTicks activation_time) {
   client_->OnFrameTokenChanged(frame_token, activation_time);
+}
+
+// CommitPending without a target for TakeFallbackContentFrom. Since we cannot
+// guarantee that Navigation will complete, evict our surfaces which are from
+// a previous Navigation.
+void DelegatedFrameHost::ClearFallbackSurfaceForCommitPending() {
+  const viz::SurfaceId* fallback_surface_id =
+      client_->DelegatedFrameHostGetLayer()->GetOldestAcceptableFallback();
+
+  // CommitPending failed, and Navigation never completed. Evict our surfaces.
+  if (fallback_surface_id && fallback_surface_id->is_valid()) {
+    EvictDelegatedFrame();
+    client_->DelegatedFrameHostGetLayer()->SetOldestAcceptableFallback(
+        viz::SurfaceId());
+  }
 }
 
 void DelegatedFrameHost::ResetFallbackToFirstNavigationSurface() {
@@ -410,10 +425,10 @@ void DelegatedFrameHost::DidCopyStaleContent(
   SetFrameEvictionStateAndNotifyObservers(FrameEvictionState::kNotStarted);
   ContinueDelegatedFrameEviction();
 
-  auto transfer_resource = viz::TransferableResource::MakeGL(
+  auto transfer_resource = viz::TransferableResource::MakeGpu(
       result->GetTextureResult()->planes[0].mailbox, GL_LINEAR, GL_TEXTURE_2D,
       result->GetTextureResult()->planes[0].sync_token, result->size(),
-      false /* is_overlay_candidate */);
+      viz::RGBA_8888, false /* is_overlay_candidate */);
   viz::CopyOutputResult::ReleaseCallbacks release_callbacks =
       result->TakeTextureOwnership();
   DCHECK_EQ(1u, release_callbacks.size());
@@ -421,7 +436,10 @@ void DelegatedFrameHost::DidCopyStaleContent(
   if (stale_content_layer_->parent() != client_->DelegatedFrameHostGetLayer())
     client_->DelegatedFrameHostGetLayer()->Add(stale_content_layer_.get());
 
+// TODO(crbug.com/1281251): This DCHECK occasionally gets hit on Chrome OS.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK(!stale_content_layer_->has_external_content());
+#endif
   stale_content_layer_->SetVisible(true);
   stale_content_layer_->SetBounds(gfx::Rect(surface_dip_size_));
   stale_content_layer_->SetTransferableResource(
@@ -452,8 +470,7 @@ void DelegatedFrameHost::ContinueDelegatedFrameEviction() {
   // during navigation, construction, destruction, or in unit tests).
   if (!surface_ids.empty()) {
     DCHECK(!GetCurrentSurfaceId().is_valid() ||
-           std::find(surface_ids.begin(), surface_ids.end(),
-                     GetCurrentSurfaceId()) != surface_ids.end());
+           base::Contains(surface_ids, GetCurrentSurfaceId()));
     DCHECK(host_frame_sink_manager_);
     host_frame_sink_manager_->EvictSurfaces(surface_ids);
   }

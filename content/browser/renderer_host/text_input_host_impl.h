@@ -1,11 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_RENDERER_HOST_TEXT_INPUT_HOST_IMPL_H_
 #define CONTENT_BROWSER_RENDERER_HOST_TEXT_INPUT_HOST_IMPL_H_
 
-#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/input/text_input_host.mojom.h"
 
@@ -14,7 +13,7 @@ namespace content {
 // Note that the methods should run on BrowserThread::IO to get pumped because
 // BrowserThread::UI is being blocked on a semaphore at TextInputClientMac.
 // http://crbug.com/121917
-class CONTENT_EXPORT TextInputHostImpl : public blink::mojom::TextInputHost {
+class TextInputHostImpl : public blink::mojom::TextInputHost {
  public:
   TextInputHostImpl();
 

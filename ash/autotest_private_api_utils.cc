@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
+#include "ui/compositor/layer_animator.h"
 
 namespace ash {
 namespace {
@@ -127,7 +128,7 @@ bool WaitForHomeLauncherState(bool target_visible, base::OnceClosure closure) {
 
 bool WaitForLauncherAnimation(base::OnceClosure closure) {
   auto* app_list_view =
-      Shell::Get()->app_list_controller()->presenter()->GetView();
+      Shell::Get()->app_list_controller()->fullscreen_presenter()->GetView();
   if (!app_list_view) {
     std::move(closure).Run();
     return true;
@@ -180,7 +181,7 @@ bool WaitForLauncherState(AppListViewState target_state,
   // Don't wait if the launcher is already in the target state and not
   // animating.
   auto* app_list_view =
-      Shell::Get()->app_list_controller()->presenter()->GetView();
+      Shell::Get()->app_list_controller()->fullscreen_presenter()->GetView();
   bool animating =
       app_list_view &&
       app_list_view->GetWidget()->GetLayer()->GetAnimator()->is_animating();

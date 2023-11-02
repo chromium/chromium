@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -73,7 +73,7 @@ class CONTENT_EXPORT SignedExchangeDevToolsProxy {
   void OnSignedExchangeReceived(
       const absl::optional<SignedExchangeEnvelope>& envelope,
       const scoped_refptr<net::X509Certificate>& certificate,
-      const net::SSLInfo* ssl_info);
+      const absl::optional<net::SSLInfo>& ssl_info);
 
  private:
   const GURL outer_request_url_;

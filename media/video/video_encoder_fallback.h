@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,26 +29,26 @@ class MEDIA_EXPORT VideoEncoderFallback : public VideoEncoder {
                        CreateFallbackCB create_fallback_cb);
   ~VideoEncoderFallback() override;
 
-  // VideoDecoder implementation.
+  // VideoEncoder implementation.
   void Initialize(VideoCodecProfile profile,
                   const Options& options,
                   OutputCB output_cb,
-                  StatusCB done_cb) override;
+                  EncoderStatusCB done_cb) override;
   void Encode(scoped_refptr<VideoFrame> frame,
               bool key_frame,
-              StatusCB done_cb) override;
+              EncoderStatusCB done_cb) override;
   void ChangeOptions(const Options& options,
                      OutputCB output_cb,
-                     StatusCB done_cb) override;
-  void Flush(StatusCB done_cb) override;
+                     EncoderStatusCB done_cb) override;
+  void Flush(EncoderStatusCB done_cb) override;
 
  private:
   void FallbackInitialize();
   void FallbackEncode(PendingEncode args);
-  void FallbackInitCompleted(Status status);
+  void FallbackInitCompleted(EncoderStatus status);
   PendingEncode MakePendingEncode(scoped_refptr<VideoFrame> frame,
                                   bool key_frame,
-                                  StatusCB done_cb);
+                                  EncoderStatusCB done_cb);
   void CallOutput(VideoEncoderOutput output,
                   absl::optional<CodecDescription> desc);
 
@@ -66,7 +66,7 @@ class MEDIA_EXPORT VideoEncoderFallback : public VideoEncoder {
   std::vector<std::unique_ptr<PendingEncode>> encodes_to_retry_;
 
   CreateFallbackCB create_fallback_cb_;
-  StatusCB init_done_cb_;
+  EncoderStatusCB init_done_cb_;
   OutputCB output_cb_;
   VideoCodecProfile profile_;
   Options options_;

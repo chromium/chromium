@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,60 +10,64 @@
 #include "base/time/time.h"
 #include "components/history/core/browser/keyword_id.h"
 #include "components/history/core/browser/url_row.h"
+#include "sql/statement.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace history {
 
-// NormalizedKeywordSearchTermVisit is returned by
-// GetMostRecentNormalizedKeywordSearchTerms. It contains the time of the most
-// recent visit and the visit count for the normalized search term aggregated
-// from the keyword visits.
-struct NormalizedKeywordSearchTermVisit {
-  NormalizedKeywordSearchTermVisit() = default;
-  ~NormalizedKeywordSearchTermVisit();
-
-  // Returns the frecency score of the visit based on the following formula:
-  //            (frequency ^ frequency_exponent) * recency_decay_unit_in_seconds
-  // frecency = ————————————————————————————————————————————————————————————————
-  //                   recency_in_seconds + recency_decay_unit_in_seconds
-  // This score combines frequency and recency of the visit favoring ones that
-  // are more frequent and more recent (see go/local-zps-frecency-ranking).
-  // `recency_decay_unit_sec` is the number of seconds until the recency
-  // component of the score decays to half. `frequency_exponent` is factor by
-  // which the frequency of the visit is exponentiated.
-  double GetFrecency(base::Time now,
-                     int recency_decay_unit_sec,
-                     double frequency_exponent) const;
-
-  std::u16string normalized_term;     // The search term, in lower case and with
-                                      // extra whitespaces collapsed.
-  int visits{0};                      // The visit count.
-  base::Time most_recent_visit_time;  // The time of the most recent visit.
-};
-
-// KeywordSearchTermVisit is returned from GetMostRecentKeywordSearchTerms. It
-// gives the time and search term of the keyword visit.
+// Represents one or more visits to a keyword search term. It contains the
+// search term and the normalized search term in addition to the visit count and
+// the last visit time. An optional frecency score may be provided by the
+// utility functions/helpers in keyword_search_term_util.h where applicable.
 struct KeywordSearchTermVisit {
-  KeywordSearchTermVisit();
-  ~KeywordSearchTermVisit();
+  KeywordSearchTermVisit() = default;
+  KeywordSearchTermVisit(const KeywordSearchTermVisit&) = delete;
+  KeywordSearchTermVisit& operator=(const KeywordSearchTermVisit&) = delete;
+  ~KeywordSearchTermVisit() = default;
 
   std::u16string term;             // The search term that was used.
   std::u16string normalized_term;  // The search term, in lower case and with
                                    // extra whitespaces collapsed.
-  int visits;  // The visit count.
-  base::Time time;  // The time of the most recent visit.
+  int visit_count{0};              // The search term visit count.
+  base::Time last_visit_time;      // The time of the last visit.
+  absl::optional<double> score;    // The optional calculated frecency score.
 };
 
 // Used for URLs that have a search term associated with them.
 struct KeywordSearchTermRow {
-  KeywordSearchTermRow();
-  KeywordSearchTermRow(const KeywordSearchTermRow& other);
-  ~KeywordSearchTermRow();
+  KeywordSearchTermRow() = default;
+  KeywordSearchTermRow(const KeywordSearchTermRow& other) = default;
+  ~KeywordSearchTermRow() = default;
 
-  KeywordID keyword_id;  // ID of the keyword.
-  URLID url_id;  // ID of the url.
+  KeywordID keyword_id{0};         // ID of the keyword.
+  URLID url_id{0};                 // ID of the url.
   std::u16string term;             // The search term that was used.
   std::u16string normalized_term;  // The search term, in lower case and with
                                    // extra whitespaces collapsed.
+};
+
+// KeywordSearchTermVisitEnumerator --------------------------------------------
+
+// A basic enumerator to enumerate keyword search term visits. May be created
+// and initialized by URLDatabase only.
+class KeywordSearchTermVisitEnumerator {
+ public:
+  KeywordSearchTermVisitEnumerator(const KeywordSearchTermVisitEnumerator&) =
+      delete;
+  KeywordSearchTermVisitEnumerator& operator=(
+      const KeywordSearchTermVisitEnumerator&) = delete;
+
+  ~KeywordSearchTermVisitEnumerator() = default;
+
+  // Returns the next search term visit or nullptr if no more visits are left.
+  std::unique_ptr<KeywordSearchTermVisit> GetNextVisit();
+
+ private:
+  friend class URLDatabase;
+  KeywordSearchTermVisitEnumerator() = default;
+
+  sql::Statement statement_;  // The statement to create KeywordSearchTermVisit.
+  bool initialized_{false};   // Whether |statement_| can be executed.
 };
 
 }  // namespace history

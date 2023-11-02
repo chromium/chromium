@@ -158,6 +158,13 @@ struct ContextMenuData {
   // TextFragmentAnchor.
   bool opened_from_highlight = false;
 
+  // The form's renderer id if the context menu is triggered on the form.
+  absl::optional<uint64_t> form_renderer_id;
+
+  // The field's renderer id if the context menu is triggered on an input
+  // field or a textarea field.
+  absl::optional<uint64_t> field_renderer_id;
+
   ContextMenuData()
       : media_type(blink::mojom::ContextMenuDataMediaType::kNone),
         has_image_contents(false),

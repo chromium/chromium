@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,12 +12,13 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
@@ -25,6 +26,7 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
 #include "printing/print_settings.h"
+#include "printing/printing_features.h"
 #include "ui/aura/window.h"
 #include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_ui.h"
@@ -117,7 +119,7 @@ class StickyPrintSettingGtk {
   }
 
  private:
-  GtkPrintSettings* last_used_settings_;
+  raw_ptr<GtkPrintSettings> last_used_settings_;
 };
 
 StickyPrintSettingGtk& GetLastUsedSettings() {
@@ -168,13 +170,13 @@ class GtkPrinterList {
   }
 
   std::vector<GtkPrinter*> printers_;
-  GtkPrinter* default_printer_ = nullptr;
+  raw_ptr<GtkPrinter> default_printer_ = nullptr;
 };
 
 }  // namespace
 
 // static
-printing::PrintDialogGtkInterface* PrintDialogGtk::CreatePrintDialog(
+printing::PrintDialogLinuxInterface* PrintDialogGtk::CreatePrintDialog(
     PrintingContextLinux* context) {
   return new PrintDialogGtk(context);
 }
@@ -182,7 +184,10 @@ printing::PrintDialogGtkInterface* PrintDialogGtk::CreatePrintDialog(
 PrintDialogGtk::PrintDialogGtk(PrintingContextLinux* context)
     : base::RefCountedDeleteOnSequence<PrintDialogGtk>(
           base::SequencedTaskRunnerHandle::Get()),
-      context_(context) {}
+      context_(context) {
+  // Paired with the ReleaseDialog() call.
+  AddRef();
+}
 
 PrintDialogGtk::~PrintDialogGtk() {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
@@ -414,8 +419,11 @@ void PrintDialogGtk::ShowDialog(
 
 void PrintDialogGtk::PrintDocument(const printing::MetafilePlayer& metafile,
                                    const std::u16string& document_name) {
-  // This runs on the print worker thread, does not block the UI thread.
-  DCHECK(!owning_task_runner()->RunsTasksInCurrentSequence());
+  // For in-browser printing, this runs on the print worker thread, so it does
+  // not block the UI thread.  For OOP it runs on the service document task
+  // runner.
+  DCHECK_EQ(owning_task_runner()->RunsTasksInCurrentSequence(),
+            printing::features::kEnableOopPrintDriversJobPrint.Get());
 
   // The document printing tasks can outlive the PrintingContext that created
   // this dialog.
@@ -446,11 +454,8 @@ void PrintDialogGtk::PrintDocument(const printing::MetafilePlayer& metafile,
                                 document_name));
 }
 
-void PrintDialogGtk::AddRefToDialog() {
-  AddRef();
-}
-
 void PrintDialogGtk::ReleaseDialog() {
+  context_ = nullptr;
   Release();
 }
 
@@ -463,6 +468,11 @@ void PrintDialogGtk::OnResponse(GtkWidget* dialog, int response_id) {
 
   switch (response_id) {
     case GTK_RESPONSE_OK: {
+      if (!context_) {
+        std::move(callback_).Run(printing::mojom::ResultCode::kCanceled);
+        return;
+      }
+
       if (gtk_settings_)
         g_object_unref(gtk_settings_);
       gtk_settings_ =
@@ -567,17 +577,19 @@ void PrintDialogGtk::OnJobCompleted(GtkPrintJob* print_job,
   if (print_job)
     g_object_unref(print_job);
 
-  base::ThreadPool::PostTask(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-      base::BindOnce(base::GetDeleteFileCallback(), path_to_pdf_));
+  base::ThreadPool::PostTask(FROM_HERE,
+                             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+                              base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+                             base::GetDeleteFileCallback(path_to_pdf_));
   // Printing finished. Matches AddRef() in PrintDocument();
   Release();
 }
 
 void PrintDialogGtk::InitPrintSettings(
     std::unique_ptr<PrintSettings> settings) {
+  if (!context_)
+    return;
+
   InitPrintSettingsGtk(gtk_settings_, page_setup_, settings.get());
   context_->InitWithSettings(std::move(settings));
 }

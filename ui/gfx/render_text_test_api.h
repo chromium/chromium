@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_GFX_RENDER_TEXT_TEST_API_H_
 #define UI_GFX_RENDER_TEXT_TEST_API_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/break_list.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/render_text.h"
@@ -119,7 +120,7 @@ class RenderTextTestApi {
   }
 
  private:
-  RenderText* render_text_;
+  raw_ptr<RenderText> render_text_;
 };
 
 }  // namespace test

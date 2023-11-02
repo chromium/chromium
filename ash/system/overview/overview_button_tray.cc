@@ -1,11 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/overview/overview_button_tray.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/metrics/user_metrics_recorder.h"
+#include "ash/constants/tray_background_view_catalog.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -57,11 +57,14 @@ bool ShouldButtonBeVisible() {
   // details. But we also want to enable it if the user has explicitly enabled
   // `kOverviewButton` from chrome://flags or from the command line. Even though
   // the user is not in the group of existing desks users. Note, can be removed
-  // once the experiment is done.
-  if (base::FeatureList::IsEnabled(features::kOverviewButton) &&
-      (desks_restore_util::HasPrimaryUserUsedDesksRecently() ||
-       base::FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
-           features::kOverviewButton.name))) {
+  // once the experiment is done. Note, only check whether the feature is
+  // overridden from command line if the FeatureList is initialized.
+  const base::FeatureList* feature_list = base::FeatureList::GetInstance();
+  if ((feature_list && feature_list->IsFeatureOverriddenFromCommandLine(
+                           features::kOverviewButton.name,
+                           base::FeatureList::OVERRIDE_ENABLE_FEATURE)) ||
+      (base::FeatureList::IsEnabled(features::kOverviewButton) &&
+       desks_restore_util::HasPrimaryUserUsedDesksRecently())) {
     return true;
   }
 
@@ -74,14 +77,14 @@ bool ShouldButtonBeVisible() {
 constexpr base::TimeDelta OverviewButtonTray::kDoubleTapThresholdMs;
 
 OverviewButtonTray::OverviewButtonTray(Shelf* shelf)
-    : TrayBackgroundView(shelf),
+    : TrayBackgroundView(shelf, TrayBackgroundViewCatalogName::kOverview),
       icon_(new views::ImageView()),
       scoped_session_observer_(this) {
   const gfx::ImageSkia image = GetIconImage();
   const int vertical_padding = (kTrayItemSize - image.height()) / 2;
   const int horizontal_padding = (kTrayItemSize - image.width()) / 2;
   icon_->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(vertical_padding, horizontal_padding)));
+      gfx::Insets::VH(vertical_padding, horizontal_padding)));
   tray_container()->AddChildView(icon_);
 
   // Since OverviewButtonTray is located on the rightmost position of a
@@ -184,7 +187,7 @@ bool OverviewButtonTray::PerformAction(const ui::Event& event) {
     overview_controller->EndOverview(OverviewEndAction::kOverviewButton);
   else
     overview_controller->StartOverview(OverviewStartAction::kOverviewButton);
-  Shell::Get()->metrics()->RecordUserMetricsAction(UMA_TRAY_OVERVIEW);
+  base::RecordAction(base::UserMetricsAction("Tray_Overview"));
 
   // The return value doesn't matter here. OnOverviewModeStarting() and
   // OnOverviewModeEnded() will do the right thing to set the button state.

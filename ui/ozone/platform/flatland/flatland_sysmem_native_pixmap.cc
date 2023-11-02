@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,9 @@ namespace ui {
 
 FlatlandSysmemNativePixmap::FlatlandSysmemNativePixmap(
     scoped_refptr<FlatlandSysmemBufferCollection> collection,
-    gfx::NativePixmapHandle handle)
-    : collection_(collection), handle_(std::move(handle)) {}
+    gfx::NativePixmapHandle handle,
+    gfx::Size size)
+    : collection_(collection), handle_(std::move(handle)), size_(size) {}
 
 FlatlandSysmemNativePixmap::~FlatlandSysmemNativePixmap() = default;
 
@@ -46,6 +47,13 @@ size_t FlatlandSysmemNativePixmap::GetNumberOfPlanes() const {
   return 0;
 }
 
+bool FlatlandSysmemNativePixmap::SupportsZeroCopyWebGPUImport() const {
+  NOTREACHED();
+  // TODO(crbug.com/1304490): Figure out how to import multi-planar pixmap into
+  // WebGPU without copy.
+  return false;
+}
+
 uint64_t FlatlandSysmemNativePixmap::GetBufferFormatModifier() const {
   NOTREACHED();
   return 0;
@@ -56,7 +64,7 @@ gfx::BufferFormat FlatlandSysmemNativePixmap::GetBufferFormat() const {
 }
 
 gfx::Size FlatlandSysmemNativePixmap::GetBufferSize() const {
-  return collection_->size();
+  return size_;
 }
 
 uint32_t FlatlandSysmemNativePixmap::GetUniqueId() const {
@@ -68,6 +76,7 @@ bool FlatlandSysmemNativePixmap::ScheduleOverlayPlane(
     const gfx::OverlayPlaneData& overlay_plane_data,
     std::vector<gfx::GpuFence> acquire_fences,
     std::vector<gfx::GpuFence> release_fences) {
+  NOTREACHED();
   return false;
 }
 
@@ -79,9 +88,8 @@ const gfx::NativePixmapHandle& FlatlandSysmemNativePixmap::PeekHandle() const {
   return handle_;
 }
 
-bool FlatlandSysmemNativePixmap::SupportsOverlayPlane(
-    gfx::AcceleratedWidget widget) const {
-  return false;
+bool FlatlandSysmemNativePixmap::SupportsOverlayPlane() const {
+  return collection_->HasFlatlandImportToken();
 }
 
 }  // namespace ui

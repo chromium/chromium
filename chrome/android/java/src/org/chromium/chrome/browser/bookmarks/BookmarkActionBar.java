@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,18 +15,16 @@ import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
+import org.chromium.chrome.browser.app.bookmarks.BookmarkAddEditFolderActivity;
+import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderSelectActivity;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
-import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.util.ToolbarUtils;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableListAdapter;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
-import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -116,16 +114,16 @@ public class BookmarkActionBar extends SelectableListToolbar<BookmarkId>
             RecordUserAction.record("MobileBookmarkManagerEntryOpenedInNewTab");
             RecordHistogram.recordCount1000Histogram(
                     "Bookmarks.Count.OpenInNewTab", mSelectionDelegate.getSelectedItems().size());
-            openBookmarksInNewTabs(selectionDelegate.getSelectedItemsAsList(),
-                    new TabDelegate(false), mDelegate.getModel());
+            mDelegate.openBookmarks(selectionDelegate.getSelectedItemsAsList(),
+                    /*openInNewTab=*/true, /*incognito=*/false);
             selectionDelegate.clearSelection();
             return true;
         } else if (menuItem.getItemId() == R.id.selection_open_in_incognito_tab_id) {
             RecordUserAction.record("MobileBookmarkManagerEntryOpenedInIncognito");
             RecordHistogram.recordCount1000Histogram("Bookmarks.Count.OpenInIncognito",
                     mSelectionDelegate.getSelectedItems().size());
-            openBookmarksInNewTabs(selectionDelegate.getSelectedItemsAsList(),
-                    new TabDelegate(true), mDelegate.getModel());
+            mDelegate.openBookmarks(selectionDelegate.getSelectedItemsAsList(),
+                    /*openInNewTab=*/true, /*incognito=*/true);
             selectionDelegate.clearSelection();
             return true;
         }
@@ -175,7 +173,6 @@ public class BookmarkActionBar extends SelectableListToolbar<BookmarkId>
     @Override
     public void onFolderStateSet(BookmarkId folder) {
         mCurrentFolder = mDelegate.getModel().getBookmarkById(folder);
-
         getMenu().findItem(R.id.search_menu_id).setVisible(true);
         getMenu().findItem(R.id.edit_menu_id).setVisible(mCurrentFolder.isEditable());
 
@@ -186,7 +183,10 @@ public class BookmarkActionBar extends SelectableListToolbar<BookmarkId>
             return;
         }
 
-        if (mDelegate.getModel().getTopLevelFolderParentIDs().contains(mCurrentFolder.getParentId())
+        if (folder.equals(BookmarkId.SHOPPING_FOLDER)) {
+            setTitle(R.string.price_tracking_bookmarks_filter_title);
+        } else if (mDelegate.getModel().getTopLevelFolderParentIDs().contains(
+                           mCurrentFolder.getParentId())
                 && TextUtils.isEmpty(mCurrentFolder.getTitle())) {
             setTitle(R.string.bookmarks);
         } else {
@@ -242,19 +242,6 @@ public class BookmarkActionBar extends SelectableListToolbar<BookmarkId>
             }
         } else {
             mDelegate.notifyStateChange(this);
-        }
-    }
-
-    private static void openBookmarksInNewTabs(
-            List<BookmarkId> bookmarks, TabDelegate tabDelegate, BookmarkModel model) {
-        for (BookmarkId id : bookmarks) {
-            if (id == null) continue;
-            GURL url = model.getBookmarkById(id).getUrl();
-            tabDelegate.createNewTab(
-                    new LoadUrlParams(url), TabLaunchType.FROM_LONGPRESS_BACKGROUND, null);
-            if (id.getType() == BookmarkType.READING_LIST) {
-                model.setReadStatusForReadingList(url, true);
-            }
         }
     }
 

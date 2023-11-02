@@ -1,7 +1,7 @@
-<style include="cr-shared-style diagnostics-shared diagnostics-fonts">
+<style include="cr-shared-style diagnostics-shared">
   #banner {
     align-items: center;
-    background-color: var(--google-blue-50);
+    background-color: var(--cros-highlight-color);
     display: flex;
     height: 56px;
     position: sticky;
@@ -13,13 +13,9 @@
   #bannerIcon {
     --iron-icon-height: 20px;
     --iron-icon-width: 20px;
-    fill: var(--google-blue-600);
+    fill: var(--cros-color-prominent);
     padding-inline-end: 16px;
     padding-inline-start: 40px;
-  }
-
-  #bannerMsg {
-    @apply --diagnostics-caution-banner-font;
   }
 
   .elevation-2 {
@@ -28,5 +24,5 @@
 </style>
 <div id="banner" hidden$="[[!bannerMessage]]" class$="[[scrollingClass_]]">
   <iron-icon icon="diagnostics:info" id="bannerIcon"></iron-icon>
-  <span id="bannerMsg">[[bannerMessage]]</span>
+  <span id="bannerMsg" class="diagnostics-caution-banner-font">[[bannerMessage]]</span>
 </div>

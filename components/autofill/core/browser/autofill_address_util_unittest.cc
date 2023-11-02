@@ -1,11 +1,14 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/autofill_address_util.h"
 
 #include "base/guid.h"
+#include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -32,7 +35,7 @@ class AddressFormattingTest : public ::testing::Test {
   std::string GetLocale() { return "en-US"; }
 
  private:
-  ui::ResourceBundle* orig_resource_bundle_;
+  raw_ptr<ui::ResourceBundle> orig_resource_bundle_;
 };
 
 // This is a regression test from crbug.com/1259928. Address formats of
@@ -47,6 +50,33 @@ TEST_F(AddressFormattingTest, GetAddressComponentsSkipsEmptyLines) {
 
   EXPECT_FALSE(
       base::ranges::any_of(lines, [](auto line) { return line.empty(); }));
+}
+
+// Tests that address field extensions are applied to `GetAddressComponents()`,
+// by checking that Great Britain's address format is extended by a state field.
+TEST_F(AddressFormattingTest, GetAddressComponentsWithExtensions) {
+  base::test::ScopedFeatureList address_extension_feature;
+  address_extension_feature.InitAndEnableFeature(
+      features::kAutofillEnableExtendedAddressFormats);
+
+  std::vector<std::vector<::i18n::addressinput::AddressUiComponent>> lines;
+  std::string components_language_code;
+  autofill::GetAddressComponents("GB", GetLocale(), /*include_literals=*/false,
+                                 &lines, &components_language_code);
+
+  // Expect to find a line consisting solely of a state field.
+  // Because `include_literals=false`, accessing `.field` is valid.
+  auto state_line = base::ranges::find_if(lines, [](const auto& line) {
+    return line.size() == 1 &&
+           line[0].field == ::i18n::addressinput::AddressField::ADMIN_AREA;
+  });
+  ASSERT_NE(state_line, lines.end());
+  EXPECT_EQ((*state_line)[0].length_hint,
+            ::i18n::addressinput::AddressUiComponent::HINT_LONG);
+  // The prior component on the previous line should be the postal code.
+  ASSERT_NE(state_line, lines.begin());
+  EXPECT_EQ((--state_line)->back().field,
+            ::i18n::addressinput::AddressField::POSTAL_CODE);
 }
 
 TEST_F(AddressFormattingTest, GetEnvelopeStyleAddressSanity) {
@@ -139,6 +169,30 @@ TEST_F(
                               /*include_country=*/true);
   // There should be no consecutive white spaces.
   EXPECT_EQ(address.find(u"  "), std::string::npos);
+}
+
+// Tests that address field extensions are applied to
+// `GetEnvelopeStyleAddress()`, by checking that Great Britain's address format
+// is extended by a state field.
+TEST_F(AddressFormattingTest, GetEnvelopeStyleAddressWithExtensions) {
+  base::test::ScopedFeatureList address_extension_feature;
+  address_extension_feature.InitAndEnableFeature(
+      features::kAutofillEnableExtendedAddressFormats);
+
+  AutofillProfile profile(base::GenerateGUID(), /*origin=*/"");
+  test::SetProfileInfo(&profile, "FirstName", "MiddleName", "LastName",
+                       "johndoe@hades.com", /*company=*/"", "666 Erebus St.",
+                       "Apt 8", "Elysium", /*state=*/"Greater London",
+                       "WC2H 8AG", "GB", "+44 20 7031 3000");
+
+  std::u16string address =
+      GetEnvelopeStyleAddress(profile, GetLocale(), /*include_recipient=*/true,
+                              /*include_country=*/true);
+  // Expect the zip code, followed by a new line and the state.
+  EXPECT_NE(
+      address.find(profile.GetInfo(ADDRESS_HOME_ZIP, GetLocale()) + u"\n" +
+                   profile.GetInfo(ADDRESS_HOME_STATE, GetLocale())),
+      std::string::npos);
 }
 
 TEST_F(AddressFormattingTest,

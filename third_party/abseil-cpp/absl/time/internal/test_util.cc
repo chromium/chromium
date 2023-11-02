@@ -17,6 +17,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstring>
+#include <memory>
 
 #include "absl/base/config.h"
 #include "absl/base/internal/raw_logging.h"
@@ -67,10 +68,6 @@ const struct ZoneInfo {
     {"Invalid/TimeZone", nullptr, 0},
     {"", nullptr, 0},
 
-    // Also allow for loading the local time zone under TZ=US/Pacific.
-    {"US/Pacific",  //
-     reinterpret_cast<char*>(America_Los_Angeles), America_Los_Angeles_len},
-
     // Allows use of the local time zone from a system-specific location.
 #ifdef _MSC_VER
     {"localtime",  //
@@ -87,14 +84,15 @@ class TestZoneInfoSource : public cctz::ZoneInfoSource {
       : data_(data), end_(data + size) {}
 
   std::size_t Read(void* ptr, std::size_t size) override {
-    const std::size_t len = std::min<std::size_t>(size, end_ - data_);
+    const std::size_t len =
+        std::min(size, static_cast<std::size_t>(end_ - data_));
     memcpy(ptr, data_, len);
     data_ += len;
     return len;
   }
 
   int Skip(std::size_t offset) override {
-    data_ += std::min<std::size_t>(offset, end_ - data_);
+    data_ += std::min(offset, static_cast<std::size_t>(end_ - data_));
     return 0;
   }
 
@@ -114,7 +112,10 @@ std::unique_ptr<cctz::ZoneInfoSource> TestFactory(
           new TestZoneInfoSource(zoneinfo.data, zoneinfo.length));
     }
   }
-  ABSL_RAW_LOG(FATAL, "Unexpected time zone \"%s\" in test", name.c_str());
+
+  // The embedded zoneinfo data does not include the zone, so fallback to
+  // built-in UTC. The tests have been crafted so that this should only
+  // happen when testing absl::LocalTimeZone() with an unconstrained ${TZ}.
   return nullptr;
 }
 

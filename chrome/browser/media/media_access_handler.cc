@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 bool MediaAccessHandler::IsInsecureCapturingInProgress(int render_process_id,
                                                        int render_frame_id) {
@@ -30,7 +30,12 @@ void MediaAccessHandler::CheckDevicesAndRunCallback(
   bool get_default_audio_device = audio_allowed;
   bool get_default_video_device = video_allowed;
 
-  blink::MediaStreamDevices devices;
+  // TOOD(crbug.com/1300883): Generalize to multiple streams.
+  blink::mojom::StreamDevicesSet stream_devices_set;
+  stream_devices_set.stream_devices.emplace_back(
+      blink::mojom::StreamDevices::New());
+  blink::mojom::StreamDevices& stream_devices =
+      *stream_devices_set.stream_devices[0];
 
   // Set an initial error result. If neither audio or video is allowed, we'll
   // never try to get any device below but will just create |ui| and return an
@@ -53,7 +58,7 @@ void MediaAccessHandler::CheckDevicesAndRunCallback(
         MediaCaptureDevicesDispatcher::GetInstance()->GetRequestedAudioDevice(
             request.requested_audio_device_id);
     if (audio_device) {
-      devices.push_back(*audio_device);
+      stream_devices.audio_device = *audio_device;
       get_default_audio_device = false;
     }
   }
@@ -62,7 +67,7 @@ void MediaAccessHandler::CheckDevicesAndRunCallback(
         MediaCaptureDevicesDispatcher::GetInstance()->GetRequestedVideoDevice(
             request.requested_video_device_id);
     if (video_device) {
-      devices.push_back(*video_device);
+      stream_devices.video_device = *video_device;
       get_default_video_device = false;
     }
   }
@@ -73,16 +78,22 @@ void MediaAccessHandler::CheckDevicesAndRunCallback(
     MediaCaptureDevicesDispatcher::GetInstance()
         ->GetDefaultDevicesForBrowserContext(
             web_contents->GetBrowserContext(), get_default_audio_device,
-            get_default_video_device, &devices);
+            get_default_video_device, stream_devices);
   }
 
   std::unique_ptr<content::MediaStreamUI> ui;
-  if (!devices.empty()) {
+  if (stream_devices.audio_device.has_value() ||
+      stream_devices.video_device.has_value()) {
     result = blink::mojom::MediaStreamRequestResult::OK;
     ui = MediaCaptureDevicesDispatcher::GetInstance()
              ->GetMediaStreamCaptureIndicator()
-             ->RegisterMediaStream(web_contents, devices);
+             ->RegisterMediaStream(web_contents, stream_devices);
   }
 
-  std::move(callback).Run(devices, result, std::move(ui));
+  if (!stream_devices.audio_device.has_value() &&
+      !stream_devices.video_device.has_value()) {
+    stream_devices_set.stream_devices.clear();
+  }
+
+  std::move(callback).Run(stream_devices_set, result, std::move(ui));
 }

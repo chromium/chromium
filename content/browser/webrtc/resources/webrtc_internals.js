@@ -1,9 +1,9 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
 import {MAX_STATS_DATA_POINT_BUFFER_SIZE} from './data_series.js';
 import {DumpCreator, peerConnectionDataStore, userMediaRequests} from './dump_creator.js';
@@ -13,6 +13,7 @@ import {drawSingleReport, removeStatsReportGraphs} from './stats_graph_helper.js
 import {StatsRatesCalculator, StatsReport} from './stats_rates_calculator.js';
 import {StatsTable} from './stats_table.js';
 import {TabView} from './tab_view.js';
+import {createIceCandidateGrid, updateIceCandidateGrid} from './candidate_grid.js';
 
 const USER_MEDIA_TAB_ID = 'user-media-tab-id';
 
@@ -121,6 +122,7 @@ function initialize() {
   addWebUIListener('add-standard-stats', addStandardStats);
   addWebUIListener('add-legacy-stats', addLegacyStats);
   addWebUIListener('add-get-user-media', addGetUserMedia);
+  addWebUIListener('update-get-user-media', updateGetUserMedia);
   addWebUIListener(
       'remove-get-user-media-for-renderer', removeGetUserMediaForRenderer);
   addWebUIListener(
@@ -142,18 +144,31 @@ function initialize() {
         params.eventLogRecordingsToggleable);
   });
 
-  // Requests stats from all peer connections every second.
-  window.setInterval(requestStats, 1000);
+  // Requests stats from all peer connections every second unless specified via
+  // ?statsInterval=(milliseconds >= 100ms)
+  const searchParameters = new URLSearchParams(window.location.search);
+  let statsInterval = 1000;
+  if (searchParameters.has('statsInterval')) {
+    statsInterval = Math.max(
+        parseInt(searchParameters.get('statsInterval'), 10),
+        100);
+    if (!isFinite(statsInterval)) {
+      statsInterval = 1000;
+    }
+  }
+  window.setInterval(requestStats, statsInterval);
 }
 document.addEventListener('DOMContentLoaded', initialize);
 
 function createStatsSelectionOptionElements() {
-  const p = document.createElement('p');
-
-  const selectElement = document.createElement('select');
-  selectElement.setAttribute('id', 'statsSelectElement');
+  const statsElement = $('stats-template').content.cloneNode(true);
+  const selectElement = statsElement.getElementById('statsSelectElement');
+  const legacyStatsElement = statsElement.getElementById(
+      'legacy-stats-warning');
   selectElement.onchange = () => {
     currentGetStatsMethod = selectElement.value;
+    legacyStatsElement.style.display =
+        currentGetStatsMethod === OPTION_GETSTATS_LEGACY ? 'block' : 'none';
     Object.keys(peerConnectionDataStore).forEach(id => {
       const peerConnectionElement = $(id);
       statsTable.clearStatsLists(peerConnectionElement);
@@ -170,17 +185,7 @@ function createStatsSelectionOptionElements() {
   });
 
   selectElement.value = currentGetStatsMethod;
-
-  p.appendChild(document.createTextNode('Read Stats From: '));
-  p.appendChild(selectElement);
-
-  const statsDocumentation = document.createElement('p');
-  statsDocumentation.appendChild(
-    document.createTextNode('Note: computed stats are in []. ' +
-      'Experimental stats are marked with an * at the end.'));
-  p.appendChild(statsDocumentation);
-
-  return p;
+  return statsElement;
 }
 
 function requestStats() {
@@ -295,7 +300,6 @@ function removePeerConnection(data) {
   }
 }
 
-
 /**
  * Adds a peer connection.
  *
@@ -333,27 +337,6 @@ function addPeerConnection(data) {
   const deprecationNotices = document.createElement('ul');
   if (data.rtcConfiguration) {
     deprecationNotices.className = 'peerconnection-deprecations';
-    if (data.rtcConfiguration.indexOf('extmapAllowMixed: false') !== -1) {
-      // Hard deprecation, setting "false" will no longer work.
-      appendChildWithText(deprecationNotices, 'li',
-        'Note: The RTCPeerConnection offerAllowExtmapMixed ' +
-        'option is a non-standard feature. This feature will be removed ' +
-        'in M93 (Canary: July 15, 2021; Stable: August 24, 2021). For ' +
-        'interoperability with legacy WebRTC versions that throw errors ' +
-        'when attempting to parse the a=extmap-allow-mixed line in the ' +
-        'SDP remove the line from the SDP during signalling.');
-    }
-    if (data.rtcConfiguration.indexOf('sdpSemantics: "plan-b"') !== -1) {
-      appendChildWithText(deprecationNotices, 'li',
-        'Plan B SDP semantics, which is used when constructing an ' +
-        'RTCPeerConnection with {sdpSemantics:\"plan-b\"}, is a legacy ' +
-        'version of the Session Description Protocol that has severe ' +
-        'compatibility issues on modern browsers. The standardized SDP ' +
-        'format, \"unified-plan\", has been used by default since M72 ' +
-        '(January, 2019). Dropping support for Plan B is targeted for ' +
-        'M93. See https://www.chromestatus.com/feature/5823036655665152 ' +
-        'for more details.');
-    }
   }
   if (data.constraints) {
     if (data.constraints.indexOf('enableDtlsSrtp:') !== -1) {
@@ -395,6 +378,7 @@ function addPeerConnection(data) {
   candidatePair.appendChild(document.createElement('span'));
   peerConnectionElement.appendChild(candidatePair);
 
+  createIceCandidateGrid(peerConnectionElement);
   return peerConnectionElement;
 }
 
@@ -499,6 +483,8 @@ function addStandardStats(data) {
           + ' <=> ' + remoteCandidate.address + ':' + remoteCandidate.port;
     }
 
+    // Mark active local-candidate, remote candidate and candidate pair
+    // bold in the table.
     const statsContainer =
         document.getElementById(peerConnectionElement.id + '-table-container');
     const activeConnectionClass = 'stats-table-active-connection';
@@ -510,14 +496,34 @@ function addStandardStats(data) {
       if (innerText.startsWith(activeCandidatePair.id)
           || innerText.startsWith(localCandidate.id)
           || innerText.startsWith(remoteCandidate.id)) {
-        node.classList.add(activeConnectionClass);
+        node.firstElementChild.classList.add(activeConnectionClass);
       } else {
-        node.classList.remove(activeConnectionClass);
+        node.firstElementChild.classList.remove(activeConnectionClass);
       }
     });
+    // Mark active candidate-pair graph bold.
+    const statsGraphContainers = peerConnectionElement
+      .getElementsByClassName('stats-graph-container');
+    for (let i = 0; i < statsGraphContainers.length; i++) {
+      const node = statsGraphContainers[i];
+      if (node.nodeName !== 'DETAILS') {
+        continue;
+      }
+      if (!node.id.startsWith(pcId + '-candidate-pair')) {
+        continue;
+      }
+      if (node.id === pcId + '-candidate-pair-' + activeCandidatePair.id
+          + '-graph-container') {
+        node.firstElementChild.classList.add(activeConnectionClass);
+      } else {
+        node.firstElementChild.classList.remove(activeConnectionClass);
+      }
+    }
   } else {
     candidateElement.innerText = '(not connected)';
   }
+
+  updateIceCandidateGrid(peerConnectionElement, r.statsById);
 }
 
 /**
@@ -545,12 +551,11 @@ function addLegacyStats(data) {
   }
 }
 
-
 /**
  * Adds a getUserMedia request.
  *
  * @param {!Object} data The object containing rid {number}, pid {number},
- *     origin {string}, audio {string}, video {string}.
+ *     origin {string}, request_id {number}, audio {string}, video {string}.
  */
 function addGetUserMedia(data) {
   userMediaRequests.push(data);
@@ -561,21 +566,81 @@ function addGetUserMedia(data) {
 
   const requestDiv = document.createElement('div');
   requestDiv.className = 'user-media-request-div-class';
+  requestDiv.id = ['gum', data.rid, data.pid, data.request_id].join('-');
   requestDiv.rid = data.rid;
   $(USER_MEDIA_TAB_ID).appendChild(requestDiv);
 
   appendChildWithText(requestDiv, 'div', 'Caller origin: ' + data.origin);
   appendChildWithText(requestDiv, 'div', 'Caller process id: ' + data.pid);
-  appendChildWithText(requestDiv, 'div', 'Time: ' + (new Date(data.timestamp)));
-  appendChildWithText(requestDiv, 'span', 'Audio Constraints')
-      .style.fontWeight = 'bold';
-  appendChildWithText(requestDiv, 'div', data.audio);
-
-  appendChildWithText(requestDiv, 'span', 'Video Constraints')
-      .style.fontWeight = 'bold';
-  appendChildWithText(requestDiv, 'div', data.video);
+  const el = appendChildWithText(requestDiv, 'span', 'getUserMedia call');
+  el.style.fontWeight = 'bold';
+  appendChildWithText(el, 'div', 'Time: ' +
+    (new Date(data.timestamp).toTimeString()))
+    .style.fontWeight = 'normal';
+  if (data.audio !== undefined) {
+    appendChildWithText(el, 'div', 'Audio constraints: ' +
+      (data.audio || 'true'))
+      .style.fontWeight = 'normal';
+  }
+  if (data.video !== undefined) {
+    appendChildWithText(el, 'div', 'Video constraints: ' +
+      (data.video || 'true'))
+      .style.fontWeight = 'normal';
+  }
 }
 
+/**
+ * Update a getUserMedia request with a result or error.
+ *
+ * @param {!Object} data The object containing rid {number}, pid {number},
+ *     request_id {number}. For getUserMedia results there is also the
+ *     stream_id {string}, audio_track_info {string} and
+ *     video_track_info {string}. For errors the error {string} and
+ *     error_message {string} fields are set.
+ */
+function updateGetUserMedia(data) {
+  userMediaRequests.push(data);
+
+  if (!$(USER_MEDIA_TAB_ID)) {
+    tabView.addTab(USER_MEDIA_TAB_ID, 'GetUserMedia Requests');
+  }
+
+  const requestDiv = document.getElementById(
+    ['gum', data.rid, data.pid, data.request_id].join('-'));
+  if (!requestDiv) {
+    console.error('Could not update getUserMedia request', data);
+    return;
+  }
+
+  if (data.error) {
+    const el = appendChildWithText(requestDiv, 'span', 'Error');
+    el.style.fontWeight = 'bold';
+    appendChildWithText(el, 'div', 'Time: ' +
+      (new Date(data.timestamp).toTimeString()))
+      .style.fontWeight = 'normal';
+    appendChildWithText(el, 'div', 'Error: ' + data.error)
+      .style.fontWeight = 'normal';
+    appendChildWithText(el, 'div', 'Error message: ' + data.error_message)
+      .style.fontWeight = 'normal';
+    return;
+  }
+
+  const el = appendChildWithText(requestDiv, 'span', 'getUserMedia result');
+  el.style.fontWeight = 'bold';
+  appendChildWithText(el, 'div', 'Time: ' +
+    (new Date(data.timestamp).toTimeString()))
+    .style.fontWeight = 'normal';
+  appendChildWithText(el, 'div', 'Stream id: ' + data.stream_id)
+    .style.fontWeight = 'normal';
+  if (data.audio_track_info) {
+    appendChildWithText(el, 'div', 'Audio track: ' + data.audio_track_info)
+        .style.fontWeight = 'normal';
+  }
+  if (data.video_track_info) {
+    appendChildWithText(el, 'div', 'Video track: ' + data.video_track_info)
+        .style.fontWeight = 'normal';
+  }
+}
 
 /**
  * Removes the getUserMedia requests from the specified |rid|.

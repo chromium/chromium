@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,7 @@
 #include "remoting/protocol/channel_authenticator.h"
 #include "remoting/protocol/p2p_stream_socket.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 SecureChannelFactory::SecureChannelFactory(
     StreamChannelFactory* channel_factory,
@@ -79,5 +78,4 @@ void SecureChannelFactory::OnSecureChannelCreated(
   std::move(callback).Run(std::move(socket));
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

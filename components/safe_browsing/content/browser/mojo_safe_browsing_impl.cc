@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/record_replay.h"
 #include "base/supports_user_data.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
@@ -108,8 +109,7 @@ void MojoSafeBrowsingImpl::MaybeCreate(
 
   scoped_refptr<UrlCheckerDelegate> delegate = delegate_getter.Run();
 
-  if (!resource_context || !delegate ||
-      !delegate->GetDatabaseManager()->IsSupported())
+  if (!resource_context || !delegate)
     return;
 
   std::unique_ptr<MojoSafeBrowsingImpl> impl(new MojoSafeBrowsingImpl(
@@ -163,8 +163,8 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
       content::RenderFrameHost::kNoFrameTreeNodeId,
       /*real_time_lookup_enabled=*/false,
       /*can_rt_check_subresource_url=*/false,
-      /*can_check_db=*/true, /*last_committed_url=*/GURL(),
-      content::GetUIThreadTaskRunner({}),
+      /*can_check_db=*/true, /*can_check_high_confidence_allowlist=*/true,
+      /*last_committed_url=*/GURL(), content::GetUIThreadTaskRunner({}),
       /*url_lookup_service=*/nullptr, WebUIInfoSingleton::GetInstance());
 
   checker_impl->CheckUrl(

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
@@ -63,6 +64,7 @@ class TestUploadClient : public UploaderInterface {
       : last_record_digest_map_(last_record_digest_map) {}
 
   void ProcessRecord(EncryptedRecord encrypted_record,
+                     ScopedReservation scoped_reservation,
                      base::OnceCallback<void(bool)> processed_cb) override {
     WrappedRecord wrapped_record;
     ASSERT_TRUE(wrapped_record.ParseFromString(
@@ -116,7 +118,7 @@ class TestUploadClient : public UploaderInterface {
 
  private:
   absl::optional<int64_t> generation_id_;
-  LastRecordDigestMap* const last_record_digest_map_;
+  const raw_ptr<LastRecordDigestMap> last_record_digest_map_;
 
   Sequence test_upload_sequence_;
 };
@@ -124,9 +126,7 @@ class TestUploadClient : public UploaderInterface {
 class StorageQueueStressTest : public ::testing::TestWithParam<size_t> {
  public:
   void SetUp() override {
-    // Enable compression.
-    scoped_feature_list_.InitFromCommandLine(
-        {CompressionModule::kCompressReportingFeature}, {});
+    scoped_feature_list_.InitAndEnableFeature(kCompressReportingPipeline);
 
     ASSERT_TRUE(location_.CreateUniqueTempDir());
     options_.set_directory(base::FilePath(location_.GetPath()));
@@ -135,10 +135,10 @@ class StorageQueueStressTest : public ::testing::TestWithParam<size_t> {
   void TearDown() override {
     ResetTestStorageQueue();
     // Make sure all memory is deallocated.
-    ASSERT_THAT(GetMemoryResource()->GetUsed(), Eq(0u));
+    ASSERT_THAT(options_.memory_resource()->GetUsed(), Eq(0u));
     // Make sure all disk is not reserved (files remain, but Storage is not
     // responsible for them anymore).
-    ASSERT_THAT(GetDiskResource()->GetUsed(), Eq(0u));
+    ASSERT_THAT(options_.disk_space_resource()->GetUsed(), Eq(0u));
   }
 
   void CreateTestStorageQueueOrDie(const QueueOptions& options) {
@@ -173,22 +173,6 @@ class StorageQueueStressTest : public ::testing::TestWithParam<size_t> {
     // StorageQueue is destructed on a thread,
     // so we need to wait for it to destruct.
     task_environment_.RunUntilIdle();
-  }
-
-  QueueOptions BuildStorageQueueOptionsImmediate() const {
-    return QueueOptions(options_)
-        .set_subdirectory(FILE_PATH_LITERAL("D1"))
-        .set_file_prefix(FILE_PATH_LITERAL("F0001"))
-        .set_max_single_file_size(GetParam());
-  }
-
-  QueueOptions BuildStorageQueueOptionsPeriodic(
-      base::TimeDelta upload_period = base::Seconds(1)) const {
-    return BuildStorageQueueOptionsImmediate().set_upload_period(upload_period);
-  }
-
-  QueueOptions BuildStorageQueueOptionsOnlyManual() const {
-    return BuildStorageQueueOptionsPeriodic(base::TimeDelta::Max());
   }
 
   void AsyncStartTestUploader(
@@ -230,13 +214,20 @@ TEST_P(StorageQueueStressTest,
     test::TestCallbackWaiter write_waiter;
     base::RepeatingCallback<void(Status)> cb = base::BindRepeating(
         [](test::TestCallbackWaiter* waiter, Status status) {
-          EXPECT_OK(status);
+          EXPECT_OK(status) << status;
           waiter->Signal();
         },
         &write_waiter);
 
     SCOPED_TRACE(base::StrCat({"Create ", base::NumberToString(iStart)}));
-    CreateTestStorageQueueOrDie(BuildStorageQueueOptionsOnlyManual());
+    CreateTestStorageQueueOrDie(
+        QueueOptions(options_)
+            .set_subdirectory(FILE_PATH_LITERAL("D1"))
+            .set_file_prefix(FILE_PATH_LITERAL("F0001"))
+            .set_max_single_file_size(GetParam())
+            .set_upload_period(base::TimeDelta::Max())
+            .set_upload_retry_delay(
+                base::TimeDelta()));  // No retry by default.
 
     // Write into the queue at random order (simultaneously).
     SCOPED_TRACE(base::StrCat({"Write ", base::NumberToString(iStart)}));

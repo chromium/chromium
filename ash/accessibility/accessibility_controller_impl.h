@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,6 +43,7 @@ class AccessibilityConfirmationDialog;
 class AccessibilityEventRewriter;
 class AccessibilityHighlightController;
 class AccessibilityObserver;
+class DictationBubbleController;
 class DictationNudgeController;
 class FloatingAccessibilityController;
 class PointScanController;
@@ -212,6 +213,8 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
 
   Feature& GetFeature(FeatureType feature) const;
 
+  base::WeakPtr<AccessibilityControllerImpl> GetWeakPtr();
+
   // Getters for the corresponding features.
   Feature& autoclick() const;
   Feature& caret_highlight() const;
@@ -251,8 +254,13 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
 
   PointScanController* GetPointScanController();
 
+  // Update the autoclick menu bounds and sticky keys overlay bounds if
+  // necessary. This may need to happen when the display work area changes, or
+  // if system UI regions change (like the virtual keyboard position).
+  void UpdateFloatingPanelBoundsIfNeeded();
+
   // Update the autoclick menu bounds if necessary. This may need to happen when
-  // the display work area changes, or if system ui regions change (like the
+  // the display work area changes, or if system UI regions change (like the
   // virtual keyboard position).
   void UpdateAutoclickMenuBoundsIfNeeded();
 
@@ -332,7 +340,7 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
 
   // Plays an earcon. Earcons are brief and distinctive sounds that indicate
   // that their mapped event has occurred. The |sound_key| enums can be found in
-  // ash/components/audio/sounds.h.
+  // chromeos/ash/components/audio/sounds.h.
   void PlayEarcon(Sound sound_key);
 
   // Initiates play of shutdown sound. Returns the TimeDelta duration.
@@ -345,9 +353,6 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
 
   // Toggle dictation.
   void ToggleDictation();
-
-  // Cancels all current and queued speech immediately.
-  void SilenceSpokenFeedback();
 
   // Called when we first detect two fingers are held down, which can be used to
   // toggle spoken feedback on some touch-only devices.
@@ -438,16 +443,34 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   void DisablePolicyRecommendationRestorerForTesting() override;
   void SuspendSwitchAccessKeyHandling(bool suspend) override;
   void EnableChromeVoxVolumeSlideGesture() override;
-  void ShowConfirmationDialog(const std::u16string& title,
-                              const std::u16string& description,
-                              base::OnceClosure on_accept_callback,
-                              base::OnceClosure on_cancel_callback,
-                              base::OnceClosure on_close_callback) override;
   void UpdateDictationButtonOnSpeechRecognitionDownloadChanged(
       int download_progress) override;
   void ShowSpeechRecognitionDownloadNotificationForDictation(
       bool succeeded,
       const std::u16string& display_language) override;
+  void UpdateDictationBubble(
+      bool visible,
+      DictationBubbleIconType icon,
+      const absl::optional<std::u16string>& text,
+      const absl::optional<std::vector<DictationBubbleHintType>>& hints)
+      override;
+  void SilenceSpokenFeedback() override;
+
+  // A confirmation dialog will be shown the first time an accessibility feature
+  // is enabled using the specified accelerator key sequence. Only one dialog
+  // will be shown at a time, and will not be shown again if the user has
+  // selected "accept" on a given dialog. The dialog was added to ensure that
+  // users would be aware of the shortcut they have just enabled, and to prevent
+  // users from accidentally triggering the feature. The dialog is currently
+  // shown when enabling the following features: high contrast, full screen
+  // magnifier, docked magnifier and screen rotation and when requested by the
+  // AccessibilityPrivate extension API. The shown dialog is stored as a weak
+  // pointer in the variable |confirmation_dialog_| below.
+  void ShowConfirmationDialog(const std::u16string& title,
+                              const std::u16string& description,
+                              base::OnceClosure on_accept_callback,
+                              base::OnceClosure on_cancel_callback,
+                              base::OnceClosure on_close_callback) override;
 
   // SessionObserver:
   void OnSigninScreenPrefServiceInitialized(PrefService* prefs) override;
@@ -479,6 +502,8 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
     return dictation_soda_download_progress_;
   }
 
+  DictationBubbleController* GetDictationBubbleControllerForTest();
+
  private:
   // Populate |features_| with the feature of the correct type.
   void CreateAccessibilityFeatures();
@@ -507,6 +532,10 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   void UpdateLargeCursorFromPref();
   void UpdateLiveCaptionFromPref();
   void UpdateCursorColorFromPrefs();
+  void UpdateFilterGreyscaleFromPrefs();
+  void UpdateFilterSaturationFromPrefs();
+  void UpdateFilterSepiaFromPrefs();
+  void UpdateFilterHueRotationFromPrefs();
   void UpdateSwitchAccessKeyCodesFromPref(SwitchAccessCommand command);
   void UpdateSwitchAccessAutoScanEnabledFromPref();
   void UpdateSwitchAccessAutoScanSpeedFromPref();
@@ -579,6 +608,9 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   // with ShowDictationLanguageUpgradedNudge() and reset at Shutdown() or when
   // the Dictation feature is disabled.
   std::unique_ptr<DictationNudgeController> dictation_nudge_controller_;
+
+  // Used to control the Dictation bubble UI.
+  std::unique_ptr<DictationBubbleController> dictation_bubble_controller_;
 
   // True if ChromeVox should enable its volume slide gesture.
   bool enable_chromevox_volume_slide_gesture_ = false;

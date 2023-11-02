@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,13 @@
 #include <unordered_set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "extensions/browser/management_policy.h"
@@ -318,8 +319,8 @@ class ExtensionManagement : public KeyedService {
   // Extension settings applicable to all extensions.
   std::unique_ptr<internal::GlobalSettings> global_settings_;
 
-  Profile* const profile_ = nullptr;
-  PrefService* pref_service_ = nullptr;
+  const raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
   bool is_signin_profile_ = false;
   bool is_child_ = false;
 
@@ -328,7 +329,7 @@ class ExtensionManagement : public KeyedService {
   std::vector<std::unique_ptr<ManagementPolicy::Provider>> providers_;
 };
 
-class ExtensionManagementFactory : public BrowserContextKeyedServiceFactory {
+class ExtensionManagementFactory : public ProfileKeyedServiceFactory {
  public:
   ExtensionManagementFactory(const ExtensionManagementFactory&) = delete;
   ExtensionManagementFactory& operator=(const ExtensionManagementFactory&) =
@@ -346,8 +347,6 @@ class ExtensionManagementFactory : public BrowserContextKeyedServiceFactory {
 
   // BrowserContextKeyedServiceExtensionManagementFactory:
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;

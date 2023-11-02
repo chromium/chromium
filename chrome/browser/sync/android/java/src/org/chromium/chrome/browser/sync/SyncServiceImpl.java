@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.PassphraseType;
+import org.chromium.components.sync.UserSelectableType;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -43,14 +44,12 @@ public class SyncServiceImpl extends SyncService {
             new CopyOnWriteArrayList<SyncStateChangedListener>();
 
     /**
-     * ModelTypes that the user can directly select in settings.
-     * Logically, this is a subset of the native UserSelectableTypeSet, but it
-     * uses values from the ModelType enum instead.
-     * TODO(crbug.com/985290): Resolve this inconsistency.
+     * UserSelectableTypes that the user can directly select in settings.
+     * This is a subset of the native UserSelectableTypeSet.
      */
-    private static final int[] ALL_SELECTABLE_TYPES =
-            new int[] {ModelType.AUTOFILL, ModelType.BOOKMARKS, ModelType.PASSWORDS,
-                    ModelType.PREFERENCES, ModelType.PROXY_TABS, ModelType.TYPED_URLS};
+    private static final int[] ALL_SELECTABLE_TYPES = new int[] {UserSelectableType.AUTOFILL,
+            UserSelectableType.BOOKMARKS, UserSelectableType.PASSWORDS,
+            UserSelectableType.PREFERENCES, UserSelectableType.TABS, UserSelectableType.HISTORY};
 
     /** SyncService should be the only caller of this method. */
     public static @Nullable SyncServiceImpl create() {
@@ -79,6 +78,11 @@ public class SyncServiceImpl extends SyncService {
     @Override
     public boolean canSyncFeatureStart() {
         return SyncServiceImplJni.get().canSyncFeatureStart(mSyncServiceAndroidBridge);
+    }
+
+    @Override
+    public boolean isSyncFeatureEnabled() {
+        return SyncServiceImplJni.get().isSyncFeatureEnabled(mSyncServiceAndroidBridge);
     }
 
     @Override
@@ -111,17 +115,6 @@ public class SyncServiceImpl extends SyncService {
     }
 
     @Override
-    public void setDecoupledFromAndroidMasterSync() {
-        SyncServiceImplJni.get().setDecoupledFromAndroidMasterSync(mSyncServiceAndroidBridge);
-    }
-
-    @Override
-    public boolean getDecoupledFromAndroidMasterSync() {
-        return SyncServiceImplJni.get().getDecoupledFromAndroidMasterSync(
-                mSyncServiceAndroidBridge);
-    }
-
-    @Override
     public @Nullable CoreAccountInfo getAccountInfo() {
         return SyncServiceImplJni.get().getAccountInfo(mSyncServiceAndroidBridge);
     }
@@ -139,10 +132,10 @@ public class SyncServiceImpl extends SyncService {
     }
 
     @Override
-    public Set<Integer> getChosenDataTypes() {
-        int[] modelTypeArray =
-                SyncServiceImplJni.get().getChosenDataTypes(mSyncServiceAndroidBridge);
-        return modelTypeArrayToSet(modelTypeArray);
+    public Set<Integer> getSelectedTypes() {
+        int[] userSelectableTypeArray =
+                SyncServiceImplJni.get().getSelectedTypes(mSyncServiceAndroidBridge);
+        return userSelectableTypeArrayToSet(userSelectableTypeArray);
     }
 
     @Override
@@ -151,9 +144,9 @@ public class SyncServiceImpl extends SyncService {
     }
 
     @Override
-    public void setChosenDataTypes(boolean syncEverything, Set<Integer> enabledTypes) {
-        SyncServiceImplJni.get().setChosenDataTypes(mSyncServiceAndroidBridge, syncEverything,
-                syncEverything ? ALL_SELECTABLE_TYPES : modelTypeSetToArray(enabledTypes));
+    public void setSelectedTypes(boolean syncEverything, Set<Integer> enabledTypes) {
+        SyncServiceImplJni.get().setSelectedTypes(mSyncServiceAndroidBridge, syncEverything,
+                syncEverything ? ALL_SELECTABLE_TYPES : userSelectableTypeSetToArray(enabledTypes));
     }
 
     @Override
@@ -226,16 +219,6 @@ public class SyncServiceImpl extends SyncService {
         for (SyncStateChangedListener listener : mListeners) {
             listener.syncStateChanged();
         }
-    }
-
-    @Override
-    public boolean isSyncAllowedByPlatform() {
-        return SyncServiceImplJni.get().isSyncAllowedByPlatform(mSyncServiceAndroidBridge);
-    }
-
-    @Override
-    public void setSyncAllowedByPlatform(boolean allowed) {
-        SyncServiceImplJni.get().setSyncAllowedByPlatform(mSyncServiceAndroidBridge, allowed);
     }
 
     @Override
@@ -333,7 +316,7 @@ public class SyncServiceImpl extends SyncService {
 
     @Override
     public boolean isSyncingUrlsWithKeystorePassphrase() {
-        return isEngineInitialized() && getActiveDataTypes().contains(ModelType.TYPED_URLS)
+        return isEngineInitialized() && getActiveDataTypes().contains(ModelType.HISTORY)
                 && (getPassphraseType() == PassphraseType.KEYSTORE_PASSPHRASE
                         || getPassphraseType() == PassphraseType.TRUSTED_VAULT_PASSPHRASE);
     }
@@ -376,19 +359,21 @@ public class SyncServiceImpl extends SyncService {
         return modelTypeSet;
     }
 
-    private static int[] modelTypeSetToArray(Set<Integer> modelTypeSet) {
-        int[] modelTypeArray = new int[modelTypeSet.size()];
-        int i = 0;
-        for (int modelType : modelTypeSet) {
-            modelTypeArray[i++] = modelType;
+    private static Set<Integer> userSelectableTypeArrayToSet(int[] userSelectableTypeArray) {
+        Set<Integer> userSelectableTypeSet = new HashSet<Integer>();
+        for (int i = 0; i < userSelectableTypeArray.length; i++) {
+            userSelectableTypeSet.add(userSelectableTypeArray[i]);
         }
-        return modelTypeArray;
+        return userSelectableTypeSet;
     }
 
-    @VisibleForTesting
-    @Override
-    public long getNativeSyncServiceImplForTest() {
-        return SyncServiceImplJni.get().getNativeSyncServiceImplForTest(mSyncServiceAndroidBridge);
+    private static int[] userSelectableTypeSetToArray(Set<Integer> userSelectableTypeSet) {
+        int[] userSelectableTypeArray = new int[userSelectableTypeSet.size()];
+        int i = 0;
+        for (int userSelectableType : userSelectableTypeSet) {
+            userSelectableTypeArray[i++] = userSelectableType;
+        }
+        return userSelectableTypeArray;
     }
 
     @NativeMethods
@@ -399,8 +384,7 @@ public class SyncServiceImpl extends SyncService {
         boolean isSyncRequested(long nativeSyncServiceAndroidBridge);
         void setSyncRequested(long nativeSyncServiceAndroidBridge, boolean requested);
         boolean canSyncFeatureStart(long nativeSyncServiceAndroidBridge);
-        boolean isSyncAllowedByPlatform(long nativeSyncServiceAndroidBridge);
-        void setSyncAllowedByPlatform(long nativeSyncServiceAndroidBridge, boolean allowed);
+        boolean isSyncFeatureEnabled(long nativeSyncServiceAndroidBridge);
         boolean isSyncFeatureActive(long nativeSyncServiceAndroidBridge);
         boolean isSyncDisabledByEnterprisePolicy(long nativeSyncServiceAndroidBridge);
         boolean isEngineInitialized(long nativeSyncServiceAndroidBridge);
@@ -410,9 +394,9 @@ public class SyncServiceImpl extends SyncService {
         void setFirstSetupComplete(
                 long nativeSyncServiceAndroidBridge, int syncFirstSetupCompleteSource);
         int[] getActiveDataTypes(long nativeSyncServiceAndroidBridge);
-        int[] getChosenDataTypes(long nativeSyncServiceAndroidBridge);
-        void setChosenDataTypes(
-                long nativeSyncServiceAndroidBridge, boolean syncEverything, int[] modelTypeArray);
+        int[] getSelectedTypes(long nativeSyncServiceAndroidBridge);
+        void setSelectedTypes(long nativeSyncServiceAndroidBridge, boolean syncEverything,
+                int[] userSelectableTypeArray);
         boolean isCustomPassphraseAllowed(long nativeSyncServiceAndroidBridge);
         boolean isEncryptEverythingEnabled(long nativeSyncServiceAndroidBridge);
         boolean isPassphraseRequiredForPreferredDataTypes(long nativeSyncServiceAndroidBridge);
@@ -428,8 +412,6 @@ public class SyncServiceImpl extends SyncService {
         int getAuthError(long nativeSyncServiceAndroidBridge);
         boolean hasUnrecoverableError(long nativeSyncServiceAndroidBridge);
         boolean requiresClientUpgrade(long nativeSyncServiceAndroidBridge);
-        void setDecoupledFromAndroidMasterSync(long nativeSyncServiceAndroidBridge);
-        boolean getDecoupledFromAndroidMasterSync(long nativeSyncServiceAndroidBridge);
         @Nullable
         CoreAccountInfo getAccountInfo(long nativeSyncServiceAndroidBridge);
         boolean hasSyncConsent(long nativeSyncServiceAndroidBridge);
@@ -440,6 +422,5 @@ public class SyncServiceImpl extends SyncService {
         boolean shouldOfferTrustedVaultOptIn(long nativeSyncServiceAndroidBridge);
         void triggerRefresh(long nativeSyncServiceAndroidBridge);
         long getLastSyncedTimeForDebugging(long nativeSyncServiceAndroidBridge);
-        long getNativeSyncServiceImplForTest(long nativeSyncServiceAndroidBridge);
     }
 }

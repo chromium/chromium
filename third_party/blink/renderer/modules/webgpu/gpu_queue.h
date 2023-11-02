@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,13 +11,13 @@
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 
 namespace blink {
 
 class ExceptionState;
 class GPUBuffer;
 class GPUCommandBuffer;
-class GPUImageCopyImageBitmap;
 class GPUImageCopyExternalImage;
 class GPUImageCopyTexture;
 class GPUImageCopyTextureTagged;
@@ -38,34 +38,40 @@ class GPUQueue : public DawnObject<WGPUQueue> {
   // gpu_queue.idl
   void submit(const HeapVector<Member<GPUCommandBuffer>>& buffers);
   ScriptPromise onSubmittedWorkDone(ScriptState* script_state);
-  void writeBuffer(GPUBuffer* buffer,
+  void writeBuffer(ScriptState* script_state,
+                   GPUBuffer* buffer,
                    uint64_t buffer_offset,
                    const MaybeShared<DOMArrayBufferView>& data,
                    uint64_t data_element_offset,
                    ExceptionState& exception_state);
-  void writeBuffer(GPUBuffer* buffer,
+  void writeBuffer(ScriptState* script_state,
+                   GPUBuffer* buffer,
                    uint64_t buffer_offset,
                    const MaybeShared<DOMArrayBufferView>& data,
                    uint64_t data_element_offset,
                    uint64_t data_element_count,
                    ExceptionState& exception_state);
-  void writeBuffer(GPUBuffer* buffer,
+  void writeBuffer(ScriptState* script_state,
+                   GPUBuffer* buffer,
                    uint64_t buffer_offset,
                    const DOMArrayBufferBase* data,
                    uint64_t data_byte_offset,
                    ExceptionState& exception_state);
-  void writeBuffer(GPUBuffer* buffer,
+  void writeBuffer(ScriptState* script_state,
+                   GPUBuffer* buffer,
                    uint64_t buffer_offset,
                    const DOMArrayBufferBase* data,
                    uint64_t data_byte_offset,
                    uint64_t byte_size,
                    ExceptionState& exception_state);
-  void writeTexture(GPUImageCopyTexture* destination,
+  void writeTexture(ScriptState* script_state,
+                    GPUImageCopyTexture* destination,
                     const MaybeShared<DOMArrayBufferView>& data,
                     GPUImageDataLayout* data_layout,
                     const V8GPUExtent3D* write_size,
                     ExceptionState& exception_state);
-  void writeTexture(GPUImageCopyTexture* destination,
+  void writeTexture(ScriptState* script_state,
+                    GPUImageCopyTexture* destination,
                     const DOMArrayBufferBase* data,
                     GPUImageDataLayout* data_layout,
                     const V8GPUExtent3D* write_size,
@@ -74,30 +80,20 @@ class GPUQueue : public DawnObject<WGPUQueue> {
                                   GPUImageCopyTextureTagged* destination,
                                   const V8GPUExtent3D* copySize,
                                   ExceptionState& exception_state);
-  void copyImageBitmapToTexture(GPUImageCopyImageBitmap* source,
-                                GPUImageCopyTexture* destination,
-                                const V8GPUExtent3D* copy_size,
-                                ExceptionState& exception_state);
 
  private:
   void OnWorkDoneCallback(ScriptPromiseResolver* resolver,
                           WGPUQueueWorkDoneStatus status);
 
-  bool CopyContentFromCPU(StaticBitmapImage* image,
-                          const WGPUOrigin3D& origin,
-                          const WGPUExtent3D& copy_size,
-                          const WGPUImageCopyTexture& destination,
-                          const WGPUTextureFormat dest_texture_format,
-                          bool premultiplied_alpha,
-                          bool flipY = false);
-  bool CopyContentFromGPU(StaticBitmapImage* image,
-                          const WGPUOrigin3D& origin,
-                          const WGPUExtent3D& copy_size,
-                          const WGPUImageCopyTexture& destination,
-                          const WGPUTextureFormat dest_texture_format,
-                          bool premultiplied_alpha,
-                          bool flipY = false);
-  void WriteBufferImpl(GPUBuffer* buffer,
+  bool UploadContentToTexture(StaticBitmapImage* image,
+                              const WGPUOrigin3D& origin,
+                              const WGPUExtent3D& copy_size,
+                              const WGPUImageCopyTexture& destination,
+                              bool dst_premultiplied_alpha,
+                              PredefinedColorSpace dst_color_space,
+                              bool flipY);
+  void WriteBufferImpl(ScriptState* script_state,
+                       GPUBuffer* buffer,
                        uint64_t buffer_offset,
                        uint64_t data_byte_length,
                        const void* data_base_ptr,
@@ -105,12 +101,18 @@ class GPUQueue : public DawnObject<WGPUQueue> {
                        uint64_t data_byte_offset,
                        absl::optional<uint64_t> byte_size,
                        ExceptionState& exception_state);
-  void WriteTextureImpl(GPUImageCopyTexture* destination,
+  void WriteTextureImpl(ScriptState* script_state,
+                        GPUImageCopyTexture* destination,
                         const void* data,
                         size_t dataSize,
                         GPUImageDataLayout* data_layout,
                         const V8GPUExtent3D* write_size,
                         ExceptionState& exception_state);
+
+  void setLabelImpl(const String& value) override {
+    std::string utf8_label = value.Utf8();
+    GetProcs().queueSetLabel(GetHandle(), utf8_label.c_str());
+  }
 };
 
 }  // namespace blink

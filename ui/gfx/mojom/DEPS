@@ -6,4 +6,7 @@ specific_include_rules = {
   "delegated_ink_metadata_mojom_traits\.h" : [
     "+skia/public/mojom/skcolor_mojom_traits.h",
   ],
+  "display_color_spaces_mojom_traits.cc" : [
+    "+skia/public/mojom/skcolorspace_primaries_mojom_traits.h",
+  ],
 }

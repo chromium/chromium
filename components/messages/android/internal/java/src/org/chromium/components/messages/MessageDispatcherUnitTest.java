@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,8 +37,8 @@ public class MessageDispatcherUnitTest {
 
     @Test
     public void testEnqueueWindowScopedMessage() {
-        MessageDispatcherImpl dispatcher =
-                new MessageDispatcherImpl(null, () -> 1, (v) -> 1L, (v) -> {}, null, mQueueManager);
+        MessageDispatcherImpl dispatcher = new MessageDispatcherImpl(
+                null, () -> 1, (x, v) -> 1L, (v) -> {}, null, mQueueManager);
         dispatcher.enqueueWindowScopedMessage(getModel(), false);
         ArgumentCaptor<ScopeKey> captor = ArgumentCaptor.forClass(ScopeKey.class);
         verify(mQueueManager).enqueueMessage(any(), any(), captor.capture(), anyBoolean());
@@ -53,7 +53,8 @@ public class MessageDispatcherUnitTest {
                 .with(MessageBannerProperties.TITLE, "test")
                 .with(MessageBannerProperties.DESCRIPTION, "Description")
                 .with(MessageBannerProperties.ICON, null)
-                .with(MessageBannerProperties.ON_PRIMARY_ACTION, () -> {})
+                .with(MessageBannerProperties.ON_PRIMARY_ACTION,
+                        () -> PrimaryActionClickBehavior.DISMISS_IMMEDIATELY)
                 .with(MessageBannerProperties.ON_DISMISSED, (dismissReason) -> {})
                 .build();
     }

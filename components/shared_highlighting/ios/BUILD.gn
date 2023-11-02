@@ -1,0 +1,32 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ios") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "parsing_utils.h",
+    "parsing_utils.mm",
+    "shared_highlighting_constants.h",
+    "shared_highlighting_constants.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/web/public",
+    "//ios/web/public/ui",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "parsing_utils_unittest.mm" ]
+  deps = [
+    ":ios",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//url",
+  ]
+}

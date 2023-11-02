@@ -1,14 +1,16 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/base_switches.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/component_loader.h"
+#include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -17,6 +19,8 @@
 #include "components/embedder_support/switches.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/permission_request_observer.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -24,6 +28,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "device/fido/features.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension_features.h"
 #include "net/dns/mock_host_resolver.h"
@@ -54,10 +59,16 @@ class CryptotokenBrowserTest : public base::test::WithFeatureOverride,
   CryptotokenBrowserTest()
       : base::test::WithFeatureOverride(
             extensions_features::kU2FSecurityKeyAPI) {
-#if defined(OS_WIN)
-    // Don't dispatch requests to the native Windows API.
-    scoped_feature_list_.InitAndDisableFeature(device::kWebAuthUseNativeWinApi);
+    // Enable the feature flag to load the cryptoken component extension at
+    // startup.
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{extensions_features::kLoadCryptoTokenExtension},
+        /*disabled_features=*/{
+#if BUILDFLAG(IS_WIN)
+          // Don't dispatch requests to the native Windows API.
+          device::kWebAuthUseNativeWinApi
 #endif
+        });
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -98,11 +109,11 @@ class CryptotokenBrowserTest : public base::test::WithFeatureOverride,
   // methods below. Uses the main frame by default or
   // |frame_to_use_for_connecting_| if a test overrides it.
   content::RenderFrameHost* FrameToUseForConnecting() {
-    return frame_to_use_for_connecting_ ? frame_to_use_for_connecting_
+    return frame_to_use_for_connecting_ ? frame_to_use_for_connecting_.get()
                                         : browser()
                                               ->tab_strip_model()
                                               ->GetActiveWebContents()
-                                              ->GetMainFrame();
+                                              ->GetPrimaryMainFrame();
   }
 
   void ExpectChromeRuntimeIsUndefined() {
@@ -114,7 +125,7 @@ class CryptotokenBrowserTest : public base::test::WithFeatureOverride,
         content::EvalJs(FrameToUseForConnecting(), script);
     EXPECT_THAT(
         result.error,
-        testing::StartsWith("a JavaScript error:\nTypeError: Cannot read "
+        testing::StartsWith("a JavaScript error: \"TypeError: Cannot read "
                             "properties of undefined (reading 'connect')"));
   }
 
@@ -158,22 +169,8 @@ class CryptotokenBrowserTest : public base::test::WithFeatureOverride,
     kShowPrompt,
   };
 
-  void ExpectSignSuccess(const std::string& app_id,
-                         PromptExpectation prompt_expectation) {
-    content::WebContents* web_contents =
-        content::WebContents::FromRenderFrameHost(FrameToUseForConnecting());
-    if (prompt_expectation == PromptExpectation::kShowPrompt) {
-      // Automatically resolve permission prompts shown by Cryptotoken on the
-      // target frame.
-      permissions::PermissionRequestManager* request_manager =
-          permissions::PermissionRequestManager::FromWebContents(web_contents);
-      request_manager->set_auto_response_for_test(
-          permissions::PermissionRequestManager::DENY_ALL);
-    }
-
-    permissions::PermissionRequestObserver permission_request_observer(
-        web_contents);
-    const std::string script = base::StringPrintf(
+  std::string GenerateScriptRequestForAppId(const std::string& app_id) {
+    return base::StringPrintf(
         R"(new Promise((resolve,reject) => {
           chrome.runtime.sendMessage('%s',
               {
@@ -208,6 +205,24 @@ class CryptotokenBrowserTest : public base::test::WithFeatureOverride,
               });
       }))",
         kCryptoTokenExtensionId, app_id.c_str(), app_id.c_str());
+  }
+
+  void ExpectSignSuccess(const std::string& app_id,
+                         PromptExpectation prompt_expectation) {
+    content::WebContents* web_contents =
+        content::WebContents::FromRenderFrameHost(FrameToUseForConnecting());
+    if (prompt_expectation == PromptExpectation::kShowPrompt) {
+      // Automatically resolve permission prompts shown by Cryptotoken on the
+      // target frame.
+      permissions::PermissionRequestManager* request_manager =
+          permissions::PermissionRequestManager::FromWebContents(web_contents);
+      request_manager->set_auto_response_for_test(
+          permissions::PermissionRequestManager::DENY_ALL);
+    }
+
+    permissions::PermissionRequestObserver permission_request_observer(
+        web_contents);
+    const std::string script = GenerateScriptRequestForAppId(app_id);
     const content::EvalJsResult result =
         content::EvalJs(FrameToUseForConnecting(), script);
     if (prompt_expectation == PromptExpectation::kShowPrompt) {
@@ -227,7 +242,7 @@ class CryptotokenBrowserTest : public base::test::WithFeatureOverride,
 
   net::EmbeddedTestServer http_server_{net::EmbeddedTestServer::TYPE_HTTP};
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
-  content::RenderFrameHost* frame_to_use_for_connecting_ = nullptr;
+  raw_ptr<content::RenderFrameHost> frame_to_use_for_connecting_ = nullptr;
 
  private:
   // content::URLLoaderInterceptor callback
@@ -261,9 +276,7 @@ class CryptotokenBrowserTest : public base::test::WithFeatureOverride,
     return true;
   }
 
-#if defined(OS_WIN)
   base::test::ScopedFeatureList scoped_feature_list_;
-#endif
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
 };
 
@@ -347,7 +360,7 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 IN_PROC_BROWSER_TEST_P(CryptotokenBrowserTest,
-                       OriginTrailDoesNotAffectChildIframes) {
+                       OriginTrialDoesNotAffectChildIframes) {
   GURL parent_url = GURL(kOriginTrialOrigin);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), parent_url));
   content::WebContents* web_contents =
@@ -373,26 +386,6 @@ IN_PROC_BROWSER_TEST_P(CryptotokenBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(CryptotokenBrowserTest, ConnectWithEnterprisePolicy) {
-  // Connection succeeds regardless of feature flag state with the enterprise
-  // policy overriding deprecation changes.
-  browser()->profile()->GetPrefs()->Set(
-      extensions::pref_names::kU2fSecurityKeyApiEnabled, base::Value(true));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server_.GetURL(kNonOriginTrialDomain, "/empty.html")));
-  ExpectConnectSuccess();
-}
-
-IN_PROC_BROWSER_TEST_P(CryptotokenBrowserTest,
-                       SignWithEnterprisePolicyDoesNotShowPrompt) {
-  browser()->profile()->GetPrefs()->Set(
-      extensions::pref_names::kU2fSecurityKeyApiEnabled, base::Value(true));
-  GURL url = GURL(https_server_.GetURL(kNonOriginTrialDomain, "/empty.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  std::string app_id = url::Origin::Create(url).Serialize();
-  ExpectSignSuccess(app_id, PromptExpectation::kNoPrompt);
-}
-
 IN_PROC_BROWSER_TEST_P(CryptotokenBrowserTest, InsecureOriginCannotConnect) {
   // Connections from insecure origins always fail.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -400,7 +393,80 @@ IN_PROC_BROWSER_TEST_P(CryptotokenBrowserTest, InsecureOriginCannotConnect) {
   ExpectChromeRuntimeIsUndefined();
 }
 
+// Verify that a page with an origin that is not deriveable from its URL, in
+// this case because it uses a CSP sandbox, does not pass appid check.
+IN_PROC_BROWSER_TEST_P(CryptotokenBrowserTest, SandboxedPageDoesNotSign) {
+  if (!IsParamFeatureEnabled()) {
+    // Can't connect with the API disabled.
+    return;
+  }
+  GURL url = https_server_.GetURL(kNonOriginTrialDomain,
+                                  "/cryptotoken/csp-sandbox.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  std::string app_id = url::Origin::Create(url).Serialize();
+
+  const std::string script = GenerateScriptRequestForAppId(app_id);
+  const content::EvalJsResult result =
+      content::EvalJs(FrameToUseForConnecting(), script);
+  EXPECT_EQ("errorCode:2,errorMessage:undefined", result);
+}
+
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(CryptotokenBrowserTest);
+
+// Test that the `kLoadCryptoTokenExtension` feature controls loading of the
+// component extension.
+class CryptotokenLoadFeatureBrowserTest
+    : public base::test::WithFeatureOverride,
+      public InProcessBrowserTest {
+ protected:
+  CryptotokenLoadFeatureBrowserTest()
+      : base::test::WithFeatureOverride(
+            extensions_features::kLoadCryptoTokenExtension) {}
+
+  void SetUp() override {
+    ComponentLoader::EnableBackgroundExtensionsForTesting();
+    InProcessBrowserTest::SetUp();
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(CryptotokenLoadFeatureBrowserTest, IsLoaded) {
+  EXPECT_EQ(ExtensionRegistry::Get(browser()->profile())
+                    ->GenerateInstalledExtensionsSet()
+                    ->GetByID(kCryptoTokenExtensionId) != nullptr,
+            IsParamFeatureEnabled());
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(CryptotokenLoadFeatureBrowserTest);
+
+// Test that `extensions_prefs::kLoadCryptoTokenExtension` also controls loading
+// of the component extension.
+class CryptotokenLoadPolicyBrowserTest : public policy::PolicyTest {
+ protected:
+  void SetUpInProcessBrowserTestFixture() override {
+    PolicyTest::SetUpInProcessBrowserTestFixture();
+
+    policy::PolicyMap policies;
+    policies.Set(policy::key::kLoadCryptoTokenExtension,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                 policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
+    UpdateProviderPolicy(policies);
+  }
+
+  void SetUp() override {
+    ComponentLoader::EnableBackgroundExtensionsForTesting();
+    policy::PolicyTest::SetUp();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(CryptotokenLoadPolicyBrowserTest, IsLoaded) {
+  // The policy controls the extension even if the feature is disabled.
+  EXPECT_FALSE(base::FeatureList::IsEnabled(
+      extensions_features::kLoadCryptoTokenExtension));
+  EXPECT_NE(ExtensionRegistry::Get(browser()->profile())
+                ->GenerateInstalledExtensionsSet()
+                ->GetByID(kCryptoTokenExtensionId),
+            nullptr);
+}
 
 }  // namespace
 }  // namespace extensions

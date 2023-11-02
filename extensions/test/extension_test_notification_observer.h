@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 
 #include "base/callback.h"
 #include "base/callback_list.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -131,7 +131,7 @@ class ExtensionTestNotificationObserver : public content::NotificationObserver,
   // Quits the message loop if |condition_| is met.
   void MaybeQuit();
 
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext> context_;
 
  private:
   content::NotificationRegistrar registrar_;

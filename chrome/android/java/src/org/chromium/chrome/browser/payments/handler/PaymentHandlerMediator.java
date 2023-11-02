@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChange
 import org.chromium.chrome.browser.payments.ServiceWorkerPaymentAppBridge;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator.PaymentHandlerUiObserver;
 import org.chromium.chrome.browser.payments.handler.toolbar.PaymentHandlerToolbarCoordinator.PaymentHandlerToolbarObserver;
-import org.chromium.chrome.browser.ui.TabObscuringHandler;
+import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -31,7 +31,6 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.payments.mojom.PaymentEventResponseType;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.util.TokenHolder;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -64,7 +63,7 @@ import java.lang.annotation.RetentionPolicy;
     private final ActivityStateListener mActivityStateListener;
 
     /** A token held while the payment sheet is obscuring all visible tabs. */
-    private int mTabObscuringToken = TokenHolder.INVALID_TOKEN;
+    private TabObscuringHandler.Token mTabObscuringToken;
 
     @IntDef({CloseReason.OTHERS, CloseReason.USER, CloseReason.ACTIVITY_DIED,
             CloseReason.INSECURE_NAVIGATION, CloseReason.FAIL_LOAD})
@@ -159,11 +158,12 @@ import java.lang.annotation.RetentionPolicy;
      * @param obscure Whether to obscure all tabs.
      */
     private void setObscureState(boolean obscure) {
-        if (obscure && mTabObscuringToken == TokenHolder.INVALID_TOKEN) {
-            mTabObscuringToken = mTabObscuringHandler.obscureAllTabs();
-        } else if (!obscure && mTabObscuringToken != TokenHolder.INVALID_TOKEN) {
-            mTabObscuringHandler.unobscureAllTabs(mTabObscuringToken);
-            mTabObscuringToken = TokenHolder.INVALID_TOKEN;
+        if (obscure && mTabObscuringToken == null) {
+            mTabObscuringToken =
+                    mTabObscuringHandler.obscure(TabObscuringHandler.Target.ALL_TABS_AND_TOOLBAR);
+        } else if (!obscure && mTabObscuringToken != null) {
+            mTabObscuringHandler.unobscure(mTabObscuringToken);
+            mTabObscuringToken = null;
         }
     }
 
@@ -240,14 +240,18 @@ import java.lang.annotation.RetentionPolicy;
 
     // Implement WebContentsObserver:
     @Override
-    public void didFinishNavigation(NavigationHandle navigationHandle) {
+    public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigationHandle) {
         // Checking uncommitted navigations (e.g., Network errors) is unnecessary because
         // they have no chance to be loaded nor rendered.
-        if (navigationHandle.isSameDocument() || !navigationHandle.hasCommitted()
-                || !navigationHandle.isInPrimaryMainFrame()) {
+        if (navigationHandle.isSameDocument() || !navigationHandle.hasCommitted()) {
             return;
         }
         closeIfInsecure();
+    }
+
+    @Override
+    public void didFinishNavigationNoop(NavigationHandle navigationHandle) {
+        if (!navigationHandle.isInPrimaryMainFrame()) return;
     }
 
     // Implement WebContentsObserver:

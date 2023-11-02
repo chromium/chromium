@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="subtitle"
+        android:title="@string/preload_pages_standard_preloading_subtitle"
+        app:allowDividerBelow="false" />
+
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="bullet_one"
+        android:summary="@string/preload_pages_standard_preloading_bullet_one"
+        app:allowDividerBelow="false" />
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="bullet_two"
+        android:summary="@string/preload_pages_standard_preloading_bullet_two"
+        app:allowDividerBelow="false" />
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="bullet_three"
+        android:summary="@string/preload_pages_standard_preloading_bullet_three"
+        app:allowDividerBelow="false" />
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="bullet_four"
+        android:summary="@string/preload_pages_standard_preloading_bullet_four"
+        app:allowDividerBelow="false" />
+</PreferenceScreen>

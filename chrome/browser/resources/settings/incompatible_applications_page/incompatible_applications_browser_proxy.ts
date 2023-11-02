@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,18 +18,17 @@ export enum ActionTypes {
   UPGRADE = 2,
 }
 
-export type IncompatibleApplication = {
-  name: string,
-  actionType: ActionTypes,
-  actionUrl: string,
-};
+export interface IncompatibleApplication {
+  name: string;
+  type: ActionTypes;
+  url: string;
+}
 
 export interface IncompatibleApplicationsBrowserProxy {
   /**
    * Get the list of incompatible applications.
    */
-  requestIncompatibleApplicationsList():
-      Promise<Array<IncompatibleApplication>>;
+  requestIncompatibleApplicationsList(): Promise<IncompatibleApplication[]>;
 
   /**
    * Launches the Apps & Features page that allows uninstalling

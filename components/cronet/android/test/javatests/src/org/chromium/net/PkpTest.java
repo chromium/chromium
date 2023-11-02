@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,8 +66,8 @@ public class PkpTest {
         if (mTestRule.testingJavaImpl()) {
             return;
         }
-        // Start HTTP2 Test Server
         System.loadLibrary("cronet_tests");
+        TestFilesInstaller.installIfNeeded(getContext());
         assertTrue(Http2TestServer.startHttp2TestServer(
                 getContext(), SERVER_CERT_PEM, SERVER_KEY_PKCS8_PEM));
         mServerHost = "test.example.com";

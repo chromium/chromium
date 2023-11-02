@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 @protocol SavePasswordsConsumerDelegate
 
 // Callback called when the async request launched from
-// |getLoginsFromPasswordStore| finishes.
+// `getLoginsFromPasswordStore` finishes.
 - (void)onGetPasswordStoreResults:
     (std::vector<std::unique_ptr<password_manager::PasswordForm>>)results;
 
@@ -35,9 +35,11 @@ class SavePasswordsConsumer : public password_manager::PasswordStoreConsumer {
   void OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<password_manager::PasswordForm>> results)
       override;
+  base::WeakPtr<password_manager::PasswordStoreConsumer> GetWeakPtr();
 
  private:
   __weak id<SavePasswordsConsumerDelegate> delegate_ = nil;
+  base::WeakPtrFactory<SavePasswordsConsumer> weak_ptr_factory_{this};
 };
 
 }  // namespace ios

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -242,15 +242,6 @@ struct URLRequest {
   // The priority of this request determined by Blink.
   RequestPriority priority;
 
-  // True if corresponding AppCache group should be reset.
-  bool should_reset_appcache;
-
-  // https://wicg.github.io/cors-rfc1918/#external-request
-  // TODO(toyoshim): The browser should know better than renderers do.
-  // This is used to plumb Blink decided information for legacy code path, but
-  // eventually we should remove this.
-  bool is_external_request;
-
   // A policy to decide if CORS-preflight fetch should be performed.
   CorsPreflightPolicy cors_preflight_policy;
 
@@ -313,8 +304,8 @@ struct URLRequest {
   // credentials or default credentials may still be used for authentication.
   bool do_not_prompt_for_login;
 
-  // True if |frame_id| is the main frame of a RenderView.
-  bool is_main_frame;
+  // True if |frame_id| is the outermost main frame of a page.
+  bool is_outermost_main_frame;
 
   // Note: this is an enum of type ui::PageTransition.
   // TODO(jam): remove this from the struct since network service shouldn't know
@@ -370,22 +361,11 @@ struct URLRequest {
   // handler.
   string? devtools_stack_id;
 
-  // True for prefetch requests when SignedExchangePrefetchCacheForNavigations
-  // feature is enabled by flags or SignedExchangeSubresourcePrefetch feature is
-  // enabled by flags, or OriginTrial. TODO(horo): Remove this when these
-  // features are enabled by default.
-  bool is_signed_exchange_prefetch_cache_enabled;
-
   // True for XHR, Fetch, and EventSource.
   bool is_fetch_like_api;
 
   // True for favicon.
   bool is_favicon;
-
-  // If set, the network service will attempt to retrieve the appropriate origin
-  // policy, if necessary, and attach it to the ResourceResponseHead.
-  // Spec: https://wicg.github.io/origin-policy/
-  bool obey_origin_policy;
 
   // The original destination of a request that was passed through by a service
   // worker.

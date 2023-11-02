@@ -1,13 +1,13 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/apps/chrome_native_app_window_views.h"
 
 #include <stddef.h>
+
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -74,17 +74,17 @@ const std::map<ui::Accelerator, int>& GetAcceleratorTable() {
   if (!chrome::IsRunningInForcedAppMode()) {
     static base::NoDestructor<std::map<ui::Accelerator, int>> accelerators(
         AcceleratorsFromMapping(kAppWindowAcceleratorMap,
-                                base::size(kAppWindowAcceleratorMap)));
+                                std::size(kAppWindowAcceleratorMap)));
     return *accelerators;
   }
 
   static base::NoDestructor<std::map<ui::Accelerator, int>>
       app_mode_accelerators([]() {
         std::map<ui::Accelerator, int> mapping = AcceleratorsFromMapping(
-            kAppWindowAcceleratorMap, base::size(kAppWindowAcceleratorMap));
+            kAppWindowAcceleratorMap, std::size(kAppWindowAcceleratorMap));
         std::map<ui::Accelerator, int> kiosk_mapping = AcceleratorsFromMapping(
             kAppWindowKioskAppModeAcceleratorMap,
-            base::size(kAppWindowKioskAppModeAcceleratorMap));
+            std::size(kAppWindowKioskAppModeAcceleratorMap));
         mapping.insert(std::begin(kiosk_mapping), std::end(kiosk_mapping));
         return mapping;
       }());
@@ -93,13 +93,9 @@ const std::map<ui::Accelerator, int>& GetAcceleratorTable() {
 
 }  // namespace
 
-ChromeNativeAppWindowViews::ChromeNativeAppWindowViews()
-    : has_frame_color_(false),
-      active_frame_color_(SK_ColorBLACK),
-      inactive_frame_color_(SK_ColorBLACK) {
-}
+ChromeNativeAppWindowViews::ChromeNativeAppWindowViews() = default;
 
-ChromeNativeAppWindowViews::~ChromeNativeAppWindowViews() {}
+ChromeNativeAppWindowViews::~ChromeNativeAppWindowViews() = default;
 
 void ChromeNativeAppWindowViews::OnBeforeWidgetInit(
     const AppWindow::CreateParams& create_params,
@@ -148,7 +144,7 @@ void ChromeNativeAppWindowViews::InitializeDefaultWindow(
         window_bounds.x() != BoundsSpecification::kUnspecifiedPosition &&
         window_bounds.y() != BoundsSpecification::kUnspecifiedPosition;
     if (!position_specified) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       // On Mac, this will call NativeWidgetMac's CenterWindow() which relies
       // on the size being its content size instead of window size. That
       // API only causes a problem when we use system title bar in an old
@@ -182,8 +178,8 @@ void ChromeNativeAppWindowViews::InitializeDefaultWindow(
   // registered. This CHECK catches the case.
   CHECK(!is_kiosk_app_mode ||
         accelerator_table.size() ==
-            base::size(kAppWindowAcceleratorMap) +
-                base::size(kAppWindowKioskAppModeAcceleratorMap));
+            std::size(kAppWindowAcceleratorMap) +
+                std::size(kAppWindowKioskAppModeAcceleratorMap));
 
   // Ensure there is a ZoomController in kiosk mode, otherwise the processing
   // of the accelerators will cause a crash. Note CHECK here because DCHECK
@@ -283,7 +279,7 @@ ChromeNativeAppWindowViews::CreateNonClientFrameView(views::Widget* widget) {
 }
 
 bool ChromeNativeAppWindowViews::WidgetHasHitTestMask() const {
-  return shape_ != NULL;
+  return shape_ != nullptr;
 }
 
 void ChromeNativeAppWindowViews::GetWidgetHitTestMask(SkPath* mask) const {
@@ -338,7 +334,7 @@ void ChromeNativeAppWindowViews::UpdateShape(
   std::unique_ptr<SkRegion> region;
   if (shape_rects_) {
     region = std::make_unique<SkRegion>();
-    for (const gfx::Rect& input_rect : *shape_rects_.get())
+    for (const gfx::Rect& input_rect : *shape_rects_)
       region->op(gfx::RectToSkIRect(input_rect), SkRegion::kUnion_Op);
   }
   shape_ = std::move(region);

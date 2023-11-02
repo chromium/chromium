@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@ static const int kConvertInputs = 8;
 static const int kConvertCycles = 3;
 
 // Parameters used for testing.
-static const ChannelLayout kChannelLayout = CHANNEL_LAYOUT_STEREO;
+static constexpr ChannelLayout kChannelLayout = CHANNEL_LAYOUT_STEREO;
 static const int kHighLatencyBufferSize = 2048;
 static const int kLowLatencyBufferSize = 256;
 static const int kSampleRate = 48000;
@@ -30,15 +30,17 @@ static const int kSampleRate = 48000;
 // Number of full sine wave cycles for each Render() call.
 static const int kSineCycles = 4;
 
-// Tuple of <input rate, output rate, output channel layout, epsilon>.
-typedef std::tuple<int, int, ChannelLayout, double> AudioConverterTestData;
+// Tuple of <input rate, output rate, output channel layout config, epsilon>.
+typedef std::tuple<int, int, ChannelLayoutConfig, double>
+    AudioConverterTestData;
 class AudioConverterTest
     : public testing::TestWithParam<AudioConverterTestData> {
  public:
   AudioConverterTest() : epsilon_(std::get<3>(GetParam())) {
     // Create input and output parameters based on test parameters.
     input_parameters_ =
-        AudioParameters(AudioParameters::AUDIO_PCM_LINEAR, kChannelLayout,
+        AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
+                        ChannelLayoutConfig::FromLayout<kChannelLayout>(),
                         std::get<0>(GetParam()), kHighLatencyBufferSize);
     output_parameters_ = AudioParameters(
         AudioParameters::AUDIO_PCM_LOW_LATENCY, std::get<2>(GetParam()),
@@ -200,13 +202,11 @@ TEST(AudioConverterTest, AudioDelayAndDiscreteChannelCount) {
   // Choose input and output parameters such that the transform must make
   // multiple calls to fill the buffer.
   AudioParameters input_parameters(AudioParameters::AUDIO_PCM_LINEAR,
-                                   CHANNEL_LAYOUT_DISCRETE, kSampleRate,
+                                   {CHANNEL_LAYOUT_DISCRETE, 10}, kSampleRate,
                                    kLowLatencyBufferSize);
-  input_parameters.set_channels_for_discrete(10);
   AudioParameters output_parameters(AudioParameters::AUDIO_PCM_LINEAR,
-                                    CHANNEL_LAYOUT_DISCRETE, kSampleRate * 2,
-                                    kHighLatencyBufferSize);
-  output_parameters.set_channels_for_discrete(5);
+                                    {CHANNEL_LAYOUT_DISCRETE, 5},
+                                    kSampleRate * 2, kHighLatencyBufferSize);
 
   AudioConverter converter(input_parameters, output_parameters, false);
   FakeAudioRenderCallback callback(0.2, kSampleRate);
@@ -257,12 +257,18 @@ INSTANTIATE_TEST_SUITE_P(
     AudioConverterTest,
     testing::Values(
         // No resampling. No channel mixing.
-        std::make_tuple(44100, 44100, CHANNEL_LAYOUT_STEREO, 0.00000048),
+        std::make_tuple(44100,
+                        44100,
+                        ChannelLayoutConfig::Stereo(),
+                        0.00000048),
 
         // Upsampling. Channel upmixing.
-        std::make_tuple(44100, 48000, CHANNEL_LAYOUT_QUAD, 0.033),
+        std::make_tuple(44100,
+                        48000,
+                        ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_QUAD>(),
+                        0.033),
 
         // Downsampling. Channel downmixing.
-        std::make_tuple(48000, 41000, CHANNEL_LAYOUT_MONO, 0.042)));
+        std::make_tuple(48000, 41000, ChannelLayoutConfig::Mono(), 0.042)));
 
 }  // namespace media

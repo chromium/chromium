@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,10 +14,9 @@ import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
-import com.google.common.base.Optional;
-
 import org.chromium.base.Callback;
 import org.chromium.base.Promise;
+import org.chromium.components.signin.base.AccountCapabilities;
 
 import java.util.List;
 
@@ -26,19 +25,19 @@ import java.util.List;
  */
 public interface AccountManagerFacade {
     /**
-     * Listener for {@link ChildAccountStatus.Status}.
+     * Listener for whether the account is a child one.
      */
     interface ChildAccountStatusListener {
         /**
-         * The method is called when child account status is ready.
+         * The method is called when the status of the account (whether it is a child one) is ready.
          *
-         * @param status The status of the account.
-         * @param childAccount The child account if status != {@link Status.NOT_CHILD}; null
+         * @param isChild If account is a child account.
+         * @param childAccount The child account if isChild != false; null
          *         otherwise.
          *
          * TODO(crbug.com/1258563): consider refactoring this interface to use Promises.
          */
-        void onStatusReady(@ChildAccountStatus.Status int status, @Nullable Account childAccount);
+        void onStatusReady(boolean isChild, @Nullable Account childAccount);
     }
 
     /**
@@ -96,16 +95,18 @@ public interface AccountManagerFacade {
      * Checks the child account status of the given account.
      *
      * @param account The account to check the child account status.
-     * @param listener The listener is called when the {@link ChildAccountStatus.Status} is ready.
+     * @param listener The listener is called when the status of the account
+     *                 (whether it is a child one) is ready.
      */
     @MainThread
     void checkChildAccountStatus(Account account, ChildAccountStatusListener listener);
 
     /**
-     * Gets the boolean for whether the account can offer extended sync promos.
-     * If the result is not yet fetched, the optional will be empty.
+     * @param account The account used to look up capabilities.
+     * @return account capabilities for the given account.
      */
-    Optional<Boolean> canOfferExtendedSyncPromos(Account account);
+    @MainThread
+    Promise<AccountCapabilities> getAccountCapabilities(Account account);
 
     /**
      * Creates an intent that will ask the user to add a new account to the device. See

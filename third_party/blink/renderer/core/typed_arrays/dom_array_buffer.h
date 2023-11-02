@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 
 namespace blink {
 
-class CORE_EXPORT DOMArrayBuffer final : public DOMArrayBufferBase {
+class CORE_EXPORT DOMArrayBuffer : public DOMArrayBufferBase {
   DEFINE_WRAPPERTYPEINFO();
   static const WrapperTypeInfo wrapper_type_info_body_;
 
@@ -64,7 +64,7 @@ class CORE_EXPORT DOMArrayBuffer final : public DOMArrayBufferBase {
 
   // Transfer the ArrayBuffer if it is detachable, otherwise make a copy and
   // transfer that.
-  bool Transfer(v8::Isolate*, ArrayBufferContents& result);
+  virtual bool Transfer(v8::Isolate*, ArrayBufferContents& result);
 
   // Share the ArrayBuffer, even if it is non-shared. Such sharing is necessary
   // for e.g. WebAudio which uses a separate thread for processing the

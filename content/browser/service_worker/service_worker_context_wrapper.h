@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/observer_list_threadsafe.h"
@@ -26,6 +27,7 @@
 #include "content/public/browser/service_worker_running_info.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
@@ -157,6 +159,10 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   // ServiceWorkerContext implementation:
   void AddObserver(ServiceWorkerContextObserver* observer) override;
   void RemoveObserver(ServiceWorkerContextObserver* observer) override;
+  // TODO (crbug.com/1335059) RegisterServiceWorker passes an invalid frame id.
+  // Currently it's okay because it is used only by PaymentAppInstaller and
+  // Extensions, but ideally we should add some guard to avoid the method is
+  // called from other places.
   void RegisterServiceWorker(
       const GURL& script_url,
       const blink::StorageKey& key,
@@ -167,11 +173,16 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
                                ResultCallback callback) override;
   ServiceWorkerExternalRequestResult StartingExternalRequest(
       int64_t service_worker_version_id,
+      ServiceWorkerExternalRequestTimeoutType timeout_type,
       const std::string& request_uuid) override;
   ServiceWorkerExternalRequestResult FinishedExternalRequest(
       int64_t service_worker_version_id,
       const std::string& request_uuid) override;
   size_t CountExternalRequestsForTest(const blink::StorageKey& key) override;
+  bool ExecuteScriptForTest(
+      const std::string& script,
+      int64_t service_worker_version_id,
+      ServiceWorkerScriptExecutionCallback callback) override;
   bool MaybeHasRegistrationForStorageKey(const blink::StorageKey& key) override;
   void GetAllOriginsInfo(GetUsageInfoCallback callback) override;
   void DeleteForStorageKey(const blink::StorageKey& key,
@@ -202,6 +213,9 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   void StopAllServiceWorkers(base::OnceClosure callback) override;
   const base::flat_map<int64_t, ServiceWorkerRunningInfo>&
   GetRunningServiceWorkerInfos() override;
+  bool IsLiveRunningServiceWorker(int64_t service_worker_version_id) override;
+  service_manager::InterfaceProvider& GetRemoteInterfaces(
+      int64_t service_worker_version_id) override;
 
   scoped_refptr<ServiceWorkerRegistration> GetLiveRegistration(
       int64_t registration_id);
@@ -356,21 +370,20 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   // DeleteAndStartOver fails.
   ServiceWorkerContextCore* context();
 
-  // This method waits for service worker registrations to be initialized, and
-  // depends on |on_registrations_initialized_| and |registrations_initialized_|
-  // which are called in InitializeRegisteredOrigins().
-  void WaitForRegistrationsInitializedForTest();
-
   void SetLoaderFactoryForUpdateCheckForTest(
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory);
   // Returns nullptr on failure.
   scoped_refptr<network::SharedURLLoaderFactory> GetLoaderFactoryForUpdateCheck(
-      const GURL& scope);
+      const GURL& scope,
+      network::mojom::ClientSecurityStatePtr client_security_state);
 
   // Returns nullptr on failure.
   // Note: This is currently only used for plzServiceWorker.
   scoped_refptr<network::SharedURLLoaderFactory>
-  GetLoaderFactoryForMainScriptFetch(const GURL& scope, int64_t version_id);
+  GetLoaderFactoryForMainScriptFetch(
+      const GURL& scope,
+      int64_t version_id,
+      network::mojom::ClientSecurityStatePtr client_security_state);
 
   // Binds a ServiceWorkerStorageControl.
   void BindStorageControl(
@@ -463,58 +476,20 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   CreateNonNetworkPendingURLLoaderFactoryBundleForUpdateCheck(
       BrowserContext* browser_context);
 
-  // This is used as a callback of GetRegisteredStorageKeys when initialising to
-  // store a list of storage keys that have registered service workers.
-  void DidGetRegisteredStorageKeys(
-      const std::vector<blink::StorageKey>& storage_keys);
-
-  // Temporary for https://crbug.com/1161153.
+  // TODO(https://crbug.com/1295029): Remove. Temporary workaround.
   void StartServiceWorkerAndDispatchMessageOnUIThread(
       const GURL& scope,
       const blink::StorageKey& key,
       blink::TransferableMessage message,
       ResultCallback callback);
-  void DeleteForStorageKeyOnUIThread(
-      const blink::StorageKey& key,
-      ResultCallback callback,
-      scoped_refptr<base::TaskRunner> callback_runner);
-  void GetRegistrationUserDataOnUIThread(int64_t registration_id,
-                                         const std::vector<std::string>& keys,
-                                         GetUserDataCallback callback);
-  void GetRegistrationUserDataByKeyPrefixOnUIThread(
-      int64_t registration_id,
-      const std::string& key_prefix,
-      GetUserDataCallback callback);
-  void GetRegistrationUserKeysAndDataByKeyPrefixOnUIThread(
-      int64_t registration_id,
-      const std::string& key_prefix,
-      GetUserKeysAndDataCallback callback);
-  void StoreRegistrationUserDataOnUIThread(
-      int64_t registration_id,
-      const blink::StorageKey& key,
-      const std::vector<std::pair<std::string, std::string>>& key_value_pairs,
-      StatusCallback callback);
-  void ClearRegistrationUserDataOnUIThread(int64_t registration_id,
-                                           const std::vector<std::string>& keys,
-                                           StatusCallback callback);
-  void ClearRegistrationUserDataByKeyPrefixesOnUIThread(
-      int64_t registration_id,
-      const std::vector<std::string>& key_prefixes,
-      StatusCallback callback);
-  void GetUserDataForAllRegistrationsOnUIThread(
-      const std::string& key,
-      GetUserDataForAllRegistrationsCallback callback);
-  void GetUserDataForAllRegistrationsByKeyPrefixOnUIThread(
-      const std::string& key_prefix,
-      GetUserDataForAllRegistrationsCallback callback);
-  void ClearUserDataForAllRegistrationsByKeyPrefixOnUIThread(
-      const std::string& key_prefix,
-      StatusCallback callback);
+
+  void ClearRunningServiceWorkers();
 
   scoped_refptr<network::SharedURLLoaderFactory>
   GetLoaderFactoryForBrowserInitiatedRequest(
       const GURL& scope,
-      absl::optional<int64_t> version_id);
+      absl::optional<int64_t> version_id,
+      network::mojom::ClientSecurityStatePtr client_security_state);
 
   // Observers of |context_core_| which live within content's implementation
   // boundary. Shared with |context_core_|.
@@ -532,20 +507,17 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   // Initialized in Init(); true if the user data directory is empty.
   bool is_incognito_ = false;
 
+  // Indicates if we are in the middle of deleting the `context_core_` in
+  // order to start over.
+  bool is_deleting_and_starting_over_ = false;
+
   // Raw pointer to the StoragePartitionImpl owning |this|.
-  StoragePartitionImpl* storage_partition_ = nullptr;
+  raw_ptr<StoragePartitionImpl> storage_partition_ = nullptr;
 
   // Map that contains all service workers that are considered "running". Used
   // to dispatch OnVersionStartedRunning()/OnVersionStoppedRunning() events.
   base::flat_map<int64_t /* version_id */, ServiceWorkerRunningInfo>
       running_service_workers_;
-
-  // A set of StorageKeys that have at least one registration.
-  // TODO(http://crbug.com/824858): This can be removed when service workers are
-  // fully converted to running on the UI thread.
-  std::set<blink::StorageKey> registered_storage_keys_;
-  bool registrations_initialized_ = false;
-  base::OnceClosure on_registrations_initialized_;
 
   std::unique_ptr<ServiceWorkerIdentifiabilityMetrics> identifiability_metrics_;
 

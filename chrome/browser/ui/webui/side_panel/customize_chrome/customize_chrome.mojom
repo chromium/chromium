@@ -1,0 +1,15 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module side_panel.mojom;
+
+// Browser-side handler for requests from WebUI page.
+interface CustomizeChromePageHandler {
+  // Sets the visibility of NTP tiles and whether custom links are enabled.
+  SetMostVisitedSettings(bool custom_links_enabled, bool shortcuts_visible);
+
+  // Returns the visibility of NTP tiles and whether custom links are enabled.
+  GetMostVisitedSettings() => (bool custom_links_enabled,
+                               bool shortcuts_visible);
+};

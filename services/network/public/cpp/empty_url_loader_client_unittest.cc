@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {
@@ -38,7 +39,7 @@ void CheckBodyIsDrained(const std::string& body) {
 
   // Upcasting to mojom::URLLoaderClient to access mojom methods.
   mojom::URLLoaderClient* client = empty_client.get();
-  client->OnStartLoadingResponseBody(std::move(consumer_handle));
+  client->OnReceiveResponse(nullptr, std::move(consumer_handle), absl::nullopt);
   client->OnComplete(URLLoaderCompletionStatus(net::OK));
 
   EXPECT_TRUE(mojo::BlockingCopyFromString(body, producer_handle));

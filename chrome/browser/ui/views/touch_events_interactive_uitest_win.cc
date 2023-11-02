@@ -1,7 +1,8 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/win/windows_version.h"
 #include "build/build_config.h"
@@ -194,13 +195,13 @@ class TouchEventsViewTest : public ViewEventTestBase {
   }
 
  protected:
-  views::View* touch_view_ = nullptr;
-  TestingGestureRecognizer* gesture_recognizer_ = nullptr;
-  ui::GestureRecognizer* initial_gr_ = nullptr;
+  raw_ptr<views::View> touch_view_ = nullptr;
+  raw_ptr<TestingGestureRecognizer> gesture_recognizer_ = nullptr;
+  raw_ptr<ui::GestureRecognizer> initial_gr_ = nullptr;
 };
 
-#if defined(OS_WIN)  // Fails on latest versions of Windows.
-                     // https://crbug.com/1108551.
+#if BUILDFLAG(IS_WIN)  // Fails on latest versions of Windows.
+                       // https://crbug.com/1108551.
 #define MAYBE_CheckWindowsNativeMessageForTouchEvents \
   DISABLED_CheckWindowsNativeMessageForTouchEvents
 #else
@@ -247,8 +248,8 @@ class TouchEventsRecursiveViewTest : public TouchEventsViewTest {
   }
 };
 
-#if defined(OS_WIN)  // Fails on latest versions of Windows.
-                     // https://crbug.com/1108551.
+#if BUILDFLAG(IS_WIN)  // Fails on latest versions of Windows.
+                       // https://crbug.com/1108551.
 #define MAYBE_CheckWindowsRecursiveHandler DISABLED_CheckWindowsRecursiveHandler
 #else
 #define MAYBE_CheckWindowsRecursiveHandler CheckWindowsRecursiveHandler

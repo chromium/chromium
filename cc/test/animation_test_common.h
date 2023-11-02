@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/time/time.h"
 #include "cc/animation/animation_timeline.h"
 #include "cc/animation/keyframe_model.h"
 #include "cc/paint/element_id.h"
@@ -15,7 +16,7 @@
 #include "ui/gfx/geometry/transform_operations.h"
 
 namespace gfx {
-class Vector2dF;
+class PointF;
 }
 
 namespace cc {
@@ -67,8 +68,8 @@ class FakeFloatTransition : public gfx::FloatAnimationCurve {
 };
 
 int AddScrollOffsetAnimationToAnimation(Animation* animation,
-                                        gfx::Vector2dF initial_value,
-                                        gfx::Vector2dF target_value);
+                                        gfx::PointF initial_value,
+                                        gfx::PointF target_value);
 
 int AddAnimatedTransformToAnimation(Animation* animation,
                                     double duration,
@@ -89,7 +90,8 @@ int AddOpacityTransitionToAnimation(Animation* animation,
                                     double duration,
                                     float start_opacity,
                                     float end_opacity,
-                                    bool use_timing_function);
+                                    bool use_timing_function,
+                                    absl::optional<int> id = absl::nullopt);
 
 int AddAnimatedFilterToAnimation(Animation* animation,
                                  double duration,

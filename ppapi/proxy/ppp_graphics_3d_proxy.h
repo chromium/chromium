@@ -1,11 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef PPAPI_PROXY_PPP_GRAPHICS_3D_PROXY_H_
 #define PPAPI_PROXY_PPP_GRAPHICS_3D_PROXY_H_
 
-#include "base/macros.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/c/ppp_graphics_3d.h"
 #include "ppapi/proxy/interface_proxy.h"

@@ -1,0 +1,81 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//pdf/features.gni")
+import("//testing/test.gni")
+
+assert(enable_pdf)
+
+source_set("loader") {
+  visibility = [
+    # TODO(crbug.com/1158929): Eliminate
+    # chrome_find_request_manager_browsertest.cc's dependence on
+    # document_loader_impl.h.
+    "//chrome/test:browser_tests${exec_target_suffix}",
+    "//pdf/*",
+  ]
+
+  friend = [
+    ":unit_tests",
+    "//pdf:pdf_test_utils",
+  ]
+
+  sources = [
+    "chunk_stream.h",
+    "document_loader_impl.cc",
+    "range_set.cc",
+    "range_set.h",
+    "url_loader.cc",
+    "url_loader_wrapper.h",
+    "url_loader_wrapper_impl.cc",
+  ]
+
+  configs += [ "//pdf:strict" ]
+
+  public = [
+    "document_loader.h",
+    "document_loader_impl.h",
+    "result_codes.h",
+    "url_loader.h",
+    "url_loader_wrapper_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//net",
+    "//pdf:features",
+    "//third_party/blink/public:blink",
+    "//ui/gfx/range",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  visibility = [ "//pdf:pdf_unittests${exec_target_suffix}" ]
+
+  sources = [
+    "chunk_stream_unittest.cc",
+    "document_loader_impl_unittest.cc",
+    "range_set_unittest.cc",
+    "url_loader_unittest.cc",
+  ]
+
+  configs += [ "//pdf:strict" ]
+
+  deps = [
+    ":loader",
+    "//base",
+    "//base/test:test_support",
+    "//net",
+    "//pdf:features",
+    "//pdf:pdf_test_utils",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public:blink",
+    "//ui/gfx/range",
+    "//url",
+  ]
+}

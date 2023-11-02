@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -149,7 +149,7 @@ std::string StringView::Utf8(UTF8ConversionMode mode) const {
 bool StringView::ContainsOnlyASCIIOrEmpty() const {
   if (StringImpl* impl = SharedImpl())
     return impl->ContainsOnlyASCIIOrEmpty();
-  if (IsEmpty())
+  if (empty())
     return true;
   ASCIIStringAttributes attrs =
       Is8Bit() ? CharacterAttributes(Characters8(), length())
@@ -157,10 +157,33 @@ bool StringView::ContainsOnlyASCIIOrEmpty() const {
   return attrs.contains_only_ascii;
 }
 
+bool StringView::SubstringContainsOnlyWhitespaceOrEmpty(unsigned from,
+                                                        unsigned to) const {
+  SECURITY_DCHECK(from <= length());
+  SECURITY_DCHECK(to <= length());
+  DCHECK(from <= to);
+
+  if (Is8Bit()) {
+    for (wtf_size_t i = from; i < to; ++i) {
+      if (!IsASCIISpace(Characters8()[i]))
+        return false;
+    }
+
+    return true;
+  }
+
+  for (wtf_size_t i = from; i < to; ++i) {
+    if (!IsASCIISpace(Characters16()[i]))
+      return false;
+  }
+
+  return true;
+}
+
 String StringView::ToString() const {
   if (IsNull())
     return String();
-  if (IsEmpty())
+  if (empty())
     return g_empty_string;
   if (StringImpl* impl = SharedImpl())
     return impl;
@@ -172,7 +195,7 @@ String StringView::ToString() const {
 AtomicString StringView::ToAtomicString() const {
   if (IsNull())
     return g_null_atom;
-  if (IsEmpty())
+  if (empty())
     return g_empty_atom;
   if (StringImpl* impl = SharedImpl())
     return AtomicString(impl);

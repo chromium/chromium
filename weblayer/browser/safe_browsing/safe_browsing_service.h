@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,11 +31,10 @@ class SharedURLLoaderFactory;
 }  // namespace network
 
 namespace safe_browsing {
-class PingManager;
 class UrlCheckerDelegate;
 class RealTimeUrlLookupServiceBase;
 class RemoteSafeBrowsingDatabaseManager;
-class SafeBrowsingApiHandler;
+class SafeBrowsingApiHandlerBridge;
 class SafeBrowsingNetworkContext;
 class TriggerManager;
 }  // namespace safe_browsing
@@ -76,8 +75,6 @@ class SafeBrowsingService {
   // *accessed* only on the IO thread.
   scoped_refptr<safe_browsing::RemoteSafeBrowsingDatabaseManager>
   GetSafeBrowsingDBManager();
-
-  safe_browsing::PingManager* GetPingManager();
 
   scoped_refptr<safe_browsing::SafeBrowsingUIManager>
   GetSafeBrowsingUIManager();
@@ -121,13 +118,10 @@ class SafeBrowsingService {
 
   scoped_refptr<UrlCheckerDelegateImpl> safe_browsing_url_checker_delegate_;
 
-  std::unique_ptr<safe_browsing::SafeBrowsingApiHandler>
+  std::unique_ptr<safe_browsing::SafeBrowsingApiHandlerBridge>
       safe_browsing_api_handler_;
 
   std::string user_agent_;
-
-  // Provides phishing and malware statistics. Accessed on UI thread.
-  std::unique_ptr<safe_browsing::PingManager> ping_manager_;
 
   // Whether |safe_browsing_db_manager_| has been started. Accessed only on the
   // IO thread.

@@ -1,16 +1,17 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'chrome://connectivity-diagnostics/strings.m.js';
-import 'chrome://resources/cr_components/chromeos/network_health/network_diagnostics_mojo.m.js';
-import 'chrome://resources/cr_components/chromeos/network_health/network_diagnostics.m.js';
+import 'chrome://resources/ash/common/network_health/network_diagnostics.js';
 
-import {setNetworkDiagnosticsServiceForTesting} from 'chrome://resources/cr_components/chromeos/network_health/mojo_interface_provider.m.js';
-import {Icons} from 'chrome://resources/cr_components/chromeos/network_health/network_diagnostics_types.m.js';
+import {setNetworkDiagnosticsServiceForTesting} from 'chrome://resources/ash/common/network_health/mojo_interface_provider.js';
+import {Icons} from 'chrome://resources/ash/common/network_health/network_diagnostics_types.js';
+import {RoutineVerdict} from 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-webui.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertGT, assertNotReached, assertTrue} from '../../../chai_assert.js';
-import {flushTasks, isVisible} from '../../../test_util.js';
+import {isVisible} from '../../../test_util.js';
 
 import {FakeNetworkDiagnostics} from './fake_network_diagnostics_routines.js';
 import {getIconFromSrc} from './network_health_test_utils.js';
@@ -37,7 +38,7 @@ suite('NetworkDiagnosticsTest', () => {
     networkDiagnostics = null;
   });
 
-  /** @param {!ash.networkDiagnostics.mojom.RoutineVerdict} verdict */
+  /** @param {!RoutineVerdict} verdict */
   function setFakeVerdict(verdict) {
     fakeNetworkDiagnostics_.setFakeVerdict(verdict);
   }
@@ -74,19 +75,19 @@ suite('NetworkDiagnosticsTest', () => {
 
   /**
    * Checks that all the routine groups' verdicts match the |verdict| param
-   * @param {!ash.networkDiagnostics.mojom.RoutineVerdict} verdict
+   * @param {!RoutineVerdict} verdict
    */
   function checkRoutinesVerdict(verdict) {
     for (const group of getRoutineGroups()) {
       const icon = group.$$('.routine-icon');
       switch (verdict) {
-        case ash.networkDiagnostics.mojom.RoutineVerdict.kNoProblem:
+        case RoutineVerdict.kNoProblem:
           assertEquals(getIconFromSrc(icon.src), Icons.TEST_PASSED);
           break;
-        case ash.networkDiagnostics.mojom.RoutineVerdict.kNotRun:
+        case RoutineVerdict.kNotRun:
           assertEquals(getIconFromSrc(icon.src), Icons.TEST_NOT_RUN);
           break;
-        case ash.networkDiagnostics.mojom.RoutineVerdict.kProblem:
+        case RoutineVerdict.kProblem:
           assertEquals(getIconFromSrc(icon.src), Icons.TEST_FAILED);
           break;
         default:
@@ -97,7 +98,7 @@ suite('NetworkDiagnosticsTest', () => {
 
   /**
    * Checks that all the routine groups' problems match the |verdict| param
-   * @param {!ash.networkDiagnostics.mojom.RoutineVerdict} verdict
+   * @param {!RoutineVerdict} verdict
    */
   async function checkRoutinesProblems(verdict) {
     for (const group of getRoutineGroups()) {
@@ -111,12 +112,12 @@ suite('NetworkDiagnosticsTest', () => {
         const parts = msg.split(': ');
 
         switch (verdict) {
-          case ash.networkDiagnostics.mojom.RoutineVerdict.kNoProblem:
+          case RoutineVerdict.kNoProblem:
             assertEquals(parts.length, 1);
             assertEquals(
                 parts[0], networkDiagnostics.i18n('NetworkDiagnosticsPassed'));
             break;
-          case ash.networkDiagnostics.mojom.RoutineVerdict.kProblem:
+          case RoutineVerdict.kProblem:
             assertGT(parts.length, 0);
             assertEquals(
                 parts[0], networkDiagnostics.i18n('NetworkDiagnosticsFailed'));
@@ -125,7 +126,7 @@ suite('NetworkDiagnosticsTest', () => {
               assertGT(parts[1].length, 0);
             }
             break;
-          case ash.networkDiagnostics.mojom.RoutineVerdict.kNotRun:
+          case RoutineVerdict.kNotRun:
             assertEquals(parts.length, 1);
             assertEquals(
                 parts[0], networkDiagnostics.i18n('NetworkDiagnosticsNotRun'));
@@ -147,9 +148,7 @@ suite('NetworkDiagnosticsTest', () => {
   });
 
   // Tests running the routines with each expect result.
-  [ash.networkDiagnostics.mojom.RoutineVerdict.kNoProblem,
-   ash.networkDiagnostics.mojom.RoutineVerdict.kNotRun,
-   ash.networkDiagnostics.mojom.RoutineVerdict.kProblem]
+  [RoutineVerdict.kNoProblem, RoutineVerdict.kNotRun, RoutineVerdict.kProblem]
       .forEach(verdict => {
         test('RoutinesRun' + verdict, async () => {
           setFakeVerdict(verdict);

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -31,9 +31,8 @@ bool ShouldReturnFixedPluginData(Navigator& navigator) {
       }
     }
   }
-  // Otherwise, depend on the feature flag, which can be disabled via
-  // Finch killswitch.
-  return RuntimeEnabledFeatures::NavigatorPluginsFixedEnabled();
+  // Otherwise, return fixed plugin data.
+  return true;
 }
 }  // namespace
 
@@ -84,7 +83,7 @@ bool NavigatorPlugins::javaEnabled(Navigator& navigator) {
 namespace {
 
 void RecordPlugins(LocalDOMWindow* window, DOMPluginArray* plugins) {
-  if (!IdentifiabilityStudySettings::Get()->IsWebFeatureAllowed(
+  if (!IdentifiabilityStudySettings::Get()->ShouldSampleWebFeature(
           WebFeature::kNavigatorPlugins) ||
       !window) {
     return;
@@ -111,7 +110,8 @@ void RecordPlugins(LocalDOMWindow* window, DOMPluginArray* plugins) {
 void RecordMimeTypes(LocalDOMWindow* window, DOMMimeTypeArray* mime_types) {
   constexpr IdentifiableSurface surface = IdentifiableSurface::FromTypeAndToken(
       IdentifiableSurface::Type::kWebFeature, WebFeature::kNavigatorMimeTypes);
-  if (!IdentifiabilityStudySettings::Get()->ShouldSample(surface) || !window) {
+  if (!IdentifiabilityStudySettings::Get()->ShouldSampleSurface(surface) ||
+      !window) {
     return;
   }
   IdentifiableTokenBuilder builder;

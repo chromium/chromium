@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,17 +12,16 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/mock_account_manager_facade.h"
+#include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -54,8 +53,7 @@ Account AccountFromGaiaID(const std::string& gaia_id) {
 class AccountManagerUtilTest : public testing::Test {
  public:
   AccountManagerUtilTest()
-      : scoped_feature_list_(kMultiProfileAccountConsistency),
-        testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
+      : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
     CHECK(testing_profile_manager_.SetUp());
     main_path_ = GetProfilePath("Default");
     ON_CALL(mock_facade_, GetPersistentErrorForAccount)
@@ -98,8 +96,9 @@ class AccountManagerUtilTest : public testing::Test {
             [&accounts_in_facade](
                 base::OnceCallback<void(const std::vector<Account>&)>
                     callback) { std::move(callback).Run(accounts_in_facade); });
-    auto mapper = std::make_unique<AccountProfileMapper>(mock_facade(),
-                                                         attributes_storage());
+    auto mapper = std::make_unique<AccountProfileMapper>(
+        mock_facade(), attributes_storage(),
+        testing_profile_manager_.local_state()->Get());
     SetAccountsInStorage(accounts);
     return mapper;
   }
@@ -140,48 +139,13 @@ class AccountManagerUtilTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   testing::NiceMock<account_manager::MockAccountManagerFacade> mock_facade_;
   TestingProfileManager testing_profile_manager_;
   base::FilePath main_path_;
 };
 
-TEST_F(AccountManagerUtilTest, GetAccountsAvailableAsPrimary) {
-  base::FilePath other_path = GetProfilePath("Other");
-  std::unique_ptr<AccountProfileMapper> mapper =
-      CreateMapper({{main_path(), {"A"}}, {other_path, {"B", "C"}}});
-
-  base::MockRepeatingCallback<void(const std::vector<Account>&)> mock_callback;
-
-  // All the non-syncing accounts are returned.
-  EXPECT_CALL(mock_callback,
-              Run(testing::UnorderedElementsAre(
-                  Field(&Account::key, AccountKey{"A", kGaiaType}),
-                  Field(&Account::key, AccountKey{"B", kGaiaType}),
-                  Field(&Account::key, AccountKey{"C", kGaiaType}))));
-  GetAccountsAvailableAsPrimary(mapper.get(), attributes_storage(),
-                                mock_callback.Get());
-  testing::Mock::VerifyAndClearExpectations(&mock_callback);
-
-  // Check that only the non-syncing accounts are returned.
-  SetPrimaryAccountForProfile(other_path, "B");
-  EXPECT_CALL(mock_callback,
-              Run(testing::UnorderedElementsAre(
-                  Field(&Account::key, AccountKey{"A", kGaiaType}),
-                  Field(&Account::key, AccountKey{"C", kGaiaType}))));
-  GetAccountsAvailableAsPrimary(mapper.get(), attributes_storage(),
-                                mock_callback.Get());
-  testing::Mock::VerifyAndClearExpectations(&mock_callback);
-
-  SetPrimaryAccountForProfile(main_path(), "A");
-  EXPECT_CALL(mock_callback, Run(testing::UnorderedElementsAre(Field(
-                                 &Account::key, AccountKey{"C", kGaiaType}))));
-  GetAccountsAvailableAsPrimary(mapper.get(), attributes_storage(),
-                                mock_callback.Get());
-}
-
-TEST_F(AccountManagerUtilTest, GetAccountsAvailableAsSecondary) {
+TEST_F(AccountManagerUtilTest, GetAllAvailableAccounts) {
   base::FilePath second_path = GetProfilePath("Second");
   base::FilePath third_path = GetProfilePath("Third");
   base::FilePath unassigned = base::FilePath();
@@ -200,8 +164,7 @@ TEST_F(AccountManagerUtilTest, GetAccountsAvailableAsSecondary) {
                   Field(&Account::key, AccountKey{"C", kGaiaType}),
                   Field(&Account::key, AccountKey{"D", kGaiaType}),
                   Field(&Account::key, AccountKey{"E", kGaiaType}))));
-  GetAccountsAvailableAsSecondary(mapper.get(), main_path(),
-                                  mock_callback.Get());
+  GetAllAvailableAccounts(mapper.get(), main_path(), mock_callback.Get());
   testing::Mock::VerifyAndClearExpectations(&mock_callback);
 
   EXPECT_CALL(mock_callback,
@@ -209,8 +172,7 @@ TEST_F(AccountManagerUtilTest, GetAccountsAvailableAsSecondary) {
                   Field(&Account::key, AccountKey{"A", kGaiaType}),
                   Field(&Account::key, AccountKey{"D", kGaiaType}),
                   Field(&Account::key, AccountKey{"E", kGaiaType}))));
-  GetAccountsAvailableAsSecondary(mapper.get(), second_path,
-                                  mock_callback.Get());
+  GetAllAvailableAccounts(mapper.get(), second_path, mock_callback.Get());
   testing::Mock::VerifyAndClearExpectations(&mock_callback);
 
   // Syncing status does not change anything here.
@@ -222,8 +184,7 @@ TEST_F(AccountManagerUtilTest, GetAccountsAvailableAsSecondary) {
                   Field(&Account::key, AccountKey{"C", kGaiaType}),
                   Field(&Account::key, AccountKey{"D", kGaiaType}),
                   Field(&Account::key, AccountKey{"E", kGaiaType}))));
-  GetAccountsAvailableAsSecondary(mapper.get(), main_path(),
-                                  mock_callback.Get());
+  GetAllAvailableAccounts(mapper.get(), main_path(), mock_callback.Get());
   testing::Mock::VerifyAndClearExpectations(&mock_callback);
 
   EXPECT_CALL(mock_callback,
@@ -231,8 +192,7 @@ TEST_F(AccountManagerUtilTest, GetAccountsAvailableAsSecondary) {
                   Field(&Account::key, AccountKey{"A", kGaiaType}),
                   Field(&Account::key, AccountKey{"D", kGaiaType}),
                   Field(&Account::key, AccountKey{"E", kGaiaType}))));
-  GetAccountsAvailableAsSecondary(mapper.get(), second_path,
-                                  mock_callback.Get());
+  GetAllAvailableAccounts(mapper.get(), second_path, mock_callback.Get());
   testing::Mock::VerifyAndClearExpectations(&mock_callback);
 
   // Non existing profile path or empty profile path returns all accounts.
@@ -245,9 +205,50 @@ TEST_F(AccountManagerUtilTest, GetAccountsAvailableAsSecondary) {
                   Field(&Account::key, AccountKey{"D", kGaiaType}),
                   Field(&Account::key, AccountKey{"E", kGaiaType}))))
       .Times(2);
-  GetAccountsAvailableAsSecondary(mapper.get(), non_existing_path,
-                                  mock_callback.Get());
-  GetAccountsAvailableAsSecondary(mapper.get(), base::FilePath(),
-                                  mock_callback.Get());
+  GetAllAvailableAccounts(mapper.get(), non_existing_path, mock_callback.Get());
+  GetAllAvailableAccounts(mapper.get(), base::FilePath(), mock_callback.Get());
+  testing::Mock::VerifyAndClearExpectations(&mock_callback);
+}
+
+TEST_F(AccountManagerUtilTest, GetAccountsAvailableAsSecondary_Overlapping) {
+  base::FilePath second_path = GetProfilePath("Second");
+  base::FilePath unassigned = base::FilePath();
+  std::unique_ptr<AccountProfileMapper> mapper =
+      CreateMapper({{main_path(), {"A", "B"}},
+                    {second_path, {"B", "C"}},
+                    {unassigned, {"E"}}});
+
+  base::MockRepeatingCallback<void(const std::vector<Account>&)> mock_callback;
+
+  // All accounts not in the current profile are returned, incl. unassigned.
+  EXPECT_CALL(mock_callback,
+              Run(testing::UnorderedElementsAre(
+                  Field(&Account::key, AccountKey{"C", kGaiaType}),
+                  Field(&Account::key, AccountKey{"E", kGaiaType}))));
+  GetAllAvailableAccounts(mapper.get(), main_path(), mock_callback.Get());
+  testing::Mock::VerifyAndClearExpectations(&mock_callback);
+
+  EXPECT_CALL(mock_callback,
+              Run(testing::UnorderedElementsAre(
+                  Field(&Account::key, AccountKey{"A", kGaiaType}),
+                  Field(&Account::key, AccountKey{"E", kGaiaType}))));
+  GetAllAvailableAccounts(mapper.get(), second_path, mock_callback.Get());
+  testing::Mock::VerifyAndClearExpectations(&mock_callback);
+
+  // Syncing status does not change anything here.
+  SetPrimaryAccountForProfile(main_path(), "A");
+  SetPrimaryAccountForProfile(second_path, "B");
+  EXPECT_CALL(mock_callback,
+              Run(testing::UnorderedElementsAre(
+                  Field(&Account::key, AccountKey{"C", kGaiaType}),
+                  Field(&Account::key, AccountKey{"E", kGaiaType}))));
+  GetAllAvailableAccounts(mapper.get(), main_path(), mock_callback.Get());
+  testing::Mock::VerifyAndClearExpectations(&mock_callback);
+
+  EXPECT_CALL(mock_callback,
+              Run(testing::UnorderedElementsAre(
+                  Field(&Account::key, AccountKey{"A", kGaiaType}),
+                  Field(&Account::key, AccountKey{"E", kGaiaType}))));
+  GetAllAvailableAccounts(mapper.get(), second_path, mock_callback.Get());
   testing::Mock::VerifyAndClearExpectations(&mock_callback);
 }

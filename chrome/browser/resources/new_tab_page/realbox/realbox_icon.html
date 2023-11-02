@@ -17,8 +17,8 @@
     width: 32px;
   }
 
-  /* Entity matches feature a dominant color background until image loads. */
-  :host-context(ntp-realbox-match[is-rich-suggestion][has-image]) #container {
+  /* Entities may feature a dominant color background until image loads. */
+  :host-context(ntp-realbox-match[has-image]) #container {
     background-color: var(--container-bg-color);
   }
 
@@ -40,11 +40,16 @@
     display: initial;
   }
 
+  :host([is-answer]) #image {
+    max-height: 24px;
+    max-width: 24px;
+  }
+
   #icon {
     -webkit-mask-position: center;
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-size: 16px;
-    background-color: var(--search-box-icon, var(--google-grey-refresh-700));
+    background-color: var(--color-realbox-search-icon-background);
     background-position: center center;
     background-repeat: no-repeat;
     background-size: 16px;
@@ -60,8 +65,8 @@
     background-color: white;
   }
 
-  :host([in-searchbox][background-image='google_g.png']) #icon {
-    background-size: 12px;
+  :host([in-searchbox][background-image='realbox/icons/google_g.svg']) #icon {
+    background-size: 24px;
   }
 
   :host([in-searchbox][mask-image='search.svg']) #icon {
@@ -71,5 +76,7 @@
 <div id="container" style="--container-bg-color:
     [[containerBgColor_(imageSrc_, match.imageDominantColor)]];">
   <image id="image" src="[[imageSrc_]]"></image>
-  <div id="icon" style="[[iconStyle_]]"></div>
+  <!--Note: Do not remove the '$' in '$=' below, otherwise the 'style' attribute
+      is erroneously removed by the HTML minifier. -->
+  <div id="icon" style$="[[iconStyle_]]"></div>
 </div>

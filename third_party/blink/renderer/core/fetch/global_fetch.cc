@@ -1,18 +1,18 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/fetch/global_fetch.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_request_init.h"
+#include "third_party/blink/renderer/core/execution_context/navigator_base.h"
 #include "third_party/blink/renderer/core/fetch/fetch_manager.h"
 #include "third_party/blink/renderer/core/fetch/request.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
@@ -117,6 +117,12 @@ GlobalFetch::ScopedFetcher* GlobalFetch::ScopedFetcher::From(
     WorkerGlobalScope& worker) {
   return GlobalFetchImpl<WorkerGlobalScope>::From(worker,
                                                   worker.GetExecutionContext());
+}
+
+GlobalFetch::ScopedFetcher* GlobalFetch::ScopedFetcher::From(
+    NavigatorBase& navigator) {
+  return GlobalFetchImpl<NavigatorBase>::From(navigator,
+                                              navigator.GetExecutionContext());
 }
 
 void GlobalFetch::ScopedFetcher::Trace(Visitor* visitor) const {}

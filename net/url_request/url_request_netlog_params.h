@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,7 +43,6 @@ NET_EXPORT base::Value NetLogURLRequestStartParams(
     const GURL& url,
     const std::string& method,
     int load_flags,
-    PrivacyMode privacy_mode,
     const IsolationInfo& isolation_info,
     const SiteForCookies& site_for_cookies,
     const absl::optional<url::Origin>& initiator,

@@ -1,14 +1,13 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/activity_services/data/share_to_data_builder.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/macros.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/download/download_manager_tab_helper.h"
 #import "ios/chrome/browser/snapshots/fake_snapshot_generator_delegate.h"
@@ -17,13 +16,13 @@
 #import "ios/testing/ocmock_complex_type_helper.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "ui/base/test/ios/ui_image_test_utils.h"
-#include "url/gurl.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -54,13 +53,11 @@ class ShareToDataBuilderTest : public PlatformTest {
     web_state_->SetVisibleURL(GURL(kExpectedUrl));
 
     // Attach SnapshotTabHelper to allow snapshot generation.
-    SnapshotTabHelper::CreateForWebState(web_state_.get(),
-                                         [[NSUUID UUID] UUIDString]);
+    SnapshotTabHelper::CreateForWebState(web_state_.get());
     delegate_ = [[FakeSnapshotGeneratorDelegate alloc] init];
     SnapshotTabHelper::FromWebState(web_state_.get())->SetDelegate(delegate_);
     // Needed by the ShareToDataForWebState to get the tab title.
-    DownloadManagerTabHelper::CreateForWebState(web_state_.get(),
-                                                /*delegate=*/nullptr);
+    DownloadManagerTabHelper::CreateForWebState(web_state_.get());
     web_state_->SetTitle(kExpectedTitle);
 
     // Add a fake view to the FakeWebState. This will be used to capture the
@@ -135,7 +132,7 @@ TEST_F(ShareToDataBuilderTest, TestSharePageCommandHandlingNoShareUrl) {
   }
 }
 
-// Verifies that |ShareToDataForWebState()| returns nil if the WebState passed
+// Verifies that `ShareToDataForWebState()` returns nil if the WebState passed
 // is nullptr.
 TEST_F(ShareToDataBuilderTest, TestReturnsNilWhenClosing) {
   EXPECT_EQ(nil, activity_services::ShareToDataForWebState(nullptr, GURL()));
@@ -148,8 +145,8 @@ TEST_F(ShareToDataBuilderTest, ShareToDataForURL) {
   NSString* testTitle = @"Some Title";
   NSString* additionalText = @"Foo, Bar!";
 
-  ShareToData* data =
-      activity_services::ShareToDataForURL(testURL, testTitle, additionalText);
+  ShareToData* data = activity_services::ShareToDataForURL(testURL, testTitle,
+                                                           additionalText, nil);
 
   EXPECT_EQ(testURL, data.shareURL);
   EXPECT_EQ(testURL, data.visibleURL);

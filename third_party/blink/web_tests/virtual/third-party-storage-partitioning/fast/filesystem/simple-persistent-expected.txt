@@ -1,0 +1,11 @@
+requestFileSystem PERSISTENT test.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+Successfully obtained PERSISTENT FileSystem:file__0:Persistent
+PASS fileSystem.name.length > 0 is true
+PASS fileSystem.root.fullPath is "/"
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

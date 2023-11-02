@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -104,7 +104,8 @@ testcase.formatDialog = async () => {
 
   // Check the correct size is displayed.
   const warning = await remoteCall.waitForElement(appId, [
-    'files-format-dialog', '#warning-container:not([hidden]) #warning-message'
+    'files-format-dialog',
+    '#warning-container:not([hidden]) #warning-message',
   ]);
   chrome.test.assertEq(
       '51 bytes of files will be deleted', warning.text.trim());
@@ -359,8 +360,7 @@ testcase.formatDialogGearMenu = async () => {
   await remoteCall.callRemoteTestUtil('focus', appId, ['#file-list']);
 
   // Click an item in the list.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, [ENTRIES.hello.nameText]));
+  await remoteCall.waitUntilSelected(appId, ENTRIES.hello.nameText);
 
   // Click on the gear menu button.
   await remoteCall.waitAndClickElement(appId, '#gear-button:not([hidden])');

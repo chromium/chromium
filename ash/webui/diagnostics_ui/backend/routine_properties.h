@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <string>
 
 #include "ash/webui/diagnostics_ui/mojom/system_routine_controller.mojom.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 
 namespace ash {
 namespace diagnostics {
@@ -22,7 +22,7 @@ struct RoutineProperties {
   mojom::RoutineType type;
   const char* metric_name;
   uint32_t duration_seconds;
-  chromeos::cros_healthd::mojom::DiagnosticRoutineEnum healthd_type;
+  cros_healthd::mojom::DiagnosticRoutineEnum healthd_type;
 };
 
 extern const RoutineProperties kRoutineProperties[];

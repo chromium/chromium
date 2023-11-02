@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -248,7 +248,8 @@ GLImageMemory* GLImageMemory::FromGLImage(GLImage* image) {
 
 bool GLImageMemory::Initialize(const unsigned char* memory,
                                gfx::BufferFormat format,
-                               size_t stride) {
+                               size_t stride,
+                               bool disable_pbo_upload) {
   if (!ValidFormat(format)) {
     LOG(ERROR) << "Invalid format: " << gfx::BufferFormatToString(format);
     return false;
@@ -265,13 +266,17 @@ bool GLImageMemory::Initialize(const unsigned char* memory,
   format_ = format;
   stride_ = stride;
 
-  bool tex_image_from_pbo_is_slow = false;
-#if defined(OS_WIN)
-  tex_image_from_pbo_is_slow = true;
-#endif  // OS_WIN
+#if BUILDFLAG(IS_WIN)
+  // CopyTexImage from PBO is slow on Windows.
+  disable_pbo_upload = true;
+#endif  // BUILDFLAG(IS_WIN)
+
+  if (disable_pbo_upload)
+    return true;
+
   GLContext* context = GLContext::GetCurrent();
   DCHECK(context);
-  if (!tex_image_from_pbo_is_slow && SupportsPBO(context) &&
+  if (SupportsPBO(context) &&
       (SupportsMapBuffer(context) || SupportsMapBufferRange(context))) {
     constexpr size_t kTaskBytes = 1024 * 1024;
     buffer_bytes_ = stride * size_.height();

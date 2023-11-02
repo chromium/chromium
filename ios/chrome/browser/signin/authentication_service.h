@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/user_approved_account_list_manager.h"
-#include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
+#import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 
 namespace syncer {
 class SyncService;
@@ -35,10 +35,22 @@ class SyncSetupService;
 // authentication library.
 class AuthenticationService : public KeyedService,
                               public signin::IdentityManager::Observer,
-                              public ios::ChromeBrowserProvider::Observer,
-                              public ios::ChromeIdentityService::Observer,
                               public ChromeAccountManagerService::Observer {
  public:
+  // The service status for AuthenticationService.
+  enum class ServiceStatus {
+    // Sign-in forced by enterprise policy.
+    SigninForcedByPolicy = 0,
+    // Sign-in is possible.
+    SigninAllowed = 1,
+    // Sign-in disabled by user.
+    SigninDisabledByUser = 2,
+    // Sign-in disabled by enterprise policy.
+    SigninDisabledByPolicy = 3,
+    // Sign-in disabled for internal reason (probably running Chromium).
+    SigninDisabledByInternal = 4,
+  };
+
   // Initializes the service.
   AuthenticationService(PrefService* pref_service,
                         SyncSetupService* sync_setup_service,
@@ -68,6 +80,10 @@ class AuthenticationService : public KeyedService,
   // Adds and removes observers.
   void AddObserver(AuthenticationServiceObserver* observer);
   void RemoveObserver(AuthenticationServiceObserver* observer);
+
+  // Returns the service status, see ServiceStatus. This value can be observed
+  // using AuthenticationServiceObserver::OnServiceStatusChanged().
+  ServiceStatus GetServiceStatus();
 
   // Reminds user to Sign in and sync to Chrome when a new tab is opened.
   void SetReauthPromptForSignInAndSync();
@@ -104,23 +120,23 @@ class AuthenticationService : public KeyedService,
   virtual bool HasPrimaryIdentityManaged(
       signin::ConsentLevel consent_level) const;
 
-  // Retrieves the identity of the currently authenticated user or |nil| if
+  // Retrieves the identity of the currently authenticated user or `nil` if
   // either the user is not authenticated, or is authenticated through
   // ClientLogin.
   // Virtual for testing.
   virtual ChromeIdentity* GetPrimaryIdentity(
       signin::ConsentLevel consent_level) const;
 
-  // Grants signin::ConsentLevel::kSignin to |identity|.
+  // Grants signin::ConsentLevel::kSignin to `identity`.
   // This method does not set up Sync-the-feature for the identity.
   // Virtual for testing.
-  virtual void SignIn(ChromeIdentity* identity);
+  virtual void SignIn(id<SystemIdentity> identity);
 
-  // Grants signin::ConsentLevel::kSync to |identity|.
+  // Grants signin::ConsentLevel::kSync to `identity`.
   // This starts setting up Sync-the-feature, but the setup will only complete
   // once SyncUserSettings::SetFirstSetupComplete() is called.
   // Virtual for testing.
-  virtual void GrantSyncConsent(ChromeIdentity* identity);
+  virtual void GrantSyncConsent(id<SystemIdentity> identity);
 
   // Signs the authenticated user out of Chrome and clears the browsing
   // data if the account is managed. If force_clear_browsing_data is true,
@@ -131,12 +147,12 @@ class AuthenticationService : public KeyedService,
                        bool force_clear_browsing_data,
                        ProceduralBlock completion);
 
-  // Returns whether there is a cached associated MDM error for |identity|.
-  bool HasCachedMDMErrorForIdentity(ChromeIdentity* identity) const;
+  // Returns whether there is a cached associated MDM error for `identity`.
+  bool HasCachedMDMErrorForIdentity(id<SystemIdentity> identity) const;
 
-  // Shows the MDM Error dialog for |identity| if it has an associated MDM
-  // error. Returns true if |identity| had an associated error, false otherwise.
-  bool ShowMDMErrorDialogForIdentity(ChromeIdentity* identity);
+  // Shows the MDM Error dialog for `identity` if it has an associated MDM
+  // error. Returns true if `identity` had an associated error, false otherwise.
+  bool ShowMDMErrorDialogForIdentity(id<SystemIdentity> identity);
 
   // Returns a weak pointer of this.
   base::WeakPtr<AuthenticationService> GetWeakPtr();
@@ -145,46 +161,46 @@ class AuthenticationService : public KeyedService,
   // sync the accounts between the IdentityManager and the SSO library.
   void OnApplicationWillEnterForeground();
 
-  // ChromeBrowserProvider implementation.
-  void OnChromeIdentityServiceDidChange(
-      ios::ChromeIdentityService* new_service) override;
-  void OnChromeBrowserProviderWillBeDestroyed() override;
-
  private:
   friend class AuthenticationServiceFake;
   friend class AuthenticationServiceTest;
 
-  // Migrates the token service accounts stored in prefs from emails to account
-  // ids.
-  void MigrateAccountsStoredInPrefsIfNeeded();
+  // Clears local data for users under parental controls and runs `completion`.
+  void OnIsSubjectToParentalControlsResult(
+      ios::ChromeIdentityCapabilityResult result,
+      ProceduralBlock completion);
 
-  // Returns the cached MDM infos associated with |identity|. If the cache
-  // is stale for |identity|, the entry might be removed.
-  NSDictionary* GetCachedMDMInfo(ChromeIdentity* identity) const;
+  // Returns the cached MDM infos associated with `identity`. If the cache
+  // is stale for `identity`, the entry might be removed.
+  NSDictionary* GetCachedMDMInfo(id<SystemIdentity> identity) const;
 
-  // Handles an MDM notification |user_info| associated with |identity|.
-  // Returns whether the notification associated with |user_info| was fully
+  // Handles an MDM notification `user_info` associated with `identity`.
+  // Returns whether the notification associated with `user_info` was fully
   // handled.
-  bool HandleMDMNotification(ChromeIdentity* identity, NSDictionary* user_info);
+  bool HandleMDMNotification(id<SystemIdentity> identity,
+                             NSDictionary* user_info);
 
   // Verifies that the authenticated user is still associated with a valid
   // ChromeIdentity. This method must only be called when the user is
   // authenticated with the shared authentication library. If there is no valid
   // ChromeIdentity associated with the currently authenticated user, or the
-  // identity is |invalid_identity|, this method will sign the user out.
+  // identity is `invalid_identity`, this method will sign the user out.
   //
-  // |invalid_identity| is an additional identity to consider invalid. It can be
+  // `invalid_identity` is an additional identity to consider invalid. It can be
   // nil if there is no such additional identity to ignore.
   //
-  // |should_prompt| indicates whether the user should be prompted with the
+  // `should_prompt` indicates whether the user should be prompted with the
   // resign-in infobar if the method signs out.
-  void HandleForgottenIdentity(ChromeIdentity* invalid_identity,
-                               bool should_prompt);
+  // `device_restore` should be true only when called from `Initialize()` and
+  // Chrome is started after a device restore.
+  void HandleForgottenIdentity(id<SystemIdentity> invalid_identity,
+                               bool should_prompt,
+                               bool device_restore);
 
   // Checks if the authenticated identity was removed by calling
-  // |HandleForgottenIdentity|. Reloads the OAuth2 token service accounts if the
+  // `HandleForgottenIdentity`. Reloads the OAuth2 token service accounts if the
   // authenticated identity is still present.
-  // |keychain_reload| indicates if the identity list has to be reloaded because
+  // `keychain_reload` indicates if the identity list has to be reloaded because
   // the keychain has changed.
   void ReloadCredentialsFromIdentities(bool keychain_reload);
 
@@ -192,16 +208,23 @@ class AuthenticationService : public KeyedService,
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
 
-  // ChromeIdentityServiceObserver implementation.
-  void OnAccessTokenRefreshFailed(ChromeIdentity* identity,
-                                  NSDictionary* user_info) override;
-  void OnChromeIdentityServiceWillBeDestroyed() override;
-
   // ChromeAccountManagerServiceObserver implementation.
+  void OnAccessTokenRefreshFailed(id<SystemIdentity> identity,
+                                  NSDictionary* user_info) override;
   void OnIdentityListChanged(bool need_user_approval) override;
+  void OnServiceSupportedChanged() override;
 
-  // Fires |OnPrimaryAccountRestricted| on all observers.
+  // Fires `OnPrimaryAccountRestricted` on all observers.
   void FirePrimaryAccountRestricted();
+
+  // Notification for prefs::kSigninAllowed.
+  void OnSigninAllowedChanged(const std::string& name);
+
+  // Notification for prefs::kBrowserSigninPolicy.
+  void OnBrowserSigninPolicyChanged(const std::string& name);
+
+  // Fires `OnServiceStatusChanged` on all observers.
+  void FireServiceStatusNotification();
 
   // The delegate for this AuthenticationService. It is invalid to call any
   // method on this object except Initialize() or Shutdown() if this pointer
@@ -232,10 +255,6 @@ class AuthenticationService : public KeyedService,
   // Map between account IDs and their associated MDM error.
   mutable std::map<CoreAccountId, NSDictionary*> cached_mdm_infos_;
 
-  base::ScopedObservation<ios::ChromeIdentityService,
-                          ios::ChromeIdentityService::Observer>
-      identity_service_observation_{this};
-
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
@@ -243,6 +262,11 @@ class AuthenticationService : public KeyedService,
   base::ScopedObservation<ChromeAccountManagerService,
                           ChromeAccountManagerService::Observer>
       account_manager_service_observation_{this};
+
+  // Registrar for prefs::kSigninAllowed.
+  PrefChangeRegistrar pref_change_registrar_;
+  // Registrar for prefs::kBrowserSigninPolicy.
+  PrefChangeRegistrar local_pref_change_registrar_;
 
   base::WeakPtrFactory<AuthenticationService> weak_pointer_factory_;
 };

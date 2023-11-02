@@ -1,17 +1,19 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/commerce/coupons/coupon_service.h"
 
-#include "chrome/browser/commerce/commerce_feature_list.h"
-#include "chrome/browser/commerce/coupons/coupon_db_content.pb.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/commerce/coupons/coupon_service_factory.h"
-#include "chrome/browser/persisted_state_db/profile_proto_db.h"
-#include "chrome/browser/persisted_state_db/profile_proto_db_factory.h"
+#include "chrome/browser/persisted_state_db/session_proto_db_factory.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/proto/coupon_db_content.pb.h"
+#include "components/session_proto_db/session_proto_db.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -35,12 +37,14 @@ autofill::AutofillOfferData BuildCouponOfferData(const int64_t id,
                                                  const char* origin,
                                                  const char* coupon_description,
                                                  const char* coupon_code) {
-  autofill::AutofillOfferData data;
-  data.offer_id = id;
-  data.display_strings.value_prop_text = coupon_description;
-  data.promo_code = coupon_code;
-  data.merchant_origins.emplace_back(GURL(origin));
-  return data;
+  base::Time expiry;
+  std::vector<GURL> merchant_origins;
+  merchant_origins.emplace_back(origin);
+  autofill::DisplayStrings display_strings;
+  display_strings.value_prop_text = coupon_description;
+  return autofill::AutofillOfferData::FreeListingCouponOffer(
+      id, expiry, merchant_origins, /*offer_details_url=*/GURL(),
+      display_strings, coupon_code);
 }
 
 const int64_t kMockCouponIdA = 135;
@@ -63,7 +67,7 @@ const coupon_db::CouponContentProto kMockProtoB =
                             kMockCouponCodeB);
 
 using CouponProto =
-    std::vector<ProfileProtoDB<coupon_db::CouponContentProto>::KeyAndValue>;
+    std::vector<SessionProtoDB<coupon_db::CouponContentProto>::KeyAndValue>;
 using Coupons = std::vector<autofill::AutofillOfferData*>;
 using CouponsMap =
     base::flat_map<GURL,
@@ -72,8 +76,6 @@ using CouponsMap =
 const CouponProto kExpectedA = {{kMockMerchantA, kMockProtoA}};
 const CouponProto kExpectedB = {{kMockMerchantB, kMockProtoB}};
 const CouponProto kEmptyExpected = {};
-autofill::AutofillOfferData couponDataA;
-autofill::AutofillOfferData couponDataB;
 
 struct CouponDataStruct {
   const int64_t id;
@@ -98,10 +100,10 @@ class CouponServiceTest : public testing::Test {
 
     service_ = CouponServiceFactory::GetForProfile(&profile_);
     coupon_db_ = service_->GetDB();
-    couponDataA =
+    coupon_data_a_ =
         BuildCouponOfferData(kMockCouponIdA, kMockMerchantA,
                              kMockCouponDescriptionA, kMockCouponCodeA);
-    couponDataB =
+    coupon_data_b_ =
         BuildCouponOfferData(kMockCouponIdB, kMockMerchantB,
                              kMockCouponDescriptionB, kMockCouponCodeB);
 
@@ -158,14 +160,28 @@ class CouponServiceTest : public testing::Test {
   }
 
  protected:
+  class MockCouponServiceObserver : public CouponServiceObserver {
+   public:
+    MOCK_METHOD(void,
+                OnCouponInvalidated,
+                (const autofill::AutofillOfferData& offer_data),
+                (override));
+  };
+
   void SetUpCouponMap(std::vector<CouponDataStruct> coupons) {
     CouponsMap coupon_map;
     for (auto coupon : coupons) {
-      auto offer = std::make_unique<autofill::AutofillOfferData>();
-      offer->offer_id = coupon.id;
-      offer->display_strings.value_prop_text = std::move(coupon.description);
-      offer->promo_code = std::move(coupon.coupon_code);
-      offer->merchant_origins.emplace_back(GURL(coupon.origin));
+      int64_t offer_id = coupon.id;
+      base::Time expiry;
+      autofill::DisplayStrings display_strings;
+      display_strings.value_prop_text = coupon.description;
+      std::string promo_code = coupon.coupon_code;
+      std::vector<GURL> merchant_origins;
+      merchant_origins.emplace_back(GURL(coupon.origin));
+      auto offer = std::make_unique<autofill::AutofillOfferData>(
+          autofill::AutofillOfferData::FreeListingCouponOffer(
+              offer_id, expiry, merchant_origins, /*offer_details_url=*/GURL(),
+              display_strings, promo_code));
       coupon_map[GURL(coupon.origin)].emplace_back(std::move(offer));
     }
     service_->UpdateFreeListingCoupons(coupon_map);
@@ -179,6 +195,15 @@ class CouponServiceTest : public testing::Test {
 
   bool IsFeatureEnabled() { return service_->features_enabled_; }
 
+  void CheckCouponServiceObservers(
+      std::vector<CouponServiceObserver*> expected_observers) {
+    std::vector<CouponServiceObserver*> current_observers;
+    for (CouponServiceObserver& observer : service_->observers_) {
+      current_observers.emplace_back(&observer);
+    }
+    EXPECT_EQ(expected_observers, current_observers);
+  }
+
   // This needs to be declared before |task_environment_|, so that it will be
   // destroyed after |task_environment_| has run all the tasks on other threads
   // that might check if a feature is enabled.
@@ -186,8 +211,10 @@ class CouponServiceTest : public testing::Test {
   // Required to run tests from UI thread.
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  CouponService* service_;
-  CouponDB* coupon_db_;
+  raw_ptr<CouponService> service_;
+  raw_ptr<CouponDB> coupon_db_;
+  autofill::AutofillOfferData coupon_data_a_;
+  autofill::AutofillOfferData coupon_data_b_;
 };
 
 TEST_F(CouponServiceTest, TestGetCouponForUrl) {
@@ -199,16 +226,16 @@ TEST_F(CouponServiceTest, TestGetCouponForUrl) {
 
   Coupons result = service_->GetFreeListingCouponsForUrl(orgin_a);
   EXPECT_EQ(result.size(), 1u);
-  EXPECT_EQ(*result[0], couponDataA);
+  EXPECT_EQ(*result[0], coupon_data_a_);
 
   result = service_->GetFreeListingCouponsForUrl(orgin_b);
   EXPECT_EQ(result.size(), 1u);
-  EXPECT_EQ(*result[0], couponDataB);
+  EXPECT_EQ(*result[0], coupon_data_b_);
 
   result = service_->GetFreeListingCouponsForUrl(
       GURL(std::string(kMockMerchantA) + "/cart"));
   EXPECT_EQ(result.size(), 1u);
-  EXPECT_EQ(*result[0], couponDataA);
+  EXPECT_EQ(*result[0], coupon_data_a_);
 }
 
 TEST_F(CouponServiceTest, TestUpdateCoupons) {
@@ -219,7 +246,7 @@ TEST_F(CouponServiceTest, TestUpdateCoupons) {
 
   Coupons result = service_->GetFreeListingCouponsForUrl(origin);
   EXPECT_EQ(result.size(), 1u);
-  EXPECT_EQ(*result[0], couponDataA);
+  EXPECT_EQ(*result[0], coupon_data_a_);
   coupon_db_->LoadCoupon(
       origin, base::BindOnce(&CouponServiceTest::GetEvaluationCoupons,
                              base::Unretained(this), run_loop[0].QuitClosure(),
@@ -237,7 +264,7 @@ TEST_F(CouponServiceTest, TestDeleteCouponForUrl) {
 
   Coupons result = service_->GetFreeListingCouponsForUrl(orgin_a);
   EXPECT_EQ(result.size(), 1u);
-  EXPECT_EQ(*result[0], couponDataA);
+  EXPECT_EQ(*result[0], coupon_data_a_);
   coupon_db_->LoadCoupon(
       orgin_a, base::BindOnce(&CouponServiceTest::GetEvaluationCoupons,
                               base::Unretained(this), run_loop[0].QuitClosure(),
@@ -246,7 +273,7 @@ TEST_F(CouponServiceTest, TestDeleteCouponForUrl) {
 
   result = service_->GetFreeListingCouponsForUrl(orgin_b);
   EXPECT_EQ(result.size(), 1u);
-  EXPECT_EQ(*result[0], couponDataB);
+  EXPECT_EQ(*result[0], coupon_data_b_);
   coupon_db_->LoadCoupon(
       orgin_b, base::BindOnce(&CouponServiceTest::GetEvaluationCoupons,
                               base::Unretained(this), run_loop[1].QuitClosure(),
@@ -285,7 +312,7 @@ TEST_F(CouponServiceTest, TestInitialization) {
 
   result = service_->GetFreeListingCouponsForUrl(origin);
   EXPECT_EQ(result.size(), 1u);
-  EXPECT_EQ(*result[0], couponDataA);
+  EXPECT_EQ(*result[0], coupon_data_a_);
 }
 
 TEST_F(CouponServiceTest, TestDeleteAllCoupons) {
@@ -325,7 +352,7 @@ TEST_F(CouponServiceTest, TestRecordCouponDisplayTimestamp) {
   Coupons result = service_->GetFreeListingCouponsForUrl(origin);
   EXPECT_EQ(result.size(), 1u);
   autofill::AutofillOfferData* offer = result[0];
-  EXPECT_EQ(*offer, couponDataA);
+  EXPECT_EQ(*offer, coupon_data_a_);
   EXPECT_EQ(service_->GetCouponDisplayTimestamp(*offer), base::Time());
   coupon_db_->LoadCoupon(
       origin, base::BindOnce(&CouponServiceTest::GetEvaluationCouponTimestamp,
@@ -339,7 +366,7 @@ TEST_F(CouponServiceTest, TestRecordCouponDisplayTimestamp) {
   result = service_->GetFreeListingCouponsForUrl(origin);
   EXPECT_EQ(result.size(), 1u);
   offer = result[0];
-  EXPECT_EQ(*offer, couponDataA);
+  EXPECT_EQ(*offer, coupon_data_a_);
   EXPECT_GT(service_->GetCouponDisplayTimestamp(*offer), base::Time());
   EXPECT_LT(service_->GetCouponDisplayTimestamp(*offer), base::Time::Now());
   coupon_db_->LoadCoupon(
@@ -411,7 +438,7 @@ TEST_F(CouponServiceTest, MaybeFeatureStatusChanged_FeatureDisabled) {
   EXPECT_TRUE(service_->IsUrlEligible(origin));
   Coupons result = service_->GetFreeListingCouponsForUrl(origin);
   EXPECT_EQ(result.size(), 1u);
-  EXPECT_EQ(*result[0], couponDataA);
+  EXPECT_EQ(*result[0], coupon_data_a_);
   coupon_db_->LoadCoupon(
       origin, base::BindOnce(&CouponServiceTest::GetEvaluationCoupons,
                              base::Unretained(this), run_loop[0].QuitClosure(),
@@ -433,12 +460,114 @@ TEST_F(CouponServiceTest, MaybeFeatureStatusChanged_FeatureDisabled) {
   EXPECT_EQ(service_->GetFreeListingCouponsForUrl(origin).size(), 0u);
 }
 
+// Test CouponServiceObservers are correctly registered/unregistered.
+TEST_F(CouponServiceTest, TestSetupCouponServiceObserver) {
+  MockCouponServiceObserver observer;
+  service_->AddObserver(&observer);
+  CheckCouponServiceObservers({&observer});
+  service_->RemoveObserver(&observer);
+  CheckCouponServiceObservers({});
+}
+
+// Test CouponServiceObservers should be notified when a coupon is deleted.
+TEST_F(CouponServiceTest, TestDeleteCouponForUrl_NotifyObserver) {
+  MockCouponServiceObserver observer;
+  service_->AddObserver(&observer);
+  CheckCouponServiceObservers({&observer});
+  GURL origin(kMockMerchantA);
+  SetUpCouponMap(
+      {{kMockCouponIdA, origin, kMockCouponDescriptionA, kMockCouponCodeA}});
+  Coupons result = service_->GetFreeListingCouponsForUrl(origin);
+  EXPECT_EQ(result.size(), 1u);
+  EXPECT_EQ(*result[0], coupon_data_a_);
+
+  EXPECT_CALL(observer, OnCouponInvalidated(*result[0])).Times(1);
+  service_->DeleteFreeListingCouponsForUrl(origin);
+}
+
+// Test CouponServiceObservers should be notified when all coupons are deleted.
+TEST_F(CouponServiceTest, TestDeleteAllCoupons_NotifyObserver) {
+  MockCouponServiceObserver observer;
+  service_->AddObserver(&observer);
+  CheckCouponServiceObservers({&observer});
+  GURL orgin_a(kMockMerchantA);
+  GURL orgin_b(kMockMerchantB);
+  SetUpCouponMap(
+      {{kMockCouponIdA, orgin_a, kMockCouponDescriptionA, kMockCouponCodeA},
+       {kMockCouponIdB, orgin_b, kMockCouponDescriptionB, kMockCouponCodeB}});
+  Coupons result = service_->GetFreeListingCouponsForUrl(orgin_a);
+  EXPECT_EQ(result.size(), 1u);
+  EXPECT_EQ(*result[0], coupon_data_a_);
+  auto* couponA = result[0];
+  result = service_->GetFreeListingCouponsForUrl(orgin_b);
+  EXPECT_EQ(result.size(), 1u);
+  EXPECT_EQ(*result[0], coupon_data_b_);
+  auto* couponB = result[0];
+
+  EXPECT_CALL(observer, OnCouponInvalidated(*couponA)).Times(1);
+  EXPECT_CALL(observer, OnCouponInvalidated(*couponB)).Times(1);
+  service_->DeleteAllFreeListingCoupons();
+}
+
+// Test CouponServiceObservers should be notified when there is a new batch of
+// coupon data arrives, and some of the existing coupons are no longer valid.
+TEST_F(CouponServiceTest, TestUpdateCoupons_NotifyObserver) {
+  MockCouponServiceObserver observer;
+  service_->AddObserver(&observer);
+  CheckCouponServiceObservers({&observer});
+  GURL orgin_a(kMockMerchantA);
+  GURL orgin_b(kMockMerchantB);
+  SetUpCouponMap(
+      {{kMockCouponIdA, orgin_a, kMockCouponDescriptionA, kMockCouponCodeA},
+       {kMockCouponIdB, orgin_b, kMockCouponDescriptionB, kMockCouponCodeB}});
+  Coupons result = service_->GetFreeListingCouponsForUrl(orgin_a);
+  EXPECT_EQ(result.size(), 1u);
+  EXPECT_EQ(*result[0], coupon_data_a_);
+  auto* couponA = result[0];
+  result = service_->GetFreeListingCouponsForUrl(orgin_b);
+  EXPECT_EQ(result.size(), 1u);
+  EXPECT_EQ(*result[0], coupon_data_b_);
+  auto* couponB = result[0];
+
+  EXPECT_CALL(observer, OnCouponInvalidated(*couponA)).Times(1);
+  EXPECT_CALL(observer, OnCouponInvalidated(*couponB)).Times(0);
+  SetUpCouponMap(
+      {{kMockCouponIdB, orgin_b, kMockCouponDescriptionB, kMockCouponCodeB}});
+}
+
+// Test when a new batch of coupon data arrives, existing coupons that are also
+// in the new batch won't be reset.
+TEST_F(CouponServiceTest, TestUpdateCoupons_SkipExisting) {
+  GURL orgin_a(kMockMerchantA);
+  GURL orgin_b(kMockMerchantB);
+  SetUpCouponMap(
+      {{kMockCouponIdA, orgin_a, kMockCouponDescriptionA, kMockCouponCodeA},
+       {kMockCouponIdB, orgin_b, kMockCouponDescriptionB, kMockCouponCodeB}});
+  Coupons result = service_->GetFreeListingCouponsForUrl(orgin_b);
+  EXPECT_EQ(result.size(), 1u);
+  EXPECT_EQ(*result[0], coupon_data_b_);
+  auto* couponB = result[0];
+
+  SetUpCouponMap(
+      {{kMockCouponIdB, orgin_b, kMockCouponDescriptionB, kMockCouponCodeB}});
+  result = service_->GetFreeListingCouponsForUrl(orgin_b);
+  EXPECT_EQ(result.size(), 1u);
+  EXPECT_EQ(result[0], couponB);
+}
+
 // Test for when coupon feature is disabled.
 class CouponServiceFeatureDisabledTest : public CouponServiceTest {
  public:
   CouponServiceFeatureDisabledTest() {
     feature_list_.Reset();
     feature_list_.InitAndDisableFeature(commerce::kRetailCoupons);
+  }
+
+  void SetUp() override {
+    CouponServiceTest::SetUp();
+
+    // Assume that relevant features are disabled initially.
+    service_->MaybeFeatureStatusChanged(false);
   }
 };
 

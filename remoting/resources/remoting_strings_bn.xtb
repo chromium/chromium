@@ -26,7 +26,6 @@
 <translation id="225614027745146050">স্বাগতম</translation>
 <translation id="2320166752086256636">কীবোর্ড লুকান</translation>
 <translation id="2329392777730037872">ক্লায়েন্টের ডিভাইসে <ph name="URL" /> খোলা যায়নি।</translation>
-<translation id="2333212046079545895">কপিরাইট ২০২১ Google LLC. সর্বস্বত্ব সংরক্ষিত।</translation>
 <translation id="2359808026110333948">চালিয়ে যান</translation>
 <translation id="2366718077645204424">হোস্টে পৌঁছাতে পারেনি৷ আপনার ব্যবহার করা নেটওয়ার্কের কনফিগারেশনের কারণে সম্ভবত এটি হয়েছে৷</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> অনলাইনে সর্বশেষ <ph name="RELATIVE_TIMESTAMP" /> দেখা গেছে।</translation>
@@ -37,6 +36,7 @@
 <translation id="2599300881200251572">এই পরিষেবাটি Chrome রিমোট ডেস্কটপ থেকে আগত কানেকশন চালু করে৷</translation>
 <translation id="2647232381348739934">Chromoting পরিষেবা</translation>
 <translation id="2676780859508944670">কাজ করছে...</translation>
+<translation id="2692522824157224199">কপিরাইট ২০২২ Google LLC. সর্বস্বত্ব সংরক্ষিত।</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">যাচাইকরণে সমস্যা হয়েছে, অনুগ্রহ করে আবার লগ-ইন করুন।</translation>
 <translation id="2803375539583399270">পিন নম্বর দিন</translation>
@@ -73,10 +73,10 @@
 <translation id="4257751272692708833"><ph name="PRODUCT_NAME" /> URL ফরওয়ার্ডার</translation>
 <translation id="4277736576214464567">অ্যাক্সেস কোডটি ভুল৷ অনুগ্রহ করে আবার চেষ্টা করুন৷</translation>
 <translation id="4281844954008187215">পরিষেবার শর্তাদি</translation>
+<translation id="4372650392690220936">কপিরাইট ২০২২ The Chromium Authors. সর্বস্বত্ব সংরক্ষিত।</translation>
 <translation id="4405930547258349619">কোর লাইব্রেরি</translation>
 <translation id="443560535555262820">অ্যাক্সেসিবিলিটি অভিরুচির প্যানেল খুলুন</translation>
 <translation id="4450893287417543264">আর দেখতে চাই না</translation>
-<translation id="4512952200932940229">কপিরাইট ২০২১ The Chromium Authors. সর্বস্বত্ত্ব সংরক্ষিত।</translation>
 <translation id="4513946894732546136">প্রতিক্রিয়া</translation>
 <translation id="4563926062592110512">ক্লায়েন্ট বিচ্ছিন্ন হয়েছে: <ph name="CLIENT_USERNAME" />৷</translation>
 <translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> সঠিকভাবে কনফিগার করা হয়নি। অন্য একটি ডিফল্ট ওয়েব ব্রাউজার বেছে নিয়ে URL ফরোয়ার্ড করার সুবিধা চালু করুন।</translation>
@@ -99,7 +99,7 @@
 <translation id="5204575267916639804">FAQs</translation>
 <translation id="5222676887888702881">সাইন-আউট করুন</translation>
 <translation id="5234764350956374838">খারিজ</translation>
-<translation id="5308380583665731573">সংযুক্ত করুন</translation>
+<translation id="5308380583665731573">কানেক্ট করুন</translation>
 <translation id="533625276787323658">এমন কিছু নেই যাতে সংযোগ করা যায়</translation>
 <translation id="5397086374758643919">Chrome রিমোট ডেস্কটপ হোস্ট আনইনস্টলার</translation>
 <translation id="5419418238395129586">শেষ অনলাইনে ছিলেন: <ph name="DATE" /> তারিখে</translation>

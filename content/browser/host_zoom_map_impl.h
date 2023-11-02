@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,10 @@
 #include <tuple>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner_helpers.h"
+#include "base/time/time.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/host_zoom_map.h"
 
 namespace content {
@@ -45,6 +47,8 @@ class CONTENT_EXPORT HostZoomMapImpl : public HostZoomMap {
                                     double level) override;
   bool UsesTemporaryZoomLevel(int render_process_id,
                               int render_view_id) override;
+  void SetNoLongerUsesTemporaryZoomLevel(int render_process_id,
+                                         int render_view_id);
   void SetTemporaryZoomLevel(int render_process_id,
                              int render_view_id,
                              double level) override;
@@ -77,6 +81,12 @@ class CONTENT_EXPORT HostZoomMapImpl : public HostZoomMap {
   void WillCloseRenderView(int render_process_id, int render_view_id);
 
   void SetClockForTesting(base::Clock* clock) override;
+
+#if BUILDFLAG(IS_ANDROID)
+  void SetDefaultZoomLevelPrefCallback(
+      HostZoomMap::DefaultZoomChangedCallback callback) override;
+  HostZoomMap::DefaultZoomChangedCallback* GetDefaultZoomLevelPrefCallback();
+#endif
 
  private:
   struct ZoomLevel {
@@ -119,6 +129,11 @@ class CONTENT_EXPORT HostZoomMapImpl : public HostZoomMap {
   base::RepeatingCallbackList<void(const ZoomLevelChange&)>
       zoom_level_changed_callbacks_;
 
+#if BUILDFLAG(IS_ANDROID)
+  // Callback called when Java-side UI updates the default zoom level.
+  HostZoomMap::DefaultZoomChangedCallback default_zoom_level_pref_callback_;
+#endif
+
   // Copy of the pref data.
   HostZoomLevels host_zoom_levels_;
   SchemeHostZoomLevels scheme_host_zoom_levels_;
@@ -126,7 +141,7 @@ class CONTENT_EXPORT HostZoomMapImpl : public HostZoomMap {
 
   TemporaryZoomLevels temporary_zoom_levels_;
 
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 };
 
 }  // namespace content

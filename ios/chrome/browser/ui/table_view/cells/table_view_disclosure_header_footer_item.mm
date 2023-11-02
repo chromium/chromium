@@ -1,18 +1,18 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/table_view/cells/table_view_disclosure_header_footer_item.h"
 
-#include "base/mac/foundation_util.h"
-#include "base/numerics/math_constants.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
+#import "base/mac/foundation_util.h"
+#import "base/numerics/math_constants.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -169,19 +169,12 @@ static const CGFloat kDisabledOpacity = (CGFloat)0.40;
 
 #pragma mark - public methods
 
-- (void)animateHighlight {
-  [self addAnimationHighlightToAnimator];
-  [self.cellAnimator startAnimation];
-}
-
 - (void)setInitialDirection:(DisclosureDirection)direction {
   [self rotateToDirection:direction animate:NO];
 }
 
-- (void)animateHighlightAndRotateToDirection:(DisclosureDirection)direction {
-  [self addAnimationHighlightToAnimator];
+- (void)rotateToDirection:(DisclosureDirection)direction {
   [self rotateToDirection:direction animate:YES];
-  [self.cellAnimator startAnimation];
 }
 
 #pragma mark - properties
@@ -201,20 +194,6 @@ static const CGFloat kDisabledOpacity = (CGFloat)0.40;
 }
 
 #pragma mark - internal methods
-
-- (void)addAnimationHighlightToAnimator {
-  UIColor* originalBackgroundColor = self.cellDefaultBackgroundColor;
-  self.cellAnimator = [[UIViewPropertyAnimator alloc]
-      initWithDuration:kTableViewCellSelectionAnimationDuration
-                 curve:UIViewAnimationCurveLinear
-            animations:^{
-              self.contentView.backgroundColor = self.highlightColor;
-            }];
-  __weak TableViewDisclosureHeaderFooterView* weakSelf = self;
-  [self.cellAnimator addCompletion:^(UIViewAnimatingPosition finalPosition) {
-    weakSelf.contentView.backgroundColor = originalBackgroundColor;
-  }];
-}
 
 // When view is being initialized, it has not been added to the hierarchy yet.
 // So, in order to set the initial direction, a non-animation transform is
@@ -243,10 +222,14 @@ static const CGFloat kDisabledOpacity = (CGFloat)0.40;
 
     if (animate) {
       __weak TableViewDisclosureHeaderFooterView* weakSelf = self;
-      [self.cellAnimator addAnimations:^{
-        weakSelf.disclosureImageView.transform =
-            CGAffineTransformRotate(CGAffineTransformIdentity, angle);
-      }];
+      self.cellAnimator = [[UIViewPropertyAnimator alloc]
+          initWithDuration:kTableViewCellSelectionAnimationDuration
+                     curve:UIViewAnimationCurveLinear
+                animations:^{
+                  weakSelf.disclosureImageView.transform =
+                      CGAffineTransformRotate(CGAffineTransformIdentity, angle);
+                }];
+      [self.cellAnimator startAnimation];
     } else {
       self.disclosureImageView.transform =
           CGAffineTransformRotate(CGAffineTransformIdentity, angle);

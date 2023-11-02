@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 FakePhoneHubManager::FakePhoneHubManager() = default;
@@ -34,8 +34,9 @@ FindMyDeviceController* FakePhoneHubManager::GetFindMyDeviceController() {
   return &fake_find_my_device_controller_;
 }
 
-NotificationAccessManager* FakePhoneHubManager::GetNotificationAccessManager() {
-  return &fake_notification_access_manager_;
+MultideviceFeatureAccessManager*
+FakePhoneHubManager::GetMultideviceFeatureAccessManager() {
+  return &fake_multidevice_feature_access_manager_;
 }
 
 NotificationInteractionHandler*
@@ -58,9 +59,8 @@ PhoneModel* FakePhoneHubManager::GetPhoneModel() {
 
 RecentAppsInteractionHandler*
 FakePhoneHubManager::GetRecentAppsInteractionHandler() {
-  return features::IsPhoneHubRecentAppsEnabled()
-             ? &fake_recent_apps_interaction_handler_
-             : nullptr;
+  return features::IsEcheSWAEnabled() ? &fake_recent_apps_interaction_handler_
+                                      : nullptr;
 }
 
 ScreenLockManager* FakePhoneHubManager::GetScreenLockManager() {
@@ -79,5 +79,10 @@ UserActionRecorder* FakePhoneHubManager::GetUserActionRecorder() {
   return &fake_user_action_recorder_;
 }
 
+void FakePhoneHubManager::GetHostLastSeenTimestamp(
+    base::OnceCallback<void(absl::optional<base::Time>)> callback) {
+  std::move(callback).Run(host_last_seen_timestamp_);
+}
+
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

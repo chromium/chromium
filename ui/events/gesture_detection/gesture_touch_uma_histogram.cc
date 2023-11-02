@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -117,6 +117,8 @@ UMAEventType GestureTouchUMAHistogram::UMAEventTypeFromEvent(
         return UMA_ET_GESTURE_PINCH_UPDATE_3;
       return UMA_ET_GESTURE_PINCH_UPDATE;
     }
+    case ET_GESTURE_SHORT_PRESS:
+      return UMA_ET_GESTURE_SHORT_PRESS;
     case ET_GESTURE_LONG_PRESS:
       return UMA_ET_GESTURE_LONG_PRESS;
     case ET_GESTURE_LONG_TAP:

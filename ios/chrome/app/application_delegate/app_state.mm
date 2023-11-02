@@ -1,47 +1,44 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/app/application_delegate/app_state.h"
 
-#include <utility>
+#import <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/critical_closure.h"
+#import "base/bind.h"
+#import "base/callback.h"
+#import "base/critical_closure.h"
 #import "base/ios/crb_protocol_observers.h"
 #import "base/ios/ios_util.h"
-#include "base/mac/foundation_util.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/task/post_task.h"
-#include "components/feature_engagement/public/event_constants.h"
-#include "components/feature_engagement/public/tracker.h"
-#include "components/metrics/metrics_service.h"
+#import "base/mac/foundation_util.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/notreached.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/tracker.h"
+#import "components/metrics/metrics_service.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "ios/chrome/app/application_delegate/browser_launcher.h"
 #import "ios/chrome/app/application_delegate/memory_warning_helper.h"
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
-#import "ios/chrome/app/application_delegate/tab_opening.h"
-#import "ios/chrome/app/application_delegate/tab_switching.h"
 #import "ios/chrome/app/application_delegate/user_activity_handler.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
 #import "ios/chrome/app/main_application_delegate.h"
-#include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/browsing_data/sessions_storage_util.h"
-#include "ios/chrome/browser/chrome_constants.h"
+#import "ios/chrome/browser/chrome_constants.h"
+#import "ios/chrome/browser/crash_report/crash_helper.h"
 #import "ios/chrome/browser/crash_report/crash_keys_helper.h"
-#include "ios/chrome/browser/crash_report/crash_keys_helper.h"
-#include "ios/chrome/browser/crash_report/crash_loop_detection_util.h"
-#include "ios/chrome/browser/crash_report/features.h"
+#import "ios/chrome/browser/crash_report/crash_loop_detection_util.h"
+#import "ios/chrome/browser/crash_report/features.h"
 #import "ios/chrome/browser/device_sharing/device_sharing_manager.h"
-#include "ios/chrome/browser/feature_engagement/tracker_factory.h"
+#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/ui/authentication/signed_in_accounts_view_controller.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
@@ -50,29 +47,29 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 #import "ios/chrome/browser/ui/main/scene_delegate.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
-#include "ios/chrome/browser/web_state_list/session_metrics.h"
+#import "ios/chrome/browser/web_state_list/session_metrics.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_metrics_browser_agent.h"
-#include "ios/net/cookies/cookie_store_ios.h"
-#include "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/discover_feed/discover_feed_provider.h"
-#import "ios/public/provider/chrome/browser/user_feedback/user_feedback_provider.h"
-#include "ios/web/public/thread/web_task_traits.h"
-#include "net/url_request/url_request_context.h"
-#include "net/url_request/url_request_context_getter.h"
-#include "ui/base/device_form_factor.h"
+#import "ios/net/cookies/cookie_store_ios.h"
+#import "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
+#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
+#import "ios/public/provider/chrome/browser/user_feedback/user_feedback_api.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
+#import "net/url_request/url_request_context.h"
+#import "net/url_request/url_request_context_getter.h"
+#import "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 namespace {
-// Helper method to post |closure| on the UI thread.
+// Helper method to post `closure` on the UI thread.
 void PostTaskOnUIThread(base::OnceClosure closure) {
-  base::PostTask(FROM_HERE, {web::WebThread::UI}, std::move(closure));
+  web::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(closure));
 }
-NSString* const kStartupAttemptReset = @"StartupAttempReset";
+NSString* const kStartupAttemptReset = @"StartupAttemptReset";
 
 // Time interval used for startRecordingMemoryFootprintWithInterval:
 const NSTimeInterval kMemoryFootprintRecordingTimeInterval = 5;
@@ -92,16 +89,16 @@ const NSTimeInterval kMemoryFootprintRecordingTimeInterval = 5;
 @interface AppState () <AppStateObserver> {
   // Browser launcher to launch browser in different states.
   __weak id<BrowserLauncher> _browserLauncher;
+
   // UIApplicationDelegate for the application.
   __weak MainApplicationDelegate* _mainApplicationDelegate;
 
-  // YES if the app is currently in the process of terminating.
-  BOOL _appIsTerminating;
   // Whether the application is currently in the background.
   // This is a workaround for rdar://22392526 where
   // -applicationDidEnterBackground: can be called twice.
   // TODO(crbug.com/546196): Remove this once rdar://22392526 is fixed.
   BOOL _applicationInBackground;
+
   // YES if cookies are currently being flushed to disk.
   BOOL _savingCookies;
 }
@@ -110,11 +107,11 @@ const NSTimeInterval kMemoryFootprintRecordingTimeInterval = 5;
 @property(nonatomic, strong) AppStateObserverList* observers;
 
 // This method is the first to be called when user launches the application.
-// This performs the minimal amount of browser initalization that is needed by
+// This performs the minimal amount of browser initialization that is needed by
 // safe mode.
 // Depending on the background tasks history, the state of the application is
 // INITIALIZATION_STAGE_BACKGROUND so this
-// step cannot be included in the |startUpBrowserToStage:| method.
+// step cannot be included in the `startUpBrowserToStage:` method.
 - (void)initializeUIPreSafeMode;
 
 // Complete the browser initialization for a regular startup.
@@ -229,7 +226,8 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   }
 
   // Return YES if the First Run UI is showing.
-  return self.initStage == InitStageFirstRun &&
+  return (self.initStage == InitStageFirstRun ||
+          self.initStage == InitStageEnterprise) &&
          self.startupInformation.isFirstRun;
 }
 
@@ -250,12 +248,13 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   crash_keys::SetCurrentlyInBackground(true);
 
   if (self.initStage < InitStageBrowserObjectsForUI) {
-    // The clean-up done in |-applicationDidEnterBackground:| is only valid for
+    // The clean-up done in `-applicationDidEnterBackground:` is only valid for
     // the case when the application is started in foreground, so there is
-    // nothing to clean up as the application was not initialized for foregound.
+    // nothing to clean up as the application was not initialized for
+    // foreground.
     //
     // From the stack trace of the crash bug http://crbug.com/437307 , it
-    // seems that |-applicationDidEnterBackground:| may be called when the app
+    // seems that `-applicationDidEnterBackground:` may be called when the app
     // is started in background and before the initialization for background
     // stage is done. Note that the crash bug could not be reproduced though.
     return;
@@ -284,11 +283,12 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
           AppState* strongSelf = weakSelf;
           if (strongSelf)
             strongSelf->_savingCookies = NO;
-        }));
-    base::PostTask(
-        FROM_HERE, {web::WebThread::IO}, base::BindOnce(^{
-          net::CookieStoreIOS* store = static_cast<net::CookieStoreIOS*>(
-              getter->GetURLRequestContext()->cookie_store());
+        }),
+        /*is_immediate=*/true);
+    web::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(^{
+          net::CookieStore* store =
+              getter->GetURLRequestContext()->cookie_store();
           // FlushStore() runs its callback on any thread. Jump back to UI.
           store->FlushStore(
               base::BindOnce(&PostTaskOnUIThread, std::move(criticalClosure)));
@@ -305,9 +305,9 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   [[PreviousSessionInfo sharedInstance] resetMemoryWarningFlag];
   [[PreviousSessionInfo sharedInstance] stopRecordingMemoryFootprint];
 
-  // Turn off uploading of crash reports and metrics, in case the method of
-  // communication changes while in the background.
-  [MetricsMediator disableReporting];
+  // Turn off uploading of crash reports. This prevents failed uploads that will
+  // not be retried in Breakpad.
+  crash_helper::PauseBreakpadUploads();
 
   GetApplicationContext()->OnAppEnterBackground();
 }
@@ -319,9 +319,14 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   // already the case. This is especially needed for scene startup.
   if (self.initStage < InitStageBrowserObjectsForUI) {
     // Start the initialization in the case it wasn't already done before
-    // foregrounding the app. |initStage| will be greater than InitStageStart if
+    // foregrounding the app. `initStage` will be greater than InitStageStart if
     // the initialization was already started.
     if (self.initStage == InitStageStart) {
+      // TODO(crbug.com/1346512): Remove this code path after some time in
+      // canary. This is meant to be easy to revert. Initialization is always
+      // started at application:didFinishLaunchingWithOptions: and transitions
+      // past InitStageStart before returning to the runloop.
+      NOTREACHED();
       [self queueTransitionToFirstInitStage];
     }
     // TODO(crbug.com/1197330): This function should only be called once
@@ -351,7 +356,8 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   [metricsMediator updateMetricsStateBasedOnPrefsUserTriggered:NO];
 
   // Send any feedback that might be still on temporary storage.
-  ios::GetChromeBrowserProvider().GetUserFeedbackProvider()->Synchronize();
+  if (ios::provider::IsUserFeedbackSupported())
+    ios::provider::UploadAllPendingUserFeedback();
 
   GetApplicationContext()->OnAppEnterForeground();
 
@@ -375,6 +381,9 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
         startRecordingMemoryFootprintWithInterval:
             base::Seconds(kMemoryFootprintRecordingTimeInterval)];
   }
+
+  // This will be a no-op if upload already started.
+  crash_helper::UploadCrashReports();
 }
 
 - (void)applicationWillTerminate:(UIApplication*)application {
@@ -399,7 +408,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   // Halt the tabs, so any outstanding requests get cleaned up, without actually
   // closing the tabs. Set the BVC to inactive to cancel all the dialogs.
   // Don't do this if there are no scenes, since there's no defined interface
-  // provider (and no tabs)
+  // provider (and no tabs).
   if (self.initStage >= InitStageBrowserObjectsForUI) {
     for (SceneState* sceneState in self.connectedScenes) {
       sceneState.interfaceProvider.currentInterface.userInteractionEnabled = NO;
@@ -411,21 +420,23 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 
 - (void)application:(UIApplication*)application
     didDiscardSceneSessions:(NSSet<UISceneSession*>*)sceneSessions {
-  NSMutableArray<NSString*>* sessionIDs =
-      [NSMutableArray arrayWithCapacity:sceneSessions.count];
-  // This method is invoked by iOS to inform the application that the sessions
-  // for "closed windows" is garbage collected and that any data associated with
-  // them by the application needs to be deleted.
-  //
+  DCHECK_GE(self.initStage, InitStageBrowserObjectsForBackgroundHandlers);
+
+  ios::GetChromeBrowserProvider()
+      .GetChromeIdentityService()
+      ->ApplicationDidDiscardSceneSessions(sceneSessions);
+
   // Usually Chrome uses -[SceneState sceneSessionID] as identifier to properly
   // support devices that do not support multi-window (and which use a constant
   // identifier). For devices that do not support multi-window the session is
-  // saved at a constant path, so it is harmnless to delete files at a path
+  // saved at a constant path, so it is harmless to delete files at a path
   // derived from -persistentIdentifier (since there won't be files deleted).
   // For devices that do support multi-window, there is data to delete once the
   // session is garbage collected.
   //
   // Thus it is always correct to use -persistentIdentifier here.
+  NSMutableArray<NSString*>* sessionIDs =
+      [NSMutableArray arrayWithCapacity:sceneSessions.count];
   for (UISceneSession* session in sceneSessions) {
     [sessionIDs addObject:session.persistentIdentifier];
   }
@@ -468,8 +479,12 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 
   [self queueTransitionToFirstInitStage];
 
-  // Won't yet initialize the UI at this point when scene startup is supported
-  // in which case |stateBackground| is true.
+  // `stateBackground` is wrongly always YES, even in regular foreground
+  // launches. This variable is a legacy before we started supporting
+  // multi-scene.
+  // TODO(crbug.com/1346512): Remove this code path after some time in
+  // canary. This is meant to be easy to revert.
+  DCHECK(stateBackground);
   if (!stateBackground) {
     [self initializeUIPreSafeMode];
   }
@@ -623,13 +638,12 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 
   // The startup failure count *must* be synchronized now, since the crashes it
   // is trying to count are during startup.
-  // -[PreviousSessionInfo beginRecordingCurrentSession] calls |synchronize| on
+  // -[PreviousSessionInfo beginRecordingCurrentSession] calls `synchronize` on
   // the user defaults, so leverage that to prevent calling it twice.
 
   // Start recording info about this session.
   [[PreviousSessionInfo sharedInstance] beginRecordingCurrentSession];
 }
-
 
 #pragma mark - UIBlockerManager
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -88,13 +88,6 @@ public interface BrowserPaymentRequest {
     void onSpecValidated(PaymentRequestSpec spec);
 
     /**
-     * Adds the PaymentAppFactory(s) specified by the implementers to the given PaymentAppService.
-     * @param service The PaymentAppService to be added with the factories.
-     * @param delegate The delegate of payment app factory.
-     */
-    void addPaymentAppFactories(PaymentAppService service, PaymentAppFactoryDelegate delegate);
-
-    /**
      * @return Whether at least one payment app (including basic-card payment app) is available
      *         (excluding the pending apps).
      */
@@ -123,10 +116,9 @@ public interface BrowserPaymentRequest {
      * Called when these conditions are satisfied: (1) show() has been called, (2) payment apps
      * are all queried, and (3) PaymentDetails is finalized.
      * @return The error if it fails; null otherwise.
-     * @param isUserGestureShow Whether PaymentRequest.show() was invoked with a user gesture.
      */
     @Nullable
-    default String onShowCalledAndAppsQueriedAndDetailsFinalized(boolean isUserGestureShow) {
+    default String onShowCalledAndAppsQueriedAndDetailsFinalized() {
         return null;
     }
 

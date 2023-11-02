@@ -8,7 +8,7 @@
   }
 
   #group-button {
-    --cr-icon-button-size: 28px;
+    --cr-icon-button-size: var(--emoji-size);
     --cr-icon-button-fill-color: var(--cros-icon-color-primary);
     --cr-icon-button-icon-size: 20px;
     font-size: 20px;
@@ -16,18 +16,21 @@
     padding: 0;
   }
 
+  :host([v2-enabled]) #group-button:not(.emoji-group-active) {
+    --cr-icon-button-fill-color: var(--cros-icon-color-secondary);
+  }
+
   #group-button.emoji-group-active {
     --cr-icon-button-fill-color: var(--cros-icon-color-prominent);
   }
-
 </style>
 
 <cr-icon-button
     id="group-button"
     iron-icon="[[icon]]"
-    class$="[[_className(active)]]"
+    class$="[[calculateClassName(active)]]"
     on-click="handleClick"
     aria-label="[[name]]"
     disabled="[[disabled]]"
-    >
+    custom-tab-index="[[customTabIndex]]">
 </cr-icon-button>

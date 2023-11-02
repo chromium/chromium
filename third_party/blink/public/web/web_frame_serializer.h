@@ -43,7 +43,7 @@ class WebFrame;
 class WebLocalFrame;
 
 // Serialization of frame contents into html or mhtml.
-class WebFrameSerializer {
+class BLINK_EXPORT WebFrameSerializer {
  public:
   // Delegate for controling the behavior of generateMHTMLParts method.
   class MHTMLPartsGenerationDelegate {
@@ -68,10 +68,9 @@ class WebFrameSerializer {
   // Same |boundary| needs to used for all generateMHTMLHeader and
   // generateMHTMLParts and generateMHTMLFooter calls that belong to the same
   // MHTML document (see also rfc1341, section 7.2.1, "boundary" description).
-  BLINK_EXPORT static WebThreadSafeData GenerateMHTMLHeader(
-      const WebString& boundary,
-      WebLocalFrame*,
-      MHTMLPartsGenerationDelegate*);
+  static WebThreadSafeData GenerateMHTMLHeader(const WebString& boundary,
+                                               WebLocalFrame*,
+                                               MHTMLPartsGenerationDelegate*);
 
   // Generates and returns MHTML parts for the given frame and the
   // savable resources underneath.
@@ -79,10 +78,9 @@ class WebFrameSerializer {
   // Same |boundary| needs to used for all generateMHTMLHeader and
   // generateMHTMLParts and generateMHTMLFooter calls that belong to the same
   // MHTML document (see also rfc1341, section 7.2.1, "boundary" description).
-  BLINK_EXPORT static WebThreadSafeData GenerateMHTMLParts(
-      const WebString& boundary,
-      WebLocalFrame*,
-      MHTMLPartsGenerationDelegate*);
+  static WebThreadSafeData GenerateMHTMLParts(const WebString& boundary,
+                                              WebLocalFrame*,
+                                              MHTMLPartsGenerationDelegate*);
 
   // IMPORTANT:
   // The API below is an older implementation of frame serialization that
@@ -119,19 +117,18 @@ class WebFrameSerializer {
   //
   // False is returned if no data has been serialized (i.e. because
   // the target frame didn't have a valid url).
-  BLINK_EXPORT static bool Serialize(WebLocalFrame*,
-                                     WebFrameSerializerClient*,
-                                     LinkRewritingDelegate*,
-                                     bool);
+  static bool Serialize(WebLocalFrame*,
+                        WebFrameSerializerClient*,
+                        LinkRewritingDelegate*,
+                        bool);
 
   // FIXME: The following are here for unit testing purposes. Consider
   // changing the unit tests instead.
 
   // Generate the META for charset declaration.
-  BLINK_EXPORT static WebString GenerateMetaCharsetDeclaration(
-      const WebString& charset);
+  static WebString GenerateMetaCharsetDeclaration(const WebString& charset);
   // Generate the MOTW declaration.
-  BLINK_EXPORT static WebString GenerateMarkOfTheWebDeclaration(const WebURL&);
+  static WebString GenerateMarkOfTheWebDeclaration(const WebURL&);
 };
 
 }  // namespace blink

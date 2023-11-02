@@ -38,15 +38,12 @@
 
 <script src="dynamic_form_utils.js"></script>
 <script>
-
-var notify_on_credit_card_name_input_appear = false;
-
 function ExpChanged() {
   RemoveForm("cc1");
 
   var new_form =
-    (window.kAutofillRefillWithRendererIds && document.getElementById('cc1')) ||
-     document.createElement('form');
+    document.getElementById('cc1') ||
+    document.createElement('form');
   new_form.setAttribute('method',"post");
   //new_form.setAttribute('action',"https://example.com/")
   new_form.setAttribute('name',"cc1.1");
@@ -102,23 +99,7 @@ function ExpChanged() {
 
   document.getElementsByTagName('body')[0].appendChild(new_form);
 
-  if (notify_on_credit_card_name_input_appear) {
-    // Give time to see if it fills.
-    setTimeout(function() {
-      window.domAutomationController.send(document.getElementById("cc-name").value != '');
-    }, 1000);
-  }
+  window['refill'] = true;
+  console.log('An event happened that should trigger a refill.');
 }
-
-function hasRefilled() {
-  var credit_card_name_input = document.getElementById('cc-name');
-  if (credit_card_name_input) {
-    setTimeout(function() {
-      window.domAutomationController.send(credit_card_name_input.value != '');
-    }, 1000);
-  } else {
-    notify_on_credit_card_name_input_appear = true;
-  }
-}
-
 </script>

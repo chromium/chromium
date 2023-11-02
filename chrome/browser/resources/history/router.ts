@@ -1,13 +1,14 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'chrome://resources/polymer/v3_0/iron-location/iron-location.js';
 import 'chrome://resources/polymer/v3_0/iron-location/iron-query-params.js';
 
-import {Debouncer, html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Debouncer, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {QueryState} from './externs.js';
+import {getTemplate} from './router.html.js';
 
 // All valid pages.
 export enum Page {
@@ -25,7 +26,7 @@ export class HistoryRouterElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -67,8 +68,7 @@ export class HistoryRouterElement extends PolymerElement {
   private path_: string;
   private urlQuery_: string;
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     // Redirect legacy search URLs to URLs compatible with History.
@@ -140,6 +140,16 @@ export class HistoryRouterElement extends PolymerElement {
     // changes get processed together.
     this.debouncer_ = Debouncer.debounce(
         this.debouncer_, microTask, this.parseUrl_.bind(this));
+  }
+
+  getDebouncerForTesting(): Debouncer|null {
+    return this.debouncer_;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'history-router': HistoryRouterElement;
   }
 }
 

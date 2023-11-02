@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/gtest_prod_util.h"
@@ -62,7 +61,7 @@ class FirefoxImporter : public Importer {
 
   FRIEND_TEST_ALL_PREFIXES(FirefoxImporterTest, ImportBookmarksV25);
   void ImportBookmarks();
-#if !defined(OS_MAC) && !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
   void ImportPasswords();
 #endif
   void ImportHistory();
@@ -117,7 +116,7 @@ class FirefoxImporter : public Importer {
   base::FilePath app_path_;
   base::ScopedTempDir source_path_copy_;
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   // Stored because we can only access it from the UI thread.
   std::string locale_;
 #endif

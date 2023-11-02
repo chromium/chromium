@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/rand_util.h"
 #include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
 #include "components/prefs/pref_service.h"
 #include "components/query_tiles/internal/stats.h"
 #include "components/query_tiles/internal/tile_config.h"
@@ -144,12 +145,10 @@ TileGroup* TileServiceSchedulerImpl::GetTileGroup() {
 }
 
 std::unique_ptr<net::BackoffEntry> TileServiceSchedulerImpl::GetBackoff() {
-  std::unique_ptr<net::BackoffEntry> result;
-  const base::ListValue* value = prefs_->GetList(kBackoffEntryKey);
-  if (value) {
-    result = net::BackoffEntrySerializer::DeserializeFromValue(
-        *value, backoff_policy_.get(), tick_clock_, clock_->Now());
-  }
+  const base::Value::List& value = prefs_->GetList(kBackoffEntryKey);
+  std::unique_ptr<net::BackoffEntry> result =
+      net::BackoffEntrySerializer::DeserializeFromList(
+          value, backoff_policy_.get(), tick_clock_, clock_->Now());
   if (!result) {
     return std::make_unique<net::BackoffEntry>(backoff_policy_.get(),
                                                tick_clock_);
@@ -220,9 +219,9 @@ void TileServiceSchedulerImpl::GetTaskWindow(int64_t* start_time_ms,
 }
 
 void TileServiceSchedulerImpl::UpdateBackoff(net::BackoffEntry* backoff) {
-  base::Value value =
-      net::BackoffEntrySerializer::SerializeToValue(*backoff, clock_->Now());
-  prefs_->Set(kBackoffEntryKey, value);
+  base::Value::List serialized =
+      net::BackoffEntrySerializer::SerializeToList(*backoff, clock_->Now());
+  prefs_->SetList(kBackoffEntryKey, std::move(serialized));
 }
 
 void TileServiceSchedulerImpl::MarkFirstRunScheduled() {

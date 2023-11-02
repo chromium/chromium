@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -65,6 +65,10 @@ class BASE_EXPORT Token {
 
   // Generates a string representation of this Token useful for e.g. logging.
   std::string ToString() const;
+
+  // FromString is the opposite of ToString. It returns absl::nullopt if the
+  // |string_representation| is invalid.
+  static absl::optional<Token> FromString(StringPiece string_representation);
 
  private:
   // Note: Two uint64_t are used instead of uint8_t[16] in order to have a

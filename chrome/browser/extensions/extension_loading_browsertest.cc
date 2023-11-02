@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -33,7 +33,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -85,8 +85,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
       embedded_test_server()->GetURL("/README.chromium");
   EXPECT_THAT(test_link_from_NTP.spec(), testing::EndsWith("/README.chromium"))
       << "Check that the test server started.";
-  NavigateInRenderer(browser()->tab_strip_model()->GetActiveWebContents(),
-                     test_link_from_NTP);
+  EXPECT_TRUE(
+      NavigateInRenderer(browser()->tab_strip_model()->GetActiveWebContents(),
+                         test_link_from_NTP));
 
   // Increase the extension's version.
   extension_dir.WriteManifest(base::StringPrintf(kManifestTemplate, 2));
@@ -99,9 +100,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
 
   // The extension takes a couple round-trips to the renderer in order
   // to crash, so open a new tab to wait long enough.
-  AddTabAtIndex(browser()->tab_strip_model()->count(),
-                GURL("http://www.google.com/"),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_FALSE(AddTabAtIndex(browser()->tab_strip_model()->count(),
+                             GURL("http://www.google.com/"),
+                             ui::PAGE_TRANSITION_TYPED));
 
   // Check that the extension hasn't crashed.
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
@@ -140,8 +141,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
       embedded_test_server()->GetURL("/README.chromium");
   EXPECT_THAT(test_link_from_ntp.spec(), testing::EndsWith("/README.chromium"))
       << "Check that the test server started.";
-  NavigateInRenderer(browser()->tab_strip_model()->GetActiveWebContents(),
-                     test_link_from_ntp);
+  EXPECT_TRUE(
+      NavigateInRenderer(browser()->tab_strip_model()->GetActiveWebContents(),
+                         test_link_from_ntp));
 
   // Increase the extension's version and add the NTP url override which will
   // add the kNewTabPageOverride permission.
@@ -285,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest, RuntimeValidWhileDevToolsOpen) {
   const std::string inspect_ext_id = inspect_ext->id();
 
   // Open the devtools and wait until the devtools_page is ready.
-  ExtensionTestMessageListener devtools_ready("devtools_page_ready", false);
+  ExtensionTestMessageListener devtools_ready("devtools_page_ready");
   devtools_util::InspectBackgroundPage(inspect_ext, profile());
   ASSERT_TRUE(devtools_ready.WaitUntilSatisfied());
 
@@ -322,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest, RuntimeValidWhileDevToolsOpen) {
 // browser wouldn't route the event incorrectly to ServiceWorkerTaskQueue (which
 // used to cause a crash).
 IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest, PRE_ChangeBackgroundScriptType) {
-  ExtensionTestMessageListener listener("ready", false);
+  ExtensionTestMessageListener listener("ready");
   const Extension* extension = LoadExtension(
       test_data_dir_.AppendASCII("manifest_changed_before_restart"),
       {.context_type = ContextType::kServiceWorker});

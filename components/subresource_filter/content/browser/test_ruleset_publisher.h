@@ -1,10 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_TEST_RULESET_PUBLISHER_H_
 #define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_TEST_RULESET_PUBLISHER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 
 namespace subresource_filter {
@@ -29,7 +30,7 @@ class TestRulesetPublisher {
   void SetRuleset(const TestRuleset& unindexed_ruleset);
 
  private:
-  RulesetService* ruleset_service_;
+  raw_ptr<RulesetService> ruleset_service_;
 };
 
 }  // namespace testing

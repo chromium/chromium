@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,10 +60,14 @@ class ExtensionInstallForceListPolicyHandler
   void ApplyPolicySettings(const policy::PolicyMap& policies,
                            PrefValueMap* prefs) override;
 
+  // Convenience method to directly get a base::Value::Dict with the policy
+  // values.
+  base::Value::Dict GetPolicyDict(const policy::PolicyMap& policy_map);
+
  private:
   // Parses the data in |policy_value| and writes them to |extension_dict|.
   bool ParseList(const base::Value* policy_value,
-                 base::DictionaryValue* extension_dict,
+                 base::Value::Dict* extension_dict,
                  policy::PolicyErrorMap* errors);
 };
 

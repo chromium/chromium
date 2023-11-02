@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/gfx/native_widget_types.h"
 
 class NativeWindowTracker;
@@ -52,17 +54,11 @@ class ExtensionInstallPromptShowParams {
   bool WasParentDestroyed();
 
  private:
-  void WebContentsDestroyed();
+  raw_ptr<Profile> profile_;
 
-  Profile* profile_;
-  content::WebContents* parent_web_contents_;
-  bool parent_web_contents_destroyed_;
+  base::WeakPtr<content::WebContents> parent_web_contents_;
+
   gfx::NativeWindow parent_window_;
-
-  class WebContentsDestructionObserver;
-  std::unique_ptr<WebContentsDestructionObserver>
-      web_contents_destruction_observer_;
-
   std::unique_ptr<NativeWindowTracker> native_window_tracker_;
 };
 

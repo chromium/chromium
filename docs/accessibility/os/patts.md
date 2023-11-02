@@ -11,7 +11,7 @@ called PATTS. It's based on the same engine that ships with all Android devices.
 
 This is for Googlers only.
 
-Visit [http://go/chrome-tts-blaze](http://go/chrome-tts-blaze)
+Visit [http://go/google-tts-web-ports](http://go/google-tts-web-ports)
 for instructions on how to build the engine from source and get the
 latest voice files.
 

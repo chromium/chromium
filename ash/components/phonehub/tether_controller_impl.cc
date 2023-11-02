@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,22 +7,24 @@
 #include "ash/components/phonehub/phone_status_model.h"
 #include "ash/components/phonehub/user_action_recorder.h"
 #include "ash/components/phonehub/util/histogram_util.h"
-#include "chromeos/components/multidevice/logging/logging.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/services/network_config/in_process_instance.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 namespace {
 
+using ::chromeos::network_config::mojom::ConnectionStateType;
+using ::chromeos::network_config::mojom::DeviceStatePropertiesPtr;
+using ::chromeos::network_config::mojom::FilterType;
+using ::chromeos::network_config::mojom::NetworkType;
+using ::chromeos::network_config::mojom::StartConnectResult;
 using multidevice_setup::MultiDeviceSetupClient;
 using multidevice_setup::mojom::Feature;
 using multidevice_setup::mojom::FeatureState;
 
-using network_config::mojom::ConnectionStateType;
-using network_config::mojom::DeviceStatePropertiesPtr;
-using network_config::mojom::FilterType;
-using network_config::mojom::NetworkType;
-using network_config::mojom::StartConnectResult;
+// TODO(https://crbug.com/1164001): remove after migrating to namespace ash.
+namespace network_config = ::chromeos::network_config;
 
 }  // namespace
 
@@ -94,6 +96,7 @@ TetherControllerImpl::~TetherControllerImpl() {
 }
 
 TetherController::Status TetherControllerImpl::GetStatus() const {
+  PA_LOG(VERBOSE) << __func__ << ": status = " << status_;
   return status_;
 }
 
@@ -446,9 +449,9 @@ TetherController::Status TetherControllerImpl::ComputeStatus() const {
 
   switch (connection_state) {
     case ConnectionStateType::kOnline:
-      FALLTHROUGH;
+      [[fallthrough]];
     case ConnectionStateType::kConnected:
-      FALLTHROUGH;
+      [[fallthrough]];
     case ConnectionStateType::kPortal:
       return Status::kConnected;
 
@@ -462,4 +465,4 @@ TetherController::Status TetherControllerImpl::ComputeStatus() const {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

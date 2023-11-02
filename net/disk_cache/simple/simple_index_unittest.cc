@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/hash/hash.h"
+#include "base/memory/raw_ptr.h"
 #include "base/pickle.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/task_runner.h"
@@ -20,6 +21,7 @@
 #include "base/time/time.h"
 #include "net/base/cache_type.h"
 #include "net/disk_cache/backend_cleanup_tracker.h"
+#include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/simple/simple_index_delegate.h"
 #include "net/disk_cache/simple/simple_index_file.h"
 #include "net/disk_cache/simple/simple_test_util.h"
@@ -62,7 +64,10 @@ class MockSimpleIndexFile : public SimpleIndexFile,
                             public base::SupportsWeakPtr<MockSimpleIndexFile> {
  public:
   explicit MockSimpleIndexFile(net::CacheType cache_type)
-      : SimpleIndexFile(nullptr, nullptr, cache_type, base::FilePath()) {}
+      : SimpleIndexFile(nullptr,
+                        base::MakeRefCounted<TrivialFileOperationsFactory>(),
+                        cache_type,
+                        base::FilePath()) {}
 
   void LoadIndexEntries(base::Time cache_last_modified,
                         base::OnceClosure callback,
@@ -92,7 +97,7 @@ class MockSimpleIndexFile : public SimpleIndexFile,
 
  private:
   base::OnceClosure load_callback_;
-  SimpleIndexLoadResult* load_result_ = nullptr;
+  raw_ptr<SimpleIndexLoadResult> load_result_ = nullptr;
   int load_index_entries_calls_ = 0;
   int disk_writes_ = 0;
   SimpleIndex::EntrySet disk_write_entry_set_;
@@ -109,8 +114,7 @@ class SimpleIndexTest : public net::TestWithTaskEnvironment,
   }
 
   void SetUp() override {
-    std::unique_ptr<MockSimpleIndexFile> index_file(
-        new MockSimpleIndexFile(CacheType()));
+    auto index_file = std::make_unique<MockSimpleIndexFile>(CacheType());
     index_file_ = index_file->AsWeakPtr();
     index_ =
         std::make_unique<SimpleIndex>(/* io_thread = */ nullptr,
@@ -258,13 +262,13 @@ TEST_F(SimpleIndexTest, IndexSizeCorrectOnMerge) {
   index()->UpdateEntrySize(hashes_.at<4>(), 4u * kSizeResolution);
   EXPECT_EQ(9u * kSizeResolution, index()->cache_size_);
   {
-    std::unique_ptr<SimpleIndexLoadResult> result(new SimpleIndexLoadResult());
+    auto result = std::make_unique<SimpleIndexLoadResult>();
     result->did_load = true;
     index()->MergeInitializingSet(std::move(result));
   }
   EXPECT_EQ(9u * kSizeResolution, index()->cache_size_);
   {
-    std::unique_ptr<SimpleIndexLoadResult> result(new SimpleIndexLoadResult());
+    auto result = std::make_unique<SimpleIndexLoadResult>();
     result->did_load = true;
     const uint64_t new_hash_key = hashes_.at<11>();
     result->entries.insert(std::make_pair(

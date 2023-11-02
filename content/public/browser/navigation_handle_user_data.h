@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/supports_user_data.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/navigation_handle.h"
 
 namespace content {
@@ -81,8 +80,7 @@ class NavigationHandleUserData : public base::SupportsUserData::Data {
 // This macro declares a static variable inside the class that inherits from
 // NavigationHandleUserData. The address of this static variable is used as
 // the key to store/retrieve an instance of the class.
-#define NAVIGATION_HANDLE_USER_DATA_KEY_DECL() \
-  static constexpr int kUserDataKey = 0
+#define NAVIGATION_HANDLE_USER_DATA_KEY_DECL() static const int kUserDataKey = 0
 
 // This macro instantiates the static variable declared by the previous macro.
 // It must live in a .cc file to ensure that there is only one instantiation

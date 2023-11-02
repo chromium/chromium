@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/modules/breakout_box/frame_queue_underlying_source.h"
 #include "third_party/blink/renderer/modules/breakout_box/transferred_frame_queue_underlying_source.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
@@ -25,13 +25,15 @@ class FrameQueueTransferringOptimizer final
 
   using ConnectHostCallback = CrossThreadOnceFunction<void(
       scoped_refptr<base::SequencedTaskRunner>,
-      TransferredFrameQueueUnderlyingSource<NativeFrameType>*)>;
+      CrossThreadPersistent<
+          TransferredFrameQueueUnderlyingSource<NativeFrameType>>)>;
 
   FrameQueueTransferringOptimizer(
       FrameQueueHost*,
       scoped_refptr<base::SequencedTaskRunner> host_runner,
       wtf_size_t max_queue_size,
-      ConnectHostCallback callback);
+      ConnectHostCallback connect_host_callback,
+      CrossThreadOnceFunction<void()> transferred_source_destroyed_callback);
   ~FrameQueueTransferringOptimizer() override = default;
 
   UnderlyingSourceBase* PerformInProcessOptimization(
@@ -41,6 +43,7 @@ class FrameQueueTransferringOptimizer final
   CrossThreadWeakPersistent<FrameQueueHost> host_;
   scoped_refptr<base::SequencedTaskRunner> host_runner_;
   ConnectHostCallback connect_host_callback_;
+  CrossThreadOnceFunction<void()> transferred_source_destroyed_callback_;
   wtf_size_t max_queue_size_;
 };
 

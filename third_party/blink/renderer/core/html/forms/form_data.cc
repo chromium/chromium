@@ -39,10 +39,9 @@
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/network/form_data_encoder.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/line_ending.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -52,7 +51,9 @@ namespace {
 
 class FormDataIterationSource final
     : public PairIterable<String,
-                          Member<V8FormDataEntryValue>>::IterationSource {
+                          IDLString,
+                          Member<V8FormDataEntryValue>,
+                          V8FormDataEntryValue>::IterationSource {
  public:
   FormDataIterationSource(FormData* form_data)
       : form_data_(form_data), current_(0) {}
@@ -77,25 +78,14 @@ class FormDataIterationSource final
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(form_data_);
-    PairIterable<String, Member<V8FormDataEntryValue>>::IterationSource::Trace(
-        visitor);
+    PairIterable<String, IDLString, Member<V8FormDataEntryValue>,
+                 V8FormDataEntryValue>::IterationSource::Trace(visitor);
   }
 
  private:
   const Member<FormData> form_data_;
   wtf_size_t current_;
 };
-
-String Normalize(const String& input) {
-  // https://html.spec.whatwg.org/C/#append-an-entry
-  if (RuntimeEnabledFeatures::LateFormNewlineNormalizationEnabled()) {
-    return ReplaceUnmatchedSurrogates(input);
-  } else {
-    // This is the previous behavior of "append an entry":
-    // https://html.spec.whatwg.org/commit-snapshots/4cfb2b76873e23e8a8ac762f5ddaa0a6630b3e6e/#append-an-entry
-    return ReplaceUnmatchedSurrogates(NormalizeLineEndingsToCRLF(input));
-  }
-}
 
 }  // namespace
 
@@ -225,17 +215,17 @@ void FormData::append(const String& name, Blob* blob, const String& filename) {
 }
 
 void FormData::AppendFromElement(const String& name, int value) {
-  append(Normalize(name), String::Number(value));
+  append(ReplaceUnmatchedSurrogates(name), String::Number(value));
 }
 
 void FormData::AppendFromElement(const String& name, File* file) {
-  entries_.push_back(
-      MakeGarbageCollected<Entry>(Normalize(name), file, String()));
+  entries_.push_back(MakeGarbageCollected<Entry>(
+      ReplaceUnmatchedSurrogates(name), file, String()));
 }
 
 void FormData::AppendFromElement(const String& name, const String& value) {
-  entries_.push_back(
-      MakeGarbageCollected<Entry>(Normalize(name), Normalize(value)));
+  entries_.push_back(MakeGarbageCollected<Entry>(
+      ReplaceUnmatchedSurrogates(name), ReplaceUnmatchedSurrogates(value)));
 }
 
 std::string FormData::Encode(const String& string) const {
@@ -244,22 +234,15 @@ std::string FormData::Encode(const String& string) const {
 
 scoped_refptr<EncodedFormData> FormData::EncodeFormData(
     EncodedFormData::EncodingType encoding_type) {
-  FormDataEncoder::Mode normalize_mode;
-  if (encoding_type == EncodedFormData::kFormURLEncoded ||
-      RuntimeEnabledFeatures::LateFormNewlineNormalizationEnabled()) {
-    normalize_mode = FormDataEncoder::kNormalizeCRLF;
-  } else {
-    normalize_mode = FormDataEncoder::kDoNotNormalizeCRLF;
-  }
-
   scoped_refptr<EncodedFormData> form_data = EncodedFormData::Create();
   Vector<char> encoded_data;
   for (const auto& entry : Entries()) {
     FormDataEncoder::AddKeyValuePairAsFormData(
         encoded_data, Encode(entry->name()),
-        entry->isFile() ? Encode(Normalize(entry->GetFile()->name()))
-                        : Encode(entry->Value()),
-        encoding_type, normalize_mode);
+        entry->isFile()
+            ? Encode(ReplaceUnmatchedSurrogates(entry->GetFile()->name()))
+            : Encode(entry->Value()),
+        encoding_type);
   }
   form_data->AppendData(encoded_data.data(), encoded_data.size());
   return form_data;
@@ -270,17 +253,9 @@ scoped_refptr<EncodedFormData> FormData::EncodeMultiPartFormData() {
   form_data->SetBoundary(FormDataEncoder::GenerateUniqueBoundaryString());
   Vector<char> encoded_data;
   for (const auto& entry : Entries()) {
-    FormDataEncoder::Mode normalize_mode;
-    if (RuntimeEnabledFeatures::LateFormNewlineNormalizationEnabled()) {
-      normalize_mode = FormDataEncoder::kNormalizeCRLF;
-    } else {
-      normalize_mode = FormDataEncoder::kDoNotNormalizeCRLF;
-    }
-
     Vector<char> header;
     FormDataEncoder::BeginMultiPartHeader(header, form_data->Boundary().data(),
-                                          Encode(entry->name()),
-                                          normalize_mode);
+                                          Encode(entry->name()));
 
     // If the current type is blob, then we also need to include the
     // filename.
@@ -289,9 +264,8 @@ scoped_refptr<EncodedFormData> FormData::EncodeMultiPartFormData() {
       if (auto* file = DynamicTo<File>(entry->GetBlob())) {
         // For file blob, use the filename (or relative path if it is
         // present) as the name.
-        name = file->webkitRelativePath().IsEmpty()
-                   ? file->name()
-                   : file->webkitRelativePath();
+        name = file->webkitRelativePath().empty() ? file->name()
+                                                  : file->webkitRelativePath();
 
         // If a filename is passed in FormData.append(), use it instead
         // of the file blob's name.
@@ -313,7 +287,7 @@ scoped_refptr<EncodedFormData> FormData::EncodeMultiPartFormData() {
       // Add the content type if available, or "application/octet-stream"
       // otherwise (RFC 1867).
       String content_type;
-      if (entry->GetBlob()->type().IsEmpty())
+      if (entry->GetBlob()->type().empty())
         content_type = "application/octet-stream";
       else
         content_type = entry->GetBlob()->type();
@@ -328,19 +302,15 @@ scoped_refptr<EncodedFormData> FormData::EncodeMultiPartFormData() {
       if (entry->GetBlob()->HasBackingFile()) {
         auto* file = To<File>(entry->GetBlob());
         // Do not add the file if the path is empty.
-        if (!file->GetPath().IsEmpty())
+        if (!file->GetPath().empty())
           form_data->AppendFile(file->GetPath(), file->LastModifiedTime());
       } else {
         form_data->AppendBlob(entry->GetBlob()->Uuid(),
                               entry->GetBlob()->GetBlobDataHandle());
       }
     } else {
-      std::string encoded_value;
-      if (RuntimeEnabledFeatures::LateFormNewlineNormalizationEnabled()) {
-        encoded_value = Encode(NormalizeLineEndingsToCRLF(entry->Value()));
-      } else {
-        encoded_value = Encode(entry->Value());
-      }
+      std::string encoded_value =
+          Encode(NormalizeLineEndingsToCRLF(entry->Value()));
       form_data->AppendData(
           encoded_value.c_str(),
           base::checked_cast<wtf_size_t>(encoded_value.length()));
@@ -353,7 +323,10 @@ scoped_refptr<EncodedFormData> FormData::EncodeMultiPartFormData() {
   return form_data;
 }
 
-PairIterable<String, Member<V8FormDataEntryValue>>::IterationSource*
+PairIterable<String,
+             IDLString,
+             Member<V8FormDataEntryValue>,
+             V8FormDataEntryValue>::IterationSource*
 FormData::StartIteration(ScriptState*, ExceptionState&) {
   return MakeGarbageCollected<FormDataIterationSource>(this);
 }

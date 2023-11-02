@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">Отворите нови прозор у режиму без архивирања</translation>
 <translation id="152892567002884378">Појачајте звук</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, па <ph name="ESC" /></translation>
+<translation id="1586324912145647027">Идите на радне површине од 1 до 8</translation>
 <translation id="1652741121070700329">Померите на почетак претходне речи</translation>
 <translation id="1679841710523778799">Повећајте осветљеност</translation>
 <translation id="168356808214100546">Притисните и задржите <ph name="ALT" />, додирујте <ph name="TAB" /> док не дођете до прозора који желите да отворите, па отпустите.</translation>
@@ -70,6 +71,7 @@
 <translation id="3140353188828248647">Фокусирање траке за адресу</translation>
 <translation id="3256109297135787951">Уклоните истицање са ставке на полици</translation>
 <translation id="3288816184963444640">Затворите тренутно отворени прозор</translation>
+<translation id="3322797428033495633">Фокусирајте прозор слике у слици</translation>
 <translation id="3350805006883559974">Задржавање активног прозора на врху</translation>
 <translation id="3407560819924487926">Покрените менаџер задатка</translation>
 <translation id="3417835166382867856">Претражите картице</translation>
@@ -91,6 +93,7 @@
 <translation id="3949671998904569433">зарез</translation>
 <translation id="3976863468609830880">Кликните на последњу икону на полици</translation>
 <translation id="3994783594793697310">Ресетујте ниво зумирања приказа</translation>
+<translation id="4026837045671473537">Укључите режим инверзије боја</translation>
 <translation id="4026843240379844265">Помера активан прозор на различите екране</translation>
 <translation id="4035482366624727273">Изаберите све ставке на страници</translation>
 <translation id="4060703249685950734">Поново отворите картицу или прозор који су последњи затворени</translation>
@@ -129,6 +132,7 @@
 <translation id="5563050856984839829">Притисните <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> и кликните на линк</translation>
 <translation id="561814908794220892">Отворите веб-страницу на новој картици</translation>
 <translation id="5620219513321115856">Преместите активни прозор на радну површину на десној страни</translation>
+<translation id="5699366815052349604">Доделите активни прозор свим радним површинама</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> или <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Отворите линк на картици</translation>
 <translation id="5757474750054631686">Смањите осветљеност тастатуре (само за тастатуре са позадинским осветљењем)</translation>
@@ -138,7 +142,6 @@
 <translation id="5921745308587794300">Ротација прозора</translation>
 <translation id="5926306472221400972">Направите снимак целог екрана</translation>
 <translation id="6022924867608035986">Обришите текст из оквира за претрагу</translation>
-<translation id="6045998054441862242">Укључите режим високог контраста</translation>
 <translation id="6052614013050385269">Десни клик на линк</translation>
 <translation id="6129953537138746214">Размак</translation>
 <translation id="6143669479988153888">Увећајте страницу</translation>
@@ -155,6 +158,7 @@
 <translation id="6445033640292336367">Вратите картицу на првобитни положај</translation>
 <translation id="6474744297082284761">Умањите (на базној станици ИЛИ када су омогућене лупе за цео екран)</translation>
 <translation id="649811797655257835">Изаберите датотеку, па притисните <ph name="SPACE" /></translation>
+<translation id="6515089016094047210">Отвори или затвори виџет календара.</translation>
 <translation id="6551886416582667425">Направите делимичан снимак екрана/снимак</translation>
 <translation id="6556040137485212400">Отворите прозор који најдуже нисте користили</translation>
 <translation id="666343722268997814">Отворите мени истакнуте ставке који се активира десним тастером миша</translation>
@@ -198,12 +202,12 @@
 <translation id="8388247778047144397">Превуците линк у празну област на траци са картицама</translation>
 <translation id="8389638407792712197">Отворите нови прозор</translation>
 <translation id="8429696719963529183">Користите F тастере (од F1 до F12)</translation>
-<translation id="8537650670971624753">Изађи из режима претраге</translation>
 <translation id="85690795166292698">Отворите линк на новој картици</translation>
 <translation id="8609384513243082612">Отворите нову картицу</translation>
 <translation id="8644639153978066712">Прикажите скривене датотеке у апликацији Датотеке</translation>
 <translation id="8717459106217102612">Изаберите претходну реч или слово</translation>
 <translation id="8727232706774971183">Прегледајте обавештења</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> од 1 до 8</translation>
 <translation id="8855885154700222542">Тастер за цео екран</translation>
 <translation id="8881584919399569791">Преместите активни прозор на радну површину на левој страни</translation>
 <translation id="88986195241502842">Страница надоле</translation>

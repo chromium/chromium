@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,8 @@
 #include <string>
 
 #include "base/callback.h"
-#include "chromeos/login/auth/key.h"
+#include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
+#include "chromeos/ash/components/login/auth/public/key.h"
 #include "components/prefs/pref_service.h"
 
 class AccountId;
@@ -18,6 +19,7 @@ class ScopedKeepAlive;
 namespace ash {
 namespace quick_unlock {
 class PinStorageCryptohome;
+enum class Purpose;
 
 // Provides high-level access to the user's PIN. The underlying storage can be
 // either cryptohome or prefs.
@@ -49,7 +51,7 @@ class PinBackend {
   void HasLoginSupport(BoolCallback result);
 
   // Try to migrate a prefs-based PIN to cryptohome.
-  void MigrateToCryptohome(Profile* profile, const Key& key);
+  void MigrateToCryptohome(Profile*, std::unique_ptr<UserContext>);
 
   // Check if the given account_id has a PIN registered.
   void IsSet(const AccountId& account_id, BoolCallback result);
@@ -75,12 +77,20 @@ class PinBackend {
   // Is PIN authentication available for the given account? Even if PIN is set,
   // it may not be available for authentication due to some additional
   // restrictions.
-  void CanAuthenticate(const AccountId& account_id, BoolCallback result);
-
-  // Try to authenticate.
-  void TryAuthenticate(const AccountId& account_id,
-                       const Key& key,
+  void CanAuthenticate(const AccountId& account_id,
+                       Purpose purpose,
                        BoolCallback result);
+
+  // Try to check a pin `key` value for the given user. The `key` must be plain
+  // text and not contain a salt. The `user_context` must not have an
+  // associated auth session, and must have `IsUsingPin` set to true. The
+  // UserContext passed to the `result` callback after the authentication
+  // attempt is the same as the one that was passed to `TryAuthenticate`. In
+  // particular, it does not have an associated auth session.
+  void TryAuthenticate(std::unique_ptr<UserContext> user_context,
+                       const Key& key,
+                       Purpose purpose,
+                       AuthOperationCallback result);
 
   // Returns true if the cryptohome backend should be used. Sometimes the prefs
   // backend should be used even when cryptohome is available, ie, when there is
@@ -115,23 +125,26 @@ class PinBackend {
 
   // Called when a migration attempt has completed. If `success` is true the PIN
   // should be cleared from prefs.
-  void OnPinMigrationAttemptComplete(Profile* profile, bool success);
+  void OnPinMigrationAttemptComplete(Profile* profile,
+                                     std::unique_ptr<UserContext>,
+                                     absl::optional<AuthenticationError>);
 
   // Actions to be performed after an authentication attempt with Cryptohome.
   // The only use case right now is for PIN auto submit, where we might want to
   // expose the PIN length upon a successful attempt.
-  void OnCryptohomeAuthenticationResponse(const AccountId& account_id,
-                                          const Key& key,
-                                          BoolCallback result,
-                                          bool success);
+  void OnCryptohomeAuthenticationResponse(
+      const Key& key,
+      AuthOperationCallback result,
+      std::unique_ptr<UserContext> user_context,
+      absl::optional<AuthenticationError> error);
 
   // Called after checking the user's PIN when enabling auto submit.
   // If the authentication was `success`ful, the `pin_length` will be
   // exposed in local state.
-  void OnPinAutosubmitCheckComplete(const AccountId& account_id,
-                                    size_t pin_length,
+  void OnPinAutosubmitCheckComplete(size_t pin_length,
                                     BoolCallback result,
-                                    bool success);
+                                    std::unique_ptr<UserContext> user_context,
+                                    absl::optional<AuthenticationError> error);
 
   // Help method for working with the PIN auto submit preference.
   PrefService* PrefService(const AccountId& account_id);
@@ -159,6 +172,14 @@ class PinBackend {
   // Backfill PIN auto submit preferences for users who already have a pin, but
   // had it set up before the pin auto submit feature was released.
   void PinAutosubmitBackfill(const AccountId& account_id, size_t pin_length);
+
+  // Updates the user context stored in the storage indexed by the supplied
+  // `auth_token`, and runs the supplied `callback` with true iff the `error`
+  // parameter is `nullopt`.
+  static void OnAuthOperation(std::string auth_token,
+                              BoolCallback callback,
+                              std::unique_ptr<UserContext>,
+                              absl::optional<AuthenticationError>);
 
   // True if still trying to determine which backend should be used.
   bool resolving_backend_ = true;

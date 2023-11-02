@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -46,6 +46,13 @@ using VideoCaptureDeliverFrameCB = base::RepeatingCallback<void(
     std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
     base::TimeTicks estimated_capture_time)>;
 
+// Callback for delivering dropped frame notifications.
+using VideoCaptureNotifyFrameDroppedCB = base::RepeatingClosure;
+
+// Callback for informing when new crop-versions are applied.
+using VideoCaptureCropVersionCB =
+    base::RepeatingCallback<void(uint32_t crop_version)>;
+
 using VideoCaptureDeviceFormatsCB =
     base::OnceCallback<void(const media::VideoCaptureFormats&)>;
 
@@ -62,6 +69,7 @@ enum VideoCaptureState {
   VIDEO_CAPTURE_STATE_STOPPING,
   VIDEO_CAPTURE_STATE_STOPPED,
   VIDEO_CAPTURE_STATE_ERROR,
+  VIDEO_CAPTURE_STATE_ERROR_SYSTEM_PERMISSIONS_DENIED,
   VIDEO_CAPTURE_STATE_ENDED,
   VIDEO_CAPTURE_STATE_LAST = VIDEO_CAPTURE_STATE_ENDED
 };

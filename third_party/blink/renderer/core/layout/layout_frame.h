@@ -34,8 +34,6 @@ class LayoutFrame final : public LayoutEmbeddedContent {
  public:
   explicit LayoutFrame(HTMLFrameElement*);
 
-  FrameEdgeInfo EdgeInfo() const;
-
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override;
 
   const char* GetName() const override {
@@ -48,8 +46,7 @@ class LayoutFrame final : public LayoutEmbeddedContent {
     NOT_DESTROYED();
     return type == kLayoutObjectFrame || LayoutEmbeddedContent::IsOfType(type);
   }
-
-  void UpdateFromElement() override;
+  void UpdateLayout() override;
 };
 
 template <>

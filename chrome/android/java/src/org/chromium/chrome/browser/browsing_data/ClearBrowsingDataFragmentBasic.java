@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@ import android.provider.Browser;
 import android.text.SpannableString;
 import android.view.View;
 
+import androidx.annotation.IntDef;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.preference.Preference;
 
@@ -20,7 +21,6 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -38,6 +38,8 @@ import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 import java.util.List;
 
@@ -56,6 +58,18 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
          * @see org.chromium.chrome.browser.LaunchIntentDispatcher#createCustomTabActivityIntent
          */
         Intent createCustomTabActivityIntent(Context context, Intent intent);
+    }
+
+    /**
+     * UMA histogram values for MyActivity navigations.
+     * Note: this should stay in sync with ClearBrowsingDataMyActivityNavigation in enums.xml.
+     */
+    @IntDef({MyActivityNavigation.TOP_LEVEL, MyActivityNavigation.SEARCH_HISTORY})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface MyActivityNavigation {
+        int TOP_LEVEL = 0;
+        int SEARCH_HISTORY = 1;
+        int NUM_ENTRIES = 2;
     }
 
     private CustomTabIntentHelper mCustomTabHelper;
@@ -81,16 +95,10 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
         if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             // Update the Clear Browsing History text based on the sign-in/sync state and whether
             // the link to MyActivity is displayed inline or at the bottom of the page.
-            // Note: when the flag is enabled but sync is disabled, the default string is used, so
-            // there is no need to change it.
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.SEARCH_HISTORY_LINK)
-                    && isHistorySyncEnabled()) {
+            // Note: when  sync is disabled, the default string is used.
+            if (isHistorySyncEnabled()) {
                 // The text is different only for users with history sync.
                 historyCheckbox.setSummary(R.string.clear_browsing_history_summary_synced_no_link);
-            } else if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SEARCH_HISTORY_LINK)) {
-                historyCheckbox.setSummary(isHistorySyncEnabled()
-                                ? R.string.clear_browsing_history_summary_synced
-                                : R.string.clear_browsing_history_summary_signed_in);
             }
             cookiesCheckbox.setSummary(
                     R.string.clear_cookies_and_site_data_summary_basic_signed_in);
@@ -112,13 +120,11 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
         boolean isDefaultSearchEngineGoogle = templateUrlService.isDefaultSearchEngineGoogle();
 
         // Google-related links to delete search history and other browsing activity.
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SEARCH_HISTORY_LINK)
-                || defaultSearchEngine == null
+        if (defaultSearchEngine == null
                 || !identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
-            // One of three cases:
-            // 1. The feature is disabled.
-            // 2. The default search engine is disabled.
-            // 3. The user is not signed into Chrome.
+            // One of two cases:
+            // 1. The default search engine is disabled.
+            // 2. The user is not signed into Chrome.
             // In all those cases, delete the link to clear Google data using MyActivity.
             deleteGoogleDataTextIfExists();
         } else if (isDefaultSearchEngineGoogle) {
@@ -130,12 +136,10 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
         }
 
         // Text for search history if DSE is not Google.
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SEARCH_HISTORY_LINK)
-                || defaultSearchEngine == null || isDefaultSearchEngineGoogle) {
-            // One of three cases:
-            // 1. The feature is disabled.
-            // 2. The default search engine is disabled.
-            // 3. The default search engine is Google.
+        if (defaultSearchEngine == null || isDefaultSearchEngineGoogle) {
+            // One of two cases:
+            // 1. The default search engine is disabled.
+            // 2. The default search engine is Google.
             // In all those cases, delete the link to clear non-Google search history.
             deleteNonGoogleSearchHistoryTextIfExists();
         } else if (defaultSearchEngine.getIsPrepopulated()) {
@@ -173,29 +177,42 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
     private SpannableString buildGoogleSearchHistoryText() {
         return SpanApplier.applySpans(getContext().getString(R.string.clear_search_history_link),
                 new SpanInfo("<link1>", "</link1>",
-                        new NoUnderlineClickableSpan(getContext().getResources(),
-                                createOpenCCTCallback(
-                                        UrlConstants.GOOGLE_SEARCH_HISTORY_URL_IN_CBD))),
+                        new NoUnderlineClickableSpan(getContext(),
+                                createOpenMyActivityCallback(/* openSearchHistory = */ true))),
                 new SpanInfo("<link2>", "</link2>",
-                        new NoUnderlineClickableSpan(getContext().getResources(),
-                                createOpenCCTCallback(UrlConstants.MY_ACTIVITY_URL_IN_CBD))));
+                        new NoUnderlineClickableSpan(getContext(),
+                                createOpenMyActivityCallback(/* openSearchHistory = */ false))));
     }
 
     private SpannableString buildGoogleMyActivityText() {
         return SpanApplier.applySpans(
                 getContext().getString(R.string.clear_search_history_link_other_forms),
                 new SpanInfo("<link1>", "</link1>",
-                        new NoUnderlineClickableSpan(getContext().getResources(),
-                                createOpenCCTCallback(UrlConstants.MY_ACTIVITY_URL_IN_CBD))));
+                        new NoUnderlineClickableSpan(getContext(),
+                                createOpenMyActivityCallback(/* openSearchHistory = */ false))));
     }
 
-    private Callback<View> createOpenCCTCallback(String url) {
+    /** If openSearchHistory is true, opens the search history page; otherwise: top level. */
+    private Callback<View> createOpenMyActivityCallback(boolean openSearchHistory) {
         return (widget) -> {
             assert mCustomTabHelper
                     != null
                 : "CCT helper must be set on ClearBrowsingFragmentBasic before opening a link.";
             CustomTabsIntent customTabIntent =
                     new CustomTabsIntent.Builder().setShowTitle(true).build();
+
+            String url;
+            if (openSearchHistory) {
+                url = UrlConstants.GOOGLE_SEARCH_HISTORY_URL_IN_CBD;
+                RecordHistogram.recordEnumeratedHistogram(
+                        "Settings.ClearBrowsingData.OpenMyActivity",
+                        MyActivityNavigation.SEARCH_HISTORY, MyActivityNavigation.NUM_ENTRIES);
+            } else {
+                url = UrlConstants.MY_ACTIVITY_URL_IN_CBD;
+                RecordHistogram.recordEnumeratedHistogram(
+                        "Settings.ClearBrowsingData.OpenMyActivity", MyActivityNavigation.TOP_LEVEL,
+                        MyActivityNavigation.NUM_ENTRIES);
+            }
             customTabIntent.intent.setData(Uri.parse(url));
             Intent intent = mCustomTabHelper.createCustomTabActivityIntent(
                     getContext(), customTabIntent.intent);
@@ -208,7 +225,7 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
 
     private boolean isHistorySyncEnabled() {
         SyncService syncService = SyncService.get();
-        return syncService != null && syncService.isSyncRequested()
+        return syncService != null && syncService.isSyncFeatureEnabled()
                 && syncService.getActiveDataTypes().contains(ModelType.HISTORY_DELETE_DIRECTIVES);
     }
 

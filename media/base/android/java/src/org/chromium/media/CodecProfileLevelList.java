@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@ import android.media.MediaCodecInfo.CodecProfileLevel;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.MainDex;
+import org.chromium.build.annotations.MainDex;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,16 +74,17 @@ class CodecProfileLevelList {
 
     private static class UnsupportedCodecProfileException extends RuntimeException {}
 
-    private static int getCodecFromMime(String mime) {
+    public static int getCodecFromMime(String mime) {
         if (mime.endsWith("vp9")) return VideoCodec.VP9;
         if (mime.endsWith("vp8")) return VideoCodec.VP8;
+        if (mime.endsWith("av01")) return VideoCodec.AV1;
         if (mime.endsWith("avc")) return VideoCodec.H264;
         if (mime.endsWith("hevc")) return VideoCodec.HEVC;
         if (mime.endsWith("dolby-vision")) return VideoCodec.DOLBY_VISION;
         throw new UnsupportedCodecProfileException();
     }
 
-    private static int mediaCodecProfileToChromiumMediaProfile(int codec, int profile) {
+    public static int mediaCodecProfileToChromiumMediaProfile(int codec, int profile) {
         switch (codec) {
             case VideoCodec.H264:
                 switch (profile) {
@@ -123,6 +124,16 @@ class CodecProfileLevelList {
                     case CodecProfileLevel.VP9Profile3:
                     case CodecProfileLevel.VP9Profile3HDR:
                         return VideoCodecProfile.VP9PROFILE_PROFILE3;
+                    default:
+                        throw new UnsupportedCodecProfileException();
+                }
+            case VideoCodec.AV1:
+                switch (profile) {
+                    case CodecProfileLevel.AV1ProfileMain8:
+                    case CodecProfileLevel.AV1ProfileMain10:
+                    case CodecProfileLevel.AV1ProfileMain10HDR10:
+                    case CodecProfileLevel.AV1ProfileMain10HDR10Plus:
+                        return VideoCodecProfile.AV1PROFILE_PROFILE_MAIN;
                     default:
                         throw new UnsupportedCodecProfileException();
                 }

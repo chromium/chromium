@@ -1,29 +1,34 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/exo/chrome_data_exchange_delegate.h"
 
+#include <algorithm>
 #include <string>
+#include <vector>
 
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/pickle.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/dbus/cicerone/cicerone_client.h"
-#include "chromeos/dbus/concierge/concierge_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/seneschal/fake_seneschal_client.h"
-#include "chromeos/dbus/seneschal/seneschal_client.h"
+#include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
+#include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/seneschal/fake_seneschal_client.h"
+#include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "components/exo/shell_surface_util.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/test/browser_task_environment.h"
@@ -43,7 +48,7 @@
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/gfx/geometry/rect.h"
-#include "url/origin.h"
+#include "url/url_constants.h"
 
 namespace ash {
 
@@ -67,10 +72,10 @@ void CaptureUTF16(std::string* result,
 class ChromeDataExchangeDelegateTest : public testing::Test {
  public:
   void SetUp() override {
-    chromeos::DBusThreadManager::Initialize();
-    chromeos::CiceroneClient::InitializeFake();
-    chromeos::ConciergeClient::InitializeFake();
-    chromeos::SeneschalClient::InitializeFake();
+    ChunneldClient::InitializeFake();
+    ash::CiceroneClient::InitializeFake();
+    ConciergeClient::InitializeFake();
+    SeneschalClient::InitializeFake();
 
     profile_ = std::make_unique<TestingProfile>();
     test_helper_ =
@@ -104,7 +109,7 @@ class ChromeDataExchangeDelegateTest : public testing::Test {
         storage::FileSystemMountOption(), crostini_dir_);
 
     // DBus seneschal client.
-    fake_seneschal_client_ = chromeos::FakeSeneschalClient::Get();
+    fake_seneschal_client_ = FakeSeneschalClient::Get();
     ASSERT_TRUE(fake_seneschal_client_);
   }
 
@@ -112,10 +117,10 @@ class ChromeDataExchangeDelegateTest : public testing::Test {
     mount_points_->RevokeAllFileSystems();
     test_helper_.reset();
     profile_.reset();
-    chromeos::SeneschalClient::Shutdown();
-    chromeos::ConciergeClient::Shutdown();
-    chromeos::CiceroneClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
+    SeneschalClient::Shutdown();
+    ConciergeClient::Shutdown();
+    ash::CiceroneClient::Shutdown();
+    ChunneldClient::Shutdown();
   }
 
  protected:
@@ -133,15 +138,19 @@ class ChromeDataExchangeDelegateTest : public testing::Test {
   std::string crostini_mount_name_;
   base::FilePath crostini_dir_;
 
-  chromeos::FakeSeneschalClient* fake_seneschal_client_ = nullptr;
+  FakeSeneschalClient* fake_seneschal_client_ = nullptr;
 };
 
 TEST_F(ChromeDataExchangeDelegateTest, GetDataTransferEndpointType) {
+  // Create container window as the parent for other windows.
+  aura::Window container_window(nullptr, aura::client::WINDOW_TYPE_NORMAL);
+  container_window.Init(ui::LAYER_NOT_DRAWN);
+
   // ChromeDataExchangeDelegate always checks app type in
   // window->GetToplevelWindow(), so we must create a parent window with
   // delegate and app type set, but use the child window in tests. Arc:
   aura::Window* arc_toplevel = aura::test::CreateTestWindowWithDelegate(
-      &delegate_, 0, gfx::Rect(), nullptr);
+      &delegate_, 0, gfx::Rect(), &container_window);
   arc_toplevel->SetProperty(aura::client::kAppType,
                             static_cast<int>(ash::AppType::ARC_APP));
   ASSERT_TRUE(ash::IsArcWindow(arc_toplevel));
@@ -151,7 +160,7 @@ TEST_F(ChromeDataExchangeDelegateTest, GetDataTransferEndpointType) {
 
   // Crostini:
   aura::Window* crostini_toplevel = aura::test::CreateTestWindowWithDelegate(
-      &delegate_, 0, gfx::Rect(), nullptr);
+      &delegate_, 0, gfx::Rect(), &container_window);
   crostini_toplevel->SetProperty(aura::client::kAppType,
                                  static_cast<int>(ash::AppType::CROSTINI_APP));
   ASSERT_TRUE(crostini::IsCrostiniWindow(crostini_toplevel));
@@ -159,9 +168,19 @@ TEST_F(ChromeDataExchangeDelegateTest, GetDataTransferEndpointType) {
       aura::test::CreateTestWindowWithBounds(gfx::Rect(), crostini_toplevel);
   ASSERT_TRUE(crostini::IsCrostiniWindow(crostini_window->GetToplevelWindow()));
 
+  // Lacros:
+  aura::Window* lacros_toplevel = aura::test::CreateTestWindowWithDelegate(
+      &delegate_, 0, gfx::Rect(), &container_window);
+  exo::SetShellApplicationId(lacros_toplevel, "org.chromium.lacros.");
+  ASSERT_TRUE(crosapi::browser_util::IsLacrosWindow(lacros_toplevel));
+  aura::Window* lacros_window =
+      aura::test::CreateTestWindowWithBounds(gfx::Rect(), lacros_toplevel);
+  ASSERT_TRUE(crosapi::browser_util::IsLacrosWindow(
+      lacros_window->GetToplevelWindow()));
+
   // Plugin VM:
   aura::Window* plugin_vm_toplevel = aura::test::CreateTestWindowWithDelegate(
-      &delegate_, 0, gfx::Rect(), nullptr);
+      &delegate_, 0, gfx::Rect(), &container_window);
   exo::SetShellApplicationId(plugin_vm_toplevel, "org.chromium.plugin_vm_ui");
   ASSERT_TRUE(plugin_vm::IsPluginVmAppWindow(plugin_vm_toplevel));
   aura::Window* plugin_vm_window =
@@ -179,6 +198,9 @@ TEST_F(ChromeDataExchangeDelegateTest, GetDataTransferEndpointType) {
   EXPECT_EQ(
       ui::EndpointType::kCrostini,
       data_exchange_delegate.GetDataTransferEndpointType(crostini_window));
+
+  EXPECT_EQ(ui::EndpointType::kLacros,
+            data_exchange_delegate.GetDataTransferEndpointType(lacros_window));
 
   EXPECT_EQ(
       ui::EndpointType::kPluginVm,
@@ -200,7 +222,7 @@ TEST_F(ChromeDataExchangeDelegateTest, GetFilenames) {
   std::vector<ui::FileInfo> files = data_exchange_delegate.GetFilenames(
       ui::EndpointType::kArc,
       Data("\n\tfile:///file1\t\r\n#ignore\r\nfile:///file2\r\n"));
-  EXPECT_EQ(2, files.size());
+  EXPECT_EQ(2u, files.size());
   EXPECT_EQ("/file1", files[0].path.value());
   EXPECT_EQ("", files[0].display_name.value());
   EXPECT_EQ("/file2", files[1].path.value());
@@ -210,81 +232,81 @@ TEST_F(ChromeDataExchangeDelegateTest, GetFilenames) {
   files = data_exchange_delegate.GetFilenames(
       ui::EndpointType::kCrostini,
       Data("file:///mnt/chromeos/MyFiles/shared/file"));
-  EXPECT_EQ(1, files.size());
+  EXPECT_EQ(1u, files.size());
   EXPECT_EQ(shared_path.Append("file"), files[0].path);
 
   // Crostini homedir should be mapped.
   files = data_exchange_delegate.GetFilenames(
       ui::EndpointType::kCrostini, Data("file:///home/testuser/file"));
-  EXPECT_EQ(1, files.size());
+  EXPECT_EQ(1u, files.size());
   EXPECT_EQ(crostini_dir_.Append("file"), files[0].path);
 
   // Crostini internal paths should be mapped.
   files = data_exchange_delegate.GetFilenames(ui::EndpointType::kCrostini,
                                               Data("file:///etc/hosts"));
-  EXPECT_EQ(1, files.size());
+  EXPECT_EQ(1u, files.size());
   EXPECT_EQ("vmfile:termina:/etc/hosts", files[0].path.value());
 
   // Unshared paths should fail.
   files = data_exchange_delegate.GetFilenames(
       ui::EndpointType::kCrostini,
       Data("file:///mnt/chromeos/MyFiles/unshared/file"));
-  EXPECT_EQ(0, files.size());
+  EXPECT_EQ(0u, files.size());
   files = data_exchange_delegate.GetFilenames(
       ui::EndpointType::kCrostini,
       Data("file:///mnt/chromeos/MyFiles/shared/file1\r\n"
            "file:///mnt/chromeos/MyFiles/unshared/file2"));
-  EXPECT_EQ(1, files.size());
+  EXPECT_EQ(1u, files.size());
   EXPECT_EQ(shared_path.Append("file1"), files[0].path);
 
   // file:/path should fail.
   files = data_exchange_delegate.GetFilenames(
       ui::EndpointType::kCrostini, Data("file:/mnt/chromeos/MyFiles/file"));
-  EXPECT_EQ(0, files.size());
+  EXPECT_EQ(0u, files.size());
 
   // file:path should fail.
   files = data_exchange_delegate.GetFilenames(
       ui::EndpointType::kCrostini, Data("file:mnt/chromeos/MyFiles/file"));
-  EXPECT_EQ(0, files.size());
+  EXPECT_EQ(0u, files.size());
 
   // file:// should fail.
   files = data_exchange_delegate.GetFilenames(ui::EndpointType::kCrostini,
                                               Data("file://"));
-  EXPECT_EQ(0, files.size());
+  EXPECT_EQ(0u, files.size());
 
   // file:/// maps to internal root.
   files = data_exchange_delegate.GetFilenames(ui::EndpointType::kCrostini,
                                               Data("file:///"));
-  EXPECT_EQ(1, files.size());
+  EXPECT_EQ(1u, files.size());
   EXPECT_EQ("vmfile:termina:/", files[0].path.value());
 
   // /path should fail.
   files = data_exchange_delegate.GetFilenames(
       ui::EndpointType::kCrostini, Data("/mnt/chromeos/MyFiles/file"));
-  EXPECT_EQ(0, files.size());
+  EXPECT_EQ(0u, files.size());
 
   // Plugin VM shared paths should be mapped.
   files = data_exchange_delegate.GetFilenames(
       ui::EndpointType::kPluginVm, Data("file://ChromeOS/MyFiles/shared/file"));
-  EXPECT_EQ(1, files.size());
+  EXPECT_EQ(1u, files.size());
   EXPECT_EQ(shared_path.Append("file"), files[0].path);
 
   // Plugin VM internal paths should be mapped.
   files = data_exchange_delegate.GetFilenames(
       ui::EndpointType::kPluginVm, Data("file:///C:/WINDOWS/notepad.exe"));
-  EXPECT_EQ(1, files.size());
+  EXPECT_EQ(1u, files.size());
   EXPECT_EQ("vmfile:PvmDefault:C:/WINDOWS/notepad.exe", files[0].path.value());
 
   // Unshared paths should fail.
   files = data_exchange_delegate.GetFilenames(
       ui::EndpointType::kPluginVm,
       Data("file://ChromeOS/MyFiles/unshared/file"));
-  EXPECT_EQ(0, files.size());
+  EXPECT_EQ(0u, files.size());
   files = data_exchange_delegate.GetFilenames(
       ui::EndpointType::kPluginVm,
       Data("file://ChromeOS/MyFiles/shared/file1\r\n"
            "file://ChromeOS/MyFiles/unshared/file2"));
-  EXPECT_EQ(1, files.size());
+  EXPECT_EQ(1u, files.size());
   EXPECT_EQ(shared_path.Append("file1"), files[0].path);
 }
 
@@ -454,22 +476,29 @@ TEST_F(ChromeDataExchangeDelegateTest, ParseFileSystemSources) {
       guest_os::GuestOsSharePath::GetForProfile(profile());
   guest_os_share_path->RegisterSharedPath(crostini::kCrostiniDefaultVmName,
                                           shared_path);
-  std::u16string urls =
-      u"filesystem:chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/"
-      "external/Downloads-test%2540example.com-hash/shared/file1\n"
-      "filesystem:chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/"
-      "external/Downloads-test%2540example.com-hash/shared/file2";
+  const GURL file_manager_url = file_manager::util::GetFileManagerURL();
+  std::vector<std::string> file_names = {
+      "external/Downloads-test%2540example.com-hash/shared/file1",
+      "external/Downloads-test%2540example.com-hash/shared/file2",
+  };
+  std::vector<std::string> file_urls;
+  std::transform(file_names.begin(), file_names.end(),
+                 std::back_inserter(file_urls),
+                 [&file_manager_url](const std::string& name) {
+                   return base::StrCat({url::kFileSystemScheme, ":",
+                                        file_manager_url.Resolve(name).spec()});
+                 });
+  std::u16string urls(base::ASCIIToUTF16(base::JoinString(file_urls, "\n")));
   base::Pickle pickle;
   ui::WriteCustomDataToPickle(
       std::unordered_map<std::u16string, std::u16string>(
           {{u"fs/tag", u"exo"}, {u"fs/sources", urls}}),
       &pickle);
 
-  ui::DataTransferEndpoint files_app(url::Origin::Create(
-      GURL("chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj")));
+  ui::DataTransferEndpoint files_app(file_manager_url.Resolve("main.html"));
   std::vector<ui::FileInfo> file_info =
       data_exchange_delegate.ParseFileSystemSources(&files_app, pickle);
-  EXPECT_EQ(2, file_info.size());
+  EXPECT_EQ(2u, file_info.size());
   EXPECT_EQ(shared_path.Append("file1"), file_info[0].path);
   EXPECT_EQ(shared_path.Append("file2"), file_info[1].path);
   EXPECT_EQ(base::FilePath(), file_info[0].display_name);

@@ -28,6 +28,18 @@
       #container {
         padding-inline-start: var(--cr-section-padding);
       }
+
+      @media (prefers-color-scheme: dark) {
+        #lightIcon {
+          display: none;
+        }
+      }
+
+      @media (prefers-color-scheme: light) {
+        #darkIcon {
+          display: none;
+        }
+      }
     </style>
 
     <cr-dialog id="dialog" close-text="$i18n{cancel}" ignore-popstate
@@ -64,7 +76,11 @@
                   class="cr-separators">
                 <template>
                   <div class="list-item" first$="[[!index]]">
-                    <iron-icon icon="cr-fingerprint-icon:enrollment-done">
+                    <iron-icon id="darkIcon"
+                        icon="cr-fingerprint-icon:fingerprint-scanned-dark">
+                    </iron-icon>
+                    <iron-icon id="lightIcon"
+                        icon="cr-fingerprint-icon:fingerprint-scanned-light">
                     </iron-icon>
                     <div class="name" aria-label="[[item.name]]">
                       [[item.name]]

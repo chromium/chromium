@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -225,8 +225,11 @@ public class RelatedSearchesControl {
             int viewId = mIsInBarControl
                     ? R.id.contextual_search_related_searches_view_id
                     : R.id.contextual_search_related_searches_in_content_view_id;
-            mControlView = new RelatedSearchesControlView(
-                    mOverlayPanel, mContext, mViewContainer, mResourceLoader, layoutId, viewId);
+            int controlId = mIsInBarControl
+                    ? R.id.contextual_search_related_searches_view_control_id
+                    : R.id.contextual_search_related_searches_in_content_view_id;
+            mControlView = new RelatedSearchesControlView(mOverlayPanel, mContext, mViewContainer,
+                    mResourceLoader, layoutId, viewId, controlId);
         }
         assert mChipsSelected == 0 || hasReleatedSearchesToShow();
         mRelatedSearchesSuggestions = relatedSearches;
@@ -242,7 +245,7 @@ public class RelatedSearchesControl {
         mSelectedChip = NO_SELECTED_CHIP;
     }
 
-    void onPanelCollapsed() {
+    void onPanelCollapsing() {
         clearSelectedSuggestions();
     }
 
@@ -406,7 +409,7 @@ public class RelatedSearchesControl {
         if (mControlView == null) return;
 
         float y = mPanelSectionHost.getYPositionPx();
-        View view = mControlView.getControlView();
+        View view = mControlView.getView();
         if (view == null || !mIsVisible || (mIsShowingView && mViewY == y) || mHeightPx == 0.f) {
             return;
         }
@@ -438,7 +441,7 @@ public class RelatedSearchesControl {
     private void hideView() {
         if (mControlView == null) return;
 
-        View view = mControlView.getControlView();
+        View view = mControlView.getView();
         if (view == null || !mIsVisible || !mIsShowingView) {
             return;
         }
@@ -485,6 +488,8 @@ public class RelatedSearchesControl {
         mChipsSelected++;
         boolean isRelatedSearchesSuggestion = suggestionIndex > 0 || !mDisplayDefaultQuery;
         ContextualSearchUma.logAllSearches(isRelatedSearchesSuggestion);
+
+        mControlView.smoothScrollToPosition(suggestionIndex);
     }
 
     /** The position of the first Related Searches suggestion in the carousel UI. */
@@ -515,6 +520,8 @@ public class RelatedSearchesControl {
     }
 
     private void handleChipTapped(PropertyModel tappedChip) {
+        if (mControlView == null) return;
+
         onSuggestionClicked(tappedChip.get(ChipProperties.ID));
         if (mSelectedChip != NO_SELECTED_CHIP) {
             mChips.get(mSelectedChip).model.set(ChipProperties.SELECTED, false);
@@ -538,6 +545,7 @@ public class RelatedSearchesControl {
         // TODO(donnd): track the offset of the carousel here, so we can use it for snapshotting
         // and log that the user has scrolled it.
         private float mLastOffset;
+        private final int mControlId;
 
         /**
          * Constructs a view that can be shown in the panel.
@@ -547,10 +555,12 @@ public class RelatedSearchesControl {
          * @param resourceLoader    The resource loader that will handle the snapshot capturing.
          * @param layoutId          The XML Layout that declares the View.
          * @param viewId            The id of the root View of the Layout.
+         * @param controlId         The id of the control View.
          */
         RelatedSearchesControlView(OverlayPanel panel, Context context, ViewGroup container,
-                DynamicResourceLoader resourceLoader, int layoutId, int viewId) {
+                DynamicResourceLoader resourceLoader, int layoutId, int viewId, int controlId) {
             super(panel, layoutId, viewId, context, container, resourceLoader);
+            mControlId = controlId;
 
             // Setup Chips handling
             mChipsCoordinator = new ChipsCoordinator(context, mChips);
@@ -565,12 +575,30 @@ public class RelatedSearchesControl {
                 @Override
                 public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                     if (newState == RecyclerView.SCROLL_STATE_DRAGGING) mScrolled = true;
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) invalidate(false);
                 }
             });
         }
 
+        /**
+         * Smoothly scroll to the view in the position.
+         * @param position the position of the view to scroll to.
+         */
+        private void smoothScrollToPosition(int position) {
+            RecyclerView recyclerView = (RecyclerView) mChipsCoordinator.getView();
+            recyclerView.smoothScrollToPosition(position);
+        }
+
         /** Returns the view for this control. */
         View getControlView() {
+            View view = getView();
+            if (view == null) return null;
+
+            return view.findViewById(mControlId);
+        }
+
+        @Override
+        public View getView() {
             return super.getView();
         }
 

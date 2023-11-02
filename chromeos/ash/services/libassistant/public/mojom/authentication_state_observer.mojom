@@ -1,0 +1,13 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.libassistant.mojom;
+
+// Observer which will be informed of authentication state changes.
+interface AuthenticationStateObserver {
+  // Called when Libassistant detects an authentication failure.
+  // This can be due to invalid credentials, or simply because the
+  // authentication token expired.
+  OnAuthenticationError();
+};

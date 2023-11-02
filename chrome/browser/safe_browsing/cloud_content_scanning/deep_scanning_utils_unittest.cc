@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <limits>
 #include <string>
 #include <tuple>
+#include <utility>
 
 #include "base/files/file_path.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -30,6 +31,18 @@ constexpr BinaryUploadService::Result kAllBinaryUploadServiceResults[]{
     BinaryUploadService::Result::FILE_ENCRYPTED,
     BinaryUploadService::Result::DLP_SCAN_UNSUPPORTED_FILE_TYPE,
 };
+
+#if !BUILDFLAG(USE_CRASH_KEY_STUBS)
+constexpr std::pair<ScanningCrashKey, const char*> kAllCrashKeys[] = {
+    {ScanningCrashKey::PENDING_FILE_UPLOADS, "pending-file-upload-scans"},
+    {ScanningCrashKey::PENDING_FILE_DOWNLOADS, "pending-file-download-scans"},
+    {ScanningCrashKey::PENDING_TEXT_UPLOADS, "pending-text-upload-scans"},
+    {ScanningCrashKey::PENDING_PRINTS, "pending-print-scans"},
+    {ScanningCrashKey::TOTAL_FILE_UPLOADS, "total-file-upload-scans"},
+    {ScanningCrashKey::TOTAL_FILE_DOWNLOADS, "total-file-download-scans"},
+    {ScanningCrashKey::TOTAL_TEXT_UPLOADS, "total-text-upload-scans"},
+    {ScanningCrashKey::TOTAL_PRINTS, "total-print-scans"}};
+#endif  // !BUILDFLAG(USE_CRASH_KEY_STUBS)
 
 constexpr int64_t kTotalBytes = 1000;
 
@@ -73,7 +86,9 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(testing::Values(DeepScanAccessPoint::DOWNLOAD,
                                      DeepScanAccessPoint::UPLOAD,
                                      DeepScanAccessPoint::DRAG_AND_DROP,
-                                     DeepScanAccessPoint::PASTE),
+                                     DeepScanAccessPoint::PASTE,
+                                     DeepScanAccessPoint::PRINT,
+                                     DeepScanAccessPoint::FILE_TRANSFER),
                      testing::ValuesIn(kAllBinaryUploadServiceResults)));
 
 TEST_P(DeepScanningUtilsUMATest, SuccessfulScanVerdicts) {
@@ -234,45 +249,9 @@ TEST_P(DeepScanningUtilsUMATest, InvalidDuration) {
       histograms().GetTotalCountsForPrefix("SafeBrowsing.DeepScan.").size());
 }
 
-class DeepScanningUtilsDlpFileSupportedTest : public testing::Test {
- protected:
-  std::vector<base::FilePath::StringType> UnsupportedDlpFileTypes() {
-    return {FILE_PATH_LITERAL(".these"), FILE_PATH_LITERAL(".types"),
-            FILE_PATH_LITERAL(".are"), FILE_PATH_LITERAL(".not"),
-            FILE_PATH_LITERAL(".supported")};
-  }
-
-  std::vector<std::string> UnsupportedDlpMimeTypes() {
-    return {"image/png", "video/webm", "audio/wav", "i/made", "this/up", "foo"};
-  }
-
-  base::FilePath FilePath(const base::FilePath::StringType& type) {
-    return base::FilePath(FILE_PATH_LITERAL("foo") + type);
-  }
-};
-
-TEST_F(DeepScanningUtilsDlpFileSupportedTest, FileExtension) {
-  // With a DLP-only scan, only the types returned by SupportedDlpFileTypes()
-  // will be supported, and other types will fail.
-  for (const base::FilePath::StringType& type : SupportedDlpFileTypes()) {
-    EXPECT_TRUE(FileTypeSupportedForDlp(FilePath(type)));
-  }
-  for (const base::FilePath::StringType& type : UnsupportedDlpFileTypes()) {
-    EXPECT_FALSE(FileTypeSupportedForDlp(FilePath(type)));
-  }
-}
-
-TEST_F(DeepScanningUtilsDlpFileSupportedTest, MimeType) {
-  for (const std::string& type : SupportedDlpMimeTypes()) {
-    EXPECT_TRUE(MimeTypeSupportedForDlp(type));
-  }
-  for (const std::string& type : UnsupportedDlpMimeTypes()) {
-    EXPECT_FALSE(MimeTypeSupportedForDlp(type));
-  }
-}
-
 #if !BUILDFLAG(USE_CRASH_KEY_STUBS)
-class DeepScanningUtilsCrashKeysTest : public testing::Test {
+class DeepScanningUtilsCrashKeysTest
+    : public testing::TestWithParam<std::pair<ScanningCrashKey, const char*>> {
  public:
   void SetUp() override {
     crash_reporter::ResetCrashKeysForTesting();
@@ -280,64 +259,60 @@ class DeepScanningUtilsCrashKeysTest : public testing::Test {
   }
 
   void TearDown() override { crash_reporter::ResetCrashKeysForTesting(); }
+
+  ScanningCrashKey key_enum() { return std::get<0>(GetParam()); }
+
+  const char* key_string() { return std::get<1>(GetParam()); }
 };
 
-TEST_F(DeepScanningUtilsCrashKeysTest, SmallModifications) {
+INSTANTIATE_TEST_SUITE_P(,
+                         DeepScanningUtilsCrashKeysTest,
+                         testing::ValuesIn(kAllCrashKeys));
+
+TEST_P(DeepScanningUtilsCrashKeysTest, SmallModifications) {
   // The key implicitly starts at 0.
-  IncrementCrashKey(ScanningCrashKey::PENDING_FILE_DOWNLOADS, 1);
-  EXPECT_EQ("1",
-            crash_reporter::GetCrashKeyValue("pending-file-download-scans"));
+  IncrementCrashKey(key_enum(), 1);
+  EXPECT_EQ("1", crash_reporter::GetCrashKeyValue(key_string()));
 
-  IncrementCrashKey(ScanningCrashKey::PENDING_FILE_DOWNLOADS, 1);
-  EXPECT_EQ("2",
-            crash_reporter::GetCrashKeyValue("pending-file-download-scans"));
+  IncrementCrashKey(key_enum(), 1);
+  EXPECT_EQ("2", crash_reporter::GetCrashKeyValue(key_string()));
 
-  DecrementCrashKey(ScanningCrashKey::PENDING_FILE_DOWNLOADS, 1);
-  EXPECT_EQ("1",
-            crash_reporter::GetCrashKeyValue("pending-file-download-scans"));
+  DecrementCrashKey(key_enum(), 1);
+  EXPECT_EQ("1", crash_reporter::GetCrashKeyValue(key_string()));
 
-  DecrementCrashKey(ScanningCrashKey::PENDING_FILE_DOWNLOADS, 1);
-  EXPECT_TRUE(
-      crash_reporter::GetCrashKeyValue("pending-file-download-scans").empty());
+  DecrementCrashKey(key_enum(), 1);
+  EXPECT_TRUE(crash_reporter::GetCrashKeyValue(key_string()).empty());
 }
 
-TEST_F(DeepScanningUtilsCrashKeysTest, LargeModifications) {
+TEST_P(DeepScanningUtilsCrashKeysTest, LargeModifications) {
   // The key implicitly starts at 0.
-  IncrementCrashKey(ScanningCrashKey::PENDING_FILE_UPLOADS, 100);
-  EXPECT_EQ("100",
-            crash_reporter::GetCrashKeyValue("pending-file-upload-scans"));
+  IncrementCrashKey(key_enum(), 100);
+  EXPECT_EQ("100", crash_reporter::GetCrashKeyValue(key_string()));
 
-  IncrementCrashKey(ScanningCrashKey::PENDING_FILE_UPLOADS, 100);
-  EXPECT_EQ("200",
-            crash_reporter::GetCrashKeyValue("pending-file-upload-scans"));
+  IncrementCrashKey(key_enum(), 100);
+  EXPECT_EQ("200", crash_reporter::GetCrashKeyValue(key_string()));
 
-  DecrementCrashKey(ScanningCrashKey::PENDING_FILE_UPLOADS, 100);
-  EXPECT_EQ("100",
-            crash_reporter::GetCrashKeyValue("pending-file-upload-scans"));
+  DecrementCrashKey(key_enum(), 100);
+  EXPECT_EQ("100", crash_reporter::GetCrashKeyValue(key_string()));
 
-  DecrementCrashKey(ScanningCrashKey::PENDING_FILE_UPLOADS, 100);
-  EXPECT_TRUE(
-      crash_reporter::GetCrashKeyValue("pending-file-upload-scans").empty());
+  DecrementCrashKey(key_enum(), 100);
+  EXPECT_TRUE(crash_reporter::GetCrashKeyValue(key_string()).empty());
 }
 
-TEST_F(DeepScanningUtilsCrashKeysTest, InvalidModifications) {
+TEST_P(DeepScanningUtilsCrashKeysTest, InvalidModifications) {
   // The crash key value cannot be negative.
-  DecrementCrashKey(ScanningCrashKey::PENDING_TEXT_UPLOADS, 1);
-  EXPECT_TRUE(
-      crash_reporter::GetCrashKeyValue("pending-text-upload-scans").empty());
-  DecrementCrashKey(ScanningCrashKey::PENDING_TEXT_UPLOADS, 100);
-  EXPECT_TRUE(
-      crash_reporter::GetCrashKeyValue("pending-text-upload-scans").empty());
+  DecrementCrashKey(key_enum(), 1);
+  EXPECT_TRUE(crash_reporter::GetCrashKeyValue(key_string()).empty());
+  DecrementCrashKey(key_enum(), 100);
+  EXPECT_TRUE(crash_reporter::GetCrashKeyValue(key_string()).empty());
 
   // The crash key value is restricted to 6 digits. If a modification would
   // exceed it, it is clamped so crashes will indicate that the key was set at a
   // very high value.
-  IncrementCrashKey(ScanningCrashKey::PENDING_TEXT_UPLOADS, 123456789);
-  EXPECT_EQ("999999",
-            crash_reporter::GetCrashKeyValue("pending-text-upload-scans"));
-  IncrementCrashKey(ScanningCrashKey::PENDING_TEXT_UPLOADS, 123456789);
-  EXPECT_EQ("999999",
-            crash_reporter::GetCrashKeyValue("pending-text-upload-scans"));
+  IncrementCrashKey(key_enum(), 123456789);
+  EXPECT_EQ("999999", crash_reporter::GetCrashKeyValue(key_string()));
+  IncrementCrashKey(key_enum(), 123456789);
+  EXPECT_EQ("999999", crash_reporter::GetCrashKeyValue(key_string()));
 }
 #endif  // !BUILDFLAG(USE_CRASH_KEY_STUBS)
 

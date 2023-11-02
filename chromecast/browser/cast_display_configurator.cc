@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -141,7 +141,8 @@ void CastDisplayConfigurator::EnableDisplay(
   std::vector<display::DisplayConfigurationParams> config_request;
   config_request.push_back(std::move(display_config_params));
 
-  delegate_->Configure(config_request, std::move(callback));
+  delegate_->Configure(config_request, std::move(callback),
+                       display::kTestModeset | display::kCommitModeset);
   NotifyObservers();
 }
 
@@ -155,7 +156,8 @@ void CastDisplayConfigurator::DisableDisplay(
   std::vector<display::DisplayConfigurationParams> config_request;
   config_request.push_back(std::move(display_config_params));
 
-  delegate_->Configure(config_request, std::move(callback));
+  delegate_->Configure(config_request, std::move(callback),
+                       display::kTestModeset | display::kCommitModeset);
 }
 
 void CastDisplayConfigurator::ConfigureDisplayFromCommandLine() {
@@ -236,7 +238,8 @@ void CastDisplayConfigurator::OnDisplaysAcquired(
       config_request,
       base::BindRepeating(&CastDisplayConfigurator::OnDisplayConfigured,
                           weak_factory_.GetWeakPtr(), display_,
-                          display_->native_mode(), origin));
+                          display_->native_mode(), origin),
+      display::kTestModeset | display::kCommitModeset);
 }
 
 void CastDisplayConfigurator::OnDisplayConfigured(
@@ -246,7 +249,15 @@ void CastDisplayConfigurator::OnDisplayConfigured(
     bool config_success) {
   DCHECK(display);
   DCHECK(mode);
-  DCHECK_EQ(display, display_);
+
+  // Discard events for previous configurations. It is safe to discard since a
+  // new configuration round was initiated and we're waiting for another
+  // OnDisplayConfigured() event with the up-to-date display to arrive.
+  //
+  // This typically only happens when there's crashes and the state updates at
+  // the same time old notifications are received.
+  if (display != display_)
+    return;
 
   const gfx::Rect bounds(origin, mode->size());
   DVLOG(1) << __func__ << " success=" << config_success

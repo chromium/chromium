@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef GPU_IPC_COMMON_CONTEXT_RESULT_MOJOM_TRAITS_H_
 #define GPU_IPC_COMMON_CONTEXT_RESULT_MOJOM_TRAITS_H_
 
+#include "base/notreached.h"
 #include "gpu/command_buffer/common/context_result.h"
 #include "gpu/gpu_export.h"
 #include "gpu/ipc/common/context_result.mojom-shared.h"

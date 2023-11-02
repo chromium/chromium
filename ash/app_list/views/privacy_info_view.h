@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,6 +42,7 @@ class PrivacyInfoView : public SearchResultBaseView {
   void SelectInitialResultAction(bool reverse_tab_order) override;
   bool SelectNextResultAction(bool reverse_tab_order) override;
   views::View* GetSelectedView() override;
+  void OnThemeChanged() override;
 
   virtual void LinkClicked() = 0;
   virtual void CloseButtonPressed() = 0;
@@ -69,6 +70,7 @@ class PrivacyInfoView : public SearchResultBaseView {
   const int info_string_id_;
   const int link_string_id_;
   views::Link* link_view_ = nullptr;  // Not owned.
+  size_t text_offset_ = 0;
 
   // Indicates which of the privacy notice's actions is selected for keyboard
   // navigation.

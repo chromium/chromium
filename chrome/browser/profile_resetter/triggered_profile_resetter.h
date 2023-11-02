@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -72,9 +73,9 @@ class TriggeredProfileResetter : public KeyedService {
   virtual std::u16string GetResetToolName();
 
  private:
-#if defined(OS_WIN)
-  Profile* profile_;
-#endif  // defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
+  raw_ptr<Profile> profile_;
+#endif  // BUILDFLAG(IS_WIN)
 
   bool has_reset_trigger_ = false;
   bool activate_called_ = false;

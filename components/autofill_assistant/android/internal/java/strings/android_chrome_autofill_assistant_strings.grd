@@ -83,6 +83,9 @@
     <output filename="values-zh-rHK/android_chrome_autofill_assistant_strings.xml" lang="zh-HK" type="android" />
     <output filename="values-zh-rTW/android_chrome_autofill_assistant_strings.xml" lang="zh-TW" type="android" />
     <output filename="values-zu/android_chrome_autofill_assistant_strings.xml" lang="zu" type="android" />
+    <!-- Pseudolocales -->
+    <output filename="values-ar-rXB/android_chrome_autofill_assistant_strings.xml" lang="ar-XB" type="android" />
+    <output filename="values-en-rXA/android_chrome_autofill_assistant_strings.xml" lang="en-XA" type="android" />
   </outputs>
   <translations>
     <file path="translations/android_chrome_autofill_assistant_strings_af.xtb" lang="af" />
@@ -96,6 +99,7 @@
     <file path="translations/android_chrome_autofill_assistant_strings_bs.xtb" lang="bs" />
     <file path="translations/android_chrome_autofill_assistant_strings_ca.xtb" lang="ca" />
     <file path="translations/android_chrome_autofill_assistant_strings_cs.xtb" lang="cs" />
+    <file path="translations/android_chrome_autofill_assistant_strings_cy.xtb" lang="cy" />
     <file path="translations/android_chrome_autofill_assistant_strings_da.xtb" lang="da" />
     <file path="translations/android_chrome_autofill_assistant_strings_de.xtb" lang="de" />
     <file path="translations/android_chrome_autofill_assistant_strings_el.xtb" lang="el" />
@@ -247,6 +251,24 @@
       </message>
       <message name="IDS_AUTOFILL_ASSISTANT_OVERFLOW_OPTIONS" desc="Content description for the overflow icon displayed in the first prompt, which will open a popup menu with additional options.">
         Preferences
+      </message>
+      <message name="IDS_AUTOFILL_ASSISTANT_TTS_BUTTON" desc="Content description for the text to speech button, which is used to start or stop voice instructions.">
+        Start or stop voice instructions
+      </message>
+      <message name="IDS_AUTOFILL_ASSISTANT_SPLIT_ONBOARDING_TERMS_TITLE" desc="The title of the terms and conditions popup dialog.">
+        Google Assistant needs your permission
+      </message>
+      <message name="IDS_AUTOFILL_ASSISTANT_SPLIT_ONBOARDING_CLOSE_BOTTOMSHEET" desc="The button text to close the bottomsheet, declining the flow.">
+        No thanks
+      </message>
+      <message name="IDS_AUTOFILL_ASSISTANT_SPLIT_ONBOARDING_SHOW_DIALOG" desc="The button text to start the flow in split onboarding.">
+        Fast checkout
+      </message>
+      <message name="IDS_AUTOFILL_ASSISTANT_SPLIT_ONBOARDING_TITLE" desc="The title shown in the split onboarding. The Assistant offers users help/assistance to buy movie tickets.">
+        Hi, I can help you buy tickets in just a few taps
+      </message>
+      <message name="IDS_AUTOFILL_ASSISTANT_SPLIT_ONBOARDING_SUBTITLE" desc="The subtitle shown in the split onboarding. The Assistant will facilitate movie ticket checkout for users by using the user's securely stored user data.">
+        Your Google Assistant makes it easier to buy movie tickets using your securely stored details
       </message>
     </messages>
   </release>

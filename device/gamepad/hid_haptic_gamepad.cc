@@ -1,12 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "device/gamepad/hid_haptic_gamepad.h"
 
-#include <algorithm>
 #include <vector>
 
+#include "base/ranges/algorithm.h"
 #include "device/gamepad/hid_writer.h"
 
 namespace device {
@@ -50,7 +50,6 @@ HidHapticGamepad::HapticReportData kHapticReportData[] = {
     // Stadia controller
     {0x18d1, 0x9400, 0x05, 5, 1, 3, 2 * kBitsPerByte, 0, 0xffff},
 };
-size_t kHapticReportDataLength = base::size(kHapticReportData);
 
 HidHapticGamepad::HidHapticGamepad(const HapticReportData& data,
                                    std::unique_ptr<HidWriter> writer)
@@ -79,34 +78,28 @@ std::unique_ptr<HidHapticGamepad> HidHapticGamepad::Create(
 
 // static
 bool HidHapticGamepad::IsHidHaptic(uint16_t vendor_id, uint16_t product_id) {
-  const auto* begin = kHapticReportData;
-  const auto* end = kHapticReportData + kHapticReportDataLength;
-  const auto* find_it =
-      std::find_if(begin, end, [=](const HapticReportData& d) {
+  return base::ranges::any_of(
+      kHapticReportData, [=](const HapticReportData& d) {
         return d.vendor_id == vendor_id && d.product_id == product_id;
       });
-  return find_it != end;
 }
 
 // static
 const HidHapticGamepad::HapticReportData* HidHapticGamepad::GetHapticReportData(
     uint16_t vendor_id,
     uint16_t product_id) {
-  const auto* begin = kHapticReportData;
-  const auto* end = kHapticReportData + kHapticReportDataLength;
   const auto* find_it =
-      std::find_if(begin, end, [=](const HapticReportData& d) {
+      base::ranges::find_if(kHapticReportData, [=](const HapticReportData& d) {
         return d.vendor_id == vendor_id && d.product_id == product_id;
       });
-  return find_it == end ? nullptr : &*find_it;
+  return find_it == std::end(kHapticReportData) ? nullptr : &*find_it;
 }
 
 void HidHapticGamepad::DoShutdown() {
   writer_.reset();
 }
 
-void HidHapticGamepad::SetVibration(double strong_magnitude,
-                                    double weak_magnitude) {
+void HidHapticGamepad::SetVibration(mojom::GamepadEffectParametersPtr params) {
   DCHECK(writer_);
   std::vector<uint8_t> control_report(report_length_bytes_);
   control_report[0] = report_id_;
@@ -114,7 +107,7 @@ void HidHapticGamepad::SetVibration(double strong_magnitude,
     // Single channel vibration. Combine both channels into a single magnitude.
     std::vector<uint8_t> vibration_bytes;
     double vibration_magnitude =
-        std::min(strong_magnitude + weak_magnitude, 1.0);
+        std::min(params->strong_magnitude + params->weak_magnitude, 1.0);
     MagnitudeToBytes(vibration_magnitude, report_size_bits_, logical_min_,
                      logical_max_, &vibration_bytes);
     // Vibration magnitude must not overwrite the report ID.
@@ -128,9 +121,9 @@ void HidHapticGamepad::SetVibration(double strong_magnitude,
     // Dual channel vibration.
     std::vector<uint8_t> left_bytes;
     std::vector<uint8_t> right_bytes;
-    MagnitudeToBytes(strong_magnitude, report_size_bits_, logical_min_,
+    MagnitudeToBytes(params->strong_magnitude, report_size_bits_, logical_min_,
                      logical_max_, &left_bytes);
-    MagnitudeToBytes(weak_magnitude, report_size_bits_, logical_min_,
+    MagnitudeToBytes(params->weak_magnitude, report_size_bits_, logical_min_,
                      logical_max_, &right_bytes);
     // Vibration magnitude must not overwrite the report ID.
     DCHECK(report_id_ == 0x00 || strong_offset_bytes_ > 0);

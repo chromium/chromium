@@ -1,12 +1,8 @@
-all: overview.svg
+overview.svg: overview.pdf
+	pdf2svg $< $@
 
-build/bin/svgbob:
-	cargo install --git https://github.com/ivanceras/svgbob --rev df01674c47350665158ececa476e63f51c58a9c7 --root build
+overview.pdf: overview.tex
+	latexmk $<
 
-%.svg: %.ascii build/bin/svgbob
-	build/bin/svgbob $< > $@
-
-clean:
-	rm -f *.svg
-
-.PHONY: all clean
+overview.png: overview.svg
+	svgexport $< $@ 3x

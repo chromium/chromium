@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,10 +15,6 @@ namespace mojo {
 class ScopedInterfaceEndpointHandle;
 }  // namespace mojo
 
-namespace IPC {
-class Message;
-} // namespace IPC
-
 namespace remoting {
 
 // An interface representing the object receiving IPC messages from a worker
@@ -29,9 +25,6 @@ class WorkerProcessIpcDelegate {
 
   // Notifies that a client has been connected to the channel.
   virtual void OnChannelConnected(int32_t peer_pid) = 0;
-
-  // Processes messages sent by the client.
-  virtual bool OnMessageReceived(const IPC::Message& message) = 0;
 
   // Notifies that a permanent error was encountered.
   virtual void OnPermanentError(int exit_code) = 0;

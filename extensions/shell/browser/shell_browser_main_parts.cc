@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chromeos/dbus/hermes/hermes_clients.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/prefs/pref_service.h"
@@ -50,30 +49,34 @@
 #include "ui/aura/env.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/audio/audio_devices_pref_handler_impl.h"
-#include "ash/components/audio/cras_audio_handler.h"
-#include "chromeos/disks/disk_mount_manager.h"
-#include "chromeos/network/network_handler.h"
-#include "extensions/shell/browser/shell_audio_controller_chromeos.h"
-#include "extensions/shell/browser/shell_network_controller_chromeos.h"
+#if BUILDFLAG(IS_LINUX)
+#include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "device/bluetooth/dbus/dbus_bluez_manager_wrapper_linux.h"
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/dbus/audio/cras_audio_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/audio/audio_devices_pref_handler_impl.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
+#include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_clients.h"
+#include "chromeos/ash/components/dbus/shill/shill_clients.h"
+#include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
-#include "device/bluetooth/dbus/bluez_dbus_thread_manager.h"
+#include "extensions/shell/browser/shell_audio_controller_chromeos.h"
+#include "extensions/shell/browser/shell_network_controller_chromeos.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_dbus_thread_manager.h"
+#include "chromeos/lacros/dbus/lacros_dbus_thread_manager.h"
+#include "device/bluetooth/dbus/bluez_dbus_thread_manager.h"
 #endif
 
 #if BUILDFLAG(ENABLE_NACL)
@@ -91,22 +94,12 @@ using content::BrowserContext;
 
 namespace extensions {
 
-namespace {
-
-// Intentionally dereferences a null pointer to test the crash reporter.
-void CrashForTest() {
-  int* bad_pointer = nullptr;
-  *bad_pointer = 0;
-}
-
-}  // namespace
-
 ShellBrowserMainParts::ShellBrowserMainParts(
-    content::MainFunctionParams parameters,
-    ShellBrowserMainDelegate* browser_main_delegate)
+    ShellBrowserMainDelegate* browser_main_delegate,
+    bool is_integration_test)
     : extension_system_(nullptr),
-      parameters_(std::move(parameters)),
-      browser_main_delegate_(browser_main_delegate) {}
+      browser_main_delegate_(browser_main_delegate),
+      is_integration_test_(is_integration_test) {}
 
 ShellBrowserMainParts::~ShellBrowserMainParts() = default;
 
@@ -115,23 +108,40 @@ void ShellBrowserMainParts::PostCreateMainMessageLoop() {
   // Perform initialization of D-Bus objects here rather than in the below
   // helper classes so those classes' tests can initialize stub versions of the
   // D-Bus objects.
-  chromeos::DBusThreadManager::Initialize();
-  dbus::Bus* bus = chromeos::DBusThreadManager::Get()->GetSystemBus();
+  ash::DBusThreadManager::Initialize();
+  dbus::Bus* bus = ash::DBusThreadManager::Get()->GetSystemBus();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::LacrosDBusThreadManager::Initialize();
+  dbus::Bus* bus = chromeos::LacrosDBusThreadManager::Get()->GetSystemBus();
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
   if (bus) {
-    chromeos::hermes_clients::Initialize(bus);
     bluez::BluezDBusManager::Initialize(bus);
-    chromeos::CrasAudioClient::Initialize(bus);
+  } else {
+    bluez::BluezDBusManager::InitializeFake();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (bus) {
+    ash::shill_clients::Initialize(bus);
+    ash::hermes_clients::Initialize(bus);
+    ash::CrasAudioClient::Initialize(bus);
+    ash::CrosDisksClient::Initialize(bus);
     chromeos::PowerManagerClient::Initialize(bus);
   } else {
-    chromeos::hermes_clients::InitializeFakes();
-    bluez::BluezDBusManager::InitializeFake();
-    chromeos::CrasAudioClient::InitializeFake();
+    ash::shill_clients::InitializeFakes();
+    ash::hermes_clients::InitializeFakes();
+    ash::CrasAudioClient::InitializeFake();
+    ash::CrosDisksClient::InitializeFake();
     chromeos::PowerManagerClient::InitializeFake();
   }
 
-  chromeos::disks::DiskMountManager::Initialize();
+  // Depends on CrosDisksClient.
+  ash::disks::DiskMountManager::Initialize();
 
-  chromeos::NetworkHandler::Initialize();
+  ash::NetworkHandler::Initialize();
   network_controller_ = std::make_unique<ShellNetworkController>(
       base::CommandLine::ForCurrentProcess()->GetSwitchValueNative(
           switches::kAppShellPreferredNetwork));
@@ -140,18 +150,17 @@ void ShellBrowserMainParts::PostCreateMainMessageLoop() {
       switches::kAppShellAllowRoaming)) {
     network_controller_->SetCellularAllowRoaming(true);
   }
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // app_shell doesn't need GTK, so the fake input method context can work.
   // See crbug.com/381852 and revision fb69f142.
   // TODO(michaelpg): Verify this works for target environments.
   ui::InitializeInputMethodForTesting();
-
-  bluez::BluezDBusManager::Initialize(nullptr /* system_bus */);
 #else
   ui::InitializeInputMethodForTesting();
 #endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosDBusThreadManager::Initialize();
+
+#if BUILDFLAG(IS_LINUX)
+  bluez::DBusBluezManagerWrapperLinux::Initialize();
 #endif
 }
 
@@ -237,12 +246,8 @@ int ShellBrowserMainParts::PreMainMessageLoopRun() {
   content::ShellDevToolsManagerDelegate::StartHttpHandler(
       browser_context_.get());
 
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ::switches::kBrowserCrashTest))
-    CrashForTest();
-
   // Skip these steps in integration tests.
-  if (!parameters_.ui_task) {
+  if (!is_integration_test_) {
     browser_main_delegate_->Start(browser_context_.get());
     desktop_controller_->PreMainMessageLoopRun();
   }
@@ -291,23 +296,28 @@ void ShellBrowserMainParts::PostMainMessageLoopRun() {
 void ShellBrowserMainParts::PostDestroyThreads() {
   extensions_browser_client_.reset();
   ExtensionsBrowserClient::Set(nullptr);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosDBusThreadManager::Shutdown();
+#if BUILDFLAG(IS_CHROMEOS)
+  device::BluetoothAdapterFactory::Shutdown();
+  bluez::BluezDBusManager::Shutdown();
+#elif BUILDFLAG(IS_LINUX)
+  device::BluetoothAdapterFactory::Shutdown();
+  bluez::DBusBluezManagerWrapperLinux::Shutdown();
 #endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   network_controller_.reset();
-  chromeos::NetworkHandler::Shutdown();
-  chromeos::disks::DiskMountManager::Shutdown();
-  device::BluetoothAdapterFactory::Shutdown();
-  bluez::BluezDBusManager::Shutdown();
+  ash::NetworkHandler::Shutdown();
+  ash::disks::DiskMountManager::Shutdown();
   chromeos::PowerManagerClient::Shutdown();
-  chromeos::CrasAudioClient::Shutdown();
-  chromeos::DBusThreadManager::Shutdown();
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  device::BluetoothAdapterFactory::Shutdown();
-  bluez::BluezDBusManager::Shutdown();
-  bluez::BluezDBusThreadManager::Shutdown();
+  ash::CrosDisksClient::Shutdown();
+  ash::CrasAudioClient::Shutdown();
+  ash::shill_clients::Shutdown();
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::DBusThreadManager::Shutdown();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::LacrosDBusThreadManager::Shutdown();
 #endif
 }
 

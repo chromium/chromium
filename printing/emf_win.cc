@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -156,6 +156,13 @@ bool Emf::GetData(void* buffer, uint32_t size) const {
       GetEnhMetaFileBits(emf_, size, reinterpret_cast<BYTE*>(buffer));
   DCHECK(size2 == size);
   return size2 == size && size2 != 0;
+}
+
+bool Emf::ShouldCopySharedMemoryRegionData() const {
+  // `InitFromData()` operates directly upon memory provide to it, so any
+  // caller for cases where this data is shared cross-process should have the
+  // data copied before it is operated upon.
+  return true;
 }
 
 mojom::MetafileDataType Emf::GetDataType() const {

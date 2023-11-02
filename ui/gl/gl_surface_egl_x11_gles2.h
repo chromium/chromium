@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,8 @@ namespace gl {
 class GL_EXPORT NativeViewGLSurfaceEGLX11GLES2
     : public NativeViewGLSurfaceEGLX11 {
  public:
-  explicit NativeViewGLSurfaceEGLX11GLES2(x11::Window window);
+  explicit NativeViewGLSurfaceEGLX11GLES2(gl::GLDisplayEGL* display,
+                                          x11::Window window);
 
   NativeViewGLSurfaceEGLX11GLES2(const NativeViewGLSurfaceEGLX11GLES2&) =
       delete;

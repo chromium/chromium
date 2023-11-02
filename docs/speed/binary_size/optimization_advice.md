@@ -123,12 +123,9 @@ There are two mechanisms for compressing Chrome l10n files.
  * Would a vector image work?
    * Images that can be described by a series of paths should generally be
      stored as vectors.
-     * The one exception is if the image will be used pre-Lollipop in a
-       notification or application icon.
    * For images used in native code: [VectorIcon](https://chromium.googlesource.com/chromium/src/+/HEAD/components/vector_icons/README.md).
    * For Android drawables: [VectorDrawable](https://developer.android.com/guide/topics/graphics/vector-drawable-resources).
-     * Convert from `.svg` online using https://inloop.github.io/svg2android/.
-     * Optimize vector drawables with [avocado](https://bugs.chromium.org/p/chromium/issues/detail?id=982302).
+     * Convert from `.svg` following [this guide](https://developer.android.com/studio/write/vector-asset-studio.html#svg).
      * (Googlers): Find most icons as .svg at [go/icons](https://goto.google.com/icons).
  * Would **lossy** compression make sense (often true for large images)?
    * If so, [use lossy webp](https://codereview.chromium.org/2615243002/).
@@ -178,7 +175,9 @@ Practical advice:
  * Ensure no symbols exist that are used only by tests.
  * Be concise with strings used for error handling.
    * Identical strings throughout the codebase are de-duped. Take advantage of
-     this for error-related strings.
+     this for log strings and exception messages.
+   * For exceptions, prefer to omit a message altogether unless it provides
+     more detail than the stack trace will.
 
 #### Optimizing Native Code
  * If there's a notable increase in `.data.rel.ro`:
@@ -233,8 +232,14 @@ Practical advice:
      classes have a constructor in addition to the callback method.
    * E.g. rather than have `onFailure()` vs `onSuccess()`, have an
      `onFinished(bool)`.
-   * E.g. rather than have `onTextChanged()`, `onDateChanged()`, ..., have a
-     single `onChanged()` that assumes everything changed.
+   * E.g. rather than have `onTextChanged(newValue)`, `onDateChanged(newValue)`,
+     ..., have a single `onChanged()`, where callbacks use getters to retrieve
+     the new values.
+     * This design allows classes to use a shared callback for multiple listeners.
+     * This design simplifies data flow by forcing the use of getters (assuming
+       getters exist in the first place).
+ * Do not override `equals()`, `toString()`, `hashCode()` unless necessary. Since
+   these methods are defined on `Object`, R8 can basically never remove them.
  * Ensure unused code is optimized away by R8.
    * See [here][proguard-build-doc] for more info on how Chrome uses ProGuard.
    * Add `@CheckDiscard` to methods or classes that you expect R8 to inline.

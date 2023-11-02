@@ -1,23 +1,23 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/web/navigation/navigation_item_impl.h"
 
-#include <stddef.h>
+#import <stddef.h>
 
-#include <memory>
-#include <utility>
+#import <memory>
+#import <utility>
 
-#include "base/check_op.h"
-#include "base/strings/utf_string_conversions.h"
-#include "components/url_formatter/url_formatter.h"
-#include "ios/web/common/features.h"
+#import "base/check_op.h"
+#import "base/strings/utf_string_conversions.h"
+#import "components/url_formatter/url_formatter.h"
+#import "ios/web/common/features.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
-#include "ios/web/navigation/wk_navigation_util.h"
+#import "ios/web/navigation/wk_navigation_util.h"
 #import "ios/web/public/web_client.h"
-#include "ui/base/page_transition_types.h"
-#include "ui/gfx/text_elider.h"
+#import "ui/base/page_transition_types.h"
+#import "ui/gfx/text_elider.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -56,7 +56,7 @@ NavigationItemImpl::NavigationItemImpl()
       should_skip_serialization_(false),
       navigation_initiation_type_(web::NavigationInitiationType::NONE),
       is_untrusted_(false),
-      is_upgraded_to_https_(false) {}
+      https_upgrade_type_(HttpsUpgradeType::kNone) {}
 
 NavigationItemImpl::~NavigationItemImpl() {
 }
@@ -70,7 +70,7 @@ NavigationItemImpl::NavigationItemImpl(const NavigationItemImpl& item)
       title_(item.title_),
       page_display_state_(item.page_display_state_),
       transition_type_(item.transition_type_),
-      favicon_(item.favicon_),
+      favicon_status_(item.favicon_status_),
       ssl_(item.ssl_),
       timestamp_(item.timestamp_),
       user_agent_type_(item.user_agent_type_),
@@ -84,7 +84,7 @@ NavigationItemImpl::NavigationItemImpl(const NavigationItemImpl& item)
       navigation_initiation_type_(item.navigation_initiation_type_),
       is_untrusted_(item.is_untrusted_),
       cached_display_title_(item.cached_display_title_),
-      is_upgraded_to_https_(item.is_upgraded_to_https_) {}
+      https_upgrade_type_(item.https_upgrade_type_) {}
 
 int NavigationItemImpl::GetUniqueID() const {
   return unique_id_;
@@ -174,12 +174,12 @@ ui::PageTransition NavigationItemImpl::GetTransitionType() const {
   return transition_type_;
 }
 
-const FaviconStatus& NavigationItemImpl::GetFavicon() const {
-  return favicon_;
+const FaviconStatus& NavigationItemImpl::GetFaviconStatus() const {
+  return favicon_status_;
 }
 
-FaviconStatus& NavigationItemImpl::GetFavicon() {
-  return favicon_;
+void NavigationItemImpl::SetFaviconStatus(const FaviconStatus& favicon_status) {
+  favicon_status_ = favicon_status;
 }
 
 const SSLStatus& NavigationItemImpl::GetSSL() const {
@@ -235,12 +235,13 @@ void NavigationItemImpl::AddHttpRequestHeaders(
     http_request_headers_ = [additional_headers mutableCopy];
 }
 
-void NavigationItemImpl::SetUpgradedToHttps() {
-  is_upgraded_to_https_ = true;
+void NavigationItemImpl::SetHttpsUpgradeType(
+    HttpsUpgradeType https_upgrade_type) {
+  https_upgrade_type_ = https_upgrade_type;
 }
 
-bool NavigationItemImpl::IsUpgradedToHttps() const {
-  return is_upgraded_to_https_;
+HttpsUpgradeType NavigationItemImpl::GetHttpsUpgradeType() const {
+  return https_upgrade_type_;
 }
 
 void NavigationItemImpl::SetSerializedStateObject(
@@ -313,7 +314,7 @@ void NavigationItemImpl::ResetForCommit() {
 
 void NavigationItemImpl::RestoreStateFromItem(NavigationItem* other) {
   // Restore the UserAgent type in any case, as if the URLs are different it
-  // might mean that |this| is a next navigation. The page display state and the
+  // might mean that `this` is a next navigation. The page display state and the
   // virtual URL only make sense if it is the same item. The other headers might
   // not make sense after creating a new navigation to the page.
   if (other->GetUserAgentType() != UserAgentType::NONE) {
@@ -353,7 +354,7 @@ NSString* NavigationItemImpl::GetDescription() const {
            "displayState:%@ userAgent:%s "
            "is_created_from_hash_change: %@ "
            "navigation_initiation_type: %d "
-           "is_upgraded_to_https: %@",
+           "https_upgrade_type: %s",
           url_.spec().c_str(), virtual_url_.spec().c_str(),
           original_request_url_.spec().c_str(), referrer_.url.spec().c_str(),
           base::UTF16ToUTF8(title_).c_str(), transition_type_,
@@ -361,7 +362,7 @@ NSString* NavigationItemImpl::GetDescription() const {
           GetUserAgentTypeDescription(user_agent_type_).c_str(),
           is_created_from_hash_change_ ? @"true" : @"false",
           navigation_initiation_type_,
-          is_upgraded_to_https_ ? @"true" : @"false"];
+          GetHttpsUpgradeTypeDescription(https_upgrade_type_).c_str()];
 }
 #endif
 

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,17 +7,16 @@
 
 #include <memory>
 
+#include "content/common/content_export.h"
 #include "content/common/frame.mojom.h"
 #include "content/renderer/navigation_client.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 
 namespace blink {
-class WebDocumentLoader;
-
 namespace mojom {
 enum class CommitResult;
 }
-}
+}  // namespace blink
 
 namespace content {
 
@@ -37,9 +36,6 @@ class CONTENT_EXPORT NavigationState {
       bool was_initiated_in_this_frame);
 
   static std::unique_ptr<NavigationState> CreateForSynchronousCommit();
-
-  static NavigationState* FromDocumentLoader(
-      blink::WebDocumentLoader* document_loader);
 
   // True iff the frame's navigation was within the same document.
   bool WasWithinSameDocument();

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/cancelable_callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/model/omnibox_suggestions.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "url/gurl.h"
@@ -47,8 +48,8 @@ class AutocompleteController : public ::AutocompleteController::Observer {
   void OnResultChanged(::AutocompleteController* controller,
                        bool default_match_changed) override;
 
-  Profile* profile_;
-  ChromeAutocompleteProviderClient* client_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<ChromeAutocompleteProviderClient> client_;
   std::unique_ptr<::AutocompleteController> autocomplete_controller_;
   SuggestionCallback suggestion_callback_;
   AutocompleteRequest last_request_;

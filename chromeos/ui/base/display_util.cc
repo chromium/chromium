@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -119,6 +119,16 @@ bool IsDisplayLayoutPrimary(const display::Display& display) {
   const display::Display::Rotation rotation = display.rotation();
   return IsPrimaryOrientation(
       RotationToOrientation(GetDisplayNaturalOrientation(display), rotation));
+}
+
+float GetRepresentativeDeviceScaleFactor(
+    const std::vector<display::Display>& displays) {
+  float largest_device_scale_factor = 1.0f;
+  for (const display::Display& display : displays) {
+    largest_device_scale_factor =
+        std::max(largest_device_scale_factor, display.device_scale_factor());
+  }
+  return largest_device_scale_factor;
 }
 
 }  // namespace chromeos

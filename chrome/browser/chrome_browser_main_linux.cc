@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,11 +26,15 @@
 #include "device/bluetooth/dbus/bluez_dbus_thread_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/installer/util/google_update_settings.h"
 #endif
 
-#if defined(USE_DBUS) && !defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/dbus/lacros_dbus_thread_manager.h"
+#endif
+
+#if defined(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/dbus_memory_pressure_evaluator_linux.h"
 #endif
 
@@ -45,11 +49,46 @@
 #endif
 
 ChromeBrowserMainPartsLinux::ChromeBrowserMainPartsLinux(
-    content::MainFunctionParams parameters,
+    bool is_integration_test,
     StartupData* startup_data)
-    : ChromeBrowserMainPartsPosix(std::move(parameters), startup_data) {}
+    : ChromeBrowserMainPartsPosix(is_integration_test, startup_data) {}
 
 ChromeBrowserMainPartsLinux::~ChromeBrowserMainPartsLinux() {
+}
+
+void ChromeBrowserMainPartsLinux::PostCreateMainMessageLoop() {
+#if BUILDFLAG(IS_CHROMEOS)
+  // No-op: Ash and Lacros Bluetooth DBusManager initialization depend on
+  // FeatureList, and is done elsewhere.
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  bluez::BluezDBusManager::Initialize(nullptr /* system_bus */);
+
+  // Set up crypt config. This needs to be done before anything starts the
+  // network service, as the raw encryption key needs to be shared with the
+  // network service for encrypted cookie storage.
+  // Chrome OS does not need a crypt config as its user data directories are
+  // already encrypted and none of the true encryption backends used by desktop
+  // Linux are available on Chrome OS anyway.
+  std::unique_ptr<os_crypt::Config> config =
+      std::make_unique<os_crypt::Config>();
+  // Forward to os_crypt the flag to use a specific password store.
+  config->store = base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+      switches::kPasswordStore);
+  // Forward the product name
+  config->product_name = l10n_util::GetStringUTF8(IDS_PRODUCT_NAME);
+  // OSCrypt may target keyring, which requires calls from the main thread.
+  config->main_thread_runner = content::GetUIThreadTaskRunner({});
+  // OSCrypt can be disabled in a special settings file.
+  config->should_use_preference =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableEncryptionSelection);
+  chrome::GetDefaultUserDataDirectory(&config->user_data_path);
+  OSCrypt::SetConfig(std::move(config));
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+  ChromeBrowserMainPartsPosix::PostCreateMainMessageLoop();
 }
 
 void ChromeBrowserMainPartsLinux::PreProfileInit() {
@@ -60,36 +99,12 @@ void ChromeBrowserMainPartsLinux::PreProfileInit() {
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(base::IgnoreResult(&base::GetLinuxDistro)));
-
-  // Set up crypt config. This should be kept in sync with the OSCrypt parts of
-  // SystemNetworkContextManager::OnNetworkServiceCreated.
-  std::unique_ptr<os_crypt::Config> config(new os_crypt::Config());
-  // Forward to os_crypt the flag to use a specific password store.
-  config->store =
-      parsed_command_line().GetSwitchValueASCII(switches::kPasswordStore);
-  // Forward the product name
-  config->product_name = l10n_util::GetStringUTF8(IDS_PRODUCT_NAME);
-  // OSCrypt may target keyring, which requires calls from the main thread.
-  config->main_thread_runner = content::GetUIThreadTaskRunner({});
-  // OSCrypt can be disabled in a special settings file.
-  config->should_use_preference =
-      parsed_command_line().HasSwitch(switches::kEnableEncryptionSelection);
-  chrome::GetDefaultUserDataDirectory(&config->user_data_path);
-  OSCrypt::SetConfig(std::move(config));
 #endif
 
   ChromeBrowserMainPartsPosix::PreProfileInit();
 }
 
-void ChromeBrowserMainPartsLinux::PostCreateMainMessageLoop() {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  bluez::BluezDBusManager::Initialize(nullptr /* system_bus */);
-#endif
-
-  ChromeBrowserMainPartsPosix::PostCreateMainMessageLoop();
-}
-
-#if defined(USE_DBUS) && !defined(OS_CHROMEOS)
+#if defined(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)
 void ChromeBrowserMainPartsLinux::PostBrowserStart() {
   // static_cast is safe because this is the only implementation of
   // MemoryPressureMonitor.
@@ -105,13 +120,15 @@ void ChromeBrowserMainPartsLinux::PostBrowserStart() {
 
   ChromeBrowserMainPartsPosix::PostBrowserStart();
 }
-#endif
+#endif  // defined(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)
 
 void ChromeBrowserMainPartsLinux::PostDestroyThreads() {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
+  // No-op; per PostBrowserStart() comment, this is done elsewhere.
+#else
   bluez::BluezDBusManager::Shutdown();
   bluez::BluezDBusThreadManager::Shutdown();
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   ChromeBrowserMainPartsPosix::PostDestroyThreads();
 }

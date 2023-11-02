@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -51,7 +52,7 @@ class FaviconSource : public content::URLDataSource {
       const GURL& url,
       const content::WebContents::Getter& wc_getter,
       content::URLDataSource::GotDataCallback callback) override;
-  std::string GetMimeType(const std::string&) override;
+  std::string GetMimeType(const GURL&) override;
   bool AllowCaching() override;
   bool ShouldReplaceExistingSource() override;
   bool ShouldServiceRequest(const GURL& url,
@@ -65,7 +66,7 @@ class FaviconSource : public content::URLDataSource {
   virtual base::RefCountedMemory* LoadIconBytes(float scale_factor,
                                                 int resource_id);
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
  private:
   // Defines the allowed pixel sizes for requested favicons.
@@ -87,7 +88,8 @@ class FaviconSource : public content::URLDataSource {
 
   // Sends the 16x16 DIP 1x default favicon.
   void SendDefaultResponse(content::URLDataSource::GotDataCallback callback,
-                           const content::WebContents::Getter& wc_getter);
+                           const content::WebContents::Getter& wc_getter,
+                           bool force_light_mode = false);
 
   // Sends back default favicon or fallback monogram.
   void SendDefaultResponse(content::URLDataSource::GotDataCallback callback,

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,10 @@ class DownloadUIController
     // This method is invoked to notify the UI of the new download |item|. Note
     // that |item| may be in any state by the time this method is invoked.
     virtual void OnNewDownloadReady(download::DownloadItem* item) = 0;
+
+    // Notifies the controller that the main download button is clicked. Only
+    // invoked by the download bubble UI.
+    virtual void OnButtonClicked();
   };
 
   // |manager| is the download manager to observe for new downloads. If
@@ -41,6 +45,10 @@ class DownloadUIController
   DownloadUIController& operator=(const DownloadUIController&) = delete;
 
   ~DownloadUIController() override;
+
+  // Notifies the controller that the main download button is clicked. Currently
+  // only invoked by the download bubble UI.
+  void OnButtonClicked();
 
  private:
   void OnDownloadCreated(content::DownloadManager* manager,

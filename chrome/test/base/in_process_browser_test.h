@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -20,7 +21,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "ui/base/test/scoped_fake_full_keyboard_access.h"
 #endif
 
@@ -32,17 +33,17 @@ namespace base {
 
 class CommandLine;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 namespace mac {
 class ScopedNSAutoreleasePool;
 }  // namespace mac
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 namespace win {
 class ScopedCOMInitializer;
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }  // namespace base
 
 #if defined(TOOLKIT_VIEWS)
@@ -51,15 +52,19 @@ class ViewsDelegate;
 }
 #endif  // defined(TOOLKIT_VIEWS)
 
+namespace display {
+class Screen;
+}
+
 class Browser;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 class FakeAccountManagerUI;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 class MainThreadStackSamplingProfiler;
 class Profile;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 class ScopedBundleSwizzlerMac;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 // Base class for tests that bring up Browser instances.
 // Writing tests with InProcessBrowserTest is slightly different than that of
@@ -192,15 +197,22 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // teardown, but may instead be run manually by the test, if necessary.
   void RunUntilBrowserProcessQuits();
 
-  // Convenience methods for adding tabs to a Browser.
-  void AddTabAtIndexToBrowser(Browser* browser,
-                              int index,
-                              const GURL& url,
-                              ui::PageTransition transition,
-                              bool check_navigation_success);
-  void AddTabAtIndex(int index,
-                     const GURL& url,
-                     ui::PageTransition transition);
+  // Convenience methods for adding tabs to a Browser. Returns true if the
+  // navigation succeeded. |check_navigation_success| is ignored and will be
+  // removed as part of check_navigation_success http://crbug.com/1014186.
+  // Do not add new usages of the version with |check_navigation_success|.
+  [[nodiscard]] bool AddTabAtIndexToBrowser(Browser* browser,
+                                            int index,
+                                            const GURL& url,
+                                            ui::PageTransition transition,
+                                            bool check_navigation_success);
+  [[nodiscard]] bool AddTabAtIndexToBrowser(Browser* browser,
+                                            int index,
+                                            const GURL& url,
+                                            ui::PageTransition transition);
+  [[nodiscard]] bool AddTabAtIndex(int index,
+                                   const GURL& url,
+                                   ui::PageTransition transition);
 
   // Sets up default command line that will be used to launch the child browser
   // process with an in-process test. Called by SetUp() after SetUpCommandLine()
@@ -214,10 +226,10 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // If a test wishes to set up some initial non-empty state in the user data
   // directory before the browser starts up, it can do so here. Returns true if
   // successful.
-  virtual bool SetUpUserDataDirectory() WARN_UNUSED_RESULT;
+  [[nodiscard]] virtual bool SetUpUserDataDirectory();
 
   // Initializes the display::Screen instance.
-  virtual void SetScreenInstance() {}
+  virtual void SetScreenInstance();
 
   // BrowserTestBase:
   void PreRunTestOnMainThread() override;
@@ -241,7 +253,7 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // is omitted, the currently active profile will be used.
   Browser* CreateIncognitoBrowser(Profile* profile = nullptr);
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // Similar to |CreateBrowser|, but creates a Guest browser.
   // To create a ChromeOS Guest user session, you need to add proper switches to
   // commandline while setting up the test. For an example see
@@ -261,7 +273,7 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // the navigation to complete, and show the browser's window.
   void AddBlankTabAndShow(Browser* browser);
 
-#if !defined OS_MAC && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   // Return a CommandLine object that is used to relaunch the browser_test
   // binary as a browser process. This function is deliberately not defined on
   // the Mac because re-using an existing browser process when launching from
@@ -272,12 +284,12 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   base::CommandLine GetCommandLineForRelaunch();
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Returns the autorelease pool in use inside RunTestOnMainThreadLoop().
   base::mac::ScopedNSAutoreleasePool* AutoreleasePool() const {
     return autorelease_pool_;
   }
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
   // Returns the test data path used by the embedded test server.
   base::FilePath GetChromeTestDataDir() const;
@@ -306,6 +318,10 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   FakeAccountManagerUI* GetFakeAccountManagerUI() const;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::unique_ptr<display::Screen> screen_;
+#endif
+
  private:
   void Initialize();
 
@@ -318,7 +334,10 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // If no browser is created in BrowserMain(), then |browser_| will remain
   // nullptr unless SelectFirstBrowser() is called after the creation of the
   // first browser instance at a later time.
-  Browser* browser_ = nullptr;
+  //
+  // TODO(crbug.com/1298696): browser_tests breaks with MTECheckedPtr
+  // enabled. Triage.
+  raw_ptr<Browser, DegradeToNoOpWhenMTE> browser_ = nullptr;
 
   // Used to run the process until the BrowserProcess signals the test to quit.
   std::unique_ptr<base::RunLoop> run_loop_;
@@ -339,8 +358,8 @@ class InProcessBrowserTest : public content::BrowserTestBase {
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
-#if defined(OS_MAC)
-  base::mac::ScopedNSAutoreleasePool* autorelease_pool_ = nullptr;
+#if BUILDFLAG(IS_MAC)
+  raw_ptr<base::mac::ScopedNSAutoreleasePool> autorelease_pool_ = nullptr;
   std::unique_ptr<ScopedBundleSwizzlerMac> bundle_swizzler_;
 
   // Enable fake full keyboard access by default, so that tests don't depend on
@@ -348,9 +367,9 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // more consistent with other platforms, where most views are focusable by
   // default.
   ui::test::ScopedFakeFullKeyboardAccess faked_full_keyboard_access_;
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::unique_ptr<base::win::ScopedCOMInitializer> com_initializer_;
 #endif
 

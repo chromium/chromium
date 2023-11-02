@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_low_energy_scan_session.h"
 
@@ -80,6 +81,8 @@ class FastInitiationScanner
   // Set of remote devices that we detect are currently emitting fast initiation
   // advertisements.
   base::flat_set<std::string> detected_devices_;
+  // The last time that devices detected went from zero to greater than zero.
+  base::TimeTicks devices_detected_timestamp_;
 
   base::WeakPtrFactory<FastInitiationScanner> weak_ptr_factory_{this};
 };

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,8 +23,10 @@
 #include "third_party/blink/renderer/modules/csspaint/paint_worklet.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/paint_worklet_paint_dispatcher.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
@@ -48,13 +50,15 @@ PaintWorkletProxyClient* PaintWorkletProxyClient::Create(LocalDOMWindow* window,
       local_frame->LocalRootFrameWidget()->EnsureCompositorPaintDispatcher(
           &compositor_host_queue);
   return MakeGarbageCollected<PaintWorkletProxyClient>(
-      worklet_id, paint_worklet, std::move(compositor_paint_dispatcher),
-      std::move(compositor_host_queue));
+      worklet_id, paint_worklet,
+      window->GetTaskRunner(TaskType::kInternalDefault),
+      std::move(compositor_paint_dispatcher), std::move(compositor_host_queue));
 }
 
 PaintWorkletProxyClient::PaintWorkletProxyClient(
     int worklet_id,
     PaintWorklet* paint_worklet,
+    scoped_refptr<base::SingleThreadTaskRunner> main_thread_runner,
     base::WeakPtr<PaintWorkletPaintDispatcher> paint_dispatcher,
     scoped_refptr<base::SingleThreadTaskRunner> compositor_host_queue)
     : Supplement(nullptr),
@@ -62,7 +66,7 @@ PaintWorkletProxyClient::PaintWorkletProxyClient(
       compositor_host_queue_(std::move(compositor_host_queue)),
       worklet_id_(worklet_id),
       state_(RunState::kUninitialized),
-      main_thread_runner_(Thread::MainThread()->GetTaskRunner()),
+      main_thread_runner_(std::move(main_thread_runner)),
       paint_worklet_(paint_worklet) {
   DCHECK(IsMainThread());
 }
@@ -182,7 +186,7 @@ sk_sp<PaintRecord> PaintWorkletProxyClient::Paint(
     return definition->Paint(compositor_input, animated_property_values);
   }
   // TODO: Can this happen? We don't register till all are here.
-  if (global_scopes_.IsEmpty())
+  if (global_scopes_.empty())
     return sk_make_sp<PaintRecord>();
 
   // PaintWorklets are stateless by spec. There are two ways script might try to
@@ -200,7 +204,7 @@ sk_sp<PaintRecord> PaintWorkletProxyClient::Paint(
 
   const CSSPaintWorkletInput* input =
       To<CSSPaintWorkletInput>(compositor_input);
-  device_pixel_ratio_ = input->DeviceScaleFactor() * input->EffectiveZoom();
+  device_pixel_ratio_ = input->EffectiveZoom();
   definition = global_scope->FindDefinition(input->NameCopy());
   return definition->Paint(compositor_input, animated_property_values);
 }

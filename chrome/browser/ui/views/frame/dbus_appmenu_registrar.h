@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,10 @@
 #include <map>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 
 namespace dbus {
 class Bus;
@@ -29,6 +30,7 @@ class DbusAppmenuRegistrar {
  public:
   DbusAppmenuRegistrar(const DbusAppmenuRegistrar&) = delete;
   DbusAppmenuRegistrar& operator=(const DbusAppmenuRegistrar&) = delete;
+  ~DbusAppmenuRegistrar() = delete;
 
   static DbusAppmenuRegistrar* GetInstance();
 
@@ -38,7 +40,7 @@ class DbusAppmenuRegistrar {
   dbus::Bus* bus() { return bus_.get(); }
 
  private:
-  friend struct base::DefaultSingletonTraits<DbusAppmenuRegistrar>;
+  friend class base::NoDestructor<DbusAppmenuRegistrar>;
 
   enum MenuState {
     // Initialize() hasn't been called.
@@ -59,7 +61,6 @@ class DbusAppmenuRegistrar {
   };
 
   DbusAppmenuRegistrar();
-  ~DbusAppmenuRegistrar();
 
   void InitializeMenu(DbusAppmenu* menu);
 
@@ -71,7 +72,7 @@ class DbusAppmenuRegistrar {
   void OnNameOwnerChanged(const std::string& service_owner);
 
   scoped_refptr<dbus::Bus> bus_;
-  dbus::ObjectProxy* registrar_proxy_;
+  raw_ptr<dbus::ObjectProxy> registrar_proxy_;
   bool service_has_owner_ = false;
 
   // Maps menus to flags that indicate if the menu has been successfully

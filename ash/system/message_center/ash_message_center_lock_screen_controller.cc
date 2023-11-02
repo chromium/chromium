@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,9 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/login/ui/lock_screen.h"
-#include "ash/public/cpp/toast_data.h"
+#include "ash/public/cpp/system/toast_data.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -142,7 +143,8 @@ void AshMessageCenterLockScreenController::EncourageUserToUnlock(
 
   // TODO(yoshiki): Update UI after the UX finalizes.
   Shell::Get()->toast_manager()->Show(
-      ToastData(kToastId, message, ToastData::kInfiniteDuration, absl::nullopt,
+      ToastData(kToastId, ToastCatalogName::kEncourageUnlock, message,
+                ToastData::kInfiniteDuration,
                 /*visible_on_lock_screen=*/true));
 }
 

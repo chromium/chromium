@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -42,6 +43,16 @@ class ServiceWorkerVersion;
 // ServiceWorkerMainResourceLoader to perform the resource load.
 class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class FetchHandlerSkipReason {
+    kNoFetchHandler = 0,
+    kNotSkipped = 1,
+    kSkippedForEmptyFetchHandler = 2,
+
+    kMaxValue = kSkippedForEmptyFetchHandler,
+  };
+
   // If |skip_service_worker| is true, service workers are bypassed for
   // request interception.
   ServiceWorkerControlleeRequestHandler(
@@ -83,6 +94,7 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
       const blink::StorageKey& storage_key);
 
   void ContinueWithRegistration(
+      base::TimeTicks start_time,
       blink::ServiceWorkerStatusCode status,
       scoped_refptr<ServiceWorkerRegistration> registration);
   void ContinueWithActivatedVersion(
@@ -113,7 +125,7 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
   const bool skip_service_worker_;
 
   std::unique_ptr<ServiceWorkerMainResourceLoaderWrapper> loader_wrapper_;
-  BrowserContext* browser_context_;
+  raw_ptr<BrowserContext> browser_context_;
   GURL stripped_url_;
   blink::StorageKey storage_key_;
   bool force_update_started_;

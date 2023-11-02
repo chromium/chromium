@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/strings/utf_string_conversions.h"
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -22,6 +23,13 @@ namespace {
 struct TruncatedString16 {
   absl::optional<std::u16string> string;
 };
+
+absl::optional<std::string> ConvertOptionalString16(
+    const TruncatedString16& string) {
+  return string.string.has_value()
+             ? absl::make_optional(base::UTF16ToUTF8(string.string.value()))
+             : absl::nullopt;
+}
 
 }  // namespace
 
@@ -179,10 +187,96 @@ bool StructTraits<blink::mojom::ManifestLaunchHandlerDataView,
                   ::blink::Manifest::LaunchHandler>::
     Read(blink::mojom::ManifestLaunchHandlerDataView data,
          ::blink::Manifest::LaunchHandler* out) {
-  if (!data.ReadRouteTo(&out->route_to))
+  if (!data.ReadClientMode(&out->client_mode))
     return false;
 
-  if (!data.ReadNavigateExistingClient(&out->navigate_existing_client))
+  return true;
+}
+
+bool StructTraits<blink::mojom::ManifestTranslationItemDataView,
+                  ::blink::Manifest::TranslationItem>::
+    Read(blink::mojom::ManifestTranslationItemDataView data,
+         ::blink::Manifest::TranslationItem* out) {
+  TruncatedString16 string;
+  if (!data.ReadName(&string))
+    return false;
+  out->name = ConvertOptionalString16(string);
+
+  if (!data.ReadShortName(&string))
+    return false;
+  out->short_name = ConvertOptionalString16(string);
+
+  if (!data.ReadDescription(&string))
+    return false;
+  out->description = ConvertOptionalString16(string);
+
+  return true;
+}
+
+bool StructTraits<blink::mojom::HomeTabParamsDataView,
+                  ::blink::Manifest::HomeTabParams>::
+    Read(blink::mojom::HomeTabParamsDataView data,
+         ::blink::Manifest::HomeTabParams* out) {
+  return data.ReadIcons(&out->icons);
+}
+
+bool StructTraits<blink::mojom::NewTabButtonParamsDataView,
+                  ::blink::Manifest::NewTabButtonParams>::
+    Read(blink::mojom::NewTabButtonParamsDataView data,
+         ::blink::Manifest::NewTabButtonParams* out) {
+  return data.ReadUrl(&out->url);
+}
+
+bool UnionTraits<blink::mojom::HomeTabUnionDataView,
+                 ::blink::Manifest::TabStrip::HomeTab>::
+    Read(blink::mojom::HomeTabUnionDataView data,
+         blink::Manifest::TabStrip::HomeTab* out) {
+  switch (data.tag()) {
+    case blink::mojom::HomeTabUnionDataView::Tag::kVisibility:
+      ::blink::mojom::TabStripMemberVisibility visibility;
+      if (!data.ReadVisibility(&visibility))
+        return false;
+      *out = visibility;
+      return true;
+    case blink::mojom::HomeTabUnionDataView::Tag::kParams:
+      ::blink::Manifest::HomeTabParams params;
+      if (!data.ReadParams(&params))
+        return false;
+      *out = params;
+      return true;
+  }
+  return false;
+}
+
+bool UnionTraits<blink::mojom::NewTabButtonUnionDataView,
+                 ::blink::Manifest::TabStrip::NewTabButton>::
+    Read(blink::mojom::NewTabButtonUnionDataView data,
+         ::blink::Manifest::TabStrip::NewTabButton* out) {
+  switch (data.tag()) {
+    case blink::mojom::NewTabButtonUnionDataView::Tag::kVisibility:
+      ::blink::mojom::TabStripMemberVisibility visibility;
+      if (!data.ReadVisibility(&visibility))
+        return false;
+      *out = visibility;
+      return true;
+    case blink::mojom::NewTabButtonUnionDataView::Tag::kParams:
+      ::blink::Manifest::NewTabButtonParams params;
+      if (!data.ReadParams(&params))
+        return false;
+      *out = params;
+      return true;
+  }
+  return false;
+}
+
+bool StructTraits<blink::mojom::ManifestTabStripDataView,
+                  ::blink::Manifest::TabStrip>::
+    Read(blink::mojom::ManifestTabStripDataView data,
+         ::blink::Manifest::TabStrip* out) {
+  if (!data.ReadHomeTab(&out->home_tab))
+    return false;
+
+  if (!data.ReadNewTabButton(&out->new_tab_button))
     return false;
 
   return true;

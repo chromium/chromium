@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,17 +13,18 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/network/network_state.h"
-#include "chromeos/network/portal_detector/mock_network_portal_detector.h"
-#include "chromeos/network/portal_detector/network_portal_detector.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/network/network_state.h"
 #include "components/image_fetcher/core/request_metadata.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
+#include "net/base/url_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "url/gurl.h"
 
 using testing::_;
 using testing::AtLeast;
@@ -31,6 +32,30 @@ using testing::Invoke;
 using testing::NiceMock;
 using testing::Return;
 using testing::SaveArg;
+
+namespace {
+
+const char kLocaleKey[] = "locale";
+const char kBrowserKey[] = "browser";
+const char kPlatformKey[] = "platform";
+const char kFirmwareKey[] = "firmware";
+const char kPsdKey1[] = "psd1";
+const char kPsdKey2[] = "psd2";
+const char kPsdValue1[] = "psdValue1";
+const char kPsdValue2[] = "psdValue2 =%^*$#&";
+const char kLocaleValue1[] = "locale1";
+const char kBrowserValue1[] = "browser1";
+
+bool GetQueryParameter(const std::string& query,
+                       const std::string& key,
+                       std::string* value) {
+  // Name and scheme actually don't matter, but are required to get a valid URL
+  // for parsing.
+  GURL query_url("http://localhost?" + query);
+  return net::GetValueForKeyInQuery(query_url, key, value);
+}
+
+}  // namespace
 
 namespace ash {
 
@@ -50,45 +75,67 @@ class HatsNotificationControllerTest : public BrowserWithTestWindowTest {
 
     display_service_ =
         std::make_unique<NotificationDisplayServiceTester>(profile());
-    network_portal_detector::InitializeForTesting(
-        &mock_network_portal_detector_);
+    helper_ = std::make_unique<NetworkHandlerTestHelper>();
   }
 
   void TearDown() override {
-    // The notifications may be deleted async.
-    base::RunLoop loop;
-    loop.RunUntilIdle();
-    network_portal_detector::InitializeForTesting(nullptr);
+    helper_.reset();
+    display_service_.reset();
+    // Notifications may be deleted async.
+    base::RunLoop().RunUntilIdle();
+
     BrowserWithTestWindowTest::TearDown();
   }
 
   scoped_refptr<HatsNotificationController> InstantiateHatsController() {
     // The initialization will fail since the function IsNewDevice() will return
     // true.
-    scoped_refptr<HatsNotificationController> hats_notification_controller =
-        new HatsNotificationController(profile(), kHatsGeneralSurvey);
+    auto hats_notification_controller =
+        base::MakeRefCounted<HatsNotificationController>(profile(),
+                                                         kHatsGeneralSurvey);
 
     // HatsController::IsNewDevice() is run on a blocking thread.
     content::RunAllTasksUntilIdle();
 
-    // Send a callback to the observer to simulate internet connectivity is
-    // present on device.
-    ON_CALL(mock_network_portal_detector_,
-            AddAndFireObserver(hats_notification_controller.get()))
-        .WillByDefault(Invoke([](NetworkPortalDetector::Observer* observer) {
-          NetworkState network_state("");
-          observer->OnPortalDetectionCompleted(
-              &network_state,
-              NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
-        }));
-
     return hats_notification_controller;
   }
 
-  NiceMock<MockNetworkPortalDetector> mock_network_portal_detector_;
+  void SendPortalState(scoped_refptr<HatsNotificationController>& controller,
+                       NetworkState::PortalState portal_state) {
+    NetworkState network_state("");
+    controller->PortalStateChanged(&network_state, portal_state);
+    base::RunLoop().RunUntilIdle();
+  }
 
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
+  std::unique_ptr<NetworkHandlerTestHelper> helper_;
 };
+
+TEST_F(HatsNotificationControllerTest, GetFormattedSiteContext) {
+  base::flat_map<std::string, std::string> product_specific_data = {
+      {kPsdKey1, kPsdValue1},
+      {kPsdKey2, kPsdValue2},
+      {kBrowserKey, kBrowserValue1}};
+
+  std::string context = HatsNotificationController::GetFormattedSiteContext(
+      kLocaleValue1, product_specific_data);
+
+  std::string value;
+  EXPECT_TRUE(GetQueryParameter(context, kLocaleKey, &value));
+  EXPECT_EQ(kLocaleValue1, value);
+  EXPECT_TRUE(GetQueryParameter(context, kBrowserKey, &value));
+  EXPECT_NE(kBrowserValue1, value);
+  EXPECT_TRUE(GetQueryParameter(context, kPlatformKey, &value));
+  EXPECT_TRUE(GetQueryParameter(context, kFirmwareKey, &value));
+
+  EXPECT_TRUE(GetQueryParameter(context, kPsdKey1, &value));
+  EXPECT_EQ(kPsdValue1, value);
+  EXPECT_TRUE(GetQueryParameter(context, kPsdKey2, &value));
+  EXPECT_EQ(kPsdValue2, value);
+
+  // Confirm that the values are properly url escaped.
+  EXPECT_NE(std::string::npos, context.find("psdValue2%20%3D%25%5E*%24%23%26"));
+}
 
 TEST_F(HatsNotificationControllerTest, NewDevice_ShouldNotShowNotification) {
   int64_t initial_timestamp = base::Time::Now().ToInternalValue();
@@ -107,58 +154,44 @@ TEST_F(HatsNotificationControllerTest, NewDevice_ShouldNotShowNotification) {
   ASSERT_TRUE(base::Time::FromInternalValue(current_timestamp) >
               base::Time::FromInternalValue(initial_timestamp));
 
-  // Destructor for HatsController removes self from observer list.
-  EXPECT_CALL(mock_network_portal_detector_,
-              RemoveObserver(hats_notification_controller.get()))
-      .Times(1);
-
   EXPECT_FALSE(display_service_->GetNotification(
       HatsNotificationController::kNotificationId));
 }
 
 TEST_F(HatsNotificationControllerTest, OldDevice_ShouldShowNotification) {
   auto hats_notification_controller = InstantiateHatsController();
-
-  // On initialization, HatsNotificationController adds itself as an observer to
-  // NetworkPortalDetector to detect internet connectivity.
-  EXPECT_CALL(mock_network_portal_detector_,
-              AddAndFireObserver(hats_notification_controller.get()))
-      .Times(1);
-
   hats_notification_controller->Initialize(false);
 
-  // Finally check if notification was launched to confirm initialization.
+  // Ensure notification was launched to confirm initialization.
   EXPECT_TRUE(display_service_->GetNotification(
       HatsNotificationController::kNotificationId));
+
+  // Simulate dismissing notification by the user to clean up the notification.
   display_service_->RemoveNotification(
       NotificationHandler::Type::TRANSIENT,
-      HatsNotificationController::kNotificationId, false);
+      HatsNotificationController::kNotificationId, /*by_user=*/true);
 }
 
 TEST_F(HatsNotificationControllerTest, NoInternet_DoNotShowNotification) {
   auto hats_notification_controller = InstantiateHatsController();
 
-  // Upon destruction HatsNotificationController removes itself as an observer
-  // from NetworkPortalDetector. This will only be called once from the
-  // destructor.
-  EXPECT_CALL(mock_network_portal_detector_,
-              RemoveObserver(hats_notification_controller.get()))
-      .Times(1);
+  SendPortalState(hats_notification_controller,
+                  NetworkState::PortalState::kUnknown);
+  EXPECT_FALSE(display_service_->GetNotification(
+      HatsNotificationController::kNotificationId));
 
-  NetworkState network_state("");
-  hats_notification_controller->OnPortalDetectionCompleted(
-      &network_state, NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_UNKNOWN);
+  SendPortalState(hats_notification_controller,
+                  NetworkState::PortalState::kNoInternet);
+  EXPECT_FALSE(display_service_->GetNotification(
+      HatsNotificationController::kNotificationId));
 
-  hats_notification_controller->OnPortalDetectionCompleted(
-      &network_state, NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE);
+  SendPortalState(hats_notification_controller,
+                  NetworkState::PortalState::kPortal);
+  EXPECT_FALSE(display_service_->GetNotification(
+      HatsNotificationController::kNotificationId));
 
-  hats_notification_controller->OnPortalDetectionCompleted(
-      &network_state, NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL);
-
-  hats_notification_controller->OnPortalDetectionCompleted(
-      &network_state,
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PROXY_AUTH_REQUIRED);
-
+  SendPortalState(hats_notification_controller,
+                  NetworkState::PortalState::kProxyAuthRequired);
   EXPECT_FALSE(display_service_->GetNotification(
       HatsNotificationController::kNotificationId));
 }
@@ -170,35 +203,19 @@ TEST_F(HatsNotificationControllerTest, DismissNotification_ShouldUpdatePref) {
 
   auto hats_notification_controller = InstantiateHatsController();
 
-  // HatsController removed as a network observer when user closes notification.
-  EXPECT_CALL(mock_network_portal_detector_,
-              RemoveObserver(hats_notification_controller.get()))
-      .Times(1);
-
   // Simulate closing notification via user interaction.
   hats_notification_controller->Close(true);
 
   int64_t new_timestamp =
       pref_service->GetInt64(prefs::kHatsLastInteractionTimestamp);
   // The flag should be updated to a new timestamp.
-  ASSERT_TRUE(base::Time::FromInternalValue(new_timestamp) >
+  EXPECT_TRUE(base::Time::FromInternalValue(new_timestamp) >
               base::Time::FromInternalValue(now_timestamp));
-
-  // Destructor for HatsController removes self from observer list.
-  EXPECT_CALL(mock_network_portal_detector_,
-              RemoveObserver(hats_notification_controller.get()))
-      .Times(1);
 }
 
 TEST_F(HatsNotificationControllerTest,
        Disconnected_RemoveNotification_Connected_AddNotification) {
   auto hats_notification_controller = InstantiateHatsController();
-
-  // On initialization, HatsNotificationController adds itself as an observer to
-  // NetworkPortalDetector to detect internet connectivity.
-  EXPECT_CALL(mock_network_portal_detector_,
-              AddAndFireObserver(hats_notification_controller.get()))
-      .Times(1);
 
   hats_notification_controller->Initialize(false);
 
@@ -207,21 +224,21 @@ TEST_F(HatsNotificationControllerTest,
       HatsNotificationController::kNotificationId));
 
   // Notification is removed when Internet connection is lost.
-  NetworkState network_state("");
-  hats_notification_controller->OnPortalDetectionCompleted(
-      &network_state, NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE);
+  SendPortalState(hats_notification_controller,
+                  NetworkState::PortalState::kNoInternet);
   EXPECT_FALSE(display_service_->GetNotification(
       HatsNotificationController::kNotificationId));
 
   // Notification is launched again when Internet connection is regained.
-  hats_notification_controller->OnPortalDetectionCompleted(
-      &network_state, NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  SendPortalState(hats_notification_controller,
+                  NetworkState::PortalState::kOnline);
   EXPECT_TRUE(display_service_->GetNotification(
       HatsNotificationController::kNotificationId));
 
+  // Simulate dismissing notification by the user to clean up the notification.
   display_service_->RemoveNotification(
       NotificationHandler::Type::TRANSIENT,
-      HatsNotificationController::kNotificationId, false);
+      HatsNotificationController::kNotificationId, /*by_user=*/true);
 }
 
 }  // namespace ash

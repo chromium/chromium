@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -45,6 +45,11 @@ class _MediaBenchmark(perf_benchmark.PerfBenchmark):
     options.SetTimelineBasedMetrics(['mediaMetric', 'cpuTimeMetric'])
     return options
 
+  def SetExtraBrowserOptions(self, options):
+    # bf-cache messes with the time_to_play numbers when we do several runs
+    # in a row. More info crbug.com/1309294
+    options.AppendExtraBrowserArgs('--disable-features=BackForwardCache')
+
 
 @benchmark.Info(emails=['dalecurtis@chromium.org'],
                 component='Internals>Media',
@@ -76,11 +81,12 @@ class MediaMobile(_MediaBenchmark):
   # SUPPORTED_PLATFORMS is deprecated, please put system specifier tags
   # from expectations.config in SUPPORTED_PLATFORM_TAGS.
   SUPPORTED_PLATFORM_TAGS = [
-      platforms.ANDROID_NOT_WEBVIEW, platforms.FUCHSIA_ASTRO
+      platforms.ANDROID_NOT_WEBVIEW, platforms.FUCHSIA_ASTRO,
+      platforms.FUCHSIA_SHERLOCK
   ]
   SUPPORTED_PLATFORMS = [
-      story.expectations.ANDROID_NOT_WEBVIEW,
-      story.expectations.FUCHSIA_WEB_ENGINE_SHELL
+      story.expectations.ANDROID_NOT_WEBVIEW, story.expectations.FUCHSIA_ASTRO,
+      story.expectations.FUCHSIA_SHERLOCK
   ]
 
   def CreateStorySet(self, options):
@@ -91,6 +97,7 @@ class MediaMobile(_MediaBenchmark):
     return 'media.mobile'
 
   def SetExtraBrowserOptions(self, options):
+    super(MediaMobile, self).SetExtraBrowserOptions(options)
     # By default, Chrome on Android does not allow autoplay
     # of media: it requires a user gesture event to start a video.
     # The following option works around that.

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,11 +14,10 @@ GEN('#include "content/public/test/browser_test.h"');
 class CrComponentsMojoInteractiveTest extends PolymerInteractiveUITest {
   /** @override */
   get browsePreload() {
-    throw 'this is abstract and should be overriden by subclasses';
+    throw new Error('this is abstract and should be overriden by subclasses');
   }
 }
 
-// eslint-disable-next-line no-var
 var CrComponentsMostVisitedFocusTest =
     class extends CrComponentsMojoInteractiveTest {
   /** @override */

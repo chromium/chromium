@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_request.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -56,6 +57,15 @@ bool TestPermissionBubbleViewDelegate::WasCurrentRequestAlreadyDisplayed() {
   return false;
 }
 
+bool TestPermissionBubbleViewDelegate::RecreateView() {
+  return false;
+}
+
+base::WeakPtr<permissions::PermissionPrompt::Delegate>
+TestPermissionBubbleViewDelegate::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 PermissionBubbleBrowserTest::PermissionBubbleBrowserTest() = default;
 
 PermissionBubbleBrowserTest::~PermissionBubbleBrowserTest() = default;
@@ -78,14 +88,13 @@ content::WebContents* PermissionBubbleBrowserTest::OpenExtensionAppWindow() {
   CHECK(extension);
 
   apps::AppLaunchParams params(
-      extension->id(),
-      apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated,
-      WindowOpenDisposition::NEW_WINDOW, apps::mojom::LaunchSource::kFromTest);
+      extension->id(), apps::LaunchContainer::kLaunchContainerPanelDeprecated,
+      WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest);
 
   content::WebContents* app_contents =
       apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
           ->BrowserAppLauncher()
-          ->LaunchAppWithParams(std::move(params));
+          ->LaunchAppWithParamsForTesting(std::move(params));
   CHECK(app_contents);
   return app_contents;
 }

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,7 +37,8 @@ class DisplayItemRasterInvalidator {
   ALWAYS_INLINE void AddRasterInvalidation(DisplayItemClientId,
                                            const gfx::Rect&,
                                            PaintInvalidationReason,
-                                           RasterInvalidator::ClientIsOldOrNew);
+                                           RasterInvalidator::ClientIsOldOrNew,
+                                           const char* why);
   ALWAYS_INLINE DisplayItemIterator
   MatchNewDisplayItemInOldChunk(const DisplayItem& new_item,
                                 DisplayItemIterator& next_old_item_to_match);

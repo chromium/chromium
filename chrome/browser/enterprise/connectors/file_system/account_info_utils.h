@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -69,8 +69,6 @@ void SetFileSystemAccountInfo(PrefService* prefs,
                               base::Value account_info);
 bool ClearFileSystemAccountInfo(PrefService* prefs,
                                 const std::string& service_provider);
-base::Value GetFileSystemAccountInfo(PrefService* prefs,
-                                     const std::string& service_provider);
 
 struct AccountInfo {
   std::string account_name;

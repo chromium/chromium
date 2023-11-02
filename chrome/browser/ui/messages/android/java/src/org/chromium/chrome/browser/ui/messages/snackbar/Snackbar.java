@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -100,6 +100,13 @@ public class Snackbar {
     public static final int UMA_AUTOFILL_VIRTUAL_CARD_FILLED = 44;
     public static final int UMA_WINDOW_ERROR = 45;
     public static final int UMA_MODULE_INSTALL_FAILURE = 46;
+    public static final int UMA_PRICE_TRACKING_SUCCESS = 47;
+    public static final int UMA_PRICE_TRACKING_FAILURE = 48;
+    public static final int UMA_PRIVACY_SANDBOX_ADD_INTEREST = 49;
+    public static final int UMA_PRIVACY_SANDBOX_REMOVE_INTEREST = 50;
+    public static final int UMA_BAD_FLAGS = 51;
+    public static final int UMA_DOWNLOAD_INTERSTITIAL_DOWNLOAD_DELETED = 52;
+    public static final int UMA_INCOGNITO_REAUTH_ENABLED_FROM_PROMO = 53;
 
     private @Nullable SnackbarController mController;
     private CharSequence mText;

@@ -1,19 +1,18 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/translate/translate_model_service_factory.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/translate/content/browser/translate_model_service.h"
+#include "components/translate/core/browser/translate_model_service.h"
 #include "components/translate/core/common/translate_util.h"
 
 // static
@@ -30,9 +29,12 @@ TranslateModelServiceFactory* TranslateModelServiceFactory::GetInstance() {
 }
 
 TranslateModelServiceFactory::TranslateModelServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "TranslateModelService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          ProfileSelections::BuildForRegularAndIncognito()) {
+  if (translate::IsTFLiteLanguageDetectionEnabled())
+    DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
+}
 
 TranslateModelServiceFactory::~TranslateModelServiceFactory() = default;
 
@@ -54,9 +56,4 @@ KeyedService* TranslateModelServiceFactory::BuildServiceInstanceFor(
                                                 background_task_runner);
   }
   return nullptr;
-}
-
-content::BrowserContext* TranslateModelServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }

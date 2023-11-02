@@ -1,8 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/xr/xr_frame_provider.h"
+
+#include <utility>
 
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -83,15 +85,15 @@ void XRFrameProvider::OnSessionStarted(
         std::move(session_ptr->data_provider),
         xr_->GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI));
     immersive_data_provider_.set_disconnect_handler(
-        WTF::Bind(&XRFrameProvider::OnProviderConnectionError,
-                  WrapWeakPersistent(this), WrapWeakPersistent(session)));
+        WTF::BindOnce(&XRFrameProvider::OnProviderConnectionError,
+                      WrapWeakPersistent(this), WrapWeakPersistent(session)));
 
     immersive_presentation_provider_.Bind(
         std::move(session_ptr->submit_frame_sink->provider),
         xr_->GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI));
     immersive_presentation_provider_.set_disconnect_handler(
-        WTF::Bind(&XRFrameProvider::OnProviderConnectionError,
-                  WrapWeakPersistent(this), WrapWeakPersistent(session)));
+        WTF::BindOnce(&XRFrameProvider::OnProviderConnectionError,
+                      WrapWeakPersistent(this), WrapWeakPersistent(session)));
 
     frame_transport_->BindSubmitFrameClient(
         std::move(session_ptr->submit_frame_sink->client_receiver));
@@ -111,8 +113,8 @@ void XRFrameProvider::OnSessionStarted(
         std::move(session_ptr->data_provider),
         xr_->GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI));
     data_provider.set_disconnect_handler(
-        WTF::Bind(&XRFrameProvider::OnProviderConnectionError,
-                  WrapWeakPersistent(this), WrapWeakPersistent(session)));
+        WTF::BindOnce(&XRFrameProvider::OnProviderConnectionError,
+                      WrapWeakPersistent(this), WrapWeakPersistent(session)));
 
     non_immersive_data_providers_.insert(
         session, WrapDisallowNew(std::move(data_provider)));
@@ -230,8 +232,8 @@ void XRFrameProvider::ScheduleImmersiveFrame(
   pending_immersive_vsync_ = true;
 
   immersive_data_provider_->GetFrameData(
-      std::move(options), WTF::Bind(&XRFrameProvider::OnImmersiveFrameData,
-                                    WrapWeakPersistent(this)));
+      std::move(options), WTF::BindOnce(&XRFrameProvider::OnImmersiveFrameData,
+                                        WrapWeakPersistent(this)));
 }
 
 void XRFrameProvider::ScheduleNonImmersiveFrame(
@@ -329,9 +331,10 @@ void XRFrameProvider::OnImmersiveFrameData(
   // Used kInternalMedia since 1) this is not spec-ed and 2) this is media
   // related then tasks should not be throttled or frozen in background tabs.
   window->GetTaskRunner(blink::TaskType::kInternalMedia)
-      ->PostTask(FROM_HERE, WTF::Bind(&XRFrameProvider::ProcessScheduledFrame,
-                                      WrapWeakPersistent(this), std::move(data),
-                                      high_res_now_ms));
+      ->PostTask(FROM_HERE,
+                 WTF::BindOnce(&XRFrameProvider::ProcessScheduledFrame,
+                               WrapWeakPersistent(this), std::move(data),
+                               high_res_now_ms));
 }
 
 void XRFrameProvider::OnNonImmersiveVSync(double high_res_now_ms) {
@@ -349,9 +352,10 @@ void XRFrameProvider::OnNonImmersiveVSync(double high_res_now_ms) {
     return;
 
   window->GetTaskRunner(blink::TaskType::kInternalMedia)
-      ->PostTask(FROM_HERE,
-                 WTF::Bind(&XRFrameProvider::ProcessScheduledFrame,
-                           WrapWeakPersistent(this), nullptr, high_res_now_ms));
+      ->PostTask(
+          FROM_HERE,
+          WTF::BindOnce(&XRFrameProvider::ProcessScheduledFrame,
+                        WrapWeakPersistent(this), nullptr, high_res_now_ms));
 }
 
 void XRFrameProvider::OnNonImmersiveFrameData(
@@ -416,8 +420,8 @@ void XRFrameProvider::RequestNonImmersiveFrameData(XRSession* session) {
 
     data_provider->GetFrameData(
         std::move(options),
-        WTF::Bind(&XRFrameProvider::OnNonImmersiveFrameData,
-                  WrapWeakPersistent(this), WrapWeakPersistent(session)));
+        WTF::BindOnce(&XRFrameProvider::OnNonImmersiveFrameData,
+                      WrapWeakPersistent(this), WrapWeakPersistent(session)));
   }
 }
 
@@ -484,7 +488,7 @@ void XRFrameProvider::ProcessScheduledFrame(
       DCHECK(buffer_mailbox_holder_);
     }
 #endif
-    if (frame_data && !frame_data->views.IsEmpty()) {
+    if (frame_data && !frame_data->views.empty()) {
       immersive_session_->UpdateViews(frame_data->views);
     }
 
@@ -498,10 +502,10 @@ void XRFrameProvider::ProcessScheduledFrame(
     // is already updated.
     window->GetTaskRunner(blink::TaskType::kInternalMedia)
         ->PostTask(FROM_HERE,
-                   WTF::Bind(&XRSession::OnFrame,
-                             WrapWeakPersistent(immersive_session_.Get()),
-                             high_res_now_ms, buffer_mailbox_holder_,
-                             camera_image_mailbox_holder_));
+                   WTF::BindOnce(&XRSession::OnFrame,
+                                 WrapWeakPersistent(immersive_session_.Get()),
+                                 high_res_now_ms, buffer_mailbox_holder_,
+                                 camera_image_mailbox_holder_));
   } else {
     // In the process of fulfilling the frame requests for each session they are
     // extremely likely to request another frame. Work off of a separate list
@@ -557,11 +561,11 @@ void XRFrameProvider::ProcessScheduledFrame(
       // a helper method who can determine if the state requirements are still
       // met that would allow the frame to be served.
       window->GetTaskRunner(blink::TaskType::kInternalMedia)
-          ->PostTask(
-              FROM_HERE,
-              WTF::Bind(&XRFrameProvider::OnPreDispatchInlineFrame,
-                        WrapWeakPersistent(this), WrapWeakPersistent(session),
-                        high_res_now_ms, absl::nullopt, absl::nullopt));
+          ->PostTask(FROM_HERE,
+                     WTF::BindOnce(&XRFrameProvider::OnPreDispatchInlineFrame,
+                                   WrapWeakPersistent(this),
+                                   WrapWeakPersistent(session), high_res_now_ms,
+                                   absl::nullopt, absl::nullopt));
     }
   }
 }
@@ -662,9 +666,10 @@ void XRFrameProvider::SubmitWebGLLayer(XRWebGLLayer* layer, bool was_changed) {
     // placeholder.
     scoped_refptr<Image> image_ref;
     DVLOG(3) << __FUNCTION__ << ": FrameSubmit for SharedBuffer mode";
-    frame_transport_->FrameSubmit(immersive_presentation_provider_.get(),
-                                  webgl_context->ContextGL(), webgl_context,
-                                  std::move(image_ref), frame_id_);
+    frame_transport_->FrameSubmit(
+        immersive_presentation_provider_.get(), webgl_context->ContextGL(),
+        webgl_context->SharedImageInterface(), webgl_context,
+        std::move(image_ref), frame_id_);
     return;
   }
 
@@ -682,8 +687,9 @@ void XRFrameProvider::SubmitWebGLLayer(XRWebGLLayer* layer, bool was_changed) {
   }
 
   frame_transport_->FrameSubmit(immersive_presentation_provider_.get(),
-                                webgl_context->ContextGL(), webgl_context,
-                                std::move(image_ref), frame_id_);
+                                webgl_context->ContextGL(),
+                                webgl_context->SharedImageInterface(),
+                                webgl_context, std::move(image_ref), frame_id_);
 
   // Reset our frame id, since anything we'd want to do (resizing/etc) can
   // no-longer happen to this frame.

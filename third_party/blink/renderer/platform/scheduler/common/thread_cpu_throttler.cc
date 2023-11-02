@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,13 @@
 #include "base/memory/singleton.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <signal.h>
 #define USE_SIGNALS 1
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -148,11 +149,11 @@ void ThreadCPUThrottler::ThrottlingThread::HandleSignal(int signal) {
 #endif  // USE_SIGNALS
 
 void ThreadCPUThrottler::ThrottlingThread::Throttle() {
-  const int quant_time_us = 200;
+  [[maybe_unused]] const int quant_time_us = 200;
 #ifdef USE_SIGNALS
   pthread_kill(throttled_thread_handle_.platform_handle(), SIGUSR2);
   Sleep(base::Microseconds(quant_time_us));
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   double rate = Acquire_Load(&throttling_rate_percent_) / 100.;
   base::TimeDelta run_duration =
       base::Microseconds(static_cast<int>(quant_time_us / rate));
@@ -162,13 +163,11 @@ void ThreadCPUThrottler::ThrottlingThread::Throttle() {
   ::SuspendThread(throttled_thread_handle_.platform_handle());
   Sleep(sleep_duration);
   ::ResumeThread(throttled_thread_handle_.platform_handle());
-#else
-  ALLOW_UNUSED_LOCAL(quant_time_us);
 #endif
 }
 
 void ThreadCPUThrottler::ThrottlingThread::Start() {
-#if defined(USE_SIGNALS) || defined(OS_WIN)
+#if defined(USE_SIGNALS) || BUILDFLAG(IS_WIN)
 #if defined(USE_SIGNALS)
   InstallSignalHandler();
 #endif
@@ -181,7 +180,7 @@ void ThreadCPUThrottler::ThrottlingThread::Start() {
 }
 
 void ThreadCPUThrottler::ThrottlingThread::Sleep(base::TimeDelta duration) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // We cannot rely on ::Sleep function as it's precision is not enough for
   // the purpose. Could be up to 16ms jitter.
   base::TimeTicks wakeup_time = base::TimeTicks::Now() + duration;

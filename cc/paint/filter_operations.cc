@@ -1,14 +1,16 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "cc/paint/filter_operations.h"
 
 #include <stddef.h>
+
 #include <cmath>
 #include <numeric>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
 #include "cc/paint/filter_operation.h"
@@ -164,7 +166,7 @@ bool FilterOperations::HasFilterThatAffectsOpacity() const {
       case FilterOperation::ALPHA_THRESHOLD:
         return true;
       case FilterOperation::COLOR_MATRIX: {
-        const SkScalar* matrix = op.matrix();
+        auto& matrix = op.matrix();
         if (matrix[15] || matrix[16] || matrix[17] || matrix[18] != 1 ||
             matrix[19])
           return true;
@@ -190,10 +192,7 @@ bool FilterOperations::HasReferenceFilter() const {
 }
 
 bool FilterOperations::HasFilterOfType(FilterOperation::FilterType type) const {
-  return operations_.end() !=
-         std::find_if(
-             operations_.begin(), operations_.end(),
-             [type](const FilterOperation& op) { return op.type() == type; });
+  return base::Contains(operations_, type, &FilterOperation::type);
 }
 
 FilterOperations FilterOperations::Blend(const FilterOperations& from,

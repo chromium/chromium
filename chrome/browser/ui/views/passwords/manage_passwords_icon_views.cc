@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,8 @@ ManagePasswordsIconViews::ManagePasswordsIconViews(
     : PageActionIconView(updater,
                          IDC_MANAGE_PASSWORDS_FOR_PAGE,
                          icon_label_bubble_delegate,
-                         page_action_icon_delegate) {
+                         page_action_icon_delegate,
+                         "ManagePasswords") {
   // Password icon should not be mirrored in RTL.
   image()->SetFlipCanvasOnPaintForRTLUI(false);
 }
@@ -94,6 +95,9 @@ std::u16string ManagePasswordsIconViews::GetTextForTooltipAndAccessibleName()
       return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TOOLTIP_SAVE);
     case password_manager::ui::CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE:
       return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TOOLTIP_MOVE);
+    case password_manager::ui::BIOMETRIC_AUTHENTICATION_FOR_FILLING_STATE:
+    case password_manager::ui::BIOMETRIC_AUTHENTICATION_CONFIRMATION_STATE:
+      return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TOOLTIP_PROTECT);
   }
   NOTREACHED();
   return std::u16string();

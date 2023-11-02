@@ -1,5 +1,5 @@
 load("@rules_rust//cargo:cargo_build_script.bzl", "cargo_build_script")
-load("@rules_rust//rust:rust.bzl", "rust_binary", "rust_library")
+load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library")
 load("@third-party//:vendor.bzl", "vendored")
 
 def third_party_glob(include):

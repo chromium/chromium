@@ -1,9 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view.h"
 
+#include "base/observer_list.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
@@ -92,10 +93,11 @@ void PermissionToggleRowView::InitForUserSource(bool should_show_spacer_view) {
   auto toggle_button = std::make_unique<views::ToggleButton>(
       base::BindRepeating(&PermissionToggleRowView::OnToggleButtonPressed,
                           base::Unretained(this)));
-  toggle_button->SetPreferredSize({toggle_button->GetPreferredSize().width(),
-                                   row_view_->GetFirstLineHeight()});
+  toggle_button->SetPreferredSize(
+      gfx::Size(toggle_button->GetPreferredSize().width(),
+                row_view_->GetFirstLineHeight()));
   toggle_button->SetProperty(views::kMarginsKey,
-                             gfx::Insets(0, icon_label_spacing));
+                             gfx::Insets::VH(0, icon_label_spacing));
   toggle_button->SetAccessibleName(l10n_util::GetStringFUTF16(
       IDS_PAGE_INFO_SELECTOR_TOOLTIP,
       PageInfoUI::PermissionTypeToUIString(permission_.type)));
@@ -124,11 +126,11 @@ void PermissionToggleRowView::InitForUserSource(bool should_show_spacer_view) {
     // permissions to align toggles.
     if (should_show_spacer_view) {
       auto spacer_view = std::make_unique<views::View>();
-      spacer_view->SetPreferredSize({icon_size, icon_size});
+      spacer_view->SetPreferredSize(gfx::Size(icon_size, icon_size));
       spacer_view_ = row_view_->AddControl(std::move(spacer_view));
     } else {
-      toggle_button_->SetProperty(views::kMarginsKey,
-                                  gfx::Insets(0, icon_label_spacing, 0, 0));
+      toggle_button_->SetProperty(
+          views::kMarginsKey, gfx::Insets::TLBR(0, icon_label_spacing, 0, 0));
     }
   }
 }
@@ -141,7 +143,7 @@ void PermissionToggleRowView::InitForManagedSource(
       PageInfoUI::PermissionStateToUIString(delegate, permission_),
       views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY);
   state_label->SetProperty(views::kMarginsKey,
-                           gfx::Insets(0, icon_label_spacing));
+                           gfx::Insets::VH(0, icon_label_spacing));
   row_view_->AddControl(std::move(state_label));
 
   auto managed_icon = std::make_unique<NonAccessibleImageView>();

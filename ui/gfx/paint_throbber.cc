@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,7 +48,7 @@ void PaintArc(Canvas* canvas,
   // Inset by half the stroke width to make sure the whole arc is inside
   // the visible rect.
   const int inset = SkScalarCeilToInt(*stroke_width / 2.0);
-  oval.Inset(inset, inset);
+  oval.Inset(inset);
 
   SkPath path;
   path.arcTo(RectToSkRect(oval), start_angle, sweep, true);

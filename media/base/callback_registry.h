@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "media/base/bind_to_current_loop.h"
@@ -51,8 +52,8 @@ class CallbackRegistry<void(Args...)> {
 
   ~CallbackRegistry() = default;
 
-  std::unique_ptr<CallbackRegistration> Register(CallbackType cb)
-      WARN_UNUSED_RESULT {
+  [[nodiscard]] std::unique_ptr<CallbackRegistration> Register(
+      CallbackType cb) {
     base::AutoLock lock(lock_);
     DCHECK(cb);
     uint32_t registration_id = ++next_registration_id_;
@@ -69,8 +70,8 @@ class CallbackRegistry<void(Args...)> {
   void Notify(Args&&... args) {
     DVLOG(1) << __func__;
     base::AutoLock lock(lock_);
-    for (auto const& entry : callbacks_)
-      entry.second.Run(std::forward<Args>(args)...);
+    for (auto const& [key_id, callback] : callbacks_)
+      callback.Run(std::forward<Args>(args)...);
   }
 
  private:
@@ -86,7 +87,7 @@ class CallbackRegistry<void(Args...)> {
     ~RegistrationImpl() override { registry_->Unregister(registration_id_); }
 
    private:
-    CallbackRegistry<void(Args...)>* registry_ = nullptr;
+    raw_ptr<CallbackRegistry<void(Args...)>> registry_ = nullptr;
     uint32_t registration_id_ = 0;
   };
 

@@ -1,10 +1,12 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/base/view_prop.h"
 
 #include <set>
+
+#include "base/memory/raw_ptr.h"
 
 namespace ui {
 
@@ -70,7 +72,7 @@ class ViewProp::Data : public base::RefCounted<ViewProp::Data> {
 
   const gfx::AcceleratedWidget view_;
   const char* key_;
-  void* data_;
+  raw_ptr<void> data_;
 };
 
 // static

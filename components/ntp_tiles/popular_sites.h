@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,10 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/values.h"
 #include "components/ntp_tiles/section_type.h"
 #include "components/ntp_tiles/tile_title_source.h"
 #include "url/gurl.h"
-
-namespace base {
-class ListValue;
-}
 
 namespace ntp_tiles {
 
@@ -72,7 +69,7 @@ class PopularSites {
   virtual std::string GetDirectoryToFetch() = 0;
   virtual std::string GetCountryToFetch() = 0;
   virtual std::string GetVersionToFetch() = 0;
-  virtual const base::ListValue* GetCachedJson() = 0;
+  virtual const base::Value::List& GetCachedJson() = 0;
 };
 
 }  // namespace ntp_tiles

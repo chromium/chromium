@@ -30,8 +30,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_DESTINATION_H_
 
 #include <memory>
-
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_audio_device.h"
@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_io_callback.h"
 #include "third_party/blink/renderer/platform/audio/media_multi_channel_resampler.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
@@ -191,11 +192,14 @@ class PLATFORM_EXPORT AudioDestination
   AudioCallbackMetricReporter metric_reporter_;
 
   // This protects |device_state_| below.
-  mutable Mutex state_change_lock_;
+  mutable base::Lock state_change_lock_;
 
   // Modified only on the main thread, so it can be read without holding a lock
   // there.
   DeviceState device_state_;
+
+  // Collect the device latency matric only from the initial callback.
+  bool is_latency_metric_collected_ = false;
 };
 
 }  // namespace blink

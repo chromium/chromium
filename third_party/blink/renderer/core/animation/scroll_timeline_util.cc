@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,9 +52,9 @@ CompositorScrollTimeline::ScrollDirection ConvertOrientation(
     ScrollTimeline::ScrollDirection orientation,
     const ComputedStyle* style) {
   // Easy cases; physical is always physical.
-  if (orientation == ScrollTimeline::Horizontal)
+  if (orientation == ScrollTimeline::ScrollDirection::kHorizontal)
     return CompositorScrollTimeline::ScrollRight;
-  if (orientation == ScrollTimeline::Vertical)
+  if (orientation == ScrollTimeline::ScrollDirection::kVertical)
     return CompositorScrollTimeline::ScrollDown;
 
   // Harder cases; first work out which axis is which, and then for each check
@@ -69,7 +69,7 @@ CompositorScrollTimeline::ScrollDirection ConvertOrientation(
   // direction: ltr;
   bool is_ltr_direction = style ? style->IsLeftToRightDirection() : true;
 
-  if (orientation == ScrollTimeline::Block) {
+  if (orientation == ScrollTimeline::ScrollDirection::kBlock) {
     if (is_horizontal_writing_mode) {
       // For horizontal writing mode, block is vertical. The starting edge is
       // always the top.
@@ -81,7 +81,7 @@ CompositorScrollTimeline::ScrollDirection ConvertOrientation(
                                          : CompositorScrollTimeline::ScrollLeft;
   }
 
-  DCHECK_EQ(orientation, ScrollTimeline::Inline);
+  DCHECK_EQ(orientation, ScrollTimeline::ScrollDirection::kInline);
   if (is_horizontal_writing_mode) {
     // For horizontal writing mode, inline is horizontal. The starting edge
     // depends on the directionality.
@@ -93,12 +93,6 @@ CompositorScrollTimeline::ScrollDirection ConvertOrientation(
   // does not matter.
   return is_ltr_direction ? CompositorScrollTimeline::ScrollDown
                           : CompositorScrollTimeline::ScrollUp;
-}
-
-double ComputeProgress(double current_offset,
-                       const WTF::Vector<double>& resolved_offsets) {
-  return cc::ComputeProgress<WTF::Vector<double>>(current_offset,
-                                                  resolved_offsets);
 }
 
 }  // namespace scroll_timeline_util

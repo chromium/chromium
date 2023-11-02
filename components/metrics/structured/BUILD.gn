@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -29,6 +29,7 @@ static_library("structured") {
   deps = [
     ":storage",
     ":structured_events",
+    ":structured_metrics_validator",
     "//base",
     "//components/metrics",
     "//components/metrics/structured/mojom",
@@ -39,9 +40,12 @@ static_library("structured") {
 
 static_library("events") {
   sources = [
+    "delegating_events_processor.cc",
+    "delegating_events_processor.h",
     "enums.h",
     "event.cc",
     "event.h",
+    "events_processor_interface.h",
     "structured_metrics_client.cc",
     "structured_metrics_client.h",
   ]
@@ -70,8 +74,6 @@ proto_library("storage") {
 # Sources used by all static libraries in this BUILD file.
 source_set("common") {
   sources = [
-    "event_base.cc",
-    "event_base.h",
     "histogram_util.cc",
     "histogram_util.h",
     "recorder.cc",
@@ -102,7 +104,7 @@ action("gen_structured_events") {
     "//tools/metrics/structured/gen_events.py",
     "//tools/metrics/structured/model.py",
     "//tools/metrics/structured/model_util.py",
-    "//tools/metrics/structured/templates.py",
+    "//tools/metrics/structured/templates_events.py",
   ]
   sources = [ "//tools/metrics/structured/structured.xml" ]
 
@@ -121,44 +123,12 @@ action("gen_structured_events") {
   ]
 }
 
-# TODO(crbug.com/1249222): Rename this to gen_structured_events and
-# delete old target once migration is complete.
-action("gen_structured_mojo_events") {
-  script = "//tools/metrics/structured/gen_mojo_events.py"
-
-  # Re-generate the outputs if the codegen code changes:
-  inputs = [
-    "//tools/metrics/structured/codegen.py",
-    "//tools/metrics/structured/gen_mojo_events.py",
-    "//tools/metrics/structured/model.py",
-    "//tools/metrics/structured/model_util.py",
-    "//tools/metrics/structured/templates_mojo_events.py",
-  ]
-  sources = [ "//tools/metrics/structured/structured.xml" ]
-
-  outdir = "$target_gen_dir"
-
-  outputs = [
-    outdir + "/structured_mojo_events.cc",
-    outdir + "/structured_mojo_events.h",
-  ]
-
-  args = [
-    "--input",
-    rebase_path(sources[0], root_build_dir),
-    "--output",
-    rebase_path(outdir, root_build_dir),
-  ]
-}
-
 static_library("structured_events") {
-  sources = get_target_outputs(":gen_structured_events") +
-            get_target_outputs(":gen_structured_mojo_events")
+  sources = get_target_outputs(":gen_structured_events")
 
   deps = [
     ":common",
     ":gen_structured_events",
-    ":gen_structured_mojo_events",
     "//base",
   ]
 }
@@ -193,10 +163,10 @@ action("gen_structured_metrics_validator") {
 
 static_library("structured_metrics_validator") {
   sources = get_target_outputs(":gen_structured_metrics_validator") + [
-              "event_validator.h",
               "event_validator.cc",
-              "project_validator.h",
+              "event_validator.h",
               "project_validator.cc",
+              "project_validator.h",
             ]
 
   deps = [
@@ -237,12 +207,10 @@ static_library("neutrino_logging_util") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "event_base_unittest.cc",
     "external_metrics_unittest.cc",
     "key_data_unittest.cc",
     "persistent_proto_unittest.cc",
     "structured_metrics_provider_unittest.cc",
-    "structured_mojo_events_unittest.cc",
   ]
 
   deps = [

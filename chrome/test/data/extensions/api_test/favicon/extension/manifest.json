@@ -1,0 +1,7 @@
+{
+  "name": "Test",
+  "version": "1.0",
+  "manifest_version": 3,
+  "permissions": ["favicon"],
+  "host_permissions": ["http://www.example.com/*"]
+}

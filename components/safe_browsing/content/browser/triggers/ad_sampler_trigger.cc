@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -87,6 +87,7 @@ AdSamplerTrigger::AdSamplerTrigger(
     history::HistoryService* history_service,
     ReferrerChainProvider* referrer_chain_provider)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<AdSamplerTrigger>(*web_contents),
       sampler_frequency_denominator_(GetSamplerFrequencyDenominator()),
       start_report_delay_ms_(
           base::RandInt(kMinAdSampleCollectionStartDelayMilliseconds,
@@ -133,7 +134,7 @@ void AdSamplerTrigger::CreateAdSampleReport() {
       TriggerManager::GetSBErrorDisplayOptions(*prefs_, web_contents());
 
   const content::GlobalRenderFrameHostId primary_main_frame_id =
-      web_contents()->GetMainFrame()->GetGlobalId();
+      web_contents()->GetPrimaryMainFrame()->GetGlobalId();
   security_interstitials::UnsafeResource resource;
   resource.threat_type = SB_THREAT_TYPE_AD_SAMPLE;
   resource.url = web_contents()->GetURL();

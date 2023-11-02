@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
+import org.chromium.components.payments.CSPChecker;
 import org.chromium.components.payments.PackageManagerDelegate;
 import org.chromium.components.payments.PaymentManifestDownloader;
 import org.chromium.components.payments.PaymentManifestParser;
@@ -95,7 +96,7 @@ public class PaymentManifestVerifierTest {
 
         mDownloader = new PaymentManifestDownloader() {
             @Override
-            public void initialize(WebContents webContents) {}
+            public void initialize(WebContents webContents, CSPChecker cspChecker) {}
 
             @Override
             public void downloadPaymentMethodManifest(
@@ -158,7 +159,7 @@ public class PaymentManifestVerifierTest {
                 mMatchingApps, null /* supportedOrigins */,
                 mWebDataService, new PaymentManifestDownloader() {
                     @Override
-                    public void initialize(WebContents webContents) {}
+                    public void initialize(WebContents webContents, CSPChecker cspChecker) {}
 
                     @Override
                     public void downloadPaymentMethodManifest(
@@ -183,7 +184,7 @@ public class PaymentManifestVerifierTest {
                 mMatchingApps, null /* supportedOrigins */,
                 mWebDataService, new PaymentManifestDownloader() {
                     @Override
-                    public void initialize(WebContents webContents) {}
+                    public void initialize(WebContents webContents, CSPChecker cspChecker) {}
 
                     @Override
                     public void downloadPaymentMethodManifest(

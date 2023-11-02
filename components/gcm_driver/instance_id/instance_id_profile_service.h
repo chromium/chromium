@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,14 @@ class InstanceIDProfileService : public KeyedService {
 
   InstanceIDDriver* driver() const { return driver_.get(); }
 
+  static std::unique_ptr<InstanceIDProfileService> CreateForTests(
+      std::unique_ptr<InstanceIDDriver> instance_id_driver);
+
  private:
+  // Private constructor used for tests only.
+  explicit InstanceIDProfileService(
+      std::unique_ptr<InstanceIDDriver> instance_id_driver);
+
   std::unique_ptr<InstanceIDDriver> driver_;
 };
 

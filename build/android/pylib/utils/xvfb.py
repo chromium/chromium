@@ -1,4 +1,4 @@
-# Copyright (c) 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -16,7 +16,7 @@ def _IsLinux():
   return sys.platform.startswith('linux')
 
 
-class Xvfb(object):
+class Xvfb:
   """Class to start and stop Xvfb if relevant.  Nop if not Linux."""
 
   def __init__(self):

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,9 +26,9 @@ TEST(CascadePriorityTest, EncodeOriginImportance) {
   using Origin = CascadeOrigin;
   EXPECT_EQ(0b00001ull, EncodeOriginImportance(Origin::kUserAgent, false));
   EXPECT_EQ(0b00010ull, EncodeOriginImportance(Origin::kUser, false));
-  EXPECT_EQ(0b00011ull, EncodeOriginImportance(Origin::kAuthor, false));
-  EXPECT_EQ(0b00100ull, EncodeOriginImportance(Origin::kAnimation, false));
-  EXPECT_EQ(0b01100ull, EncodeOriginImportance(Origin::kAuthor, true));
+  EXPECT_EQ(0b00100ull, EncodeOriginImportance(Origin::kAuthor, false));
+  EXPECT_EQ(0b00101ull, EncodeOriginImportance(Origin::kAnimation, false));
+  EXPECT_EQ(0b01011ull, EncodeOriginImportance(Origin::kAuthor, true));
   EXPECT_EQ(0b01101ull, EncodeOriginImportance(Origin::kUser, true));
   EXPECT_EQ(0b01110ull, EncodeOriginImportance(Origin::kUserAgent, true));
   EXPECT_EQ(0b10000ull, EncodeOriginImportance(Origin::kTransition, false));

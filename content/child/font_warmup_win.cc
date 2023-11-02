@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
@@ -28,9 +29,11 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/ports/SkTypeface_win.h"
 
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
 #include "ppapi/shared_impl/proxy_lock.h"
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
+#endif  // BUILDFLAG(ENABLE_PPAPI)
+
+#include "base/record_replay.h"
 
 namespace content {
 
@@ -116,7 +119,7 @@ class FakeGdiObject : public base::RefCountedThreadSafe<FakeGdiObject> {
   friend class base::RefCountedThreadSafe<FakeGdiObject>;
   ~FakeGdiObject() {}
 
-  void* handle_;
+  raw_ptr<void> handle_;
   uint32_t magic_;
   sk_sp<SkTypeface> typeface_;
 };
@@ -205,9 +208,9 @@ sk_sp<SkTypeface> GetTypefaceFromLOGFONT(const LOGFONTW* log_font) {
                                        : SkFontStyle::kUpright_Slant);
 
   std::string family_name = base::WideToUTF8(log_font->lfFaceName);
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
   ppapi::ProxyAutoLock lock;  // Needed for DirectWrite font proxy.
-#endif                        // BUILDFLAG(ENABLE_PLUGINS)
+#endif                        // BUILDFLAG(ENABLE_PPAPI)
   return sk_sp<SkTypeface>(
       g_warmup_fontmgr->matchFamilyStyle(family_name.c_str(), style));
 }
@@ -394,6 +397,13 @@ void PatchServiceManagerCalls() {
            : "advapi32.dll");
 
   is_patched = true;
+
+  // Skip patching when replaying, we aren't working with real DLLs and will crash
+  // if we try to patch them.
+  if (recordreplay::IsReplaying())
+    return;
+
+  recordreplay::AutoPassThroughEvents pt;
 
   static base::NoDestructor<base::win::IATPatchFunction> patch_open_sc_manager;
   DWORD patched = patch_open_sc_manager->Patch(

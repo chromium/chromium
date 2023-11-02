@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -98,8 +98,10 @@ class BenchmarkRunnerIntegrationTest(unittest.TestCase):
     histograms.ImportDicts(dicts)
     return histograms
 
-  # TODO(https://crbug.com/1098412): Fix the test.
-  @decorators.Disabled('chromeos')
+  @decorators.Disabled(
+      'chromeos',  # TODO(https://crbug.com/1098412): Fix the test.
+      'android-nougat',  # Flaky: https://crbug.com/1342706
+      'mac')  # Failing: https://crbug.com/1370958
   def testTimelineBasedEndToEnd(self):
     class TestTimelineBasedBenchmark(perf_benchmark.PerfBenchmark):
       """A dummy benchmark that records a trace and runs sampleMetric on it."""

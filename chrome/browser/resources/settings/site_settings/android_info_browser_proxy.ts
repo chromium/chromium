@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,21 +10,21 @@ import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
  * Type definition of AndroidAppsInfo entry. |playStoreEnabled| indicates that
  * Play Store is enabled. |settingsAppAvailable| indicates that Android settings
  * app is registered in the system.
- * @see chrome/browser/ui/webui/settings/chromeos/android_apps_handler.cc
+ * @see chrome/browser/ui/webui/settings/ash/android_apps_handler.cc
  */
-export type AndroidAppsInfo = {
-  playStoreEnabled: boolean,
-  settingsAppAvailable: boolean,
-};
+export interface AndroidAppsInfo {
+  playStoreEnabled: boolean;
+  settingsAppAvailable: boolean;
+}
 
 /**
  * An object containing messages for web permissisions origin
  * and the messages multidevice feature state.
  */
-export type AndroidSmsInfo = {
-  origin: string,
-  enabled: boolean,
-};
+export interface AndroidSmsInfo {
+  origin: string;
+  enabled: boolean;
+}
 
 export interface AndroidInfoBrowserProxy {
   /**

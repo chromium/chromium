@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,10 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_unsignedlong.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_bluetooth_advertising_event_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_bluetooth_data_filter_init.h"
@@ -26,6 +28,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -40,12 +43,14 @@
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_service_data_map.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_uuid.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
+
+namespace {
 
 // Per the Bluetooth Spec: The name is a user-friendly name associated with the
 // device and consists of a maximum of 248 bytes coded according to the UTF-8
@@ -56,13 +61,39 @@ const char kDeviceNameTooLong[] =
 const char kInactiveDocumentError[] = "Document not active";
 const char kHandleGestureForPermissionRequest[] =
     "Must be handling a user gesture to show a permission request.";
+const char kFencedFrameError[] =
+    "Web Bluetooth is not allowed in a fenced frame tree.";
+const char kPermissionsPolicyBlocked[] =
+    "Access to the feature \"bluetooth\" is disallowed by permissions policy.";
+
+// Does basic checks that are common to all IDL calls, mainly that the window is
+// valid, and the request is not being done from a fenced frame tree. Returns
+// true if exceptions have been flagged, and false otherwise.
+bool IsRequestDenied(LocalDOMWindow* window, ExceptionState& exception_state) {
+  if (!window) {
+    exception_state.ThrowTypeError(kInactiveDocumentError);
+  } else if (window->GetFrame()->IsInFencedFrameTree()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
+                                      kFencedFrameError);
+  }
+
+  return exception_state.HadException();
+}
+
+// Checks whether the document is allowed by Permissions Policy to call Web
+// Bluetooth API methods.
+bool IsFeatureEnabled(LocalDOMWindow* window) {
+  return window->IsFeatureEnabled(
+      mojom::blink::PermissionsPolicyFeature::kBluetooth,
+      ReportOptions::kReportOnFailure);
+}
 
 // Remind developers when they are using Web Bluetooth on unsupported platforms.
 // TODO(https://crbug.com/570344): Remove this method when all platforms are
 // supported.
 void AddUnsupportedPlatformConsoleMessage(ExecutionContext* context) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID) && !defined(OS_MAC) && \
-    !defined(OS_WIN)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID) && \
+    !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
   context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kJavaScript,
       mojom::blink::ConsoleMessageLevel::kInfo,
@@ -72,7 +103,7 @@ void AddUnsupportedPlatformConsoleMessage(ExecutionContext* context) {
 #endif
 }
 
-static void CanonicalizeFilter(
+void CanonicalizeFilter(
     const BluetoothLEScanFilterInit* filter,
     mojom::blink::WebBluetoothLeScanFilterPtr& canonicalized_filter,
     ExceptionState& exception_state) {
@@ -196,7 +227,7 @@ static void CanonicalizeFilter(
   }
 }
 
-static void ConvertRequestDeviceOptions(
+void ConvertRequestDeviceOptions(
     const RequestDeviceOptions* options,
     mojom::blink::WebBluetoothRequestDeviceOptionsPtr& result,
     ExecutionContext* execution_context,
@@ -211,7 +242,7 @@ static void ConvertRequestDeviceOptions(
   result->accept_all_devices = options->acceptAllDevices();
 
   if (options->hasFilters()) {
-    if (options->filters().IsEmpty()) {
+    if (options->filters().empty()) {
       exception_state.ThrowTypeError(
           "'filters' member must be non-empty to find any devices.");
       return;
@@ -255,12 +286,20 @@ static void ConvertRequestDeviceOptions(
   }
 }
 
+}  // namespace
+
 ScriptPromise Bluetooth::getAvailability(ScriptState* script_state,
                                          ExceptionState& exception_state) {
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
-  if (!window) {
-    exception_state.ThrowTypeError(kInactiveDocumentError);
+  if (IsRequestDenied(window, exception_state)) {
     return ScriptPromise();
+  }
+
+  // If Bluetooth is disallowed by Permissions Policy, getAvailability should
+  // return false.
+  if (!IsFeatureEnabled(window)) {
+    return ScriptPromise::Cast(script_state,
+                               ScriptValue::From(script_state, false));
   }
 
   CHECK(window->IsSecureContext());
@@ -270,9 +309,9 @@ ScriptPromise Bluetooth::getAvailability(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   service_->GetAvailability(
-      WTF::Bind([](ScriptPromiseResolver* resolver,
-                   bool result) { resolver->Resolve(result); },
-                WrapPersistent(resolver)));
+      WTF::BindOnce([](ScriptPromiseResolver* resolver,
+                       bool result) { resolver->Resolve(result); },
+                    WrapPersistent(resolver)));
   return promise;
 }
 
@@ -314,8 +353,12 @@ void Bluetooth::RequestDeviceCallback(
 ScriptPromise Bluetooth::getDevices(ScriptState* script_state,
                                     ExceptionState& exception_state) {
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
-  if (!window) {
-    exception_state.ThrowTypeError(kInactiveDocumentError);
+  if (IsRequestDenied(window, exception_state)) {
+    return ScriptPromise();
+  }
+
+  if (!IsFeatureEnabled(window)) {
+    exception_state.ThrowSecurityError(kPermissionsPolicyBlocked);
     return ScriptPromise();
   }
 
@@ -326,9 +369,9 @@ ScriptPromise Bluetooth::getDevices(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  service_->GetDevices(WTF::Bind(&Bluetooth::GetDevicesCallback,
-                                 WrapPersistent(this),
-                                 WrapPersistent(resolver)));
+  service_->GetDevices(WTF::BindOnce(&Bluetooth::GetDevicesCallback,
+                                     WrapPersistent(this),
+                                     WrapPersistent(resolver)));
   return promise;
 }
 
@@ -337,8 +380,12 @@ ScriptPromise Bluetooth::requestDevice(ScriptState* script_state,
                                        const RequestDeviceOptions* options,
                                        ExceptionState& exception_state) {
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
-  if (!window) {
-    exception_state.ThrowTypeError(kInactiveDocumentError);
+  if (IsRequestDenied(window, exception_state)) {
+    return ScriptPromise();
+  }
+
+  if (!IsFeatureEnabled(window)) {
+    exception_state.ThrowSecurityError(kPermissionsPolicyBlocked);
     return ScriptPromise();
   }
 
@@ -371,8 +418,8 @@ ScriptPromise Bluetooth::requestDevice(ScriptState* script_state,
 
   service_->RequestDevice(
       std::move(device_options),
-      WTF::Bind(&Bluetooth::RequestDeviceCallback, WrapPersistent(this),
-                WrapPersistent(resolver)));
+      WTF::BindOnce(&Bluetooth::RequestDeviceCallback, WrapPersistent(this),
+                    WrapPersistent(resolver)));
   return promise;
 }
 
@@ -391,7 +438,7 @@ static void ConvertRequestLEScanOptions(
   result->keep_repeated_devices = options->keepRepeatedDevices();
 
   if (options->hasFilters()) {
-    if (options->filters().IsEmpty()) {
+    if (options->filters().empty()) {
       exception_state.ThrowTypeError(
           "'filters' member must be non-empty to find any devices.");
       return;
@@ -437,8 +484,12 @@ ScriptPromise Bluetooth::requestLEScan(ScriptState* script_state,
                                        const BluetoothLEScanOptions* options,
                                        ExceptionState& exception_state) {
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
-  if (!window) {
-    exception_state.ThrowTypeError(kInactiveDocumentError);
+  if (IsRequestDenied(window, exception_state)) {
+    return ScriptPromise();
+  }
+
+  if (!IsFeatureEnabled(window)) {
+    exception_state.ThrowSecurityError(kPermissionsPolicyBlocked);
     return ScriptPromise();
   }
 
@@ -486,8 +537,9 @@ ScriptPromise Bluetooth::requestLEScan(ScriptState* script_state,
   auto scan_options_copy = scan_options->Clone();
   service_->RequestScanningStart(
       std::move(client), std::move(scan_options),
-      WTF::Bind(&Bluetooth::RequestScanningCallback, WrapPersistent(this),
-                WrapPersistent(resolver), id, std::move(scan_options_copy)));
+      WTF::BindOnce(&Bluetooth::RequestScanningCallback, WrapPersistent(this),
+                    WrapPersistent(resolver), id,
+                    std::move(scan_options_copy)));
 
   return promise;
 }
@@ -499,7 +551,7 @@ void Bluetooth::AdvertisingEvent(
       GetBluetoothDeviceRepresentingDevice(std::move(advertising_event->device),
                                            GetSupplementable()->DomWindow()),
       std::move(advertising_event));
-  DispatchEvent(*event);
+  DispatchEvent(*event, "Bluetooth::AdvertisingEvent");
 }
 
 void Bluetooth::PageVisibilityChanged() {
@@ -557,15 +609,18 @@ Bluetooth::~Bluetooth() = default;
 BluetoothDevice* Bluetooth::GetBluetoothDeviceRepresentingDevice(
     mojom::blink::WebBluetoothDevicePtr device_ptr,
     ExecutionContext* context) {
-  auto it = device_instance_map_.find(device_ptr->id);
+  // TODO(crbug.com/1275634): convert device_instance_map_ to use
+  // WebBluetoothDeviceId as key
+  auto it =
+      device_instance_map_.find(device_ptr->id.DeviceIdInBase64().c_str());
   if (it != device_instance_map_.end()) {
     return it->value;
   }
 
-  String id = device_ptr->id;
   BluetoothDevice* device = MakeGarbageCollected<BluetoothDevice>(
       context, std::move(device_ptr), this);
-  auto result = device_instance_map_.insert(id, device);
+  auto result = device_instance_map_.insert(
+      device->GetDevice()->id.DeviceIdInBase64().c_str(), device);
   DCHECK(result.is_new_entry);
   return device;
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,7 +52,7 @@ void Get(std::vector<std::string>* app_ids);
 std::string GetOemAppsFolderName();
 
 // Number of apps in hard-coded apps order.
-extern const size_t kDefaultAppOrderCount;
+size_t DefaultAppCount();
 
 }  // namespace default_app_order
 }  // namespace chromeos

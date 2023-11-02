@@ -1,12 +1,14 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CapabilitiesResponse, Cdd, DEFAULT_MAX_COPIES, Destination, DestinationCertificateStatus, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationType, GooglePromotedDestinationId, LocalDestinationInfo, MeasurementSystemUnitType, MediaSizeCapability, MediaSizeOption, NativeInitialSettings, VendorCapabilityValueType} from 'chrome://print/print_preview.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {CapabilitiesResponse, Cdd, DEFAULT_MAX_COPIES, Destination, DestinationOrigin, DestinationStore, ExtensionDestinationInfo, GooglePromotedDestinationId, LocalDestinationInfo, MeasurementSystemUnitType, MediaSizeCapability, MediaSizeOption, NativeInitialSettings, VendorCapabilityValueType} from 'chrome://print/print_preview.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 export function getDefaultInitialSettings(isPdf: boolean = false):
@@ -33,11 +35,11 @@ export function getDefaultInitialSettings(isPdf: boolean = false):
 }
 
 export function getCddTemplate(
-    printerId: string, opt_printerName?: string): CapabilitiesResponse {
+    printerId: string, printerName?: string): CapabilitiesResponse {
   const template: CapabilitiesResponse = {
     printer: {
       deviceName: printerId,
-      printerName: opt_printerName || '',
+      printerName: printerName || '',
     },
     capabilities: {
       version: '1.0',
@@ -47,26 +49,28 @@ export function getCddTemplate(
         color: {
           option: [
             {type: 'STANDARD_COLOR', is_default: true},
-            {type: 'STANDARD_MONOCHROME'}
-          ]
+            {type: 'STANDARD_MONOCHROME'},
+          ],
         },
         dpi: {
           option: [
             {horizontal_dpi: 200, vertical_dpi: 200, is_default: true},
             {horizontal_dpi: 100, vertical_dpi: 100},
-          ]
+          ],
         },
         duplex: {
           option: [
-            {type: 'NO_DUPLEX', is_default: true}, {type: 'LONG_EDGE'},
-            {type: 'SHORT_EDGE'}
-          ]
+            {type: 'NO_DUPLEX', is_default: true},
+            {type: 'LONG_EDGE'},
+            {type: 'SHORT_EDGE'},
+          ],
         },
         page_orientation: {
           option: [
-            {type: 'PORTRAIT', is_default: true}, {type: 'LANDSCAPE'},
-            {type: 'AUTO'}
-          ]
+            {type: 'PORTRAIT', is_default: true},
+            {type: 'LANDSCAPE'},
+            {type: 'AUTO'},
+          ],
         },
         media_size: {
           option: [
@@ -82,13 +86,13 @@ export function getCddTemplate(
               width_microns: 215900,
               height_microns: 215900,
               custom_display_name: 'CUSTOM_SQUARE',
-            }
-          ]
-        }
-      }
-    }
+            },
+          ],
+        },
+      },
+    },
   };
-  // <if expr="chromeos or lacros">
+  // <if expr="is_chromeos">
   template.capabilities!.printer.pin = {supported: true};
   // </if>
   return template;
@@ -99,12 +103,12 @@ export function getCddTemplate(
  * capabilities, the values of these options are arbitrary. These values are
  * provided and read by the destination, so there are no fixed options like
  * there are for margins or color.
- * @param opt_printerName Defaults to an empty string.
+ * @param printerName Defaults to an empty string.
  */
 export function getCddTemplateWithAdvancedSettings(
     numSettings: number, printerId: string,
-    opt_printerName?: string): CapabilitiesResponse {
-  const template = getCddTemplate(printerId, opt_printerName);
+    printerName?: string): CapabilitiesResponse {
+  const template = getCddTemplate(printerId, printerName);
   if (numSettings < 1) {
     return template;
   }
@@ -135,9 +139,9 @@ export function getCddTemplateWithAdvancedSettings(
       option: [
         {display_name: 'Standard', value: 0, is_default: true},
         {display_name: 'Recycled', value: 1},
-        {display_name: 'Special', value: 2}
-      ]
-    }
+        {display_name: 'Special', value: 2},
+      ],
+    },
   });
 
   if (numSettings < 3) {
@@ -150,7 +154,7 @@ export function getCddTemplateWithAdvancedSettings(
     type: 'TYPED_VALUE',
     typed_value_cap: {
       default: '',
-    }
+    },
   });
 
   if (numSettings < 4) {
@@ -164,29 +168,10 @@ export function getCddTemplateWithAdvancedSettings(
     typed_value_cap: {
       default: '',
       value_type: VendorCapabilityValueType.BOOLEAN,
-    }
+    },
   });
 
   return template;
-}
-
-/**
- * Creates a destination with a certificate status tag.
- * @param id Printer id
- * @param name Printer display name
- * @param invalid Whether printer has an invalid certificate.
- */
-export function createDestinationWithCertificateStatus(
-    id: string, name: string, invalid: boolean) {
-  const tags = {
-    certificateStatus: invalid ? DestinationCertificateStatus.NO :
-                                 DestinationCertificateStatus.UNKNOWN,
-    account: 'foo@chromium.org',
-  };
-  const dest = new Destination(
-      id, DestinationType.GOOGLE, DestinationOrigin.COOKIES, name,
-      DestinationConnectionStatus.ONLINE, tags);
-  return dest;
 }
 
 /**
@@ -199,9 +184,10 @@ export function getPdfPrinter(): {capabilities: Cdd} {
       printer: {
         page_orientation: {
           option: [
-            {type: 'AUTO', is_default: true}, {type: 'PORTRAIT'},
-            {type: 'LANDSCAPE'}
-          ]
+            {type: 'AUTO', is_default: true},
+            {type: 'PORTRAIT'},
+            {type: 'LANDSCAPE'},
+          ],
         },
         color: {option: [{type: 'STANDARD_COLOR', is_default: true}]},
         media_size: {
@@ -209,11 +195,11 @@ export function getPdfPrinter(): {capabilities: Cdd} {
             name: 'NA_LETTER',
             width_microns: 0,
             height_microns: 0,
-            is_default: true
-          }]
-        }
-      }
-    }
+            is_default: true,
+          }],
+        },
+      },
+    },
   };
 }
 
@@ -227,7 +213,7 @@ export function getDefaultMediaSize(device: CapabilitiesResponse):
       opt => !!opt.is_default);
   return {
     width_microns: size!.width_microns,
-    height_microns: size!.height_microns
+    height_microns: size!.height_microns,
   };
 }
 
@@ -240,16 +226,60 @@ export function getDefaultOrientation(device: CapabilitiesResponse): string {
   return assert(options!.find(opt => !!opt.is_default)!.type!);
 }
 
+interface ExtensionPrinters {
+  destinations: Destination[];
+  infoLists: ExtensionDestinationInfo[][];
+}
+
+export function getExtensionDestinations(): ExtensionPrinters {
+  const destinations: Destination[] = [];
+  const infoLists: ExtensionDestinationInfo[][] = [];
+  infoLists.push([]);
+  infoLists.push([]);
+  [{
+    id: 'IDA',
+    name: 'PrinterA',
+    extensionId: 'ext1',
+    extensionName: 'ExtensionOne',
+  },
+   {
+     id: 'IDB',
+     name: 'PrinterB',
+     extensionId: 'ext1',
+     extensionName: 'ExtensionOne',
+   },
+   {
+     id: 'IDC',
+     name: 'PrinterC',
+     extensionId: 'ext2',
+     extensionName: 'ExtensionTwo',
+   },
+  ].forEach(info => {
+    const destination =
+        new Destination(info.id, DestinationOrigin.EXTENSION, info.name, {
+          extensionId: info.extensionId,
+          extensionName: info.extensionName,
+        });
+    if (info.extensionId === 'ext1') {
+      infoLists[0]!.push(info);
+    } else {
+      infoLists[1]!.push(info);
+    }
+    destinations.push(destination);
+  });
+  return {destinations, infoLists};
+}
+
 /**
  * Creates 5 local destinations, adds them to |localDestinations|.
  */
 export function getDestinations(localDestinations: LocalDestinationInfo[]):
     Destination[] {
   const destinations: Destination[] = [];
-  // <if expr="not chromeos and not lacros">
+  // <if expr="not is_chromeos">
   const origin = DestinationOrigin.LOCAL;
   // </if>
-  // <if expr="chromeos or lacros">
+  // <if expr="is_chromeos">
   const origin = DestinationOrigin.CROS;
   // </if>
   // Five destinations. FooDevice is the system default.
@@ -259,9 +289,8 @@ export function getDestinations(localDestinations: LocalDestinationInfo[]):
    {deviceName: 'ID4', printerName: 'Four'},
    {deviceName: 'FooDevice', printerName: 'FooName'}]
       .forEach(info => {
-        const destination = new Destination(
-            info.deviceName, DestinationType.LOCAL, origin, info.printerName,
-            DestinationConnectionStatus.ONLINE);
+        const destination =
+            new Destination(info.deviceName, origin, info.printerName);
         localDestinations.push(info);
         destinations.push(destination);
       });
@@ -283,15 +312,15 @@ export function getMediaSizeCapabilityWithCustomNames(): MediaSizeCapability {
         height_microns: 79400,
         is_default: true,
         custom_display_name_localized:
-            [{locale: navigator.language, value: customLocalizedMediaName}]
+            [{locale: navigator.language, value: customLocalizedMediaName}],
       },
       {
         name: 'CUSTOM',
         width_microns: 15900,
         height_microns: 79400,
-        custom_display_name: customMediaName
-      }
-    ]
+        custom_display_name: customMediaName,
+      },
+    ],
   };
 }
 
@@ -301,7 +330,7 @@ export function getMediaSizeCapabilityWithCustomNames(): MediaSizeCapability {
  * @return Promise that resolves when the input-change event has fired.
  */
 export function triggerInputEvent(
-    inputElement: HTMLInputElement, input: string,
+    inputElement: HTMLInputElement|CrInputElement, input: string,
     parentElement: HTMLElement): Promise<void> {
   inputElement.value = input;
   inputElement.dispatchEvent(
@@ -333,44 +362,21 @@ export function createDestinationStore(): DestinationStore {
       testListenerElement.addWebUIListener.bind(testListenerElement));
 }
 
-// <if expr="chromeos or lacros">
+// <if expr="is_chromeos">
 /**
  * @return The Google Drive destination.
  */
-export function getGoogleDriveDestination(_account: string): Destination {
+export function getGoogleDriveDestination(): Destination {
   return new Destination(
-      'Save to Drive CrOS', DestinationType.LOCAL, DestinationOrigin.LOCAL,
-      'Save to Google Drive', DestinationConnectionStatus.ONLINE);
+      'Save to Drive CrOS', DestinationOrigin.LOCAL, 'Save to Google Drive');
 }
 // </if>
-// <if expr="not chromeos and not lacros">
-/**
- * @param account The user account the destination should be associated with.
- * @return The Google Drive destination.
- */
-export function getGoogleDriveDestination(account: string): Destination {
-  return getCloudDestination(
-      GooglePromotedDestinationId.DOCS, GooglePromotedDestinationId.DOCS,
-      account);
-}
-// </if>
-
-/**
- * @param account The user account the destination should be associated with.
- */
-export function getCloudDestination(
-    id: string, name: string, account: string): Destination {
-  return new Destination(
-      id, DestinationType.GOOGLE, DestinationOrigin.COOKIES, name,
-      DestinationConnectionStatus.ONLINE, {account: account});
-}
 
 /** @return The Save as PDF destination. */
 export function getSaveAsPdfDestination(): Destination {
   return new Destination(
-      GooglePromotedDestinationId.SAVE_AS_PDF, DestinationType.LOCAL,
-      DestinationOrigin.LOCAL, loadTimeData.getString('printToPDF'),
-      DestinationConnectionStatus.ONLINE);
+      GooglePromotedDestinationId.SAVE_AS_PDF, DestinationOrigin.LOCAL,
+      loadTimeData.getString('printToPDF'));
 }
 
 /**
@@ -385,4 +391,47 @@ export function selectOption(
   select.value = option;
   select.dispatchEvent(new CustomEvent('change'));
   return eventToPromise('process-select-change', section);
+}
+
+// Fake MediaQueryList used in mocking response of |window.matchMedia|.
+export class FakeMediaQueryList extends EventTarget implements MediaQueryList {
+  private listener_: ((e: MediaQueryListEvent) => any)|null = null;
+  private matches_: boolean = false;
+  private media_: string;
+
+  constructor(media: string) {
+    super();
+    this.media_ = media;
+  }
+
+  addListener(listener: (e: MediaQueryListEvent) => any) {
+    this.listener_ = listener;
+  }
+
+  removeListener(listener: (e: MediaQueryListEvent) => any) {
+    assertEquals(listener, this.listener_);
+    this.listener_ = null;
+  }
+
+  onchange() {
+    if (this.listener_) {
+      this.listener_(new MediaQueryListEvent(
+          'change', {media: this.media_, matches: this.matches_}));
+    }
+  }
+
+  get media(): string {
+    return this.media_;
+  }
+
+  get matches(): boolean {
+    return this.matches_;
+  }
+
+  set matches(matches: boolean) {
+    if (this.matches_ !== matches) {
+      this.matches_ = matches;
+      this.onchange();
+    }
+  }
 }

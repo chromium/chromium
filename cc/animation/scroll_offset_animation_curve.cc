@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <ostream>
 #include <utility>
 
 #include "base/check_op.h"
@@ -81,9 +82,9 @@ std::unique_ptr<TimingFunction> ImpulseCurveWithInitialSlope(double slope) {
   return CubicBezierTimingFunction::Create(x1, y1, x2, y2);
 }
 
-bool IsNewTargetInOppositeDirection(const gfx::Vector2dF& current_position,
-                                    const gfx::Vector2dF& old_target,
-                                    const gfx::Vector2dF& new_target) {
+bool IsNewTargetInOppositeDirection(const gfx::PointF& current_position,
+                                    const gfx::PointF& old_target,
+                                    const gfx::PointF& new_target) {
   gfx::Vector2dF old_delta = old_target - current_position;
   gfx::Vector2dF new_delta = new_target - current_position;
 
@@ -132,15 +133,14 @@ absl::optional<double>
     ScrollOffsetAnimationCurve::animation_duration_for_testing_;
 
 ScrollOffsetAnimationCurve::ScrollOffsetAnimationCurve(
-    const gfx::Vector2dF& target_value,
+    const gfx::PointF& target_value,
     AnimationType animation_type,
     absl::optional<DurationBehavior> duration_behavior)
     : target_value_(target_value),
       animation_type_(animation_type),
       duration_behavior_(duration_behavior),
       has_set_initial_value_(false) {
-  DCHECK_EQ((animation_type == AnimationType::kEaseInOut ||
-             animation_type == AnimationType::kImpulse),
+  DCHECK_EQ(animation_type == AnimationType::kEaseInOut,
             duration_behavior.has_value());
   switch (animation_type) {
     case AnimationType::kEaseInOut:
@@ -157,7 +157,7 @@ ScrollOffsetAnimationCurve::ScrollOffsetAnimationCurve(
 }
 
 ScrollOffsetAnimationCurve::ScrollOffsetAnimationCurve(
-    const gfx::Vector2dF& target_value,
+    const gfx::PointF& target_value,
     std::unique_ptr<TimingFunction> timing_function,
     AnimationType animation_type,
     absl::optional<DurationBehavior> duration_behavior)
@@ -166,8 +166,7 @@ ScrollOffsetAnimationCurve::ScrollOffsetAnimationCurve(
       animation_type_(animation_type),
       duration_behavior_(duration_behavior),
       has_set_initial_value_(false) {
-  DCHECK_EQ((animation_type == AnimationType::kEaseInOut ||
-             animation_type == AnimationType::kImpulse),
+  DCHECK_EQ(animation_type == AnimationType::kEaseInOut,
             duration_behavior.has_value());
 }
 
@@ -276,7 +275,7 @@ base::TimeDelta ScrollOffsetAnimationCurve::ImpulseSegmentDuration(
 }
 
 void ScrollOffsetAnimationCurve::SetInitialValue(
-    const gfx::Vector2dF& initial_value,
+    const gfx::PointF& initial_value,
     base::TimeDelta delayed_by,
     float velocity) {
   initial_value_ = initial_value;
@@ -296,7 +295,7 @@ void ScrollOffsetAnimationCurve::ApplyAdjustment(
   target_value_ = target_value_ + adjustment;
 }
 
-gfx::Vector2dF ScrollOffsetAnimationCurve::GetValue(base::TimeDelta t) const {
+gfx::PointF ScrollOffsetAnimationCurve::GetValue(base::TimeDelta t) const {
   const base::TimeDelta duration = total_animation_duration_ - last_retarget_;
   t -= last_retarget_;
 
@@ -306,10 +305,10 @@ gfx::Vector2dF ScrollOffsetAnimationCurve::GetValue(base::TimeDelta t) const {
     return initial_value_;
 
   const double progress = timing_function_->GetValue(t / duration);
-  return gfx::Vector2dF(gfx::Tween::FloatValueBetween(
-                            progress, initial_value_.x(), target_value_.x()),
-                        gfx::Tween::FloatValueBetween(
-                            progress, initial_value_.y(), target_value_.y()));
+  return gfx::PointF(gfx::Tween::FloatValueBetween(progress, initial_value_.x(),
+                                                   target_value_.x()),
+                     gfx::Tween::FloatValueBetween(progress, initial_value_.y(),
+                                                   target_value_.y()));
 }
 
 base::TimeDelta ScrollOffsetAnimationCurve::Duration() const {
@@ -368,9 +367,8 @@ double ScrollOffsetAnimationCurve::CalculateVelocity(base::TimeDelta t) {
   return slope * (MaximumDimension(delta) / duration.InSecondsF());
 }
 
-void ScrollOffsetAnimationCurve::UpdateTarget(
-    base::TimeDelta t,
-    const gfx::Vector2dF& new_target) {
+void ScrollOffsetAnimationCurve::UpdateTarget(base::TimeDelta t,
+                                              const gfx::PointF& new_target) {
   DCHECK_NE(animation_type_, AnimationType::kLinear)
       << "UpdateTarget is not supported on linear scroll animations.";
 
@@ -398,7 +396,7 @@ void ScrollOffsetAnimationCurve::UpdateTarget(
     return;
   }
 
-  gfx::Vector2dF current_position = GetValue(t);
+  gfx::PointF current_position = GetValue(t);
   gfx::Vector2dF new_delta = new_target - current_position;
 
   // We are already at or very close to the new target. Stop animating.
@@ -419,7 +417,9 @@ void ScrollOffsetAnimationCurve::UpdateTarget(
   }
 
   const base::TimeDelta new_duration =
-      EaseInOutBoundedSegmentDuration(new_delta, t, delayed_by);
+      (animation_type_ == AnimationType::kEaseInOut)
+          ? EaseInOutBoundedSegmentDuration(new_delta, t, delayed_by)
+          : ImpulseSegmentDuration(new_delta, delayed_by);
   if (new_duration.InSecondsF() < kEpsilon) {
     // The duration is (close to) 0, so stop the animation.
     target_value_ = new_target;
@@ -433,17 +433,19 @@ void ScrollOffsetAnimationCurve::UpdateTarget(
   double new_slope =
       velocity * (new_duration.InSecondsF() / MaximumDimension(new_delta));
 
-  DCHECK(animation_type_ == AnimationType::kImpulse ||
-         animation_type_ == AnimationType::kEaseInOut);
-  if (animation_type_ == AnimationType::kImpulse &&
-      IsNewTargetInOppositeDirection(current_position, target_value_,
-                                     new_target)) {
-    // Prevent any rubber-banding by setting the velocity (and subsequently, the
-    // slope) to 0 when moving in the opposite direciton.
-    new_slope = 0;
+  if (animation_type_ == AnimationType::kEaseInOut) {
+    timing_function_ = EaseInOutWithInitialSlope(new_slope);
+  } else {
+    DCHECK_EQ(animation_type_, AnimationType::kImpulse);
+    if (IsNewTargetInOppositeDirection(current_position, target_value_,
+                                       new_target)) {
+      // Prevent any rubber-banding by setting the velocity (and subsequently,
+      // the slope) to 0 when moving in the opposite direciton.
+      new_slope = 0;
+    }
+    timing_function_ = ImpulseCurveWithInitialSlope(new_slope);
   }
 
-  timing_function_ = EaseInOutWithInitialSlope(new_slope);
   initial_value_ = current_position;
   target_value_ = new_target;
   total_animation_duration_ = t + new_duration;

@@ -1,6 +1,8 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "base/memory/raw_ptr.h"
 
 #import "ui/views/controls/menu/menu_runner_impl_cocoa.h"
 
@@ -17,11 +19,11 @@
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/events/event_utils.h"
 #import "ui/events/test/cocoa_test_event_utils.h"
+#include "ui/views/controls/menu/menu_cocoa_watcher_mac.h"
 #include "ui/views/controls/menu/menu_runner_impl_adapter.h"
 #include "ui/views/test/views_test_base.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 namespace {
 
 constexpr int kTestCommandId = 0;
@@ -69,7 +71,7 @@ class TestModel : public ui::SimpleMenuModel {
     }
 
    private:
-    TestModel* model_;
+    raw_ptr<TestModel> model_;
   };
 
  private:
@@ -130,8 +132,12 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
 
     if (runner_) {
       runner_->Release();
-      runner_ = NULL;
+      runner_ = nullptr;
     }
+
+    // Clean up for tests that set the notification filter.
+    MenuCocoaWatcherMac::SetNotificationFilterForTesting(
+        MacNotificationFilter::DontIgnoreNotifications);
 
     parent_->CloseNow();
     ViewsTestBase::TearDown();
@@ -141,16 +147,28 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
 
   // Runs the menu after registering |callback| as the menu open callback.
   void RunMenu(base::OnceClosure callback) {
+    MenuCocoaWatcherMac::SetNotificationFilterForTesting(
+        MacNotificationFilter::IgnoreAllNotifications);
+
+    base::OnceClosure wrapped_callback = base::BindOnce(
+        [](base::OnceClosure cb) {
+          // Ignore app activation notifications while the test is running (all
+          // others are OK).
+          MenuCocoaWatcherMac::SetNotificationFilterForTesting(
+              MacNotificationFilter::IgnoreWorkspaceNotifications);
+          std::move(cb).Run();
+        },
+        std::move(callback));
     if (IsAsync()) {
       // Cancelling an async menu under MenuControllerCocoa::OpenMenuImpl()
       // (which invokes WillShowMenu()) will cause a UAF when that same function
       // tries to show the menu. So post a task instead.
-      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                    std::move(callback));
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, std::move(wrapped_callback));
     } else {
       menu_->set_menu_open_callback(
           base::BindOnce(&MenuRunnerCocoaTest::RunMenuWrapperCallback,
-                         base::Unretained(this), std::move(callback)));
+                         base::Unretained(this), std::move(wrapped_callback)));
     }
 
     runner_->RunMenuAt(parent_, nullptr, gfx::Rect(),
@@ -162,11 +180,21 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
   // Runs then cancels a combobox menu and captures the frame of the anchoring
   // view.
   void RunMenuAt(const gfx::Rect& anchor) {
+    MenuCocoaWatcherMac::SetNotificationFilterForTesting(
+        MacNotificationFilter::IgnoreAllNotifications);
+
     last_anchor_frame_ = NSZeroRect;
 
-    base::OnceClosure callback =
-        base::BindOnce(&MenuRunnerCocoaTest::ComboboxRunMenuAtCallback,
-                       base::Unretained(this));
+    base::OnceClosure callback = base::BindOnce(
+        [](MenuRunnerCocoaTest* test) {
+          // Ignore app activation notifications while the test is running (all
+          // others are OK).
+          MenuCocoaWatcherMac::SetNotificationFilterForTesting(
+              MacNotificationFilter::IgnoreWorkspaceNotifications);
+          test->ComboboxRunMenuAtCallback();
+        },
+        base::Unretained(this));
+
     if (IsAsync()) {
       base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                     std::move(callback));
@@ -235,7 +263,7 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
 
     // Simulate clicking the item using its accelerator.
     NSEvent* accelerator = cocoa_test_event_utils::KeyEventWithKeyCode(
-        'e', 'e', NSKeyDown, NSCommandKeyMask);
+        'e', 'e', NSEventTypeKeyDown, NSEventModifierFlagCommand);
     [native_menu performKeyEquivalent:accelerator];
   }
 
@@ -247,8 +275,8 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
 
  protected:
   std::unique_ptr<TestModel> menu_;
-  internal::MenuRunnerImplInterface* runner_ = nullptr;
-  views::Widget* parent_ = nullptr;
+  raw_ptr<internal::MenuRunnerImplInterface> runner_ = nullptr;
+  raw_ptr<views::Widget> parent_ = nullptr;
   NSRect last_anchor_frame_ = NSZeroRect;
   NSUInteger native_view_subview_count_ = 0;
   int menu_close_count_ = 0;
@@ -305,8 +333,7 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
   base::RepeatingClosure quit_closure_;
 };
 
-// Crashes frequently, https://crbug.com/1073069
-TEST_P(MenuRunnerCocoaTest, DISABLED_RunMenuAndCancel) {
+TEST_P(MenuRunnerCocoaTest, RunMenuAndCancel) {
   base::TimeTicks min_time = ui::EventTimeForNow();
 
   RunMenu(base::BindOnce(&MenuRunnerCocoaTest::MenuCancelCallback,
@@ -331,8 +358,7 @@ TEST_P(MenuRunnerCocoaTest, DISABLED_RunMenuAndCancel) {
   EXPECT_EQ(1, menu_close_count_);
 }
 
-// Marking as disabled for crbug/1058157.
-TEST_P(MenuRunnerCocoaTest, DISABLED_RunMenuAndDelete) {
+TEST_P(MenuRunnerCocoaTest, RunMenuAndDelete) {
   RunMenu(base::BindOnce(&MenuRunnerCocoaTest::MenuDeleteCallback,
                          base::Unretained(this)));
   // Note the close callback is NOT invoked for deleted menus.
@@ -341,8 +367,7 @@ TEST_P(MenuRunnerCocoaTest, DISABLED_RunMenuAndDelete) {
 
 // Tests a potential lifetime issue using the Cocoa MenuController, which has a
 // weak reference to the model.
-// Disabled: crbug.com/1060063
-TEST_P(MenuRunnerCocoaTest, DISABLED_RunMenuAndDeleteThenSelectItem) {
+TEST_P(MenuRunnerCocoaTest, RunMenuAndDeleteThenSelectItem) {
   RunMenu(
       base::BindOnce(&MenuRunnerCocoaTest::ModelDeleteThenSelectItemCallback,
                      base::Unretained(this)));
@@ -351,8 +376,7 @@ TEST_P(MenuRunnerCocoaTest, DISABLED_RunMenuAndDeleteThenSelectItem) {
 
 // Ensure a menu can be safely released immediately after a call to Cancel() in
 // the same run loop iteration.
-// Disabled: crbug.com/1060063
-TEST_P(MenuRunnerCocoaTest, DISABLED_DestroyAfterCanceling) {
+TEST_P(MenuRunnerCocoaTest, DestroyAfterCanceling) {
   RunMenu(base::BindOnce(&MenuRunnerCocoaTest::MenuCancelAndDeleteCallback,
                          base::Unretained(this)));
 
@@ -365,8 +389,7 @@ TEST_P(MenuRunnerCocoaTest, DISABLED_DestroyAfterCanceling) {
   }
 }
 
-// Marking as disabled as test is flaky. crbug.com/1060063
-TEST_P(MenuRunnerCocoaTest, DISABLED_RunMenuTwice) {
+TEST_P(MenuRunnerCocoaTest, RunMenuTwice) {
   for (int i = 0; i < 2; ++i) {
     RunMenu(base::BindOnce(&MenuRunnerCocoaTest::MenuCancelCallback,
                            base::Unretained(this)));
@@ -384,13 +407,12 @@ TEST_P(MenuRunnerCocoaTest, CancelWithoutRunning) {
 
 TEST_P(MenuRunnerCocoaTest, DeleteWithoutRunning) {
   runner_->Release();
-  runner_ = NULL;
+  runner_ = nullptr;
   EXPECT_EQ(0, menu_close_count_);
 }
 
 // Tests anchoring of the menus used for toolkit-views Comboboxes.
-// Disabled: crbug.com/1060063
-TEST_P(MenuRunnerCocoaTest, DISABLED_ComboboxAnchoring) {
+TEST_P(MenuRunnerCocoaTest, ComboboxAnchoring) {
   // Combobox at 20,10 in the Widget.
   const gfx::Rect combobox_rect(20, 10, 80, 50);
 
@@ -432,9 +454,10 @@ TEST_P(MenuRunnerCocoaTest, DISABLED_ComboboxAnchoring) {
   // In RTL, Cocoa messes up the positioning unless the anchor rectangle is
   // offset to the right of the view. The offset for the checkmark is also
   // skipped, to give a better match to native behavior.
-  base::i18n::SetICUDefaultLocale("he");
+  base::i18n::SetRTLForTesting(true);
   RunMenuAt(anchor_rect);
   EXPECT_EQ(combobox_rect.right(), last_anchor_frame_.origin.x);
+  base::i18n::SetRTLForTesting(false);
 }
 
 INSTANTIATE_TEST_SUITE_P(,
@@ -442,5 +465,4 @@ INSTANTIATE_TEST_SUITE_P(,
                          ::testing::Values(MenuType::NATIVE, MenuType::VIEWS),
                          &MenuTypeToString);
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

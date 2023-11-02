@@ -1,0 +1,23 @@
+<!--
+@WAIT-FOR:done
+-->
+<head>
+<style>
+.c4 {}
+</style>
+</head>
+<body>
+<div id="container">
+  <h3 id="heading">Browser</h3>
+  <a id="anchor"></a>
+</div>
+<script>
+  function crash() {
+    document.getElementById('container').setAttribute('aria-hidden', 'true');
+    document.getElementById('heading').setAttribute('aria-hidden', 'false');
+    document.getElementById('anchor').setAttribute('class', 'c4');
+    heading['computedName']; // access to the property triggers name computation
+    document.title = 'done';
+  }
+  setTimeout(crash, 100);
+</script>

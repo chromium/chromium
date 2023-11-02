@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -79,31 +79,34 @@ TEST(JsonSchemaCompilerChoicesTest, ObjectWithChoicesParamsCreate) {
 
 TEST(JsonSchemaCompilerChoicesTest, ObjectWithChoicesParamsCreateFail) {
   {
-    auto object_param = std::make_unique<base::DictionaryValue>();
-    object_param->SetKey("strings", base::Value(5));
-    std::unique_ptr<base::ListValue> params_value(new base::ListValue());
-    params_value->Append(std::move(object_param));
+    base::Value::Dict object_param;
+    object_param.Set("strings", 5);
+    base::Value::List params_value;
+    params_value.Append(std::move(object_param));
     std::unique_ptr<choices::ObjectWithChoices::Params> params(
-        choices::ObjectWithChoices::Params::Create(params_value->GetList()));
+        choices::ObjectWithChoices::Params::Create(
+            base::Value(std::move(params_value)).GetList()));
     EXPECT_FALSE(params.get());
   }
   {
-    auto object_param = std::make_unique<base::DictionaryValue>();
-    object_param->SetKey("strings", base::Value("asdf"));
-    object_param->SetKey("integers", base::Value("asdf"));
-    std::unique_ptr<base::ListValue> params_value(new base::ListValue());
-    params_value->Append(std::move(object_param));
+    base::Value::Dict object_param;
+    object_param.Set("strings", "asdf");
+    object_param.Set("integers", "asdf");
+    base::Value::List params_value;
+    params_value.Append(std::move(object_param));
     std::unique_ptr<choices::ObjectWithChoices::Params> params(
-        choices::ObjectWithChoices::Params::Create(params_value->GetList()));
+        choices::ObjectWithChoices::Params::Create(
+            base::Value(std::move(params_value)).GetList()));
     EXPECT_FALSE(params.get());
   }
   {
-    auto object_param = std::make_unique<base::DictionaryValue>();
-    object_param->SetKey("integers", base::Value(6));
-    std::unique_ptr<base::ListValue> params_value(new base::ListValue());
-    params_value->Append(std::move(object_param));
+    base::Value::Dict object_param;
+    object_param.Set("integers", 6);
+    base::Value::List params_value;
+    params_value.Append(std::move(object_param));
     std::unique_ptr<choices::ObjectWithChoices::Params> params(
-        choices::ObjectWithChoices::Params::Create(params_value->GetList()));
+        choices::ObjectWithChoices::Params::Create(
+            base::Value(std::move(params_value)).GetList()));
     EXPECT_FALSE(params.get());
   }
 }
@@ -117,18 +120,19 @@ TEST(JsonSchemaCompilerChoicesTest, PopulateChoiceType) {
   for (const auto& string : strings)
     strings_value.Append(string);
 
-  base::DictionaryValue value;
-  value.SetInteger("integers", 4);
-  value.SetKey("strings", std::move(strings_value));
+  base::Value::Dict dict;
+  dict.Set("integers", 4);
+  dict.Set("strings", std::move(strings_value));
+  base::Value value(std::move(dict));
 
   choices::ChoiceType out;
   ASSERT_TRUE(choices::ChoiceType::Populate(value, &out));
-  ASSERT_TRUE(out.integers.as_integer.get());
-  EXPECT_FALSE(out.integers.as_integers.get());
+  ASSERT_TRUE(out.integers.as_integer);
+  EXPECT_FALSE(out.integers.as_integers);
   EXPECT_EQ(4, *out.integers.as_integer);
 
-  EXPECT_FALSE(out.strings->as_string.get());
-  ASSERT_TRUE(out.strings->as_strings.get());
+  EXPECT_FALSE(out.strings->as_string);
+  ASSERT_TRUE(out.strings->as_strings);
   EXPECT_EQ(strings, *out.strings->as_strings);
 }
 
@@ -138,40 +142,39 @@ TEST(JsonSchemaCompilerChoicesTest, ChoiceTypeToValue) {
   strings_value.Append("of");
   strings_value.Append("strings");
 
-  base::DictionaryValue value;
-  value.SetInteger("integers", 5);
-  value.SetKey("strings", std::move(strings_value));
+  base::Value::Dict dict;
+  dict.Set("integers", 5);
+  dict.Set("strings", std::move(strings_value));
+  base::Value value(std::move(dict));
 
   choices::ChoiceType out;
   ASSERT_TRUE(choices::ChoiceType::Populate(value, &out));
 
-  EXPECT_TRUE(value.Equals(out.ToValue().get()));
+  EXPECT_EQ(value, out.ToValue());
 }
 
 TEST(JsonSchemaCompilerChoicesTest, ReturnChoices) {
   {
     choices::ReturnChoices::Results::Result results;
-    results.as_integers = std::make_unique<std::vector<int>>(Vector(1, 2));
+    results.as_integers = Vector<int>(1, 2);
 
-    std::unique_ptr<base::Value> results_value = results.ToValue();
-    ASSERT_TRUE(results_value);
+    base::Value results_value(results.ToValue());
 
     base::Value expected(base::Value::Type::LIST);
     expected.Append(1);
     expected.Append(2);
 
-    EXPECT_TRUE(expected.Equals(results_value.get()));
+    EXPECT_EQ(expected, results_value);
   }
   {
     choices::ReturnChoices::Results::Result results;
-    results.as_integer = std::make_unique<int>(5);
+    results.as_integer = 5;
 
-    std::unique_ptr<base::Value> results_value = results.ToValue();
-    ASSERT_TRUE(results_value);
+    base::Value results_value(results.ToValue());
 
     base::Value expected(5);
 
-    EXPECT_TRUE(expected.Equals(results_value.get()));
+    EXPECT_EQ(expected, results_value);
   }
 }
 
@@ -189,7 +192,7 @@ TEST(JsonSchemaCompilerChoicesTest, NestedChoices) {
     EXPECT_FALSE(obj->as_choice2);
     EXPECT_EQ(42, *obj->as_integer);
 
-    EXPECT_EQ(value, *obj->ToValue());
+    EXPECT_EQ(value, obj->ToValue());
   }
 
   {
@@ -205,7 +208,7 @@ TEST(JsonSchemaCompilerChoicesTest, NestedChoices) {
     EXPECT_FALSE(obj->as_choice1->as_boolean);
     EXPECT_EQ("foo", *obj->as_choice1->as_string);
 
-    EXPECT_EQ(value, *obj->ToValue());
+    EXPECT_EQ(value, obj->ToValue());
   }
 
   {
@@ -221,7 +224,7 @@ TEST(JsonSchemaCompilerChoicesTest, NestedChoices) {
     ASSERT_TRUE(obj->as_choice1->as_boolean);
     EXPECT_TRUE(*obj->as_choice1->as_boolean);
 
-    EXPECT_EQ(value, *obj->ToValue());
+    EXPECT_EQ(value, obj->ToValue());
   }
 
   {
@@ -238,7 +241,7 @@ TEST(JsonSchemaCompilerChoicesTest, NestedChoices) {
     EXPECT_FALSE(obj->as_choice2->as_choice_types);
     EXPECT_EQ(42.0, *obj->as_choice2->as_double_);
 
-    EXPECT_EQ(value, *obj->ToValue());
+    EXPECT_EQ(value, obj->ToValue());
   }
 
   {
@@ -255,17 +258,17 @@ TEST(JsonSchemaCompilerChoicesTest, NestedChoices) {
     ASSERT_TRUE(obj->as_choice2->as_choice_type);
     EXPECT_FALSE(obj->as_choice2->as_choice_types);
     {
-      choices::ChoiceType* choice_type = obj->as_choice2->as_choice_type.get();
-      ASSERT_TRUE(choice_type->integers.as_integers);
-      EXPECT_FALSE(choice_type->integers.as_integer);
-      EXPECT_EQ(Vector(1, 2), *choice_type->integers.as_integers);
-      ASSERT_TRUE(choice_type->strings);
-      EXPECT_FALSE(choice_type->strings->as_strings);
-      ASSERT_TRUE(choice_type->strings->as_string);
-      EXPECT_EQ("foo", *choice_type->strings->as_string);
+      const choices::ChoiceType& choice_type = *obj->as_choice2->as_choice_type;
+      ASSERT_TRUE(choice_type.integers.as_integers);
+      EXPECT_FALSE(choice_type.integers.as_integer);
+      EXPECT_EQ(Vector(1, 2), *choice_type.integers.as_integers);
+      ASSERT_TRUE(choice_type.strings);
+      EXPECT_FALSE(choice_type.strings->as_strings);
+      ASSERT_TRUE(choice_type.strings->as_string);
+      EXPECT_EQ("foo", *choice_type.strings->as_string);
     }
 
-    EXPECT_EQ(value, *obj->ToValue());
+    EXPECT_EQ(value, obj->ToValue());
   }
 
   {
@@ -287,7 +290,7 @@ TEST(JsonSchemaCompilerChoicesTest, NestedChoices) {
     // Bleh too much effort to test everything.
     ASSERT_EQ(2u, obj->as_choice2->as_choice_types->size());
 
-    EXPECT_EQ(value, *obj->ToValue());
+    EXPECT_EQ(value, obj->ToValue());
   }
 }
 

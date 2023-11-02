@@ -26,7 +26,6 @@
 <translation id="225614027745146050">Вітаємо!</translation>
 <translation id="2320166752086256636">Сховати клавіатуру</translation>
 <translation id="2329392777730037872">Не вдалося відкрити сторінку <ph name="URL" /> на пристрої клієнта.</translation>
-<translation id="2333212046079545895">© Google LLC 2021. Усі права захищено.</translation>
 <translation id="2359808026110333948">Продовжити</translation>
 <translation id="2366718077645204424">Не вдається зв’язатися з хостом. Можливо, це пов’язано з конфігурацією мережі, яку ви використовуєте.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> Востаннє онлайн: <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -37,6 +36,7 @@
 <translation id="2599300881200251572">Ця служба дозволяє встановлювати вхідні з’єднання з клієнтів Віддаленого керування Chrome.</translation>
 <translation id="2647232381348739934">Служба Віддалений доступ ОС Chrome</translation>
 <translation id="2676780859508944670">Виконується…</translation>
+<translation id="2692522824157224199">© Google LLC 2022. Усі права захищено.</translation>
 <translation id="2699970397166997657">Віддалений доступ ОС Chrome</translation>
 <translation id="2758123043070977469">Не вдалось автентифікуватись. Увійдіть ще раз.</translation>
 <translation id="2803375539583399270">Введіть PIN-код</translation>
@@ -73,10 +73,10 @@
 <translation id="4257751272692708833">Додаток <ph name="PRODUCT_NAME" /> для переадресації URL-адрес</translation>
 <translation id="4277736576214464567">Недійсний код доступу. Повторіть спробу.</translation>
 <translation id="4281844954008187215">Умови використання</translation>
+<translation id="4372650392690220936">© The Chromium Authors 2022. Усі права захищено.</translation>
 <translation id="4405930547258349619">Коренева бібліотека</translation>
 <translation id="443560535555262820">Відкрити параметри спеціальних можливостей</translation>
 <translation id="4450893287417543264">Більше не показувати</translation>
-<translation id="4512952200932940229">© The Chromium Authors 2021. Усі права захищено.</translation>
 <translation id="4513946894732546136">Відгуки</translation>
 <translation id="4563926062592110512">Від’єднано клієнт <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> налаштовано неправильно. Виберіть інший веб-переглядач за умовчанням, а тоді знову ввімкніть переадресацію URL-адрес.</translation>

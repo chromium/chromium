@@ -1,10 +1,10 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 from telemetry import story
 from page_sets.desktop_ui import \
-    download_shelf_story, new_tab_page_story, omnibox_story, \
+    new_tab_page_story, omnibox_story, \
     side_search_story, tab_search_story, webui_tab_strip_story
 from page_sets.desktop_ui.ui_devtools_utils import IsMac
 
@@ -27,20 +27,6 @@ class DesktopUIStorySet(story.StorySet):
       tab_search_story.TabSearchStoryMeasureMemoryMultiwindow,
       tab_search_story.TabSearchStoryMeasureMemory2TabSearch,
       tab_search_story.TabSearchStoryMeasureMemory3TabSearch,
-  ]
-
-  DOWNLOAD_SHELF_STORIES = [
-      download_shelf_story.DownloadShelfStory1File,
-      download_shelf_story.DownloadShelfStory5File,
-      download_shelf_story.DownloadShelfStoryMeasureMemory,
-      download_shelf_story.DownloadShelfStoryTop10Loading,
-  ]
-
-  DOWNLOAD_SHELF_WEBUI_STORIES = [
-      download_shelf_story.DownloadShelfWebUIStory1File,
-      download_shelf_story.DownloadShelfWebUIStory5File,
-      download_shelf_story.DownloadShelfWebUIStoryMeasureMemory,
-      download_shelf_story.DownloadShelfWebUIStoryTop10Loading,
   ]
 
   WEBUI_TAB_STRIP_STORIES = [
@@ -74,15 +60,7 @@ class DesktopUIStorySet(story.StorySet):
       self.AddStory(
           cls(self, [
               '--top-chrome-touch-ui=disabled',
-          ]))
-
-    for cls in self.DOWNLOAD_SHELF_STORIES:
-      self.AddStory(cls(self))
-
-    for cls in self.DOWNLOAD_SHELF_WEBUI_STORIES:
-      self.AddStory(
-          cls(self, [
-              '--enable-features=WebUIDownloadShelf',
+              '--enable-features=TabSearchUseMetricsReporter',
           ]))
 
     # WebUI Tab Strip is not available on Mac.
@@ -101,7 +79,11 @@ class DesktopUIStorySet(story.StorySet):
       self.AddStory(
           cls(self, [
               '--enable-features=NtpModules,\
-              NtpRecipeTasksModule:NtpRecipeTasksModuleDataParam/fake'
+              NtpRecipeTasksModule:NtpRecipeTasksModuleDataParam/fake,\
+              NtpChromeCartModule:NtpChromeCartModuleDataParam/fake,\
+              NtpDriveModule:NtpDriveModuleDataParam/fake,\
+              NtpPhotosModule:NtpPhotosModuleDataParam/1',
+              '--signed-out-ntp-modules',
           ]))
 
     for cls in self.SIDE_SEARCH_STORIES:

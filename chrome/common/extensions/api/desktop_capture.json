@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,18 @@
         "type": "string",
         "enum": ["screen", "window", "tab", "audio"],
         "description": "Enum used to define set of desktop media sources used in chooseDesktopMedia()."
+      },
+      {
+        "id": "SystemAudioPreferenceEnum",
+        "type": "string",
+        "enum": ["include", "exclude"],
+        "description": "Mirrors <a href=\"https://w3c.github.io/mediacapture-screen-share/#dom-systemaudiopreferenceenum\">SystemAudioPreferenceEnum</a>."
+      },
+      {
+        "id": "SelfCapturePreferenceEnum",
+        "type": "string",
+        "enum": ["include", "exclude"],
+        "description": "Mirrors <a href=\"https://w3c.github.io/mediacapture-screen-share/#dom-selfcapturepreferenceenum\">SelfCapturePreferenceEnum</a>."
       }
     ],
     "functions": [
@@ -33,6 +45,30 @@
             "description": "Optional tab for which the stream is created. If not specified then the resulting stream can be used only by the calling extension. The stream can only be used by frames in the given tab whose security origin matches <code>tab.url</code>. The tab's origin must be a secure origin, e.g. HTTPS."
           },
           {
+            "type": "object",
+            "name": "options",
+            "optional": true,
+            "nodoc": true,
+            "properties": {
+              "systemAudio": {
+                "$ref": "SystemAudioPreferenceEnum",
+                "optional": true,
+                "description": "Mirrors <a href=\"https://w3c.github.io/mediacapture-screen-share/#dom-displaymediastreamconstraints-systemaudio\">systemAudio</a>."
+              },
+              "selfBrowserSurface": {
+                "$ref": "SelfCapturePreferenceEnum",
+                "optional": true,
+                "description": "Mirrors <a href=\"https://w3c.github.io/mediacapture-screen-share/#dom-displaymediastreamconstraints-selfbrowsersurface\">selfBrowserSurface</a>."
+              },
+              "suppressLocalAudioPlaybackIntended": {
+                "type": "boolean",
+                "optional": true,
+                "description": "Indicates that the caller intends to perform local audio suppression, and that the media picker shown to the user should therefore reflect that with the appropriate warnings, as it does when getDisplayMedia() is invoked."
+              }
+            },
+            "description": "Mirrors members of <a href=\"https://w3c.github.io/mediacapture-screen-share/#dom-displaymediastreamconstraints\">DisplayMediaStreamConstraints</a> which need to be applied before the user makes their selection, and must therefore be provided to chooseDesktopMedia() rather than be deferred to getUserMedia()."
+          },
+          {
             "type": "function",
             "name": "callback",
             "parameters": [
@@ -49,7 +85,7 @@
                    "canRequestAudioTrack": {
                      "type": "boolean",
                      "description": "True if \"audio\" is included in parameter sources, and the end user does not uncheck the \"Share audio\" checkbox. Otherwise false, and in this case, one should not ask for audio stream through getUserMedia call."
-                   } 
+                   }
                 }
               }
             ]

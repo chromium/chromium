@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -29,8 +29,14 @@ blink_core_sources_page = [
   "focus_changed_observer.h",
   "focus_controller.cc",
   "focus_controller.h",
+  "focusgroup_controller_utils.cc",
+  "focusgroup_controller_utils.h",
+  "focusgroup_controller.cc",
+  "focusgroup_controller.h",
   "frame_tree.cc",
   "frame_tree.h",
+  "grid_focusgroup_structure_info.cc",
+  "grid_focusgroup_structure_info.h",
   "link_highlight.cc",
   "link_highlight.h",
   "named_pages_mapper.cc",
@@ -48,8 +54,6 @@ blink_core_sources_page = [
   "page_popup_controller.h",
   "page_visibility_observer.cc",
   "page_visibility_observer.h",
-  "page_widget_delegate.cc",
-  "page_widget_delegate.h",
   "plugin_data.cc",
   "plugin_data.h",
   "plugin_script_forbidden_scope.cc",
@@ -79,7 +83,6 @@ blink_core_sources_page = [
   "scrolling/scroll_state_callback.h",
   "scrolling/scrolling_coordinator.cc",
   "scrolling/scrolling_coordinator.h",
-  "scrolling/scrolling_coordinator_context.h",
   "scrolling/snap_coordinator.cc",
   "scrolling/snap_coordinator.h",
   "scrolling/sticky_position_scrolling_constraints.cc",
@@ -103,4 +106,33 @@ blink_core_sources_page = [
   "validation_message_overlay_delegate.h",
   "viewport_description.cc",
   "viewport_description.h",
+]
+
+blink_core_tests_page = [
+  "autoscroll_controller_test.cc",
+  "chrome_client_impl_test.cc",
+  "chrome_client_test.cc",
+  "context_menu_controller_test.cc",
+  "drag_controller_test.cc",
+  "drag_image_test.cc",
+  "focus_controller_test.cc",
+  "focusgroup_controller_test.cc",
+  "named_pages_mapper_test.cc",
+  "page_popup_client_test.cc",
+  "plugin_data_test.cc",
+  "print_context_test.cc",
+  "scrolling/element_fragment_anchor_test.cc",
+  "scrolling/main_thread_scrolling_reasons_test.cc",
+  "scrolling/root_scroller_test.cc",
+  "scrolling/scroll_into_view_test.cc",
+  "scrolling/scroll_metrics_test.cc",
+  "scrolling/scroll_state_test.cc",
+  "scrolling/scrolling_test.cc",
+  "scrolling/snap_coordinator_test.cc",
+  "slot_scoped_traversal_test.cc",
+  "spatial_navigation_test.cc",
+  "touch_adjustment_test.cc",
+  "validation_message_overlay_delegate_test.cc",
+  "viewport_test.cc",
+  "window_features_test.cc",
 ]

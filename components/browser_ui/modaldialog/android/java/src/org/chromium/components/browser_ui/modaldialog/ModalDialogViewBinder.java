@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.components.browser_ui.modaldialog;
 
 import android.text.TextUtils;
+import android.view.View;
 
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -22,16 +23,24 @@ public class ModalDialogViewBinder
     public void bind(PropertyModel model, ModalDialogView view, PropertyKey propertyKey) {
         if (ModalDialogProperties.TITLE == propertyKey) {
             view.setTitle(model.get(ModalDialogProperties.TITLE));
+        } else if (ModalDialogProperties.TITLE_MAX_LINES == propertyKey) {
+            view.setTitleMaxLines(model.get(ModalDialogProperties.TITLE_MAX_LINES));
         } else if (ModalDialogProperties.TITLE_ICON == propertyKey) {
             view.setTitleIcon(model.get(ModalDialogProperties.TITLE_ICON));
-        } else if (ModalDialogProperties.MESSAGE == propertyKey) {
-            view.setMessage(model.get(ModalDialogProperties.MESSAGE));
+        } else if (ModalDialogProperties.MESSAGE_PARAGRAPH_1 == propertyKey) {
+            view.setMessageParagraph1(model.get(ModalDialogProperties.MESSAGE_PARAGRAPH_1));
+        } else if (ModalDialogProperties.MESSAGE_PARAGRAPH_2 == propertyKey) {
+            view.setMessageParagraph2(model.get(ModalDialogProperties.MESSAGE_PARAGRAPH_2));
         } else if (ModalDialogProperties.CUSTOM_VIEW == propertyKey) {
             view.setCustomView(model.get(ModalDialogProperties.CUSTOM_VIEW));
+        } else if (ModalDialogProperties.CUSTOM_BUTTON_BAR_VIEW == propertyKey) {
+            view.setCustomButtonBar(model.get(ModalDialogProperties.CUSTOM_BUTTON_BAR_VIEW));
         } else if (ModalDialogProperties.POSITIVE_BUTTON_TEXT == propertyKey) {
             assert checkFilterTouchConsistency(model);
             view.setButtonText(ModalDialogProperties.ButtonType.POSITIVE,
                     model.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
+        } else if (ModalDialogProperties.POSITIVE_BUTTON_ICON == propertyKey) {
+            view.setPositiveButtonIcon(model.get(ModalDialogProperties.POSITIVE_BUTTON_ICON));
         } else if (ModalDialogProperties.POSITIVE_BUTTON_CONTENT_DESCRIPTION == propertyKey) {
             view.setButtonContentDescription(ModalDialogProperties.ButtonType.POSITIVE,
                     model.get(ModalDialogProperties.POSITIVE_BUTTON_CONTENT_DESCRIPTION));
@@ -49,6 +58,8 @@ public class ModalDialogViewBinder
         } else if (ModalDialogProperties.NEGATIVE_BUTTON_DISABLED == propertyKey) {
             view.setButtonEnabled(ModalDialogProperties.ButtonType.NEGATIVE,
                     !model.get(ModalDialogProperties.NEGATIVE_BUTTON_DISABLED));
+        } else if (ModalDialogProperties.FOOTER_MESSAGE == propertyKey) {
+            view.setFooterMessage(model.get(ModalDialogProperties.FOOTER_MESSAGE));
         } else if (ModalDialogProperties.TITLE_SCROLLABLE == propertyKey) {
             view.setTitleScrollable(model.get(ModalDialogProperties.TITLE_SCROLLABLE));
         } else if (ModalDialogProperties.CONTROLLER == propertyKey) {
@@ -68,9 +79,20 @@ public class ModalDialogViewBinder
             // Intentionally left empty since this is a property used for the dialog container.
         } else if (ModalDialogProperties.BUTTON_STYLES == propertyKey) {
             assert checkFilledButtonConsistency(model);
+            assert checkCustomButtonsConsistency(model);
             // Intentionally left empty since this is only read once before the dialog is inflated.
-        } else if (ModalDialogProperties.FULLSCREEN_DIALOG == propertyKey) {
-            view.setIgnoreWidthConstraints(true);
+        } else if (ModalDialogProperties.FULLSCREEN_DIALOG == propertyKey
+                || ModalDialogProperties.DIALOG_WHEN_LARGE == propertyKey
+                || ModalDialogProperties.EXCEED_MAX_HEIGHT == propertyKey) {
+            boolean ignoreWidthConstraints = model.get(ModalDialogProperties.FULLSCREEN_DIALOG)
+                    || model.get(ModalDialogProperties.DIALOG_WHEN_LARGE);
+            boolean ignoreHeightConstraint = model.get(ModalDialogProperties.EXCEED_MAX_HEIGHT);
+            view.setIgnoreConstraints(ignoreWidthConstraints, ignoreHeightConstraint);
+            assert !(model.get(ModalDialogProperties.FULLSCREEN_DIALOG)
+                    && model.get(ModalDialogProperties.DIALOG_WHEN_LARGE))
+                : "Both FULLSCREEN_DIALOG and DIALOG_WHEN_LARGE cannot be set to true.";
+        } else if (ModalDialogProperties.FOCUS_DIALOG == propertyKey) {
+            // Intentionally left empty since this is a property for the dialog container.
         } else {
             assert false : "Unhandled property detected in ModalDialogViewBinder!";
         }
@@ -105,5 +127,15 @@ public class ModalDialogViewBinder
         }
 
         return true;
+    }
+
+    /**
+     * Checks that BUTTON_STYLES isn't present together with CUSTOM_BUTTON_BAR_VIEW because the
+     * custom button bar overrides the default positive and negative buttons..
+     */
+    private static boolean checkCustomButtonsConsistency(PropertyModel model) {
+        int styles = model.get(ModalDialogProperties.BUTTON_STYLES);
+        View customButtons = model.get(ModalDialogProperties.CUSTOM_BUTTON_BAR_VIEW);
+        return styles == 0 || customButtons == null;
     }
 }

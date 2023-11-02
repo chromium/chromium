@@ -36,7 +36,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  # These classes subclass RenderView and RenderWidget to inject behaviour
+  # These classes subclass `blink::WebView` and RenderWidget to inject behaviour
   # for web tests.
   "web_(frame|view|widget)_test_proxy\.h": [
     "+content/renderer",

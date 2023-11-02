@@ -1,11 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/performance_manager/freezing/freezing_vote_aggregator.h"
 
-#include <algorithm>
-
+#include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "components/performance_manager/public/freezing/freezing.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
@@ -181,8 +181,7 @@ FreezingVoteAggregator::FreezingVoteData::FindVote(FreezingVoterId voter_id) {
   // a normal one for kCannotFreeze votes.
 
   auto it =
-      std::find_if(votes_.begin(), votes_.end(),
-                   [voter_id](const auto& e) { return e.first == voter_id; });
+      base::ranges::find(votes_, voter_id, &VotesDeque::value_type::first);
   DCHECK(it != votes_.end());
   return it;
 }
@@ -190,9 +189,7 @@ FreezingVoteAggregator::FreezingVoteData::FindVote(FreezingVoterId voter_id) {
 void FreezingVoteAggregator::FreezingVoteData::AddVoteToDeque(
     FreezingVoterId voter_id,
     const FreezingVote& vote) {
-  DCHECK(std::find_if(votes_.begin(), votes_.end(), [voter_id](const auto& e) {
-           return e.first == voter_id;
-         }) == votes_.end());
+  DCHECK(!base::Contains(votes_, voter_id, &VotesDeque::value_type::first));
   if (vote.value() == FreezingVoteValue::kCannotFreeze) {
     votes_.emplace_front(voter_id, vote);
   } else {

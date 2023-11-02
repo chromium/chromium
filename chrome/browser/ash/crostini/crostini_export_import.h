@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,10 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/crostini/crostini_export_import_notification_controller.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
 
 class Profile;
 
@@ -77,12 +80,12 @@ class CrostiniExportImport : public KeyedService,
 
   struct OperationData {
     OperationData(ExportImportType type,
-                  ContainerId id,
+                  guest_os::GuestId id,
                   OnceTrackerFactory factory);
     ~OperationData();
 
     ExportImportType type;
-    ContainerId container_id;
+    guest_os::GuestId container_id;
     OnceTrackerFactory tracker_factory;
   };
 
@@ -104,44 +107,46 @@ class CrostiniExportImport : public KeyedService,
   // KeyedService:
   void Shutdown() override;
 
-  // Export the crostini container showing FileDialog.
-  void ExportContainer(content::WebContents* web_contents);
-  // Import the crostini container showing FileDialog.
-  void ImportContainer(content::WebContents* web_contents);
+  // Export the |container_id| showing FileDialog.
+  void ExportContainer(guest_os::GuestId container_id,
+                       content::WebContents* web_contents);
+  // Import the |container_id| showing FileDialog.
+  void ImportContainer(guest_os::GuestId container_id,
+                       content::WebContents* web_contents);
 
   // Export |container_id| to |path| and invoke |callback| when complete.
-  void ExportContainer(ContainerId container_id,
+  void ExportContainer(guest_os::GuestId container_id,
                        base::FilePath path,
                        CrostiniManager::CrostiniResultCallback callback);
   // Import |container_id| from |path| and invoke |callback| when complete.
-  void ImportContainer(ContainerId container_id,
+  void ImportContainer(guest_os::GuestId container_id,
                        base::FilePath path,
                        CrostiniManager::CrostiniResultCallback callback);
 
   // Export |container_id| showing FileDialog, and using |tracker_factory| for
   // status tracking.
-  void ExportContainer(ContainerId container_id,
+  void ExportContainer(guest_os::GuestId container_id,
                        content::WebContents* web_contents,
                        OnceTrackerFactory tracker_factory);
   // Import |container_id| showing FileDialog, and using |tracker_factory| for
   // status tracking.
-  void ImportContainer(ContainerId container_id,
+  void ImportContainer(guest_os::GuestId container_id,
                        content::WebContents* web_contents,
                        OnceTrackerFactory tracker_factory);
 
   // Export |container| to |path| and invoke |tracker_factory| to create a
   // tracker for this operation.
-  void ExportContainer(ContainerId container_id,
+  void ExportContainer(guest_os::GuestId container_id,
                        base::FilePath path,
                        OnceTrackerFactory tracker_factory);
   // Import |container| from |path| and invoke |tracker_factory| to create a
   // tracker for this operation.
-  void ImportContainer(ContainerId container_id,
+  void ImportContainer(guest_os::GuestId container_id,
                        base::FilePath path,
                        OnceTrackerFactory tracker_factory);
 
   // Cancel currently running export/import.
-  void CancelOperation(ExportImportType type, ContainerId id);
+  void CancelOperation(ExportImportType type, guest_os::GuestId id);
 
   // Whether an export or import is currently in progress.
   bool GetExportImportOperationStatus() const;
@@ -150,17 +155,21 @@ class CrostiniExportImport : public KeyedService,
   base::FilePath GetDefaultBackupPath() const;
 
   base::WeakPtr<CrostiniExportImportNotificationController>
-  GetNotificationControllerForTesting(ContainerId container_id);
+  GetNotificationControllerForTesting(guest_os::GuestId container_id);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest,
                            TestDeprecatedExportSuccess);
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest, TestExportSuccess);
+  FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest,
+                           TestExportCustomVmContainerSuccess);
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest, TestExportFail);
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest, TestExportCancelled);
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest,
                            TestExportDoneBeforeCancelled);
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest, TestImportSuccess);
+  FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest,
+                           TestImportCustomVmContainerSuccess);
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest, TestImportFail);
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest, TestImportCancelled);
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest,
@@ -170,9 +179,9 @@ class CrostiniExportImport : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest, TestImportFailSpace);
 
   OperationData* NewOperationData(ExportImportType type,
-                                  ContainerId id,
+                                  guest_os::GuestId id,
                                   OnceTrackerFactory cb);
-  OperationData* NewOperationData(ExportImportType type, ContainerId id);
+  OperationData* NewOperationData(ExportImportType type, guest_os::GuestId id);
   OperationData* NewOperationData(ExportImportType type);
 
   // ui::SelectFileDialog::Listener implementation.
@@ -185,19 +194,25 @@ class CrostiniExportImport : public KeyedService,
              base::FilePath path,
              CrostiniManager::CrostiniResultCallback callback);
 
-  // DEPRECATED crostini::ExportContainerProgressObserver implementation.
-  // TODO(juwa): delete this once the new version of tremplin has shipped.
-  void OnExportContainerProgress(const ContainerId& container_id,
-                                 crostini::ExportContainerProgressStatus status,
-                                 int progress_percent,
-                                 uint64_t progress_speed) override;
+  // Restart VM with LXD if required and share the file path with VM.
+  void EnsureLxdStartedThenSharePath(
+      const guest_os::GuestId& container_id,
+      const base::FilePath& path,
+      bool persist,
+      guest_os::GuestOsSharePath::SharePathCallback callback);
+
+  // Share the file path with VM after VM has been restarted.
+  void SharePath(const std::string& vm_name,
+                 const base::FilePath& path,
+                 guest_os::GuestOsSharePath::SharePathCallback callback,
+                 crostini::CrostiniResult result);
 
   // crostini::ExportContainerProgressObserver implementation.
-  void OnExportContainerProgress(const ContainerId& container_id,
+  void OnExportContainerProgress(const guest_os::GuestId& container_id,
                                  const StreamingExportStatus& status) override;
 
   // crostini::ImportContainerProgressObserver implementation.
-  void OnImportContainerProgress(const ContainerId& container_id,
+  void OnImportContainerProgress(const guest_os::GuestId& container_id,
                                  crostini::ImportContainerProgressStatus status,
                                  int progress_percent,
                                  uint64_t progress_speed,
@@ -206,27 +221,27 @@ class CrostiniExportImport : public KeyedService,
                                  uint64_t available_space,
                                  uint64_t minimum_required_space) override;
 
-  void ExportAfterSharing(const ContainerId& container_id,
+  void ExportAfterSharing(const guest_os::GuestId& container_id,
                           const base::FilePath& path,
                           CrostiniManager::CrostiniResultCallback callback,
                           const base::FilePath& container_path,
                           bool result,
                           const std::string& failure_reason);
   void OnExportComplete(const base::Time& start,
-                        const ContainerId& container_id,
+                        const guest_os::GuestId& container_id,
                         CrostiniManager::CrostiniResultCallback callback,
                         CrostiniResult result,
                         uint64_t container_size,
                         uint64_t compressed_size);
 
-  void ImportAfterSharing(const ContainerId& container_id,
+  void ImportAfterSharing(const guest_os::GuestId& container_id,
                           const base::FilePath& path,
                           CrostiniManager::CrostiniResultCallback callback,
                           const base::FilePath& container_path,
                           bool result,
                           const std::string& failure_reason);
   void OnImportComplete(const base::Time& start,
-                        const ContainerId& container_id,
+                        const guest_os::GuestId& container_id,
                         CrostiniManager::CrostiniResultCallback callback,
                         CrostiniResult result);
 
@@ -236,7 +251,8 @@ class CrostiniExportImport : public KeyedService,
   std::string GetUniqueNotificationId();
 
   using TrackerMap =
-      std::map<ContainerId, std::unique_ptr<CrostiniExportImportStatusTracker>>;
+      std::map<guest_os::GuestId,
+               std::unique_ptr<CrostiniExportImportStatusTracker>>;
 
   std::unique_ptr<CrostiniExportImportStatusTracker> RemoveTracker(
       TrackerMap::iterator it);

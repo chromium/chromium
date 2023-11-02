@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,8 @@
 #include "base/notreached.h"
 #include "cc/input/snap_selection_strategy.h"
 #include "ui/gfx/geometry/vector2d_f.h"
+
+#include "base/record_replay.h"
 
 namespace cc {
 namespace {
@@ -58,7 +60,7 @@ void SetOrUpdateResult(const SnapSearchResult& candidate,
 }
 
 const absl::optional<SnapSearchResult>& ClosestSearchResult(
-    const gfx::Vector2dF reference_point,
+    const gfx::PointF reference_point,
     SearchAxis axis,
     const absl::optional<SnapSearchResult>& a,
     const absl::optional<SnapSearchResult>& b) {
@@ -108,22 +110,22 @@ void SnapSearchResult::Union(const SnapSearchResult& other) {
 }
 
 SnapContainerData::SnapContainerData()
-    : proximity_range_(gfx::Vector2dF(std::numeric_limits<float>::max(),
-                                      std::numeric_limits<float>::max())) {}
+    : proximity_range_(gfx::PointF(std::numeric_limits<float>::max(),
+                                   std::numeric_limits<float>::max())) {}
 
 SnapContainerData::SnapContainerData(ScrollSnapType type)
     : scroll_snap_type_(type),
-      proximity_range_(gfx::Vector2dF(std::numeric_limits<float>::max(),
-                                      std::numeric_limits<float>::max())) {}
+      proximity_range_(gfx::PointF(std::numeric_limits<float>::max(),
+                                   std::numeric_limits<float>::max())) {}
 
 SnapContainerData::SnapContainerData(ScrollSnapType type,
                                      const gfx::RectF& rect,
-                                     const gfx::Vector2dF& max)
+                                     const gfx::PointF& max)
     : scroll_snap_type_(type),
       rect_(rect),
       max_position_(max),
-      proximity_range_(gfx::Vector2dF(std::numeric_limits<float>::max(),
-                                      std::numeric_limits<float>::max())) {}
+      proximity_range_(gfx::PointF(std::numeric_limits<float>::max(),
+                                   std::numeric_limits<float>::max())) {}
 
 SnapContainerData::SnapContainerData(const SnapContainerData& other) = default;
 
@@ -143,14 +145,14 @@ void SnapContainerData::AddSnapAreaData(SnapAreaData snap_area_data) {
 
 bool SnapContainerData::FindSnapPosition(
     const SnapSelectionStrategy& strategy,
-    gfx::Vector2dF* snap_position,
+    gfx::PointF* snap_position,
     TargetSnapAreaElementIds* target_element_ids,
     const ElementId& active_element_id) const {
   *target_element_ids = TargetSnapAreaElementIds();
   if (scroll_snap_type_.is_none)
     return false;
 
-  gfx::Vector2dF base_position = strategy.base_position();
+  gfx::PointF base_position = strategy.base_position();
   SnapAxis axis = scroll_snap_type_.axis;
   bool should_snap_on_x = strategy.ShouldSnapOnX() &&
                           (axis == SnapAxis::kX || axis == SnapAxis::kBoth);
@@ -234,6 +236,7 @@ bool SnapContainerData::FindSnapPosition(
   }
 
   *snap_position = strategy.current_position();
+
   if (selected_x.has_value()) {
     snap_position->set_x(selected_x.value().snap_offset());
     target_element_ids->x = selected_x.value().element_id();
@@ -262,7 +265,7 @@ bool SnapContainerData::FindSnapPosition(
 // of the corridors.
 bool SnapContainerData::FindSnapPositionForMutualSnap(
     const SnapSelectionStrategy& strategy,
-    gfx::Vector2dF* snap_position) const {
+    gfx::PointF* snap_position) const {
   DCHECK(strategy.ShouldSnapOnX() && strategy.ShouldSnapOnY());
   bool found = false;
   gfx::Vector2dF smallest_distance(std::numeric_limits<float>::max(),

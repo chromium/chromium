@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -52,6 +51,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/crx_file/crx_verifier.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/sync/model/string_ordinal.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/navigation_controller.h"
@@ -127,8 +127,8 @@ void ExtensionProtocolTestResourcesHandler(const base::FilePath& test_dir_root,
   }
 
   // Strip the '_test_resources/' prefix from |relative_path|.
-  std::vector<base::FilePath::StringType> components;
-  relative_path->GetComponents(&components);
+  std::vector<base::FilePath::StringType> components =
+      relative_path->GetComponents();
   DCHECK_GT(components.size(), 1u);
   base::FilePath new_relative_path;
   for (size_t i = 1u; i < components.size(); ++i)
@@ -207,7 +207,7 @@ bool ModifyManifestForManifestVersion3(base::DictionaryValue& manifest_dict) {
     return false;
   }
 
-  manifest_dict.SetInteger(manifest_keys::kManifestVersion, 3);
+  manifest_dict.SetIntPath(manifest_keys::kManifestVersion, 3);
   return true;
 }
 
@@ -251,7 +251,7 @@ bool ModifyExtensionForServiceWorker(const base::FilePath& extension_root,
   }
 
   // Number of JS scripts must be >= 1.
-  base::Value::ConstListView scripts_list = background_scripts_list->GetList();
+  const base::Value::List& scripts_list = background_scripts_list->GetList();
   if (scripts_list.size() < 1) {
     ADD_FAILURE() << extension_root.value()
                   << ": Only event pages with JS script(s) can be loaded "
@@ -307,7 +307,7 @@ ExtensionBrowserTest::ExtensionBrowserTest(ContextType context_type)
       override_prompt_for_external_extensions_(
           FeatureSwitch::prompt_for_external_extensions(),
           false),
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       user_desktop_override_(base::DIR_USER_DESKTOP),
       common_desktop_override_(base::DIR_COMMON_DESKTOP),
       user_quick_launch_override_(base::DIR_USER_QUICK_LAUNCH),
@@ -327,7 +327,7 @@ Profile* ExtensionBrowserTest::profile() {
     if (browser())
       profile_ = browser()->profile();
     else
-      profile_ = ProfileManager::GetActiveUserProfile();
+      profile_ = ProfileManager::GetLastUsedProfile();
   }
   return profile_;
 }
@@ -361,7 +361,7 @@ const Extension* ExtensionBrowserTest::GetExtensionByPath(
       return extension.get();
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 void ExtensionBrowserTest::SetUp() {
@@ -392,9 +392,9 @@ void ExtensionBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
     // This makes sure that we create the Default profile first, with no
     // ExtensionService and then the real profile with one, as we do when
     // running on chromeos.
-    command_line->AppendSwitchASCII(chromeos::switches::kLoginUser,
+    command_line->AppendSwitchASCII(ash::switches::kLoginUser,
                                     "testuser@gmail.com");
-    command_line->AppendSwitchASCII(chromeos::switches::kLoginProfile, "user");
+    command_line->AppendSwitchASCII(ash::switches::kLoginProfile, "user");
   }
 #endif
 }
@@ -479,7 +479,7 @@ const Extension* ExtensionBrowserTest::LoadExtensionAsComponentWithManifest(
   base::ScopedAllowBlockingForTesting allow_blocking;
   std::string manifest;
   if (!base::ReadFileToString(path.Append(manifest_relative_path), &manifest)) {
-    return NULL;
+    return nullptr;
   }
 
   extension_service()->component_loader()->set_ignore_allowlist_for_testing(
@@ -489,7 +489,7 @@ const Extension* ExtensionBrowserTest::LoadExtensionAsComponentWithManifest(
   const Extension* extension =
       extension_registry()->enabled_extensions().GetByID(extension_id);
   if (!extension)
-    return NULL;
+    return nullptr;
   observer_->set_last_loaded_extension_id(extension->id());
   return extension;
 }
@@ -506,13 +506,13 @@ const Extension* ExtensionBrowserTest::LoadAndLaunchApp(
   content::WindowedNotificationObserver app_loaded_observer(
       content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
       content::NotificationService::AllSources());
-  apps::AppLaunchParams params(app->id(), LaunchContainer::kLaunchContainerNone,
-                               WindowOpenDisposition::NEW_WINDOW,
-                               apps::mojom::LaunchSource::kFromTest);
+  apps::AppLaunchParams params(
+      app->id(), apps::LaunchContainer::kLaunchContainerNone,
+      WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest);
   params.command_line = *base::CommandLine::ForCurrentProcess();
   apps::AppServiceProxyFactory::GetForProfile(profile())
       ->BrowserAppLauncher()
-      ->LaunchAppWithParams(std::move(params));
+      ->LaunchAppWithParamsForTesting(std::move(params));
   app_loaded_observer.Wait();
 
   return app;
@@ -673,7 +673,7 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
       crx_path = PackExtension(path, run_flags);
     }
     if (crx_path.empty())
-      return NULL;
+      return nullptr;
 
     std::unique_ptr<ExtensionInstallPrompt> install_ui;
     if (prompt_auto_confirm) {
@@ -717,11 +717,11 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
     for (auto iter = errors->begin(); iter != errors->end(); ++iter)
       VLOG(1) << *iter;
 
-    return NULL;
+    return nullptr;
   }
 
   if (!observer_->WaitForExtensionViewsToLoad())
-    return NULL;
+    return nullptr;
   return registry->GetExtensionById(last_loaded_extension_id(),
                                     ExtensionRegistry::ENABLED);
 }
@@ -787,25 +787,26 @@ void ExtensionBrowserTest::OpenWindow(content::WebContents* contents,
   }
 
   if (newtab_process_should_equal_opener) {
-    EXPECT_EQ(contents->GetMainFrame()->GetSiteInstance(),
-              newtab->GetMainFrame()->GetSiteInstance());
+    EXPECT_EQ(contents->GetPrimaryMainFrame()->GetSiteInstance(),
+              newtab->GetPrimaryMainFrame()->GetSiteInstance());
   } else {
-    EXPECT_NE(contents->GetMainFrame()->GetSiteInstance(),
-              newtab->GetMainFrame()->GetSiteInstance());
+    EXPECT_NE(contents->GetPrimaryMainFrame()->GetSiteInstance(),
+              newtab->GetPrimaryMainFrame()->GetSiteInstance());
   }
 
   if (newtab_result)
     *newtab_result = newtab;
 }
 
-void ExtensionBrowserTest::NavigateInRenderer(content::WebContents* contents,
+bool ExtensionBrowserTest::NavigateInRenderer(content::WebContents* contents,
                                               const GURL& url) {
   // Note: We use ExecuteScript instead of ExecJS here, because ExecuteScript
   // works on pages with a Content Security Policy.
   EXPECT_TRUE(content::ExecuteScript(
       contents, "window.location = '" + url.spec() + "';"));
-  content::WaitForLoadStop(contents);
+  bool result = content::WaitForLoadStop(contents);
   EXPECT_EQ(url, contents->GetController().GetLastCommittedEntry()->GetURL());
+  return result;
 }
 
 ExtensionHost* ExtensionBrowserTest::FindHostWithPath(ProcessManager* manager,

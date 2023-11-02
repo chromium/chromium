@@ -1,27 +1,27 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/webui/interstitials/interstitial_ui.h"
 
 #import <Foundation/Foundation.h>
-#include <memory>
-#include <utility>
+#import <memory>
+#import <utility>
 
-#include "base/memory/ref_counted_memory.h"
-#include "base/time/time.h"
-#include "components/grit/dev_ui_components_resources.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
+#import "base/memory/ref_counted_memory.h"
+#import "base/time/time.h"
+#import "components/grit/dev_ui_components_resources.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/webui/interstitials/interstitial_ui_constants.h"
 #import "ios/chrome/browser/ui/webui/interstitials/interstitial_ui_util.h"
-#include "ios/components/security_interstitials/ios_security_interstitial_page.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/components/security_interstitials/ios_security_interstitial_page.h"
 #import "ios/web/public/web_state.h"
-#include "ios/web/public/webui/url_data_source_ios.h"
-#include "ios/web/public/webui/web_ui_ios.h"
-#include "ios/web/public/webui/web_ui_ios_data_source.h"
-#include "net/base/url_util.h"
-#include "ui/base/resource/resource_bundle.h"
+#import "ios/web/public/webui/url_data_source_ios.h"
+#import "ios/web/public/webui/web_ui_ios.h"
+#import "ios/web/public/webui/web_ui_ios_data_source.h"
+#import "net/base/url_util.h"
+#import "ui/base/resource/resource_bundle.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

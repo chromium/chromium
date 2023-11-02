@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -168,15 +168,15 @@ bool ParseSingleAppTag(const base::Value& app_element,
 void ParseXmlDone(ParseUpdateManifestCallback callback,
                   data_decoder::DataDecoder::ValueOrError result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!result.value) {
-    ManifestParseFailure failure("Failed to parse XML: " + *result.error,
+  if (!result.has_value()) {
+    ManifestParseFailure failure("Failed to parse XML: " + result.error(),
                                  ManifestInvalidError::XML_PARSING_FAILED);
     ReportError(std::move(callback), failure);
     return;
   }
 
   auto results = std::make_unique<UpdateManifestResults>();
-  base::Value& root = *result.value;
+  base::Value& root = *result;
 
   // Look for the required namespace declaration.
   std::string gupdate_ns;
@@ -276,7 +276,8 @@ void ParseUpdateManifest(const std::string& xml,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(callback);
   data_decoder::DataDecoder::ParseXmlIsolated(
-      xml, base::BindOnce(&ParseXmlDone, std::move(callback)));
+      xml, data_decoder::mojom::XmlParser::WhitespaceBehavior::kIgnore,
+      base::BindOnce(&ParseXmlDone, std::move(callback)));
 }
 
 }  // namespace extensions

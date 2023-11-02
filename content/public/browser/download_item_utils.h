@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_DOWNLOAD_ITEM_UTILS_H_
 
 #include "content/common/content_export.h"
+#include "content/public/browser/global_routing_id.h"
 
 namespace download {
 class DownloadItem;
@@ -15,6 +16,7 @@ namespace content {
 
 class BrowserContext;
 class WebContents;
+class RenderFrameHost;
 
 // Helper class to attach WebContents and BrowserContext to a DownloadItem.
 class CONTENT_EXPORT DownloadItemUtils {
@@ -27,10 +29,20 @@ class CONTENT_EXPORT DownloadItemUtils {
   static WebContents* GetWebContents(
       const download::DownloadItem* downloadItem);
 
+  // Helper method to get the RenderFrameHost from a DownloadItem.
+  static RenderFrameHost* GetRenderFrameHost(
+      const download::DownloadItem* downloadItem);
+
   // Attach information to a DownloadItem.
   static void AttachInfo(download::DownloadItem* downloadItem,
                          BrowserContext* browser_context,
-                         WebContents* web_contents);
+                         WebContents* web_contents,
+                         GlobalRenderFrameHostId id);
+
+  // Attach information to a DownloadItem.
+  static void AttachInfoForTesting(download::DownloadItem* downloadItem,
+                                   BrowserContext* browser_context,
+                                   WebContents* web_contents);
 };
 
 }  // namespace content

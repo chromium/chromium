@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/events/accessibility_event_rewriter.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
 #include "ash/accessibility/switch_access/point_scan_controller.h"
 #include "ash/constants/ash_constants.h"
@@ -163,8 +164,8 @@ bool AccessibilityEventRewriter::RewriteEventForChromeVox(
     if (rewritten_key_event->GetDomKey() == ui::DomKey::TAB)
       capture = false;
 
-    delegate_->DispatchKeyEventToChromeVox(
-        ui::Event::Clone(*rewritten_key_event), capture);
+    delegate_->DispatchKeyEventToChromeVox(rewritten_key_event->Clone(),
+                                           capture);
     return capture;
   }
 
@@ -178,8 +179,17 @@ bool AccessibilityEventRewriter::RewriteEventForSwitchAccess(
     return false;
 
   const ui::KeyEvent* key_event = event.AsKeyEvent();
+  ui::EventRewriterChromeOS::MutableKeyState state(key_event);
+  event_rewriter_chromeos_->RewriteModifierKeys(*key_event, &state);
+  event_rewriter_chromeos_->RewriteFunctionKeys(*key_event, &state);
+
+  std::unique_ptr<ui::Event> rewritten_event;
+  ui::EventRewriterChromeOS::BuildRewrittenKeyEvent(*key_event, state,
+                                                    &rewritten_event);
+  ui::KeyEvent* rewritten_key_event = rewritten_event.get()->AsKeyEvent();
+
   const auto& key =
-      switch_access_key_codes_to_capture_.find(key_event->key_code());
+      switch_access_key_codes_to_capture_.find(rewritten_key_event->key_code());
   if (key == switch_access_key_codes_to_capture_.end())
     return false;
 
@@ -214,7 +224,7 @@ bool AccessibilityEventRewriter::RewriteEventForSwitchAccess(
       }
     } else {
       SwitchAccessCommand command =
-          key_code_to_switch_access_command_[key_event->key_code()];
+          key_code_to_switch_access_command_[rewritten_key_event->key_code()];
       delegate_->SendSwitchAccessCommand(command);
     }
   }
@@ -291,10 +301,16 @@ void AccessibilityEventRewriter::OnMagnifierKeyReleased(
 void AccessibilityEventRewriter::MaybeSendMouseEvent(const ui::Event& event) {
   // Mouse moves are the only pertinent event for accessibility component
   // extensions.
-  if (send_mouse_events_ && event.type() == ui::ET_MOUSE_MOVED &&
-      (Shell::Get()->fullscreen_magnifier_controller()->IsEnabled() ||
+  if (send_mouse_events_ &&
+      (event.type() == ui::ET_MOUSE_MOVED ||
+       event.type() == ui::ET_MOUSE_DRAGGED) &&
+      (Shell::Get()
+           ->accessibility_controller()
+           ->fullscreen_magnifier()
+           .enabled() ||
+       Shell::Get()->accessibility_controller()->docked_magnifier().enabled() ||
        Shell::Get()->accessibility_controller()->spoken_feedback().enabled())) {
-    delegate_->DispatchMouseEvent(ui::Event::Clone(event));
+    delegate_->DispatchMouseEvent(event.Clone());
   }
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -121,21 +121,20 @@ class BookmarkCodecTest : public testing::Test {
                                  base::Value** result_value) {
     ASSERT_TRUE(value->is_dict());
 
-    base::Value* roots = value->FindDictKey(BookmarkCodec::kRootsKey);
+    base::Value::Dict* roots =
+        value->GetDict().FindDict(BookmarkCodec::kRootsKey);
     ASSERT_TRUE(roots);
 
-    base::Value* bb_value =
-        roots->FindDictKey(BookmarkCodec::kRootFolderNameKey);
-    ASSERT_TRUE(bb_value);
+    base::Value::Dict* bb_dict =
+        roots->FindDict(BookmarkCodec::kBookmarkBarFolderNameKey);
+    ASSERT_TRUE(bb_dict);
 
-    base::Value* bb_children_value =
-        bb_value->FindListKey(BookmarkCodec::kChildrenKey);
-    ASSERT_TRUE(bb_children_value);
+    base::Value::List* bb_children_list =
+        bb_dict->FindList(BookmarkCodec::kChildrenKey);
+    ASSERT_TRUE(bb_children_list);
+    ASSERT_LT(index, bb_children_list->size());
 
-    base::Value::ListView bb_children_l_value = bb_children_value->GetList();
-    ASSERT_LT(index, bb_children_l_value.size());
-
-    base::Value& child_value = bb_children_l_value[index];
+    base::Value& child_value = (*bb_children_list)[index];
     ASSERT_TRUE(child_value.is_dict());
 
     *result_value = &child_value;
@@ -173,6 +172,8 @@ class BookmarkCodecTest : public testing::Test {
                                 sync_metadata_str);
     model->set_next_node_id(max_id);
     AsMutable(model->root_node())->SetMetaInfoMap(codec->model_meta_info_map());
+    AsMutable(model->root_node())
+        ->SetUnsyncedMetaInfoMap(codec->model_unsynced_meta_info_map());
 
     return result;
   }
@@ -378,7 +379,7 @@ TEST_F(BookmarkCodecTest, PersistIDsTest) {
       AssertModelsEqual(decoded_model.get(), decoded_model2.get()));
 }
 
-TEST_F(BookmarkCodecTest, CanDecodeModelWithoutMobileBookmarks) {
+TEST_F(BookmarkCodecTest, CannotDecodeModelWithoutMobileBookmarks) {
   base::FilePath test_file =
       GetTestDataDir().AppendASCII("bookmarks/model_without_sync.json");
   ASSERT_TRUE(base::PathExists(test_file));
@@ -390,35 +391,8 @@ TEST_F(BookmarkCodecTest, CanDecodeModelWithoutMobileBookmarks) {
   std::unique_ptr<BookmarkModel> decoded_model(
       TestBookmarkClient::CreateModel());
   BookmarkCodec decoder;
-  ASSERT_TRUE(Decode(&decoder, *root.get(), decoded_model.get(),
-                     /*sync_metadata_str=*/nullptr));
-  ExpectIDsUnique(decoded_model.get());
-
-  const BookmarkNode* bbn = decoded_model->bookmark_bar_node();
-  ASSERT_EQ(1u, bbn->children().size());
-
-  const BookmarkNode* child = bbn->children().front().get();
-  EXPECT_EQ(BookmarkNode::FOLDER, child->type());
-  EXPECT_EQ(u"Folder A", child->GetTitle());
-  ASSERT_EQ(1u, child->children().size());
-
-  child = child->children().front().get();
-  EXPECT_EQ(BookmarkNode::URL, child->type());
-  EXPECT_EQ(u"Bookmark Manager", child->GetTitle());
-
-  const BookmarkNode* other = decoded_model->other_node();
-  ASSERT_EQ(1u, other->children().size());
-
-  child = other->children().front().get();
-  EXPECT_EQ(BookmarkNode::FOLDER, child->type());
-  EXPECT_EQ(u"Folder B", child->GetTitle());
-  ASSERT_EQ(1u, child->children().size());
-
-  child = child->children().front().get();
-  EXPECT_EQ(BookmarkNode::URL, child->type());
-  EXPECT_EQ(u"Get started with Google Chrome", child->GetTitle());
-
-  ASSERT_TRUE(decoded_model->mobile_node() != nullptr);
+  EXPECT_FALSE(Decode(&decoder, *root.get(), decoded_model.get(),
+                      /*sync_metadata_str=*/nullptr));
 }
 
 TEST_F(BookmarkCodecTest, EncodeAndDecodeMetaInfo) {
@@ -444,6 +418,34 @@ TEST_F(BookmarkCodecTest, EncodeAndDecodeMetaInfo) {
   EXPECT_TRUE(child->GetMetaInfo("node_info", &meta_value));
   EXPECT_EQ("value2", meta_value);
   EXPECT_FALSE(child->GetMetaInfo("other_key", &meta_value));
+}
+
+TEST_F(BookmarkCodecTest, EncodeAndDecodeUnsyncedMetaInfo) {
+  // Add meta info and encode.
+  std::unique_ptr<BookmarkModel> model(CreateTestModel1());
+  model->SetNodeUnsyncedMetaInfo(model->root_node(), "model_info", "value1");
+  model->SetNodeUnsyncedMetaInfo(
+      model->bookmark_bar_node()->children().front().get(), "node_info",
+      "value2");
+  std::string checksum;
+  base::Value value =
+      EncodeHelper(model.get(), /*sync_metadata_str=*/std::string(), &checksum);
+
+  // Decode and check for meta info.
+  model = DecodeHelper(value, checksum, &checksum, false,
+                       /*sync_metadata_str=*/nullptr);
+  std::string meta_value;
+  EXPECT_TRUE(
+      model->root_node()->GetUnsyncedMetaInfo("model_info", &meta_value));
+  EXPECT_EQ("value1", meta_value);
+  EXPECT_FALSE(
+      model->root_node()->GetUnsyncedMetaInfo("other_key", &meta_value));
+  const BookmarkNode* bbn = model->bookmark_bar_node();
+  ASSERT_EQ(1u, bbn->children().size());
+  const BookmarkNode* child = bbn->children().front().get();
+  EXPECT_TRUE(child->GetUnsyncedMetaInfo("node_info", &meta_value));
+  EXPECT_EQ("value2", meta_value);
+  EXPECT_FALSE(child->GetUnsyncedMetaInfo("other_key", &meta_value));
 }
 
 // Verifies that we can still decode the old codec format after changing the

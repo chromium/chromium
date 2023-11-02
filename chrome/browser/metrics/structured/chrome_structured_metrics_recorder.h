@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,9 @@
 
 #include "base/no_destructor.h"
 #include "components/metrics/structured/event.h"
-#include "components/metrics/structured/event_base.h"
+#include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/structured_metrics_client.h"
-#include "components/metrics/structured/structured_mojo_events.h"
+#include "components/prefs/pref_registry_simple.h"
 
 namespace metrics {
 namespace structured {
@@ -28,10 +28,14 @@ using RecordingDelegate = StructuredMetricsClient::RecordingDelegate;
 // This class delegates to a Recorder that will be created on ctor.
 // |Initialize()| should be called ASAP. When |Initialize()| should be called is
 // platform specific.
-class ChromeStructuredMetricsRecorder : RecordingDelegate {
+class ChromeStructuredMetricsRecorder : public RecordingDelegate {
  public:
   // Pointer to singleton.
   static ChromeStructuredMetricsRecorder* Get();
+
+  // Registers prefs.
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
+  static void RegisterUserProfilePrefs(PrefRegistrySimple* registry);
 
   ChromeStructuredMetricsRecorder(
       const ChromeStructuredMetricsRecorder& recorder) = delete;
@@ -50,7 +54,6 @@ class ChromeStructuredMetricsRecorder : RecordingDelegate {
 
   // RecordingDelegate:
   void RecordEvent(Event&& event) override;
-  void Record(EventBase&& event_base) override;
   bool IsReadyToRecord() const override;
 
  private:

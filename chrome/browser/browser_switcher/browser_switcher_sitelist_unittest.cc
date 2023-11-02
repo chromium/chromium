@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,12 +31,18 @@ class TestBrowserSwitcherPrefs : public BrowserSwitcherPrefs {
       : BrowserSwitcherPrefs(prefs, nullptr) {}
 };
 
-std::unique_ptr<base::Value> StringArrayToValue(
-    const std::vector<const char*>& strings) {
-  std::vector<base::Value> values(strings.size());
-  std::transform(strings.begin(), strings.end(), values.begin(),
-                 [](const char* s) { return base::Value(s); });
-  return std::make_unique<base::Value>(values);
+base::Value StringArrayToValue(const std::vector<const char*>& strings) {
+  base::Value::List list;
+  for (const auto* string : strings)
+    list.Append(string);
+  return base::Value(std::move(list));
+}
+
+void CheckRuleSetSize(size_t expected_sitelist_size,
+                      size_t expected_greylist_size,
+                      const RuleSet* ruleset) {
+  ASSERT_EQ(expected_sitelist_size, ruleset->sitelist.size());
+  ASSERT_EQ(expected_greylist_size, ruleset->greylist.size());
 }
 
 }  // namespace
@@ -49,15 +55,13 @@ class BrowserSwitcherSitelistTest : public testing::TestWithParam<ParsingMode> {
                   const std::vector<const char*>& url_greylist,
                   bool enabled = true) {
     BrowserSwitcherPrefs::RegisterProfilePrefs(prefs_backend_.registry());
-    prefs_backend_.SetManagedPref(prefs::kEnabled,
-                                  std::make_unique<base::Value>(enabled));
+    prefs_backend_.SetManagedPref(prefs::kEnabled, base::Value(enabled));
     prefs_backend_.SetManagedPref(prefs::kUrlList,
                                   StringArrayToValue(url_list));
     prefs_backend_.SetManagedPref(prefs::kUrlGreylist,
                                   StringArrayToValue(url_greylist));
-    prefs_backend_.SetManagedPref(
-        prefs::kParsingMode,
-        std::make_unique<base::Value>(static_cast<int>(parsing_mode_)));
+    prefs_backend_.SetManagedPref(prefs::kParsingMode,
+                                  base::Value(static_cast<int>(parsing_mode_)));
     prefs_ = std::make_unique<TestBrowserSwitcherPrefs>(&prefs_backend_);
     sitelist_ = std::make_unique<BrowserSwitcherSitelistImpl>(prefs_.get());
   }
@@ -114,7 +118,7 @@ TEST_P(BrowserSwitcherSitelistTest, CanonicalizeRule) {
     CheckCanonicalizedRule("*://example.com/", "Example.Com/");
     CheckCanonicalizedRule("!*://example.com/abc", "!Example.Com/Abc");
     CheckCanonicalizedRule("*://example.com/", "/Example.Com");
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     CheckCanonicalizedRule("*://example.com/", "//Example.Com");
     CheckCanonicalizedRule("!*://example.com/", "!//Example.Com");
 #else
@@ -171,7 +175,7 @@ TEST_P(BrowserSwitcherSitelistTest, CanonicalizeRulesLikeMicrosoft) {
                          "://example.com");
   CheckCanonicalizedRule("",  // *://bar.com/
                          "mailto:foo@bar.com");
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   CheckCanonicalizedRule("file:///c:/src/",  // *://c/src
                          "C:/src/");
   CheckCanonicalizedRule("file:///c:/src",  // *://c/src
@@ -405,21 +409,20 @@ TEST_P(BrowserSwitcherSitelistTest, ShouldPickUpPrefChanges) {
 TEST_P(BrowserSwitcherSitelistTest, ShouldIgnoreNonManagedPrefs) {
   Initialize({}, {});
 
-  prefs_backend()->Set(prefs::kUrlList, *StringArrayToValue({"example.com"}));
+  prefs_backend()->Set(prefs::kUrlList, StringArrayToValue({"example.com"}));
   EXPECT_FALSE(ShouldSwitch(GURL("http://example.com/")));
 
   prefs_backend()->SetManagedPref(prefs::kUrlList,
                                   StringArrayToValue({"example.com"}));
   prefs_backend()->Set(prefs::kUrlGreylist,
-                       *StringArrayToValue({"morespecific.example.com"}));
+                       StringArrayToValue({"morespecific.example.com"}));
   EXPECT_TRUE(ShouldSwitch(GURL("http://morespecific.example.com/")));
 }
 
 TEST_P(BrowserSwitcherSitelistTest, SetIeemSitelist) {
   Initialize({}, {});
-  ParsedXml ieem;
-  ieem.rules = {"example.com"};
-  sitelist()->SetIeemSitelist(std::move(ieem));
+  // XXX: Also do some tests that use ieem.rules.greylist.
+  sitelist()->SetIeemSitelist(RawRuleSet({"example.com"}, {}));
   EXPECT_TRUE(ShouldSwitch(GURL("http://example.com/")));
   EXPECT_TRUE(ShouldSwitch(GURL("http://bar.example.com/")));
   EXPECT_FALSE(ShouldSwitch(GURL("http://google.com/")));
@@ -427,9 +430,7 @@ TEST_P(BrowserSwitcherSitelistTest, SetIeemSitelist) {
 
 TEST_P(BrowserSwitcherSitelistTest, SetExternalSitelist) {
   Initialize({}, {});
-  ParsedXml external;
-  external.rules = {"example.com"};
-  sitelist()->SetExternalSitelist(std::move(external));
+  sitelist()->SetExternalSitelist(RawRuleSet({"example.com"}, {}));
   EXPECT_TRUE(ShouldSwitch(GURL("http://example.com/")));
   EXPECT_TRUE(ShouldSwitch(GURL("http://bar.example.com/")));
   EXPECT_FALSE(ShouldSwitch(GURL("http://google.com/")));
@@ -437,9 +438,7 @@ TEST_P(BrowserSwitcherSitelistTest, SetExternalSitelist) {
 
 TEST_P(BrowserSwitcherSitelistTest, SetExternalGreylist) {
   Initialize({"example.com"}, {});
-  ParsedXml external;
-  external.rules = {"foo.example.com"};
-  sitelist()->SetExternalGreylist(std::move(external));
+  sitelist()->SetExternalGreylist(RawRuleSet({}, {"foo.example.com"}));
   EXPECT_TRUE(ShouldSwitch(GURL("http://example.com/")));
   EXPECT_TRUE(ShouldSwitch(GURL("http://bar.example.com/")));
   EXPECT_FALSE(ShouldSwitch(GURL("http://foo.example.com/")));
@@ -448,12 +447,8 @@ TEST_P(BrowserSwitcherSitelistTest, SetExternalGreylist) {
 
 TEST_P(BrowserSwitcherSitelistTest, All3Sources) {
   Initialize({"google.com"}, {"mail.google.com"});
-  ParsedXml ieem;
-  ieem.rules = {"!maps.google.com"};
-  sitelist()->SetIeemSitelist(std::move(ieem));
-  ParsedXml external;
-  external.rules = {"yahoo.com"};
-  sitelist()->SetExternalSitelist(std::move(external));
+  sitelist()->SetIeemSitelist(RawRuleSet({"!maps.google.com"}, {}));
+  sitelist()->SetExternalSitelist(RawRuleSet({"yahoo.com"}, {}));
   EXPECT_TRUE(ShouldSwitch(GURL("http://google.com/")));
   EXPECT_TRUE(ShouldSwitch(GURL("http://drive.google.com/")));
   EXPECT_FALSE(ShouldSwitch(GURL("http://mail.google.com/")));
@@ -465,41 +460,38 @@ TEST_P(BrowserSwitcherSitelistTest, All3Sources) {
 TEST_P(BrowserSwitcherSitelistTest, ReCanonicalizeWhenParsingModeChanges) {
   // Configure all sitelists/greylists at the same time.
   Initialize({"google.com"}, {"mail.google.com"});
-  ParsedXml ieem;
-  ieem.rules = {"example.com"};
-  sitelist()->SetIeemSitelist(std::move(ieem));
-  ParsedXml external_sitelist;
-  external_sitelist.rules = {"yahoo.com"};
-  sitelist()->SetExternalSitelist(std::move(external_sitelist));
-  ParsedXml external_greylist;
-  external_greylist.rules = {"duckduckgo.com"};
-  sitelist()->SetExternalGreylist(std::move(external_greylist));
+  sitelist()->SetIeemSitelist(RawRuleSet({"example.com"}, {"grey.com"}));
+  sitelist()->SetExternalSitelist(RawRuleSet({"yahoo.com"}, {}));
+  sitelist()->SetExternalGreylist(RawRuleSet({}, {"duckduckgo.com"}));
 
   // Check initial state.
-  ASSERT_EQ(1u, prefs()->GetRules().sitelist.size());
-  ASSERT_EQ(1u, prefs()->GetRules().greylist.size());
-  ASSERT_EQ(1u, sitelist()->GetIeemSitelist()->sitelist.size());
-  ASSERT_EQ(1u, sitelist()->GetExternalSitelist()->sitelist.size());
-  ASSERT_EQ(1u, sitelist()->GetExternalSitelist()->greylist.size());
+  CheckRuleSetSize(1u, 1u, &prefs()->GetRules());
+  CheckRuleSetSize(1u, 1u, sitelist()->GetIeemSitelist());
+  CheckRuleSetSize(1u, 0u, sitelist()->GetExternalSitelist());
+  CheckRuleSetSize(0u, 1u, sitelist()->GetExternalGreylist());
   if (parsing_mode() == ParsingMode::kDefault) {
     EXPECT_EQ("google.com", prefs()->GetRules().sitelist[0]->ToString());
     EXPECT_EQ("mail.google.com", prefs()->GetRules().greylist[0]->ToString());
     EXPECT_EQ("example.com",
               sitelist()->GetIeemSitelist()->sitelist[0]->ToString());
+    EXPECT_EQ("grey.com",
+              sitelist()->GetIeemSitelist()->greylist[0]->ToString());
     EXPECT_EQ("yahoo.com",
               sitelist()->GetExternalSitelist()->sitelist[0]->ToString());
     EXPECT_EQ("duckduckgo.com",
-              sitelist()->GetExternalSitelist()->greylist[0]->ToString());
+              sitelist()->GetExternalGreylist()->greylist[0]->ToString());
   } else {
     EXPECT_EQ("*://google.com/", prefs()->GetRules().sitelist[0]->ToString());
     EXPECT_EQ("*://mail.google.com/",
               prefs()->GetRules().greylist[0]->ToString());
     EXPECT_EQ("*://example.com/",
               sitelist()->GetIeemSitelist()->sitelist[0]->ToString());
+    EXPECT_EQ("*://grey.com/",
+              sitelist()->GetIeemSitelist()->greylist[0]->ToString());
     EXPECT_EQ("*://yahoo.com/",
               sitelist()->GetExternalSitelist()->sitelist[0]->ToString());
     EXPECT_EQ("*://duckduckgo.com/",
-              sitelist()->GetExternalSitelist()->greylist[0]->ToString());
+              sitelist()->GetExternalGreylist()->greylist[0]->ToString());
   }
 
   // Change parsing mode.
@@ -507,37 +499,39 @@ TEST_P(BrowserSwitcherSitelistTest, ReCanonicalizeWhenParsingModeChanges) {
                                      ? ParsingMode::kIESiteListMode
                                      : ParsingMode::kDefault;
   prefs_backend()->SetManagedPref(
-      prefs::kParsingMode,
-      std::make_unique<base::Value>(static_cast<int>(new_parsing_mode)));
+      prefs::kParsingMode, base::Value(static_cast<int>(new_parsing_mode)));
   prefs()->OnPolicyUpdated(policy::PolicyNamespace(), policy::PolicyMap(),
                            policy::PolicyMap());
   base::RunLoop().RunUntilIdle();
 
   // Check that canonicalization changed.
-  ASSERT_EQ(1u, prefs()->GetRules().sitelist.size());
-  ASSERT_EQ(1u, prefs()->GetRules().greylist.size());
-  ASSERT_EQ(1u, sitelist()->GetIeemSitelist()->sitelist.size());
-  ASSERT_EQ(1u, sitelist()->GetExternalSitelist()->sitelist.size());
-  ASSERT_EQ(1u, sitelist()->GetExternalSitelist()->greylist.size());
+  CheckRuleSetSize(1u, 1u, &prefs()->GetRules());
+  CheckRuleSetSize(1u, 1u, sitelist()->GetIeemSitelist());
+  CheckRuleSetSize(1u, 0u, sitelist()->GetExternalSitelist());
+  CheckRuleSetSize(0u, 1u, sitelist()->GetExternalGreylist());
   if (new_parsing_mode == ParsingMode::kDefault) {
     EXPECT_EQ("google.com", prefs()->GetRules().sitelist[0]->ToString());
     EXPECT_EQ("mail.google.com", prefs()->GetRules().greylist[0]->ToString());
     EXPECT_EQ("example.com",
               sitelist()->GetIeemSitelist()->sitelist[0]->ToString());
+    EXPECT_EQ("grey.com",
+              sitelist()->GetIeemSitelist()->greylist[0]->ToString());
     EXPECT_EQ("yahoo.com",
               sitelist()->GetExternalSitelist()->sitelist[0]->ToString());
     EXPECT_EQ("duckduckgo.com",
-              sitelist()->GetExternalSitelist()->greylist[0]->ToString());
+              sitelist()->GetExternalGreylist()->greylist[0]->ToString());
   } else {
     EXPECT_EQ("*://google.com/", prefs()->GetRules().sitelist[0]->ToString());
     EXPECT_EQ("*://mail.google.com/",
               prefs()->GetRules().greylist[0]->ToString());
     EXPECT_EQ("*://example.com/",
               sitelist()->GetIeemSitelist()->sitelist[0]->ToString());
+    EXPECT_EQ("*://grey.com/",
+              sitelist()->GetIeemSitelist()->greylist[0]->ToString());
     EXPECT_EQ("*://yahoo.com/",
               sitelist()->GetExternalSitelist()->sitelist[0]->ToString());
     EXPECT_EQ("*://duckduckgo.com/",
-              sitelist()->GetExternalSitelist()->greylist[0]->ToString());
+              sitelist()->GetExternalGreylist()->greylist[0]->ToString());
   }
 }
 

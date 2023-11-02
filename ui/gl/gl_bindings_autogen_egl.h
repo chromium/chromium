@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -106,6 +106,11 @@ typedef EGLBoolean(GL_BINDING_CALL* eglExportDMABUFImageQueryMESAProc)(
     int* fourcc,
     int* num_planes,
     EGLuint64KHR* modifiers);
+typedef EGLBoolean(GL_BINDING_CALL* eglExportVkImageANGLEProc)(
+    EGLDisplay dpy,
+    EGLImageKHR image,
+    void* vk_image,
+    void* vk_image_create_info);
 typedef EGLBoolean(GL_BINDING_CALL* eglGetCompositorTimingANDROIDProc)(
     EGLDisplay dpy,
     EGLSurface surface,
@@ -216,6 +221,18 @@ typedef EGLBoolean(GL_BINDING_CALL* eglQueryDisplayAttribEXTProc)(
     EGLDisplay dpy,
     EGLint attribute,
     EGLAttrib* value);
+typedef EGLBoolean(GL_BINDING_CALL* eglQueryDmaBufFormatsEXTProc)(
+    EGLDisplay dpy,
+    EGLint max_formats,
+    EGLint* formats,
+    EGLint* num_formats);
+typedef EGLBoolean(GL_BINDING_CALL* eglQueryDmaBufModifiersEXTProc)(
+    EGLDisplay dpy,
+    EGLint format,
+    EGLint max_modifiers,
+    EGLuint64KHR* modifiers,
+    EGLBoolean* external_only,
+    EGLint* num_modifiers);
 typedef EGLBoolean(GL_BINDING_CALL* eglQueryStreamKHRProc)(EGLDisplay dpy,
                                                            EGLStreamKHR stream,
                                                            EGLenum attribute,
@@ -296,37 +313,93 @@ typedef EGLint(GL_BINDING_CALL* eglWaitSyncKHRProc)(EGLDisplay dpy,
                                                     EGLSyncKHR sync,
                                                     EGLint flags);
 
-struct ExtensionsEGL {
+struct GL_EXPORT ClientExtensionsEGL {
+  bool b_EGL_ANGLE_display_power_preference;
   bool b_EGL_ANGLE_feature_control;
+  bool b_EGL_ANGLE_platform_angle;
+  bool b_EGL_ANGLE_platform_angle_d3d;
+  bool b_EGL_ANGLE_platform_angle_device_id;
+  bool b_EGL_ANGLE_platform_angle_device_type_egl_angle;
+  bool b_EGL_ANGLE_platform_angle_device_type_swiftshader;
+  bool b_EGL_ANGLE_platform_angle_metal;
+  bool b_EGL_ANGLE_platform_angle_null;
+  bool b_EGL_ANGLE_platform_angle_opengl;
+  bool b_EGL_ANGLE_platform_angle_vulkan;
   bool b_EGL_EXT_device_base;
   bool b_EGL_EXT_device_enumeration;
   bool b_EGL_EXT_device_query;
+  bool b_EGL_EXT_platform_device;
   bool b_EGL_KHR_debug;
+  bool b_EGL_MESA_platform_surfaceless;
+
+  void InitializeClientExtensionSettings();
+
+ private:
+  static std::string GetClientExtensions();
+};
+
+struct GL_EXPORT DisplayExtensionsEGL {
   bool b_EGL_ANDROID_blob_cache;
+  bool b_EGL_ANDROID_create_native_client_buffer;
+  bool b_EGL_ANDROID_front_buffer_auto_refresh;
   bool b_EGL_ANDROID_get_frame_timestamps;
   bool b_EGL_ANDROID_get_native_client_buffer;
   bool b_EGL_ANDROID_native_fence_sync;
+  bool b_EGL_ANGLE_context_virtualization;
+  bool b_EGL_ANGLE_create_context_backwards_compatible;
+  bool b_EGL_ANGLE_create_context_client_arrays;
+  bool b_EGL_ANGLE_create_context_webgl_compatibility;
   bool b_EGL_ANGLE_d3d_share_handle_client_buffer;
+  bool b_EGL_ANGLE_display_semaphore_share_group;
+  bool b_EGL_ANGLE_display_texture_share_group;
+  bool b_EGL_ANGLE_external_context_and_surface;
+  bool b_EGL_ANGLE_iosurface_client_buffer;
+  bool b_EGL_ANGLE_keyed_mutex;
   bool b_EGL_ANGLE_power_preference;
+  bool b_EGL_ANGLE_program_cache_control;
   bool b_EGL_ANGLE_query_surface_pointer;
+  bool b_EGL_ANGLE_robust_resource_initialization;
   bool b_EGL_ANGLE_stream_producer_d3d_texture;
   bool b_EGL_ANGLE_surface_d3d_texture_2d_share_handle;
+  bool b_EGL_ANGLE_surface_orientation;
   bool b_EGL_ANGLE_sync_control_rate;
+  bool b_EGL_ANGLE_vulkan_image;
+  bool b_EGL_ANGLE_window_fixed_size;
+  bool b_EGL_ARM_implicit_external_sync;
+  bool b_EGL_CHROMIUM_create_context_bind_generates_resource;
   bool b_EGL_CHROMIUM_sync_control;
+  bool b_EGL_EXT_create_context_robustness;
+  bool b_EGL_EXT_gl_colorspace_display_p3;
+  bool b_EGL_EXT_gl_colorspace_display_p3_passthrough;
+  bool b_EGL_EXT_image_dma_buf_import;
+  bool b_EGL_EXT_image_dma_buf_import_modifiers;
   bool b_EGL_EXT_image_flush_external;
+  bool b_EGL_EXT_pixel_format_float;
+  bool b_EGL_IMG_context_priority;
+  bool b_EGL_KHR_create_context;
   bool b_EGL_KHR_fence_sync;
+  bool b_EGL_KHR_gl_colorspace;
   bool b_EGL_KHR_gl_texture_2D_image;
   bool b_EGL_KHR_image;
   bool b_EGL_KHR_image_base;
+  bool b_EGL_KHR_no_config_context;
   bool b_EGL_KHR_stream;
   bool b_EGL_KHR_stream_consumer_gltexture;
+  bool b_EGL_KHR_surfaceless_context;
   bool b_EGL_KHR_swap_buffers_with_damage;
   bool b_EGL_KHR_wait_sync;
   bool b_EGL_MESA_image_dma_buf_export;
+  bool b_EGL_NOK_texture_from_pixmap;
   bool b_EGL_NV_post_sub_buffer;
+  bool b_EGL_NV_robustness_video_memory_purge;
   bool b_EGL_NV_stream_consumer_gltexture_yuv;
   bool b_GL_CHROMIUM_egl_android_native_fence_sync_hack;
   bool b_GL_CHROMIUM_egl_khr_fence_sync_hack;
+
+  void InitializeExtensionSettings(EGLDisplay display);
+  void UpdateConditionalExtensionSettings(EGLDisplay display);
+
+  static std::string GetPlatformExtensions(EGLDisplay display);
 };
 
 struct ProcsEGL {
@@ -354,6 +427,7 @@ struct ProcsEGL {
   eglDupNativeFenceFDANDROIDProc eglDupNativeFenceFDANDROIDFn;
   eglExportDMABUFImageMESAProc eglExportDMABUFImageMESAFn;
   eglExportDMABUFImageQueryMESAProc eglExportDMABUFImageQueryMESAFn;
+  eglExportVkImageANGLEProc eglExportVkImageANGLEFn;
   eglGetCompositorTimingANDROIDProc eglGetCompositorTimingANDROIDFn;
   eglGetCompositorTimingSupportedANDROIDProc
       eglGetCompositorTimingSupportedANDROIDFn;
@@ -388,6 +462,8 @@ struct ProcsEGL {
   eglQueryDeviceStringEXTProc eglQueryDeviceStringEXTFn;
   eglQueryDisplayAttribANGLEProc eglQueryDisplayAttribANGLEFn;
   eglQueryDisplayAttribEXTProc eglQueryDisplayAttribEXTFn;
+  eglQueryDmaBufFormatsEXTProc eglQueryDmaBufFormatsEXTFn;
+  eglQueryDmaBufModifiersEXTProc eglQueryDmaBufModifiersEXTFn;
   eglQueryStreamKHRProc eglQueryStreamKHRFn;
   eglQueryStreamu64KHRProc eglQueryStreamu64KHRFn;
   eglQueryStringProc eglQueryStringFn;
@@ -499,6 +575,10 @@ class GL_EXPORT EGLApi {
       int* fourcc,
       int* num_planes,
       EGLuint64KHR* modifiers) = 0;
+  virtual EGLBoolean eglExportVkImageANGLEFn(EGLDisplay dpy,
+                                             EGLImageKHR image,
+                                             void* vk_image,
+                                             void* vk_image_create_info) = 0;
   virtual EGLBoolean eglGetCompositorTimingANDROIDFn(
       EGLDisplay dpy,
       EGLSurface surface,
@@ -598,6 +678,16 @@ class GL_EXPORT EGLApi {
   virtual EGLBoolean eglQueryDisplayAttribEXTFn(EGLDisplay dpy,
                                                 EGLint attribute,
                                                 EGLAttrib* value) = 0;
+  virtual EGLBoolean eglQueryDmaBufFormatsEXTFn(EGLDisplay dpy,
+                                                EGLint max_formats,
+                                                EGLint* formats,
+                                                EGLint* num_formats) = 0;
+  virtual EGLBoolean eglQueryDmaBufModifiersEXTFn(EGLDisplay dpy,
+                                                  EGLint format,
+                                                  EGLint max_modifiers,
+                                                  EGLuint64KHR* modifiers,
+                                                  EGLBoolean* external_only,
+                                                  EGLint* num_modifiers) = 0;
   virtual EGLBoolean eglQueryStreamKHRFn(EGLDisplay dpy,
                                          EGLStreamKHR stream,
                                          EGLenum attribute,
@@ -702,6 +792,8 @@ class GL_EXPORT EGLApi {
   ::gl::g_current_egl_context->eglExportDMABUFImageMESAFn
 #define eglExportDMABUFImageQueryMESA \
   ::gl::g_current_egl_context->eglExportDMABUFImageQueryMESAFn
+#define eglExportVkImageANGLE \
+  ::gl::g_current_egl_context->eglExportVkImageANGLEFn
 #define eglGetCompositorTimingANDROID \
   ::gl::g_current_egl_context->eglGetCompositorTimingANDROIDFn
 #define eglGetCompositorTimingSupportedANDROID \
@@ -748,6 +840,10 @@ class GL_EXPORT EGLApi {
   ::gl::g_current_egl_context->eglQueryDisplayAttribANGLEFn
 #define eglQueryDisplayAttribEXT \
   ::gl::g_current_egl_context->eglQueryDisplayAttribEXTFn
+#define eglQueryDmaBufFormatsEXT \
+  ::gl::g_current_egl_context->eglQueryDmaBufFormatsEXTFn
+#define eglQueryDmaBufModifiersEXT \
+  ::gl::g_current_egl_context->eglQueryDmaBufModifiersEXTFn
 #define eglQueryStreamKHR ::gl::g_current_egl_context->eglQueryStreamKHRFn
 #define eglQueryStreamu64KHR ::gl::g_current_egl_context->eglQueryStreamu64KHRFn
 #define eglQueryString ::gl::g_current_egl_context->eglQueryStringFn

@@ -1,9 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 
+#include "ash/capture_mode/camera_video_frame_handler.h"
+#include "ash/capture_mode/camera_video_frame_renderer.h"
+#include "ash/capture_mode/capture_mode_camera_controller.h"
+#include "ash/capture_mode/capture_mode_camera_preview_view.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_session.h"
@@ -45,19 +49,45 @@ void CaptureModeTestApi::StartForRegion(bool for_video) {
   controller_->Start(CaptureModeEntryType::kQuickSettings);
 }
 
+void CaptureModeTestApi::SetCaptureModeSource(CaptureModeSource source) {
+  controller_->SetSource(source);
+}
+
+bool CaptureModeTestApi::IsSessionActive() const {
+  return controller_->IsActive();
+}
+
 void CaptureModeTestApi::SetUserSelectedRegion(const gfx::Rect& region) {
   controller_->SetUserCaptureRegion(region, /*by_user=*/true);
 }
 
-void CaptureModeTestApi::PerformCapture() {
+void CaptureModeTestApi::PerformCapture(bool skip_count_down) {
   DCHECK(controller_->IsActive());
-  base::AutoReset<bool> skip_count_down(&controller_->skip_count_down_ui_,
-                                        true);
-  controller_->PerformCapture();
+  if (skip_count_down) {
+    base::AutoReset<bool> skip_count_down_resetter(
+        &controller_->skip_count_down_ui_, true);
+    controller_->PerformCapture();
+  } else {
+    controller_->PerformCapture();
+  }
 }
 
 bool CaptureModeTestApi::IsVideoRecordingInProgress() const {
   return controller_->is_recording_in_progress();
+}
+
+bool CaptureModeTestApi::IsPendingDlpCheck() const {
+  return controller_->pending_dlp_check_;
+}
+
+bool CaptureModeTestApi::IsSessionWaitingForDlpConfirmation() const {
+  return controller_->IsActive() &&
+         controller_->capture_mode_session_->is_waiting_for_dlp_confirmation_;
+}
+
+bool CaptureModeTestApi::IsInCountDownAnimation() const {
+  return controller_->IsActive() &&
+         controller_->capture_mode_session_->IsInCountDownAnimation();
 }
 
 void CaptureModeTestApi::StopVideoRecording() {
@@ -75,9 +105,18 @@ void CaptureModeTestApi::SetOnCaptureFileDeletedCallback(
   controller_->on_file_deleted_callback_for_test_ = std::move(callback);
 }
 
+void CaptureModeTestApi::SetOnVideoRecordCountdownFinishedCallback(
+    base::OnceClosure callback) {
+  controller_->on_countdown_finished_callback_for_test_ = std::move(callback);
+}
+
 void CaptureModeTestApi::SetAudioRecordingEnabled(bool enabled) {
   DCHECK(!controller_->is_recording_in_progress());
   controller_->enable_audio_recording_ = enabled;
+}
+
+bool CaptureModeTestApi::GetAudioRecordingEnabled() const {
+  return controller_->GetAudioRecordingEnabled();
 }
 
 void CaptureModeTestApi::FlushRecordingServiceForTesting() {
@@ -127,6 +166,44 @@ aura::Window* CaptureModeTestApi::GetFolderSelectionDialogWindow() {
   auto* session = controller_->capture_mode_session();
   auto* dialog_controller = session->folder_selection_dialog_controller_.get();
   return dialog_controller ? dialog_controller->dialog_window() : nullptr;
+}
+
+void CaptureModeTestApi::SetForceUseGpuMemoryBufferForCameraFrames(bool value) {
+  DCHECK(controller_->camera_controller());
+  CameraVideoFrameHandler::SetForceUseGpuMemoryBufferForTest(value);
+}
+
+size_t CaptureModeTestApi::GetNumberOfAvailableCameras() const {
+  DCHECK(controller_->camera_controller());
+  return controller_->camera_controller()->available_cameras().size();
+}
+
+void CaptureModeTestApi::SelectCameraAtIndex(size_t index) {
+  auto* camera_controller = controller_->camera_controller();
+  DCHECK(camera_controller);
+  DCHECK_LT(index, GetNumberOfAvailableCameras());
+  const auto& camera_info = camera_controller->available_cameras()[index];
+  camera_controller->SetSelectedCamera(camera_info.camera_id);
+}
+
+void CaptureModeTestApi::TurnCameraOff() {
+  auto* camera_controller = controller_->camera_controller();
+  DCHECK(camera_controller);
+  camera_controller->SetSelectedCamera(CameraId());
+}
+
+void CaptureModeTestApi::SetOnCameraVideoFrameRendered(
+    CameraVideoFrameCallback callback) {
+  auto* camera_controller = controller_->camera_controller();
+  DCHECK(camera_controller);
+  DCHECK(camera_controller->camera_preview_widget());
+  DCHECK(camera_controller->camera_preview_view_);
+  camera_controller->camera_preview_view_->camera_video_renderer_
+      .on_video_frame_rendered_for_test_ = std::move(callback);
+}
+
+views::Widget* CaptureModeTestApi::GetCameraPreviewWidget() {
+  return controller_->camera_controller()->camera_preview_widget();
 }
 
 void CaptureModeTestApi::SetType(bool for_video) {

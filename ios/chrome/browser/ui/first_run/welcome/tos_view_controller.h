@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,10 +13,13 @@
 @interface TOSViewController : UIViewController
 
 // Initiates a TOSViewController with
-// |TOSView| UIView with ToS page in it;
-// |handler| to handle user action.
+// `TOSView` UIView with ToS page in it;
+// `handler` to handle user action.
 - (instancetype)initWithContentView:(UIView*)TOSView
                             handler:(id<TOSCommands>)handler;
+
+// Closes the TOS.
+- (void)close;
 
 @end
 

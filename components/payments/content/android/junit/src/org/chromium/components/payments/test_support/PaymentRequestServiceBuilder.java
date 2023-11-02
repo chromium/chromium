@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -239,6 +239,11 @@ public class PaymentRequestServiceBuilder implements Delegate {
         mMethodData[0].supportedMethod = MethodStrings.SECURE_PAYMENT_CONFIRMATION;
 
         mMethodData[0].securePaymentConfirmation = mSecurePaymentConfirmationRequest;
+        return this;
+    }
+
+    public PaymentRequestServiceBuilder setPayeeName(String payeeName) {
+        mSecurePaymentConfirmationRequest.payeeName = payeeName;
         return this;
     }
 

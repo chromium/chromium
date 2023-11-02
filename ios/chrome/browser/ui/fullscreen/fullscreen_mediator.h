@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
@@ -73,12 +72,12 @@ class FullscreenMediator : public FullscreenModelObserver {
   void FullscreenModelScrollEventEnded(FullscreenModel* model) override;
   void FullscreenModelWasReset(FullscreenModel* model) override;
 
-  // Sets up |animator_| with |style|, notifies FullscreenControllerObservers,
+  // Sets up `animator_` with `style`, notifies FullscreenControllerObservers,
   // and starts the animation.
   void AnimateWithStyle(FullscreenAnimatorStyle style);
 
   // Stops the current scroll end animation if one is in progress.  If
-  // |update_model| is true, the FullscreenModel will be updated with the active
+  // `update_model` is true, the FullscreenModel will be updated with the active
   // animator's current progress value.
   void StopAnimating(bool update_model);
 

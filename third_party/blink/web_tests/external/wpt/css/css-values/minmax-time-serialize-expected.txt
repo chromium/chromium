@@ -19,7 +19,7 @@ FAIL 'min(900ms, 1s)' as a specified value should serialize as 'calc(0.9s)'. ass
 PASS 'min(900ms, 1s)' as a computed value should serialize as '0.9s'.
 FAIL 'max(1100ms, 1s)' as a specified value should serialize as 'calc(1.1s)'. assert_equals: 'max(1100ms, 1s)' and 'calc(1.1s)' should serialize the same in specified values. expected "calc(1.1s)" but got "max(1100ms, 1s)"
 PASS 'max(1100ms, 1s)' as a computed value should serialize as '1.1s'.
-FAIL 'calc(min(1s, 2s) + max(3s, 4s) + 10s)' as a specified value should serialize as 'calc(15s)'. assert_equals: 'calc(min(1s, 2s) + max(3s, 4s) + 10s)' and 'calc(15s)' should serialize the same in specified values. expected "calc(15s)" but got "calc(10005ms)"
-FAIL 'calc(min(1s, 2s) + max(3s, 4s) + 10s)' as a computed value should serialize as '15s'. assert_equals: 'calc(min(1s, 2s) + max(3s, 4s) + 10s)' and '15s' should serialize the same in computed values. expected "15s" but got "10.005s"
+PASS 'calc(min(1s, 2s) + max(3s, 4s) + 10s)' as a specified value should serialize as 'calc(15s)'.
+PASS 'calc(min(1s, 2s) + max(3s, 4s) + 10s)' as a computed value should serialize as '15s'.
 Harness: the test ran to completion.
 

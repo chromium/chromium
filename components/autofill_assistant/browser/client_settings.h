@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -140,6 +140,17 @@ struct ClientSettings {
   // should be concatenated.
   ClientSettingsProto::SlowWarningSettings::MessageMode message_mode =
       ClientSettingsProto::SlowWarningSettings::REPLACE;
+
+  // Extra time SelectorObserver has to finish. If it takes longer than
+  // max_wait_time + extra_timeout (this value) it assumes something went
+  // wrong and fails with a |TIMED_OUT| error. SelectorObserver only counts
+  // time spent waiting so a extra delay of 1 to 10 seconds for javascript
+  // execution and checking selectors is conceivable.
+  base::TimeDelta selector_observer_extra_timeout = base::Seconds(15);
+
+  // Wait until no DOM changes are received for this amount of time to check
+  // the selectors. An interval of 0 effectively disables debouncing.
+  base::TimeDelta selector_observer_debounce_interval = base::Milliseconds(100);
 };
 
 }  // namespace autofill_assistant

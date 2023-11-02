@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -80,12 +80,15 @@ interface HidService {
   GetDevices() => (array<device.mojom.HidDeviceInfo> devices);
 
   // Requests access to a device. A chooser dialog is displayed with a list of
-  // connected devices. If |filters| is non-empty, only devices that match one
-  // or more of the filters will be included in the chooser list. If |filters|
-  // is empty, all connected devices are included. |devices| contains logical
-  // HID interfaces exposed by the device. If the chooser dialog is canceled,
-  // |devices| is an empty array.
-  RequestDevice(array<HidDeviceFilter> filters)
+  // connected devices. If |filters| is empty, all connected devices are
+  // included in the chooser list except devices that match one or more
+  // filters in |exclusion_filters|. If |filters| is non-empty, connected
+  // devices are included if they match one or more filters in |filters| and
+  // do not match any filters in |exclusion_filters|. |devices| contains
+  // logical HID interfaces exposed by the device. If the chooser dialog is
+  // canceled, |devices| is an empty array.
+  RequestDevice(array<HidDeviceFilter> filters,
+                array<HidDeviceFilter> exclusion_filters)
       => (array<device.mojom.HidDeviceInfo> devices);
 
   // Opens a connection to the device with GUID matching |device_guid|. |client|
@@ -94,4 +97,8 @@ interface HidService {
   // device could not be opened.
   Connect(string device_guid, pending_remote<device.mojom.HidConnectionClient> client)
       => (pending_remote<device.mojom.HidConnection>? connection);
+
+  // Attempts to revoke the permission to the device matching |device_info|.
+  // It will fail silently if the permission cannot be revoked.
+  Forget(device.mojom.HidDeviceInfo device_info) => ();
 };

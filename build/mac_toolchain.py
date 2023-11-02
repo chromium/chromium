@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -18,8 +18,6 @@ The toolchain version can be overridden by setting MAC_TOOLCHAIN_REVISION with
 the full revision, e.g. 9A235.
 """
 
-from __future__ import print_function
-
 import argparse
 import os
 import pkg_resources
@@ -32,20 +30,21 @@ import sys
 
 def LoadPList(path):
   """Loads Plist at |path| and returns it as a dictionary."""
-  if sys.version_info.major == 2:
-    return plistlib.readPlist(path)
   with open(path, 'rb') as f:
     return plistlib.load(f)
 
 
-# This contains binaries from Xcode 13.1 13A1030d, along with the macOS 12 SDK.
-# To build these packages, see comments in build/xcode_binaries.yaml
+# This contains binaries from Xcode 13.4.1 13F100, along with the macOS 12 SDK
+# (12.3 21E226). To build these packages, see comments in
+# build/xcode_binaries.yaml
 MAC_BINARIES_LABEL = 'infra_internal/ios/xcode/xcode_binaries/mac-amd64'
-MAC_BINARIES_TAG = 'wOVYsXlTe3LsA1i9HtemuK_aDZ8NEHuKnhLYJvc8F5UC'
+MAC_BINARIES_TAG = 'OzUNvLYw4Z-9XcbsXRKaDWo3rbJtcD1B7BbGPqEQ8a0C'
 
 # The toolchain will not be downloaded if the minimum OS version is not met. 19
-# is the major version number for macOS 10.15. 12B5044c (Xcode 12.2rc) only runs
-# on 10.15.4 and newer.
+# is the Darwin major version number for macOS 10.15. Xcode 13.3 13E113 only
+# claims support for running on macOS 12.0 and newer, but some bots are still
+# running older OS versions. 10.15.4, the macOS minimum through Xcode 12.4,
+# still seems to work.
 MAC_MINIMUM_OS_VERSION = [19, 4]
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -161,11 +160,10 @@ def InstallXcodeBinaries():
     return 0
 
   # Use puppet's sudoers script to accept the license if its available.
-  license_accept_script = '/usr/local/bin/xcode_accept_license.py'
+  license_accept_script = '/usr/local/bin/xcode_accept_license.sh'
   if os.path.exists(license_accept_script):
     args = [
-        'sudo', license_accept_script, '--xcode-version', cipd_xcode_version,
-        '--license-version', cipd_license_version
+        'sudo', license_accept_script, cipd_xcode_version, cipd_license_version
     ]
     subprocess.check_call(args)
     return 0

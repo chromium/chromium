@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -10,7 +10,11 @@ static_library("storage_configuration") {
     "storage_configuration.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/resources:resource_interface",
+  ]
 }
 
 static_library("storage_uploader_interface") {
@@ -23,6 +27,7 @@ static_library("storage_uploader_interface") {
     "//base",
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",
+    "//components/reporting/resources:resource_interface",
     "//components/reporting/util:status",
     "//components/reporting/util:status_proto",
   ]
@@ -44,6 +49,7 @@ static_library("storage_queue") {
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",
     "//components/reporting/resources:resource_interface",
+    "//components/reporting/util:file",
     "//components/reporting/util:status",
     "//components/reporting/util:status_macros",
     "//components/reporting/util:task_runner_context",
@@ -69,8 +75,12 @@ static_library("storage") {
     "//components/reporting/encryption:encryption_module_interface",
     "//components/reporting/encryption:primitives",
     "//components/reporting/encryption:verification",
+    "//components/reporting/health:health_module",
+    "//components/reporting/proto:pipeline_id_proto",
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",
+    "//components/reporting/resources:resource_interface",
+    "//components/reporting/util:file",
     "//components/reporting/util:status",
     "//components/reporting/util:status_macros",
     "//components/reporting/util:task_runner_context",
@@ -187,6 +197,7 @@ source_set("unit_tests") {
     "//components/reporting/encryption:testing_primitives",
     "//components/reporting/proto:record_proto",
     "//components/reporting/resources:resource_interface",
+    "//components/reporting/util:file",
     "//components/reporting/util:status",
     "//components/reporting/util:status_macros",
     "//components/reporting/util:test_callbacks_support",

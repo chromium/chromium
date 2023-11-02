@@ -1,15 +1,16 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 
-#include <algorithm>
 #include <list>
 
 #include "ash/public/cpp/shell_window_ids.h"
+#include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/views/chrome_web_dialog_view.h"
 #include "components/session_manager/core/session_manager.h"
@@ -23,6 +24,7 @@
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/display/util/display_util.h"
 #include "ui/gfx/geometry/insets.h"
 
 namespace chromeos {
@@ -38,13 +40,22 @@ std::list<SystemWebDialogDelegate*>* GetInstances() {
 }
 
 // Creates default initial parameters. The system web dialog has 12 dip corner
-// radius by default. If the window has a non-client frame view, we don't need
-// to set shadow, since the bubble frame view will help draw the shadow.
-views::Widget::InitParams CreateWidgetParams() {
+// radius by default. If the the dialog uses a non client type frame, we should
+// build a drop shadow. If use a dialog type frame, we don't have to set a
+// shadow since the dialog frame's border has its own shadow.
+views::Widget::InitParams CreateWidgetParams(
+    SystemWebDialogDelegate::FrameKind frame_kind) {
   views::Widget::InitParams params;
   params.corner_radius = kSystemDialogCornerRadiusDp;
-  // Dialog frame view has its own shadow.
-  params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
+  // Set shadow type according to the frame kind.
+  switch (frame_kind) {
+    case SystemWebDialogDelegate::FrameKind::kNonClient:
+      params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
+      break;
+    case SystemWebDialogDelegate::FrameKind::kDialog:
+      params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
+      break;
+  }
   return params;
 }
 
@@ -57,19 +68,13 @@ const size_t SystemWebDialogDelegate::kDialogMarginForInternalScreenPx = 48;
 SystemWebDialogDelegate* SystemWebDialogDelegate::FindInstance(
     const std::string& id) {
   auto* instances = GetInstances();
-  auto iter =
-      std::find_if(instances->begin(), instances->end(),
-                   [id](SystemWebDialogDelegate* i) { return i->Id() == id; });
+  auto iter = base::ranges::find(*instances, id, &SystemWebDialogDelegate::Id);
   return iter == instances->end() ? nullptr : *iter;
 }
 
 // static
 bool SystemWebDialogDelegate::HasInstance(const GURL& url) {
-  auto* instances = GetInstances();
-  auto it = std::find_if(
-      instances->begin(), instances->end(),
-      [url](SystemWebDialogDelegate* dialog) { return dialog->gurl_ == url; });
-  return it != instances->end();
+  return base::Contains(*GetInstances(), url, &SystemWebDialogDelegate::gurl_);
 }
 
 // static
@@ -80,7 +85,7 @@ gfx::Size SystemWebDialogDelegate::ComputeDialogSizeForInternalScreen(
   // TODO(https://crbug.com/1035060): It could be possible that a Chromebox is
   // hooked up to a low-resolution monitor. It might be a good idea to check
   // that display's resolution as well.
-  if (!display::Display::HasInternalDisplay())
+  if (!display::HasInternalDisplay())
     return preferred_size;
 
   display::Display internal_display;
@@ -131,6 +136,7 @@ SystemWebDialogDelegate::SystemWebDialogDelegate(const GURL& gurl,
     case session_manager::SessionState::LOGIN_PRIMARY:
     case session_manager::SessionState::LOCKED:
     case session_manager::SessionState::LOGIN_SECONDARY:
+    case session_manager::SessionState::RMA:
       set_modal_type(ui::MODAL_TYPE_SYSTEM);
       break;
   }
@@ -218,7 +224,8 @@ bool SystemWebDialogDelegate::ShouldShowDialogTitle() const {
 void SystemWebDialogDelegate::ShowSystemDialogForBrowserContext(
     content::BrowserContext* browser_context,
     gfx::NativeWindow parent) {
-  views::Widget::InitParams extra_params = CreateWidgetParams();
+  views::Widget::InitParams extra_params =
+      CreateWidgetParams(GetWebDialogFrameKind());
 
   // If unparented and not modal, keep it on top (see header comment).
   if (!parent && GetDialogModalType() == ui::MODAL_TYPE_NONE)

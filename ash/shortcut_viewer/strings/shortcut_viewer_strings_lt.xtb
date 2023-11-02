@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">Atidaryti naują langą inkognito režimu</translation>
 <translation id="152892567002884378">Padidinti garsumą</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, tada <ph name="ESC" /></translation>
+<translation id="1586324912145647027">Eiti į 1–8 darbalaukį</translation>
 <translation id="1652741121070700329">Pereiti į ankstesnio žodžio pradžią</translation>
 <translation id="1679841710523778799">Padidinti šviesumą</translation>
 <translation id="168356808214100546">Paspauskite ir palaikykite <ph name="ALT" />, palieskite <ph name="TAB" />, kol pateksite į norimą atidaryti langą, tada atleiskite.</translation>
@@ -70,6 +71,7 @@
 <translation id="3140353188828248647">Fokusuoti adreso juostą</translation>
 <translation id="3256109297135787951">Pašalinti elemento lentynoje paryškinimą</translation>
 <translation id="3288816184963444640">Uždaryti esamą langą</translation>
+<translation id="3322797428033495633">Paryškinti vaizdo vaizde langą</translation>
 <translation id="3350805006883559974">Rodyti slankųjį aktyvų langą viršuje</translation>
 <translation id="3407560819924487926">Rodyti užduočių tvarkytuvę</translation>
 <translation id="3417835166382867856">Ieškoti skirtukų</translation>
@@ -91,6 +93,7 @@
 <translation id="3949671998904569433">kablelis</translation>
 <translation id="3976863468609830880">Spustelėti paskutinę piktogramą lentynoje</translation>
 <translation id="3994783594793697310">Iš naujo nustatyti ekrano mastelio keitimo lygį</translation>
+<translation id="4026837045671473537">Spalvų inversijos režimo įjungimas</translation>
 <translation id="4026843240379844265">Aktyvaus lango perkėlimas iš vieno ekrano į kitą</translation>
 <translation id="4035482366624727273">Pasirinkti viską puslapyje</translation>
 <translation id="4060703249685950734">Iš naujo atidaryti paskutinį uždarytą skirtuką arba langą</translation>
@@ -129,6 +132,7 @@
 <translation id="5563050856984839829">Paspauskite <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> ir spustelėkite nuorodą</translation>
 <translation id="561814908794220892">Atidaryti tinklalapį naujame skirtuke</translation>
 <translation id="5620219513321115856">Aktyvus langas perkeliamas į pultą dešinėje</translation>
+<translation id="5699366815052349604">Priskirti aktyvų langą visiems darbalaukiams</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> arba <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Atidaryti nuorodą skirtuke</translation>
 <translation id="5757474750054631686">Pritemdyti klaviatūrą (skirta tik klaviatūroms su foniniu apšvietimu)</translation>
@@ -138,7 +142,6 @@
 <translation id="5921745308587794300">Pasukti langą</translation>
 <translation id="5926306472221400972">Kurti viso ekrano kopiją</translation>
 <translation id="6022924867608035986">Išvalyti paieškos laukelio tekstą</translation>
-<translation id="6045998054441862242">Įjungti didelio kontrasto režimą</translation>
 <translation id="6052614013050385269">Dešiniuoju klavišu spustelėti nuorodą</translation>
 <translation id="6129953537138746214">Tarpas</translation>
 <translation id="6143669479988153888">Artinti puslapyje</translation>
@@ -155,6 +158,7 @@
 <translation id="6445033640292336367">Grąžinti skirtuką į pradinę padėtį</translation>
 <translation id="6474744297082284761">Tolinti (kai yra doke ARBA įgalintas viso ekrano didinimas)</translation>
 <translation id="649811797655257835">Pasirinkite failą, tada paspauskite <ph name="SPACE" /></translation>
+<translation id="6515089016094047210">Atidarykite arba uždarykite kalendoriaus valdiklį.</translation>
 <translation id="6551886416582667425">Kurti dalinę ekrano kopiją / įrašą</translation>
 <translation id="6556040137485212400">Atidaryti langą, kuris buvo nenaudojamas ilgiausiai</translation>
 <translation id="666343722268997814">Atidaryti paryškinto elemento kontekstinį meniu</translation>
@@ -198,12 +202,12 @@
 <translation id="8388247778047144397">Nuvilkite nuorodą į tuščią sritį skirtuko juostelėje</translation>
 <translation id="8389638407792712197">Atidaryti naują langą</translation>
 <translation id="8429696719963529183">Naudoti F klavišus (F1–F12)</translation>
-<translation id="8537650670971624753">Išeiti iš paieškos režimo</translation>
 <translation id="85690795166292698">Atidaryti nuorodą naujame skirtuke</translation>
 <translation id="8609384513243082612">Atidaryti naują skirtuką</translation>
 <translation id="8644639153978066712">Pateikti paslėptus failus Failų programoje</translation>
 <translation id="8717459106217102612">Pasirinkti ankstesnį žodį ar raidę</translation>
 <translation id="8727232706774971183">Žiūrėti pranešimus</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> nuo 1 iki 8</translation>
 <translation id="8855885154700222542">Viso ekrano klavišas</translation>
 <translation id="8881584919399569791">Aktyvus langas perkeliamas į pultą kairėje</translation>
 <translation id="88986195241502842">Puslapiu žemyn</translation>

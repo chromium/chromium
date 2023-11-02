@@ -59,6 +59,7 @@ class PortTestCase(LoggingTestCase):
     # Subclasses override this to point to their Port subclass.
     os_name = None
     os_version = None
+    machine = None
     port_maker = Port
     port_name = None
     full_port_name = None
@@ -69,10 +70,12 @@ class PortTestCase(LoggingTestCase):
                   options=None,
                   os_name=None,
                   os_version=None,
+                  machine=None,
                   **kwargs):
-        host = host or MockSystemHost(
-            os_name=(os_name or self.os_name),
-            os_version=(os_version or self.os_version))
+        host = host or MockSystemHost(os_name=(os_name or self.os_name),
+                                      os_version=(os_version
+                                                  or self.os_version),
+                                      machine=(machine or self.machine))
         options = options or optparse.Values({
             'configuration': 'Release',
             'use_xvfb': True
@@ -175,21 +178,21 @@ class PortTestCase(LoggingTestCase):
 
     def test_diff_image__missing_both(self):
         port = self.make_port()
-        self.assertEqual(port.diff_image(None, None), (None, None))
-        self.assertEqual(port.diff_image(None, ''), (None, None))
-        self.assertEqual(port.diff_image('', None), (None, None))
+        self.assertEqual(port.diff_image(None, None), (None, None, None))
+        self.assertEqual(port.diff_image(None, ''), (None, None, None))
+        self.assertEqual(port.diff_image('', None), (None, None, None))
 
-        self.assertEqual(port.diff_image('', ''), (None, None))
+        self.assertEqual(port.diff_image('', ''), (None, None, None))
 
     def test_diff_image__missing_actual(self):
         port = self.make_port()
-        self.assertEqual(port.diff_image(None, 'foo'), ('foo', None))
-        self.assertEqual(port.diff_image('', 'foo'), ('foo', None))
+        self.assertEqual(port.diff_image(None, 'foo'), ('foo', None, None))
+        self.assertEqual(port.diff_image('', 'foo'), ('foo', None, None))
 
     def test_diff_image__missing_expected(self):
         port = self.make_port()
-        self.assertEqual(port.diff_image('foo', None), ('foo', None))
-        self.assertEqual(port.diff_image('foo', ''), ('foo', None))
+        self.assertEqual(port.diff_image('foo', None), ('foo', None, None))
+        self.assertEqual(port.diff_image('foo', ''), ('foo', None, None))
 
     def test_diff_image(self):
         def _path_to_image_diff():
@@ -202,16 +205,32 @@ class PortTestCase(LoggingTestCase):
 
         def mock_run_command(args):
             port.host.filesystem.write_binary_file(args[4], mock_image_diff)
-            raise ScriptError(exit_code=1)
+            raise ScriptError(
+                output='Found pixels_different: 100, max_channel_diff: 30',
+                exit_code=1)
 
         # Images are different.
         port._executive = MockExecutive(run_command_fn=mock_run_command)  # pylint: disable=protected-access
-        self.assertEqual(mock_image_diff,
-                         port.diff_image('EXPECTED', 'ACTUAL')[0])
+        diff, stats, err = port.diff_image('EXPECTED', 'ACTUAL')
+        self.assertEqual(diff, mock_image_diff)
+        self.assertEqual(stats, {"maxDifference": 30, "totalPixels": 100})
+        self.assertEqual(err, None)
 
         # Images are the same.
         port._executive = MockExecutive(exit_code=0)  # pylint: disable=protected-access
         self.assertEqual(None, port.diff_image('EXPECTED', 'ACTUAL')[0])
+
+        # Images are the same up to fuzzy diff.
+        port._executive = MockExecutive(
+            output='Found pixels_different: 250, max_channel_diff: 35',
+            exit_code=0)  # pylint: disable=protected-access
+        diff, stats, err = port.diff_image('EXPECTED',
+                                           'ACTUAL',
+                                           max_channel_diff=[10, 40],
+                                           max_pixels_diff=[0, 500])
+        self.assertEqual(diff, None)
+        self.assertEqual(stats, {"maxDifference": 35, "totalPixels": 250})
+        self.assertEqual(err, None)
 
         # There was some error running image_diff.
         port._executive = MockExecutive(exit_code=2)  # pylint: disable=protected-access
@@ -225,11 +244,10 @@ class PortTestCase(LoggingTestCase):
     def test_diff_image_crashed(self):
         port = self.make_port()
         port._executive = MockExecutive(should_throw=True, exit_code=2)  # pylint: disable=protected-access
-        self.assertEqual(
-            port.diff_image('EXPECTED', 'ACTUAL'),
-            (None,
-             'Image diff returned an exit code of 2. See http://crbug.com/278596'
-             ))
+        self.assertEqual(port.diff_image('EXPECTED', 'ACTUAL'), (
+            None, None,
+            'Image diff returned an exit code of 2. See http://crbug.com/278596'
+        ))
 
     def test_test_configuration(self):
         port = self.make_port()
@@ -343,9 +361,15 @@ class PortTestCase(LoggingTestCase):
     def test_used_expectations_files(self):
         options = optparse.Values({
             'additional_expectations': ['/tmp/foo'],
-            'additional_driver_flag': ['flag-specific']
+            'additional_driver_flag': ['--flag-not-affecting'],
+            'flag_specific':
+            'a',
         })
         port = self.make_port(options=options)
+        port.host.filesystem.write_text_file(
+            port.host.filesystem.join(port.web_tests_dir(),
+                                      'FlagSpecificConfig'),
+            '[{"name": "a", "args": ["--aa"]}]')
         self.assertEqual(list(port.used_expectations_files()), [
             port.path_to_generic_test_expectations_file(),
             port.path_to_webdriver_expectations_file(),
@@ -354,7 +378,7 @@ class PortTestCase(LoggingTestCase):
                                       'StaleTestExpectations'),
             port.host.filesystem.join(port.web_tests_dir(), 'SlowTests'),
             port.host.filesystem.join(port.web_tests_dir(), 'FlagExpectations',
-                                      'flag-specific'),
+                                      'a'),
             '/tmp/foo',
         ])
 
@@ -398,5 +422,6 @@ class PortTestCase(LoggingTestCase):
         # use a real SystemHost(). We don't care what virtual_test_suites() returns as long
         # as it is iterable.
         port = self.make_port(host=SystemHost(), port_name=self.full_port_name)
+        port.operating_system = lambda: 'linux'
         self.assertTrue(
             isinstance(port.virtual_test_suites(), collections.Iterable))

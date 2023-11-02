@@ -1,15 +1,18 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.signin.services;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.StringDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Set;
 
 /**
@@ -20,6 +23,17 @@ public class SigninPreferencesManager {
 
     private final SharedPreferencesManager mManager;
 
+    /** Suffix strings for promo shown count preference and histograms. */
+    @StringDef({SyncPromoAccessPointId.BOOKMARKS, SyncPromoAccessPointId.NTP,
+            SyncPromoAccessPointId.RECENT_TABS, SyncPromoAccessPointId.SETTINGS})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface SyncPromoAccessPointId {
+        String BOOKMARKS = "Bookmarks";
+        String NTP = "Ntp";
+        String RECENT_TABS = "RecentTabs"; // Only used for histograms
+        String SETTINGS = "Settings";
+    }
+
     private SigninPreferencesManager() {
         mManager = SharedPreferencesManager.getInstance();
     }
@@ -29,6 +43,15 @@ public class SigninPreferencesManager {
      */
     public static SigninPreferencesManager getInstance() {
         return INSTANCE;
+    }
+
+    /**
+     * Suppress signin promos in New Tab Page for {@link SignInPromo#SUPPRESSION_PERIOD_MS}. This
+     * will not affect promos that were created before this call.
+     */
+    public void temporarilySuppressNewTabPagePromos() {
+        SigninPreferencesManager.getInstance().setNewTabPageSigninPromoSuppressionPeriodStart(
+                System.currentTimeMillis());
     }
 
     /**

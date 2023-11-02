@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest, GetPageTextForSpeech) {
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   RenderWidgetHostView* rwhv =
-      shell()->web_contents()->GetMainFrame()->GetView();
+      shell()->web_contents()->GetPrimaryMainFrame()->GetView();
   RenderWidgetHostViewMac* rwhv_mac =
       static_cast<RenderWidgetHostViewMac*>(rwhv);
 
@@ -142,10 +142,10 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest,
       static_cast<WebContentsImpl*>(shell()->web_contents());
   auto* root = web_contents_impl->GetPrimaryFrameTree().root();
   web_contents_impl->GetPrimaryFrameTree().SetFocusedFrame(
-      root, root->current_frame_host()->GetSiteInstance());
+      root, root->current_frame_host()->GetSiteInstance()->group());
 
   RenderWidgetHostView* rwhv =
-      shell()->web_contents()->GetMainFrame()->GetView();
+      shell()->web_contents()->GetPrimaryMainFrame()->GetView();
   RenderWidgetHostViewMac* rwhv_mac =
       static_cast<RenderWidgetHostViewMac*>(rwhv);
 
@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest, UpdateInputFlags) {
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   RenderWidgetHostView* rwhv =
-      shell()->web_contents()->GetMainFrame()->GetView();
+      shell()->web_contents()->GetPrimaryMainFrame()->GetView();
   RenderWidgetHostViewMac* rwhv_mac =
       static_cast<RenderWidgetHostViewMac*>(rwhv);
   RenderWidgetHostViewCocoa* rwhv_cocoa = rwhv_mac->GetInProcessNSView();
@@ -193,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest,
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   RenderWidgetHostView* rwhv =
-      shell()->web_contents()->GetMainFrame()->GetView();
+      shell()->web_contents()->GetPrimaryMainFrame()->GetView();
   RenderWidgetHostViewMac* rwhv_mac =
       static_cast<RenderWidgetHostViewMac*>(rwhv);
   RenderWidgetHostViewCocoa* rwhv_cocoa = rwhv_mac->GetInProcessNSView();
@@ -207,8 +207,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest,
   EXPECT_EQ(0lu, [rwhv_cocoa selectedRange].location);
 
   TextSelectionWaiter waiter(rwhv_mac);
-  NSEvent* key_a =
-      cocoa_test_event_utils::KeyEventWithKeyCode('a', 'a', NSKeyDown, 0);
+  NSEvent* key_a = cocoa_test_event_utils::KeyEventWithKeyCode(
+      'a', 'a', NSEventTypeKeyDown, 0);
   [rwhv_cocoa keyEvent:key_a];
 
   // After typing 'a', the browser process assumes that the text was entered and

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/url_matcher/url_matcher.h"
 #include "extensions/browser/api/declarative/declarative_rule.h"
 #include "extensions/browser/api/declarative_webrequest/webrequest_condition_attribute.h"
@@ -29,10 +29,10 @@ struct WebRequestData {
   ~WebRequestData();
 
   // The network request that is currently being processed.
-  const WebRequestInfo* request;
+  raw_ptr<const WebRequestInfo> request;
   // The stage (progress) of the network request.
   RequestStage stage;
-  const net::HttpResponseHeaders* original_response_headers;
+  raw_ptr<const net::HttpResponseHeaders> original_response_headers;
 };
 
 // Adds information about URL matches to WebRequestData.
@@ -40,8 +40,8 @@ struct WebRequestDataWithMatchIds {
   explicit WebRequestDataWithMatchIds(const WebRequestData* request_data);
   ~WebRequestDataWithMatchIds();
 
-  const WebRequestData* data;
-  std::set<url_matcher::URLMatcherConditionSet::ID> url_match_ids;
+  raw_ptr<const WebRequestData> data;
+  std::set<base::MatcherStringPattern::ID> url_match_ids;
 };
 
 // Representation of a condition in the Declarative WebRequest API. A condition

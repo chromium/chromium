@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SKIA_PUBLIC_MOJOM_TILE_MODE_MOJOM_TRAITS_H_
 #define SKIA_PUBLIC_MOJOM_TILE_MODE_MOJOM_TRAITS_H_
 
+#include "base/notreached.h"
 #include "skia/public/mojom/tile_mode.mojom-shared.h"
 #include "third_party/skia/include/core/SkTileMode.h"
 

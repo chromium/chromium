@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,9 @@
 #include <sstream>
 #include <utility>
 
-#include "ash/components/settings/cros_settings_names.h"
-#include "ash/components/settings/timezone_settings.h"
+#include "ash/components/arc/mojom/enterprise_reporting.mojom.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -26,7 +27,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
@@ -37,12 +37,11 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/util/version_loader.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/system/statistics_provider.h"
-#include "components/arc/mojom/enterprise_reporting.mojom.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/arc_service_manager.h"
+#include "chromeos/version/version_loader.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -52,11 +51,11 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
+namespace policy {
+
 namespace {
 
-namespace em = enterprise_management;
-
-using base::Time;
+namespace em = ::enterprise_management;
 
 // How much time in the past to store active periods for.
 constexpr base::TimeDelta kMaxStoredPastActivityInterval = base::Days(30);
@@ -72,8 +71,7 @@ const char kReportSizeHistogramName[] =
 const char kTimeSinceLastReportHistogramName[] =
     "ChromeOS.FamilyLink.ChildStatusReportRequest.TimeSinceLastReport";
 
-bool ReadAndroidStatus(
-    policy::ChildStatusCollector::AndroidStatusReceiver receiver) {
+bool ReadAndroidStatus(ChildStatusCollector::AndroidStatusReceiver receiver) {
   auto* const arc_service_manager = arc::ArcServiceManager::Get();
   if (!arc_service_manager)
     return false;
@@ -90,8 +88,6 @@ bool ReadAndroidStatus(
 }
 
 }  // namespace
-
-namespace policy {
 
 class ChildStatusCollectorState : public StatusCollectorState {
  public:
@@ -233,8 +229,8 @@ void ChildStatusCollector::OnUsageTimeStateChange(
 }
 
 void ChildStatusCollector::UpdateChildUsageTime() {
-  Time now = clock_->Now();
-  Time reset_time = activity_storage_->GetBeginningOfDay(now);
+  base::Time now = clock_->Now();
+  base::Time reset_time = activity_storage_->GetBeginningOfDay(now);
   if (reset_time > now)
     reset_time -= base::Days(1);
   // Reset screen time if it has not been reset today.
@@ -276,7 +272,7 @@ bool ChildStatusCollector::GetActivityTimes(
     // This is correct even when there are leap seconds, because when a leap
     // second occurs, two consecutive seconds have the same timestamp.
     int64_t end_timestamp =
-        activity_period.start_timestamp() + Time::kMillisecondsPerDay;
+        activity_period.start_timestamp() + base::Time::kMillisecondsPerDay;
 
     em::ScreenTimeSpan* screen_time_span = status->add_screen_time_span();
     em::TimePeriod* period = screen_time_span->mutable_time_period();
@@ -430,8 +426,12 @@ bool ChildStatusCollector::IsReportingAppInfoAndActivity() const {
   return false;
 }
 
-void ChildStatusCollector::OnOSVersion(const std::string& version) {
-  os_version_ = version;
+// TODO(https://crbug.com/1364425)
+// Make this function fallible when the optional passed in evaluated to
+// nullptr, instead of returning a dummy string.
+void ChildStatusCollector::OnOSVersion(
+    const absl::optional<std::string>& version) {
+  os_version_ = version.value_or("0.0.0.0");
 }
 
 }  // namespace policy

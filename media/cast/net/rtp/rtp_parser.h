@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,9 +14,6 @@
 namespace media {
 namespace cast {
 
-// TODO(miu): RtpParser and RtpPacketizer should be consolidated into a single
-// module that handles all RTP/Cast packet serialization and deserialization
-// throughout the media/cast library.
 class RtpParser {
  public:
   RtpParser(uint32_t expected_sender_ssrc, uint8_t expected_payload_type);

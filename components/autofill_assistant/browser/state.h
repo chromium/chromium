@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,8 +32,10 @@ enum class AutofillAssistantState {
 
   // Autofill assistant is keeping track of script availability.
   //
-  // In this mode, no UI is shown and scripts are not autostarted. User
-  // actions might be available.
+  // UI will only be shown if the previous state was RUNNING and if the script
+  // finished with tell + stop.
+  //
+  // In this mode, scripts are not autostarted. User actions might be available.
   //
   // Note that it is possible to go from TRACKING to STARTING to trigger
   // whatever autostartable scripts is defined for a page.
@@ -79,7 +81,7 @@ enum class AutofillAssistantState {
   // In that scenario, the status message at the time of transition to STOPPED
   // is supposed to contain the final message.
   //
-  // Next states: TRACKING, RUNNING
+  // Next states: TRACKING
   STOPPED,
 
   // Autofill assistant is waiting for the user to browse the website until one

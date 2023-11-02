@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,8 +24,6 @@ typedef NS_ENUM(NSUInteger, DefaultPromoType);
 @class MemoryWarningHelper;
 @class MetricsMediator;
 @protocol StartupInformation;
-@protocol TabOpening;
-@protocol TabSwitching;
 
 namespace base {
 class TimeTicks;
@@ -72,7 +70,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 // active and enters the foreground. This can happen if the policies have
 // changed since the last cold start, meaning the user was signed out during
 // startup.
-@property(nonatomic) BOOL shouldShowPolicySignoutPrompt;
+@property(nonatomic) BOOL shouldShowForceSignOutPrompt;
 
 // Indicates that this app launch is one after a crash.
 @property(nonatomic, assign) BOOL postCrashLaunch;
@@ -100,6 +98,9 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 // YES if the views being presented should only support the portrait
 // orientation.
 @property(nonatomic, readonly) BOOL portraitOnly;
+
+// YES if the application is getting terminated.
+@property(nonatomic, readonly) BOOL appIsTerminating;
 
 // Saves the launchOptions to be used from -newTabFromLaunchOptions. If the
 // application is in background, initialize the browser to basic. If not, launch
@@ -155,7 +156,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 - (void)removeObserver:(id<AppStateObserver>)observer;
 
 // Adds a new agent. Agents are owned by the app state.
-// This automatically sets the app state on the |agent|.
+// This automatically sets the app state on the `agent`.
 - (void)addAgent:(id<AppStateAgent>)agent;
 // Removes an agent.
 - (void)removeAgent:(id<AppStateAgent>)agent;

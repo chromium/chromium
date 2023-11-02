@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,21 +7,21 @@
 #include <stdint.h>
 
 #include "base/containers/contains.h"
+#include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "build/util/chromium_git_revision.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
-#elif defined(OS_POSIX) && !defined(OS_MAC)
+#elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
 #include <sys/utsname.h>
 #endif
 
@@ -29,38 +29,51 @@ namespace content {
 
 namespace {
 
+const char kFrozenUserAgentTemplate[] =
+    "Mozilla/5.0 (%s) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/%s.0.0.0 "
+#if BUILDFLAG(IS_ANDROID)
+    "%s"
+#endif
+    "Safari/537.36";
+
 std::string GetUserAgentPlatform() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return "";
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   return "Macintosh; ";
-#elif defined(USE_OZONE)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return "X11; ";  // strange, but that's what Firefox uses
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   return "Linux; ";
-#elif defined(OS_FUCHSIA)
-  // TODO(https://crbug.com/1225812): Determine what to report for Fuchsia,
-  // considering both backwards compatibility and User-Agent Reduction.
-  return "X11; ";
-#elif defined(OS_POSIX)
-  return "Unknown; ";
+#elif BUILDFLAG(IS_FUCHSIA)
+  return "";
+#else
+#error Unsupported platform
+#endif
+}
+
+std::string GetUnifiedPlatform() {
+#if BUILDFLAG(IS_ANDROID)
+  return "Linux; Android 10; K";
+#elif BUILDFLAG(IS_CHROMEOS)
+  return "X11; CrOS x86_64 14541.0.0";
+#elif BUILDFLAG(IS_MAC)
+  return "Macintosh; Intel Mac OS X 10_15_7";
+#elif BUILDFLAG(IS_WIN)
+  return "Windows NT 10.0; Win64; x64";
+#elif BUILDFLAG(IS_FUCHSIA)
+  return "Fuchsia";
+#elif BUILDFLAG(IS_LINUX)
+  return "X11; Linux x86_64";
+#else
+#error Unsupported platform
 #endif
 }
 
 }  // namespace
 
-std::string GetUnifiedPlatform() {
-#if defined(OS_ANDROID)
-  return frozen_user_agent_strings::kUnifiedPlatformAndroid;
-#elif defined(OS_CHROMEOS)
-  return frozen_user_agent_strings::kUnifiedPlatformCrOS;
-#elif defined(OS_MAC)
-  return frozen_user_agent_strings::kUnifiedPlatformMacOS;
-#elif defined(OS_WIN)
-  return frozen_user_agent_strings::kUnifiedPlatformWindows;
-#else
-  return frozen_user_agent_strings::kUnifiedPlatformLinux;
-#endif
+std::string GetUnifiedPlatformForTesting() {
+  return GetUnifiedPlatform();
 }
 
 // Inaccurately named for historical reasons
@@ -75,9 +88,9 @@ std::string GetChromiumGitRevision() {
 std::string BuildCpuInfo() {
   std::string cpuinfo;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   cpuinfo = "Intel";
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   base::win::OSInfo* os_info = base::win::OSInfo::GetInstance();
   if (os_info->IsWowX86OnAMD64()) {
     cpuinfo = "WOW64";
@@ -89,7 +102,7 @@ std::string BuildCpuInfo() {
     else if (windows_architecture == base::win::OSInfo::IA64_ARCHITECTURE)
       cpuinfo = "Win64; IA64";
   }
-#elif defined(OS_POSIX) && !defined(OS_MAC)
+#elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
   // Should work on any Posix system.
   struct utsname unixinfo;
   uname(&unixinfo);
@@ -106,10 +119,10 @@ std::string BuildCpuInfo() {
   return cpuinfo;
 }
 
-// Return the CPU architecture in Windows/Mac/POSIX and the empty string
-// elsewhere.
-std::string GetLowEntropyCpuArchitecture() {
-#if defined(OS_WIN)
+// Return the CPU architecture in Windows/Mac/POSIX/Fuchsia and the empty string
+// on Android or if unknown.
+std::string GetCpuArchitecture() {
+#if BUILDFLAG(IS_WIN)
   base::win::OSInfo::WindowsArchitecture windows_architecture =
       base::win::OSInfo::GetInstance()->GetArchitecture();
   base::win::OSInfo* os_info = base::win::OSInfo::GetInstance();
@@ -123,7 +136,7 @@ std::string GetLowEntropyCpuArchitecture() {
              (windows_architecture == base::win::OSInfo::X64_ARCHITECTURE)) {
     return "x86";
   }
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   base::mac::CPUType cpu_type = base::mac::GetCPUType();
   if (cpu_type == base::mac::CPUType::kIntel) {
     return "x86";
@@ -131,7 +144,9 @@ std::string GetLowEntropyCpuArchitecture() {
              cpu_type == base::mac::CPUType::kTranslatedIntel) {
     return "arm";
   }
-#elif defined(OS_POSIX) && !defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
+  return std::string();
+#elif BUILDFLAG(IS_POSIX)
   std::string cpu_info = BuildCpuInfo();
   if (base::StartsWith(cpu_info, "arm") ||
       base::StartsWith(cpu_info, "aarch")) {
@@ -141,37 +156,50 @@ std::string GetLowEntropyCpuArchitecture() {
              base::StartsWith(cpu_info, "x86")) {
     return "x86";
   }
+#elif BUILDFLAG(IS_FUCHSIA)
+  std::string cpu_arch = base::SysInfo::ProcessCPUArchitecture();
+  if (base::StartsWith(cpu_arch, "x86")) {
+    return "x86";
+  } else if (base::StartsWith(cpu_arch, "ARM")) {
+    return "arm";
+  }
+#else
+#error Unsupported platform
 #endif
+  DLOG(WARNING) << "Unrecognized CPU Architecture";
   return std::string();
 }
 
-std::string GetLowEntropyCpuBitness() {
-#if defined(OS_WIN)
+// Return the CPU bitness in Windows/Mac/POSIX/Fuchsia and the empty string
+// on Android.
+std::string GetCpuBitness() {
+#if BUILDFLAG(IS_WIN)
   return (base::win::OSInfo::GetInstance()->GetArchitecture() ==
           base::win::OSInfo::X86_ARCHITECTURE)
              ? "32"
              : "64";
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)
   return "64";
-#elif defined(OS_POSIX) && !defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
+  return std::string();
+#elif BUILDFLAG(IS_POSIX)
   return base::Contains(BuildCpuInfo(), "64") ? "64" : "32";
 #else
-  return std::string();
+#error Unsupported platform
 #endif
 }
 
 std::string GetOSVersion(IncludeAndroidBuildNumber include_android_build_number,
                          IncludeAndroidModel include_android_model) {
   std::string os_version;
-#if defined(OS_WIN) || defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   int32_t os_major_version = 0;
   int32_t os_minor_version = 0;
   int32_t os_bugfix_version = 0;
   base::SysInfo::OperatingSystemVersionNumbers(
       &os_major_version, &os_minor_version, &os_bugfix_version);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // A significant amount of web content breaks if the reported "Mac
   // OS X" major version number is greater than 10. Continue to report
   // this as 10_15_7, the last dot release for that macOS version.
@@ -184,22 +212,22 @@ std::string GetOSVersion(IncludeAndroidBuildNumber include_android_build_number,
 
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::string android_version_str = base::SysInfo::OperatingSystemVersion();
   std::string android_info_str =
       GetAndroidOSInfo(include_android_build_number, include_android_model);
 #endif
 
   base::StringAppendF(&os_version,
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
                       "%d.%d", os_major_version, os_minor_version
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
                       "%d_%d_%d", os_major_version, os_minor_version,
                       os_bugfix_version
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS)
                       "%d.%d.%d", os_major_version, os_minor_version,
                       os_bugfix_version
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
                       "%s%s", android_version_str.c_str(),
                       android_info_str.c_str()
 #else
@@ -221,32 +249,33 @@ std::string BuildOSCpuInfoFromOSVersionAndCpuType(const std::string& os_version,
                                                   const std::string& cpu_type) {
   std::string os_cpu;
 
-#if !defined(OS_ANDROID) && defined(OS_POSIX) && !defined(OS_MAC)
+#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
   // Should work on any Posix system.
   struct utsname unixinfo;
   uname(&unixinfo);
 #endif
 
-#if defined(OS_WIN)
-  if (!cpu_type.empty())
+#if BUILDFLAG(IS_WIN)
+  if (!cpu_type.empty()) {
     base::StringAppendF(&os_cpu, "Windows NT %s; %s", os_version.c_str(),
                         cpu_type.c_str());
-  else
+  } else {
     base::StringAppendF(&os_cpu, "Windows NT %s", os_version.c_str());
+  }
 #else
   base::StringAppendF(&os_cpu,
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
                       "%s Mac OS X %s", cpu_type.c_str(), os_version.c_str()
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS)
                       "CrOS "
                       "%s %s",
                       cpu_type.c_str(),  // e.g. i686
                       os_version.c_str()
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
                       "Android %s", os_version.c_str()
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
                       "Fuchsia"
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
                       "%s %s",
                       unixinfo.sysname,  // e.g. Linux
                       cpu_type.c_str()   // e.g. i686
@@ -258,22 +287,30 @@ std::string BuildOSCpuInfoFromOSVersionAndCpuType(const std::string& os_version,
 }
 
 std::string GetReducedUserAgent(bool mobile, std::string major_version) {
-  std::string user_agent;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  // There is an extra field in the template on Android.
   std::string device_compat;
   // Note: The extra space after Mobile is meaningful here, to avoid
   // "MobileSafari", but unneeded for non-mobile Android devices.
   device_compat = mobile ? "Mobile " : "";
-  user_agent = base::StringPrintf(frozen_user_agent_strings::kAndroid,
-                                  GetUnifiedPlatform().c_str(),
-                                  major_version.c_str(), device_compat.c_str());
-#else
-  user_agent =
-      base::StringPrintf(frozen_user_agent_strings::kDesktop,
-                         GetUnifiedPlatform().c_str(), major_version.c_str());
 #endif
+  std::string user_agent =
+      base::StringPrintf(kFrozenUserAgentTemplate, GetUnifiedPlatform().c_str(),
+                         major_version.c_str()
+#if BUILDFLAG(IS_ANDROID)
+                             ,
+                         device_compat.c_str()
+#endif
+      );
 
   return user_agent;
+}
+
+std::string BuildUnifiedPlatformUserAgentFromProduct(
+    const std::string& product) {
+  std::string os_info;
+  base::StringAppendF(&os_info, "%s", GetUnifiedPlatform().c_str());
+  return BuildUserAgentFromOSAndProduct(os_info, product);
 }
 
 std::string BuildUserAgentFromProduct(const std::string& product) {
@@ -287,7 +324,7 @@ std::string BuildUserAgentFromProduct(const std::string& product) {
 
 std::string BuildModelInfo() {
   std::string model;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Only send the model information if on the release build of Android,
   // matching user agent behaviour.
   if (base::SysInfo::GetAndroidBuildCodename() == "REL")
@@ -296,7 +333,7 @@ std::string BuildModelInfo() {
   return model;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 std::string BuildUserAgentFromProductAndExtraOSInfo(
     const std::string& product,
     const std::string& extra_os_info,
@@ -336,7 +373,7 @@ std::string GetAndroidOSInfo(
 
   return android_info_str;
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 std::string BuildUserAgentFromOSAndProduct(const std::string& os_info,
                                            const std::string& product) {
@@ -349,6 +386,15 @@ std::string BuildUserAgentFromOSAndProduct(const std::string& os_info,
                       "%s Safari/537.36",
                       os_info.c_str(), product.c_str());
   return user_agent;
+}
+
+bool IsWoW64() {
+#if BUILDFLAG(IS_WIN)
+  base::win::OSInfo* os_info = base::win::OSInfo::GetInstance();
+  return os_info->IsWowX86OnAMD64();
+#else
+  return false;
+#endif
 }
 
 }  // namespace content

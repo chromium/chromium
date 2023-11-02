@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "device/fido/fido_types.h"
 #include "device/fido/virtual_ctap2_device.h"
 #include "device/fido/virtual_fido_device.h"
+#include "device/fido/virtual_fido_device_discovery.h"
 
 namespace device {
 namespace test {
@@ -60,6 +61,8 @@ class MultipleVirtualFidoDeviceFactory : public device::FidoDiscoveryFactory {
 
  private:
   std::vector<DeviceDetails> devices_;
+  scoped_refptr<VirtualFidoDeviceDiscovery::Trace> trace_ =
+      new VirtualFidoDeviceDiscovery::Trace;
 };
 
 }  // namespace test

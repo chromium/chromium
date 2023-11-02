@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UPGRADE_DETECTOR_INSTALLED_VERSION_MONITOR_LACROS_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/upgrade_detector/installed_version_monitor.h"
 #include "chromeos/crosapi/mojom/browser_version.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -27,7 +28,7 @@ class LacrosInstalledVersionMonitor final
   void OnBrowserVersionInstalled(const std::string& version) override;
 
  private:
-  chromeos::LacrosService* const lacros_service_;
+  const raw_ptr<chromeos::LacrosService> lacros_service_;
 
   Callback callback_;
 

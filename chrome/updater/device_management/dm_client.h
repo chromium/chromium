@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace update_client {
 class NetworkFetcher;
@@ -19,7 +20,7 @@ class NetworkFetcher;
 namespace updater {
 
 class DMStorage;
-class PolicyService;
+struct PolicyServiceProxyConfiguration;
 struct PolicyValidationResult;
 
 class DMClient {
@@ -49,7 +50,7 @@ class DMClient {
     kNoDeviceID,
 
     // Register request is not sent since the device is already registered.
-    kAleadyRegistered,
+    kAlreadyRegistered,
 
     // Request is not sent because the device is not managed.
     kNotManaged,
@@ -130,7 +131,8 @@ class DMClient {
       PolicyValidationReportCallback callback);
 
   static std::unique_ptr<Configurator> CreateDefaultConfigurator(
-      scoped_refptr<PolicyService> policy_service);
+      absl::optional<PolicyServiceProxyConfiguration>
+          policy_service_proxy_configuration);
 };
 
 }  // namespace updater

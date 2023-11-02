@@ -15,7 +15,13 @@
       function setupCanvasClick() {
         webglCanvas.onclick = function() {
           console.log("Requesting Permission");
-          navigator.geolocation.getCurrentPosition(()=> {}, ()=>{});
+          navigator.geolocation.getCurrentPosition(
+            ()=> {
+              console.log('Permission request resolved');
+            },
+            ()=>{
+              console.log('Permission request rejected');
+            });
         };
       }
     </script>

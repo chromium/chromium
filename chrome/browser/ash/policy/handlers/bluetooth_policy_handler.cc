@@ -1,16 +1,16 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/policy/handlers/bluetooth_policy_handler.h"
 
-#include "ash/components/settings/cros_settings_names.h"
-#include "ash/components/settings/cros_settings_provider.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/syslog_logging.h"
 #include "base/values.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
@@ -58,7 +58,7 @@ void BluetoothPolicyHandler::SetBluetoothPolicy(
     scoped_refptr<device::BluetoothAdapter> adapter) {
   // Get the updated policy.
   bool allow_bluetooth = true;
-  const base::ListValue* allowed_services_list = nullptr;
+  const base::Value::List* allowed_services_list = nullptr;
   std::vector<device::BluetoothUUID> allowed_services;
 
   cros_settings_->GetBoolean(ash::kAllowBluetooth, &allow_bluetooth);
@@ -74,7 +74,7 @@ void BluetoothPolicyHandler::SetBluetoothPolicy(
   // returns an empty list even if the policy did not set.
   if (cros_settings_->GetList(ash::kDeviceAllowedBluetoothServices,
                               &allowed_services_list)) {
-    for (const auto& list_value : allowed_services_list->GetList()) {
+    for (const auto& list_value : *allowed_services_list) {
       if (!list_value.is_string())
         continue;
 

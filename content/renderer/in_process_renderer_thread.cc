@@ -1,17 +1,19 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/renderer/in_process_renderer_thread.h"
 
 #include "build/build_config.h"
+#include "content/public/common/content_client.h"
+#include "content/public/renderer/content_renderer_client.h"
 #include "content/renderer/render_process.h"
 #include "content/renderer/render_process_impl.h"
 #include "content/renderer/render_thread_impl.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #endif
 
@@ -29,11 +31,18 @@ InProcessRendererThread::~InProcessRendererThread() {
 }
 
 void InProcessRendererThread::Init() {
+  // In single-process mode, we never enter the sandbox, so run the post-sandbox
+  // code now.
+  content::ContentRendererClient* client = GetContentClient()->renderer();
+  if (client) {
+    client->PostSandboxInitialized();
+  }
+
   // Call AttachCurrentThreadWithName, before any other AttachCurrentThread()
   // calls. The latter causes Java VM to assign Thread-??? to the thread name.
   // Please note calls to AttachCurrentThreadWithName after AttachCurrentThread
   // will not change the thread name kept in Java VM.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::android::AttachCurrentThreadWithName(thread_name());
   // Make sure we aren't somehow reinitialising the inprocess renderer thread on
   // Android. Temporary CHECK() to debug http://crbug.com/514141

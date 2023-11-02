@@ -11,3 +11,9 @@ include_rules = [
   "+services/network/public/mojom",
   "+ui/base",
 ]
+
+specific_include_rules = {
+  "template_(fetcher|store)_unittest\.cc": [
+    "+services/network/test",
+  ]
+}

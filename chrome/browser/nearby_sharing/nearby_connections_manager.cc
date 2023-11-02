@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,6 +48,6 @@ NearbyConnectionsManager::PayloadStatusListener::~PayloadStatusListener() =
     default;
 
 base::WeakPtr<NearbyConnectionsManager::PayloadStatusListener>
-NearbyConnectionsManager::PayloadStatusListener::GetWeakPtr() const {
+NearbyConnectionsManager::PayloadStatusListener::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }

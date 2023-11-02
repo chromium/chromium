@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,15 +18,17 @@ namespace feature_engagement {
 
 namespace {
 
-const base::Feature kOnceTestFeatureFoo{"test_foo",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kOnceTestFeatureBar{"test_bar",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kOnceTestFeatureFoo,
+             "test_foo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOnceTestFeatureBar,
+             "test_bar",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 FeatureConfig kValidFeatureConfig;
 FeatureConfig kInvalidFeatureConfig;
 
-// A EventModel that is easily configurable at runtime.
+// An EventModel that is easily configurable at runtime.
 class OnceTestEventModel : public EventModel {
  public:
   OnceTestEventModel() : ready_(false) { kValidFeatureConfig.valid = true; }
@@ -169,6 +171,39 @@ TEST_F(OnceConditionValidatorTest, OnlyTriggerIfNothingElseIsShowing) {
   EXPECT_FALSE(result.currently_showing_ok);
 
   validator_.NotifyDismissed(kOnceTestFeatureBar);
+  EXPECT_TRUE(validator_
+                  .MeetsConditions(kOnceTestFeatureFoo, kValidFeatureConfig,
+                                   event_model_, availability_model_,
+                                   display_lock_controller_, nullptr, 0u)
+                  .NoErrors());
+}
+
+TEST_F(OnceConditionValidatorTest,
+       AlsoTriggerWhenSomethingElseIsShowingForTesting) {
+  validator_.AllowMultipleFeaturesForTesting(true);
+  validator_.NotifyIsShowing(kOnceTestFeatureBar, FeatureConfig(), {""});
+  ConditionValidator::Result result = validator_.MeetsConditions(
+      kOnceTestFeatureFoo, kValidFeatureConfig, event_model_,
+      availability_model_, display_lock_controller_, nullptr, 0u);
+  EXPECT_TRUE(result.NoErrors());
+
+  validator_.NotifyDismissed(kOnceTestFeatureBar);
+  EXPECT_TRUE(validator_
+                  .MeetsConditions(kOnceTestFeatureFoo, kValidFeatureConfig,
+                                   event_model_, availability_model_,
+                                   display_lock_controller_, nullptr, 0u)
+                  .NoErrors());
+}
+
+TEST_F(OnceConditionValidatorTest, PriorityNotificationBlocksOtherIPHs) {
+  validator_.SetPriorityNotification("test_bar");
+  ConditionValidator::Result result = validator_.MeetsConditions(
+      kOnceTestFeatureFoo, kValidFeatureConfig, event_model_,
+      availability_model_, display_lock_controller_, nullptr, 0u);
+  EXPECT_FALSE(result.NoErrors());
+  EXPECT_FALSE(result.priority_notification_ok);
+
+  validator_.SetPriorityNotification(absl::nullopt);
   EXPECT_TRUE(validator_
                   .MeetsConditions(kOnceTestFeatureFoo, kValidFeatureConfig,
                                    event_model_, availability_model_,

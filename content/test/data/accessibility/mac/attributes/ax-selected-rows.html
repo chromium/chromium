@@ -1,0 +1,18 @@
+<!--
+@SCRIPT:
+  grid.accessibilityAttributeNames.has(AXSelectedRows)
+  tree.accessibilityAttributeNames.has(AXSelectedRows)
+  treegrid.accessibilityAttributeNames.has(AXSelectedRows)
+  not_applicable.accessibilityAttributeNames.has(AXSelectedRows)
+-->
+<!DOCTYPE html>
+<div id="grid" role="grid">
+  <div role="row" aria-selected="true"></div>
+</div>
+<ul id="tree" role="tree">
+  <li role="treeitem" aria-selected="true"></li>
+</ul>
+<div id="treegrid" role="treegrid">
+  <div role="row" aria-selected="true"></div>
+</div>
+<div id="not_applicable"></div>

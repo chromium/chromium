@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -79,7 +80,7 @@ class AppLifetimeMonitor : public KeyedService,
   void NotifyAppDeactivated(const std::string& app_id);
   void NotifyAppStop(const std::string& app_id);
 
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext> context_;
   base::ObserverList<Observer>::Unchecked observers_;
   base::ScopedObservation<extensions::ExtensionHostRegistry,
                           extensions::ExtensionHostRegistry::Observer>

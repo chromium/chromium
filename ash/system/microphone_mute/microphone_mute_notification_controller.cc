@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,11 @@
 #include <cstdint>
 #include <string>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/microphone_mute_notification_delegate.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/privacy_hub/privacy_hub_metrics.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/vector_icons/vector_icons.h"
@@ -78,8 +80,13 @@ void MicrophoneMuteNotificationController::MaybeShowNotification(
     message_center::NotificationPriority priority,
     bool recreate) {
   if (mic_mute_on_) {
+    auto* microphone_mute_notification_delegate =
+        MicrophoneMuteNotificationDelegate::Get();
+    // `MicrophoneMuteNotificationDelegate` is not created in guest mode.
+    if (!microphone_mute_notification_delegate)
+      return;
     absl::optional<std::u16string> app_name =
-        MicrophoneMuteNotificationDelegate::Get()->GetAppAccessingMicrophone();
+        microphone_mute_notification_delegate->GetAppAccessingMicrophone();
     if (app_name.has_value() || input_stream_count_) {
       if (recreate)
         RemoveMicrophoneMuteNotification();
@@ -118,6 +125,7 @@ MicrophoneMuteNotificationController::GenerateMicrophoneMuteNotification(
               if (!button_index)
                 return;
               CrasAudioHandler::Get()->SetInputMute(false);
+              privacy_hub_metrics::LogMicrophoneEnabledFromNotification(true);
             }));
   }
 
@@ -127,7 +135,8 @@ MicrophoneMuteNotificationController::GenerateMicrophoneMuteNotification(
           GetNotificationTitle(app_name), GetNotificationMessage(),
           /*display_source=*/std::u16string(), GURL(),
           message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT, kNotificationId),
+              message_center::NotifierType::SYSTEM_COMPONENT, kNotificationId,
+              NotificationCatalogName::kMicrophoneMute),
           notification_data, delegate, vector_icons::kSettingsIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
   return notification;

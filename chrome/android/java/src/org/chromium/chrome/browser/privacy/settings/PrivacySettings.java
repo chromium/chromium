@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,10 +20,12 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthSettingSwitchPreference;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsFragment;
 import org.chromium.chrome.browser.privacy.secure_dns.SecureDnsSettings;
-import org.chromium.chrome.browser.privacy_review.PrivacyReviewDialog;
+import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxReferrer;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsFragment;
+import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsFragmentV3;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
@@ -49,7 +51,7 @@ import org.chromium.ui.text.SpanApplier;
 public class PrivacySettings
         extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener {
     private static final String PREF_CAN_MAKE_PAYMENT = "can_make_payment";
-    private static final String PREF_NETWORK_PREDICTIONS = "preload_pages";
+    private static final String PREF_PRELOAD_PAGES = "preload_pages";
     private static final String PREF_HTTPS_FIRST_MODE = "https_first_mode";
     private static final String PREF_SECURE_DNS = "secure_dns";
     private static final String PREF_USAGE_STATS = "usage_stats_reporting";
@@ -58,7 +60,7 @@ public class PrivacySettings
     private static final String PREF_SYNC_AND_SERVICES_LINK = "sync_and_services_link";
     private static final String PREF_CLEAR_BROWSING_DATA = "clear_browsing_data";
     private static final String PREF_PRIVACY_SANDBOX = "privacy_sandbox";
-    private static final String PREF_PRIVACY_REVIEW = "privacy_review";
+    private static final String PREF_PRIVACY_GUIDE = "privacy_guide";
     private static final String PREF_INCOGNITO_LOCK = "incognito_lock";
 
     private ManagedPreferenceDelegate mManagedPreferenceDelegate;
@@ -71,27 +73,24 @@ public class PrivacySettings
         SettingsUtils.addPreferencesFromResource(this, R.xml.privacy_preferences);
         getActivity().setTitle(R.string.prefs_privacy_security);
 
-        findPreference(PREF_PRIVACY_SANDBOX)
-                .setSummary(PrivacySandboxSettingsFragment.getStatusString(getContext()));
-        // Overwrite the click listener to pass a correct referrer to the fragment.
-        findPreference(PREF_PRIVACY_SANDBOX).setOnPreferenceClickListener(preference -> {
-            Bundle fragmentArgs = new Bundle();
-            fragmentArgs.putInt(PrivacySandboxSettingsFragment.PRIVACY_SANDBOX_REFERRER,
-                    PrivacySandboxReferrer.PRIVACY_SETTINGS);
-            new SettingsLauncherImpl().launchSettingsActivity(
-                    getContext(), PrivacySandboxSettingsFragment.class, fragmentArgs);
-            return true;
-        });
-
-        Preference privacyReviewPreference = findPreference(PREF_PRIVACY_REVIEW);
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_REVIEW)) {
-            getPreferenceScreen().removePreference(privacyReviewPreference);
+        Preference sandboxPreference = findPreference(PREF_PRIVACY_SANDBOX);
+        // Hide the Privacy Sandbox if it is restricted.
+        if (PrivacySandboxBridge.isPrivacySandboxRestricted()) {
+            getPreferenceScreen().removePreference(sandboxPreference);
         } else {
-            privacyReviewPreference.setOnPreferenceClickListener(preference -> {
-                PrivacyReviewDialog dialog = new PrivacyReviewDialog(getContext());
-                dialog.show();
+            sandboxPreference.setSummary(
+                    PrivacySandboxSettingsFragment.getStatusString(getContext()));
+            // Overwrite the click listener to pass a correct referrer to the fragment.
+            sandboxPreference.setOnPreferenceClickListener(preference -> {
+                PrivacySandboxSettingsFragmentV3.launchPrivacySandboxSettings(getContext(),
+                        new SettingsLauncherImpl(), PrivacySandboxReferrer.PRIVACY_SETTINGS);
                 return true;
             });
+        }
+
+        Preference privacyGuidePreference = findPreference(PREF_PRIVACY_GUIDE);
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_GUIDE)) {
+            getPreferenceScreen().removePreference(privacyGuidePreference);
         }
 
         IncognitoReauthSettingSwitchPreference incognitoReauthPreference =
@@ -116,13 +115,6 @@ public class PrivacySettings
                 (ChromeSwitchPreference) findPreference(PREF_CAN_MAKE_PAYMENT);
         canMakePaymentPref.setOnPreferenceChangeListener(this);
 
-        ChromeSwitchPreference networkPredictionPref =
-                (ChromeSwitchPreference) findPreference(PREF_NETWORK_PREDICTIONS);
-        networkPredictionPref.setChecked(
-                PrivacyPreferencesManagerImpl.getInstance().getNetworkPredictionEnabled());
-        networkPredictionPref.setOnPreferenceChangeListener(this);
-        networkPredictionPref.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
-
         ChromeSwitchPreference httpsFirstModePref =
                 (ChromeSwitchPreference) findPreference(PREF_HTTPS_FIRST_MODE);
         httpsFirstModePref.setVisible(
@@ -143,7 +135,7 @@ public class PrivacySettings
 
     private SpannableString buildSyncAndServicesLink() {
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-        NoUnderlineClickableSpan servicesLink = new NoUnderlineClickableSpan(getResources(), v -> {
+        NoUnderlineClickableSpan servicesLink = new NoUnderlineClickableSpan(getContext(), v -> {
             settingsLauncher.launchSettingsActivity(getActivity(), GoogleServicesSettings.class);
         });
         if (IdentityServicesProvider.get()
@@ -156,7 +148,7 @@ public class PrivacySettings
                     new SpanApplier.SpanInfo("<link>", "</link>", servicesLink));
         }
         // Otherwise, show the string with both links to "Sync" and "Google Services".
-        NoUnderlineClickableSpan syncLink = new NoUnderlineClickableSpan(getResources(), v -> {
+        NoUnderlineClickableSpan syncLink = new NoUnderlineClickableSpan(getContext(), v -> {
             settingsLauncher.launchSettingsActivity(getActivity(), ManageSyncSettings.class,
                     ManageSyncSettings.createArguments(false));
         });
@@ -171,9 +163,6 @@ public class PrivacySettings
         if (PREF_CAN_MAKE_PAYMENT.equals(key)) {
             UserPrefs.get(Profile.getLastUsedRegularProfile())
                     .setBoolean(Pref.CAN_MAKE_PAYMENT_ENABLED, (boolean) newValue);
-        } else if (PREF_NETWORK_PREDICTIONS.equals(key)) {
-            PrivacyPreferencesManagerImpl.getInstance().setNetworkPredictionEnabled(
-                    (boolean) newValue);
         } else if (PREF_HTTPS_FIRST_MODE.equals(key)) {
             UserPrefs.get(Profile.getLastUsedRegularProfile())
                     .setBoolean(Pref.HTTPS_ONLY_MODE_ENABLED, (boolean) newValue);
@@ -204,6 +193,12 @@ public class PrivacySettings
             doNotTrackPref.setSummary(prefService.getBoolean(Pref.ENABLE_DO_NOT_TRACK)
                             ? R.string.text_on
                             : R.string.text_off);
+        }
+
+        Preference preloadPagesPreference = findPreference(PREF_PRELOAD_PAGES);
+        if (preloadPagesPreference != null) {
+            preloadPagesPreference.setSummary(
+                    PreloadPagesSettingsFragment.getPreloadPagesSummaryString(getContext()));
         }
 
         Preference secureDnsPref = findPreference(PREF_SECURE_DNS);
@@ -249,9 +244,7 @@ public class PrivacySettings
     private ChromeManagedPreferenceDelegate createManagedPreferenceDelegate() {
         return preference -> {
             String key = preference.getKey();
-            if (PREF_NETWORK_PREDICTIONS.equals(key)) {
-                return PrivacyPreferencesManagerImpl.getInstance().isNetworkPredictionManaged();
-            } else if (PREF_HTTPS_FIRST_MODE.equals(key)) {
+            if (PREF_HTTPS_FIRST_MODE.equals(key)) {
                 return UserPrefs.get(Profile.getLastUsedRegularProfile())
                         .isManagedPreference(Pref.HTTPS_ONLY_MODE_ENABLED);
             }

@@ -1,9 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/svg/animation/element_smil_animations.h"
 
+#include "base/record_replay.h"
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_sandwich.h"
 
 namespace blink {
@@ -33,7 +34,13 @@ void ElementSMILAnimations::RemoveAnimation(const QualifiedName& attribute,
 
 bool ElementSMILAnimations::Apply(SMILTime elapsed) {
   bool did_apply = false;
+  HeapVector<Member<SMILAnimationSandwich>> sandwich_vector;
   for (SMILAnimationSandwich* sandwich : sandwiches_.Values()) {
+    sandwich_vector.push_back(sandwich);
+  }
+  std::sort(sandwich_vector.begin(), sandwich_vector.end(),
+            recordreplay::CompareMemberByPointerId<Member<SMILAnimationSandwich>>());
+  for (SMILAnimationSandwich* sandwich : sandwich_vector) {
     sandwich->UpdateActiveAnimationStack(elapsed);
     if (sandwich->ApplyAnimationValues())
       did_apply = true;

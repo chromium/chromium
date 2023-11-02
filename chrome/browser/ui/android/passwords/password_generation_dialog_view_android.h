@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/password_manager/android/password_generation_dialog_view_interface.h"
 
 class PasswordGenerationController;
@@ -49,7 +50,7 @@ class PasswordGenerationDialogViewAndroid
 
  private:
   // The controller provides data for this view and owns it.
-  PasswordGenerationController* controller_;
+  raw_ptr<PasswordGenerationController> controller_;
 
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;

@@ -37,9 +37,7 @@ class {{export_attribute}} {{class_name}} {
   enum class {{enum_name}} : uint32_t {
 {%  for field in union.fields %}
     {{ kythe_annotation("%s.%s"|format(union|get_full_mojom_name_for_kind(), field.name)) }}
-    {{field.name|upper}},
-    {{ kythe_annotation("%s.%s"|format(union|get_full_mojom_name_for_kind(), field.name)) }}
-    k{{field.name|under_to_camel}} = {{field.name|upper}},
+    k{{field.name|under_to_camel}},
 {%- endfor %}
   };
 

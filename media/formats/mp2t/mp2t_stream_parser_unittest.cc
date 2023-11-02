@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -166,10 +166,10 @@ class Mp2tStreamParserTest : public testing::Test {
         video_frame_count_(0),
         has_audio_(true),
         has_video_(true),
-        audio_min_dts_(kNoDecodeTimestamp()),
-        audio_max_dts_(kNoDecodeTimestamp()),
-        video_min_dts_(kNoDecodeTimestamp()),
-        video_max_dts_(kNoDecodeTimestamp()),
+        audio_min_dts_(kNoDecodeTimestamp),
+        audio_max_dts_(kNoDecodeTimestamp),
+        video_min_dts_(kNoDecodeTimestamp),
+        video_max_dts_(kNoDecodeTimestamp),
         audio_track_id_(0),
         video_track_id_(0),
         current_audio_config_(),
@@ -207,10 +207,10 @@ class Mp2tStreamParserTest : public testing::Test {
     config_count_ = 0;
     audio_frame_count_ = 0;
     video_frame_count_ = 0;
-    audio_min_dts_ = kNoDecodeTimestamp();
-    audio_max_dts_ = kNoDecodeTimestamp();
-    video_min_dts_ = kNoDecodeTimestamp();
-    video_max_dts_ = kNoDecodeTimestamp();
+    audio_min_dts_ = kNoDecodeTimestamp;
+    audio_max_dts_ = kNoDecodeTimestamp;
+    video_min_dts_ = kNoDecodeTimestamp;
+    video_max_dts_ = kNoDecodeTimestamp;
   }
 
   bool AppendData(const uint8_t* data, size_t length) {
@@ -280,15 +280,15 @@ class Mp2tStreamParserTest : public testing::Test {
   bool OnNewBuffers(const StreamParser::BufferQueueMap& buffer_queue_map) {
     EXPECT_GT(config_count_, 0);
     // Ensure that track ids are properly assigned on all emitted buffers.
-    for (const auto& it : buffer_queue_map) {
-      DVLOG(3) << "Buffers for track_id=" << it.first;
-      for (const auto& buf : it.second) {
+    for (const auto& [track_id, buffer] : buffer_queue_map) {
+      DVLOG(3) << "Buffers for track_id=" << track_id;
+      for (const auto& buf : buffer) {
         DVLOG(3) << "  track_id=" << buf->track_id()
                  << ", size=" << buf->data_size()
                  << ", pts=" << buf->timestamp().InSecondsF()
                  << ", dts=" << buf->GetDecodeTimestamp().InSecondsF()
                  << ", dur=" << buf->duration().InSecondsF();
-        EXPECT_EQ(it.first, buf->track_id());
+        EXPECT_EQ(track_id, buf->track_id());
       }
     }
 
@@ -317,18 +317,18 @@ class Mp2tStreamParserTest : public testing::Test {
     if (!video_buffers.empty()) {
       DecodeTimestamp first_dts = video_buffers.front()->GetDecodeTimestamp();
       DecodeTimestamp last_dts = video_buffers.back()->GetDecodeTimestamp();
-      if (video_max_dts_ != kNoDecodeTimestamp() && first_dts < video_max_dts_)
+      if (video_max_dts_ != kNoDecodeTimestamp && first_dts < video_max_dts_)
         return false;
-      if (video_min_dts_ == kNoDecodeTimestamp())
+      if (video_min_dts_ == kNoDecodeTimestamp)
         video_min_dts_ = first_dts;
       video_max_dts_ = last_dts;
     }
     if (!audio_buffers.empty()) {
       DecodeTimestamp first_dts = audio_buffers.front()->GetDecodeTimestamp();
       DecodeTimestamp last_dts = audio_buffers.back()->GetDecodeTimestamp();
-      if (audio_max_dts_ != kNoDecodeTimestamp() && first_dts < audio_max_dts_)
+      if (audio_max_dts_ != kNoDecodeTimestamp && first_dts < audio_max_dts_)
         return false;
-      if (audio_min_dts_ == kNoDecodeTimestamp())
+      if (audio_min_dts_ == kNoDecodeTimestamp)
         audio_min_dts_ = first_dts;
       audio_max_dts_ = last_dts;
     }

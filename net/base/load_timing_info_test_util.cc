@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,8 @@ namespace net {
 
 void ExpectConnectTimingHasNoTimes(
     const LoadTimingInfo::ConnectTiming& connect_timing) {
-  EXPECT_TRUE(connect_timing.dns_start.is_null());
-  EXPECT_TRUE(connect_timing.dns_end.is_null());
+  EXPECT_TRUE(connect_timing.domain_lookup_start.is_null());
+  EXPECT_TRUE(connect_timing.domain_lookup_end.is_null());
   EXPECT_TRUE(connect_timing.connect_start.is_null());
   EXPECT_TRUE(connect_timing.connect_end.is_null());
   EXPECT_TRUE(connect_timing.ssl_start.is_null());
@@ -26,12 +26,13 @@ void ExpectConnectTimingHasTimes(
   EXPECT_LE(connect_timing.connect_start, connect_timing.connect_end);
 
   if (!(connect_timing_flags & CONNECT_TIMING_HAS_DNS_TIMES)) {
-    EXPECT_TRUE(connect_timing.dns_start.is_null());
-    EXPECT_TRUE(connect_timing.dns_end.is_null());
+    EXPECT_TRUE(connect_timing.domain_lookup_start.is_null());
+    EXPECT_TRUE(connect_timing.domain_lookup_end.is_null());
   } else {
-    EXPECT_FALSE(connect_timing.dns_start.is_null());
-    EXPECT_LE(connect_timing.dns_start, connect_timing.dns_end);
-    EXPECT_LE(connect_timing.dns_end, connect_timing.connect_start);
+    EXPECT_FALSE(connect_timing.domain_lookup_start.is_null());
+    EXPECT_LE(connect_timing.domain_lookup_start,
+              connect_timing.domain_lookup_end);
+    EXPECT_LE(connect_timing.domain_lookup_end, connect_timing.connect_start);
   }
 
   if (!(connect_timing_flags & CONNECT_TIMING_HAS_SSL_TIMES)) {

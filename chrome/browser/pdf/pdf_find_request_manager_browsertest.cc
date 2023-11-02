@@ -1,15 +1,15 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
@@ -29,22 +29,14 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
-#include "pdf/document_loader_impl.h"
+#include "pdf/loader/document_loader_impl.h"
 #include "pdf/pdf_features.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom.h"
 
 namespace content {
 
-class PdfFindRequestManagerTest : public base::test::WithFeatureOverride,
-                                  public InProcessBrowserTest {
+class PdfFindRequestManagerTest : public InProcessBrowserTest {
  public:
-  PdfFindRequestManagerTest()
-      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfUnseasoned) {}
-  PdfFindRequestManagerTest(const PdfFindRequestManagerTest&) = delete;
-  PdfFindRequestManagerTest& operator=(const PdfFindRequestManagerTest&) =
-      delete;
-  ~PdfFindRequestManagerTest() override = default;
-
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
@@ -87,7 +79,7 @@ class PdfFindRequestManagerTest : public base::test::WithFeatureOverride,
 
  private:
   FindTestWebContentsDelegate test_delegate_;
-  WebContentsDelegate* normal_delegate_ = nullptr;
+  raw_ptr<WebContentsDelegate> normal_delegate_ = nullptr;
 
   // The ID of the last find request requested.
   int last_request_id_ = 0;
@@ -107,19 +99,14 @@ class PdfFindRequestManagerTestWithPdfPartialLoading
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/702993): Stop testing both modes after unseasoned launches.
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PdfFindRequestManagerTest);
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    PdfFindRequestManagerTestWithPdfPartialLoading);
-
 // Tests searching in a full-page PDF.
 // Flaky on Windows ASAN: crbug.com/1030368.
-#if defined(OS_WIN) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
 #define MAYBE_FindInPDF DISABLED_FindInPDF
 #else
 #define MAYBE_FindInPDF FindInPDF
 #endif
-IN_PROC_BROWSER_TEST_P(PdfFindRequestManagerTest, MAYBE_FindInPDF) {
+IN_PROC_BROWSER_TEST_F(PdfFindRequestManagerTest, MAYBE_FindInPDF) {
   ASSERT_TRUE(embedded_test_server()->Start());
   LoadAndWait("/find_in_pdf_page.pdf");
   ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(contents()));
@@ -179,10 +166,8 @@ void SendRangeResponse(net::test_server::ControllableHttpResponse* response,
 
 // Tests searching in a PDF received in chunks via range-requests.  See also
 // https://crbug.com/1027173.
-
-// TODO(crbug.com/1247167): Flaky.
-IN_PROC_BROWSER_TEST_P(PdfFindRequestManagerTestWithPdfPartialLoading,
-                       DISABLED_FindInChunkedPDF) {
+IN_PROC_BROWSER_TEST_F(PdfFindRequestManagerTestWithPdfPartialLoading,
+                       FindInChunkedPDF) {
   constexpr uint32_t kStalledResponseSize =
       chrome_pdf::DocumentLoaderImpl::kDefaultRequestSize + 123;
 
@@ -278,7 +263,7 @@ IN_PROC_BROWSER_TEST_P(PdfFindRequestManagerTestWithPdfPartialLoading,
 // TODO(paulmeyer): Note that this is left disabled for now since
 // EnsurePDFHasLoaded() currently does not work for embedded PDFs. This will be
 // fixed and enabled in a subsequent patch.
-IN_PROC_BROWSER_TEST_P(PdfFindRequestManagerTest, DISABLED_FindInEmbeddedPDFs) {
+IN_PROC_BROWSER_TEST_F(PdfFindRequestManagerTest, DISABLED_FindInEmbeddedPDFs) {
   ASSERT_TRUE(embedded_test_server()->Start());
   LoadAndWait("/find_in_embedded_pdf_page.html");
   ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(contents()));
@@ -298,7 +283,7 @@ IN_PROC_BROWSER_TEST_P(PdfFindRequestManagerTest, DISABLED_FindInEmbeddedPDFs) {
   EXPECT_EQ(11, results.active_match_ordinal);
 }
 
-IN_PROC_BROWSER_TEST_P(PdfFindRequestManagerTest, FindMissingStringInPDF) {
+IN_PROC_BROWSER_TEST_F(PdfFindRequestManagerTest, FindMissingStringInPDF) {
   ASSERT_TRUE(embedded_test_server()->Start());
   LoadAndWait("/find_in_pdf_page.pdf");
   ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(contents()));
@@ -315,7 +300,7 @@ IN_PROC_BROWSER_TEST_P(PdfFindRequestManagerTest, FindMissingStringInPDF) {
 
 // Tests searching for a word character-by-character, as would typically be
 // done by a user typing into the find bar.
-IN_PROC_BROWSER_TEST_P(PdfFindRequestManagerTest,
+IN_PROC_BROWSER_TEST_F(PdfFindRequestManagerTest,
                        CharacterByCharacterFindInPDF) {
   ASSERT_TRUE(embedded_test_server()->Start());
   LoadAndWait("/find_in_pdf_page.pdf");
@@ -348,7 +333,7 @@ IN_PROC_BROWSER_TEST_P(PdfFindRequestManagerTest,
 
 // Tests that find-in-page results only come for the PDF contents, and not from
 // the PDF Viewer's UI.
-IN_PROC_BROWSER_TEST_P(PdfFindRequestManagerTest, DoesNotSearchPdfViewerUi) {
+IN_PROC_BROWSER_TEST_F(PdfFindRequestManagerTest, DoesNotSearchPdfViewerUi) {
   ASSERT_TRUE(embedded_test_server()->Start());
   LoadAndWait("/find_in_pdf_page.pdf");
   ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(contents()));
@@ -363,6 +348,28 @@ IN_PROC_BROWSER_TEST_P(PdfFindRequestManagerTest, DoesNotSearchPdfViewerUi) {
   FindResults results = delegate()->GetFindResults();
   EXPECT_EQ(last_request_id(), results.request_id);
   EXPECT_EQ(1, results.number_of_matches);
+}
+
+// Regression test for crbug.com/1352097.
+IN_PROC_BROWSER_TEST_F(PdfFindRequestManagerTest, SingleResultFindNext) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  LoadAndWait("/find_in_pdf_page.pdf");
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(contents()));
+
+  auto options = blink::mojom::FindOptions::New();
+  Find("pdf", options.Clone());
+  delegate()->MarkNextReply();
+  delegate()->WaitForNextReply();
+
+  options->new_session = false;
+  Find("pdf", options.Clone());
+  delegate()->MarkNextReply();
+  delegate()->WaitForNextReply();
+
+  FindResults results = delegate()->GetFindResults();
+  EXPECT_EQ(last_request_id(), results.request_id);
+  EXPECT_EQ(1, results.number_of_matches);
+  EXPECT_EQ(1, results.active_match_ordinal);
 }
 
 }  // namespace content

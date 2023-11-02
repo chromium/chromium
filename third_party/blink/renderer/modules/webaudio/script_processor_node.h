@@ -32,6 +32,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
+#include "third_party/blink/renderer/modules/webaudio/script_processor_handler.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -56,73 +57,6 @@ class WaitableEvent;
 // "onaudioprocess" attribute is an event listener which will get called
 // periodically with an AudioProcessingEvent which has AudioBuffers for each
 // input and output.
-
-class ScriptProcessorHandler final
-    : public AudioHandler,
-      public base::SupportsWeakPtr<ScriptProcessorHandler> {
- public:
-  static scoped_refptr<ScriptProcessorHandler> Create(
-      AudioNode&,
-      float sample_rate,
-      uint32_t buffer_size,
-      uint32_t number_of_input_channels,
-      uint32_t number_of_output_channels,
-      const HeapVector<Member<AudioBuffer>>& input_buffers,
-      const HeapVector<Member<AudioBuffer>>& output_buffers);
-  ~ScriptProcessorHandler() override;
-
-  // AudioHandler
-  void Process(uint32_t frames_to_process) override;
-  void Initialize() override;
-
-  uint32_t BufferSize() const { return buffer_size_; }
-
-  void SetChannelCount(uint32_t, ExceptionState&) override;
-  void SetChannelCountMode(const String&, ExceptionState&) override;
-
-  uint32_t NumberOfOutputChannels() const override {
-    return number_of_output_channels_;
-  }
-
-  Mutex& GetBufferLock() { return buffer_lock_; }
-
- private:
-  ScriptProcessorHandler(AudioNode&,
-                         float sample_rate,
-                         uint32_t buffer_size,
-                         uint32_t number_of_input_channels,
-                         uint32_t number_of_output_channels,
-                         const HeapVector<Member<AudioBuffer>>& input_buffers,
-                         const HeapVector<Member<AudioBuffer>>& output_buffers);
-  double TailTime() const override;
-  double LatencyTime() const override;
-  bool RequiresTailProcessing() const final;
-
-  void FireProcessEvent(uint32_t);
-  void FireProcessEventForOfflineAudioContext(uint32_t, base::WaitableEvent*);
-
-  // Double buffering
-  uint32_t DoubleBufferIndex() const { return double_buffer_index_; }
-  void SwapBuffers() { double_buffer_index_ = 1 - double_buffer_index_; }
-  uint32_t double_buffer_index_;
-
-  // Protects |shared_input_buffers| and |shared_output_buffers_|.
-  mutable Mutex buffer_lock_;
-  WTF::Vector<std::unique_ptr<SharedAudioBuffer>> shared_input_buffers_;
-  WTF::Vector<std::unique_ptr<SharedAudioBuffer>> shared_output_buffers_;
-
-  uint32_t buffer_size_;
-  uint32_t buffer_read_write_index_;
-  uint32_t number_of_input_channels_;
-  uint32_t number_of_output_channels_;
-
-  scoped_refptr<AudioBus> internal_input_bus_;
-
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  FRIEND_TEST_ALL_PREFIXES(ScriptProcessorNodeTest, BufferLifetime);
-};
-
 class ScriptProcessorNode final
     : public AudioNode,
       public ActiveScriptWrappable<ScriptProcessorNode> {

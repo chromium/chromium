@@ -1,13 +1,11 @@
-/* Copyright 2017 The Chromium Authors. All rights reserved.
+/* Copyright 2017 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
-import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-import {TabBox} from 'chrome://resources/js/cr/ui/tabs.js';
-import {$} from 'chrome://resources/js/util.m.js';
+import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 
-decorate('tabbox', TabBox);
+import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
 /**
  * Asks the C++ SafeBrowsingUIHandler to get the lists of Safe Browsing
@@ -87,6 +85,15 @@ function initialize() {
   });
   addWebUIListener('sent-csbrr-update', function(result) {
     addSentCSBRRsInfo(result);
+  });
+
+  sendWithPromise('getSentHitReports', []).then((sentHitReports) => {
+    sentHitReports.forEach(function(hitReports) {
+      addSentHitReportsInfo(hitReports);
+    });
+  });
+  addWebUIListener('sent-hit-report-list', function(result) {
+    addSentHitReportsInfo(result);
   });
 
   sendWithPromise('getPGEvents', []).then((pgEvents) => {
@@ -170,9 +177,11 @@ function initialize() {
     addDeepScan(result);
   });
 
+  // <if expr="is_android">
   sendWithPromise('getReferringAppInfo', []).then((info) => {
     addReferringAppInfo(info);
   });
+  // </if>
 
   $('get-referrer-chain-form').addEventListener('submit', addReferrerChain);
 
@@ -184,10 +193,9 @@ function initialize() {
   };
 
   // When the tab updates, update the anchor
-  $('tabbox').addEventListener('selectedChange', function() {
-    const tabbox = $('tabbox');
-    const tabs = tabbox.querySelector('tabs').children;
-    const selectedTab = tabs[tabbox.selectedIndex];
+  $('tabbox').addEventListener('selected-index-change', e => {
+    const tabs = document.querySelectorAll('div[slot=\'tab\']');
+    const selectedTab = tabs[e.detail];
     window.location.hash = 'tab-' + selectedTab.id;
   }, true);
 }
@@ -310,6 +318,11 @@ function addSentCSBRRsInfo(result) {
   appendChildWithInnerText(logDiv, result);
 }
 
+function addSentHitReportsInfo(result) {
+  const logDiv = $('sent-hit-report-list');
+  appendChildWithInnerText(logDiv, result);
+}
+
 function addPGEvent(result) {
   const logDiv = $('pg-event-log');
   const eventFormatted = '[' + (new Date(result['time'])).toLocaleString() +
@@ -415,14 +428,19 @@ function addReferrerChain(ev) {
       });
 }
 
+// <if expr="is_android">
 function addReferringAppInfo(info) {
   $('referring-app-info').innerHTML = trustedTypes.emptyHTML;
   $('referring-app-info').textContent = info;
 }
+// </if>
 
 function showTab(tabId) {
-  if ($(tabId)) {
-    $(tabId).selected = 'selected';
+  const tabs = document.querySelectorAll('div[slot=\'tab\']');
+  const index = Array.from(tabs).findIndex(t => t.id === tabId);
+  if (index !== -1) {
+    document.querySelector('cr-tab-box')
+        .setAttribute('selected-index', index.toString());
   }
 }
 

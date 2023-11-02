@@ -17,19 +17,25 @@ package org.tensorflow.lite.task.vision.segmenter;
 
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
+import android.os.ParcelFileDescriptor;
 
+import com.google.android.odml.image.MlImage;
 import com.google.auto.value.AutoValue;
 
-import org.tensorflow.lite.DataType;
+import org.tensorflow.lite.support.image.MlImageAdapter;
 import org.tensorflow.lite.support.image.TensorImage;
-import org.tensorflow.lite.task.core.BaseTaskApi;
+import org.tensorflow.lite.task.core.BaseOptions;
 import org.tensorflow.lite.task.core.TaskJniUtils;
 import org.tensorflow.lite.task.core.TaskJniUtils.EmptyHandleProvider;
 import org.tensorflow.lite.task.core.vision.ImageProcessingOptions;
+import org.tensorflow.lite.task.vision.core.BaseVisionTaskApi;
+import org.tensorflow.lite.task.vision.core.BaseVisionTaskApi.InferenceProvider;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.MappedByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -60,7 +66,7 @@ import java.util.List;
  *             is the number of classes supported by the model.
  *         <li>optional (but recommended) label map(s) can be attached as AssociatedFile-s with type
  *             TENSOR_AXIS_LABELS, containing one label per line. The first such AssociatedFile (if
- *             any) is used to fill the class name, i.e. {@link ColoredLabel#getClassName} of the
+ *             any) is used to fill the class name, i.e. {@link ColoredLabel#getlabel} of the
  *             results. The display name, i.e. {@link ColoredLabel#getDisplayName}, is filled from
  *             the AssociatedFile (if any) whose locale matches the `display_names_locale` field of
  *             the `ImageSegmenterOptions` used at creation time ("en" by default, i.e. English). If
@@ -71,8 +77,10 @@ import java.util.List;
  * <p>An example of such model can be found on <a
  * href="https://tfhub.dev/tensorflow/lite-model/deeplabv3/1/metadata/1">TensorFlow Hub.</a>.
  */
-public final class ImageSegmenter extends BaseTaskApi {
+public final class ImageSegmenter extends BaseVisionTaskApi {
     private static final String IMAGE_SEGMENTER_NATIVE_LIB = "task_vision_jni";
+    private static final int OPTIONAL_FD_LENGTH = -1;
+    private static final int OPTIONAL_FD_OFFSET = -1;
 
     private final OutputType outputType;
 
@@ -81,8 +89,9 @@ public final class ImageSegmenter extends BaseTaskApi {
      *
      * @param modelPath path of the segmentation model with metadata in the assets
      * @throws IOException if an I/O error occurs when loading the tflite model
-     * @throws AssertionError if error occurs when creating {@link ImageSegmenter} from the native
-     *     code
+     * @throws IllegalArgumentException if an argument is invalid
+     * @throws IllegalStateException if there is an internal error
+     * @throws RuntimeException if there is an otherwise unspecified error
      */
     public static ImageSegmenter createFromFile(Context context, String modelPath)
             throws IOException {
@@ -91,29 +100,98 @@ public final class ImageSegmenter extends BaseTaskApi {
     }
 
     /**
+     * Creates an {@link ImageSegmenter} instance from the default {@link ImageSegmenterOptions}.
+     *
+     * @param modelFile the segmentation model {@link File} instance
+     * @throws IOException if an I/O error occurs when loading the tflite model
+     * @throws IllegalArgumentException if an argument is invalid
+     * @throws IllegalStateException if there is an internal error
+     * @throws RuntimeException if there is an otherwise unspecified error
+     */
+    public static ImageSegmenter createFromFile(File modelFile) throws IOException {
+        return createFromFileAndOptions(modelFile, ImageSegmenterOptions.builder().build());
+    }
+
+    /**
+     * Creates an {@link ImageSegmenter} instance with a model buffer and the default {@link
+     * ImageSegmenterOptions}.
+     *
+     * @param modelBuffer a direct {@link ByteBuffer} or a {@link MappedByteBuffer} of the
+     *     segmentation model
+     * @throws IllegalStateException if there is an internal error
+     * @throws RuntimeException if there is an otherwise unspecified error
+     * @throws IllegalArgumentException if the model buffer is not a direct {@link ByteBuffer} or a
+     *     {@link MappedByteBuffer}
+     */
+    public static ImageSegmenter createFromBuffer(final ByteBuffer modelBuffer) {
+        return createFromBufferAndOptions(modelBuffer, ImageSegmenterOptions.builder().build());
+    }
+
+    /**
      * Creates an {@link ImageSegmenter} instance from {@link ImageSegmenterOptions}.
      *
      * @param modelPath path of the segmentation model with metadata in the assets
      * @throws IOException if an I/O error occurs when loading the tflite model
-     * @throws AssertionError if error occurs when creating {@link ImageSegmenter} from the native
-     *     code
+     * @throws IllegalArgumentException if an argument is invalid
+     * @throws IllegalStateException if there is an internal error
+     * @throws RuntimeException if there is an otherwise unspecified error
      */
     public static ImageSegmenter createFromFileAndOptions(Context context, String modelPath,
             final ImageSegmenterOptions options) throws IOException {
         try (AssetFileDescriptor assetFileDescriptor = context.getAssets().openFd(modelPath)) {
-            long nativeHandle = TaskJniUtils.createHandleFromLibrary(new EmptyHandleProvider() {
-                @Override
-                public long createHandle() {
-                    return initJniWithModelFdAndOptions(
-                            /*fileDescriptor=*/assetFileDescriptor.getParcelFileDescriptor()
-                                    .getFd(),
-                            /*fileDescriptorLength=*/assetFileDescriptor.getLength(),
-                            /*fileDescriptorOffset=*/assetFileDescriptor.getStartOffset(),
-                            options.getDisplayNamesLocale(), options.getOutputType().getValue());
-                }
-            }, IMAGE_SEGMENTER_NATIVE_LIB);
-            return new ImageSegmenter(nativeHandle, options.getOutputType());
+            return createFromModelFdAndOptions(
+                    /*fileDescriptor=*/assetFileDescriptor.getParcelFileDescriptor().getFd(),
+                    /*fileDescriptorLength=*/assetFileDescriptor.getLength(),
+                    /*fileDescriptorOffset=*/assetFileDescriptor.getStartOffset(), options);
         }
+    }
+
+    /**
+     * Creates an {@link ImageSegmenter} instance from {@link ImageSegmenterOptions}.
+     *
+     * @param modelFile the segmentation model {@link File} instance
+     * @throws IOException if an I/O error occurs when loading the tflite model
+     * @throws IllegalArgumentException if an argument is invalid
+     * @throws IllegalStateException if there is an internal error
+     * @throws RuntimeException if there is an otherwise unspecified error
+     */
+    public static ImageSegmenter createFromFileAndOptions(
+            File modelFile, final ImageSegmenterOptions options) throws IOException {
+        try (ParcelFileDescriptor descriptor =
+                        ParcelFileDescriptor.open(modelFile, ParcelFileDescriptor.MODE_READ_ONLY)) {
+            return createFromModelFdAndOptions(
+                    /*fileDescriptor=*/descriptor.getFd(),
+                    /*fileDescriptorLength=*/OPTIONAL_FD_LENGTH,
+                    /*fileDescriptorOffset=*/OPTIONAL_FD_OFFSET, options);
+        }
+    }
+
+    /**
+     * Creates an {@link ImageSegmenter} instance with a model buffer and {@link
+     * ImageSegmenterOptions}.
+     *
+     * @param modelBuffer a direct {@link ByteBuffer} or a {@link MappedByteBuffer} of the
+     *     segmentation model
+     * @throws IllegalStateException if there is an internal error
+     * @throws RuntimeException if there is an otherwise unspecified error
+     * @throws IllegalArgumentException if the model buffer is not a direct {@link ByteBuffer} or a
+     *     {@link MappedByteBuffer}
+     */
+    public static ImageSegmenter createFromBufferAndOptions(
+            final ByteBuffer modelBuffer, final ImageSegmenterOptions options) {
+        if (!(modelBuffer.isDirect() || modelBuffer instanceof MappedByteBuffer)) {
+            throw new IllegalArgumentException(
+                    "The model buffer should be either a direct ByteBuffer or a MappedByteBuffer.");
+        }
+        return new ImageSegmenter(TaskJniUtils.createHandleFromLibrary(new EmptyHandleProvider() {
+            @Override
+            public long createHandle() {
+                return initJniWithByteBuffer(modelBuffer, options.getDisplayNamesLocale(),
+                        options.getOutputType().getValue(),
+                        TaskJniUtils.createProtoBaseOptionsHandleWithLegacyNumThreads(
+                                options.getBaseOptions(), options.getNumThreads()));
+            }
+        }, IMAGE_SEGMENTER_NATIVE_LIB), options.getOutputType());
     }
 
     /**
@@ -131,20 +209,30 @@ public final class ImageSegmenter extends BaseTaskApi {
     public abstract static class ImageSegmenterOptions {
         private static final String DEFAULT_DISPLAY_NAME_LOCALE = "en";
         private static final OutputType DEFAULT_OUTPUT_TYPE = OutputType.CATEGORY_MASK;
+        private static final int NUM_THREADS = -1;
+
+        public abstract BaseOptions getBaseOptions();
 
         public abstract String getDisplayNamesLocale();
 
         public abstract OutputType getOutputType();
 
+        public abstract int getNumThreads();
+
         public static Builder builder() {
             return new AutoValue_ImageSegmenter_ImageSegmenterOptions.Builder()
                     .setDisplayNamesLocale(DEFAULT_DISPLAY_NAME_LOCALE)
-                    .setOutputType(DEFAULT_OUTPUT_TYPE);
+                    .setOutputType(DEFAULT_OUTPUT_TYPE)
+                    .setNumThreads(NUM_THREADS)
+                    .setBaseOptions(BaseOptions.builder().build());
         }
 
         /** Builder for {@link ImageSegmenterOptions}. */
         @AutoValue.Builder
         public abstract static class Builder {
+            /** Sets the general options to configure Task APIs, such as accelerators. */
+            public abstract Builder setBaseOptions(BaseOptions baseOptions);
+
             /**
              * Sets the locale to use for display names specified through the TFLite Model Metadata,
              * if any.
@@ -157,6 +245,20 @@ public final class ImageSegmenter extends BaseTaskApi {
 
             public abstract Builder setOutputType(OutputType outputType);
 
+            /**
+             * Sets the number of threads to be used for TFLite ops that support multi-threading
+             * when running inference with CPU. Defaults to -1.
+             *
+             * <p>numThreads should be greater than 0 or equal to -1. Setting numThreads to -1 has
+             * the effect to let TFLite runtime set the value.
+             *
+             * @deprecated use {@link BaseOptions} to configure number of threads instead. This
+             *         method
+             *     will override the number of threads configured from {@link BaseOptions}.
+             */
+            @Deprecated
+            public abstract Builder setNumThreads(int numThreads);
+
             public abstract ImageSegmenterOptions build();
         }
     }
@@ -164,12 +266,24 @@ public final class ImageSegmenter extends BaseTaskApi {
     /**
      * Performs actual segmentation on the provided image.
      *
-     * @param image a {@link TensorImage} object that represents an RGB image
+     * <p>{@link ImageSegmenter} supports the following {@link TensorImage} color space types:
+     *
+     * <ul>
+     *   <li>{@link org.tensorflow.lite.support.image.ColorSpaceType#RGB}
+     *   <li>{@link org.tensorflow.lite.support.image.ColorSpaceType#NV12}
+     *   <li>{@link org.tensorflow.lite.support.image.ColorSpaceType#NV21}
+     *   <li>{@link org.tensorflow.lite.support.image.ColorSpaceType#YV12}
+     *   <li>{@link org.tensorflow.lite.support.image.ColorSpaceType#YV21}
+     * </ul>
+     *
+     * @param image a UINT8 {@link TensorImage} object that represents an RGB or YUV image
      * @return results of performing image segmentation. Note that at the time, a single {@link
      *     Segmentation} element is expected to be returned. The result is stored in a {@link List}
      *     for later extension to e.g. instance segmentation models, which may return one
      * segmentation per object.
-     * @throws AssertionError if error occurs when segmenting the image from the native code
+     * @throws IllegalStateException if there is an internal error
+     * @throws RuntimeException if there is an otherwise unspecified error
+     * @throws IllegalArgumentException if the color space type of image is unsupported
      */
     public List<Segmentation> segment(TensorImage image) {
         return segment(image, ImageProcessingOptions.builder().build());
@@ -178,29 +292,97 @@ public final class ImageSegmenter extends BaseTaskApi {
     /**
      * Performs actual segmentation on the provided image with {@link ImageProcessingOptions}.
      *
-     * @param image a {@link TensorImage} object that represents an RGB image
-     * @param options {@link ImageSegmenter} only supports image rotation (through {@link
-     *     ImageProcessingOptions#Builder#setOrientation}) currently. The orientation of an image
-     *     defaults to {@link ImageProcessingOptions#Orientation#TOP_LEFT}.
+     * <p>{@link ImageSegmenter} supports the following {@link TensorImage} color space types:
+     *
+     * <ul>
+     *   <li>{@link org.tensorflow.lite.support.image.ColorSpaceType#RGB}
+     *   <li>{@link org.tensorflow.lite.support.image.ColorSpaceType#NV12}
+     *   <li>{@link org.tensorflow.lite.support.image.ColorSpaceType#NV21}
+     *   <li>{@link org.tensorflow.lite.support.image.ColorSpaceType#YV12}
+     *   <li>{@link org.tensorflow.lite.support.image.ColorSpaceType#YV21}
+     * </ul>
+     *
+     * <p>{@link ImageSegmenter} supports the following options:
+     *
+     * <ul>
+     *   <li>image rotation (through {@link ImageProcessingOptions.Builder#setOrientation}). It
+     *       defaults to {@link ImageProcessingOptions.Orientation#TOP_LEFT}
+     * </ul>
+     *
+     * @param image a UINT8 {@link TensorImage} object that represents an RGB or YUV image
+     * @param options the options configure how to preprocess the image
      * @return results of performing image segmentation. Note that at the time, a single {@link
      *     Segmentation} element is expected to be returned. The result is stored in a {@link List}
      *     for later extension to e.g. instance segmentation models, which may return one
      * segmentation per object.
-     * @throws AssertionError if error occurs when segmenting the image from the native code
+     * @throws IllegalStateException if there is an internal error
+     * @throws RuntimeException if there is an otherwise unspecified error
+     * @throws IllegalArgumentException if the color space type of image is unsupported
      */
     public List<Segmentation> segment(TensorImage image, ImageProcessingOptions options) {
+        return run(new InferenceProvider<List<Segmentation>>() {
+            @Override
+            public List<Segmentation> run(
+                    long frameBufferHandle, int width, int height, ImageProcessingOptions options) {
+                return segment(frameBufferHandle, options);
+            }
+        }, image, options);
+    }
+
+    /**
+     * Performs actual segmentation on the provided {@code MlImage}.
+     *
+     * @param image an {@code MlImage} to segment.
+     * @return results of performing image segmentation. Note that at the time, a single {@link
+     *     Segmentation} element is expected to be returned. The result is stored in a {@link List}
+     *     for later extension to e.g. instance segmentation models, which may return one
+     * segmentation per object.
+     * @throws IllegalStateException if there is an internal error
+     * @throws RuntimeException if there is an otherwise unspecified error
+     * @throws IllegalArgumentException if the storage type or format of the image is unsupported
+     */
+    public List<Segmentation> segment(MlImage image) {
+        return segment(image, ImageProcessingOptions.builder().build());
+    }
+
+    /**
+     * Performs actual segmentation on the provided {@code MlImage} with {@link
+     * ImageProcessingOptions}.
+     *
+     * <p>{@link ImageSegmenter} supports the following options:
+     *
+     * <ul>
+     *   <li>image rotation (through {@link ImageProcessingOptions.Builder#setOrientation}). It
+     *       defaults to {@link ImageProcessingOptions.Orientation#TOP_LEFT}. {@link
+     *       MlImage#getRotation()} is not effective.
+     * </ul>
+     *
+     * @param image an {@code MlImage} to segment.
+     * @param options the options configure how to preprocess the image.
+     * @return results of performing image segmentation. Note that at the time, a single {@link
+     *     Segmentation} element is expected to be returned. The result is stored in a {@link List}
+     *     for later extension to e.g. instance segmentation models, which may return one
+     * segmentation per object.
+     * @throws IllegalStateException if there is an internal error
+     * @throws RuntimeException if there is an otherwise unspecified error
+     * @throws IllegalArgumentException if the color space type of image is unsupported
+     */
+    public List<Segmentation> segment(MlImage image, ImageProcessingOptions options) {
+        image.getInternal().acquire();
+        TensorImage tensorImage = MlImageAdapter.createTensorImageFrom(image);
+        List<Segmentation> result = segment(tensorImage, options);
+        image.close();
+        return result;
+    }
+
+    public List<Segmentation> segment(long frameBufferHandle, ImageProcessingOptions options) {
         checkNotClosed();
 
-        // image_segmenter_jni.cc expects an uint8 image. Convert image of other types into uint8.
-        TensorImage imageUint8 = image.getDataType() == DataType.UINT8
-                ? image
-                : TensorImage.createFrom(image, DataType.UINT8);
         List<byte[]> maskByteArrays = new ArrayList<>();
         List<ColoredLabel> coloredLabels = new ArrayList<>();
         int[] maskShape = new int[2];
-        segmentNative(getNativeHandle(), imageUint8.getBuffer(), imageUint8.getWidth(),
-                imageUint8.getHeight(), maskByteArrays, maskShape, coloredLabels,
-                options.getOrientation().getValue());
+        segmentNative(
+                getNativeHandle(), frameBufferHandle, maskByteArrays, maskShape, coloredLabels);
 
         List<ByteBuffer> maskByteBuffers = new ArrayList<>();
         for (byte[] bytes : maskByteArrays) {
@@ -214,9 +396,28 @@ public final class ImageSegmenter extends BaseTaskApi {
                 outputType.createMasksFromBuffer(maskByteBuffers, maskShape), coloredLabels));
     }
 
+    private static ImageSegmenter createFromModelFdAndOptions(final int fileDescriptor,
+            final long fileDescriptorLength, final long fileDescriptorOffset,
+            final ImageSegmenterOptions options) {
+        long nativeHandle = TaskJniUtils.createHandleFromLibrary(new EmptyHandleProvider() {
+            @Override
+            public long createHandle() {
+                return initJniWithModelFdAndOptions(fileDescriptor, fileDescriptorLength,
+                        fileDescriptorOffset, options.getDisplayNamesLocale(),
+                        options.getOutputType().getValue(),
+                        TaskJniUtils.createProtoBaseOptionsHandleWithLegacyNumThreads(
+                                options.getBaseOptions(), options.getNumThreads()));
+            }
+        }, IMAGE_SEGMENTER_NATIVE_LIB);
+        return new ImageSegmenter(nativeHandle, options.getOutputType());
+    }
+
     private static native long initJniWithModelFdAndOptions(int fileDescriptor,
             long fileDescriptorLength, long fileDescriptorOffset, String displayNamesLocale,
-            int outputType);
+            int outputType, long baseOptionsHandle);
+
+    private static native long initJniWithByteBuffer(ByteBuffer modelBuffer,
+            String displayNamesLocale, int outputType, long baseOptionsHandle);
 
     /**
      * The native method to segment the image.
@@ -224,9 +425,8 @@ public final class ImageSegmenter extends BaseTaskApi {
      * <p>{@code maskBuffers}, {@code maskShape}, {@code coloredLabels} will be updated in the
      * native layer.
      */
-    private static native void segmentNative(long nativeHandle, ByteBuffer image, int width,
-            int height, List<byte[]> maskByteArrays, int[] maskShape,
-            List<ColoredLabel> coloredLabels, int orientation);
+    private static native void segmentNative(long nativeHandle, long frameBufferHandle,
+            List<byte[]> maskByteArrays, int[] maskShape, List<ColoredLabel> coloredLabels);
 
     @Override
     protected void deinit(long nativeHandle) {

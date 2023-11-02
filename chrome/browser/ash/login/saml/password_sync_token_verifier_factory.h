@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_SAML_PASSWORD_SYNC_TOKEN_VERIFIER_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -15,8 +15,7 @@ class PasswordSyncTokenVerifier;
 
 // Singleton that owns all PasswordSyncTokenVerifiers and associates them
 // with Profiles.
-class PasswordSyncTokenVerifierFactory
-    : public BrowserContextKeyedServiceFactory {
+class PasswordSyncTokenVerifierFactory : public ProfileKeyedServiceFactory {
  public:
   static PasswordSyncTokenVerifierFactory* GetInstance();
 

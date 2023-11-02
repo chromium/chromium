@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,8 @@
 #include <stdint.h>
 #include <memory>
 
-#include "base/macros.h"
+#include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_pool.h"
 #include "base/unguessable_token.h"
@@ -40,7 +41,8 @@ class GPU_EXPORT GpuMemoryBufferImplDXGI : public GpuMemoryBufferImpl {
       gfx::BufferUsage usage,
       DestructionCallback callback,
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-      scoped_refptr<base::UnsafeSharedMemoryPool> pool);
+      scoped_refptr<base::UnsafeSharedMemoryPool> pool,
+      base::span<uint8_t> premapped_memory = base::span<uint8_t>());
 
   static base::OnceClosure AllocateForTesting(
       const gfx::Size& size,
@@ -66,11 +68,11 @@ class GPU_EXPORT GpuMemoryBufferImplDXGI : public GpuMemoryBufferImpl {
                           gfx::DXGIHandleToken dxgi_token,
                           GpuMemoryBufferManager* gpu_memory_buffer_manager,
                           scoped_refptr<base::UnsafeSharedMemoryPool> pool,
-                          base::UnsafeSharedMemoryRegion region);
+                          base::span<uint8_t> premapped_memory);
 
   base::win::ScopedHandle dxgi_handle_;
   gfx::DXGIHandleToken dxgi_token_;
-  GpuMemoryBufferManager* gpu_memory_buffer_manager_;
+  raw_ptr<GpuMemoryBufferManager> gpu_memory_buffer_manager_;
 
   // Used to create and store shared memory for data, copied via request to
   // gpu process.
@@ -78,8 +80,7 @@ class GPU_EXPORT GpuMemoryBufferImplDXGI : public GpuMemoryBufferImpl {
   std::unique_ptr<base::UnsafeSharedMemoryPool::Handle> shared_memory_handle_;
 
   // Used to store shared memory passed from the capturer.
-  base::UnsafeSharedMemoryRegion unowned_region_;
-  base::WritableSharedMemoryMapping unowned_mapping_;
+  base::span<uint8_t> premapped_memory_;
 };
 
 }  // namespace gpu

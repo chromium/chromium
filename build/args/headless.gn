@@ -17,9 +17,6 @@ angle_enable_swiftshader = true
 # Embed resource.pak into binary to simplify deployment.
 headless_use_embedded_resources = true
 
-# Expose headless bindings for freetype library bundled with Chromium.
-headless_fontconfig_utils = true
-
 # Don't use Prefs component, disabling access to Local State prefs.
 headless_use_prefs = false
 
@@ -41,6 +38,7 @@ enable_nacl = false
 enable_print_preview = false
 enable_remoting = false
 use_alsa = false
+use_bluez = false
 use_cups = false
 use_dbus = false
 use_gio = false
@@ -53,6 +51,3 @@ v8_enable_lazy_source_positions = false
 use_glib = false
 use_gtk = false
 use_pangocairo = false
-
-# TODO(1096425): Remove this once use_x11 goes away.
-use_x11 = false

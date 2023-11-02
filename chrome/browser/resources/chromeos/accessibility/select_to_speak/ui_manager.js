@@ -1,6 +1,8 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+import {AutomationUtil} from '../common/automation_util.js';
 
 import {ParagraphUtils} from './paragraph_utils.js';
 import {PrefsManager} from './prefs_manager.js';
@@ -47,8 +49,6 @@ const DEFAULT_BACKGROUND_SHADING_COLOR = '#0006';
  * @interface
  */
 export class SelectToSpeakUiListener {
-  constructor() {}
-
   /** User requests navigation to next paragraph. */
   onNextParagraphRequested() {}
 
@@ -106,13 +106,13 @@ export class UiManager {
     this.panelButton_ = null;
 
     // Cache desktop and listen to focus changes.
-    chrome.automation.getDesktop((desktop) => {
+    chrome.automation.getDesktop(desktop => {
       this.desktop_ = desktop;
 
       // Listen to focus changes so we can grab the floating panel when it
       // goes into focus, so it can be used later without having to search
       // through the entire tree.
-      desktop.addEventListener(EventType.FOCUS, (evt) => {
+      desktop.addEventListener(EventType.FOCUS, evt => {
         this.onFocusChange_(evt);
       }, true);
     });
@@ -303,7 +303,7 @@ export class UiManager {
         0;
     node.boundsForRange(
         currentWord.start - charIndexInParent,
-        currentWord.end - charIndexInParent, (bounds) => {
+        currentWord.end - charIndexInParent, bounds => {
           const highlights = bounds ? [bounds] : [];
           chrome.accessibilityPrivate.setHighlights(
               highlights, this.prefsManager_.highlightColor());
@@ -333,15 +333,12 @@ export class UiManager {
    */
   update(nodeGroup, node, currentWord, panelState) {
     const {showPanel, paused, speechRateMultiplier} = panelState;
-    // Show the parent element of the currently verbalized node with the
-    // focus ring. This is a nicer user-facing behavior than jumping from
-    // node to node, as nodes may not correspond well to paragraphs or
-    // blocks.
-    // TODO: Better test: has no siblings in the group, highlight just
-    // the one node. if it has siblings, highlight the parent.
+    // Show the block parent of the currently verbalized node with the
+    // focus ring. If the node has no siblings in the group, highlight just
+    // the one node.
     let focusRingRect;
     const currentBlockParent = nodeGroup.blockParent;
-    if (currentBlockParent !== null && node.role === RoleType.INLINE_TEXT_BOX) {
+    if (currentBlockParent !== null && nodeGroup.nodes.length > 1) {
       focusRingRect = currentBlockParent.location;
     } else {
       focusRingRect = node.location;
@@ -393,7 +390,7 @@ export class UiManager {
     if (!node) {
       return false;
     }
-    return AutomationUtil.getAncestors(node).find((n) => {
+    return AutomationUtil.getAncestors(node).find(n => {
       return n.className === SELECT_TO_SPEAK_TRAY_CLASS_NAME;
     }) !== undefined;
   }

@@ -13,7 +13,7 @@ feed_response {
     }
     feature {
       renderable_unit: STREAM
-      stream_extension {
+      stream {
       }
     }
   }
@@ -37,18 +37,18 @@ feed_response {
     metadata {
       content_id {
         content_domain: "stories.f"
-        type: CARD
+        type: 1
         id: 3328940074512586021
       }
     }
     feature {
       parent_id {
         content_domain: "content.f"
-        type: CLUSTER
+        type: 3
         id: 14679492703605464401
       }
       renderable_unit: CONTENT
-      content_extension {
+      content {
         prefetch_metadata {
           uri: "http://www.google.com/search?q=card1"
           title: "card 1 title"
@@ -69,7 +69,7 @@ feed_response {
     metadata {
       content_id {
         content_domain: "content.f"
-        type: CLUSTER
+        type: 3
         id: 14679492703605464401
       }
     }
@@ -79,7 +79,7 @@ feed_response {
         id: 0
       }
       renderable_unit: CLUSTER
-      cluster_extension {
+      cluster {
       }
     }
   }
@@ -88,18 +88,18 @@ feed_response {
     metadata {
       content_id {
         content_domain: "stories.f"
-        type: CARD
+        type: 1
         id: 8191455549164721606
       }
     }
     feature {
       parent_id {
         content_domain: "content.f"
-        type: CLUSTER
+        type: 3
         id: 16663153735812675251
       }
       renderable_unit: CONTENT
-      content_extension {
+      content {
         prefetch_metadata {
           uri: "http://www.google.com/search?q=card2"
           title: "card 2 title"
@@ -120,7 +120,7 @@ feed_response {
     metadata {
       content_id {
         content_domain: "content.f"
-        type: CLUSTER
+        type: 3
         id: 16663153735812675251
       }
     }
@@ -130,7 +130,7 @@ feed_response {
         id: 0
       }
       renderable_unit: CLUSTER
-      cluster_extension {
+      cluster {
       }
     }
   }
@@ -139,18 +139,18 @@ feed_response {
     metadata {
       content_id {
         content_domain: "stories.f"
-        type: CARD
+        type: 1
         id: 10337142060535577025
       }
     }
     feature {
       parent_id {
         content_domain: "content.f"
-        type: CLUSTER
+        type: 3
         id: 15532023010474785878
       }
       renderable_unit: CONTENT
-      content_extension {
+      content {
         prefetch_metadata {
           uri: "http://www.google.com/search?q=card3"
           title: "card 3 title"
@@ -171,7 +171,7 @@ feed_response {
     metadata {
       content_id {
         content_domain: "content.f"
-        type: CLUSTER
+        type: 3
         id: 15532023010474785878
       }
     }
@@ -181,7 +181,7 @@ feed_response {
         id: 0
       }
       renderable_unit: CLUSTER
-      cluster_extension {
+      cluster {
       }
     }
   }
@@ -190,18 +190,18 @@ feed_response {
     metadata {
       content_id {
         content_domain: "stories.f"
-        type: CARD
+        type: 1
         id: 9467333465122011616
       }
     }
     feature {
       parent_id {
         content_domain: "content.f"
-        type: CLUSTER
+        type: 3
         id: 10111267591181086437
       }
       renderable_unit: CONTENT
-      content_extension {
+      content {
         prefetch_metadata {
           uri: "http://www.google.com/search?q=card4"
           title: "card 4 title"
@@ -222,7 +222,7 @@ feed_response {
     metadata {
       content_id {
         content_domain: "content.f"
-        type: CLUSTER
+        type: 3
         id: 10111267591181086437
       }
     }
@@ -232,7 +232,7 @@ feed_response {
         id: 0
       }
       renderable_unit: CLUSTER
-      cluster_extension {
+      cluster {
       }
     }
   }
@@ -241,18 +241,18 @@ feed_response {
     metadata {
       content_id {
         content_domain: "stories.f"
-        type: CARD
+        type: 1
         id: 10024917518268143371
       }
     }
     feature {
       parent_id {
         content_domain: "content.f"
-        type: CLUSTER
+        type: 3
         id: 6703713839373923610
       }
       renderable_unit: CONTENT
-      content_extension {
+      content {
         prefetch_metadata {
           uri: "http://www.google.com/search?q=card5"
           title: "card 5 title"
@@ -273,7 +273,7 @@ feed_response {
     metadata {
       content_id {
         content_domain: "content.f"
-        type: CLUSTER
+        type: 3
         id: 6703713839373923610
       }
     }
@@ -283,7 +283,7 @@ feed_response {
         id: 0
       }
       renderable_unit: CLUSTER
-      cluster_extension {
+      cluster {
       }
     }
   }
@@ -292,18 +292,18 @@ feed_response {
     metadata {
       content_id {
         content_domain: "stories.f"
-        type: CARD
+        type: 1
         id: 14956621708214864803
       }
     }
     feature {
       parent_id {
         content_domain: "content.f"
-        type: CLUSTER
+        type: 3
         id: 12592500096310265284
       }
       renderable_unit: CONTENT
-      content_extension {
+      content {
         prefetch_metadata {
           uri: "http://www.google.com/search?q=card6"
           title: "card 6 title"
@@ -324,7 +324,7 @@ feed_response {
     metadata {
       content_id {
         content_domain: "content.f"
-        type: CLUSTER
+        type: 3
         id: 12592500096310265284
       }
     }
@@ -334,7 +334,7 @@ feed_response {
         id: 0
       }
       renderable_unit: CLUSTER
-      cluster_extension {
+      cluster {
       }
     }
   }
@@ -343,18 +343,18 @@ feed_response {
     metadata {
       content_id {
         content_domain: "stories.f"
-        type: CARD
+        type: 1
         id: 2741853109953412745
       }
     }
     feature {
       parent_id {
         content_domain: "content.f"
-        type: CLUSTER
+        type: 3
         id: 1016582787945881825
       }
       renderable_unit: CONTENT
-      content_extension {
+      content {
         prefetch_metadata {
           uri: "http://www.google.com/search?q=card7"
           title: "card 7 title"
@@ -375,7 +375,7 @@ feed_response {
     metadata {
       content_id {
         content_domain: "content.f"
-        type: CLUSTER
+        type: 3
         id: 1016582787945881825
       }
     }
@@ -385,7 +385,7 @@ feed_response {
         id: 0
       }
       renderable_unit: CLUSTER
-      cluster_extension {
+      cluster {
       }
     }
   }
@@ -394,18 +394,18 @@ feed_response {
     metadata {
       content_id {
         content_domain: "stories.f"
-        type: CARD
+        type: 1
         id: 586433679892097787
       }
     }
     feature {
       parent_id {
         content_domain: "content.f"
-        type: CLUSTER
+        type: 3
         id: 9506447424580769257
       }
       renderable_unit: CONTENT
-      content_extension {
+      content {
         prefetch_metadata {
           uri: "http://www.google.com/search?q=card8"
           title: "card 8 title"
@@ -426,7 +426,7 @@ feed_response {
     metadata {
       content_id {
         content_domain: "content.f"
-        type: CLUSTER
+        type: 3
         id: 9506447424580769257
       }
     }
@@ -436,7 +436,7 @@ feed_response {
         id: 0
       }
       renderable_unit: CLUSTER
-      cluster_extension {
+      cluster {
       }
     }
   }
@@ -445,18 +445,18 @@ feed_response {
     metadata {
       content_id {
         content_domain: "stories.f"
-        type: CARD
+        type: 1
         id: 790985792726953756
       }
     }
     feature {
       parent_id {
         content_domain: "content.f"
-        type: CLUSTER
+        type: 3
         id: 17612738377810195843
       }
       renderable_unit: CONTENT
-      content_extension {
+      content {
         prefetch_metadata {
           uri: "http://www.google.com/search?q=card9"
           title: "card 9 title"
@@ -477,7 +477,7 @@ feed_response {
     metadata {
       content_id {
         content_domain: "content.f"
-        type: CLUSTER
+        type: 3
         id: 17612738377810195843
       }
     }
@@ -487,7 +487,7 @@ feed_response {
         id: 0
       }
       renderable_unit: CLUSTER
-      cluster_extension {
+      cluster {
       }
     }
   }
@@ -496,18 +496,18 @@ feed_response {
     metadata {
       content_id {
         content_domain: "stories.f"
-        type: CARD
+        type: 1
         id: 7324025093440047528
       }
     }
     feature {
       parent_id {
         content_domain: "content.f"
-        type: CLUSTER
+        type: 3
         id: 5093490247022575399
       }
       renderable_unit: CONTENT
-      content_extension {
+      content {
         prefetch_metadata {
           uri: "http://www.google.com/search?q=card10"
           title: "card 10 title"
@@ -528,7 +528,7 @@ feed_response {
     metadata {
       content_id {
         content_domain: "content.f"
-        type: CLUSTER
+        type: 3
         id: 5093490247022575399
       }
     }
@@ -538,7 +538,7 @@ feed_response {
         id: 0
       }
       renderable_unit: CLUSTER
-      cluster_extension {
+      cluster {
       }
     }
   }
@@ -564,6 +564,9 @@ feed_response {
   }
   feed_response_metadata {
     #response_time_ms: 1587056924
+    event_id {
+      time_usec: 123456
+    }
     chrome_feed_response_metadata {
       privacy_notice_fulfilled: true
       logging_enabled: true

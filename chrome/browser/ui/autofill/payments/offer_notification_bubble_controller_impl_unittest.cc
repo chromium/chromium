@@ -1,30 +1,27 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/commerce/commerce_feature_list.h"
 #include "chrome/browser/commerce/coupons/coupon_service.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
-#include "content/public/test/mock_navigation_handle.h"
-#include "content/public/test/navigation_simulator.h"
-#include "content/public/test/web_contents_tester.h"
+#include "components/autofill/core/browser/test_autofill_clock.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/commerce/core/commerce_feature_list.h"
+#include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 
 namespace {
-
 class TestOfferNotificationBubbleControllerImpl
     : public OfferNotificationBubbleControllerImpl {
  public:
@@ -41,15 +38,7 @@ class TestOfferNotificationBubbleControllerImpl
 
  private:
   // Overrides to bypass the IsWebContentsActive check.
-  void DoShowBubble() override {
-    Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
-    set_bubble_view(
-        browser->window()
-            ->GetAutofillBubbleHandler()
-            ->ShowOfferNotificationBubble(web_contents(), this,
-                                          /*is_user_gesture=*/false));
-    DCHECK(bubble_view());
-  }
+  bool IsWebContentsActive() override { return true; }
 };
 
 }  // namespace
@@ -82,6 +71,8 @@ class OfferNotificationBubbleControllerImplTest
   }
 
  protected:
+  base::test::ScopedFeatureList feature_list_;
+
   class MockCouponService : public CouponService {
    public:
     MOCK_METHOD1(RecordCouponDisplayTimestamp,
@@ -91,7 +82,8 @@ class OfferNotificationBubbleControllerImplTest
   };
 
   void ShowBubble(const AutofillOfferData* offer) {
-    controller()->ShowOfferNotificationIfApplicable(offer, &card_);
+    controller()->ShowOfferNotificationIfApplicable(
+        offer, &card_, /*should_show_icon_only=*/false);
   }
 
   void CloseBubble(PaymentsBubbleClosedReason closed_reason =
@@ -104,14 +96,48 @@ class OfferNotificationBubbleControllerImplTest
     controller()->ReshowBubble();
   }
 
-  AutofillOfferData CreateTestOfferWithOrigins(
-      const std::vector<GURL>& merchant_origins) {
-    // Only adding what the tests need to pass. Feel free to add more populated
-    // fields as necessary.
-    AutofillOfferData offer;
-    offer.offer_id = 1357;
-    offer.merchant_origins = merchant_origins;
-    return offer;
+  AutofillOfferData CreateTestCardLinkedOffer(
+      const std::vector<GURL>& merchant_origins,
+      const std::vector<int64_t>& eligible_instrument_ids = {}) {
+    int64_t offer_id = 1357;
+    base::Time expiry = base::Time::Now() + base::Days(2);
+    GURL offer_details_url("https://www.google.com/");
+    std::string offer_reward_amount = "5%";
+    return autofill::AutofillOfferData::GPayCardLinkedOffer(
+        offer_id, expiry, merchant_origins, offer_details_url,
+        autofill::DisplayStrings(), eligible_instrument_ids,
+        offer_reward_amount);
+  }
+
+  AutofillOfferData CreateTestFreeListingCouponOffer(
+      const std::vector<GURL>& merchant_origins,
+      const std::string& promo_code) {
+    int64_t offer_id = 2468;
+    base::Time expiry = base::Time::Now() + base::Days(2);
+    autofill::DisplayStrings display_strings;
+    display_strings.value_prop_text = "5% off on shoes. Up to $50.";
+    display_strings.see_details_text = "See details";
+    display_strings.usage_instructions_text =
+        "Click the promo code field at checkout to autofill it.";
+    return autofill::AutofillOfferData::FreeListingCouponOffer(
+        offer_id, expiry, merchant_origins, /*offer_details_url=*/GURL(),
+        display_strings, promo_code);
+  }
+
+  AutofillOfferData CreateTestGPayPromoCodeOffer(
+      const std::vector<GURL>& merchant_origins,
+      const std::string& promo_code) {
+    int64_t offer_id = 2468;
+    base::Time expiry = base::Time::Now() + base::Days(2);
+    autofill::DisplayStrings display_strings;
+    display_strings.value_prop_text = "5% off on shoes. Up to $50.";
+    display_strings.see_details_text = "See details";
+    display_strings.usage_instructions_text =
+        "Click the promo code field at checkout to autofill it.";
+    GURL offer_details_url = GURL("https://pay.google.com");
+    return autofill::AutofillOfferData::GPayPromoCodeOffer(
+        offer_id, expiry, merchant_origins, offer_details_url, display_strings,
+        promo_code);
   }
 
   TestOfferNotificationBubbleControllerImpl* controller() {
@@ -126,6 +152,7 @@ class OfferNotificationBubbleControllerImplTest
     controller->coupon_service_ = coupon_service;
   }
 
+  TestAutofillClock test_clock_;
   MockCouponService mock_coupon_service_;
 
  private:
@@ -134,57 +161,56 @@ class OfferNotificationBubbleControllerImplTest
 
 TEST_F(OfferNotificationBubbleControllerImplTest, BubbleShown) {
   // Check that bubble is visible.
-  AutofillOfferData offer = CreateTestOfferWithOrigins(
-      {GURL("https://www.example.com/first/").DeprecatedGetOriginAsURL()});
+  AutofillOfferData offer = CreateTestCardLinkedOffer(
+      /*merchant_origins=*/{GURL("https://www.example.com/first/")
+                                .DeprecatedGetOriginAsURL()},
+      /*eligible_instrument_ids=*/{123});
   ShowBubble(&offer);
   EXPECT_TRUE(controller()->GetOfferNotificationBubbleView());
 }
 
-TEST_F(OfferNotificationBubbleControllerImplTest, OriginSticky) {
-  static const struct {
-    GURL url_navigated_to;
-    bool bubble_should_be_visible;
-  } test_cases[] = {
-      {GURL("https://www.example.com/second/"), true},
-      {GURL("https://www.about.com/"), false},
-      {GURL("https://support.example.com/first/"), false},
-      {GURL("http://www.example.com/first/"), false},
-      {GURL("https://www.test.com/first/"), true},
-  };
+// Ensures the bubble does not stick around after it has been shown for longer
+// than kAutofillBubbleSurviveNavigationTime (5 seconds).
+TEST_F(OfferNotificationBubbleControllerImplTest,
+       OfferBubbleDismissesOnNavigation) {
+  AutofillOfferData offer = CreateTestCardLinkedOffer(
+      /*merchant_origins=*/{GURL("https://www.example.com/first/")
+                                .DeprecatedGetOriginAsURL()},
+      /*eligible_instrument_ids=*/{123});
+  ShowBubble(&offer);
+  EXPECT_TRUE(controller()->GetOfferNotificationBubbleView());
+  test_clock_.Advance(kAutofillBubbleSurviveNavigationTime - base::Seconds(1));
+  controller()->ShowOfferNotificationIfApplicable(
+      &offer, nullptr, /*should_show_icon_only=*/true);
+  // Ensure the bubble is still there if
+  // kOfferNotificationBubbleSurviveNavigationTime hasn't been reached yet.
+  EXPECT_TRUE(controller()->GetOfferNotificationBubbleView());
 
-  for (const auto& test_case : test_cases) {
-    // Set the initial origin that the bubble will be displayed on.
-    NavigateAndCommitActiveTab(GURL("https://www.example.com/first/"));
-    AutofillOfferData offer = CreateTestOfferWithOrigins(
-        {GURL("https://www.example.com/first/").DeprecatedGetOriginAsURL(),
-         GURL("https://www.test.com/first/").DeprecatedGetOriginAsURL()});
-    ShowBubble(&offer);
-
-    // Bubble should be visible.
-    EXPECT_TRUE(controller()->GetOfferNotificationBubbleView());
-
-    // Navigate to a different url, and verify bubble visibility.
-    NavigateAndCommitActiveTab(test_case.url_navigated_to);
-    EXPECT_EQ(test_case.bubble_should_be_visible,
-              !!controller()->GetOfferNotificationBubbleView());
-  }
+  test_clock_.Advance(base::Seconds(2));
+  controller()->ShowOfferNotificationIfApplicable(
+      &offer, nullptr, /*should_show_icon_only=*/true);
+  // Ensure new page does not have an active offer notification bubble.
+  EXPECT_EQ(nullptr, controller()->GetOfferNotificationBubbleView());
 }
 
 TEST_F(OfferNotificationBubbleControllerImplTest,
        ShownOfferIsRetrievableFromController) {
-  AutofillOfferData offer = CreateTestOfferWithOrigins(
-      {GURL("https://www.example.com/first/").DeprecatedGetOriginAsURL()});
+  AutofillOfferData offer = CreateTestCardLinkedOffer(
+      /*merchant_origins=*/{GURL("https://www.example.com/first/")
+                                .DeprecatedGetOriginAsURL()},
+      /*eligible_instrument_ids=*/{123});
   ShowBubble(&offer);
 
-  EXPECT_EQ(&offer, controller()->GetOffer());
+  EXPECT_TRUE(*controller()->GetOffer() == offer);
 }
 
 TEST_F(OfferNotificationBubbleControllerImplTest,
        FreeListing_NotShownWithinTimeGap) {
   base::HistogramTester histogram_tester;
-  AutofillOfferData offer = CreateTestOfferWithOrigins(
-      {GURL("https://www.example.com/first/").DeprecatedGetOriginAsURL()});
-  offer.promo_code = "FREEFALL1234";
+  AutofillOfferData offer = CreateTestFreeListingCouponOffer(
+      /*merchant_origins=*/{GURL("https://www.example.com/first/")
+                                .DeprecatedGetOriginAsURL()},
+      /*promo_code=*/"FREEFALL1234");
   // Try to show a FreeListing coupon whose last shown timestamp is within time
   // gap.
   EXPECT_CALL(mock_coupon_service_, GetCouponDisplayTimestamp(offer))
@@ -203,9 +229,10 @@ TEST_F(OfferNotificationBubbleControllerImplTest,
 TEST_F(OfferNotificationBubbleControllerImplTest,
        FreeListing_ShownBeyondTimeGap) {
   base::HistogramTester histogram_tester;
-  AutofillOfferData offer = CreateTestOfferWithOrigins(
-      {GURL("https://www.example.com/first/").DeprecatedGetOriginAsURL()});
-  offer.promo_code = "FREEFALL1234";
+  AutofillOfferData offer = CreateTestFreeListingCouponOffer(
+      /*merchant_origins=*/{GURL("https://www.example.com/first/")
+                                .DeprecatedGetOriginAsURL()},
+      /*promo_code=*/"FREEFALL1234");
   // Try to show a FreeListing coupon whose last shown timestamp is beyond time
   // gap.
   EXPECT_CALL(mock_coupon_service_, GetCouponDisplayTimestamp(offer))
@@ -223,65 +250,67 @@ TEST_F(OfferNotificationBubbleControllerImplTest,
   EXPECT_TRUE(controller()->GetOfferNotificationBubbleView());
 }
 
-class OfferNotificationBubbleControllerImplPrerenderTest
-    : public OfferNotificationBubbleControllerImplTest {
- public:
-  OfferNotificationBubbleControllerImplPrerenderTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {blink::features::kPrerender2},
-        // This feature is to run test on any bot.
-        {blink::features::kPrerender2MemoryControls});
-  }
-
-  // BrowserWithTestWindowTest::AddTab creates a real WebContentsImpl object,
-  // but we need a TestWebContents object to unit test prerendering, so we
-  // override AddTab to create a TestWebContents instead.
-  void AddTab(const GURL& url) override {
-    std::unique_ptr<content::WebContents> contents(
-        content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
-    content::WebContents* raw_contents = contents.get();
-    browser()->tab_strip_model()->AppendWebContents(std::move(contents), true);
-    EXPECT_EQ(web_contents(), raw_contents);
-    content::WebContentsTester::For(raw_contents)->NavigateAndCommit(url);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(OfferNotificationBubbleControllerImplPrerenderTest,
-       DoNotHideBubbleForPrerender) {
-  const GURL& original_url = GURL("https://www.example.com/first/");
-  NavigateAndCommitActiveTab(original_url);
-
-  // Ensure a bubble is visible on the primary page.
-  AutofillOfferData offer =
-      CreateTestOfferWithOrigins({original_url.DeprecatedGetOriginAsURL()});
+TEST_F(OfferNotificationBubbleControllerImplTest,
+       FreeListing_OnCouponInvalidated) {
+  AutofillOfferData offer = CreateTestFreeListingCouponOffer(
+      /*merchant_origins=*/{GURL("https://www.example.com/first/")
+                                .DeprecatedGetOriginAsURL()},
+      /*promo_code=*/"FREEFALL1234");
+  EXPECT_CALL(mock_coupon_service_, GetCouponDisplayTimestamp(offer))
+      .Times(1)
+      .WillOnce(::testing::Return(base::Time::Now() -
+                                  commerce::kCouponDisplayInterval.Get() -
+                                  base::Seconds(1)));
   ShowBubble(&offer);
   EXPECT_TRUE(controller()->GetOfferNotificationBubbleView());
 
-  // Start a prerender and navigate the test page.
-  const GURL& prerender_url = GURL("https://www.example.com/second/");
-  content::RenderFrameHost* prerender_frame =
-      content::WebContentsTester::For(web_contents())
-          ->AddPrerenderAndCommitNavigation(prerender_url);
-  ASSERT_EQ(prerender_frame->GetLifecycleState(),
-            content::RenderFrameHost::LifecycleState::kPrerendering);
-
-  // Ensure a bubble is still visible on the primary page.
+  AutofillOfferData offer2 = CreateTestFreeListingCouponOffer(
+      /*merchant_origins=*/{GURL("https://www.example.com/first/")
+                                .DeprecatedGetOriginAsURL()},
+      /*promo_code=*/"FREEFALL5678");
+  controller()->OnCouponInvalidated(offer2);
   EXPECT_TRUE(controller()->GetOfferNotificationBubbleView());
 
-  // Activate the prerendered page.
-  content::NavigationSimulator::CreateRendererInitiated(
-      prerender_url, web_contents()->GetMainFrame())
-      ->Commit();
+  controller()->OnCouponInvalidated(offer);
+  EXPECT_FALSE(controller()->GetOfferNotificationBubbleView());
+}
 
-  // Ensure a bubble is still visible on the activated page since it has the
-  // same-origin as the original url. Cross-origin prerendering is unsupported
-  // right now, so this navigation will always be same-origin.
-  // TODO(crbug.com/1176054): Add a cross-origin test when prerendering
-  // eventually support it.
+// Tests that the offer notification bubble will be shown, and coupon service
+// will not be called for a GPay promo code offer.
+TEST_F(OfferNotificationBubbleControllerImplTest, GPayPromoCode_BubbleShown) {
+  feature_list_.InitAndEnableFeature(
+      autofill::features::kAutofillFillMerchantPromoCodeFields);
+  AutofillOfferData offer = CreateTestGPayPromoCodeOffer(
+      /*merchant_origins=*/{GURL("https://www.example.com/first/")
+                                .DeprecatedGetOriginAsURL()},
+      /*promo_code=*/"FREEFALL5678");
+  ShowBubble(&offer);
+
+  EXPECT_CALL(mock_coupon_service_, GetCouponDisplayTimestamp).Times(0);
   EXPECT_TRUE(controller()->GetOfferNotificationBubbleView());
+  EXPECT_EQ(controller()->GetWindowTitle(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_GPAY_PROMO_CODE_OFFERS_REMINDER_TITLE));
+}
+
+// Tests that the offer notification bubble will be shown as a free-listing
+// coupon notification bubble when the feature is disabled.
+TEST_F(OfferNotificationBubbleControllerImplTest,
+       GPayPromoCode_BubbleShownWithFLCTitle) {
+  feature_list_.InitAndDisableFeature(
+      autofill::features::kAutofillFillMerchantPromoCodeFields);
+
+  AutofillOfferData offer = CreateTestGPayPromoCodeOffer(
+      /*merchant_origins=*/{GURL("https://www.example.com/first/")
+                                .DeprecatedGetOriginAsURL()},
+      /*promo_code=*/"FREEFALL5678");
+  ShowBubble(&offer);
+
+  EXPECT_CALL(mock_coupon_service_, GetCouponDisplayTimestamp).Times(0);
+  EXPECT_TRUE(controller()->GetOfferNotificationBubbleView());
+  EXPECT_EQ(
+      controller()->GetWindowTitle(),
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_PROMO_CODE_OFFERS_REMINDER_TITLE));
 }
 
 }  // namespace autofill

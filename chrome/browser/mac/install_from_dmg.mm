@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,6 @@
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/mac/authorization_util.h"
@@ -234,7 +233,7 @@ DiskImageStatus IsPathOnReadOnlyDiskImage(
   }
 
   const char dev_root[] = "/dev/";
-  const int dev_root_length = base::size(dev_root) - 1;
+  const int dev_root_length = std::size(dev_root) - 1;
   if (strncmp(statfs_buf.f_mntfromname, dev_root, dev_root_length) != 0) {
     // Not rooted at dev_root, no BSD name to search on.
     return DiskImageStatusFalse;
@@ -300,7 +299,7 @@ bool ShouldInstallDialog() {
 
   NSAlert* alert = [[[NSAlert alloc] init] autorelease];
 
-  [alert setAlertStyle:NSInformationalAlertStyle];
+  [alert setAlertStyle:NSAlertStyleInformational];
   [alert setMessageText:title];
   [alert setInformativeText:prompt];
   [alert addButtonWithTitle:yes];
@@ -438,7 +437,7 @@ void ShowErrorDialog() {
 
   NSAlert* alert = [[[NSAlert alloc] init] autorelease];
 
-  [alert setAlertStyle:NSWarningAlertStyle];
+  [alert setAlertStyle:NSAlertStyleWarning];
   [alert setMessageText:title];
   [alert setInformativeText:error];
   [alert addButtonWithTitle:ok];

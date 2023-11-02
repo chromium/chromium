@@ -1,4 +1,4 @@
-// Copyright (c) 2006-2008 The Chromium Authors. All rights reserved.
+// Copyright 2006-2008 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,18 +10,30 @@
 namespace sandbox {
 
 struct NtExports {
+  bool                                   Initialized;
   NtAllocateVirtualMemoryFunction        AllocateVirtualMemory;
+  NtCreateFileFunction                   CreateFile;
+  NtCreateSectionFunction                CreateSection;
   NtCloseFunction                        Close;
   NtDuplicateObjectFunction              DuplicateObject;
   NtFreeVirtualMemoryFunction            FreeVirtualMemory;
   NtMapViewOfSectionFunction             MapViewOfSection;
+  NtOpenFileFunction                     OpenFile;
+  NtOpenThreadFunction                   OpenThread;
+  NtOpenProcessFunction                  OpenProcess;
+  NtOpenProcessTokenFunction             OpenProcessToken;
+  NtOpenProcessTokenExFunction           OpenProcessTokenEx;
   NtProtectVirtualMemoryFunction         ProtectVirtualMemory;
+  NtQueryAttributesFileFunction          QueryAttributesFile;
+  NtQueryFullAttributesFileFunction      QueryFullAttributesFile;
   NtQueryInformationProcessFunction      QueryInformationProcess;
   NtQueryObjectFunction                  QueryObject;
   NtQuerySectionFunction                 QuerySection;
   NtQueryVirtualMemoryFunction           QueryVirtualMemory;
-  NtUnmapViewOfSectionFunction           UnmapViewOfSection;
+  NtSetInformationFileFunction           SetInformationFile;
+  NtSetInformationProcessFunction        SetInformationProcess;
   NtSignalAndWaitForSingleObjectFunction SignalAndWaitForSingleObject;
+  NtUnmapViewOfSectionFunction           UnmapViewOfSection;
   NtWaitForSingleObjectFunction          WaitForSingleObject;
   RtlAllocateHeapFunction                RtlAllocateHeap;
   RtlAnsiStringToUnicodeStringFunction   RtlAnsiStringToUnicodeString;
@@ -30,6 +42,7 @@ struct NtExports {
   RtlCreateUserThreadFunction            RtlCreateUserThread;
   RtlDestroyHeapFunction                 RtlDestroyHeap;
   RtlFreeHeapFunction                    RtlFreeHeap;
+  RtlNtStatusToDosErrorFunction          RtlNtStatusToDosError;
   _strnicmpFunction                      _strnicmp;
   strlenFunction                         strlen;
   wcslenFunction                         wcslen;

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,8 +34,8 @@ bool MtpManagerClientChromeOS::GetStorageInfoForPath(
   if (!path.IsAbsolute())
     return false;
 
-  std::vector<base::FilePath::StringType> path_components;
-  path.GetComponents(&path_components);
+  std::vector<base::FilePath::StringType> path_components =
+      path.GetComponents();
   if (path_components.size() < 2)
     return false;
 

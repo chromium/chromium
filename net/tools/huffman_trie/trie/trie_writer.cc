@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,7 @@
 #include "base/check.h"
 #include "net/tools/huffman_trie/trie/trie_bit_buffer.h"
 
-namespace net {
-
-namespace huffman_trie {
+namespace net::huffman_trie {
 
 namespace {
 
@@ -107,8 +105,8 @@ bool TrieWriter::WriteEntries(const TrieEntries& entries,
 
   ReversedEntries reversed_entries;
   for (auto* const entry : entries) {
-    std::unique_ptr<ReversedEntry> reversed_entry(
-        new ReversedEntry(ReverseName(entry->name()), entry));
+    auto reversed_entry =
+        std::make_unique<ReversedEntry>(ReverseName(entry->name()), entry);
     reversed_entries.push_back(std::move(reversed_entry));
   }
 
@@ -130,8 +128,8 @@ bool TrieWriter::WriteDispatchTables(ReversedEntries::iterator start,
   writer.WriteSize(prefix.size());
 
   if (prefix.size()) {
-    for (size_t i = 0; i < prefix.size(); ++i) {
-      writer.WriteChar(prefix.at(i), huffman_table_, huffman_builder_);
+    for (uint8_t c : prefix) {
+      writer.WriteChar(c, huffman_table_, huffman_builder_);
     }
   }
 
@@ -186,6 +184,4 @@ void TrieWriter::Flush() {
   buffer_.Flush();
 }
 
-}  // namespace huffman_trie
-
-}  // namespace net
+}  // namespace net::huffman_trie

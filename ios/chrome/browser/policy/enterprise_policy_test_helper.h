@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,17 +19,17 @@ class TestChromeBrowserState;
 // state configured with that policy.
 class EnterprisePolicyTestHelper {
  public:
-  // Creates a new instance using |state_directory_path| as storage for the
+  // Creates a new instance using `state_directory_path` as storage for the
   // backing state.
   explicit EnterprisePolicyTestHelper(
       const base::FilePath& state_directory_path);
   ~EnterprisePolicyTestHelper();
 
-  // Returns the browser state configured with |policy_provider_|.
+  // Returns the browser state configured with `policy_provider_`.
   TestChromeBrowserState* GetBrowserState() const;
   // Returns the backing local state.
   PrefService* GetLocalState();
-  // Returns the policy provider attached to |browser_state_|.
+  // Returns the policy provider attached to `browser_state_`.
   policy::MockConfigurationPolicyProvider* GetPolicyProvider();
   // Returns the browser policy connector.
   BrowserPolicyConnectorIOS* GetBrowserPolicyConnector();
@@ -37,13 +37,13 @@ class EnterprisePolicyTestHelper {
  private:
   // The enterprise configuration policy provider.
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
-  // The application-level policy connector. Must outlive |local_state_|.
+  // The application-level policy connector. Must outlive `local_state_`.
   std::unique_ptr<BrowserPolicyConnectorIOS> browser_policy_connector_;
   // The local state PrefService managed by policy.
   std::unique_ptr<PrefService> local_state_;
-  // The BrowserState-level policy connector. Must outlive |pref_service_|.
+  // The BrowserState-level policy connector. Must outlive `pref_service_`.
   std::unique_ptr<BrowserStatePolicyConnector> browser_state_policy_connector_;
-  // The browser state configured with the |policy_provider_|.
+  // The browser state configured with the `policy_provider_`.
   std::unique_ptr<TestChromeBrowserState> browser_state_;
 
   EnterprisePolicyTestHelper& operator=(const EnterprisePolicyTestHelper&) =

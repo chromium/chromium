@@ -8,3 +8,5 @@
 ++++[static] name='bar'
 ++[paragraph] roledescription:Texty
 ++++[static] name='baz'
+++[panel] roledescription:SuperContainer
+++++[static] name='SuperContainer group'

@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -92,6 +92,11 @@ enum MinidumpStreamType : uint32_t {
   //!
   //! \sa MemoryInfoListStream
   kMinidumpStreamTypeMemoryInfoList = MemoryInfoListStream,
+
+  //! \brief The stream type for MINIDUMP_THREAD_NAME_LIST.
+  //!
+  //! \sa ThreadNamesStream
+  kMinidumpStreamTypeThreadNameList = ThreadNamesStream,
 
   //! \brief The last reserved minidump stream.
   //!

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,8 @@
 #include "third_party/blink/renderer/core/css/cssom/paint_worklet_deferred_image.h"
 #include "third_party/blink/renderer/core/css/cssom/style_value_factory.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -101,7 +103,7 @@ scoped_refptr<Image> CSSPaintValue::GetImage(
     const ImageResourceObserver& client,
     const Document& document,
     const ComputedStyle& style,
-    const FloatSize& target_size) {
+    const gfx::SizeF& target_size) {
   // https://crbug.com/835589: early exit when paint target is associated with
   // a link.
   if (style.InsideLink() != EInsideLink::kNotInsideLink)
@@ -120,17 +122,6 @@ scoped_refptr<Image> CSSPaintValue::GetImage(
 
   // TODO(crbug.com/946515): Break dependency on LayoutObject.
   const LayoutObject& layout_object = static_cast<const LayoutObject&>(client);
-
-  // TODO(crbug.com/716231): Remove this hack once zoom_for_dsf is enabled on
-  // all platforms (currently not enabled on Mac).
-  float device_scale_factor = 1;
-  if (layout_object.GetFrame() && layout_object.GetFrame()->GetPage()) {
-    // The value of DeviceScaleFactorDeprecated would be 1 on a platform where
-    // zoom_for_dsf is enabled, even if we run chrome with
-    // --force-device-scale-factor with a value that is not 1.
-    device_scale_factor =
-        layout_object.GetFrame()->GetPage()->DeviceScaleFactorDeprecated();
-  }
 
   // For Off-Thread PaintWorklet, we just collect the necessary inputs together
   // and defer the actual JavaScript call until much later (during cc Raster).
@@ -166,16 +157,15 @@ scoped_refptr<Image> CSSPaintValue::GetImage(
       BuildInputArgumentValues(cross_thread_input_arguments);
       scoped_refptr<CSSPaintWorkletInput> input =
           base::MakeRefCounted<CSSPaintWorkletInput>(
-              GetName(), target_size, zoom, device_scale_factor,
-              generator.WorkletId(), std::move(style_data.value()),
+              GetName(), target_size, zoom, generator.WorkletId(),
+              std::move(style_data.value()),
               std::move(cross_thread_input_arguments),
               std::move(input_property_keys));
       return PaintWorkletDeferredImage::Create(std::move(input), target_size);
     }
   }
 
-  return generator.Paint(client, target_size, parsed_input_arguments_,
-                         device_scale_factor);
+  return generator.Paint(client, target_size, parsed_input_arguments_);
 }
 
 void CSSPaintValue::BuildInputArgumentValues(

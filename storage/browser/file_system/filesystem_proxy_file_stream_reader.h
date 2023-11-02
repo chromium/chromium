@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -34,6 +33,14 @@ namespace storage {
 class COMPONENT_EXPORT(STORAGE_BROWSER) FilesystemProxyFileStreamReader
     : public FileStreamReader {
  public:
+  FilesystemProxyFileStreamReader(
+      scoped_refptr<base::TaskRunner> task_runner,
+      const base::FilePath& file_path,
+      std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
+      int64_t initial_offset,
+      const base::Time& expected_modification_time,
+      bool emit_metrics,
+      base::PassKey<FileStreamReader> pass_key);
   ~FilesystemProxyFileStreamReader() override;
 
   // FileStreamReader overrides.
@@ -46,15 +53,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FilesystemProxyFileStreamReader
       base::RefCountedData<std::unique_ptr<storage::FilesystemProxy>>;
 
  private:
-  friend class FileStreamReader;
-
-  FilesystemProxyFileStreamReader(
-      scoped_refptr<base::TaskRunner> task_runner,
-      const base::FilePath& file_path,
-      std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
-      int64_t initial_offset,
-      const base::Time& expected_modification_time,
-      bool emit_metrics);
   void Open(net::CompletionOnceCallback callback);
 
   // Callbacks that are chained from Open for Read.

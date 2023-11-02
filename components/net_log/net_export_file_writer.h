@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,7 +66,7 @@ class NetExportFileWriter {
   // of NetExportFileWriter's state changes.
   class StateObserver {
    public:
-    virtual void OnNewState(const base::DictionaryValue& state) = 0;
+    virtual void OnNewState(const base::Value::Dict& state) = 0;
   };
 
   // Struct used to store the results of setting up the default log directory
@@ -124,10 +124,10 @@ class NetExportFileWriter {
   //
   // |polled_data| is a JSON dictionary that will be appended to the end of the
   // log; it's for adding additional info to the log that aren't events.
-  void StopNetLog(std::unique_ptr<base::DictionaryValue> polled_data);
+  void StopNetLog(base::Value::Dict polled_data = base::Value::Dict());
 
   // Creates a DictionaryValue summary of the state of the NetExportFileWriter
-  std::unique_ptr<base::DictionaryValue> GetState() const;
+  base::Value::Dict GetState() const;
 
   // Gets the log filepath. |path_callback| will be used to notify the caller
   // when the filepath is retrieved. |path_callback| will be executed with an
@@ -183,7 +183,7 @@ class NetExportFileWriter {
   // logging after the output file has been created.
   void StartNetLogAfterCreateFile(net::NetLogCaptureMode capture_mode,
                                   uint64_t max_file_size,
-                                  base::Value custom_constants,
+                                  base::Value::Dict custom_constants,
                                   base::File log_file);
 
   void OnStartResult(net::NetLogCaptureMode capture_mode, int result);

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 #include "base/feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/subscriber_crosapi.h"
+#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace apps {
 
@@ -33,9 +33,11 @@ void SubscriberCrosapiFactory::ShutDownForTesting(
 }
 
 SubscriberCrosapiFactory::SubscriberCrosapiFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "SubscriberCrosapi",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::Builder()
+              .WithGuest(ProfileSelection::kOffTheRecordOnly)
+              .Build()) {
   // The Lacros app service proxy that will talk with the
   // the SubscriberCrosapi will be created by AppServiceProxyFactory.
   DependsOn(apps::AppServiceProxyFactory::GetInstance());

@@ -1,0 +1,21 @@
+<!-- Simple aria-1.0 combobox test html for end-to-end a11y unit tests. -->
+<html>
+  <head>
+    <script>
+      function go() {
+        document.getElementById('test-input').focus();
+        document.getElementById('test-input').setAttribute('aria-expanded', 'true');
+        document.getElementById('test-listbox').removeAttribute('hidden');
+        document.getElementById('test-input').setAttribute('aria-controls', 'test-listbox');
+      }
+    </script>
+  </head>
+  <body>
+    <input id="test-input" type="text" role="combobox" aria-expanded="false">
+    <ul id="test-listbox" role="listbox" hidden>
+      <li role="option">Chrome</li>
+      <li role="option">Chromium</li>
+      <li role="option">Clank</li>
+    </ul>
+  </body>
+</html>

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "ash/public/cpp/system_tray_observer.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/ui/ash/login_screen_shown_observer.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 
@@ -18,10 +19,6 @@ enum class ParentCodeValidationResult;
 class HatsUnlockSurveyTrigger;
 class LoginAuthRecorder;
 }  // namespace ash
-
-namespace base {
-class ListValue;
-}
 
 // Handles method calls sent from ash to chrome. Also sends messages from chrome
 // to ash.
@@ -133,12 +130,12 @@ class LoginScreenClientImpl : public ash::LoginScreenClient {
   void OnSystemTrayBubbleShown() override;
   void OnLoginScreenShown() override;
   void OnUserActivity() override;
+  views::Widget* GetLoginWindowWidget() override;
 
  private:
-  void SetPublicSessionKeyboardLayout(
-      const AccountId& account_id,
-      const std::string& locale,
-      std::unique_ptr<base::ListValue> keyboard_layouts);
+  void SetPublicSessionKeyboardLayout(const AccountId& account_id,
+                                      const std::string& locale,
+                                      base::Value::List keyboard_layouts);
 
   void ShowGaiaSigninInternal(const AccountId& prefilled_account);
 
@@ -158,6 +155,8 @@ class LoginScreenClientImpl : public ash::LoginScreenClient {
   base::ObserverList<ash::SystemTrayObserver>::Unchecked system_tray_observers_;
 
   base::ObserverList<LoginScreenShownObserver> login_screen_shown_observers_;
+
+  base::TimeTicks time_show_gaia_signin_initiated_;
 
   base::WeakPtrFactory<LoginScreenClientImpl> weak_ptr_factory_{this};
 };

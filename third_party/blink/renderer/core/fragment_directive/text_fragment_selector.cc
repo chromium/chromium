@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,7 @@ bool IsValidTerm(const String& term) {
   DCHECK_EQ(term.find(','), kNotFound);
   DCHECK_EQ(term.find('&'), kNotFound);
 
-  if (term.IsEmpty())
+  if (term.empty())
     return false;
 
   wtf_size_t hyphen_pos = term.find('-');
@@ -35,14 +35,14 @@ bool IsValidTerm(const String& term) {
 }
 
 bool IsPrefix(const String& term) {
-  if (term.IsEmpty())
+  if (term.empty())
     return false;
 
   return term[term.length() - 1] == '-';
 }
 
 bool IsSuffix(const String& term) {
-  if (term.IsEmpty())
+  if (term.empty())
     return false;
 
   return term[0] == '-';
@@ -64,7 +64,7 @@ TextFragmentSelector TextFragmentSelector::FromTextDirective(
   Vector<String> terms;
   directive.Split(",", true, terms);
 
-  if (terms.IsEmpty() || terms.size() > 4)
+  if (terms.empty() || terms.size() > 4)
     return kInvalidSelector;
 
   if (IsPrefix(terms.front())) {
@@ -72,7 +72,7 @@ TextFragmentSelector TextFragmentSelector::FromTextDirective(
     prefix = prefix.Left(prefix.length() - 1);
     terms.erase(terms.begin());
 
-    if (!IsValidTerm(prefix) || terms.IsEmpty())
+    if (!IsValidTerm(prefix) || terms.empty())
       return kInvalidSelector;
   }
 
@@ -81,11 +81,11 @@ TextFragmentSelector TextFragmentSelector::FromTextDirective(
     suffix = suffix.Right(suffix.length() - 1);
     terms.pop_back();
 
-    if (!IsValidTerm(suffix) || terms.IsEmpty())
+    if (!IsValidTerm(suffix) || terms.empty())
       return kInvalidSelector;
   }
 
-  DCHECK(!terms.IsEmpty());
+  DCHECK(!terms.empty());
   if (terms.size() > 2)
     return kInvalidSelector;
 
@@ -95,7 +95,7 @@ TextFragmentSelector TextFragmentSelector::FromTextDirective(
     return kInvalidSelector;
   terms.erase(terms.begin());
 
-  if (!terms.IsEmpty()) {
+  if (!terms.empty()) {
     type = kRange;
     end = terms.front();
     if (!IsValidTerm(end))
@@ -104,7 +104,7 @@ TextFragmentSelector TextFragmentSelector::FromTextDirective(
     terms.erase(terms.begin());
   }
 
-  DCHECK(terms.IsEmpty());
+  DCHECK(terms.empty());
 
   return TextFragmentSelector(
       type, DecodeURLEscapeSequences(start, DecodeURLMode::kUTF8),
@@ -124,21 +124,21 @@ TextFragmentSelector::TextFragmentSelector(SelectorType type) : type_(type) {}
 
 String TextFragmentSelector::ToString() const {
   StringBuilder selector;
-  if (!prefix_.IsEmpty()) {
+  if (!prefix_.empty()) {
     selector.Append(EscapeSelectorSpecialCharacters(prefix_));
     selector.Append("-,");
   }
 
-  if (!start_.IsEmpty()) {
+  if (!start_.empty()) {
     selector.Append(EscapeSelectorSpecialCharacters(start_));
   }
 
-  if (!end_.IsEmpty()) {
+  if (!end_.empty()) {
     selector.Append(",");
     selector.Append(EscapeSelectorSpecialCharacters(end_));
   }
 
-  if (!suffix_.IsEmpty()) {
+  if (!suffix_.empty()) {
     selector.Append(",-");
     selector.Append(EscapeSelectorSpecialCharacters(suffix_));
   }

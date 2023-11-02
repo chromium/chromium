@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,10 @@
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -48,9 +50,9 @@ const char* kAllowListPrefixesForAllPlatforms[] = {
     "/Default/Shortcuts",
     "/GrShaderCache/GPUCache",
     "/Local State"};
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 const char* kAllowListPrefixesForPlatform[] = {"/Default/Visited Links"};
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 const char* kAllowListPrefixesForPlatform[] = {
     "/Default/databases-off-the-record",
     "/Default/heavy_ad_intervention_opt_out.db", "/Default/Top Sites",
@@ -59,12 +61,12 @@ const char* kAllowListPrefixesForPlatform[] = {
     // This file only contains the path to the latest executable of Chrome,
     // therefore it's safe to be written in Incognito.
     "/Last Browser"};
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS)
 const char* kAllowListPrefixesForPlatform[] = {
     "/Default/Local Storage/leveldb/CURRENT",
     "/Default/Site Characteristics Database", "/Default/Sync Data/LevelDB",
     "/test-user/.variations-list.txt"};
-#elif defined(OS_LINUX)
+#elif BUILDFLAG(IS_LINUX)
 const char* kAllowListPrefixesForPlatform[] = {"/Default/Web Data"};
 #else
 const char* kAllowListPrefixesForPlatform[] = {};
@@ -163,17 +165,16 @@ bool AreDirectoriesModified(Snapshot& snapshot_before,
     if (!base::Contains(snapshot_before.directories, directory)) {
       // If a file/prefix in this directory is allowlisted, ignore directory
       // addition.
-      if (std::any_of(allow_list.cbegin(), allow_list.cend(),
-                      [&directory](const std::string& prefix) {
-                        return prefix.find(directory) == 0;
-                      })) {
+      if (base::ranges::any_of(allow_list,
+                               [&directory](const std::string& prefix) {
+                                 return prefix.find(directory) == 0;
+                               })) {
         continue;
       }
 
       // If directory is specifically allow list, ignore.
-      if (std::any_of(
-              std::cbegin(kAllowListEmptyDirectoryPrefixesForAllPlatforms),
-              std::cend(kAllowListEmptyDirectoryPrefixesForAllPlatforms),
+      if (base::ranges::any_of(
+              kAllowListEmptyDirectoryPrefixesForAllPlatforms,
               [&directory](const std::string& allow_listed_directory) {
                 return directory.find(allow_listed_directory) == 0;
               })) {
@@ -202,10 +203,9 @@ bool AreFilesModified(Snapshot& snapshot_before,
     if (is_new ||
         fd.second.last_modified_time != before->second.last_modified_time) {
       // Ignore allow-listed paths.
-      if (std::any_of(allow_list.cbegin(), allow_list.cend(),
-                      [&fd](const std::string& prefix) {
-                        return fd.first.find(prefix) == 0;
-                      })) {
+      if (base::ranges::any_of(allow_list, [&fd](const std::string& prefix) {
+            return fd.first.find(prefix) == 0;
+          })) {
         continue;
       }
 
@@ -235,7 +235,7 @@ class IncognitoProfileContainmentBrowserTest : public InProcessBrowserTest {
   IncognitoProfileContainmentBrowserTest()
       : allow_list_(std::begin(kAllowListPrefixesForAllPlatforms),
                     std::end(kAllowListPrefixesForAllPlatforms)) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     // These prefixes are allowed twice, once under "Default" and once under
     // "test-user".
     std::set<std::string> test_folder;
@@ -248,8 +248,9 @@ class IncognitoProfileContainmentBrowserTest : public InProcessBrowserTest {
     allow_list_.insert(test_folder.begin(), test_folder.end());
 #endif
 
-    allow_list_.insert(std::begin(kAllowListPrefixesForPlatform),
-                       std::end(kAllowListPrefixesForPlatform));
+    for (const char* platform_prefix : kAllowListPrefixesForPlatform) {
+      allow_list_.emplace(platform_prefix);
+    }
   }
 
   void SetUpOnMainThread() override {
@@ -284,8 +285,9 @@ IN_PROC_BROWSER_TEST_F(IncognitoProfileContainmentBrowserTest,
 // state even if user did not explicitly open the browser in regular mode and if
 // so, please add the file to the allow_list at the top and file a bug to follow
 // up.
+// TODO(https://crbug.com/1277824): Flakes on Win 7.
 IN_PROC_BROWSER_TEST_F(IncognitoProfileContainmentBrowserTest,
-                       StoringDataDoesNotModifyProfileFolder) {
+                       DISABLED_StoringDataDoesNotModifyProfileFolder) {
   // Take a snapshot of regular profile.
   Snapshot before_incognito;
   GetUserDirectorySnapshot(before_incognito, /*compute_file_hashes=*/true);

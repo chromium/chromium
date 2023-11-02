@@ -1,8 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/services/storage/dom_storage/local_storage_impl.h"
+
+#include <tuple>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -10,7 +12,6 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -256,7 +257,7 @@ class LocalStorageImplTest : public testing::Test {
     base::RunLoop run_loop;
     std::vector<blink::mojom::KeyValuePtr> data;
     mojo::PendingRemote<blink::mojom::StorageAreaObserver> unused_observer;
-    ignore_result(unused_observer.InitWithNewPipeAndPassReceiver());
+    std::ignore = unused_observer.InitWithNewPipeAndPassReceiver();
     area->GetAll(std::move(unused_observer),
                  test::MakeGetAllCallback(run_loop.QuitClosure(), &data));
     run_loop.Run();
@@ -465,10 +466,10 @@ TEST_F(LocalStorageImplTest, GetStorageUsage_Data) {
 
   std::vector<mojom::StorageUsageInfoPtr> info = GetStorageUsageSync();
   ASSERT_EQ(2u, info.size());
-  if (info[0]->origin == storage_key2.origin())
+  if (info[0]->storage_key == storage_key2)
     std::swap(info[0], info[1]);
-  EXPECT_EQ(storage_key1.origin(), info[0]->origin);
-  EXPECT_EQ(storage_key2.origin(), info[1]->origin);
+  EXPECT_EQ(storage_key1, info[0]->storage_key);
+  EXPECT_EQ(storage_key2, info[1]->storage_key);
   EXPECT_LE(before_write, info[0]->last_modified);
   EXPECT_LE(before_write, info[1]->last_modified);
   EXPECT_GE(after_write, info[0]->last_modified);

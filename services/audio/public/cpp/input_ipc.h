@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,8 @@
 #include <string>
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
+#include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "media/audio/audio_input_ipc.h"
@@ -25,8 +26,9 @@ namespace audio {
 // InputIPC is a client-side class for handling creation,
 // initialization and control of an input stream. May only be used on a single
 // thread.
-class InputIPC : public media::AudioInputIPC,
-                 public media::mojom::AudioInputStreamClient {
+class COMPONENT_EXPORT(AUDIO_PUBLIC_CPP) InputIPC
+    : public media::AudioInputIPC,
+      public media::mojom::AudioInputStreamClient {
  public:
   InputIPC(mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
            const std::string& device_id,
@@ -60,7 +62,7 @@ class InputIPC : public media::AudioInputIPC,
 
   mojo::Remote<media::mojom::AudioInputStream> stream_;
   mojo::Receiver<AudioInputStreamClient> stream_client_receiver_{this};
-  media::AudioInputIPCDelegate* delegate_ = nullptr;
+  raw_ptr<media::AudioInputIPCDelegate> delegate_ = nullptr;
 
   std::string device_id_;
   absl::optional<base::UnguessableToken> stream_id_;

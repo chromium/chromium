@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,15 @@
 
 #include <stdint.h>
 
-#include <algorithm>
 #include <memory>
 #include <string>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/profiles/profile.h"
@@ -26,6 +28,7 @@
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_set.h"
@@ -172,7 +175,7 @@ class ExtensionMetricsProviderInstallsTest
   }
 
  private:
-  extensions::ExtensionPrefs* prefs_ = nullptr;
+  raw_ptr<extensions::ExtensionPrefs> prefs_ = nullptr;
   base::Time last_sample_time_;
 };
 
@@ -273,7 +276,7 @@ TEST_F(ExtensionMetricsProviderInstallsTest, TestProtoConstruction) {
     scoped_refptr<const Extension> extension =
         ExtensionBuilder("browser_action")
             .SetLocation(ManifestLocation::kInternal)
-            .SetAction(ExtensionBuilder::ActionType::BROWSER_ACTION)
+            .SetAction(extensions::ActionInfo::TYPE_BROWSER)
             .Build();
     add_extension(extension.get());
     ExtensionInstallProto install = ConstructProto(*extension);
@@ -285,7 +288,7 @@ TEST_F(ExtensionMetricsProviderInstallsTest, TestProtoConstruction) {
     scoped_refptr<const Extension> extension =
         ExtensionBuilder("page_action")
             .SetLocation(ManifestLocation::kInternal)
-            .SetAction(ExtensionBuilder::ActionType::PAGE_ACTION)
+            .SetAction(extensions::ActionInfo::TYPE_PAGE)
             .Build();
     add_extension(extension.get());
     ExtensionInstallProto install = ConstructProto(*extension);
@@ -416,14 +419,8 @@ TEST_F(ExtensionMetricsProviderInstallsTest,
   ASSERT_EQ(2u, installs.size());
   // One should be the extension, and the other should be the app. We don't
   // check the specifics of the proto, since that's tested above.
-  EXPECT_TRUE(std::any_of(installs.begin(), installs.end(),
-                          [](const ExtensionInstallProto& install) {
-                            return install.type() ==
-                                   ExtensionInstallProto::EXTENSION;
-                          }));
-  EXPECT_TRUE(std::any_of(installs.begin(), installs.end(),
-                          [](const ExtensionInstallProto& install) {
-                            return install.type() ==
-                                   ExtensionInstallProto::PLATFORM_APP;
-                          }));
+  EXPECT_TRUE(base::Contains(installs, ExtensionInstallProto::EXTENSION,
+                             &ExtensionInstallProto::type));
+  EXPECT_TRUE(base::Contains(installs, ExtensionInstallProto::PLATFORM_APP,
+                             &ExtensionInstallProto::type));
 }

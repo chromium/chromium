@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-// Returns an UIFont* calculated by |style| and
-// min(|currentCategory|,|maxCategory|).
+// Returns an UIFont* calculated by `style` and
+// min(`currentCategory`,`maxCategory`).
 UIFont* PreferredFontForTextStyleWithMaxCategory(
     UIFontTextStyle style,
     UIContentSizeCategory currentCategory,

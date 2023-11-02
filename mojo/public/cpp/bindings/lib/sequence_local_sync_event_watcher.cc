@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 
 #include "base/bind.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
@@ -19,6 +19,8 @@
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/sync_event_watcher.h"
+
+#include "base/record_replay.h"
 
 namespace mojo {
 
@@ -61,7 +63,8 @@ class SequenceLocalSyncEventWatcher::SequenceLocalState {
                base::WaitableEvent::InitialState::NOT_SIGNALED),
         event_watcher_(&event_,
                        base::BindRepeating(&SequenceLocalState::OnEventSignaled,
-                                           base::Unretained(this))) {
+                                           base::Unretained(this))),
+        ready_watchers_lock_("SequenceLocalState.ready_watchers_lock_") {
     // We always allow this event handler to be awoken during any sync event on
     // the sequence. Individual watchers still must opt into having such
     // wake-ups propagated to them.
@@ -110,10 +113,10 @@ class SequenceLocalSyncEventWatcher::SequenceLocalState {
     if (registered_watchers_.empty()) {
       // If no more watchers are registered, clear our sequence-local storage.
       // Deletes |this|.
-      // Check if the current task runner is valid before doing this to avoid
-      // races at shutdown when other objects use SequenceLocalStorageSlot and
-      // indirectly call to here.
-      if (base::SequencedTaskRunnerHandle::IsSet())
+      // Check if the SequenceLocalStorageMap is valid before doing this to
+      // avoid races at shutdown when other objects use SequenceLocalStorageSlot
+      // and indirectly call to here.
+      if (base::internal::SequenceLocalStorageMap::IsSetForCurrentThread())
         GetStorageSlot().reset();
     }
   }
@@ -191,8 +194,8 @@ class SequenceLocalSyncEventWatcher::SequenceLocalState {
   WatcherStateMap registered_watchers_;
 
   // Tracks state of the top-most |SyncWatch()| invocation on the stack.
-  const SequenceLocalSyncEventWatcher* top_watcher_ = nullptr;
-  WatcherState* top_watcher_state_ = nullptr;
+  raw_ptr<const SequenceLocalSyncEventWatcher> top_watcher_ = nullptr;
+  raw_ptr<WatcherState> top_watcher_state_ = nullptr;
 
   // Set of all SequenceLocalSyncEventWatchers in a signaled state, guarded by
   // a lock for sequence-safe signaling.
@@ -220,8 +223,9 @@ void SequenceLocalSyncEventWatcher::SequenceLocalState::OnEventSignaled() {
         watcher->callback_.Run();
 
         // The callback may have deleted |this|.
-        if (!weak_self)
+        if (!weak_self) {
           return;
+        }
       }
     }
   }
@@ -259,7 +263,7 @@ class SequenceLocalSyncEventWatcher::Registration {
 
  private:
   const base::WeakPtr<SequenceLocalState> weak_shared_state_;
-  SequenceLocalState* const shared_state_;
+  const raw_ptr<SequenceLocalState, DanglingUntriaged> shared_state_;
   WatcherStateMap::iterator watcher_state_iterator_;
   const scoped_refptr<WatcherState> watcher_state_;
 };

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -68,10 +68,6 @@ class ChromeClassTester {
   // Utility methods used for filtering out non-chrome classes (and ones we
   // deliberately ignore) in HandleTagDeclDefinition().
   bool IsIgnoredType(const std::string& base_name);
-
-  // Attempts to determine the filename for the given SourceLocation.
-  // Returns false if the filename could not be determined.
-  bool GetFilename(clang::SourceLocation loc, std::string* filename);
 
   clang::CompilerInstance& instance_;
   clang::DiagnosticsEngine& diagnostic_;

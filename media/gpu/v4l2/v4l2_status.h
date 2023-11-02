@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,7 @@ enum class V4L2StatusCodes : StatusCodeType {
   kFailedResourceAllocation = 7,
   kBadFormat = 8,
   kFailedToStartStreamQueue = 9,
+  kFailedToDestroyQueueBuffers = 10,
 };
 
 struct V4L2StatusTraits {

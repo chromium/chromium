@@ -1,19 +1,19 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/overlays/infobar_modal/translate/translate_infobar_modal_overlay_mediator.h"
 
-#include "base/metrics/histogram_macros.h"
-#include "base/metrics/sparse_histogram.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/metrics/metrics_log.h"
-#include "components/translate/core/browser/translate_step.h"
-#include "components/translate/core/common/translate_constants.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/metrics/sparse_histogram.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/metrics/metrics_log.h"
+#import "components/translate/core/browser/translate_step.h"
+#import "components/translate/core/common/translate_constants.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/infobar_modal_overlay_responses.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/translate_infobar_modal_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/translate_infobar_modal_overlay_responses.h"
-#include "ios/chrome/browser/overlays/public/overlay_response.h"
+#import "ios/chrome/browser/overlays/public/overlay_response.h"
 #import "ios/chrome/browser/translate/translate_constants.h"
 #import "ios/chrome/browser/translate/translate_infobar_metrics_recorder.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
@@ -226,7 +226,7 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
 
 - (void)didSelectSourceLanguageIndex:(int)languageIndex
                             withName:(NSString*)languageName {
-  // Sanity check that |languageIndex| matches the languageName selected.
+  // Sanity check that `languageIndex` matches the languageName selected.
   DCHECK([languageName
       isEqualToString:base::SysUTF16ToNSString(
                           self.config->language_names().at(languageIndex))]);
@@ -251,7 +251,7 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
 
 - (void)didSelectTargetLanguageIndex:(int)languageIndex
                             withName:(NSString*)languageName {
-  // Sanity check that |languageIndex| matches the languageName selected.
+  // Sanity check that `languageIndex` matches the languageName selected.
   DCHECK([languageName
       isEqualToString:base::SysUTF16ToNSString(
                           self.config->language_names().at(languageIndex))]);
@@ -331,11 +331,11 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
   return items;
 }
 
-// Records a histogram for |event|.
+// Records a histogram for `event`.
 - (void)recordInfobarEvent:(translate::InfobarEvent)event {
   UMA_HISTOGRAM_ENUMERATION(kEventHistogram, event);
 }
-// Records a histogram of |histogram| for |langCode|. This is used to log the
+// Records a histogram of `histogram` for `langCode`. This is used to log the
 // language distribution of certain Translate events.
 - (void)recordLanguageDataHistogram:(const std::string&)histogramName
                        languageCode:(const std::string&)langCode {
@@ -359,8 +359,8 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
 }
 
 // Returns a dictionary of prefs to send to the modalConsumer depending on
-// |sourceLanguage|, |targetLanguage|, |translateButtonEnabled|, and
-// |self.currentStep|.
+// `sourceLanguage`, `targetLanguage`, `translateButtonEnabled`, and
+// `self.currentStep`.
 - (NSDictionary*)createPrefDictionaryForSourceLanguage:(NSString*)sourceLanguage
                                         targetLanguage:(NSString*)targetLanguage
                                 translateButtonEnabled:

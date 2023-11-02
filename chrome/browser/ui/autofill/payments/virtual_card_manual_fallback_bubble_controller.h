@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,6 +61,9 @@ class VirtualCardManualFallbackBubbleController {
   // Returns the title text of the bubble.
   virtual std::u16string GetBubbleTitleText() const = 0;
 
+  // Returns the text used in the learn more link.
+  virtual std::u16string GetLearnMoreLinkText() const = 0;
+
   // Returns the educational label shown in the body of the bubble.
   virtual std::u16string GetEducationalBodyLabel() const = 0;
 
@@ -93,6 +96,9 @@ class VirtualCardManualFallbackBubbleController {
   // Handles the event of bubble closure. |closed_reason| is the detailed reason
   // why the bubble was closed.
   virtual void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) = 0;
+
+  // Handles the event on the learn more link being clicked
+  virtual void OnLinkClicked(const GURL& url) = 0;
 
   // Handles the event of clicking the |field|'s button.
   virtual void OnFieldClicked(VirtualCardManualFallbackBubbleField field) = 0;

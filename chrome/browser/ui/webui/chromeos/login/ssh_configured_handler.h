@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,12 +14,10 @@
 
 namespace chromeos {
 
-class JSCallsContainer;
-
 // A class that handles getIsSshConfigured requests.
 class SshConfiguredHandler : public BaseWebUIHandler {
  public:
-  explicit SshConfiguredHandler(JSCallsContainer* js_calls_container);
+  SshConfiguredHandler();
   SshConfiguredHandler(const SshConfiguredHandler&) = delete;
   SshConfiguredHandler& operator=(const SshConfiguredHandler&) = delete;
 
@@ -29,7 +27,7 @@ class SshConfiguredHandler : public BaseWebUIHandler {
   void DeclareJSCallbacks() override;
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void Initialize() override;
+  void InitAfterJavascriptAllowed() final;
 
  private:
   void HandleGetIsSshConfigured(const std::string& callback_id);

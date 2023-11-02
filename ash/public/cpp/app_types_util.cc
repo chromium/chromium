@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,11 @@ namespace ash {
 bool IsArcWindow(const aura::Window* window) {
   return window && window->GetProperty(aura::client::kAppType) ==
                        static_cast<int>(ash::AppType::ARC_APP);
+}
+
+bool IsLacrosWindow(const aura::Window* window) {
+  return window->GetProperty(aura::client::kAppType) ==
+         static_cast<int>(ash::AppType::LACROS);
 }
 
 }  // namespace ash

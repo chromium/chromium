@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef HEADLESS_LIB_BROWSER_PROTOCOL_BROWSER_HANDLER_H_
 #define HEADLESS_LIB_BROWSER_PROTOCOL_BROWSER_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "headless/lib/browser/protocol/browser.h"
 #include "headless/lib/browser/protocol/domain_handler.h"
@@ -41,7 +42,7 @@ class BrowserHandler : public DomainHandler, public Browser::Backend {
   Response SetDockTile(Maybe<std::string> label, Maybe<Binary> image) override;
 
  private:
-  HeadlessBrowserImpl* browser_;
+  raw_ptr<HeadlessBrowserImpl> browser_;
   std::string target_id_;
 };
 

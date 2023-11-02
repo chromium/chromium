@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/one_shot_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -74,8 +75,7 @@ class ExtensionSystemImpl : public ExtensionSystem {
       base::OnceClosure callback) override;
 
   void UnregisterExtensionWithRequestContexts(
-      const std::string& extension_id,
-      const UnloadedExtensionReason reason) override;
+      const std::string& extension_id) override;
 
   const base::OneShotEvent& ready() const override;
   bool is_ready() const override;
@@ -129,7 +129,7 @@ class ExtensionSystemImpl : public ExtensionSystem {
     ContentVerifier* content_verifier();
 
    private:
-    Profile* profile_;
+    raw_ptr<Profile> profile_;
 
     // The services that are shared between normal and incognito profiles.
 
@@ -169,9 +169,9 @@ class ExtensionSystemImpl : public ExtensionSystem {
     base::OneShotEvent ready_;
   };
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
-  Shared* shared_;
+  raw_ptr<Shared> shared_;
 };
 
 }  // namespace extensions

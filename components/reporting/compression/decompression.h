@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "base/feature_list.h"
@@ -29,7 +29,7 @@ class Decompression : public base::RefCountedThreadSafe<Decompression> {
   // string then can be further updated by the caller. std::string is used
   // instead of base::StringPiece because ownership is taken of |record| through
   // std::move(record).
-  static std::string DecompressRecord(
+  [[nodiscard]] static std::string DecompressRecord(
       std::string record,
       CompressionInformation compression_information);
 

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/time/time.h"
 #include "components/metrics/demographics/user_demographics.h"
 #include "components/metrics/metrics_log_uploader.h"
@@ -18,15 +19,14 @@
 
 class PrefService;
 
-namespace base {
-struct Feature;
-}
-
 namespace syncer {
 class SyncService;
 }
 
 namespace metrics {
+
+// Feature switch to report user's noised birth year and gender.
+BASE_DECLARE_FEATURE(kDemographicMetricsReporting);
 
 // Provider of the synced user’s noised birth year and gender to the UMA metrics
 // server. The synced user's birth year and gender were provided to Google when
@@ -98,9 +98,6 @@ class DemographicMetricsProvider : public MetricsProvider,
   // UkmDemographicMetricsProvider:
   void ProvideSyncedUserNoisedBirthYearAndGenderToReport(
       ukm::Report* report) override;
-
-  // Feature switch to report user's noised birth year and gender.
-  static const base::Feature kDemographicMetricsReporting;
 
  private:
   // Provides the synced user's noised birth year and gender.

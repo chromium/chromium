@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,7 +43,8 @@ class DrmDisplayHost : public GpuThreadObserver {
   void SetGammaCorrection(
       const std::vector<display::GammaRampRGBEntry>& degamma_lut,
       const std::vector<display::GammaRampRGBEntry>& gamma_lut);
-  void SetPrivacyScreen(bool enabled);
+  void SetPrivacyScreen(bool enabled,
+                        display::SetPrivacyScreenCallback callback);
 
   // Called when the IPC from the GPU process arrives to answer the above
   // commands.

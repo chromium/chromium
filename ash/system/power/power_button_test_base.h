@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,6 +52,9 @@ class PowerButtonTestBase : public AshTestBase {
   // |screenshot_controller_| if the switch state is not UNSUPPORTED.
   void SetTabletModeSwitchState(
       chromeos::PowerManagerClient::TabletMode tablet_mode_switch_state);
+
+  // Simulates ARC power button event.
+  void LaunchArcPowerButtonEvent();
 
   // Simulates a power button press.
   void PressPowerButton();

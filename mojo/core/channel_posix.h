@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/containers/queue.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/synchronization/lock.h"
@@ -46,6 +45,9 @@ class ChannelPosix : public Channel,
                               size_t extra_header_size,
                               std::vector<PlatformHandle>* handles,
                               bool* deferred) override;
+  bool GetReadPlatformHandlesForIpcz(
+      size_t num_handles,
+      std::vector<PlatformHandle>& handles) override;
   bool OnControlMessage(Message::MessageType message_type,
                         const void* payload,
                         size_t payload_size,
@@ -82,7 +84,7 @@ class ChannelPosix : public Channel,
   bool WriteNoLock(MessageView message_view);
   bool FlushOutgoingMessagesNoLock();
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   bool WriteOutgoingMessagesWithWritev();
 
   // FlushOutgoingMessagesWritevNoLock is equivalent to
@@ -92,11 +94,11 @@ class ChannelPosix : public Channel,
   // needs to be transferred we cannot use writev(2) and instead will fall
   // back to the standard write.
   bool FlushOutgoingMessagesWritevNoLock();
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   bool CloseHandles(const int* fds, size_t num_fds);
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
   // We may be initialized with a server socket, in which case this will be
   // valid until it accepts an incoming connection.
@@ -120,10 +122,10 @@ class ChannelPosix : public Channel,
 
   bool leak_handle_ = false;
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   base::Lock fds_to_close_lock_;
   std::vector<base::ScopedFD> fds_to_close_;
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 };
 
 }  // namespace core

@@ -6,7 +6,6 @@ General guidelines:
 * Follow the [Proto Do's and Don'ts](http://go/protodosdonts) (sorry, Googlers only).
 * Maintain local consistency.
 * Use proto2 syntax.
-* **Always** get a review from someone in the OWNERS file in this folder. Don't use owners from higher-level folders, and **never** TBR changes!
 
 Some specific guidelines on top of the general ones above, or just things that often come up:
 * Enum entries should be in ALL_CAPS (different from C++!), and for new code, the first entry should be a `FOO_UNSPECIFIED = 0` one.
@@ -20,3 +19,7 @@ Some specific guidelines on top of the general ones above, or just things that o
   * If the field **is** still accessed: Mark it as `[deprecated = true]`. This is the common case, since the browser typically needs to continue supporting the old field for backwards compatibility reasons.
   * If the field **is not** accessed anymore (i.e. no non-ancient clients depend on the field being populated anymore, all migration code has been retired, etc): Remove the field, and add `reserved` entries for both its name and its tag number.
 * Deprecating enum values: This is particularly tricky, especially if the default value is not a `FOO_UNSPECIFIED` one (see above). A common pattern is prepending `DEPRECATED_` to the entry name.
+
+For reviewers:
+* Be extra careful with protocol changes, especially consider backward and forward compatibility.
+* In doubt, loop in a second reviewer from the Sync team.

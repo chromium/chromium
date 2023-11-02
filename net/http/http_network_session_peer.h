@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/net_export.h"
 
@@ -37,7 +37,7 @@ class NET_EXPORT_PRIVATE HttpNetworkSessionPeer {
   HttpNetworkSessionParams* params();
 
  private:
-  HttpNetworkSession* const session_;
+  const raw_ptr<HttpNetworkSession> session_;
 };
 
 }  // namespace net

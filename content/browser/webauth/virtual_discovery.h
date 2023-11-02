@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,18 +10,18 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
-#include "content/common/content_export.h"
 #include "device/fido/fido_device_discovery.h"
+#include "device/fido/fido_transport_protocol.h"
 
 namespace device {
-class FidoDevice;
+class VirtualFidoDevice;
 }
 
 namespace content {
 
 // A fully automated FidoDeviceDiscovery implementation, which is disconnected
 // from the real world, and discovers VirtualFidoDevice instances.
-class CONTENT_EXPORT VirtualFidoDiscovery
+class VirtualFidoDiscovery
     : public ::device::FidoDeviceDiscovery,
       public base::SupportsWeakPtr<VirtualFidoDiscovery> {
  public:
@@ -33,7 +33,7 @@ class CONTENT_EXPORT VirtualFidoDiscovery
   // Notifies the AuthenticatorEnvironment of this instance being destroyed.
   ~VirtualFidoDiscovery() override;
 
-  void AddVirtualDevice(std::unique_ptr<::device::FidoDevice> device);
+  void AddVirtualDevice(std::unique_ptr<device::VirtualFidoDevice> device);
   bool RemoveVirtualDevice(base::StringPiece device_id);
 
  protected:
@@ -41,7 +41,7 @@ class CONTENT_EXPORT VirtualFidoDiscovery
   void StartInternal() override;
 
  private:
-  std::vector<std::unique_ptr<::device::FidoDevice>>
+  std::vector<std::unique_ptr<device::VirtualFidoDevice>>
       devices_pending_discovery_start_;
 };
 

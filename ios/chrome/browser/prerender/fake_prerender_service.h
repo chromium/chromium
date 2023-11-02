@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ class FakePrerenderService : public PrerenderService {
   ~FakePrerenderService() override;
 
   // Sets the WebState being prerendered.  Subsequent calls to
-  // IsWebStatePrerendered() will return true for |web_state|.
+  // IsWebStatePrerendered() will return true for `web_state`.
   void set_prerender_web_state(web::WebState* web_state) {
     prerender_web_state_ = web_state;
   }

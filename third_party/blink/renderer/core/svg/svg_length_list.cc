@@ -21,7 +21,7 @@
 #include "third_party/blink/renderer/core/svg/svg_length_list.h"
 
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 
 namespace blink {
@@ -54,7 +54,7 @@ SVGParsingError SVGLengthList::ParseInternal(const CharType* ptr,
     if (ptr == start)
       break;
     String value_string(start, static_cast<wtf_size_t>(ptr - start));
-    if (value_string.IsEmpty())
+    if (value_string.empty())
       break;
 
     auto* length = MakeGarbageCollected<SVGLength>(mode_);
@@ -71,7 +71,7 @@ SVGParsingError SVGLengthList::ParseInternal(const CharType* ptr,
 SVGParsingError SVGLengthList::SetValueAsString(const String& value) {
   Clear();
 
-  if (value.IsEmpty())
+  if (value.empty())
     return SVGParseStatus::kNoError;
 
   return WTF::VisitCharacters(value, [&](const auto* chars, unsigned length) {

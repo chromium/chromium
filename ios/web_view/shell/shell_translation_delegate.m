@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -122,16 +122,12 @@
 #pragma mark - Private
 
 - (UIWindow*)anyKeyWindow {
-#if !defined(__IPHONE_13_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_13_0
-  return [UIApplication sharedApplication].keyWindow;
-#else
   NSArray<UIWindow*>* windows = [UIApplication sharedApplication].windows;
   for (UIWindow* window in windows) {
     if (window.isKeyWindow)
       return window;
   }
   return nil;
-#endif
 }
 
 @end

@@ -4,18 +4,18 @@ rootWebArea focusable
 ++++++labelText
 ++++++++staticText name='l1'
 ++++++++++inlineTextBox name='l1'
-++++++textField focusable name='l1'
+++++++textField focusable inputType='text' name='l1'
 ++++++++genericContainer
 ++++++labelText
 ++++++++staticText name='l2'
 ++++++++++inlineTextBox name='l2'
-++++++textField focusable name='l2' value='value'
+++++++textField focusable inputType='text' name='l2' value='value'
 ++++++++genericContainer
 ++++++++++staticText name='value'
 ++++++++++++inlineTextBox name='value'
-++++++textField focusable name='l2'
+++++++textField focusable inputType='text' name='l2'
 ++++++++genericContainer
-++++++textField focusable name='l2' value='value  *'
+++++++textField focusable inputType='text' name='l2' value='value  *'
 ++++++++genericContainer
 ++++++++++staticText name='value  *'
 ++++++++++++inlineTextBox name='value  *'
@@ -23,9 +23,9 @@ rootWebArea focusable
 ++++++++staticText name='Email'
 ++++++++++inlineTextBox name='Email'
 ++++++genericContainer
-++++++textField focusable name='Email'
+++++++textField focusable inputType='text' name='Email'
 ++++++++genericContainer
-++++++textField focusable name='Email' value='value'
+++++++textField focusable inputType='text' name='Email' value='value'
 ++++++++genericContainer
 ++++++++++staticText name='value'
 ++++++++++++inlineTextBox name='value'
@@ -35,7 +35,7 @@ rootWebArea focusable
 ++++++++genericContainer
 ++++++++++staticText name='Value'
 ++++++++++++inlineTextBox name='Value'
-++++++textField focusable description='Description' name='Name' value='value' descriptionFrom=title
+++++++textField focusable description='Description' inputType='text' name='Name' value='value' descriptionFrom=title
 ++++++++genericContainer
 ++++++++++staticText name='value'
 ++++++++++++inlineTextBox name='value'

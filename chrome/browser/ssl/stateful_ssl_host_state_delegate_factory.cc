@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,7 @@
 #include <memory>
 
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 
 namespace {
@@ -44,9 +42,9 @@ StatefulSSLHostStateDelegateFactory::GetDefaultFactoryForTesting() {
 }
 
 StatefulSSLHostStateDelegateFactory::StatefulSSLHostStateDelegateFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "StatefulSSLHostStateDelegate",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(HostContentSettingsMapFactory::GetInstance());
 }
 
@@ -56,12 +54,6 @@ StatefulSSLHostStateDelegateFactory::~StatefulSSLHostStateDelegateFactory() =
 KeyedService* StatefulSSLHostStateDelegateFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return BuildStatefulSSLHostStateDelegate(context).release();
-}
-
-content::BrowserContext*
-StatefulSSLHostStateDelegateFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }
 
 bool StatefulSSLHostStateDelegateFactory::ServiceIsNULLWhileTesting() const {

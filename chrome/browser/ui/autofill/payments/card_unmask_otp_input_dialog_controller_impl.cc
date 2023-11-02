@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,11 @@
 
 #include <string>
 
+#include "build/build_config.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_otp_input_dialog_view.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/otp_unmask_result.h"
 #include "components/strings/grit/components_strings.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
@@ -39,7 +37,7 @@ void CardUnmaskOtpInputDialogControllerImpl::ShowDialog(
   otp_length_ = otp_length;
   delegate_ = delegate;
   dialog_view_ =
-      CardUnmaskOtpInputDialogView::CreateAndShow(this, web_contents());
+      CardUnmaskOtpInputDialogView::CreateAndShow(this, &GetWebContents());
 
   DCHECK(dialog_view_);
   AutofillMetrics::LogOtpInputDialogShown();
@@ -47,6 +45,11 @@ void CardUnmaskOtpInputDialogControllerImpl::ShowDialog(
 
 void CardUnmaskOtpInputDialogControllerImpl::OnOtpVerificationResult(
     OtpUnmaskResult result) {
+  // This can be invoked when the dialog is not visible. In this case we do
+  // nothing.
+  if (!dialog_view_)
+    return;
+
   switch (result) {
     case OtpUnmaskResult::kSuccess:
       dialog_view_->Dismiss(/*show_confirmation_before_closing=*/true,
@@ -129,11 +132,11 @@ CardUnmaskOtpInputDialogControllerImpl::GetTextfieldPlaceholderText() const {
       base::NumberToString16(otp_length_));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 int CardUnmaskOtpInputDialogControllerImpl::GetExpectedOtpLength() const {
   return otp_length_;
 }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 bool CardUnmaskOtpInputDialogControllerImpl::IsValidOtp(
     const std::u16string& otp) const {
@@ -176,7 +179,8 @@ std::u16string CardUnmaskOtpInputDialogControllerImpl::GetConfirmationMessage()
 
 CardUnmaskOtpInputDialogControllerImpl::CardUnmaskOtpInputDialogControllerImpl(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsUserData<CardUnmaskOtpInputDialogControllerImpl>(
+          *web_contents) {}
 
 void CardUnmaskOtpInputDialogControllerImpl::ShowInvalidState(
     OtpUnmaskResult otp_unmask_result) {

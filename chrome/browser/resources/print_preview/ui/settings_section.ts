@@ -1,19 +1,21 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-import './print_preview_shared_css.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import './print_preview_shared.css.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-class PrintPreviewSettingsSectionElement extends PolymerElement {
+import {getTemplate} from './settings_section.html.js';
+
+export class PrintPreviewSettingsSectionElement extends PolymerElement {
   static get is() {
     return 'print-preview-settings-section';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 }
 

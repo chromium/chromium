@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,24 +71,24 @@ UnionTraits<blink::mojom::IDBKeyDataView, blink::IndexedDBKey>::GetTag(
     const blink::IndexedDBKey& key) {
   switch (key.type()) {
     case blink::mojom::IDBKeyType::Array:
-      return blink::mojom::IDBKeyDataView::Tag::KEY_ARRAY;
+      return blink::mojom::IDBKeyDataView::Tag::kKeyArray;
     case blink::mojom::IDBKeyType::Binary:
-      return blink::mojom::IDBKeyDataView::Tag::BINARY;
+      return blink::mojom::IDBKeyDataView::Tag::kBinary;
     case blink::mojom::IDBKeyType::String:
-      return blink::mojom::IDBKeyDataView::Tag::STRING;
+      return blink::mojom::IDBKeyDataView::Tag::kString;
     case blink::mojom::IDBKeyType::Date:
-      return blink::mojom::IDBKeyDataView::Tag::DATE;
+      return blink::mojom::IDBKeyDataView::Tag::kDate;
     case blink::mojom::IDBKeyType::Number:
-      return blink::mojom::IDBKeyDataView::Tag::NUMBER;
+      return blink::mojom::IDBKeyDataView::Tag::kNumber;
     case blink::mojom::IDBKeyType::None:
-      return blink::mojom::IDBKeyDataView::Tag::OTHER_NONE;
+      return blink::mojom::IDBKeyDataView::Tag::kOtherNone;
 
     // Not used, fall through to NOTREACHED.
     case blink::mojom::IDBKeyType::Invalid:  // Only used in blink.
     case blink::mojom::IDBKeyType::Min:;     // Only used in the browser.
   }
   NOTREACHED();
-  return blink::mojom::IDBKeyDataView::Tag::OTHER_NONE;
+  return blink::mojom::IDBKeyDataView::Tag::kOtherNone;
 }
 
 // static
@@ -96,35 +96,35 @@ bool UnionTraits<blink::mojom::IDBKeyDataView, blink::IndexedDBKey>::Read(
     blink::mojom::IDBKeyDataView data,
     blink::IndexedDBKey* out) {
   switch (data.tag()) {
-    case blink::mojom::IDBKeyDataView::Tag::KEY_ARRAY: {
+    case blink::mojom::IDBKeyDataView::Tag::kKeyArray: {
       std::vector<blink::IndexedDBKey> array;
       if (!data.ReadKeyArray(&array))
         return false;
       *out = blink::IndexedDBKey(std::move(array));
       return true;
     }
-    case blink::mojom::IDBKeyDataView::Tag::BINARY: {
+    case blink::mojom::IDBKeyDataView::Tag::kBinary: {
       ArrayDataView<uint8_t> bytes;
       data.GetBinaryDataView(&bytes);
       std::string binary(bytes.data(), bytes.data() + bytes.size());
       *out = blink::IndexedDBKey(std::move(binary));
       return true;
     }
-    case blink::mojom::IDBKeyDataView::Tag::STRING: {
+    case blink::mojom::IDBKeyDataView::Tag::kString: {
       std::u16string string;
       if (!data.ReadString(&string))
         return false;
       *out = blink::IndexedDBKey(std::move(string));
       return true;
     }
-    case blink::mojom::IDBKeyDataView::Tag::DATE:
+    case blink::mojom::IDBKeyDataView::Tag::kDate:
       *out = blink::IndexedDBKey(data.date(), blink::mojom::IDBKeyType::Date);
       return true;
-    case blink::mojom::IDBKeyDataView::Tag::NUMBER:
+    case blink::mojom::IDBKeyDataView::Tag::kNumber:
       *out =
           blink::IndexedDBKey(data.number(), blink::mojom::IDBKeyType::Number);
       return true;
-    case blink::mojom::IDBKeyDataView::Tag::OTHER_NONE:
+    case blink::mojom::IDBKeyDataView::Tag::kOtherNone:
       *out = blink::IndexedDBKey(blink::mojom::IDBKeyType::None);
       return true;
   }
@@ -139,21 +139,18 @@ StructTraits<blink::mojom::IDBKeyPathDataView, blink::IndexedDBKeyPath>::data(
   if (key_path.IsNull())
     return nullptr;
 
-  auto data = blink::mojom::IDBKeyPathData::New();
   switch (key_path.type()) {
     case blink::mojom::IDBKeyPathType::String:
-      data->set_string(key_path.string());
-      return data;
+      return blink::mojom::IDBKeyPathData::NewString(key_path.string());
     case blink::mojom::IDBKeyPathType::Array:
-      data->set_string_array(key_path.array());
-      return data;
+      return blink::mojom::IDBKeyPathData::NewStringArray(key_path.array());
 
     // The following key path types are not used.
     case blink::mojom::IDBKeyPathType::Null:;  // No-op, fall out of switch
                                                // block to NOTREACHED().
   }
   NOTREACHED();
-  return data;
+  return nullptr;
 }
 
 // static
@@ -168,14 +165,14 @@ bool StructTraits<blink::mojom::IDBKeyPathDataView, blink::IndexedDBKeyPath>::
   }
 
   switch (data_view.tag()) {
-    case blink::mojom::IDBKeyPathDataDataView::Tag::STRING: {
+    case blink::mojom::IDBKeyPathDataDataView::Tag::kString: {
       std::u16string string;
       if (!data_view.ReadString(&string))
         return false;
       *out = blink::IndexedDBKeyPath(string);
       return true;
     }
-    case blink::mojom::IDBKeyPathDataDataView::Tag::STRING_ARRAY: {
+    case blink::mojom::IDBKeyPathDataDataView::Tag::kStringArray: {
       std::vector<std::u16string> array;
       if (!data_view.ReadStringArray(&array))
         return false;

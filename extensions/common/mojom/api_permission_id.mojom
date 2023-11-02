@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -86,7 +86,8 @@ enum APIPermissionID {
   kDeleted_ExperienceSamplingPrivate = 60,
   kExperimental = 61,
   kDeleted_ExtensionView = 62,
-  kExternallyConnectableAllUrls = 63,
+  // TODO(https://crbug.com/1363485): Remove this entry.
+  kDeprecated_ExternallyConnectableAllUrls = 63,
   kFeedbackPrivate = 64,
   kFileBrowserHandler = 65,
   kFileBrowserHandlerInternal = 66,
@@ -127,7 +128,7 @@ enum APIPermissionID {
   kMediaRouterPrivate = 101,
   kMetricsPrivate = 102,
   kMDns = 103,
-  kMusicManagerPrivate = 104,
+  kDeleted_MusicManagerPrivate = 104,
   kNativeMessaging = 105,
   kDeleted_NetworkingConfig = 106,
   kNetworkingPrivate = 107,
@@ -153,7 +154,7 @@ enum APIPermissionID {
   kSerial = 127,
   kSessions = 128,
   kSettingsPrivate = 129,
-  kSignedInDevices = 130,
+  kDeleted_SignedInDevices = 130,
   kSocket = 131,
   kStartupPages = 132,
   kStorage = 133,
@@ -177,7 +178,7 @@ enum APIPermissionID {
   kVirtualKeyboardPrivate = 151,
   kVpnProvider = 152,
   kWallpaper = 153,
-  kWallpaperPrivate = 154,
+  kDeleted_WallpaperPrivate = 154,
   kWebcamPrivate = 155,
   kDeleted_kWebConnectable = 156,
   kWebNavigation = 157,
@@ -236,7 +237,7 @@ enum APIPermissionID {
   kEnterpriseReportingPrivate = 210,
   kCecPrivate = 211,
   kSafeBrowsingPrivate = 212,
-  kFileSystemRequestDownloads = 213,
+  kDeleted_FileSystemRequestDownloads = 213,
   kDeleted_SystemPowerSource = 214,
   kArcAppsPrivate = 215,
   kEnterpriseHardwarePlatform = 216,
@@ -261,6 +262,13 @@ enum APIPermissionID {
   kSpeechRecognitionPrivate = 235,
   kChromeOSDiagnostics = 236,
   kChromeOSTelemetrySerialNumber = 237,
+  kSharedStoragePrivate = 238,
+  kEnterpriseRemoteApps = 239,
+  kOffscreen = 240,
+  kSidePanel = 241,
+  kDownloadsUi = 242,
+  kWebRequestAuthProvider = 243,
+  kChromeOSTelemetryNetworkInformation = 244,
 
   // Add new entries at the end of the enum and be sure to update the
   // "ExtensionPermission3" enum in tools/metrics/histograms/enums.xml

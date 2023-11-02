@@ -1,10 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/shell.h"
 
-#include <algorithm>
 #include <memory>
 #include <queue>
 #include <vector>
@@ -34,13 +33,12 @@
 #include "ash/wallpaper/wallpaper_widget_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_controller.h"
-#include "ash/wm/window_util.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/account_id/account_id.h"
-#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
@@ -429,65 +427,6 @@ TEST_F(ShellTest, ManagedWindowModeBasics) {
   widget->Close();
 }
 
-TEST_F(ShellTest, FullscreenWindowHidesShelf) {
-  ExpectAllContainers();
-
-  // Create a normal window.  It is not maximized.
-  views::Widget* widget = TestWidgetBuilder()
-                              .SetBounds(gfx::Rect(11, 22, 300, 400))
-                              .BuildOwnedByNativeWidget();
-  EXPECT_FALSE(widget->IsMaximized());
-
-  // Shelf defaults to visible.
-  EXPECT_EQ(SHELF_VISIBLE, Shell::GetPrimaryRootWindowController()
-                               ->GetShelfLayoutManager()
-                               ->visibility_state());
-
-  // Fullscreen window hides it.
-  widget->SetFullscreen(true);
-  EXPECT_EQ(SHELF_HIDDEN, Shell::GetPrimaryRootWindowController()
-                              ->GetShelfLayoutManager()
-                              ->visibility_state());
-
-  // Restoring the window restores it.
-  widget->Restore();
-  EXPECT_EQ(SHELF_VISIBLE, Shell::GetPrimaryRootWindowController()
-                               ->GetShelfLayoutManager()
-                               ->visibility_state());
-
-  // Clean up.
-  widget->Close();
-}
-
-// Various assertions around auto-hide behavior.
-// TODO(jamescook): Move this to ShelfTest.
-TEST_F(ShellTest, ToggleAutoHide) {
-  std::unique_ptr<aura::Window> window =
-      std::make_unique<aura::Window>(nullptr);
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
-  window->SetType(aura::client::WINDOW_TYPE_NORMAL);
-  window->Init(ui::LAYER_TEXTURED);
-  ParentWindowInPrimaryRootWindow(window.get());
-  window->Show();
-  wm::ActivateWindow(window.get());
-
-  Shelf* shelf = GetPrimaryShelf();
-  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
-  EXPECT_EQ(ShelfAutoHideBehavior::kAlways, shelf->auto_hide_behavior());
-
-  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kNever);
-  EXPECT_EQ(ShelfAutoHideBehavior::kNever, shelf->auto_hide_behavior());
-
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MAXIMIZED);
-  EXPECT_EQ(ShelfAutoHideBehavior::kNever, shelf->auto_hide_behavior());
-
-  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
-  EXPECT_EQ(ShelfAutoHideBehavior::kAlways, shelf->auto_hide_behavior());
-
-  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kNever);
-  EXPECT_EQ(ShelfAutoHideBehavior::kNever, shelf->auto_hide_behavior());
-}
-
 // Tests that the cursor-filter is ahead of the drag-drop controller in the
 // pre-target list.
 TEST_F(ShellTest, TestPreTargetHandlerOrder) {
@@ -497,9 +436,9 @@ TEST_F(ShellTest, TestPreTargetHandlerOrder) {
 
   ui::EventHandlerList handlers = test_api.GetPreTargetHandlers();
   ui::EventHandlerList::const_iterator cursor_filter =
-      std::find(handlers.begin(), handlers.end(), shell->mouse_cursor_filter());
-  ui::EventHandlerList::const_iterator drag_drop = std::find(
-      handlers.begin(), handlers.end(), shell_test_api.drag_drop_controller());
+      base::ranges::find(handlers, shell->mouse_cursor_filter());
+  ui::EventHandlerList::const_iterator drag_drop =
+      base::ranges::find(handlers, shell_test_api.drag_drop_controller());
   EXPECT_NE(handlers.end(), cursor_filter);
   EXPECT_NE(handlers.end(), drag_drop);
   EXPECT_GT(drag_drop, cursor_filter);

@@ -1,12 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/updater/policy/dm_policy_manager.h"
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "base/enterprise_util.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
@@ -56,8 +59,14 @@ DMPolicyManager::DMPolicyManager(
 
 DMPolicyManager::~DMPolicyManager() = default;
 
-bool DMPolicyManager::IsManaged() const {
-  return base::IsMachineExternallyManaged();
+bool DMPolicyManager::HasActiveDevicePolicies() const {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  return base::IsManagedDevice();
+#else
+  // crbug.com/1276162 - implement.
+  NOTIMPLEMENTED();
+  return false;
+#endif
 }
 
 std::string DMPolicyManager::source() const {
@@ -137,7 +146,7 @@ const ::wireless_android_enterprise_devicemanagement::ApplicationSettings*
 DMPolicyManager::GetAppSettings(const std::string& app_id) const {
   const auto& repeated_app_settings = omaha_settings_.application_settings();
   for (const auto& app_settings_proto : repeated_app_settings) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // BundleIdentifier is preferred over AppGuid as product ID on Mac.
     // If not found, fall back to AppGuid below.
     if (app_settings_proto.has_bundle_identifier() &&
@@ -145,7 +154,7 @@ DMPolicyManager::GetAppSettings(const std::string& app_id) const {
                                          app_id)) {
       return &app_settings_proto;
     }
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
     if (app_settings_proto.has_app_guid() &&
         base::EqualsCaseInsensitiveASCII(app_settings_proto.app_guid(),
                                          app_id)) {
@@ -225,6 +234,12 @@ bool DMPolicyManager::IsRollbackToTargetVersionAllowed(
                        ::wireless_android_enterprise_devicemanagement::
                            ROLLBACK_TO_TARGET_VERSION_ENABLED);
   return true;
+}
+
+// TODO(crbug.com/1347562): implement retrieving the force installs apps.
+bool DMPolicyManager::GetForceInstallApps(
+    std::vector<std::string>* /* force_install_apps */) const {
+  return false;
 }
 
 std::unique_ptr<PolicyManagerInterface> CreateDMPolicyManager() {

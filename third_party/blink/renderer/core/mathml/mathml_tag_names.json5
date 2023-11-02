@@ -69,11 +69,11 @@
     },
     {
       name: "mi",
-      interfaceName: "MathMLElement",
+      interfaceName: "MathMLTokenElement",
     },
     {
       name: "mn",
-      interfaceName: "MathMLElement",
+      interfaceName: "MathMLTokenElement",
     },
     {
       name: "mo",
@@ -93,7 +93,7 @@
     },
     {
       name: "ms",
-      interfaceName: "MathMLElement",
+      interfaceName: "MathMLTokenElement",
     },
     {
       name: "mspace",
@@ -117,7 +117,7 @@
     },
     {
       name: "mtext",
-      interfaceName: "MathMLElement",
+      interfaceName: "MathMLTokenElement",
     },
     {
       name: "mover",

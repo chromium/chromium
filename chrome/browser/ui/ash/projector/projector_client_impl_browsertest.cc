@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,29 +7,47 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/projector/projector_client.h"
-#include "ash/public/cpp/projector/projector_controller.h"
-#include "ash/public/cpp/test/mock_projector_controller.h"
+#include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
+#include "ash/public/cpp/test/mock_projector_client.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
+#include "base/bind.h"
+#include "base/callback_forward.h"
+#include "base/files/file_path.h"
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
+#include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
+#include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
-#include "chrome/browser/speech/fake_speech_recognition_service.h"
+#include "chrome/browser/ui/ash/projector/projector_app_client_impl.h"
+#include "chrome/browser/ui/ash/projector/projector_utils.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/soda/soda_installer_impl_chromeos.h"
+#include "components/account_id/account_id.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/page_type.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -38,16 +56,70 @@ namespace ash {
 
 namespace {
 
-const char kFirstSpeechResult[] = "the brown fox";
-const char kSecondSpeechResult[] = "the brown fox jumped over the lazy dog";
+apps::AppServiceProxy* GetAppServiceProxy(Profile* profile) {
+  return apps::AppServiceProxyFactory::GetForProfile(profile);
+}
+
+// Returns the account id for logging in.
+absl::optional<AccountId> GetPrimaryAccountId(bool is_managed) {
+  if (is_managed) {
+    return AccountId::FromUserEmailGaiaId(
+        FakeGaiaMixin::kEnterpriseUser1, FakeGaiaMixin::kEnterpriseUser1GaiaId);
+  }
+  // Use the default FakeGaiaMixin::kFakeUserEmail consumer test account id.
+  return absl::nullopt;
+}
 
 }  // namespace
+
+// A class helps to verify enable/disable Drive could invoke
+// ProjectorAppClient::Observer::OnDriveFsMountStatusChanged().
+class DriveFsMountStatusWaiter : public ProjectorAppClient::Observer {
+ public:
+  explicit DriveFsMountStatusWaiter(drive::DriveIntegrationService* service)
+      : service_(service) {
+    GetProjectorAppClientImpl()->AddObserver(this);
+  }
+
+  DriveFsMountStatusWaiter(const DriveFsMountStatusWaiter&) = delete;
+  DriveFsMountStatusWaiter& operator=(const DriveFsMountStatusWaiter&) = delete;
+
+  ~DriveFsMountStatusWaiter() override {
+    GetProjectorAppClientImpl()->RemoveObserver(this);
+  }
+
+  // ProjectorAppClient::Observer:
+  void OnNewScreencastPreconditionChanged(
+      const NewScreencastPrecondition& condition) override {
+    std::move(quit_closure_).Run();
+  }
+  MOCK_METHOD1(OnScreencastsPendingStatusChanged,
+               void(const PendingScreencastSet&));
+  MOCK_METHOD1(OnSodaProgress, void(int));
+  MOCK_METHOD0(OnSodaError, void());
+  MOCK_METHOD0(OnSodaInstalled, void());
+
+  void SetDriveEnabled(bool enabled_drive, base::OnceClosure quit_closure) {
+    quit_closure_ = std::move(quit_closure);
+    service_->SetEnabled(enabled_drive);
+  }
+
+  ProjectorAppClientImpl* GetProjectorAppClientImpl() {
+    return static_cast<ProjectorAppClientImpl*>(ProjectorAppClient::Get());
+  }
+
+ private:
+  base::OnceClosure quit_closure_;
+  drive::DriveIntegrationService* service_;
+};
 
 class ProjectorClientTest : public InProcessBrowserTest {
  public:
   ProjectorClientTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kProjector, features::kOnDeviceSpeechRecognition}, {});
+        {features::kProjector, features::kProjectorAnnotator,
+         features::kOnDeviceSpeechRecognition},
+        {});
   }
 
   ~ProjectorClientTest() override = default;
@@ -56,6 +128,7 @@ class ProjectorClientTest : public InProcessBrowserTest {
 
   // InProcessBrowserTest:
   void SetUpInProcessBrowserTestFixture() override {
+    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
     create_drive_integration_service_ =
         base::BindRepeating(&ProjectorClientTest::CreateDriveIntegrationService,
                             base::Unretained(this));
@@ -64,62 +137,18 @@ class ProjectorClientTest : public InProcessBrowserTest {
         &create_drive_integration_service_);
   }
 
-  void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-    speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
-
-    scoped_resetter_ =
-        std::make_unique<ProjectorController::ScopedInstanceResetterForTest>();
-    controller_ = std::make_unique<ash::MockProjectorController>();
-    client_ = std::make_unique<ProjectorClientImpl>(controller_.get());
-
-    CrosSpeechRecognitionServiceFactory::GetInstanceForTest()
-        ->SetTestingFactoryAndUse(
-            browser()->profile(),
-            base::BindRepeating(
-                &ProjectorClientTest::CreateTestSpeechRecognitionService,
-                base::Unretained(this)));
-  }
-
-  void TearDownOnMainThread() override {
-    client_.reset();
-    controller_.reset();
-    scoped_resetter_.reset();
-  }
-
-  std::unique_ptr<KeyedService> CreateTestSpeechRecognitionService(
-      content::BrowserContext* context) {
-    std::unique_ptr<speech::FakeSpeechRecognitionService> fake_service =
-        std::make_unique<speech::FakeSpeechRecognitionService>();
-    fake_service_ = fake_service.get();
-    return std::move(fake_service);
-  }
-
-  void SendSpeechResult(const char* result, bool is_final) {
-    EXPECT_TRUE(fake_service_->is_capturing_audio());
-    base::RunLoop loop;
-    fake_service_->SendSpeechRecognitionResult(
-        media::SpeechRecognitionResult(result, is_final));
-    loop.RunUntilIdle();
-  }
-
-  void SendTranscriptionError() {
-    EXPECT_TRUE(fake_service_->is_capturing_audio());
-    base::RunLoop loop;
-    fake_service_->SendSpeechRecognitionError();
-    loop.RunUntilIdle();
-  }
-
   // This test helper verifies that navigating to the |url| doesn't result in a
   // 404 error.
   void VerifyUrlValid(const char* url) {
     GURL gurl(url);
-    EXPECT_TRUE(gurl.is_valid());
-    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+    EXPECT_TRUE(gurl.is_valid()) << "url isn't valid: " << url;
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl))
+        << "navigating to url failed: " << url;
     content::WebContents* tab =
         browser()->tab_strip_model()->GetActiveWebContents();
     EXPECT_EQ(tab->GetController().GetLastCommittedEntry()->GetPageType(),
-              content::PAGE_TYPE_NORMAL);
+              content::PAGE_TYPE_NORMAL)
+        << "page has unexpected errors: " << url;
   }
 
   drive::DriveIntegrationService* CreateDriveIntegrationService(
@@ -134,12 +163,9 @@ class ProjectorClientTest : public InProcessBrowserTest {
     return integration_service;
   }
 
- protected:
-  std::unique_ptr<ProjectorController::ScopedInstanceResetterForTest>
-      scoped_resetter_;
-  std::unique_ptr<ash::MockProjectorController> controller_;
-  std::unique_ptr<ProjectorClient> client_;
-  speech::FakeSpeechRecognitionService* fake_service_;
+  ProjectorClient* client() { return ProjectorClient::Get(); }
+
+ private:
   drive::DriveIntegrationServiceFactory::FactoryCallback
       create_drive_integration_service_;
   std::unique_ptr<drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>
@@ -147,70 +173,27 @@ class ProjectorClientTest : public InProcessBrowserTest {
   std::map<Profile*, std::unique_ptr<drive::FakeDriveFsHelper>>
       fake_drivefs_helpers_;
 
- private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ProjectorClientTest, ShowOrCloseSelfieCamTest) {
-  EXPECT_FALSE(client_->IsSelfieCamVisible());
-  client_->ShowSelfieCam();
-  EXPECT_TRUE(client_->IsSelfieCamVisible());
-  client_->CloseSelfieCam();
-  EXPECT_FALSE(client_->IsSelfieCamVisible());
-}
-
-// This test verifies that the selfie cam WebUI URL is valid.
-IN_PROC_BROWSER_TEST_F(ProjectorClientTest, SelfieCamUrlValid) {
-  VerifyUrlValid(kChromeUITrustedProjectorSelfieCamUrl);
-}
-
-// This test verifies that the Projector app WebUI URL is valid.
-IN_PROC_BROWSER_TEST_F(ProjectorClientTest, AppUrlValid) {
-  VerifyUrlValid(kChromeUITrustedProjectorAppUrl);
-}
-
-// TODO(crbug/1199396): Add a test to verify the selfie cam turns off when the
-// device goes inactive.
-
-IN_PROC_BROWSER_TEST_F(ProjectorClientTest, SpeechRecognitionResults) {
-  client_->StartSpeechRecognition();
-  fake_service_->WaitForRecognitionStarted();
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_CALL(*controller_, OnTranscription(media::SpeechRecognitionResult(
-                                kFirstSpeechResult, false)));
-  SendSpeechResult(kFirstSpeechResult, false /* is_final */);
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_CALL(*controller_, OnTranscription(media::SpeechRecognitionResult(
-                                kSecondSpeechResult, false)));
-  SendSpeechResult(kSecondSpeechResult, false /* is_final */);
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_CALL(*controller_, OnTranscriptionError());
-  SendTranscriptionError();
-}
-
-IN_PROC_BROWSER_TEST_F(ProjectorClientTest, GetDriveFsMountPointPath) {
-  ASSERT_TRUE(client_->IsDriveFsMounted());
-
-  base::FilePath mounted_path;
-  ASSERT_TRUE(client_->GetDriveFsMountPointPath(&mounted_path));
-  ASSERT_EQ(browser()->profile()->GetPath().Append("drivefs"), mounted_path);
+// This test verifies that the (un)trusted Projector app and annotator WebUI
+// URLs are valid.
+IN_PROC_BROWSER_TEST_F(ProjectorClientTest, AppUrlsValid) {
+  VerifyUrlValid(kChromeUITrustedProjectorUrl);
+  VerifyUrlValid(kChromeUIUntrustedProjectorUrl);
+  VerifyUrlValid(kChromeUITrustedAnnotatorUrl);
+  VerifyUrlValid(kChromeUIUntrustedAnnotatorUrl);
 }
 
 IN_PROC_BROWSER_TEST_F(ProjectorClientTest, OpenProjectorApp) {
   auto* profile = browser()->profile();
-  web_app::WebAppProvider::GetForTest(profile)
-      ->system_web_app_manager()
-      .InstallSystemAppsForTesting();
+  SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
 
-  client_->OpenProjectorApp();
-  web_app::FlushSystemWebAppLaunchesForTesting(profile);
+  client()->OpenProjectorApp();
 
   // Verify that Projector App is opened.
   Browser* app_browser =
-      FindSystemWebAppBrowser(profile, web_app::SystemAppType::PROJECTOR);
+      FindSystemWebAppBrowser(profile, SystemWebAppType::PROJECTOR);
   ASSERT_TRUE(app_browser);
   content::WebContents* tab =
       app_browser->tab_strip_model()->GetActiveWebContents();
@@ -218,5 +201,259 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, OpenProjectorApp) {
   EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
             content::PAGE_TYPE_NORMAL);
 }
+
+// This test covers launching the Projector app with files when the app is
+// already open. The launch event should recycle the existing window and should
+// not open a new window.
+IN_PROC_BROWSER_TEST_F(ProjectorClientTest, SendFilesToProjectorApp) {
+  const size_t starting_browser_count = chrome::GetTotalBrowserCount();
+
+  auto* profile = browser()->profile();
+  SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
+
+  // Launch the app for the first time.
+  client()->OpenProjectorApp();
+
+  // Verify that Projector App is opened.
+  Browser* app_browser1 =
+      FindSystemWebAppBrowser(profile, SystemWebAppType::PROJECTOR);
+  ASSERT_TRUE(app_browser1);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), starting_browser_count + 1);
+
+  content::WebContents* tab =
+      app_browser1->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab);
+  EXPECT_TRUE(WaitForLoadStop(tab));
+
+  base::FilePath file1("test1"), file2("test2");
+  // Launch the app again with files. This operation should recycle the same
+  // window.
+  SendFilesToProjectorApp({file1, file2});
+
+  // Verify that the Projector App is still open.
+  Browser* app_browser2 =
+      FindSystemWebAppBrowser(profile, SystemWebAppType::PROJECTOR);
+  // Launching the app with files should not open a new window.
+  EXPECT_EQ(app_browser1, app_browser2);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), starting_browser_count + 1);
+
+  tab = app_browser2->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab);
+  EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
+            content::PAGE_TYPE_NORMAL);
+}
+
+IN_PROC_BROWSER_TEST_F(ProjectorClientTest, MinimizeProjectorApp) {
+  auto* profile = browser()->profile();
+  SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
+
+  client()->OpenProjectorApp();
+
+  // Verify that Projector App is opened.
+  Browser* app_browser =
+      FindSystemWebAppBrowser(profile, SystemWebAppType::PROJECTOR);
+  ASSERT_TRUE(app_browser);
+  content::WebContents* tab =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab);
+  EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
+            content::PAGE_TYPE_NORMAL);
+
+  client()->MinimizeProjectorApp();
+  // Verify that Projector App is minimized.
+  EXPECT_TRUE(app_browser->window()->IsMinimized());
+}
+
+IN_PROC_BROWSER_TEST_F(ProjectorClientTest, CloseProjectorApp) {
+  auto* profile = browser()->profile();
+  SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
+
+  client()->OpenProjectorApp();
+
+  // Verify that Projector App is opened.
+  Browser* app_browser =
+      FindSystemWebAppBrowser(profile, SystemWebAppType::PROJECTOR);
+  ASSERT_TRUE(app_browser);
+  content::WebContents* tab =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab);
+  EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
+            content::PAGE_TYPE_NORMAL);
+
+  EXPECT_FALSE(app_browser->IsAttemptingToCloseBrowser());
+  client()->CloseProjectorApp();
+  // Verify that Projector App is closing.
+  EXPECT_TRUE(app_browser->IsAttemptingToCloseBrowser());
+}
+
+IN_PROC_BROWSER_TEST_F(ProjectorClientTest, GetDriveFsMountPointPath) {
+  ASSERT_TRUE(client()->IsDriveFsMounted());
+  ASSERT_FALSE(client()->IsDriveFsMountFailed());
+
+  base::FilePath mounted_path;
+  ASSERT_TRUE(client()->GetBaseStoragePath(&mounted_path));
+  ASSERT_EQ(browser()->profile()->GetPath().Append("drivefs"), mounted_path);
+}
+
+IN_PROC_BROWSER_TEST_F(ProjectorClientTest, DriveUnmountedAndRemounted) {
+  drive::DriveIntegrationService* service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(
+          browser()->profile());
+  EXPECT_TRUE(service->is_enabled());
+
+  DriveFsMountStatusWaiter observer{service};
+
+  {
+    base::RunLoop run_loop;
+    observer.SetDriveEnabled(
+        /*enabled_drive=*/false, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+  {
+    base::RunLoop run_loop;
+    observer.SetDriveEnabled(
+        /*enabled_drive=*/true, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+}
+
+// Tests Projector client for child and managed users.
+class ProjectorClientManagedTest
+    : public MixinBasedInProcessBrowserTest,
+      public testing::WithParamInterface</*IsChild=*/bool> {
+ protected:
+  void SetUpOnMainThread() override {
+    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
+    logged_in_user_mixin_.LogInUser();
+  }
+
+  bool is_child() const { return GetParam(); }
+
+  bool is_managed() const { return !is_child(); }
+
+  ProjectorClient* client() { return ProjectorClient::Get(); }
+
+  std::string GetPolicy() {
+    if (is_child())
+      return prefs::kProjectorDogfoodForFamilyLinkEnabled;
+    return prefs::kProjectorAllowByPolicy;
+  }
+
+  apps::Readiness GetAppReadiness(const web_app::AppId& app_id) {
+    apps::Readiness readiness;
+    bool app_found =
+        GetAppServiceProxy(browser()->profile())
+            ->AppRegistryCache()
+            .ForOneApp(app_id, [&readiness](const apps::AppUpdate& update) {
+              readiness = update.Readiness();
+            });
+    EXPECT_TRUE(app_found);
+    return readiness;
+  }
+
+  absl::optional<apps::IconKey> GetAppIconKey(const web_app::AppId& app_id) {
+    absl::optional<apps::IconKey> icon_key;
+    bool app_found =
+        GetAppServiceProxy(browser()->profile())
+            ->AppRegistryCache()
+            .ForOneApp(app_id, [&icon_key](const apps::AppUpdate& update) {
+              icon_key = update.IconKey();
+            });
+    EXPECT_TRUE(app_found);
+    return icon_key;
+  }
+
+ private:
+  LoggedInUserMixin logged_in_user_mixin_{
+      &mixin_host_,
+      is_child() ? LoggedInUserMixin::LogInType::kChild
+                 : LoggedInUserMixin::LogInType::kRegular,
+      embedded_test_server(),
+      this,
+      /*should_launch_browser=*/true,
+      GetPrimaryAccountId(is_managed())};
+};
+
+IN_PROC_BROWSER_TEST_P(ProjectorClientManagedTest,
+                       OpenProjectorAppWithoutPolicy) {
+  auto* profile = browser()->profile();
+  SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
+
+  client()->OpenProjectorApp();
+
+  // Verify that Projector App is opened.
+  Browser* app_browser =
+      FindSystemWebAppBrowser(profile, ash::SystemWebAppType::PROJECTOR);
+
+  if (is_child()) {
+    // Can't open for Family Link account.
+    EXPECT_FALSE(app_browser);
+  } else {
+    // Can open for other managed account.
+    EXPECT_TRUE(app_browser);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(ProjectorClientManagedTest,
+                       PRE_DisableThenEnablePolicy) {
+  auto* profile = browser()->profile();
+  // By the time the test runs, SystemWebAppManager already marked the app as
+  // disabled because the policy is not set. This PRE step, sets the policy so
+  // that the app is correctly enabled when the actual test runs.
+  profile->GetPrefs()->SetBoolean(GetPolicy(), true);
+}
+
+// Prevents a regression to b/230779397.
+IN_PROC_BROWSER_TEST_P(ProjectorClientManagedTest, DisableThenEnablePolicy) {
+  auto* profile = browser()->profile();
+  SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
+
+  client()->OpenProjectorApp();
+
+  // Verify the user can open the Projector App when the policy is enabled.
+  Browser* app_browser =
+      FindSystemWebAppBrowser(profile, SystemWebAppType::PROJECTOR);
+  ASSERT_TRUE(app_browser);
+  content::WebContents* tab =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab);
+  EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
+            content::PAGE_TYPE_NORMAL);
+
+  // Suppose the policy flips to false while the user is still signed in and has
+  // the Projector app open.
+  profile->GetPrefs()->SetBoolean(GetPolicy(), false);
+  // The Projector app immediately closes to prevent further access.
+  EXPECT_TRUE(app_browser->IsAttemptingToCloseBrowser());
+
+  auto* web_app_provider = web_app::WebAppProvider::GetForTest(profile);
+  base::RunLoop loop;
+  web_app_provider->on_registry_ready().Post(FROM_HERE, loop.QuitClosure());
+  loop.Run();
+
+  // We can't uninstall the Projector SWA until the next session, but the icon
+  // is greyed out and disabled.
+  EXPECT_EQ(apps::Readiness::kDisabledByPolicy,
+            GetAppReadiness(kChromeUITrustedProjectorSwaAppId));
+  EXPECT_TRUE(apps::IconEffects::kBlocked &
+              GetAppIconKey(kChromeUITrustedProjectorSwaAppId)->icon_effects);
+
+  // The app can re-enable too if it's already installed and the policy flips to
+  // true.
+  profile->GetPrefs()->SetBoolean(GetPolicy(), true);
+
+  base::RunLoop loop2;
+  web_app_provider->on_registry_ready().Post(FROM_HERE, loop2.QuitClosure());
+  loop2.Run();
+
+  EXPECT_EQ(apps::Readiness::kReady,
+            GetAppReadiness(kChromeUITrustedProjectorSwaAppId));
+  EXPECT_FALSE(apps::IconEffects::kBlocked &
+               GetAppIconKey(kChromeUITrustedProjectorSwaAppId)->icon_effects);
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         ProjectorClientManagedTest,
+                         /*IsChild=*/testing::Bool());
 
 }  // namespace ash

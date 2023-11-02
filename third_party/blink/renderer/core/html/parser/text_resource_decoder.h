@@ -27,6 +27,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/loader/fetch/body_text_decoder.h"
 #include "third_party/blink/renderer/platform/loader/fetch/text_resource_decoder_options.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
@@ -42,7 +43,9 @@ class HTMLMetaCharsetParser;
 //
 // To construct a string from known-UTF-8 data without BOM, please use
 // WTF::String::FromUTF8 instead.
-class CORE_EXPORT TextResourceDecoder {
+// TODO(crbug.com/1373623): Move this to blink/renderer/platform and remove
+// BodyTextDecoder.
+class CORE_EXPORT TextResourceDecoder : public BodyTextDecoder {
   USING_FAST_MALLOC(TextResourceDecoder);
 
  public:
@@ -60,7 +63,7 @@ class CORE_EXPORT TextResourceDecoder {
   explicit TextResourceDecoder(const TextResourceDecoderOptions&);
   TextResourceDecoder(const TextResourceDecoder&) = delete;
   TextResourceDecoder& operator=(const TextResourceDecoder&) = delete;
-  ~TextResourceDecoder();
+  ~TextResourceDecoder() override;
 
   void SetEncoding(const WTF::TextEncoding&, EncodingSource);
   const WTF::TextEncoding& Encoding() const { return encoding_; }
@@ -69,8 +72,9 @@ class CORE_EXPORT TextResourceDecoder {
            source_ == kEncodingFromContentSniffing;
   }
 
-  String Decode(const char* data, size_t length);
-  String Flush();
+  String Decode(const char* data, size_t length) override;
+  String Flush() override;
+  WebEncodingData GetEncodingData() const override;
 
   bool SawError() const { return saw_error_; }
   wtf_size_t CheckForBOM(const char*, wtf_size_t);

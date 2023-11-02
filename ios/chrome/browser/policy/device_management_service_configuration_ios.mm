@@ -1,17 +1,17 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/policy/device_management_service_configuration_ios.h"
+#import "ios/chrome/browser/policy/device_management_service_configuration_ios.h"
 
-#include <stdint.h>
+#import <stdint.h>
 
-#include "base/logging.h"
-#include "base/strings/stringprintf.h"
-#include "base/system/sys_info.h"
-#include "build/build_config.h"
-#include "components/policy/core/browser/browser_policy_connector.h"
-#include "components/version_info/version_info.h"
+#import "base/logging.h"
+#import "base/strings/stringprintf.h"
+#import "base/system/sys_info.h"
+#import "build/build_config.h"
+#import "components/policy/core/browser/browser_policy_connector.h"
+#import "components/version_info/version_info.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

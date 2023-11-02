@@ -63,7 +63,7 @@ strongly consider one of the above first.
 ***
 
 **Prerequisite:** a machine capable of [building
-Android](http://source.android.com/source/building.html).
+Android](https://source.android.com/source/building.html).
 
 Clone an AOSP checkout, picking a branch supported for your device (you'll need
 a branch above 5.0.0) from the [list of
@@ -115,7 +115,7 @@ WebView:
   `monochrome_{public_}apk`, this is not a valid WebView provider. Unlike on
   `userdebug`/`eng` images, the WebView update service performs additional
   signature checks on `user` images, only loading code that has been signed by
-  one of the expected signatures&mdash;as above, these keys are not available
+  one of the expected signatures—as above, these keys are not available
   for local builds.
 
 Both of the above are important security features: these protect users from

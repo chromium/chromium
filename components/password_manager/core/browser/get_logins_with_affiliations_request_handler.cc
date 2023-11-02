@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/trace_event/trace_event.h"
 
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -25,6 +26,9 @@ constexpr int kCallsNumber = 2;
 
 }  // namespace
 
+using LoginsResultOrError =
+    GetLoginsWithAffiliationsRequestHandler::LoginsResultOrError;
+
 GetLoginsWithAffiliationsRequestHandler::
     GetLoginsWithAffiliationsRequestHandler(
         const PasswordFormDigest& form,
@@ -40,7 +44,7 @@ GetLoginsWithAffiliationsRequestHandler::
 GetLoginsWithAffiliationsRequestHandler::
     ~GetLoginsWithAffiliationsRequestHandler() = default;
 
-base::OnceCallback<void(std::vector<std::unique_ptr<PasswordForm>>)>
+base::OnceCallback<void(LoginsResultOrError)>
 GetLoginsWithAffiliationsRequestHandler::LoginsForFormClosure() {
   return base::BindOnce(
       &GetLoginsWithAffiliationsRequestHandler::HandleLoginsForFormReceived,
@@ -55,7 +59,7 @@ GetLoginsWithAffiliationsRequestHandler::AffiliationsClosure() {
       this);
 }
 
-base::OnceCallback<void(GetLoginsWithAffiliationsRequestHandler::LoginsResult)>
+base::OnceCallback<void(LoginsResultOrError)>
 GetLoginsWithAffiliationsRequestHandler::AffiliatedLoginsClosure() {
   return base::BindOnce(
       &GetLoginsWithAffiliationsRequestHandler::HandleAffiliatedLoginsReceived,
@@ -63,8 +67,16 @@ GetLoginsWithAffiliationsRequestHandler::AffiliatedLoginsClosure() {
 }
 
 void GetLoginsWithAffiliationsRequestHandler::HandleLoginsForFormReceived(
-    std::vector<std::unique_ptr<PasswordForm>> logins) {
-  for (const auto& form : logins) {
+    LoginsResultOrError logins_or_error) {
+  if (absl::holds_alternative<PasswordStoreBackendError>(logins_or_error)) {
+    backend_error_ = absl::get<PasswordStoreBackendError>(logins_or_error);
+    results_.clear();
+    forms_received_.Run();
+    return;
+  }
+
+  LoginsResult forms = std::move(absl::get<LoginsResult>(logins_or_error));
+  for (const auto& form : forms) {
     switch (GetMatchResult(*form, requested_digest_)) {
       case MatchResult::NO_MATCH:
         NOTREACHED();
@@ -78,8 +90,9 @@ void GetLoginsWithAffiliationsRequestHandler::HandleLoginsForFormReceived(
         break;
     }
   }
-  results_.insert(results_.end(), std::make_move_iterator(logins.begin()),
-                  std::make_move_iterator(logins.end()));
+
+  results_.insert(results_.end(), std::make_move_iterator(forms.begin()),
+                  std::make_move_iterator(forms.end()));
   forms_received_.Run();
 }
 
@@ -97,7 +110,15 @@ GetLoginsWithAffiliationsRequestHandler::HandleAffiliationsReceived(
 }
 
 void GetLoginsWithAffiliationsRequestHandler::HandleAffiliatedLoginsReceived(
-    std::vector<std::unique_ptr<PasswordForm>> logins) {
+    LoginsResultOrError logins_or_error) {
+  if (absl::holds_alternative<PasswordStoreBackendError>(logins_or_error)) {
+    backend_error_ = absl::get<PasswordStoreBackendError>(logins_or_error);
+    results_.clear();
+    forms_received_.Run();
+    return;
+  }
+
+  LoginsResult logins = std::move(absl::get<LoginsResult>(logins_or_error));
   password_manager_util::TrimUsernameOnlyCredentials(&logins);
   // PasswordStore must request only exact matches for the domains filtered in
   // HandleAffiliationsReceived.
@@ -105,12 +126,19 @@ void GetLoginsWithAffiliationsRequestHandler::HandleAffiliatedLoginsReceived(
     DCHECK(!form->is_public_suffix_match);
   results_.insert(results_.end(), std::make_move_iterator(logins.begin()),
                   std::make_move_iterator(logins.end()));
+  TRACE_EVENT_NESTABLE_ASYNC_END0("passwords", "PasswordStore::GetLogins",
+                                  consumer_.get());
   forms_received_.Run();
 }
 
 void GetLoginsWithAffiliationsRequestHandler::NotifyConsumer() {
   if (!consumer_)
     return;
+  if (backend_error_.has_value()) {
+    consumer_->OnGetPasswordStoreResultsOrErrorFrom(
+        store_, std::move(backend_error_.value()));
+    return;
+  }
   // PSL matches can also be affiliation matches.
   for (const auto& form : results_) {
     switch (GetMatchResult(*form, requested_digest_)) {
@@ -133,7 +161,7 @@ void GetLoginsWithAffiliationsRequestHandler::NotifyConsumer() {
       }
     }
   }
-  consumer_->OnGetPasswordStoreResultsFrom(store_, std::move(results_));
+  consumer_->OnGetPasswordStoreResultsOrErrorFrom(store_, std::move(results_));
 }
 
 }  // namespace password_manager

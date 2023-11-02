@@ -1,0 +1,44 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash,
+       "Quick Pair protocols (e.g. Fast Pair) are ash-chrome only")
+
+source_set("cpp") {
+  sources = [
+    "account_key_filter.cc",
+    "account_key_filter.h",
+    "battery_notification.cc",
+    "battery_notification.h",
+    "decrypted_passkey.cc",
+    "decrypted_passkey.h",
+    "decrypted_response.cc",
+    "decrypted_response.h",
+    "fast_pair_message_type.h",
+    "not_discoverable_advertisement.cc",
+    "not_discoverable_advertisement.h",
+  ]
+
+  deps = [
+    "//base",
+    "//crypto",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "account_key_filter_unittest.cc" ]
+
+  deps = [
+    ":cpp",
+    "//base/test:test_support",
+    "//crypto",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

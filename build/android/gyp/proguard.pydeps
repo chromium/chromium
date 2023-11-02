@@ -2,7 +2,6 @@
 #   build/print_python_deps.py --root build/android/gyp --output build/android/gyp/proguard.pydeps build/android/gyp/proguard.py
 ../../gn_helpers.py
 ../../print_python_deps.py
-../convert_dex_profile.py
 ../pylib/__init__.py
 ../pylib/dex/__init__.py
 ../pylib/dex/dex_parser.py

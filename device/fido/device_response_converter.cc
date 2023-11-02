@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,8 @@
 #include "device/fido/authenticator_supported_options.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
+#include "device/fido/fido_parsing_utils.h"
+#include "device/fido/fido_transport_protocol.h"
 #include "device/fido/opaque_attestation_statement.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -110,14 +112,34 @@ ReadCTAPMakeCredentialResponse(FidoTransportProtocol transport_used,
         it->second.GetBytestring().size() != kLargeBlobKeyLength) {
       return absl::nullopt;
     }
-    response.set_large_blob_key(
+    response.large_blob_key = fido_parsing_utils::Materialize(
         base::make_span<kLargeBlobKeyLength>(it->second.GetBytestring()));
+  }
+
+  it = decoded_map.find(CBOR(0x06));
+  if (it != decoded_map.end()) {
+    if (!it->second.is_map()) {
+      return absl::nullopt;
+    }
+    const auto& unsigned_extension_outputs_map = it->second.GetMap();
+    for (const auto& map_it : unsigned_extension_outputs_map) {
+      if (!map_it.first.is_string()) {
+        return absl::nullopt;
+      }
+      if (map_it.first.GetString() == kExtensionDevicePublicKey) {
+        if (!map_it.second.is_bytestring()) {
+          return absl::nullopt;
+        }
+        response.device_public_key_signature = map_it.second.GetBytestring();
+      }
+    }
   }
 
   return response;
 }
 
 absl::optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
+    FidoTransportProtocol transport_used,
     const absl::optional<cbor::Value>& cbor) {
   if (!cbor || !cbor->is_map())
     return absl::nullopt;
@@ -140,6 +162,8 @@ absl::optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
   auto signature = it->second.GetBytestring();
   AuthenticatorGetAssertionResponse response(std::move(*auth_data),
                                              std::move(signature));
+
+  response.transport_used = transport_used;
 
   it = response_map.find(CBOR(0x01));
   if (it != response_map.end()) {
@@ -166,6 +190,15 @@ absl::optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
     response.num_credentials = it->second.GetUnsigned();
   }
 
+  it = response_map.find(CBOR(0x06));
+  if (it != response_map.end()) {
+    if (!it->second.is_bool() || response.num_credentials.has_value()) {
+      return absl::nullopt;
+    }
+
+    response.user_selected = it->second.GetBool();
+  }
+
   it = response_map.find(CBOR(0x07));
   if (it != response_map.end()) {
     if (!it->second.is_bytestring()) {
@@ -178,6 +211,25 @@ absl::optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
     }
     memcpy(response.large_blob_key->data(), key.data(),
            response.large_blob_key->size());
+  }
+
+  it = response_map.find(CBOR(0x08));
+  if (it != response_map.end()) {
+    if (!it->second.is_map()) {
+      return absl::nullopt;
+    }
+    const auto& unsigned_extension_outputs_map = it->second.GetMap();
+    for (const auto& map_it : unsigned_extension_outputs_map) {
+      if (!map_it.first.is_string()) {
+        return absl::nullopt;
+      }
+      if (map_it.first.GetString() == kExtensionDevicePublicKey) {
+        if (!map_it.second.is_bytestring()) {
+          return absl::nullopt;
+        }
+        response.device_public_key_signature = map_it.second.GetBytestring();
+      }
+    }
   }
 
   return response;
@@ -281,6 +333,8 @@ absl::optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
         options.supports_cred_protect = true;
       } else if (extension_str == kExtensionCredBlob) {
         cred_blob_extension_seen = true;
+      } else if (extension_str == kExtensionMinPINLength) {
+        options.supports_min_pin_length_extension = true;
       }
       extensions.push_back(extension_str);
     }
@@ -511,6 +565,24 @@ absl::optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
 
     response.max_credential_id_length =
         base::saturated_cast<uint32_t>(it->second.GetUnsigned());
+  }
+
+  it = response_map.find(CBOR(0x09));
+  if (it != response_map.end()) {
+    if (!it->second.is_array())
+      return absl::nullopt;
+
+    response.transports.emplace();
+    for (const auto& transport_str : it->second.GetArray()) {
+      if (!transport_str.is_string())
+        return absl::nullopt;
+
+      absl::optional<FidoTransportProtocol> maybe_transport(
+          ConvertToFidoTransportProtocol(transport_str.GetString()));
+      if (maybe_transport.has_value()) {
+        response.transports->insert(*maybe_transport);
+      }
+    }
   }
 
   it = response_map.find(CBOR(0x0a));

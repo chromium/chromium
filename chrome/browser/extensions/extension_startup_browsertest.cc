@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,6 @@
 #include "base/run_loop.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -116,26 +115,18 @@ class ExtensionStartupTestBase : public InProcessBrowserTest {
  protected:
   // InProcessBrowserTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    if (load_extensions_.empty()) {
-      // If no |load_extensions_| were specified, allow unauthenticated
-      // extension settings to be loaded from Preferences as if they had been
-      // authenticated correctly before they were handed to the ExtensionSystem.
-      command_line->AppendSwitchASCII(
-          switches::kForceFieldTrials,
-          base::StringPrintf(
-              "%s/%s/", chrome_prefs::internals::kSettingsEnforcementTrialName,
-              chrome_prefs::internals::kSettingsEnforcementGroupNoEnforcement));
-#if defined(OS_WIN) || defined(OS_MAC)
-      // In Windows and MacOS builds, it is not possible to disable settings
-      // enforcement.
-      unauthenticated_load_allowed_ = false;
-#endif
-    } else {
+    if (!load_extensions_.empty()) {
       base::FilePath::StringType paths = base::JoinString(
           load_extensions_, base::FilePath::StringType(1, ','));
       command_line->AppendSwitchNative(extensions::switches::kLoadExtension,
                                        paths);
       command_line->AppendSwitch(switches::kDisableExtensionsFileAccessCheck);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+    } else {
+      // In Windows and MacOS builds, it is not possible to disable settings
+      // enforcement.
+      unauthenticated_load_allowed_ = false;
+#endif
     }
   }
 
@@ -358,7 +349,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsLoadTest,
   // The --load-extension command line flag should not be applied to the sign-in
   // profile.
   EXPECT_EQ(0, GetNonComponentEnabledExtensionCount(
-                   chromeos::ProfileHelper::GetSigninProfile()));
+                   ash::ProfileHelper::GetSigninProfile()));
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

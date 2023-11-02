@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,13 +44,13 @@ class DoublyLinkedListTest : public testing::Test {
 };
 
 void DoublyLinkedListTest::SetUp() {
-  EXPECT_TRUE(list_.IsEmpty());
+  EXPECT_TRUE(list_.empty());
   EXPECT_EQ(0ul, list_.size());
   EXPECT_EQ(0ul, test_node_counter);
 }
 
 void DoublyLinkedListTest::TearDown() {
-  while (!list_.IsEmpty())
+  while (!list_.empty())
     delete list_.RemoveHead();
   EXPECT_EQ(0ul, test_node_counter);
 }
@@ -76,7 +76,7 @@ DoublyLinkedList<TestNode>::AddResult DoublyLinkedListTest::CheckedInsert(
             result.is_new_entry ? current_size + 1 : current_size);
   EXPECT_EQ(test_node_counter,
             result.is_new_entry ? current_size + 1 : current_size);
-  EXPECT_FALSE(list_.IsEmpty());
+  EXPECT_FALSE(list_.empty());
   return result;
 }
 
@@ -87,7 +87,7 @@ TEST_F(DoublyLinkedListTest, InsertEmpty) {
   auto* node_heap = list_.RemoveHead();
   EXPECT_EQ(0ul, list_.size());
   EXPECT_EQ(1ul, test_node_counter);
-  EXPECT_TRUE(list_.IsEmpty());
+  EXPECT_TRUE(list_.empty());
 
   delete node_heap;
   EXPECT_EQ(0ul, test_node_counter);
@@ -95,7 +95,7 @@ TEST_F(DoublyLinkedListTest, InsertEmpty) {
   list_.InsertAfter(std::make_unique<TestNode>(0), nullptr);
   EXPECT_EQ(1ul, list_.size());
   EXPECT_EQ(1ul, test_node_counter);
-  EXPECT_FALSE(list_.IsEmpty());
+  EXPECT_FALSE(list_.empty());
   delete list_.RemoveHead();
 
   TestNode node_stack(-1);
@@ -103,12 +103,12 @@ TEST_F(DoublyLinkedListTest, InsertEmpty) {
   EXPECT_EQ(1ul, list_.size());
   EXPECT_EQ(1ul, test_node_counter);
   EXPECT_EQ(list_.Head(), list_.Tail());
-  EXPECT_FALSE(list_.IsEmpty());
+  EXPECT_FALSE(list_.empty());
 
   list_.Remove(&node_stack);
   EXPECT_EQ(0ul, list_.size());
   EXPECT_EQ(1ul, test_node_counter);
-  EXPECT_TRUE(list_.IsEmpty());
+  EXPECT_TRUE(list_.empty());
 }
 
 TEST_F(DoublyLinkedListTest, InsertRandom) {
@@ -122,7 +122,7 @@ TEST_F(DoublyLinkedListTest, InsertRandom) {
   EXPECT_EQ(num_items, list_.size());
   EXPECT_EQ(num_items, test_node_counter);
   EXPECT_NE(list_.Head(), list_.Tail());
-  EXPECT_FALSE(list_.IsEmpty());
+  EXPECT_FALSE(list_.empty());
 
   EXPECT_TRUE(IsSorted());
 }
@@ -138,7 +138,7 @@ TEST_F(DoublyLinkedListTest, InsertSorted) {
   EXPECT_EQ(num_items, list_.size());
   EXPECT_EQ(num_items, test_node_counter);
   EXPECT_NE(list_.Head(), list_.Tail());
-  EXPECT_FALSE(list_.IsEmpty());
+  EXPECT_FALSE(list_.empty());
 
   EXPECT_TRUE(IsSorted());
 }
@@ -151,7 +151,7 @@ TEST_F(DoublyLinkedListTest, InsertAfter) {
       list_.InsertAfter(std::make_unique<TestNode>(10), begin_result.node);
   EXPECT_EQ(2ul, list_.size());
   EXPECT_EQ(2ul, test_node_counter);
-  EXPECT_FALSE(list_.IsEmpty());
+  EXPECT_FALSE(list_.empty());
   EXPECT_TRUE(IsSorted());
   EXPECT_EQ(end_result.node, list_.Tail());
 
@@ -184,7 +184,7 @@ TEST_F(DoublyLinkedListTest, InsertAfterDup) {
   auto result = list_.InsertAfter(std::make_unique<TestNode>(0), nullptr);
   EXPECT_EQ(1ul, list_.size());
   EXPECT_EQ(1ul, test_node_counter);
-  EXPECT_FALSE(list_.IsEmpty());
+  EXPECT_FALSE(list_.empty());
   EXPECT_TRUE(IsSorted());
   EXPECT_TRUE(result.is_new_entry);
   EXPECT_EQ(result.node, list_.Head());
@@ -193,7 +193,7 @@ TEST_F(DoublyLinkedListTest, InsertAfterDup) {
   result = list_.InsertAfter(std::make_unique<TestNode>(0), list_.Head());
   EXPECT_EQ(2ul, list_.size());
   EXPECT_EQ(2ul, test_node_counter);
-  EXPECT_FALSE(list_.IsEmpty());
+  EXPECT_FALSE(list_.empty());
   EXPECT_FALSE(IsSorted());
   EXPECT_TRUE(result.is_new_entry);
   EXPECT_NE(result.node, list_.Head());
@@ -202,7 +202,7 @@ TEST_F(DoublyLinkedListTest, InsertAfterDup) {
   result = list_.InsertAfter(std::make_unique<TestNode>(1), list_.Head());
   EXPECT_EQ(3ul, list_.size());
   EXPECT_EQ(3ul, test_node_counter);
-  EXPECT_FALSE(list_.IsEmpty());
+  EXPECT_FALSE(list_.empty());
   EXPECT_FALSE(IsSorted());
   EXPECT_TRUE(result.is_new_entry);
   EXPECT_NE(result.node, list_.Head());
@@ -211,7 +211,7 @@ TEST_F(DoublyLinkedListTest, InsertAfterDup) {
   result = list_.InsertAfter(std::make_unique<TestNode>(1), list_.Tail());
   EXPECT_EQ(4ul, list_.size());
   EXPECT_EQ(4ul, test_node_counter);
-  EXPECT_FALSE(list_.IsEmpty());
+  EXPECT_FALSE(list_.empty());
   EXPECT_FALSE(IsSorted());
   EXPECT_TRUE(result.is_new_entry);
   EXPECT_NE(result.node, list_.Head());

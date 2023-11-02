@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,9 +40,8 @@ class ReportQueueManualTestContextTest : public testing::Test {
     task_runner_ =
         base::ThreadPool::CreateSequencedTaskRunner(base::TaskTraits());
     mock_report_queue_ =
-        std::unique_ptr<reporting::MockReportQueue, base::OnTaskRunnerDeleter>(
-            new reporting::MockReportQueue(),
-            base::OnTaskRunnerDeleter(task_runner_));
+        std::unique_ptr<MockReportQueue, base::OnTaskRunnerDeleter>(
+            new MockReportQueue(), base::OnTaskRunnerDeleter(task_runner_));
     auto build_report_queue_cb = base::BindOnce(
         &ReportQueueManualTestContextTest::BuildReportQueueCallback,
         base::Unretained(this));
@@ -63,11 +62,11 @@ class ReportQueueManualTestContextTest : public testing::Test {
     dm_token_ = std::move(report_queue_config)->dm_token();
   }
 
-  std::unique_ptr<reporting::MockReportQueue, base::OnTaskRunnerDeleter>
-      mock_report_queue_ = std::unique_ptr<reporting::MockReportQueue,
-                                           base::OnTaskRunnerDeleter>(
-          nullptr,
-          base::OnTaskRunnerDeleter(nullptr));
+  std::unique_ptr<MockReportQueue, base::OnTaskRunnerDeleter>
+      mock_report_queue_ =
+          std::unique_ptr<MockReportQueue, base::OnTaskRunnerDeleter>(
+              nullptr,
+              base::OnTaskRunnerDeleter(nullptr));
 
   std::string dm_token_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

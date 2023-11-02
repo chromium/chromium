@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,32 +13,22 @@ class OfflineLoginScreen;
 
 namespace chromeos {
 
-class OfflineLoginView {
+class OfflineLoginView : public base::SupportsWeakPtr<OfflineLoginView> {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"offline-login"};
+  inline constexpr static StaticOobeScreenId kScreenId{"offline-login",
+                                                       "OfflineLoginScreen"};
 
   OfflineLoginView() = default;
   virtual ~OfflineLoginView() = default;
 
   // Shows the contents of the screen.
-  virtual void Show() = 0;
+  virtual void Show(base::Value::Dict params) = 0;
 
   // Hide the contents of the screen.
   virtual void Hide() = 0;
 
-  // Binds |screen| to the view.
-  virtual void Bind(ash::OfflineLoginScreen* screen) = 0;
-
-  // Unbinds the screen from the view.
-  virtual void Unbind() = 0;
-
   // Clear the input fields on the screen.
   virtual void Reset() = 0;
-
-  // Preload e-mail, enterprise domain and e-mail domain.
-  // TODO(dkuzmin): merge this function with Show() in future and use
-  // ShowScreenWithData in handler.
-  virtual void LoadParams(base::DictionaryValue& params) = 0;
 
   // Proceeds to the password input dialog.
   virtual void ShowPasswordPage() = 0;
@@ -54,7 +44,7 @@ class OfflineLoginScreenHandler : public BaseScreenHandler,
                                   public OfflineLoginView {
  public:
   using TView = OfflineLoginView;
-  explicit OfflineLoginScreenHandler(JSCallsContainer* js_calls_container);
+  OfflineLoginScreenHandler();
   ~OfflineLoginScreenHandler() override;
 
   OfflineLoginScreenHandler(const OfflineLoginScreenHandler&) = delete;
@@ -64,29 +54,18 @@ class OfflineLoginScreenHandler : public BaseScreenHandler,
  private:
   void HandleCompleteAuth(const std::string& username,
                           const std::string& password);
-  void HandleEmailSubmitted(const std::string& username);
 
   // OfflineLoginView:
-  void Show() override;
+  void Show(base::Value::Dict params) override;
   void Hide() override;
-  void Bind(ash::OfflineLoginScreen* screen) override;
-  void Unbind() override;
   void Reset() override;
-  void LoadParams(base::DictionaryValue& params) override;
   void ShowPasswordPage() override;
   void ShowOnlineRequiredDialog() override;
   void ShowPasswordMismatchMessage() override;
 
   // BaseScreenHandler:
-  void RegisterMessages() override;
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void Initialize() override;
-
-  ash::OfflineLoginScreen* screen_ = nullptr;
-
-  // Whether the screen should be shown right after initialization.
-  bool show_on_init_ = false;
 };
 
 }  // namespace chromeos

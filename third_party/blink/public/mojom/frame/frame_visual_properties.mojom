@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,7 +70,8 @@ struct FrameVisualProperties {
   // for what, and how they should relate or not.
   gfx.mojom.Rect compositor_viewport;
 
-  gfx.mojom.Rect screen_space_rect;
+  // The frame's rect relative to the nearest ancestor local root frame.
+  gfx.mojom.Rect rect_in_local_root;
 
   gfx.mojom.Size local_frame_size;
 

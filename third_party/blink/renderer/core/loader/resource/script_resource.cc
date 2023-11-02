@@ -28,6 +28,7 @@
 
 #include <utility>
 
+#include "base/metrics/histogram_macros.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink.h"
@@ -49,6 +50,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/text_resource_decoder_options.h"
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
@@ -114,7 +116,9 @@ ScriptResource::ScriptResource(
                    options,
                    decoder_options),
       consume_cache_state_(ConsumeCacheState::kWaitingForCache),
-      initial_request_script_type_(initial_request_script_type) {
+      initial_request_script_type_(initial_request_script_type),
+      stream_text_decoder_(
+          std::make_unique<TextResourceDecoder>(decoder_options)) {
   static bool script_streaming_enabled =
       base::FeatureList::IsEnabled(features::kScriptStreaming);
   // TODO(leszeks): This could be static to avoid the cost of feature flag
@@ -166,6 +170,7 @@ const ParkableString& ScriptResource::SourceText() {
   CHECK(IsLoaded());
 
   if (source_text_.IsNull() && Data()) {
+    SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Blink.Script.SourceTextTime");
     String source_text = DecodedText();
     ClearData();
     SetDecodedSize(source_text.CharactersSizeInBytes());
@@ -173,6 +178,54 @@ const ParkableString& ScriptResource::SourceText() {
   }
 
   return source_text_;
+}
+
+// RawSourceText() should be only used for Experimental Web Snapshots behind the
+// flag. This is intended for experiments and should be redesigned before
+// shipping, because this method conflicts with the invariants around
+// ScriptResource in corner cases. Do not derive new code based on this method.
+// This is expected to be removed (and the real Blink integration landed)
+// before M102. See crbug.com/1173534.
+const ParkableString& ScriptResource::RawSourceText() {
+  CHECK(RuntimeEnabledFeatures::ExperimentalWebSnapshotsEnabled());
+
+  CHECK(IsLoaded());
+
+  if (source_text_.IsNull() && Data()) {
+    String source_text = RawText();
+    ClearData();
+    SetDecodedSize(source_text.CharactersSizeInBytes());
+    source_text_ = ParkableString(source_text.ReleaseImpl());
+  }
+
+  return source_text_;
+}
+
+bool ScriptResource::IsWebSnapshot() const {
+  const char web_snapshot_prefix[4] = {'+', '+', '+', ';'};
+  return RuntimeEnabledFeatures::ExperimentalWebSnapshotsEnabled() &&
+         DataHasPrefix(base::span<const char>(web_snapshot_prefix));
+}
+
+bool ScriptResource::DataHasPrefix(const base::span<const char>& prefix) const {
+  CHECK(RuntimeEnabledFeatures::ExperimentalWebSnapshotsEnabled());
+
+  if (Data() == nullptr) {
+    return false;
+  }
+  size_t checked_bytes = 0;
+  for (const auto& span : *Data()) {
+    for (const auto& byte : span) {
+      if (prefix[checked_bytes] != byte) {
+        return false;
+      }
+      ++checked_bytes;
+      if (checked_bytes == prefix.size()) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 String ScriptResource::TextForInspector() const {
@@ -204,7 +257,7 @@ String ScriptResource::TextForInspector() const {
   return "";
 }
 
-SingleCachedMetadataHandler* ScriptResource::CacheHandler() {
+CachedMetadataHandler* ScriptResource::CacheHandler() {
   return cached_metadata_handler_;
 }
 
@@ -220,10 +273,10 @@ void ScriptResource::SetSerializedCachedMetadata(mojo_base::BigBuffer data) {
           // It's safe to access unchecked cached metadata here, because the
           // ScriptCacheConsumer result will be ignored if the cached metadata
           // check fails later.
-          SingleCachedMetadataHandler::kAllowUnchecked)) {
+          CachedMetadataHandler::kAllowUnchecked)) {
     cache_consumer_ = MakeGarbageCollected<ScriptCacheConsumer>(
-        V8CodeCache::GetCachedMetadata(
-            CacheHandler(), SingleCachedMetadataHandler::kAllowUnchecked),
+        V8CodeCache::GetCachedMetadata(CacheHandler(),
+                                       CachedMetadataHandler::kAllowUnchecked),
         Url(), InspectorId());
     AdvanceConsumeCacheState(ConsumeCacheState::kRunningOffThread);
   } else {
@@ -275,6 +328,10 @@ void ScriptResource::SetRevalidatingRequest(
   // Revalidation requests don't actually load the current Resource, so disable
   // streaming.
   DisableStreaming(ScriptStreamer::NotStreamingReason::kRevalidate);
+
+  // For the same reason, disable off-thread cache consumption.
+  cache_consumer_ = nullptr;
+  DisableOffThreadConsumeCache();
 
   TextResource::SetRevalidatingRequest(request);
 }
@@ -357,11 +414,26 @@ void ScriptResource::ResponseBodyReceived(
   CheckStreamingState();
   CHECK(!ErrorOccurred());
 
-  streamer_ = MakeGarbageCollected<ScriptStreamer>(this, std::move(data_pipe),
-                                                   response_body_loader_client,
-                                                   loader_task_runner);
+  streamer_ = MakeGarbageCollected<ResourceScriptStreamer>(
+      this, std::move(data_pipe), response_body_loader_client,
+      std::move(stream_text_decoder_), loader_task_runner);
   CHECK_EQ(no_streamer_reason_, ScriptStreamer::NotStreamingReason::kInvalid);
   AdvanceStreamingState(StreamingState::kStreaming);
+}
+
+void ScriptResource::DidReceiveDecodedData(
+    const String& data,
+    std::unique_ptr<DecodedDataInfo> info) {
+  // Web snapshots use RawSourceText(), and don't need the decoded data.
+  if (IsWebSnapshot())
+    return;
+
+  if (!info)
+    return;
+
+  source_text_ = ParkableString(
+      data.Impl(), std::move(To<ScriptDecodedDataInfo>(info.get())->digest_));
+  SetDecodedSize(source_text_.CharactersSizeInBytes());
 }
 
 void ScriptResource::NotifyFinished() {
@@ -396,15 +468,32 @@ void ScriptResource::NotifyFinished() {
       break;
   }
   CheckStreamingState();
+
+  if (!source_text_.IsNull() && Data()) {
+    DCHECK(
+        base::FeatureList::IsEnabled(features::kDecodeScriptSourceOffThread));
+    // Wait to call ClearData() here instead of in DidReceiveDecodedData() since
+    // the integrity check requires Data() to not be null.
+    ClearData();
+  }
+
   TextResource::NotifyFinished();
 }
 
-ScriptStreamer* ScriptResource::TakeStreamer() {
+void ScriptResource::SetEncoding(const String& chs) {
+  TextResource::SetEncoding(chs);
+  if (stream_text_decoder_) {
+    stream_text_decoder_->SetEncoding(
+        WTF::TextEncoding(chs), TextResourceDecoder::kEncodingFromHTTPHeader);
+  }
+}
+
+ResourceScriptStreamer* ScriptResource::TakeStreamer() {
   CHECK(IsLoaded());
   if (!streamer_)
     return nullptr;
 
-  ScriptStreamer* streamer = streamer_;
+  ResourceScriptStreamer* streamer = streamer_;
   // A second use of the streamer is not possible, so we null it out and disable
   // streaming for subsequent uses.
   streamer_ = nullptr;

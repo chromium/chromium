@@ -1,8 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/views/widget/native_widget_mac.h"
+
+#include "base/memory/raw_ptr.h"
 
 #import <Cocoa/Cocoa.h>
 
@@ -68,7 +70,7 @@ class NativeWidgetMacInteractiveUITest::Observer : public TestWidgetObserver {
   }
 
  private:
-  NativeWidgetMacInteractiveUITest* parent_;
+  raw_ptr<NativeWidgetMacInteractiveUITest> parent_;
 };
 
 // Test that showing a window causes it to attain global keyWindow status.

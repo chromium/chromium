@@ -1,22 +1,22 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/open_in/open_in_toolbar.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-// A class that counts the number of times the |dummyMethod:| method is called.
+// A class that counts the number of times the `dummyMethod:` method is called.
 @interface DummyObserver : NSObject
 
-// The number of times |dummyMethod:| is invoked.
+// The number of times `dummyMethod:` is invoked.
 @property(nonatomic, readonly) int dummyMethodCallCount;
 
-// The method whose invocation increases |dummyMethodCallCount| by one.
+// The method whose invocation increases `dummyMethodCallCount` by one.
 - (void)dummyMethod:(id)parameter;
 
 @end

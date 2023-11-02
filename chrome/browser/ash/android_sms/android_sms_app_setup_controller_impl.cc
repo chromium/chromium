@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,13 +15,15 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/external_install_options.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chromeos/components/multidevice/logging/logging.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/url_util.h"
@@ -77,8 +79,14 @@ void AndroidSmsAppSetupControllerImpl::PwaDelegate::RemovePwa(
   }
 
   provider->install_finalizer().UninstallExternalWebApp(
-      app_id, webapps::WebappUninstallSource::kInternalPreinstalled,
-      std::move(callback));
+      app_id, web_app::WebAppManagement::kDefault,
+      webapps::WebappUninstallSource::kInternalPreinstalled,
+      base::BindOnce(
+          [](SuccessCallback callback, webapps::UninstallResultCode code) {
+            std::move(callback).Run(code ==
+                                    webapps::UninstallResultCode::kSuccess);
+          },
+          std::move(callback)));
 }
 
 AndroidSmsAppSetupControllerImpl::AndroidSmsAppSetupControllerImpl(
@@ -241,7 +249,7 @@ void AndroidSmsAppSetupControllerImpl::TryInstallApp(const GURL& install_url,
                   << "Trying to install PWA for " << install_url
                   << ". Num attempts so far # " << num_attempts_so_far;
   web_app::ExternalInstallOptions options(
-      install_url, blink::mojom::DisplayMode::kStandalone,
+      install_url, web_app::UserDisplayMode::kStandalone,
       web_app::ExternalInstallSource::kInternalDefault);
   options.override_previous_user_uninstall = true;
   // The ServiceWorker does not load in time for the installability check, so
@@ -262,7 +270,7 @@ void AndroidSmsAppSetupControllerImpl::OnAppInstallResult(
     const GURL& install_url,
     web_app::ExternallyManagedAppManager::InstallResult result) {
   UMA_HISTOGRAM_ENUMERATION("AndroidSms.PWAInstallationResult", result.code);
-  const bool install_succeeded = web_app::IsSuccess(result.code);
+  const bool install_succeeded = webapps::IsSuccess(result.code);
 
   if (!install_succeeded && num_attempts_so_far < kMaxInstallRetryCount) {
     base::TimeDelta retry_delay =
@@ -298,9 +306,9 @@ void AndroidSmsAppSetupControllerImpl::OnAppInstallResult(
                              num_attempts_so_far + 1, kMaxInstallRetryCount);
 
   // Grant notification permission for the PWA.
-  host_content_settings_map_->SetWebsiteSettingDefaultScope(
+  host_content_settings_map_->SetContentSettingDefaultScope(
       app_url, GURL() /* top_level_url */, ContentSettingsType::NOTIFICATIONS,
-      std::make_unique<base::Value>(ContentSetting::CONTENT_SETTING_ALLOW));
+      ContentSetting::CONTENT_SETTING_ALLOW);
 
   std::move(callback).Run(true /* success */);
 }

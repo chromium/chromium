@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,10 +53,10 @@ class VIEWS_EXPORT MenuRunnerImplCocoa : public MenuRunnerImplInterface {
   base::scoped_nsobject<MenuControllerDelegate> menu_delegate_;
 
   // Are we in run waiting for it to return?
-  bool running_;
+  bool running_ = false;
 
   // Set if |running_| and Release() has been invoked.
-  bool delete_after_run_;
+  bool delete_after_run_ = false;
 
   // The timestamp of the event which closed the menu - or 0.
   base::TimeTicks closing_event_time_;

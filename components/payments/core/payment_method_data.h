@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/values.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 
 namespace base {
@@ -29,9 +30,9 @@ class PaymentMethodData {
   bool operator==(const PaymentMethodData& other) const;
   bool operator!=(const PaymentMethodData& other) const;
 
-  // Populates the properties of this PaymentMethodData from |value|. Returns
+  // Populates the properties of this PaymentMethodData from |dict|. Returns
   // true if the required values are present.
-  bool FromValue(const base::Value& value);
+  bool FromValueDict(const base::Value::Dict& dict);
 
   // Payment method identifier for payment method that the merchant web site
   // accepts.

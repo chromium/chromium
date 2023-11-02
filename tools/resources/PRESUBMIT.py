@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -23,6 +23,6 @@ def _CommonChecks(input_api, output_api):
     return input_api.canned_checks.RunUnitTests(input_api,
                                                 output_api,
                                                 tests,
-                                                skip_shebang_check=True)
+                                                run_on_python2=False)
 
   return []

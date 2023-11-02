@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_SEARCH_SEARCH_PROVIDER_OBSERVER_H_
 #define COMPONENTS_SEARCH_SEARCH_PROVIDER_OBSERVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
@@ -28,7 +29,7 @@ class SearchProviderObserver : public TemplateURLServiceObserver {
   base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
       service_observation_{this};
   // May be nullptr in tests.
-  TemplateURLService* service_;
+  raw_ptr<TemplateURLService> service_;
   bool is_google_;
   base::RepeatingClosure callback_;
 };

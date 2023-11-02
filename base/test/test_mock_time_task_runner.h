@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
@@ -43,7 +43,9 @@ class ThreadTaskRunnerHandle;
 //
 //   - Methods RunsTasksInCurrentSequence() and Post[Delayed]Task() can be
 //     called from any thread, but the rest of the methods must be called on
-//     the same thread the TestMockTimeTaskRunner was created on.
+//     the same thread the TestMockTimeTaskRunner was created on unless a call
+//     is made to DetachFromThread(), in which case usage can switch to a
+//     different thread.
 //   - It allows for reentrancy, in that it handles the running of tasks that in
 //     turn call back into it (e.g., to post more tasks).
 //   - Tasks are stored in a priority queue, and executed in the increasing
@@ -201,11 +203,20 @@ class TestMockTimeTaskRunner : public SingleThreadTaskRunner,
   size_t GetPendingTaskCount();
   TimeDelta NextPendingTaskDelay();
 
+  // Allow invoking methods from different threads.
+  // It is the caller's responsibility to ensure there are no data races.
+  void DetachFromThread();
+
   // SingleThreadTaskRunner:
   bool RunsTasksInCurrentSequence() const override;
   bool PostDelayedTask(const Location& from_here,
                        OnceClosure task,
                        TimeDelta delay) override;
+  bool PostDelayedTaskAt(subtle::PostDelayedTaskPassKey,
+                         const Location& from_here,
+                         OnceClosure task,
+                         TimeTicks delayed_run_time,
+                         subtle::DelayPolicy deadline_policy) override;
   bool PostNonNestableDelayedTask(const Location& from_here,
                                   OnceClosure task,
                                   TimeDelta delay) override;
@@ -245,7 +256,7 @@ class TestMockTimeTaskRunner : public SingleThreadTaskRunner,
     Time Now() const override;
 
    private:
-    TestMockTimeTaskRunner* task_runner_;
+    raw_ptr<TestMockTimeTaskRunner> task_runner_;
   };
 
   struct TestOrderedPendingTask;

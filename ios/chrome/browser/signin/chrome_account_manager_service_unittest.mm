@@ -1,17 +1,17 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 
-#include "components/signin/public/base/signin_pref_names.h"
+#import "components/signin/public/base/signin_pref_names.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state_manager.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
-#include "ios/chrome/test/testing_application_context.h"
+#import "ios/chrome/test/testing_application_context.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
-#include "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
@@ -60,7 +60,7 @@ class ChromeAccountManagerServiceTest : public PlatformTest {
 
   // Sets a restricted pattern.
   void SetPattern(const std::string pattern) {
-    base::ListValue allowed_patterns;
+    base::Value allowed_patterns(base::Value::Type::LIST);
     allowed_patterns.Append(pattern);
     GetApplicationContext()->GetLocalState()->Set(
         prefs::kRestrictAccountsToPatterns, allowed_patterns);

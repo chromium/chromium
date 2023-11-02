@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/ptr_util.h"
@@ -154,7 +153,7 @@ class StylusButtonEventConverterEvdevTest : public testing::Test {
   }
 
   void DispatchEventForTest(ui::Event* event) {
-    std::unique_ptr<ui::Event> cloned_event = ui::Event::Clone(*event);
+    std::unique_ptr<ui::Event> cloned_event = event->Clone();
     dispatched_events_.push_back(std::move(cloned_event));
   }
 
@@ -187,7 +186,7 @@ TEST_F(StylusButtonEventConverterEvdevTest, DellActivePenSingleClick) {
       {{0, 0}, EV_SYN, SYN_REPORT, 0},
   };
 
-  for (unsigned i = 0; i < base::size(mock_kernel_queue); ++i) {
+  for (unsigned i = 0; i < std::size(mock_kernel_queue); ++i) {
     dev->ProcessEvent(mock_kernel_queue[i]);
   }
   EXPECT_EQ(0u, size());
@@ -211,7 +210,7 @@ TEST_F(StylusButtonEventConverterEvdevTest, DellActivePenDoubleClick) {
       {{0, 0}, EV_SYN, SYN_REPORT, 0},
   };
 
-  for (unsigned i = 0; i < base::size(mock_kernel_queue); ++i) {
+  for (unsigned i = 0; i < std::size(mock_kernel_queue); ++i) {
     dev->ProcessEvent(mock_kernel_queue[i]);
   }
   EXPECT_EQ(2u, size());
@@ -243,7 +242,7 @@ TEST_F(StylusButtonEventConverterEvdevTest, DellActivePenLongPress) {
       {{0, 0}, EV_SYN, SYN_REPORT, 0},
   };
 
-  for (unsigned i = 0; i < base::size(mock_kernel_queue); ++i) {
+  for (unsigned i = 0; i < std::size(mock_kernel_queue); ++i) {
     dev->ProcessEvent(mock_kernel_queue[i]);
   }
   EXPECT_EQ(0u, size());

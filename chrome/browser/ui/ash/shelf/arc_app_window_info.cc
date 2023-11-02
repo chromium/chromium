@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/window_properties.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
+#include "chrome/browser/ui/app_list/arc/intent.h"
 
 namespace {
 
@@ -16,11 +17,11 @@ constexpr char kLogicalWindowIntentPrefix[] =
     "S.org.chromium.arc.logical_window_id=";
 
 std::string GetLogicalWindowIdFromIntent(const std::string& launch_intent) {
-  arc::Intent intent;
-  if (!arc::ParseIntent(launch_intent, &intent))
+  auto intent = arc::Intent::Get(launch_intent);
+  if (!intent)
     return std::string();
   const std::string prefix(kLogicalWindowIntentPrefix);
-  for (const auto& param : intent.extra_params()) {
+  for (const auto& param : intent->extra_params()) {
     if (base::StartsWith(param, prefix, base::CompareCase::SENSITIVE))
       return param.substr(prefix.length());
   }
@@ -38,6 +39,12 @@ ArcAppWindowInfo::ArcAppWindowInfo(const arc::ArcAppShelfId& app_shelf_id,
       logical_window_id_(GetLogicalWindowIdFromIntent(launch_intent)) {}
 
 ArcAppWindowInfo::~ArcAppWindowInfo() = default;
+
+void ArcAppWindowInfo::OnWindowDestroying(aura::Window* window) {
+  DCHECK(observed_window_.IsObservingSource(window));
+  observed_window_.Reset();
+  window_ = nullptr;
+}
 
 void ArcAppWindowInfo::SetDescription(const std::string& title,
                                       const gfx::ImageSkia& icon) {
@@ -68,8 +75,17 @@ void ArcAppWindowInfo::UpdateWindowProperties() {
 }
 
 void ArcAppWindowInfo::set_window(aura::Window* window) {
+  if (window_ == window)
+    return;
+
+  if (window_ && observed_window_.IsObservingSource(window_))
+    observed_window_.Reset();
+
   window_ = window;
   UpdateWindowProperties();
+
+  if (window && !observed_window_.IsObservingSource(window))
+    observed_window_.Observe(window);
 }
 
 aura::Window* ArcAppWindowInfo::ArcAppWindowInfo::window() {
@@ -80,7 +96,7 @@ const arc::ArcAppShelfId& ArcAppWindowInfo::app_shelf_id() const {
   return app_shelf_id_;
 }
 
-const ash::ShelfID ArcAppWindowInfo::shelf_id() const {
+ash::ShelfID ArcAppWindowInfo::shelf_id() const {
   return ash::ShelfID(app_shelf_id_.ToString());
 }
 

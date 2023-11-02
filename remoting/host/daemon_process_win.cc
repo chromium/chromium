@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
+#include "base/command_line.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -25,25 +25,22 @@
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"
-#include "ipc/ipc_channel_handle.h"
-#include "ipc/ipc_message.h"
-#include "ipc/ipc_message_macros.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/base/auto_thread.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/scoped_sc_handle_win.h"
+#include "remoting/host/base/host_exit_codes.h"
+#include "remoting/host/base/screen_resolution.h"
+#include "remoting/host/base/switches.h"
 #include "remoting/host/branding.h"
-#include "remoting/host/chromoting_messages.h"
 #include "remoting/host/desktop_session_win.h"
 #include "remoting/host/host_config.h"
-#include "remoting/host/host_exit_codes.h"
 #include "remoting/host/host_main.h"
 #include "remoting/host/ipc_constants.h"
 #include "remoting/host/mojom/remoting_host.mojom.h"
 #include "remoting/host/pairing_registry_delegate_win.h"
-#include "remoting/host/screen_resolution.h"
-#include "remoting/host/switches.h"
 #include "remoting/host/win/etw_trace_consumer.h"
 #include "remoting/host/win/host_event_file_logger.h"
 #include "remoting/host/win/host_event_windows_event_logger.h"
@@ -108,11 +105,10 @@ class DaemonProcessWin : public DaemonProcess {
   void OnWorkerProcessStopped() override;
 
   // DaemonProcess overrides.
-  void SendToNetwork(IPC::Message* message) override;
   bool OnDesktopSessionAgentAttached(
       int terminal_id,
       int session_id,
-      const IPC::ChannelHandle& desktop_pipe) override;
+      mojo::ScopedMessagePipeHandle desktop_pipe) override;
 
   // If event logging has been configured, creates an ETW trace consumer which
   // listens for logged events from our host processes.  Tracing stops when
@@ -130,6 +126,7 @@ class DaemonProcessWin : public DaemonProcess {
   void LaunchNetworkProcess() override;
   void SendHostConfigToNetworkProcess(
       const std::string& serialized_config) override;
+  void SendTerminalDisconnected(int terminal_id) override;
 
   // Changes the service start type to 'manual'.
   void DisableAutoStart();
@@ -156,6 +153,8 @@ class DaemonProcessWin : public DaemonProcess {
 
   std::unique_ptr<EtwTraceConsumer> etw_trace_consumer_;
 
+  mojo::AssociatedRemote<mojom::DesktopSessionConnectionEvents>
+      desktop_session_connection_events_;
   mojo::AssociatedRemote<mojom::RemotingHostControl> remoting_host_control_;
 };
 
@@ -179,18 +178,16 @@ void DaemonProcessWin::OnChannelConnected(int32_t peer_pid) {
     return;
   }
 
-  network_launcher_->GetRemoteAssociatedInterface(
-      remoting_host_control_.BindNewEndpointAndPassReceiver());
-  if (!remoting_host_control_.is_connected()) {
-    CrashNetworkProcess(FROM_HERE);
-    return;
-  }
-
   // Typically the Daemon process is responsible for disconnecting the remote
   // however in cases where the network process crashes, we want to ensure that
   // |remoting_host_control_| is reset so it can be reused after the network
   // process is relaunched.
-  remoting_host_control_.reset_on_disconnect();
+  remoting_host_control_.reset();
+  network_launcher_->GetRemoteAssociatedInterface(
+      remoting_host_control_.BindNewEndpointAndPassReceiver());
+  desktop_session_connection_events_.reset();
+  network_launcher_->GetRemoteAssociatedInterface(
+      desktop_session_connection_events_.BindNewEndpointAndPassReceiver());
 
   if (!InitializePairingRegistry()) {
     CrashNetworkProcess(FROM_HERE);
@@ -220,22 +217,20 @@ void DaemonProcessWin::OnWorkerProcessStopped() {
   // Reset our IPC remote so it's ready to re-init if the network process is
   // re-launched.
   remoting_host_control_.reset();
-}
+  desktop_session_connection_events_.reset();
 
-void DaemonProcessWin::SendToNetwork(IPC::Message* message) {
-  if (network_launcher_) {
-    network_launcher_->Send(message);
-  } else {
-    delete message;
-  }
+  DaemonProcess::OnWorkerProcessStopped();
 }
 
 bool DaemonProcessWin::OnDesktopSessionAgentAttached(
     int terminal_id,
     int session_id,
-    const IPC::ChannelHandle& desktop_pipe) {
-  SendToNetwork(new ChromotingDaemonNetworkMsg_DesktopAttached(
-      terminal_id, session_id, desktop_pipe));
+    mojo::ScopedMessagePipeHandle desktop_pipe) {
+  if (desktop_session_connection_events_) {
+    desktop_session_connection_events_->OnDesktopSessionAgentAttached(
+        terminal_id, session_id, std::move(desktop_pipe));
+  }
+
   return true;
 }
 
@@ -274,7 +269,7 @@ void DaemonProcessWin::LaunchNetworkProcess() {
   std::unique_ptr<base::CommandLine> target(new base::CommandLine(host_binary));
   target->AppendSwitchASCII(kProcessTypeSwitchName, kProcessTypeHost);
   target->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
-                           kCopiedSwitchNames, base::size(kCopiedSwitchNames));
+                           kCopiedSwitchNames, std::size(kCopiedSwitchNames));
 
   std::unique_ptr<UnprivilegedProcessDelegate> delegate(
       new UnprivilegedProcessDelegate(io_task_runner(), std::move(target)));
@@ -284,18 +279,27 @@ void DaemonProcessWin::LaunchNetworkProcess() {
 
 void DaemonProcessWin::SendHostConfigToNetworkProcess(
     const std::string& serialized_config) {
-  if (remoting_host_control_.is_bound()) {
-    LOG_IF(ERROR, !remoting_host_control_.is_connected())
-        << "IPC channel not connected. HostConfig message will be dropped.";
+  if (!remoting_host_control_) {
+    return;
+  }
 
-    absl::optional<base::Value> config(HostConfigFromJson(serialized_config));
-    if (!config.has_value()) {
-      LOG(ERROR) << "Invalid host config, shutting down.";
-      OnPermanentError(kInvalidHostConfigurationExitCode);
-      return;
-    }
+  LOG_IF(ERROR, !remoting_host_control_.is_connected())
+      << "IPC channel not connected. HostConfig message will be dropped.";
 
-    remoting_host_control_->ApplyHostConfig(std::move(config.value()));
+  absl::optional<base::Value::Dict> config(
+      HostConfigFromJson(serialized_config));
+  if (!config.has_value()) {
+    LOG(ERROR) << "Invalid host config, shutting down.";
+    OnPermanentError(kInvalidHostConfigurationExitCode);
+    return;
+  }
+
+  remoting_host_control_->ApplyHostConfig(std::move(config.value()));
+}
+
+void DaemonProcessWin::SendTerminalDisconnected(int terminal_id) {
+  if (desktop_session_connection_events_) {
+    desktop_session_connection_events_->OnTerminalDisconnected(terminal_id);
   }
 }
 
@@ -368,7 +372,7 @@ bool DaemonProcessWin::InitializePairingRegistry() {
   if (!(privileged_key.IsValid() && unprivileged_key.IsValid()))
     return false;
 
-  if (!remoting_host_control_.is_bound())
+  if (!remoting_host_control_)
     return false;
 
   remoting_host_control_->InitializePairingRegistry(

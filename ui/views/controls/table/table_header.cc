@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,6 @@
 #include "ui/views/controls/table/table_utils.h"
 #include "ui/views/controls/table/table_view.h"
 #include "ui/views/focus/focus_manager.h"
-#include "ui/views/native_cursor.h"
 #include "ui/views/style/platform_style.h"
 
 namespace views {
@@ -55,6 +54,7 @@ constexpr int kSortIndicatorSize = 8;
 
 // static
 const int TableHeader::kHorizontalPadding = 7;
+
 // static
 const int TableHeader::kSortIndicatorWidth =
     kSortIndicatorSize + TableHeader::kHorizontalPadding * 2;
@@ -140,16 +140,15 @@ void TableHeader::OnPaint(gfx::Canvas* canvas) {
         (column.column.id == sorted_column_id &&
          title_width + kSortIndicatorWidth <= width);
 
-    if (paint_sort_indicator &&
-        column.column.alignment == ui::TableColumn::RIGHT) {
+    if (paint_sort_indicator)
       width -= kSortIndicatorWidth;
-    }
 
     canvas->DrawStringRectWithFlags(
         column.column.title, font_list_, text_color,
         gfx::Rect(GetMirroredXWithWidthInView(x, width), kVerticalPadding,
                   width, height() - kVerticalPadding * 2),
-        TableColumnAlignmentToCanvasAlignment(column.column.alignment));
+        TableColumnAlignmentToCanvasAlignment(
+            GetMirroredTableColumnAlignment(column.column.alignment)));
 
     if (paint_sort_indicator) {
       cc::PaintFlags flags;
@@ -158,19 +157,12 @@ void TableHeader::OnPaint(gfx::Canvas* canvas) {
       flags.setAntiAlias(true);
 
       int indicator_x = 0;
-      ui::TableColumn::Alignment alignment = column.column.alignment;
-      if (base::i18n::IsRTL()) {
-        if (alignment == ui::TableColumn::LEFT)
-          alignment = ui::TableColumn::RIGHT;
-        else if (alignment == ui::TableColumn::RIGHT)
-          alignment = ui::TableColumn::LEFT;
-      }
-      switch (alignment) {
+      switch (column.column.alignment) {
         case ui::TableColumn::LEFT:
           indicator_x = x + title_width;
           break;
         case ui::TableColumn::CENTER:
-          indicator_x = x + width / 2;
+          indicator_x = x + width / 2 + title_width / 2;
           break;
         case ui::TableColumn::RIGHT:
           indicator_x = x + width;
@@ -227,9 +219,9 @@ void TableHeader::AddedToWidget() {
   table_->UpdateVirtualAccessibilityChildrenBounds();
 }
 
-gfx::NativeCursor TableHeader::GetCursor(const ui::MouseEvent& event) {
-  return GetResizeColumn(GetMirroredXInView(event.x())) != -1
-             ? GetNativeColumnResizeCursor()
+ui::Cursor TableHeader::GetCursor(const ui::MouseEvent& event) {
+  return GetResizeColumn(GetMirroredXInView(event.x())).has_value()
+             ? ui::mojom::CursorType::kColumnResize
              : View::GetCursor(event);
 }
 
@@ -291,9 +283,8 @@ void TableHeader::OnThemeChanged() {
 }
 
 void TableHeader::ResizeColumnViaKeyboard(
-    int index,
+    size_t index,
     TableView::AdvanceDirection direction) {
-  DCHECK_GE(index, 0);
   const TableView::VisibleColumn& column = table_->GetVisibleColumn(index);
   const int needed_for_title =
       gfx::GetStringWidth(column.column.title, font_list_) +
@@ -318,30 +309,32 @@ bool TableHeader::GetHeaderRowHasFocus() const {
 }
 
 gfx::Rect TableHeader::GetActiveHeaderCellBounds() const {
-  const int active_index = table_->GetActiveVisibleColumnIndex();
-  DCHECK_NE(ui::ListSelectionModel::kUnselectedIndex, active_index);
+  const absl::optional<size_t> active_index =
+      table_->GetActiveVisibleColumnIndex();
+  DCHECK(active_index.has_value());
   const TableView::VisibleColumn& column =
-      table_->GetVisibleColumn(active_index);
+      table_->GetVisibleColumn(active_index.value());
   return gfx::Rect(column.x, 0, column.width, height());
 }
 
 bool TableHeader::HasFocusIndicator() const {
-  return table_->GetActiveVisibleColumnIndex() !=
-         ui::ListSelectionModel::kUnselectedIndex;
+  return table_->GetActiveVisibleColumnIndex().has_value();
 }
 
 bool TableHeader::StartResize(const ui::LocatedEvent& event) {
   if (is_resizing())
     return false;
 
-  const int index = GetResizeColumn(GetMirroredXInView(event.x()));
-  if (index == -1)
+  const absl::optional<size_t> index =
+      GetResizeColumn(GetMirroredXInView(event.x()));
+  if (!index.has_value())
     return false;
 
   resize_details_ = std::make_unique<ColumnResizeDetails>();
-  resize_details_->column_index = index;
+  resize_details_->column_index = index.value();
   resize_details_->initial_x = event.root_location().x();
-  resize_details_->initial_width = table_->GetVisibleColumn(index).width;
+  resize_details_->initial_width =
+      table_->GetVisibleColumn(index.value()).width;
   return true;
 }
 
@@ -368,28 +361,34 @@ void TableHeader::ToggleSortOrder(const ui::LocatedEvent& event) {
     return;
 
   const int x = GetMirroredXInView(event.x());
-  const int index = GetClosestVisibleColumnIndex(table_, x);
-  const TableView::VisibleColumn& column(table_->GetVisibleColumn(index));
+  const absl::optional<size_t> index = GetClosestVisibleColumnIndex(table_, x);
+  if (!index.has_value())
+    return;
+  const TableView::VisibleColumn& column(
+      table_->GetVisibleColumn(index.value()));
   if (x >= column.x && x < column.x + column.width && event.y() >= 0 &&
-      event.y() < height())
-    table_->ToggleSortOrder(index);
+      event.y() < height()) {
+    table_->ToggleSortOrder(index.value());
+  }
 }
 
-int TableHeader::GetResizeColumn(int x) const {
+absl::optional<size_t> TableHeader::GetResizeColumn(int x) const {
   const Columns& columns(table_->visible_columns());
   if (columns.empty())
-    return -1;
+    return absl::nullopt;
 
-  const int index = GetClosestVisibleColumnIndex(table_, x);
-  DCHECK_NE(-1, index);
-  const TableView::VisibleColumn& column(table_->GetVisibleColumn(index));
-  if (index > 0 && x >= column.x - kResizePadding &&
+  const absl::optional<size_t> index = GetClosestVisibleColumnIndex(table_, x);
+  DCHECK(index.has_value());
+  const TableView::VisibleColumn& column(
+      table_->GetVisibleColumn(index.value()));
+  if (index.value() > 0 && x >= column.x - kResizePadding &&
       x <= column.x + kResizePadding) {
-    return index - 1;
+    return index.value() - 1;
   }
   const int max_x = column.x + column.width;
-  return (x >= max_x - kResizePadding && x <= max_x + kResizePadding) ? index
-                                                                      : -1;
+  return (x >= max_x - kResizePadding && x <= max_x + kResizePadding)
+             ? absl::make_optional(index.value())
+             : absl::nullopt;
 }
 BEGIN_METADATA(TableHeader, View)
 END_METADATA

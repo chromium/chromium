@@ -1,11 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.notifications;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.Notification;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -14,6 +13,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Icon;
 import android.os.Build;
 import android.os.Bundle;
+
+import androidx.annotation.RequiresApi;
 
 /**
  * Utils for Android notification tests.
@@ -37,7 +38,7 @@ public class NotificationTestUtil {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.M) // for Icon.loadDrawable()
+    @RequiresApi(Build.VERSION_CODES.M) // for Icon.loadDrawable()
     public static Bitmap getBitmapFromIcon(Context context, Icon icon) {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
         return ((BitmapDrawable) icon.loadDrawable(context)).getBitmap();

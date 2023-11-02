@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,13 +12,13 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/arc/mojom/file_system.mojom-forward.h"
+#include "ash/components/arc/session/connection_observer.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/arc/fileapi/arc_select_files_handler.h"
 #include "chrome/browser/ash/arc/fileapi/file_stream_forwarder.h"
-#include "components/arc/mojom/file_system.mojom-forward.h"
-#include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/watcher_manager.h"
@@ -41,10 +41,20 @@ class ArcFileSystemBridge
       public ConnectionObserver<mojom::FileSystemInstance>,
       public mojom::FileSystemHost {
  public:
+  using OpenFileToReadCallback = mojom::FileSystemHost::OpenFileToReadCallback;
+
   class Observer {
    public:
     virtual void OnDocumentChanged(int64_t watcher_id,
                                    storage::WatcherManager::ChangeType type) {}
+
+    // Propagates `mojom::FileSystemHost::OnMediaStoreUriAdded()` events from
+    // ARC to observers. See payload details in mojo interface documentation:
+    // /ash/components/arc/mojom/file_system.mojom.
+    virtual void OnMediaStoreUriAdded(
+        const GURL& uri,
+        const mojom::MediaStoreMetadata& metadata) {}
+
     virtual void OnRootsChanged() {}
 
    protected:
@@ -109,6 +119,8 @@ class ArcFileSystemBridge
   void GetFileSelectorElements(
       mojom::GetFileSelectorElementsRequestPtr request,
       GetFileSelectorElementsCallback callback) override;
+  void OnMediaStoreUriAdded(const GURL& uri,
+                            mojom::MediaStoreMetadataPtr metadata) override;
 
   // ConnectionObserver<mojom::FileSystemInstance> overrides:
   void OnConnectionClosed() override;

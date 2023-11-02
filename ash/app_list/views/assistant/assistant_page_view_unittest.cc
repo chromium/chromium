@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,11 +15,14 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkTypes.h"
@@ -36,12 +39,8 @@ namespace ash {
 
 namespace {
 
-using chromeos::assistant::AssistantInteractionMetadata;
-using chromeos::assistant::AssistantInteractionType;
-
-// The min/max height of the embedded Assistant.
-constexpr int kMaxHeightDip = 440;
-constexpr int kMinHeightDip = 180;
+using assistant::AssistantInteractionMetadata;
+using assistant::AssistantInteractionType;
 
 #define EXPECT_INTERACTION_OF_TYPE(type_)                      \
   ({                                                           \
@@ -158,21 +157,6 @@ class VisibilityObserver : public views::ViewObserver {
   bool was_drawn_ = false;
 };
 
-// Simply constructs a GestureEvent for test.
-class GestureEventForTest : public ui::GestureEvent {
- public:
-  GestureEventForTest(const gfx::Point& location,
-                      ui::GestureEventDetails details)
-      : GestureEvent(location.x(),
-                     location.y(),
-                     /*flags=*/ui::EF_NONE,
-                     base::TimeTicks(),
-                     details) {}
-
-  GestureEventForTest(const GestureEventForTest&) = delete;
-  GestureEventForTest& operator=(const GestureEventForTest&) = delete;
-};
-
 // Base class for tests of the embedded assistant page in:
 // - Legacy clamshell mode ("peeking launcher")
 // - Clamshell mode ("bubble launcher")
@@ -218,31 +202,9 @@ class AssistantPageViewTest : public AssistantAshTestBase {
   }
 };
 
-// Tests for the legacy non-bubble app list ("peeking launcher").
-// These tests can be deleted when features::kProductivityLauncher is fully
-// launched.
-class AssistantPageNonBubbleTest : public AssistantPageViewTest {
- public:
-  AssistantPageNonBubbleTest() {
-    scoped_feature_list_.InitAndDisableFeature(features::kProductivityLauncher);
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Tests that only apply to the clamshell bubble launcher.
-class AssistantPageBubbleTest : public AssistantPageViewTest {
- public:
-  AssistantPageBubbleTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kProductivityLauncher);
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Counts the number of Assistant interactions that are started.
 class AssistantInteractionCounter
-    : private chromeos::assistant::AssistantInteractionSubscriber {
+    : private assistant::AssistantInteractionSubscriber {
  public:
   explicit AssistantInteractionCounter(
       chromeos::assistant::Assistant* service) {
@@ -256,142 +218,22 @@ class AssistantInteractionCounter
 
  private:
   // AssistantInteractionSubscriber implementation:
-  void OnInteractionStarted(
-      const chromeos::assistant::AssistantInteractionMetadata&) override {
+  void OnInteractionStarted(const AssistantInteractionMetadata&) override {
     interaction_count_++;
   }
 
   int interaction_count_ = 0;
-  chromeos::assistant::ScopedAssistantInteractionSubscriber
-      interaction_observer_{this};
+  assistant::ScopedAssistantInteractionSubscriber interaction_observer_{this};
 };
 
-TEST_F(AssistantPageNonBubbleTest, ShouldStartInPeekingState) {
-  DoNotShowOnboardingViews();
-
-  ShowAssistantUi();
-
-  EXPECT_EQ(AppListViewState::kPeeking, app_list_view()->app_list_state());
-}
-
-TEST_F(AssistantPageNonBubbleTest, ShouldStartInHalfState) {
-  SetOnboardingMode(AssistantOnboardingMode::kEducation);
-
-  ShowAssistantUi();
-
-  EXPECT_EQ(AppListViewState::kHalf, app_list_view()->app_list_state());
-}
-
-TEST_F(AssistantPageNonBubbleTest, ShouldStartAtMinimumHeight) {
-  DoNotShowOnboardingViews();
-
-  ShowAssistantUi();
-
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(kMinHeightDip, main_view()->size().height());
-}
-
-TEST_F(AssistantPageNonBubbleTest,
-       ShouldRemainAtMinimumHeightWhenDisplayingOneLiner) {
-  DoNotShowOnboardingViews();
-
-  ShowAssistantUi();
-
-  MockTextInteraction().WithTextResponse("Short one-liner");
-
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(kMinHeightDip, main_view()->size().height());
-}
-
-TEST_F(AssistantPageNonBubbleTest, ShouldGetBiggerWithMultilineText) {
-  ShowAssistantUi();
-
-  MockTextInteraction().WithTextResponse(
-      "This\ntext\nhas\na\nlot\nof\nlinebreaks.");
-
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(kMaxHeightDip, main_view()->size().height());
-}
-
-TEST_F(AssistantPageNonBubbleTest, ShouldGetBiggerWhenWrappingTextLine) {
-  ShowAssistantUi();
-
-  MockTextInteraction().WithTextResponse(
-      "This is a very long text without any linebreaks. "
-      "This will wrap, and should cause the Assistant view to get bigger. "
-      "If it doesn't, this looks really bad. This is what caused b/134963994.");
-
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(kMaxHeightDip, main_view()->size().height());
-}
-
-// Only tested for non-bubble launcher because for the bubble launcher we always
-// close the bubble and it can't permanently steal focus from another window.
-TEST_F(AssistantPageNonBubbleTest,
-       ShouldNotRequestFocusWhenOtherAppWindowOpens) {
-  // This tests the root cause of b/141945964.
-  // Namely, the Assistant code should not request the focus while being closed.
-  ShowAssistantUi();
-
-  // Start observing all focus changes.
-  FocusChangeListenerStub focus_listener(main_view());
-
-  // Steal the focus by creating a new App window.
-  SwitchToNewAppWindow();
-
-  // This causes the Assistant UI to close.
-  ASSERT_FALSE(window()->IsVisible());
-
-  // Now check that no child view of our UI received the focus.
-  for (const views::View* view : focus_listener.focused_views()) {
-    EXPECT_FALSE(page_view()->Contains(view))
-        << "Focus was received by Assistant view '" << view->GetClassName()
-        << "' while Assistant was closing";
-  }
-}
-
-// Only tested for non-bubble launcher because for the bubble launcher we always
-// close the bubble and clear the input when we switch to tablet mode.
-TEST_F(AssistantPageNonBubbleTest,
-       ShouldNotClearQueryWhenSwitchingToTabletMode) {
-  const std::u16string query_text = u"unsubmitted query";
-  ShowAssistantUiInTextMode();
-  input_text_field()->SetText(query_text);
-
-  SetTabletMode(true);
-
-  EXPECT_HAS_FOCUS(input_text_field());
-  EXPECT_EQ(query_text, input_text_field()->GetText());
-}
-
-//------------------------------------------------------------------------------
-// Tests for the clamshell mode launcher, parameterized by the feature
-// kProductivityLauncher.
-class AssistantPageClamshellTest : public AssistantPageViewTest,
-                                   public testing::WithParamInterface<bool> {
- public:
-  AssistantPageClamshellTest() {
-    if (GetParam())
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kProductivityLauncher);
-    else
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kProductivityLauncher);
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(Bubble, AssistantPageClamshellTest, testing::Bool());
-
-TEST_P(AssistantPageClamshellTest, PressingAssistantKeyShowsAssistantPage) {
+TEST_F(AssistantPageViewTest, PressingAssistantKeyShowsAssistantPage) {
   ShowAssistantUi(AssistantEntryPoint::kHotkey);
 
   EXPECT_TRUE(Shell::Get()->app_list_controller()->IsVisible());
   EXPECT_TRUE(page_view()->GetVisible());
 }
 
-TEST_P(AssistantPageClamshellTest,
+TEST_F(AssistantPageViewTest,
        OpeningLauncherThenPressingAssistantKeyShowsAssistantPage) {
   OpenLauncher();
   ShowAssistantUi(AssistantEntryPoint::kHotkey);
@@ -399,21 +241,20 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_TRUE(page_view()->GetVisible());
 }
 
-TEST_P(AssistantPageClamshellTest, PressingAssistantKeyTwiceClosesLauncher) {
+TEST_F(AssistantPageViewTest, PressingAssistantKeyTwiceClosesLauncher) {
   ShowAssistantUi(AssistantEntryPoint::kHotkey);
   CloseAssistantUi(AssistantExitPoint::kHotkey);
 
   EXPECT_FALSE(Shell::Get()->app_list_controller()->IsVisible());
 }
 
-TEST_P(AssistantPageClamshellTest, ShouldFocusTextFieldWhenOpeningWithHotkey) {
+TEST_F(AssistantPageViewTest, ShouldFocusTextFieldWhenOpeningWithHotkey) {
   ShowAssistantUi(AssistantEntryPoint::kHotkey);
 
   EXPECT_HAS_FOCUS(input_text_field());
 }
 
-TEST_P(AssistantPageClamshellTest,
-       ShouldNotLoseTextfieldFocusWhenSendingTextQuery) {
+TEST_F(AssistantPageViewTest, ShouldNotLoseTextfieldFocusWhenSendingTextQuery) {
   ShowAssistantUi();
 
   SendQueryThroughTextField("The query");
@@ -421,7 +262,7 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_HAS_FOCUS(input_text_field());
 }
 
-TEST_P(AssistantPageClamshellTest,
+TEST_F(AssistantPageViewTest,
        ShouldNotLoseTextfieldFocusWhenDisplayingResponse) {
   ShowAssistantUi();
 
@@ -430,7 +271,7 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_HAS_FOCUS(input_text_field());
 }
 
-TEST_P(AssistantPageClamshellTest, ShouldNotLoseTextfieldFocusWhenResizing) {
+TEST_F(AssistantPageViewTest, ShouldNotLoseTextfieldFocusWhenResizing) {
   ShowAssistantUi();
 
   MockTextInteraction().WithTextResponse(
@@ -440,8 +281,7 @@ TEST_P(AssistantPageClamshellTest, ShouldNotLoseTextfieldFocusWhenResizing) {
   EXPECT_HAS_FOCUS(input_text_field());
 }
 
-TEST_P(AssistantPageClamshellTest,
-       FocusShouldRemainInAssistantViewWhenPressingTab) {
+TEST_F(AssistantPageViewTest, FocusShouldRemainInAssistantViewWhenPressingTab) {
   constexpr int kMaxIterations = 100;
   ShowAssistantUi();
 
@@ -462,7 +302,7 @@ TEST_P(AssistantPageClamshellTest,
   } while (focused_view != initial_focused_view);
 }
 
-TEST_P(AssistantPageClamshellTest,
+TEST_F(AssistantPageViewTest,
        FocusShouldCycleThroughOnboardingSuggestionsWhenPressingTab) {
   constexpr int kMaxIterations = 100;
 
@@ -495,13 +335,13 @@ TEST_P(AssistantPageClamshellTest,
   }
 }
 
-TEST_P(AssistantPageClamshellTest, ShouldFocusMicWhenOpeningWithHotword) {
+TEST_F(AssistantPageViewTest, ShouldFocusMicWhenOpeningWithHotword) {
   ShowAssistantUi(AssistantEntryPoint::kHotword);
 
   EXPECT_HAS_FOCUS(mic_view());
 }
 
-TEST_P(AssistantPageClamshellTest, ShouldShowGreetingLabelWhenOpening) {
+TEST_F(AssistantPageViewTest, ShouldShowGreetingLabelWhenOpening) {
   DoNotShowOnboardingViews();
 
   ShowAssistantUi();
@@ -510,14 +350,14 @@ TEST_P(AssistantPageClamshellTest, ShouldShowGreetingLabelWhenOpening) {
   EXPECT_FALSE(onboarding_view()->IsDrawn());
 }
 
-TEST_P(AssistantPageClamshellTest, ShouldShowOnboardingWhenOpening) {
+TEST_F(AssistantPageViewTest, ShouldShowOnboardingWhenOpening) {
   ShowAssistantUi();
 
   EXPECT_TRUE(onboarding_view()->IsDrawn());
   EXPECT_FALSE(greeting_label()->IsDrawn());
 }
 
-TEST_P(AssistantPageClamshellTest, ShouldDismissGreetingLabelAfterQuery) {
+TEST_F(AssistantPageViewTest, ShouldDismissGreetingLabelAfterQuery) {
   DoNotShowOnboardingViews();
 
   ShowAssistantUi();
@@ -528,7 +368,7 @@ TEST_P(AssistantPageClamshellTest, ShouldDismissGreetingLabelAfterQuery) {
   EXPECT_FALSE(onboarding_view()->IsDrawn());
 }
 
-TEST_P(AssistantPageClamshellTest, ShouldDismissOnboardingAfterQuery) {
+TEST_F(AssistantPageViewTest, ShouldDismissOnboardingAfterQuery) {
   ShowAssistantUi();
 
   MockTextInteraction().WithTextResponse("The response");
@@ -537,7 +377,7 @@ TEST_P(AssistantPageClamshellTest, ShouldDismissOnboardingAfterQuery) {
   EXPECT_FALSE(greeting_label()->IsDrawn());
 }
 
-TEST_P(AssistantPageClamshellTest, ShouldShowGreetingLabelAgainAfterReopening) {
+TEST_F(AssistantPageViewTest, ShouldShowGreetingLabelAgainAfterReopening) {
   DoNotShowOnboardingViews();
 
   ShowAssistantUi();
@@ -554,7 +394,7 @@ TEST_P(AssistantPageClamshellTest, ShouldShowGreetingLabelAgainAfterReopening) {
   EXPECT_FALSE(onboarding_view()->IsDrawn());
 }
 
-TEST_P(AssistantPageClamshellTest,
+TEST_F(AssistantPageViewTest,
        ShouldNotShowGreetingLabelWhenOpeningFromSearchResult) {
   DoNotShowOnboardingViews();
 
@@ -564,7 +404,7 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_FALSE(onboarding_view()->IsDrawn());
 }
 
-TEST_P(AssistantPageClamshellTest,
+TEST_F(AssistantPageViewTest,
        ShouldNotShowOnboardingWhenOpeningFromSearchResult) {
   ShowAssistantUi(AssistantEntryPoint::kLauncherSearchResult);
 
@@ -572,7 +412,7 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_FALSE(greeting_label()->IsDrawn());
 }
 
-TEST_P(AssistantPageClamshellTest, ShouldShowOnboardingForNewUsers) {
+TEST_F(AssistantPageViewTest, ShouldShowOnboardingForNewUsers) {
   // A user is considered new if they haven't had an Assistant interaction in
   // the past 28 days.
   const base::Time new_user_cutoff = base::Time::Now() - base::Days(28);
@@ -594,7 +434,7 @@ TEST_P(AssistantPageClamshellTest, ShouldShowOnboardingForNewUsers) {
   EXPECT_TRUE(onboarding_view()->IsDrawn());
 }
 
-TEST_P(AssistantPageClamshellTest, ShouldShowOnboardingUntilInteractionOccurs) {
+TEST_F(AssistantPageViewTest, ShouldShowOnboardingUntilInteractionOccurs) {
   SetTimeOfLastInteraction(base::Time::Now() - base::Days(28));
   ShowAssistantUi();
 
@@ -619,7 +459,7 @@ TEST_P(AssistantPageClamshellTest, ShouldShowOnboardingUntilInteractionOccurs) {
   EXPECT_FALSE(onboarding_view()->IsDrawn());
 }
 
-TEST_P(AssistantPageClamshellTest,
+TEST_F(AssistantPageViewTest,
        ShouldShowOnboardingToExistingUsersIfShownPreviouslyInDifferentSession) {
   SetTimeOfLastInteraction(base::Time::Now());
   SetNumberOfSessionsWhereOnboardingShown(1);
@@ -641,7 +481,7 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_FALSE(onboarding_view()->IsDrawn());
 }
 
-TEST_P(AssistantPageClamshellTest,
+TEST_F(AssistantPageViewTest,
        ShouldNotShowOnboardingToExistingUsersIfShownPreviouslyInMaxSessions) {
   SetTimeOfLastInteraction(base::Time::Now());
   SetNumberOfSessionsWhereOnboardingShown(
@@ -656,8 +496,7 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_FALSE(onboarding_view()->IsDrawn());
 }
 
-TEST_P(AssistantPageClamshellTest,
-       ShouldFocusMicViewWhenPressingVoiceInputToggle) {
+TEST_F(AssistantPageViewTest, ShouldFocusMicViewWhenPressingVoiceInputToggle) {
   ShowAssistantUiInTextMode();
 
   ClickOnAndWait(voice_input_toggle());
@@ -665,7 +504,7 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_HAS_FOCUS(mic_view());
 }
 
-TEST_P(AssistantPageClamshellTest,
+TEST_F(AssistantPageViewTest,
        ShouldStartVoiceInteractionWhenPressingVoiceInputToggle) {
   ShowAssistantUiInTextMode();
 
@@ -674,7 +513,7 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_INTERACTION_OF_TYPE(AssistantInteractionType::kVoice);
 }
 
-TEST_P(AssistantPageClamshellTest,
+TEST_F(AssistantPageViewTest,
        ShouldStopVoiceInteractionWhenPressingKeyboardInputToggle) {
   ShowAssistantUiInVoiceMode();
   EXPECT_INTERACTION_OF_TYPE(AssistantInteractionType::kVoice);
@@ -684,8 +523,7 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_FALSE(current_interaction().has_value());
 }
 
-TEST_P(AssistantPageClamshellTest,
-       ShouldShowOptInViewUnlessUserHasGivenConsent) {
+TEST_F(AssistantPageViewTest, ShouldShowOptInViewUnlessUserHasGivenConsent) {
   ShowAssistantUi();
   const views::View* suggestion_chips = suggestion_chip_container();
   const views::View* opt_in = opt_in_view();
@@ -707,8 +545,7 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_TRUE(suggestion_chips->IsDrawn());
 }
 
-TEST_P(AssistantPageClamshellTest,
-       ShouldSubmitQueryWhenClickingOnSuggestionChip) {
+TEST_F(AssistantPageViewTest, ShouldSubmitQueryWhenClickingOnSuggestionChip) {
   ShowAssistantUi();
   ash::SuggestionChipView* suggestion_chip =
       CreateAndGetSuggestionChip("<suggestion chip query>");
@@ -719,7 +556,7 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_EQ("<suggestion chip query>", current_interaction()->query);
 }
 
-TEST_P(AssistantPageClamshellTest,
+TEST_F(AssistantPageViewTest,
        ShouldSubmitQueryWhenPressingEnterOnSuggestionChip) {
   ShowAssistantUi();
   ash::SuggestionChipView* suggestion_chip =
@@ -732,7 +569,7 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_EQ("<suggestion chip query>", current_interaction()->query);
 }
 
-TEST_P(AssistantPageClamshellTest,
+TEST_F(AssistantPageViewTest,
        ShouldNotSubmitQueryWhenPressingSpaceOnSuggestionChip) {
   ShowAssistantUi();
   ash::SuggestionChipView* suggestion_chip =
@@ -744,7 +581,7 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_NO_INTERACTION();
 }
 
-TEST_P(AssistantPageClamshellTest,
+TEST_F(AssistantPageViewTest,
        ShouldOnlySubmitOneQueryWhenClickingSuggestionChipMultipleTimes) {
   ShowAssistantUi();
   ash::SuggestionChipView* suggestion_chip =
@@ -759,7 +596,7 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_EQ(1, counter.interaction_count());
 }
 
-TEST_P(AssistantPageClamshellTest,
+TEST_F(AssistantPageViewTest,
        ShouldOnlySubmitQueryFromFirstSuggestionChipClickedOn) {
   ShowAssistantUi();
   MockTextInteraction()
@@ -782,7 +619,7 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_EQ("<first query>", current_interaction()->query);
 }
 
-TEST_P(AssistantPageClamshellTest,
+TEST_F(AssistantPageViewTest,
        SuggestionChipsShouldNotBeFocusableAfterSubmittingQuery) {
   ShowAssistantUi();
   MockTextInteraction()
@@ -801,7 +638,7 @@ TEST_P(AssistantPageClamshellTest,
   }
 }
 
-TEST_P(AssistantPageClamshellTest,
+TEST_F(AssistantPageViewTest,
        ShouldFocusTextFieldWhenSubmittingSuggestionChipInTextMode) {
   ShowAssistantUiInTextMode();
   ash::SuggestionChipView* suggestion_chip =
@@ -813,8 +650,9 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_HAS_FOCUS(input_text_field());
 }
 
-TEST_P(AssistantPageClamshellTest,
-       ShouldFocusMicWhenSubmittingSuggestionChipInVoiceMode) {
+// TODO(b/234164113): Test is flaky.
+TEST_F(AssistantPageViewTest,
+       DISABLED_ShouldFocusMicWhenSubmittingSuggestionChipInVoiceMode) {
   ShowAssistantUi();
   ash::SuggestionChipView* suggestion_chip =
       CreateAndGetSuggestionChip("<suggestion chip query>");
@@ -826,7 +664,7 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_HAS_FOCUS(mic_view());
 }
 
-TEST_P(AssistantPageClamshellTest,
+TEST_F(AssistantPageViewTest,
        ShouldFocusTextFieldWhenPressingKeyboardInputToggle) {
   ShowAssistantUiInVoiceMode();
 
@@ -835,9 +673,6 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_HAS_FOCUS(input_text_field());
 }
 
-// TODO(crbug.com/1229797): Switch to TEST_P and AssistantPageClamshellTest.
-// It fails with kProductivityLauncher enabled because the vertical position of
-// the suggestion chip doesn't match.
 TEST_F(AssistantPageViewTest,
        ShouldNotScrollSuggestionChipsWhenSubmittingQuery) {
   ShowAssistantUiInTextMode();
@@ -860,7 +695,7 @@ TEST_F(AssistantPageViewTest,
   EXPECT_EQ(initial_bounds, final_bounds);
 }
 
-TEST_P(AssistantPageClamshellTest, RememberAndShowHistory) {
+TEST_F(AssistantPageViewTest, RememberAndShowHistory) {
   ShowAssistantUiInTextMode();
   EXPECT_HAS_FOCUS(input_text_field());
 
@@ -887,7 +722,7 @@ TEST_P(AssistantPageClamshellTest, RememberAndShowHistory) {
   EXPECT_TRUE(input_text_field()->GetText().empty());
 }
 
-TEST_P(AssistantPageClamshellTest, ShouldHaveConversationStarters) {
+TEST_F(AssistantPageViewTest, ShouldHaveConversationStarters) {
   DoNotShowOnboardingViews();
 
   ShowAssistantUi();
@@ -896,7 +731,7 @@ TEST_P(AssistantPageClamshellTest, ShouldHaveConversationStarters) {
   EXPECT_FALSE(GetSuggestionChips().empty());
 }
 
-TEST_P(AssistantPageClamshellTest,
+TEST_F(AssistantPageViewTest,
        ShouldNotHaveConversationStartersWhenShowingOnboarding) {
   ShowAssistantUi();
 
@@ -904,7 +739,7 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_TRUE(GetSuggestionChips().empty());
 }
 
-TEST_P(AssistantPageClamshellTest, ShouldHavePopulatedSuggestionChips) {
+TEST_F(AssistantPageViewTest, ShouldHavePopulatedSuggestionChips) {
   constexpr char kAnyQuery[] = "<query>";
   constexpr char kAnyText[] = "<text>";
   constexpr char kAnyChip[] = "<chip>";
@@ -922,103 +757,9 @@ TEST_P(AssistantPageClamshellTest, ShouldHavePopulatedSuggestionChips) {
   EXPECT_EQ(kAnyChip, base::UTF16ToUTF8(chip->GetText()));
 }
 
-TEST_F(AssistantPageNonBubbleTest, Theme) {
-  ASSERT_FALSE(features::IsDarkLightModeEnabled());
-
-  ShowAssistantUi();
-
-  EXPECT_EQ(page_view()->layer()->GetTargetColor(), SK_ColorWHITE);
-}
-
-TEST_F(AssistantPageNonBubbleTest, ThemeDarkLightMode) {
-  base::test::ScopedFeatureList scoped_feature_list_enable_dark_light_mode(
-      features::kDarkLightMode);
-  base::test::ScopedFeatureList scoped_feature_list_disable_blur;
-  scoped_feature_list_disable_blur.InitAndDisableFeature(
-      features::kEnableBackgroundBlur);
-
-  AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
-      Shell::Get()->session_controller()->GetActivePrefService());
-
-  ASSERT_FALSE(features::IsBackgroundBlurEnabled());
-
-  // Confirm that our opacity matches with that of AppListView using.
-  const SkColor shield_layer_color_95_light =
-      ColorProvider::Get()->GetShieldLayerColor(
-          ColorProvider::ShieldLayerType::kShield95);
-  EXPECT_EQ(SkColorGetA(shield_layer_color_95_light),
-            static_cast<uint32_t>(AppListView::kAppListOpacity * 255));
-
-  ShowAssistantUi();
-
-  ASSERT_FALSE(Shell::Get()->IsInTabletMode());
-  EXPECT_FLOAT_EQ(page_view()->layer()->background_blur(), 0.0f);
-  EXPECT_EQ(page_view()->layer()->GetTargetColor(),
-            shield_layer_color_95_light);
-
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      prefs::kDarkModeEnabled, true);
-
-  const SkColor shield_layer_color_95_dark =
-      ColorProvider::Get()->GetShieldLayerColor(
-          ColorProvider::ShieldLayerType::kShield95);
-  EXPECT_EQ(page_view()->layer()->GetTargetColor(), shield_layer_color_95_dark);
-
-  // Simulate the case where tablet mode is enabled in the middle of a session.
-  SetTabletMode(true);
-
-  // Unlike with-blur case, it does not get a background blur if the blur flag
-  // is off. But it gets 0.95 opacity.
-  EXPECT_FLOAT_EQ(page_view()->layer()->background_blur(), 0.0f);
-  EXPECT_EQ(page_view()->layer()->GetTargetColor(), shield_layer_color_95_dark);
-}
-
-TEST_F(AssistantPageNonBubbleTest, ThemeDarkLightModeWithBlur) {
-  base::test::ScopedFeatureList scoped_feature_list(features::kDarkLightMode);
-  AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
-      Shell::Get()->session_controller()->GetActivePrefService());
-  ASSERT_TRUE(features::IsBackgroundBlurEnabled());
-
-  // Confirm that our opacity matches with that of AppListView using.
-  const SkColor shield_layer_color_80_light =
-      ColorProvider::Get()->GetShieldLayerColor(
-          ColorProvider::ShieldLayerType::kShield80);
-  EXPECT_EQ(SkColorGetA(shield_layer_color_80_light),
-            static_cast<uint32_t>(AppListView::kAppListOpacityWithBlur * 255));
-
-  ShowAssistantUi();
-  ASSERT_FALSE(Shell::Get()->IsInTabletMode());
-  EXPECT_FLOAT_EQ(page_view()->layer()->background_blur(), 0.0f);
-
-  EXPECT_EQ(page_view()->layer()->GetTargetColor(),
-            shield_layer_color_80_light);
-
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      prefs::kDarkModeEnabled, true);
-  const SkColor shield_layer_color_80_dark =
-      ColorProvider::Get()->GetShieldLayerColor(
-          ColorProvider::ShieldLayerType::kShield80);
-
-  EXPECT_EQ(page_view()->layer()->GetTargetColor(), shield_layer_color_80_dark);
-
-  // Simulate the case where tablet mode is enabled in the middle of a session.
-  // We add a background blur as we don't get a blur from AppListView in tablet
-  // mode.
-  SetTabletMode(true);
-  EXPECT_FLOAT_EQ(page_view()->layer()->background_blur(),
-                  ColorProvider::kBackgroundBlurSigma);
-
-  // Confirm that background blur is removed if it leaves tablet mode.
-  SetTabletMode(false);
-  EXPECT_FLOAT_EQ(page_view()->layer()->background_blur(), 0.0f);
-}
-
-// ProductivityLauncher only uses AssistantPageView in tablet mode. Clamshell
-// mode uses AppListBubbleAssistantPage, which is tested in
-// AppListBubbleViewTest.AssistantPageDoesNotHaveBackground.
-TEST_F(AssistantPageBubbleTest, PageViewHasBackgroundBlurInTabletMode) {
-  ASSERT_TRUE(features::IsProductivityLauncherEnabled());
-
+TEST_F(AssistantPageViewTest, PageViewHasBackgroundBlurInTabletMode) {
+  // AssistantPageView is only used in tablet mode. Clamshell mode uses
+  // AppListBubbleAssistantPage.
   SetTabletMode(true);
   ShowAssistantUi();
 
@@ -1033,27 +774,32 @@ TEST_F(AssistantPageBubbleTest, PageViewHasBackgroundBlurInTabletMode) {
                 ColorProvider::BaseLayerType::kTransparent80));
 }
 
-TEST_F(AssistantPageBubbleTest, BackgroundColorInDarkLightMode) {
-  ASSERT_TRUE(features::IsProductivityLauncherEnabled());
-
-  base::test::ScopedFeatureList scoped_feature_list(features::kDarkLightMode);
-  AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
+TEST_F(AssistantPageViewTest, BackgroundColorInDarkLightMode) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      chromeos::features::kDarkLightMode);
+  auto* color_provider = AshColorProvider::Get();
+  auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
+  dark_light_mode_controller->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
-  ASSERT_FALSE(ColorProvider::Get()->IsDarkModeEnabled());
 
+  // AssistantPageView is only used in tablet mode. Clamshell mode uses
+  // AppListBubbleAssistantPage.
   SetTabletMode(true);
   ShowAssistantUi();
 
+  const bool initial_dark_mode_status =
+      dark_light_mode_controller->IsDarkModeEnabled();
   EXPECT_EQ(page_view()->layer()->GetTargetColor(),
-            ColorProvider::Get()->GetBaseLayerColor(
+            color_provider->GetBaseLayerColor(
                 ColorProvider::BaseLayerType::kTransparent80));
 
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      prefs::kDarkModeEnabled, true);
-  ASSERT_TRUE(ColorProvider::Get()->IsDarkModeEnabled());
+  // Switch the color mode.
+  dark_light_mode_controller->ToggleColorMode();
+  ASSERT_NE(initial_dark_mode_status,
+            dark_light_mode_controller->IsDarkModeEnabled());
 
   EXPECT_EQ(page_view()->layer()->GetTargetColor(),
-            ColorProvider::Get()->GetBaseLayerColor(
+            color_provider->GetBaseLayerColor(
                 ColorProvider::BaseLayerType::kTransparent80));
 }
 

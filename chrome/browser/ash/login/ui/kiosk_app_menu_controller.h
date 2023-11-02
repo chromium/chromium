@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,7 @@ class KioskAppMenuController : public KioskAppManagerObserver {
 
   // Manually dispatch kiosk app data to Ash.
   void SendKioskApps();
+  void ConfigureKioskCallbacks();
 
   // KioskAppManagerObserver:
   void OnKioskAppDataChanged(const std::string& app_id) override;

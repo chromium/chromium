@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -172,8 +172,8 @@ TEST_F(VideoCaptureServiceLifecycleTest,
   factory->CreateDevice(
       std::move(fake_device_info.descriptor.device_id),
       fake_device.BindNewPipeAndPassReceiver(),
-      base::BindOnce([](mojom::DeviceAccessResultCode result_code) {
-        ASSERT_EQ(mojom::DeviceAccessResultCode::SUCCESS, result_code);
+      base::BindOnce([](media::VideoCaptureError result_code) {
+        ASSERT_EQ(media::VideoCaptureError::kNone, result_code);
       }));
   media::VideoCaptureParams requestable_settings;
   requestable_settings.requested_format = fake_device_info.supported_formats[0];

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Tests for create_unwind_table.py.
@@ -142,6 +142,8 @@ class _TestEncodeStackPointerUpdate(unittest.TestCase):
     self.assertEqual(bytes([0b00000000 | 3]), EncodeStackPointerUpdate(16))
     self.assertEqual(bytes([0b01000000 | 3]), EncodeStackPointerUpdate(-16))
 
+    self.assertEqual(bytes([0b00111111]), EncodeStackPointerUpdate(0x100))
+
     # 10110010 uleb128
     # vsp = vsp + 0x204 + (uleb128 << 2)
     self.assertEqual(bytes([0b10110010, 0b00000000]),
@@ -150,6 +152,8 @@ class _TestEncodeStackPointerUpdate(unittest.TestCase):
                      EncodeStackPointerUpdate(0x208))
 
     # For vsp increments of 0x104-0x200, use 00xxxxxx twice.
+    self.assertEqual(bytes([0b00111111, 0b00000000]),
+                     EncodeStackPointerUpdate(0x104))
     self.assertEqual(bytes([0b00111111, 0b00111111]),
                      EncodeStackPointerUpdate(0x200))
     self.assertEqual(bytes([0b01111111, 0b01111111]),
@@ -311,10 +315,10 @@ class _TestEncodeFunctionUnwinds(unittest.TestCase):
                              FunctionUnwind(address=100,
                                             size=PAGE_SIZE - 100,
                                             address_unwinds=()),
-                             FunctionUnwind(address=0,
-                                            size=100,
-                                            address_unwinds=()),
-                         ])))
+                             FunctionUnwind(
+                                 address=0, size=100, address_unwinds=()),
+                         ],
+                                               text_section_start_address=0)))
 
   @unittest.mock.patch('create_unwind_table.EncodeAddressUnwinds')
   def testFillingGaps(self, MockEncodeAddressUnwinds):
@@ -332,38 +336,65 @@ class _TestEncodeFunctionUnwinds(unittest.TestCase):
     ],
                      list(
                          EncodeFunctionUnwinds([
-                             FunctionUnwind(address=0,
-                                            size=50,
-                                            address_unwinds=()),
+                             FunctionUnwind(
+                                 address=0, size=50, address_unwinds=()),
                              FunctionUnwind(address=100,
                                             size=PAGE_SIZE - 100,
                                             address_unwinds=()),
-                         ])))
+                         ],
+                                               text_section_start_address=0)))
 
   @unittest.mock.patch('create_unwind_table.EncodeAddressUnwinds')
   def testFillingLastPage(self, MockEncodeAddressUnwinds):
     MockEncodeAddressUnwinds.return_value = EncodedAddressUnwind(0, b'\x00')
 
-    self.assertEqual([
-        EncodedFunctionUnwind(page_number=0,
-                              page_offset=0,
-                              address_unwinds=EncodedAddressUnwind(0, b'\x00')),
-        EncodedFunctionUnwind(page_number=0,
-                              page_offset=100 >> 1,
-                              address_unwinds=EncodedAddressUnwind(0, b'\x00')),
-        EncodedFunctionUnwind(page_number=0,
-                              page_offset=200 >> 1,
-                              address_unwinds=REFUSE_TO_UNWIND),
-    ],
-                     list(
-                         EncodeFunctionUnwinds([
-                             FunctionUnwind(address=1100,
-                                            size=100,
-                                            address_unwinds=()),
-                             FunctionUnwind(address=1200,
-                                            size=100,
-                                            address_unwinds=()),
-                         ])))
+    self.assertEqual(
+        [
+            EncodedFunctionUnwind(page_number=0,
+                                  page_offset=0,
+                                  address_unwinds=EncodedAddressUnwind(
+                                      0, b'\x00')),
+            EncodedFunctionUnwind(page_number=0,
+                                  page_offset=100 >> 1,
+                                  address_unwinds=EncodedAddressUnwind(
+                                      0, b'\x00')),
+            EncodedFunctionUnwind(page_number=0,
+                                  page_offset=200 >> 1,
+                                  address_unwinds=REFUSE_TO_UNWIND),
+        ],
+        list(
+            EncodeFunctionUnwinds([
+                FunctionUnwind(address=1100, size=100, address_unwinds=()),
+                FunctionUnwind(address=1200, size=100, address_unwinds=()),
+            ],
+                                  text_section_start_address=1100)))
+
+  @unittest.mock.patch('create_unwind_table.EncodeAddressUnwinds')
+  def testFillingFirstPage(self, MockEncodeAddressUnwinds):
+    MockEncodeAddressUnwinds.return_value = EncodedAddressUnwind(0, b'\x00')
+
+    self.assertEqual(
+        [
+            EncodedFunctionUnwind(
+                page_number=0, page_offset=0, address_unwinds=REFUSE_TO_UNWIND),
+            EncodedFunctionUnwind(page_number=0,
+                                  page_offset=100 >> 1,
+                                  address_unwinds=EncodedAddressUnwind(
+                                      0, b'\x00')),
+            EncodedFunctionUnwind(page_number=0,
+                                  page_offset=200 >> 1,
+                                  address_unwinds=EncodedAddressUnwind(
+                                      0, b'\x00')),
+            EncodedFunctionUnwind(page_number=0,
+                                  page_offset=300 >> 1,
+                                  address_unwinds=REFUSE_TO_UNWIND),
+        ],
+        list(
+            EncodeFunctionUnwinds([
+                FunctionUnwind(address=1100, size=100, address_unwinds=()),
+                FunctionUnwind(address=1200, size=100, address_unwinds=()),
+            ],
+                                  text_section_start_address=1000)))
 
   @unittest.mock.patch('create_unwind_table.EncodeAddressUnwinds')
   def testOverlappedFunctions(self, _):
@@ -374,7 +405,8 @@ class _TestEncodeFunctionUnwinds(unittest.TestCase):
             EncodeFunctionUnwinds([
                 FunctionUnwind(address=0, size=100, address_unwinds=()),
                 FunctionUnwind(address=50, size=100, address_unwinds=()),
-            ])))
+            ],
+                                  text_section_start_address=0)))
 
 
 class _TestNullParser(unittest.TestCase):
@@ -662,7 +694,7 @@ class _TestFunctionOffsetTable(unittest.TestCase):
     complete_instruction_sequence1 = bytes([1, 3])
 
     sequence1 = (
-        EncodedAddressUnwind(0x200, complete_instruction_sequence1),
+        EncodedAddressUnwind(0x400, complete_instruction_sequence1),
         EncodedAddressUnwind(0x0, complete_instruction_sequence0),
     )
 
@@ -697,11 +729,11 @@ class _TestFunctionOffsetTable(unittest.TestCase):
     complete_instruction_sequence2 = bytes([2, 3])
 
     sequence1 = (
-        EncodedAddressUnwind(0x10, complete_instruction_sequence1),
+        EncodedAddressUnwind(0x20, complete_instruction_sequence1),
         EncodedAddressUnwind(0x0, complete_instruction_sequence0),
     )
     sequence2 = (
-        EncodedAddressUnwind(0x200, complete_instruction_sequence2),
+        EncodedAddressUnwind(0x400, complete_instruction_sequence2),
         EncodedAddressUnwind(0x0, complete_instruction_sequence0),
     )
     address_unwind_sequences = [sequence1, sequence2]
@@ -743,11 +775,11 @@ class _TestFunctionOffsetTable(unittest.TestCase):
     complete_instruction_sequence2 = bytes([2, 3])
 
     sequence1 = (
-        EncodedAddressUnwind(0x10, complete_instruction_sequence1),
+        EncodedAddressUnwind(0x20, complete_instruction_sequence1),
         EncodedAddressUnwind(0x0, complete_instruction_sequence0),
     )
     sequence2 = (
-        EncodedAddressUnwind(0x200, complete_instruction_sequence2),
+        EncodedAddressUnwind(0x400, complete_instruction_sequence2),
         EncodedAddressUnwind(0x0, complete_instruction_sequence0),
     )
     sequence3 = sequence1
@@ -1082,15 +1114,15 @@ class _TestGenerateUnwindTables(unittest.TestCase):
   def testGenerateUnwindTables(self):
     """This is an integration test that hooks everything together. """
     address_unwind_sequence0 = (
-        EncodedAddressUnwind(0x10, bytes([0, 0xb0])),
+        EncodedAddressUnwind(0x20, bytes([0, 0xb0])),
         EncodedAddressUnwind(0x0, bytes([0xb0])),
     )
     address_unwind_sequence1 = (
-        EncodedAddressUnwind(0x10, bytes([1, 0xb0])),
+        EncodedAddressUnwind(0x20, bytes([1, 0xb0])),
         EncodedAddressUnwind(0x0, bytes([0xb0])),
     )
     address_unwind_sequence2 = (
-        EncodedAddressUnwind(0x100, bytes([2, 0xb0])),
+        EncodedAddressUnwind(0x200, bytes([2, 0xb0])),
         EncodedAddressUnwind(0x0, bytes([0xb0])),
     )
 

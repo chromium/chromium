@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@ import 'chrome://resources/js/action_link.js';
 import './strings.m.js';
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {$, appendParam} from 'chrome://resources/js/util.m.js';
+import {$, appendParam} from 'chrome://resources/js/util.js';
 
 /* Id for tracking automatic refresh of crash list.  */
 let refreshCrashListId = undefined;
@@ -40,7 +40,7 @@ function updateCrashList({
   crashes,
   version,
   os,
-  isGoogleAccount
+  isGoogleAccount,
 }) {
   $('crashesCount').textContent = loadTimeData.getStringF(
       'crashCountFormat', crashes.length.toLocaleString());
@@ -154,8 +154,8 @@ function updateCrashList({
 function fileBug(crashId, os, version) {
   const commentLines = [
     'IMPORTANT: Your crash has already been automatically reported ' +
-    'to our crash system. Please file this bug only if you can provide ' +
-    'more information about it.',
+        'to our crash system. Please file this bug only if you can provide ' +
+        'more information about it.',
     '',
     '',
     'Chrome Version: ' + version,
@@ -166,11 +166,13 @@ function fileBug(crashId, os, version) {
     'Can you reproduce this crash?',
     '',
     'What steps will reproduce this crash? (If it\'s not ' +
-    'reproducible, what were you doing just before the crash?)',
-    '1.', '2.', '3.',
+        'reproducible, what were you doing just before the crash?)',
+    '1.',
+    '2.',
+    '3.',
     '',
     '****DO NOT CHANGE BELOW THIS LINE****',
-    'Crash ID: crash/' + crashId
+    'Crash ID: crash/' + crashId,
   ];
   const params = {
     template: 'Crash Report',

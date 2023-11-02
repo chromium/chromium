@@ -1,0 +1,53 @@
+<style include="iron-flex cr-hidden-style">
+  #animationContainer {
+    align-items: flex-end;
+    display: flex;
+    height: 216px;
+    justify-content: center;
+    margin-bottom: 54px;
+  }
+
+  #simDetectError {
+    background-image: url(chrome://resources/ash/common/cellular_setup/sim_detect_error.svg);
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 100%;
+    width: 100%;
+  }
+
+  @media(prefers-color-scheme: dark) {
+    #simDetectError {
+      background-image: url(chrome://resources/ash/common/cellular_setup/sim_detect_error_dark.svg);
+    }
+  }
+
+  #pageBody {
+    height: 222px;
+  }
+
+  cr-lottie {
+    height: 85%;
+  }
+
+  base-page {
+    --base-page-message-height: 40px;
+  }
+</style>
+<base-page title="[[loadingTitle]]" message="[[loadingMessage]]">
+  <div slot="page-body" id="pageBody" class="layout vertical center-center">
+    <iron-media-query query="(prefers-color-scheme: dark)"
+        query-matches="{{isDarkModeActive_}}">
+    </iron-media-query>
+    <template is="dom-if" if="[[!isSimDetectError]]" restamp>
+      <div id="animationContainer">
+        <cr-lottie id="spinner"
+            animation-url="[[getAnimationUrl_(isDarkModeActive_)]]"
+            autoplay>
+        </cr-lottie>
+      </div>
+    </template>
+    <div id="simDetectError" hidden$="[[!isSimDetectError]]">
+    </div>
+  </div>
+</base-page>

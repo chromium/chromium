@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,16 +52,16 @@ float GetDragWindowOpacity(aura::Window* root_window,
 
   // Return an opacity value based on what fraction of |dragged_window| is
   // contained in |root_window|.
-  gfx::Rect dragged_window_bounds = dragged_window->bounds();
-  ::wm::ConvertRectToScreen(dragged_window->parent(), &dragged_window_bounds);
-  gfx::RectF transformed_dragged_window_bounds(dragged_window_bounds);
-  gfx::TransformAboutPivot(dragged_window_bounds.origin(),
-                           dragged_window->transform())
-      .TransformRect(&transformed_dragged_window_bounds);
+  gfx::RectF dragged_window_bounds(dragged_window->bounds());
+  ::wm::TranslateRectToScreen(dragged_window->parent(), &dragged_window_bounds);
+  dragged_window_bounds =
+      gfx::TransformAboutPivot(dragged_window_bounds.origin(),
+                               dragged_window->transform())
+          .MapRect(dragged_window_bounds);
   gfx::RectF visible_bounds(root_window->GetBoundsInScreen());
-  visible_bounds.Intersect(transformed_dragged_window_bounds);
+  visible_bounds.Intersect(dragged_window_bounds);
   return kDragPhantomMaxOpacity * visible_bounds.size().GetArea() /
-         transformed_dragged_window_bounds.size().GetArea();
+         dragged_window_bounds.size().GetArea();
 }
 
 }  // namespace

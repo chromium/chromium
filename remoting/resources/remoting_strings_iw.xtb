@@ -26,7 +26,6 @@
 <translation id="225614027745146050">ברוכים הבאים</translation>
 <translation id="2320166752086256636">הסתרת מקלדת</translation>
 <translation id="2329392777730037872">לא ניתן היה לפתוח את <ph name="URL" /> במכשיר הלקוח.</translation>
-<translation id="2333212046079545895">‏Copyright 2021 Google LLC. כל הזכויות שמורות.</translation>
 <translation id="2359808026110333948">המשך</translation>
 <translation id="2366718077645204424">לא ניתן להשיג את המארח. הסיבה לכך יכולה להיות תצורת הרשת שבה נעשה שימוש.</translation>
 <translation id="2370754117186920852">המארח <ph name="OPTIONAL_OFFLINE_REASON" /> נראה לאחרונה אונליין <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -37,6 +36,7 @@
 <translation id="2599300881200251572">‏שירות זה מאפשר חיבורים נכנסים מלקוחות Chrome Remote Desktop.</translation>
 <translation id="2647232381348739934">‏שירות Chromoting</translation>
 <translation id="2676780859508944670">בתהליך עבודה…</translation>
+<translation id="2692522824157224199">‏Copyright 2022 Google LLC. כל הזכויות שמורות.</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">אירעה בעיה באימות. יש להתחבר שוב.</translation>
 <translation id="2803375539583399270">הזנת קוד אימות</translation>
@@ -73,10 +73,10 @@
 <translation id="4257751272692708833">‏כתובת URL להעברה אל <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">קוד הגישה אינו חוקי. יש לנסות שוב.</translation>
 <translation id="4281844954008187215">תנאי שירות</translation>
+<translation id="4372650392690220936">‏זכויות יוצרים 2022 The Chromium Authors. כל הזכויות שמורות.</translation>
 <translation id="4405930547258349619">ספריית ליבה</translation>
 <translation id="443560535555262820">פתיחת העדפות הנגישות</translation>
 <translation id="4450893287417543264">אין להציג שוב</translation>
-<translation id="4512952200932940229">‏זכויות יוצרים 2021 The Chromium Authors. כל הזכויות שמורות.</translation>
 <translation id="4513946894732546136">משוב</translation>
 <translation id="4563926062592110512">לקוח שהתנתק: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4618411825115957973">‏קיימת בעיה בהגדרה של <ph name="URL_FORWARDER_NAME" />. יש להגדיר דפדפן אחר כברירת מחדל ואז להפעיל שוב את העברת כתובות ה-URL.</translation>

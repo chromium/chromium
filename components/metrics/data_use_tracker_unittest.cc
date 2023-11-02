@@ -1,9 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/metrics/data_use_tracker.h"
 
+#include "base/time/time.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -103,17 +104,15 @@ TEST(DataUseTrackerTest, CheckUpdateUsagePref) {
   local_state.ClearDataUsePrefs();
 
   data_use_tracker.UpdateMetricsUsagePrefsInternal(2 * 100, true, false);
-  EXPECT_EQ(2 * 100, local_state.GetDictionary(prefs::kUserCellDataUse)
-                         ->FindIntKey(kTodayStr));
-  EXPECT_FALSE(
-      local_state.GetDictionary(prefs::kUmaCellDataUse)->FindIntKey(kTodayStr));
+  EXPECT_EQ(2 * 100,
+            local_state.GetDict(prefs::kUserCellDataUse).FindInt(kTodayStr));
+  EXPECT_FALSE(local_state.GetDict(prefs::kUmaCellDataUse).FindInt(kTodayStr));
 
   data_use_tracker.UpdateMetricsUsagePrefsInternal(100, true, true);
-  EXPECT_EQ(3 * 100, local_state.GetDictionary(prefs::kUserCellDataUse)
-                         ->FindIntKey(kTodayStr));
-  EXPECT_EQ(
-      100,
-      local_state.GetDictionary(prefs::kUmaCellDataUse)->FindIntKey(kTodayStr));
+  EXPECT_EQ(3 * 100,
+            local_state.GetDict(prefs::kUserCellDataUse).FindInt(kTodayStr));
+  EXPECT_EQ(100,
+            local_state.GetDict(prefs::kUmaCellDataUse).FindInt(kTodayStr));
 }
 
 TEST(DataUseTrackerTest, CheckRemoveExpiredEntries) {
@@ -123,26 +122,25 @@ TEST(DataUseTrackerTest, CheckRemoveExpiredEntries) {
   SetPrefTestValuesOverRatio(&local_state);
   data_use_tracker.RemoveExpiredEntries();
 
-  EXPECT_FALSE(local_state.GetDictionary(prefs::kUserCellDataUse)
-                   ->FindIntKey(kExpiredDateStr1));
-  EXPECT_FALSE(local_state.GetDictionary(prefs::kUmaCellDataUse)
-                   ->FindIntKey(kExpiredDateStr1));
+  EXPECT_FALSE(
+      local_state.GetDict(prefs::kUserCellDataUse).FindInt(kExpiredDateStr1));
+  EXPECT_FALSE(
+      local_state.GetDict(prefs::kUmaCellDataUse).FindInt(kExpiredDateStr1));
 
-  EXPECT_FALSE(local_state.GetDictionary(prefs::kUserCellDataUse)
-                   ->FindIntKey(kExpiredDateStr2));
-  EXPECT_FALSE(local_state.GetDictionary(prefs::kUmaCellDataUse)
-                   ->FindIntKey(kExpiredDateStr2));
+  EXPECT_FALSE(
+      local_state.GetDict(prefs::kUserCellDataUse).FindInt(kExpiredDateStr2));
+  EXPECT_FALSE(
+      local_state.GetDict(prefs::kUmaCellDataUse).FindInt(kExpiredDateStr2));
 
-  EXPECT_EQ(2 * 100, local_state.GetDictionary(prefs::kUserCellDataUse)
-                         ->FindIntKey(kTodayStr));
+  EXPECT_EQ(2 * 100,
+            local_state.GetDict(prefs::kUserCellDataUse).FindInt(kTodayStr));
+  EXPECT_EQ(50, local_state.GetDict(prefs::kUmaCellDataUse).FindInt(kTodayStr));
+
   EXPECT_EQ(
-      50,
-      local_state.GetDictionary(prefs::kUmaCellDataUse)->FindIntKey(kTodayStr));
-
-  EXPECT_EQ(2 * 100, local_state.GetDictionary(prefs::kUserCellDataUse)
-                         ->FindIntKey(kYesterdayStr));
-  EXPECT_EQ(50, local_state.GetDictionary(prefs::kUmaCellDataUse)
-                    ->FindIntKey(kYesterdayStr));
+      2 * 100,
+      local_state.GetDict(prefs::kUserCellDataUse).FindInt(kYesterdayStr));
+  EXPECT_EQ(50,
+            local_state.GetDict(prefs::kUmaCellDataUse).FindInt(kYesterdayStr));
 }
 
 TEST(DataUseTrackerTest, CheckComputeTotalDataUse) {

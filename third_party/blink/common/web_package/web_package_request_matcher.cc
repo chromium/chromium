@@ -1,16 +1,17 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/public/common/web_package/web_package_request_matcher.h"
 
-#include <algorithm>
 #include <limits>
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "net/base/mime_util.h"
@@ -71,7 +72,8 @@ class ContentNegotiationAlgorithm {
       item.value = name_value_pairs.name();
       item.weight = 1.0;
       while (name_value_pairs.GetNext()) {
-        if (base::LowerCaseEqualsASCII(name_value_pairs.name_piece(), "q")) {
+        if (base::EqualsCaseInsensitiveASCII(name_value_pairs.name_piece(),
+                                             "q")) {
           if (auto value = GetQValue(name_value_pairs.value()))
             item.weight = *value;
         } else {
@@ -159,9 +161,7 @@ class AcceptEncodingNegotiation final : public ContentNegotiationAlgorithm {
 
     // Step 3. If "identity" is not a member of preferred-codings, append
     // "identity". [spec text]
-    if (!std::any_of(
-            preferred_codings.begin(), preferred_codings.end(),
-            [](const WeightedValue& p) { return p.value == kIdentity; })) {
+    if (!base::Contains(preferred_codings, kIdentity, &WeightedValue::value)) {
       preferred_codings.push_back({kIdentity, 0.0});
     }
 
@@ -370,8 +370,7 @@ absl::optional<size_t> GetPossibleKeysIndex(
   DCHECK_EQ(variant_key.size(), sorted_variants.size());
   size_t index = 0;
   for (size_t i = 0; i < sorted_variants.size(); ++i) {
-    auto found = std::find(sorted_variants[i].begin(), sorted_variants[i].end(),
-                           variant_key[i]);
+    auto found = base::ranges::find(sorted_variants[i], variant_key[i]);
     if (found == sorted_variants[i].end())
       return absl::nullopt;
 
@@ -553,9 +552,7 @@ bool WebPackageRequestMatcher::MatchRequest(
     DCHECK_EQ(vk.size(), sorted_variants.size());
     size_t i = 0;
     for (; i < sorted_variants.size(); ++i) {
-      auto found = std::find(sorted_variants[i].begin(),
-                             sorted_variants[i].end(), vk[i]);
-      if (found == sorted_variants[i].end())
+      if (!base::Contains(sorted_variants[i], vk[i]))
         break;
     }
     if (i == sorted_variants.size())
@@ -637,8 +634,7 @@ absl::optional<size_t> WebPackageRequestMatcher::FindBestMatchingIndex(
         negotiation_algorithm->run(variant_axis.second, request_value);
     if (sorted_values.empty())
       return absl::nullopt;
-    auto it = std::find(variant_axis.second.begin(), variant_axis.second.end(),
-                        sorted_values.front());
+    auto it = base::ranges::find(variant_axis.second, sorted_values.front());
     if (it == variant_axis.second.end())
       return absl::nullopt;
     size_t best_value_index = it - variant_axis.second.begin();

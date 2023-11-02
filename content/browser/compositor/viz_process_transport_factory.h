@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,13 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id_allocator.h"
 #include "components/viz/common/surfaces/subtree_capture_id_allocator.h"
 #include "content/browser/compositor/image_transport_factory.h"
 #include "gpu/command_buffer/common/context_result.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
-#include "services/viz/privileged/mojom/compositing/display_private.mojom.h"
-#include "services/viz/privileged/mojom/compositing/external_begin_frame_controller.mojom.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 #include "ui/compositor/compositor.h"
@@ -89,12 +87,7 @@ class VizProcessTransportFactory : public ui::ContextFactory,
     CompositorData& operator=(CompositorData&& other);
     ~CompositorData();
 
-    // Privileged interface that controls the display for a root
-    // CompositorFrameSink.
-    mojo::AssociatedRemote<viz::mojom::DisplayPrivate> display_private;
     std::unique_ptr<viz::HostDisplayClient> display_client;
-    mojo::AssociatedRemote<viz::mojom::ExternalBeginFrameController>
-        external_begin_frame_controller;
   };
 
   // Disables GPU compositing. This notifies UI and renderer compositors to drop
@@ -123,14 +116,16 @@ class VizProcessTransportFactory : public ui::ContextFactory,
   gpu::ContextResult TryCreateContextsForGpuCompositing(
       scoped_refptr<gpu::GpuChannelHost> gpu_channel_host);
 
-  gpu::GpuChannelEstablishFactory* const gpu_channel_establish_factory_;
+  const raw_ptr<gpu::GpuChannelEstablishFactory> gpu_channel_establish_factory_;
 
   // Controls the compositing mode based on what mode the display compositors
   // are using.
-  viz::CompositingModeReporterImpl* const compositing_mode_reporter_;
+  [[maybe_unused]] const raw_ptr<viz::CompositingModeReporterImpl>
+      compositing_mode_reporter_;
 
   // ContextProvider used on worker threads for rasterization.
-  scoped_refptr<viz::RasterContextProvider> worker_context_provider_;
+  scoped_refptr<cc::RasterContextProviderWrapper>
+      worker_context_provider_wrapper_;
 
   // ContextProvider used on the main thread. Shared by ui::Compositors and also
   // returned from GetSharedMainThreadContextProvider().
@@ -142,7 +137,7 @@ class VizProcessTransportFactory : public ui::ContextFactory,
 
   viz::FrameSinkIdAllocator frame_sink_id_allocator_;
   viz::SubtreeCaptureIdAllocator subtree_capture_id_allocator_;
-  viz::HostFrameSinkManager* const host_frame_sink_manager_;
+  const raw_ptr<viz::HostFrameSinkManager> host_frame_sink_manager_;
 
   scoped_refptr<base::SingleThreadTaskRunner> const resize_task_runner_;
 

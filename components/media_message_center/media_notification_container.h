@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,7 +40,9 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationContainer {
   virtual void OnMediaArtworkChanged(const gfx::ImageSkia& image) = 0;
 
   // Called when MediaNotificationView's colors change.
-  virtual void OnColorsChanged(SkColor foreground, SkColor background) = 0;
+  virtual void OnColorsChanged(SkColor foreground,
+                               SkColor foreground_disabled,
+                               SkColor background) = 0;
 
   // Called when the header row is clicked.
   virtual void OnHeaderClicked() = 0;

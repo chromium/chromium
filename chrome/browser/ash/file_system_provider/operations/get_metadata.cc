@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,10 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
 
-#include "base/macros.h"
+#include "base/time/time.h"
 #include "chrome/common/extensions/api/file_system_provider.h"
 #include "chrome/common/extensions/api/file_system_provider_internal.h"
 
@@ -48,29 +49,31 @@ bool ConvertRequestValueToFileInfo(std::unique_ptr<RequestValue> value,
         std::make_unique<int64_t>(static_cast<int64_t>(*params->metadata.size));
 
   if (fields & ProvidedFileSystemInterface::METADATA_FIELD_MODIFICATION_TIME) {
-    std::string input_modification_time;
-    params->metadata.modification_time->additional_properties.GetString(
-        "value", &input_modification_time);
+    const std::string* input_modification_time =
+        params->metadata.modification_time->additional_properties.FindString(
+            "value");
 
-    // Allow to pass invalid modification time, since there is no way to verify
-    // it easily on any earlier stage.
-    base::Time output_modification_time;
-    ignore_result(base::Time::FromString(input_modification_time.c_str(),
-                                         &output_modification_time));
-    output->modification_time =
-        std::make_unique<base::Time>(output_modification_time);
+    if (input_modification_time) {
+      // Allow to pass invalid modification time, since there is no way to
+      // verify it easily on any earlier stage.
+      base::Time output_modification_time;
+      std::ignore = base::Time::FromString(input_modification_time->c_str(),
+                                           &output_modification_time);
+      output->modification_time =
+          std::make_unique<base::Time>(output_modification_time);
+    }
   }
 
   if (fields & ProvidedFileSystemInterface::METADATA_FIELD_MIME_TYPE &&
-      params->metadata.mime_type.get()) {
+      params->metadata.mime_type) {
     output->mime_type =
-        std::make_unique<std::string>(*params->metadata.mime_type.get());
+        std::make_unique<std::string>(*params->metadata.mime_type);
   }
 
   if (fields & ProvidedFileSystemInterface::METADATA_FIELD_THUMBNAIL &&
-      params->metadata.thumbnail.get()) {
+      params->metadata.thumbnail) {
     output->thumbnail =
-        std::make_unique<std::string>(*params->metadata.thumbnail.get());
+        std::make_unique<std::string>(*params->metadata.thumbnail);
   }
 
   return true;
@@ -85,26 +88,26 @@ bool ValidateIDLEntryMetadata(
   using extensions::api::file_system_provider::EntryMetadata;
 
   if (fields & ProvidedFileSystemInterface::METADATA_FIELD_IS_DIRECTORY &&
-      !metadata.is_directory.get()) {
+      !metadata.is_directory) {
     return false;
   }
 
   if (fields & ProvidedFileSystemInterface::METADATA_FIELD_NAME &&
-      (!metadata.name.get() || !ValidateName(*metadata.name, root_entry))) {
+      (!metadata.name || !ValidateName(*metadata.name, root_entry))) {
     return false;
   }
 
   if (fields & ProvidedFileSystemInterface::METADATA_FIELD_SIZE &&
-      !metadata.size.get()) {
+      !metadata.size) {
     return false;
   }
 
   if (fields & ProvidedFileSystemInterface::METADATA_FIELD_MODIFICATION_TIME) {
     if (!metadata.modification_time)
       return false;
-    std::string input_modification_time;
-    if (!metadata.modification_time->additional_properties.GetString(
-            "value", &input_modification_time)) {
+    const std::string* input_modification_time =
+        metadata.modification_time->additional_properties.FindString("value");
+    if (!input_modification_time) {
       return false;
     }
   }
@@ -113,13 +116,13 @@ bool ValidateIDLEntryMetadata(
   // accepted. Note, that there is a warning in custom bindings for it.
 
   if (fields & ProvidedFileSystemInterface::METADATA_FIELD_THUMBNAIL &&
-      metadata.thumbnail.get()) {
+      metadata.thumbnail) {
     // Sanity check for the thumbnail format. Note, that another, more
     // granural check is done in custom bindings. Note, this is an extra check
     // only for the security reasons.
     const std::string expected_prefix = "data:";
     std::string thumbnail_prefix =
-        metadata.thumbnail.get()->substr(0, expected_prefix.size());
+        metadata.thumbnail->substr(0, expected_prefix.size());
     std::transform(thumbnail_prefix.begin(),
                    thumbnail_prefix.end(),
                    thumbnail_prefix.begin(),

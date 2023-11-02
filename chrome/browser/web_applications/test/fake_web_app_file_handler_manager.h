@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,9 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "chrome/browser/web_applications/web_app_file_handler_manager.h"
+#include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -26,7 +27,8 @@ class FakeWebAppFileHandlerManager : public WebAppFileHandlerManager {
       delete;
   ~FakeWebAppFileHandlerManager() override;
 
-  const apps::FileHandlers* GetAllFileHandlers(const AppId& app_id) override;
+  const apps::FileHandlers* GetAllFileHandlers(
+      const AppId& app_id) const override;
 
   using AcceptMap = std::map<std::string, base::flat_set<std::string>>;
   // Installs a file handler for |app_id| with the action url |handler|,
@@ -36,10 +38,12 @@ class FakeWebAppFileHandlerManager : public WebAppFileHandlerManager {
   // Note: |enable| indicates whether file handlers for |app_id| should be
   // enabled, not whether this specific file handler should be enabled. If any
   // file handler is enabled, all of them will be.
-  void InstallFileHandler(const AppId& app_id,
-                          const GURL& handler,
-                          const AcceptMap& accept,
-                          bool enable = true);
+  void InstallFileHandler(
+      const AppId& app_id,
+      const GURL& handler,
+      const AcceptMap& accept,
+      absl::optional<apps::FileHandler::LaunchType> launch_type,
+      bool enable = true);
 
  private:
   std::map<AppId, apps::FileHandlers> file_handlers_;

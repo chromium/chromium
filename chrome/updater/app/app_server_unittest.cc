@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,8 @@
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/task/single_thread_task_executor.h"
-#include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/update_service.h"
@@ -44,9 +44,9 @@ class AppServerTest : public AppServer {
               ActiveDutyInternal,
               (scoped_refptr<UpdateServiceInternal>),
               (override));
-  MOCK_METHOD(bool, SwapRPCInterfaces, (), (override));
+  MOCK_METHOD(bool, SwapInNewVersion, (), (override));
   MOCK_METHOD(bool,
-              ConvertLegacyUpdaters,
+              MigrateLegacyUpdaters,
               (base::RepeatingCallback<void(const RegistrationRequest&)>),
               (override));
   MOCK_METHOD(void, UninstallSelf, (), (override));
@@ -55,18 +55,14 @@ class AppServerTest : public AppServer {
   ~AppServerTest() override = default;
 
  private:
-  void InitializeThreadPool() override {
-    // Do nothing, the test has already created the thread pool.
-  }
-
   void Shutdown0() { Shutdown(0); }
 };
 
 void ClearPrefs() {
   const UpdaterScope updater_scope = GetUpdaterScope();
   for (const absl::optional<base::FilePath>& path :
-       {GetBaseDirectory(updater_scope),
-        GetVersionedDirectory(updater_scope)}) {
+       {GetBaseDataDirectory(updater_scope),
+        GetVersionedDataDirectory(updater_scope)}) {
     ASSERT_TRUE(path);
     ASSERT_TRUE(
         base::DeleteFile(path->Append(FILE_PATH_LITERAL("prefs.json"))));
@@ -75,21 +71,10 @@ void ClearPrefs() {
 
 class AppServerTestCase : public testing::Test {
  public:
-  AppServerTestCase() : main_task_executor_(base::MessagePumpType::UI) {}
-  ~AppServerTestCase() override = default;
-
-  void SetUp() override {
-    base::ThreadPoolInstance::CreateAndStartWithDefaultParams("test");
-    ClearPrefs();
-  }
-
-  void TearDown() override {
-    base::ThreadPoolInstance::Get()->JoinForTesting();
-    base::ThreadPoolInstance::Set(nullptr);
-  }
+  void SetUp() override { ClearPrefs(); }
 
  private:
-  base::SingleThreadTaskExecutor main_task_executor_;
+  base::test::TaskEnvironment environment_;
 };
 
 }  // namespace
@@ -108,13 +93,15 @@ TEST_F(AppServerTestCase, SelfUninstall) {
 
   // Expect the app to ActiveDuty then SelfUninstall.
   EXPECT_CALL(*app, ActiveDuty).Times(1);
-  EXPECT_CALL(*app, SwapRPCInterfaces).Times(0);
-  EXPECT_CALL(*app, ConvertLegacyUpdaters).Times(0);
+  EXPECT_CALL(*app, SwapInNewVersion).Times(0);
+  EXPECT_CALL(*app, MigrateLegacyUpdaters).Times(0);
   EXPECT_CALL(*app, UninstallSelf).Times(1);
   EXPECT_EQ(app->Run(), 0);
   EXPECT_TRUE(CreateLocalPrefs(GetUpdaterScope())->GetQualified());
 }
 
+// TODO(crbug.com/1367437): Enable tests once updater is implemented for Linux
+#if !BUILDFLAG(IS_LINUX)
 TEST_F(AppServerTestCase, SelfPromote) {
   {
     scoped_refptr<LocalPrefs> local_prefs = CreateLocalPrefs(GetUpdaterScope());
@@ -124,10 +111,11 @@ TEST_F(AppServerTestCase, SelfPromote) {
   {
     auto app = base::MakeRefCounted<AppServerTest>();
 
-    // Expect the app to SwapRpcInterfaces and then ActiveDuty then Shutdown(0).
+    // Expect the app to SwapInNewVersion and then ActiveDuty then
+    // Shutdown(0).
     EXPECT_CALL(*app, ActiveDuty).Times(1);
-    EXPECT_CALL(*app, SwapRPCInterfaces).WillOnce(Return(true));
-    EXPECT_CALL(*app, ConvertLegacyUpdaters).WillOnce(Return(true));
+    EXPECT_CALL(*app, SwapInNewVersion).WillOnce(Return(true));
+    EXPECT_CALL(*app, MigrateLegacyUpdaters).WillOnce(Return(true));
     EXPECT_CALL(*app, UninstallSelf).Times(0);
     EXPECT_EQ(app->Run(), 0);
   }
@@ -141,11 +129,11 @@ TEST_F(AppServerTestCase, InstallAutoPromotes) {
   {
     auto app = base::MakeRefCounted<AppServerTest>();
 
-    // Expect the app to SwapRpcInterfaces and then ActiveDuty then Shutdown(0).
-    // In this case it bypasses qualification.
+    // Expect the app to SwapInNewVersion and then ActiveDuty then
+    // Shutdown(0). In this case it bypasses qualification.
     EXPECT_CALL(*app, ActiveDuty).Times(1);
-    EXPECT_CALL(*app, SwapRPCInterfaces).WillOnce(Return(true));
-    EXPECT_CALL(*app, ConvertLegacyUpdaters).WillOnce(Return(true));
+    EXPECT_CALL(*app, SwapInNewVersion).WillOnce(Return(true));
+    EXPECT_CALL(*app, MigrateLegacyUpdaters).WillOnce(Return(true));
     EXPECT_CALL(*app, UninstallSelf).Times(0);
     EXPECT_EQ(app->Run(), 0);
     EXPECT_FALSE(CreateLocalPrefs(GetUpdaterScope())->GetQualified());
@@ -155,6 +143,7 @@ TEST_F(AppServerTestCase, InstallAutoPromotes) {
   EXPECT_FALSE(global_prefs->GetSwapping());
   EXPECT_EQ(global_prefs->GetActiveVersion(), kUpdaterVersion);
 }
+#endif  // !BUILDFLAG(IS_LINUX)
 
 TEST_F(AppServerTestCase, SelfPromoteFails) {
   {
@@ -165,10 +154,10 @@ TEST_F(AppServerTestCase, SelfPromoteFails) {
   {
     auto app = base::MakeRefCounted<AppServerTest>();
 
-    // Expect the app to SwapRpcInterfaces and then Shutdown(2).
+    // Expect the app to SwapInNewVersion and then Shutdown(2).
     EXPECT_CALL(*app, ActiveDuty).Times(0);
-    EXPECT_CALL(*app, SwapRPCInterfaces).WillOnce(Return(false));
-    EXPECT_CALL(*app, ConvertLegacyUpdaters).Times(0);
+    EXPECT_CALL(*app, SwapInNewVersion).WillOnce(Return(false));
+    EXPECT_CALL(*app, MigrateLegacyUpdaters).Times(0);
     EXPECT_CALL(*app, UninstallSelf).Times(0);
     EXPECT_EQ(app->Run(), 2);
   }
@@ -178,6 +167,8 @@ TEST_F(AppServerTestCase, SelfPromoteFails) {
   EXPECT_EQ(global_prefs->GetActiveVersion(), "0");
 }
 
+// TODO(crbug.com/1367437): Enable tests once updater is implemented for Linux
+#if !BUILDFLAG(IS_LINUX)
 TEST_F(AppServerTestCase, ActiveDutyAlready) {
   {
     scoped_refptr<GlobalPrefs> global_prefs =
@@ -193,8 +184,8 @@ TEST_F(AppServerTestCase, ActiveDutyAlready) {
 
     // Expect the app to ActiveDuty and then Shutdown(0).
     EXPECT_CALL(*app, ActiveDuty).Times(1);
-    EXPECT_CALL(*app, SwapRPCInterfaces).Times(0);
-    EXPECT_CALL(*app, ConvertLegacyUpdaters).Times(0);
+    EXPECT_CALL(*app, SwapInNewVersion).Times(0);
+    EXPECT_CALL(*app, MigrateLegacyUpdaters).Times(0);
     EXPECT_CALL(*app, UninstallSelf).Times(0);
     EXPECT_EQ(app->Run(), 0);
   }
@@ -218,11 +209,11 @@ TEST_F(AppServerTestCase, StateDirty) {
   {
     auto app = base::MakeRefCounted<AppServerTest>();
 
-    // Expect the app to SwapRpcInterfaces and then ActiveDuty and then
+    // Expect the app to SwapInNewVersion and then ActiveDuty and then
     // Shutdown(0).
     EXPECT_CALL(*app, ActiveDuty).Times(1);
-    EXPECT_CALL(*app, SwapRPCInterfaces).WillOnce(Return(true));
-    EXPECT_CALL(*app, ConvertLegacyUpdaters).WillOnce(Return(true));
+    EXPECT_CALL(*app, SwapInNewVersion).WillOnce(Return(true));
+    EXPECT_CALL(*app, MigrateLegacyUpdaters).WillOnce(Return(true));
     EXPECT_CALL(*app, UninstallSelf).Times(0);
     EXPECT_EQ(app->Run(), 0);
   }
@@ -231,6 +222,7 @@ TEST_F(AppServerTestCase, StateDirty) {
   EXPECT_FALSE(global_prefs->GetSwapping());
   EXPECT_EQ(global_prefs->GetActiveVersion(), kUpdaterVersion);
 }
+#endif  // !BUILDFLAG(IS_LINUX)
 
 TEST_F(AppServerTestCase, StateDirtySwapFails) {
   {
@@ -246,10 +238,10 @@ TEST_F(AppServerTestCase, StateDirtySwapFails) {
   {
     auto app = base::MakeRefCounted<AppServerTest>();
 
-    // Expect the app to SwapRpcInterfaces and Shutdown(2).
+    // Expect the app to SwapInNewVersion and Shutdown(2).
     EXPECT_CALL(*app, ActiveDuty).Times(0);
-    EXPECT_CALL(*app, SwapRPCInterfaces).WillOnce(Return(false));
-    EXPECT_CALL(*app, ConvertLegacyUpdaters).Times(0);
+    EXPECT_CALL(*app, SwapInNewVersion).WillOnce(Return(false));
+    EXPECT_CALL(*app, MigrateLegacyUpdaters).Times(0);
     EXPECT_CALL(*app, UninstallSelf).Times(0);
     EXPECT_EQ(app->Run(), 2);
   }

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -103,6 +103,17 @@ generate_test_data() {
   # Copy of Mach-O DMG with extension changed to .txt and no 'koly' signature ##
   cp "${OUT_DIR}/mach_o_in_dmg_no_koly_signature.dmg" \
       "${OUT_DIR}/mach_o_in_dmg_no_koly_signature.txt"
+
+  # Copy of Mach-O DMG with partition Name/CFName overwritten ##################
+  cp "${OUT_DIR}/mach_o_in_dmg.dmg" \
+      "${OUT_DIR}/mach_o_in_dmg_no_partition_name.dmg"
+  grep --byte-offset --only-matching --text Apple_HFS \
+      "${OUT_DIR}/mach_o_in_dmg_no_partition_name.dmg" |
+      sed 's/:.*$//' | while read -r match; do
+      printf '         ' | dd conv=notrunc \
+          of="${OUT_DIR}/mach_o_in_dmg_no_partition_name.dmg" \
+          bs=1 seek=$match &> /dev/null
+  done
 
   # Package Data for CIPD ######################################################
 

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,15 +19,6 @@ class TextureImage : public gl::GLImage {
   unsigned GetDataType() override { return GL_UNSIGNED_BYTE; }
   BindOrCopy ShouldBindOrCopy() override { return BIND; }
   bool BindTexImage(unsigned target) override {
-    glTexImage2D(target,
-                 0,  // mip level
-                 GetInternalFormat(), size_.width(), size_.height(),
-                 0,  // border
-                 GetDataFormat(), GetDataType(), nullptr);
-    return true;
-  }
-  bool BindTexImageWithInternalformat(unsigned target,
-                                      unsigned internal_format) override {
     glTexImage2D(target,
                  0,  // mip level
                  GetInternalFormat(), size_.width(), size_.height(),
@@ -60,6 +51,7 @@ scoped_refptr<gl::GLImage> TextureImageFactory::CreateImageForGpuMemoryBuffer(
     gfx::GpuMemoryBufferHandle handle,
     const gfx::Size& size,
     gfx::BufferFormat format,
+    const gfx::ColorSpace& color_space,
     gfx::BufferPlane plane,
     int client_id,
     SurfaceHandle surface_handle) {

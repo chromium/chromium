@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,7 @@
 #import <WebKit/WebKit.h>
 
 #import "base/test/ios/wait_util.h"
-#include "base/timer/elapsed_timer.h"
-#import "ios/testing/earl_grey/earl_grey_app.h"
-#import "ios/web/public/deprecated/crw_js_injection_receiver.h"
+#import "base/values.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -21,55 +19,38 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace web {
 
-// Executes |javascript| on the given |web_state|, and waits until execution is
-// completed. If |out_error| is not nil, it is set to the error resulting from
+// Executes `javascript` on the given `web_state`, and waits until execution is
+// completed. If `out_error` is not nil, it is set to the error resulting from
 // the execution, if one occurs. The return value is the result of the
 // JavaScript execution, or nil if script execution timed out.
-id ExecuteJavaScript(WebState* web_state,
-                     NSString* javascript,
-                     NSError* __autoreleasing* out_error) {
+absl::optional<base::Value> ExecuteJavaScript(
+    WebState* web_state,
+    const std::u16string& javascript) {
   __block bool did_complete = false;
-  __block id result = nil;
-  CRWJSInjectionReceiver* receiver = web_state->GetJSInjectionReceiver();
-  [receiver executeJavaScript:javascript
-            completionHandler:^(id value, NSError* error) {
-              did_complete = true;
-              result = [value copy];
-              if (out_error)
-                *out_error = [error copy];
-            }];
+  __block absl::optional<base::Value> result;
+
+  web_state->ExecuteJavaScript(
+      javascript, base::BindOnce(^(const base::Value* completion_result) {
+        result = completion_result->Clone();
+        did_complete = true;
+      }));
 
   // Wait for completion.
   BOOL succeeded = WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
     return did_complete;
   });
 
-  return succeeded ? result : nil;
+  return succeeded ? std::move(result) : absl::nullopt;
 }
 
 bool WaitUntilWindowIdInjected(WebState* web_state) {
-  bool is_window_id_injected = false;
-  bool is_timeout = false;
-  bool is_unrecoverable_error = false;
-
-  base::ElapsedTimer timer;
-  base::TimeDelta timeout = base::Seconds(kWaitForJSCompletionTimeout);
-
   // Keep polling until either the JavaScript execution returns with expected
   // value (indicating that Window ID is set), the timeout occurs, or an
   // unrecoverable error occurs.
-  while (!is_window_id_injected && !is_timeout && !is_unrecoverable_error) {
-    NSError* error = nil;
-    id result = ExecuteJavaScript(web_state, @"0", &error);
-    if (error) {
-      is_unrecoverable_error = ![error.domain isEqual:WKErrorDomain] ||
-                               error.code != WKErrorJavaScriptExceptionOccurred;
-    } else {
-      is_window_id_injected = [result isEqual:@0];
-    }
-    is_timeout = timeout < timer.Elapsed();
-  }
-  return !is_timeout && !is_unrecoverable_error;
+  return WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+    absl::optional<base::Value> result = ExecuteJavaScript(web_state, u"0");
+    return result && result->is_double() && result->GetDouble() == 0.0;
+  });
 }
 
 }  // namespace web

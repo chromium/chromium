@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,11 @@
 
 #include <vector>
 
-#include "ash/components/settings/cros_settings_names.h"
-#include "ash/components/settings/cros_settings_provider.h"
 #include "base/bind.h"
-#include "chromeos/network/network_handler.h"
-#include "chromeos/network/prohibited_technologies_handler.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/prohibited_technologies_handler.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace policy {
@@ -40,11 +40,11 @@ void DeviceWiFiAllowedHandler::OnWiFiPolicyChanged() {
   bool wifi_allowed = true;
   cros_settings_->GetBoolean(ash::kDeviceWiFiAllowed, &wifi_allowed);
   if (!wifi_allowed) {
-    chromeos::NetworkHandler::Get()
+    ash::NetworkHandler::Get()
         ->prohibited_technologies_handler()
         ->AddGloballyProhibitedTechnology(shill::kTypeWifi);
   } else {
-    chromeos::NetworkHandler::Get()
+    ash::NetworkHandler::Get()
         ->prohibited_technologies_handler()
         ->RemoveGloballyProhibitedTechnology(shill::kTypeWifi);
   }

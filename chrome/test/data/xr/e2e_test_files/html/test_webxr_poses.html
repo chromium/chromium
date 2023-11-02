@@ -15,8 +15,6 @@ test can query for whether each submitted frame used the correct pose.
     <script src="../resources/webxr_e2e.js"></script>
     <script src="../resources/webxr_boilerplate.js"></script>
     <script>
-      setup({single_test: true});
-
       var frame_id = 0;
       var frame_data_array = {};
       var pose_array = {};
@@ -92,6 +90,8 @@ test can query for whether each submitted frame used the correct pose.
 
       onMagicWindowXRFrameCallback = function(session, frame) {
         magic_window_frame_id++;
+        updateSingleTestProgressMessage(
+            'Got magic window frame number ' + magic_window_frame_id);
         cached_frame_of_ref = sessionInfos[sessionTypes.MAGIC_WINDOW].currentRefSpace;
         let pose = frame.getViewerPose(cached_frame_of_ref);
         magic_window_frame_position_array[magic_window_frame_id] = pose.transform.position;

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@ import androidx.annotation.StringRes;
 
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
+import org.chromium.url.GURL;
 
 /**
  * Interface defining a provider for data needed by the {@link LocationBar}.
@@ -55,6 +56,13 @@ public interface LocationBarDataProvider {
     /** Returns The url for the currently active page.*/
     @NonNull
     String getCurrentUrl();
+
+    /**
+     * Returns the url of the current tab, represented as a GURL. Returns an empty GURL when there
+     * is no tab.
+     */
+    @NonNull
+    GURL getCurrentGurl();
 
     /** Returns the delegate for the NewTabPage shown for the current tab. */
     @NonNull
@@ -112,9 +120,10 @@ public interface LocationBarDataProvider {
      * Returns the current page classification.
      *
      * @param isFocusedFromFakebox If the omnibox focus originated from the fakebox.
+     * @param isPrefetch If the page classification for prefetching is requested.
      * @return Integer value representing the {@code OmniboxEventProto.PageClassification}.
      */
-    int getPageClassification(boolean isFocusedFromFakebox);
+    int getPageClassification(boolean isFocusedFromFakebox, boolean isPrefetch);
 
     /**
      * Returns the resource ID of the icon that should be displayed or 0 if no icon should be shown.

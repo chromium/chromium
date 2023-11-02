@@ -39,11 +39,15 @@
 // required types without reference to the generator output headers.
 
 #include <memory>
+
 #include "base/gtest_prod_util.h"
+#include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
+#include "mojo/public/cpp/system/data_pipe.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/blob/data_element.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -116,17 +120,11 @@ class PLATFORM_EXPORT BlobData {
   static std::unique_ptr<BlobData> CreateForFileWithUnknownSize(
       const String& path,
       const absl::optional<base::Time>& expected_modification_time);
-  static std::unique_ptr<BlobData> CreateForFileSystemURLWithUnknownSize(
-      const KURL& file_system_url,
-      const absl::optional<base::Time>& expected_modification_time);
-
-  // Detaches from current thread so that it can be passed to another thread.
-  void DetachFromCurrentThread();
 
   const String& ContentType() const { return content_type_; }
   void SetContentType(const String&);
 
-  const Vector<mojom::blink::DataElementPtr>& Elements() const {
+  const Vector<mojom::blink::DataElementPtr>& ElementsForTesting() const {
     return elements_;
   }
   Vector<mojom::blink::DataElementPtr> ReleaseElements();
@@ -143,11 +141,6 @@ class PLATFORM_EXPORT BlobData {
   void AppendBlob(scoped_refptr<BlobDataHandle>,
                   int64_t offset,
                   int64_t length);
-  void AppendFileSystemURL(
-      const KURL&,
-      int64_t offset,
-      int64_t length,
-      const absl::optional<base::Time>& expected_modification_time);
   void AppendText(const String&, bool normalize_line_endings_to_native);
 
   // The value of the size property for a Blob who has this data.
@@ -168,7 +161,15 @@ class PLATFORM_EXPORT BlobData {
 
   Vector<mojom::blink::DataElementPtr> elements_;
   size_t current_memory_population_ = 0;
-  BlobBytesProvider* last_bytes_provider_ = nullptr;
+
+  // These two members are used to combine multiple consecutive 'bytes' elements
+  // (as created by `AppendBytes`, `AppendData` or `AppendText`) into a single
+  // element. When one has a value the other also has a value. Before using
+  // `elements_` to actually create a blob, `last_bytes_provider_` should be
+  // bound to `last_bytes_provider_receiver_`.
+  std::unique_ptr<BlobBytesProvider> last_bytes_provider_;
+  mojo::PendingReceiver<mojom::blink::BytesProvider>
+      last_bytes_provider_receiver_;
 };
 
 class PLATFORM_EXPORT BlobDataHandle
@@ -200,8 +201,8 @@ class PLATFORM_EXPORT BlobDataHandle
       uint64_t size,
       mojo::PendingRemote<mojom::blink::Blob>);
 
-  String Uuid() const { return uuid_.IsolatedCopy(); }
-  String GetType() const { return type_.IsolatedCopy(); }
+  String Uuid() const { return uuid_; }
+  String GetType() const { return type_; }
   uint64_t size() const { return size_; }
 
   bool IsSingleUnknownSizeFile() const { return is_single_unknown_size_file_; }
@@ -225,7 +226,7 @@ class PLATFORM_EXPORT BlobDataHandle
                        absl::optional<base::Time>* snapshot_modification_time);
 
   void SetBlobRemoteForTesting(mojo::PendingRemote<mojom::blink::Blob> remote) {
-    MutexLocker locker(blob_remote_mutex_);
+    base::AutoLock locker(blob_remote_lock_);
     blob_remote_ = std::move(remote);
   }
 
@@ -247,11 +248,11 @@ class PLATFORM_EXPORT BlobDataHandle
   const bool is_single_unknown_size_file_;
   // This class is supposed to be thread safe. So to be able to use the mojo
   // Blob interface from multiple threads store a PendingRemote combined with
-  // a mutex, and make sure any access to the mojo interface is done protected
-  // by the mutex.
+  // a lock, and make sure any access to the mojo interface is done protected
+  // by the lock.
   mojo::PendingRemote<mojom::blink::Blob> blob_remote_
-      GUARDED_BY(blob_remote_mutex_);
-  Mutex blob_remote_mutex_;
+      GUARDED_BY(blob_remote_lock_);
+  base::Lock blob_remote_lock_;
 };
 
 }  // namespace blink

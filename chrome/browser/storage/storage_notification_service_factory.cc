@@ -1,16 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/storage/storage_notification_service_factory.h"
 
-#include "chrome/browser/profiles/incognito_helpers.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-
 StorageNotificationServiceFactory::StorageNotificationServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "StorageNotificationService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          ProfileSelections::BuildForRegularAndIncognito()) {}
 StorageNotificationServiceFactory::~StorageNotificationServiceFactory() {}
 
 // static
@@ -42,10 +39,4 @@ StorageNotificationServiceFactory::BuildInstanceFor(
 bool StorageNotificationServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
   return true;
-}
-
-content::BrowserContext*
-StorageNotificationServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_controller_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_dialog_controller_win.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -73,15 +74,15 @@ class ChromeCleanerDialogControllerImpl
   void OnInteractionDone();
   void ShowChromeCleanerPrompt();
 
-  ChromeCleanerController* cleaner_controller_ = nullptr;
+  raw_ptr<ChromeCleanerController> cleaner_controller_ = nullptr;
   bool dialog_shown_ = false;
 
   // In case there is no browser available to prompt a user
   // signal it, this way we can prompt it once a browser gets available..
   bool prompt_pending_ = false;
-  Browser* browser_ = nullptr;
+  raw_ptr<Browser> browser_ = nullptr;
   std::unique_ptr<ChromeCleanerPromptDelegate> prompt_delegate_impl_;
-  ChromeCleanerPromptDelegate* prompt_delegate_ = nullptr;
+  raw_ptr<ChromeCleanerPromptDelegate> prompt_delegate_ = nullptr;
 };
 
 }  // namespace safe_browsing

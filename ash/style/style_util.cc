@@ -1,27 +1,39 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/style/style_util.h"
 
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
+#include "ui/color/color_id.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
+#include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_host_view.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/focus_ring.h"
 
 namespace ash {
 
-namespace {
+// static
+float StyleUtil::GetInkDropOpacity() {
+  return DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
+             ? kDarkInkDropOpacity
+             : kLightInkDropOpacity;
+}
 
-std::unique_ptr<views::InkDrop> CreateInkDrop(views::Button* host,
-                                              bool highlight_on_hover,
-                                              bool highlight_on_focus) {
+// static
+std::unique_ptr<views::InkDrop> StyleUtil::CreateInkDrop(
+    views::Button* host,
+    bool highlight_on_hover,
+    bool highlight_on_focus) {
   return views::InkDrop::CreateInkDropForFloodFillRipple(
       views::InkDrop::Get(host), highlight_on_hover, highlight_on_focus);
 }
 
-std::unique_ptr<views::InkDropRipple> CreateInkDropRipple(
+// static
+std::unique_ptr<views::InkDropRipple> StyleUtil::CreateInkDropRipple(
     const gfx::Insets& insets,
     const views::View* host,
     SkColor background_color) {
@@ -33,8 +45,9 @@ std::unique_ptr<views::InkDropRipple> CreateInkDropRipple(
       base_color_and_opacity.first, base_color_and_opacity.second);
 }
 
-std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight(
-    views::View* host,
+// static
+std::unique_ptr<views::InkDropHighlight> StyleUtil::CreateInkDropHighlight(
+    const views::View* host,
     SkColor background_color) {
   const std::pair<SkColor, float> base_color_and_opacity =
       AshColorProvider::Get()->GetInkDropBaseColorAndOpacity(background_color);
@@ -43,8 +56,6 @@ std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight(
   highlight->set_visible_opacity(base_color_and_opacity.second);
   return highlight;
 }
-
-}  // namespace
 
 // static
 void StyleUtil::SetRippleParams(views::View* host,
@@ -88,6 +99,19 @@ void StyleUtil::ConfigureInkDropAttributes(views::View* view,
 
   if (ripple_config_attributes & kHighlightOpacity)
     host->SetHighlightOpacity(base_color_and_opacity.second);
+}
+
+// static
+views::FocusRing* StyleUtil::SetUpFocusRingForView(
+    views::View* view,
+    absl::optional<int> halo_inset) {
+  DCHECK(view);
+  views::FocusRing::Install(view);
+  views::FocusRing* focus_ring = views::FocusRing::Get(view);
+  focus_ring->SetColorId(ui::kColorAshFocusRing);
+  if (halo_inset)
+    focus_ring->SetHaloInset(*halo_inset);
+  return focus_ring;
 }
 
 }  // namespace ash

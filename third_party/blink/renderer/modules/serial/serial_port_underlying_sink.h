@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
+#include "services/device/public/mojom/serial.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
 
@@ -15,6 +16,7 @@ namespace blink {
 class ExceptionState;
 class ScriptPromiseResolver;
 class SerialPort;
+class WritableStreamDefaultController;
 
 class SerialPortUnderlyingSink final : public UnderlyingSinkBase {
  public:
@@ -33,13 +35,12 @@ class SerialPortUnderlyingSink final : public UnderlyingSinkBase {
                       ScriptValue reason,
                       ExceptionState&) override;
 
-  // After |data_pipe_| has closed calls to write() will return a Promise
-  // rejected with this DOMException.
-  void SignalErrorOnClose(DOMException*);
+  void SignalError(device::mojom::blink::SerialSendError);
 
   void Trace(Visitor*) const override;
 
  private:
+  void OnAborted();
   void OnHandleReady(MojoResult, const mojo::HandleSignalsState&);
   void OnFlushOrDrain();
   void WriteData();
@@ -48,7 +49,8 @@ class SerialPortUnderlyingSink final : public UnderlyingSinkBase {
   mojo::ScopedDataPipeProducerHandle data_pipe_;
   mojo::SimpleWatcher watcher_;
   Member<SerialPort> serial_port_;
-  Member<DOMException> pending_exception_;
+  Member<ScriptState> script_state_;
+  Member<WritableStreamDefaultController> controller_;
 
   Member<V8BufferSource> buffer_source_;
   size_t offset_ = 0;

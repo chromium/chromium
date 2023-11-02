@@ -1,11 +1,14 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/web/text_fragments/text_fragments_java_script_feature.h"
 
-#include <vector>
+#import <vector>
 
+#import "base/no_destructor.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/shared_highlighting/ios/parsing_utils.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frame_util.h"
@@ -16,7 +19,7 @@
 #endif
 
 namespace {
-const char kScriptName[] = "text_fragments_js";
+const char kScriptName[] = "text_fragments";
 const char kScriptHandlerName[] = "textFragments";
 const char kHandleFragmentsScript[] = "textFragments.handleTextFragments";
 const char kRemoveHighlightsScript[] = "textFragments.removeHighlights";
@@ -51,7 +54,9 @@ void TextFragmentsJavaScriptFeature::ProcessTextFragments(
     std::string foreground_color_hex_rgb) {
   DCHECK(web_state);
   auto* frame = web::GetMainFrame(web_state);
-  DCHECK(frame);
+  if (!frame) {
+    return;
+  }
 
   base::Value bg_color = background_color_hex_rgb.empty()
                              ? base::Value()
@@ -73,7 +78,10 @@ void TextFragmentsJavaScriptFeature::RemoveHighlights(WebState* web_state,
                                                       const GURL& new_url) {
   DCHECK(web_state);
   auto* frame = web::GetMainFrame(web_state);
-  DCHECK(frame);
+  if (!frame) {
+    return;
+  }
+
   std::vector<base::Value> parameters;
   parameters.emplace_back(new_url.is_valid() ? new_url.spec() : "");
   CallJavaScriptFunction(frame, kRemoveHighlightsScript, parameters);
@@ -94,6 +102,13 @@ void TextFragmentsJavaScriptFeature::ScriptMessageReceived(
 
   const std::string* command = response->FindStringKey("command");
   if (!command) {
+    return;
+  }
+
+  // Discard messages if we've navigated away.
+  auto sender_url = script_message.request_url();
+  GURL current_url = web_state->GetLastCommittedURL();
+  if (!sender_url || *sender_url != current_url) {
     return;
   }
 
@@ -126,6 +141,30 @@ void TextFragmentsJavaScriptFeature::ScriptMessageReceived(
     manager->OnProcessingComplete(success_count, fragment_count);
   } else if (*command == "textFragments.onClick") {
     manager->OnClick();
+  } else if (*command == "textFragments.onClickWithSender") {
+    absl::optional<CGRect> rect =
+        shared_highlighting::ParseRect(response->FindDictKey("rect"));
+    const std::string* text = response->FindStringKey("text");
+
+    const base::Value::List* fragment_values_list =
+        response->GetDict().FindList("fragments");
+    std::vector<shared_highlighting::TextFragment> fragments;
+    if (fragment_values_list) {
+      for (const base::Value& val : *fragment_values_list) {
+        absl::optional<shared_highlighting::TextFragment> fragment =
+            shared_highlighting::TextFragment::FromValue(&val);
+        if (fragment) {
+          fragments.push_back(*fragment);
+        }
+      }
+    }
+
+    if (!rect || !text || fragments.empty()) {
+      return;
+    }
+    manager->OnClickWithSender(
+        shared_highlighting::ConvertToBrowserRect(*rect, web_state),
+        base::SysUTF8ToNSString(*text), std::move(fragments));
   }
 }
 

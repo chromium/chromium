@@ -37,7 +37,8 @@ namespace blink {
 HTMLStyleElement::HTMLStyleElement(Document& document,
                                    const CreateElementFlags flags)
     : HTMLElement(html_names::kStyleTag, document),
-      StyleElement(&document, flags.IsCreatedByParser()) {}
+      StyleElement(&document, flags.IsCreatedByParser()),
+      blocking_attribute_(MakeGarbageCollected<BlockingAttribute>(this)) {}
 
 HTMLStyleElement::~HTMLStyleElement() = default;
 
@@ -53,6 +54,12 @@ void HTMLStyleElement::ParseAttribute(
   } else if (params.name == html_names::kTypeAttr) {
     HTMLElement::ParseAttribute(params);
     StyleElement::ChildrenChanged(*this);
+  } else if (params.name == html_names::kBlockingAttr &&
+             RuntimeEnabledFeatures::BlockingAttributeEnabled()) {
+    blocking_attribute_->DidUpdateAttributeValue(params.old_value,
+                                                 params.new_value);
+    blocking_attribute_->CountTokenUsage();
+    BlockingAttributeChanged(*this);
   } else {
     HTMLElement::ParseAttribute(params);
   }
@@ -69,6 +76,7 @@ void HTMLStyleElement::FinishParsingChildren() {
 
 Node::InsertionNotificationRequest HTMLStyleElement::InsertedInto(
     ContainerNode& insertion_point) {
+  recordreplay::Assert("[RUN-1116] HTMLStyleElement::InsertedInto FunctionEntry");
   HTMLElement::InsertedInto(insertion_point);
   if (isConnected()) {
     if (StyleElement::ProcessStyleSheet(GetDocument(), *this) ==
@@ -86,6 +94,7 @@ void HTMLStyleElement::RemovedFrom(ContainerNode& insertion_point) {
 }
 
 void HTMLStyleElement::ChildrenChanged(const ChildrenChange& change) {
+  recordreplay::Assert("[RUN-1116] HTMLStyleElement::ChildrenChanged FunctionEntry");
   HTMLElement::ChildrenChanged(change);
   if (StyleElement::ChildrenChanged(*this) ==
       StyleElement::kProcessingFatalError)
@@ -107,9 +116,9 @@ void HTMLStyleElement::DispatchPendingEvent(
   if (is_load_event) {
     if (GetDocument().HasListenerType(
             Document::kLoadListenerAtCapturePhaseOrAtStyleElement))
-      DispatchEvent(*Event::Create(event_type_names::kLoad));
+      DispatchEvent(*Event::Create(event_type_names::kLoad), "HTMLStyleElement::DispatchPendingEvent #1");
   } else {
-    DispatchEvent(*Event::Create(event_type_names::kError));
+    DispatchEvent(*Event::Create(event_type_names::kError), "HTMLStyleElement::DispatchPendingEvent #2");
   }
   // Checks Document's load event synchronously here for performance.
   // This is safe because dispatchPendingEvent() is called asynchronously.
@@ -129,7 +138,7 @@ void HTMLStyleElement::NotifyLoadedSheetAndAllCriticalSubresources(
       .GetTaskRunner(TaskType::kNetworking)
       ->PostTask(
           FROM_HERE,
-          WTF::Bind(
+          WTF::BindOnce(
               &HTMLStyleElement::DispatchPendingEvent, WrapPersistent(this),
               std::make_unique<IncrementLoadEventDelayCount>(GetDocument()),
               is_load_event));
@@ -147,7 +156,12 @@ void HTMLStyleElement::setDisabled(bool set_disabled) {
     style_sheet->setDisabled(set_disabled);
 }
 
+bool HTMLStyleElement::IsPotentiallyRenderBlocking() const {
+  return blocking_attribute_->HasRenderToken() || CreatedByParser();
+}
+
 void HTMLStyleElement::Trace(Visitor* visitor) const {
+  visitor->Trace(blocking_attribute_);
   StyleElement::Trace(visitor);
   HTMLElement::Trace(visitor);
 }

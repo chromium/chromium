@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -176,10 +177,9 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   virtual void MoveEntryToPendingDelete(NoStatePrefetchContents* entry,
                                         FinalStatus final_status);
 
-  // Query the list of current prerender pages to see if the given web contents
-  // is prerendering a page.
-  bool IsWebContentsPrerendering(
-      const content::WebContents* web_contents) const;
+  // Query the list of current prefetches to see if the given web contents is
+  // prefetching a page.
+  bool IsWebContentsPrefetching(const content::WebContents* web_contents) const;
 
   // Returns the NoStatePrefetchContents object for the given web_contents,
   // otherwise returns NULL. Note that the NoStatePrefetchContents may have been
@@ -193,9 +193,6 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   virtual NoStatePrefetchContents* GetNoStatePrefetchContentsForRoute(
       int child_id,
       int route_id) const;
-
-  // Returns a list of all WebContents being prerendered.
-  std::vector<content::WebContents*> GetAllPrerenderingContents() const;
 
   // Returns a list of all WebContents being NoStatePrefetched.
   std::vector<content::WebContents*>
@@ -236,14 +233,6 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   base::Time GetCurrentTime() const;
   base::TimeTicks GetCurrentTimeTicks() const;
   void SetTickClockForTesting(const base::TickClock* tick_clock);
-
-  void DisablePageLoadMetricsObserverForTesting() {
-    page_load_metric_observer_disabled_ = true;
-  }
-
-  bool PageLoadMetricsObserverDisabledForTesting() const {
-    return page_load_metric_observer_disabled_;
-  }
 
   void AddObserver(std::unique_ptr<NoStatePrefetchManagerObserver> observer);
 
@@ -337,7 +326,7 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
     }
 
    private:
-    NoStatePrefetchManager* const manager_;
+    const raw_ptr<NoStatePrefetchManager> manager_;
     std::unique_ptr<NoStatePrefetchContents> contents_;
 
     // The number of distinct NoStatePrefetchHandles created for |this|,
@@ -399,8 +388,6 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
 
   void StartSchedulingPeriodicCleanups();
   void StopSchedulingPeriodicCleanups();
-
-  void EvictOldestPrerendersIfNecessary();
 
   // Deletes stale and cancelled prerendered NoStatePrefetchContents, as well as
   // WebContents that have been replaced by prerendered WebContents.
@@ -489,7 +476,7 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   Config config_;
 
   // The browser_context that owns this NoStatePrefetchManager.
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   // The delegate that allows content embedder to override the logic in this
   // class.
@@ -538,9 +525,7 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   using PrerenderProcessSet = std::set<content::RenderProcessHost*>;
   PrerenderProcessSet prerender_process_hosts_;
 
-  const base::TickClock* tick_clock_;
-
-  bool page_load_metric_observer_disabled_ = false;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   std::vector<std::unique_ptr<NoStatePrefetchManagerObserver>> observers_;
 

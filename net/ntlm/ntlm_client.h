@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,13 +20,13 @@
 #include <memory>
 #include <string>
 
+#include "base/check.h"
 #include "base/containers/span.h"
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 #include "net/ntlm/ntlm_constants.h"
 
-namespace net {
-namespace ntlm {
+namespace net::ntlm {
 
 // Provides an implementation of an NTLMv1 or NTLMv2 Client with support
 // for MIC and EPA [1]. This implementation does not support the key exchange,
@@ -155,7 +155,6 @@ class NET_EXPORT_PRIVATE NtlmClient {
   std::vector<uint8_t> negotiate_message_;
 };
 
-}  // namespace ntlm
-}  // namespace net
+}  // namespace net::ntlm
 
 #endif  // NET_NTLM_NTLM_CLIENT_H_

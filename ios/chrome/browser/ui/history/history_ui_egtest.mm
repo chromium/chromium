@@ -1,30 +1,31 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
-#include "base/ios/ios_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/ios/ios_util.h"
+#import "base/strings/stringprintf.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/ui/history/history_ui_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/browser/ui/table_view/table_view_constants.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
-#include "ios/chrome/common/string_util.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/common/string_util.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/base/mac/url_conversions.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "net/test/embedded_test_server/http_request.h"
+#import "net/test/embedded_test_server/http_response.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -47,10 +48,6 @@ char kResponse1[] = "Test Page 1 content";
 char kResponse2[] = "Test Page 2 content";
 char kResponse3[] = "Test Page 3 content";
 
-// Matcher for the history button in the tools menu.
-id<GREYMatcher> HistoryButton() {
-  return grey_accessibilityID(kToolsMenuHistoryId);
-}
 // Matcher for the edit button in the navigation bar.
 id<GREYMatcher> NavigationEditButton() {
   return grey_accessibilityID(kHistoryToolbarEditButtonIdentifier);
@@ -165,24 +162,39 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // Assert that history displays three entries.
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL1.DeprecatedGetOriginAsURL().spec(),
-                                   kTitle1)] assertWithMatcher:grey_notNil()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL1)),
+              kTitle1)] assertWithMatcher:grey_notNil()];
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL2.DeprecatedGetOriginAsURL().spec(),
-                                   kTitle2)] assertWithMatcher:grey_notNil()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL2)),
+              kTitle2)] assertWithMatcher:grey_notNil()];
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL3.DeprecatedGetOriginAsURL().spec(),
-                                   _URL3.GetContent())]
-      assertWithMatcher:grey_notNil()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL3)),
+              _URL3.GetContent())] assertWithMatcher:grey_notNil()];
 
   // Tap a history entry and assert that navigation to that entry's URL occurs.
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL1.DeprecatedGetOriginAsURL().spec(),
-                                   kTitle1)] performAction:grey_tap()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL1)),
+              kTitle1)] performAction:grey_tap()];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
 }
 
@@ -198,13 +210,21 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [self openHistoryPanel];
 
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL1.DeprecatedGetOriginAsURL().spec(),
-                                   kTitle1)] assertWithMatcher:grey_notNil()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL1)),
+              kTitle1)] assertWithMatcher:grey_notNil()];
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL2.DeprecatedGetOriginAsURL().spec(),
-                                   kTitle2)] assertWithMatcher:grey_notNil()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL2)),
+              kTitle2)] assertWithMatcher:grey_notNil()];
 }
 
 // Tests that searching history displays only entries matching the search term.
@@ -237,18 +257,29 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       assertWithMatcher:grey_nil()];
 
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL1.DeprecatedGetOriginAsURL().spec(),
-                                   kTitle1)] assertWithMatcher:grey_notNil()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL1)),
+              kTitle1)] assertWithMatcher:grey_notNil()];
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL2.DeprecatedGetOriginAsURL().spec(),
-                                   kTitle2)] assertWithMatcher:grey_nil()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL2)),
+              kTitle2)] assertWithMatcher:grey_nil()];
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL3.DeprecatedGetOriginAsURL().spec(),
-                                   _URL3.GetContent())]
-      assertWithMatcher:grey_nil()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL3)),
+              _URL3.GetContent())] assertWithMatcher:grey_nil()];
 }
 
 // Tests that long press on scrim while search box is enabled dismisses the
@@ -261,9 +292,13 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // Try long press.
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL1.DeprecatedGetOriginAsURL().spec(),
-                                   kTitle1)] performAction:grey_longPress()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL1)),
+              kTitle1)] performAction:grey_longPress()];
 
   // Verify context menu is not visible.
   [[EarlGrey
@@ -278,18 +313,29 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // Verifiy we went back to original folder content.
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL1.DeprecatedGetOriginAsURL().spec(),
-                                   kTitle1)] assertWithMatcher:grey_notNil()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL1)),
+              kTitle1)] assertWithMatcher:grey_notNil()];
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL2.DeprecatedGetOriginAsURL().spec(),
-                                   kTitle2)] assertWithMatcher:grey_notNil()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL2)),
+              kTitle2)] assertWithMatcher:grey_notNil()];
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL3.DeprecatedGetOriginAsURL().spec(),
-                                   _URL3.GetContent())]
-      assertWithMatcher:grey_notNil()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL3)),
+              _URL3.GetContent())] assertWithMatcher:grey_notNil()];
 }
 
 // Tests deletion of history entries.
@@ -299,56 +345,89 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // Assert that three history elements are present.
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL1.DeprecatedGetOriginAsURL().spec(),
-                                   kTitle1)] assertWithMatcher:grey_notNil()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL1)),
+              kTitle1)] assertWithMatcher:grey_notNil()];
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL2.DeprecatedGetOriginAsURL().spec(),
-                                   kTitle2)] assertWithMatcher:grey_notNil()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL2)),
+              kTitle2)] assertWithMatcher:grey_notNil()];
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL3.DeprecatedGetOriginAsURL().spec(),
-                                   _URL3.GetContent())]
-      assertWithMatcher:grey_notNil()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL3)),
+              _URL3.GetContent())] assertWithMatcher:grey_notNil()];
 
   // Enter edit mode, select a history element, and press delete.
   [[EarlGrey selectElementWithMatcher:NavigationEditButton()]
       performAction:grey_tap()];
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL1.DeprecatedGetOriginAsURL().spec(),
-                                   kTitle1)] performAction:grey_tap()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL1)),
+              kTitle1)] performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:DeleteHistoryEntriesButton()]
       performAction:grey_tap()];
 
   // Assert that the deleted entry is gone and the other two remain.
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL1.DeprecatedGetOriginAsURL().spec(),
-                                   kTitle1)] assertWithMatcher:grey_nil()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL1)),
+              kTitle1)] assertWithMatcher:grey_nil()];
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL2.DeprecatedGetOriginAsURL().spec(),
-                                   kTitle2)] assertWithMatcher:grey_notNil()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL2)),
+              kTitle2)] assertWithMatcher:grey_notNil()];
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL3.DeprecatedGetOriginAsURL().spec(),
-                                   _URL3.GetContent())]
-      assertWithMatcher:grey_notNil()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL3)),
+              _URL3.GetContent())] assertWithMatcher:grey_notNil()];
 
   // Enter edit mode, select both remaining entries, and press delete.
   [[EarlGrey selectElementWithMatcher:NavigationEditButton()]
       performAction:grey_tap()];
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL2.DeprecatedGetOriginAsURL().spec(),
-                                   kTitle2)] performAction:grey_tap()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL2)),
+              kTitle2)] performAction:grey_tap()];
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL3.DeprecatedGetOriginAsURL().spec(),
-                                   _URL3.GetContent())]
-      performAction:grey_tap()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL3)),
+              _URL3.GetContent())] performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:DeleteHistoryEntriesButton()]
       performAction:grey_tap()];
 
@@ -403,9 +482,13 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // Long press on the history element.
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL1.DeprecatedGetOriginAsURL().spec(),
-                                   kTitle1)] performAction:grey_longPress()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL1)),
+              kTitle1)] performAction:grey_longPress()];
 
   // Select "Open in New Tab" and confirm that new tab is opened with selected
   // URL.
@@ -423,9 +506,13 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // Long press on the history element.
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL1.DeprecatedGetOriginAsURL().spec(),
-                                   kTitle1)] performAction:grey_longPress()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL1)),
+              kTitle1)] performAction:grey_longPress()];
 
   [ChromeEarlGrey verifyOpenInNewWindowActionWithContent:kResponse1];
 }
@@ -438,9 +525,13 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // Long press on the history element.
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL1.DeprecatedGetOriginAsURL().spec(),
-                                   kTitle1)] performAction:grey_longPress()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL1)),
+              kTitle1)] performAction:grey_longPress()];
 
   // Select "Open in New Incognito Tab" and confirm that new tab is opened in
   // incognito with the selected URL.
@@ -455,9 +546,13 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // Long press on the history element.
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL1.DeprecatedGetOriginAsURL().spec(),
-                                   kTitle1)] performAction:grey_longPress()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL1)),
+              kTitle1)] performAction:grey_longPress()];
 
   // Tap "Copy URL" and wait for the URL to be copied to the pasteboard.
   [ChromeEarlGrey
@@ -474,9 +569,13 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // Long press on the history element.
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL1.DeprecatedGetOriginAsURL().spec(),
-                                   kTitle1)] performAction:grey_longPress()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL1)),
+              kTitle1)] performAction:grey_longPress()];
 
   [ChromeEarlGrey
       verifyShareActionWithURL:_URL1
@@ -490,31 +589,51 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // Long press on the history element.
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL1.DeprecatedGetOriginAsURL().spec(),
-                                   kTitle1)] performAction:grey_longPress()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL1)),
+              kTitle1)] performAction:grey_longPress()];
 
   [[EarlGrey selectElementWithMatcher:DeleteButton()] performAction:grey_tap()];
 
   // Assert that the deleted entry is gone and the other two remain.
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL1.DeprecatedGetOriginAsURL().spec(),
-                                   kTitle1)] assertWithMatcher:grey_nil()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL1)),
+              kTitle1)] assertWithMatcher:grey_nil()];
 
   // Wait for the animations to be done, then validate.
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
-          HistoryEntry(_URL2.DeprecatedGetOriginAsURL().spec(), kTitle2)];
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL2)),
+              kTitle2)];
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL2.DeprecatedGetOriginAsURL().spec(),
-                                   kTitle2)] assertWithMatcher:grey_notNil()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL2)),
+              kTitle2)] assertWithMatcher:grey_notNil()];
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL3.DeprecatedGetOriginAsURL().spec(),
-                                   _URL3.GetContent())]
-      assertWithMatcher:grey_notNil()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL3)),
+              _URL3.GetContent())] assertWithMatcher:grey_notNil()];
 }
 
 // Tests that the VC can be dismissed by swiping down.
@@ -612,12 +731,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 #pragma mark Multiwindow
 
 - (void)testHistorySyncInMultiwindow {
-// TODO(crbug.com/1252457): Test is flaky on iPad devices.
-#if !TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/1252457): Test is flaky on iPad devices.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"This test is flaky on iPad devices.");
   }
-#endif
 
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
@@ -634,56 +751,90 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // Assert that three history elements are present in second window.
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL1.DeprecatedGetOriginAsURL().spec(),
-                                   kTitle1)] assertWithMatcher:grey_notNil()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL1)),
+              kTitle1)] assertWithMatcher:grey_notNil()];
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL2.DeprecatedGetOriginAsURL().spec(),
-                                   kTitle2)] assertWithMatcher:grey_notNil()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL2)),
+              kTitle2)] assertWithMatcher:grey_notNil()];
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL3.DeprecatedGetOriginAsURL().spec(),
-                                   _URL3.GetContent())]
-      assertWithMatcher:grey_notNil()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL3)),
+              _URL3.GetContent())] assertWithMatcher:grey_notNil()];
 
   // Open history panel in first window also.
   [self openHistoryPanelInWindowWithNumber:0];
 
   // Assert that three history elements are present in first window.
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL1.DeprecatedGetOriginAsURL().spec(),
-                                   kTitle1)] assertWithMatcher:grey_notNil()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL1)),
+              kTitle1)] assertWithMatcher:grey_notNil()];
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL2.DeprecatedGetOriginAsURL().spec(),
-                                   kTitle2)] assertWithMatcher:grey_notNil()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL2)),
+              kTitle2)] assertWithMatcher:grey_notNil()];
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL3.DeprecatedGetOriginAsURL().spec(),
-                                   _URL3.GetContent())]
-      assertWithMatcher:grey_notNil()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL3)),
+              _URL3.GetContent())] assertWithMatcher:grey_notNil()];
 
   // Delete item 1 from first window.
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL1.DeprecatedGetOriginAsURL().spec(),
-                                   kTitle1)] performAction:grey_longPress()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL1)),
+              kTitle1)] performAction:grey_longPress()];
 
   [[EarlGrey selectElementWithMatcher:DeleteButton()] performAction:grey_tap()];
 
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL1.DeprecatedGetOriginAsURL().spec(),
-                                   kTitle1)] assertWithMatcher:grey_nil()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL1)),
+              kTitle1)] assertWithMatcher:grey_nil()];
 
   // And make sure it has disappeared from second window.
   [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
   [[EarlGrey
-      selectElementWithMatcher:HistoryEntry(
-                                   _URL1.DeprecatedGetOriginAsURL().spec(),
-                                   kTitle1)] assertWithMatcher:grey_nil()];
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL1)),
+              kTitle1)] assertWithMatcher:grey_nil()];
 }
 
 #pragma mark Helper Methods
@@ -701,12 +852,14 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 - (void)openHistoryPanel {
   [ChromeEarlGreyUI openToolsMenu];
-  [ChromeEarlGreyUI tapToolsMenuButton:HistoryButton()];
+  [ChromeEarlGreyUI
+      tapToolsMenuButton:chrome_test_util::HistoryDestinationButton()];
 }
 
 - (void)openHistoryPanelInWindowWithNumber:(int)windowNumber {
   [ChromeEarlGreyUI openToolsMenuInWindowWithNumber:windowNumber];
-  [ChromeEarlGreyUI tapToolsMenuButton:HistoryButton()];
+  [ChromeEarlGreyUI
+      tapToolsMenuButton:chrome_test_util::HistoryDestinationButton()];
 }
 
 @end

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/shared_memory_mapping.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread.h"
 #include "components/chromeos_camera/mjpeg_decode_accelerator.h"
@@ -26,7 +27,6 @@ namespace media {
 
 class BitstreamBuffer;
 class ScopedVAImage;
-class UnalignedSharedMemory;
 class VaapiWrapper;
 class VideoFrame;
 
@@ -75,7 +75,7 @@ class MEDIA_GPU_EXPORT VaapiMjpegDecodeAccelerator
 
   // Processes one decode request.
   void DecodeFromShmTask(int32_t task_id,
-                         std::unique_ptr<UnalignedSharedMemory> shm,
+                         base::WritableSharedMemoryMapping mapping,
                          scoped_refptr<VideoFrame> dst_frame);
   void DecodeFromDmaBufTask(int32_t task_id,
                             base::ScopedFD src_dmabuf_fd,

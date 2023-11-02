@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,10 @@
 
 #include "ash/public/cpp/notification_utils.h"
 #include "base/location.h"
-#include "base/task/post_task.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/gnubby/gnubby_client.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -26,12 +25,13 @@ namespace ash {
 GnubbyNotification::GnubbyNotification()
     : update_dismiss_notification_timer_(new base::OneShotTimer()),
       weak_ptr_factory_(this) {
-  DCHECK(DBusThreadManager::Get()->GetGnubbyClient());
-  DBusThreadManager::Get()->GetGnubbyClient()->AddObserver(this);
+  DCHECK(GnubbyClient::Get());
+  GnubbyClient::Get()->AddObserver(this);
 }
+
 GnubbyNotification::~GnubbyNotification() {
-  DCHECK(DBusThreadManager::Get()->GetGnubbyClient());
-  DBusThreadManager::Get()->GetGnubbyClient()->RemoveObserver(this);
+  DCHECK(GnubbyClient::Get());
+  GnubbyClient::Get()->RemoveObserver(this);
 }
 
 void GnubbyNotification::PromptUserAuth() {

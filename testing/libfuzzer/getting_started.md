@@ -11,7 +11,7 @@ topics, see the [main page](README.md).
 ### Setting up your build environment
 
 Generate build files by using the `use_libfuzzer` [GN] argument together with a
-sanitizer:
+sanitizer. Pick the [GN config] that corresponds to the DUT you're deploying to:
 
 ```bash
 # AddressSanitizer is the default config we recommend testing with.
@@ -25,8 +25,27 @@ tools/mb/mb.py gen -m chromium.fuzz -b 'Libfuzzer Upload Mac ASan' out/libfuzzer
 python tools\mb\mb.py gen -m chromium.fuzz -b "Libfuzzer Upload Windows ASan" out\libfuzzer
 ```
 
+If testing things locally these are the recommended configurations
+
+```bash
+# AddressSanitizer is the default config we recommend testing with.
+# Linux:
+tools/mb/mb.py gen -m chromium.fuzz -b 'Libfuzzer Local Linux ASan' out/libfuzzer
+# Chrome OS:
+tools/mb/mb.py gen -m chromium.fuzz -b 'Libfuzzer Local Chrome OS ASan' out/libfuzzer
+# Mac:
+tools/mb/mb.py gen -m chromium.fuzz -b 'Libfuzzer Local Mac ASan' out/libfuzzer
+# Windows:
+python tools\mb\mb.py gen -m chromium.fuzz -b "Libfuzzer Local Windows ASan" out\libfuzzer
+```
+
 *** note
-**Note:** You can also invoke [AFL] by using the `use_afl` GN argument, but we
+**Note:** The above invocations may set `use_remoteexec` or `use_rbe` to true.
+However, these args aren't compatible on local workstations yet. So if you run
+into reclient errors when building locally, remove both those args and set
+`use_goma` instead.
+
+You can also invoke [AFL] by using the `use_afl` GN argument, but we
 recommend libFuzzer for local development. Running libFuzzer locally doesn't
 require any special configuration and gives quick, meaningful output for speed,
 coverage, and other parameters.
@@ -95,17 +114,19 @@ target.
 
 ### Running the fuzz target
 
-After you create your fuzz target, build it with ninja and run it locally:
+After you create your fuzz target, build it with autoninja and run it locally. In
+most cases you don't want to commit your locally generated corpus, so save it
+somewhere like `/tmp/corpus`.
 
 ```bash
 # Build the fuzz target.
-ninja -C out/libfuzzer url_parse_fuzzer
+autoninja -C out/libfuzzer url_parse_fuzzer
 # Create an empty corpus directory.
-mkdir corpus
+mkdir /tmp/corpus
 # Run the fuzz target.
-./out/libfuzzer/url_parse_fuzzer corpus
+./out/libfuzzer/url_parse_fuzzer /tmp/corpus
 # If have other corpus directories, pass their paths as well:
-./out/libfuzzer/url_parse_fuzzer corpus seed_corpus_dir_1 seed_corpus_dir_N
+./out/libfuzzer/url_parse_fuzzer /tmp/corpus seed_corpus_dir_1 seed_corpus_dir_N
 ```
 
 Your fuzz target should produce output like this:
@@ -309,17 +330,16 @@ fuzzing engine.
 [AddressSanitizer]: http://clang.llvm.org/docs/AddressSanitizer.html
 [ClusterFuzz status]: libFuzzer_integration.md#Status-Links
 [Efficient Fuzzing Guide]: efficient_fuzzing.md
-[FuzzedDataProvider]: https://cs.chromium.org/chromium/src/third_party/libFuzzer/src/utils/FuzzedDataProvider.h
+[FuzzedDataProvider]: https://cs.chromium.org/chromium/src/third_party/re2/src/re2/fuzzing/compiler-rt/include/fuzzer/FuzzedDataProvider.h
 [Fuzzer Dictionary]: efficient_fuzzing.md#Fuzzer-dictionary
 [GN]: https://gn.googlesource.com/gn/+/master/README.md
+[GN config]: https://cs.chromium.org/chromium/src/tools/mb/mb_config_expectations/chromium.fuzz.json
 [Getting Started with libprotobuf-mutator in Chromium]: libprotobuf-mutator.md
 [Integration Reference]: reference.md
 [MemorySanitizer]: http://clang.llvm.org/docs/MemorySanitizer.html
 [Seed Corpus]: efficient_fuzzing.md#Seed-corpus
 [UndefinedBehaviorSanitizer]: http://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html
 [code coverage report]: efficient_fuzzing.md#Code-coverage
-[crbug/598448]: https://bugs.chromium.org/p/chromium/issues/detail?id=598448
 [upstream documentation]: https://github.com/google/fuzzing/blob/master/docs/split-inputs.md#fuzzed-data-provider
 [libFuzzer's output documentation]: http://llvm.org/docs/LibFuzzer.html#output
 [quic_stream_factory_fuzzer.cc]: https://cs.chromium.org/chromium/src/net/quic/quic_stream_factory_fuzzer.cc
-[sanitizers]: https://github.com/google/sanitizers

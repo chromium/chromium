@@ -1,29 +1,31 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_DESKS_STORAGE_CORE_LOCAL_DESK_DATA_MANAGER_H_
 #define COMPONENTS_DESKS_STORAGE_CORE_LOCAL_DESK_DATA_MANAGER_H_
 
-#include <map>
 #include <memory>
 
+#include "ash/public/cpp/desk_template.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/guid.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "base/task/sequenced_task_runner_helpers.h"
+#include "components/account_id/account_id.h"
 #include "components/desks_storage/core/desk_model.h"
 
 namespace ash {
-class DeskTemplate;
 class OverviewTestBase;
 }  // namespace ash
 
 namespace desks_storage {
 // The LocalDeskDataManager is the local storage implementation of
 // the DeskModel interface and handles storage operations for local
-// desk templates.
+// desk templates and save and recall desks.
 //
 // TODO(crbug.com/1227215): add calls to DeskModelObserver
 class LocalDeskDataManager : public DeskModel {
@@ -44,93 +46,126 @@ class LocalDeskDataManager : public DeskModel {
     kInvalidPath,
   };
 
-  explicit LocalDeskDataManager(const base::FilePath& path);
+  LocalDeskDataManager(const base::FilePath& user_data_dir_path,
+                       const AccountId& account_id);
 
   LocalDeskDataManager(const LocalDeskDataManager&) = delete;
   LocalDeskDataManager& operator=(const LocalDeskDataManager&) = delete;
   ~LocalDeskDataManager() override;
 
+  struct LoadCacheResult {
+    LoadCacheResult(CacheStatus status,
+                    std::vector<std::unique_ptr<ash::DeskTemplate>> entries);
+    LoadCacheResult(LoadCacheResult&& other);
+    ~LoadCacheResult();
+    CacheStatus status;
+    std::vector<std::unique_ptr<ash::DeskTemplate>> entries;
+  };
+
+  struct DeleteTaskResult {
+    DeleteTaskResult(DeleteEntryStatus status,
+                     std::vector<std::unique_ptr<ash::DeskTemplate>> entries);
+    DeleteTaskResult(DeleteTaskResult&& other);
+    ~DeleteTaskResult();
+    DeleteEntryStatus status;
+    std::vector<std::unique_ptr<ash::DeskTemplate>> entries;
+  };
+
   // DeskModel:
-  void GetAllEntries(GetAllEntriesCallback callback) override;
-  void GetEntryByUUID(const std::string& uuid,
-                      GetEntryByUuidCallback callback) override;
+  DeskModel::GetAllEntriesResult GetAllEntries() override;
+  DeskModel::GetEntryByUuidResult GetEntryByUUID(
+      const base::GUID& uuid) override;
   void AddOrUpdateEntry(std::unique_ptr<ash::DeskTemplate> new_entry,
                         AddOrUpdateEntryCallback callback) override;
-  void DeleteEntry(const std::string& uuid,
+  void DeleteEntry(const base::GUID& uuid,
                    DeleteEntryCallback callback) override;
   void DeleteAllEntries(DeleteEntryCallback callback) override;
   std::size_t GetEntryCount() const override;
   std::size_t GetMaxEntryCount() const override;
+  std::size_t GetSaveAndRecallDeskEntryCount() const override;
+  std::size_t GetDeskTemplateEntryCount() const override;
+  std::size_t GetMaxSaveAndRecallDeskEntryCount() const override;
+  std::size_t GetMaxDeskTemplateEntryCount() const override;
   std::vector<base::GUID> GetAllEntryUuids() const override;
   bool IsReady() const override;
   bool IsSyncing() const override;
+  ash::DeskTemplate* FindOtherEntryWithName(
+      const std::u16string& name,
+      ash::DeskTemplateType type,
+      const base::GUID& uuid) const override;
+
+  static void SetDisableMaxTemplateLimitForTesting(bool disabled);
+  static void SetExcludeSaveAndRecallDeskInMaxEntryCountForTesting(
+      bool disabled);
 
  private:
   friend class ash::OverviewTestBase;
 
-  // Loads desk templates from |local_path_| into cache if the cache is not
+  // Loads templates from `user_data_dir_path` into the
+  // `saved_desks_list_`, based on the template's desk type, if the cache is not
   // loaded yet.
-  void EnsureCacheIsLoaded();
 
-  // Gets all desk templates from user's local template directory.
-  void GetAllEntriesTask(DeskModel::GetAllEntriesStatus* status_ptr,
-                         std::vector<ash::DeskTemplate*>* entries_ptr);
+  static LoadCacheResult LoadCacheOnBackgroundSequence(
+      const base::FilePath& user_data_dir_path);
 
-  // Wrapper method to call GetAllEntriesCallback.
-  void OnGetAllEntries(
-      std::unique_ptr<DeskModel::GetAllEntriesStatus> status_ptr,
-      std::unique_ptr<std::vector<ash::DeskTemplate*>> entries_ptr,
-      DeskModel::GetAllEntriesCallback callback);
-
-  // Get a specific desk template by |uuid_str|.
-  void GetEntryByUuidTask(const std::string& uuid_str,
-                          DeskModel::GetEntryByUuidStatus* status_ptr,
-                          ash::DeskTemplate** entry_ptr_ptr);
-
-  // Wrapper method to call GetEntryByUuidCallback.
-  void OnGetEntryByUuid(
-      std::unique_ptr<DeskModel::GetEntryByUuidStatus> status_ptr,
-      std::unique_ptr<ash::DeskTemplate*> entry_ptr_ptr,
-      DeskModel::GetEntryByUuidCallback callback);
-
-  // Add or update a desk template by |new_entry|'s UUID.
-  void AddOrUpdateEntryTask(std::unique_ptr<ash::DeskTemplate> new_entry,
-                            DeskModel::AddOrUpdateEntryStatus* status_ptr);
+  // Add or update an entry by `new_entry`'s UUID.
+  static AddOrUpdateEntryStatus AddOrUpdateEntryTask(
+      const base::FilePath& local_saved_desk_path,
+      const base::GUID uuid,
+      base::Value entry_base_value);
 
   // Wrapper method to call AddOrUpdateEntryCallback.
-  void OnAddOrUpdateEntry(
-      std::unique_ptr<DeskModel::AddOrUpdateEntryStatus> status_ptr,
-      DeskModel::AddOrUpdateEntryCallback callback);
+  void OnAddOrUpdateEntry(AddOrUpdateEntryCallback callback,
+                          bool is_update,
+                          ash::DeskTemplateType desk_type,
+                          const base::GUID uuid,
+                          std::unique_ptr<ash::DeskTemplate> entry,
+                          AddOrUpdateEntryStatus status);
 
-  // Remove entry with |uuid_str|. If the entry with |uuid_str| does not
+  using SavedDesks =
+      base::flat_map<base::GUID, std::unique_ptr<ash::DeskTemplate>>;
+
+  // Remove entry with `uuid`. If the entry with `uuid` does not
   // exist, then the deletion is considered a success.
-  void DeleteEntryTask(const std::string& uuid_str,
-                       DeskModel::DeleteEntryStatus* status_ptr);
+  static DeleteTaskResult DeleteEntryTask(
+      const base::FilePath& local_saved_desk_path,
+      const base::GUID& uuid,
+      std::vector<std::unique_ptr<ash::DeskTemplate>> roll_back_entry);
 
   // Delete all entries.
-  void DeleteAllEntriesTask(DeskModel::DeleteEntryStatus* status_ptr);
+  static DeleteTaskResult DeleteAllEntriesTask(
+      const base::FilePath& local_saved_desk_path,
+      std::vector<std::unique_ptr<ash::DeskTemplate>> entries);
 
   // Wrapper method to call DeleteEntryCallback.
-  void OnDeleteEntry(std::unique_ptr<DeskModel::DeleteEntryStatus> status_ptr,
-                     DeskModel::DeleteEntryCallback callback);
+  void OnDeleteEntry(DeleteEntryCallback callback,
+                     DeleteTaskResult delete_return);
 
-  // Returns true if |templates_| contains a desk template with |name|.
-  bool HasTemplateWithName(const std::u16string& name);
+  // Returns the desk type of the `uuid`.
+  ash::DeskTemplateType GetDeskTypeOfUuid(const base::GUID uuid) const;
+
+  // Wrapper method to load the read files into the `saved_desks_list_` cache.
+  void MoveEntriesIntoCache(LoadCacheResult cache_result);
 
   // Task runner used to schedule tasks on the IO thread.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  // File path to the template subdirection in user data directory's:
-  // e.g. "/path/to/user/data/dir/templates".
-  const base::FilePath local_path_;
+  // File path to the user data directory's: e.g.
+  // "/path/to/user/data/dir/".
+  const base::FilePath user_data_dir_path_;
 
-  // In-memory desk template cache that owns desk_templates so that these desk
-  // templates can be retrieved by GetAllEntries.
-  // |templates_| is keyed by UUIDs.
-  std::map<base::GUID, std::unique_ptr<ash::DeskTemplate>> templates_;
+  // File path to the saveddesks template subdirectory in user data directory's:
+  // e.g. "/path/to/user/data/dir/saveddesk".
+  const base::FilePath local_saved_desk_path_;
 
-  // Flag indicating the status of this in memory cache.
+  // Account ID of the user this class will cache app data for.
+  const AccountId account_id_;
+
+  // Cache status of the templates cache for both desk types.
   CacheStatus cache_status_;
+
+  // In memory cache of saved desks based on their type.
+  base::flat_map<ash::DeskTemplateType, SavedDesks> saved_desks_list_;
 
   // Weak pointer factory for posting tasks to task runner.
   base::WeakPtrFactory<LocalDeskDataManager> weak_ptr_factory_{this};

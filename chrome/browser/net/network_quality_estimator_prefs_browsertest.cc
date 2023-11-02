@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,11 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/process/memory.h"
 #include "base/run_loop.h"
 #include "base/task/deferred_sequenced_task_runner.h"
-#include "base/task/post_task.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_restrictions.h"
@@ -40,6 +40,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/base/filename_util.h"
 #include "net/nqe/effective_connection_type.h"
 #include "net/nqe/network_quality_estimator.h"
@@ -138,7 +139,7 @@ class TestNetworkQualityObserver
  private:
   net::EffectiveConnectionType run_loop_wait_effective_connection_type_;
   std::unique_ptr<base::RunLoop> run_loop_;
-  network::NetworkQualityTracker* tracker_;
+  raw_ptr<network::NetworkQualityTracker> tracker_;
   net::EffectiveConnectionType effective_connection_type_;
 };
 
@@ -202,25 +203,23 @@ IN_PROC_BROWSER_TEST_F(NetworkQualityEstimatorPrefsBrowserTest,
   context_params->cert_verifier_params = content::GetCertVerifierParams(
       cert_verifier::mojom::CertVerifierCreationParams::New());
   context_params->file_paths = network::mojom::NetworkContextFilePaths::New();
-  context_params->file_paths->data_path =
-      browser()->profile()->GetPath().Append(
-          FILE_PATH_LITERAL("Network For Testing"));
+  const base::FilePath data_path = browser()->profile()->GetPath().Append(
+      FILE_PATH_LITERAL("Network For Testing"));
+  context_params->file_paths->data_directory = data_path;
   context_params->file_paths->unsandboxed_data_path =
       browser()->profile()->GetPath();
   context_params->file_paths->http_server_properties_file_name =
       base::FilePath(FILE_PATH_LITERAL("Temp Network Persistent State"));
   context_params->file_paths->trigger_migration = true;
 
-  base::CreateDirectory(context_params->file_paths->data_path);
-  auto state = base::MakeRefCounted<JsonPrefStore>(
-      context_params->file_paths->data_path.Append(
-          *context_params->file_paths->http_server_properties_file_name));
+  base::CreateDirectory(data_path);
+  auto state = base::MakeRefCounted<JsonPrefStore>(data_path.Append(
+      *context_params->file_paths->http_server_properties_file_name));
 
   base::DictionaryValue pref_value;
   base::Value value("2G");
   pref_value.SetKey("network_id_foo", value.Clone());
-  state->SetValue("net.network_qualities",
-                  base::Value::ToUniquePtrValue(pref_value.Clone()), 0);
+  state->SetValue("net.network_qualities", pref_value.Clone(), 0);
 
   // Wait for the pending commit to finish before creating the network context.
   base::RunLoop loop;

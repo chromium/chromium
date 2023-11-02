@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ const FilterOperations& GetFilterList(const CSSProperty& property,
   switch (property.PropertyID()) {
     default:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case CSSPropertyID::kBackdropFilter:
       return style.BackdropFilter();
     case CSSPropertyID::kFilter:
@@ -258,7 +258,7 @@ void CSSFilterListInterpolationType::ApplyStandardPropertyValue(
   wtf_size_t length = interpolable_list.length();
 
   FilterOperations filter_operations;
-  filter_operations.Operations().ReserveCapacity(length);
+  filter_operations.Operations().reserve(length);
   for (wtf_size_t i = 0; i < length; i++) {
     filter_operations.Operations().push_back(
         To<InterpolableFilter>(interpolable_list.Get(i))

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,13 +13,14 @@
 #include "base/containers/id_map.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/single_sample_metrics.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "third_party/blink/public/platform/media/webmediaplayer_delegate.h"
+#include "third_party/blink/public/web/web_view_observer.h"
 
 namespace blink {
 enum class WebFullscreenVideoStatus;
@@ -33,6 +34,7 @@ enum class MediaContentType;
 // the MediaPlayerDelegateHost.
 class CONTENT_EXPORT RendererWebMediaPlayerDelegate
     : public content::RenderFrameObserver,
+      public blink::WebViewObserver,
       public blink::WebMediaPlayerDelegate,
       public base::SupportsWeakPtr<RendererWebMediaPlayerDelegate> {
  public:
@@ -65,9 +67,11 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate
   bool IsStale(int player_id) override;
 
   // content::RenderFrameObserver overrides.
-  void WasHidden() override;
-  void WasShown() override;
   void OnDestruct() override;
+
+  // blink::WebViewObserver overrides.
+  void OnPageVisibilityChanged(
+      blink::mojom::PageVisibilityState visibility_state) override;
 
   // Returns the number of WebMediaPlayers that are associated with this
   // delegate.
@@ -145,9 +149,9 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate
   // when the idle cleanup timer should be fired more aggressively.
   bool is_low_end_;
 
-  // Records the peak player count for this render frame.
-  size_t peak_player_count_ = 0u;
-  std::unique_ptr<base::SingleSampleMetric> peak_player_count_uma_;
+  // Last page shown/hidden state sent to the player.  Unset if we have not sent
+  // any message.  Used to elide duplicates.
+  absl::optional<bool> is_shown_;
 };
 
 }  // namespace media

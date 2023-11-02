@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,8 @@
 
 // Moves the tiles down, by setting the content offset of the collection to 0.
 - (void)shiftTilesDown;
-// Moves the tiles up by pinning the omnibox to the top. |completion| is called
-// when the collection is scrolled to top. |animations| is called only if it is
+// Moves the tiles up by pinning the omnibox to the top. `completion` is called
+// when the collection is scrolled to top. `animations` is called only if it is
 // not yet scrolled to the top.
 - (void)shiftTilesUpWithAnimations:(ProceduralBlock)animations
                         completion:

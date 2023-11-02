@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,32 +9,41 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_sides.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_items.h"
 #include "third_party/blink/renderer/core/layout/ng/mathml/ng_mathml_paint_info.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_borders.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_fragment_data.h"
+#include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
 #include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
+#include "third_party/blink/renderer/platform/wtf/bit_field.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
-class NGBlockBreakToken;
 class NGBoxFragmentBuilder;
 enum class NGOutlineType;
+struct FrameSetLayoutData;
 
 class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
  public:
-  static scoped_refptr<const NGPhysicalBoxFragment> Create(
+  static const NGPhysicalBoxFragment* Create(
       NGBoxFragmentBuilder* builder,
       WritingMode block_or_line_writing_mode);
-  // Creates a copy of |other| but uses the "post-layout" fragments to ensure
-  // fragment-tree consistency.
-  static scoped_refptr<const NGPhysicalBoxFragment>
-  CloneWithPostLayoutFragments(const NGPhysicalBoxFragment& other,
-                               const absl::optional<PhysicalRect>
-                                   updated_layout_overflow = absl::nullopt);
+
+  // Creates a shallow copy of |other|.
+  static const NGPhysicalBoxFragment* Clone(const NGPhysicalBoxFragment& other);
+
+  // Creates a shallow copy of |other| but uses the "post-layout" fragments to
+  // ensure fragment-tree consistency.
+  static const NGPhysicalBoxFragment* CloneWithPostLayoutFragments(
+      const NGPhysicalBoxFragment& other,
+      const absl::optional<PhysicalRect> updated_layout_overflow =
+          absl::nullopt);
 
   using PassKey = base::PassKey<NGPhysicalBoxFragment>;
   NGPhysicalBoxFragment(PassKey,
@@ -50,25 +59,16 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
                         bool has_rare_data,
                         WritingMode block_or_line_writing_mode);
 
+  // Make a shallow copy. The child fragment pointers are just shallowly
+  // copied. Fragment *items* are cloned (but not box fragments associated with
+  // items), though. Additionally, the copy will set new overflow information,
+  // based on the parameters, rather than copying it from the original fragment.
   NGPhysicalBoxFragment(PassKey,
                         const NGPhysicalBoxFragment& other,
                         bool has_layout_overflow,
-                        const PhysicalRect& layout_overflow,
-                        bool recalculate_layout_overflow);
+                        const PhysicalRect& layout_overflow);
 
-  ~NGPhysicalBoxFragment() {
-    ink_overflow_.Reset(InkOverflowType());
-    if (const_has_fragment_items_)
-      ComputeItemsAddress()->~NGFragmentItems();
-    if (const_has_rare_data_)
-      ComputeRareDataAddress()->~RareData();
-    if (ChildrenValid()) {
-      for (const NGLink& child : Children()) {
-        if (child.fragment)
-          child.fragment->Release();
-      }
-    }
-  }
+  ~NGPhysicalBoxFragment();
 
 #if DCHECK_IS_ON()
   class AllowPostLayoutScope {
@@ -83,6 +83,8 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     static unsigned allow_count_;
   };
 #endif
+
+  void TraceAfterDispatch(Visitor* visitor) const;
 
   const NGPhysicalBoxFragment* PostLayout() const;
 
@@ -128,14 +130,18 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   }
 
   // Returns |NGFragmentItems| if this fragment has one.
-  bool HasItems() const { return const_has_fragment_items_; }
+  bool HasItems() const {
+    // Use get_concurrently because it can be called from a background thread in
+    // TraceAfterDispatch().
+    return bit_field_.get_concurrently<ConstHasFragmentItemsFlag>();
+  }
   const NGFragmentItems* Items() const {
-    return const_has_fragment_items_ ? ComputeItemsAddress() : nullptr;
+    return HasItems() ? ComputeItemsAddress() : nullptr;
   }
 
-  absl::optional<LayoutUnit> Baseline() const {
-    if (has_baseline_)
-      return baseline_;
+  absl::optional<LayoutUnit> FirstBaseline() const {
+    if (has_first_baseline_)
+      return first_baseline_;
     return absl::nullopt;
   }
 
@@ -145,7 +151,19 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     return absl::nullopt;
   }
 
-  PhysicalRect TableGridRect() const {
+  bool UseLastBaselineForInlineBaseline() const {
+    return use_last_baseline_for_inline_baseline_;
+  }
+
+  bool UseBlockEndMarginEdgeForInlineBaseline() const {
+    if (!use_last_baseline_for_inline_baseline_)
+      return false;
+    if (const auto* layout_block = DynamicTo<LayoutBlock>(GetLayoutObject()))
+      return layout_block->UseLogicalBottomMarginEdgeForInlineBlockBaseline();
+    return false;
+  }
+
+  LogicalRect TableGridRect() const {
     return ComputeRareDataAddress()->table_grid_rect;
   }
 
@@ -154,7 +172,9 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   }
 
   const NGTableBorders* TableCollapsedBorders() const {
-    return ComputeRareDataAddress()->table_collapsed_borders.get();
+    return ConstHasRareData()
+               ? ComputeRareDataAddress()->table_collapsed_borders.get()
+               : nullptr;
   }
 
   const NGTableFragmentData::CollapsedBordersGeometry*
@@ -166,27 +186,66 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     return ComputeRareDataAddress()->table_cell_column_index;
   }
 
+  absl::optional<wtf_size_t> TableSectionStartRowIndex() const {
+    DCHECK(IsTableNGSection());
+    if (!ConstHasRareData())
+      return absl::nullopt;
+    const auto* rare_data = ComputeRareDataAddress();
+    if (rare_data->table_section_row_offsets.empty())
+      return absl::nullopt;
+    return rare_data->table_section_start_row_index;
+  }
+
+  const Vector<LayoutUnit>* TableSectionRowOffsets() const {
+    DCHECK(IsTableNGSection());
+    return ConstHasRareData()
+               ? &ComputeRareDataAddress()->table_section_row_offsets
+               : nullptr;
+  }
+
+  // The name of the page (if any) to which this fragment belongs. The page name
+  // is propagated all the way up to the page fragment, which is needed in order
+  // to support e.g. page orientation. See https://drafts.csswg.org/css-page-3
+  AtomicString PageName() const {
+    if (!ConstHasRareData())
+      return AtomicString();
+    return ComputeRareDataAddress()->page_name;
+  }
+
   // Returns the layout-overflow for this fragment.
   const PhysicalRect LayoutOverflow() const {
     if (is_legacy_layout_root_)
       return To<LayoutBox>(GetLayoutObject())->PhysicalLayoutOverflowRect();
-    if (!has_layout_overflow_)
+    if (!HasLayoutOverflow())
       return {{}, Size()};
     return *ComputeLayoutOverflowAddress();
   }
 
-  bool HasLayoutOverflow() const { return has_layout_overflow_; }
+  bool HasLayoutOverflow() const {
+    return bit_field_.get<HasLayoutOverflowFlag>();
+  }
 
   const NGPhysicalBoxStrut Borders() const {
-    if (!has_borders_)
+    if (!HasBorders())
       return NGPhysicalBoxStrut();
     return *ComputeBordersAddress();
   }
 
   const NGPhysicalBoxStrut Padding() const {
-    if (!has_padding_)
+    if (!HasPadding())
       return NGPhysicalBoxStrut();
     return *ComputePaddingAddress();
+  }
+
+  const PhysicalOffset ContentOffset() const {
+    if (!HasBorders() && !HasPadding())
+      return PhysicalOffset();
+    PhysicalOffset offset;
+    if (HasBorders())
+      offset += Borders().Offset();
+    if (HasPadding())
+      offset += Padding().Offset();
+    return offset;
   }
 
   // Returns the bounds of any inflow children for this fragment (specifically
@@ -198,7 +257,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   // size and position of the grid instead.
   // This is used for scrollable overflow calculations.
   const absl::optional<PhysicalRect> InflowBounds() const {
-    if (!has_inflow_bounds_)
+    if (!HasInflowBounds())
       return absl::nullopt;
     return *ComputeInflowBoundsAddress();
   }
@@ -231,7 +290,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   //       </span>
   //       <span style="display:inline-flex;">   <!-- N/A -->
   bool IsInlineFormattingContext() const {
-    return is_inline_formatting_context_;
+    return bit_field_.get<IsInlineFormattingContextFlag>();
   }
 
   // The |LayoutBox| whose |PhysicalFragments()| contains |this|. This is
@@ -239,7 +298,8 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   const LayoutBox* OwnerLayoutBox() const;
   LayoutBox* MutableOwnerLayoutBox() const;
 
-  // Returns the offset in the |OwnerLayoutBox| coordinate system.
+  // Returns the offset in the |OwnerLayoutBox| coordinate system. This is only
+  // supported for CSS boxes (i.e. not for fragmentainers, for instance).
   PhysicalOffset OffsetFromOwnerLayoutBox() const;
 
   PhysicalRect ScrollableOverflow(TextHeightType height_type) const;
@@ -265,14 +325,15 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   PhysicalSize ScrollSize() const;
 
   NGInkOverflow::Type InkOverflowType() const {
-    return static_cast<NGInkOverflow::Type>(ink_overflow_type_);
+    return static_cast<NGInkOverflow::Type>(
+        bit_field_.get<InkOverflowTypeValue>());
   }
   bool IsInkOverflowComputed() const {
-    return InkOverflowType() != NGInkOverflow::kNotSet &&
-           InkOverflowType() != NGInkOverflow::kInvalidated;
+    return InkOverflowType() != NGInkOverflow::Type::kNotSet &&
+           InkOverflowType() != NGInkOverflow::Type::kInvalidated;
   }
   bool HasInkOverflow() const {
-    return InkOverflowType() != NGInkOverflow::kNone;
+    return InkOverflowType() != NGInkOverflow::Type::kNone;
   }
 
   // 3 types of ink overflows:
@@ -302,20 +363,12 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   }
   const NGPhysicalBoxFragment* InlineContainerFragmentIfOutlineOwner() const;
 
-  // Returns the |ComputedStyle| to use for painting outlines. When |this| is
-  // a block in a continuation-chain, it may need to paint outlines if its
-  // ancestor inline boxes in the DOM tree has outlines.
-  const ComputedStyle* StyleForContinuationOutline() const {
-    if (const auto* layout_object = GetLayoutObject())
-      return layout_object->StyleForContinuationOutline();
-    return nullptr;
-  }
-
   // Fragment offset is this fragment's offset from parent.
   // Needed to compensate for LayoutInline Legacy code offsets.
   void AddSelfOutlineRects(const PhysicalOffset& additional_offset,
                            NGOutlineType include_block_overflows,
-                           Vector<PhysicalRect>* outline_rects) const;
+                           Vector<PhysicalRect>* outline_rects,
+                           LayoutObject::OutlineInfo* info) const;
   // Same as |AddSelfOutlineRects|, except when |this.IsInlineBox()|, in which
   // case the coordinate system is relative to the inline formatting context.
   void AddOutlineRects(const PhysicalOffset& additional_offset,
@@ -324,38 +377,50 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
 
   PositionWithAffinity PositionForPoint(PhysicalOffset) const;
 
-  UBiDiLevel BidiLevel() const;
+  // The outsets to apply to the border-box of this fragment for
+  // |overflow-clip-margin|.
+  NGPhysicalBoxStrut OverflowClipMarginOutsets() const;
 
   PhysicalBoxSides SidesToInclude() const {
-    return PhysicalBoxSides(include_border_top_, include_border_right_,
-                            include_border_bottom_, include_border_left_);
+    return PhysicalBoxSides(IncludeBorderTop(), IncludeBorderRight(),
+                            IncludeBorderBottom(), IncludeBorderLeft());
+  }
+
+  const NGBlockBreakToken* BreakToken() const {
+    return To<NGBlockBreakToken>(NGPhysicalFragment::BreakToken());
   }
 
   // Return true if this is the first fragment generated from a node.
-  bool IsFirstForNode() const { return is_first_for_node_; }
+  bool IsFirstForNode() const { return bit_field_.get<IsFirstForNodeFlag>(); }
 
   // Return true if this is the only fragment generated from a node.
   bool IsOnlyForNode() const { return IsFirstForNode() && !BreakToken(); }
 
   bool HasDescendantsForTablePart() const {
     DCHECK(IsTableNGPart() || IsTableNGCell());
-    return has_descendants_for_table_part_;
+    return bit_field_.get<HasDescendantsForTablePartFlag>();
   }
 
   bool IsFragmentationContextRoot() const {
-    return is_fragmentation_context_root_;
+    return bit_field_.get<IsFragmentationContextRootFlag>();
   }
+
+  bool IsMonolithic() const { return bit_field_.get<IsMonolithicFlag>(); }
 
 #if DCHECK_IS_ON()
   void CheckSameForSimplifiedLayout(const NGPhysicalBoxFragment&,
                                     bool check_same_block_size) const;
 #endif
 
+  const FrameSetLayoutData* GetFrameSetLayoutData() const {
+    return ComputeRareDataAddress()->frame_set_layout_data.get();
+  }
+
   bool HasExtraMathMLPainting() const {
     if (IsMathMLFraction())
       return true;
 
-    if (const_has_rare_data_ && ComputeRareDataAddress()->mathml_paint_info)
+    if (ConstHasRareData() && ComputeRareDataAddress()->mathml_paint_info)
       return true;
 
     return false;
@@ -389,6 +454,36 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     return MutableForPainting(*this);
   }
 
+  class MutableForCloning {
+    STACK_ALLOCATED();
+    friend class NGFragmentRepeater;
+    friend class NGPhysicalBoxFragment;
+
+   public:
+    void ClearIsFirstForNode() {
+      fragment_.bit_field_.set<IsFirstForNodeFlag>(false);
+    }
+    void ClearPropagatedOOFs() { fragment_.ClearOutOfFlowData(); }
+    void SetBreakToken(const NGBlockBreakToken* token) {
+      fragment_.break_token_ = token;
+    }
+    base::span<NGLink> Children() const {
+      DCHECK(fragment_.children_valid_);
+      return base::make_span(fragment_.children_,
+                             fragment_.const_num_children_);
+    }
+
+   private:
+    explicit MutableForCloning(const NGPhysicalBoxFragment& fragment)
+        : fragment_(const_cast<NGPhysicalBoxFragment&>(fragment)) {}
+
+    NGPhysicalBoxFragment& fragment_;
+  };
+  friend class MutableForCloning;
+  MutableForCloning GetMutableForCloning() const {
+    return MutableForCloning(*this);
+  }
+
   // Returns if this fragment can compute ink overflow.
   bool CanUseFragmentsForInkOverflow() const { return !IsLegacyLayoutRoot(); }
   // Recalculates and updates |*InkOverflow|.
@@ -399,82 +494,168 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
 #if DCHECK_IS_ON()
   void InvalidateInkOverflow();
   void AssertFragmentTreeSelf() const;
-  void AssertFragmentTreeChildren(bool allow_destroyed = false) const;
+  void AssertFragmentTreeChildren(bool allow_destroyed_or_moved = false) const;
 #endif
 
+ protected:
+  friend class NGPhysicalFragment;
+  void Dispose();
+
  private:
-  static size_t ByteSize(wtf_size_t num_fragment_items,
-                         wtf_size_t num_children,
-                         bool has_layout_overflow,
-                         bool has_borders,
-                         bool has_padding,
-                         bool has_inflow_bounds,
-                         bool has_rare_data);
+  using BitField = WTF::ConcurrentlyReadBitField<uint32_t>;
+  using ConstHasFragmentItemsFlag =
+      BitField::DefineFirstValue<bool, 1, WTF::BitFieldValueConstness::kConst>;
+  using IsInlineFormattingContextFlag =
+      ConstHasFragmentItemsFlag::DefineNextValue<bool, 1>;
+  using IncludeBorderTopFlag =
+      IsInlineFormattingContextFlag::DefineNextValue<bool, 1>;
+  using IncludeBorderRightFlag = IncludeBorderTopFlag::DefineNextValue<bool, 1>;
+  using IncludeBorderBottomFlag =
+      IncludeBorderRightFlag::DefineNextValue<bool, 1>;
+  using IncludeBorderLeftFlag =
+      IncludeBorderBottomFlag::DefineNextValue<bool, 1>;
+  using HasLayoutOverflowFlag = IncludeBorderLeftFlag::DefineNextValue<bool, 1>;
+  using InkOverflowTypeValue =
+      HasLayoutOverflowFlag::DefineNextValue<uint8_t, NGInkOverflow::kTypeBits>;
+  using HasBordersFlag = InkOverflowTypeValue::DefineNextValue<bool, 1>;
+  using HasPaddingFlag = HasBordersFlag::DefineNextValue<bool, 1>;
+  using HasInflowBoundsFlag = HasPaddingFlag::DefineNextValue<bool, 1>;
+  using ConstHasRareDataFlag = HasInflowBoundsFlag::
+      DefineNextValue<bool, 1, WTF::BitFieldValueConstness::kConst>;
+  using IsFirstForNodeFlag = ConstHasRareDataFlag::DefineNextValue<bool, 1>;
+  using HasDescendantsForTablePartFlag =
+      IsFirstForNodeFlag::DefineNextValue<bool, 1>;
+  using IsFragmentationContextRootFlag =
+      HasDescendantsForTablePartFlag::DefineNextValue<bool, 1>;
+  using IsMonolithicFlag =
+      IsFragmentationContextRootFlag::DefineNextValue<bool, 1>;
+
+  bool ConstHasRareData() const {
+    // Use get_concurrently because it can be called from a background thread in
+    // TraceAfterDispatch().
+    return bit_field_.get_concurrently<ConstHasRareDataFlag>();
+  }
+  bool IncludeBorderTop() const {
+    return bit_field_.get<IncludeBorderTopFlag>();
+  }
+  bool IncludeBorderRight() const {
+    return bit_field_.get<IncludeBorderRightFlag>();
+  }
+  bool IncludeBorderBottom() const {
+    return bit_field_.get<IncludeBorderBottomFlag>();
+  }
+  bool IncludeBorderLeft() const {
+    return bit_field_.get<IncludeBorderLeftFlag>();
+  }
+  bool HasBorders() const { return bit_field_.get<HasBordersFlag>(); }
+  bool HasPadding() const { return bit_field_.get<HasPaddingFlag>(); }
+  bool HasInflowBounds() const { return bit_field_.get<HasInflowBoundsFlag>(); }
+
+  static size_t AdditionalByteSize(wtf_size_t num_fragment_items,
+                                   wtf_size_t num_children,
+                                   bool has_layout_overflow,
+                                   bool has_borders,
+                                   bool has_padding,
+                                   bool has_inflow_bounds,
+                                   bool has_rare_data);
 
   struct RareData {
+    DISALLOW_NEW();
+
+   public:
     RareData(const RareData&);
     explicit RareData(NGBoxFragmentBuilder*);
+    void Trace(Visitor*) const;
 
+    const std::unique_ptr<const FrameSetLayoutData> frame_set_layout_data;
     const std::unique_ptr<const NGMathMLPaintInfo> mathml_paint_info;
 
-    // TablesNG rare data.
-    PhysicalRect table_grid_rect;
+    // Table rare-data.
+    LogicalRect table_grid_rect;
     NGTableFragmentData::ColumnGeometries table_column_geometries;
     scoped_refptr<const NGTableBorders> table_collapsed_borders;
     std::unique_ptr<NGTableFragmentData::CollapsedBordersGeometry>
         table_collapsed_borders_geometry;
+
+    // Table-cell rare-data.
     wtf_size_t table_cell_column_index;
+
+    // Table-section rare-data.
+    wtf_size_t table_section_start_row_index;
+    Vector<LayoutUnit> table_section_row_offsets;
+
+    // Pagination data.
+    AtomicString page_name;
   };
 
   const NGFragmentItems* ComputeItemsAddress() const {
-    DCHECK(const_has_fragment_items_ || has_layout_overflow_ || has_borders_ ||
-           has_padding_ || has_inflow_bounds_ || const_has_rare_data_);
+    DCHECK(HasItems() || HasLayoutOverflow() || HasBorders() || HasPadding() ||
+           HasInflowBounds() || ConstHasRareData());
     const NGLink* children_end = children_ + const_num_children_;
-    return reinterpret_cast<const NGFragmentItems*>(children_end);
+    return reinterpret_cast<const NGFragmentItems*>(
+        base::bits::AlignUp(reinterpret_cast<const uint8_t*>(children_end),
+                            alignof(NGFragmentItems)));
   }
 
   const PhysicalRect* ComputeLayoutOverflowAddress() const {
-    DCHECK(has_layout_overflow_ || has_borders_ || has_padding_ ||
-           has_inflow_bounds_ || const_has_rare_data_);
+    DCHECK(HasLayoutOverflow() || HasBorders() || HasPadding() ||
+           HasInflowBounds() || ConstHasRareData());
     const NGFragmentItems* items = ComputeItemsAddress();
-    if (!const_has_fragment_items_)
-      return reinterpret_cast<const PhysicalRect*>(items);
+    const uint8_t* uint8_t_items = reinterpret_cast<const uint8_t*>(items);
+    if (HasItems())
+      uint8_t_items += items->ByteSize();
+
     return reinterpret_cast<const PhysicalRect*>(
-        reinterpret_cast<const uint8_t*>(items) + items->ByteSize());
+        base::bits::AlignUp(uint8_t_items, alignof(PhysicalRect)));
   }
 
   const NGPhysicalBoxStrut* ComputeBordersAddress() const {
-    DCHECK(has_borders_ || has_padding_ || has_inflow_bounds_ ||
-           const_has_rare_data_);
+    DCHECK(HasBorders() || HasPadding() || HasInflowBounds() ||
+           ConstHasRareData());
     const PhysicalRect* address = ComputeLayoutOverflowAddress();
-    return has_layout_overflow_
-               ? reinterpret_cast<const NGPhysicalBoxStrut*>(address + 1)
-               : reinterpret_cast<const NGPhysicalBoxStrut*>(address);
+    const uint8_t* unaligned_border_address =
+        HasLayoutOverflow() ? reinterpret_cast<const uint8_t*>(address + 1)
+                            : reinterpret_cast<const uint8_t*>(address);
+    return reinterpret_cast<const NGPhysicalBoxStrut*>(base::bits::AlignUp(
+        unaligned_border_address, alignof(NGPhysicalBoxStrut)));
   }
 
   const NGPhysicalBoxStrut* ComputePaddingAddress() const {
-    DCHECK(has_padding_ || has_inflow_bounds_ || const_has_rare_data_);
+    DCHECK(HasPadding() || HasInflowBounds() || ConstHasRareData());
     const NGPhysicalBoxStrut* address = ComputeBordersAddress();
-    return has_borders_ ? address + 1 : address;
+    const uint8_t* unaligned_address =
+        HasBorders() ? reinterpret_cast<const uint8_t*>(address + 1)
+                     : reinterpret_cast<const uint8_t*>(address);
+    return reinterpret_cast<const NGPhysicalBoxStrut*>(
+        base::bits::AlignUp(unaligned_address, alignof(NGPhysicalBoxStrut)));
   }
 
   const PhysicalRect* ComputeInflowBoundsAddress() const {
-    DCHECK(has_inflow_bounds_ || const_has_rare_data_);
+    DCHECK(HasInflowBounds() || ConstHasRareData());
     NGPhysicalBoxStrut* address =
         const_cast<NGPhysicalBoxStrut*>(ComputePaddingAddress());
-    return has_padding_ ? reinterpret_cast<PhysicalRect*>(address + 1)
-                        : reinterpret_cast<PhysicalRect*>(address);
+    const uint8_t* unaligned_address =
+        HasPadding() ? reinterpret_cast<const uint8_t*>(address + 1)
+                     : reinterpret_cast<const uint8_t*>(address);
+    return reinterpret_cast<const PhysicalRect*>(
+        base::bits::AlignUp(unaligned_address, alignof(PhysicalRect)));
   }
 
   const RareData* ComputeRareDataAddress() const {
-    DCHECK(const_has_rare_data_);
+    DCHECK(ConstHasRareData());
     PhysicalRect* address =
         const_cast<PhysicalRect*>(ComputeInflowBoundsAddress());
-    return has_inflow_bounds_ ? reinterpret_cast<RareData*>(address + 1)
-                              : reinterpret_cast<RareData*>(address);
+    const uint8_t* unaligned_address =
+        HasInflowBounds() ? reinterpret_cast<const uint8_t*>(address + 1)
+                          : reinterpret_cast<const uint8_t*>(address);
+    return reinterpret_cast<const RareData*>(
+        base::bits::AlignUp(unaligned_address, alignof(RareData)));
   }
 
   void SetInkOverflow(const PhysicalRect& self, const PhysicalRect& contents);
+  void SetInkOverflowType(NGInkOverflow::Type type) {
+    bit_field_.set<InkOverflowTypeValue>(static_cast<uint8_t>(type));
+  }
   PhysicalRect RecalcContentsInkOverflow();
   PhysicalRect ComputeSelfInkOverflow() const;
 
@@ -504,25 +685,11 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   void CheckIntegrity() const;
 #endif
 
-  unsigned is_inline_formatting_context_ : 1;
-  const unsigned const_has_fragment_items_ : 1;
-  unsigned include_border_top_ : 1;
-  unsigned include_border_right_ : 1;
-  unsigned include_border_bottom_ : 1;
-  unsigned include_border_left_ : 1;
-  unsigned has_layout_overflow_ : 1;
-  unsigned ink_overflow_type_ : NGInkOverflow::kTypeBits;
-  unsigned has_borders_ : 1;
-  unsigned has_padding_ : 1;
-  unsigned has_inflow_bounds_ : 1;
-  const unsigned const_has_rare_data_ : 1;
-  unsigned is_first_for_node_ : 1;
-  unsigned has_descendants_for_table_part_ : 1;
-  unsigned is_fragmentation_context_root_ : 1;
+  BitField bit_field_;
 
   const wtf_size_t const_num_children_;
 
-  LayoutUnit baseline_;
+  LayoutUnit first_baseline_;
   LayoutUnit last_baseline_;
   NGInkOverflow ink_overflow_;
   NGLink children_[];

@@ -9,5 +9,8 @@
   ],
   "start_url": "manifest_test_page.html",
   "display": "standalone",
-  "display_override": [ "tabbed" ]
+  "display_override": [ "tabbed" ],
+  "tab_strip": {
+    "new_tab_button": "auto"
+  }
 }

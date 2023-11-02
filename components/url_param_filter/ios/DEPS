@@ -1,0 +1,5 @@
+include_rules = [
+  "+ios/web/public",
+  "+ios/web/public/test",
+  "+components/url_param_filter/core",
+]

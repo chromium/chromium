@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/push_notification.pb.h"
 
@@ -56,7 +57,7 @@ class OptimizationGuideBridge {
   void OnDeferredStartup(JNIEnv* env);
 
  private:
-  OptimizationGuideKeyedService* optimization_guide_keyed_service_;
+  raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_;
 };
 
 }  // namespace android

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -62,7 +63,7 @@ class PasswordManagerSigninInterceptTestHelper {
   std::string gaia_id() const;
 
  private:
-  const net::test_server::EmbeddedTestServer* https_test_server_;
+  raw_ptr<const net::test_server::EmbeddedTestServer> https_test_server_;
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_MANAGER_SIGNIN_INTERCEPT_TEST_HELPER_H_

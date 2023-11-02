@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,17 +25,17 @@ AutofillProgressDialogControllerImpl::~AutofillProgressDialogControllerImpl() {
 }
 
 void AutofillProgressDialogControllerImpl::ShowDialog(
+    AutofillProgressDialogType autofill_progress_dialog_type,
     base::OnceClosure cancel_callback) {
   DCHECK(!autofill_progress_dialog_view_);
 
+  autofill_progress_dialog_type_ = autofill_progress_dialog_type;
   cancel_callback_ = std::move(cancel_callback);
   autofill_progress_dialog_view_ =
       AutofillProgressDialogView::CreateAndShow(this);
 
   if (autofill_progress_dialog_view_)
-    // TODO(crbug.com/1261529): Pass in the flow type once we have another use
-    // case so that the progress dialog can be shared across multiple use cases.
-    AutofillMetrics::LogProgressDialogShown();
+    AutofillMetrics::LogProgressDialogShown(autofill_progress_dialog_type);
 }
 
 void AutofillProgressDialogControllerImpl::DismissDialog(
@@ -52,34 +52,67 @@ void AutofillProgressDialogControllerImpl::OnDismissed(
     bool is_canceled_by_user) {
   // Dialog is being dismissed so set the pointer to nullptr.
   autofill_progress_dialog_view_ = nullptr;
-
   if (is_canceled_by_user)
     std::move(cancel_callback_).Run();
-  // TODO(crbug.com/1261529): Pass in the flow type once we have another use
-  // case so that the progress dialog can be shared across multiple use cases.
-  AutofillMetrics::LogProgressDialogResultMetric(is_canceled_by_user);
+  AutofillMetrics::LogProgressDialogResultMetric(
+      is_canceled_by_user, autofill_progress_dialog_type_);
+  autofill_progress_dialog_type_ = AutofillProgressDialogType::kUnspecified;
   cancel_callback_.Reset();
 }
 
 const std::u16string AutofillProgressDialogControllerImpl::GetTitle() {
-  return l10n_util::GetStringUTF16(IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_V2);
+  switch (autofill_progress_dialog_type_) {
+    case AutofillProgressDialogType::kAndroidFIDOProgressDialog:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_FIDO_AUTHENTICATION_PROMPT_TITLE);
+    case AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_V2);
+    case AutofillProgressDialogType::kUnspecified:
+      NOTREACHED();
+      return std::u16string();
+  }
 }
 
 const std::u16string
 AutofillProgressDialogControllerImpl::GetCancelButtonLabel() {
-  return l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_CARD_UNMASK_CANCEL_BUTTON_LABEL);
+  switch (autofill_progress_dialog_type_) {
+    case AutofillProgressDialogType::kAndroidFIDOProgressDialog:
+      return l10n_util::GetStringUTF16(IDS_CANCEL);
+    case AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_CARD_UNMASK_CANCEL_BUTTON_LABEL);
+    case AutofillProgressDialogType::kUnspecified:
+      NOTREACHED();
+      return std::u16string();
+  }
 }
 
 const std::u16string AutofillProgressDialogControllerImpl::GetLoadingMessage() {
-  return l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_CARD_UNMASK_PROGRESS_BAR_MESSAGE);
+  switch (autofill_progress_dialog_type_) {
+    case AutofillProgressDialogType::kAndroidFIDOProgressDialog:
+      return std::u16string();
+    case AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_CARD_UNMASK_PROGRESS_BAR_MESSAGE);
+    case AutofillProgressDialogType::kUnspecified:
+      NOTREACHED();
+      return std::u16string();
+  }
 }
 
 const std::u16string
 AutofillProgressDialogControllerImpl::GetConfirmationMessage() {
-  return l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_CARD_UNMASK_CONFIRMATION_MESSAGE);
+  switch (autofill_progress_dialog_type_) {
+    case AutofillProgressDialogType::kAndroidFIDOProgressDialog:
+      return std::u16string();
+    case AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_CARD_UNMASK_CONFIRMATION_MESSAGE);
+    case AutofillProgressDialogType::kUnspecified:
+      NOTREACHED();
+      return std::u16string();
+  }
 }
 
 content::WebContents* AutofillProgressDialogControllerImpl::GetWebContents() {

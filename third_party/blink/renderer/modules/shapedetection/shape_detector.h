@@ -1,11 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SHAPEDETECTION_SHAPE_DETECTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SHAPEDETECTION_SHAPE_DETECTOR_H_
 
-#include "skia/public/mojom/bitmap.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
@@ -21,14 +20,18 @@ class MODULES_EXPORT ShapeDetector : public ScriptWrappable {
   ~ShapeDetector() override = default;
 
   ScriptPromise detect(ScriptState* script_state,
-                       const V8ImageBitmapSource* image_source);
+                       const V8ImageBitmapSource* image_source,
+                       ExceptionState&);
 
  private:
-  ScriptPromise DetectShapesOnImageData(ScriptPromiseResolver*, ImageData*);
-  ScriptPromise DetectShapesOnImageElement(ScriptPromiseResolver*,
-                                           const HTMLImageElement*);
+  ScriptPromise DetectShapesOnImageData(ScriptState*,
+                                        ImageData*,
+                                        ExceptionState&);
+  ScriptPromise DetectShapesOnImageElement(ScriptState*,
+                                           const HTMLImageElement*,
+                                           ExceptionState&);
 
-  virtual ScriptPromise DoDetect(ScriptPromiseResolver*, SkBitmap) = 0;
+  virtual ScriptPromise DoDetect(ScriptState*, SkBitmap, ExceptionState&) = 0;
 };
 
 }  // namespace blink

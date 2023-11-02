@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,20 +60,19 @@ absl::optional<std::string> MapJsonErrorToReason(
   const char kErrorCodeKey[] = "code";
 
   std::unique_ptr<const base::Value> value(google_apis::ParseJson(error_body));
-  const base::DictionaryValue* dictionary = nullptr;
-  const base::DictionaryValue* error = nullptr;
-  if (value && value->GetAsDictionary(&dictionary) &&
-      dictionary->GetDictionaryWithoutPathExpansion(kErrorKey, &error)) {
+  const base::Value::Dict* dictionary = value ? value->GetIfDict() : nullptr;
+  const base::Value::Dict* error =
+      dictionary ? dictionary->FindDict(kErrorKey) : nullptr;
+  if (error) {
     // Get error message and code.
-    const std::string* message = error->FindStringKey(kErrorMessageKey);
-    absl::optional<int> code = error->FindIntKey(kErrorCodeKey);
+    const std::string* message = error->FindString(kErrorMessageKey);
+    absl::optional<int> code = error->FindInt(kErrorCodeKey);
     DLOG(ERROR) << "code: " << (code ? code.value() : OTHER_ERROR)
                 << ", message: " << (message ? *message : "");
 
     // Returns the reason of the first error.
-    const base::ListValue* errors = nullptr;
-    if (error->GetListWithoutPathExpansion(kErrorErrorsKey, &errors)) {
-      const base::Value& first_error = errors->GetList()[0];
+    if (const base::Value::List* errors = error->FindList(kErrorErrorsKey)) {
+      const base::Value& first_error = (*errors)[0];
       if (first_error.is_dict()) {
         const std::string* reason = first_error.FindStringKey(kErrorReasonKey);
         if (reason)
@@ -85,9 +84,8 @@ absl::optional<std::string> MapJsonErrorToReason(
 }
 
 std::unique_ptr<base::Value> ParseJson(const std::string& json) {
-  base::JSONReader::ValueWithError parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(json);
-  if (!parsed_json.value) {
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(json);
+  if (!parsed_json.has_value()) {
     std::string trimmed_json;
     if (json.size() < 80) {
       trimmed_json = json;
@@ -99,11 +97,11 @@ std::unique_ptr<base::Value> ParseJson(const std::string& json) {
                              json.substr(json.size() - 10).c_str());
     }
     LOG(WARNING) << "Error while parsing entry response: "
-                 << parsed_json.error_message << ", json:\n"
+                 << parsed_json.error().message << ", json:\n"
                  << trimmed_json;
     return nullptr;
   }
-  return base::Value::ToUniquePtrValue(std::move(*parsed_json.value));
+  return base::Value::ToUniquePtrValue(std::move(*parsed_json));
 }
 
 UrlFetchRequestBase::UrlFetchRequestBase(

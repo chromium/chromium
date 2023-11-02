@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,10 @@
 #import <Foundation/Foundation.h>
 
 #include "components/optimization_guide/proto/hints.pb.h"
+
+namespace optimization_guide {
+class OptimizationMetadata;
+}  // namespace optimization_guide
 
 class OptimizationGuideTestAppInterfaceWrapper {
  public:
@@ -26,6 +30,13 @@ class OptimizationGuideTestAppInterfaceWrapper {
 // Registers the optimization type for which hints should be fetched for.
 + (void)registerOptimizationType:
     (optimization_guide::proto::OptimizationType)type;
+
+// Invokes `CanApplyOptimization` on the the host for its side effect but does
+// not return anything.
++ (void)canApplyOptimization:(NSString*)url
+                        type:(optimization_guide::proto::OptimizationType)type
+                    metadata:
+                        (optimization_guide::OptimizationMetadata*)metadata;
 
 @end
 

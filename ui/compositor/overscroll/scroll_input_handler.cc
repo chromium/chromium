@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -91,8 +91,8 @@ void ScrollInputHandler::ReconcileElasticOverscrollAndRootScroll() {}
 void ScrollInputHandler::SetPrefersReducedMotion(bool prefers_reduced_motion) {}
 
 void ScrollInputHandler::UpdateRootLayerStateForSynchronousInputHandler(
-    const gfx::Vector2dF& total_scroll_offset,
-    const gfx::Vector2dF& max_scroll_offset,
+    const gfx::PointF& total_scroll_offset,
+    const gfx::PointF& max_scroll_offset,
     const gfx::SizeF& scrollable_size,
     float page_scale_factor,
     float min_page_scale_factor,

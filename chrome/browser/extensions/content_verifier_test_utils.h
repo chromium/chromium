@@ -1,11 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_EXTENSIONS_CONTENT_VERIFIER_TEST_UTILS_H_
 #define CHROME_BROWSER_EXTENSIONS_CONTENT_VERIFIER_TEST_UTILS_H_
 
-#include <list>
 #include <map>
 #include <memory>
 #include <set>
@@ -14,6 +13,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
+#include "base/time/time.h"
 #include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/content_verifier.h"
@@ -27,7 +27,6 @@ namespace extensions {
 
 class ExtensionDownloader;
 class ExtensionDownloaderDelegate;
-class ManifestFetchData;
 
 namespace content_verifier_test {
 
@@ -49,16 +48,16 @@ class DownloaderTestDelegate : public ExtensionDownloaderTestDelegate {
                    const std::string& version_string,
                    const base::FilePath& crx_path);
 
-  const std::vector<std::unique_ptr<ManifestFetchData>>& requests();
+  const std::vector<ExtensionDownloaderTask>& requests();
 
   // ExtensionDownloaderTestDelegate:
   void StartUpdateCheck(ExtensionDownloader* downloader,
                         ExtensionDownloaderDelegate* delegate,
-                        std::unique_ptr<ManifestFetchData> fetch_data) override;
+                        std::vector<ExtensionDownloaderTask> tasks) override;
 
  private:
   // The requests we've received.
-  std::vector<std::unique_ptr<ManifestFetchData>> requests_;
+  std::vector<ExtensionDownloaderTask> requests_;
 
   // The prepared responses - this maps an extension id to a (version string,
   // crx file path) pair.

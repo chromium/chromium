@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,8 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/callback_forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/size.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -23,6 +25,8 @@ struct ASH_PUBLIC_EXPORT AmbientModeTopic {
   AmbientModeTopic();
   AmbientModeTopic(const AmbientModeTopic&);
   AmbientModeTopic& operator=(const AmbientModeTopic&);
+  AmbientModeTopic(AmbientModeTopic&&);
+  AmbientModeTopic& operator=(AmbientModeTopic&&);
   ~AmbientModeTopic();
 
   // Details, i.e. the attribution, to be displayed for the current photo on
@@ -104,6 +108,9 @@ class ASH_PUBLIC_EXPORT AmbientBackendController {
   using FetchWeatherCallback =
       base::OnceCallback<void(const absl::optional<WeatherInfo>& weather_info)>;
 
+  using GetGooglePhotosAlbumsPreviewCallback =
+      base::OnceCallback<void(const std::vector<GURL>& preview_urls)>;
+
   static AmbientBackendController* Get();
 
   AmbientBackendController();
@@ -112,12 +119,19 @@ class ASH_PUBLIC_EXPORT AmbientBackendController {
   virtual ~AmbientBackendController();
 
   // Sends request to retrieve |num_topics| of |ScreenUpdate| from the backdrop
-  // server.
+  // server with the specified |screen_size|.
+  //
+  // |show_pair_personal_portraits|: Whether IMAX should serve paired or single
+  // personal portrait photos returned by the Photos backend. Ignored for
+  // non-personal topic types.
+  //
   // Upon completion, |callback| is run with the parsed |ScreenUpdate|. If any
   // errors happened during the process, e.g. failed to fetch access token, a
   // default instance will be returned.
   virtual void FetchScreenUpdateInfo(
       int num_topics,
+      bool show_pair_personal_portraits,
+      const gfx::Size& screen_size,
       OnScreenUpdateInfoFetchedCallback callback) = 0;
 
   // Get ambient mode Settings from server.
@@ -141,6 +155,13 @@ class ASH_PUBLIC_EXPORT AmbientBackendController {
 
   // Fetch the weather information.
   virtual void FetchWeather(FetchWeatherCallback) = 0;
+
+  virtual void GetGooglePhotosAlbumsPreview(
+      const std::vector<std::string>& album_ids,
+      int preview_width,
+      int preview_height,
+      int num_previews,
+      GetGooglePhotosAlbumsPreviewCallback callback) = 0;
 
   // Get stock photo urls to cache in advance in case Ambient mode is started
   // without internet access.

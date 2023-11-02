@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,6 +37,12 @@ static jlong JNI_DialogOverlayImpl_Init(JNIEnv* env,
           base::UnguessableToken::Deserialize(high, low));
 
   if (!rfhi)
+    return 0;
+
+  // If the RenderFrameHost does not have a live RenderFrame, immediately bail
+  // out: not only is there nothing to do, the `RenderFrameDeleted()`
+  // notification to clean up the overlay would never be called.
+  if (!rfhi->IsRenderFrameLive())
     return 0;
 
   // TODO(http://crbug.com/673886): Support overlay surfaces in VR using GVR
@@ -93,7 +99,7 @@ DialogOverlayImpl::DialogOverlayImpl(const JavaParamRef<jobject>& obj,
 
   // Make sure RenderFrameDeleted will be called on RFH and thus we will clean
   // up.
-  DCHECK(rfhi_->IsRenderFrameCreated());
+  CHECK(rfhi_->IsRenderFrameLive());
   web_contents->GetNativeView()->AddObserver(this);
 
   // Note that we're not allowed to call back into |obj| before it calls
@@ -122,8 +128,7 @@ void DialogOverlayImpl::CompleteInit(JNIEnv* env,
   // changes only.
   if (auto* window = web_contents()->GetNativeView()->GetWindowAndroid()) {
     RegisterWindowObserverIfNeeded(window);
-    ScopedJavaLocalRef<jobject> token = window->GetWindowToken();
-    Java_DialogOverlayImpl_onWindowToken(env, obj, token);
+    Java_DialogOverlayImpl_onWindowAndroid(env, obj, window->GetJavaObject());
   }
 
   // Pass up a reference to the container view so we can observe its location.
@@ -237,15 +242,13 @@ void DialogOverlayImpl::OnAttachedToWindow() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   JNIEnv* env = AttachCurrentThread();
 
-  ScopedJavaLocalRef<jobject> token;
-
-  if (auto* window = web_contents()->GetNativeView()->GetWindowAndroid()) {
+  auto* window = web_contents()->GetNativeView()->GetWindowAndroid();
+  if (window)
     RegisterWindowObserverIfNeeded(window);
-    token = window->GetWindowToken();
-  }
+
   ScopedJavaLocalRef<jobject> obj = obj_.get(env);
   if (!obj.is_null())
-    Java_DialogOverlayImpl_onWindowToken(env, obj, token);
+    Java_DialogOverlayImpl_onWindowAndroid(env, obj, window->GetJavaObject());
 
   StartObservingContainerView();
 }
@@ -254,7 +257,7 @@ void DialogOverlayImpl::OnDetachedFromWindow() {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = obj_.get(env);
   if (!obj.is_null())
-    Java_DialogOverlayImpl_onWindowToken(env, obj, nullptr);
+    Java_DialogOverlayImpl_onWindowAndroid(env, obj, nullptr);
   Stop();
 }
 
@@ -299,7 +302,7 @@ class AndroidOverlaySyncHelper {
 
 static void JNI_DialogOverlayImpl_NotifyDestroyedSynchronously(
     JNIEnv* env,
-    int message_pipe_handle) {
+    jlong message_pipe_handle) {
   mojo::MessagePipeHandle handle(message_pipe_handle);
   mojo::ScopedMessagePipeHandle scoped_handle(handle);
   mojo::Remote<media::mojom::AndroidOverlayClient> remote(

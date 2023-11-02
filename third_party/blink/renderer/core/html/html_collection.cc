@@ -443,11 +443,11 @@ Element* HTMLCollection::namedItem(const AtomicString& name) const {
 
   const NamedItemCache& cache = GetNamedItemCache();
   const auto* id_results = cache.GetElementsById(name);
-  if (id_results && !id_results->IsEmpty())
+  if (id_results && !id_results->empty())
     return id_results->front();
 
   const auto* name_results = cache.GetElementsByName(name);
-  if (name_results && !name_results->IsEmpty())
+  if (name_results && !name_results->empty())
     return name_results->front();
 
   return nullptr;
@@ -476,7 +476,7 @@ void HTMLCollection::SupportedPropertyNames(Vector<String>& names) {
   for (unsigned i = 0; i < length; ++i) {
     Element* element = item(i);
     const AtomicString& id_attribute = element->GetIdAttribute();
-    if (!id_attribute.IsEmpty()) {
+    if (!id_attribute.empty()) {
       HashSet<AtomicString>::AddResult add_result =
           existing_names.insert(id_attribute);
       if (add_result.is_new_entry)
@@ -486,7 +486,7 @@ void HTMLCollection::SupportedPropertyNames(Vector<String>& names) {
     if (!html_element)
       continue;
     const AtomicString& name_attribute = element->GetNameAttribute();
-    if (!name_attribute.IsEmpty() &&
+    if (!name_attribute.empty() &&
         (GetType() != kDocAll ||
          NameShouldBeVisibleInDocumentAll(*html_element))) {
       HashSet<AtomicString>::AddResult add_result =
@@ -511,13 +511,13 @@ void HTMLCollection::UpdateIdNameCache() const {
   for (unsigned i = 0; i < length; ++i) {
     Element* element = item(i);
     const AtomicString& id_attr_val = element->GetIdAttribute();
-    if (!id_attr_val.IsEmpty())
+    if (!id_attr_val.empty())
       cache->AddElementWithId(id_attr_val, element);
     auto* html_element = DynamicTo<HTMLElement>(element);
     if (!html_element)
       continue;
     const AtomicString& name_attr_val = element->GetNameAttribute();
-    if (!name_attr_val.IsEmpty() && id_attr_val != name_attr_val &&
+    if (!name_attr_val.empty() && id_attr_val != name_attr_val &&
         (GetType() != kDocAll ||
          NameShouldBeVisibleInDocumentAll(*html_element)))
       cache->AddElementWithName(name_attr_val, element);
@@ -529,8 +529,8 @@ void HTMLCollection::UpdateIdNameCache() const {
 
 void HTMLCollection::NamedItems(const AtomicString& name,
                                 HeapVector<Member<Element>>& result) const {
-  DCHECK(result.IsEmpty());
-  if (name.IsEmpty())
+  DCHECK(result.empty());
+  if (name.empty())
     return;
 
   UpdateIdNameCache();

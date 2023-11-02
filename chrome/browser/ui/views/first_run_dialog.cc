@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/first_run/first_run_dialog.h"
+#include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/shell_integration.h"
@@ -21,7 +22,6 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/crash/core/app/breakpad_linux.h"
 #include "components/crash/core/app/crashpad.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -32,39 +32,29 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "components/metrics/structured/neutrino_logging.h"  // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-namespace {
-
-#if !defined(OS_MAC)
-void InitCrashReporterIfEnabled(bool enabled) {
-  if (!crash_reporter::IsCrashpadEnabled() && enabled)
-    breakpad::InitCrashReporter(std::string());
-}
-#endif
-
-}  // namespace
-
 namespace first_run {
 
-void ShowFirstRunDialog(Profile* profile) {
-#if defined(OS_MAC)
+void ShowFirstRunDialog() {
+  // Don't show first run dialog when running in headless mode since this
+  // would effectively block the UI because there is no one to interact with
+  // the dialog.
+  if (headless::IsChromeNativeHeadless())
+    return;
+
+#if BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(features::kViewsFirstRunDialog))
-    ShowFirstRunDialogViews(profile);
+    ShowFirstRunDialogViews();
   else
-    ShowFirstRunDialogCocoa(profile);
+    ShowFirstRunDialogCocoa();
 #else
-  ShowFirstRunDialogViews(profile);
+  ShowFirstRunDialogViews();
 #endif
 }
 
-void ShowFirstRunDialogViews(Profile* profile) {
+void ShowFirstRunDialogViews() {
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   FirstRunDialog::Show(
       base::BindRepeating(&platform_util::OpenExternal,
-                          base::Unretained(profile),
                           GURL(chrome::kLearnMoreReportingURL)),
       run_loop.QuitClosure());
   run_loop.Run();
@@ -105,8 +95,6 @@ FirstRunDialog::FirstRunDialog(base::RepeatingClosure learn_more_callback,
       l10n_util::GetStringUTF16(IDS_FR_ENABLE_LOGGING)));
   // Having this box checked means the user has to opt-out of metrics recording.
   report_crashes_->SetChecked(!first_run::IsMetricsReportingOptIn());
-
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::FIRST_RUN_DIALOG);
 }
 
 FirstRunDialog::~FirstRunDialog() {
@@ -114,23 +102,19 @@ FirstRunDialog::~FirstRunDialog() {
 
 void FirstRunDialog::Done() {
   CHECK(!quit_runloop_.is_null());
+
+  if (!closed_through_accept_button_) {
+    ChangeMetricsReportingState(false);
+  }
+
   quit_runloop_.Run();
 }
 
 bool FirstRunDialog::Accept() {
   GetWidget()->Hide();
+  closed_through_accept_button_ = true;
 
-#if defined(OS_MAC)
   ChangeMetricsReportingState(report_crashes_->GetChecked());
-#else
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  metrics::structured::NeutrinoDevicesLog(
-      metrics::structured::NeutrinoDevicesLocation::kFirstRunDialog);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  ChangeMetricsReportingStateWithReply(
-      report_crashes_->GetChecked(),
-      base::BindOnce(&InitCrashReporterIfEnabled));
-#endif
 
   if (make_default_->GetChecked())
     shell_integration::SetAsDefaultBrowser();

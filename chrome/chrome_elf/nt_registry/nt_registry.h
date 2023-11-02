@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,6 +30,12 @@
 #include "sandbox/win/src/nt_internals.h"  // NTSTATUS
 
 namespace nt {
+
+// When recording/replaying the registry API gets initialized at different points
+// due to differences in dll loading behavior. For now we workaround this by
+// resetting the initialization after RecordReplayAttach is called so that the
+// function pointers loaded can be intercepted properly.
+void RecordReplayResetRegApiInitialization();
 
 // Windows registry maximum lengths (in chars).  Not including null char.
 // https://msdn.microsoft.com/en-us/library/windows/desktop/ms724872(v=vs.85).aspx

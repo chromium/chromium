@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -176,7 +176,7 @@ NintendoDataFetcher::ExtractAssociatedDevice(const NintendoController* device) {
   if (associated_device) {
     PadState* state = GetPadState(associated_device->GetSourceId());
     if (state)
-      state->source = GAMEPAD_SOURCE_NONE;
+      state->source = GamepadSource::kNone;
   }
 
   return associated_device;

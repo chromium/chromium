@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,6 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
-namespace tray {
 
 // This class encapsulates the logic to find and show the IP addresses and mac
 // addresses of the default network and available network technologies.
@@ -63,7 +62,6 @@ class ASH_EXPORT NetworkInfoBubble : public views::BubbleDialogDelegateView {
   base::WeakPtr<Delegate> delegate_;
 };
 
-}  // namespace tray
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_NETWORK_NETWORK_INFO_BUBBLE_H_

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -97,8 +97,7 @@ void ClientSettings::UpdateFromProto(const ClientSettingsProto& proto) {
     talkback_sheet_size_fraction = proto.talkback_sheet_size_fraction();
   }
   if (proto.has_back_button_settings()) {
-    if (proto.back_button_settings().has_message() &&
-        proto.back_button_settings().has_undo_label()) {
+    if (proto.back_button_settings().has_undo_label()) {
       back_button_settings = proto.back_button_settings();
     } else {
       back_button_settings.reset();
@@ -172,6 +171,14 @@ void ClientSettings::UpdateFromProto(const ClientSettingsProto& proto) {
     integration_test_settings = proto.integration_test_settings();
   } else {
     integration_test_settings.reset();
+  }
+  if (proto.has_selector_observer_extra_timeout_ms()) {
+    selector_observer_extra_timeout =
+        base::Milliseconds(proto.selector_observer_extra_timeout_ms());
+  }
+  if (proto.has_selector_observer_debounce_interval_ms()) {
+    selector_observer_debounce_interval =
+        base::Milliseconds(proto.selector_observer_debounce_interval_ms());
   }
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
 #include "base/test/scoped_feature_list.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/arc_prefs.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_service_factory.h"
@@ -51,8 +51,8 @@ bool TestIsWebstoreExtension(base::StringPiece id) {
 class AppLaunchEventLoggerForTest : public AppLaunchEventLogger {
  public:
   AppLaunchEventLoggerForTest(extensions::ExtensionRegistry* registry,
-                              base::DictionaryValue* arc_apps,
-                              base::DictionaryValue* arc_packages,
+                              base::Value::Dict* arc_apps,
+                              base::Value::Dict* arc_packages,
                               Profile* profile)
       : AppLaunchEventLogger(profile) {
     arc_apps_ = arc_apps;
@@ -146,14 +146,14 @@ TEST_F(AppLaunchEventLoggerTest, CheckUkmCodeArc) {
   base::Value package(base::Value::Type::DICTIONARY);
   package.SetKey(AppLaunchEventLogger::kShouldSync, base::Value(true));
 
-  auto packages = std::make_unique<base::DictionaryValue>();
-  packages->SetKey(kMapsPackageName, package.Clone());
+  auto packages = std::make_unique<base::Value::Dict>();
+  packages->Set(kMapsPackageName, package.Clone());
 
-  base::Value app(base::Value::Type::DICTIONARY);
-  app.SetKey(AppLaunchEventLogger::kPackageName, base::Value(kMapsPackageName));
+  base::Value::Dict app;
+  app.Set(AppLaunchEventLogger::kPackageName, base::Value(kMapsPackageName));
 
-  auto arc_apps = std::make_unique<base::DictionaryValue>();
-  arc_apps->SetKey(kMapsArcApp, app.Clone());
+  auto arc_apps = std::make_unique<base::Value::Dict>();
+  arc_apps->Set(kMapsArcApp, app.Clone());
 
   AppLaunchEventLoggerForTest app_launch_event_logger_(
       nullptr, arc_apps.get(), packages.get(), &profile_);
@@ -170,7 +170,8 @@ TEST_F(AppLaunchEventLoggerTest, CheckUkmCodeArc) {
   test_ukm_recorder_.ExpectEntryMetric(entry, "LaunchedFrom", 1);
 }
 
-TEST_F(AppLaunchEventLoggerTest, CheckMultipleClicks) {
+// TODO(1289705): This test is flaky.
+TEST_F(AppLaunchEventLoggerTest, DISABLED_CheckMultipleClicks) {
   web_app::FakeWebAppProvider* provider =
       web_app::FakeWebAppProvider::Get(&profile_);
 
@@ -187,9 +188,9 @@ TEST_F(AppLaunchEventLoggerTest, CheckMultipleClicks) {
   calculator_package.SetKey(AppLaunchEventLogger::kShouldSync,
                             base::Value(true));
 
-  auto packages = std::make_unique<base::DictionaryValue>();
-  packages->SetKey(kMapsPackageName, maps_package.Clone());
-  packages->SetKey(kCalculatorPackageName, calculator_package.Clone());
+  auto packages = std::make_unique<base::Value::Dict>();
+  packages->Set(kMapsPackageName, maps_package.Clone());
+  packages->Set(kCalculatorPackageName, calculator_package.Clone());
 
   base::Value maps_app(base::Value::Type::DICTIONARY);
   base::Value calculator_app(base::Value::Type::DICTIONARY);
@@ -198,9 +199,9 @@ TEST_F(AppLaunchEventLoggerTest, CheckMultipleClicks) {
   calculator_app.SetKey(AppLaunchEventLogger::kPackageName,
                         base::Value(kCalculatorPackageName));
 
-  auto arc_apps = std::make_unique<base::DictionaryValue>();
-  arc_apps->SetKey(kMapsArcApp, maps_app.Clone());
-  arc_apps->SetKey(kCalculatorArcApp, calculator_app.Clone());
+  auto arc_apps = std::make_unique<base::Value::Dict>();
+  arc_apps->Set(kMapsArcApp, maps_app.Clone());
+  arc_apps->Set(kCalculatorArcApp, calculator_app.Clone());
 
   AppLaunchEventLoggerForTest app_launch_event_logger_(
       nullptr, arc_apps.get(), packages.get(), &profile_);

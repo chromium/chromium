@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/client/client_test_helper.h"
@@ -23,23 +24,18 @@
 #include "gpu/command_buffer/service/gpu_tracer.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/raster_decoder.h"
-#include "gpu/command_buffer/service/shared_image_manager.h"
-#include "gpu/command_buffer/service/shared_image_representation.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/test_helper.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gl/gl_display.h"
 #include "ui/gl/gl_mock.h"
 #include "ui/gl/gl_surface_stub.h"
 #include "ui/gl/gl_version_info.h"
 
-namespace gpu {
-
-namespace gles2 {
-class MockCopyTextureResourceManager;
-}  // namespace gles2
-
-namespace raster {
+namespace gpu::raster {
 
 class RasterDecoderTestBase : public ::testing::TestWithParam<bool>,
                               public DecoderClient {
@@ -48,7 +44,9 @@ class RasterDecoderTestBase : public ::testing::TestWithParam<bool>,
   ~RasterDecoderTestBase() override;
 
   void OnConsoleMessage(int32_t id, const std::string& message) override;
-  void CacheShader(const std::string& key, const std::string& shader) override;
+  void CacheBlob(gpu::GpuDiskCacheType type,
+                 const std::string& key,
+                 const std::string& blob) override;
   void OnFenceSyncRelease(uint64_t release) override;
   void OnDescheduleUntilFinished() override;
   void OnRescheduleAfterFinished() override;
@@ -104,12 +102,13 @@ class RasterDecoderTestBase : public ::testing::TestWithParam<bool>,
 
   template <typename T>
   T GetSharedMemoryAs() {
-    return reinterpret_cast<T>(shared_memory_address_);
+    return reinterpret_cast<T>(shared_memory_address_.get());
   }
 
   template <typename T>
   T GetSharedMemoryAsWithOffset(uint32_t offset) {
-    void* ptr = reinterpret_cast<int8_t*>(shared_memory_address_) + offset;
+    void* ptr =
+        reinterpret_cast<int8_t*>(shared_memory_address_.get()) + offset;
     return reinterpret_cast<T>(ptr);
   }
 
@@ -176,8 +175,8 @@ class RasterDecoderTestBase : public ::testing::TestWithParam<bool>,
 
   int32_t shared_memory_id_;
   uint32_t shared_memory_offset_;
-  void* shared_memory_address_;
-  void* shared_memory_base_;
+  raw_ptr<void> shared_memory_address_;
+  raw_ptr<void> shared_memory_base_;
 
   uint32_t immediate_buffer_[64];
 
@@ -189,7 +188,7 @@ class RasterDecoderTestBase : public ::testing::TestWithParam<bool>,
   SharedImageManager shared_image_manager_;
   MemoryTypeTracker memory_tracker_;
   base::test::SingleThreadTaskEnvironment task_environment_;
-  gles2::MockCopyTextureResourceManager* copy_texture_manager_;  // not owned
+  raw_ptr<gl::GLDisplay> display_ = nullptr;
 };
 
 class RasterDecoderManualInitTest : public RasterDecoderTestBase {
@@ -200,7 +199,6 @@ class RasterDecoderManualInitTest : public RasterDecoderTestBase {
   void SetUp() override {}
 };
 
-}  // namespace raster
-}  // namespace gpu
+}  // namespace gpu::raster
 
 #endif  // GPU_COMMAND_BUFFER_SERVICE_RASTER_DECODER_UNITTEST_BASE_H_

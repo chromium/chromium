@@ -1,10 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser;
 
-import static org.chromium.chrome.browser.base.SplitCompatUtils.CHROME_SPLIT_NAME;
+import static org.chromium.chrome.browser.base.SplitCompatApplication.CHROME_SPLIT_NAME;
 
 import android.app.ActivityManager.TaskDescription;
 import android.content.Context;
@@ -17,26 +17,30 @@ import android.os.Bundle;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.StyleRes;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.color.DynamicColors;
+
+import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.base.ServiceTracingProxyProvider;
 import org.chromium.chrome.browser.base.SplitChromeApplication;
-import org.chromium.chrome.browser.base.SplitCompatAppComponentFactory;
-import org.chromium.chrome.browser.base.SplitCompatUtils;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
+import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
-import org.chromium.chrome.browser.theme.ThemeUtils;
-import org.chromium.chrome.browser.ui.theme.ColorDelegateImpl;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
+
+import java.util.LinkedHashSet;
 
 /**
  * A subclass of {@link AppCompatActivity} that maintains states and objects applied to all
@@ -47,7 +51,8 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     private final ObservableSupplierImpl<ModalDialogManager> mModalDialogManagerSupplier =
             new ObservableSupplierImpl<>();
     private NightModeStateProvider mNightModeStateProvider;
-    private @StyleRes int mThemeResId;
+    private LinkedHashSet<Integer> mThemeResIds = new LinkedHashSet<>();
+    private ServiceTracingProxyProvider mServiceTracingProxyProvider;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -67,8 +72,10 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         // If ClassLoader was corrected by SplitCompatAppComponentFactory, also need to correct
         // the reference in the associated Context.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            SplitCompatAppComponentFactory.checkContextClassLoader(newBase, this);
+            BundleUtils.checkContextClassLoader(newBase, this);
         }
+
+        mServiceTracingProxyProvider = ServiceTracingProxyProvider.create(newBase);
 
         mNightModeStateProvider = createNightModeStateProvider();
 
@@ -84,7 +91,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        SplitCompatUtils.restoreLoadedSplits(savedInstanceState);
+        BundleUtils.restoreLoadedSplits(savedInstanceState);
         mModalDialogManagerSupplier.set(createModalDialogManager());
 
         initializeNightModeStateProvider();
@@ -114,26 +121,33 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         // LayoutInflaters that use this ClassLoader can find view classes that
         // live inside splits. Very useful when FragmentManger tries to inflate
         // the UI automatically on restore.
-        return SplitCompatUtils.getSplitCompatClassLoader();
+        return BundleUtils.getSplitCompatClassLoader();
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        SplitCompatUtils.saveLoadedSplits(outState);
+        BundleUtils.saveLoadedSplits(outState);
     }
 
     @Override
     public void setTheme(@StyleRes int resid) {
         super.setTheme(resid);
-        mThemeResId = resid;
+        mThemeResIds.add(resid);
+    }
+
+    @Override
+    @RequiresApi(Build.VERSION_CODES.O)
+    public void onMultiWindowModeChanged(boolean inMultiWindowMode, Configuration configuration) {
+        super.onMultiWindowModeChanged(inMultiWindowMode, configuration);
+        onMultiWindowModeChanged(inMultiWindowMode);
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         NightModeUtils.updateConfigurationForNightMode(
-                this, mNightModeStateProvider.isInNightMode(), newConfig, mThemeResId);
+                this, mNightModeStateProvider.isInNightMode(), newConfig, mThemeResIds);
         // newConfig will have the default system locale so reapply the app locale override if
         // needed: https://crbug.com/1248944
         GlobalAppLocaleController.getInstance().maybeOverrideContextConfig(this);
@@ -209,10 +223,16 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     @CallSuper
     protected void applyThemeOverlays() {
         setTheme(R.style.ColorOverlay_ChromiumAndroid);
+        DynamicColors.applyToActivityIfAvailable(this);
 
-        if (supportsDynamicColors()) {
-            new ColorDelegateImpl().applyDynamicColorsIfAvailable(this);
-        }
+        DeferredStartupHandler.getInstance().addDeferredTask(() -> {
+            // #registerSyntheticFieldTrial requires native.
+            boolean isDynamicColorAvailable = DynamicColors.isDynamicColorAvailable();
+            RecordHistogram.recordBooleanHistogram(
+                    "Android.DynamicColors.IsAvailable", isDynamicColorAvailable);
+            UmaSessionStats.registerSyntheticFieldTrial(
+                    "IsDynamicColorAvailable", isDynamicColorAvailable ? "Enabled" : "Disabled");
+        });
 
         // Try to enable browser overscroll when content overscroll is enabled for consistency. This
         // needs to be in a cached feature because activity startup happens before native is
@@ -221,24 +241,18 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         // use the old value and then content will pick up the enabled value, causing one execution
         // of inconsistency.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-                && !CachedFeatureFlags.isEnabled(ChromeFeatureList.ELASTIC_OVERSCROLL)) {
+                && !ChromeFeatureList.sElasticOverscroll.isEnabled()) {
             setTheme(R.style.ThemeOverlay_DisableOverscroll);
         }
 
+        // TODO(https://crbug.com/1345778): Remove these overlays.
         // We apply an extra theme overlay to override some of the dynamic colors. For example,
         // android:textColorHighlight is overridden by dynamic colors, preventing us from specifying
         // the alpha for the selected text highlight. In this case, the overridden colors should
         // still use dynamic colors, as in the android:textColorHighlight example where we use a
         // color state list that depends on colorPrimary.
         setTheme(R.style.ThemeOverlay_DynamicColorOverrides);
-    }
-
-    /**
-     * Returns whether the activity supports dynamic colors. For most activities this is only true
-     * if full dynamic colors are enabled.
-     */
-    protected boolean supportsDynamicColors() {
-        return ThemeUtils.ENABLE_FULL_DYNAMIC_COLORS.getValue();
+        setTheme(R.style.ThemeOverlay_DynamicButtons);
     }
 
     /**
@@ -265,5 +279,17 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     @Override
     public SharedPreferences getSharedPreferences(String name, int mode) {
         return ContextUtils.getApplicationContext().getSharedPreferences(name, mode);
+    }
+
+    // Note that we do not need to (and can't) override getSystemService(Class<T>) as internally
+    // that just gets the name of the Service and calls getSystemService(String) for backwards
+    // compatibility with overrides like this one.
+    @Override
+    public Object getSystemService(String name) {
+        Object service = super.getSystemService(name);
+        if (mServiceTracingProxyProvider != null) {
+            mServiceTracingProxyProvider.traceSystemServices();
+        }
+        return service;
     }
 }

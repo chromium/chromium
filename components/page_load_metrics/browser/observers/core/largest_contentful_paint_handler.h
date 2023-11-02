@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #ifndef COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_CORE_LARGEST_CONTENTFUL_PAINT_HANDLER_H_
@@ -12,6 +12,7 @@
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -32,25 +33,27 @@ class ContentfulPaintTimingInfo {
     kMaxValue = kText,
   };
 
-  explicit ContentfulPaintTimingInfo(
-      LargestContentTextOrImage largest_content_type,
-      bool in_main_frame,
-      blink::LargestContentfulPaintTypeMask type);
-  explicit ContentfulPaintTimingInfo(
+  ContentfulPaintTimingInfo(LargestContentTextOrImage largest_content_type,
+                            bool in_main_frame,
+                            blink::LargestContentfulPaintType type);
+  ContentfulPaintTimingInfo(
       const absl::optional<base::TimeDelta>&,
       const uint64_t& size,
       const LargestContentTextOrImage largest_content_type,
+      double image_bpp,
       bool in_main_frame,
-      blink::LargestContentfulPaintTypeMask type);
+      blink::LargestContentfulPaintType type);
   ContentfulPaintTimingInfo(const ContentfulPaintTimingInfo& other);
   void Reset(const absl::optional<base::TimeDelta>&,
              const uint64_t& size,
-             blink::LargestContentfulPaintTypeMask type);
+             blink::LargestContentfulPaintType type,
+             double image_bpp);
   absl::optional<base::TimeDelta> Time() const { return time_; }
   bool InMainFrame() const { return in_main_frame_; }
-  blink::LargestContentfulPaintTypeMask Type() const { return type_; }
+  blink::LargestContentfulPaintType Type() const { return type_; }
   uint64_t Size() const { return size_; }
   LargestContentTextOrImage TextOrImage() const { return text_or_image_; }
+  double ImageBPP() const { return image_bpp_; }
 
   // Returns true iff this object does not represent any paint.
   bool Empty() const {
@@ -74,14 +77,16 @@ class ContentfulPaintTimingInfo {
   absl::optional<base::TimeDelta> time_;
   uint64_t size_;
   LargestContentTextOrImage text_or_image_;
-  blink::LargestContentfulPaintTypeMask type_ = 0;
+  blink::LargestContentfulPaintType type_ =
+      blink::LargestContentfulPaintType::kNone;
+  double image_bpp_ = 0.0;
   bool in_main_frame_;
 };
 
 class ContentfulPaint {
  public:
   explicit ContentfulPaint(bool in_main_frame,
-                           blink::LargestContentfulPaintTypeMask type);
+                           blink::LargestContentfulPaintType type);
   ContentfulPaintTimingInfo& Text() { return text_; }
   const ContentfulPaintTimingInfo& Text() const { return text_; }
   ContentfulPaintTimingInfo& Image() { return image_; }
@@ -114,12 +119,18 @@ class LargestContentfulPaintHandler {
       ContentfulPaintTimingInfo::LargestContentTextOrImage*
           largest_content_type);
 
-  void RecordTiming(
+  void RecordMainFrameTiming(
+      const page_load_metrics::mojom::LargestContentfulPaintTiming&
+          largest_contentful_paint,
+      const absl::optional<base::TimeDelta>&
+          first_input_or_scroll_notified_timestamp);
+  void RecordSubFrameTiming(
       const page_load_metrics::mojom::LargestContentfulPaintTiming&
           largest_contentful_paint,
       const absl::optional<base::TimeDelta>&
           first_input_or_scroll_notified_timestamp,
-      content::RenderFrameHost* subframe_rfh);
+      content::RenderFrameHost* subframe_rfh,
+      const GURL& main_frame_url);
   inline void RecordMainFrameTreeNodeId(int main_frame_tree_node_id) {
     main_frame_tree_node_id_.emplace(main_frame_tree_node_id);
   }
@@ -133,18 +144,9 @@ class LargestContentfulPaintHandler {
   const ContentfulPaintTimingInfo& MainFrameLargestContentfulPaint() const {
     return main_frame_contentful_paint_.MergeTextAndImageTiming();
   }
-  const ContentfulPaintTimingInfo& SubframesLargestContentfulPaint() const {
-    return subframe_contentful_paint_.MergeTextAndImageTiming();
-  }
   const ContentfulPaintTimingInfo& CrossSiteSubframesLargestContentfulPaint()
       const {
     return cross_site_subframe_contentful_paint_.MergeTextAndImageTiming();
-  }
-  const ContentfulPaintTimingInfo& MainFrameLargestImagePaint() const {
-    return main_frame_contentful_paint_.Image();
-  }
-  const ContentfulPaintTimingInfo& MainFrameLargestTextPaint() const {
-    return main_frame_contentful_paint_.Text();
   }
 
   // We merge the candidates from main frame and subframe to get the largest
@@ -156,7 +158,7 @@ class LargestContentfulPaintHandler {
   void OnSubFrameDeleted(int frame_tree_node_id);
 
  private:
-  void RecordSubframeTiming(
+  void RecordSubFrameTimingInternal(
       const page_load_metrics::mojom::LargestContentfulPaintTiming&
           largest_contentful_paint,
       const absl::optional<base::TimeDelta>&
@@ -168,19 +170,9 @@ class LargestContentfulPaintHandler {
       const page_load_metrics::mojom::LargestContentfulPaintTiming&
           largest_contentful_paint,
       const base::TimeDelta& navigation_start_offset);
-  void RecordMainFrameTiming(
-      const page_load_metrics::mojom::LargestContentfulPaintTiming&
-          largest_contentful_paint,
-      const absl::optional<base::TimeDelta>&
-          first_input_or_scroll_notified_timestamp);
   void UpdateFirstInputOrScrollNotified(
       const absl::optional<base::TimeDelta>& candidate_new_time,
       const base::TimeDelta& navigation_start_offset);
-  void MergeForSubframes(
-      ContentfulPaintTimingInfo* inout_timing,
-      const absl::optional<base::TimeDelta>& candidate_new_time,
-      const uint64_t& candidate_new_size,
-      base::TimeDelta navigation_start_offset);
   bool IsValid(const absl::optional<base::TimeDelta>& time) {
     // When |time| is not present, this means that there is no current
     // candidate. If |time| is 0, it corresponds to an image that has not

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@ public class EmptyTabModel implements TabModel {
      * EmptyTabModel.
      */
     @VisibleForTesting
-    protected EmptyTabModel() {}
+    public EmptyTabModel() {}
 
     // "Initialization on demand holder idiom"
     private static class LazyHolder {
@@ -54,7 +54,7 @@ public class EmptyTabModel implements TabModel {
     }
 
     @Override
-    public Tab getNextTabIfClosed(int id) {
+    public Tab getNextTabIfClosed(int id, boolean uponExit) {
         return null;
     }
 
@@ -65,7 +65,7 @@ public class EmptyTabModel implements TabModel {
     public void closeAllTabs() {}
 
     @Override
-    public void closeAllTabs(boolean allowDelegation, boolean uponExit) {}
+    public void closeAllTabs(boolean uponExit) {}
 
     @Override
     public int getCount() {
@@ -89,7 +89,7 @@ public class EmptyTabModel implements TabModel {
     }
 
     @Override
-    public void setIndex(int i, @TabSelectionType int type) {}
+    public void setIndex(int i, @TabSelectionType int type, boolean skipLoadingTab) {}
 
     @Override
     public boolean isActiveModel() {
@@ -133,6 +133,9 @@ public class EmptyTabModel implements TabModel {
     public void cancelTabClosure(int tabId) {}
 
     @Override
+    public void notifyAllTabsClosureUndone() {}
+
+    @Override
     public boolean supportsPendingClosures() {
         return false;
     }
@@ -156,5 +159,5 @@ public class EmptyTabModel implements TabModel {
     public void removeTab(Tab tab) {}
 
     @Override
-    public void openMostRecentlyClosedTab() {}
+    public void openMostRecentlyClosedEntry() {}
 }

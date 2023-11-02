@@ -1,9 +1,13 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/app_list/arc/arc_app_dialog.h"
 
+#include "ash/components/arc/mojom/app.mojom.h"
+#include "ash/components/arc/test/arc_util_test_support.h"
+#include "ash/components/arc/test/connection_holder_util.h"
+#include "ash/components/arc/test/fake_app_instance.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
@@ -21,10 +25,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/arc/mojom/app.mojom.h"
-#include "components/arc/test/arc_util_test_support.h"
-#include "components/arc/test/connection_holder_util.h"
-#include "components/arc/test/fake_app_instance.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 
@@ -67,12 +67,12 @@ class ArcAppUninstallDialogViewBrowserTest : public InProcessBrowserTest {
     WaitForInstanceReady(arc_app_list_pref_->app_connection_holder());
 
     // In this setup, we have one app and one shortcut which share one package.
-    mojom::AppInfo app;
-    app.name = "Fake App 0";
-    app.package_name = "fake.package.0";
-    app.activity = "fake.app.0.activity";
-    app.sticky = false;
-    app_instance_->SendRefreshAppList(std::vector<mojom::AppInfo>(1, app));
+    std::vector<mojom::AppInfoPtr> one_app;
+    one_app.emplace_back(mojom::AppInfo::New("Fake App 0", "fake.package.0",
+                                             "fake.app.0.activity",
+                                             false /* sticky */));
+
+    app_instance_->SendRefreshAppList(one_app);
 
     mojom::ShortcutInfo shortcut;
     shortcut.name = "Fake Shortcut 0";
@@ -126,12 +126,11 @@ class ArcAppPermissionDialogViewBrowserTest
   ~ArcAppPermissionDialogViewBrowserTest() override = default;
 
   void InstallExtraPackage(int id) {
-    mojom::AppInfo app;
-    app.name = base::StringPrintf("Fake App %d", id);
-    app.package_name = base::StringPrintf("fake.package.%d", id);
-    app.activity = base::StringPrintf("fake.app.%d.activity", id);
-    app.sticky = false;
-    instance()->SendAppAdded(app);
+    mojom::AppInfoPtr app = mojom::AppInfo::New(
+        base::StringPrintf("Fake App %d", id),
+        base::StringPrintf("fake.package.%d", id),
+        base::StringPrintf("fake.app.%d.activity", id), false);
+    instance()->SendAppAdded(*app);
 
     instance()->SendPackageAdded(arc::mojom::ArcPackageInfo::New(
         base::StringPrintf("fake.package.%d", id) /* package_name */,
@@ -142,7 +141,6 @@ class ArcAppPermissionDialogViewBrowserTest
     auto* app_service_proxy =
         apps::AppServiceProxyFactory::GetForProfile(profile());
     ASSERT_TRUE(app_service_proxy);
-    app_service_proxy->FlushMojoCallsForTesting();
   }
 
   void set_accepted(bool accepted) { accepted_ = accepted; }

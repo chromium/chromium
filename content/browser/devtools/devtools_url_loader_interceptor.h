@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,6 +54,7 @@ struct InterceptedRequestInfo {
   protocol::Maybe<bool> is_download;
   protocol::Maybe<protocol::String> redirect_url;
   protocol::Maybe<protocol::String> renderer_request_id;
+  protocol::Maybe<protocol::String> redirected_request_id;
 };
 
 class DevToolsURLLoaderInterceptor {

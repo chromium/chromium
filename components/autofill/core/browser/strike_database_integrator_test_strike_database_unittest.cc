@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/autofill/core/browser/proto/strike_data.pb.h"
+#include "components/autofill/core/browser/strike_database_integrator_base.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/leveldb_proto/public/proto_database.h"
@@ -67,13 +68,19 @@ class StrikeDatabaseIntegratorTestStrikeDatabaseTest : public ::testing::Test {
 
 TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
        MaxStrikesLimitReachedTest) {
-  EXPECT_EQ(false, strike_database_->IsMaxStrikesLimitReached());
+  StrikeDatabaseIntegratorBase::BlockedReason reason =
+      StrikeDatabaseIntegratorBase::kUnknown;
+  EXPECT_EQ(false, strike_database_->ShouldBlockFeature(&reason));
+  EXPECT_EQ(StrikeDatabaseIntegratorBase::BlockedReason::kUnknown, reason);
   // 3 strikes added.
   strike_database_->AddStrikes(3);
-  EXPECT_EQ(false, strike_database_->IsMaxStrikesLimitReached());
+  EXPECT_EQ(false, strike_database_->ShouldBlockFeature(&reason));
+  EXPECT_EQ(StrikeDatabaseIntegratorBase::BlockedReason::kUnknown, reason);
   // 4 strike added, total strike count is 7.
   strike_database_->AddStrikes(4);
-  EXPECT_EQ(true, strike_database_->IsMaxStrikesLimitReached());
+  EXPECT_EQ(true, strike_database_->ShouldBlockFeature(&reason));
+  EXPECT_EQ(StrikeDatabaseIntegratorBase::BlockedReason::kMaxStrikeLimitReached,
+            reason);
 }
 
 TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
@@ -248,15 +255,21 @@ TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
 
 TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
        MaxStrikesLimitReachedUniqueIdTest) {
+  StrikeDatabaseIntegratorBase::BlockedReason reason =
+      StrikeDatabaseIntegratorBase::kUnknown;
   strike_database_->SetUniqueIdsRequired(true);
   const std::string unique_id = "1234";
-  EXPECT_EQ(false, strike_database_->IsMaxStrikesLimitReached(unique_id));
+  EXPECT_EQ(false, strike_database_->ShouldBlockFeature(unique_id, &reason));
+  EXPECT_EQ(StrikeDatabaseIntegratorBase::BlockedReason::kUnknown, reason);
   // 1 strike added for |unique_id|.
   strike_database_->AddStrike(unique_id);
-  EXPECT_EQ(false, strike_database_->IsMaxStrikesLimitReached(unique_id));
+  EXPECT_EQ(false, strike_database_->ShouldBlockFeature(unique_id, &reason));
+  EXPECT_EQ(StrikeDatabaseIntegratorBase::BlockedReason::kUnknown, reason);
   // 6 strikes added for |unique_id|.
   strike_database_->AddStrikes(6, unique_id);
-  EXPECT_EQ(true, strike_database_->IsMaxStrikesLimitReached(unique_id));
+  EXPECT_EQ(true, strike_database_->ShouldBlockFeature(unique_id, &reason));
+  EXPECT_EQ(StrikeDatabaseIntegratorBase::BlockedReason::kMaxStrikeLimitReached,
+            reason);
 }
 
 TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
@@ -425,6 +438,44 @@ TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
     EXPECT_EQ(i <= 6 ? 0 : 1,
               strike_database_->GetStrikes(base::NumberToString(i)));
   }
+}
+
+// Test to ensure that |ShouldBlockFeature| function works correctly with the
+// required latency since last strike requirement.
+TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
+       HasRequiredDelayPassedSinceLastStrike) {
+  autofill::TestAutofillClock test_clock{AutofillClock::Now()};
+  strike_database_->SetUniqueIdsRequired(true);
+  strike_database_->SetRequiredDelaySinceLastStrike(base::Days(7));
+
+  strike_database_->AddStrike("fake key");
+  ASSERT_EQ(1U, strike_database_->CountEntries());
+
+  StrikeDatabaseIntegratorBase::BlockedReason reason =
+      StrikeDatabaseIntegratorBase::kUnknown;
+  EXPECT_TRUE(strike_database_->ShouldBlockFeature("fake key", &reason));
+  EXPECT_EQ(
+      reason,
+      StrikeDatabaseIntegratorBase::BlockedReason::kRequiredDelayNotPassed);
+
+  test_clock.Advance(base::Days(1));
+  reason = StrikeDatabaseIntegratorBase::kUnknown;
+  EXPECT_TRUE(strike_database_->ShouldBlockFeature("fake key", &reason));
+  EXPECT_EQ(
+      reason,
+      StrikeDatabaseIntegratorBase::BlockedReason::kRequiredDelayNotPassed);
+
+  reason = StrikeDatabaseIntegratorBase::kUnknown;
+  test_clock.Advance(base::Days(7));
+  EXPECT_FALSE(strike_database_->ShouldBlockFeature("fake key", &reason));
+  EXPECT_EQ(reason, StrikeDatabaseIntegratorBase::BlockedReason::kUnknown);
+
+  reason = StrikeDatabaseIntegratorBase::kUnknown;
+  strike_database_->AddStrike("fake key");
+  EXPECT_TRUE(strike_database_->ShouldBlockFeature("fake key", &reason));
+  EXPECT_EQ(
+      reason,
+      StrikeDatabaseIntegratorBase::BlockedReason::kRequiredDelayNotPassed);
 }
 
 }  // namespace autofill

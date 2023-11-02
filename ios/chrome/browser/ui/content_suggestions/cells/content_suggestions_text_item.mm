@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,7 +54,7 @@
 
 #pragma mark - Private
 
-// Configures the |textLabel|.
+// Configures the `textLabel`.
 - (void)configureTextLabel:(UILabel*)textLabel {
   textLabel.text = self.text;
   textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
@@ -64,7 +64,7 @@
   textLabel.numberOfLines = 0;
 }
 
-// Configures the |detailTextLabel|.
+// Configures the `detailTextLabel`.
 - (void)configureDetailTextLabel:(UILabel*)detailTextLabel {
   detailTextLabel.text = self.detailText;
   detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];

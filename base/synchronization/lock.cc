@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,14 @@
 #include "base/synchronization/lock.h"
 
 #if DCHECK_IS_ON()
+#include "base/threading/platform_thread.h"
+#endif
+
+#if DCHECK_IS_ON()
 
 namespace base {
 
-Lock::Lock() : lock_() {
+Lock::Lock(const char* ordered_name) : lock_(ordered_name) {
 }
 
 Lock::~Lock() {

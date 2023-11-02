@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
 #include "ui/ozone/platform/wayland/host/wayland_popup.h"
+#include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
 #include "ui/ozone/platform/wayland/host/zxdg_surface_v6_wrapper_impl.h"
 #include "ui/ozone/platform/wayland/host/zxdg_toplevel_v6_wrapper_impl.h"
@@ -158,18 +159,17 @@ bool ZXDGPopupV6WrapperImpl::Initialize(const ShellPopupParams& params) {
       &ZXDGPopupV6WrapperImpl::PopupDone,
   };
 
-  zxdg_positioner_v6* positioner =
-      CreatePositioner(wayland_window_->parent_window());
+  auto positioner = CreatePositioner();
   if (!positioner)
     return false;
 
   zxdg_popup_v6_.reset(zxdg_surface_v6_get_popup(
       zxdg_surface_v6_wrapper_->zxdg_surface(),
-      parent_xdg_surface->zxdg_surface(), positioner));
+      parent_xdg_surface->zxdg_surface(), positioner.get()));
   if (!zxdg_popup_v6_)
     return false;
-
-  zxdg_positioner_v6_destroy(positioner);
+  connection_->wayland_window_manager()->NotifyWindowRoleAssigned(
+      wayland_window_);
 
   GrabIfPossible(connection_, wayland_window_->parent_window());
 
@@ -203,15 +203,26 @@ void ZXDGPopupV6WrapperImpl::SetWindowGeometry(const gfx::Rect& bounds) {
 }
 
 void ZXDGPopupV6WrapperImpl::Grab(uint32_t serial) {
-  zxdg_popup_v6_grab(zxdg_popup_v6_.get(), connection_->seat(), serial);
+  DCHECK(connection_->seat());
+
+  zxdg_popup_v6_grab(zxdg_popup_v6_.get(), connection_->seat()->wl_object(),
+                     serial);
 }
 
-zxdg_positioner_v6* ZXDGPopupV6WrapperImpl::CreatePositioner(
-    WaylandWindow* parent_window) {
-  struct zxdg_positioner_v6* positioner;
-  positioner = zxdg_shell_v6_create_positioner(connection_->shell_v6());
+bool ZXDGPopupV6WrapperImpl::SupportsDecoration() {
+  // zxdg_popup_v6 doesn't support frame configuration.
+  return false;
+}
+
+void ZXDGPopupV6WrapperImpl::Decorate() {
+  NOTREACHED();
+}
+
+wl::Object<zxdg_positioner_v6> ZXDGPopupV6WrapperImpl::CreatePositioner() {
+  wl::Object<zxdg_positioner_v6> positioner(
+      zxdg_shell_v6_create_positioner(connection_->shell_v6()));
   if (!positioner)
-    return nullptr;
+    return {};
 
   gfx::Rect anchor_rect;
   OwnedWindowAnchorPosition anchor_position;
@@ -220,15 +231,17 @@ zxdg_positioner_v6* ZXDGPopupV6WrapperImpl::CreatePositioner(
   FillAnchorData(params_, &anchor_rect, &anchor_position, &anchor_gravity,
                  &constraint_adjustment);
 
-  zxdg_positioner_v6_set_anchor_rect(positioner, anchor_rect.x(),
+  zxdg_positioner_v6_set_anchor_rect(positioner.get(), anchor_rect.x(),
                                      anchor_rect.y(), anchor_rect.width(),
                                      anchor_rect.height());
-  zxdg_positioner_v6_set_size(positioner, params_.bounds.width(),
+  zxdg_positioner_v6_set_size(positioner.get(), params_.bounds.width(),
                               params_.bounds.height());
-  zxdg_positioner_v6_set_anchor(positioner, TranslateAnchor(anchor_position));
-  zxdg_positioner_v6_set_gravity(positioner, TranslateGravity(anchor_gravity));
+  zxdg_positioner_v6_set_anchor(positioner.get(),
+                                TranslateAnchor(anchor_position));
+  zxdg_positioner_v6_set_gravity(positioner.get(),
+                                 TranslateGravity(anchor_gravity));
   zxdg_positioner_v6_set_constraint_adjustment(
-      positioner, TranslateConstraintAdjustment(constraint_adjustment));
+      positioner.get(), TranslateConstraintAdjustment(constraint_adjustment));
   return positioner;
 }
 

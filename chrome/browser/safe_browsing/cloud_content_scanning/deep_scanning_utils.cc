@@ -1,12 +1,13 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
-#include <algorithm>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
@@ -53,12 +54,15 @@ crash_reporter::CrashKeyString<7>* GetScanCrashKey(ScanningCrashKey key) {
       "pending-text-upload-scans");
   static crash_reporter::CrashKeyString<7> pending_file_downloads(
       "pending-file-download-scans");
+  static crash_reporter::CrashKeyString<7> pending_prints(
+      "pending-print-scans");
   static crash_reporter::CrashKeyString<7> total_file_uploads(
       "total-file-upload-scans");
   static crash_reporter::CrashKeyString<7> total_text_uploads(
       "total-text-upload-scans");
   static crash_reporter::CrashKeyString<7> total_file_downloads(
       "total-file-download-scans");
+  static crash_reporter::CrashKeyString<7> total_prints("total-print-scans");
   switch (key) {
     case ScanningCrashKey::PENDING_FILE_UPLOADS:
       return &pending_file_uploads;
@@ -66,12 +70,16 @@ crash_reporter::CrashKeyString<7>* GetScanCrashKey(ScanningCrashKey key) {
       return &pending_text_uploads;
     case ScanningCrashKey::PENDING_FILE_DOWNLOADS:
       return &pending_file_downloads;
+    case ScanningCrashKey::PENDING_PRINTS:
+      return &pending_prints;
     case ScanningCrashKey::TOTAL_FILE_UPLOADS:
       return &total_file_uploads;
     case ScanningCrashKey::TOTAL_TEXT_UPLOADS:
       return &total_text_uploads;
     case ScanningCrashKey::TOTAL_FILE_DOWNLOADS:
       return &total_file_downloads;
+    case ScanningCrashKey::TOTAL_PRINTS:
+      return &total_prints;
   }
 }
 
@@ -79,9 +87,11 @@ int* GetScanCrashKeyCount(ScanningCrashKey key) {
   static int pending_file_uploads = 0;
   static int pending_text_uploads = 0;
   static int pending_file_downloads = 0;
+  static int pending_prints = 0;
   static int total_file_uploads = 0;
   static int total_text_uploads = 0;
   static int total_file_downloads = 0;
+  static int total_prints = 0;
   switch (key) {
     case ScanningCrashKey::PENDING_FILE_UPLOADS:
       return &pending_file_uploads;
@@ -89,12 +99,16 @@ int* GetScanCrashKeyCount(ScanningCrashKey key) {
       return &pending_text_uploads;
     case ScanningCrashKey::PENDING_FILE_DOWNLOADS:
       return &pending_file_downloads;
+    case ScanningCrashKey::PENDING_PRINTS:
+      return &pending_prints;
     case ScanningCrashKey::TOTAL_FILE_UPLOADS:
       return &total_file_uploads;
     case ScanningCrashKey::TOTAL_TEXT_UPLOADS:
       return &total_text_uploads;
     case ScanningCrashKey::TOTAL_FILE_DOWNLOADS:
       return &total_file_downloads;
+    case ScanningCrashKey::TOTAL_PRINTS:
+      return &total_prints;
   }
 }
 
@@ -123,6 +137,8 @@ void ModifyKey(ScanningCrashKey key, int delta) {
 void MaybeReportDeepScanningVerdict(
     Profile* profile,
     const GURL& url,
+    const std::string& source,
+    const std::string& destination,
     const std::string& file_name,
     const std::string& download_digest_sha256,
     const std::string& mime_type,
@@ -132,11 +148,7 @@ void MaybeReportDeepScanningVerdict(
     BinaryUploadService::Result result,
     const enterprise_connectors::ContentAnalysisResponse& response,
     EventResult event_result) {
-  DCHECK(std::all_of(download_digest_sha256.begin(),
-                     download_digest_sha256.end(), [](const char& c) {
-                       return (c >= '0' && c <= '9') ||
-                              (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');
-                     }));
+  DCHECK(base::ranges::all_of(download_digest_sha256, base::IsHexDigit<char>));
   auto* router =
       extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile);
   if (!router)
@@ -144,9 +156,9 @@ void MaybeReportDeepScanningVerdict(
 
   std::string unscanned_reason = MaybeGetUnscannedReason(result);
   if (!unscanned_reason.empty()) {
-    router->OnUnscannedFileEvent(url, file_name, download_digest_sha256,
-                                 mime_type, trigger, access_point,
-                                 unscanned_reason, content_size, event_result);
+    router->OnUnscannedFileEvent(
+        url, source, destination, file_name, download_digest_sha256, mime_type,
+        trigger, access_point, unscanned_reason, content_size, event_result);
   }
 
   if (result != BinaryUploadService::Result::SUCCESS)
@@ -161,15 +173,15 @@ void MaybeReportDeepScanningVerdict(
       else if (response_result.tag() == "dlp")
         unscanned_reason = "DLP_SCAN_FAILED";
 
-      router->OnUnscannedFileEvent(url, file_name, download_digest_sha256,
-                                   mime_type, trigger, access_point,
-                                   std::move(unscanned_reason), content_size,
-                                   event_result);
+      router->OnUnscannedFileEvent(url, source, destination, file_name,
+                                   download_digest_sha256, mime_type, trigger,
+                                   access_point, std::move(unscanned_reason),
+                                   content_size, event_result);
     } else if (response_result.triggered_rules_size() > 0) {
       router->OnAnalysisConnectorResult(
-          url, file_name, download_digest_sha256, mime_type, trigger,
-          response.request_token(), access_point, response_result, content_size,
-          event_result);
+          url, source, destination, file_name, download_digest_sha256,
+          mime_type, trigger, response.request_token(), access_point,
+          response_result, content_size, event_result);
     }
   }
 }
@@ -177,18 +189,17 @@ void MaybeReportDeepScanningVerdict(
 void ReportAnalysisConnectorWarningBypass(
     Profile* profile,
     const GURL& url,
+    const std::string& source,
+    const std::string& destination,
     const std::string& file_name,
     const std::string& download_digest_sha256,
     const std::string& mime_type,
     const std::string& trigger,
     DeepScanAccessPoint access_point,
     const int64_t content_size,
-    const enterprise_connectors::ContentAnalysisResponse& response) {
-  DCHECK(std::all_of(download_digest_sha256.begin(),
-                     download_digest_sha256.end(), [](const char& c) {
-                       return (c >= '0' && c <= '9') ||
-                              (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');
-                     }));
+    const enterprise_connectors::ContentAnalysisResponse& response,
+    absl::optional<std::u16string> user_justification) {
+  DCHECK(base::ranges::all_of(download_digest_sha256, base::IsHexDigit<char>));
   auto* router =
       extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile);
   if (!router)
@@ -200,8 +211,9 @@ void ReportAnalysisConnectorWarningBypass(
       continue;
 
     router->OnAnalysisConnectorWarningBypassed(
-        url, file_name, download_digest_sha256, mime_type, trigger,
-        response.request_token(), access_point, result, content_size);
+        url, source, destination, file_name, download_digest_sha256, mime_type,
+        trigger, response.request_token(), access_point, result, content_size,
+        user_justification);
   }
 }
 
@@ -232,6 +244,10 @@ std::string DeepScanAccessPointToString(DeepScanAccessPoint access_point) {
       return "DragAndDrop";
     case DeepScanAccessPoint::PASTE:
       return "Paste";
+    case DeepScanAccessPoint::PRINT:
+      return "Print";
+    case DeepScanAccessPoint::FILE_TRANSFER:
+      return "FileTransfer";
   }
   NOTREACHED();
   return "";
@@ -299,106 +315,6 @@ void RecordDeepScanMetrics(DeepScanAccessPoint access_point,
   base::UmaHistogramCustomTimes(
       "SafeBrowsing.DeepScan." + access_point_string + ".Duration", duration,
       base::Milliseconds(1), base::Minutes(30), 50);
-}
-
-const std::array<const base::FilePath::CharType*, 26>& SupportedDlpFileTypes() {
-  // Keep sorted for efficient access.
-  static constexpr const std::array<const base::FilePath::CharType*, 26>
-      kSupportedDLPFileTypes = {
-          FILE_PATH_LITERAL(".7z"),   FILE_PATH_LITERAL(".bz2"),
-          FILE_PATH_LITERAL(".bzip"), FILE_PATH_LITERAL(".cab"),
-          FILE_PATH_LITERAL(".csv"),  FILE_PATH_LITERAL(".doc"),
-          FILE_PATH_LITERAL(".docx"), FILE_PATH_LITERAL(".eps"),
-          FILE_PATH_LITERAL(".gz"),   FILE_PATH_LITERAL(".gzip"),
-          FILE_PATH_LITERAL(".htm"),  FILE_PATH_LITERAL(".html"),
-          FILE_PATH_LITERAL(".odt"),  FILE_PATH_LITERAL(".pdf"),
-          FILE_PATH_LITERAL(".ppt"),  FILE_PATH_LITERAL(".pptx"),
-          FILE_PATH_LITERAL(".ps"),   FILE_PATH_LITERAL(".rar"),
-          FILE_PATH_LITERAL(".rtf"),  FILE_PATH_LITERAL(".tar"),
-          FILE_PATH_LITERAL(".txt"),  FILE_PATH_LITERAL(".wpd"),
-          FILE_PATH_LITERAL(".xls"),  FILE_PATH_LITERAL(".xlsx"),
-          FILE_PATH_LITERAL(".xps"),  FILE_PATH_LITERAL(".zip")};
-  // TODO: Replace this DCHECK with a static assert once std::is_sorted is
-  // constexpr in C++20.
-  DCHECK(std::is_sorted(
-      kSupportedDLPFileTypes.begin(), kSupportedDLPFileTypes.end(),
-      [](const base::FilePath::StringType& a,
-         const base::FilePath::StringType& b) { return a.compare(b) < 0; }));
-
-  return kSupportedDLPFileTypes;
-}
-
-bool FileTypeSupportedForDlp(const base::FilePath& path) {
-  // Accept any file type in the supported list for DLP scans.
-  base::FilePath::StringType extension(path.FinalExtension());
-  std::transform(extension.begin(), extension.end(), extension.begin(),
-                 tolower);
-
-  const auto& dlp_types = SupportedDlpFileTypes();
-  return std::binary_search(dlp_types.begin(), dlp_types.end(), extension);
-}
-
-const std::array<const char*, 38>& SupportedDlpMimeTypes() {
-  // Keep sorted for efficient access.
-  static constexpr const std::array<const char*, 38> kSupportedDLPMimeTypes = {
-      "application/gzip",
-      "application/msexcel",
-      "application/mspowerpoint",
-      "application/msword",
-      "application/octet-stream",
-      "application/pdf",
-      "application/postscript",
-      "application/rtf",
-      "application/vnd.google-apps.document.internal",
-      "application/vnd.google-apps.spreadsheet.internal",
-      "application/vnd.ms-cab-compressed",
-      "application/vnd.ms-excel",
-      "application/vnd.ms-excel.sheet.macroenabled.12",
-      "application/vnd.ms-excel.template.macroenabled.12",
-      "application/vnd.ms-powerpoint",
-      "application/vnd.ms-powerpoint.presentation.macroenabled.12",
-      "application/vnd.ms-word",
-      "application/vnd.ms-word.document.12",
-      "application/vnd.ms-word.document.macroenabled.12",
-      "application/vnd.ms-word.template.macroenabled.12",
-      "application/vnd.ms-xpsdocument",
-      "application/vnd.msword",
-      "application/vnd.oasis.opendocument.text",
-      "application/"
-      "vnd.openxmlformats-officedocument.presentationml.presentation",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.template",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.template",
-      "application/vnd.rar",
-      "application/vnd.wordperfect",
-      "application/x-7z-compressed",
-      "application/x-bzip",
-      "application/x-bzip2",
-      "application/x-gzip",
-      "application/x-rar-compressed",
-      "application/x-tar",
-      "application/x-zip-compressed",
-      "application/zip"};
-  // TODO: Replace this DCHECK with a static assert once std::is_sorted is
-  // constexpr in C++20.
-  DCHECK(std::is_sorted(kSupportedDLPMimeTypes.begin(),
-                        kSupportedDLPMimeTypes.end(),
-                        [](const std::string& a, const std::string& b) {
-                          return a.compare(b) < 0;
-                        }));
-
-  return kSupportedDLPMimeTypes;
-}
-
-// Returns true if the given mime type is supported for DLP scanning.
-bool MimeTypeSupportedForDlp(const std::string& mime_type) {
-  // All text mime type are considered scannable for DLP.
-  if (mime_type.size() >= 5 && mime_type.substr(0, 5) == "text/")
-    return true;
-
-  const auto& mime_types = SupportedDlpMimeTypes();
-  return std::binary_search(mime_types.begin(), mime_types.end(), mime_type);
 }
 
 enterprise_connectors::ContentAnalysisResponse

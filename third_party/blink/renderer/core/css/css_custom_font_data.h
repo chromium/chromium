@@ -62,18 +62,22 @@ class CSSCustomFontData final : public CustomFontData {
 
  private:
   CSSCustomFontData(CSSFontFaceSource* source, FallbackVisibility visibility)
-      : font_face_source_(source),
-        fallback_visibility_(visibility),
-        is_loading_(false) {
+      : font_face_source_(source), fallback_visibility_(visibility) {
     if (source)
       is_loading_ = source->IsLoading();
   }
 
   // TODO(Oilpan): consider moving (Custom)FontFace hierarchy to the heap,
   // thereby making this reference a Member<>.
+#if defined(USE_PARALLEL_TEXT_SHAPING)
+  CrossThreadWeakPersistent<CSSFontFaceSource> font_face_source_;
+  std::atomic<FallbackVisibility> fallback_visibility_;
+  mutable std::atomic<bool> is_loading_{false};
+#else
   WeakPersistent<CSSFontFaceSource> font_face_source_;
   FallbackVisibility fallback_visibility_;
-  mutable bool is_loading_;
+  mutable bool is_loading_ = false;
+#endif
 };
 
 }  // namespace blink

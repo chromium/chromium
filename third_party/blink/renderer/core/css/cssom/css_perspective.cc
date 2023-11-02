@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -130,7 +130,11 @@ const CSSFunctionValue* CSSPerspective::ToCSSValue() const {
     }
   }
 
-  DCHECK(length);
+  // TODO(crbug.com/983784): We currently don't fully support typed
+  // arithmetic, which can cause `length` to be nullptr here.
+  if (!length)
+    return nullptr;
+
   auto* result =
       MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kPerspective);
   result->Append(*length);

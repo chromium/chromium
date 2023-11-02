@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,11 @@ namespace prefs {
 //
 // Value is an int stored as IntegerPref.
 extern const char kPrivacyBudgetGeneration[];
+
+// Pref used for persisting for which blocks of surfaces we already reported the
+// hash for estimating the Reid score. Used to avoid recomputing and reporting
+// the hashes multiple times.
+extern const char kPrivacyBudgetReportedReidBlocks[];
 
 // Pref used for persisting |IdentifiabilityStudyState::seen_surface_sequence_|.
 //

@@ -1,0 +1,15 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(is_chromeos_ash, "The cloud upload dialog is ash-chrome only")
+
+mojom("mojo_bindings") {
+  sources = [ "cloud_upload.mojom" ]
+
+  public_deps = [ "//mojo/public/mojom/base" ]
+  webui_module_path = "/"
+}

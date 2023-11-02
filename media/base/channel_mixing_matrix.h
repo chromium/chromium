@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "media/base/channel_layout.h"
 #include "media/base/media_export.h"
 
@@ -31,7 +32,7 @@ class MEDIA_EXPORT ChannelMixingMatrix {
 
  private:
   // Result transformation of input channels to output channels
-  std::vector<std::vector<float>>* matrix_;
+  raw_ptr<std::vector<std::vector<float>>> matrix_;
 
   // Input and output channel layout provided during construction.
   ChannelLayout input_layout_;

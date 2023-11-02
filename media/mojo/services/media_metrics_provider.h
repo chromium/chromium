@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <string>
 
+#include "base/time/time.h"
 #include "media/base/container_names.h"
 #include "media/base/pipeline_status.h"
 #include "media/base/renderer_factory_selector.h"
@@ -45,13 +46,16 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
   using GetRecordAggregateWatchTimeCallback =
       base::RepeatingCallback<RecordAggregateWatchTimeCallback(void)>;
 
+  using IsShuttingDownCallback = base::RepeatingCallback<bool(void)>;
+
   MediaMetricsProvider(BrowsingMode is_incognito,
                        FrameStatus is_top_frame,
                        ukm::SourceId source_id,
                        learning::FeatureValue origin,
                        VideoDecodePerfHistory::SaveCallback save_cb,
                        GetLearningSessionCallback learning_session_cb,
-                       RecordAggregateWatchTimeCallback record_playback_cb);
+                       RecordAggregateWatchTimeCallback record_playback_cb,
+                       IsShuttingDownCallback is_shutting_down_cb);
 
   MediaMetricsProvider(const MediaMetricsProvider&) = delete;
   MediaMetricsProvider& operator=(const MediaMetricsProvider&) = delete;
@@ -80,6 +84,7 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
       VideoDecodePerfHistory::SaveCallback save_cb,
       GetLearningSessionCallback learning_session_cb,
       GetRecordAggregateWatchTimeCallback get_record_playback_cb,
+      IsShuttingDownCallback is_shutting_down_cb,
       mojo::PendingReceiver<mojom::MediaMetricsProvider> receiver);
 
  private:
@@ -97,14 +102,15 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
     VideoCodec video_codec;
     VideoPipelineInfo video_pipeline_info;
     AudioPipelineInfo audio_pipeline_info;
-    PipelineStatus last_pipeline_status = PIPELINE_OK;
+    PipelineStatusCodes last_pipeline_status = PIPELINE_OK;
   };
 
   // mojom::MediaMetricsProvider implementation:
   void Initialize(bool is_mse,
                   mojom::MediaURLScheme url_scheme,
                   mojom::MediaStreamType media_stream_type) override;
-  void OnError(PipelineStatus status) override;
+  void OnError(const PipelineStatus& status) override;
+  void OnFallback(const PipelineStatus& status) override;
   void SetAudioPipelineInfo(const AudioPipelineInfo& info) override;
   void SetContainerName(
       container_names::MediaContainerName container_name) override;
@@ -149,6 +155,7 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
   const VideoDecodePerfHistory::SaveCallback save_cb_;
   const GetLearningSessionCallback learning_session_cb_;
   const RecordAggregateWatchTimeCallback record_playback_cb_;
+  const IsShuttingDownCallback is_shutting_down_cb_;
 
   // UMA pipeline packaged data
   PipelineInfo uma_info_;

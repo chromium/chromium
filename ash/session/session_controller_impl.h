@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,6 +28,7 @@ namespace ash {
 class FullscreenController;
 class SessionControllerClient;
 class SessionObserver;
+class SignoutScreenshotHandler;
 class TestSessionControllerClient;
 
 // Implements mojom::SessionController to cache session related info such as
@@ -46,9 +47,6 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
 
   base::TimeDelta session_length_limit() const { return session_length_limit_; }
   base::Time session_start_time() const { return session_start_time_; }
-  bool session_state_change_in_progress() const {
-    return session_state_change_in_progress_;
-  }
 
   // Returns the number of signed in users. If 0 is returned, there is either
   // no session in progress or no active user.
@@ -130,6 +128,9 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
   // device (i.e. first time login on the device).
   bool IsUserFirstLogin() const;
 
+  // Returns true if the device is enterprise managed.
+  bool IsEnterpriseManaged() const;
+
   // Returns true if should display managed icon for current session,
   // and false otherwise.
   bool ShouldDisplayManagedUI() const;
@@ -137,10 +138,16 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
   // Locks the screen. The locking happens asynchronously.
   void LockScreen();
 
+  // Hides the lock screen.
+  void HideLockScreen();
+
   // Requests signing out all users, ending the current session.
   // NOTE: This should only be called from LockStateController, other callers
   // should use LockStateController::RequestSignOut() instead.
   void RequestSignOut();
+
+  // Requests a system restart to apply an OS update.
+  void RequestRestartForUpdate();
 
   // Attempts to restart the chrome browser.
   void AttemptRestartChrome();
@@ -155,9 +162,6 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
 
   // Show the multi-profile login UI to add another user to this session.
   void ShowMultiProfileLogin();
-
-  // Forwards EmitAshInitialized to |client_|.
-  void EmitAshInitialized();
 
   // Returns the PrefService used at the signin screen, which is tied to an
   // incognito profile in chrome and is valid until the browser exits.
@@ -215,6 +219,8 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
 
   // Test helpers.
   void ClearUserSessionsForTest();
+  void SetSignoutScreenshotHandlerForTest(
+      std::unique_ptr<SignoutScreenshotHandler> handler);
 
  private:
   friend class TestSessionControllerClient;
@@ -255,6 +261,13 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
   // Called when IsUserSessionBlocked() becomes true. If there isn't an active
   // window, tries to activate one.
   void EnsureActiveWindowAfterUnblockingUserSession();
+
+  // Proceeds with signout after the (optional) signout screenshot is taken.
+  void ProceedWithSignOut();
+
+  // Proceeds with restart to update after the (optional) signout screenshot is
+  // taken.
+  void ProceedWithRestartToUpdate();
 
   // Client interface to session manager code (chrome).
   SessionControllerClient* client_ = nullptr;
@@ -315,8 +328,8 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
 
   std::unique_ptr<FullscreenController> fullscreen_controller_;
 
-  // Indicate if the session state is being changed.
-  bool session_state_change_in_progress_ = false;
+  // May be null if glanceables are not enabled.
+  std::unique_ptr<SignoutScreenshotHandler> signout_screenshot_handler_;
 
   base::WeakPtrFactory<SessionControllerImpl> weak_ptr_factory_{this};
 };

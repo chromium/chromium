@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,10 +20,10 @@ namespace printing {
 // implementation for use on ChromeOS.
 class PrintBackendChromeOS : public PrintBackend {
  public:
-  explicit PrintBackendChromeOS(const std::string& locale);
+  PrintBackendChromeOS() = default;
 
   // PrintBackend implementation.
-  mojom::ResultCode EnumeratePrinters(PrinterList* printer_list) override;
+  mojom::ResultCode EnumeratePrinters(PrinterList& printer_list) override;
   mojom::ResultCode GetDefaultPrinterName(
       std::string& default_printer) override;
   mojom::ResultCode GetPrinterBasicInfo(
@@ -42,11 +42,8 @@ class PrintBackendChromeOS : public PrintBackend {
   ~PrintBackendChromeOS() override = default;
 };
 
-PrintBackendChromeOS::PrintBackendChromeOS(const std::string& locale)
-    : PrintBackend(locale) {}
-
 mojom::ResultCode PrintBackendChromeOS::EnumeratePrinters(
-    PrinterList* printer_list) {
+    PrinterList& printer_list) {
   return mojom::ResultCode::kSuccess;
 }
 
@@ -89,14 +86,13 @@ bool PrintBackendChromeOS::IsValidPrinter(const std::string& printer_name) {
 
 // static
 scoped_refptr<PrintBackend> PrintBackend::CreateInstanceImpl(
-    const base::DictionaryValue* print_backend_settings,
-    const std::string& locale,
-    bool /*for_cloud_print*/) {
+    const base::Value::Dict* print_backend_settings,
+    const std::string& /*locale*/) {
 #if defined(USE_CUPS)
   return base::MakeRefCounted<PrintBackendCupsIpp>(
-      CreateConnection(print_backend_settings), locale);
+      CreateConnection(print_backend_settings));
 #else
-  return base::MakeRefCounted<PrintBackendChromeOS>(locale);
+  return base::MakeRefCounted<PrintBackendChromeOS>();
 #endif  // defined(USE_CUPS)
 }
 

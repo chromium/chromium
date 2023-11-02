@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,7 +58,9 @@ CompositorViewImpl::CompositorViewImpl(JNIEnv* env,
   root_layer_->SetIsDrawable(true);
   absl::optional<SkColor> background_color =
       ui::JavaColorToOptionalSkColor(java_background_color);
-  root_layer_->SetBackgroundColor(background_color.value());
+  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+  root_layer_->SetBackgroundColor(
+      SkColor4f::FromColor(background_color.value()));
 }
 
 CompositorViewImpl::~CompositorViewImpl() = default;

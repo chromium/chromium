@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 
 #include <memory>
 #include <string>
+
+#include "base/memory/raw_ptr.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -96,8 +98,8 @@ class UserClassifier {
   void SetMetricValue(Metric metric, double metric_value);
   void ClearMetricValue(Metric metric);
 
-  PrefService* pref_service_;
-  base::Clock* clock_;
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<base::Clock> clock_;
 
   // Params of the metric.
   const double discount_rate_per_hour_;

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/display/tablet_state.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_lacros.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -59,11 +59,12 @@ ui::WaylandExtension* GetWaylandExtensionFromWebContents(
   if (!window->GetHost())
     return nullptr;
 
-  auto* dwth_linux = views::DesktopWindowTreeHostLinux::From(window->GetHost());
-  if (!dwth_linux)
+  auto* dwth_platform =
+      views::DesktopWindowTreeHostLacros::From(window->GetHost());
+  if (!dwth_platform)
     return nullptr;
 
-  return dwth_linux->GetWaylandExtension();
+  return dwth_platform->GetWaylandExtension();
 }
 
 void ScreenOrientationDelegateLacros::Lock(

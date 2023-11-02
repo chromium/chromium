@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,7 +41,7 @@ bool IsNGBlockFragmentationRoot(const LayoutNGBlockFlow* block_flow) {
 }  // anonymous namespace
 
 // With 100 unique strings, a 2^12 slot table has a false positive rate of ~2%.
-using ClassnameFilter = BloomFilter<12>;
+using ClassnameFilter = CountingBloomFilter<12>;
 using Corner = ScrollAnchor::Corner;
 
 ScrollAnchor::ScrollAnchor()
@@ -130,10 +130,11 @@ static LayoutRect RelativeBounds(const LayoutObject* layout_object,
     NOTREACHED();
   }
 
-  LayoutRect relative_bounds = LayoutRect(
-      scroller
-          ->LocalToVisibleContentQuad(FloatRect(local_bounds), layout_object)
-          .BoundingBox());
+  LayoutRect relative_bounds =
+      LayoutRect(scroller
+                     ->LocalToVisibleContentQuad(
+                         gfx::QuadF(gfx::RectF(local_bounds)), layout_object)
+                     .BoundingBox());
 
   return relative_bounds;
 }
@@ -149,11 +150,9 @@ static LayoutPoint ComputeRelativeOffset(const LayoutObject* layout_object,
 
 static bool CandidateMayMoveWithScroller(const LayoutObject* candidate,
                                          const ScrollableArea* scroller) {
-  if (const ComputedStyle* style = candidate->Style()) {
-    if (style->HasViewportConstrainedPosition() ||
-        style->HasStickyConstrainedPosition())
-      return false;
-  }
+  if (candidate->IsFixedPositioned() ||
+      candidate->StyleRef().HasStickyConstrainedPosition())
+    return false;
 
   LayoutObject::AncestorSkipInfo skip_info(ScrollerLayoutBox(scroller));
   candidate->Container(&skip_info);
@@ -227,7 +226,7 @@ static const String UniqueSimpleSelectorAmongSiblings(Element* element) {
 
   if (element->HasClass()) {
     AtomicString unique_classname = UniqueClassnameAmongSiblings(element);
-    if (!unique_classname.IsEmpty()) {
+    if (!unique_classname.empty()) {
       return AtomicString(".") + unique_classname;
     }
   }
@@ -249,6 +248,12 @@ static const String ComputeUniqueSelector(Node* anchor_node) {
   // of the DOM and can't be used as part of a selector. We fail in this case;
   // success isn't possible.
   if (anchor_node->IsPseudoElement()) {
+    return String();
+  }
+
+  // When the scroll anchor is a shadow DOM element, the selector may be applied
+  // to the top document. We fail in this case.
+  if (anchor_node->IsInShadowTree()) {
     return String();
   }
 
@@ -369,7 +374,7 @@ bool ScrollAnchor::FindAnchorInPriorityCandidates() {
   LayoutObject* candidate = nullptr;
   ExamineResult result{kSkip};
   auto* focused_element = document.FocusedElement();
-  if (focused_element && HasEditableStyle(*focused_element)) {
+  if (focused_element && IsEditable(*focused_element)) {
     candidate = PriorityCandidateFromNode(focused_element);
     if (candidate) {
       result = ExaminePriorityCandidate(candidate);
@@ -471,7 +476,7 @@ ScrollAnchor::WalkStatus ScrollAnchor::FindAnchorInOOFs(
   if (!layout_block)
     return kSkip;
 
-  if (!layout_block->IsLayoutNGMixin()) {
+  if (!layout_block->IsLayoutNGObject()) {
     if (TrackedLayoutBoxLinkedHashSet* positioned_descendants =
             layout_block->PositionedObjects()) {
       for (LayoutBox* descendant : *positioned_descendants) {
@@ -561,8 +566,8 @@ void ScrollAnchor::NotifyBeforeLayout() {
   ScrollOffset scroll_offset = scroller_->GetScrollOffset();
   float block_direction_scroll_offset =
       ScrollerLayoutBox(scroller_)->IsHorizontalWritingMode()
-          ? scroll_offset.height()
-          : scroll_offset.width();
+          ? scroll_offset.y()
+          : scroll_offset.x();
   if (block_direction_scroll_offset == 0) {
     ClearSelf();
     return;
@@ -590,7 +595,7 @@ void ScrollAnchor::NotifyBeforeLayout() {
   queued_ = true;
 }
 
-IntSize ScrollAnchor::ComputeAdjustment() const {
+gfx::Vector2d ScrollAnchor::ComputeAdjustment() const {
   // The anchor node can report fractional positions, but it is DIP-snapped when
   // painting (crbug.com/610805), so we must round the offsets to determine the
   // visual delta. If we scroll by the delta in LayoutUnits, the snapping of the
@@ -598,38 +603,38 @@ IntSize ScrollAnchor::ComputeAdjustment() const {
   // (For example, anchor moving from 2.4px -> 2.6px is really 2px -> 3px, so we
   // should scroll by 1px instead of 0.2px.) This is true regardless of whether
   // the ScrollableArea actually uses fractional scroll positions.
-  IntSize delta = RoundedIntSize(ComputeRelativeOffset(anchor_object_,
-                                                       scroller_, corner_)) -
-                  RoundedIntSize(saved_relative_offset_);
+  gfx::Vector2d delta = ToRoundedVector2d(ComputeRelativeOffset(
+                            anchor_object_, scroller_, corner_)) -
+                        ToRoundedVector2d(saved_relative_offset_);
 
   LayoutRect anchor_rect = RelativeBounds(anchor_object_, scroller_);
 
   // Only adjust on the block layout axis.
   const LayoutBox* scroller_box = ScrollerLayoutBox(scroller_);
   if (scroller_box->IsHorizontalWritingMode())
-    delta.set_width(0);
+    delta.set_x(0);
   else
-    delta.set_height(0);
+    delta.set_y(0);
 
   if (anchor_is_cv_auto_without_layout_) {
     // See the effect delta would have on the anchor rect.
     // If the anchor is now off-screen (in block direction) then make sure it's
     // just at the edge.
-    anchor_rect.Move(-delta);
+    anchor_rect.Move(-LayoutSize(delta));
     if (scroller_box->IsHorizontalWritingMode()) {
       if (anchor_rect.MaxY() < 0)
-        delta.set_height(delta.height() + anchor_rect.MaxY().ToInt());
+        delta.set_y(delta.y() + anchor_rect.MaxY().ToInt());
     } else {
       // For the flipped blocks writing mode, we need to adjust the offset to
       // align the opposite edge of the block (MaxX edge instead of X edge).
       if (scroller_box->HasFlippedBlocksWritingMode()) {
         auto visible_rect = GetVisibleRect(scroller_);
         if (anchor_rect.X() > visible_rect.MaxX()) {
-          delta.set_width(delta.width() - (anchor_rect.X().ToInt() -
-                                           visible_rect.MaxX().ToInt()));
+          delta.set_x(delta.x() -
+                      (anchor_rect.X().ToInt() - visible_rect.MaxX().ToInt()));
         }
       } else if (anchor_rect.MaxX() < 0) {
-        delta.set_width(delta.width() + anchor_rect.MaxX().ToInt());
+        delta.set_x(delta.x() + anchor_rect.MaxX().ToInt());
       }
     }
   }
@@ -638,7 +643,7 @@ IntSize ScrollAnchor::ComputeAdjustment() const {
   // make it physical.
   if (!scroller_box->IsHorizontalWritingMode() &&
       scroller_box->HasFlippedBlocksWritingMode()) {
-    delta.set_width(-delta.width());
+    delta.set_x(-delta.x());
   }
   return delta;
 }
@@ -650,7 +655,7 @@ void ScrollAnchor::Adjust() {
   DCHECK(scroller_);
   if (!anchor_object_)
     return;
-  IntSize adjustment = ComputeAdjustment();
+  gfx::Vector2d adjustment = ComputeAdjustment();
 
   // We should pick a new anchor if we had an unlaid-out content-visibility
   // auto. It should have been laid out, so if it is still the best candidate,
@@ -670,7 +675,7 @@ void ScrollAnchor::Adjust() {
   }
 
   scroller_->SetScrollOffset(
-      scroller_->GetScrollOffset() + FloatSize(adjustment),
+      scroller_->GetScrollOffset() + ScrollOffset(adjustment),
       mojom::blink::ScrollType::kAnchoring);
 
   UseCounter::Count(ScrollerLayoutBox(scroller_)->GetDocument(),
@@ -730,17 +735,17 @@ bool ScrollAnchor::RestoreAnchor(const SerializedAnchor& serialized_anchor) {
     // and attempt to re-find the anchor. The user-visible effect should end up
     // roughly the same.
     ScrollOffset current_offset = scroller_->GetScrollOffset();
-    FloatRect bounding_box = anchor_object->AbsoluteBoundingBoxFloatRect();
-    FloatPoint location_point =
+    gfx::RectF bounding_box = anchor_object->AbsoluteBoundingBoxRectF();
+    gfx::PointF location_point =
         anchor_object->Style()->IsFlippedBlocksWritingMode()
             ? bounding_box.top_right()
             : bounding_box.origin();
-    FloatPoint desired_point = location_point + current_offset;
+    gfx::PointF desired_point = location_point + current_offset;
 
-    ScrollOffset desired_offset =
-        ScrollOffset(desired_point.x(), desired_point.y());
+    ScrollOffset desired_offset = desired_point.OffsetFromOrigin();
     ScrollOffset delta =
-        ScrollOffset(RoundedIntSize(serialized_anchor.relative_offset));
+        ScrollOffset(serialized_anchor.relative_offset.X().ToFloat(),
+                     serialized_anchor.relative_offset.Y().ToFloat());
     desired_offset -= delta;
     scroller_->SetScrollOffset(desired_offset,
                                mojom::blink::ScrollType::kAnchoring);
@@ -773,7 +778,7 @@ const SerializedAnchor ScrollAnchor::GetSerializedAnchor() {
 
   // It's safe to return saved_selector_ before checking anchor_object_, since
   // clearing anchor_object_ also clears saved_selector_.
-  if (!saved_selector_.IsEmpty()) {
+  if (!saved_selector_.empty()) {
     DCHECK(anchor_object_);
     return SerializedAnchor(
         saved_selector_,

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,13 +15,14 @@
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "media/cast/cast_config.h"
-#include "media/cast/sender/sender_encoded_frame.h"
-#include "media/cast/sender/vpx_encoder.h"
+#include "media/cast/common/sender_encoded_frame.h"
+#include "media/cast/encoding/vpx_encoder.h"
 #include "media/cast/test/receiver/video_decoder.h"
 #include "media/cast/test/utility/default_config.h"
 #include "media/cast/test/utility/standalone_cast_environment.h"
 #include "media/cast/test/utility/video_utility.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
 
 namespace media {
 namespace cast {
@@ -95,7 +96,8 @@ class VideoDecoderTest : public ::testing::TestWithParam<Codec> {
     vp8_encoder_.Encode(video_frame, reference_time, encoded_frame.get());
     // Rewrite frame IDs for testing purposes.
     encoded_frame->frame_id = last_frame_id_ + 1 + num_dropped_frames;
-    if (encoded_frame->dependency == EncodedFrame::KEY)
+    if (encoded_frame->dependency ==
+        openscreen::cast::EncodedFrame::Dependency::kKeyFrame)
       encoded_frame->referenced_frame_id = encoded_frame->frame_id;
     else
       encoded_frame->referenced_frame_id = encoded_frame->frame_id - 1;
@@ -144,7 +146,6 @@ class VideoDecoderTest : public ::testing::TestWithParam<Codec> {
     EXPECT_EQ(expected_video_frame->coded_size().height(),
               video_frame->coded_size().height());
     EXPECT_LT(40.0, I420PSNR(*expected_video_frame, *video_frame));
-    // TODO(miu): Once we start using VideoFrame::timestamp_, check that here.
 
     // Signal the main test thread that more video was decoded.
     base::AutoLock auto_lock(lock_);

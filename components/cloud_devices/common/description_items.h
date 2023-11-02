@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,14 +10,13 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <utility>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/numerics/safe_conversions.h"
 #include "components/cloud_devices/common/cloud_device_description.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cloud_devices {
 
@@ -31,10 +30,10 @@ namespace cloud_devices {
 //   static std::string GetItemPath();
 //
 //   // Loads ticket item. Returns false if failed.
-//   static bool Load(const base::Value& dict, ContentType* option);
+//   static bool Load(const base::Value::Dict& dict, ContentType* option);
 //
 //   // Saves ticket item.
-//   static void Save(ContentType option, base::Value* dict);
+//   static void Save(ContentType option, base::Value::Dict* dict);
 
 // Represents a CDD capability that is stored as a JSON list
 // Ex: "<CAPABILITY_NAME>": [ {<VALUE>}, {<VALUE>}, {<VALUE>} ]
@@ -98,12 +97,12 @@ class SelectionCapability {
   bool LoadFrom(const CloudDeviceDescription& description);
   void SaveTo(CloudDeviceDescription* description) const;
 
-  bool LoadFrom(const base::Value& dict);
-  void SaveTo(base::Value* dict) const;
+  bool LoadFrom(const base::Value::Dict& dict);
+  void SaveTo(base::Value::Dict* dict) const;
 
   void Reset() {
     options_.clear();
-    default_idx_ = -1;
+    default_idx_.reset();
   }
 
   bool IsValid() const;
@@ -120,16 +119,16 @@ class SelectionCapability {
 
   const Option& GetDefault() const {
     CHECK(!options_.empty());
-    return options_[std::max(default_idx_, 0)];
+    return options_[default_idx_.value_or(0)];
   }
 
   void AddOption(const Option& option) { AddDefaultOption(option, false); }
 
   void AddDefaultOption(const Option& option, bool is_default) {
     if (is_default) {
-      DCHECK_EQ(default_idx_, -1);
+      DCHECK(!default_idx_.has_value());
       // Point to the last element.
-      default_idx_ = base::checked_cast<int>(size());
+      default_idx_ = size();
     }
     options_.push_back(option);
   }
@@ -138,7 +137,7 @@ class SelectionCapability {
   typedef std::vector<Option> OptionVector;
 
   OptionVector options_;
-  int default_idx_;
+  absl::optional<size_t> default_idx_;
 };
 
 // Represents CDD capability that can be true or false.

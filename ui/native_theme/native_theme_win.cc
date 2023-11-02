@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,10 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/win/dark_mode_support.h"
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/scoped_hdc.h"
 #include "base/win/scoped_select_object.h"
@@ -35,6 +37,7 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/color/color_provider.h"
 #include "ui/display/win/screen_win.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -244,6 +247,7 @@ gfx::Size NativeThemeWin::GetPartSize(Part part,
 }
 
 void NativeThemeWin::Paint(cc::PaintCanvas* canvas,
+                           const ui::ColorProvider* color_provider,
                            Part part,
                            State state,
                            const gfx::Rect& rect,
@@ -255,17 +259,17 @@ void NativeThemeWin::Paint(cc::PaintCanvas* canvas,
 
   switch (part) {
     case kMenuPopupGutter:
-      PaintMenuGutter(canvas, rect, color_scheme);
+      PaintMenuGutter(canvas, color_provider, rect);
       return;
     case kMenuPopupSeparator:
-      PaintMenuSeparator(canvas, extra.menu_separator, color_scheme);
+      PaintMenuSeparator(canvas, color_provider, extra.menu_separator);
       return;
     case kMenuPopupBackground:
-      PaintMenuBackground(canvas, rect, color_scheme);
+      PaintMenuBackground(canvas, color_provider, rect);
       return;
     case kMenuItemBackground:
-      CommonThemePaintMenuItemBackground(this, canvas, state, rect,
-                                         extra.menu_item, color_scheme);
+      CommonThemePaintMenuItemBackground(this, color_provider, canvas, state,
+                                         rect, extra.menu_item);
       return;
     default:
       PaintIndirect(canvas, part, state, rect, extra);
@@ -275,7 +279,9 @@ void NativeThemeWin::Paint(cc::PaintCanvas* canvas,
 
 NativeThemeWin::NativeThemeWin(bool configure_web_instance,
                                bool should_only_use_dark_colors)
-    : NativeTheme(should_only_use_dark_colors), color_change_listener_(this) {
+    : NativeTheme(should_only_use_dark_colors),
+      supports_windows_dark_mode_(base::win::IsDarkModeAvailable()),
+      color_change_listener_(this) {
   // If there's no sequenced task runner handle, we can't be called back for
   // dark mode changes. This generally happens in tests. As a result, ignore
   // dark mode in this case.
@@ -296,7 +302,7 @@ NativeThemeWin::NativeThemeWin(bool configure_web_instance,
   // Initialize the cached system colors.
   UpdateSystemColors();
   set_preferred_color_scheme(CalculatePreferredColorScheme());
-  set_preferred_contrast(CalculatePreferredContrast());
+  SetPreferredContrast(CalculatePreferredContrast());
 
   memset(theme_handles_, 0, sizeof(theme_handles_));
 
@@ -320,25 +326,8 @@ void NativeThemeWin::ConfigureWebInstance() {
   web_instance->set_use_dark_colors(ShouldUseDarkColors());
   web_instance->set_forced_colors(InForcedColorsMode());
   web_instance->set_preferred_color_scheme(GetPreferredColorScheme());
-  web_instance->set_preferred_contrast(GetPreferredContrast());
+  web_instance->SetPreferredContrast(GetPreferredContrast());
   web_instance->set_system_colors(GetSystemColors());
-}
-
-bool NativeThemeWin::AllowColorPipelineRedirection(
-    ColorScheme color_scheme) const {
-  return true;
-}
-
-SkColor NativeThemeWin::GetSystemColorDeprecated(ColorId color_id,
-                                                 ColorScheme color_scheme,
-                                                 bool apply_processing) const {
-  absl::optional<SkColor> color;
-  if (color_scheme == ColorScheme::kPlatformHighContrast &&
-      (color = GetPlatformHighContrastColor(color_id))) {
-    return color.value();
-  }
-  return NativeTheme::GetSystemColorDeprecated(color_id, color_scheme,
-                                               apply_processing);
 }
 
 NativeThemeWin::~NativeThemeWin() {
@@ -368,7 +357,7 @@ void NativeThemeWin::OnSysColorChange() {
   if (!IsForcedHighContrast())
     set_forced_colors(IsUsingHighContrastThemeInternal());
   set_preferred_color_scheme(CalculatePreferredColorScheme());
-  set_preferred_contrast(CalculatePreferredContrast());
+  SetPreferredContrast(CalculatePreferredContrast());
   NotifyOnNativeThemeUpdated();
 }
 
@@ -378,9 +367,11 @@ void NativeThemeWin::UpdateSystemColors() {
         color_utils::GetSysSkColor(sys_color);
 }
 
-void NativeThemeWin::PaintMenuSeparator(cc::PaintCanvas* canvas,
-                                        const MenuSeparatorExtraParams& params,
-                                        ColorScheme color_scheme) const {
+void NativeThemeWin::PaintMenuSeparator(
+    cc::PaintCanvas* canvas,
+    const ColorProvider* color_provider,
+    const MenuSeparatorExtraParams& params) const {
+  DCHECK(color_provider);
   const gfx::RectF rect(*params.paint_rect);
   gfx::PointF start = rect.CenterPoint();
   gfx::PointF end = start;
@@ -393,27 +384,26 @@ void NativeThemeWin::PaintMenuSeparator(cc::PaintCanvas* canvas,
   }
 
   cc::PaintFlags flags;
-  flags.setColor(
-      GetSystemColor(NativeTheme::kColorId_MenuSeparatorColor, color_scheme));
+  flags.setColor(color_provider->GetColor(kColorMenuSeparator));
   canvas->drawLine(start.x(), start.y(), end.x(), end.y(), flags);
 }
 
 void NativeThemeWin::PaintMenuGutter(cc::PaintCanvas* canvas,
-                                     const gfx::Rect& rect,
-                                     ColorScheme color_scheme) const {
+                                     const ColorProvider* color_provider,
+                                     const gfx::Rect& rect) const {
+  DCHECK(color_provider);
   cc::PaintFlags flags;
-  flags.setColor(
-      GetSystemColor(NativeTheme::kColorId_MenuSeparatorColor, color_scheme));
+  flags.setColor(color_provider->GetColor(kColorMenuSeparator));
   int position_x = rect.x() + rect.width() / 2;
   canvas->drawLine(position_x, rect.y(), position_x, rect.bottom(), flags);
 }
 
 void NativeThemeWin::PaintMenuBackground(cc::PaintCanvas* canvas,
-                                         const gfx::Rect& rect,
-                                         ColorScheme color_scheme) const {
+                                         const ColorProvider* color_provider,
+                                         const gfx::Rect& rect) const {
+  DCHECK(color_provider);
   cc::PaintFlags flags;
-  flags.setColor(
-      GetSystemColor(NativeTheme::kColorId_MenuBackgroundColor, color_scheme));
+  flags.setColor(color_provider->GetColor(kColorMenuBackground));
   canvas->drawRect(gfx::RectToSkRect(rect), flags);
 }
 
@@ -457,7 +447,7 @@ void NativeThemeWin::PaintDirect(SkCanvas* destination_canvas,
           PaintLeftMenuArrowThemed(hdc, handle, part_id, state_id, rect);
           return;
         }
-        FALLTHROUGH;
+        [[fallthrough]];
       case kCheckbox:
       case kInnerSpinButton:
       case kMenuCheck:
@@ -606,39 +596,6 @@ void NativeThemeWin::PaintDirect(SkCanvas* destination_canvas,
     case kSliderThumb:
     case kMaxPart:
       NOTREACHED();
-  }
-}
-
-absl::optional<SkColor> NativeThemeWin::GetPlatformHighContrastColor(
-    ColorId color_id) const {
-  switch (color_id) {
-    case kColorId_WindowBackground:
-      return system_colors_[SystemThemeColor::kWindow];
-
-    case kColorId_MenuIconColor:
-    case kColorId_ThrobberSpinningColor:
-    case kColorId_DefaultIconColor:
-      return system_colors_[SystemThemeColor::kWindowText];
-
-    case kColorId_ThrobberWaitingColor:
-      return system_colors_[SystemThemeColor::kGrayText];
-
-    case kColorId_MenuBackgroundColor:
-      return system_colors_[SystemThemeColor::kButtonFace];
-
-    case kColorId_MenuSeparatorColor:
-    case kColorId_FocusedBorderColor:
-      return system_colors_[SystemThemeColor::kButtonText];
-
-    case kColorId_ProminentButtonColor:
-    case kColorId_FocusedMenuItemBackgroundColor:
-      return system_colors_[SystemThemeColor::kHighlight];
-
-    case kColorId_TextOnProminentButtonColor:
-      return system_colors_[SystemThemeColor::kHighlightText];
-
-    default:
-      return absl::nullopt;
   }
 }
 
@@ -1424,7 +1381,7 @@ int NativeThemeWin::GetWindowsState(Part part,
     case kScrollbarVerticalThumb:
       if ((state == kHovered) && !extra.scrollbar_thumb.is_hovering)
         return SCRBS_HOT;
-      FALLTHROUGH;
+      [[fallthrough]];
     case kScrollbarHorizontalTrack:
     case kScrollbarVerticalTrack:
       switch (state) {
@@ -1575,7 +1532,9 @@ HANDLE NativeThemeWin::GetThemeHandle(ThemeName theme_name) const {
     handle = OpenThemeData(nullptr, L"Combobox");
     break;
   case SCROLLBAR:
-    handle = OpenThemeData(nullptr, L"Scrollbar");
+    handle = OpenThemeData(nullptr, supports_windows_dark_mode_
+                                        ? L"Explorer::Scrollbar"
+                                        : L"Scrollbar");
     break;
   case STATUS:
     handle = OpenThemeData(nullptr, L"Status");
@@ -1628,6 +1587,7 @@ void NativeThemeWin::UpdateDarkModeStatus() {
   }
   set_use_dark_colors(dark_mode_enabled);
   set_preferred_color_scheme(CalculatePreferredColorScheme());
+  CloseHandlesInternal();
   NotifyOnNativeThemeUpdated();
 }
 

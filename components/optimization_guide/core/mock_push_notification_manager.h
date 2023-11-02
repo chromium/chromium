@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,17 +16,14 @@ class MockPushNotificationManager : public PushNotificationManager {
   MockPushNotificationManager();
   ~MockPushNotificationManager() override;
 
-  MOCK_METHOD(void,
-              SetDelegate,
-              (PushNotificationManager::Delegate*),
-              (override));
+  MOCK_METHOD(void, SetDelegate, (PushNotificationManager::Delegate*));
   MOCK_METHOD(void, OnDelegateReady, (), (override));
   MOCK_METHOD(void,
               OnNewPushNotification,
               (const proto::HintNotificationPayload&),
               (override));
-  MOCK_METHOD(void, AddObserver, (Observer * observer), (override));
-  MOCK_METHOD(void, RemoveObserver, (Observer * observer), (override));
+  MOCK_METHOD(void, AddObserver, (Observer * observer));
+  MOCK_METHOD(void, RemoveObserver, (Observer * observer));
 };
 
 }  // namespace optimization_guide

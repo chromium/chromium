@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,12 +37,11 @@ void InMemoryHistoryBackend::DeleteAllSearchTermsForKeyword(
   db_->DeleteAllSearchTermsForKeyword(keyword_id);
 }
 
-void InMemoryHistoryBackend::OnURLVisited(HistoryService* history_service,
-                                          ui::PageTransition transition,
-                                          const URLRow& row,
-                                          const RedirectList& redirects,
-                                          base::Time visit_time) {
-  OnURLVisitedOrModified(row);
+void InMemoryHistoryBackend::OnURLVisited(
+    history::HistoryService* history_service,
+    const history::URLRow& url_row,
+    const history::VisitRow& new_visit) {
+  OnURLVisitedOrModified(url_row);
 }
 
 void InMemoryHistoryBackend::OnURLsModified(HistoryService* history_service,

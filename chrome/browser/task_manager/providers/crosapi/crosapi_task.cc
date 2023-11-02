@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,39 +15,6 @@ constexpr char16_t kCrosapiTaskTitlePrefix[] = u"Lacros: ";
 
 std::u16string GetCrosapiTaskTitle(const std::u16string& mojo_task_title) {
   return kCrosapiTaskTitlePrefix + mojo_task_title;
-}
-
-task_manager::Task::Type FromMojo(crosapi::mojom::TaskType mojo_type) {
-  switch (mojo_type) {
-    case crosapi::mojom::TaskType::kBrowser:
-      return task_manager::Task::BROWSER;
-    case crosapi::mojom::TaskType::kGpu:
-      return task_manager::Task::GPU;
-    case crosapi::mojom::TaskType::kZygote:
-      return task_manager::Task::ZYGOTE;
-    case crosapi::mojom::TaskType::kUtility:
-      return task_manager::Task::UTILITY;
-    case crosapi::mojom::TaskType::kRenderer:
-      return task_manager::Task::RENDERER;
-    case crosapi::mojom::TaskType::kExtension:
-      return task_manager::Task::EXTENSION;
-    case crosapi::mojom::TaskType::kGuest:
-      return task_manager::Task::GUEST;
-    case crosapi::mojom::TaskType::kPlugin:
-      return task_manager::Task::PLUGIN;
-    case crosapi::mojom::TaskType::kNacl:
-      return task_manager::Task::NACL;
-    case crosapi::mojom::TaskType::kSandboxHelper:
-      return task_manager::Task::SANDBOX_HELPER;
-    case crosapi::mojom::TaskType::kDedicatedWorker:
-      return task_manager::Task::DEDICATED_WORKER;
-    case crosapi::mojom::TaskType::kSharedWorker:
-      return task_manager::Task::SHARED_WORKER;
-    case crosapi::mojom::TaskType::kServiceWorker:
-      return task_manager::Task::SERVICE_WORKER;
-    case crosapi::mojom::TaskType::kUnknown:
-      return task_manager::Task::UNKNOWN;
-  }
 }
 
 blink::WebCacheResourceTypeStat FromMojo(

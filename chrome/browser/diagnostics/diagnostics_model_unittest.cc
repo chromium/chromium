@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,7 @@ class DiagnosticsModelTest : public testing::Test {
 
   void SetUp() override {
     model_.reset(MakeDiagnosticsModel(cmdline_));
-    ASSERT_TRUE(model_.get() != NULL);
+    ASSERT_TRUE(model_.get() != nullptr);
   }
 
   void TearDown() override { model_.reset(); }
@@ -48,7 +48,7 @@ class UTObserver: public DiagnosticsModel::Observer {
   UTObserver& operator=(const UTObserver&) = delete;
 
   void OnTestFinished(int index, DiagnosticsModel* model) override {
-    EXPECT_TRUE(model != NULL);
+    EXPECT_TRUE(model != nullptr);
     ++num_tested_;
     EXPECT_NE(DiagnosticsModel::TEST_FAIL_STOP,
               model->GetTest(index).GetResult())
@@ -56,12 +56,12 @@ class UTObserver: public DiagnosticsModel::Observer {
   }
 
   void OnAllTestsDone(DiagnosticsModel* model) override {
-    EXPECT_TRUE(model != NULL);
+    EXPECT_TRUE(model != nullptr);
     tests_done_ = true;
   }
 
   void OnRecoveryFinished(int index, DiagnosticsModel* model) override {
-    EXPECT_TRUE(model != NULL);
+    EXPECT_TRUE(model != nullptr);
     ++num_recovered_;
     EXPECT_NE(DiagnosticsModel::RECOVERY_FAIL_STOP,
               model->GetTest(index).GetResult())
@@ -69,7 +69,7 @@ class UTObserver: public DiagnosticsModel::Observer {
   }
 
   void OnAllRecoveryDone(DiagnosticsModel* model) override {
-    EXPECT_TRUE(model != NULL);
+    EXPECT_TRUE(model != nullptr);
     recovery_done_ = true;
   }
 

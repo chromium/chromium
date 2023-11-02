@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "media/base/video_frame.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/modules/mediacapturefromelement/canvas_capture_handler.h"
@@ -56,6 +57,8 @@ MediaStream* HTMLCanvasElementCapture::captureStream(
     return nullptr;
   }
 
+  ExecutionContext* context = ExecutionContext::From(script_state);
+  DCHECK(context);
   LocalFrame* frame = ToLocalFrameIfNotDetached(script_state->GetContext());
   MediaStreamComponent* component = nullptr;
   const gfx::Size size(element.width(), element.height());
@@ -68,12 +71,14 @@ MediaStream* HTMLCanvasElementCapture::captureStream(
   std::unique_ptr<CanvasCaptureHandler> handler;
   if (given_frame_rate) {
     handler = CanvasCaptureHandler::CreateCanvasCaptureHandler(
-        frame, size, frame_rate, Platform::Current()->GetIOTaskRunner(),
-        &component);
+        frame, size, frame_rate,
+        context->GetTaskRunner(TaskType::kInternalMediaRealTime),
+        Platform::Current()->GetIOTaskRunner(), &component);
   } else {
     handler = CanvasCaptureHandler::CreateCanvasCaptureHandler(
-        frame, size, kDefaultFrameRate, Platform::Current()->GetIOTaskRunner(),
-        &component);
+        frame, size, kDefaultFrameRate,
+        context->GetTaskRunner(TaskType::kInternalMediaRealTime),
+        Platform::Current()->GetIOTaskRunner(), &component);
   }
 
   if (!handler) {
@@ -83,8 +88,6 @@ MediaStream* HTMLCanvasElementCapture::captureStream(
     return nullptr;
   }
 
-  ExecutionContext* context = ExecutionContext::From(script_state);
-  DCHECK(context);
   CanvasCaptureMediaStreamTrack* canvas_track;
   if (given_frame_rate) {
     canvas_track = MakeGarbageCollected<CanvasCaptureMediaStreamTrack>(

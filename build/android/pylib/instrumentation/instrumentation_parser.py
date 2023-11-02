@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -34,7 +34,7 @@ RESULT_CODE_CANCELED = 0
 _INSTR_LINE_RE = re.compile(r'^\s*INSTRUMENTATION_([A-Z_]+): (.*)$')
 
 
-class InstrumentationParser(object):
+class InstrumentationParser:
 
   def __init__(self, stream):
     """An incremental parser for the output of Android instrumentation tests.

@@ -1,25 +1,24 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "android_webview/browser/gfx/browser_view_renderer.h"
 
 #include <map>
 #include <memory>
 #include <queue>
 #include <utility>
 
-#include "android_webview/browser/gfx/browser_view_renderer.h"
 #include "android_webview/browser/gfx/child_frame.h"
 #include "android_webview/browser/gfx/compositor_frame_consumer.h"
 #include "android_webview/browser/gfx/render_thread_manager.h"
 #include "android_webview/browser/gfx/test/rendering_test.h"
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
-#include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "content/public/test/test_synchronous_compositor_android.h"
 
 namespace android_webview {
@@ -183,7 +182,7 @@ class TestAnimateInAndOutOfScreen : public RenderingTest {
     // webview onto the screen on render thread. End the test when the parent
     // draw constraints of BVR is updated to initial constraints.
     if (on_draw_count_ == 1 || on_draw_count_ == 2)
-      browser_view_renderer_->PrepareToDraw(gfx::Vector2d(), gfx::Rect());
+      browser_view_renderer_->PrepareToDraw(gfx::Point(), gfx::Rect());
   }
 
   void DidOnDraw(bool success) override {
@@ -194,9 +193,10 @@ class TestAnimateInAndOutOfScreen : public RenderingTest {
   bool WillDrawOnRT(HardwareRendererDrawParams* params) override {
     if (draw_gl_count_on_rt_ == 1) {
       draw_gl_count_on_rt_++;
-      ui_task_runner_->PostTask(FROM_HERE,
-                                base::BindOnce(&RenderingTest::PostInvalidate,
-                                               base::Unretained(this)));
+      ui_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&RenderingTest::PostInvalidate, base::Unretained(this),
+                         /*inside_vsync=*/false));
       return false;
     }
 
@@ -207,7 +207,7 @@ class TestAnimateInAndOutOfScreen : public RenderingTest {
     if (draw_gl_count_on_rt_ == 0)
       transform = new_constraints_.transform;
 
-    transform.matrix().asColMajorf(params->transform);
+    transform.GetColMajorF(params->transform);
     return true;
   }
 
@@ -264,7 +264,7 @@ class TestAnimateOnScreenWithoutOnDraw : public RenderingTest {
   void WillOnDraw() override {
     RenderingTest::WillOnDraw();
     // Set empty tile viewport on first frame.
-    browser_view_renderer_->PrepareToDraw(gfx::Vector2d(), gfx::Rect());
+    browser_view_renderer_->PrepareToDraw(gfx::Point(), gfx::Rect());
   }
 
   void DidOnDraw(bool success) override {
@@ -492,7 +492,7 @@ class SwitchLayerTreeFrameSinkIdTest : public ResourceRenderingTest {
         {1u, viz::ResourceId(3u)},
         {1u, viz::ResourceId(4u)},
     };
-    if (frame_number >= static_cast<int>(base::size(infos))) {
+    if (frame_number >= static_cast<int>(std::size(infos))) {
       return nullptr;
     }
 
@@ -690,15 +690,12 @@ class DidReachMaximalScrollOffsetTest : public RenderingTest {
  public:
   void StartTest() override {
     browser_view_renderer_->SetDipScale(kDipScale);
-    gfx::Vector2dF total_scroll_offset = kTotalScrollOffset;
-    gfx::Vector2dF total_max_scroll_offset = kTotalMaxScrollOffset;
+    gfx::PointF total_scroll_offset = kTotalScrollOffset;
+    gfx::PointF total_max_scroll_offset = kTotalMaxScrollOffset;
     gfx::SizeF scrollable_size = kScrollableSize;
-    // When --use-zoom-for-dsf is enabled, these values are in physical pixels.
-    if (content::IsUseZoomForDSFEnabled()) {
-      total_scroll_offset.Scale(kDipScale);
-      total_max_scroll_offset.Scale(kDipScale);
-      scrollable_size.Scale(kDipScale);
-    }
+    total_scroll_offset.Scale(kDipScale);
+    total_max_scroll_offset.Scale(kDipScale);
+    scrollable_size.Scale(kDipScale);
     // |UpdateRootLayerState()| will call |SetTotalRootLayerScrollOffset()|.
     browser_view_renderer_->UpdateRootLayerState(
         ActiveCompositor(), total_scroll_offset, total_max_scroll_offset,
@@ -706,37 +703,37 @@ class DidReachMaximalScrollOffsetTest : public RenderingTest {
         kMaxPageScaleFactor);
   }
 
-  void ScrollContainerViewTo(const gfx::Vector2d& new_value) override {
-    EXPECT_EQ(kExpectedScrollOffset.ToString(), new_value.ToString());
+  void ScrollContainerViewTo(const gfx::Point& new_value) override {
+    EXPECT_EQ(kExpectedScrollOffset, new_value);
     EndTest();
   }
 
  private:
   static constexpr float kDipScale = 2.625f;
-  static const gfx::Vector2dF kTotalScrollOffset;
-  static const gfx::Vector2dF kTotalMaxScrollOffset;
+  static const gfx::PointF kTotalScrollOffset;
+  static const gfx::PointF kTotalMaxScrollOffset;
   static const gfx::SizeF kScrollableSize;
   static constexpr float kPageScaleFactor = 1.f;
   // These two are not used in this test.
   static constexpr float kMinPageScaleFactor = 1.f;
   static constexpr float kMaxPageScaleFactor = 5.f;
 
-  static const gfx::Vector2d kExpectedScrollOffset;
+  static const gfx::Point kExpectedScrollOffset;
 };
 
 // The current scroll offset in logical pixel, which is at the end.
-const gfx::Vector2dF DidReachMaximalScrollOffsetTest::kTotalScrollOffset =
-    gfx::Vector2dF(0.f, 6132.f);
+const gfx::PointF DidReachMaximalScrollOffsetTest::kTotalScrollOffset =
+    gfx::PointF(0.f, 6132.f);
 // The maximum possible scroll offset in logical pixel.
-const gfx::Vector2dF DidReachMaximalScrollOffsetTest::kTotalMaxScrollOffset =
-    gfx::Vector2dF(0.f, 6132.f);
+const gfx::PointF DidReachMaximalScrollOffsetTest::kTotalMaxScrollOffset =
+    gfx::PointF(0.f, 6132.f);
 // This is what passed to CTS test, not used for this test.
 const gfx::SizeF DidReachMaximalScrollOffsetTest::kScrollableSize =
     gfx::SizeF(412.f, 6712.f);
 // In max_scroll_offset() we are using ceiling rounding for scaled scroll
 // offset. Therefore ceiling(2.625 * 6132 = 16096.5) = 16097.
-const gfx::Vector2d DidReachMaximalScrollOffsetTest::kExpectedScrollOffset =
-    gfx::Vector2d(0, 16097);
+const gfx::Point DidReachMaximalScrollOffsetTest::kExpectedScrollOffset =
+    gfx::Point(0, 16097);
 
 RENDERING_TEST_F(DidReachMaximalScrollOffsetTest);
 

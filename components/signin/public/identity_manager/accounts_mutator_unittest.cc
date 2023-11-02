@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/signin/internal/identity_manager/accounts_mutator_impl.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "build/chromeos_buildflags.h"
@@ -75,7 +76,7 @@ class TestIdentityManagerDiagnosticsObserver
     token_remover_source_ = source;
   }
 
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
   CoreAccountId token_updator_account_id_;
   std::string token_updator_source_;
   CoreAccountId token_remover_account_id_;

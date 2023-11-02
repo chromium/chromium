@@ -11,13 +11,8 @@
   </outputs>
   <release seq="1">
     <includes>
-      <include name="IDR_FILEMANAGER_MANIFEST" file="file_manager/manifest.json" type="BINDATA" />
-      <!-- The Files app pages and scripts. -->
-      <include name="IDR_FILE_MANAGER_BACKGROUND_HTML" file="file_manager/background.html" type="BINDATA" />
       <!-- Polymer elements -->
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_QUICK_PREVIEW_CSS" file="file_manager/foreground/elements/files_quick_view.css" type="BINDATA" />
-
-      <!-- Scripts required by the metadata parser worker. -->
 
       <!-- Images referenced from the manifest or the code -->
       <include name="IDR_FILE_MANAGER_ICON_16" file="file_manager/common/images/icon16.png" type="BINDATA" />
@@ -29,28 +24,8 @@
       <include name="IDR_FILE_MANAGER_ICON_192" file="file_manager/common/images/icon192.png" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ICON_256" file="file_manager/common/images/icon256.png" type="BINDATA" />
 
-      <!-- Resources used for non-flattened HTML files. -->
-      <include name="IDR_FILE_MANAGER_DRIVE_WELCOME_STYLE" file="file_manager/foreground/css/drive_welcome.css" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_HOLDING_SPACE_WELCOME_STYLE" file="file_manager/foreground/css/holding_space_welcome.css" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_PHOTOS_WELCOME_STYLE" file="file_manager/foreground/css/photos_welcome.css" type="BINDATA" />
-
-      <!-- The AudioPlayer app pages and scripts. -->
-      <include name="IDR_AUDIO_PLAYER_MANIFEST" file="audio_player/manifest.json" type="BINDATA" />
-      <include name="IDR_AUDIO_PLAYER_BACKGROUND_HTML" file="audio_player/background.html" type="BINDATA" />
-      <include name="IDR_AUDIO_PLAYER_MODULE" file="audio_player/audio_player.html" allowexternalscript="true" flattenhtml="true" type="BINDATA" />
-      <include name="IDR_AUDIO_PLAYER_ICON_FAVICON_16" file="audio_player/icons/audio-player-favicon-16.png" type="BINDATA" />
-      <include name="IDR_AUDIO_PLAYER_ICON_FAVICON_32" file="audio_player/icons/audio-player-favicon-32.png" type="BINDATA" />
-      <include name="IDR_AUDIO_PLAYER_ICON_16" file="audio_player/icons/audio-player-16.png" type="BINDATA" />
-      <include name="IDR_AUDIO_PLAYER_ICON_32" file="audio_player/icons/audio-player-32.png" type="BINDATA" />
-      <include name="IDR_AUDIO_PLAYER_ICON_48" file="audio_player/icons/audio-player-48.png" type="BINDATA" />
-      <include name="IDR_AUDIO_PLAYER_ICON_64" file="audio_player/icons/audio-player-64.png" type="BINDATA" />
-      <include name="IDR_AUDIO_PLAYER_ICON_96" file="audio_player/icons/audio-player-96.png" type="BINDATA" />
-      <include name="IDR_AUDIO_PLAYER_ICON_128" file="audio_player/icons/audio-player-128.png" type="BINDATA" />
-      <include name="IDR_AUDIO_PLAYER_ICON_192" file="audio_player/icons/audio-player-192.png" type="BINDATA" />
-      <include name="IDR_AUDIO_PLAYER_ICON_256" file="audio_player/icons/audio-player-256.png" type="BINDATA" />
-
       <!-- Image loader extension manifest and scripts. -->
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <include name="IDR_IMAGE_LOADER_MANIFEST" file="image_loader/manifest.json" type="BINDATA" />
         <include name="IDR_IMAGE_LOADER_BACKGROUND_HTML" file="image_loader/background.html" type="BINDATA" />
         <include name="IDR_IMAGE_LOADER_PIEX_WASM_JS" file="image_loader/piex/piex.js.wasm" type="BINDATA" />
@@ -58,6 +33,7 @@
         <if expr="optimize_webui">
           <!-- When optimize_webui=false these are included via generate_grd() rule -->
           <include name="IDR_IMAGE_LOADER_IMAGE_LOADER_CLIENT_JS" file="image_loader/image_loader_client.js" type="BINDATA" />
+          <include name="IDR_IMAGE_LOADER_IMAGE_ORIENTATION_JS" file="image_loader/image_orientation.js" type="BINDATA" />
           <include name="IDR_IMAGE_LOADER_LOAD_IMAGE_REQUEST_JS" file="image_loader/load_image_request.js" type="BINDATA" />
         </if>
       </if>

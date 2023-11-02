@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include "base/base_paths.h"
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/json/json_reader.h"
 #include "base/native_library.h"
 #include "base/path_service.h"
@@ -69,7 +68,7 @@ void EstablishInitialContext(test::MockGSSAPILibrary* library) {
       1,                                   // Locally initiated
       0);                                  // Open
   gss_buffer_desc in_buffer = {0, nullptr};
-  gss_buffer_desc out_buffer = {base::size(kInitialAuthResponse),
+  gss_buffer_desc out_buffer = {std::size(kInitialAuthResponse),
                                 const_cast<char*>(kInitialAuthResponse)};
   library->ExpectSecurityContext(
       "Negotiate",
@@ -93,7 +92,7 @@ TEST(HttpAuthGSSAPIPOSIXTest, GSSAPIStartup) {
   // TODO(ahendrickson): Manipulate the libraries and paths to test each of the
   // libraries we expect, and also whether or not they have the interface
   // functions we want.
-  std::unique_ptr<GSSAPILibrary> gssapi(new GSSAPISharedLibrary(std::string()));
+  auto gssapi = std::make_unique<GSSAPISharedLibrary>(std::string());
   DCHECK(gssapi.get());
   EXPECT_TRUE(
       gssapi.get()->Init(NetLogWithSource::Make(NetLogSourceType::NONE)));
@@ -118,8 +117,8 @@ TEST(HttpAuthGSSAPIPOSIXTest, GSSAPIStartup) {
 TEST(HttpAuthGSSAPIPOSIXTest, CustomLibraryMissing) {
   RecordingNetLogObserver net_log_observer;
 
-  std::unique_ptr<GSSAPILibrary> gssapi(
-      new GSSAPISharedLibrary("/this/library/does/not/exist"));
+  auto gssapi =
+      std::make_unique<GSSAPISharedLibrary>("/this/library/does/not/exist");
   EXPECT_FALSE(
       gssapi.get()->Init(NetLogWithSource::Make(NetLogSourceType::NONE)));
 
@@ -183,8 +182,7 @@ TEST(HttpAuthGSSAPIPOSIXTest, CustomLibraryMethodsMissing) {
 }
 
 TEST(HttpAuthGSSAPIPOSIXTest, GSSAPICycle) {
-  std::unique_ptr<test::MockGSSAPILibrary> mock_library(
-      new test::MockGSSAPILibrary);
+  auto mock_library = std::make_unique<test::MockGSSAPILibrary>();
   DCHECK(mock_library.get());
   mock_library->Init(NetLogWithSource());
   const char kAuthResponse[] = "Mary had a little lamb";
@@ -221,13 +219,10 @@ TEST(HttpAuthGSSAPIPOSIXTest, GSSAPICycle) {
           kAuthResponse)   // Output token
   };
 
-  for (size_t i = 0; i < base::size(queries); ++i) {
-    mock_library->ExpectSecurityContext(queries[i].expected_package,
-                                        queries[i].response_code,
-                                        queries[i].minor_response_code,
-                                        queries[i].context_info,
-                                        queries[i].expected_input_token,
-                                        queries[i].output_token);
+  for (const auto& query : queries) {
+    mock_library->ExpectSecurityContext(
+        query.expected_package, query.response_code, query.minor_response_code,
+        query.context_info, query.expected_input_token, query.output_token);
   }
 
   OM_uint32 major_status = 0;
@@ -244,7 +239,7 @@ TEST(HttpAuthGSSAPIPOSIXTest, GSSAPICycle) {
   gss_buffer_desc output_token = {0, nullptr};
   OM_uint32 ret_flags = 0;
   OM_uint32 time_rec = 0;
-  for (size_t i = 0; i < base::size(queries); ++i) {
+  for (const auto& query : queries) {
     major_status = mock_library->init_sec_context(&minor_status,
                                                   initiator_cred_handle,
                                                   &context_handle,
@@ -258,7 +253,7 @@ TEST(HttpAuthGSSAPIPOSIXTest, GSSAPICycle) {
                                                   &output_token,
                                                   &ret_flags,
                                                   &time_rec);
-    EXPECT_EQ(queries[i].response_code, major_status);
+    EXPECT_EQ(query.response_code, major_status);
     CopyBuffer(&input_token, &output_token);
     ClearBuffer(&output_token);
   }

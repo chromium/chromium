@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,11 @@ const char TestMetricsServiceClient::kBrandForTesting[] = "brand_for_testing";
 
 TestMetricsServiceClient::TestMetricsServiceClient() = default;
 TestMetricsServiceClient::~TestMetricsServiceClient() = default;
+
+variations::SyntheticTrialRegistry*
+TestMetricsServiceClient::GetSyntheticTrialRegistry() {
+  return nullptr;
+}
 
 metrics::MetricsService* TestMetricsServiceClient::GetMetricsService() {
   return nullptr;

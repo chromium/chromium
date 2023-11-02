@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html class=reftest-wait>
+<title>Shared transitions: different width container should keep aspect ratio (by default)</title>
+<link rel="help" href="https://github.com/WICG/shared-element-transitions">
+<link rel="author" href="mailto:vmpstr@chromium.org">
+<link rel="match" href="intrinsic-aspect-ratio-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<style>
+.spacer {
+  height: 10px;
+}
+.box {
+  width: 100px;
+  height: 100px;
+  contain: paint;
+  background: blue;
+}
+#target1 {
+  page-transition-tag: target1;
+}
+#target2 {
+  page-transition-tag: target2;
+}
+#hidden {
+  page-transition-tag: hidden;
+  width: 10px;
+  height: 10px;
+  visibility: hidden;
+  contain: paint;
+}
+
+/* We're verifying what we capture, so just display the new contents for 5 minutes.  */
+html::page-transition-container(*) { animation-duration: 300s; }
+html::page-transition-incoming-image(*) { animation: unset; opacity: 1; }
+html::page-transition-outgoing-image(*) { animation: unset; opacity: 0; }
+
+html::page-transition-container(target1) {
+  animation: unset;
+  width: 50px;
+  border: 2px solid black;
+}
+html::page-transition-container(target2) {
+  animation: unset;
+  width: 200px;
+  border: 2px solid black;
+}
+
+/* hide the root so we show transition background to ensure we're in a transition */
+html::page-transition-container(root) { animation: unset; opacity: 0; }
+html::page-transition { background: lightpink; }
+</style>
+
+<div id=target1 class=box></div>
+<div class=spacer></div>
+<div id=target2 class=box></div>
+<div id=hidden></div>
+<script>
+async function runTest() {
+  let t = document.createDocumentTransition();
+  t.start(() => {
+    requestAnimationFrame(() => requestAnimationFrame(takeScreenshot));
+  });
+}
+onload = () => requestAnimationFrame(() => requestAnimationFrame(runTest));
+</script>
+

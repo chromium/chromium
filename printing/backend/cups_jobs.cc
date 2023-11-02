@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,10 +36,15 @@ constexpr char kPrinterState[] = "printer-state";
 constexpr char kPrinterStateReasons[] = "printer-state-reasons";
 constexpr char kPrinterStateMessage[] = "printer-state-message";
 
-constexpr char kPrinterMakeAndModel[] = "printer-make-and-model";
-constexpr char kIppVersionsSupported[] = "ipp-versions-supported";
-constexpr char kIppFeaturesSupported[] = "ipp-features-supported";
-constexpr char kDocumentFormatSupported[] = "document-format-supported";
+constexpr base::StringPiece kPrinterMakeAndModel = "printer-make-and-model";
+constexpr base::StringPiece kIppVersionsSupported = "ipp-versions-supported";
+constexpr base::StringPiece kIppFeaturesSupported = "ipp-features-supported";
+constexpr base::StringPiece kDocumentFormatSupported =
+    "document-format-supported";
+constexpr base::StringPiece kOauthAuthorizationServerUri =
+    "oauth-authorization-server-uri";
+constexpr base::StringPiece kOauthAuthorizationScope =
+    "oauth-authorization-scope";
 
 // job attributes
 constexpr char kJobUri[] = "job-uri";
@@ -117,10 +122,11 @@ constexpr int kHttpConnectTimeoutMs = 1000;
 constexpr std::array<const char* const, 3> kPrinterAttributes{
     {kPrinterState, kPrinterStateReasons, kPrinterStateMessage}};
 
-constexpr std::array<const char* const, 7> kPrinterInfoAndStatus{
-    {kPrinterMakeAndModel, kIppVersionsSupported, kIppFeaturesSupported,
-     kDocumentFormatSupported, kPrinterState, kPrinterStateReasons,
-     kPrinterStateMessage}};
+constexpr std::array<const char* const, 9> kPrinterInfoAndStatus{
+    {kPrinterMakeAndModel.data(), kIppVersionsSupported.data(),
+     kIppFeaturesSupported.data(), kDocumentFormatSupported.data(),
+     kPrinterState, kPrinterStateReasons, kPrinterStateMessage,
+     kOauthAuthorizationServerUri.data(), kOauthAuthorizationScope.data()}};
 
 // Converts an IPP attribute `attr` to the appropriate JobState enum.
 CupsJob::JobState ToJobState(ipp_attribute_t* attr) {
@@ -314,6 +320,9 @@ void ParseJobs(ipp_t* response,
 // Returns true if at least printer-make-and-model and ipp-versions-supported
 // were read.
 bool ParsePrinterInfo(ipp_t* response, PrinterInfo* printer_info) {
+  // Set to true when parsing of one of oauth-authorization-* attributes fails.
+  bool oauth_error = false;
+
   for (ipp_attribute_t* attr = ippFirstAttribute(response); attr != nullptr;
        attr = ippNextAttribute(response)) {
     const char* const value = ippGetName(attr);
@@ -321,7 +330,7 @@ bool ParsePrinterInfo(ipp_t* response, PrinterInfo* printer_info) {
       continue;
     }
     base::StringPiece name(value);
-    if (name == base::StringPiece(kPrinterMakeAndModel)) {
+    if (name == kPrinterMakeAndModel) {
       int tag = ippGetValueTag(attr);
       if (tag != IPP_TAG_TEXT && tag != IPP_TAG_TEXTLANG) {
         LOG(WARNING) << "printer-make-and-model value tag is " << tag << ".";
@@ -330,7 +339,7 @@ bool ParsePrinterInfo(ipp_t* response, PrinterInfo* printer_info) {
       if (make_and_model_string) {
         printer_info->make_and_model = make_and_model_string;
       }
-    } else if (name == base::StringPiece(kIppVersionsSupported)) {
+    } else if (name == kIppVersionsSupported) {
       std::vector<std::string> ipp_versions;
       ParseCollection(attr, &ipp_versions);
       for (const std::string& version : ipp_versions) {
@@ -339,18 +348,52 @@ bool ParsePrinterInfo(ipp_t* response, PrinterInfo* printer_info) {
           printer_info->ipp_versions.push_back(major_minor);
         }
       }
-    } else if (name == base::StringPiece(kIppFeaturesSupported)) {
+    } else if (name == kIppFeaturesSupported) {
       std::vector<std::string> features;
       ParseCollection(attr, &features);
       printer_info->ipp_everywhere = base::Contains(features, kIppEverywhere);
-    } else if (name == base::StringPiece(kDocumentFormatSupported)) {
+    } else if (name == kDocumentFormatSupported) {
       ParseCollection(attr, &printer_info->document_formats);
+    } else if (name == kOauthAuthorizationServerUri) {
+      int tag = ippGetValueTag(attr);
+      if (tag != IPP_TAG_URI) {
+        LOG(WARNING) << "oauth-authorization-server-uri value tag is " << tag
+                     << ".";
+      }
+      const char* oauth_server_string = ippGetString(attr, 0, nullptr);
+      if (oauth_server_string) {
+        printer_info->oauth_server = oauth_server_string;
+      } else {
+        oauth_error = true;
+        LOG(WARNING) << "Cannot parse oauth-authorization-server-uri.";
+      }
+    } else if (name == kOauthAuthorizationScope) {
+      int tag = ippGetValueTag(attr);
+      if (tag != IPP_TAG_NAME) {
+        LOG(WARNING) << "oauth-authorization-scope value tag is " << tag << ".";
+      }
+      const char* oauth_scope_string = ippGetString(attr, 0, nullptr);
+      if (oauth_scope_string) {
+        printer_info->oauth_scope = oauth_scope_string;
+      } else {
+        oauth_error = true;
+        LOG(WARNING) << "Cannot parse oauth-authorization-scope.";
+      }
     }
   }
 
   if (printer_info->ipp_versions.empty()) {
     // ipp-versions-supported is missing from the response.  This is IPP 1.0.
     printer_info->ipp_versions.push_back(base::Version({1, 0}));
+  }
+
+  if (!printer_info->oauth_scope.empty() &&
+      printer_info->oauth_server.empty()) {
+    oauth_error = true;
+  }
+  if (oauth_error) {
+    printer_info->oauth_server.clear();
+    printer_info->oauth_scope.clear();
   }
 
   // All IPP versions require make and model to be populated so we use it to
@@ -518,7 +561,8 @@ PrinterQueryResult GetPrinterInfo(const std::string& address,
       http.get(), printer_uri, resource, kPrinterInfoAndStatus.size(),
       kPrinterInfoAndStatus.data(), &status);
   if (StatusError(status) || response.get() == nullptr) {
-    LOG(WARNING) << "Get attributes failure: " << status;
+    LOG(WARNING) << "Get attributes failure: "
+                 << base::StringPrintf("0x%04x", status);
     return PrinterQueryResult::kUnknownFailure;
   }
 

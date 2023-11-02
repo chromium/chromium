@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,13 @@
 
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/system/tray/system_tray_item_uma_type.h"
 #include "ash/system/unified/feature_pod_button.h"
+#include "ash/system/unified/feature_pod_controller_base.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -37,15 +38,17 @@ FeaturePodButton* CaptureModeFeaturePodController::CreateButton() {
   return button_;
 }
 
+QsFeatureCatalogName CaptureModeFeaturePodController::GetCatalogName() {
+  return QsFeatureCatalogName::kCaptureMode;
+}
+
 void CaptureModeFeaturePodController::OnIconPressed() {
+  TrackToggleUMA(/*target_toggle_state=*/true);
+
   // Close the system tray bubble. Deletes |this|.
   tray_controller_->CloseBubble();
 
   CaptureModeController::Get()->Start(CaptureModeEntryType::kQuickSettings);
-}
-
-SystemTrayItemUmaType CaptureModeFeaturePodController::GetUmaType() const {
-  return SystemTrayItemUmaType::UMA_SCREEN_CAPTURE;
 }
 
 }  // namespace ash

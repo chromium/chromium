@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -209,10 +210,10 @@ class ImpressionHistoryTrackerImpl : public ImpressionHistoryTracker {
   std::map<SchedulerClientType, bool> need_update_db_;
 
   // The clock to provide the current timestamp.
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
   // Delegate object.
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   base::WeakPtrFactory<ImpressionHistoryTrackerImpl> weak_ptr_factory_{this};
 };

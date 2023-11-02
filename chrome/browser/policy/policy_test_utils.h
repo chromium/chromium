@@ -1,13 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_POLICY_POLICY_TEST_UTILS_H_
 #define CHROME_BROWSER_POLICY_POLICY_TEST_UTILS_H_
 
-#include <string>
-
-#include "ash/public/cpp/keyboard/keyboard_types.h"
+#include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -15,19 +13,11 @@
 #include "components/security_interstitials/core/controller_client.h"
 #include "url/gurl.h"
 
-class Browser;
-
 namespace content {
 class WebContents;
 }  // namespace content
 
-namespace extensions {
-class Extension;
-}  // namespace extensions
-
 namespace policy {
-
-extern const base::FilePath::CharType kTestExtensionsDir[];
 
 class PolicyMap;
 
@@ -46,71 +36,45 @@ class PolicyTest : public PlatformBrowserTest {
   PolicyTest();
   ~PolicyTest() override;
 
-  void SetUp() override;
-
   void SetUpInProcessBrowserTestFixture() override;
 
   void SetUpOnMainThread() override;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override;
-
   void SetScreenshotPolicy(bool enabled);
 
-  void SetRequireCTForTesting(bool required);
-
-  scoped_refptr<const extensions::Extension> LoadUnpackedExtension(
-      const base::FilePath::StringType& name);
-
   void UpdateProviderPolicy(const PolicyMap& policy);
-
-  // Sends a mouse click at the given coordinates to the current renderer.
-  void PerformClick(int x, int y);
 
   static void SetPolicy(PolicyMap* policies,
                         const char* key,
                         absl::optional<base::Value> value);
 
-  void ApplySafeSearchPolicy(absl::optional<base::Value> legacy_safe_search,
-                             absl::optional<base::Value> google_safe_search,
-                             absl::optional<base::Value> legacy_youtube,
-                             absl::optional<base::Value> youtube_restrict);
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void TestScreenshotFile(bool enabled);
-
-  void SetEnableFlag(const keyboard::KeyboardEnableFlag& flag);
-
-  void ClearEnableFlag(const keyboard::KeyboardEnableFlag& flag);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  static GURL GetExpectedSearchURL(bool expect_safe_search);
-
-  static void CheckSafeSearch(Browser* browser,
-                              bool expect_safe_search,
-                              const std::string& url = "http://google.com/");
-
-  static void CheckYouTubeRestricted(int youtube_restrict_mode,
-                                     const net::HttpRequestHeaders& headers);
-
-  static void CheckAllowedDomainsHeader(const std::string& allowed_domain,
-                                        const net::HttpRequestHeaders& headers);
 
   static bool FetchSubresource(content::WebContents* web_contents,
                                const GURL& url);
 
-  bool IsShowingInterstitial(content::WebContents* tab);
-
-  void WaitForInterstitial(content::WebContents* tab);
-
-  int IsEnhancedProtectionMessageVisibleOnInterstitial();
-
-  void SendInterstitialCommand(
-      content::WebContents* tab,
-      security_interstitials::SecurityInterstitialCommand command);
-
   void FlushBlocklistPolicy();
 
+  // Navigates to `url` and returns true if navigation completed.
+  bool NavigateToUrl(GURL url, PlatformBrowserTest* browser_test);
+
   testing::NiceMock<MockConfigurationPolicyProvider> provider_;
+};
+
+class PolicyTestAppTerminationObserver {
+ public:
+  PolicyTestAppTerminationObserver();
+  ~PolicyTestAppTerminationObserver();
+
+  bool WasAppTerminated() const { return terminated_; }
+
+ private:
+  void OnAppTerminating() { terminated_ = true; }
+
+  base::CallbackListSubscription terminating_subscription_;
+  bool terminated_ = false;
 };
 
 }  // namespace policy

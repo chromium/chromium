@@ -1,0 +1,202 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.quick_pair.mojom;
+
+// Type values for Fast Pair messages.
+enum MessageType {
+  // Key-based Pairing Request.
+  kKeyBasedPairingRequest,
+  // Key-based Pairing Response.
+  kKeyBasedPairingResponse,
+  // Seeker's passkey.
+  kSeekersPasskey,
+  // Provider's passkey.
+  kProvidersPasskey,
+};
+
+// Decrypted response value.
+struct DecryptedResponse {
+  // Message type.
+  MessageType message_type;
+  // Provider's public (BR/EDR) address.
+  array<uint8, 6> address_bytes;
+  // Random value.
+  array<uint8, 9> salt;
+};
+
+// Decrypted passkey value.
+struct DecryptedPasskey {
+  // Message type.
+  MessageType message_type;
+  // 6 digit passkey.
+  uint32 passkey;
+  // Random value.
+  array<uint8, 12> salt;
+};
+
+// 'Not discoverable' advertisements and MessageStreamMessages may contain
+// battery information, see
+// https://developers.google.com/nearby/fast-pair/spec#BatteryNotification.
+struct BatteryInfo {
+  // Whether or not the device is charging.
+  bool is_charging;
+  // Battery level ranging from 0 to 100. -1 if unknown.
+  int8 percentage;
+};
+
+// 'Not discoverable' advertisements may contain battery information, see
+// https://developers.google.com/nearby/fast-pair/spec#BatteryNotification.
+struct BatteryNotification {
+  // Whether or not to show UI based on this notification.
+  bool show_ui;
+  // Battery information for the left bud.
+  BatteryInfo left_bud_info;
+  // Battery information for the right bud.
+  BatteryInfo right_bud_info;
+  // Battery information for the case.
+  BatteryInfo case_info;
+};
+
+// MessageStreamMessages may contain battery update information, see
+// https://developers.google.com/nearby/fast-pair/spec#battery_updated.
+struct BatteryUpdate {
+  // Battery information for the left bud.
+  BatteryInfo left_bud_info;
+  // Battery information for the right bud.
+  BatteryInfo right_bud_info;
+  // Battery information for the case.
+  BatteryInfo case_info;
+};
+
+// Indication of whether or not the Acknowledgement message in a
+// MessageStreamMessage is a Ack or a Nak, with reasons for Nak. See
+// https://developers.google.com/nearby/fast-pair/spec#MessageStreamAcknowledgements.
+enum Acknowledgement {
+  // Acknowledgement.
+  kAck,
+  // Not Acknowledgement, not supported.
+  kNotSupportedNak,
+  // Not Acknowledgement, device busy.
+  kDeviceBusyNak,
+  // Not Acknowledgement, not allowed due to current state.
+  kNotAllowedDueToCurrentStateNak,
+};
+
+// All the message groups for the MessageStreamMessage to be used in
+// Acknowledgement. See
+// https://developers.google.com/nearby/fast-pair/spec#MessageStream.
+enum MessageGroup {
+  // Bluetooth event.
+  kBluetoothEvent,
+  // Companion App event.
+  kCompanionAppEvent,
+  // Device information event.
+  kDeviceInformationEvent,
+  // Device action event.
+  kDeviceActionEvent,
+  // Acknowledgement.
+  kAcknowledgementEvent,
+};
+
+// MessageStreamMessages may contain RingDevice events, see
+// https://developers.google.com/nearby/fast-pair/spec#ringing_a_device.
+struct RingDevice {
+  // Since the MessageStreamMessage does not contain
+  // information about how many components are on the device, this byte needs
+  // to be understood by consumers.
+  uint8 ring_device_byte;
+  // Timeout for how long the device should ring for. This is an optional field,
+  // and a timeout of -1 implies no timeout.
+  int8 timeout_in_seconds;
+};
+
+// MessageStreamMessages may contain Acknowledgement events, see
+// https://developers.google.com/nearby/fast-pair/spec#MessageStreamAcknowledgements.
+struct AcknowledgementMessage {
+  // The byte representation of the message code in the message group being
+  // acknowledged or not acknowledged.
+  uint8 action_message_code;
+  // Acknowledgement or the reason for not acknowledgement.
+  Acknowledgement acknowledgement;
+  // The message group being acknowledged or not acknowledged.
+  MessageGroup action_message_group;
+};
+
+// Parsed message stream message value which may take the value of any single
+// one of these fields at a time, see
+// https://developers.google.com/nearby/fast-pair/spec#MessageStream.
+union MessageStreamMessage {
+  // Model id information for Retroactively Writing Account Key.
+  string model_id;
+  // BLE address information for Retroactively Writing Account Key.
+  string ble_address_update;
+  // Battery updates for battery notifications.
+  BatteryUpdate battery_update;
+  // Remaining battery time, in minutes.
+  uint16 remaining_battery_time;
+  // Enable/Disable silence mode. If true, enable silence mode. If false,
+  // disable silence mode.
+  bool enable_silence_mode;
+  // Companion app log buffer full.
+  bool companion_app_log_buffer_full;
+  // Active components byte. Since the MessageStreamMessage does not contain
+  // information about how many components are on the device, this byte needs
+  // to be understood by consumers. See
+  // https://developers.google.com/nearby/fast-pair/spec#MessageStreamActiveComponents.
+  uint8 active_components_byte;
+  // Ring device event.
+  RingDevice ring_device_event;
+  // Acknowledgement event for an action.
+  AcknowledgementMessage acknowledgement;
+  // Sdk version for Android platform.
+  int8 sdk_version;
+};
+
+// Advertisement payload for Fast Pair 'not discoverable' devices. See
+// https://developers.google.com/nearby/fast-pair/spec#advertising_payload_fast_pair_account_data
+// for additional details (note: not all fields in the spec are in use, thus
+// aren't included in this struct).
+struct NotDiscoverableAdvertisement {
+  // Bytes in the account key filter.
+  array<uint8> account_key_filter;
+  // Random value generate by the Bluetooth device.
+  array<uint8> salt;
+  // Whether or not to show UI based on this advertisement.
+  bool show_ui;
+  // Optional battery notification information.
+  BatteryNotification? battery_notification;
+};
+
+// Parses untrusted bytes from a Bluetooth device during Fast Pair. Lives in a
+// sandboxed utility process which is launched by Ash. Instances should be
+// retrieved via QuickPairService.
+interface FastPairDataParser {
+  // Gets the hex string representation of the device's model ID from the
+  // service data.
+  GetHexModelIdFromServiceData(array<uint8> service_data) => (string? model_id);
+
+  // Decrypts |encrypted_response_bytes| using |aes_key| and parses a
+  // DecryptedResponse instance if possible.
+  ParseDecryptedResponse(
+    array<uint8, 16> aes_key,
+    array<uint8, 16> encrypted_response_bytes) => (DecryptedResponse? response);
+
+  // Decrypts |encrypted_passkey_bytes| using |aes_key| and parses a
+  // DecryptedPasskey instance if possible.
+  ParseDecryptedPasskey(
+    array<uint8, 16> aes_key,
+    array<uint8, 16> encrypted_passkey_bytes) => (DecryptedPasskey? passkey);
+
+  // Parses a 'not discoverable' advertisement instance from |service_data| if
+  // possible. If there is not salt information in the advertisement, use
+  // |address| as salt instead.
+  ParseNotDiscoverableAdvertisement(array<uint8> service_data, string address)
+      => (NotDiscoverableAdvertisement? advertisement);
+
+  // Parses MessageStreamMessage instances from |message_bytes| if
+  // possible.
+  ParseMessageStreamMessages(array<uint8> message_bytes)
+      => (array<MessageStreamMessage> messages);
+};

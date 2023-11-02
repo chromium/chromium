@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,11 @@
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_status.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_type.h"
-#include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_scheduler_impl.h"
+#include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_scheduler_base.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_metrics_helper.h"
 
 namespace base {
+class LazyNow;
 class TaskObserver;
 namespace sequence_manager {
 class SequenceManager;
@@ -33,7 +34,8 @@ class WorkerSchedulerProxy;
 class WakeUpBudgetPool;
 class CPUTimeBudgetPool;
 
-class PLATFORM_EXPORT WorkerThreadScheduler : public NonMainThreadSchedulerImpl,
+class PLATFORM_EXPORT WorkerThreadScheduler : public NonMainThreadSchedulerBase,
+                                              public ThreadScheduler,
                                               public IdleHelper::Delegate {
  public:
   // |sequence_manager| and |proxy| must remain valid for the entire lifetime of
@@ -46,20 +48,20 @@ class PLATFORM_EXPORT WorkerThreadScheduler : public NonMainThreadSchedulerImpl,
   WorkerThreadScheduler& operator=(const WorkerThreadScheduler&) = delete;
   ~WorkerThreadScheduler() override;
 
-  // WebThreadScheduler implementation:
+  // ThreadScheduler implementation:
   scoped_refptr<base::SingleThreadTaskRunner> V8TaskRunner() override;
-  scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override;
-  scoped_refptr<base::SingleThreadTaskRunner> NonWakingTaskRunner() override;
   bool ShouldYieldForHighPriorityWork() override;
-  bool CanExceedIdleDeadlineIfRequired() const override;
   void AddTaskObserver(base::TaskObserver* task_observer) override;
   void RemoveTaskObserver(base::TaskObserver* task_observer) override;
-  void AddRAILModeObserver(RAILModeObserver*) override {}
-  void RemoveRAILModeObserver(RAILModeObserver const*) override {}
+  void PostIdleTask(const base::Location&, Thread::IdleTask) override;
+  void PostDelayedIdleTask(const base::Location&,
+                           base::TimeDelta delay,
+                           Thread::IdleTask) override;
+  void PostNonNestableIdleTask(const base::Location&,
+                               Thread::IdleTask) override;
+  base::TimeTicks MonotonicallyIncreasingVirtualTime() override;
+  void SetV8Isolate(v8::Isolate* isolate) override;
   void Shutdown() override;
-
-  // ThreadSchedulerImpl implementation:
-  scoped_refptr<SingleThreadIdleTaskRunner> IdleTaskRunner() override;
 
   // NonMainThreadSchedulerImpl implementation:
   void Init() override;
@@ -68,10 +70,13 @@ class PLATFORM_EXPORT WorkerThreadScheduler : public NonMainThreadSchedulerImpl,
       NonMainThreadTaskQueue* worker_task_queue,
       const base::sequence_manager::Task& task,
       base::sequence_manager::TaskQueue::TaskTiming* task_timing,
-      base::sequence_manager::LazyNow* lazy_now) override;
+      base::LazyNow* lazy_now) override;
 
   SchedulerHelper* GetSchedulerHelperForTesting();
   base::TimeTicks CurrentIdleTaskDeadlineForTesting() const;
+
+  scoped_refptr<SingleThreadIdleTaskRunner> IdleTaskRunner();
+  scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner();
 
   // Virtual for test.
   virtual void OnLifecycleStateChanged(
@@ -127,6 +132,7 @@ class PLATFORM_EXPORT WorkerThreadScheduler : public NonMainThreadSchedulerImpl,
       const base::sequence_manager::TaskQueue::TaskTiming& task_timing);
 
   const ThreadType thread_type_;
+  scoped_refptr<NonMainThreadTaskQueue> idle_helper_queue_;
   IdleHelper idle_helper_;
   bool initialized_ = false;
   scoped_refptr<NonMainThreadTaskQueue> control_task_queue_;

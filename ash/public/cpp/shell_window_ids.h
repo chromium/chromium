@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,6 +58,9 @@ enum ShellWindowId {
   // The wallpaper (desktop background) window.
   kShellWindowId_WallpaperContainer,
 
+  // The glanceables ("welcome back") window container.
+  kShellWindowId_GlanceablesContainer,
+
   // The containers for standard top-level windows per active desks.
   // * Notes:
   //   - There are no direct mapping between `kShellWindowId_DeskContainerA` and
@@ -75,15 +78,24 @@ enum ShellWindowId {
   kShellWindowId_DeskContainerF,
   kShellWindowId_DeskContainerG,
   kShellWindowId_DeskContainerH,
+  kShellWindowId_DeskContainerI,
+  kShellWindowId_DeskContainerJ,
+  kShellWindowId_DeskContainerK,
+  kShellWindowId_DeskContainerL,
+  kShellWindowId_DeskContainerM,
+  kShellWindowId_DeskContainerN,
+  kShellWindowId_DeskContainerO,
+  kShellWindowId_DeskContainerP,
 
   // The container for top-level windows with the 'always-on-top' flag set.
   kShellWindowId_AlwaysOnTopContainer,
 
+  // The container for the floating window.
+  // Experimental feature, please don't use this container.
+  kShellWindowId_FloatContainer,
+
   // The container for the app list.
   kShellWindowId_AppListContainer,
-
-  // The container for the floating window.
-  kShellWindowId_FloatContainer,
 
   // The container for the home screen, e.g. the app list in tablet mode.
   kShellWindowId_HomeScreenContainer,
@@ -139,7 +151,8 @@ enum ShellWindowId {
   // The container for menus.
   kShellWindowId_MenuContainer,
 
-  // The container for drag/drop images and tooltips.
+  // The container for drag/drop images, tooltips, and widgets that are tagged
+  // with ui::ZOrderLevel::kSecuritySurface.
   kShellWindowId_DragImageAndTooltipContainer,
 
   // The container for the fullscreen power button menu.
@@ -208,6 +221,17 @@ enum NonContainerWindowId {
   // |SelectFileDialogExtension| from favoring to parent the dialog to a browser
   // window (if one exists).
   kShellWindowId_CaptureModeFolderSelectionDialogOwner,
+
+  // The window that shows the "Save desk as template" button and `Save desk for
+  // later` button below the Virtual Desks bar. There's only one such window on
+  // each display when overview mode is active.
+  kShellWindowId_SaveDeskButtonContainer,
+
+  // The window that shows the Saved Desk Library in overview.
+  kShellWindowId_SavedDeskLibraryWindow,
+
+  // The window that shows the "No recent items" label in overview.
+  kShellWindowId_OverviewNoWindowsLabelWindow,
 };
 
 // A list of system modal container IDs. The order of the list is important that

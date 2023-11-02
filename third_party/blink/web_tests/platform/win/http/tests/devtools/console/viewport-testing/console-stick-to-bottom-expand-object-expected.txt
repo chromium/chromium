@@ -1,0 +1,22 @@
+Verifies viewport stick-to-bottom behavior when prompt has space below editable area.
+
+Message count: 150
+
+Running: testExpandLastVisibleObjectRemainsInView
+
+Force selecting index 149
+Is at bottom: true, should stick: true, selected element is fully visible? true
+Expanding object
+Is at bottom: false, should stick: false, selected element is fully visible? false
+Collapsing object
+Is at bottom: true, should stick: false, selected element is fully visible? true
+
+Running: testExpandFirstVisibleObjectRemainsInView
+
+Force selecting index 146
+Is at bottom: false, should stick: false, selected element is fully visible? true
+Expanding object
+Is at bottom: false, should stick: false, selected element is fully visible? true
+Collapsing object
+Is at bottom: false, should stick: false, selected element is fully visible? true
+

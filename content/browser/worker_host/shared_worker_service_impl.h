@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,13 @@
 #include <string>
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/worker_host/shared_worker_host.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/shared_worker_service.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -73,6 +74,11 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
       ukm::SourceId client_ukm_source_id);
 
+  // Returns the SharedWorkerHost associated with this token. Clients should
+  // not hold on to the pointer, as it may become invalid when the worker exits.
+  SharedWorkerHost* GetSharedWorkerHostFromToken(
+      const blink::SharedWorkerToken& worker_token) const;
+
   // Virtual for testing.
   virtual void DestroyHost(SharedWorkerHost* host);
 
@@ -112,7 +118,6 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
       const blink::MessagePortChannel& message_port,
       blink::mojom::FetchClientSettingsObjectPtr
           outside_fetch_client_settings_object,
-      bool did_fetch_worker_script,
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
           subresource_loader_factories,
       blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params,
@@ -133,9 +138,11 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
 
   std::set<std::unique_ptr<SharedWorkerHost>, base::UniquePtrComparator>
       worker_hosts_;
+  base::flat_map<blink::SharedWorkerToken, SharedWorkerHost*>
+      shared_worker_hosts_;
 
   // |storage_partition_| owns |this|.
-  StoragePartitionImpl* const storage_partition_;
+  const raw_ptr<StoragePartitionImpl> storage_partition_;
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_override_;
 

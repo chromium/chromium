@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 
 namespace web {
 
-// This class contains different "stages" to be executed by |WebMain()|.
+// This class contains different "stages" to be executed by `WebMain()`.
 // Each stage is represented by a single WebMainParts method, called from
-// the corresponding method in |WebMainLoop| (e.g., EarlyInitialization())
+// the corresponding method in `WebMainLoop` (e.g., EarlyInitialization())
 // which does the following:
 //  - calls a method (e.g., "PreEarlyInitialization()") which implements
 //    platform / tookit specific code for that stage.

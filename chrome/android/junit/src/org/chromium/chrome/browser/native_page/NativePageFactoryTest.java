@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -94,7 +94,7 @@ public class NativePageFactoryTest {
     private static class MockNativePageBuilder extends NativePageFactory.NativePageBuilder {
         private MockNativePageBuilder() {
             super(null, null, null, null, null, null, null, null, null, null,
-                    new DummyJankTracker(), null);
+                    new DummyJankTracker(), null, null);
         }
 
         @Override
@@ -113,7 +113,7 @@ public class NativePageFactoryTest {
         }
 
         @Override
-        public NativePage buildHistoryPage(Tab tab) {
+        public NativePage buildHistoryPage(Tab tab, String url) {
             return new MockNativePage(NativePageType.HISTORY);
         }
     }
@@ -121,7 +121,7 @@ public class NativePageFactoryTest {
     @Before
     public void setUp() {
         mNativePageFactory = new NativePageFactory(null, null, null, null, null, null, null, null,
-                null, null, null, new DummyJankTracker(), null);
+                null, null, null, new DummyJankTracker(), null, null);
         mNativePageFactory.setNativePageBuilderForTesting(new MockNativePageBuilder());
     }
 

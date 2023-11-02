@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,9 +20,8 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/paint_throbber.h"
-#include "ui/views/image_model_utils.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 // windows.h needs to come first.  The gap above prevents reordering.
@@ -36,7 +35,7 @@ namespace {
 
 gfx::ImageSkia CreateDefaultFavicon() {
   gfx::ImageSkia icon;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The default window icon is the application icon, not the default favicon.
   HICON app_icon = GetAppIcon();
   icon = gfx::ImageSkia::CreateFromBitmap(
@@ -140,8 +139,8 @@ void TabIconView::PaintButtonContents(gfx::Canvas* canvas) {
       return;
     }
 
-    gfx::ImageSkia favicon = views::GetImageSkiaFromImageModel(
-        model_->GetFaviconForTabIconView(), GetColorProvider());
+    gfx::ImageSkia favicon =
+        model_->GetFaviconForTabIconView().Rasterize(GetColorProvider());
     if (!favicon.isNull()) {
       PaintFavicon(canvas, favicon);
       return;

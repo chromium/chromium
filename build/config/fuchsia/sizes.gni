@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -14,7 +14,6 @@ template("compute_fuchsia_package_sizes") {
     testonly = true
     executable = "//build/fuchsia/binary_sizes.py"
     wrapper_script = "$root_out_dir/bin/run_${target_name}"
-    use_vpython3 = true
 
     assert(target_cpu == "arm64" || target_cpu == "x64",
            "target_cpu must be arm64 or x64")
@@ -31,7 +30,7 @@ template("compute_fuchsia_package_sizes") {
     # swarming test client.
     data += [
       "//build/fuchsia/",
-      "//fuchsia/release/size_tests/",
+      "//tools/fuchsia/size_tests/",
       "//third_party/fuchsia-sdk/sdk/arch/",
       "//third_party/fuchsia-sdk/sdk/tools/${target_cpu}/",
     ]

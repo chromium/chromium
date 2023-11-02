@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_HISTORY_METRICS_DOMAIN_DIVERSITY_REPORTER_H_
 #define COMPONENTS_HISTORY_METRICS_DOMAIN_DIVERSITY_REPORTER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
@@ -57,9 +58,9 @@ class DomainDiversityReporter : public KeyedService,
   void Shutdown() override {}
 
  private:
-  history::HistoryService* history_service_;
-  PrefService* prefs_;
-  base::Clock* clock_;
+  raw_ptr<history::HistoryService> history_service_;
+  raw_ptr<PrefService> prefs_;
+  raw_ptr<base::Clock> clock_;
 
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>

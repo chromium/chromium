@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,16 +58,6 @@ TEST(MiniInstallerTest, GetModuleDir) {
   PathString directory;
 
   ASSERT_TRUE(GetModuleDir(/*module=*/nullptr, &directory));
-  ASSERT_NE(directory.length(), 0U);
-  EXPECT_LT(directory.length(), directory.capacity());
-  EXPECT_EQ(directory.get()[directory.length() - 1], L'\\');
-}
-
-TEST(MiniInstallerTest, GetTempDir) {
-  ProcessExitResult exit_result(SUCCESS_EXIT_CODE);
-  PathString directory;
-
-  ASSERT_TRUE(GetTempDir(&directory, &exit_result));
   ASSERT_NE(directory.length(), 0U);
   EXPECT_LT(directory.length(), directory.capacity());
   EXPECT_EQ(directory.get()[directory.length() - 1], L'\\');

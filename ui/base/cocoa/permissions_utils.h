@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,16 @@ COMPONENT_EXPORT(UI_BASE) bool IsScreenCaptureAllowed();
 // user previously declined to give permission, this will just return `false`
 // immediately without prompting the user.
 COMPONENT_EXPORT(UI_BASE) bool TryPromptUserForScreenCapture();
+
+// Screen sharing will fail if the following conditions are met:
+// * The running instance of Chrome has not yet screen shared this session.
+// * Chrome has updated.
+// * Chrome has fallen out of a macOS system permission cache.
+//
+// If Chrome has access to capture the screen, take a screenshot of the whole
+// screen. This will warm up the cache in the relevant processes. See
+// https://crbug.com/1317690 for more information.
+COMPONENT_EXPORT(UI_BASE) void WarmScreenCapture();
 
 }  // namespace ui
 

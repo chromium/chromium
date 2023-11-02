@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,10 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/time/time.h"
 #include "media/base/media_util.h"
 #include "media/base/mock_filters.h"
 #include "media/base/mock_media_log.h"
@@ -67,7 +69,7 @@ class SourceBufferStateTest : public ::testing::Test {
             &media_log_);
     mock_stream_parser_ = new testing::StrictMock<MockStreamParser>();
     return base::WrapUnique(new SourceBufferState(
-        base::WrapUnique(mock_stream_parser_), std::move(frame_processor),
+        base::WrapUnique(mock_stream_parser_.get()), std::move(frame_processor),
         base::BindRepeating(&SourceBufferStateTest::CreateDemuxerStream,
                             base::Unretained(this)),
         &media_log_));
@@ -149,7 +151,7 @@ class SourceBufferStateTest : public ::testing::Test {
 
   testing::StrictMock<MockMediaLog> media_log_;
   std::vector<std::unique_ptr<ChunkDemuxerStream>> demuxer_streams_;
-  MockStreamParser* mock_stream_parser_;
+  raw_ptr<MockStreamParser> mock_stream_parser_;
   StreamParser::NewConfigCB new_config_cb_;
 };
 

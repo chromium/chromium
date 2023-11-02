@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,14 +37,15 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
-#include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/status_icons/status_icon.h"
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/browser/ui/browser.h"
@@ -68,7 +69,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
-#include "content/public/browser/notification_service.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -79,7 +79,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_family.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/win/app_icon.h"
 #endif
 
@@ -117,7 +117,7 @@ BackgroundModeManager::BackgroundModeData::BackgroundModeData(
       applications_(std::make_unique<BackgroundApplicationListModel>(profile)),
       profile_(profile),
       command_id_handler_vector_(command_id_handler_vector) {
-  profile_observation_.Observe(profile_);
+  profile_observation_.Observe(profile_.get());
 }
 
 BackgroundModeManager::BackgroundModeData::~BackgroundModeData() = default;
@@ -350,8 +350,9 @@ BackgroundModeManager::BackgroundModeManager(
     StartBackgroundMode();
 
   // Listen for the application shutting down so we can release our KeepAlive.
-  registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
-                 content::NotificationService::AllSources());
+  on_app_terminating_subscription_ =
+      browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
+          &BackgroundModeManager::OnAppTerminating, base::Unretained(this)));
   BrowserList::AddObserver(this);
 }
 
@@ -371,7 +372,7 @@ BackgroundModeManager::~BackgroundModeManager() {
 
 // static
 void BackgroundModeManager::RegisterPrefs(PrefRegistrySimple* registry) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   registry->RegisterBooleanPref(prefs::kUserRemovedLoginItem, false);
   registry->RegisterBooleanPref(prefs::kChromeCreatedLoginItem, false);
   registry->RegisterBooleanPref(prefs::kMigratedLoginItemPref, false);
@@ -435,11 +436,18 @@ bool BackgroundModeManager::UnregisterProfile(Profile* profile) {
 void BackgroundModeManager::LaunchBackgroundApplication(
     Profile* profile,
     const Extension* extension) {
+#if !BUILDFLAG(IS_CHROMEOS)
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->BrowserAppLauncher()
       ->LaunchAppWithParams(CreateAppLaunchParamsUserContainer(
           profile, extension, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          apps::mojom::LaunchSource::kFromBackgroundMode));
+          apps::LaunchSource::kFromBackgroundMode));
+#else
+  // background mode is not used in Chrome OS platform.
+  // TODO(crbug.com/1291803): Remove the background mode manager from Chrome OS
+  // build.
+  NOTIMPLEMENTED();
+#endif
 }
 
 // static
@@ -476,13 +484,7 @@ size_t BackgroundModeManager::NumberOfBackgroundModeData() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-//  BackgroundModeManager, content::NotificationObserver overrides
-void BackgroundModeManager::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(chrome::NOTIFICATION_APP_TERMINATING, type);
-
+void BackgroundModeManager::OnAppTerminating() {
   // Make sure we aren't still keeping the app alive (only happens if we
   // don't receive an EXTENSIONS_READY notification for some reason).
   ReleaseStartupKeepAlive();
@@ -491,7 +493,6 @@ void BackgroundModeManager::Observe(
   EndBackgroundMode();
   // Shutting down, so don't listen for any more notifications so we don't
   // try to re-enter/exit background mode again.
-  registrar_.RemoveAll();
   for (const auto& it : background_mode_data_)
     it.second->applications()->RemoveObserver(this);
 }
@@ -627,8 +628,8 @@ void BackgroundModeManager::ExecuteCommand(int command_id, int event_flags) {
       if (bmd) {
         chrome::ShowAboutChrome(bmd->GetBrowserWindow());
       } else {
-        ProfilePicker::Show(ProfilePicker::EntryPoint::kBackgroundModeManager,
-                            GURL(chrome::kChromeUIHelpURL));
+        ProfilePicker::Show(ProfilePicker::Params::ForBackgroundManager(
+            GURL(chrome::kChromeUIHelpURL)));
       }
       break;
     case IDC_TASK_MANAGER:
@@ -636,8 +637,8 @@ void BackgroundModeManager::ExecuteCommand(int command_id, int event_flags) {
       if (bmd) {
         chrome::OpenTaskManager(bmd->GetBrowserWindow());
       } else {
-        ProfilePicker::Show(ProfilePicker::EntryPoint::kBackgroundModeManager,
-                            GURL(ProfilePicker::kTaskManagerUrl));
+        ProfilePicker::Show(ProfilePicker::Params::ForBackgroundManager(
+            GURL(ProfilePicker::kTaskManagerUrl)));
       }
       break;
     case IDC_EXIT:
@@ -664,7 +665,8 @@ void BackgroundModeManager::ExecuteCommand(int command_id, int event_flags) {
       if (bmd) {
         bmd->ExecuteCommand(command_id, event_flags);
       } else {
-        ProfilePicker::Show(ProfilePicker::EntryPoint::kBackgroundModeManager);
+        ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+            ProfilePicker::EntryPoint::kBackgroundModeManager));
       }
       break;
   }
@@ -875,7 +877,7 @@ void BackgroundModeManager::UpdateEnableLaunchOnStartup() {
 // Gets the image for the status tray icon, at the correct size for the current
 // platform and display settings.
 gfx::ImageSkia GetStatusTrayIcon() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, use GetSmallAppIconSize to get the correct image size. The
   // user's "text size" setting in Windows determines how large the system tray
   // icon should be.
@@ -892,10 +894,10 @@ gfx::ImageSkia GetStatusTrayIcon() {
     return gfx::ImageSkia();
 
   return family->CreateExact(size).AsImageSkia();
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
       IDR_PRODUCT_LOGO_128);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
       IDR_STATUS_TRAY_ICON);
 #else
@@ -910,7 +912,7 @@ void BackgroundModeManager::CreateStatusTrayIcon() {
 
   // Since there are multiple profiles which share the status tray, we now
   // use the browser process to keep track of it.
-#if !defined(OS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
     !BUILDFLAG(IS_CHROMEOS_LACROS)
   if (!status_tray_)
     status_tray_ = g_browser_process->status_tray();

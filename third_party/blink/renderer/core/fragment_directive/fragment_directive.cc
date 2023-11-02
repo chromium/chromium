@@ -1,15 +1,17 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/fragment_directive/fragment_directive.h"
 
+#include "components/shared_highlighting/core/common/fragment_directives_constants.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_range_selection.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/editing/dom_selection.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
+#include "third_party/blink/renderer/core/fragment_directive/css_selector_directive.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_directive.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_selector_generator.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -18,15 +20,6 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-
-namespace {
-
-constexpr char kFragmentDirectivePrefix[] = ":~:";
-// Subtract 1 because base::size includes the \0 string terminator.
-constexpr size_t kFragmentDirectivePrefixStringLength =
-    base::size(kFragmentDirectivePrefix) - 1;
-
-}  // namespace
 
 namespace blink {
 
@@ -38,7 +31,8 @@ KURL FragmentDirective::ConsumeFragmentDirective(const KURL& url) {
   // Strip the fragment directive from the URL fragment. E.g. "#id:~:text=a"
   // --> "#id". See https://github.com/WICG/scroll-to-text-fragment.
   String fragment = url.FragmentIdentifier();
-  wtf_size_t start_pos = fragment.Find(kFragmentDirectivePrefix);
+  wtf_size_t start_pos =
+      fragment.Find(shared_highlighting::kFragmentsUrlDelimiter);
 
   last_navigation_had_fragment_directive_ = start_pos != kNotFound;
   fragment_directive_string_length_ = 0;
@@ -46,8 +40,8 @@ KURL FragmentDirective::ConsumeFragmentDirective(const KURL& url) {
     return url;
 
   KURL new_url = url;
-  String fragment_directive =
-      fragment.Substring(start_pos + kFragmentDirectivePrefixStringLength);
+  String fragment_directive = fragment.Substring(
+      start_pos + shared_highlighting::kFragmentsUrlDelimiterLength);
 
   if (start_pos == 0)
     new_url.RemoveFragmentIdentifier();
@@ -141,11 +135,11 @@ ScriptPromise FragmentDirective::createSelectorDirective(
   auto* generator = MakeGarbageCollected<TextFragmentSelectorGenerator>(frame);
   generator->Generate(
       *range_in_flat_tree,
-      WTF::Bind(
+      WTF::BindOnce(
           [](ScriptPromiseResolver* resolver,
              TextFragmentSelectorGenerator* generator,
-             const RangeInFlatTree* range,
-             const TextFragmentSelector& selector) {
+             const RangeInFlatTree* range, const TextFragmentSelector& selector,
+             shared_highlighting::LinkGenerationError error) {
             if (selector.Type() ==
                 TextFragmentSelector::SelectorType::kInvalid) {
               RejectWithCode(resolver, DOMExceptionCode::kOperationError,
@@ -172,11 +166,14 @@ void FragmentDirective::ParseDirectives(const String& fragment_directive) {
   for (String& directive_string : directive_strings) {
     if (directive_string.StartsWith("text=")) {
       String value = directive_string.Right(directive_string.length() - 5);
-      if (value.IsEmpty())
+      if (value.empty())
         continue;
 
       if (TextDirective* text_directive = TextDirective::Create(value))
         new_directives.push_back(text_directive);
+    } else if (auto* selector_directive =
+                   CssSelectorDirective::TryParse(directive_string)) {
+      new_directives.push_back(selector_directive);
     }
   }
 

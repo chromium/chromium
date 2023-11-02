@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,14 +30,14 @@ class MODULES_EXPORT MIDIAccessInitializer : public ScriptPromiseResolver,
     String id;
     String manufacturer;
     String name;
-    MIDIPort::TypeCode type;
+    MIDIPortType type;
     String version;
     midi::mojom::PortState state;
 
     PortDescriptor(const String& id,
                    const String& manufacturer,
                    const String& name,
-                   MIDIPort::TypeCode type,
+                   MIDIPortType type,
                    const String& version,
                    midi::mojom::PortState state)
         : id(id),

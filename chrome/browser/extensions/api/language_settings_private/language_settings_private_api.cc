@@ -1,10 +1,9 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/api/language_settings_private/language_settings_private_api.h"
 
-#include <algorithm>
 #include <map>
 #include <memory>
 #include <set>
@@ -15,11 +14,11 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -44,7 +43,6 @@
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
-#include "ui/base/ime/ash/input_method_descriptor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_collator.h"
 
@@ -53,6 +51,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
+#include "ui/base/ime/ash/input_method_descriptor.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/input_method_util.h"
 #endif
@@ -82,7 +81,7 @@ base::flat_set<std::string> GetIMEsFromPref(PrefService* prefs,
 // Returns the set of allowed UI locales.
 base::flat_set<std::string> GetAllowedLanguages(PrefService* prefs) {
   const auto& allowed_languages_values =
-      prefs->GetList(prefs::kAllowedLanguages)->GetList();
+      prefs->GetList(prefs::kAllowedLanguages);
   return base::MakeFlatSet<std::string>(
       allowed_languages_values, {},
       [](const auto& locale_value) { return locale_value.GetString(); });
@@ -205,8 +204,7 @@ CreateTranslatePrefsForBrowserContext(
 }  // namespace
 
 LanguageSettingsPrivateGetLanguageListFunction::
-    LanguageSettingsPrivateGetLanguageListFunction()
-    : language_list_(std::make_unique<base::ListValue>()) {}
+    LanguageSettingsPrivateGetLanguageListFunction() = default;
 
 LanguageSettingsPrivateGetLanguageListFunction::
     ~LanguageSettingsPrivateGetLanguageListFunction() = default;
@@ -229,7 +227,7 @@ LanguageSettingsPrivateGetLanguageListFunction::Run() {
       std::move(spellcheck_languages));
 
   // Build the language list.
-  language_list_->ClearList();
+  language_list_.clear();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const base::flat_set<std::string> allowed_ui_locales(GetAllowedLanguages(
       Profile::FromBrowserContext(browser_context())->GetPrefs()));
@@ -243,23 +241,23 @@ LanguageSettingsPrivateGetLanguageListFunction::Run() {
 
     // Set optional fields only if they differ from the default.
     if (base::Contains(spellcheck_language_set, entry.code)) {
-      language.supports_spellcheck = std::make_unique<bool>(true);
+      language.supports_spellcheck = true;
     }
     if (entry.supports_translate) {
-      language.supports_translate = std::make_unique<bool>(true);
+      language.supports_translate = true;
     }
 
     if (l10n_util::IsUserFacingUILocale(entry.code)) {
-      language.supports_ui = std::make_unique<bool>(true);
+      language.supports_ui = true;
     }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (!allowed_ui_locales.empty() &&
         !base::Contains(allowed_ui_locales, language.code)) {
-      language.is_prohibited_language = std::make_unique<bool>(true);
+      language.is_prohibited_language = true;
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    language_list_->Append(language.ToValue());
+    language_list_.Append(language.ToValue());
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -271,11 +269,11 @@ LanguageSettingsPrivateGetLanguageListFunction::Run() {
     language.code = ash::extension_ime_util::kArcImeLanguage;
     language.display_name =
         l10n_util::GetStringUTF8(IDS_SETTINGS_LANGUAGES_KEYBOARD_APPS);
-    language_list_->Append(language.ToValue());
+    language_list_.Append(base::Value(language.ToValue()));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (spellcheck::UseBrowserSpellChecker()) {
     if (!base::FeatureList::IsEnabled(
             spellcheck::kWinDelaySpellcheckServiceInit)) {
@@ -293,18 +291,16 @@ LanguageSettingsPrivateGetLanguageListFunction::Run() {
       return RespondLater();
     }
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(language_list_))));
+  return RespondNow(WithArguments(std::move(language_list_)));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void LanguageSettingsPrivateGetLanguageListFunction::
     OnDictionariesInitialized() {
   UpdateSupportedPlatformDictionaries();
-  Respond(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(language_list_))));
+  Respond(WithArguments(std::move(language_list_)));
   // Matches the AddRef in Run().
   Release();
 }
@@ -313,13 +309,13 @@ void LanguageSettingsPrivateGetLanguageListFunction::
     UpdateSupportedPlatformDictionaries() {
   SpellcheckService* service =
       SpellcheckServiceFactory::GetForContext(browser_context());
-  for (auto& language_val : language_list_->GetList()) {
+  for (auto& language_val : language_list_) {
     if (service->UsesWindowsDictionary(*language_val.FindStringKey("code"))) {
       language_val.SetBoolKey("supportsSpellcheck", new bool(true));
     }
   }
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 LanguageSettingsPrivateEnableLanguageFunction::
     LanguageSettingsPrivateEnableLanguageFunction() = default;
@@ -433,7 +429,7 @@ LanguageSettingsPrivateGetAlwaysTranslateLanguagesFunction::Run() {
     always_translate_languages_->Append(entry);
   }
 
-  return RespondNow(OneArgument(
+  return RespondNow(WithArguments(
       base::Value::FromUniquePtrValue(std::move(always_translate_languages_))));
 }
 
@@ -472,11 +468,11 @@ LanguageSettingsPrivateGetNeverTranslateLanguagesFunction::Run() {
   std::vector<std::string> languages =
       translate_prefs->GetNeverTranslateLanguages();
 
-  base::Value never_translate_languages(base::Value::Type::LIST);
+  base::Value::List never_translate_languages;
   for (auto& entry : languages) {
     never_translate_languages.Append(std::move(entry));
   }
-  return RespondNow(OneArgument(std::move(never_translate_languages)));
+  return RespondNow(WithArguments(std::move(never_translate_languages)));
 }
 
 LanguageSettingsPrivateMoveLanguageFunction::
@@ -560,7 +556,7 @@ LanguageSettingsPrivateGetSpellcheckWordsFunction::Run() {
 
   if (dictionary->IsLoaded())
     return RespondNow(
-        OneArgument(base::Value::FromUniquePtrValue(GetSpellcheckWords())));
+        WithArguments(base::Value::FromUniquePtrValue(GetSpellcheckWords())));
 
   dictionary->AddObserver(this);
   AddRef();  // Balanced in OnCustomDictionaryLoaded().
@@ -572,7 +568,7 @@ void LanguageSettingsPrivateGetSpellcheckWordsFunction::
   SpellcheckService* service =
       SpellcheckServiceFactory::GetForContext(browser_context());
   service->GetCustomDictionary()->RemoveObserver(this);
-  Respond(OneArgument(base::Value::FromUniquePtrValue(GetSpellcheckWords())));
+  Respond(WithArguments(base::Value::FromUniquePtrValue(GetSpellcheckWords())));
   Release();
 }
 
@@ -622,7 +618,7 @@ LanguageSettingsPrivateAddSpellcheckWordFunction::Run() {
   }
 #endif
 
-  return RespondNow(OneArgument(base::Value(success)));
+  return RespondNow(WithArguments(success));
 }
 
 LanguageSettingsPrivateRemoveSpellcheckWordFunction::
@@ -648,7 +644,7 @@ LanguageSettingsPrivateRemoveSpellcheckWordFunction::Run() {
   }
 #endif
 
-  return RespondNow(OneArgument(base::Value(success)));
+  return RespondNow(WithArguments(success));
 }
 
 LanguageSettingsPrivateGetTranslateTargetLanguageFunction::
@@ -662,9 +658,9 @@ LanguageSettingsPrivateGetTranslateTargetLanguageFunction::Run() {
   language::LanguageModel* language_model =
       LanguageModelManagerFactory::GetForBrowserContext(browser_context())
           ->GetPrimaryModel();
-  return RespondNow(OneArgument(base::Value(TranslateService::GetTargetLanguage(
+  return RespondNow(WithArguments(TranslateService::GetTargetLanguage(
       Profile::FromBrowserContext(browser_context())->GetPrefs(),
-      language_model))));
+      language_model)));
 }
 
 LanguageSettingsPrivateSetTranslateTargetLanguageFunction::
@@ -685,7 +681,6 @@ LanguageSettingsPrivateSetTranslateTargetLanguageFunction::Run() {
       CreateTranslatePrefsForBrowserContext(browser_context());
 
   std::string chrome_language = language_code;
-  translate_prefs->AddToLanguageList(language_code, false);
 
   if (language_code == translate_prefs->GetRecentTargetLanguage()) {
     return RespondNow(NoArguments());
@@ -730,11 +725,11 @@ void PopulateInputMethodListFromDescriptors(
     input_method.language_codes = descriptor.language_codes();
     input_method.tags = GetInputMethodTags(&input_method);
     if (base::Contains(enabled_ids, input_method.id))
-      input_method.enabled = std::make_unique<bool>(true);
+      input_method.enabled = true;
     if (descriptor.options_page_url().is_valid())
-      input_method.has_options_page = std::make_unique<bool>(true);
+      input_method.has_options_page = true;
     if (!allowed_ids.empty() && !base::Contains(allowed_ids, input_method.id)) {
-      input_method.is_prohibited_by_policy = std::make_unique<bool>(true);
+      input_method.is_prohibited_by_policy = true;
     }
     input_map[base::UTF8ToUTF16(util->GetLocalizedDisplayName(descriptor))] =
         std::move(input_method);
@@ -776,8 +771,7 @@ LanguageSettingsPrivateGetInputMethodListsFunction::Run() {
         ext_ime_descriptors, &input_method_lists.third_party_extension_imes);
   }
 
-  return RespondNow(OneArgument(
-      base::Value::FromUniquePtrValue(input_method_lists.ToValue())));
+  return RespondNow(WithArguments(input_method_lists.ToValue()));
 #endif
 }
 
@@ -832,24 +826,22 @@ LanguageSettingsPrivateAddInputMethodFunction::Run() {
   std::string input_methods = base::JoinString(input_method_list, ",");
   prefs->SetString(pref_name, input_methods);
 
-  // In LSV2 Update 2, we want to automatically enable "Show input options in
-  // shelf" when the user has multiple input methods.
+  // We want to automatically enable "Show input options in shelf" when the user
+  // has multiple input methods.
   // We don't want to repeatedly enable it every time the user adds an input
   // method, as a user may want to intentionally turn it off - so we only enable
   // it once the user reaches two input methods.
-  if (base::FeatureList::IsEnabled(ash::features::kLanguageSettingsUpdate2)) {
-    // As pref_name and input_method_set only refer to the preference related to
-    // the list of IMEs for which this newly-added IME is in, we need the other
-    // IME list to calculate the total number of IMEs.
-    const char* other_ime_list_pref_name = is_component_extension_ime
-                                               ? prefs::kLanguageEnabledImes
-                                               : prefs::kLanguagePreloadEngines;
-    base::flat_set<std::string> other_input_method_set(
-        GetIMEsFromPref(prefs, other_ime_list_pref_name));
-    if (input_method_set.size() + other_input_method_set.size() ==
-        kNumImesToAutoEnableImeMenu) {
-      prefs->SetBoolean(prefs::kLanguageImeMenuActivated, true);
-    }
+  // As pref_name and input_method_set only refer to the preference related to
+  // the list of IMEs for which this newly-added IME is in, we need the other
+  // IME list to calculate the total number of IMEs.
+  const char* other_ime_list_pref_name = is_component_extension_ime
+                                             ? prefs::kLanguageEnabledImes
+                                             : prefs::kLanguagePreloadEngines;
+  base::flat_set<std::string> other_input_method_set(
+      GetIMEsFromPref(prefs, other_ime_list_pref_name));
+  if (input_method_set.size() + other_input_method_set.size() ==
+      kNumImesToAutoEnableImeMenu) {
+    prefs->SetBoolean(prefs::kLanguageImeMenuActivated, true);
   }
 #endif
   return RespondNow(NoArguments());
@@ -892,8 +884,7 @@ LanguageSettingsPrivateRemoveInputMethodFunction::Run() {
       input_method_ids, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   // Find and remove the matching input method id.
-  const auto& pos = std::find(input_method_list.begin(),
-                              input_method_list.end(), input_method_id);
+  const auto& pos = base::ranges::find(input_method_list, input_method_id);
   if (pos != input_method_list.end()) {
     input_method_list.erase(pos);
     prefs->SetString(pref_name, base::JoinString(input_method_list, ","));

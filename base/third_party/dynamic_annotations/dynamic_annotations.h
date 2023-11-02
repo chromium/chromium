@@ -50,6 +50,8 @@
 #ifndef __DYNAMIC_ANNOTATIONS_H__
 #define __DYNAMIC_ANNOTATIONS_H__
 
+#include <stddef.h>
+
 #ifndef DYNAMIC_ANNOTATIONS_PREFIX
 # define DYNAMIC_ANNOTATIONS_PREFIX
 #endif
@@ -469,11 +471,11 @@ void DYNAMIC_ANNOTATIONS_NAME(AnnotateHappensAfter)(
     const char *file, int line,
     const volatile void *obj) DYNAMIC_ANNOTATIONS_ATTRIBUTE_WEAK;
 void DYNAMIC_ANNOTATIONS_NAME(AnnotatePublishMemoryRange)(
-    const char *file, int line,
-    const volatile void *address, long size) DYNAMIC_ANNOTATIONS_ATTRIBUTE_WEAK;
+    const char *file, int line, const volatile void *address,
+    size_t size) DYNAMIC_ANNOTATIONS_ATTRIBUTE_WEAK;
 void DYNAMIC_ANNOTATIONS_NAME(AnnotateUnpublishMemoryRange)(
-    const char *file, int line,
-    const volatile void *address, long size) DYNAMIC_ANNOTATIONS_ATTRIBUTE_WEAK;
+    const char *file, int line, const volatile void *address,
+    size_t size) DYNAMIC_ANNOTATIONS_ATTRIBUTE_WEAK;
 void DYNAMIC_ANNOTATIONS_NAME(AnnotatePCQCreate)(
     const char *file, int line,
     const volatile void *pcq) DYNAMIC_ANNOTATIONS_ATTRIBUTE_WEAK;
@@ -487,8 +489,8 @@ void DYNAMIC_ANNOTATIONS_NAME(AnnotatePCQGet)(
     const char *file, int line,
     const volatile void *pcq) DYNAMIC_ANNOTATIONS_ATTRIBUTE_WEAK;
 void DYNAMIC_ANNOTATIONS_NAME(AnnotateNewMemory)(
-    const char *file, int line,
-    const volatile void *mem, long size) DYNAMIC_ANNOTATIONS_ATTRIBUTE_WEAK;
+    const char *file, int line, const volatile void *mem,
+    size_t size) DYNAMIC_ANNOTATIONS_ATTRIBUTE_WEAK;
 void DYNAMIC_ANNOTATIONS_NAME(AnnotateExpectRace)(
     const char *file, int line, const volatile void *mem,
     const char *description) DYNAMIC_ANNOTATIONS_ATTRIBUTE_WEAK;
@@ -498,7 +500,7 @@ void DYNAMIC_ANNOTATIONS_NAME(AnnotateBenignRace)(
     const char *file, int line, const volatile void *mem,
     const char *description) DYNAMIC_ANNOTATIONS_ATTRIBUTE_WEAK;
 void DYNAMIC_ANNOTATIONS_NAME(AnnotateBenignRaceSized)(
-    const char *file, int line, const volatile void *mem, long size,
+    const char *file, int line, const volatile void *mem, size_t size,
     const char *description) DYNAMIC_ANNOTATIONS_ATTRIBUTE_WEAK;
 void DYNAMIC_ANNOTATIONS_NAME(AnnotateMutexIsUsedAsCondVar)(
     const char *file, int line,

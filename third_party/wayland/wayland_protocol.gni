@@ -1,12 +1,22 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 # Template to generate wayland protocol code with wayland-scanner.
 #
+# Generates C source and header files from XML manifest files that declare
+# Wayland protocols.
+#
+# The invoker MUST define `sources` which is the list of XML files.
+#
+# The invoker MAY define `generator_type` which is one of: protocol-marshalling,
+# protocol-server, protocol-client, all (default assumed if the parameter is not
+# specified).
+#
 # Example:
 #  wayland_protocol("foo") {
-#    sources = [ "foo.xml" ]
+#    sources = [ "foo.xml", "bar.xml" ]
+#    generator_type = "protocol-client"  # optional, "all" is the default
 #  }
 
 import("//third_party/wayland/features.gni")
@@ -14,17 +24,50 @@ import("//third_party/wayland/features.gni")
 template("wayland_protocol") {
   assert(defined(invoker.sources), "Need sources for wayland protocol")
 
+  if (defined(invoker.generator_type)) {
+    assert(invoker.generator_type == "protocol-marshalling" ||
+           invoker.generator_type == "protocol-client" ||
+           invoker.generator_type == "protocol-server")
+    generator_type = invoker.generator_type
+  } else {
+    generator_type = "all"
+  }
+
   # Calculate the output paths.
   protocol_outputs = []
   output_dirs = []
   foreach(protocol, invoker.sources) {
     dir = "$root_gen_dir/" + rebase_path(get_path_info(protocol, "dir"), "//")
     name = get_path_info(protocol, "name")
-    protocol_outputs += [
-      "${dir}/${name}-protocol.c",
-      "${dir}/${name}-client-protocol.h",
-      "${dir}/${name}-server-protocol.h",
-    ]
+
+    if (generator_type == "protocol-marshalling") {
+      # If it's a protocol marshalling code, only private marshalling code will
+      # be generated.
+      protocol_outputs += [ "${dir}/${name}-protocol.c" ]
+    } else if (generator_type == "protocol-server") {
+      # In case of server protocol generation, only server headers are generated.
+      protocol_outputs += [
+        "${dir}/${name}-server-protocol-core.h",
+        "${dir}/${name}-server-protocol.h",
+      ]
+    } else if (generator_type == "protocol-client") {
+      # In case of server protocol generation, only client headers are generated.
+      protocol_outputs += [
+        "${dir}/${name}-client-protocol-core.h",
+        "${dir}/${name}-client-protocol.h",
+      ]
+    } else {
+      assert(generator_type == "all")
+
+      # In all the other cases(generation of protocols from
+      # //third_party/wayland-protocols), private source with server and client
+      # headers are generated.
+      protocol_outputs += [
+        "${dir}/${name}-protocol.c",
+        "${dir}/${name}-server-protocol.h",
+        "${dir}/${name}-client-protocol.h",
+      ]
+    }
     output_dirs += [ dir ]
   }
 
@@ -52,22 +95,28 @@ template("wayland_protocol") {
       rebase_path(root_gen_dir, root_build_dir),
     ]
 
+    args += [
+      "--generator-type",
+      generator_type,
+    ]
+
     if (use_system_wayland_scanner) {
       args += [
         "--cmd",
-        system_wayland_scanner_path,
+        "./" + rebase_path(system_wayland_scanner_path, root_build_dir),
       ]
+      sources += [ system_wayland_scanner_path ]
     } else {
       wayland_scanner_label =
           "//third_party/wayland:wayland_scanner($host_toolchain)"
       deps = [ wayland_scanner_label ]
       wayland_scanner_path = get_label_info(wayland_scanner_label,
                                             "root_out_dir") + "/wayland_scanner"
-      cmd = "./" + rebase_path(wayland_scanner_path, root_build_dir)
       args += [
         "--cmd",
-        cmd,
+        "./" + rebase_path(wayland_scanner_path, root_build_dir),
       ]
+      sources += [ wayland_scanner_path ]
     }
   }
 

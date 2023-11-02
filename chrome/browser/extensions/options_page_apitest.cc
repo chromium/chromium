@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,7 +53,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, OptionsPage) {
     (function() {
       var button = document.querySelector('extensions-manager').
                     shadowRoot.querySelector('extensions-detail-view').
-                    shadowRoot.querySelector('#extensions-options');
+                    shadowRoot.querySelector('#extensionsOptions');
       button.click();
     })();)";
 
@@ -88,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
           .Set("version", "1")
           .ToJSON());
 
-  ExtensionTestMessageListener listener(false /* will_reply */);
+  ExtensionTestMessageListener listener;
   scoped_refptr<const Extension> extension =
       InstallExtension(extension_dir.Pack(), 1);
   ASSERT_TRUE(extension.get());

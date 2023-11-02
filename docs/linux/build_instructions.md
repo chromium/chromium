@@ -161,11 +161,12 @@ By default GN produces a build with all of the debug assertions enabled
 line-by-line debugging. Setting `symbol_level=0` will include no debug
 symbols at all. Either will speed up the build compared to full symbols.
 
-#### Disable debug symbols for Blink
+#### Disable debug symbols for Blink and v8
 
 Due to its extensive use of templates, the Blink code produces about half
 of our debug symbols. If you don't ever need to debug Blink, you can set
-the GN arg `blink_symbol_level=0`.
+the GN arg `blink_symbol_level=0`. Similarly, if you don't need to debug v8 you
+can improve build speeds by setting the GN arg `v8_symbol_level=0`.
 
 #### Use Icecc
 
@@ -189,7 +190,7 @@ See [related bug](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=808181).
 
 #### ccache
 
-You can use [ccache](https://ccache.samba.org) to speed up local builds (again,
+You can use [ccache](https://ccache.dev) to speed up local builds (again,
 this is not useful if you're using Goma).
 
 Increase your ccache hit rate by setting `CCACHE_BASEDIR` to a parent directory
@@ -198,7 +199,7 @@ that the working directories all have in common (e.g.,
 `CCACHE_SLOPPINESS=include_file_mtime` (since if you are using multiple working
 directories, header times in svn sync'ed portions of your trees will be
 different - see
-[the ccache troubleshooting section](http://ccache.samba.org/manual.html#_troubleshooting)
+[the ccache troubleshooting section](https://ccache.dev/manual/latest.html#_troubleshooting)
 for additional information). If you use symbolic links from your home directory
 to get to the local physical disk directory where you keep those working
 development directories, consider putting
@@ -241,6 +242,19 @@ hyperthreaded, 12 GB RAM)
 *   Without tmpfs
     *   15m:40s
 
+### Smaller builds
+
+The Chrome binary contains embedded symbols by default. You can reduce its size
+by using the Linux `strip` command to remove this debug information. You can
+also reduce binary size by disabling debug mode, disabling dchecks, and turning
+on all optimizations by enabling official build mode, with these GN args:
+
+```
+is_debug = false
+dcheck_always_on = false
+is_official_build = true
+```
+
 ## Build Chromium
 
 Build Chromium (the "chrome" target) with Ninja using the command:
@@ -267,8 +281,14 @@ $ out/Default/chrome
 
 ## Running test targets
 
-You can run the tests in the same way. You can also limit which tests are
-run using the `--gtest_filter` arg, e.g.:
+First build the unit_tests binary by running the command:
+
+```shell
+$ autoninja -C out/Default unit_tests
+```
+
+You can run the tests by running the unit_tests binary. You can also limit which
+tests are run using the `--gtest_filter` arg, e.g.:
 
 ```shell
 $ out/Default/unit_tests --gtest_filter="PushClientTest.*"

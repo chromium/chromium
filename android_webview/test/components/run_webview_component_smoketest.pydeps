@@ -122,6 +122,7 @@
 //third_party/catapult/telemetry/telemetry/core/__init__.py
 //third_party/catapult/telemetry/telemetry/core/android_action_runner.py
 //third_party/catapult/telemetry/telemetry/core/android_platform.py
+//third_party/catapult/telemetry/telemetry/core/cast_interface.py
 //third_party/catapult/telemetry/telemetry/core/cros_interface.py
 //third_party/catapult/telemetry/telemetry/core/debug_data.py
 //third_party/catapult/telemetry/telemetry/core/exceptions.py
@@ -203,6 +204,7 @@
 //third_party/catapult/telemetry/telemetry/internal/backends/chrome_inspector/inspector_storage.py
 //third_party/catapult/telemetry/telemetry/internal/backends/chrome_inspector/inspector_websocket.py
 //third_party/catapult/telemetry/telemetry/internal/backends/chrome_inspector/memory_backend.py
+//third_party/catapult/telemetry/telemetry/internal/backends/chrome_inspector/native_profiling_backend.py
 //third_party/catapult/telemetry/telemetry/internal/backends/chrome_inspector/system_info_backend.py
 //third_party/catapult/telemetry/telemetry/internal/backends/chrome_inspector/tracing_backend.py
 //third_party/catapult/telemetry/telemetry/internal/backends/chrome_inspector/ui_devtools_client_backend.py
@@ -233,6 +235,7 @@
 //third_party/catapult/telemetry/telemetry/internal/platform/__init__.py
 //third_party/catapult/telemetry/telemetry/internal/platform/android_device.py
 //third_party/catapult/telemetry/telemetry/internal/platform/android_platform_backend.py
+//third_party/catapult/telemetry/telemetry/internal/platform/cast_device.py
 //third_party/catapult/telemetry/telemetry/internal/platform/cros_device.py
 //third_party/catapult/telemetry/telemetry/internal/platform/desktop_device.py
 //third_party/catapult/telemetry/telemetry/internal/platform/device.py

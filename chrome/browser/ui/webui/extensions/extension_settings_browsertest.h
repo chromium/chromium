@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,6 +59,9 @@ class ExtensionSettingsUIBrowserTest : public WebUIBrowserTest {
 
   // Shrinks the web contents view in order to ensure vertical overflow.
   void ShrinkWebContentsView();
+
+  // Sets whether to ignore errors for deprecated manifest versions.
+  void SetSilenceDeprecatedManifestVersionWarnings(bool silence);
 
   const base::FilePath& test_data_dir() { return test_data_dir_; }
 

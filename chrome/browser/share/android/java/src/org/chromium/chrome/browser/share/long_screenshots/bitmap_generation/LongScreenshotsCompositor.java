@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -69,7 +69,8 @@ public class LongScreenshotsCompositor {
     @VisibleForTesting
     protected void onCompositorReady(UnguessableToken rootFrameGuid, UnguessableToken[] frameGuids,
             int[] frameContentSize, int[] scrollOffsets, int[] subFramesCount,
-            UnguessableToken[] subFrameGuids, int[] subFrameClipRects, long nativeAxTree) {
+            UnguessableToken[] subFrameGuids, int[] subFrameClipRects, float pageScaleFactor,
+            long nativeAxTree) {
         mContentSize = getMainFrameValues(frameContentSize);
         Size offsetSize = getMainFrameValues(scrollOffsets);
         mScrollOffset = new Point(offsetSize.getWidth(), offsetSize.getHeight());

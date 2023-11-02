@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package org.chromium.chrome.browser.gesturenav;
@@ -94,15 +94,14 @@ public class NavigationBubble extends LinearLayout {
     public NavigationBubble(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        mBlack = ApiCompatibilityUtils.getColor(getResources(), R.color.navigation_bubble_arrow);
+        mBlack = getContext().getColor(R.color.navigation_bubble_arrow);
         mColorPrimary = SemanticColorUtils.getDefaultIconColorAccent1(getContext());
 
         mColorUpdateListener = new ColorUpdateListener();
         mColorAnimator = ValueAnimator.ofFloat(0, 1).setDuration(COLOR_TRANSITION_DURATION_MS);
         mColorAnimator.addUpdateListener(mColorUpdateListener);
-        getBackground().setColorFilter(ApiCompatibilityUtils.getColor(getResources(),
-                                               R.color.navigation_bubble_background_color),
-                Mode.MULTIPLY);
+        getBackground().setColorFilter(
+                SemanticColorUtils.getNavigationBubbleBackgroundColor(context), Mode.MULTIPLY);
         mCloseApp = getResources().getString(R.string.overscroll_navigation_close_chrome,
                 getContext().getString(R.string.app_name));
         mCloseTab = getResources().getString(R.string.overscroll_navigation_close_tab);

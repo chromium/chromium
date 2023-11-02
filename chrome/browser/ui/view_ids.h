@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,6 +66,7 @@ enum ViewID {
   VIEW_ID_TRANSLATE_BUTTON,
   VIEW_ID_AVATAR_BUTTON,
   VIEW_ID_WEBAUTHN_BUTTON,
+  VIEW_ID_SHARING_HUB_BUTTON,
 
   // Location bar content settings icons.
   VIEW_ID_CONTENT_SETTING_JAVASCRIPT,
@@ -98,6 +99,9 @@ enum ViewID {
 
   // The Download shelf.
   VIEW_ID_DOWNLOAD_SHELF,
+
+  // The header in the App Identity Update dialog.
+  VIEW_ID_APP_IDENTITY_UPDATE_HEADER,
 
   // Used in chrome/browser/ui/cocoa/view_id_util_browsertest.mm.
   // If you add new ids, make sure the above test passes.

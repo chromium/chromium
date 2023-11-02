@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -11,7 +11,7 @@ import("//tools/json_schema_compiler/json_schema_api.gni")
 assert(enable_extensions)
 
 function_registration("api_registration") {
-  sources = chrome_apps_api_schema_files + chrome_apps_uncompiled_schema_files
+  sources = chrome_apps_api_schema_files
   impl_dir = "//chrome/browser/apps/platform_apps/api"
   configs = [ "//build/config:precompiled_headers" ]
   bundle_name = "ChromeApps"
@@ -29,6 +29,8 @@ source_set("api") {
     "browser/browser_api.h",
     "browser_context_keyed_service_factories.cc",
     "browser_context_keyed_service_factories.h",
+    "deprecation_features.cc",
+    "deprecation_features.h",
     "media_galleries/blob_data_source_factory.cc",
     "media_galleries/blob_data_source_factory.h",
     "media_galleries/media_galleries_api.cc",
@@ -51,7 +53,6 @@ source_set("api") {
     # extracted into their own BUILD files (so they are easy to audit, add, or
     # remove), but any that depend on //chrome/browser:browser can't.
     "//chrome/browser:browser_process",
-    "//chrome/browser/apps/platform_apps/api/music_manager_private",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
@@ -63,8 +64,14 @@ source_set("api") {
     "//extensions/browser",
   ]
 
-  public_deps =
-      [ "//chrome/browser/apps/platform_apps/api/music_manager_private" ]
+  if (is_chromeos) {
+    sources += [
+      "enterprise_remote_apps/enterprise_remote_apps_api.cc",
+      "enterprise_remote_apps/enterprise_remote_apps_api.h",
+    ]
+
+    deps += [ "//chromeos/components/remote_apps/mojom" ]
+  }
 
   if (is_chromeos_ash) {
     sources += [
@@ -78,8 +85,9 @@ source_set("api") {
 
     deps += [
       "//chrome:strings",
-      "//chromeos/components/multidevice/logging",
-      "//chromeos/components/proximity_auth",
+      "//chrome/browser/ash/crosapi",
+      "//chromeos/ash/components/multidevice/logging",
+      "//chromeos/ash/components/proximity_auth",
       "//components/account_id",
       "//components/strings:components_strings_grit",
       "//components/user_manager",
@@ -103,6 +111,7 @@ source_set("api") {
   }
   visibility += [
     ":api_registration",
+    "//chrome/browser/ash",
     "//chrome/browser/chromeos",
   ]
 }

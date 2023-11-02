@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,8 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/page_scheduler_impl.h"
+#include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_scheduler_impl.h"
-#include "third_party/blink/renderer/platform/scheduler/worker/worker_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_thread_scheduler.h"
 
 namespace blink {
@@ -45,12 +45,12 @@ class WorkerThreadSchedulerForTest : public WorkerThreadScheduler {
   base::WaitableEvent* throtting_state_changed_;
 };
 
-class WorkerThreadForTest : public WorkerThread {
+class WorkerThreadForTest : public NonMainThreadImpl {
  public:
   WorkerThreadForTest(FrameScheduler* frame_scheduler,
                       base::WaitableEvent* throtting_state_changed)
-      : WorkerThread(ThreadCreationParams(ThreadType::kTestThread)
-                         .SetFrameOrWorkerScheduler(frame_scheduler)),
+      : NonMainThreadImpl(ThreadCreationParams(ThreadType::kTestThread)
+                              .SetFrameOrWorkerScheduler(frame_scheduler)),
         throtting_state_changed_(throtting_state_changed) {}
 
   ~WorkerThreadForTest() override {
@@ -72,7 +72,7 @@ class WorkerThreadForTest : public WorkerThread {
     completion->Signal();
   }
 
-  std::unique_ptr<NonMainThreadSchedulerImpl> CreateNonMainThreadScheduler(
+  std::unique_ptr<NonMainThreadSchedulerBase> CreateNonMainThreadScheduler(
       base::sequence_manager::SequenceManager* manager) override {
     auto scheduler = std::make_unique<WorkerThreadSchedulerForTest>(
         manager, worker_scheduler_proxy(), throtting_state_changed_);
@@ -127,8 +127,7 @@ class WorkerSchedulerProxyTest : public testing::Test {
             base::sequence_manager::SequenceManagerForTest::Create(
                 nullptr,
                 task_environment_.GetMainThreadTaskRunner(),
-                task_environment_.GetMockTickClock()),
-            absl::nullopt)),
+                task_environment_.GetMockTickClock()))),
         agent_group_scheduler_(
             main_thread_scheduler_->CreateAgentGroupScheduler()),
         page_scheduler_(
@@ -136,7 +135,7 @@ class WorkerSchedulerProxyTest : public testing::Test {
                 nullptr)),
         frame_scheduler_(page_scheduler_->CreateFrameScheduler(
             nullptr,
-            nullptr,
+            /*is_in_embedded_frame_tree=*/false,
             FrameScheduler::FrameType::kMainFrame)) {}
 
   ~WorkerSchedulerProxyTest() override {

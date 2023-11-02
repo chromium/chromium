@@ -1,6 +1,8 @@
-<!-- Copyright 2020 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 <!--
 TODO(crbug.com/1259303): resolve this hack
 Hack: if device_disabled screen would load (and register) as first screen,
@@ -47,7 +49,8 @@ first, and prevents such error.
       </div>
       <div slot="content" class="flex layout vertical center center-justified">
         <div id="message">[[message_]]</div>
-        <img class="oobe-illustration flex" src="/images/device-disabled.svg">
+        <img src="/images/device-disabled.svg"
+            class="oobe-illustration flex" aria-hidden="true">
       </div>
     </oobe-adaptive-dialog>
   </template>

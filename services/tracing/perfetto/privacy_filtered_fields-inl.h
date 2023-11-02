@@ -172,7 +172,7 @@ constexpr int kChromeMessagePumpIndices[] = {1, 2, -1};
 constexpr MessageInfo kChromeMessagePump = {kChromeMessagePumpIndices, nullptr};
 
 // Proto Message: ChromeMojoEventInfo
-constexpr int kChromeMojoEventInfoIndices[] = {1, 2, 3, -1};
+constexpr int kChromeMojoEventInfoIndices[] = {1, 2, 3, 4, -1};
 constexpr MessageInfo kChromeMojoEventInfo = {kChromeMojoEventInfoIndices,
                                               nullptr};
 
@@ -182,7 +182,7 @@ constexpr MessageInfo kChromeApplicationStateInfo = {
     kChromeApplicationStateInfoIndices, nullptr};
 
 // Proto Message: ChromeRendererSchedulerState
-constexpr int kChromeRendererSchedulerStateIndices[] = {1, -1};
+constexpr int kChromeRendererSchedulerStateIndices[] = {1, 2, 3, -1};
 constexpr MessageInfo kChromeRendererSchedulerState = {
     kChromeRendererSchedulerStateIndices, nullptr};
 
@@ -242,7 +242,7 @@ constexpr MessageInfo kShouldSwapBrowsingInstancesResult = {
     kShouldSwapBrowsingInstancesResultIndices, nullptr};
 
 // Proto Message: FrameTreeNodeInfo
-constexpr int kFrameTreeNodeInfoIndices[] = {1, 2, 3, -1};
+constexpr int kFrameTreeNodeInfoIndices[] = {1, 2, 3, 6, -1};
 constexpr MessageInfo kFrameTreeNodeInfo = {kFrameTreeNodeInfoIndices, nullptr};
 
 // Proto Message: ChromeHashedPerformanceMark
@@ -285,18 +285,46 @@ constexpr MessageInfo kChromeWebAppBadNavigate = {
 constexpr int kChromeExtensionIdIndices[] = {2, -1};
 constexpr MessageInfo kChromeExtensionId = {kChromeExtensionIdIndices, nullptr};
 
+// Proto Message: SiteInstanceGroup
+constexpr int kSiteInstanceGroupIndices[] = {1, 2, 3, -1};
+constexpr MessageInfo const* kSiteInstanceGroupComplexMessages[] = {
+    nullptr, nullptr, &kRenderProcessHost};
+constexpr MessageInfo kSiteInstanceGroup = {kSiteInstanceGroupIndices,
+                                            kSiteInstanceGroupComplexMessages};
+
 // Proto Message: SiteInstance
-constexpr int kSiteInstanceIndices[] = {1, 2, 3, 4, 5, 6, -1};
-constexpr MessageInfo kSiteInstance = {kSiteInstanceIndices, nullptr};
+constexpr int kSiteInstanceIndices[] = {1, 2, 3, 4, 5, 6, 7, -1};
+constexpr MessageInfo const* kSiteInstanceComplexMessages[] = {
+    nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, &kSiteInstanceGroup};
+constexpr MessageInfo kSiteInstance = {kSiteInstanceIndices,
+                                       kSiteInstanceComplexMessages};
 
 // Proto Message: RenderViewHost
 constexpr int kRenderViewHostIndices[] = {1, 2, 3, 4, 5, -1};
 constexpr MessageInfo kRenderViewHost = {kRenderViewHostIndices, nullptr};
 
 // Proto Message: RenderFrameProxyHost
-constexpr int kRenderFrameProxyHostIndices[] = {1, 2, 3, 4, 5, -1};
+constexpr int kRenderFrameProxyHostIndices[] = {1, 2, 3, 4, 5, 6, -1};
 constexpr MessageInfo kRenderFrameProxyHost = {kRenderFrameProxyHostIndices,
                                                nullptr};
+
+// Proto Message: AndroidView
+constexpr int kAndroidViewIndices[] = {1, 2, 3, 4, 5, 6, -1};
+constexpr MessageInfo kAndroidView = {kAndroidViewIndices, nullptr};
+
+// Proto Message: AndroidActivity
+constexpr int kAndroidActivityIndices[] = {1, 2, -1};
+constexpr MessageInfo const* kAndroidActivityComplexMessages[] = {
+    nullptr, &kAndroidView};
+constexpr MessageInfo kAndroidActivity = {kAndroidActivityIndices,
+                                          kAndroidActivityComplexMessages};
+
+// Proto Message: AndroidViewDump
+constexpr int kAndroidViewDumpIndices[] = {1, -1};
+constexpr MessageInfo const* kAndroidViewDumpComplexMessages[] = {
+    &kAndroidActivity};
+constexpr MessageInfo kAndroidViewDump = {kAndroidViewDumpIndices,
+                                          kAndroidViewDumpComplexMessages};
 
 // Proto Message: ParkableStringCompressInBackground
 constexpr int kParkableStringCompressInBackgroundIndices[] = {1, -1};
@@ -313,18 +341,54 @@ constexpr int kChromeSamplingProfilerSampleCollectedIndices[] = {1, 2, 3, -1};
 constexpr MessageInfo kChromeSamplingProfilerSampleCollected = {
     kChromeSamplingProfilerSampleCollectedIndices, nullptr};
 
+// Proto Message: RenderFrameHost
+constexpr int kRenderFrameHostIndices[] = {3, 6, 12, -1};
+constexpr MessageInfo kRenderFrameHost = {kRenderFrameHostIndices, nullptr};
+
 // Proto Message: RendererMainThreadTaskExecution
-constexpr int kRendererMainThreadTaskExecutionIndices[] = {1, 2, 3, 4, -1};
+constexpr int kRendererMainThreadTaskExecutionIndices[] = {1, 2, 3, 4, 5, -1};
 constexpr MessageInfo kRendererMainThreadTaskExecution = {
     kRendererMainThreadTaskExecutionIndices, nullptr};
+
+// Proto Message: EventLatency
+constexpr int kEventLatencyIndices[] = {1, -1};
+constexpr MessageInfo kEventLatency = {kEventLatencyIndices, nullptr};
+
+// Proto Message: ProcessSingleton
+constexpr int kProcessSingletonIndices[] = {1, 2, -1};
+constexpr MessageInfo kProcessSingleton = {kProcessSingletonIndices, nullptr};
+
+// Proto Message: AndroidIPC
+constexpr int kAndroidIPCIndices[] = {1, 2, -1};
+constexpr MessageInfo kAndroidIPC = {kAndroidIPCIndices, nullptr};
+
+// Proto Message: ChromeSqlDiagnostics
+constexpr int kChromeSqlDiagnosticsIndices[] = {1, 2, 3, 4,  5, 6,
+                                                7, 8, 9, 10, -1};
+constexpr MessageInfo kChromeSqlDiagnostics = {kChromeSqlDiagnosticsIndices,
+                                               nullptr};
+
+// Proto Message: SequenceManagerTask
+constexpr int kSequenceManagerTaskIndices[] = {1, 2, -1};
+constexpr MessageInfo kSequenceManagerTask = {kSequenceManagerTaskIndices,
+                                              nullptr};
+
+// Proto Message: AndroidToolbar
+constexpr int kAndroidToolbarIndices[] = {1, 2, 3, -1};
+constexpr MessageInfo kAndroidToolbar = {kAndroidToolbarIndices, nullptr};
+
+// Proto Message: ActiveProcesses
+constexpr int kActiveProcessesIndices[] = {1, -1};
+constexpr MessageInfo kActiveProcesses = {kActiveProcessesIndices, nullptr};
 
 // Proto Message: TrackEvent
 constexpr int kTrackEventIndices[] = {
     1,    2,    3,    5,    6,    9,    10,   11,   12,   16,   17,   22,
     23,   24,   25,   26,   27,   28,   29,   30,   31,   32,   33,   34,
-    35,   36,   38,   39,   40,   41,   42,   43,   1001, 1002, 1003, 1004,
-    1005, 1006, 1007, 1008, 1009, 1010, 1011, 1012, 1013, 1014, 1015, 1016,
-    1017, 1018, 1019, 1020, 1021, 1023, 1024, 1025, 1031, -1};
+    35,   36,   38,   39,   40,   41,   42,   43,   47,   48,   1001, 1002,
+    1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010, 1011, 1012, 1013, 1014,
+    1015, 1016, 1017, 1018, 1019, 1020, 1021, 1022, 1023, 1024, 1025, 1028,
+    1031, 1032, 1033, 1034, 1036, 1038, 1039, 1040, 1041, 1042, -1};
 constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     nullptr,
     nullptr,
@@ -358,6 +422,8 @@ constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     &kChromeWindowHandleEventInfo,
     nullptr,
     &kChromeContentSettingsEventInfo,
+    nullptr,
+    nullptr,
     &kChromeMemoryPressureNotification,
     &kChromeTaskAnnotator,
     &kChromeBrowserContext,
@@ -379,10 +445,21 @@ constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     &kSiteInstance,
     &kRenderViewHost,
     &kRenderFrameProxyHost,
+    &kAndroidViewDump,
     &kParkableStringCompressInBackground,
     &kParkableStringUnpark,
     &kChromeSamplingProfilerSampleCollected,
-    &kRendererMainThreadTaskExecution};
+    &kRenderFrameHost,
+    &kRendererMainThreadTaskExecution,
+    &kEventLatency,
+    &kProcessSingleton,
+    &kSiteInstanceGroup,
+    nullptr,
+    &kAndroidIPC,
+    &kChromeSqlDiagnostics,
+    &kSequenceManagerTask,
+    &kAndroidToolbar,
+    &kActiveProcesses};
 constexpr MessageInfo kTrackEvent = {kTrackEventIndices,
                                      kTrackEventComplexMessages};
 
@@ -394,8 +471,12 @@ constexpr MessageInfo kEventCategory = {kEventCategoryIndices, nullptr};
 constexpr int kEventNameIndices[] = {1, 2, -1};
 constexpr MessageInfo kEventName = {kEventNameIndices, nullptr};
 
+// Proto Message: InternedString
+constexpr int kInternedStringIndices[] = {1, 2, -1};
+constexpr MessageInfo kInternedString = {kInternedStringIndices, nullptr};
+
 // Proto Message: Frame
-constexpr int kFrameIndices[] = {1, 3, 4, -1};
+constexpr int kFrameIndices[] = {1, 2, 3, 4, -1};
 constexpr MessageInfo kFrame = {kFrameIndices, nullptr};
 
 // Proto Message: Callstack
@@ -415,11 +496,19 @@ constexpr MessageInfo kInternedMappingPath = {kInternedMappingPathIndices,
 constexpr int kMappingIndices[] = {1, 2, 3, 4, 5, 7, -1};
 constexpr MessageInfo kMapping = {kMappingIndices, nullptr};
 
+// Proto Message: UnsymbolizedSourceLocation
+constexpr int kUnsymbolizedSourceLocationIndices[] = {1, 2, 3, -1};
+constexpr MessageInfo kUnsymbolizedSourceLocation = {
+    kUnsymbolizedSourceLocationIndices, nullptr};
+
 // Proto Message: InternedData
-constexpr int kInternedDataIndices[] = {1, 2, 4, 6, 7, 16, 17, 19, -1};
+constexpr int kInternedDataIndices[] = {1, 2, 4, 5, 6, 7, 16, 17, 19, 28, -1};
 constexpr MessageInfo const* kInternedDataComplexMessages[] = {
-    &kEventCategory, &kEventName,       &kSourceLocation,      &kFrame,
-    &kCallstack,     &kInternedBuildId, &kInternedMappingPath, &kMapping};
+    &kEventCategory,   &kEventName,
+    &kSourceLocation,  &kInternedString,
+    &kFrame,           &kCallstack,
+    &kInternedBuildId, &kInternedMappingPath,
+    &kMapping,         &kUnsymbolizedSourceLocation};
 constexpr MessageInfo kInternedData = {kInternedDataIndices,
                                        kInternedDataComplexMessages};
 
@@ -545,7 +634,7 @@ constexpr MessageInfo kTrackDescriptor = {kTrackDescriptorIndices,
 
 // Proto Message: TracePacket
 constexpr int kTracePacketIndices[] = {6,  8,  10, 11, 12, 13, 35, 36, 41, 42,
-                                       43, 44, 51, 54, 56, 58, 59, 60, -1};
+                                       43, 44, 51, 54, 56, 58, 59, 60, 87, -1};
 constexpr MessageInfo const* kTracePacketComplexMessages[] = {
     &kClockSnapshot,
     nullptr,
@@ -564,7 +653,8 @@ constexpr MessageInfo const* kTracePacketComplexMessages[] = {
     &kHeapGraph,
     nullptr,
     &kTracePacketDefaults,
-    &kTrackDescriptor};
+    &kTrackDescriptor,
+    nullptr};
 constexpr MessageInfo kTracePacket = {kTracePacketIndices,
                                       kTracePacketComplexMessages};
 

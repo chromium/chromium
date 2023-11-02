@@ -1,21 +1,18 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/renderer/pepper/mock_renderer_ppapi_host.h"
 
-#include "content/public/renderer/render_view.h"
-#include "content/public/test/fake_pepper_plugin_instance.h"
+#include "content/renderer/pepper/fake_pepper_plugin_instance.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace content {
 
-MockRendererPpapiHost::MockRendererPpapiHost(RenderView* render_view,
-                                             RenderFrame* render_frame,
+MockRendererPpapiHost::MockRendererPpapiHost(RenderFrame* render_frame,
                                              PP_Instance instance)
     : sink_(),
       ppapi_host_(&sink_, ppapi::PpapiPermissions()),
-      render_view_(render_view),
       render_frame_(render_frame),
       pp_instance_(instance),
       has_user_gesture_(false),
@@ -43,13 +40,6 @@ RenderFrame* MockRendererPpapiHost::GetRenderFrameForInstance(
   return nullptr;
 }
 
-RenderView* MockRendererPpapiHost::GetRenderViewForInstance(
-    PP_Instance instance) {
-  if (instance == pp_instance_)
-    return render_view_;
-  return nullptr;
-}
-
 blink::WebPluginContainer* MockRendererPpapiHost::GetContainerForInstance(
     PP_Instance instance) {
   NOTIMPLEMENTED();
@@ -60,7 +50,7 @@ bool MockRendererPpapiHost::HasUserGesture(PP_Instance instance) {
   return has_user_gesture_;
 }
 
-int MockRendererPpapiHost::GetRoutingIDForWidget(PP_Instance instance) {
+int MockRendererPpapiHost::GetRoutingIDForFrame(PP_Instance instance) {
   return 0;
 }
 

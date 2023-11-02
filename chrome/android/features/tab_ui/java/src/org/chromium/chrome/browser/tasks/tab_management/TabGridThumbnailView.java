@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@ import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.util.AttributeSet;
 
-import org.chromium.base.MathUtils;
-import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
+import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
 
 /**
@@ -19,12 +19,8 @@ import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
  * behavior of this Class is the same as the RoundedCornerImageView.
  */
 public class TabGridThumbnailView extends RoundedCornerImageView {
-    private final float mAspectRatio;
-
     public TabGridThumbnailView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mAspectRatio = MathUtils.clamp(
-                (float) TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO.getValue(), 0.5f, 2.0f);
     }
 
     @Override
@@ -34,9 +30,10 @@ public class TabGridThumbnailView extends RoundedCornerImageView {
         int measuredWidth = getMeasuredWidth();
         int measureHeight = getMeasuredHeight();
 
-        int expectedHeight = (int) (measuredWidth * 1.0 / mAspectRatio);
+        int expectedHeight =
+                (int) (measuredWidth * 1.0 / TabUtils.getTabThumbnailAspectRatio(getContext()));
         if ((TabUiFeatureUtilities.isLaunchPolishEnabled()
-                    || ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(getContext()))
+                    || ReturnToChromeUtil.isStartSurfaceEnabled(getContext()))
                 && isPlaceHolder()) {
             measureHeight = expectedHeight;
         }
@@ -55,11 +52,6 @@ public class TabGridThumbnailView extends RoundedCornerImageView {
      * @param isSelected Whether the thumbnail is on a selected tab.
      */
     void setColorThumbnailPlaceHolder(boolean isIncognito, boolean isSelected) {
-        if (!TabUiThemeProvider.themeRefactorEnabled()) {
-            setImageResource(TabUiThemeProvider.getThumbnailPlaceHolderColorResource(isIncognito));
-            return;
-        }
-
         ColorDrawable placeHolder =
                 new ColorDrawable(TabUiThemeProvider.getMiniThumbnailPlaceHolderColor(
                         getContext(), isIncognito, isSelected));
@@ -75,14 +67,11 @@ public class TabGridThumbnailView extends RoundedCornerImageView {
         }
 
         if (TabUiFeatureUtilities.isTabThumbnailAspectRatioNotOne()) {
-            float expectedThumbnailAspectRatio =
-                    (float) TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO.getValue();
-            expectedThumbnailAspectRatio =
-                    MathUtils.clamp(expectedThumbnailAspectRatio, 0.5f, 2.0f);
+            float expectedThumbnailAspectRatio = TabUtils.getTabThumbnailAspectRatio(getContext());
             int height = (int) (getWidth() * 1.0 / expectedThumbnailAspectRatio);
             setMinimumHeight(Math.min(getHeight(), height));
         } else {
-            setMinimumHeight(getWidth());
+            setMinimumHeight(getHeight());
         }
     }
 }

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,20 +9,12 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state_io_data.h"
 #include "ios/chrome/browser/net/net_types.h"
 
 class ChromeBrowserState;
 class IOSChromeURLRequestContextGetter;
-
-namespace net {
-class CookieStore;
-class HttpNetworkSession;
-class HttpTransactionFactory;
-class URLRequestJobFactory;
-}  // namespace net
 
 // OffTheRecordChromeBrowserState owns a
 // OffTheRecordChromeBrowserStateIOData::Handle, which holds a reference to the
@@ -67,7 +59,7 @@ class OffTheRecordChromeBrowserStateIOData : public ChromeBrowserStateIOData {
     void LazyInitialize() const;
 
     // Collect references to context getters in reverse order, i.e. last item
-    // will be main request getter. This list is passed to |io_data_|
+    // will be main request getter. This list is passed to `io_data_`
     // for invalidation on IO thread.
     std::unique_ptr<IOSChromeURLRequestContextGetterVector>
     GetAllContextGetters();
@@ -94,19 +86,8 @@ class OffTheRecordChromeBrowserStateIOData : public ChromeBrowserStateIOData {
   OffTheRecordChromeBrowserStateIOData();
   ~OffTheRecordChromeBrowserStateIOData() override;
 
-  void InitializeInternal(
-      std::unique_ptr<IOSChromeNetworkDelegate> chrome_network_delegate,
-      ProfileParams* profile_params,
-      ProtocolHandlerMap* protocol_handlers) const override;
-
-  mutable std::unique_ptr<IOSChromeNetworkDelegate> network_delegate_;
-
-  mutable std::unique_ptr<net::HttpNetworkSession> http_network_session_;
-  mutable std::unique_ptr<net::HttpTransactionFactory> main_http_factory_;
-
-  mutable std::unique_ptr<net::CookieStore> main_cookie_store_;
-
-  mutable std::unique_ptr<net::URLRequestJobFactory> main_job_factory_;
+  void InitializeInternal(net::URLRequestContextBuilder* context_builder,
+                          ProfileParams* profile_params) const override;
 
   // Server bound certificates and cookies are persisted to the disk on iOS.
   base::FilePath cookie_path_;

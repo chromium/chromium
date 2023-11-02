@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,6 +38,14 @@ enum class GlobalMediaControlsCastActionAndEntryPoint {
   kStopViaSystemTray = 5,
   kMaxValue = kStopViaSystemTray,
 };
+
+// The minimum size in px that the media artwork can be to be displayed in the
+// item.
+constexpr int kMediaItemArtworkMinSize = 114;
+
+// The desired size in px for the media artwork to be displayed in the item. The
+// media session service will try and select artwork closest to this size.
+constexpr int kMediaItemArtworkDesiredSize = 512;
 
 }  // namespace global_media_controls
 

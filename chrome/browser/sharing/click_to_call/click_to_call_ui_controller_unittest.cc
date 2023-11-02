@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/guid.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/sharing/fake_device_info.h"
@@ -21,6 +22,7 @@
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync_device_info/fake_device_info_tracker.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -50,8 +52,10 @@ class ClickToCallUiControllerTest : public testing::Test {
           return std::make_unique<testing::NiceMock<MockSharingService>>();
         }));
     ClickToCallUiController::ShowDialog(
-        web_contents_.get(), /*initiating_origin=*/absl::nullopt,
-        GURL(base::StrCat({"tel:", kPhoneNumber})), false);
+        web_contents_.get(),
+        /*initiating_origin=*/absl::nullopt,
+        /*initiator_document=*/content::WeakDocumentPtr(),
+        GURL(base::StrCat({"tel:", kPhoneNumber})), false, u"TestApp");
     controller_ = ClickToCallUiController::GetOrCreateFromWebContents(
         web_contents_.get());
   }
@@ -66,7 +70,7 @@ class ClickToCallUiControllerTest : public testing::Test {
   content::RenderViewHostTestEnabler test_render_host_factories_;
   TestingProfile profile_;
   std::unique_ptr<content::WebContents> web_contents_;
-  ClickToCallUiController* controller_ = nullptr;
+  raw_ptr<ClickToCallUiController> controller_ = nullptr;
 };
 }  // namespace
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -67,9 +67,9 @@ constexpr CGFloat kHorizontalAvatarLeadingMargin = 16.;
 @property(nonatomic, strong) NSLayoutConstraint* titleConstraintForNameAndEmail;
 // Constraints if the name doesn't exist.
 @property(nonatomic, strong) NSLayoutConstraint* titleConstraintForEmailOnly;
-// Constraints to update when |self.minimumTopMargin| is updated.
+// Constraints to update when `self.minimumTopMargin` is updated.
 @property(nonatomic, strong) NSArray<NSLayoutConstraint*>* topConstraints;
-// Constraints to update when |self.minimumBottomMargin| is updated.
+// Constraints to update when `self.minimumBottomMargin` is updated.
 @property(nonatomic, strong) NSArray<NSLayoutConstraint*>* bottomConstraints;
 // Constraints for the avatar size.
 @property(nonatomic, strong)
@@ -242,7 +242,7 @@ constexpr CGFloat kHorizontalAvatarLeadingMargin = 16.;
 
 #pragma mark - private
 
-// Returns the default style values according to |self.style|.
+// Returns the default style values according to `self.style`.
 - (const StyleValues*)styleValues {
   switch (self.style) {
     case IdentityViewStyleDefault:

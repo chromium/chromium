@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -103,7 +103,8 @@ class TestQuotaManagerProxy : public QuotaManagerProxy {
   TestQuotaManagerProxy()
       : QuotaManagerProxy(
             /*quota_manager_impl=*/nullptr,
-            base::SequencedTaskRunnerHandle::Get()) {}
+            base::SequencedTaskRunnerHandle::Get(),
+            /*profile_path=*/base::FilePath()) {}
 
   void RegisterClient(
       mojo::PendingRemote<mojom::QuotaClient> client,
@@ -270,7 +271,7 @@ class DatabaseTracker_TestHelper_Test {
               base::TouchFile(tracker->GetFullDBFilePath(kOrigin2, kDB3),
                               three_days_ago, three_days_ago));
 
-          // Delete databases modified since yesterday. db2 is whitelisted.
+          // Delete databases modified since yesterday. db2 is in the allowlist.
           base::Time yesterday = base::Time::Now();
           yesterday -= base::Days(1);
 

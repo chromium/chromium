@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,7 +35,7 @@ ExtensionFunction::ResponseAction SettingsPrivateSetPrefFunction::Run() {
   DCHECK(delegate);
 
   settings_private::SetPrefResult result =
-      delegate->SetPref(parameters->name, parameters->value.get());
+      delegate->SetPref(parameters->name, &parameters->value);
   switch (result) {
     case settings_private::SetPrefResult::SUCCESS:
       return RespondNow(OneArgument(base::Value(true)));
@@ -86,12 +86,11 @@ ExtensionFunction::ResponseAction SettingsPrivateGetPrefFunction::Run() {
       SettingsPrivateDelegateFactory::GetForBrowserContext(browser_context());
   DCHECK(delegate);
 
-  std::unique_ptr<base::Value> value = delegate->GetPref(parameters->name);
-  if (value->is_none())
+  base::Value value = delegate->GetPref(parameters->name);
+  if (value.is_none())
     return RespondNow(Error("Pref * does not exist", parameters->name));
   else
-    return RespondNow(
-        OneArgument(base::Value::FromUniquePtrValue(std::move(value))));
+    return RespondNow(OneArgument(std::move(value)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

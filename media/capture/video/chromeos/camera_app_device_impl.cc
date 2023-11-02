@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <cmath>
 
+#include "base/cxx17_backports.h"
 #include "base/task/bind_post_task.h"
 #include "base/time/time.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
@@ -176,20 +177,25 @@ void CameraAppDeviceImpl::SetCameraDeviceContext(
 void CameraAppDeviceImpl::MaybeDetectDocumentCorners(
     std::unique_ptr<gpu::GpuMemoryBufferImpl> gmb,
     VideoRotation rotation) {
-  {
-    base::AutoLock lock(capture_intent_lock_);
-    if (capture_intent_ != cros::mojom::CaptureIntent::DOCUMENT) {
-      return;
-    }
-  }
   if (!ash::DocumentScannerServiceClient::IsSupported()) {
     return;
+  }
+  {
+    base::AutoLock lock(document_corners_observers_lock_);
+    if (document_corners_observers_.empty()) {
+      return;
+    }
   }
   mojo_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&CameraAppDeviceImpl::DetectDocumentCornersOnMojoThread,
                      weak_ptr_factory_for_mojo_.GetWeakPtr(), std::move(gmb),
                      rotation));
+}
+
+bool CameraAppDeviceImpl::IsMultipleStreamsEnabled() {
+  base::AutoLock lock(multi_stream_lock_);
+  return multi_stream_enabled_;
 }
 
 void CameraAppDeviceImpl::GetCameraInfo(GetCameraInfoCallback callback) {
@@ -345,7 +351,18 @@ void CameraAppDeviceImpl::RegisterDocumentCornersObserver(
     RegisterDocumentCornersObserverCallback callback) {
   DCHECK(mojo_task_runner_->BelongsToCurrentThread());
 
+  base::AutoLock lock(document_corners_observers_lock_);
   document_corners_observers_.Add(std::move(observer));
+  std::move(callback).Run();
+}
+
+void CameraAppDeviceImpl::SetMultipleStreamsEnabled(
+    bool enabled,
+    SetMultipleStreamsEnabledCallback callback) {
+  DCHECK(mojo_task_runner_->BelongsToCurrentThread());
+
+  base::AutoLock lock(multi_stream_lock_);
+  multi_stream_enabled_ = enabled;
   std::move(callback).Run();
 }
 
@@ -458,6 +475,7 @@ void CameraAppDeviceImpl::OnDetectedDocumentCornersOnMojoThread(
     rotated_corners.push_back(rotate_corner(corner));
   }
 
+  base::AutoLock lock(document_corners_observers_lock_);
   for (auto& observer : document_corners_observers_) {
     observer->OnDocumentCornersUpdated(rotated_corners);
   }

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -121,7 +121,7 @@ MediaPlayerBridge::~MediaPlayerBridge() {
 
 void MediaPlayerBridge::Initialize() {
   cookies_.clear();
-  if (url_.SchemeIsBlob()) {
+  if (url_.SchemeIsBlob() || url_.SchemeIsFileSystem()) {
     NOTREACHED();
     return;
   }
@@ -169,6 +169,11 @@ void MediaPlayerBridge::SetVideoSurface(gl::ScopedJavaSurface surface) {
 }
 
 void MediaPlayerBridge::SetPlaybackRate(double playback_rate) {
+  if (!prepared_) {
+    pending_playback_rate_ = playback_rate;
+    return;
+  }
+
   if (j_media_player_bridge_.is_null())
     return;
 
@@ -182,19 +187,12 @@ void MediaPlayerBridge::SetPlaybackRate(double playback_rate) {
 void MediaPlayerBridge::Prepare() {
   DCHECK(j_media_player_bridge_.is_null());
 
-  if (url_.SchemeIsBlob()) {
+  if (url_.SchemeIsBlob() || url_.SchemeIsFileSystem()) {
     NOTREACHED();
     return;
   }
 
   CreateJavaMediaPlayerBridge();
-
-  if (url_.SchemeIsFileSystem()) {
-    client_->GetMediaResourceGetter()->GetPlatformPathFromURL(
-        url_, base::BindOnce(&MediaPlayerBridge::SetDataSource,
-                             weak_factory_.GetWeakPtr()));
-    return;
-  }
 
   SetDataSource(url_.spec());
 }
@@ -487,6 +485,11 @@ void MediaPlayerBridge::OnMediaPrepared() {
   if (pending_play_) {
     StartInternal();
     pending_play_ = false;
+  }
+
+  if (pending_playback_rate_) {
+    SetPlaybackRate(pending_playback_rate_.value());
+    pending_playback_rate_.reset();
   }
 }
 

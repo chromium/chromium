@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,18 +7,18 @@
 
 #include <cstdint>
 
-#include "net/base/net_export.h"
+#include "quiche/common/platform/api/quiche_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace quiche {
 
-NET_EXPORT_PRIVATE absl::optional<int64_t> QuicheUtcDateTimeToUnixSecondsImpl(
-    int year,
-    int month,
-    int day,
-    int hour,
-    int minute,
-    int second);
+QUICHE_EXPORT_PRIVATE absl::optional<int64_t>
+QuicheUtcDateTimeToUnixSecondsImpl(int year,
+                                   int month,
+                                   int day,
+                                   int hour,
+                                   int minute,
+                                   int second);
 
 }  // namespace quiche
 

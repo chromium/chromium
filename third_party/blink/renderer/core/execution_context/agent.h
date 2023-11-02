@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
-#include "v8/include/v8.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
+#include "v8/include/v8-forward.h"
+#include "v8/include/v8-microtask-queue.h"
 
 namespace blink {
 
@@ -21,6 +22,7 @@ class EventLoop;
 }
 
 class ExecutionContext;
+class RejectedPromises;
 
 // Corresponding spec concept is:
 // https://html.spec.whatwg.org/C#integration-with-the-javascript-agent-formalism
@@ -30,7 +32,8 @@ class ExecutionContext;
 // Worklets have their own agent.
 // While an WindowAgentFactory is shared across a group of reachable frames,
 // Agent is shared across a group of reachable and same-site frames.
-class CORE_EXPORT Agent : public GarbageCollected<Agent> {
+class CORE_EXPORT Agent : public GarbageCollected<Agent>,
+                          public Supplementable<Agent> {
  public:
   // Do not create the instance directly.
   // Use MakeGarbageCollected<Agent>() or
@@ -44,7 +47,7 @@ class CORE_EXPORT Agent : public GarbageCollected<Agent> {
     return event_loop_;
   }
 
-  virtual void Trace(Visitor*) const;
+  void Trace(Visitor*) const override;
 
   void AttachContext(ExecutionContext*);
   void DetachContext(ExecutionContext*);
@@ -68,9 +71,9 @@ class CORE_EXPORT Agent : public GarbageCollected<Agent> {
   //
   // TODO(mkwst): We need a specification for these restrictions:
   // https://crbug.com/1206150.
-  static bool IsDirectSocketEnabled();
-  // Only called from blink::SetIsDirectSocketEnabled.
-  static void SetIsDirectSocketEnabled(bool value);
+  static bool IsIsolatedApplication();
+  // Only called from blink::SetIsIsolatedApplication.
+  static void SetIsIsolatedApplication(bool value);
 
   // Representing agent cluster's "is origin-keyed" concept:
   // https://html.spec.whatwg.org/C/#is-origin-keyed
@@ -82,26 +85,55 @@ class CORE_EXPORT Agent : public GarbageCollected<Agent> {
   // For example, a page with no Origin-Agent-Cluster header, that uses a data:
   // URL to create an iframe, would have an origin-keyed data: URL Agent,
   // plus a site-keyed outer page Agent, both in the same process.
-  bool IsOriginKeyed();
+  bool IsOriginKeyed() const;
 
   // TODO(domenic,wjmaclean): once logical cross-origin isolation is implemented
   // and unified with origin-keyed agent clusters, then this should no longer be
   // necessary; we can just check IsOriginKeyed().
-  bool IsExplicitlyOriginKeyed() const { return is_explicitly_origin_keyed_; }
+  //
+  // IsOriginKeyedForInheritance() returns true if either this agent represents
+  // an origin-keyed agent cluster, as determined by the navigation request,
+  // or if ForceOriginKeyedBecauseOfInheritance has been called by the loader.
+  bool IsOriginKeyedForInheritance() const;
 
-  // This sets whether the agent cluster is explicitly requested to be
-  // origin-keyed via the Origin-Agent-Cluster header. It can also be
-  // implicitly origin-keyed if it is in a cross-origin isolated agent cluster.
-  void SetIsExplicitlyOriginKeyed(bool value);
+  // If no Origin-Agent-Cluster http header was set, the decision for site- or
+  // origin-keyed agent clusters is based on the default behaviour, which is
+  // scheduled to change in the M106 release. If this clustering is based on
+  // the default handling, IsOriginOrSiteKeyedBasedOnDefault is true.
+  bool IsOriginOrSiteKeyedBasedOnDefault() const;
+
+  // Force usage of origin-keyed agent cluster. For use by the document loader,
+  // for cases where the origin-keyed should be inherited from parent documents.
+  void ForceOriginKeyedBecauseOfInheritance();
+
+  // Returns if this is a Window Agent or not.
+  virtual bool IsWindowAgent() const;
+
+  virtual void Dispose();
+  virtual void PerformMicrotaskCheckpoint();
+
+  RejectedPromises& GetRejectedPromises();
+
+  virtual int RecordReplayId() const {
+    return record_replay_id_;
+  }
+
+ protected:
+  Agent(v8::Isolate* isolate,
+        const base::UnguessableToken& cluster_id,
+        std::unique_ptr<v8::MicrotaskQueue> microtask_queue,
+        bool is_origin_agent_cluster,
+        bool origin_agent_cluster_left_as_default);
+
+  int record_replay_id_ = 0;
 
  private:
+  scoped_refptr<RejectedPromises> rejected_promises_;
   scoped_refptr<scheduler::EventLoop> event_loop_;
   const base::UnguessableToken cluster_id_;
-  bool is_explicitly_origin_keyed_ = false;
-
-#if DCHECK_IS_ON()
-  bool is_explicitly_origin_keyed_set_ = false;
-#endif
+  bool origin_keyed_because_of_inheritance_;
+  const bool is_origin_agent_cluster_;
+  const bool origin_agent_cluster_left_as_default_;
 };
 
 }  // namespace blink

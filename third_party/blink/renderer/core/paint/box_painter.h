@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,7 +35,7 @@ class BoxPainter {
   // paint coordinates.
   void PaintBoxDecorationBackgroundWithRect(
       const PaintInfo& paint_info,
-      const IntRect& visual_rect,
+      const gfx::Rect& visual_rect,
       const PhysicalRect& paint_rect,
       const DisplayItemClient& background_client);
 

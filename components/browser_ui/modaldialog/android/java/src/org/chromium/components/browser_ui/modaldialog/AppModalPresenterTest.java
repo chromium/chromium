@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,7 @@ import android.graphics.Color;
 import android.view.View;
 import android.widget.Button;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.filters.SmallTest;
@@ -47,8 +48,10 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
-import org.chromium.ui.test.util.DummyUiActivity;
+
+import java.util.concurrent.TimeoutException;
 
 /**
  * Tests for {@link AppModalPresenter}.
@@ -59,8 +62,8 @@ public class AppModalPresenterTest {
     @ClassRule
     public static DisableAnimationsTestRule disableAnimationsRule = new DisableAnimationsTestRule();
     @ClassRule
-    public static BaseActivityTestRule<DummyUiActivity> activityTestRule =
-            new BaseActivityTestRule<>(DummyUiActivity.class);
+    public static BaseActivityTestRule<BlankUiTestActivity> activityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     private class TestObserver implements ModalDialogTestUtils.TestDialogDismissedObserver {
         public final CallbackHelper onDialogDismissedCallback = new CallbackHelper();
@@ -145,6 +148,30 @@ public class AppModalPresenterTest {
         mTestObserver.onDialogDismissedCallback.waitForCallback(callCount);
 
         mExpectedDismissalCause = null;
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"ModalDialog"})
+    public void testBackPressedCallback_ModalDialogProperty_IsFired() throws TimeoutException {
+        PropertyModel dialog1 = createDialog(sActivity, sManager, "1", null);
+        CallbackHelper callbackHelper = new CallbackHelper();
+        final OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                callbackHelper.notifyCalled();
+            }
+        };
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            dialog1.set(ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
+                    onBackPressedCallback);
+        });
+
+        showDialog(sManager, dialog1, ModalDialogType.APP);
+
+        Espresso.pressBack();
+        callbackHelper.waitForCallback(0);
     }
 
     @Test

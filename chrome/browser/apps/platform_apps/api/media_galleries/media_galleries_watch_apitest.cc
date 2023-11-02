@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
@@ -110,7 +111,7 @@ class MediaGalleriesGalleryWatchApiTest : public extensions::ExtensionApiTest {
 
   void ExecuteCmdAndCheckReply(const std::string& js_command,
                                const std::string& ok_message) {
-    ExtensionTestMessageListener listener(ok_message, false);
+    ExtensionTestMessageListener listener(ok_message);
     background_main_frame_->ExecuteJavaScriptForTests(
         base::ASCIIToUTF16(js_command), base::NullCallback());
     EXPECT_TRUE(listener.WaitUntilSatisfied());
@@ -128,8 +129,7 @@ class MediaGalleriesGalleryWatchApiTest : public extensions::ExtensionApiTest {
                                       ? kAddGalleryWatchRequestSucceeded
                                       : kAddGalleryWatchRequestFailed;
 
-    ExtensionTestMessageListener add_gallery_watch_finished(
-        expected_result, false /* no reply */);
+    ExtensionTestMessageListener add_gallery_watch_finished(expected_result);
     ExecuteCmdAndCheckReply(kSetupWatchOnValidGalleriesCmd, kAddGalleryWatchOK);
     EXPECT_TRUE(add_gallery_watch_finished.WaitUntilSatisfied());
   }
@@ -168,7 +168,7 @@ class MediaGalleriesGalleryWatchApiTest : public extensions::ExtensionApiTest {
 
   void FetchMediaGalleriesList() {
     ExtensionTestMessageListener get_media_systems_finished(
-        kGetMediaFileSystemsCallbackOK, false /* no reply */);
+        kGetMediaFileSystemsCallbackOK);
     ExecuteCmdAndCheckReply(kGetMediaFileSystemsCmd, kGetMediaFileSystemsOK);
     EXPECT_TRUE(get_media_systems_finished.WaitUntilSatisfied());
   }
@@ -178,13 +178,13 @@ class MediaGalleriesGalleryWatchApiTest : public extensions::ExtensionApiTest {
 
   base::ScopedTempDir test_gallery_;
 
-  const extensions::Extension* extension_ = nullptr;
+  raw_ptr<const extensions::Extension> extension_ = nullptr;
 
-  content::RenderFrameHost* background_main_frame_ = nullptr;
+  raw_ptr<content::RenderFrameHost> background_main_frame_ = nullptr;
 };
 
 // TODO(crbug.com/1177103): Re-enable. Flaky on Linux and Windows.
-#if defined(OS_LINUX) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_BasicGalleryWatch DISABLED_BasicGalleryWatch
 #else
 #define MAYBE_BasicGalleryWatch BasicGalleryWatch
@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesGalleryWatchApiTest,
 
   // Modify gallery contents.
   ExtensionTestMessageListener gallery_change_event_received(
-      kGalleryChangedEventReceived, false /* no reply */);
+      kGalleryChangedEventReceived);
 
   ASSERT_TRUE(AddNewFileInTestGallery());
   if (GalleryWatchesSupported())
@@ -215,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesGalleryWatchApiTest,
 }
 
 // TODO(crbug.com/1047645): Flaky on Linux and Windows.
-#if defined(OS_LINUX) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_CorrectResponseOnModifyingWatchedGallery \
   DISABLED_CorrectResponseOnModifyingWatchedGallery
 #else
@@ -233,8 +233,7 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesGalleryWatchApiTest,
   SetupGalleryWatches();
 
   // Modify gallery contents; expect correct details.
-  ExtensionTestMessageListener got_correct_details(kOnGalleryChangedCheckingOK,
-                                                   false);
+  ExtensionTestMessageListener got_correct_details(kOnGalleryChangedCheckingOK);
   ASSERT_TRUE(AddNewFileInTestGallery());
   EXPECT_TRUE(got_correct_details.WaitUntilSatisfied());
 }
@@ -242,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesGalleryWatchApiTest,
 // Test is flaky on windows and linux: crbug.com/1150017.
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if defined(OS_WIN) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 #define MAYBE_RemoveListenerAndModifyGallery \
   DISABLED_RemoveListenerAndModifyGallery
 #else
@@ -260,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesGalleryWatchApiTest,
 
   // Modify gallery contents.
   ExtensionTestMessageListener gallery_change_event_received(
-      kGalleryChangedEventReceived, false /* no reply */);
+      kGalleryChangedEventReceived);
   ASSERT_TRUE(AddNewFileInTestGallery());
   EXPECT_TRUE(gallery_change_event_received.WaitUntilSatisfied());
 
@@ -293,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesGalleryWatchApiTest,
   // Modify gallery contents. Listener should not get called because add watch
   // request was not called.
   ExtensionTestMessageListener gallery_change_event_received(
-      kGalleryChangedEventReceived, false /* no reply */);
+      kGalleryChangedEventReceived);
   ASSERT_TRUE(AddNewFileInTestGallery());
 
   // Remove gallery watch listener.

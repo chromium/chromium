@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,11 +31,13 @@ public interface ProcessScopeDependencyProvider {
     }
 
     /** Returns the account name of the signed-in user, or the empty string. */
+    @Deprecated
     default String getAccountName() {
         return "";
     }
 
     /** Returns the client instance id for this chrome. */
+    @Deprecated
     default String getClientInstanceId() {
         return "";
     }
@@ -43,6 +45,35 @@ public interface ProcessScopeDependencyProvider {
     /** Returns the collection of currently active experiment ids. */
     default int[] getExperimentIds() {
         return new int[0];
+    }
+
+    /**
+     * Provides experimental feature state to xsurface implementations.
+     */
+    public interface FeatureStateProvider {
+        boolean isFeatureActive(String featureName);
+        boolean getBooleanParameterValue(
+                String featureName, String paramName, boolean defaultValue);
+    }
+
+    /**
+     * Returns whether a feature is active.
+     *
+     * The returned function must be called on the UI thread.
+     */
+    default FeatureStateProvider getFeatureStateProvider() {
+        return new FeatureStateProvider() {
+            @Override
+            public boolean isFeatureActive(String featureName) {
+                return false;
+            }
+
+            @Override
+            public boolean getBooleanParameterValue(
+                    String featureName, String paramName, boolean defaultValue) {
+                return false;
+            }
+        };
     }
 
     /** @see {Log.e} */
@@ -130,7 +161,7 @@ public interface ProcessScopeDependencyProvider {
      * Stores a view FeedAction for eventual upload. 'data' is a serialized FeedAction protobuf
      * message.
      */
-    default void processViewAction(byte[] data) {}
+    default void processViewAction(byte[] data, LoggingParameters loggingParameters) {}
 
     /**
      * Reports whether the visibility log upload was successful.

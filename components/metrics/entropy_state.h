@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_registry_simple.h"
 
 class PrefService;
@@ -74,7 +75,7 @@ class EntropyState final {
   static bool IsValidLowEntropySource(int value);
 
   // The local state prefs store.
-  PrefService* const local_state_;
+  const raw_ptr<PrefService> local_state_;
 
   // The non-identifying low entropy source values. These values seed the
   // pseudorandom generators which pick experimental groups. The "old" value is

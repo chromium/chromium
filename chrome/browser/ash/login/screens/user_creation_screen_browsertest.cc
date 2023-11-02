@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "chrome/browser/ash/login/screens/user_creation_screen.h"
@@ -58,6 +58,7 @@ class UserCreationScreenTest
   }
 
   void SelectUserTypeOnUserCreationScreen(test::UIPath element_id) {
+    OobeScreenWaiter(UserCreationView::kScreenId).Wait();
     ASSERT_TRUE(LoginScreenTestApi::IsEnterpriseEnrollmentButtonShown());
     test::OobeJS().ExpectVisiblePath(kUserCreationDialog);
     test::OobeJS().ExpectHasAttribute("checked", kSelfButton);
@@ -66,6 +67,7 @@ class UserCreationScreenTest
   }
 
   void SelectSetUpMethodOnChildScreen(test::UIPath element_id) {
+    OobeScreenWaiter(UserCreationView::kScreenId).Wait();
     ASSERT_FALSE(LoginScreenTestApi::IsEnterpriseEnrollmentButtonShown());
     test::OobeJS().ExpectHiddenPath(kUserCreationDialog);
     test::OobeJS().ExpectVisiblePath(kChildSignInDialog);

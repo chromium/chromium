@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,6 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
         expansion_(0),
         expansion_per_opportunity_(0),
         expansion_opportunity_count_(0),
-        text_justify_(TextJustify::kAuto),
         has_spacing_(false),
         normalize_space_(false),
         allow_tabs_(false),
@@ -46,11 +45,11 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
 
   // Set letter-spacing and word-spacing.
   bool SetSpacing(const FontDescription&);
+  bool SetSpacing(float letter_spacing, float word_spacing);
 
   // Set the expansion for the justification.
   void SetExpansion(float expansion,
                     TextDirection,
-                    TextJustify,
                     bool allows_leading_expansion = false,
                     bool allows_trailing_expansion = false);
 
@@ -77,8 +76,7 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
 
   void ComputeExpansion(bool allows_leading_expansion,
                         bool allows_trailing_expansion,
-                        TextDirection,
-                        TextJustify);
+                        TextDirection);
 
   float NextExpansion();
 
@@ -88,7 +86,6 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
   float expansion_;
   float expansion_per_opportunity_;
   unsigned expansion_opportunity_count_;
-  TextJustify text_justify_;
   bool has_spacing_;
   bool normalize_space_;
   bool allow_tabs_;

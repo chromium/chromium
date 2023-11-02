@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,14 +23,19 @@
 #include "base/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "components/app_restore/window_properties.h"
 #include "components/exo/buffer.h"
 #include "components/exo/permission.h"
+#include "components/exo/security_delegate.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/sub_surface.h"
 #include "components/exo/surface.h"
+#include "components/exo/surface_test_util.h"
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_helper.h"
+#include "components/exo/test/mock_security_delegate.h"
 #include "components/exo/test/shell_surface_builder.h"
+#include "components/exo/window_properties.h"
 #include "components/exo/wm_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
@@ -57,13 +62,15 @@ namespace exo {
 
 using ShellSurfaceTest = test::ExoTestBase;
 
+namespace {
+
 bool HasBackdrop() {
   ash::WorkspaceController* wc = ash::ShellTestApi().workspace_controller();
   return !!ash::WorkspaceControllerTestApi(wc).GetBackdropWindow();
 }
 
 uint32_t ConfigureFullscreen(uint32_t serial,
-                             const gfx::Size& size,
+                             const gfx::Rect& bounds,
                              chromeos::WindowStateType state_type,
                              bool resizing,
                              bool activated,
@@ -83,6 +90,38 @@ std::unique_ptr<ShellSurface> CreatePopupShellSurface(
   popup_shell_surface->SetOrigin(origin);
   return popup_shell_surface;
 }
+
+std::unique_ptr<ShellSurface> CreateX11TransientShellSurface(
+    ShellSurface* parent,
+    const gfx::Size& size,
+    const gfx::Point& origin) {
+  return test::ShellSurfaceBuilder(size)
+      .SetParent(parent)
+      .SetOrigin(origin)
+      .BuildShellSurface();
+}
+
+struct ConfigureData {
+  gfx::Rect suggested_bounds;
+  chromeos::WindowStateType state_type = chromeos::WindowStateType::kDefault;
+  bool is_resizing = false;
+  bool is_active = false;
+};
+
+uint32_t Configure(ConfigureData* config_data,
+                   const gfx::Rect& bounds,
+                   chromeos::WindowStateType state_type,
+                   bool resizing,
+                   bool activated,
+                   const gfx::Vector2d& origin_offset) {
+  config_data->suggested_bounds = bounds;
+  config_data->state_type = state_type;
+  config_data->is_resizing = resizing;
+  config_data->is_active = activated;
+  return 0;
+}
+
+}  // namespace
 
 TEST_F(ShellSurfaceTest, AcknowledgeConfigure) {
   gfx::Size buffer_size(32, 32);
@@ -252,6 +291,44 @@ TEST_F(ShellSurfaceTest, CannotMaximizeNonResizableWindow) {
   EXPECT_FALSE(shell_surface->CanMaximize());
 }
 
+TEST_F(ShellSurfaceTest, MaximizeFromFullscreen) {
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetMaximumSize(gfx::Size(10, 10))
+          .BuildShellSurface();
+  // Act: Maximize after fullscreen
+  shell_surface->root_surface()->Commit();
+  shell_surface->SetFullscreen(true);
+  shell_surface->root_surface()->Commit();
+  shell_surface->Maximize();
+  shell_surface->root_surface()->Commit();
+
+  // Assert: Window should stay fullscreen.
+  EXPECT_TRUE(shell_surface->GetWidget()->IsFullscreen());
+}
+
+TEST_F(ShellSurfaceTest, MaximizeExitsFullscreen) {
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetMaximumSize(gfx::Size(10, 10))
+          .BuildShellSurface();
+
+  // Act: Set window property kRestoreOrMaximizeExitsFullscreen
+  // then maximize after fullscreen
+  shell_surface->root_surface()->Commit();
+  shell_surface->GetWidget()->GetNativeWindow()->SetProperty(
+      kRestoreOrMaximizeExitsFullscreen, true);
+  shell_surface->SetFullscreen(true);
+  shell_surface->root_surface()->Commit();
+  shell_surface->Maximize();
+  shell_surface->root_surface()->Commit();
+
+  // Assert: Window should exit fullscreen and be maximized.
+  EXPECT_TRUE(shell_surface->GetWidget()->GetNativeWindow()->GetProperty(
+      kRestoreOrMaximizeExitsFullscreen));
+  EXPECT_TRUE(shell_surface->GetWidget()->IsMaximized());
+}
+
 TEST_F(ShellSurfaceTest, Minimize) {
   gfx::Size buffer_size(256, 256);
   std::unique_ptr<Buffer> buffer(
@@ -305,6 +382,42 @@ TEST_F(ShellSurfaceTest, Restore) {
       shell_surface->GetWidget()->GetWindowBoundsInScreen().size().ToString());
 }
 
+TEST_F(ShellSurfaceTest, RestoreFromFullscreen) {
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetMaximumSize(gfx::Size(10, 10))
+          .BuildShellSurface();
+
+  // Act: Restore after fullscreen
+  shell_surface->SetFullscreen(true);
+  shell_surface->root_surface()->Commit();
+  shell_surface->Restore();
+  shell_surface->root_surface()->Commit();
+
+  // Assert: Window should stay fullscreen.
+  EXPECT_TRUE(shell_surface->GetWidget()->IsFullscreen());
+}
+
+TEST_F(ShellSurfaceTest, RestoreExitsFullscreen) {
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
+
+  // Act: Set window property kRestoreOrMaximizeExitsFullscreen
+  // then restore after fullscreen
+  shell_surface->root_surface()->Commit();
+  shell_surface->GetWidget()->GetNativeWindow()->SetProperty(
+      kRestoreOrMaximizeExitsFullscreen, true);
+  shell_surface->SetFullscreen(true);
+  shell_surface->Restore();
+  shell_surface->root_surface()->Commit();
+
+  // Assert: Window should exit fullscreen and be restored.
+  EXPECT_TRUE(shell_surface->GetWidget()->GetNativeWindow()->GetProperty(
+      kRestoreOrMaximizeExitsFullscreen));
+  EXPECT_EQ(gfx::Size(256, 256),
+            shell_surface->GetWidget()->GetWindowBoundsInScreen().size());
+}
+
 TEST_F(ShellSurfaceTest, HostWindowBoundsUpdatedAfterCommitWidget) {
   gfx::Size buffer_size(256, 256);
   std::unique_ptr<Buffer> buffer(
@@ -343,6 +456,30 @@ TEST_F(ShellSurfaceTest, SetFullscreen) {
   EXPECT_FALSE(HasBackdrop());
   EXPECT_NE(GetContext()->bounds().ToString(),
             shell_surface->GetWidget()->GetWindowBoundsInScreen().ToString());
+}
+
+TEST_F(ShellSurfaceTest, PreWidgetUnfullscreen) {
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256}).SetNoCommit().BuildShellSurface();
+  shell_surface->Maximize();
+  shell_surface->SetFullscreen(false);
+  EXPECT_EQ(shell_surface->GetWidget(), nullptr);
+  shell_surface->root_surface()->Commit();
+  EXPECT_TRUE(shell_surface->GetWidget()->IsMaximized());
+}
+
+TEST_F(ShellSurfaceTest, PreWidgetMaximizeFromFullscreen) {
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetNoCommit()
+          .SetMaximumSize(gfx::Size(10, 10))
+          .BuildShellSurface();
+  // Fullscreen -> Maximize for non Lacros surfaces should stay fullscreen
+  shell_surface->SetFullscreen(true);
+  shell_surface->Maximize();
+  EXPECT_EQ(shell_surface->GetWidget(), nullptr);
+  shell_surface->root_surface()->Commit();
+  EXPECT_TRUE(shell_surface->GetWidget()->IsFullscreen());
 }
 
 TEST_F(ShellSurfaceTest, SetTitle) {
@@ -386,7 +523,7 @@ TEST_F(ShellSurfaceTest, SetApplicationId) {
   EXPECT_EQ(nullptr, GetShellApplicationId(window));
 }
 
-TEST_F(ShellSurfaceTest, ActivationPermission) {
+TEST_F(ShellSurfaceTest, ActivationPermissionLegacy) {
   gfx::Size buffer_size(64, 64);
   std::unique_ptr<Buffer> buffer(
       new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
@@ -417,7 +554,9 @@ TEST_F(ShellSurfaceTest, ActivationPermission) {
   EXPECT_TRUE(HasPermissionToActivate(window));
 }
 
-TEST_F(ShellSurfaceTest, WidgetActivation) {
+TEST_F(ShellSurfaceTest, WidgetActivationLegacy) {
+  std::unique_ptr<SecurityDelegate> default_security_delegate =
+      SecurityDelegate::GetDefaultSecurityDelegate();
   gfx::Size buffer_size(64, 64);
   auto buffer1 = std::make_unique<Buffer>(
       exo_test_helper()->CreateGpuMemoryBuffer(buffer_size));
@@ -425,6 +564,7 @@ TEST_F(ShellSurfaceTest, WidgetActivation) {
   auto shell_surface1 = std::make_unique<ShellSurface>(surface1.get());
   surface1->Attach(buffer1.get());
   surface1->Commit();
+  shell_surface1->SetSecurityDelegate(default_security_delegate.get());
 
   // The window is active.
   views::Widget* widget1 = shell_surface1->GetWidget();
@@ -437,6 +577,7 @@ TEST_F(ShellSurfaceTest, WidgetActivation) {
   auto shell_surface2 = std::make_unique<ShellSurface>(surface2.get());
   surface2->Attach(buffer2.get());
   surface2->Commit();
+  shell_surface2->SetSecurityDelegate(default_security_delegate.get());
 
   // Now the second window is active.
   views::Widget* widget2 = shell_surface2->GetWidget();
@@ -453,6 +594,44 @@ TEST_F(ShellSurfaceTest, WidgetActivation) {
 
   // The second window cannot activate itself.
   surface2->RequestActivation();
+  EXPECT_TRUE(widget1->IsActive());
+  EXPECT_FALSE(widget2->IsActive());
+}
+
+TEST_F(ShellSurfaceTest, WidgetActivation) {
+  test::MockSecurityDelegate security_delegate;
+  gfx::Size buffer_size(64, 64);
+  std::unique_ptr<ShellSurface> shell_surface1 =
+      test::ShellSurfaceBuilder(buffer_size)
+          .SetSecurityDelegate(&security_delegate)
+          .BuildShellSurface();
+
+  // The window is active.
+  views::Widget* widget1 = shell_surface1->GetWidget();
+  EXPECT_TRUE(widget1->IsActive());
+
+  // Create a second window.
+  std::unique_ptr<ShellSurface> shell_surface2 =
+      test::ShellSurfaceBuilder(buffer_size)
+          .SetSecurityDelegate(&security_delegate)
+          .BuildShellSurface();
+
+  // Now the second window is active.
+  views::Widget* widget2 = shell_surface2->GetWidget();
+  EXPECT_FALSE(widget1->IsActive());
+  EXPECT_TRUE(widget2->IsActive());
+
+  // The first window can activate itself.
+  EXPECT_CALL(security_delegate, CanSelfActivate(widget1->GetNativeWindow()))
+      .WillOnce(testing::Return(true));
+  shell_surface1->surface_for_testing()->RequestActivation();
+  EXPECT_TRUE(widget1->IsActive());
+  EXPECT_FALSE(widget2->IsActive());
+
+  // The second window cannot activate itself.
+  EXPECT_CALL(security_delegate, CanSelfActivate(widget2->GetNativeWindow()))
+      .WillOnce(testing::Return(false));
+  shell_surface2->surface_for_testing()->RequestActivation();
   EXPECT_TRUE(widget1->IsActive());
   EXPECT_FALSE(widget2->IsActive());
 }
@@ -569,7 +748,7 @@ TEST_F(ShellSurfaceTest, StartResizeAndDestroyShell) {
 
   uint32_t serial = 0;
   auto configure_callback = base::BindRepeating(
-      [](uint32_t* const serial_ptr, const gfx::Size& size,
+      [](uint32_t* const serial_ptr, const gfx::Rect& bounds,
          chromeos::WindowStateType state_type, bool resizing, bool activated,
          const gfx::Vector2d& origin_offset) { return ++(*serial_ptr); },
       &serial);
@@ -589,7 +768,7 @@ TEST_F(ShellSurfaceTest, StartResizeAndDestroyShell) {
   surface->Commit();
 
   shell_surface->set_configure_callback(base::BindRepeating(
-      [](const gfx::Size& size, chromeos::WindowStateType state_type,
+      [](const gfx::Rect& bounds, chromeos::WindowStateType state_type,
          bool resizing, bool activated, const gfx::Vector2d& origin_offset) {
         ADD_FAILURE() << "Configure Should not be called";
         return uint32_t{0};
@@ -624,40 +803,94 @@ TEST_F(ShellSurfaceTest, SetMinimumSize) {
       new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
   std::unique_ptr<Surface> surface(new Surface);
   std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
-
-  gfx::Size size(50, 50);
-  shell_surface->SetMinimumSize(size);
   surface->Attach(buffer.get());
   surface->Commit();
-  EXPECT_EQ(size, shell_surface->GetMinimumSize());
-  EXPECT_EQ(size, shell_surface->GetWidget()->GetMinimumSize());
-  EXPECT_EQ(size, shell_surface->GetWidget()
-                      ->GetNativeWindow()
-                      ->delegate()
-                      ->GetMinimumSize());
 
-  gfx::Size size_with_frame(50, 82);
+  constexpr gfx::Size kSizes[] = {{50, 50}, {100, 50}};
+  for (const gfx::Size size : kSizes) {
+    SCOPED_TRACE(
+        base::StringPrintf("MinSize=%dx%d", size.width(), size.height()));
+    ConfigureData config_data;
+    shell_surface->set_configure_callback(
+        base::BindRepeating(&Configure, base::Unretained(&config_data)));
+
+    shell_surface->SetMinimumSize(size);
+    surface->Commit();
+    EXPECT_EQ(size, shell_surface->GetMinimumSize());
+    EXPECT_EQ(size, shell_surface->GetWidget()->GetMinimumSize());
+    EXPECT_EQ(size, shell_surface->GetWidget()
+                        ->GetNativeWindow()
+                        ->delegate()
+                        ->GetMinimumSize());
+    gfx::Size expected_size(buffer_size);
+    expected_size.set_width(std::max(buffer_size.width(), size.width()));
+    EXPECT_EQ(expected_size,
+              shell_surface->GetWidget()->GetWindowBoundsInScreen().size());
+    if (buffer_size.width() > size.width())
+      EXPECT_TRUE(config_data.suggested_bounds.IsEmpty());
+    else
+      EXPECT_EQ(expected_size, config_data.suggested_bounds.size());
+  }
+  // Reset configure callback because config_data is out of scope.
+  shell_surface->set_configure_callback(base::NullCallback());
+  // With frame.
   surface->SetFrame(SurfaceFrameType::NORMAL);
-  EXPECT_EQ(size, shell_surface->GetMinimumSize());
-  EXPECT_EQ(size_with_frame, shell_surface->GetWidget()->GetMinimumSize());
-  EXPECT_EQ(size_with_frame, shell_surface->GetWidget()
-                                 ->GetNativeWindow()
-                                 ->delegate()
-                                 ->GetMinimumSize());
+  for (const gfx::Size size : kSizes) {
+    SCOPED_TRACE(base::StringPrintf("MinSize=%dx%d with frame", size.width(),
+                                    size.height()));
+    ConfigureData config_data;
+    shell_surface->set_configure_callback(
+        base::BindRepeating(&Configure, base::Unretained(&config_data)));
+
+    const gfx::Size size_with_frame(size.width(), size.height() + 32);
+    shell_surface->SetMinimumSize(size);
+    surface->Commit();
+    EXPECT_EQ(size, shell_surface->GetMinimumSize());
+    EXPECT_EQ(size_with_frame, shell_surface->GetWidget()->GetMinimumSize());
+    EXPECT_EQ(size_with_frame, shell_surface->GetWidget()
+                                   ->GetNativeWindow()
+                                   ->delegate()
+                                   ->GetMinimumSize());
+    gfx::Size expected_size(buffer_size);
+    expected_size.set_width(std::max(buffer_size.width(), size.width()));
+    if (buffer_size.width() > size.width())
+      EXPECT_TRUE(config_data.suggested_bounds.IsEmpty());
+    else
+      EXPECT_EQ(expected_size, config_data.suggested_bounds.size());
+    shell_surface->set_configure_callback(base::NullCallback());
+  }
 }
 
 TEST_F(ShellSurfaceTest, SetMaximumSize) {
-  gfx::Size buffer_size(64, 64);
+  gfx::Size buffer_size(256, 256);
   std::unique_ptr<Buffer> buffer(
       new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
   std::unique_ptr<Surface> surface(new Surface);
   std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
-
-  gfx::Size size(100, 100);
-  shell_surface->SetMaximumSize(size);
   surface->Attach(buffer.get());
   surface->Commit();
-  EXPECT_EQ(size, shell_surface->GetMaximumSize());
+
+  constexpr gfx::Size kSizes[] = {{300, 300}, {200, 300}};
+  for (const gfx::Size size : kSizes) {
+    SCOPED_TRACE(
+        base::StringPrintf("MaxSize=%dx%d", size.width(), size.height()));
+    ConfigureData config_data;
+    shell_surface->set_configure_callback(
+        base::BindRepeating(&Configure, base::Unretained(&config_data)));
+
+    shell_surface->SetMaximumSize(size);
+    surface->Commit();
+    EXPECT_EQ(size, shell_surface->GetMaximumSize());
+    gfx::Size expected_size(buffer_size);
+    expected_size.set_width(std::min(size.width(), buffer_size.width()));
+    EXPECT_EQ(expected_size,
+              shell_surface->GetWidget()->GetWindowBoundsInScreen().size());
+
+    if (buffer_size.width() < size.width())
+      EXPECT_TRUE(config_data.suggested_bounds.IsEmpty());
+    else
+      EXPECT_EQ(expected_size, config_data.suggested_bounds.size());
+  }
 }
 
 void PreClose(int* pre_close_count, int* close_count) {
@@ -744,56 +977,39 @@ TEST_F(ShellSurfaceTest, ForceClose) {
   EXPECT_EQ(surface_destroyed_ctr, 1);
 }
 
-uint32_t Configure(gfx::Size* suggested_size,
-                   chromeos::WindowStateType* has_state_type,
-                   bool* is_resizing,
-                   bool* is_active,
-                   const gfx::Size& size,
-                   chromeos::WindowStateType state_type,
-                   bool resizing,
-                   bool activated,
-                   const gfx::Vector2d& origin_offset) {
-  *suggested_size = size;
-  *has_state_type = state_type;
-  *is_resizing = resizing;
-  *is_active = activated;
-  return 0;
-}
-
 TEST_F(ShellSurfaceTest, ConfigureCallback) {
   // Must be before shell_surface so it outlives it, for shell_surface's
   // destructor calls Configure() referencing these 4 variables.
-  gfx::Size suggested_size;
-  chromeos::WindowStateType has_state_type = chromeos::WindowStateType::kNormal;
-  bool is_resizing = false;
-  bool is_active = false;
+  ConfigureData config_data;
 
   std::unique_ptr<Surface> surface(new Surface);
   std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
 
-  shell_surface->set_configure_callback(base::BindRepeating(
-      &Configure, base::Unretained(&suggested_size),
-      base::Unretained(&has_state_type), base::Unretained(&is_resizing),
-      base::Unretained(&is_active)));
+  shell_surface->set_configure_callback(
+      base::BindRepeating(&Configure, base::Unretained(&config_data)));
 
   gfx::Rect geometry(16, 16, 32, 32);
   shell_surface->SetGeometry(geometry);
 
   // Commit without contents should result in a configure callback with empty
-  // suggested size as a mechanims to ask the client size itself.
+  // suggested size as a mechanisms to ask the client size itself.
   surface->Commit();
-  EXPECT_TRUE(suggested_size.IsEmpty());
+  EXPECT_TRUE(config_data.suggested_bounds.IsEmpty());
+  EXPECT_TRUE(shell_surface->GetWidget());
+  EXPECT_FALSE(shell_surface->GetWidget()->IsVisible());
+  EXPECT_EQ(geometry.size(), shell_surface->CalculatePreferredSize());
 
-  // Geometry should not be committed until surface has contents.
-  EXPECT_TRUE(shell_surface->CalculatePreferredSize().IsEmpty());
+  gfx::Rect maximized_bounds =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
 
-  // Widget creation is deferred until the surface has contents.
+  // State change should be sent even if the content is not attached.
+  // See crbug.com/1138978.
   shell_surface->Maximize();
   shell_surface->AcknowledgeConfigure(0);
 
-  EXPECT_FALSE(shell_surface->GetWidget());
-  EXPECT_TRUE(suggested_size.IsEmpty());
-  EXPECT_EQ(chromeos::WindowStateType::kNormal, has_state_type);
+  EXPECT_FALSE(config_data.suggested_bounds.IsEmpty());
+  EXPECT_EQ(maximized_bounds.size(), config_data.suggested_bounds.size());
+  EXPECT_EQ(chromeos::WindowStateType::kMaximized, config_data.state_type);
 
   gfx::Size buffer_size(64, 64);
   std::unique_ptr<Buffer> buffer(
@@ -801,11 +1017,9 @@ TEST_F(ShellSurfaceTest, ConfigureCallback) {
   surface->Attach(buffer.get());
   surface->Commit();
 
-  gfx::Rect maximized_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
   EXPECT_TRUE(shell_surface->GetWidget());
-  EXPECT_EQ(maximized_bounds.size(), suggested_size);
-  EXPECT_EQ(chromeos::WindowStateType::kMaximized, has_state_type);
+  EXPECT_EQ(maximized_bounds.size(), config_data.suggested_bounds.size());
+  EXPECT_EQ(chromeos::WindowStateType::kMaximized, config_data.state_type);
   shell_surface->Restore();
   shell_surface->AcknowledgeConfigure(0);
   // It should be restored to the original geometry size.
@@ -813,63 +1027,184 @@ TEST_F(ShellSurfaceTest, ConfigureCallback) {
 
   shell_surface->SetFullscreen(true);
   shell_surface->AcknowledgeConfigure(0);
-  EXPECT_EQ(GetContext()->bounds().size().ToString(),
-            suggested_size.ToString());
-  EXPECT_EQ(chromeos::WindowStateType::kFullscreen, has_state_type);
+  EXPECT_EQ(GetContext()->bounds().size(), config_data.suggested_bounds.size());
+  EXPECT_EQ(chromeos::WindowStateType::kFullscreen, config_data.state_type);
   shell_surface->SetFullscreen(false);
   shell_surface->AcknowledgeConfigure(0);
   EXPECT_EQ(geometry.size(), shell_surface->CalculatePreferredSize());
 
   shell_surface->GetWidget()->Activate();
   shell_surface->AcknowledgeConfigure(0);
-  EXPECT_TRUE(is_active);
+  EXPECT_TRUE(config_data.is_active);
   shell_surface->GetWidget()->Deactivate();
   shell_surface->AcknowledgeConfigure(0);
-  EXPECT_FALSE(is_active);
+  EXPECT_FALSE(config_data.is_active);
 
-  EXPECT_FALSE(is_resizing);
+  EXPECT_FALSE(config_data.is_resizing);
   shell_surface->StartResize(HTBOTTOMRIGHT);
   shell_surface->AcknowledgeConfigure(0);
-  EXPECT_TRUE(is_resizing);
+  EXPECT_TRUE(config_data.is_resizing);
 }
 
 TEST_F(ShellSurfaceTest, CreateMinimizedWindow) {
   // Must be before shell_surface so it outlives it, for shell_surface's
   // destructor calls Configure() referencing these 4 variables.
-  gfx::Size suggested_size;
-  chromeos::WindowStateType has_state_type = chromeos::WindowStateType::kNormal;
-  bool is_resizing = false;
-  bool is_active = false;
+  ConfigureData config_data;
 
   std::unique_ptr<Surface> surface(new Surface);
   std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
 
-  shell_surface->set_configure_callback(base::BindRepeating(
-      &Configure, base::Unretained(&suggested_size),
-      base::Unretained(&has_state_type), base::Unretained(&is_resizing),
-      base::Unretained(&is_active)));
+  shell_surface->set_configure_callback(
+      base::BindRepeating(&Configure, base::Unretained(&config_data)));
+
+  gfx::Rect geometry(0, 0, 1, 1);
+  shell_surface->SetGeometry(geometry);
+  shell_surface->Minimize();
+  shell_surface->AcknowledgeConfigure(0);
+  // Commit without contents should result in a configure callback with empty
+  // suggested size as a mechanisms to ask the client size itself.
+  surface->Commit();
+
+  EXPECT_TRUE(shell_surface->GetWidget());
+  EXPECT_TRUE(shell_surface->GetWidget()->IsMinimized());
+  EXPECT_TRUE(config_data.suggested_bounds.IsEmpty());
+  EXPECT_EQ(geometry.size(), shell_surface->CalculatePreferredSize());
+}
+
+TEST_F(ShellSurfaceTest, CreateMinimizedWindow2) {
+  // Must be before shell_surface so it outlives it, for shell_surface's
+  // destructor calls Configure() referencing these 4 variables.
+  ConfigureData config_data;
+
+  std::unique_ptr<Surface> surface(new Surface);
+  std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
+
+  shell_surface->set_configure_callback(
+      base::BindRepeating(&Configure, base::Unretained(&config_data)));
 
   gfx::Rect geometry(0, 0, 1, 1);
   shell_surface->SetGeometry(geometry);
 
   // Commit without contents should result in a configure callback with empty
-  // suggested size as a mechanims to ask the client size itself.
+  // suggested size as a mechanisms to ask the client size itself.
   surface->Commit();
-  EXPECT_TRUE(suggested_size.IsEmpty());
-
-  // Geometry should not be committed until surface has contents.
-  EXPECT_TRUE(shell_surface->CalculatePreferredSize().IsEmpty());
+  EXPECT_TRUE(config_data.suggested_bounds.IsEmpty());
+  EXPECT_TRUE(shell_surface->GetWidget());
+  EXPECT_FALSE(shell_surface->GetWidget()->IsVisible());
+  EXPECT_EQ(geometry.size(), shell_surface->CalculatePreferredSize());
 
   shell_surface->Minimize();
   shell_surface->AcknowledgeConfigure(0);
+
   // Commit without contents should result in a configure callback with empty
-  // suggested size as a mechanims to ask the client size itself.
+  // suggested size as a mechanisms to ask the client size itself.
   surface->Commit();
 
   EXPECT_TRUE(shell_surface->GetWidget());
   EXPECT_TRUE(shell_surface->GetWidget()->IsMinimized());
-  EXPECT_TRUE(suggested_size.IsEmpty());
   EXPECT_EQ(geometry.size(), shell_surface->CalculatePreferredSize());
+
+  // Once the initial empty size is sent in configure,
+  // new configure should send the size requested.
+  EXPECT_EQ(geometry.size(), config_data.suggested_bounds.size());
+}
+
+TEST_F(ShellSurfaceTest,
+       CreateMaximizedWindowWithRestoreBoundsWithoutInitialBuffer) {
+  // Must be before shell_surface so it outlives it, for shell_surface's
+  // destructor calls Configure() referencing these 4 variables.
+  ConfigureData config_data;
+  gfx::Size buffer_size(256, 256);
+
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder(buffer_size)
+          .SetNoRootBuffer()
+          .BuildShellSurface();
+
+  shell_surface->set_configure_callback(
+      base::BindRepeating(&Configure, base::Unretained(&config_data)));
+
+  Surface* root_surface = shell_surface->surface_for_testing();
+  root_surface->Commit();
+  shell_surface->AcknowledgeConfigure(0);
+
+  // Ash may maximize the window.
+  EXPECT_TRUE(shell_surface->GetWidget());
+  EXPECT_FALSE(shell_surface->GetWidget()->IsVisible());
+  EXPECT_FALSE(shell_surface->GetWidget()->IsMaximized());
+
+  shell_surface->Maximize();
+  shell_surface->AcknowledgeConfigure(0);
+
+  EXPECT_FALSE(shell_surface->GetWidget()->IsVisible());
+  EXPECT_TRUE(shell_surface->GetWidget()->IsMaximized());
+
+  auto buffer = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(buffer_size));
+  root_surface->Attach(buffer.get());
+
+  gfx::Rect geometry_full(buffer_size);
+  shell_surface->SetGeometry(geometry_full);
+
+  // Commit without contents should result in a configure callback with empty
+  // suggested size as a mechanisms to ask the client size itself.
+  root_surface->Commit();
+  shell_surface->AcknowledgeConfigure(0);
+
+  EXPECT_TRUE(shell_surface->GetWidget()->IsVisible());
+  EXPECT_TRUE(shell_surface->GetWidget()->IsMaximized());
+
+  auto* window_state =
+      ash::WindowState::Get(shell_surface->GetWidget()->GetNativeWindow());
+
+  EXPECT_TRUE(window_state->HasRestoreBounds());
+
+  auto bounds = window_state->GetRestoreBoundsInParent();
+  EXPECT_EQ(geometry_full.size(), bounds.size());
+}
+
+TEST_F(ShellSurfaceTest, CreateMaximizedWindowWithRestoreBounds) {
+  // Must be before shell_surface so it outlives it, for shell_surface's
+  // destructor calls Configure() referencing these 4 variables.
+  ConfigureData config_data;
+  gfx::Size buffer_size(256, 256);
+  std::unique_ptr<Buffer> buffer(
+      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+
+  std::unique_ptr<Surface> surface(new Surface);
+  std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
+
+  shell_surface->set_configure_callback(
+      base::BindRepeating(&Configure, base::Unretained(&config_data)));
+
+  gfx::Rect geometry(0, 0, 1, 1);
+  shell_surface->SetGeometry(geometry);
+  shell_surface->Maximize();
+
+  // Commit without contents should result in a configure callback with empty
+  // suggested size as a mechanisms to ask the client size itself.
+  surface->Attach(buffer.get());
+  surface->Commit();
+  shell_surface->AcknowledgeConfigure(0);
+
+  gfx::Rect geometry_full(0, 0, 100, 100);
+  shell_surface->SetGeometry(geometry_full);
+
+  surface->Commit();
+  shell_surface->AcknowledgeConfigure(1);
+
+  EXPECT_TRUE(shell_surface->GetWidget());
+  EXPECT_TRUE(shell_surface->GetWidget()->IsMaximized());
+  EXPECT_EQ(geometry_full.size(), shell_surface->CalculatePreferredSize());
+
+  auto* window_state =
+      ash::WindowState::Get(shell_surface->GetWidget()->GetNativeWindow());
+
+  EXPECT_TRUE(window_state->HasRestoreBounds());
+
+  auto bounds = window_state->GetRestoreBoundsInParent();
+  EXPECT_EQ(geometry.width(), bounds.width());
+  EXPECT_EQ(geometry.height(), bounds.height());
 }
 
 TEST_F(ShellSurfaceTest, ToggleFullscreen) {
@@ -882,9 +1217,8 @@ TEST_F(ShellSurfaceTest, ToggleFullscreen) {
   surface->Attach(buffer.get());
   surface->Commit();
   EXPECT_FALSE(HasBackdrop());
-  EXPECT_EQ(
-      buffer_size.ToString(),
-      shell_surface->GetWidget()->GetWindowBoundsInScreen().size().ToString());
+  EXPECT_EQ(buffer_size,
+            shell_surface->GetWidget()->GetWindowBoundsInScreen().size());
   shell_surface->Maximize();
   EXPECT_FALSE(HasBackdrop());
   EXPECT_EQ(GetContext()->bounds().width(),
@@ -945,7 +1279,7 @@ TEST_F(ShellSurfaceTest, CycleSnap) {
   EXPECT_EQ(buffer_size,
             shell_surface->GetWidget()->GetWindowBoundsInScreen().size());
 
-  ash::WMEvent event(ash::WM_EVENT_CYCLE_SNAP_PRIMARY);
+  ash::WindowSnapWMEvent event(ash::WM_EVENT_CYCLE_SNAP_PRIMARY);
   aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
 
   // Enter snapped mode.
@@ -1028,6 +1362,17 @@ TEST_F(ShellSurfaceTest, Transient) {
   EXPECT_FALSE(child_window->IsVisible());
   parent_window->Show();
   EXPECT_TRUE(child_window->IsVisible());
+}
+
+TEST_F(ShellSurfaceTest, X11Transient) {
+  auto parent = test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
+
+  gfx::Point origin(50, 50);
+
+  auto transient =
+      CreateX11TransientShellSurface(parent.get(), gfx::Size(100, 100), origin);
+  EXPECT_TRUE(transient->GetWidget()->movement_disabled());
+  EXPECT_EQ(transient->GetWidget()->GetWindowBoundsInScreen().origin(), origin);
 }
 
 TEST_F(ShellSurfaceTest, Popup) {
@@ -1116,6 +1461,117 @@ TEST_F(ShellSurfaceTest, Popup) {
   }
 }
 
+TEST_F(ShellSurfaceTest, Menu) {
+  std::unique_ptr<ShellSurface> root_shell_surface =
+      test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
+  EXPECT_TRUE(root_shell_surface->GetWidget()->IsVisible());
+
+  std::unique_ptr<ShellSurface> menu_shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetAsMenu()
+          .SetParent(root_shell_surface.get())
+          .BuildShellSurface();
+  EXPECT_TRUE(menu_shell_surface->GetWidget()->IsVisible());
+  EXPECT_EQ(aura::client::WINDOW_TYPE_MENU,
+            menu_shell_surface->GetWidget()->GetNativeWindow()->GetType());
+}
+
+TEST_F(ShellSurfaceTest, MenuOnPopup) {
+  std::unique_ptr<ShellSurface> root_shell_surface =
+      test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
+  EXPECT_TRUE(root_shell_surface->GetWidget()->IsVisible());
+
+  std::unique_ptr<ShellSurface> popup_shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetAsPopup()
+          .SetParent(root_shell_surface.get())
+          .BuildShellSurface();
+  EXPECT_TRUE(popup_shell_surface->GetWidget()->IsVisible());
+  EXPECT_EQ(aura::client::WINDOW_TYPE_POPUP,
+            popup_shell_surface->GetWidget()->GetNativeWindow()->GetType());
+
+  std::unique_ptr<ShellSurface> menu_shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetAsMenu()
+          .SetParent(popup_shell_surface.get())
+          .BuildShellSurface();
+  EXPECT_TRUE(menu_shell_surface->GetWidget()->IsVisible());
+  EXPECT_EQ(aura::client::WINDOW_TYPE_MENU,
+            menu_shell_surface->GetWidget()->GetNativeWindow()->GetType());
+}
+
+TEST_F(ShellSurfaceTest, PopupOnMenu) {
+  std::unique_ptr<ShellSurface> root_shell_surface =
+      test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
+  EXPECT_TRUE(root_shell_surface->GetWidget()->IsVisible());
+
+  std::unique_ptr<ShellSurface> menu_shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetAsMenu()
+          .SetParent(root_shell_surface.get())
+          .BuildShellSurface();
+  EXPECT_TRUE(menu_shell_surface->GetWidget()->IsVisible());
+  EXPECT_EQ(aura::client::WINDOW_TYPE_MENU,
+            menu_shell_surface->GetWidget()->GetNativeWindow()->GetType());
+
+  std::unique_ptr<ShellSurface> popup_shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetAsPopup()
+          .SetParent(menu_shell_surface.get())
+          .BuildShellSurface();
+  EXPECT_TRUE(popup_shell_surface->GetWidget()->IsVisible());
+  EXPECT_EQ(aura::client::WINDOW_TYPE_POPUP,
+            popup_shell_surface->GetWidget()->GetNativeWindow()->GetType());
+}
+
+TEST_F(ShellSurfaceTest, PopupOnPopup) {
+  std::unique_ptr<ShellSurface> root_shell_surface =
+      test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
+  EXPECT_TRUE(root_shell_surface->GetWidget()->IsVisible());
+
+  std::unique_ptr<ShellSurface> popup_shell_surface_1 =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetAsPopup()
+          .SetParent(root_shell_surface.get())
+          .BuildShellSurface();
+  EXPECT_TRUE(popup_shell_surface_1->GetWidget()->IsVisible());
+  EXPECT_EQ(aura::client::WINDOW_TYPE_POPUP,
+            popup_shell_surface_1->GetWidget()->GetNativeWindow()->GetType());
+
+  std::unique_ptr<ShellSurface> popup_shell_surface_2 =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetAsPopup()
+          .SetParent(popup_shell_surface_1.get())
+          .BuildShellSurface();
+  EXPECT_TRUE(popup_shell_surface_2->GetWidget()->IsVisible());
+  EXPECT_EQ(aura::client::WINDOW_TYPE_POPUP,
+            popup_shell_surface_2->GetWidget()->GetNativeWindow()->GetType());
+}
+
+TEST_F(ShellSurfaceTest, MenuOnMenu) {
+  std::unique_ptr<ShellSurface> root_shell_surface =
+      test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
+  EXPECT_TRUE(root_shell_surface->GetWidget()->IsVisible());
+
+  std::unique_ptr<ShellSurface> menu_shell_surface_1 =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetAsMenu()
+          .SetParent(root_shell_surface.get())
+          .BuildShellSurface();
+  EXPECT_TRUE(menu_shell_surface_1->GetWidget()->IsVisible());
+  EXPECT_EQ(aura::client::WINDOW_TYPE_MENU,
+            menu_shell_surface_1->GetWidget()->GetNativeWindow()->GetType());
+
+  std::unique_ptr<ShellSurface> menu_shell_surface_2 =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetAsMenu()
+          .SetParent(menu_shell_surface_1.get())
+          .BuildShellSurface();
+  EXPECT_TRUE(menu_shell_surface_2->GetWidget()->IsVisible());
+  EXPECT_EQ(aura::client::WINDOW_TYPE_MENU,
+            menu_shell_surface_2->GetWidget()->GetNativeWindow()->GetType());
+}
+
 TEST_F(ShellSurfaceTest, PopupWithInputRegion) {
   gfx::Size buffer_size(256, 256);
   std::unique_ptr<Buffer> buffer(
@@ -1133,7 +1589,7 @@ TEST_F(ShellSurfaceTest, PopupWithInputRegion) {
 
   auto subsurface =
       std::make_unique<SubSurface>(child_surface.get(), surface.get());
-  subsurface->SetPosition(gfx::Point(10, 10));
+  subsurface->SetPosition(gfx::PointF(10, 10));
   child_surface->SetInputRegion(cc::Region(gfx::Rect(0, 0, 256, 2560)));
   child_surface->Commit();
   surface->Commit();
@@ -1205,6 +1661,43 @@ TEST_F(ShellSurfaceTest, PopupWithInputRegion) {
   }
 }
 
+TEST_F(ShellSurfaceTest, PopupWithInvisibleParent) {
+  // Invisible main window.
+  std::unique_ptr<ShellSurface> root_shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetNoRootBuffer()
+          .BuildShellSurface();
+  EXPECT_FALSE(root_shell_surface->GetWidget()->IsVisible());
+
+  std::unique_ptr<ShellSurface> popup_shell_surface_1 =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetNoRootBuffer()
+          .SetAsPopup()
+          .SetDisableMovement()
+          .SetParent(root_shell_surface.get())
+          .BuildShellSurface();
+
+  EXPECT_EQ(root_shell_surface->GetWidget()->GetNativeWindow(),
+            wm::GetTransientParent(
+                popup_shell_surface_1->GetWidget()->GetNativeWindow()));
+
+  EXPECT_FALSE(popup_shell_surface_1->GetWidget()->IsVisible());
+
+  // Create visible popup.
+  std::unique_ptr<ShellSurface> popup_shell_surface_2 =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetAsPopup()
+          .SetDisableMovement()
+          .SetParent(popup_shell_surface_1.get())
+          .BuildShellSurface();
+
+  EXPECT_TRUE(popup_shell_surface_2->GetWidget()->IsVisible());
+
+  EXPECT_EQ(popup_shell_surface_1->GetWidget()->GetNativeWindow(),
+            wm::GetTransientParent(
+                popup_shell_surface_2->GetWidget()->GetNativeWindow()));
+}
+
 TEST_F(ShellSurfaceTest, Caption) {
   gfx::Size buffer_size(256, 256);
   auto buffer = std::make_unique<Buffer>(
@@ -1258,8 +1751,8 @@ TEST_F(ShellSurfaceTest, DragMaximizedWindow) {
   chromeos::WindowStateType configured_state =
       chromeos::WindowStateType::kDefault;
   shell_surface->set_configure_callback(base::BindLambdaForTesting(
-      [&](const gfx::Size& size, chromeos::WindowStateType state, bool resizing,
-          bool activated, const gfx::Vector2d& origin_offset) {
+      [&](const gfx::Rect& bounds, chromeos::WindowStateType state,
+          bool resizing, bool activated, const gfx::Vector2d& origin_offset) {
         configured_state = state;
         return uint32_t{0};
       }));
@@ -1431,6 +1924,65 @@ TEST_F(ShellSurfaceTest, ServerStartResize) {
             size.width() + kDragAmount);
 }
 
+TEST_F(ShellSurfaceTest, ServerStartResizeComponent) {
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({64, 64}).SetNoCommit().BuildShellSurface();
+  shell_surface->OnSetServerStartResize();
+  shell_surface->root_surface()->Commit();
+  ASSERT_TRUE(shell_surface->GetWidget());
+
+  auto* widget = shell_surface->GetWidget();
+
+  gfx::Size size = widget->GetWindowBoundsInScreen().size();
+  widget->SetBounds(gfx::Rect(size));
+
+  uint32_t serial = 0;
+  auto configure_callback = base::BindRepeating(
+      [](uint32_t* const serial_ptr, const gfx::Rect& bounds,
+         chromeos::WindowStateType state_type, bool resizing, bool activated,
+         const gfx::Vector2d& origin_offset) { return ++(*serial_ptr); },
+      &serial);
+
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(size.width() + 2, size.height() / 2);
+
+  EXPECT_EQ(shell_surface->resize_component_for_test(), HTCAPTION);
+
+  constexpr int kDragAmount = 10;
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseBy(kDragAmount, 0);
+  EXPECT_EQ(shell_surface->resize_component_for_test(), HTCAPTION);
+  shell_surface->AcknowledgeConfigure(serial);
+  shell_surface->root_surface()->Commit();
+  EXPECT_EQ(shell_surface->resize_component_for_test(), HTRIGHT);
+  event_generator->ReleaseLeftButton();
+  shell_surface->AcknowledgeConfigure(serial);
+  shell_surface->root_surface()->Commit();
+  EXPECT_EQ(shell_surface->resize_component_for_test(), HTCAPTION);
+}
+
+// Make sure that dragging to another display will update the origin to
+// correct value.
+TEST_F(ShellSurfaceTest, UpdateBoundsWhenDraggedToAnotherDisplay) {
+  UpdateDisplay("800x600, 800x600");
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({64, 64}).BuildShellSurface();
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  shell_surface->SetWindowBounds({0, 0, 64, 64});
+
+  gfx::Point last_origin;
+  auto origin_change = [&](const gfx::Point& p) { last_origin = p; };
+
+  shell_surface->set_origin_change_callback(
+      base::BindLambdaForTesting(origin_change));
+  event_generator->MoveMouseTo(1, 1);
+  event_generator->PressLeftButton();
+  shell_surface->StartMove();
+  event_generator->MoveMouseTo(801, 1);
+  event_generator->ReleaseLeftButton();
+  EXPECT_EQ(last_origin, gfx::Point(800, 0));
+}
+
 // Make sure that resize shadow does not update until commit when the window
 // property |aura::client::kUseWindowBoundsForShadow| is false.
 TEST_F(ShellSurfaceTest, ResizeShadowIndependentBounds) {
@@ -1444,8 +1996,6 @@ TEST_F(ShellSurfaceTest, ResizeShadowIndependentBounds) {
 
   gfx::Size size = widget->GetWindowBoundsInScreen().size();
   widget->SetBounds(gfx::Rect(size));
-  widget->GetNativeWindow()->SetProperty(
-      aura::client::kUseWindowBoundsForShadow, false);
 
   // Starts mouse event to make sure resize shadow is created.
   ui::test::EventGenerator* event_generator = GetEventGenerator();
@@ -1458,6 +2008,9 @@ TEST_F(ShellSurfaceTest, ResizeShadowIndependentBounds) {
   ASSERT_TRUE(resize_shadow);
   shell_surface->root_surface()->SetFrame(SurfaceFrameType::SHADOW);
   shell_surface->root_surface()->Commit();
+  EXPECT_FALSE(widget->GetNativeWindow()->GetProperty(
+      aura::client::kUseWindowBoundsForShadow));
+
   ui::Shadow* normal_shadow =
       wm::ShadowController::GetShadowForWindow(widget->GetNativeWindow());
   ASSERT_TRUE(normal_shadow);
@@ -1473,7 +2026,7 @@ TEST_F(ShellSurfaceTest, ResizeShadowIndependentBounds) {
   gfx::Rect new_bounds(new_size);
   uint32_t serial = 0;
   auto configure_callback = base::BindRepeating(
-      [](uint32_t* const serial_ptr, const gfx::Size& size,
+      [](uint32_t* const serial_ptr, const gfx::Rect& bounds,
          chromeos::WindowStateType state_type, bool resizing, bool activated,
          const gfx::Vector2d& origin_offset) { return ++(*serial_ptr); },
       &serial);
@@ -1482,7 +2035,7 @@ TEST_F(ShellSurfaceTest, ResizeShadowIndependentBounds) {
 
   // Resize the widget and set geometry.
   shell_surface->StartResize(HTBOTTOMRIGHT);
-  shell_surface->SetWidgetBounds(new_bounds);
+  shell_surface->SetWidgetBounds(new_bounds, /*adjusted_by_server=*/false);
   shell_surface->SetGeometry(new_bounds);
 
   // Client acknowledge configure for resizing. Shadow sizes should not be
@@ -1525,6 +2078,12 @@ TEST_F(ShellSurfaceTest, ResizeShadowDependentBounds) {
   ASSERT_TRUE(resize_shadow);
   shell_surface->root_surface()->SetFrame(SurfaceFrameType::SHADOW);
   shell_surface->root_surface()->Commit();
+  EXPECT_FALSE(widget->GetNativeWindow()->GetProperty(
+      aura::client::kUseWindowBoundsForShadow));
+  // Override the property to update the shadow bounds immediately.
+  widget->GetNativeWindow()->SetProperty(
+      aura::client::kUseWindowBoundsForShadow, true);
+
   ui::Shadow* normal_shadow =
       wm::ShadowController::GetShadowForWindow(widget->GetNativeWindow());
   ASSERT_TRUE(normal_shadow);
@@ -1541,7 +2100,7 @@ TEST_F(ShellSurfaceTest, ResizeShadowDependentBounds) {
 
   // Resize the widget and set geometry.
   shell_surface->StartResize(HTBOTTOMRIGHT);
-  shell_surface->SetWidgetBounds(new_bounds);
+  shell_surface->SetWidgetBounds(new_bounds, /*adjusted_by_server=*/false);
   shell_surface->SetGeometry(new_bounds);
   // Shadow bounds are updated as soon as the widget bounds change.
   EXPECT_EQ(
@@ -1779,6 +2338,367 @@ TEST_F(ShellSurfaceTest, NotifyOnWindowCreation) {
   shell_surface->surface_for_testing()->Commit();
 
   EXPECT_EQ(1u, observer.observed_windows().size());
+}
+
+TEST_F(ShellSurfaceTest, Reparent) {
+  auto shell_surface1 = test::ShellSurfaceBuilder({20, 20}).BuildShellSurface();
+  views::Widget* widget1 = shell_surface1->GetWidget();
+
+  // Create a second window.
+  auto shell_surface2 = test::ShellSurfaceBuilder({20, 20}).BuildShellSurface();
+  views::Widget* widget2 = shell_surface2->GetWidget();
+
+  auto child_shell_surface =
+      test::ShellSurfaceBuilder({20, 20}).BuildShellSurface();
+  child_shell_surface->SetParent(shell_surface1.get());
+  views::Widget* child_widget = child_shell_surface->GetWidget();
+  // By default, a child widget is not activatable. Explicitly make it
+  // activatable so that calling child_surface->RequestActivation() is
+  // possible.
+  child_widget->widget_delegate()->SetCanActivate(true);
+
+  GrantPermissionToActivateIndefinitely(widget1->GetNativeWindow());
+  GrantPermissionToActivateIndefinitely(widget2->GetNativeWindow());
+  GrantPermissionToActivateIndefinitely(child_widget->GetNativeWindow());
+
+  shell_surface2->Activate();
+  EXPECT_FALSE(child_widget->ShouldPaintAsActive());
+  EXPECT_FALSE(widget1->ShouldPaintAsActive());
+  EXPECT_TRUE(widget2->ShouldPaintAsActive());
+
+  child_shell_surface->Activate();
+  // A widget should have the same paint-as-active state with its parent.
+  EXPECT_TRUE(child_widget->ShouldPaintAsActive());
+  EXPECT_TRUE(widget1->ShouldPaintAsActive());
+  EXPECT_FALSE(widget2->ShouldPaintAsActive());
+
+  // Reparent child to widget2.
+  child_shell_surface->SetParent(shell_surface2.get());
+  EXPECT_TRUE(child_widget->ShouldPaintAsActive());
+  EXPECT_TRUE(widget2->ShouldPaintAsActive());
+  EXPECT_FALSE(widget1->ShouldPaintAsActive());
+
+  shell_surface1->Activate();
+  EXPECT_FALSE(child_widget->ShouldPaintAsActive());
+  EXPECT_FALSE(widget2->ShouldPaintAsActive());
+  EXPECT_TRUE(widget1->ShouldPaintAsActive());
+
+  // Delete widget1 (i.e. the non-parent widget) shouldn't crash.
+  widget1->Close();
+  shell_surface1.reset();
+
+  child_shell_surface->Activate();
+  EXPECT_TRUE(child_widget->ShouldPaintAsActive());
+  EXPECT_TRUE(widget2->ShouldPaintAsActive());
+}
+
+TEST_F(ShellSurfaceTest, ThrottleFrameRate) {
+  auto shell_surface = test::ShellSurfaceBuilder({20, 20}).BuildShellSurface();
+  SurfaceObserverForTest observer;
+  shell_surface->root_surface()->AddSurfaceObserver(&observer);
+  aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
+
+  EXPECT_CALL(observer, ThrottleFrameRate(true));
+  window->SetProperty(ash::kFrameRateThrottleKey, true);
+
+  EXPECT_CALL(observer, ThrottleFrameRate(false));
+  window->SetProperty(ash::kFrameRateThrottleKey, false);
+
+  shell_surface->root_surface()->RemoveSurfaceObserver(&observer);
+}
+
+namespace {
+
+struct ShellSurfaceCallbacks {
+  struct ConfigureState {
+    gfx::Rect bounds;
+    chromeos::WindowStateType state_type;
+    bool resizing;
+    bool activated;
+  };
+
+  uint32_t OnConfigure(const gfx::Rect& bounds,
+                       chromeos::WindowStateType state_type,
+                       bool resizing,
+                       bool activated,
+                       const gfx::Vector2d& origin_offset) {
+    configure_state.emplace();
+    *configure_state = {bounds, state_type, resizing, activated};
+    return ++serial;
+  }
+  void OnOriginChange(const gfx::Point& origin_) { origin = origin_; }
+  void Reset() {
+    configure_state.reset();
+    origin.reset();
+  }
+  absl::optional<ConfigureState> configure_state;
+  absl::optional<gfx::Point> origin;
+  int32_t serial = 0;
+};
+
+}  // namespace
+
+TEST_F(ShellSurfaceTest, DragWithHTCLIENT) {
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({64, 64}).BuildShellSurface();
+  ShellSurfaceCallbacks callbacks;
+  shell_surface->set_configure_callback(base::BindRepeating(
+      &ShellSurfaceCallbacks::OnConfigure, base::Unretained(&callbacks)));
+  ash::WindowState::Get(shell_surface->GetWidget()->GetNativeWindow())
+      ->CreateDragDetails(gfx::PointF(0, 0), HTCLIENT,
+                          ::wm::WINDOW_MOVE_SOURCE_TOUCH);
+
+  shell_surface->GetWidget()->SetBounds(gfx::Rect(0, 0, 80, 80));
+  shell_surface->AcknowledgeConfigure(callbacks.serial);
+  shell_surface->root_surface()->Commit();
+}
+
+TEST_F(ShellSurfaceTest, ScreenCoordinates) {
+  auto shell_surface = test::ShellSurfaceBuilder({20, 20}).BuildShellSurface();
+  ShellSurfaceCallbacks callbacks;
+
+  shell_surface->set_configure_callback(base::BindRepeating(
+      &ShellSurfaceCallbacks::OnConfigure, base::Unretained(&callbacks)));
+  shell_surface->set_origin_change_callback(base::BindRepeating(
+      &ShellSurfaceCallbacks::OnOriginChange, base::Unretained(&callbacks)));
+
+  shell_surface->SetWindowBounds(gfx::Rect(10, 10, 300, 300));
+  ASSERT_TRUE(!!callbacks.configure_state);
+  ASSERT_TRUE(!callbacks.origin);
+  EXPECT_EQ(callbacks.configure_state->bounds, gfx::Rect(10, 10, 300, 300));
+
+  callbacks.Reset();
+  shell_surface->SetWindowBounds(gfx::Rect(100, 100, 300, 300));
+  ASSERT_TRUE(!callbacks.configure_state);
+  ASSERT_TRUE(!!callbacks.origin);
+  EXPECT_EQ(*callbacks.origin, gfx::Point(100, 100));
+
+  callbacks.Reset();
+  shell_surface->SetWindowBounds(gfx::Rect(0, 0, 300000, 300000));
+  ASSERT_TRUE(!!callbacks.configure_state);
+  EXPECT_EQ(callbacks.configure_state->bounds,
+            display::Screen::GetScreen()->GetPrimaryDisplay().work_area());
+}
+
+TEST_F(ShellSurfaceTest, InitialBounds) {
+  {
+    gfx::Size size(20, 30);
+    auto shell_surface =
+        test::ShellSurfaceBuilder(size).SetNoCommit().BuildShellSurface();
+
+    EXPECT_FALSE(shell_surface->GetWidget());
+    gfx::Rect bounds(gfx::Point(35, 135), size);
+    shell_surface->SetWindowBounds(bounds);
+    shell_surface->root_surface()->Commit();
+
+    ASSERT_TRUE(shell_surface->GetWidget());
+    EXPECT_EQ(bounds, shell_surface->GetWidget()->GetWindowBoundsInScreen());
+  }
+  {
+    // Requesting larger than display work area bounds should not be allowed.
+    gfx::Size size(2000, 3000);
+    auto shell_surface =
+        test::ShellSurfaceBuilder(size).SetNoCommit().BuildShellSurface();
+
+    EXPECT_FALSE(shell_surface->GetWidget());
+    gfx::Rect bounds(gfx::Point(35, 135), size);
+    shell_surface->SetWindowBounds(bounds);
+    shell_surface->root_surface()->Commit();
+
+    ASSERT_TRUE(shell_surface->GetWidget());
+    EXPECT_EQ(display::Screen::GetScreen()->GetPrimaryDisplay().work_area(),
+              shell_surface->GetWidget()->GetWindowBoundsInScreen());
+  }
+}
+
+// Make sure that the centering logic can use the correct size
+// even if there is a pending configure.
+TEST_F(ShellSurfaceTest, InitialCenteredBoundsWithConfigure) {
+  auto shell_surface = test::ShellSurfaceBuilder(gfx::Size(0, 0))
+                           .SetNoRootBuffer()
+                           .SetNoCommit()
+                           .BuildShellSurface();
+  ShellSurfaceCallbacks callbacks;
+  shell_surface->set_configure_callback(base::BindRepeating(
+      &ShellSurfaceCallbacks::OnConfigure, base::Unretained(&callbacks)));
+  shell_surface->root_surface()->Commit();
+  EXPECT_FALSE(shell_surface->GetWidget()->IsVisible());
+
+  gfx::Size size(256, 256);
+  auto new_buffer =
+      std::make_unique<Buffer>(exo_test_helper()->CreateGpuMemoryBuffer(size));
+  shell_surface->root_surface()->Attach(new_buffer.get());
+  shell_surface->root_surface()->Commit();
+  EXPECT_TRUE(shell_surface->GetWidget()->IsVisible());
+
+  gfx::Rect expected =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  expected.ClampToCenteredSize(size);
+  EXPECT_EQ(expected, shell_surface->GetWidget()->GetWindowBoundsInScreen());
+}
+
+// Test that restore info is set correctly.
+TEST_F(ShellSurfaceTest, SetRestoreInfo) {
+  int32_t restore_session_id = 200;
+  int32_t restore_window_id = 100;
+
+  gfx::Size size(20, 30);
+  auto shell_surface =
+      test::ShellSurfaceBuilder(size).SetNoCommit().BuildShellSurface();
+
+  shell_surface->SetRestoreInfo(restore_session_id, restore_window_id);
+  shell_surface->Restore();
+  shell_surface->root_surface()->Commit();
+
+  EXPECT_TRUE(shell_surface->GetWidget()->IsVisible());
+  EXPECT_EQ(restore_session_id,
+            shell_surface->GetWidget()->GetNativeWindow()->GetProperty(
+                app_restore::kWindowIdKey));
+  EXPECT_EQ(restore_window_id,
+            shell_surface->GetWidget()->GetNativeWindow()->GetProperty(
+                app_restore::kRestoreWindowIdKey));
+}
+
+// Test that restore id is set correctly.
+TEST_F(ShellSurfaceTest, SetRestoreInfoWithWindowIdSource) {
+  int32_t restore_session_id = 200;
+  const std::string app_id = "app_id";
+
+  gfx::Size size(20, 30);
+  auto shell_surface =
+      test::ShellSurfaceBuilder(size).SetNoCommit().BuildShellSurface();
+
+  shell_surface->SetRestoreInfoWithWindowIdSource(restore_session_id, app_id);
+  shell_surface->Restore();
+  shell_surface->root_surface()->Commit();
+
+  EXPECT_TRUE(shell_surface->GetWidget()->IsVisible());
+
+  // FetchRestoreWindowId will return 0, because no app with id "app_id" is
+  // installed.
+  EXPECT_EQ(0, shell_surface->GetWidget()->GetNativeWindow()->GetProperty(
+                   app_restore::kRestoreWindowIdKey));
+  EXPECT_EQ(app_id, *shell_surface->GetWidget()->GetNativeWindow()->GetProperty(
+                        app_restore::kAppIdKey));
+}
+
+// Surfaces without non-client view should not crash.
+TEST_F(ShellSurfaceTest, NoNonClientViewWithConfigure) {
+  // Popup windows don't have a non-client view.
+  auto shell_surface =
+      test::ShellSurfaceBuilder({20, 20}).SetAsPopup().BuildShellSurface();
+  ShellSurfaceCallbacks callbacks;
+
+  // Having a configure callback leads to a call to GetClientBoundsInScreen().
+  shell_surface->set_configure_callback(base::BindRepeating(
+      &ShellSurfaceCallbacks::OnConfigure, base::Unretained(&callbacks)));
+
+  shell_surface->SetWindowBounds(gfx::Rect(10, 10, 300, 300));
+  EXPECT_TRUE(callbacks.configure_state);
+  EXPECT_EQ(callbacks.configure_state->bounds, gfx::Rect(10, 10, 300, 300));
+}
+
+TEST_F(ShellSurfaceTest, WindowIsResizableWithEmptySizeConstraints) {
+  auto shell_surface = test::ShellSurfaceBuilder({20, 20})
+                           .SetMinimumSize(gfx::Size(0, 0))
+                           .SetMaximumSize(gfx::Size(0, 0))
+                           .BuildShellSurface();
+  EXPECT_TRUE(shell_surface->GetWidget()->widget_delegate()->CanResize());
+}
+
+TEST_F(ShellSurfaceTest, SetSystemModal) {
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetUseSystemModalContainer()
+          .SetNoCommit()
+          .BuildShellSurface();
+
+  shell_surface->SetSystemModal(true);
+  shell_surface->root_surface()->Commit();
+
+  EXPECT_EQ(ui::MODAL_TYPE_SYSTEM, shell_surface->GetModalType());
+  EXPECT_FALSE(shell_surface->frame_enabled());
+}
+
+TEST_F(ShellSurfaceTest, PipInitialPosition) {
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetUseSystemModalContainer()
+          .SetNoCommit()
+          .BuildShellSurface();
+  shell_surface->SetWindowBounds(gfx::Rect(20, 20, 256, 256));
+  shell_surface->SetPip();
+  shell_surface->root_surface()->Commit();
+  // PIP positioner place the PIP window to the edge that is closer to the given
+  // position
+  EXPECT_EQ(gfx::Rect(8, 20, 256, 256),
+            shell_surface->GetWidget()->GetWindowBoundsInScreen());
+}
+
+TEST_F(ShellSurfaceTest, PostWindowChangeCallback) {
+  chromeos::WindowStateType state_type = chromeos::WindowStateType::kDefault;
+  auto test_callback = base::BindRepeating(
+      [](chromeos::WindowStateType* state_type, const gfx::Rect&,
+         chromeos::WindowStateType new_type, bool, bool,
+         const gfx::Vector2d&) -> uint32_t {
+        *state_type = new_type;
+        return 0;
+      },
+      &state_type);
+
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
+
+  shell_surface->set_configure_callback(test_callback);
+
+  auto* state = ash::WindowState::Get(
+      shell_surface->GetWidget()->GetNativeWindow()->GetToplevelWindow());
+
+  // Make sure we are in a non-snapped state before testing state change.
+  ASSERT_FALSE(state->IsSnapped());
+
+  auto snap_event =
+      std::make_unique<ash::WindowSnapWMEvent>(ash::WM_EVENT_SNAP_PRIMARY);
+
+  // Trigger a snap event, this should cause a configure event.
+  state->OnWMEvent(snap_event.get());
+
+  EXPECT_EQ(state_type, chromeos::WindowStateType::kPrimarySnapped);
+}
+
+// A single configuration event should be sent when both the bounds and the
+// window state change.
+TEST_F(ShellSurfaceTest, ConfigureOnlySentOnceForBoundsAndWindowStateChange) {
+  int times_configured = 0;
+  auto test_callback = base::BindRepeating(
+      [](int* times_configured, const gfx::Rect&,
+         chromeos::WindowStateType new_type, bool, bool,
+         const gfx::Vector2d&) -> uint32_t {
+        ++(*times_configured);
+        return 0;
+      },
+      &times_configured);
+
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({1, 1}).BuildShellSurface();
+
+  shell_surface->set_configure_callback(test_callback);
+
+  auto* state = ash::WindowState::Get(
+      shell_surface->GetWidget()->GetNativeWindow()->GetToplevelWindow());
+
+  // Make sure we are in normal mode. Maximizing from this state should result
+  // in BOTH the bounds and state changing.
+  ASSERT_TRUE(state->IsNormalStateType());
+
+  auto maximize_event = std::make_unique<ash::WMEvent>(ash::WM_EVENT_MAXIMIZE);
+
+  // Trigger a snap event, this should cause a configure event.
+  state->OnWMEvent(maximize_event.get());
+
+  // The bounds change event should have been suppressed because the window
+  // state is changing.
+  EXPECT_EQ(times_configured, 1);
 }
 
 }  // namespace exo

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chromeos/lacros/lacros_service.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "ui/aura/window.h"
 
 namespace crosapi {
@@ -30,7 +29,8 @@ mojom::WebPageInfoPtr PopulateWebPageInfoFromBrowser(const Browser* browser) {
   if (!contents)
     return nullptr;
 
-  ukm::SourceId source_id = ukm::GetSourceIdForWebContentsDocument(contents);
+  ukm::SourceId source_id =
+      contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
   if (source_id == ukm::kInvalidSourceId)
     return nullptr;
 

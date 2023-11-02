@@ -29,7 +29,7 @@
 #include "third_party/blink/renderer/core/svg/svg_matrix_tear_off.h"
 #include "third_party/blink/renderer/core/svg/svg_rect_tear_off.h"
 #include "third_party/blink/renderer/core/svg_names.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 
@@ -73,7 +73,7 @@ AffineTransform SVGGraphicsElement::ComputeCTM(
     if (!svg_element)
       break;
 
-    ctm = svg_element->LocalCoordinateSpaceTransform(mode).Multiply(ctm);
+    ctm = svg_element->LocalCoordinateSpaceTransform(mode).PreConcat(ctm);
 
     switch (mode) {
       case kNearestViewportScope:
@@ -149,8 +149,6 @@ void SVGGraphicsElement::SvgAttributeChanged(
     // away with removing the InvalidationGuard?
     SetNeedsStyleRecalc(kLocalStyleChange,
                         StyleChangeReasonForTracing::FromAttribute(attr_name));
-    if (LayoutObject* object = GetLayoutObject())
-      MarkForLayoutAndParentResourceInvalidation(*object);
     return;
   }
 

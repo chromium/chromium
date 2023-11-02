@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@ package org.chromium.android_webview;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.os.Build;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.ColorUtils;
@@ -63,12 +64,22 @@ public class DarkModeHelper {
         }
     }
 
+    // must use getIdentifier to access resources from another app
+    @SuppressWarnings("DiscouragedApi")
     @LightTheme
     public static int getLightTheme(Context context) {
         if (sLightThemeForTesting != null) return sLightThemeForTesting;
         int lightTheme = LightTheme.LIGHT_THEME_UNDEFINED;
-        TypedArray a =
-                context.getTheme().obtainStyledAttributes(new int[] {android.R.attr.isLightTheme});
+        int resId = android.R.attr.isLightTheme;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            // android.R.attr.isLightTheme is added in Q, for pre-Q platform, WebView
+            // checks if app has isLightTheme attr which could be added by Android X
+            // and wasn't stripped out.
+            resId = context.getApplicationContext().getResources().getIdentifier(
+                    "isLightTheme", "attr", context.getApplicationContext().getPackageName());
+            if (resId == 0) return lightTheme;
+        }
+        TypedArray a = context.getTheme().obtainStyledAttributes(new int[] {resId});
         if (a.hasValue(0)) {
             lightTheme = a.getBoolean(0, true) ? LightTheme.LIGHT_THEME_TRUE
                                                : LightTheme.LIGHT_THEME_FALSE;

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2021 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <resources>
     <dimen name="toolbar_tab_count_text_size_1_digit">12dp</dimen>
@@ -17,6 +19,9 @@
 
     <!-- Toolbar Phone - padding of the optional button when menu button is present -->
     <dimen name="toolbar_phone_optional_button_padding">12dp</dimen>
+
+    <!-- Home Button Menu dimensions-->
+    <dimen name="home_button_list_menu_width">222dp</dimen>
 
     <dimen name="menu_badge_translation_y">6dp</dimen>
 
@@ -34,6 +39,11 @@
     <!-- Start surface toolbar dimensions -->
     <dimen name="start_surface_toolbar_button_padding_to_button">8dp</dimen>
     <dimen name="start_surface_toolbar_button_padding_to_edge">16dp</dimen>
+    <dimen name="start_surface_fake_search_box_top_margin">24dp</dimen>
+    <dimen name="identity_disc_button_margin_start">16dp</dimen>
+    <!-- The total height of the logo shown in Start surface content. This is
+    calculated by |ntp_logo_height + ntp_logo_margin_top + ntp_logo_margin_bottom|. -->
+    <dimen name="start_surface_content_logo_height">149dp</dimen>
 
     <!-- Navigation history popup dimensions -->
     <dimen name="navigation_popup_width">312dp</dimen>

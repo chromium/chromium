@@ -8,6 +8,15 @@
       "invalidations": [
         [38, 74, 152, 110]
       ]
+    },
+    {
+      "name": "Caret",
+      "position": [39, 75],
+      "bounds": [1, 18],
+      "contentsOpaque": true,
+      "invalidations": [
+        [0, 0, 1, 18]
+      ]
     }
   ]
 }

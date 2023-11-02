@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -72,7 +72,7 @@ std::vector<IndicatorSpec> GetIndicatorSpecs() {
       {kBluetoothConnectedIndicator, kWebVrBluetoothConnectedIndicator,
        vector_icons::kBluetoothConnectedIcon,
        IDS_VR_SHELL_SITE_IS_USING_BLUETOOTH,
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
        IDS_VR_SHELL_BG_IS_USING_BLUETOOTH,
 #else
        0,
@@ -89,7 +89,7 @@ std::vector<IndicatorSpec> GetIndicatorSpecs() {
        &CapturingStateModel::screen_capture_enabled,
        false},
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
       {kUsbConnectedIndicator, kWebXrUsbConnectedIndicator,
        vector_icons::kUsbIcon,
        IDS_VR_SHELL_SITE_IS_USING_USB,

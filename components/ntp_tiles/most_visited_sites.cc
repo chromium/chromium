@@ -1,10 +1,11 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/ntp_tiles/most_visited_sites.h"
 
 #include <algorithm>
+#include <cctype>
 #include <iterator>
 #include <memory>
 #include <utility>
@@ -15,18 +16,28 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/user_metrics.h"
+#include "base/observer_list.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/ntp_tiles/constants.h"
+#include "components/ntp_tiles/deleted_tile_type.h"
 #include "components/ntp_tiles/features.h"
 #include "components/ntp_tiles/icon_cacher.h"
+#include "components/ntp_tiles/metrics.h"
 #include "components/ntp_tiles/pref_names.h"
 #include "components/ntp_tiles/switches.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
+#include "components/webapps/common/constants.h"
+#include "extensions/buildflags/buildflags.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// GN doesn't understand conditional includes, so we need nogncheck here.
+#include "extensions/common/constants.h"  // nogncheck
+#endif
 
 using history::TopSites;
 
@@ -115,13 +126,15 @@ MostVisitedSites::MostVisitedSites(
     std::unique_ptr<PopularSites> popular_sites,
     std::unique_ptr<CustomLinksManager> custom_links,
     std::unique_ptr<IconCacher> icon_cacher,
-    std::unique_ptr<MostVisitedSitesSupervisor> supervisor)
+    std::unique_ptr<MostVisitedSitesSupervisor> supervisor,
+    bool is_default_chrome_app_migrated)
     : prefs_(prefs),
       top_sites_(top_sites),
       popular_sites_(std::move(popular_sites)),
       custom_links_(std::move(custom_links)),
       icon_cacher_(std::move(icon_cacher)),
       supervisor_(std::move(supervisor)),
+      is_default_chrome_app_migrated_(is_default_chrome_app_migrated),
       max_num_sites_(0u),
       mv_source_(TileSource::TOP_SITES),
       is_observing_(false) {
@@ -709,8 +722,19 @@ void MostVisitedSites::MergeMostVisitedTiles(NTPTilesVector personal_tiles) {
 void MostVisitedSites::SaveTilesAndNotify(
     NTPTilesVector new_tiles,
     std::map<SectionType, NTPTilesVector> sections) {
-  if (!current_tiles_.has_value() || (*current_tiles_ != new_tiles)) {
-    current_tiles_.emplace(std::move(new_tiles));
+  // TODO(https://crbug.com/1266574):
+  // Remove this after preinstalled apps are migrated.
+
+  NTPTilesVector fixed_tiles = is_default_chrome_app_migrated_
+                                   ? RemoveInvalidPreinstallApps(new_tiles)
+                                   : new_tiles;
+
+  if (fixed_tiles.size() != new_tiles.size()) {
+    metrics::RecordsMigratedDefaultAppDeleted(
+        DeletedTileType::kMostVisitedSite);
+  }
+  if (!current_tiles_.has_value() || (*current_tiles_ != fixed_tiles)) {
+    current_tiles_.emplace(std::move(fixed_tiles));
 
     int num_personal_tiles = 0;
     for (const auto& tile : *current_tiles_) {
@@ -730,6 +754,40 @@ void MostVisitedSites::SaveTilesAndNotify(
 }
 
 // static
+bool MostVisitedSites::IsNtpTileFromPreinstalledApp(GURL url) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  return url.is_valid() && url.SchemeIs(extensions::kExtensionScheme) &&
+         extension_misc::IsPreinstalledAppId(url.host());
+#else
+  return false;
+#endif
+}
+
+// static
+bool MostVisitedSites::WasNtpAppMigratedToWebApp(PrefService* prefs, GURL url) {
+  const base::Value::List& migrated_apps =
+      prefs->GetList(webapps::kWebAppsMigratedPreinstalledApps);
+  for (const auto& val : migrated_apps) {
+    if (val.is_string() && val.GetString() == url.host())
+      return true;
+  }
+  return false;
+}
+
+NTPTilesVector MostVisitedSites::RemoveInvalidPreinstallApps(
+    NTPTilesVector new_tiles) {
+  new_tiles.erase(
+      std::remove_if(new_tiles.begin(), new_tiles.end(),
+                     [this](NTPTile ntp_tile) {
+                       return MostVisitedSites::IsNtpTileFromPreinstalledApp(
+                                  ntp_tile.url) &&
+                              MostVisitedSites::WasNtpAppMigratedToWebApp(
+                                  prefs_, ntp_tile.url);
+                     }),
+      new_tiles.end());
+  return new_tiles;
+}
+
 NTPTilesVector MostVisitedSites::MergeTiles(
     NTPTilesVector personal_tiles,
     NTPTilesVector popular_tiles,

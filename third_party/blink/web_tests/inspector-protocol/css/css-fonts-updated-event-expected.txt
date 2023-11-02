@@ -4,6 +4,7 @@ normal
 normal
 normal
 normal
+auto
 U+0-10FFFE
 ಠ_ಠNoto Monoಠ_ಠ
 SUCCESS: CSS.FontsUpdated events received.

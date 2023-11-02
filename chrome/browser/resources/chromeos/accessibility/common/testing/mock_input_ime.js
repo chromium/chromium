@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,6 +42,9 @@ var MockInputIme = {
   /** @private {MockImeCommitParameters} */
   lastCommittedParameters_: null,
 
+  /** @private {Resolve?} */
+  waitForCommitResolve_: null,
+
   // Methods from chrome.input.ime API. //
 
   onFocus: {
@@ -49,7 +52,7 @@ var MockInputIme = {
      * Adds a listener to onFocus.
      * @param {function<InputContext>} listener
      */
-    addListener: (listener) => {
+    addListener: listener => {
       MockInputIme.onFocusListener_ = listener;
     },
 
@@ -57,11 +60,11 @@ var MockInputIme = {
      * Removes the listener.
      * @param {function<InputContext>} listener
      */
-    removeListener: (listener) => {
+    removeListener: listener => {
       if (MockInputIme.onFocusListener_ === listener) {
         MockInputIme.onFocusListener_ = null;
       }
-    }
+    },
   },
 
   onBlur: {
@@ -69,7 +72,7 @@ var MockInputIme = {
      * Adds a listener to onBlur.
      * @param {function<number>} listener
      */
-    addListener: (listener) => {
+    addListener: listener => {
       MockInputIme.onBlurListener_ = listener;
     },
 
@@ -77,11 +80,11 @@ var MockInputIme = {
      * Removes the listener.
      * @param {function<number>} listener
      */
-    removeListener: (listener) => {
+    removeListener: listener => {
       if (MockInputIme.onBlurListener_ === listener) {
         MockInputIme.onBlurListener_ = null;
       }
-    }
+    },
   },
 
   /** @param {!MockImeCompositionParameters} composition */
@@ -97,6 +100,10 @@ var MockInputIme = {
   /** @param {!MockImeCommitParameters} commitParameters */
   commitText(commitParameters) {
     MockInputIme.lastCommittedParameters_ = commitParameters;
+    if (this.waitForCommitResolve_) {
+      this.waitForCommitResolve_();
+      this.waitForCommitResolve_ = null;
+    }
   },
 
   /** @param {Object} unused */
@@ -148,5 +155,15 @@ var MockInputIme = {
   clearLastParameters() {
     MockInputIme.lastCommittedParameters_ = null;
     MockInputIme.lastCompositionParameters_ = null;
+  },
+
+  /**
+   * Returns a promise which waits for the next committed text to resolve.
+   * @return {!Promise}
+   */
+  async waitForCommit() {
+    return new Promise(resolve => {
+      this.waitForCommitResolve_ = resolve;
+    });
   },
 };

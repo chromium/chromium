@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/url_formatter/url_formatter.h"
 #include "url/gurl.h"
@@ -38,7 +39,8 @@ class LocationBarModelImpl : public LocationBarModel {
   security_state::SecurityLevel GetSecurityLevel() const override;
   net::CertStatus GetCertStatus() const override;
   metrics::OmniboxEventProto::PageClassification GetPageClassification(
-      OmniboxFocusSource focus_source) override;
+      OmniboxFocusSource focus_source,
+      bool is_prefetch = false) override;
   const gfx::VectorIcon& GetVectorIcon() const override;
   std::u16string GetSecureDisplayText() const override;
   std::u16string GetSecureAccessibilityText() const override;
@@ -51,7 +53,7 @@ class LocationBarModelImpl : public LocationBarModel {
   std::u16string GetFormattedURL(
       url_formatter::FormatUrlTypes format_types) const;
 
-  LocationBarModelDelegate* delegate_;
+  raw_ptr<LocationBarModelDelegate> delegate_;
   const size_t max_url_display_chars_;
 };
 

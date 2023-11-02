@@ -1,8 +1,8 @@
-# SAML for Chrome OS login and enrollment
+# SAML for ChromeOS login and enrollment
 
 [TOC]
 
-## SAML authentication in Chrome OS
+## SAML authentication in ChromeOS
 By default, authentication for Google accounts is handled by Gaia, Google's
 externally available account service. When an unauthenticated user visits a
 [Google page](https://accounts.google.com), the GAIA login form is shown. This
@@ -18,12 +18,12 @@ A domain can be [configured](https://support.google.com/a?p=sso) to
 use SAML authentication.
 
 ## Obtaining the user’s password
-Chrome OS needs to know the user's password entered during login to
+ChromeOS needs to know the user's password entered during login to
 * encrypt the user’s data stored on the disk drive,
 * protect the lock screen and to
 * enable offline login when there is no network accessibility.
 
-The problem with SAML is that the password is not entered on a Chrome OS system
+The problem with SAML is that the password is not entered on a ChromeOS system
 dialog directly, but inside a webview hosted by the IdP. While the OS has access
 to the HTML, there is no simple, canonical way to get the password as it is
 unclear in general which form fields contain the data.
@@ -62,20 +62,20 @@ Three cases are possible:
    requires the user to enter a permanent password and a one-time password into
    the login form.
 
-Case 1 will cause Chrome OS login to ask the user to
+Case 1 will cause ChromeOS login to ask the user to
 [pick a manual password for the device](https://cs.chromium.org/chromium/src/chrome/browser/resources/chromeos/login/screen_gaia_signin.js?rcl=c4dd0ee9aebc827a18caa7cb0fdcf7c123d1a29f&l=981).
 If the password does not exist in the first place (e.g. authentication by smart
-cards, NFC, biometry), Chrome OS login may
+cards, NFC, biometry), ChromeOS login may
 [proceed without the password](https://cs.chromium.org/chromium/src/chrome/browser/resources/gaia_auth_host/authenticator.js?rcl=faf24c60e6177fe0dcda857ec257d84ebabddc0e&l=799).
 
 Case 2 is the ideal case. We most likely scraped the user’s password correctly.
-Chrome OS login
+ChromeOS login
 [uses it as the user's password](https://cs.chromium.org/chromium/src/chrome/browser/resources/gaia_auth_host/authenticator.js?rcl=faf24c60e6177fe0dcda857ec257d84ebabddc0e&l=708).
 
 Case 3 indicates that we probably scraped the user’s actual password and some
 additional password fields containing additional credentials that are not of
-interest to Chrome OS. In order to determine which one is the correct password,
-Chrome OS asks the user to enter the password once more into an additional
+interest to ChromeOS. In order to determine which one is the correct password,
+ChromeOS asks the user to enter the password once more into an additional
 password prompt. If the password entered matches one of the scraped password,
 the user’s actual password has been identified and login is successful. The user
 can try again if there is no match. After two mismatches, login fails with an

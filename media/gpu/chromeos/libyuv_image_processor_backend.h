@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/image_processor_backend.h"
 #include "media/gpu/media_gpu_export.h"
 #include "ui/gfx/geometry/rect.h"
@@ -30,7 +31,7 @@ class MEDIA_GPU_EXPORT LibYUVImageProcessorBackend
   static std::unique_ptr<ImageProcessorBackend> Create(
       const PortConfig& input_config,
       const PortConfig& output_config,
-      const std::vector<OutputMode>& preferred_output_modes,
+      OutputMode output_mode,
       VideoRotation relative_rotation,
       ErrorCB error_cb,
       scoped_refptr<base::SequencedTaskRunner> backend_task_runner);
@@ -43,6 +44,12 @@ class MEDIA_GPU_EXPORT LibYUVImageProcessorBackend
   void Process(scoped_refptr<VideoFrame> input_frame,
                scoped_refptr<VideoFrame> output_frame,
                FrameReadyCB cb) override;
+
+  bool needs_linear_output_buffers() const override;
+
+  static std::vector<Fourcc> GetSupportedOutputFormats(Fourcc input_format);
+
+  bool supports_incoherent_buffers() const override;
 
  private:
   LibYUVImageProcessorBackend(

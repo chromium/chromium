@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -150,13 +150,10 @@ void CastMediaBlocker::OnRenderFrameCreated(
 void CastMediaBlocker::UpdateBackgroundVideoPlaybackState() {
   if (!web_contents())
     return;
-  web_contents()->ForEachRenderFrameHost(base::BindRepeating(
-      [](CastMediaBlocker* cast_media_blocker,
-         content::RenderFrameHost* frame) {
-        cast_media_blocker->UpdateRenderFrameBackgroundVideoPlaybackState(
-            frame);
-      },
-      this));
+  web_contents()->ForEachRenderFrameHost(
+      [this](content::RenderFrameHost* frame) {
+        UpdateRenderFrameBackgroundVideoPlaybackState(frame);
+      });
 }
 
 void CastMediaBlocker::UpdateRenderFrameBackgroundVideoPlaybackState(

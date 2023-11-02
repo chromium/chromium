@@ -1,46 +1,47 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_SERVICES_IME_RULE_BASED_ENGINE_H_
 #define ASH_SERVICES_IME_RULE_BASED_ENGINE_H_
 
-#include "ash/services/ime/input_engine.h"
 #include "ash/services/ime/public/cpp/rulebased/engine.h"
 #include "ash/services/ime/public/cpp/suggestions.h"
 #include "ash/services/ime/public/mojom/input_method.mojom.h"
 #include "ash/services/ime/public/mojom/input_method_host.mojom.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 
-namespace chromeos {
+namespace ash {
 namespace ime {
 
 // Handles rule-based input methods such as Arabic and Vietnamese.
 // Rule-based input methods are based off deterministic rules and do not
 // provide features such as suggestions.
-class RuleBasedEngine : public InputEngine, public mojom::InputMethod {
+class RuleBasedEngine : public mojom::InputMethod {
  public:
   // Returns nullptr if |ime_spec| is not valid for this RuleBasedEngine.
   static std::unique_ptr<RuleBasedEngine> Create(
       const std::string& ime_spec,
-      mojo::PendingReceiver<mojom::InputMethod> receiver,
-      mojo::PendingRemote<mojom::InputMethodHost> host);
+      mojo::PendingAssociatedReceiver<mojom::InputMethod> receiver,
+      mojo::PendingAssociatedRemote<mojom::InputMethodHost> host);
 
   RuleBasedEngine(const RuleBasedEngine& other) = delete;
   RuleBasedEngine& operator=(const RuleBasedEngine& other) = delete;
   ~RuleBasedEngine() override;
 
-  // InputEngine:
-  bool IsConnected() override;
+  bool IsConnected();
 
   // mojom::InputMethod overrides:
   // Most of these methods are deliberately empty because rule-based input
   // methods do not need to listen to these events.
+  void OnFocusDeprecated(mojom::InputFieldInfoPtr input_field_info,
+                         mojom::InputMethodSettingsPtr settings) override {}
   void OnFocus(mojom::InputFieldInfoPtr input_field_info,
-               mojom::InputMethodSettingsPtr settings) override {}
+               mojom::InputMethodSettingsPtr settings,
+               OnFocusCallback callback) override;
   void OnBlur() override {}
   void OnSurroundingTextChanged(
       const std::string& text,
@@ -50,16 +51,19 @@ class RuleBasedEngine : public InputEngine, public mojom::InputMethod {
   void ProcessKeyEvent(mojom::PhysicalKeyEventPtr event,
                        ProcessKeyEventCallback callback) override;
   void OnCandidateSelected(uint32_t selected_candidate_index) override;
+  void OnQuickSettingsUpdated(
+      mojom::InputMethodQuickSettingsPtr quick_settings) override;
+  void IsReadyForTesting(IsReadyForTestingCallback callback) override;
 
   // TODO(https://crbug.com/837156): Implement a state for the interface.
 
  private:
   RuleBasedEngine(const std::string& ime_spec,
-                  mojo::PendingReceiver<mojom::InputMethod> receiver,
-                  mojo::PendingRemote<mojom::InputMethodHost> host);
+                  mojo::PendingAssociatedReceiver<mojom::InputMethod> receiver,
+                  mojo::PendingAssociatedRemote<mojom::InputMethodHost> host);
 
-  mojo::Receiver<mojom::InputMethod> receiver_;
-  mojo::Remote<mojom::InputMethodHost> host_;
+  mojo::AssociatedReceiver<mojom::InputMethod> receiver_;
+  mojo::AssociatedRemote<mojom::InputMethodHost> host_;
 
   rulebased::Engine engine_;
 
@@ -68,6 +72,6 @@ class RuleBasedEngine : public InputEngine, public mojom::InputMethod {
 };
 
 }  // namespace ime
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_IME_RULE_BASED_ENGINE_H_

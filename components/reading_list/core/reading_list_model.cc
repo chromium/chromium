@@ -1,10 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/reading_list/core/reading_list_model.h"
 
 #include "base/check_op.h"
+#include "base/observer_list.h"
 
 ReadingListModel::ReadingListModel() : current_batch_updates_count_(0) {}
 

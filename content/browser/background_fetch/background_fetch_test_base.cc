@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,6 @@
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/storage_partition_impl.h"
-#include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -120,7 +119,8 @@ int64_t BackgroundFetchTestBase::RegisterServiceWorkerForOrigin(
         blink::mojom::FetchClientSettingsObject::New(),
         base::BindOnce(&DidRegisterServiceWorker,
                        &service_worker_registration_id, run_loop.QuitClosure()),
-        /*requesting_frame_id=*/GlobalRenderFrameHostId());
+        /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+        PolicyContainerPolicies());
 
     run_loop.Run();
   }
@@ -201,7 +201,8 @@ BackgroundFetchTestBase::CreateBackgroundFetchRegistrationData(
 
 scoped_refptr<DevToolsBackgroundServicesContextImpl>
 BackgroundFetchTestBase::devtools_context() {
-  return storage_partition()->GetDevToolsBackgroundServicesContext();
+  return static_cast<DevToolsBackgroundServicesContextImpl*>(
+      storage_partition()->GetDevToolsBackgroundServicesContext());
 }
 
 }  // namespace content

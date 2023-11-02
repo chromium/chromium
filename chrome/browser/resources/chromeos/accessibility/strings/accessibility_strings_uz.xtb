@@ -30,7 +30,9 @@
 <translation id="1189258430971676908">Mashq hududi: Pastga ochiladigan roʻyxatlar</translation>
 <translation id="1195238899008218998">Xotima</translation>
 <translation id="1197088940767939838">Apelsinrang</translation>
+<translation id="1198865190323699001">Sensorli ishoralar</translation>
 <translation id="1201402288615127009">Keyingisi</translation>
+<translation id="1202112913213080585">bekor qilish</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">Bundan keyin boshqa 2-darajali sarlavha mavjud emas</translation>
 <translation id="1212770441379271564">Quyidagi tezkor tugmalar ChromeVox buyruqlari emas, lekin Chrome bilan ishlashda juda foydali bo‘ladi:
@@ -41,6 +43,7 @@
     Chrome brauzeri menyusini ochish uchun “Alt + F” tugmalarini bosing.</translation>
 <translation id="1213216066620407844">ChromeVox - Chrome’ga ovoz baxsh etib</translation>
 <translation id="1225969361094801578">Koʻkimtir toʻq kulrang</translation>
+<translation id="122928249241119550">avvalgi gapga oʻtish</translation>
 <translation id="1230503547248836149">Matnni belgilashni boshlash</translation>
 <translation id="1236794971743289975">Yakuniy izoh</translation>
 <translation id="1237797094773582699">Toʻrt barmoq bilan oʻngdan chapga surish kabi avvalgi boʻlimga qaytish mumkin. Hoziroq sinang!</translation>
@@ -134,9 +137,9 @@
 <translation id="1812527064848182527">yotiq</translation>
 <translation id="1829244130665387512">Sahifa ichidan qidirish</translation>
 <translation id="1834891354138622109">Ustun</translation>
-<translation id="1845944666972354496">Faollashtirish uchun ikki marta bosing</translation>
 <translation id="1846771122725914429">Bluetooth brayl displeyi</translation>
 <translation id="1852018405765032699">Ekranni toʻrtta barmoq bilan bosish orqali ChromeVox menyusini ochish va yopish mumkin. Bu menyu buyruqlar va yorliqlar haqidagi foydali axborotlardan iborat. Menyu ochilganda undagi elementlarni bir barmoq svaypi bilan varaqlash, ikki marta bosish orqali kerakli elementni faollashtirish mumkin. Davom etish uchun ekranni toʻrtta barmoq bilan bosing.</translation>
+<translation id="1864430479908918647">Qidiruv+Boʻshliq tugmalarini bosing</translation>
 <translation id="1865601187525349519">Matn oxiri</translation>
 <translation id="1876229593313240038">doc</translation>
 <translation id="1902396333223336119">Katakcha</translation>
@@ -211,6 +214,7 @@
 <translation id="2435422727584637732">Xira koʻk</translation>
 <translation id="2438712309510062123">Taklif qilish</translation>
 <translation id="2450814015951372393">Belgilash katakchasi</translation>
+<translation id="2450992626945324272">keyingi gapga oʻtish</translation>
 <translation id="2461822463642141190">Ayni vaqtda</translation>
 <translation id="2462626033734746142">Tanlash tugmalari guruhi</translation>
 <translation id="2467741090055146971">tanlovni bekor qilish</translation>
@@ -233,6 +237,7 @@
 <translation id="2619344480613750862">Ekran qismlarini ham shunday varaqlash mumkin. Masalan launcher, javon yoki Chrome varaqlariaro. Keyingi qismga almashtirish uchun toʻrtta barmoq bilan ekranni chapga suring. Buni hoziroq sinab koʻring.</translation>
 <translation id="2624431853467395961">O‘rganish rejimini ochish</translation>
 <translation id="2626530649491650971">clickable</translation>
+<translation id="263637551280112393">Search+Shift+Space tugmalarini bosing</translation>
 <translation id="2637227747952042642">Matem</translation>
 <translation id="2638785836053527382">Yuklab olish davom ettirildi: <ph name="FILE_NAME" /></translation>
 <translation id="2639750663247012216">ChromeVox modifikatori</translation>
@@ -388,7 +393,9 @@
 <translation id="3492609944033322585">{COUNT,plural, =1{o‘ng qavs}other{# ta o‘ng qavs}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
 <translation id="3497063866483065785">{COUNT,plural, =1{so‘roq belgisi}other{# ta so‘roq belgisi}}</translation>
+<translation id="3505359110822747654">ChromeVox menyularini yigʻish</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{sirkumfleks belgisi}other{# ta sirkumfleks belgisi}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{oq marker}other{# ta oq marker}}</translation>
 <translation id="352577523970648069">Tahrirlanadigan matn</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152">kesib olish: <ph name="TEXT" />.</translation>
@@ -485,6 +492,7 @@
 <translation id="42164919740161077">Eski gumbazrang</translation>
 <translation id="4217571870635786043">Ovoz bilan yozish</translation>
 <translation id="4218529045364428769">{COUNT,plural, =1{tire belgisi}other{# ta tire belgisi}}</translation>
+<translation id="4220024144662591089"><ph name="START_PHRASE" /> — <ph name="END_PHRASE" /> dan tanlash</translation>
 <translation id="4221012616705981690">Bundan oldin boshqa roʻyxat mavjud emas</translation>
 <translation id="4225355998815256469">Shakl sozlamalari</translation>
 <translation id="4230834257931120629">Och koʻkimtir kulrang</translation>
@@ -503,6 +511,7 @@
 <translation id="4300318234632215983">Havoladan keyingi URL manzilni e’lon qilish</translation>
 <translation id="4322625298640984693">Toʻq zangrang</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{nuqta}=3{uch nuqta}other{# ta nuqta}}</translation>
+<translation id="4352022650330571548"><ph name="PHRASE" /> deb yozing</translation>
 <translation id="4372435075475052704">min:<ph name="X" /></translation>
 <translation id="4372705107434148843">Nutqni to‘xtatish</translation>
 <translation id="4376316291247992553">Grafik elementlarni Brayl yozuviga o‘tkazish</translation>
@@ -520,6 +529,7 @@
 <translation id="4479068155583208887">Toʻq xira qizil</translation>
 <translation id="4482330759234983253">Avvalgi jadval</translation>
 <translation id="4491109536499578614">Tasvir</translation>
+<translation id="4507332368061453500">Joriy elementni biroz bosib turish</translation>
 <translation id="4511186779140817916">Archilgan bodomrang</translation>
 <translation id="451510441928265982">Bundan oldin boshqa 4-darajali sarlavha mavjud emas</translation>
 <translation id="4515799157838123044">Fondagi kontentni xiralashtirish</translation>
@@ -532,6 +542,7 @@
 <translation id="4601367666219428522">jdv <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Keyingi tugmalar bosilishini o‘tkazib yuborish</translation>
 <translation id="4623097797855662355">Nashriyot ramzi</translation>
+<translation id="4624970070706497034">TalkBack endi Chromebook qurilmalarini sozlamaydi. Undan foydalanishingiz mumkin, lekin TalkBack standart klaviatura tugmalaridan foydalaning. Mavjud tugmalarni koʻrish uchun avval Search+A, keyin esa K tugmasini bosing. Hali ham TalkBack ishlatishni istasangiz, buyruq ustiga yana bir marta bosing.</translation>
 <translation id="463135993322337640">Yangi o‘zgarishlarni ko‘rish uchun ChromeVox tugmasini, keyin esa O va N harflarini bosing</translation>
 <translation id="4649220074413114917">Ekranni ikkita barmoq bilan bosish orqali joriy qidiruvni bekor qilish mumkin. Bu ChromeVox biror nimani oʻqimasligi kerak boʻlganda qulay. Davom etish uchun ekranni ikkita barmoq bilan bosing.</translation>
 <translation id="4660783501463101648">ChromeVox Classic olib tashlandi. Endi unga klaviatura orqali qaytib bo‘lmaydi.</translation>
@@ -587,7 +598,6 @@
 <translation id="4993152509206108683">Nutq tezligi: <ph name="PERCENT" />%</translation>
 <translation id="4994420463726586413">Batareyaning joriy holati aytilsin</translation>
 <translation id="4997282455736854877">“<ph name="NAME" />” tanlash tugmasi belgilandi</translation>
-<translation id="5011664330025416377">Faollashtirish uchun Search+Probel tugmalarini bosing</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, menyu elementi (radio tugma) tanlandi</translation>
 <translation id="5020651427400641814">Ovozlar jurnalini yoqish</translation>
 <translation id="5041394372352067729">Breyl ekranini sahifa tepasiga joylash</translation>
@@ -614,7 +624,6 @@
 <translation id="5170206230005240598">Brayl yozuvidagi taglavhalar yoniq</translation>
 <translation id="5183440668879371625">Avvalgi qator</translation>
 <translation id="5189244881767082992">Chiziq</translation>
-<translation id="5234747236692380506"><ph name="TEXT" /> yozish</translation>
 <translation id="5263034204789987535">Och qumrang</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">Tugatish</translation>
@@ -641,6 +650,7 @@
 <translation id="5355014376930441909">Keyingi qism mavjud emas</translation>
 <translation id="5368000168321181111">Ovoz signallari o‘chirib qo‘yildi</translation>
 <translation id="5368505757342402527">Yuklab olinmoqda (<ph name="PROGRESS" />%): <ph name="FILE_NAME" />. Taxminan <ph name="TIME" /> <ph name="UNITS" /> qoldi.</translation>
+<translation id="5381388086899614489">bosib turing</translation>
 <translation id="5400836586163650660">Kulrang</translation>
 <translation id="5402367795255837559">Brayl yozuvi</translation>
 <translation id="5402791055281059602">Modal bildirishnoma</translation>
@@ -662,6 +672,7 @@
 <translation id="5522423213731659107">Qisqa kurs tugadi!</translation>
 <translation id="5534303576632885660">hdr</translation>
 <translation id="5539820223028224601">Och kulrang</translation>
+<translation id="554893713779400387">Diktovkani yoqish</translation>
 <translation id="5549179427201066174">Ovoz signallarini (earcons) yoqish yoki faolsizlantirish</translation>
 <translation id="556042886152191864">Tugma</translation>
 <translation id="5561345396546889625">Keyingi ro‘yxat</translation>
@@ -672,6 +683,7 @@
 <translation id="5597170376237141345">Keyingi belgilash katakchasi</translation>
 <translation id="5598905979683743333">“<ph name="NAME" />” tanlash tugmasi belgilanmadi</translation>
 <translation id="5601172225407283979">Standart amalni bajarish</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{kvadrat marker}other{# ta kvadrat marker}}</translation>
 <translation id="5608798115546226984">Avto-to‘ldirish qatori</translation>
 <translation id="5616029807486814372">Keyingi dars</translation>
 <translation id="561939826962581046">vaqt</translation>
@@ -679,6 +691,8 @@
 <translation id="5623842676595125836">Jurnal</translation>
 <translation id="5628125749885014029">h4</translation>
 <translation id="5632083598315326067">Grafik belgi</translation>
+<translation id="5648939288050772726">Tabriklaymiz! Siz ChromeVoxni ishlatish haqidagi boshlangʻich saboqlar bilan tanishdingiz. Eslatma: Qidiruv+Nuqta tugmalarini bosish orqali ChromeVox menyusini istalgan vaqtda chiqarish mumkin. ChromeVox va ChromeOS haqida batafsil axborotni quyidagi sahifalardan olish mumkin.
+    Saboqlarni yakunlagan boʻlsangiz, ChromeVox orqali Yopish tugmasini tanlang va uni bosing.</translation>
 <translation id="5653397561111110475">Chromebook sensorli ekranidan maxsus imkoniyatlar rejimida foydalanish</translation>
 <translation id="5655682562155942719">O‘tish buyruqlari</translation>
 <translation id="56637627897541303">Matn maydoni</translation>
@@ -749,8 +763,10 @@
 <translation id="6100239002225743044">Bitta tepadagi qatorga oʻtish</translation>
 <translation id="6118126368611144850">Endi ChromeVox android ilovalarida ishlaydi. Agar qurilmangizda Play Market o‘rnatilgan bo‘lsa, Google Chrome Canary versiyasini o‘rnatib buni o‘zingiz sinab ko‘ring.</translation>
 <translation id="611827076493383239">vtd</translation>
+<translation id="6119846243427417423">faollashtirish</translation>
 <translation id="6122013438240733403">btn</translation>
 <translation id="6132506484792346370">Oddiy yoki birlashgan ro‘yxat</translation>
+<translation id="613344593214611552">avvalgi gapni oʻchirish</translation>
 <translation id="6142308968191113180">4-darajali sarlavha</translation>
 <translation id="6150023170003443621">Yorqin yashil</translation>
 <translation id="6158882249329863701"><ph name="TABLECELLROWINDEX" />-qator <ph name="TABLECELLCOLUMNINDEX" />-ustun</translation>
@@ -760,9 +776,11 @@
 <translation id="6186305613600865047">Sahifaning oxiriga o‘tish</translation>
 <translation id="6187190722927752226">Och dengizrang</translation>
 <translation id="6197361807490522975">Toʻq moviy</translation>
+<translation id="6218813441317556731"><ph name="DELETE_PHRASE" /> iborasini <ph name="INSERT_PHRASE" />ga almashtirish</translation>
 <translation id="6236061028292614533">Keyingi sarlavha</translation>
 <translation id="6254901459154107917">Keyingi matn tahrirlash qatori</translation>
 <translation id="6259464875943891919"><ph name="TYPE" /> konteyneridan chiqish.</translation>
+<translation id="6280088282605782512">Ikki marta tegining</translation>
 <translation id="6282062888058716985">nav</translation>
 <translation id="6295699829709583154">Asosiy tugmalar: Qidiruv</translation>
 <translation id="6305702903308659374">ChromeVox ekrandan o‘qiyotgan bo‘lsa ham ovoz balandligi o‘zgartirilmasin</translation>
@@ -933,6 +951,7 @@
 <translation id="7533226154149229506">Oqimtir sariq</translation>
 <translation id="7543255924852002459">“Bekor qilish” tugmasi</translation>
 <translation id="7552432549459840808">Foydali Chrome tezkor tugmalari</translation>
+<translation id="7553679324939294712"><ph name="INSERT_PHRASE" /> iborasini <ph name="BEFORE_PHRASE" /> dan avval joylash</translation>
 <translation id="7569983096843329377">Qora</translation>
 <translation id="7579911500627256166">nuqta <ph name="DOT" /></translation>
 <translation id="7592060599656252486">Ayrimlar</translation>
@@ -956,16 +975,16 @@
 <translation id="7684431668231950609">Matnni tahrirlash, URL manzil</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">Avvalgi tanlash tugmasi</translation>
+<translation id="7696631298608145306">keyingi soʻzga oʻtish</translation>
 <translation id="7701040980221191251">Hech qanday</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7713139339518499741">Tabiiy ovoz</translation>
 <translation id="7714340021005120797">Keyingi kombinatsiyalangan roʻyxat mavjud emas</translation>
-<translation id="772146615414628379">Tabriklaymiz! Siz ChromeVoxni ishlatish haqidagi boshlangʻich saboqlar bilan tanishdingiz. Eslatma: Qidiruv+Nuqta tugmalarini bosish orqali ChromeVox menyusini istalgan vaqtda chiqarish mumkin. ChromeVox va Chrome OS haqida batafsil axborotni quyidagi sahifalardan olish mumkin.
-    Saboqlarni yakunlagan boʻlsangiz, ChromeVox orqali Yopish tugmasini tanlang va uni bosing.</translation>
 <translation id="7724603315864178912">Qirqish</translation>
 <translation id="7731785449856576010">Keyingi media vidjeti mavjud emas.</translation>
 <translation id="7735498529470878067">Teginib oʻrganish funksiyasi ekrandagi elementlarni tez aniqlash imkonini beradi.</translation>
 <translation id="773906353055481349">Katakka oʻtish uchun Search+Ctrl+Alt bilan birga strelkalardan foydalaning</translation>
+<translation id="7746976083433980639"><ph name="ACTION" /> – <ph name="LABEL" /></translation>
 <translation id="7763537600611320912"><ph name="FILE_NAME" /> faylini yuklab olish boshlandi</translation>
 <translation id="7768784765476638775">Teginib tinglash</translation>
 <translation id="7776293189010177726">ChromeVox menyularini ochish</translation>
@@ -1065,6 +1084,7 @@
 <translation id="8455868257606149352">Maks <ph name="X" /></translation>
 <translation id="84575901236241018"><ph name="KEY" /> ruxsat kaliti bor</translation>
 <translation id="8463645336674919227">Grammatik xatoni qoldirish</translation>
+<translation id="8465573210279050749">avvalgi soʻzni oʻchirish</translation>
 <translation id="847040613207937740">Keyingi belgilash katakchasi mavjud emas</translation>
 <translation id="8473540203671727883">Sichqoncha ostidagi matnni ovoz chiqarib oʻqish</translation>
 <translation id="8476408756881832830">ChromeVox ekrandan o‘qiyotganda media fayllar ijrosi vaqtincha to‘xtatilsin</translation>
@@ -1095,11 +1115,13 @@
 <translation id="8659501358298941449">Pastga ochiladigan roʻyxatlar</translation>
 <translation id="8666733765751421568"><ph name="TYPE" /> oxiri</translation>
 <translation id="867187640362843212">5-darajali sarlavha</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}other{ichki daraja #}}</translation>
 <translation id="8693391540059827073">Sevimli faslim</translation>
 <translation id="8696284982970258155">Musaffo moviy</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{vertikal chiziq}other{ # ta vertikal chiziq}}</translation>
 <translation id="8741370088760768424">Maslahat: Joriy elementni faollashtirish uchun Qidiruv + Boʻsh joy tugmalarini bosing.</translation>
 <translation id="8743786158317878347">jadval kabi tartiblangan ma’lumot kiritish</translation>
+<translation id="8746846427395705317">avvalgi soʻzga oʻtish</translation>
 <translation id="8747966237988593539">Tartibli ro‘yxat</translation>
 <translation id="8749988712346667988">Kumushrang</translation>
 <translation id="875769700429317857"><ph name="FILE_NAME" /> fayli yuklab olindi</translation>
@@ -1127,6 +1149,7 @@
 <translation id="8970172509886453271">Bundan oldin boshqa qism mavjud emas</translation>
 <translation id="89720367119469899">O‘chirib qo‘yish</translation>
 <translation id="8978496506222343566">tltip</translation>
+<translation id="898089897833732740"><ph name="PHRASE" /> iborasini oʻchirish</translation>
 <translation id="8986362086234534611">Olib tashlash</translation>
 <translation id="8989104346085848538">ChromeVox nutqini toʻxtatish uchun Control tugmasini bosing.</translation>
 <translation id="8993737615451556423">Oʻqish ovozini tezlatish, sekinlatish va pauza qilish kabi boshqaruv elementlarini chiqaradi</translation>
@@ -1162,6 +1185,7 @@
 <translation id="9223032053830369045">Toʻq qizil</translation>
 <translation id="923331726185079994">ChromeVox yangilandi</translation>
 <translation id="93384979447910801">Kulrangsimon yashil</translation>
+<translation id="937605981140327129">Ayni vaqtda TalkBack oʻrnatilmagan. Play Market orqali Android AccessibilitySuite ilovasini oʻrnating va qaytadan urining.</translation>
 <translation id="948171205378458592">Nutq tezligini kamaytirish</translation>
 <translation id="957570623732056069">Bu darsni ochish uchun bir barmoqni yon tomonlarga suring</translation>
 <translation id="958854023026327378">Bitta barmoq bilan pastga suring</translation>

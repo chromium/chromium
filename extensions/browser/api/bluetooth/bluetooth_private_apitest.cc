@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -104,7 +104,7 @@ class BluetoothPrivateApiTest : public ExtensionApiTest {
   void DispatchPairingEvent(bt_private::PairingEventType pairing_event_type) {
     bt_private::PairingEvent pairing_event;
     pairing_event.pairing = pairing_event_type;
-    pairing_event.device.name = std::make_unique<std::string>(kDeviceName);
+    pairing_event.device.name = kDeviceName;
     pairing_event.device.address = mock_device_->GetAddress();
     pairing_event.device.vendor_id_source = bt::VENDOR_ID_SOURCE_USB;
     pairing_event.device.type = bt::DEVICE_TYPE_PHONE;
@@ -247,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothPrivateApiTest, DisconnectAll) {
 }
 
 // Device::Forget not implemented on OSX.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(BluetoothPrivateApiTest, ForgetDevice) {
   EXPECT_CALL(*mock_device_, Forget(_, _))
       .WillOnce(
@@ -291,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothPrivateApiTest, Connect) {
       .Times(2)
       .WillOnce(Return(false))
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_device_, Connect_(_, _))
+  EXPECT_CALL(*mock_device_, Connect(_, _))
       .WillOnce(RunOnceCallback<1>(/*error_code=*/absl::nullopt));
   ASSERT_TRUE(RunExtensionTest("bluetooth_private/connect", {},
                                {.load_as_component = true}))
@@ -304,7 +304,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothPrivateApiTest, Pair) {
                   _, device::BluetoothAdapter::PAIRING_DELEGATE_PRIORITY_HIGH));
   EXPECT_CALL(*mock_device_, ExpectingConfirmation())
       .WillRepeatedly(Return(true));
-  EXPECT_CALL(*mock_device_, Pair_(_, _))
+  EXPECT_CALL(*mock_device_, Pair(_, _))
       .WillOnce(DoAll(
           WithoutArgs(Invoke(
               this,

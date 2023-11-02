@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -14,6 +14,7 @@ source_set("webui") {
     "//ios/web/public/webui",
     "//ios/web/web_state:web_state_impl_header",
     "//mojo/public/cpp/system",
+    "//mojo/public/js:resources",
     "//net",
     "//ui/base",
     "//ui/resources",
@@ -43,7 +44,6 @@ source_set("webui") {
     "web_ui_ios_data_source_impl.mm",
     "web_ui_ios_impl.h",
     "web_ui_ios_impl.mm",
-    "web_ui_ios_message_handler.cc",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]

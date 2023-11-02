@@ -33,6 +33,17 @@ windows of `width` adjacent elements from `data` using `reduction_type`. This
 op is intended to cover basic use cases; more complex combinations can be
 created using the sliding_window op.
 
+```
+>>> input_data = tf.ragged.constant([["e", "f", "g"], ["dd", "ee"]])
+>>> ngrams(
+...   input_data,
+...   width=2,
+...   axis=-1,
+...   reduction_type=Reduction.STRING_JOIN,
+...   string_separator="|")
+<tf.RaggedTensor [[b'e|f', b'f|g'], [b'dd|ee']]>
+```
+
 <!-- Tabular view -->
  <table class="responsive fixed orange">
 <colgroup><col width="214px"><col></colgroup>
@@ -78,7 +89,9 @@ constant. Currently supports:
 <tr><th colspan="2"><h2 class="add-link">Returns</h2></th></tr>
 <tr class="alt">
 <td colspan="2">
-A tensor of ngrams.
+A tensor of ngrams. If the input is a tf.Tensor, the output will also
+be a tf.Tensor; if the input is a tf.RaggedTensor, the output will be
+a tf.RaggedTensor.
 </td>
 </tr>
 

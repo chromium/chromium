@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,12 @@
 namespace extension_web_request_api_constants {
 
 const char kChallengerKey[] = "challenger";
+const char kDocumentIdKey[] = "documentId";
+const char kDocumentLifecycleKey[] = "documentLifecycle";
 const char kErrorKey[] = "error";
 const char kFrameIdKey[] = "frameId";
+const char kFrameTypeKey[] = "frameType";
+const char kParentDocumentIdKey[] = "parentDocumentId";
 const char kParentFrameIdKey[] = "parentFrameId";
 const char kProcessIdKey[] = "processId";
 const char kFromCache[] = "fromCache";
@@ -63,8 +67,6 @@ const char kOnResponseStarted[] = "onResponseStarted";
 const char kOnSendHeaders[] = "onSendHeaders";
 const char kOnAuthRequired[] = "onAuthRequired";
 
-const char kInvalidPublicSessionBlockingResponse[] =
-    "Only the 'cancel' action is allowed in Public Sessions.";
 const char kInvalidRedirectUrl[] = "redirectUrl '*' is not a valid URL.";
 const char kInvalidBlockingResponse[] =
     "cancel cannot be true in the presence of other keys.";

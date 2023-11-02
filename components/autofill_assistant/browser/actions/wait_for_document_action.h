@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/autofill_assistant/browser/actions/action.h"
-#include "components/autofill_assistant/browser/web/element_finder.h"
 
 namespace autofill_assistant {
+class ElementFinderResult;
 
 class WaitForDocumentAction : public Action {
  public:
@@ -29,7 +29,7 @@ class WaitForDocumentAction : public Action {
   void OnShortWaitForElement(const Selector& frame_selector,
                              const ClientStatus& status);
   void OnFindElement(const ClientStatus& status,
-                     std::unique_ptr<ElementFinder::Result> element);
+                     std::unique_ptr<ElementFinderResult> element);
   void WaitForReadyState();
 
   void OnGetStartState(const ClientStatus& status,
@@ -43,7 +43,7 @@ class WaitForDocumentAction : public Action {
   void SendResult(const ClientStatus& status, DocumentReadyState end_state);
 
   ProcessActionCallback callback_;
-  std::unique_ptr<ElementFinder::Result> optional_frame_element_;
+  std::unique_ptr<ElementFinderResult> optional_frame_element_;
   base::WeakPtrFactory<WaitForDocumentAction> weak_ptr_factory_{this};
 };
 

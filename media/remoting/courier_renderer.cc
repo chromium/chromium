@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,8 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
+#include "components/cast_streaming/public/remoting_proto_enum_utils.h"
+#include "components/cast_streaming/public/remoting_proto_utils.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/buffering_state.h"
 #include "media/base/media_resource.h"
@@ -23,8 +25,6 @@
 #include "media/base/video_renderer_sink.h"
 #include "media/base/waiting.h"
 #include "media/remoting/demuxer_stream_adapter.h"
-#include "media/remoting/proto_enum_utils.h"
-#include "media/remoting/proto_utils.h"
 #include "media/remoting/renderer_controller.h"
 
 using openscreen::cast::RpcMessenger;
@@ -57,6 +57,25 @@ constexpr base::TimeDelta kStabilizationPeriod = base::Seconds(2);
 // data flow rates for metrics.
 constexpr base::TimeDelta kDataFlowPollPeriod = base::Seconds(10);
 
+// base::Bind* doesn't understand openscreen::WeakPtr, so we must manually
+// check the RpcMessenger pointer before calling into it.
+void RegisterForRpcTask(
+    openscreen::WeakPtr<openscreen::cast::RpcMessenger> rpc_messenger,
+    int rpc_handle,
+    openscreen::cast::RpcMessenger::ReceiveMessageCallback message_cb) {
+  if (rpc_messenger) {
+    rpc_messenger->RegisterMessageReceiverCallback(rpc_handle,
+                                                   std::move(message_cb));
+  }
+}
+void DeregisterFromRpcTask(
+    openscreen::WeakPtr<openscreen::cast::RpcMessenger> rpc_messenger,
+    int rpc_handle) {
+  if (rpc_messenger) {
+    rpc_messenger->UnregisterMessageReceiverCallback(rpc_handle);
+  }
+}
+
 }  // namespace
 
 CourierRenderer::CourierRenderer(
@@ -77,27 +96,15 @@ CourierRenderer::CourierRenderer(
   // Note: The constructor is running on the main thread, but will be destroyed
   // on the media thread. Therefore, all weak pointers must be dereferenced on
   // the media thread.
-  rpc_messenger_->RegisterMessageReceiverCallback(
-      rpc_handle_,
-      [runner = media_task_runner_, ptr = weak_factory_.GetWeakPtr()](
-          std::unique_ptr<openscreen::cast::RpcMessage> message) {
-        if (ptr) {
-          CourierRenderer::OnMessageReceivedOnMainThread(runner, ptr,
-                                                         std::move(message));
-        } else {
-          LOG(WARNING) << "Invalid weak factory pointer.";
-        }
-      });
+  media_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&CourierRenderer::RegisterForRpcMessaging,
+                                weak_factory_.GetWeakPtr()));
 }
 
 CourierRenderer::~CourierRenderer() {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
 
-  // Post task on main thread to unregister message receiver.
-  main_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&CourierRenderer::DeregisterFromRpcMessaging,
-                                weak_factory_.GetWeakPtr()));
-
+  DeregisterFromRpcMessaging();
   if (video_renderer_sink_) {
     video_renderer_sink_->PaintSingleFrame(
         VideoFrame::CreateBlackFrame(gfx::Size(1280, 720)));
@@ -531,8 +538,9 @@ void CourierRenderer::OnBufferingStateChange(
     OnFatalError(RPC_INVALID);
     return;
   }
-  absl::optional<BufferingState> state = ToMediaBufferingState(
-      message->rendererclient_onbufferingstatechange_rpc().state());
+  absl::optional<BufferingState> state =
+      cast_streaming::remoting::ToMediaBufferingState(
+          message->rendererclient_onbufferingstatechange_rpc().state());
   BufferingStateChangeReason reason = BUFFERING_CHANGE_REASON_UNKNOWN;
   if (!state.has_value())
     return;
@@ -564,7 +572,8 @@ void CourierRenderer::OnAudioConfigChange(
   const openscreen::cast::AudioDecoderConfig pb_audio_config =
       audio_config_message->audio_decoder_config();
   AudioDecoderConfig out_audio_config;
-  ConvertProtoToAudioDecoderConfig(pb_audio_config, &out_audio_config);
+  cast_streaming::remoting::ConvertProtoToAudioDecoderConfig(pb_audio_config,
+                                                             &out_audio_config);
   DCHECK(out_audio_config.IsValidConfig());
 
   client_->OnAudioConfigChange(out_audio_config);
@@ -585,7 +594,8 @@ void CourierRenderer::OnVideoConfigChange(
   const openscreen::cast::VideoDecoderConfig pb_video_config =
       video_config_message->video_decoder_config();
   VideoDecoderConfig out_video_config;
-  ConvertProtoToVideoDecoderConfig(pb_video_config, &out_video_config);
+  cast_streaming::remoting::ConvertProtoToVideoDecoderConfig(pb_video_config,
+                                                             &out_video_config);
   DCHECK(out_video_config.IsValidConfig());
 
   client_->OnVideoConfigChange(out_video_config);
@@ -626,7 +636,7 @@ void CourierRenderer::OnStatisticsUpdate(
     return;
   }
   PipelineStatistics stats;
-  ConvertProtoToPipelineStatistics(
+  cast_streaming::remoting::ConvertProtoToPipelineStatistics(
       message->rendererclient_onstatisticsupdate_rpc(), &stats);
   // Note: Each field in |stats| is a delta, not the aggregate amount.
   if (stats.audio_bytes_decoded > 0 || stats.video_frames_decoded > 0 ||
@@ -809,10 +819,28 @@ bool CourierRenderer::IsWaitingForDataFromDemuxers() const {
            !audio_demuxer_stream_adapter_->is_data_pending()));
 }
 
+void CourierRenderer::RegisterForRpcMessaging() {
+  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  auto receive_callback = BindToCurrentLoop(base::BindRepeating(
+      &CourierRenderer::OnReceivedRpc, weak_factory_.GetWeakPtr()));
+
+  main_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &RegisterForRpcTask, rpc_messenger_, rpc_handle_,
+          [cb = std::move(receive_callback)](
+
+              std::unique_ptr<openscreen::cast::RpcMessage> message) {
+            cb.Run(std::move(message));
+          }));
+}
+
 void CourierRenderer::DeregisterFromRpcMessaging() {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   if (rpc_messenger_) {
-    rpc_messenger_->UnregisterMessageReceiverCallback(rpc_handle_);
+    main_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&DeregisterFromRpcTask, rpc_messenger_, rpc_handle_));
   }
 }
 

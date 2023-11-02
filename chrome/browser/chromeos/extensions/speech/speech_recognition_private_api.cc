@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "chrome/browser/chromeos/extensions/speech/speech_recognition_private_api.h"
 
 #include "chrome/browser/chromeos/extensions/speech/speech_recognition_private_manager.h"
+#include "chrome/browser/speech/speech_recognition_constants.h"
 #include "chrome/common/extensions/api/speech_recognition_private.h"
 #include "content/public/browser/browser_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -43,13 +44,15 @@ ExtensionFunction::ResponseAction SpeechRecognitionPrivateStartFunction::Run() {
 }
 
 void SpeechRecognitionPrivateStartFunction::OnStart(
+    speech::SpeechRecognitionType type,
     absl::optional<std::string> error) {
   if (error.has_value()) {
     Respond(Error(error.value()));
     return;
   }
 
-  Respond(NoArguments());
+  Respond(WithArguments(api::speech_recognition_private::ToString(
+      speech::SpeechRecognitionTypeToApiType(type))));
 }
 
 ExtensionFunction::ResponseAction SpeechRecognitionPrivateStopFunction::Run() {

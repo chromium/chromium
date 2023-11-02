@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -24,6 +25,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/trace_event_analyzer.h"
 #include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -34,7 +36,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/tracing.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/cast_channel/cast_message_handler.h"
+#include "components/media_router/common/providers/cast/channel/cast_message_handler.h"
 #include "components/mirroring/mojom/cast_message_channel.mojom.h"
 #include "components/mirroring/mojom/mirroring_service_host.mojom.h"
 #include "components/mirroring/mojom/session_observer.mojom.h"
@@ -228,6 +230,8 @@ void QueryTraceEvents(trace_analyzer::TraceAnalyzer* analyzer,
       trace_analyzer::Query::EventNameIs(std::string(event_name)) &&
       (trace_analyzer::Query::EventPhaseIs(TRACE_EVENT_PHASE_BEGIN) ||
        trace_analyzer::Query::EventPhaseIs(TRACE_EVENT_PHASE_ASYNC_BEGIN) ||
+       trace_analyzer::Query::EventPhaseIs(
+           TRACE_EVENT_PHASE_NESTABLE_ASYNC_BEGIN) ||
        trace_analyzer::Query::EventPhaseIs(TRACE_EVENT_PHASE_FLOW_BEGIN) ||
        trace_analyzer::Query::EventPhaseIs(TRACE_EVENT_PHASE_INSTANT) ||
        trace_analyzer::Query::EventPhaseIs(TRACE_EVENT_PHASE_COMPLETE));
@@ -879,7 +883,8 @@ class TestTabMirroringSession : public mirroring::mojom::SessionObserver,
     const std::string receiver_model_name{};
     auto session_params = mirroring::mojom::SessionParameters::New(
         mirroring::mojom::SessionType::AUDIO_AND_VIDEO, endpoint.address(),
-        receiver_model_name, base::Milliseconds(kTargetPlayoutDelayMs));
+        receiver_model_name, "sender-123", "receiver-456",
+        base::Milliseconds(kTargetPlayoutDelayMs));
 
     host_->Start(std::move(session_params), std::move(observer_remote),
                  std::move(channel_remote),
@@ -896,8 +901,8 @@ class TestTabMirroringSession : public mirroring::mojom::SessionObserver,
   void LogInfoMessage(const std::string& message) override {}
   void LogErrorMessage(const std::string& message) override {}
 
-  // CastMessageChannel implementation
-  void Send(mirroring::mojom::CastMessagePtr message) override {
+  // CastMessageChannel implementation (inbound).
+  void OnMessage(mirroring::mojom::CastMessagePtr message) override {
     Json::CharReaderBuilder rb;
     auto reader = std::unique_ptr<Json::CharReader>(rb.newCharReader());
     Json::Value root;
@@ -930,12 +935,14 @@ class TestTabMirroringSession : public mirroring::mojom::SessionObserver,
   // Returns AUDIO + VIDEO
   std::pair<openscreen::cast::Stream, openscreen::cast::Stream>
   GetStreamsFromOffer(const Json::Value& offer_message_body) {
-    auto offer = openscreen::cast::Offer::Parse(offer_message_body["offer"]);
-    EXPECT_TRUE(offer);
-    EXPECT_LT(0u, offer.value().audio_streams.size());
-    EXPECT_LT(0u, offer.value().video_streams.size());
-    return std::make_pair(offer.value().audio_streams[0].stream,
-                          offer.value().video_streams[0].stream);
+    openscreen::cast::Offer offer;
+    EXPECT_TRUE(
+        openscreen::cast::Offer::TryParse(offer_message_body["offer"], &offer)
+            .ok());
+    EXPECT_LT(0u, offer.audio_streams.size());
+    EXPECT_LT(0u, offer.video_streams.size());
+    return std::make_pair(offer.audio_streams[0].stream,
+                          offer.video_streams[0].stream);
   }
 
   void SetSharedConfigs(const std::pair<openscreen::cast::Stream,
@@ -980,7 +987,7 @@ class TestTabMirroringSession : public mirroring::mojom::SessionObserver,
 
     VLOG(1) << "Sending ANSWER";
     offer_message->json_format_data = ssb.str();
-    channel_to_service_->Send(std::move(offer_message));
+    channel_to_service_->OnMessage(std::move(offer_message));
   }
 
   mojo::Remote<mirroring::mojom::MirroringServiceHost> host_;
@@ -992,7 +999,7 @@ class TestTabMirroringSession : public mirroring::mojom::SessionObserver,
   int udp_port_ = -1;
   SharedSenderReceiverConfigs shared_configs_;
 
-  CastV2PerformanceTest* const parent_;
+  const raw_ptr<CastV2PerformanceTest> parent_;
   scoped_refptr<media::cast::StandaloneCastEnvironment> cast_environment_;
 };
 }  // namespace

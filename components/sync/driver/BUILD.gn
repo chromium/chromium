@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -43,8 +43,6 @@ static_library("driver") {
     "sync_auth_util.cc",
     "sync_auth_util.h",
     "sync_client.h",
-    "sync_driver_switches.cc",
-    "sync_driver_switches.h",
     "sync_internals_util.cc",
     "sync_internals_util.h",
     "sync_policy_handler.cc",
@@ -92,7 +90,6 @@ static_library("driver") {
     "//base",
     "//base:i18n",
     "//build:chromeos_buildflags",
-    "//components/data_use_measurement/core",
     "//components/invalidation/impl:feature_list",
     "//components/keyed_service/core",
     "//components/metrics",
@@ -112,51 +109,4 @@ static_library("driver") {
   }
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
-}
-
-static_library("test_support") {
-  testonly = true
-  sources = [
-    "data_type_manager_mock.cc",
-    "data_type_manager_mock.h",
-    "fake_data_type_controller.cc",
-    "fake_data_type_controller.h",
-    "fake_sync_api_component_factory.cc",
-    "fake_sync_api_component_factory.h",
-    "fake_sync_service.cc",
-    "fake_sync_service.h",
-    "mock_sync_service.cc",
-    "mock_sync_service.h",
-    "sync_client_mock.cc",
-    "sync_client_mock.h",
-    "sync_service_impl_bundle.cc",
-    "sync_service_impl_bundle.h",
-    "sync_user_settings_mock.cc",
-    "sync_user_settings_mock.h",
-    "test_sync_service.cc",
-    "test_sync_service.h",
-    "test_sync_user_settings.cc",
-    "test_sync_user_settings.h",
-  ]
-
-  public_deps = [ "//components/sync/base:test_support" ]
-
-  deps = [
-    "//base/test:test_support",
-    "//build:chromeos_buildflags",
-    "//components/invalidation/impl:test_support",
-    "//components/pref_registry",
-    "//components/prefs:test_support",
-    "//components/signin/public/base",
-    "//components/signin/public/identity_manager:test_support",
-    "//components/sync",
-    "//components/sync:test_support_engine",
-    "//components/sync:test_support_model",
-    "//components/sync/driver",
-    "//components/sync/invalidations:test_support",
-    "//components/version_info",
-    "//components/version_info:generate_version_info",
-    "//google_apis",
-    "//services/network:test_support",
-  ]
 }

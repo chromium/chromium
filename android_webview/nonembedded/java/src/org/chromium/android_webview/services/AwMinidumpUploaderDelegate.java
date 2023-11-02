@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -97,6 +97,12 @@ public class AwMinidumpUploaderDelegate implements MinidumpUploaderDelegate {
                 // job. JobScheduler will call onStopJob causing our upload to be interrupted when
                 // our network requirements no longer hold.
                 return NetworkPermissionUtil.isNetworkUnmetered(mConnectivityManager);
+            }
+            @Override
+            public boolean isUsageAndCrashReportingPermittedByPolicy() {
+                // Metrics reporting can only be disabled by the user and the app.
+                // Return true since Chrome policy doesn't apply to WebView.
+                return true;
             }
             @Override
             public boolean isUsageAndCrashReportingPermittedByUser() {

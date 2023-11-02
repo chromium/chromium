@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,12 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/iterable.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
 
 class GPUSupportedFeatures : public ScriptWrappable,
-                             public SetlikeIterable<String> {
+                             public SetlikeIterable<String, IDLString> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -20,6 +21,7 @@ class GPUSupportedFeatures : public ScriptWrappable,
 
   void AddFeatureName(const String& feature_name);
 
+  bool has(const String& feature) const;
   bool hasForBinding(ScriptState* script_state,
                      const String& feature,
                      ExceptionState& exception_state) const;
@@ -32,7 +34,7 @@ class GPUSupportedFeatures : public ScriptWrappable,
   HashSet<String> features_;
 
   class IterationSource final
-      : public SetlikeIterable<String>::IterationSource {
+      : public SetlikeIterable<String, IDLString>::IterationSource {
    public:
     explicit IterationSource(const HashSet<String>& features);
 

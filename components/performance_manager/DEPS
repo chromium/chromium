@@ -1,5 +1,10 @@
 include_rules = [
+  "+chromeos/dbus",
+  "+components/content_settings/core/common",
   "+components/memory_pressure",
+  "+components/metrics",
+  "+components/pref_registry",
+  "+components/prefs",
   "+components/services/storage/public/cpp",
   "+components/ukm",
   "+content/public/common",

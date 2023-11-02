@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,11 +22,6 @@ std::wstring ToUpperASCII(WStringPiece str) {
 
 int CompareCaseInsensitiveASCII(WStringPiece a, WStringPiece b) {
   return internal::CompareCaseInsensitiveASCIIT(a, b);
-}
-
-bool EqualsCaseInsensitiveASCII(WStringPiece a, WStringPiece b) {
-  return a.size() == b.size() &&
-         internal::CompareCaseInsensitiveASCIIT(a, b) == 0;
 }
 
 bool RemoveChars(WStringPiece input,
@@ -74,10 +69,6 @@ std::wstring CollapseWhitespace(WStringPiece text,
 
 bool ContainsOnlyChars(WStringPiece input, WStringPiece characters) {
   return input.find_first_not_of(characters) == StringPiece::npos;
-}
-
-bool LowerCaseEqualsASCII(WStringPiece str, StringPiece lowercase_ascii) {
-  return internal::DoLowerCaseEqualsASCII(str, lowercase_ascii);
 }
 
 bool EqualsASCII(WStringPiece str, StringPiece ascii) {

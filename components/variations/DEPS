@@ -11,6 +11,7 @@ include_rules = [
   "+components/version_info",
   "+crypto",
   "-net",
+  "+net/android",
   "+third_party/protobuf",
   "+third_party/smhasher",
   "+third_party/zlib/google",

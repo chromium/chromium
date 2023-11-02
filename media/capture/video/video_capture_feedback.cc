@@ -1,12 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/capture/video/video_capture_feedback.h"
 
-#include <algorithm>
 #include <cmath>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 
 namespace media {
@@ -63,8 +63,7 @@ void VideoCaptureFeedback::Combine(const VideoCaptureFeedback& other) {
   // Merge mapped sizes for all consumers.
   for (const gfx::Size& mapped_size : other.mapped_sizes) {
     // Skip duplicates.
-    if (std::find(mapped_sizes.begin(), mapped_sizes.end(), mapped_size) !=
-        mapped_sizes.end()) {
+    if (base::Contains(mapped_sizes, mapped_size)) {
       continue;
     }
     // As a safety measure, limit the number of sizes that can be asked for.

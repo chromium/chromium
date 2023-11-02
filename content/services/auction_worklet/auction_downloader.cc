@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/trace_event/trace_event.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
@@ -47,6 +48,8 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             "These requests triggered by a website."
         })");
 
+const char kWebAssemblyMime[] = "application/wasm";
+
 // Returns the MIME type string to send for the Accept header for `mime_type`.
 // These are the official IANA MIME type strings, though other MIME type strings
 // are allows in the response.
@@ -56,18 +59,34 @@ base::StringPiece MimeTypeToString(AuctionDownloader::MimeType mime_type) {
       return base::StringPiece("application/javascript");
     case AuctionDownloader::MimeType::kJson:
       return base::StringPiece("application/json");
+    case AuctionDownloader::MimeType::kWebAssembly:
+      return base::StringPiece(kWebAssemblyMime);
   }
 }
 
-// Checks if `advertised_mime_type` is consistent with `mime_type`.
-// `advertised_mime_type` must be lowercase.
-bool MimeTypeIsConsistent(AuctionDownloader::MimeType mime_type,
-                          const std::string& advertised_mime_type) {
+// Checks if `response_info` is consistent with `mime_type`.
+bool MimeTypeIsConsistent(
+    AuctionDownloader::MimeType mime_type,
+    const network::mojom::URLResponseHead* response_info) {
   switch (mime_type) {
     case AuctionDownloader::MimeType::kJavascript:
-      return blink::IsSupportedJavascriptMimeType(advertised_mime_type);
+      // ResponseInfo's `mime_type` is always lowercase.
+      return blink::IsSupportedJavascriptMimeType(response_info->mime_type);
     case AuctionDownloader::MimeType::kJson:
-      return blink::IsJSONMimeType(advertised_mime_type);
+      // ResponseInfo's `mime_type` is always lowercase.
+      return blink::IsJSONMimeType(response_info->mime_type);
+    case AuctionDownloader::MimeType::kWebAssembly: {
+      std::string raw_content_type;
+      // Here we use the headers directly, not the parsed mimetype, since we
+      // much check there are no parameters whatsoever. Ref.
+      // https://webassembly.github.io/spec/web-api/#streaming-modules
+      if (!response_info->headers->GetNormalizedHeader(
+              net::HttpRequestHeaders::kContentType, &raw_content_type)) {
+        return false;
+      }
+
+      return base::ToLowerASCII(raw_content_type) == kWebAssemblyMime;
+    }
   }
 }
 
@@ -81,6 +100,43 @@ bool IsAllowedCharset(base::StringPiece charset, const std::string& body) {
   }
   // TODO(mmenke): Worth supporting iso-8859-1, or full character set list?
   return false;
+}
+
+double CalculateMillisecondDelta(const net::LoadTimingInfo& timing,
+                                 base::TimeTicks time) {
+  return time.is_null() ? -1 : (time - timing.request_start).InMillisecondsF();
+}
+
+void WriteTraceTiming(const net::LoadTimingInfo& timing,
+                      perfetto::TracedValue dest) {
+  perfetto::TracedDictionary dict = std::move(dest).WriteDictionary();
+  dict.Add("requestTime", timing.request_start.since_origin().InSecondsF());
+  dict.Add("proxyStart",
+           CalculateMillisecondDelta(timing, timing.proxy_resolve_start));
+  dict.Add("proxyEnd",
+           CalculateMillisecondDelta(timing, timing.proxy_resolve_end));
+  dict.Add("dnsStart", CalculateMillisecondDelta(
+                           timing, timing.connect_timing.domain_lookup_start));
+  dict.Add("dnsEnd", CalculateMillisecondDelta(
+                         timing, timing.connect_timing.domain_lookup_end));
+  dict.Add("connectStart", CalculateMillisecondDelta(
+                               timing, timing.connect_timing.connect_start));
+  dict.Add("connectEnd", CalculateMillisecondDelta(
+                             timing, timing.connect_timing.connect_end));
+  dict.Add("sslStart",
+           CalculateMillisecondDelta(timing, timing.connect_timing.ssl_start));
+  dict.Add("sslEnd",
+           CalculateMillisecondDelta(timing, timing.connect_timing.ssl_end));
+  dict.Add("workerStart",
+           CalculateMillisecondDelta(timing, timing.service_worker_start_time));
+  dict.Add("workerReady",
+           CalculateMillisecondDelta(timing, timing.service_worker_ready_time));
+  dict.Add("sendStart", CalculateMillisecondDelta(timing, timing.send_start));
+  dict.Add("sendEnd", CalculateMillisecondDelta(timing, timing.send_end));
+  dict.Add("receiveHeadersEnd",
+           CalculateMillisecondDelta(timing, timing.receive_headers_end));
+  dict.Add("pushStart", timing.push_start.since_origin().InSecondsF());
+  dict.Add("pushEnd", timing.push_end.since_origin().InSecondsF());
 }
 
 }  // namespace
@@ -98,16 +154,35 @@ AuctionDownloader::AuctionDownloader(
   resource_request->url = source_url;
   resource_request->redirect_mode = network::mojom::RedirectMode::kError;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  // TODO(morlovich): We may need to set devtools_request_id here, and pass it
+  // along in AuctionUrlLoaderFactoryProxy when supporting the devtools network
+  // tab. At that point GetRequestId() should probably get a cheaper
+  // implementation.
+  resource_request->enable_load_timing =
+      *TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED("devtools.timeline");
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
                                       MimeTypeToString(mime_type_));
 
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), kTrafficAnnotation);
 
+  TRACE_EVENT_INSTANT_WITH_TIMESTAMP1(
+      "devtools.timeline", "ResourceSendRequest", TRACE_EVENT_SCOPE_THREAD,
+      base::TimeTicks::Now(), "data", [&](perfetto::TracedValue dest) {
+        auto dict = std::move(dest).WriteDictionary();
+        dict.Add("requestId", GetRequestId());
+        dict.Add("url", source_url.spec());
+      });
+
   // Abort on redirects.
   // TODO(mmenke): May want a browser-side proxy to block redirects instead.
   simple_url_loader_->SetOnRedirectCallback(base::BindRepeating(
       &AuctionDownloader::OnRedirect, base::Unretained(this)));
+
+  simple_url_loader_->SetOnResponseStartedCallback(base::BindRepeating(
+      &AuctionDownloader::OnResponseStarted, base::Unretained(this)));
+
+  simple_url_loader_->SetTimeoutDuration(base::Seconds(30));
 
   // TODO(mmenke): Consider limiting the size of response bodies.
   simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
@@ -139,36 +214,50 @@ void AuctionDownloader::OnBodyReceived(std::unique_ptr<std::string> body) {
           "Failed to load %s error = %s.", source_url_.spec().c_str(),
           net::ErrorToString(simple_url_loader->NetError()).c_str());
     }
-    std::move(auction_downloader_callback_).Run(nullptr /* body */, error_msg);
-  } else if (!simple_url_loader->ResponseInfo()->headers ||
-             !simple_url_loader->ResponseInfo()->headers->GetNormalizedHeader(
-                 "X-Allow-FLEDGE", &allow_fledge) ||
-             !base::EqualsCaseInsensitiveASCII(allow_fledge, "true")) {
+    TraceResult(/*failure=*/true, /*completion_time=*/base::TimeTicks(),
+                /*encoded_data_length=*/0,
+                /*decoded_body_length=*/0);
     std::move(auction_downloader_callback_)
-        .Run(nullptr /* body */,
+        .Run(/*body=*/nullptr, /*headers=*/nullptr, error_msg);
+    return;
+  }
+
+  // Everything below is a network success even if it's a semantic failure.
+  TraceResult(/*failure=*/false,
+              simple_url_loader->CompletionStatus()->completion_time,
+              simple_url_loader->ResponseInfo()->encoded_data_length,
+              /*decoded_body_length=*/body->size());
+
+  if (!simple_url_loader->ResponseInfo()->headers ||
+      !simple_url_loader->ResponseInfo()->headers->GetNormalizedHeader(
+          "X-Allow-FLEDGE", &allow_fledge) ||
+      !base::EqualsCaseInsensitiveASCII(allow_fledge, "true")) {
+    std::move(auction_downloader_callback_)
+        .Run(/*body=*/nullptr, /*headers=*/nullptr,
              base::StringPrintf(
                  "Rejecting load of %s due to lack of X-Allow-FLEDGE: true.",
                  source_url_.spec().c_str()));
-  } else if (!MimeTypeIsConsistent(
-                 mime_type_,
-                 // ResponseInfo's `mime_type` is always lowercase.
-                 simple_url_loader->ResponseInfo()->mime_type)) {
+  } else if (!MimeTypeIsConsistent(mime_type_,
+                                   simple_url_loader->ResponseInfo())) {
     std::move(auction_downloader_callback_)
-        .Run(nullptr /* body */,
+        .Run(/*body=*/nullptr, /*headers=*/nullptr,
              base::StringPrintf(
                  "Rejecting load of %s due to unexpected MIME type.",
                  source_url_.spec().c_str()));
-  } else if (!IsAllowedCharset(simple_url_loader->ResponseInfo()->charset,
+  } else if ((mime_type_ != MimeType::kWebAssembly) &&
+             !IsAllowedCharset(simple_url_loader->ResponseInfo()->charset,
                                *body)) {
     std::move(auction_downloader_callback_)
-        .Run(nullptr /* body */,
+        .Run(/*body=*/nullptr, /*headers=*/nullptr,
              base::StringPrintf(
                  "Rejecting load of %s due to unexpected charset.",
                  source_url_.spec().c_str()));
   } else {
     // All OK!
     std::move(auction_downloader_callback_)
-        .Run(std::move(body), absl::nullopt /* error_msg */);
+        .Run(std::move(body),
+             std::move(simple_url_loader->ResponseInfo()->headers),
+             /*error_msg=*/absl::nullopt);
   }
 }
 
@@ -181,9 +270,85 @@ void AuctionDownloader::OnRedirect(
   // Need to cancel the load, to prevent the request from continuing.
   simple_url_loader_.reset();
 
+  TraceResult(/*failure=*/true, /*completion_time=*/base::TimeTicks(),
+              /*encoded_data_length=*/0,
+              /*decoded_body_length=*/0);
+
   std::move(auction_downloader_callback_)
-      .Run(nullptr /* body */, base::StringPrintf("Unexpected redirect on %s.",
-                                                  source_url_.spec().c_str()));
+      .Run(/*body=*/nullptr, /*headers=*/nullptr,
+           base::StringPrintf("Unexpected redirect on %s.",
+                              source_url_.spec().c_str()));
+}
+
+void AuctionDownloader::OnResponseStarted(
+    const GURL& final_url,
+    const network::mojom::URLResponseHead& response_head) {
+  TRACE_EVENT_INSTANT1(
+      "devtools.timeline", "ResourceReceiveResponse", TRACE_EVENT_SCOPE_THREAD,
+      "data", [&](perfetto::TracedValue dest) {
+        perfetto::TracedDictionary dict = std::move(dest).WriteDictionary();
+        dict.Add("requestId", GetRequestId());
+        if (response_head.headers)
+          dict.Add("statusCode", response_head.headers->response_code());
+        dict.Add("mimeType", response_head.mime_type);
+        dict.Add("encodedDataLength", response_head.encoded_data_length);
+
+        // ref.  WebURLLoader::PopulateURLResponse
+        dict.Add("fromCache",
+                 (!response_head.load_timing.request_start_time.is_null() &&
+                  response_head.response_time <
+                      response_head.load_timing.request_start_time));
+        dict.Add("fromServiceWorker",
+                 response_head.was_fetched_via_service_worker);
+
+        if (response_head.was_fetched_via_service_worker) {
+          switch (response_head.service_worker_response_source) {
+            case network::mojom::FetchResponseSource::kCacheStorage:
+              dict.Add("serviceWorkerResponseSource", "cacheStorage");
+              break;
+            case network::mojom::FetchResponseSource::kHttpCache:
+              dict.Add("serviceWorkerResponseSource", "httpCache");
+              break;
+            case network::mojom::FetchResponseSource::kNetwork:
+              dict.Add("serviceWorkerResponseSource", "network");
+              break;
+            case network::mojom::FetchResponseSource::kUnspecified:
+              dict.Add("serviceWorkerResponseSource", "fallbackCode");
+          }
+        }
+
+        if (!response_head.response_time.is_null()) {
+          dict.Add("responseTime", response_head.response_time.ToJsTime());
+        }
+
+        // Only send load timing if it exists, e.g. not a cache hit.
+        if (!response_head.load_timing.receive_headers_end.is_null()) {
+          WriteTraceTiming(response_head.load_timing, dict.AddItem("timing"));
+        }
+      });
+}
+
+std::string AuctionDownloader::GetRequestId() {
+  if (!request_id_.has_value())
+    request_id_ = base::UnguessableToken::Create();
+  return request_id_->ToString();
+}
+
+void AuctionDownloader::TraceResult(bool failure,
+                                    base::TimeTicks completion_time,
+                                    int64_t encoded_data_length,
+                                    int64_t decoded_body_length) {
+  TRACE_EVENT_INSTANT1(
+      "devtools.timeline", "ResourceFinish", TRACE_EVENT_SCOPE_THREAD, "data",
+      [&](perfetto::TracedValue dest) {
+        perfetto::TracedDictionary dict = std::move(dest).WriteDictionary();
+        dict.Add("requestId", GetRequestId());
+        dict.Add("didFail", failure);
+        dict.Add("encodedDataLength", encoded_data_length);
+        dict.Add("decodedBodyLength", decoded_body_length);
+        if (!completion_time.is_null())
+          dict.Add("finishTime", completion_time.since_origin().InSecondsF());
+      });
 }
 
 }  // namespace auction_worklet

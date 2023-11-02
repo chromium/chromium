@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ class SVGResource;
 
 class CORE_EXPORT SVGResourceClient : public GarbageCollectedMixin {
  public:
-  virtual ~SVGResourceClient() = default;
+  virtual ~SVGResourceClient();
 
   virtual void ResourceContentChanged(SVGResource*) = 0;
 
@@ -28,7 +28,7 @@ class CORE_EXPORT SVGResourceClient : public GarbageCollectedMixin {
   }
 
  protected:
-  SVGResourceClient() = default;
+  SVGResourceClient();
 };
 
 }  // namespace blink

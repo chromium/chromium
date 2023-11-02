@@ -1,30 +1,27 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/hidden_style_css.m.js';
-import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
-import './print_preview_shared_css.js';
+import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
+import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import './print_preview_shared.css.js';
 import './settings_section.js';
 import '../strings.m.js';
 
-import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
-import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './other_options_settings.html.js';
 import {SettingsMixin} from './settings_mixin.js';
 
-type CheckboxOption = {
-  name: string,
-  label: string,
-  value?: boolean,
-  managed?: boolean,
-  available?: boolean,
-};
-
-type RepeaterEvent = {
-  model: {item: CheckboxOption},
-};
+interface CheckboxOption {
+  name: string;
+  label: string;
+  value?: boolean;
+  managed?: boolean;
+  available?: boolean;
+}
 
 const PrintPreviewOtherOptionsSettingsElementBase =
     SettingsMixin(I18nMixin(PolymerElement));
@@ -36,7 +33,7 @@ export class PrintPreviewOtherOptionsSettingsElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -150,7 +147,7 @@ export class PrintPreviewOtherOptionsSettingsElement extends
   /**
    * @param e Contains the checkbox item that was checked.
    */
-  private onChange_(e: RepeaterEvent) {
+  private onChange_(e: DomRepeatEvent<CheckboxOption>) {
     const name = e.model.item.name;
     this.updateSettingWithTimeout_(
         name,
@@ -164,6 +161,13 @@ export class PrintPreviewOtherOptionsSettingsElement extends
    */
   private getClass_(index: number): string {
     return index === this.firstIndex_ ? 'first-visible' : '';
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-other-options-settings':
+        PrintPreviewOtherOptionsSettingsElement;
   }
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/check.h"
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/strike_database_base.h"
@@ -27,12 +28,26 @@ static const char kSharedId[] = "shared_id";
 // be loaded once per browser session.
 class StrikeDatabaseIntegratorBase {
  public:
+  // Reason why the feature should be blocked.
+  enum BlockedReason {
+    // Unknown reason, default value.
+    kUnknown = 0,
+    // Feature not offered due to max strike limit has been reached.
+    kMaxStrikeLimitReached = 1,
+    // Feature not offered due to required delay since last strike has not
+    // passed yet.
+    kRequiredDelayNotPassed = 2,
+  };
+
   explicit StrikeDatabaseIntegratorBase(StrikeDatabaseBase* strike_database);
   virtual ~StrikeDatabaseIntegratorBase();
 
-  // Returns whether or not strike count for |id| has reached the strike limit
-  // set by GetMaxStrikesLimit().
-  bool IsMaxStrikesLimitReached(const std::string& id = kSharedId) const;
+  // Returns whether a particular feature should be blocked (not offered) for
+  // the given |id|. The |blocked_reason|, if provided, will be populated with
+  // the reason why the feature should be blocked.
+  bool ShouldBlockFeature(const std::string& id,
+                          BlockedReason* blocked_reason = nullptr) const;
+  bool ShouldBlockFeature(BlockedReason* blocked_reason = nullptr) const;
 
   // Increments in-memory cache and updates underlying ProtoDatabase.
   int AddStrike(const std::string& id = kSharedId);
@@ -152,6 +167,12 @@ class StrikeDatabaseIntegratorBase {
   // Returns whether or not a unique string identifier is required for every
   // strike in this project.
   virtual bool UniqueIdsRequired() const = 0;
+
+  // Returns the time delta to wait for before prompting the feature again. If
+  // the Optional is empty, then there is no required delay during which the
+  // feature is blocked.
+  virtual absl::optional<base::TimeDelta> GetRequiredDelaySinceLastStrike()
+      const;
 };
 
 }  // namespace autofill

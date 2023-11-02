@@ -1,17 +1,17 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
 
 #include "base/test/bind.h"
-#include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
 #include "chrome/browser/lacros/browser_service_lacros.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/crosapi/mojom/kiosk_session_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #include "content/public/test/browser_test.h"
 
 using crosapi::mojom::BrowserInitParams;
@@ -28,14 +28,14 @@ class FakeKioskSessionServiceLacros : public KioskSessionServiceLacros {
   ~FakeKioskSessionServiceLacros() override = default;
 
   // KioskSessionServiceLacros:
-  void AttemptUserExit() override { std::move(after_attempt_user_exit).Run(); }
+  void AttemptUserExit() override { std::move(after_attempt_user_exit_).Run(); }
 
   void set_after_attempt_user_exit(base::OnceClosure closure) {
-    after_attempt_user_exit = base::BindOnce(std::move(closure));
+    after_attempt_user_exit_ = std::move(closure);
   }
 
  private:
-  base::OnceClosure after_attempt_user_exit;
+  base::OnceClosure after_attempt_user_exit_;
 };
 
 class KioskSessionServiceBrowserTest : public InProcessBrowserTest {
@@ -64,10 +64,9 @@ class KioskSessionServiceBrowserTest : public InProcessBrowserTest {
 
   void SetSessionType(SessionType type) {
     BrowserInitParamsPtr init_params =
-        chromeos::LacrosService::Get()->init_params()->Clone();
+        chromeos::BrowserInitParams::GetForTests()->Clone();
     init_params->session_type = type;
-    chromeos::LacrosService::Get()->SetInitParamsForTests(
-        std::move(init_params));
+    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
   }
 
   void CreateKioskMainWindow() {
@@ -97,6 +96,10 @@ class KioskSessionServiceBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(KioskSessionServiceBrowserTest, AttemptUserExit) {
   SetSessionType(SessionType::kWebKioskSession);
   CreateKioskMainWindow();
+
+  // Verify the install URL stored in the service.
+  EXPECT_EQ(kiosk_session_service_lacros()->GetInstallURL(),
+            GURL(kNavigationUrl));
 
   // Close all browser windows, which should trigger `AttemptUserExit` API call.
   base::RunLoop run_loop;

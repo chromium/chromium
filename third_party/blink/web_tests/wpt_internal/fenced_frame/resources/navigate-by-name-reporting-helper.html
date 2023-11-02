@@ -10,7 +10,7 @@
 -->
 
 <script>
-const navigation_success_key = KEYS["navigation_success"];
+const [navigation_success_key] = parseKeylist();
 
 // We're currently using `window.opener` as a proxy for "did this load in a new
 // outermost popup window?". Note that if we try and test navigations initiated

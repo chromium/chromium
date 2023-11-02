@@ -1,6 +1,8 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 
@@ -20,11 +22,13 @@ static_library("safe_browsing") {
     "//build:branding_buildflags",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
+    "//chrome/browser/google",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chrome/common:constants",
     "//components/browser_sync",
+    "//components/enterprise:enterprise",
     "//components/enterprise/common:strings",
     "//components/keyed_service/content",
     "//components/language/core/browser",
@@ -49,12 +53,14 @@ static_library("safe_browsing") {
     "//components/safe_browsing/core/browser/sync",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:interfaces",
+    "//components/safe_browsing/core/common:safe_browsing_policy_handler",
     "//components/search_engines",
     "//components/security_interstitials/content:security_interstitial_page",
     "//components/security_interstitials/core",
     "//components/sessions",
     "//components/signin/public/identity_manager",
     "//components/url_formatter",
+    "//components/vector_icons:vector_icons",
     "//mojo/public/cpp/platform",
     "//mojo/public/cpp/system",
     "//services/preferences/public/cpp",
@@ -107,12 +113,16 @@ static_library("safe_browsing") {
       "chrome_password_protection_service.h",
       "chrome_password_protection_service_factory.cc",
       "chrome_password_protection_service_factory.h",
+      "chrome_ping_manager_factory.cc",
+      "chrome_ping_manager_factory.h",
       "chrome_safe_browsing_blocking_page_factory.cc",
       "chrome_safe_browsing_blocking_page_factory.h",
       "chrome_ui_manager_delegate.cc",
       "chrome_ui_manager_delegate.h",
       "chrome_user_population_helper.cc",
       "chrome_user_population_helper.h",
+      "chrome_v4_protocol_config_provider.cc",
+      "chrome_v4_protocol_config_provider.h",
       "client_side_detection_service_factory.cc",
       "client_side_detection_service_factory.h",
       "delayed_warning_navigation_throttle.cc",
@@ -127,8 +137,12 @@ static_library("safe_browsing") {
       "safe_browsing_service.h",
       "services_delegate.cc",
       "services_delegate.h",
-      "tailored_security_service_factory.cc",
-      "tailored_security_service_factory.h",
+      "tailored_security/chrome_tailored_security_service.cc",
+      "tailored_security/chrome_tailored_security_service.h",
+      "tailored_security/tailored_security_service_factory.cc",
+      "tailored_security/tailored_security_service_factory.h",
+      "tailored_security/tailored_security_url_observer.cc",
+      "tailored_security/tailored_security_url_observer.h",
       "telemetry/telemetry_service.cc",
       "telemetry/telemetry_service.h",
       "test_safe_browsing_blocking_page_quiet.cc",
@@ -199,8 +213,10 @@ static_library("safe_browsing") {
         "cloud_content_scanning/binary_fcm_service.h",
         "cloud_content_scanning/binary_upload_service.cc",
         "cloud_content_scanning/binary_upload_service.h",
-        "cloud_content_scanning/binary_upload_service_factory.cc",
-        "cloud_content_scanning/binary_upload_service_factory.h",
+        "cloud_content_scanning/cloud_binary_upload_service.cc",
+        "cloud_content_scanning/cloud_binary_upload_service.h",
+        "cloud_content_scanning/cloud_binary_upload_service_factory.cc",
+        "cloud_content_scanning/cloud_binary_upload_service_factory.h",
         "cloud_content_scanning/deep_scanning_utils.cc",
         "cloud_content_scanning/deep_scanning_utils.h",
         "cloud_content_scanning/file_analysis_request.cc",
@@ -241,6 +257,38 @@ static_library("safe_browsing") {
         "download_protection/ppapi_download_request.h",
         "download_protection/two_phase_uploader.cc",
         "download_protection/two_phase_uploader.h",
+        "extension_telemetry/cookies_get_all_signal.cc",
+        "extension_telemetry/cookies_get_all_signal.h",
+        "extension_telemetry/cookies_get_all_signal_processor.cc",
+        "extension_telemetry/cookies_get_all_signal_processor.h",
+        "extension_telemetry/cookies_get_signal.cc",
+        "extension_telemetry/cookies_get_signal.h",
+        "extension_telemetry/cookies_get_signal_processor.cc",
+        "extension_telemetry/cookies_get_signal_processor.h",
+        "extension_telemetry/extension_signal.h",
+        "extension_telemetry/extension_signal_processor.h",
+        "extension_telemetry/extension_signal_util.cc",
+        "extension_telemetry/extension_signal_util.h",
+        "extension_telemetry/extension_telemetry_persister.cc",
+        "extension_telemetry/extension_telemetry_persister.h",
+        "extension_telemetry/extension_telemetry_service.cc",
+        "extension_telemetry/extension_telemetry_service.h",
+        "extension_telemetry/extension_telemetry_service_factory.cc",
+        "extension_telemetry/extension_telemetry_service_factory.h",
+        "extension_telemetry/extension_telemetry_uploader.cc",
+        "extension_telemetry/extension_telemetry_uploader.h",
+        "extension_telemetry/password_reuse_signal.cc",
+        "extension_telemetry/password_reuse_signal.h",
+        "extension_telemetry/potential_password_theft_signal_processor.cc",
+        "extension_telemetry/potential_password_theft_signal_processor.h",
+        "extension_telemetry/remote_host_contacted_signal.cc",
+        "extension_telemetry/remote_host_contacted_signal.h",
+        "extension_telemetry/remote_host_contacted_signal_processor.cc",
+        "extension_telemetry/remote_host_contacted_signal_processor.h",
+        "extension_telemetry/tabs_execute_script_signal.cc",
+        "extension_telemetry/tabs_execute_script_signal.h",
+        "extension_telemetry/tabs_execute_script_signal_processor.cc",
+        "extension_telemetry/tabs_execute_script_signal_processor.h",
         "incident_reporting/binary_integrity_analyzer.cc",
         "incident_reporting/binary_integrity_analyzer.h",
         "incident_reporting/binary_integrity_incident.cc",
@@ -279,6 +327,9 @@ static_library("safe_browsing") {
         "incident_reporting/tracked_preference_incident.h",
         "services_delegate_desktop.cc",
         "services_delegate_desktop.h",
+        "services_delegate_desktop.h",
+        "tailored_security/notification_handler_desktop.cc",
+        "tailored_security/notification_handler_desktop.h",
       ]
       if (is_mac) {
         sources += [
@@ -310,6 +361,7 @@ static_library("safe_browsing") {
         ":verdict_cache_manager_factory",
         "//build:branding_buildflags",
         "//build:chromeos_buildflags",
+        "//chrome/app/vector_icons:vector_icons",
         "//chrome/common",
         "//chrome/common/safe_browsing:archive_analyzer_results",
         "//chrome/common/safe_browsing:binary_feature_extractor",
@@ -351,15 +403,24 @@ static_library("safe_browsing") {
           "//chrome/services/file_util/public/mojom",
         ]
       }
+      if (is_chromeos_ash) {
+        deps += [ "//ash/constants:constants" ]
+      }
     } else if (safe_browsing_mode == 2) {
       if (is_android) {
         sources += [
           "android/services_delegate_android.cc",
           "android/services_delegate_android.h",
+          "tailored_security/consented_message_android.cc",
+          "tailored_security/consented_message_android.h",
+          "tailored_security/unconsented_message_android.cc",
+          "tailored_security/unconsented_message_android.h",
           "telemetry/android/android_telemetry_service.cc",
           "telemetry/android/android_telemetry_service.h",
         ]
         deps += [
+          "//chrome/app/vector_icons:vector_icons",
+          "//components/messages/android:android",
           "//components/safe_browsing/android:remote_database_manager",
           "//ui/android:android",
         ]
@@ -389,6 +450,7 @@ source_set("verdict_cache_manager_factory") {
     "//components/keyed_service/content",
     "//components/prefs",
     "//components/safe_browsing/core/browser:verdict_cache_manager",
+    "//components/safe_browsing/core/browser/sync",
     "//content/public/browser",
   ]
 }
@@ -442,12 +504,23 @@ source_set("test_support") {
       "test_safe_browsing_service.h",
     ]
 
+    if (!is_android) {
+      sources += [
+        "test_safe_browsing_navigation_observer_manager.cc",
+        "test_safe_browsing_navigation_observer_manager.h",
+      ]
+    }
+
     deps = [
       ":safe_browsing",
+      "//chrome/browser:browser",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui:ui",
       "//chrome/common",
       "//chrome/common/safe_browsing:proto",
       "//components/enterprise/common/proto:connectors_proto",
       "//components/safe_browsing:buildflags",
+      "//components/safe_browsing/content/browser:browser",
       "//components/safe_browsing/content/browser:safe_browsing_blocking_page",
       "//components/safe_browsing/content/browser:safe_browsing_service",
       "//components/safe_browsing/core/browser/db:database_manager",
@@ -455,6 +528,7 @@ source_set("test_support") {
       "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
       "//content/public/browser",
       "//services/network:test_support",
+      "//testing/gtest",
     ]
   }
 

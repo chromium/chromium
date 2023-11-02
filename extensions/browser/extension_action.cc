@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "base/base64.h"
 #include "base/check_op.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/values.h"
 #include "extensions/browser/extension_icon_image.h"
 #include "extensions/browser/extension_icon_placeholder.h"
 #include "extensions/common/constants.h"
@@ -31,6 +30,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_skia_source.h"
 #include "ui/gfx/skbitmap_operations.h"
 #include "url/gurl.h"
@@ -118,18 +118,17 @@ void ExtensionAction::SetIcon(int tab_id, const gfx::Image& image) {
 }
 
 ExtensionAction::IconParseResult ExtensionAction::ParseIconFromCanvasDictionary(
-    const base::DictionaryValue& dict,
+    const base::Value::Dict& dict,
     gfx::ImageSkia* icon) {
-  for (base::DictionaryValue::Iterator iter(dict); !iter.IsAtEnd();
-       iter.Advance()) {
+  for (const auto item : dict) {
     std::string byte_string;
     const void* bytes = nullptr;
     size_t num_bytes = 0;
-    if (iter.value().is_blob()) {
-      bytes = iter.value().GetBlob().data();
-      num_bytes = iter.value().GetBlob().size();
-    } else if (iter.value().is_string()) {
-      if (!base::Base64Decode(iter.value().GetString(), &byte_string))
+    if (item.second.is_blob()) {
+      bytes = item.second.GetBlob().data();
+      num_bytes = item.second.GetBlob().size();
+    } else if (item.second.is_string()) {
+      if (!base::Base64Decode(item.second.GetString(), &byte_string))
         return IconParseResult::kDecodeFailure;
       bytes = byte_string.c_str();
       num_bytes = byte_string.length();
@@ -332,6 +331,20 @@ int ExtensionAction::GetIconWidth(int tab_id) const {
   // If no icon has been set and there is no default icon, we need favicon
   // width.
   return FallbackIcon().Width();
+}
+
+bool ExtensionAction::GetIsVisibleInternal(int tab_id,
+                                           bool include_declarative) const {
+  if (const bool* tab_is_visible = FindOrNull(&is_visible_, tab_id))
+    return *tab_is_visible;
+
+  if (include_declarative && base::Contains(declarative_show_count_, tab_id))
+    return true;
+
+  if (const bool* default_is_visible = FindOrNull(&is_visible_, kDefaultTabId))
+    return *default_is_visible;
+
+  return false;
 }
 
 }  // namespace extensions

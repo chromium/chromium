@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 
 #include <string>
 #include <vector>
+
+#include "base/memory/raw_ptr.h"
 
 namespace permissions {
 
@@ -175,7 +177,7 @@ class ChooserController {
 
  private:
   std::u16string title_;
-  View* view_ = nullptr;
+  raw_ptr<View> view_ = nullptr;
 };
 
 }  // namespace permissions

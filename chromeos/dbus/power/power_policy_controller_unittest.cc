@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,10 +49,14 @@ class PowerPolicyControllerTest : public testing::Test {
 TEST_F(PowerPolicyControllerTest, Prefs) {
   PowerPolicyController::PrefValues prefs;
   prefs.ac_screen_dim_delay_ms = 600000;
+  prefs.ac_quick_dim_delay_ms = 500000;
   prefs.ac_screen_off_delay_ms = 660000;
+  prefs.ac_quick_lock_delay_ms = 550000;
   prefs.ac_idle_delay_ms = 720000;
   prefs.battery_screen_dim_delay_ms = 300000;
+  prefs.battery_quick_dim_delay_ms = 250000;
   prefs.battery_screen_off_delay_ms = 360000;
+  prefs.battery_quick_lock_delay_ms = 260000;
   prefs.battery_idle_delay_ms = 420000;
   prefs.ac_idle_action = PowerPolicyController::ACTION_SUSPEND;
   prefs.battery_idle_action = PowerPolicyController::ACTION_STOP_SESSION;
@@ -68,17 +72,22 @@ TEST_F(PowerPolicyControllerTest, Prefs) {
   prefs.force_nonzero_brightness_for_user_activity = false;
   prefs.boot_on_ac = true;
   prefs.usb_power_share = false;
+  prefs.send_feedback_if_undimmed = true;
   policy_controller_->ApplyPrefs(prefs);
 
   power_manager::PowerManagementPolicy expected_policy;
   expected_policy.mutable_ac_delays()->set_screen_dim_ms(600000);
+  expected_policy.mutable_ac_delays()->set_quick_dim_ms(500000);
   expected_policy.mutable_ac_delays()->set_screen_off_ms(660000);
   expected_policy.mutable_ac_delays()->set_screen_lock_ms(-1);
+  expected_policy.mutable_ac_delays()->set_quick_lock_ms(550000);
   expected_policy.mutable_ac_delays()->set_idle_warning_ms(-1);
   expected_policy.mutable_ac_delays()->set_idle_ms(720000);
   expected_policy.mutable_battery_delays()->set_screen_dim_ms(300000);
+  expected_policy.mutable_battery_delays()->set_quick_dim_ms(250000);
   expected_policy.mutable_battery_delays()->set_screen_off_ms(360000);
   expected_policy.mutable_battery_delays()->set_screen_lock_ms(-1);
+  expected_policy.mutable_battery_delays()->set_quick_lock_ms(260000);
   expected_policy.mutable_battery_delays()->set_idle_warning_ms(-1);
   expected_policy.mutable_battery_delays()->set_idle_ms(420000);
   expected_policy.set_ac_idle_action(
@@ -97,6 +106,7 @@ TEST_F(PowerPolicyControllerTest, Prefs) {
   expected_policy.set_force_nonzero_brightness_for_user_activity(false);
   expected_policy.set_boot_on_ac(true);
   expected_policy.set_usb_power_share(false);
+  expected_policy.set_send_feedback_if_undimmed(true);
   expected_policy.mutable_battery_charge_mode()->set_mode(
       power_manager::PowerManagementPolicy::BatteryChargeMode::ADAPTIVE);
 

@@ -1,12 +1,12 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 
-#include "base/bind.h"
-#include "components/prefs/pref_member.h"
-#include "components/prefs/pref_service.h"
+#import "base/bind.h"
+#import "components/prefs/pref_member.h"
+#import "components/prefs/pref_service.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -39,6 +39,10 @@
 
 - (void)setValue:(BOOL)value {
   _pref.SetValue(value == YES);
+}
+
+- (void)stop {
+  _pref.Destroy();
 }
 
 @end

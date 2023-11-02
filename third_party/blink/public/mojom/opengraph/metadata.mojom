@@ -1,0 +1,23 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "url/mojom/url.mojom";
+
+// An instance of OpenGraphMetadata represents the OpenGraph metadata extracted
+// from a page's meta tags - see https://ogp.me for more details. At the moment,
+// this is only a partial implementation to meet the needs of one use case.
+//
+// Security note: all this metadata comes directly from the page and while it
+// has been syntactically validated (by Mojo) no semantic checking has been
+// done. In particular, there is no guarantee that the various URLs, if present,
+// actually refer to images and in general they may be assumed to point to
+// arbitrary, untrusted web content.
+struct OpenGraphMetadata {
+  // The URL included in the og:image meta tag, or (as a compatibility behavior)
+  // the URL included in the image itemprop meta tag if that was present and no
+  // og:image is present.
+  url.mojom.Url? image;
+};

@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_MENU_LIST_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_MENU_LIST_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_layout_object.h"
 
 namespace blink {
@@ -42,6 +41,7 @@ class AXMenuList final : public AXLayoutObject {
 
   AccessibilityExpanded IsExpanded() const final;
   bool OnNativeClickAction() override;
+  void SetNeedsToUpdateChildren() const override;
   void ClearChildren() const override;
   void Detach() override;
 

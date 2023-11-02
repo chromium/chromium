@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@ message SanitizerConfigProto {
   map<string, Elements> drop_attributes = 6;
 
   optional bool allow_custom_elements = 7;
+  optional bool allow_unknown_markup = 10;
   optional bool allow_comments = 8;
 
   enum StringContext {

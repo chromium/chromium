@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
@@ -185,7 +186,7 @@ class CONTENT_EXPORT DOMStorageContextWrapper
   // Unowned reference to our owning partition. This is always valid until it's
   // reset to null if/when the partition is destroyed. May also be null in
   // tests.
-  StoragePartitionImpl* partition_;
+  raw_ptr<StoragePartitionImpl> partition_;
 
   // To receive memory pressure signals.
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,31 +20,25 @@
     [
       CallWith = ScriptState, RaisesException, HighEntropy, MeasureAs = GetUserMediaPromise
     ] Promise<MediaStream>
-    getUserMedia(optional MediaStreamConstraints constraints = {});
+    getUserMedia(optional UserMediaStreamConstraints constraints = {});
 
     // https://w3c.github.io/mediacapture-screen-share/#dom-mediadevices-getdisplaymedia
     [
       RuntimeEnabled = GetDisplayMedia, CallWith = ScriptState, RaisesException,
       MeasureAs = GetDisplayMedia
     ] Promise<MediaStream>
-    getDisplayMedia(optional MediaStreamConstraints constraints = {});
+    getDisplayMedia(optional DisplayMediaStreamOptions constraints = {});
 
-    // https://wicg.github.io/capture-handle/
+    [
+      RuntimeEnabled = GetDisplayMediaSet, CallWith = ScriptState, RaisesException
+    ] Promise<sequence<MediaStream>>
+    getDisplayMediaSet(optional DisplayMediaStreamOptions constraints = {});
+
+    // https://w3c.github.io/mediacapture-handle/identity/
     // Allows an application APP to opt-in to exposing certain information to
     // applications which end up capturing APP.
     [
       RuntimeEnabled = CaptureHandle, CallWith = ScriptState, RaisesException
     ] void
     setCaptureHandleConfig(optional CaptureHandleConfig config = {});
-
-    // Given an html element of specified type, produces an identifier for the
-    // element that can be used by SelfCaptureMediaStreamTrack. Repeated calls
-    // to this method will return the same value.
-    // See draft spec here: https://eladalon1983.github.io/region-capture/.
-    // TODO(crbug.com/1247761): Link to final spec once it's published.
-    [
-      CallWith = ScriptState, RaisesException, MeasureAs = RegionCapture,
-      RuntimeEnabled = RegionCapture
-    ] Promise<DOMString>
-    produceCropId((HTMLDivElement or HTMLIFrameElement) target);
 };

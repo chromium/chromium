@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,9 @@ namespace content {
 // 3) Main RenderFrameHost is re-created after crash.
 
 // Page is deleted in the following cases:
-// 1) Main RenderFrameHost is deleted.
+// 1) Main RenderFrameHost is deleted. Note that this might be different from
+//    when the navigation commits, see the comment in
+//    RenderFrameHost::LifecycleState::kPendingDeletion for more details.
 // 2) A cross-document non-bfcached navigation is committed in the same
 //    RenderFrameHost.
 // 3) Before main RenderFrameHost is re-created after crash.
@@ -49,10 +51,11 @@ namespace content {
 // NOTE: Depending on the process model, the cross-origin iframes are likely to
 // be hosted in a different renderer process than the main document, so a given
 // page is hosted in multiple renderer processes at the same time.
-// RenderViewHost / RenderView / blink::Page (which are all 1:1:1) represent a
-// part of a given content::Page in a given renderer process (note, however,
-// that like RenderFrameHosts, these objects at the moment can be reused for a
-// new content::Page for a cross-document same-site main-frame navigation).
+// RenderViewHost / `blink::WebView` / blink::Page (which are all 1:1:1)
+// represent a part of a given content::Page in a given renderer process (note,
+// however, that like RenderFrameHosts, these objects at the moment can be
+// reused for a new content::Page for a cross-document same-site main-frame
+// navigation).
 class CONTENT_EXPORT Page : public base::SupportsUserData {
  public:
   ~Page() override = default;
@@ -68,6 +71,9 @@ class CONTENT_EXPORT Page : public base::SupportsUserData {
       base::OnceCallback<void(const GURL&, blink::mojom::ManifestPtr)>;
 
   // Requests the manifest URL and the Manifest of the main frame's document.
+  // |callback| may be called after the WebContents has been destroyed.
+  // This must be invoked on the UI thread, |callback| will be invoked on the UI
+  // thread.
   virtual void GetManifest(GetManifestCallback callback) = 0;
 
   // Returns true iff this Page is primary for the associated `WebContents`

@@ -1,10 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/path_service.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -28,7 +29,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
-#include "net/base/escape.h"
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -43,10 +43,6 @@ const char* kHostA = "a.test";
 const char* kHostB = "b.test";
 const char* kHostC = "c.test";
 const char* kHostD = "d.test";
-
-std::string OrNone(const std::string& arg) {
-  return arg.empty() ? "None" : arg;
-}
 
 enum class TestType { kFrame, kWorker };
 
@@ -113,8 +109,8 @@ class CookiePolicyBrowserTest : public InProcessBrowserTest {
     EXPECT_TRUE(NavigateIframeToURL(web_contents, "test", page));
   }
 
-  void ExpectFrameContent(const std::string& expected) {
-    storage::test::ExpectFrameContent(GetFrame(), expected);
+  std::string GetFrameContent() {
+    return storage::test::GetFrameContent(GetFrame());
   }
 
   void SetCookieViaJS(content::RenderFrameHost* frame,
@@ -140,14 +136,14 @@ class CookiePolicyBrowserTest : public InProcessBrowserTest {
     load_observer.Wait();
   }
 
-  void ExpectNestedFrameContent(const std::string& expected) {
-    storage::test::ExpectFrameContent(GetNestedFrame(), expected);
+  std::string GetNestedFrameContent() {
+    return storage::test::GetFrameContent(GetNestedFrame());
   }
 
   content::RenderFrameHost* GetFrame() {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    return ChildFrameAt(web_contents->GetMainFrame(), 0);
+    return ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   }
 
   content::RenderFrameHost* GetNestedFrame() {
@@ -291,7 +287,8 @@ class CookiePolicyBrowserTest : public InProcessBrowserTest {
                      bool expected) {
     switch (test_type) {
       case TestType::kFrame:
-        storage::test::ExpectStorageForFrame(frame, expected);
+        storage::test::ExpectStorageForFrame(frame, /*include_cookies=*/true,
+                                             expected);
         return;
       case TestType::kWorker:
         storage::test::ExpectStorageForWorker(frame, expected);
@@ -302,7 +299,7 @@ class CookiePolicyBrowserTest : public InProcessBrowserTest {
   void SetStorage(TestType test_type, content::RenderFrameHost* frame) {
     switch (test_type) {
       case TestType::kFrame:
-        storage::test::SetStorageForFrame(frame);
+        storage::test::SetStorageForFrame(frame, /*include_cookies=*/true);
         return;
       case TestType::kWorker:
         storage::test::SetStorageForWorker(frame);
@@ -355,13 +352,13 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
 
   NavigateToPageWithFrame(kHostA);
 
-  storage::test::ExpectCookiesOnHost(browser()->profile(), GetURL(kHostB), "");
+  EXPECT_EQ(content::GetCookies(browser()->profile(), GetURL(kHostB)), "");
 
   // Navigate iframe to a cross-site, cookie-setting endpoint, and verify that
   // the cookie is set:
   NavigateFrameTo(kHostB, "/set-cookie?thirdparty=1;SameSite=None;Secure");
-  storage::test::ExpectCookiesOnHost(browser()->profile(), GetURL(kHostB),
-                                     "thirdparty=1");
+  EXPECT_EQ(content::GetCookies(browser()->profile(), GetURL(kHostB)),
+            "thirdparty=1");
 
   // Navigate iframe to a cross-site frame with a frame, and navigate _that_
   // frame to a cross-site, cookie-setting endpoint, and verify that the cookie
@@ -371,8 +368,8 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
   // is still cross-site.
   NavigateNestedFrameTo(kHostB,
                         "/set-cookie?thirdparty=2;SameSite=None;Secure");
-  storage::test::ExpectCookiesOnHost(browser()->profile(), GetURL(kHostB),
-                                     "thirdparty=2");
+  EXPECT_EQ(content::GetCookies(browser()->profile(), GetURL(kHostB)),
+            "thirdparty=2");
 
   // Navigate iframe to a cross-site frame with a frame, and navigate _that_
   // frame to a cross-site, cookie-setting endpoint, and verify that the cookie
@@ -380,8 +377,8 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
   NavigateFrameTo(kHostC, "/iframe.html");
   NavigateNestedFrameTo(kHostB,
                         "/set-cookie?thirdparty=3;SameSite=None;Secure");
-  storage::test::ExpectCookiesOnHost(browser()->profile(), GetURL(kHostB),
-                                     "thirdparty=3");
+  EXPECT_EQ(content::GetCookies(browser()->profile(), GetURL(kHostB)),
+            "thirdparty=3");
 }
 
 // This test does the same navigations as the test above, so we can be assured
@@ -397,7 +394,7 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
   // Navigate iframe to a cross-site, cookie-setting endpoint, and verify that
   // the cookie is not set:
   NavigateFrameTo(kHostB, "/set-cookie?thirdparty=1;SameSite=None;Secure");
-  storage::test::ExpectCookiesOnHost(browser()->profile(), GetURL(kHostB), "");
+  EXPECT_EQ(content::GetCookies(browser()->profile(), GetURL(kHostB)), "");
 
   // Navigate iframe to a cross-site frame with a frame, and navigate _that_
   // frame to a cross-site, cookie-setting endpoint, and verify that the cookie
@@ -405,7 +402,7 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
   NavigateFrameTo(kHostB, "/iframe.html");
   NavigateNestedFrameTo(kHostB,
                         "/set-cookie?thirdparty=2;SameSite=None;Secure");
-  storage::test::ExpectCookiesOnHost(browser()->profile(), GetURL(kHostB), "");
+  EXPECT_EQ(content::GetCookies(browser()->profile(), GetURL(kHostB)), "");
 
   // Navigate iframe to a cross-site frame with a frame, and navigate _that_
   // frame to a cross-site, cookie-setting endpoint, and verify that the cookie
@@ -413,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
   NavigateFrameTo(kHostC, "/iframe.html");
   NavigateNestedFrameTo(kHostB,
                         "/set-cookie?thirdparty=3;SameSite=None;Secure");
-  storage::test::ExpectCookiesOnHost(browser()->profile(), GetURL(kHostB), "");
+  EXPECT_EQ(content::GetCookies(browser()->profile(), GetURL(kHostB)), "");
 }
 
 IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
@@ -423,29 +420,29 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
   // Set a cookie on `b.test`.
   content::SetCookie(browser()->profile(), https_server_.GetURL(kHostB, "/"),
                      "thirdparty=1;SameSite=None;Secure");
-  storage::test::ExpectCookiesOnHost(browser()->profile(), GetURL(kHostB),
-                                     "thirdparty=1");
+  EXPECT_EQ(content::GetCookies(browser()->profile(), GetURL(kHostB)),
+            "thirdparty=1");
 
   NavigateToPageWithFrame(kHostA);
 
   // Navigate iframe to a cross-site, cookie-reading endpoint, and verify that
   // the cookie is sent:
   NavigateFrameTo(kHostB, "/echoheader?cookie");
-  ExpectFrameContent("thirdparty=1");
+  EXPECT_EQ(GetFrameContent(), "thirdparty=1");
 
   // Navigate iframe to a cross-site frame with a frame, and navigate _that_
   // frame to a cross-site page that echoes the cookie header, and verify that
   // the cookie is sent:
   NavigateFrameTo(kHostB, "/iframe.html");
   NavigateNestedFrameTo(kHostB, "/echoheader?cookie");
-  ExpectNestedFrameContent("thirdparty=1");
+  EXPECT_EQ(GetNestedFrameContent(), "thirdparty=1");
 
   // Navigate iframe to a cross-site frame with a frame, and navigate _that_
   // frame to a distinct cross-site page that echoes the cookie header, and
   // verify that the cookie is not sent:
   NavigateFrameTo(kHostC, "/iframe.html");
   NavigateNestedFrameTo(kHostB, "/echoheader?cookie");
-  ExpectNestedFrameContent("thirdparty=1");
+  EXPECT_EQ(GetNestedFrameContent(), "thirdparty=1");
 }
 
 // This test does the same navigations as the test above, so we can be assured
@@ -459,29 +456,29 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
   // Set a cookie on `b.test`.
   content::SetCookie(browser()->profile(), https_server_.GetURL(kHostB, "/"),
                      "thirdparty=1;SameSite=None;Secure");
-  storage::test::ExpectCookiesOnHost(browser()->profile(), GetURL(kHostB),
-                                     "thirdparty=1");
+  EXPECT_EQ(content::GetCookies(browser()->profile(), GetURL(kHostB)),
+            "thirdparty=1");
 
   NavigateToPageWithFrame(kHostA);
 
   // Navigate iframe to a cross-site, cookie-reading endpoint, and verify that
   // the cookie is not sent:
   NavigateFrameTo(kHostB, "/echoheader?cookie");
-  ExpectFrameContent("None");
+  EXPECT_EQ(GetFrameContent(), "None");
 
   // Navigate iframe to a cross-site frame with a frame, and navigate _that_
   // frame to a cross-site page that echoes the cookie header, and verify that
   // the cookie is not sent:
   NavigateFrameTo(kHostB, "/iframe.html");
   NavigateNestedFrameTo(kHostB, "/echoheader?cookie");
-  ExpectNestedFrameContent("None");
+  EXPECT_EQ(GetNestedFrameContent(), "None");
 
   // Navigate iframe to a cross-site frame with a frame, and navigate _that_
   // frame to a distinct cross-site page that echoes the cookie header, and
   // verify that the cookie is not sent:
   NavigateFrameTo(kHostC, "/iframe.html");
   NavigateNestedFrameTo(kHostB, "/echoheader?cookie");
-  ExpectNestedFrameContent("None");
+  EXPECT_EQ(GetNestedFrameContent(), "None");
 }
 
 IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
@@ -491,14 +488,14 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
   // Set a cookie on `b.test`.
   content::SetCookie(browser()->profile(), https_server_.GetURL(kHostB, "/"),
                      "thirdparty=1;SameSite=None;Secure");
-  storage::test::ExpectCookiesOnHost(browser()->profile(), GetURL(kHostB),
-                                     "thirdparty=1");
+  EXPECT_EQ(content::GetCookies(browser()->profile(), GetURL(kHostB)),
+            "thirdparty=1");
 
   // Set a cookie on d.test.
   content::SetCookie(browser()->profile(), https_server_.GetURL(kHostD, "/"),
                      "thirdparty=other;SameSite=None;Secure");
-  storage::test::ExpectCookiesOnHost(browser()->profile(), GetURL(kHostD),
-                                     "thirdparty=other");
+  EXPECT_EQ(content::GetCookies(browser()->profile(), GetURL(kHostD)),
+            "thirdparty=other");
 
   // Allow all requests to b.test to have cookies.
   // On the other hand, d.test does not have an exception set for it.
@@ -511,32 +508,32 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
   // Navigate iframe to a cross-site, cookie-reading endpoint, and verify that
   // the cookie is sent:
   NavigateFrameTo(kHostB, "/echoheader?cookie");
-  ExpectFrameContent("thirdparty=1");
+  EXPECT_EQ(GetFrameContent(), "thirdparty=1");
   // Navigate iframe to d.test and verify that the cookie is not sent.
   NavigateFrameTo(kHostD, "/echoheader?cookie");
-  ExpectFrameContent("None");
+  EXPECT_EQ(GetFrameContent(), "None");
 
   // Navigate iframe to a cross-site frame with a frame, and navigate _that_
   // frame to a cross-site page that echoes the cookie header, and verify that
   // the cookie is sent:
   NavigateFrameTo(kHostB, "/iframe.html");
   NavigateNestedFrameTo(kHostB, "/echoheader?cookie");
-  ExpectNestedFrameContent("thirdparty=1");
+  EXPECT_EQ(GetNestedFrameContent(), "thirdparty=1");
   // Navigate nested iframe to d.test and verify that the cookie is not
   // sent.
   NavigateNestedFrameTo(kHostD, "/echoheader?cookie");
-  ExpectNestedFrameContent("None");
+  EXPECT_EQ(GetNestedFrameContent(), "None");
 
   // Navigate iframe to a cross-site frame with a frame, and navigate _that_
   // frame to a distinct cross-site page that echoes the cookie header, and
   // verify that the cookie is sent:
   NavigateFrameTo(kHostC, "/iframe.html");
   NavigateNestedFrameTo(kHostB, "/echoheader?cookie");
-  ExpectNestedFrameContent("thirdparty=1");
+  EXPECT_EQ(GetNestedFrameContent(), "thirdparty=1");
   // Navigate nested iframe to d.test and verify that the cookie is not
   // sent.
   NavigateNestedFrameTo(kHostD, "/echoheader?cookie");
-  ExpectNestedFrameContent("None");
+  EXPECT_EQ(GetNestedFrameContent(), "None");
 }
 
 IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
@@ -546,8 +543,8 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
   // Set a cookie on `b.test`.
   content::SetCookie(browser()->profile(), https_server_.GetURL(kHostB, "/"),
                      "thirdparty=1;SameSite=None;Secure");
-  storage::test::ExpectCookiesOnHost(browser()->profile(), GetURL(kHostB),
-                                     "thirdparty=1");
+  EXPECT_EQ(content::GetCookies(browser()->profile(), GetURL(kHostB)),
+            "thirdparty=1");
 
   // Allow all requests on the top frame domain a.test to have cookies.
   GURL url = https_server_.GetURL(kHostA, "/");
@@ -559,21 +556,21 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
   // Navigate iframe to a cross-site, cookie-reading endpoint, and verify that
   // the cookie is sent:
   NavigateFrameTo(kHostB, "/echoheader?cookie");
-  ExpectFrameContent("thirdparty=1");
+  EXPECT_EQ(GetFrameContent(), "thirdparty=1");
 
   // Navigate iframe to a cross-site frame with a frame, and navigate _that_
   // frame to a cross-site page that echoes the cookie header, and verify that
   // the cookie is sent:
   NavigateFrameTo(kHostB, "/iframe.html");
   NavigateNestedFrameTo(kHostB, "/echoheader?cookie");
-  ExpectNestedFrameContent("thirdparty=1");
+  EXPECT_EQ(GetNestedFrameContent(), "thirdparty=1");
 
   // Navigate iframe to a cross-site frame with a frame, and navigate _that_
   // frame to a distinct cross-site page that echoes the cookie header, and
   // verify that the cookie is sent:
   NavigateFrameTo(kHostC, "/iframe.html");
   NavigateNestedFrameTo(kHostB, "/echoheader?cookie");
-  ExpectNestedFrameContent("thirdparty=1");
+  EXPECT_EQ(GetNestedFrameContent(), "thirdparty=1");
 
   // Now repeat the above with a different top frame site, which does not have
   // an exception set for it.
@@ -582,21 +579,21 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
   // Navigate iframe to a cross-site, cookie-reading endpoint, and verify that
   // the cookie is not sent:
   NavigateFrameTo(kHostB, "/echoheader?cookie");
-  ExpectFrameContent("None");
+  EXPECT_EQ(GetFrameContent(), "None");
 
   // Navigate iframe to a cross-site frame with a frame, and navigate _that_
   // frame to a cross-site page that echoes the cookie header, and verify that
   // the cookie is not sent:
   NavigateFrameTo(kHostB, "/iframe.html");
   NavigateNestedFrameTo(kHostB, "/echoheader?cookie");
-  ExpectNestedFrameContent("None");
+  EXPECT_EQ(GetNestedFrameContent(), "None");
 
   // Navigate iframe to a cross-site frame with a frame, and navigate _that_
   // frame to a distinct cross-site page that echoes the cookie header, and
   // verify that the cookie is not sent:
   NavigateFrameTo(kHostC, "/iframe.html");
   NavigateNestedFrameTo(kHostB, "/echoheader?cookie");
-  ExpectNestedFrameContent("None");
+  EXPECT_EQ(GetNestedFrameContent(), "None");
 }
 
 IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
@@ -619,8 +616,16 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
   TestNestedThirdPartyIFrameStorage(TestType::kWorker);
 }
 
+// TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_NestedFirstPartyIFrameStorageForFrame \
+  DISABLED_NestedFirstPartyIFrameStorageForFrame
+#else
+#define MAYBE_NestedFirstPartyIFrameStorageForFrame \
+  NestedFirstPartyIFrameStorageForFrame
+#endif
 IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
-                       NestedFirstPartyIFrameStorageForFrame) {
+                       MAYBE_NestedFirstPartyIFrameStorageForFrame) {
   TestNestedFirstPartyIFrameStorage(TestType::kFrame);
 }
 
@@ -728,262 +733,5 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest, MultiTabNestedTest) {
   NavigateNestedFrameTo(kHostA, "/browsing_data/site_data.html");
   storage::test::ExpectCrossTabInfoForFrame(GetNestedFrame(), true);
 }
-
-// The tuple<bool, bool> is used as <sameparty-considered-first-party flag is
-// enabled, block-third-party-cookies setting is enabled>.
-class SamePartyIsFirstPartyCookiePolicyBrowserTest
-    : public CookiePolicyBrowserTest,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
- public:
-  SamePartyIsFirstPartyCookiePolicyBrowserTest() {
-    if (sameparty_considered_first_party()) {
-      feature_list_.InitAndEnableFeature(
-          net::features::kSamePartyCookiesConsideredFirstParty);
-    } else {
-      feature_list_.Init();
-    }
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    CookiePolicyBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(
-        network::switches::kUseFirstPartySet,
-        base::StringPrintf("https://%s,https://%s,https://%s", kHostA, kHostB,
-                           kHostC));
-  }
-
-  std::string AllCookies() const { return "thirdparty=1; firstparty=1"; }
-
-  std::string ExpectedSamePartyCookies() const {
-    // Assumes a cross-site context.
-    if (block_third_party_cookies()) {
-      if (sameparty_considered_first_party())
-        return "firstparty=1";
-
-      return "";
-    }
-
-    return "thirdparty=1; firstparty=1";
-  }
-
-  std::string ExpectedCrossPartyCookies() const {
-    // Assumes a cross-site context.
-    if (block_third_party_cookies())
-      return "";
-
-    return "thirdparty=1";
-  }
-
-  bool sameparty_considered_first_party() const {
-    return std::get<0>(GetParam());
-  }
-  bool block_third_party_cookies() const { return std::get<1>(GetParam()); }
-
-  std::vector<std::string> CookieLines() {
-    return {
-        "thirdparty=1;SameSite=None;Secure",
-        "firstparty=1;SameParty;Secure",
-    };
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(SamePartyIsFirstPartyCookiePolicyBrowserTest,
-                       Write_HTTP) {
-  SetBlockThirdPartyCookies(block_third_party_cookies());
-  // Navigate iframe to a cross-site, same-party, cookie-setting endpoint, and
-  // verify that only the appropriate cookies are set.
-  // A(B)
-  NavigateToPageWithFrame(kHostA);
-  NavigateFrameTo(kHostB, base::StrCat({
-                              "/set-cookie?",
-                              base::JoinString(CookieLines(), "&"),
-                          }));
-  EXPECT_EQ(ExpectedSamePartyCookies(),
-            content::GetCookies(browser()->profile(), GetURL(kHostB)));
-}
-
-IN_PROC_BROWSER_TEST_P(SamePartyIsFirstPartyCookiePolicyBrowserTest,
-                       Read_HTTP) {
-  SetBlockThirdPartyCookies(block_third_party_cookies());
-  // Set cookies on `b.test`.
-  for (const std::string& cookie_line : CookieLines()) {
-    ASSERT_TRUE(content::SetCookie(
-        browser()->profile(), https_server_.GetURL(kHostB, "/"), cookie_line));
-  }
-
-  // Navigate iframe to a cross-site, same-party cookie-reading endpoint, and
-  // verify that only the appropriate cookies are sent.
-  // A(B)
-  NavigateToPageWithFrame(kHostA);
-  NavigateFrameTo(kHostB, "/echoheader?cookie");
-  ExpectFrameContent(OrNone(ExpectedSamePartyCookies()));
-
-  // Navigate iframe to a cross-site, same-party frame with a frame, and
-  // navigate _that_ frame to a cross-site page that echoes the cookie header,
-  // and verify that only the appropriate cookies are sent.
-  // A(C(B))
-  NavigateFrameTo(kHostC, "/iframe.html");
-  NavigateNestedFrameTo(kHostB, "/echoheader?cookie");
-  ExpectNestedFrameContent(OrNone(ExpectedSamePartyCookies()));
-
-  // Navigate iframe to a cross-site, cross-party frame with a frame, and
-  // navigate _that_ frame to a distinct cross-site page that echoes the cookie
-  // header, and verify that only the appropriate cookies are sent.
-  // A(D(B))
-  NavigateFrameTo(kHostD, "/iframe.html");
-  NavigateNestedFrameTo(kHostB, "/echoheader?cookie");
-  ExpectNestedFrameContent(OrNone(ExpectedCrossPartyCookies()));
-
-  // Navigate to a page with a cross-party iframe, and verify cookie access.
-  // D(B)
-  NavigateToPageWithFrame(kHostD);
-  NavigateFrameTo(kHostB, "/echoheader?cookie");
-  ExpectFrameContent(OrNone(ExpectedCrossPartyCookies()));
-
-  // Navigate to a cross-party page that embeds an iframe and a nested iframe
-  // (that is same-party to the other iframe), and verify cookie access.
-  // D(A(B))
-  NavigateFrameTo(kHostA, "/iframe.html");
-  NavigateNestedFrameTo(kHostB, "/echoheader?cookie");
-  ExpectNestedFrameContent(OrNone(ExpectedCrossPartyCookies()));
-}
-
-IN_PROC_BROWSER_TEST_P(SamePartyIsFirstPartyCookiePolicyBrowserTest, Write_JS) {
-  SetBlockThirdPartyCookies(block_third_party_cookies());
-  // Navigate iframe to a cross-site, same-party endpoint, set some cookies
-  // via JS, and verify that only the appropriate cookies are actually set.
-  // A(B)
-  NavigateToPageWithFrame(kHostA);
-  NavigateFrameTo(kHostB, "/empty.html");
-  for (const std::string& cookie_line : CookieLines()) {
-    SetCookieViaJS(GetFrame(), cookie_line);
-  }
-  EXPECT_EQ(ExpectedSamePartyCookies(),
-            content::GetCookies(browser()->profile(), GetURL(kHostB)));
-}
-
-IN_PROC_BROWSER_TEST_P(SamePartyIsFirstPartyCookiePolicyBrowserTest, Read_JS) {
-  SetBlockThirdPartyCookies(block_third_party_cookies());
-  // Set cookies on `b.test`.
-  for (const std::string& cookie_line : CookieLines()) {
-    ASSERT_TRUE(content::SetCookie(
-        browser()->profile(), https_server_.GetURL(kHostB, "/"), cookie_line));
-  }
-
-  // Navigate iframe to a cross-site, same-party endpoint, read cookies via JS,
-  // and verify that only the appropriate cookies are read.
-  // A(B)
-  NavigateToPageWithFrame(kHostA);
-  NavigateFrameTo(kHostB, "/empty.html");
-  EXPECT_EQ(ExpectedSamePartyCookies(), GetCookieViaJS(GetFrame()));
-
-  // Navigate iframe to a cross-site, same-party frame with a frame,
-  // navigate _that_ frame to a cross-site page, and read cookies via JS;
-  // verify that only the appropriate cookies are read.
-  // A(C(B))
-  NavigateFrameTo(kHostC, "/iframe.html");
-  NavigateNestedFrameTo(kHostB, "/empty.html");
-  EXPECT_EQ(ExpectedSamePartyCookies(), GetCookieViaJS(GetNestedFrame()));
-
-  // Navigate iframe to a cross-site, cross-party frame with a frame,
-  // navigate _that_ frame to a distinct cross-site page, and read cookies via
-  // JS; verify that only the appropriate cookies are read.
-  // A(D(B))
-  NavigateFrameTo(kHostD, "/iframe.html");
-  NavigateNestedFrameTo(kHostB, "/empty.html");
-  EXPECT_EQ(ExpectedCrossPartyCookies(), GetCookieViaJS(GetNestedFrame()));
-
-  // Navigate to a page with a cross-party iframe, and verify cookie access.
-  // D(B)
-  NavigateToPageWithFrame(kHostD);
-  NavigateFrameTo(kHostB, "/empty.html");
-  EXPECT_EQ(ExpectedCrossPartyCookies(), GetCookieViaJS(GetFrame()));
-
-  // Navigate to a cross-party page that embeds an iframe and a nested iframe
-  // (that is same-party to the other iframe), and verify cookie access.
-  // D(A(B))
-  NavigateFrameTo(kHostA, "/iframe.html");
-  NavigateNestedFrameTo(kHostB, "/empty.html");
-  EXPECT_EQ(ExpectedCrossPartyCookies(), GetCookieViaJS(GetNestedFrame()));
-}
-
-IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest, ThirdPartyCookieHistogram) {
-  base::HistogramTester tester;
-  const char* histogram =
-      "Navigation.MainFrame.ThirdPartyCookieBlockingEnabled";
-  NavigateToPageWithFrame(kHostA);
-  tester.ExpectTotalCount(histogram, 1);
-  tester.ExpectBucketCount(histogram,
-                           ThirdPartyCookieBlockState::kCookiesAllowed, 1);
-
-  SetBlockThirdPartyCookies(true);
-  NavigateToPageWithFrame(kHostA);
-  tester.ExpectTotalCount(histogram, 2);
-  tester.ExpectBucketCount(
-      histogram, ThirdPartyCookieBlockState::kThirdPartyCookiesBlocked, 1);
-
-  GURL url = https_server_.GetURL(kHostA, "/");
-  cookie_settings()->SetThirdPartyCookieSetting(url, CONTENT_SETTING_ALLOW);
-  NavigateToPageWithFrame(kHostA);
-  tester.ExpectTotalCount(histogram, 3);
-  tester.ExpectBucketCount(
-      histogram,
-      ThirdPartyCookieBlockState::kThirdPartyCookieBlockingDisabledForSite, 1);
-}
-
-IN_PROC_BROWSER_TEST_P(SamePartyIsFirstPartyCookiePolicyBrowserTest,
-                       Redirect_HTTP) {
-  SetBlockThirdPartyCookies(block_third_party_cookies());
-  // Set cookies on `a.test`.
-  for (const std::string& cookie_line : CookieLines()) {
-    ASSERT_TRUE(content::SetCookie(
-        browser()->profile(), https_server_.GetURL(kHostA, "/"), cookie_line));
-  }
-
-  // Navigate iframe to a cross-site, cross-party page. Then redirect to a
-  // same-site (same-party) cookie-reading endpoint, and verify that the
-  // appropriate cookies are sent.
-  // A(D -> A)
-  NavigateToPageWithFrame(kHostA);
-  NavigateFrameTo(
-      kHostD, base::StrCat({
-                  "/server-redirect?",
-                  net::EscapeQueryParamValue(
-                      https_server_.GetURL(kHostA, "/echoheader?cookie").spec(),
-                      /*use_plus=*/false),
-              }));
-  ExpectFrameContent(AllCookies());
-}
-
-IN_PROC_BROWSER_TEST_P(SamePartyIsFirstPartyCookiePolicyBrowserTest,
-                       Redirect_JS) {
-  SetBlockThirdPartyCookies(block_third_party_cookies());
-  // Set cookies on `a.test`.
-  for (const std::string& cookie_line : CookieLines()) {
-    ASSERT_TRUE(content::SetCookie(
-        browser()->profile(), https_server_.GetURL(kHostA, "/"), cookie_line));
-  }
-
-  // Navigate iframe to a cross-site, cross-party page. Then redirect to a
-  // same-site (same-party) cookie-reading endpoint, and verify that the
-  // appropriate cookies are sent.
-  // A(D -> A)
-  NavigateToPageWithFrame(kHostA);
-  NavigateFrameTo(
-      kHostD, base::StrCat({
-                  "/script_redirect.html?",
-                  net::EscapeQueryParamValue(
-                      https_server_.GetURL(kHostA, "/echoheader?cookie").spec(),
-                      /*use_plus=*/false),
-              }));
-  ExpectFrameContent(AllCookies());
-}
-
-INSTANTIATE_TEST_CASE_P(FlagAndSettings,
-                        SamePartyIsFirstPartyCookiePolicyBrowserTest,
-                        testing::Combine(testing::Bool(), testing::Bool()));
 
 }  // namespace

@@ -3,6 +3,7 @@ specific_include_rules = {
     "+chrome/browser/ui/views",
   ],
   "personalization_app_integration_browsertest.cc": [
+    "+ash/ambient/test/ambient_ash_test_helper.h",
     "+chrome/browser/ui/views/frame/browser_view.h",
     "+ui/message_center/message_center.h",
   ],

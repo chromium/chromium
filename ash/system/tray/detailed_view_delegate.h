@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,9 +50,6 @@ class ASH_EXPORT DetailedViewDelegate {
 
   // Get the background color of the detailed view.
   virtual absl::optional<SkColor> GetBackgroundColor();
-
-  // Get the padding of the detailed view.
-  virtual gfx::Insets GetInsetsForDetailedView() const;
 
   // Return true if overflow indicator of ScrollView is enabled.
   virtual bool IsOverflowIndicatorEnabled() const;

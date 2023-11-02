@@ -1,10 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/browsing_data/access_context_audit_service.h"
 #include "base/memory/ref_counted.h"
-#include "base/task/post_task.h"
+#include "base/observer_list.h"
 #include "base/task/thread_pool.h"
 #include "base/task/updateable_sequenced_task_runner.h"
 #include "base/time/default_clock.h"
@@ -234,15 +234,13 @@ void AccessContextAuditService::Shutdown() {
   ClearSessionOnlyRecords();
 }
 
-void AccessContextAuditService::OnOriginDataCleared(
+void AccessContextAuditService::OnStorageKeyDataCleared(
     uint32_t remove_mask,
-    base::RepeatingCallback<bool(const url::Origin&)> origin_matcher,
+    content::StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
     const base::Time begin,
     const base::Time end) {
   std::set<AccessContextAuditDatabase::StorageAPIType> types;
 
-  if (remove_mask & content::StoragePartition::REMOVE_DATA_MASK_APPCACHE)
-    types.insert(AccessContextAuditDatabase::StorageAPIType::kAppCache);
   if (remove_mask & content::StoragePartition::REMOVE_DATA_MASK_FILE_SYSTEMS)
     types.insert(AccessContextAuditDatabase::StorageAPIType::kFileSystem);
   if (remove_mask & content::StoragePartition::REMOVE_DATA_MASK_INDEXEDDB)
@@ -260,20 +258,20 @@ void AccessContextAuditService::OnOriginDataCleared(
     return;
 
   DCHECK_EQ(AccessContextAuditDatabase::StorageAPIType::kMaxValue,
-            AccessContextAuditDatabase::StorageAPIType::kAppCache)
+            AccessContextAuditDatabase::StorageAPIType::kAppCacheDeprecated)
       << "Unexpected number of storage types. Ensure that all storage types "
          "are accounted for when checking |remove_mask|.";
   bool all_origin_storage_types = types.size() == 7;
 
-  if (begin == base::Time() && end == base::Time::Max() && !origin_matcher &&
-      all_origin_storage_types) {
+  if (begin == base::Time() && end == base::Time::Max() &&
+      !storage_key_matcher && all_origin_storage_types) {
     database_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&AccessContextAuditDatabase::RemoveAllRecords,
                                   database_));
     return;
   }
 
-  if (!origin_matcher && all_origin_storage_types) {
+  if (!storage_key_matcher && all_origin_storage_types) {
     database_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -285,7 +283,8 @@ void AccessContextAuditService::OnOriginDataCleared(
   database_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&AccessContextAuditDatabase::RemoveStorageApiRecords,
-                     database_, types, std::move(origin_matcher), begin, end));
+                     database_, types, std::move(storage_key_matcher), begin,
+                     end));
 }
 
 void AccessContextAuditService::OnCookieChange(

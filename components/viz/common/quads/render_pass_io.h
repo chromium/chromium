@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,10 @@ VIZ_COMMON_EXPORT base::Value CompositorRenderPassListToDict(
 VIZ_COMMON_EXPORT bool CompositorRenderPassListFromDict(
     const base::Value& dict,
     CompositorRenderPassList* render_pass_list);
+
+VIZ_COMMON_EXPORT const char* BlendModeToString(SkBlendMode blend_mode);
+VIZ_COMMON_EXPORT const char* DrawQuadMaterialToString(
+    DrawQuad::Material material);
 
 // Represents the important information used for (de)serialization of
 // `CompositorFrame`s on a given surface.

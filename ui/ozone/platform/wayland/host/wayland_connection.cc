@@ -1,15 +1,17 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 
+#include <content-type-v1-client-protocol.h>
 #include <extended-drag-unstable-v1-client-protocol.h>
 #include <presentation-time-client-protocol.h>
 #include <xdg-shell-client-protocol.h>
 #include <xdg-shell-unstable-v6-client-protocol.h>
 
 #include <algorithm>
+#include <cstdint>
 #include <memory>
 #include <vector>
 
@@ -20,41 +22,43 @@
 #include "base/strings/string_util.h"
 #include "base/task/current_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/time/time.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/ozone/common/features.h"
-#include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/gtk_primary_selection_device_manager.h"
 #include "ui/ozone/platform/wayland/host/gtk_shell1.h"
 #include "ui/ozone/platform/wayland/host/org_kde_kwin_idle.h"
 #include "ui/ozone/platform/wayland/host/overlay_prioritizer.h"
 #include "ui/ozone/platform/wayland/host/proxy/wayland_proxy_impl.h"
 #include "ui/ozone/platform/wayland/host/surface_augmenter.h"
+#include "ui/ozone/platform/wayland/host/wayland_buffer_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
-#include "ui/ozone/platform/wayland/host/wayland_clipboard.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor_position.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device_manager.h"
-#include "ui/ozone/platform/wayland/host/wayland_data_drag_controller.h"
 #include "ui/ozone/platform/wayland/host/wayland_drm.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_input_method_context.h"
 #include "ui/ozone/platform/wayland/host/wayland_keyboard.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
+#include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_shm.h"
-#include "ui/ozone/platform/wayland/host/wayland_touch.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_drag_controller.h"
 #include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
+#include "ui/ozone/platform/wayland/host/wayland_zcr_color_management_output.h"
+#include "ui/ozone/platform/wayland/host/wayland_zcr_color_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_cursor_shapes.h"
+#include "ui/ozone/platform/wayland/host/wayland_zcr_touchpad_haptics.h"
 #include "ui/ozone/platform/wayland/host/wayland_zwp_linux_dmabuf.h"
 #include "ui/ozone/platform/wayland/host/wayland_zwp_pointer_constraints.h"
 #include "ui/ozone/platform/wayland/host/wayland_zwp_pointer_gestures.h"
 #include "ui/ozone/platform/wayland/host/wayland_zwp_relative_pointer_manager.h"
+#include "ui/ozone/platform/wayland/host/xdg_activation.h"
 #include "ui/ozone/platform/wayland/host/xdg_foreign_wrapper.h"
 #include "ui/ozone/platform/wayland/host/zwp_idle_inhibit_manager.h"
 #include "ui/ozone/platform/wayland/host/zwp_primary_selection_device_manager.h"
@@ -75,18 +79,20 @@ namespace {
 // advertised by the server.
 constexpr uint32_t kMaxCompositorVersion = 4;
 constexpr uint32_t kMaxKeyboardExtensionVersion = 2;
-constexpr uint32_t kMaxSeatVersion = 5;
-constexpr uint32_t kMaxXdgShellVersion = 3;
+constexpr uint32_t kMaxXdgShellVersion = 5;
 constexpr uint32_t kMaxZXdgShellVersion = 1;
 constexpr uint32_t kMaxWpPresentationVersion = 1;
 constexpr uint32_t kMaxWpViewporterVersion = 1;
 constexpr uint32_t kMaxTextInputManagerVersion = 1;
-constexpr uint32_t kMaxTextInputExtensionVersion = 1;
+constexpr uint32_t kMaxTextInputExtensionVersion = 6;
 constexpr uint32_t kMaxExplicitSyncVersion = 2;
 constexpr uint32_t kMaxAlphaCompositingVersion = 1;
 constexpr uint32_t kMaxXdgDecorationVersion = 1;
 constexpr uint32_t kMaxExtendedDragVersion = 1;
 constexpr uint32_t kMaxXdgOutputManagerVersion = 3;
+constexpr uint32_t kMaxKeyboardShortcutsInhibitManagerVersion = 1;
+constexpr uint32_t kMaxStylusVersion = 2;
+constexpr uint32_t kMaxWpContentTypeVersion = 1;
 
 int64_t ConvertTimespecToMicros(const struct timespec& ts) {
   // On 32-bit systems, the calculation cannot overflow int64_t.
@@ -175,12 +181,20 @@ bool WaylandConnection::Initialize() {
                               &WaylandDrm::Instantiate);
   RegisterGlobalObjectFactory(WaylandOutput::kInterfaceName,
                               &WaylandOutput::Instantiate);
+  RegisterGlobalObjectFactory(WaylandSeat::kInterfaceName,
+                              &WaylandSeat::Instantiate);
   RegisterGlobalObjectFactory(WaylandShm::kInterfaceName,
                               &WaylandShm::Instantiate);
   RegisterGlobalObjectFactory(WaylandZAuraShell::kInterfaceName,
                               &WaylandZAuraShell::Instantiate);
+  if (features::IsLacrosColorManagementEnabled()) {
+    RegisterGlobalObjectFactory(WaylandZcrColorManager::kInterfaceName,
+                                &WaylandZcrColorManager::Instantiate);
+  }
   RegisterGlobalObjectFactory(WaylandZcrCursorShapes::kInterfaceName,
                               &WaylandZcrCursorShapes::Instantiate);
+  RegisterGlobalObjectFactory(WaylandZcrTouchpadHaptics::kInterfaceName,
+                              &WaylandZcrTouchpadHaptics::Instantiate);
   RegisterGlobalObjectFactory(WaylandZwpLinuxDmabuf::kInterfaceName,
                               &WaylandZwpLinuxDmabuf::Instantiate);
   RegisterGlobalObjectFactory(WaylandZwpPointerConstraints::kInterfaceName,
@@ -189,6 +203,8 @@ bool WaylandConnection::Initialize() {
                               &WaylandZwpPointerGestures::Instantiate);
   RegisterGlobalObjectFactory(WaylandZwpRelativePointerManager::kInterfaceName,
                               &WaylandZwpRelativePointerManager::Instantiate);
+  RegisterGlobalObjectFactory(XdgActivation::kInterfaceName,
+                              &XdgActivation::Instantiate);
   RegisterGlobalObjectFactory(XdgForeignWrapper::kInterfaceNameV1,
                               &XdgForeignWrapper::Instantiate);
   RegisterGlobalObjectFactory(XdgForeignWrapper::kInterfaceNameV2,
@@ -205,7 +221,7 @@ bool WaylandConnection::Initialize() {
 
   display_.reset(wl_display_connect(nullptr));
   if (!display_) {
-    LOG(ERROR) << "Failed to connect to Wayland display";
+    PLOG(ERROR) << "Failed to connect to Wayland display";
     return false;
   }
 
@@ -228,6 +244,10 @@ bool WaylandConnection::Initialize() {
   event_source_ = std::make_unique<WaylandEventSource>(
       display(), event_queue_.get(), wayland_window_manager(), this);
 
+  // Create the buffer factory before registry listener is set so that shm, drm,
+  // zwp_linux_dmabuf objects are able to be stored.
+  wayland_buffer_factory_ = std::make_unique<WaylandBufferFactory>();
+
   wl_registry_add_listener(registry_.get(), &registry_listener, this);
   while (!wayland_output_manager_ ||
          !wayland_output_manager_->IsOutputReady()) {
@@ -240,7 +260,7 @@ bool WaylandConnection::Initialize() {
     LOG(ERROR) << "No wl_compositor object";
     return false;
   }
-  if (!shm_) {
+  if (!wayland_buffer_factory()->shm()) {
     LOG(ERROR) << "No wl_shm object";
     return false;
   }
@@ -259,31 +279,15 @@ bool WaylandConnection::Initialize() {
   return true;
 }
 
-void WaylandConnection::RegisterGlobalObjectFactory(
-    const char* interface_name,
-    wl::GlobalObjectFactory factory) {
-  DCHECK_EQ(global_object_factories_.count(interface_name), 0U);
-
-  global_object_factories_[interface_name] = factory;
-}
-
-void WaylandConnection::ScheduleFlush() {
-  // When we are in tests, the message loop is set later when the
-  // initialization of the OzonePlatform complete. Thus, just
-  // flush directly. This doesn't happen in normal run.
-  if (!base::CurrentUIThread::IsSet()) {
-    Flush();
-  } else if (!scheduled_flush_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&WaylandConnection::Flush, base::Unretained(this)));
-    scheduled_flush_ = true;
-  }
-}
-
 void WaylandConnection::RoundTripQueue() {
+  if (roundtrip_closure_for_testing_) {
+    roundtrip_closure_for_testing_.Run();
+    return;
+  }
+
+  DCHECK(event_source_);
   DCHECK(event_queue_.get());
-  wl_display_roundtrip_queue(display(), event_queue_.get());
+  event_source_->RoundTripQueue();
 }
 
 void WaylandConnection::SetShutdownCb(base::OnceCallback<void()> shutdown_cb) {
@@ -333,45 +337,39 @@ wl::Object<wl_surface> WaylandConnection::CreateSurface() {
       wl_compositor_create_surface(compositor_.get()));
 }
 
-void WaylandConnection::Flush() {
-  wl_display_flush(display_.get());
-  scheduled_flush_ = false;
+void WaylandConnection::RegisterGlobalObjectFactory(
+    const char* interface_name,
+    wl::GlobalObjectFactory factory) {
+  // If we get duplicate interface names, something is seriously wrong.
+  CHECK_EQ(global_object_factories_.count(interface_name), 0U);
+
+  global_object_factories_[interface_name] = factory;
 }
 
-void WaylandConnection::UpdateInputDevices(wl_seat* seat,
-                                           uint32_t capabilities) {
-  DCHECK(seat);
-  DCHECK(event_source_);
-  auto has_pointer = capabilities & WL_SEAT_CAPABILITY_POINTER;
-  auto has_keyboard = capabilities & WL_SEAT_CAPABILITY_KEYBOARD;
-  auto has_touch = capabilities & WL_SEAT_CAPABILITY_TOUCH;
+void WaylandConnection::Flush() {
+  wl_display_flush(display_.get());
+}
 
+void WaylandConnection::UpdateInputDevices() {
   // Container for devices. Can be empty.
   std::vector<InputDevice> devices;
 
-  if (!has_pointer) {
-    pointer_.reset();
+  if (seat_->pointer()) {
+    cursor_ = std::make_unique<WaylandCursor>(seat_->pointer(), this);
+    cursor_->set_listener(listener_);
+    wayland_cursor_position_ = std::make_unique<WaylandCursorPosition>();
+
+    // Wayland doesn't expose InputDeviceType.
+    devices.emplace_back(InputDevice(seat_->pointer()->id(),
+                                     InputDeviceType::INPUT_DEVICE_UNKNOWN,
+                                     "pointer"));
+
+    // Pointer is required for PointerGestures to be functional.
+    if (wayland_zwp_pointer_gestures_)
+      wayland_zwp_pointer_gestures_->Init();
+  } else {
     cursor_.reset();
     wayland_cursor_position_.reset();
-  } else if (!pointer_) {
-    if (wl_pointer* pointer = wl_seat_get_pointer(seat)) {
-      pointer_ =
-          std::make_unique<WaylandPointer>(pointer, this, event_source());
-      cursor_ = std::make_unique<WaylandCursor>(pointer_.get(), this);
-      cursor_->set_listener(listener_);
-      wayland_cursor_position_ = std::make_unique<WaylandCursorPosition>();
-
-      // Wayland doesn't expose InputDeviceType.
-      devices.emplace_back(InputDevice(
-          pointer_->id(), InputDeviceType::INPUT_DEVICE_UNKNOWN, "pointer"));
-
-      // Pointer is required for PointerGestures to be functional.
-      if (wayland_zwp_pointer_gestures_)
-        wayland_zwp_pointer_gestures_->Init();
-
-    } else {
-      LOG(ERROR) << "Failed to get wl_pointer from seat";
-    }
   }
 
   // Notify about mouse changes.
@@ -379,16 +377,11 @@ void WaylandConnection::UpdateInputDevices(wl_seat* seat,
 
   // Clear the local container to store a keyboard device now.
   devices.clear();
-  if (!has_keyboard) {
-    keyboard_.reset();
-  } else if (!keyboard_) {
-    if (!CreateKeyboard()) {
-      LOG(ERROR) << "Failed to create WaylandKeyboard";
-    } else {
-      // Wayland doesn't expose InputDeviceType.
-      devices.emplace_back(InputDevice(
-          keyboard_->id(), InputDeviceType::INPUT_DEVICE_UNKNOWN, "keyboard"));
-    }
+  if (seat_->keyboard()) {
+    // Wayland doesn't expose InputDeviceType.
+    devices.emplace_back(InputDevice(seat_->keyboard()->id(),
+                                     InputDeviceType::INPUT_DEVICE_UNKNOWN,
+                                     "keyboard"));
   }
 
   // Notify about keyboard changes.
@@ -397,32 +390,9 @@ void WaylandConnection::UpdateInputDevices(wl_seat* seat,
   // TODO(msisov): wl_touch doesn't expose the display it belongs to. Thus, it's
   // impossible to figure out the size of the touchscreen for TouchscreenDevice
   // struct that should be passed to a DeviceDataManager instance.
-  if (!has_touch) {
-    touch_.reset();
-  } else if (!touch_) {
-    if (wl_touch* touch = wl_seat_get_touch(seat)) {
-      touch_ = std::make_unique<WaylandTouch>(touch, this, event_source());
-    } else {
-      LOG(ERROR) << "Failed to get wl_touch from seat";
-    }
-  }
 
   // Notify update completed.
   GetHotplugEventObserver()->OnDeviceListsComplete();
-}
-
-bool WaylandConnection::CreateKeyboard() {
-  wl_keyboard* keyboard = wl_seat_get_keyboard(seat_.get());
-  if (!keyboard)
-    return false;
-
-  auto* layout_engine = KeyboardLayoutEngineManager::GetKeyboardLayoutEngine();
-  // Make sure to destroy the old WaylandKeyboard (if it exists) before creating
-  // the new one.
-  keyboard_.reset();
-  keyboard_.reset(new WaylandKeyboard(keyboard, keyboard_extension_v1_.get(),
-                                      this, layout_engine, event_source()));
-  return true;
 }
 
 DeviceHotplugEventObserver* WaylandConnection::GetHotplugEventObserver() {
@@ -451,10 +421,6 @@ void WaylandConnection::Global(void* data,
                                uint32_t name,
                                const char* interface,
                                uint32_t version) {
-  static constexpr wl_seat_listener seat_listener = {
-      &Capabilities,
-      &Name,
-  };
   static constexpr xdg_wm_base_listener shell_listener = {
       &Ping,
   };
@@ -465,7 +431,7 @@ void WaylandConnection::Global(void* data,
       &ClockId,
   };
 
-  WaylandConnection* connection = static_cast<WaylandConnection*>(data);
+  auto* connection = static_cast<WaylandConnection*>(data);
 
   auto factory_it = connection->global_object_factories_.find(interface);
   if (factory_it != connection->global_object_factories_.end()) {
@@ -486,15 +452,6 @@ void WaylandConnection::Global(void* data,
       LOG(ERROR) << "Failed to bind to wl_subcompositor global";
       return;
     }
-  } else if (!connection->seat_ && strcmp(interface, "wl_seat") == 0) {
-    connection->seat_ =
-        wl::Bind<wl_seat>(registry, name, std::min(version, kMaxSeatVersion));
-    if (!connection->seat_) {
-      LOG(ERROR) << "Failed to bind to wl_seat global";
-      return;
-    }
-    wl_seat_add_listener(connection->seat_.get(), &seat_listener, connection);
-    connection->CreateDataObjectsIfReady();
   } else if (!connection->shell_v6_ &&
              strcmp(interface, "zxdg_shell_v6") == 0) {
     // Check for zxdg_shell_v6 first.
@@ -535,6 +492,14 @@ void WaylandConnection::Global(void* data,
       LOG(ERROR) << "Failed to bind zwp_linux_explicit_synchronization_v1";
       return;
     }
+  } else if (!connection->content_type_manager_v1_ &&
+             (strcmp(interface, "wp_content_type_manager_v1") == 0)) {
+    connection->content_type_manager_v1_ = wl::Bind<wp_content_type_manager_v1>(
+        registry, name, std::min(version, kMaxWpContentTypeVersion));
+    if (!connection->content_type_manager_v1_) {
+      LOG(ERROR) << "Failed to bind wp_content_type_v1";
+      return;
+    }
   } else if (!connection->presentation_ &&
              (strcmp(interface, "wp_presentation") == 0)) {
     connection->presentation_ = wl::Bind<wp_presentation>(
@@ -563,7 +528,19 @@ void WaylandConnection::Global(void* data,
     }
     // CreateKeyboard may fail if we do not have keyboard seat capabilities yet.
     // We will create the keyboard when get them in that case.
-    connection->CreateKeyboard();
+    if (connection->seat_)
+      connection->seat_->RefreshKeyboard();
+  } else if (!connection->keyboard_shortcuts_inhibit_manager_v1_ &&
+             strcmp(interface, "zwp_keyboard_shortcuts_inhibit_manager_v1") ==
+                 0) {
+    connection->keyboard_shortcuts_inhibit_manager_v1_ =
+        wl::Bind<zwp_keyboard_shortcuts_inhibit_manager_v1>(
+            registry, name,
+            std::min(version, kMaxKeyboardShortcutsInhibitManagerVersion));
+    if (!connection->keyboard_shortcuts_inhibit_manager_v1_) {
+      LOG(ERROR) << "Failed to bind zwp_keyboard_shortcuts_inhibit_manager_v1";
+      return;
+    }
   } else if (!connection->text_input_manager_v1_ &&
              strcmp(interface, "zwp_text_input_manager_v1") == 0) {
     connection->text_input_manager_v1_ = wl::Bind<zwp_text_input_manager_v1>(
@@ -612,11 +589,19 @@ void WaylandConnection::Global(void* data,
     NOTIMPLEMENTED_LOG_ONCE()
         << interface << " is recognized but not yet supported";
     ReportShellUMA(UMALinuxWaylandShell::kZwlrLayerShellV1);
+  } else if (!connection->zcr_stylus_v2_ &&
+             strcmp(interface, "zcr_stylus_v2") == 0) {
+    connection->zcr_stylus_v2_ = wl::Bind<zcr_stylus_v2>(
+        registry, name, std::min(version, kMaxStylusVersion));
+    if (!connection->zcr_stylus_v2_) {
+      LOG(ERROR) << "Failed to bind to zcr_stylus_v2";
+      return;
+    }
   }
 
   connection->available_globals_.emplace_back(interface, version);
 
-  connection->ScheduleFlush();
+  connection->Flush();
 }
 
 base::TimeTicks WaylandConnection::ConvertPresentationTime(uint32_t tv_sec_hi,
@@ -650,6 +635,16 @@ base::TimeTicks WaylandConnection::ConvertPresentationTime(uint32_t tv_sec_hi,
   return now + base::Microseconds(delta_us);
 }
 
+const gfx::PointF WaylandConnection::MaybeConvertLocation(
+    const gfx::PointF& location,
+    const WaylandWindow* window) const {
+  if (!surface_submission_in_pixel_coordinates_ || !window)
+    return location;
+  gfx::PointF converted(location);
+  converted.Scale(1.0f / window->window_scale());
+  return converted;
+}
+
 // static
 void WaylandConnection::GlobalRemove(void* data,
                                      wl_registry* registry,
@@ -666,32 +661,19 @@ void WaylandConnection::GlobalRemove(void* data,
 }
 
 // static
-void WaylandConnection::Capabilities(void* data,
-                                     wl_seat* seat,
-                                     uint32_t capabilities) {
-  WaylandConnection* self = static_cast<WaylandConnection*>(data);
-  DCHECK(self);
-  self->UpdateInputDevices(seat, capabilities);
-  self->ScheduleFlush();
-}
-
-// static
-void WaylandConnection::Name(void* data, wl_seat* seat, const char* name) {}
-
-// static
 void WaylandConnection::PingV6(void* data,
                                zxdg_shell_v6* shell_v6,
                                uint32_t serial) {
   WaylandConnection* connection = static_cast<WaylandConnection*>(data);
   zxdg_shell_v6_pong(shell_v6, serial);
-  connection->ScheduleFlush();
+  connection->Flush();
 }
 
 // static
 void WaylandConnection::Ping(void* data, xdg_wm_base* shell, uint32_t serial) {
   WaylandConnection* connection = static_cast<WaylandConnection*>(data);
   xdg_wm_base_pong(shell, serial);
-  connection->ScheduleFlush();
+  connection->Flush();
 }
 
 // static

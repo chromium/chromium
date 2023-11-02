@@ -1,0 +1,15 @@
+<html>
+  <head>
+    <title>Manifest test app with background color</title>
+    <link rel="manifest" href="background-color.json">
+    <meta id="background-color" name="background-color" content="blue">
+    <script>
+      window.onload = () => {
+        navigator.serviceWorker.register('service_worker_empty_fetch_handler.js');
+      };
+    </script>
+  </head>
+  <body>
+    Manifest test app with a background color.
+  </body>
+</html>

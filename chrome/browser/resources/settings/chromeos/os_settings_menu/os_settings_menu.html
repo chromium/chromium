@@ -3,7 +3,7 @@
     /* The tap target extends slightly above each visible menu item. */
     --tap-target-padding: 3px;
     /* Width of the keyboard focus border. */
-    --focus-border-width: 1px;
+    --focus-border-width: 2px;
     box-sizing: border-box;
     display: block;
     padding-bottom: 2px;
@@ -47,6 +47,7 @@
     margin-inline-end: 2px;
     min-height: 32px;
     padding-inline-start: 20px;
+    text-decoration: none;
   }
 
   :host-context([dir=rtl]) a.item {
@@ -100,7 +101,8 @@
   }
 
   :host-context(.focus-outline-visible) #advancedButton:focus {
-    outline: auto 5px -webkit-focus-ring-color;
+    border-radius: 0 20px 20px 0;
+    outline: var(--focus-border-width) solid var(--cros-focus-ring-color);
   }
 
   #advancedButton > span {
@@ -181,6 +183,12 @@
     <iron-icon icon="os-settings:apps"></iron-icon>
     $i18n{appsPageTitle}
   </a>
+  <template is="dom-if" if="[[isAccessibilityOSSettingsVisibilityEnabled_]]">
+    <a href="/osAccessibility" class="item">
+      <iron-icon icon="os-settings:accessibility"></iron-icon>
+      $i18n{a11yPageTitle}
+    </a>
+  </template>
   <cr-button id="advancedButton"
       aria-expanded$="[[boolToString_(advancedOpened)]]"
       on-click="onAdvancedButtonToggle_">
@@ -207,14 +215,16 @@
         <iron-icon icon="os-settings:print"></iron-icon>
         $i18n{printingPageTitle}
       </a>
-      <a href="/crostini" hidden="[[!showCrostini]]" class="item">
+      <a href="/crostini" class="item">
         <iron-icon icon="os-settings:developer-tags"></iron-icon>
         $i18n{crostiniPageTitle}
       </a>
-      <a href="/osAccessibility" class="item">
-        <iron-icon icon="os-settings:accessibility"></iron-icon>
-        $i18n{a11yPageTitle}
-      </a>
+      <template is="dom-if" if="[[!isAccessibilityOSSettingsVisibilityEnabled_]]">
+        <a href="/osAccessibility" class="item">
+          <iron-icon icon="os-settings:accessibility"></iron-icon>
+          $i18n{a11yPageTitle}
+        </a>
+      </template>
       <a id="osReset" href="/osReset" hidden="[[!showReset]]" class="item">
         <iron-icon icon="os-settings:restore"></iron-icon>
         $i18n{resetPageTitle}
@@ -222,7 +232,7 @@
     </iron-selector>
   </iron-collapse>
   <div id="menuSeparator"></div>
-  <a id="aboutItem" href="/help" class="item">
+  <a id="aboutItem" href="/help/about" class="item">
     $i18n{aboutOsPageTitle}
   </a>
 </iron-selector>

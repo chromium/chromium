@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,7 +41,7 @@ TEST(MimeUtilTest, LookupTypes) {
   EXPECT_TRUE(IsSupportedNonImageMimeType("application/+json"));
   EXPECT_TRUE(IsSupportedNonImageMimeType("application/x-suggestions+json"));
   EXPECT_TRUE(IsSupportedNonImageMimeType("application/x-s+json;x=2"));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #if 0  // Disabled until http://crbug.com/318217 is resolved.
   EXPECT_TRUE(IsSupportedMediaMimeType("application/vnd.apple.mpegurl"));
   EXPECT_TRUE(IsSupportedMediaMimeType("application/x-mpegurl"));

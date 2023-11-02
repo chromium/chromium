@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,7 @@
 
 #include "ui/views/examples/example_base.h"
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 // MenuExample demonstrates how to use the MenuModelAdapter and MenuRunner
 // classes.
@@ -25,7 +24,6 @@ class VIEWS_EXAMPLES_EXPORT MenuExample : public ExampleBase {
   void CreateExampleView(View* container) override;
 };
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples
 
 #endif  // UI_VIEWS_EXAMPLES_MENU_EXAMPLE_H_

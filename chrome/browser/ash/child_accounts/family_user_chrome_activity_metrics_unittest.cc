@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,7 @@
 #include "chrome/test/base/test_browser_window_aura.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
+#include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/session_manager/core/session_manager.h"
@@ -49,7 +50,8 @@ constexpr apps::InstanceState kInactiveInstanceState =
 void SetScreenOff(bool is_screen_off) {
   power_manager::ScreenIdleState screen_idle_state;
   screen_idle_state.set_off(is_screen_off);
-  FakePowerManagerClient::Get()->SendScreenIdleStateChanged(screen_idle_state);
+  chromeos::FakePowerManagerClient::Get()->SendScreenIdleStateChanged(
+      screen_idle_state);
 }
 
 }  // namespace
@@ -64,7 +66,7 @@ class FamilyUserChromeActivityMetricsTest
   ~FamilyUserChromeActivityMetricsTest() override = default;
 
   void SetUp() override {
-    PowerManagerClient::InitializeFake();
+    chromeos::PowerManagerClient::InitializeFake();
     ChromeRenderViewHostTestHarness::SetUp();
     InitiateFamilyUserChromeActivityMetrics();
 
@@ -78,7 +80,7 @@ class FamilyUserChromeActivityMetricsTest
 
     // Install Chrome.
     scoped_refptr<extensions::Extension> chrome = app_time::CreateExtension(
-        extension_misc::kChromeAppId, kExtensionNameChrome, kExtensionAppUrl);
+        app_constants::kChromeAppId, kExtensionNameChrome, kExtensionAppUrl);
     extension_service_->AddComponentExtension(chrome.get());
 
     PushChromeApp();
@@ -99,7 +101,7 @@ class FamilyUserChromeActivityMetricsTest
     test_browser_.reset();
     DestroyFamilyUserChromeActivityMetrics();
     ChromeRenderViewHostTestHarness::TearDown();
-    PowerManagerClient::Shutdown();
+    chromeos::PowerManagerClient::Shutdown();
   }
 
  protected:
@@ -113,15 +115,18 @@ class FamilyUserChromeActivityMetricsTest
   }
 
   void PushChromeApp() {
+    auto mojom_app_type = apps::ConvertAppTypeToMojomAppType(
+        app_time::GetChromeAppId().app_type());
+
     std::vector<apps::mojom::AppPtr> deltas;
     auto app = apps::mojom::App::New();
     app->app_id = app_time::GetChromeAppId().app_id();
-    app->app_type = app_time::GetChromeAppId().app_type();
+    app->app_type = mojom_app_type;
     deltas.push_back(std::move(app));
 
     apps::AppServiceProxyFactory::GetForProfile(profile())
         ->AppRegistryCache()
-        .OnApps(std::move(deltas), app_time::GetChromeAppId().app_type(),
+        .OnApps(std::move(deltas), mojom_app_type,
                 false /* should_notify_initialized */);
   }
 
@@ -132,17 +137,11 @@ class FamilyUserChromeActivityMetricsTest
   void OnNewDay() { family_user_chrome_activity_metrics_->OnNewDay(); }
 
   void PushChromeAppInstance(aura::Window* window, apps::InstanceState state) {
-    std::unique_ptr<apps::Instance> instance = std::make_unique<apps::Instance>(
-        app_time::GetChromeAppId().app_id(),
-        apps::Instance::InstanceKey::ForWindowBasedApp(window));
-    instance->UpdateState(state, base::Time::Now());
-
-    std::vector<std::unique_ptr<apps::Instance>> deltas;
-    deltas.push_back(std::move(instance));
-
+    apps::InstanceParams params(app_time::GetChromeAppId().app_id(), window);
+    params.state = std::make_pair(state, base::Time::Now());
     apps::AppServiceProxyFactory::GetForProfile(profile())
         ->InstanceRegistry()
-        .OnInstances(deltas);
+        .CreateOrUpdateInstance(std::move(params));
   }
 
   std::unique_ptr<Browser> CreateBrowserWithAuraWindow() {

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,7 +48,7 @@ void RegisterPrefs(PrefRegistrySimple* registry);
 // System Profile directory, which is an invalid last used profile.
 void SetLastUsedProfile(const base::FilePath& profile_dir);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Returns the display name of the specified on-the-record profile (or guest),
 // specified by |profile_path|, used in the avatar button or user manager. If
 // |profile_path| is the guest path, it will return IDS_GUEST_PROFILE_NAME. If
@@ -58,10 +58,6 @@ void SetLastUsedProfile(const base::FilePath& profile_dir);
 std::u16string GetAvatarNameForProfile(const base::FilePath& profile_path);
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-// Returns the string to use in the fast user switcher menu for the specified
-// menu item. Adds a supervision indicator to the profile name if appropriate.
-std::u16string GetProfileSwitcherTextForItem(const AvatarMenu::Item& item);
-
 // Update the name of |profile| to |new_profile_name|. This updates the profile
 // preferences, which triggers an update in the ProfileAttributesStorage. This
 // method should be called when the user is explicitely changing the profile
@@ -90,11 +86,11 @@ bool IsProfileCreationAllowed();
 // Returns true if guest mode is allowed by prefs.
 bool IsGuestModeEnabled();
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 // Returns true if secondary profiles are allowed by
 // |prefs::kLacrosSecondaryProfilesAllowed|.
 bool AreSecondaryProfilesAllowed();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Returns true if sign in is required to browse as this profile.  Call with
 // profile->GetPath() if you have a profile pointer.
@@ -115,11 +111,21 @@ void RemoveBrowsingDataForProfile(const base::FilePath& profile_path);
 // Returns whether a public session is being run currently.
 bool IsPublicSession();
 
-// Returns whether public session restrictions are enabled.
-bool ArePublicSessionRestrictionsEnabled();
+// Returns whether a kiosk session is being run currently.
+bool IsKioskSession();
 
-// Returns whether a kiosk app is being run currently.
-bool IsKioskApp();
+// Returns true if the current session is a Chrome App Kiosk session.
+bool IsChromeAppKioskSession();
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Returns true if the current session is a Web Kiosk session.
+bool IsWebKioskSession();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Returns whether it's a regular session (with gaia account)
+bool SessionHasGaiaAccount();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Returns the default name for a new enterprise profile.
@@ -136,7 +142,7 @@ std::u16string GetDefaultNameForNewSignedInProfileWithIncompleteInfo(
     const CoreAccountInfo& account_info);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace profiles
 

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "net/base/net_errors.h"
@@ -42,8 +41,7 @@ const char kSharedSecretBad[] = "0000-0000-0001";
 
 }  // namespace
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class ThirdPartyAuthenticatorTest : public AuthenticatorTestBase {
   class FakeTokenFetcher {
@@ -224,5 +222,4 @@ TEST_F(ThirdPartyAuthenticatorTest, ClientBadSecret) {
   ASSERT_EQ(Authenticator::REJECTED, client_->state());
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

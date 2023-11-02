@@ -1,24 +1,25 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import <objc/runtime.h>
 
-#include "base/bind.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/bind.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
-#include "ios/chrome/browser/web/features.h"
+#import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
-#include "ios/net/url_test_util.h"
+#import "ios/net/url_test_util.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#include "net/test/embedded_test_server/default_handlers.h"
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
+#import "ios/web/common/features.h"
+#import "net/test/embedded_test_server/default_handlers.h"
+#import "net/test/embedded_test_server/http_request.h"
+#import "net/test/embedded_test_server/http_response.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -42,11 +43,8 @@ const char kPageTwoTitle[] = "page 2";
 // Path to a test page used to count each page load.
 const char kCountURL[] = "/countme.html";
 
-// Suffix used to disable kRestoreSessionFromCache.
-NSString* const kDisableCacheRestoreSuffix = @"WithCacheRestoreDisabled";
-
 // Response handler for page1 and page2 that supports 'airplane mode' by
-// returning an empty RawHttpResponse when |responds_with_content| us false.
+// returning an empty RawHttpResponse when `responds_with_content` us false.
 std::unique_ptr<net::test_server::HttpResponse> RestoreResponse(
     const bool& responds_with_content,
     const net::test_server::HttpRequest& request) {
@@ -75,7 +73,7 @@ std::unique_ptr<net::test_server::HttpResponse> RestoreResponse(
   return std::move(http_response);
 }
 
-// Response handler for |kCountURL| that counts the number of page loads.
+// Response handler for `kCountURL` that counts the number of page loads.
 std::unique_ptr<net::test_server::HttpResponse> CountResponse(
     int* counter,
     const net::test_server::HttpRequest& request) {
@@ -91,10 +89,9 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
   return std::move(http_response);
 }
 
-// Returns true when omnibox contains |text|, otherwise returns false after
+// Returns true when omnibox contains `text`, otherwise returns false after
 // after a timeout.
-bool WaitForOmniboxContaining(std::string text) WARN_UNUSED_RESULT;
-bool WaitForOmniboxContaining(std::string text) {
+[[nodiscard]] bool WaitForOmniboxContaining(std::string text) {
   return base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, ^bool {
         NSError* error = nil;
@@ -107,7 +104,7 @@ bool WaitForOmniboxContaining(std::string text) {
 }
 
 // Integration tests for restoring session history.
-@interface RestoreTestCase : ChromeTestCase {
+@interface RestoreWithCacheTestCase : ChromeTestCase {
   // Use a second test server to ensure different origin navigations.
   std::unique_ptr<net::EmbeddedTestServer> _secondTestServer;
 }
@@ -133,55 +130,16 @@ bool WaitForOmniboxContaining(std::string text) {
 
 // Verify that each page visited in -loadTestPages is properly restored by
 // navigating to each page and triggering a restore, confirming that pages are
-// reloaded and back-forward history is preserved.  If |checkServerData| is YES,
+// reloaded and back-forward history is preserved.  If `checkServerData` is YES,
 // also check that the proper content is restored.
 - (void)verifyRestoredTestPages:(BOOL)checkServerData;
 
 @end
 
-@implementation RestoreTestCase
-
-+ (NSArray*)testInvocations {
-  NSMutableArray* testInvocations = [[super testInvocations] mutableCopy];
-
-  // RestoreTestCase tests a lot of ios/web session restore logic. iOS 15
-  // supports a more efficient session restore flow, but there are plenty of
-  // edge case reasons for a session restore to fall back to legacy restore.
-  // To ensure each test below ios/web restore path, duplicate each test with a
-  // version that runs with kRestoreSessionFromCache enabled and disabled.
-  if (@available(iOS 15, *)) {
-    unsigned int count = 0;
-    Method* methods = class_copyMethodList(self, &count);
-    for (unsigned i = 0; i < count; i++) {
-      SEL selector = method_getName(methods[i]);
-      NSString* name = NSStringFromSelector(selector);
-      if ([name hasPrefix:@"test"]) {
-        // Add disabled selector to test invocations.
-        SEL disabled_selector = NSSelectorFromString([NSString
-            stringWithFormat:@"%@%@", name, kDisableCacheRestoreSuffix]);
-        NSInvocation* invocation = [NSInvocation
-            invocationWithMethodSignature:
-                [self instanceMethodSignatureForSelector:selector]];
-        [invocation setSelector:disabled_selector];
-        [testInvocations addObject:invocation];
-
-        // Link method to disabled selector.
-        Method instanceMethod = class_getInstanceMethod(self, selector);
-        const char* typeEncoding = method_getTypeEncoding(instanceMethod);
-        class_addMethod(self, disabled_selector,
-                        method_getImplementation(instanceMethod), typeEncoding);
-      }
-    }
-  }
-  return [testInvocations copy];
-}
+@implementation RestoreWithCacheTestCase
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  if ([self.name containsString:kDisableCacheRestoreSuffix]) {
-    config.features_disabled.push_back(web::kRestoreSessionFromCache);
-  }
-  config.features_disabled.push_back(kStartSurface);
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
   return config;
 }
 
@@ -402,6 +360,43 @@ bool WaitForOmniboxContaining(std::string text) {
   [self triggerRestore];
   [[EarlGrey selectElementWithMatcher:NTPCollectionView()]
       assertWithMatcher:grey_notNil()];
+}
+
+@end
+
+// Test using synthesize restore.
+@interface RestoreWithSynthesizedTestCase : RestoreWithCacheTestCase
+@end
+
+@implementation RestoreWithSynthesizedTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.features_disabled.push_back(web::kRestoreSessionFromCache);
+  return config;
+}
+
+// This is currently needed to prevent this test case from being ignored.
+- (void)testEmpty {
+}
+
+@end
+
+// Test using synthesize restore.
+@interface RestoreWithLegacyTestCase : RestoreWithCacheTestCase
+@end
+
+@implementation RestoreWithLegacyTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.features_disabled.push_back(web::features::kSynthesizedRestoreSession);
+  config.features_disabled.push_back(web::kRestoreSessionFromCache);
+  return config;
+}
+
+// This is currently needed to prevent this test case from being ignored.
+- (void)testEmpty {
 }
 
 @end

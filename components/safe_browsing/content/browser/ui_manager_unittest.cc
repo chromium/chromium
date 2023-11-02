@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,13 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page_factory.h"
 #include "components/safe_browsing/content/browser/safe_browsing_controller_client.h"
-#include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
@@ -183,8 +183,7 @@ class TestSafeBrowsingUIManagerDelegate
       content::BrowserContext* browser_context) override {
     return nullptr;
   }
-  PingManager* GetPingManagerIfExists() override { return nullptr; }
-  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory(
+  PingManager* GetPingManager(
       content::BrowserContext* browser_context) override {
     return nullptr;
   }
@@ -235,7 +234,7 @@ class SafeBrowsingUIManagerTest : public content::RenderViewHostTestHarness {
       const char* url,
       bool is_subresource) {
     const content::GlobalRenderFrameHostId primary_main_frame_id =
-        web_contents()->GetMainFrame()->GetGlobalId();
+        web_contents()->GetPrimaryMainFrame()->GetGlobalId();
     security_interstitials::UnsafeResource resource;
     resource.url = GURL(url);
     resource.is_subresource = is_subresource;
@@ -280,7 +279,7 @@ class SafeBrowsingUIManagerTest : public content::RenderViewHostTestHarness {
 
  private:
   scoped_refptr<SafeBrowsingUIManager> ui_manager_;
-  TestSafeBrowsingUIManagerDelegate* raw_ui_manager_delegate_ = nullptr;
+  raw_ptr<TestSafeBrowsingUIManagerDelegate> raw_ui_manager_delegate_ = nullptr;
 };
 
 TEST_F(SafeBrowsingUIManagerTest, Allowlist) {

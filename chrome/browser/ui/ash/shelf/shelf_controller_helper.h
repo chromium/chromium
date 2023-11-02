@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,6 +40,10 @@ class ShelfControllerHelper : public ExtensionEnableFlowDelegate {
   // paused, return AppStatus::kPaused. Otherwise, return AppStatus::kReady.
   static ash::AppStatus GetAppStatus(Profile* profile,
                                      const std::string& app_id);
+
+  // Helper function to return whether the app with `app_id` should explicitly
+  // be hidden from shelf, as indicated by `AppUpdate::ShowInShelf()` app state.
+  static bool IsAppHiddenFromShelf(Profile* profile, const std::string& app_id);
 
   // Returns the app id of the specified tab, or an empty string if there is
   // no app. All known profiles will be queried for this.

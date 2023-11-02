@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,6 @@
 #include "ui/accessibility/ax_mode.h"
 
 namespace blink {
-
-class AXObjectCache;
 
 // An AXContext enables accessibility support in a Document for as
 // long as the AXContext is alive. While the AXContext exists,
@@ -39,9 +37,11 @@ class CORE_EXPORT AXContext {
 
   const ui::AXMode& GetAXMode() { return ax_mode_; }
 
+  void SetAXMode(const ui::AXMode&);
+
  protected:
   WeakPersistent<Document> document_;
-  const ui::AXMode ax_mode_;
+  ui::AXMode ax_mode_;
 };
 
 }  // namespace blink

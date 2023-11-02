@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,27 @@ FontFamily* CreateAndAppendFamily(FontFamily& parent,
 }
 
 }  // namespace
+
+TEST(FontFamilyTest, CountNames) {
+  {
+    FontFamily family;
+    EXPECT_EQ(1u, family.CountNames());
+  }
+  {
+    FontFamily family;
+    family.SetFamily("A", FontFamily::Type::kFamilyName);
+    CreateAndAppendFamily(family, "B", FontFamily::Type::kFamilyName);
+    EXPECT_EQ(2u, family.CountNames());
+  }
+  {
+    FontFamily family;
+    family.SetFamily("A", FontFamily::Type::kFamilyName);
+    FontFamily* b_family =
+        CreateAndAppendFamily(family, "B", FontFamily::Type::kFamilyName);
+    CreateAndAppendFamily(*b_family, "C", FontFamily::Type::kFamilyName);
+    EXPECT_EQ(3u, family.CountNames());
+  }
+}
 
 TEST(FontFamilyTest, ToString) {
   {

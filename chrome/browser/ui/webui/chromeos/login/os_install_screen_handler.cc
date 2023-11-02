@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,13 @@
 #include <string>
 
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/login/screens/os_install_screen.h"
-#include "chrome/browser/ui/webui/chromeos/login/js_calls_container.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/l10n/time_format.h"
 #include "ui/strings/grit/ui_strings.h"
 
 namespace chromeos {
@@ -24,19 +25,10 @@ constexpr const char kNoDestinationDeviceFoundStep[] =
 constexpr const char kSuccessStep[] = "success";
 }  // namespace
 
-// static
-constexpr StaticOobeScreenId OsInstallScreenView::kScreenId;
+OsInstallScreenHandler::OsInstallScreenHandler()
+    : BaseScreenHandler(kScreenId) {}
 
-OsInstallScreenHandler::OsInstallScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
-  set_user_acted_method_path("login.OsInstallScreen.userActed");
-}
-
-OsInstallScreenHandler::~OsInstallScreenHandler() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
+OsInstallScreenHandler::~OsInstallScreenHandler() = default;
 
 void OsInstallScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
@@ -87,8 +79,6 @@ void OsInstallScreenHandler::DeclareLocalizedValues(
 
   builder->Add("osInstallDialogSuccessTitle",
                IDS_OS_INSTALL_SCREEN_SUCCESS_TITLE);
-  builder->Add("osInstallDialogSuccessRestartButton",
-               IDS_OS_INSTALL_SCREEN_RESTART_BUTTON);
 
   builder->Add("osInstallDialogSendFeedback",
                IDS_OS_INSTALL_SCREEN_SEND_FEEDBACK);
@@ -96,24 +86,12 @@ void OsInstallScreenHandler::DeclareLocalizedValues(
                IDS_OS_INSTALL_SCREEN_SHUTDOWN_BUTTON);
 }
 
-void OsInstallScreenHandler::Initialize() {}
-
 void OsInstallScreenHandler::Show() {
-  ShowScreen(kScreenId);
-}
-
-void OsInstallScreenHandler::Bind(ash::OsInstallScreen* screen) {
-  screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen_);
-}
-
-void OsInstallScreenHandler::Unbind() {
-  screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreen(nullptr);
+  ShowInWebUI();
 }
 
 void OsInstallScreenHandler::ShowStep(const char* step) {
-  CallJS("login.OsInstallScreen.showStep", std::string(step));
+  CallExternalAPI("showStep", std::string(step));
 }
 
 void OsInstallScreenHandler::SetStatus(OsInstallClient::Status status) {
@@ -134,15 +112,18 @@ void OsInstallScreenHandler::SetStatus(OsInstallClient::Status status) {
 }
 
 void OsInstallScreenHandler::SetServiceLogs(const std::string& service_log) {
-  CallJS("login.OsInstallScreen.setServiceLogs", service_log);
+  CallExternalAPI("setServiceLogs", service_log);
 }
 
-void OsInstallScreenHandler::UpdateCountdownStringWithTime(int64_t time_left) {
-  CallJS("login.OsInstallScreen.updateCountdownString",
-         l10n_util::GetStringFUTF8(
-             IDS_OS_INSTALL_SCREEN_SUCCESS_SUBTITLE,
-             l10n_util::GetStringUTF16(IDS_INSTALLED_PRODUCT_OS_NAME),
-             l10n_util::GetPluralStringFUTF16(IDS_TIME_LONG_SECS, time_left)));
+void OsInstallScreenHandler::UpdateCountdownStringWithTime(
+    base::TimeDelta time_left) {
+  CallExternalAPI(
+      "updateCountdownString",
+      l10n_util::GetStringFUTF8(
+          IDS_OS_INSTALL_SCREEN_SUCCESS_SUBTITLE,
+          ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
+                                 ui::TimeFormat::LENGTH_LONG, time_left),
+          l10n_util::GetStringUTF16(IDS_INSTALLED_PRODUCT_OS_NAME)));
 }
 
 }  // namespace chromeos

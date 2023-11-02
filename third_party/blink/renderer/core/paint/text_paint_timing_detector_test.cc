@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/trace_event_analyzer.h"
+#include "base/time/time.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
@@ -50,7 +51,7 @@ class TextPaintTimingDetectorTest : public testing::Test {
   }
   Document& GetDocument() { return *GetFrame()->GetDocument(); }
 
-  IntRect GetViewportRect(LocalFrameView& view) {
+  gfx::Rect GetViewportRect(LocalFrameView& view) {
     ScrollableArea* scrollable_area = view.GetScrollableArea();
     DCHECK(scrollable_area);
     return scrollable_area->VisibleContentRect();
@@ -64,13 +65,13 @@ class TextPaintTimingDetectorTest : public testing::Test {
   }
 
   TextPaintTimingDetector* GetTextPaintTimingDetector() {
-    return GetPaintTimingDetector().GetTextPaintTimingDetector();
+    return &GetPaintTimingDetector().GetTextPaintTimingDetector();
   }
 
   TextPaintTimingDetector* GetChildFrameTextPaintTimingDetector() {
-    return GetChildFrameView()
-        .GetPaintTimingDetector()
-        .GetTextPaintTimingDetector();
+    return &GetChildFrameView()
+                .GetPaintTimingDetector()
+                .GetTextPaintTimingDetector();
   }
 
   LargestTextPaintManager* GetLargestTextPaintManager() {
@@ -85,7 +86,7 @@ class TextPaintTimingDetectorTest : public testing::Test {
   wtf_size_t TextQueuedForPaintTimeSize(const LocalFrameView& view) {
     return view.GetPaintTimingDetector()
         .GetTextPaintTimingDetector()
-        ->texts_queued_for_paint_time_.size();
+        .texts_queued_for_paint_time_.size();
   }
 
   wtf_size_t ContainerTotalSize() {
@@ -124,11 +125,11 @@ class TextPaintTimingDetectorTest : public testing::Test {
   }
 
   base::TimeTicks LargestPaintTime() {
-    return GetPaintTimingDetector().largest_text_paint_time_;
+    return GetPaintTimingDetector().lcp_details_.largest_text_paint_time_;
   }
 
   uint64_t LargestPaintSize() {
-    return GetPaintTimingDetector().largest_text_paint_size_;
+    return GetPaintTimingDetector().lcp_details_.largest_text_paint_size_;
   }
 
   void SetBodyInnerHTML(const std::string& content) {
@@ -195,7 +196,7 @@ class TextPaintTimingDetectorTest : public testing::Test {
     return GetChildFrameView()
         .GetPaintTimingDetector()
         .GetTextPaintTimingDetector()
-        ->ltp_manager_->LargestText();
+        .ltp_manager_->LargestText();
   }
 
   void SetFontSize(Element* font_element, uint16_t font_size) {
@@ -294,30 +295,31 @@ TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_TraceEvent_Candidate) {
   EXPECT_EQ(1u, events.size());
   EXPECT_EQ("loading", events[0]->category);
 
-  EXPECT_TRUE(events[0]->HasArg("frame"));
+  EXPECT_TRUE(events[0]->HasStringArg("frame"));
 
-  EXPECT_TRUE(events[0]->HasArg("data"));
-  base::Value arg;
-  EXPECT_TRUE(events[0]->GetArgAsValue("data", &arg));
-  base::DictionaryValue* arg_dict;
-  EXPECT_TRUE(arg.GetAsDictionary(&arg_dict));
-  EXPECT_GT(arg_dict->FindIntKey("DOMNodeId").value_or(-1), 0);
-  EXPECT_GT(arg_dict->FindIntKey("size").value_or(-1), 0);
-  EXPECT_EQ(arg_dict->FindIntKey("candidateIndex").value_or(-1), 1);
-  absl::optional<bool> is_main_frame = arg_dict->FindBoolKey("isMainFrame");
+  ASSERT_TRUE(events[0]->HasDictArg("data"));
+  base::Value::Dict arg_dict = events[0]->GetKnownArgAsDict("data");
+  EXPECT_GT(arg_dict.FindInt("DOMNodeId").value_or(-1), 0);
+  EXPECT_GT(arg_dict.FindInt("size").value_or(-1), 0);
+  EXPECT_EQ(arg_dict.FindInt("candidateIndex").value_or(-1), 1);
+  absl::optional<bool> is_main_frame = arg_dict.FindBool("isMainFrame");
   EXPECT_TRUE(is_main_frame.has_value());
   EXPECT_EQ(true, is_main_frame.value());
-  absl::optional<bool> is_oopif = arg_dict->FindBoolKey("isOOPIF");
-  EXPECT_TRUE(is_oopif.has_value());
-  EXPECT_EQ(false, is_oopif.value());
-  EXPECT_GT(arg_dict->FindIntKey("frame_x").value_or(-1), 0);
-  EXPECT_GT(arg_dict->FindIntKey("frame_y").value_or(-1), 0);
-  EXPECT_GT(arg_dict->FindIntKey("frame_width").value_or(-1), 0);
-  EXPECT_GT(arg_dict->FindIntKey("frame_height").value_or(-1), 0);
-  EXPECT_GT(arg_dict->FindIntKey("root_x").value_or(-1), 0);
-  EXPECT_GT(arg_dict->FindIntKey("root_y").value_or(-1), 0);
-  EXPECT_GT(arg_dict->FindIntKey("root_width").value_or(-1), 0);
-  EXPECT_GT(arg_dict->FindIntKey("root_height").value_or(-1), 0);
+  absl::optional<bool> is_outermost_main_frame =
+      arg_dict.FindBool("isOutermostMainFrame");
+  EXPECT_TRUE(is_outermost_main_frame.has_value());
+  EXPECT_EQ(true, is_outermost_main_frame.value());
+  absl::optional<bool> is_embedded_frame = arg_dict.FindBool("isEmbeddedFrame");
+  EXPECT_TRUE(is_embedded_frame.has_value());
+  EXPECT_EQ(false, is_embedded_frame.value());
+  EXPECT_GT(arg_dict.FindInt("frame_x").value_or(-1), 0);
+  EXPECT_GT(arg_dict.FindInt("frame_y").value_or(-1), 0);
+  EXPECT_GT(arg_dict.FindInt("frame_width").value_or(-1), 0);
+  EXPECT_GT(arg_dict.FindInt("frame_height").value_or(-1), 0);
+  EXPECT_GT(arg_dict.FindInt("root_x").value_or(-1), 0);
+  EXPECT_GT(arg_dict.FindInt("root_y").value_or(-1), 0);
+  EXPECT_GT(arg_dict.FindInt("root_width").value_or(-1), 0);
+  EXPECT_GT(arg_dict.FindInt("root_height").value_or(-1), 0);
 }
 
 TEST_F(TextPaintTimingDetectorTest,
@@ -345,32 +347,33 @@ TEST_F(TextPaintTimingDetectorTest,
   EXPECT_EQ(1u, events.size());
   EXPECT_EQ("loading", events[0]->category);
 
-  EXPECT_TRUE(events[0]->HasArg("frame"));
+  EXPECT_TRUE(events[0]->HasStringArg("frame"));
 
-  EXPECT_TRUE(events[0]->HasArg("data"));
-  base::Value arg;
-  EXPECT_TRUE(events[0]->GetArgAsValue("data", &arg));
-  base::DictionaryValue* arg_dict;
-  EXPECT_TRUE(arg.GetAsDictionary(&arg_dict));
-  EXPECT_GT(arg_dict->FindIntKey("DOMNodeId").value_or(-1), 0);
-  EXPECT_GT(arg_dict->FindIntKey("size").value_or(-1), 0);
-  EXPECT_EQ(arg_dict->FindIntKey("candidateIndex").value_or(-1), 1);
-  absl::optional<bool> is_main_frame = arg_dict->FindBoolKey("isMainFrame");
+  ASSERT_TRUE(events[0]->HasDictArg("data"));
+  base::Value::Dict arg_dict = events[0]->GetKnownArgAsDict("data");
+  EXPECT_GT(arg_dict.FindInt("DOMNodeId").value_or(-1), 0);
+  EXPECT_GT(arg_dict.FindInt("size").value_or(-1), 0);
+  EXPECT_EQ(arg_dict.FindInt("candidateIndex").value_or(-1), 1);
+  absl::optional<bool> is_main_frame = arg_dict.FindBool("isMainFrame");
   EXPECT_TRUE(is_main_frame.has_value());
   EXPECT_EQ(false, is_main_frame.value());
-  absl::optional<bool> is_oopif = arg_dict->FindBoolKey("isOOPIF");
-  EXPECT_TRUE(is_oopif.has_value());
-  EXPECT_EQ(false, is_oopif.value());
+  absl::optional<bool> is_outermost_main_frame =
+      arg_dict.FindBool("isOutermostMainFrame");
+  EXPECT_TRUE(is_outermost_main_frame.has_value());
+  EXPECT_EQ(false, is_outermost_main_frame.value());
+  absl::optional<bool> is_embedded_frame = arg_dict.FindBool("isEmbeddedFrame");
+  EXPECT_TRUE(is_embedded_frame.has_value());
+  EXPECT_EQ(false, is_embedded_frame.value());
   // There's sometimes a 1 pixel offset for the y dimensions.
-  EXPECT_EQ(arg_dict->FindIntKey("frame_x").value_or(-1), 10);
-  EXPECT_GE(arg_dict->FindIntKey("frame_y").value_or(-1), 9);
-  EXPECT_LE(arg_dict->FindIntKey("frame_y").value_or(-1), 10);
-  EXPECT_GT(arg_dict->FindIntKey("frame_width").value_or(-1), 0);
-  EXPECT_GT(arg_dict->FindIntKey("frame_height").value_or(-1), 0);
-  EXPECT_GT(arg_dict->FindIntKey("root_x").value_or(-1), 25);
-  EXPECT_GT(arg_dict->FindIntKey("root_y").value_or(-1), 50);
-  EXPECT_GT(arg_dict->FindIntKey("root_width").value_or(-1), 0);
-  EXPECT_GT(arg_dict->FindIntKey("root_height").value_or(-1), 0);
+  EXPECT_EQ(arg_dict.FindInt("frame_x").value_or(-1), 10);
+  EXPECT_GE(arg_dict.FindInt("frame_y").value_or(-1), 9);
+  EXPECT_LE(arg_dict.FindInt("frame_y").value_or(-1), 10);
+  EXPECT_GT(arg_dict.FindInt("frame_width").value_or(-1), 0);
+  EXPECT_GT(arg_dict.FindInt("frame_height").value_or(-1), 0);
+  EXPECT_GT(arg_dict.FindInt("root_x").value_or(-1), 25);
+  EXPECT_GT(arg_dict.FindInt("root_y").value_or(-1), 50);
+  EXPECT_GT(arg_dict.FindInt("root_width").value_or(-1), 0);
+  EXPECT_GT(arg_dict.FindInt("root_height").value_or(-1), 0);
 }
 
 TEST_F(TextPaintTimingDetectorTest, AggregationBySelfPaintingInlineElement) {
@@ -569,27 +572,28 @@ TEST_F(TextPaintTimingDetectorTest,
   EXPECT_EQ(ContainerTotalSize(), 0u);
 }
 
-TEST_F(TextPaintTimingDetectorTest,
-       DestroyLargestTextPaintMangerAfterUserInput) {
+TEST_F(TextPaintTimingDetectorTest, StopRecordingLCPAfterUserInput) {
   SetBodyInnerHTML(R"HTML(
   )HTML");
   AppendDivElementToBody("text");
   UpdateAllLifecyclePhasesAndSimulatePresentationTime();
-  EXPECT_TRUE(GetLargestTextPaintManager());
+  EXPECT_TRUE(GetTextPaintTimingDetector()->IsRecordingLargestTextPaint());
 
   SimulateInputEvent();
-  EXPECT_FALSE(GetLargestTextPaintManager());
+  EXPECT_TRUE(GetLargestTextPaintManager());
+  EXPECT_FALSE(GetTextPaintTimingDetector()->IsRecordingLargestTextPaint());
 }
 
-TEST_F(TextPaintTimingDetectorTest, KeepLargestTextPaintMangerAfterUserInput) {
+TEST_F(TextPaintTimingDetectorTest, DoNotStopRecordingLCPAfterKeyUp) {
   SetBodyInnerHTML(R"HTML(
   )HTML");
   AppendDivElementToBody("text");
   UpdateAllLifecyclePhasesAndSimulatePresentationTime();
-  EXPECT_TRUE(GetLargestTextPaintManager());
+  EXPECT_TRUE(GetTextPaintTimingDetector()->IsRecordingLargestTextPaint());
 
   SimulateKeyUp();
   EXPECT_TRUE(GetLargestTextPaintManager());
+  EXPECT_TRUE(GetTextPaintTimingDetector()->IsRecordingLargestTextPaint());
 }
 
 TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_TextRecordAfterRemoval) {

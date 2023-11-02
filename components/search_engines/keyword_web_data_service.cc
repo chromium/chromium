@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,6 +32,7 @@ std::unique_ptr<WDTypedResult> GetKeywordsImpl(WebDatabase* db) {
   result.default_search_provider_id =
       keyword_table->GetDefaultSearchProviderID();
   result.builtin_keyword_version = keyword_table->GetBuiltinKeywordVersion();
+  result.starter_pack_version = keyword_table->GetStarterPackKeywordVersion();
   return std::make_unique<WDResult<WDKeywordsResult>>(KEYWORDS_RESULT, result);
 }
 
@@ -44,6 +45,14 @@ WebDatabase::State SetDefaultSearchProviderIDImpl(TemplateURLID id,
 
 WebDatabase::State SetBuiltinKeywordVersionImpl(int version, WebDatabase* db) {
   return KeywordTable::FromWebDatabase(db)->SetBuiltinKeywordVersion(version)
+             ? WebDatabase::COMMIT_NEEDED
+             : WebDatabase::COMMIT_NOT_NEEDED;
+}
+
+WebDatabase::State SetStarterPackKeywordVersionImpl(int version,
+                                                    WebDatabase* db) {
+  return KeywordTable::FromWebDatabase(db)->SetStarterPackKeywordVersion(
+             version)
              ? WebDatabase::COMMIT_NEEDED
              : WebDatabase::COMMIT_NOT_NEEDED;
 }
@@ -135,6 +144,11 @@ void KeywordWebDataService::SetBuiltinKeywordVersion(int version) {
                         base::BindOnce(&SetBuiltinKeywordVersionImpl, version));
 }
 
+void KeywordWebDataService::SetStarterPackKeywordVersion(int version) {
+  wdbs_->ScheduleDBTask(
+      FROM_HERE, base::BindOnce(&SetStarterPackKeywordVersionImpl, version));
+}
+
 void KeywordWebDataService::ShutdownOnUISequence() {
   CommitQueuedOperations();
   WebDataServiceBase::ShutdownOnUISequence();
@@ -156,7 +170,7 @@ void KeywordWebDataService::AdjustBatchModeLevel(bool entering_batch_mode) {
       // When killing an app on Android/iOS, shutdown isn't guaranteed to be
       // called. Finishing this task immediately ensures the table is fully
       // populated even if the app is killed before the timer expires.
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
       CommitQueuedOperations();
 #else
       timer_.Reset();

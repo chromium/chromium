@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -119,9 +119,8 @@ class WorkingSetTrimmerTest : public GraphTestHarness {
 }  // namespace
 
 TEST_F(WorkingSetTrimmerTest, EmptyWorkingSet) {
-  // Set the launch time of the process node to match |child_process_|.
   process_node_->SetProcess(child_process_.Duplicate(),
-                            child_process_.CreationTime());
+                            /* launch_time=*/base::TimeTicks::Now());
 
   // When all frames in the process node are frozen, the working set of
   // |child_process_| should be emptied.

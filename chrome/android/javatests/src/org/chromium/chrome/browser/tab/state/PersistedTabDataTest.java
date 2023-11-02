@@ -1,10 +1,9 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.tab.state;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -14,15 +13,17 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.DoNotRevive;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
@@ -39,14 +40,24 @@ public class PersistedTabDataTest {
     private static final int INITIAL_VALUE = 42;
     private static final int CHANGED_VALUE = 51;
 
+    @Mock
+    ShoppingPersistedTabData mShoppingPersistedTabDataMock;
+
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+        // TODO(crbug.com/1337102): Remove runOnUiThreadBlocking call after code refactoring/cleanup
+        // ShoppingPersistedTabData must be mocked on the ui thread, otherwise a thread assert will
+        // fail. An ObserverList is created when creating the mock. The same ObserverList is used
+        // later in the test.
+        ThreadUtils.runOnUiThreadBlocking(() -> { MockitoAnnotations.initMocks(this); });
     }
 
     @SmallTest
     @UiThreadTest
     @Test
+    @DisabledTest(message = "https://crbug.com/1292239")
+    @DoNotRevive(reason = "Causes other tests in batch to fail, see crbug.com/1292239")
+    // TODO(crbug.com/1292239): Unbatch this and reenable.
     public void testCacheCallbacks() throws InterruptedException {
         Tab tab = MockTab.createAndInitialize(1, false);
         tab.setIsTabSaveEnabled(true);
@@ -73,24 +84,21 @@ public class PersistedTabDataTest {
     @SmallTest
     @UiThreadTest
     @Test
-    public void testSerializeAndLogOutOfMemoryError() {
+    public void testSerializeAndLogOutOfMemoryError_Get() {
         Tab tab = MockTab.createAndInitialize(1, false);
-        OutOfMemoryMockPersistedTabData outOfMemoryMockPersistedTabData =
-                new OutOfMemoryMockPersistedTabData(tab);
-        Assert.assertNull(outOfMemoryMockPersistedTabData
-                                  .getOomAndMetricsWrapper(
-                                          outOfMemoryMockPersistedTabData.getSerializeSupplier())
-                                  .get());
+        OutOfMemoryMockPersistedTabDataGet outOfMemoryMockPersistedTabData =
+                new OutOfMemoryMockPersistedTabDataGet(tab);
+        Assert.assertNull(outOfMemoryMockPersistedTabData.getOomAndMetricsWrapper().get());
     }
 
     @SmallTest
     @UiThreadTest
-    @Test(expected = OutOfMemoryError.class)
-    public void testSerializeOutOfMemoryError() {
+    @Test
+    public void testSerializeAndLogOutOfMemoryError() {
         Tab tab = MockTab.createAndInitialize(1, false);
         OutOfMemoryMockPersistedTabData outOfMemoryMockPersistedTabData =
                 new OutOfMemoryMockPersistedTabData(tab);
-        outOfMemoryMockPersistedTabData.getSerializeSupplier().get();
+        Assert.assertNull(outOfMemoryMockPersistedTabData.getOomAndMetricsWrapper().get());
     }
 
     @SmallTest
@@ -114,12 +122,12 @@ public class PersistedTabDataTest {
     @Test
     public void testOnTabClose() throws TimeoutException {
         TabImpl tab = (TabImpl) MockTab.createAndInitialize(1, false);
-        ShoppingPersistedTabData shoppingPersistedTabData = mock(ShoppingPersistedTabData.class);
         tab.setIsTabSaveEnabled(true);
-        tab.getUserDataHost().setUserData(ShoppingPersistedTabData.class, shoppingPersistedTabData);
+        tab.getUserDataHost().setUserData(
+                ShoppingPersistedTabData.class, mShoppingPersistedTabDataMock);
         PersistedTabData.onTabClose(tab);
         Assert.assertFalse(tab.getIsTabSaveEnabledSupplierForTesting().get());
-        verify(shoppingPersistedTabData, times(1)).disableSaving();
+        verify(mShoppingPersistedTabDataMock, times(1)).disableSaving();
     }
 
     static class ThreadVerifierMockPersistedTabData extends MockPersistedTabData {
@@ -128,7 +136,7 @@ public class PersistedTabDataTest {
         }
 
         @Override
-        public Supplier<ByteBuffer> getSerializeSupplier() {
+        public Serializer<ByteBuffer> getSerializer() {
             // Verify anything before the supplier is called on the UI thread
             ThreadUtils.assertOnUiThread();
             return () -> {
@@ -137,7 +145,20 @@ public class PersistedTabDataTest {
                 // {@link CriticalPersistedTabData} may unnecessarily consume
                 // the UI thread and cause jank.
                 ThreadUtils.assertOnBackgroundThread();
-                return super.getSerializeSupplier().get();
+                return super.getSerializer().get();
+            };
+        }
+    }
+
+    static class OutOfMemoryMockPersistedTabDataGet extends MockPersistedTabData {
+        OutOfMemoryMockPersistedTabDataGet(Tab tab) {
+            super(tab, 0 /** unused in OutOfMemoryMockPersistedTabData */);
+        }
+        @Override
+        public Serializer<ByteBuffer> getSerializer() {
+            return () -> {
+                // OutOfMemoryError thrown on getSerializer.get();
+                throw new OutOfMemoryError("Out of memory error");
             };
         }
     }
@@ -147,10 +168,9 @@ public class PersistedTabDataTest {
             super(tab, 0 /** unused in OutOfMemoryMockPersistedTabData */);
         }
         @Override
-        public Supplier<ByteBuffer> getSerializeSupplier() {
-            return () -> {
-                throw new OutOfMemoryError("Out of memory error");
-            };
+        public Serializer<ByteBuffer> getSerializer() {
+            // OutOfMemoryError thrown on getSerializer
+            throw new OutOfMemoryError("Out of memory error");
         }
     }
 

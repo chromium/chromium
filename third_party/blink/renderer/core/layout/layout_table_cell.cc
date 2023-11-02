@@ -38,8 +38,8 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/table_cell_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/table_cell_painter.h"
-#include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
+#include "ui/gfx/geometry/quad_f.h"
 
 namespace blink {
 
@@ -465,8 +465,7 @@ void LayoutTableCell::UpdateStyleWritingModeFromRow(const LayoutObject* row) {
   scoped_refptr<ComputedStyle> new_style = ComputedStyle::Clone(StyleRef());
   new_style->SetWritingMode(row->StyleRef().GetWritingMode());
   new_style->UpdateFontOrientation();
-  SetModifiedStyleOutsideStyleRecalc(new_style,
-                                     LayoutObject::ApplyStyleChanges::kNo);
+  SetStyle(new_style, LayoutObject::ApplyStyleChanges::kNo);
   SetHorizontalWritingMode(StyleRef().IsHorizontalWritingMode());
   UnmarkOrthogonalWritingModeRoot();
 
@@ -1250,7 +1249,7 @@ bool LayoutTableCell::BackgroundIsKnownToBeOpaqueInRect(
 
 bool LayoutTableCell::HasLineIfEmpty() const {
   NOT_DESTROYED();
-  if (GetNode() && HasEditableStyle(*GetNode()))
+  if (GetNode() && IsEditable(*GetNode()))
     return true;
 
   return LayoutBlock::HasLineIfEmpty();

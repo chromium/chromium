@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
 #include "extensions/common/constants.h"
@@ -89,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsertestUtilTest,
   EXPECT_NONFATAL_FAILURE(
       EXPECT_FALSE(ExecuteScriptInBackgroundPageNoWait(
           browser_context(), "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "")),
-      "Extension aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa has no background page.");
+      "No enabled extension with id: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 }
 
 }  // namespace

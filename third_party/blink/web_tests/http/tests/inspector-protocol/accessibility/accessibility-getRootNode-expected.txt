@@ -5,6 +5,10 @@ getRootAXNode for main frame:
 {
     backendDOMNodeId : <number>
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 144
+    }
     frameId : <string>
     ignored : false
     name : {
@@ -36,15 +40,7 @@ getRootAXNode for main frame:
         value : 
     }
     nodeId : <string>
-    properties : [
-        [0] : {
-            name : focusable
-            value : {
-                type : booleanOrUndefined
-                value : true
-            }
-        }
-    ]
+    properties : <object>
     role : {
         type : internalRole
         value : RootWebArea
@@ -56,6 +52,10 @@ getRootAXNode for iframe:
 {
     backendDOMNodeId : <number>
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 144
+    }
     frameId : <string>
     ignored : false
     name : {
@@ -91,15 +91,7 @@ getRootAXNode for iframe:
         value : Iframe with accessible name
     }
     nodeId : <string>
-    properties : [
-        [0] : {
-            name : focusable
-            value : {
-                type : booleanOrUndefined
-                value : true
-            }
-        }
-    ]
+    properties : <object>
     role : {
         type : internalRole
         value : RootWebArea

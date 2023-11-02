@@ -1,4 +1,4 @@
-rootWebArea name='Actions'
+rootWebArea name='Actions' actions=scrollBackward,scrollDown,scrollForward,scrollLeft,scrollRight,scrollUp
 ++genericContainer ignored
 ++++genericContainer
 ++++++slider horizontal valueForRange=50.00 minValueForRange=1.00 maxValueForRange=100.00 actions=decrement,increment,setValue

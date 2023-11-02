@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/gfx/animation/animation_delegate.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -18,20 +19,18 @@ class LabelButton;
 class Label;
 }  // namespace views
 
-namespace ui {
-class CallbackLayerAnimationObserver;
-}
-
 namespace ash {
 
 class CaptureModeSession;
+class DropToStopRecordingButtonAnimation;
 
 // A view that displays (optional) icon and text message to the user depending
 // on current capture source and type. In video capture mode, it will later
 // transform into a 3 second countdown timer.
 class ASH_EXPORT CaptureLabelView
     : public views::View,
-      public CaptureModeSessionFocusCycler::HighlightableView {
+      public CaptureModeSessionFocusCycler::HighlightableView,
+      public gfx::AnimationDelegate {
  public:
   METADATA_HEADER(CaptureLabelView);
 
@@ -60,22 +59,33 @@ class ASH_EXPORT CaptureLabelView
   // views::View:
   void Layout() override;
   gfx::Size CalculatePreferredSize() const override;
+  void OnThemeChanged() override;
 
   // CaptureModeSessionFocusCycler::HighlightableView:
   views::View* GetView() override;
   std::unique_ptr<views::HighlightPathGenerator> CreatePathGenerator() override;
 
- private:
-  // Start performing countdown to number |timout_count_down_| animation.
-  void ScheduleCountDownAnimation();
-  // Called when each number's countdown animation is completed.
-  bool OnCountDownAnimationCompleted(
-      const ui::CallbackLayerAnimationObserver& observer);
+  // gfx::AnimationDelegate:
+  void AnimationEnded(const gfx::Animation* animation) override;
+  void AnimationProgressed(const gfx::Animation* animation) override;
 
-  // Starts the layer animation sequences for the countdown label.
-  void StartLabelLayerAnimationSequences();
-  // Starts the layer animation sequences for the entire widget if applicable.
-  void StartWidgetLayerAnimationSequences();
+ private:
+  // Fades in and out the given `counter_value` (e.g. "3", "2", or "1") as it
+  // performs a step in the count down animation.
+  void FadeInAndOutCounter(int counter_value);
+
+  // At the end of the count down animation, we drop the widget of this view to
+  // the position where the stop button will be shown.
+  void DropWidgetToStopRecordingButton();
+
+  // This is a fallback animation in case the stop recording button is not
+  // available (e.g. during shutdown or root window removal). In this case, we
+  // fade out the widget of this view as the last step in the count down
+  // animation.
+  void FadeOutWidget();
+
+  // Called once the entire count down animation finishes.
+  void OnCountDownAnimationFinished();
 
   // The label button that displays an icon and a text message. Can be user
   // interactable. When clicking/tapping on the button, start perform image or
@@ -85,16 +95,17 @@ class ASH_EXPORT CaptureLabelView
   // The label that displays a text message. Not user interactable.
   views::Label* label_ = nullptr;
 
-  int timeout_count_down_;
-
   // Callback function to be called after countdown if finished.
   base::OnceClosure countdown_finished_callback_;
-  // Observe the countdown animation.
-  std::unique_ptr<ui::CallbackLayerAnimationObserver> animation_observer_;
 
   // Pointer to the current capture mode session. Not nullptr during this
   // lifecycle.
   CaptureModeSession* capture_mode_session_;
+
+  // Animates the widget of this view towards the position of the stop recording
+  // button at the end of the count down.
+  std::unique_ptr<DropToStopRecordingButtonAnimation>
+      drop_to_stop_button_animation_;
 
   base::WeakPtrFactory<CaptureLabelView> weak_factory_{this};
 };

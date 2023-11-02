@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,7 +31,7 @@ class FileIFrameAPITest : public extensions::ExtensionBrowserTest {
     WriteManifest();
     WriteBackgroundPage();
 
-    ExtensionTestMessageListener listener(false /*will_reply*/);
+    ExtensionTestMessageListener listener;
     ASSERT_TRUE(LoadExtension(extension_dir_.UnpackedPath(),
                               {.allow_file_access = has_file_access_}));
     EXPECT_TRUE(listener.WaitUntilSatisfied());

@@ -1,17 +1,11 @@
 <style include="print-preview-shared">
-<if expr="chromeos or lacros">
+<if expr="is_chromeos">
   :host([has-pin-setting_]) {
     margin-bottom: 0 !important;
   }
 </if>
 </style>
-<template is="dom-if" if="[[!cloudPrintDisabled_]]">
-  <print-preview-user-manager id="userManager" active-user="{{activeUser_}}"
-      cloud-print-disabled="[[cloudPrintDisabled_]]"
-      users="{{users_}}" destination-store="[[destinationStore_]]">
-  </print-preview-user-manager>
-</template>
-<if expr="not chromeos and not lacros">
+<if expr="not is_chromeos">
   <print-preview-destination-select id="destinationSelect"
       active-user="[[activeUser_]]" dark="[[dark]]"
       destination="[[destination]]"
@@ -28,14 +22,12 @@
       <print-preview-destination-dialog
           destination-store="[[destinationStore_]]"
           recent-destination-list="[[recentDestinationList_]]"
-          active-user="[[activeUser_]]" users="[[users_]]"
-          current-destination-account="[[destination.account]]"
-          on-account-change="onAccountChange_" on-close="onDialogClose_">
+          on-close="onDialogClose_">
       </print-preview-destination-dialog>
     </template>
   </cr-lazy-render>
 </if>
-<if expr="chromeos or lacros">
+<if expr="is_chromeos">
   <print-preview-destination-select-cros id="destinationSelect"
       active-user="[[activeUser_]]" dark="[[dark]]"
       destination="[[destination]]"
@@ -53,9 +45,7 @@
       <print-preview-destination-dialog-cros
           destination-store="[[destinationStore_]]"
           recent-destination-list="[[recentDestinationList_]]"
-          active-user="[[activeUser_]]" users="[[users_]]"
-          current-destination-account="[[destination.account]]"
-          on-account-change="onAccountChange_" on-close="onDialogClose_">
+          on-close="onDialogClose_">
       </print-preview-destination-dialog-cros>
     </template>
   </cr-lazy-render>

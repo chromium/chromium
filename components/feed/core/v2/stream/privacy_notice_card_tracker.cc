@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,19 +42,6 @@ void PrivacyNoticeCardTracker::OnCardViewed(
     const feedwire::ContentId& content_id) {
   if (!IsPrivacyNoticeCard(content_id))
     return;
-
-  // Do two things if the notice card was viewed:
-  // * If kInterestFeedV2ClicksAndViewsConditionalUpload is enabled, remember
-  // the notice card was viewed.
-  // * If the notice card is viewed and auto-dismiss is enabled, increment view
-  // count.
-
-  if (is_signed_in &&
-      base::FeatureList::IsEnabled(
-          feed::kInterestFeedV2ClicksAndViewsConditionalUpload)) {
-    feed::prefs::SetHasReachedClickAndViewActionsUploadConditions(
-        *profile_prefs_, true);
-  }
 
   auto now = base::TimeTicks::Now();
   if (now - last_view_time_ < base::Minutes(5))

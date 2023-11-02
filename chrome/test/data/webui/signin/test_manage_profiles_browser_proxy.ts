@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,11 +17,13 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
       'openManageProfileSettingsSubPage', 'launchSelectedProfile',
       'askOnStartupChanged', 'getNewProfileSuggestedThemeInfo',
       'getProfileThemeInfo', 'removeProfile', 'getProfileStatistics',
-      'loadSignInProfileCreationFlow', 'createProfile', 'setProfileName',
+      'selectNewAccount', 'createProfile',
+      'createProfileAndOpenCustomizationDialog', 'setProfileName',
       'recordSignInPromoImpression', 'getAvailableIcons', 'getSwitchProfile',
       'confirmProfileSwitch', 'cancelProfileSwitch',
-      // <if expr="lacros">
-      'getUnassignedAccounts',
+      // <if expr="chromeos_lacros">
+      'getAvailableAccounts', 'openAshAccountSettingsPage',
+      'selectExistingAccountLacros',
       // </if>
     ]);
 
@@ -31,7 +33,7 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
       themeFrameColor: 'rgb(70, 42, 104)',
       themeShapeColor: 'rgb(109, 65, 161)',
       themeFrameTextColor: 'rgb(255, 255, 255)',
-      themeGenericAvatar: 'AvatarUrl-22'
+      themeGenericAvatar: 'AvatarUrl-22',
     };
 
     this.profileSample = {
@@ -43,7 +45,7 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
       userName: 'Alice@gmail.com',
       isManaged: false,
       avatarIcon: 'url',
-      // <if expr="lacros">
+      // <if expr="chromeos_lacros">
       isPrimaryLacrosProfile: false,
       // </if>
     };
@@ -100,8 +102,8 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('getProfileStatistics', profilePath);
   }
 
-  loadSignInProfileCreationFlow(profileColor: number|null, gaiaId: string) {
-    this.methodCalled('loadSignInProfileCreationFlow', [profileColor, gaiaId]);
+  selectNewAccount(profileColor: number|null) {
+    this.methodCalled('selectNewAccount', [profileColor]);
   }
 
   createProfile(
@@ -110,6 +112,11 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
     this.methodCalled(
         'createProfile',
         [profileName, profileColor, avatarIndex, createShortcut]);
+  }
+
+  createProfileAndOpenCustomizationDialog(profileColor: number) {
+    this.methodCalled(
+        'createProfileAndOpenCustomizationDialog', [profileColor]);
   }
 
   setProfileName(profilePath: string, profileName: string) {
@@ -160,9 +167,17 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('cancelProfileSwitch');
   }
 
-  // <if expr="lacros">
-  getUnassignedAccounts() {
-    this.methodCalled('getUnassignedAccounts');
+  // <if expr="chromeos_lacros">
+  getAvailableAccounts() {
+    this.methodCalled('getAvailableAccounts');
+  }
+
+  openAshAccountSettingsPage() {
+    this.methodCalled('openAshAccountSettingsPage');
+  }
+
+  selectExistingAccountLacros(profileColor: number|null, gaiaId: string) {
+    this.methodCalled('selectExistingAccountLacros', [profileColor, gaiaId]);
   }
   // </if>
 }

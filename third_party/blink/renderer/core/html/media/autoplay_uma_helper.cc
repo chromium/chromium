@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/media/autoplay_policy.h"
@@ -112,7 +113,7 @@ void AutoplayUmaHelper::RecordAutoplayUnmuteStatus(
                                 status);
 
   // Record UKM event for unmute muted autoplay.
-  if (element_->GetDocument().IsInMainFrame()) {
+  if (element_->GetDocument().IsInOutermostMainFrame()) {
     int source = static_cast<int>(AutoplaySource::kAttribute);
     if (sources_.size() == kDualSourceSize) {
       source = static_cast<int>(AutoplaySource::kDualSource);

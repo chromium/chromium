@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,10 +14,10 @@
 @protocol GridMenuActionsDataSource
 
 // Asks the delegate for the GridItem object representing the grid cell with
-// |identifier|.
+// `identifier`.
 - (GridItem*)gridItemForCellIdentifier:(NSString*)identifier;
 
-// Asks the delegate if the grid |item| is already bookmarked.
+// Asks the delegate if the grid `item` is already bookmarked.
 - (BOOL)isGridItemBookmarked:(GridItem*)item;
 
 @end

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -87,11 +87,6 @@ class ASH_EXPORT SwipeHomeToOverviewController {
 
   // The timer to run FinalizeDragAndShowOverview().
   base::OneShotTimer overview_transition_timer_;
-
-  // ScopedClosureRunner that while in scope disables background blur in home
-  // screen. It will be set during home screen drag with a goal of improving
-  // overall drag performance.
-  absl::optional<base::ScopedClosureRunner> home_screen_blur_disabler_;
 };
 
 }  // namespace ash

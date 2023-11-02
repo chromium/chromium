@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -13,6 +13,7 @@ generate_grd("build_grd") {
   input_files_base_dir = rebase_path(".", "//")
 
   input_files = [
+    "candidate_grid.js",
     "data_series.js",
     "dump_creator.js",
     "peer_connection_update_table.js",

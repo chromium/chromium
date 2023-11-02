@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,9 @@
 
 #include <memory>
 
+#include "ash/public/cpp/projector/annotator_tool.h"
 #include "ash/public/cpp/projector/projector_controller.h"
-#include "ash/webui/projector_app/annotator_tool.h"
+#include "ash/webui/projector_app/projector_app_client.h"
 #include "base/check.h"
 #include "base/json/values_util.h"
 #include "base/values.h"
@@ -15,8 +16,26 @@
 
 namespace ash {
 
-AnnotatorMessageHandler::AnnotatorMessageHandler() = default;
-AnnotatorMessageHandler::~AnnotatorMessageHandler() = default;
+AnnotatorMessageHandler::AnnotatorMessageHandler() {
+  ProjectorAppClient::Get()->SetAnnotatorMessageHandler(this);
+}
+
+AnnotatorMessageHandler::~AnnotatorMessageHandler() {
+  ProjectorAppClient::Get()->ResetAnnotatorMessageHandler(this);
+}
+
+void AnnotatorMessageHandler::RegisterMessages() {
+  web_ui()->RegisterMessageCallback(
+      "onUndoRedoAvailabilityChanged",
+      base::BindRepeating(
+          &AnnotatorMessageHandler::OnUndoRedoAvailabilityChanged,
+          base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      "onCanvasInitialized",
+      base::BindRepeating(&AnnotatorMessageHandler::OnCanvasInitialized,
+                          base::Unretained(this)));
+}
 
 void AnnotatorMessageHandler::SetTool(const AnnotatorTool& tool) {
   AllowJavascript();
@@ -38,30 +57,20 @@ void AnnotatorMessageHandler::Clear() {
   FireWebUIListener("clear");
 }
 
-void AnnotatorMessageHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
-      "onToolSet", base::BindRepeating(&AnnotatorMessageHandler::OnToolSet,
-                                       base::Unretained(this)));
-
-  web_ui()->RegisterMessageCallback(
-      "onUndoRedoAvailabilityChanged",
-      base::BindRepeating(
-          &AnnotatorMessageHandler::OnUndoRedoAvailabilityChanged,
-          base::Unretained(this)));
-}
-
-void AnnotatorMessageHandler::OnToolSet(base::Value::ConstListView args) {
-  DCHECK_EQ(args.size(), 1u);
-  ProjectorController::Get()->OnToolSet(AnnotatorTool::FromValue(args[0]));
-}
-
 void AnnotatorMessageHandler::OnUndoRedoAvailabilityChanged(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   DCHECK_EQ(args.size(), 2u);
   DCHECK(args[0].is_bool());
   DCHECK(args[1].is_bool());
   ProjectorController::Get()->OnUndoRedoAvailabilityChanged(args[0].GetBool(),
                                                             args[1].GetBool());
+}
+
+void AnnotatorMessageHandler::OnCanvasInitialized(
+    const base::Value::List& args) {
+  DCHECK_EQ(args.size(), 1u);
+  DCHECK(args[0].is_bool());
+  ProjectorController::Get()->OnCanvasInitialized(args[0].GetBool());
 }
 
 }  // namespace ash

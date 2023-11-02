@@ -6,7 +6,7 @@ applied to chromium:
 https://chromium-review.googlesource.com/c/chromium/src/+/1962628
 
 The command line to use on Windows to record top_real_world_desktop:
-vpython tools\perf\run_benchmark --browser=release rendering.desktop
+vpython3 tools\perf\run_benchmark --browser=release rendering.desktop
   --story-tag-filter=top_real_world_desktop
 
 For each site, all frames are zipped into a single file, together with

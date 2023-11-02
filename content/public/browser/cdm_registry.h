@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "content/common/content_export.h"
+#include "content/public/common/cdm_info.h"
 
 namespace content {
 
@@ -32,6 +33,11 @@ class CONTENT_EXPORT CdmRegistry {
   // reported and what is actually available, if the reported functionality
   // changes between versions. (http://crbug.com/599588)
   virtual void RegisterCdm(const CdmInfo& info) = 0;
+
+  // Sets the status for all hardware secure CDMs, e.g. to disable hardware
+  // secure CDMs.
+  // TODO(xhwang): Provide a way to disable a specific `key_system`
+  virtual void SetHardwareSecureCdmStatus(CdmInfo::Status status) = 0;
 };
 
 }  // namespace content

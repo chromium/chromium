@@ -9,7 +9,6 @@
     margin-inline-end: 0;
     margin-inline-start: 32px;
     margin-top: 0;
-    width: 68px;
   }
 
   #moreSettingsButton {
@@ -119,6 +118,8 @@
   }
 
   #toast {
+    --cr-toast-background: var(--cros-toast-background-color);
+    --cr-toast-text-color: var(--cros-toast-text-color);
     bottom: 0;
     left: 0;
   }
@@ -130,13 +131,13 @@
   }
 
   #toastInfoIcon {
-    fill: var(--google-red-refresh-300);
+    fill: var(--cros-toast-icon-color-error);
     margin-inline-end: 10px;
     margin-inline-start: -8px;
   }
 
   #toastText {
-    color: var(--google-grey-200);
+    color: var(--cros-toast-text-color);
   }
 
   #getHelpDiv {
@@ -146,14 +147,26 @@
   }
 
   #getHelpLink {
-    color: var(--google-blue-refresh-300);
+    color: var(--cros-link-color);
     text-decoration: none;
   }
 
   #dialogInfoIcon {
     display: block;
-    fill: var(--google-red-600);
+    fill: var(--cros-icon-color-alert);
     margin-bottom: 14px;
+  }
+
+  #scanFailedDialog [slot=body] {
+    color: var(--cros-text-color-secondary);
+  }
+
+  #scanFailedDialog [slot=title] {
+    color: var(--cros-text-color-primary);
+  }
+
+  cr-dialog#scanFailedDialog::part(dialog) {
+    background-color: var(--cros-bg-color-elevation-3);
   }
 </style>
 <div id="scanningContainer">
@@ -202,7 +215,7 @@
           </cr-button>
           <iron-collapse id="collapse" opened="{{opened_}}">
             <color-mode-select id="colorModeSelect"
-                options="[[capabilities_.colorModes]]"
+                options="[[selectedSourceColorModes_]]"
                 disabled="[[settingsDisabled_]]"
                 selected-option="{{selectedColorMode}}">
             </color-mode-select>
@@ -212,7 +225,7 @@
                 selected-option="{{selectedPageSize}}">
             </page-size-select>
             <resolution-select id="resolutionSelect"
-                options="[[capabilities_.resolutions]]"
+                options="[[selectedSourceResolutions_]]"
                 disabled="[[settingsDisabled_]]"
                 selected-option="{{selectedResolution}}">
             </resolution-select>

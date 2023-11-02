@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,24 +6,23 @@
 
 #import <Photos/Photos.h>
 
-#include "base/bind.h"
-#include "base/feature_list.h"
-#include "base/files/file_path.h"
-#include "base/format_macros.h"
-#include "base/ios/ios_util.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/task/post_task.h"
-#include "base/task/thread_pool.h"
-#include "base/threading/scoped_blocking_call.h"
-#include "components/strings/grit/components_strings.h"
+#import "base/bind.h"
+#import "base/feature_list.h"
+#import "base/files/file_path.h"
+#import "base/format_macros.h"
+#import "base/ios/ios_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/task/thread_pool.h"
+#import "base/threading/scoped_blocking_call.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/image_util/image_util.h"
 #import "ios/chrome/browser/web/image_fetch/image_fetch_tab_helper.h"
-#include "ios/chrome/grit/ios_chromium_strings.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "net/base/mime_util.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "net/base/mime_util.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -33,8 +32,9 @@ namespace {
 
 // Kill switch guarding a workaround for TCC violations before iOS14.  In case
 // iOS14 starts triggering violations too.  See crbug.com/1159431 for details.
-const base::Feature kPhotoLibrarySaveImage{"PhotoLibrarySaveImage",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kPhotoLibrarySaveImage,
+             "PhotoLibrarySaveImage",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 
@@ -78,8 +78,8 @@ const base::Feature kPhotoLibrarySaveImage{"PhotoLibrarySaveImage",
       return;
     }
 
-    // Use -imageWithData to validate |data|, but continue to pass the raw
-    // |data| to -savePhoto to ensure no data loss occurs.
+    // Use -imageWithData to validate `data`, but continue to pass the raw
+    // `data` to -savePhoto to ensure no data loss occurs.
     UIImage* savedImage = [UIImage imageWithData:data];
     if (!savedImage) {
       [strongSelf
@@ -89,7 +89,7 @@ const base::Feature kPhotoLibrarySaveImage{"PhotoLibrarySaveImage",
     }
 
     if (base::FeatureList::IsEnabled(kPhotoLibrarySaveImage)) {
-      // Dump |data| into the photo library. Requires the usage of
+      // Dump `data` into the photo library. Requires the usage of
       // NSPhotoLibraryAddUsageDescription.
       [[PHPhotoLibrary sharedPhotoLibrary]
           performChanges:^{

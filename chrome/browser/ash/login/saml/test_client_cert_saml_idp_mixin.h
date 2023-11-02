@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,10 +54,6 @@ class TestClientCertSamlIdpMixin final : public InProcessBrowserTestMixin {
   std::unique_ptr<net::test_server::HttpResponse>
   HandleSamlWithClientCertsServerRequest(
       const net::test_server::HttpRequest& request);
-
-  // Returns the URL to be used by the SAML page to redirect back to Gaia after
-  // the authentication completion.
-  GURL GetGaiaSamlAssertionUrl(const std::string& saml_relay_state);
 
   FakeGaiaMixin* const gaia_mixin_;
   net::EmbeddedTestServer saml_server_{net::EmbeddedTestServer::TYPE_HTTPS};

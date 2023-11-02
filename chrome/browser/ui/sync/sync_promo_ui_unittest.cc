@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,13 +13,13 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/sync/driver/sync_driver_switches.h"
+#include "components/sync/base/command_line_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class SyncPromoUITest : public testing::Test {
  public:
-  SyncPromoUITest() {}
+  SyncPromoUITest() = default;
 
   SyncPromoUITest(const SyncPromoUITest&) = delete;
   SyncPromoUITest& operator=(const SyncPromoUITest&) = delete;
@@ -33,8 +33,7 @@ class SyncPromoUITest : public testing::Test {
 
  protected:
   void DisableSync() {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kDisableSync);
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(syncer::kDisableSync);
   }
 
   content::BrowserTaskEnvironment task_environment_;

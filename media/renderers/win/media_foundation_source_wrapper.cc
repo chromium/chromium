@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -338,6 +338,9 @@ HRESULT MediaFoundationSourceWrapper::GetInputTrustAuthority(
     REFIID riid,
     IUnknown** object_out) {
   DVLOG_FUNC(1);
+
+  if (state_ == State::kShutdown)
+    return MF_E_SHUTDOWN;
 
   if (stream_id >= StreamCount())
     return E_INVALIDARG;

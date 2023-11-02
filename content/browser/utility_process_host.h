@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,20 +9,25 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/environment.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/launch.h"
 #include "build/build_config.h"
+#include "build/chromecast_buildflags.h"
 #include "content/common/child_process.mojom.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_child_process_host_delegate.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/system/message_pipe.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+// TODO(crbug.com/1328879): Remove this when fixing the bug.
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
+#include "base/callback.h"
+#include "mojo/public/cpp/system/message_pipe.h"
+#endif
 
 namespace base {
 class Thread;
@@ -82,13 +87,15 @@ class CONTENT_EXPORT UtilityProcessHost
 
   // Returns information about the utility child process.
   const ChildProcessData& GetData();
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   void SetEnv(const base::EnvironmentMap& env);
 #endif
 
   // Starts the utility process.
   bool Start();
 
+// TODO(crbug.com/1328879): Remove this method when fixing the bug.
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
   // Instructs the utility process to run an instance of the named service,
   // bound to |service_pipe|. This is DEPRECATED and should never be used.
   using RunServiceDeprecatedCallback =
@@ -96,6 +103,7 @@ class CONTENT_EXPORT UtilityProcessHost
   void RunServiceDeprecated(const std::string& service_name,
                             mojo::ScopedMessagePipeHandle service_pipe,
                             RunServiceDeprecatedCallback callback);
+#endif
 
   // Sets the name of the process to appear in the task manager.
   void SetName(const std::u16string& name);
@@ -160,9 +168,12 @@ class CONTENT_EXPORT UtilityProcessHost
   };
   LaunchState launch_state_ = LaunchState::kLaunchInProgress;
 
+// TODO(crbug.com/1328879): Remove this when fixing the bug.
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
   // Collection of callbacks to be run once the process is actually started (or
   // fails to start).
   std::vector<RunServiceDeprecatedCallback> pending_run_service_callbacks_;
+#endif
 
   std::unique_ptr<Client> client_;
 

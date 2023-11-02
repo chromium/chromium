@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -14,6 +14,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <set>
@@ -23,6 +24,7 @@
 
 #include "base/check.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/installer/util/work_item_list.h"
@@ -33,6 +35,12 @@ class RegistryEntry;
 namespace base {
 class AtomicFlag;
 class CommandLine;
+
+namespace win {
+enum class ShortcutOperation;
+struct ShortcutProperties;
+
+}  // namespace win
 }  // namespace base
 
 // This is a utility class that provides common shell integration methods
@@ -75,7 +83,8 @@ class ShellUtil {
     SHORTCUT_LOCATION_TASKBAR_PINS,   // base::win::Version::WIN7 +
     SHORTCUT_LOCATION_APP_SHORTCUTS,  // base::win::Version::WIN8 +
     SHORTCUT_LOCATION_STARTUP,
-    NUM_SHORTCUT_LOCATIONS
+    // Update this if a new ShortcutLocation is added.
+    SHORTCUT_LOCATION_LAST = SHORTCUT_LOCATION_STARTUP,
   };
 
   enum ShortcutOperation {
@@ -383,17 +392,37 @@ class ShellUtil {
                                    ShortcutLocation new_location,
                                    const ShortcutProperties& properties);
 
-  // Updates shortcut in |location| (or creates it if |options| specify
+  // This converts ShellUtil's `location`, `properties`, and `operation` into
+  // their base::win equivalents so callers can get the behavior of
+  // CreateOrUpdateShortcut, but handle the actual shortcut creation themselves,
+  // e.g., update the shortcut out-of-process. If `should_install_shortcut` is
+  // set to false, caller should not create or update the shortcut, but may try
+  // to pin an existing shortcut, as long as the function returns true.
+  // This functions returns false in unexpected error conditions.
+  static bool TranslateShortcutCreationOrUpdateInfo(
+      ShortcutLocation location,
+      const ShortcutProperties& properties,
+      ShortcutOperation operation,
+      base::win::ShortcutOperation& base_operation,
+      base::win::ShortcutProperties& base_properties,
+      bool& should_install_shortcut,
+      base::FilePath& shortcut_path);
+
+  // Updates shortcut in `location` (or creates it if `options` specify
   // SHELL_SHORTCUT_CREATE_ALWAYS).
-  // |properties| and |operation| affect this method as described on their
+  // `properties` and `operation` affect this method as described on their
   // invidividual definitions above.
-  // |location| may be one of SHORTCUT_LOCATION_DESKTOP,
+  // `location` may be one of SHORTCUT_LOCATION_DESKTOP,
   // SHORTCUT_LOCATION_QUICK_LAUNCH, SHORTCUT_LOCATION_START_MENU_ROOT,
   // SHORTCUT_LOCATION_START_MENU_CHROME_DIR, or
   // SHORTCUT_LOCATION_START_MENU_CHROME_APPS_DIR.
+  // If `pinned` is not null, and `properties` requests that the shortcut be
+  // pinned, and the shortcut creation succeeds, `pinned` will be set to true
+  // if pinning was successful, false otherwise.
   static bool CreateOrUpdateShortcut(ShortcutLocation location,
                                      const ShortcutProperties& properties,
-                                     ShortcutOperation operation);
+                                     ShortcutOperation operation,
+                                     bool* pinned = nullptr);
 
   // Returns the string "|icon_path|,|icon_index|" (see, for example,
   // http://msdn.microsoft.com/library/windows/desktop/dd391573.aspx).
@@ -504,15 +533,33 @@ class ShellUtil {
   // TODO(benwells): Attempt to undo any changes that were successfully made.
   // http://crbug.com/83970
   //
-  // shell_change: Defined whether to register as default browser at system
+  // shell_change: Defines whether to register as default browser at system
   //               level or user level. If value has ShellChange::SYSTEM_LEVEL
   //               we should be running as admin user.
   // chrome_exe: The chrome.exe path to register as default browser.
-  // elevate_if_not_admin: On Vista if user is not admin, try to elevate for
+  // elevate_if_not_admin: On Win7 if user is not admin, try to elevate for
   //                       Chrome registration.
   static bool MakeChromeDefault(int shell_change,
                                 const base::FilePath& chrome_exe,
                                 bool elevate_if_not_admin);
+
+  // Make Chrome the default browser on Windows 10. This function works by going
+  // through the url protocols and file associations that are related to general
+  // browsing, e.g. http, https, .html etc., and directly setting the relevant
+  // registry entries for each. If any of these fails the operation will return
+  // false to indicate failure, which is consistent with the return value of
+  // shell_integration::GetDefaultBrowser. This function will also return false
+  // if it can't set the default directly on the current platform.
+  //
+  // shell_change: Defines whether to register as default browser at system
+  //               level or user level. If value has ShellChange::SYSTEM_LEVEL
+  //               we should be running as admin user.
+  // chrome_exe: The chrome.exe path to register as default browser.
+  // elevate_if_not_admin: If user is not admin, try to elevate for
+  //                       Chrome registration.
+  static bool MakeChromeDefaultDirectly(int shell_change,
+                                        const base::FilePath& chrome_exe,
+                                        bool elevate_if_not_admin);
 
   // Opens the Apps & Features page in the Windows settings in branded builds.
   //
@@ -738,8 +785,6 @@ class ShellUtil {
   // associated with this application by default.
   // |application_icon_path| is the path of the icon displayed for this
   // application in the Open With menu.
-  // |file_type_icon_path| is the path of the icon used for files of these
-  // types when associated with this application by default.
   // |file_extensions| is the set of extensions to associate. They must not be
   // empty or start with a '.'.
   // Returns true on success, false on failure.
@@ -749,7 +794,6 @@ class ShellUtil {
       const std::wstring& application_name,
       const std::wstring& file_type_name,
       const base::FilePath& application_icon_path,
-      const base::FilePath& file_type_icon_path,
       const std::set<std::wstring>& file_extensions);
 
   // Deletes all associations with a particular application in the Windows
@@ -828,6 +872,18 @@ class ShellUtil {
       HKEY root,
       const std::vector<std::unique_ptr<RegistryEntry>>& entries,
       bool best_effort_no_rollback = false);
+
+  static std::array<uint32_t, 4> ComputeHashForTesting(
+      base::span<const uint8_t> input);
+
+  static std::wstring ComputeUserChoiceHashForTesting(
+      const std::wstring& extension,
+      const std::wstring& sid,
+      const std::wstring& prog_id,
+      const std::wstring& datetime);
+
+  static std::wstring GetCurrentProgIdForTesting(
+      const base::FilePath& chrome_exe);
 };
 
 #endif  // CHROME_INSTALLER_UTIL_SHELL_UTIL_H_

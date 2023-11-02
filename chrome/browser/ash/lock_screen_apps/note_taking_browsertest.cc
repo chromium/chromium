@@ -1,28 +1,41 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+#include <string>
+#include <type_traits>
+#include <utility>
+
 #include "apps/launcher.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/public/mojom/tray_action.mojom.h"
+#include "ash/public/mojom/tray_action.mojom-shared.h"
+#include "base/callback_forward.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/ash/lock_screen_apps/lock_screen_profile_creator.h"
 #include "chrome/browser/ash/lock_screen_apps/state_controller.h"
+#include "chrome/browser/ash/lock_screen_apps/state_observer.h"
 #include "chrome/browser/ash/note_taking_helper.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/session_manager_types.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/browser/app_window/app_window.h"
-#include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/common/api/app_runtime.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace content {
+class BrowserMainParts;
+}
 
 namespace {
 
@@ -144,7 +157,7 @@ class LockScreenNoteTakingTest : public extensions::ExtensionBrowserTest {
     // The test should reply to this message in order for the app window to
     // close itself.
     ExtensionTestMessageListener ready_to_close("readyToClose",
-                                                true /* will_reply */);
+                                                ReplyBehavior::kWillReply);
 
     lock_screen_apps::StateController::Get()->RequestNewLockScreenNote(
         ash::mojom::LockScreenNoteOrigin::kLockScreenButtonTap);
@@ -226,12 +239,11 @@ IN_PROC_BROWSER_TEST_F(LockScreenNoteTakingTest, LaunchInNonLockScreenContext) {
 
   // Launch note taking in regular, non lock screen context. The test will
   // verify the app cannot create lock screen enabled app windows in this case.
-  auto action_data =
-      std::make_unique<extensions::api::app_runtime::ActionData>();
-  action_data->action_type =
+  extensions::api::app_runtime::ActionData action_data;
+  action_data.action_type =
       extensions::api::app_runtime::ActionType::ACTION_TYPE_NEW_NOTE;
   apps::LaunchPlatformAppWithAction(profile(), app.get(),
-                                    std::move(action_data), base::FilePath());
+                                    std::move(action_data));
 
   ASSERT_TRUE(result_catcher()->GetNextResult()) << result_catcher()->message();
 }
@@ -286,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(LockScreenNoteTakingTest, AppLaunchActionDataParams) {
             lock_screen_apps::StateController::Get()->GetLockScreenNoteState());
 
   ExtensionTestMessageListener expected_action_data("getExpectedActionData",
-                                                    true /* will_reply */);
+                                                    ReplyBehavior::kWillReply);
 
   ASSERT_TRUE(expected_action_data.WaitUntilSatisfied());
   expected_action_data.Reply(R"({"actionType": "new_note",

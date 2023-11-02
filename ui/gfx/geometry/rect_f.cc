@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,16 @@
 #include <limits>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "ui/gfx/geometry/insets_f.h"
+#include "ui/gfx/geometry/outsets_f.h"
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include <CoreGraphics/CoreGraphics.h>
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include <ApplicationServices/ApplicationServices.h>
 #endif
 
@@ -32,7 +34,7 @@ static void AdjustAlongAxis(float dst_origin,
     *origin = std::min(dst_origin + dst_size, *origin + *size) - *size;
 }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 RectF::RectF(const CGRect& r)
     : origin_(r.origin.x, r.origin.y), size_(r.size.width, r.size.height) {
 }
@@ -43,13 +45,9 @@ CGRect RectF::ToCGRect() const {
 #endif
 
 void RectF::Inset(const InsetsF& insets) {
-  Inset(insets.left(), insets.top(), insets.right(), insets.bottom());
-}
-
-void RectF::Inset(float left, float top, float right, float bottom) {
-  origin_ += Vector2dF(left, top);
-  set_width(std::max(width() - left - right, 0.0f));
-  set_height(std::max(height() - top - bottom, 0.0f));
+  origin_ += Vector2dF(insets.left(), insets.top());
+  set_width(width() - insets.width());
+  set_height(height() - insets.height());
 }
 
 void RectF::Offset(float horizontal, float vertical) {
@@ -65,10 +63,8 @@ void RectF::operator-=(const Vector2dF& offset) {
 }
 
 InsetsF RectF::InsetsFrom(const RectF& inner) const {
-  return InsetsF(inner.y() - y(),
-                 inner.x() - x(),
-                 bottom() - inner.bottom(),
-                 right() - inner.right());
+  return InsetsF::TLBR(inner.y() - y(), inner.x() - x(),
+                       bottom() - inner.bottom(), right() - inner.right());
 }
 
 bool RectF::operator<(const RectF& other) const {
@@ -153,6 +149,19 @@ void RectF::UnionEvenIfEmpty(const RectF& rect) {
   float rb = std::max(bottom(), rect.bottom());
 
   SetRect(rx, ry, rr - rx, rb - ry);
+
+  // Due to floating errors and SizeF::clamp(), the new rect may not fully
+  // contain the original rects at the right/bottom side. Expand the rect in
+  // the case.
+  constexpr auto kFloatMax = std::numeric_limits<float>::max();
+  if (UNLIKELY(right() < rr && width() < kFloatMax)) {
+    size_.SetToNextWidth();
+    DCHECK_GE(right(), rr);
+  }
+  if (UNLIKELY(bottom() < rb && height() < kFloatMax)) {
+    size_.SetToNextHeight();
+    DCHECK_GE(bottom(), rb);
+  }
 }
 
 void RectF::Subtract(const RectF& rect) {
@@ -328,9 +337,29 @@ RectF MaximumCoveredRect(const RectF& a, const RectF& b) {
   return maximum;
 }
 
+RectF MapRect(const RectF& r, const RectF& src_rect, const RectF& dest_rect) {
+  if (src_rect.IsEmpty())
+    return RectF();
+
+  float width_scale = dest_rect.width() / src_rect.width();
+  float height_scale = dest_rect.height() / src_rect.height();
+  return RectF(dest_rect.x() + (r.x() - src_rect.x()) * width_scale,
+               dest_rect.y() + (r.y() - src_rect.y()) * height_scale,
+               r.width() * width_scale, r.height() * height_scale);
+}
+
 std::string RectF::ToString() const {
   return base::StringPrintf("%s %s", origin().ToString().c_str(),
                             size().ToString().c_str());
+}
+
+bool RectF::ApproximatelyEqual(const RectF& rect,
+                               float tolerance_x,
+                               float tolerance_y) const {
+  return std::abs(x() - rect.x()) <= tolerance_x &&
+         std::abs(y() - rect.y()) <= tolerance_y &&
+         std::abs(right() - rect.right()) <= tolerance_x &&
+         std::abs(bottom() - rect.bottom()) <= tolerance_y;
 }
 
 }  // namespace gfx

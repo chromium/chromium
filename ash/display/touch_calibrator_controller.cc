@@ -1,10 +1,9 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/display/touch_calibrator_controller.h"
 
-#include <algorithm>
 #include <memory>
 
 #include "ash/display/touch_calibrator_view.h"
@@ -13,6 +12,7 @@
 #include "ash/shell.h"
 #include "ash/touch/ash_touch_transform_controller.h"
 #include "base/bind.h"
+#include "base/ranges/algorithm.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/display/manager/touch_device_manager.h"
@@ -45,9 +45,8 @@ gfx::Transform CalculateEventTransformer(int touch_device_id) {
   const std::vector<ui::TouchscreenDevice>& device_list =
       ui::DeviceDataManager::GetInstance()->GetTouchscreenDevices();
 
-  auto device_it = std::find_if(
-      device_list.begin(), device_list.end(),
-      [&](const auto& device) { return device.id == touch_device_id; });
+  auto device_it = base::ranges::find(device_list, touch_device_id,
+                                      &ui::TouchscreenDevice::id);
   DCHECK(device_it != device_list.end())
       << "Device id " << touch_device_id
       << " is invalid. No such device connected to system";
@@ -246,14 +245,14 @@ void TouchCalibratorController::OnTouchEvent(ui::TouchEvent* touch) {
   // calibration.
   if (target_screen_calibration_view->state() ==
       TouchCalibratorView::CALIBRATION_COMPLETE) {
-    gfx::RectF calibration_bounds(
-        target_screen_calibration_view->GetLocalBounds());
-    Shell::Get()
-        ->window_tree_host_manager()
-        ->GetAshWindowTreeHostForDisplayId(target_display_.id())
-        ->AsWindowTreeHost()
-        ->GetRootTransform()
-        .TransformRect(&calibration_bounds);
+    gfx::RectF calibration_bounds =
+        Shell::Get()
+            ->window_tree_host_manager()
+            ->GetAshWindowTreeHostForDisplayId(target_display_.id())
+            ->AsWindowTreeHost()
+            ->GetRootTransform()
+            .MapRect(
+                gfx::RectF(target_screen_calibration_view->GetLocalBounds()));
     CompleteCalibration(touch_point_quad_,
                         gfx::ToRoundedSize(calibration_bounds.size()));
     return;
@@ -289,12 +288,12 @@ void TouchCalibratorController::OnTouchEvent(ui::TouchEvent* touch) {
     // display is rotated or a device scale factor is applied. The display point
     // needs to have the root transform applied as well to correctly pair it
     // with the touch point.
-    Shell::Get()
-        ->window_tree_host_manager()
-        ->GetAshWindowTreeHostForDisplayId(target_display_.id())
-        ->AsWindowTreeHost()
-        ->GetRootTransform()
-        .TransformPoint(&display_point);
+    display_point = Shell::Get()
+                        ->window_tree_host_manager()
+                        ->GetAshWindowTreeHostForDisplayId(target_display_.id())
+                        ->AsWindowTreeHost()
+                        ->GetRootTransform()
+                        .MapPoint(display_point);
 
     // Why do we need this? To understand this we need to know the life of an
     // event location. The event location undergoes the following
@@ -335,8 +334,8 @@ void TouchCalibratorController::OnTouchEvent(ui::TouchEvent* touch) {
     // device was previously associated with. To solve this, we need to undo the
     // changes made to the event location by WindowEventDispatcher. This is what
     // is achieved by |event_transformer_|.
-    gfx::PointF event_location_f(touch->location_f());
-    event_transformer_.TransformPoint(&event_location_f);
+    gfx::PointF event_location_f =
+        event_transformer_.MapPoint(touch->location_f());
 
     touch_point_quad_[state_index] =
         std::make_pair(display_point, gfx::ToRoundedPoint(event_location_f));

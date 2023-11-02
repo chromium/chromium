@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -57,16 +57,12 @@ class ChromeNTPTilesInternalsMessageHandlerClient
   std::unique_ptr<ntp_tiles::MostVisitedSites> MakeMostVisitedSites() override;
   PrefService* GetPrefs() override;
   void RegisterMessageCallback(
-      const std::string& message,
-      base::RepeatingCallback<void(base::Value::ConstListView)> callback)
+      base::StringPiece message,
+      base::RepeatingCallback<void(const base::Value::List&)> callback)
       override;
-  void RegisterDeprecatedMessageCallback(
-      const std::string& message,
-      const base::RepeatingCallback<void(const base::ListValue*)>& callback)
-      override;
-  void CallJavascriptFunctionVector(
-      const std::string& name,
-      const std::vector<const base::Value*>& values) override;
+  void CallJavascriptFunctionSpan(
+      base::StringPiece name,
+      base::span<const base::ValueView> values) override;
 
   ntp_tiles::NTPTilesInternalsMessageHandler handler_;
 };
@@ -90,13 +86,13 @@ bool ChromeNTPTilesInternalsMessageHandlerClient::DoesSourceExist(
     case ntp_tiles::TileSource::POPULAR_BAKED_IN:
     case ntp_tiles::TileSource::POPULAR:
     case ntp_tiles::TileSource::EXPLORE:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       return true;
 #else
       return false;
 #endif
     case ntp_tiles::TileSource::CUSTOM_LINKS:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       return false;
 #else
       return true;
@@ -117,21 +113,14 @@ PrefService* ChromeNTPTilesInternalsMessageHandlerClient::GetPrefs() {
 }
 
 void ChromeNTPTilesInternalsMessageHandlerClient::RegisterMessageCallback(
-    const std::string& message,
-    base::RepeatingCallback<void(base::Value::ConstListView)> callback) {
+    base::StringPiece message,
+    base::RepeatingCallback<void(const base::Value::List&)> callback) {
   web_ui()->RegisterMessageCallback(message, std::move(callback));
 }
 
-void ChromeNTPTilesInternalsMessageHandlerClient::
-    RegisterDeprecatedMessageCallback(
-        const std::string& message,
-        const base::RepeatingCallback<void(const base::ListValue*)>& callback) {
-  web_ui()->RegisterDeprecatedMessageCallback(message, callback);
-}
-
-void ChromeNTPTilesInternalsMessageHandlerClient::CallJavascriptFunctionVector(
-    const std::string& name,
-    const std::vector<const base::Value*>& values) {
+void ChromeNTPTilesInternalsMessageHandlerClient::CallJavascriptFunctionSpan(
+    base::StringPiece name,
+    base::span<const base::ValueView> values) {
   web_ui()->CallJavascriptFunctionUnsafe(name, values);
 }
 

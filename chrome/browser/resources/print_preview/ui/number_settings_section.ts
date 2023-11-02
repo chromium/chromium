@@ -1,17 +1,18 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
-import './print_preview_shared_css.js';
-import './print_preview_vars_css.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import './print_preview_shared.css.js';
+import './print_preview_vars.css.js';
 import './settings_section.js';
 
-import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
-import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {InputMixin} from './input_mixin.js';
+import {getTemplate} from './number_settings_section.html.js';
 
 export interface PrintPreviewNumberSettingsSectionElement {
   $: {
@@ -29,7 +30,7 @@ export class PrintPreviewNumberSettingsSectionElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -86,14 +87,14 @@ export class PrintPreviewNumberSettingsSectionElement extends
   private inputString_: string;
   private errorMessage_: string;
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addEventListener('input-change', e => this.onInputChangeEvent_(e));
   }
 
   /** @return The cr-input field element for InputBehavior. */
-  getInput() {
+  override getInput() {
     return this.$.userValue;
   }
 

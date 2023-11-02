@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_client.h"
@@ -95,22 +96,24 @@ class TestSigninClient : public SigninClient {
   std::unique_ptr<GaiaAuthFetcher> CreateGaiaAuthFetcher(
       GaiaAuthConsumer* consumer,
       gaia::GaiaSource source) override;
-  bool IsNonEnterpriseUser(const std::string& email) override;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  absl::optional<account_manager::Account> GetInitialPrimaryAccount() override;
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void SetInitialPrimaryAccountForTests(
-      const account_manager::Account& account);
-#endif
+  absl::optional<account_manager::Account> GetInitialPrimaryAccount() override;
+  absl::optional<bool> IsInitialPrimaryAccountChild() const override;
+
+  void SetInitialPrimaryAccountForTests(const account_manager::Account& account,
+                                        const absl::optional<bool>& is_child);
+  void RemoveAccount(const account_manager::AccountKey& account_key) override;
+
+  void RemoveAllAccounts() override;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
  private:
   std::unique_ptr<network::TestURLLoaderFactory>
       default_test_url_loader_factory_;
-  network::TestURLLoaderFactory* test_url_loader_factory_;
+  raw_ptr<network::TestURLLoaderFactory> test_url_loader_factory_;
 
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
   std::unique_ptr<network::mojom::CookieManager> cookie_manager_;
   bool are_signin_cookies_allowed_;
   bool network_calls_delayed_;
@@ -120,7 +123,8 @@ class TestSigninClient : public SigninClient {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   absl::optional<account_manager::Account> initial_primary_account_;
-#endif
+  absl::optional<bool> is_initial_primary_account_child_;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_BASE_TEST_SIGNIN_CLIENT_H_

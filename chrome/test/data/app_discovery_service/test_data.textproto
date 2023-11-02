@@ -1,0 +1,64 @@
+app_with_locale {
+  app {
+    app_id_for_platform: "jrioj324j2095245234320o"
+    app_name: "really fun game"
+    display_name {
+      language_code: "en-US"
+      name_in_language: "Really Fun Game"
+    }
+    available_stores {
+      store_code: "GAME STORE"
+      store_label: "game store"
+    }
+    publisher_name: "FUN GAME STUDIOS"
+    icon_info {
+      icon_path: "icons/0_jrioj324j2095245234320o.png"
+    }
+    deeplink: "https://todo.com/games?game-id=jrioj324j2095245234320o"
+    source_name: "LuckyMe"
+  }
+  locale_availability {
+    available_country_codes: "AU"
+    available_country_codes: "CA"
+    available_localised_names {
+      language_code: "en-US"
+      name_in_language: "US Name"
+    }
+    available_localised_names {
+      language_code: "en-CA"
+      name_in_language: "CA Name"
+    }
+  }
+}
+app_with_locale {
+  app {
+    app_id_for_platform: "reijarowaiore131983u12jkljs893"
+    app_name: "14 days"
+    display_name {
+      language_code: "en-US"
+      name_in_language: "14 days"
+    }
+    available_stores {
+      store_code: "GAME STORE"
+      store_label: "Game Store"
+    }
+    publisher_name: "Cool Games"
+    icon_info {
+      icon_path: "icons/113_reijarowaiore131983u12jkljs893.png"
+    }
+    deeplink: "https://todo.com/games?game-id=reijarowaiore131983u12jkljs893"
+    source_name: "LuckyMe"
+  }
+  locale_availability {
+    available_country_codes: "CH"
+    available_country_codes: "CA"
+    available_localised_names {
+      language_code: "en-US"
+      name_in_language: "14 days"
+    }
+    available_localised_names {
+      language_code: "zh-CN"
+      name_in_language: "\345\240\241"
+    }
+  }
+}

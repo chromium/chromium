@@ -1,35 +1,35 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web/init/web_main_loop.h"
+#import "ios/web/init/web_main_loop.h"
 
-#include <stddef.h>
+#import <stddef.h>
 
-#include <utility>
+#import <utility>
 
-#include "base/bind.h"
-#include "base/command_line.h"
-#include "base/logging.h"
-#include "base/message_loop/message_pump_type.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/path_service.h"
-#include "base/power_monitor/power_monitor.h"
-#include "base/power_monitor/power_monitor_device_source.h"
-#include "base/process/process_metrics.h"
-#include "base/task/post_task.h"
-#include "base/task/single_thread_task_executor.h"
-#include "base/task/thread_pool/thread_pool_instance.h"
-#include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#import "base/bind.h"
+#import "base/command_line.h"
+#import "base/logging.h"
+#import "base/message_loop/message_pump_type.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/path_service.h"
+#import "base/power_monitor/power_monitor.h"
+#import "base/power_monitor/power_monitor_device_source.h"
+#import "base/process/process_metrics.h"
+#import "base/task/single_thread_task_executor.h"
+#import "base/task/thread_pool/thread_pool_instance.h"
+#import "base/threading/thread_restrictions.h"
+#import "base/threading/thread_task_runner_handle.h"
 #import "ios/web/net/cookie_notification_bridge.h"
-#include "ios/web/public/init/ios_global_state.h"
-#include "ios/web/public/init/web_main_parts.h"
-#include "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/init/ios_global_state.h"
+#import "ios/web/public/init/web_main_parts.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_client.h"
-#include "ios/web/web_sub_thread.h"
-#include "ios/web/web_thread_impl.h"
-#include "ios/web/webui/url_data_manager_ios.h"
+#import "ios/web/web_sub_thread.h"
+#import "ios/web/web_thread_impl.h"
+#import "ios/web/webui/url_data_manager_ios.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -156,8 +156,8 @@ void WebMainLoop::ShutdownThreadsAndCleanUp() {
   // Teardown may start in PostMainMessageLoopRun, and during teardown we
   // need to be able to perform IO.
   base::PermanentThreadAllowance::AllowBlocking();
-  base::PostTask(FROM_HERE, {WebThread::IO},
-                 base::BindOnce(base::IgnoreResult(
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(base::IgnoreResult(
                      &base::PermanentThreadAllowance::AllowBlocking)));
 
   // Also allow waiting to join threads.
@@ -166,8 +166,8 @@ void WebMainLoop::ShutdownThreadsAndCleanUp() {
   // persistent work is being done after ThreadPoolInstance::Shutdown() in order
   // to move towards atomic shutdown.
   base::PermanentThreadAllowance::AllowBaseSyncPrimitives();
-  base::PostTask(
-      FROM_HERE, {WebThread::IO},
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(base::IgnoreResult(
           &base::PermanentThreadAllowance::AllowBaseSyncPrimitives)));
 

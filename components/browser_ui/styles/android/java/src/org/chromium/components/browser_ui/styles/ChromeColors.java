@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,8 +16,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 import com.google.android.material.color.MaterialColors;
 import com.google.android.material.elevation.ElevationOverlayProvider;
 
-import org.chromium.base.ApiCompatibilityUtils;
-
 /**
  * Provides common default colors for Chrome UI.
  */
@@ -33,8 +31,7 @@ public class ChromeColors {
      * @return The default theme color.
      */
     public static @ColorInt int getDefaultThemeColor(Context context, boolean isIncognito) {
-        return isIncognito ? ApiCompatibilityUtils.getColor(
-                       context.getResources(), R.color.toolbar_background_primary_dark)
+        return isIncognito ? context.getColor(R.color.toolbar_background_primary_dark)
                            : MaterialColors.getColor(context, R.attr.colorSurface, TAG);
     }
 
@@ -48,11 +45,8 @@ public class ChromeColors {
      * @return The primary background color.
      */
     public static @ColorInt int getPrimaryBackgroundColor(Context context, boolean isIncognito) {
-        return isIncognito ? ApiCompatibilityUtils.getColor(
-                       context.getResources(), R.color.default_bg_color_dark)
-                           : MaterialColors.getColor(context, R.attr.default_bg_color_dynamic,
-                                   // Temporarily pass a default, see https://crbug.com/1247186.
-                                   R.color.default_bg_color);
+        return isIncognito ? context.getColor(R.color.default_bg_color_dark)
+                           : SemanticColorUtils.getDefaultBgColor(context);
     }
 
     /**
@@ -68,42 +62,39 @@ public class ChromeColors {
     }
 
     /**
-     * Returns the text medium thick secondary style based on the given parameter.
+     * Returns the text medium thick secondary style based on the incognito state.
      *
-     * @param forceLightTextColor When true, returns the light-mode medium text secondary style;
-     *         otherwise returns adaptive medium text secondary style.
+     * @param isIncognito When true, returns the baseline light medium text secondary style;
+     *         otherwise returns adaptive medium text secondary style that can have dynamic colors.
      * @return The medium text secondary style.
      */
-    public static int getTextMediumThickSecondaryStyle(boolean forceLightTextColor) {
-        return forceLightTextColor ? R.style.TextAppearance_TextMediumThick_Secondary_Baseline_Light
-                                   : R.style.TextAppearance_TextMediumThick_Secondary;
+    public static int getTextMediumThickSecondaryStyle(boolean isIncognito) {
+        return isIncognito ? R.style.TextAppearance_TextMediumThick_Secondary_Baseline_Light
+                           : R.style.TextAppearance_TextMediumThick_Secondary;
     }
 
     /**
-     * Returns the primary icon tint resource to use based on the current parameters and whether
-     * the app is in night mode.
+     * Returns the primary icon tint resource to use based on the incognito state.
      *
-     * @param forceLightIconTint When true, returns the light tint color res; otherwise returns
-     *         adaptive primary icon tint color res.
+     * @param isIncognito When true, returns the baseline light tint color res; otherwise returns
+     *         the default primary icon tint list that is adaptive and can be dynamic.
      * @return The {@link ColorRes} for the icon tint.
      */
-    public static @ColorRes int getPrimaryIconTintRes(boolean forceLightIconTint) {
-        return forceLightIconTint ? R.color.default_icon_color_light_tint_list
-                                  : R.color.default_icon_color_tint_list;
+    public static @ColorRes int getPrimaryIconTintRes(boolean isIncognito) {
+        return isIncognito ? R.color.default_icon_color_light_tint_list
+                           : R.color.default_icon_color_tint_list;
     }
 
     /**
-     * Returns the primary icon tint to use based on the current parameters and whether the app is
-     * in night mode.
+     * Returns the primary icon tint to use based on the incognito state.
      *
      * @param context The {@link Context} used to retrieve colors.
-     * @param forceLightIconTint When true, returns the light tint color res; otherwise returns
-     *         adaptive primary icon tint color res.
+     * @param isIncognito When true, returns the baseline light tint list; otherwise returns the
+     *         default primary icon tint list that is adaptive and can be dynamic.
      * @return The {@link ColorStateList} for the icon tint.
      */
-    public static ColorStateList getPrimaryIconTint(Context context, boolean forceLightIconTint) {
-        return AppCompatResources.getColorStateList(
-                context, getPrimaryIconTintRes(forceLightIconTint));
+    public static ColorStateList getPrimaryIconTint(Context context, boolean isIncognito) {
+        return AppCompatResources.getColorStateList(context, getPrimaryIconTintRes(isIncognito));
     }
 
     /**

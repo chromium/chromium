@@ -1,15 +1,15 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/ui_devtools/views/view_element.h"
 
-#include <algorithm>
-
+#include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/ui_devtools/Protocol.h"
+#include "components/ui_devtools/protocol.h"
 #include "components/ui_devtools/ui_element_delegate.h"
 #include "components/ui_devtools/views/devtools_event_util.h"
 #include "components/ui_devtools/views/element_utility.h"
@@ -91,12 +91,13 @@ ViewElement::~ViewElement() = default;
 
 void ViewElement::OnChildViewRemoved(views::View* parent, views::View* view) {
   DCHECK_EQ(parent, view_);
-  auto iter = std::find_if(
-      children().begin(), children().end(), [view](UIElement* child) {
-        return view ==
-               UIElement::GetBackingElement<views::View, ViewElement>(child);
-      });
-  DCHECK(iter != children().end());
+  auto iter = base::ranges::find(children(), view, [](UIElement* child) {
+    return UIElement::GetBackingElement<views::View, ViewElement>(child);
+  });
+  if (iter == children().end()) {
+    RebuildTree();
+    return;
+  }
   UIElement* child_element = *iter;
   RemoveChild(child_element);
   delete child_element;
@@ -104,19 +105,27 @@ void ViewElement::OnChildViewRemoved(views::View* parent, views::View* view) {
 
 void ViewElement::OnChildViewAdded(views::View* parent, views::View* view) {
   DCHECK_EQ(parent, view_);
+  if (base::Contains(children(), view, [](UIElement* child) {
+        return UIElement::GetBackingElement<views::View, ViewElement>(child);
+      })) {
+    RebuildTree();
+    return;
+  }
   AddChild(new ViewElement(view, delegate(), this));
 }
 
 void ViewElement::OnChildViewReordered(views::View* parent, views::View* view) {
   DCHECK_EQ(parent, view_);
-  auto iter = std::find_if(
-      children().begin(), children().end(), [view](UIElement* child) {
-        return view ==
-               UIElement::GetBackingElement<views::View, ViewElement>(child);
-      });
-  DCHECK(iter != children().end());
+  auto iter = base::ranges::find(children(), view, [](UIElement* child) {
+    return UIElement::GetBackingElement<views::View, ViewElement>(child);
+  });
+  if (iter == children().end() ||
+      children().size() != view_->children().size()) {
+    RebuildTree();
+    return;
+  }
   UIElement* child_element = *iter;
-  ReorderChild(child_element, parent->GetIndexOf(view));
+  ReorderChild(child_element, parent->GetIndexOf(view).value());
 }
 
 void ViewElement::OnViewBoundsChanged(views::View* view) {
@@ -170,9 +179,9 @@ void ViewElement::PaintRect() const {
 
 bool ViewElement::FindMatchByElementID(
     const ui::ElementIdentifier& identifier) {
-  auto result = views::ElementTrackerViews::GetInstance()
-                    ->GetAllMatchingViewsInAnyContext(identifier);
-  return std::find(result.begin(), result.end(), view_) != result.end();
+  return base::Contains(views::ElementTrackerViews::GetInstance()
+                            ->GetAllMatchingViewsInAnyContext(identifier),
+                        view_);
 }
 
 bool ViewElement::DispatchMouseEvent(protocol::DOM::MouseEvent* event) {
@@ -226,6 +235,13 @@ void* ViewElement::GetClassInstance() const {
 
 ui::Layer* ViewElement::GetLayer() const {
   return view_->layer();
+}
+
+void ViewElement::RebuildTree() {
+  ClearChildren();
+  for (auto* child : view_->children()) {
+    AddChild(new ViewElement(child, delegate(), this));
+  }
 }
 
 }  // namespace ui_devtools

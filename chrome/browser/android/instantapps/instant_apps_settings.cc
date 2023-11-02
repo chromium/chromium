@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,9 +41,8 @@ void RecordShouldShowBannerMetric(AiaBannerReason reason) {
 
 }  // namespace
 
-void InstantAppsSettings::RecordInfoBarShowEvent(
-    content::WebContents* web_contents,
-    const std::string& url) {
+void InstantAppsSettings::RecordShowEvent(content::WebContents* web_contents,
+                                          const std::string& url) {
   webapps::AppBannerSettingsHelper::RecordBannerEvent(
       web_contents, GURL(url),
       webapps::AppBannerSettingsHelper::kInstantAppsKey,
@@ -51,9 +50,8 @@ void InstantAppsSettings::RecordInfoBarShowEvent(
       base::Time::Now());
 }
 
-void InstantAppsSettings::RecordInfoBarDismissEvent(
-    content::WebContents* web_contents,
-    const std::string& url) {
+void InstantAppsSettings::RecordDismissEvent(content::WebContents* web_contents,
+                                             const std::string& url) {
   webapps::AppBannerSettingsHelper::RecordBannerEvent(
       web_contents, GURL(url),
       webapps::AppBannerSettingsHelper::kInstantAppsKey,

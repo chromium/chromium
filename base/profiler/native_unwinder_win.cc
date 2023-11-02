@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
-#include "base/profiler/native_unwinder.h"
 #include "base/profiler/win32_stack_frame_unwinder.h"
 #include "build/build_config.h"
 
@@ -23,8 +22,8 @@ bool NativeUnwinderWin::CanUnwindFrom(const Frame& current_frame) const {
 // returns false.
 UnwindResult NativeUnwinderWin::TryUnwind(RegisterContext* thread_context,
                                           uintptr_t stack_top,
-                                          std::vector<Frame>* stack) const {
-  // We expect the frame correponding to the |thread_context| register state to
+                                          std::vector<Frame>* stack) {
+  // We expect the frame corresponding to the |thread_context| register state to
   // exist within |stack|.
   DCHECK_GT(stack->size(), 0u);
 
@@ -59,7 +58,7 @@ UnwindResult NativeUnwinderWin::TryUnwind(RegisterContext* thread_context,
       return UnwindResult::kAborted;
     }
 
-    if (ContextPC(thread_context) == 0)
+    if (RegisterContextInstructionPointer(thread_context) == 0)
       return UnwindResult::kCompleted;
 
     // Exclusive range of expected stack pointer values after the unwind.
@@ -84,17 +83,13 @@ UnwindResult NativeUnwinderWin::TryUnwind(RegisterContext* thread_context,
     }
 
     // Record the frame to which we just unwound.
-    stack->emplace_back(
-        ContextPC(thread_context),
-        module_cache()->GetModuleForAddress(ContextPC(thread_context)));
+    stack->emplace_back(RegisterContextInstructionPointer(thread_context),
+                        module_cache()->GetModuleForAddress(
+                            RegisterContextInstructionPointer(thread_context)));
   }
 
   NOTREACHED();
   return UnwindResult::kCompleted;
-}
-
-std::unique_ptr<Unwinder> CreateNativeUnwinder(ModuleCache* module_cache) {
-  return std::make_unique<NativeUnwinderWin>();
 }
 
 }  // namespace base

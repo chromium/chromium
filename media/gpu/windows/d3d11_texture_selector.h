@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,6 +46,7 @@ class MEDIA_GPU_EXPORT TextureSelector {
       ComD3D11VideoDevice video_device,
       ComD3D11DeviceContext device_context,
       MediaLog* media_log,
+      gfx::ColorSpace input_color_space,
       bool shared_image_use_shared_handle = false);
 
   virtual std::unique_ptr<Texture2DWrapper> CreateTextureWrapper(

@@ -30,11 +30,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_HRTF_DATABASE_LOADER_H_
 
 #include <memory>
+
+#include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "third_party/blink/renderer/platform/audio/hrtf_database.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
@@ -89,9 +91,9 @@ class PLATFORM_EXPORT HRTFDatabaseLoader final
 
   // |lock_| MUST be held when accessing |hrtf_database_| or |thread_| because
   // it can be accessed by multiple threads (e.g multiple AudioContexts).
-  Mutex lock_;
-  std::unique_ptr<HRTFDatabase> hrtf_database_;
-  std::unique_ptr<Thread> thread_;
+  base::Lock lock_;
+  std::unique_ptr<HRTFDatabase> hrtf_database_ GUARDED_BY(lock_);
+  std::unique_ptr<NonMainThread> thread_ GUARDED_BY(lock_);
 
   float database_sample_rate_;
 };

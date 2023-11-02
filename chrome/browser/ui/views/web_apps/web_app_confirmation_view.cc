@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/web_apps/web_app_info_image_source.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
@@ -37,6 +38,7 @@ namespace {
 
 bool g_auto_accept_web_app_for_testing = false;
 bool g_auto_check_open_in_window_for_testing = false;
+const char* g_title_to_use_for_app = nullptr;
 
 bool ShowRadioButtons() {
   // This UI is only for prototyping and is not intended for shipping.
@@ -46,12 +48,37 @@ bool ShowRadioButtons() {
          base::FeatureList::IsEnabled(features::kDesktopPWAsTabStripSettings);
 }
 
+// When pre-populating the shortcut name field (using the web app title) we
+// should try to make some effort to not suggest things we know work extra
+// poorly when used as filenames in the OS. This is especially problematic when
+// creating shortcuts to pages that have no title, because then the URL of the
+// page will be used as a suggestion, and (if accepted by the user) the shortcut
+// name will look really weird. For example, MacOS will convert a colon (:) to a
+// forward-slash (/), and Windows will convert the colons to spaces. MacOS even
+// goes a step further and collapses multiple consecutive forward-slashes in
+// localized names into a single forward-slash. That means, using 'https://foo'
+// as an example, a shortcut with a display name of 'https/foo' is created on
+// MacOS and 'https   foo' on Windows. By stripping away the schema, we will be
+// greatly reducing the frequency of shortcuts having weird names. Note: This
+// does not affect user's ability to use URLs as a shortcut name (which would
+// result in a weird filename), it only restricts what we suggest as titles.
+std::u16string NormalizeSuggestedAppTitle(const std::u16string& title) {
+  std::u16string normalized = title;
+  if (base::StartsWith(normalized, u"https://")) {
+    normalized = normalized.substr(8);
+  }
+  if (base::StartsWith(normalized, u"http://")) {
+    normalized = normalized.substr(7);
+  }
+  return normalized;
+}
+
 }  // namespace
 
 WebAppConfirmationView::~WebAppConfirmationView() {}
 
 WebAppConfirmationView::WebAppConfirmationView(
-    std::unique_ptr<WebApplicationInfo> web_app_info,
+    std::unique_ptr<WebAppInstallInfo> web_app_info,
     chrome::AppInstallationAcceptanceCallback callback)
     : web_app_info_(std::move(web_app_info)), callback_(std::move(callback)) {
   DCHECK(web_app_info_);
@@ -100,7 +127,10 @@ WebAppConfirmationView::WebAppConfirmationView(
                            .SetImage(image),
                        views::Builder<views::Textfield>()
                            .CopyAddressTo(&title_tf_)
-                           .SetText(web_app_info_->title)
+                           .SetText(NormalizeSuggestedAppTitle(
+                               g_title_to_use_for_app != nullptr
+                                   ? base::ASCIIToUTF16(g_title_to_use_for_app)
+                                   : web_app_info_->title))
                            .SetAccessibleName(l10n_util::GetStringUTF16(
                                IDS_BOOKMARK_APP_AX_BUBBLE_NAME_LABEL))
                            .SetController(this));
@@ -108,7 +138,7 @@ WebAppConfirmationView::WebAppConfirmationView(
   const auto display_mode = web_app_info_->user_display_mode;
   // Build the content child views.
   if (ShowRadioButtons()) {
-    constexpr int kRadioGroupId = 1;
+    constexpr int kRadioGroupId = 0;
     builder.AddChildren(
         views::Builder<views::View>(),  // Skip the first column.
         views::Builder<views::RadioButton>()
@@ -116,22 +146,22 @@ WebAppConfirmationView::WebAppConfirmationView(
             .SetText(
                 l10n_util::GetStringUTF16(IDS_BOOKMARK_APP_BUBBLE_OPEN_AS_TAB))
             .SetGroup(kRadioGroupId)
-            .SetChecked(display_mode == web_app::DisplayMode::kBrowser),
+            .SetChecked(display_mode == web_app::UserDisplayMode::kBrowser),
         views::Builder<views::View>(),  // Column skip.
         views::Builder<views::RadioButton>()
             .CopyAddressTo(&open_as_window_radio_)
             .SetText(l10n_util::GetStringUTF16(
                 IDS_BOOKMARK_APP_BUBBLE_OPEN_AS_WINDOW))
             .SetGroup(kRadioGroupId)
-            .SetChecked(display_mode != web_app::DisplayMode::kBrowser &&
-                        display_mode != web_app::DisplayMode::kTabbed),
+            .SetChecked(display_mode != web_app::UserDisplayMode::kBrowser &&
+                        display_mode != web_app::UserDisplayMode::kTabbed),
         views::Builder<views::View>(),  // Column skip.
         views::Builder<views::RadioButton>()
             .CopyAddressTo(&open_as_tabbed_window_radio_)
             .SetText(l10n_util::GetStringUTF16(
                 IDS_BOOKMARK_APP_BUBBLE_OPEN_AS_TABBED_WINDOW))
             .SetGroup(kRadioGroupId)
-            .SetChecked(display_mode == web_app::DisplayMode::kTabbed));
+            .SetChecked(display_mode == web_app::UserDisplayMode::kTabbed));
   } else {
     builder.AddChildren(
         views::Builder<views::View>(),  // Column skip.
@@ -139,7 +169,7 @@ WebAppConfirmationView::WebAppConfirmationView(
             .CopyAddressTo(&open_as_window_checkbox_)
             .SetText(l10n_util::GetStringUTF16(
                 IDS_BOOKMARK_APP_BUBBLE_OPEN_AS_WINDOW))
-            .SetChecked(display_mode != web_app::DisplayMode::kBrowser));
+            .SetChecked(display_mode != web_app::UserDisplayMode::kBrowser));
   }
 
   std::move(builder).BuildChildren();
@@ -152,7 +182,6 @@ WebAppConfirmationView::WebAppConfirmationView(
   }
 
   title_tf_->SelectAll(true);
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::WEB_APP_CONFIRMATION);
 }
 
 views::View* WebAppConfirmationView::GetInitiallyFocusedView() {
@@ -175,16 +204,18 @@ bool WebAppConfirmationView::Accept() {
   web_app_info_->title = GetTrimmedTitle();
   if (ShowRadioButtons()) {
     if (open_as_tabbed_window_radio_->GetChecked()) {
-      web_app_info_->user_display_mode = web_app::DisplayMode::kTabbed;
+      web_app_info_->user_display_mode = web_app::UserDisplayMode::kTabbed;
     } else {
-      web_app_info_->user_display_mode = open_as_window_radio_->GetChecked()
-                                             ? web_app::DisplayMode::kStandalone
-                                             : web_app::DisplayMode::kBrowser;
+      web_app_info_->user_display_mode =
+          open_as_window_radio_->GetChecked()
+              ? web_app::UserDisplayMode::kStandalone
+              : web_app::UserDisplayMode::kBrowser;
     }
   } else {
-    web_app_info_->user_display_mode = open_as_window_checkbox_->GetChecked()
-                                           ? web_app::DisplayMode::kStandalone
-                                           : web_app::DisplayMode::kBrowser;
+    web_app_info_->user_display_mode =
+        open_as_window_checkbox_->GetChecked()
+            ? web_app::UserDisplayMode::kStandalone
+            : web_app::UserDisplayMode::kBrowser;
   }
   std::move(callback_).Run(true, std::move(web_app_info_));
   return true;
@@ -215,7 +246,7 @@ END_METADATA
 namespace chrome {
 
 void ShowWebAppInstallDialog(content::WebContents* web_contents,
-                             std::unique_ptr<WebApplicationInfo> web_app_info,
+                             std::unique_ptr<WebAppInstallInfo> web_app_info,
                              AppInstallationAcceptanceCallback callback) {
   auto* dialog =
       new WebAppConfirmationView(std::move(web_app_info), std::move(callback));
@@ -230,6 +261,10 @@ void SetAutoAcceptWebAppDialogForTesting(bool auto_accept,
                                          bool auto_open_in_window) {
   g_auto_accept_web_app_for_testing = auto_accept;
   g_auto_check_open_in_window_for_testing = auto_open_in_window;
+}
+
+void SetOverrideTitleForTesting(const char* title_to_use) {
+  g_title_to_use_for_app = title_to_use;
 }
 
 }  // namespace chrome

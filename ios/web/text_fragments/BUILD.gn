@@ -1,16 +1,17 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
 import("//ios/build/config.gni")
-import("//ios/web/js_compile.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
 
 source_set("text_fragments") {
   deps = [
     ":text_fragments_js",
     "//base",
     "//components/shared_highlighting/core/common",
+    "//components/shared_highlighting/ios",
     "//ios/web/common:features",
     "//ios/web/public",
     "//ios/web/public:web_state_observer",
@@ -31,9 +32,10 @@ source_set("text_fragments") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
-js_compile_bundle("text_fragments_js") {
+optimize_js("text_fragments_js") {
   visibility = [ ":text_fragments" ]
-  closure_entry_point = "__crWeb.textFragments"
+
+  primary_script = "resources/text_fragments.js"
 
   sources = [
     "//third_party/text-fragments-polyfill/src/src/text-fragment-utils.js",

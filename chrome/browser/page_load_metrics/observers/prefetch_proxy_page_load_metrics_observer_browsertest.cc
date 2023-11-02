@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_switches.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/prerender_test_util.h"
@@ -97,19 +96,8 @@ class PrefetchProxyPageLoadMetricsObserverBrowserTest
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 };
 
-IN_PROC_BROWSER_TEST_F(PrefetchProxyPageLoadMetricsObserverBrowserTest,
-                       BeforeFCPPlumbing) {
-  base::HistogramTester histogram_tester;
-  NavigateToOriginPath("/index.html");
-  NavigateAway();
-
-  histogram_tester.ExpectUniqueSample(
-      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Noncached", 2,
-      1);
-}
-
 // TODO(http://crbug.com/1025737) Flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_HistoryPlumbing DISABLED_HistoryPlumbing
 #else
 #define MAYBE_HistoryPlumbing HistoryPlumbing
@@ -148,10 +136,6 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyPageLoadMetricsObserverBrowserTest,
       "PageLoad.Clients.SubresourceLoading.DaysSinceLastVisitToOrigin", 0);
   histogram_tester.ExpectTotalCount(
       "PageLoad.Clients.SubresourceLoading.HasPreviousVisitToOrigin", 0);
-  histogram_tester.ExpectTotalCount(
-      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Cached", 0);
-  histogram_tester.ExpectTotalCount(
-      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Noncached", 0);
 }
 
 class PrefetchProxyPageLoadMetricsObserverPrerenderBrowserTest
@@ -204,16 +188,8 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyPageLoadMetricsObserverPrerenderBrowserTest,
   content::test::PrerenderHostObserver host_observer(*GetWebContents(),
                                                      host_id);
   EXPECT_FALSE(host_observer.was_activated());
-  histogram_tester.ExpectTotalCount(
-      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Cached", 0);
-  histogram_tester.ExpectTotalCount(
-      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Noncached", 0);
 
   // Activate the prerender page.
   prerender_test_helper().NavigatePrimaryPage(prerender_url);
   EXPECT_TRUE(host_observer.was_activated());
-  histogram_tester.ExpectTotalCount(
-      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Cached", 1);
-  histogram_tester.ExpectTotalCount(
-      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Noncached", 1);
 }

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,6 @@
 #define ASH_ACCELERATORS_ACCELERATOR_NOTIFICATIONS_H_
 
 #include "ash/ash_export.h"
-
-namespace message_center {
-class Notification;
-}
 
 namespace ash {
 
@@ -27,11 +23,6 @@ ASH_EXPORT void ShowDeprecatedAcceleratorNotification(
     int message_id,
     int old_shortcut_id,
     int new_shortcut_id);
-
-ASH_EXPORT void ShowShortcutsChangedNotification();
-
-ASH_EXPORT message_center::Notification*
-FindShortcutsChangedNotificationForTest();
 
 ASH_EXPORT void ShowDockedMagnifierNotification();
 

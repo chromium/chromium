@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,19 +6,36 @@
 
 #include <tuple>
 
+#include "base/base64.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/strings/utf_string_conversions.h"
+#include "third_party/skia/include/core/SkColor.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
+
+const char kVisibleAppName[] = "visible_app_name";
+const char kPackageName[] = "package_name";
+const char kUserId[] = "user_id";
+const char kIcon[] = "icon";
+const char kIconColorR[] = "icon_color_r";
+const char kIconColorG[] = "icon_color_g";
+const char kIconColorB[] = "icon_color_b";
+const char kIconIsMonochrome[] = "icon_is_monochrome";
 
 Notification::AppMetadata::AppMetadata(const std::u16string& visible_app_name,
                                        const std::string& package_name,
                                        const gfx::Image& icon,
+                                       const absl::optional<SkColor> icon_color,
+                                       bool icon_is_monochrome,
                                        int64_t user_id)
     : visible_app_name(visible_app_name),
       package_name(package_name),
       icon(icon),
+      icon_color(icon_color),
+      icon_is_monochrome(icon_is_monochrome),
       user_id(user_id) {}
 
 Notification::AppMetadata::AppMetadata(const AppMetadata& other) = default;
@@ -34,6 +51,72 @@ bool Notification::AppMetadata::operator==(const AppMetadata& other) const {
 
 bool Notification::AppMetadata::operator!=(const AppMetadata& other) const {
   return !(*this == other);
+}
+
+base::Value Notification::AppMetadata::ToValue() const {
+  scoped_refptr<base::RefCountedMemory> png_data = icon.As1xPNGBytes();
+
+  base::Value val(base::Value::Type::DICTIONARY);
+  val.SetKey(kVisibleAppName, base::Value(visible_app_name));
+  val.SetKey(kPackageName, base::Value(package_name));
+  val.SetDoubleKey(kUserId, user_id);
+  val.SetKey(kIcon, base::Value(base::Base64Encode(*png_data)));
+  val.SetBoolKey(kIconIsMonochrome, icon_is_monochrome);
+  if (icon_color.has_value()) {
+    val.SetIntKey(kIconColorR, SkColorGetR(*icon_color));
+    val.SetIntKey(kIconColorG, SkColorGetG(*icon_color));
+    val.SetIntKey(kIconColorB, SkColorGetB(*icon_color));
+  }
+  return val;
+}
+
+// static
+Notification::AppMetadata Notification::AppMetadata::FromValue(
+    const base::Value& value) {
+  DCHECK(value.is_dict());
+  DCHECK(value.FindKey(kVisibleAppName));
+  DCHECK(value.FindKey(kVisibleAppName)->is_string());
+  DCHECK(value.FindKey(kPackageName));
+  DCHECK(value.FindKey(kPackageName)->is_string());
+  DCHECK(value.FindKey(kUserId));
+  DCHECK(value.FindKey(kUserId)->is_double());
+  DCHECK(value.FindKey(kIcon));
+  DCHECK(value.FindKey(kIcon)->is_string());
+
+  if (value.FindKey(kIconIsMonochrome)) {
+    DCHECK(value.FindKey(kIconIsMonochrome)->is_bool());
+  }
+  bool icon_is_monochrome =
+      value.FindBoolPath(kIconIsMonochrome).value_or(false);
+
+  absl::optional<SkColor> icon_color = absl::nullopt;
+  if (value.FindKey(kIconColorR)) {
+    DCHECK(value.FindKey(kIconColorR)->is_int());
+    DCHECK(value.FindKey(kIconColorG));
+    DCHECK(value.FindKey(kIconColorG)->is_int());
+    DCHECK(value.FindKey(kIconColorB));
+    DCHECK(value.FindKey(kIconColorB)->is_int());
+    icon_color = SkColorSetRGB(*(value.FindIntPath(kIconColorR)),
+                               *(value.FindIntPath(kIconColorG)),
+                               *(value.FindIntPath(kIconColorB)));
+  }
+
+  const base::Value* visible_app_name_value = value.FindPath(kVisibleAppName);
+  std::u16string visible_app_name_string_value;
+  if (visible_app_name_value->is_string()) {
+    visible_app_name_string_value =
+        base::UTF8ToUTF16(visible_app_name_value->GetString());
+  }
+
+  std::string icon_str;
+  base::Base64Decode(*(value.FindStringPath(kIcon)), &icon_str);
+  gfx::Image decode_icon = gfx::Image::CreateFrom1xPNGBytes(
+      base::RefCountedString::TakeString(&icon_str));
+
+  return Notification::AppMetadata(visible_app_name_string_value,
+                                   *(value.FindStringPath(kPackageName)),
+                                   decode_icon, icon_color, icon_is_monochrome,
+                                   *(value.FindDoublePath(kUserId)));
 }
 
 Notification::Notification(
@@ -163,4 +246,4 @@ std::ostream& operator<<(std::ostream& stream,
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

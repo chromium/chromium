@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,12 +45,7 @@ void MenuConfig::Init() {
 
   SystemParametersInfo(SPI_GETMENUSHOWDELAY, 0, &show_delay, 0);
 
-  win11_style_menus =
-      base::FeatureList::IsEnabled(features::kWin11StyleMenus) &&
-      (base::win::GetVersion() >= base::win::Version::WIN11 ||
-       base::GetFieldTrialParamByFeatureAsBool(
-           features::kWin11StyleMenus,
-           features::kWin11StyleMenuAllWindowsVersionsName, false));
+  win11_style_menus = base::win::GetVersion() >= base::win::Version::WIN11;
   UMA_HISTOGRAM_BOOLEAN("Windows.Menu.Win11Style", win11_style_menus);
   separator_upper_height = 5;
   separator_lower_height = 7;

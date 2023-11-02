@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,7 +42,7 @@ class PrintBackendCUPS : public PrintBackend {
   ~PrintBackendCUPS() override;
 
   // PrintBackend implementation.
-  mojom::ResultCode EnumeratePrinters(PrinterList* printer_list) override;
+  mojom::ResultCode EnumeratePrinters(PrinterList& printer_list) override;
   mojom::ResultCode GetDefaultPrinterName(
       std::string& default_printer) override;
   mojom::ResultCode GetPrinterBasicInfo(
@@ -67,9 +67,10 @@ class PrintBackendCUPS : public PrintBackend {
   // Wrapper around cupsGetNamedDest().
   ScopedDestination GetNamedDest(const std::string& printer_name);
 
-  GURL print_server_url_;
+  const std::string locale_;
+  const GURL print_server_url_;
   http_encryption_t cups_encryption_;
-  bool blocking_;
+  const bool blocking_;
 };
 
 }  // namespace printing

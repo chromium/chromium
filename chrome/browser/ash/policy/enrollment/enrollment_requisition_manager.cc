@@ -1,10 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 
 #include "base/logging.h"
+#include "build/chromeos_buildflags.h"
+#include "build/config/chromebox_for_meetings/buildflags.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/browser_process.h"
@@ -103,7 +105,10 @@ std::string EnrollmentRequisitionManager::GetDeviceRequisition() {
 // static
 void EnrollmentRequisitionManager::SetDeviceRequisition(
     const std::string& requisition) {
-  VLOG(1) << "SetDeviceRequisition " << requisition;
+  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // in the logs.
+  LOG(WARNING) << "SetDeviceRequisition " << requisition;
+
   auto* local_state = g_browser_process->local_state();
   if (requisition.empty()) {
     local_state->ClearPref(prefs::kDeviceEnrollmentRequisition);
@@ -128,6 +133,14 @@ bool EnrollmentRequisitionManager::IsRemoraRequisition() {
 // static
 bool EnrollmentRequisitionManager::IsSharkRequisition() {
   return GetDeviceRequisition() == kSharkRequisition;
+}
+
+bool EnrollmentRequisitionManager::IsMeetDevice() {
+#if BUILDFLAG(PLATFORM_CFM)
+  return true;
+#else
+  return IsRemoraRequisition();
+#endif  // BUILDFLAG(PLATFORM_CFM)
 }
 
 // static

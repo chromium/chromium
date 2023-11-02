@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,6 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
-import org.chromium.ui.widget.ChipView;
 
 /**
  * The coordinator responsible for managing a list of chips.  To get the {@link View} that
@@ -80,6 +79,7 @@ public class ChipsCoordinator {
                         .with(ChipProperties.CLICK_HANDLER, clickHandler)
                         .with(ChipProperties.ICON, iconId)
                         .with(ChipProperties.ENABLED, true)
+                        .with(ChipProperties.SELECTED, false)
                         .with(ChipProperties.TEXT_MAX_WIDTH_PX, ChipProperties.SHOW_WHOLE_TEXT)
                         .build();
         return new ListItem(ChipProperties.BASIC_CHIP, model);

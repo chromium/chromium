@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -15,7 +15,6 @@ from .code_node_cxx import CxxFuncDefNode
 from .code_node_cxx import CxxNamespaceNode
 from .codegen_accumulator import CodeGenAccumulator
 from .codegen_context import CodeGenContext
-from .codegen_format import format_template as _format
 from .codegen_utils import component_export
 from .codegen_utils import component_export_header
 from .codegen_utils import enclose_with_header_guard
@@ -234,6 +233,8 @@ def make_nested_enum_class_def(cg_context):
         TextNode("enum class Enum : enum_int_t {"),
         ListNode(enum_values, separator=", "),
         TextNode("};"),
+        TextNode("static constexpr size_t kEnumSize = {};".format(
+            len(enum_values))),
     ])
 
 

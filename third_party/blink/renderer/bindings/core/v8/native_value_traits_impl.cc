@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,9 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/custom/v8_custom_xpath_ns_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_ctype_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_xpath_ns_resolver.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "v8/include/v8-fast-api-calls.h"
 
@@ -56,8 +58,9 @@ CreateIDLSequenceFromV8Array<IDLLong>(v8::Isolate* isolate,
 
   result.ReserveInitialCapacity(length);
   result.resize(length);
-  if (v8::TryCopyAndConvertArrayToCppBuffer<&v8::kTypeInfoInt32, int32_t>(
-          v8_array, result.data(), length)) {
+  if (v8::TryToCopyAndConvertArrayToCppBuffer<
+          V8CTypeTraits<IDLLong>::kCTypeInfo.GetId()>(v8_array, result.data(),
+                                                      length)) {
     return result;
   }
 

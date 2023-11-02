@@ -1,20 +1,24 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef BASE_TASK_SEQUENCE_MANAGER_TASK_QUEUE_H_
 #define BASE_TASK_SEQUENCE_MANAGER_TASK_QUEUE_H_
 
+#include <cstdint>
 #include <memory>
 
+#include "base/base_export.h"
+#include "base/check.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/common/checked_lock.h"
-#include "base/task/sequence_manager/lazy_now.h"
+#include "base/task/common/lazy_now.h"
 #include "base/task/sequence_manager/tasks.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_observer.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "base/trace_event/base_tracing.h"
 #include "base/trace_event/base_tracing_forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -26,11 +30,9 @@ namespace base {
 
 class TaskObserver;
 
-namespace trace_event {
-class BlameContext;
-}
-
 namespace sequence_manager {
+
+using QueueName = ::perfetto::protos::pbzero::SequenceManagerTask::QueueName;
 
 namespace internal {
 class AssociatedThreadId;
@@ -67,7 +69,7 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
     // the TaskQueue already had a pending immediate task.
     // The implementation may use this to:
     // - Restrict task execution by inserting/updating a fence.
-    // - Update the TaskQueue's next delayed wake up via UpdateDelayedWakeUp().
+    // - Update the TaskQueue's next delayed wake up via UpdateWakeUp().
     //   This allows the Throttler to perform additional operations later from
     //   OnWakeUp().
     // This is always called on the thread this TaskQueue is associated with.
@@ -82,9 +84,9 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
     // tasks or ripe delayed tasks. The implementation should return the next
     // allowed wake up, or nullopt if no future wake-up is necessary.
     // This is always called on the thread this TaskQueue is associated with.
-    virtual absl::optional<DelayedWakeUp> GetNextAllowedWakeUp(
+    virtual absl::optional<WakeUp> GetNextAllowedWakeUp(
         LazyNow* lazy_now,
-        absl::optional<DelayedWakeUp> next_desired_wake_up,
+        absl::optional<WakeUp> next_desired_wake_up,
         bool has_ready_task) = 0;
 
    protected:
@@ -129,7 +131,7 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
 
   // Options for constructing a TaskQueue.
   struct Spec {
-    explicit Spec(const char* name) : name(name) {}
+    explicit Spec(QueueName name) : name(name) {}
 
     Spec SetShouldMonitorQuiescence(bool should_monitor) {
       should_monitor_quiescence = should_monitor;
@@ -153,7 +155,7 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
       return *this;
     }
 
-    const char* name;
+    QueueName name;
     bool should_monitor_quiescence = false;
     bool should_notify_observers = true;
     bool delayed_fence_allowed = false;
@@ -280,7 +282,7 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
   // such tasks (immediate tasks don't count) or the queue is disabled it
   // returns nullopt.
   // NOTE: this must be called on the thread this TaskQueue was created by.
-  absl::optional<DelayedWakeUp> GetNextDesiredWakeUp();
+  absl::optional<WakeUp> GetNextDesiredWakeUp();
 
   // Can be called on any thread.
   virtual const char* GetName() const;
@@ -299,11 +301,6 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
   // manager executes its tasks on.
   void AddTaskObserver(TaskObserver* task_observer);
   void RemoveTaskObserver(TaskObserver* task_observer);
-
-  // Set the blame context which is entered and left while executing tasks from
-  // this task queue. |blame_context| must be null or outlive this task queue.
-  // Must be called on the thread this TaskQueue was created by.
-  void SetBlameContext(trace_event::BlameContext* blame_context);
 
   enum class InsertFencePosition {
     kNow,  // Tasks posted on the queue up till this point further may run.
@@ -356,7 +353,7 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
   // Updates the task queue's next wake up time in its time domain, taking into
   // account the desired run time of queued tasks and policies enforced by the
   // throttler if any.
-  void UpdateDelayedWakeUp(LazyNow* lazy_now);
+  void UpdateWakeUp(LazyNow* lazy_now);
 
   // Controls whether or not the queue will emit traces events when tasks are
   // posted to it while disabled. This only applies for the current or next
@@ -378,8 +375,8 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
   }
 
   // Checks whether or not this TaskQueue has a TaskQueueImpl.
-  // TODO(kdillon): Remove this method when TaskQueueImpl inherits from
-  // TaskQueue and TaskQueue no longer owns an Impl.
+  // TODO(crbug.com/1143007): Remove this method when TaskQueueImpl inherits
+  // from TaskQueue and TaskQueue no longer owns an Impl.
   bool HasImpl() { return !!impl_; }
 
   using OnTaskStartedHandler =
@@ -401,12 +398,29 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
   // finalize the task, and use the resulting timing.
   void SetOnTaskCompletedHandler(OnTaskCompletedHandler handler);
 
-  // Set a callback for adding custom functionality for processing posted task.
+  // RAII handle associated with an OnTaskPostedHandler. Unregisters the handler
+  // upon destruction.
+  class OnTaskPostedCallbackHandle {
+   public:
+    OnTaskPostedCallbackHandle(const OnTaskPostedCallbackHandle&) = delete;
+    OnTaskPostedCallbackHandle& operator=(const OnTaskPostedCallbackHandle&) =
+        delete;
+    virtual ~OnTaskPostedCallbackHandle() = default;
+
+   protected:
+    OnTaskPostedCallbackHandle() = default;
+  };
+
+  // Add a callback for adding custom functionality for processing posted task.
   // Callback will be dispatched while holding a scheduler lock. As a result,
   // callback should not call scheduler APIs directly, as this can lead to
   // deadlocks. For example, PostTask should not be called directly and
-  // ScopedDeferTaskPosting::PostOrDefer should be used instead.
-  void SetOnTaskPostedHandler(OnTaskPostedHandler handler);
+  // ScopedDeferTaskPosting::PostOrDefer should be used instead. `handler` must
+  // not be a null callback. Must be called on the thread this task queue is
+  // associated with, and the handle returned must be destroyed on the same
+  // thread.
+  [[nodiscard]] std::unique_ptr<OnTaskPostedCallbackHandle>
+  AddOnTaskPostedHandler(OnTaskPostedHandler handler);
 
   // Set a callback to fill trace event arguments associated with the task
   // execution.
@@ -450,12 +464,12 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
 
   const WeakPtr<internal::SequenceManagerImpl> sequence_manager_;
 
-  scoped_refptr<internal::AssociatedThreadId> associated_thread_;
-  scoped_refptr<SingleThreadTaskRunner> default_task_runner_;
+  const scoped_refptr<const internal::AssociatedThreadId> associated_thread_;
+  const scoped_refptr<SingleThreadTaskRunner> default_task_runner_;
 
   int enabled_voter_count_ = 0;
   int voter_count_ = 0;
-  const char* name_;
+  QueueName name_;
 
   base::WeakPtrFactory<TaskQueue> weak_ptr_factory_{this};
 };

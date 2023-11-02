@@ -1,21 +1,19 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/crosapi/browser_version_service_ash.h"
+
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/browser_process.h"
 
 namespace {
 
 absl::optional<component_updater::ComponentInfo> GetComponent(
     const std::vector<component_updater::ComponentInfo>& components,
     const std::string& id) {
-  auto it = std::find_if(
-      components.begin(), components.end(),
-      [id](const component_updater::ComponentInfo& component_info) {
-        return component_info.id == id;
-      });
+  auto it =
+      base::ranges::find(components, id, &component_updater::ComponentInfo::id);
 
   if (it != components.end())
     return *it;

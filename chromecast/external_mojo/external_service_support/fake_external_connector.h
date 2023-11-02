@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,6 +54,8 @@ class FakeExternalConnector
       std::vector<chromecast::external_mojo::mojom::ServiceInstanceInfoPtr>
           service_instances_info) override;
   std::unique_ptr<external_service_support::ExternalConnector> Clone() override;
+  mojo::PendingRemote<external_mojo::mojom::ExternalConnector>
+  RequestConnector() override;
   void SendChromiumConnectorRequest(
       mojo::ScopedMessagePipeHandle request) override;
   void QueryServiceList(

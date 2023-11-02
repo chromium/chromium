@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -29,17 +29,30 @@ class PressStory(page_module.Page):
   DETERMINISTIC_JS = False
   NAME = None
 
-  def __init__(self, ps, tags=None, extra_browser_args=None):
+  def __init__(self,
+               page_set,
+               tags=None,
+               extra_browser_args=None,
+               url=None,
+               name=None):
     super(PressStory,
-          self).__init__(self.URL,
-                         ps,
-                         base_dir=ps.base_dir,
+          self).__init__(url or self.URL,
+                         page_set,
+                         base_dir=page_set.base_dir,
                          make_javascript_deterministic=self.DETERMINISTIC_JS,
-                         name=self.NAME if self.NAME else self.URL,
-                         tags=tags,
+                         name=name or self.NAME or self.URL,
+                         tags=self.PreprocessTags(tags),
                          extra_browser_args=extra_browser_args)
     self._measurements = []
     self._action_runner = None
+
+  def PreprocessTags(self, tags=None):
+    if tags is None:
+      tags = []
+    else:
+      assert 'all' not in tags
+    tags.append('all')
+    return tags
 
   def AddMeasurement(self, name, unit, samples, description=None):
     """Record an ad-hoc measurement.

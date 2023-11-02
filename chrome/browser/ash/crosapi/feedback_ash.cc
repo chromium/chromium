@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,7 +39,7 @@ void FeedbackAsh::ShowFeedbackPage(mojom::FeedbackInfoPtr feedback_info) {
     LOG(ERROR) << "Cannot invoke feedback for lacros: No primary user found!";
     return;
   }
-  Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+  Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
   if (!profile) {
     LOG(ERROR)
         << "Cannot invoke feedback for lacros: No primary profile found!";

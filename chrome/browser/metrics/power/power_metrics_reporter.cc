@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,27 +11,32 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
-#include "chrome/browser/metrics/power/power_details_provider.h"
-#include "chrome/browser/performance_monitor/process_metrics_recorder_util.h"
-#include "chrome/browser/performance_monitor/process_monitor.h"
+#include "chrome/browser/metrics/power/power_metrics.h"
+#include "chrome/browser/metrics/power/power_metrics_constants.h"
+#include "chrome/browser/metrics/power/process_metrics_recorder_util.h"
+#include "chrome/browser/metrics/power/process_monitor.h"
+#include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "components/power_metrics/resource_coalition_mac.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 namespace {
 
-constexpr const char* kBatteryDischargeRateHistogramName =
-    "Power.BatteryDischargeRate2";
-constexpr const char* kBatteryDischargeModeHistogramName =
-    "Power.BatteryDischargeMode";
 constexpr const char* kBatterySamplingDelayHistogramName =
     "Power.BatterySamplingDelay";
-constexpr const char* kMainScreenBrightnessHistogramName =
-    "Power.MainScreenBrightness2";
-constexpr const char* kMainScreenBrightnessAvailableHistogramName =
-    "Power.MainScreenBrightnessAvailable";
+
+bool IsWithinTolerance(base::TimeDelta value,
+                       base::TimeDelta expected,
+                       base::TimeDelta tolerance) {
+  return (value - expected).magnitude() < tolerance;
+}
 
 // Calculates the UKM bucket |value| falls in and returns it. This uses an
 // exponential bucketing approach with an exponent base of 1.3, resulting in
@@ -49,246 +54,306 @@ int64_t GetBucketForSample(base::TimeDelta value) {
       kOverflowBucket);
 }
 
-// Returns the scenario-specific suffix to use for metrics captured during an
-// interval described by |interval_data|.
-const char* GetScenarioSuffix(
-    const UsageScenarioDataStore::IntervalData& interval_data) {
-  // Important: The order of the conditions is important. See the full
-  // description of each scenario in the histograms.xml file.
-  if (interval_data.max_tab_count == 0)
-    return ".ZeroWindow";
-  if (interval_data.max_visible_window_count == 0)
-    return ".AllTabsHidden";
-  if (!interval_data.time_capturing_video.is_zero())
-    return ".VideoCapture";
-  if (!interval_data.time_playing_video_full_screen_single_monitor.is_zero())
-    return ".FullscreenVideo";
-  if (!interval_data.time_playing_video_in_visible_tab.is_zero()) {
-    // Note: UKM data reveals that navigations are infrequent when a video is
-    // playing in fullscreen, when video is captured or when audio is playing.
-    // For that reason, there is no distinct suffix for navigation vs. no
-    // navigation in these cases.
-    if (interval_data.top_level_navigation_count == 0)
-      return ".EmbeddedVideo_NoNavigation";
-    return ".EmbeddedVideo_WithNavigation";
+// Returns the histogram suffix to be used given the MonitoredProcessType.
+const char* GetMetricSuffixFromProcessType(MonitoredProcessType type) {
+  switch (type) {
+    case MonitoredProcessType::kBrowser:
+      return "BrowserProcess";
+    case MonitoredProcessType::kRenderer:
+      return "RendererProcess";
+    case MonitoredProcessType::kExtensionPersistent:
+      return "RendererExtensionPersistentProcess";
+    case MonitoredProcessType::kExtensionEvent:
+      return "RendererExtensionEventProcess";
+    case MonitoredProcessType::kGpu:
+      return "GPUProcess";
+    case MonitoredProcessType::kUtility:
+      return "UtilityProcess";
+    case MonitoredProcessType::kNetwork:
+      return "NetworkProcess";
+    case MonitoredProcessType::kOther:
+      return "OtherProcess";
+    default:
+      NOTREACHED();
+      return "";
   }
-  if (!interval_data.time_playing_audio.is_zero())
-    return ".Audio";
-  if (interval_data.top_level_navigation_count > 0)
-    return ".Navigation";
-  if (interval_data.user_interaction_count > 0)
-    return ".Interaction";
-  return ".Passive";
-}
-
-// Returns the histogram suffixes to use for metrics captured during an interval
-// described by |interval_data|.
-std::vector<const char*> GetSuffixes(
-    const UsageScenarioDataStore::IntervalData& interval_data) {
-  // Histograms are recorded without suffix and with a scenario-specific suffix.
-  return std::vector<const char*>{"", GetScenarioSuffix(interval_data)};
 }
 
 }  // namespace
 
 PowerMetricsReporter::PowerMetricsReporter(
-    const base::WeakPtr<UsageScenarioDataStore>& data_store,
-    std::unique_ptr<BatteryLevelProvider> battery_level_provider)
-    : data_store_(data_store),
-      battery_level_provider_(std::move(battery_level_provider)) {
-  DCHECK(performance_monitor::ProcessMonitor::Get());
-  performance_monitor::ProcessMonitor::Get()->AddObserver(this);
+    ProcessMonitor* process_monitor,
+    UsageScenarioDataStore* short_usage_scenario_data_store,
+    UsageScenarioDataStore* long_usage_scenario_data_store,
+    std::unique_ptr<base::BatteryLevelProvider> battery_level_provider
+#if BUILDFLAG(IS_MAC)
+    ,
+    std::unique_ptr<CoalitionResourceUsageProvider>
+        coalition_resource_usage_provider
+#endif  // BUILDFLAG(IS_MAC)
+    )
+    : process_monitor_(process_monitor),
+      short_usage_scenario_data_store_(short_usage_scenario_data_store),
+      long_usage_scenario_data_store_(long_usage_scenario_data_store),
+      battery_level_provider_(std::move(battery_level_provider))
+#if BUILDFLAG(IS_MAC)
+      ,
+      coalition_resource_usage_provider_(
+          std::move(coalition_resource_usage_provider))
+#endif  // BUILDFLAG(IS_MAC)
+{
+  if (!short_usage_scenario_data_store_) {
+    short_usage_scenario_tracker_ = std::make_unique<UsageScenarioTracker>();
+    short_usage_scenario_data_store_ =
+        short_usage_scenario_tracker_->data_store();
+  }
 
-  battery_level_provider_->GetBatteryState(
-      base::BindOnce(&PowerMetricsReporter::OnFirstBatteryStateSampled,
-                     weak_factory_.GetWeakPtr()));
+  if (!long_usage_scenario_data_store_) {
+    long_usage_scenario_tracker_ = std::make_unique<UsageScenarioTracker>();
+    long_usage_scenario_data_store_ =
+        long_usage_scenario_tracker_->data_store();
+  }
 
-#if defined(OS_MAC)
-  power_details_provider_ = PowerDetailsProvider::Create();
+  interval_begin_ = base::TimeTicks::Now();
+
+  // `battery_level_provider_` may be null on platforms that do not have an
+  // implementation.
+  if (battery_level_provider_) {
+    // Unretained() is safe here because |this| outlive
+    // |battery_level_provider_|.
+    battery_level_provider_->GetBatteryState(
+        base::BindOnce(&PowerMetricsReporter::OnFirstBatteryStateSampled,
+                       base::Unretained(this)));
+  }
+
+#if BUILDFLAG(IS_MAC)
+  coalition_resource_usage_provider_->Init();
 #endif
+
+  StartNextLongInterval();
 }
 
-PowerMetricsReporter::~PowerMetricsReporter() {
-  if (auto* process_monitor = performance_monitor::ProcessMonitor::Get()) {
-    process_monitor->RemoveObserver(this);
-  }
-}
+PowerMetricsReporter::~PowerMetricsReporter() = default;
 
-void PowerMetricsReporter::OnFirstSampleForTesting(base::OnceClosure closure) {
-  if (!interval_begin_.is_null()) {
-    std::move(closure).Run();
-  } else {
-    on_battery_sampled_for_testing_ = std::move(closure);
-  }
-}
-
+// static
 int64_t PowerMetricsReporter::GetBucketForSampleForTesting(
     base::TimeDelta value) {
   return GetBucketForSample(value);
 }
 
-void PowerMetricsReporter::OnAggregatedMetricsSampled(
-    const performance_monitor::ProcessMonitor::Metrics& metrics) {
+void PowerMetricsReporter::OnFirstBatteryStateSampled(
+    const absl::optional<base::BatteryLevelProvider::BatteryState>&
+        battery_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  battery_level_provider_->GetBatteryState(
-      base::BindOnce(&PowerMetricsReporter::OnBatteryStateAndMetricsSampled,
-                     weak_factory_.GetWeakPtr(), metrics,
-                     /* scheduled_time=*/base::TimeTicks::Now()));
+  DCHECK(battery_level_provider_);
+  battery_state_ = battery_state;
 }
 
-std::vector<const char*> PowerMetricsReporter::GetSuffixesForTesting(
-    const UsageScenarioDataStore::IntervalData& interval_data) {
-  return GetSuffixes(interval_data);
-}
-
-void PowerMetricsReporter::ReportHistograms(
-    const UsageScenarioDataStore::IntervalData& interval_data,
-    const performance_monitor::ProcessMonitor::Metrics& metrics,
-    base::TimeDelta interval_duration,
-    BatteryDischargeMode discharge_mode,
-    absl::optional<int64_t> discharge_rate_during_interval) {
-  const std::vector<const char*> suffixes = GetSuffixes(interval_data);
-  ReportCPUHistograms(metrics, suffixes);
-  ReportBatteryHistograms(interval_duration, discharge_mode,
-                          discharge_rate_during_interval, suffixes);
-#if defined(OS_MAC)
-  RecordCoalitionData(metrics, suffixes);
+void PowerMetricsReporter::StartNextLongInterval() {
+#if BUILDFLAG(IS_MAC)
+  // On Mac, set the timer for 10 seconds before the end of the long interval to
+  // start the short interval.
+  interval_timer_.Start(
+      FROM_HERE,
+      kLongPowerMetricsIntervalDuration - kShortPowerMetricsIntervalDuration,
+      base::BindOnce(&PowerMetricsReporter::OnShortIntervalBegin,
+                     base::Unretained(this)));
+#else
+  interval_timer_.Start(FROM_HERE, kLongPowerMetricsIntervalDuration,
+                        base::BindOnce(&PowerMetricsReporter::OnLongIntervalEnd,
+                                       base::Unretained(this)));
 #endif
 }
 
-void PowerMetricsReporter::ReportBatteryHistograms(
-    base::TimeDelta interval_duration,
-    BatteryDischargeMode discharge_mode,
-    absl::optional<int64_t> discharge_rate_during_interval,
-    const std::vector<const char*>& suffixes) {
-  // Ratio by which the time elapsed can deviate from
-  // |performance_monitor::ProcessMonitor::kGatherInterval| without invalidating
-  // this sample.
-  constexpr double kTolerableTimeElapsedRatio = 0.10;
-  constexpr double kTolerablePositiveDrift = (1. + kTolerableTimeElapsedRatio);
-  constexpr double kTolerableNegativeDrift = (1. - kTolerableTimeElapsedRatio);
+#if BUILDFLAG(IS_MAC)
+void PowerMetricsReporter::OnShortIntervalBegin() {
+  short_interval_begin_time_ = base::TimeTicks::Now();
+  short_usage_scenario_data_store_->ResetIntervalData();
+  coalition_resource_usage_provider_->StartShortInterval();
 
-  if (discharge_mode == BatteryDischargeMode::kDischarging &&
-      interval_duration > performance_monitor::ProcessMonitor::kGatherInterval *
-                              kTolerablePositiveDrift) {
-    // Too much time passed since the last record. Either the task took
-    // too long to get executed or system sleep took place.
-    discharge_mode = BatteryDischargeMode::kInvalidInterval;
-  }
-
-  if (discharge_mode == BatteryDischargeMode::kDischarging &&
-      interval_duration < performance_monitor::ProcessMonitor::kGatherInterval *
-                              kTolerableNegativeDrift) {
-    // The recording task executed too early after the previous one, possibly
-    // because the previous task took too long to execute.
-    discharge_mode = BatteryDischargeMode::kInvalidInterval;
-  }
-
-  for (const char* suffix : suffixes) {
-    base::UmaHistogramEnumeration(
-        base::JoinString({kBatteryDischargeModeHistogramName, suffix}, ""),
-        discharge_mode);
-
-    if (discharge_mode == BatteryDischargeMode::kDischarging) {
-      DCHECK(discharge_rate_during_interval.has_value());
-      base::UmaHistogramCounts1000(
-          base::JoinString({kBatteryDischargeRateHistogramName, suffix}, ""),
-          *discharge_rate_during_interval);
-    }
-  }
+  interval_timer_.Start(
+      FROM_HERE, kShortPowerMetricsIntervalDuration,
+      base::BindRepeating(&PowerMetricsReporter::OnLongIntervalEnd,
+                          base::Unretained(this)));
 }
+#endif  // BUILDFLAG(IS_MAC)
 
-void PowerMetricsReporter::OnFirstBatteryStateSampled(
-    const BatteryLevelProvider::BatteryState& battery_state) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  battery_state_ = battery_state;
-  interval_begin_ = base::TimeTicks::Now();
-  if (on_battery_sampled_for_testing_)
-    std::move(on_battery_sampled_for_testing_).Run();
-}
-
-void PowerMetricsReporter::OnBatteryStateAndMetricsSampled(
-    const performance_monitor::ProcessMonitor::Metrics& metrics,
-    base::TimeTicks scheduled_time,
-    const BatteryLevelProvider::BatteryState& battery_state) {
+void PowerMetricsReporter::OnLongIntervalEnd() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto now = base::TimeTicks::Now();
-  base::TimeDelta interval_duration = now - interval_begin_;
+  // Sample the metrics for all processes. This will call back into
+  // OnAggregatedMetricsSampled() once done (synchronously).
+  process_monitor_->SampleAllProcesses(this);
+}
+
+void PowerMetricsReporter::OnMetricsSampled(
+    MonitoredProcessType type,
+    const ProcessMonitor::Metrics& metrics) {
+  RecordProcessHistograms(GetMetricSuffixFromProcessType(type), metrics);
+}
+
+void PowerMetricsReporter::OnAggregatedMetricsSampled(
+    const ProcessMonitor::Metrics& metrics) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Evaluate the interval duration.
+  const base::TimeTicks now = base::TimeTicks::Now();
+  const base::TimeDelta interval_duration = now - interval_begin_;
   interval_begin_ = now;
-  base::UmaHistogramMicrosecondsTimes(kBatterySamplingDelayHistogramName,
-                                      now - scheduled_time);
 
-  auto discharge_mode_and_rate =
-      GetBatteryDischargeRateDuringInterval(battery_state, interval_duration);
-  ReportUKMsAndHistograms(metrics, interval_duration,
-                          discharge_mode_and_rate.first,
-                          discharge_mode_and_rate.second);
-
-  if (on_battery_sampled_for_testing_)
-    std::move(on_battery_sampled_for_testing_).Run();
+  // Finally, retrieve the battery state before reporting the metrics. On
+  // platform without a BatteryLevelProvider implementation, skip straight to
+  // reporting the metrics.
+  if (battery_level_provider_) {
+    // Note: The use of `Unretained()` is safe here because |this| outlives
+    //       |battery_level_provider_|.
+    battery_level_provider_->GetBatteryState(base::BindOnce(
+        &PowerMetricsReporter::OnBatteryAndAggregatedProcessMetricsSampled,
+        base::Unretained(this), metrics, interval_duration,
+        /*battery_sample_begin_time=*/now));
+  } else {
+    // Get usage scenario data.
+    auto long_interval_data =
+        long_usage_scenario_data_store_->ResetIntervalData();
+    ReportMetrics(long_interval_data, interval_duration, metrics);
+  }
 }
 
-void PowerMetricsReporter::ReportUKMsAndHistograms(
-    const performance_monitor::ProcessMonitor::Metrics& metrics,
+void PowerMetricsReporter::OnBatteryAndAggregatedProcessMetricsSampled(
+    const ProcessMonitor::Metrics& aggregated_process_metrics,
     base::TimeDelta interval_duration,
-    BatteryDischargeMode discharge_mode,
-    absl::optional<int64_t> discharge_rate_during_interval) const {
+    base::TimeTicks battery_sample_begin_time,
+    const absl::optional<base::BatteryLevelProvider::BatteryState>&
+        new_battery_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(data_store_.MaybeValid());
+  DCHECK(battery_level_provider_);
 
-  UsageScenarioDataStore::IntervalData interval_data =
-      data_store_->ResetIntervalData();
+  // Report time it took to sample the battery state.
+  base::UmaHistogramMicrosecondsTimes(
+      kBatterySamplingDelayHistogramName,
+      base::TimeTicks::Now() - battery_sample_begin_time);
 
-  absl::optional<int64_t> main_screen_brightness;
-  if (power_details_provider_.get()) {
-    absl::optional<double> brightness =
-        power_details_provider_->GetMainScreenBrightnessLevel();
-    if (brightness.has_value()) {
-      // Report the percentage as an integer as UMA doesn't allow reporting
-      // reals.
-      main_screen_brightness = brightness.value() * 100;
-      // The brightness value reported by the system sometimes exceeds 100%,
-      // allow values up to 150 to understand this better.
-      // An histogram with 50 buckets, a minimum of 1 and a maximum of 150 will
-      // have 43 buckets in the [1, 100] range and 7 in the 100+ range.
-      base::UmaHistogramCustomCounts(kMainScreenBrightnessHistogramName,
-                                     main_screen_brightness.value(), 1, 150,
-                                     50);
+  // Evaluate battery discharge mode and rate.
+  auto previous_battery_state =
+      std::exchange(battery_state_, new_battery_state);
+  auto battery_discharge = GetBatteryDischargeDuringInterval(
+      previous_battery_state, new_battery_state, interval_duration);
+
+#if BUILDFLAG(IS_WIN)
+  // Report battery max capacity. We suspect that the max capacity is 100 for a
+  // significant portion of clients on Windows, which doesn't provide sufficient
+  // granularity (the battery typically discharges by less than 1% per 2
+  // minutes). This histogram will allow us to validate the hypothesis.
+  if (new_battery_state.has_value()) {
+    CHECK_EQ(new_battery_state->full_charged_capacity.has_value(),
+             new_battery_state->charge_unit.has_value());
+    if (new_battery_state->full_charged_capacity.has_value() &&
+        new_battery_state->charge_unit.value() ==
+            base::BatteryLevelProvider::BatteryLevelUnit::kMWh) {
+      base::UmaHistogramCounts10000(
+          "Power.BatteryMaxCapacity",
+          new_battery_state->full_charged_capacity.value());
     }
   }
-  base::UmaHistogramBoolean(kMainScreenBrightnessAvailableHistogramName,
-                            main_screen_brightness.has_value());
+#endif
 
-  ReportUKMs(interval_data, metrics, interval_duration, discharge_mode,
-             discharge_rate_during_interval, main_screen_brightness);
-
-  ReportHistograms(interval_data, metrics, interval_duration, discharge_mode,
-                   discharge_rate_during_interval);
+  // Get usage scenario data.
+  auto long_interval_data =
+      long_usage_scenario_data_store_->ResetIntervalData();
+  ReportMetrics(long_interval_data, interval_duration,
+                aggregated_process_metrics);
+  ReportBatterySpecificMetrics(long_interval_data, interval_duration,
+                               aggregated_process_metrics, battery_discharge);
 }
 
-// static
-void PowerMetricsReporter::ReportCPUHistograms(
-    const performance_monitor::ProcessMonitor::Metrics& metrics,
-    const std::vector<const char*>& suffixes) {
-  for (const char* suffix : suffixes) {
-    std::string complete_suffix = base::StrCat({"Total", suffix});
-    performance_monitor::RecordProcessHistograms(complete_suffix.c_str(),
-                                                 metrics);
-  }
-}
-
-void PowerMetricsReporter::ReportUKMs(
-    const UsageScenarioDataStore::IntervalData& interval_data,
-    const performance_monitor::ProcessMonitor::Metrics& metrics,
+void PowerMetricsReporter::ReportMetrics(
+    const UsageScenarioDataStore::IntervalData& long_interval_data,
     base::TimeDelta interval_duration,
-    BatteryDischargeMode discharge_mode,
-    absl::optional<int64_t> discharge_rate_during_interval,
-    absl::optional<int64_t> main_screen_brightness) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(data_store_.MaybeValid());
+    const ProcessMonitor::Metrics& aggregated_process_metrics) {
+  // Get scenario data.
+  const auto long_interval_scenario_params =
+      GetLongIntervalScenario(long_interval_data);
+  // Histograms are recorded without suffix and with a scenario-specific
+  // suffix.
+  const std::vector<const char*> long_interval_suffixes{
+      "", long_interval_scenario_params.histogram_suffix};
 
+  // Report process metrics histograms.
+  ReportAggregatedProcessMetricsHistograms(aggregated_process_metrics,
+                                           long_interval_suffixes);
+  base::UmaHistogramEnumeration("PerformanceMonitor.UsageScenario.LongInterval",
+                                long_interval_scenario_params.scenario);
+
+#if BUILDFLAG(IS_MAC)
+  // Sample coalition resource usage rate.
+  absl::optional<power_metrics::CoalitionResourceUsageRate>
+      short_interval_resource_usage_rate;
+  absl::optional<power_metrics::CoalitionResourceUsageRate>
+      long_interval_resource_usage_rate;
+  coalition_resource_usage_provider_->EndIntervals(
+      &short_interval_resource_usage_rate, &long_interval_resource_usage_rate);
+
+  // Report resource coalition histograms for the long interval.
+  if (long_interval_resource_usage_rate.has_value()) {
+    ReportResourceCoalitionHistograms(long_interval_resource_usage_rate.value(),
+                                      long_interval_suffixes);
+  }
+
+  // Then do it for the short interval.
+  if (short_interval_resource_usage_rate.has_value()) {
+    auto short_interval_data =
+        short_usage_scenario_data_store_->ResetIntervalData();
+    const ScenarioParams short_interval_scenario_params =
+        GetShortIntervalScenarioParams(short_interval_data, long_interval_data);
+
+    base::UmaHistogramEnumeration(
+        "PerformanceMonitor.UsageScenario.ShortInterval",
+        short_interval_scenario_params.scenario);
+
+    ReportShortIntervalHistograms(
+        short_interval_scenario_params.histogram_suffix,
+        short_interval_resource_usage_rate.value());
+    MaybeEmitHighCPUTraceEvent(short_interval_scenario_params,
+                               short_interval_resource_usage_rate.value());
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
+  StartNextLongInterval();
+}
+
+void PowerMetricsReporter::ReportBatterySpecificMetrics(
+    const UsageScenarioDataStore::IntervalData& long_interval_data,
+    base::TimeDelta interval_duration,
+    const ProcessMonitor::Metrics& aggregated_process_metrics,
+    BatteryDischarge battery_discharge) {
+  DCHECK(battery_level_provider_);
+
+  // Report UKMs.
+  ReportBatteryUKMs(long_interval_data, aggregated_process_metrics,
+                    interval_duration, battery_discharge);
+
+  // Ratio by which the time elapsed can deviate from
+  // |kLongPowerMetricsIntervalDuration| without invalidating this sample.
+  // TODO(pmonette): Change to DCHECK after ensuring this never triggers.
+  CHECK_GE(interval_duration, kLongPowerMetricsIntervalDuration);
+  constexpr double kTolerableTimeElapsedRatio = 0.10;
+  if (battery_discharge.mode == BatteryDischargeMode::kDischarging &&
+      !IsWithinTolerance(
+          interval_duration, kLongPowerMetricsIntervalDuration,
+          kLongPowerMetricsIntervalDuration * kTolerableTimeElapsedRatio)) {
+    battery_discharge.mode = BatteryDischargeMode::kInvalidInterval;
+  }
+
+  ReportBatteryHistograms(
+      interval_duration, battery_discharge,
+      {"", GetLongIntervalScenario(long_interval_data).histogram_suffix});
+}
+
+void PowerMetricsReporter::ReportBatteryUKMs(
+    const UsageScenarioDataStore::IntervalData& interval_data,
+    const ProcessMonitor::Metrics& metrics,
+    base::TimeDelta interval_duration,
+    BatteryDischarge battery_discharge) {
   // UKM may be unavailable in content_shell or other non-chrome/ builds; it
   // may also be unavailable if browser shutdown has started; so this may be a
   // nullptr. If it's unavailable, UKM reporting will be skipped.
@@ -314,13 +379,13 @@ void PowerMetricsReporter::ReportUKMs(
   // interval duration.
   builder.SetUptimeSeconds(ukm::GetExponentialBucketMinForUserTiming(
       interval_data.uptime_at_interval_end.InSeconds()));
-  builder.SetBatteryDischargeMode(static_cast<int64_t>(discharge_mode));
-  if (discharge_mode == BatteryDischargeMode::kDischarging) {
-    DCHECK(discharge_rate_during_interval.has_value());
-    builder.SetBatteryDischargeRate(*discharge_rate_during_interval);
+  builder.SetBatteryDischargeMode(static_cast<int64_t>(battery_discharge.mode));
+  if (battery_discharge.mode == BatteryDischargeMode::kDischarging) {
+    DCHECK(battery_discharge.rate_relative.has_value());
+    builder.SetBatteryDischargeRate(*battery_discharge.rate_relative);
   }
   builder.SetCPUTimeMs(metrics.cpu_usage * interval_duration.InMilliseconds());
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   builder.SetIdleWakeUps(metrics.idle_wakeups);
   builder.SetPackageExits(metrics.package_idle_wakeups);
   builder.SetEnergyImpactScore(metrics.energy_impact);
@@ -352,56 +417,26 @@ void PowerMetricsReporter::ReportUKMs(
       GetBucketForSample(interval_data.time_playing_audio));
   builder.SetOriginVisibilityTimeSeconds(
       GetBucketForSample(interval_data.longest_visible_origin_duration));
-  if (main_screen_brightness.has_value()) {
-    // The data should be reported with a 20% granularity.
-    builder.SetMainScreenBrightnessPercent(
-        ukm::GetLinearBucketMin(main_screen_brightness.value(), 20));
-  }
   builder.SetDeviceSleptDuringInterval(interval_data.sleep_events);
 
   builder.Record(ukm_recorder);
 }
 
-std::pair<PowerMetricsReporter::BatteryDischargeMode, absl::optional<int64_t>>
-PowerMetricsReporter::GetBatteryDischargeRateDuringInterval(
-    const BatteryLevelProvider::BatteryState& new_battery_state,
-    base::TimeDelta interval_duration) {
-  auto previous_battery_state =
-      std::exchange(battery_state_, new_battery_state);
+#if BUILDFLAG(IS_MAC)
+void PowerMetricsReporter::MaybeEmitHighCPUTraceEvent(
+    const ScenarioParams& short_interval_scenario_params,
+    const CoalitionResourceUsageRate& coalition_resource_usage_rate) {
+  if (coalition_resource_usage_rate.cpu_time_per_second >=
+      short_interval_scenario_params.short_interval_cpu_threshold) {
+    const base::TimeTicks now = base::TimeTicks::Now();
 
-  if (previous_battery_state.battery_count == 0 ||
-      battery_state_.battery_count == 0) {
-    return {BatteryDischargeMode::kNoBattery, absl::nullopt};
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
+        "browser", short_interval_scenario_params.trace_event_title,
+        TRACE_ID_LOCAL(this), short_interval_begin_time_);
+    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+        "browser", short_interval_scenario_params.trace_event_title,
+        TRACE_ID_LOCAL(this), now);
   }
-  if (!previous_battery_state.on_battery && !battery_state_.on_battery) {
-    return {BatteryDischargeMode::kPluggedIn, absl::nullopt};
-  }
-  if (previous_battery_state.on_battery != battery_state_.on_battery) {
-    return {BatteryDischargeMode::kStateChanged, absl::nullopt};
-  }
-  if (!previous_battery_state.charge_level.has_value() ||
-      !battery_state_.charge_level.has_value()) {
-    return {BatteryDischargeMode::kChargeLevelUnavailable, absl::nullopt};
-  }
-
-  // The battery discharge rate is reported per minute with 1/10000 of full
-  // charge resolution.
-  static const int64_t kDischargeRateFactor =
-      10000 * base::Minutes(1).InSecondsF();
-
-#if defined(OS_MAC)
-  // On MacOS, empirical evidence has shown that right after a full charge, the
-  // current capacity stays equal to the maximum capacity for several minutes,
-  // despite the fact that power was definitely consumed. Reporting a zero
-  // discharge rate for this duration would be misleading.
-  if (previous_battery_state.charge_level.value() == 1.0)
-    return {BatteryDischargeMode::kMacFullyCharged, absl::nullopt};
-#endif
-
-  auto discharge_rate = (previous_battery_state.charge_level.value() -
-                         battery_state_.charge_level.value()) *
-                        kDischargeRateFactor / interval_duration.InSeconds();
-  if (discharge_rate < 0)
-    return {BatteryDischargeMode::kBatteryLevelIncreased, absl::nullopt};
-  return {BatteryDischargeMode::kDischarging, discharge_rate};
+  short_interval_begin_time_ = base::TimeTicks();
 }
+#endif  // BUILDFLAG(IS_MAC)

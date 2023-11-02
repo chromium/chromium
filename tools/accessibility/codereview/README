@@ -1,0 +1,28 @@
+Summary
+========================================
+Provide an alternative workflow to Gerrit/Poly Gerrit.
+
+Setup
+========================================
+
+Load/initialize crq.el (the Emacs front-end). Add crq.el at runtime (m-x load-file, crq.el <ret>). Load it in your .emacs otherwise (load-file "<path-to-crq.el>").
+
+Place this directory in your path.
+
+Usage
+========================================
+- Switch to your root Chrome src directory.
+- from email, grab either the change id hash or issue number.
+- m-x crq-review
+- yank the issue number, <ret>
+- read the diff. Press enter to add an in-line comment and press c-u, space to return to the diff.
+- add lgtm to the overall comment (after the === comments ===) section
+- c-c, c-p to publish
+
+TODO
+========================================
+- check in gerrit_utils.py api additions once ready
+- add api bindings for listing published comments and get into download_issue.py
+- make hitting enter on a published comment (in the crq mode) reply to that comment and make the GerritParser aware of it to pass through to the right api endpoint.
+- make more of the usage automated (e.g. add mode bindings for downloading, publishing, etc).
+- pass through lgtm on overall comment as SetReview with label Code-Review: 1

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,7 @@
 #include "third_party/blink/public/mojom/media/renderer_audio_output_stream_factory.mojom.h"
 #include "third_party/blink/public/mojom/native_io/native_io.mojom.h"
 #include "third_party/blink/public/mojom/notifications/notification_service.mojom.h"
+#include "third_party/blink/public/mojom/page/display_cutout.mojom.h"
 
 namespace content {
 
@@ -39,13 +40,9 @@ void RegisterNonAssociatedPoliciesForSameOriginPrerendering(
   // audio, showing notification) and are non-deferrable.
   // Please update `PrerenderCancelledInterface` and
   // `GetCancelledInterfaceType()` in
-  // content/browser/prerender/prerender_metrics.h once you add a new kCancel
-  // interface.
+  // content/browser/preloading/prerender/prerender_metrics.h once you add a new
+  // kCancel interface.
 
-  // NotificationService has a sync message and is requested in
-  // Notification constructor, so it should be kCancel.
-  map.SetNonAssociatedPolicy<blink::mojom::NotificationService>(
-      MojoBinderNonAssociatedPolicy::kCancel);
   map.SetNonAssociatedPolicy<device::mojom::GamepadHapticsManager>(
       MojoBinderNonAssociatedPolicy::kCancel);
   map.SetNonAssociatedPolicy<device::mojom::GamepadMonitor>(
@@ -116,6 +113,16 @@ void RegisterChannelAssociatedPoliciesForSameOriginPrerendering(
   // play media. Feature-specific capability control is implemented to delay
   // playing media. See `RenderFrameImpl::DeferMediaLoad` for more information.
   map.SetAssociatedPolicy<media::mojom::MediaPlayerHost>(
+      MojoBinderAssociatedPolicy::kGrant);
+
+  // DisplayCutout supports the CSS viewport-fit property. It tracks
+  // the current viewport-fit on a per-document basis, but only calls
+  // the WebContents::NotifyViewportFitChanged and informs WebContents's
+  // observers when the document is fullscreened. Prerendered documents cannot
+  // enter fullscreen because they do not have transient activation, nor are
+  // they active documents (see RenderFrameHostImpl::EnterFullscreen), so it is
+  // safe to allow a prerendered document to use it.
+  map.SetAssociatedPolicy<blink::mojom::DisplayCutoutHost>(
       MojoBinderAssociatedPolicy::kGrant);
 }
 

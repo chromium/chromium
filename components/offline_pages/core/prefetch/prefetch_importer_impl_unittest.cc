@@ -1,12 +1,13 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/offline_pages/core/prefetch/prefetch_importer_impl.h"
 
+#include <tuple>
+
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_simple_task_runner.h"
@@ -36,7 +37,7 @@ std::string TestAttribution() {
 
 class TestOfflinePageModel : public StubOfflinePageModel {
  public:
-  TestOfflinePageModel() { ignore_result(archive_dir_.CreateUniqueTempDir()); }
+  TestOfflinePageModel() { std::ignore = archive_dir_.CreateUniqueTempDir(); }
 
   TestOfflinePageModel(const TestOfflinePageModel&) = delete;
   TestOfflinePageModel& operator=(const TestOfflinePageModel&) = delete;

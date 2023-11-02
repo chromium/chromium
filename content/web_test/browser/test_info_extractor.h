@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,12 +20,16 @@ struct TestInfo {
   TestInfo(const GURL& url,
            const std::string& expected_pixel_hash,
            const base::FilePath& current_working_directory,
+           bool wpt_print_mode,
            bool protocol_mode);
   ~TestInfo();
 
   GURL url;
   std::string expected_pixel_hash;
   base::FilePath current_working_directory;
+
+  // Forces the default printing format required by WPT print reftests.
+  bool wpt_print_mode;
 
   // If true, the input and output of content_shell are assumed to follow the
   // run_web_tests protocol through pipes that connect stdin and stdout of

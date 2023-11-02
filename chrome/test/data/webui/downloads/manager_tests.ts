@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,8 @@ suite('manager tests', function() {
   let toastManager: CrToastManagerElement;
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
 
     testBrowserProxy = new TestDownloadsProxy();
     callbackRouterRemote = testBrowserProxy.callbackRouterRemote;
@@ -201,7 +202,7 @@ suite('manager tests', function() {
   test('undo is not shown when removing only dangerous items', async () => {
     callbackRouterRemote.insertItems(0, [
       createDownload({isDangerous: true}),
-      createDownload({isMixedContent: true})
+      createDownload({isMixedContent: true}),
     ]);
     await callbackRouterRemote.$.flushForTesting();
     toastManager.show('', /* hideSlotted= */ false);
@@ -212,8 +213,9 @@ suite('manager tests', function() {
 
   test('undo is shown when removing items', async () => {
     callbackRouterRemote.insertItems(0, [
-      createDownload(), createDownload({isDangerous: true}),
-      createDownload({isMixedContent: true})
+      createDownload(),
+      createDownload({isDangerous: true}),
+      createDownload({isMixedContent: true}),
     ]);
     await callbackRouterRemote.$.flushForTesting();
     toastManager.show('', /* hideSlotted= */ true);

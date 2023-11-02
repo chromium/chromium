@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -123,8 +124,8 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
 
-  AvatarToolbarButton* const avatar_toolbar_button_;
-  Profile* const profile_;
+  const raw_ptr<AvatarToolbarButton> avatar_toolbar_button_;
+  const raw_ptr<Profile> profile_;
   IdentityAnimationState identity_animation_state_ =
       IdentityAnimationState::kNotShowing;
 

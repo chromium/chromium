@@ -25,95 +25,27 @@
 
 #include "third_party/blink/renderer/modules/webaudio/biquad_filter_node.h"
 
-#include <memory>
+#include <limits>
 
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_biquad_filter_options.h"
-#include "third_party/blink/renderer/core/inspector/console_message.h"
-#include "third_party/blink/renderer/modules/webaudio/audio_basic_processor_handler.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
-#include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
+#include "third_party/blink/renderer/modules/webaudio/biquad_filter_handler.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
-#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
 
-BiquadFilterHandler::BiquadFilterHandler(AudioNode& node,
-                                         float sample_rate,
-                                         AudioParamHandler& frequency,
-                                         AudioParamHandler& q,
-                                         AudioParamHandler& gain,
-                                         AudioParamHandler& detune)
-    : AudioBasicProcessorHandler(
-          kNodeTypeBiquadFilter,
-          node,
-          sample_rate,
-          std::make_unique<BiquadProcessor>(
-              sample_rate,
-              1,
-              node.context()->GetDeferredTaskHandler().RenderQuantumFrames(),
-              frequency,
-              q,
-              gain,
-              detune)) {
-  DCHECK(Context());
-  DCHECK(Context()->GetExecutionContext());
+namespace {
 
-  task_runner_ = Context()->GetExecutionContext()->GetTaskRunner(
-      TaskType::kMediaElementEvent);
+constexpr double kDefaultFrequencyValue = 350.0;
+constexpr float kMinFrequencyValue = 0.0f;
+constexpr double kDefaultQValue = 1.0;
+constexpr double kDefaultGainValue = 0.0;
+constexpr float kMinGainValue = std::numeric_limits<float>::lowest();
+constexpr double kDefaultDetuneValue = 0.0;
 
-  // Initialize the handler so that AudioParams can be processed.
-  Initialize();
-}
-
-scoped_refptr<BiquadFilterHandler> BiquadFilterHandler::Create(
-    AudioNode& node,
-    float sample_rate,
-    AudioParamHandler& frequency,
-    AudioParamHandler& q,
-    AudioParamHandler& gain,
-    AudioParamHandler& detune) {
-  return base::AdoptRef(
-      new BiquadFilterHandler(node, sample_rate, frequency, q, gain, detune));
-}
-
-void BiquadFilterHandler::Process(uint32_t frames_to_process) {
-  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
-               "BiquadFilterHandler::Process");
-
-  AudioBasicProcessorHandler::Process(frames_to_process);
-
-  if (!did_warn_bad_filter_state_) {
-    // Inform the user once if the output has a non-finite value.  This is a
-    // proxy for the filter state containing non-finite values since the output
-    // is also saved as part of the state of the filter.
-    if (HasNonFiniteOutput()) {
-      did_warn_bad_filter_state_ = true;
-
-      PostCrossThreadTask(
-          *task_runner_, FROM_HERE,
-          CrossThreadBindOnce(&BiquadFilterHandler::NotifyBadState,
-                              AsWeakPtr()));
-    }
-  }
-}
-
-void BiquadFilterHandler::NotifyBadState() const {
-  DCHECK(IsMainThread());
-  if (!Context() || !Context()->GetExecutionContext())
-    return;
-
-  Context()->GetExecutionContext()->AddConsoleMessage(
-      MakeGarbageCollected<ConsoleMessage>(
-          mojom::ConsoleMessageSource::kJavaScript,
-          mojom::ConsoleMessageLevel::kWarning,
-          NodeTypeName() +
-              ": state is bad, probably due to unstable filter caused "
-              "by fast parameter automation."));
-}
+}  // namespace
 
 BiquadFilterNode::BiquadFilterNode(BaseAudioContext& context)
     : AudioNode(context),
@@ -121,34 +53,35 @@ BiquadFilterNode::BiquadFilterNode(BaseAudioContext& context)
           AudioParam::Create(context,
                              Uuid(),
                              AudioParamHandler::kParamTypeBiquadFilterFrequency,
-                             350.0,
+                             kDefaultFrequencyValue,
                              AudioParamHandler::AutomationRate::kAudio,
                              AudioParamHandler::AutomationRateMode::kVariable,
-                             0,
-                             context.sampleRate() / 2)),
+                             kMinFrequencyValue,
+                             /*max_value=*/context.sampleRate() / 2)),
       q_(AudioParam::Create(context,
                             Uuid(),
                             AudioParamHandler::kParamTypeBiquadFilterQ,
-                            1.0,
+                            kDefaultQValue,
                             AudioParamHandler::AutomationRate::kAudio,
                             AudioParamHandler::AutomationRateMode::kVariable)),
-      gain_(AudioParam::Create(context,
-                               Uuid(),
-                               AudioParamHandler::kParamTypeBiquadFilterGain,
-                               0.0,
-                               AudioParamHandler::AutomationRate::kAudio,
-                               AudioParamHandler::AutomationRateMode::kVariable,
-                               std::numeric_limits<float>::lowest(),
-                               40 * log10f(std::numeric_limits<float>::max()))),
-      detune_(
-          AudioParam::Create(context,
-                             Uuid(),
-                             AudioParamHandler::kParamTypeBiquadFilterDetune,
-                             0.0,
-                             AudioParamHandler::AutomationRate::kAudio,
-                             AudioParamHandler::AutomationRateMode::kVariable,
-                             -1200 * log2f(std::numeric_limits<float>::max()),
-                             1200 * log2f(std::numeric_limits<float>::max()))) {
+      gain_(AudioParam::Create(
+          context,
+          Uuid(),
+          AudioParamHandler::kParamTypeBiquadFilterGain,
+          kDefaultGainValue,
+          AudioParamHandler::AutomationRate::kAudio,
+          AudioParamHandler::AutomationRateMode::kVariable,
+          kMinGainValue,
+          /*max_value=*/40 * log10f(std::numeric_limits<float>::max()))),
+      detune_(AudioParam::Create(
+          context,
+          Uuid(),
+          AudioParamHandler::kParamTypeBiquadFilterDetune,
+          kDefaultDetuneValue,
+          AudioParamHandler::AutomationRate::kAudio,
+          AudioParamHandler::AutomationRateMode::kVariable,
+          /*min_value=*/-1200 * log2f(std::numeric_limits<float>::max()),
+          /*max_value=*/1200 * log2f(std::numeric_limits<float>::max()))) {
   SetHandler(BiquadFilterHandler::Create(*this, context.sampleRate(),
                                          frequency_->Handler(), q_->Handler(),
                                          gain_->Handler(), detune_->Handler()));
@@ -162,8 +95,9 @@ BiquadFilterNode* BiquadFilterNode::Create(BaseAudioContext& context,
 
   // TODO(crbug.com/1055983): Remove this when the execution context validity
   // check is not required in the AudioNode factory methods.
-  if (!context.CheckExecutionContextAndThrowIfNecessary(exception_state))
+  if (!context.CheckExecutionContextAndThrowIfNecessary(exception_state)) {
     return nullptr;
+  }
 
   return MakeGarbageCollected<BiquadFilterNode>(context);
 }
@@ -173,8 +107,9 @@ BiquadFilterNode* BiquadFilterNode::Create(BaseAudioContext* context,
                                            ExceptionState& exception_state) {
   BiquadFilterNode* node = Create(*context, exception_state);
 
-  if (!node)
+  if (!node) {
     return nullptr;
+  }
 
   node->HandleChannelOptions(options, exception_state);
 
@@ -245,8 +180,9 @@ void BiquadFilterNode::setType(const String& type) {
 }
 
 bool BiquadFilterNode::SetType(BiquadProcessor::FilterType type) {
-  if (type > BiquadProcessor::FilterType::kAllpass)
+  if (type > BiquadProcessor::FilterType::kAllpass) {
     return false;
+  }
 
   base::UmaHistogramEnumeration("WebAudio.BiquadFilter.Type", type);
 

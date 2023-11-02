@@ -1,8 +1,9 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/process/process.h"
+#include "base/record_replay.h"
 
 #include "base/clang_profiling_buildflags.h"
 #include "base/debug/activity_tracker.h"
@@ -34,7 +35,7 @@ Process::Process(ProcessHandle handle)
 }
 
 Process::Process(Process&& other)
-    : process_(other.process_.Take()),
+    : process_(other.process_.release()),
       is_current_process_(other.is_current_process_) {
   other.Close();
 }
@@ -44,7 +45,7 @@ Process::~Process() {
 
 Process& Process::operator=(Process&& other) {
   DCHECK_NE(this, &other);
-  process_.Set(other.process_.Take());
+  process_.Set(other.process_.release());
   is_current_process_ = other.is_current_process_;
   other.Close();
   return *this;
@@ -83,18 +84,19 @@ void Process::TerminateCurrentProcessImmediately(int exit_code) {
 #if BUILDFLAG(CLANG_PROFILING)
   WriteClangProfilingProfile();
 #endif
-  ::TerminateProcess(GetCurrentProcess(), exit_code);
+  recordreplay::FinishRecording();
+  ::TerminateProcess(GetCurrentProcess(), static_cast<UINT>(exit_code));
   // There is some ambiguity over whether the call above can return. Rather than
   // hitting confusing crashes later on we should crash right here.
   IMMEDIATE_CRASH();
 }
 
 bool Process::IsValid() const {
-  return process_.IsValid() || is_current();
+  return process_.is_valid() || is_current();
 }
 
 ProcessHandle Process::Handle() const {
-  return is_current_process_ ? GetCurrentProcess() : process_.Get();
+  return is_current_process_ ? GetCurrentProcess() : process_.get();
 }
 
 Process Process::Duplicate() const {
@@ -117,7 +119,7 @@ Process Process::Duplicate() const {
 ProcessHandle Process::Release() {
   if (is_current())
     return ::GetCurrentProcess();
-  return process_.Take();
+  return process_.release();
 }
 
 ProcessId Process::Pid() const {
@@ -143,7 +145,7 @@ bool Process::is_current() const {
 
 void Process::Close() {
   is_current_process_ = false;
-  if (!process_.IsValid())
+  if (!process_.is_valid())
     return;
 
   process_.Close();
@@ -153,7 +155,8 @@ bool Process::Terminate(int exit_code, bool wait) const {
   constexpr DWORD kWaitMs = 60 * 1000;
 
   DCHECK(IsValid());
-  bool result = (::TerminateProcess(Handle(), exit_code) != FALSE);
+  bool result =
+      ::TerminateProcess(Handle(), static_cast<UINT>(exit_code)) != FALSE;
   if (result) {
     // The process may not end immediately due to pending I/O
     if (wait && ::WaitForSingleObject(Handle(), kWaitMs) != WAIT_OBJECT_0)
@@ -170,8 +173,9 @@ bool Process::Terminate(int exit_code, bool wait) const {
     // A non-zero timeout is necessary here for the same reasons as above.
     if (::WaitForSingleObject(Handle(), kWaitMs) == WAIT_OBJECT_0) {
       DWORD actual_exit;
-      Exited(::GetExitCodeProcess(Handle(), &actual_exit) ? actual_exit
-                                                          : exit_code);
+      Exited(::GetExitCodeProcess(Handle(), &actual_exit)
+                 ? static_cast<int>(actual_exit)
+                 : exit_code);
       result = true;
     }
   }
@@ -184,9 +188,9 @@ Process::WaitExitStatus Process::WaitForExitOrEvent(
   // Record the event that this thread is blocking upon (for hang diagnosis).
   base::debug::ScopedProcessWaitActivity process_activity(this);
 
-  HANDLE events[] = {Handle(), stop_event_handle.Get()};
+  HANDLE events[] = {Handle(), stop_event_handle.get()};
   DWORD wait_result =
-      ::WaitForMultipleObjects(base::size(events), events, FALSE, INFINITE);
+      ::WaitForMultipleObjects(std::size(events), events, FALSE, INFINITE);
 
   if (wait_result == WAIT_OBJECT_0) {
     DWORD temp_code;  // Don't clobber out-parameters in case of failure.
@@ -194,9 +198,9 @@ Process::WaitExitStatus Process::WaitForExitOrEvent(
       return Process::WaitExitStatus::FAILED;
 
     if (exit_code)
-      *exit_code = temp_code;
+      *exit_code = static_cast<int>(temp_code);
 
-    Exited(temp_code);
+    Exited(static_cast<int>(temp_code));
     return Process::WaitExitStatus::PROCESS_EXITED;
   }
 
@@ -235,9 +239,9 @@ bool Process::WaitForExitWithTimeout(TimeDelta timeout, int* exit_code) const {
     return false;
 
   if (exit_code)
-    *exit_code = temp_code;
+    *exit_code = static_cast<int>(temp_code);
 
-  Exited(temp_code);
+  Exited(static_cast<int>(temp_code));
   return true;
 }
 
@@ -248,7 +252,7 @@ void Process::Exited(int exit_code) const {
 
 bool Process::IsProcessBackgrounded() const {
   DCHECK(IsValid());
-  DWORD priority = GetPriority();
+  int priority = GetPriority();
   if (priority == 0)
     return false;  // Failure case.
   return ((priority == BELOW_NORMAL_PRIORITY_CLASS) ||
@@ -273,7 +277,7 @@ bool Process::SetProcessBackgrounded(bool value) {
 
 int Process::GetPriority() const {
   DCHECK(IsValid());
-  return ::GetPriorityClass(Handle());
+  return static_cast<int>(::GetPriorityClass(Handle()));
 }
 
 }  // namespace base

@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "ui/display/display.h"
 
@@ -51,7 +51,7 @@ int64_t DeviceDisplayCrosTestHelper::GetSecondDisplayId() const {
     ADD_FAILURE() << "The second display is not connected.";
     return 0;
   }
-  return GetDisplayManager()->GetCurrentDisplayIdList()[1];
+  return GetDisplayManager()->GetConnectedDisplayIdList()[1];
 }
 
 const display::Display& DeviceDisplayCrosTestHelper::GetFirstDisplay() const {
@@ -95,7 +95,7 @@ void DeviceDisplayCrosTestHelper::ToggleSecondDisplay() {
 }
 
 void DeviceDisplayPolicyCrosBrowserTest::SetUpInProcessBrowserTestFixture() {
-  chromeos::SessionManagerClient::InitializeFakeInMemory();
+  ash::SessionManagerClient::InitializeFakeInMemory();
   ash::DisplayConfigurationController::DisableAnimatorForTest();
   DevicePolicyCrosBrowserTest::SetUpInProcessBrowserTestFixture();
 }

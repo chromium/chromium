@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,9 +27,8 @@ enum SharesheetViewID {
   // ID for the view populated with targets that shows in the default
   // sharesheet.
   TARGETS_DEFAULT_VIEW_ID,
-  // ID for the view populated with targets that shows in the expanded
-  // sharesheet.
-  TARGETS_EXPANDED_VIEW_ID,
+  HEADER_VIEW_TEXT_PREVIEW_ID,
+  SHARE_ACTION_VIEW_ID,
 };
 
 std::unique_ptr<views::Label> CreateShareLabel(

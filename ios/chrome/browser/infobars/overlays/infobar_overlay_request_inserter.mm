@@ -1,13 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
 
-#include "base/check_op.h"
-#include "base/memory/ptr_util.h"
-#include "ios/chrome/browser/infobars/infobar_ios.h"
-#include "ios/chrome/browser/infobars/overlays/default_infobar_overlay_request_factory.h"
+#import "base/check_op.h"
+#import "base/memory/ptr_util.h"
+#import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_banner_overlay_request_cancel_handler.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_modal_completion_notifier.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_modal_overlay_request_cancel_handler.h"
@@ -15,8 +14,8 @@
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_factory.h"
 #import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/infobar_banner_placeholder_request_config.h"
-#include "ios/chrome/browser/overlays/public/overlay_modality.h"
-#include "ios/chrome/browser/overlays/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/public/overlay_modality.h"
+#import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -24,21 +23,6 @@
 #endif
 
 WEB_STATE_USER_DATA_KEY_IMPL(InfobarOverlayRequestInserter)
-
-// static
-void InfobarOverlayRequestInserter::CreateForWebState(
-    web::WebState* web_state,
-    InfobarOverlayRequestFactory request_factory) {
-  DCHECK(web_state);
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(
-        UserDataKey(),
-        base::WrapUnique(new InfobarOverlayRequestInserter(
-            web_state, request_factory
-                           ? request_factory
-                           : &DefaultInfobarOverlayRequestFactory)));
-  }
-}
 
 InsertParams::InsertParams(InfoBarIOS* infobar) : infobar(infobar) {}
 
@@ -51,7 +35,7 @@ InfobarOverlayRequestInserter::InfobarOverlayRequestInserter(
       request_factory_(factory) {
   DCHECK(web_state_);
   DCHECK(request_factory_);
-  // Populate |queues_| with the request queues at the appropriate modalities.
+  // Populate `queues_` with the request queues at the appropriate modalities.
   queues_[InfobarOverlayType::kBanner] = OverlayRequestQueue::FromWebState(
       web_state_, OverlayModality::kInfobarBanner);
   queues_[InfobarOverlayType::kModal] = OverlayRequestQueue::FromWebState(
@@ -95,15 +79,15 @@ void InfobarOverlayRequestInserter::InsertOverlayRequest(
           request.get(), queue, params.infobar);
       OverlayRequestQueue* banner_queue =
           queues_.at(InfobarOverlayType::kBanner);
-      std::unique_ptr<OverlayRequest> request =
+      std::unique_ptr<OverlayRequest> placeholder_request =
           OverlayRequest::CreateWithConfig<
               InfobarBannerPlaceholderRequestConfig>(params.infobar);
       std::unique_ptr<InfobarModalOverlayRequestCancelHandler>
           modal_cancel_handler =
               std::make_unique<InfobarModalOverlayRequestCancelHandler>(
-                  request.get(), banner_queue, params.infobar,
+                  placeholder_request.get(), banner_queue, params.infobar,
                   modal_completion_notifier_.get());
-      banner_queue->InsertRequest(0, std::move(request),
+      banner_queue->InsertRequest(0, std::move(placeholder_request),
                                   std::move(modal_cancel_handler));
       break;
   }

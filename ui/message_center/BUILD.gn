@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -101,6 +101,8 @@ component("message_center") {
         "views/message_view.h",
         "views/notification_background_painter.cc",
         "views/notification_background_painter.h",
+        "views/notification_control_button_factory.cc",
+        "views/notification_control_button_factory.h",
         "views/notification_control_buttons_view.cc",
         "views/notification_control_buttons_view.h",
         "views/notification_header_view.cc",
@@ -208,6 +210,10 @@ if (enable_message_center) {
       "//ui/resources:ui_test_pak_data",
     ]
 
+    if (is_chromeos_ash) {
+      deps += [ "//ash/constants" ]
+    }
+
     if (toolkit_views) {
       sources += [
         "views/message_popup_collection_unittest.cc",
@@ -224,12 +230,17 @@ if (enable_message_center) {
         "//ui/views",
         "//ui/views:test_support",
       ]
+
+      if (is_chromeos) {
+        deps += [ "//chromeos/constants:constants" ]
+      }
     }
 
     if (is_fuchsia) {
       additional_manifest_fragments = [
-        "//build/config/fuchsia/test/font_capabilities.test-cmx",
-        "//build/config/fuchsia/test/present_view_capabilities.test-cmx",
+        "//build/config/fuchsia/test/fonts.shard.test-cml",
+        "//build/config/fuchsia/test/present_view.shard.test-cml",
+        "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
       ]
     }
   }

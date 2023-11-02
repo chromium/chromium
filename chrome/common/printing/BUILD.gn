@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -35,6 +35,8 @@ source_set("printing") {
   sources = [
     "printer_capabilities.cc",
     "printer_capabilities.h",
+    "printing_init.cc",
+    "printing_init.h",
   ]
 
   public_deps = [

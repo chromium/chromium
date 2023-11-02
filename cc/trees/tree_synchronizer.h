@@ -1,4 +1,4 @@
-// Copyright 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,12 +22,16 @@ class CC_EXPORT TreeSynchronizer {
   // Accepts a Layer tree and returns a reference to a LayerImpl tree that
   // duplicates the structure of the Layer tree, reusing the LayerImpls in the
   // tree provided by old_layer_impl_root if possible.
-  static void SynchronizeTrees(const CommitState*, LayerTreeImpl* tree_impl);
+  static void SynchronizeTrees(const CommitState& commit_state,
+                               const ThreadUnsafeCommitState& unsafe_state,
+                               LayerTreeImpl* tree_impl);
 
   static void SynchronizeTrees(LayerTreeImpl* pending_tree,
                                LayerTreeImpl* active_tree);
 
-  static void PushLayerProperties(CommitState*, LayerTreeImpl* impl_tree);
+  static void PushLayerProperties(const CommitState& commit_state,
+                                  const ThreadUnsafeCommitState& unsafe_state,
+                                  LayerTreeImpl* impl_tree);
 
   static void PushLayerProperties(LayerTreeImpl* pending_tree,
                                   LayerTreeImpl* active_tree);

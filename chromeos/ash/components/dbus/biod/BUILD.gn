@@ -1,0 +1,52 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
+
+component("biod") {
+  defines = [ "IS_BIOD_CLIENT_IMPL" ]
+
+  public_deps = [
+    ":biod_proto",
+    "//chromeos/dbus/common",
+  ]
+
+  deps = [
+    "//base",
+    "//dbus",
+  ]
+
+  sources = [
+    "biod_client.cc",
+    "biod_client.h",
+    "fake_biod_client.cc",
+    "fake_biod_client.h",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  public_deps = [ ":biod" ]
+  deps = [
+    ":biod_proto",
+    "//base",
+    "//dbus",
+  ]
+  sources = [
+    "test_utils.cc",
+    "test_utils.h",
+  ]
+}
+
+proto_library("biod_proto") {
+  sources = [
+    "//third_party/cros_system_api/dbus/biod/constants.proto",
+    "//third_party/cros_system_api/dbus/biod/messages.proto",
+  ]
+
+  proto_out_dir = "chromeos/ash/components/dbus/biod"
+}

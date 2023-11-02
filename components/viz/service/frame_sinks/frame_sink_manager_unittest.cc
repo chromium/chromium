@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,14 @@
 
 #include "base/containers/contains.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/viz/common/constants.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
+#include "components/viz/service/surfaces/surface_manager.h"
 #include "components/viz/test/begin_frame_source_test.h"
 #include "components/viz/test/compositor_frame_helpers.h"
 #include "components/viz/test/fake_external_begin_frame_source.h"
@@ -33,6 +36,8 @@ constexpr FrameSinkId kFrameSinkIdA(2, 1);
 constexpr FrameSinkId kFrameSinkIdB(3, 1);
 constexpr FrameSinkId kFrameSinkIdC(4, 1);
 constexpr FrameSinkId kFrameSinkIdD(5, 1);
+constexpr FrameSinkId kFrameSinkIdE(6, 1);
+constexpr FrameSinkId kFrameSinkIdF(7, 1);
 
 // Holds the four interface objects needed to create a RootCompositorFrameSink.
 struct RootCompositorFrameSinkData {
@@ -94,7 +99,7 @@ class FrameSinkManagerTest : public testing::Test {
   }
 
   CapturableFrameSink* FindCapturableFrameSink(const FrameSinkId& id) {
-    return manager_.FindCapturableFrameSink(id);
+    return manager_.FindCapturableFrameSink(VideoCaptureTarget(id));
   }
 
   // Verifies the frame sinks with provided id in |ids| are throttled at
@@ -401,7 +406,44 @@ TEST_F(FrameSinkManagerTest, EvictSurfaces) {
 
   // Call EvictSurfaces. Now the garbage collector can destroy the surfaces.
   manager_.EvictSurfaces({surface_id1, surface_id2});
+  // Garbage collection is not synchronous.
+  EXPECT_TRUE(manager_.surface_manager()->GetSurfaceForId(surface_id1));
+
   ExpireAllTemporaryReferencesAndGarbageCollect();
+  EXPECT_FALSE(manager_.surface_manager()->GetSurfaceForId(surface_id1));
+  EXPECT_FALSE(manager_.surface_manager()->GetSurfaceForId(surface_id2));
+}
+
+// Verifies that the SurfaceIds passed to EvictSurfaces are destroyed
+// synchronously if the feature is enabled..
+TEST_F(FrameSinkManagerTest, EagerSurfacesGarbageCollection) {
+  base::test::ScopedFeatureList feature_list{
+      features::kEagerSurfaceGarbageCollection};
+
+  ParentLocalSurfaceIdAllocator allocator1;
+  ParentLocalSurfaceIdAllocator allocator2;
+  allocator1.GenerateId();
+  LocalSurfaceId local_surface_id1 = allocator1.GetCurrentLocalSurfaceId();
+  allocator2.GenerateId();
+  LocalSurfaceId local_surface_id2 = allocator2.GetCurrentLocalSurfaceId();
+  SurfaceId surface_id1(kFrameSinkIdA, local_surface_id1);
+  SurfaceId surface_id2(kFrameSinkIdB, local_surface_id2);
+
+  // Create two frame sinks. Each create a surface.
+  auto sink1 = CreateCompositorFrameSinkSupport(kFrameSinkIdA);
+  auto sink2 = CreateCompositorFrameSinkSupport(kFrameSinkIdB);
+  sink1->SubmitCompositorFrame(local_surface_id1, MakeDefaultCompositorFrame());
+  sink2->SubmitCompositorFrame(local_surface_id2, MakeDefaultCompositorFrame());
+
+  // |surface_id1| and |surface_id2| should remain alive after garbage
+  // collection because they're not marked for destruction.
+  ExpireAllTemporaryReferencesAndGarbageCollect();
+  EXPECT_TRUE(manager_.surface_manager()->GetSurfaceForId(surface_id1));
+  EXPECT_TRUE(manager_.surface_manager()->GetSurfaceForId(surface_id2));
+
+  // Call EvictSurfaces. Now the garbage collector can destroy the surfaces.
+  manager_.EvictSurfaces({surface_id1, surface_id2});
+  // Garbage collection happened synchronously.
   EXPECT_FALSE(manager_.surface_manager()->GetSurfaceForId(surface_id1));
   EXPECT_FALSE(manager_.surface_manager()->GetSurfaceForId(surface_id2));
 }
@@ -470,6 +512,90 @@ TEST_F(FrameSinkManagerTest, Throttle) {
                                         client_c->frame_sink_id());
   manager_.UnregisterFrameSinkHierarchy(client_c->frame_sink_id(),
                                         client_d->frame_sink_id());
+}
+
+TEST_F(FrameSinkManagerTest, GlobalThrottle) {
+  // root -> A -> B
+  //      -> C -> D
+  auto root = CreateCompositorFrameSinkSupport(kFrameSinkIdRoot);
+  auto client_a = CreateCompositorFrameSinkSupport(kFrameSinkIdA);
+  auto client_b = CreateCompositorFrameSinkSupport(kFrameSinkIdB);
+  auto client_c = CreateCompositorFrameSinkSupport(kFrameSinkIdC);
+  auto client_d = CreateCompositorFrameSinkSupport(kFrameSinkIdD);
+
+  // Set up the hierarchy.
+  manager_.RegisterFrameSinkHierarchy(root->frame_sink_id(),
+                                      client_a->frame_sink_id());
+  manager_.RegisterFrameSinkHierarchy(client_a->frame_sink_id(),
+                                      client_b->frame_sink_id());
+  manager_.RegisterFrameSinkHierarchy(root->frame_sink_id(),
+                                      client_c->frame_sink_id());
+  manager_.RegisterFrameSinkHierarchy(client_c->frame_sink_id(),
+                                      client_d->frame_sink_id());
+
+  constexpr base::TimeDelta global_interval = base::Hertz(30);
+  constexpr base::TimeDelta interval = base::Hertz(20);
+  // The global throttle interval is floored to avoid precision-related
+  // accumulated error. See the comment on `StartThrottlingAllFrameSinks`
+  const base::TimeDelta expected_global_interval =
+      base::Hertz(30).FloorToMultiple(base::Microseconds(100));
+
+  std::vector<FrameSinkId> ids{kFrameSinkIdRoot, kFrameSinkIdA, kFrameSinkIdB,
+                               kFrameSinkIdC, kFrameSinkIdD};
+
+  // By default, a CompositorFrameSinkSupport shouldn't have its
+  // |begin_frame_interval| set.
+  VerifyThrottling(base::TimeDelta(), ids);
+
+  // Starting global throttling should throttle the entire hierarchy.
+  manager_.StartThrottlingAllFrameSinks(global_interval);
+  VerifyThrottling(expected_global_interval, ids);
+
+  // Throttling more aggressively on top of global throttling should further
+  // throttle the specified frame sink hierarchy, but preserve global throttling
+  // on the unaffected framesinks.
+  manager_.Throttle({kFrameSinkIdC}, interval);
+  VerifyThrottling(expected_global_interval,
+                   {kFrameSinkIdRoot, kFrameSinkIdA, kFrameSinkIdB});
+  VerifyThrottling(interval, {kFrameSinkIdC, kFrameSinkIdD});
+
+  // Attempting to per-sink throttle to an interval shorter than the global
+  // throttling should still throttle all frame sinks to the global interval.
+  manager_.Throttle({kFrameSinkIdA}, base::Hertz(40));
+  VerifyThrottling(expected_global_interval, ids);
+
+  // Add a new branch to the hierarchy. These new frame sinks should be globally
+  // throttled immediately. root -> A -> B
+  //      -> C -> D
+  //      -> E -> F
+  auto client_e = CreateCompositorFrameSinkSupport(kFrameSinkIdE);
+  auto client_f = CreateCompositorFrameSinkSupport(kFrameSinkIdF);
+  manager_.RegisterFrameSinkHierarchy(root->frame_sink_id(),
+                                      client_e->frame_sink_id());
+  manager_.RegisterFrameSinkHierarchy(client_e->frame_sink_id(),
+                                      client_f->frame_sink_id());
+  VerifyThrottling(
+      expected_global_interval,
+      {kFrameSinkIdRoot, kFrameSinkIdA, kFrameSinkIdB, kFrameSinkIdC,
+       kFrameSinkIdD, kFrameSinkIdE, kFrameSinkIdF});
+
+  // Disabling global throttling should revert back to only the up-to-date
+  // per-frame sink throttling.
+  manager_.StopThrottlingAllFrameSinks();
+  VerifyThrottling(base::Hertz(40), {kFrameSinkIdA, kFrameSinkIdB});
+
+  manager_.UnregisterFrameSinkHierarchy(root->frame_sink_id(),
+                                        client_a->frame_sink_id());
+  manager_.UnregisterFrameSinkHierarchy(client_a->frame_sink_id(),
+                                        client_b->frame_sink_id());
+  manager_.UnregisterFrameSinkHierarchy(root->frame_sink_id(),
+                                        client_c->frame_sink_id());
+  manager_.UnregisterFrameSinkHierarchy(client_c->frame_sink_id(),
+                                        client_d->frame_sink_id());
+  manager_.UnregisterFrameSinkHierarchy(root->frame_sink_id(),
+                                        client_e->frame_sink_id());
+  manager_.UnregisterFrameSinkHierarchy(client_e->frame_sink_id(),
+                                        client_f->frame_sink_id());
 }
 
 // Verifies if a frame sink is being captured, it should not be throttled.

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 
 #import "ios/chrome/browser/ui/main_content/test/test_main_content_ui_observer.h"
 #import "ios/chrome/browser/ui/main_content/test/test_main_content_ui_state.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
+#import "testing/gtest/include/gtest/gtest.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -53,7 +53,7 @@ void VerifyMainContentUIBroadcast(TestMainContentUIState* ui_state,
                                   bool should_broadcast) {
   ASSERT_TRUE(ui_state);
   ASSERT_TRUE(broadcaster);
-  // Create an observer and modifier for |ui_state|.
+  // Create an observer and modifier for `ui_state`.
   TestMainContentUIObserver* observer =
       [[TestMainContentUIObserver alloc] init];
   observer.broadcaster = broadcaster;
@@ -68,6 +68,6 @@ void VerifyMainContentUIBroadcast(TestMainContentUIState* ui_state,
     EXPECT_EQ(observer.scrolling, modifier.was_scrolling());
     EXPECT_EQ(observer.dragging, modifier.was_dragging());
   }
-  // Stop observing |broadcaster|.
+  // Stop observing `broadcaster`.
   observer.broadcaster = nil;
 }

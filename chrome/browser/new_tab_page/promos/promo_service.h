@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/new_tab_page/promos/promo_data.h"
 #include "chrome/browser/new_tab_page/promos/promo_service_observer.h"
@@ -29,6 +30,8 @@ class SharedURLLoaderFactory;
 class PromoService : public KeyedService {
  public:
   enum class Status {
+    // Promo service initialized and no new response has been registered.
+    NOT_UPDATED,
     // Received a valid response and there is a promo running.
     OK_WITH_PROMO,
     // Received a valid response but there is no promo running.
@@ -57,8 +60,9 @@ class PromoService : public KeyedService {
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  // Returns the currently cached middle-slot PromoData, if any.
-  const absl::optional<PromoData>& promo_data() const { return promo_data_; }
+  // Returns the currently cached middle-slot PromoData, if any. Virtual for
+  // testing.
+  virtual const absl::optional<PromoData>& promo_data() const;
   Status promo_status() const { return promo_status_; }
 
   // Requests an asynchronous refresh from the network. After the update
@@ -66,12 +70,15 @@ class PromoService : public KeyedService {
   virtual void Refresh();
 
   // Add/remove observers. All observers must unregister themselves before the
-  // PromoService is destroyed.
-  void AddObserver(PromoServiceObserver* observer);
+  // PromoService is destroyed. Virtual for testing.
+  virtual void AddObserver(PromoServiceObserver* observer);
   void RemoveObserver(PromoServiceObserver* observer);
 
   // Marks |promo_id| as blocked from being shown again.
   void BlocklistPromo(const std::string& promo_id);
+
+  // Unmarks |promo_id| as blocked and allows it to be shown again.
+  void UndoBlocklistPromo(const std::string& promo_id);
 
   GURL GetLoadURLForTesting() const;
 
@@ -94,9 +101,9 @@ class PromoService : public KeyedService {
   base::ObserverList<PromoServiceObserver, true>::Unchecked observers_;
 
   absl::optional<PromoData> promo_data_;
-  Status promo_status_;
+  Status promo_status_ = Status::NOT_UPDATED;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   base::WeakPtrFactory<PromoService> weak_ptr_factory_{this};
 };

@@ -1,10 +1,9 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/network/trust_tokens/trust_token_request_signing_helper.h"
 
-#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <string>
@@ -32,9 +31,9 @@
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/public/cpp/trust_token_parameterization.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
+#include "services/network/test/trust_token_test_util.h"
 #include "services/network/trust_tokens/proto/public.pb.h"
 #include "services/network/trust_tokens/test/signed_request_verification_util.h"
-#include "services/network/trust_tokens/test/trust_token_test_util.h"
 #include "services/network/trust_tokens/trust_token_request_canonicalizer.h"
 #include "services/network/trust_tokens/trust_token_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -158,9 +157,9 @@ void AssertHasSignaturesAndExtract(
     net::structured_headers::Item& issuer_item = issuer_and_params.item;
     ASSERT_TRUE(issuer_item.is_string());
 
-    auto signature_iterator = std::find_if(
-        issuer_and_params.params.begin(), issuer_and_params.params.end(),
-        [](auto& param) { return param.first == "sig"; });
+    auto signature_iterator = base::ranges::find(
+        issuer_and_params.params, "sig",
+        &net::structured_headers::Parameters::value_type::first);
 
     ASSERT_TRUE(signature_iterator != issuer_and_params.params.end())
         << "Missing signature";
@@ -180,8 +179,8 @@ void AssertDecodesToCborAndExtractField(base::StringPiece signing_data,
   absl::optional<cbor::Value> parsed = cbor::Reader::Read(base::as_bytes(
       // Skip over the domain separator (e.g. "Trust Token v0").
       base::make_span(signing_data)
-          .subspan(base::size(TrustTokenRequestSigningHelper::
-                                  kRequestSigningDomainSeparator))));
+          .subspan(std::size(TrustTokenRequestSigningHelper::
+                                 kRequestSigningDomainSeparator))));
   ASSERT_TRUE(parsed);
 
   const cbor::Value::MapValue& map = parsed->GetMap();

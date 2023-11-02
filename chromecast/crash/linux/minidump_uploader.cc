@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -216,7 +216,8 @@ bool MinidumpUploader::DoWork() {
     LOG(INFO) << "Uploading crash to " << upload_location_;
     CastCrashdumpData crashdump_data;
     crashdump_data.product = kProductName;
-    crashdump_data.version = GetVersionString();
+    crashdump_data.version = GetVersionString(
+        dump.params().cast_release_version, dump.params().cast_build_number);
     crashdump_data.guid = client_id;
     crashdump_data.ptime = uptime_stream.str();
     crashdump_data.comments = comment.str();
@@ -283,6 +284,9 @@ bool MinidumpUploader::DoWork() {
     }
     if (!dump.params().stadia_session_id.empty()) {
       g.SetParameter("stadia_session_id", dump.params().stadia_session_id);
+    }
+    if (!dump.params().signature.empty()) {
+      g.SetParameter("signature", dump.params().signature);
     }
     if (!dump.params().extra_info.empty()) {
       std::vector<std::string> pairs = base::SplitString(dump.params().extra_info,

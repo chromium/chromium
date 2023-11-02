@@ -126,7 +126,8 @@ class PrintExpectations(Command):
 
         if options.paths:
             files = default_port.default_expectations_files()
-            web_tests_dir = default_port.web_tests_dir()
+            web_tests_dir = default_port._filesystem.normpath(
+                default_port.web_tests_dir())
             for file in files:
                 if file.startswith(web_tests_dir):
                     file = file.replace(web_tests_dir,

@@ -1,9 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "components/android_autofill/browser/android_autofill_manager.h"
 #include "components/android_autofill/browser/test_autofill_provider.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -11,47 +15,55 @@ namespace autofill {
 class AndroidAutofillManagerTestHelper : public AndroidAutofillManager {
  public:
   explicit AndroidAutofillManagerTestHelper(AutofillProvider* autofill_provider)
-      : AndroidAutofillManager(nullptr,
-                               nullptr,
-                               DISABLE_AUTOFILL_DOWNLOAD_MANAGER) {
+      : AndroidAutofillManager(nullptr, nullptr, EnableDownloadManager(false)) {
     set_autofill_provider_for_testing(autofill_provider);
   }
 
   void SimulatePropagateAutofillPredictions() {
-    PropagateAutofillPredictions(nullptr, std::vector<FormStructure*>());
+    PropagateAutofillPredictions({});
   }
 
   void SimulateOnAskForValuesToFillImpl() {
-    OnAskForValuesToFillImpl(0, FormData(), FormFieldData(), gfx::RectF(),
-                             /*autoselect_first_suggestion=*/false);
+    OnAskForValuesToFillImpl(FormData(), FormFieldData(), gfx::RectF(),
+                             /*query_id=*/0,
+                             /*autoselect_first_suggestion=*/false,
+                             FormElementWasClicked(false));
   }
 };
 
 class AutofillProviderTestHelper : public TestAutofillProvider {
  public:
+  explicit AutofillProviderTestHelper(content::WebContents* web_contents)
+      : TestAutofillProvider(web_contents) {}
+
   bool HasServerPrediction() const { return manager_->has_server_prediction(); }
 
  private:
   // AutofillProvider
-  void OnAskForValuesToFill(AndroidAutofillManager* manager,
-                            int32_t id,
-                            const FormData& form,
-                            const FormFieldData& field,
-                            const gfx::RectF& bounding_box,
-                            bool autoselect_first_suggestion) override {
+  void OnAskForValuesToFill(
+      AndroidAutofillManager* manager,
+      const FormData& form,
+      const FormFieldData& field,
+      const gfx::RectF& bounding_box,
+      int32_t query_id,
+      bool autoselect_first_suggestion,
+      FormElementWasClicked form_element_was_clicked) override {
     manager_ = manager;
   }
   void OnServerQueryRequestError(AndroidAutofillManager* manager,
                                  FormSignature form_signature) override {}
 
-  AndroidAutofillManager* manager_;
+  raw_ptr<AndroidAutofillManager> manager_;
 };
 
 class AutofillProviderTest : public testing::Test {
  public:
   void SetUp() override {
+    web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        &browser_context_, nullptr);
+    // Owned by WebContents.
     autofill_provider_test_helper_ =
-        std::make_unique<AutofillProviderTestHelper>();
+        new AutofillProviderTestHelper(web_contents_.get());
     android_autofill_manager_test_helper_ =
         std::make_unique<AndroidAutofillManagerTestHelper>(
             autofill_provider_test_helper_.get());
@@ -66,7 +78,11 @@ class AutofillProviderTest : public testing::Test {
   }
 
  private:
-  std::unique_ptr<AutofillProviderTestHelper> autofill_provider_test_helper_;
+  content::BrowserTaskEnvironment task_environment_;
+  content::TestBrowserContext browser_context_;
+  std::unique_ptr<content::WebContents> web_contents_;
+  // Owned by WebContents.
+  raw_ptr<AutofillProviderTestHelper> autofill_provider_test_helper_;
   std::unique_ptr<AndroidAutofillManagerTestHelper>
       android_autofill_manager_test_helper_;
 };

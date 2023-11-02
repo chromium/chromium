@@ -1,12 +1,13 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import <Foundation/Foundation.h>
 
-#include <memory>
+#import <memory>
 
-#include "base/strings/utf_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/sessions/test_session_service.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
@@ -22,13 +23,13 @@
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
-#include "ui/base/device_form_factor.h"
+#import "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -39,7 +40,10 @@ namespace {
 class TabStripControllerTest : public PlatformTest {
  protected:
   TabStripControllerTest()
-      : scene_state_([[SceneState alloc] initWithAppState:nil]) {}
+      : scene_state_([[SceneState alloc] initWithAppState:nil]) {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+  }
 
   void SetUp() override {
     if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET)
@@ -53,19 +57,19 @@ class TabStripControllerTest : public PlatformTest {
     mock_application_settings_commands_handler_ =
         OCMStrictProtocolMock(@protocol(ApplicationSettingsCommands));
 
-    [browser_.GetCommandDispatcher()
+    [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_application_commands_handler_
                      forProtocol:@protocol(ApplicationCommands)];
-    [browser_.GetCommandDispatcher()
+    [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_application_settings_commands_handler_
                      forProtocol:@protocol(ApplicationSettingsCommands)];
-    [browser_.GetCommandDispatcher()
+    [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_popup_menu_commands_handler_
                      forProtocol:@protocol(PopupMenuCommands)];
 
-    SceneStateBrowserAgent::CreateForBrowser(&browser_, scene_state_);
+    SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
 
-    controller_ = [[TabStripController alloc] initWithBrowser:&browser_
+    controller_ = [[TabStripController alloc] initWithBrowser:browser_.get()
                                                         style:NORMAL];
   }
 
@@ -81,14 +85,15 @@ class TabStripControllerTest : public PlatformTest {
     auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     navigation_manager->SetVisibleItem(visible_navigation_item_.get());
     web_state->SetNavigationManager(std::move(navigation_manager));
-    browser_.GetWebStateList()->InsertWebState(
+    browser_->GetWebStateList()->InsertWebState(
         /*index=*/0, std::move(web_state), WebStateList::INSERT_NO_FLAGS,
         WebStateOpener());
   }
 
   web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<web::NavigationItem> visible_navigation_item_;
-  TestBrowser browser_;
   id mock_application_commands_handler_;
   id mock_popup_menu_commands_handler_;
   id mock_application_settings_commands_handler_;

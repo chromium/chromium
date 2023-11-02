@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -21,7 +21,7 @@ def _ResourceNameToJavaSymbol(resource_name):
   return re.sub('[\.:]', '_', resource_name)
 
 
-class RTxtGenerator(object):
+class RTxtGenerator:
   def __init__(self,
                res_dirs,
                ignore_pattern=resource_utils.AAPT_IGNORE_PATTERN):
@@ -77,7 +77,7 @@ class RTxtGenerator(object):
     try:
       return ElementTree.parse(xml_path).getroot()
     except Exception as e:
-      raise RuntimeError('Failure parsing {}:\n  {}'.format(xml_path, e))
+      raise RuntimeError('Failure parsing {}:\n'.format(xml_path)) from e
 
   def _ExtractNewIdsFromXml(self, xml_path):
     return self._ExtractNewIdsFromNode(self._ParseXml(xml_path))
@@ -137,7 +137,7 @@ class RTxtGenerator(object):
     ret = set()
     for res_dir in self.res_dirs:
       ret.update(self._CollectResourcesListFromDirectory(res_dir))
-    return ret
+    return sorted(ret)
 
   def WriteRTxtFile(self, rtxt_path):
     resources = self._CollectResourcesListFromDirectories()

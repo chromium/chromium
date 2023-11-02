@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -195,7 +195,7 @@ TEST_F(RunSegmenterTest, EmojiZWJSequences) {
         FontFallbackPriority::kText},
        {"👩‍👩", USCRIPT_LATIN, OrientationIterator::kOrientationKeep,
         FontFallbackPriority::kEmojiEmoji},
-       {u8"\U0000200D‍efg", USCRIPT_LATIN,
+       {"\U0000200D‍efg", USCRIPT_LATIN,
         OrientationIterator::kOrientationKeep, FontFallbackPriority::kText}});
 }
 
@@ -244,8 +244,8 @@ TEST_F(RunSegmenterTest, EmojiSubdivisionFlags) {
 
 TEST_F(RunSegmenterTest, NonEmojiPresentationSymbols) {
   CheckRunsHorizontal(
-      {{u8"\U00002626\U0000262a\U00002638\U0000271d\U00002721\U00002627"
-        u8"\U00002628\U00002629\U0000262b\U0000262c\U00002670"
+      {{"\U00002626\U0000262a\U00002638\U0000271d\U00002721\U00002627"
+        "\U00002628\U00002629\U0000262b\U0000262c\U00002670"
         "\U00002671\U0000271f\U00002720",
         USCRIPT_COMMON, OrientationIterator::kOrientationKeep,
         FontFallbackPriority::kText}});

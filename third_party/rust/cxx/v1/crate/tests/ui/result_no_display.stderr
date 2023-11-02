@@ -1,5 +1,5 @@
 error[E0277]: `NonError` doesn't implement `std::fmt::Display`
- --> $DIR/result_no_display.rs:4:19
+ --> tests/ui/result_no_display.rs:4:19
   |
 4 |         fn f() -> Result<()>;
   |                   ^^^^^^^^^^ `NonError` cannot be formatted with the default formatter

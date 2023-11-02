@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -283,7 +284,7 @@ class AXTreeSourceWithInvalidId : public AXTreeSource<const AXNode*> {
   }
 
  private:
-  AXTree* tree_;
+  raw_ptr<AXTree> tree_;
   int invalid_id_;
 };
 
@@ -515,7 +516,7 @@ class AXTreeSourceTestWrapper : public AXTreeSource<const AXNode*> {
   }
 
  private:
-  AXTreeSource<const AXNode*>* tree_source_;
+  raw_ptr<AXTreeSource<const AXNode*>> tree_source_;
   std::set<AXNodeID> cleared_node_ids_;
 };
 

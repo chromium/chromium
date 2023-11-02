@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,10 +46,11 @@ bool StructTraits<blink::mojom::blink::CloneableMessage::DataView,
                      data.stack_trace_debugger_id_second()),
       data.stack_trace_should_pause());
 
-  absl::optional<base::UnguessableToken> locked_agent_cluster_id;
-  if (!data.ReadLockedAgentClusterId(&locked_agent_cluster_id))
+  base::UnguessableToken sender_agent_cluster_id;
+  if (!data.ReadSenderAgentClusterId(&sender_agent_cluster_id))
     return false;
-  out->locked_agent_cluster_id = locked_agent_cluster_id;
+  out->sender_agent_cluster_id = sender_agent_cluster_id;
+  out->locked_to_sender_agent_cluster = data.locked_to_sender_agent_cluster();
 
   Vector<PendingRemote<blink::mojom::blink::FileSystemAccessTransferToken>>&
       tokens = out->message->FileSystemAccessTokens();

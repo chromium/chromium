@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/observer_list.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
@@ -24,8 +25,9 @@ namespace policy {
 CloudPolicyCore::Observer::~Observer() = default;
 
 void CloudPolicyCore::Observer::OnRemoteCommandsServiceStarted(
-    CloudPolicyCore* core) {
-}
+    CloudPolicyCore* core) {}
+
+void CloudPolicyCore::Observer::OnCoreDestruction(CloudPolicyCore* core) {}
 
 CloudPolicyCore::CloudPolicyCore(
     const std::string& policy_type,
@@ -40,7 +42,11 @@ CloudPolicyCore::CloudPolicyCore(
       network_connection_tracker_getter_(
           std::move(network_connection_tracker_getter)) {}
 
-CloudPolicyCore::~CloudPolicyCore() = default;
+CloudPolicyCore::~CloudPolicyCore() {
+  Disconnect();
+  for (auto& observer : observers_)
+    observer.OnCoreDestruction(this);
+}
 
 void CloudPolicyCore::Connect(std::unique_ptr<CloudPolicyClient> client) {
   CHECK(!client_);

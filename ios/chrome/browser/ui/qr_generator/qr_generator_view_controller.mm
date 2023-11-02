@@ -1,18 +1,18 @@
-
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/qr_generator/qr_generator_view_controller.h"
 
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/qr_generator/qr_generator_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/image_util.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -25,6 +25,8 @@ const CGFloat kQRCodeImageSize = 200.0;
 constexpr CGFloat kGeneratedImagePadding = 20;
 constexpr CGFloat kButtonMaxWidth = 327;
 constexpr CGFloat kContentMaxWidth = 500;
+constexpr CGFloat kBottomMargin = 24;
+constexpr CGFloat kSymbolSize = 22;
 
 }  // namespace
 
@@ -143,7 +145,8 @@ constexpr CGFloat kContentMaxWidth = 500;
     [stackView.centerXAnchor constraintEqualToAnchor:scrollView.centerXAnchor],
 
     [primaryActionButton.bottomAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor],
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor
+                       constant:-kBottomMargin],
     [primaryActionButton.leadingAnchor
         constraintGreaterThanOrEqualToAnchor:scrollView.leadingAnchor],
     [primaryActionButton.trailingAnchor
@@ -228,8 +231,11 @@ constexpr CGFloat kContentMaxWidth = 500;
 
   NSMutableArray* regularHeightItems = [[NSMutableArray alloc] init];
   NSMutableArray* compactHeightItems = [[NSMutableArray alloc] init];
+  UIImage* helpImage =
+      UseSymbols() ? DefaultSymbolWithPointSize(kHelpSymbol, kSymbolSize)
+                   : [UIImage imageNamed:@"help_icon"];
   UIBarButtonItem* helpButton =
-      [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"help_icon"]
+      [[UIBarButtonItem alloc] initWithImage:helpImage
                                        style:UIBarButtonItemStylePlain
                                       target:self
                                       action:@selector(didTapHelpButton)];

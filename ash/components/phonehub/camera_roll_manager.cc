@@ -1,13 +1,12 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/components/phonehub/camera_roll_manager.h"
 
 #include "ash/components/phonehub/camera_roll_item.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 CameraRollManager::CameraRollManager() = default;
@@ -43,7 +42,19 @@ void CameraRollManager::NotifyCameraRollViewUiStateUpdated() {
   }
 }
 
+void CameraRollManager::NotifyCameraRollDownloadError(
+    CameraRollManager::Observer::DownloadErrorType error_type,
+    const proto::CameraRollItemMetadata& metadata) {
+  for (auto& observer : observer_list_) {
+    observer.OnCameraRollDownloadError(error_type, metadata);
+  }
+}
+
 void CameraRollManager::Observer::OnCameraRollViewUiStateUpdated() {}
 
+void CameraRollManager::Observer::OnCameraRollDownloadError(
+    DownloadErrorType error_type,
+    const proto::CameraRollItemMetadata& metadata) {}
+
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

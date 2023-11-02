@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/notreached.h"
+#include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
 #include "base/task/single_thread_task_runner.h"
@@ -20,12 +21,11 @@
 #include "components/google/core/common/google_util.h"
 #include "components/language/core/browser/url_language_histogram.h"
 #include "components/translate/content/browser/content_record_page_language.h"
-#include "components/translate/content/browser/translate_model_service.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
+#include "components/translate/core/browser/translate_model_service.h"
 #include "components/translate/core/common/translate_metrics.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_details.h"
@@ -36,6 +36,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
@@ -51,25 +52,22 @@ const int kMaxTranslateLoadCheckAttempts = 20;
 // Overrides the hrefTranslate logic to auto-translate when the navigation is
 // from any origin rather than only Google origins. Used for manual testing
 // where the test page may reside on a test domain.
-const base::Feature kAutoHrefTranslateAllOrigins{
-    "AutoHrefTranslateAllOrigins", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kAutoHrefTranslateAllOrigins,
+             "AutoHrefTranslateAllOrigins",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
 
 ContentTranslateDriver::ContentTranslateDriver(
     content::WebContents& web_contents,
-    content::NavigationController* nav_controller,
     language::UrlLanguageHistogram* url_language_histogram,
     translate::TranslateModelService* translate_model_service)
     : content::WebContentsObserver(&web_contents),
-      navigation_controller_(nav_controller),
       translate_manager_(nullptr),
       max_reload_check_attempts_(kMaxTranslateLoadCheckAttempts),
       next_page_seq_no_(0),
       language_histogram_(url_language_histogram),
-      translate_model_service_(translate_model_service) {
-  DCHECK(navigation_controller_);
-}
+      translate_model_service_(translate_model_service) {}
 
 ContentTranslateDriver::~ContentTranslateDriver() = default;
 
@@ -110,12 +108,12 @@ void ContentTranslateDriver::InitiateTranslation(const std::string& page_lang,
 // TranslateDriver methods
 
 bool ContentTranslateDriver::IsLinkNavigation() {
-  return navigation_controller_ &&
-         navigation_controller_->GetLastCommittedEntry() &&
-         ui::PageTransitionCoreTypeIs(
-             navigation_controller_->GetLastCommittedEntry()
-                 ->GetTransitionType(),
-             ui::PAGE_TRANSITION_LINK);
+  return web_contents()->GetController().GetLastCommittedEntry() &&
+         ui::PageTransitionCoreTypeIs(web_contents()
+                                          ->GetController()
+                                          .GetLastCommittedEntry()
+                                          ->GetTransitionType(),
+                                      ui::PAGE_TRANSITION_LINK);
 }
 
 void ContentTranslateDriver::OnTranslateEnabledChanged() {
@@ -151,7 +149,7 @@ void ContentTranslateDriver::RevertTranslation(int page_seq_no) {
 }
 
 bool ContentTranslateDriver::IsIncognito() {
-  return navigation_controller_->GetBrowserContext()->IsOffTheRecord();
+  return web_contents()->GetBrowserContext()->IsOffTheRecord();
 }
 
 const std::string& ContentTranslateDriver::GetContentsMimeType() {
@@ -167,11 +165,16 @@ const GURL& ContentTranslateDriver::GetVisibleURL() {
 }
 
 ukm::SourceId ContentTranslateDriver::GetUkmSourceId() {
-  return ukm::GetSourceIdForWebContentsDocument(web_contents());
+  return web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
 }
 
 bool ContentTranslateDriver::HasCurrentPage() {
-  return (navigation_controller_->GetLastCommittedEntry() != nullptr);
+  // TODO(https://crbug.com/524208): This function used to check the existence
+  // of GetLastCommittedEntry(), which will always exist now. Consider removing
+  // this function, making the callers assume HasCurrentPage() is always true.
+  content::NavigationEntry* current_entry =
+      web_contents()->GetController().GetLastCommittedEntry();
+  return current_entry && !current_entry->IsInitialEntry();
 }
 
 void ContentTranslateDriver::OpenUrlInNewTab(const GURL& url) {
@@ -361,7 +364,7 @@ void ContentTranslateDriver::OnPageTranslated(
     bool cancelled,
     const std::string& source_lang,
     const std::string& translated_lang,
-    TranslateErrors::Type error_type) {
+    TranslateErrors error_type) {
   if (cancelled) {
     // Informs the |TranslateMetricsLogger| that the translation was cancelled.
     translate_manager_->GetActiveTranslateMetricsLogger()

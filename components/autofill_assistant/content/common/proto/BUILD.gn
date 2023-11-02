@@ -1,0 +1,21 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
+proto_library("proto") {
+  proto_in_dir = "//"
+  sources = [ "semantic_feature_overrides.proto" ]
+}
+
+if (is_android) {
+  proto_java_library("proto_java") {
+    proto_path = "//components/autofill_assistant/"
+    sources = [ "semantic_feature_overrides.proto" ]
+  }
+}

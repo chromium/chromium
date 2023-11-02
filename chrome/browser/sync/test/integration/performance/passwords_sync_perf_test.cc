@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,7 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story) {
 
 class PasswordsSyncPerfTest : public SyncTest {
  public:
-  PasswordsSyncPerfTest() : SyncTest(TWO_CLIENT), password_number_(0) {}
+  PasswordsSyncPerfTest() : SyncTest(TWO_CLIENT) {}
 
   PasswordsSyncPerfTest(const PasswordsSyncPerfTest&) = delete;
   PasswordsSyncPerfTest& operator=(const PasswordsSyncPerfTest&) = delete;
@@ -59,7 +59,7 @@ class PasswordsSyncPerfTest : public SyncTest {
   // Returns a new unique password value.
   std::string NextPassword();
 
-  int password_number_;
+  int password_number_ = 0;
 };
 
 void PasswordsSyncPerfTest::AddLogins(int profile, int num_logins) {
@@ -74,7 +74,7 @@ void PasswordsSyncPerfTest::AddLogins(int profile, int num_logins) {
 void PasswordsSyncPerfTest::UpdateLogins(int profile) {
   std::vector<std::unique_ptr<password_manager::PasswordForm>> logins =
       passwords_helper::GetLogins(GetProfilePasswordStoreInterface(profile));
-  for (auto& login : logins) {
+  for (std::unique_ptr<password_manager::PasswordForm>& login : logins) {
     login->password_value = base::ASCIIToUTF16(NextPassword());
     GetProfilePasswordStoreInterface(profile)->UpdateLogin(*login);
   }
@@ -101,7 +101,7 @@ std::string PasswordsSyncPerfTest::NextPassword() {
 IN_PROC_BROWSER_TEST_F(PasswordsSyncPerfTest, P0) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
-  auto reporter =
+  perf_test::PerfResultReporter reporter =
       SetUpReporter(base::NumberToString(kNumPasswords) + "_passwords");
   AddLogins(0, kNumPasswords);
   base::TimeDelta dt = TimeUntilQuiescence(GetSyncClients());

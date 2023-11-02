@@ -1,9 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_COCOA_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_COCOA_H_
+
+#include "base/memory/raw_ptr.h"
 
 #import <Cocoa/Cocoa.h>
 #include <string>
@@ -40,20 +42,6 @@ struct CONTENT_EXPORT AXTextEdit {
 // Returns true if the given object is an NSRange instance.
 bool IsNSRange(id value);
 
-// Uses a system API to verify that the given object is an AXTextMarker object.
-bool IsAXTextMarker(id text_marker);
-
-// Uses a system API to verify that the given object is an AXTextMarkerRange
-// object.
-bool IsAXTextMarkerRange(id marker_range);
-
-// Returns the AXNodePosition representing the given AXTextMarker.
-CONTENT_EXPORT BrowserAccessibility::AXPosition AXTextMarkerToAXPosition(
-    id text_marker);
-
-// Returns the AXRange representing the given AXTextMarkerRange.
-BrowserAccessibility::AXRange AXTextMarkerRangeToAXRange(id marker_range);
-
 // Returns an AXTextMarker representing the given position in the tree.
 id AXTextMarkerFrom(const BrowserAccessibilityCocoa* anchor,
                     int offset,
@@ -70,7 +58,7 @@ id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
 // This class converts it into a format Cocoa can query.
 @interface BrowserAccessibilityCocoa : AXPlatformNodeCocoa {
  @private
-  content::BrowserAccessibility* _owner;
+  raw_ptr<content::BrowserAccessibility> _owner;
   // An array of children of this object. Cached to avoid re-computing.
   base::scoped_nsobject<NSMutableArray> _children;
   // Whether the children have changed and need to be updated.
@@ -98,10 +86,6 @@ id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
 // from browserAccessibility_.
 - (ax::mojom::Role)internalRole;
 
-// Convenience method to get the BrowserAccessibilityDelegate from
-// the manager.
-- (content::BrowserAccessibilityDelegate*)delegate;
-
 // Get the BrowserAccessibility that this object wraps.
 - (content::BrowserAccessibility*)owner;
 
@@ -119,7 +103,6 @@ id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
 - (NSString*)methodNameForAttribute:(NSString*)attribute;
 
 - (NSString*)valueForRange:(NSRange)range;
-- (NSAttributedString*)attributedValueForRange:(NSRange)range;
 - (NSRect)frameForRange:(NSRange)range;
 
 // Find the index of the given row among the descendants of this object
@@ -131,62 +114,39 @@ id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
 // on the characteristics of this accessibility node.
 - (content::BrowserAccessibility*)actionTarget;
 
-// Internally-used property.
-@property(nonatomic, readonly) NSPoint origin;
-
-@property(nonatomic, readonly) NSNumber* ariaPosInSet;
-@property(nonatomic, readonly) NSNumber* ariaSetSize;
 @property(nonatomic, readonly) NSArray* children;
 @property(nonatomic, readonly) NSArray* columns;
 @property(nonatomic, readonly) NSValue* columnIndexRange;
-@property(nonatomic, readonly) NSString* descriptionForAccessibility;
 @property(nonatomic, readonly) NSNumber* disclosing;
 @property(nonatomic, readonly) id disclosedByRow;
 @property(nonatomic, readonly) NSNumber* disclosureLevel;
 @property(nonatomic, readonly) id disclosedRows;
-@property(nonatomic, readonly) NSString* dropEffects;
-// Returns the object at the root of the current edit field, if any.
-@property(nonatomic, readonly) id editableAncestor;
 @property(nonatomic, readonly) NSNumber* enabled;
 // Returns a text marker that points to the last character in the document that
 // can be selected with Voiceover.
 @property(nonatomic, readonly) id endTextMarker;
 @property(nonatomic, readonly) NSNumber* expanded;
 @property(nonatomic, readonly) NSNumber* focused;
-@property(nonatomic, readonly) NSNumber* grabbed;
 @property(nonatomic, readonly) id header;
-@property(nonatomic, readonly) NSString* help;
-// isIgnored returns whether or not the accessibility object
-// should be ignored by the accessibility hierarchy.
-@property(nonatomic, readonly, getter=isIgnored) BOOL ignored;
 // Index of a row, column, or tree item.
 @property(nonatomic, readonly) NSNumber* index;
 @property(nonatomic, readonly) NSNumber* treeItemRowIndex;
 @property(nonatomic, readonly) NSNumber* insertionPointLineNumber;
-@property(nonatomic, readonly) NSNumber* isMultiSelectable;
-@property(nonatomic, readonly) NSNumber* loaded;
-@property(nonatomic, readonly) NSNumber* loadingProgress;
 @property(nonatomic, readonly) NSNumber* maxValue;
 @property(nonatomic, readonly) NSNumber* minValue;
 @property(nonatomic, readonly) NSNumber* numberOfCharacters;
 @property(nonatomic, readonly) NSString* orientation;
 @property(nonatomic, readonly) id parent;
 @property(nonatomic, readonly) NSValue* position;
-@property(nonatomic, readonly) NSNumber* required;
 // A string indicating the role of this object as far as accessibility
 // is concerned.
 @property(nonatomic, readonly) NSString* role;
-@property(nonatomic, readonly) NSString* roleDescription;
 @property(nonatomic, readonly) NSArray* rowHeaders;
 @property(nonatomic, readonly) NSValue* rowIndexRange;
-@property(nonatomic, readonly) NSArray* rows;
-// The object is selected as a whole.
-@property(nonatomic, readonly) NSNumber* selected;
 @property(nonatomic, readonly) NSArray* selectedChildren;
 @property(nonatomic, readonly) NSString* selectedText;
 @property(nonatomic, readonly) NSValue* selectedTextRange;
 @property(nonatomic, readonly) id selectedTextMarkerRange;
-@property(nonatomic, readonly) NSValue* size;
 @property(nonatomic, readonly) NSString* sortDirection;
 // Returns a text marker that points to the first character in the document that
 // can be selected with Voiceover.
@@ -196,9 +156,6 @@ id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
 @property(nonatomic, readonly) NSString* subrole;
 // The tabs owned by a tablist.
 @property(nonatomic, readonly) NSArray* tabs;
-@property(nonatomic, readonly) NSString* title;
-@property(nonatomic, readonly) id titleUIElement;
-@property(nonatomic, readonly) NSURL* url;
 @property(nonatomic, readonly) NSString* value;
 @property(nonatomic, readonly) NSString* valueDescription;
 @property(nonatomic, readonly) NSValue* visibleCharacterRange;
@@ -206,7 +163,6 @@ id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
 @property(nonatomic, readonly) NSArray* visibleChildren;
 @property(nonatomic, readonly) NSArray* visibleColumns;
 @property(nonatomic, readonly) NSArray* visibleRows;
-@property(nonatomic, readonly) NSNumber* visited;
 @property(nonatomic, readonly) id window;
 @end
 

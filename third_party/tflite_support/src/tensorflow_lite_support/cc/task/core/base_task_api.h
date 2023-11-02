@@ -18,8 +18,8 @@ limitations under the License.
 
 #include <utility>
 
-#include "absl/status/status.h"
-#include "absl/strings/string_view.h"
+#include "absl/status/status.h"        // from @com_google_absl
+#include "absl/strings/string_view.h"  // from @com_google_absl
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow_lite_support/cc/common.h"
 #include "tensorflow_lite_support/cc/port/status_macros.h"
@@ -38,14 +38,19 @@ class BaseUntypedTaskApi {
 
   virtual ~BaseUntypedTaskApi() = default;
 
-  TfLiteEngine* GetTfLiteEngine() { return engine_.get(); }
-  const TfLiteEngine* GetTfLiteEngine() const { return engine_.get(); }
-
   const metadata::ModelMetadataExtractor* GetMetadataExtractor() const {
     return engine_->metadata_extractor();
   }
 
  protected:
+  // TODO(b/200258103): It's a short term solution. In the future we will forbid
+  // Tasks exposing the underlying TfLiteEngine. Please try not rely on this
+  // function.
+  //
+  // Returns a raw pointer to the underlying TfLiteEngine.
+  TfLiteEngine* GetTfLiteEngine() { return engine_.get(); }
+
+ private:
   std::unique_ptr<TfLiteEngine> engine_;
 };
 
@@ -58,6 +63,24 @@ class BaseTaskApi : public BaseUntypedTaskApi {
   BaseTaskApi(const BaseTaskApi&) = delete;
   BaseTaskApi& operator=(const BaseTaskApi&) = delete;
 
+  int32_t GetInputCount() {
+    return GetTfLiteEngine()->interpreter()->inputs().size();
+  }
+
+  const TfLiteIntArray* GetInputShape(int index) {
+    auto interpreter = GetTfLiteEngine()->interpreter();
+    return interpreter->tensor(interpreter->inputs()[index])->dims;
+  }
+
+  int32_t GetOutputCount() {
+    return GetTfLiteEngine()->interpreter()->outputs().size();
+  }
+
+  const TfLiteIntArray* GetOutputShape(int index) {
+    auto interpreter = GetTfLiteEngine()->interpreter();
+    return interpreter->tensor(interpreter->outputs()[index])->dims;
+  }
+
   // Cancels the current running TFLite invocation on CPU.
   //
   // Usually called on a different thread than the one inference is running on.
@@ -69,7 +92,7 @@ class BaseTaskApi : public BaseUntypedTaskApi {
   // partially delegated on CPU, logs a warning message and only cancels the
   // invocation running on CPU. Other invocation which depends on the output of
   // the CPU invocation will not be executed.
-  void Cancel() { engine_->Cancel(); }
+  void Cancel() { GetTfLiteEngine()->Cancel(); }
 
  protected:
   // Subclasses need to populate input_tensors from api_inputs.
@@ -84,18 +107,20 @@ class BaseTaskApi : public BaseUntypedTaskApi {
       InputTypes... api_inputs) = 0;
 
   // Returns (the addresses of) the model's inputs.
-  std::vector<TfLiteTensor*> GetInputTensors() { return engine_->GetInputs(); }
+  std::vector<TfLiteTensor*> GetInputTensors() {
+    return GetTfLiteEngine()->GetInputs();
+  }
 
   // Returns (the addresses of) the model's outputs.
   std::vector<const TfLiteTensor*> GetOutputTensors() {
-    return engine_->GetOutputs();
+    return GetTfLiteEngine()->GetOutputs();
   }
 
   // Performs inference using tflite::support::TfLiteInterpreterWrapper
   // InvokeWithoutFallback().
   tflite::support::StatusOr<OutputType> Infer(InputTypes... args) {
     tflite::task::core::TfLiteEngine::InterpreterWrapper* interpreter_wrapper =
-        engine_->interpreter_wrapper();
+        GetTfLiteEngine()->interpreter_wrapper();
     // Note: AllocateTensors() is already performed by the interpreter wrapper
     // at InitInterpreter time (see TfLiteEngine).
     RETURN_IF_ERROR(Preprocess(GetInputTensors(), args...));
@@ -115,7 +140,7 @@ class BaseTaskApi : public BaseUntypedTaskApi {
   // CPU where applicable.
   tflite::support::StatusOr<OutputType> InferWithFallback(InputTypes... args) {
     tflite::task::core::TfLiteEngine::InterpreterWrapper* interpreter_wrapper =
-        engine_->interpreter_wrapper();
+        GetTfLiteEngine()->interpreter_wrapper();
     // Note: AllocateTensors() is already performed by the interpreter wrapper
     // at InitInterpreter time (see TfLiteEngine).
     RETURN_IF_ERROR(Preprocess(GetInputTensors(), args...));

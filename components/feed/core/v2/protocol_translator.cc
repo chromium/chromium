@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -270,7 +270,7 @@ absl::optional<feedstore::DataOperation> TranslateDataOperation(
 RefreshResponseData TranslateWireResponse(
     feedwire::Response response,
     StreamModelUpdateRequest::Source source,
-    bool was_signed_in_request,
+    const AccountInfo& account_info,
     base::Time current_time) {
   if (response.response_version() != feedwire::Response::FEED_RESPONSE)
     return {};
@@ -322,17 +322,31 @@ RefreshResponseData TranslateWireResponse(
 
   const auto& chrome_response_metadata =
       response_metadata.chrome_feed_response_metadata();
-  result->stream_data.set_signed_in(was_signed_in_request);
+  // Note that we're storing the raw proto bytes for the root event ID because
+  // we want to retain any unknown fields. This value is ignored in next-page
+  // responses. Because time_usec is a required field, we can only serialize
+  // this message if it is set.
+  if (response_metadata.event_id().has_time_usec()) {
+    result->stream_data.set_root_event_id(
+        response_metadata.event_id().SerializeAsString());
+  }
+  result->stream_data.set_signed_in(!account_info.IsEmpty());
+  result->stream_data.set_gaia(account_info.gaia);
+  result->stream_data.set_email(account_info.email);
   result->stream_data.set_logging_enabled(
       chrome_response_metadata.logging_enabled());
   result->stream_data.set_privacy_notice_fulfilled(
       chrome_response_metadata.privacy_notice_fulfilled());
+
   for (const feedstore::Content& content : result->content) {
-    result->stream_data.add_content_ids(content.content_id().id());
+    for (auto& metadata : content.prefetch_metadata()) {
+      result->stream_data.add_content_hashes(
+          feedstore::ContentHashFromPrefetchMetadata(metadata));
+    }
   }
 
   absl::optional<std::string> session_id = absl::nullopt;
-  if (was_signed_in_request) {
+  if (!account_info.IsEmpty()) {
     // Signed-in requests don't use session_id tokens; set an empty value to
     // ensure that there are no old session_id tokens left hanging around.
     session_id = std::string();
@@ -363,10 +377,16 @@ RefreshResponseData TranslateWireResponse(
   response_data.content_lifetime = std::move(content_lifetime);
   response_data.session_id = std::move(session_id);
   response_data.experiments = std::move(experiments);
-  response_data.server_request_received_timestamp_ns =
-      feed_response->feed_response_metadata().event_id().time_usec() * 1'000;
-  response_data.server_response_sent_timestamp_ns =
-      feed_response->feed_response_metadata().response_time_ms() * 1'000'000;
+  response_data.server_request_received_timestamp =
+      feedstore::FromTimestampMicros(
+          feed_response->feed_response_metadata().event_id().time_usec());
+  response_data.server_response_sent_timestamp = feedstore::FromTimestampMillis(
+      feed_response->feed_response_metadata().response_time_ms());
+  response_data.last_fetch_timestamp = current_time;
+  response_data.web_and_app_activity_enabled =
+      chrome_response_metadata.web_and_app_activity_enabled();
+  response_data.discover_personalization_enabled =
+      chrome_response_metadata.discover_personalization_enabled();
 
   return response_data;
 }

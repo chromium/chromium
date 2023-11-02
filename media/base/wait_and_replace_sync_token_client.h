@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MEDIA_BASE_WAIT_AND_REPLACE_SYNC_TOKEN_CLIENT_H_
 #define MEDIA_BASE_WAIT_AND_REPLACE_SYNC_TOKEN_CLIENT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "media/base/media_export.h"
 #include "media/base/video_frame.h"
@@ -28,7 +29,7 @@ class MEDIA_EXPORT WaitAndReplaceSyncTokenClient
   void WaitSyncToken(const gpu::SyncToken& sync_token) final;
 
  private:
-  gpu::InterfaceBase* ib_;
+  raw_ptr<gpu::InterfaceBase> ib_;
 };
 
 }  // namespace media

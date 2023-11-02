@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-forward.h"
+#include "third_party/blink/public/mojom/navigation/navigation_api_history_entry_arrays.mojom.h"
 
 namespace gfx {
 class Point;
@@ -33,6 +34,9 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
   ~FakeLocalFrame() override;
 
   void Init(blink::AssociatedInterfaceProvider* provider);
+
+  // Flushes mojo messages on `receiver_`.
+  void FlushMessages();
 
   // blink::mojom::LocalFrame:
   void GetTextSurroundingSelection(
@@ -75,7 +79,7 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
   void AdvanceFocusInFrame(blink::mojom::FocusType focus_type,
                            const absl::optional<blink::RemoteFrameToken>&
                                source_frame_token) override;
-  void AdvanceFocusInForm(blink::mojom::FocusType focus_type) override;
+  void AdvanceFocusForIME(blink::mojom::FocusType focus_type) override;
   void ReportContentSecurityPolicyViolation(
       network::mojom::CSPViolationPtr violation) override;
   void DidUpdateFramePolicy(const blink::FramePolicy& frame_policy) override;
@@ -87,7 +91,7 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
   void JavaScriptMethodExecuteRequest(
       const std::u16string& object_name,
       const std::u16string& method_name,
-      base::Value arguments,
+      base::Value::List arguments,
       bool wants_result,
       JavaScriptMethodExecuteRequestCallback callback) override;
   void JavaScriptExecuteRequest(
@@ -107,7 +111,7 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
       JavaScriptExecuteRequestInIsolatedWorldCallback callback) override;
   void GetSavableResourceLinks(
       GetSavableResourceLinksCallback callback) override;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void GetCharacterIndexAtPoint(const gfx::Point& point) override;
   void GetFirstRectForRange(const gfx::Range& range) override;
   void GetStringForRange(const gfx::Range& range,
@@ -129,13 +133,21 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
       mojo::PendingAssociatedRemote<blink::mojom::DevToolsAgentHost> host,
       mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> receiver)
       override;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void ExtractSmartClipData(const gfx::Rect& rect,
                             ExtractSmartClipDataCallback callback) override;
 #endif
   void HandleRendererDebugURL(const GURL& url) override;
   void GetCanonicalUrlForSharing(
       base::OnceCallback<void(const absl::optional<GURL>&)> callback) override;
+  void GetOpenGraphMetadata(
+      base::OnceCallback<void(blink::mojom::OpenGraphMetadataPtr)>) override;
+  void SetNavigationApiHistoryEntriesForRestore(
+      blink::mojom::NavigationApiHistoryEntryArraysPtr entry_arrays) override;
+  void NotifyNavigationApiOfDisposedEntries(
+      const std::vector<std::string>& keys) override;
+  void TraverseCancelled(const std::string& navigation_api_key,
+                         blink::mojom::TraverseCancelledReason reason) override;
 
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);

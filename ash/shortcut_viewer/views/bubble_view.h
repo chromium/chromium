@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/public/cpp/style/color_provider.h"
 #include "ui/views/view.h"
 
 namespace gfx {
@@ -47,6 +48,8 @@ class BubbleView : public views::View {
   views::Label* text_ = nullptr;
 
   std::vector<gfx::ShadowValue> shadows_;
+
+  ash::ColorProvider* color_provider_;  // Not owned.
 };
 
 }  // namespace keyboard_shortcut_viewer

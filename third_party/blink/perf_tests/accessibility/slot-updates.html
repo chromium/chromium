@@ -7,9 +7,9 @@
   <sn-form slot="form-slot"></sn-form>
 </sn-show-element>
 <script>
-  const TABLE_COLS = 15;
-  const TABLE_ROWS = 15;
-  const FORM_CONTROLS = 15;
+  const TABLE_COLS = 5;
+  const TABLE_ROWS = 5;
+  const FORM_CONTROLS = 5;
 
   class snShowElement extends HTMLElement {
     constructor() {
@@ -115,12 +115,12 @@
       PerfTestRunner.addRunTestStartMarker();
       startTime = PerfTestRunner.now();
 
-      setTimeout(toggleDisplay, 10);
+      setTimeout(toggleDisplay, 250);
 
       // Re-run the same test.
       // Wait to allow the asynchronous accessibility code that's
       // covered by traceEventsToMeasure to have a chance to run.
-      setTimeout(runTest, 1500);
+      setTimeout(runTest, 2500);
     }
   }
 
@@ -136,6 +136,7 @@
       iterationCount: 6,
       tracingCategories: 'accessibility',
       traceEventsToMeasure: [
+        'AXObjectCacheImpl::ChildrenChanged(LayoutObject)',
         'ProcessDeferredAccessibilityEvents',
         'RenderAccessibilityImpl::SendPendingAccessibilityEvents'
       ]

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -88,7 +88,7 @@ public class LanguageSettingsTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "Flaky - https://crbug.com/1114938")
+    @DisabledTest(message = "Flaky - https://crbug.com/1115695")
     public void testRemoveLanguage() {
         RecyclerView acceptLanguageList = mActivity.findViewById(R.id.language_list);
         int originalAcceptLanguageCount = acceptLanguageList.getChildCount();
@@ -203,7 +203,7 @@ public class LanguageSettingsTest {
         TestThreadUtils.runOnUiThreadBlocking(moreButton::dismiss);
 
         // Toggle the switch.
-        onView(withId(R.id.switchWidget)).perform(click());
+        TestThreadUtils.runOnUiThreadBlocking((Runnable) pref::performClick);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertEquals("Preference of 'offer to translate' should be toggled when switch "
                             + "widget is clicked.",

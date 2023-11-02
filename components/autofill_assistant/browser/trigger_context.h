@@ -1,37 +1,46 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_TRIGGER_CONTEXT_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_TRIGGER_CONTEXT_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
-#include "components/autofill_assistant/browser/script_parameters.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 
 namespace autofill_assistant {
+
+class ScriptParameters;
 
 // Contains trigger context information for the current script execution.
 class TriggerContext {
  public:
   // Helper struct to facilitate instantiating this class.
   struct Options {
+    Options();
     Options(const std::string& experiment_ids,
             bool is_cct,
             bool onboarding_shown,
             bool is_direct_action,
             const std::string& initial_url,
-            bool is_in_chrome_triggered);
-    Options();
+            bool is_in_chrome_triggered,
+            bool is_externally_triggered,
+            bool skip_autofill_assistant_onboarding,
+            bool suppress_browsing_features);
     ~Options();
+
     std::string experiment_ids;
     bool is_cct = false;
     bool onboarding_shown = false;
     bool is_direct_action = false;
     std::string initial_url;
     bool is_in_chrome_triggered = false;
+    bool is_externally_triggered = false;
+    bool skip_autofill_assistant_onboarding = false;
+    bool suppress_browsing_features = true;
   };
 
   // Creates an empty trigger context.
@@ -45,68 +54,69 @@ class TriggerContext {
   TriggerContext(std::unique_ptr<ScriptParameters> script_parameters,
                  const Options& options);
 
-  // Creates a trigger context with the given values.
-  // TODO(arbesser): remove this overload.
-  TriggerContext(std::unique_ptr<ScriptParameters> script_parameters,
-                 const std::string& experiment_ids,
-                 bool is_cct,
-                 bool onboarding_shown,
-                 bool is_direct_action,
-                 const std::string& initial_url,
-                 bool is_in_chrome_triggered);
-
   // Creates a trigger context that contains the merged contents of all input
   // instances at the time of calling (does not reference |contexts| after
   // creation).
-  TriggerContext(std::vector<const TriggerContext*> contexts);
-  virtual ~TriggerContext();
+  explicit TriggerContext(std::vector<const TriggerContext*> contexts);
+
+  ~TriggerContext();
   TriggerContext(const TriggerContext&) = delete;
   TriggerContext& operator=(const TriggerContext&) = delete;
 
   // Returns a const reference to the script parameters.
-  virtual const ScriptParameters& GetScriptParameters() const;
+  const ScriptParameters& GetScriptParameters() const;
 
-  // Replaces the current script parameters with |script_parameters|.
-  virtual void SetScriptParameters(
-      std::unique_ptr<ScriptParameters> script_parameters);
+  // Replaces the current script parameters with `script_parameters`.
+  void SetScriptParameters(std::unique_ptr<ScriptParameters> script_parameters);
 
   // Returns a comma-separated set of experiment ids.
-  virtual std::string GetExperimentIds() const;
+  std::string GetExperimentIds() const;
 
   // Returns the initial url. Use with care and prefer the original deeplink
   // where possible, since the initial url might point to a redirect link
   // instead of the target domain.
-  virtual std::string GetInitialUrl() const;
+  std::string GetInitialUrl() const;
 
-  // Returns whether an experiment is contained in |experiment_ids|.
-  virtual bool HasExperimentId(const std::string& experiment_id) const;
+  // Returns whether an experiment is contained in `experiment_ids`.
+  bool HasExperimentId(const std::string& experiment_id) const;
 
   // Returns true if we're in a Chrome Custom Tab created for Autofill
-  // Assistant, originally created through AutofillAssistantFacade.start(), in
+  // Assistant, originally created through `AutofillAssistantFacade.start()` in
   // Java.
-  virtual bool GetCCT() const;
+  bool GetCCT() const;
 
   // Returns true if the onboarding was shown at the beginning when this
   // autofill assistant flow got triggered.
-  virtual bool GetOnboardingShown() const;
+  bool GetOnboardingShown() const;
 
   // Sets whether an onboarding was shown.
-  virtual void SetOnboardingShown(bool onboarding_shown);
+  void SetOnboardingShown(bool onboarding_shown);
 
   // Returns true if the current action was triggered by a direct action.
-  virtual bool GetDirectAction() const;
+  bool GetDirectAction() const;
 
   // Returns whether this trigger context is coming from an external surface,
-  // i.e., a button or link on a website, or whether this is from within Chrome.
-  virtual bool GetInChromeTriggered() const;
+  // i.e., a button or link on a website, or whether this is from within
+  // Chrome.
+  bool GetInChromeTriggered() const;
+
+  // Returns whether the triggering source is external, i.e. headless.
+  bool GetIsExternallyTriggered() const;
+
+  // Returns whether the triggering source will handle its own onboarding flow
+  // and the default onboarding flow should be skipped.
+  bool GetSkipAutofillAssistantOnboarding() const;
+
+  // Returns whether browsing features, such as the keyboard, Autofill,
+  // translation, etc.  should be suppressed while a flow is running.
+  bool GetSuppressBrowsingFeatures() const;
 
   // Returns the trigger type of the trigger script that was shown and accepted
   // at the beginning of the flow, if any.
-  virtual TriggerScriptProto::TriggerUIType GetTriggerUIType() const;
+  TriggerScriptProto::TriggerUIType GetTriggerUIType() const;
 
   // Sets the trigger type of the shown trigger script.
-  virtual void SetTriggerUIType(
-      TriggerScriptProto::TriggerUIType trigger_ui_type);
+  void SetTriggerUIType(TriggerScriptProto::TriggerUIType trigger_ui_type);
 
  private:
   std::unique_ptr<ScriptParameters> script_parameters_;
@@ -119,6 +129,9 @@ class TriggerContext {
   bool onboarding_shown_ = false;
   bool direct_action_ = false;
   bool is_in_chrome_triggered_ = false;
+  bool is_externally_triggered_ = false;
+  bool skip_autofill_assistant_onboarding_ = false;
+  bool suppress_browsing_features_ = true;
 
   // The initial url at the time of triggering.
   std::string initial_url_;

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -270,6 +270,13 @@ std::string SharedVASurface::GetMD5Sum(FetchPolicy fetch_policy) const {
   LOG_ASSERT(convert_res == 0)
       << "Failed to convert " << media::FourccToString(fourcc)
       << " to packed I420.";
+
+  // Clean up VA handles.
+  VAStatus res = vaUnmapBuffer(va_device_.display(), image.buf);
+  VA_LOG_ASSERT(res, "vaUnmapBuffer");
+
+  res = vaDestroyImage(va_device_.display(), image.image_id);
+  VA_LOG_ASSERT(res, "vaDestroyImage");
 
   base::MD5Digest md5_digest;
   base::MD5Sum(i420_data.data(), i420_data.size(), &md5_digest);

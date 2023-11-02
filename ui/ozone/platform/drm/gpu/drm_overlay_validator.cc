@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include "base/files/platform_file.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/timer/elapsed_timer.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/gpu_fence.h"
@@ -29,8 +30,7 @@ namespace {
 scoped_refptr<DrmFramebuffer> GetBufferForPageFlipTest(
     const DrmWindow* drm_window,
     const OverlaySurfaceCandidate& overlay_surface,
-    std::vector<scoped_refptr<DrmFramebuffer>>* reusable_buffers,
-    size_t* total_allocated_memory_size) {
+    std::vector<scoped_refptr<DrmFramebuffer>>* reusable_buffers) {
   if (overlay_surface.native_pixmap) {
     return static_cast<GbmPixmap*>(overlay_surface.native_pixmap.get())
         ->framebuffer();
@@ -69,12 +69,11 @@ scoped_refptr<DrmFramebuffer> GetBufferForPageFlipTest(
   if (!buffer)
     return nullptr;
 
-  for (size_t i = 0; i < buffer->GetNumPlanes(); ++i)
-    *total_allocated_memory_size += buffer->GetPlaneSize(i);
-
+  constexpr bool kIsOriginalBuffer = false;
   scoped_refptr<DrmFramebuffer> drm_framebuffer =
       DrmFramebuffer::AddFramebuffer(drm_device, buffer.get(),
-                                     buffer->GetSize(), modifiers);
+                                     buffer->GetSize(), modifiers,
+                                     kIsOriginalBuffer);
   if (!drm_framebuffer)
     return nullptr;
 
@@ -88,6 +87,18 @@ DrmOverlayValidator::DrmOverlayValidator(DrmWindow* window) : window_(window) {}
 
 DrmOverlayValidator::~DrmOverlayValidator() {}
 
+DrmOverlayPlane DrmOverlayValidator::MakeOverlayPlane(
+    const OverlaySurfaceCandidate& param,
+    std::vector<scoped_refptr<DrmFramebuffer>>& reusable_buffers) {
+  scoped_refptr<DrmFramebuffer> buffer =
+      GetBufferForPageFlipTest(window_, param, &reusable_buffers);
+
+  return DrmOverlayPlane(buffer, param.plane_z_order, param.transform,
+                         gfx::ToNearestRect(param.display_rect),
+                         param.crop_rect, !param.is_opaque,
+                         /*gpu_fence=*/nullptr);
+}
+
 OverlayStatusList DrmOverlayValidator::TestPageFlip(
     const OverlaySurfaceCandidateList& params,
     const DrmOverlayPlaneList& last_used_planes) {
@@ -95,8 +106,9 @@ OverlayStatusList DrmOverlayValidator::TestPageFlip(
   HardwareDisplayController* controller = window_->GetController();
   if (!controller) {
     // The controller is not yet installed.
-    for (auto& param : returns)
-      param = OVERLAY_STATUS_NOT;
+    for (auto& status : returns) {
+      status = OVERLAY_STATUS_NOT;
+    }
 
     return returns;
   }
@@ -105,43 +117,79 @@ OverlayStatusList DrmOverlayValidator::TestPageFlip(
   std::vector<scoped_refptr<DrmFramebuffer>> reusable_buffers;
   scoped_refptr<DrmDevice> drm = controller->GetDrmDevice();
 
-  for (const auto& plane : last_used_planes)
+  for (const auto& plane : last_used_planes) {
     reusable_buffers.push_back(plane.buffer);
+  }
 
-  size_t total_allocated_memory_size = 0;
-
+  std::vector<size_t> plane_indices;
   for (size_t i = 0; i < params.size(); ++i) {
-    if (!params[i].overlay_handled) {
+    auto& param = params[i];
+    // Skip candidates that have already been disqualified.
+    if (!param.overlay_handled) {
       returns[i] = OVERLAY_STATUS_NOT;
       continue;
     }
 
-    scoped_refptr<DrmFramebuffer> buffer = GetBufferForPageFlipTest(
-        window_, params[i], &reusable_buffers, &total_allocated_memory_size);
-
-    DrmOverlayPlane plane(buffer, params[i].plane_z_order, params[i].transform,
-                          gfx::ToNearestRect(params[i].display_rect),
-                          params[i].crop_rect, !params[i].is_opaque,
-                          /*gpu_fence=*/nullptr);
-    test_list.push_back(std::move(plane));
-
-    if (buffer && controller->TestPageFlip(test_list)) {
-      returns[i] = OVERLAY_STATUS_ABLE;
-    } else {
-      // If test failed here, platform cannot support this configuration
-      // with current combination of layers. This is usually the case when this
-      // plane has requested post processing capability which needs additional
-      // hardware resources and they might be already in use by other planes.
-      // For example this plane has requested scaling capabilities and all
-      // available scalars are already in use by other planes.
+    DrmOverlayPlane plane = MakeOverlayPlane(param, reusable_buffers);
+    if (!plane.buffer) {
       returns[i] = OVERLAY_STATUS_NOT;
-      test_list.pop_back();
+      continue;
     }
+
+    test_list.push_back(std::move(plane));
+    // We need to save the indices because we're skipping some planes.
+    plane_indices.push_back(i);
   }
 
-  UMA_HISTOGRAM_MEMORY_KB(
-      "Compositing.Display.DrmOverlayManager.TotalTestBufferMemorySize",
-      total_allocated_memory_size / 1024);
+  int test_page_flip_count = 0;
+
+  // Test the whole list, then gradually remove the last plane and retest until
+  // we have success, or no more planes to test.
+  while (!test_list.empty()) {
+    test_page_flip_count++;
+    base::ElapsedTimer timer;
+
+    bool test_result = controller->TestPageFlip(test_list);
+
+    auto time = timer.Elapsed();
+    static constexpr base::TimeDelta kMinTime = base::Microseconds(1);
+    static constexpr base::TimeDelta kMaxTime = base::Milliseconds(10);
+    static constexpr int kTimeBuckets = 50;
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Compositing.Display.DrmOverlayManager.TestPageFlipUs", time, kMinTime,
+        kMaxTime, kTimeBuckets);
+
+    if (test_page_flip_count == 1) {
+      UMA_HISTOGRAM_BOOLEAN(
+          "Compositing.Display.DrmOverlayManager.FirstTestPageFlipPassed",
+          test_result);
+    }
+
+    if (test_result) {
+      break;
+    }
+
+    // If test failed here, platform cannot support this configuration
+    // with current combination of layers. This is usually the case when this
+    // plane has requested post processing capability which needs additional
+    // hardware resources and they might be already in use by other planes.
+    // For example this plane has requested scaling capabilities and all
+    // available scalars are already in use by other planes.
+
+    // Drop the last plane from the test list and set it to OVERLAY_STATUS_NOT.
+    returns[plane_indices.back()] = OVERLAY_STATUS_NOT;
+    plane_indices.pop_back();
+    test_list.pop_back();
+  }
+
+  // Set OVERLAY_STATUS_ABLE for all planes left in the test_list.
+  for (size_t index : plane_indices) {
+    returns[index] = OVERLAY_STATUS_ABLE;
+  }
+
+  UMA_HISTOGRAM_COUNTS_100(
+      "Compositing.Display.DrmOverlayManager.TestPageFlipCount",
+      test_page_flip_count);
 
   return returns;
 }

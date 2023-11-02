@@ -1,12 +1,14 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/app_list/model/app_list_item.h"
 
 #include "ash/app_list/model/app_list_item_observer.h"
+#include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -51,8 +53,10 @@ const gfx::ImageSkia& AppListItem::GetIcon(
   return metadata_->icon;
 }
 
-void AppListItem::SetDefaultIcon(const gfx::ImageSkia& icon) {
+void AppListItem::SetDefaultIconAndColor(const gfx::ImageSkia& icon,
+                                         const IconColor& color) {
   metadata_->icon = icon;
+  metadata_->icon_color = color;
 
   // If the item does not have a config specific icon, it will be represented by
   // the (possibly scaled) default icon, which means that changing the default
@@ -71,6 +75,10 @@ const gfx::ImageSkia& AppListItem::GetDefaultIcon() const {
   return metadata_->icon;
 }
 
+const IconColor& AppListItem::GetDefaultIconColor() const {
+  return metadata_->icon_color;
+}
+
 void AppListItem::SetIconVersion(int icon_version) {
   if (metadata_->icon_version == icon_version)
     return;
@@ -83,6 +91,14 @@ void AppListItem::SetIconVersion(int icon_version) {
   for (auto& observer : observers_) {
     observer.ItemIconVersionChanged();
   }
+}
+
+SkColor AppListItem::GetNotificationBadgeColor(views::View* view) const {
+  const views::Widget* app_list_widget = view->GetWidget();
+  if (is_folder() && app_list_widget)
+    return ash::AppListColorProvider::Get()->GetFolderNotificationBadgeColor(
+        app_list_widget);
+  return metadata_->badge_color;
 }
 
 void AppListItem::SetNotificationBadgeColor(const SkColor color) {
@@ -106,6 +122,10 @@ const char* AppListItem::GetItemType() const {
 }
 
 AppListItem* AppListItem::FindChildItem(const std::string& id) {
+  return nullptr;
+}
+
+AppListItem* AppListItem::GetChildItemAt(size_t index) {
   return nullptr;
 }
 
@@ -153,4 +173,13 @@ void AppListItem::UpdateNotificationBadge(bool has_badge) {
   }
 }
 
+void AppListItem::SetIsNewInstall(bool is_new_install) {
+  if (metadata_->is_new_install == is_new_install)
+    return;
+
+  metadata_->is_new_install = is_new_install;
+  for (auto& observer : observers_) {
+    observer.ItemIsNewInstallChanged();
+  }
+}
 }  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,7 +34,8 @@ class DrmNativeDisplayDelegate : public display::NativeDisplayDelegate {
   void GetDisplays(display::GetDisplaysCallback callback) override;
   void Configure(
       const std::vector<display::DisplayConfigurationParams>& config_requests,
-      display::ConfigureCallback callback) override;
+      display::ConfigureCallback callback,
+      uint32_t modeset_flag) override;
   void GetHDCPState(const display::DisplaySnapshot& output,
                     display::GetHDCPStateCallback callback) override;
   void SetHDCPState(const display::DisplaySnapshot& output,
@@ -47,7 +48,9 @@ class DrmNativeDisplayDelegate : public display::NativeDisplayDelegate {
       int64_t display_id,
       const std::vector<display::GammaRampRGBEntry>& degamma_lut,
       const std::vector<display::GammaRampRGBEntry>& gamma_lut) override;
-  void SetPrivacyScreen(int64_t display_id, bool enabled) override;
+  void SetPrivacyScreen(int64_t display_id,
+                        bool enabled,
+                        display::SetPrivacyScreenCallback callback) override;
   void AddObserver(display::NativeDisplayObserver* observer) override;
   void RemoveObserver(display::NativeDisplayObserver* observer) override;
   display::FakeDisplayController* GetFakeDisplayController() override;

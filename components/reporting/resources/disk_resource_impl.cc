@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,15 +8,10 @@
 #include <cstdint>
 
 #include "base/check_op.h"
-#include "base/no_destructor.h"
 
 namespace reporting {
 
-// TODO(b/159361496): Set total disk allowance based on the platform
-// (or policy?).
-DiskResourceImpl::DiskResourceImpl()
-    : total_(256u * 1024LLu * 1024LLu),  // 256 MiB
-      used_(0) {}
+DiskResourceImpl::DiskResourceImpl(uint64_t total_size) : total_(total_size) {}
 
 DiskResourceImpl::~DiskResourceImpl() = default;
 
@@ -34,21 +29,16 @@ void DiskResourceImpl::Discard(uint64_t size) {
   used_.fetch_sub(size);
 }
 
-uint64_t DiskResourceImpl::GetTotal() {
+uint64_t DiskResourceImpl::GetTotal() const {
   return total_;
 }
 
-uint64_t DiskResourceImpl::GetUsed() {
+uint64_t DiskResourceImpl::GetUsed() const {
   return used_.load();
 }
 
 void DiskResourceImpl::Test_SetTotal(uint64_t test_total) {
   total_ = test_total;
-}
-
-ResourceInterface* GetDiskResource() {
-  static base::NoDestructor<DiskResourceImpl> disk;
-  return disk.get();
 }
 
 }  // namespace reporting

@@ -1,4 +1,4 @@
-// Copyright 2020 The Crashpad Authors. All rights reserved.
+// Copyright 2020 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,16 +18,20 @@
 #include <mach-o/dyld.h>
 #include <mach-o/dyld_images.h>
 #include <mach-o/nlist.h>
+#include <objc/objc-exception.h>
 #include <signal.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
+#include <thread>
 #include <vector>
 
 #import "Service/Sources/EDOHostNamingService.h"
 #import "Service/Sources/EDOHostService.h"
 #import "Service/Sources/NSObject+EDOValueObject.h"
+#include "base/logging.h"
 #include "base/strings/sys_string_conversions.h"
 #include "client/annotation.h"
 #include "client/annotation_list.h"
@@ -35,9 +39,15 @@
 #include "client/crashpad_client.h"
 #include "client/crashpad_info.h"
 #include "client/simple_string_dictionary.h"
+#include "client/simulate_crash.h"
 #include "snapshot/minidump/process_snapshot_minidump.h"
+#include "test/file.h"
 #import "test/ios/host/cptest_crash_view_controller.h"
 #import "test/ios/host/cptest_shared_object.h"
+#import "test/ios/host/handler_forbidden_allocators.h"
+#include "util/file/filesystem.h"
+#include "util/ios/raw_logging.h"
+#include "util/thread/thread.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -56,6 +66,14 @@ base::FilePath GetDatabaseDir() {
   return database_dir.Append("crashpad");
 }
 
+base::FilePath GetRawLogOutputFile() {
+  base::FilePath document_directory([NSFileManager.defaultManager
+                                        URLsForDirectory:NSDocumentDirectory
+                                               inDomains:NSUserDomainMask]
+                                        .lastObject.path.UTF8String);
+  return document_directory.Append("raw_log_output.txt");
+}
+
 std::unique_ptr<crashpad::CrashReportDatabase> GetDatabase() {
   base::FilePath database_dir = GetDatabaseDir();
   std::unique_ptr<crashpad::CrashReportDatabase> database =
@@ -66,6 +84,35 @@ std::unique_ptr<crashpad::CrashReportDatabase> GetDatabase() {
 OperationStatus GetPendingReports(std::vector<Report>* pending_reports) {
   std::unique_ptr<crashpad::CrashReportDatabase> database(GetDatabase());
   return database->GetPendingReports(pending_reports);
+}
+
+std::unique_ptr<crashpad::ProcessSnapshotMinidump>
+GetProcessSnapshotMinidumpFromSinglePending() {
+  std::vector<Report> pending_reports;
+  OperationStatus status = GetPendingReports(&pending_reports);
+  if (status != crashpad::CrashReportDatabase::kNoError ||
+      pending_reports.size() != 1) {
+    return nullptr;
+  }
+
+  auto reader = std::make_unique<crashpad::FileReader>();
+  auto process_snapshot = std::make_unique<crashpad::ProcessSnapshotMinidump>();
+  if (!reader->Open(pending_reports[0].file_path) ||
+      !process_snapshot->Initialize(reader.get())) {
+    return nullptr;
+  }
+  return process_snapshot;
+}
+
+UIWindow* GetAnyWindow() {
+#if defined(__IPHONE_15_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_0
+  if (@available(iOS 15.0, *)) {
+    UIWindowScene* scene = reinterpret_cast<UIWindowScene*>(
+        [UIApplication sharedApplication].connectedScenes.anyObject);
+    return scene.keyWindow;
+  }
+#endif
+  return [UIApplication sharedApplication].windows[0];
 }
 
 [[clang::optnone]] void recurse(int counter) {
@@ -81,20 +128,34 @@ OperationStatus GetPendingReports(std::vector<Report>* pending_reports) {
 
 @interface CPTestApplicationDelegate ()
 - (void)processIntermediateDumps;
+@property(copy, nonatomic) NSString* raw_log_output;
 @end
 
 @implementation CPTestApplicationDelegate {
   crashpad::CrashpadClient client_;
+  crashpad::ScopedFileHandle raw_logging_file_;
 }
 
 @synthesize window = _window;
 
 - (BOOL)application:(UIApplication*)application
     didFinishLaunchingWithOptions:(NSDictionary*)launchOptions {
+  base::FilePath raw_log_file_path = GetRawLogOutputFile();
+  NSString* path =
+      [NSString stringWithUTF8String:raw_log_file_path.value().c_str()];
+  self.raw_log_output =
+      [[NSString alloc] initWithContentsOfFile:path
+                                      encoding:NSUTF8StringEncoding
+                                         error:NULL];
+  raw_logging_file_.reset(
+      LoggingOpenFileForWrite(raw_log_file_path,
+                              crashpad::FileWriteMode::kTruncateOrCreate,
+                              crashpad::FilePermissions::kOwnerOnly));
+  crashpad::internal::SetFileHandleForTesting(raw_logging_file_.get());
+
   // Start up crashpad.
   std::map<std::string, std::string> annotations = {
       {"prod", "xcuitest"}, {"ver", "1"}, {"plat", "iOS"}, {"crashpad", "yes"}};
-
   NSArray<NSString*>* arguments = [[NSProcessInfo processInfo] arguments];
   if ([arguments containsObject:@"--alternate-client-annotations"]) {
     annotations = {{"prod", "some_app"},
@@ -103,7 +164,11 @@ OperationStatus GetPendingReports(std::vector<Report>* pending_reports) {
                    {"crashpad", "no"}};
   }
   if (client_.StartCrashpadInProcessHandler(
-          GetDatabaseDir(), "", annotations)) {
+          GetDatabaseDir(),
+          "",
+          annotations,
+          crashpad::CrashpadClient::
+              ProcessPendingReportsObservationCallback())) {
     client_.ProcessIntermediateDumps();
   }
 
@@ -159,40 +224,36 @@ OperationStatus GetPendingReports(std::vector<Report>* pending_reports) {
   return pending_reports.size();
 }
 
-- (int)pendingReportException {
-  std::vector<Report> pending_reports;
-  OperationStatus status = GetPendingReports(&pending_reports);
-  if (status != crashpad::CrashReportDatabase::kNoError ||
-      pending_reports.size() != 1) {
-    return -1;
-  }
+- (bool)pendingReportException:(NSNumber**)exception {
+  auto process_snapshot = GetProcessSnapshotMinidumpFromSinglePending();
+  if (!process_snapshot || !process_snapshot->Exception()->Exception())
+    return false;
+  *exception = [NSNumber
+      numberWithUnsignedInt:process_snapshot->Exception()->Exception()];
+  return true;
+}
 
-  auto reader = std::make_unique<crashpad::FileReader>();
-  reader->Open(pending_reports[0].file_path);
-  crashpad::ProcessSnapshotMinidump process_snapshot;
-  process_snapshot.Initialize(reader.get());
-  return static_cast<int>(process_snapshot.Exception()->Exception());
+- (bool)pendingReportExceptionInfo:(NSNumber**)exception_info {
+  auto process_snapshot = GetProcessSnapshotMinidumpFromSinglePending();
+  if (!process_snapshot || !process_snapshot->Exception()->ExceptionInfo())
+    return false;
+
+  *exception_info = [NSNumber
+      numberWithUnsignedInt:process_snapshot->Exception()->ExceptionInfo()];
+  return true;
 }
 
 - (NSDictionary*)getAnnotations {
-  std::vector<Report> pending_reports;
-  OperationStatus status = GetPendingReports(&pending_reports);
-  if (status != crashpad::CrashReportDatabase::kNoError ||
-      pending_reports.size() != 1) {
+  auto process_snapshot = GetProcessSnapshotMinidumpFromSinglePending();
+  if (!process_snapshot)
     return @{};
-  }
-
-  auto reader = std::make_unique<crashpad::FileReader>();
-  reader->Open(pending_reports[0].file_path);
-  crashpad::ProcessSnapshotMinidump process_snapshot;
-  process_snapshot.Initialize(reader.get());
 
   NSDictionary* dict = @{
     @"simplemap" : [@{} mutableCopy],
     @"vector" : [@[] mutableCopy],
     @"objects" : [@[] mutableCopy]
   };
-  for (const auto* module : process_snapshot.Modules()) {
+  for (const auto* module : process_snapshot->Modules()) {
     for (const auto& kv : module->AnnotationsSimpleMap()) {
       [dict[@"simplemap"] setValue:@(kv.second.c_str())
                             forKey:@(kv.first.c_str())];
@@ -215,43 +276,36 @@ OperationStatus GetPendingReports(std::vector<Report>* pending_reports) {
 }
 
 - (NSDictionary*)getProcessAnnotations {
-  std::vector<Report> pending_reports;
-  OperationStatus status = GetPendingReports(&pending_reports);
-  if (status != crashpad::CrashReportDatabase::kNoError ||
-      pending_reports.size() != 1) {
+  auto process_snapshot = GetProcessSnapshotMinidumpFromSinglePending();
+  if (!process_snapshot)
     return @{};
-  }
 
-  auto reader = std::make_unique<crashpad::FileReader>();
-  reader->Open(pending_reports[0].file_path);
-  crashpad::ProcessSnapshotMinidump process_snapshot;
-  process_snapshot.Initialize(reader.get());
   NSDictionary* dict = [@{} mutableCopy];
-  for (const auto& kv : process_snapshot.AnnotationsSimpleMap()) {
+  for (const auto& kv : process_snapshot->AnnotationsSimpleMap()) {
     [dict setValue:@(kv.second.c_str()) forKey:@(kv.first.c_str())];
   }
 
   return [dict passByValue];
 }
 
-- (void)crashBadAccess {
+// Use [[clang::optnone]] here to get consistent exception codes, otherwise the
+// exception can change depending on optimization level.
+- (void)crashBadAccess [[clang::optnone]] {
   strcpy(nullptr, "bla");
 }
 
 - (void)crashKillAbort {
+  crashpad::test::ReplaceAllocatorsWithHandlerForbidden();
   kill(getpid(), SIGABRT);
 }
 
-- (void)crashSegv {
-  long* zero = nullptr;
-  *zero = 0xc045004d;
-}
-
 - (void)crashTrap {
+  crashpad::test::ReplaceAllocatorsWithHandlerForbidden();
   __builtin_trap();
 }
 
 - (void)crashAbort {
+  crashpad::test::ReplaceAllocatorsWithHandlerForbidden();
   abort();
 }
 
@@ -261,7 +315,8 @@ OperationStatus GetPendingReports(std::vector<Report>* pending_reports) {
 }
 
 - (void)crashNSException {
-  // EDO has its own sinkhole, so dispatch this away.
+  // EDO has its own sinkhole which will suppress this attempt at an NSException
+  // crash, so dispatch this out of the sinkhole.
   dispatch_async(dispatch_get_main_queue(), ^{
     NSError* error = [NSError errorWithDomain:@"com.crashpad.xcuitests"
                                          code:200
@@ -271,6 +326,27 @@ OperationStatus GetPendingReports(std::vector<Report>* pending_reports) {
                              reason:@"Intentionally throwing error."
                            userInfo:@{NSUnderlyingErrorKey : error}] raise];
   });
+}
+
+- (void)crashUnhandledNSException {
+  std::thread t([self]() {
+    @autoreleasepool {
+      @try {
+        NSError* error = [NSError errorWithDomain:@"com.crashpad.xcuitests"
+                                             code:200
+                                         userInfo:@{@"Error Object" : self}];
+
+        [[NSException exceptionWithName:NSInternalInconsistencyException
+                                 reason:@"Intentionally throwing error."
+                               userInfo:@{NSUnderlyingErrorKey : error}] raise];
+      } @catch (id reason_exception) {
+        // Intentionally use throw here to intentionally make a sinkhole that
+        // will be missed by ObjcPreprocessor.
+        objc_exception_throw(reason_exception);
+      }
+    }
+  });
+  t.join();
 }
 
 - (void)crashUnrecognizedSelectorAfterDelay {
@@ -287,6 +363,19 @@ OperationStatus GetPendingReports(std::vector<Report>* pending_reports) {
   } @catch (NSException* exception) {
   } @finally {
   }
+}
+
+- (void)crashCoreAutoLayoutSinkhole {
+  // EDO has its own sinkhole which will suppress this attempt at an NSException
+  // crash, so dispatch this out of the sinkhole.
+  dispatch_async(dispatch_get_main_queue(), ^{
+    UIView* unattachedView = [[UIView alloc] init];
+    UIWindow* window = GetAnyWindow();
+    [NSLayoutConstraint activateConstraints:@[
+      [window.rootViewController.view.bottomAnchor
+          constraintEqualToAnchor:unattachedView.bottomAnchor],
+    ]];
+  });
 }
 
 - (void)crashRecursion {
@@ -336,6 +425,78 @@ OperationStatus GetPendingReports(std::vector<Report>* pending_reports) {
   test_annotation_four.Set("same-name 4");
   test_annotation_two.Clear();
   abort();
+}
+
+class RaceThread : public crashpad::Thread {
+ public:
+  explicit RaceThread() : Thread() {}
+
+  void SetCount(int count) { count_ = count; }
+
+ private:
+  void ThreadMain() override {
+    for (int i = 0; i < count_; ++i) {
+      CRASHPAD_SIMULATE_CRASH();
+    }
+  }
+
+  int count_;
+};
+
+- (void)generateDumpWithoutCrash:(int)dump_count threads:(int)threads {
+  std::vector<RaceThread> race_threads(threads);
+  for (RaceThread& race_thread : race_threads) {
+    race_thread.SetCount(dump_count);
+    race_thread.Start();
+  }
+
+  for (RaceThread& race_thread : race_threads) {
+    race_thread.Join();
+  }
+}
+
+class CrashThread : public crashpad::Thread {
+ public:
+  explicit CrashThread(bool signal) : Thread(), signal_(signal) {}
+
+ private:
+  void ThreadMain() override {
+    sleep(1);
+    if (signal_) {
+      abort();
+    } else {
+      __builtin_trap();
+    }
+  }
+  bool signal_;
+};
+
+- (void)crashConcurrentSignalAndMach {
+  CrashThread signal_thread(true);
+  CrashThread mach_thread(false);
+  signal_thread.Start();
+  mach_thread.Start();
+  signal_thread.Join();
+  mach_thread.Join();
+}
+
+- (void)crashInHandlerReentrant {
+  crashpad::CrashpadClient client_;
+  client_.SetMachExceptionCallbackForTesting(abort);
+
+  // Trigger a Mach exception.
+  [self crashTrap];
+}
+
+- (void)allocateWithForbiddenAllocators {
+  crashpad::test::ReplaceAllocatorsWithHandlerForbidden();
+  (void)malloc(10);
+}
+
+- (NSString*)rawLogContents {
+  CPTestApplicationDelegate* delegate =
+      (CPTestApplicationDelegate*)UIApplication.sharedApplication.delegate;
+  return delegate.raw_log_output;
 }
 
 @end

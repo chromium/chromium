@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,6 +26,7 @@ GestureDetector::Config BuildGestureDetectorConfig(
   GestureDetector::Config config;
   config.longpress_timeout =
       base::Milliseconds(gesture_config.long_press_time_in_ms());
+  config.shortpress_timeout = gesture_config.short_press_time();
   config.showpress_timeout =
       base::Milliseconds(gesture_config.show_press_delay_in_ms());
   config.double_tap_timeout =

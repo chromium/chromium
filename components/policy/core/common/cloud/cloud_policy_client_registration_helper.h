@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,9 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/user_info_fetcher.h"
@@ -20,10 +22,6 @@
 
 namespace signin {
 class IdentityManager;
-}
-
-namespace network {
-class SharedURLLoaderFactory;
 }
 
 namespace policy {
@@ -61,6 +59,7 @@ class POLICY_EXPORT CloudPolicyClientRegistrationHelper
       const std::string& token,
       const std::string& client_id,
       const ClientDataDelegate& client_data_delegate,
+      bool is_mandatory,
       base::OnceClosure callback);
 
  private:
@@ -69,7 +68,7 @@ class POLICY_EXPORT CloudPolicyClientRegistrationHelper
   void OnTokenFetched(const std::string& oauth_access_token);
 
   // UserInfoFetcher::Delegate implementation:
-  void OnGetUserInfoSuccess(const base::DictionaryValue* response) override;
+  void OnGetUserInfoSuccess(const base::Value::Dict& response) override;
   void OnGetUserInfoFailure(const GoogleServiceAuthError& error) override;
 
   // CloudPolicyClient::Observer implementation:
@@ -92,8 +91,7 @@ class POLICY_EXPORT CloudPolicyClientRegistrationHelper
   // GAIA to get information about the signed in user.
   std::string oauth_access_token_;
 
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  CloudPolicyClient* client_;
+  raw_ptr<CloudPolicyClient> client_;
   enterprise_management::DeviceRegisterRequest::Type registration_type_;
   base::OnceClosure callback_;
 };

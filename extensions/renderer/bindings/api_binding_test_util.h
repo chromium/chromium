@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,9 @@
 #include <string>
 
 #include "base/strings/string_piece.h"
+#include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "v8/include/v8.h"
-
-namespace base {
-class DictionaryValue;
-class ListValue;
-class Value;
-}
 
 namespace extensions {
 
@@ -24,19 +19,27 @@ namespace extensions {
 // to write JSON strings without needing to escape quotes.
 std::string ReplaceSingleQuotes(base::StringPiece str);
 
-// Returns a base::Value parsed from |str|. EXPECTs the conversion to succeed.
-std::unique_ptr<base::Value> ValueFromString(base::StringPiece str);
+// Returns a base::Value parsed from |str|. Will ADD_FAILURE on error.
+base::Value ValueFromString(base::StringPiece str);
 
-// As above, but returning a ListValue.
-std::unique_ptr<base::ListValue> ListValueFromString(base::StringPiece str);
+// As above, but returning a Value::List.
+base::Value::List ListValueFromString(base::StringPiece str);
+
+// As above, but returning a Value::Dict.
+base::Value::Dict DictValueFromString(base::StringPiece str);
+
+// Returns a base::Value parsed from |str|. EXPECTs the conversion to succeed.
+// DEPRECATED: prefer `ValueFromString`.
+std::unique_ptr<base::Value> DeprecatedValueFromString(base::StringPiece str);
 
 // As above, but returning a DictionaryValue.
-std::unique_ptr<base::DictionaryValue> DictionaryValueFromString(
+// DEPRECATED: prefer `DictValueFromString`.
+std::unique_ptr<base::DictionaryValue> DeprecatedDictionaryValueFromString(
     base::StringPiece str);
 
 // Converts the given |value| to a JSON string. EXPECTs the conversion to
 // succeed.
-std::string ValueToString(const base::Value& value);
+std::string ValueToString(const base::ValueView&);
 
 // Converts the given |value| to a string. Returns "empty", "undefined", "null",
 // or "function" for unserializable values. Note this differs from

@@ -1,10 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "extensions/browser/content_script_tracker.h"
 
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -181,7 +181,7 @@ class ContentScriptMatchingBrowserTest : public ShellApiTest,
                       std::unique_ptr<content::WebContents> new_contents,
                       const GURL& target_url,
                       WindowOpenDisposition disposition,
-                      const gfx::Rect& initial_rect,
+                      const blink::mojom::WindowFeatures& window_features,
                       bool user_gesture,
                       bool* was_blocked) override {
     DCHECK_EQ(tab1_.get(), source);
@@ -208,7 +208,7 @@ class ContentScriptMatchingBrowserTest : public ShellApiTest,
 
   content::RenderFrameHost* tab1_fooFrame() {
     EXPECT_TRUE(tab1_);
-    return tab1_->GetMainFrame();
+    return tab1_->GetPrimaryMainFrame();
   }
 
   content::RenderFrameHost* tab1_fooBlankFrame() {
@@ -234,7 +234,7 @@ class ContentScriptMatchingBrowserTest : public ShellApiTest,
 
   content::RenderFrameHost* tab2_barBlankFrame1() {
     EXPECT_TRUE(tab2_);
-    return tab2_->GetMainFrame();
+    return tab2_->GetPrimaryMainFrame();
   }
 
   content::RenderFrameHost* tab2_barBlankFrame2() {
@@ -250,7 +250,7 @@ class ContentScriptMatchingBrowserTest : public ShellApiTest,
 
   // Populated by InstallContentScriptsExtension (called by individual tests).
   TestExtensionDir dir_;
-  const Extension* extension_ = nullptr;
+  raw_ptr<const Extension> extension_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(ContentScriptMatchingBrowserTest,
@@ -324,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptMatchingBrowserTest,
 }
 
 // Flaky on MacOS since r622662. See https://crbug.com/921883
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_ContentScriptMatching_NotAllFrames \
   DISABLED_ContentScriptMatching_NotAllFrames
 #else

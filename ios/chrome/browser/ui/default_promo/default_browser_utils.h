@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,11 +20,11 @@ namespace {
 
 // Enum actions for the IOS.DefaultBrowserFullscreenPromo* UMA metrics. Entries
 // should not be renumbered and numeric values should never be reused.
-enum IOSDefaultBrowserFullscreenPromoAction {
-  ACTION_BUTTON = 0,
-  CANCEL = 1,
-  REMIND_ME_LATER = 2,
-  kMaxValue = REMIND_ME_LATER,
+enum class IOSDefaultBrowserFullscreenPromoAction {
+  kActionButton = 0,
+  kCancel = 1,
+  kRemindMeLater = 2,
+  kMaxValue = kRemindMeLater,
 };
 
 }  // namespace
@@ -39,7 +39,7 @@ extern const char kDefaultBrowserFullscreenPromoExperimentRemindMeGroupParam[];
 // Logs the timestamp of user activity that is deemed to be an indication of
 // a user that would likely benefit from having Chrome set as their default
 // browser. Before logging the current activity, this method will also clear all
-// past expired logs for |type| that have happened too far in the past.
+// past expired logs for `type` that have happened too far in the past.
 void LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoType type);
 
 // Logs the timestamp of a user tap on the "Remind Me Later" button in the
@@ -104,11 +104,11 @@ bool IsChromeLikelyDefaultBrowser7Days();
 
 // Returns true if the past behavior of the user indicates that the user fits
 // the categorization that would likely benefit from having Chrome set as their
-// default browser for the passed |type|. Returns false otherwise.
+// default browser for the passed `type`. Returns false otherwise.
 bool IsLikelyInterestedDefaultBrowserUser(DefaultPromoType type);
 
 // Returns the most recent promo the user showed interest in. Defaults to
-// DefaultPromoTypeGeneral if no interest is found. If |skipAllTabsPromo| is
+// DefaultPromoTypeGeneral if no interest is found. If `skipAllTabsPromo` is
 // true, this type of promo will be ignored.
 DefaultPromoType MostRecentInterestDefaultPromoType(BOOL skipAllTabsPromo);
 

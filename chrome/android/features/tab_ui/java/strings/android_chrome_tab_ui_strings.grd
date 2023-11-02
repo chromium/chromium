@@ -83,6 +83,9 @@
     <output filename="values-zh-rHK/android_chrome_tab_ui_strings.xml" lang="zh-HK" type="android" />
     <output filename="values-zh-rTW/android_chrome_tab_ui_strings.xml" lang="zh-TW" type="android" />
     <output filename="values-zu/android_chrome_tab_ui_strings.xml" lang="zu" type="android" />
+    <!-- Pseudolocales -->
+    <output filename="values-ar-rXB/android_chrome_tab_ui_strings.xml" lang="ar-XB" type="android" />
+    <output filename="values-en-rXA/android_chrome_tab_ui_strings.xml" lang="en-XA" type="android" />
   </outputs>
   <translations>
     <file path="translations/android_chrome_tab_ui_strings_af.xtb" lang="af" />
@@ -96,6 +99,7 @@
     <file path="translations/android_chrome_tab_ui_strings_bs.xtb" lang="bs" />
     <file path="translations/android_chrome_tab_ui_strings_ca.xtb" lang="ca" />
     <file path="translations/android_chrome_tab_ui_strings_cs.xtb" lang="cs" />
+    <file path="translations/android_chrome_tab_ui_strings_cy.xtb" lang="cy" />
     <file path="translations/android_chrome_tab_ui_strings_da.xtb" lang="da" />
     <file path="translations/android_chrome_tab_ui_strings_de.xtb" lang="de" />
     <file path="translations/android_chrome_tab_ui_strings_el.xtb" lang="el" />
@@ -242,6 +246,67 @@
       </message>
       <message name="IDS_ACCESSIBILITY_TAB_SELECTION_EDITOR" desc="Accessibility string for Tab Selection Editor view. This string is announced when the Tab Selection Editor is shown to screen.">
         Multi-select mode
+      </message>
+      <!-- Tab Selection Editor V2 strings -->
+      <message name="IDS_TAB_SELECTION_EDITOR_SELECT_ALL" desc="This text button is shown in the Tab Selection Editor Toolbar. When the user taps the button, Chrome selects all the tabs shown in the editor. [CHAR_LIMIT=27]">
+        Select all
+      </message>
+      <message name="IDS_TAB_SELECTION_EDITOR_DESELECT_ALL" desc="This text button is shown in the Tab Selection Editor Toolbar. When the user taps the button, Chrome deselects all the tabs shown in the editor. [CHAR_LIMIT=27]">
+        Deselect all
+      </message>
+      <message name="IDS_TAB_SELECTION_EDITOR_SHARE_TABS_ACTION_BUTTON" desc="This text button is shown in the Tab Selection Editor Toolbar. When the user taps the button, Chrome shares all currently selected tabs shown in the editor. [CHAR_LIMIT=27]">
+        {TABS_COUNT, plural,
+          =1 {Share tab}
+          other {Share tabs}
+        }
+      </message>
+      <message name="IDS_ACCESSIBILITY_TAB_SELECTION_EDITOR_SHARE_TABS_ACTION_BUTTON" desc="The accessibility string for the share button in the Tab Selection Editor Toolbar. Tap this button to share all selected tabs.">
+        {TABS_COUNT, plural,
+          =1 {Share <ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> selected tab}
+          other {Share <ph name="TABS_COUNT_MANY">%1$d<ex>8</ex></ph> selected tabs}
+        }
+      </message>
+      <message name="IDS_TAB_SELECTION_EDITOR_TABS_COUNT" desc="The text for the selection counter shown in the Tab Selection Editor Toolbar. This shows the number of selected tabs including those within selected groups.">
+        {TABS_COUNT, plural,
+          =1 {<ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> tab}
+          other {<ph name="TABS_COUNT_MANY">%1$d<ex>8</ex></ph> tabs}
+        }
+      </message>
+      <message name="IDS_TAB_SELECTION_EDITOR_GROUP_TABS" desc="This text menu item is shown in the Tab Selection Editor menu. 'Group' is a verb. When the user taps the menu item, Chrome creates a new group that contains the selected tabs. [CHAR_LIMIT=27]">
+        {TABS_COUNT, plural,
+          =1 {Group tab}
+          other {Group tabs}
+        }
+      </message>
+      <message name="IDS_ACCESSIBILITY_TAB_SELECTION_EDITOR_GROUP_TABS" desc="The accessibility text to read when the 'Group tabs' menu item in the selection mode menu is focused. When this menu item is tapped, all the selected tabs will be grouped together.">
+        {TABS_COUNT, plural,
+          =1 {Group <ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> selected tab}
+          other {Group <ph name="TABS_COUNT_MANY">%1$d<ex>8</ex></ph> selected tabs}
+        }
+      </message>
+      <message name="IDS_TAB_SELECTION_EDITOR_UNGROUP_TABS" desc="This text menu item is shown in the Tab Selection Editor menu. 'Ungroup' is a verb. When the user taps the menu item, Chrome removes the selected tabs from the group. [CHAR_LIMIT=27]">
+        {TABS_COUNT, plural,
+          =1 {Ungroup tab}
+          other {Ungroup tabs}
+        }
+      </message>
+      <message name="IDS_ACCESSIBILITY_TAB_SELECTION_EDITOR_UNGROUP_TABS" desc="The accessibility text to read when the 'Ungroup tabs' menu item in the selection mode menu is focused. When this menu item is tapped, all the selected tabs will be ungroup.">
+        {TABS_COUNT, plural,
+          =1 {Ungroup <ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> selected tab}
+          other {Ungroup <ph name="TABS_COUNT_MANY">%1$d<ex>8</ex></ph> selected tabs}
+        }
+      </message>
+      <message name="IDS_TAB_SELECTION_EDITOR_CLOSE_TABS" desc="This text menu item is shown in the Tab Selection Editor menu. 'Close' is a verb. When the user taps the menu item, Chrome closes the selected tabs. [CHAR_LIMIT=27]">
+        {TABS_COUNT, plural,
+          =1 {Close tab}
+          other {Close tabs}
+        }
+      </message>
+      <message name="IDS_ACCESSIBILITY_TAB_SELECTION_EDITOR_CLOSE_TABS" desc="The accessibility text to read when the 'Close tabs' menu item in the selection mode menu is focused. When this menu item is tapped, all the selected tabs will be closed.">
+        {TABS_COUNT, plural,
+          =1 {Close <ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> selected tab}
+          other {Close <ph name="TABS_COUNT_MANY">%1$d<ex>8</ex></ph> selected tabs}
+        }
       </message>
 
       <!-- Tab Grid Dialog strings -->
@@ -436,12 +501,15 @@
         Visit site
       </message>
       <message name="IDS_PRICE_DROP_NOTIFICATION_ACTION_TURN_OFF_ALERT" desc="This text shows when users swipe down the price drop notification. When users click this button, we won't send price drop notifications on this product to them any more.">
-        Turn off alert
+        Stop tracking product
       </message>
 
       <!-- Merchant Viewer strings -->
       <message name="IDS_MERCHANT_VIEWER_MESSAGE_TITLE" desc="Message shown when merchant trust signals are available.">
         View store info?
+      </message>
+      <message name="IDS_MERCHANT_VIEWER_MESSAGE_TITLE_SEE_REVIEWS" desc="Alternative title of the message shown when merchant trust signals are available.">
+        See store reviews?
       </message>
       <message name="IDS_MERCHANT_VIEWER_MESSAGE_ACTION" desc="The label of the action button on the merchant viewer message.">
         View
@@ -453,6 +521,11 @@
          {REVIEWS, plural,
             =1 {(<ph name="REVIEWS_COUNT_ONE">%1$s<ex>1</ex></ph> review)}
             other {(<ph name="REVIEWS_COUNT_MANY">%1$s<ex>8</ex></ph> reviews)}}
+      </message>
+      <message name="IDS_MERCHANT_VIEWER_MESSAGE_DESCRIPTION_REVIEWS_FROM_GOOGLE" desc="Alternative message description indicating that the reviews come from Google.">
+         {REVIEWS, plural,
+            =1 {<ph name="REVIEWS_COUNT_ONE">%1$s<ex>1</ex></ph> review from Google}
+            other {<ph name="REVIEWS_COUNT_MANY">%1$s<ex>8</ex></ph> reviews from Google}}
       </message>
       <message name="IDS_MERCHANT_VIEWER_MESSAGE_RATING_NUMERICAL" desc="The rating of the merchant in numerical form.">
         <ph name="CURRENT_RATING">%1$.1f<ex>4.5</ex></ph>/<ph name="RATING_BASELINE">%2$d<ex>5</ex></ph>
@@ -494,6 +567,20 @@
       </message>
       <message name="IDS_MERCHANT_VIEWER_PREVIEW_SHEET_CLOSED" desc="Accessibility string read when the merchant viewer bottom sheet is closed.">
         Information about this store closed
+      </message>
+
+      <!-- Close All Tabs Dialog Strings -->
+      <message name="IDS_CLOSE_ALL_TABS_DIALOG_TITLE" desc="When users click the menu item 'Close all tabs' in tab switcher, a dialog will pop up and this text is the title of the dialog.">
+        Close all tabs?
+      </message>
+      <message name="IDS_CLOSE_ALL_TABS_DIALOG_MESSAGE" desc="When users click the menu item 'Close all tabs' in tab switcher, a dialog will pop up and this text is the message of the dialog.">
+        You can find your closed tabs in Recent tabs under the Chrome main menu
+      </message>
+      <message name="IDS_CLOSE_ALL_TABS_DIALOG_TITLE_INCOGNITO" desc="When users click the menu item 'Close all tabs' in Incognito tab switcher, a dialog will pop up and this text is the title of the dialog.">
+        Close all Incognito tabs?
+      </message>
+      <message name="IDS_CLOSE_ALL_TABS_DIALOG_MESSAGE_INCOGNITO" desc="When users click the menu item 'Close all tabs' in Incognito tab switcher, a dialog will pop up and this text is the message of the dialog.">
+        Your activity in these Incognito tabs will be cleared from this device
       </message>
     </messages>
   </release>

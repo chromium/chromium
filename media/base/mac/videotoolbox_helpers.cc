@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/big_endian.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 
 namespace media {
@@ -90,7 +91,7 @@ class RawAnnexBBuffer : public AnnexBBuffer {
   size_t GetReservedSize() const override { return reserved_size_; }
 
  private:
-  char* annexb_buffer_;
+  raw_ptr<char> annexb_buffer_;
   size_t annexb_buffer_size_;
   size_t annexb_buffer_offset_;
   size_t reserved_size_;
@@ -114,7 +115,7 @@ class StringAnnexBBuffer : public AnnexBBuffer {
   size_t GetReservedSize() const override { return str_annexb_buffer_->size(); }
 
  private:
-  std::string* str_annexb_buffer_;
+  raw_ptr<std::string> str_annexb_buffer_;
 };
 
 template <typename NalSizeType>
@@ -130,7 +131,7 @@ void CopyNalsToAnnexB(char* avcc_buffer,
   while (bytes_left > 0) {
     DCHECK_GT(bytes_left, sizeof(NalSizeType));
     NalSizeType nal_size;
-    base::ReadBigEndian(avcc_buffer, &nal_size);
+    base::ReadBigEndian(reinterpret_cast<uint8_t*>(avcc_buffer), &nal_size);
     bytes_left -= sizeof(NalSizeType);
     avcc_buffer += sizeof(NalSizeType);
 
@@ -276,6 +277,16 @@ SessionPropertySetter::SessionPropertySetter(
 
 SessionPropertySetter::~SessionPropertySetter() {}
 
+bool SessionPropertySetter::IsSupported(CFStringRef key) {
+  DCHECK(session_);
+  if (!supported_keys_) {
+    CFDictionaryRef dict_ref;
+    if (VTSessionCopySupportedPropertyDictionary(session_, &dict_ref) == noErr)
+      supported_keys_.reset(dict_ref);
+  }
+  return supported_keys_ && CFDictionaryContainsKey(supported_keys_, key);
+}
+
 bool SessionPropertySetter::Set(CFStringRef key, int32_t value) {
   DCHECK(session_);
   base::ScopedCFTypeRef<CFNumberRef> cfvalue(
@@ -286,6 +297,13 @@ bool SessionPropertySetter::Set(CFStringRef key, int32_t value) {
 bool SessionPropertySetter::Set(CFStringRef key, bool value) {
   DCHECK(session_);
   CFBooleanRef cfvalue = (value) ? kCFBooleanTrue : kCFBooleanFalse;
+  return VTSessionSetProperty(session_, key, cfvalue) == noErr;
+}
+
+bool SessionPropertySetter::Set(CFStringRef key, double value) {
+  DCHECK(session_);
+  base::ScopedCFTypeRef<CFNumberRef> cfvalue(
+      CFNumberCreate(nullptr, kCFNumberDoubleType, &value));
   return VTSessionSetProperty(session_, key, cfvalue) == noErr;
 }
 

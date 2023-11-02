@@ -1,11 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/speech/cros_speech_recognition_service.h"
 
 #include "base/files/file_path.h"
-#include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "chrome/services/speech/audio_source_fetcher_impl.h"
 #include "chrome/services/speech/cros_speech_recognition_recognizer_impl.h"
 #include "components/soda/constants.h"
@@ -13,11 +13,15 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "media/base/media_switches.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 
 namespace speech {
 
 namespace {
+
+constexpr char kInvalidSpeechRecogntionOptions[] =
+    "Invalid SpeechRecognitionOptions provided";
 
 void PopulateFilePaths(const std::string* language,
                        base::FilePath& binary_path,
@@ -49,14 +53,15 @@ CrosSpeechRecognitionService::CrosSpeechRecognitionService(
 
 CrosSpeechRecognitionService::~CrosSpeechRecognitionService() {}
 
-void CrosSpeechRecognitionService::Create(
+void CrosSpeechRecognitionService::BindSpeechRecognitionContext(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionContext> receiver) {
-  if (enable_soda_) {
-    speech_recognition_contexts_.Add(this, std::move(receiver));
-  } else {
-    // If soda is not enabled, do the same thing as chrome.
-    ChromeSpeechRecognitionService::Create(std::move(receiver));
-  }
+  speech_recognition_contexts_.Add(this, std::move(receiver));
+}
+
+void CrosSpeechRecognitionService::BindAudioSourceSpeechRecognitionContext(
+    mojo::PendingReceiver<media::mojom::AudioSourceSpeechRecognitionContext>
+        receiver) {
+  audio_source_speech_recognition_contexts_.Add(this, std::move(receiver));
 }
 
 void CrosSpeechRecognitionService::BindRecognizer(
@@ -64,14 +69,22 @@ void CrosSpeechRecognitionService::BindRecognizer(
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> client,
     media::mojom::SpeechRecognitionOptionsPtr options,
     BindRecognizerCallback callback) {
+  // This binding is used by LiveCaption and it can't be server based
+  // recognition.
+  if (options->is_server_based ||
+      options->recognizer_client_type !=
+          media::mojom::RecognizerClientType::kLiveCaption) {
+    mojo::ReportBadMessage(kInvalidSpeechRecogntionOptions);
+    return;
+  }
+
   base::FilePath binary_path, languagepack_path;
-  PopulateFilePaths(base::OptionalOrNullptr(options->language), binary_path,
+  PopulateFilePaths(base::OptionalToPtr(options->language), binary_path,
                     languagepack_path);
 
   CrosSpeechRecognitionRecognizerImpl::Create(
-      std::move(receiver), std::move(client),
-      nullptr /* =SpeechRecognitionService WeakPtr*/, std::move(options),
-      binary_path, languagepack_path);
+      std::move(receiver), std::move(client), std::move(options), binary_path,
+      languagepack_path);
   std::move(callback).Run(
       CrosSpeechRecognitionRecognizerImpl::IsMultichannelSupported());
 }
@@ -81,8 +94,16 @@ void CrosSpeechRecognitionService::BindAudioSourceFetcher(
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> client,
     media::mojom::SpeechRecognitionOptionsPtr options,
     BindRecognizerCallback callback) {
+  if (options->is_server_based) {
+    // TODO(b/245614967): when kInternalServerSideSpeechRecognition
+    // feature flag is enabled, create the appropriate recognition recognizer
+    // here.
+    mojo::ReportBadMessage(kInvalidSpeechRecogntionOptions);
+    return;
+  }
+
   base::FilePath binary_path, languagepack_path;
-  PopulateFilePaths(base::OptionalOrNullptr(options->language), binary_path,
+  PopulateFilePaths(base::OptionalToPtr(options->language), binary_path,
                     languagepack_path);
 
   // CrosSpeechRecognitionService runs on browser UI thread.
@@ -111,8 +132,8 @@ void CrosSpeechRecognitionService::CreateAudioSourceFetcherOnIOThread(
   AudioSourceFetcherImpl::Create(
       std::move(fetcher_receiver),
       std::make_unique<CrosSpeechRecognitionRecognizerImpl>(
-          std::move(client), nullptr /* =SpeechRecognitionService WeakPtr*/,
-          std::move(options), binary_path, languagepack_path));
+          std::move(client), std::move(options), binary_path,
+          languagepack_path));
 }
 
 }  // namespace speech

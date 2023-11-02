@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/media/media_notification_provider.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/global_media_controls/public/media_dialog_delegate.h"
 #include "components/global_media_controls/public/media_item_manager_observer.h"
@@ -67,6 +68,10 @@ class ASH_EXPORT MediaNotificationProviderImpl
   void OnMediaItemUISizeChanged() override;
   void OnMediaItemUIDestroyed(const std::string& id) override;
 
+  global_media_controls::MediaItemManager* item_manager() {
+    return item_manager_.get();
+  }
+
   global_media_controls::MediaSessionItemProducer*
   media_session_item_producer_for_testing() {
     return media_session_item_producer_.get();
@@ -75,7 +80,8 @@ class ASH_EXPORT MediaNotificationProviderImpl
  private:
   base::ObserverList<MediaNotificationProviderObserver> observers_;
 
-  global_media_controls::MediaItemUIListView* active_session_view_ = nullptr;
+  base::WeakPtr<global_media_controls::MediaItemUIListView>
+      active_session_view_;
 
   std::unique_ptr<global_media_controls::MediaItemManager> item_manager_;
 

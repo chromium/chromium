@@ -166,7 +166,7 @@ container_algorithm_internal::ContainerDifferenceType<const C> c_distance(
 // c_all_of()
 //
 // Container-based version of the <algorithm> `std::all_of()` function to
-// test a condition on all elements within a container.
+// test if all elements within a container satisfy a condition.
 template <typename C, typename Pred>
 bool c_all_of(const C& c, Pred&& pred) {
   return std::all_of(container_algorithm_internal::c_begin(c),

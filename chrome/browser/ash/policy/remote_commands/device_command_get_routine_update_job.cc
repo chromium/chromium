@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@
 #include "base/syslog_logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
-#include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -58,7 +58,7 @@ bool PopulateMojoEnumValueIfValid(int possible_enum, T* valid_enum_out) {
     return false;
   }
   T enum_to_check = static_cast<T>(possible_enum);
-  if (!chromeos::cros_healthd::mojom::IsKnownEnumValue(enum_to_check))
+  if (!ash::cros_healthd::mojom::IsKnownEnumValue(enum_to_check))
     return false;
   *valid_enum_out = enum_to_check;
   return true;
@@ -69,7 +69,7 @@ bool PopulateMojoEnumValueIfValid(int possible_enum, T* valid_enum_out) {
 class DeviceCommandGetRoutineUpdateJob::Payload
     : public RemoteCommandJob::ResultPayload {
  public:
-  explicit Payload(chromeos::cros_healthd::mojom::RoutineUpdatePtr update);
+  explicit Payload(ash::cros_healthd::mojom::RoutineUpdatePtr update);
   Payload(const Payload&) = delete;
   Payload& operator=(const Payload&) = delete;
   ~Payload() override = default;
@@ -78,11 +78,11 @@ class DeviceCommandGetRoutineUpdateJob::Payload
   std::unique_ptr<std::string> Serialize() override;
 
  private:
-  chromeos::cros_healthd::mojom::RoutineUpdatePtr update_;
+  ash::cros_healthd::mojom::RoutineUpdatePtr update_;
 };
 
 DeviceCommandGetRoutineUpdateJob::Payload::Payload(
-    chromeos::cros_healthd::mojom::RoutineUpdatePtr update)
+    ash::cros_healthd::mojom::RoutineUpdatePtr update)
     : update_(std::move(update)) {}
 
 std::unique_ptr<std::string>
@@ -122,9 +122,9 @@ DeviceCommandGetRoutineUpdateJob::Payload::Serialize() {
 }
 
 DeviceCommandGetRoutineUpdateJob::DeviceCommandGetRoutineUpdateJob()
-    : routine_id_(chromeos::cros_healthd::mojom::kFailedToStartId),
-      command_(chromeos::cros_healthd::mojom::DiagnosticRoutineCommandEnum::
-                   kGetStatus),
+    : routine_id_(ash::cros_healthd::mojom::kFailedToStartId),
+      command_(
+          ash::cros_healthd::mojom::DiagnosticRoutineCommandEnum::kGetStatus),
       include_output_(false) {}
 
 DeviceCommandGetRoutineUpdateJob::~DeviceCommandGetRoutineUpdateJob() = default;
@@ -175,7 +175,7 @@ void DeviceCommandGetRoutineUpdateJob::RunImpl(
       << "Executing GetRoutineUpdate command with DiagnosticRoutineCommandEnum "
       << command_;
 
-  chromeos::cros_healthd::ServiceConnection::GetInstance()->GetRoutineUpdate(
+  ash::cros_healthd::ServiceConnection::GetInstance()->GetRoutineUpdate(
       routine_id_, command_, include_output_,
       base::BindOnce(
           &DeviceCommandGetRoutineUpdateJob::OnCrosHealthdResponseReceived,
@@ -186,7 +186,7 @@ void DeviceCommandGetRoutineUpdateJob::RunImpl(
 void DeviceCommandGetRoutineUpdateJob::OnCrosHealthdResponseReceived(
     CallbackWithResult succeeded_callback,
     CallbackWithResult failed_callback,
-    chromeos::cros_healthd::mojom::RoutineUpdatePtr update) {
+    ash::cros_healthd::mojom::RoutineUpdatePtr update) {
   if (!update) {
     SYSLOG(ERROR) << "No RoutineUpdate received from cros_healthd.";
     base::ThreadTaskRunnerHandle::Get()->PostTask(

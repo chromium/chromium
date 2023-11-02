@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "sandbox/win/src/internal_types.h"
 #if !defined(SANDBOX_FUZZ_TARGET)
 #include "sandbox/win/src/sandbox_nt_types.h"

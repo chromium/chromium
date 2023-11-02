@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "base/containers/contains.h"
 #include "base/test/bind.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
-#include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_registration.h"
@@ -82,7 +81,8 @@ class ServiceWorkerContextCoreTest : public testing::Test,
               registration_id = result_registration_id;
               loop.Quit();
             }),
-        /*requesting_frame_id=*/GlobalRenderFrameHostId());
+        /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+        PolicyContainerPolicies());
     loop.Run();
     EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status);
     scoped_refptr<ServiceWorkerRegistration> registration =
@@ -247,7 +247,8 @@ TEST_F(ServiceWorkerContextCoreTest, DeleteForStorageKeyAbortsQueuedJobs) {
             register_job_status = result_status;
             register_job_loop.Quit();
           }),
-      /*requesting_frame_id=*/GlobalRenderFrameHostId());
+      /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+      PolicyContainerPolicies());
 
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, DeleteForStorageKey(key));
 
@@ -271,8 +272,7 @@ TEST_F(ServiceWorkerContextCoreTest,
 
   // Add a controlled client.
   ServiceWorkerContainerHost* container_host = CreateControllee();
-  container_host->UpdateUrls(scope, net::SiteForCookies::FromUrl(scope), origin,
-                             key);
+  container_host->UpdateUrls(scope, origin, key);
   container_host->SetControllerRegistration(registration,
                                             /*notify_controllerchange=*/false);
 
@@ -295,7 +295,8 @@ TEST_F(ServiceWorkerContextCoreTest,
             register_job_status = result_status;
             register_job_loop.Quit();
           }),
-      /*requesting_frame_id=*/GlobalRenderFrameHostId());
+      /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+      PolicyContainerPolicies());
 
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, DeleteForStorageKey(key));
 

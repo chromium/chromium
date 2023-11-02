@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
@@ -32,7 +32,7 @@ class NET_EXPORT_PRIVATE SOCKSSocketParams
   SOCKSSocketParams(scoped_refptr<TransportSocketParams> proxy_server_params,
                     bool socks_v5,
                     const HostPortPair& host_port_pair,
-                    const NetworkIsolationKey& network_isolation_key,
+                    const NetworkAnonymizationKey& network_anonymization_key,
                     const NetworkTrafficAnnotationTag& traffic_annotation);
 
   SOCKSSocketParams(const SOCKSSocketParams&) = delete;
@@ -43,8 +43,8 @@ class NET_EXPORT_PRIVATE SOCKSSocketParams
   }
   const HostPortPair& destination() const { return destination_; }
   bool is_socks_v5() const { return socks_v5_; }
-  const NetworkIsolationKey& network_isolation_key() {
-    return network_isolation_key_;
+  const NetworkAnonymizationKey& network_isolation_key() {
+    return network_anonymization_key_;
   }
 
   const NetworkTrafficAnnotationTag traffic_annotation() {
@@ -60,7 +60,7 @@ class NET_EXPORT_PRIVATE SOCKSSocketParams
   // This is the HTTP destination.
   const HostPortPair destination_;
   const bool socks_v5_;
-  const NetworkIsolationKey network_isolation_key_;
+  const NetworkAnonymizationKey network_anonymization_key_;
 
   NetworkTrafficAnnotationTag traffic_annotation_;
 };
@@ -142,7 +142,7 @@ class NET_EXPORT_PRIVATE SOCKSConnectJob : public ConnectJob,
   State next_state_;
   std::unique_ptr<ConnectJob> transport_connect_job_;
   std::unique_ptr<StreamSocket> socket_;
-  SOCKSClientSocket* socks_socket_ptr_;
+  raw_ptr<SOCKSClientSocket> socks_socket_ptr_;
 
   ResolveErrorInfo resolve_error_info_;
 };

@@ -1,0 +1,29 @@
+Name: Crubit: C++/Rust Bidirectional Interop Tool
+Short Name: crubit
+URL: https://github.com/google/crubit
+Version: 0
+Date: See the comments next to the `crubit_revision` in the //DEPS file
+Revision: See `crubit_revision` in the //DEPS file
+License: Apache 2.0
+Security Critical: no
+
+Description:
+
+Extremely experimental interop tooling for C++ and Rust.
+
+See also:
+
+- Google-internal "High-level Design of C++/Rust Interop" doc at
+  https://docs.google.com/document/d/1FDBHv0qQQpvV8URRW1crgKWlVm3UEh87pJrmFAxuFrI/edit?usp=sharing
+
+- //build/rust/rs_bindings_from_cc.gni (support for using Crubit for generating
+  C++/Rust bindings during Chromium build using `bin/rs_bindings_from_cc` tool
+  + for building such generated files against
+  `./src/rs_bindings_from_cc/support` libraries).
+
+- //tools/rust/build_crubit.py (for building `bin/rs_bindings_from_cc` tool for
+  packaging and distribution via `gclient sync`)
+
+Local Modifications:
+- Added BUILD.gn that covers `src/rs_bindings_from_cc/support'
+  (see https://crrev.com/c/3756719)

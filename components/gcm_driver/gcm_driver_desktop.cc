@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -134,8 +135,7 @@ class GCMDriverDesktop::IOWorker : public GCMClient::Delegate {
 GCMDriverDesktop::IOWorker::IOWorker(
     const scoped_refptr<base::SequencedTaskRunner>& ui_thread,
     const scoped_refptr<base::SequencedTaskRunner>& io_thread)
-    : ui_thread_(ui_thread),
-      io_thread_(io_thread) {
+    : ui_thread_(ui_thread), io_thread_(io_thread) {
   DCHECK(ui_thread_->RunsTasksInCurrentSequence());
 }
 
@@ -437,8 +437,7 @@ void GCMDriverDesktop::IOWorker::RemoveInstanceIDData(
     gcm_client_->RemoveInstanceIDData(app_id);
 }
 
-void GCMDriverDesktop::IOWorker::GetInstanceIDData(
-    const std::string& app_id) {
+void GCMDriverDesktop::IOWorker::GetInstanceIDData(const std::string& app_id) {
   DCHECK(io_thread_->RunsTasksInCurrentSequence());
 
   std::string instance_id;
@@ -536,8 +535,7 @@ GCMDriverDesktop::GCMDriverDesktop(
           base::Unretained(network_connection_tracker), blocking_task_runner));
 }
 
-GCMDriverDesktop::~GCMDriverDesktop() {
-}
+GCMDriverDesktop::~GCMDriverDesktop() = default;
 
 void GCMDriverDesktop::ValidateRegistration(
     const std::string& app_id,
@@ -611,7 +609,7 @@ void GCMDriverDesktop::AddAppHandler(const std::string& app_id,
   DCHECK(ui_thread_->RunsTasksInCurrentSequence());
   GCMDriver::AddAppHandler(app_id, handler);
 
-   // Ensures that the GCM service is started when there is an interest.
+  // Ensures that the GCM service is started when there is an interest.
   EnsureStarted(GCMClient::DELAYED_START);
 }
 
@@ -621,8 +619,10 @@ void GCMDriverDesktop::RemoveAppHandler(const std::string& app_id) {
 
   // Stops the GCM service when no app intends to consume it. Stop function will
   // remove the last app handler - account mapper.
-  if (app_handlers().size() == 1)
+  if (app_handlers().size() == 1) {
+    DVLOG(1) << "Removed last app handler, calling GCMDriverDesktop::Stop now.";
     Stop();
+  }
 }
 
 void GCMDriverDesktop::AddConnectionObserver(GCMConnectionObserver* observer) {
@@ -810,12 +810,11 @@ InstanceIDHandler* GCMDriverDesktop::GetInstanceIDHandlerInternal() {
   return this;
 }
 
-void GCMDriverDesktop::GetToken(
-    const std::string& app_id,
-    const std::string& authorized_entity,
-    const std::string& scope,
-    base::TimeDelta time_to_live,
-    GetTokenCallback callback) {
+void GCMDriverDesktop::GetToken(const std::string& app_id,
+                                const std::string& authorized_entity,
+                                const std::string& scope,
+                                base::TimeDelta time_to_live,
+                                GetTokenCallback callback) {
   DCHECK(!app_id.empty());
   DCHECK(!authorized_entity.empty());
   DCHECK(!scope.empty());
@@ -961,10 +960,9 @@ void GCMDriverDesktop::DoDeleteToken(const std::string& app_id,
                                 authorized_entity, scope));
 }
 
-void GCMDriverDesktop::AddInstanceIDData(
-    const std::string& app_id,
-    const std::string& instance_id,
-    const std::string& extra_data) {
+void GCMDriverDesktop::AddInstanceIDData(const std::string& app_id,
+                                         const std::string& instance_id,
+                                         const std::string& extra_data) {
   DCHECK(ui_thread_->RunsTasksInCurrentSequence());
 
   GCMClient::Result result = EnsureStarted(GCMClient::IMMEDIATE_START);
@@ -985,10 +983,9 @@ void GCMDriverDesktop::AddInstanceIDData(
   DoAddInstanceIDData(app_id, instance_id, extra_data);
 }
 
-void GCMDriverDesktop::DoAddInstanceIDData(
-    const std::string& app_id,
-    const std::string& instance_id,
-    const std::string& extra_data) {
+void GCMDriverDesktop::DoAddInstanceIDData(const std::string& app_id,
+                                           const std::string& instance_id,
+                                           const std::string& extra_data) {
   io_thread_->PostTask(
       FROM_HERE, base::BindOnce(&GCMDriverDesktop::IOWorker::AddInstanceIDData,
                                 base::Unretained(io_worker_.get()), app_id,
@@ -1316,7 +1313,8 @@ void GCMDriverDesktop::OnActivityRecorded(
 }
 
 bool GCMDriverDesktop::TokenTupleComparer::operator()(
-    const TokenTuple& a, const TokenTuple& b) const {
+    const TokenTuple& a,
+    const TokenTuple& b) const {
   if (std::get<0>(a) < std::get<0>(b))
     return true;
   if (std::get<0>(a) > std::get<0>(b))

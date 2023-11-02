@@ -1,0 +1,55 @@
+<!-- Copyright 2019 The Chromium Authors
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<!DOCTYPE html>
+<head>
+<link rel="stylesheet" href="chrome://theme/colors.css?sets=legacy">
+<meta charset="utf-8">
+<title>Sample System Web App</title>
+<header id='title'>Sample System Web App</header>
+<style>
+  html {
+    background-color: var(--cros-bg-color);
+    color: var(--cros-text-color-primary);
+    font-family: Roboto;
+  }
+
+</style>
+</head>
+<br>
+<a href="/inter_frame_communication.html"><button>Inter Frame Communication Demo</button></a>
+<a href="/component_playground.html"><button>Component Playground</button></a>
+<div>
+  <div>
+    <label for="number1">Multiply number 1: </label>
+    <input type="text" id="number1" value="0">
+  </div>
+  <div>
+    <label for="number2">Multiply number 2: </label>
+    <input type="text" id="number2" value="0">
+  </div>
+  <div>
+    <label for="additional">Additional multiplier: </label>
+    <input type="text" id="additional" value="2">
+  </div>
+</div>
+
+<p id="result">Result: 0</p>
+
+<div>
+  <button id="do-something" type="button">Do Something (via Mojo)</button>
+  <div>
+    <label for="mojo-event">Mojo event: </label>
+    <input type="text" readonly id="mojo-event">
+  </div>
+  <div>
+    <label for="background">Preferences background: </label>
+    <input type="text" readonly id="background">
+  </div>
+  <div>
+    <label for="foreground">Preferences foreground: </label>
+    <input type="text" readonly id="foreground">
+  </div>
+</div>
+
+<script src="main.js" type="module"></script>

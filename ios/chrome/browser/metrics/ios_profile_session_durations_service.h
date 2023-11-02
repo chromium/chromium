@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@ class SyncService;
 class IOSProfileSessionDurationsService : public KeyedService {
  public:
   // Callers must ensure that the parameters outlive this object.
-  // If |sync_service| and |identity_manager| are null, then this object does
+  // If `sync_service` and `identity_manager` are null, then this object does
   // not monitor profile session durations.
   IOSProfileSessionDurationsService(syncer::SyncService* sync_service,
                                     signin::IdentityManager* identity_manager);
@@ -42,6 +42,9 @@ class IOSProfileSessionDurationsService : public KeyedService {
   virtual void OnSessionStarted(base::TimeTicks session_start);
   virtual void OnSessionEnded(base::TimeDelta session_length);
   virtual bool IsSessionActive();
+
+  bool IsSignedIn() const;
+  bool IsSyncing() const;
 
  private:
   std::unique_ptr<syncer::SyncSessionDurationsMetricsRecorder>

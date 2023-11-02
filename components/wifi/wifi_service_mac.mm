@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,29 +43,29 @@ class WiFiServiceMac : public WiFiService {
   void UnInitialize() override;
 
   void GetProperties(const std::string& network_guid,
-                     base::DictionaryValue* properties,
+                     base::Value::Dict* properties,
                      std::string* error) override;
 
   void GetManagedProperties(const std::string& network_guid,
-                            base::DictionaryValue* managed_properties,
+                            base::Value::Dict* managed_properties,
                             std::string* error) override;
 
   void GetState(const std::string& network_guid,
-                base::DictionaryValue* properties,
+                base::Value::Dict* properties,
                 std::string* error) override;
 
   void SetProperties(const std::string& network_guid,
-                     std::unique_ptr<base::DictionaryValue> properties,
+                     base::Value::Dict properties,
                      std::string* error) override;
 
   void CreateNetwork(bool shared,
-                     std::unique_ptr<base::DictionaryValue> properties,
+                     base::Value::Dict properties,
                      std::string* network_guid,
                      std::string* error) override;
 
   void GetVisibleNetworks(const std::string& network_type,
-                          base::ListValue* network_list,
-                          bool include_details) override;
+                          bool include_details,
+                          base::Value::List* network_list) override;
 
   void RequestNetworkScan() override;
 
@@ -155,7 +155,7 @@ class WiFiServiceMac : public WiFiService {
   // Guid of last known connected network.
   std::string connected_network_guid_;
   // Temporary storage of network properties indexed by |network_guid|.
-  base::DictionaryValue network_properties_;
+  base::Value::Dict network_properties_;
 };
 
 WiFiServiceMac::WiFiServiceMac() : wlan_observer_(nil) {
@@ -173,13 +173,6 @@ void WiFiServiceMac::Initialize(
     DVLOG(1) << "Failed to initialize default interface.";
     return;
   }
-
-  if (![interface_
-          respondsToSelector:@selector(associateToNetwork:password:error:)]) {
-    DVLOG(1) << "CWInterface does not support associateToNetwork.";
-    interface_.reset();
-    return;
-  }
 }
 
 void WiFiServiceMac::UnInitialize() {
@@ -189,7 +182,7 @@ void WiFiServiceMac::UnInitialize() {
 }
 
 void WiFiServiceMac::GetProperties(const std::string& network_guid,
-                                   base::DictionaryValue* properties,
+                                   base::Value::Dict* properties,
                                    std::string* error) {
   NetworkList::iterator it = FindNetwork(network_guid);
   if (it == networks_.end()) {
@@ -199,47 +192,42 @@ void WiFiServiceMac::GetProperties(const std::string& network_guid,
   }
 
   it->connection_state = GetNetworkConnectionState(network_guid);
-  std::unique_ptr<base::DictionaryValue> network(it->ToValue(false));
-  properties->Swap(network.get());
+  *properties = it->ToValue(/*network_list=*/false);
   DVLOG(1) << *properties;
 }
 
-void WiFiServiceMac::GetManagedProperties(
-    const std::string& network_guid,
-    base::DictionaryValue* managed_properties,
-    std::string* error) {
+void WiFiServiceMac::GetManagedProperties(const std::string& network_guid,
+                                          base::Value::Dict* managed_properties,
+                                          std::string* error) {
   *error = kErrorNotImplemented;
 }
 
 void WiFiServiceMac::GetState(const std::string& network_guid,
-                              base::DictionaryValue* properties,
+                              base::Value::Dict* properties,
                               std::string* error) {
   *error = kErrorNotImplemented;
 }
 
-void WiFiServiceMac::SetProperties(
-    const std::string& network_guid,
-    std::unique_ptr<base::DictionaryValue> properties,
-    std::string* error) {
-  base::DictionaryValue* existing_properties;
+void WiFiServiceMac::SetProperties(const std::string& network_guid,
+                                   base::Value::Dict properties,
+                                   std::string* error) {
   // If the network properties already exist, don't override previously set
   // properties, unless they are set in |properties|.
-  if (network_properties_.GetDictionaryWithoutPathExpansion(
-          network_guid, &existing_properties)) {
-    existing_properties->MergeDictionary(properties.get());
+  base::Value::Dict* existing_properties =
+      network_properties_.FindDict(network_guid);
+  if (existing_properties) {
+    existing_properties->Merge(std::move(properties));
   } else {
-    network_properties_.SetWithoutPathExpansion(network_guid,
-                                                std::move(properties));
+    network_properties_.Set(network_guid, std::move(properties));
   }
 }
 
-void WiFiServiceMac::CreateNetwork(
-    bool shared,
-    std::unique_ptr<base::DictionaryValue> properties,
-    std::string* network_guid,
-    std::string* error) {
+void WiFiServiceMac::CreateNetwork(bool shared,
+                                   base::Value::Dict properties,
+                                   std::string* network_guid,
+                                   std::string* error) {
   NetworkProperties network_properties;
-  if (!network_properties.UpdateFromValue(*properties)) {
+  if (!network_properties.UpdateFromValue(properties)) {
     *error = kErrorInvalidData;
     return;
   }
@@ -249,13 +237,13 @@ void WiFiServiceMac::CreateNetwork(
     *error = kErrorInvalidData;
     return;
   }
-  network_properties_.SetWithoutPathExpansion(guid, std::move(properties));
+  network_properties_.Set(guid, std::move(properties));
   *network_guid = guid;
 }
 
 void WiFiServiceMac::GetVisibleNetworks(const std::string& network_type,
-                                        base::ListValue* network_list,
-                                        bool include_details) {
+                                        bool include_details,
+                                        base::Value::List* network_list) {
   if (!network_type.empty() &&
       network_type != onc::network_type::kAllTypes &&
       network_type != onc::network_type::kWiFi) {
@@ -268,9 +256,7 @@ void WiFiServiceMac::GetVisibleNetworks(const std::string& network_type,
   for (NetworkList::const_iterator it = networks_.begin();
        it != networks_.end();
        ++it) {
-    std::unique_ptr<base::DictionaryValue> network(
-        it->ToValue(!include_details));
-    network_list->Append(std::move(network));
+    network_list->Append(it->ToValue(/*network_list=*/!include_details));
   }
 }
 
@@ -313,15 +299,15 @@ void WiFiServiceMac::StartConnect(const std::string& network_guid,
   }
 
   // Check whether WiFi Password is set in |network_properties_|.
-  base::DictionaryValue* properties;
-  base::DictionaryValue* wifi;
-  std::string passphrase;
+  base::Value::Dict* properties = network_properties_.FindDict(network_guid);
   NSString* ns_password = nil;
-  if (network_properties_.GetDictionaryWithoutPathExpansion(network_guid,
-                                                            &properties) &&
-      properties->GetDictionary(onc::network_type::kWiFi, &wifi) &&
-      wifi->GetString(onc::wifi::kPassphrase, &passphrase)) {
-    ns_password = base::SysUTF8ToNSString(passphrase);
+  if (properties) {
+    base::Value::Dict* wifi = properties->FindDict(onc::network_type::kWiFi);
+    if (wifi) {
+      const std::string* passphrase = wifi->FindString(onc::wifi::kPassphrase);
+      if (passphrase)
+        ns_password = base::SysUTF8ToNSString(*passphrase);
+    }
   }
 
   // Number of attempts to associate to network.

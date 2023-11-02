@@ -1,6 +1,8 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "base/memory/raw_ptr.h"
 
 #import <Cocoa/Cocoa.h>
 #include <memory>
@@ -19,7 +21,6 @@
 #include "base/process/launch.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
@@ -36,8 +37,8 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/web_applications/extensions/web_app_extension_shortcut.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_shortcut_mac.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/mac/app_mode_common.h"
 #include "content/public/test/browser_test.h"
@@ -227,7 +228,7 @@ class AppLifetimeMonitorObserver : public apps::AppLifetimeMonitor::Observer {
   }
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   int activated_count_ = 0;
   int deactivated_count_ = 0;
 };
@@ -431,7 +432,7 @@ IN_PROC_BROWSER_TEST_F(AppShimInteractiveTest, MAYBE_Launch) {
 
   // Case 2: Launch the shim, it should start the app.
   {
-    ExtensionTestMessageListener launched_listener("Launched", false);
+    ExtensionTestMessageListener launched_listener("Launched");
     base::CommandLine shim_cmdline(base::CommandLine::NO_PROGRAM);
     shim_cmdline.AppendSwitch(app_mode::kLaunchedForTest);
     NSRunningApplication* shim_app = base::mac::OpenApplicationWithPath(
@@ -481,7 +482,7 @@ IN_PROC_BROWSER_TEST_F(AppShimInteractiveTest, MAYBE_ShowWindow) {
   // Launch the app. It should create a hidden window, but the shim should not
   // launch.
   {
-    ExtensionTestMessageListener launched_listener("Launched", false);
+    ExtensionTestMessageListener launched_listener("Launched");
     LaunchPlatformApp(app);
     EXPECT_TRUE(launched_listener.WaitUntilSatisfied());
   }
@@ -520,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(AppShimInteractiveTest, MAYBE_ShowWindow) {
 
   // Launch a second window. It should not launch the shim.
   {
-    ExtensionTestMessageListener launched_listener("Launched", false);
+    ExtensionTestMessageListener launched_listener("Launched");
     LaunchPlatformApp(app);
     EXPECT_TRUE(launched_listener.WaitUntilSatisfied());
   }
@@ -652,7 +653,7 @@ IN_PROC_BROWSER_TEST_F(AppShimInteractiveTest, MAYBE_RebuildShim) {
   //     rebuild the shim.
   // (3) After rebuilding, Chrome again launches the shim and expects it to
   //     behave normally.
-  ExtensionTestMessageListener launched_listener("Launched", false);
+  ExtensionTestMessageListener launched_listener("Launched");
   base::CommandLine shim_cmdline(base::CommandLine::NO_PROGRAM);
   NSRunningApplication* shim_app = base::mac::OpenApplicationWithPath(
       shim_path, shim_cmdline, NSWorkspaceLaunchDefault);

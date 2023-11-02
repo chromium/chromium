@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -52,7 +53,6 @@
 namespace {
 
 using extensions::mojom::ManifestLocation;
-using ActionType = extensions::ExtensionBuilder::ActionType;
 
 // A simple observer that tracks the number of times certain events occur.
 class ToolbarActionsModelTestObserver : public ToolbarActionsModel::Observer {
@@ -96,7 +96,7 @@ class ToolbarActionsModelTestObserver : public ToolbarActionsModel::Observer {
     last_pinned_action_ids_ = model_->pinned_action_ids();
   }
 
-  ToolbarActionsModel* const model_;
+  const raw_ptr<ToolbarActionsModel> model_;
 
   size_t inserted_count_;
   size_t removed_count_;
@@ -140,19 +140,17 @@ class ToolbarActionsModelUnitTest
   void TearDown() override;
 
   // Adds or removes the given |extension| and verify success.
-  testing::AssertionResult AddExtension(
-      const scoped_refptr<const extensions::Extension>& extension)
-      WARN_UNUSED_RESULT;
-  testing::AssertionResult RemoveExtension(
-      const scoped_refptr<const extensions::Extension>& extension)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] testing::AssertionResult AddExtension(
+      const scoped_refptr<const extensions::Extension>& extension);
+  [[nodiscard]] testing::AssertionResult RemoveExtension(
+      const scoped_refptr<const extensions::Extension>& extension);
 
   // Adds three extensions, all with browser actions.
-  testing::AssertionResult AddBrowserActionExtensions() WARN_UNUSED_RESULT;
+  [[nodiscard]] testing::AssertionResult AddBrowserActionExtensions();
 
   // Adds three extensions, one each for browser action, page action, and no
   // action, and are added in that order.
-  testing::AssertionResult AddActionExtensions() WARN_UNUSED_RESULT;
+  [[nodiscard]] testing::AssertionResult AddActionExtensions();
 
   // Returns true if the |toobar_model_| has an action with the given |id|.
   bool ModelHasActionForId(const std::string& id) const;
@@ -188,7 +186,7 @@ class ToolbarActionsModelUnitTest
       const extensions::ExtensionList& extensions);
 
   // The toolbar model associated with the testing profile.
-  ToolbarActionsModel* toolbar_model_;
+  raw_ptr<ToolbarActionsModel> toolbar_model_;
 
   // The test observer to track events. Must come after toolbar_model_ so that
   // it is destroyed and removes itself as an observer first.
@@ -253,12 +251,13 @@ testing::AssertionResult ToolbarActionsModelUnitTest::RemoveExtension(
 }
 
 testing::AssertionResult ToolbarActionsModelUnitTest::AddActionExtensions() {
-  browser_action_extension_ = extensions::ExtensionBuilder("browser_action")
-                                  .SetAction(ActionType::BROWSER_ACTION)
-                                  .SetLocation(ManifestLocation::kInternal)
-                                  .Build();
+  browser_action_extension_ =
+      extensions::ExtensionBuilder("browser_action")
+          .SetAction(extensions::ActionInfo::TYPE_BROWSER)
+          .SetLocation(ManifestLocation::kInternal)
+          .Build();
   page_action_extension_ = extensions::ExtensionBuilder("page_action")
-                               .SetAction(ActionType::PAGE_ACTION)
+                               .SetAction(extensions::ActionInfo::TYPE_PAGE)
                                .SetLocation(ManifestLocation::kInternal)
                                .Build();
   no_action_extension_ = extensions::ExtensionBuilder("no_action")
@@ -276,15 +275,15 @@ testing::AssertionResult ToolbarActionsModelUnitTest::AddActionExtensions() {
 testing::AssertionResult
 ToolbarActionsModelUnitTest::AddBrowserActionExtensions() {
   browser_action_a_ = extensions::ExtensionBuilder("browser_actionA")
-                          .SetAction(ActionType::BROWSER_ACTION)
+                          .SetAction(extensions::ActionInfo::TYPE_BROWSER)
                           .SetLocation(ManifestLocation::kInternal)
                           .Build();
   browser_action_b_ = extensions::ExtensionBuilder("browser_actionB")
-                          .SetAction(ActionType::BROWSER_ACTION)
+                          .SetAction(extensions::ActionInfo::TYPE_BROWSER)
                           .SetLocation(ManifestLocation::kInternal)
                           .Build();
   browser_action_c_ = extensions::ExtensionBuilder("browser_actionC")
-                          .SetAction(ActionType::BROWSER_ACTION)
+                          .SetAction(extensions::ActionInfo::TYPE_BROWSER)
                           .SetLocation(ManifestLocation::kInternal)
                           .Build();
 
@@ -328,7 +327,7 @@ TEST_F(ToolbarActionsModelUnitTest, BasicToolbarActionsModelTest) {
   // Load an extension with a browser action.
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("browser_action")
-          .SetAction(ActionType::BROWSER_ACTION)
+          .SetAction(extensions::ActionInfo::TYPE_BROWSER)
           .SetLocation(ManifestLocation::kInternal)
           .Build();
   ASSERT_TRUE(AddExtension(extension));
@@ -355,17 +354,17 @@ TEST_F(ToolbarActionsModelUnitTest, NewToolbarExtensionsAreUnpinned) {
   // Three extensions with actions.
   scoped_refptr<const extensions::Extension> extension_a =
       extensions::ExtensionBuilder("a")
-          .SetAction(ActionType::BROWSER_ACTION)
+          .SetAction(extensions::ActionInfo::TYPE_BROWSER)
           .SetLocation(ManifestLocation::kInternal)
           .Build();
   scoped_refptr<const extensions::Extension> extension_b =
       extensions::ExtensionBuilder("b")
-          .SetAction(ActionType::BROWSER_ACTION)
+          .SetAction(extensions::ActionInfo::TYPE_BROWSER)
           .SetLocation(ManifestLocation::kInternal)
           .Build();
   scoped_refptr<const extensions::Extension> extension_c =
       extensions::ExtensionBuilder("c")
-          .SetAction(ActionType::BROWSER_ACTION)
+          .SetAction(extensions::ActionInfo::TYPE_BROWSER)
           .SetLocation(ManifestLocation::kInternal)
           .Build();
 
@@ -564,7 +563,7 @@ TEST_F(ToolbarActionsModelUnitTest, ActionsToolbarIncognitoEnableExtension) {
 
   extensions::TestExtensionDir* dirs[] = {&dir1, &dir2};
   const extensions::Extension* extensions[] = {nullptr, nullptr};
-  for (size_t i = 0; i < base::size(dirs); ++i) {
+  for (size_t i = 0; i < std::size(dirs); ++i) {
     // The extension id will be calculated from the file path; we need this to
     // wait for the extension to load.
     base::FilePath path_for_id =
@@ -966,7 +965,7 @@ TEST_F(ToolbarActionsModelUnitTest, PinStateErasedOnUninstallation) {
 
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("extension")
-          .SetAction(ActionType::BROWSER_ACTION)
+          .SetAction(extensions::ActionInfo::TYPE_BROWSER)
           .SetLocation(ManifestLocation::kInternal)
           .Build();
 
@@ -1016,7 +1015,7 @@ TEST_F(ToolbarActionsModelUnitTest, ForcePinnedByPolicy) {
 
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("test")
-          .SetAction(ActionType::BROWSER_ACTION)
+          .SetAction(extensions::ActionInfo::TYPE_BROWSER)
           .SetLocation(ManifestLocation::kInternal)
           .SetID(extension_id)
           .Build();
@@ -1027,6 +1026,70 @@ TEST_F(ToolbarActionsModelUnitTest, ForcePinnedByPolicy) {
   EXPECT_TRUE(toolbar_model()->IsActionPinned(extension->id()));
   auto* prefs = extensions::ExtensionPrefs::Get(profile());
   EXPECT_FALSE(base::Contains(prefs->GetPinnedExtensions(), extension_id));
+
+  // Pin all other extensions, to allow moving them around.
+  ASSERT_TRUE(AddBrowserActionExtensions());
+  const auto& id_a = browser_action_a()->id();
+  const auto& id_b = browser_action_b()->id();
+  const auto& id_c = browser_action_c()->id();
+  toolbar_model()->SetActionVisibility(id_a, true);
+  toolbar_model()->SetActionVisibility(id_b, true);
+  toolbar_model()->SetActionVisibility(id_c, true);
+
+  // Force-pinned extensions aren't saved in the pref.
+  EXPECT_THAT(prefs->GetPinnedExtensions(),
+              testing::ElementsAre(id_a, id_b, id_c));
+  EXPECT_THAT(toolbar_model()->pinned_action_ids(),
+              testing::ElementsAre(id_a, id_b, id_c, extension_id));
+
+  // Try to move the force-pinned extension. This shouldn't do anything because
+  // they can't be moved. See crbug.com/1266952.
+  toolbar_model()->MovePinnedAction(extension_id, 1);
+  EXPECT_THAT(prefs->GetPinnedExtensions(),
+              testing::ElementsAre(id_a, id_b, id_c));
+  EXPECT_THAT(toolbar_model()->pinned_action_ids(),
+              testing::ElementsAre(id_a, id_b, id_c, extension_id));
+
+  // Try to move other extensions. This should work fine.
+  toolbar_model()->MovePinnedAction(id_a, 1);
+  EXPECT_THAT(prefs->GetPinnedExtensions(),
+              testing::ElementsAre(id_b, id_a, id_c));
+  EXPECT_THAT(toolbar_model()->pinned_action_ids(),
+              testing::ElementsAre(id_b, id_a, id_c, extension_id));
+
+  toolbar_model()->MovePinnedAction(id_a, 2);
+  EXPECT_THAT(prefs->GetPinnedExtensions(),
+              testing::ElementsAre(id_b, id_c, id_a));
+  EXPECT_THAT(toolbar_model()->pinned_action_ids(),
+              testing::ElementsAre(id_b, id_c, id_a, extension_id));
+
+  toolbar_model()->MovePinnedAction(id_a, 0);
+  EXPECT_THAT(prefs->GetPinnedExtensions(),
+              testing::ElementsAre(id_a, id_b, id_c));
+  EXPECT_THAT(toolbar_model()->pinned_action_ids(),
+              testing::ElementsAre(id_a, id_b, id_c, extension_id));
+
+  // Try to move an extension to the right of the force-pinned one. This will
+  // not work, and the force-pinned one will stay to the right. But the other
+  // extension will still get moved as far right as it can.
+  toolbar_model()->MovePinnedAction(id_a, 3);
+  EXPECT_THAT(prefs->GetPinnedExtensions(),
+              testing::ElementsAre(id_b, id_c, id_a));
+  EXPECT_THAT(toolbar_model()->pinned_action_ids(),
+              testing::ElementsAre(id_b, id_c, id_a, extension_id));
+
+  // Again, but using an index greater than the rightmost index (mostly to check
+  // for crashes).
+  toolbar_model()->MovePinnedAction(id_a, 0);
+  EXPECT_THAT(prefs->GetPinnedExtensions(),
+              testing::ElementsAre(id_a, id_b, id_c));
+  EXPECT_THAT(toolbar_model()->pinned_action_ids(),
+              testing::ElementsAre(id_a, id_b, id_c, extension_id));
+  toolbar_model()->MovePinnedAction(id_a, 4);
+  EXPECT_THAT(prefs->GetPinnedExtensions(),
+              testing::ElementsAre(id_b, id_c, id_a));
+  EXPECT_THAT(toolbar_model()->pinned_action_ids(),
+              testing::ElementsAre(id_b, id_c, id_a, extension_id));
 }
 
 // Tests that the pin state (and position) for extensions that are unloaded

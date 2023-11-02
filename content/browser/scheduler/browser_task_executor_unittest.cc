@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -123,7 +123,7 @@ TEST_F(BrowserTaskExecutorTest, RunAllPendingTasksForTestingOnIOIsReentrant) {
 TEST_F(BrowserTaskExecutorTest, GetTaskRunnerWithBrowserTaskTraits) {
   StrictMockTask task_1;
 
-  GetUIThreadTaskRunner({BrowserTaskType::kPreconnect})
+  GetUIThreadTaskRunner({BrowserTaskType::kUserInput})
       ->PostTask(FROM_HERE, task_1.Get());
 
   EXPECT_CALL(task_1, Run);
@@ -151,11 +151,12 @@ TEST_F(BrowserTaskTraitsMappingTest, BrowserTaskTraitsMapToProperPriorities) {
             QueueType::kUserBlocking);
 
   EXPECT_EQ(BrowserTaskExecutor::GetQueueType({BrowserTaskType::kBootstrap}),
-            QueueType::kBootstrap);
+            QueueType::kUserBlocking);
   EXPECT_EQ(BrowserTaskExecutor::GetQueueType({BrowserTaskType::kDefault}),
             QueueType::kUserBlocking);
-  EXPECT_EQ(BrowserTaskExecutor::GetQueueType({BrowserTaskType::kPreconnect}),
-            QueueType::kPreconnection);
+  EXPECT_EQ(BrowserTaskExecutor::GetQueueType(
+                {BrowserTaskType::kServiceWorkerStorageControlResponse}),
+            QueueType::kServiceWorkerStorageControlResponse);
 
   EXPECT_EQ(BrowserTaskExecutor::GetQueueType({}), QueueType::kUserBlocking);
 }
@@ -249,12 +250,10 @@ TEST_F(BrowserTaskExecutorWithCustomSchedulerTest,
   GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
       ->PostDelayedTask(FROM_HERE, best_effort.Get(), base::Milliseconds(100));
   GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
-      ->PostTask(FROM_HERE,
-
-                 best_effort.Get());
+      ->PostTask(FROM_HERE, best_effort.Get());
   task_environment_.RunUntilIdle();
 
-  BrowserTaskExecutor::EnableAllQueues();
+  BrowserTaskExecutor::OnStartupComplete();
   EXPECT_CALL(best_effort, Run).Times(4);
   task_environment_.FastForwardBy(base::Milliseconds(100));
 }

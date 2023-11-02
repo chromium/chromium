@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_FLEX_NG_FLEX_ITEM_ITERATOR_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -30,20 +31,31 @@ class CORE_EXPORT NGFlexItemIterator {
   STACK_ALLOCATED();
 
  public:
-  NGFlexItemIterator(const Vector<NGFlexLine>& flex_lines,
-                     const NGBlockBreakToken* break_token);
+  NGFlexItemIterator(const HeapVector<NGFlexLine>& flex_lines,
+                     const NGBlockBreakToken* break_token,
+                     bool is_column);
 
   // Returns the next flex item which should be laid out, along with its
-  // respective break token.
+  // respective break token. |broke_before_row| will be true if the current
+  // flex row broke before, represented by its first child's break token.
+  // |broke_before_row| should always be false for column flex containers.
   struct Entry;
-  Entry NextItem();
+  Entry NextItem(bool broke_before_row);
+
+  bool HasMoreBreakTokens() const { return break_token_; }
+
+  // Move the iterator to the next line, unless we are already at the start of a
+  // line.
+  void NextLine();
 
  private:
   NGFlexItem* FindNextItem(const NGBlockBreakToken* item_break_token = nullptr);
+  void AdjustItemIndexForNewLine();
 
   NGFlexItem* next_unstarted_item_ = nullptr;
-  const Vector<NGFlexLine>& flex_lines_;
+  const HeapVector<NGFlexLine>& flex_lines_;
   const NGBlockBreakToken* break_token_;
+  bool is_column_ = false;
 
   // An index into break_token_'s ChildBreakTokens() vector. Used for keeping
   // track of the next child break token to inspect.
@@ -54,6 +66,8 @@ class CORE_EXPORT NGFlexItemIterator {
   // An index into the flex_lines_'s line_items_ vector. Used for keeping track
   // of the next flex item to inspect.
   wtf_size_t flex_item_idx_ = 0;
+  // Stores the next item index to process for each line, if applicable.
+  Vector<wtf_size_t> next_item_idx_for_line_;
 };
 
 struct NGFlexItemIterator::Entry {

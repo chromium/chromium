@@ -1,9 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/tracing/perfetto_platform.h"
 
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/deferred_sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -11,14 +13,23 @@
 #include "base/tracing/perfetto_task_runner.h"
 #include "base/tracing_buildflags.h"
 #include "build/build_config.h"
+#include "third_party/perfetto/protos/perfetto/trace/track_event/process_descriptor.gen.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/thread_descriptor.gen.h"
 
-#if !defined(OS_NACL)
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_NACL)
 #include "third_party/perfetto/include/perfetto/ext/base/thread_task_runner.h"
 #endif
 
 namespace base {
 namespace tracing {
+
+namespace {
+constexpr char kProcessNamePrefix[] = "org.chromium-";
+}  // namespace
 
 PerfettoPlatform::PerfettoPlatform(TaskRunnerType task_runner_type)
     : task_runner_type_(task_runner_type),
@@ -59,7 +70,7 @@ std::unique_ptr<perfetto::base::TaskRunner> PerfettoPlatform::CreateTaskRunner(
     const CreateTaskRunnerArgs&) {
   switch (task_runner_type_) {
     case TaskRunnerType::kBuiltin:
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
       return std::make_unique<perfetto::base::ThreadTaskRunner>(
           perfetto::base::ThreadTaskRunner::CreateAndStart());
 #else
@@ -75,20 +86,39 @@ std::unique_ptr<perfetto::base::TaskRunner> PerfettoPlatform::CreateTaskRunner(
   }
 }
 
+// This method is used by the SDK to determine the producer name.
+// Note that we override the producer name for the mojo backend in ProducerHost,
+// and thus this only affects the producer name for the system backend.
 std::string PerfettoPlatform::GetCurrentProcessName() {
-  // TODO(skyostil): Unimplemented since we're not registering producers through
-  // the client API yet.
-  return "";
+  const char* host_package_name = nullptr;
+#if BUILDFLAG(IS_ANDROID)
+  host_package_name = android::BuildInfo::GetInstance()->host_package_name();
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  // On Android we want to include if this is webview inside of an app or
+  // Android Chrome. To aid this we add the host_package_name to differentiate
+  // the various apps and sources.
+  std::string process_name;
+  if (host_package_name) {
+    process_name = StrCat(
+        {kProcessNamePrefix, host_package_name, "-",
+         NumberToString(trace_event::TraceLog::GetInstance()->process_id())});
+  } else {
+    process_name = StrCat(
+        {kProcessNamePrefix,
+         NumberToString(trace_event::TraceLog::GetInstance()->process_id())});
+  }
+  return process_name;
 }
 
 void PerfettoPlatform::OnThreadNameChanged(const char* name) {
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  // TODO(skyostil): Also capture names for threads which predate tracing being
-  // initialized.
+  int process_id = trace_event::TraceLog::GetInstance()->process_id();
   if (perfetto::Tracing::IsInitialized()) {
     auto track = perfetto::ThreadTrack::Current();
     auto desc = track.Serialize();
     desc.mutable_thread()->set_thread_name(name);
+    desc.mutable_thread()->set_pid(process_id);
     perfetto::TrackEvent::SetTrackDescriptor(track, std::move(desc));
   }
 #endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)

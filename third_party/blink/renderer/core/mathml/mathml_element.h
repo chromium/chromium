@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,8 +32,8 @@ class CORE_EXPORT MathMLElement : public Element {
 
   bool IsMathMLElement() const =
       delete;  // This will catch anyone doing an unnecessary check.
-
-  bool IsTokenElement() const;
+  bool IsStyledElement() const =
+      delete;  // This will catch anyone doing an unnecessary check.
 
   virtual bool IsGroupingElement() const { return false; }
 
@@ -54,6 +54,9 @@ class CORE_EXPORT MathMLElement : public Element {
 
   // https://w3c.github.io/mathml-core/#dfn-boolean
   absl::optional<bool> BooleanAttribute(const QualifiedName& name) const;
+
+  LayoutObject* CreateLayoutObject(const ComputedStyle&,
+                                   LegacyLayout legacy) override;
 };
 
 template <typename T>

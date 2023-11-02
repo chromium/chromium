@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,6 +41,9 @@ const char kGoogleAmpCachePathPattern[] = "/[a-z]/(s/)?(.*)";
 // Regex pattern for the path of Google AMP Viewer URLs.
 const char kGoogleAmpViewerPathPattern[] = "/amp/(s/)?(.*)";
 
+const char kGoogleNewsHost[] = "news.google.com";
+const char kGoogleNewsPathPattern[] = "/articles/(.*)";
+
 }  // namespace
 
 // Used to free a CaptureResult if it is passed up to Java and cannot be used by
@@ -60,9 +63,11 @@ LongScreenshotsTabService::LongScreenshotsTabService(
                               std::move(policy),
                               is_off_the_record),
       google_amp_cache_path_regex_(kGoogleAmpCachePathPattern),
-      google_amp_viewer_path_regex_(kGoogleAmpViewerPathPattern) {
+      google_amp_viewer_path_regex_(kGoogleAmpViewerPathPattern),
+      google_news_path_regex_(kGoogleNewsPathPattern) {
   DCHECK(google_amp_cache_path_regex_.ok());
   DCHECK(google_amp_viewer_path_regex_.ok());
+  DCHECK(google_news_path_regex_.ok());
 
   JNIEnv* env = base::android::AttachCurrentThread();
 
@@ -105,7 +110,7 @@ void LongScreenshotsTabService::CaptureTab(int tab_id,
       contents->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/true,
                                        /*stay_awake=*/true);
   content::RenderFrameHost* rfh =
-      GetRootRenderFrameHost(contents->GetMainFrame(), *url);
+      GetRootRenderFrameHost(contents->GetPrimaryMainFrame(), *url);
   if (in_memory) {
     CaptureTabInternal(tab_id, rfh->GetFrameTreeNodeId(), rfh->GetGlobalId(),
                        clip_x, clip_y, clip_width, clip_height, in_memory,
@@ -147,7 +152,7 @@ void LongScreenshotsTabService::CaptureTabInternal(
   // There is a small chance RenderFrameHost may be destroyed when the UI thread
   // is used to create the directory.  By doing a lookup for the RenderFrameHost
   // and comparing it to the WebContent, we can ensure that the content is still
-  // available for capture and WebContents::GetMainFrame did not return a
+  // available for capture and WebContents::GetPrimaryMainFrame did not return a
   // defunct pointer.
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id);
   if (!contents || !rfh || contents->IsBeingDestroyed() || !rfh->IsActive()) {
@@ -201,18 +206,16 @@ content::RenderFrameHost* LongScreenshotsTabService::GetRootRenderFrameHost(
   }
 
   std::vector<content::RenderFrameHost*> child_frames;
-  main_frame->ForEachRenderFrameHost(base::BindRepeating(
-      [](std::vector<content::RenderFrameHost*>* child_frames,
-         content::RenderFrameHost* main_frame, content::RenderFrameHost* rfh) {
+  main_frame->ForEachRenderFrameHostWithAction(
+      [main_frame, &child_frames](content::RenderFrameHost* rfh) {
         // All frames get traversed in breadth-first order.
         // If a direct child is found, skip traversing its children.
         if (rfh->GetParent() == main_frame) {
-          child_frames->push_back(rfh);
+          child_frames.push_back(rfh);
           return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
         }
         return content::RenderFrameHost::FrameIterationAction::kContinue;
-      },
-      &child_frames, main_frame));
+      });
 
   // In AMP pages the main frame should have exactly one child subframe.
   if (child_frames.size() != 1) {
@@ -237,6 +240,12 @@ bool LongScreenshotsTabService::IsAmpUrl(const GURL& url) {
           url, google_util::DISALLOW_SUBDOMAIN,
           google_util::DISALLOW_NON_STANDARD_PORTS) &&
       re2::RE2::FullMatch(url.path(), google_amp_viewer_path_regex_)) {
+    return true;
+  }
+
+  // Check for "news.google.com/articles/*".
+  if (url.DomainIs(kGoogleNewsHost) &&
+      re2::RE2::FullMatch(url.path(), google_news_path_regex_)) {
     return true;
   }
 

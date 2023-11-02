@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/strings/string_piece.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
+#include "components/reporting/resources/resource_interface.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 
@@ -62,6 +63,7 @@ class UploaderInterface {
   // the record or error status has been processed, with true if next record
   // needs to be delivered and false if the Uploader should stop.
   virtual void ProcessRecord(EncryptedRecord record,
+                             ScopedReservation scoped_reservation,
                              base::OnceCallback<void(bool)> processed_cb) = 0;
 
   // Makes a note of a gap [start, start + count). Expects |processed_cb| to

@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,10 +7,8 @@
 # benchmarks should shrink overtime.
 UNDOCUMENTED_BENCHMARKS = {
     'components_perftests',
-    'dromaeo',
     'dummy_benchmark.noisy_benchmark_1',
     'dummy_benchmark.stable_benchmark_1',
-    'gpu_perftests',
     'jetstream',
     'kraken',
     'load_library_perf_tests',
@@ -22,6 +20,7 @@ UNDOCUMENTED_BENCHMARKS = {
     'speedometer2',
     'speedometer2-chrome-health',
     'speedometer2-future',
+    'speedometer2-minormc',
     'speedometer2-pcscan',
     'startup.mobile',
     'system_health.webview_startup',

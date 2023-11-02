@@ -1,0 +1,38 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+source_set("cpp") {
+  sources = [
+    "cros_bluetooth_config_util.cc",
+    "cros_bluetooth_config_util.h",
+    "device_image_info.cc",
+    "device_image_info.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/ash/services/bluetooth_config/public/mojom",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "cros_bluetooth_config_util_unittest.cc",
+    "device_image_info_unittest.cc",
+  ]
+
+  deps = [
+    ":cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/services/bluetooth_config/public/mojom",
+    "//testing/gtest",
+  ]
+}

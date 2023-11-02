@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,13 +40,19 @@ class BASE_EXPORT PowerThermalObserver {
   // equipped with those) or reducing voltage and frequency (oftentimes
   // degrading overall responsiveness). The taxonomy is derived from MacOS (see
   // e.g. [1]) but applies to others e.g. Linux/ChromeOS.
-  // [1] https://developer.apple.com/library/archive/documentation/Performance/Conceptual/power_efficiency_guidelines_osx/RespondToThermalStateChanges.html
+  // [1]
+  // https://developer.apple.com/library/archive/documentation/Performance/Conceptual/power_efficiency_guidelines_osx/RespondToThermalStateChanges.html
+  // Attention: These values are persisted to logs. Entries should not be
+  // renumbered and numeric values should never be reused. Keep in sync with
+  // DeviceThermalState
+  // in //tools/metrics/histograms/enums.xml.
   enum class DeviceThermalState {
-    kUnknown,
-    kNominal,
-    kFair,
-    kSerious,
-    kCritical,
+    kUnknown = 0,
+    kNominal = 1,
+    kFair = 2,
+    kSerious = 3,
+    kCritical = 4,
+    kMaxValue = kCritical,
   };
   // The maximum speed limit in the system.
   static constexpr int kSpeedLimitMax = 100;

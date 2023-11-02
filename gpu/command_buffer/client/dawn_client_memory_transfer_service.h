@@ -1,12 +1,14 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef GPU_COMMAND_BUFFER_CLIENT_DAWN_CLIENT_MEMORY_TRANSFER_SERVICE_H_
 #define GPU_COMMAND_BUFFER_CLIENT_DAWN_CLIENT_MEMORY_TRANSFER_SERVICE_H_
 
-#include <dawn_wire/WireClient.h>
+#include <dawn/wire/WireClient.h>
 #include <vector>
+
+#include "base/memory/raw_ptr.h"
 
 namespace gpu {
 
@@ -18,7 +20,7 @@ namespace webgpu {
 struct MemoryTransferHandle;
 
 class DawnClientMemoryTransferService
-    : public dawn_wire::client::MemoryTransferService {
+    : public dawn::wire::client::MemoryTransferService {
  public:
   DawnClientMemoryTransferService(MappedMemoryManager* mapped_memory);
   ~DawnClientMemoryTransferService() override;
@@ -48,7 +50,7 @@ class DawnClientMemoryTransferService
   // than once per block.
   void MarkHandleFree(void* ptr);
 
-  MappedMemoryManager* mapped_memory_;
+  raw_ptr<MappedMemoryManager> mapped_memory_;
   // Pointers to memory allocated by the MappedMemoryManager to free after
   // the next Flush.
   std::vector<void*> free_blocks_;

@@ -1,22 +1,22 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/network/public/cpp/client_hints.h"
 #include <iostream>
 
-#include "base/feature_list.h"
-#include "base/test/scoped_feature_list.h"
-#include "services/network/public/cpp/features.h"
+#include "base/test/gtest_util.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 using testing::UnorderedElementsAre;
 
 namespace network {
 
-TEST(ClientHintsTest, ParseAcceptCH) {
+TEST(ClientHintsTest, ParseClientHintsHeader) {
   absl::optional<std::vector<network::mojom::WebClientHintsType>> result;
 
   // Empty is OK.
@@ -34,7 +34,7 @@ TEST(ClientHintsTest, ParseAcceptCH) {
 
   // Must be a list of tokens, not other things.
   result = ParseClientHintsHeader("\"device-memory\", \"rtt\"");
-  EXPECT_FALSE(result.has_value());
+  ASSERT_FALSE(result.has_value());
 
   // Parameters to the tokens are ignored, as encourageed by structured headers
   // spec.
@@ -52,10 +52,6 @@ TEST(ClientHintsTest, ParseAcceptCH) {
               UnorderedElementsAre(
                   network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED,
                   network::mojom::WebClientHintsType::kRtt_DEPRECATED));
-}
-
-TEST(ClientHintsTest, ParseAcceptCHCaseInsensitive) {
-  absl::optional<std::vector<network::mojom::WebClientHintsType>> result;
 
   // Matching is case-insensitive.
   result = ParseClientHintsHeader("Device-meMory,  Rtt ");
@@ -66,60 +62,137 @@ TEST(ClientHintsTest, ParseAcceptCHCaseInsensitive) {
                   network::mojom::WebClientHintsType::kRtt_DEPRECATED));
 }
 
-TEST(ClientHintsTest, ParseAcceptCHLifetime) {
-  EXPECT_EQ(base::TimeDelta(), ParseAcceptCHLifetime(""));
-  EXPECT_EQ(base::TimeDelta(), ParseAcceptCHLifetime("-1000"));
-  EXPECT_EQ(base::TimeDelta(), ParseAcceptCHLifetime("1000s"));
-  EXPECT_EQ(base::TimeDelta(), ParseAcceptCHLifetime("1000.5"));
-  EXPECT_EQ(base::Seconds(1000), ParseAcceptCHLifetime("1000"));
+TEST(ClientHintsTest,
+     ParseClientHintToDelegatedThirdPartiesHeader_HttpEquivAcceptCH) {
+  EXPECT_DCHECK_DEATH(ParseClientHintToDelegatedThirdPartiesHeader(
+      "", MetaCHType::HttpEquivAcceptCH));
 }
 
-TEST(ClientHintsTest, SuggestAlternateClientHintIfDeprecated) {
-  EXPECT_EQ(SuggestAlternateClientHintIfDeprecated(
-                network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED),
-            absl::nullopt);
-  EXPECT_EQ(SuggestAlternateClientHintIfDeprecated(
-                network::mojom::WebClientHintsType::kDpr_DEPRECATED),
-            absl::nullopt);
-  EXPECT_EQ(SuggestAlternateClientHintIfDeprecated(
-                network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED),
-            absl::nullopt);
-  EXPECT_EQ(SuggestAlternateClientHintIfDeprecated(
-                network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED),
-            absl::nullopt);
-  EXPECT_EQ(SuggestAlternateClientHintIfDeprecated(
-                network::mojom::WebClientHintsType::kRtt_DEPRECATED),
-            absl::nullopt);
-  EXPECT_EQ(SuggestAlternateClientHintIfDeprecated(
-                network::mojom::WebClientHintsType::kDownlink_DEPRECATED),
-            absl::nullopt);
-  EXPECT_EQ(SuggestAlternateClientHintIfDeprecated(
-                network::mojom::WebClientHintsType::kEct_DEPRECATED),
-            absl::nullopt);
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kClientHintDeprecationIssue);
-  EXPECT_EQ(SuggestAlternateClientHintIfDeprecated(
-                network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED),
-            network::mojom::WebClientHintsType::kDeviceMemory);
-  EXPECT_EQ(SuggestAlternateClientHintIfDeprecated(
-                network::mojom::WebClientHintsType::kDpr_DEPRECATED),
-            network::mojom::WebClientHintsType::kDpr);
-  EXPECT_EQ(SuggestAlternateClientHintIfDeprecated(
-                network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED),
-            network::mojom::WebClientHintsType::kResourceWidth);
-  EXPECT_EQ(SuggestAlternateClientHintIfDeprecated(
-                network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED),
-            network::mojom::WebClientHintsType::kResourceWidth);
-  EXPECT_EQ(SuggestAlternateClientHintIfDeprecated(
-                network::mojom::WebClientHintsType::kRtt_DEPRECATED),
-            absl::nullopt);
-  EXPECT_EQ(SuggestAlternateClientHintIfDeprecated(
-                network::mojom::WebClientHintsType::kDownlink_DEPRECATED),
-            absl::nullopt);
-  EXPECT_EQ(SuggestAlternateClientHintIfDeprecated(
-                network::mojom::WebClientHintsType::kEct_DEPRECATED),
-            absl::nullopt);
+TEST(ClientHintsTest,
+     ParseClientHintToDelegatedThirdPartiesHeader_HttpEquivDelegateCH) {
+  ClientHintToDelegatedThirdPartiesHeader result;
+
+  // Empty is OK.
+  result = ParseClientHintToDelegatedThirdPartiesHeader(
+      " ", MetaCHType::HttpEquivDelegateCH);
+  EXPECT_TRUE(result.map.empty());
+  EXPECT_FALSE(result.had_invalid_origins);
+
+  // Empty with semicolons OK.
+  result = ParseClientHintToDelegatedThirdPartiesHeader(
+      " ; ; ", MetaCHType::HttpEquivDelegateCH);
+  EXPECT_TRUE(result.map.empty());
+  EXPECT_FALSE(result.had_invalid_origins);
+
+  // Normal case.
+  result = ParseClientHintToDelegatedThirdPartiesHeader(
+      "device-memory;  rtt ", MetaCHType::HttpEquivDelegateCH);
+  EXPECT_THAT(
+      result.map,
+      UnorderedElementsAre(
+          std::make_pair(
+              network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED,
+              (std::vector<url::Origin>){}),
+          std::make_pair(network::mojom::WebClientHintsType::kRtt_DEPRECATED,
+                         (std::vector<url::Origin>){})));
+  EXPECT_FALSE(result.had_invalid_origins);
+
+  // Must be a list of tokens, not other things.
+  result = ParseClientHintToDelegatedThirdPartiesHeader(
+      "\"device-memory\"; \"rtt\"", MetaCHType::HttpEquivDelegateCH);
+  EXPECT_TRUE(result.map.empty());
+  EXPECT_FALSE(result.had_invalid_origins);
+
+  // Comma separated tokens won't work
+  result = ParseClientHintToDelegatedThirdPartiesHeader(
+      "device-memory,rtt", MetaCHType::HttpEquivDelegateCH);
+  EXPECT_TRUE(result.map.empty());
+  EXPECT_FALSE(result.had_invalid_origins);
+
+  // Unknown tokens are fine, since this meant to be extensible.
+  result = ParseClientHintToDelegatedThirdPartiesHeader(
+      "device-memory;  rtt ; nosuchtokenwhywhywhy",
+      MetaCHType::HttpEquivDelegateCH);
+  EXPECT_THAT(
+      result.map,
+      UnorderedElementsAre(
+          std::make_pair(
+              network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED,
+              (std::vector<url::Origin>){}),
+          std::make_pair(network::mojom::WebClientHintsType::kRtt_DEPRECATED,
+                         (std::vector<url::Origin>){})));
+  EXPECT_FALSE(result.had_invalid_origins);
+
+  // Matching is case-insensitive.
+  result = ParseClientHintToDelegatedThirdPartiesHeader(
+      "Device-meMory;  Rtt ", MetaCHType::HttpEquivDelegateCH);
+  EXPECT_THAT(
+      result.map,
+      UnorderedElementsAre(
+          std::make_pair(
+              network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED,
+              (std::vector<url::Origin>){}),
+          std::make_pair(network::mojom::WebClientHintsType::kRtt_DEPRECATED,
+                         (std::vector<url::Origin>){})));
+  EXPECT_FALSE(result.had_invalid_origins);
+
+  // Matching can find a one or more origins.
+  result = ParseClientHintToDelegatedThirdPartiesHeader(
+      "device-memory https://foo.bar;  rtt https://foo.bar "
+      "https://baz.qux ",
+      MetaCHType::HttpEquivDelegateCH);
+  EXPECT_THAT(
+      result.map,
+      UnorderedElementsAre(
+          std::make_pair(
+              network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED,
+              (std::vector<url::Origin>){
+                  url::Origin::Create(GURL("https://foo.bar"))}),
+          std::make_pair(network::mojom::WebClientHintsType::kRtt_DEPRECATED,
+                         (std::vector<url::Origin>){
+                             url::Origin::Create(GURL("https://foo.bar")),
+                             url::Origin::Create(GURL("https://baz.qux"))})));
+  EXPECT_FALSE(result.had_invalid_origins);
+
+  // Matching ignores invalid domains
+  result = ParseClientHintToDelegatedThirdPartiesHeader(
+      "device-memory 6;  rtt https://foo.bar/wasd self about:blank ",
+      MetaCHType::HttpEquivDelegateCH);
+  EXPECT_THAT(
+      result.map,
+      UnorderedElementsAre(
+          std::make_pair(
+              network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED,
+              (std::vector<url::Origin>){}),
+          std::make_pair(network::mojom::WebClientHintsType::kRtt_DEPRECATED,
+                         (std::vector<url::Origin>){
+                             url::Origin::Create(GURL("https://foo.bar"))})));
+  EXPECT_TRUE(result.had_invalid_origins);
+
+  // Matching won't split all ascii whitespace, but will trim if there's a space
+  result = ParseClientHintToDelegatedThirdPartiesHeader(
+      "device-memory https://foo.bar/\nhttps://baz.qux/;  "
+      "rtt\thttps://foo.bar/; ect \rhttps://foo.bar/",
+      MetaCHType::HttpEquivDelegateCH);
+  EXPECT_THAT(
+      result.map,
+      UnorderedElementsAre(
+          std::make_pair(
+              network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED,
+              (std::vector<url::Origin>){
+                  url::Origin::Create(GURL("https://foo.bar"))}),
+          std::make_pair(network::mojom::WebClientHintsType::kEct_DEPRECATED,
+                         (std::vector<url::Origin>){
+                             url::Origin::Create(GURL("https://foo.bar"))})));
+  EXPECT_FALSE(result.had_invalid_origins);
+
+  // name="accept-ch" syntax won't work.
+  result = ParseClientHintToDelegatedThirdPartiesHeader(
+      "device-memory=https://foo.bar,  rtt=( https://foo.bar "
+      "https://baz.qux) ",
+      MetaCHType::HttpEquivDelegateCH);
+  EXPECT_TRUE(result.map.empty());
+  EXPECT_FALSE(result.had_invalid_origins);
 }
 
 }  // namespace network

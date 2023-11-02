@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -81,13 +81,13 @@ class OriginTrialsComponentInstallerTest : public PlatformTest {
   }
 
   void AddDisabledFeaturesToPrefs(const std::vector<std::string>& features) {
-    base::ListValue disabled_feature_list;
+    base::Value::List disabled_feature_list;
     for (const std::string& feature : features) {
       disabled_feature_list.Append(feature);
     }
-    ListPrefUpdate update(
+    ScopedListPrefUpdate update(
         local_state(), embedder_support::prefs::kOriginTrialDisabledFeatures);
-    update->Swap(&disabled_feature_list);
+    *update = std::move(disabled_feature_list);
   }
 
   void CheckDisabledFeaturesPrefs(const std::vector<std::string>& features) {
@@ -96,32 +96,31 @@ class OriginTrialsComponentInstallerTest : public PlatformTest {
     ASSERT_TRUE(local_state()->HasPrefPath(
         embedder_support::prefs::kOriginTrialDisabledFeatures));
 
-    const base::ListValue* disabled_feature_list = local_state()->GetList(
+    const base::Value::List& disabled_feature_list = local_state()->GetList(
         embedder_support::prefs::kOriginTrialDisabledFeatures);
-    ASSERT_TRUE(disabled_feature_list);
 
-    ASSERT_EQ(features.size(), disabled_feature_list->GetList().size());
+    ASSERT_EQ(features.size(), disabled_feature_list.size());
 
-    std::string disabled_feature;
     for (size_t i = 0; i < features.size(); ++i) {
-      const bool found = disabled_feature_list->GetString(i, &disabled_feature);
-      EXPECT_TRUE(found) << "Entry not found or not a string at index " << i;
-      if (!found) {
+      const std::string* disabled_feature =
+          disabled_feature_list[i].GetIfString();
+      if (!disabled_feature) {
+        ADD_FAILURE() << "Entry not found or not a string at index " << i;
         continue;
       }
-      EXPECT_EQ(features[i], disabled_feature)
+      EXPECT_EQ(features[i], *disabled_feature)
           << "Feature lists differ at index " << i;
     }
   }
 
   void AddDisabledTokensToPrefs(const std::vector<std::string>& tokens) {
-    base::ListValue disabled_token_list;
+    base::Value::List disabled_token_list;
     for (const std::string& token : tokens) {
       disabled_token_list.Append(token);
     }
-    ListPrefUpdate update(local_state(),
-                          embedder_support::prefs::kOriginTrialDisabledTokens);
-    update->Swap(&disabled_token_list);
+    ScopedListPrefUpdate update(
+        local_state(), embedder_support::prefs::kOriginTrialDisabledTokens);
+    *update = std::move(disabled_token_list);
   }
 
   void CheckDisabledTokensPrefs(const std::vector<std::string>& tokens) {
@@ -130,20 +129,19 @@ class OriginTrialsComponentInstallerTest : public PlatformTest {
     ASSERT_TRUE(local_state()->HasPrefPath(
         embedder_support::prefs::kOriginTrialDisabledTokens));
 
-    const base::ListValue* disabled_token_list = local_state()->GetList(
+    const base::Value::List& disabled_token_list = local_state()->GetList(
         embedder_support::prefs::kOriginTrialDisabledTokens);
-    ASSERT_TRUE(disabled_token_list);
 
-    ASSERT_EQ(tokens.size(), disabled_token_list->GetList().size());
+    ASSERT_EQ(tokens.size(), disabled_token_list.size());
 
-    std::string disabled_token;
     for (size_t i = 0; i < tokens.size(); ++i) {
-      const bool found = disabled_token_list->GetString(i, &disabled_token);
-      EXPECT_TRUE(found) << "Entry not found or not a string at index " << i;
-      if (!found) {
+      const std::string* disabled_token = disabled_token_list[i].GetIfString();
+
+      if (!disabled_token) {
+        ADD_FAILURE() << "Entry not found or not a string at index " << i;
         continue;
       }
-      EXPECT_EQ(tokens[i], disabled_token)
+      EXPECT_EQ(tokens[i], *disabled_token)
           << "Token lists differ at index " << i;
     }
   }

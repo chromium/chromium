@@ -1,15 +1,16 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "base/containers/cxx20_erase.h"
+#include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -67,6 +68,14 @@ void AutomationEventRouter::RegisterListenerWithDesktopPermission(
            ui::AXTreeIDUnknown(), true);
 }
 
+void AutomationEventRouter::UnregisterListenerWithDesktopPermission(
+    int listener_process_id) {
+  content::RenderProcessHost* host =
+      content::RenderProcessHost::FromID(listener_process_id);
+  if (host)
+    RemoveAutomationListener(host);
+}
+
 void AutomationEventRouter::DispatchAccessibilityEventsInternal(
     const ExtensionMsg_AccessibilityEventBundleParams& event_bundle) {
   content::BrowserContext* active_context =
@@ -118,7 +127,7 @@ void AutomationEventRouter::DispatchTreeDestroyedEvent(
   if (listeners_.empty())
     return;
 
-  browser_context = browser_context ? browser_context : active_context_;
+  browser_context = browser_context ? browser_context : active_context_.get();
   auto args(api::automation_internal::OnAccessibilityTreeDestroyed::Create(
       tree_id.ToString()));
   auto event = std::make_unique<Event>(
@@ -134,7 +143,7 @@ void AutomationEventRouter::DispatchActionResult(
     content::BrowserContext* browser_context) {
   CHECK(!data.source_extension_id.empty());
 
-  browser_context = browser_context ? browser_context : active_context_;
+  browser_context = browser_context ? browser_context : active_context_.get();
   if (listeners_.empty())
     return;
 
@@ -211,8 +220,8 @@ AutomationEventRouter::AutomationListener::AutomationListener(
 
 AutomationEventRouter::AutomationListener::~AutomationListener() = default;
 
-void AutomationEventRouter::AutomationListener::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
+void AutomationEventRouter::AutomationListener::PrimaryPageChanged(
+    content::Page& page) {
   router->RemoveAutomationListener(
       content::RenderProcessHost::FromID(process_id));
 }
@@ -223,11 +232,8 @@ void AutomationEventRouter::Register(const ExtensionId& extension_id,
                                      ui::AXTreeID ax_tree_id,
                                      bool desktop) {
   DCHECK(desktop || ax_tree_id != ui::AXTreeIDUnknown());
-  const auto& iter =
-      std::find_if(listeners_.begin(), listeners_.end(),
-                   [listener_process_id](const auto& item) {
-                     return item->process_id == listener_process_id;
-                   });
+  const auto& iter = base::ranges::find(listeners_, listener_process_id,
+                                        &AutomationListener::process_id);
 
   // Add a new entry if we don't have one with that process.
   if (iter == listeners_.end()) {
@@ -292,7 +298,8 @@ void AutomationEventRouter::RemoveAutomationListener(
   base::EraseIf(listeners_, [process_id](const auto& item) {
     return item->process_id == process_id;
   });
-  rph_observers_.RemoveObservation(host);
+  if (rph_observers_.IsObservingSource(host))
+    rph_observers_.RemoveObservation(host);
   UpdateActiveProfile();
 
   if (rph_observers_.GetSourcesCount() == 0) {

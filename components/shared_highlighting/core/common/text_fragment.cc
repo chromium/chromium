@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,16 +6,16 @@
 
 #include <sstream>
 
+#include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "components/shared_highlighting/core/common/text_fragments_constants.h"
-#include "net/base/escape.h"
+#include "components/shared_highlighting/core/common/fragment_directives_constants.h"
 
 namespace {
 
 // Escapes any special character such that the fragment can be added to a URL.
 std::string Escape(const std::string& str) {
-  std::string escaped = net::EscapeQueryParamValue(str, /*usePlus=*/false);
+  std::string escaped = base::EscapeQueryParamValue(str, /*usePlus=*/false);
 
   // Hyphens must also be escaped since they are used to indicate prefix/suffix
   // components.
@@ -137,7 +137,7 @@ std::string TextFragment::ToEscapedString() const {
     return std::string();
   }
   std::stringstream ss;
-  ss << kFragmentParameterName;
+  ss << kTextDirectiveParameterName;
 
   if (!prefix_.empty()) {
     ss << Escape(prefix_) << "-,";

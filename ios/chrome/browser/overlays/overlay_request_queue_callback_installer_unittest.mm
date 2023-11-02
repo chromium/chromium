@@ -1,16 +1,16 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/overlays/public/overlay_request_queue_callback_installer.h"
 
-#include "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
+#import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
-#include "ios/chrome/browser/overlays/test/fake_overlay_request_callback_installer.h"
-#include "ios/chrome/browser/overlays/test/overlay_test_macros.h"
+#import "ios/chrome/browser/overlays/test/fake_overlay_request_callback_installer.h"
+#import "ios/chrome/browser/overlays/test/overlay_test_macros.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/platform_test.h"
+#import "testing/gmock/include/gmock/gmock.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -39,7 +39,7 @@ class OverlayRequestQueueCallbackInstallerTest : public PlatformTest {
     request_installer->set_request_support(SupportedConfig::RequestSupport());
     queue_installer_->AddRequestCallbackInstaller(std::move(request_installer));
   }
-  ~OverlayRequestQueueCallbackInstallerTest() = default;
+  ~OverlayRequestQueueCallbackInstallerTest() override = default;
 
   OverlayRequestQueue* queue() {
     return OverlayRequestQueue::FromWebState(&web_state_, kModality);
@@ -58,7 +58,7 @@ TEST_F(OverlayRequestQueueCallbackInstallerTest, InstallForSupportedRequest) {
   OverlayRequest* request = added_request.get();
   queue()->AddRequest(std::move(added_request));
 
-  // Dispatch a response through |request|, expecting the dispatch callback to
+  // Dispatch a response through `request`, expecting the dispatch callback to
   // be executed on the mock receiver.
   EXPECT_CALL(callback_receiver_,
               DispatchCallback(request, DispatchInfo::ResponseSupport()));

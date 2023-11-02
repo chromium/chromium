@@ -1,9 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/policy/enrollment/fake_auto_enrollment_client.h"
 
+#include "chrome/browser/ash/policy/enrollment/psm/rlwe_dmserver_client.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace policy {
@@ -40,7 +41,7 @@ FakeAutoEnrollmentClient::FactoryImpl::CreateForInitialEnrollment(
     const std::string& device_brand_code,
     int power_initial,
     int power_limit,
-    PrivateMembershipRlweClient::Factory* psm_rlwe_client_factory) {
+    std::unique_ptr<psm::RlweDmserverClient> psm_rlwe_dmserver_client) {
   std::unique_ptr<FakeAutoEnrollmentClient> fake_client =
       std::make_unique<FakeAutoEnrollmentClient>(progress_callback);
   fake_client_created_callback_.Run(fake_client.get());
@@ -59,18 +60,6 @@ void FakeAutoEnrollmentClient::Start() {
 }
 
 void FakeAutoEnrollmentClient::Retry() {}
-
-void FakeAutoEnrollmentClient::CancelAndDeleteSoon() {
-  delete this;
-}
-
-std::string FakeAutoEnrollmentClient::device_id() const {
-  return std::string();
-}
-
-AutoEnrollmentState FakeAutoEnrollmentClient::state() const {
-  return state_;
-}
 
 void FakeAutoEnrollmentClient::SetState(AutoEnrollmentState target_state) {
   state_ = target_state;

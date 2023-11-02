@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,7 @@ import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/pol
 
 import {loadTimeData} from '../i18n_setup.js';
 
-// <if expr="chromeos or lacros">
-import {BlockingRequestManager} from './blocking_request_manager.js';
-// </if>
-import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
-import {PasswordManagerImpl} from './password_manager_proxy.js';
+import {PasswordRequestorMixin, PasswordRequestorMixinInterface} from './password_requestor_mixin.js';
 
 type Constructor<T> = new (...args: any[]) => T;
 
@@ -19,24 +15,18 @@ type Constructor<T> = new (...args: any[]) => T;
  * It is used by <password-list-item>.
  */
 export const ShowPasswordMixin = dedupingMixin(
-    <T extends Constructor<PolymerElement>>(superClass: T): T&
+    <T extends Constructor<PolymerElement>>(superClass: T):
+        (T|PasswordRequestorMixinInterface)&
     Constructor<ShowPasswordMixinInterface> => {
-      class ShowPasswordMixin extends superClass {
+      class ShowPasswordMixin extends PasswordRequestorMixin
+      (superClass) {
         static get properties() {
           return {
             entry: Object,
-
-            // <if expr="chromeos or lacros">
-            tokenRequestManager: Object
-            // </if>
           };
         }
 
-        entry: MultiStorePasswordUiEntry;
-
-        // <if expr="chromeos or lacros">
-        tokenRequestManager: BlockingRequestManager;
-        // </if>
+        entry: chrome.passwordsPrivate.PasswordUiEntry;
 
         getPasswordInputType() {
           return this.entry.password || this.entry.federationText ? 'text' :
@@ -64,26 +54,23 @@ export const ShowPasswordMixin = dedupingMixin(
               ' '.repeat(NUM_PLACEHOLDERS);
         }
 
-        onShowPasswordButtonTap() {
+        /**
+         * Handler for showing the passwords. If the password will be shown in
+         * view password dialog, it should be handled by the dialog via the
+         * event. If the password should be displayed inline, the method should
+         * update the text.
+         */
+        onShowPasswordButtonClick() {
           if (this.entry.password) {
             this.hide();
             return;
           }
-          PasswordManagerImpl.getInstance()
-              .requestPlaintextPassword(
-                  this.entry.getAnyId(),
-                  chrome.passwordsPrivate.PlaintextReason.VIEW)
-              .then(
-                  password => {
-                    this.set('entry.password', password);
-                  },
-                  _error => {
-                    // <if expr="chromeos or lacros">
-                    // If no password was found, refresh auth token and retry.
-                    this.tokenRequestManager.request(
-                        () => this.onShowPasswordButtonTap());
-                    // </if>
-                  });
+
+          this.requestPlaintextPassword(
+                  this.entry.id, chrome.passwordsPrivate.PlaintextReason.VIEW)
+              .then(password => {
+                this.set('entry.password', password);
+              }, () => {});
         }
 
         hide() {
@@ -96,7 +83,7 @@ export const ShowPasswordMixin = dedupingMixin(
 
 
 export interface ShowPasswordMixinInterface {
-  entry: MultiStorePasswordUiEntry;
+  entry: chrome.passwordsPrivate.PasswordUiEntry;
 
   /**
    * Gets the password input's type. Should be 'text' when password is visible
@@ -126,8 +113,8 @@ export interface ShowPasswordMixinInterface {
    */
   getPassword(): string;
 
-  /** Handler for tapping the show/hide button. */
-  onShowPasswordButtonTap(): void;
+  /** Handler for clicking the show/hide button. */
+  onShowPasswordButtonClick(): void;
 
   /** Hides the password. */
   hide(): void;

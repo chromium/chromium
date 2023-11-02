@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_arguments.h"
 #include "base/trace_event/trace_event.h"
+#include "gpu/command_buffer/service/dawn_caching_interface.h"
 
-namespace gpu {
-namespace webgpu {
+namespace gpu::webgpu {
 
 namespace {
 
@@ -34,7 +34,7 @@ class AsyncWaitableEventImpl
   base::WaitableEvent waitable_event_;
 };
 
-class AsyncWaitableEvent : public dawn_platform::WaitableEvent {
+class AsyncWaitableEvent : public dawn::platform::WaitableEvent {
  public:
   explicit AsyncWaitableEvent()
       : waitable_event_impl_(base::MakeRefCounted<AsyncWaitableEventImpl>()) {}
@@ -51,10 +51,10 @@ class AsyncWaitableEvent : public dawn_platform::WaitableEvent {
   scoped_refptr<AsyncWaitableEventImpl> waitable_event_impl_;
 };
 
-class AsyncWorkerTaskPool : public dawn_platform::WorkerTaskPool {
+class AsyncWorkerTaskPool : public dawn::platform::WorkerTaskPool {
  public:
-  std::unique_ptr<dawn_platform::WaitableEvent> PostWorkerTask(
-      dawn_platform::PostWorkerTaskCallback callback,
+  std::unique_ptr<dawn::platform::WaitableEvent> PostWorkerTask(
+      dawn::platform::PostWorkerTaskCallback callback,
       void* user_data) override {
     std::unique_ptr<AsyncWaitableEvent> waitable_event =
         std::make_unique<AsyncWaitableEvent>();
@@ -67,7 +67,7 @@ class AsyncWorkerTaskPool : public dawn_platform::WorkerTaskPool {
 
  private:
   static void RunWorkerTask(
-      dawn_platform::PostWorkerTaskCallback callback,
+      dawn::platform::PostWorkerTaskCallback callback,
       void* user_data,
       scoped_refptr<AsyncWaitableEventImpl> waitable_event_impl) {
     TRACE_EVENT0("toplevel", "DawnPlatformImpl::RunWorkerTask");
@@ -78,12 +78,14 @@ class AsyncWorkerTaskPool : public dawn_platform::WorkerTaskPool {
 
 }  // anonymous namespace
 
-DawnPlatform::DawnPlatform() = default;
+DawnPlatform::DawnPlatform(
+    std::unique_ptr<DawnCachingInterface> dawn_caching_interface)
+    : dawn_caching_interface_(std::move(dawn_caching_interface)) {}
 
 DawnPlatform::~DawnPlatform() = default;
 
 const unsigned char* DawnPlatform::GetTraceCategoryEnabledFlag(
-    dawn_platform::TraceCategory category) {
+    dawn::platform::TraceCategory category) {
   // For now, all Dawn trace categories are put under "gpu.dawn"
   return TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
       TRACE_DISABLED_BY_DEFAULT("gpu.dawn"));
@@ -125,10 +127,13 @@ uint64_t DawnPlatform::AddTraceEvent(
   return result;
 }
 
-std::unique_ptr<dawn_platform::WorkerTaskPool>
+dawn::platform::CachingInterface* DawnPlatform::GetCachingInterface() {
+  return dawn_caching_interface_.get();
+}
+
+std::unique_ptr<dawn::platform::WorkerTaskPool>
 DawnPlatform::CreateWorkerTaskPool() {
   return std::make_unique<AsyncWorkerTaskPool>();
 }
 
-}  // namespace webgpu
-}  // namespace gpu
+}  // namespace gpu::webgpu

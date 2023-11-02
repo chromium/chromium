@@ -1,18 +1,19 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "extensions/browser/api/declarative_net_request/ruleset_manager.h"
 
-#include <algorithm>
 #include <iterator>
 #include <tuple>
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/web_cache/browser/web_cache_manager.h"
@@ -44,7 +45,7 @@ void NotifyRequestWithheld(const ExtensionId& extension_id,
                            const WebRequestInfo& request) {
   DCHECK(ExtensionsAPIClient::Get());
   ExtensionsAPIClient::Get()->NotifyWebRequestWithheld(
-      request.render_process_id, request.frame_id, extension_id);
+      request.render_process_id, request.frame_routing_id, extension_id);
 }
 
 // Helper to log the time taken in RulesetManager::EvaluateRequestInternal.
@@ -138,11 +139,8 @@ const CompositeMatcher* RulesetManager::GetMatcherForExtension(
   // This is O(n) but it's ok since the number of extensions will be small and
   // we have to maintain the rulesets sorted in decreasing order of installation
   // time.
-  auto iter =
-      std::find_if(rulesets_.begin(), rulesets_.end(),
-                   [&extension_id](const ExtensionRulesetData& ruleset) {
-                     return ruleset.extension_id == extension_id;
-                   });
+  auto iter = base::ranges::find(rulesets_, extension_id,
+                                 &ExtensionRulesetData::extension_id);
 
   // There must be ExtensionRulesetData corresponding to this |extension_id|.
   if (iter == rulesets_.end())
@@ -192,10 +190,8 @@ bool RulesetManager::HasExtraHeadersMatcherForRequest(
                 "Modify this method to ensure HasExtraHeadersMatcherForRequest "
                 "is updated as new actions are added.");
 
-  return std::any_of(
-      actions.begin(), actions.end(), [](const RequestAction& action) {
-        return action.type == RequestAction::Type::MODIFY_HEADERS;
-      });
+  return base::Contains(actions, RequestAction::Type::MODIFY_HEADERS,
+                        &RequestAction::type);
 }
 
 void RulesetManager::OnRenderFrameCreated(content::RenderFrameHost* host) {

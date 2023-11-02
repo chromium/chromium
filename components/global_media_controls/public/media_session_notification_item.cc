@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,10 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "components/global_media_controls/public/constants.h"
 #include "components/media_message_center/media_notification_view.h"
+#include "components/url_formatter/elide_url.h"
+#include "components/url_formatter/url_formatter.h"
 #include "services/media_session/public/cpp/util.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
@@ -35,15 +38,6 @@ MediaSessionNotificationItem::Source GetSource(const std::string& name) {
 
 // How long to wait (in milliseconds) for a new media session to begin.
 constexpr base::TimeDelta kFreezeTimerDelay = base::Milliseconds(2500);
-
-// The minimum size in px that the media session artwork can be to be displayed
-// in the notification.
-constexpr int kMediaSessionNotificationArtworkMinSize = 114;
-
-// The desired size in px for the media session artwork to be displayed in the
-// notification. The media session service will try and select artwork closest
-// to this size.
-constexpr int kMediaSessionNotificationArtworkDesiredSize = 512;
 
 }  // namespace
 
@@ -95,7 +89,7 @@ void MediaSessionNotificationItem::MediaSessionMetadataChanged(
   // want to avoid sending the metadata twice is that metrics are recorded when
   // metadata is set and we don't want to double-count metrics.
   if (view_ && view_needs_metadata_update_ && !frozen_)
-    view_->UpdateWithMediaMetadata(session_metadata_);
+    view_->UpdateWithMediaMetadata(GetSessionMetadata());
 
   view_needs_metadata_update_ = false;
 }
@@ -122,6 +116,13 @@ void MediaSessionNotificationItem::MediaSessionPositionChanged(
   if (view_ && !frozen_) {
     view_->UpdateWithMediaPosition(*position);
   }
+}
+
+void MediaSessionNotificationItem::UpdatePresentationRequestOrigin(
+    const url::Origin& origin) {
+  optional_presentation_request_origin_ = origin;
+  if (view_ && !frozen_)
+    view_->UpdateWithMediaMetadata(GetSessionMetadata());
 }
 
 void MediaSessionNotificationItem::MediaControllerImageChanged(
@@ -154,7 +155,7 @@ void MediaSessionNotificationItem::SetView(
   if (view_) {
     view_needs_metadata_update_ = false;
     view_->UpdateWithMediaSessionInfo(session_info_);
-    view_->UpdateWithMediaMetadata(session_metadata_);
+    view_->UpdateWithMediaMetadata(GetSessionMetadata());
     view_->UpdateWithMediaActions(session_actions_);
     view_->UpdateWithMuteStatus(session_info_->muted);
 
@@ -164,6 +165,8 @@ void MediaSessionNotificationItem::SetView(
       view_->UpdateWithMediaArtwork(*session_artwork_);
     if (session_favicon_.has_value())
       view_->UpdateWithFavicon(*session_favicon_);
+  } else {
+    optional_presentation_request_origin_.reset();
   }
 }
 
@@ -184,13 +187,16 @@ void MediaSessionNotificationItem::SeekTo(base::TimeDelta time) {
 }
 
 void MediaSessionNotificationItem::Dismiss() {
-  if (media_controller_remote_.is_bound())
-    media_controller_remote_->Stop();
   delegate_->RemoveItem(request_id_);
 }
 
 media_message_center::SourceType MediaSessionNotificationItem::SourceType() {
   return media_message_center::SourceType::kLocalMediaSession;
+}
+
+void MediaSessionNotificationItem::Stop() {
+  if (media_controller_remote_.is_bound())
+    media_controller_remote_->Stop();
 }
 
 void MediaSessionNotificationItem::Raise() {
@@ -225,13 +231,12 @@ void MediaSessionNotificationItem::SetController(
     // Bind an observer to be notified when the artwork changes.
     media_controller_remote_->ObserveImages(
         media_session::mojom::MediaSessionImageType::kArtwork,
-        kMediaSessionNotificationArtworkMinSize,
-        kMediaSessionNotificationArtworkDesiredSize,
+        kMediaItemArtworkMinSize, kMediaItemArtworkDesiredSize,
         artwork_observer_receiver_.BindNewPipeAndPassRemote());
 
     media_controller_remote_->ObserveImages(
         media_session::mojom::MediaSessionImageType::kSourceIcon,
-        gfx::kFaviconSize, kMediaSessionNotificationArtworkDesiredSize,
+        gfx::kFaviconSize, kMediaItemArtworkDesiredSize,
         favicon_observer_receiver_.BindNewPipeAndPassRemote());
   }
 
@@ -257,6 +262,17 @@ void MediaSessionNotificationItem::Freeze(base::OnceClosure unfrozen_callback) {
 
 void MediaSessionNotificationItem::FlushForTesting() {
   media_controller_remote_.FlushForTesting();  // IN-TEST
+}
+
+media_session::MediaMetadata MediaSessionNotificationItem::GetSessionMetadata()
+    const {
+  media_session::MediaMetadata data = session_metadata_;
+  if (optional_presentation_request_origin_.has_value()) {
+    data.source_title = url_formatter::FormatOriginForSecurityDisplay(
+        optional_presentation_request_origin_.value(),
+        url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
+  }
+  return data;
 }
 
 bool MediaSessionNotificationItem::ShouldShowNotification() const {
@@ -317,7 +333,7 @@ void MediaSessionNotificationItem::Unfreeze() {
   if (view_) {
     view_needs_metadata_update_ = false;
     view_->UpdateWithMediaSessionInfo(session_info_);
-    view_->UpdateWithMediaMetadata(session_metadata_);
+    view_->UpdateWithMediaMetadata(GetSessionMetadata());
     view_->UpdateWithMediaActions(session_actions_);
     view_->UpdateWithMuteStatus(session_info_->muted);
 

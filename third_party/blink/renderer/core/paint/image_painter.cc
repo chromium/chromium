@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/scoped_paint_state.h"
 #include "third_party/blink/renderer/platform/geometry/layout_point.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_cache_skipper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
@@ -48,21 +49,15 @@ bool CheckForOversizedImagesPolicy(const LayoutImage& layout_image,
           layout_image.GetDocument().GetExecutionContext()))
     return false;
 
-  DoubleSize layout_size(layout_image.ContentSize());
-  IntSize image_size = image->Size();
+  LayoutSize layout_size = layout_image.ContentSize();
+  gfx::Size image_size = image->Size();
   if (layout_size.IsEmpty() || image_size.IsEmpty())
     return false;
 
-  // Note: Do not use frame->GetDevicePixelRatio() here, because it
-  // leads to different behaviour on MacOS platform. https://crbug.com/716231.
-  // virtual/scalefactor200/http/tests/images/document-policy/document-policy-oversized-images-edge-cases.html
-  // verifies the behaviour.
-  const double dsf =
-      layout_image.GetDocument().GetPage()->DeviceScaleFactorDeprecated();
   const double downscale_ratio_width =
-      image_size.width() / layout_size.Width() / dsf;
+      image_size.width() / layout_size.Width().ToDouble();
   const double downscale_ratio_height =
-      image_size.height() / layout_size.Height() / dsf;
+      image_size.height() / layout_size.Height().ToDouble();
 
   const LayoutImageResource* image_resource = layout_image.ImageResource();
   const ImageResourceContent* cached_image =
@@ -75,6 +70,24 @@ bool CheckForOversizedImagesPolicy(const LayoutImage& layout_image,
       blink::PolicyValue::CreateDecDouble(
           std::max(downscale_ratio_width, downscale_ratio_height)),
       ReportOptions::kReportOnFailure, g_empty_string, image_url);
+}
+
+ImagePaintTimingInfo ComputeImagePaintTimingInfo(
+    const LayoutImage& layout_image,
+    const Image& image,
+    const ImageResourceContent* image_content,
+    const GraphicsContext& context,
+    const gfx::Rect& image_border) {
+  // |report_paint_timing| for ImagePaintTimingInfo is set to false since we
+  // expect all images to be contentful and non-generated
+  if (!image_content) {
+    return ImagePaintTimingInfo(/* image_may_be_lcp_candidate */ false,
+                                /* report_paint_timing */ false);
+  }
+  return ImagePaintTimingInfo(PaintTimingDetector::NotifyImagePaint(
+      layout_image, image.Size(), *image_content,
+      context.GetPaintController().CurrentPaintChunkProperties(),
+      image_border));
 }
 
 }  // namespace
@@ -129,7 +142,7 @@ void ImagePainter::PaintAreaElementFocusRing(const PaintInfo& paint_info) {
   paint_info.context.Save();
   PhysicalRect focus_rect = layout_image_.PhysicalContentBoxRect();
   focus_rect.Move(paint_offset);
-  paint_info.context.Clip(PixelSnappedIntRect(focus_rect));
+  paint_info.context.Clip(ToPixelSnappedRect(focus_rect));
   OutlinePainter::PaintFocusRingPath(paint_info.context, path,
                                      *area_element_style);
   paint_info.context.Restore();
@@ -169,41 +182,48 @@ void ImagePainter::PaintReplaced(const PaintInfo& paint_info,
 
   if (!has_image) {
     // Draw an outline rect where the image should be.
-    IntRect paint_rect = PixelSnappedIntRect(content_rect);
+    gfx::Rect paint_rect = ToPixelSnappedRect(content_rect);
     BoxDrawingRecorder recorder(context, layout_image_, paint_info.phase,
                                 paint_offset);
     context.SetStrokeStyle(kSolidStroke);
     context.SetStrokeColor(Color::kLightGray);
     context.SetFillColor(Color::kTransparent);
-    context.DrawRect(paint_rect, PaintAutoDarkMode(
-                                     layout_image_.StyleRef(),
-                                     DarkModeFilter::ElementRole::kBackground));
+    context.DrawRect(paint_rect,
+                     PaintAutoDarkMode(layout_image_.StyleRef(),
+                                       DarkModeFilter::ElementRole::kBorder));
     return;
   }
 
   PhysicalRect paint_rect = layout_image_.ReplacedContentRect();
   paint_rect.offset += paint_offset;
 
-  BoxDrawingRecorder recorder(context, layout_image_, paint_info.phase,
-                              paint_offset);
-  DCHECK(paint_info.PaintContainer());
-  PaintIntoRect(context, paint_rect, content_rect);
+  // If |overflow| is supported for replaced elements, paint the complete image
+  // and the painting will be clipped based on overflow value by clip paint
+  // property nodes.
+  const PhysicalRect visual_rect =
+      layout_image_.ClipsToContentBox() ? content_rect : paint_rect;
+
+  DrawingRecorder recorder(context, layout_image_, paint_info.phase,
+                           ToEnclosingRect(visual_rect));
+  PaintIntoRect(context, paint_rect, visual_rect);
 }
 
 void ImagePainter::PaintIntoRect(GraphicsContext& context,
                                  const PhysicalRect& dest_rect,
                                  const PhysicalRect& content_rect) {
   const LayoutImageResource& image_resource = *layout_image_.ImageResource();
+  recordreplay::Assert("[RUN-658-2008] ImagePainter::PaintIntoRect %s",
+                       layout_image_.CachedImage() ? layout_image_.CachedImage()->Url().GetString().Utf8().c_str() : "");
   if (!image_resource.HasImage() || image_resource.ErrorOccurred())
     return;  // FIXME: should we just ASSERT these conditions? (audit all
              // callers).
 
-  IntRect pixel_snapped_dest_rect = PixelSnappedIntRect(dest_rect);
+  gfx::Rect pixel_snapped_dest_rect = ToPixelSnappedRect(dest_rect);
   if (pixel_snapped_dest_rect.IsEmpty())
     return;
 
   scoped_refptr<Image> image =
-      image_resource.GetImage(FloatSize(dest_rect.size));
+      image_resource.GetImage(gfx::SizeF(dest_rect.size));
   if (!image || image->IsNull())
     return;
 
@@ -212,17 +232,17 @@ void ImagePainter::PaintIntoRect(GraphicsContext& context,
   auto respect_orientation = image->HasDefaultOrientation()
                                  ? kDoNotRespectImageOrientation
                                  : image_resource.ImageOrientation();
-  FloatRect src_rect(FloatPoint(), image->SizeAsFloat(respect_orientation));
+  gfx::RectF src_rect(image->SizeAsFloat(respect_orientation));
 
   // If the content rect requires clipping, adjust |srcRect| and
   // |pixelSnappedDestRect| over using a clip.
   if (!content_rect.Contains(dest_rect)) {
-    IntRect pixel_snapped_content_rect = PixelSnappedIntRect(content_rect);
+    gfx::Rect pixel_snapped_content_rect = ToPixelSnappedRect(content_rect);
     pixel_snapped_content_rect.Intersect(pixel_snapped_dest_rect);
     if (pixel_snapped_content_rect.IsEmpty())
       return;
-    src_rect = MapRect(FloatRect(pixel_snapped_content_rect),
-                       FloatRect(pixel_snapped_dest_rect), src_rect);
+    src_rect = gfx::MapRect(gfx::RectF(pixel_snapped_content_rect),
+                            gfx::RectF(pixel_snapped_dest_rect), src_rect);
     pixel_snapped_dest_rect = pixel_snapped_content_rect;
   }
 
@@ -236,7 +256,7 @@ void ImagePainter::PaintIntoRect(GraphicsContext& context,
   DEVTOOLS_TIMELINE_TRACE_EVENT_WITH_CATEGORIES(
       TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "PaintImage",
       inspector_paint_image_event::Data, layout_image_, src_rect,
-      FloatRect(dest_rect));
+      gfx::RectF(dest_rect));
 
   ScopedInterpolationQuality interpolation_quality_scope(
       context, layout_image_.StyleRef().GetInterpolationQuality());
@@ -263,27 +283,31 @@ void ImagePainter::PaintIntoRect(GraphicsContext& context,
     }
   }
 
-  context.DrawImage(image.get(), decode_mode,
-                    PaintAutoDarkMode(layout_image_.StyleRef(),
-                                      DarkModeFilter::ElementRole::kBackground),
-                    FloatRect(pixel_snapped_dest_rect), &src_rect,
-                    SkBlendMode::kSrcOver, respect_orientation);
+  auto image_auto_dark_mode = ImageClassifierHelper::GetImageAutoDarkMode(
+      *layout_image_.GetFrame(), layout_image_.StyleRef(),
+      gfx::RectF(pixel_snapped_dest_rect), src_rect);
 
-  if (ImageResourceContent* image_content = image_resource.CachedImage()) {
-    if ((IsA<HTMLImageElement>(node) || IsA<HTMLVideoElement>(node)) &&
-        image_content->IsLoaded()) {
-      LocalDOMWindow* window = layout_image_.GetDocument().domWindow();
-      DCHECK(window);
-      ImageElementTiming::From(*window).NotifyImagePainted(
-          layout_image_, *image_content,
-          context.GetPaintController().CurrentPaintChunkProperties(),
-          ToGfxRect(pixel_snapped_dest_rect));
-    }
-    PaintTimingDetector::NotifyImagePaint(
-        layout_image_, ToGfxSize(image->Size()), *image_content,
+  // At this point we have all the necessary information to report paint
+  // timing data. Do so now in order to mark the resulting PaintImage as
+  // an LCP candidate.
+  ImageResourceContent* image_content = image_resource.CachedImage();
+  if (image_content &&
+      (IsA<HTMLImageElement>(node) || IsA<HTMLVideoElement>(node)) &&
+      image_content->IsLoaded()) {
+    LocalDOMWindow* window = layout_image_.GetDocument().domWindow();
+    DCHECK(window);
+    ImageElementTiming::From(*window).NotifyImagePainted(
+        layout_image_, *image_content,
         context.GetPaintController().CurrentPaintChunkProperties(),
-        ToGfxRect(pixel_snapped_dest_rect));
+        pixel_snapped_dest_rect);
   }
+
+  context.DrawImage(
+      image.get(), decode_mode, image_auto_dark_mode,
+      ComputeImagePaintTimingInfo(layout_image_, *image, image_content, context,
+                                  pixel_snapped_dest_rect),
+      gfx::RectF(pixel_snapped_dest_rect), &src_rect, SkBlendMode::kSrcOver,
+      respect_orientation);
 }
 
 }  // namespace blink

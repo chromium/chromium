@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "gpu/command_buffer/common/buffer.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/gpu_export.h"
@@ -127,6 +126,10 @@ class GPU_EXPORT CommandBuffer {
   // An ordering barrier must be placed after any commands that use the buffer
   // before it is safe to call this function to destroy it.
   virtual void DestroyTransferBuffer(int32_t id) = 0;
+
+  // Forcibly lose this context. Used by higher-level code when it determines
+  // the necessity to do so. Has no effect if the context has already been lost.
+  virtual void ForceLostContext(error::ContextLostReason reason) = 0;
 };
 
 }  // namespace gpu

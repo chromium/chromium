@@ -1,17 +1,15 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_WEBUI_MEDIA_ROUTER_CAST_FEEDBACK_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_MEDIA_ROUTER_CAST_FEEDBACK_UI_H_
 
+#include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "content/public/browser/web_ui_controller.h"
 
 class Profile;
-
-namespace base {
-class ListValue;
-}
 
 namespace content {
 class WebContents;
@@ -28,10 +26,10 @@ class CastFeedbackUI : public content::WebUIController {
   ~CastFeedbackUI() override;
 
  private:
-  void OnCloseMessage(const base::ListValue*);
+  void OnCloseMessage(const base::Value::List&);
 
-  Profile* const profile_;
-  content::WebContents* const web_contents_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<content::WebContents> web_contents_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

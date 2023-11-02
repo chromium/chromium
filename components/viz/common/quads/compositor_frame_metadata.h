@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,10 +28,10 @@
 #include "ui/gfx/overlay_transform.h"
 #include "ui/latency/latency_info.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/viz/common/quads/selection.h"
 #include "ui/gfx/selection_bound.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace viz {
 
@@ -73,7 +73,7 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
 
   // Scroll offset and scale of the root layer. This can be used for tasks
   // like positioning windowed plugins.
-  gfx::Vector2dF root_scroll_offset;
+  gfx::PointF root_scroll_offset;
   float page_scale_factor = 0.f;
 
   gfx::SizeF scrollable_viewport_size;
@@ -93,7 +93,7 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   // This color is usually obtained from the background color of the <body>
   // element. It can be used for filling in gutter areas around the frame when
   // it's too small to fill the box the parent reserved for it.
-  SkColor root_background_color = SK_ColorWHITE;
+  SkColor4f root_background_color = SkColors::kWhite;
 
   std::vector<ui::LatencyInfo> latency_info;
 
@@ -163,9 +163,8 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   //   2. This frame will not be submitted to the root surface - The browser UI
   //     does not use this, and the frame must be contained within a
   //     SurfaceDrawQuad.
-  // The ink trail created with this metadata will only last for a single frame
-  // before it disappears, regardless of whether or not the next frame contains
-  // delegated ink metadata.
+  // This metadata will be copied when an aggregated frame is made, and will be
+  // used until this Compositor Frame Metadata is replaced.
   std::unique_ptr<gfx::DelegatedInkMetadata> delegated_ink_metadata;
 
   // This represents a list of directives to execute in order to support the

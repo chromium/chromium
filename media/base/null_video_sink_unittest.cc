@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "media/base/null_video_sink.h"
 #include "media/base/test_helpers.h"
@@ -39,11 +40,11 @@ class NullVideoSinkTest : public testing::Test,
 
   std::unique_ptr<NullVideoSink> ConstructSink(bool clockless,
                                                base::TimeDelta interval) {
-    std::unique_ptr<NullVideoSink> new_sink(
-        new NullVideoSink(clockless, interval,
-                          base::BindRepeating(&NullVideoSinkTest::FrameReceived,
-                                              base::Unretained(this)),
-                          task_environment_.GetMainThreadTaskRunner()));
+    auto new_sink = std::make_unique<NullVideoSink>(
+        clockless, interval,
+        base::BindRepeating(&NullVideoSinkTest::FrameReceived,
+                            base::Unretained(this)),
+        task_environment_.GetMainThreadTaskRunner());
     new_sink->set_tick_clock_for_testing(&tick_clock_);
     return new_sink;
   }

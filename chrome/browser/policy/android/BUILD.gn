@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,7 +8,7 @@ android_library("util_java") {
   sources = [ "java/src/org/chromium/chrome/browser/policy/CloudManagementSharedPreferences.java" ]
 
   deps = [
-    "//base:base_java",
+    "//base:jni_java",
     "//chrome/browser/preferences:java",
     "//components/policy/android:policy_java",
   ]
@@ -23,7 +23,8 @@ android_library("java") {
   ]
 
   deps = [
-    "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//chrome/browser/profiles/android:java",
     "//components/policy/android:policy_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -66,11 +67,7 @@ generate_jni("jni_headers") {
   ]
 }
 
-android_library("junit") {
-  # Skip platform checks since Robolectric depends on requires_android targets.
-  bypass_platform_checks = true
-  testonly = true
-
+robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/policy/CloudManagementAndroidConnectionTest.java",
     "java/src/org/chromium/chrome/browser/policy/CloudManagementSharedPreferencesTest.java",
@@ -82,7 +79,6 @@ android_library("junit") {
     ":util_java",
     "//base:base_junit_test_support",
     "//chrome/browser/preferences:java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
   ]

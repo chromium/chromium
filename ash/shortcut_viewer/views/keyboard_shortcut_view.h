@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "ash/search_box/search_box_view_delegate.h"
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -33,8 +32,7 @@ class KeyboardShortcutItemView;
 class KSVSearchBoxView;
 
 // The UI container for Ash and Chrome keyboard shortcuts.
-class KeyboardShortcutView : public views::WidgetDelegateView,
-                             public ash::SearchBoxViewDelegate {
+class KeyboardShortcutView : public views::WidgetDelegateView {
  public:
   KeyboardShortcutView(const KeyboardShortcutView&) = delete;
   KeyboardShortcutView& operator=(const KeyboardShortcutView&) = delete;
@@ -55,15 +53,10 @@ class KeyboardShortcutView : public views::WidgetDelegateView,
   void Layout() override;
   gfx::Size CalculatePreferredSize() const override;
   void OnPaint(gfx::Canvas* canvas) override;
+  void OnThemeChanged() override;
 
-  // SearchBoxViewDelegate:
-  void QueryChanged(ash::SearchBoxViewBase* sender) override;
-  void AssistantButtonPressed() override {}
-  void BackButtonPressed() override;
-  void CloseButtonPressed() override;
-  void ActiveChanged(ash::SearchBoxViewBase* sender) override;
-  void OnSearchBoxKeyEvent(ui::KeyEvent* event) override {}
-  bool CanSelectSearchResults() override;
+  // Handles search box query changes.
+  void QueryChanged(const std::u16string& query);
 
  private:
   friend class KeyboardShortcutViewTest;
@@ -80,7 +73,7 @@ class KeyboardShortcutView : public views::WidgetDelegateView,
       absl::optional<ash::ShortcutCategory> initial_category);
 
   // Update views' layout based on search box status.
-  void UpdateViewsLayout(bool is_search_box_active);
+  void UpdateViewsLayout();
 
   // Show search results in |search_results_container_|.
   void ShowSearchResults(const std::u16string& search_query);
@@ -95,6 +88,10 @@ class KeyboardShortcutView : public views::WidgetDelegateView,
   KSVSearchBoxView* GetSearchBoxViewForTesting();
   const std::vector<KeyboardShortcutItemView*>&
   GetFoundShortcutItemsForTesting() const;
+
+  // Determine correct color based on dark mode flag and preference.
+  void UpdateBackgroundColor();
+  void UpdateActiveAndInactiveFrameColor();
 
   // Owned by views hierarchy.
   // The container for category tabs and lists of KeyboardShortcutItemViews.

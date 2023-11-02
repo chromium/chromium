@@ -1,26 +1,26 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/web_state_list/web_state_list_metrics_browser_agent.h"
 
-#include "base/metrics/histogram_macros.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
-#include "components/navigation_metrics/navigation_metrics.h"
-#include "components/profile_metrics/browser_profile_type.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/chrome/browser/crash_report/crash_loop_detection_util.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "components/navigation_metrics/navigation_metrics.h"
+#import "components/profile_metrics/browser_profile_type.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/crash_report/crash_loop_detection_util.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
-#include "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#include "ios/chrome/browser/web_state_list/all_web_state_observation_forwarder.h"
-#include "ios/chrome/browser/web_state_list/session_metrics.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/chrome/browser/web_state_list/all_web_state_observation_forwarder.h"
+#import "ios/chrome/browser/web_state_list/session_metrics.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
-#include "ios/web/public/browser_state.h"
-#include "ios/web/public/navigation/navigation_context.h"
-#include "ios/web/public/navigation/navigation_item.h"
-#include "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/browser_state.h"
+#import "ios/web/public/navigation/navigation_context.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -28,17 +28,6 @@
 #endif
 
 BROWSER_USER_DATA_KEY_IMPL(WebStateListMetricsBrowserAgent)
-
-// static
-void WebStateListMetricsBrowserAgent::CreateForBrowser(
-    Browser* browser,
-    SessionMetrics* session_metrics) {
-  if (!FromBrowser(browser)) {
-    browser->SetUserData(UserDataKey(),
-                         base::WrapUnique(new WebStateListMetricsBrowserAgent(
-                             browser, session_metrics)));
-  }
-}
 
 WebStateListMetricsBrowserAgent::WebStateListMetricsBrowserAgent(
     Browser* browser,
@@ -86,8 +75,18 @@ void WebStateListMetricsBrowserAgent::WebStateDetachedAt(
     int index) {
   if (metric_collection_paused_)
     return;
-  base::RecordAction(base::UserMetricsAction("MobileTabClosed"));
   session_metrics_->OnWebStateDetached();
+}
+
+void WebStateListMetricsBrowserAgent::WillCloseWebStateAt(
+    WebStateList* web_state_list,
+    web::WebState* web_state,
+    int index,
+    bool user_action) {
+  if (metric_collection_paused_)
+    return;
+  if (user_action)
+    base::RecordAction(base::UserMetricsAction("MobileTabClosed"));
 }
 
 void WebStateListMetricsBrowserAgent::WebStateActivatedAt(

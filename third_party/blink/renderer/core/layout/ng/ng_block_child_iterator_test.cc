@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/layout/ng/ng_block_child_iterator.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
@@ -13,15 +14,16 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
 
 namespace blink {
-namespace {
 
 const NGBlockBreakToken* CreateBreakToken(
     NGLayoutInputNode node,
     const NGBreakTokenVector* child_break_tokens = nullptr,
     bool has_seen_all_children = false) {
   NGBoxFragmentBuilder builder(
-      node, &node.Style(), /* space */ nullptr,
+      node, &node.Style(), NGConstraintSpace(),
       WritingDirectionMode(WritingMode::kHorizontalTb, TextDirection::kLtr));
+  DCHECK(!builder.HasBreakTokenData());
+  builder.SetBreakTokenData(MakeGarbageCollected<NGBlockBreakTokenData>());
   if (has_seen_all_children)
     builder.SetHasSeenAllChildren();
   if (child_break_tokens) {
@@ -175,5 +177,28 @@ TEST_F(NGBlockChildIteratorTest, SeenAllChildren) {
             iterator.NextChild());
 }
 
-}  // namespace
+TEST_F(NGBlockChildIteratorTest, DeleteNodeWhileIteration) {
+  SetBodyInnerHTML(R"HTML(
+      <div id='child1'></div>
+      <div id='child2'></div>
+      <div id='child3'></div>
+    )HTML");
+  NGLayoutInputNode node1 = NGBlockNode(GetLayoutBoxByElementId("child1"));
+  NGLayoutInputNode node2 = node1.NextSibling();
+  NGLayoutInputNode node3 = node2.NextSibling();
+
+  using Entry = NGBlockChildIterator::Entry;
+  NGBlockChildIterator iterator(node1, nullptr);
+  EXPECT_EQ(Entry(node1, nullptr), iterator.NextChild());
+  {
+    // Set the container query flag to pass LayoutObject::
+    // IsAllowedToModifyLayoutTreeStructure() check.
+    base::AutoReset<bool> cq_recalc(
+        &GetDocument().GetStyleEngine().in_container_query_style_recalc_, true);
+    node2.GetLayoutBox()->Remove();
+  }
+  EXPECT_EQ(Entry(node3, nullptr), iterator.NextChild());
+  EXPECT_EQ(Entry(nullptr, nullptr), iterator.NextChild());
+}
+
 }  // namespace blink

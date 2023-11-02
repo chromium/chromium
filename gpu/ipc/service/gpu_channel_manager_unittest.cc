@@ -1,6 +1,8 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "gpu/ipc/service/gpu_channel_manager.h"
 
 #include <limits.h>
 #include <stddef.h>
@@ -13,13 +15,13 @@
 #include "base/trace_event/trace_event_impl.h"
 #include "base/trace_event/trace_log.h"
 #include "base/unguessable_token.h"
+#include "build/build_config.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/context_result.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/service/gpu_channel.h"
-#include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/ipc/service/gpu_channel_test_common.h"
 
 namespace {
@@ -64,8 +66,7 @@ class TestTraceEventFilter : public base::trace_event::TraceEventFilter {
 
       g_trace_event = std::make_unique<base::trace_event::TraceEvent>(
           trace_event.thread_id(), trace_event.timestamp(),
-          trace_event.thread_timestamp(),
-          trace_event.thread_instruction_count(), trace_event.phase(),
+          trace_event.thread_timestamp(), trace_event.phase(),
           trace_event.category_group_enabled(), trace_event.name(),
           trace_event.scope(), trace_event.id(), trace_event.bind_id(),
           args.get(), trace_event.flags());
@@ -122,7 +123,7 @@ class GpuChannelManagerTest : public GpuChannelTestCommon {
                                   GpuPeakMemoryAllocationSource::UNKNOWN);
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void TestApplicationBackgrounded(ContextType type,
                                    bool should_destroy_channel) {
     ASSERT_TRUE(channel_manager());
@@ -180,13 +181,12 @@ TEST_F(GpuChannelManagerTest, EstablishChannel) {
 
   ASSERT_TRUE(channel_manager());
   GpuChannel* channel = channel_manager()->EstablishChannel(
-      base::UnguessableToken::Create(), kClientId, kClientTracingId, false,
-      true);
+      base::UnguessableToken::Create(), kClientId, kClientTracingId, false);
   EXPECT_TRUE(channel);
   EXPECT_EQ(channel_manager()->LookupChannel(kClientId), channel);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(GpuChannelManagerTest, OnBackgroundedWithoutWebGL) {
   TestApplicationBackgrounded(CONTEXT_TYPE_OPENGLES2, true);
 }

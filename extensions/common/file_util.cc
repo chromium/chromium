@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,9 +20,9 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
@@ -40,7 +40,6 @@
 #include "extensions/common/manifest_handlers/default_locale_handler.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/strings/grit/extensions_strings.h"
-#include "net/base/escape.h"
 #include "net/base/filename_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -228,7 +227,7 @@ scoped_refptr<Extension> LoadExtension(
     return nullptr;
 
   if (!extension_l10n_util::LocalizeExtension(
-          extension_path, manifest.get(),
+          extension_path, &manifest->GetDict(),
           extension_l10n_util::GetGzippedMessagesPermissionForLocation(
               location),
           error)) {
@@ -451,7 +450,7 @@ base::FilePath ExtensionURLToRelativeFilePath(const GURL& url) {
 
   // Convert %-encoded UTF8 to regular UTF8.
   std::string file_path;
-  if (!net::UnescapeBinaryURLComponentSafe(
+  if (!base::UnescapeBinaryURLComponentSafe(
           url_path, true /* fail_on_path_separators */, &file_path)) {
     // There shouldn't be any escaped path separators or control characters in
     // the path. However, if there are, it's best to just fail.
@@ -545,55 +544,6 @@ MessageBundle* LoadMessageBundle(
       locale_path, default_locale, gzip_permission, error);
 
   return message_bundle;
-}
-
-MessageBundle::SubstitutionMap* LoadMessageBundleSubstitutionMap(
-    const base::FilePath& extension_path,
-    const std::string& extension_id,
-    const std::string& default_locale,
-    extension_l10n_util::GzippedMessagesPermission gzip_permission) {
-  return LoadMessageBundleSubstitutionMapFromPaths(
-      {extension_path}, extension_id, default_locale, gzip_permission);
-}
-
-MessageBundle::SubstitutionMap* LoadNonLocalizedMessageBundleSubstitutionMap(
-    const std::string& extension_id) {
-  MessageBundle::SubstitutionMap* return_value =
-      new MessageBundle::SubstitutionMap();
-
-  // Add @@extension_id reserved message here.
-  return_value->insert(
-      std::make_pair(MessageBundle::kExtensionIdKey, extension_id));
-
-  return return_value;
-}
-
-MessageBundle::SubstitutionMap* LoadMessageBundleSubstitutionMapFromPaths(
-    const std::vector<base::FilePath>& paths,
-    const std::string& extension_id,
-    const std::string& default_locale,
-    extension_l10n_util::GzippedMessagesPermission gzip_permission) {
-  MessageBundle::SubstitutionMap* return_value =
-      LoadNonLocalizedMessageBundleSubstitutionMap(extension_id);
-
-  // Touch disk only if extension is localized.
-  if (default_locale.empty())
-    return return_value;
-
-  std::string error;
-  for (const base::FilePath& path : paths) {
-    std::unique_ptr<MessageBundle> bundle(
-        LoadMessageBundle(path, default_locale, gzip_permission, &error));
-    if (bundle) {
-      for (const auto& iter : *bundle->dictionary()) {
-        // |insert| only adds new entries, and does not replace entries in
-        // the main extension or previously processed imports.
-        return_value->insert(std::make_pair(iter.first, iter.second));
-      }
-    }
-  }
-
-  return return_value;
 }
 
 base::FilePath GetVerifiedContentsPath(const base::FilePath& extension_path) {

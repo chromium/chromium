@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,15 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
 
+#include <memory>
+#include <vector>
+
+#include "base/win/registry.h"
+#include "crypto/signature_verifier.h"
+
 namespace enterprise_connectors {
+
+class SigningKeyPair;
 
 // Windows implementation of the KeyPersistenceDelegate interface.
 class WinKeyPersistenceDelegate : public KeyPersistenceDelegate {
@@ -15,11 +23,19 @@ class WinKeyPersistenceDelegate : public KeyPersistenceDelegate {
   ~WinKeyPersistenceDelegate() override;
 
   // KeyPersistenceDelegate:
+  bool CheckRotationPermissions() override;
   bool StoreKeyPair(KeyPersistenceDelegate::KeyTrustLevel trust_level,
                     std::vector<uint8_t> wrapped) override;
-  KeyPersistenceDelegate::KeyInfo LoadKeyPair() override;
-  std::unique_ptr<crypto::UnexportableKeyProvider> GetTpmBackedKeyProvider()
-      override;
+  std::unique_ptr<SigningKeyPair> LoadKeyPair() override;
+  std::unique_ptr<SigningKeyPair> CreateKeyPair() override;
+
+ private:
+  friend class WinKeyPersistenceDelegateTest;
+
+  // static
+  void SetAcceptableKeyAlgorithmForTesting(
+      base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
+          acceptable_algorithms);
 };
 
 }  // namespace enterprise_connectors

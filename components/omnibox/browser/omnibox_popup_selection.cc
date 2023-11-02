@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "build/build_config.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 
 const size_t OmniboxPopupSelection::kNoMatch = static_cast<size_t>(-1);
 
@@ -46,44 +45,56 @@ bool OmniboxPopupSelection::IsControlPresentOnMatch(
   // user is trying to focus the header itself (which is still shown).
   if (state != FOCUSED_BUTTON_HEADER && match.suggestion_group_id.has_value() &&
       pref_service &&
-      result.IsSuggestionGroupIdHidden(pref_service,
-                                       match.suggestion_group_id.value())) {
+      result.IsSuggestionGroupHidden(pref_service,
+                                     match.suggestion_group_id.value())) {
     return false;
   }
 
   switch (state) {
     case FOCUSED_BUTTON_HEADER: {
-      // For the first match, if it a suggestion_group_id, then it has a header.
-      if (line == 0)
-        return match.suggestion_group_id.has_value();
+      // Trivial case where there's no header at all.
+      if (!match.suggestion_group_id.has_value()) {
+        return false;
+      }
+      // Empty string headers are not rendered and should not be traversed.
+      if (result.GetHeaderForSuggestionGroup(match.suggestion_group_id.value())
+              .empty()) {
+        return false;
+      }
 
-      // Otherwise, we only show headers that are distinct from the previous
+      // Now we know there's an existing header. First line header is always
+      // distinct from the previous match (because there is no previous match).
+      if (line == 0) {
+        return true;
+      }
+
+      // Otherwise, we verify that this header is distinct from the previous
       // match's header.
       const auto& previous_match = result.match_at(line - 1);
-      return match.suggestion_group_id.has_value() &&
-             match.suggestion_group_id != previous_match.suggestion_group_id;
+      return match.suggestion_group_id != previous_match.suggestion_group_id;
     }
     case NORMAL:
       return true;
     case KEYWORD_MODE:
       return match.associated_keyword != nullptr;
     case FOCUSED_BUTTON_TAB_SWITCH:
-      // Buttons are suppressed for matches with an associated keyword, unless
-      // dedicated button row is enabled.
-      if (OmniboxFieldTrial::IsKeywordSearchButtonEnabled())
-        return match.has_tab_match.value_or(false);
-      else
-        return match.has_tab_match.value_or(false) && !match.associated_keyword;
+      // The default action for suggestions from the open tab provider in
+      // keyword mode is to switch to the open tab so no button is necessary.
+      if (OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() &&
+          match.from_keyword &&
+          match.provider->type() == AutocompleteProvider::TYPE_OPEN_TAB) {
+        return false;
+      }
+      return match.has_tab_match.value_or(false);
     case FOCUSED_BUTTON_ACTION:
+      // Actions buttons should not be shown in keyword mode.
+      if (OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() &&
+          match.from_keyword) {
+        return false;
+      }
       return match.action != nullptr;
     case FOCUSED_BUTTON_REMOVE_SUGGESTION:
-      // Remove suggestion buttons are suppressed for matches with an associated
-      // keyword, unless the feature that moves it to the button row is enabled.
-      if (OmniboxFieldTrial::IsKeywordSearchButtonEnabled()) {
-        return match.SupportsDeletion();
-      } else {
-        return !match.associated_keyword && match.SupportsDeletion();
-      }
+      return match.SupportsDeletion();
     default:
       break;
   }
@@ -178,16 +189,9 @@ OmniboxPopupSelection::GetAllAvailableSelectionsSorted(
       all_states.push_back(FOCUSED_BUTTON_HEADER);
 
     all_states.push_back(NORMAL);
-
-    // Keyword mode is accessible if the keyword search button is enabled. If
-    // not, then keyword mode is only accessible by tabbing forward.
-    if (OmniboxFieldTrial::IsKeywordSearchButtonEnabled() ||
-        (direction == kForward && step == kStateOrLine)) {
-      all_states.push_back(KEYWORD_MODE);
-    }
-
+    all_states.push_back(KEYWORD_MODE);
     all_states.push_back(FOCUSED_BUTTON_TAB_SWITCH);
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     all_states.push_back(FOCUSED_BUTTON_ACTION);
 #endif
     all_states.push_back(FOCUSED_BUTTON_REMOVE_SUGGESTION);
@@ -198,17 +202,17 @@ OmniboxPopupSelection::GetAllAvailableSelectionsSorted(
   // Now, for each accessible line, add all the available line states to a list.
   std::vector<OmniboxPopupSelection> available_selections;
   {
-    auto add_available_line_states_for_line = [&](size_t line) {
-      for (LineState state : all_states) {
-        OmniboxPopupSelection selection(line, state);
+    auto add_available_line_states_for_line = [&](size_t line_number) {
+      for (LineState line_state : all_states) {
+        OmniboxPopupSelection selection(line_number, line_state);
         if (selection.IsControlPresentOnMatch(result, pref_service)) {
           available_selections.push_back(selection);
         }
       }
     };
 
-    for (size_t line = 0; line < result.size(); ++line) {
-      add_available_line_states_for_line(line);
+    for (size_t line_number = 0; line_number < result.size(); ++line_number) {
+      add_available_line_states_for_line(line_number);
     }
   }
   DCHECK(

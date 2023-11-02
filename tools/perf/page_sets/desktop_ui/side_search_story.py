@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,13 +6,14 @@ from page_sets.desktop_ui.multitab_story import MultiTabStory
 from page_sets.desktop_ui.ui_devtools_utils import ClickOn
 from page_sets.desktop_ui.ui_devtools_utils import \
     SHIFT_DOWN, PressKey
+from page_sets.desktop_ui.browser_element_identifiers \
+    import kSideSearchButtonElementId
 
 SIDE_SEARCH_BENCHMARK_UMA = [
     'SideSearch.LoadCompletedTime',
     'SideSearch.LoadDocumentTime',
 ]
 
-SIDE_SEARCH_BUTTON = 'SideSearchToolbarButton'
 GOOGLE_SEARCH_URL = 'https://www.google.com/search?q=test'
 CHROME_VERSION_URL = 'chrome://version/'
 
@@ -33,7 +34,7 @@ class SideSearchStory(MultiTabStory):
     assert action_runner.tab.url == CHROME_VERSION_URL
 
     # Open side search.
-    ClickOn(self._devtools, SIDE_SEARCH_BUTTON)
+    ClickOn(self._devtools, element_id=kSideSearchButtonElementId)
     action_runner.Wait(1)
 
     self.InteractWithPage(action_runner)

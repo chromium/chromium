@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,9 @@
 
 #include <string>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "components/feed/mojom/rss_link_reader.mojom.h"
 #include "content/public/renderer/render_frame.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
@@ -35,14 +37,14 @@ GURL GetRssUrlFromLinkElement(const blink::WebElement& link_element) {
   if (!web_type.ContainsOnlyASCII() || !web_rel.ContainsOnlyASCII())
     return GURL();
   std::string type = web_type.Ascii();
-  if (!(base::LowerCaseEqualsASCII(type, "application/rss+xml") ||
-        base::LowerCaseEqualsASCII(type, "application/rss+atom") ||
-        base::LowerCaseEqualsASCII(type, "application/atom+xml"))) {
+  if (!(base::EqualsCaseInsensitiveASCII(type, "application/rss+xml") ||
+        base::EqualsCaseInsensitiveASCII(type, "application/rss+atom") ||
+        base::EqualsCaseInsensitiveASCII(type, "application/atom+xml"))) {
     return GURL();
   }
   std::string rel = web_rel.Ascii();
-  if (!(base::LowerCaseEqualsASCII(rel, "alternate") ||
-        base::LowerCaseEqualsASCII(rel, "service.feed"))) {
+  if (!(base::EqualsCaseInsensitiveASCII(rel, "alternate") ||
+        base::EqualsCaseInsensitiveASCII(rel, "service.feed"))) {
     return GURL();
   }
   blink::WebURL url =
@@ -93,9 +95,13 @@ RssLinkReader::RssLinkReader(content::RenderFrame* render_frame,
 RssLinkReader::~RssLinkReader() = default;
 
 void RssLinkReader::GetRssLinks(GetRssLinksCallback callback) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
   blink::WebDocument document = render_frame()->GetWebFrame()->GetDocument();
   std::move(callback).Run(
       mojom::RssLinks::New(document.Url(), GetRssLinksFromDocument(document)));
+  base::UmaHistogramMicrosecondsTimes(
+      "ContentSuggestions.Feed.WebFeed.GetRssLinksRendererTime",
+      base::TimeTicks::Now() - start_time);
 }
 
 void RssLinkReader::OnDestruct() {

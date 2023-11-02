@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/signin/internal/identity_manager/oauth_multilogin_helper.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
@@ -64,7 +65,7 @@ class AccountsCookieMutatorImpl : public AccountsCookieMutator {
 
   void TriggerCookieJarUpdate() override;
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   void ForceTriggerOnCookieChange() override;
 #endif
 
@@ -84,10 +85,10 @@ class AccountsCookieMutatorImpl : public AccountsCookieMutator {
     std::unique_ptr<OAuthMultiloginHelper> helper_;
   };
 
-  SigninClient* signin_client_;
-  ProfileOAuth2TokenService* token_service_;
-  GaiaCookieManagerService* gaia_cookie_manager_service_;
-  AccountTrackerService* account_tracker_service_;
+  raw_ptr<SigninClient> signin_client_;
+  raw_ptr<ProfileOAuth2TokenService> token_service_;
+  raw_ptr<GaiaCookieManagerService> gaia_cookie_manager_service_;
+  raw_ptr<AccountTrackerService> account_tracker_service_;
 };
 
 }  // namespace signin

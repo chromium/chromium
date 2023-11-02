@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,10 @@
 #include "components/metrics/unsent_log_store.h"
 
 namespace metrics {
+
+// The feature to record the unsent log info metrics, refer to
+// UnsentLogStoreMetricsImpl::RecordLastUnsentLogMetadataMetrics.
+BASE_DECLARE_FEATURE(kRecordLastUnsentLogMetadataMetrics);
 
 // Interface for recording metrics from UnsentLogStore.
 class UnsentLogStoreMetrics {
@@ -50,10 +54,6 @@ class UnsentLogStoreMetrics {
   virtual void RecordLastUnsentLogMetadataMetrics(int unsent_samples_count,
                                                   int sent_samples_count,
                                                   int persisted_size_in_kb);
-
-  // The feature to record the unsent log info metrics, refer to
-  // UnsentLogStoreMetricsImpl::RecordLastUnsentLogMetadataMetrics.
-  static const base::Feature kRecordLastUnsentLogMetadataMetrics;
 };
 
 }  // namespace metrics

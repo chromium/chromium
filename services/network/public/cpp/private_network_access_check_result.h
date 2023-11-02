@@ -1,11 +1,14 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_PRIVATE_NETWORK_ACCESS_CHECK_RESULT_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_PRIVATE_NETWORK_ACCESS_CHECK_RESULT_H_
 
+#include <iosfwd>
+
 #include "base/component_export.h"
+#include "base/strings/string_piece_forward.h"
 #include "services/network/public/mojom/cors.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -50,9 +53,29 @@ enum class PrivateNetworkAccessCheckResult {
   // `kUnknown` and policy is `kPreflightBlock`.
   kBlockedByPolicyPreflightBlock = 9,
 
+  // The result should have instead been `kBlockedByTargetIpAddressSpace` or
+  // `kBlockedByInconsistentIpAddressSpace`, but the policy is `kPreflightWarn`
+  // so the request was allowed.
+  kAllowedByPolicyPreflightWarn = 10,
+
+  // Request connected to two different IP address spaces for the same response.
+  kBlockedByInconsistentIpAddressSpace = 11,
+
   // Required for UMA histogram logging.
-  kMaxValue = kBlockedByPolicyPreflightBlock,
+  kMaxValue = kBlockedByInconsistentIpAddressSpace,
 };
+
+// Returns a human-readable string representing `result`, suitable for logging.
+base::StringPiece COMPONENT_EXPORT(NETWORK_CPP)
+    PrivateNetworkAccessCheckResultToStringPiece(
+        PrivateNetworkAccessCheckResult result);
+
+// Results are streamable for easier logging and debugging.
+//
+// `COMPONENT_EXPORT()` must come first to compile correctly on Windows.
+COMPONENT_EXPORT(NETWORK_CPP)
+std::ostream& operator<<(std::ostream& out,
+                         PrivateNetworkAccessCheckResult result);
 
 // If `result` indicates that the request should be blocked, returns the
 // corresponding `CorsError` enum value. Otherwise returns `nullopt`.

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -118,6 +118,10 @@ class GFX_EXPORT ImageSkiaOperations {
   static ImageSkia CreateImageWithCircleBackground(int radius,
                                                    SkColor color,
                                                    const ImageSkia& image);
+
+  // Creates an image with a roundrect clip path with `radius`.
+  static ImageSkia CreateImageWithRoundRectClip(int radius,
+                                                const ImageSkia& image);
 
  private:
   ImageSkiaOperations();  // Class for scoping only.

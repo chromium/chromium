@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/image/image.h"
 
 namespace gfx {
@@ -27,7 +28,7 @@ struct SharingApp {
 
   ~SharingApp();
 
-  const gfx::VectorIcon* vector_icon = nullptr;
+  raw_ptr<const gfx::VectorIcon> vector_icon = nullptr;
   gfx::Image image;
   std::u16string name;
   std::string identifier;

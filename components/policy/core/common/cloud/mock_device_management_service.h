@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
@@ -79,6 +80,7 @@ class FakeDeviceManagementService : public DeviceManagementService {
       std::map<std::string, std::string>* query_params);
   JobAction CaptureRequest(
       enterprise_management::DeviceManagementRequest* request);
+  JobAction CaptureTimeout(base::TimeDelta* timeout);
 
   // Convenience actions to post a task which will call |SetResponseForTesting|
   // on the job.
@@ -129,7 +131,7 @@ class FakeDeviceManagementService : public DeviceManagementService {
   std::unique_ptr<Job> CreateJob(
       std::unique_ptr<JobConfiguration> config) override;
 
-  MockJobCreationHandler* creation_handler_;
+  raw_ptr<MockJobCreationHandler> creation_handler_;
 };
 
 // A fake implementation of DMServerJobConfiguration that can be used in tests
@@ -162,6 +164,7 @@ class FakeJobConfiguration : public DMServerJobConfiguration {
 
   void SetRequestPayload(const std::string& request_payload);
   void SetShouldRetryResponse(DeviceManagementService::Job::RetryMethod method);
+  void SetTimeoutDuration(base::TimeDelta timeout);
 
  private:
   DeviceManagementService::Job::RetryMethod ShouldRetry(

@@ -1,27 +1,27 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_button/cr_button.js';
 import '../i18n_setup.js';
-import '../settings_shared_css.js';
+import '../settings_shared.css.js';
 
-import {assert} from '//resources/js/assert.m.js';
-import {I18nMixin} from '//resources/js/i18n_mixin.js';
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from '//resources/js/assert_ts.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ExtensionControlBrowserProxyImpl} from '../extension_control_browser_proxy.js';
+import {OpenWindowProxyImpl} from '../open_window_proxy.js';
 
-const ExtensionControlledIndicatorElementBase = I18nMixin(PolymerElement);
+import {getTemplate} from './extension_controlled_indicator.html.js';
 
-export class ExtensionControlledIndicatorElement extends
-    ExtensionControlledIndicatorElementBase {
+export class ExtensionControlledIndicatorElement extends PolymerElement {
   static get is() {
     return 'extension-controlled-indicator';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -37,22 +37,18 @@ export class ExtensionControlledIndicatorElement extends
   extensionName: string;
 
   private getLabel_(): string {
-    if (this.extensionId === undefined || this.extensionName === undefined) {
-      return '';
-    }
-
-    const manageUrl = 'chrome://extensions/?id=' + this.extensionId;
-    return this.i18nAdvanced('controlledByExtension', {
-      substitutions:
-          ['<a href="' + manageUrl + '" target="_blank">' + this.extensionName +
-           '</a>'],
-    });
+    return loadTimeData.getStringF('controlledByExtension', this.extensionName);
   }
 
-  private onDisableTap_() {
+  private onManageClick_() {
+    const manageUrl = 'chrome://extensions/?id=' + this.extensionId;
+    OpenWindowProxyImpl.getInstance().openURL(manageUrl);
+  }
+
+  private onDisableClick_() {
     assert(this.extensionCanBeDisabled);
     ExtensionControlBrowserProxyImpl.getInstance().disableExtension(
-        assert(this.extensionId));
+        this.extensionId);
     this.dispatchEvent(
         new CustomEvent('extension-disable', {bubbles: true, composed: true}));
   }

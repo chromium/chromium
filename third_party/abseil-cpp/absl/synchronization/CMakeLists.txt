@@ -14,6 +14,7 @@
 # limitations under the License.
 #
 
+# Internal-only target, do not depend on directly.
 absl_cc_library(
   NAME
     graphcycles_internal
@@ -32,6 +33,7 @@ absl_cc_library(
     absl::raw_logging_internal
 )
 
+# Internal-only target, do not depend on directly.
 absl_cc_library(
   NAME
     kernel_timeout_internal
@@ -125,6 +127,7 @@ absl_cc_test(
     GTest::gmock_main
 )
 
+# Internal-only target, do not depend on directly.
 absl_cc_library(
   NAME
     thread_pool
@@ -170,6 +173,7 @@ absl_cc_test(
     GTest::gmock_main
 )
 
+# Internal-only target, do not depend on directly.
 absl_cc_library(
   NAME
     per_thread_sem_test_common

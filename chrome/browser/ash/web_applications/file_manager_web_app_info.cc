@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,17 +6,19 @@
 
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/webui/file_manager/resources/grit/file_manager_swa_resources.h"
 #include "ash/webui/file_manager/url_constants.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/grit/generated_resources.h"
 #include "extensions/common/constants.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_styles.h"
 #include "ui/file_manager/grit/file_manager_resources.h"
 
 using ash::file_manager::kChromeUIFileManagerURL;
@@ -27,7 +29,7 @@ namespace {
 // The handler action has the format: chrome://file-manager/?${ACTION_NAME}
 // This means: For files with the given `file_extensions` or `mime_type` the
 // Files SWA is a candidate app to open/handle such files.
-void AppendFileHandler(WebApplicationInfo& info,
+void AppendFileHandler(WebAppInstallInfo& info,
                        const std::string& action_name,
                        const base::flat_set<std::string>& file_extensions,
                        const std::string& mime_type = "") {
@@ -35,8 +37,7 @@ void AppendFileHandler(WebApplicationInfo& info,
 
   GURL action = GURL(kChromeUIFileManagerURL);
   GURL::Replacements replacements;
-  replacements.SetQuery(action_name.c_str(),
-                        url::Component(0, action_name.length()));
+  replacements.SetQueryStr(action_name);
   handler.action = action.ReplaceComponents(replacements);
 
   handler.accept.emplace_back();
@@ -49,8 +50,8 @@ void AppendFileHandler(WebApplicationInfo& info,
 
 }  // namespace
 
-std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForFileManager() {
-  auto info = std::make_unique<WebApplicationInfo>();
+std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForFileManager() {
+  auto info = std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL(kChromeUIFileManagerURL);
   info->scope = GURL(kChromeUIFileManagerURL);
   info->title = l10n_util::GetStringUTF16(IDS_FILEMANAGER_APP_NAME);
@@ -66,16 +67,49 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForFileManager() {
           {"icon256.png", 256, IDR_FILE_MANAGER_ICON_256},
       },
       *info);
-  info->theme_color = 0xFFFFFFFF;
-  info->background_color = 0xFFFFFFFF;
+
+  info->theme_color = cros_styles::ResolveColor(
+      cros_styles::ColorName::kBgColor, /*is_dark_mode=*/false);
+  info->dark_mode_theme_color = cros_styles::ResolveColor(
+      cros_styles::ColorName::kBgColor, /*is_dark_mode=*/true);
+  info->background_color = info->theme_color;
+  info->dark_mode_background_color = info->dark_mode_theme_color;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
-  info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
+  info->user_display_mode = web_app::UserDisplayMode::kStandalone;
+
+  // NOTE: when adding new formats to the extension list below, don't
+  // forget to also update file_manager/manifest.json.
 
   // Add File Handlers. NOTE: Order of handlers matters.
   // Archives:
   AppendFileHandler(*info, "mount-archive",
-                    {"7z", "bz2", "crx", "gz", "iso", "rar", "tar", "tbz",
-                     "tbz2", "tgz", "zip"});
+                    {
+                        "7z",     //
+                        "bz",     //
+                        "bz2",    //
+                        "crx",    //
+                        "gz",     //
+                        "iso",    //
+                        "lz",     //
+                        "lzma",   //
+                        "rar",    //
+                        "tar",    //
+                        "taz",    //
+                        "tb2",    //
+                        "tbz",    //
+                        "tbz2",   //
+                        "tgz",    //
+                        "tlz",    //
+                        "tlzma",  //
+                        "txz",    //
+                        "tz",     //
+                        "tz2",    //
+                        "tzst",   //
+                        "xz",     //
+                        "z",      //
+                        "zip",    //
+                        "zst",    //
+                    });
 
   // Drive & Google Docs:
   AppendFileHandler(*info, "open-hosted-generic",
@@ -83,6 +117,19 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForFileManager() {
   AppendFileHandler(*info, "open-hosted-gdoc", {"gdoc"});
   AppendFileHandler(*info, "open-hosted-gsheet", {"gsheet"});
   AppendFileHandler(*info, "open-hosted-gslides", {"gslides"});
+
+  // Drive & Office Docs:
+  AppendFileHandler(*info,
+                    ::file_manager::file_tasks::kActionIdWebDriveOfficeWord,
+                    {"doc", "docx"});
+  AppendFileHandler(*info,
+                    ::file_manager::file_tasks::kActionIdWebDriveOfficeExcel,
+                    {"xls", "xlsx"});
+  AppendFileHandler(
+      *info, ::file_manager::file_tasks::kActionIdWebDriveOfficePowerPoint,
+      {"ppt", "pptx"});
+  AppendFileHandler(*info, ::file_manager::file_tasks::kActionIdOpenInOffice,
+                    {"doc", "docx", "xls", "xlsx", "ppt", "pptx"});
 
   // View in the browser (with mime-type):
   AppendFileHandler(*info, "view-pdf", {"pdf"}, "application/pdf");
@@ -102,17 +149,16 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForFileManager() {
 }
 
 FileManagerSystemAppDelegate::FileManagerSystemAppDelegate(Profile* profile)
-    : web_app::SystemWebAppDelegate(
-          web_app::SystemAppType::FILE_MANAGER,
+    : ash::SystemWebAppDelegate(
+          ash::SystemWebAppType::FILE_MANAGER,
           "File Manager",
           GURL(kChromeUIFileManagerURL),
           profile,
-          web_app::OriginTrialsMap(
-              {{web_app::GetOrigin(kChromeUIFileManagerURL),
-                {"FileHandling"}}})) {}
+          ash::OriginTrialsMap(
+              {{ash::GetOrigin(kChromeUIFileManagerURL), {"FileHandling"}}})) {}
 
-std::unique_ptr<WebApplicationInfo>
-FileManagerSystemAppDelegate::GetWebAppInfo() const {
+std::unique_ptr<WebAppInstallInfo> FileManagerSystemAppDelegate::GetWebAppInfo()
+    const {
   return CreateWebAppInfoForFileManager();
 }
 
@@ -125,17 +171,14 @@ bool FileManagerSystemAppDelegate::ShouldReuseExistingWindow() const {
 }
 
 bool FileManagerSystemAppDelegate::IsAppEnabled() const {
-  return ash::features::IsFileManagerSwaEnabled();
+  return true;
 }
 
 bool FileManagerSystemAppDelegate::ShouldShowNewWindowMenuOption() const {
   return true;
 }
 
-std::vector<web_app::AppId>
+std::vector<std::string>
 FileManagerSystemAppDelegate::GetAppIdsToUninstallAndReplace() const {
-  if (ash::features::IsFileManagerSwaEnabled()) {
-    return {extension_misc::kFilesManagerAppId};
-  }
-  return {};
+  return {extension_misc::kFilesManagerAppId};
 }

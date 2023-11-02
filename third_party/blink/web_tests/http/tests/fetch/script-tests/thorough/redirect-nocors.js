@@ -47,11 +47,10 @@ var TEST_TARGETS = [
     responseNotRedirected, checkURLList.bind(self, [OTHER_BASE_URL])],
    onlyOnServiceWorkerProxiedTest([methodIsPOST, authCheck2])],
   // The 308 redirect response doesn't change the method.
-  // FIXME: disabled due to https://crbug.com/451938
-  // [REDIRECT_URL + encodeURIComponent(OTHER_BASE_URL) +
-  // '&mode=no-cors&method=POST&Status=308',
-  // [fetchResolved, noContentLength, noServerHeader, noBody, typeOpaque],
-  // onlyOnServiceWorkerProxiedTest([methodIsPOST, authCheck2])],
+  [REDIRECT_URL + encodeURIComponent(OTHER_BASE_URL) +
+   '&mode=no-cors&method=POST&Status=308',
+   [fetchResolved, noContentLength, noServerHeader, noBody, typeOpaque],
+   onlyOnServiceWorkerProxiedTest([methodIsPOST, authCheck2])],
 
   // Redirect: other origin -> same origin
   [OTHER_REDIRECT_URL + encodeURIComponent(BASE_URL) +
@@ -91,11 +90,10 @@ var TEST_TARGETS = [
     responseNotRedirected, checkURLList.bind(self, [BASE_URL])],
    onlyOnServiceWorkerProxiedTest([methodIsPOST, authCheck1])],
   // The 308 redirect response MUST NOT change the method.
-  // FIXME: disabled due to https://crbug.com/451938
-  // [OTHER_REDIRECT_URL + encodeURIComponent(BASE_URL) +
-  //  '&mode=no-cors&method=POST&Status=308',
-  //  [fetchResolved, noContentLength, noServerHeader, noBody, typeOpaque],
-  //  onlyOnServiceWorkerProxiedTest([methodIsPOST, authCheck1])],
+  [OTHER_REDIRECT_URL + encodeURIComponent(BASE_URL) +
+   '&mode=no-cors&method=POST&Status=308',
+   [fetchResolved, noContentLength, noServerHeader, noBody, typeOpaque],
+   onlyOnServiceWorkerProxiedTest([methodIsPOST, authCheck1])],
 
   // Redirect: other origin -> same origin
   [OTHER_REDIRECT_URL + encodeURIComponent(OTHER_BASE_URL) +

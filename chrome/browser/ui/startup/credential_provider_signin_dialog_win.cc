@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/syslog_logging.h"
 #include "base/win/win_util.h"
 #include "chrome/browser/signin/signin_promo.h"
@@ -160,7 +161,7 @@ class CredentialProviderWebUIMessageHandler
 
   // content::WebUIMessageHandler:
   void RegisterMessages() override {
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         kLSTFetchResultsMessage,
         base::BindRepeating(
             &CredentialProviderWebUIMessageHandler::OnSigninComplete,
@@ -169,9 +170,9 @@ class CredentialProviderWebUIMessageHandler
     // This message is always sent as part of the SAML flow but we don't really
     // need to process it. We do however have to handle the message or else
     // there will be a DCHECK failure in web_ui about an unhandled message.
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         "updatePasswordAttributes",
-        base::BindRepeating([](const base::ListValue* args) {}));
+        base::BindRepeating([](const base::Value::List& args) {}));
   }
 
   void AbortIfPossible() {
@@ -181,26 +182,28 @@ class CredentialProviderWebUIMessageHandler
 
     // Build a result for the credential provider that includes only the abort
     // exit code.
-    std::unique_ptr<base::Value> result(
-        new base::Value(base::Value::Type::DICTIONARY));
-    result->SetKey(credential_provider::kKeyExitCode,
-                   base::Value(credential_provider::kUiecAbort));
-    base::ListValue args;
+    base::Value::Dict result;
+    result.Set(credential_provider::kKeyExitCode,
+               base::Value(credential_provider::kUiecAbort));
+    base::Value::List args;
     args.Append(std::move(result));
-    OnSigninComplete(&args);
+    OnSigninComplete(args);
   }
 
  private:
-  base::Value ParseArgs(const base::ListValue* args, int* out_exit_code) {
+  base::Value ParseArgs(const base::Value::List& args, int* out_exit_code) {
     DCHECK(out_exit_code);
 
-    const base::Value* dict_result = nullptr;
-    if (!args || args->GetList().empty() || !args->Get(0, &dict_result) ||
-        !dict_result->is_dict()) {
+    if (args.empty()) {
       *out_exit_code = credential_provider::kUiecMissingSigninData;
       return base::Value(base::Value::Type::DICTIONARY);
     }
-    const base::Value* exit_code = dict_result->FindKeyOfType(
+    const base::Value& dict_result = args[0];
+    if (!dict_result.is_dict()) {
+      *out_exit_code = credential_provider::kUiecMissingSigninData;
+      return base::Value(base::Value::Type::DICTIONARY);
+    }
+    const base::Value* exit_code = dict_result.FindKeyOfType(
         credential_provider::kKeyExitCode, base::Value::Type::INTEGER);
 
     if (exit_code && exit_code->GetInt() != credential_provider::kUiecSuccess) {
@@ -208,15 +211,15 @@ class CredentialProviderWebUIMessageHandler
       return base::Value(base::Value::Type::DICTIONARY);
     }
 
-    const base::Value* email = dict_result->FindKeyOfType(
+    const base::Value* email = dict_result.FindKeyOfType(
         credential_provider::kKeyEmail, base::Value::Type::STRING);
-    const base::Value* password = dict_result->FindKeyOfType(
+    const base::Value* password = dict_result.FindKeyOfType(
         credential_provider::kKeyPassword, base::Value::Type::STRING);
-    const base::Value* id = dict_result->FindKeyOfType(
+    const base::Value* id = dict_result.FindKeyOfType(
         credential_provider::kKeyId, base::Value::Type::STRING);
-    const base::Value* access_token = dict_result->FindKeyOfType(
+    const base::Value* access_token = dict_result.FindKeyOfType(
         credential_provider::kKeyAccessToken, base::Value::Type::STRING);
-    const base::Value* refresh_token = dict_result->FindKeyOfType(
+    const base::Value* refresh_token = dict_result.FindKeyOfType(
         credential_provider::kKeyRefreshToken, base::Value::Type::STRING);
 
     if (!email || email->GetString().empty() || !password ||
@@ -228,10 +231,10 @@ class CredentialProviderWebUIMessageHandler
     }
 
     *out_exit_code = credential_provider::kUiecSuccess;
-    return dict_result->Clone();
+    return dict_result.Clone();
   }
 
-  void OnSigninComplete(const base::ListValue* args) {
+  void OnSigninComplete(const base::Value::List& args) {
     // If the callback was already called, ignore.  This may happen if the
     // user presses Escape right after finishing the signin process, the
     // Escape is processed first by AbortIfPossible(), and the signin then
@@ -415,7 +418,7 @@ class CredentialProviderWebDialogDelegate : public ui::WebDialogDelegate {
   // through the dialog.
   mutable HandleGcpwSigninCompleteResult signin_callback_;
 
-  mutable CredentialProviderWebUIMessageHandler* handler_ = nullptr;
+  mutable raw_ptr<CredentialProviderWebUIMessageHandler> handler_ = nullptr;
 };
 
 bool ValidateSigninCompleteResult(const std::string& access_token,
@@ -470,6 +473,49 @@ bool StartGCPWSignin(const base::CommandLine& command_line,
   return true;
 }
 
+// Overrides some of the functions from its indirect ancestor
+// WebContentsDelegate. GCPW web dialog should control content creation outside
+// of its main window.
+class CredentialProviderWebDialogView : public views::WebDialogView {
+ public:
+  CredentialProviderWebDialogView(content::BrowserContext* context,
+                                  ui::WebDialogDelegate* delegate,
+                                  std::unique_ptr<WebContentsHandler> handler)
+      : views::WebDialogView(context, delegate, std::move(handler)) {}
+
+  CredentialProviderWebDialogView(const CredentialProviderWebDialogView&) =
+      delete;
+  CredentialProviderWebDialogView& operator=(
+      const CredentialProviderWebDialogView&) = delete;
+
+  ~CredentialProviderWebDialogView() override {}
+
+  // Indicates intent to interfere with window creations.
+  bool IsWebContentsCreationOverridden(
+      content::SiteInstance* source_site_instance,
+      content::mojom::WindowContainerType window_container_type,
+      const GURL& opener_url,
+      const std::string& frame_name,
+      const GURL& target_url) override {
+    return true;
+  }
+
+  // Suppresses all window creation.
+  content::WebContents* CreateCustomWebContents(
+      content::RenderFrameHost* opener,
+      content::SiteInstance* source_site_instance,
+      bool is_new_browsing_instance,
+      const GURL& opener_url,
+      const std::string& frame_name,
+      const GURL& target_url,
+      const content::StoragePartitionConfig& partition_config,
+      content::SessionStorageNamespace* session_storage_namespace) override {
+    VLOG(0) << "Suppressed window creation for  " << target_url.host()
+            << target_url.path();
+    return nullptr;
+  }
+};
+
 views::WebDialogView* ShowCredentialProviderSigninDialog(
     const base::CommandLine& command_line,
     content::BrowserContext* context,
@@ -501,7 +547,7 @@ views::WebDialogView* ShowCredentialProviderSigninDialog(
   // The web dialog view that will contain the web ui for the login screen.
   // This view will be automatically deleted by the widget that owns it when it
   // is closed.
-  auto view = std::make_unique<views::WebDialogView>(
+  auto view = std::make_unique<CredentialProviderWebDialogView>(
       context, delegate.release(),
       std::make_unique<ChromeWebContentsHandler>());
   views::Widget::InitParams init_params(

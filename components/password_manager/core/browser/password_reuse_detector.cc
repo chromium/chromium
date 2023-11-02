@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,15 +12,13 @@
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_hash_data.h"
+#include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_reuse_detector_consumer.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/psl_matching_helper.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "google_apis/gaia/gaia_auth_util.h"
-#include "google_apis/gaia/gaia_urls.h"
-#include "url/origin.h"
-
-using url::Origin;
+#include "url/gurl.h"
 
 namespace password_manager {
 
@@ -110,6 +108,17 @@ void PasswordReuseDetector::OnLoginsChanged(
   }
 }
 
+void PasswordReuseDetector::OnLoginsRetained(
+    const std::vector<PasswordForm>& retained_passwords) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  passwords_with_matching_reused_credentials_.clear();
+  // |retained_passwords| contains also blacklisted entities, but since they
+  // don't have password value they will be skipped inside AddPassword().
+  for (const auto& form : retained_passwords)
+    AddPassword(form);
+}
+
 void PasswordReuseDetector::ClearCachedAccountStorePasswords() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& key_value : passwords_with_matching_reused_credentials_) {
@@ -131,7 +140,7 @@ void PasswordReuseDetector::CheckReuse(
   DCHECK(consumer);
   if (input.size() < kMinPasswordLengthToCheck) {
     consumer->OnReuseCheckDone(false, 0, absl::nullopt, {},
-                               SavedPasswordsCount());
+                               SavedPasswordsCount(), std::string(), 0);
     return;
   }
 
@@ -149,29 +158,37 @@ void PasswordReuseDetector::CheckReuse(
           : 0;
 
   std::vector<MatchingReusedCredential> matching_reused_credentials;
-  size_t saved_reused_password_length =
+
+  std::u16string saved_reused_password =
       CheckSavedPasswordReuse(input, domain, &matching_reused_credentials);
 
   size_t max_reused_password_length =
-      std::max({saved_reused_password_length, gaia_reused_password_length,
+      std::max({saved_reused_password.size(), gaia_reused_password_length,
                 enterprise_reused_password_length});
 
   if (max_reused_password_length == 0) {
     consumer->OnReuseCheckDone(false, 0, absl::nullopt, {},
-                               SavedPasswordsCount());
+                               SavedPasswordsCount(), std::string(), 0);
     return;
   }
+
+  uint64_t reused_password_hash =
+      CalculatePasswordHash(saved_reused_password, std::string());
 
   absl::optional<PasswordHashData> reused_protected_password_hash =
       absl::nullopt;
   if (gaia_reused_password_length > enterprise_reused_password_length) {
+    reused_password_hash = reused_gaia_password_hash->hash;
     reused_protected_password_hash = std::move(reused_gaia_password_hash);
   } else if (enterprise_reused_password_length != 0) {
+    reused_password_hash = reused_enterprise_password_hash->hash;
     reused_protected_password_hash = std::move(reused_enterprise_password_hash);
   }
-  consumer->OnReuseCheckDone(
-      true, max_reused_password_length, reused_protected_password_hash,
-      matching_reused_credentials, SavedPasswordsCount());
+
+  consumer->OnReuseCheckDone(true, max_reused_password_length,
+                             reused_protected_password_hash,
+                             matching_reused_credentials, SavedPasswordsCount(),
+                             domain, reused_password_hash);
 }
 
 absl::optional<PasswordHashData> PasswordReuseDetector::CheckGaiaPasswordReuse(
@@ -184,9 +201,7 @@ absl::optional<PasswordHashData> PasswordReuseDetector::CheckGaiaPasswordReuse(
   }
 
   // Skips password reuse check if |domain| matches Gaia origin.
-  const Origin gaia_origin = Origin::Create(
-      GaiaUrls::GetInstance()->gaia_url().DeprecatedGetOriginAsURL());
-  if (Origin::Create(GURL(domain)).IsSameOriginWith(gaia_origin))
+  if (gaia::HasGaiaSchemeHostPort(GURL(domain)))
     return absl::nullopt;
 
   return FindPasswordReuse(input, gaia_password_hash_data_list_.value());
@@ -214,7 +229,7 @@ PasswordReuseDetector::CheckNonGaiaEnterprisePasswordReuse(
   return FindPasswordReuse(input, enterprise_password_hash_data_list_.value());
 }
 
-size_t PasswordReuseDetector::CheckSavedPasswordReuse(
+std::u16string PasswordReuseDetector::CheckSavedPasswordReuse(
     const std::u16string& input,
     const std::string& domain,
     std::vector<MatchingReusedCredential>* matching_reused_credentials_out) {
@@ -228,6 +243,9 @@ size_t PasswordReuseDetector::CheckSavedPasswordReuse(
 
   // The longest password match is kept for metrics.
   size_t longest_match_len = 0;
+
+  // The reused saved password.
+  std::u16string reused_saved_password;
 
   for (auto passwords_iterator = FindFirstSavedPassword(input);
        passwords_iterator != passwords_with_matching_reused_credentials_.end();
@@ -249,15 +267,17 @@ size_t PasswordReuseDetector::CheckSavedPasswordReuse(
     matching_reused_credentials_set.insert(credentials.begin(),
                                            credentials.end());
     DCHECK(!passwords_iterator->first.empty());
-    longest_match_len =
-        std::max(longest_match_len, passwords_iterator->first.size());
+    if (passwords_iterator->first.size() > longest_match_len) {
+      longest_match_len = passwords_iterator->first.size();
+      reused_saved_password = passwords_iterator->first;
+    }
   }
 
   matching_reused_credentials_out->assign(
       matching_reused_credentials_set.begin(),
       matching_reused_credentials_set.end());
 
-  return longest_match_len;
+  return reused_saved_password;
 }
 
 void PasswordReuseDetector::UseGaiaPasswordHash(

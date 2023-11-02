@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
 #include "chrome/browser/share/core/share_targets_observer.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -46,7 +48,7 @@ struct SharingHubAction {
   ~SharingHubAction() = default;
   int command_id;
   std::u16string title;
-  const gfx::VectorIcon* icon;
+  raw_ptr<const gfx::VectorIcon> icon;
   bool is_first_party;
   gfx::ImageSkia third_party_icon;
   std::string feature_name_for_metrics;
@@ -101,9 +103,11 @@ class SharingHubModel : public sharing::ShareTargetsObserver {
   // A list of third party action URLs mapped to action id.
   std::map<int, GURL> third_party_action_urls_;
 
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext> context_;
 
   std::unique_ptr<sharing::mojom::ShareTargets> third_party_targets_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace sharing_hub

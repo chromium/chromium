@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,6 +54,10 @@ public class NtpFeedSurfaceLifecycleManagerTest {
     private Stream mStream;
     @Mock
     private PrefService mPrefService;
+    @Mock
+    private FeedSurfaceCoordinator mCoordinator;
+    @Mock
+    private FeedReliabilityLogger mFeedReliabilityLogger;
 
     private NtpFeedSurfaceLifecycleManager mNtpStreamLifecycleManager;
 
@@ -65,9 +69,11 @@ public class NtpFeedSurfaceLifecycleManagerTest {
         when(mPrefService.getBoolean(anyString())).thenReturn(true);
         doNothing().when(mPrefService).setBoolean(anyString(), anyBoolean());
         NtpFeedSurfaceLifecycleManager.setPrefServiceForTesting(mPrefService);
+        when(mCoordinator.getFeedReliabilityLogger()).thenReturn(mFeedReliabilityLogger);
 
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
-        mNtpStreamLifecycleManager = new NtpFeedSurfaceLifecycleManager(mActivity, mTab, null);
+        mNtpStreamLifecycleManager =
+                new NtpFeedSurfaceLifecycleManager(mActivity, mTab, mCoordinator);
         verify(mStream, times(1)).onCreate(or(any(String.class), isNull()));
     }
 
@@ -289,5 +295,12 @@ public class NtpFeedSurfaceLifecycleManagerTest {
         inOrder.verify(mStream).onDestroy();
         verify(mStream, times(2)).onHide();
         verify(mStream, times(1)).onDestroy();
+    }
+
+    @Test
+    @SmallTest
+    public void testPaused() {
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.PAUSED);
+        verify(mCoordinator).onActivityPaused();
     }
 }

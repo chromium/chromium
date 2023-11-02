@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,8 @@ var expectedVolume1 = {
   profile: {profileId: '', displayName: '', isCurrentProfile: true},
   diskFileSystemType: 'exfat',
   iconSet: {},
-  driveLabel: 'drive_label1'
+  driveLabel: 'drive_label1',
+  hidden: false
 };
 
 var expectedVolume2 = {
@@ -42,7 +43,8 @@ var expectedVolume2 = {
   profile: {profileId: '', displayName: '', isCurrentProfile: true},
   diskFileSystemType: 'exfat',
   iconSet: {},
-  driveLabel: 'drive_label2'
+  driveLabel: 'drive_label2',
+  hidden: false
 };
 
 var expectedVolume3 = {
@@ -62,12 +64,13 @@ var expectedVolume3 = {
   profile: {profileId: '', displayName: '', isCurrentProfile: true},
   diskFileSystemType: 'exfat',
   iconSet: {},
-  driveLabel: 'drive_label3'
+  driveLabel: 'drive_label3',
+  hidden: false
 };
 
 var expectedDownloadsVolume = {
   volumeId: /^downloads:[^\/]*$/,
-  volumeLabel: '',
+  volumeLabel: 'My files',
   volumeType: 'downloads',
   isReadOnly: false,
   isReadOnlyRemovableDevice: false,
@@ -78,7 +81,8 @@ var expectedDownloadsVolume = {
   profile: {profileId: '', displayName: '', isCurrentProfile: true},
   diskFileSystemType: '',
   iconSet: {},
-  driveLabel: ''
+  driveLabel: '',
+  hidden: false
 };
 
 var expectedArchiveVolume = {
@@ -95,7 +99,8 @@ var expectedArchiveVolume = {
   profile: {profileId: '', displayName: '', isCurrentProfile: true},
   diskFileSystemType: '',
   iconSet: {},
-  driveLabel: ''
+  driveLabel: '',
+  hidden: false
 };
 
 var expectedProvidedVolume = {
@@ -117,7 +122,25 @@ var expectedProvidedVolume = {
     icon16x16Url: 'chrome://resources/testing-provider-id-16.jpg',
     icon32x32Url: 'chrome://resources/testing-provider-id-32.jpg'
   },
-  driveLabel: ''
+  driveLabel: '',
+  hidden: false
+};
+
+var expectedShareCacheVolume = {
+  volumeId: 'system_internal:ShareCache',
+  volumeLabel: '',
+  volumeType: 'system_internal',
+  isReadOnly: true,
+  isReadOnlyRemovableDevice: false,
+  hasMedia: false,
+  configurable: false,
+  watchable: false,
+  source: 'system',
+  profile: {profileId: '', displayName: '', isCurrentProfile: true},
+  diskFileSystemType: '',
+  iconSet: {},
+  driveLabel: '',
+  hidden: true
 };
 
 // List of expected mount points.
@@ -129,7 +152,8 @@ var expectedVolumeList = [
   expectedProvidedVolume,
   expectedVolume1,
   expectedVolume2,
-  expectedVolume3
+  expectedVolume3,
+  expectedShareCacheVolume
 ];
 
 function validateObject(received, expected, name) {
@@ -168,19 +192,32 @@ function validateObject(received, expected, name) {
 
 chrome.test.runTests([
   function removeMount() {
-    chrome.fileManagerPrivate.removeMount('removable:mount_path1');
-
-    // We actually check this one on C++ side. If MountLibrary.RemoveMount
-    // doesn't get called, test will fail.
-    chrome.test.succeed();
+    chrome.fileManagerPrivate.removeMount('removable:mount_path1', () => {
+      chrome.test.assertNoLastError();
+      chrome.test.succeed();
+    });
   },
 
   function removeMountArchive() {
-    chrome.fileManagerPrivate.removeMount('archive:archive_mount_path');
+    chrome.fileManagerPrivate.removeMount('archive:archive_mount_path', () => {
+      chrome.test.assertNoLastError();
+      chrome.test.succeed();
+    });
+  },
 
-    // We actually check this one on C++ side. If MountLibrary.RemoveMount
-    // doesn't get called, test will fail.
-    chrome.test.succeed();
+  function removeMount() {
+    chrome.fileManagerPrivate.removeMount('removable:mount_path1', () => {
+      chrome.test.assertEq(chrome.runtime.lastError.message, 'error_cancelled');
+      chrome.test.succeed();
+    });
+  },
+
+  function removeMountArchive() {
+    chrome.fileManagerPrivate.removeMount('archive:archive_mount_path', () => {
+      chrome.test.assertEq(
+          chrome.runtime.lastError.message, 'error_need_password');
+      chrome.test.succeed();
+    });
   },
 
   function getVolumeMetadataList() {

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,6 +46,12 @@ class InternalAuthenticatorAndroid : public webauthn::InternalAuthenticator {
       blink::mojom::Authenticator::
           IsUserVerifyingPlatformAuthenticatorAvailableCallback callback)
       override;
+  bool IsGetMatchingCredentialIdsSupported() override;
+  void GetMatchingCredentialIds(
+      const std::string& relying_party_id,
+      const std::vector<std::vector<uint8_t>>& credential_ids,
+      bool require_third_party_payment_bit,
+      webauthn::GetMatchingCredentialIdsCallback callback) override;
   void Cancel() override;
   content::RenderFrameHost* GetRenderFrameHost() override;
 
@@ -60,6 +66,9 @@ class InternalAuthenticatorAndroid : public webauthn::InternalAuthenticator {
   void InvokeIsUserVerifyingPlatformAuthenticatorAvailableResponse(
       JNIEnv* env,
       jboolean is_uvpaa);
+  void InvokeGetMatchingCredentialIdsResponse(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobjectArray>& credential_ids_array);
 
  private:
   // Returns the associated AuthenticatorImpl Java object. Initializes new
@@ -75,6 +84,8 @@ class InternalAuthenticatorAndroid : public webauthn::InternalAuthenticator {
       get_assertion_response_callback_;
   blink::mojom::Authenticator::
       IsUserVerifyingPlatformAuthenticatorAvailableCallback is_uvpaa_callback_;
+  webauthn::GetMatchingCredentialIdsCallback
+      get_matching_credential_ids_callback_;
 };
 
 #endif  // COMPONENTS_WEBAUTHN_ANDROID_INTERNAL_AUTHENTICATOR_ANDROID_H_

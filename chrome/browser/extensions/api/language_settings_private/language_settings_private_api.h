@@ -1,10 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_EXTENSIONS_API_LANGUAGE_SETTINGS_PRIVATE_LANGUAGE_SETTINGS_PRIVATE_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_LANGUAGE_SETTINGS_PRIVATE_LANGUAGE_SETTINGS_PRIVATE_API_H_
 
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/spellchecker/spellcheck_custom_dictionary.h"
 #include "extensions/browser/extension_function.h"
@@ -31,13 +32,13 @@ class LanguageSettingsPrivateGetLanguageListFunction
   // ExtensionFunction overrides.
   ResponseAction Run() override;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void OnDictionariesInitialized();
   void UpdateSupportedPlatformDictionaries();
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
  private:
-  std::unique_ptr<base::ListValue> language_list_;
+  base::Value::List language_list_;
 };
 
 // Implements the languageSettingsPrivate.enableLanguage method.

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,14 +48,13 @@ void BackGestureContextualNudgeDelegate::DidFinishNavigation(
   DCHECK(window_);
   // Make sure for one valid navigation, we only fire one status change
   // notification.
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (navigation_handle->HasCommitted() &&
-      (navigation_handle->IsInPrimaryMainFrame() ||
-       navigation_handle->HasSubframeNavigationEntryCommitted()) &&
-      (navigation_handle->GetURL() !=
-       navigation_handle->GetPreviousMainFrameURL())) {
+      ((navigation_handle->IsInPrimaryMainFrame() &&
+        (navigation_handle->GetURL() !=
+         navigation_handle->GetPreviousPrimaryMainFrameURL())) ||
+       (navigation_handle->GetParentFrame() &&
+        navigation_handle->GetParentFrame()->GetPage().IsPrimary() &&
+        navigation_handle->HasSubframeNavigationEntryCommitted()))) {
     controller_->NavigationEntryChanged(window_);
   }
 }

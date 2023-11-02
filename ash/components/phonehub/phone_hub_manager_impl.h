@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,26 +7,26 @@
 
 #include <memory>
 
+#include "ash/components/phonehub/feature_setup_response_processor.h"
 #include "ash/components/phonehub/phone_hub_manager.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "base/callback.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 
 namespace device_sync {
 class DeviceSyncClient;
-}  // namespace device_sync
+}
 
 namespace multidevice_setup {
 class MultiDeviceSetupClient;
-}  // namespace multidevice_setup
-
-namespace secure_channel {
-class ConnectionManager;
-class SecureChannelClient;
-}  // namespace secure_channel
+}
 
 namespace phonehub {
 
@@ -36,8 +36,8 @@ class CameraRollDownloadManager;
 class CameraRollManager;
 class CrosStateSender;
 class InvalidConnectionDisconnector;
-class MessageSender;
 class MessageReceiver;
+class MessageSender;
 class MultideviceSetupStateUpdater;
 class MutablePhoneModel;
 class NotificationProcessor;
@@ -51,7 +51,7 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
       PrefService* pref_service,
       device_sync::DeviceSyncClient* device_sync_client,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
-      chromeos::secure_channel::SecureChannelClient* secure_channel_client,
+      secure_channel::SecureChannelClient* secure_channel_client,
       std::unique_ptr<BrowserTabsModelProvider> browser_tabs_model_provider,
       std::unique_ptr<CameraRollDownloadManager> camera_roll_download_manager,
       const base::RepeatingClosure& show_multidevice_setup_dialog_callback);
@@ -65,7 +65,8 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   DoNotDisturbController* GetDoNotDisturbController() override;
   FeatureStatusProvider* GetFeatureStatusProvider() override;
   FindMyDeviceController* GetFindMyDeviceController() override;
-  NotificationAccessManager* GetNotificationAccessManager() override;
+  MultideviceFeatureAccessManager* GetMultideviceFeatureAccessManager()
+      override;
   NotificationInteractionHandler* GetNotificationInteractionHandler() override;
   NotificationManager* GetNotificationManager() override;
   OnboardingUiTracker* GetOnboardingUiTracker() override;
@@ -74,6 +75,9 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   ScreenLockManager* GetScreenLockManager() override;
   TetherController* GetTetherController() override;
   UserActionRecorder* GetUserActionRecorder() override;
+
+  void GetHostLastSeenTimestamp(
+      base::OnceCallback<void(absl::optional<base::Time>)> callback) override;
 
  private:
   // KeyedService:
@@ -89,16 +93,17 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   std::unique_ptr<DoNotDisturbController> do_not_disturb_controller_;
   std::unique_ptr<ConnectionScheduler> connection_scheduler_;
   std::unique_ptr<FindMyDeviceController> find_my_device_controller_;
-  std::unique_ptr<NotificationAccessManager> notification_access_manager_;
+  std::unique_ptr<MultideviceFeatureAccessManager>
+      multidevice_feature_access_manager_;
   std::unique_ptr<ScreenLockManager> screen_lock_manager_;
   std::unique_ptr<NotificationInteractionHandler>
       notification_interaction_handler_;
   std::unique_ptr<NotificationManager> notification_manager_;
   std::unique_ptr<OnboardingUiTracker> onboarding_ui_tracker_;
   std::unique_ptr<NotificationProcessor> notification_processor_;
-  std::unique_ptr<PhoneStatusProcessor> phone_status_processor_;
   std::unique_ptr<RecentAppsInteractionHandler>
       recent_apps_interaction_handler_;
+  std::unique_ptr<PhoneStatusProcessor> phone_status_processor_;
   std::unique_ptr<TetherController> tether_controller_;
   std::unique_ptr<BrowserTabsModelProvider> browser_tabs_model_provider_;
   std::unique_ptr<BrowserTabsModelController> browser_tabs_model_controller_;
@@ -107,9 +112,11 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   std::unique_ptr<InvalidConnectionDisconnector>
       invalid_connection_disconnector_;
   std::unique_ptr<CameraRollManager> camera_roll_manager_;
+  std::unique_ptr<FeatureSetupResponseProcessor>
+      feature_setup_response_processor_;
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_PHONE_HUB_MANAGER_IMPL_H_

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/metrics/histogram.h"
+#include "base/numerics/clamped_math.h"
 #include "base/time/time.h"
 
 namespace base {

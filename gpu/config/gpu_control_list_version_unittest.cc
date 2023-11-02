@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -194,21 +194,22 @@ TEST_F(VersionTest, LexicalComparison) {
 
 TEST_F(VersionTest, IntelDriverSchema) {
   {
-    // New drivers, AA.BB.CCC.DDDD
     Version info = {kLT, kNumerical, kIntelDriver, "25.20.100.6952", nullptr};
     EXPECT_TRUE(info.Contains("0.0.100.6000"));
     EXPECT_FALSE(info.Contains("0.0.100.7000"));
     EXPECT_FALSE(info.Contains("0.0.200.6000"));
     EXPECT_TRUE(info.Contains("26.20.100.6000"));
     EXPECT_FALSE(info.Contains("24.20.100.7000"));
+    EXPECT_TRUE(info.Contains("23.20.16.5037"));
   }
   {
-    // Old drivers, AA.BB.CC.DDDD
     Version info = {kGT, kNumerical, kIntelDriver, "10.18.15.4256", nullptr};
     EXPECT_TRUE(info.Contains("0.0.15.6000"));
     EXPECT_FALSE(info.Contains("0.0.15.4000"));
     EXPECT_TRUE(info.Contains("10.18.15.4279"));
     EXPECT_FALSE(info.Contains("15.40.15.4058"));
+    EXPECT_TRUE(info.Contains("26.20.100.6000"));
+    EXPECT_TRUE(info.Contains("26.20.100.4000"));
   }
 }
 

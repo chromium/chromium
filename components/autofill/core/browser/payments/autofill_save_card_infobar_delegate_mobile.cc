@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_ui_utils_mobile.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -73,6 +75,9 @@ AutofillSaveCardInfoBarDelegateMobile::
     RunSaveCardPromptCallback(
         AutofillClient::SaveCardOfferUserDecision::kIgnored,
         /*user_provided_details=*/{});
+    LogSaveCreditCardPromptResult(
+        autofill_metrics::SaveCreditCardPromptResult::kIgnored, upload_,
+        options_);
     LogUserAction(AutofillMetrics::INFOBAR_IGNORED);
   }
 }
@@ -129,7 +134,7 @@ AutofillSaveCardInfoBarDelegateMobile::GetIdentifier() const {
 
 bool AutofillSaveCardInfoBarDelegateMobile::ShouldExpire(
     const NavigationDetails& details) const {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   if (base::FeatureList::IsEnabled(
           features::kAutofillSaveCardDismissOnNavigation)) {
     // Expire the Infobar unless the navigation was triggered by the form that
@@ -139,12 +144,12 @@ bool AutofillSaveCardInfoBarDelegateMobile::ShouldExpire(
     // Use the default behavior used by Android.
     return false;
   }
-#else   // defined(OS_IOS)
+#else   // BUILDFLAG(IS_IOS)
   // The user has submitted a form, causing the page to navigate elsewhere. We
   // don't want the infobar to be expired at this point, because the user won't
   // get a chance to answer the question.
   return false;
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 }
 
 void AutofillSaveCardInfoBarDelegateMobile::InfoBarDismissed() {
@@ -152,6 +157,8 @@ void AutofillSaveCardInfoBarDelegateMobile::InfoBarDismissed() {
       AutofillClient::SaveCardOfferUserDecision::kDeclined,
       /*user_provided_details=*/{});
   LogUserAction(AutofillMetrics::INFOBAR_DENIED);
+  LogSaveCreditCardPromptResult(
+      autofill_metrics::SaveCreditCardPromptResult::kDenied, upload_, options_);
 }
 
 bool AutofillSaveCardInfoBarDelegateMobile::Cancel() {
@@ -159,6 +166,8 @@ bool AutofillSaveCardInfoBarDelegateMobile::Cancel() {
       AutofillClient::SaveCardOfferUserDecision::kDeclined,
       /*user_provided_details=*/{});
   LogUserAction(AutofillMetrics::INFOBAR_DENIED);
+  LogSaveCreditCardPromptResult(
+      autofill_metrics::SaveCreditCardPromptResult::kDenied, upload_, options_);
   return true;
 }
 
@@ -189,6 +198,15 @@ std::u16string AutofillSaveCardInfoBarDelegateMobile::GetButtonLabel(
 }
 
 bool AutofillSaveCardInfoBarDelegateMobile::Accept() {
+  // Acceptance can be logged immediately if:
+  // 1. the user is accepting local save.
+  // 2. or when we don't need more info in order to upload.
+  if (!upload_ || (!options_.should_request_name_from_user &&
+                   !options_.should_request_expiration_date_from_user)) {
+    LogSaveCreditCardPromptResult(
+        autofill_metrics::SaveCreditCardPromptResult::kAccepted, upload_,
+        options_);
+  }
   RunSaveCardPromptCallback(
       AutofillClient::SaveCardOfferUserDecision::kAccepted,
       /*user_provided_details=*/{});
@@ -196,7 +214,7 @@ bool AutofillSaveCardInfoBarDelegateMobile::Accept() {
   return true;
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 bool AutofillSaveCardInfoBarDelegateMobile::UpdateAndAccept(
     std::u16string cardholder_name,
     std::u16string expiration_date_month,
@@ -211,7 +229,7 @@ bool AutofillSaveCardInfoBarDelegateMobile::UpdateAndAccept(
   LogUserAction(AutofillMetrics::INFOBAR_ACCEPTED);
   return true;
 }
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
 void AutofillSaveCardInfoBarDelegateMobile::RunSaveCardPromptCallback(
     AutofillClient::SaveCardOfferUserDecision user_decision,

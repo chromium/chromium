@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ XRSpace::XRSpace(XRSession* session) : session_(session) {}
 XRSpace::~XRSpace() = default;
 
 absl::optional<TransformationMatrix> XRSpace::NativeFromViewer(
-    const absl::optional<TransformationMatrix>& mojo_from_viewer) {
+    const absl::optional<TransformationMatrix>& mojo_from_viewer) const {
   if (!mojo_from_viewer)
     return absl::nullopt;
 
@@ -25,23 +25,23 @@ absl::optional<TransformationMatrix> XRSpace::NativeFromViewer(
   if (!native_from_mojo)
     return absl::nullopt;
 
-  native_from_mojo->Multiply(*mojo_from_viewer);
+  native_from_mojo->PreConcat(*mojo_from_viewer);
 
   // This is now native_from_viewer
   return native_from_mojo;
 }
 
-TransformationMatrix XRSpace::NativeFromOffsetMatrix() {
+TransformationMatrix XRSpace::NativeFromOffsetMatrix() const {
   TransformationMatrix identity;
   return identity;
 }
 
-TransformationMatrix XRSpace::OffsetFromNativeMatrix() {
+TransformationMatrix XRSpace::OffsetFromNativeMatrix() const {
   TransformationMatrix identity;
   return identity;
 }
 
-absl::optional<TransformationMatrix> XRSpace::MojoFromOffsetMatrix() {
+absl::optional<TransformationMatrix> XRSpace::MojoFromOffsetMatrix() const {
   auto maybe_mojo_from_native = MojoFromNative();
   if (!maybe_mojo_from_native) {
     return absl::nullopt;
@@ -49,11 +49,11 @@ absl::optional<TransformationMatrix> XRSpace::MojoFromOffsetMatrix() {
 
   // Modifies maybe_mojo_from_native - it becomes mojo_from_offset_matrix.
   // Saves a heap allocation since there is no need to create a new unique_ptr.
-  maybe_mojo_from_native->Multiply(NativeFromOffsetMatrix());
+  maybe_mojo_from_native->PreConcat(NativeFromOffsetMatrix());
   return maybe_mojo_from_native;
 }
 
-absl::optional<TransformationMatrix> XRSpace::NativeFromMojo() {
+absl::optional<TransformationMatrix> XRSpace::NativeFromMojo() const {
   absl::optional<TransformationMatrix> mojo_from_native = MojoFromNative();
   if (!mojo_from_native)
     return absl::nullopt;
@@ -66,7 +66,7 @@ bool XRSpace::EmulatedPosition() const {
   return session()->EmulatedPosition();
 }
 
-XRPose* XRSpace::getPose(XRSpace* other_space) {
+XRPose* XRSpace::getPose(const XRSpace* other_space) const {
   DVLOG(2) << __func__ << ": ToString()=" << ToString()
            << ", other_space->ToString()=" << other_space->ToString();
 
@@ -79,7 +79,7 @@ XRPose* XRSpace::getPose(XRSpace* other_space) {
   }
 
   // Add any origin offset now.
-  mojo_from_offset->Multiply(NativeFromOffsetMatrix());
+  mojo_from_offset->PreConcat(NativeFromOffsetMatrix());
 
   absl::optional<TransformationMatrix> other_from_mojo =
       other_space->NativeFromMojo();
@@ -90,19 +90,19 @@ XRPose* XRSpace::getPose(XRSpace* other_space) {
 
   // Add any origin offset from the other space now.
   TransformationMatrix other_offset_from_mojo =
-      other_space->OffsetFromNativeMatrix().Multiply(*other_from_mojo);
+      other_space->OffsetFromNativeMatrix() * other_from_mojo.value();
 
   // TODO(crbug.com/969133): Update how EmulatedPosition is determined here once
   // spec issue https://github.com/immersive-web/webxr/issues/534 has been
   // resolved.
   TransformationMatrix other_offset_from_offset =
-      other_offset_from_mojo.Multiply(*mojo_from_offset);
+      other_offset_from_mojo * mojo_from_offset.value();
   return MakeGarbageCollected<XRPose>(
       other_offset_from_offset,
       EmulatedPosition() || other_space->EmulatedPosition());
 }
 
-absl::optional<TransformationMatrix> XRSpace::OffsetFromViewer() {
+absl::optional<TransformationMatrix> XRSpace::OffsetFromViewer() const {
   absl::optional<TransformationMatrix> native_from_viewer =
       NativeFromViewer(session()->GetMojoFrom(
           device::mojom::blink::XRReferenceSpaceType::kViewer));
@@ -111,7 +111,7 @@ absl::optional<TransformationMatrix> XRSpace::OffsetFromViewer() {
     return absl::nullopt;
   }
 
-  return OffsetFromNativeMatrix().Multiply(*native_from_viewer);
+  return OffsetFromNativeMatrix() * *native_from_viewer;
 }
 
 ExecutionContext* XRSpace::GetExecutionContext() const {

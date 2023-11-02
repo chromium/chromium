@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,14 @@
 #include <limits>
 #include <memory>
 
+#include "base/files/file_util.h"
 #include "base/hash/hash.h"
-#include "base/macros.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
+#include "build/build_config.h"
+#include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/blockfile/backend_impl.h"
@@ -103,8 +107,7 @@ namespace disk_cache {
 // total memory used under control.
 class EntryImpl::UserBuffer {
  public:
-  explicit UserBuffer(BackendImpl* backend)
-      : backend_(backend->GetWeakPtr()), offset_(0), grow_allowed_(true) {
+  explicit UserBuffer(BackendImpl* backend) : backend_(backend->GetWeakPtr()) {
     buffer_.reserve(kMaxBlockSize);
   }
 
@@ -147,9 +150,9 @@ class EntryImpl::UserBuffer {
   bool GrowBuffer(int required, int limit);
 
   base::WeakPtr<BackendImpl> backend_;
-  int offset_;
+  int offset_ = 0;
   std::vector<char> buffer_;
-  bool grow_allowed_;
+  bool grow_allowed_ = true;
 };
 
 bool EntryImpl::UserBuffer::PreWrite(int offset, int len) {
@@ -317,13 +320,8 @@ EntryImpl::EntryImpl(BackendImpl* backend, Addr address, bool read_only)
     : entry_(nullptr, Addr(0)),
       node_(nullptr, Addr(0)),
       backend_(backend->GetWeakPtr()),
-      doomed_(false),
-      read_only_(read_only),
-      dirty_(false) {
+      read_only_(read_only) {
   entry_.LazyInit(backend->File(address), address);
-  for (int i = 0; i < kNumStreams; i++) {
-    unreported_size_[i] = 0;
-  }
 }
 
 void EntryImpl::DoomImpl() {
@@ -360,7 +358,8 @@ int EntryImpl::WriteDataImpl(int index,
                              IOBuffer* buf,
                              int buf_len,
                              CompletionOnceCallback callback,
-                             bool truncate) {
+                             bool truncate,
+                             bool* optimistic) {
   if (net_log_.IsCapturing()) {
     NetLogReadWriteData(net_log_, net::NetLogEventType::ENTRY_WRITE_DATA,
                         net::NetLogEventPhase::BEGIN, index, offset, buf_len,
@@ -368,7 +367,7 @@ int EntryImpl::WriteDataImpl(int index,
   }
 
   int result = InternalWriteData(index, offset, buf, buf_len,
-                                 std::move(callback), truncate);
+                                 std::move(callback), truncate, optimistic);
 
   if (result != net::ERR_IO_PENDING && net_log_.IsCapturing()) {
     NetLogReadWriteComplete(net_log_, net::NetLogEventType::ENTRY_WRITE_DATA,
@@ -701,10 +700,12 @@ void EntryImpl::FixForDelete() {
 }
 
 void EntryImpl::IncrementIoCount() {
+  ++io_count_;
   backend_->IncrementIoCount();
 }
 
 void EntryImpl::DecrementIoCount() {
+  --io_count_;
   if (backend_.get())
     backend_->DecrementIoCount();
 }
@@ -877,9 +878,13 @@ int EntryImpl::WriteData(int index,
                          int buf_len,
                          CompletionOnceCallback callback,
                          bool truncate) {
-  if (callback.is_null())
-    return WriteDataImpl(index, offset, buf, buf_len, std::move(callback),
-                         truncate);
+  if (callback.is_null()) {
+    bool optimistic;
+    int err = WriteDataImpl(index, offset, buf, buf_len, std::move(callback),
+                            truncate, &optimistic);
+    DCHECK(!optimistic);
+    return err;
+  }
 
   DCHECK(node_.Data()->dirty || read_only_);
   if (index < 0 || index >= kNumStreams)
@@ -1118,9 +1123,11 @@ int EntryImpl::InternalWriteData(int index,
                                  IOBuffer* buf,
                                  int buf_len,
                                  CompletionOnceCallback callback,
-                                 bool truncate) {
+                                 bool truncate,
+                                 bool* optimistic) {
   DCHECK(node_.Data()->dirty || read_only_);
   DVLOG(2) << "Write to " << index << " at " << offset << " : " << buf_len;
+  *optimistic = false;
   if (index < 0 || index >= kNumStreams)
     return net::ERR_INVALID_ARGUMENT;
 
@@ -1159,6 +1166,8 @@ int EntryImpl::InternalWriteData(int index,
   backend_->OnEvent(Stats::WRITE_DATA);
   backend_->OnWrite(buf_len);
 
+  UMA_HISTOGRAM_BOOLEAN("HttpCache.BlockfileWriteInUserBuffer",
+                        !!user_buffers_[index].get());
   if (user_buffers_[index].get()) {
     // Complete the operation locally.
     user_buffers_[index]->Write(offset, buf, buf_len);
@@ -1191,17 +1200,32 @@ int EntryImpl::InternalWriteData(int index,
   if (!buf_len)
     return 0;
 
+  scoped_refptr<net::IOBuffer> op_buf = buf;
+
   SyncCallback* io_callback = nullptr;
   bool null_callback = callback.is_null();
   if (!null_callback) {
-    io_callback = new SyncCallback(this, buf, std::move(callback),
+#if BUILDFLAG(IS_WIN)
+    // Only do this optimization on Windows, since it's guaranteed there that an
+    // async write to the File object followed by a read will always give the
+    // previously written data. On Posix this isn't the case.
+    if (base::FeatureList::IsEnabled(
+            net::features::kOptimisticBlockfileWrite) &&
+        io_count_ == 0) {
+      op_buf = base::MakeRefCounted<IOBuffer>(buf_len);
+      memcpy(op_buf->data(), buf->data(), buf_len);
+      *optimistic = true;
+    }
+#endif
+
+    io_callback = new SyncCallback(this, op_buf.get(), std::move(callback),
                                    net::NetLogEventType::ENTRY_WRITE_DATA);
   }
 
   TimeTicks start_async = TimeTicks::Now();
 
   bool completed;
-  if (!file->Write(buf->data(), buf_len, file_offset, io_callback,
+  if (!file->Write(op_buf->data(), buf_len, file_offset, io_callback,
                    &completed)) {
     if (io_callback)
       io_callback->Discard();
@@ -1215,7 +1239,8 @@ int EntryImpl::InternalWriteData(int index,
     ReportIOTime(kWriteAsync1, start_async);
 
   ReportIOTime(kWrite, start);
-  return (completed || null_callback) ? buf_len : net::ERR_IO_PENDING;
+  return (completed || *optimistic || null_callback) ? buf_len
+                                                     : net::ERR_IO_PENDING;
 }
 
 // ------------------------------------------------------------------------
@@ -1263,7 +1288,7 @@ void EntryImpl::DeleteData(Addr address, int index) {
   if (!address.is_initialized())
     return;
   if (address.is_separate_file()) {
-    int failure = !DeleteCacheFile(backend_->GetFileName(address));
+    int failure = !base::DeleteFile(backend_->GetFileName(address));
     CACHE_UMA(COUNTS, "DeleteFailed", 0, failure);
     if (failure) {
       LOG(ERROR) << "Failed to delete " <<
@@ -1309,7 +1334,7 @@ File* EntryImpl::GetExternalFile(Addr address, int index) {
   DCHECK(index >= 0 && index <= kKeyFileIndex);
   if (!files_[index].get()) {
     // For a key file, use mixed mode IO.
-    scoped_refptr<File> file(new File(kKeyFileIndex == index));
+    auto file = base::MakeRefCounted<File>(kKeyFileIndex == index);
     if (file->Init(backend_->GetFileName(address)))
       files_[index].swap(file);
   }
@@ -1565,7 +1590,7 @@ int EntryImpl::InitSparseData() {
     return net::OK;
 
   // Use a local variable so that sparse_ never goes from 'valid' to NULL.
-  std::unique_ptr<SparseControl> sparse(new SparseControl(this));
+  auto sparse = std::make_unique<SparseControl>(this);
   int result = sparse->Init();
   if (net::OK == result)
     sparse_.swap(sparse);
@@ -1582,7 +1607,9 @@ uint32_t EntryImpl::GetEntryFlags() {
   return entry_.Data()->flags;
 }
 
-void EntryImpl::GetData(int index, char** buffer, Addr* address) {
+void EntryImpl::GetData(int index,
+                        std::unique_ptr<char[]>* buffer,
+                        Addr* address) {
   DCHECK(backend_.get());
   if (user_buffers_[index].get() && user_buffers_[index]->Size() &&
       !user_buffers_[index]->Start()) {
@@ -1590,8 +1617,8 @@ void EntryImpl::GetData(int index, char** buffer, Addr* address) {
     int data_len = entry_.Data()->data_size[index];
     if (data_len <= user_buffers_[index]->Size()) {
       DCHECK(!user_buffers_[index]->Start());
-      *buffer = new char[data_len];
-      memcpy(*buffer, user_buffers_[index]->Data(), data_len);
+      *buffer = std::make_unique<char[]>(data_len);
+      memcpy(buffer->get(), user_buffers_[index]->Data(), data_len);
       return;
     }
   }

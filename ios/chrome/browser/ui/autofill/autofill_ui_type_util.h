@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,10 +49,10 @@ static const AutofillProfileFieldDisplayInfo kProfileFieldsToDisplay[] = {
     {autofill::EMAIL_ADDRESS, IDS_IOS_AUTOFILL_EMAIL, UIReturnKeyDone,
      UIKeyboardTypeEmailAddress, UITextAutocapitalizationTypeNone}};
 
-// Returns the AutofillUIType equivalent to |type|.
+// Returns the AutofillUIType equivalent to `type`.
 AutofillUIType AutofillUITypeFromAutofillType(autofill::ServerFieldType type);
 
-// Returns the autofill::ServerFieldType equivalent to |type|.
+// Returns the autofill::ServerFieldType equivalent to `type`.
 autofill::ServerFieldType AutofillTypeFromAutofillUIType(AutofillUIType type);
 
 // Returns the list of autofill::ServerFieldType used by the edit profile

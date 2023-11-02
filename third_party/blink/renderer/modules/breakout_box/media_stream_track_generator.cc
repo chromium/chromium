@@ -1,10 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/breakout_box/media_stream_track_generator.h"
 
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_generator_init.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -20,8 +20,8 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
-#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
-#include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
 
 namespace blink {
@@ -46,9 +46,7 @@ MediaStreamTrackGenerator* MediaStreamTrackGenerator::Create(
     return nullptr;
   }
 
-  return MakeGarbageCollected<MediaStreamTrackGenerator>(
-      script_state, type,
-      /*track_id=*/WTF::CreateCanonicalUUIDString());
+  return MakeGarbageCollected<MediaStreamTrackGenerator>(script_state, type);
 }
 
 MediaStreamTrackGenerator* MediaStreamTrackGenerator::Create(
@@ -76,30 +74,58 @@ MediaStreamTrackGenerator* MediaStreamTrackGenerator::Create(
     return nullptr;
   }
 
-  return MakeGarbageCollected<MediaStreamTrackGenerator>(
-      script_state, type,
-      /*track_id=*/WTF::CreateCanonicalUUIDString());
+  return MakeGarbageCollected<MediaStreamTrackGenerator>(script_state, type);
+}
+
+// static
+MediaStreamComponent* MediaStreamTrackGenerator::MakeMediaStreamComponent(
+    ScriptState* script_state,
+    MediaStreamSource::StreamType type) {
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  std::unique_ptr<WebPlatformMediaStreamSource> platform_source;
+  std::unique_ptr<MediaStreamTrackPlatform> platform_track;
+  switch (type) {
+    case MediaStreamSource::StreamType::kTypeVideo:
+      platform_source = std::make_unique<PushableMediaStreamVideoSource>(
+          execution_context->GetTaskRunner(TaskType::kInternalMediaRealTime));
+
+      platform_track = std::make_unique<MediaStreamVideoTrack>(
+          static_cast<blink::MediaStreamVideoSource*>(platform_source.get()),
+          MediaStreamVideoSource::ConstraintsOnceCallback(),
+          /*enabled=*/true);
+      break;
+    case MediaStreamSource::StreamType::kTypeAudio:
+      // TODO(https://crbug.com/1168281): use a different thread than the IO
+      // thread to deliver Audio.
+      platform_source = std::make_unique<PushableMediaStreamAudioSource>(
+          execution_context->GetTaskRunner(TaskType::kInternalMediaRealTime),
+          Platform::Current()->GetIOTaskRunner());
+      platform_track =
+          std::make_unique<MediaStreamAudioTrack>(/*is_local_track=*/true);
+      break;
+    default:
+      NOTREACHED();
+      return nullptr;
+  }
+
+  const String track_id = WTF::CreateCanonicalUUIDString();
+  return MakeGarbageCollected<MediaStreamComponentImpl>(
+      MakeGarbageCollected<MediaStreamSource>(track_id, type, track_id,
+                                              /*remote=*/false,
+                                              std::move(platform_source)),
+      std::move(platform_track));
 }
 
 MediaStreamTrackGenerator::MediaStreamTrackGenerator(
     ScriptState* script_state,
-    MediaStreamSource::StreamType type,
-    const String& track_id)
-    : MediaStreamTrack(
-          ExecutionContext::From(script_state),
-          MakeGarbageCollected<MediaStreamComponent>(
-              MakeGarbageCollected<MediaStreamSource>(track_id,
-                                                      type,
-                                                      track_id,
-                                                      /*remote=*/false))) {
-  if (type == MediaStreamSource::kTypeVideo) {
-    CreateVideoOutputPlatformTrack();
-  } else {
-    DCHECK_EQ(type, MediaStreamSource::kTypeAudio);
-    CreateAudioOutputPlatformTrack();
+    MediaStreamSource::StreamType type)
+    : MediaStreamTrackImpl(ExecutionContext::From(script_state),
+                           MakeMediaStreamComponent(script_state, type)) {
+  if (type == MediaStreamSource::kTypeAudio) {
+    static_cast<blink::MediaStreamAudioSource*>(
+        Component()->Source()->GetPlatformSource())
+        ->ConnectToInitializedTrack(Component());
   }
-  UseCounter::Count(ExecutionContext::From(script_state),
-                    WebFeature::kMediaStreamTrackGenerator);
 }
 
 WritableStream* MediaStreamTrackGenerator::writable(ScriptState* script_state) {
@@ -116,39 +142,10 @@ WritableStream* MediaStreamTrackGenerator::writable(ScriptState* script_state) {
 
 PushableMediaStreamVideoSource* MediaStreamTrackGenerator::PushableVideoSource()
     const {
-  DCHECK_EQ(Component()->Source()->GetType(), MediaStreamSource::kTypeVideo);
+  DCHECK_EQ(Component()->GetSourceType(), MediaStreamSource::kTypeVideo);
   return static_cast<PushableMediaStreamVideoSource*>(
       GetExecutionContext()->GetTaskRunner(TaskType::kInternalMediaRealTime),
       MediaStreamVideoSource::GetVideoSource(Component()->Source()));
-}
-
-void MediaStreamTrackGenerator::CreateVideoOutputPlatformTrack() {
-  std::unique_ptr<PushableMediaStreamVideoSource> platform_source =
-      std::make_unique<PushableMediaStreamVideoSource>(
-          GetExecutionContext()->GetTaskRunner(
-              TaskType::kInternalMediaRealTime));
-  PushableMediaStreamVideoSource* platform_source_ptr = platform_source.get();
-  Component()->Source()->SetPlatformSource(std::move(platform_source));
-  std::unique_ptr<MediaStreamVideoTrack> platform_track =
-      std::make_unique<MediaStreamVideoTrack>(
-          platform_source_ptr,
-          MediaStreamVideoSource::ConstraintsOnceCallback(),
-          /*enabled=*/true);
-  Component()->SetPlatformTrack(std::move(platform_track));
-}
-
-void MediaStreamTrackGenerator::CreateAudioOutputPlatformTrack() {
-  // TODO(https:/crbug.com/1168281): use a different thread than the IO thread
-  // to deliver Audio.
-  std::unique_ptr<PushableMediaStreamAudioSource> platform_source =
-      std::make_unique<PushableMediaStreamAudioSource>(
-          GetExecutionContext()->GetTaskRunner(
-              TaskType::kInternalMediaRealTime),
-          Platform::Current()->GetIOTaskRunner());
-
-  platform_source->ConnectToTrack(Component());
-
-  Component()->Source()->SetPlatformSource(std::move(platform_source));
 }
 
 void MediaStreamTrackGenerator::CreateVideoStream(ScriptState* script_state) {
@@ -181,7 +178,7 @@ void MediaStreamTrackGenerator::Trace(Visitor* visitor) const {
   visitor->Trace(video_underlying_sink_);
   visitor->Trace(audio_underlying_sink_);
   visitor->Trace(writable_);
-  MediaStreamTrack::Trace(visitor);
+  MediaStreamTrackImpl::Trace(visitor);
 }
 
 }  // namespace blink

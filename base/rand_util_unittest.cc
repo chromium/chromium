@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,6 +43,53 @@ TEST(RandUtilTest, RandDouble) {
   volatile double number = base::RandDouble();
   EXPECT_GT(1.0, number);
   EXPECT_LE(0.0, number);
+}
+
+TEST(RandUtilTest, RandFloat) {
+  // Force 32-bit precision, making sure we're not in an 80-bit FPU register.
+  volatile float number = base::RandFloat();
+  EXPECT_GT(1.f, number);
+  EXPECT_LE(0.f, number);
+}
+
+TEST(RandUtilTest, BitsToOpenEndedUnitInterval) {
+  // Force 64-bit precision, making sure we're not in an 80-bit FPU register.
+  volatile double all_zeros = BitsToOpenEndedUnitInterval(0x0);
+  EXPECT_EQ(0.0, all_zeros);
+
+  // Force 64-bit precision, making sure we're not in an 80-bit FPU register.
+  volatile double smallest_nonzero = BitsToOpenEndedUnitInterval(0x1);
+  EXPECT_LT(0.0, smallest_nonzero);
+
+  for (uint64_t i = 0x2; i < 0x10; ++i) {
+    // Force 64-bit precision, making sure we're not in an 80-bit FPU register.
+    volatile double number = BitsToOpenEndedUnitInterval(i);
+    EXPECT_EQ(i * smallest_nonzero, number);
+  }
+
+  // Force 64-bit precision, making sure we're not in an 80-bit FPU register.
+  volatile double all_ones = BitsToOpenEndedUnitInterval(UINT64_MAX);
+  EXPECT_GT(1.0, all_ones);
+}
+
+TEST(RandUtilTest, BitsToOpenEndedUnitIntervalF) {
+  // Force 32-bit precision, making sure we're not in an 80-bit FPU register.
+  volatile float all_zeros = BitsToOpenEndedUnitIntervalF(0x0);
+  EXPECT_EQ(0.f, all_zeros);
+
+  // Force 32-bit precision, making sure we're not in an 80-bit FPU register.
+  volatile float smallest_nonzero = BitsToOpenEndedUnitIntervalF(0x1);
+  EXPECT_LT(0.f, smallest_nonzero);
+
+  for (uint64_t i = 0x2; i < 0x10; ++i) {
+    // Force 32-bit precision, making sure we're not in an 80-bit FPU register.
+    volatile float number = BitsToOpenEndedUnitIntervalF(i);
+    EXPECT_EQ(i * smallest_nonzero, number);
+  }
+
+  // Force 32-bit precision, making sure we're not in an 80-bit FPU register.
+  volatile float all_ones = BitsToOpenEndedUnitIntervalF(UINT64_MAX);
+  EXPECT_GT(1.f, all_ones);
 }
 
 TEST(RandUtilTest, RandBytes) {

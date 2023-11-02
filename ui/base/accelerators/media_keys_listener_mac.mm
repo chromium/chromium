@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 
 #include <ApplicationServices/ApplicationServices.h>
 #include <Carbon/Carbon.h>
+#include "base/memory/raw_ptr.h"
+
 #import <Cocoa/Cocoa.h>
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/hidsystem/ev_keymap.h>
@@ -63,7 +65,7 @@ class MediaKeysListenerImpl : public MediaKeysListener {
   void StartEventTapIfNecessary();
   void StopEventTapIfNecessary();
 
-  MediaKeysListener::Delegate* delegate_;
+  raw_ptr<MediaKeysListener::Delegate> delegate_;
   const Scope scope_;
   // Event tap for intercepting mac media keys.
   CFMachPortRef event_tap_ = nullptr;
@@ -181,7 +183,7 @@ CGEventRef MediaKeysListenerImpl::EventTapCallback(CGEventTapProxy proxy,
   }
 
   // Ignore events that are not system defined media keys.
-  if (type != NX_SYSDEFINED || [ns_event type] != NSSystemDefined ||
+  if (type != NX_SYSDEFINED || [ns_event type] != NSEventTypeSystemDefined ||
       [ns_event subtype] != kSystemDefinedEventMediaKeysSubtype) {
     return event;
   }

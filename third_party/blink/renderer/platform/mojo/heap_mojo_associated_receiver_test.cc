@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
 #include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -87,7 +88,7 @@ class HeapMojoAssociatedReceiverGCBaseTest : public TestSupportingGC {
     associated_remote_ = mojo::AssociatedRemote<sample::blink::Service>(
         owner_->associated_receiver().BindNewEndpointAndPassRemote(
             null_task_runner));
-    associated_remote_.set_disconnect_handler(WTF::Bind(
+    associated_remote_.set_disconnect_handler(WTF::BindOnce(
         [](HeapMojoAssociatedReceiverGCBaseTest* associated_receiver_test) {
           associated_receiver_test->run_loop().Quit();
           associated_receiver_test->disconnected() = true;

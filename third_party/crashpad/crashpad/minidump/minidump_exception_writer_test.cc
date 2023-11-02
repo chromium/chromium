@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,10 +14,10 @@
 
 #include "minidump/minidump_exception_writer.h"
 
+#include <iterator>
 #include <string>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "gtest/gtest.h"
 #include "minidump/minidump_context.h"
 #include "minidump/minidump_context_writer.h"
@@ -86,7 +86,7 @@ void ExpectExceptionStream(const MINIDUMP_EXCEPTION_STREAM* expected,
             expected_exception.NumberParameters);
   EXPECT_EQ(observed->ExceptionRecord.__unusedAlignment, 0u);
   for (size_t index = 0;
-       index < base::size(observed_exception.ExceptionInformation);
+       index < std::size(observed_exception.ExceptionInformation);
        ++index) {
     EXPECT_EQ(observed_exception.ExceptionInformation[index],
               expected_exception.ExceptionInformation[index]);

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -124,6 +124,11 @@ extern const char kPaymentManifestCrossSiteRedirectNotAllowed[];
 // Used when downloading payment manifest URL A has failed. This format should
 // be used with base::ReplaceStringPlaceholders(fmt, {A}, nullptr).
 extern const char kPaymentManifestDownloadFailed[];
+
+// Used when Content Security Policy (CSP) denied downloading payment manifest
+// URL A. This format should be used with base::ReplaceStringPlaceholders(fmt,
+// {A}, nullptr).
+extern const char kPaymentManifestCSPDenied[];
 
 // Payment handler passed a non-object field "details" in response to the
 // "paymentrequest" event.
@@ -255,6 +260,18 @@ extern const char kValidInstrumentIconRequired[];
 // Used when the icon that was either downloaded or read from user profile is
 // not valid.
 extern const char kInvalidIcon[];
+
+// Used when the rpId field was not specified for the
+// "secure-payment-confirmation" method.
+extern const char kRpIdRequired[];
+
+// Used when neither of the payeeOrigin or payeeName fields were specified for
+// the "secure-payment-confirmation" method.
+extern const char kPayeeOriginOrPayeeNameRequired[];
+
+// Used when the payeeOrigin field was specified but was non-https for the
+// "secure-payment-confirmation" method.
+extern const char kPayeeOriginMustBeHttps[];
 
 }  // namespace errors
 }  // namespace payments

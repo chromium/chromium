@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,10 +31,11 @@ enum ValidateAttributeResult {
 // - a single-value attribute cannot have more than one value
 // - a set-of-values attribute cannot be empty
 // Returns kFatalError <=> at least one of the constraints has been violated.
-ValidateAttributeResult ValidateAttribute(ipp_op_t ipp_oper_id,
-                                          const std::string& name,
-                                          ipp_parser::mojom::ValueType type,
-                                          size_t values_count);
+ValidateAttributeResult ValidateAttribute(
+    ipp_op_t ipp_oper_id,
+    const std::string& name,
+    ipp_parser::mojom::IppAttributeValue::Tag type,
+    size_t values_count);
 
 }  // namespace cups_proxy
 

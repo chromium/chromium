@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/constants/ash_constants.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/keyboard_ui_factory.h"
@@ -21,6 +22,7 @@
 #include "ash/wm/window_util.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -67,13 +69,10 @@ absl::optional<display::Display> GetFirstTouchDisplay() {
 bool GetVirtualKeyboardFeatureValue(PrefService* prefs,
                                     const std::string& feature_path) {
   DCHECK(prefs);
-  const base::DictionaryValue* features =
-      prefs->GetDictionary(prefs::kAccessibilityVirtualKeyboardFeatures);
+  const base::Value::Dict& features =
+      prefs->GetDict(prefs::kAccessibilityVirtualKeyboardFeatures);
 
-  if (!features)
-    return false;
-
-  return features->FindBoolPath(feature_path).value_or(false);
+  return features.FindBool(feature_path).value_or(false);
 }
 
 }  // namespace
@@ -278,6 +277,11 @@ KeyRepeatSettings KeyboardControllerImpl::GetKeyRepeatSettings() {
                            base::Milliseconds(interval_in_ms)};
 }
 
+bool KeyboardControllerImpl::AreTopRowKeysFunctionKeys() {
+  PrefService* prefs = pref_change_registrar_->prefs();
+  return prefs->GetBoolean(ash::prefs::kSendFunctionKeys);
+}
+
 // SessionObserver
 void KeyboardControllerImpl::OnSessionStateChanged(
     session_manager::SessionState state) {
@@ -399,6 +403,11 @@ aura::Window* KeyboardControllerImpl::GetContainerForDefaultDisplay() {
 
 void KeyboardControllerImpl::TransferGestureEventToShelf(
     const ui::GestureEvent& e) {
+  if (!base::FeatureList::IsEnabled(
+          features::kShelfGesturesWithVirtualKeyboard)) {
+    return;
+  }
+
   ash::Shelf* shelf =
       ash::Shelf::ForWindow(keyboard_ui_controller_->GetKeyboardWindow());
   if (shelf) {

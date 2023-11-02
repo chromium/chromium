@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,40 +7,48 @@
  * 'settings-manage-profile' is the settings subpage containing controls to
  * edit a profile's name, icon, and desktop shortcut.
  */
-import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
-import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
-import 'chrome://resources/cr_elements/shared_style_css.m.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_components/customize_themes/customize_themes.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/shadow.js';
-import '../settings_shared_css.js';
+import '../settings_shared.css.js';
 import 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.js';
 
-import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {AvatarIcon} from 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.js';
-import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
+import {getTemplate} from './manage_profile.html.js';
 import {ManageProfileBrowserProxy, ManageProfileBrowserProxyImpl, ProfileShortcutStatus} from './manage_profile_browser_proxy.js';
 import {SyncStatus} from './sync_browser_proxy.js';
 
 const SettingsManageProfileElementBase =
     RouteObserverMixin(WebUIListenerMixin(PolymerElement)) as {
       new (): PolymerElement & WebUIListenerMixinInterface &
-      RouteObserverMixinInterface
+          RouteObserverMixinInterface,
     };
 
-class SettingsManageProfileElement extends SettingsManageProfileElementBase {
+export interface SettingsManageProfileElement {
+  $: {
+    name: CrInputElement,
+  };
+}
+
+export class SettingsManageProfileElement extends
+    SettingsManageProfileElementBase {
   static get is() {
     return 'settings-manage-profile';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -101,17 +109,17 @@ class SettingsManageProfileElement extends SettingsManageProfileElementBase {
   private profileAvatar_: AvatarIcon;
   profileName: string;
   private hasProfileShortcut_: boolean;
-  availableIcons: Array<AvatarIcon>;
+  availableIcons: AvatarIcon[];
   syncStatus: SyncStatus|null;
   private isProfileShortcutSettingVisible_: boolean;
-  pattern_: string;
+  private pattern_: string;
   private browserProxy_: ManageProfileBrowserProxy =
       ManageProfileBrowserProxyImpl.getInstance();
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
-    const setIcons = (icons: Array<AvatarIcon>) => {
+    const setIcons = (icons: AvatarIcon[]) => {
       this.availableIcons = icons;
     };
 
@@ -119,11 +127,10 @@ class SettingsManageProfileElement extends SettingsManageProfileElementBase {
     this.browserProxy_.getAvailableIcons().then(setIcons);
   }
 
-  currentRouteChanged() {
+  override currentRouteChanged() {
     if (Router.getInstance().getCurrentRoute() === routes.MANAGE_PROFILE) {
       if (this.profileName) {
-        const profileNameInput =
-            this.shadowRoot!.querySelector<CrInputElement>('#name');
+        const profileNameInput = this.$.name;
         if (profileNameInput) {
           profileNameInput.value = this.profileName;
         }
@@ -195,6 +202,12 @@ class SettingsManageProfileElement extends SettingsManageProfileElementBase {
     } else {
       this.browserProxy_.removeProfileShortcut();
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-manage-profile': SettingsManageProfileElement;
   }
 }
 

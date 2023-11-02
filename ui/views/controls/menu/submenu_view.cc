@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,15 @@
 #include <set>
 
 #include "base/compiler_specific.h"
+#include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/owned_window_anchor.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -65,17 +68,14 @@ SubmenuView::~SubmenuView() {
 }
 
 bool SubmenuView::HasEmptyMenuItemView() const {
-  return std::any_of(
-      children().cbegin(), children().cend(), [](const View* child) {
-        return child->GetID() == MenuItemView::kEmptyMenuItemViewID;
-      });
+  return base::Contains(children(), MenuItemView::kEmptyMenuItemViewID,
+                        &View::GetID);
 }
 
 bool SubmenuView::HasVisibleChildren() const {
-  const auto menu_items = GetMenuItems();
-  return std::any_of(
-      menu_items.cbegin(), menu_items.cend(),
-      [](const MenuItemView* item) { return item->GetVisible(); });
+  return base::ranges::any_of(GetMenuItems(), [](const MenuItemView* item) {
+    return item->GetVisible();
+  });
 }
 
 SubmenuView::MenuItems SubmenuView::GetMenuItems() const {
@@ -87,10 +87,9 @@ SubmenuView::MenuItems SubmenuView::GetMenuItems() const {
   return menu_items;
 }
 
-MenuItemView* SubmenuView::GetMenuItemAt(int index) {
+MenuItemView* SubmenuView::GetMenuItemAt(size_t index) {
   const MenuItems menu_items = GetMenuItems();
-  DCHECK_GE(index, 0);
-  DCHECK_LT(static_cast<size_t>(index), menu_items.size());
+  DCHECK_LT(index, menu_items.size());
   return menu_items[index];
 }
 
@@ -187,7 +186,7 @@ gfx::Size SubmenuView::CalculatePreferredSize() const {
                minimum_preferred_width_ - 2 * insets.width()));
 
   if (parent_menu_item_->GetMenuController() &&
-      parent_menu_item_->GetMenuController()->use_touchable_layout()) {
+      parent_menu_item_->GetMenuController()->use_ash_system_ui_layout()) {
     width = std::max(touchable_minimum_width, width);
   }
 
@@ -273,12 +272,6 @@ void SubmenuView::OnDragExited() {
   parent_menu_item_->GetMenuController()->OnDragExited(this);
 }
 
-ui::mojom::DragOperation SubmenuView::OnPerformDrop(
-    const ui::DropTargetEvent& event) {
-  DCHECK(parent_menu_item_->GetMenuController());
-  return parent_menu_item_->GetMenuController()->OnPerformDrop(this, event);
-}
-
 views::View::DropCallback SubmenuView::GetDropCallback(
     const ui::DropTargetEvent& event) {
   DCHECK(parent_menu_item_->GetMenuController());
@@ -293,11 +286,8 @@ bool SubmenuView::OnMouseWheel(const ui::MouseWheelEvent& e) {
     return true;
   }
 
-  const auto starts_above_vis_bounds = [&vis_bounds](const MenuItemView* item) {
-    return item->y() < vis_bounds.y();
-  };
-  auto i = std::find_if_not(menu_items.cbegin(), menu_items.cend(),
-                            starts_above_vis_bounds);
+  auto i = base::ranges::lower_bound(menu_items, vis_bounds.y(), {},
+                                     &MenuItemView::y);
   if (i == menu_items.cend())
     return true;
 
@@ -369,24 +359,24 @@ void SubmenuView::OnGestureEvent(ui::GestureEvent* event) {
     event->SetHandled();
 }
 
-int SubmenuView::GetRowCount() {
-  return static_cast<int>(GetMenuItems().size());
+size_t SubmenuView::GetRowCount() {
+  return GetMenuItems().size();
 }
 
-int SubmenuView::GetSelectedRow() {
+absl::optional<size_t> SubmenuView::GetSelectedRow() {
   const auto menu_items = GetMenuItems();
-  const auto i =
-      std::find_if(menu_items.cbegin(), menu_items.cend(),
-                   [](const MenuItemView* item) { return item->IsSelected(); });
-  return (i == menu_items.cend()) ? -1 : std::distance(menu_items.cbegin(), i);
+  const auto i = base::ranges::find_if(menu_items, &MenuItemView::IsSelected);
+  return (i == menu_items.cend()) ? absl::nullopt
+                                  : absl::make_optional(static_cast<size_t>(
+                                        std::distance(menu_items.cbegin(), i)));
 }
 
-void SubmenuView::SetSelectedRow(int row) {
+void SubmenuView::SetSelectedRow(absl::optional<size_t> row) {
   parent_menu_item_->GetMenuController()->SetSelection(
-      GetMenuItemAt(row), MenuController::SELECTION_DEFAULT);
+      GetMenuItemAt(row.value()), MenuController::SELECTION_DEFAULT);
 }
 
-std::u16string SubmenuView::GetTextForRow(int row) {
+std::u16string SubmenuView::GetTextForRow(size_t row) {
   return MenuItemView::GetAccessibleNameForMenuItem(
       GetMenuItemAt(row)->title(), std::u16string(),
       GetMenuItemAt(row)->ShouldShowNewBadge());
@@ -486,10 +476,30 @@ void SubmenuView::SetDropMenuItem(MenuItemView* item,
   MenuItemView* old_drop_item = drop_item_;
   drop_item_ = item;
   drop_position_ = position;
-  if (old_drop_item && old_drop_item != drop_item_)
-    old_drop_item->OnDropStatusChanged();
-  if (drop_item_)
-    drop_item_->OnDropStatusChanged();
+  if (!old_drop_item || !item) {
+    // Whether the selection is actually drawn
+    // (`MenuItemView:last_paint_as_selected_`) depends upon whether there is a
+    // drop item. Find the selected item and have it updates its paint as
+    // selected state.
+    for (View* child : children()) {
+      if (!child->GetVisible() ||
+          child->GetID() != MenuItemView::kMenuItemViewID) {
+        continue;
+      }
+      MenuItemView* child_menu_item = static_cast<MenuItemView*>(child);
+      if (child_menu_item->IsSelected()) {
+        child_menu_item->OnDropOrSelectionStatusMayHaveChanged();
+        // Only one menu item is selected, so no need to continue iterating once
+        // the selected item is found.
+        break;
+      }
+    }
+  } else {
+    if (old_drop_item && old_drop_item != drop_item_)
+      old_drop_item->OnDropOrSelectionStatusMayHaveChanged();
+    if (drop_item_)
+      drop_item_->OnDropOrSelectionStatusMayHaveChanged();
+  }
   SchedulePaintForDropIndicator(drop_item_, drop_position_);
 }
 

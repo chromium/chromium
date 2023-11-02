@@ -30,11 +30,15 @@
 namespace blink {
 
 AudioSummingJunction::AudioSummingJunction(DeferredTaskHandler& handler)
-    : deferred_task_handler_(&handler), rendering_state_need_updating_(false) {}
+    : deferred_task_handler_(&handler) {
+  // Registered for set/map key determinism.
+  recordreplay::RegisterPointer("AudioSummingJunction", this);
+}
 
 AudioSummingJunction::~AudioSummingJunction() {
   GetDeferredTaskHandler().AssertGraphOwner();
   GetDeferredTaskHandler().RemoveMarkedSummingJunction(this);
+  recordreplay::UnregisterPointer(this);
 }
 
 void AudioSummingJunction::ChangedOutputs() {
@@ -49,7 +53,7 @@ void AudioSummingJunction::UpdateRenderingState() {
   DCHECK(GetDeferredTaskHandler().IsAudioThread());
   GetDeferredTaskHandler().AssertGraphOwner();
   if (rendering_state_need_updating_) {
-    // Copy from m_outputs to m_renderingOutputs.
+    // Copy from `outputs_` to `rendering_outputs_`.
     rendering_outputs_.resize(outputs_.size());
     unsigned j = 0;
     for (AudioNodeOutput* output : outputs_) {

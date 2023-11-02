@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
@@ -49,7 +50,8 @@ void VisibilityTimerTabHelper::OnVisibilityChanged(
 
 VisibilityTimerTabHelper::VisibilityTimerTabHelper(
     content::WebContents* contents)
-    : content::WebContentsObserver(contents) {}
+    : content::WebContentsObserver(contents),
+      content::WebContentsUserData<VisibilityTimerTabHelper>(*contents) {}
 
 void VisibilityTimerTabHelper::RunTask(base::OnceClosure task) {
   DCHECK_EQ(web_contents()->GetVisibility(), content::Visibility::VISIBLE);

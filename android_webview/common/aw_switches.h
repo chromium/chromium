@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,8 +19,12 @@ extern const char kFinchSeedNoChargingRequirement[];
 extern const char kFinchSeedMinDownloadPeriod[];
 extern const char kFinchSeedMinUpdatePeriod[];
 extern const char kWebViewEnableModernCookieSameSite[];
-extern const char kWebViewDisableAppsPackageNamesAllowlistComponent[];
+extern const char kWebViewDisablePackageAllowlistThrottling[];
 extern const char kWebViewSelectiveImageInversionDarkening[];
+extern const char kWebViewMPArchFencedFrames[];
+extern const char kWebViewShadowDOMFencedFrames[];
+extern const char kWebViewDisableAppRecovery[];
+extern const char kWebViewEnableAppRecovery[];
 
 }  // namespace switches
 

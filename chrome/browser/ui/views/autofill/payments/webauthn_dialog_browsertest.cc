@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,11 +31,9 @@ class WebauthnDialogBrowserTest : public DialogBrowserTest {
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-
     // Do lazy initialization of WebauthnDialogControllerImpl.
-    WebauthnDialogControllerImpl::CreateForWebContents(web_contents);
+    WebauthnDialogControllerImpl::CreateForPage(
+        web_contents()->GetPrimaryPage());
 
     if (name == kOfferDialogName) {
       controller()->ShowOfferDialog(base::DoNothing());
@@ -60,8 +58,12 @@ class WebauthnDialogBrowserTest : public DialogBrowserTest {
         !browser()->tab_strip_model()->GetActiveWebContents())
       return nullptr;
 
-    return WebauthnDialogControllerImpl::FromWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents());
+    return WebauthnDialogControllerImpl::GetForPage(
+        web_contents()->GetPrimaryPage());
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
   }
 };
 
@@ -75,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(WebauthnDialogBrowserTest,
                        OfferDialog_CanCloseTabWhileDialogShowing) {
   ShowUi(kOfferDialogName);
   VerifyUi();
-  browser()->tab_strip_model()->GetActiveWebContents()->Close();
+  web_contents()->Close();
   base::RunLoop().RunUntilIdle();
 }
 
@@ -105,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(WebauthnDialogBrowserTest,
                        VerifyPendingDialog_CanCloseTabWhileDialogShowing) {
   ShowUi(kVerifyDialogName);
   VerifyUi();
-  browser()->tab_strip_model()->GetActiveWebContents()->Close();
+  web_contents()->Close();
   base::RunLoop().RunUntilIdle();
 }
 

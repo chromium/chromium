@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,6 +41,9 @@ class BackGestureEventHandler : public display::DisplayObserver,
   // ui::EventHandler:
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
+
+  // ui::GestureConsumer:
+  const std::string& GetName() const override;
 
   // ui::GestureProviderAuraClient:
   void OnGestureEvent(GestureConsumer* consumer,

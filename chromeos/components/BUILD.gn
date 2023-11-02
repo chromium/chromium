@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -22,17 +22,10 @@ test("chromeos_components_unittests") {
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//chromeos/components/cdm_factory_daemon:unit_tests",
-    "//chromeos/components/feature_usage:unit_tests",
-    "//chromeos/components/local_search_service:unit_tests",
-    "//chromeos/components/local_search_service/public/mojom:unit_tests",
     "//chromeos/components/mojo_bootstrap:unit_tests",
-    "//chromeos/components/multidevice:unit_tests",
-    "//chromeos/components/proximity_auth:unit_tests",
-    "//chromeos/components/sensors:unit_tests",
-    "//chromeos/components/string_matching:unit_tests",
-    "//chromeos/components/sync_wifi:unit_tests",
-    "//chromeos/components/tether:unit_tests",
-    "//chromeos/components/trial_group:unit_tests",
+    "//chromeos/components/onc:unit_tests",
+    "//chromeos/components/quick_answers:unit_tests",
+    "//chromeos/components/security_token_pin:unit_tests",
     "//mojo/core/embedder",
     "//ui/base:base",
   ]
@@ -40,15 +33,5 @@ test("chromeos_components_unittests") {
   data_deps = [
     "//chromeos/strings:chromeos_test_strings",
     "//ui/resources:ui_test_pak_data",
-  ]
-}
-
-group("closure_compile") {
-  testonly = true
-
-  # TODO(https://crbug.com/1164001): closure_compile deps should be moved to
-  # the appropriate place during the code migration project.
-  deps = [
-    "//chromeos/components/multidevice/debug_webui/resources:closure_compile",
   ]
 }

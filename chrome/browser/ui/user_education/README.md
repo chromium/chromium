@@ -11,6 +11,3 @@ Active projects:
   more obvious
 * Tutorials: step-by-step guided walkthroughs of features. User-initiated and
   more thorough than single-step IPH promotions
-
-TODO(https://crbug.com/1132335): add overview and thorough instructions on how
-to apply user education to features

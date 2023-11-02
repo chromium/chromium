@@ -1,11 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/tabs/background_tab_animation_view.h"
 
-#include "base/check.h"
-#include "ios/chrome/browser/ui/util/animation_util.h"
+#import "base/check.h"
+#import "ios/chrome/browser/ui/util/animation_util.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/named_guide_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -68,7 +68,7 @@ CGFloat kRotationAngleInRadians = 20.0 / 180 * M_PI;
   [CATransaction setCompletionBlock:^{
     completion();
   }];
-  CAMediaTimingFunction* easeIn = TimingFunction(ios::material::CurveEaseIn);
+  CAMediaTimingFunction* easeIn = MaterialTimingFunction(MaterialCurveEaseIn);
   CGFloat timing =
       [self animationDurationWithParentSize:self.superview.frame.size
                                       xDiff:xDiff
@@ -150,8 +150,8 @@ CGFloat kRotationAngleInRadians = 20.0 / 180 * M_PI;
                              fromView:tabGridButtonLayoutGuide.owningView];
 }
 
-// Returns the animation duration, based on the |parentSize| and the |yDiff| and
-// |xDiff| between the origin and destination point. The animation is faster the
+// Returns the animation duration, based on the `parentSize` and the `yDiff` and
+// `xDiff` between the origin and destination point. The animation is faster the
 // closer the origin and destination are.
 - (CGFloat)animationDurationWithParentSize:(CGSize)parentSize
                                      xDiff:(CGFloat)xDiff
@@ -167,8 +167,8 @@ CGFloat kRotationAngleInRadians = 20.0 / 180 * M_PI;
 }
 
 // Returns the BezierPath that should be followed by the animated view, based on
-// the |parentSize| and the |yDiff| and |xDiff| between the |origin| and
-// |destination| point.
+// the `parentSize` and the `yDiff` and `xDiff` between the `origin` and
+// `destination` point.
 - (UIBezierPath*)positionPathWithParentHeight:(CGFloat)parentHeight
                                         xDiff:(CGFloat)xDiff
                                         yDiff:(CGFloat)yDiff

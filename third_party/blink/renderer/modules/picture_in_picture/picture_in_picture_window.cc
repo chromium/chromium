@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,7 @@ void PictureInPictureWindow::OnResize(const gfx::Size& size) {
     return;
 
   size_ = size;
-  DispatchEvent(*Event::Create(event_type_names::kResize));
+  DispatchEvent(*Event::Create(event_type_names::kResize), "PictureInPictureWindow::OnResize");
 }
 
 const AtomicString& PictureInPictureWindow::InterfaceName() const {

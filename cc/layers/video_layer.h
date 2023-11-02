@@ -1,4 +1,4 @@
-// Copyright 2010 The Chromium Authors. All rights reserved.
+// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/layers/layer.h"
 #include "media/base/video_transformation.h"
@@ -28,7 +29,8 @@ class CC_EXPORT VideoLayer : public Layer {
   VideoLayer(const VideoLayer&) = delete;
   VideoLayer& operator=(const VideoLayer&) = delete;
 
-  std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
+  std::unique_ptr<LayerImpl> CreateLayerImpl(
+      LayerTreeImpl* tree_impl) const override;
 
   bool Update() override;
 
@@ -42,9 +44,9 @@ class CC_EXPORT VideoLayer : public Layer {
 
   // This pointer is only for passing to VideoLayerImpl's constructor. It should
   // never be dereferenced by this class.
-  VideoFrameProvider* provider_;
+  ProtectedSequenceReadable<raw_ptr<VideoFrameProvider>> provider_;
 
-  media::VideoTransformation transform_;
+  const media::VideoTransformation transform_;
 };
 
 }  // namespace cc

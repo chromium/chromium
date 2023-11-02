@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -45,7 +45,6 @@ swarming.task_triggerers(
     pool_realm = "@root",
     groups = [
         "mdb/chrome-troopers",
-        "google/luci-task-force@google.com",
     ],
 )
 
@@ -88,6 +87,9 @@ swarming.task_triggerers(
         "chromium-led-users",
     ],
     users = [
+        # Build Recipes Tester launches orchestrator led builds which needs to
+        # trigger compilator led builds
+        "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
         # An account used by "Build Recipes Tester" builder infra/try bucket
         # used to tests changes to Chromium recipes using LED before commit.
         "infra-try-recipes-tester@chops-service-accounts.iam.gserviceaccount.com",

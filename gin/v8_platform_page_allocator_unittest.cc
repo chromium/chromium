@@ -1,11 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "gin/v8_platform_page_allocator.h"
 
 #include "base/cpu.h"
-
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // includes for Branch Target Instruction tests
@@ -14,7 +14,7 @@
 
 #include "base/allocator/partition_allocator/arm_bti_test_functions.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <signal.h>
 #include "testing/gtest/include/gtest/gtest-death-test.h"
 #endif
@@ -25,21 +25,33 @@ namespace gin {
 TEST(V8PlatformPageAllocatorTest, VerifyGetPageConfig) {
   auto sut = gin::PageAllocator();
 
-  CHECK_EQ(sut.GetPageConfigForTesting(v8::PageAllocator::kNoAccess),
-           base::PageInaccessible);
-  CHECK_EQ(sut.GetPageConfigForTesting(v8::PageAllocator::kRead),
-           base::PageRead);
-  CHECK_EQ(sut.GetPageConfigForTesting(v8::PageAllocator::kReadWrite),
-           base::PageReadWrite);
-  CHECK_EQ(sut.GetPageConfigForTesting(v8::PageAllocator::kReadWriteExecute),
-           base::PageReadWriteExecute);
-  CHECK_EQ(sut.GetPageConfigForTesting(v8::PageAllocator::kReadExecute),
-           base::CPU::GetInstanceNoAllocation().has_bti()
-               ? base::PageReadExecuteProtected
-               : base::PageReadExecute);
+  CHECK_EQ(sut.GetPageConfigPermissionsForTesting(v8::PageAllocator::kNoAccess),
+           partition_alloc::PageAccessibilityConfiguration::kInaccessible);
+  CHECK_EQ(sut.GetPageConfigPermissionsForTesting(v8::PageAllocator::kRead),
+           partition_alloc::PageAccessibilityConfiguration::kRead);
   CHECK_EQ(
-      sut.GetPageConfigForTesting(v8::PageAllocator::kNoAccessWillJitLater),
-      base::PageInaccessible);
+      sut.GetPageConfigPermissionsForTesting(v8::PageAllocator::kReadWrite),
+      partition_alloc::PageAccessibilityConfiguration::kReadWrite);
+  CHECK_EQ(sut.GetPageConfigPermissionsForTesting(
+               v8::PageAllocator::kReadWriteExecute),
+           partition_alloc::PageAccessibilityConfiguration::kReadWriteExecute);
+
+#if defined(__ARM_FEATURE_BTI_DEFAULT)
+  CHECK_EQ(
+      sut.GetPageConfigPermissionsForTesting(v8::PageAllocator::kReadExecute),
+      base::CPU::GetInstanceNoAllocation().has_bti()
+          ? partition_alloc::PageAccessibilityConfiguration::
+                kReadExecuteProtected
+          : partition_alloc::PageAccessibilityConfiguration::kReadExecute);
+#else
+  CHECK_EQ(
+      sut.GetPageConfigPermissionsForTesting(v8::PageAllocator::kReadExecute),
+      partition_alloc::PageAccessibilityConfiguration::kReadExecute);
+#endif
+
+  CHECK_EQ(sut.GetPageConfigPermissionsForTesting(
+               v8::PageAllocator::kNoAccessWillJitLater),
+           partition_alloc::PageAccessibilityConfiguration::kInaccessible);
 }
 
 #if defined(ARCH_CPU_ARM64) && (OS_LINUX || OS_ANDROID)
@@ -49,8 +61,10 @@ using BTITestFunction = int64_t (*)(int64_t);
 TEST(V8PlatformPageAllocatorBTITest, VerifyReadExecutePagesAreProtected) {
   auto page_allocator = gin::PageAllocator();
 
-  auto const memory_size = base::PageAllocationGranularity();
-  auto const memory_alignment = base::PageAllocationGranularity();
+  auto const memory_size =
+      partition_alloc::internal::PageAllocationGranularity();
+  auto const memory_alignment =
+      partition_alloc::internal::PageAllocationGranularity();
 
   // Next, map some read-write memory and copy some test helper functions there.
   char* const buffer = reinterpret_cast<char*>(page_allocator.AllocatePages(
@@ -91,11 +105,11 @@ TEST(V8PlatformPageAllocatorBTITest, VerifyReadExecutePagesAreProtected) {
   // the actual CPU we are running on. The code that were are trying to execute
   // is assembly code and always has BTI enabled.
   if (base::CPU::GetInstanceNoAllocation().has_bti()) {
-#if defined(OS_POSIX)  // signal handling is available on POSIX compliant
-                       // systems only
+#if BUILDFLAG(IS_POSIX)  // signal handling is available on POSIX compliant
+                         // systems only
     EXPECT_EXIT({ bti_invalid_fn(15); }, testing::KilledBySignal(SIGILL),
                 "");  // Should crash with SIGILL.
-#endif                // defined(OS_POSIX)
+#endif                // BUILDFLAG(IS_POSIX)
   } else {
     EXPECT_EQ(bti_invalid_fn(15), 17);
   }
@@ -106,8 +120,10 @@ TEST(V8PlatformPageAllocatorBTITest, VerifyReadExecutePagesAreProtected) {
 TEST(V8PlatformAllocatorBTITest, VerifyReadWriteExecutePagesAreNotProtected) {
   auto page_allocator = gin::PageAllocator();
 
-  auto const memory_size = base::PageAllocationGranularity();
-  auto const memory_alignment = base::PageAllocationGranularity();
+  auto const memory_size =
+      partition_alloc::internal::PageAllocationGranularity();
+  auto const memory_alignment =
+      partition_alloc::internal::PageAllocationGranularity();
 
   // Next, map some read-write memory and copy some test helper functions there.
   char* const buffer = reinterpret_cast<char*>(page_allocator.AllocatePages(

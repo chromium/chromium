@@ -1,9 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
 
+#include "base/json/json_reader.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "content/public/browser/web_contents.h"
@@ -34,13 +36,17 @@ class ChildModalDialogDelegate : public views::DialogDelegateView {
     DCHECK(owned_by_widget());
     SetModalType(ui::MODAL_TYPE_CHILD);
     SetFocusBehavior(FocusBehavior::ALWAYS);
-    // Dialogs that take focus must have a name to pass accessibility checks.
+    // Dialogs that take focus must have a name and role to pass accessibility
+    // checks.
+    GetViewAccessibility().OverrideRole(ax::mojom::Role::kDialog);
     GetViewAccessibility().OverrideName("Test dialog");
   }
   ChildModalDialogDelegate(const ChildModalDialogDelegate&) = delete;
   ChildModalDialogDelegate& operator=(const ChildModalDialogDelegate&) = delete;
   ~ChildModalDialogDelegate() override = default;
 };
+
+}  // namespace
 
 using InlineLoginDialogChromeOSTest = InProcessBrowserTest;
 
@@ -70,5 +76,47 @@ IN_PROC_BROWSER_TEST_F(InlineLoginDialogChromeOSTest,
   // No crash.
 }
 
-}  // namespace
+IN_PROC_BROWSER_TEST_F(InlineLoginDialogChromeOSTest, ReturnsEmptyDialogArgs) {
+  auto* dialog = new InlineLoginDialogChromeOS(
+      GURL(chrome::kChromeUIChromeSigninURL), /*options=*/absl::nullopt,
+      /*close_dialog_closure=*/base::DoNothing());
+  EXPECT_TRUE(InlineLoginDialogChromeOS::IsShown());
+  EXPECT_EQ(dialog->GetDialogArgs(), "");
+
+  // Delete dialog by calling OnDialogClosed.
+  dialog->OnDialogClosed("");
+  // Make sure the dialog is deleted.
+  EXPECT_FALSE(InlineLoginDialogChromeOS::IsShown());
+}
+
+IN_PROC_BROWSER_TEST_F(InlineLoginDialogChromeOSTest,
+                       ReturnsCorrectDialogArgs) {
+  account_manager::AccountAdditionOptions options;
+  options.is_available_in_arc = true;
+  options.show_arc_availability_picker = false;
+  auto* dialog = new InlineLoginDialogChromeOS(
+      GURL(chrome::kChromeUIChromeSigninURL), options,
+      /*close_dialog_closure=*/base::DoNothing());
+  EXPECT_TRUE(InlineLoginDialogChromeOS::IsShown());
+
+  absl::optional<base::Value> args =
+      base::JSONReader::Read(dialog->GetDialogArgs());
+  ASSERT_TRUE(args.has_value());
+  EXPECT_TRUE(args.value().is_dict());
+  const base::Value::Dict& dict = args.value().GetDict();
+  absl::optional<bool> is_available_in_arc = dict.FindBool("isAvailableInArc");
+  absl::optional<bool> show_arc_availability_picker =
+      dict.FindBool("showArcAvailabilityPicker");
+  ASSERT_TRUE(is_available_in_arc.has_value());
+  ASSERT_TRUE(show_arc_availability_picker.has_value());
+  EXPECT_EQ(is_available_in_arc.value(), options.is_available_in_arc);
+  EXPECT_EQ(show_arc_availability_picker.value(),
+            options.show_arc_availability_picker);
+
+  // Delete dialog by calling OnDialogClosed.
+  dialog->OnDialogClosed("");
+  // Make sure the dialog is deleted.
+  EXPECT_FALSE(InlineLoginDialogChromeOS::IsShown());
+}
+
 }  // namespace chromeos

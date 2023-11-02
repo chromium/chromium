@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,7 +66,11 @@ import java.util.List;
  */
 @SuppressWarnings("ResultOfMethodCallIgnored")
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE,
+        instrumentedPackages =
+                {
+                        "androidx.recyclerview.widget.RecyclerView" // required to mock final
+                })
 @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
 public class TabGridItemTouchHelperCallbackUnitTest {
     @Rule
@@ -757,36 +761,6 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     @Test
-    public void newTabTileNotDraggable() {
-        when(mMockViewHolder1.getItemViewType()).thenReturn(TabProperties.UiType.NEW_TAB_TILE);
-        setupItemTouchHelperCallback(false);
-        assertFalse(
-                mItemTouchHelperCallback.hasDragFlagForTesting(mRecyclerView, mMockViewHolder1));
-    }
-
-    @Test
-    public void newTabTileNotSwipeable() {
-        when(mMockViewHolder1.getItemViewType()).thenReturn(TabProperties.UiType.NEW_TAB_TILE);
-        setupItemTouchHelperCallback(false);
-        assertFalse(mItemTouchHelperCallback.hasSwipeFlag(mRecyclerView, mMockViewHolder1));
-    }
-
-    @Test
-    public void newTabTileNotDropable() {
-        when(mMockViewHolder1.getItemViewType()).thenReturn(TabProperties.UiType.NEW_TAB_TILE);
-        setupItemTouchHelperCallback(false);
-        assertFalse(mItemTouchHelperCallback.canDropOver(
-                mRecyclerView, mMockViewHolder2, mMockViewHolder1));
-    }
-
-    @Test(expected = AssertionError.class)
-    public void newTabTileOnMoveFail() {
-        when(mMockViewHolder1.getItemViewType()).thenReturn(TabProperties.UiType.NEW_TAB_TILE);
-        setupItemTouchHelperCallback(false);
-        mItemTouchHelperCallback.onMove(mRecyclerView, mMockViewHolder1, mMockViewHolder2);
-    }
-
-    @Test
     public void largeMessageItemNotDraggable() {
         when(mMockViewHolder1.getItemViewType()).thenReturn(TabProperties.UiType.LARGE_MESSAGE);
         setupItemTouchHelperCallback(false);
@@ -882,7 +856,6 @@ public class TabGridItemTouchHelperCallbackUnitTest {
                                    .with(TabProperties.TAB_ID, id)
                                    .with(CARD_TYPE, TAB)
                                    .build();
-        doReturn(position).when(viewHolder).getAdapterPosition();
         return viewHolder;
     }
 

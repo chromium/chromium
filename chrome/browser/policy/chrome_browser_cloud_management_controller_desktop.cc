@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/path_service.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -34,36 +35,42 @@
 #include "content/public/browser/network_service_instance.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "base/base_paths_win.h"
 #include "chrome/install_static/install_modes.h"
 #else
 #include "chrome/common/chrome_switches.h"
-#endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/policy/browser_dm_token_storage_mac.h"
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/policy/browser_dm_token_storage_linux.h"
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/policy/browser_dm_token_storage_win.h"
 #include "chrome/install_static/install_util.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/device_trust_key_manager_impl.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/key_rotation_launcher.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_FUCHSIA)
 #include "chrome/browser/policy/browser_dm_token_storage_fuchsia.h"
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 namespace policy {
 
 namespace {
 
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr base::FilePath::StringPieceType kCachedPolicyDirname =
     FILE_PATH_LITERAL("Policies");
 #endif
@@ -80,13 +87,13 @@ void ChromeBrowserCloudManagementControllerDesktop::
     SetDMTokenStorageDelegate() {
   std::unique_ptr<BrowserDMTokenStorage::Delegate> storage_delegate;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   storage_delegate = std::make_unique<BrowserDMTokenStorageMac>();
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   storage_delegate = std::make_unique<BrowserDMTokenStorageLinux>();
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   storage_delegate = std::make_unique<BrowserDMTokenStorageWin>();
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   storage_delegate = std::make_unique<BrowserDMTokenStorageFuchsia>();
 #else
   NOTREACHED();
@@ -102,7 +109,7 @@ int ChromeBrowserCloudManagementControllerDesktop::GetUserDataDirKey() {
 base::FilePath
 ChromeBrowserCloudManagementControllerDesktop::GetExternalPolicyDir() {
   base::FilePath external_policy_path;
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   base::PathService::Get(base::DIR_PROGRAM_FILESX86, &external_policy_path);
 
   external_policy_path =
@@ -147,7 +154,7 @@ bool ChromeBrowserCloudManagementControllerDesktop::
           kEnrollmentSuccess:
       case ChromeBrowserCloudManagementController::RegisterResult::
           kEnrollmentFailedSilently:
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
         app_controller_mac::EnterpriseStartupDialogClosed();
 #endif
         return true;
@@ -233,6 +240,21 @@ bool ChromeBrowserCloudManagementControllerDesktop::ReadyToInit() {
 std::unique_ptr<ClientDataDelegate>
 ChromeBrowserCloudManagementControllerDesktop::CreateClientDataDelegate() {
   return std::make_unique<ClientDataDelegateDesktop>();
+}
+
+std::unique_ptr<enterprise_connectors::DeviceTrustKeyManager>
+ChromeBrowserCloudManagementControllerDesktop::CreateDeviceTrustKeyManager() {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+  if (enterprise_connectors::IsDeviceTrustConnectorFeatureEnabled()) {
+    auto key_rotation_launcher =
+        enterprise_connectors::KeyRotationLauncher::Create(
+            BrowserDMTokenStorage::Get(), GetDeviceManagementService(),
+            GetSharedURLLoaderFactory(), g_browser_process->local_state());
+    return std::make_unique<enterprise_connectors::DeviceTrustKeyManagerImpl>(
+        std::move(key_rotation_launcher));
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+  return nullptr;
 }
 
 void ChromeBrowserCloudManagementControllerDesktop::StartInvalidations() {

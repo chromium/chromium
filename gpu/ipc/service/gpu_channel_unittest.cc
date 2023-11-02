@@ -1,14 +1,16 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "gpu/ipc/service/gpu_channel.h"
 
 #include <stdint.h>
 
 #include "base/run_loop.h"
 #include "base/test/test_simple_task_runner.h"
+#include "build/build_config.h"
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
-#include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/ipc/service/gpu_channel_test_common.h"
 
@@ -20,7 +22,7 @@ class GpuChannelTest : public GpuChannelTestCommon {
   ~GpuChannelTest() override = default;
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const SurfaceHandle kFakeSurfaceHandle = reinterpret_cast<SurfaceHandle>(1);
 #else
 const SurfaceHandle kFakeSurfaceHandle = 1;
@@ -236,7 +238,8 @@ TEST_F(GpuChannelExitForContextLostTest,
   ASSERT_TRUE(channel);
 
   // Put channel manager into shutdown state.
-  channel_manager()->OnContextLost(false /* synthetic_loss */);
+  channel_manager()->OnContextLost(-1 /* context_lost_count */,
+                                   false /* synthetic_loss */);
 
   // Calling OnContextLost() above may destroy the gpu channel via post task.
   // Ensure that post task has happened.
@@ -268,7 +271,8 @@ TEST_F(GpuChannelExitForContextLostTest,
        CreateFailsDuringLostContextShutdown_2) {
   // Put channel manager into shutdown state. Do this before creating a channel,
   // as doing this may destroy any active channels.
-  channel_manager()->OnContextLost(false /* synthetic_loss */);
+  channel_manager()->OnContextLost(-1 /* context_lost_count */,
+                                   false /* synthetic_loss */);
 
   int32_t kClientId = 1;
   GpuChannel* channel = CreateChannel(kClientId, false);

@@ -25,7 +25,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/filters/fe_turbulence.h"
 
-#include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
 
@@ -144,7 +144,7 @@ sk_sp<PaintFilter> FETurbulence::CreateImageFilter() {
       type, SkFloatToScalar(base_frequency_x),
       SkFloatToScalar(base_frequency_y), capped_num_octaves,
       SkFloatToScalar(Seed()), StitchTiles() ? &size : nullptr,
-      base::OptionalOrNullptr(crop_rect));
+      base::OptionalToPtr(crop_rect));
 }
 
 static WTF::TextStream& operator<<(WTF::TextStream& ts,

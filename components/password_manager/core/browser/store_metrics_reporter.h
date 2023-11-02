@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
@@ -86,6 +87,7 @@ class StoreMetricsReporter : public PasswordStoreConsumer {
       account_store_results_;
 
   base::OnceClosure done_callback_;
+  base::WeakPtrFactory<StoreMetricsReporter> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

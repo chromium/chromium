@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,9 @@ extern const char kForceEnableMetricsReporting[];
 extern const char kMetricsRecordingOnly[];
 extern const char kMetricsUploadIntervalSec[];
 extern const char kResetVariationState[];
+extern const char kUkmServerUrl[];
+extern const char kUmaServerUrl[];
+extern const char kUmaInsecureServerUrl[];
 
 }  // namespace switches
 

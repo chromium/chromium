@@ -41,6 +41,7 @@ leap bat shed everywhere knock over the lamp jump on the table toss the mousie.
 <script type="text/javascript">
 var textArea = document.getElementById('text');
 promise_test (async () => {
+  await waitForCompositorCommit();
   var scrollbarX = textArea.offsetLeft + textArea.offsetWidth - 5;
   var scrollThumbSafeOffset = 20;
   var scrollbarY = textArea.offsetTop + scrollThumbSafeOffset;

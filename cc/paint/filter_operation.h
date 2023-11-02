@@ -1,10 +1,11 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CC_PAINT_FILTER_OPERATION_H_
 #define CC_PAINT_FILTER_OPERATION_H_
 
+#include <array>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -29,7 +30,8 @@ namespace cc {
 
 class CC_PAINT_EXPORT FilterOperation {
  public:
-  using Matrix = SkScalar[20];
+  // 4x5 color matrix equivalent to SkColorMatrix.
+  using Matrix = std::array<float, 20>;
   using ShapeRects = std::vector<gfx::Rect>;
   enum FilterType {
     GRAYSCALE,
@@ -75,7 +77,7 @@ class CC_PAINT_EXPORT FilterOperation {
     return drop_shadow_offset_;
   }
 
-  SkColor drop_shadow_color() const {
+  SkColor4f drop_shadow_color() const {
     DCHECK_EQ(type_, DROP_SHADOW);
     return drop_shadow_color_;
   }
@@ -145,7 +147,7 @@ class CC_PAINT_EXPORT FilterOperation {
 
   static FilterOperation CreateDropShadowFilter(const gfx::Point& offset,
                                                 float std_deviation,
-                                                SkColor color) {
+                                                SkColor4f color) {
     return FilterOperation(DROP_SHADOW, offset, std_deviation, color);
   }
 
@@ -206,7 +208,7 @@ class CC_PAINT_EXPORT FilterOperation {
     drop_shadow_offset_ = offset;
   }
 
-  void set_drop_shadow_color(SkColor color) {
+  void set_drop_shadow_color(SkColor4f color) {
     DCHECK_EQ(type_, DROP_SHADOW);
     drop_shadow_color_ = color;
   }
@@ -265,7 +267,7 @@ class CC_PAINT_EXPORT FilterOperation {
   FilterOperation(FilterType type,
                   const gfx::Point& offset,
                   float stdDeviation,
-                  SkColor color);
+                  SkColor4f color);
 
   FilterOperation(FilterType, const Matrix& matrix);
 
@@ -284,7 +286,7 @@ class CC_PAINT_EXPORT FilterOperation {
   float amount_;
   float outer_threshold_;
   gfx::Point drop_shadow_offset_;
-  SkColor drop_shadow_color_;
+  SkColor4f drop_shadow_color_;
   sk_sp<PaintFilter> image_filter_;
   Matrix matrix_;
   int zoom_inset_;

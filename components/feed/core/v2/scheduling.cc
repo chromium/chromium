@@ -1,31 +1,31 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/feed/core/v2/scheduling.h"
 
 #include "base/json/values_util.h"
+#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/feed/core/v2/config.h"
 #include "components/feed/core/v2/feedstore_util.h"
+#include "components/feed/feed_feature_list.h"
 
 namespace feed {
 namespace {
 
-base::Value VectorToValue(const std::vector<base::TimeDelta>& values) {
-  base::Value result(base::Value::Type::LIST);
+base::Value::List VectorToList(const std::vector<base::TimeDelta>& values) {
+  base::Value::List result;
   for (base::TimeDelta delta : values) {
     result.Append(base::TimeDeltaToValue(delta));
   }
   return result;
 }
 
-bool ValueToVector(const base::Value& value,
-                   std::vector<base::TimeDelta>* result) {
-  if (!value.is_list())
-    return false;
-  for (const base::Value& entry : value.GetList()) {
+bool ListToVector(const base::Value::List& value,
+                  std::vector<base::TimeDelta>* result) {
+  for (const base::Value& entry : value) {
     absl::optional<base::TimeDelta> delta = base::ValueToTimeDelta(entry);
     if (!delta)
       return false;
@@ -43,6 +43,17 @@ base::TimeDelta GetThresholdTime(base::TimeDelta default_threshold,
   return server_threshold;
 }
 
+RequestSchedule::Type GetScheduleType(const base::Value* value) {
+  if (value && value->is_int()) {
+    int int_value = value->GetInt();
+    if (int_value >= 0 &&
+        int_value <= base::to_underlying(RequestSchedule::Type::kMaxValue)) {
+      return static_cast<RequestSchedule::Type>(int_value);
+    }
+  }
+  return RequestSchedule::Type::kScheduledRefresh;
+}
+
 }  // namespace
 
 RequestSchedule::RequestSchedule() = default;
@@ -52,22 +63,21 @@ RequestSchedule& RequestSchedule::operator=(const RequestSchedule&) = default;
 RequestSchedule::RequestSchedule(RequestSchedule&&) = default;
 RequestSchedule& RequestSchedule::operator=(RequestSchedule&&) = default;
 
-base::Value RequestScheduleToValue(const RequestSchedule& schedule) {
-  base::Value result(base::Value::Type::DICTIONARY);
-  result.SetKey("anchor", base::TimeToValue(schedule.anchor_time));
-  result.SetKey("offsets", VectorToValue(schedule.refresh_offsets));
+base::Value::Dict RequestScheduleToDict(const RequestSchedule& schedule) {
+  base::Value::Dict result;
+  result.Set("anchor", base::TimeToValue(schedule.anchor_time));
+  result.Set("offsets", VectorToList(schedule.refresh_offsets));
+  result.Set("type", base::to_underlying(schedule.type));
   return result;
 }
 
-RequestSchedule RequestScheduleFromValue(const base::Value& value) {
-  if (!value.is_dict())
-    return {};
+RequestSchedule RequestScheduleFromDict(const base::Value::Dict& value) {
   RequestSchedule result;
-  absl::optional<base::Time> anchor =
-      base::ValueToTime(value.FindKey("anchor"));
-  const base::Value* offsets =
-      value.FindKeyOfType("offsets", base::Value::Type::LIST);
-  if (!anchor || !offsets || !ValueToVector(*offsets, &result.refresh_offsets))
+  absl::optional<base::Time> anchor = base::ValueToTime(value.Find("anchor"));
+  const base::Value::List* offsets = value.FindList("offsets");
+  result.type = GetScheduleType(value.Find("type"));
+
+  if (!anchor || !offsets || !ListToVector(*offsets, &result.refresh_offsets))
     return {};
   result.anchor_time = *anchor;
   return result;
@@ -99,14 +109,15 @@ base::Time NextScheduledRequestTime(base::Time now, RequestSchedule* schedule) {
 
 bool ShouldWaitForNewContent(const feedstore::Metadata& metadata,
                              const StreamType& stream_type,
-                             base::TimeDelta content_age) {
+                             base::TimeDelta content_age,
+                             bool is_web_feed_subscriber) {
   const feedstore::Metadata::StreamMetadata* stream_metadata =
       feedstore::FindMetadataForStream(metadata, stream_type);
   if (stream_metadata && stream_metadata->is_known_stale())
     return true;
 
-  base::TimeDelta staleness_threshold =
-      GetFeedConfig().GetStalenessThreshold(stream_type);
+  base::TimeDelta staleness_threshold = GetFeedConfig().GetStalenessThreshold(
+      stream_type, is_web_feed_subscriber);
   if (stream_metadata && stream_metadata->has_content_lifetime()) {
     staleness_threshold = GetThresholdTime(
         staleness_threshold,
@@ -118,12 +129,18 @@ bool ShouldWaitForNewContent(const feedstore::Metadata& metadata,
 
 bool ContentInvalidFromAge(const feedstore::Metadata& metadata,
                            const StreamType& stream_type,
-                           base::TimeDelta content_age) {
+                           base::TimeDelta content_age,
+                           bool is_web_feed_subscriber) {
   const feedstore::Metadata::StreamMetadata* stream_metadata =
       feedstore::FindMetadataForStream(metadata, stream_type);
 
   base::TimeDelta content_expiration_threshold =
       GetFeedConfig().content_expiration_threshold;
+  if (base::FeatureList::IsEnabled(kWebFeedOnboarding) &&
+      !is_web_feed_subscriber && stream_type.IsWebFeed()) {
+    content_expiration_threshold =
+        GetFeedConfig().subscriptionless_content_expiration_threshold;
+  }
   if (stream_metadata && stream_metadata->has_content_lifetime()) {
     content_expiration_threshold = GetThresholdTime(
         content_expiration_threshold,

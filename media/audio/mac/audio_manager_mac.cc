@@ -1,10 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/audio/mac/audio_manager_mac.h"
 
-#include <algorithm>
 #include <limits>
 #include <memory>
 #include <utility>
@@ -19,8 +18,10 @@
 #include "base/memory/free_deleter.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_observer.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/mac/audio_auhal_mac.h"
 #include "media/audio/mac/audio_input_mac.h"
@@ -608,14 +609,14 @@ AudioParameters AudioManagerMac::GetInputStreamParameters(
   if (device == kAudioObjectUnknown) {
     DLOG(ERROR) << "Invalid device " << device_id;
     return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                           CHANNEL_LAYOUT_STEREO, kFallbackSampleRate,
+                           ChannelLayoutConfig::Stereo(), kFallbackSampleRate,
                            ChooseBufferSize(true, kFallbackSampleRate));
   }
 
   int channels = 0;
-  ChannelLayout channel_layout = CHANNEL_LAYOUT_STEREO;
+  ChannelLayoutConfig channel_layout_config = ChannelLayoutConfig::Stereo();
   if (GetDeviceChannels(device, AUElement::INPUT, &channels) && channels <= 2) {
-    channel_layout = GuessChannelLayout(channels);
+    channel_layout_config = ChannelLayoutConfig::Guess(channels);
   } else {
     DLOG(ERROR) << "Failed to get the device channels, use stereo as default "
                 << "for device " << device_id;
@@ -632,8 +633,8 @@ AudioParameters AudioManagerMac::GetInputStreamParameters(
 
   // TODO(grunell): query the native channel layout for the specific device.
   AudioParameters params(
-      AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout, sample_rate,
-      buffer_size,
+      AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout_config,
+      sample_rate, buffer_size,
       AudioParameters::HardwareCapabilities(
           GetMinAudioBufferSizeMacOS(limits::kMinAudioBufferSize, sample_rate),
           limits::kMaxAudioBufferSize));
@@ -642,13 +643,11 @@ AudioParameters AudioManagerMac::GetInputStreamParameters(
     params.set_effects(AudioParameters::NOISE_SUPPRESSION);
   }
 
-  // VoiceProcessingIO is only supported on MacOS 10.12 and cannot be used on
-  // aggregate devices, since it creates an aggregate device itself.  It also
-  // only runs in mono, but we allow upmixing to stereo since we can't claim a
-  // device works either in stereo without echo cancellation or mono with echo
-  // cancellation.
-  if (base::mac::IsAtLeastOS10_12() &&
-      (params.channel_layout() == CHANNEL_LAYOUT_MONO ||
+  // VoiceProcessingIO cannot be used on aggregate devices, since it creates an
+  // aggregate device itself.  It also only runs in mono, but we allow upmixing
+  // to stereo since we can't claim a device works either in stereo without echo
+  // cancellation or mono with echo cancellation.
+  if ((params.channel_layout() == CHANNEL_LAYOUT_MONO ||
        params.channel_layout() == CHANNEL_LAYOUT_STEREO) &&
       core_audio_mac::GetDeviceTransportType(device) !=
           kAudioDeviceTransportTypeAggregate) {
@@ -829,7 +828,8 @@ AudioParameters AudioManagerMac::GetPreferredOutputStreamParameters(
     return input_params.IsValid()
                ? input_params
                : AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                 CHANNEL_LAYOUT_STEREO, kFallbackSampleRate,
+                                 ChannelLayoutConfig::Stereo(),
+                                 kFallbackSampleRate,
                                  ChooseBufferSize(false, kFallbackSampleRate));
   }
 
@@ -874,13 +874,12 @@ AudioParameters AudioManagerMac::GetPreferredOutputStreamParameters(
   }
 
   AudioParameters params(
-      AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout,
+      AudioParameters::AUDIO_PCM_LOW_LATENCY, {channel_layout, output_channels},
       hardware_sample_rate, buffer_size,
       AudioParameters::HardwareCapabilities(
           GetMinAudioBufferSizeMacOS(limits::kMinAudioBufferSize,
                                      hardware_sample_rate),
           limits::kMaxAudioBufferSize));
-  params.set_channels_for_discrete(output_channels);
   return params;
 }
 
@@ -1230,9 +1229,7 @@ void AudioManagerMac::ReleaseOutputStreamUsingRealDevice(
 
 void AudioManagerMac::ReleaseInputStream(AudioInputStream* stream) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  auto stream_it = std::find(basic_input_streams_.begin(),
-                             basic_input_streams_.end(),
-                             stream);
+  auto stream_it = base::ranges::find(basic_input_streams_, stream);
   if (stream_it == basic_input_streams_.end())
     low_latency_input_streams_.remove(static_cast<AUAudioInputStream*>(stream));
   else

@@ -1,11 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_COMMON_INPUT_SYNTHETIC_GESTURE_PARAMS_H_
 #define CONTENT_COMMON_INPUT_SYNTHETIC_GESTURE_PARAMS_H_
 
-#include "content/common/content_export.h"
 #include "content/common/input/input_injector.mojom-shared.h"
 
 namespace content {
@@ -16,7 +15,7 @@ namespace content {
 // The logic for dispatching input events that implement the gesture lives
 // in separate classes in content/browser/renderer_host/input/.
 //
-struct CONTENT_EXPORT SyntheticGestureParams {
+struct SyntheticGestureParams {
   SyntheticGestureParams();
   SyntheticGestureParams(const SyntheticGestureParams& other);
   virtual ~SyntheticGestureParams();

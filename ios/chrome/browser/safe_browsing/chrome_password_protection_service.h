@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,12 +25,17 @@ class GURL;
 class PrefService;
 class SafeBrowsingService;
 
+namespace history {
+class HistoryService;
+}
+
 namespace password_manager {
 class PasswordStore;
 }  // namespace password_manager
 
 namespace safe_browsing {
 class PasswordProtectionRequest;
+class SafeBrowsingMetricsCollector;
 }  // namespace safe_browsing
 
 namespace web {
@@ -47,6 +52,9 @@ class ChromePasswordProtectionService
   ChromePasswordProtectionService(
       SafeBrowsingService* sb_service,
       ChromeBrowserState* browser_state,
+      history::HistoryService* history_service,
+      safe_browsing::SafeBrowsingMetricsCollector*
+          safe_browsing_metrics_collector,
       ChangePhishedCredentialsCallback add_phished_credentials =
           base::BindRepeating(&password_manager::AddPhishedCredentials),
       ChangePhishedCredentialsCallback remove_phished_credentials =
@@ -66,8 +74,8 @@ class ChromePasswordProtectionService
       const std::string& verdict_token,
       safe_browsing::ReusedPasswordAccountType password_type) override;
 
-  // Stores |verdict| in the cache based on its |trigger_type|, |url|,
-  // reused |password_type|, |verdict| and |receive_time|.
+  // Stores `verdict` in the cache based on its `trigger_type`, `url`,
+  // reused `password_type`, `verdict` and `receive_time`.
   void CacheVerdict(
       const GURL& url,
       safe_browsing::LoginReputationClientRequest::TriggerType trigger_type,
@@ -83,7 +91,7 @@ class ChromePasswordProtectionService
       safe_browsing::ReusedPasswordAccountType password_type,
       safe_browsing::LoginReputationClientResponse* out_response) override;
 
-  // Returns the number of saved verdicts for the given |trigger_type|.
+  // Returns the number of saved verdicts for the given `trigger_type`.
   int GetStoredVerdictCount(
       safe_browsing::LoginReputationClientRequest::TriggerType trigger_type)
       override;
@@ -92,7 +100,8 @@ class ChromePasswordProtectionService
       safe_browsing::PasswordProtectionRequest* request,
       const std::string& username,
       safe_browsing::PasswordType password_type,
-      bool is_phishing_url) override;
+      bool is_phishing_url,
+      bool warning_shown) override;
 
   void ReportPasswordChanged() override;
 
@@ -232,9 +241,9 @@ class ChromePasswordProtectionService
       safe_browsing::LoginReputationClientRequest* request_proto) override;
 
  private:
-  // Returns true if the |web_state| is already showing a warning dialog.
+  // Returns true if the `web_state` is already showing a warning dialog.
   bool IsModalWarningShowingInWebState(web::WebState* web_state);
-  // Removes all warning requests for |web_state|.
+  // Removes all warning requests for `web_state`.
   void RemoveWarningRequestsByWebState(web::WebState* web_state);
 
   password_manager::PasswordStoreInterface* GetStoreForReusedCredential(
@@ -248,10 +257,10 @@ class ChromePasswordProtectionService
   // account and is accessible only when the user is signed in and non syncing.
   password_manager::PasswordStoreInterface* GetAccountPasswordStore() const;
 
-  // Gets prefs associated with |browser_state_|.
+  // Gets prefs associated with `browser_state_`.
   PrefService* GetPrefs() const;
 
-  // Returns whether |browser_state_| has safe browsing service enabled.
+  // Returns whether `browser_state_` has safe browsing service enabled.
   bool IsSafeBrowsingEnabled();
 
   // Lookup for a callback for showing a warning for a given request.

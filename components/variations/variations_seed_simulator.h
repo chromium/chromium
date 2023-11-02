@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/metrics/field_trial.h"
 #include "base/version.h"
+#include "components/variations/entropy_provider.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/proto/variations_seed.pb.h"
 
@@ -20,6 +21,7 @@ namespace variations {
 class ProcessedStudy;
 struct ClientFilterableState;
 class VariationsSeed;
+class VariationsLayers;
 
 // VariationsSeedSimulator simulates the result of creating a set of studies
 // and detecting which studies would result in group changes.
@@ -45,14 +47,8 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedSimulator {
     int kill_critical_group_change_count;
   };
 
-  // Creates the simulator with the given default and low entropy providers. The
-  // |low_entropy_provider| will be used for studies that should only use a low
-  // entropy source. This is defined by
-  // VariationsSeedProcessor::ShouldStudyUseLowEntropy, in
-  // variations_seed_processor.h.
-  VariationsSeedSimulator(
-      const base::FieldTrial::EntropyProvider& default_entropy_provider,
-      const base::FieldTrial::EntropyProvider& low_entropy_provider);
+  // Creates the simulator with the given entropy providers.
+  explicit VariationsSeedSimulator(const EntropyProviders& entropy_providers);
 
   VariationsSeedSimulator(const VariationsSeedSimulator&) = delete;
   VariationsSeedSimulator& operator=(const VariationsSeedSimulator&) = delete;
@@ -82,7 +78,8 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedSimulator {
   // that apply to the configuration being simulated. Returns the results of the
   // simulation as a set of expected group change counts of each type.
   Result ComputeDifferences(
-      const std::vector<ProcessedStudy>& processed_studies);
+      const std::vector<ProcessedStudy>& processed_studies,
+      const VariationsLayers& layers);
 
   // Maps proto enum |type| to a ChangeType.
   ChangeType ConvertExperimentTypeToChangeType(Study_Experiment_Type type);
@@ -91,7 +88,8 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedSimulator {
   // assignment and returns a corresponding ChangeType if the result differs
   // from that study's group in the current process.
   ChangeType PermanentStudyGroupChanged(const ProcessedStudy& processed_study,
-                                        const std::string& selected_group);
+                                        const std::string& selected_group,
+                                        const VariationsLayers& layers);
 
   // For the given |processed_study| with SESSION consistency, determines if
   // there are enough changes in the study config that restarting will result
@@ -100,8 +98,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedSimulator {
   ChangeType SessionStudyGroupChanged(const ProcessedStudy& filtered_study,
                                       const std::string& selected_group);
 
-  const base::FieldTrial::EntropyProvider& default_entropy_provider_;
-  const base::FieldTrial::EntropyProvider& low_entropy_provider_;
+  const EntropyProviders& entropy_providers_;
 };
 
 }  // namespace variations

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,27 +11,30 @@ namespace history {
 
 class HistoryBackend;
 
+// Used by internal History components to observe `HistoryBackend` and process
+// those notifications on the backend task runner.
+//
+// Classes external to History that wish to observe History should instead use
+// `HistoryServiceObserver`, which operates on the main thread.
+//
+// These notifications are kept roughly in sync with `HistoryServiceObserver`,
+// but there's already not an exact 1-to-1 correspondence.
 class HistoryBackendObserver {
  public:
-  HistoryBackendObserver() {}
+  HistoryBackendObserver() = default;
 
   HistoryBackendObserver(const HistoryBackendObserver&) = delete;
   HistoryBackendObserver& operator=(const HistoryBackendObserver&) = delete;
 
-  virtual ~HistoryBackendObserver() {}
+  virtual ~HistoryBackendObserver() = default;
 
-  // Called when user visits an URL.
+  // Called when the user visits an URL.
   //
-  // The `row` ID will be set to the value that is currently in effect in the
-  // main history database. `redirects` is the list of redirects leading up to
-  // the URL. If we have a redirect chain A -> B -> C and user is visiting C,
-  // then `redirects[0]=B` and `redirects[1]=A`. If there are no redirects,
-  // `redirects` is an empty vector.
+  // The row IDs will be set to the values that are currently in effect in the
+  // main history database.
   virtual void OnURLVisited(HistoryBackend* history_backend,
-                            ui::PageTransition transition,
-                            const URLRow& row,
-                            const RedirectList& redirects,
-                            base::Time visit_time) = 0;
+                            const URLRow& url_row,
+                            const VisitRow& visit_row) = 0;
 
   // Called when a URL has been added or modified.
   //
@@ -57,6 +60,15 @@ class HistoryBackendObserver {
                              bool expired,
                              const URLRows& deleted_rows,
                              const std::set<GURL>& favicon_urls) = 0;
+
+  // Called when a visit is updated. Typically this happens when the visit
+  // duration is updated, and in some redirect cases when the transition type
+  // is updated.
+  virtual void OnVisitUpdated(const VisitRow& visit) = 0;
+
+  // Called when a visit is deleted - usually either due to expiry, or because
+  // the user explicitly deleted it.
+  virtual void OnVisitDeleted(const VisitRow& visit) = 0;
 };
 
 }  // namespace history

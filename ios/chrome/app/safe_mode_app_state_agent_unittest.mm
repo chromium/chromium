@@ -1,24 +1,25 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/app/safe_mode_app_state_agent.h"
 
-#include "base/ios/block_types.h"
-#include "base/test/ios/wait_util.h"
+#import "base/ios/block_types.h"
+#import "base/test/ios/wait_util.h"
 #import "ios/chrome/app/application_delegate/app_state_testing.h"
 #import "ios/chrome/app/application_delegate/browser_launcher.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/main_application_delegate.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/main/connection_information.h"
 #import "ios/chrome/browser/ui/main/test/fake_scene_state.h"
 #import "ios/chrome/browser/ui/safe_mode/safe_mode_coordinator.h"
-#include "ios/chrome/test/block_cleanup_test.h"
+#import "ios/chrome/test/block_cleanup_test.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/testing/scoped_block_swizzler.h"
-#include "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
-#include "third_party/ocmock/gtest_support.h"
+#import "third_party/ocmock/gtest_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -49,8 +50,8 @@ typedef BOOL (^DecisionBlock)(id self);
     didTransitionFromInitStage:(InitStage)previousInitStage;
 @end
 
-// Iterate through the init stages from |startInitStage| up to
-// |initStageDestination|.
+// Iterate through the init stages from `startInitStage` up to
+// `initStageDestination`.
 void IterateToStage(InitStage startInitStage,
                     InitStage initStageDestination,
                     SafeModeAppAgent* agent,
@@ -74,6 +75,7 @@ void IterateToStage(InitStage startInitStage,
 class SafeModeAppStateAgentTest : public BlockCleanupTest {
  protected:
   SafeModeAppStateAgentTest() {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
     window_ = [OCMockObject mockForClass:[UIWindow class]];
     browser_launcher_mock_ =
         [OCMockObject mockForProtocol:@protocol(BrowserLauncher)];
@@ -84,8 +86,6 @@ class SafeModeAppStateAgentTest : public BlockCleanupTest {
     main_application_delegate_ =
         [OCMockObject mockForClass:[MainApplicationDelegate class]];
   }
-
-  void SetUp() override { BlockCleanupTest::SetUp(); }
 
   void swizzleSafeModeShouldStart(BOOL shouldStart) {
     safe_mode_swizzle_block_ = ^BOOL(id self) {
@@ -108,7 +108,9 @@ class SafeModeAppStateAgentTest : public BlockCleanupTest {
                                  startupInformation:startup_information_mock_
                                 applicationDelegate:main_application_delegate_];
 
-      main_scene_state_ = [main_scene_state_ initWithAppState:app_state_];
+      main_scene_state_ =
+          [main_scene_state_ initWithAppState:app_state_
+                                 browserState:browser_state_.get()];
       main_scene_state_.window = getWindowMock();
     }
     return app_state_;
@@ -122,6 +124,7 @@ class SafeModeAppStateAgentTest : public BlockCleanupTest {
 
  private:
   web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
   AppState* app_state_;
   FakeSceneState* main_scene_state_;
 

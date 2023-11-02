@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,6 +54,11 @@ TableLayoutView& TableLayoutView::SetLinkedColumnSizeLimit(int size_limit) {
 
 TableLayoutView& TableLayoutView::SetMinimumSize(const gfx::Size& size) {
   table_layout_->SetMinimumSize(size);
+  return *this;
+}
+
+TableLayoutView& TableLayoutView::SetIncludeHidden(bool include_hidden) {
+  table_layout_->SetIncludeHidden(include_hidden);
   return *this;
 }
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/base/net_export.h"
 
@@ -143,7 +142,7 @@ struct NET_EXPORT WebSocketFrameChunk {
   std::unique_ptr<WebSocketFrameHeader> header;
 
   // Indicates this part is the last chunk of a frame.
-  bool final_chunk;
+  bool final_chunk = false;
 
   // |payload| is always unmasked even if the frame is masked. |payload| might
   // be empty in the first chunk.

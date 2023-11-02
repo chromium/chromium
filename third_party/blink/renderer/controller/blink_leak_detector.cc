@@ -1,9 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/controller/blink_leak_detector.h"
 
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
@@ -17,19 +18,17 @@
 #include "third_party/blink/renderer/core/workers/dedicated_worker_messaging_proxy.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 
 namespace blink {
 
-BlinkLeakDetector& GetLeakDetector() {
-  DEFINE_STATIC_LOCAL(BlinkLeakDetector, leak_detector, ());
-  return leak_detector;
-}
-
-BlinkLeakDetector::BlinkLeakDetector()
-    : delayed_gc_timer_(Thread::Current()->GetTaskRunner(),
+BlinkLeakDetector::BlinkLeakDetector(
+    base::PassKey<BlinkLeakDetector> pass_key,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+    : delayed_gc_timer_(std::move(task_runner),
                         this,
                         &BlinkLeakDetector::TimerFiredGC) {}
 
@@ -37,10 +36,12 @@ BlinkLeakDetector::~BlinkLeakDetector() = default;
 
 // static
 void BlinkLeakDetector::Bind(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     mojo::PendingReceiver<mojom::blink::LeakDetector> receiver) {
-  // This should be called only once per process on RenderProcessWillLaunch.
-  DCHECK(!GetLeakDetector().receiver_.is_bound());
-  GetLeakDetector().receiver_.Bind(std::move(receiver));
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<BlinkLeakDetector>(base::PassKey<BlinkLeakDetector>(),
+                                          task_runner),
+      std::move(receiver), task_runner);
 }
 
 void BlinkLeakDetector::PerformLeakDetection(
@@ -61,7 +62,7 @@ void BlinkLeakDetector::PerformLeakDetection(
   // here.
   V8PerIsolateData::From(isolate)->EnsureScriptRegexpContext();
 
-  GetMemoryCache()->EvictResources();
+  MemoryCache::Get()->EvictResources();
 
   // FIXME: HTML5 Notification should be closed because notification affects
   // the result of number of DOM objects.

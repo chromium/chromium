@@ -43,7 +43,7 @@
 
 namespace WTF {
 
-#if !defined(OS_ANDROID) && !defined(OS_WIN)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN)
 WTF_EXPORT base::PlatformThreadId CurrentThread();
 #else
 // On Android gettid(3) uses a faster TLS model than thread_local.
@@ -51,7 +51,7 @@ WTF_EXPORT base::PlatformThreadId CurrentThread();
 inline base::PlatformThreadId CurrentThread() {
   return base::PlatformThread::CurrentId();
 }
-#endif  // !defined(OS_ANDROID) && !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN)
 
 #if DCHECK_IS_ON()
 WTF_EXPORT bool IsBeforeThreadCreated();
@@ -59,7 +59,6 @@ WTF_EXPORT void WillCreateThread();
 WTF_EXPORT void SetIsBeforeThreadCreatedForTest();
 #endif
 
-class AtomicStringTable;
 struct ICUConverterWrapper;
 
 class WTF_EXPORT Threading {
@@ -71,8 +70,6 @@ class WTF_EXPORT Threading {
   Threading& operator=(const Threading&) = delete;
   ~Threading();
 
-  AtomicStringTable& GetAtomicStringTable() { return *atomic_string_table_; }
-
   ICUConverterWrapper& CachedConverterICU() { return *cached_converter_icu_; }
 
   base::PlatformThreadId ThreadId() const { return thread_id_; }
@@ -80,17 +77,16 @@ class WTF_EXPORT Threading {
   // Must be called on the main thread before any callers to wtfThreadData().
   static void Initialize();
 
-#if defined(OS_WIN) && defined(COMPILER_MSVC)
+#if BUILDFLAG(IS_WIN) && defined(COMPILER_MSVC)
   static size_t ThreadStackSize();
 #endif
 
  private:
-  std::unique_ptr<AtomicStringTable> atomic_string_table_;
   std::unique_ptr<ICUConverterWrapper> cached_converter_icu_;
 
   base::PlatformThreadId thread_id_;
 
-#if defined(OS_WIN) && defined(COMPILER_MSVC)
+#if BUILDFLAG(IS_WIN) && defined(COMPILER_MSVC)
   size_t thread_stack_size_ = 0u;
 #endif
 

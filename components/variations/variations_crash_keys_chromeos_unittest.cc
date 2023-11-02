@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,7 +52,7 @@ TEST_F(VariationsCrashKeysChromeOsTest, WritesVariationsList) {
       home_path.Append(".variations-list.txt");
 
   // Start with 2 trials, one active and one not
-  base::FieldTrialList::CreateFieldTrial("Trial1", "Group1")->group();
+  base::FieldTrialList::CreateFieldTrial("Trial1", "Group1")->Activate();
   base::FieldTrialList::CreateFieldTrial("Trial2", "Group2");
 
   InitCrashKeys();

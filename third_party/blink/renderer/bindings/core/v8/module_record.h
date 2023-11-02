@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
@@ -33,13 +34,13 @@ class CORE_EXPORT ModuleRecordProduceCacheData final
     : public GarbageCollected<ModuleRecordProduceCacheData> {
  public:
   ModuleRecordProduceCacheData(v8::Isolate*,
-                               SingleCachedMetadataHandler*,
+                               CachedMetadataHandler*,
                                V8CodeCache::ProduceCacheOptions,
                                v8::Local<v8::Module>);
 
   void Trace(Visitor*) const;
 
-  SingleCachedMetadataHandler* CacheHandler() const { return cache_handler_; }
+  CachedMetadataHandler* CacheHandler() const { return cache_handler_; }
   V8CodeCache::ProduceCacheOptions GetProduceCacheOptions() const {
     return produce_cache_options_;
   }
@@ -48,7 +49,7 @@ class CORE_EXPORT ModuleRecordProduceCacheData final
   }
 
  private:
-  Member<SingleCachedMetadataHandler> cache_handler_;
+  Member<CachedMetadataHandler> cache_handler_;
   V8CodeCache::ProduceCacheOptions produce_cache_options_;
   TraceWrapperV8Reference<v8::UnboundModuleScript> unbound_script_;
 };

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL Client hints loaded on same-origin iframe include hints with a default permissions policy of self and *. promise_test: Unhandled rejection with value: "FAIL sec-ch-ua True None"
+FAIL Client hints loaded on cross-origin iframe only include hints with a default permissions policy of *. promise_test: Unhandled rejection with value: "FAIL sec-ch-ua True None"
+Harness: the test ran to completion.
+

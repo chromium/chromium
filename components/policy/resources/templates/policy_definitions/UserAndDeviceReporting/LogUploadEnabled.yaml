@@ -1,0 +1,27 @@
+arc_support: This policy has no effect on the logging done by Android.
+caption: Send system logs to the management server
+desc: |-
+  Setting the policy to Enabled sends system logs to the management server, to allow admins to monitor system logs.
+
+        Setting the policy to Disabled or leaving it unset reports no system logs.
+device_only: true
+example_value: false
+features:
+  dynamic_refresh: true
+items:
+- caption: Enable device system log upload
+  value: true
+- caption: Disable device system log upload
+  value: false
+owners:
+- cros-reporting-team@google.com
+- lbaraz@chromium.org
+- pbond@chromium.org
+schema:
+  type: boolean
+supported_chrome_os_management:
+- google_cloud
+supported_on:
+- chrome_os:46-
+tags: []
+type: main

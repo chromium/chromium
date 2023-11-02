@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,11 @@
 
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
-#include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
-#include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/certificate_provider/certificate_provider_service.h"
+#include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/login/auth/challenge_response/cert_utils.h"
+#include "chromeos/ash/components/login/auth/challenge_response/cert_utils.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/x509_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -21,9 +21,9 @@
 namespace ash {
 namespace {
 
-CertificateProviderService* GetCertificateProviderService() {
+chromeos::CertificateProviderService* GetCertificateProviderService() {
   Profile* signin_profile = ProfileHelper::GetSigninProfile();
-  return CertificateProviderServiceFactory::GetForBrowserContext(
+  return chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
       signin_profile);
 }
 

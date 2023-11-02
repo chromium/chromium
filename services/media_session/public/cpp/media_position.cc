@@ -1,9 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/media_session/public/cpp/media_position.h"
 
+#include "base/check.h"
 #include "base/strings/stringprintf.h"
 
 namespace media_session {
@@ -43,9 +44,18 @@ base::TimeDelta MediaPosition::GetPosition() const {
 }
 
 base::TimeDelta MediaPosition::GetPositionAtTime(base::TimeTicks time) const {
-  DCHECK(time >= last_updated_time_);
+  base::TimeDelta delta = time - last_updated_time_;
 
-  base::TimeDelta elapsed_time = playback_rate_ * (time - last_updated_time_);
+  // It's possible to get a time query that is *before* the last updated time
+  // since |time| and |last_updated_time| generally come from different
+  // processes. When we get a negative value, just assume effectively no time
+  // has passed.
+  if (delta.is_negative()) {
+    DCHECK(!base::TimeTicks::IsConsistentAcrossProcesses());
+    delta = base::Microseconds(0);
+  }
+
+  base::TimeDelta elapsed_time = playback_rate_ * delta;
   base::TimeDelta updated_position = position_ + elapsed_time;
 
   base::TimeDelta start = base::Seconds(0);

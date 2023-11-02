@@ -19,30 +19,20 @@ from __future__ import division
 from __future__ import print_function
 
 from absl.testing import parameterized
+from keras import keras_parameterized
+from keras import testing_utils
 import numpy as np
+import tensorflow as tf
 
-from tensorflow.python import keras
-from tensorflow.python.data.ops import dataset_ops
-from tensorflow.python.framework import dtypes
-from tensorflow.python.framework import sparse_tensor
 from tensorflow.python.framework import test_util
-from tensorflow.python.keras import backend as K
-from tensorflow.python.keras import keras_parameterized
-from tensorflow.python.keras import testing_utils
-from tensorflow.python.keras.engine.base_layer import Layer
-from tensorflow.python.keras.layers import recurrent as rnn_v1
-from tensorflow.python.keras.layers import recurrent_v2 as rnn_v2
-from tensorflow.python.ops import math_ops
-from tensorflow.python.ops.ragged import ragged_factory_ops
-from tensorflow.python.platform import test
 from tensorflow_text.python.keras.layers.todense import ToDense
 
 
-class Final(Layer):
+class Final(tf.keras.layers.Layer):
   """This is a helper layer that can be used as the last layer in a network for testing purposes."""
 
   def call(self, inputs):
-    return math_ops.cast(inputs, dtypes.float32)
+    return tf.dtypes.cast(inputs, tf.dtypes.float32)
 
   def compute_output_shape(self, input_shape):
     return input_shape
@@ -55,9 +45,10 @@ class Final(Layer):
 def get_input_dataset(in_data, out_data=None):
   batch_size = in_data.shape[0]
   if out_data is None:
-    return dataset_ops.DatasetV2.from_tensor_slices(in_data).batch(batch_size)
+    return tf.data.Dataset.from_tensor_slices(in_data).batch(
+        batch_size)
 
-  return dataset_ops.DatasetV2.from_tensor_slices(
+  return tf.data.Dataset.from_tensor_slices(
       (in_data, out_data)).batch(batch_size)
 
 
@@ -67,7 +58,7 @@ class RaggedTensorsToDenseLayerTest(keras_parameterized.TestCase):
 
   def SKIP_test_ragged_input_default_padding(self):
     input_data = get_input_dataset(
-        ragged_factory_ops.constant([[1, 2, 3, 4, 5], [2, 3]]))
+        tf.ragged.constant([[1, 2, 3, 4, 5], [2, 3]]))
     expected_output = np.array([[1, 2, 3, 4, 5], [2, 3, 0, 0, 0]])
 
     layers = [ToDense(), Final()]
@@ -75,7 +66,7 @@ class RaggedTensorsToDenseLayerTest(keras_parameterized.TestCase):
         layers,
         input_shape=(None,),
         input_ragged=True,
-        input_dtype=dtypes.int32)
+        input_dtype=tf.dtypes.int32)
     model.compile(
         optimizer="sgd",
         loss="mse",
@@ -86,7 +77,7 @@ class RaggedTensorsToDenseLayerTest(keras_parameterized.TestCase):
 
   def SKIP_test_ragged_input_with_padding(self):
     input_data = get_input_dataset(
-        ragged_factory_ops.constant([[[1, 2, 3, 4, 5]], [[2], [3]]]))
+        tf.ragged.constant([[[1, 2, 3, 4, 5]], [[2], [3]]]))
     expected_output = np.array([[[1., 2., 3., 4., 5.],
                                  [-1., -1., -1., -1., -1.]],
                                 [[2., -1., -1., -1., -1.],
@@ -97,7 +88,7 @@ class RaggedTensorsToDenseLayerTest(keras_parameterized.TestCase):
         layers,
         input_shape=(None, None),
         input_ragged=True,
-        input_dtype=dtypes.int32)
+        input_dtype=tf.dtypes.int32)
     model.compile(
         optimizer="sgd",
         loss="mse",
@@ -107,17 +98,18 @@ class RaggedTensorsToDenseLayerTest(keras_parameterized.TestCase):
     self.assertAllEqual(output, expected_output)
 
   def test_ragged_input_pad_and_mask(self):
-    input_data = ragged_factory_ops.constant([[1, 2, 3, 4, 5], []])
+    input_data = tf.ragged.constant([[1, 2, 3, 4, 5], []])
     expected_mask = np.array([True, False])
 
     output = ToDense(pad_value=-1, mask=True)(input_data)
     self.assertTrue(hasattr(output, "_keras_mask"))
     self.assertIsNot(output._keras_mask, None)
-    self.assertAllEqual(K.get_value(output._keras_mask), expected_mask)
+    self.assertAllEqual(
+        tf.keras.backend.get_value(output._keras_mask), expected_mask)
 
   def test_ragged_input_shape(self):
     input_data = get_input_dataset(
-        ragged_factory_ops.constant([[1, 2, 3, 4, 5], [2, 3]]))
+        tf.ragged.constant([[1, 2, 3, 4, 5], [2, 3]]))
     expected_output = np.array([[1, 2, 3, 4, 5, 0, 0], [2, 3, 0, 0, 0, 0, 0]])
 
     layers = [ToDense(shape=[2, 7]), Final()]
@@ -125,7 +117,7 @@ class RaggedTensorsToDenseLayerTest(keras_parameterized.TestCase):
         layers,
         input_shape=(None,),
         input_ragged=True,
-        input_dtype=dtypes.int32)
+        input_dtype=tf.dtypes.int32)
     model.compile(
         optimizer="sgd",
         loss="mse",
@@ -136,24 +128,26 @@ class RaggedTensorsToDenseLayerTest(keras_parameterized.TestCase):
 
   @parameterized.named_parameters(
       *test_util.generate_combinations_with_testcase_name(layer=[
-          rnn_v1.SimpleRNN, rnn_v1.GRU, rnn_v1.LSTM, rnn_v2.GRU, rnn_v2.LSTM
+          tf.keras.layers.SimpleRNN, tf.compat.v1.keras.layers.GRU,
+          tf.compat.v1.keras.layers.LSTM, tf.keras.layers.GRU,
+          tf.keras.layers.LSTM
       ]))
   def SKIP_test_ragged_input_RNN_layer(self, layer):
     input_data = get_input_dataset(
-        ragged_factory_ops.constant([[1, 2, 3, 4, 5], [5, 6]]))
+        tf.ragged.constant([[1, 2, 3, 4, 5], [5, 6]]))
 
     layers = [
         ToDense(pad_value=7, mask=True),
-        keras.layers.Embedding(8, 16),
+        tf.keras.layers.Embedding(8, 16),
         layer(16),
-        keras.layers.Dense(3, activation="softmax"),
-        keras.layers.Dense(1, activation="sigmoid")
+        tf.keras.layers.Dense(3, activation="softmax"),
+        tf.keras.layers.Dense(1, activation="sigmoid")
     ]
     model = testing_utils.get_model_from_layers(
         layers,
         input_shape=(None,),
         input_ragged=True,
-        input_dtype=dtypes.int32)
+        input_dtype=tf.dtypes.int32)
     model.compile(
         optimizer="rmsprop",
         loss="binary_crossentropy",
@@ -170,7 +164,7 @@ class SparseTensorsToDenseLayerTest(keras_parameterized.TestCase):
 
   def SKIP_test_sparse_input_default_padding(self):
     input_data = get_input_dataset(
-        sparse_tensor.SparseTensor(
+        tf.sparse.SparseTensor(
             indices=[[0, 0], [1, 2]], values=[1, 2], dense_shape=[3, 4]))
 
     expected_output = np.array([[1., 0., 0., 0.], [0., 0., 2., 0.],
@@ -181,7 +175,7 @@ class SparseTensorsToDenseLayerTest(keras_parameterized.TestCase):
         layers,
         input_shape=(None,),
         input_sparse=True,
-        input_dtype=dtypes.int32)
+        input_dtype=tf.dtypes.int32)
     model.compile(
         optimizer="sgd",
         loss="mse",
@@ -192,7 +186,7 @@ class SparseTensorsToDenseLayerTest(keras_parameterized.TestCase):
 
   def SKIP_test_sparse_input_with_padding(self):
     input_data = get_input_dataset(
-        sparse_tensor.SparseTensor(
+        tf.sparse.SparseTensor(
             indices=[[0, 0], [1, 2]], values=[1, 2], dense_shape=[3, 4]))
 
     expected_output = np.array([[1., -1., -1., -1.], [-1., -1., 2., -1.],
@@ -203,7 +197,7 @@ class SparseTensorsToDenseLayerTest(keras_parameterized.TestCase):
         layers,
         input_shape=(None,),
         input_sparse=True,
-        input_dtype=dtypes.int32)
+        input_dtype=tf.dtypes.int32)
     model.compile(
         optimizer="sgd",
         loss="mse",
@@ -213,7 +207,7 @@ class SparseTensorsToDenseLayerTest(keras_parameterized.TestCase):
     self.assertAllEqual(output, expected_output)
 
   def test_sparse_input_pad_and_mask(self):
-    input_data = sparse_tensor.SparseTensor(
+    input_data = tf.sparse.SparseTensor(
         indices=[[0, 0], [1, 2]], values=[1, 2], dense_shape=[3, 4])
 
     expected_mask = np.array([True, True, False])
@@ -221,11 +215,12 @@ class SparseTensorsToDenseLayerTest(keras_parameterized.TestCase):
     output = ToDense(pad_value=-1, mask=True)(input_data)
     self.assertTrue(hasattr(output, "_keras_mask"))
     self.assertIsNot(output._keras_mask, None)
-    self.assertAllEqual(K.get_value(output._keras_mask), expected_mask)
+    self.assertAllEqual(
+        tf.keras.backend.get_value(output._keras_mask), expected_mask)
 
   def test_sparse_input_shape(self):
     input_data = get_input_dataset(
-        sparse_tensor.SparseTensor(
+        tf.sparse.SparseTensor(
             indices=[[0, 0], [1, 2]], values=[1, 2], dense_shape=[3, 4]))
 
     expected_output = np.array([[1., 0., 0., 0.], [0., 0., 2., 0.],
@@ -236,7 +231,7 @@ class SparseTensorsToDenseLayerTest(keras_parameterized.TestCase):
         layers,
         input_shape=(None,),
         input_sparse=True,
-        input_dtype=dtypes.int32)
+        input_dtype=tf.dtypes.int32)
     model.compile(
         optimizer="sgd",
         loss="mse",
@@ -247,4 +242,4 @@ class SparseTensorsToDenseLayerTest(keras_parameterized.TestCase):
 
 
 if __name__ == "__main__":
-  test.main()
+  tf.test.main()

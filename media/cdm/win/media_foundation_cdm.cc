@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,8 +17,8 @@
 #include "base/win/scoped_propvariant.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/cdm_promise.h"
+#include "media/base/win/hresults.h"
 #include "media/base/win/media_foundation_cdm_proxy.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/cdm/win/media_foundation_cdm_module.h"
@@ -34,18 +34,6 @@ using Microsoft::WRL::Make;
 using Microsoft::WRL::RuntimeClass;
 using Microsoft::WRL::RuntimeClassFlags;
 using Exception = CdmPromise::Exception;
-
-// GUID is little endian. The byte array in network order is big endian.
-std::vector<uint8_t> ByteArrayFromGUID(REFGUID guid) {
-  std::vector<uint8_t> byte_array(sizeof(GUID));
-  GUID* reversed_guid = reinterpret_cast<GUID*>(byte_array.data());
-  *reversed_guid = guid;
-  reversed_guid->Data1 = _byteswap_ulong(guid.Data1);
-  reversed_guid->Data2 = _byteswap_ushort(guid.Data2);
-  reversed_guid->Data3 = _byteswap_ushort(guid.Data3);
-  // Data4 is already a byte array so no need to byte swap.
-  return byte_array;
-}
 
 HRESULT CreatePolicySetEvent(ComPtr<IMFMediaEvent>& policy_set_event) {
   base::win::ScopedPropVariant policy_set_prop;
@@ -127,9 +115,11 @@ int GetHdcpValue(HdcpVersion hdcp_version) {
 class CdmProxyImpl : public MediaFoundationCdmProxy {
  public:
   CdmProxyImpl(ComPtr<IMFContentDecryptionModule> mf_cdm,
-               base::RepeatingClosure hardware_context_reset_cb)
+               base::RepeatingClosure hardware_context_reset_cb,
+               MediaFoundationCdm::CdmEventCB cdm_event_cb)
       : mf_cdm_(mf_cdm),
-        hardware_context_reset_cb_(std::move(hardware_context_reset_cb)) {}
+        hardware_context_reset_cb_(std::move(hardware_context_reset_cb)),
+        cdm_event_cb_(std::move(cdm_event_cb)) {}
 
   // MediaFoundationCdmProxy implementation
 
@@ -229,6 +219,14 @@ class CdmProxyImpl : public MediaFoundationCdmProxy {
     hardware_context_reset_cb_.Run();
   }
 
+  void OnSignificantPlayback() override {
+    cdm_event_cb_.Run(CdmEvent::kSignificantPlayback, S_OK);
+  }
+
+  void OnPlaybackError(HRESULT hresult) override {
+    cdm_event_cb_.Run(CdmEvent::kPlaybackError, hresult);
+  }
+
  private:
   ~CdmProxyImpl() override = default;
 
@@ -240,7 +238,7 @@ class CdmProxyImpl : public MediaFoundationCdmProxy {
     RETURN_IF_FAILED(
         mf_cdm_->GetProtectionSystemIds(&protection_system_ids, &count));
     if (count == 0)
-      return E_FAIL;
+      return kErrorZeroProtectionSystemId;
 
     *protection_system_id = *protection_system_ids;
     DVLOG(2) << __func__ << " protection_system_id="
@@ -251,8 +249,9 @@ class CdmProxyImpl : public MediaFoundationCdmProxy {
 
   ComPtr<IMFContentDecryptionModule> mf_cdm_;
 
-  // A callback to notify hardware context reset.
+  // Callbacks to notify hardware context reset and playback error.
   base::RepeatingClosure hardware_context_reset_cb_;
+  MediaFoundationCdm::CdmEventCB cdm_event_cb_;
 
   // Store IMFTrustedInput to avoid potential performance cost.
   ComPtr<IMFTrustedInput> trusted_input_;
@@ -279,6 +278,7 @@ MediaFoundationCdm::MediaFoundationCdm(
     const CreateMFCdmCB& create_mf_cdm_cb,
     const IsTypeSupportedCB& is_type_supported_cb,
     const StoreClientTokenCB& store_client_token_cb,
+    const CdmEventCB& cdm_event_cb,
     const SessionMessageCB& session_message_cb,
     const SessionClosedCB& session_closed_cb,
     const SessionKeysChangeCB& session_keys_change_cb,
@@ -287,6 +287,7 @@ MediaFoundationCdm::MediaFoundationCdm(
       create_mf_cdm_cb_(create_mf_cdm_cb),
       is_type_supported_cb_(is_type_supported_cb),
       store_client_token_cb_(store_client_token_cb),
+      cdm_event_cb_(cdm_event_cb),
       session_message_cb_(session_message_cb),
       session_closed_cb_(session_closed_cb),
       session_keys_change_cb_(session_keys_change_cb),
@@ -311,6 +312,10 @@ HRESULT MediaFoundationCdm::Initialize() {
   create_mf_cdm_cb_.Run(hresult, mf_cdm);
   if (!mf_cdm) {
     DCHECK(FAILED(hresult));
+    // Only report CdmEvent::kCdmError here as this is where most failures
+    // happen, and other errors can be easily triggered by sites, e.g. a bad
+    // server certificate or a bad license.
+    OnCdmEvent(CdmEvent::kCdmError, hresult);
     return hresult;
   }
 
@@ -492,24 +497,25 @@ bool MediaFoundationCdm::RequiresMediaFoundationRenderer() {
   return true;
 }
 
-bool MediaFoundationCdm::GetMediaFoundationCdmProxy(
-    GetMediaFoundationCdmProxyCB get_mf_cdm_proxy_cb) {
+scoped_refptr<MediaFoundationCdmProxy>
+MediaFoundationCdm::GetMediaFoundationCdmProxy() {
   DVLOG_FUNC(1);
 
   if (!mf_cdm_) {
     DLOG(ERROR) << __func__ << ": Invalid state with null `mf_cdm_`";
-    return false;
+    return nullptr;
   }
 
   if (!cdm_proxy_) {
     cdm_proxy_ = base::MakeRefCounted<CdmProxyImpl>(
         mf_cdm_,
         base::BindRepeating(&MediaFoundationCdm::OnHardwareContextReset,
+                            weak_factory_.GetWeakPtr()),
+        base::BindRepeating(&MediaFoundationCdm::OnCdmEvent,
                             weak_factory_.GetWeakPtr()));
   }
 
-  BindToCurrentLoop(std::move(get_mf_cdm_proxy_cb)).Run(cdm_proxy_);
-  return true;
+  return cdm_proxy_;
 }
 
 bool MediaFoundationCdm::OnSessionId(
@@ -577,7 +583,8 @@ void MediaFoundationCdm::CloseSessionInternal(
     return;
   }
 
-  // EME requires running session closed algorithm before resolving the promise.
+  // EME requires running session closed algorithm before resolving the
+  // promise.
   sessions_.erase(session_id);
   session_closed_cb_.Run(session_id, reason);
   promise->resolve();
@@ -610,6 +617,11 @@ void MediaFoundationCdm::OnHardwareContextReset() {
     DLOG(ERROR) << __func__ << ": Re-initialization failed";
     DCHECK(!mf_cdm_);
   }
+}
+
+void MediaFoundationCdm::OnCdmEvent(CdmEvent event, HRESULT hresult) {
+  DVLOG_FUNC(1);
+  cdm_event_cb_.Run(event, hresult);
 }
 
 void MediaFoundationCdm::OnIsTypeSupportedResult(

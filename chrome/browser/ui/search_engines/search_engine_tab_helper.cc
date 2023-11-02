@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,16 +42,20 @@ bool IsFormSubmit(NavigationEntry* entry) {
 
 // static
 void SearchEngineTabHelper::BindOpenSearchDescriptionDocumentHandler(
-    mojo::PendingAssociatedReceiver<
-        chrome::mojom::OpenSearchDescriptionDocumentHandler> receiver,
-    content::RenderFrameHost* rfh) {
+    content::RenderFrameHost* rfh,
+    mojo::PendingReceiver<chrome::mojom::OpenSearchDescriptionDocumentHandler>
+        receiver) {
+  // Bind only for outermost main frames.
+  if (rfh->GetParentOrOuterDocument())
+    return;
+
   auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
   if (!web_contents)
     return;
   auto* tab_helper = SearchEngineTabHelper::FromWebContents(web_contents);
   if (!tab_helper)
     return;
-  tab_helper->osdd_handler_receivers_.Bind(rfh, std::move(receiver));
+  tab_helper->osdd_handler_receivers_.Add(tab_helper, std::move(receiver));
 }
 
 SearchEngineTabHelper::~SearchEngineTabHelper() = default;
@@ -98,7 +102,7 @@ std::u16string SearchEngineTabHelper::GenerateKeywordFromNavigationEntry(
 
 SearchEngineTabHelper::SearchEngineTabHelper(WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      osdd_handler_receivers_(web_contents, this) {
+      content::WebContentsUserData<SearchEngineTabHelper>(*web_contents) {
   DCHECK(web_contents);
 
   favicon::CreateContentFaviconDriverForWebContents(web_contents);
@@ -112,11 +116,6 @@ void SearchEngineTabHelper::PageHasOpenSearchDescriptionDocument(
   // Checks to see if we should generate a keyword based on the OSDD, and if
   // necessary uses TemplateURLFetcher to download the OSDD and create a
   // keyword.
-
-  // Only accept messages from the main frame.
-  if (osdd_handler_receivers_.GetCurrentTargetFrame() !=
-      web_contents()->GetMainFrame())
-    return;
 
   // Make sure that the page is the current page and other basic checks.
   // When |page_url| has file: scheme, this method doesn't work because of
@@ -149,7 +148,7 @@ void SearchEngineTabHelper::PageHasOpenSearchDescriptionDocument(
   if (keyword.empty())
     return;
 
-  auto* frame = web_contents()->GetMainFrame();
+  auto* frame = web_contents()->GetPrimaryMainFrame();
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory;
   frame->CreateNetworkServiceDefaultFactory(
       url_loader_factory.BindNewPipeAndPassReceiver());

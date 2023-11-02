@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,12 @@
 #include <queue>
 #include <set>
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/text_element_timing.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
@@ -32,8 +33,8 @@ class TextRecord final : public GarbageCollected<TextRecord> {
              const gfx::RectF& root_visual_rect,
              uint32_t frame_index)
       : node_(&node),
-        first_size(new_first_size),
         frame_index_(frame_index),
+        first_size(new_first_size),
         element_timing_rect_(element_timing_rect) {
     if (PaintTimingVisualizer::IsTracingEnabled()) {
       lcp_rect_info_ = std::make_unique<LCPRectInfo>(
@@ -46,8 +47,8 @@ class TextRecord final : public GarbageCollected<TextRecord> {
   void Trace(Visitor*) const;
 
   WeakMember<Node> node_;
-  uint64_t first_size = 0;
   uint32_t frame_index_ = 0;
+  uint64_t first_size = 0;
   gfx::RectF element_timing_rect_;
   std::unique_ptr<LCPRectInfo> lcp_rect_info_;
   // The time of the first paint after fully loaded.
@@ -77,6 +78,12 @@ class CORE_EXPORT LargestTextPaintManager final
                                      const gfx::RectF& root_visual_rect);
   Member<TextRecord> PopLargestIgnoredText() {
     return std::move(largest_ignored_text_);
+  }
+
+  void Clear() {
+    count_candidates_ = 0;
+    largest_text_.Clear();
+    largest_ignored_text_.Clear();
   }
 
   void Trace(Visitor*) const;
@@ -131,10 +138,13 @@ class CORE_EXPORT TextPaintTimingDetector final
   void OnPaintFinished();
   void LayoutObjectWillBeDestroyed(const LayoutObject&);
   void StopRecordingLargestTextPaint();
+  void RestartRecordingLargestTextPaint();
   void ResetCallbackManager(PaintTimingCallbackManager* manager) {
     callback_manager_ = manager;
   }
-  inline bool IsRecordingLargestTextPaint() const { return ltp_manager_; }
+  inline bool IsRecordingLargestTextPaint() const {
+    return recording_largest_text_paint_;
+  }
   inline TextRecord* UpdateCandidate() {
     return ltp_manager_->UpdateCandidate();
   }
@@ -162,12 +172,6 @@ class CORE_EXPORT TextPaintTimingDetector final
     added_entry_in_latest_frame_ = true;
   }
 
-  Member<PaintTimingCallbackManager> callback_manager_;
-  Member<const LocalFrameView> frame_view_;
-  // Set lazily because we may not have the correct Window when first
-  // initializing this class.
-  Member<TextElementTiming> text_element_timing_;
-
   // LayoutObjects for which text has been aggregated.
   HeapHashSet<Member<const LayoutObject>> recorded_set_;
 
@@ -176,7 +180,14 @@ class CORE_EXPORT TextPaintTimingDetector final
   HeapHashMap<Member<const LayoutObject>, Member<TextRecord>>
       texts_queued_for_paint_time_;
 
+  Member<PaintTimingCallbackManager> callback_manager_;
+  Member<const LocalFrameView> frame_view_;
+  // Set lazily because we may not have the correct Window when first
+  // initializing this class.
+  Member<TextElementTiming> text_element_timing_;
+
   Member<LargestTextPaintManager> ltp_manager_;
+  bool recording_largest_text_paint_ = true;
 
   // Used to decide which frame a record belongs to, monotonically increasing.
   uint32_t frame_index_ = 1;

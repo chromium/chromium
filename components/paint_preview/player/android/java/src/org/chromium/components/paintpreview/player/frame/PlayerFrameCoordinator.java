@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,18 +41,18 @@ public class PlayerFrameCoordinator {
      */
     public PlayerFrameCoordinator(Context context, PlayerCompositorDelegate compositorDelegate,
             UnguessableToken frameGuid, int contentWidth, int contentHeight, int initialScrollX,
-            int initialScrollY, boolean canDetectZoom,
+            int initialScrollY, float initialScaleFactor, boolean canDetectZoom,
             @Nullable OverscrollHandler overscrollHandler, PlayerGestureListener gestureHandler,
             @Nullable Runnable firstPaintListener,
             @Nullable Supplier<Boolean> isAccessibilityEnabled,
-            @Nullable Runnable initialViewportSizeAvailable, boolean shouldCompressBitmaps) {
+            @Nullable Runnable initialViewportSizeAvailable) {
         PropertyModel model = new PropertyModel.Builder(PlayerFrameProperties.ALL_KEYS).build();
         OverScroller scroller = new OverScroller(context);
         scroller.setFriction(ViewConfiguration.getScrollFriction() / 2);
 
         mMediator = new PlayerFrameMediator(model, compositorDelegate, gestureHandler, frameGuid,
                 new Size(contentWidth, contentHeight), initialScrollX, initialScrollY,
-                initialViewportSizeAvailable, shouldCompressBitmaps);
+                initialScaleFactor, initialViewportSizeAvailable);
 
         if (canDetectZoom) {
             mScaleController =
@@ -91,10 +91,11 @@ public class PlayerFrameCoordinator {
 
     public Point getScrollPosition() {
         Rect viewPortRect = mMediator.getViewport().asRect();
-        float scaleFactor = mMediator.getViewport().getScale();
-        if (scaleFactor == 0) scaleFactor = 1;
-        return new Point(
-                (int) (viewPortRect.left / scaleFactor), (int) (viewPortRect.top / scaleFactor));
+        return new Point(viewPortRect.left, viewPortRect.top);
+    }
+
+    public float getScale() {
+        return mMediator.getViewport().getScale();
     }
 
     /**
@@ -109,6 +110,8 @@ public class PlayerFrameCoordinator {
     }
 
     public PlayerFrameViewport getViewportForAccessibility() {
+        if (mMediator == null) return null;
+
         return mMediator.getViewport();
     }
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -86,7 +86,7 @@ std::unique_ptr<views::View> LockScreen::MakeContentsView() {
   auto initial_note_action_state =
       Shell::Get()->tray_action()->GetLockScreenNoteState();
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kShowLoginDevOverlay)) {
+          switches::kShowLoginDevOverlay)) {
     auto debug_view =
         std::make_unique<LockDebugView>(initial_note_action_state, type_);
     contents_view_ = debug_view->lock();
@@ -147,7 +147,7 @@ void LockScreen::Destroy() {
   Shell::Get()->login_screen_controller()->data_dispatcher()->RemoveObserver(
       Shelf::ForWindow(Shell::GetPrimaryRootWindow())
           ->shelf_widget()
-          ->login_shelf_view());
+          ->GetLoginShelfView());
 
   delete instance_;
   instance_ = nullptr;
@@ -163,6 +163,10 @@ void LockScreen::FocusPreviousUser() {
 
 void LockScreen::ShowParentAccessDialog() {
   contents_view_->ShowParentAccessDialog();
+}
+
+void LockScreen::SetHasKioskApp(bool has_kiosk_apps) {
+  contents_view_->SetHasKioskApp(has_kiosk_apps);
 }
 
 void LockScreen::OnLockScreenNoteStateChanged(mojom::TrayActionState state) {

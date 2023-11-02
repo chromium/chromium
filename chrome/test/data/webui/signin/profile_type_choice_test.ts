@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,8 @@ import 'chrome://profile-picker/lazy_load.js';
 
 import {ProfileTypeChoiceElement} from 'chrome://profile-picker/lazy_load.js';
 import {ManageProfilesBrowserProxyImpl} from 'chrome://profile-picker/profile_picker.js';
-import {isLacros} from 'chrome://resources/js/cr.m.js';
 
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_proxy.js';
@@ -20,7 +19,8 @@ suite('ProfileTypeChoiceTest', function() {
   setup(function() {
     browserProxy = new TestManageProfilesBrowserProxy();
     ManageProfilesBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     choice = document.createElement('profile-type-choice');
     document.body.append(choice);
   });
@@ -34,8 +34,7 @@ suite('ProfileTypeChoiceTest', function() {
   });
 
   test('NotNowButton', function() {
-    // Local profile creation is not enabled on Lacros.
-    assertEquals(isChildVisible(choice, '#notNowButton'), !isLacros);
+    assertTrue(isChildVisible(choice, '#notNowButton'));
   });
 
   test('VerifySignInPromoImpressionRecorded', function() {

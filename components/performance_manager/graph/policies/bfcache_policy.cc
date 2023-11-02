@@ -1,12 +1,12 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/performance_manager/graph/policies/bfcache_policy.h"
 
 #include "base/bind.h"
-#include "base/containers/contains.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/notreached.h"
 #include "base/task/task_traits.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -19,10 +19,49 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 
-namespace performance_manager {
-namespace policies {
+namespace performance_manager::policies {
 
 namespace {
+
+// The foregrounded tab's cache limit on moderate memory pressure. The negative
+// value means no limit.
+int ForegroundCacheSizeOnModeratePressure() {
+  static constexpr base::FeatureParam<int>
+      foreground_cache_size_on_moderate_pressure{
+          &features::kBFCachePerformanceManagerPolicy,
+          "foreground_cache_size_on_moderate_pressure", 3};
+  return foreground_cache_size_on_moderate_pressure.Get();
+}
+
+// The backgrounded tab's cache limit on moderate memory pressure. The negative
+// value means no limit.
+int BackgroundCacheSizeOnModeratePressure() {
+  static constexpr base::FeatureParam<int>
+      background_cache_size_on_moderate_pressure{
+          &features::kBFCachePerformanceManagerPolicy,
+          "background_cache_size_on_moderate_pressure", 1};
+  return background_cache_size_on_moderate_pressure.Get();
+}
+
+// The foregrounded tab's cache limit on critical memory pressure. The negative
+// value means no limit.
+int ForegroundCacheSizeOnCriticalPressure() {
+  static constexpr base::FeatureParam<int>
+      foreground_cache_size_on_critical_pressure{
+          &features::kBFCachePerformanceManagerPolicy,
+          "foreground_cache_size_on_critical_pressure", 0};
+  return foreground_cache_size_on_critical_pressure.Get();
+}
+
+// The backgrounded tab's cache limit on critical memory pressure. The negative
+// value means no limit.
+int BackgroundCacheSizeOnCriticalPressure() {
+  static constexpr base::FeatureParam<int>
+      background_cache_size_on_critical_pressure{
+          &features::kBFCachePerformanceManagerPolicy,
+          "background_cache_size_on_critical_pressure", 0};
+  return background_cache_size_on_critical_pressure.Get();
+}
 
 bool PageMightHaveFramesInBFCache(const PageNode* page_node) {
   // TODO(crbug.com/1211368): Use PageState when that actually works.
@@ -36,10 +75,32 @@ bool PageMightHaveFramesInBFCache(const PageNode* page_node) {
   return false;
 }
 
-void MaybeFlushBFCacheOnUIThread(const WebContentsProxy& contents_proxy) {
+using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
+
+void MaybeFlushBFCacheOnUIThread(const WebContentsProxy& contents_proxy,
+                                 MemoryPressureLevel memory_pressure_level) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content::WebContents* const content = contents_proxy.Get();
   if (!content)
+    return;
+
+  int cache_size = -1;
+  bool foregrounded =
+      (content->GetVisibility() == content::Visibility::VISIBLE);
+  switch (memory_pressure_level) {
+    case MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE:
+      cache_size = foregrounded ? ForegroundCacheSizeOnModeratePressure()
+                                : BackgroundCacheSizeOnModeratePressure();
+      break;
+    case MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL:
+      cache_size = foregrounded ? ForegroundCacheSizeOnCriticalPressure()
+                                : BackgroundCacheSizeOnCriticalPressure();
+      break;
+    default:
+      NOTREACHED();
+  }
+  // Do not flush BFCache if cache_size is negative (such as -1).
+  if (cache_size < 0)
     return;
 
   // Do not flush the BFCache if there's a pending navigation as this could stop
@@ -47,113 +108,45 @@ void MaybeFlushBFCacheOnUIThread(const WebContentsProxy& contents_proxy) {
   // TODO(sebmarchand): Check if this is really needed.
   auto& navigation_controller = content->GetController();
   if (!navigation_controller.GetPendingEntry())
-    navigation_controller.GetBackForwardCache().Flush();
+    navigation_controller.GetBackForwardCache().Prune(cache_size);
 }
 
 }  // namespace
 
-BFCachePolicy::BFCachePolicy()
-    : flush_on_moderate_pressure_{features::
-                                      BFCachePerformanceManagerPolicyParams::
-                                          GetParams()
-                                              .flush_on_moderate_pressure()},
-      delay_to_flush_background_tab_{
-          features::BFCachePerformanceManagerPolicyParams::GetParams()
-              .delay_to_flush_background_tab()} {}
-
-BFCachePolicy::~BFCachePolicy() = default;
-
-void BFCachePolicy::MaybeFlushBFCache(const PageNode* page_node) {
+void BFCachePolicy::MaybeFlushBFCache(
+    const PageNode* page_node,
+    MemoryPressureLevel memory_pressure_level) {
   DCHECK(page_node);
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&MaybeFlushBFCacheOnUIThread,
-                                page_node->GetContentsProxy()));
-}
-
-void BFCachePolicy::MaybeFlushBFCacheLater(const PageNode* page_node) {
-  // If |MaybeFlushBFCacheLater| is called while waiting for the timer,
-  // |MaybeFlushBFCacheLater| will reset the timer.
-  if (base::Contains(page_to_flush_timer_, page_node)) {
-    page_to_flush_timer_[page_node].Reset();
-  } else {
-    page_to_flush_timer_[page_node].Start(
-        FROM_HERE, delay_to_flush_background_tab_,
-        base::BindOnce(&BFCachePolicy::MaybeFlushBFCache,
-                       weak_ptr_factory_.GetWeakPtr(), page_node));
-  }
+      FROM_HERE,
+      base::BindOnce(&MaybeFlushBFCacheOnUIThread,
+                     page_node->GetContentsProxy(), memory_pressure_level));
 }
 
 void BFCachePolicy::OnPassedToGraph(Graph* graph) {
   DCHECK(graph->HasOnlySystemNode());
   graph_ = graph;
-  graph_->AddPageNodeObserver(this);
   graph_->AddSystemNodeObserver(this);
 }
 
 void BFCachePolicy::OnTakenFromGraph(Graph* graph) {
-  graph_->RemovePageNodeObserver(this);
   graph_->RemoveSystemNodeObserver(this);
   graph_ = nullptr;
 }
 
-void BFCachePolicy::OnIsVisibleChanged(const PageNode* page_node) {
-  if (delay_to_flush_background_tab_.InSeconds() < 0)
-    return;
-
-  // Try to flush the BFCache of pages when they become non-visible. This could
-  // fail if the page still has a pending navigation.
-  if (page_node->GetPageState() == PageState::kActive &&
-      !page_node->IsVisible() && PageMightHaveFramesInBFCache(page_node)) {
-    MaybeFlushBFCacheLater(page_node);
-  } else if (page_node->IsVisible()) {
-    // Remove the timer associated with |page_node| if one exists.
-    page_to_flush_timer_.erase(page_node);
-  }
-}
-
-void BFCachePolicy::OnLoadingStateChanged(const PageNode* page_node) {
-  if (delay_to_flush_background_tab_.InSeconds() < 0)
-    return;
-
-  // Flush the BFCache of pages that finish a navigation while in background.
-  // TODO(sebmarchand): Check if this is really needed.
-  if (!page_node->IsVisible() &&
-      page_node->GetLoadingState() >= PageNode::LoadingState::kLoadedBusy &&
-      PageMightHaveFramesInBFCache(page_node)) {
-    MaybeFlushBFCacheLater(page_node);
-  } else if (page_node->IsVisible()) {
-    // Remove the timer associated with |page_node| if one exists.
-    page_to_flush_timer_.erase(page_node);
-  }
-}
-
-void BFCachePolicy::OnBeforePageNodeRemoved(const PageNode* page_node) {
-  // Remove the timer associated with |page_node| if one exists.
-  page_to_flush_timer_.erase(page_node);
-}
-
-void BFCachePolicy::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel new_level) {
+void BFCachePolicy::OnMemoryPressure(MemoryPressureLevel new_level) {
   // This shouldn't happen but add the check anyway in case the API changes.
-  if (new_level == base::MemoryPressureListener::MemoryPressureLevel::
-                       MEMORY_PRESSURE_LEVEL_NONE) {
+  if (new_level == MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE) {
     return;
   }
 
-  if (new_level == base::MemoryPressureListener::MemoryPressureLevel::
-                       MEMORY_PRESSURE_LEVEL_MODERATE &&
-      !flush_on_moderate_pressure_) {
-    return;
-  }
-
-  // Flush the cache of all pages.
+  // Apply the cache limit to all pages.
   for (auto* page_node : graph_->GetAllPageNodes()) {
-    if (page_node->GetPageState() == PageState::kActive &&
+    if (page_node->GetPageState() == PageNode::PageState::kActive &&
         PageMightHaveFramesInBFCache(page_node)) {
-      MaybeFlushBFCache(page_node);
+      MaybeFlushBFCache(page_node, new_level);
     }
   }
 }
 
-}  // namespace policies
-}  // namespace performance_manager
+}  // namespace performance_manager::policies

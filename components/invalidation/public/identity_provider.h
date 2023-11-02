@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -91,7 +92,7 @@ class IdentityProvider {
   void RemoveObserver(Observer* observer);
 
   void RequestDetailedStatus(
-      base::RepeatingCallback<void(const base::DictionaryValue&)> caller) const;
+      base::RepeatingCallback<void(base::Value::Dict)> caller) const;
 
  protected:
   IdentityProvider();
@@ -115,7 +116,7 @@ class IdentityProvider {
     Diagnostics();
 
     // Collect all the internal variables in a single readable dictionary.
-    base::DictionaryValue CollectDebugData() const;
+    base::Value::Dict CollectDebugData() const;
 
     int token_removal_for_not_active_account_count = 0;
     int token_update_for_not_active_account_count = 0;

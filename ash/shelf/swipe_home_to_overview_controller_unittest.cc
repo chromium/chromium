@@ -1,8 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/shelf/swipe_home_to_overview_controller.h"
+
+#include <tuple>
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/test/app_list_test_helper.h"
@@ -18,12 +20,12 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -118,8 +120,8 @@ class SwipeHomeToOverviewControllerTest : public AshTestBase {
 
     // Ensure there is one more frame presented after animation finishes
     // to allow animation throughput data is passed from cc to ui.
-    ignore_result(
-        ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(200)));
+    std::ignore =
+        ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(200));
   }
 
   void TapOnHomeLauncherSearchBox() {
@@ -685,16 +687,16 @@ TEST_F(SwipeHomeToOverviewControllerTest, ScaleChangesDuringDrag) {
   Drag(shelf_bounds.top_center() - gfx::Vector2d(0, transition_threshold - 50),
        0.f, 1.f);
 
-  gfx::RectF last_home_bounds = original_home_bounds;
-  home_screen_window->transform().TransformRect(&last_home_bounds);
+  gfx::RectF last_home_bounds =
+      home_screen_window->transform().MapRect(original_home_bounds);
   EXPECT_GT(original_home_bounds.width(), last_home_bounds.width());
 
   // Moving up should shrink home bounds further.
   Drag(shelf_bounds.top_center() - gfx::Vector2d(0, transition_threshold + 10),
        0.f, 1.f);
 
-  gfx::RectF current_home_bounds = original_home_bounds;
-  home_screen_window->transform().TransformRect(&current_home_bounds);
+  gfx::RectF current_home_bounds =
+      home_screen_window->transform().MapRect(original_home_bounds);
   EXPECT_GT(last_home_bounds.width(), current_home_bounds.width());
   last_home_bounds = current_home_bounds;
 
@@ -702,16 +704,16 @@ TEST_F(SwipeHomeToOverviewControllerTest, ScaleChangesDuringDrag) {
   Drag(shelf_bounds.top_center() - gfx::Vector2d(0, transition_threshold - 40),
        0.f, 1.f);
 
-  current_home_bounds = original_home_bounds;
-  home_screen_window->transform().TransformRect(&current_home_bounds);
+  current_home_bounds =
+      home_screen_window->transform().MapRect(original_home_bounds);
   EXPECT_LT(last_home_bounds.width(), current_home_bounds.width());
   last_home_bounds = current_home_bounds;
 
   // Horizontal movement should not change bounds.
   Drag(shelf_bounds.top_center() - gfx::Vector2d(50, transition_threshold - 40),
        1.f, 0.f);
-  current_home_bounds = original_home_bounds;
-  home_screen_window->transform().TransformRect(&current_home_bounds);
+  current_home_bounds =
+      home_screen_window->transform().MapRect(original_home_bounds);
   EXPECT_EQ(last_home_bounds, current_home_bounds);
 
   // At shelf top the home window should have no transform.

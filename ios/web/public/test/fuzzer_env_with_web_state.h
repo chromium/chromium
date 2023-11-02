@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,9 +14,9 @@
 
 namespace web {
 
-// A class with required web task environment and a |WebState*| set up in its
+// A class with required web task environment and a `WebState*| set up in its
 // constructor. It should be used as a function level static var in the
-// libFuzzer |LLVMFuzzerTestOneInput| to run the environment set up once. It can
+// libFuzzer `LLVMFuzzerTestOneInput` to run the environment set up once. It can
 // be extended to add more set ups in subclass's constructor.
 class FuzzerEnvWithWebState {
  public:

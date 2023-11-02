@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -79,6 +79,7 @@ class ChromeKeyboardControllerClientTestHelper::FakeKeyboardController
     return ash::KeyRepeatSettings{true, base::Milliseconds(1000),
                                   base::Milliseconds(1000)};
   }
+  bool AreTopRowKeysFunctionKeys() override { return false; }
 
  private:
   keyboard::KeyboardConfig keyboard_config_;

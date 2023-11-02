@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "gpu/ipc/common/surface_handle.h"
@@ -29,6 +28,7 @@ class GPU_IPC_SERVICE_EXPORT ImageTransportSurface {
   // This will be implemented separately by each platform. On failure, a null
   // scoped_refptr should be returned.
   static scoped_refptr<gl::GLSurface> CreateNativeSurface(
+      gl::GLDisplay* display,
       base::WeakPtr<ImageTransportSurfaceDelegate> stub,
       SurfaceHandle surface_handle,
       gl::GLSurfaceFormat format);

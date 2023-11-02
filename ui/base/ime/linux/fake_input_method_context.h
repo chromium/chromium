@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,11 +23,20 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) FakeInputMethodContext
   bool DispatchKeyEvent(const ui::KeyEvent& key_event) override;
   bool IsPeekKeyEvent(const ui::KeyEvent& key_event) override;
   void Reset() override;
-  void Focus() override;
-  void Blur() override;
+  void UpdateFocus(bool has_client,
+                   TextInputType old_type,
+                   TextInputType new_type) override;
   void SetCursorLocation(const gfx::Rect& rect) override;
   void SetSurroundingText(const std::u16string& text,
                           const gfx::Range& selection_range) override;
+  void SetContentType(TextInputType type,
+                      TextInputMode mode,
+                      uint32_t flags,
+                      bool should_do_learning) override;
+  void SetGrammarFragmentAtCursor(const ui::GrammarFragment& fragment) override;
+  void SetAutocorrectInfo(const gfx::Range& autocorrect_range,
+                          const gfx::Rect& autocorrect_bounds) override;
+  VirtualKeyboardController* GetVirtualKeyboardController() override;
 };
 
 }  // namespace ui

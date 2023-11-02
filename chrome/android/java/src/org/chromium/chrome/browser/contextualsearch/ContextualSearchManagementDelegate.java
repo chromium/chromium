@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,8 +66,8 @@ public interface ContextualSearchManagementDelegate {
      */
     void onCloseContextualSearch(@StateChangeReason int reason);
 
-    /** Notifies that the Panel has transitioned from an open state to the peeking state. */
-    void onPanelCollapsed();
+    /** Notifies that the Panel has started a transition from an open state to the peeking state. */
+    void onPanelCollapsing();
 
     /**
      * @return An OverlayContentDelegate to watch events on the panel's content.
@@ -80,27 +80,9 @@ public interface ContextualSearchManagementDelegate {
     void logCurrentState();
 
     /**
-     * Called when the Contextual Search panel's animation is finished and it's shown.
+     * Called when the Contextual Search panel is closed.
      */
     void onPanelFinishedShowing();
-
-    /**
-     * Called when the Contextual Search panel is resized.
-     */
-    void onPanelResized();
-
-    /**
-     * Called when the privacy Opt-in in the panel has been accepted.
-     */
-    void onPromoOptIn();
-
-    /** Returns whether the In-Panel-Help is currently enabled. */
-    boolean isPanelHelpEnabled();
-
-    /**
-     * Called when the Help section of the panel has its OK button clicked.
-     */
-    void onPanelHelpOkClicked();
 
     /**
      * Notifies that a Related Searches suggestion has been clicked, and whether it was shown in the
@@ -117,4 +99,10 @@ public interface ContextualSearchManagementDelegate {
      * @return A {@link ScrimCoordinator} to fade the status bar in and out.
      */
     ScrimCoordinator getScrimCoordinator();
+
+    /**
+     * Returns whether the Delayed Intelligence Feature is currently active for the current user.
+     * A user must be in the undecided privacy state for Delayed Intelligence to take affect.
+     */
+    boolean isDelayedIntelligenceActive();
 }

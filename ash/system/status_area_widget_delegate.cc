@@ -1,33 +1,42 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/status_area_widget_delegate.h"
 
 #include "ash/focus_cycler.h"
+#include "ash/login/ui/lock_screen.h"
+#include "ash/public/cpp/login_screen.h"
+#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
+#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/tray/tray_constants.h"
+#include "ash/system/unified/date_tray.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/containers/adapters.h"
+#include "base/ranges/algorithm.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/skia_paint_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/box_layout.h"
 
 namespace ash {
 
 namespace {
 
 constexpr int kPaddingBetweenItems = 8;
+constexpr int kSystemTraysRightPaddingOffset = -4;
 
 class StatusAreaWidgetDelegateAnimationSettings
     : public ui::ScopedLayerAnimationSettings {
@@ -120,12 +129,22 @@ void StatusAreaWidgetDelegate::Shutdown() {
   // it's done to make sure that StatusAreaWidget isn't accessed by the View
   // hierarchy during its destruction.
   RemoveAllChildViews();
-  // StatusAreaWidgetDelegate uses a GridLayout which unfortunately doesn't
-  // handle child add/removal. Remove the LayoutManager early to prevent UAFs
-  // during Widget destruction.
-  // TODO(pbos): This really shouldn't be necessary. It's a deficiency in
-  // GridLayout.
-  SetLayoutManager(nullptr);
+}
+
+void StatusAreaWidgetDelegate::GetAccessibleNodeData(
+    ui::AXNodeData* node_data) {
+  AccessiblePaneView::GetAccessibleNodeData(node_data);
+  // If OOBE dialog is visible it should be the next accessible widget,
+  // otherwise it should be LockScreen.
+  if (!!LoginScreen::Get()->GetLoginWindowWidget() &&
+      LoginScreen::Get()->GetLoginWindowWidget()->IsVisible()) {
+    GetViewAccessibility().OverrideNextFocus(
+        LoginScreen::Get()->GetLoginWindowWidget());
+  } else if (LockScreen::HasInstance()) {
+    GetViewAccessibility().OverrideNextFocus(LockScreen::Get()->widget());
+  }
+  Shelf* shelf = Shelf::ForWindow(GetWidget()->GetNativeWindow());
+  GetViewAccessibility().OverridePreviousFocus(shelf->shelf_widget());
 }
 
 views::View* StatusAreaWidgetDelegate::GetDefaultFocusableChild() {
@@ -172,22 +191,9 @@ bool StatusAreaWidgetDelegate::CanActivate() const {
   return focus_cycler->widget_activating() == GetWidget();
 }
 
-std::unique_ptr<StatusAreaWidgetDelegate::PauseCalculatingTargetBounds>
-StatusAreaWidgetDelegate::CreateScopedPauseCalculatingTargetBounds() {
-  return std::make_unique<PauseCalculatingTargetBounds>(this);
-}
-
 void StatusAreaWidgetDelegate::CalculateTargetBounds() {
-  // Prevents creating new layout manager when adding the tray buttons.
-  if (is_adding_tray_buttons_)
-    return;
-  // Use a grid layout so that the trays can be centered in each cell, and
-  // so that the widget gets laid out correctly when tray sizes change.
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-
-  const auto it = std::find_if(children().crbegin(), children().crend(),
-                               [](const View* v) { return v->GetVisible(); });
+  const auto it =
+      base::ranges::find(base::Reversed(children()), true, &View::GetVisible);
   const View* last_visible_child = it == children().crend() ? nullptr : *it;
 
   // Set the border for each child, with a different border for the edge child.
@@ -197,32 +203,12 @@ void StatusAreaWidgetDelegate::CalculateTargetBounds() {
     SetBorderOnChild(child, last_visible_child == child);
   }
 
-  views::ColumnSet* columns = layout->AddColumnSet(0);
+  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
+  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
+  layout->SetOrientation(shelf_->IsHorizontalAlignment()
+                             ? views::BoxLayout::Orientation::kHorizontal
+                             : views::BoxLayout::Orientation::kVertical);
 
-  if (shelf_->IsHorizontalAlignment()) {
-    for (auto* child : children()) {
-      if (!child->GetVisible())
-        continue;
-      columns->AddColumn(views::GridLayout::CENTER, views::GridLayout::FILL,
-                         0, /* resize percent */
-                         views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-    }
-    layout->StartRow(0, 0);
-    for (auto* child : children()) {
-      if (child->GetVisible())
-        layout->AddExistingView(child);
-    }
-  } else {
-    columns->AddColumn(views::GridLayout::FILL, views::GridLayout::CENTER,
-                       0, /* resize percent */
-                       views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-    for (auto* child : children()) {
-      if (!child->GetVisible())
-        continue;
-      layout->StartRow(0, 0);
-      layout->AddExistingView(child);
-    }
-  }
   target_bounds_.set_size(GetPreferredSize());
 }
 
@@ -240,10 +226,6 @@ void StatusAreaWidgetDelegate::UpdateLayout(bool animate) {
 }
 
 void StatusAreaWidgetDelegate::ChildPreferredSizeChanged(View* child) {
-  // Prevents resizing and layout row and column change when adding the tray
-  // buttons.
-  if (is_adding_tray_buttons_)
-    return;
   const gfx::Size current_size = size();
   const gfx::Size new_size = GetPreferredSize();
   if (new_size == current_size)
@@ -281,6 +263,16 @@ void StatusAreaWidgetDelegate::SetBorderOnChild(views::View* child,
   // is enabled).
   int right_edge = kPaddingBetweenItems;
 
+  // TODO(crbug/1354354): Refactor this hack to make it more efficient and less
+  // of a hack.
+  // If this view is `DateTray` or `NotificationCenterTray`, apply
+  // the offset `kSystemTraysRightPaddingOffset` between it and the tray on it's
+  // right.
+  if (child->GetClassName() == DateTray::kViewClassName ||
+      child->GetClassName() == NotificationCenterTray::kViewClassName) {
+    right_edge += kSystemTraysRightPaddingOffset;
+  }
+
   if (is_child_on_edge) {
     right_edge = ShelfConfig::Get()->control_button_edge_spacing(
         true /* is_primary_axis_edge */);
@@ -292,8 +284,8 @@ void StatusAreaWidgetDelegate::SetBorderOnChild(views::View* child,
     std::swap(bottom_edge, right_edge);
   }
 
-  child->SetBorder(
-      views::CreateEmptyBorder(top_edge, left_edge, bottom_edge, right_edge));
+  child->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(top_edge, left_edge, bottom_edge, right_edge)));
 
   // Layout on |child| needs to be updated based on new border value before
   // displaying; otherwise |child| will be showing with old border size.

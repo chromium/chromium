@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
+#include "base/scoped_multi_source_observation.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "content/public/browser/devtools_manager_delegate.h"
@@ -40,6 +42,12 @@ class DevToolsBrowserContextManager : public BrowserListObserver,
   // ProfileObserver:
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
+  // Idempotent function ensuring the `profile` is not more observed, and
+  // `otr_profiles_` is updated accordingly.
+  void StopObservingProfileIfAny(Profile* profile);
+
+  base::ScopedMultiSourceObservation<Profile, ProfileObserver>
+      profile_observation_{this};
   base::flat_map<std::string, Profile*> otr_profiles_;
   base::flat_map<std::string, content::DevToolsManagerDelegate::DisposeCallback>
       pending_context_disposals_;

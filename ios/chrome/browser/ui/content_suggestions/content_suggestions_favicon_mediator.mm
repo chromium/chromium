@@ -1,19 +1,20 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_favicon_mediator.h"
 
-#include "base/bind.h"
-#include "components/favicon/core/large_icon_service.h"
-#include "ios/chrome/browser/application_context.h"
+#import "base/bind.h"
+#import "components/favicon/core/large_icon_service.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_data_sink.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestions_section_information.h"
 #import "ios/chrome/browser/ui/favicon/favicon_attributes_provider.h"
 #import "ios/chrome/browser/ui/favicon/favicon_attributes_with_payload.h"
-#include "ios/chrome/browser/ui/ntp/metrics.h"
-#include "ui/gfx/image/image.h"
+#import "ios/chrome/browser/ui/ntp/metrics/metrics.h"
+#import "ui/gfx/image/image.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -42,9 +43,6 @@ const CGFloat kMostVisitedFaviconMinimalSize = 32;
 @end
 
 @implementation ContentSuggestionsFaviconMediator
-
-@synthesize mostVisitedAttributesProvider = _mostVisitedAttributesProvider;
-@synthesize dataSink = _dataSink;
 
 #pragma mark - Public.
 
@@ -83,7 +81,7 @@ const CGFloat kMostVisitedFaviconMinimalSize = 32;
 
     strongItem.attributes = attributes;
     [strongSelf logFaviconFetchedForItem:strongItem];
-    [strongSelf.dataSink itemHasChanged:strongItem];
+    [strongSelf.consumer updateMostVisitedTileConfig:strongItem];
   };
 
   [self.mostVisitedAttributesProvider fetchFaviconAttributesForURL:item.URL
@@ -93,7 +91,7 @@ const CGFloat kMostVisitedFaviconMinimalSize = 32;
 
 #pragma mark - Private.
 
-// If it is the first time the favicon corresponding to |URL| has its favicon
+// If it is the first time the favicon corresponding to `URL` has its favicon
 // fetched, its impression is logged.
 // This is called when the favicon is fetched and might not represent a tile
 // impression (for example, if some tiles are not displayed on screen because

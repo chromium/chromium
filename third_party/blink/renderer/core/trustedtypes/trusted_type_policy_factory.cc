@@ -1,16 +1,17 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/trustedtypes/trusted_type_policy_factory.h"
 
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_trusted_html.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_trusted_script.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_trusted_script_url.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/events/before_create_policy_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
@@ -18,6 +19,9 @@
 #include "third_party/blink/renderer/core/inspector/exception_metadata.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/trustedtypes/event_handler_names.h"
+#include "third_party/blink/renderer/core/trustedtypes/trusted_html.h"
+#include "third_party/blink/renderer/core/trustedtypes/trusted_script.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_type_policy.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -42,7 +46,7 @@ TrustedTypePolicy* TrustedTypePolicyFactory::createPolicy(
     ExceptionState& exception_state) {
   if (RuntimeEnabledFeatures::TrustedTypeBeforePolicyCreationEventEnabled()) {
     DispatchEventResult result =
-        DispatchEvent(*BeforeCreatePolicyEvent::Create(policy_name));
+        DispatchEvent(*BeforeCreatePolicyEvent::Create(policy_name), "TrustedTypePolicyFactory::createPolicy");
     if (result != DispatchEventResult::kNotCanceled) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kNotAllowedError,
@@ -58,46 +62,62 @@ TrustedTypePolicy* TrustedTypePolicyFactory::createPolicy(
   UseCounter::Count(GetExecutionContext(),
                     WebFeature::kTrustedTypesCreatePolicy);
 
+  // TT requires two validity checks: One against the CSP, and one for the
+  // default policy. Use |disallowed| (and |violation_details|) to aggregate
+  // these, so we can have unified error handling.
+  //
+  // Spec ref:
+  // https://www.w3.org/TR/2022/WD-trusted-types-20220927/#create-trusted-type-policy-algorithm,
+  // steps 2 + 3
+  bool disallowed = false;
+  ContentSecurityPolicy::AllowTrustedTypePolicyDetails violation_details =
+      ContentSecurityPolicy::AllowTrustedTypePolicyDetails::kAllowed;
+
   // This issue_id is used to generate a link in the DevTools front-end from
   // the JavaScript TypeError to the inspector issue which is reported by
   // ContentSecurityPolicy::ReportViolation via the call to
   // AllowTrustedTypeAssignmentFailure below.
   base::UnguessableToken issue_id = base::UnguessableToken::Create();
-  if (RuntimeEnabledFeatures::TrustedDOMTypesEnabled(GetExecutionContext()) &&
-      GetExecutionContext()->GetContentSecurityPolicy()) {
-    ContentSecurityPolicy::AllowTrustedTypePolicyDetails violation_details =
-        ContentSecurityPolicy::AllowTrustedTypePolicyDetails::kAllowed;
-    bool disallowed = !GetExecutionContext()
-                           ->GetContentSecurityPolicy()
-                           ->AllowTrustedTypePolicy(
-                               policy_name, policy_map_.Contains(policy_name),
-                               violation_details, issue_id);
-    if (violation_details != ContentSecurityPolicy::ContentSecurityPolicy::
-                                 AllowTrustedTypePolicyDetails::kAllowed) {
-      // We may report a violation here even when disallowed is false
-      // in case policy is a report-only one.
-      probe::OnContentSecurityPolicyViolation(
-          GetExecutionContext(),
-          ContentSecurityPolicyViolationType::kTrustedTypesPolicyViolation);
-    }
-    if (disallowed) {
-      // For a better error message, we'd like to disambiguate between
-      // "disallowed" and "disallowed because of a duplicate name".
-      bool disallowed_because_of_duplicate_name =
-          violation_details ==
-          ContentSecurityPolicy::AllowTrustedTypePolicyDetails::
-              kDisallowedDuplicateName;
-      const String message =
-          disallowed_because_of_duplicate_name
-              ? "Policy with name \"" + policy_name + "\" already exists."
-              : "Policy \"" + policy_name + "\" disallowed.";
-      exception_state.ThrowTypeError(message);
-      MaybeAssociateExceptionMetaData(
-          exception_state, "issueId",
-          IdentifiersFactory::IdFromToken(issue_id));
-      return nullptr;
-    }
+
+  if (GetExecutionContext()->GetContentSecurityPolicy()) {
+    disallowed = !GetExecutionContext()
+                      ->GetContentSecurityPolicy()
+                      ->AllowTrustedTypePolicy(
+                          policy_name, policy_map_.Contains(policy_name),
+                          violation_details, issue_id);
   }
+  if (!disallowed && policy_name == "default" &&
+      policy_map_.Contains("default")) {
+    disallowed = true;
+    violation_details = ContentSecurityPolicy::AllowTrustedTypePolicyDetails::
+        kDisallowedDuplicateName;
+  }
+
+  if (violation_details != ContentSecurityPolicy::ContentSecurityPolicy::
+                               AllowTrustedTypePolicyDetails::kAllowed) {
+    // We may report a violation here even when disallowed is false
+    // in case policy is a report-only one.
+    probe::OnContentSecurityPolicyViolation(
+        GetExecutionContext(),
+        ContentSecurityPolicyViolationType::kTrustedTypesPolicyViolation);
+  }
+  if (disallowed) {
+    // For a better error message, we'd like to disambiguate between
+    // "disallowed" and "disallowed because of a duplicate name".
+    bool disallowed_because_of_duplicate_name =
+        violation_details ==
+        ContentSecurityPolicy::AllowTrustedTypePolicyDetails::
+            kDisallowedDuplicateName;
+    const String message =
+        disallowed_because_of_duplicate_name
+            ? "Policy with name \"" + policy_name + "\" already exists."
+            : "Policy \"" + policy_name + "\" disallowed.";
+    exception_state.ThrowTypeError(message);
+    MaybeAssociateExceptionMetaData(exception_state, "issueId",
+                                    IdentifiersFactory::IdFromToken(issue_id));
+    return nullptr;
+  }
+
   UseCounter::Count(GetExecutionContext(),
                     WebFeature::kTrustedTypesPolicyCreated);
   if (policy_name == "default") {
@@ -190,7 +210,10 @@ const struct {
      true},
     {"*", "innerHTML", nullptr, SpecificTrustedType::kHTML, false, true},
     {"*", "outerHTML", nullptr, SpecificTrustedType::kHTML, false, true},
-    {"*", "on*", nullptr, SpecificTrustedType::kScript, true, false},
+#define FOREACH_EVENT_HANDLER(name) \
+  {"*", #name, nullptr, SpecificTrustedType::kScript, true, false},
+    EVENT_HANDLER_LIST(FOREACH_EVENT_HANDLER)
+#undef FOREACH_EVENT_HANDLER
 };
 
 // Does a type table entry match a property?
@@ -201,22 +224,20 @@ bool EqualsProperty(decltype(*kTypeTable)& left,
                     const String& ns) {
   DCHECK_EQ(tag.LowerASCII(), tag);
   return (left.element == tag || !strcmp(left.element, "*")) &&
-         (left.property == attr ||
-          (!strcmp(left.property, "on*") && attr.StartsWith("on"))) &&
-         left.element_namespace == ns && !left.is_not_property;
+         left.property == attr && left.element_namespace == ns &&
+         !left.is_not_property;
 }
 
 // Does a type table entry match an attribute?
 // (Attributes get queried by calling acecssor methods on the DOM. These are
-//  case-insensitivem, because DOM.)
+//  case-insensitive, because DOM.)
 bool EqualsAttribute(decltype(*kTypeTable)& left,
                      const String& tag,
                      const String& attr,
                      const String& ns) {
   DCHECK_EQ(tag.LowerASCII(), tag);
   return (left.element == tag || !strcmp(left.element, "*")) &&
-         (String(left.property).LowerASCII() == attr.LowerASCII() ||
-          (!strcmp(left.property, "on*") && attr.StartsWith("on"))) &&
+         CodeUnitCompareIgnoringASCIICase(attr, left.property) == 0 &&
          left.element_namespace == ns && !left.is_not_attribute;
 }
 
@@ -238,10 +259,10 @@ typedef bool (*PropertyEqualsFn)(decltype(*kTypeTable)&,
                                  const String&,
                                  const String&);
 
-String FindTypeInTypeTable(const String& tagName,
-                           const String& propertyName,
-                           const String& elementNS,
-                           PropertyEqualsFn equals) {
+SpecificTrustedType FindTypeInTypeTable(const String& tagName,
+                                        const String& propertyName,
+                                        const String& elementNS,
+                                        PropertyEqualsFn equals) {
   SpecificTrustedType type = SpecificTrustedType::kNone;
   for (auto* it = std::cbegin(kTypeTable); it != std::cend(kTypeTable); it++) {
     if ((*equals)(*it, tagName, propertyName, elementNS)) {
@@ -249,15 +270,23 @@ String FindTypeInTypeTable(const String& tagName,
       break;
     }
   }
-  return getTrustedTypeName(type);
+  return type;
+}
+
+String FindTypeNameInTypeTable(const String& tagName,
+                               const String& propertyName,
+                               const String& elementNS,
+                               PropertyEqualsFn equals) {
+  return getTrustedTypeName(
+      FindTypeInTypeTable(tagName, propertyName, elementNS, equals));
 }
 
 String TrustedTypePolicyFactory::getPropertyType(
     const String& tagName,
     const String& propertyName,
     const String& elementNS) const {
-  return FindTypeInTypeTable(tagName.LowerASCII(), propertyName, elementNS,
-                             &EqualsProperty);
+  return FindTypeNameInTypeTable(tagName.LowerASCII(), propertyName, elementNS,
+                                 &EqualsProperty);
 }
 
 String TrustedTypePolicyFactory::getAttributeType(
@@ -265,8 +294,8 @@ String TrustedTypePolicyFactory::getAttributeType(
     const String& attributeName,
     const String& tagNS,
     const String& attributeNS) const {
-  return FindTypeInTypeTable(tagName.LowerASCII(), attributeName, tagNS,
-                             &EqualsAttribute);
+  return FindTypeNameInTypeTable(tagName.LowerASCII(), attributeName, tagNS,
+                                 &EqualsAttribute);
 }
 
 String TrustedTypePolicyFactory::getPropertyType(
@@ -297,7 +326,7 @@ ScriptValue TrustedTypePolicyFactory::getTypeMapping(ScriptState* script_state,
   // Create three-deep dictionary of properties, like so:
   // {tagname: { ["attributes"|"properties"]: { attribute: type }}}
 
-  if (!ns.IsEmpty())
+  if (!ns.empty())
     return ScriptValue::CreateNull(script_state->GetIsolate());
 
   v8::HandleScope handle_scope(script_state->GetIsolate());
@@ -367,6 +396,22 @@ void TrustedTypePolicyFactory::Trace(Visitor* visitor) const {
   visitor->Trace(empty_html_);
   visitor->Trace(empty_script_);
   visitor->Trace(policy_map_);
+}
+
+inline bool FindEventHandlerAttributeInTable(
+    const AtomicString& attributeName) {
+  return SpecificTrustedType::kScript ==
+         FindTypeInTypeTable("*", attributeName, String(), &EqualsAttribute);
+}
+
+bool TrustedTypePolicyFactory::IsEventHandlerAttributeName(
+    const AtomicString& attributeName) {
+  // Check that the "on" prefix indeed filters out only non-event handlers.
+  DCHECK(!FindEventHandlerAttributeInTable(attributeName) ||
+         attributeName.StartsWithIgnoringASCIICase("on"));
+
+  return attributeName.StartsWithIgnoringASCIICase("on") &&
+         FindEventHandlerAttributeInTable(attributeName);
 }
 
 }  // namespace blink

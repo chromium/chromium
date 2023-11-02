@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -13,8 +13,7 @@ def _CheckSemanticCssColors(input_api, output_api):
   try:
     # Change the system path to SemanticCssChecker's directory to be
     # able to import it.
-    sys.path.append(join(src_root, 'chrome', 'browser', 'resources',
-                         'chromeos'))
+    sys.path.append(join(src_root, 'ui', 'chromeos', 'styles'))
     from semantic_css_checker import SemanticCssChecker
   finally:
     sys.path = original_sys_path

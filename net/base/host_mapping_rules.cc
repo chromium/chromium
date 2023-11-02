@@ -1,4 +1,4 @@
-// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,11 +21,11 @@
 namespace net {
 
 struct HostMappingRules::MapRule {
-  MapRule() : replacement_port(-1) {}
+  MapRule() = default;
 
   std::string hostname_pattern;
   std::string replacement_hostname;
-  int replacement_port;
+  int replacement_port = -1;
 };
 
 struct HostMappingRules::ExclusionRule {
@@ -85,11 +85,11 @@ HostMappingRules::RewriteResult HostMappingRules::RewriteUrl(GURL& url) const {
   if (!RewriteHost(&host_port_pair))
     return RewriteResult::kNoMatchingRule;
 
-  url::Replacements<char> replacements;
+  GURL::Replacements replacements;
   std::string port_str = base::NumberToString(host_port_pair.port());
-  replacements.SetPort(port_str.c_str(), url::Component(0, port_str.size()));
+  replacements.SetPortStr(port_str);
   std::string host_str = host_port_pair.HostForURL();
-  replacements.SetHost(host_str.c_str(), url::Component(0, host_str.size()));
+  replacements.SetHostStr(host_str);
   GURL new_url = url.ReplaceComponents(replacements);
 
   if (!new_url.is_valid())
@@ -110,7 +110,8 @@ bool HostMappingRules::AddRuleFromString(base::StringPiece rule_string) {
       base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
   // Test for EXCLUSION rule.
-  if (parts.size() == 2 && base::LowerCaseEqualsASCII(parts[0], "exclude")) {
+  if (parts.size() == 2 &&
+      base::EqualsCaseInsensitiveASCII(parts[0], "exclude")) {
     ExclusionRule rule;
     rule.hostname_pattern = base::ToLowerASCII(parts[1]);
     exclusion_rules_.push_back(rule);
@@ -118,7 +119,7 @@ bool HostMappingRules::AddRuleFromString(base::StringPiece rule_string) {
   }
 
   // Test for MAP rule.
-  if (parts.size() == 3 && base::LowerCaseEqualsASCII(parts[0], "map")) {
+  if (parts.size() == 3 && base::EqualsCaseInsensitiveASCII(parts[0], "map")) {
     MapRule rule;
     rule.hostname_pattern = base::ToLowerASCII(parts[1]);
 

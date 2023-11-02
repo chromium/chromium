@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,15 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/driver/sync_service_utils.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/trusted_vault_client_backend.h"
+#import "ios/chrome/browser/signin/trusted_vault_client_backend_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/signin/chrome_trusted_vault_service.h"
 #import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -41,6 +42,7 @@ using l10n_util::GetNSStringF;
                         intent:(SigninTrustedVaultDialogIntent)intent
                        trigger:(syncer::TrustedVaultUserActionTriggerForUMA)
                                    trigger {
+  DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _intent = intent;
@@ -60,8 +62,6 @@ using l10n_util::GetNSStringF;
 
 - (void)interruptWithAction:(SigninCoordinatorInterruptAction)action
                  completion:(ProceduralBlock)completion {
-  ios::ChromeTrustedVaultService* trustedVaultService =
-      ios::GetChromeBrowserProvider().GetChromeTrustedVaultService();
   BOOL animated;
   switch (action) {
     case SigninCoordinatorInterruptActionNoDismiss:
@@ -87,7 +87,9 @@ using l10n_util::GetNSStringF;
       completion();
     }
   };
-  trustedVaultService->CancelDialog(animated, cancelCompletion);
+  TrustedVaultClientBackendFactory::GetForBrowserState(
+      self.browser->GetBrowserState())
+      ->CancelDialog(animated, cancelCompletion);
 }
 
 #pragma mark - ChromeCoordinator
@@ -104,8 +106,6 @@ using l10n_util::GetNSStringF;
   // If not, the coordinator can be closed successfuly, by calling
   // -[TrustedVaultReauthenticationCoordinator
   // reauthentificationCompletedWithSuccess:]
-  ios::ChromeTrustedVaultService* trustedVaultService =
-      ios::GetChromeBrowserProvider().GetChromeTrustedVaultService();
   self.identity = AuthenticationServiceFactory::GetForBrowserState(
                       self.browser->GetBrowserState())
                       ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
@@ -120,12 +120,15 @@ using l10n_util::GetNSStringF;
       };
   switch (self.intent) {
     case SigninTrustedVaultDialogIntentFetchKeys:
-      trustedVaultService->Reauthentication(self.identity,
-                                            self.baseViewController, callback);
+      TrustedVaultClientBackendFactory::GetForBrowserState(
+          self.browser->GetBrowserState())
+          ->Reauthentication(self.identity, self.baseViewController, callback);
       break;
     case SigninTrustedVaultDialogIntentDegradedRecoverability:
-      trustedVaultService->FixDegradedRecoverability(
-          self.identity, self.baseViewController, callback);
+      TrustedVaultClientBackendFactory::GetForBrowserState(
+          self.browser->GetBrowserState())
+          ->FixDegradedRecoverability(self.identity, self.baseViewController,
+                                      callback);
       break;
   }
 }
@@ -163,6 +166,15 @@ using l10n_util::GetNSStringF;
       signinCompletionInfoWithIdentity:success ? self.identity : nil];
   [self runCompletionCallbackWithSigninResult:result
                                completionInfo:completionInfo];
+}
+
+#pragma mark - NSObject
+
+- (NSString*)description {
+  return [NSString
+      stringWithFormat:@"<%@: %p, errorAlertCoordinator: %p, intent: %lu>",
+                       self.class.description, self, self.errorAlertCoordinator,
+                       self.intent];
 }
 
 @end

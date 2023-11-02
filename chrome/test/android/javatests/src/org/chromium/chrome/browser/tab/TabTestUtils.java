@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,16 +7,12 @@ package org.chromium.chrome.browser.tab;
 import android.content.Context;
 import android.view.View;
 
-import org.junit.Assert;
-
 import org.chromium.base.ObserverList;
 import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.url.GURL;
-
-import java.nio.ByteBuffer;
 
 /**
  * Exposes helper functions to be used in tests to instrument tab interaction.
@@ -173,17 +169,5 @@ public class TabTestUtils {
      */
     public static void setIsShowingErrorPage(Tab tab, boolean isShowingErrorPage) {
         ((TabImpl) tab).setIsShowingErrorPage(isShowingErrorPage);
-    }
-
-    /**
-     * Verify a ByteBuffer is equal to a byte array.
-     * @param expected bytes expected in ByteBuffer, stored as a byte array.
-     * @param actual ByteBuffer found to be compared to the byte array.
-     */
-    public static void verifyByteBuffer(byte[] expected, ByteBuffer actual) {
-        Assert.assertEquals(expected.length, actual.limit());
-        for (int i = 0; i < actual.limit(); i++) {
-            Assert.assertEquals(expected[i], actual.get());
-        }
     }
 }

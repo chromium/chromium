@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,14 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/system/power/battery_notification.h"
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 
@@ -25,7 +28,8 @@ const char kNotifierSystemPriority[] = "ash.some-high-priority-component";
 
 class SessionStateNotificationBlockerTest
     : public NoSessionAshTestBase,
-      public message_center::NotificationBlocker::Observer {
+      public message_center::NotificationBlocker::Observer,
+      public testing::WithParamInterface<bool> {
  public:
   SessionStateNotificationBlockerTest() = default;
 
@@ -38,11 +42,17 @@ class SessionStateNotificationBlockerTest
 
   // tests::AshTestBase overrides:
   void SetUp() override {
+    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+    scoped_feature_list_->InitWithFeatureState(features::kNotificationsRefresh,
+                                               IsNotificationsRefreshEnabled());
+
     NoSessionAshTestBase::SetUp();
     blocker_ = std::make_unique<SessionStateNotificationBlocker>(
         message_center::MessageCenter::Get());
     blocker_->AddObserver(this);
   }
+
+  bool IsNotificationsRefreshEnabled() const { return GetParam(); }
 
   void TearDown() override {
     blocker_->RemoveObserver(this);
@@ -66,7 +76,7 @@ class SessionStateNotificationBlockerTest
     message_center::Notification notification(
         message_center::NOTIFICATION_TYPE_SIMPLE,
         GetNotificationId(notifier_id), u"chromeos-title", u"chromeos-message",
-        gfx::Image(), u"chromeos-source", GURL(), notifier_id,
+        ui::ImageModel(), u"chromeos-source", GURL(), notifier_id,
         message_center::RichNotificationData(), nullptr);
     if (notifier_id.id == kNotifierSystemPriority)
       notification.set_priority(message_center::SYSTEM_PRIORITY);
@@ -78,7 +88,7 @@ class SessionStateNotificationBlockerTest
     message_center::Notification notification(
         message_center::NOTIFICATION_TYPE_SIMPLE,
         GetNotificationId(notifier_id), u"chromeos-title", u"chromeos-message",
-        gfx::Image(), u"chromeos-source", GURL(), notifier_id,
+        ui::ImageModel(), u"chromeos-source", GURL(), notifier_id,
         message_center::RichNotificationData(), nullptr);
     if (notifier_id.id == kNotifierSystemPriority)
       notification.set_priority(message_center::SYSTEM_PRIORITY);
@@ -99,9 +109,14 @@ class SessionStateNotificationBlockerTest
 
   int state_changed_count_ = 0;
   std::unique_ptr<message_center::NotificationBlocker> blocker_;
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
-TEST_F(SessionStateNotificationBlockerTest, BaseTest) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         SessionStateNotificationBlockerTest,
+                         testing::Bool() /* IsNotificationsRefreshEnabled() */);
+
+TEST_P(SessionStateNotificationBlockerTest, BaseTest) {
   // OOBE.
   GetSessionControllerClient()->SetSessionState(SessionState::OOBE);
   EXPECT_EQ(0, GetStateChangedCountAndReset());
@@ -135,10 +150,11 @@ TEST_F(SessionStateNotificationBlockerTest, BaseTest) {
   EXPECT_TRUE(ShouldShowNotification(notifier_id));
 }
 
-TEST_F(SessionStateNotificationBlockerTest, AlwaysAllowedNotifier) {
+TEST_P(SessionStateNotificationBlockerTest, AlwaysAllowedNotifier) {
   // NOTIFIER_DISPLAY is allowed to shown in the login screen.
   message_center::NotifierId notifier_id(
-      message_center::NotifierType::SYSTEM_COMPONENT, kNotifierSystemPriority);
+      message_center::NotifierType::SYSTEM_COMPONENT, kNotifierSystemPriority,
+      NotificationCatalogName::kTestCatalogName);
 
   // OOBE.
   GetSessionControllerClient()->SetSessionState(SessionState::OOBE);
@@ -171,7 +187,7 @@ TEST_F(SessionStateNotificationBlockerTest, AlwaysAllowedNotifier) {
   EXPECT_TRUE(ShouldShowNotification(notifier_id));
 }
 
-TEST_F(SessionStateNotificationBlockerTest, BlockOnPrefService) {
+TEST_P(SessionStateNotificationBlockerTest, BlockOnPrefService) {
   // OOBE.
   GetSessionControllerClient()->SetSessionState(SessionState::OOBE);
   EXPECT_EQ(0, GetStateChangedCountAndReset());
@@ -211,9 +227,10 @@ TEST_F(SessionStateNotificationBlockerTest, BlockOnPrefService) {
   EXPECT_TRUE(ShouldShowNotificationAsPopup(notifier_id));
 }
 
-TEST_F(SessionStateNotificationBlockerTest, BlockInKioskMode) {
+TEST_P(SessionStateNotificationBlockerTest, BlockInKioskMode) {
   message_center::NotifierId notifier_id(
-      message_center::NotifierType::SYSTEM_COMPONENT, kNotifierSystemPriority);
+      message_center::NotifierType::SYSTEM_COMPONENT, kNotifierSystemPriority,
+      NotificationCatalogName::kTestCatalogName);
   EXPECT_TRUE(ShouldShowNotificationAsPopup(notifier_id));
   EXPECT_TRUE(ShouldShowNotification(notifier_id));
 
@@ -222,7 +239,7 @@ TEST_F(SessionStateNotificationBlockerTest, BlockInKioskMode) {
   EXPECT_FALSE(ShouldShowNotification(notifier_id));
 }
 
-TEST_F(SessionStateNotificationBlockerTest, DelayAfterLogin) {
+TEST_P(SessionStateNotificationBlockerTest, DelayAfterLogin) {
   SessionStateNotificationBlocker::SetUseLoginNotificationDelayForTest(true);
   GetSessionControllerClient()->SetSessionState(SessionState::LOGIN_PRIMARY);
 
@@ -236,7 +253,8 @@ TEST_F(SessionStateNotificationBlockerTest, DelayAfterLogin) {
 
   // System notification should still be shown.
   message_center::NotifierId system_notifier_id(
-      message_center::NotifierType::SYSTEM_COMPONENT, "system-notifier");
+      message_center::NotifierType::SYSTEM_COMPONENT, "system-notifier",
+      NotificationCatalogName::kTestCatalogName);
   EXPECT_TRUE(ShouldShowNotification(system_notifier_id));
 
   // The notification delay should not be enabled for all other tests.

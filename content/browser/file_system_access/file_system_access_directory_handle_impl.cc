@@ -1,11 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/file_system_access/file_system_access_directory_handle_impl.h"
 
+#include "base/guid.h"
 #include "base/i18n/file_util_icu.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -14,12 +14,12 @@
 #include "content/browser/file_system_access/file_system_access_transfer_token_impl.h"
 #include "content/browser/file_system_access/file_system_access_write_lock_manager.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "net/base/escape.h"
 #include "net/base/filename_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom.h"
@@ -49,12 +49,14 @@ FileSystemAccessDirectoryHandleImpl::~FileSystemAccessDirectoryHandleImpl() =
 void FileSystemAccessDirectoryHandleImpl::GetPermissionStatus(
     bool writable,
     GetPermissionStatusCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DoGetPermissionStatus(writable, std::move(callback));
 }
 
 void FileSystemAccessDirectoryHandleImpl::RequestPermission(
     bool writable,
     RequestPermissionCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DoRequestPermission(writable, std::move(callback));
 }
 
@@ -260,6 +262,8 @@ void FileSystemAccessDirectoryHandleImpl::Resolve(
 void FileSystemAccessDirectoryHandleImpl::ResolveImpl(
     ResolveCallback callback,
     FileSystemAccessTransferTokenImpl* possible_child) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!possible_child) {
     std::move(callback).Run(
         file_system_access_error::FromStatus(
@@ -273,6 +277,19 @@ void FileSystemAccessDirectoryHandleImpl::ResolveImpl(
 
   // If two URLs are of a different type they are definitely not related.
   if (parent_url.type() != child_url.type()) {
+    std::move(callback).Run(file_system_access_error::Ok(), absl::nullopt);
+    return;
+  }
+
+  // URLs from the sandboxed file system must include bucket info, while URLs
+  // from non-sandboxed file systems should not.
+  DCHECK_EQ(parent_url.type() == storage::kFileSystemTypeTemporary,
+            parent_url.bucket().has_value());
+  DCHECK_EQ(child_url.type() == storage::kFileSystemTypeTemporary,
+            child_url.bucket().has_value());
+
+  // Since the types match, either both or neither URL will have bucket info.
+  if (parent_url.bucket() != child_url.bucket()) {
     std::move(callback).Run(file_system_access_error::Ok(), absl::nullopt);
     return;
   }
@@ -302,9 +319,9 @@ void FileSystemAccessDirectoryHandleImpl::ResolveImpl(
     return;
   }
 
-  std::vector<base::FilePath::StringType> components;
-  relative_path.GetComponents(&components);
-#if defined(OS_WIN)
+  std::vector<base::FilePath::StringType> components =
+      relative_path.GetComponents();
+#if BUILDFLAG(IS_WIN)
   std::vector<std::string> result;
   result.reserve(components.size());
   for (const auto& component : components) {
@@ -438,10 +455,16 @@ namespace {
 bool IsShellIntegratedExtension(const base::FilePath::StringType& extension) {
   base::FilePath::StringType extension_lower = base::ToLowerASCII(extension);
 
-  // .lnk files may be used to execute arbitrary code (see
-  // https://nvd.nist.gov/vuln/detail/CVE-2010-2568).
-  if (extension_lower == FILE_PATH_LITERAL("lnk"))
+  // .lnk and .scf files may be used to execute arbitrary code (see
+  // https://nvd.nist.gov/vuln/detail/CVE-2010-2568 and
+  // https://crbug.com/1227995, respectively). '.url' files can be used to read
+  // arbitrary files (see https://crbug.com/1307930 and
+  // https://crbug.com/1354518).
+  if (extension_lower == FILE_PATH_LITERAL("lnk") ||
+      extension_lower == FILE_PATH_LITERAL("scf") ||
+      extension_lower == FILE_PATH_LITERAL("url")) {
     return true;
+  }
 
   // Setting a file's extension to a CLSID may conceal its actual file type on
   // some Windows versions (see https://nvd.nist.gov/vuln/detail/CVE-2004-0420).
@@ -482,7 +505,7 @@ bool FileSystemAccessDirectoryHandleImpl::IsSafePathComponent(
   }
 
   std::u16string component16;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   component16.assign(component.value().begin(), component.value().end());
 #else
   std::string component8 = component.AsUTF8Unsafe();
@@ -519,6 +542,8 @@ blink::mojom::FileSystemAccessErrorPtr
 FileSystemAccessDirectoryHandleImpl::GetChildURL(
     const std::string& basename,
     storage::FileSystemURL* result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!IsSafePathComponent(basename)) {
     return file_system_access_error::FromStatus(
         FileSystemAccessStatus::kInvalidArgument, "Name is not allowed.");
@@ -528,6 +553,10 @@ FileSystemAccessDirectoryHandleImpl::GetChildURL(
   *result = file_system_context()->CreateCrackedFileSystemURL(
       parent.storage_key(), parent.mount_type(),
       parent.virtual_path().Append(base::FilePath::FromUTF8Unsafe(basename)));
+  // Child URLs inherit their parent's storage bucket.
+  if (parent.bucket()) {
+    result->SetBucket(parent.bucket().value());
+  }
   return file_system_access_error::Ok();
 }
 
@@ -535,6 +564,8 @@ FileSystemAccessEntryPtr FileSystemAccessDirectoryHandleImpl::CreateEntry(
     const std::string& basename,
     const storage::FileSystemURL& url,
     HandleType handle_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (handle_type == HandleType::kDirectory) {
     return FileSystemAccessEntry::New(
         FileSystemAccessHandle::NewDirectory(
@@ -547,8 +578,18 @@ FileSystemAccessEntryPtr FileSystemAccessDirectoryHandleImpl::CreateEntry(
       basename);
 }
 
+void FileSystemAccessDirectoryHandleImpl::GetUniqueId(
+    GetUniqueIdCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::GUID id = manager()->GetUniqueId(*this);
+  DCHECK(id.is_valid());
+  std::move(callback).Run(id.AsLowercaseString());
+}
+
 base::WeakPtr<FileSystemAccessHandleBase>
 FileSystemAccessDirectoryHandleImpl::AsWeakPtr() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return weak_factory_.GetWeakPtr();
 }
 

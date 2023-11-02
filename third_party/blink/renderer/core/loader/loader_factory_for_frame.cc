@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -133,8 +133,6 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForFrame::CreateURLLoader(
       request, frame->GetLocalFrameHostRemote(),
       pending_remote.InitWithNewPipeAndPassReceiver());
   WebURLLoaderFactory* factory = frame->GetURLLoaderFactory();
-  // TODO(crbug.com/1252983): Remove this after debugging.
-  CHECK(factory);
   return factory->CreateURLLoader(
       webreq, CreateTaskRunnerHandle(freezable_task_runner),
       CreateTaskRunnerHandle(unfreezable_task_runner),

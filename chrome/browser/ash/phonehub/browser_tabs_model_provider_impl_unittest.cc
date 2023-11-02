@@ -1,15 +1,19 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/phonehub/browser_tabs_model_provider_impl.h"
 
+#include <memory>
+#include <utility>
+#include <vector>
+
 #include "ash/components/phonehub/fake_browser_tabs_metadata_fetcher.h"
 #include "ash/components/phonehub/mutable_phone_model.h"
 #include "ash/components/phonehub/phone_model_test_util.h"
-#include "chromeos/components/multidevice/remote_device_test_util.h"
-#include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
-#include "components/sync/driver/mock_sync_service.h"
+#include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
+#include "chromeos/ash/components/multidevice/remote_device_test_util.h"
+#include "components/sync/test/mock_sync_service.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -19,12 +23,6 @@ namespace ash {
 namespace phonehub {
 
 namespace {
-
-// TODO(https://crbug.com/1164001): remove after chromeos/components/phonehub is
-// migrated.
-using ::chromeos::phonehub::CreateFakeBrowserTabMetadata;
-using ::chromeos::phonehub::FakeBrowserTabsMetadataFetcher;
-using ::chromeos::phonehub::MutablePhoneModel;
 
 using ::testing::_;
 
@@ -77,10 +75,10 @@ multidevice::RemoteDeviceRef CreatePhoneDevice(const std::string& pii_name) {
   return builder.Build();
 }
 
-sync_sessions::SyncedSession* CreateNewSession(
+std::unique_ptr<sync_sessions::SyncedSession> CreateNewSession(
     const std::string& session_name,
     const base::Time& session_time = base::Time::FromDoubleT(0)) {
-  sync_sessions::SyncedSession* session = new sync_sessions::SyncedSession();
+  auto session = std::make_unique<sync_sessions::SyncedSession>();
   session->session_name = session_name;
   session->modified_time = session_time;
   return session;
@@ -131,10 +129,9 @@ class BrowserTabsModelProviderImplTest
   }
 
   void SetPiiFreeName(const std::string& pii_free_name) {
-    fake_multidevice_setup_client_.SetHostStatusWithDevice(
-        std::make_pair(chromeos::multidevice_setup::mojom::HostStatus::
-                           kEligibleHostExistsButNoHostSet,
-                       CreatePhoneDevice(/*pii_name=*/pii_free_name)));
+    fake_multidevice_setup_client_.SetHostStatusWithDevice(std::make_pair(
+        multidevice_setup::mojom::HostStatus::kEligibleHostExistsButNoHostSet,
+        CreatePhoneDevice(/*pii_name=*/pii_free_name)));
   }
 
   base::CallbackListSubscription MockSubscribeToForeignSessionsChanged(
@@ -216,8 +213,9 @@ TEST_F(BrowserTabsModelProviderImplTest, AttemptBrowserTabsModelUpdate) {
 
   // Test enabling tab sync with no matching pii name with session_name.
   std::vector<const sync_sessions::SyncedSession*> sessions;
-  sync_sessions::SyncedSession* session = CreateNewSession(kPhoneNameTwo);
-  sessions.emplace_back(session);
+  std::unique_ptr<sync_sessions::SyncedSession> session =
+      CreateNewSession(kPhoneNameTwo);
+  sessions.emplace_back(session.get());
   set_enable_tab_sync(true);
   set_synced_sessions(&sessions);
   NotifySubscription();
@@ -229,8 +227,9 @@ TEST_F(BrowserTabsModelProviderImplTest, AttemptBrowserTabsModelUpdate) {
   // Test enabling tab sync with matching pii name with session_name, which
   // will cause the |fake_browser_tabs_metadata_fetcher()| to have a pending
   // callback.
-  sync_sessions::SyncedSession* new_session = CreateNewSession(kPhoneNameOne);
-  sessions.emplace_back(new_session);
+  std::unique_ptr<sync_sessions::SyncedSession> new_session =
+      CreateNewSession(kPhoneNameOne);
+  sessions.emplace_back(new_session.get());
   set_enable_tab_sync(true);
   set_synced_sessions(&sessions);
   NotifySubscription();
@@ -249,8 +248,10 @@ TEST_F(BrowserTabsModelProviderImplTest, AttemptBrowserTabsModelUpdate) {
 
 TEST_F(BrowserTabsModelProviderImplTest, ClearTabMetadataDuringMetadataFetch) {
   SetPiiFreeName(kPhoneNameOne);
-  sync_sessions::SyncedSession* new_session = CreateNewSession(kPhoneNameOne);
-  std::vector<const sync_sessions::SyncedSession*> sessions({new_session});
+  std::unique_ptr<sync_sessions::SyncedSession> new_session =
+      CreateNewSession(kPhoneNameOne);
+  std::vector<const sync_sessions::SyncedSession*> sessions(
+      {new_session.get()});
 
   set_enable_tab_sync(true);
   set_synced_sessions(&sessions);
@@ -272,17 +273,17 @@ TEST_F(BrowserTabsModelProviderImplTest, ClearTabMetadataDuringMetadataFetch) {
 
 TEST_F(BrowserTabsModelProviderImplTest, SessionCorrectlySelected) {
   SetPiiFreeName(kPhoneNameOne);
-  sync_sessions::SyncedSession* session_a =
+  std::unique_ptr<sync_sessions::SyncedSession> session_a =
       CreateNewSession(kPhoneNameOne, base::Time::FromDoubleT(1));
-  sync_sessions::SyncedSession* session_b =
+  std::unique_ptr<sync_sessions::SyncedSession> session_b =
       CreateNewSession(kPhoneNameOne, base::Time::FromDoubleT(3));
-  sync_sessions::SyncedSession* session_c =
+  std::unique_ptr<sync_sessions::SyncedSession> session_c =
       CreateNewSession(kPhoneNameOne, base::Time::FromDoubleT(2));
-  sync_sessions::SyncedSession* session_d =
+  std::unique_ptr<sync_sessions::SyncedSession> session_d =
       CreateNewSession(kPhoneNameTwo, base::Time::FromDoubleT(10));
 
   std::vector<const sync_sessions::SyncedSession*> sessions(
-      {session_a, session_b, session_c, session_d});
+      {session_a.get(), session_b.get(), session_c.get(), session_d.get()});
 
   set_enable_tab_sync(true);
   set_synced_sessions(&sessions);
@@ -291,7 +292,8 @@ TEST_F(BrowserTabsModelProviderImplTest, SessionCorrectlySelected) {
 
   // |session_b| should be the selected session because it is the has the same
   // session_name as the set phone name and the latest modified time.
-  EXPECT_EQ(fake_browser_tabs_metadata_fetcher()->GetSession(), session_b);
+  EXPECT_EQ(fake_browser_tabs_metadata_fetcher()->GetSession(),
+            session_b.get());
 }
 
 }  // namespace phonehub

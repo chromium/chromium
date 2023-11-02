@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -108,8 +108,8 @@ BoringsslTrustTokenIssuanceCryptographer::ConfirmIssuance(
   for (size_t i = 0; i < sk_TRUST_TOKEN_num(tokens.get()); ++i) {
     TRUST_TOKEN* token = sk_TRUST_TOKEN_value(tokens.get(), i);
     // Copy the token's contents.
-    ret->tokens.push_back(
-        std::string(reinterpret_cast<const char*>(token->data), token->len));
+    ret->tokens.emplace_back(reinterpret_cast<const char*>(token->data),
+                             token->len);
   }
 
   return ret;

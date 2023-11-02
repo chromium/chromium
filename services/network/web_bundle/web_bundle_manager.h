@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,12 +15,10 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
+#include "services/network/web_bundle/web_bundle_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
-
-class WebBundleURLLoaderFactory;
-struct WebBundlePendingSubresourceRequest;
 
 // WebBundleManager manages the lifetime of a WebBundleURLLoaderFactory object,
 // which is created for each WebBundle. And also manages the quota of memory
@@ -57,11 +55,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleManager {
   // Key is a tuple of (Process id, WebBundle token)
   using Key = std::pair<int32_t, base::UnguessableToken>;
 
+  static Key GetKey(const ResourceRequest::WebBundleTokenParams& token_params,
+                    int32_t process_id);
   base::WeakPtr<WebBundleURLLoaderFactory> GetWebBundleURLLoaderFactory(
-      const ResourceRequest::WebBundleTokenParams& params,
-      int32_t process_id);
+      const Key& key);
 
-  void DisconnectHandler(base::UnguessableToken token, int32_t process_id);
+  void DisconnectHandler(Key key);
 
   bool AllocateMemoryForProcess(int32_t process_id, uint64_t num_bytes);
   void ReleaseMemoryForProcess(int32_t process_id, uint64_t num_bytes);
@@ -69,12 +68,20 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleManager {
     max_memory_per_process_ = max_memory_per_process;
   }
 
+  void CleanUpWillBeDeletedURLLoader(
+      Key key,
+      WebBundleURLLoaderFactory::URLLoader* will_be_deleted_url_loader);
+
+  bool IsPendingLoadersEmptyForTesting(Key key) const {
+    return pending_loaders_.find(key) == pending_loaders_.end();
+  }
+
   std::map<Key, std::unique_ptr<WebBundleURLLoaderFactory>> factories_;
-  // Pending subresource requests for each key, which should be processed when
+  // Pending subresource loaders for each key, which should be processed when
   // a request for the bundle arrives later.
   std::map<Key,
-           std::vector<std::unique_ptr<WebBundlePendingSubresourceRequest>>>
-      pending_requests_;
+           std::vector<base::WeakPtr<WebBundleURLLoaderFactory::URLLoader>>>
+      pending_loaders_;
 
   uint64_t max_memory_per_process_;
   std::map<int32_t, uint64_t> memory_usage_per_process_;

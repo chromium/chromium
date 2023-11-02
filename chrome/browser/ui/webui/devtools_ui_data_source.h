@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,7 +52,7 @@ class DevToolsDataSource : public content::URLDataSource {
   struct PendingRequest;
 
   // content::URLDataSource overrides.
-  std::string GetMimeType(const std::string& path) override;
+  std::string GetMimeType(const GURL& url) override;
   bool ShouldAddContentSecurityPolicy() override;
   bool ShouldDenyXFrameOptions() override;
   bool ShouldServeMimeTypeAsContentTypeHeader() override;
@@ -70,6 +70,9 @@ class DevToolsDataSource : public content::URLDataSource {
   // Serves remote DevTools frontend from any endpoint, passed through
   // command-line flag.
   void StartCustomDataRequest(const GURL& url, GotDataCallback callback);
+
+  bool MaybeHandleCustomRequest(const std::string& path,
+                                GotDataCallback* callback);
 
   virtual void StartNetworkRequest(
       const GURL& url,

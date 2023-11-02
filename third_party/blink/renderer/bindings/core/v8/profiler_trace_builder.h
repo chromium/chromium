@@ -1,15 +1,18 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_PROFILER_TRACE_BUILDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_PROFILER_TRACE_BUILDER_H_
 
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_profiler_marker.h"
+#include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -68,7 +71,7 @@ struct ProfilerNodeFrameHash {
 //
 // The trace format is described at:
 // https://wicg.github.io/js-self-profiling/#the-profilertrace-dictionary
-class ProfilerTraceBuilder final
+class CORE_EXPORT ProfilerTraceBuilder final
     : public GarbageCollected<ProfilerTraceBuilder> {
  public:
   static ProfilerTrace* FromProfile(ScriptState*,
@@ -88,7 +91,10 @@ class ProfilerTraceBuilder final
  private:
   // Adds a stack sample from V8 to the trace, performing necessary filtering
   // and coalescing.
-  void AddSample(const v8::CpuProfileNode* node, base::TimeTicks timestamp);
+  void AddSample(const v8::CpuProfileNode* node,
+                 base::TimeTicks timestamp,
+                 const v8::StateTag state,
+                 const v8::EmbedderStateTag embedder_state);
   // Obtains the stack ID of the substack with the given node as its leaf,
   // performing origin-based filtering.
   absl::optional<wtf_size_t> GetOrInsertStackId(const v8::CpuProfileNode* node);
@@ -99,6 +105,33 @@ class ProfilerTraceBuilder final
 
   ProfilerTrace* GetTrace() const;
 
+  inline absl::optional<V8ProfilerMarker> VMStateToMarker(v8::StateTag state) {
+    switch (state) {
+      case v8::GC:
+        return V8ProfilerMarker(V8ProfilerMarker::Enum::kGc);
+      case v8::JS:
+      case v8::ATOMICS_WAIT:
+        return V8ProfilerMarker(V8ProfilerMarker::Enum::kScript);
+      default:
+        return absl::optional<V8ProfilerMarker>();
+    }
+  }
+
+  inline absl::optional<V8ProfilerMarker> BlinkStateToMarker(
+      const v8::EmbedderStateTag state_tag,
+      const v8::StateTag fallback_state) {
+    auto blink_state = static_cast<BlinkState>(state_tag);
+    switch (blink_state) {
+      case BlinkState::LAYOUT:
+        return V8ProfilerMarker(V8ProfilerMarker::Enum::kLayout);
+      case BlinkState::STYLE:
+        return V8ProfilerMarker(V8ProfilerMarker::Enum::kStyle);
+      case BlinkState::PAINT:
+        return V8ProfilerMarker(V8ProfilerMarker::Enum::kPaint);
+      default:
+        return VMStateToMarker(fallback_state);
+    }
+  }
   // Discards metadata frames and performs an origin check on the given stack
   // frame, returning true if it either has the same origin as the profiler, or
   // if it should be shared cross origin.
@@ -124,6 +157,9 @@ class ProfilerTraceBuilder final
   // A mapping from a V8 internal script ID to whether or not it passes the
   // same-origin policy for the ScriptState that the trace belongs to.
   HashMap<int, bool> script_same_origin_cache_;
+
+  FRIEND_TEST_ALL_PREFIXES(ProfilerTraceBuilderTest, AddVMStateMarker);
+  FRIEND_TEST_ALL_PREFIXES(ProfilerTraceBuilderTest, AddEmbedderStateMarker);
 };
 
 }  // namespace blink

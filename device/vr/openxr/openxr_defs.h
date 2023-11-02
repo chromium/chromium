@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,6 +28,8 @@ constexpr char kHPReverbG2InteractionProfilePath[] =
     "/interaction_profiles/hp/mixed_reality_controller";
 constexpr char kHandSelectGraspInteractionProfilePath[] =
     "/interaction_profiles/microsoft/hand_interaction";
+constexpr char kHTCViveCosmosInteractionProfilePath[] =
+    "/interaction_profiles/htc/vive_cosmos_controller";
 
 }  // namespace device
 

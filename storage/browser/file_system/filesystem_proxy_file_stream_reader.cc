@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,11 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/task_runner.h"
 #include "base/task/task_runner_util.h"
+#include "base/types/pass_key.h"
 #include "net/base/file_stream.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -35,13 +34,13 @@ base::FileErrorOr<base::File::Info> DoGetFileInfo(
     scoped_refptr<FilesystemProxyFileStreamReader::SharedFilesystemProxy>
         shared_filesystem_proxy) {
   if (!shared_filesystem_proxy->data->PathExists(path)) {
-    return base::File::FILE_ERROR_NOT_FOUND;
+    return base::unexpected(base::File::FILE_ERROR_NOT_FOUND);
   }
 
   absl::optional<base::File::Info> info =
       shared_filesystem_proxy->data->GetFileInfo(path);
   if (!info.has_value()) {
-    return base::File::FILE_ERROR_FAILED;
+    return base::unexpected(base::File::FILE_ERROR_FAILED);
   }
 
   return std::move(*info);
@@ -64,9 +63,10 @@ std::unique_ptr<FileStreamReader> FileStreamReader::CreateForFilesystemProxy(
     const base::Time& expected_modification_time) {
   DCHECK(filesystem_proxy);
   constexpr bool emit_metrics = false;
-  return base::WrapUnique(new FilesystemProxyFileStreamReader(
+  return std::make_unique<FilesystemProxyFileStreamReader>(
       std::move(task_runner), file_path, std::move(filesystem_proxy),
-      initial_offset, expected_modification_time, emit_metrics));
+      initial_offset, expected_modification_time, emit_metrics,
+      base::PassKey<FileStreamReader>());
 }
 
 std::unique_ptr<FileStreamReader>
@@ -78,9 +78,10 @@ FileStreamReader::CreateForIndexedDBDataItemReader(
     const base::Time& expected_modification_time) {
   DCHECK(filesystem_proxy);
   constexpr bool emit_metrics = true;
-  return base::WrapUnique(new FilesystemProxyFileStreamReader(
+  return std::make_unique<FilesystemProxyFileStreamReader>(
       std::move(task_runner), file_path, std::move(filesystem_proxy),
-      initial_offset, expected_modification_time, emit_metrics));
+      initial_offset, expected_modification_time, emit_metrics,
+      base::PassKey<FileStreamReader>());
 }
 
 FilesystemProxyFileStreamReader::~FilesystemProxyFileStreamReader() = default;
@@ -118,7 +119,8 @@ FilesystemProxyFileStreamReader::FilesystemProxyFileStreamReader(
     std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
     int64_t initial_offset,
     const base::Time& expected_modification_time,
-    bool emit_metrics)
+    bool emit_metrics,
+    base::PassKey<FileStreamReader> /*pass_key*/)
     : task_runner_(std::move(task_runner)),
       shared_filesystem_proxy_(base::MakeRefCounted<SharedFilesystemProxy>(
           std::move(filesystem_proxy))),
@@ -159,7 +161,7 @@ void FilesystemProxyFileStreamReader::DidVerifyForOpen(
 
 void FilesystemProxyFileStreamReader::DidOpenFile(
     base::FileErrorOr<base::File> open_result) {
-  if (open_result.is_error()) {
+  if (!open_result.has_value()) {
     std::move(callback_).Run(open_result.error());
     return;
   }
@@ -215,13 +217,13 @@ void FilesystemProxyFileStreamReader::DidGetFileInfoForGetLength(
     base::FileErrorOr<base::File::Info> result) {
   // TODO(enne): track rate of missing blobs for http://crbug.com/1131151
   if (emit_metrics_) {
-    bool file_was_found = !result.is_error() ||
+    bool file_was_found = result.has_value() ||
                           result.error() != base::File::FILE_ERROR_NOT_FOUND;
     UMA_HISTOGRAM_BOOLEAN("WebCore.IndexedDB.FoundBlobFileForValue",
                           file_was_found);
   }
 
-  if (result.is_error()) {
+  if (!result.has_value()) {
     std::move(callback).Run(net::FileErrorToNetError(result.error()));
     return;
   }

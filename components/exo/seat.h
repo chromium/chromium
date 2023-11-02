@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/events/event_handler.h"
-#include "ui/events/keycodes/dom/dom_codes.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/platform/platform_event_observer.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -30,13 +30,13 @@
 #endif
 
 namespace ui {
-enum class DomCode;
 class KeyEvent;
 }  // namespace ui
 
 namespace exo {
 class DragDropOperation;
 class DataExchangeDelegate;
+class Pointer;
 class ScopedDataSource;
 class SeatObserver;
 class Surface;
@@ -62,8 +62,6 @@ class Seat : public aura::client::FocusChangeObserver,
   using FocusChangedCallback =
       base::RepeatingCallback<void(Surface*, Surface*, bool)>;
 
-  void SetFocusChangedCallback(FocusChangedCallback callback);
-
   void Shutdown();
 
   // Registers the observer with the given priority.
@@ -83,7 +81,13 @@ class Seat : public aura::client::FocusChangeObserver,
     return 0 <= priority && priority <= kMaxObserverPriority;
   }
 
-  // Returns currently focused surface. This is vertual so that we can override
+  // Notify observers about pointer capture state changes.
+  void NotifyPointerCaptureEnabled(Pointer* pointer,
+                                   aura::Window* capture_window);
+  void NotifyPointerCaptureDisabled(Pointer* pointer,
+                                    aura::Window* capture_window);
+
+  // Returns currently focused surface. This is virtual so that we can override
   // the behavior for testing.
   virtual Surface* GetFocusedSurface();
 
@@ -112,10 +116,6 @@ class Seat : public aura::client::FocusChangeObserver,
                  Surface* origin,
                  Surface* icon,
                  ui::mojom::DragEventSource event_source);
-
-  // Sets the last location in screen coordinates, irrespective of mouse or
-  // touch.
-  void SetLastPointerLocation(const gfx::PointF& last_pointer_location);
 
   // Abort any drag operations that haven't been started yet.
   void AbortPendingDragOperation();
@@ -159,6 +159,18 @@ class Seat : public aura::client::FocusChangeObserver,
 
  private:
   class RefCountedScopedClipboardWriter;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Called when the focused window is a Lacros window and a source
+  // DataTransferEndpoint is read in the available MIME types. This
+  // is currently used to synchronize clipboard source metadata from
+  // Lacros to Ash.
+  void OnDataTransferEndpointRead(
+      scoped_refptr<RefCountedScopedClipboardWriter> writer,
+      base::OnceClosure callback,
+      const std::string& mime_type,
+      std::u16string data);
+#endif
 
   // Called when data is read from FD passed from a client.
   // |data| is read data. |source| is source of the data, or nullptr if
@@ -219,10 +231,6 @@ class Seat : public aura::client::FocusChangeObserver,
 
   // True while Seat is updating clipboard data to selection source.
   bool changing_clipboard_data_to_selection_source_;
-
-  gfx::PointF last_pointer_location_;
-
-  std::vector<FocusChangedCallback> focus_changed_callbacks_;
 
   bool was_shutdown_ = false;
 

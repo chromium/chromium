@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,20 @@
 #include <memory>
 #include <string>
 
-class SkBitmap;
+#include "base/callback_forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace views {
 class Label;
 class ProgressBar;
 class View;
 class ImageView;
+class StyledLabel;
 }  // namespace views
+
+namespace gfx {
+class ImageSkia;
+}
 
 namespace payments {
 
@@ -37,6 +43,9 @@ constexpr int kDescriptionLineHeight = 20;
 
 // Insets of the body content.
 constexpr int kBodyInsets = 8;
+
+// Insets of the secondary small text, e.g., the opt-out footer.
+constexpr int kSecondarySmallTextInsets = 16;
 
 // Extra inset between the body content and the dialog buttons.
 constexpr int kBodyExtraInset = 16;
@@ -66,7 +75,20 @@ std::unique_ptr<views::Label> CreateSecurePaymentConfirmationTitleLabel(
 
 /// Creates the image view for the SPC instrument icon.
 std::unique_ptr<views::ImageView>
-CreateSecurePaymentConfirmationInstrumentIconView(const SkBitmap& bitmap);
+CreateSecurePaymentConfirmationInstrumentIconView(const gfx::ImageSkia& bitmap);
+
+// Formats the merchant label by combining the name and origin for display.
+std::u16string FormatMerchantLabel(
+    const absl::optional<std::u16string>& merchant_name,
+    const absl::optional<std::u16string>& merchant_origin);
+
+// Creates a label with a link to allow the user to delete their payment related
+// data from the relying party.
+std::unique_ptr<views::StyledLabel> CreateSecurePaymentConfirmationOptOutView(
+    const std::u16string& relying_party_id,
+    const std::u16string& opt_out_label,
+    const std::u16string& opt_out_link_label,
+    base::RepeatingClosure on_click);
 
 }  // namespace payments
 

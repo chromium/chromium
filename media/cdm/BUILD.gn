@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -12,8 +12,8 @@ source_set("cdm_type_conversion") {
   if (enable_library_cdms || is_win) {
     # This target is a subcomponent.
     visibility = [
+      ":*",
       "//media",
-      "//media/cdm",
     ]
     configs += [ "//media:subcomponent_config" ]
   } else {
@@ -67,6 +67,8 @@ source_set("cdm") {
     "supported_audio_codecs.h",
   ]
 
+  public_deps = [ ":cdm_type" ]
+
   deps = [
     "//crypto",
     "//media/base",
@@ -82,7 +84,6 @@ source_set("cdm") {
     deps += [
       ":cdm_api",
       ":cdm_paths",
-      "//components/crash/core/common:crash_key",
     ]
     sources += [
       "cdm_adapter.cc",
@@ -116,10 +117,13 @@ source_set("cdm") {
       "cdm_document_service.h",
       "cdm_helpers.cc",
       "cdm_helpers.h",
+      "load_cdm_uma_helper.cc",
+      "load_cdm_uma_helper.h",
     ]
     deps += [
       ":cdm_api",
       ":cdm_type_conversion",
+      "//components/crash/core/common:crash_key",
     ]
   }
 
@@ -135,6 +139,8 @@ source_set("cdm") {
       "win/media_foundation_cdm_module.h",
       "win/media_foundation_cdm_session.cc",
       "win/media_foundation_cdm_session.h",
+      "win/media_foundation_cdm_util.cc",
+      "win/media_foundation_cdm_util.h",
     ]
 
     libs = [ "Propsys.lib" ]
@@ -146,15 +152,24 @@ source_set("cdm") {
   }
 }
 
-static_library("cdm_paths") {
-  sources = [
-    "cdm_paths.cc",
-    "cdm_paths.h",
-  ]
-  deps = [
-    "//base",
-    "//media:media_buildflags",
-  ]
+if (enable_library_cdms) {
+  static_library("cdm_paths") {
+    public = [ "cdm_paths.h" ]
+
+    sources = [ "cdm_paths.cc" ]
+
+    public_deps = [ ":cdm_type" ]
+
+    deps = [
+      "//base",
+      "//media:media_buildflags",
+    ]
+  }
+}
+
+source_set("cdm_type") {
+  sources = [ "cdm_type.h" ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {

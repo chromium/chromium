@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,8 +34,13 @@ void Renderer::SetPreservesPitch(bool preserves_pitch) {
   // Not supported by most renderers.
 }
 
-void Renderer::SetAutoplayInitiated(bool autoplay_initiated) {
+void Renderer::SetWasPlayedWithUserActivation(
+    bool was_played_with_user_activation) {
   // Not supported by most renderers.
+}
+
+void Renderer::OnExternalVideoFrameRequest() {
+  // Default implementation of OnExternalVideoFrameRequest is to no-op.
 }
 
 }  // namespace media

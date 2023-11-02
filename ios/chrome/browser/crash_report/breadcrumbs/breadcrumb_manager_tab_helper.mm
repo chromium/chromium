@@ -1,23 +1,23 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_tab_helper.h"
 
 #import "base/ios/ns_error_util.h"
-#include "base/strings/stringprintf.h"
-#include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
-#include "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "base/strings/stringprintf.h"
+#import "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
+#import "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/net/protocol_handler_util.h"
-#include "ios/web/public/favicon/favicon_url.h"
+#import "ios/web/public/favicon/favicon_url.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#include "ios/web/public/security/security_style.h"
-#include "ios/web/public/security/ssl_status.h"
+#import "ios/web/public/security/security_style.h"
+#import "ios/web/public/security/ssl_status.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 
@@ -95,9 +95,9 @@ void BreadcrumbManagerTabHelper::PlatformLogEvent(const std::string& event) {
   const bool is_scroll_event =
       event.find(breadcrumbs::kBreadcrumbScroll) != std::string::npos;
   if (!is_scroll_event) {
-    // |sequentially_scrolled_| is incremented for each scroll event and reset
+    // `sequentially_scrolled_` is incremented for each scroll event and reset
     // here when non-scrolling event is logged. The user can scroll multiple
-    // times and |sequentially_scrolled_| will allow to throttle the logs to
+    // times and `sequentially_scrolled_` will allow to throttle the logs to
     // avoid polluting breadcrumbs.
     sequentially_scrolled_ = 0;
   }

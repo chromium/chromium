@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/version.h"
 #include "components/variations/proto/study.pb.h"
+#include "components/variations/seed_response.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
 
@@ -49,6 +50,13 @@ class VariationsServiceClient {
 
   // Returns the current form factor of the device.
   virtual Study::FormFactor GetCurrentFormFactor();
+
+  // If a native variations service that directly fetches the seed from the
+  // server is implemented, returns the SeedResponse from the native variations
+  // seed store, and removes the seed from the native storage given that we can
+  // assume that the returned seed would be stored into Chrome Prefs. Otherwise,
+  // returns nullptr.
+  virtual std::unique_ptr<SeedResponse> TakeSeedFromNativeVariationsSeedStore();
 
   // Returns whether the client is enterprise.
   // TODO(manukh): crbug.com/1003025. This is inconsistent with UMA which

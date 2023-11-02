@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -31,6 +32,10 @@
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
+#include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
+#include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
+#include "chrome/browser/preloading/prerender/prerender_manager.h"
+#include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ssl/typed_navigation_upgrade_throttle.h"
@@ -48,9 +53,11 @@
 #include "components/favicon/core/favicon_service.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
+#include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/omnibox_controller_emitter.h"
 #include "components/omnibox/browser/search_provider.h"
+#include "components/omnibox/browser/shortcuts_backend.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/search_engines/template_url_service.h"
@@ -122,12 +129,10 @@ bool ChromeOmniboxClient::IsPasteAndGoEnabled() const {
 }
 
 bool ChromeOmniboxClient::IsDefaultSearchProviderEnabled() const {
-  const base::DictionaryValue* url_dict = profile_->GetPrefs()->GetDictionary(
+  const base::Value::Dict& url_dict = profile_->GetPrefs()->GetDict(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName);
-  bool disabled_by_policy = false;
-  url_dict->GetBoolean(DefaultSearchManager::kDisabledByPolicy,
-                       &disabled_by_policy);
-  return !disabled_by_policy;
+  return !url_dict.FindBool(DefaultSearchManager::kDisabledByPolicy)
+              .value_or(false);
 }
 
 const SessionID& ChromeOmniboxClient::GetSessionID() const {
@@ -165,6 +170,11 @@ int ChromeOmniboxClient::GetHttpsPortForTesting() const {
   return TypedNavigationUpgradeThrottle::GetHttpsPortForTesting();
 }
 
+bool ChromeOmniboxClient::IsUsingFakeHttpsForHttpsUpgradeTesting() const {
+  // Tests on desktop/Android always use a real HTTPS server.
+  return false;
+}
+
 gfx::Image ChromeOmniboxClient::GetIconIfExtensionMatch(
     const AutocompleteMatch& match) const {
   TemplateURLService* service =
@@ -196,8 +206,8 @@ gfx::Image ChromeOmniboxClient::GetSizedIcon(const gfx::Image& icon) const {
   // around them to align them vertically with the other vector icons.
   DCHECK_GE(icon_size, icon.Height());
   DCHECK_GE(icon_size, icon.Width());
-  gfx::Insets padding_border((icon_size - icon.Height()) / 2,
-                             (icon_size - icon.Width()) / 2);
+  auto padding_border = gfx::Insets::VH((icon_size - icon.Height()) / 2,
+                                        (icon_size - icon.Width()) / 2);
   if (!padding_border.IsEmpty()) {
     return gfx::Image(gfx::CanvasImageSource::CreatePadded(*icon.ToImageSkia(),
                                                            padding_border));
@@ -250,8 +260,15 @@ void ChromeOmniboxClient::OnFocusChanged(OmniboxFocusState state,
 void ChromeOmniboxClient::OnResultChanged(
     const AutocompleteResult& result,
     bool default_match_changed,
+    bool should_preload,
     const BitmapFetchedCallback& on_bitmap_fetched) {
-  auto now = base::TimeTicks::Now();
+  if (should_preload) {
+    if (SearchPrefetchService* search_prefetch_service =
+            SearchPrefetchServiceFactory::GetForProfile(profile_)) {
+      search_prefetch_service->OnResultChanged(controller_->GetWebContents(),
+                                               result);
+    }
+  }
 
   BitmapFetcherService* bitmap_fetcher_service =
       BitmapFetcherServiceFactory::GetForBrowserContext(profile_);
@@ -263,18 +280,16 @@ void ChromeOmniboxClient::OnResultChanged(
   request_ids_.clear();
   // Create new requests.
   int result_index = -1;
-  for (const auto& match : result) {
+  for (const AutocompleteMatch& match : result) {
     ++result_index;
     if (match.ImageUrl().is_empty()) {
       continue;
     }
 
     request_ids_.push_back(bitmap_fetcher_service->RequestImage(
-        match.ImageUrl(),
-        base::BindOnce(
-            &ChromeOmniboxClient::OnBitmapFetched, weak_factory_.GetWeakPtr(),
-            on_bitmap_fetched, result_index,
-            bitmap_fetcher_service->IsCached(match.ImageUrl()), now)));
+        match.ImageUrl(), base::BindOnce(&ChromeOmniboxClient::OnBitmapFetched,
+                                         weak_factory_.GetWeakPtr(),
+                                         on_bitmap_fetched, result_index)));
   }
 }
 
@@ -314,6 +329,7 @@ void ChromeOmniboxClient::OnTextChanged(const AutocompleteMatch& current_match,
   AutocompleteActionPredictor::Action recommended_action =
       AutocompleteActionPredictor::ACTION_NONE;
   if (user_input_in_progress) {
+    content::WebContents* web_contents = controller_->GetWebContents();
     AutocompleteActionPredictor* action_predictor =
         predictors::AutocompleteActionPredictorFactory::GetForProfile(profile_);
     action_predictor->RegisterTransitionalMatches(user_text, result);
@@ -323,8 +339,8 @@ void ChromeOmniboxClient::OnTextChanged(const AutocompleteMatch& current_match,
     // but only get it if the user has actually typed something to avoid
     // constructing it before it's needed. Note: This event is triggered as
     // part of startup when the initial tab transitions to the start page.
-    recommended_action =
-        action_predictor->RecommendAction(user_text, current_match);
+    recommended_action = action_predictor->RecommendAction(
+        user_text, current_match, web_contents);
   }
 
   UMA_HISTOGRAM_ENUMERATION("AutocompleteActionPredictor.Action",
@@ -359,12 +375,31 @@ void ChromeOmniboxClient::OnRevert() {
 }
 
 void ChromeOmniboxClient::OnURLOpenedFromOmnibox(OmniboxLog* log) {
+  // Record the value if prerender for search suggestion was not started. Other
+  // values (kHitFinished, kUnused, kCancelled) are recorded in
+  // PrerenderManager.
+  content::WebContents* web_contents = controller_->GetWebContents();
+  if (web_contents) {
+    if (SearchPrefetchService* search_prefetch_service =
+            SearchPrefetchServiceFactory::GetForProfile(profile_)) {
+      search_prefetch_service->OnURLOpenedFromOmnibox(log, web_contents);
+    }
+
+    auto* prerender_manager = PrerenderManager::FromWebContents(web_contents);
+    if (!prerender_manager ||
+        !prerender_manager->HasSearchResultPagePrerendered()) {
+      base::UmaHistogramEnumeration(
+          internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
+          PrerenderPredictionStatus::kNotStarted);
+    }
+  }
+
   predictors::AutocompleteActionPredictorFactory::GetForProfile(profile_)
       ->OnOmniboxOpenedUrl(*log);
 }
 
 void ChromeOmniboxClient::OnBookmarkLaunched() {
-  RecordBookmarkLaunch(BOOKMARK_LAUNCH_LOCATION_OMNIBOX,
+  RecordBookmarkLaunch(BookmarkLaunchLocation::kOmnibox,
                        profile_metrics::GetBrowserProfileType(profile_));
 }
 
@@ -390,6 +425,22 @@ void ChromeOmniboxClient::OpenUpdateChromeDialog() {
   }
 }
 
+void ChromeOmniboxClient::FocusWebContents() {
+  if (controller_->GetWebContents())
+    controller_->GetWebContents()->Focus();
+}
+
+void ChromeOmniboxClient::OnNavigationLikely(
+    size_t index,
+    const AutocompleteMatch& match,
+    omnibox::mojom::NavigationPredictor navigation_predictor) {
+  if (SearchPrefetchService* search_prefetch_service =
+          SearchPrefetchServiceFactory::GetForProfile(profile_)) {
+    search_prefetch_service->OnNavigationLikely(
+        index, match, navigation_predictor, controller_->GetWebContents());
+  }
+}
+
 void ChromeOmniboxClient::DoPrerender(const AutocompleteMatch& match) {
   content::WebContents* web_contents = controller_->GetWebContents();
 
@@ -397,8 +448,10 @@ void ChromeOmniboxClient::DoPrerender(const AutocompleteMatch& match) {
   if (content::DevToolsAgentHost::IsDebuggerAttached(web_contents))
     return;
 
+  // TODO(https://crbug.com/1278634): Refactor relevant code to reuse common
+  // code, and ensure metrics are correctly recorded.
+  DCHECK(!AutocompleteMatch::IsSearchType(match.type));
   gfx::Rect container_bounds = web_contents->GetContainerBounds();
-
   predictors::AutocompleteActionPredictorFactory::GetForProfile(profile_)
       ->StartPrerendering(match.destination_url, *web_contents,
                           container_bounds.size());
@@ -425,15 +478,7 @@ void ChromeOmniboxClient::DoPreconnect(const AutocompleteMatch& match) {
 
 void ChromeOmniboxClient::OnBitmapFetched(const BitmapFetchedCallback& callback,
                                           int result_index,
-                                          bool is_cached,
-                                          base::TimeTicks start_time,
                                           const SkBitmap& bitmap) {
-  auto time_delta = base::TimeTicks::Now() - start_time;
-  UMA_HISTOGRAM_TIMES("Omnibox.BitmapFetchLatency", time_delta);
-  if (is_cached)
-    UMA_HISTOGRAM_TIMES("Omnibox.BitmapFetchLatency.Cached", time_delta);
-  else
-    UMA_HISTOGRAM_TIMES("Omnibox.BitmapFetchLatency.Uncached", time_delta);
   callback.Run(result_index, bitmap);
 }
 

@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_TAB_GROUPS_PUBLIC_MOJOM_TAB_GROUPS_MOJOM_TRAITS_H_
 #define COMPONENTS_TAB_GROUPS_PUBLIC_MOJOM_TAB_GROUPS_MOJOM_TRAITS_H_
 
+#include "base/notreached.h"
 #include "components/tab_groups/public/mojom/tab_group_types.mojom.h"
 #include "components/tab_groups/tab_group_color.h"
 
@@ -33,6 +34,8 @@ struct EnumTraits<tab_groups::mojom::Color, tab_groups::TabGroupColorId> {
         return MojoTabGroupColorId::kPurple;
       case TabGroupColorId::kCyan:
         return MojoTabGroupColorId::kCyan;
+      case TabGroupColorId::kOrange:
+        return MojoTabGroupColorId::kOrange;
     }
     NOTREACHED();
     return MojoTabGroupColorId::kGrey;
@@ -63,6 +66,9 @@ struct EnumTraits<tab_groups::mojom::Color, tab_groups::TabGroupColorId> {
         return true;
       case MojoTabGroupColorId::kCyan:
         *out = TabGroupColorId::kCyan;
+        return true;
+      case MojoTabGroupColorId::kOrange:
+        *out = TabGroupColorId::kOrange;
         return true;
     }
     NOTREACHED();

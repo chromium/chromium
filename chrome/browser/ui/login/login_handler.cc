@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
-#include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
@@ -399,17 +399,18 @@ PasswordForm LoginHandler::MakeInputForPasswordManager(
     const GURL& request_url,
     const net::AuthChallengeInfo& auth_info) {
   PasswordForm dialog_form;
-  if (base::LowerCaseEqualsASCII(auth_info.scheme, net::kBasicAuthScheme)) {
+  if (base::EqualsCaseInsensitiveASCII(auth_info.scheme,
+                                       net::kBasicAuthScheme)) {
     dialog_form.scheme = PasswordForm::Scheme::kBasic;
-  } else if (base::LowerCaseEqualsASCII(auth_info.scheme,
-                                        net::kDigestAuthScheme)) {
+  } else if (base::EqualsCaseInsensitiveASCII(auth_info.scheme,
+                                              net::kDigestAuthScheme)) {
     dialog_form.scheme = PasswordForm::Scheme::kDigest;
   } else {
     dialog_form.scheme = PasswordForm::Scheme::kOther;
   }
   dialog_form.url = auth_info.challenger.GetURL();
-  DCHECK(auth_info.is_proxy || auth_info.challenger.IsSameOriginWith(
-                                   url::Origin::Create(request_url)));
+  DCHECK(auth_info.is_proxy ||
+         auth_info.challenger == url::SchemeHostPort(request_url));
   dialog_form.signon_realm = GetSignonRealm(dialog_form.url, auth_info);
   return dialog_form;
 }
@@ -424,12 +425,12 @@ void LoginHandler::GetDialogStrings(const GURL& request_url,
   if (auth_info.is_proxy) {
     *authority = l10n_util::GetStringFUTF16(
         IDS_LOGIN_DIALOG_PROXY_AUTHORITY,
-        url_formatter::FormatOriginForSecurityDisplay(
-            auth_info.challenger, url_formatter::SchemeDisplay::SHOW));
+        url_formatter::FormatUrlForSecurityDisplay(
+            auth_info.challenger.GetURL(), url_formatter::SchemeDisplay::SHOW));
     authority_url = auth_info.challenger.GetURL();
   } else {
     *authority = url_formatter::FormatUrlForSecurityDisplay(request_url);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Android concatenates with a space rather than displaying on two separate
     // lines, so it needs some surrounding text.
     *authority =

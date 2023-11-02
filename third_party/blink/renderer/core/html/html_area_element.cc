@@ -115,7 +115,7 @@ Path HTMLAreaElement::GetPath(const LayoutObject* container_object) const {
     // No need to zoom because it is already applied in
     // containerObject->borderBoxRect().
     if (const auto* box = DynamicTo<LayoutBox>(container_object))
-      path.AddRect(FloatRect(box->BorderBoxRect()));
+      path.AddRect(gfx::RectF(box->BorderBoxRect()));
     path_ = nullptr;
     return path;
   }
@@ -124,7 +124,7 @@ Path HTMLAreaElement::GetPath(const LayoutObject* container_object) const {
   if (path_) {
     path = *path_;
   } else {
-    if (coords_.IsEmpty())
+    if (coords_.empty())
       return path;
 
     switch (shape_) {
@@ -155,7 +155,7 @@ Path HTMLAreaElement::GetPath(const LayoutObject* container_object) const {
           float y0 = ClampCoordinate(coords_[1]);
           float x1 = ClampCoordinate(coords_[2]);
           float y1 = ClampCoordinate(coords_[3]);
-          path.AddRect(FloatRect(x0, y0, x1 - x0, y1 - y0));
+          path.AddRect(gfx::PointF(x0, y0), gfx::PointF(x1, y1));
         }
         break;
       default:
@@ -193,12 +193,14 @@ bool HTMLAreaElement::IsMouseFocusable() const {
 }
 
 bool HTMLAreaElement::IsFocusableStyle() const {
-  HTMLImageElement* image = ImageElement();
-  if (!image || !image->GetLayoutObject() ||
-      image->GetLayoutObject()->Style()->Visibility() != EVisibility::kVisible)
-    return false;
-
-  return SupportsFocus() && Element::tabIndex() >= 0;
+  if (HTMLImageElement* image = ImageElement()) {
+    if (LayoutObject* layout_object = image->GetLayoutObject()) {
+      const ComputedStyle& style = layout_object->StyleRef();
+      return !style.IsInert() && style.Visibility() == EVisibility::kVisible &&
+             SupportsFocus() && Element::tabIndex() >= 0;
+    }
+  }
+  return false;
 }
 
 void HTMLAreaElement::SetFocused(bool should_be_focused,
@@ -217,7 +219,7 @@ void HTMLAreaElement::SetFocused(bool should_be_focused,
     layout_image->AreaElementFocusChanged(this);
 }
 
-void HTMLAreaElement::UpdateFocusAppearanceWithOptions(
+void HTMLAreaElement::UpdateSelectionOnFocus(
     SelectionBehaviorOnFocus selection_behavior,
     const FocusOptions* options) {
   GetDocument().UpdateStyleAndLayoutTreeForNode(this);
@@ -225,8 +227,7 @@ void HTMLAreaElement::UpdateFocusAppearanceWithOptions(
     return;
 
   if (HTMLImageElement* image_element = ImageElement()) {
-    image_element->UpdateFocusAppearanceWithOptions(selection_behavior,
-                                                    options);
+    image_element->UpdateSelectionOnFocus(selection_behavior, options);
   }
 }
 

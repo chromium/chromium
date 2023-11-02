@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_capacity_allocation_host.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace {
@@ -64,8 +65,9 @@ void FileSystemAccessCapacityTracker::RequestFileCapacityChange(
   }
   capacity_allocation_host_->RequestCapacityChange(
       capacity_delta,
-      WTF::Bind(&FileSystemAccessCapacityTracker::DidRequestCapacityChange,
-                WrapPersistent(this), required_capacity, std::move(callback)));
+      WTF::BindOnce(&FileSystemAccessCapacityTracker::DidRequestCapacityChange,
+                    WrapPersistent(this), required_capacity,
+                    std::move(callback)));
 }
 
 bool FileSystemAccessCapacityTracker::RequestFileCapacityChangeSync(

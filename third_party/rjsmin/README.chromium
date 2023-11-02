@@ -1,0 +1,9 @@
+Name: rjsmin
+Short Name: rjsmin
+URL: http://opensource.perlig.de/rjsmin/
+Version: 1.0.12
+License: Apache 2.0
+Security Critical: no
+
+Description:
+rJSmin is a javascript minifier written in python.

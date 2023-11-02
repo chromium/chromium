@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,21 +8,14 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
+#include "ui/base/text/bytes_formatting.h"
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId LacrosDataMigrationScreenView::kScreenId;
+LacrosDataMigrationScreenHandler::LacrosDataMigrationScreenHandler()
+    : BaseScreenHandler(kScreenId) {}
 
-LacrosDataMigrationScreenHandler::LacrosDataMigrationScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
-  set_user_acted_method_path("login.LacrosDataMigrationScreen.userActed");
-}
-
-LacrosDataMigrationScreenHandler::~LacrosDataMigrationScreenHandler() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
+LacrosDataMigrationScreenHandler::~LacrosDataMigrationScreenHandler() = default;
 
 void LacrosDataMigrationScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
@@ -30,35 +23,49 @@ void LacrosDataMigrationScreenHandler::DeclareLocalizedValues(
                IDS_LACROS_DATA_MIGRATION_SCREEN_TITLE);
   builder->Add("lacrosDataMigrationSubtitle",
                IDS_LACROS_DATA_MIGRATION_SCREEN_SUBTITLE);
-}
-
-void LacrosDataMigrationScreenHandler::Bind(LacrosDataMigrationScreen* screen) {
-  BaseScreenHandler::SetBaseScreen(screen);
-  screen_ = screen;
-}
-
-void LacrosDataMigrationScreenHandler::Unbind() {
-  BaseScreenHandler::SetBaseScreen(nullptr);
-  screen_ = nullptr;
+  builder->Add("lacrosDataMigrationSkipButton",
+               IDS_LACROS_DATA_MIGRATION_SCREEN_SKIP_BUTTON);
+  builder->Add("lacrosDataMigrationSkipSuggestion",
+               IDS_LACROS_DATA_MIGRATION_SCREEN_SKIP_SUGGESTION);
+  builder->Add("batteryWarningTitle", IDS_UPDATE_BATTERY_WARNING_TITLE);
+  builder->Add("batteryWarningText", IDS_UPDATE_BATTERY_WARNING_TEXT);
+  builder->Add("lacrosDataMigrationErrorTitle",
+               IDS_LACROS_DATA_MIGRATION_SCREEN_ERROR_TITLE);
+  builder->Add("lacrosDataMigrationErrorLowDiskSpace",
+               IDS_LACROS_DATA_MIGRATION_SCREEN_ERROR_LOW_DISK_SPACE);
+  builder->Add("lacrosDataMigrationErrorSubtitle",
+               IDS_LACROS_DATA_MIGRATION_SCREEN_ERROR_SUBTITLE);
+  builder->Add("lacrosDataMigrationErrorCancelButton",
+               IDS_LACROS_DATA_MIGRATION_SCREEN_ERROR_CANCEL_BUTTON);
+  builder->Add("lacrosDataMigrationErrorGotoFilesButton",
+               IDS_LACROS_DATA_MIGRATION_SCREEN_ERROR_GOTO_FILES_BUTTON);
 }
 
 void LacrosDataMigrationScreenHandler::Show() {
-  if (!page_is_ready()) {
-    show_on_init_ = true;
-    return;
-  }
-  ShowScreen(kScreenId);
+  ShowInWebUI();
 }
 
 void LacrosDataMigrationScreenHandler::SetProgressValue(int progress) {
-  CallJS("login.LacrosDataMigrationScreen.setProgressValue", progress);
+  CallExternalAPI("setProgressValue", progress);
 }
 
-void LacrosDataMigrationScreenHandler::Initialize() {
-  if (show_on_init_) {
-    Show();
-    show_on_init_ = false;
-  }
+void LacrosDataMigrationScreenHandler::ShowSkipButton() {
+  CallExternalAPI("showSkipButton");
+}
+
+void LacrosDataMigrationScreenHandler::SetLowBatteryStatus(bool low_battery) {
+  CallExternalAPI("setLowBatteryStatus", low_battery);
+}
+
+void LacrosDataMigrationScreenHandler::SetFailureStatus(
+    const absl::optional<uint64_t>& required_size,
+    bool show_goto_files) {
+  CallExternalAPI(
+      "setFailureStatus",
+      required_size.has_value()
+          ? ui::FormatBytes(static_cast<int64_t>(required_size.value()))
+          : std::u16string(),
+      show_goto_files);
 }
 
 }  // namespace chromeos

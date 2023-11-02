@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/language/ios/browser/ios_language_detection_tab_helper.h"
 
 namespace web {
@@ -43,7 +42,7 @@ class FakeLanguageDetectionTabHelperObserver
       language_detection_details_;
 
   // Stops observing the IOSLanguageDetectionTabHelper instance associated with
-  // |web_state_| and sets |web_state_| to null.
+  // `web_state_` and sets `web_state_` to null.
   void StopObservingIOSLanguageDetectionTabHelper();
 };
 

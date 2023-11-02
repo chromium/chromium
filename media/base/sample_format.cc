@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,8 @@ int SampleFormatToBytesPerChannel(SampleFormat sample_format) {
     case kSampleFormatAc3:
     case kSampleFormatEac3:
     case kSampleFormatMpegHAudio:
+    case kSampleFormatDts:
+    case kSampleFormatDtsxP2:
       return 1;
     case kSampleFormatS16:
     case kSampleFormatPlanarS16:
@@ -28,6 +30,7 @@ int SampleFormatToBytesPerChannel(SampleFormat sample_format) {
     case kSampleFormatF32:
     case kSampleFormatPlanarF32:
     case kSampleFormatPlanarS32:
+    case kSampleFormatIECDts:
       return 4;
   }
 
@@ -67,6 +70,12 @@ const char* SampleFormatToString(SampleFormat sample_format) {
       return "Compressed E-AC3 bitstream";
     case kSampleFormatMpegHAudio:
       return "Compressed MPEG-H audio bitstream";
+    case kSampleFormatDts:
+      return "Compressed DTS bitstream";
+    case kSampleFormatDtsxP2:
+      return "Compressed DTSXP2 bitstream";
+    case kSampleFormatIECDts:
+      return "IEC-61937 encapsulated DTS bitstream";
   }
   NOTREACHED() << "Invalid sample format provided: " << sample_format;
   return "";
@@ -88,6 +97,9 @@ bool IsPlanar(SampleFormat sample_format) {
     case kSampleFormatAc3:
     case kSampleFormatEac3:
     case kSampleFormatMpegHAudio:
+    case kSampleFormatDts:
+    case kSampleFormatDtsxP2:
+    case kSampleFormatIECDts:
       return false;
   }
 
@@ -105,6 +117,9 @@ bool IsInterleaved(SampleFormat sample_format) {
     case kSampleFormatAc3:
     case kSampleFormatEac3:
     case kSampleFormatMpegHAudio:
+    case kSampleFormatDts:
+    case kSampleFormatDtsxP2:
+    case kSampleFormatIECDts:
       return true;
     case kUnknownSampleFormat:
     case kSampleFormatPlanarU8:
@@ -123,6 +138,13 @@ bool IsBitstream(SampleFormat sample_format) {
     case kSampleFormatAc3:
     case kSampleFormatEac3:
     case kSampleFormatMpegHAudio:
+    case kSampleFormatDts:
+    case kSampleFormatDtsxP2:
+    case kSampleFormatIECDts:
+      // If on-device decoding is required, the sample format will be
+      // kSampleFormatS16, so it will return false. If bit-stream passthrough
+      // is required, the sample format would already be
+      // kSampleFormatDts/DtsxP2. In this case, it should return true as below.
       return true;
     case kUnknownSampleFormat:
     case kSampleFormatU8:

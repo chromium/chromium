@@ -1,9 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_REMOTE_COCOA_APP_SHIM_VIEWS_SCROLLBAR_BRIDGE_H_
 #define COMPONENTS_REMOTE_COCOA_APP_SHIM_VIEWS_SCROLLBAR_BRIDGE_H_
+
+#include "base/memory/raw_ptr.h"
 
 #import <Cocoa/Cocoa.h>
 
@@ -23,7 +25,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ViewsScrollbarBridgeDelegate {
 REMOTE_COCOA_APP_SHIM_EXPORT
 @interface ViewsScrollbarBridge : NSObject {
  @private
-  ViewsScrollbarBridgeDelegate* _delegate;  // Weak. Owns this.
+  raw_ptr<ViewsScrollbarBridgeDelegate> _delegate;  // Weak. Owns this.
 }
 
 // Initializes with the given delegate and registers for notifications on

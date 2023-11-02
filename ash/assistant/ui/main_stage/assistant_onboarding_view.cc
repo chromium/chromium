@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,26 +17,26 @@
 #include "ash/assistant/ui/main_stage/assistant_onboarding_suggestion_view.h"
 #include "ash/public/cpp/assistant/controller/assistant_suggestions_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
-#include "ash/public/cpp/style/color_provider.h"
-#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/table_layout_view.h"
 
 namespace ash {
 
 namespace {
 
-using chromeos::assistant::AssistantSuggestion;
-using chromeos::assistant::AssistantSuggestionType;
+using assistant::AssistantSuggestion;
+using assistant::AssistantSuggestionType;
 
 // Greeting.
 constexpr int kGreetingLabelLineHeight = 28;
@@ -49,7 +49,6 @@ constexpr int kIntroLabelSizeDelta = 2;
 
 // Suggestions.
 constexpr int kSuggestionsColumnCount = 3;
-constexpr int kSuggestionsColumnSetId = 1;
 constexpr int kSuggestionsMaxCount = 6;
 constexpr int kSuggestionsMarginDip = 16;
 constexpr int kSuggestionsMarginTopDip = 32;
@@ -144,12 +143,10 @@ void AssistantOnboardingView::ChildPreferredSizeChanged(views::View* child) {
 void AssistantOnboardingView::OnThemeChanged() {
   views::View::OnThemeChanged();
 
-  ScopedAssistantLightModeAsDefault scoped_light_mode_as_default;
-
-  greeting_->SetEnabledColor(ColorProvider::Get()->GetContentLayerColor(
-      ColorProvider::ContentLayerType::kTextColorPrimary));
-  intro_->SetEnabledColor(ColorProvider::Get()->GetContentLayerColor(
-      ColorProvider::ContentLayerType::kTextColorPrimary));
+  SkColor greeting_color =
+      GetColorProvider()->GetColor(kColorAshAssistantGreetingEnabled);
+  greeting_->SetEnabledColor(greeting_color);
+  intro_->SetEnabledColor(greeting_color);
 }
 
 void AssistantOnboardingView::OnAssistantControllerDestroying() {
@@ -182,7 +179,7 @@ void AssistantOnboardingView::OnUiVisibilityChanged(
 void AssistantOnboardingView::InitLayout() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets(0, assistant::ui::GetHorizontalMargin())));
+      gfx::Insets::VH(0, assistant::ui::GetHorizontalMargin())));
 
   // Greeting.
   greeting_ = AddChildView(std::make_unique<views::Label>());
@@ -197,7 +194,8 @@ void AssistantOnboardingView::InitLayout() {
   // Intro.
   intro_ = AddChildView(std::make_unique<views::Label>());
   intro_->SetAutoColorReadabilityEnabled(false);
-  intro_->SetBorder(views::CreateEmptyBorder(kIntroLabelMarginTopDip, 0, 0, 0));
+  intro_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(kIntroLabelMarginTopDip, 0, 0, 0)));
   intro_->SetFontList(assistant::ui::GetDefaultFontList()
                           .DeriveWithSizeDelta(kIntroLabelSizeDelta)
                           .DeriveWithWeight(gfx::Font ::Weight::MEDIUM));
@@ -212,26 +210,24 @@ void AssistantOnboardingView::InitLayout() {
 }
 
 void AssistantOnboardingView::UpdateSuggestions() {
-  if (grid_)
-    RemoveChildViewT(grid_);
+  if (table_)
+    RemoveChildViewT(table_);
 
-  grid_ = AddChildView(std::make_unique<views::View>());
-  grid_->SetBorder(views::CreateEmptyBorder(kSuggestionsMarginTopDip, 0, 0, 0));
-
-  auto* layout = grid_->SetLayoutManager(std::make_unique<views::GridLayout>());
-  auto* columns = layout->AddColumnSet(kSuggestionsColumnSetId);
+  table_ = AddChildView(std::make_unique<views::TableLayoutView>());
+  table_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(kSuggestionsMarginTopDip, 0, 0, 0)));
 
   // Initialize columns.
   for (int i = 0; i < kSuggestionsColumnCount; ++i) {
     if (i > 0) {
-      columns->AddPaddingColumn(
-          /*resize_percent=*/views::GridLayout::kFixedSize,
+      table_->AddPaddingColumn(
+          /*horizontal_resize=*/views::TableLayout::kFixedSize,
           /*width=*/kSuggestionsMarginDip);
     }
-    columns->AddColumn(
-        /*h_align=*/views::GridLayout::Alignment::FILL,
-        /*v_align=*/views::GridLayout::Alignment::FILL, /*resize_percent=*/1.0,
-        /*size_type=*/views::GridLayout::ColumnSize::kFixed,
+    table_->AddColumn(
+        /*h_align=*/views::LayoutAlignment::kStretch,
+        /*v_align=*/views::LayoutAlignment::kStretch, /*horizontal_resize=*/1.0,
+        /*size_type=*/views::TableLayout::ColumnSize::kFixed,
         /*fixed_width=*/0, /*min_width=*/0);
   }
 
@@ -244,17 +240,14 @@ void AssistantOnboardingView::UpdateSuggestions() {
   for (size_t i = 0; i < suggestions.size() && i < kSuggestionsMaxCount; ++i) {
     if (i % kSuggestionsColumnCount == 0) {
       if (i > 0) {
-        layout->StartRowWithPadding(
-            /*vertical_resize=*/views::GridLayout::kFixedSize,
-            /*column_set_id=*/kSuggestionsColumnSetId,
-            /*padding_resize=*/views::GridLayout::kFixedSize,
-            /*padding=*/kSuggestionsMarginDip);
-      } else {
-        layout->StartRow(/*vertical_resize=*/views::GridLayout::kFixedSize,
-                         /*column_set_id=*/kSuggestionsColumnSetId);
+        table_->AddPaddingRow(
+            /*vertical_resize=*/views::TableLayout::kFixedSize,
+            /*height=*/kSuggestionsMarginDip);
       }
+      table_->AddRows(/*n=*/1,
+                      /*vertical_resize=*/views::TableLayout::kFixedSize);
     }
-    layout->AddView(std::make_unique<AssistantOnboardingSuggestionView>(
+    table_->AddChildView(std::make_unique<AssistantOnboardingSuggestionView>(
         delegate_, suggestions.at(i), i));
   }
 }

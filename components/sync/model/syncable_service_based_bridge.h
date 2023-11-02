@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/sync/model/model_error.h"
@@ -86,7 +86,7 @@ class SyncableServiceBasedBridge : public ModelTypeSyncBridge {
   void OnReadAllMetadataForInit(const absl::optional<ModelError>& error,
                                 std::unique_ptr<MetadataBatch> metadata_batch);
   void OnSyncableServiceReady(std::unique_ptr<MetadataBatch> metadata_batch);
-  absl::optional<ModelError> StartSyncableService() WARN_UNUSED_RESULT;
+  [[nodiscard]] absl::optional<ModelError> StartSyncableService();
   SyncChangeList StoreAndConvertRemoteChanges(
       std::unique_ptr<MetadataChangeList> metadata_change_list,
       EntityChangeList input_entity_change_list);
@@ -102,7 +102,7 @@ class SyncableServiceBasedBridge : public ModelTypeSyncBridge {
   void ReportErrorIfSet(const absl::optional<ModelError>& error);
 
   const ModelType type_;
-  SyncableService* const syncable_service_;
+  const raw_ptr<SyncableService> syncable_service_;
 
   std::unique_ptr<ModelTypeStore> store_;
   bool syncable_service_started_;

@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,12 +14,12 @@
 #include <unordered_map>
 #include <utility>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
 #include "base/allocator/partition_allocator/starscan/metadata_allocator.h"
 #include "base/allocator/partition_allocator/starscan/starscan_fwd.h"
-#include "base/threading/platform_thread.h"
-#include "base/time/time.h"
 
-namespace base {
+namespace partition_alloc {
 
 class StatsReporter;
 
@@ -74,11 +74,12 @@ class StatsCollector final {
     using PerThreadEvents =
         std::array<DeferredTraceEvent, static_cast<size_t>(IdType::kNumIds)>;
     using UnderlyingMap = std::unordered_map<
-        PlatformThreadId,
+        internal::base::PlatformThreadId,
         PerThreadEvents,
-        std::hash<PlatformThreadId>,
+        std::hash<internal::base::PlatformThreadId>,
         std::equal_to<>,
-        MetadataAllocator<std::pair<const PlatformThreadId, PerThreadEvents>>>;
+        MetadataAllocator<std::pair<const internal::base::PlatformThreadId,
+                                    PerThreadEvents>>>;
 
     inline void RegisterBeginEventFromCurrentThread(IdType id);
     inline void RegisterEndEventFromCurrentThread(IdType id);
@@ -133,7 +134,7 @@ class StatsCollector final {
   }
 
   base::TimeDelta GetOverallTime() const;
-  void ReportTracesAndHists(StatsReporter& reporter) const;
+  void ReportTracesAndHists(partition_alloc::StatsReporter& reporter) const;
 
  private:
   using MetadataString =
@@ -161,10 +162,10 @@ class StatsCollector final {
 
   template <Context context>
   void ReportTracesAndHistsImpl(
-      StatsReporter& reporter,
+      partition_alloc::StatsReporter& reporter,
       const DeferredTraceEventMap<context>& event_map) const;
 
-  void ReportSurvivalRate(StatsReporter& reporter) const;
+  void ReportSurvivalRate(partition_alloc::StatsReporter& reporter) const;
 
   DeferredTraceEventMap<Context::kMutator> mutator_trace_events_;
   DeferredTraceEventMap<Context::kScanner> scanner_trace_events_;
@@ -242,6 +243,6 @@ inline StatsCollector::MetadataString StatsCollector::ToUMAString(
 #undef FOR_ALL_PCSCAN_SCANNER_SCOPES
 
 }  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_STATS_COLLECTOR_H_

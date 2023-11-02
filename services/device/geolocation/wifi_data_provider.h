@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include <set>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "services/device/geolocation/wifi_data.h"
 
@@ -48,6 +48,10 @@ class WifiDataProvider : public base::RefCountedThreadSafe<WifiDataProvider> {
 
   bool has_callbacks() const;
 
+  base::WeakPtr<WifiDataProvider> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  protected:
   friend class base::RefCountedThreadSafe<WifiDataProvider>;
   virtual ~WifiDataProvider();
@@ -71,6 +75,8 @@ class WifiDataProvider : public base::RefCountedThreadSafe<WifiDataProvider> {
   scoped_refptr<base::SingleThreadTaskRunner> client_task_runner_;
 
   CallbackSet callbacks_;
+
+  base::WeakPtrFactory<WifiDataProvider> weak_factory_{this};
 };
 
 }  // namespace device

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_filter.h"
+#include "components/prefs/pref_name_set.h"
 #include "components/prefs/segregated_pref_store.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/preferences/public/mojom/tracked_preference_validation_delegate.mojom.h"
@@ -22,7 +23,7 @@
 #include "services/preferences/tracked/temp_scoped_dir_cleaner.h"
 #include "services/preferences/tracked/tracked_preferences_migration.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_util.h"
 #include "services/preferences/tracked/registry_hash_store_contents_win.h"
@@ -49,7 +50,7 @@ std::pair<std::unique_ptr<PrefHashStore>, std::unique_ptr<HashStoreContents>>
 GetExternalVerificationPrefHashStorePair(
     const prefs::mojom::TrackedPersistentPrefStoreConfiguration& config,
     scoped_refptr<TempScopedDirCleaner> temp_dir_cleaner) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return std::make_pair(
       std::make_unique<PrefHashStoreImpl>(config.registry_seed,
                                           config.legacy_device_id,
@@ -72,8 +73,8 @@ PersistentPrefStore* CreateTrackedPersistentPrefStore(
       unprotected_configuration;
   std::vector<prefs::mojom::TrackedPreferenceMetadataPtr>
       protected_configuration;
-  std::set<std::string> protected_pref_names;
-  std::set<std::string> unprotected_pref_names;
+  PrefNameSet protected_pref_names;
+  PrefNameSet unprotected_pref_names;
   for (auto& metadata : config->tracking_configuration) {
     if (metadata->enforcement_level > prefs::mojom::TrackedPreferenceMetadata::
                                           EnforcementLevel::NO_ENFORCEMENT) {
@@ -87,7 +88,7 @@ PersistentPrefStore* CreateTrackedPersistentPrefStore(
   config->tracking_configuration.clear();
 
   scoped_refptr<TempScopedDirCleaner> temp_scoped_dir_cleaner;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // For tests that create a profile in a ScopedTempDir, share a ref_counted
   // object between the unprotected and protected hash filter's
   // RegistryHashStoreContentsWin which will clear the registry keys when

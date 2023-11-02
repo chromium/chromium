@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/permissions/permissions_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
@@ -38,6 +39,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/browsertest_util.h"
@@ -53,6 +55,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -222,11 +225,10 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, RunAtTimingsAllFire) {
                               "/extensions/test_xsl.xml"};
 
   for (const auto& path : test_paths) {
-    ExtensionTestMessageListener listener_start("document-start-success",
-                                                false);
-    ExtensionTestMessageListener listener_end("document-end-success", false);
+    ExtensionTestMessageListener listener_start("document-start-success");
+    ExtensionTestMessageListener listener_end("document-end-success");
     listener_end.set_failure_message("document-end-failure");
-    ExtensionTestMessageListener listener_idle("document-idle-success", false);
+    ExtensionTestMessageListener listener_idle("document-idle-success");
     listener_idle.set_failure_message("document-idle-failure");
 
     // Load the URL and make sure each script set for the different timings have
@@ -367,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, FetchExemptFromCSP) {
   test_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), kContentScript);
   ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
 
-  ExtensionTestMessageListener listener(false /* will_reply */);
+  ExtensionTestMessageListener listener;
 
   // The fetch will undergo a redirect. Note that the fetched file sets the
   // "Access-Control-Allow-Origin: *" header to allow for cross origin access.
@@ -680,18 +682,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ContentScriptBypassPageCSP) {
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-class ContentScriptApiTestWithTrustedDOMTypesEnabled
-    : public ContentScriptApiTest {
- public:
-  ContentScriptApiTestWithTrustedDOMTypesEnabled() {
-    feature_list_.InitAndEnableFeature(features::kTrustedDOMTypes);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ContentScriptApiTestWithTrustedDOMTypesEnabled,
+IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
                        ContentScriptBypassPageTrustedTypes) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   extensions::ResultCatcher catcher;
@@ -727,7 +718,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ContentScriptBlockingScript) {
   js_dialog_manager->SetDialogShownCallbackForTesting(
       dialog_wait.QuitClosure());
 
-  ExtensionTestMessageListener listener("done", false);
+  ExtensionTestMessageListener listener("done");
   listener.set_extension_id(ext2->id());
 
   // Navigate! Both extensions will try to inject.
@@ -781,7 +772,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
   js_dialog_manager->SetDialogShownCallbackForTesting(
       dialog_wait.QuitClosure());
 
-  ExtensionTestMessageListener listener("done", false);
+  ExtensionTestMessageListener listener("done");
   listener.set_extension_id(ext2->id());
 
   // Navigate!
@@ -853,14 +844,15 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
   const Extension* injector = LoadExtension(injector_dir.UnpackedPath());
   ASSERT_TRUE(injector);
 
-  ExtensionTestMessageListener listener("done", false);
-  AddTabAtIndex(0, GURL("chrome://newtab"), ui::PAGE_TRANSITION_LINK);
+  ExtensionTestMessageListener listener("done");
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL("chrome://newtab"), ui::PAGE_TRANSITION_LINK));
   browser()->tab_strip_model()->ActivateTabAt(0);
   content::WebContents* tab_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
   EXPECT_EQ(new_tab_override->GetResourceURL("newtab.html"),
-            tab_contents->GetMainFrame()->GetLastCommittedURL());
+            tab_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
   EXPECT_FALSE(listener.was_satisfied());
   listener.Reset();
 
@@ -880,9 +872,8 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
   // inject the script, because scripts aren't allowed to run on foreign
   // extensions' pages.
   base::FilePath data_dir = test_data_dir_.AppendASCII("content_scripts");
-  ExtensionTestMessageListener iframe_loaded_listener("iframe loaded", false);
-  ExtensionTestMessageListener content_script_listener("script injected",
-                                                       false);
+  ExtensionTestMessageListener iframe_loaded_listener("iframe loaded");
+  ExtensionTestMessageListener content_script_listener("script injected");
   LoadExtension(data_dir.AppendASCII("script_a_com"));
   LoadExtension(data_dir.AppendASCII("background_page_iframe"));
   EXPECT_TRUE(iframe_loaded_listener.WaitUntilSatisfied());
@@ -892,7 +883,8 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
 IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, CannotScriptTheNewTabPage) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
-  ExtensionTestMessageListener test_listener("ready", true);
+  ExtensionTestMessageListener test_listener("ready",
+                                             ReplyBehavior::kWillReply);
   LoadExtension(test_data_dir_.AppendASCII("content_scripts/ntp"));
   ASSERT_TRUE(test_listener.WaitUntilSatisfied());
 
@@ -1331,7 +1323,7 @@ void ContentScriptRelatedFrameTest::SetUpOnMainThread() {
   constexpr char kContentScriptManifest[] =
       R"({
            "name": "Content Script injection in related frames",
-           "manifest_version": 2,
+           "manifest_version": 3,
            "version": "0.1",
            "content_scripts": [{
              "matches": ["http://example.com/*"],
@@ -1348,15 +1340,14 @@ void ContentScriptRelatedFrameTest::SetUpOnMainThread() {
              "js": ["script.js"],
              "run_at": "document_end",
              "all_frames": true,
-             %s
              "match_about_blank": true
            }]
          })";
   const char* extra_property = "";
   if (IncludeMatchOriginAsFallback())
     extra_property = R"("match_origin_as_fallback": true,)";
-  std::string manifest = base::StringPrintf(kContentScriptManifest,
-                                            extra_property, extra_property);
+  std::string manifest =
+      base::StringPrintf(kContentScriptManifest, extra_property);
   test_extension_dir_.WriteManifest(manifest);
 
   std::string script = base::StringPrintf(
@@ -1500,9 +1491,9 @@ GURL ContentScriptRelatedFrameTest::CreateFilesystemURL(
 IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
                        MatchAboutBlank_Iframe_Allowed) {
   content::WebContents* tab = NavigateTab(allowed_url_with_iframe());
-  NavigateIframe(tab->GetMainFrame(), "frames[0]", about_blank());
+  NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0]", about_blank());
   content::RenderFrameHost* render_frame_host =
-      content::ChildFrameAt(tab->GetMainFrame(), 0);
+      content::ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(render_frame_host);
   EXPECT_EQ(about_blank(), render_frame_host->GetLastCommittedURL());
   EXPECT_TRUE(DidScriptRunInFrame(render_frame_host));
@@ -1513,9 +1504,9 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
 IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
                        MatchAboutBlank_Iframe_Disallowed) {
   content::WebContents* tab = NavigateTab(disallowed_url_with_iframe());
-  NavigateIframe(tab->GetMainFrame(), "frames[0]", about_blank());
+  NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0]", about_blank());
   content::RenderFrameHost* render_frame_host =
-      content::ChildFrameAt(tab->GetMainFrame(), 0);
+      content::ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(render_frame_host);
   EXPECT_EQ(about_blank(), render_frame_host->GetLastCommittedURL());
   EXPECT_FALSE(DidScriptRunInFrame(render_frame_host));
@@ -1527,7 +1518,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
                        MatchAboutBlank_Popup_Allowed) {
   content::WebContents* tab = NavigateTab(allowed_url());
   content::WebContents* popup = OpenPopup(tab, about_blank());
-  EXPECT_TRUE(DidScriptRunInFrame(popup->GetMainFrame()));
+  EXPECT_TRUE(DidScriptRunInFrame(popup->GetPrimaryMainFrame()));
 }
 
 // Injection should fail on a popup to about:blank created by a disallowed site.
@@ -1535,7 +1526,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
                        MatchAboutBlank_Popup_Disallowed) {
   content::WebContents* tab = NavigateTab(disallowed_url());
   content::WebContents* popup = OpenPopup(tab, about_blank());
-  EXPECT_FALSE(DidScriptRunInFrame(popup->GetMainFrame()));
+  EXPECT_FALSE(DidScriptRunInFrame(popup->GetPrimaryMainFrame()));
 }
 
 // Browser-initiated navigations do not have a separate precursor tuple, so
@@ -1543,7 +1534,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
 IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
                        MatchAboutBlank_BrowserOpened) {
   content::WebContents* tab = NavigateTab(about_blank());
-  EXPECT_FALSE(DidScriptRunInFrame(tab->GetMainFrame()));
+  EXPECT_FALSE(DidScriptRunInFrame(tab->GetPrimaryMainFrame()));
 }
 
 // Tests injecting a content script when the iframe rewrites the parent to be
@@ -1552,11 +1543,20 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
 // https://crbug.com/963420.
 IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
                        MatchAboutBlank_NullParent) {
-  content::DOMMessageQueue message_queue;
   NavigateParams navigate_params(browser(), null_document_url(),
                                  ui::PAGE_TRANSITION_TYPED);
   navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  Navigate(&navigate_params);
+
+  // Save the WebContents instance that will be created by this navigation, as
+  // the dom message that we later wait for is sent in this instance.
+  content::WebContents* web_contents = nullptr;
+  {
+    content::WebContentsAddedObserver new_web_contents_observer;
+    Navigate(&navigate_params);
+    web_contents = new_web_contents_observer.GetWebContents();
+  }
+
+  content::DOMMessageQueue message_queue(web_contents);
   std::string result;
   // We can't rely on the navigation observer logic, because the frame is
   // destroyed before it finishes loading. Instead, it sends a message through
@@ -1567,7 +1567,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(null_document_url(), tab->GetLastCommittedURL());
-  content::RenderFrameHost* main_frame = tab->GetMainFrame();
+  content::RenderFrameHost* main_frame = tab->GetPrimaryMainFrame();
   // Sanity check: The main frame should have been re-written. The test passes
   // if there's no crash. Since the iframe rewrites the parent synchronously
   // after sending the "navigated" message, there's no risk of a race here.
@@ -1582,10 +1582,10 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
 IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
                        MatchAboutBlank_BlobFrame) {
   content::WebContents* tab = NavigateTab(allowed_url_with_iframe());
-  GURL blob_url = CreateBlobURL(tab->GetMainFrame());
-  NavigateIframe(tab->GetMainFrame(), "frames[0]", blob_url);
+  GURL blob_url = CreateBlobURL(tab->GetPrimaryMainFrame());
+  NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0]", blob_url);
   content::RenderFrameHost* render_frame_host =
-      content::ChildFrameAt(tab->GetMainFrame(), 0);
+      content::ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(render_frame_host);
   EXPECT_EQ(blob_url, render_frame_host->GetLastCommittedURL());
   EXPECT_FALSE(DidScriptRunInFrame(render_frame_host));
@@ -1596,9 +1596,9 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
 IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
                        MatchAboutBlank_DataFrame) {
   content::WebContents* tab = NavigateTab(allowed_url_with_iframe());
-  NavigateIframe(tab->GetMainFrame(), "frames[0]", data_url());
+  NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0]", data_url());
   content::RenderFrameHost* render_frame_host =
-      content::ChildFrameAt(tab->GetMainFrame(), 0);
+      content::ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(render_frame_host);
   EXPECT_EQ(data_url(), render_frame_host->GetLastCommittedURL());
   EXPECT_FALSE(DidScriptRunInFrame(render_frame_host));
@@ -1607,11 +1607,16 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
 // Tests that content scripts can run on filesystem: URLs.
 IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
                        MatchAboutBlank_FilesystemFrame) {
+  // TODO(https://crbug.com/1332598): Remove this test when removing filesystem:
+  // navigation for good.
+  if (!base::FeatureList::IsEnabled(blink::features::kFileSystemUrlNavigation))
+    GTEST_SKIP();
+
   content::WebContents* tab = NavigateTab(allowed_url_with_iframe());
-  GURL filesystem_url = CreateFilesystemURL(tab->GetMainFrame());
-  NavigateIframe(tab->GetMainFrame(), "frames[0]", filesystem_url);
+  GURL filesystem_url = CreateFilesystemURL(tab->GetPrimaryMainFrame());
+  NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0]", filesystem_url);
   content::RenderFrameHost* render_frame_host =
-      content::ChildFrameAt(tab->GetMainFrame(), 0);
+      content::ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(render_frame_host);
   EXPECT_EQ(filesystem_url, render_frame_host->GetLastCommittedURL());
 
@@ -1631,19 +1636,20 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
   content::WebContents* tab =
       NavigateTab(non_matching_path_specific_iframe_url());
   // Navigate the child frame to the URL that matches the path requirement.
-  NavigateIframe(tab->GetMainFrame(), "frames[0]", path_specific_allowed_url());
+  NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0]",
+                 path_specific_allowed_url());
 
   content::RenderFrameHost* child_frame =
-      content::ChildFrameAt(tab->GetMainFrame(), 0);
+      content::ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
 
   EXPECT_EQ(path_specific_allowed_url(), child_frame->GetLastCommittedURL());
   // The script should have ran in the child frame (which matches the pattern),
   // but not the parent frame (which doesn't match the path component).
   EXPECT_TRUE(DidScriptRunInFrame(child_frame));
-  EXPECT_FALSE(DidScriptRunInFrame(tab->GetMainFrame()));
+  EXPECT_FALSE(DidScriptRunInFrame(tab->GetPrimaryMainFrame()));
 
   // Now, navigate the iframe to an about:blank URL.
-  NavigateIframe(tab->GetMainFrame(), "frames[0]", about_blank());
+  NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0]", about_blank());
 
   // Unlike match_origin_as_fallback, match_about_blank will attempt to climb
   // the frame tree to find an ancestor with path. This results in finding the
@@ -1677,9 +1683,9 @@ class ContentScriptMatchOriginAsFallbackTest
 IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
                        DataURLInjection_SimpleIframe_Allowed) {
   content::WebContents* tab = NavigateTab(allowed_url_with_iframe());
-  NavigateIframe(tab->GetMainFrame(), "frames[0]", data_url());
+  NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0]", data_url());
   content::RenderFrameHost* render_frame_host =
-      content::ChildFrameAt(tab->GetMainFrame(), 0);
+      content::ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(render_frame_host);
   EXPECT_EQ(data_url(), render_frame_host->GetLastCommittedURL());
   EXPECT_TRUE(DidScriptRunInFrame(render_frame_host));
@@ -1690,9 +1696,9 @@ IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
 IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
                        DataURLInjection_SimpleIframe_Disallowed) {
   content::WebContents* tab = NavigateTab(disallowed_url_with_iframe());
-  NavigateIframe(tab->GetMainFrame(), "frames[0]", data_url());
+  NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0]", data_url());
   content::RenderFrameHost* render_frame_host =
-      content::ChildFrameAt(tab->GetMainFrame(), 0);
+      content::ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(render_frame_host);
   EXPECT_EQ(data_url(), render_frame_host->GetLastCommittedURL());
   EXPECT_FALSE(DidScriptRunInFrame(render_frame_host));
@@ -1702,10 +1708,10 @@ IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
 IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
                        BlobURLInjection_SimpleIframe_Allowed) {
   content::WebContents* tab = NavigateTab(allowed_url_with_iframe());
-  GURL blob_url = CreateBlobURL(tab->GetMainFrame());
-  NavigateIframe(tab->GetMainFrame(), "frames[0]", blob_url);
+  GURL blob_url = CreateBlobURL(tab->GetPrimaryMainFrame());
+  NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0]", blob_url);
   content::RenderFrameHost* render_frame_host =
-      content::ChildFrameAt(tab->GetMainFrame(), 0);
+      content::ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(render_frame_host);
   EXPECT_EQ(blob_url, render_frame_host->GetLastCommittedURL());
   EXPECT_TRUE(DidScriptRunInFrame(render_frame_host));
@@ -1716,10 +1722,10 @@ IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
 IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
                        BlobURLInjection_SimpleIframe_Disallowed) {
   content::WebContents* tab = NavigateTab(disallowed_url_with_iframe());
-  GURL blob_url = CreateBlobURL(tab->GetMainFrame());
-  NavigateIframe(tab->GetMainFrame(), "frames[0]", blob_url);
+  GURL blob_url = CreateBlobURL(tab->GetPrimaryMainFrame());
+  NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0]", blob_url);
   content::RenderFrameHost* render_frame_host =
-      content::ChildFrameAt(tab->GetMainFrame(), 0);
+      content::ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(render_frame_host);
   EXPECT_EQ(blob_url, render_frame_host->GetLastCommittedURL());
   EXPECT_FALSE(DidScriptRunInFrame(render_frame_host));
@@ -1728,11 +1734,15 @@ IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
 // Inject a content script on an iframe to a filesystem: URL on an allowed site.
 IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
                        FilesystemURLInjection_SimpleIframe_Allowed) {
+  // TODO(https://crbug.com/1332598): Remove this test when removing filesystem:
+  // navigation for good.
+  if (!base::FeatureList::IsEnabled(blink::features::kFileSystemUrlNavigation))
+    GTEST_SKIP();
   content::WebContents* tab = NavigateTab(allowed_url_with_iframe());
-  GURL filesystem_url = CreateFilesystemURL(tab->GetMainFrame());
-  NavigateIframe(tab->GetMainFrame(), "frames[0]", filesystem_url);
+  GURL filesystem_url = CreateFilesystemURL(tab->GetPrimaryMainFrame());
+  NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0]", filesystem_url);
   content::RenderFrameHost* render_frame_host =
-      content::ChildFrameAt(tab->GetMainFrame(), 0);
+      content::ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(render_frame_host);
   EXPECT_EQ(filesystem_url, render_frame_host->GetLastCommittedURL());
   EXPECT_TRUE(DidScriptRunInFrame(render_frame_host));
@@ -1742,11 +1752,15 @@ IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
 // protected site.
 IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
                        FilesystemURLInjection_SimpleIframe_Disallowed) {
+  // TODO(https://crbug.com/1332598): Remove this test when removing filesystem:
+  // navigation for good.
+  if (!base::FeatureList::IsEnabled(blink::features::kFileSystemUrlNavigation))
+    GTEST_SKIP();
   content::WebContents* tab = NavigateTab(disallowed_url_with_iframe());
-  GURL filesystem_url = CreateFilesystemURL(tab->GetMainFrame());
-  NavigateIframe(tab->GetMainFrame(), "frames[0]", filesystem_url);
+  GURL filesystem_url = CreateFilesystemURL(tab->GetPrimaryMainFrame());
+  NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0]", filesystem_url);
   content::RenderFrameHost* render_frame_host =
-      content::ChildFrameAt(tab->GetMainFrame(), 0);
+      content::ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(render_frame_host);
   EXPECT_EQ(filesystem_url, render_frame_host->GetLastCommittedURL());
   EXPECT_FALSE(DidScriptRunInFrame(render_frame_host));
@@ -1764,12 +1778,12 @@ IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
       nested_frame_src.c_str());
 
   const GURL data_url(base::StrCat({"data:text/html,", nested_data_html}));
-  NavigateIframe(tab->GetMainFrame(), "frames[0]", data_url);
+  NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0]", data_url);
 
   // The extension should have injected in both iframes, since they each
   // "belong" to the original, allowed site.
   content::RenderFrameHost* first_data =
-      content::ChildFrameAt(tab->GetMainFrame(), 0);
+      content::ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(first_data);
   EXPECT_EQ(data_url, first_data->GetLastCommittedURL());
   EXPECT_TRUE(DidScriptRunInFrame(first_data));
@@ -1788,9 +1802,10 @@ IN_PROC_BROWSER_TEST_F(
   // Open a page to a protected site, and then navigate an iframe to an allowed
   // site with an iframe.
   content::WebContents* tab = NavigateTab(disallowed_url_with_iframe());
-  NavigateIframe(tab->GetMainFrame(), "frames[0]", allowed_url_with_iframe());
+  NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0]",
+                 allowed_url_with_iframe());
   content::RenderFrameHost* example_com_frame =
-      content::ChildFrameAt(tab->GetMainFrame(), 0);
+      content::ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   EXPECT_EQ(allowed_url_with_iframe(),
             example_com_frame->GetLastCommittedURL());
 
@@ -1810,7 +1825,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Now, navigate the iframe within the allowed site to a data URL, but do so
   // from the top frame (which the extension is not allowed to access).
-  NavigateIframe(tab->GetMainFrame(), "frames[0].frames[0]", data_url());
+  NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0].frames[0]", data_url());
 
   {
     // Since the top frame (which the extension may not access) is now the
@@ -1831,10 +1846,10 @@ IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
   // Open a page to an allowed site, and then navigate an iframe to a disallowed
   // site with an iframe.
   content::WebContents* tab = NavigateTab(allowed_url_with_iframe());
-  NavigateIframe(tab->GetMainFrame(), "frames[0]",
+  NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0]",
                  disallowed_url_with_iframe());
   content::RenderFrameHost* example_com_frame =
-      content::ChildFrameAt(tab->GetMainFrame(), 0);
+      content::ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   EXPECT_EQ(disallowed_url_with_iframe(),
             example_com_frame->GetLastCommittedURL());
 
@@ -1855,7 +1870,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
 
   // Now, navigate the iframe within the disallowed site to a data URL, but do
   // so from the top frame (which the extension is allowed to access).
-  NavigateIframe(tab->GetMainFrame(), "frames[0].frames[0]", data_url());
+  NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0].frames[0]", data_url());
 
   {
     content::RenderFrameHost* data_url_host = content::FrameMatchingPredicate(
@@ -1868,65 +1883,6 @@ IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
     // related frame. https://crbug.com/1111028.
     EXPECT_TRUE(DidScriptRunInFrame(data_url_host));
   }
-}
-
-// Test content script injection into iframes when the script has a
-// path-specific pattern and the parent frame does match.
-IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
-                       PathSpecificMatchPattern_ParentFrameMatches) {
-  // Open a page to the page that matches the content script's pattern.
-  content::WebContents* tab = NavigateTab(matching_path_specific_iframe_url());
-  // Navigate the iframe to a data URL.
-  NavigateIframe(tab->GetMainFrame(), "frames[0]", data_url());
-
-  content::RenderFrameHost* child_frame =
-      content::ChildFrameAt(tab->GetMainFrame(), 0);
-
-  EXPECT_EQ(data_url(), child_frame->GetLastCommittedURL());
-
-  // The script should have ran in the parent frame.
-  EXPECT_TRUE(DidScriptRunInFrame(tab->GetMainFrame()));
-
-  // Subtle: When using match_origin_as_fallback, the URL we use for matching
-  // the frame is the precursor origin. As such, here, it won't inject (since
-  // it doesn't match the path component).
-  // TODO(devlin): Adjust the matching logic for these frames to inject if they
-  // are same-origin with a matching pattern, and change this to
-  // EXPECT_TRUE(DidScriptRunInFrame(child_frame));
-  EXPECT_FALSE(DidScriptRunInFrame(child_frame));
-}
-
-// Test content script injection into iframes when the script has a
-// path-specific pattern and the parent frame does *not* match.
-IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
-                       PathSpecificMatchPattern_ParentFrameDoesntMatch) {
-  // Open a page to the page that's same-origin with the match pattern, but
-  // doesn't match.
-  content::WebContents* tab =
-      NavigateTab(non_matching_path_specific_iframe_url());
-  // Navigate the child frame to the URL that matches the path requirement.
-  NavigateIframe(tab->GetMainFrame(), "frames[0]", path_specific_allowed_url());
-
-  content::RenderFrameHost* child_frame =
-      content::ChildFrameAt(tab->GetMainFrame(), 0);
-
-  EXPECT_EQ(path_specific_allowed_url(), child_frame->GetLastCommittedURL());
-  // The script should have ran in the child frame (which matches the pattern),
-  // but not the parent frame (which doesn't match the path component).
-  EXPECT_TRUE(DidScriptRunInFrame(child_frame));
-  EXPECT_FALSE(DidScriptRunInFrame(tab->GetMainFrame()));
-
-  // Now, navigate the iframe to a data URL.
-  NavigateIframe(tab->GetMainFrame(), "frames[0]", data_url());
-  EXPECT_EQ(data_url(), child_frame->GetLastCommittedURL());
-
-  // Subtle: When using match_origin_as_fallback, the URL we use for matching
-  // the frame is the precursor origin. As such, here, it won't inject (since
-  // it doesn't match the path component).
-  // TODO(devlin): Adjust the matching logic for these frames to inject if they
-  // are same-origin with a matching pattern, and change this to
-  // EXPECT_TRUE(DidScriptRunInFrame(child_frame));
-  EXPECT_FALSE(DidScriptRunInFrame(child_frame));
 }
 
 // Test fixture which sets a custom NTP Page.
@@ -1964,7 +1920,7 @@ class NTPInterceptionTest : public ExtensionApiTest {
 // Regression test for crbug.com/844428.
 IN_PROC_BROWSER_TEST_F(NTPInterceptionTest, ContentScript) {
   // Load an extension which tries to inject a script into every frame.
-  ExtensionTestMessageListener listener("ready", false /*will_reply*/);
+  ExtensionTestMessageListener listener("ready");
   const Extension* extension = LoadExtension(test_data_dir_);
   ASSERT_TRUE(extension);
   ASSERT_TRUE(listener.WaitUntilSatisfied());
@@ -2036,9 +1992,11 @@ class ContentScriptApiIdentifiabilityTest : public ContentScriptApiTest {
   IdentifiabilityMetricsTestHelper identifiability_metrics_test_helper_;
 };
 
+// TODO(crbug.com/1305273): Fix this flaky test.
 // Test that identifiability study of content script injection produces the
 // expected UKM events.
-IN_PROC_BROWSER_TEST_F(ContentScriptApiIdentifiabilityTest, InjectionRecorded) {
+IN_PROC_BROWSER_TEST_F(ContentScriptApiIdentifiabilityTest,
+                       DISABLED_InjectionRecorded) {
   base::RunLoop run_loop;
   identifiability_metrics_test_helper_.PrepareForTest(&run_loop);
 
@@ -2088,20 +2046,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiIdentifiabilityTest,
       blink::IdentifiableSurface::Type::kExtensionContentScript));
 }
 
-class SubresourceWebBundlesContentScriptApiTest
-    : public ExtensionApiTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  static std::string DescribeParams(
-      const testing::TestParamInfo<ParamType>& info) {
-    return info.param ? "UrnUuid" : "UuidInPackage";
-  }
-
-  void SetUp() override {
-    feature_list_.InitWithFeatures({features::kSubresourceWebBundles}, {});
-    ExtensionApiTest::SetUp();
-  }
-
+class SubresourceWebBundlesContentScriptApiTest : public ExtensionApiTest {
  protected:
   // Registers a request handler for static content.
   void RegisterRequestHandler(const std::string& relative_url,
@@ -2131,30 +2076,26 @@ class SubresourceWebBundlesContentScriptApiTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesContentScriptApiTest,
+IN_PROC_BROWSER_TEST_F(SubresourceWebBundlesContentScriptApiTest,
                        SubresourceWebBundleIframe) {
-  const char* scheme = GetParam() ? "urn" : "uuid-in-package";
-  const char* uuid_url_prefix = GetParam() ? "urn:uuid:" : "uuid-in-package:";
-
-  // Create an extension that injects a content script in "urn" or
-  // "uuid-in-package" scheme urls.
+  // Create an extension that injects a content script in "uuid-in-package"
+  // scheme urls.
   TestExtensionDir test_dir;
-  test_dir.WriteManifest(base::StringPrintf(R"({
+  test_dir.WriteManifest(R"({
         "name": "Web Request Subresource Web Bundles Test",
         "manifest_version": 2,
         "version": "0.1",
-        "permissions": ["%s:*"],
+        "permissions": ["uuid-in-package:*"],
         "content_scripts": [{
           "matches":[
-            "%s:*"
+            "uuid-in-package:*"
           ],
           "all_frames": true,
           "js":[
             "content_script.js"
           ]
         }]
-      })",
-                                            scheme, scheme));
+      })");
 
   test_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"),
                      R"(
@@ -2166,13 +2107,12 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesContentScriptApiTest,
 
   ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
 
-  const std::string uuid_html_url = base::StringPrintf(
-      "%s65c6f241-f6b5-4302-9f95-9a826c4dda1c", uuid_url_prefix);
-  web_package::WebBundleBuilder builder("", "");
-  auto html_location =
-      builder.AddResponse({{":status", "200"}, {"content-type", "text/html"}},
-                          "<script>console.error('hoge');</script>");
-  builder.AddIndexEntry(uuid_html_url, "", {html_location});
+  const std::string uuid_html_url =
+      "uuid-in-package:65c6f241-f6b5-4302-9f95-9a826c4dda1c";
+  web_package::WebBundleBuilder builder;
+  builder.AddExchange(uuid_html_url,
+                      {{":status", "200"}, {"content-type", "text/html"}},
+                      "<script>console.error('hoge');</script>");
   std::vector<uint8_t> bundle = builder.CreateBundle();
   const std::string web_bundle = std::string(bundle.begin(), bundle.end());
 
@@ -2182,17 +2122,21 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesContentScriptApiTest,
   RegisterRequestHandler("/test.wbn", "application/webbundle", web_bundle,
                          true /* nosniff */);
 
-  const std::string page_html =
-      base::StringPrintf(R"(
-        <link rel="webbundle" href="./test.wbn" scopes="%s">
+  const std::string page_html = base::StringPrintf(R"(
+        <script type="webbundle">
+        {
+          "source": "./test.wbn",
+          "scopes": ["uuid-in-package:"]
+        }
+        </script>
         <iframe src="%s"></iframe>
       )",
-                         uuid_url_prefix, uuid_html_url.c_str());
+                                                   uuid_html_url.c_str());
   RegisterRequestHandler("/test.html", "text/html", page_html,
                          false /* nosniff */);
   ASSERT_TRUE(StartEmbeddedTestServer());
 
-  ExtensionTestMessageListener listener(false /* will_reply */);
+  ExtensionTestMessageListener listener;
 
   GURL page_url = embedded_test_server()->GetURL("/test.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
@@ -2200,10 +2144,110 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesContentScriptApiTest,
   EXPECT_EQ(uuid_html_url, listener.message());
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SubresourceWebBundlesContentScriptApiTest,
-    testing::Bool(),
-    SubresourceWebBundlesContentScriptApiTest::DescribeParams);
+class ContentScriptApiPrerenderingTest : public ContentScriptApiTest {
+ public:
+  ContentScriptApiPrerenderingTest() = default;
+
+ private:
+  content::test::ScopedPrerenderFeatureList prerender_feature_list_;
+};
+
+// TODO(crbug.com/1344548): Re-enable this test
+IN_PROC_BROWSER_TEST_F(ContentScriptApiPrerenderingTest,
+                       DISABLED_Prerendering) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  ASSERT_TRUE(RunExtensionTest("content_scripts/prerendering")) << message_;
+}
+
+class ContentScriptApiFencedFrameTest : public ContentScriptApiTest {
+ protected:
+  ContentScriptApiFencedFrameTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kFencedFrames, {{"implementation_type", "mparch"}}},
+         {features::kPrivacySandboxAdsAPIsOverride, {}}},
+        {/* disabled_features */});
+    UseHttpsTestServer();
+  }
+  ~ContentScriptApiFencedFrameTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Inject two extensions with matching rules. Only the extension
+// that matches the outermost extension's content_scripts should
+// get injected.
+// The documentIdle extension should execute (sending 'done').
+// The documentStart extension should not-execute (sending 'fail') since it
+// isn't the parent extension of the fenced frame.
+IN_PROC_BROWSER_TEST_F(ContentScriptApiFencedFrameTest,
+                       InjectionMatchesCorrectExtension) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  const char kDocumentIdleExtensionManifest[] =
+      R"MANIFEST({
+        "name": "Document Idle Extesnsion",
+        "version": "0.1",
+        "manifest_version": 3,
+        "content_scripts": [{
+          "matches": ["https://*/fenced_frames/title1.html"],
+          "js": ["script.js"],
+          "run_at": "document_idle",
+          "all_frames": true
+        }]
+      })MANIFEST";
+
+  const char kDocumentStartExtensionManifest[] =
+      R"MANIFEST({
+        "name": "Document Start extension",
+        "version": "0.1",
+        "manifest_version": 3,
+        "content_scripts": [{
+          "matches": ["https://*/fenced_frames/title1.html"],
+          "js": ["script.js"],
+          "run_at": "document_start",
+          "all_frames": true
+        }]
+      })MANIFEST";
+
+  GURL fenced_frame_url =
+      embedded_test_server()->GetURL("a.test", "/fenced_frames/title1.html");
+
+  const char kFencedFrameHtml[] =
+      R"HTML(<html>Fenced Frame Test!<fencedframe src="%s">
+          </fencedframe></html>)HTML";
+
+  TestExtensionDir document_idle_extension_dir;
+  document_idle_extension_dir.WriteManifest(kDocumentIdleExtensionManifest);
+  document_idle_extension_dir.WriteFile(
+      FILE_PATH_LITERAL("test.html"),
+      base::StringPrintf(kFencedFrameHtml, fenced_frame_url.spec().c_str()));
+  document_idle_extension_dir.WriteFile(FILE_PATH_LITERAL("script.js"),
+                                        kNonBlockingScript);
+  const Extension* extension =
+      LoadExtension(document_idle_extension_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  TestExtensionDir document_start_extension_dir;
+  const char kFailureScript[] = "chrome.test.sendMessage('fail');";
+
+  document_start_extension_dir.WriteManifest(kDocumentStartExtensionManifest);
+  document_start_extension_dir.WriteFile(FILE_PATH_LITERAL("script.js"),
+                                         kFailureScript);
+
+  ASSERT_TRUE(LoadExtension(document_start_extension_dir.UnpackedPath()));
+
+  ExtensionTestMessageListener listener;
+  content::WebContents* tab_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  GURL extension_test_url = extension->GetResourceURL("test.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_test_url));
+
+  EXPECT_EQ(extension_test_url,
+            tab_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
+  EXPECT_TRUE(listener.WaitUntilSatisfied());
+  EXPECT_EQ("done", listener.message());
+}
 
 }  // namespace extensions

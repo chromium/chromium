@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,9 +23,10 @@ WebUIController::WebUIController(WebUI* web_ui) : web_ui_(web_ui) {}
 
 WebUIController::~WebUIController() = default;
 
-bool WebUIController::OverrideHandleWebUIMessage(const GURL& source_url,
-                                                 const std::string& message,
-                                                 const base::ListValue& args) {
+bool WebUIController::OverrideHandleWebUIMessage(
+    const GURL& source_url,
+    const std::string& message,
+    const base::Value::List& args) {
   return false;
 }
 

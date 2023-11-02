@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,34 @@
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+
+namespace {
+
+crosapi::mojom::OpenUrlFrom OpenUrlFromToMojom(
+    ash::NewWindowDelegate::OpenUrlFrom from) {
+  switch (from) {
+    case ash::NewWindowDelegate::OpenUrlFrom::kUnspecified:
+    case ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction:
+      return crosapi::mojom::OpenUrlFrom::kUnspecified;
+    case ash::NewWindowDelegate::OpenUrlFrom::kArc:
+      return crosapi::mojom::OpenUrlFrom::kArc;
+  }
+}
+
+crosapi::mojom::OpenUrlParams::WindowOpenDisposition DispositionToMojom(
+    ash::NewWindowDelegate::Disposition disposition) {
+  switch (disposition) {
+    case ash::NewWindowDelegate::Disposition::kNewForegroundTab:
+      return crosapi::mojom::OpenUrlParams::WindowOpenDisposition::
+          kNewForegroundTab;
+    case ash::NewWindowDelegate::Disposition::kNewWindow:
+      return crosapi::mojom::OpenUrlParams::WindowOpenDisposition::kNewWindow;
+    case ash::NewWindowDelegate::Disposition::kSwitchToTab:
+      return crosapi::mojom::OpenUrlParams::WindowOpenDisposition::kSwitchToTab;
+  }
+}
+
+}  // namespace
 
 CrosapiNewWindowDelegate::WindowObserver::WindowObserver(
     CrosapiNewWindowDelegate* owner,
@@ -53,6 +81,7 @@ void CrosapiNewWindowDelegate::WindowObserver::OnWindowVisibilityChanged(
   if (crosapi::GetShellSurfaceWindow(window_id_) == window) {
     std::move(closure_).Run(window);
     owner_->DestroyWindowObserver();
+    return;
   }
 }
 
@@ -70,6 +99,7 @@ void CrosapiNewWindowDelegate::WindowObserver::SetWindowID(
     if (window == it) {
       std::move(closure_).Run(window);
       owner_->DestroyWindowObserver();
+      return;
     }
   }
 }
@@ -81,12 +111,14 @@ CrosapiNewWindowDelegate::CrosapiNewWindowDelegate(
 CrosapiNewWindowDelegate::~CrosapiNewWindowDelegate() = default;
 
 void CrosapiNewWindowDelegate::NewTab() {
-  crosapi::BrowserManager::Get()->NewTab();
+  crosapi::BrowserManager::Get()->NewTab(
+      /*should_trigger_session_restore=*/false);
 }
 
 void CrosapiNewWindowDelegate::NewWindow(bool incognito,
                                          bool should_trigger_session_restore) {
-  crosapi::BrowserManager::Get()->NewWindow(incognito);
+  crosapi::BrowserManager::Get()->NewWindow(incognito,
+                                            should_trigger_session_restore);
 }
 
 void CrosapiNewWindowDelegate::NewWindowForDetachingTab(
@@ -122,8 +154,10 @@ void CrosapiNewWindowDelegate::NewWindowForDetachingTab(
 }
 
 void CrosapiNewWindowDelegate::OpenUrl(const GURL& url,
-                                       bool from_user_interaction) {
-  crosapi::BrowserManager::Get()->OpenUrl(url);
+                                       OpenUrlFrom from,
+                                       Disposition disposition) {
+  crosapi::BrowserManager::Get()->OpenUrl(url, OpenUrlFromToMojom(from),
+                                          DispositionToMojom(disposition));
 }
 
 void CrosapiNewWindowDelegate::OpenCalculator() {
@@ -166,6 +200,10 @@ void CrosapiNewWindowDelegate::OpenFeedbackPage(
     FeedbackSource source,
     const std::string& description_template) {
   delegate_->OpenFeedbackPage(source, description_template);
+}
+
+void CrosapiNewWindowDelegate::OpenPersonalizationHub() {
+  delegate_->OpenPersonalizationHub();
 }
 
 void CrosapiNewWindowDelegate::DestroyWindowObserver() {

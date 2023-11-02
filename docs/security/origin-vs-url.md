@@ -12,7 +12,8 @@ Use origins whenever possible.
 
 ## Use `GetLastCommittedOrigin()` or `GetSecurityContext()`.
 
-**_Good_**
+### Good
+
 ```c++
 // Example of browser-side code.
 content::RenderFrameHost* frame = ...;
@@ -29,7 +30,8 @@ if (safelist.Matches(frame->GetSecurityContext()->GetSecurityOrigin()) {
 }
 ```
 
-**_Bad_**
+### Bad
+
 ```c++
 // Example of browser-side code.
 content::RenderFrameHost* frame = ...;
@@ -75,34 +77,78 @@ Use the following datatypes to represent origins:
 
 ## Avoid converting URLs to origins.
 
-**_Good_**
+### Good
+
 ```c++
 url::Origin origin = GetLastCommittedOrigin();
 ```
 
-**_Bad_**
+### Bad
+
 ```c++
 GURL url = ...;
 GURL origin = url.DeprecatedGetOriginAsURL();
-// BUG: |origin| will be empty if |url| is a blob: URL like
-//      "blob:http://origin/guid-goes-here".
-// BUG: |origin| will be incorrect if |url| is an "about:blank" URL
-//      or if |url| came from a sandboxed frame.
-// BUG: |origin| will be incorrect when |url| (rather than
-//      |base_url_for_data_url|) is used when working with loadDataWithBaseUrl
+// BUG: `origin` will be incorrect if `url` is an "about:blank" URL
+// BUG: `origin` will be incorrect if `url` came from a sandboxed frame.
+// BUG: `origin` will be incorrect when `url` (rather than
+//      `base_url_for_data_url`) is used when working with loadDataWithBaseUrl
 //      (see also https://crbug.com/1201514).
-// NOTE: |GURL origin| is also an anti-pattern; see the "Use correct type to
+// BUG: `origin` will be empty if `url` is a blob: URL like
+//      "blob:http://origin/guid-goes-here".
+// NOTE: `GURL origin` is also an anti-pattern; see the "Use correct type to
 //       represent origins" section below.
+
+// Blink-specific example:
+KURL url = ...;
+scoped_refptr<SecurityOrigin> origin = SecurityOrigin::Create(url);
+// BUG: `origin` will be incorrect if `url` is an "about:blank" URL
+// BUG: `origin` will be incorrect if `url` came from a sandboxed frame.
 ```
 
-**_Risky_**
+### Risky
+
+If you know what you are doing and really need to convert a URL into an origin,
+then you can consider using `url::Origin::Create`, `url::SchemeHostPort`, or
+`url::Origin::Resolve` (noting the limitations of those APIs - see below for
+more details).
+
 ```c++
-// If you know what you are doing (e.g., don't care about "about:blank", about
-// sandboxed frames, or about loadDataWithBaseUrl) and really need to convert
-// a URL into an origin, then url::Origin::Create will correctly handle
-// filesystem: and/or blob: URLs (unlike the "bad" example above).
-GURL url = ...;
+const GURL& url = ...;
+
+// WARNING: `url::Origin::Create(url)` can give unexpected results if:
+// 1) `url` is "about:blank", or "about:srcdoc"
+//    (returning unique, opaque origin rather than the real origin of the frame)
+// 2) `url` comes from a sandboxed frame
+//    (potentially returning a non-opaque origin, when an opaque one is needed)
+// 3) `base_url_for_data_url` should be used instead of `url`
+//
+// WARNING: `url::Origin::Create(url)` has some additional subtleties:
+// 4) if `url` is a blob: or filesystem: URL like "blob:http://origin/blob-guid"
+//    then the inner origin will be returned (unlike with `url::SchemeHostPort`)
+// 5) data: URLs will be correctly be translated into opaque origins, but the
+//    precursor origin will be lost (unlike with `url::Resolve`).
 url::Origin origin = url::Origin::Create(url);
-// |origin| will be "http://origin/" if |url| is a blob: or filesystem: URL
-// like "blob:http://origin/guid-goes-here".
+
+// WARNING: `url::SchemeHostPort(url)` will *mechanically* extract the scheme,
+// host, and port of the URL, discarding other parts of the URL.  This may have
+// unexpected results when:
+// 1) `url` is "about:blank", or "about:srcdoc"
+// 2) `url` comes from a sandboxed frame, i.e. when an opaque origin is expected
+// 3) `url` is a data: URL, i.e. when an opaque origin is expected
+// 4) `url` is a blob: or filesystem: URL like "blob:http://origin/blob-guid"
+//    (the inner origin will *not* be returned - unlike `url::Origin::Create`)
+url::SchemeHostPort scheme_host_port = url::SchemeHostPort(url);
+
+// `url::Origin::Resolve` should work okay when:
+// 1) `url` is "about:blank", or "about:srcdoc"
+// 2) `url` comes from a sandboxed frame (i.e. when `base_origin` is opaque)
+// 3) `url` is a data: URL (i.e. propagating precursor of `base_origin`)
+// 4) `url` is a blob: or filesystem: URL like "blob:http://origin/blob-guid"
+//
+// WARNING: It is simpler and more robust to just use `GetLastCommittedOrigin`
+// (instead of combining `GetLastCommittedOrigin` and `GetLastCommittedURL`
+// using `url::Origin::Resolve`).
+// WARNING: `url::Origin::Resolve` is unaware of `base_url_for_data_url`.
+const url::Origin& base_origin = ...
+url::Origin origin = url::Origin::Resolve(url, base_origin);
 ```

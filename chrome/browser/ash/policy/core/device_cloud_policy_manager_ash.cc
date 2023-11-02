@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/components/settings/cros_settings_names.h"
-#include "ash/components/settings/cros_settings_provider.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_switches.h"
@@ -27,25 +25,26 @@
 #include "chrome/browser/ash/attestation/enrollment_certificate_uploader_impl.h"
 #include "chrome/browser/ash/attestation/enrollment_id_upload_manager.h"
 #include "chrome/browser/ash/attestation/machine_certificate_uploader_impl.h"
-#include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
+#include "chrome/browser/ash/login/reporting/lock_unlock_reporter.h"
 #include "chrome/browser/ash/login/reporting/login_logout_reporter.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/policy_pref_names.h"
+#include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/policy/networking/euicc_status_uploader.h"
 #include "chrome/browser/ash/policy/remote_commands/device_commands_factory_ash.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_manager.h"
 #include "chrome/browser/ash/policy/reporting/user_added_removed/user_added_removed_reporter.h"
 #include "chrome/browser/ash/policy/rsu/lookup_key_uploader.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/ash/policy/status_collector/device_status_collector.h"
-#include "chrome/browser/ash/policy/status_collector/legacy_device_status_collector.h"
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 #include "chrome/browser/ash/policy/uploading/heartbeat_scheduler.h"
 #include "chrome/browser/ash/policy/uploading/status_uploader.h"
 #include "chrome/browser/ash/policy/uploading/system_log_uploader.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/system/statistics_provider.h"
-#include "chromeos/tpm/install_attributes.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
@@ -61,8 +60,6 @@
 #include "crypto/sha2.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
-
-namespace em = enterprise_management;
 
 namespace policy {
 
@@ -81,7 +78,7 @@ constexpr base::TimeDelta kDeviceStatusUploadFrequency = base::Hours(3);
 
 // Checks whether forced re-enrollment is enabled.
 bool IsForcedReEnrollmentEnabled() {
-  return ash::AutoEnrollmentController::IsFREEnabled();
+  return AutoEnrollmentTypeChecker::IsFREEnabled();
 }
 
 }  // namespace
@@ -127,12 +124,15 @@ void DeviceCloudPolicyManagerAsh::RemoveDeviceCloudPolicyManagerObserver(
 
 // Keep clean up order as the reversed creation order.
 void DeviceCloudPolicyManagerAsh::Shutdown() {
+  metric_reporting_manager_.reset();
+  lock_unlock_reporter_.reset();
   login_logout_reporter_.reset();
   user_added_removed_reporter_.reset();
   heartbeat_scheduler_.reset();
   syslog_uploader_.reset();
   status_uploader_.reset();
   managed_session_service_.reset();
+  euicc_status_uploader_.reset();
   external_data_manager_->Disconnect();
   state_keys_update_subscription_ = {};
   CloudPolicyManager::Shutdown();
@@ -153,12 +153,12 @@ ZeroTouchEnrollmentMode
 DeviceCloudPolicyManagerAsh::GetZeroTouchEnrollmentMode() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(
-          chromeos::switches::kEnterpriseEnableZeroTouchEnrollment)) {
+          ash::switches::kEnterpriseEnableZeroTouchEnrollment)) {
     return ZeroTouchEnrollmentMode::DISABLED;
   }
 
   std::string value = command_line->GetSwitchValueASCII(
-      chromeos::switches::kEnterpriseEnableZeroTouchEnrollment);
+      ash::switches::kEnterpriseEnableZeroTouchEnrollment);
   if (value == kZeroTouchEnrollmentForced) {
     return ZeroTouchEnrollmentMode::FORCED;
   }
@@ -169,14 +169,14 @@ DeviceCloudPolicyManagerAsh::GetZeroTouchEnrollmentMode() {
     return ZeroTouchEnrollmentMode::ENABLED;
   }
   LOG(WARNING) << "Malformed value \"" << value << "\" for switch --"
-               << chromeos::switches::kEnterpriseEnableZeroTouchEnrollment
+               << ash::switches::kEnterpriseEnableZeroTouchEnrollment
                << ". Ignoring switch.";
   return ZeroTouchEnrollmentMode::DISABLED;
 }
 
 void DeviceCloudPolicyManagerAsh::StartConnection(
     std::unique_ptr<CloudPolicyClient> client_to_connect,
-    chromeos::InstallAttributes* install_attributes) {
+    ash::InstallAttributes* install_attributes) {
   CHECK(!service());
 
   // Set state keys here so the first policy fetch submits them to the server.
@@ -187,8 +187,7 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
   // exposing policy for extensions.
   if (!component_policy_disabled_for_testing_) {
     const base::FilePath component_policy_cache_dir =
-        base::PathService::CheckedGet(
-            chromeos::DIR_SIGNIN_PROFILE_COMPONENT_POLICY);
+        base::PathService::CheckedGet(ash::DIR_SIGNIN_PROFILE_COMPONENT_POLICY);
     CHECK(signin_profile_forwarding_schema_registry_);
     CreateComponentCloudPolicyService(
         dm_protocol::kChromeSigninExtensionPolicyType,
@@ -214,15 +213,13 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
   lookup_key_uploader_ = std::make_unique<LookupKeyUploader>(
       device_store(), g_browser_process->local_state(),
       enrollment_certificate_uploader_.get());
-  if (ash::features::IsESimPolicyEnabled()) {
-    euicc_status_uploader_ = std::make_unique<EuiccStatusUploader>(
-        client(), g_browser_process->local_state());
-  }
+  euicc_status_uploader_ = std::make_unique<EuiccStatusUploader>(
+      client(), g_browser_process->local_state());
 
   // Don't create a MachineCertificateUploader or start the
   // AttestationPolicyObserver if machine cert requests are disabled.
   if (!(base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kDisableMachineCertRequest))) {
+          ash::switches::kDisableMachineCertRequest))) {
     machine_certificate_uploader_ =
         std::make_unique<ash::attestation::MachineCertificateUploaderImpl>(
             client());
@@ -242,23 +239,26 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
   // themselves track the current state of the monitoring settings and only
   // perform monitoring if it is active.
   if (install_attributes->IsCloudManaged()) {
-    managed_session_service_ =
-        std::make_unique<policy::ManagedSessionService>();
-    // TODO(b/199169968):: Pass managed_session_service_ to
-    // DeviceStatusCollector instance.
-    CreateStatusUploader();
+    CreateManagedSessionServiceAndReporters();
+    CreateStatusUploader(managed_session_service_.get());
     syslog_uploader_ =
         std::make_unique<SystemLogUploader>(nullptr, task_runner_);
     heartbeat_scheduler_ = std::make_unique<HeartbeatScheduler>(
         g_browser_process->gcm_driver(), client(), device_store_.get(),
         install_attributes->GetDeviceId(), task_runner_);
-    login_logout_reporter_ = ash::reporting::LoginLogoutReporter::Create(
+    metric_reporting_manager_ = reporting::MetricReportingManager::Create(
         managed_session_service_.get());
-    user_added_removed_reporter_ =
-        std::make_unique<::reporting::UserAddedRemovedReporter>();
   }
 
   NotifyConnected();
+}
+
+void DeviceCloudPolicyManagerAsh::OnPolicyStoreReady(
+    ash::InstallAttributes* install_attributes) {
+  if (!install_attributes->IsCloudManaged()) {
+    return;
+  }
+  CreateManagedSessionServiceAndReporters();
 }
 
 void DeviceCloudPolicyManagerAsh::Unregister(UnregisterCallback callback) {
@@ -286,6 +286,7 @@ void DeviceCloudPolicyManagerAsh::SetSigninProfileSchemaRegistry(
   DCHECK(!signin_profile_forwarding_schema_registry_);
   signin_profile_forwarding_schema_registry_ =
       std::make_unique<ForwardingSchemaRegistry>(schema_registry);
+  NotifyGotRegistry();
 }
 
 void DeviceCloudPolicyManagerAsh::OnStateKeysUpdated() {
@@ -305,27 +306,34 @@ void DeviceCloudPolicyManagerAsh::NotifyDisconnected() {
     observer.OnDeviceCloudPolicyManagerDisconnected();
 }
 
-void DeviceCloudPolicyManagerAsh::CreateStatusUploader() {
-  std::unique_ptr<StatusCollector> collector;
-  bool granular_reporting_enabled;
-  ash::CrosSettings* settings = ash::CrosSettings::Get();
+void DeviceCloudPolicyManagerAsh::NotifyGotRegistry() {
+  for (auto& observer : observers_)
+    observer.OnDeviceCloudPolicyManagerGotRegistry();
+}
 
-  if (!settings->GetBoolean(ash::kEnableDeviceGranularReporting,
-                            &granular_reporting_enabled)) {
-    granular_reporting_enabled = true;
-  }
-
-  if (granular_reporting_enabled) {
-    collector = std::make_unique<DeviceStatusCollector>(
-        local_state_, chromeos::system::StatisticsProvider::GetInstance());
-  } else {
-    collector = std::make_unique<LegacyDeviceStatusCollector>(
-        local_state_, chromeos::system::StatisticsProvider::GetInstance());
-  }
+void DeviceCloudPolicyManagerAsh::CreateStatusUploader(
+    ManagedSessionService* managed_session_service) {
+  auto collector = std::make_unique<DeviceStatusCollector>(
+      local_state_, chromeos::system::StatisticsProvider::GetInstance(),
+      managed_session_service);
 
   status_uploader_ = std::make_unique<StatusUploader>(
       client(), std::move(collector), task_runner_,
       kDeviceStatusUploadFrequency);
+}
+
+void DeviceCloudPolicyManagerAsh::CreateManagedSessionServiceAndReporters() {
+  if (managed_session_service_) {
+    return;
+  }
+
+  managed_session_service_ = std::make_unique<ManagedSessionService>();
+  login_logout_reporter_ = ash::reporting::LoginLogoutReporter::Create(
+      managed_session_service_.get());
+  user_added_removed_reporter_ = ::reporting::UserAddedRemovedReporter::Create(
+      managed_session_service_.get());
+  lock_unlock_reporter_ = ash::reporting::LockUnlockReporter::Create(
+      managed_session_service_.get());
 }
 
 }  // namespace policy

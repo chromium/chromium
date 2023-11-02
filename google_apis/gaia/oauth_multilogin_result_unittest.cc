@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -91,30 +91,30 @@ TEST(OAuthMultiloginResultTest, TryParseCookiesFromValue) {
   result.TryParseCookiesFromValue(dictionary_value.get());
 
   base::Time time_now = base::Time::Now();
-  base::Time expiration_time = (time_now + base::Seconds(63070000.));
+  base::Time expiration_time = (time_now + base::Seconds(34560000.));
   double now = time_now.ToDoubleT();
   double expiration = expiration_time.ToDoubleT();
   const std::vector<CanonicalCookie> cookies = {
       *CanonicalCookie::CreateUnsafeCookieForTesting(
           "SID", "vAlUe1", ".google.ru", "/", time_now, time_now,
-          expiration_time, /*secure=*/true,
+          expiration_time, time_now, /*secure=*/true,
           /*httponly=*/false, net::CookieSameSite::UNSPECIFIED,
           net::CookiePriority::COOKIE_PRIORITY_HIGH,
           /*same_party=*/false),
       *CanonicalCookie::CreateUnsafeCookieForTesting(
           "SAPISID", "vAlUe2", "google.com", "/", time_now, time_now,
-          expiration_time, /*secure=*/false,
+          expiration_time, time_now, /*secure=*/false,
           /*httponly=*/true, net::CookieSameSite::LAX_MODE,
           net::CookiePriority::COOKIE_PRIORITY_HIGH,
           /*same_party=*/false),
       *CanonicalCookie::CreateUnsafeCookieForTesting(
-          "HSID", "vAlUe4", "", "/", time_now, time_now, time_now,
+          "HSID", "vAlUe4", "", "/", time_now, time_now, time_now, time_now,
           /*secure=*/true, /*httponly=*/true, net::CookieSameSite::STRICT_MODE,
           net::CookiePriority::COOKIE_PRIORITY_HIGH,
           /*same_party=*/false),
       *CanonicalCookie::CreateUnsafeCookieForTesting(
           "__Secure-1PSID", "vAlUe4", ".google.fr", "/", time_now, time_now,
-          expiration_time, /*secure=*/true, /*httponly=*/true,
+          expiration_time, time_now, /*secure=*/true, /*httponly=*/true,
           net::CookieSameSite::UNSPECIFIED,
           net::CookiePriority::COOKIE_PRIORITY_HIGH,
           /*same_party=*/true)};
@@ -186,6 +186,8 @@ TEST(OAuthMultiloginResultTest, TryParseCookiesFromValue) {
               DoubleNear(now, 0.5));
   EXPECT_THAT(result.cookies()[0].ExpiryDate().ToDoubleT(),
               DoubleNear(expiration, 0.5));
+  EXPECT_THAT(result.cookies()[0].LastUpdateDate().ToDoubleT(),
+              DoubleNear(now, 0.5));
 }
 
 TEST(OAuthMultiloginResultTest, CreateOAuthMultiloginResultFromString) {

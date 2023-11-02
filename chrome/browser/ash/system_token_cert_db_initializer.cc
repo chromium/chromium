@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,15 +19,18 @@
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "build/buildflag.h"
+#include "chrome/browser/ash/crosapi/cert_database_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/login/startup_utils.h"
-#include "chromeos/dbus/dbus_method_call_status.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/network/network_cert_loader.h"
+#include "chromeos/ash/components/network/system_token_cert_db_storage.h"
+#include "chromeos/ash/components/tpm/buildflags.h"
+#include "chromeos/ash/components/tpm/tpm_token_loader.h"
+#include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
-#include "chromeos/dbus/userdataauth/userdataauth_client.h"
-#include "chromeos/network/network_cert_loader.h"
-#include "chromeos/network/system_token_cert_db_storage.h"
-#include "chromeos/tpm/buildflags.h"
-#include "chromeos/tpm/tpm_token_loader.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/nss_util_internal.h"
@@ -41,7 +44,7 @@ namespace {
 constexpr base::TimeDelta kInitialRequestDelay = base::Milliseconds(100);
 constexpr base::TimeDelta kMaxRequestDelay = base::Minutes(5);
 
-#if BUILDFLAG(SYSTEM_SLOT_SOFTWARE_FALLBACK)
+#if BUILDFLAG(NSS_SLOTS_SOFTWARE_FALLBACK)
 constexpr bool kIsSystemSlotSoftwareFallbackAllowed = true;
 #else
 constexpr bool kIsSystemSlotSoftwareFallbackAllowed = false;
@@ -88,6 +91,14 @@ base::TimeDelta GetNextRequestDelay(base::TimeDelta last_delay) {
   return std::min(last_delay * 2, kMaxRequestDelay);
 }
 
+void NotifyCertsChangedInAshOnUIThread() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  crosapi::CrosapiManager::Get()
+      ->crosapi_ash()
+      ->cert_database_ash()
+      ->NotifyCertsChangedInAsh();
+}
+
 }  // namespace
 
 constexpr base::TimeDelta
@@ -95,7 +106,7 @@ constexpr base::TimeDelta
 
 SystemTokenCertDBInitializer::SystemTokenCertDBInitializer()
     : tpm_request_delay_(kInitialRequestDelay),
-      is_system_slot_software_fallback_allowed_(
+      is_nss_slots_software_fallback_allowed_(
           kIsSystemSlotSoftwareFallbackAllowed) {
   // Only start loading the system token once cryptohome is available and only
   // if the TPM is ready (available && owned && not being owned).
@@ -109,11 +120,15 @@ SystemTokenCertDBInitializer::~SystemTokenCertDBInitializer() {
 
   // Note that the observer could potentially not be added yet, but
   // the operation is a no-op in that case.
-  TpmManagerClient::Get()->RemoveObserver(this);
+  chromeos::TpmManagerClient::Get()->RemoveObserver(this);
 
   // Notify consumers of SystemTokenCertDbStorage that the database is not
   // usable anymore.
   SystemTokenCertDbStorage::Get()->ResetDatabase();
+
+  if (system_token_cert_database_) {
+    system_token_cert_database_->RemoveObserver(this);
+  }
 
   // Destroy the NSSCertDatabase on the IO thread because consumers could be
   // accessing it there.
@@ -137,13 +152,13 @@ void SystemTokenCertDBInitializer::OnCryptohomeAvailable(bool available) {
   }
 
   VLOG(1) << "SystemTokenCertDBInitializer: Cryptohome available.";
-  TpmManagerClient::Get()->AddObserver(this);
+  chromeos::TpmManagerClient::Get()->AddObserver(this);
 
   CheckTpm();
 }
 
 void SystemTokenCertDBInitializer::CheckTpm() {
-  TpmManagerClient::Get()->GetTpmNonsensitiveStatus(
+  chromeos::TpmManagerClient::Get()->GetTpmNonsensitiveStatus(
       ::tpm_manager::GetTpmNonsensitiveStatusRequest(),
       base::BindOnce(&SystemTokenCertDBInitializer::OnGetTpmNonsensitiveStatus,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -173,7 +188,7 @@ void SystemTokenCertDBInitializer::OnGetTpmNonsensitiveStatus(
   // allowed. Note that we don't fall back to software solution as long as TPM
   // is enabled.
   if (reply.is_owned() ||
-      (!reply.is_enabled() && is_system_slot_software_fallback_allowed_)) {
+      (!reply.is_enabled() && is_nss_slots_software_fallback_allowed_)) {
     VLOG_IF(1, !reply.is_owned())
         << "Initializing database when TPM is not owned.";
     MaybeStartInitializingDatabase();
@@ -192,7 +207,7 @@ void SystemTokenCertDBInitializer::OnGetTpmNonsensitiveStatus(
       // initialization was interrupted. We don't care about the result, and
       // don't block waiting for it.
       LOG(WARNING) << "Request taking TPM ownership.";
-      TpmManagerClient::Get()->TakeOwnership(
+      chromeos::TpmManagerClient::Get()->TakeOwnership(
           ::tpm_manager::TakeOwnershipRequest(), base::DoNothing());
     }
     return;
@@ -236,11 +251,17 @@ void SystemTokenCertDBInitializer::InitializeDatabase(
       /*public_slot=*/std::move(system_slot),
       /*private_slot=*/crypto::ScopedPK11Slot());
   database->SetSystemSlot(std::move(system_slot_copy));
+  database->AddObserver(this);
   system_token_cert_database_ = std::move(database);
 
   auto* system_token_cert_db_storage = SystemTokenCertDbStorage::Get();
   DCHECK(system_token_cert_db_storage);
   system_token_cert_db_storage->SetDatabase(system_token_cert_database_.get());
+}
+
+void SystemTokenCertDBInitializer::OnCertDBChanged() {
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&NotifyCertsChangedInAshOnUIThread));
 }
 
 }  // namespace ash

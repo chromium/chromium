@@ -1,11 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "gpu/vulkan/vulkan_util.h"
 
+#include <tuple>
+
 #include "base/logging.h"
-#include "base/macros.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 
 namespace gpu {
@@ -39,7 +40,7 @@ VkSemaphore ImportVkSemaphoreHandle(VkDevice vk_device,
   }
 
   // If import is successful, the VkSemaphore takes the ownership of the fd.
-  ignore_result(win32_handle.Take());
+  std::ignore = win32_handle.Take();
 
   return semaphore;
 }

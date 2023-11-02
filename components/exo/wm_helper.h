@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,7 @@ class Window;
 namespace client {
 class CaptureClient;
 class CursorClient;
+class DragDropClient;
 class FocusChangeObserver;
 }  // namespace client
 }  // namespace aura
@@ -52,16 +53,13 @@ class WMHelper : public aura::client::DragDropDelegate {
   class DragDropObserver {
    public:
     using DropCallback =
-        base::OnceCallback<void(const ui::DropTargetEvent& event,
-                                ui::mojom::DragOperation& output_drag_op)>;
+        base::OnceCallback<void(ui::mojom::DragOperation& output_drag_op)>;
 
     virtual void OnDragEntered(const ui::DropTargetEvent& event) = 0;
     virtual aura::client::DragUpdateInfo OnDragUpdated(
         const ui::DropTargetEvent& event) = 0;
     virtual void OnDragExited() = 0;
-    virtual ui::mojom::DragOperation OnPerformDrop(
-        const ui::DropTargetEvent& event) = 0;
-    virtual DropCallback GetDropCallback(const ui::DropTargetEvent& event) = 0;
+    virtual DropCallback GetDropCallback() = 0;
 
    protected:
     virtual ~DragDropObserver() {}
@@ -115,6 +113,16 @@ class WMHelper : public aura::client::DragDropDelegate {
     virtual void OnExoWindowCreated(aura::Window* window) {}
   };
 
+  // Interface for Exo classes needing to listen to PowerManagerClient events.
+  //
+  // Only implemented for ChromeOS, otherwise a no-op.
+  class PowerObserver : public base::CheckedObserver {
+   public:
+    virtual void SuspendDone() {}
+    virtual void ScreenBrightnessChanged(double percent) {}
+    virtual void LidEventReceived(bool opened) {}
+  };
+
   WMHelper();
 
   WMHelper(const WMHelper&) = delete;
@@ -136,6 +144,9 @@ class WMHelper : public aura::client::DragDropDelegate {
   void AddExoWindowObserver(ExoWindowObserver* observer);
   void RemoveExoWindowObserver(ExoWindowObserver* observer);
 
+  virtual void AddPowerObserver(PowerObserver* observer);
+  virtual void RemovePowerObserver(PowerObserver* observer);
+
   virtual void AddDragDropObserver(DragDropObserver* observer) = 0;
   virtual void RemoveDragDropObserver(DragDropObserver* observer) = 0;
   virtual void SetDragDropDelegate(aura::Window*) = 0;
@@ -155,6 +166,7 @@ class WMHelper : public aura::client::DragDropDelegate {
   virtual aura::Window* GetFocusedWindow() const = 0;
   virtual aura::Window* GetRootWindowForNewWindows() const = 0;
   virtual aura::client::CursorClient* GetCursorClient() = 0;
+  virtual aura::client::DragDropClient* GetDragDropClient() = 0;
   virtual void AddPreTargetHandler(ui::EventHandler* handler) = 0;
   virtual void PrependPreTargetHandler(ui::EventHandler* handler) = 0;
   virtual void RemovePreTargetHandler(ui::EventHandler* handler) = 0;
@@ -173,9 +185,6 @@ class WMHelper : public aura::client::DragDropDelegate {
   aura::client::DragUpdateInfo OnDragUpdated(
       const ui::DropTargetEvent& event) override = 0;
   void OnDragExited() override = 0;
-  ui::mojom::DragOperation OnPerformDrop(
-      const ui::DropTargetEvent& event,
-      std::unique_ptr<ui::OSExchangeData> data) override = 0;
   aura::client::DragDropDelegate::DropCallback GetDropCallback(
       const ui::DropTargetEvent& event) override = 0;
 

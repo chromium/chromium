@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -45,8 +46,8 @@ class SynchronousCompositorClient {
                                     const viz::FrameSinkId& id) = 0;
 
   virtual void UpdateRootLayerState(SynchronousCompositor* compositor,
-                                    const gfx::Vector2dF& total_scroll_offset,
-                                    const gfx::Vector2dF& max_scroll_offset,
+                                    const gfx::PointF& total_scroll_offset,
+                                    const gfx::PointF& max_scroll_offset,
                                     const gfx::SizeF& scrollable_size,
                                     float page_scale_factor,
                                     float min_page_scale_factor,

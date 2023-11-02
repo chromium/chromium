@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,9 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "mojo/public/cpp/bindings/async_flusher.h"
@@ -101,7 +101,7 @@ class KeyValueStoreImpl : public base::RefCountedThreadSafe<KeyValueStoreImpl>,
     }
 
     const scoped_refptr<base::SequencedTaskRunner> task_runner_;
-    KeyValueStoreImpl* const key_value_store_;
+    const raw_ptr<KeyValueStoreImpl> key_value_store_;
     std::unique_ptr<Receiver<mojom::Writer>> receiver_;
   };
 

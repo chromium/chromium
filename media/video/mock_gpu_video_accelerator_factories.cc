@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,9 +39,7 @@ class GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
            gfx::BufferFormat::BGRA_8888 == format_);
     DCHECK(num_planes_ <= kMaxPlanes);
     for (int i = 0; i < static_cast<int>(num_planes_); ++i) {
-      bytes_[i].resize(gfx::RowSizeForBufferFormat(size_.width(), format_, i) *
-                       size_.height() /
-                       gfx::SubsamplingFactorForBufferFormat(format_, i));
+      bytes_[i].resize(gfx::PlaneSizeForBufferFormat(size_, format_, i));
     }
   }
 
@@ -76,11 +74,7 @@ class GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
     return gfx::SHARED_MEMORY_BUFFER;
   }
   gfx::GpuMemoryBufferHandle CloneHandle() const override {
-    NOTREACHED();
     return gfx::GpuMemoryBufferHandle();
-  }
-  ClientBuffer AsClientBuffer() override {
-    return reinterpret_cast<ClientBuffer>(this);
   }
   void OnMemoryDump(
       base::trace_event::ProcessMemoryDump* pmd,
@@ -108,7 +102,11 @@ MockGpuVideoAcceleratorFactories::MockGpuVideoAcceleratorFactories(
 
 MockGpuVideoAcceleratorFactories::~MockGpuVideoAcceleratorFactories() = default;
 
-bool MockGpuVideoAcceleratorFactories::IsGpuVideoAcceleratorEnabled() {
+bool MockGpuVideoAcceleratorFactories::IsGpuVideoDecodeAcceleratorEnabled() {
+  return true;
+}
+
+bool MockGpuVideoAcceleratorFactories::IsGpuVideoEncodeAcceleratorEnabled() {
   return true;
 }
 
@@ -120,8 +118,8 @@ MockGpuVideoAcceleratorFactories::CreateGpuMemoryBuffer(
   base::AutoLock guard(lock_);
   if (fail_to_allocate_gpu_memory_buffer_)
     return nullptr;
-  std::unique_ptr<gfx::GpuMemoryBuffer> ret(
-      new GpuMemoryBufferImpl(size, format, fail_to_map_gpu_memory_buffer_));
+  auto ret = std::make_unique<GpuMemoryBufferImpl>(
+      size, format, fail_to_map_gpu_memory_buffer_);
   created_memory_buffers_.push_back(ret.get());
   return ret;
 }

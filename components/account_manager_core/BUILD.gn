@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,12 +6,13 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-assert(is_chromeos_ash || is_chromeos_lacros)
+assert(is_chromeos)
 
 component("account_manager_core") {
   sources = [
     "account.cc",
     "account.h",
+    "account_addition_options.h",
     "account_addition_result.cc",
     "account_addition_result.h",
     "account_manager_facade.cc",

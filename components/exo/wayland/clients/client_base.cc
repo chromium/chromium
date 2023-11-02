@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -28,14 +28,17 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/memory/platform_shared_memory_region.h"
+#include "base/memory/shared_memory_mapper.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/unguessable_token.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
@@ -121,11 +124,12 @@ ClientBase* CastToClientBase(void* data) {
 
 class MemfdMemoryMapping : public base::SharedMemoryMapping {
  public:
-  MemfdMemoryMapping(void* memory, size_t size)
-      : base::SharedMemoryMapping(memory,
-                                  size,
-                                  size /* mapped_size */,
-                                  base::UnguessableToken::Create()) {}
+  MemfdMemoryMapping(base::span<uint8_t> mapped_span)
+      : base::SharedMemoryMapping(
+            mapped_span,
+            mapped_span.size(),
+            base::UnguessableToken::Create(),
+            base::SharedMemoryMapper::GetDefaultInstance()) {}
 };
 
 void RegistryHandler(void* data,
@@ -152,7 +156,7 @@ void RegistryHandler(void* data,
         wl_registry_bind(registry, id, &wp_presentation_interface, 1)));
   } else if (strcmp(interface, "zaura_shell") == 0) {
     globals->aura_shell.reset(static_cast<zaura_shell*>(
-        wl_registry_bind(registry, id, &zaura_shell_interface, 14)));
+        wl_registry_bind(registry, id, &zaura_shell_interface, 34)));
   } else if (strcmp(interface, "zwp_linux_dmabuf_v1") == 0) {
     globals->linux_dmabuf.reset(static_cast<zwp_linux_dmabuf_v1*>(
         wl_registry_bind(registry, id, &zwp_linux_dmabuf_v1_interface, 2)));
@@ -189,6 +193,14 @@ void RegistryHandler(void* data,
   } else if (strcmp(interface, "zcr_stylus_v2") == 0) {
     globals->stylus.reset(static_cast<zcr_stylus_v2*>(
         wl_registry_bind(registry, id, &zcr_stylus_v2_interface, version)));
+  } else if (strcmp(interface, zcr_remote_shell_v1_interface.name) == 0) {
+    globals->cr_remote_shell_v1.reset(
+        static_cast<zcr_remote_shell_v1*>(wl_registry_bind(
+            registry, id, &zcr_remote_shell_v1_interface, version)));
+  } else if (strcmp(interface, zcr_remote_shell_v2_interface.name) == 0) {
+    globals->cr_remote_shell_v2.reset(
+        static_cast<zcr_remote_shell_v2*>(wl_registry_bind(
+            registry, id, &zcr_remote_shell_v2_interface, version)));
   }
 }
 
@@ -530,7 +542,7 @@ bool ClientBase::Init(const InitParams& params) {
         return false;
       }
       // We can't actually use the virtual GEM, so discard it like we do in CrOS
-      if (base::LowerCaseEqualsASCII("vgem", drm_version->name))
+      if (base::EqualsCaseInsensitiveASCII("vgem", drm_version->name))
         continue;
       if (strstr(drm_version->name, params.use_drm_value.c_str())) {
         drm_fd_ = std::move(drm_fd);
@@ -553,9 +565,10 @@ bool ClientBase::Init(const InitParams& params) {
     ui::OzonePlatform::InitParams ozone_params;
     ozone_params.single_process = true;
     ui::OzonePlatform::InitializeForGPU(ozone_params);
-    bool gl_initialized = gl::init::InitializeGLOneOff();
-    DCHECK(gl_initialized);
-    gl_surface_ = gl::init::CreateOffscreenGLSurface(gfx::Size());
+    gl::GLDisplayEGL* display = static_cast<gl::GLDisplayEGL*>(
+        gl::init::InitializeGLOneOff(/*system_device_id=*/0));
+    DCHECK(display);
+    gl_surface_ = gl::init::CreateOffscreenGLSurface(display, gfx::Size());
     gl_context_ =
         gl::init::CreateGLContext(nullptr,  // share_group
                                   gl_surface_.get(), gl::GLContextAttribs());
@@ -563,11 +576,11 @@ bool ClientBase::Init(const InitParams& params) {
     make_current_ = std::make_unique<ui::ScopedMakeCurrent>(gl_context_.get(),
                                                             gl_surface_.get());
 
-    if (gl::GLSurfaceEGL::HasEGLExtension("EGL_EXT_image_flush_external") ||
-        gl::GLSurfaceEGL::HasEGLExtension("EGL_ARM_implicit_external_sync")) {
+    if (display->ext->b_EGL_EXT_image_flush_external ||
+        display->ext->b_EGL_ARM_implicit_external_sync) {
       egl_sync_type_ = EGL_SYNC_FENCE_KHR;
     }
-    if (gl::GLSurfaceEGL::HasEGLExtension("EGL_ANDROID_native_fence_sync")) {
+    if (display->ext->b_EGL_ANDROID_native_fence_sync) {
       egl_sync_type_ = EGL_SYNC_NATIVE_FENCE_ANDROID;
     }
 
@@ -917,6 +930,16 @@ void ClientBase::HandleDmabufModifier(
     uint32_t modifier_hi,
     uint32_t modifier_lo) {}
 
+////////////////////////////////////////////////////////////////////////////////
+// zaura_output_listener
+
+void ClientBase::HandleInsets(const gfx::Insets& insets) {}
+
+void ClientBase::HandleLogicalTransform(int32_t transform) {}
+
+////////////////////////////////////////////////////////////////////////////////
+// helper functions
+
 std::unique_ptr<ClientBase::Buffer> ClientBase::CreateBuffer(
     const gfx::Size& size,
     int32_t drm_format,
@@ -938,7 +961,8 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateBuffer(
 
     if (use_memfd_) {
       // udmabuf_create requires a page aligned buffer.
-      length = base::bits::AlignUp(length, getpagesize());
+      length = base::bits::AlignUp(length,
+                                   base::checked_cast<size_t>(getpagesize()));
       int memfd = memfd_create("memfd", MFD_ALLOW_SEALING);
       if (memfd < 0) {
         PLOG(ERROR) << "memfd_create failed";
@@ -968,7 +992,8 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateBuffer(
         return nullptr;
       }
 
-      buffer->shared_memory_mapping = MemfdMemoryMapping(mapped_data, length);
+      base::span<uint8_t> mapped_span = base::make_span(mapped_data, length);
+      buffer->shared_memory_mapping = MemfdMemoryMapping(mapped_span);
       buffer->shm_pool.reset(
           wl_shm_create_pool(globals_.shm.get(), memfd, length));
 
@@ -1225,10 +1250,7 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateDrmBuffer(
 
 ClientBase::Buffer* ClientBase::DequeueBuffer() {
   auto buffer_it =
-      std::find_if(buffers_.begin(), buffers_.end(),
-                   [](const std::unique_ptr<ClientBase::Buffer>& buffer) {
-                     return !buffer->busy;
-                   });
+      base::ranges::find_if_not(buffers_, &ClientBase::Buffer::busy);
   if (buffer_it == buffers_.end())
     return nullptr;
 
@@ -1247,7 +1269,13 @@ void ClientBase::SetupAuraShellIfAvailable() {
       [](void* data, struct zaura_shell* zaura_shell, uint32_t layout_mode) {},
       [](void* data, struct zaura_shell* zaura_shell, uint32_t id) {
         CastToClientBase(data)->bug_fix_ids_.insert(id);
-      }};
+      },
+      [](void* data, struct zaura_shell* zaura_shell,
+         struct wl_array* desk_names) {},
+      [](void* data, struct zaura_shell* zaura_shell,
+         int32_t active_desk_index) {},
+      [](void* data, struct zaura_shell* zaura_shell,
+         struct wl_surface* gained_active, struct wl_surface* lost_active) {}};
   zaura_shell_add_listener(globals_.aura_shell.get(), &kAuraShellListener,
                            this);
 
@@ -1259,6 +1287,26 @@ void ClientBase::SetupAuraShellIfAvailable() {
   }
 
   zaura_surface_set_frame(aura_surface.get(), ZAURA_SURFACE_FRAME_TYPE_NORMAL);
+
+  static zaura_output_listener kAuraOutputListener = {
+      [](void* data, struct zaura_output* zaura_output, uint32_t flags,
+         uint32_t scale) {},
+      [](void* data, struct zaura_output* zaura_output, uint32_t connection) {},
+      [](void* data, struct zaura_output* zaura_output, uint32_t scale) {},
+      [](void* data, struct zaura_output* zaura_output, int32_t top,
+         int32_t left, int32_t bottom, int32_t right) {
+        CastToClientBase(data)->HandleInsets(
+            gfx::Insets::TLBR(top, left, bottom, right));
+      },
+      [](void* data, struct zaura_output* zaura_output, int32_t transform) {
+        CastToClientBase(data)->HandleLogicalTransform(transform);
+      },
+  };
+
+  std::unique_ptr<zaura_output> aura_output(zaura_shell_get_aura_output(
+      globals_.aura_shell.get(), globals_.output.get()));
+  zaura_output_add_listener(aura_output.get(), &kAuraOutputListener, this);
+  globals_.aura_output = std::move(aura_output);
 }
 
 void ClientBase::SetupPointerStylus() {

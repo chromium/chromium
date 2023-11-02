@@ -1,40 +1,46 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/autocomplete/autocomplete_provider_client_impl.h"
+#import "ios/chrome/browser/autocomplete/autocomplete_provider_client_impl.h"
 
-#include "base/notreached.h"
-#include "base/strings/utf_string_conversions.h"
-#include "components/history/core/browser/history_service.h"
-#include "components/keyed_service/core/service_access_type.h"
-#include "components/language/core/browser/pref_names.h"
-#include "components/omnibox/browser/autocomplete_classifier.h"
-#include "components/prefs/pref_service.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
-#include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/autocomplete/autocomplete_classifier_factory.h"
-#include "ios/chrome/browser/autocomplete/in_memory_url_index_factory.h"
-#include "ios/chrome/browser/autocomplete/remote_suggestions_service_factory.h"
-#include "ios/chrome/browser/autocomplete/shortcuts_backend_factory.h"
-#include "ios/chrome/browser/autocomplete/tab_matcher_impl.h"
-#include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/chrome/browser/history/history_service_factory.h"
-#include "ios/chrome/browser/history/top_sites_factory.h"
+#import "base/notreached.h"
+#import "base/strings/utf_string_conversions.h"
+#import "components/history/core/browser/history_service.h"
+#import "components/history/core/browser/top_sites.h"
+#import "components/keyed_service/core/service_access_type.h"
+#import "components/language/core/browser/pref_names.h"
+#import "components/omnibox/browser/actions/omnibox_pedal_provider.h"
+#import "components/omnibox/browser/autocomplete_classifier.h"
+#import "components/omnibox/browser/omnibox_triggered_feature_service.h"
+#import "components/omnibox/browser/shortcuts_backend.h"
+#import "components/prefs/pref_service.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/sync/driver/sync_service.h"
+#import "components/unified_consent/url_keyed_data_collection_consent_helper.h"
+#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/autocomplete/autocomplete_classifier_factory.h"
+#import "ios/chrome/browser/autocomplete/in_memory_url_index_factory.h"
+#import "ios/chrome/browser/autocomplete/omnibox_pedal_implementation.h"
+#import "ios/chrome/browser/autocomplete/remote_suggestions_service_factory.h"
+#import "ios/chrome/browser/autocomplete/shortcuts_backend_factory.h"
+#import "ios/chrome/browser/autocomplete/tab_matcher_impl.h"
+#import "ios/chrome/browser/autocomplete/zero_suggest_cache_service_factory.h"
+#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/history/history_service_factory.h"
+#import "ios/chrome/browser/history/top_sites_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
-#include "ios/chrome/browser/pref_names.h"
-#include "ios/chrome/browser/search_engines/template_url_service_factory.h"
-#include "ios/chrome/browser/signin/identity_manager_factory.h"
-#include "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
-#include "ios/components/webui/web_ui_url_constants.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
+#import "ios/components/webui/web_ui_url_constants.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -49,7 +55,10 @@ AutocompleteProviderClientImpl::AutocompleteProviderClientImpl(
                   SyncServiceFactory::GetForBrowserState(browser_state_))),
       omnibox_triggered_feature_service_(
           std::make_unique<OmniboxTriggeredFeatureService>()),
-      tab_matcher_(browser_state_) {}
+      tab_matcher_(browser_state_) {
+  pedal_provider_ = std::make_unique<OmniboxPedalProvider>(
+      *this, GetPedalImplementations(IsOffTheRecord(), false));
+}
 
 AutocompleteProviderClientImpl::~AutocompleteProviderClientImpl() {}
 
@@ -64,6 +73,10 @@ PrefService* AutocompleteProviderClientImpl::GetPrefs() const {
 
 PrefService* AutocompleteProviderClientImpl::GetLocalState() {
   return GetApplicationContext()->GetLocalState();
+}
+
+std::string AutocompleteProviderClientImpl::GetApplicationLocale() const {
+  return GetApplicationContext()->GetApplicationLocale();
 }
 
 const AutocompleteSchemeClassifier&
@@ -122,8 +135,20 @@ AutocompleteProviderClientImpl::GetDocumentSuggestionsService(
   return nullptr;
 }
 
+ZeroSuggestCacheService*
+AutocompleteProviderClientImpl::GetZeroSuggestCacheService() {
+  return ios::ZeroSuggestCacheServiceFactory::GetForBrowserState(
+      browser_state_);
+}
+
+const ZeroSuggestCacheService*
+AutocompleteProviderClientImpl::GetZeroSuggestCacheService() const {
+  return ios::ZeroSuggestCacheServiceFactory::GetForBrowserState(
+      browser_state_);
+}
+
 OmniboxPedalProvider* AutocompleteProviderClientImpl::GetPedalProvider() const {
-  return nullptr;
+  return pedal_provider_.get();
 }
 
 scoped_refptr<ShortcutsBackend>

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstring>
 
-#include "base/bits.h"
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "media/base/decrypt_config.h"

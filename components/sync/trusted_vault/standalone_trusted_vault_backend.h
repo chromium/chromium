@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,12 +13,14 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/weak_ptr.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/driver/trusted_vault_histograms.h"
 #include "components/sync/protocol/local_trusted_vault.pb.h"
 #include "components/sync/trusted_vault/trusted_vault_connection.h"
+#include "components/sync/trusted_vault/trusted_vault_degraded_recoverability_handler.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -36,7 +38,8 @@ namespace syncer {
 // dedicated sequence (using thread pool). Can be constructed on any thread/
 // sequence.
 class StandaloneTrustedVaultBackend
-    : public base::RefCountedThreadSafe<StandaloneTrustedVaultBackend> {
+    : public base::RefCountedThreadSafe<StandaloneTrustedVaultBackend>,
+      public TrustedVaultDegradedRecoverabilityHandler::Delegate {
  public:
   using FetchKeysCallback = base::OnceCallback<void(
       const std::vector<std::vector<uint8_t>>& vault_keys)>;
@@ -63,6 +66,12 @@ class StandaloneTrustedVaultBackend
       delete;
   StandaloneTrustedVaultBackend& operator=(
       const StandaloneTrustedVaultBackend& other) = delete;
+
+  // TrustedVaultDegradedRecoverabilityHandler::Delegate implementation.
+  void WriteDegradedRecoverabilityState(
+      const sync_pb::LocalTrustedVaultDegradedRecoverabilityState&
+          degraded_recoverability_state) override;
+  void OnDegradedRecoverabilityChanged() override;
 
   // Restores state saved in |file_path_|, should be called before using the
   // object.
@@ -109,6 +118,8 @@ class StandaloneTrustedVaultBackend
                                 int method_type_hint,
                                 base::OnceClosure cb);
 
+  void ClearDataForAccount(const CoreAccountInfo& account_info);
+
   absl::optional<CoreAccountInfo> GetPrimaryAccountForTesting() const;
 
   sync_pb::LocalDeviceRegistrationInfo GetDeviceRegistrationInfoForTesting(
@@ -116,12 +127,25 @@ class StandaloneTrustedVaultBackend
 
   std::vector<uint8_t> GetLastAddedRecoveryMethodPublicKeyForTesting() const;
 
+  void SetDeviceRegisteredVersionForTesting(const std::string& gaia_id,
+                                            int version);
+  void SetLastRegistrationReturnedLocalDataObsoleteForTesting(
+      const std::string& gaia_id);
+
   void SetClockForTesting(base::Clock* clock);
+
+  bool HasPendingTrustedRecoveryMethodForTesting() const;
+
+  bool AreConnectionRequestsThrottledForTesting();
 
  private:
   friend class base::RefCountedThreadSafe<StandaloneTrustedVaultBackend>;
 
-  ~StandaloneTrustedVaultBackend();
+  static TrustedVaultDownloadKeysStatusForUMA
+  GetDownloadKeysStatusForUMAFromResponse(
+      TrustedVaultDownloadKeysStatus response_status);
+
+  ~StandaloneTrustedVaultBackend() override;
 
   // Finds the per-user vault in |data_| for |gaia_id|. Returns null if not
   // found.
@@ -132,8 +156,12 @@ class StandaloneTrustedVaultBackend
   // registration is desirable (i.e. feature toggle enabled and user signed in),
   // it returns an enum representing the registration state, intended to be used
   // for metric recording. Otherwise it returns nullopt.
-  absl::optional<TrustedVaultDeviceRegistrationStateForUMA> MaybeRegisterDevice(
-      bool has_persistent_auth_error_for_uma);
+  absl::optional<TrustedVaultDeviceRegistrationStateForUMA>
+  MaybeRegisterDevice();
+
+  // Attempts to honor the pending operation stored in
+  // |pending_trusted_recovery_method_|.
+  void MaybeProcessPendingTrustedRecoveryMethod();
 
   // Called when device registration for |gaia_id| is completed (either
   // successfully or not). |data_| must contain LocalTrustedVaultPerUser for
@@ -144,7 +172,7 @@ class StandaloneTrustedVaultBackend
       const TrustedVaultKeyAndVersion& vault_key_and_version);
 
   void OnKeysDownloaded(TrustedVaultDownloadKeysStatus status,
-                        const std::vector<std::vector<uint8_t>>& vault_keys,
+                        const std::vector<std::vector<uint8_t>>& new_vault_keys,
                         int last_vault_key_version);
 
   void OnTrustedRecoveryMethodAdded(base::OnceClosure cb,
@@ -152,7 +180,8 @@ class StandaloneTrustedVaultBackend
 
   void AbandonConnectionRequest();
 
-  void FulfillOngoingFetchKeys();
+  void FulfillOngoingFetchKeys(
+      absl::optional<TrustedVaultDownloadKeysStatusForUMA> status_for_uma);
 
   // Returns true if the last failed request time imply that upcoming requests
   // should be throttled now (certain amount of time should pass since the last
@@ -167,6 +196,8 @@ class StandaloneTrustedVaultBackend
   // Removes all data for non-primary accounts if they were previously marked
   // for deletion due to accounts in cookie jar changes.
   void RemoveNonPrimaryAccountKeysIfMarkedForDeletion();
+
+  void VerifyDeviceRegistrationForUMA(const std::string& gaia_id);
 
   const base::FilePath file_path_;
 
@@ -184,6 +215,9 @@ class StandaloneTrustedVaultBackend
   // Only current |primary_account_| can be used for communication with trusted
   // vault server.
   absl::optional<CoreAccountInfo> primary_account_;
+
+  // Whether |primary_account_| has a persistent auth error.
+  bool has_persistent_auth_error_ = false;
 
   // If AddTrustedRecoveryMethod() gets invoked before SetPrimaryAccount(), the
   // execution gets deferred until SetPrimaryAccount() is invoked.
@@ -211,6 +245,8 @@ class StandaloneTrustedVaultBackend
 
   // Destroying this will cancel the ongoing request.
   std::unique_ptr<TrustedVaultConnection::Request> ongoing_connection_request_;
+  std::unique_ptr<TrustedVaultConnection::Request>
+      ongoing_verify_registration_request_;
 
   // Same as above, but specifically used for recoverability-related requests.
   // TODO(crbug.com/1201659): Move elsewhere.
@@ -221,7 +257,13 @@ class StandaloneTrustedVaultBackend
 
   // Used to determine current time, set to base::DefaultClock in prod and can
   // be overridden in tests.
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
+
+  // Used to take care of polling the degraded recoverability state from the
+  // server for the |primary_account|. Instance changes whenever
+  // |primary_account| changes.
+  std::unique_ptr<TrustedVaultDegradedRecoverabilityHandler>
+      degraded_recoverability_handler_;
 
   std::vector<uint8_t> last_added_recovery_method_public_key_for_testing_;
 

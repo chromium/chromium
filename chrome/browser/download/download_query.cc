@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,16 +70,14 @@ bool GetAs(const base::Value& in, std::u16string* out) {
 template <>
 bool GetAs(const base::Value& in, std::vector<std::u16string>* out) {
   out->clear();
-  const base::ListValue* list = NULL;
-  if (!in.GetAsList(&list))
+  if (!in.is_list())
     return false;
-  for (size_t i = 0; i < list->GetList().size(); ++i) {
-    std::u16string element;
-    if (!list->GetString(i, &element)) {
+  for (const auto& value : in.GetListDeprecated()) {
+    if (!value.is_string()) {
       out->clear();
       return false;
     }
-    out->push_back(element);
+    out->push_back(base::UTF8ToUTF16(value.GetString()));
   }
   return true;
 }
@@ -222,6 +220,68 @@ ComparisonType Compare(
 
 }  // anonymous namespace
 
+// AddSorter() creates a Sorter and pushes it onto sorters_. A Sorter is a
+// direction and a Callback to Compare<>(). After filtering, Search() makes a
+// DownloadComparator functor from the sorters_ and passes the
+// DownloadComparator to std::partial_sort. std::partial_sort calls the
+// DownloadComparator with different pairs of DownloadItems.  DownloadComparator
+// iterates over the sorters until a callback returns ComparisonType LT or GT.
+// DownloadComparator returns true or false depending on that ComparisonType and
+// the sorter's direction in order to indicate to std::partial_sort whether the
+// left item is after or before the right item. If all sorters return EQ, then
+// DownloadComparator compares GetId. A DownloadQuery may have zero or more
+// Sorters, but there is one DownloadComparator per call to Search().
+
+struct DownloadQuery::Sorter {
+  using SortType = base::RepeatingCallback<ComparisonType(const DownloadItem&,
+                                                          const DownloadItem&)>;
+
+  template <typename ValueType>
+  static Sorter Build(DownloadQuery::SortDirection adirection,
+                      ValueType (*accessor)(const DownloadItem&)) {
+    return Sorter(adirection,
+                  base::BindRepeating(&Compare<ValueType>,
+                                      base::BindRepeating(accessor)));
+  }
+
+  Sorter(DownloadQuery::SortDirection adirection, const SortType& asorter)
+      : direction(adirection), sorter(asorter) {}
+  ~Sorter() = default;
+
+  DownloadQuery::SortDirection direction;
+  SortType sorter;
+};
+
+class DownloadQuery::DownloadComparator {
+ public:
+  explicit DownloadComparator(const DownloadQuery::SorterVector& terms)
+      : terms_(terms) {}
+
+  // Returns true if |left| sorts before |right|.
+  bool operator()(const DownloadItem* left, const DownloadItem* right);
+
+ private:
+  const DownloadQuery::SorterVector& terms_;
+
+  // std::sort requires this class to be copyable.
+};
+
+bool DownloadQuery::DownloadComparator::operator()(const DownloadItem* left,
+                                                   const DownloadItem* right) {
+  for (auto term = terms_.begin(); term != terms_.end(); ++term) {
+    switch (term->sorter.Run(*left, *right)) {
+      case LT:
+        return term->direction == DownloadQuery::ASCENDING;
+      case GT:
+        return term->direction == DownloadQuery::DESCENDING;
+      case EQ:
+        break;  // break the switch but not the loop
+    }
+  }
+  CHECK_NE(left->GetId(), right->GetId());
+  return left->GetId() < right->GetId();
+}
+
 // static
 bool DownloadQuery::MatchesQuery(const std::vector<std::u16string>& query_terms,
                                  const DownloadItem& item) {
@@ -243,16 +303,16 @@ bool DownloadQuery::MatchesQuery(const std::vector<std::u16string>& query_terms,
 
   for (auto it = query_terms.begin(); it != query_terms.end(); ++it) {
     std::u16string term = base::i18n::ToLower(*it);
-    if (!base::i18n::StringSearchIgnoringCaseAndAccents(
-            term, original_url_raw, NULL, NULL) &&
+    if (!base::i18n::StringSearchIgnoringCaseAndAccents(term, original_url_raw,
+                                                        nullptr, nullptr) &&
         !base::i18n::StringSearchIgnoringCaseAndAccents(
-            term, original_url_formatted, NULL, NULL) &&
-        !base::i18n::StringSearchIgnoringCaseAndAccents(
-            term, url_raw, NULL, NULL) &&
-        !base::i18n::StringSearchIgnoringCaseAndAccents(
-            term, url_formatted, NULL, NULL) &&
-        !base::i18n::StringSearchIgnoringCaseAndAccents(
-            term, path, NULL, NULL)) {
+            term, original_url_formatted, nullptr, nullptr) &&
+        !base::i18n::StringSearchIgnoringCaseAndAccents(term, url_raw, nullptr,
+                                                        nullptr) &&
+        !base::i18n::StringSearchIgnoringCaseAndAccents(term, url_formatted,
+                                                        nullptr, nullptr) &&
+        !base::i18n::StringSearchIgnoringCaseAndAccents(term, path, nullptr,
+                                                        nullptr)) {
       return false;
     }
   }
@@ -342,66 +402,6 @@ bool DownloadQuery::Matches(const DownloadItem& item) const {
       return false;
   }
   return true;
-}
-
-// AddSorter() creates a Sorter and pushes it onto sorters_. A Sorter is a
-// direction and a Callback to Compare<>(). After filtering, Search() makes a
-// DownloadComparator functor from the sorters_ and passes the
-// DownloadComparator to std::partial_sort. std::partial_sort calls the
-// DownloadComparator with different pairs of DownloadItems.  DownloadComparator
-// iterates over the sorters until a callback returns ComparisonType LT or GT.
-// DownloadComparator returns true or false depending on that ComparisonType and
-// the sorter's direction in order to indicate to std::partial_sort whether the
-// left item is after or before the right item. If all sorters return EQ, then
-// DownloadComparator compares GetId. A DownloadQuery may have zero or more
-// Sorters, but there is one DownloadComparator per call to Search().
-
-struct DownloadQuery::Sorter {
-  using SortType = base::RepeatingCallback<ComparisonType(const DownloadItem&,
-                                                          const DownloadItem&)>;
-
-  template<typename ValueType>
-  static Sorter Build(DownloadQuery::SortDirection adirection,
-                         ValueType (*accessor)(const DownloadItem&)) {
-    return Sorter(adirection,
-                  base::BindRepeating(&Compare<ValueType>,
-                                      base::BindRepeating(accessor)));
-  }
-
-  Sorter(DownloadQuery::SortDirection adirection, const SortType& asorter)
-      : direction(adirection), sorter(asorter) {}
-  ~Sorter() = default;
-
-  DownloadQuery::SortDirection direction;
-  SortType sorter;
-};
-
-class DownloadQuery::DownloadComparator {
- public:
-  explicit DownloadComparator(const DownloadQuery::SorterVector& terms)
-    : terms_(terms) {
-  }
-
-  // Returns true if |left| sorts before |right|.
-  bool operator() (const DownloadItem* left, const DownloadItem* right);
-
- private:
-  const DownloadQuery::SorterVector& terms_;
-
-  // std::sort requires this class to be copyable.
-};
-
-bool DownloadQuery::DownloadComparator::operator() (
-    const DownloadItem* left, const DownloadItem* right) {
-  for (auto term = terms_.begin(); term != terms_.end(); ++term) {
-    switch (term->sorter.Run(*left, *right)) {
-      case LT: return term->direction == DownloadQuery::ASCENDING;
-      case GT: return term->direction == DownloadQuery::DESCENDING;
-      case EQ: break;  // break the switch but not the loop
-    }
-  }
-  CHECK_NE(left->GetId(), right->GetId());
-  return left->GetId() < right->GetId();
 }
 
 void DownloadQuery::AddSorter(DownloadQuery::SortType type,

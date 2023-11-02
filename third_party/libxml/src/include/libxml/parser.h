@@ -10,8 +10,6 @@
 #ifndef __XML_PARSER_H__
 #define __XML_PARSER_H__
 
-#include <stdarg.h>
-
 #include <libxml/xmlversion.h>
 #include <libxml/tree.h>
 #include <libxml/dict.h>
@@ -192,7 +190,7 @@ struct _xmlParserCtxt {
     const xmlChar    *version;        /* the XML version string */
     const xmlChar   *encoding;        /* the declared encoding, if any */
     int            standalone;        /* standalone document */
-    int                  html;        /* an HTML(1)/Docbook(2) document
+    int                  html;        /* an HTML(1) document
                                        * 3 is HTML after <head>
                                        * 10 is HTML after <body>
                                        */
@@ -863,11 +861,14 @@ XMLPUBFUN int XMLCALL
 /*
  * Recovery mode
  */
+XML_DEPRECATED
 XMLPUBFUN xmlDocPtr XMLCALL
 		xmlRecoverDoc		(const xmlChar *cur);
+XML_DEPRECATED
 XMLPUBFUN xmlDocPtr XMLCALL
 		xmlRecoverMemory	(const char *buffer,
 					 int size);
+XML_DEPRECATED
 XMLPUBFUN xmlDocPtr XMLCALL
 		xmlRecoverFile		(const char *filename);
 #endif /* LIBXML_SAX1_ENABLED */
@@ -880,47 +881,59 @@ XMLPUBFUN int XMLCALL
 XMLPUBFUN int XMLCALL
 		xmlParseExtParsedEnt	(xmlParserCtxtPtr ctxt);
 #ifdef LIBXML_SAX1_ENABLED
+XML_DEPRECATED
 XMLPUBFUN int XMLCALL
 		xmlSAXUserParseFile	(xmlSAXHandlerPtr sax,
 					 void *user_data,
 					 const char *filename);
+XML_DEPRECATED
 XMLPUBFUN int XMLCALL
 		xmlSAXUserParseMemory	(xmlSAXHandlerPtr sax,
 					 void *user_data,
 					 const char *buffer,
 					 int size);
+XML_DEPRECATED
 XMLPUBFUN xmlDocPtr XMLCALL
 		xmlSAXParseDoc		(xmlSAXHandlerPtr sax,
 					 const xmlChar *cur,
 					 int recovery);
+// TODO(https://github.com/google/maldoca/issues/87): Re-Deprecate this when
+//   maldoca stops using xmlSAXParseMemory.
+//XML_DEPRECATED
 XMLPUBFUN xmlDocPtr XMLCALL
 		xmlSAXParseMemory	(xmlSAXHandlerPtr sax,
 					 const char *buffer,
 					 int size,
 					 int recovery);
+XML_DEPRECATED
 XMLPUBFUN xmlDocPtr XMLCALL
 		xmlSAXParseMemoryWithData (xmlSAXHandlerPtr sax,
 					 const char *buffer,
 					 int size,
 					 int recovery,
 					 void *data);
+XML_DEPRECATED
 XMLPUBFUN xmlDocPtr XMLCALL
 		xmlSAXParseFile		(xmlSAXHandlerPtr sax,
 					 const char *filename,
 					 int recovery);
+XML_DEPRECATED
 XMLPUBFUN xmlDocPtr XMLCALL
 		xmlSAXParseFileWithData	(xmlSAXHandlerPtr sax,
 					 const char *filename,
 					 int recovery,
 					 void *data);
+XML_DEPRECATED
 XMLPUBFUN xmlDocPtr XMLCALL
 		xmlSAXParseEntity	(xmlSAXHandlerPtr sax,
 					 const char *filename);
+XML_DEPRECATED
 XMLPUBFUN xmlDocPtr XMLCALL
 		xmlParseEntity		(const char *filename);
 #endif /* LIBXML_SAX1_ENABLED */
 
 #ifdef LIBXML_VALID_ENABLED
+XML_DEPRECATED
 XMLPUBFUN xmlDtdPtr XMLCALL
 		xmlSAXParseDTD		(xmlSAXHandlerPtr sax,
 					 const xmlChar *ExternalID,
@@ -957,6 +970,7 @@ XMLPUBFUN int XMLCALL
                      const xmlChar *string,
                      xmlNodePtr *lst,
                      int recover);
+XML_DEPRECATED
 XMLPUBFUN int XMLCALL
 		xmlParseExternalEntity	(xmlDocPtr doc,
 					 xmlSAXHandlerPtr sax,
@@ -977,6 +991,9 @@ XMLPUBFUN int XMLCALL
  */
 XMLPUBFUN xmlParserCtxtPtr XMLCALL
 		xmlNewParserCtxt	(void);
+XMLPUBFUN xmlParserCtxtPtr XMLCALL
+		xmlNewSAXParserCtxt	(const xmlSAXHandler *sax,
+					 void *userData);
 XMLPUBFUN int XMLCALL
 		xmlInitParserCtxt	(xmlParserCtxtPtr ctxt);
 XMLPUBFUN void XMLCALL
@@ -984,6 +1001,7 @@ XMLPUBFUN void XMLCALL
 XMLPUBFUN void XMLCALL
 		xmlFreeParserCtxt	(xmlParserCtxtPtr ctxt);
 #ifdef LIBXML_SAX1_ENABLED
+XML_DEPRECATED
 XMLPUBFUN void XMLCALL
 		xmlSetupParserForBuffer	(xmlParserCtxtPtr ctxt,
 					 const xmlChar* buffer,
@@ -996,13 +1014,16 @@ XMLPUBFUN xmlParserCtxtPtr XMLCALL
 /*
  * Reading/setting optional parsing features.
  */
+XML_DEPRECATED
 XMLPUBFUN int XMLCALL
 		xmlGetFeaturesList	(int *len,
 					 const char **result);
+XML_DEPRECATED
 XMLPUBFUN int XMLCALL
 		xmlGetFeature		(xmlParserCtxtPtr ctxt,
 					 const char *name,
 					 void *result);
+XML_DEPRECATED
 XMLPUBFUN int XMLCALL
 		xmlSetFeature		(xmlParserCtxtPtr ctxt,
 					 const char *name,

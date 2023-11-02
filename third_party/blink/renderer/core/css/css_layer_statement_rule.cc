@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,10 +16,14 @@ CSSLayerStatementRule::CSSLayerStatementRule(
 
 CSSLayerStatementRule::~CSSLayerStatementRule() = default;
 
+Vector<String> CSSLayerStatementRule::nameList() const {
+  return layer_statement_rule_->GetNamesAsStrings();
+}
+
 String CSSLayerStatementRule::cssText() const {
   StringBuilder result;
   result.Append("@layer ");
-  Vector<String> names = layer_statement_rule_->GetNamesAsStrings();
+  const Vector<String>& names = nameList();
   result.Append(names[0]);
   for (unsigned i = 1; i < names.size(); ++i) {
     result.Append(", ");

@@ -14,28 +14,40 @@
 
 #include "absl/container/internal/raw_hash_set.h"
 
+#include <algorithm>
 #include <atomic>
 #include <cmath>
 #include <cstdint>
 #include <deque>
 #include <functional>
+#include <iterator>
+#include <list>
+#include <map>
 #include <memory>
 #include <numeric>
+#include <ostream>
 #include <random>
 #include <string>
+#include <type_traits>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
+#include <vector>
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
 #include "absl/base/internal/cycleclock.h"
+#include "absl/base/internal/prefetch.h"
 #include "absl/base/internal/raw_logging.h"
+#include "absl/container/flat_hash_map.h"
+#include "absl/container/flat_hash_set.h"
 #include "absl/container/internal/container_memory.h"
 #include "absl/container/internal/hash_function_defaults.h"
 #include "absl/container/internal/hash_policy_testing.h"
 #include "absl/container/internal/hashtable_debug.h"
+#include "absl/log/log.h"
 #include "absl/strings/string_view.h"
 
 namespace absl {
@@ -194,35 +206,39 @@ TEST(Group, Match) {
   }
 }
 
-TEST(Group, MatchEmpty) {
+TEST(Group, MaskEmpty) {
   if (Group::kWidth == 16) {
     ctrl_t group[] = {ctrl_t::kEmpty, CtrlT(1), ctrl_t::kDeleted,  CtrlT(3),
                       ctrl_t::kEmpty, CtrlT(5), ctrl_t::kSentinel, CtrlT(7),
                       CtrlT(7),       CtrlT(5), CtrlT(3),          CtrlT(1),
                       CtrlT(1),       CtrlT(1), CtrlT(1),          CtrlT(1)};
-    EXPECT_THAT(Group{group}.MatchEmpty(), ElementsAre(0, 4));
+    EXPECT_THAT(Group{group}.MaskEmpty().LowestBitSet(), 0);
+    EXPECT_THAT(Group{group}.MaskEmpty().HighestBitSet(), 4);
   } else if (Group::kWidth == 8) {
     ctrl_t group[] = {ctrl_t::kEmpty,    CtrlT(1), CtrlT(2),
                       ctrl_t::kDeleted,  CtrlT(2), CtrlT(1),
                       ctrl_t::kSentinel, CtrlT(1)};
-    EXPECT_THAT(Group{group}.MatchEmpty(), ElementsAre(0));
+    EXPECT_THAT(Group{group}.MaskEmpty().LowestBitSet(), 0);
+    EXPECT_THAT(Group{group}.MaskEmpty().HighestBitSet(), 0);
   } else {
     FAIL() << "No test coverage for Group::kWidth==" << Group::kWidth;
   }
 }
 
-TEST(Group, MatchEmptyOrDeleted) {
+TEST(Group, MaskEmptyOrDeleted) {
   if (Group::kWidth == 16) {
-    ctrl_t group[] = {ctrl_t::kEmpty, CtrlT(1), ctrl_t::kDeleted,  CtrlT(3),
-                      ctrl_t::kEmpty, CtrlT(5), ctrl_t::kSentinel, CtrlT(7),
-                      CtrlT(7),       CtrlT(5), CtrlT(3),          CtrlT(1),
-                      CtrlT(1),       CtrlT(1), CtrlT(1),          CtrlT(1)};
-    EXPECT_THAT(Group{group}.MatchEmptyOrDeleted(), ElementsAre(0, 2, 4));
+    ctrl_t group[] = {ctrl_t::kEmpty,   CtrlT(1), ctrl_t::kEmpty,    CtrlT(3),
+                      ctrl_t::kDeleted, CtrlT(5), ctrl_t::kSentinel, CtrlT(7),
+                      CtrlT(7),         CtrlT(5), CtrlT(3),          CtrlT(1),
+                      CtrlT(1),         CtrlT(1), CtrlT(1),          CtrlT(1)};
+    EXPECT_THAT(Group{group}.MaskEmptyOrDeleted().LowestBitSet(), 0);
+    EXPECT_THAT(Group{group}.MaskEmptyOrDeleted().HighestBitSet(), 4);
   } else if (Group::kWidth == 8) {
     ctrl_t group[] = {ctrl_t::kEmpty,    CtrlT(1), CtrlT(2),
                       ctrl_t::kDeleted,  CtrlT(2), CtrlT(1),
                       ctrl_t::kSentinel, CtrlT(1)};
-    EXPECT_THAT(Group{group}.MatchEmptyOrDeleted(), ElementsAre(0, 3));
+    EXPECT_THAT(Group{group}.MaskEmptyOrDeleted().LowestBitSet(), 0);
+    EXPECT_THAT(Group{group}.MaskEmptyOrDeleted().HighestBitSet(), 3);
   } else {
     FAIL() << "No test coverage for Group::kWidth==" << Group::kWidth;
   }
@@ -334,7 +350,7 @@ class StringPolicy {
     struct ctor {};
 
     template <class... Ts>
-    slot_type(ctor, Ts&&... ts) : pair(std::forward<Ts>(ts)...) {}
+    explicit slot_type(ctor, Ts&&... ts) : pair(std::forward<Ts>(ts)...) {}
 
     std::pair<std::string, std::string> pair;
   };
@@ -406,7 +422,7 @@ struct CustomAlloc : std::allocator<T> {
   CustomAlloc() {}
 
   template <typename U>
-  CustomAlloc(const CustomAlloc<U>& other) {}
+  explicit CustomAlloc(const CustomAlloc<U>& /*other*/) {}
 
   template<class U> struct rebind {
     using other = CustomAlloc<U>;
@@ -1244,7 +1260,7 @@ ExpectedStats XorSeedExpectedStats() {
     case 16:
       if (kRandomizesInserts) {
         return {0.1,
-                1.0,
+                2.0,
                 {{0.95, 0.1}},
                 {{0.95, 0}, {0.99, 1}, {0.999, 8}, {0.9999, 15}}};
       } else {
@@ -1258,6 +1274,7 @@ ExpectedStats XorSeedExpectedStats() {
   return {};
 }
 
+// TODO(b/80415403): Figure out why this test is so flaky, esp. on MSVC
 TEST(Table, DISABLED_EnsureNonQuadraticTopNXorSeedByProbeSeqLength) {
   ProbeStatsPerSize stats;
   std::vector<size_t> sizes = {Group::kWidth << 5, Group::kWidth << 10};
@@ -1269,6 +1286,7 @@ TEST(Table, DISABLED_EnsureNonQuadraticTopNXorSeedByProbeSeqLength) {
   for (size_t size : sizes) {
     auto& stat = stats[size];
     VerifyStats(size, expected, stat);
+    LOG(INFO) << size << " " << stat;
   }
 }
 
@@ -1330,17 +1348,17 @@ ExpectedStats LinearTransformExpectedStats() {
                 {{0.95, 0.3}},
                 {{0.95, 0}, {0.99, 1}, {0.999, 8}, {0.9999, 15}}};
       } else {
-        return {0.15,
-                0.5,
-                {{0.95, 0.3}},
-                {{0.95, 0}, {0.99, 3}, {0.999, 15}, {0.9999, 25}}};
+        return {0.4,
+                0.6,
+                {{0.95, 0.5}},
+                {{0.95, 1}, {0.99, 14}, {0.999, 23}, {0.9999, 26}}};
       }
     case 16:
       if (kRandomizesInserts) {
         return {0.1,
                 0.4,
                 {{0.95, 0.3}},
-                {{0.95, 0}, {0.99, 1}, {0.999, 8}, {0.9999, 15}}};
+                {{0.95, 1}, {0.99, 2}, {0.999, 9}, {0.9999, 15}}};
       } else {
         return {0.05,
                 0.2,
@@ -1352,6 +1370,7 @@ ExpectedStats LinearTransformExpectedStats() {
   return {};
 }
 
+// TODO(b/80415403): Figure out why this test is so flaky.
 TEST(Table, DISABLED_EnsureNonQuadraticTopNLinearTransformByProbeSeqLength) {
   ProbeStatsPerSize stats;
   std::vector<size_t> sizes = {Group::kWidth << 5, Group::kWidth << 10};
@@ -1363,6 +1382,7 @@ TEST(Table, DISABLED_EnsureNonQuadraticTopNLinearTransformByProbeSeqLength) {
   for (size_t size : sizes) {
     auto& stat = stats[size];
     VerifyStats(size, expected, stat);
+    LOG(INFO) << size << " " << stat;
   }
 }
 
@@ -1497,7 +1517,7 @@ TEST(Table, RehashZeroForcesRehash) {
 TEST(Table, ConstructFromInitList) {
   using P = std::pair<std::string, std::string>;
   struct Q {
-    operator P() const { return {}; }
+    operator P() const { return {}; }  // NOLINT
   };
   StringTable t = {P(), Q(), {}, {{}, {}}};
 }
@@ -2020,7 +2040,7 @@ TEST(Table, UnstablePointers) {
 TEST(TableDeathTest, EraseOfEndAsserts) {
   // Use an assert with side-effects to figure out if they are actually enabled.
   bool assert_enabled = false;
-  assert([&]() {
+  assert([&]() {  // NOLINT
     assert_enabled = true;
     return true;
   }());
@@ -2028,7 +2048,7 @@ TEST(TableDeathTest, EraseOfEndAsserts) {
 
   IntTable t;
   // Extra simple "regexp" as regexp support is highly varied across platforms.
-  constexpr char kDeathMsg[] = "Invalid operation on iterator";
+  constexpr char kDeathMsg[] = "erase.. called on invalid iterator";
   EXPECT_DEATH_IF_SUPPORTED(t.erase(t.end()), kDeathMsg);
 }
 
@@ -2040,7 +2060,7 @@ TEST(RawHashSamplerTest, Sample) {
 
   auto& sampler = GlobalHashtablezSampler();
   size_t start_size = 0;
-  std::unordered_set<const HashtablezInfo*> preexisting_info;
+  absl::flat_hash_set<const HashtablezInfo*> preexisting_info;
   start_size += sampler.Iterate([&](const HashtablezInfo& info) {
     preexisting_info.insert(&info);
     ++start_size;
@@ -2067,8 +2087,8 @@ TEST(RawHashSamplerTest, Sample) {
     }
   }
   size_t end_size = 0;
-  std::unordered_map<size_t, int> observed_checksums;
-  std::unordered_map<ssize_t, int> reservations;
+  absl::flat_hash_map<size_t, int> observed_checksums;
+  absl::flat_hash_map<ssize_t, int> reservations;
   end_size += sampler.Iterate([&](const HashtablezInfo& info) {
     if (preexisting_info.count(&info) == 0) {
       observed_checksums[info.hashes_bitwise_xor.load(

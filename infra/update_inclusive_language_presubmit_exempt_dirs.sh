@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -27,7 +27,7 @@
 # instance, you should run this from the parent of the current directory
 # rather than from this directory.
 
-git grep -c -E '\b((black|white)list|slave)\b' | \
+git grep -c -E '\b((black|white)list|master|slave)\b' | \
   awk -F ":" 'NF {cmd=sprintf("dirname %s",$1);cmd | getline dirname; \
   a[dirname] += $2; b[dirname] += 1} END {for (i in a) print i, a[i], b[i]}' \
   | sort

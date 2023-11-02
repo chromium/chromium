@@ -1,10 +1,11 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CC_LAYERS_VIDEO_FRAME_PROVIDER_CLIENT_IMPL_H_
 #define CC_LAYERS_VIDEO_FRAME_PROVIDER_CLIENT_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
@@ -76,9 +77,9 @@ class CC_EXPORT VideoFrameProviderClientImpl
                                VideoFrameControllerClient* client);
   ~VideoFrameProviderClientImpl() override;
 
-  VideoFrameProvider* provider_;
-  VideoFrameControllerClient* client_;
-  VideoLayerImpl* active_video_layer_;
+  raw_ptr<VideoFrameProvider> provider_;
+  raw_ptr<VideoFrameControllerClient> client_;
+  raw_ptr<VideoLayerImpl> active_video_layer_;
   bool stopped_;
   bool rendering_;
   bool needs_put_current_frame_;

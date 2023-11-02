@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,9 @@
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker.h"
 #include "chrome/browser/sessions/session_restore_delegate.h"
@@ -295,7 +297,7 @@ class TabLoader : public base::RefCounted<TabLoader>,
 
   // The tick clock used by this class. This is used as a testing seam. If not
   // overridden it defaults to a base::DefaultTickClock.
-  const base::TickClock* clock_;
+  raw_ptr<const base::TickClock> clock_;
 
   // Holds a pointer to the active tab loader, if one exists. Overlapping
   // session restores will be handled by the same tab loader.
@@ -309,7 +311,8 @@ class TabLoader : public base::RefCounted<TabLoader>,
   size_t reentry_depth_ = 0;
 
   // Callback that is invoked by calls to SetTabLoadingEnabled.
-  base::RepeatingCallback<void(bool)>* tab_loading_enabled_callback_ = nullptr;
+  raw_ptr<base::RepeatingCallback<void(bool)>> tab_loading_enabled_callback_ =
+      nullptr;
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_TAB_LOADER_H_

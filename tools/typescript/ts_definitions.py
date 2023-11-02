@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -33,6 +33,7 @@ def _write_tsconfig_json(gen_dir, tsconfig):
 
 def main(argv):
   parser = argparse.ArgumentParser()
+  parser.add_argument('--deps', nargs='*')
   parser.add_argument('--gen_dir', required=True)
   parser.add_argument('--out_dir', required=True)
   parser.add_argument('--root_dir', required=True)
@@ -49,6 +50,10 @@ def main(argv):
   tsconfig['files'] = [os.path.join(root_dir, f) for f in args.js_files]
   tsconfig['compilerOptions']['rootDir'] = root_dir
   tsconfig['compilerOptions']['outDir'] = out_dir
+  if tsconfig['compilerOptions']['typeRoots'] is not None:
+    tsconfig['compilerOptions']['typeRoots'] = \
+        [os.path.relpath(os.path.join(_HERE_DIR, f), args.gen_dir) for f \
+             in tsconfig['compilerOptions']['typeRoots']]
 
   # Handle custom path mappings, for example chrome://resources/ URLs.
   if args.path_mappings is not None:
@@ -57,6 +62,9 @@ def main(argv):
       mapping = m.split('|')
       path_mappings[mapping[0]].append(os.path.join('./', mapping[1]))
     tsconfig['compilerOptions']['paths'] = path_mappings
+
+  if args.deps is not None:
+    tsconfig['references'] = [{'path': dep} for dep in args.deps]
 
   _write_tsconfig_json(args.gen_dir, tsconfig)
 
@@ -83,31 +91,30 @@ def main(argv):
       generated_files.append(
           os.path.normpath(os.path.relpath(l[len(token):], args.out_dir)))
 
-  generated_files.sort()
   args.js_files.sort()
+  generated_files_set = set(generated_files)
 
-  unexpected_file = None
   for i, _js_file in enumerate(args.js_files):
     js_file = os.path.normpath(_js_file)
 
-    if os.path.dirname(js_file) != os.path.dirname(generated_files[i]):
-      unexpected_file = generated_files[i]
-      break
+    expected_file = base = os.path.splitext(js_file)[0] + '.d.ts'
 
-    base = os.path.splitext(os.path.basename(js_file))[0]
-    if base + '.d.ts' != os.path.basename(generated_files[i]):
-      unexpected_file = generated_files[i]
-      break
+    if expected_file in generated_files_set:
+      # Remove the file from the set, to check at the end if any unexpected
+      # files were generated.
+      generated_files_set.remove(expected_file)
+
+  unexpected_files_found = len(generated_files_set) > 0
 
   # Delete all generated files to not pollute the gen/ folder with any invalid
   # files, which could cause problems on subsequent builds.
-  if unexpected_file is not None:
+  if unexpected_files_found:
     for f in generated_files:
       os.remove(os.path.join(args.out_dir, f))
 
     raise Exception(\
-        'Unexpected file \'%s\' generated, deleting all generated files.' \
-        % unexpected_file)
+        'Unexpected file(s) \'%s\' generated, deleting all generated files.' \
+        % generated_files_set)
 
 
 if __name__ == '__main__':

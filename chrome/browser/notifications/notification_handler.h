@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,8 @@ class NotificationHandler {
     ANNOUNCEMENT = 7,
     NEARBY_SHARE = 8,
     NOTIFICATIONS_MUTED = 9,
-    MAX = NOTIFICATIONS_MUTED,
+    TAILORED_SECURITY = 10,
+    MAX = TAILORED_SECURITY,
   };
 
   virtual ~NotificationHandler();

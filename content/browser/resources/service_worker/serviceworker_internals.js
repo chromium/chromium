@@ -1,11 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'chrome://resources/js/jstemplate_compiled.js';
 
 import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
 function initialize() {
   addWebUIListener('partition-data', onPartitionData);
@@ -166,7 +166,7 @@ function initialize() {
           unregistered_registrations: unregisteredRegistrations,
           unregistered_versions: unregisteredVersions,
           partition_id: partition_id,
-          partition_path: partition_path
+          partition_path: partition_path,
         }),
         template);
     for (let i = 0; i < COMMANDS.length; ++i) {

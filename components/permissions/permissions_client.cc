@@ -1,14 +1,16 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/permissions/permissions_client.h"
 
 #include "base/callback.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/permissions/permission_request_enums.h"
 #include "components/permissions/permission_uma_util.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "ui/gfx/paint_vector_icon.h"
 #endif
 
@@ -45,7 +47,7 @@ void PermissionsClient::AreSitesImportant(
     entry.second = false;
 }
 
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 bool PermissionsClient::IsCookieDeletionDisabled(
     content::BrowserContext* browser_context,
     const GURL& origin) {
@@ -54,14 +56,14 @@ bool PermissionsClient::IsCookieDeletionDisabled(
 #endif
 
 void PermissionsClient::GetUkmSourceId(content::BrowserContext* browser_context,
-                                       const content::WebContents* web_contents,
+                                       content::WebContents* web_contents,
                                        const GURL& requesting_origin,
                                        GetUkmSourceIdCallback callback) {
   std::move(callback).Run(absl::nullopt);
 }
 
 IconId PermissionsClient::GetOverrideIconId(RequestType request_type) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return 0;
 #else
   return gfx::kNoneIcon;
@@ -80,6 +82,8 @@ void PermissionsClient::OnPromptResolved(
     PermissionAction action,
     const GURL& origin,
     PermissionPromptDisposition prompt_disposition,
+    PermissionPromptDispositionReason prompt_disposition_reason,
+    PermissionRequestGestureType gesture_type,
     absl::optional<QuietUiReason> quiet_ui_reason) {}
 
 absl::optional<bool>
@@ -111,28 +115,14 @@ absl::optional<GURL> PermissionsClient::OverrideCanonicalOrigin(
   return absl::nullopt;
 }
 
-bool PermissionsClient::DoOriginsMatchNewTabPage(const GURL& requesting_origin,
-                                                 const GURL& embedding_origin) {
+bool PermissionsClient::DoURLsMatchNewTabPage(const GURL& requesting_origin,
+                                              const GURL& embedding_origin) {
   return false;
 }
 
-#if defined(OS_ANDROID)
-bool PermissionsClient::IsPermissionControlledByDse(
-    content::BrowserContext* browser_context,
-    ContentSettingsType type,
-    const url::Origin& origin) {
-  return false;
-}
-
+#if BUILDFLAG(IS_ANDROID)
 bool PermissionsClient::IsDseOrigin(content::BrowserContext* browser_context,
                                     const url::Origin& origin) {
-  return false;
-}
-
-bool PermissionsClient::ResetPermissionIfControlledByDse(
-    content::BrowserContext* browser_context,
-    ContentSettingsType type,
-    const url::Origin& origin) {
   return false;
 }
 
@@ -147,6 +137,16 @@ infobars::InfoBar* PermissionsClient::MaybeCreateInfoBar(
     base::WeakPtr<PermissionPromptAndroid> prompt) {
   return nullptr;
 }
+
+#if BUILDFLAG(IS_ANDROID)
+std::unique_ptr<PermissionsClient::PermissionMessageDelegate>
+PermissionsClient::MaybeCreateMessageUI(
+    content::WebContents* web_contents,
+    ContentSettingsType type,
+    base::WeakPtr<PermissionPromptAndroid> prompt) {
+  return nullptr;
+}
+#endif
 
 void PermissionsClient::RepromptForAndroidPermissions(
     content::WebContents* web_contents,

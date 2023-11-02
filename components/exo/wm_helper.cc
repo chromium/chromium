@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,6 +43,14 @@ void WMHelper::AddExoWindowObserver(ExoWindowObserver* observer) {
 
 void WMHelper::RemoveExoWindowObserver(ExoWindowObserver* observer) {
   exo_window_observers_.RemoveObserver(observer);
+}
+
+void WMHelper::AddPowerObserver(PowerObserver* observer) {
+  NOTREACHED();
+}
+
+void WMHelper::RemovePowerObserver(PowerObserver* observer) {
+  NOTREACHED();
 }
 
 void WMHelper::NotifyExoWindowCreated(aura::Window* window) {

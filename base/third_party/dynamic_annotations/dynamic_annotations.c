@@ -125,11 +125,11 @@ void DYNAMIC_ANNOTATIONS_NAME(AnnotateHappensAfter)(
 {DYNAMIC_ANNOTATIONS_IMPL}
 
 void DYNAMIC_ANNOTATIONS_NAME(AnnotatePublishMemoryRange)(
-    const char *file, int line, const volatile void *address, long size)
+    const char *file, int line, const volatile void *address, size_t size)
 {DYNAMIC_ANNOTATIONS_IMPL}
 
 void DYNAMIC_ANNOTATIONS_NAME(AnnotateUnpublishMemoryRange)(
-    const char *file, int line, const volatile void *address, long size)
+    const char *file, int line, const volatile void *address, size_t size)
 {DYNAMIC_ANNOTATIONS_IMPL}
 
 void DYNAMIC_ANNOTATIONS_NAME(AnnotatePCQCreate)(
@@ -149,7 +149,7 @@ void DYNAMIC_ANNOTATIONS_NAME(AnnotatePCQGet)(
 {DYNAMIC_ANNOTATIONS_IMPL}
 
 void DYNAMIC_ANNOTATIONS_NAME(AnnotateNewMemory)(
-    const char *file, int line, const volatile void *mem, long size)
+    const char *file, int line, const volatile void *mem, size_t size)
 {DYNAMIC_ANNOTATIONS_IMPL}
 
 void DYNAMIC_ANNOTATIONS_NAME(AnnotateExpectRace)(
@@ -167,7 +167,7 @@ void DYNAMIC_ANNOTATIONS_NAME(AnnotateBenignRace)(
 {DYNAMIC_ANNOTATIONS_IMPL}
 
 void DYNAMIC_ANNOTATIONS_NAME(AnnotateBenignRaceSized)(
-    const char *file, int line, const volatile void *mem, long size,
+    const char *file, int line, const volatile void *mem, size_t size,
     const char *description)
 {DYNAMIC_ANNOTATIONS_IMPL}
 

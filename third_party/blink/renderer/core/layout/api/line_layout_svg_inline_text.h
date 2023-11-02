@@ -1,10 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_API_LINE_LAYOUT_SVG_INLINE_TEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_API_LINE_LAYOUT_SVG_INLINE_TEXT_H_
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 
@@ -65,7 +66,7 @@ class SVGInlineTextMetricsIterator {
     DCHECK(text_line_layout);
     if (!text_line_layout_ || text_line_layout_ != text_line_layout) {
       Reset(text_line_layout);
-      DCHECK(!MetricsList().IsEmpty());
+      DCHECK(!MetricsList().empty());
     }
 
     if (character_offset_ == start_character_offset)

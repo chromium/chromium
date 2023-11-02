@@ -36,10 +36,6 @@ testOverriddenToString(/^regex$/, true)
 /^regex$/
 testOverriddenToString(/^regex$/, false)
 /^regex$/
-testOverriddenToString(new Date, true)
-Date
-testOverriddenToString(new Date, false)
-Date
 testOverriddenToString({}, true)
 {toString: ƒ, valueOf: ƒ}
 testOverriddenToString({}, false)

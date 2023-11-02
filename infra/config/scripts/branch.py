@@ -1,5 +1,5 @@
 #!/usr/bin/env vpython3
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Script for updating the project settings for a chromium branch.
@@ -80,7 +80,12 @@ def initialize_cmd(args):
     f.write(settings)
 
 
-BRANCH_TYPES = ('standard', 'desktop-extended-stable', 'cros-lts')
+BRANCH_TYPES = (
+    'standard',
+    'desktop-extended-stable',
+    'cros-lts',
+    'fuchsia-lts',
+)
 
 
 def set_type(settings_json, branch_types):

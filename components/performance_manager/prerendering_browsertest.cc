@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,7 +58,7 @@ class PerformanceManagerPrerenderingBrowserTest
     // and wait for the old RenderFrameHost to be deleted after we navigate away
     // from it.
     content::DisableBackForwardCacheForTesting(
-        web_contents(), content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+        web_contents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
   }
 
   void TearDownOnMainThread() override {
@@ -131,12 +131,11 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerPrerenderingBrowserTest,
   // Activate the prerendered document. Test that GetMainFrameNode now returns
   // its main frame, and the original frame tree is gone.
   content::RenderFrameDeletedObserver deleted_observer(
-      web_contents()->GetMainFrame());
-  content::TestNavigationManager navigation_manager(web_contents(),
-                                                    kPrerenderingUrl);
+      web_contents()->GetPrimaryMainFrame());
+  content::test::PrerenderHostObserver prerender_observer(*web_contents(),
+                                                          kPrerenderingUrl);
   prerender_helper_.NavigatePrimaryPage(kPrerenderingUrl);
-  navigation_manager.WaitForNavigationFinished();
-  ASSERT_TRUE(navigation_manager.was_prerendered_page_activation());
+  ASSERT_TRUE(prerender_observer.was_activated());
   deleted_observer.WaitUntilDeleted();
   RunInGraph([&](Graph*) {
     ASSERT_TRUE(page_node);

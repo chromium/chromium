@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,11 +12,15 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 
 // This file contains back-/forward-cache tests for fetching from the network.
+// It was forked from
+// https://source.chromium.org/chromium/chromium/src/+/main:content/browser/back_forward_cache_browsertest.cc;drc=748acc7b301b489567691500c558c5fde8cfd538
 //
 // When adding tests please also add WPTs. See
 // third_party/blink/web_tests/external/wpt/html/browsers/browsing-the-web/back-forward-cache/README.md
 
 namespace content {
+
+using NotRestoredReason = BackForwardCacheMetrics::NotRestoredReason;
 
 // When loading task is unfreezable with the feature flag
 // kLoadingTaskUnfreezable, a page will keep processing the in-flight network
@@ -51,8 +55,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, FetchWhileStoring) {
   EXPECT_FALSE(delete_observer_rfh_a.deleted());
 
   // 3) Go back to A.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
 }
 
@@ -102,11 +105,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   delete_observer_rfh_a.WaitUntilDeleted();
 
   // 3) Go back to A.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kNetworkRequestRedirected},
-      {}, {}, {}, {}, FROM_HERE);
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectNotRestored({NotRestoredReason::kNetworkRequestRedirected}, {}, {}, {},
+                    {}, FROM_HERE);
 }
 
 // Eviction is triggered when a keepalive fetch request gets redirected while
@@ -159,11 +160,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   delete_observer_rfh_a.WaitUntilDeleted();
 
   // 3) Go back to A.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kNetworkRequestRedirected},
-      {}, {}, {}, {}, FROM_HERE);
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectNotRestored({NotRestoredReason::kNetworkRequestRedirected}, {}, {}, {},
+                    {}, FROM_HERE);
 }
 
 // Tests the case when the header was received before the page is frozen,
@@ -199,11 +198,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   delete_observer_rfh_a.WaitUntilDeleted();
 
   // 3) Go back to A.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
-                         kNetworkRequestDatapipeDrainedAsBytesConsumer},
-                    {}, {}, {}, {}, FROM_HERE);
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectNotRestored(
+      {NotRestoredReason::kNetworkRequestDatapipeDrainedAsBytesConsumer}, {},
+      {}, {}, {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -242,15 +240,13 @@ IN_PROC_BROWSER_TEST_F(
   response.Done();
 
   // 3) Go back to A.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
 }
 
-// TODO(crbug.com/1236190) Disabled for flaky failures on various configs.
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTest,
-    DISABLED_PageWithDrainedDatapipeRequestsForScriptStreamerShouldBeEvictedIfStreamedTooMuch) {
+    PageWithDrainedDatapipeRequestsForScriptStreamerShouldBeEvictedIfStreamedTooMuch) {
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
                                                       "/small_script.js");
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -260,6 +256,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // 1) Navigate to A.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_1(current_frame_host());
+
   // Append the script tag.
   EXPECT_TRUE(ExecJs(shell(), R"(
     var script = document.createElement('script');
@@ -279,18 +277,21 @@ IN_PROC_BROWSER_TEST_F(
 
   // 2) Navigate to B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  // Page A is now in BFCache.
+  EXPECT_TRUE(rfh_1->IsInBackForwardCache());
 
   // Complete the response after navigating away.
-  std::string body(kMaxBufferedBytesPerRequest + 1, '*');
+  std::string body(kMaxBufferedBytesPerProcess + 1, '*');
   response.Send(body);
   response.Done();
+  // Page A should be evicted from BFCache, we wait for the deletion to
+  // complete.
+  EXPECT_TRUE(rfh_1.WaitUntilRenderFrameDeleted());
 
   // 3) Go back to A.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
-      {}, {}, {}, {}, FROM_HERE);
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectNotRestored({NotRestoredReason::kNetworkExceedsBufferLimit}, {}, {}, {},
+                    {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
@@ -318,51 +319,12 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 3) Go back to the first page. We should restore the page from the
   // back-forward cache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
 
   // Wait until the deferred body is processed. Since it's not a valid image
   // value, we'll get the "error" event.
   EXPECT_EQ("error", EvalJs(rfh_1, "image_load_status"));
-}
-
-IN_PROC_BROWSER_TEST_F(
-    BackForwardCacheBrowserTest,
-    ImageStillLoading_ResponseStartedWhileFrozen_ExceedsPerRequestBytesLimit) {
-  net::test_server::ControllableHttpResponse image_response(
-      embedded_test_server(), "/image.png");
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  // 1) Navigate to a page with an image with src == "image.png".
-  RenderFrameHostImpl* rfh_1 = NavigateToPageWithImage(
-      embedded_test_server()->GetURL("a.com", "/title1.html"));
-
-  // Wait for the image request, but don't send anything yet.
-  image_response.WaitForRequest();
-
-  // 2) Navigate away.
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("b.com", "/title2.html")));
-  // The page was still loading when we navigated away, but it's still eligible
-  // for back-forward cache.
-  EXPECT_TRUE(rfh_1->IsInBackForwardCache());
-
-  RenderFrameDeletedObserver delete_observer(rfh_1);
-  // Start sending the image response while in the back-forward cache.
-  image_response.Send(net::HTTP_OK, "image/png");
-  std::string body(kMaxBufferedBytesPerRequest + 1, '*');
-  image_response.Send(body);
-  image_response.Done();
-  delete_observer.WaitUntilDeleted();
-
-  // 3) Go back to the first page. We should not restore the page from the
-  // back-forward cache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
-      {}, {}, {}, {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -386,28 +348,31 @@ IN_PROC_BROWSER_TEST_F(
   // for back-forward cache.
   EXPECT_TRUE(rfh_1->IsInBackForwardCache());
 
-  // 3) Go back to the first page using TestNavigationManager so that we split
+  // 3) Go back to the first page using TestActivationManager so that we split
   // the navigation into stages.
-  TestNavigationManager navigation_manager_back(shell()->web_contents(), url);
+  TestActivationManager restore_activation_manager(shell()->web_contents(),
+                                                   url);
   web_contents()->GetController().GoBack();
-  EXPECT_TRUE(navigation_manager_back.WaitForResponse());
+  EXPECT_TRUE(restore_activation_manager.WaitForBeforeChecks());
 
   // Before we try to commit the navigation, BFCache will defer to wait
   // asynchronously for renderers to reply that they've unfrozen. Finish the
   // image response in that time.
-  navigation_manager_back.ResumeNavigation();
+  restore_activation_manager.ResumeActivation();
+  auto* navigation_request =
+      NavigationRequest::From(restore_activation_manager.GetNavigationHandle());
   ASSERT_TRUE(
-      NavigationRequest::From(navigation_manager_back.GetNavigationHandle())
-          ->IsCommitDeferringConditionDeferredForTesting());
-  ASSERT_FALSE(navigation_manager_back.GetNavigationHandle()->HasCommitted());
+      navigation_request->IsCommitDeferringConditionDeferredForTesting());
+  ASSERT_FALSE(restore_activation_manager.is_paused());
+  ASSERT_FALSE(navigation_request->HasCommitted());
 
   image_response.Send(net::HTTP_OK, "image/png");
-  std::string body(kMaxBufferedBytesPerRequest + 1, '*');
+  std::string body(kMaxBufferedBytesPerProcess + 1, '*');
   image_response.Send(body);
   image_response.Done();
 
   // Finish the navigation.
-  navigation_manager_back.WaitForNavigationFinished();
+  restore_activation_manager.WaitForNavigationFinished();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectRestored(FROM_HERE);
 }
@@ -427,7 +392,7 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* rfh_1 = current_frame_host();
   // Wait for the document to load DOM to ensure that kLoading is not
   // one of the reasons why the document wasn't cached.
-  WaitForDOMContentLoaded(rfh_1);
+  ASSERT_TRUE(WaitForDOMContentLoaded(rfh_1));
 
   EXPECT_TRUE(ExecJs(rfh_1, R"(
       var image1 = document.createElement("img");
@@ -461,10 +426,9 @@ IN_PROC_BROWSER_TEST_F(
 
   RenderFrameDeletedObserver delete_observer(rfh_1);
   // Start sending the image responses while in the back-forward cache. The
-  // body size of the responses individually is less than the per-request limit,
+  // body size of the responses individually is less than the per-process limit,
   // but together they surpass the per-process limit.
   const int image_body_size = kMaxBufferedBytesPerProcess / 2 + 1;
-  DCHECK_LT(image_body_size, kMaxBufferedBytesPerRequest);
   std::string body(image_body_size, '*');
   image1_response.Send(net::HTTP_OK, "image/png");
   image1_response.Send(body);
@@ -476,11 +440,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // 3) Go back to the first page. We should not restore the page from the
   // back-forward cache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
-      {}, {}, {}, {}, FROM_HERE);
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectNotRestored({NotRestoredReason::kNetworkExceedsBufferLimit}, {}, {}, {},
+                    {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -498,7 +460,7 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* main_rfh = current_frame_host();
   // Wait for the document to load DOM to ensure that kLoading is not
   // one of the reasons why the document wasn't cached.
-  WaitForDOMContentLoaded(main_rfh);
+  ASSERT_TRUE(WaitForDOMContentLoaded(main_rfh));
 
   EXPECT_TRUE(ExecJs(main_rfh, R"(
       var image1 = document.createElement("img");
@@ -516,7 +478,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // First, wait for the subframe document to load DOM to ensure that kLoading
   // is not one of the reasons why the document wasn't cached.
-  WaitForDOMContentLoaded(subframe_rfh);
+  EXPECT_TRUE(WaitForDOMContentLoaded(subframe_rfh));
 
   EXPECT_TRUE(ExecJs(subframe_rfh, R"(
       var image2 = document.createElement("img");
@@ -543,12 +505,11 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameDeletedObserver delete_observer_1(main_rfh);
   RenderFrameDeletedObserver delete_observer_2(subframe_rfh);
   // Start sending the image responses while in the back-forward cache. The
-  // body size of the responses individually is less than the per-request limit,
+  // body size of the responses individually is less than the per-process limit,
   // but together they surpass the per-process limit since both the main frame
   // and the subframe are put in the same renderer process (because they're
   // same-site).
   const int image_body_size = kMaxBufferedBytesPerProcess / 2 + 1;
-  DCHECK_LT(image_body_size, kMaxBufferedBytesPerRequest);
   std::string body(image_body_size, '*');
   image1_response.Send(net::HTTP_OK, "image/png");
   image1_response.Send(body);
@@ -561,11 +522,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // 3) Go back to the first page. We should not restore the page from the
   // back-forward cache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
-      {}, {}, {}, {}, FROM_HERE);
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectNotRestored({NotRestoredReason::kNetworkExceedsBufferLimit}, {}, {}, {},
+                    {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -588,7 +547,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title2.html")));
   RenderFrameHostImpl* rfh_2 = current_frame_host();
-  WaitForDOMContentLoaded(rfh_2);
+  ASSERT_TRUE(WaitForDOMContentLoaded(rfh_2));
 
   // The first page was still loading images when we navigated away, but it's
   // still eligible for back-forward cache.
@@ -610,7 +569,6 @@ IN_PROC_BROWSER_TEST_F(
   // back-forward cache. The body size of the response is half of the
   // per-process limit.
   const int image_body_size = kMaxBufferedBytesPerProcess / 2 + 1;
-  DCHECK_LT(image_body_size, kMaxBufferedBytesPerRequest);
   std::string body(image_body_size, '*');
   image1_response.Send(net::HTTP_OK, "image/png");
   image1_response.Send(body);
@@ -618,8 +576,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // 4) Go back to the first page. We should restore the page from the
   // back-forward cache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
 
   // The second page was still loading images when we navigated away, but it's
@@ -640,8 +597,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // 5) Go forward. We should restore the second page from the back-forward
   // cache.
-  web_contents()->GetController().GoForward();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoForward(web_contents()));
   ExpectRestored(FROM_HERE);
 }
 
@@ -665,7 +621,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title2.html")));
   RenderFrameHostImpl* rfh_2 = current_frame_host();
-  WaitForDOMContentLoaded(rfh_2);
+  ASSERT_TRUE(WaitForDOMContentLoaded(rfh_2));
 
   // The first page was still loading images when we navigated away, but it's
   // still eligible for back-forward cache.
@@ -695,11 +651,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // 4) Go back to the first page. We should not restore the page from the
   // back-forward cache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
-      {}, {}, {}, {}, FROM_HERE);
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectNotRestored({NotRestoredReason::kNetworkExceedsBufferLimit}, {}, {}, {},
+                    {}, FROM_HERE);
 
   // The second page was still loading images when we navigated away, but it's
   // still eligible for back-forward cache.
@@ -717,8 +671,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // 5) Go forward. We should restore the second page from the back-forward
   // cache.
-  web_contents()->GetController().GoForward();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoForward(web_contents()));
   ExpectRestored(FROM_HERE);
 
   // Wait until the deferred body is processed. Since it's not a valid image
@@ -751,57 +704,13 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // finish the request. Eventually the page will get deleted due to network
   // request timeout.
   image_response.Send(net::HTTP_OK, "image/png");
-  std::string body(kMaxBufferedBytesPerRequest + 1, '*');
   delete_observer.WaitUntilDeleted();
 
   // 3) Go back to the first page. We should not restore the page from the
   // back-forward cache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kNetworkRequestTimeout}, {},
-      {}, {}, {}, FROM_HERE);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    BackForwardCacheBrowserTest,
-    ImageStillLoading_ResponseStartedBeforeFreezing_ExceedsPerRequestBytesLimit) {
-  net::test_server::ControllableHttpResponse image_response(
-      embedded_test_server(), "/image.png");
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  // 1) Navigate to a page with an image with src == "image.png".
-  RenderFrameHostImpl* rfh_1 = NavigateToPageWithImage(
-      embedded_test_server()->GetURL("a.com", "/title1.html"));
-
-  // Start sending response before the page gets in the back-forward cache.
-  image_response.WaitForRequest();
-  image_response.Send(net::HTTP_OK, "image/png");
-  image_response.Send(" ");
-  // Run some script to ensure the renderer processed its pending tasks.
-  EXPECT_TRUE(ExecJs(rfh_1, "var foo = 42;"));
-
-  // 2) Navigate away.
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("b.com", "/title2.html")));
-  // The page was still loading when we navigated away, but it's still eligible
-  // for back-forward cache.
-  EXPECT_TRUE(rfh_1->IsInBackForwardCache());
-
-  // Send the image response body while in the back-forward cache.
-  RenderFrameDeletedObserver delete_observer(rfh_1);
-  std::string body(kMaxBufferedBytesPerRequest + 1, '*');
-  image_response.Send(body);
-  image_response.Done();
-  delete_observer.WaitUntilDeleted();
-
-  // 3) Go back to the first page. We should not restore the page from the
-  // back-forward cache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
-      {}, {}, {}, {}, FROM_HERE);
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectNotRestored({NotRestoredReason::kNetworkRequestTimeout}, {}, {}, {}, {},
+                    FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -819,7 +728,7 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* rfh_1 = current_frame_host();
   // Wait for the document to load DOM to ensure that kLoading is not
   // one of the reasons why the document wasn't cached.
-  WaitForDOMContentLoaded(rfh_1);
+  ASSERT_TRUE(WaitForDOMContentLoaded(rfh_1));
 
   EXPECT_TRUE(ExecJs(rfh_1, R"(
       var image1 = document.createElement("img");
@@ -861,10 +770,9 @@ IN_PROC_BROWSER_TEST_F(
 
   RenderFrameDeletedObserver delete_observer(rfh_1);
   // Send the image response body while in the back-forward cache. The body size
-  // of the responses individually is less than the per-request limit, but
+  // of the responses individually is less than the per-process limit, but
   // together they surpass the per-process limit.
   const int image_body_size = kMaxBufferedBytesPerProcess / 2 + 1;
-  DCHECK_LT(image_body_size, kMaxBufferedBytesPerRequest);
   std::string body(image_body_size, '*');
   image1_response.Send(body);
   image1_response.Done();
@@ -874,11 +782,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // 3) Go back to the first page. We should not restore the page from the
   // back-forward cache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
-      {}, {}, {}, {}, FROM_HERE);
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectNotRestored({NotRestoredReason::kNetworkExceedsBufferLimit}, {}, {}, {},
+                    {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
@@ -921,8 +827,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 3) Go back to the first page. We should restore the page from the
   // back-forward cache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
 }
 
@@ -966,8 +871,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // 3) Go back to the first page. We should restore the page from the
   // back-forward cache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
 }
 
@@ -1001,8 +905,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 3) Go back to the first page. We should restore the page from the
   // back-forward cache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
 
   // Wait until the deferred body is processed. Since it's not a valid image

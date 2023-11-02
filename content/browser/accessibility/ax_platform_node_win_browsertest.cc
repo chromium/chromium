@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -147,9 +147,9 @@ class AXPlatformNodeWinBrowserTest : public AccessibilityContentBrowserTest {
 
   void UIAIWindowProviderGetIsModalBrowserTestTemplate(
       ax::mojom::Role expected_role,
-      content::BrowserAccessibility* (content::BrowserAccessibility::*f)(
-          uint32_t) const,
-      uint32_t index_arg,
+      content::BrowserAccessibility* (content::BrowserAccessibility::*f)(size_t)
+          const,
+      size_t index_arg,
       bool expected_is_modal,
       bool expected_is_window_provider_available) {
     BrowserAccessibility* root_browser_accessibility =
@@ -200,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinBrowserTest,
   ASSERT_EQ(ax::mojom::Role::kStaticText, browser_accessibility->GetRole());
 
   BrowserAccessibility* iframe_browser_accessibility =
-      browser_accessibility->manager()->GetRoot();
+      browser_accessibility->manager()->GetBrowserAccessibilityRoot();
   ASSERT_NE(nullptr, iframe_browser_accessibility);
   ASSERT_EQ(ax::mojom::Role::kRootWebArea,
             iframe_browser_accessibility->GetRole());
@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinBrowserTest,
   ASSERT_EQ(S_OK, root_iaccessible2->scrollToPoint(
                       IA2_COORDTYPE_SCREEN_RELATIVE, iframe_screen_bounds.x(),
                       iframe_screen_bounds.y()));
-  location_changed_waiter.WaitForNotification();
+  ASSERT_TRUE(location_changed_waiter.WaitForNotification());
 
   gfx::Rect bounds = browser_accessibility->GetBoundsRect(
       ui::AXCoordinateSystem::kScreenDIPs, ui::AXClippingBehavior::kUnclipped);
@@ -534,7 +534,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinUIABrowserTest, UIAScrollIntoView) {
                                          ui::kAXModeComplete,
                                          ax::mojom::Event::kLocationChanged);
   EXPECT_HRESULT_SUCCEEDED(platform_node->ScrollIntoView());
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 }
 
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinUIABrowserTest,
@@ -653,7 +653,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinBrowserTest,
       "</body></html>";
   GURL url(url_str);
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
@@ -662,7 +662,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinBrowserTest,
 
   // Find a node to hit test. Note that this is a really simple page,
   // so synchronous hit testing will work fine.
-  BrowserAccessibility* node = manager->GetRoot();
+  BrowserAccessibility* node = manager->GetBrowserAccessibilityRoot();
   while (node && node->GetRole() != ax::mojom::Role::kButton)
     node = manager->NextInTreeOrder(node);
   DCHECK(node);
@@ -675,7 +675,8 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinBrowserTest,
   ui::AXPlatformNodeWin* root_platform_node =
       static_cast<ui::AXPlatformNodeWin*>(
           ui::AXPlatformNode::FromNativeViewAccessible(
-              manager->GetRoot()->GetNativeViewAccessible()));
+              manager->GetBrowserAccessibilityRoot()
+                  ->GetNativeViewAccessible()));
 
   // First test that calling accHitTest on the root node returns the button.
   {
@@ -726,7 +727,10 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinBrowserTest, IFrameTraversal) {
       FindNodeAfter(root_node, "Before iframe");
   ASSERT_NE(nullptr, before_iframe_node);
   ASSERT_EQ(ax::mojom::Role::kStaticText, before_iframe_node->GetRole());
-  before_iframe_node = before_iframe_node->PlatformGetFirstChild();
+
+  ASSERT_EQ(0U, before_iframe_node->PlatformChildCount());
+  ASSERT_EQ(1U, before_iframe_node->InternalChildCount());
+  before_iframe_node = before_iframe_node->InternalGetFirstChild();
   ASSERT_NE(nullptr, before_iframe_node);
   ASSERT_EQ(ax::mojom::Role::kInlineTextBox, before_iframe_node->GetRole());
 
@@ -734,7 +738,10 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinBrowserTest, IFrameTraversal) {
       FindNodeAfter(before_iframe_node, "Text in iframe");
   ASSERT_NE(nullptr, inside_iframe_node);
   ASSERT_EQ(ax::mojom::Role::kStaticText, inside_iframe_node->GetRole());
-  inside_iframe_node = inside_iframe_node->PlatformGetFirstChild();
+
+  ASSERT_EQ(0U, inside_iframe_node->PlatformChildCount());
+  ASSERT_EQ(1U, inside_iframe_node->InternalChildCount());
+  inside_iframe_node = inside_iframe_node->InternalGetFirstChild();
   ASSERT_NE(nullptr, inside_iframe_node);
   ASSERT_EQ(ax::mojom::Role::kInlineTextBox, inside_iframe_node->GetRole());
 
@@ -742,7 +749,10 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinBrowserTest, IFrameTraversal) {
       FindNodeAfter(inside_iframe_node, "After iframe");
   ASSERT_NE(nullptr, after_iframe_node);
   ASSERT_EQ(ax::mojom::Role::kStaticText, after_iframe_node->GetRole());
-  after_iframe_node = after_iframe_node->PlatformGetFirstChild();
+
+  ASSERT_EQ(0U, after_iframe_node->PlatformChildCount());
+  ASSERT_EQ(1U, after_iframe_node->InternalChildCount());
+  after_iframe_node = after_iframe_node->InternalGetFirstChild();
   ASSERT_NE(nullptr, after_iframe_node);
   ASSERT_EQ(ax::mojom::Role::kInlineTextBox, after_iframe_node->GetRole());
 

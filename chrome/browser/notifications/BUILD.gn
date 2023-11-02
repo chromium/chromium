@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -58,11 +58,15 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/notifications/channels/ChromeChannelDefinitions.java",
       "android/java/src/org/chromium/chrome/browser/notifications/channels/LocaleChangedBroadcastReceiver.java",
       "android/java/src/org/chromium/chrome/browser/notifications/channels/SiteChannelsManager.java",
+      "android/java/src/org/chromium/chrome/browser/notifications/permissions/NotificationPermissionChangeReceiver.java",
+      "android/java/src/org/chromium/chrome/browser/notifications/permissions/NotificationPermissionController.java",
+      "android/java/src/org/chromium/chrome/browser/notifications/permissions/NotificationPermissionRationaleDialogController.java",
     ]
 
     deps = [
       ":java_resources",
       "//base:base_java",
+      "//base:jni_java",
       "//chrome/browser/flags:java",
       "//chrome/browser/offline_pages/android:java",
       "//chrome/browser/preferences:java",
@@ -74,8 +78,8 @@ if (is_android) {
       "//components/content_settings/android:content_settings_enums_java",
       "//components/url_formatter/android:url_formatter_java",
       "//content/public/android:content_full_java",
-      "//third_party/android_deps:android_support_v7_appcompat_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_core_core_java",
       "//ui/android:ui_no_recycler_view_java",
     ]
 
@@ -95,17 +99,22 @@ if (is_android) {
     ]
   }
 
-  android_library("junit_tests") {
-    # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
-    bypass_platform_checks = true
-    testonly = true
-
+  robolectric_library("junit_tests") {
     sources = [
+      "android/java/src/org/chromium/chrome/browser/notifications/NotificationBuilderBaseTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationIntentInterceptorTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationSystemStatusUtilUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/notifications/NotificationTestUtil.java",
       "android/java/src/org/chromium/chrome/browser/notifications/PendingIntentProviderTest.java",
+      "android/java/src/org/chromium/chrome/browser/notifications/StandardNotificationBuilderTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/ThrottlingNotificationSchedulerTest.java",
+      "android/java/src/org/chromium/chrome/browser/notifications/channels/ChannelsInitializerTest.java",
+      "android/java/src/org/chromium/chrome/browser/notifications/channels/ChannelsUpdaterTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/channels/ChromeChannelDefinitionsTest.java",
+      "android/java/src/org/chromium/chrome/browser/notifications/permissions/NotificationPermissionChangeReceiverTest.java",
+      "android/java/src/org/chromium/chrome/browser/notifications/permissions/NotificationPermissionControllerTest.java",
+      "android/java/src/org/chromium/chrome/browser/notifications/permissions/NotificationPermissionRationaleDialogControllerTest.java",
+      "android/java/src/org/chromium/chrome/browser/notifications/permissions/TestRationaleDelegate.java",
     ]
 
     deps = [
@@ -113,14 +122,23 @@ if (is_android) {
       "//base:base_java",
       "//base:base_java_test_support",
       "//base:base_junit_test_support",
-      "//chrome/test/android:chrome_java_test_support",
+      "//chrome/browser/flags:java",
+      "//chrome/browser/preferences:java",
+      "//chrome/test/android:chrome_java_unit_test_support",
       "//components/browser_ui/notifications/android:java",
-      "//third_party/android_deps:robolectric_all_java",
+      "//components/embedder_support/android:junit_test_support",
+      "//components/url_formatter/android:url_formatter_java",
+      "//third_party/android_deps:espresso_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_test_core_java",
+      "//third_party/androidx:androidx_test_core_java",
+      "//third_party/androidx:androidx_test_ext_junit_java",
       "//third_party/hamcrest:hamcrest_core_java",
       "//third_party/hamcrest:hamcrest_library_java",
       "//third_party/junit",
       "//third_party/mockito:mockito_java",
+      "//ui/android:ui_java_test_support",
+      "//ui/android:ui_no_recycler_view_java",
     ]
   }
 
@@ -129,12 +147,8 @@ if (is_android) {
 
     sources = [
       "android/java/src/org/chromium/chrome/browser/notifications/CustomNotificationBuilderTest.java",
-      "android/java/src/org/chromium/chrome/browser/notifications/NotificationBuilderBaseTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationTestUtil.java",
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationWrapperBuilderFactoryTest.java",
-      "android/java/src/org/chromium/chrome/browser/notifications/StandardNotificationBuilderTest.java",
-      "android/java/src/org/chromium/chrome/browser/notifications/channels/ChannelsInitializerTest.java",
-      "android/java/src/org/chromium/chrome/browser/notifications/channels/ChannelsUpdaterTest.java",
     ]
 
     deps = [
@@ -143,12 +157,13 @@ if (is_android) {
       "//base:base_java_test_support",
       "//chrome/browser/flags:java",
       "//chrome/browser/preferences:java",
-      "//chrome/test/android:chrome_java_test_support",
+      "//chrome/test/android:chrome_java_integration_test_support",
       "//components/browser_ui/notifications/android:java",
       "//components/browser_ui/util/android:java",
       "//components/browser_ui/widget/android:java",
       "//content/public/test/android:content_java_test_support",
       "//third_party/android_support_test_runner:runner_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/hamcrest:hamcrest_core_java",
       "//third_party/hamcrest:hamcrest_library_java",
@@ -160,12 +175,17 @@ if (is_android) {
 
   android_resources("java_resources") {
     sources = [
+      "android/java/res/drawable-ldrtl/notification_permission_rationale_dialog_header.xml",
+      "android/java/res/drawable/notification_permission_rationale_dialog_header.xml",
+      "android/java/res/layout/notification_permission_rationale_dialog.xml",
       "android/java/res/layout/web_notification.xml",
       "android/java/res/layout/web_notification_big.xml",
       "android/java/res/layout/web_notification_button.xml",
       "android/java/res/layout/web_notification_icon_frame.xml",
       "android/java/res/layout/web_notification_small_icon.xml",
+      "android/java/res/values-night/colors.xml",
       "android/java/res/values-v21/styles.xml",
+      "android/java/res/values/colors.xml",
       "android/java/res/values/styles.xml",
     ]
 

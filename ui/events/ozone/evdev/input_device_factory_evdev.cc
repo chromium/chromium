@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/ptr_util.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -20,14 +21,16 @@
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/device_util_linux.h"
 #include "ui/events/devices/stylus_state.h"
+#include "ui/events/event_switches.h"
 #include "ui/events/ozone/evdev/device_event_dispatcher_evdev.h"
 #include "ui/events/ozone/evdev/event_converter_evdev_impl.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 #include "ui/events/ozone/evdev/gamepad_event_converter_evdev.h"
+#include "ui/events/ozone/evdev/keyboard_imposter_checker_evdev.h"
 #include "ui/events/ozone/evdev/microphone_mute_switch_event_converter_evdev.h"
 #include "ui/events/ozone/evdev/stylus_button_event_converter_evdev.h"
-#include "ui/events/ozone/evdev/switches.h"
 #include "ui/events/ozone/evdev/tablet_event_converter_evdev.h"
+#include "ui/events/ozone/evdev/touch_evdev_types.h"
 #include "ui/events/ozone/evdev/touch_event_converter_evdev.h"
 #include "ui/events/ozone/features.h"
 #include "ui/events/ozone/gamepad/gamepad_provider_ozone.h"
@@ -50,24 +53,6 @@
 namespace ui {
 
 namespace {
-
-struct OpenInputDeviceParams {
-  // Unique identifier for the new device.
-  int id;
-
-  // Device path to open.
-  base::FilePath path;
-
-  // Dispatcher for events.
-  DeviceEventDispatcherEvdev* dispatcher;
-
-  // State shared between devices.
-  CursorDelegateEvdev* cursor;
-#if defined(USE_EVDEV_GESTURES)
-  GesturePropertyProvider* gesture_property_provider;
-#endif
-  SharedPalmDetectionFilterState* shared_palm_state;
-};
 
 #if defined(USE_EVDEV_GESTURES)
 void SetGestureIntProperty(GesturePropertyProvider* provider,
@@ -94,100 +79,6 @@ void SetGestureBoolProperty(GesturePropertyProvider* provider,
 
 #endif
 
-std::unique_ptr<EventConverterEvdev> CreateConverter(
-    const OpenInputDeviceParams& params,
-    base::ScopedFD fd,
-    const EventDeviceInfo& devinfo) {
-#if defined(USE_LIBINPUT)
-  // Use LibInputEventConverter for odd touchpads
-  if (devinfo.UseLibinput()) {
-    return LibInputEventConverter::Create(params.path, params.id, devinfo,
-                                          params.cursor, params.dispatcher);
-  }
-#endif
-
-#if defined(USE_EVDEV_GESTURES)
-  // Touchpad or mouse: use gestures library.
-  // EventReaderLibevdevCros -> GestureInterpreterLibevdevCros -> DispatchEvent
-  if (devinfo.HasTouchpad() || devinfo.HasMouse() ||
-      devinfo.HasPointingStick()) {
-    std::unique_ptr<GestureInterpreterLibevdevCros> gesture_interp =
-        std::make_unique<GestureInterpreterLibevdevCros>(
-            params.id, params.cursor, params.gesture_property_provider,
-            params.dispatcher);
-    return std::make_unique<EventReaderLibevdevCros>(std::move(fd), params.path,
-                                                     params.id, devinfo,
-                                                     std::move(gesture_interp));
-  }
-#endif
-
-  // Touchscreen: use TouchEventConverterEvdev.
-  if (devinfo.HasTouchscreen()) {
-    return TouchEventConverterEvdev::Create(
-        std::move(fd), params.path, params.id, devinfo,
-        params.shared_palm_state, params.dispatcher);
-  }
-
-  // Graphics tablet
-  if (devinfo.HasTablet()) {
-    return base::WrapUnique<EventConverterEvdev>(new TabletEventConverterEvdev(
-        std::move(fd), params.path, params.id, params.cursor, devinfo,
-        params.dispatcher));
-  }
-
-  if (devinfo.HasGamepad()) {
-    return base::WrapUnique<EventConverterEvdev>(new GamepadEventConverterEvdev(
-        std::move(fd), params.path, params.id, devinfo, params.dispatcher));
-  }
-
-  if (devinfo.IsStylusButtonDevice()) {
-    return base::WrapUnique<EventConverterEvdev>(
-        new StylusButtonEventConverterEvdev(
-            std::move(fd), params.path, params.id, devinfo, params.dispatcher));
-  }
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kEnableMicrophoneMuteSwitchDeviceSwitch) &&
-      devinfo.IsMicrophoneMuteSwitchDevice()) {
-    return base::WrapUnique<EventConverterEvdev>(
-        new MicrophoneMuteSwitchEventConverterEvdev(
-            std::move(fd), params.path, params.id, devinfo, params.dispatcher));
-  }
-
-  // Everything else: use EventConverterEvdevImpl.
-  return base::WrapUnique<EventConverterEvdevImpl>(
-      new EventConverterEvdevImpl(std::move(fd), params.path, params.id,
-                                  devinfo, params.cursor, params.dispatcher));
-}
-
-// Open an input device and construct an EventConverterEvdev.
-std::unique_ptr<EventConverterEvdev> OpenInputDevice(
-    const OpenInputDeviceParams& params) {
-  const base::FilePath& path = params.path;
-  TRACE_EVENT1("evdev", "OpenInputDevice", "path", path.value());
-
-  base::ScopedFD fd(open(path.value().c_str(), O_RDWR | O_NONBLOCK));
-  if (fd.get() < 0) {
-    PLOG(ERROR) << "Cannot open " << path.value();
-    return nullptr;
-  }
-
-  // Use monotonic timestamps for events. The touch code in particular
-  // expects event timestamps to correlate to the monotonic clock
-  // (base::TimeTicks).
-  unsigned int clk = CLOCK_MONOTONIC;
-  if (ioctl(fd.get(), EVIOCSCLOCKID, &clk))
-    PLOG(ERROR) << "failed to set CLOCK_MONOTONIC";
-
-  EventDeviceInfo devinfo;
-  if (!devinfo.Initialize(fd.get(), path)) {
-    LOG(ERROR) << "Failed to get device information for " << path.value();
-    return nullptr;
-  }
-
-  return CreateConverter(params, std::move(fd), devinfo);
-}
-
 bool IsUncategorizedDevice(const EventConverterEvdev& converter) {
   return !converter.HasTouchscreen() && !converter.HasKeyboard() &&
          !converter.HasMouse() && !converter.HasPointingStick() &&
@@ -198,18 +89,20 @@ bool IsUncategorizedDevice(const EventConverterEvdev& converter) {
 
 InputDeviceFactoryEvdev::InputDeviceFactoryEvdev(
     std::unique_ptr<DeviceEventDispatcherEvdev> dispatcher,
-    CursorDelegateEvdev* cursor)
+    CursorDelegateEvdev* cursor,
+    std::unique_ptr<InputDeviceOpener> input_device_opener)
     : task_runner_(base::ThreadTaskRunnerHandle::Get()),
       cursor_(cursor),
       shared_palm_state_(new SharedPalmDetectionFilterState),
 #if defined(USE_EVDEV_GESTURES)
       gesture_property_provider_(new GesturePropertyProvider),
 #endif
-      dispatcher_(std::move(dispatcher)) {
+      dispatcher_(std::move(dispatcher)),
+      keyboard_imposter_checker_(new KeyboardImposterCheckerEvdev),
+      input_device_opener_(std::move(input_device_opener)) {
 }
 
-InputDeviceFactoryEvdev::~InputDeviceFactoryEvdev() {
-}
+InputDeviceFactoryEvdev::~InputDeviceFactoryEvdev() = default;
 
 void InputDeviceFactoryEvdev::AddInputDevice(int id,
                                              const base::FilePath& path) {
@@ -224,7 +117,8 @@ void InputDeviceFactoryEvdev::AddInputDevice(int id,
   params.gesture_property_provider = gesture_property_provider_.get();
 #endif
 
-  std::unique_ptr<EventConverterEvdev> converter = OpenInputDevice(params);
+  std::unique_ptr<EventConverterEvdev> converter =
+      input_device_opener_->OpenInputDevice(params);
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -264,10 +158,44 @@ void InputDeviceFactoryEvdev::AttachInputDevice(
                               base::Unretained(this)));
     }
 
+    if (converter->type() == InputDeviceType::INPUT_DEVICE_INTERNAL &&
+        converter->HasPen()) {
+      converter->SetReportStylusStateCallback(
+          base::BindRepeating(&InputDeviceFactoryEvdev::SetLatestStylusState,
+                              base::Unretained(this)));
+    }
+
+    if (converter->type() == InputDeviceType::INPUT_DEVICE_INTERNAL &&
+        converter->HasTouchscreen() && !converter->HasPen()) {
+      converter->SetGetLatestStylusStateCallback(
+          base::BindRepeating(&InputDeviceFactoryEvdev::GetLatestStylusState,
+                              base::Unretained(this)));
+    }
+
+    if ((converter->type() == InputDeviceType::INPUT_DEVICE_USB ||
+         converter->type() == InputDeviceType::INPUT_DEVICE_BLUETOOTH) &&
+        converter->HasKeyboard()) {
+      converter->SetReceivedValidInputCallback(base::BindRepeating(
+          &InputDeviceFactoryEvdev::UpdateKeyboardDevicesOnKeyPress,
+          base::Unretained(this)));
+    }
+
     // Add initialized device to map.
     converters_[path] = std::move(converter);
     converters_[path]->Start();
+
     UpdateDirtyFlags(converters_[path].get());
+
+    // Register device on physical port & get ids of devices on the same
+    // physical port.
+    std::vector<int> ids_to_check =
+        keyboard_imposter_checker_->OnDeviceAdded(converters_[path].get());
+    // Check for imposters on all devices that share the same physical port.
+    for (const auto& it : converters_) {
+      if (base::Contains(ids_to_check, it.second->id()) &&
+          keyboard_imposter_checker_->FlagIfImposter(it.second.get()))
+        UpdateDirtyFlags(it.second.get());
+    }
 
     // Sync settings to new device.
     ApplyInputDeviceSettings();
@@ -292,6 +220,19 @@ void InputDeviceFactoryEvdev::DetachInputDevice(const base::FilePath& path) {
 
     // Cancel libevent notifications from this converter.
     converter->Stop();
+
+    // Decrement device count on physical port. Get ids of devices on the same
+    // physical port.
+    std::vector<int> ids_to_check =
+        keyboard_imposter_checker_->OnDeviceRemoved(converter.get());
+    // Check for imposters on all devices that share the same physical port.
+    // Declassify any devices as no longer imposters, if the removal of this
+    // device changes their status.
+    for (const auto& it : converters_) {
+      if (base::Contains(ids_to_check, it.second->id()) &&
+          !keyboard_imposter_checker_->FlagIfImposter(it.second.get()))
+        UpdateDirtyFlags(it.second.get());
+    }
 
     UpdateDirtyFlags(converter.get());
     NotifyDevicesUpdated();
@@ -356,6 +297,9 @@ base::WeakPtr<InputDeviceFactoryEvdev> InputDeviceFactoryEvdev::GetWeakPtr() {
 void InputDeviceFactoryEvdev::ApplyInputDeviceSettings() {
   TRACE_EVENT0("evdev", "ApplyInputDeviceSettings");
 
+  SetIntPropertyForOneType(
+      DT_TOUCHPAD, "Haptic Button Sensitivity",
+      input_device_settings_.touchpad_haptic_click_sensitivity);
   SetIntPropertyForOneType(DT_TOUCHPAD, "Pointer Sensitivity",
                            input_device_settings_.touchpad_sensitivity);
   SetIntPropertyForOneType(DT_TOUCHPAD, "Scroll Sensitivity",
@@ -466,6 +410,26 @@ void InputDeviceFactoryEvdev::StopVibration(int id) {
   }
 }
 
+void InputDeviceFactoryEvdev::PlayHapticTouchpadEffect(
+    ui::HapticTouchpadEffect effect,
+    ui::HapticTouchpadEffectStrength strength) {
+  for (const auto& it : converters_) {
+    if (it.second->HasHapticTouchpad()) {
+      it.second->PlayHapticTouchpadEffect(effect, strength);
+    }
+  }
+}
+
+void InputDeviceFactoryEvdev::SetHapticTouchpadEffectForNextButtonRelease(
+    ui::HapticTouchpadEffect effect,
+    ui::HapticTouchpadEffectStrength strength) {
+  for (const auto& it : converters_) {
+    if (it.second->HasHapticTouchpad()) {
+      it.second->SetHapticTouchpadEffectForNextButtonRelease(effect, strength);
+    }
+  }
+}
+
 bool InputDeviceFactoryEvdev::IsDeviceEnabled(
     const EventConverterEvdev* converter) {
   if (!input_device_settings_.enable_internal_touchpad &&
@@ -563,14 +527,16 @@ void InputDeviceFactoryEvdev::NotifyTouchscreensUpdated() {
 }
 
 void InputDeviceFactoryEvdev::NotifyKeyboardsUpdated() {
+  base::flat_map<int, std::vector<uint64_t>> key_bits_mapping;
   std::vector<InputDevice> keyboards;
   for (auto it = converters_.begin(); it != converters_.end(); ++it) {
     if (it->second->HasKeyboard()) {
       keyboards.push_back(InputDevice(it->second->input_device()));
+      key_bits_mapping[it->second->id()] = it->second->GetKeyboardKeyBits();
     }
   }
-
-  dispatcher_->DispatchKeyboardDevicesUpdated(keyboards);
+  dispatcher_->DispatchKeyboardDevicesUpdated(keyboards,
+                                              std::move(key_bits_mapping));
 }
 
 void InputDeviceFactoryEvdev::NotifyMouseDevicesUpdated() {
@@ -579,7 +545,9 @@ void InputDeviceFactoryEvdev::NotifyMouseDevicesUpdated() {
   for (auto it = converters_.begin(); it != converters_.end(); ++it) {
     if (it->second->HasMouse()) {
       mice.push_back(it->second->input_device());
-      has_mouse = true;
+      // Some I2C touchpads falsely claim to be mice, see b/205272718
+      if (it->second->type() != ui::InputDeviceType::INPUT_DEVICE_INTERNAL)
+        has_mouse = true;
     } else if (it->second->HasPointingStick()) {
       mice.push_back(it->second->input_device());
       has_pointing_stick = true;
@@ -591,26 +559,31 @@ void InputDeviceFactoryEvdev::NotifyMouseDevicesUpdated() {
 
 void InputDeviceFactoryEvdev::NotifyTouchpadDevicesUpdated() {
   std::vector<InputDevice> touchpads;
-  for (auto it = converters_.begin(); it != converters_.end(); ++it) {
-    if (it->second->HasTouchpad()) {
-      touchpads.push_back(it->second->input_device());
+  bool has_haptic_touchpad = false;
+  for (const auto& it : converters_) {
+    if (it.second->HasTouchpad()) {
+      if (it.second->HasHapticTouchpad())
+        has_haptic_touchpad = true;
+      touchpads.push_back(it.second->input_device());
     }
   }
 
-  dispatcher_->DispatchTouchpadDevicesUpdated(touchpads);
+  dispatcher_->DispatchTouchpadDevicesUpdated(touchpads, has_haptic_touchpad);
 }
 
 void InputDeviceFactoryEvdev::NotifyGamepadDevicesUpdated() {
+  base::flat_map<int, std::vector<uint64_t>> key_bits_mapping;
   std::vector<GamepadDevice> gamepads;
   for (auto it = converters_.begin(); it != converters_.end(); ++it) {
     if (it->second->HasGamepad()) {
       gamepads.emplace_back(it->second->input_device(),
                             it->second->GetGamepadAxes(),
                             it->second->GetGamepadRumbleCapability());
+      key_bits_mapping[it->second->id()] = it->second->GetGamepadKeyBits();
     }
   }
 
-  dispatcher_->DispatchGamepadDevicesUpdated(gamepads);
+  dispatcher_->DispatchGamepadDevicesUpdated(gamepads, std::move(key_bits_mapping));
 }
 
 void InputDeviceFactoryEvdev::NotifyUncategorizedDevicesUpdated() {
@@ -621,6 +594,12 @@ void InputDeviceFactoryEvdev::NotifyUncategorizedDevicesUpdated() {
   }
 
   dispatcher_->DispatchUncategorizedDevicesUpdated(uncategorized_devices);
+}
+
+void InputDeviceFactoryEvdev::UpdateKeyboardDevicesOnKeyPress(
+    const EventConverterEvdev* converter) {
+  UpdateDirtyFlags(converter);
+  NotifyDevicesUpdated();
 }
 
 void InputDeviceFactoryEvdev::SetIntPropertyForOneType(
@@ -671,6 +650,42 @@ void InputDeviceFactoryEvdev::EnableDevices() {
   // ApplyInputDeviceSettings() instead of this function.
   for (const auto& it : converters_)
     it.second->SetEnabled(IsDeviceEnabled(it.second.get()));
+}
+
+void InputDeviceFactoryEvdev::SetLatestStylusState(
+    const InProgressTouchEvdev& event,
+    const int32_t x_res,
+    const int32_t y_res,
+    const base::TimeTicks& timestamp) {
+  // TODO(alanlxl): Copy happens here. This function may be called very
+  // frequently because the firmware reports stylus status every few ms.
+  // Comments it out for the timebeing until it's really used.
+  // latest_stylus_state_.stylus_event = event;
+
+  if (x_res <= 0) {
+    VLOG(1) << "Invalid resolution " << x_res;
+    latest_stylus_state_.x_res = 1;
+  } else {
+    latest_stylus_state_.x_res = x_res;
+  }
+
+  if (y_res <= 0) {
+    VLOG(1) << "Invalid resolution " << y_res;
+    latest_stylus_state_.y_res = 1;
+  } else {
+    latest_stylus_state_.y_res = y_res;
+  }
+
+  if (timestamp < latest_stylus_state_.timestamp) {
+    VLOG(1) << "Unexpected decreased timestamp received.";
+  }
+
+  latest_stylus_state_.timestamp = timestamp;
+}
+
+void InputDeviceFactoryEvdev::GetLatestStylusState(
+    const InProgressStylusState** stylus_state) const {
+  *stylus_state = &latest_stylus_state_;
 }
 
 }  // namespace ui

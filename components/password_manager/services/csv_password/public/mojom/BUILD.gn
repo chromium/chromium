@@ -1,0 +1,51 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//testing/test.gni")
+
+mojom("mojom") {
+  sources = [ "csv_password_parser.mojom" ]
+
+  public_deps = [
+    "//sandbox/policy/mojom",
+    "//url/mojom:url_mojom_gurl",
+  ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "password_manager.mojom.CSVPassword"
+          cpp = "::password_manager::CSVPassword"
+        },
+      ]
+      traits_headers = [ "csv_password_parser_traits.h" ]
+      traits_sources = [ "csv_password_parser_traits.cc" ]
+      traits_public_deps =
+          [ "//components/password_manager/core/browser/import:csv" ]
+    },
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "csv_password_parser_traits_unittest.cc" ]
+
+  deps = [
+    ":mojom",
+    "//base",
+    "//base/test:test_support",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//testing/gtest",
+  ]
+}
+
+test("csv_password_mojo_unittests") {
+  deps = [
+    ":unit_tests",
+    "//mojo/core/test:run_all_unittests",
+  ]
+}

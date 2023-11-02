@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -26,6 +25,7 @@
 #include "chromecast/browser/named_message_port_connector_cast.h"
 #include "chromecast/mojo/remote_interfaces.h"
 #include "components/on_load_script_injector/browser/on_load_script_injector_host.h"
+#include "components/url_rewrite/browser/url_request_rewrite_rules_manager.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -61,6 +61,8 @@ class CastWebContentsImpl : public CastWebContents,
 
   content::WebContents* web_contents() const override;
   PageState page_state() const override;
+  url_rewrite::UrlRequestRewriteRulesManager* url_rewrite_rules_manager()
+      override;
 
   // CastWebContents implementation:
   int tab_id() const override;
@@ -78,6 +80,8 @@ class CastWebContentsImpl : public CastWebContents,
   void AddRendererFeatures(base::Value features) override;
   void SetInterfacesForRenderer(
       mojo::PendingRemote<mojom::RemoteInterfaces> remote_interfaces) override;
+  void SetUrlRewriteRules(
+      url_rewrite::mojom::UrlRequestRewriteRulesPtr rules) override;
   void LoadUrl(const GURL& url) override;
   void ClosePage() override;
   void Stop(int error_code) override;
@@ -111,7 +115,6 @@ class CastWebContentsImpl : public CastWebContents,
 
   // content::WebContentsObserver implementation:
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
-  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
   void DidStartNavigation(
@@ -147,15 +150,11 @@ class CastWebContentsImpl : public CastWebContents,
       content::WebContentsObserver::MediaStoppedReason reason) override;
 
  private:
-  // Proxy allowing a client to communicate with IdentificationSettingsManager
-  // in a RenderFrame.
-  struct IdentificationSettingsProxy {
-    IdentificationSettingsProxy();
-    ~IdentificationSettingsProxy();
-    mojo::AssociatedRemote<mojom::IdentificationSettingsManager> remote;
-    mojo::AssociatedReceiverSet<mojom::IdentificationSettingsManager> receivers;
-  };
-
+  // Constructor used to create inner CastWebContents. This allows inner
+  // contents to share the same URL rewrite rules as the root.
+  CastWebContentsImpl(content::WebContents* web_contents,
+                      mojom::CastWebViewParamsPtr params,
+                      CastWebContents* parent);
   void OnPageLoading();
   void OnPageLoaded();
   void UpdatePageState();
@@ -173,6 +172,8 @@ class CastWebContentsImpl : public CastWebContents,
 
   content::WebContents* web_contents_;
   mojom::CastWebViewParamsPtr params_;
+  absl::optional<url_rewrite::UrlRequestRewriteRulesManager>
+      url_rewrite_rules_manager_;
   PageState page_state_;
   PageState last_state_;
   shell::RemoteDebuggingServer* const remote_debugging_server_;
@@ -182,6 +183,7 @@ class CastWebContentsImpl : public CastWebContents,
   // Retained so that this observer can be removed before being destroyed:
   content::RenderProcessHost* main_process_host_;
 
+  CastWebContents* const parent_cast_web_contents_ = nullptr;
   base::flat_set<std::unique_ptr<CastWebContents>> inner_contents_;
   base::Value renderer_features_{base::Value::Type::DICTIONARY};
 
@@ -202,10 +204,6 @@ class CastWebContentsImpl : public CastWebContents,
 
   on_load_script_injector::OnLoadScriptInjectorHost<uint64_t> script_injector_;
   mojo::Remote<mojom::ApiBindings> api_bindings_;
-
-  base::flat_map<content::RenderFrameHost*,
-                 std::unique_ptr<IdentificationSettingsProxy>>
-      identification_settings_proxies;
 
   // If |ConnectToBindingsService| is invoked, |bindings_received_| is set
   // false. Following |LoadUrl| will be stored in |pending_load_url_|, and

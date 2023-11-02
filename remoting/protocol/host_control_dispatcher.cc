@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,7 @@
 #include "remoting/protocol/message_pipe.h"
 #include "remoting/protocol/message_serialization.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 HostControlDispatcher::HostControlDispatcher()
     : ChannelDispatcherBase(kControlChannelName) {}
@@ -126,10 +125,11 @@ void HostControlDispatcher::OnIncomingMessage(
     host_stub_->SelectDesktopDisplay(message->select_display());
   } else if (message->has_peer_connection_parameters()) {
     host_stub_->ControlPeerConnection(message->peer_connection_parameters());
+  } else if (message->has_video_layout()) {
+    host_stub_->SetVideoLayout(message->video_layout());
   } else {
     LOG(WARNING) << "Unknown control message received.";
   }
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

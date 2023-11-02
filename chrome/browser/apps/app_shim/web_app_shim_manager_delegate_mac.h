@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,12 +19,13 @@ struct AppLaunchParams;
 
 namespace web_app {
 
-using BrowserAppLauncherForTesting = base::OnceCallback<content::WebContents*(
-    const apps::AppLaunchParams& params)>;
+using BrowserAppLauncherForTesting =
+    base::RepeatingCallback<content::WebContents*(
+        const apps::AppLaunchParams& params)>;
 
 // Test helper that hooking calls to BrowserAppLauncher::LaunchAppWithParams
 void SetBrowserAppLauncherForTesting(
-    BrowserAppLauncherForTesting browserAppLauncherForTesting);
+    const BrowserAppLauncherForTesting& launcher);
 
 class WebAppShimManagerDelegate : public apps::AppShimManager::Delegate {
  public:

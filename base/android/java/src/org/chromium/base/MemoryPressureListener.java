@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@ import android.app.Activity;
 import android.content.ComponentCallbacks2;
 
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.memory.MemoryPressureCallback;
+import org.chromium.build.annotations.MainDex;
 
 /**
  * This class is Java equivalent of base::MemoryPressureListener: it distributes pressure
@@ -88,6 +88,10 @@ public class MemoryPressureListener {
     /**
      * Distributes |pressure| to all callbacks.
      * This method should be called only on ThreadUtils.UiThread.
+     *
+     * This includes sending the notification to the native side, provided that addNativeCallback()
+     * has been called. It does not trigger all the clients listening directly to
+     * ComponentCallbacks2 notifications.
      */
     public static void notifyMemoryPressure(@MemoryPressureLevel int pressure) {
         ThreadUtils.assertOnUiThread();

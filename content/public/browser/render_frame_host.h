@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,12 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/function_ref.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/back_forward_cache.h"
+#include "content/public/common/extra_mojo_js_features.mojom.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
@@ -28,14 +31,17 @@
 #include "third_party/blink/public/mojom/frame/frame.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/sudden_termination_disabler_type.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-forward.h"
+#include "third_party/blink/public/mojom/opengraph/metadata.mojom-forward.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-forward.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/gfx/native_widget_types.h"
 
 class GURL;
 
 namespace base {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 namespace android {
 template <typename T>
 class JavaRef;
@@ -44,7 +50,6 @@ class JavaRef;
 
 class TimeDelta;
 class UnguessableToken;
-class Value;
 }  // namespace base
 
 namespace blink {
@@ -79,9 +84,9 @@ class URLLoaderFactory;
 }
 }  // namespace network
 
-namespace perfetto {
-class TracedValue;
-}
+namespace perfetto::protos::pbzero {
+class RenderFrameHost;
+}  // namespace perfetto::protos::pbzero
 
 namespace service_manager {
 class InterfaceProvider;
@@ -101,6 +106,7 @@ class Origin;
 namespace content {
 
 class BrowserContext;
+class DocumentRef;
 struct GlobalRenderFrameHostId;
 class RenderProcessHost;
 class RenderViewHost;
@@ -108,6 +114,7 @@ class RenderWidgetHost;
 class RenderWidgetHostView;
 class SiteInstance;
 class StoragePartition;
+class WeakDocumentPtr;
 class WebUI;
 class Page;
 
@@ -146,6 +153,13 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // frame that is currently rendered in a different process than |process_id|.
   static int GetFrameTreeNodeIdForRoutingId(int process_id, int routing_id);
 
+  // Returns the FrameTreeNode ID corresponding to the specified |process_id|
+  // and |frame_token|. This routing ID pair may represent a placeholder for
+  // frame that is currently rendered in a different process than |process_id|.
+  static int GetFrameTreeNodeIdForFrameToken(
+      int process_id,
+      const ::blink::FrameToken& frame_token);
+
   // Returns the RenderFrameHost corresponding to the
   // |placeholder_frame_token| in the given |render_process_id|. The returned
   // RenderFrameHost will always be in a different process.  It may be null if
@@ -155,16 +169,19 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
       int render_process_id,
       const blink::RemoteFrameToken& placeholder_frame_token);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Returns the RenderFrameHost object associated with a Java native pointer.
   static RenderFrameHost* FromJavaRenderFrameHost(
       const base::android::JavaRef<jobject>& jrender_frame_host_android);
 #endif
 
-  ~RenderFrameHost() override {}
+  // Logs UMA metrics related to isolatable sandboxed iframes.
+  static void LogSandboxedIframesIsolationMetrics();
+
+  ~RenderFrameHost() override = default;
 
   // Returns the route id for this frame.
-  virtual int GetRoutingID() = 0;
+  virtual int GetRoutingID() const = 0;
 
   // Returns the frame token for this frame.
   virtual const blink::LocalFrameToken& GetFrameToken() = 0;
@@ -188,19 +205,26 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
                                      size_t max_nodes,
                                      const base::TimeDelta& timeout) = 0;
 
+  using AXTreeDistillerCallback = base::OnceCallback<void(
+      const ui::AXTreeUpdate&,
+      const std::vector<ui::AXNodeID>& content_node_ids)>;
+  // Requests a one-time snapshot of the accessibility tree with distilled
+  // node IDs identified.
+  virtual void RequestDistilledAXTree(AXTreeDistillerCallback callback) = 0;
+
   // Returns the SiteInstance grouping all RenderFrameHosts that have script
   // access to this RenderFrameHost, and must therefore live in the same
   // process.
   // Associated SiteInstance never changes.
-  virtual SiteInstance* GetSiteInstance() = 0;
+  virtual SiteInstance* GetSiteInstance() const = 0;
 
   // Returns the process for this frame.
   // Associated RenderProcessHost never changes.
-  virtual RenderProcessHost* GetProcess() = 0;
+  virtual RenderProcessHost* GetProcess() const = 0;
 
   // Returns the GlobalRenderFrameHostId for this frame. Embedders should store
   // this instead of a raw RenderFrameHost pointer.
-  virtual GlobalRenderFrameHostId GetGlobalId() = 0;
+  virtual GlobalRenderFrameHostId GetGlobalId() const = 0;
 
   // Returns a StoragePartition associated with this RenderFrameHost.
   // Associated StoragePartition never changes.
@@ -226,7 +250,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // can be checked with IsRenderFrameLive().
   // NOTE: Due to historical relationships between RenderViewHost and
   // RenderWidgetHost, the main frame RenderWidgetHostView may initially exist
-  // before IsRenderFrameCreated() is true, but they would afterward change
+  // before IsRenderFrameLive() is true, but they would afterward change
   // values together. It is better to not rely on this behaviour as it is
   // intended to change. See https://crbug.com/419087.
   virtual RenderWidgetHostView* GetView() = 0;
@@ -245,7 +269,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // RenderFrameHost is the main one and there is no parent.
   // The result may be in a different process than the
   // current RenderFrameHost.
-  virtual RenderFrameHost* GetParent() = 0;
+  virtual RenderFrameHost* GetParent() const = 0;
 
   // Returns the document owning the frame this RenderFrameHost is located
   // in, which will either be a parent (for <iframe>s) or outer document (for
@@ -267,7 +291,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   //  C GetParent & GetParentOrOuterDocument returns A.
   //  B GetParent & GetParentOrOuterDocument returns A.
   //  A GetParent & GetParentOrOuterDocument returns nullptr.
-  virtual RenderFrameHost* GetParentOrOuterDocument() = 0;
+  virtual RenderFrameHost* GetParentOrOuterDocument() const = 0;
 
   // Returns the eldest parent of this RenderFrameHost.
   // Always non-null, but might be equal to |this|.
@@ -304,13 +328,13 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // <fencedframe> element, if the frame is not the top-level <fencedframe>
   // itself. That is, this will return false for all <iframes> nested under a
   // <fencedframe>.
-  virtual bool IsFencedFrameRoot() = 0;
+  virtual bool IsFencedFrameRoot() const = 0;
 
   // Fenced frames (meta-bug https://crbug.com/1111084):
   // Returns true if `this` was loaded in a <fencedframe> element directly or if
   // one of `this` ancestors was loaded in a <fencedframe> element. This
   // supports both Shadow DOM and MPArch implementations.
-  virtual bool IsNestedWithinFencedFrame() = 0;
+  virtual bool IsNestedWithinFencedFrame() const = 0;
 
   // |ForEachRenderFrameHost| traverses this RenderFrameHost and all of its
   // descendants, including frames in any inner frame trees, in breadth-first
@@ -333,13 +357,10 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
     // Does not continue traversal.
     kStop
   };
-  using FrameIterationCallback =
-      base::RepeatingCallback<FrameIterationAction(RenderFrameHost*)>;
-  using FrameIterationAlwaysContinueCallback =
-      base::RepeatingCallback<void(RenderFrameHost*)>;
-  virtual void ForEachRenderFrameHost(FrameIterationCallback on_frame) = 0;
+  virtual void ForEachRenderFrameHostWithAction(
+      base::FunctionRef<FrameIterationAction(RenderFrameHost*)> on_frame) = 0;
   virtual void ForEachRenderFrameHost(
-      FrameIterationAlwaysContinueCallback on_frame) = 0;
+      base::FunctionRef<void(RenderFrameHost*)> on_frame) = 0;
 
   // Returns the FrameTreeNode ID associated with this RenderFrameHost. This ID
   // is browser-global and uniquely identifies a browser-side concept of a frame
@@ -356,13 +377,14 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   //
   // In the other direction, a RenderFrameHost can also transfer to a different
   // FrameTreeNode! Prior to the advent of prerendered pages
-  // (content/browser/prerender/README.md), that was not true, and it could be
-  // assumed that the return value of RenderFrameHost::GetFrameTreeNodeId() was
-  // constant over the lifetime of the RenderFrameHost. But with prerender
-  // activations, the main frame of the prerendered page transfers to a new
-  // FrameTreeNode, so newer code should no longer make that assumption. This
-  // transfer only happens for main frames (currently only during a prerender
-  // activation navigation) and never happens for subframes.
+  // (content/browser/preloading/prerender/README.md), that was not true, and it
+  // could be assumed that the return value of
+  // RenderFrameHost::GetFrameTreeNodeId() was constant over the lifetime of the
+  // RenderFrameHost. But with prerender activations, the main frame of the
+  // prerendered page transfers to a new FrameTreeNode, so newer code should no
+  // longer make that assumption. This transfer only happens for main frames
+  // (currently only during a prerender activation navigation) and never happens
+  // for subframes.
   //
   // If a stable identifier is needed, GetGlobalId() always refers to this
   // RenderFrameHost, while this RenderFrameHost might host multiple documents
@@ -425,9 +447,9 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   //     below.
   //
   //     In practice this means that the frame is guaranteed to be hosted in a
-  //     process that is isolated to the frame's origin. The process may also
-  //     host cross-origin frames and workers only if they have opted in to
-  //     being embedded by asserting CORS or CORP headers.
+  //     process that is isolated to the frame's origin. Additionally, the
+  //     frame may embed cross-origin frames and workers only if they have
+  //     opted in to being embedded by asserting CORS or CORP headers.
   //
   // 3.  The frame may be an "isolated application", corresponding to a mostly
   //     TBD set of restrictions we're exploring in https://crbug.com/1206150,
@@ -488,10 +510,10 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // Note that this does not reflect navigations in other RenderFrameHosts,
   // frames, or pages within the same WebContents, so it may differ from
   // NavigationController::GetLastCommittedEntry().
-  virtual const GURL& GetLastCommittedURL() = 0;
+  virtual const GURL& GetLastCommittedURL() const = 0;
 
   // Returns the last committed origin of this RenderFrameHost.
-  virtual const url::Origin& GetLastCommittedOrigin() = 0;
+  virtual const url::Origin& GetLastCommittedOrigin() const = 0;
 
   // Returns the network isolation key used for subresources from the currently
   // committed navigation. It's set on commit and does not change until the next
@@ -540,7 +562,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   //   ExecuteJavaScript("obj.foo(1, true)", callback)
   virtual void ExecuteJavaScriptMethod(const std::u16string& object_name,
                                        const std::u16string& method_name,
-                                       base::Value arguments,
+                                       base::Value::List arguments,
                                        JavaScriptResultCallback callback) = 0;
 
   // This is the default API to run JavaScript in this frame. This API can only
@@ -567,6 +589,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // activation.
   virtual void ExecuteJavaScriptWithUserGestureForTests(
       const std::u16string& javascript,
+      JavaScriptResultCallback callback,
       int32_t world_id = ISOLATED_WORLD_ID_GLOBAL) = 0;
 
   // Tells the renderer to perform a given action on the plugin located at a
@@ -603,7 +626,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   virtual void SaveImageAt(int x, int y) = 0;
 
   // RenderViewHost for this frame.
-  virtual RenderViewHost* GetRenderViewHost() = 0;
+  virtual RenderViewHost* GetRenderViewHost() const = 0;
 
   // Returns the InterfaceProvider that this process can use to bind
   // interfaces exposed to it by the application running in this frame.
@@ -618,13 +641,12 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // of a frame are defined in Blink.
   virtual blink::mojom::PageVisibilityState GetVisibilityState() = 0;
 
-  // Returns true if WebContentsObserver::RenderFrameCreated notification has
-  // been dispatched for this frame, and so a RenderFrameDeleted notification
-  // will later be dispatched for this frame.
-  virtual bool IsRenderFrameCreated() = 0;
+  // Returns whether the IP address of the last commit was publicly routable.
+  virtual bool IsLastCommitIPAddressPubliclyRoutable() const = 0;
 
   // Returns whether the RenderFrame in the renderer process has been created
   // and still has a connection.  This is valid for all frames.
+  // RenderFrameDeleted notification will later be dispatched for this frame.
   virtual bool IsRenderFrameLive() = 0;
 
   // Defines different states the RenderFrameHost can be in during its lifetime,
@@ -688,7 +710,9 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
     // After a cross-document navigation, the old documents are going to run
     // unload handlers in the background and will be deleted thereafter e.g.
     // after a DidFinishNavigation in the same frame for a different
-    // RenderFrameHost, up until RenderFrameDeleted.
+    // RenderFrameHost, up until RenderFrameDeleted. Use
+    // RenderFrameHostWrapper::WaitUntilRenderFrameDelete() to wait until
+    // RenderFrameHost is deleted in tests.
     kPendingDeletion,
   };
 
@@ -707,6 +731,13 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // a state.  Eventually, we should make sure that embedders only learn about
   // new RenderFrameHosts when they reach the kPendingCommit state.
   virtual LifecycleState GetLifecycleState() = 0;
+
+  // Returns true if and only if the `lifecycle_state` matches
+  // `GetLifecycleState`. This is helpful for determining if a RenderFrameHost
+  // is in a specific state since GetLifecycleState can crash on speculative
+  // frames. TODO(crbug.com/1183639): Remove this method once
+  // GetLifecycleState() can be used for speculative.
+  virtual bool IsInLifecycleState(LifecycleState lifecycle_state) = 0;
 
   // Returns true if the document hosted in this RenderFrameHost is committed
   // and lives inside a page presented to the user for the WebContents it is in
@@ -801,7 +832,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   virtual void SetWebUIProperty(const std::string& name,
                                 const std::string& value) = 0;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Returns the Java object of this instance.
   virtual base::android::ScopedJavaLocalRef<jobject>
   GetJavaRenderFrameHost() = 0;
@@ -811,7 +842,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // implemented in Java in the browser process to C++ code in the browser
   // process.
   virtual service_manager::InterfaceProvider* GetJavaInterfaces() = 0;
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Stops and disables the hang monitor for beforeunload. This avoids flakiness
   // in tests that need to observe beforeunload dialogs, which could fail if the
@@ -930,37 +961,14 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // Returns true if this frame has fired DOMContentLoaded.
   virtual bool IsDOMContentLoaded() = 0;
 
-  // Update whether the frame is considered an ad subframe by Ad Tagging.
+  // Update whether the frame is considered an ad frame by Ad Tagging.
   //
   // Note: This ad status is currently maintained and updated *outside* content.
   // This is used to ensure the render frame proxies are in sync (since they
   // aren't exposed in the public API). Eventually, we might be able to simplify
   // this somewhat (maybe //content would be responsible for maintaining the
   // state, with some content client method used to update it).
-  virtual void UpdateIsAdSubframe(bool is_ad_subframe) = 0;
-
-  // Perform security checks on Web Authentication requests. These can be
-  // called by other |Authenticator| mojo interface implementations in the
-  // browser process so that they don't have to duplicate security policies.
-  // For requests originating from the render process, |effective_origin| will
-  // be the same as the last committed origin. However, for request originating
-  // from the browser process, this may be different.
-  // |is_payment_credential_creation| indicates whether MakeCredential is making
-  // a payment credential.
-  // |PerformGetAssertionWebAuthSecurityChecks| returns a security check result
-  // and a boolean representing whether the given origin is cross-origin with
-  // any frame in this frame's ancestor chain. This extra cross-origin bit is
-  // relevant in case callers need it for crypto signature.
-  virtual std::pair<blink::mojom::AuthenticatorStatus, bool>
-  PerformGetAssertionWebAuthSecurityChecks(
-      const std::string& relying_party_id,
-      const url::Origin& effective_origin,
-      bool is_payment_credential_get_assertion) = 0;
-  virtual blink::mojom::AuthenticatorStatus
-  PerformMakeCredentialWebAuthSecurityChecks(
-      const std::string& relying_party_id,
-      const url::Origin& effective_origin,
-      bool is_payment_credential_creation) = 0;
+  virtual void UpdateIsAdFrame(bool is_ad_frame) = 0;
 
   // Tells the host that this is part of setting up a WebXR DOM Overlay. This
   // starts a short timer that permits entering fullscreen mode, similar to a
@@ -968,10 +976,12 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   virtual void SetIsXrOverlaySetup() = 0;
 
   // Returns the UKM source id for the page load (last committed cross-document
-  // non-bfcache navigation in the main frame).
+  // non-bfcache navigation in the outermost main frame).
   // This id typically has an associated PageLoad UKM event.
-  // Note: this can be called on any frame, but this id for all subframes is the
-  // same as the id for the main frame.
+  // Note: this can be called on any frame, but this id for all subframes or
+  // fenced frames is the same as the id for the outermost main frame. For
+  // portals, this id for frames inside a portal is the same as the id for the
+  // main frame for the portal.
   virtual ukm::SourceId GetPageUkmSourceId() = 0;
 
   // Report an inspector issue to devtools. Note that the issue is stored on the
@@ -985,8 +995,10 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // created on the document.
   virtual bool DocumentUsedWebOTP() = 0;
 
+  using TraceProto = perfetto::protos::pbzero::RenderFrameHost;
   // Write a description of this RenderFrameHost into the provided |context|.
-  virtual void WriteIntoTrace(perfetto::TracedValue context) = 0;
+  virtual void WriteIntoTrace(
+      perfetto::TracedProto<TraceProto> context) const = 0;
 
   // Start/stop event log output from WebRTC on this RFH for the peer connection
   // identified locally within the RFH using the ID `lid`.
@@ -1008,6 +1020,13 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   virtual void GetCanonicalUrl(
       base::OnceCallback<void(const absl::optional<GURL>&)> callback) = 0;
 
+  // Fetch the OpenGraph metadata from the renderer process. The returned data
+  // has only been validated as follows:
+  // * Contained URLs are web schemes, not other schemes
+  // Any other properties you want, you'll need to check yourself.
+  virtual void GetOpenGraphMetadata(
+      base::OnceCallback<void(blink::mojom::OpenGraphMetadataPtr)>) = 0;
+
   // Returns true if the last navigation in this RenderFrameHost has committed
   // an error document that is a placeholder document installed when the
   // navigation failed or was blocked, containing an error message like "This
@@ -1015,6 +1034,27 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // This can't be called for pending commit RFH because the value is set
   // during call to RenderFrameHostImpl::DidNavigate which happens after commit.
   virtual bool IsErrorDocument() = 0;
+
+  // Return checked and weak references, respectively, to the current document
+  // in this RenderFrameHost, which will be no longer valid once the
+  // RenderFrameHost is deleted or navigates to another document.
+  virtual DocumentRef GetDocumentRef() = 0;
+  virtual WeakDocumentPtr GetWeakDocumentPtr() = 0;
+
+  // Enable Mojo JavaScript bindings in the renderer process. It will be
+  // effective on the first creation of script context after the call is made.
+  // If called at frame creation time (RenderFrameCreated) or just before a
+  // document is committed (ReadyToCommitNavigation), the resulting document
+  // will have the JS bindings enabled.
+  //
+  // If |features| is nullptr, only MojoJs will be enabled. Otherwise |features|
+  // enables a set of additional features that can be used with MojoJs. For
+  // example, helper methods for MojoJs to better work with Web API objects.
+  virtual void EnableMojoJsBindings(mojom::ExtraMojoJsFeaturesPtr features) = 0;
+
+  // Whether the current document is loaded inside an anonymous iframe. Updated
+  // on every cross-document navigation.
+  virtual bool IsAnonymous() const = 0;
 
  private:
   // This interface should only be implemented inside content.

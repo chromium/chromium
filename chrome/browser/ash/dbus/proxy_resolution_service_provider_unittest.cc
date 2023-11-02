@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,10 @@
 #include "chrome/browser/ash/net/system_proxy_manager.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chromeos/dbus/services/service_provider_test_helper.h"
-#include "chromeos/dbus/system_proxy/system_proxy_client.h"
-#include "chromeos/network/network_handler_test_helper.h"
-#include "chromeos/tpm/stub_install_attributes.h"
+#include "chromeos/ash/components/dbus/services/service_provider_test_helper.h"
+#include "chromeos/ash/components/dbus/system_proxy/system_proxy_client.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -59,11 +59,11 @@ class MockNetworkContext : public network::TestNetworkContext {
   // network::mojom::NetworkContext implementation:
   void LookUpProxyForURL(
       const GURL& url,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       mojo::PendingRemote<::network::mojom::ProxyLookupClient>
           proxy_lookup_client) override {
     last_url_ = url;
-    last_network_isolation_key_ = network_isolation_key;
+    last_network_anonymization_key_ = network_anonymization_key;
 
     mojo::Remote<::network::mojom::ProxyLookupClient>
         proxy_lookup_client_remote(std::move(proxy_lookup_client));
@@ -82,19 +82,18 @@ class MockNetworkContext : public network::TestNetworkContext {
   }
 
   const GURL& last_url() const { return last_url_; }
-  const net::NetworkIsolationKey& last_network_isolation_key() const {
-    return last_network_isolation_key_;
+  const net::NetworkAnonymizationKey& last_network_anonymization_key() const {
+    return last_network_anonymization_key_;
   }
 
  private:
   GURL last_url_;
-  net::NetworkIsolationKey last_network_isolation_key_;
+  net::NetworkAnonymizationKey last_network_anonymization_key_;
 
   LookupProxyForURLMockResult lookup_proxy_result_;
 
-  chromeos::ScopedStubInstallAttributes test_install_attributes_{
-      chromeos::StubInstallAttributes::CreateCloudManaged("fake-domain",
-                                                          "fake-id")};
+  ScopedStubInstallAttributes test_install_attributes_{
+      StubInstallAttributes::CreateCloudManaged("fake-domain", "fake-id")};
 };
 
 }  // namespace
@@ -203,7 +202,7 @@ TEST_F(ProxyResolutionServiceProviderTest, NullNetworkContext) {
   EXPECT_EQ("No NetworkContext", result.error);
 }
 
-// Make sure requests use an opaque transient NetworkIsolationKey.
+// Make sure requests use an opaque transient NetworkAnonymizationKey.
 TEST_F(ProxyResolutionServiceProviderTest,
        UniqueTransientNetworkIsolationKeys) {
   const GURL kUrl("https://foo.test/food");
@@ -215,7 +214,8 @@ TEST_F(ProxyResolutionServiceProviderTest,
   EXPECT_EQ(kProxyResult, result.proxy_info);
   EXPECT_EQ("", result.error);
   EXPECT_EQ(kUrl, mock_network_context_.last_url());
-  EXPECT_TRUE(mock_network_context_.last_network_isolation_key().IsTransient());
+  EXPECT_TRUE(
+      mock_network_context_.last_network_anonymization_key().IsTransient());
 }
 
 // Tests the behaviour of system-proxy when enabled via the feature flag

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,10 +28,6 @@ class AppListA11yAnnouncer {
   // the reference to `announcement_view_` when the view is about to get
   // deleted.
   void Shutdown();
-
-  // Modifies the announcement view to verbalize that app list transitioned to
-  // peeking state.
-  void AnnouncePeekingState();
 
   // Modifies the announcement view to verbalize that app list transitioned to
   // fullscreen state.
@@ -66,18 +62,14 @@ class AppListA11yAnnouncer {
   // As above, but does not announce a page. Used for single-page apps grids.
   void AnnounceAppsGridReorder(int target_row, int target_column);
 
-  // Modifies the announcement view to verbalize that a folder was opened in the
-  // apps container.
-  void AnnounceFolderOpened();
-
   // Modifies the announcement view to verbalize that a folder was closed in the
   // apps container.
   void AnnounceFolderClosed();
 
- private:
   // Modifies the announcement view to verbalize the provided announcement.
   void Announce(const std::u16string& announcement);
 
+ private:
   // The view used to send accessibility announcements. Owned by the parent's
   // views hierarchy.
   views::View* announcement_view_;

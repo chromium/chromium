@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,13 +28,14 @@ class WebTestPushMessagingService : public PushMessagingService {
   // PushMessagingService implementation:
   void SubscribeFromDocument(const GURL& requesting_origin,
                              int64_t service_worker_registration_id,
-                             int renderer_id,
+                             int render_process_id,
                              int render_frame_id,
                              blink::mojom::PushSubscriptionOptionsPtr options,
                              bool user_gesture,
                              RegisterCallback callback) override;
   void SubscribeFromWorker(const GURL& requesting_origin,
                            int64_t service_worker_registration_id,
+                           int render_process_id,
                            blink::mojom::PushSubscriptionOptionsPtr options,
                            RegisterCallback callback) override;
   void GetSubscriptionInfo(const GURL& origin,

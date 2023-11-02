@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,8 +61,8 @@
                      emailAddress:(NSString*)emailAddress
     NS_DESIGNATED_INITIALIZER;
 
-// Unavailable. Please use |initWithFirstName:middleNameOrInitial:lastName:
-// line1:line2:zip:city:state:country:|.
+// Unavailable. Please use `initWithFirstName:middleNameOrInitial:lastName:
+// line1:line2:zip:city:state:country:`.
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

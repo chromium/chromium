@@ -1,0 +1,21 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Next MinVersion: 1
+
+module arc.mojom;
+
+// Used by ARC to create a new sharesheet session. A sharesheet session is used
+// to show the Chrome sharesheet initiated from an Android app
+// Next method ID: 0
+interface SharesheetHost {
+  // TODO(phshah): Add methods to open sharesheet view
+};
+
+// Next method ID: 1
+interface SharesheetInstance {
+  // Establishes full-duplex communication with the host.
+  [MinVersion=0] Init@0(pending_remote<SharesheetHost> host_remote) => ();
+};
+

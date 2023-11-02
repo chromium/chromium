@@ -1,9 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_DISPLAY_WIN_TOPMOST_WINDOW_FINDER_WIN_H_
 #define UI_DISPLAY_WIN_TOPMOST_WINDOW_FINDER_WIN_H_
+
+#include <set>
 
 #include "base/win/scoped_gdi_object.h"
 #include "ui/display/win/base_window_finder_win.h"

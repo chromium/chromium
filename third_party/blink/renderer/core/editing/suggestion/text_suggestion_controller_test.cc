@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -84,7 +84,7 @@ TEST_F(TextSuggestionControllerTest, ApplySpellCheckSuggestion) {
 }
 
 // Flaky on Android: http://crbug.com/1104700
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_ApplyTextSuggestion DISABLED_ApplyTextSuggestion
 #else
 #define MAYBE_ApplyTextSuggestion ApplyTextSuggestion
@@ -524,7 +524,7 @@ TEST_F(TextSuggestionControllerTest, SuggestionMarkerWithEmptySuggestion) {
       node_suggestion_marker_pairs =
           GetFrame().GetDocument()->Markers().MarkersIntersectingRange(
               range_to_check, DocumentMarker::MarkerTypes::Suggestion());
-  EXPECT_FALSE(node_suggestion_marker_pairs.IsEmpty());
+  EXPECT_FALSE(node_suggestion_marker_pairs.empty());
 
   // Calling ShowSuggestionMenu() shouldn't crash. See crbug.com/901135.
   // ShowSuggestionMenu() may still get called because of race condition.

@@ -280,6 +280,7 @@ function assert_rotate3d_equals(actual, expected, description) {
 
 function assert_phase_at_time(animation, phase, currentTime) {
   animation.currentTime = currentTime;
+  const fillMode = animation.effect.getTiming().fill;
 
   if (phase === 'active') {
     // If the fill mode is 'none', then progress will only be non-null if we
@@ -306,4 +307,7 @@ function assert_phase_at_time(animation, phase, currentTime) {
                       `time is ${currentTime} (progress is non-null with ` +
                       `appropriate fill mode)`);
   }
+
+  // Reset fill mode to avoid side-effects.
+  animation.effect.updateTiming({ fill: fillMode });
 }

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/task_environment.h"
@@ -51,8 +52,8 @@ class TestFCMSyncNetworkChannel : public FCMSyncNetworkChannel {
   void StopListening() override {}
 
   void RequestDetailedStatus(
-      const base::RepeatingCallback<void(const base::DictionaryValue&)>&
-          callback) override {}
+      const base::RepeatingCallback<void(base::Value::Dict)>& callback)
+      override {}
 };
 
 // TODO: Make FCMInvalidationListener class abstract and explicitly make all the
@@ -68,9 +69,9 @@ class FakeFCMInvalidationListener : public FCMInvalidationListener {
   ~FakeFCMInvalidationListener() override = default;
 
   void RequestDetailedStatus(
-      const base::RepeatingCallback<void(const base::DictionaryValue&)>&
-          callback) const override {
-    callback.Run(base::DictionaryValue());
+      const base::RepeatingCallback<void(base::Value::Dict)>& callback)
+      const override {
+    callback.Run(base::Value::Dict());
   }
 };
 
@@ -165,7 +166,7 @@ class FCMInvalidationServiceTestDelegate {
   void InitializeInvalidationService() {
     fake_listener_ = new FakeFCMInvalidationListener(
         std::make_unique<TestFCMSyncNetworkChannel>());
-    invalidation_service_->InitForTest(base::WrapUnique(fake_listener_));
+    invalidation_service_->InitForTest(base::WrapUnique(fake_listener_.get()));
   }
 
   FCMInvalidationService* GetInvalidationService() {
@@ -190,7 +191,7 @@ class FCMInvalidationServiceTestDelegate {
   std::unique_ptr<MockInstanceID> mock_instance_id_;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<IdentityProvider> identity_provider_;
-  FCMInvalidationListener* fake_listener_;  // Owned by the service.
+  raw_ptr<FCMInvalidationListener> fake_listener_;  // Owned by the service.
   network::TestURLLoaderFactory url_loader_factory_;
   TestingPrefServiceSimple pref_service_;
 
@@ -208,9 +209,9 @@ TEST(FCMInvalidationServiceTest, NotifiesAboutInstanceID) {
 
   // Set up a cached InstanceID aka client ID stored in prefs.
   {
-    DictionaryPrefUpdate update(&delegate->pref_service_,
+    ScopedDictPrefUpdate update(&delegate->pref_service_,
                                 prefs::kInvalidationClientIDCache);
-    update->SetStringKey(kSenderId, "InstanceIDFromPrefs");
+    update->Set(kSenderId, "InstanceIDFromPrefs");
   }
 
   // Create the invalidation service, but do not initialize it yet.
@@ -220,7 +221,7 @@ TEST(FCMInvalidationServiceTest, NotifiesAboutInstanceID) {
   ASSERT_TRUE(invalidation_service->GetInvalidatorClientId().empty());
 
   // Register a handler *before* initializing the invalidation service.
-  FakeInvalidationHandler handler;
+  FakeInvalidationHandler handler("owner_1");
   invalidation_service->RegisterInvalidationHandler(&handler);
 
   // Because the invalidation service hasn't been initialized, the client ID is
@@ -251,7 +252,7 @@ TEST(FCMInvalidationServiceTest, NotifiesAboutInstanceID) {
 
   // Another handler that gets registered should immediately be informed of the
   // client ID.
-  FakeInvalidationHandler handler2;
+  FakeInvalidationHandler handler2(/*owner=*/"owner_2");
   invalidation_service->RegisterInvalidationHandler(&handler2);
   EXPECT_EQ(handler2.GetInvalidatorClientId(), "FreshInstanceID");
 
@@ -287,7 +288,7 @@ namespace internal {
 
 class FakeCallbackContainer {
  public:
-  void FakeCallback(const base::DictionaryValue& value) { called_ = true; }
+  void FakeCallback(base::Value::Dict value) { called_ = true; }
 
   bool called_ = false;
   base::WeakPtrFactory<FakeCallbackContainer> weak_ptr_factory_{this};

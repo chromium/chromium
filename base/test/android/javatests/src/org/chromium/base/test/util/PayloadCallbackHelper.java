@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@ import org.junit.Assert;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -74,7 +75,23 @@ public class PayloadCallbackHelper<T> {
      */
     @Nullable
     public T getPayloadByIndexBlocking(int index) {
-        waitForCallback(1 + index);
+        return getPayloadByIndexBlocking(
+                index, CallbackHelper.WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+    }
+
+    /**
+     * Blocks until the requested payload is provided, and then returns it.
+     * @param index Index into a conceptual array of payloads provided by sequential callbacks.
+     * @param timeout timeout value for all callbacks to occur.
+     * @param unit timeout unit.
+     * @return The nth payload provided to notify. Null is a valid return value if the callback was
+     *         invoked with null.
+     * @throws IndexOutOfBoundsException If notify is not called at least the specified number of
+     *         times.
+     */
+    @Nullable
+    public T getPayloadByIndexBlocking(int index, long timeout, TimeUnit unit) {
+        waitForCallback(1 + index, timeout, unit);
         return mPayloadList.get(index);
     }
 
@@ -87,7 +104,7 @@ public class PayloadCallbackHelper<T> {
      */
     @Nullable
     public T getOnlyPayloadBlocking() {
-        waitForCallback(1);
+        waitForCallback(1, CallbackHelper.WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         // While this lock likely isn't necessary for tests to call this method correctly, it allows
         // this method to truly fulfil the contact promised by the method's name that there's only
         // one payload. Other threads may be waiting to notify while this lock is held. Note this
@@ -108,17 +125,19 @@ public class PayloadCallbackHelper<T> {
     /**
      * Blocks until notify has been called the specified number of times.
      * @param expectedCallCount The number of times notify should be called.
+     * @param timeout timeout value for all callbacks to occur.
+     * @param unit timeout unit.
      * @throws IndexOutOfBoundsException If notify is not called at least the specified number of
      *         times.
      */
-    private void waitForCallback(int expectedCallCount) {
+    private void waitForCallback(int expectedCallCount, long timeout, TimeUnit unit) {
         int currentCallCount = mDelegate.getCallCount();
         int numberOfCallsToWaitFor = expectedCallCount - currentCallCount;
         if (numberOfCallsToWaitFor <= 0) {
             return;
         }
         try {
-            mDelegate.waitForCallback(currentCallCount, numberOfCallsToWaitFor);
+            mDelegate.waitForCallback(currentCallCount, numberOfCallsToWaitFor, timeout, unit);
         } catch (TimeoutException te) {
             throw new IllegalStateException(te);
         }

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,9 +55,9 @@ AdsBlockedDialog::~AdsBlockedDialog() {
     Dismiss();
 }
 
-void AdsBlockedDialog::Show() {
+void AdsBlockedDialog::Show(bool should_post_dialog) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_AdsBlockedDialog_show(env, java_ads_blocked_dialog_);
+  Java_AdsBlockedDialog_show(env, java_ads_blocked_dialog_, should_post_dialog);
 }
 
 void AdsBlockedDialog::Dismiss() {

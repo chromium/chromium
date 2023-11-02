@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/window_open_disposition.h"
@@ -137,7 +137,7 @@ class TabModalConfirmDialogDelegate : public content::WebContentsObserver {
   // Close the dialog.
   void CloseDialog();
 
-  TabModalConfirmDialogCloseDelegate* close_delegate_;
+  raw_ptr<TabModalConfirmDialogCloseDelegate> close_delegate_;
 
   // True iff we are in the process of closing, to avoid running callbacks
   // multiple times.

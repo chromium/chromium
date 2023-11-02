@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/sequence_bound.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
@@ -20,6 +21,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "storage/browser/quota/storage_policy_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_ancestor_frame_type.mojom.h"
 
 namespace blink {
 class StorageKey;
@@ -106,6 +108,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   void CreateNewRegistration(
       blink::mojom::ServiceWorkerRegistrationOptions options,
       const blink::StorageKey& key,
+      blink::mojom::AncestorFrameType ancestor_frame_type,
       NewRegistrationCallback callback);
 
   // Create a new instance of ServiceWorkerVersion which is associated with the
@@ -216,6 +219,11 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
                                      const blink::StorageKey& key,
                                      const std::string& value,
                                      StatusCallback callback);
+  void UpdateFetchHandlerType(
+      int64_t registration_id,
+      const blink::StorageKey& key,
+      blink::mojom::ServiceWorkerFetchHandlerType fetch_handler_type,
+      StatusCallback callback);
   void StoreUncommittedResourceId(int64_t resource_id,
                                   const blink::StorageKey& key);
   void DoomUncommittedResource(int64_t resource_id);
@@ -301,6 +309,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   void CreateNewRegistrationWithBucketInfo(
       blink::mojom::ServiceWorkerRegistrationOptions options,
       const blink::StorageKey& key,
+      blink::mojom::AncestorFrameType ancestor_frame_type,
       NewRegistrationCallback callback,
       storage::QuotaErrorOr<storage::BucketInfo> result);
 
@@ -388,6 +397,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   void DidGetNewRegistrationId(
       blink::mojom::ServiceWorkerRegistrationOptions options,
       const blink::StorageKey& key,
+      blink::mojom::AncestorFrameType ancestor_frame_type,
       NewRegistrationCallback callback,
       int64_t registration_id);
 
@@ -466,7 +476,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
       Args&&... args);
 
   // The ServiceWorkerContextCore object must outlive this.
-  ServiceWorkerContextCore* const context_;
+  const raw_ptr<ServiceWorkerContextCore> context_;
 
   mojo::Remote<storage::mojom::ServiceWorkerStorageControl>
       remote_storage_control_;

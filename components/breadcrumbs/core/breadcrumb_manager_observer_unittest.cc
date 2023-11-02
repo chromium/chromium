@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,10 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
-#include "components/breadcrumbs/core/breadcrumb_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -27,67 +27,59 @@ class FakeBreadcrumbManagerObserver : public BreadcrumbManagerObserver {
       const FakeBreadcrumbManagerObserver&) = delete;
 
   // BreadcrumbManagerObserver
-  void EventAdded(BreadcrumbManager* manager,
-                  const std::string& event) override {
-    event_added_last_received_manager_ = manager;
+  void EventAdded(const std::string& event) override {
+    event_added_count_++;
     event_added_last_received_event_ = event;
   }
 
-  void OldEventsRemoved(BreadcrumbManager* manager) override {
-    old_events_removed_last_received_manager_ = manager;
-  }
+  void OldEventsRemoved() override { old_events_removed_count_++; }
 
-  BreadcrumbManager* event_added_last_received_manager_ = nullptr;
+  size_t event_added_count_ = 0u;
   std::string event_added_last_received_event_;
 
-  BreadcrumbManager* old_events_removed_last_received_manager_ = nullptr;
+  size_t old_events_removed_count_ = 0u;
 };
 
 }  // namespace
 
 class BreadcrumbManagerObserverTest : public PlatformTest {
  protected:
-  BreadcrumbManagerObserverTest() { manager_.AddObserver(&observer_); }
-
-  ~BreadcrumbManagerObserverTest() override {
-    manager_.RemoveObserver(&observer_);
-  }
+  BreadcrumbManagerObserverTest() = default;
+  ~BreadcrumbManagerObserverTest() override = default;
 
   base::test::TaskEnvironment task_env_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
-  BreadcrumbManager manager_{GetStartTime()};
   FakeBreadcrumbManagerObserver observer_;
 };
 
-// Tests that |BreadcrumbManagerObserver::EventAdded| is called when an event to
-// added to |manager_|.
+// Tests that `BreadcrumbManagerObserver::EventAdded` is called when an event to
+// added to the BreadcrumbManager.
 TEST_F(BreadcrumbManagerObserverTest, EventAdded) {
-  ASSERT_FALSE(observer_.event_added_last_received_manager_);
+  ASSERT_EQ(0u, observer_.event_added_count_);
   ASSERT_TRUE(observer_.event_added_last_received_event_.empty());
 
   const std::string event = "event";
-  manager_.AddEvent(event);
+  BreadcrumbManager::GetInstance().AddEvent(event);
 
-  EXPECT_EQ(&manager_, observer_.event_added_last_received_manager_);
-  // A timestamp will be prepended to the event passed to |AddEvent|.
+  EXPECT_EQ(1u, observer_.event_added_count_);
+  // A timestamp will be prepended to the event passed to `AddEvent`.
   EXPECT_NE(std::string::npos,
             observer_.event_added_last_received_event_.find(event));
 }
 
-// Tests that |BreadcumbManager::OldEventsRemoved| is called when old events are
-// dropped from |manager_|.
+// Tests that `BreadcumbManager::OldEventsRemoved` is called when old events are
+// dropped from the BreadcrumbManager.
 TEST_F(BreadcrumbManagerObserverTest, OldEventsRemoved) {
-  ASSERT_FALSE(observer_.old_events_removed_last_received_manager_);
+  ASSERT_EQ(0u, observer_.old_events_removed_count_);
 
   const std::string event = "event";
-  manager_.AddEvent(event);
+  BreadcrumbManager::GetInstance().AddEvent(event);
   task_env_.FastForwardBy(base::Hours(1));
-  manager_.AddEvent(event);
+  BreadcrumbManager::GetInstance().AddEvent(event);
   task_env_.FastForwardBy(base::Hours(1));
-  manager_.AddEvent(event);
+  BreadcrumbManager::GetInstance().AddEvent(event);
 
-  EXPECT_EQ(&manager_, observer_.old_events_removed_last_received_manager_);
+  EXPECT_EQ(1u, observer_.old_events_removed_count_);
 }
 
 }  // namespace breadcrumbs

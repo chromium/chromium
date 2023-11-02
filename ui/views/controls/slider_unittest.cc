@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -72,9 +73,9 @@ class TestSliderListener : public views::SliderListener {
   // The epoch of the last time SliderDragEnded was called.
   int last_drag_ended_epoch_ = -1;
   // The sender from the last SliderDragStarted call.
-  views::Slider* last_drag_started_sender_ = nullptr;
+  raw_ptr<views::Slider> last_drag_started_sender_ = nullptr;
   // The sender from the last SliderDragEnded call.
-  views::Slider* last_drag_ended_sender_ = nullptr;
+  raw_ptr<views::Slider> last_drag_ended_sender_ = nullptr;
 };
 
 TestSliderListener::TestSliderListener() = default;
@@ -158,7 +159,7 @@ class SliderTest : public views::ViewsTestBase,
 
  private:
   // The Slider to be tested.
-  Slider* slider_ = nullptr;
+  raw_ptr<Slider> slider_ = nullptr;
 
   // Populated values for discrete slider.
   base::flat_set<float> values_;
@@ -289,7 +290,7 @@ TEST_P(SliderTest, NukeAllowedValues) {
 }
 
 // No touch on desktop Mac. Tracked in http://crbug.com/445520.
-#if !defined(OS_MAC) || defined(USE_AURA)
+#if !BUILDFLAG(IS_MAC) || defined(USE_AURA)
 
 // Test the slider location after a tap gesture.
 TEST_P(SliderTest, SliderValueForTapGesture) {
@@ -462,7 +463,7 @@ TEST_P(SliderTest, SliderRaisesA11yEvents) {
   EXPECT_EQ(1, ax_counter.GetCount(ax::mojom::Event::kValueChanged));
 }
 
-#endif  // !defined(OS_MAC) || defined(USE_AURA)
+#endif  // !BUILDFLAG(IS_MAC) || defined(USE_AURA)
 
 INSTANTIATE_TEST_SUITE_P(All,
                          SliderTest,

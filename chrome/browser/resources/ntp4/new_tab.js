@@ -1,15 +1,13 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import './strings.m.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
-import {getUrlForCss} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {parseHtmlSubset} from 'chrome://resources/js/parse_html_subset.m.js';
-import {$, appendParam, getRequiredElement} from 'chrome://resources/js/util.m.js';
+import {$, appendParam, getRequiredElement} from 'chrome://resources/js/util.js';
 
 import {AppInfo} from './app_info.js';
 import {APP_LAUNCH, AppsPage} from './apps_page.js';
@@ -69,7 +67,7 @@ function NewTabView() {
 // TODO(dbeam): NewTabView is now the only extender of PageListView; these
 // classes should be merged.
 NewTabView.prototype = {
-  __proto__: PageListView.prototype
+  __proto__: PageListView.prototype,
 };
 
 /**
@@ -134,6 +132,18 @@ function onChromeWebStoreButtonClick(e) {
 }
 
 /**
+ * Launches the deprecated apps deletion dialog on click.
+ * @param {!Event} e The click/auxclick event.
+ */
+function onChromeDeprecatedAppsDeletionLinkClick(e) {
+  if (/** @type {MouseEvent} */ (e).button > 1) {
+    return;
+  }
+  e.preventDefault();
+  chrome.send('deprecatedDialogLinkClicked');
+}
+
+/**
  * Queued callbacks which lie in wait for all sections to be ready.
  * @type {Array}
  */
@@ -158,7 +168,7 @@ document.addEventListener('sectionready', function(e) {
  * @param {Function} callback The work to be done when ready.
  */
 function doWhenAllSectionsReady(callback) {
-  assert(typeof callback == 'function');
+  assert(typeof callback === 'function');
   if (sectionsToWaitFor > 0) {
     readyCallbacks.push(callback);
   } else {
@@ -289,11 +299,29 @@ export function enterRearrangeMode() {
  * Note that calls to this function can occur at any time, not just in
  * response to a getApps request. For example, when a user
  * installs/uninstalls an app on another synchronized devices.
- * @param {{apps: Array<AppInfo>, appPageNames: Array<string>}} data
- *     An object with all the data on available applications.
+ * @param {{apps: Array<AppInfo>, appPageNames: Array<string>,
+ *     deprecatedAppsDialogLinkText: string}} data An object with all the data
+ *     on available applications.
  */
 function getAppsCallback(data) {
   newTabView.getAppsCallback(data);
+  setUpDeprecatedAppsDialogLink(data.deprecatedAppsDialogLinkText);
+}
+
+/**
+ * Called whenever there are deprecated apps on the page, to set up the link
+ * to trigger the deprecated apps dialog.
+ * @param {string} linkText The link text to trigger the deprecated apps dialog.
+ */
+function setUpDeprecatedAppsDialogLink(linkText) {
+  if (linkText) {
+    $('deprecated-apps-link').textContent = linkText;
+    $('deprecated-apps-link')
+        .addEventListener('click', onChromeDeprecatedAppsDeletionLinkClick);
+    $('deprecated-apps-link-container').hidden = false;
+  } else {
+    $('deprecated-apps-link-container').hidden = true;
+  }
 }
 
 /**

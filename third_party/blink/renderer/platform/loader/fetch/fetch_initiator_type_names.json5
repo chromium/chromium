@@ -5,6 +5,7 @@
   },
 
   data: [
+    "attributionsrc",
     "audio",
     "beacon",
     "css",

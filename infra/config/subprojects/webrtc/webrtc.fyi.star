@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -17,7 +17,7 @@ luci.bucket(
         ),
         acl.entry(
             roles = acl.BUILDBUCKET_OWNER,
-            groups = "google/luci-task-force@google.com",
+            groups = "project-chromium-admins",
         ),
         acl.entry(
             roles = acl.SCHEDULER_OWNER,
@@ -40,10 +40,13 @@ defaults.build_numbers.set(True)
 defaults.cpu.set(cpu.X86_64)
 defaults.executable.set("recipe:chromium")
 defaults.execution_timeout.set(2 * time.hour)
-defaults.os.set(os.LINUX_XENIAL_OR_BIONIC_REMOVE)
+defaults.os.set(os.LINUX_DEFAULT)
 defaults.pool.set("luci.chromium.webrtc.fyi")
 defaults.service_account.set("chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com")
 defaults.triggered_by.set(["webrtc-gitiles-trigger"])
+
+# TODO(crbug.com/1362440): remove this.
+defaults.omit_python2.set(False)
 
 # Builders are defined in lexicographic order by name
 
@@ -89,14 +92,13 @@ builder(
 
 builder(
     name = "WebRTC Chromium FYI Mac Builder",
-    cores = 8,
     goma_backend = goma.backend.RBE_PROD,
     os = os.MAC_ANY,
+    xcode = xcode.x14main,
 )
 
 builder(
     name = "WebRTC Chromium FYI Mac Builder (dbg)",
-    cores = 8,
     goma_backend = goma.backend.RBE_PROD,
     os = os.MAC_ANY,
 )
@@ -105,6 +107,7 @@ builder(
     name = "WebRTC Chromium FYI Mac Tester",
     os = os.MAC_ANY,
     triggered_by = ["WebRTC Chromium FYI Mac Builder"],
+    xcode = xcode.x14main,
 )
 
 builder(
@@ -132,29 +135,15 @@ builder(
 # to swarming bots with appropriate OS using swarming
 # dimensions.
 builder(
-    name = "WebRTC Chromium FYI Win7 Tester",
-    os = os.WINDOWS_DEFAULT,
-    triggered_by = ["WebRTC Chromium FYI Win Builder"],
-)
-
-builder(
-    name = "WebRTC Chromium FYI Win8 Tester",
-    os = os.WINDOWS_DEFAULT,
-    triggered_by = ["WebRTC Chromium FYI Win Builder"],
-)
-
-builder(
     name = "WebRTC Chromium FYI ios-device",
-    executable = "recipe:webrtc/chromium_ios",
     goma_backend = goma.backend.RBE_PROD,
     os = os.MAC_ANY,
-    xcode = xcode.x12d4e,
+    xcode = xcode.x14main,
 )
 
 builder(
     name = "WebRTC Chromium FYI ios-simulator",
-    executable = "recipe:webrtc/chromium_ios",
     goma_backend = goma.backend.RBE_PROD,
     os = os.MAC_ANY,
-    xcode = xcode.x12d4e,
+    xcode = xcode.x14main,
 )

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@
 #include "content/public/browser/platform_notification_context.h"
 #include "content/public/browser/storage_partition.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/notifications/notification_trigger_scheduler_android.h"
 #endif
 
@@ -28,7 +28,7 @@ using content::BrowserThread;
 // static
 std::unique_ptr<NotificationTriggerScheduler>
 NotificationTriggerScheduler::Create() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return base::WrapUnique(new NotificationTriggerSchedulerAndroid());
 #else
   return base::WrapUnique(new NotificationTriggerScheduler());

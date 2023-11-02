@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
  * earcons. It's designed to be self-contained and not depend on the
  * rest of the code.
  */
+
+import {Earcon} from '../common/abstract_earcons.js';
 
 /**
  * EarconEngine generates ChromeVox's earcons using the web audio API.
@@ -111,7 +113,7 @@ export class EarconEngine {
     this.progressTime_ = this.context_.currentTime;
 
     /**
-     * @type {?number} The window.setInterval ID for progress sounds.
+     * @type {?number} The setInterval ID for progress sounds.
      * @private
      */
     this.progressIntervalID_ = null;
@@ -132,11 +134,10 @@ export class EarconEngine {
     // Initialization: load the base sound data files asynchronously.
     const allSoundFilesToLoad =
         EarconEngine.SOUNDS.concat(EarconEngine.REVERBS);
-    allSoundFilesToLoad.forEach((function(sound) {
-                                  const url =
-                                      EarconEngine.BASE_URL + sound + '.wav';
-                                  this.loadSound(sound, url);
-                                }).bind(this));
+    allSoundFilesToLoad.forEach(sound => {
+      const url = `${EarconEngine.BASE_URL}${sound}.wav`;
+      this.loadSound(sound, url);
+    });
   }
 
   /**
@@ -524,7 +525,7 @@ export class EarconEngine {
       gain: 0.008,
       freq: freq1,
       overtones: 1,
-      overtoneFactor: 0.1
+      overtoneFactor: 0.1,
     });
   }
 
@@ -711,7 +712,7 @@ export class EarconEngine {
       gain: 0.3,
       freq: freq1,
       overtones: 3,
-      overtoneFactor: 0.1
+      overtoneFactor: 0.1,
     });
     this.generateSinusoidal({
       attack: 0.02,
@@ -720,7 +721,7 @@ export class EarconEngine {
       gain: 0.3,
       freq: freq2,
       overtones: 3,
-      overtoneFactor: 0.1
+      overtoneFactor: 0.1,
     });
 
     this.currentTrackedEarcon_ = undefined;
@@ -741,7 +742,7 @@ export class EarconEngine {
       freq: freq1,
       endFreq: freq2,
       overtones: 1,
-      overtoneFactor: 0.1
+      overtoneFactor: 0.1,
     });
   }
 
@@ -755,12 +756,12 @@ export class EarconEngine {
       let t = this.progressTime_ - this.context_.currentTime;
       this.progressSources_.push([
         this.progressTime_,
-        this.play('static', {gain: 0.5 * this.progressGain_, time: t})
+        this.play('static', {gain: 0.5 * this.progressGain_, time: t}),
       ]);
       this.progressSources_.push([
         this.progressTime_,
         this.play(
-            this.controlSound, {pitch: 20, time: t, gain: this.progressGain_})
+            this.controlSound, {pitch: 20, time: t, gain: this.progressGain_}),
       ]);
 
       if (this.progressGain_ > this.progressFinalGain) {
@@ -770,12 +771,12 @@ export class EarconEngine {
 
       this.progressSources_.push([
         this.progressTime_,
-        this.play('static', {gain: 0.5 * this.progressGain_, time: t})
+        this.play('static', {gain: 0.5 * this.progressGain_, time: t}),
       ]);
       this.progressSources_.push([
         this.progressTime_,
         this.play(
-            this.controlSound, {pitch: 8, time: t, gain: this.progressGain_})
+            this.controlSound, {pitch: 8, time: t, gain: this.progressGain_}),
       ]);
 
       if (this.progressGain_ > this.progressFinalGain) {
@@ -812,7 +813,7 @@ export class EarconEngine {
     this.progressTime_ = this.context_.currentTime;
     this.generateProgressTickTocks_();
     this.progressIntervalID_ =
-        window.setInterval(this.generateProgressTickTocks_.bind(this), 1000);
+        setInterval(this.generateProgressTickTocks_.bind(this), 1000);
   }
 
   /**
@@ -831,7 +832,7 @@ export class EarconEngine {
     }
     this.progressSources_ = [];
 
-    window.clearInterval(this.progressIntervalID_);
+    clearInterval(this.progressIntervalID_);
     this.progressIntervalID_ = null;
   }
 

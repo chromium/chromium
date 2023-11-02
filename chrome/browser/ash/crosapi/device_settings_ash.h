@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,6 +33,11 @@ class DeviceSettingsAsh : public mojom::DeviceSettingsService,
   // crosapi::mojom::DeviceSettingsService:
   void AddDeviceSettingsObserver(
       mojo::PendingRemote<mojom::DeviceSettingsObserver> observer) override;
+  void GetDevicePolicy(GetDevicePolicyCallback callback) override;
+  void GetDevicePolicyDeprecated(
+      GetDevicePolicyDeprecatedCallback callback) override;
+  void GetDeviceReportSources(GetDeviceReportSourcesCallback callback) override;
+  void IsDeviceDeprovisioned(IsDeviceDeprovisionedCallback callback) override;
 
  private:
   mojo::ReceiverSet<mojom::DeviceSettingsService> receivers_;

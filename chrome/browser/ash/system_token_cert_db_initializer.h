@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "crypto/scoped_nss_types.h"
+#include "net/cert/nss_cert_database.h"
 
 namespace net {
 class NSSCertDatabase;
@@ -25,7 +26,9 @@ namespace ash {
 // components, i.e. components under //chrome/browser/chromeos/ and //chromeos/
 //
 // All of the methods must be called on the UI thread.
-class SystemTokenCertDBInitializer : public TpmManagerClient::Observer {
+class SystemTokenCertDBInitializer
+    : public chromeos::TpmManagerClient::Observer,
+      public net::NSSCertDatabase::Observer {
  public:
   // It is stated in cryptohome implementation that 5 minutes is enough time to
   // wait for any TPM operations. For more information, please refer to:
@@ -46,17 +49,20 @@ class SystemTokenCertDBInitializer : public TpmManagerClient::Observer {
   // TpmManagerClient::Observer overrides.
   void OnOwnershipTaken() override;
 
-  // Sets if the software fallback for system slot is allowed; useful for
+  // Sets if the software fallback for NSS slots are allowed; useful for
   // testing.
-  void set_is_system_slot_software_fallback_allowed(bool is_allowed) {
-    is_system_slot_software_fallback_allowed_ = is_allowed;
+  void set_is_nss_slots_software_fallback_allowed_for_testing(bool is_allowed) {
+    is_nss_slots_software_fallback_allowed_ = is_allowed;
   }
+
+  // net::NSSCertDatabase::Observer
+  void OnCertDBChanged() override;
 
  private:
   // Called once the cryptohome service is available.
   void OnCryptohomeAvailable(bool available);
 
-  // Verifies the value of the build flag system_slot_software_fallback and
+  // Verifies the value of the build flag nss_slots_software_fallback and
   // decides the initialization flow based on that.
   void CheckTpm();
 
@@ -87,8 +93,8 @@ class SystemTokenCertDBInitializer : public TpmManagerClient::Observer {
   // state. Will be adapted after each attempt.
   base::TimeDelta tpm_request_delay_;
 
-  // The flag that determines if the system slot can use software fallback.
-  bool is_system_slot_software_fallback_allowed_;
+  // The flag that determines if the NSS slots can use software fallback.
+  bool is_nss_slots_software_fallback_allowed_;
 
   // Global NSSCertDatabase which sees the system token.
   std::unique_ptr<net::NSSCertDatabase> system_token_cert_database_;

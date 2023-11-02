@@ -26,7 +26,7 @@ assertions:
     text: "the element can be sized arbitrarily by a style sheet. During rendering, the image is scaled to fit this layout size."
   - id: initial.reset
     text: "When the canvas element is created, and subsequently whenever the width and height attributes are set (whether to a new value or to the previous value), the bitmap and any associated contexts *must* be cleared back to their initial state <...>."
-  - id: initial.colour
+  - id: initial.color
     text: "When the canvas is initialized, its bitmap *must* be cleared to transparent black."
   - id: size.reflect
     text: "The width and height IDL attributes *must* reflect the respective content attributes of the same name,"
@@ -195,27 +195,27 @@ assertions:
     text: "When the context is created, the globalCompositeOperation attribute *must* initially have the value source-over."
 
 
-  - id: 2d.colours.parse
+  - id: 2d.colors.parse
     text: "On setting, strings *must* be parsed as CSS <color> values and the color assigned,"
   - id: 2d.gradient.assign
     text: "On setting, <...> CanvasGradient and CanvasPattern objects *must* be assigned themselves."
   - id: 2d.pattern.assign
     text: "On setting, <...> CanvasGradient and CanvasPattern objects *must* be assigned themselves."
-  - id: 2d.colours.invalidstring
+  - id: 2d.colors.invalidstring
     text: "If the value is a string but cannot be parsed as a CSS <color> value, <...> then it *must* be ignored, and the attribute must retain its previous value."
-  - id: 2d.colours.invalidtype
+  - id: 2d.colors.invalidtype
     text: "If the value is <...> neither a string, a CanvasGradient, nor a CanvasPattern, then it *must* be ignored, and the attribute must retain its previous value."
-  - id: 2d.colours.getcolour
+  - id: 2d.colors.getcolor
     text: "On getting, if the value is a color, then the serialization of the color *must* be returned."
   - id: 2d.gradient.object
     text: "if it is not a color but a CanvasGradient or CanvasPattern, then the respective object *must* be returned."
   - id: 2d.pattern.object
     text: "if it is not a color but a CanvasGradient or CanvasPattern, then the respective object *must* be returned."
-  - id: 2d.serializecolour.solid
+  - id: 2d.serializecolor.solid
     text: "if it has alpha equal to 1.0, then the string is a lowercase six-digit hex value"
-  - id: 2d.serializecolour.transparent
+  - id: 2d.serializecolor.transparent
     text: "Otherwise, the color value has alpha less than 1.0, and the string is the color value in the CSS rgba() functional-notation format:"
-  - id: 2d.colours.default
+  - id: 2d.colors.default
     text: "When the context is created, the strokeStyle and fillStyle attributes *must* initially have the string value #000000."
 
   - id: 2d.gradient.interpolate.linear
@@ -232,7 +232,7 @@ assertions:
 
   - id: 2d.gradient.invalidoffset
     text: "If the offset is less than 0, greater than 1, infinite, or NaN, then an INDEX_SIZE_ERR exception *must* be raised."
-  - id: 2d.gradient.invalidcolour
+  - id: 2d.gradient.invalidcolor
     text: "If the color cannot be parsed as a CSS <color> value, then a SYNTAX_ERR exception *must* be raised."
   - id: 2d.gradient.update
     text: "Otherwise, the gradient *must* have a new stop placed, at offset offset relative to the whole gradient, and with the color obtained by parsing color as a CSS <color> value."

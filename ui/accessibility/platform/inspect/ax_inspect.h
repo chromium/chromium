@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,12 +31,16 @@ struct AX_EXPORT AXTreeSelector {
   gfx::AcceleratedWidget widget{0};
 
   AXTreeSelector() = default;
+  explicit AXTreeSelector(gfx::AcceleratedWidget widget) : widget(widget) {}
   AXTreeSelector(int types, const std::string& pattern)
       : types(types), pattern(pattern) {}
   AXTreeSelector(int types,
                  const std::string& pattern,
                  gfx::AcceleratedWidget widget)
       : types(types), pattern(pattern), widget(widget) {}
+
+  AXTreeSelector(const AXTreeSelector&) = default;
+  AXTreeSelector& operator=(const AXTreeSelector&) = default;
 
   bool empty() const {
     return (types & ~(ActiveTab)) == None && widget == 0 && pattern.empty();

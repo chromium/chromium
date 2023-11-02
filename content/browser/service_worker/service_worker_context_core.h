@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "base/callback.h"
 #include "base/containers/id_map.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_threadsafe.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
@@ -29,7 +30,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom-forward.h"
 
 class GURL;
 
@@ -93,7 +94,7 @@ class CONTENT_EXPORT ServiceWorkerContextCore
                           ContainerHostPredicate predicate);
     void ForwardUntilMatchingContainerHost();
 
-    ContainerHostByClientUUIDMap* const map_;
+    const raw_ptr<ContainerHostByClientUUIDMap> map_;
     ContainerHostPredicate predicate_;
     ContainerHostByClientUUIDMap::iterator container_host_iterator_;
   };
@@ -245,7 +246,8 @@ class CONTENT_EXPORT ServiceWorkerContextCore
       blink::mojom::FetchClientSettingsObjectPtr
           outside_fetch_client_settings_object,
       RegistrationCallback callback,
-      const GlobalRenderFrameHostId& requesting_frame_id);
+      const GlobalRenderFrameHostId& requesting_frame_id,
+      const PolicyContainerPolicies& policy_container_policies);
 
   // If `is_immediate` is true, unregister clears the active worker from the
   // registration without waiting for the controlled clients to unload.
@@ -375,6 +377,13 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   void NotifyClientIsExecutionReady(
       const ServiceWorkerContainerHost& container_host);
 
+  bool MaybeHasRegistrationForStorageKey(const blink::StorageKey& key);
+
+  // This method waits for service worker registrations to be initialized, and
+  // depends on |on_registrations_initialized_| and |registrations_initialized_|
+  // which are called in InitializeRegisteredOrigins().
+  void WaitForRegistrationsInitializedForTest();
+
  private:
   friend class ServiceWorkerContextCoreTest;
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerContextCoreTest, FailureInfo);
@@ -423,10 +432,16 @@ class CONTENT_EXPORT ServiceWorkerContextCore
       ServiceWorkerContext::CheckHasServiceWorkerCallback callback,
       scoped_refptr<ServiceWorkerRegistration> registration);
 
+  // This is used as a callback of GetRegisteredStorageKeys when initialising to
+  // store a list of storage keys that have registered service workers.
+  void DidGetRegisteredStorageKeys(
+      base::TimeTicks start_time,
+      const std::vector<blink::StorageKey>& storage_keys);
+
   // It's safe to store a raw pointer instead of a scoped_refptr to |wrapper_|
   // because the Wrapper::Shutdown call that hops threads to destroy |this| uses
   // Bind() to hold a reference to |wrapper_| until |this| is fully destroyed.
-  ServiceWorkerContextWrapper* wrapper_;
+  raw_ptr<ServiceWorkerContextWrapper> wrapper_;
 
   // |container_host_by_uuid_| owns container hosts for service worker clients.
   // Container hosts for service worker execution contexts are owned by
@@ -482,6 +497,13 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   // kicked off from ServiceWorkerRegistry::ScheduleDeleteAndStartOver().
   std::unique_ptr<mojo::Receiver<storage::mojom::QuotaClient>>
       quota_client_receiver_;
+
+  // A set of StorageKeys that have at least one registration.
+  // TODO(http://crbug.com/824858): This can be removed when service workers are
+  // fully converted to running on the UI thread.
+  std::set<blink::StorageKey> registered_storage_keys_;
+  bool registrations_initialized_ = false;
+  base::OnceClosure on_registrations_initialized_for_test_;
 
   base::WeakPtrFactory<ServiceWorkerContextCore> weak_factory_{this};
 };

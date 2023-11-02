@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "base/types/id_type.h"
 #include "base/types/pass_key.h"
 #include "device/vr/android/arcore/address_to_id_map.h"
@@ -69,7 +70,7 @@ class ArCoreAnchorManager {
 
   // Owned by ArCoreImpl - non-owning pointer is fine since ArCoreAnchorManager
   // is also owned by ArCoreImpl.
-  ArSession* arcore_session_;
+  raw_ptr<ArSession> arcore_session_;
 
   // Allows reuse of the pose object; ARCore will populate it with new data on
   // each call to the ARCore SDK.

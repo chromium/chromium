@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,6 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
@@ -63,7 +62,7 @@ public final class SharingNotificationUtil {
                         .setContentTitle(contentTitle)
                         .setContentText(contentText)
                         .setBigTextStyle(contentText)
-                        .setColor(ApiCompatibilityUtils.getColor(context.getResources(), color))
+                        .setColor(context.getColor(color))
                         .setGroup(group)
                         .setPriorityBeforeO(NotificationCompat.PRIORITY_HIGH)
                         .setSmallIcon(smallIconId)
@@ -128,8 +127,7 @@ public final class SharingNotificationUtil {
                                 new NotificationMetadata(type, group, id))
                         .setContentTitle(contentTitle)
                         .setGroup(group)
-                        .setColor(ApiCompatibilityUtils.getColor(context.getResources(),
-                                R.color.default_icon_color_accent1_baseline))
+                        .setColor(context.getColor(R.color.default_icon_color_accent1_baseline))
                         .setPriorityBeforeO(NotificationCompat.PRIORITY_HIGH)
                         .setSmallIcon(R.drawable.ic_devices_16dp)
                         .setProgress(/*max=*/0, /*percentage=*/0, true)
@@ -164,7 +162,7 @@ public final class SharingNotificationUtil {
                                 new NotificationMetadata(type, group, id))
                         .setContentTitle(contentTitle)
                         .setGroup(group)
-                        .setColor(ApiCompatibilityUtils.getColor(resources, R.color.google_red_600))
+                        .setColor(context.getColor(R.color.google_red_600))
                         .setPriorityBeforeO(NotificationCompat.PRIORITY_HIGH)
                         .setSmallIcon(R.drawable.ic_error_outline_red_24dp)
                         .setContentText(contentText)

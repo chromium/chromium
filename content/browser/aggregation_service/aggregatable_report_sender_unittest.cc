@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,17 +19,21 @@
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace content {
 
 namespace {
 const char kExampleURL[] = "https://a.com/";
 
+constexpr char kReportSenderStatusHistogramName[] =
+    "PrivacySandbox.AggregationService.ReportSender.Status";
+constexpr char kReportSenderHttpResponseOrNetErrorCodeHistogramName[] =
+    "PrivacySandbox.AggregationService.ReportSender.HttpResponseOrNetErrorCode";
+
 base::Value GetExampleContents() {
-  base::Value contents(base::Value::Type::DICTIONARY);
-  contents.SetStringKey("id", "1234");
-  return contents;
+  base::Value::Dict contents;
+  contents.Set("id", "1234");
+  return base::Value(std::move(contents));
 }
 
 }  // namespace
@@ -104,6 +108,8 @@ TEST_F(AggregatableReportSenderTest, ReportSent_UploadDataCorrect) {
 }
 
 TEST_F(AggregatableReportSenderTest, ReportSent_StatusOk) {
+  base::HistogramTester histograms;
+
   sender_->SendReport(
       GURL(kExampleURL), GetExampleContents(),
       base::BindLambdaForTesting(
@@ -114,6 +120,12 @@ TEST_F(AggregatableReportSenderTest, ReportSent_StatusOk) {
   EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
       kExampleURL, ""));
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+
+  histograms.ExpectUniqueSample(kReportSenderStatusHistogramName,
+                                AggregatableReportSender::RequestStatus::kOk,
+                                1);
+  histograms.ExpectUniqueSample(
+      kReportSenderHttpResponseOrNetErrorCodeHistogramName, net::HTTP_OK, 1);
 }
 
 TEST_F(AggregatableReportSenderTest, SenderDeletedDuringRequest_NoCrash) {
@@ -126,6 +138,8 @@ TEST_F(AggregatableReportSenderTest, SenderDeletedDuringRequest_NoCrash) {
 }
 
 TEST_F(AggregatableReportSenderTest, ReportRequestHangs_Timeout) {
+  base::HistogramTester histograms;
+
   sender_->SendReport(
       GURL(kExampleURL), GetExampleContents(),
       base::BindLambdaForTesting(
@@ -139,12 +153,21 @@ TEST_F(AggregatableReportSenderTest, ReportRequestHangs_Timeout) {
   task_environment_.FastForwardBy(base::Seconds(30));
 
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+
+  histograms.ExpectUniqueSample(
+      kReportSenderStatusHistogramName,
+      AggregatableReportSender::RequestStatus::kNetworkError, 1);
+  histograms.ExpectUniqueSample(
+      kReportSenderHttpResponseOrNetErrorCodeHistogramName, net::ERR_TIMED_OUT,
+      1);
 }
 
 TEST_F(AggregatableReportSenderTest,
        ReportRequestFailsDueToNetworkChange_Retries) {
   // Retry fails
   {
+    base::HistogramTester histograms;
+
     sender_->SendReport(
         GURL(kExampleURL), GetExampleContents(),
         base::BindLambdaForTesting(
@@ -171,10 +194,19 @@ TEST_F(AggregatableReportSenderTest,
 
     // We should not retry again.
     EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+
+    histograms.ExpectUniqueSample(
+        kReportSenderStatusHistogramName,
+        AggregatableReportSender::RequestStatus::kNetworkError, 1);
+    histograms.ExpectUniqueSample(
+        kReportSenderHttpResponseOrNetErrorCodeHistogramName,
+        net::ERR_NETWORK_CHANGED, 1);
   }
 
   // Retry succeeds
   {
+    base::HistogramTester histograms;
+
     sender_->SendReport(
         GURL(kExampleURL), GetExampleContents(),
         base::BindLambdaForTesting(
@@ -195,10 +227,18 @@ TEST_F(AggregatableReportSenderTest,
     // Simulate a second request with respoonse.
     EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
         kExampleURL, ""));
+
+    histograms.ExpectUniqueSample(kReportSenderStatusHistogramName,
+                                  AggregatableReportSender::RequestStatus::kOk,
+                                  1);
+    histograms.ExpectUniqueSample(
+        kReportSenderHttpResponseOrNetErrorCodeHistogramName, net::HTTP_OK, 1);
   }
 }
 
 TEST_F(AggregatableReportSenderTest, HttpError_CallbackRuns) {
+  base::HistogramTester histograms;
+
   bool callback_run = false;
   sender_->SendReport(
       GURL(kExampleURL), GetExampleContents(),
@@ -211,9 +251,16 @@ TEST_F(AggregatableReportSenderTest, HttpError_CallbackRuns) {
 
   // We should run the callback even if there is an http error.
   EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
-      kExampleURL, "", net::HttpStatusCode::HTTP_BAD_REQUEST));
+      kExampleURL, "", net::HTTP_BAD_REQUEST));
 
   EXPECT_TRUE(callback_run);
+
+  histograms.ExpectUniqueSample(
+      kReportSenderStatusHistogramName,
+      AggregatableReportSender::RequestStatus::kServerError, 1);
+  histograms.ExpectUniqueSample(
+      kReportSenderHttpResponseOrNetErrorCodeHistogramName,
+      net::HTTP_BAD_REQUEST, 1);
 }
 
 TEST_F(AggregatableReportSenderTest, ManyReports_AllSentSuccessfully) {
@@ -248,9 +295,11 @@ TEST_F(AggregatableReportSenderTest, StatusHistoram_Expected) {
                         base::DoNothing());
     EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
         kExampleURL, ""));
+    histograms.ExpectUniqueSample(kReportSenderStatusHistogramName,
+                                  AggregatableReportSender::RequestStatus::kOk,
+                                  1);
     histograms.ExpectUniqueSample(
-        "PrivacySandbox.AggregationService.ReportStatus",
-        AggregatableReportSender::RequestStatus::kOk, 1);
+        kReportSenderHttpResponseOrNetErrorCodeHistogramName, net::HTTP_OK, 1);
   }
 
   // Network error.
@@ -263,8 +312,11 @@ TEST_F(AggregatableReportSenderTest, StatusHistoram_Expected) {
         GURL(kExampleURL), completion_status,
         network::mojom::URLResponseHead::New(), std::string()));
     histograms.ExpectUniqueSample(
-        "PrivacySandbox.AggregationService.ReportStatus",
+        kReportSenderStatusHistogramName,
         AggregatableReportSender::RequestStatus::kNetworkError, 1);
+    histograms.ExpectUniqueSample(
+        kReportSenderHttpResponseOrNetErrorCodeHistogramName, net::ERR_FAILED,
+        1);
   }
 
   // Server error.
@@ -275,8 +327,11 @@ TEST_F(AggregatableReportSenderTest, StatusHistoram_Expected) {
     EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
         kExampleURL, std::string(), net::HTTP_UNAUTHORIZED));
     histograms.ExpectUniqueSample(
-        "PrivacySandbox.AggregationService.ReportStatus",
+        kReportSenderStatusHistogramName,
         AggregatableReportSender::RequestStatus::kServerError, 1);
+    histograms.ExpectUniqueSample(
+        kReportSenderHttpResponseOrNetErrorCodeHistogramName,
+        net::HTTP_UNAUTHORIZED, 1);
   }
 }
 

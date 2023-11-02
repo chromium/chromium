@@ -1,8 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/autofill_assistant/browser/script_precondition.h"
+
+#include <memory>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -11,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "components/autofill_assistant/browser/batch_element_checker.h"
+#include "components/autofill_assistant/browser/script_parameters.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
@@ -60,7 +63,7 @@ class ScriptPreconditionTest : public testing::Test {
             FindElement(Selector({"exists"}), /* strict= */ false, _))
         .WillByDefault(WithArgs<2>([](auto&& callback) {
           std::move(callback).Run(OkClientStatus(),
-                                  std::make_unique<ElementFinder::Result>());
+                                  std::make_unique<ElementFinderResult>());
         }));
     ON_CALL(mock_web_controller_,
             FindElement(Selector({"does_not_exist"}), /* strict= */ false, _))

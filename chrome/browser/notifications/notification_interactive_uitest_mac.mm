@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,12 +27,17 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestPopupShouldActivateApp) {
   {
     base::scoped_nsobject<WindowedNSNotificationObserver> observer(
         [[WindowedNSNotificationObserver alloc]
-            initForNotification:NSApplicationDidResignActiveNotification
+            initForNotification:NSApplicationDidHideNotification
                          object:NSApp]);
     [NSApp hide:nil];
     [observer wait];
   }
-  EXPECT_FALSE([NSApp isActive]);
+  EXPECT_TRUE([NSApp isHidden]);
+
+  base::scoped_nsobject<WindowedNSNotificationObserver> observer(
+      [[WindowedNSNotificationObserver alloc]
+          initForNotification:NSApplicationDidUnhideNotification
+                       object:NSApp]);
 
   std::string result = CreateNotification(
       browser(), true, "", "", "", "",
@@ -43,13 +48,8 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestPopupShouldActivateApp) {
   message_center::Notification* notification =
       *message_center->GetVisibleNotifications().begin();
 
-  {
-    base::scoped_nsobject<WindowedNSNotificationObserver> observer(
-        [[WindowedNSNotificationObserver alloc]
-            initForNotification:NSApplicationDidBecomeActiveNotification
-                         object:NSApp]);
-    message_center->ClickOnNotification(notification->id());
-    [observer wait];
-  }
-  EXPECT_TRUE([NSApp isActive]);
+  message_center->ClickOnNotification(notification->id());
+  [observer wait];
+
+  EXPECT_FALSE([NSApp isHidden]);
 }

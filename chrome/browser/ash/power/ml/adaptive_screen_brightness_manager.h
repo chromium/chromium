@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,7 +40,7 @@ class RecentEventsCounter;
 // periodically and also when the screen brightness changes.
 class AdaptiveScreenBrightnessManager
     : public ui::UserActivityObserver,
-      public PowerManagerClient::Observer,
+      public chromeos::PowerManagerClient::Observer,
       public viz::mojom::VideoDetectorObserver {
  public:
   // Duration of inactivity that marks the end of an activity.

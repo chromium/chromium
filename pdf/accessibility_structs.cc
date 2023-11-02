@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -76,8 +76,12 @@ AccessibilityImageInfo::AccessibilityImageInfo() = default;
 
 AccessibilityImageInfo::AccessibilityImageInfo(const std::string& alt_text,
                                                uint32_t text_run_index,
-                                               const gfx::RectF& bounds)
-    : alt_text(alt_text), text_run_index(text_run_index), bounds(bounds) {}
+                                               const gfx::RectF& bounds,
+                                               const SkBitmap& image_data)
+    : alt_text(alt_text),
+      text_run_index(text_run_index),
+      bounds(bounds),
+      image_data(image_data) {}
 
 AccessibilityImageInfo::AccessibilityImageInfo(
     const AccessibilityImageInfo& other) = default;

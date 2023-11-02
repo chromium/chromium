@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,11 +15,12 @@
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/shelf/shelf_layout_manager.h"
-#include "ash/shelf/shelf_layout_manager_observer.h"
+#include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_observer.h"
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -45,7 +46,7 @@ class ASH_EXPORT AppListPresenterImpl
       public ui::ImplicitAnimationObserver,
       public views::WidgetObserver,
       public display::DisplayObserver,
-      public ShelfLayoutManagerObserver {
+      public ShelfObserver {
  public:
   static constexpr std::array<int, 7> kIdsOfContainersThatWontHideAppList = {
       kShellWindowId_AppListContainer,
@@ -105,6 +106,16 @@ class ASH_EXPORT AppListPresenterImpl
                             AppListShowSource show_source,
                             base::TimeTicks event_time_stamp);
 
+  // Handles `AppListController::UpdateAppListWithNewSortingOrder()` for the
+  // app list presenter.
+  void UpdateForNewSortingOrder(
+      const absl::optional<AppListSortOrder>& new_order,
+      bool animate,
+      base::OnceClosure update_position_closure);
+
+  // Updates the continue section visibility based on user preference.
+  void UpdateContinueSectionVisibility();
+
   // Returns current visibility of the app list. Deprecated, use
   // |IsAtLeastPartiallyVisible| instead.
   bool IsVisibleDeprecated() const;
@@ -116,23 +127,6 @@ class ASH_EXPORT AppListPresenterImpl
   // Returns target visibility. This may differ from IsVisible() if a visibility
   // transition is in progress.
   bool GetTargetVisibility() const;
-
-  // Updates y position and opacity of app list.
-  void UpdateYPositionAndOpacity(float y_position_in_screen,
-                                 float background_opacity);
-
-  // Ends the drag of app list from shelf.
-  void EndDragFromShelf(AppListViewState app_list_state);
-
-  // Passes data from a Scroll event from the shelf to the
-  // AppListView.
-  void ProcessScrollOffset(const gfx::Point& location,
-                           const gfx::Vector2d& scroll_offset_vector);
-
-  // Passes data from a MouseWheelEvent event from the shelf to the
-  // AppListView.
-  void ProcessMouseWheelOffset(const gfx::Point& location,
-                               const gfx::Vector2d& scroll_offset_vector);
 
   // Scales the home launcher view maintaining the view center point, and
   // updates its opacity. If |callback| is non-null, the update should be
@@ -194,10 +188,10 @@ class ASH_EXPORT AppListPresenterImpl
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
 
-  // ShelfLayoutManagerObserver overrides:
-  void WillDeleteShelfLayoutManager() override;
-  void OnBackgroundUpdated(ShelfBackgroundType background_type,
-                           AnimationChangeType change_type) override;
+  // ShelfObserver overrides:
+  void OnShelfShuttingDown() override;
+  void OnBackgroundTypeChanged(ShelfBackgroundType background_type,
+                               AnimationChangeType change_type) override;
 
   // Registers a callback that is run when the next frame successfully makes it
   // to the screen.
@@ -207,6 +201,9 @@ class ASH_EXPORT AppListPresenterImpl
   // Snaps the app list window bounds to fit the screen size. (See
   // https://crbug.com/884889).
   void SnapAppListBoundsToDisplayEdge();
+
+  // Called when the reorder animation completes.
+  void OnAppListReorderAnimationDone();
 
   // Owns |this|.
   AppListControllerImpl* const controller_;
@@ -218,8 +215,7 @@ class ASH_EXPORT AppListPresenterImpl
   display::ScopedDisplayObserver display_observer_{this};
 
   // An observer that notifies AppListView when the shelf state has changed.
-  base::ScopedObservation<ShelfLayoutManager, ShelfLayoutManagerObserver>
-      shelf_observer_{this};
+  base::ScopedObservation<Shelf, ShelfObserver> shelf_observer_{this};
 
   // The target visibility of the AppListView, true if the target visibility is
   // shown.
@@ -238,6 +234,13 @@ class ASH_EXPORT AppListPresenterImpl
   // Data we need to store for metrics.
   absl::optional<base::Time> last_open_time_;
   absl::optional<AppListShowSource> last_open_source_;
+
+  // Whether the presenter is currently changing app list view state to shown.
+  // TODO(https://crbug.com/1307871): Remove this when the linked crash gets
+  // diagnosed.
+  bool showing_app_list_ = false;
+
+  base::WeakPtrFactory<AppListPresenterImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

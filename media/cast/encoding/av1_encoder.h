@@ -1,0 +1,90 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef MEDIA_CAST_ENCODING_AV1_ENCODER_H_
+#define MEDIA_CAST_ENCODING_AV1_ENCODER_H_
+
+#include <stdint.h>
+
+#include "base/threading/thread_checker.h"
+#include "base/time/time.h"
+#include "media/base/feedback_signal_accumulator.h"
+#include "media/cast/cast_config.h"
+#include "media/cast/common/frame_id.h"
+#include "media/cast/encoding/software_video_encoder.h"
+#include "third_party/libaom/source/libaom/aom/aom_encoder.h"
+#include "ui/gfx/geometry/size.h"
+
+namespace media {
+class VideoFrame;
+}
+
+namespace media {
+namespace cast {
+
+class Av1Encoder final : public SoftwareVideoEncoder {
+ public:
+  explicit Av1Encoder(const FrameSenderConfig& video_config);
+
+  ~Av1Encoder() final;
+
+  // SoftwareVideoEncoder implementations.
+  void Initialize() final;
+  void Encode(scoped_refptr<media::VideoFrame> video_frame,
+              base::TimeTicks reference_time,
+              SenderEncodedFrame* encoded_frame) final;
+  void UpdateRates(uint32_t new_bitrate) final;
+  void GenerateKeyFrame() final;
+
+ private:
+  bool is_initialized() const {
+    // ConfigureForNewFrameSize() sets the timebase denominator value to
+    // non-zero if the encoder is successfully initialized, and it is zero
+    // otherwise.
+    return config_.g_timebase.den != 0;
+  }
+
+  // If the |encoder_| is live, attempt reconfiguration to allow it to encode
+  // frames at a new |frame_size|.  Otherwise, tear it down and re-create a new
+  // |encoder_| instance.
+  void ConfigureForNewFrameSize(const gfx::Size& frame_size);
+
+  const FrameSenderConfig cast_config_;
+
+  const double target_encoder_utilization_;
+
+  // AV1 internal objects.  These are valid for use only while is_initialized()
+  // returns true.
+  aom_codec_enc_cfg_t config_;
+  aom_codec_ctx_t encoder_;
+
+  // Set to true to request the next frame emitted by Av1Encoder be a key frame.
+  bool key_frame_requested_;
+
+  // Saves the current bitrate setting, for when the |encoder_| is reconfigured
+  // for different frame sizes.
+  int bitrate_kbit_;
+
+  // The |VideoFrame::timestamp()| of the last encoded frame.  This is used to
+  // predict the duration of the next frame.
+  base::TimeDelta last_frame_timestamp_;
+
+  // The ID for the next frame to be emitted.
+  FrameId next_frame_id_;
+
+  // This is bound to the thread where Initialize() is called.
+  THREAD_CHECKER(thread_checker_);
+
+  // The accumulator (time averaging) of the encoding speed.
+  FeedbackSignalAccumulator<base::TimeDelta> encoding_speed_acc_;
+
+  // The higher the speed, the less CPU usage, and the lower quality. The valid
+  // range is [0-9].
+  int encoding_speed_;
+};
+
+}  // namespace cast
+}  // namespace media
+
+#endif  // MEDIA_CAST_ENCODING_AV1_ENCODER_H_

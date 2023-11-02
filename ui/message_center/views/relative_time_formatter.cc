@@ -1,10 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/message_center/views/relative_time_formatter.h"
 
-#include "base/cxx17_backports.h"
 #include "base/numerics/safe_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -39,7 +38,7 @@ const RelativeTimeFormat& GetRelativeTimeFormat(base::TimeDelta delta) {
       {base::Days(364), IDS_MESSAGE_NOTIFICATION_DURATION_YEARS_SHORTEST,
        IDS_MESSAGE_NOTIFICATION_DURATION_YEARS_SHORTEST_FUTURE},
   };
-  constexpr size_t kTimeFormatsCount = base::size(kTimeFormats);
+  constexpr size_t kTimeFormatsCount = std::size(kTimeFormats);
   static_assert(kTimeFormatsCount > 0, "kTimeFormats must not be empty");
 
   for (size_t i = 0; i < kTimeFormatsCount - 1; ++i) {

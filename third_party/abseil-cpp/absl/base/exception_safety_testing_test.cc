@@ -701,7 +701,10 @@ struct BasicGuaranteeWithExtraContracts : public NonNegative {
 
   static constexpr int kExceptionSentinel = 9999;
 };
+
+#ifdef ABSL_INTERNAL_NEED_REDUNDANT_CONSTEXPR_DECL
 constexpr int BasicGuaranteeWithExtraContracts::kExceptionSentinel;
+#endif
 
 TEST(ExceptionCheckTest, BasicGuaranteeWithExtraContracts) {
   auto tester_with_val =

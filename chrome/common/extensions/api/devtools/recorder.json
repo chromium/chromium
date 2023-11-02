@@ -1,0 +1,68 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[
+  {
+    "namespace": "devtools.recorder",
+    "description": "Use the <code>chrome.devtools.recorder</code> API to customize the Recorder panel in DevTools.",
+    "nocompile": true,
+    "types": [
+      {
+        "id": "RecorderExtensionPlugin",
+        "type": "object",
+        "description": "A plugin interface that the Recorder panel invokes to customize the Recorder panel.",
+        "functions": [
+          {
+            "name": "stringify",
+            "type": "function",
+            "description": "Converts a recording from the Recorder panel format into a string.",
+            "parameters": [
+              {
+                "name": "recording",
+                "type": "object",
+                "description": "A recording of the user interaction with the page. This should match <a href=\"https://github.com/puppeteer/replay/blob/main/docs/api/interfaces/Schema.UserFlow.md\">Puppeteer's recording schema</a>."
+              }
+            ]
+          },
+          {
+            "name": "stringifyStep",
+            "type": "function",
+            "description": "Converts a step of the recording from the Recorder panel format into a string.",
+            "parameters": [
+              {
+                "name": "step",
+                "type": "object",
+                "description": "A step of the recording of a user interaction with the page. This should match <a href=\"https://github.com/puppeteer/replay/blob/main/docs/api/modules/Schema.md#step\">Puppeteer's step schema</a>."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "functions": [
+      {
+        "name": "registerRecorderExtensionPlugin",
+        "type": "function",
+        "description": "Registers a Recorder extension plugin.",
+        "parameters": [
+          {
+            "name": "plugin",
+            "$ref": "RecorderExtensionPlugin",
+            "description": "An instance implementing the RecorderExtensionPlugin interface."
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "description": "The name of the plugin."
+          },
+          {
+            "name": "mediaType",
+            "type": "string",
+            "description": "The media type of the string content that the plugin produces."
+          }
+        ]
+      }
+    ]
+  }
+]

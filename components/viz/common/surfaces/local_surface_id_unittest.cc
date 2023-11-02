@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,6 +38,7 @@ TEST(LocalSurfaceIdTest, VerifyToString) {
 
   int previous_log_lvl = logging::GetMinLogLevel();
 
+#if BUILDFLAG(USE_RUNTIME_VLOG)
   // When |g_min_log_level| is set to LOG_VERBOSE we expect verbose versions
   // of local_surface_id::ToString().
   logging::SetMinLogLevel(logging::LOG_VERBOSE);
@@ -45,6 +46,7 @@ TEST(LocalSurfaceIdTest, VerifyToString) {
   EXPECT_EQ(verbose_expected, local_surface_id.ToString());
   EXPECT_EQ(big_verbose_expected, big_local_surface_id.ToString());
   EXPECT_EQ(small_verbose_expected, small_local_surface_id.ToString());
+#endif  // BUILDFLAG(USE_RUNTIME_VLOG)
 
   // When |g_min_log_level| is set to LOG_INFO we expect less verbose versions
   // of local_surface_id::ToString().

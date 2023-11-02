@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,6 +40,8 @@ class PermissionUpdateMessageDelegate {
   ~PermissionUpdateMessageDelegate();
 
   void OnPermissionResult(bool all_permissions_granted);
+  int GetTitleId();
+  void AttachAdditionalCallback(PermissionUpdatedCallback callback);
 
  private:
   friend class PermissionUpdateMessageControllerAndroidTest;
@@ -47,12 +49,14 @@ class PermissionUpdateMessageDelegate {
   void HandlePrimaryActionCallback();
   void HandleDismissCallback(messages::DismissReason dismiss_reason);
   void DismissInternal();
+  void RunCallbacks(bool all_permissions_granted);
 
   std::vector<ContentSettingsType> content_settings_types_;
-  PermissionUpdatedCallback callback_;
+  std::vector<PermissionUpdatedCallback> callbacks_;
   base::OnceCallback<void(PermissionUpdateMessageDelegate*)> delete_callback_;
   std::unique_ptr<PermissionUpdateRequester> permission_update_requester_;
   std::unique_ptr<messages::MessageWrapper> message_;
+  int title_id_;
 };
 
 #endif  // CHROME_BROWSER_PERMISSIONS_PERMISSION_UPDATE_MESSAGE_DELEGATE_ANDROID_H_

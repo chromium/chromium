@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/core/css/clip_path_paint_image_generator.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -23,7 +23,8 @@ class MODULES_EXPORT ClipPathPaintImageGeneratorImpl final
   ~ClipPathPaintImageGeneratorImpl() override = default;
 
   scoped_refptr<Image> Paint(float zoom,
-                             const FloatRect& reference_box,
+                             const gfx::RectF& reference_box,
+                             const gfx::SizeF& clip_area_size,
                              const Node&) final;
   Animation* GetAnimationIfCompositable(const Element* element) final;
 

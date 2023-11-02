@@ -1,17 +1,17 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_PUBLIC_CPP_LOGIN_TYPES_H_
 #define ASH_PUBLIC_CPP_LOGIN_TYPES_H_
 
-#include "ash/components/security_token_pin/constants.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/session/user_info.h"
+#include "ash/public/cpp/smartlock_state.h"
 #include "base/callback.h"
 #include "base/time/time.h"
-#include "base/token.h"
-#include "chromeos/components/proximity_auth/public/mojom/auth_type.mojom-forward.h"
+#include "chromeos/ash/components/proximity_auth/public/mojom/auth_type.mojom-forward.h"
+#include "chromeos/components/security_token_pin/constants.h"
 #include "components/account_id/account_id.h"
 
 namespace ash {
@@ -34,7 +34,7 @@ enum class OobeDialogState {
   WRONG_HWID_WARNING = 3,
 
   // Showing supervised user creation screen.
-  SUPERVISED_USER_CREATION_FLOW = 4,
+  DEPRECATED_SUPERVISED_USER_CREATION_FLOW = 4,
 
   // Showing SAML password confirmation screen.
   SAML_PASSWORD_CONFIRM = 5,
@@ -43,7 +43,7 @@ enum class OobeDialogState {
   PASSWORD_CHANGED = 6,
 
   // Showing device enrollment screen.
-  ENROLLMENT = 7,
+  ENROLLMENT_CANCEL_DISABLED = 7,
 
   // Showing error screen.
   ERROR = 8,
@@ -72,6 +72,26 @@ enum class OobeDialogState {
 
   // Showing enrollment screen with the possibility to cancel.
   ENROLLMENT_CANCEL_ENABLED = 16,
+
+  // Showing enrollment success step.
+  ENROLLMENT_SUCCESS = 17,
+  // Showing theme selection screen.
+  THEME_SELECTION = 18,
+
+  // Showing marketing opt-in screen.
+  MARKETING_OPT_IN = 19,
+
+};
+
+// Modes of the managed device, which is used to update the visibility of
+// license-specific components.
+enum class ManagementDeviceMode {
+  kNone = 0,
+  kChromeEnterprise = 1,
+  kChromeEducation = 2,
+  kKioskSku = 3,
+  kOther = 4,
+  kMaxValue = kOther,
 };
 
 // Supported multi-profile user behavior values.
@@ -154,6 +174,24 @@ struct ASH_PUBLIC_EXPORT EasyUnlockIconInfo {
   // display via a separate EasyUnlockIconsOption update. See
   // LoginScreenClient::HardlockPod.
   bool hardlock_on_click = false;
+};
+
+// Enterprise information about a managed device.
+struct ASH_PUBLIC_EXPORT DeviceEnterpriseInfo {
+  bool operator==(const DeviceEnterpriseInfo& other) const;
+
+  // The name of the entity that manages the device and current account user.
+  //       For standard Dasher domains, this will be the domain name (foo.com).
+  //       For FlexOrgs, this will be the admin's email (user@foo.com).
+  //       For Active Directory or not enterprise enrolled, this will be an
+  //       empty string.
+  std::string enterprise_domain_manager;
+
+  // Whether this is an Active Directory managed enterprise device.
+  bool active_directory_managed = false;
+
+  // Which mode a managed device is enrolled in.
+  ManagementDeviceMode management_device_mode = ManagementDeviceMode::kNone;
 };
 
 // Information of each input method. This is used to populate keyboard layouts
@@ -265,6 +303,10 @@ struct ASH_PUBLIC_EXPORT LoginUserInfo {
   // LoginScreenModel::SetFingerprintState) which update the current state.
   FingerprintState fingerprint_state = FingerprintState::UNAVAILABLE;
 
+  // The initial Smart Lock state. There are other methods (i.e.,
+  // LoginScreenModel::SetSmartLockState) which update the current state.
+  SmartLockState smart_lock_state = SmartLockState::kDisabled;
+
   // True if multi-profiles sign in is allowed for this user.
   bool is_multiprofile_allowed = false;
 
@@ -348,16 +390,16 @@ struct ASH_PUBLIC_EXPORT SecurityTokenPinRequest {
   AccountId account_id;
 
   // Type of the code requested from the user.
-  ash::security_token_pin::CodeType code_type =
-      ash::security_token_pin::CodeType::kPin;
+  chromeos::security_token_pin::CodeType code_type =
+      chromeos::security_token_pin::CodeType::kPin;
 
   // Whether the UI controls that allow user to enter the value should be
   // enabled. MUST be |false| when |attempts_left| is zero.
   bool enable_user_input = true;
 
   // An optional error to be displayed to the user.
-  ash::security_token_pin::ErrorLabel error_label =
-      ash::security_token_pin::ErrorLabel::kNone;
+  chromeos::security_token_pin::ErrorLabel error_label =
+      chromeos::security_token_pin::ErrorLabel::kNone;
 
   // When non-negative, the UI should indicate this number to the user;
   // otherwise must be equal to -1.

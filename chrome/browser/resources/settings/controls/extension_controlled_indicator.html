@@ -11,6 +11,18 @@
     margin-inline-end: 16px;
   }
 
+  iron-icon[icon='cr:open-in-new'] {
+    fill: var(--text-color);
+    height: var(--cr-icon-size);
+    margin-inline-end: -10px;
+    margin-inline-start: 6px;
+    width: var(--cr-icon-size);
+  }
+
+  #disable {
+    margin-inline-start: 8px;
+  }
+
   /* Using ">" operator to ensure that this CSS rule will not accidentally
    * be applied to a search highlight span (which is inserted dynamically if
    * when search "hit" occurs within this element. */
@@ -20,7 +32,11 @@
   }
 </style>
 <img role="presentation" src="chrome://extension-icon/[[extensionId]]/20/1">
-<span inner-h-t-m-l="[[getLabel_(extensionId, extensionName)]]"></span>
+<span>[[getLabel_(extensionName)]]</span>
+<cr-button id="manage" on-click="onManageClick_">
+  $i18n{manage}
+  <iron-icon icon="cr:open-in-new"></iron-icon>
+</cr-button>
 <template is="dom-if" if="[[extensionCanBeDisabled]]" restamp>
-  <cr-button on-click="onDisableTap_">$i18n{disable}</cr-button>
+  <cr-button id="disable" on-click="onDisableClick_">$i18n{disable}</cr-button>
 </template>

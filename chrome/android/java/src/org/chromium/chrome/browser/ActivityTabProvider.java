@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -170,7 +170,7 @@ public class ActivityTabProvider extends ObservableSupplierImpl<Tab> implements 
             }
 
             @Override
-            public void willCloseTab(Tab tab, boolean animate) {
+            public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
                 // If this is the last tab to close, make sure a signal is sent to the observers.
                 if (mTabModelSelector.getCurrentModel().getCount() <= 1) {
                     triggerActivityTabChangeEvent(null);

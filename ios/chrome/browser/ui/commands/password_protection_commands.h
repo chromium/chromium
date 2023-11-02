@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,8 @@ enum class WarningAction;
 // Commands related to Password Protection.
 @protocol PasswordProtectionCommands
 
-// Shows the Password Protection warning with |warningText|. |completion| should
-// be called when the warning is dismissed with the user's |action|.
+// Shows the Password Protection warning with `warningText`. `completion` should
+// be called when the warning is dismissed with the user's `action`.
 - (void)showPasswordProtectionWarning:(NSString*)warningText
                            completion:(void (^)(safe_browsing::WarningAction))
                                           completion;

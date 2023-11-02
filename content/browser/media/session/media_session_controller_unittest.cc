@@ -1,10 +1,12 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 #include <tuple>
 
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "content/browser/media/media_web_contents_observer.h"
 #include "content/browser/media/session/audio_focus_delegate.h"
 #include "content/browser/media/session/media_session_controller.h"
@@ -193,7 +195,7 @@ class MediaSessionControllerTest : public RenderViewHostImplTestHarness {
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
 
-    id_ = MediaPlayerId(contents()->GetMainFrame()->GetGlobalId(), 0);
+    id_ = MediaPlayerId(contents()->GetPrimaryMainFrame()->GetGlobalId(), 0);
     controller_ = CreateController();
     media_player_ = CreateMediaPlayer(controller_.get());
 
@@ -296,7 +298,7 @@ class MediaSessionControllerTest : public RenderViewHostImplTestHarness {
   MediaPlayerId id_ = MediaPlayerId::CreateMediaPlayerIdForTests();
   std::unique_ptr<MediaSessionController> controller_;
   std::unique_ptr<TestMediaPlayer> media_player_;
-  FakeAudioFocusDelegate* audio_focus_delegate_ = nullptr;
+  raw_ptr<FakeAudioFocusDelegate> audio_focus_delegate_ = nullptr;
 };
 
 TEST_F(MediaSessionControllerTest, NoAudioNoSession) {

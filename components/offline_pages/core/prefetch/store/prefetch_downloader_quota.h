@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 #define COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_STORE_PREFETCH_DOWNLOADER_QUOTA_H_
 
 #include <cstdint>
+
+#include "base/memory/raw_ptr.h"
 
 namespace base {
 class Clock;
@@ -43,10 +45,10 @@ class PrefetchDownloaderQuota {
 
  private:
   // DB connection. Not owned.
-  sql::Database* db_;
+  raw_ptr<sql::Database> db_;
 
   // Clock used for time related calculation and quota updates in DB. Not owned.
-  const base::Clock* clock_;
+  raw_ptr<const base::Clock> clock_;
 };
 }  // namespace offline_pages
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -73,6 +73,6 @@ TEST_P(TextAttachmentTextTitleTest, TextTitleMatches) {
   EXPECT_EQ(GetParam().expected_text_title, attachment.text_title());
 }
 
-INSTANTIATE_TEST_CASE_P(TextAttachmentTextTitleTest,
-                        TextAttachmentTextTitleTest,
-                        testing::ValuesIn(kTextAttachmentTextTitleTestData));
+INSTANTIATE_TEST_SUITE_P(TextAttachmentTextTitleTest,
+                         TextAttachmentTextTitleTest,
+                         testing::ValuesIn(kTextAttachmentTextTitleTestData));

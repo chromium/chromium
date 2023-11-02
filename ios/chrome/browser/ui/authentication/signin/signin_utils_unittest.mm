@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,30 +6,30 @@
 
 #import <UIKit/UIKit.h>
 
-#include <memory>
+#import <memory>
 
-#include "base/test/scoped_feature_list.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/version.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/base/signin_switches.h"
-#include "components/sync/base/pref_names.h"
+#import "components/sync/base/pref_names.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/policy/policy_util.h"
-#include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/prefs/browser_prefs.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_signin_constants.h"
-#include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -83,12 +83,12 @@ class SigninUtilsTest : public PlatformTest {
   ChromeAccountManagerService* account_manager_service_;
 };
 
-// Should show the sign-in upgrade for the first time.
+// Should show the sign-in upgrade for the first time, after FRE.
 TEST_F(SigninUtilsTest, TestWillDisplay) {
   ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
       ->AddIdentities(@[ @"foo", @"bar" ]);
   const base::Version version_1_0("1.0");
-  EXPECT_TRUE(signin::ShouldPresentUserSigninUpgrade(
+  EXPECT_FALSE(signin::ShouldPresentUserSigninUpgrade(
       chrome_browser_state_.get(), version_1_0));
 }
 
@@ -97,7 +97,8 @@ TEST_F(SigninUtilsTest, TestWillNotDisplaySameVersion) {
   ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
       ->AddIdentities(@[ @"foo", @"bar" ]);
   const base::Version version_1_0("1.0");
-  signin::RecordVersionSeen(account_manager_service_, version_1_0);
+  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
+                                          version_1_0);
   EXPECT_FALSE(signin::ShouldPresentUserSigninUpgrade(
       chrome_browser_state_.get(), version_1_0));
 }
@@ -108,7 +109,8 @@ TEST_F(SigninUtilsTest, TestWillNotDisplayOneMinorVersion) {
       ->AddIdentities(@[ @"foo", @"bar" ]);
   const base::Version version_1_0("1.0");
   const base::Version version_1_1("1.1");
-  signin::RecordVersionSeen(account_manager_service_, version_1_0);
+  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
+                                          version_1_0);
   EXPECT_FALSE(signin::ShouldPresentUserSigninUpgrade(
       chrome_browser_state_.get(), version_1_1));
 }
@@ -119,7 +121,8 @@ TEST_F(SigninUtilsTest, TestWillNotDisplayTwoMinorVersions) {
       ->AddIdentities(@[ @"foo", @"bar" ]);
   const base::Version version_1_0("1.0");
   const base::Version version_1_2("1.2");
-  signin::RecordVersionSeen(account_manager_service_, version_1_0);
+  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
+                                          version_1_0);
   EXPECT_FALSE(signin::ShouldPresentUserSigninUpgrade(
       chrome_browser_state_.get(), version_1_2));
 }
@@ -130,7 +133,8 @@ TEST_F(SigninUtilsTest, TestWillNotDisplayOneMajorVersion) {
       ->AddIdentities(@[ @"foo", @"bar" ]);
   const base::Version version_1_0("1.0");
   const base::Version version_2_0("2.0");
-  signin::RecordVersionSeen(account_manager_service_, version_1_0);
+  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
+                                          version_1_0);
   EXPECT_FALSE(signin::ShouldPresentUserSigninUpgrade(
       chrome_browser_state_.get(), version_2_0));
 }
@@ -141,7 +145,8 @@ TEST_F(SigninUtilsTest, TestWillDisplayTwoMajorVersions) {
       ->AddIdentities(@[ @"foo", @"bar" ]);
   const base::Version version_1_0("1.0");
   const base::Version version_3_0("3.0");
-  signin::RecordVersionSeen(account_manager_service_, version_1_0);
+  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
+                                          version_1_0);
   EXPECT_TRUE(signin::ShouldPresentUserSigninUpgrade(
       chrome_browser_state_.get(), version_3_0));
 }
@@ -156,8 +161,10 @@ TEST_F(SigninUtilsTest, TestWillShowTwoTimesOnly) {
   const base::Version version_1_0("1.0");
   const base::Version version_3_0("3.0");
   const base::Version version_5_0("5.0");
-  signin::RecordVersionSeen(account_manager_service_, version_1_0);
-  signin::RecordVersionSeen(account_manager_service_, version_3_0);
+  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
+                                          version_1_0);
+  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
+                                          version_3_0);
   EXPECT_FALSE(signin::ShouldPresentUserSigninUpgrade(
       chrome_browser_state_.get(), version_5_0));
 }
@@ -171,8 +178,10 @@ TEST_F(SigninUtilsTest, TestWillShowForNewAccountAdded) {
   const base::Version version_1_0("1.0");
   const base::Version version_3_0("3.0");
   const base::Version version_5_0("5.0");
-  signin::RecordVersionSeen(account_manager_service_, version_1_0);
-  signin::RecordVersionSeen(account_manager_service_, version_3_0);
+  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
+                                          version_1_0);
+  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
+                                          version_3_0);
   ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
       ->AddIdentities(@[ @"foo1" ]);
   EXPECT_TRUE(signin::ShouldPresentUserSigninUpgrade(
@@ -192,8 +201,10 @@ TEST_F(SigninUtilsTest, TestWillNotShowWithAccountRemoved) {
   NSString* newAccountGaiaId = @"foo1";
   ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
       ->AddIdentities(@[ newAccountGaiaId ]);
-  signin::RecordVersionSeen(account_manager_service_, version_1_0);
-  signin::RecordVersionSeen(account_manager_service_, version_3_0);
+  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
+                                          version_1_0);
+  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
+                                          version_3_0);
   NSArray* allIdentities = account_manager_service_->GetAllIdentities();
   ChromeIdentity* foo1Identity = nil;
   for (ChromeIdentity* identity in allIdentities) {
@@ -218,8 +229,10 @@ TEST_F(SigninUtilsTest, TestWillNotShowNewAccountUntilTwoVersion) {
   const base::Version version_1_0("1.0");
   const base::Version version_3_0("3.0");
   const base::Version version_4_0("4.0");
-  signin::RecordVersionSeen(account_manager_service_, version_1_0);
-  signin::RecordVersionSeen(account_manager_service_, version_3_0);
+  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
+                                          version_1_0);
+  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
+                                          version_3_0);
   ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
       ->AddIdentities(@[ @"foo1" ]);
   EXPECT_FALSE(signin::ShouldPresentUserSigninUpgrade(
@@ -234,7 +247,8 @@ TEST_F(SigninUtilsTest, TestWillNotShowNewAccountUntilTwoVersion) {
 TEST_F(SigninUtilsTest, TestWillNotShowNewAccountUntilTwoVersionBis) {
   const base::Version version_1_0("1.0");
   const base::Version version_2_0("2.0");
-  signin::RecordVersionSeen(account_manager_service_, version_1_0);
+  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
+                                          version_1_0);
   ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
       ->AddIdentities(@[ @"foo1" ]);
   EXPECT_FALSE(signin::ShouldPresentUserSigninUpgrade(
@@ -250,57 +264,6 @@ TEST_F(SigninUtilsTest, TestWillNotShowIfDisabledByPolicy) {
       ->AddIdentities(@[ @"foo1" ]);
   GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
                               static_cast<int>(BrowserSigninMode::kDisabled));
-
-  EXPECT_FALSE(signin::ShouldPresentUserSigninUpgrade(
-      chrome_browser_state_.get(), version_1_0));
-}
-
-// signin::IsSigninAllowed should respect the kSigninAllowed pref.
-TEST_F(SigninUtilsTest, TestSigninAllowedPref) {
-  ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
-      ->AddIdentities(@[ @"foo", @"bar" ]);
-  // Sign-in is allowed by default.
-  EXPECT_TRUE(signin::IsSigninAllowed(chrome_browser_state_.get()->GetPrefs()));
-
-  // When sign-in is disabled, the accessor should return false.
-  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
-  EXPECT_FALSE(
-      signin::IsSigninAllowed(chrome_browser_state_.get()->GetPrefs()));
-}
-
-// signin::IsSigninAllowedByPolicy should respect the kBrowserSigninPolicy
-// pref.
-TEST_F(SigninUtilsTest, TestSigninAllowedByPolicyPref) {
-  ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
-      ->AddIdentities(@[ @"foo", @"bar" ]);
-  // Sign-in is allowed by default.
-  EXPECT_TRUE(signin::IsSigninAllowedByPolicy());
-
-  // When sign-in is disabled by policy, the accessor should return false.
-  GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
-                              static_cast<int>(BrowserSigninMode::kDisabled));
-  EXPECT_FALSE(signin::IsSigninAllowedByPolicy());
-  EXPECT_FALSE(
-      signin::IsSigninAllowed(chrome_browser_state_.get()->GetPrefs()));
-
-  // When sign-in is explicitly enabled by the user, but the policy has not
-  // changed the accessor should return false.
-  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, true);
-
-  EXPECT_FALSE(signin::IsSigninAllowedByPolicy());
-  EXPECT_FALSE(
-      signin::IsSigninAllowed(chrome_browser_state_.get()->GetPrefs()));
-}
-
-// Should not show the sign-in upgrade when extended sync promos are disabled.
-TEST_F(SigninUtilsTest, TestWillNotShowWhenPromosDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      switches::kForceDisableExtendedSyncPromos);
-
-  ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
-      ->AddIdentities(@[ @"foo", @"bar" ]);
-  const base::Version version_1_0("1.0");
 
   EXPECT_FALSE(signin::ShouldPresentUserSigninUpgrade(
       chrome_browser_state_.get(), version_1_0));

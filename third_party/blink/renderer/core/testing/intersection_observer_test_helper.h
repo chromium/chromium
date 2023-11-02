@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,7 +44,7 @@ class TestIntersectionObserverDelegate : public IntersectionObserverDelegate {
     call_count_ = 0;
   }
   PhysicalRect LastIntersectionRect() const {
-    if (entries_.IsEmpty())
+    if (entries_.empty())
       return PhysicalRect();
     const IntersectionGeometry& geometry = entries_.back()->GetGeometry();
     return geometry.IntersectionRect();

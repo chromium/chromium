@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -114,6 +114,8 @@ class SurfaceTreeHost : public SurfaceDelegate,
   void SetInitialWorkspace(const char* initial_workspace) override {}
   void Pin(bool trusted) override {}
   void Unpin() override {}
+  void SetSystemModal(bool system_modal) override {}
+  SecurityDelegate* GetSecurityDelegate() override;
 
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,
@@ -125,6 +127,8 @@ class SurfaceTreeHost : public SurfaceDelegate,
   void set_client_submits_surfaces_in_pixel_coordinates(bool enabled) {
     client_submits_surfaces_in_pixel_coordinates_ = enabled;
   }
+
+  void SetSecurityDelegate(SecurityDelegate* security_delegate);
 
  protected:
   void UpdateDisplayOnTree();
@@ -180,6 +184,8 @@ class SurfaceTreeHost : public SurfaceDelegate,
   int64_t display_id_ = display::kInvalidDisplayId;
 
   bool client_submits_surfaces_in_pixel_coordinates_ = false;
+
+  SecurityDelegate* security_delegate_ = nullptr;
 
   base::WeakPtrFactory<SurfaceTreeHost> weak_ptr_factory_{this};
 };

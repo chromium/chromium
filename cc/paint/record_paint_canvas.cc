@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,9 +36,12 @@ size_t RecordPaintCanvas::push(Args&&... args) {
   // The following check fails if client code does not check and handle
   // NeedsFlush() before issuing draw calls.
   // Note: restore ops are tolerated when flushes are requested since they are
-  // often necessary in order to bring the canvas to a flushable state
+  // often necessary in order to bring the canvas to a flushable state.
+  // SetNodeId ops are also tolerated because they may be inserted just before
+  // flushing.
   DCHECK(disable_flush_check_scope_ || !needs_flush_ ||
-         (std::is_same<T, RestoreOp>::value));
+         (std::is_same<T, RestoreOp>::value) ||
+         (std::is_same<T, SetNodeIdOp>::value));
 #endif
   return list_->push<T>(std::forward<Args>(args)...);
 }
@@ -92,7 +95,7 @@ int RecordPaintCanvas::saveLayer(const SkRect* bounds,
 }
 
 int RecordPaintCanvas::saveLayerAlpha(const SkRect* bounds, uint8_t alpha) {
-  push<SaveLayerAlphaOp>(bounds, alpha);
+  push<SaveLayerAlphaOp>(bounds, static_cast<float>(alpha / 255.0f));
   return GetCanvas()->saveLayerAlpha(bounds, alpha);
 }
 
@@ -224,11 +227,11 @@ bool RecordPaintCanvas::getDeviceClipBounds(SkIRect* bounds) const {
   return GetCanvas()->getDeviceClipBounds(bounds);
 }
 
-void RecordPaintCanvas::drawColor(SkColor color, SkBlendMode mode) {
+void RecordPaintCanvas::drawColor(SkColor4f color, SkBlendMode mode) {
   push<DrawColorOp>(color, mode);
 }
 
-void RecordPaintCanvas::clear(SkColor color) {
+void RecordPaintCanvas::clear(SkColor4f color) {
   push<DrawColorOp>(color, SkBlendMode::kSrc);
 }
 
@@ -311,8 +314,11 @@ void RecordPaintCanvas::drawImageRect(const PaintImage& image,
 void RecordPaintCanvas::drawSkottie(scoped_refptr<SkottieWrapper> skottie,
                                     const SkRect& dst,
                                     float t,
-                                    SkottieFrameDataMap images) {
-  push<DrawSkottieOp>(std::move(skottie), dst, t, std::move(images));
+                                    SkottieFrameDataMap images,
+                                    const SkottieColorMap& color_map,
+                                    SkottieTextPropertyValueMap text_map) {
+  push<DrawSkottieOp>(std::move(skottie), dst, t, std::move(images), color_map,
+                      std::move(text_map));
 }
 
 void RecordPaintCanvas::drawTextBlob(sk_sp<SkTextBlob> blob,

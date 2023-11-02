@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 namespace content {
 
 DocumentServiceEchoImpl::DocumentServiceEchoImpl(
-    RenderFrameHost* render_frame_host,
+    RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<mojom::Echo> receiver,
     base::OnceClosure destruction_cb)
     : DocumentService(render_frame_host, std::move(receiver)),

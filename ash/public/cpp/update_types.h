@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,11 +32,14 @@ enum class UpdateType {
   kSystem,
 };
 
-// Notification style for system updates, set by different policies.
-enum class NotificationStyle {
-  kDefault,
-  kAdminRecommended,  // Relaunch Notification policy
-  kAdminRequired,     // Relaunch Notification policy
+// State for deferred system updates.
+enum class DeferredUpdateState {
+  // No deferred update available.
+  kNone,
+  // Show deferred update available dialog.
+  kShowDialog,
+  // Show deferred update available notification.
+  kShowNotification
 };
 
 // Notification state for system updates, set by policies.
@@ -48,6 +51,11 @@ struct RelaunchNotificationState {
     kRequired,               // Relaunch is required until
                              // `rounded_time_until_reboot_required`.
   } requirement_type = kNone;
+
+  enum PolicySource {
+    kUser,    // Relaunch notifications are triggered by a user policy.
+    kDevice,  // Relaunch notifications are triggered by a device policy..
+  } policy_source = kUser;
 
   // The remaining time until the device will restart itself, rounded to the
   // nearest day, hour, minute, or second; depending on how far into the future

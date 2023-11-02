@@ -1,11 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_APPS_INTENT_HELPER_INTENT_PICKER_HELPERS_H_
 #define CHROME_BROWSER_APPS_INTENT_HELPER_INTENT_PICKER_HELPERS_H_
 
-#include "base/compiler_specific.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -15,18 +14,26 @@ class WebContents;
 
 namespace apps {
 
-// Displays the intent picker bubble in the omnibar if the last committed URL
+// Displays the intent picker icon in the omnibox if the last committed URL
 // has corresponding apps that can open the page.
-// Returns if the intent icon should be shown.
-bool MaybeShowIntentPicker(content::NavigationHandle* navigation_handle)
-    WARN_UNUSED_RESULT;
-// Overload used to check if the intent picker can be displayed,
-// only on non Chrome OS devices.
-// Also used to recheck after content is reparented.
+// On Chrome OS, this may also display the Intent Picker bubble automatically.
+void MaybeShowIntentPicker(content::NavigationHandle* navigation_handle);
+
+// Displays the intent picker icon in the omnibox, based on the last committed
+// URL in |web_contents|.
 void MaybeShowIntentPicker(content::WebContents* web_contents);
 
-void ShowIntentPickerBubble(content::WebContents* web_contents,
-                            const GURL& url);
+// Shows the intent picker bubble to present a choice between apps to handle
+// |url|. May launch directly into an app based on user preferences and
+// installed apps.
+void ShowIntentPickerOrLaunchApp(content::WebContents* web_contents,
+                                 const GURL& url);
+
+// Returns true if persistence for PWA entries in the Intent Picker is enabled.
+bool IntentPickerPwaPersistenceEnabled();
+
+// Returns the size, in dp, of app icons shown in the intent picker bubble.
+int GetIntentPickerBubbleIconSize();
 
 }  // namespace apps
 

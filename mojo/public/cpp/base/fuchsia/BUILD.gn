@@ -1,0 +1,66 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_fuchsia)
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("example_interfaces") {
+  testonly = true
+  sources = [ "example.mojom" ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "fuchsia.test.mojom.TestInterfaceRequest"
+          cpp = "::fidl::InterfaceRequest<::base::testfidl::TestInterface>"
+          move_only = true
+        },
+      ]
+
+      traits_headers = [
+        "//base/testfidl/cpp/fidl.h",
+        "//mojo/public/cpp/base/fuchsia/test_interface_request_mojom_traits.h",
+      ]
+      traits_public_deps = [
+        ":traits",
+        "//base:testfidl",
+      ]
+    },
+  ]
+  visibility = [ ":*" ]
+}
+
+source_set("traits") {
+  sources = [ "fidl_interface_request_mojom_traits.h" ]
+
+  public_deps = [
+    "//mojo/public/cpp/platform",
+    "//mojo/public/cpp/system",
+  ]
+
+  visibility = [
+    ":*",
+    "//fuchsia_web/webengine/mojom:*",
+    "//media/fuchsia/mojom:*",
+  ]
+}
+
+source_set("unittests") {
+  testonly = true
+
+  sources = [
+    "fidl_interface_request_mojom_traits_unittest.cc",
+    "test_interface_request_mojom_traits.h",
+  ]
+
+  deps = [
+    ":example_interfaces",
+    "//base:testfidl",
+    "//base/test:test_support",
+    "//mojo/core/test:run_all_unittests",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//testing/gtest",
+  ]
+}

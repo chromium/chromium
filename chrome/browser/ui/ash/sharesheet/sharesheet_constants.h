@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@ namespace sharesheet {
 // LayoutProvider.
 
 // Sizes are in px.
+constexpr int kDefaultBubbleWidth = 416;
 constexpr int kSpacing = 24;
 
 constexpr int kFooterDefaultVerticalPadding = 20;
@@ -45,7 +46,6 @@ constexpr int kImagePreviewBetweenChildSpacing = 2;
 constexpr int kImagePreviewIconCornerRadius = 2;
 constexpr int kImagePreviewPlaceholderIconContentSize = 20;
 constexpr SkAlpha kImagePreviewBackgroundAlphaComponent = 0x32;
-constexpr SkColor kImagePreviewPlaceholderBackgroundColor = gfx::kGoogleBlue050;
 
 constexpr int kHeaderViewBetweenChildSpacing = 12;
 constexpr int kHeaderViewNarrowInsideBorderInsets = 14;
@@ -53,12 +53,6 @@ constexpr int kHeaderViewNarrowInsideBorderInsets = 14;
 constexpr int kTitleTextLineHeight = 24;
 constexpr int kSubtitleTextLineHeight = 22;
 constexpr int kPrimaryTextLineHeight = 20;
-
-// TODO(crbug.com/1156343) : Go through code and replace all color constants
-// with colors from ColorProvider.
-constexpr SkColor kTitleTextColor = gfx::kGoogleGrey900;
-constexpr SkColor kPrimaryTextColor = gfx::kGoogleGrey700;
-constexpr SkColor kSecondaryTextColor = gfx::kGoogleGrey600;
 
 }  // namespace sharesheet
 }  // namespace ash

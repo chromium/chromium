@@ -1,58 +1,74 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/js/util.m.js';
-import '//resources/cr_elements/cr_button/cr_button.m.js';
-import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import '//resources/cr_elements/cr_input/cr_input.m.js';
+import '//resources/js/util.js';
+import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.js';
+import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/cr_elements/cr_link_row/cr_link_row.js';
-import '//resources/cr_elements/icons.m.js';
-import '//resources/cr_elements/shared_style_css.m.js';
-import '//resources/cr_elements/shared_vars_css.m.js';
-import '//resources/cr_elements/cr_expand_button/cr_expand_button.m.js';
+import '//resources/cr_elements/icons.html.js';
+import '//resources/cr_elements/cr_shared_style.css.js';
+import '//resources/cr_elements/cr_shared_vars.css.js';
+import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import './sync_account_control.js';
 import './sync_encryption_options.js';
 import '../privacy_page/personalization_options.js';
-import '../settings_shared_css.js';
-import '../settings_vars_css.js';
-// <if expr="not chromeos">
+import '../settings_shared.css.js';
+import '../settings_vars.css.js';
+// <if expr="not chromeos_ash">
 import '//resources/cr_elements/cr_toast/cr_toast.js';
+
 // </if>
 
-import {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.m.js';
-import {assert, assertNotReached} from '//resources/js/assert.m.js';
-import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
-import {WebUIListenerMixin, WebUIListenerMixinInterface} from '//resources/js/web_ui_listener_mixin.js';
-import {flush, html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
+import {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
+import {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
+import {assert, assertNotReached} from '//resources/js/assert_ts.js';
+import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
+import {WebUIListenerMixin, WebUIListenerMixinInterface} from '//resources/cr_elements/web_ui_listener_mixin.js';
+import {IronCollapseElement} from '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
+import {flush, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 
+import {FocusConfig} from '../focus_config.js';
 import {loadTimeData} from '../i18n_setup.js';
+// <if expr="chromeos_ash">
 import {SettingsPersonalizationOptionsElement} from '../privacy_page/personalization_options.js';
+// </if>
+
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
 import {PageStatus, StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from './sync_browser_proxy.js';
+// <if expr="chromeos_ash">
 import {SettingsSyncEncryptionOptionsElement} from './sync_encryption_options.js';
+// </if>
+
+import {getTemplate} from './sync_page.html.js';
 
 // TODO(rbpotter): Remove this typedef when this file is no longer needed by OS
 // Settings.
-type SyncRoutes = {
-  BASIC: Route,
-  PEOPLE: Route,
-  SYNC: Route,
-  SYNC_ADVANCED: Route,
-};
+interface SyncRoutes {
+  BASIC: Route;
+  PEOPLE: Route;
+  SYNC: Route;
+  SYNC_ADVANCED: Route;
+  OS_SYNC: Route;
+  OS_PEOPLE: Route;
+}
 
 function getSyncRoutes(): SyncRoutes {
   const router = Router.getInstance();
   return router.getRoutes() as SyncRoutes;
 }
 
-type FocusConfig = Map<string, (string|(() => void))>;
+export interface SettingsSyncPageElement {
+  $: {
+    encryptionCollapse: IronCollapseElement,
+  };
+}
 
 /**
  * @fileoverview
@@ -62,7 +78,7 @@ type FocusConfig = Map<string, (string|(() => void))>;
 const SettingsSyncPageElementBase =
     RouteObserverMixin(WebUIListenerMixin(I18nMixin(PolymerElement))) as {
       new (): PolymerElement & WebUIListenerMixinInterface &
-      I18nMixinInterface & RouteObserverMixinInterface
+          I18nMixinInterface & RouteObserverMixinInterface,
     };
 
 export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
@@ -71,7 +87,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -122,7 +138,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
 
       dataEncrypted_: {
         type: Boolean,
-        computed: 'computeDataEncrypted_(syncPrefs.encryptAllData)'
+        computed: 'computeDataEncrypted_(syncPrefs.encryptAllData)',
       },
 
       encryptionExpanded_: {
@@ -142,6 +158,16 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
       existingPassphrase_: {
         type: String,
         value: '',
+      },
+
+      /*
+       * Whether enter existing passphrase UI should be shown.
+       */
+      showExistingPassphraseBelowAccount_: {
+        type: Boolean,
+        value: false,
+        computed: 'computeShowExistingPassphraseBelowAccount_(' +
+            'syncStatus.signedIn, syncPrefs.passphraseRequired)',
       },
 
       signedIn_: {
@@ -165,10 +191,12 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
             'syncPrefs.trustedVaultKeysRequired)',
       },
 
+      // <if expr="not chromeos_ash">
       showSetupCancelDialog_: {
         type: Boolean,
         value: false,
       },
+      // </if>
 
       enterPassphraseLabel_: {
         type: String,
@@ -190,8 +218,9 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     ];
   }
 
+  prefs: {[key: string]: any};
   focusConfig: FocusConfig;
-  private pageStatus_: PageStatus
+  private pageStatus_: PageStatus;
   syncPrefs?: SyncPrefs;
   syncStatus: SyncStatus;
   private dataEncrypted_: boolean;
@@ -201,7 +230,11 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   private signedIn_: boolean;
   private syncDisabledByAdmin_: boolean;
   private syncSectionDisabled_: boolean;
+
+  // <if expr="not chromeos_ash">
   private showSetupCancelDialog_: boolean;
+  // </if>
+
   private enterPassphraseLabel_: string;
   private existingPassphraseLabel_: string;
 
@@ -251,7 +284,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     this.setupCancelConfirmed_ = false;
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.addWebUIListener(
@@ -265,7 +298,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     }
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     const router = Router.getInstance();
@@ -283,6 +316,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     }
   }
 
+  // <if expr="chromeos_ash">
   /**
    * @return The encryption options SettingsSyncEncryptionOptionsElement.
    */
@@ -296,12 +330,23 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   getPersonalizationOptions(): SettingsPersonalizationOptionsElement|null {
     return this.shadowRoot!.querySelector('settings-personalization-options');
   }
+  // </if>
 
-  // <if expr="chromeos or lacros">
+  // <if expr="is_chromeos">
   private shouldShowLacrosSideBySideWarning_(): boolean {
     return loadTimeData.getBoolean('shouldShowLacrosSideBySideWarning');
   }
   // </if>
+
+  private showActivityControls_(): boolean {
+    // <if expr="chromeos_ash">
+    // Should be hidden in OS settings.
+    if (loadTimeData.getBoolean('isOSSettings')) {
+      return false;
+    }
+    // </if>
+    return true;
+  }
 
   private computeSignedIn_(): boolean {
     return !!this.syncStatus.signedIn;
@@ -320,14 +365,39 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     return this.syncStatus !== undefined && !!this.syncStatus.managed;
   }
 
+  private getSyncAdvancedPageRoute_(): Route {
+    // <if expr="chromeos_ash">
+    if (loadTimeData.getBoolean('isOSSettings')) {
+      // In OS settings on ChromeOS a different page is used to show the list of
+      // sync data types.
+      return getSyncRoutes().OS_SYNC;
+    }
+    // </if>
+
+    return getSyncRoutes().SYNC_ADVANCED;
+  }
+
+  private getPeoplePageRoute_(): Route {
+    // <if expr="chromeos_ash">
+    if (loadTimeData.getBoolean('isOSSettings')) {
+      // In OS settings on ChromeOS a different page is used as a people page.
+      return getSyncRoutes().OS_PEOPLE;
+    }
+    // </if>
+
+    return getSyncRoutes().PEOPLE;
+  }
+
   private onFocusConfigChange_() {
-    const router = Router.getInstance();
-    this.focusConfig.set(getSyncRoutes().SYNC_ADVANCED.path, () => {
-      focusWithoutInk(
-          assert(this.shadowRoot!.querySelector('#sync-advanced-row')!));
+    this.focusConfig.set(this.getSyncAdvancedPageRoute_().path, () => {
+      const toFocus =
+          this.shadowRoot!.querySelector<HTMLElement>('#sync-advanced-row');
+      assert(toFocus);
+      focusWithoutInk(toFocus);
     });
   }
 
+  // <if expr="not chromeos_ash">
   private onSetupCancelDialogBack_() {
     this.shadowRoot!.querySelector<CrDialogElement>(
                         '#setupCancelDialog')!.cancel();
@@ -348,8 +418,9 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   private onSetupCancelDialogClose_() {
     this.showSetupCancelDialog_ = false;
   }
+  // </if>
 
-  currentRouteChanged() {
+  override currentRouteChanged() {
     const router = Router.getInstance();
     if (router.getCurrentRoute() === getSyncRoutes().SYNC) {
       this.onNavigateToPage_();
@@ -369,6 +440,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
       return;
     }
 
+    // <if expr="not chromeos_ash">
     const userActionCancelsSetup = this.syncStatus &&
         this.syncStatus.firstSetupInProgress && this.didAbort_;
     if (userActionCancelsSetup && !this.setupCancelConfirmed_) {
@@ -392,6 +464,8 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
 
     // Reset variable.
     this.setupCancelConfirmed_ = false;
+
+    // </if>
 
     this.onNavigateAwayFromPage_();
   }
@@ -487,8 +561,8 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
       tags: ['a'],
       substitutions: [
         loadTimeData.getString('syncErrorsHelpUrl'),
-        this.syncPrefs.explicitPassphraseTime
-      ]
+        this.syncPrefs.explicitPassphraseTime,
+      ],
     });
   }
 
@@ -539,15 +613,27 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     this.browserProxy_.setDecryptionPassphrase(this.existingPassphrase_)
         .then(
             sucessfullySet => this.handlePageStatusChanged_(
-                sucessfullySet ? PageStatus.DONE :
-                                 PageStatus.PASSPHRASE_FAILED));
+                this.computePageStatusAfterPassphraseChange_(sucessfullySet)));
 
     this.existingPassphrase_ = '';
   }
 
   private onPassphraseChanged_(e: CustomEvent<{didChange: boolean}>) {
     this.handlePageStatusChanged_(
-        e.detail.didChange ? PageStatus.DONE : PageStatus.PASSPHRASE_FAILED);
+        this.computePageStatusAfterPassphraseChange_(e.detail.didChange));
+  }
+
+  private computePageStatusAfterPassphraseChange_(successfullyChanged: boolean):
+      PageStatus {
+    if (!successfullyChanged) {
+      return PageStatus.PASSPHRASE_FAILED;
+    }
+
+    // Stay on the setup page if the user hasn't approved sync settings yet.
+    // Otherwise, close sync setup.
+    return this.syncStatus && this.syncStatus.firstSetupInProgress ?
+        PageStatus.CONFIGURE :
+        PageStatus.DONE;
   }
 
   /**
@@ -562,7 +648,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
         return;
       case PageStatus.DONE:
         if (router.getCurrentRoute() === getSyncRoutes().SYNC) {
-          router.navigateTo(getSyncRoutes().PEOPLE);
+          router.navigateTo(this.getPeoplePageRoute_());
         }
         return;
       case PageStatus.PASSPHRASE_FAILED:
@@ -575,9 +661,9 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
           passphraseInput.focusInput();
         }
         return;
+      default:
+        assertNotReached();
     }
-
-    assertNotReached();
   }
 
   private onLearnMoreTap_(event: Event) {
@@ -589,23 +675,24 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   }
 
   private shouldShowSyncAccountControl_(): boolean {
-    // <if expr="chromeos">
-    if (!loadTimeData.getBoolean('useBrowserSyncConsent')) {
-      return false;
-    }
+    // <if expr="chromeos_ash">
+    return false;
     // </if>
+    // <if expr="not chromeos_ash">
     return this.syncStatus !== undefined &&
         !!this.syncStatus.syncSystemEnabled &&
         loadTimeData.getBoolean('signinAllowed');
+    // </if>
   }
 
-  private shouldShowExistingPassphraseBelowAccount_(): boolean {
-    return this.syncPrefs !== undefined && !!this.syncPrefs.passphraseRequired;
+  private computeShowExistingPassphraseBelowAccount_(): boolean {
+    return this.syncStatus !== undefined && !!this.syncStatus.signedIn &&
+        this.syncPrefs !== undefined && !!this.syncPrefs.passphraseRequired;
   }
 
   private onSyncAdvancedClick_() {
     const router = Router.getInstance();
-    router.navigateTo(getSyncRoutes().SYNC_ADVANCED);
+    router.navigateTo(this.getSyncAdvancedPageRoute_());
   }
 
   /**
@@ -636,6 +723,12 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     if (passphraseInput && router.getCurrentRoute() === getSyncRoutes().SYNC) {
       passphraseInput.focus();
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-sync-page': SettingsSyncPageElement;
   }
 }
 

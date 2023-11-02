@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
@@ -32,7 +31,7 @@ namespace {
 // Arbitrary, but reasonable size limit in bytes for prefs file.
 constexpr size_t kPrefsSizeLimit = 1024 * 1024;
 
-absl::optional<base::Value> LoadPrefsFromDisk(
+absl::optional<base::Value::Dict> LoadPrefsFromDisk(
     const base::FilePath& prefs_path) {
   if (!base::PathExists(prefs_path)) {
     LOG(WARNING) << "Demo extensions prefs not found " << prefs_path.value();
@@ -47,8 +46,7 @@ absl::optional<base::Value> LoadPrefsFromDisk(
     return absl::nullopt;
   }
 
-  std::unique_ptr<base::Value> prefs_value =
-      base::JSONReader::ReadDeprecated(prefs_str);
+  absl::optional<base::Value> prefs_value = base::JSONReader::Read(prefs_str);
   if (!prefs_value) {
     LOG(ERROR) << "Unable to parse demo extensions prefs.";
     return absl::nullopt;
@@ -59,7 +57,7 @@ absl::optional<base::Value> LoadPrefsFromDisk(
     return absl::nullopt;
   }
 
-  return base::Value::FromUniquePtrValue(std::move(prefs_value));
+  return std::move(prefs_value).value().TakeDict();
 }
 
 }  // namespace
@@ -83,12 +81,12 @@ DemoExtensionsExternalLoader::~DemoExtensionsExternalLoader() = default;
 
 void DemoExtensionsExternalLoader::LoadApp(const std::string& app_id) {
   app_ids_.push_back(app_id);
-  base::DictionaryValue prefs;
-  for (const std::string& app_id : app_ids_) {
-    base::DictionaryValue app_dict;
-    app_dict.SetKey(extensions::ExternalProviderImpl::kExternalUpdateUrl,
-                    base::Value(extension_urls::kChromeWebstoreUpdateURL));
-    prefs.SetKey(app_id, std::move(app_dict));
+  base::Value::Dict prefs;
+  for (const std::string& app : app_ids_) {
+    base::Value::Dict app_dict;
+    app_dict.Set(extensions::ExternalProviderImpl::kExternalUpdateUrl,
+                 extension_urls::kChromeWebstoreUpdateURL);
+    prefs.Set(app, std::move(app_dict));
   }
   if (!external_cache_) {
     external_cache_ = std::make_unique<ExternalCacheImpl>(
@@ -103,22 +101,21 @@ void DemoExtensionsExternalLoader::LoadApp(const std::string& app_id) {
   // prefs from the Offline Demo Resources, so we don't call LoadApp() if the
   // enrollment is offline. Instead, we should merge these prefs or treat the
   // cache as a separate provider.
-  external_cache_->UpdateExtensionsList(base::DictionaryValue::From(
-      base::Value::ToUniquePtrValue(std::move(prefs))));
+  external_cache_->UpdateExtensionsListWithDict(std::move(prefs));
 }
 
 void DemoExtensionsExternalLoader::StartLoading() {
-  DemoSession::Get()->EnsureOfflineResourcesLoaded(base::BindOnce(
+  DemoSession::Get()->EnsureResourcesLoaded(base::BindOnce(
       &DemoExtensionsExternalLoader::StartLoadingFromOfflineDemoResources,
       weak_ptr_factory_.GetWeakPtr()));
 }
 
 void DemoExtensionsExternalLoader::OnExtensionListsUpdated(
-    const base::DictionaryValue* prefs) {
+    const base::Value::Dict& prefs) {
   DCHECK(external_cache_);
   // Notifies the provider that the extensions have either been downloaded or
   // found in cache, and are ready to be installed.
-  LoadFinished(prefs->CreateDeepCopy());
+  LoadFinishedWithDict(prefs.Clone());
 }
 
 void DemoExtensionsExternalLoader::StartLoadingFromOfflineDemoResources() {
@@ -128,7 +125,7 @@ void DemoExtensionsExternalLoader::StartLoadingFromOfflineDemoResources() {
   base::FilePath demo_extension_list =
       demo_session->resources()->GetExternalExtensionsPrefsPath();
   if (demo_extension_list.empty()) {
-    LoadFinished(std::make_unique<base::DictionaryValue>());
+    LoadFinishedWithDict(base::Value::Dict());
     return;
   }
 
@@ -143,46 +140,40 @@ void DemoExtensionsExternalLoader::StartLoadingFromOfflineDemoResources() {
 }
 
 void DemoExtensionsExternalLoader::DemoExternalExtensionsPrefsLoaded(
-    absl::optional<base::Value> prefs) {
+    absl::optional<base::Value::Dict> prefs) {
   if (!prefs.has_value()) {
-    LoadFinished(std::make_unique<base::DictionaryValue>());
+    LoadFinishedWithDict(base::Value::Dict());
     return;
   }
-  DCHECK(prefs.value().is_dict());
-
   DemoSession* demo_session = DemoSession::Get();
   DCHECK(demo_session);
 
   // Adjust CRX paths in the prefs. Prefs on disk contains paths relative to
   // the offline demo resources root - they have to be changed to absolute paths
   // so extensions service knows from where to load them.
-  for (auto&& dict_item : prefs.value().DictItems()) {
+  for (auto&& dict_item : prefs.value()) {
     if (!dict_item.second.is_dict())
       continue;
-
-    const base::Value* path = dict_item.second.FindKeyOfType(
-        extensions::ExternalProviderImpl::kExternalCrx,
-        base::Value::Type::STRING);
-    if (!path || !path->is_string())
+    base::Value::Dict& value_dict = dict_item.second.GetDict();
+    const std::string* path =
+        value_dict.FindString(extensions::ExternalProviderImpl::kExternalCrx);
+    if (!path)
       continue;
 
-    base::FilePath relative_path = base::FilePath(path->GetString());
+    base::FilePath relative_path = base::FilePath(*path);
     if (relative_path.IsAbsolute()) {
       LOG(ERROR) << "Ignoring demo extension with an absolute path "
                  << dict_item.first;
-      dict_item.second.RemoveKey(
-          extensions::ExternalProviderImpl::kExternalCrx);
+      value_dict.Remove(extensions::ExternalProviderImpl::kExternalCrx);
       continue;
     }
 
-    dict_item.second.SetKey(
+    value_dict.Set(
         extensions::ExternalProviderImpl::kExternalCrx,
-        base::Value(
-            demo_session->resources()->GetAbsolutePath(relative_path).value()));
+        demo_session->resources()->GetAbsolutePath(relative_path).value());
   }
 
-  LoadFinished(base::DictionaryValue::From(
-      base::Value::ToUniquePtrValue(std::move(prefs.value()))));
+  LoadFinishedWithDict(std::move(prefs).value());
 }
 
 }  // namespace ash

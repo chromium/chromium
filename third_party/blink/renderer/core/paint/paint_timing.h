@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,13 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
+#include "base/time/time.h"
 #include "third_party/blink/public/web/web_performance.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/paint/first_meaningful_paint_detector.h"
 #include "third_party/blink/renderer/core/paint/paint_event.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -84,9 +86,12 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   // given paint event has not yet occurred. See the comments for
   // monotonicallyIncreasingTime in wtf/Time.h for additional details.
 
-  // FirstPaint returns the first time that anything was painted for the
-  // current document.
-  base::TimeTicks FirstPaint() const { return first_paint_presentation_; }
+  // Returns the first time that anything was painted for the
+  // current document after a hard navigation. This is not considering soft
+  // navigations.
+  base::TimeTicks FirstPaintForMetrics() const {
+    return first_paint_presentation_for_ukm_;
+  }
 
   // Times when the first paint happens after the page is restored from the
   // back-forward cache. If the element value is zero time tick, the first paint
@@ -100,11 +105,25 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
     return request_animation_frames_after_back_forward_cache_restore_;
   }
 
-  // FirstContentfulPaint returns the first time that 'contentful' content was
-  // painted. For instance, the first time that text or image content was
-  // painted.
-  base::TimeTicks FirstContentfulPaint() const {
-    return first_contentful_paint_presentation_;
+  // Returns the first time that 'contentful' content was painted in the current
+  // document after a hard navigation (and ignoring soft navigations). For
+  // instance, the first time that text or image content was painted after the
+  // user landed on the page.
+  base::TimeTicks FirstContentfulPaintIgnoringSoftNavigations() const {
+    return first_contentful_paint_presentation_ignoring_soft_navigations_;
+  }
+
+  base::TimeTicks FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime()
+      const {
+    return first_contentful_paint_;
+  }
+
+  void ResetFirstPaintAndFCP() {
+    first_paint_ = base::TimeTicks();
+    first_paint_presentation_ = base::TimeTicks();
+    first_contentful_paint_ = base::TimeTicks();
+    first_contentful_paint_presentation_ = base::TimeTicks();
+    // TODO(yoav): Investigate if we should also reset first_image_paint_ here.
   }
 
   // FirstImagePaint returns the first time that image content was painted.
@@ -153,6 +172,11 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
 
   void OnRestoredFromBackForwardCache();
 
+  // Indicates whether a mouseover event was recently dispatched over an
+  // HTMLImageElement LCP element.
+  bool IsLCPMouseoverDispatchedRecently();
+  void SetLCPMouseoverDispatched();
+
   void Trace(Visitor*) const override;
 
  private:
@@ -197,15 +221,14 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
 
   base::TimeTicks FirstPaintRendered() const { return first_paint_; }
 
-  base::TimeTicks FirstContentfulPaintRendered() const {
-    return first_contentful_paint_;
-  }
-
   // TODO(crbug/738235): Non first_*_presentation_ variables are only being
   // tracked to compute deltas for reporting histograms and should be removed
   // once we confirm the deltas and discrepancies look reasonable.
   base::TimeTicks first_paint_;
   base::TimeTicks first_paint_presentation_;
+  // First paint timestamp that doesn't update after soft navigations, and only
+  // used for UKM reporting.
+  base::TimeTicks first_paint_presentation_for_ukm_;
   WTF::Vector<base::TimeTicks>
       first_paints_after_back_forward_cache_restore_presentation_;
   WTF::Vector<RequestAnimationFrameTimesAfterBackForwardCacheRestore>
@@ -214,11 +237,16 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   base::TimeTicks first_image_paint_presentation_;
   base::TimeTicks first_contentful_paint_;
   base::TimeTicks first_contentful_paint_presentation_;
+  // FCP timestamp that does not update after soft navigations.
+  base::TimeTicks
+      first_contentful_paint_presentation_ignoring_soft_navigations_;
   base::TimeTicks first_meaningful_paint_presentation_;
   base::TimeTicks first_meaningful_paint_candidate_;
   base::TimeTicks first_eligible_to_paint_;
 
   base::TimeTicks last_portal_activated_presentation_;
+
+  base::TimeTicks lcp_mouse_over_dispatch_time_;
 
   Member<FirstMeaningfulPaintDetector> fmp_detector_;
 

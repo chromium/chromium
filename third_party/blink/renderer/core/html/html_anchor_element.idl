@@ -35,14 +35,6 @@
 
     [CEReactions, ImplementedAs=textContent] attribute DOMString text;
 
-    // Attribution Reporting
-    [RuntimeEnabled=ConversionMeasurement, CEReactions,Reflect] attribute DOMString attributionSourceEventId;
-    [RuntimeEnabled=ConversionMeasurement, CEReactions,Reflect] attribute USVString attributionDestination;
-    [RuntimeEnabled=ConversionMeasurement, CEReactions,Reflect] attribute USVString attributionReportTo;
-    [RuntimeEnabled=ConversionMeasurement, CEReactions,Reflect] attribute DOMString attributionExpiry;
-    [RuntimeEnabled=ConversionMeasurementEventSources, CEReactions,Reflect] attribute boolean registerAttributionSource;
-    [RuntimeEnabled=ConversionMeasurement, CEReactions,Reflect] attribute DOMString attributionSourcePriority;
-
     // obsolete members
     // https://html.spec.whatwg.org/C/#HTMLAnchorElement-partial
     [CEReactions, Reflect] attribute DOMString coords;
@@ -52,4 +44,5 @@
     [CEReactions, Reflect] attribute DOMString shape;
 };
 
+HTMLAnchorElement includes HTMLAttributionSrcElementUtils;
 HTMLAnchorElement includes HTMLHyperlinkElementUtils;

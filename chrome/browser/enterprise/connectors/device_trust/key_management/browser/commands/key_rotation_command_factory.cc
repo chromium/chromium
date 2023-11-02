@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,17 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/key_rotation_command.h"
+#include "components/prefs/pref_service.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/win_key_rotation_command.h"
-#endif  // defined(OS_WIN)
+#elif BUILDFLAG(IS_LINUX)
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/linux_key_rotation_command.h"
+#elif BUILDFLAG(IS_MAC)
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/mac_key_rotation_command.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace enterprise_connectors {
 
@@ -36,13 +42,19 @@ KeyRotationCommandFactory* KeyRotationCommandFactory::GetInstance() {
   return base::Singleton<KeyRotationCommandFactory>::get();
 }
 
-std::unique_ptr<KeyRotationCommand> KeyRotationCommandFactory::CreateCommand() {
-#if defined(OS_WIN)
+std::unique_ptr<KeyRotationCommand> KeyRotationCommandFactory::CreateCommand(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    PrefService* local_prefs) {
+#if BUILDFLAG(IS_WIN)
   return std::make_unique<WinKeyRotationCommand>();
+#elif BUILDFLAG(IS_LINUX)
+  return std::make_unique<LinuxKeyRotationCommand>(url_loader_factory);
+#elif BUILDFLAG(IS_MAC)
+  return std::make_unique<MacKeyRotationCommand>(url_loader_factory,
+                                                 local_prefs);
 #else
-  NOTREACHED();
   return nullptr;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 // static

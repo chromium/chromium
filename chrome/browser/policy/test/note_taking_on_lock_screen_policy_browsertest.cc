@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include "base/command_line.h"
 #include "base/values.h"
 #include "chrome/browser/ash/note_taking_helper.h"
-#include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/browser/policy/extension_policy_test_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -23,7 +23,7 @@
 
 namespace policy {
 
-class NoteTakingOnLockScreenPolicyTest : public PolicyTest {
+class NoteTakingOnLockScreenPolicyTest : public ExtensionPolicyTestBase {
  public:
   NoteTakingOnLockScreenPolicyTest() = default;
   ~NoteTakingOnLockScreenPolicyTest() override = default;
@@ -39,7 +39,7 @@ class NoteTakingOnLockScreenPolicyTest : public PolicyTest {
     command_line->AppendSwitchASCII(
         extensions::switches::kAllowlistedExtensionID, kTestAppId);
     command_line->AppendSwitch(ash::switches::kAshForceEnableStylusTools);
-    PolicyTest::SetUpCommandLine(command_line);
+    ExtensionPolicyTestBase::SetUpCommandLine(command_line);
   }
 
   void SetUserLevelPrefValue(const std::string& app_id,
@@ -62,14 +62,9 @@ class NoteTakingOnLockScreenPolicyTest : public PolicyTest {
     UpdateProviderPolicy(policies);
   }
 
-  ash::NoteTakingLockScreenSupport GetAppLockScreenStatus(
+  ash::LockScreenAppSupport GetLockScreenSupportForApp(
       const std::string& app_id) {
-    std::unique_ptr<ash::NoteTakingAppInfo> info =
-        ash::NoteTakingHelper::Get()->GetPreferredLockScreenAppInfo(
-            browser()->profile());
-    if (!info || info->app_id != app_id)
-      return ash::NoteTakingLockScreenSupport::kNotSupported;
-    return info->lock_screen_support;
+    return ash::LockScreenApps::GetSupport(browser()->profile(), app_id);
   }
 
   // The test app ID.
@@ -87,16 +82,16 @@ IN_PROC_BROWSER_TEST_F(NoteTakingOnLockScreenPolicyTest,
   ASSERT_EQ(kTestAppId, app->id());
 
   SetUserLevelPrefValue(app->id(), true);
-  EXPECT_EQ(ash::NoteTakingLockScreenSupport::kEnabled,
-            GetAppLockScreenStatus(app->id()));
+  EXPECT_EQ(ash::LockScreenAppSupport::kEnabled,
+            GetLockScreenSupportForApp(app->id()));
 
   SetPolicyValue(base::Value(base::Value::Type::LIST));
-  EXPECT_EQ(ash::NoteTakingLockScreenSupport::kNotAllowedByPolicy,
-            GetAppLockScreenStatus(app->id()));
+  EXPECT_EQ(ash::LockScreenAppSupport::kNotAllowedByPolicy,
+            GetLockScreenSupportForApp(app->id()));
 
   SetPolicyValue(absl::nullopt);
-  EXPECT_EQ(ash::NoteTakingLockScreenSupport::kEnabled,
-            GetAppLockScreenStatus(app->id()));
+  EXPECT_EQ(ash::LockScreenAppSupport::kEnabled,
+            GetLockScreenSupportForApp(app->id()));
 }
 
 IN_PROC_BROWSER_TEST_F(NoteTakingOnLockScreenPolicyTest,
@@ -107,19 +102,19 @@ IN_PROC_BROWSER_TEST_F(NoteTakingOnLockScreenPolicyTest,
   ASSERT_EQ(kTestAppId, app->id());
 
   SetUserLevelPrefValue(app->id(), false);
-  EXPECT_EQ(ash::NoteTakingLockScreenSupport::kSupported,
-            GetAppLockScreenStatus(app->id()));
+  EXPECT_EQ(ash::LockScreenAppSupport::kSupported,
+            GetLockScreenSupportForApp(app->id()));
 
   base::Value policy(base::Value::Type::LIST);
   policy.Append(kTestAppId);
   SetPolicyValue(std::move(policy));
 
-  EXPECT_EQ(ash::NoteTakingLockScreenSupport::kSupported,
-            GetAppLockScreenStatus(app->id()));
+  EXPECT_EQ(ash::LockScreenAppSupport::kSupported,
+            GetLockScreenSupportForApp(app->id()));
 
   SetUserLevelPrefValue(app->id(), true);
-  EXPECT_EQ(ash::NoteTakingLockScreenSupport::kEnabled,
-            GetAppLockScreenStatus(app->id()));
+  EXPECT_EQ(ash::LockScreenAppSupport::kEnabled,
+            GetLockScreenSupportForApp(app->id()));
 }
 
 }  // namespace policy

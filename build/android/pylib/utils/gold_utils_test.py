@@ -1,5 +1,5 @@
 #!/usr/bin/env vpython3
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Tests for gold_utils."""
@@ -66,14 +66,14 @@ class AndroidSkiaGoldSessionDiffTest(fake_filesystem_unittest.TestCase):
 
 
 class AndroidSkiaGoldSessionDiffLinksTest(fake_filesystem_unittest.TestCase):
-  class FakeArchivedFile(object):
+  class FakeArchivedFile:
     def __init__(self, path):
       self.name = path
 
     def Link(self):
       return 'file://' + self.name
 
-  class FakeOutputManager(object):
+  class FakeOutputManager:
     def __init__(self):
       self.output_dir = tempfile.mkdtemp()
 

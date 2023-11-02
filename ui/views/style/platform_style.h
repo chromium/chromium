@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,8 +17,6 @@ class Range;
 
 namespace views {
 
-class Border;
-class LabelButton;
 class ScrollBar;
 
 // Cross-platform API for providing platform-specific styling for toolkit-views.
@@ -80,10 +78,6 @@ class VIEWS_EXPORT PlatformStyle {
 
   // Creates the default scrollbar for the given orientation.
   static std::unique_ptr<ScrollBar> CreateScrollBar(bool is_horizontal);
-
-  // Applies the current system theme to the default border created by |button|.
-  static std::unique_ptr<Border> CreateThemedLabelButtonBorder(
-      LabelButton* button);
 
   // Called whenever a textfield edit fails. Gives visual/audio feedback about
   // the failed edit if platform-appropriate.

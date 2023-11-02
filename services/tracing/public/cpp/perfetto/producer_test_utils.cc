@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,9 @@
 #include <utility>
 
 #include "base/debug/leak_annotations.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/run_loop.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -33,6 +36,8 @@ class DummyTraceWriter : public perfetto::TraceWriter {
 
     return perfetto::TraceWriter::TracePacketHandle(&trace_packet_);
   }
+
+  void FinishTracePacket() override { trace_packet_.Finalize(); }
 
   void Flush(std::function<void()> callback = {}) override {}
 
@@ -87,7 +92,8 @@ void TestProducerClient::FlushPacketIfPossible() {
   if (!trace_packet_)
     return;
 
-  uint32_t message_size = trace_packet_->Finalize();
+  trace_packet_->Finalize();
+  uint32_t message_size = stream_.written() - trace_packet_written_start_;
   EXPECT_GE(buffer.size(), message_size);
 
   auto proto = std::make_unique<perfetto::protos::TracePacket>();
@@ -111,7 +117,12 @@ perfetto::protos::pbzero::TracePacket* TestProducerClient::NewTracePacket() {
   FlushPacketIfPossible();
   trace_packet_.emplace();
   trace_packet_->Reset(&stream_);
+  trace_packet_written_start_ = stream_.written();
   return &trace_packet_.value();
+}
+
+void TestProducerClient::FinishTracePacket() {
+  FlushPacketIfPossible();
 }
 
 size_t TestProducerClient::GetFinalizedPacketCount() {
@@ -146,12 +157,36 @@ TestProducerClient::GetProtoChromeMetadata(size_t packet_index) {
   return &proto_metadata_packets_[packet_index]->chrome_metadata();
 }
 
+// static
+void TestProducerClient::WriteTraceToFile(
+    const base::FilePath::StringType& filename,
+    const PacketVector& packets) {
+  auto&& raw_trace = TestProducerClient::SerializePacketsAsTrace(packets);
+  EXPECT_TRUE(base::WriteFile(base::FilePath(filename), raw_trace));
+}
+
+// static
+std::string TestProducerClient::SerializePacketsAsTrace(
+    const PacketVector& finalized_packets) {
+  perfetto::protos::Trace trace;
+  for (auto& packet : finalized_packets) {
+    *trace.add_packet() = *packet;
+  }
+  std::string trace_bytes;
+  trace.SerializeToString(&trace_bytes);
+  return trace_bytes;
+}
+
 TestTraceWriter::TestTraceWriter(TestProducerClient* producer_client)
     : producer_client_(producer_client) {}
 
 perfetto::TraceWriter::TracePacketHandle TestTraceWriter::NewTracePacket() {
   return perfetto::TraceWriter::TracePacketHandle(
       producer_client_->NewTracePacket());
+}
+
+void TestTraceWriter::FinishTracePacket() {
+  producer_client_->FinishTracePacket();
 }
 
 perfetto::WriterID TestTraceWriter::writer_id() const {

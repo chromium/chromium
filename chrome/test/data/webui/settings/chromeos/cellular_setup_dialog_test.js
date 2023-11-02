@@ -1,12 +1,9 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
-
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// clang-format on
+import 'chrome://os-settings/chromeos/os_settings.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('CellularSetupDialog', function() {
   test('Dialog opened on attach', function(done) {
@@ -21,7 +18,7 @@ suite('CellularSetupDialog', function() {
 
     // Attach the element to the DOM, which opens the dialog.
     document.body.appendChild(cellularSetupDialog);
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(cellularSetupDialog.$.dialog.open);
   });

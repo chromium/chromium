@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Notification requests intercepted both from window and SW promise_test: Unhandled rejection with value: object "Error: You must allow notifications for this origin before running this test."
-Harness: the test ran to completion.
-

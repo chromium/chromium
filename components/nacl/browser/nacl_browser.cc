@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -47,7 +47,7 @@ const base::FilePath::StringType NaClIrtName() {
 #if defined(ARCH_CPU_X86_FAMILY)
 #if defined(ARCH_CPU_X86_64)
   bool is64 = true;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   bool is64 = base::win::OSInfo::GetInstance()->IsWowX86OnAMD64();
 #else
   bool is64 = false;
@@ -57,7 +57,7 @@ const base::FilePath::StringType NaClIrtName() {
   else
     irt_name.append(FILE_PATH_LITERAL("x86_32"));
 
-#elif defined(ARCH_CPU_ARMEL)
+#elif defined(ARCH_CPU_ARM_FAMILY)
   irt_name.append(FILE_PATH_LITERAL("arm"));
 #elif defined(ARCH_CPU_MIPSEL)
   irt_name.append(FILE_PATH_LITERAL("mips32"));
@@ -68,7 +68,7 @@ const base::FilePath::StringType NaClIrtName() {
   return irt_name;
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 bool CheckEnvVar(const char* name, bool default_value) {
   bool result = default_value;
   const char* var = getenv(name);
@@ -126,7 +126,7 @@ base::File OpenNaClReadExecImpl(const base::FilePath& file_path,
   // allow a NaCl inner sandbox escape.
   uint32_t flags = base::File::FLAG_OPEN | base::File::FLAG_READ;
   if (is_executable)
-    flags |= base::File::FLAG_EXECUTE;  // Windows only flag.
+    flags |= base::File::FLAG_WIN_EXECUTE;  // Windows only flag.
   base::File file(file_path, flags);
   if (!file.IsValid())
     return file;
@@ -142,10 +142,9 @@ base::File OpenNaClReadExecImpl(const base::FilePath& file_path,
 }
 
 NaClBrowser::NaClBrowser() {
-#if !defined(OS_ANDROID)
-      validation_cache_is_enabled_ =
-          CheckEnvVar("NACL_VALIDATION_CACHE",
-                      kValidationCacheEnabledByDefault);
+#if !BUILDFLAG(IS_ANDROID)
+  validation_cache_is_enabled_ =
+      CheckEnvVar("NACL_VALIDATION_CACHE", kValidationCacheEnabledByDefault);
 #endif
       DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
@@ -207,7 +206,7 @@ void NaClBrowser::InitIrtFilePath() {
   }
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool NaClBrowser::GetNaCl64ExePath(base::FilePath* exe_path) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   base::FilePath module_path;

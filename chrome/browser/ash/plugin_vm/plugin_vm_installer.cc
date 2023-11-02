@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,8 @@
 #include "chrome/browser/download/background_download_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
-#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/background_service/download_metadata.h"
 #include "components/prefs/pref_service.h"
@@ -56,8 +57,8 @@ constexpr char kSetupTimeHistogram[] = "PluginVm.SetupTime";
 
 constexpr char kHomeDirectory[] = "/home";
 
-chromeos::ConciergeClient* GetConciergeClient() {
-  return chromeos::ConciergeClient::Get();
+ash::ConciergeClient* GetConciergeClient() {
+  return ash::ConciergeClient::Get();
 }
 
 constexpr char kIsoSignature[] = "CD001";
@@ -85,7 +86,7 @@ PluginVmSetupResult BucketForCancelledInstall(
   switch (installing_state) {
     case PluginVmInstaller::InstallingState::kInactive:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case PluginVmInstaller::InstallingState::kCheckingLicense:
       return PluginVmSetupResult::kUserCancelledValidatingLicense;
     case PluginVmInstaller::InstallingState::kCheckingDiskSpace:
@@ -303,8 +304,8 @@ bool PluginVmInstaller::VerifyDownload(
   }
   const base::Value* plugin_vm_image_hash_ptr =
       profile_->GetPrefs()
-          ->GetDictionary(prefs::kPluginVmImage)
-          ->FindKey(prefs::kPluginVmImageHashKeyName);
+          ->GetDict(prefs::kPluginVmImage)
+          .Find(prefs::kPluginVmImageHashKeyName);
   if (!plugin_vm_image_hash_ptr) {
     LOG(ERROR) << "Hash of PluginVm image is not specified";
     return false;
@@ -392,7 +393,7 @@ void PluginVmInstaller::OnConciergeAvailable(bool success) {
 
   vm_tools::concierge::ListVmDisksRequest request;
   request.set_cryptohome_id(
-      chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_));
+      ash::ProfileHelper::GetUserIdHashFromProfile(profile_));
   request.set_storage_location(
       vm_tools::concierge::STORAGE_CRYPTOHOME_PLUGINVM);
   request.set_vm_name(kPluginVmName);
@@ -467,8 +468,10 @@ void PluginVmInstaller::StartDlcDownload() {
     return;
   }
 
-  chromeos::DlcserviceClient::Get()->Install(
-      "pita",
+  dlcservice::InstallRequest install_request;
+  install_request.set_id(kPitaDlc);
+  ash::DlcserviceClient::Get()->Install(
+      install_request,
       base::BindOnce(&PluginVmInstaller::OnDlcDownloadCompleted,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&PluginVmInstaller::OnDlcDownloadProgressUpdated,
@@ -484,7 +487,7 @@ void PluginVmInstaller::OnDlcDownloadProgressUpdated(double progress) {
 }
 
 void PluginVmInstaller::OnDlcDownloadCompleted(
-    const chromeos::DlcserviceClient::InstallResult& install_result) {
+    const ash::DlcserviceClient::InstallResult& install_result) {
   DCHECK_EQ(installing_state_, InstallingState::kDownloadingDlc);
   if (state_ == State::kCancelling) {
     CancelFinished();
@@ -664,7 +667,7 @@ void PluginVmInstaller::OnFDPrepared(absl::optional<base::ScopedFD> maybeFd) {
   if (creating_new_vm_) {
     vm_tools::concierge::CreateDiskImageRequest request;
     request.set_cryptohome_id(
-        chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_));
+        ash::ProfileHelper::GetUserIdHashFromProfile(profile_));
     request.set_vm_name(kPluginVmName);
     request.set_storage_location(
         vm_tools::concierge::STORAGE_CRYPTOHOME_PLUGINVM);
@@ -680,7 +683,7 @@ void PluginVmInstaller::OnFDPrepared(absl::optional<base::ScopedFD> maybeFd) {
   } else {
     vm_tools::concierge::ImportDiskImageRequest request;
     request.set_cryptohome_id(
-        chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_));
+        ash::ProfileHelper::GetUserIdHashFromProfile(profile_));
     request.set_vm_name(kPluginVmName);
     request.set_storage_location(
         vm_tools::concierge::STORAGE_CRYPTOHOME_PLUGINVM);
@@ -956,8 +959,8 @@ std::string PluginVmInstaller::GetInstallingStateName(InstallingState state) {
 
 GURL PluginVmInstaller::GetPluginVmImageDownloadUrl() {
   const base::Value* url_ptr = profile_->GetPrefs()
-                                   ->GetDictionary(prefs::kPluginVmImage)
-                                   ->FindKey(prefs::kPluginVmImageUrlKeyName);
+                                   ->GetDict(prefs::kPluginVmImage)
+                                   .Find(prefs::kPluginVmImageUrlKeyName);
   if (!url_ptr) {
     LOG(ERROR) << "Url to PluginVm image is not specified";
     return GURL();

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,7 @@
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/network/network_handler.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "chromeos/ash/components/network/network_handler.h"
 
 namespace ash {
 
@@ -31,9 +30,7 @@ ClientAppMetadataProviderServiceFactory::GetInstance() {
 
 ClientAppMetadataProviderServiceFactory::
     ClientAppMetadataProviderServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "ClientAppMetadataProviderService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("ClientAppMetadataProviderService") {
   DependsOn(instance_id::InstanceIDProfileServiceFactory::GetInstance());
 }
 

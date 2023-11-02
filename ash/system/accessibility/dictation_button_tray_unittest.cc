@@ -1,8 +1,9 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/accessibility/dictation_button_tray.h"
+#include <memory>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
@@ -10,10 +11,13 @@
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/login_status.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/rotator/screen_rotation_animator.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_provider.h"
+#include "ash/system/progress_indicator/progress_indicator.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/test/ash_test_base.h"
@@ -25,6 +29,7 @@
 #include "ash/wm/window_util.h"
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -33,12 +38,19 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/ime/ash/ime_bridge.h"
+#include "ui/base/ime/ash/input_method_ash.h"
+#include "ui/base/ime/fake_text_input_client.h"
+#include "ui/base/ime/text_input_type.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/events/event.h"
 #include "ui/events/gestures/gesture_types.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/color_palette.h"
+#include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/wm/core/window_util.h"
 
@@ -60,7 +72,36 @@ ui::GestureEvent CreateTapEvent(
                           ui::GestureEventDetails(ui::ET_GESTURE_TAP));
 }
 
+// ProgressIndicatorWaiter -----------------------------------------------------
+
+// A class which supports waiting for a progress indicator to reach a desired
+// state of progress.
+class ProgressIndicatorWaiter {
+ public:
+  ProgressIndicatorWaiter() = default;
+  ProgressIndicatorWaiter(const ProgressIndicatorWaiter&) = delete;
+  ProgressIndicatorWaiter& operator=(const ProgressIndicatorWaiter&) = delete;
+  ~ProgressIndicatorWaiter() = default;
+
+  // Waits for `progress_indicator` to reach the specified `progress`. If the
+  // `progress_indicator` is already at `progress`, this method no-ops.
+  void WaitForProgress(ProgressIndicator* progress_indicator,
+                       const absl::optional<float>& progress) {
+    if (progress_indicator->progress() == progress)
+      return;
+    base::RunLoop run_loop;
+    auto subscription = progress_indicator->AddProgressChangedCallback(
+        base::BindLambdaForTesting([&]() {
+          if (progress_indicator->progress() == progress)
+            run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+};
+
 }  // namespace
+
+// DictationButtonTrayTest -----------------------------------------------------
 
 class DictationButtonTrayTest : public AshTestBase {
  public:
@@ -69,7 +110,16 @@ class DictationButtonTrayTest : public AshTestBase {
   DictationButtonTrayTest(const DictationButtonTrayTest&) = delete;
   DictationButtonTrayTest& operator=(const DictationButtonTrayTest&) = delete;
 
-  void SetUp() override { AshTestBase::SetUp(); }
+  // AshTestBase:
+  void SetUp() override {
+    // Focus some input text so the Dictation button will be enabled.
+    fake_text_input_client_ =
+        std::make_unique<ui::FakeTextInputClient>(ui::TEXT_INPUT_TYPE_TEXT);
+    ui::InputMethodAsh ime(nullptr);
+    ui::IMEBridge::Get()->SetInputContextHandler(&ime);
+    AshTestBase::SetUp();
+    FocusTextInputClient();
+  }
 
  protected:
   views::ImageView* GetImageView(DictationButtonTray* tray) {
@@ -78,6 +128,20 @@ class DictationButtonTrayTest : public AshTestBase {
   void CheckDictationStatusAndUpdateIcon(DictationButtonTray* tray) {
     tray->CheckDictationStatusAndUpdateIcon();
   }
+  void FocusTextInputClient() {
+    Shell::Get()
+        ->window_tree_host_manager()
+        ->input_method()
+        ->SetFocusedTextInputClient(fake_text_input_client_.get());
+  }
+  void DetachTextInputClient() {
+    Shell::Get()
+        ->window_tree_host_manager()
+        ->input_method()
+        ->SetFocusedTextInputClient(nullptr);
+  }
+
+  std::unique_ptr<ui::FakeTextInputClient> fake_text_input_client_;
 };
 
 // Ensures that creation doesn't cause any crashes and adds the image icon.
@@ -127,6 +191,8 @@ TEST_F(DictationButtonTrayTest, ActiveStateOnlyDuringDictation) {
 
   ASSERT_FALSE(controller->dictation_active());
   ASSERT_FALSE(GetTray()->is_active());
+  // In an input text area by default.
+  EXPECT_TRUE(GetTray()->GetEnabled());
 
   Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
       AcceleratorAction::TOGGLE_DICTATION, {});
@@ -139,6 +205,52 @@ TEST_F(DictationButtonTrayTest, ActiveStateOnlyDuringDictation) {
   EXPECT_FALSE(GetTray()->is_active());
 }
 
+TEST_F(DictationButtonTrayTest, ImageIcons) {
+  SkColor color = AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kIconColorPrimary);
+  gfx::ImageSkia off_icon =
+      gfx::CreateVectorIcon(kDictationOffNewuiIcon, color);
+  gfx::ImageSkia on_icon = gfx::CreateVectorIcon(kDictationOnNewuiIcon, color);
+
+  AccessibilityControllerImpl* controller =
+      Shell::Get()->accessibility_controller();
+  TestAccessibilityControllerClient client;
+  controller->dictation().SetEnabled(true);
+
+  views::ImageView* view = GetImageView(GetTray());
+  EXPECT_TRUE(gfx::test::AreBitmapsEqual(*view->GetImage().bitmap(),
+                                         *off_icon.bitmap()));
+
+  Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
+      AcceleratorAction::TOGGLE_DICTATION, {});
+
+  EXPECT_TRUE(gfx::test::AreBitmapsEqual(*view->GetImage().bitmap(),
+                                         *on_icon.bitmap()));
+}
+
+TEST_F(DictationButtonTrayTest, DisabledWhenNoInputFocused) {
+  DetachTextInputClient();
+
+  AccessibilityControllerImpl* controller =
+      Shell::Get()->accessibility_controller();
+  controller->dictation().SetEnabled(true);
+  DictationButtonTray* tray = GetTray();
+  EXPECT_FALSE(tray->GetEnabled());
+
+  // Action doesn't work because disabled.
+  Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
+      AcceleratorAction::TOGGLE_DICTATION, {});
+  EXPECT_FALSE(controller->dictation_active());
+  EXPECT_FALSE(tray->GetEnabled());
+
+  FocusTextInputClient();
+  EXPECT_TRUE(tray->GetEnabled());
+
+  DetachTextInputClient();
+  EXPECT_FALSE(tray->GetEnabled());
+}
+
+// Base class for SODA tests of the dictation button tray.
 class DictationButtonTraySodaTest : public DictationButtonTrayTest {
  public:
   DictationButtonTraySodaTest() = default;
@@ -147,12 +259,12 @@ class DictationButtonTraySodaTest : public DictationButtonTrayTest {
   DictationButtonTraySodaTest& operator=(const DictationButtonTraySodaTest&) =
       delete;
 
+  // DictationButtonTrayTest:
   void SetUp() override {
     DictationButtonTrayTest::SetUp();
-    scoped_feature_list_.InitWithFeatures(
-        {::features::kExperimentalAccessibilityDictationOffline,
-         features::kOnDeviceSpeechRecognition},
-        {});
+
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kOnDeviceSpeechRecognition);
 
     // Since this test suite is part of ash unit tests, the
     // SodaInstallerImplChromeOS is never created (it's normally created when
@@ -167,17 +279,31 @@ class DictationButtonTraySodaTest : public DictationButtonTrayTest {
     AshTestBase::TearDown();
   }
 
-  float GetProgressRingProgress() {
-    DCHECK(GetTray()->progress_ring_);
-    absl::optional<float> progress =
-        GetTray()->progress_ring_->CalculateProgress();
+  ProgressIndicator* GetProgressIndicator() {
+    return GetTray()->progress_indicator_.get();
+  }
+
+  float GetProgressIndicatorProgress() const {
+    DCHECK(GetTray()->progress_indicator_);
+    absl::optional<float> progress = GetTray()->progress_indicator_->progress();
     DCHECK(progress.has_value());
     return progress.value();
   }
 
-  bool IsProgressRingVisible() {
-    DCHECK(GetTray()->progress_ring_);
-    return GetTray()->progress_ring_->IsVisible();
+  bool IsImageVisible() {
+    DCHECK(GetTray()->icon_);
+
+    ui::Layer* const layer = GetTray()->icon_->layer();
+    if (!layer)
+      return true;
+
+    return layer->GetTargetOpacity() == 1.f &&
+           layer->GetTargetTransform() == gfx::Transform();
+  }
+
+  bool IsProgressIndicatorVisible() const {
+    const float progress = GetProgressIndicatorProgress();
+    return progress > 0.f && progress < 1.f;
   }
 
  private:
@@ -192,35 +318,61 @@ TEST_F(DictationButtonTraySodaTest, UpdateOnSpeechRecognitionDownloadChanged) {
   controller->dictation().SetEnabled(true);
   DictationButtonTray* tray = GetTray();
   views::ImageView* image = GetImageView(tray);
+  EXPECT_TRUE(IsImageVisible());
 
   // Download progress of 0 indicates that download is not in-progress.
   tray->UpdateOnSpeechRecognitionDownloadChanged(/*download_progress=*/0);
   EXPECT_EQ(0, tray->download_progress());
   EXPECT_TRUE(tray->GetEnabled());
   EXPECT_EQ(base::UTF8ToUTF16(kEnabledTooltip), image->GetTooltipText());
-  EXPECT_FALSE(IsProgressRingVisible());
+
+  // The tray icon should be visible when the download is not in-progress.
+  ProgressIndicator* progress_indicator = GetProgressIndicator();
+  ProgressIndicatorWaiter().WaitForProgress(
+      progress_indicator, ProgressIndicator::kProgressComplete);
+  EXPECT_FALSE(IsProgressIndicatorVisible());
+  EXPECT_TRUE(IsImageVisible());
 
   // Any number 0 < number < 100 means that download is in-progress.
   tray->UpdateOnSpeechRecognitionDownloadChanged(/*download_progress=*/50);
   EXPECT_EQ(50, tray->download_progress());
   EXPECT_FALSE(tray->GetEnabled());
   EXPECT_EQ(base::UTF8ToUTF16(kDisabledTooltip), image->GetTooltipText());
-  EXPECT_TRUE(IsProgressRingVisible());
-  EXPECT_EQ(0.5f, GetProgressRingProgress());
+
+  // Enabled state doesn't change even if text input is focused.
+  DetachTextInputClient();
+  EXPECT_FALSE(tray->GetEnabled());
+  FocusTextInputClient();
+  EXPECT_FALSE(tray->GetEnabled());
+
+  // The tray icon should still be visible when the download is in progress.
+  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, 0.5f);
+  EXPECT_TRUE(IsProgressIndicatorVisible());
+  EXPECT_FALSE(progress_indicator->inner_icon_visible());
+  EXPECT_TRUE(IsImageVisible());
 
   tray->UpdateOnSpeechRecognitionDownloadChanged(/*download_progress=*/70);
   EXPECT_EQ(70, tray->download_progress());
   EXPECT_FALSE(tray->GetEnabled());
   EXPECT_EQ(base::UTF8ToUTF16(kDisabledTooltip), image->GetTooltipText());
-  EXPECT_TRUE(IsProgressRingVisible());
-  EXPECT_EQ(0.7f, GetProgressRingProgress());
+
+  // The tray icon should be visible when the download is in progress.
+  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, 0.7f);
+  EXPECT_TRUE(IsProgressIndicatorVisible());
+  EXPECT_FALSE(progress_indicator->inner_icon_visible());
+  EXPECT_TRUE(IsImageVisible());
 
   // Similar to 0, a value of 100 means that download is not in-progress.
   tray->UpdateOnSpeechRecognitionDownloadChanged(/*download_progress=*/100);
   EXPECT_EQ(100, tray->download_progress());
   EXPECT_TRUE(tray->GetEnabled());
   EXPECT_EQ(base::UTF8ToUTF16(kEnabledTooltip), image->GetTooltipText());
-  EXPECT_FALSE(IsProgressRingVisible());
+
+  // The tray icon should be visible when the download is not in-progress.
+  ProgressIndicatorWaiter().WaitForProgress(
+      progress_indicator, ProgressIndicator::kProgressComplete);
+  EXPECT_FALSE(IsProgressIndicatorVisible());
+  EXPECT_TRUE(IsImageVisible());
 }
 
 }  // namespace ash

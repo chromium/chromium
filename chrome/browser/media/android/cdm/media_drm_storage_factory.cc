@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -121,7 +121,7 @@ void CreateMediaDrmStorage(
     mojo::PendingReceiver<media::mojom::MediaDrmStorage> receiver) {
   DVLOG(1) << __func__;
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(render_frame_host);
+  CHECK(render_frame_host);
 
   content::BrowserContext* browser_context =
       render_frame_host->GetBrowserContext();
@@ -149,7 +149,7 @@ void CreateMediaDrmStorage(
   // The object will be deleted on connection error, or when the frame navigates
   // away. See DocumentService for details.
   new cdm::MediaDrmStorageImpl(
-      render_frame_host, pref_service, get_origin_id_cb,
+      *render_frame_host, pref_service, get_origin_id_cb,
       base::BindRepeating(&AllowEmptyOriginId, render_frame_host),
       std::move(receiver));
 }

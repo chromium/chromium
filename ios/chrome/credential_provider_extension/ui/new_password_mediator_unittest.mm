@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,15 +8,15 @@
 #import <Foundation/Foundation.h>
 
 #import "base/test/ios/wait_util.h"
-#include "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
 #import "ios/chrome/common/credential_provider/archivable_credential_store.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/credential_provider/user_defaults_credential_store.h"
 #import "ios/chrome/credential_provider_extension/password_util.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -26,9 +26,9 @@
 // methods were called
 @interface FakeNewPasswordUIHandler : NSObject <NewPasswordUIHandler>
 
-// Whether the |-alertUserCredentialExists| method was called.
+// Whether the `-alertUserCredentialExists` method was called.
 @property(nonatomic, assign) BOOL alertedCredentialExists;
-// Whether the |-alertSavePasswordFailed| method was called.
+// Whether the `-alertSavePasswordFailed` method was called.
 @property(nonatomic, assign) BOOL alertedSaveFailed;
 // Password passed to the consumer.
 @property(nonatomic, assign) NSString* password;
@@ -140,7 +140,7 @@ void NewPasswordMediatorTest::TearDown() {
   [TestUserDefaults() removeObjectForKey:key];
 }
 
-// Tests that |-saveNewCredential:completion:| adds a new credential to the
+// Tests that `-saveNewCredential:completion:` adds a new credential to the
 // store and that gets saved to disk.
 TEST_F(NewPasswordMediatorTest, SaveNewCredential) {
   // Manually store a credential.
@@ -191,7 +191,7 @@ TEST_F(NewPasswordMediatorTest, SaveNewCredential) {
   EXPECT_NSEQ(testUsername, freshCredentialStore.credentials[1].user);
 }
 
-// Tests that |-saveNewCredential:completion:| updates an existing credential
+// Tests that `-saveNewCredential:completion:` updates an existing credential
 // and that gets saved to disk.
 TEST_F(NewPasswordMediatorTest, SaveUpdateCredential) {
   // Create a credential that will be stored.

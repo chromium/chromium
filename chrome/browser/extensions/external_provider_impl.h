@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,9 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/external_loader.h"
 #include "extensions/browser/external_provider_interface.h"
 #include "extensions/common/manifest.h"
@@ -100,12 +102,12 @@ class ExternalProviderImpl : public ExternalProviderInterface {
   void set_allow_updates(bool allow_updates) { allow_updates_ = allow_updates; }
 
  private:
-  bool HandleMinProfileVersion(const base::DictionaryValue* extension,
+  bool HandleMinProfileVersion(const base::Value::Dict& extension,
                                const std::string& extension_id,
                                std::set<std::string>* unsupported_extensions);
 
   bool HandleDoNotInstallForEnterprise(
-      const base::DictionaryValue* extension,
+      const base::Value::Dict& extension,
       const std::string& extension_id,
       std::set<std::string>* unsupported_extensions);
 
@@ -116,7 +118,7 @@ class ExternalProviderImpl : public ExternalProviderInterface {
 
   // Retrieves the extensions from prefs and notifies the extension service for
   // each extension file/update URL found.
-  void NotifyServiceOnExternalExtensionsFound(bool is_initial_load);
+  void NotifyServiceOnExternalExtensionsFound();
 
   // Location for external extensions that are provided by this provider from
   // local crx files.
@@ -128,10 +130,10 @@ class ExternalProviderImpl : public ExternalProviderInterface {
 
   // Weak pointer to the object that consumes the external extensions.
   // This is zeroed out by: ServiceShutdown()
-  VisitorInterface* service_;  // weak
+  raw_ptr<VisitorInterface> service_;  // weak
 
   // Dictionary of the external extensions that are provided by this provider.
-  std::unique_ptr<base::DictionaryValue> prefs_;
+  std::unique_ptr<base::Value::Dict> prefs_;
 
   // Indicates that the extensions provided by this provider are loaded
   // entirely.
@@ -142,7 +144,7 @@ class ExternalProviderImpl : public ExternalProviderInterface {
   scoped_refptr<ExternalLoader> loader_;
 
   // The profile that will be used to install external extensions.
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   // Creation flags to use for the extension.  These flags will be used
   // when calling Extension::Create() by the crx installer.

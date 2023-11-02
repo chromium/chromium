@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,17 +11,19 @@
 
 #include "base/android/build_info.h"
 #include "base/feature_list.h"
-#include "base/task/post_task.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 #include "components/cdm/common/cdm_messages_android.h"
 #include "content/public/browser/android/android_overlay_provider.h"
 #include "ipc/ipc_message_macros.h"
 #include "ipc/ipc_message_start.h"
+#include "media/audio/android/audio_manager_android.h"
 #include "media/base/android/media_codec_util.h"
 #include "media/base/android/media_drm_bridge.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/eme_constants.h"
 #include "media/base/media_switches.h"
+#include "media/base/media_util.h"
 #include "media/base/video_codecs.h"
 #include "media/media_buildflags.h"
 
@@ -74,8 +76,18 @@ const CodecInfo<media::AudioCodec> kMP4AudioCodecsToQuery[] = {
     {media::EME_CODEC_AC3, media::AudioCodec::kAC3},
     {media::EME_CODEC_EAC3, media::AudioCodec::kEAC3},
 #endif
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+    {media::EME_CODEC_DTS, media::AudioCodec::kDTS},
+    {media::EME_CODEC_DTSXP2, media::AudioCodec::kDTSXP2},
+#endif
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 };
+
+// Is an audio sink connected which supports the given codec?
+static bool CanPassthrough(media::AudioCodec codec) {
+  return (media::AudioManagerAndroid::GetSinkAudioEncodingFormats() &
+          media::ConvertAudioCodecToBitstreamFormat(codec)) != 0;
+}
 
 static SupportedCodecs GetSupportedCodecs(
     const SupportedKeySystemRequest& request,
@@ -107,9 +119,19 @@ static SupportedCodecs GetSupportedCodecs(
       }
     }
 
+    // It is possible that a device that is not able to decode the audio stream
+    // is connected to an audiosink device that can. In this case, CanDecode()
+    // returns false but CanPassthrough() will return true. CanPassthrough()
+    // calls AudioManagerAndroid::GetSinkAudioEncodingFormats() to retrieve a
+    // bitmask representing audio bitstream formats that are supported by the
+    // connected audiosink device. This bitmask is then matched against current
+    // audio stream's codec type. A match indicates that the connected
+    // audiosink device is able to decode the current audio stream and Chromium
+    // should passthrough the audio bitstream instead of trying to decode it.
     for (const auto& info : kMP4AudioCodecsToQuery) {
       if ((request.codecs & info.eme_codec) &&
-          media::MediaCodecUtil::CanDecode(info.codec)) {
+          (media::MediaCodecUtil::CanDecode(info.codec) ||
+           CanPassthrough(info.codec))) {
         supported_codecs |= info.eme_codec;
       }
     }
@@ -124,13 +146,11 @@ static SupportedCodecs GetSupportedCodecs(
       (supported_codecs & media::EME_CODEC_VP9_PROFILE0)) {
     std::vector<media::CodecProfileLevel> profiles;
     media::MediaCodecUtil::AddSupportedCodecProfileLevels(&profiles);
-    auto iter =
-        std::find_if(profiles.begin(), profiles.end(),
-                     [](const media::CodecProfileLevel& profile) {
-                       return profile.codec == media::VideoCodec::kVP9 &&
-                              profile.profile == media::VP9PROFILE_PROFILE2;
-                     });
-    if (iter != profiles.end()) {
+    if (base::ranges::any_of(
+            profiles, [](const media::CodecProfileLevel& profile) {
+              return profile.codec == media::VideoCodec::kVP9 &&
+                     profile.profile == media::VP9PROFILE_PROFILE2;
+            })) {
       supported_codecs |= media::EME_CODEC_VP9_PROFILE2;
     }
   }
@@ -139,13 +159,11 @@ static SupportedCodecs GetSupportedCodecs(
       (supported_codecs & media::EME_CODEC_HEVC_PROFILE_MAIN)) {
     std::vector<media::CodecProfileLevel> profiles;
     media::MediaCodecUtil::AddSupportedCodecProfileLevels(&profiles);
-    auto iter =
-        std::find_if(profiles.begin(), profiles.end(),
-                     [](const media::CodecProfileLevel& profile) {
-                       return profile.codec == media::VideoCodec::kHEVC &&
-                              profile.profile == media::HEVCPROFILE_MAIN10;
-                     });
-    if (iter != profiles.end()) {
+    if (base::ranges::any_of(
+            profiles, [](const media::CodecProfileLevel& profile) {
+              return profile.codec == media::VideoCodec::kHEVC &&
+                     profile.profile == media::HEVCPROFILE_MAIN10;
+            })) {
       supported_codecs |= media::EME_CODEC_HEVC_PROFILE_MAIN10;
     }
   }

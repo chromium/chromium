@@ -1,9 +1,11 @@
-# Copyright 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/dcheck_always_on.gni")
 import("//build/config/ozone.gni")
 import("//build/config/sysroot.gni")
+import("//build/config/ui.gni")
 import("//build/toolchain/gcc_toolchain.gni")
 
 clang_toolchain("clang_ppc64") {
@@ -116,7 +118,6 @@ template("clang_v8_toolchain") {
   clang_toolchain(target_name) {
     toolchain_args = {
       current_os = "linux"
-      use_glib = false
       forward_variables_from(invoker.toolchain_args, "*")
     }
   }
@@ -207,6 +208,8 @@ clang_toolchain("lacros_clang_x64") {
     also_build_lacros_chrome = false
     chromeos_is_browser_only = true
     use_clang_coverage = false
+    dcheck_always_on = false
+    symbol_level = 1
   }
 }
 
@@ -287,6 +290,15 @@ gcc_toolchain("mips64el") {
     use_remoteexec = false
     is_clang = false
     use_goma = false
+  }
+}
+
+clang_toolchain("clang_riscv64") {
+  enable_linker_map = true
+  toolchain_args = {
+    current_cpu = "riscv64"
+    current_os = "linux"
+    is_clang = true
   }
 }
 
@@ -404,7 +416,7 @@ clang_toolchain("clang_loong64") {
 }
 
 gcc_toolchain("loong64") {
-  toolprefix = "loongarch64-linux-gnu"
+  toolprefix = "loongarch64-unknown-linux-gnu"
 
   cc = "${toolprefix}-gcc"
   cxx = "${toolprefix}-g++"

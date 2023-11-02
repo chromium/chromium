@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,23 +10,21 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
-#include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom-shared.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom-shared.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 
 namespace system_logs {
 
 namespace {
 
-namespace healthd = ::chromeos::cros_healthd::mojom;
+namespace healthd = ::ash::cros_healthd::mojom;
 using healthd::TelemetryInfo;
 using healthd::TelemetryInfoPtr;
 using ProbeCategories = healthd::ProbeCategoryEnum;
 
-// TODO(xiangdongkong): replace cloudready with the official branding name
-constexpr char kRevenLogKey[] = "CLOUDREADY_HARDWARE_INFO";
+constexpr char kRevenLogKey[] = "CHROMEOSFLEX_HARDWARE_INFO";
 constexpr char kNewlineWithIndent[] = "\n  ";
 constexpr char kKeyValueDelimiter[] = ": ";
 
@@ -102,12 +100,12 @@ void PopulateMemoryInfo(std::string* log, const TelemetryInfoPtr& info) {
 }
 
 void PopulateSystemInfo(std::string* log, const TelemetryInfoPtr& info) {
-  if (info->system_result_v2.is_null() || info->system_result_v2->is_error()) {
-    DVLOG(1) << "SystemResult2 not found in croshealthd response";
+  if (info->system_result.is_null() || info->system_result->is_error()) {
+    DVLOG(1) << "SystemResult not found in croshealthd response";
     return;
   }
   healthd::DmiInfoPtr& dmi_info =
-      info->system_result_v2->get_system_info_v2()->dmi_info;
+      info->system_result->get_system_info()->dmi_info;
 
   if (!dmi_info.is_null()) {
     AddLogEntry(log, "product_vendor", dmi_info->sys_vendor.value_or(""));
@@ -120,8 +118,7 @@ void PopulateSystemInfo(std::string* log, const TelemetryInfoPtr& info) {
     AddIndentedLogEntry(log, "bios_version",
                         dmi_info->bios_version.value_or(""));
   }
-  healthd::OsInfoPtr& os_info =
-      info->system_result_v2->get_system_info_v2()->os_info;
+  healthd::OsInfoPtr& os_info = info->system_result->get_system_info()->os_info;
   if (!os_info.is_null()) {
     AddIndentedLogEntry(
         log, "secureboot",
@@ -287,7 +284,7 @@ void RevenLogSource::Fetch(SysLogsSourceCallback callback) {
   probe_service_->ProbeTelemetryInfo(
       {ProbeCategories::kBluetooth, ProbeCategories::kBus,
        ProbeCategories::kCpu, ProbeCategories::kGraphics,
-       ProbeCategories::kMemory, ProbeCategories::kSystem2,
+       ProbeCategories::kMemory, ProbeCategories::kSystem,
        ProbeCategories::kTpm},
       base::BindOnce(&RevenLogSource::OnTelemetryInfoProbeResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "components/payments/content/android/jni_headers/PaymentFeatureList_jni.h"
 #include "components/payments/core/features.h"
 #include "content/public/common/content_features.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 namespace payments {
 namespace android {
@@ -17,10 +18,12 @@ namespace {
 
 // Array of payment features exposed through the Java PaymentFeatureList API.
 // Entries in this array refer to features defined in
-// components/payments/core/features.h, content/public/common/content_features.h
-// or the .h file (for Android only features).
+// components/payments/core/features.h,
+// content/public/common/content_features.h,
+// third_party/blink/public/common/features_generated.h, or the .h file (for
+// Android only features).
 const base::Feature* const kFeaturesExposedToJava[] = {
-    &::features::kPaymentRequestBasicCard,
+    &::blink::features::kClearIdentityInCanMakePaymentEvent,
     &::features::kSecurePaymentConfirmation,
     &::features::kServiceWorkerPaymentApps,
     &::features::kWebPayments,
@@ -49,8 +52,9 @@ const base::Feature* FindFeatureExposedToJava(const std::string& feature_name) {
 }  // namespace
 
 // Android only features.
-const base::Feature kAndroidAppPaymentUpdateEvents{
-    "AndroidAppPaymentUpdateEvents", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kAndroidAppPaymentUpdateEvents,
+             "AndroidAppPaymentUpdateEvents",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 static jboolean JNI_PaymentFeatureList_IsEnabled(
     JNIEnv* env,

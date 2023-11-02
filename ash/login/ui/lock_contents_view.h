@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,11 +22,18 @@
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_types.h"
+#include "ash/public/cpp/smartlock_state.h"
 #include "ash/public/cpp/system_tray_observer.h"
+#include "ash/system/enterprise/enterprise_domain_observer.h"
+#include "ash/system/model/enterprise_domain_model.h"
 #include "base/callback_forward.h"
+#include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
+#include "components/account_id/account_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/display/display_observer.h"
@@ -43,15 +50,16 @@ class BoxLayout;
 
 namespace ash {
 
+class KioskAppDefaultMessage;
 class LockScreenMediaControlsView;
 class LoginAuthUserView;
 class LoginBigUserView;
+class LoginCameraTimeoutView;
 class LoginDetachableBaseModel;
 class LoginExpandedPublicAccountView;
 class LoginUserView;
 class NoteActionLaunchButton;
 class ScrollableUsersListView;
-enum class SmartLockState;
 
 namespace mojom {
 enum class TrayActionState;
@@ -67,7 +75,8 @@ class ASH_EXPORT LockContentsView
       public SystemTrayObserver,
       public display::DisplayObserver,
       public KeyboardControllerObserver,
-      public chromeos::PowerManagerClient::Observer {
+      public chromeos::PowerManagerClient::Observer,
+      public EnterpriseDomainObserver {
  public:
   METADATA_HEADER(LockContentsView);
   class AuthErrorBubble;
@@ -86,6 +95,7 @@ class ASH_EXPORT LockContentsView
     explicit TestApi(LockContentsView* view);
     ~TestApi();
 
+    KioskAppDefaultMessage* kiosk_default_message() const;
     LoginBigUserView* primary_big_view() const;
     LoginBigUserView* opt_secondary_big_view() const;
     AccountId focused_user() const;
@@ -149,6 +159,7 @@ class ASH_EXPORT LockContentsView
   void ShowAdbEnabled();
   void ToggleSystemInfo();
   void ShowParentAccessDialog();
+  void SetHasKioskApp(bool has_kiosk_apps);
 
   // views::View:
   void Layout() override;
@@ -171,6 +182,7 @@ class ASH_EXPORT LockContentsView
                                                     bool enabled) override;
   void OnFingerprintStateChanged(const AccountId& account_id,
                                  FingerprintState state) override;
+  void OnResetFingerprintUIState(const AccountId& account_id) override;
   void OnFingerprintAuthResult(const AccountId& account_id,
                                bool success) override;
   void OnSmartLockStateChanged(const AccountId& account_id,
@@ -233,6 +245,10 @@ class ASH_EXPORT LockContentsView
   // chromeos::PowerManagerClient::Observer:
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
 
+  // ash::EnterpriseDomainObserver
+  void OnDeviceEnterpriseInfoChanged() override;
+  void OnEnterpriseAccountDomainChanged() override;
+
   void ShowAuthErrorMessageForDebug(int unlock_attempt);
 
   // Called for debugging to make |user| managed and display an icon along with
@@ -249,6 +265,9 @@ class ASH_EXPORT LockContentsView
 
   // Called for debugging to remove forced online sign-in form |user|.
   void UndoForceOnlineSignInForUserForDebug(const AccountId& user);
+
+  // Test API. Set device to have kiosk license.
+  void SetKioskLicenseModeForTesting(bool is_kiosk_license_mode);
 
   // Called by LockScreenMediaControlsView.
   void CreateMediaControlsLayout();
@@ -274,7 +293,9 @@ class ASH_EXPORT LockContentsView
     bool show_pin_pad_for_password = false;
     size_t autosubmit_pin_length = 0;
     absl::optional<EasyUnlockIconInfo> easy_unlock_icon_info = absl::nullopt;
-    FingerprintState fingerprint_state;
+    FingerprintState fingerprint_state = FingerprintState::UNAVAILABLE;
+    SmartLockState smart_lock_state = SmartLockState::kDisabled;
+    bool auth_factor_is_hiding_password = false;
     // When present, indicates that the TPM is locked.
     absl::optional<base::TimeDelta> time_until_tpm_unlock = absl::nullopt;
   };
@@ -380,10 +401,18 @@ class ASH_EXPORT LockContentsView
   // Opens an error bubble to indicate authentication failure.
   void ShowAuthErrorMessage();
 
+  // Hides the error bubble indicating authentication failure if open.
+  void HideAuthErrorMessage();
+
   // Called when the easy unlock icon is hovered.
   void OnEasyUnlockIconHovered();
   // Called when the easy unlock icon is tapped.
   void OnEasyUnlockIconTapped();
+
+  // Called when LoginAuthFactorsView enters/exits a state where an auth
+  // factor wants to hide the password and pin fields.
+  void OnAuthFactorIsHidingPasswordChanged(const AccountId& account_id,
+                                           bool auth_factor_is_hiding_password);
 
   // Called when parent access validation finished for the user with
   // |account_id|.
@@ -398,7 +427,9 @@ class ASH_EXPORT LockContentsView
   // Called when the public account is tapped.
   void OnPublicAccountTapped(bool is_primary);
 
+  // Called when the user presses buttons in the authentication error bubble.
   void LearnMoreButtonPressed();
+  void ForgotPasswordButtonPressed();
 
   // Helper method to allocate a LoginBigUserView instance.
   std::unique_ptr<LoginBigUserView> AllocateLoginBigUserView(
@@ -442,6 +473,13 @@ class ASH_EXPORT LockContentsView
   // "device is managed" type message.
   void OnBottomStatusIndicatorTapped();
 
+  // Shows GAIA sign-in page.
+  void OnBackToSigninButtonTapped();
+
+  // Update visibility of Kiosk default message. Called only if
+  // kiosk_license_mode_ is true.
+  void UpdateKioskDefaultMessageVisibility();
+
   const LockScreen::ScreenType screen_type_;
 
   std::vector<UserState> users_;
@@ -471,12 +509,19 @@ class ASH_EXPORT LockContentsView
   // Contains authentication user and the additional user views.
   NonAccessibleView* main_view_ = nullptr;
 
+  // If the kiosk app button is not visible, the kiosk app default message would
+  // be shown.
+  raw_ptr<KioskAppDefaultMessage> kiosk_default_message_ = nullptr;
+
   // Actions that should be executed before a new layout happens caused by a
   // display change (eg. screen rotation). A full layout pass is performed after
   // all actions are executed.
   std::vector<DisplayLayoutAction> layout_actions_;
 
   display::ScopedDisplayObserver display_observer_{this};
+
+  base::ScopedObservation<EnterpriseDomainModel, EnterpriseDomainObserver>
+      enterprise_domain_model_observation_{this};
 
   // All error bubbles and the tooltip view are child views of LockContentsView,
   // and will be torn down when LockContentsView is torn down.
@@ -494,13 +539,17 @@ class ASH_EXPORT LockContentsView
   // Bubble for displaying warning banner message.
   LoginErrorBubble* warning_banner_bubble_;
 
+  // View that is shown on login timeout with camera usage.
+  base::raw_ptr<LoginCameraTimeoutView> login_camera_timeout_view_ = nullptr;
+
   // Bottom status indicator displaying entreprise domain or ADB enabled alert
   BottomStatusIndicator* bottom_status_indicator_;
 
   // Tracks the visibility of the extension Ui window.
   bool extension_ui_visible_ = false;
 
-  int unlock_attempt_ = 0;
+  // Tracks the unlock attempt of each user before a successful sign-in.
+  base::flat_map<AccountId, int> unlock_attempt_by_user_;
 
   // Whether a lock screen app is currently active (i.e. lock screen note action
   // state is reported as kActive by the data dispatcher).
@@ -512,6 +561,11 @@ class ASH_EXPORT LockContentsView
   // Whether the lock screen note is disabled. Used to override the actual lock
   // screen note state.
   bool disable_lock_screen_note_ = false;
+
+  // Whether the device is enrolled with Kiosk SKU.
+  bool kiosk_license_mode_ = false;
+  // Whether any kiosk app is added.
+  bool has_kiosk_apps_ = false;
 
   // Whether the system information should be displayed or not be displayed
   // forcedly according to policy settings.

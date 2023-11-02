@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -73,6 +73,12 @@ class MockGbmBuffer final : public ui::GbmBuffer {
   int GetPlaneFd(size_t plane) const override {
     return planes_[plane].fd.get();
   }
+
+  bool SupportsZeroCopyWebGPUImport() const override {
+    NOTIMPLEMENTED();
+    return false;
+  }
+
   uint32_t GetPlaneStride(size_t plane) const override {
     DCHECK_LT(plane, planes_.size());
     return planes_[plane].stride;
@@ -183,6 +189,10 @@ std::unique_ptr<GbmBuffer> MockGbmDevice::CreateBufferFromHandle(
     gfx::NativePixmapHandle handle) {
   NOTREACHED();
   return nullptr;
+}
+
+bool MockGbmDevice::CanCreateBufferForFormat(uint32_t format) {
+  return true;
 }
 
 }  // namespace ui

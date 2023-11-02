@@ -1,39 +1,45 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_components/managed_footnote/managed_footnote.js';
-import 'chrome://resources/cr_elements/cr_icons_css.m.js';
+import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
-import 'chrome://resources/cr_elements/cr_nav_menu_item_style.js';
-import 'chrome://resources/cr_elements/icons.m.js';
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/cr_nav_menu_item_style.css.js';
+import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
-import './shared_icons.js';
-import './shared_style.js';
+import './shared_icons.html.js';
+import './shared_style.css.js';
 import './strings.m.js';
 
+import {BrowserProxyImpl} from 'chrome://resources/cr_components/history_clusters/browser_proxy.js';
+import {MetricsProxyImpl} from 'chrome://resources/cr_components/history_clusters/metrics_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {PaperRippleElement} from 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BrowserService} from './browser_service.js';
-import {BrowserProxyImpl} from './history_clusters/browser_proxy.js';
-import {MetricsProxyImpl} from './history_clusters/metrics_proxy.js';
+import {BrowserServiceImpl} from './browser_service.js';
 import {Page, TABBED_PAGES} from './router.js';
+import {getTemplate} from './side_bar.html.js';
 
-export type FooterInfo = {
-  managed: boolean,
-  otherFormsOfHistory: boolean,
-};
+export interface FooterInfo {
+  managed: boolean;
+  otherFormsOfHistory: boolean;
+}
 
 export interface HistorySideBarElement {
   $: {
     'cbd-ripple': PaperRippleElement,
+    'history': HTMLAnchorElement,
+    'menu': IronSelectorElement,
     'thc-ripple': PaperRippleElement,
+    'toggle-history-clusters': HTMLElement,
+    'syncedTabs': HTMLElement,
   };
 }
 
@@ -43,7 +49,7 @@ export class HistorySideBarElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -112,8 +118,7 @@ export class HistorySideBarElement extends PolymerElement {
   private showFooter_: boolean;
   private showHistoryClusters_: boolean;
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
     this.addEventListener('keydown', e => this.onKeydown_(e));
   }
@@ -133,7 +138,7 @@ export class HistorySideBarElement extends PolymerElement {
    * Relocates the user to the clear browsing data section of the settings page.
    */
   private onClearBrowsingDataTap_(e: Event) {
-    const browserService = BrowserService.getInstance();
+    const browserService = BrowserServiceImpl.getInstance();
     browserService.recordAction('InitClearBrowsingData');
     browserService.openClearBrowsingData();
     this.$['cbd-ripple'].upAction();
@@ -223,6 +228,12 @@ export class HistorySideBarElement extends PolymerElement {
   private computeShowToggleHistoryClusters_(): boolean {
     return this.historyClustersEnabled &&
         !this.historyClustersVisibleManagedByPolicy_;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'history-side-bar': HistorySideBarElement;
   }
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,5 +27,11 @@ void DissociateMailboxForPresent(GLuint device_id,
                                  GLuint device_generation,
                                  GLuint texture_id,
                                  GLuint texture_generation) override;
+
+void SetWebGPUExecutionContextToken(uint32_t type,
+                                    uint32_t high_high,
+                                    uint32_t high_low,
+                                    uint32_t low_high,
+                                    uint32_t low_low) override;
 
 #endif  // GPU_COMMAND_BUFFER_CLIENT_WEBGPU_IMPLEMENTATION_AUTOGEN_H_

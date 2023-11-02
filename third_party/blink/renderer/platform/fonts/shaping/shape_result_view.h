@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -141,7 +141,7 @@ class PLATFORM_EXPORT ShapeResultView final
 
   // Computes and returns the ink bounds (or visual overflow rect). This is
   // quite expensive and involves measuring each glyph accumulating the bounds.
-  FloatRect ComputeInkBounds() const;
+  gfx::RectF ComputeInkBounds() const;
 
   scoped_refptr<const SimpleFontData> PrimaryFont() const {
     return primary_font_;
@@ -169,17 +169,15 @@ class PLATFORM_EXPORT ShapeResultView final
   template <bool is_horizontal_run, bool has_glyph_offsets>
   void ComputePartInkBounds(const ShapeResultView::RunInfoPart&,
                             float run_advance,
-                            FloatRect* ink_bounds) const;
+                            gfx::RectF* ink_bounds) const;
 
   // Common signatures with ShapeResult, to templatize algorithms.
   base::span<const RunInfoPart> RunsOrParts() const { return Parts(); }
 
-  base::span<RunInfoPart> Parts() {
-    return {reinterpret_cast<RunInfoPart*>(parts_), num_parts_};
-  }
-  base::span<const RunInfoPart> Parts() const {
-    return {reinterpret_cast<const RunInfoPart*>(parts_), num_parts_};
-  }
+  base::span<RunInfoPart> Parts();
+
+  base::span<const RunInfoPart> Parts() const;
+
   unsigned StartIndexOffsetForRun() const { return char_index_offset_; }
 
   // Returns byte size, aka allocation size, of |ShapeResultView| with

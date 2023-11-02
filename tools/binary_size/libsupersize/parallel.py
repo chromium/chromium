@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Helpers related to multiprocessing."""
@@ -17,7 +17,7 @@ from multiprocessing import process
 
 DISABLE_ASYNC = os.environ.get('SUPERSIZE_DISABLE_ASYNC') == '1'
 if DISABLE_ASYNC:
-  logging.debug('Running in synchronous mode.')
+  logging.warning('Running in synchronous mode.')
 
 _is_child_process = False
 _silence_exceptions = False

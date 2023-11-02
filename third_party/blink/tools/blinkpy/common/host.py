@@ -47,9 +47,6 @@ class Host(SystemHost):
 
         self._git = None
 
-        # Everything below this line is WebKit-specific and belongs on a higher-level object.
-        self.results_fetcher = TestResultsFetcher()
-
         # FIXME: Unfortunately Port objects are currently the central-dispatch objects of the NRWT world.
         # In order to instantiate a port correctly, we have to pass it at least an executive, user, git, and filesystem
         # so for now we just pass along the whole Host object.
@@ -58,6 +55,7 @@ class Host(SystemHost):
 
         self.bb_agent = BBAgent(self)
         self.builders = BuilderList.load_default_builder_list(self.filesystem)
+        self.results_fetcher = TestResultsFetcher.from_host(self)
 
     def git(self, path=None):
         if path:

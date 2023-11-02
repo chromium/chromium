@@ -15,7 +15,7 @@ tooltip explaining why. This happens when a setting is:
 The badge icons are sourced from [cr_elements/icons.html] by default.
 
 Indicators show a tooltip with explanatory text on hover if `CrPolicyStrings`
-is set; see [settings_ui.js] for an example from MD Settings.
+is set; see [settings_ui.ts] for an example from MD Settings.
 
 ## Using an indicator
 
@@ -30,13 +30,13 @@ For one-off or composed elements, `CrPolicyIndicatorBehavior` provides some
 configurable properties and calculates dependent properties, such as the
 tooltip, icon, and visibility of the indicator.
 
-Example: [cr_policy_pref_indicator.js] overrides `indicatorType` and
+Example: [cr_policy_pref_indicator.ts] overrides `indicatorType` and
 `indicatorTooltip`. [cr_policy_pref_indicator.html] displays the computed
 properties from `CrPolicyIndicatorBehavior`.
 
 
 [cr_elements/icons.html]: ../icons.html
-[settings_ui.js]: /chrome/browser/resources/settings/settings_ui/settings_ui.js
+[settings_ui.ts]: /chrome/browser/resources/settings/settings_ui/settings_ui.ts
 [settings-checkbox]: /chrome/browser/resources/settings/controls/settings_checkbox.html
-[cr_policy_pref_indicator.js]: cr_policy_pref_indicator.js
+[cr_policy_pref_indicator.ts]: cr_policy_pref_indicator.ts
 [cr_policy_pref_indicator.html]: cr_policy_pref_indicator.html

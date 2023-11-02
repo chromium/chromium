@@ -1,10 +1,14 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include <memory>
 
 #include "content/browser/xr/metrics/session_metrics_helper.h"
 
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "content/browser/xr/metrics/session_timer.h"
 #include "content/browser/xr/metrics/webxr_session_tracker.h"
@@ -33,18 +37,18 @@ class SessionMetricsHelperData : public base::SupportsUserData::Data {
   SessionMetricsHelperData() = delete;
 
   explicit SessionMetricsHelperData(
-      SessionMetricsHelper* session_metrics_helper)
-      : session_metrics_helper_(session_metrics_helper) {}
+      std::unique_ptr<SessionMetricsHelper> session_metrics_helper)
+      : session_metrics_helper_(std::move(session_metrics_helper)) {}
 
   SessionMetricsHelperData(const SessionMetricsHelperData&) = delete;
   SessionMetricsHelperData& operator=(const SessionMetricsHelperData&) = delete;
 
-  ~SessionMetricsHelperData() override { delete session_metrics_helper_; }
+  ~SessionMetricsHelperData() override = default;
 
-  SessionMetricsHelper* get() const { return session_metrics_helper_; }
+  SessionMetricsHelper* get() const { return session_metrics_helper_.get(); }
 
  private:
-  SessionMetricsHelper* session_metrics_helper_;
+  std::unique_ptr<SessionMetricsHelper> session_metrics_helper_;
 };
 
 // Helper method to log out both the mode and the initially requested features
@@ -82,7 +86,12 @@ SessionMetricsHelper* SessionMetricsHelper::CreateForWebContents(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // This is not leaked as the SessionMetricsHelperData will clean it up.
-  return new SessionMetricsHelper(contents);
+  std::unique_ptr<SessionMetricsHelper> helper =
+      base::WrapUnique(new SessionMetricsHelper(contents));
+  contents->SetUserData(
+      kSessionMetricsHelperDataKey,
+      std::make_unique<SessionMetricsHelperData>(std::move(helper)));
+  return FromWebContents(contents);
 }
 
 SessionMetricsHelper::SessionMetricsHelper(content::WebContents* contents) {
@@ -93,8 +102,6 @@ SessionMetricsHelper::SessionMetricsHelper(content::WebContents* contents) {
   num_videos_playing_ = contents->GetCurrentlyPlayingVideoCount();
 
   Observe(contents);
-  contents->SetUserData(kSessionMetricsHelperDataKey,
-                        std::make_unique<SessionMetricsHelperData>(this));
 }
 
 SessionMetricsHelper::~SessionMetricsHelper() {
@@ -119,7 +126,7 @@ SessionMetricsHelper::StartInlineSession(
       session_id,
       std::make_unique<WebXRSessionTracker>(
           std::make_unique<ukm::builders::XR_WebXR_Session>(
-              web_contents()->GetMainFrame()->GetPageUkmSourceId())));
+              web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId())));
   auto* tracker = result.first->second.get();
 
   ReportInitialSessionData(tracker, session_options, enabled_features);
@@ -158,7 +165,7 @@ SessionMetricsHelper::StartImmersiveSession(
   // Plumb explicit RenderFrameHost reference from VRSessionImpl.
   webxr_immersive_session_tracker_ = std::make_unique<WebXRSessionTracker>(
       std::make_unique<ukm::builders::XR_WebXR_Session>(
-          web_contents()->GetMainFrame()->GetPageUkmSourceId()));
+          web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId()));
 
   // TODO(https://crbug.com/1056930): Consider renaming the timers to something
   // that indicates both that these also record AR, and that these are no longer
@@ -250,29 +257,21 @@ void SessionMetricsHelper::MediaStoppedPlaying(
   }
 }
 
-void SessionMetricsHelper::DidStartNavigation(
-    content::NavigationHandle* handle) {
+void SessionMetricsHelper::PrimaryPageChanged(content::Page& page) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // All sessions are terminated on navigations, so to ensure that we log
+  // everything that we have, cleanup any outstanding session trackers now.
+  if (webxr_immersive_session_tracker_)
+    StopAndRecordImmersiveSession();
 
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
-  if (handle && handle->IsInPrimaryMainFrame() && !handle->IsSameDocument()) {
-    // All sessions are terminated on navigations, so to ensure that we log
-    // everything that we have, cleanup any outstanding session trackers now.
-    if (webxr_immersive_session_tracker_) {
-      StopAndRecordImmersiveSession();
-    }
-
-    for (auto& inline_session_tracker : webxr_inline_session_trackers_) {
-      inline_session_tracker.second->SetSessionEnd(base::Time::Now());
-      inline_session_tracker.second->ukm_entry()->SetDuration(
-          inline_session_tracker.second->GetRoundedDurationInSeconds());
-      inline_session_tracker.second->RecordEntry();
-    }
-
-    webxr_inline_session_trackers_.clear();
+  for (auto& inline_session_tracker : webxr_inline_session_trackers_) {
+    inline_session_tracker.second->SetSessionEnd(base::Time::Now());
+    inline_session_tracker.second->ukm_entry()->SetDuration(
+        inline_session_tracker.second->GetRoundedDurationInSeconds());
+    inline_session_tracker.second->RecordEntry();
   }
+
+  webxr_inline_session_trackers_.clear();
 }
 
 }  // namespace content

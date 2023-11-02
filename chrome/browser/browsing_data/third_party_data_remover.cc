@@ -1,8 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/browsing_data/third_party_data_remover.h"
+
+#include <set>
+#include <utility>
 
 #include "base/metrics/user_metrics.h"
 #include "cc/base/features.h"
@@ -10,16 +13,9 @@
 #include "chrome/browser/browsing_data/access_context_audit_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/same_site_data_remover.h"
+#include "url/origin.h"
 
 namespace {
-
-bool DoesOriginHaveThirdPartyAccessRecord(
-    const std::set<url::Origin>& third_party_storage_origins,
-    const url::Origin& origin,
-    storage::SpecialStoragePolicy* policy) {
-  return third_party_storage_origins.find(origin) !=
-         third_party_storage_origins.end();
-}
 
 void OnGetStorageAccessRecords(
     base::OnceClosure closure,
@@ -30,9 +26,7 @@ void OnGetStorageAccessRecords(
     origins.insert(std::move(record.origin));
   }
   content::ClearSameSiteNoneCookiesAndStorageForOrigins(
-      std::move(closure), context,
-      base::BindRepeating(&DoesOriginHaveThirdPartyAccessRecord,
-                          std::move(origins)));
+      std::move(closure), context, std::move(origins));
 }
 
 }  // namespace

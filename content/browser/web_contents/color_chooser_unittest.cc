@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,7 +66,7 @@ class OpenColorChooserDelegate : public WebContentsDelegate {
 
 class ColorChooserUnitTest : public RenderViewHostImplTestHarness {};
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // The ColorChooser is only available/called on Android.
 TEST_F(ColorChooserUnitTest, ColorChooserCallsEndOnNavigatingAway) {
   GURL kUrl1("https://foo.com");
@@ -121,7 +121,7 @@ class ColorChooserTestWithBackForwardCache : public ColorChooserUnitTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // The ColorChooser is only available/called on Android.
 TEST_F(ColorChooserTestWithBackForwardCache,
        ColorChooserCallsEndOnEnteringBackForwardCache) {
@@ -141,7 +141,7 @@ TEST_F(ColorChooserTestWithBackForwardCache,
 
   // Navigate to A.
   NavigationSimulator::NavigateAndCommitFromBrowser(contents(), kUrl1);
-  RenderFrameHostImpl* rfh_a = contents()->GetMainFrame();
+  RenderFrameHostImpl* rfh_a = contents()->GetPrimaryMainFrame();
 
   mojo::PendingRemote<blink::mojom::ColorChooserClient> pending_client;
   mojo::Remote<blink::mojom::ColorChooser> pending_remote;

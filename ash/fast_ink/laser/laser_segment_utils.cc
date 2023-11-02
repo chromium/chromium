@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,8 +35,7 @@ float AngleOfPointInNewCoordinates(const gfx::PointF& origin,
   gfx::Transform transform;
   transform.Rotate(-angle_degrees);
   transform.Translate(-origin.x(), -origin.y());
-  gfx::Point3F point_to_transform(point.x(), point.y(), 0.0f);
-  transform.TransformPoint(&point_to_transform);
+  gfx::PointF point_to_transform = transform.MapPoint(point);
   return atan2(point_to_transform.y(), point_to_transform.x());
 }
 

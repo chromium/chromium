@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -21,25 +21,28 @@ source_set("favicon") {
     "large_icon_cache.h",
   ]
   deps = [
-    "//base",
     "//components/favicon/core",
     "//components/favicon/core:history_implementation",
-    "//components/favicon_base",
     "//components/image_fetcher/core",
     "//components/image_fetcher/ios",
-    "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//components/resources",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/url:constants",
     "//ios/chrome/common/ui/favicon",
     "//ios/components/webui:url_constants",
     "//ios/web",
     "//skia",
     "//ui/base",
     "//url",
+  ]
+  public_deps = [
+    "//base",
+    "//components/favicon_base",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
   ]
 }
 

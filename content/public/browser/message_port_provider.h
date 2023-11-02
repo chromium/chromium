@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,18 +8,20 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/singleton.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/messaging/string_message_codec.h"
 #include "third_party/blink/public/common/messaging/web_message_port.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #endif
 
-#if defined(OS_FUCHSIA) || BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_FUCHSIA) ||           \
+    BUILDFLAG(ENABLE_CAST_RECEIVER) && \
+        (BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID))
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #endif
 
@@ -41,19 +43,24 @@ class CONTENT_EXPORT MessagePortProvider {
   static void PostMessageToFrame(Page& page,
                                  const std::u16string& source_origin,
                                  const std::u16string& target_origin,
-                                 const std::u16string& data);
+                                 const blink::WebMessagePayload& data);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   static void PostMessageToFrame(
       Page& page,
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& source_origin,
       const base::android::JavaParamRef<jstring>& target_origin,
-      const base::android::JavaParamRef<jstring>& data,
+      /* org.chromium.content_public.browser.MessagePayload */
+      const base::android::JavaParamRef<jobject>& payload,
       const base::android::JavaParamRef<jobjectArray>& ports);
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_FUCHSIA) || BUILDFLAG(IS_CHROMECAST)
+// Fuchsia WebEngine always uses this version.
+// Some Cast Receiver implementations use it too.
+#if BUILDFLAG(IS_FUCHSIA) ||           \
+    BUILDFLAG(ENABLE_CAST_RECEIVER) && \
+        (BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID))
   // If |target_origin| is unset, then no origin scoping is applied.
   static void PostMessageToFrame(
       Page& page,
@@ -61,7 +68,7 @@ class CONTENT_EXPORT MessagePortProvider {
       const absl::optional<std::u16string>& target_origin,
       const std::u16string& data,
       std::vector<blink::WebMessagePort> ports);
-#endif  // OS_FUCHSIA || BUILDFLAG(IS_CHROMECAST)
+#endif
 };
 
 }  // namespace content

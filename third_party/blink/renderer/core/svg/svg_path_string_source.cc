@@ -20,8 +20,9 @@
 
 #include "third_party/blink/renderer/core/svg/svg_path_string_source.h"
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -196,12 +197,12 @@ PathSegmentData SVGPathStringSource::ParseSegment() {
     case kPathSegCurveToCubicAbs:
       segment.point1.set_x(ParseNumberWithError());
       segment.point1.set_y(ParseNumberWithError());
-      FALLTHROUGH;
+      [[fallthrough]];
     case kPathSegCurveToCubicSmoothRel:
     case kPathSegCurveToCubicSmoothAbs:
       segment.point2.set_x(ParseNumberWithError());
       segment.point2.set_y(ParseNumberWithError());
-      FALLTHROUGH;
+      [[fallthrough]];
     case kPathSegMoveToRel:
     case kPathSegMoveToAbs:
     case kPathSegLineToRel:

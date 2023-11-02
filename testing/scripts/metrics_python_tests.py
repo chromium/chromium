@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright 2021 The Chromium Authors. All rights reserved.
+#!/usr/bin/env vpython3
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,13 +9,15 @@ import json
 import os
 import sys
 
-
-import common
+# Add src/testing/ into sys.path for importing common without pylint errors.
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+from scripts import common
 
 
 def main_run(args):
   with common.temporary_file() as tempfile_path:
-    rc = common.run_command(['vpython',
+    rc = common.run_command(['vpython3',
         os.path.join(common.SRC_DIR, 'testing', 'test_env.py'),
         os.path.join(common.SRC_DIR, 'tools', 'metrics',
                      'metrics_python_tests.py'),

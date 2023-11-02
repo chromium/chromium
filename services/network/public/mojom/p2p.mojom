@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,8 +39,14 @@ interface P2PSocketManager {
   StartNetworkNotifications(
       pending_remote<P2PNetworkNotificationClient> client);
 
+  // Performs DNS hostname resolution.
   GetHostAddress(string host_name, bool enable_mdns)
       => (array<IPAddress> addresses);
+
+  // Performs DNS hostname resolution for a specific IP address family.
+  GetHostAddressWithFamily(string host_name,
+                           int32 address_family,
+                           bool enable_mdns) => (array<IPAddress> addresses);
 
   CreateSocket(P2PSocketType type,
                IPEndPoint local_address,

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,10 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model_observer.h"
 
@@ -27,7 +29,7 @@ class ModelTypeSyncBridge;
 // other of read ones. This object should only be accessed from one thread
 // (Usually the main thread). The observers callbacks are also sent on the main
 // thread.
-class ReadingListModel {
+class ReadingListModel : public KeyedService {
  public:
   class ScopedReadingListBatchUpdate;
 
@@ -167,12 +169,12 @@ class ReadingListModel {
     void ReadingListModelBeingShutdown(const ReadingListModel* model) override;
 
    private:
-    ReadingListModel* model_;
+    raw_ptr<ReadingListModel> model_;
   };
 
  protected:
   ReadingListModel();
-  virtual ~ReadingListModel();
+  ~ReadingListModel() override;
 
   // The observers.
   base::ObserverList<ReadingListModelObserver>::Unchecked observers_;

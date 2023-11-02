@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "gtest/gtest.h"
+#include "absl/base/attributes.h"
 
 namespace {
 
@@ -336,6 +337,7 @@ struct MovableNonCopyable {
 
 struct NonCopyableOrMovable {
   NonCopyableOrMovable() = default;
+  virtual ~NonCopyableOrMovable() = default;
   NonCopyableOrMovable(const NonCopyableOrMovable&) = delete;
   NonCopyableOrMovable(NonCopyableOrMovable&&) = delete;
   NonCopyableOrMovable& operator=(const NonCopyableOrMovable&) = delete;
@@ -1391,6 +1393,24 @@ TEST(TypeTraitsTest, IsNothrowSwappable) {
   EXPECT_FALSE(IsNothrowSwappable<adl_namespace::DeletedSwap>::value);
 
   EXPECT_TRUE(IsNothrowSwappable<adl_namespace::SpecialNoexceptSwap>::value);
+}
+
+TEST(TrivallyRelocatable, Sanity) {
+#if !defined(ABSL_HAVE_ATTRIBUTE_TRIVIAL_ABI) || \
+    !ABSL_HAVE_BUILTIN(__is_trivially_relocatable)
+  GTEST_SKIP() << "No trivial ABI support.";
+#endif
+
+  struct Trivial {};
+  struct NonTrivial {
+    NonTrivial(const NonTrivial&) {}  // NOLINT
+  };
+  struct ABSL_ATTRIBUTE_TRIVIAL_ABI TrivialAbi {
+    TrivialAbi(const TrivialAbi&) {}  // NOLINT
+  };
+  EXPECT_TRUE(absl::is_trivially_relocatable<Trivial>::value);
+  EXPECT_FALSE(absl::is_trivially_relocatable<NonTrivial>::value);
+  EXPECT_TRUE(absl::is_trivially_relocatable<TrivialAbi>::value);
 }
 
 }  // namespace

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ namespace net {
 // https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/Key_Log_Format.
 class NET_EXPORT SSLKeyLogger {
  public:
-  virtual ~SSLKeyLogger() {}
+  virtual ~SSLKeyLogger() = default;
 
   // Writes |line| followed by a newline. This may be called by multiple threads
   // simultaneously. If two calls race, the order of the lines is undefined, but

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -84,9 +84,12 @@ class MockPasswordProtectionService : public PasswordProtectionService {
                     LoginReputationClientResponse::VerdictType,
                     const std::string&,
                     ReusedPasswordAccountType));
-  MOCK_METHOD4(
-      MaybeReportPasswordReuseDetected,
-      void(PasswordProtectionRequest*, const std::string&, PasswordType, bool));
+  MOCK_METHOD5(MaybeReportPasswordReuseDetected,
+               void(PasswordProtectionRequest*,
+                    const std::string&,
+                    PasswordType,
+                    bool,
+                    bool));
   MOCK_METHOD3(UpdateSecurityState,
                void(safe_browsing::SBThreatType,
                     ReusedPasswordAccountType,

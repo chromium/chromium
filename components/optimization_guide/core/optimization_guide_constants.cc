@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,13 @@ const base::FilePath::CharType kOptimizationGuideHintStore[] =
     FILE_PATH_LITERAL("optimization_guide_hint_cache_store");
 
 const base::FilePath::CharType
-    kOptimizationGuidePredictionModelAndFeaturesStore[] =
-        FILE_PATH_LITERAL("optimization_guide_model_and_features_store");
+    kOptimizationGuidePredictionModelMetadataStore[] =
+        FILE_PATH_LITERAL("optimization_guide_model_metadata_store");
+
+const base::FilePath::CharType kOptimizationGuidePredictionModelDownloads[] =
+    FILE_PATH_LITERAL("optimization_guide_prediction_model_downloads");
+
+const base::FilePath::CharType kPageEntitiesMetadataStore[] =
+    FILE_PATH_LITERAL("page_content_annotations_page_entities_metadata_store");
 
 }  // namespace optimization_guide

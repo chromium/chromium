@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -33,9 +32,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
@@ -46,7 +43,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowNotificationManager.class})
-@Features.EnableFeatures({ChromeFeatureList.WEB_APK_INSTALL_COMPLETE_NOTIFICATION})
 public class WebApkInstallNotificationTest {
     private static final String PACKAGE_NAME = "org.chromium.webapk.for.testing";
     private static final String MANIFEST_URL = "https://test.com/manifest.json";
@@ -55,9 +51,6 @@ public class WebApkInstallNotificationTest {
 
     @Rule
     public JniMocker mJniMocker = new JniMocker();
-
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Mock
     private UrlFormatter.Natives mUrlFormatterJniMock;

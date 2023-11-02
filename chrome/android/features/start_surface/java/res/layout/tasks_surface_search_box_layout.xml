@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<view xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/search_box"
+    class="org.chromium.chrome.browser.ntp.search.SearchBoxContainerView"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/ntp_search_box_height"
+    android:layout_marginTop="0dp"
+    android:layout_marginStart="12dp"
+    android:layout_marginEnd="12dp"
+    android:paddingStart="@dimen/search_box_start_padding"
+    android:paddingEnd="@dimen/search_box_end_padding"
+    android:background="@drawable/ntp_search_box"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+  <!-- TODO(crbug.com/900912): Fix and remove lint ignore -->
+  <RelativeLayout
+      android:layout_width="0dp"
+      android:layout_height="match_parent"
+      android:layout_weight="1"
+      android:layout_marginEnd="12dp"
+      android:gravity="center_vertical">
+    <EditText
+        android:id="@+id/search_box_text"
+        style="@style/TextAppearance.SearchBoxText.NewTabPage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@null"
+        android:ellipsize="end"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:hint="@string/search_or_type_web_address"
+        android:inputType="text"
+        android:singleLine="true"
+        tools:ignore="Autofill,LabelFor" />
+  </RelativeLayout>
+  <org.chromium.ui.widget.ChromeImageView
+      android:id="@+id/voice_search_button"
+      style="@style/LocationBarActionButton"
+      android:layout_width="@dimen/tasks_surface_location_bar_url_button_size"
+      android:layout_height="@dimen/tasks_surface_location_bar_url_button_size"
+      android:contentDescription="@string/accessibility_toolbar_btn_mic"
+      android:src="@drawable/btn_mic" />
+  <org.chromium.ui.widget.ChromeImageView
+      android:id="@+id/lens_camera_button"
+      style="@style/LocationBarActionButton"
+      android:layout_width="@dimen/tasks_surface_location_bar_url_button_size"
+      android:layout_height="@dimen/tasks_surface_location_bar_url_button_size"
+      android:layout_marginStart="@dimen/tasks_surface_location_bar_url_button_start_margin"
+      android:contentDescription="@string/accessibility_btn_lens_camera"
+      android:src="@drawable/lens_camera_icon"
+      android:visibility="gone" />
+</view>

@@ -26,9 +26,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_DOCUMENT_LOAD_TIMING_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_DOCUMENT_LOAD_TIMING_H_
 
+#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
@@ -55,7 +57,7 @@ class CORE_EXPORT DocumentLoadTiming final {
 
   void MarkNavigationStart();
   void SetNavigationStart(base::TimeTicks);
-  void MarkBackForwardCacheRestoreNavigationStart(base::TimeTicks);
+  void SetBackForwardCacheRestoreNavigationStart(base::TimeTicks);
   void MarkCommitNavigationEnd();
 
   void SetInputStart(base::TimeTicks);
@@ -72,8 +74,8 @@ class CORE_EXPORT DocumentLoadTiming final {
     has_cross_origin_redirect_ = value;
   }
 
-  void MarkUnloadEventStart(base::TimeTicks);
-  void MarkUnloadEventEnd(base::TimeTicks);
+  void SetUnloadEventStart(base::TimeTicks);
+  void SetUnloadEventEnd(base::TimeTicks);
 
   void MarkFetchStart();
   void SetFetchStart(base::TimeTicks);
@@ -83,7 +85,7 @@ class CORE_EXPORT DocumentLoadTiming final {
   void MarkLoadEventStart();
   void MarkLoadEventEnd();
 
-  void MarkActivationStart(base::TimeTicks);
+  void SetActivationStart(base::TimeTicks);
 
   void SetCanRequestFromPreviousDocument(bool value) {
     can_request_from_previous_document_ = value;
@@ -150,19 +152,20 @@ class CORE_EXPORT DocumentLoadTiming final {
   base::TimeTicks unload_event_end_;
   base::TimeTicks redirect_start_;
   base::TimeTicks redirect_end_;
-  uint16_t redirect_count_;
   base::TimeTicks fetch_start_;
   base::TimeTicks response_end_;
   base::TimeTicks load_event_start_;
   base::TimeTicks load_event_end_;
   base::TimeTicks activation_start_;
-  bool has_cross_origin_redirect_;
-  bool can_request_from_previous_document_;
 
   const base::Clock* clock_;
   const base::TickClock* tick_clock_;
 
   Member<DocumentLoader> document_loader_;
+
+  uint16_t redirect_count_ = 0;
+  bool has_cross_origin_redirect_ = false;
+  bool can_request_from_previous_document_ = false;
 };
 
 }  // namespace blink

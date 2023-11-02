@@ -1,13 +1,18 @@
-<link rel="stylesheet"
-    href="chrome://resources/chromeos/colors/cros_styles.css">
-<link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
-<link rel="stylesheet" href="chrome://resources/css/md_colors.css">
-<link rel="stylesheet" href="chrome://resources/cr_elements/md_select_css.html">
-
 <template>
   <style include="cr-shared-style md-select scanning-fonts">
-    html {
-      background-color: var(--cros-bg-color);
+    :host {
+      --scanning-progress-bar: var(--google-blue-600);
+      --scanning-progress-bar-track: rgba(
+          var(--google-blue-600-rgb),
+          var(--cros-second-tone-opacity));
+      --scanning-scrollbar-rgb: var(--google-grey-600-rgb);
+      --scanning-scrollbar: rgba(var(--scanning-scrollbar-rgb), 0.38);
+      --scanning-scrollbar-thumb: rgb(var(--scanning-scrollbar-rgb))
+    }
+
+    paper-progress {
+      --paper-progress-active-color: var(--scanning-progress-bar);
+      --paper-progress-container-color: var(--scanning-progress-bar-track);
     }
 
     select {
@@ -17,6 +22,9 @@
     }
 
     select.md-select {
+      --md-select-bg-color: var(--cros-bg-color-dropped-elevation-2);
+      --md-select-focus-shadow-color: var(--cros-focus-ring-color);
+      --md-select-option-bg-color: var(--cros-bg-color-elevation-2);
       background-position-x: calc(100% - 12px);
       color: var(--scanning-scan-setting-text-color);
       font-family: var(--scanning-scan-setting-font-family);
@@ -32,12 +40,13 @@
     }
 
     ::-webkit-scrollbar {
-      -webkit-appearance: none;
+      background-color: var(--scanning-scrollbar);
+      border-radius: 4px;
       width: 4px;
     }
 
     ::-webkit-scrollbar-thumb {
-      background-color: rgba(0, 0, 0, 0.5);
+      background-color: var(--scanning-scrollbar-thumb);
       border-radius: 4px;
     }
 
@@ -112,6 +121,16 @@
         --right-panel-margin-inline-start: 60px;
         --right-panel-padding-inline-end: 32px;
         --right-panel-padding-inline-start: 32px;
+      }
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :host {
+        --scanning-progress-bar: var(--google-blue-300);
+        --scanning-progress-bar-track: rgba(
+            var(--google-blue-300-rgb),
+            var(--cros-second-tone-opacity));
+        --scanning-scrollbar-rgb: var(--google-grey-400-rgb);
       }
     }
   </style>

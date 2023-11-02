@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -15,12 +15,15 @@ blink_platform_sources("loader") {
   sources = [
     "allowed_by_nosniff.cc",
     "allowed_by_nosniff.h",
+    "attribution_header_constants.cc",
+    "attribution_header_constants.h",
     "child_url_loader_factory_bundle.cc",
     "cors/cors.cc",
     "cors/cors.h",
     "cors/cors_error_string.cc",
     "cors/cors_error_string.h",
     "fetch/back_forward_cache_loader_helper.h",
+    "fetch/body_text_decoder.h",
     "fetch/buffering_bytes_consumer.cc",
     "fetch/buffering_bytes_consumer.h",
     "fetch/bytes_consumer.cc",
@@ -35,6 +38,7 @@ blink_platform_sources("loader") {
     "fetch/data_pipe_bytes_consumer.cc",
     "fetch/data_pipe_bytes_consumer.h",
     "fetch/detachable_use_counter.h",
+    "fetch/early_hints_preload_entry.h",
     "fetch/fetch_api_request_body_mojom_traits.cc",
     "fetch/fetch_api_request_body_mojom_traits.h",
     "fetch/fetch_client_settings_object.h",
@@ -54,6 +58,7 @@ blink_platform_sources("loader") {
     "fetch/loader_freeze_mode.h",
     "fetch/loading_attribute_value.h",
     "fetch/loading_behavior_observer.h",
+    "fetch/media_timing.h",
     "fetch/memory_cache.cc",
     "fetch/memory_cache.h",
     "fetch/null_resource_fetcher_properties.cc",
@@ -102,8 +107,6 @@ blink_platform_sources("loader") {
     "fetch/script_fetch_options.h",
     "fetch/shared_buffer_bytes_consumer.cc",
     "fetch/shared_buffer_bytes_consumer.h",
-    "fetch/source_keyed_cached_metadata_handler.cc",
-    "fetch/source_keyed_cached_metadata_handler.h",
     "fetch/stale_revalidation_resource_client.cc",
     "fetch/stale_revalidation_resource_client.h",
     "fetch/subresource_web_bundle.h",
@@ -214,7 +217,6 @@ source_set("unit_tests") {
     "fetch/url_loader/cached_metadata_handler_test.cc",
     "fetch/url_loader/mojo_url_loader_client_unittest.cc",
     "fetch/url_loader/navigation_body_loader_unittest.cc",
-    "fetch/url_loader/source_keyed_cached_metadata_handler_test.cc",
     "fetch/url_loader/sync_load_context_unittest.cc",
     "fetch/url_loader/web_resource_request_sender_unittest.cc",
     "fetch/url_loader/web_url_loader_unittest.cc",
@@ -231,6 +233,7 @@ source_set("unit_tests") {
     "//mojo/public/cpp/test_support:test_utils",
     "//net:test_support",
     "//net/traffic_annotation:test_support",
+    "//services/metrics/public/cpp:ukm_builders",
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
@@ -277,6 +280,7 @@ source_set("test_support") {
     "//third_party/blink/public:blink_headers",
     "//third_party/blink/renderer/platform:platform",
     "//third_party/blink/renderer/platform/blob:generator",
+    "//third_party/blink/renderer/platform/heap:test_support",
     "//third_party/blink/renderer/platform/scheduler:test_support",
     "//third_party/icu",
   ]

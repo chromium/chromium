@@ -1,12 +1,8 @@
 specific_include_rules = {
-  "audio_output_allowed_browsertest\.cc": [
-    "+ash/components/audio",
-  ],
   "media_stream_policy_browsertest\.cc": [
     "+components/webrtc",
   ],
   "policy_browsertest\.cc": [
-    "+ash/shell.h",
     "+content/common/content_navigation_policy.h",
   ],
   "screenshot_policy_browsertest\.cc": [

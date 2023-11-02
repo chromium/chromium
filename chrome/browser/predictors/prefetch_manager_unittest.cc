@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <map>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/format_macros.h"
@@ -14,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/predictors/loading_test_util.h"
 #include "chrome/browser/predictors/predictors_features.h"
@@ -86,10 +88,11 @@ class FakePrefetchManagerDelegate
   base::flat_map<GURL, base::OnceClosure> done_callbacks_;
 };
 
-// Creates a NetworkIsolationKey for a main frame navigation to URL.
-net::NetworkIsolationKey CreateNetworkIsolationKey(const GURL& main_frame_url) {
-  url::Origin origin = url::Origin::Create(main_frame_url);
-  return net::NetworkIsolationKey(origin, origin);
+// Creates a NetworkAnonymizationKey for a main frame navigation to URL.
+net::NetworkAnonymizationKey CreateNetworkIsolationKey(
+    const GURL& main_frame_url) {
+  net::SchemefulSite site = net::SchemefulSite(main_frame_url);
+  return net::NetworkAnonymizationKey(site, site);
 }
 
 PrefetchRequest CreateScriptRequest(const GURL& url,
@@ -244,6 +247,39 @@ TEST_F(PrefetchManagerTest, OneMainFrameUrlMultiplePrefetch) {
     responses[i]->Done();
   }
   fake_delegate_->WaitForPrefetchFinished(main_frame_url);
+}
+
+// Tests that metrics related to queueing of prefetch jobs are recorded.
+TEST_F(PrefetchManagerTest, QueueingMetricsRecorded) {
+  base::HistogramTester histogram_tester;
+  net::test_server::EmbeddedTestServer test_server;
+  std::vector<PrefetchRequest> requests;
+  size_t num_prefetches = features::GetMaxInflightPrefetches();
+
+  GURL main_frame_url("https://abc.invalid");
+
+  // Start the server.
+  auto test_server_handle = test_server.StartAndReturnHandle();
+  ASSERT_TRUE(test_server_handle);
+
+  // Set up prefetches one more than the inflight limit.
+  // The request URLs can only be constructed after the server is started.
+  for (size_t i = 0; i < num_prefetches + 1; i++) {
+    std::string path = base::StringPrintf("/script%" PRIuS ".js", i);
+    GURL url = test_server.GetURL(path);
+    requests.push_back(CreateScriptRequest(url, main_frame_url));
+  }
+
+  // Start the prefetching.
+  prefetch_manager_->Start(main_frame_url, std::move(requests));
+
+  // The number of queued jobs should have been recorded.
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.Prefetch.PrefetchJobQueueLength", num_prefetches + 1, 1);
+  // Each job that was actually executed should have had its queueing time
+  // recorded.
+  histogram_tester.ExpectTotalCount(
+      "Navigation.Prefetch.PrefetchJobQueueingTime", num_prefetches);
 }
 
 // Tests prefetching multiple URLs for multiple main frames.
@@ -426,7 +462,13 @@ TEST_F(PrefetchManagerTest, Stop) {
               UnorderedElementsAreArray({test_server.GetURL(path2)}));
 }
 
-TEST_F(PrefetchManagerTest, StopAndStart) {
+// Flaky on Mac/Linux/CrOS only. http://crbug.com/1239235
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#define MAYBE_StopAndStart DISABLED_StopAndStart
+#else
+#define MAYBE_StopAndStart StopAndStart
+#endif
+TEST_F(PrefetchManagerTest, MAYBE_StopAndStart) {
   net::test_server::EmbeddedTestServer test_server;
 
   // Set up prefetches (limit + 1).

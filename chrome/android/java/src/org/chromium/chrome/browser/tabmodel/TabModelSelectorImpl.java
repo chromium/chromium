@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.ntp.RecentlyClosedBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -19,6 +20,7 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab.TabUtils.LoadIfNeededCaller;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
@@ -51,9 +53,9 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
 
     private TabContentManager mTabContentManager;
 
-    private Tab mVisibleTab;
+    private RecentlyClosedBridge mRecentlyClosedBridge;
 
-    private CloseAllTabsDelegate mCloseAllTabsDelegate;
+    private Tab mVisibleTab;
 
     private final Supplier<WindowAndroid> mWindowAndroidSupplier;
 
@@ -111,15 +113,16 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                 (ChromeTabCreator) getTabCreatorManager().getTabCreator(false);
         ChromeTabCreator incognitoTabCreator =
                 (ChromeTabCreator) getTabCreatorManager().getTabCreator(true);
+        mRecentlyClosedBridge = new RecentlyClosedBridge(Profile.getLastUsedRegularProfile(), this);
         TabModelImpl normalModel = new TabModelImpl(Profile.getLastUsedRegularProfile(),
                 mActivityType, regularTabCreator, incognitoTabCreator, mOrderController,
-                mTabContentManager, mNextTabPolicySupplier, mAsyncTabParamsManager, this,
+                tabContentProvider, mNextTabPolicySupplier, mAsyncTabParamsManager, this,
                 mIsUndoSupported);
         regularTabCreator.setTabModel(normalModel, mOrderController);
 
         IncognitoTabModel incognitoModel = new IncognitoTabModelImpl(
                 new IncognitoTabModelImplCreator(mWindowAndroidSupplier, regularTabCreator,
-                        incognitoTabCreator, mOrderController, mTabContentManager,
+                        incognitoTabCreator, mOrderController, tabContentProvider,
                         mNextTabPolicySupplier, mAsyncTabParamsManager, mActivityType, this));
         incognitoTabCreator.setTabModel(incognitoModel, mOrderController);
         onNativeLibraryReadyInternal(tabContentProvider, normalModel, incognitoModel);
@@ -174,6 +177,19 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
         };
     }
 
+    @Override
+    public void openMostRecentlyClosedEntry(TabModel tabModel) {
+        assert tabModel
+                == getModel(false) : "Trying to restore a tab from an off-the-record tab model.";
+        mRecentlyClosedBridge.openMostRecentlyClosedEntry(tabModel);
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        if (mRecentlyClosedBridge != null) mRecentlyClosedBridge.destroy();
+    }
+
     /**
      * Exposed to allow tests to initialize the selector with different tab models.
      * @param normalModel The normal tab model.
@@ -185,17 +201,12 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
     }
 
     @Override
-    public void setCloseAllTabsDelegate(CloseAllTabsDelegate delegate) {
-        mCloseAllTabsDelegate = delegate;
-    }
-
-    @Override
     public void selectModel(boolean incognito) {
         TabModel oldModel = getCurrentModel();
         super.selectModel(incognito);
         TabModel newModel = getCurrentModel();
         if (oldModel != newModel) {
-            TabModelUtils.setIndex(newModel, newModel.index());
+            TabModelUtils.setIndex(newModel, newModel.index(), false);
 
             // Make the call to notifyDataSetChanged() after any delayed events
             // have had a chance to fire. Otherwise, this may result in some
@@ -204,6 +215,11 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                 @Override
                 public void run() {
                     notifyChanged();
+                    // The tab model has changed to regular and all the visual elements wrt regular
+                    // mode is in-place. We can now signal the re-auth to hide the dialog.
+                    if (mIncognitoReauthDialogDelegate != null && !newModel.isIncognito()) {
+                        mIncognitoReauthDialogDelegate.onAfterRegularTabModelChanged();
+                    }
                 }
             });
         }
@@ -217,11 +233,6 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
         for (int i = 0; i < getModels().size(); i++) {
             getModels().get(i).commitAllTabClosures();
         }
-    }
-
-    @Override
-    public boolean closeAllTabsRequest(boolean incognito) {
-        return mCloseAllTabsDelegate.closeAllTabsRequest(incognito);
     }
 
     @Override
@@ -257,7 +268,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
         // without actual tab switch.
         if (mVisibleTab == tab && !mVisibleTab.isHidden()) {
             // The current tab might have been killed by the os while in tab switcher.
-            tab.loadIfNeeded();
+            tab.loadIfNeeded(LoadIfNeededCaller.REQUEST_TO_SHOW_TAB);
             // |tabToDropImportance| must be null, so no need to drop importance.
             return;
         }
@@ -267,7 +278,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
         // avoids unecessary work (tab restore) and prevents pollution of tab display metrics - see
         // http://crbug.com/316166.
         if (type != TabSelectionType.FROM_EXIT) {
-            tab.show(type);
+            tab.show(type, LoadIfNeededCaller.REQUEST_TO_SHOW_TAB_THEN_SHOW);
             tab.getId();
             tab.isBeingRestored();
         }

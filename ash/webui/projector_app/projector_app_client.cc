@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,28 +13,68 @@ namespace {
 
 constexpr char kPendingScreencastName[] = "name";
 constexpr char kPendingScreencastUploadProgress[] = "uploadProgress";
+constexpr char kPendingScreencastCreatedTime[] = "createdTime";
+constexpr char kPendingScreencastUploadFailed[] = "uploadFailed";
+constexpr int64_t kPendingScreencastDiffThresholdInBytes = 600 * 1024;
 
 ProjectorAppClient* g_instance = nullptr;
 }  // namespace
 
+PendingScreencast::PendingScreencast() = default;
+
+PendingScreencast::PendingScreencast(const base::FilePath& container_dir)
+    : container_dir(container_dir) {}
+
+PendingScreencast::PendingScreencast(const base::FilePath& container_dir,
+                                     const std::string& name,
+                                     int64_t total_size_in_bytes,
+                                     int64_t bytes_transferred)
+    : container_dir(container_dir),
+      name(name),
+      total_size_in_bytes(total_size_in_bytes),
+      bytes_transferred(bytes_transferred) {}
+
+PendingScreencast::PendingScreencast(const PendingScreencast&) = default;
+
+PendingScreencast& PendingScreencast::operator=(const PendingScreencast&) =
+    default;
+
+PendingScreencast::~PendingScreencast() = default;
+
 base::Value PendingScreencast::ToValue() const {
   base::Value val(base::Value::Type::DICTIONARY);
   val.SetKey(kPendingScreencastName, base::Value(name));
+  DCHECK_GT(total_size_in_bytes, 0);
+  const double upload_progress = static_cast<double>(bytes_transferred) /
+                                 static_cast<double>(total_size_in_bytes);
+  val.SetKey(kPendingScreencastUploadProgress,
+             base::Value(upload_progress * 100));
+  val.SetKey(kPendingScreencastCreatedTime,
+             base::Value(created_time.is_null()
+                             ? 0
+                             : created_time.ToJsTimeIgnoringNull()));
 
-  // TODO(b/199421317): Show uploading progress of pending screencasts in
-  // gallery. Calculate and set the correct value here.
-  val.SetKey(kPendingScreencastUploadProgress, base::Value(0));
+  val.SetKey(kPendingScreencastUploadFailed, base::Value(upload_failed));
   return val;
 }
 
-// TODO(b/199421317): Add transferred bytes check and show uploading progress of
-// pending screencasts in gallery.
 bool PendingScreencast::operator==(const PendingScreencast& rhs) const {
-  return rhs.container_dir == container_dir;
+  // When the bytes of pending screencast didn't change a lot (less than
+  // kPendingScreencastDiffThresholdInBytes), we consider this pending
+  // screencast doesn't change. It helps to reduce the frequency of updating the
+  // pending screencast list.
+  return container_dir == rhs.container_dir && name == rhs.name &&
+         std::abs(bytes_transferred - rhs.bytes_transferred) <
+             kPendingScreencastDiffThresholdInBytes &&
+         total_size_in_bytes == rhs.total_size_in_bytes &&
+         rhs.upload_failed == upload_failed;
 }
 
-bool PendingScreencast::operator<(const PendingScreencast& rhs) const {
-  return rhs.container_dir < container_dir;
+bool PendingScreencastSetComparator::operator()(
+    const PendingScreencast& a,
+    const PendingScreencast& b) const {
+  return a.container_dir < b.container_dir ||
+         a.bytes_transferred < b.bytes_transferred;
 }
 
 // static

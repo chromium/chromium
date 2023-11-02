@@ -37,13 +37,15 @@
     <cr-toggle id="enableBluetoothToggle"
         class="margin-matches-padding"
         checked="{{isBluetoothToggleOn_}}"
+        on-change="annouceBluetoothStateChange_"
         disabled$="[[isToggleDisabled_(systemProperties.systemState)]]"
         aria-label="$i18n{bluetoothToggleA11yLabel}">
     </cr-toggle>
   </div>
 
   <template is="dom-if" if="[[isBluetoothToggleOn_]]" restamp>
-    <div id="pairNewDevice" class="settings-box no-padding">
+    <div id="pairNewDevice" class="settings-box no-padding" actionable
+        on-click="onPairNewDeviceBtnClick_">
       <div id="pairNewDeviceLabel" class="middle settings-box-text"
           aria-hidden="true">
         $i18n{bluetoothPairNewDevice}

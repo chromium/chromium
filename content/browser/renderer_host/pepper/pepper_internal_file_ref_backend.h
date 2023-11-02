@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/pepper/pepper_file_ref_host.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/c/pp_resource.h"
@@ -96,7 +97,7 @@ class PepperInternalFileRefBackend : public PepperFileRefBackend {
 
   scoped_refptr<storage::FileSystemContext> GetFileSystemContext() const;
 
-  ppapi::host::PpapiHost* host_;
+  raw_ptr<ppapi::host::PpapiHost> host_;
   int render_process_id_;
   base::WeakPtr<PepperFileSystemBrowserHost> fs_host_;
   PP_FileSystemType fs_type_;

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,6 +51,9 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
   // Find a folder item matching |id|.
   AppListFolderItem* FindFolderItem(const std::string& id);
 
+  // Creates and adds an empty folder item with the provided ID.
+  AppListFolderItem* CreateFolderItem(const std::string& folder_id);
+
   // Adds |item| to the model. The model takes ownership of |item|. Returns a
   // pointer to the item that is safe to use (e.g. after passing ownership).
   AppListItem* AddItem(std::unique_ptr<AppListItem> item);
@@ -62,6 +65,8 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
                                const std::string& folder_id);
 
   // Add a "page break" item right after the specified item in item list.
+  // TODO(crbug.com/1366414): Delete this method. The launcher no longer
+  // supports page breaks.
   void AddPageBreakItemAfter(const AppListItem* previous_item);
 
   // Updates an item's metadata (e.g. name, position, etc).
@@ -113,34 +118,17 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
   // Sets the name of |item| and notifies observers.
   void SetItemName(AppListItem* item, const std::string& name);
 
-  // Sets the name and short name of |item| and notifies observers.
-  void SetItemNameAndShortName(AppListItem* item,
-                               const std::string& name,
-                               const std::string& short_name);
-
   // Deletes the item matching |id| from |top_level_item_list_| or from the
   // appropriate folder.
   void DeleteItem(const std::string& id);
 
-  // Wrapper around DeleteItem() which will also clean up if its parent folder
-  // has a single child left.
-  void DeleteUninstalledItem(const std::string& id);
-
-  // Deletes all items. This is used in profile switches.
-  void DeleteAllItems();
-
-  // Creates and adds an empty folder item with the provided ID.
-  void AddFolderItemForTest(const std::string& folder_id);
+  AppListModelDelegate* delegate() { return delegate_; }
 
   AppListItemList* top_level_item_list() const {
     return top_level_item_list_.get();
   }
 
   AppListModelStatus status() const { return status_; }
-
- protected:
-  // Returns an existing folder matching |folder_id| or creates a new folder.
-  AppListFolderItem* FindOrCreateFolderItem(const std::string& folder_id);
 
  private:
   enum class ReparentItemReason {
@@ -187,15 +175,15 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
   std::unique_ptr<AppListItem> RemoveItemFromFolder(AppListFolderItem* folder,
                                                     AppListItem* item);
 
-  // Deletes `folder` if `folder` is empty.
-  void DeleteFolderIfEmpty(AppListFolderItem* folder);
+  // Deletes folder with ID `folder_id` if it's empty.
+  void DeleteFolderIfEmpty(const std::string& folder_id);
 
   // Sets the position of a root item.
   void SetRootItemPosition(AppListItem* item,
                            const syncer::StringOrdinal& new_position);
 
   // Used to initiate updates on app list items from the ash side.
-  AppListModelDelegate* const app_list_model_delegate_;
+  AppListModelDelegate* const delegate_;
 
   std::unique_ptr<AppListItemList> top_level_item_list_;
 

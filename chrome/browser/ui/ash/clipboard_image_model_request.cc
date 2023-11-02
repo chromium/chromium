@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,7 @@
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
@@ -61,8 +62,9 @@ ClipboardImageModelRequest::Params::~Params() = default;
 
 // ClipboardImageModelFactory::TestParams: -------------------------------------
 
-ClipboardImageModelRequest::TestParams::TestParams(RequestStopCallback callback,
-                                                   bool enforce_auto_resize)
+ClipboardImageModelRequest::TestParams::TestParams(
+    RequestStopCallback callback,
+    const absl::optional<bool>& enforce_auto_resize)
     : callback(callback), enforce_auto_resize(enforce_auto_resize) {}
 
 ClipboardImageModelRequest::TestParams::~TestParams() = default;
@@ -331,8 +333,9 @@ void ClipboardImageModelRequest::OnTimeout() {
 }
 
 bool ClipboardImageModelRequest::ShouldEnableAutoResizeMode() const {
-  if (g_test_params)
-    return g_test_params->enforce_auto_resize;
+  // Prefer to use the auto resize mode specified by `g_test_params` if any.
+  if (g_test_params && g_test_params->enforce_auto_resize)
+    return *g_test_params->enforce_auto_resize;
 
   // Use auto resize mode if `bounding_box_size_` is not meaningful.
   if (bounding_box_size_.IsEmpty())

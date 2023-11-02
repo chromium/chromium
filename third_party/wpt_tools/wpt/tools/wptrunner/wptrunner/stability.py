@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import copy
 import functools
 import imp
@@ -9,6 +11,8 @@ from datetime import datetime
 from mozlog import reader
 from mozlog.formatters import JSONFormatter
 from mozlog.handlers import BaseHandler, StreamHandler, LogLevelFilter
+
+from . import wptrunner
 
 here = os.path.dirname(__file__)
 localpaths = imp.load_source("localpaths", os.path.abspath(os.path.join(here, os.pardir, os.pardir, "localpaths.py")))
@@ -262,7 +266,6 @@ def write_results(log, results, iterations, pr_number=None, use_details=False):
 
 
 def run_step(logger, iterations, restart_after_iteration, kwargs_extras, **kwargs):
-    from . import wptrunner
     kwargs = copy.deepcopy(kwargs)
 
     if restart_after_iteration:
@@ -274,7 +277,7 @@ def run_step(logger, iterations, restart_after_iteration, kwargs_extras, **kwarg
     kwargs.update(kwargs_extras)
 
     def wrap_handler(x):
-        if not kwargs["verify_log_full"]:
+        if not kwargs.get("verify_log_full", False):
             x = LogLevelFilter(x, "WARNING")
             x = LogActionFilter(x, ["log", "process_output"])
         return x
@@ -288,15 +291,17 @@ def run_step(logger, iterations, restart_after_iteration, kwargs_extras, **kwarg
     # warning+ level logs only
     logger.add_handler(StreamHandler(log, JSONFormatter()))
 
-    wptrunner.run_tests(**kwargs)
+    _, test_status = wptrunner.run_tests(**kwargs)
 
     logger._state.handlers = initial_handlers
     logger._state.running_tests = set()
     logger._state.suite_started = False
 
     log.seek(0)
-    results, inconsistent, slow = process_results(log, iterations)
-    return results, inconsistent, slow, iterations
+    total_iterations = test_status.repeated_runs * kwargs.get("rerun", 1)
+    all_skipped = test_status.all_skipped
+    results, inconsistent, slow = process_results(log, total_iterations)
+    return total_iterations, all_skipped, results, inconsistent, slow
 
 
 def get_steps(logger, repeat_loop, repeat_restart, kwargs_extras):
@@ -311,12 +316,24 @@ def get_steps(logger, repeat_loop, repeat_restart, kwargs_extras):
         if repeat_loop:
             desc = "Running tests in a loop %d times%s" % (repeat_loop,
                                                            flags_string)
-            steps.append((desc, functools.partial(run_step, logger, repeat_loop, False, kwargs_extra)))
+            steps.append((desc,
+                          functools.partial(run_step,
+                                            logger,
+                                            repeat_loop,
+                                            False,
+                                            kwargs_extra),
+                          repeat_loop))
 
         if repeat_restart:
             desc = "Running tests in a loop with restarts %s times%s" % (repeat_restart,
                                                                          flags_string)
-            steps.append((desc, functools.partial(run_step, logger, repeat_restart, True, kwargs_extra)))
+            steps.append((desc,
+                          functools.partial(run_step,
+                                            logger,
+                                            repeat_restart,
+                                            True,
+                                            kwargs_extra),
+                          repeat_restart))
 
     return steps
 
@@ -335,6 +352,7 @@ def write_summary(logger, step_results, final_result):
 
     logger.info(':::')
 
+
 def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True, max_time=None,
                     output_results=True, **kwargs):
     kwargs_extras = [{}]
@@ -346,9 +364,9 @@ def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True, m
     start_time = datetime.now()
     step_results = []
 
-    github_checks_outputter = get_gh_checks_outputter(kwargs["github_checks_text_file"])
+    github_checks_outputter = get_gh_checks_outputter(kwargs.get("github_checks_text_file"))
 
-    for desc, step_func in steps:
+    for desc, step_func, expected_iterations in steps:
         if max_time and datetime.now() - start_time > max_time:
             logger.info("::: Test verification is taking too long: Giving up!")
             logger.info("::: So far, all checks passed, but not all checks were run.")
@@ -358,15 +376,25 @@ def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True, m
         logger.info(':::')
         logger.info('::: Running test verification step "%s"...' % desc)
         logger.info(':::')
-        results, inconsistent, slow, iterations = step_func(**kwargs)
+        total_iterations, all_skipped, results, inconsistent, slow = step_func(**kwargs)
+
+        logger.info(f"::: Ran {total_iterations} of expected {expected_iterations} iterations.")
+        if total_iterations <= 1 and expected_iterations > 1 and not all_skipped:
+            step_results.append((desc, "FAIL"))
+            logger.info("::: Reached iteration timeout before finishing 2 or more repeat runs.")
+            logger.info("::: At least 2 successful repeat runs are required to validate stability.")
+            write_summary(logger, step_results, "TIMEOUT")
+            return 1
+
         if output_results:
-            write_results(logger.info, results, iterations)
+            write_results(logger.info, results, total_iterations)
 
         if inconsistent:
             step_results.append((desc, "FAIL"))
             if github_checks_outputter:
-                write_github_checks_summary_inconsistent(github_checks_outputter.output, inconsistent, iterations)
-            write_inconsistent(logger.info, inconsistent, iterations)
+                write_github_checks_summary_inconsistent(github_checks_outputter.output,
+                                                         inconsistent, total_iterations)
+            write_inconsistent(logger.info, inconsistent, total_iterations)
             write_summary(logger, step_results, "FAIL")
             return 1
 
@@ -378,6 +406,12 @@ def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True, m
             write_summary(logger, step_results, "FAIL")
             return 1
 
-        step_results.append((desc, "PASS"))
+        # If the tests passed but the number of iterations didn't match the number expected to run,
+        # it is likely that the runs were stopped early to avoid a timeout.
+        if total_iterations != expected_iterations:
+            result = f"PASS *  {total_iterations}/{expected_iterations} repeats completed"
+            step_results.append((desc, result))
+        else:
+            step_results.append((desc, "PASS"))
 
     write_summary(logger, step_results, "PASS")

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,7 +31,7 @@ async function doBackgroundTasks() {
     mainCategoryName: 'Help',
     tags: ['verycomplicatedsearchquery'],
     urlPathWithParameters: 'help/sub/3399763/',
-    locale: ''
+    locale: '',
   }]);
   window.customLaunchData.delegate.closeBackgroundPage();
 }
@@ -51,6 +51,6 @@ async function doBackgroundTasks() {
       body: 'Test body',
       mainCategoryName: 'Help',
       locale: 'en-US',
-    }
+    },
   ]);
 }

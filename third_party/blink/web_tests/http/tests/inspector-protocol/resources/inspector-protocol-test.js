@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -185,6 +185,10 @@ var TestRunner = class {
     })
   };
 
+  browserSession() {
+    return this._browserSession;
+  }
+
   browserP() {
     return this._browserSession.protocol;
   }
@@ -199,9 +203,9 @@ var TestRunner = class {
       params.height = options.height;
     if (options.enableBeginFrameControl)
       params.enableBeginFrameControl = true;
-    if (options.createContext) {
-      const browserContextId = (await browserProtocol.Target.createBrowserContext()).result.browserContextId;
-      options.browserContextId = browserContextId;
+    if (options.createContextOptions) {
+      const browserContextId = (await browserProtocol.Target.createBrowserContext(options.createContextOptions)).result.browserContextId;
+      params.browserContextId = browserContextId;
     }
     const targetId = (await browserProtocol.Target.createTarget(params)).result.targetId;
     const page = new TestRunner.Page(this, targetId);
@@ -249,7 +253,7 @@ var TestRunner = class {
     options = options || {};
     options.width = options.width || 800;
     options.height = options.height || 600;
-    options.createContext = true;
+    options.createContextOptions = {};
     options.enableBeginFrameControl = true;
     return this._start(description, options);
   }
@@ -362,6 +366,11 @@ TestRunner.Session = class {
     return session;
   }
 
+  async attachChild(targetId) {
+    const {sessionId} = (await this.protocol.Target.attachToTarget({targetId, flatten: true})).result;
+    return this.createChild(sessionId);
+  }
+
   async sendCommand(method, params) {
     var requestId = ++this._requestId;
     if (this._testRunner._dumpInspectorProtocolMessages)
@@ -391,7 +400,9 @@ TestRunner.Session = class {
     }
     var response = await this.protocol.Runtime.evaluate({expression: code, returnByValue: true, awaitPromise, userGesture});
     if (response.error) {
-      this._testRunner.log(`Error while evaluating async '${code}': ${response.error}`);
+      const errorMessage = JSON.stringify(response.error);
+      const maybeAsync = awaitPromise ? 'async ' : '';
+      this._testRunner.log(`Error while evaluating ${maybeAsync}'${code}': ${errorMessage}`);
       this._testRunner.completeTest();
     } else {
       return response.result.result.value;

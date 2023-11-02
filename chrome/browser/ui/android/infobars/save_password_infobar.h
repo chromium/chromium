@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ class SavePasswordInfoBar : public infobars::ConfirmInfoBar {
  public:
   explicit SavePasswordInfoBar(
       std::unique_ptr<SavePasswordInfoBarDelegate> delegate,
-      absl::optional<AccountInfo> account_info);
+      const AccountInfo& account_info);
 
   SavePasswordInfoBar(const SavePasswordInfoBar&) = delete;
   SavePasswordInfoBar& operator=(const SavePasswordInfoBar&) = delete;
@@ -34,7 +34,7 @@ class SavePasswordInfoBar : public infobars::ConfirmInfoBar {
 
   base::android::ScopedJavaGlobalRef<jobject> java_infobar_;
 
-  absl::optional<AccountInfo> account_info_;
+  AccountInfo account_info_;
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_INFOBARS_SAVE_PASSWORD_INFOBAR_H_

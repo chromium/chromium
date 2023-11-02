@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -137,7 +137,7 @@ TEST_F(TestURLLoaderFactoryTest, Redirects) {
   redirect_info.status_code = 301;
   redirect_info.new_url = GURL("http://example2.test/");
   TestURLLoaderFactory::Redirects redirects;
-  redirects.push_back({redirect_info, mojom::URLResponseHead::New()});
+  redirects.emplace_back(redirect_info, mojom::URLResponseHead::New());
   URLLoaderCompletionStatus status;
   std::string content = "foo";
   factory()->AddResponse(url, mojom::URLResponseHead::New(), content, status,

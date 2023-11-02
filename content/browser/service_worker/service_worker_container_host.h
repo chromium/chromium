@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -33,7 +34,7 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_client.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container_type.mojom.h"
-#include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom-forward.h"
 
 namespace content {
 
@@ -269,7 +270,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // tests use a fake id.
   void OnBeginNavigationCommit(
       const GlobalRenderFrameHostId& rfh_id,
-      const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+      const PolicyContainerPolicies& policy_container_policies,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
       ukm::SourceId document_ukm_source_id);
@@ -285,14 +286,12 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // After this is called, is_response_committed() and is_execution_ready()
   // return true.
   void CompleteWebWorkerPreparation(
-      const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+      const PolicyContainerPolicies& cross_origin_embedder_policy,
       ukm::SourceId worker_ukm_source_id);
 
-  // Sets `url_`, `site_for_cookies_`, `top_frame_origin_` and `key_`. For
-  // service worker clients, updates the client uuid if it's a cross-origin
-  // transition.
+  // Sets `url_`, `top_frame_origin_` and `key_`. For service worker clients,
+  // updates the client uuid if it's a cross-origin transition.
   void UpdateUrls(const GURL& url,
-                  const net::SiteForCookies& site_for_cookies,
                   const absl::optional<url::Origin>& top_frame_origin,
                   const blink::StorageKey& storage_key);
 
@@ -360,12 +359,16 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // is_response_committed() is true, the URL should no longer change.
   const GURL& url() const { return url_; }
 
-  // Representing the first party for cookies, if any, for this context. See
-  // |URLRequest::site_for_cookies()| for details.
+  // This returns the first party for cookies as derived from the storage key.
+  // For information on how this may differ from the SiteForCookies in the frame
+  // context please see the comments above StorageKey::ToNetSiteForCookies.
   // For service worker execution contexts, site_for_cookies() always
   // corresponds to the service worker script URL.
-  const net::SiteForCookies& site_for_cookies() const {
-    return site_for_cookies_;
+  const net::SiteForCookies site_for_cookies() const {
+    // TODO(crbug.com/1159586): Once partitioning is on by default calling
+    // ToNetSiteForCookies will be sufficient.
+    return key_.CopyWithForceEnabledThirdPartyStoragePartitioning()
+        .ToNetSiteForCookies();
   }
 
   // The URL representing the first-party site for this context.
@@ -618,7 +621,6 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
 
   // See comments for the getter functions.
   GURL url_;
-  net::SiteForCookies site_for_cookies_;
   absl::optional<url::Origin> top_frame_origin_;
   blink::StorageKey key_;
 
@@ -739,9 +741,8 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // on the GUID format.
   base::UnguessableToken fetch_request_window_id_;
 
-  // The embedder policy of the client. Set on response commit.
-  absl::optional<network::CrossOriginEmbedderPolicy>
-      cross_origin_embedder_policy_;
+  // The policy container policies of the client. Set on response commit.
+  absl::optional<PolicyContainerPolicies> policy_container_policies_;
 
   // An endpoint connected to the COEP reporter. A clone of this connection is
   // passed to the service worker. Bound on response commit.
@@ -765,7 +766,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // For service worker execution contexts -------------------------------------
 
   // The ServiceWorkerHost that owns |this|.
-  ServiceWorkerHost* service_worker_host_ = nullptr;
+  raw_ptr<ServiceWorkerHost> service_worker_host_ = nullptr;
 
   // For all instances --------------------------------------------------------
 

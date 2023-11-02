@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/aura/aura_export.h"
 #include "ui/aura/client/window_types.h"
 #include "ui/aura/window.h"
@@ -44,7 +44,6 @@ class AURA_EXPORT WindowTreeHostPlatform : public WindowTreeHost,
   void HideImpl() override;
   gfx::Rect GetBoundsInPixels() const override;
   void SetBoundsInPixels(const gfx::Rect& bounds) override;
-  gfx::Point GetLocationOnScreenInPixels() const override;
   void SetCapture() override;
   void ReleaseCapture() override;
   void SetCursorNative(gfx::NativeCursor cursor) override;
@@ -57,6 +56,10 @@ class AURA_EXPORT WindowTreeHostPlatform : public WindowTreeHost,
   const ui::PlatformWindow* platform_window() const {
     return platform_window_.get();
   }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::string GetUniqueId() const override;
+#endif
 
  protected:
   // NOTE: this does not call CreateCompositor(); subclasses must call
@@ -85,8 +88,10 @@ class AURA_EXPORT WindowTreeHostPlatform : public WindowTreeHost,
   void OnMouseEnter() override;
   void OnOcclusionStateChanged(
       ui::PlatformWindowOcclusionState occlusion_state) override;
+  void SetFrameRateThrottleEnabled(bool enabled) override;
 
   // Overridden from aura::WindowTreeHost:
+  gfx::Point GetLocationOnScreenInPixels() const override;
   bool CaptureSystemKeyEventsImpl(
       absl::optional<base::flat_set<ui::DomCode>> dom_codes) override;
   void ReleaseSystemKeyEventCapture() override;
@@ -97,11 +102,10 @@ class AURA_EXPORT WindowTreeHostPlatform : public WindowTreeHost,
   gfx::AcceleratedWidget widget_;
   std::unique_ptr<ui::PlatformWindow> platform_window_;
   gfx::NativeCursor current_cursor_;
-  gfx::Rect bounds_in_pixels_;
+  // TODO: use compositor's size.
+  gfx::Size size_in_pixels_;
 
   std::unique_ptr<ui::KeyboardHook> keyboard_hook_;
-
-  gfx::Size pending_size_;
 
   // Tracks how nested OnBoundsChanged() is. That is, on entering
   // OnBoundsChanged() this is incremented and on leaving OnBoundsChanged() this

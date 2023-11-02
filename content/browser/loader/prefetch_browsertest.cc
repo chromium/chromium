@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,8 +55,8 @@ class PrefetchBrowserTest
   }
 
   void SetUp() override {
-    std::vector<base::Feature> enable_features;
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> enable_features;
+    std::vector<base::test::FeatureRef> disabled_features;
 
     (signed_exchange_enabled_ ? enable_features : disabled_features)
         .push_back(features::kSignedHTTPExchange);
@@ -95,8 +95,8 @@ class PrefetchBrowserTestPrivacyChanges
   ~PrefetchBrowserTestPrivacyChanges() override = default;
 
   void SetUp() override {
-    std::vector<base::Feature> enable_features;
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> enable_features;
+    std::vector<base::test::FeatureRef> disabled_features;
     if (privacy_changes_enabled_) {
       enable_features.push_back(blink::features::kPrefetchPrivacyChanges);
     } else {
@@ -424,8 +424,8 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
 
 // This tests more of an implementation detail than anything. A single resource
 // must be committed to the cache partition corresponding to a single
-// NetworkIsolationKey. This means that even though it is considered "safe" to
-// reused cross-origin subresource prefetches for top-level navigations, we
+// NetworkAnonymizationKey. This means that even though it is considered "safe"
+// to reused cross-origin subresource prefetches for top-level navigations, we
 // can't actually do this, because the subresource is only reusable from the
 // frame that fetched it.
 IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
@@ -771,8 +771,9 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest, CrossOriginWithPreloadAnonymous) {
   WaitUntilLoaded(cross_origin_preload_url);
 
   // When SplitCache is enabled and the prefetch resource and its headers are
-  // fetched with a modified NetworkIsolationKey, the preload header resource
-  // must not be reusable by any other origin but its parent prefetch's.
+  // fetched with a modified NetworkAnonymizationKey, the preload header
+  // resource must not be reusable by any other origin but its parent
+  // prefetch's.
   // TODO(crbug.com/910708): When SplitCache is enabled by default, get rid of
   // the below conditional.
   if (split_cache_enabled_) {
@@ -828,14 +829,8 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest, CrossOriginWithPreloadAnonymous) {
 // Variants of this test:
 // - PrefetchBrowserTest.CrossOriginWithPreloadAnonymous
 // - PrefetchBrowserTest.CrossOriginWithPreloadCredentialled
-// Disabling due to flakiness, see https://crbug.com/1257939
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_MAC)
-#define MAYBE_CrossOriginWithPreloadCredentialled DISABLED_CrossOriginWithPreloadCredentialled
-#else
-#define MAYBE_CrossOriginWithPreloadCredentialled CrossOriginWithPreloadCredentialled
-#endif
 IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
-                       MAYBE_CrossOriginWithPreloadCredentialled) {
+                       CrossOriginWithPreloadCredentialled) {
   ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
   const auto port = embedded_test_server()->port();
   const char target_path[] = "/target.html";
@@ -925,8 +920,9 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest, SignedExchangeWithPreload) {
       target_sxg_path,
       // We mock the SignedExchangeHandler, so just return a HTML content
       // as "application/signed-exchange;v=b3".
-      ResponseEntry("<head><title>Prefetch Target (SXG)</title><script "
-                    "src=\"./preload.js\"></script></head>",
+      ResponseEntry(MockSignedExchangeHandler::kMockSxgPrefix +
+                        "<head><title>Prefetch Target (SXG)</title><script "
+                        "src=\"./preload.js\"></script></head>",
                     "application/signed-exchange;v=b3",
                     {{"x-content-type-options", "nosniff"}}));
   RegisterResponse(preload_path_in_sxg,
@@ -991,8 +987,9 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
       target_sxg_path,
       // We mock the SignedExchangeHandler, so just return a HTML content
       // as "application/signed-exchange;v=b3".
-      ResponseEntry("<head><title>Prefetch Target (SXG)</title><script "
-                    "src=\"./preload.js\"></script></head>",
+      ResponseEntry(MockSignedExchangeHandler::kMockSxgPrefix +
+                        "<head><title>Prefetch Target (SXG)</title><script "
+                        "src=\"./preload.js\"></script></head>",
                     "application/signed-exchange;v=b3",
                     {{"x-content-type-options", "nosniff"}}));
   RegisterResponse(preload_path_in_sxg,

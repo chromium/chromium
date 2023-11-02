@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 namespace base {
 class Value;
-class ListValue;
 }  // namespace base
 
 namespace sandbox_handler {
@@ -30,7 +29,7 @@ class SandboxHandler : public content::WebUIMessageHandler {
   void RegisterMessages() override;
 
   // Callback for the "requestSandboxDiagnostics" message.
-  void HandleRequestSandboxDiagnostics(const base::ListValue* args);
+  void HandleRequestSandboxDiagnostics(const base::Value::List& args);
 
   void OnSandboxDataFetched(base::Value results);
 
@@ -39,7 +38,7 @@ class SandboxHandler : public content::WebUIMessageHandler {
 
   // The ID of the callback that will get invoked with the sandbox list.
   base::Value sandbox_diagnostics_callback_id_;
-  base::Value browser_processes_;
+  base::Value::List browser_processes_;
   base::Value sandbox_policies_;
 
   // Always keep this the last member of this class to make sure it's the

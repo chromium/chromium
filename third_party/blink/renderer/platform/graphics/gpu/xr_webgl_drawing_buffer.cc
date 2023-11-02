@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@ namespace blink {
 
 XRWebGLDrawingBuffer::ColorBuffer::ColorBuffer(
     base::WeakPtr<XRWebGLDrawingBuffer> drawing_buffer,
-    const IntSize& size,
+    const gfx::Size& size,
     const gpu::Mailbox& mailbox,
     GLuint texture_id)
     : owning_thread_ref(base::PlatformThread::CurrentRef()),
@@ -62,7 +62,7 @@ XRWebGLDrawingBuffer::ColorBuffer::~ColorBuffer() {
 scoped_refptr<XRWebGLDrawingBuffer> XRWebGLDrawingBuffer::Create(
     DrawingBuffer* drawing_buffer,
     GLuint framebuffer,
-    const IntSize& size,
+    const gfx::Size& size,
     bool want_alpha_channel,
     bool want_depth_buffer,
     bool want_stencil_buffer,
@@ -145,7 +145,7 @@ void XRWebGLDrawingBuffer::BeginDestruction() {
 
 // TODO(bajones): The GL resources allocated in this function are leaking. Add
 // a way to clean up the buffers when the layer is GCed or the session ends.
-bool XRWebGLDrawingBuffer::Initialize(const IntSize& size,
+bool XRWebGLDrawingBuffer::Initialize(const gfx::Size& size,
                                       bool use_multisampling) {
   gpu::gles2::GLES2Interface* gl = drawing_buffer_->ContextGL();
 
@@ -169,8 +169,8 @@ bool XRWebGLDrawingBuffer::Initialize(const IntSize& size,
   DVLOG(2) << __FUNCTION__
            << ": anti_aliasing_mode_=" << static_cast<int>(anti_aliasing_mode_);
 
-#if defined(OS_ANDROID)
-  // On Android devices use a smaller numer of samples to provide more breathing
+#if BUILDFLAG(IS_ANDROID)
+  // On Android devices use a smaller number of samples to provide more breathing
   // room for fill-rate-bound applications.
   sample_count_ = std::min(2, max_sample_count);
 #else
@@ -196,7 +196,7 @@ bool XRWebGLDrawingBuffer::ContextLost() {
   return drawing_buffer_->destroyed();
 }
 
-IntSize XRWebGLDrawingBuffer::AdjustSize(const IntSize& new_size) {
+gfx::Size XRWebGLDrawingBuffer::AdjustSize(const gfx::Size& new_size) {
   // Ensure we always have at least a 1x1 buffer
   float width = std::max(1, new_size.width());
   float height = std::max(1, new_size.height());
@@ -212,7 +212,7 @@ IntSize XRWebGLDrawingBuffer::AdjustSize(const IntSize& new_size) {
     height *= adjusted_scale;
   }
 
-  return IntSize(width, height);
+  return gfx::Size(width, height);
 }
 
 void XRWebGLDrawingBuffer::UseSharedBuffer(
@@ -348,8 +348,8 @@ void XRWebGLDrawingBuffer::ClearBoundFramebuffer() {
   client->DrawingBufferClientRestoreMaskAndClearValues();
 }
 
-void XRWebGLDrawingBuffer::Resize(const IntSize& new_size) {
-  IntSize adjusted_size = AdjustSize(new_size);
+void XRWebGLDrawingBuffer::Resize(const gfx::Size& new_size) {
+  gfx::Size adjusted_size = AdjustSize(new_size);
 
   if (adjusted_size == size_)
     return;
@@ -454,12 +454,12 @@ void XRWebGLDrawingBuffer::Resize(const IntSize& new_size) {
 scoped_refptr<XRWebGLDrawingBuffer::ColorBuffer>
 XRWebGLDrawingBuffer::CreateColorBuffer() {
   auto* sii = drawing_buffer_->ContextProvider()->SharedImageInterface();
-  uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY |
+  uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                    gpu::SHARED_IMAGE_USAGE_GLES2 |
                    gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
   gpu::Mailbox mailbox = sii->CreateSharedImage(
-      alpha_ ? viz::RGBA_8888 : viz::RGBX_8888, ToGfxSize(size_),
-      gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+      alpha_ ? viz::RGBA_8888 : viz::RGBX_8888, size_, gfx::ColorSpace(),
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
       gpu::kNullSurfaceHandle);
 
   gpu::gles2::GLES2Interface* gl = drawing_buffer_->ContextGL();
@@ -480,7 +480,7 @@ XRWebGLDrawingBuffer::CreateColorBuffer() {
 
 scoped_refptr<XRWebGLDrawingBuffer::ColorBuffer>
 XRWebGLDrawingBuffer::CreateOrRecycleColorBuffer() {
-  if (!recycled_color_buffer_queue_.IsEmpty()) {
+  if (!recycled_color_buffer_queue_.empty()) {
     scoped_refptr<ColorBuffer> recycled =
         recycled_color_buffer_queue_.TakeLast();
     if (recycled->receive_sync_token.HasData()) {
@@ -621,8 +621,11 @@ XRWebGLDrawingBuffer::TransferToStaticBitmapImage() {
       /* shared_image_texture_id = */ 0, sk_image_info, GL_TEXTURE_2D,
       /* is_origin_top_left = */ false,
       drawing_buffer_->ContextProviderWeakPtr(),
-      base::PlatformThread::CurrentRef(), Thread::Current()->GetTaskRunner(),
-      std::move(release_callback));
+      base::PlatformThread::CurrentRef(),
+      Thread::Current()->GetDeprecatedTaskRunner(), std::move(release_callback),
+      /*supports_display_compositing=*/true,
+      // CreateColorBuffer() never sets the SCANOUT usage bit.
+      /*is_overlay_candidate=*/false);
 }
 
 // static

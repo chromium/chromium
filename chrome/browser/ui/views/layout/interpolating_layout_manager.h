@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_manager_base.h"
 
@@ -89,6 +90,8 @@ class InterpolatingLayoutManager : public views::LayoutManagerBase {
       const views::SizeBounds& size_bounds) const override;
 
  private:
+  using Layouts = std::map<views::Span, LayoutManagerBase*>;
+
   // Describes an interpolation between two layouts as a pointer to each and
   // a percentage of distance between them to interpolate linearly to.
   struct LayoutInterpolation {
@@ -119,8 +122,8 @@ class InterpolatingLayoutManager : public views::LayoutManagerBase {
   views::LayoutOrientation orientation_ = views::LayoutOrientation::kHorizontal;
 
   // Maps from interpolation range to embedded layout.
-  std::map<views::Span, LayoutManagerBase*> embedded_layouts_;
-  LayoutManagerBase* default_layout_ = nullptr;
+  Layouts embedded_layouts_;
+  raw_ptr<LayoutManagerBase> default_layout_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LAYOUT_INTERPOLATING_LAYOUT_MANAGER_H_

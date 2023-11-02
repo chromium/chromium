@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,17 +23,15 @@ size_t HashCombine(size_t seed, const T& value) {
   return seed ^ (std::hash<T>()(value) + (seed << 6) + (seed >> 2));
 }
 
-template <typename T>
-struct HasHashMethod {
-  template <typename U>
-  static char Test(decltype(&U::Hash));
-  template <typename U>
-  static int Test(...);
-  static const bool value = sizeof(Test<T>(0)) == sizeof(char);
-
- private:
-  EnsureTypeIsComplete<T> check_t_;
+template <typename T, typename SFINAE = void>
+struct HasHashMethod : std::false_type {
+  static_assert(sizeof(T), "T must be a complete type.");
 };
+
+template <typename T>
+struct HasHashMethod<T,
+                     std::void_t<decltype(std::declval<T>().Hash(size_t{0}))>>
+    : std::true_type {};
 
 template <typename T, bool has_hash_method = HasHashMethod<T>::value>
 struct HashTraits;

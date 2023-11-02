@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
@@ -89,8 +90,8 @@ class ExtensionDisabledGlobalError : public GlobalErrorWithStandardBubble,
 
   void RemoveGlobalError();
 
-  ExtensionService* service_;
-  const Extension* extension_;
+  raw_ptr<ExtensionService> service_;
+  scoped_refptr<const Extension> extension_;
   bool is_remote_install_;
 
   // How the user responded to the error; used for metrics.

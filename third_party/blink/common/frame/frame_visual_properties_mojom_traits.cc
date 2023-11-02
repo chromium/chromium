@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@ bool StructTraits<blink::mojom::FrameVisualPropertiesDataView,
       !data.ReadMaxSizeForAutoResize(&out->max_size_for_auto_resize) ||
       !data.ReadVisibleViewportSize(&out->visible_viewport_size) ||
       !data.ReadCompositorViewport(&out->compositor_viewport) ||
-      !data.ReadScreenSpaceRect(&out->screen_space_rect) ||
+      !data.ReadRectInLocalRoot(&out->rect_in_local_root) ||
       !data.ReadLocalFrameSize(&out->local_frame_size) ||
       !data.ReadRootWidgetWindowSegments(&out->root_widget_window_segments) ||
       !data.ReadLocalSurfaceId(&out->local_surface_id) ||

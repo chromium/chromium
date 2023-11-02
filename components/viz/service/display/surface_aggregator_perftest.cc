@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -126,7 +126,7 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
         bool premultiplied_alpha = false;
         const gfx::PointF uv_top_left;
         const gfx::PointF uv_bottom_right;
-        SkColor background_color = SK_ColorGREEN;
+        SkColor4f background_color = SkColors::kGreen;
         const float vertex_opacity[4] = {0.f, 0.f, 1.f, 1.f};
         bool flipped = false;
         bool nearest_neighbor = false;
@@ -146,7 +146,7 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
             SurfaceRange(absl::nullopt,
                          SurfaceId(FrameSinkId(1, i),
                                    LocalSurfaceId(i, child_tokens[i - 1]))),
-            SK_ColorWHITE, /*stretch_content_to_fill_bounds=*/false);
+            SkColors::kWhite, /*stretch_content_to_fill_bounds=*/false);
       }
 
       frame_builder.AddRenderPass(std::move(pass));
@@ -175,7 +175,7 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
               SurfaceId(FrameSinkId(1, num_surfaces),
                         LocalSurfaceId(num_surfaces,
                                        child_tokens[num_surfaces - 1]))),
-          SK_ColorWHITE, /*stretch_content_to_fill_bounds=*/false);
+          SkColors::kWhite, /*stretch_content_to_fill_bounds=*/false);
 
       pass->output_rect = gfx::Rect(0, 0, 100, 100);
 
@@ -485,9 +485,9 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
   }
 
   std::string GetHistogramStats(base::HistogramBase* histogram) {
-    base::Value graph_dict = histogram->ToGraphDict();
+    base::Value::Dict graph_dict = histogram->ToGraphDict();
     // The header contains the sample count and the mean.
-    return *graph_dict.FindStringKey("header");
+    return *graph_dict.FindString("header");
   }
 
  protected:

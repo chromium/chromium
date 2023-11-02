@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "content/public/browser/web_ui.h"
@@ -22,10 +23,15 @@ namespace {
 // Handler names:
 const char kRecordNavigation[] = "recordNavigation";
 
+// Checks Javascript input integrity before parsing.
+bool IsValidNavigationViewValue(const base::Value& value) {
+  return value.is_int() && value.GetInt() >= 0 &&
+         value.GetInt() <= static_cast<int>(NavigationView::kMaxValue);
+}
+
 // Converts base::Value<int> to NavigationView based on enum values.
 NavigationView ConvertToNavigationView(const base::Value& value) {
-  DCHECK(value.is_int());
-  DCHECK_LE(value.GetInt(), static_cast<int>(NavigationView::kMaxValue));
+  DCHECK(IsValidNavigationViewValue(value));
 
   return static_cast<NavigationView>(value.GetInt());
 }
@@ -43,7 +49,10 @@ void EmitScreenOpenDuration(const NavigationView screen,
       });
 
   auto* iter = kOpenDurationMetrics.find(screen);
-  DCHECK(iter != kOpenDurationMetrics.end());
+  if (iter == kOpenDurationMetrics.end()) {
+    NOTREACHED() << "Unknown NavigationView requested";
+    return;
+  }
 
   base::UmaHistogramLongTimes100(std::string(iter->second), time_elapsed);
 }
@@ -94,9 +103,13 @@ void DiagnosticsMetricsMessageHandler::SetWebUiForTesting(
 
 // Message Handlers:
 void DiagnosticsMetricsMessageHandler::HandleRecordNavigation(
-    base::Value::ConstListView args) {
-  DCHECK_EQ(2u, args.size());
-  DCHECK_NE(args[0], args[1]);
+    const base::Value::List& args) {
+  // Ensure JS arguments received are valid before using in calls to metrics.
+  if (args.size() != 2u || !IsValidNavigationViewValue(args[0]) ||
+      !IsValidNavigationViewValue(args[1]) || args[0] == args[1]) {
+    return;
+  }
+
   const NavigationView from_view = ConvertToNavigationView(args[0]);
   const NavigationView to_view = ConvertToNavigationView(args[1]);
   const base::Time updated_start_time = base::Time::Now();

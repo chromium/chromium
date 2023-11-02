@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -57,11 +57,6 @@ class ASH_EXPORT ShellTestApi {
   // set this to enabled, the test is responsible for setting it back to
   // disabled to prevent failing subsequent tests.
   static void SetUseLoginNotificationDelayForTest(bool use_delay);
-
-  // Whether a notification is shown at startup about new shortcuts. This
-  // can interfere with tests that expect a certain window to be active,
-  // that count notifications, or that test ChromeVox output.
-  static void SetShouldShowShortcutNotificationForTest(bool show_notification);
 
   MessageCenterController* message_center_controller();
   WorkspaceController* workspace_controller();

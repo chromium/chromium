@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,11 @@
 
 #include <sys/mman.h>
 
-#include <algorithm>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "media/gpu/macros.h"
 
@@ -18,9 +18,9 @@ namespace media {
 
 namespace {
 
-uint8_t* Mmap(const size_t length, const int fd) {
-  void* addr =
-      mmap(nullptr, length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0u);
+uint8_t* Mmap(const size_t length, const int fd, int permissions) {
+  void* addr = mmap(nullptr, length, permissions, MAP_SHARED, fd, 0u);
+
   if (addr == MAP_FAILED) {
     VLOGF(1) << "Failed to mmap.";
     return nullptr;
@@ -83,8 +83,7 @@ bool IsFormatSupported(VideoPixelFormat format) {
       // Compressed format.
       PIXEL_FORMAT_MJPEG,
   };
-  return std::find(std::cbegin(supported_formats), std::cend(supported_formats),
-                   format) != std::cend(supported_formats);
+  return base::Contains(supported_formats, format);
 }
 
 }  // namespace
@@ -104,7 +103,8 @@ GenericDmaBufVideoFrameMapper::GenericDmaBufVideoFrameMapper(
     : VideoFrameMapper(format) {}
 
 scoped_refptr<VideoFrame> GenericDmaBufVideoFrameMapper::Map(
-    scoped_refptr<const VideoFrame> video_frame) const {
+    scoped_refptr<const VideoFrame> video_frame,
+    int permissions) const {
   if (!video_frame) {
     LOG(ERROR) << "Video frame is nullptr";
     return nullptr;
@@ -155,7 +155,7 @@ scoped_refptr<VideoFrame> GenericDmaBufVideoFrameMapper::Map(
       return nullptr;
     }
 
-    uint8_t* mapped_addr = Mmap(mapped_size, dmabuf_fds[i].get());
+    uint8_t* mapped_addr = Mmap(mapped_size, dmabuf_fds[i].get(), permissions);
     chunks.emplace_back(mapped_addr, mapped_size);
     for (size_t j = i; j < next_buf; ++j)
       plane_addrs[j] = mapped_addr + planes[j].offset;

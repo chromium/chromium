@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,7 +40,7 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) SchedulerConfigurationManagerBase {
   virtual absl::optional<std::pair<bool, size_t>> GetLastReply() const = 0;
 
   void AddObserver(Observer* obs);
-  void RemoveObserver(const Observer* obs);
+  void RemoveObserver(Observer* obs);
 
  protected:
   base::ObserverList<Observer> observer_list_;

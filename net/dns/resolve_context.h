@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/sample_vector.h"
@@ -17,6 +18,7 @@
 #include "base/time/time.h"
 #include "net/base/isolation_info.h"
 #include "net/base/net_export.h"
+#include "net/base/network_handle.h"
 #include "net/dns/dns_config.h"
 #include "net/dns/public/secure_dns_mode.h"
 
@@ -148,6 +150,9 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
   void UnregisterDohStatusObserver(const DohStatusObserver* observer);
 
   URLRequestContext* url_request_context() { return url_request_context_; }
+  const URLRequestContext* url_request_context() const {
+    return url_request_context_;
+  }
   void set_url_request_context(URLRequestContext* url_request_context) {
     DCHECK(!url_request_context_);
     DCHECK(url_request_context);
@@ -176,8 +181,17 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
   // (alternative service info if it supports QUIC, for instance).
   const IsolationInfo& isolation_info() const { return isolation_info_; }
 
-  base::SafeRef<ResolveContext> AsSafeRef() const {
+  // Network to perform the DNS lookups for. When equal to
+  // handles::kInvalidNetworkHandle the decision of which one to target is left
+  // to the resolver. Virtual for testing.
+  virtual handles::NetworkHandle GetTargetNetwork() const;
+
+  base::SafeRef<ResolveContext> AsSafeRef() {
     return weak_ptr_factory_.GetSafeRef();
+  }
+
+  base::WeakPtr<ResolveContext> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
   }
 
  private:
@@ -192,7 +206,7 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
     ~ServerStats();
 
     // Count of consecutive failures after last success.
-    int last_failure_count;
+    int last_failure_count = 0;
 
     // True if any success has ever been recorded for this server for the
     // current connection.
@@ -248,15 +262,17 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
 
   static bool ServerStatsToDohAvailability(const ServerStats& stats);
 
-  URLRequestContext* url_request_context_;
+  raw_ptr<URLRequestContext> url_request_context_;
 
   std::unique_ptr<HostCache> host_cache_;
 
   // Current maximum server fallback period. Updated on connection change.
   base::TimeDelta max_fallback_period_;
 
+  // All DohStatusObservers only hold a WeakPtr<ResolveContext>, so there's no
+  // need for check_empty to be true.
   base::ObserverList<DohStatusObserver,
-                     true /* check_empty */,
+                     false /* check_empty */,
                      false /* allow_reentrancy */>
       doh_status_observers_;
 

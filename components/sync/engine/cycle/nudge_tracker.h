@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,20 +7,16 @@
 
 #include <stddef.h>
 
-#include <list>
 #include <map>
 #include <memory>
 
 #include "base/compiler_specific.h"
 #include "base/time/time.h"
-#include "components/sync/base/invalidation_interface.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/base/sync_invalidation.h"
 #include "components/sync/engine/cycle/data_type_tracker.h"
 #include "components/sync/protocol/sync_enums.pb.h"
-
-namespace sync_pb {
-class DataTypeProgressMarker;
-}  // namespace sync_pb
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
@@ -52,9 +48,15 @@ class NudgeTracker {
   // information on how this flag is maintained.
   bool IsRetryRequired() const;
 
+  // Tells this class that a commit message has been sent (note that each sync
+  // cycle may include an arbitrary number of commit messages).
+  void RecordSuccessfulCommitMessage(ModelTypeSet types);
+
   // Tells this class that all required update fetching or committing has
   // completed successfully, as the result of a "normal" sync cycle.
-  void RecordSuccessfulSyncCycle(ModelTypeSet types);
+  // Any blocked model types will ignore this, but non-blocked types and the
+  // overall state will still get updated.
+  void RecordSuccessfulSyncCycleIfNotBlocked(ModelTypeSet types);
 
   // Tells this class that the initial sync has happened for the given |types|,
   // generally due to a "configuration" cycle.
@@ -72,7 +74,7 @@ class NudgeTracker {
   // Returns the nudge delay for a remote invalidation.
   base::TimeDelta RecordRemoteInvalidation(
       ModelType type,
-      std::unique_ptr<InvalidationInterface> invalidation);
+      std::unique_ptr<SyncInvalidation> invalidation);
 
   // Take note that an initial sync is pending for this type.
   void RecordInitialSyncRequired(ModelType type);
@@ -134,13 +136,6 @@ class NudgeTracker {
   // information into the GetUpdate request before sending it off to the server.
   void FillProtoMessage(ModelType type, sync_pb::GetUpdateTriggers* msg) const;
 
-  // Fills a ProgressMarker with single legacy notification hint expected by the
-  // sync server.  Newer servers will rely on the data set by FillProtoMessage()
-  // instead of this.
-  void SetLegacyNotificationHint(
-      ModelType type,
-      sync_pb::DataTypeProgressMarker* progress) const;
-
   // Flips the flag if we're due for a retry.
   void SetSyncCycleStartTime(base::TimeTicks now);
 
@@ -166,6 +161,14 @@ class NudgeTracker {
   // is too small. This method ignores that check.
   void SetLocalChangeDelayIgnoringMinForTest(ModelType type,
                                              const base::TimeDelta& delay);
+
+  // Updates the parameters for commit quotas for the data types that can
+  // receive commits via extension APIs. Empty optional means using the
+  // defaults.
+  void SetQuotaParamsForExtensionTypes(
+      absl::optional<int> max_tokens,
+      absl::optional<base::TimeDelta> refill_interval,
+      absl::optional<base::TimeDelta> depleted_quota_nudge_delay);
 
  private:
   using TypeTrackerMap = std::map<ModelType, std::unique_ptr<DataTypeTracker>>;

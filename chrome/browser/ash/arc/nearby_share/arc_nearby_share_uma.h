@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_ARC_NEARBY_SHARE_ARC_NEARBY_SHARE_UMA_H_
 
 #include "base/files/file.h"
+#include "base/time/time.h"
 
 namespace arc {
 
@@ -41,7 +42,7 @@ enum class DataHandlingResult {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class IOErrorResult {
-  kFilereaderFailed = 0,
+  kFileReaderFailed = 0,
   kDataPipeFailedWait = 1,
   kDataPipeUnexpectedClose = 2,
   kDataPipeFailedWrite = 3,
@@ -60,6 +61,9 @@ void UpdateNearbyShareIOFail(IOErrorResult result);
 void UpdateNearbyShareWindowFound(bool found);
 
 void UpdateNearbyShareFileStreamError(base::File::Error result);
+
+void UpdateNearbyShareFileStreamCompleteTime(
+    const base::TimeDelta& elapsed_time);
 }  // namespace arc
 
 #endif  // CHROME_BROWSER_ASH_ARC_NEARBY_SHARE_ARC_NEARBY_SHARE_UMA_H_

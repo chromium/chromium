@@ -1,0 +1,49 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("data_source") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "whats_new_data_source.h",
+    "whats_new_data_source.mm",
+    "whats_new_item.h",
+    "whats_new_item.mm",
+  ]
+  deps = [
+    "resources:add_passwords_manually_banner",
+    "resources:autofill_banner",
+    "resources:autofill_hero_banner",
+    "resources:chrome_by_default_hero_banner",
+    "resources:new_overflow_menu_banner",
+    "resources:passwords_in_other_apps_banner",
+    "resources:passwords_in_other_apps_hero_banner",
+    "resources:search_tabs_banner",
+    "resources:search_tabs_hero_banner",
+    "resources:shared_highlighting_banner",
+    "resources:use_chrome_by_default_banner",
+    "resources:whats_new_entries_plist",
+    "//base",
+    "//ios/chrome/browser/ui/icons:symbols",
+    "//ios/chrome/common/ui/colors",
+    "//ui/base",
+    "//url",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "whats_new_data_source_unittest.mm" ]
+
+  deps = [
+    ":data_source",
+    "resources:unit_tests_resources",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}

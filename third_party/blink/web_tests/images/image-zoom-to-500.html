@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html>
 <script>
-var count = 0;
-
 if (window.testRunner) {
     testRunner.dumpAsText();
     testRunner.setPopupBlockingEnabled(false);
@@ -18,33 +16,20 @@ function log(message)
 function zoomPage()
 {
     var newwindow = window.open("resources/dice.png");
-    if (window.testRunner)
-        testRunner.useUnfortunateSynchronousResizeMode();
-    newwindow.onload = function() {
-        newwindow.onresize = function() {
-            var image = newwindow.document.querySelector("img");
-            if (image.clientWidth == 0) {
-              // On GTK+, sometimes the resize callback fires before the GTK
-              // window has finished resizing. If that happens, try to resize
-              // again.
-              setTimeout(function() {
-                newwindow.resizeTo(400, 400);
-              }, 0);
-              return;
-            }
+    newwindow.onload = async function() {
+        var image = newwindow.document.querySelector("img");
+        var resizePromise = new Promise(resolve => newwindow.onresize = resolve);
+        newwindow.resizeTo(400, 400);
+        await resizePromise;
 
-            if (window.testRunner) {
+        if (window.testRunner) {
+            for (var count = 0; count < 10; ++count) {
                 testRunner.zoomPageIn();
                 log("Size at zoom level" + (count) + " : "  + image.clientWidth + "x" + image.clientHeight);
-                ++count;
-                if (count == 10) {
-                    newwindow.onresize = undefined;
-                    testRunner.notifyDone();
-                }
             }
-        };
 
-        newwindow.resizeTo(400, 400);
+            testRunner.notifyDone();
+        }
     };
 }
 </script>

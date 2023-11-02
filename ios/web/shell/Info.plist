@@ -29,6 +29,10 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>IDS_IOS_CAMERA_USAGE_DESCRIPTION</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>IDS_IOS_MICROPHONE_USAGE_DESCRIPTION</string>
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>UIRequiredDeviceCapabilities</key>

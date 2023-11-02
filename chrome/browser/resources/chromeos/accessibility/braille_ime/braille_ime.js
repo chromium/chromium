@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -124,7 +124,7 @@ class BrailleIme {
       'KeyK': 0x10,
       'KeyS': 0x04,
       'KeyL': 0x20,
-      'Space': 0x100
+      'Space': 0x100,
     };
 
     /**
@@ -450,7 +450,7 @@ class BrailleIme {
             engineID: this.engineID_,
             contextID,
             offset: -deleteBefore,
-            length: deleteBefore
+            length: deleteBefore,
           },
           addText);
       // Make sure there's no non-zero length selection so that
@@ -513,8 +513,8 @@ class BrailleIme {
         style: 'check',
         visible: true,
         checked: this.useStandardKeyboard_,
-        enabled: true
-      }]
+        enabled: true,
+      }],
     });
   }
 }

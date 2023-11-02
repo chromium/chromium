@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/dbus/authpolicy/authpolicy_client.h"
+#include "chromeos/ash/components/dbus/authpolicy/authpolicy_client.h"
 
 namespace ash {
 
@@ -19,10 +19,9 @@ namespace ash {
 // for enrollment and login UI to proper cancel the flows.
 class AuthPolicyHelper {
  public:
-  using AuthCallback = chromeos::AuthPolicyClient::AuthCallback;
-  using JoinCallback = chromeos::AuthPolicyClient::JoinCallback;
-  using RefreshPolicyCallback =
-      chromeos::AuthPolicyClient::RefreshPolicyCallback;
+  using AuthCallback = AuthPolicyClient::AuthCallback;
+  using JoinCallback = AuthPolicyClient::JoinCallback;
+  using RefreshPolicyCallback = AuthPolicyClient::RefreshPolicyCallback;
   using OnDecryptedCallback =
       base::OnceCallback<void(std::string decrypted_data)>;
 

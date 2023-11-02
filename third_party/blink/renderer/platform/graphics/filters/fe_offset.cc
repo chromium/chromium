@@ -24,7 +24,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/filters/fe_offset.h"
 
-#include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
@@ -50,8 +50,8 @@ void FEOffset::SetDy(float dy) {
   dy_ = dy;
 }
 
-FloatRect FEOffset::MapEffect(const FloatRect& rect) const {
-  FloatRect result = rect;
+gfx::RectF FEOffset::MapEffect(const gfx::RectF& rect) const {
+  gfx::RectF result = rect;
   result.Offset(GetFilter()->ApplyHorizontalScale(dx_),
                 GetFilter()->ApplyVerticalScale(dy_));
   return result;
@@ -65,7 +65,7 @@ sk_sp<PaintFilter> FEOffset::CreateImageFilter() {
       SkFloatToScalar(filter->ApplyVerticalScale(dy_)),
       paint_filter_builder::Build(InputEffect(0),
                                   OperatingInterpolationSpace()),
-      base::OptionalOrNullptr(crop_rect));
+      base::OptionalToPtr(crop_rect));
 }
 
 WTF::TextStream& FEOffset::ExternalRepresentation(WTF::TextStream& ts,

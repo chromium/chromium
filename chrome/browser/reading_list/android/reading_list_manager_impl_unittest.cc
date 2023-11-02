@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -236,7 +236,7 @@ TEST_F(ReadingListManagerImplTest, AddInvalidTitle) {
   // Use an invalid UTF8 string.
   std::u16string dummy;
   EXPECT_FALSE(
-      base::UTF8ToUTF16(kInvalidUTF8, base::size(kInvalidUTF8), &dummy));
+      base::UTF8ToUTF16(kInvalidUTF8, std::size(kInvalidUTF8), &dummy));
   const auto* new_node = Add(url, std::string(kInvalidUTF8));
   EXPECT_EQ(nullptr, new_node)
       << "Should return nullptr when failed to parse the title.";

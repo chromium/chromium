@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import './help_app_ui.mojom-lite.js';
@@ -12,7 +12,7 @@ import {MessagePipe} from './message_pipe.m.js';
 import {Message} from './message_types.js';
 
 const help_app = {
-  handler: new ash.helpApp.mojom.PageHandlerRemote()
+  handler: new ash.helpApp.mojom.PageHandlerRemote(),
 };
 
 // Set up a page handler to talk to the browser process.
@@ -20,8 +20,8 @@ ash.helpApp.mojom.PageHandlerFactory.getRemote().createPageHandler(
     help_app.handler.$.bindNewPipeAndPassReceiver());
 
 // Set up an index remote to talk to Local Search Service.
-/** @type {!chromeos.localSearchService.mojom.IndexRemote} */
-const indexRemote = chromeos.localSearchService.mojom.Index.getRemote();
+/** @type {!ash.localSearchService.mojom.IndexRemote} */
+const indexRemote = ash.localSearchService.mojom.Index.getRemote();
 
 /**
  * Talks to the search handler. Use for updating the content for launcher
@@ -89,7 +89,7 @@ guestMessagePipe.registerHandler(
       const data_from_app =
           /** @type {!Array<!helpApp.SearchableItem>} */ (message);
       const data_to_send = data_from_app.map(searchable_item => {
-        /** @type {!Array<!chromeos.localSearchService.mojom.Content>} */
+        /** @type {!Array<!ash.localSearchService.mojom.Content>} */
         const contents = [
           {
             id: TITLE_ID,
@@ -157,15 +157,15 @@ guestMessagePipe.registerHandler(
       // Record the search status in the trusted frame.
       chrome.metricsPrivate.recordEnumerationValue(
           'Discover.Search.SearchStatus', response.status,
-          chromeos.localSearchService.mojom.ResponseStatus.MAX_VALUE);
+          ash.localSearchService.mojom.ResponseStatus.MAX_VALUE);
 
       if (response.status !==
-              chromeos.localSearchService.mojom.ResponseStatus.kSuccess ||
+              ash.localSearchService.mojom.ResponseStatus.kSuccess ||
           !response.results) {
         return {results: null};
       }
       const search_results =
-          /** @type {!Array<!chromeos.localSearchService.mojom.Result>} */ (
+          /** @type {!Array<!ash.localSearchService.mojom.Result>} */ (
               response.results);
       // Sort results by decreasing score.
       search_results.sort((a, b) => b.score - a.score);
@@ -271,7 +271,7 @@ guestMessagePipe.registerHandler(
         // This is a google-internal histogram. If changing this, also change
         // the corresponding histograms file.
         if (!valid) {
-          chrome.metricsPrivate.recordSparseHashable(
+          chrome.metricsPrivate.recordSparseValueWithPersistentHash(
               'Discover.LauncherSearch.InvalidConceptInUpdate', item.id);
         }
         return valid;

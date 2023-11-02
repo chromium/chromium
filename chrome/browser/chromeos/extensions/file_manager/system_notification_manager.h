@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -77,11 +77,11 @@ enum class DeviceNotificationUserActionUmaType {
 };
 
 // Histogram name for Notification.Show.
-constexpr char kNotificationShowHistogramName[] =
+inline constexpr char kNotificationShowHistogramName[] =
     "FileBrowser.Notification.Show";
 
 // Histogram name for Notification.UserAction.
-constexpr char kNotificationUserActionHistogramName[] =
+inline constexpr char kNotificationUserActionHistogramName[] =
     "FileBrowser.Notification.UserAction";
 
 // Manages creation/deletion and update of system notifications on behalf
@@ -235,7 +235,7 @@ class SystemNotificationManager {
    */
   std::unique_ptr<message_center::Notification> MakeDriveSyncErrorNotification(
       const extensions::Event& event,
-      base::Value::ListView& event_arguments);
+      const base::Value::List& event_arguments);
 
   /**
    * Click handler for the Drive offline confirmation dialog notification.
@@ -247,7 +247,7 @@ class SystemNotificationManager {
    */
   std::unique_ptr<message_center::Notification>
   MakeDriveConfirmDialogNotification(const extensions::Event& event,
-                                     base::Value::ListView& event_arguments);
+                                     const base::Value::List& event_arguments);
 
   /**
    * Update/remove Drive sync progress notification.
@@ -257,7 +257,7 @@ class SystemNotificationManager {
    */
   std::unique_ptr<message_center::Notification> UpdateDriveSyncNotification(
       const extensions::Event& event,
-      base::Value::ListView& event_arguments);
+      const base::Value::List& event_arguments);
 
   /**
    * Click handler for the removable device notification.
@@ -320,8 +320,6 @@ class SystemNotificationManager {
   // Cache the application name (used for notification display source).
   std::u16string app_name_;
 
-  // Caches the SWA feature flag.
-  bool swa_enabled_;
   base::WeakPtrFactory<SystemNotificationManager> weak_ptr_factory_{this};
 };
 

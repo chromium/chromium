@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,6 +48,12 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothAdminPolicyClient
                            const UUIDList& service_uuids,
                            base::OnceClosure callback,
                            ErrorCallback error_callback) override;
+
+  void CreateAdminPolicy(const dbus::ObjectPath& object_path,
+                         bool is_blocked_by_policy);
+  void ChangeAdminPolicy(const dbus::ObjectPath& object_path,
+                         bool is_blocked_by_policy);
+  void RemoveAdminPolicy(const dbus::ObjectPath& object_path);
 
  private:
   // Property callback passed when we create Properties* structures.

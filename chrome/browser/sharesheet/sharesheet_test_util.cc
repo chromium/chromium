@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,23 +16,21 @@
 
 namespace sharesheet {
 
-apps::mojom::IntentPtr CreateValidTextIntent() {
-  return apps_util::CreateShareIntentFromText(kTestText, kTestTitle);
+apps::IntentPtr CreateValidTextIntent() {
+  return apps_util::MakeShareIntent(kTestText, kTestTitle);
 }
 
-apps::mojom::IntentPtr CreateValidUrlIntent() {
-  return apps_util::CreateShareIntentFromText(kTestUrl, kTestTitle);
+apps::IntentPtr CreateValidUrlIntent() {
+  return apps_util::MakeShareIntent(kTestUrl, kTestTitle);
 }
 
-apps::mojom::IntentPtr CreateInvalidIntent() {
-  auto intent = apps::mojom::Intent::New();
-  intent->action = apps_util::kIntentActionSend;
-  return intent;
+apps::IntentPtr CreateInvalidIntent() {
+  return std::make_unique<apps::Intent>(apps_util::kIntentActionSend);
 }
 
-apps::mojom::IntentPtr CreateDriveIntent() {
-  return apps_util::CreateShareIntentFromDriveFile(GURL(kTestUrl), "image/",
-                                                   GURL(kTestUrl), false);
+apps::IntentPtr CreateDriveIntent() {
+  return apps_util::MakeShareIntent(GURL(kTestUrl), "image/", GURL(kTestUrl),
+                                    false);
 }
 
 storage::FileSystemURL FileInDownloads(Profile* profile, base::FilePath file) {
@@ -48,6 +46,16 @@ storage::FileSystemURL FileInDownloads(Profile* profile, base::FilePath file) {
       file_manager::util::GetDownloadsFolderForProfile(profile));
   return mount_points->CreateExternalFileSystemURL(blink::StorageKey(origin),
                                                    mount_point_name, file);
+}
+
+storage::FileSystemURL FileInNonNativeFileSystemType(Profile* profile,
+                                                     base::FilePath file) {
+  return storage::FileSystemURL::CreateForTest(
+      blink::StorageKey::CreateFromStringForTesting("chrome-extension://xxx"),
+      storage::kFileSystemTypeExternal,
+      base::FilePath("arc-documents-provider").Append(file), "",
+      storage::kFileSystemTypeArcDocumentsProvider, base::FilePath(), "",
+      storage::FileSystemMountOption());
 }
 
 }  // namespace sharesheet

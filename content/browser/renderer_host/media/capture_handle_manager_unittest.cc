@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -117,7 +117,7 @@ class CaptureHandleManagerTest : public RenderViewHostImplTestHarness {
                                        frame->GetRoutingID());
     device.id = id.ToString();
     device.display_media_info = media::mojom::DisplayMediaInformation::New();
-    (*device.display_media_info)->capture_handle = std::move(capture_handle);
+    device.display_media_info->capture_handle = std::move(capture_handle);
 
     return device;
   }
@@ -125,7 +125,8 @@ class CaptureHandleManagerTest : public RenderViewHostImplTestHarness {
   MediaStreamDevice& MakeDevice(
       std::unique_ptr<TestWebContents>& web_contents,
       media::mojom::CaptureHandlePtr capture_handle = nullptr) {
-    return MakeDevice(web_contents->GetMainFrame(), std::move(capture_handle));
+    return MakeDevice(web_contents->GetPrimaryMainFrame(),
+                      std::move(capture_handle));
   }
 
  protected:
@@ -149,7 +150,7 @@ TEST_F(CaptureHandleManagerTest,
   auto& callback_helper = MakeCallbackHelper();
   EXPECT_CALL(callback_helper, Method(_, _, _)).Times(0);
   manager_.OnTabCaptureStarted(kLabel, MakeDevice(captured),
-                               capturer->GetMainFrame()->GetGlobalId(),
+                               capturer->GetPrimaryMainFrame()->GetGlobalId(),
                                callback_helper.AsCallback());
 }
 
@@ -165,7 +166,7 @@ TEST_F(CaptureHandleManagerTest,
   auto& callback_helper = MakeCallbackHelper();
   EXPECT_CALL(callback_helper, Method(_, _, _)).Times(0);
   manager_.OnTabCaptureStarted(kLabel, captured_device,
-                               capturer->GetMainFrame()->GetGlobalId(),
+                               capturer->GetPrimaryMainFrame()->GetGlobalId(),
                                callback_helper.AsCallback());
 }
 
@@ -183,7 +184,7 @@ TEST_F(CaptureHandleManagerTest,
                                       IsCaptureHandle(url::Origin(), u"new")))
       .Times(1);
   manager_.OnTabCaptureStarted(kLabel, captured_device,
-                               capturer->GetMainFrame()->GetGlobalId(),
+                               capturer->GetPrimaryMainFrame()->GetGlobalId(),
                                callback_helper.AsCallback());
 }
 
@@ -196,7 +197,7 @@ TEST_F(CaptureHandleManagerTest, CallbackInvokedWhenCaptureHandleChanges) {
 
   auto& callback_helper = MakeCallbackHelper();
   manager_.OnTabCaptureStarted(kLabel, captured_device,
-                               capturer->GetMainFrame()->GetGlobalId(),
+                               capturer->GetPrimaryMainFrame()->GetGlobalId(),
                                callback_helper.AsCallback());
 
   EXPECT_CALL(callback_helper, Method(kLabel, captured_device.type,
@@ -220,7 +221,7 @@ TEST_F(CaptureHandleManagerTest, CaptureHandleResetByNavigation) {
 
   auto& callback_helper = MakeCallbackHelper();
   manager_.OnTabCaptureStarted(kLabel, captured_device,
-                               capturer->GetMainFrame()->GetGlobalId(),
+                               capturer->GetPrimaryMainFrame()->GetGlobalId(),
                                callback_helper.AsCallback());
 
   EXPECT_CALL(callback_helper,
@@ -247,7 +248,7 @@ TEST_F(CaptureHandleManagerTest,
 
   auto& callback_helper = MakeCallbackHelper();
   manager_.OnTabCaptureStarted(kLabel, captured_device,
-                               capturer->GetMainFrame()->GetGlobalId(),
+                               capturer->GetPrimaryMainFrame()->GetGlobalId(),
                                callback_helper.AsCallback());
 
   EXPECT_CALL(callback_helper, Method(_, _, _)).Times(0);
@@ -271,7 +272,7 @@ TEST_F(CaptureHandleManagerTest, CallbackInvokedWhenConfigAllowsCapturer) {
 
   auto& callback_helper = MakeCallbackHelper();
   manager_.OnTabCaptureStarted(kLabel, captured_device,
-                               capturer->GetMainFrame()->GetGlobalId(),
+                               capturer->GetPrimaryMainFrame()->GetGlobalId(),
                                callback_helper.AsCallback());
 
   EXPECT_CALL(callback_helper,

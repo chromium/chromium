@@ -1,4 +1,4 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,6 @@
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -36,7 +35,7 @@
 #include "url/url_constants.h"
 
 // These tests time out on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_SitePerProcessAccessibilityBrowserTest \
   DISABLED_SitePerProcessAccessibilityBrowserTest
 #else
@@ -45,7 +44,7 @@
 #endif
 // "All/DISABLED_SitePerProcessAccessibilityBrowserTest" does not work. We need
 // "DISABLED_All/...". TODO(https://crbug.com/1096416) delete when fixed.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_All DISABLED_All
 #else
 #define MAYBE_All All
@@ -103,7 +102,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_SitePerProcessAccessibilityBrowserTest,
                                                 "Title Of Awesomeness");
 
   RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetMainFrame());
+      shell()->web_contents()->GetPrimaryMainFrame());
   BrowserAccessibilityManager* main_frame_manager =
       main_frame->browser_accessibility_manager();
   VLOG(1) << "Main frame accessibility tree:\n"
@@ -111,7 +110,8 @@ IN_PROC_BROWSER_TEST_P(MAYBE_SitePerProcessAccessibilityBrowserTest,
 
   // Assert that we can walk from the main frame down into the child frame
   // directly, getting correct roles and data along the way.
-  BrowserAccessibility* ax_root = main_frame_manager->GetRoot();
+  BrowserAccessibility* ax_root =
+      main_frame_manager->GetBrowserAccessibilityRoot();
   EXPECT_EQ(ax::mojom::Role::kRootWebArea, ax_root->GetRole());
   ASSERT_EQ(1U, ax_root->PlatformChildCount());
 
@@ -242,7 +242,7 @@ IN_PROC_BROWSER_TEST_P(
   child = root->child_at(0);
 
   RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetMainFrame());
+      shell()->web_contents()->GetPrimaryMainFrame());
   BrowserAccessibilityManager* main_frame_manager =
       main_frame->browser_accessibility_manager();
   VLOG(1) << "Main frame accessibility tree:\n"
@@ -250,7 +250,8 @@ IN_PROC_BROWSER_TEST_P(
 
   // Assert that we can walk from the main frame down into the child frame
   // directly, getting correct roles and data along the way.
-  BrowserAccessibility* ax_root = main_frame_manager->GetRoot();
+  BrowserAccessibility* ax_root =
+      main_frame_manager->GetBrowserAccessibilityRoot();
   EXPECT_EQ(ax::mojom::Role::kRootWebArea, ax_root->GetRole());
   ASSERT_EQ(1U, ax_root->PlatformChildCount());
 
@@ -266,19 +267,12 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(ax::mojom::Role::kRootWebArea, ax_child_frame_root->GetRole());
   ASSERT_EQ(1U, ax_child_frame_root->PlatformChildCount());
 
-  // Get the relative iframe rect in blink pixels, i.e. if use-zoom-for-dsf is
-  // enabled, this will be in physical pixels else we'll account for the device
-  // scale factor here.
+  // Get the relative iframe rect in blink pixels.
   gfx::Rect iframe_rect_root_relative_blink_pixels = ax_iframe->GetBoundsRect(
       ui::AXCoordinateSystem::kRootFrame, ui::AXClippingBehavior::kUnclipped);
   gfx::Rect iframe_rect_root_relative_physical_pixels;
-  if (IsUseZoomForDSFEnabled()) {
-    iframe_rect_root_relative_physical_pixels =
-        iframe_rect_root_relative_blink_pixels;
-  } else {
-    iframe_rect_root_relative_physical_pixels = gfx::ScaleToEnclosingRect(
-        iframe_rect_root_relative_blink_pixels, device_scale_factor_);
-  }
+  iframe_rect_root_relative_physical_pixels =
+      iframe_rect_root_relative_blink_pixels;
 
   // Get the view bounds in screen coordinate DIPs, then ensure the offsetting
   // done by ui::AXCoordinateSystem::kScreenPhysicalPixels produces the correct

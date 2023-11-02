@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,8 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/rand_util.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -77,7 +77,7 @@ class TestFacetManagerNotifier {
   NotificationAccuracy accuracy_;
   const base::TimeDelta too_late_delay_;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
-  FacetManager* facet_manager_;
+  raw_ptr<FacetManager> facet_manager_;
 };
 
 // Stub/mock implementation for FacetManagerHost.
@@ -142,7 +142,7 @@ class MockFacetManagerHost : public FacetManagerHost {
     notifier_->Notify(time);
   }
 
-  TestFacetManagerNotifier* notifier_;
+  raw_ptr<TestFacetManagerNotifier> notifier_;
 
   FacetURI expected_facet_uri_;
   AffiliatedFacetsWithUpdateTime fake_database_content_;
@@ -596,7 +596,7 @@ TEST_F(FacetManagerTest, PrefetchWithEmptyOrStaleCache) {
   const base::TimeDelta kMaximumTestDuration = 2 * GetCacheHardExpiryPeriod();
 
   for (const bool cache_initially_stale : kFalseTrue) {
-    for (size_t i = 0; i < base::size(kTestCases); ++i) {
+    for (size_t i = 0; i < std::size(kTestCases); ++i) {
       SCOPED_TRACE(testing::Message() << "Test case: #" << i);
       SCOPED_TRACE(cache_initially_stale ? "Cache initially stale"
                                          : "Cache initially empty");
@@ -732,7 +732,7 @@ TEST_F(FacetManagerTest, PrefetchTriggeredFetchSchedulingAfterNonEmptyCache) {
 
   const base::TimeDelta kMaximumTestDuration = 2 * GetCacheHardExpiryPeriod();
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     SCOPED_TRACE(testing::Message() << "Test case: #" << i);
 
     fake_facet_manager_host()->set_fake_database_content(
@@ -797,7 +797,7 @@ TEST_F(FacetManagerTest, PrefetchTriggeredFetchSchedulingAfterNonEmptyCache2) {
 
   const base::TimeDelta kMaximumTestDuration = 2 * GetCacheHardExpiryPeriod();
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     SCOPED_TRACE(testing::Message() << "Test case: #" << i);
 
     fake_facet_manager_host()->set_fake_database_content(
@@ -923,8 +923,8 @@ TEST_F(FacetManagerTest, NestedPrefetches) {
   const base::TimeDelta kTestDuration =
       GetCacheSoftExpiryPeriod() + GetCacheHardExpiryPeriod();
 
-  for (size_t j = 0; j < base::size(kFirstPrefetchParams); ++j) {
-    for (size_t i = 0; i < base::size(kSecondPrefetchParams); ++i) {
+  for (size_t j = 0; j < std::size(kFirstPrefetchParams); ++j) {
+    for (size_t i = 0; i < std::size(kSecondPrefetchParams); ++i) {
       SCOPED_TRACE(testing::Message() << "Test case: #" << j << "." << i);
 
       fake_facet_manager_host()->clear_fake_database_content();
@@ -988,7 +988,7 @@ TEST_F(FacetManagerTest, OverlappingPrefetches) {
   const base::TimeDelta kTestDuration =
       GetCacheSoftExpiryPeriod() + GetCacheHardExpiryPeriod();
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     SCOPED_TRACE(testing::Message() << "Test case: #" << i);
 
     fake_facet_manager_host()->clear_fake_database_content();
@@ -1113,7 +1113,7 @@ TEST_F(FacetManagerTest, PrefetchWithNonInstantFetches) {
                                                GetCacheHardExpiryPeriod() +
                                                2 * GetShortTestPeriod();
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     SCOPED_TRACE(testing::Message() << "Test case: #" << i);
 
     fake_facet_manager_host()->clear_fake_database_content();
@@ -1193,7 +1193,7 @@ TEST_F(FacetManagerTest, CancelPrefetch) {
       GetCacheSoftExpiryPeriod(),
       2 * GetCacheSoftExpiryPeriod()};
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     SCOPED_TRACE(testing::Message() << "Test case: #" << i);
 
     fake_facet_manager_host()->clear_fake_database_content();

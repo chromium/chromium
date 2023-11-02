@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@
 #include "url/gurl.h"
 
 namespace net {
-class NetworkIsolationKey;
+class IsolationInfo;
 }
 
 namespace content {
@@ -60,7 +60,7 @@ class CONTENT_EXPORT PrefetchedSignedExchangeCache
   std::unique_ptr<NavigationLoaderInterceptor> MaybeCreateInterceptor(
       const GURL& outer_url,
       int frame_tree_node_id,
-      const net::NetworkIsolationKey& network_isolation_key);
+      const net::IsolationInfo& isolation_info);
 
   const EntryMap& GetExchanges();
 
@@ -85,7 +85,7 @@ class CONTENT_EXPORT PrefetchedSignedExchangeCache
       const PrefetchedSignedExchangeCacheEntry& main_exchange,
       const base::Time& now,
       int frame_tree_node_id,
-      const net::NetworkIsolationKey& network_isolation_key);
+      const net::NetworkAnonymizationKey& network_anonymization_key);
 
   EntryMap exchanges_;
 

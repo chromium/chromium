@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 namespace ash {
 namespace {
 
-constexpr int kDialogHeightForWidePadding = 640;
 constexpr double kEightPrecent = 0.08;
 
 }  // namespace
@@ -20,7 +19,7 @@ constexpr double kEightPrecent = 0.08;
 constexpr gfx::Size kMaxDialogSize{768, 768};
 // Min height should match --oobe-dialog-min-height;
 constexpr gfx::Size kMinDialogSize{464, 384};
-constexpr gfx::Insets kMinMargins{48, 48};
+constexpr gfx::Insets kMinMargins{48};
 
 // Sizes come from specs except min widths which are taken as maximal zoomed
 // display widths of smallest device ChromeTab (960x600).
@@ -60,23 +59,14 @@ gfx::Size CalculateOobeDialogSizeForPrimaryDisplay() {
 void CalculateOobeDialogBounds(const gfx::Rect& host_bounds,
                                int shelf_height,
                                bool is_horizontal,
-                               gfx::Rect* result,
-                               OobeDialogPaddingMode* result_padding) {
+                               gfx::Rect* result) {
   // Area to position dialog.
   *result = host_bounds;
-  result->Inset(0, 0, 0, shelf_height);
+  result->Inset(gfx::Insets().set_bottom(shelf_height));
 
   // Center dialog within an available area.
   result->ClampToCenteredSize(
       CalculateOobeDialogSize(host_bounds.size(), shelf_height, is_horizontal));
-  if (!result_padding)
-    return;
-  if ((result->width() >= kMaxDialogSize.width()) &&
-      (result->height() >= kDialogHeightForWidePadding)) {
-    *result_padding = OobeDialogPaddingMode::PADDING_WIDE;
-  } else {
-    *result_padding = OobeDialogPaddingMode::PADDING_NARROW;
-  }
 }
 
 }  // namespace ash

@@ -1,0 +1,23 @@
+type: DECODING_FILE
+video {
+    content_type: 'video/mp4; codecs="avc1.4d401e"'
+    width: 800
+    height: 600
+    bitrate: 3000
+    framerate: "24"
+  }
+audio {
+    content_type: 'audio/mp4; codecs="mp4a.40.2"'
+    channels: "5.1"
+    bitrate: 1000
+    samplerate: 4400
+  }
+key_system_config {
+    key_system: 'com.widevine.alpha'
+    distinctive_identifier: REQUIRED
+    persistent_state: REQUIRED
+    session_types: [PERSISTENT_LICENSE]
+  }
+key_system_video_config {
+    robustness: 'HW_SECURE_ALL'
+  }

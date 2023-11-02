@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@
 // to be executed when the scene reach the required state.
 @property(nonatomic, strong) AppStartupParameters* startupParameters;
 
-// Flag that is set when the |startupParameters| start being handled.
+// Flag that is set when the `startupParameters` start being handled.
 // Checking this flag prevents reentrant startup parameter handling.
 @property(nonatomic, assign) BOOL startupParametersAreBeingHandled;
 

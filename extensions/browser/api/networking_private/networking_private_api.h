@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,10 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/values.h"
+#include "extensions/browser/api/networking_private/networking_private_delegate.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/common/api/networking_private.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
@@ -32,7 +33,7 @@ extern const char kErrorUnconfiguredNetwork[];
 // Implements the chrome.networkingPrivate.getProperties method.
 class NetworkingPrivateGetPropertiesFunction : public ExtensionFunction {
  public:
-  NetworkingPrivateGetPropertiesFunction() {}
+  NetworkingPrivateGetPropertiesFunction() = default;
 
   NetworkingPrivateGetPropertiesFunction(
       const NetworkingPrivateGetPropertiesFunction&) = delete;
@@ -50,13 +51,13 @@ class NetworkingPrivateGetPropertiesFunction : public ExtensionFunction {
 
  private:
   void Result(absl::optional<base::Value> result,
-              absl::optional<std::string> error);
+              const absl::optional<std::string>& error);
 };
 
 // Implements the chrome.networkingPrivate.getManagedProperties method.
 class NetworkingPrivateGetManagedPropertiesFunction : public ExtensionFunction {
  public:
-  NetworkingPrivateGetManagedPropertiesFunction() {}
+  NetworkingPrivateGetManagedPropertiesFunction() = default;
 
   NetworkingPrivateGetManagedPropertiesFunction(
       const NetworkingPrivateGetManagedPropertiesFunction&) = delete;
@@ -74,13 +75,13 @@ class NetworkingPrivateGetManagedPropertiesFunction : public ExtensionFunction {
 
  private:
   void Result(absl::optional<base::Value> result,
-              absl::optional<std::string> error);
+              const absl::optional<std::string>& error);
 };
 
 // Implements the chrome.networkingPrivate.getState method.
 class NetworkingPrivateGetStateFunction : public ExtensionFunction {
  public:
-  NetworkingPrivateGetStateFunction() {}
+  NetworkingPrivateGetStateFunction() = default;
 
   NetworkingPrivateGetStateFunction(const NetworkingPrivateGetStateFunction&) =
       delete;
@@ -97,14 +98,14 @@ class NetworkingPrivateGetStateFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void Success(std::unique_ptr<base::DictionaryValue> result);
+  void Success(base::Value result);
   void Failure(const std::string& error);
 };
 
 // Implements the chrome.networkingPrivate.setProperties method.
 class NetworkingPrivateSetPropertiesFunction : public ExtensionFunction {
  public:
-  NetworkingPrivateSetPropertiesFunction() {}
+  NetworkingPrivateSetPropertiesFunction() = default;
 
   NetworkingPrivateSetPropertiesFunction(
       const NetworkingPrivateSetPropertiesFunction&) = delete;
@@ -128,7 +129,7 @@ class NetworkingPrivateSetPropertiesFunction : public ExtensionFunction {
 // Implements the chrome.networkingPrivate.createNetwork method.
 class NetworkingPrivateCreateNetworkFunction : public ExtensionFunction {
  public:
-  NetworkingPrivateCreateNetworkFunction() {}
+  NetworkingPrivateCreateNetworkFunction() = default;
 
   NetworkingPrivateCreateNetworkFunction(
       const NetworkingPrivateCreateNetworkFunction&) = delete;
@@ -152,7 +153,7 @@ class NetworkingPrivateCreateNetworkFunction : public ExtensionFunction {
 // Implements the chrome.networkingPrivate.createNetwork method.
 class NetworkingPrivateForgetNetworkFunction : public ExtensionFunction {
  public:
-  NetworkingPrivateForgetNetworkFunction() {}
+  NetworkingPrivateForgetNetworkFunction() = default;
 
   NetworkingPrivateForgetNetworkFunction(
       const NetworkingPrivateForgetNetworkFunction&) = delete;
@@ -176,7 +177,7 @@ class NetworkingPrivateForgetNetworkFunction : public ExtensionFunction {
 // Implements the chrome.networkingPrivate.getNetworks method.
 class NetworkingPrivateGetNetworksFunction : public ExtensionFunction {
  public:
-  NetworkingPrivateGetNetworksFunction() {}
+  NetworkingPrivateGetNetworksFunction() = default;
 
   NetworkingPrivateGetNetworksFunction(
       const NetworkingPrivateGetNetworksFunction&) = delete;
@@ -200,7 +201,7 @@ class NetworkingPrivateGetNetworksFunction : public ExtensionFunction {
 // Implements the chrome.networkingPrivate.getVisibleNetworks method.
 class NetworkingPrivateGetVisibleNetworksFunction : public ExtensionFunction {
  public:
-  NetworkingPrivateGetVisibleNetworksFunction() {}
+  NetworkingPrivateGetVisibleNetworksFunction() = default;
 
   NetworkingPrivateGetVisibleNetworksFunction(
       const NetworkingPrivateGetVisibleNetworksFunction&) = delete;
@@ -225,7 +226,7 @@ class NetworkingPrivateGetVisibleNetworksFunction : public ExtensionFunction {
 class NetworkingPrivateGetEnabledNetworkTypesFunction
     : public ExtensionFunction {
  public:
-  NetworkingPrivateGetEnabledNetworkTypesFunction() {}
+  NetworkingPrivateGetEnabledNetworkTypesFunction() = default;
 
   NetworkingPrivateGetEnabledNetworkTypesFunction(
       const NetworkingPrivateGetEnabledNetworkTypesFunction&) = delete;
@@ -240,12 +241,15 @@ class NetworkingPrivateGetEnabledNetworkTypesFunction
 
   // ExtensionFunction:
   ResponseAction Run() override;
+
+ private:
+  void Result(std::unique_ptr<base::Value> enabled_networks_onc_types);
 };
 
 // Implements the chrome.networkingPrivate.getDeviceStates method.
 class NetworkingPrivateGetDeviceStatesFunction : public ExtensionFunction {
  public:
-  NetworkingPrivateGetDeviceStatesFunction() {}
+  NetworkingPrivateGetDeviceStatesFunction() = default;
 
   NetworkingPrivateGetDeviceStatesFunction(
       const NetworkingPrivateGetDeviceStatesFunction&) = delete;
@@ -260,12 +264,16 @@ class NetworkingPrivateGetDeviceStatesFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ResponseAction Run() override;
+
+ private:
+  void Result(std::unique_ptr<NetworkingPrivateDelegate::DeviceStateList>
+                  device_states);
 };
 
 // Implements the chrome.networkingPrivate.enableNetworkType method.
 class NetworkingPrivateEnableNetworkTypeFunction : public ExtensionFunction {
  public:
-  NetworkingPrivateEnableNetworkTypeFunction() {}
+  NetworkingPrivateEnableNetworkTypeFunction() = default;
 
   NetworkingPrivateEnableNetworkTypeFunction(
       const NetworkingPrivateEnableNetworkTypeFunction&) = delete;
@@ -280,12 +288,15 @@ class NetworkingPrivateEnableNetworkTypeFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ResponseAction Run() override;
+
+ private:
+  void Result(bool success);
 };
 
 // Implements the chrome.networkingPrivate.disableNetworkType method.
 class NetworkingPrivateDisableNetworkTypeFunction : public ExtensionFunction {
  public:
-  NetworkingPrivateDisableNetworkTypeFunction() {}
+  NetworkingPrivateDisableNetworkTypeFunction() = default;
 
   NetworkingPrivateDisableNetworkTypeFunction(
       const NetworkingPrivateDisableNetworkTypeFunction&) = delete;
@@ -300,12 +311,15 @@ class NetworkingPrivateDisableNetworkTypeFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ResponseAction Run() override;
+
+ private:
+  void Result(bool success);
 };
 
 // Implements the chrome.networkingPrivate.requestNetworkScan method.
 class NetworkingPrivateRequestNetworkScanFunction : public ExtensionFunction {
  public:
-  NetworkingPrivateRequestNetworkScanFunction() {}
+  NetworkingPrivateRequestNetworkScanFunction() = default;
 
   NetworkingPrivateRequestNetworkScanFunction(
       const NetworkingPrivateRequestNetworkScanFunction&) = delete;
@@ -320,12 +334,15 @@ class NetworkingPrivateRequestNetworkScanFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ResponseAction Run() override;
+
+ private:
+  void Result(bool success);
 };
 
 // Implements the chrome.networkingPrivate.startConnect method.
 class NetworkingPrivateStartConnectFunction : public ExtensionFunction {
  public:
-  NetworkingPrivateStartConnectFunction() {}
+  NetworkingPrivateStartConnectFunction() = default;
 
   NetworkingPrivateStartConnectFunction(
       const NetworkingPrivateStartConnectFunction&) = delete;
@@ -349,7 +366,7 @@ class NetworkingPrivateStartConnectFunction : public ExtensionFunction {
 // Implements the chrome.networkingPrivate.startDisconnect method.
 class NetworkingPrivateStartDisconnectFunction : public ExtensionFunction {
  public:
-  NetworkingPrivateStartDisconnectFunction() {}
+  NetworkingPrivateStartDisconnectFunction() = default;
 
   NetworkingPrivateStartDisconnectFunction(
       const NetworkingPrivateStartDisconnectFunction&) = delete;
@@ -373,7 +390,7 @@ class NetworkingPrivateStartDisconnectFunction : public ExtensionFunction {
 // Implements the chrome.networkingPrivate.startActivate method.
 class NetworkingPrivateStartActivateFunction : public ExtensionFunction {
  public:
-  NetworkingPrivateStartActivateFunction() {}
+  NetworkingPrivateStartActivateFunction() = default;
 
   NetworkingPrivateStartActivateFunction(
       const NetworkingPrivateStartActivateFunction&) = delete;
@@ -397,7 +414,7 @@ class NetworkingPrivateStartActivateFunction : public ExtensionFunction {
 class NetworkingPrivateGetCaptivePortalStatusFunction
     : public ExtensionFunction {
  public:
-  NetworkingPrivateGetCaptivePortalStatusFunction() {}
+  NetworkingPrivateGetCaptivePortalStatusFunction() = default;
 
   NetworkingPrivateGetCaptivePortalStatusFunction(
       const NetworkingPrivateGetCaptivePortalStatusFunction&) = delete;
@@ -420,7 +437,7 @@ class NetworkingPrivateGetCaptivePortalStatusFunction
 
 class NetworkingPrivateUnlockCellularSimFunction : public ExtensionFunction {
  public:
-  NetworkingPrivateUnlockCellularSimFunction() {}
+  NetworkingPrivateUnlockCellularSimFunction() = default;
 
   NetworkingPrivateUnlockCellularSimFunction(
       const NetworkingPrivateUnlockCellularSimFunction&) = delete;
@@ -443,7 +460,7 @@ class NetworkingPrivateUnlockCellularSimFunction : public ExtensionFunction {
 
 class NetworkingPrivateSetCellularSimStateFunction : public ExtensionFunction {
  public:
-  NetworkingPrivateSetCellularSimStateFunction() {}
+  NetworkingPrivateSetCellularSimStateFunction() = default;
 
   NetworkingPrivateSetCellularSimStateFunction(
       const NetworkingPrivateSetCellularSimStateFunction&) = delete;
@@ -467,7 +484,7 @@ class NetworkingPrivateSetCellularSimStateFunction : public ExtensionFunction {
 class NetworkingPrivateSelectCellularMobileNetworkFunction
     : public ExtensionFunction {
  public:
-  NetworkingPrivateSelectCellularMobileNetworkFunction() {}
+  NetworkingPrivateSelectCellularMobileNetworkFunction() = default;
 
   NetworkingPrivateSelectCellularMobileNetworkFunction(
       const NetworkingPrivateSelectCellularMobileNetworkFunction&) = delete;
@@ -490,7 +507,7 @@ class NetworkingPrivateSelectCellularMobileNetworkFunction
 
 class NetworkingPrivateGetGlobalPolicyFunction : public ExtensionFunction {
  public:
-  NetworkingPrivateGetGlobalPolicyFunction() {}
+  NetworkingPrivateGetGlobalPolicyFunction() = default;
 
   NetworkingPrivateGetGlobalPolicyFunction(
       const NetworkingPrivateGetGlobalPolicyFunction&) = delete;
@@ -505,11 +522,14 @@ class NetworkingPrivateGetGlobalPolicyFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ResponseAction Run() override;
+
+ private:
+  void Result(std::unique_ptr<base::Value> global_policies);
 };
 
 class NetworkingPrivateGetCertificateListsFunction : public ExtensionFunction {
  public:
-  NetworkingPrivateGetCertificateListsFunction() {}
+  NetworkingPrivateGetCertificateListsFunction() = default;
 
   NetworkingPrivateGetCertificateListsFunction(
       const NetworkingPrivateGetCertificateListsFunction&) = delete;
@@ -524,6 +544,9 @@ class NetworkingPrivateGetCertificateListsFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ResponseAction Run() override;
+
+ private:
+  void Result(std::unique_ptr<base::Value> certificate_list);
 };
 
 }  // namespace extensions

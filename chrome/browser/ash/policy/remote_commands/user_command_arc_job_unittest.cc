@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,16 +7,16 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/arc/session/connection_holder.h"
+#include "ash/components/arc/test/fake_policy_instance.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/arc_service_manager.h"
-#include "components/arc/session/connection_holder.h"
-#include "components/arc/test/fake_policy_instance.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "content/public/test/browser_task_environment.h"
@@ -24,26 +24,26 @@
 
 namespace policy {
 
-std::unique_ptr<policy::RemoteCommandJob> CreateArcJob(
-    Profile* profile,
-    base::TimeTicks issued_time,
-    const std::string& payload) {
+std::unique_ptr<RemoteCommandJob> CreateArcJob(Profile* profile,
+                                               base::TimeTicks issued_time,
+                                               const std::string& payload) {
   // Create the job proto.
   enterprise_management::RemoteCommand command_proto;
   command_proto.set_type(
       enterprise_management::RemoteCommand_Type_USER_ARC_COMMAND);
-  constexpr policy::RemoteCommandJob::UniqueIDType kUniqueID = 123456789;
+  constexpr RemoteCommandJob::UniqueIDType kUniqueID = 123456789;
   command_proto.set_command_id(kUniqueID);
   command_proto.set_age_of_command(
       (base::TimeTicks::Now() - issued_time).InMilliseconds());
   command_proto.set_payload(payload);
 
   // Create the job and validate.
-  auto job = std::make_unique<policy::UserCommandArcJob>(profile);
+  auto job = std::make_unique<UserCommandArcJob>(profile);
 
-  EXPECT_TRUE(job->Init(base::TimeTicks::Now(), command_proto, nullptr));
+  EXPECT_TRUE(job->Init(base::TimeTicks::Now(), command_proto,
+                        enterprise_management::SignedData()));
   EXPECT_EQ(kUniqueID, job->unique_id());
-  EXPECT_EQ(policy::RemoteCommandJob::NOT_STARTED, job->status());
+  EXPECT_EQ(RemoteCommandJob::NOT_STARTED, job->status());
 
   return job;
 }
@@ -86,15 +86,15 @@ UserCommandArcJobTest::~UserCommandArcJobTest() {
 
 TEST_F(UserCommandArcJobTest, TestPayloadReceiving) {
   const std::string kPayload = "testing payload";
-  std::unique_ptr<policy::RemoteCommandJob> job =
+  std::unique_ptr<RemoteCommandJob> job =
       CreateArcJob(profile_.get(), base::TimeTicks::Now(), kPayload);
   base::RunLoop run_loop;
 
   auto check_result_callback = base::BindOnce(
-      [](base::RunLoop* run_loop, policy::RemoteCommandJob* job,
+      [](base::RunLoop* run_loop, RemoteCommandJob* job,
          arc::FakePolicyInstance* policy_instance,
          std::string expected_payload) {
-        EXPECT_EQ(policy::RemoteCommandJob::SUCCEEDED, job->status());
+        EXPECT_EQ(RemoteCommandJob::SUCCEEDED, job->status());
         EXPECT_EQ(expected_payload, policy_instance->command_payload());
         run_loop->Quit();
       },

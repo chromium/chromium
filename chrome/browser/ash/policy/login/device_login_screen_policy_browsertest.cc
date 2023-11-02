@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,11 +37,11 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace em = enterprise_management;
-
 namespace policy {
 
 namespace {
+
+namespace em = ::enterprise_management;
 
 // Spins the loop until a notification is received from |prefs| that the value
 // of |pref_name| has changed. If the notification is received before Wait()
@@ -114,18 +114,18 @@ DeviceLoginScreenPolicyBrowsertest::~DeviceLoginScreenPolicyBrowsertest() {}
 
 void DeviceLoginScreenPolicyBrowsertest::SetUpOnMainThread() {
   DevicePolicyCrosBrowserTest::SetUpOnMainThread();
-  login_profile_ = chromeos::ProfileHelper::GetSigninProfile();
+  login_profile_ = ash::ProfileHelper::GetSigninProfile();
   ASSERT_TRUE(login_profile_);
   // Set the login screen profile.
   auto* accessibility_manager = ash::AccessibilityManager::Get();
   ASSERT_TRUE(accessibility_manager);
   accessibility_manager->SetProfileForTest(
-      chromeos::ProfileHelper::GetSigninProfile());
+      ash::ProfileHelper::GetSigninProfile());
 
   auto* magnification_manager = ash::MagnificationManager::Get();
   ASSERT_TRUE(magnification_manager);
   magnification_manager->SetProfileForTest(
-      chromeos::ProfileHelper::GetSigninProfile());
+      ash::ProfileHelper::GetSigninProfile());
 }
 
 void DeviceLoginScreenPolicyBrowsertest::
@@ -138,8 +138,8 @@ void DeviceLoginScreenPolicyBrowsertest::
 void DeviceLoginScreenPolicyBrowsertest::SetUpCommandLine(
     base::CommandLine* command_line) {
   DevicePolicyCrosBrowserTest::SetUpCommandLine(command_line);
-  command_line->AppendSwitch(chromeos::switches::kLoginManager);
-  command_line->AppendSwitch(chromeos::switches::kForceLoginManagerInTests);
+  command_line->AppendSwitch(ash::switches::kLoginManager);
+  command_line->AppendSwitch(ash::switches::kForceLoginManagerInTests);
 }
 
 bool DeviceLoginScreenPolicyBrowsertest::IsPrefManaged(
@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLoginScreenPolicyBrowsertest,
 IN_PROC_BROWSER_TEST_F(DeviceLoginScreenPolicyBrowsertest, DeviceLocalAccount) {
   EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
   em::ChromeDeviceSettingsProto& proto(device_policy()->payload());
-  policy::DeviceLocalAccountTestHelper::AddPublicSession(&proto, "test");
+  DeviceLocalAccountTestHelper::AddPublicSession(&proto, "test");
   RefreshDevicePolicy();
 
   // Wait for Gaia dialog to be hidden.
@@ -241,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLoginScreenPolicyBrowsertest, ResetScreen) {
   ash::OobeScreenWaiter(chromeos::ResetView::kScreenId).Wait();
 
   em::ChromeDeviceSettingsProto& proto(device_policy()->payload());
-  policy::DeviceLocalAccountTestHelper::AddPublicSession(&proto, "test");
+  DeviceLocalAccountTestHelper::AddPublicSession(&proto, "test");
   RefreshDevicePolicy();
 
   // Wait for users to propagate.

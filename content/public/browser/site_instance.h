@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,11 +14,17 @@
 #include "content/public/browser/browsing_instance_id.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/site_instance_process_assignment.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "url/gurl.h"
+
+namespace perfetto::protos::pbzero {
+class SiteInstance;
+}  // namespace perfetto::protos::pbzero
 
 namespace content {
 class BrowserContext;
 class RenderProcessHost;
+class StoragePartitionConfig;
 
 using SiteInstanceId = base::IdType32<class SiteInstanceIdTag>;
 
@@ -140,6 +146,9 @@ class CONTENT_EXPORT SiteInstance : public base::RefCounted<SiteInstance> {
   //   corresponds to a site URL with the host "example.com".
   virtual const GURL& GetSiteURL() = 0;
 
+  // Get the StoragePartitionConfig used by this SiteInstance.
+  virtual const StoragePartitionConfig& GetStoragePartitionConfig() = 0;
+
   // Gets a SiteInstance for the given URL that shares the current
   // BrowsingInstance, creating a new SiteInstance if necessary.  This ensures
   // that a BrowsingInstance only has one SiteInstance per site, so that pages
@@ -159,6 +168,10 @@ class CONTENT_EXPORT SiteInstance : public base::RefCounted<SiteInstance> {
   // Returns true if this SiteInstance is for a site that requires a dedicated
   // process. This only returns true under the "site per process" process model.
   virtual bool RequiresDedicatedProcess() = 0;
+
+  // Returns true if this SiteInstance is for a process-isolated origin with its
+  // own OriginAgentCluster.
+  virtual bool RequiresOriginKeyedProcess() = 0;
 
   // Return whether this SiteInstance and the provided |url| are part of the
   // same web site, for the purpose of assigning them to processes accordingly.
@@ -181,8 +194,18 @@ class CONTENT_EXPORT SiteInstance : public base::RefCounted<SiteInstance> {
   // affects performance.
   virtual SiteInstanceProcessAssignment GetLastProcessAssignmentOutcome() = 0;
 
+  using TraceProto = perfetto::protos::pbzero::SiteInstance;
   // Write a representation of this object into a trace.
-  virtual void WriteIntoTrace(perfetto::TracedValue context) = 0;
+  virtual void WriteIntoTrace(perfetto::TracedProto<TraceProto> context) = 0;
+
+  // Estimates the overhead in terms of process count due to OriginAgentCluster
+  // (OAC) SiteInstances in the BrowsingInstance related to this SiteInstance.
+  // The estimate is based on counting SiteInstances where OAC is on, and
+  // subtracting from it the count of SiteInstances that would exist without
+  // OAC. If we assume that we don't coalesce SiteInstances from different
+  // BrowsingInstances into a single RenderProcess, this roughly corresponds to
+  // the number of renderer processes engendered by OAC.
+  virtual int EstimateOriginAgentClusterOverheadForMetrics() = 0;
 
   // Factory method to create a new SiteInstance.  This will create a new
   // BrowsingInstance, so it should only be used when creating a new tab from
@@ -203,11 +226,11 @@ class CONTENT_EXPORT SiteInstance : public base::RefCounted<SiteInstance> {
       const GURL& url);
 
   // Factory method to create a SiteInstance for a <webview> guest in a new
-  // BrowsingInstance.
-  // TODO(734722): Replace this method once SecurityPrincipal is available.
+  // BrowsingInstance. A guest requires a non-default StoragePartitionConfig
+  // which should be passed in via `partition_config`.
   static scoped_refptr<SiteInstance> CreateForGuest(
       BrowserContext* browser_context,
-      const GURL& guest_site_url);
+      const StoragePartitionConfig& partition_config);
 
   // Determine if a URL should "use up" a site.  URLs such as about:blank or
   // chrome-native:// leave the site unassigned.

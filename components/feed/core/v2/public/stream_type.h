@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,24 +15,29 @@ namespace feed {
 // Note: currently there are two options, but this leaves room for more
 // parameters.
 class StreamType {
+  // TODO(crbug.com/1369784) rename to StreamID.
  public:
-  enum class Type {
-    // An unspecified stream type. Used only to represent an uninitialized
-    // stream type value.
-    kUnspecified,
-    // The For-You feed stream.
-    kForYou,
-    // The Web Feed stream.
-    kWebFeed,
-  };
-  constexpr StreamType() = default;
-  constexpr explicit StreamType(Type t) : type_(t) {}
-  bool operator<(const StreamType& rhs) const { return type_ < rhs.type_; }
-  bool operator==(const StreamType& rhs) const { return type_ == rhs.type_; }
-  bool IsForYou() const { return type_ == Type::kForYou; }
-  bool IsWebFeed() const { return type_ == Type::kWebFeed; }
-  bool IsValid() const { return type_ != Type::kUnspecified; }
-  Type GetType() const { return type_; }
+  StreamType() = default;
+  virtual ~StreamType() = default;
+  explicit StreamType(StreamKind k, std::string s = std::string())
+      : kind_(k), web_feed_id_(std::move(s)) {}
+  bool operator<(const StreamType& rhs) const {
+    if (kind_ == rhs.kind_) {
+      if (kind_ != StreamKind::kChannel)
+        return false;
+      return web_feed_id_.compare(rhs.web_feed_id_) < 0;
+    }
+    return kind_ < rhs.kind_;
+  }
+  bool operator==(const StreamType& rhs) const {
+    return (kind_ == rhs.kind_) && (web_feed_id_ == rhs.web_feed_id_);
+  }
+  bool IsForYou() const { return kind_ == StreamKind::kForYou; }
+  bool IsWebFeed() const { return kind_ == StreamKind::kFollowing; }
+  bool IsChannelFeed() const { return kind_ == StreamKind::kChannel; }
+  bool IsValid() const { return kind_ != StreamKind::kUnknown; }
+  StreamKind GetType() const { return kind_; }
+  std::string GetWebFeedId() const { return web_feed_id_; }
 
   // Returns a human-readable value, for debugging/DCHECK prints.
   std::string ToString() const;
@@ -44,11 +49,10 @@ class StreamType {
   static StreamType ForTaskId(RefreshTaskId task_id);
 
  private:
-  Type type_ = Type::kUnspecified;
+  StreamKind kind_ = StreamKind::kUnknown;
+  // Identifies the feed ID in the case that the feed is a ChannelFeed.
+  std::string web_feed_id_;
 };
-
-constexpr StreamType kForYouStream(StreamType::Type::kForYou);
-constexpr StreamType kWebFeedStream(StreamType::Type::kWebFeed);
 
 inline std::ostream& operator<<(std::ostream& os,
                                 const StreamType& stream_type) {

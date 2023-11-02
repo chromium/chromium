@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -22,13 +23,13 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/favicon/favicon_utils.h"
-#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
@@ -36,6 +37,7 @@
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
+#include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/reopen_tab_in_product_help.h"
@@ -43,9 +45,8 @@
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -75,6 +76,10 @@
 #include "ui/views/widget/widget.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 using base::UserMetricsAction;
 using content::WebContents;
 
@@ -86,7 +91,7 @@ BrowserView* GetSourceBrowserViewInTabDragging() {
   auto* source_context = TabDragController::GetSourceContext();
   if (source_context) {
     gfx::NativeWindow source_window =
-        source_context->AsView()->GetWidget()->GetNativeWindow();
+        source_context->GetWidget()->GetNativeWindow();
     if (source_window)
       return BrowserView::GetBrowserViewForNativeWindow(source_window);
   }
@@ -98,25 +103,11 @@ BrowserView* GetSourceBrowserViewInTabDragging() {
 class BrowserTabStripController::TabContextMenuContents
     : public ui::SimpleMenuModel::Delegate {
  public:
-  TabContextMenuContents(Tab* tab,
-                         BrowserTabStripController* controller,
-                         FeaturePromoController* feature_promo_controller)
-      : tab_(tab),
-        controller_(controller),
-        feature_promo_controller_(feature_promo_controller) {
+  TabContextMenuContents(Tab* tab, BrowserTabStripController* controller)
+      : tab_(tab), controller_(controller) {
     model_ = controller_->menu_model_factory_->Create(
         this, controller->browser()->tab_menu_model_delegate(),
         controller->model_, controller->tabstrip_->GetModelIndexOf(tab));
-
-    // If IPH is showing, continue into the menu. IsCommandIdAlerted()
-    // is called on |menu_runner_| construction, and we check
-    // |tab_groups_promo_handle_| there. So we must do this first.
-    if (feature_promo_controller_->BubbleIsShowing(
-            feature_engagement::kIPHDesktopTabGroupsNewGroupFeature)) {
-      tab_groups_promo_handle_ =
-          feature_promo_controller_->CloseBubbleAndContinuePromo(
-              feature_engagement::kIPHDesktopTabGroupsNewGroupFeature);
-    }
 
     // Because we use "new" badging for feature promos, we cannot use system-
     // native context menus. (See crbug.com/1109256.)
@@ -128,6 +119,11 @@ class BrowserTabStripController::TabContextMenuContents
   TabContextMenuContents& operator=(const TabContextMenuContents&) = delete;
 
   void Cancel() { controller_ = nullptr; }
+
+  void CloseMenu() {
+    if (menu_runner_)
+      menu_runner_->Cancel();
+  }
 
   void RunMenuAt(const gfx::Point& point, ui::MenuSourceType source_type) {
     menu_runner_->RunMenuAt(tab_->GetWidget(), nullptr,
@@ -145,15 +141,13 @@ class BrowserTabStripController::TabContextMenuContents
 
   bool IsCommandIdAlerted(int command_id) const override {
     return command_id == TabStripModel::CommandAddToNewGroup &&
-           tab_groups_promo_handle_;
-  }
-
-  void MenuClosed(ui::SimpleMenuModel*) override {
-    tab_groups_promo_handle_.reset();
+           controller_->GetBrowser()->window()->IsFeaturePromoActive(
+               feature_engagement::kIPHDesktopTabGroupsNewGroupFeature);
   }
 
   bool GetAcceleratorForCommandId(int command_id,
                                   ui::Accelerator* accelerator) const override {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     auto* browser = controller_->browser_view_->browser();
     auto* system_app = browser->app_controller()
                            ? browser->app_controller()->system_app()
@@ -162,6 +156,7 @@ class BrowserTabStripController::TabContextMenuContents
                           browser->profile(), command_id)) {
       return false;
     }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     int browser_cmd;
     return TabStripModel::ContextMenuCommandToBrowserCommand(command_id,
@@ -182,15 +177,10 @@ class BrowserTabStripController::TabContextMenuContents
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
   // The tab we're showing a menu for.
-  Tab* tab_;
+  raw_ptr<Tab> tab_;
 
   // A pointer back to our hosting controller, for command state information.
-  BrowserTabStripController* controller_;
-
-  FeaturePromoController* const feature_promo_controller_;
-
-  // Handle we keep if showing menu IPH for tab groups.
-  absl::optional<FeaturePromoController::PromoHandle> tab_groups_promo_handle_;
+  raw_ptr<BrowserTabStripController> controller_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -203,9 +193,6 @@ BrowserTabStripController::BrowserTabStripController(
     : model_(model),
       tabstrip_(nullptr),
       browser_view_(browser_view),
-      feature_engagement_tracker_(
-          feature_engagement::TrackerFactory::GetForBrowserContext(
-              browser_view_->browser()->profile())),
       hover_tab_selector_(model),
       menu_model_factory_(std::move(menu_model_factory_override)) {
   if (!menu_model_factory_) {
@@ -289,13 +276,14 @@ void BrowserTabStripController::SelectTab(int model_index,
       content::PeakGpuMemoryTracker::Create(
           content::PeakGpuMemoryTracker::Usage::CHANGE_TAB);
 
-  TabStripModel::UserGestureDetails gesture_detail(
-      TabStripModel::GestureType::kOther, event.time_stamp());
-  TabStripModel::GestureType type = TabStripModel::GestureType::kOther;
+  TabStripUserGestureDetails gesture_detail(
+      TabStripUserGestureDetails::GestureType::kOther, event.time_stamp());
+  TabStripUserGestureDetails::GestureType type =
+      TabStripUserGestureDetails::GestureType::kOther;
   if (event.type() == ui::ET_MOUSE_PRESSED)
-    type = TabStripModel::GestureType::kMouse;
+    type = TabStripUserGestureDetails::GestureType::kMouse;
   else if (event.type() == ui::ET_GESTURE_TAP_DOWN)
-    type = TabStripModel::GestureType::kTouch;
+    type = TabStripUserGestureDetails::GestureType::kTouch;
   gesture_detail.type = type;
   model_->ActivateTabAt(model_index, gesture_detail);
 
@@ -348,17 +336,25 @@ void BrowserTabStripController::CloseTab(int model_index) {
   hover_tab_selector_.CancelTabTransition();
 
   model_->CloseWebContentsAt(model_index,
-                             TabStripModel::CLOSE_USER_GESTURE |
-                             TabStripModel::CLOSE_CREATE_HISTORICAL_TAB);
+                             TabCloseTypes::CLOSE_USER_GESTURE |
+                                 TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
 
   // Try to show reading list IPH if needed.
   if (tabstrip_->GetTabCount() >= 7) {
-    feature_engagement_tracker_->NotifyEvent(
+    browser_view_->NotifyFeatureEngagementEvent(
         feature_engagement::events::kClosedTabWithEightOrMore);
 
-    browser_view_->feature_promo_controller()->MaybeShowPromo(
+    browser_view_->MaybeShowFeaturePromo(
         feature_engagement::kIPHReadingListEntryPointFeature);
   }
+}
+
+void BrowserTabStripController::ToggleTabAudioMute(int model_index) {
+  content::WebContents* const contents = model_->GetWebContentsAt(model_index);
+  bool mute_tab = !contents->IsAudioMuted();
+  UMA_HISTOGRAM_BOOLEAN("Media.Audio.TabAudioMuted", mute_tab);
+  chrome::SetTabAudioMuted(contents, mute_tab,
+                           TabMutedReason::AUDIO_INDICATOR, std::string());
 }
 
 void BrowserTabStripController::AddTabToGroup(
@@ -401,14 +397,18 @@ bool BrowserTabStripController::ToggleTabGroupCollapsedState(
         base::RecordAction(base::UserMetricsAction("TabGroups_CannotCollapse"));
         return false;
       }
-      model_->ActivateTabAt(next_active.value(),
-                            {TabStripModel::GestureType::kOther});
+      model_->ActivateTabAt(
+          next_active.value(),
+          TabStripUserGestureDetails(
+              TabStripUserGestureDetails::GestureType::kOther));
     } else {
       // If the active tab is not in the group that is toggling to collapse,
       // reactive the active tab to deselect any other potentially selected
       // tabs.
-      model_->ActivateTabAt(GetActiveIndex(),
-                            {TabStripModel::GestureType::kOther});
+      model_->ActivateTabAt(
+          GetActiveIndex(),
+          TabStripUserGestureDetails(
+              TabStripUserGestureDetails::GestureType::kOther));
     }
     if (origin != ToggleTabGroupCollapsedStateOrigin::kImplicitAction) {
       base::RecordAction(
@@ -427,12 +427,15 @@ void BrowserTabStripController::ShowContextMenuForTab(
     Tab* tab,
     const gfx::Point& p,
     ui::MenuSourceType source_type) {
-  context_menu_contents_ = std::make_unique<TabContextMenuContents>(
-      tab, this, browser_view_->feature_promo_controller());
+  context_menu_contents_ = std::make_unique<TabContextMenuContents>(tab, this);
   context_menu_contents_->RunMenuAt(p, source_type);
-  base::UmaHistogramEnumeration(
-      "TabStrip.Tab.Views.ActivationAction",
-      TabStripModel::TabActivationTypes::kContextMenu);
+  base::UmaHistogramEnumeration("TabStrip.Tab.Views.ActivationAction",
+                                TabActivationTypes::kContextMenu);
+}
+
+void BrowserTabStripController::CloseContextMenuForTesting() {
+  if (context_menu_contents_)
+    context_menu_contents_->CloseMenu();
 }
 
 int BrowserTabStripController::HasAvailableDragActions() const {
@@ -480,9 +483,9 @@ void BrowserTabStripController::OnStartedDragging(bool dragging_window) {
     // tabs in immersive fullscreen. The top-of-window views may not be already
     // revealed if the user is attempting to attach a tab to a tabstrip
     // belonging to an immersive fullscreen window.
-    immersive_reveal_lock_.reset(
+    immersive_reveal_lock_ =
         browser_view_->immersive_mode_controller()->GetRevealedLock(
-            ImmersiveModeController::ANIMATE_REVEAL_NO));
+            ImmersiveModeController::ANIMATE_REVEAL_NO);
   }
 
   browser_view_->frame()->SetTabDragKind(dragging_window ? TabDragKind::kAllTabs
@@ -547,11 +550,6 @@ absl::optional<int> BrowserTabStripController::GetFirstTabInGroup(
   return model_->group_model()->GetTabGroup(group)->GetFirstTab();
 }
 
-absl::optional<int> BrowserTabStripController::GetLastTabInGroup(
-    const tab_groups::TabGroupId& group) const {
-  return model_->group_model()->GetTabGroup(group)->GetLastTab();
-}
-
 gfx::Range BrowserTabStripController::ListTabsInGroup(
     const tab_groups::TabGroupId& group) const {
   return model_->group_model()->GetTabGroup(group)->ListTabs();
@@ -581,10 +579,6 @@ bool BrowserTabStripController::CanDrawStrokes() const {
 SkColor BrowserTabStripController::GetFrameColor(
     BrowserFrameActiveState active_state) const {
   return GetFrameView()->GetFrameColor(active_state);
-}
-
-SkColor BrowserTabStripController::GetToolbarTopSeparatorColor() const {
-  return GetFrameView()->GetToolbarTopSeparatorColor();
 }
 
 absl::optional<int> BrowserTabStripController::GetCustomBackgroundId(
@@ -657,11 +651,11 @@ void BrowserTabStripController::OnTabStripModelChanged(
     // It's possible for |new_contents| to be null when the final tab in a tab
     // strip is closed.
     content::WebContents* new_contents = selection.new_contents;
-    int index = selection.new_model.active();
-    if (new_contents && index != TabStripModel::kNoTab) {
+    absl::optional<size_t> index = selection.new_model.active();
+    if (new_contents && index.has_value()) {
       TabUIHelper::FromWebContents(new_contents)
           ->set_was_active_at_least_once();
-      SetTabDataAt(new_contents, index);
+      SetTabDataAt(new_contents, index.value());
     }
   }
 
@@ -669,12 +663,22 @@ void BrowserTabStripController::OnTabStripModelChanged(
     tabstrip_->SetSelection(selection.new_model);
 }
 
+void BrowserTabStripController::OnTabWillBeAdded() {
+  tabstrip_->EndDrag(EndDragReason::END_DRAG_MODEL_ADDED_TAB);
+}
+
+void BrowserTabStripController::OnTabWillBeRemoved(
+    content::WebContents* contents,
+    int index) {
+  tabstrip_->OnTabWillBeRemoved(contents, index);
+}
+
 void BrowserTabStripController::OnTabGroupChanged(
     const TabGroupChange& change) {
   switch (change.type) {
     case TabGroupChange::kCreated: {
       tabstrip_->OnGroupCreated(change.group);
-      feature_engagement_tracker_->NotifyEvent(
+      browser_view_->NotifyFeatureEngagementEvent(
           feature_engagement::events::kTabGroupCreated);
       break;
     }
@@ -698,18 +702,15 @@ void BrowserTabStripController::OnTabGroupChanged(
         gfx::Range tabs_in_group = ListTabsInGroup(change.group);
         for (auto i = tabs_in_group.start(); i < tabs_in_group.end(); ++i) {
           tabstrip_->tab_at(i)->SetVisible(!new_visuals->is_collapsed());
-          if (base::FeatureList::IsEnabled(
-                  features::kTabGroupsCollapseFreezing)) {
-            if (visuals_delta->new_visuals->is_collapsed()) {
-              tabstrip_->tab_at(i)->SetFreezingVoteToken(
-                  performance_manager::freezing::EmitFreezingVoteForWebContents(
-                      model_->GetWebContentsAt(i),
-                      performance_manager::freezing::FreezingVoteValue::
-                          kCanFreeze,
-                      "Collapsed Tab Group"));
-            } else {
-              tabstrip_->tab_at(i)->ReleaseFreezingVoteToken();
-            }
+          if (visuals_delta->new_visuals->is_collapsed()) {
+            tabstrip_->tab_at(i)->SetFreezingVoteToken(
+                performance_manager::freezing::EmitFreezingVoteForWebContents(
+                    model_->GetWebContentsAt(i),
+                    performance_manager::freezing::FreezingVoteValue::
+                        kCanFreeze,
+                    "Collapsed Tab Group"));
+          } else {
+            tabstrip_->tab_at(i)->ReleaseFreezingVoteToken();
           }
         }
       }
@@ -779,21 +780,20 @@ void BrowserTabStripController::AddTab(WebContents* contents,
   // Cancel any pending tab transition.
   hover_tab_selector_.CancelTabTransition();
 
-  tabstrip_->AddTabAt(index, TabRendererData::FromTabInModel(model_, index),
-                      is_active);
+  tabstrip_->AddTabAt(index, TabRendererData::FromTabInModel(model_, index));
   // Try to show tab groups IPH if needed.
   if (tabstrip_->GetTabCount() >= 6) {
-    feature_engagement_tracker_->NotifyEvent(
+    browser_view_->NotifyFeatureEngagementEvent(
         feature_engagement::events::kSixthTabOpened);
 
-    browser_view_->feature_promo_controller()->MaybeShowPromo(
+    browser_view_->MaybeShowFeaturePromo(
         feature_engagement::kIPHDesktopTabGroupsNewGroupFeature);
   }
 
   // Try to show tab search IPH if needed.
   constexpr int kTabSearchIPHTriggerThreshold = 8;
   if (tabstrip_->GetTabCount() >= kTabSearchIPHTriggerThreshold) {
-    browser_view_->feature_promo_controller()->MaybeShowPromo(
+    browser_view_->MaybeShowFeaturePromo(
         feature_engagement::kIPHTabSearchFeature);
   }
 }

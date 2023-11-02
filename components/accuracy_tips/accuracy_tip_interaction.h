@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,8 +25,10 @@ enum class AccuracyTipInteraction {
   kDisabledByExperiment = 4,
   // Pressed "ignore" button.
   kIgnore = 5,
+  // The UI was closed because the site requested a permission.
+  kPermissionRequested = 6,
 
-  kMaxValue = kIgnore,
+  kMaxValue = kPermissionRequested,
 };
 
 }  // namespace accuracy_tips

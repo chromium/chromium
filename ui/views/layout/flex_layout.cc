@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -1107,7 +1107,7 @@ void FlexLayout::AllocateZeroWeightFlex(
   // this priority order.
   auto it = child_list.begin();
   while (it != child_list.end()) {
-    const int child_index = *it;
+    const size_t child_index = *it;
     FlexChildData& flex_child = data.child_data[child_index];
 
     // We don't care about weighted flex in this step.

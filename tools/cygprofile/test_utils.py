@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -17,13 +17,13 @@ SimpleTestSymbol = collections.namedtuple(
 
 class TestSymbolOffsetProcessor(process_profiles.SymbolOffsetProcessor):
   def __init__(self, symbol_infos):
-    super(TestSymbolOffsetProcessor, self).__init__(None)
+    super().__init__(None)
     self._symbol_infos = symbol_infos
 
 
 class TestProfileManager(process_profiles.ProfileManager):
   def __init__(self, filecontents_mapping):
-    super(TestProfileManager, self).__init__(filecontents_mapping.keys())
+    super().__init__(filecontents_mapping.keys())
     self._filecontents_mapping = filecontents_mapping
 
   def _ReadOffsets(self, filename):

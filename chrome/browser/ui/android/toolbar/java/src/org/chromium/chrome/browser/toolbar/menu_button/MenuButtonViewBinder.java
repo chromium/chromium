@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,7 +47,7 @@ class MenuButtonViewBinder implements ViewBinder<PropertyModel, MenuButton, Prop
         } else if (propertyKey == MenuButtonProperties.THEME) {
             bind(model, view, MenuButtonProperties.STATE_SUPPLIER);
             ThemeProperty themeProperty = model.get(MenuButtonProperties.THEME);
-            view.onTintChanged(themeProperty.mColorStateList, themeProperty.mUseLightColors);
+            view.onTintChanged(themeProperty.mColorStateList, themeProperty.mBrandedColorScheme);
         } else if (propertyKey == MenuButtonProperties.TRANSLATION_X) {
             view.setTranslationX(model.get(MenuButtonProperties.TRANSLATION_X));
         }

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,11 @@
 #include "base/strings/string_piece.h"
 #include "net/tools/transport_security_state_generator/transport_security_state_entry.h"
 
-namespace net {
+namespace base {
+class Time;
+}
 
-namespace transport_security_state {
+namespace net::transport_security_state {
 
 class Pinsets;
 
@@ -19,7 +21,9 @@ class Pinsets;
 //
 // More info on the format can be found in
 // net/http/transport_security_state_static.pins
-bool ParseCertificatesFile(base::StringPiece certs_input, Pinsets* pinsets);
+bool ParseCertificatesFile(base::StringPiece certs_input,
+                           Pinsets* pinsets,
+                           base::Time* timestamp);
 
 // Parses the |json| string; copies the items under the "entries" key to
 // |entries| and the pinsets under the "pinsets" key to |pinsets|.
@@ -30,8 +34,6 @@ bool ParseJSON(base::StringPiece json,
                TransportSecurityStateEntries* entries,
                Pinsets* pinsets);
 
-}  // namespace transport_security_state
-
-}  // namespace net
+}  // namespace net::transport_security_state
 
 #endif  // NET_TOOLS_TRANSPORT_SECURITY_STATE_GENERATOR_INPUT_FILE_PARSERS_H_

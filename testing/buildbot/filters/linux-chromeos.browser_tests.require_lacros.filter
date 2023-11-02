@@ -4,11 +4,16 @@
 *Magn*.*
 AccessibilityExtension*
 Autoclick*
+AshTtsApiTest*
+BrowserAppShelfControllerBrowserTest*
 ChromeVox*
 DemoAshRequiresLacrosTest*
+DesksTemplatesClientLacrosTest*
 Dictation*
 SelectToSpeak*
 SwitchAccess*
+VpnExtensionObserverBrowserTest*
+WebAppsCrosapiBrowserTest*
 # TODO(crbug.com/1245416) Enable more accessibility tests.
 -ChromeVoxBackgroundTest.SwipeLeftRight4ByContainers
 -ChromeVoxBackgroundTest.TabSwitchAndRefreshRecovery
@@ -23,11 +28,22 @@ SwitchAccess*
 -ChromeVoxPortalsTest.ShouldFocusPortal
 -SelectToSpeakEnhancedNetworkTtsVoicesTest.*
 -SelectToSpeakNavigationControlTest.*
--SwitchAccessFocusRingManagerTest.BackButtonForMenuFocus
--SwitchAccessFocusRingManagerTest.GroupFocus
 -SwitchAccessItemScanManagerTest.*
 -SwitchAccessPointScanManagerTest.PointScanLeftClick
+-ChromeVoxAutoScrollHandlerTest.RecyclerViewByPredicate
+-ChromeVoxTutorialTest.Gestures
+-ChromeVoxTutorialTest.ExitButtonTest
+-ChromeVoxTutorialTest.EscapeTest
 # Flaky (crbug.com/1268842).
--ChromeVoxLiveRegionsTest.LiveRegionRemoveElement
--ChromeVoxLiveRegionsTest.LiveRegionAddElement
+-ChromeVoxBackgroundTest.GestureOnPopUpButton
+-ChromeVoxBackgroundTest.HitTestOnExoSurface
+-ChromeVoxEditingTest.JumpCommandsSyncSelection
+-ChromeVoxBackgroundTest.ListBoxItemsNavigation
 -ChromeVoxLiveRegionsTest.FocusThenLiveRegion
+-ChromeVoxLiveRegionsTest.LiveRegionAddElement
+-ChromeVoxLiveRegionsTest.LiveRegionRemoveElement
+-ChromeVoxUserActionMonitorTest.Gestures
+# TODO(crbug.com/1339456) Disabled when switch to LacrosOnly.
+-DesksTemplatesClientLacrosTest.SystemUILaunchBrowser
+# TODO(crbug.com/1356103) Disabled when switch to LacrosOnly.
+-SwitchAccessPointScanManagerTest.PointScanRightClick

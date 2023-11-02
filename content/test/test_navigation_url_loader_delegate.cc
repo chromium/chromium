@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,7 +45,7 @@ void TestNavigationURLLoaderDelegate::ReleaseURLLoaderClientEndpoints() {
 
 void TestNavigationURLLoaderDelegate::OnRequestRedirected(
     const net::RedirectInfo& redirect_info,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_isolation_key,
     network::mojom::URLResponseHeadPtr response_head) {
   redirect_info_ = redirect_info;
   redirect_response_ = std::move(response_head);
@@ -60,7 +60,7 @@ void TestNavigationURLLoaderDelegate::OnResponseStarted(
     GlobalRequestID request_id,
     bool is_download,
     blink::NavigationDownloadPolicy download_policy,
-    net::NetworkIsolationKey network_isolation_key,
+    net::NetworkAnonymizationKey network_isolation_key,
     absl::optional<SubresourceLoaderParams> subresource_loader_params,
     EarlyHints early_hints) {
   on_request_handled_counter_++;

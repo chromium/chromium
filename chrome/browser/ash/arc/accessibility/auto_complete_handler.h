@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,9 +24,10 @@ class AccessibilityEventData;
 
 class AutoCompleteHandler : public AXTreeSourceArc::Hook {
  public:
-  static std::vector<std::pair<int32_t, std::unique_ptr<AutoCompleteHandler>>>
-  CreateIfNecessary(AXTreeSourceArc* tree_source,
-                    const mojom::AccessibilityEventData& event_data);
+  using IdAndHandler = std::pair<int32_t, std::unique_ptr<AutoCompleteHandler>>;
+  static std::vector<IdAndHandler> CreateIfNecessary(
+      AXTreeSourceArc* tree_source,
+      const mojom::AccessibilityEventData& event_data);
 
   explicit AutoCompleteHandler(const int32_t editable_node_id);
 

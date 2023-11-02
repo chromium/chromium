@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,12 +45,6 @@ class BroadcastingReceiver : public mojom::VideoFrameHandler {
         media::VideoCaptureBufferType target_buffer_type);
 
    private:
-    // If the source handle is shared_memory_via_raw_file_descriptor, we first
-    // have to unwrap it before we can clone it. Instead of unwrapping, cloning,
-    // and than wrapping back each time we need to clone it, we convert it to
-    // a regular shared memory and keep it in this form.
-    void ConvertRawFileDescriptorToSharedBuffer();
-
     int32_t buffer_context_id_;
     int32_t buffer_id_;
     scoped_refptr<VideoFrameAccessHandlerRemote> frame_access_handler_remote_;
@@ -95,6 +89,8 @@ class BroadcastingReceiver : public mojom::VideoFrameHandler {
   void OnBufferRetired(int32_t buffer_id) override;
   void OnError(media::VideoCaptureError error) override;
   void OnFrameDropped(media::VideoCaptureFrameDropReason reason) override;
+  void OnNewCropVersion(uint32_t crop_version) override;
+  void OnFrameWithEmptyRegionCapture() override;
   void OnLog(const std::string& message) override;
   void OnStarted() override;
   void OnStartedUsingGpuDecode() override;

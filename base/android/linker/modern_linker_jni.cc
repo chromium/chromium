@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/android/linker/modern_linker_jni.h"
 
 #include <dlfcn.h>
+#include <elf.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <inttypes.h>
@@ -21,6 +22,7 @@
 #include <sys/stat.h>
 #include <sys/syscall.h>
 #include <sys/types.h>
+#include <time.h>
 #include <unistd.h>
 
 #include <limits>
@@ -37,20 +39,64 @@ extern "C" {
 void* android_dlopen_ext(const char*, int, const android_dlextinfo*)
     __attribute__((weak_import));
 
-// This function is exported by the dynamic linker but never declared in any
-// official header for some architecture/version combinations.
-int dl_iterate_phdr(int (*cb)(dl_phdr_info* info, size_t size, void* data),
-                    void* data) __attribute__((weak_import));
 }  // extern "C"
 
 namespace chromium_android_linker {
 namespace {
 
 // Record of the Java VM passed to JNI_OnLoad().
-static JavaVM* s_java_vm = nullptr;
+JavaVM* s_java_vm = nullptr;
 
 // Guarded by |mLock| in Linker.java.
 RelroSharingStatus s_relro_sharing_status = RelroSharingStatus::NOT_ATTEMPTED;
+
+// Calls the ModernLinker Java methods to record the time intervals in UMA. The
+// calls are made only once pre process, hence there is no need to cache the
+// values obtained from JNIEnv. The class must *not* be reused across different
+// Java->native calls because the |jclass| reference may become invalid in this
+// case.
+class LoadTimeReporterJni : public LoadTimeReporter {
+ public:
+  LoadTimeReporterJni(JNIEnv* env, jclass modern_linker_jni_class)
+      : env_(env), class_(modern_linker_jni_class) {}
+
+  void reportDlopenExtTime(int64_t millis) const override {
+    env_->CallStaticVoidMethod(
+        class_, env_->GetStaticMethodID(class_, "reportDlopenExtTime", "(J)V"),
+        millis);
+  }
+
+  void reportIteratePhdrTime(int64_t millis) const override {
+    env_->CallStaticVoidMethod(
+        class_,
+        env_->GetStaticMethodID(class_, "reportIteratePhdrTime", "(J)V"),
+        millis);
+  }
+
+ private:
+  // Not copyable or movable.
+  LoadTimeReporterJni(const LoadTimeReporterJni&) = delete;
+  LoadTimeReporterJni& operator=(const LoadTimeReporterJni&) = delete;
+
+  JNIEnv* env_;
+  jclass class_;
+};
+
+constexpr int64_t kMillisecondsPerSecond = 1'000;
+constexpr int64_t kNanosecondsPerMillisecond = 1'000'000;
+
+int64_t GetMillisNow() {
+  struct timespec ts;
+  if (clock_gettime(CLOCK_MONOTONIC, &ts) != 0) {
+    PLOG_ERROR("clock_gettime");
+    return 0;
+  }
+
+  int64_t result = ts.tv_sec;
+  result *= kMillisecondsPerSecond;
+  result += (ts.tv_nsec / kNanosecondsPerMillisecond);
+  return result;
+}
 
 }  // namespace
 
@@ -189,35 +235,54 @@ void NativeLibInfo::CloseRelroFd() {
   relro_fd_ = kInvalidFd;
 }
 
-// static
-int NativeLibInfo::VisitLibraryPhdrs(dl_phdr_info* info,
-                                     size_t size UNUSED,
-                                     void* lib_info) {
-  auto* out_lib_info = reinterpret_cast<NativeLibInfo*>(lib_info);
-  ElfW(Addr) lookup_address =
-      static_cast<ElfW(Addr)>(out_lib_info->load_address());
+bool NativeLibInfo::FindRelroAndLibraryRangesInElf() {
+  LOG_INFO("Called for 0x%" PRIxPTR, load_address_);
 
-  // Use max and min vaddr to compute the library's load size.
+  // Check that an ELF library starts at the |load_address_|.
+  if (memcmp(reinterpret_cast<void*>(load_address_), ELFMAG, SELFMAG) != 0) {
+    LOG_ERROR("Wrong magic number");
+    return false;
+  }
+  auto class_type = *reinterpret_cast<uint8_t*>(load_address_ + EI_CLASS);
+  if (class_type == ELFCLASS32) {
+    LOG_INFO("ELFCLASS32");
+  } else if (class_type == ELFCLASS64) {
+    LOG_INFO("ELFCLASS64");
+  } else {
+    LOG_ERROR("Could not determine ELF class");
+    return false;
+  }
+
+  // Sanitycheck PAGE_SIZE before use.
+  int page_size = sysconf(_SC_PAGESIZE);
+  if (page_size != PAGE_SIZE)
+    abort();
+
+  // Compute the ranges of PT_LOAD segments and the PT_GNU_RELRO. It is possible
+  // to reach for the same information by iterating over all loaded libraries
+  // and their program headers using dl_iterate_phdr(3). Instead here the
+  // iteration goes through the array |e_phoff[e_phnum]| to avoid acquisition of
+  // the global lock in Bionic (dlfcn.cpp).
+  //
+  // The code relies on (1) having RELRO in the PT_GNU_RELRO segment, and (2)
+  // the fact that the address *range* occupied by the library is the minimal
+  // address range containing all of the PT_LOAD and PT_GNU_RELRO segments.
+  // This is a contract between the static linker and the dynamic linker which
+  // seems unlikely to get broken. It might break though as a result of
+  // post-processing the DSO, which has historically happened for a few
+  // occasions (eliminating the unwind tables and splitting the library into
+  // DFMs).
   auto min_vaddr = std::numeric_limits<ElfW(Addr)>::max();
+  auto min_relro_vaddr = min_vaddr;
   ElfW(Addr) max_vaddr = 0;
-  ElfW(Addr) min_relro_vaddr = ~0;
   ElfW(Addr) max_relro_vaddr = 0;
-
-  bool is_matching = false;
-  for (int i = 0; i < info->dlpi_phnum; ++i) {
-    const ElfW(Phdr)* phdr = &info->dlpi_phdr[i];
+  const auto* ehdr = reinterpret_cast<const ElfW(Ehdr)*>(load_address_);
+  const auto* phdrs =
+      reinterpret_cast<const ElfW(Phdr)*>(load_address_ + ehdr->e_phoff);
+  for (int i = 0; i < ehdr->e_phnum; i++) {
+    const ElfW(Phdr)* phdr = &phdrs[i];
     switch (phdr->p_type) {
       case PT_LOAD:
-        // See if this segment's load address matches the value passed to
-        // android_dlopen_ext as |extinfo.reserved_addr|.
-        //
-        // Here and below, the virtual address in memory is computed by
-        //     address == info->dlpi_addr + program_header->p_vaddr
-        // that is, the p_vaddr fields is relative to the object base address.
-        // See dl_iterate_phdr(3) for details.
-        if (lookup_address == info->dlpi_addr + phdr->p_vaddr)
-          is_matching = true;
-
         if (phdr->p_vaddr < min_vaddr)
           min_vaddr = phdr->p_vaddr;
         if (phdr->p_vaddr + phdr->p_memsz > max_vaddr)
@@ -242,38 +307,16 @@ int NativeLibInfo::VisitLibraryPhdrs(dl_phdr_info* info,
     }
   }
 
-  // Fill out size and relro information if there was a match.
-  if (is_matching) {
-    int page_size = sysconf(_SC_PAGESIZE);
-    if (page_size != PAGE_SIZE)
-      abort();
-
-    out_lib_info->load_size_ = PAGE_END(max_vaddr) - PAGE_START(min_vaddr);
-    out_lib_info->relro_size_ =
-        PAGE_END(max_relro_vaddr) - PAGE_START(min_relro_vaddr);
-    out_lib_info->relro_start_ = info->dlpi_addr + PAGE_START(min_relro_vaddr);
-
-    return true;
-  }
-
-  return false;
-}
-
-bool NativeLibInfo::FindRelroAndLibraryRangesInElf() {
-  LOG_INFO("Called for 0x%" PRIxPTR, load_address_);
-  if (!dl_iterate_phdr) {
-    LOG_ERROR("No dl_iterate_phdr() found");
-    return false;
-  }
-  int status = dl_iterate_phdr(&VisitLibraryPhdrs, this);
-  if (!status) {
-    LOG_ERROR("Failed to find library at address 0x%" PRIxPTR, load_address_);
-    return false;
-  }
+  // Fill out size and RELRO information.
+  load_size_ = PAGE_END(max_vaddr) - PAGE_START(min_vaddr);
+  relro_size_ = PAGE_END(max_relro_vaddr) - PAGE_START(min_relro_vaddr);
+  relro_start_ = load_address_ + PAGE_START(min_relro_vaddr);
   return true;
 }
 
-bool NativeLibInfo::LoadWithDlopenExt(const String& path, void** handle) {
+bool NativeLibInfo::LoadWithDlopenExt(const String& path,
+                                      const LoadTimeReporter& reporter,
+                                      void** handle) {
   LOG_INFO("Entering");
 
   // The address range must be reserved during initialization in Linker.java.
@@ -288,6 +331,7 @@ bool NativeLibInfo::LoadWithDlopenExt(const String& path, void** handle) {
   auto* address = reinterpret_cast<void*>(load_address_);
 
   // Invoke android_dlopen_ext.
+  int64_t ticks_initial = GetMillisNow();
   void* local_handle = nullptr;
   if (!AndroidDlopenExt(address, reservation_size, path.c_str(),
                         &local_handle)) {
@@ -295,6 +339,8 @@ bool NativeLibInfo::LoadWithDlopenExt(const String& path, void** handle) {
     munmap(address, load_size_);
     return false;
   }
+  int64_t ticks_after_dlopen_ext = GetMillisNow();
+  reporter.reportDlopenExtTime(ticks_after_dlopen_ext - ticks_initial);
 
   // Determine the library address ranges and the RELRO region.
   if (!FindRelroAndLibraryRangesInElf()) {
@@ -303,6 +349,7 @@ bool NativeLibInfo::LoadWithDlopenExt(const String& path, void** handle) {
     LOG_ERROR("Could not find RELRO in the loaded library: %s", path.c_str());
     abort();
   }
+  reporter.reportIteratePhdrTime(GetMillisNow() - ticks_after_dlopen_ext);
 
   // Release the unused parts of the memory reservation.
   TrimMapping(load_address_, reservation_size, load_size_);
@@ -399,10 +446,11 @@ bool NativeLibInfo::CopyFromJavaObject() {
 }
 
 bool NativeLibInfo::LoadLibrary(const String& library_path,
-                                bool spawn_relro_region) {
+                                bool spawn_relro_region,
+                                const LoadTimeReporter& reporter) {
   // Load the library.
   void* handle = nullptr;
-  if (!LoadWithDlopenExt(library_path, &handle)) {
+  if (!LoadWithDlopenExt(library_path, reporter, &handle)) {
     LOG_ERROR("Failed to load native library: %s", library_path.c_str());
     return false;
   }
@@ -476,6 +524,12 @@ bool NativeLibInfo::CompareRelroAndReplaceItBy(
     return false;
   }
 
+  if (load_address_ == 0) {
+    LOG_ERROR("Load address reset. Second attempt to load the library?");
+    s_relro_sharing_status = RelroSharingStatus::EXTERNAL_LOAD_ADDRESS_RESET;
+    return false;
+  }
+
   if (!FindRelroAndLibraryRangesInElf()) {
     LOG_ERROR("Could not find RELRO from externally provided address: 0x%p",
               reinterpret_cast<void*>(other_lib_info.load_address_));
@@ -542,7 +596,8 @@ Java_org_chromium_base_library_1loader_ModernLinkerJni_nativeLoadLibrary(
     return false;
 
   String library_path(env, jdlopen_ext_path);
-  if (!lib_info.LoadLibrary(library_path, spawn_relro_region)) {
+  LoadTimeReporterJni reporter = {env, clazz};
+  if (!lib_info.LoadLibrary(library_path, spawn_relro_region, reporter)) {
     return false;
   }
   return true;
@@ -552,10 +607,11 @@ JNI_GENERATOR_EXPORT jboolean
 Java_org_chromium_base_library_1loader_ModernLinkerJni_nativeUseRelros(
     JNIEnv* env,
     jclass clazz,
-    jobject lib_info_obj) {
+    jlong local_load_address,
+    jobject remote_lib_info_obj) {
   LOG_INFO("Entering");
   // Copy the contents from the Java-side LibInfo object.
-  NativeLibInfo incoming_lib_info = {env, lib_info_obj};
+  NativeLibInfo incoming_lib_info = {env, remote_lib_info_obj};
   if (!incoming_lib_info.CopyFromJavaObject()) {
     s_relro_sharing_status = RelroSharingStatus::CORRUPTED_IN_JAVA;
     return false;
@@ -565,7 +621,7 @@ Java_org_chromium_base_library_1loader_ModernLinkerJni_nativeUseRelros(
   // loaded library and later compare with the contents of the
   // |incoming_lib_info|.
   NativeLibInfo lib_info = {nullptr, nullptr};
-  lib_info.set_load_address(incoming_lib_info.load_address());
+  lib_info.set_load_address(static_cast<uintptr_t>(local_load_address));
 
   if (!lib_info.CompareRelroAndReplaceItBy(incoming_lib_info)) {
     return false;

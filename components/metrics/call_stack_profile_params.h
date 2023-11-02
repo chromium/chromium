@@ -1,10 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_METRICS_CALL_STACK_PROFILE_PARAMS_H_
 #define COMPONENTS_METRICS_CALL_STACK_PROFILE_PARAMS_H_
 
+#include "base/time/time.h"
 
 namespace metrics {
 
@@ -56,23 +57,30 @@ struct CallStackProfileParams {
 
   // The default constructor is required for mojo and should not be used
   // otherwise. A valid trigger should always be specified.
-  constexpr CallStackProfileParams()
-      : CallStackProfileParams(Process::kUnknown,
-                               Thread::kUnknown,
-                               Trigger::kUnknown) {}
-  constexpr CallStackProfileParams(Process process,
-                                   Thread thread,
-                                   Trigger trigger)
-      : process(process), thread(thread), trigger(trigger) {}
+  constexpr CallStackProfileParams() = default;
+
+  constexpr CallStackProfileParams(
+      Process process,
+      Thread thread,
+      Trigger trigger,
+      base::TimeDelta time_offset = base::TimeDelta())
+      : process(process),
+        thread(thread),
+        trigger(trigger),
+        time_offset(time_offset) {}
 
   // The collection process.
-  Process process;
+  Process process = Process::kUnknown;
 
   // The collection thread.
-  Thread thread;
+  Thread thread = Thread::kUnknown;
 
   // The triggering event.
-  Trigger trigger;
+  Trigger trigger = Trigger::kUnknown;
+
+  // The time of the profile, since roughly the start of the process being
+  // profiled. 0 indicates that the time is not reported.
+  base::TimeDelta time_offset;
 };
 
 }  // namespace metrics

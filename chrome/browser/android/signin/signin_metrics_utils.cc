@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,5 @@ static void JNI_SigninMetricsUtils_LogSigninUserActionForAccessPoint(
     JNIEnv* env,
     jint access_point) {
   signin_metrics::RecordSigninUserActionForAccessPoint(
-      static_cast<signin_metrics::AccessPoint>(access_point),
-      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
+      static_cast<signin_metrics::AccessPoint>(access_point));
 }

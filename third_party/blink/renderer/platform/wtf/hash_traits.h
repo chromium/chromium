@@ -30,6 +30,7 @@
 #include <utility>
 
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/atomic_operations.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table_deleted_value_type.h"
@@ -52,7 +53,7 @@ struct ClearMemoryAtomicallyIfNeeded {
 };
 template <typename T>
 struct ClearMemoryAtomicallyIfNeeded<T, true> {
-  static void Clear(T* slot) { AtomicMemzero<sizeof(T)>(slot); }
+  static void Clear(T* slot) { AtomicMemzero<sizeof(T), alignof(T)>(slot); }
 };
 }  // namespace
 
@@ -62,7 +63,7 @@ struct GenericHashTraitsBase<false, T> {
   // tables with zeroed memory.
   static const bool kEmptyValueIsZero = false;
 
-  // The hasIsEmptyValueFunction flag allows the hash table to automatically
+  // The kHasIsEmptyValueFunction flag allows the hash table to automatically
   // generate code to check for the empty value when it can be done with the
   // equality operator, but allows custom functions for cases like String that
   // need them.
@@ -98,8 +99,6 @@ struct GenericHashTraitsBase<false, T> {
     // when it is accessible.
     static const bool value = !std::is_pod<T>::value;
   };
-
-  static constexpr bool kCanHaveDeletedValue = true;
 
   // The kCanTraceConcurrently value is used by Oilpan concurrent marking. Only
   // type for which HashTraits<T>::kCanTraceConcurrently is true can be traced
@@ -476,6 +475,9 @@ struct KeyValuePairHashTraits
     return KeyTraits::IsDeletedValue(value.key);
   }
 
+  // Even non-traceable keys need to have their trait set. This is because
+  // non-traceable keys still need to be processed concurrently for checking
+  // empty/deleted state.
   static constexpr bool kCanTraceConcurrently =
       KeyTraitsArg::kCanTraceConcurrently &&
       (ValueTraitsArg::kCanTraceConcurrently ||

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,13 +17,15 @@ namespace autofill_assistant {
 using autofill_assistant::features::kAutofillAssistant;
 using autofill_assistant::features::kAutofillAssistantChromeEntry;
 using autofill_assistant::features::kAutofillAssistantDirectActions;
+using autofill_assistant::features::
+    kAutofillAssistantGetTriggerScriptsByHashPrefix;
 using autofill_assistant::features::kAutofillAssistantLoadDFMForTriggerScripts;
 using autofill_assistant::features::kAutofillAssistantProactiveHelp;
 
 StartupUtil::StartupUtil() = default;
 StartupUtil::~StartupUtil() = default;
 
-StartupUtil::StartupMode StartupUtil::ChooseStartupModeForIntent(
+StartupMode StartupUtil::ChooseStartupModeForIntent(
     const TriggerContext& trigger_context,
     const Options& options) const {
   const auto& script_parameters = trigger_context.GetScriptParameters();
@@ -32,7 +34,8 @@ StartupUtil::StartupMode StartupUtil::ChooseStartupModeForIntent(
   if (!trigger_context.GetCCT()) {
     features_to_check.emplace_back(kAutofillAssistantChromeEntry);
   }
-  if (!script_parameters.GetStartImmediately().value_or(true)) {
+  if (script_parameters.HasStartImmediately() &&
+      !script_parameters.GetStartImmediately()) {
     features_to_check.emplace_back(kAutofillAssistantProactiveHelp);
     if (!options.feature_module_installed) {
       features_to_check.emplace_back(
@@ -48,8 +51,8 @@ StartupUtil::StartupMode StartupUtil::ChooseStartupModeForIntent(
     }
   }
 
-  if (!script_parameters.GetStartImmediately().has_value() ||
-      !script_parameters.GetEnabled().value_or(false)) {
+  if (!script_parameters.HasStartImmediately() ||
+      !script_parameters.GetEnabled()) {
     VLOG(1)
         << "Invalid Autofill Assistant intent: a mandatory startup parameter "
            "(START_IMMEDIATELY or ENABLED) was missing or invalid.";
@@ -63,18 +66,14 @@ StartupUtil::StartupMode StartupUtil::ChooseStartupModeForIntent(
     return StartupMode::NO_INITIAL_URL;
   }
 
-  if (script_parameters.GetStartImmediately().value()) {
+  if (script_parameters.GetStartImmediately()) {
     // For regular scripts we can stop checking here.
     return StartupMode::START_REGULAR;
   }
 
-  if (!(script_parameters.GetRequestsTriggerScript().value_or(false) ||
-        !script_parameters.GetBase64TriggerScriptsResponseProto()
-             .value_or(std::string())
-             .empty())) {
-    VLOG(1)
-        << "Invalid Autofill Assistant intent: START_IMMEDIATELY=false "
-           "requires either REQUEST_TRIGGER_SCRIPT or TRIGGER_SCRIPTS_BASE64.";
+  if (!(script_parameters.GetRequestsTriggerScript())) {
+    VLOG(1) << "Invalid Autofill Assistant intent: START_IMMEDIATELY=false "
+               "requires REQUEST_TRIGGER_SCRIPT=true.";
     return StartupMode::MANDATORY_PARAMETERS_MISSING;
   }
 
@@ -84,14 +83,10 @@ StartupUtil::StartupMode StartupUtil::ChooseStartupModeForIntent(
     return StartupMode::SETTING_DISABLED;
   }
 
-  if (script_parameters.GetBase64TriggerScriptsResponseProto().has_value()) {
-    // Base64 trigger scripts do not require further checks, and they take
-    // precedence over RPC trigger scripts.
-    return StartupMode::START_BASE64_TRIGGER_SCRIPT;
-  }
-
-  DCHECK(script_parameters.GetRequestsTriggerScript().value_or(false));
-  if (!options.msbb_setting_enabled) {
+  DCHECK(script_parameters.GetRequestsTriggerScript());
+  if (!options.msbb_setting_enabled &&
+      !base::FeatureList::IsEnabled(
+          kAutofillAssistantGetTriggerScriptsByHashPrefix)) {
     VLOG(1) << "Invalid Autofill Assistant intent: REQUEST_TRIGGER_SCRIPT "
                "requires MSBB, but was turned off.";
     return StartupMode::SETTING_DISABLED;
@@ -113,7 +108,6 @@ absl::optional<GURL> StartupUtil::ChooseStartupUrlForIntent(
   if (url.is_valid()) {
     return url;
   }
-
   return absl::nullopt;
 }
 

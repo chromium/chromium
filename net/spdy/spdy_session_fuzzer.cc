@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -127,11 +127,11 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
           &deps, &socket_factory));
 
   net::ProxyServer direct_connect(net::ProxyServer::Direct());
-  net::SpdySessionKey session_key(net::HostPortPair("127.0.0.1", 80),
-                                  direct_connect, net::PRIVACY_MODE_DISABLED,
-                                  net::SpdySessionKey::IsProxySession::kFalse,
-                                  net::SocketTag(), net::NetworkIsolationKey(),
-                                  net::SecureDnsPolicy::kAllow);
+  net::SpdySessionKey session_key(
+      net::HostPortPair("127.0.0.1", 80), direct_connect,
+      net::PRIVACY_MODE_DISABLED, net::SpdySessionKey::IsProxySession::kFalse,
+      net::SocketTag(), net::NetworkAnonymizationKey(),
+      net::SecureDnsPolicy::kAllow);
   base::WeakPtr<net::SpdySession> spdy_session(net::CreateSpdySession(
       http_session.get(), session_key, net_log_with_source));
 

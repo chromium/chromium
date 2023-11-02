@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,8 @@
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
-#include "chrome/browser/web_applications/web_application_info.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -39,6 +39,8 @@ void AddIconToIconsMap(const GURL& icon_url,
                        int size_px,
                        SkColor solid_color,
                        IconsMap* icons_map);
+
+void AddEmptyIconToIconsMap(const GURL& icon_url, IconsMap* icons_map);
 
 bool AreColorsEqual(SkColor expected_color,
                     SkColor actual_color,
@@ -92,8 +94,8 @@ apps::IconInfo CreateIconInfo(const GURL& icon_base_url,
                               IconPurpose purpose,
                               SquareSizePx size_px);
 
-void AddIconsToWebApplicationInfo(
-    WebApplicationInfo* web_application_info,
+void AddIconsToWebAppInstallInfo(
+    WebAppInstallInfo* install_info,
     const GURL& icons_base_url,
     const std::vector<GeneratedIconsInfo>& icons_info);
 
@@ -102,18 +104,8 @@ void IconManagerWriteGeneratedIcons(
     const AppId& app_id,
     const std::vector<GeneratedIconsInfo>& icons_info);
 
-// Favicons are read on WebAppIconManager startup, awaits
-// WebAppIconManager::favicon_read_callback_ synchronously.
-void IconManagerStartAndAwaitFaviconAny(WebAppIconManager& icon_manager,
-                                        const AppId& app_id);
-
-// Monochrome favicons are read on WebAppIconManager startup, awaits
-// WebAppIconManager::favicon_monochrome_read_callback_ synchronously.
-void IconManagerStartAndAwaitFaviconMonochrome(WebAppIconManager& icon_manager,
-                                               const AppId& app_id);
-
 // Synchronous read of an app icon pixel.
-SkColor IconManagerReadAppIconPixel(const WebAppIconManager& icon_manager,
+SkColor IconManagerReadAppIconPixel(WebAppIconManager& icon_manager,
                                     const AppId& app_id,
                                     SquareSizePx size_px,
                                     int x = 0,

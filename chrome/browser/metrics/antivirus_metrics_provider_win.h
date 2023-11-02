@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,13 +16,12 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
+BASE_DECLARE_FEATURE(kReportFullAVProductDetails);
+
 // AntiVirusMetricsProvider is responsible for adding antivirus information to
 // the UMA system profile proto.
 class AntiVirusMetricsProvider : public metrics::MetricsProvider {
  public:
-  static constexpr base::Feature kReportNamesFeature = {
-      "ReportFullAVProductDetails", base::FEATURE_DISABLED_BY_DEFAULT};
-
   AntiVirusMetricsProvider();
 
   AntiVirusMetricsProvider(const AntiVirusMetricsProvider&) = delete;
@@ -30,7 +29,7 @@ class AntiVirusMetricsProvider : public metrics::MetricsProvider {
 
   ~AntiVirusMetricsProvider() override;
 
-  // metrics::MetricsDataProvider:
+  // metrics::MetricsProvider:
   void AsyncInit(base::OnceClosure done_callback) override;
   void ProvideSystemProfileMetrics(
       metrics::SystemProfileProto* system_profile_proto) override;

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,6 +34,7 @@ void ListenFilteredByPid(SimpleTestLogListener& listener) {
       std::make_unique<fuchsia::logger::LogFilterOptions>();
   options->filter_by_pid = true;
   options->pid = Process::Current().Pid();
+  options->min_severity = fuchsia::logger::LogLevelFilter::INFO;
   fuchsia::logger::LogPtr log =
       ComponentContextForProcess()->svc()->Connect<fuchsia::logger::Log>();
   listener.ListenToLog(log.get(), std::move(options));
@@ -44,7 +45,7 @@ void ListenFilteredByPid(SimpleTestLogListener& listener) {
 // Verifies that calling the log macro goes to the Fuchsia system logs, by
 // default.
 TEST(FuchsiaLoggingTest, SystemLogging) {
-  constexpr char kLogMessage[] = "system log!";
+  constexpr char kLogMessage[] = "This is FuchsiaLoggingTest.SystemLogging!";
 
   test::SingleThreadTaskEnvironment task_environment_{
       test::SingleThreadTaskEnvironment::MainThreadType::IO};
@@ -72,7 +73,8 @@ TEST(FuchsiaLoggingTest, SystemLogging) {
 
 // Verifies that configuring a system logger with multiple tags works.
 TEST(FuchsiaLoggingTest, SystemLoggingMultipleTags) {
-  constexpr char kLogMessage[] = "system log!";
+  constexpr char kLogMessage[] =
+      "This is FuchsiaLoggingTest.SystemLoggingMultipleTags!";
   const std::vector<StringPiece> kTags = {"tag1", "tag2"};
 
   test::SingleThreadTaskEnvironment task_environment_{

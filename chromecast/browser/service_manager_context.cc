@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump_type.h"
@@ -21,7 +20,6 @@
 #include "base/process/process_handle.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/deferred_sequenced_task_runner.h"
-#include "base/task/post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chromecast/browser/cast_content_browser_client.h"
@@ -70,6 +68,7 @@ const service_manager::Manifest& GetBrowserManifest() {
           .RequireCapability("*", "app")
           .RequireCapability("*", "multizone")
           .RequireCapability("*", "reconnect")
+          .RequireCapability("*", "renderer")
           .Build()};
   return *manifest;
 }

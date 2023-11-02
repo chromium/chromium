@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,10 @@
 #define MEDIA_AUDIO_FUCHSIA_AUDIO_MANAGER_FUCHSIA_H_
 
 #include "media/audio/audio_manager_base.h"
+
+#include <fuchsia/media/cpp/fidl.h>
+
+#include <map>
 
 namespace media {
 
@@ -20,6 +24,7 @@ class AudioManagerFuchsia : public AudioManagerBase {
   ~AudioManagerFuchsia() override;
 
   // Implementation of AudioManager.
+  void ShutdownOnAudioThread() override;
   bool HasAudioOutputDevices() override;
   bool HasAudioInputDevices() override;
   void GetAudioInputDeviceNames(AudioDeviceNames* device_names) override;
@@ -53,6 +58,19 @@ class AudioManagerFuchsia : public AudioManagerBase {
  private:
   AudioInputStream* MakeInputStream(const AudioParameters& input_params,
                                     const std::string& device_id);
+
+  // Initialize the `enumerator_` and the `audio_devices_` on the audio thread.
+  void InitOnAudioThread();
+
+  // Events from ::fuchsia::media::AudioDeviceEnumerator
+  void OnDeviceAdded(::fuchsia::media::AudioDeviceInfo device_info);
+  void OnDeviceRemoved(uint64_t device_token);
+
+  bool HasAudioDevice(bool is_input);
+  void GetAudioDevices(AudioDeviceNames* device_names, bool is_input);
+
+  ::fuchsia::media::AudioDeviceEnumeratorPtr enumerator_;
+  std::map<uint64_t, ::fuchsia::media::AudioDeviceInfo> audio_devices_;
 };
 
 }  // namespace media

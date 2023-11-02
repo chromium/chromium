@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -20,7 +20,7 @@ class SingleThreadTaskRunner;
 namespace blink {
 
 class CachedMetadata;
-class ScriptResource;
+class ClassicScript;
 class ScriptCacheConsumerClient;
 
 // A V8 code cache consumer for a script's code cache, which consumes the code
@@ -28,7 +28,7 @@ class ScriptCacheConsumerClient;
 // completed.
 //
 // ScriptCacheConsumer works on unchecked CachedMetadata speculatively, before
-// the source is available. If SingleCachedMetadataHandler::Check() fails later,
+// the source is available. If CachedMetadataHandler::Check() fails later,
 // the CachedMetadata on the CachedMetadataHandler will be cleared, and the
 // result of this ScriptCacheConsumer will be dropped on TakeV8ConsumeTask() due
 // to a CachedMetadata mismatch.
@@ -68,6 +68,7 @@ class CORE_EXPORT ScriptCacheConsumer final
   //      NotifyCacheConsumeFinished using the given task runner.
   void NotifyClientWaiting(
       ScriptCacheConsumerClient* client,
+      ClassicScript* classic_script,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   // Take ownership of the consume task, clearing it from the consumer so that
@@ -80,7 +81,7 @@ class CORE_EXPORT ScriptCacheConsumer final
   // Also, may return nullptr if no consume task was ever created.
   v8::ScriptCompiler::ConsumeCodeCacheTask* TakeV8ConsumeTask(
       CachedMetadata* cached_metadata) {
-    CHECK_EQ(state_, kFinishedAndReady);
+    CHECK_EQ(state_, kCalledFinishCallback);
     if (cached_metadata != cached_metadata_) {
       consume_task_.reset();
       return nullptr;
@@ -103,14 +104,27 @@ class CORE_EXPORT ScriptCacheConsumer final
   //                     '--------.---------'
   //     NotifyClientWaiting()    |     RunTaskOffThread()
   //                              v
-  //                        kBothFinished
+  //                      kFinishedAndReady
+  //                              |
+  //                              | RunTaskOffThread(), RunMergeTaskOffThread(),
+  //                              | or NotifyClientWaiting()
+  //                              v
+  //                    kMergeDoneOrNotNeeded
+  //                              |
+  //                              | CallFinishCallback()
+  //                              v
+  //                    kCalledFinishCallback
   //
   // These states are represented as a bit field.
   enum State {
     kRunning = 0,
     kConsumeFinished = 0b10,
     kClientReady = 0b01,
-    kFinishedAndReady = 0b11
+    kFinishedAndReady = 0b11,
+    kMergeDoneOrNotNeededBit = 0b100,
+    kMergeDoneOrNotNeeded = kFinishedAndReady | kMergeDoneOrNotNeededBit,
+    kCalledFinishCallbackBit = 0b1000,
+    kCalledFinishCallback = kMergeDoneOrNotNeeded | kCalledFinishCallbackBit,
   };
   static_assert(
       (kConsumeFinished & kClientReady) == 0,
@@ -119,15 +133,15 @@ class CORE_EXPORT ScriptCacheConsumer final
       (kConsumeFinished | kClientReady) == kFinishedAndReady,
       "kFinishedAndReady has to mean kConsumeFinished and kClientReady");
 
-  // Advance the state with either the kConsumeFinished or the kClientReady
-  // bit. Returns the new state, which is either the given state or
-  // kFinishedAndReady.
+  // Advance the state by setting a single bit. Returns the new state.
   State AdvanceState(State new_state_bit);
 
   // Helper methods for running the consume task off-thread and posting back
   // from it.
   void RunTaskOffThread();
-  void CallFinishCallback(const char* trace_name);
+  void RunMergeTaskOffThread();
+  void PostFinishCallbackTask();
+  void CallFinishCallback();
 
   // The cached metadata storing the code cache. This is held by the consumer
   // to keep the cached data alive even if it is cleared on the script resource.
@@ -144,12 +158,13 @@ class CORE_EXPORT ScriptCacheConsumer final
   // The task runner on which the finish callback should be run.
   scoped_refptr<base::SingleThreadTaskRunner> finish_callback_task_runner_;
 
-  // Keep the script URL string for event tracing. This is owned by the main
-  // thread, and should be copied when used off-thread.
+  // Keep the script URL string for event tracing.
   const String script_url_string_;
 
   // Keep the script resource dentifier for event tracing.
   const uint64_t script_resource_identifier_;
+
+  const char* finish_trace_name_ = nullptr;
 
   // The state of this ScriptCacheConsumer, advanced atomically when this
   // consume task completes, and when the resource completes.

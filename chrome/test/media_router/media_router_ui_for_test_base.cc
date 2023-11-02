@@ -1,9 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/test/media_router/media_router_ui_for_test_base.h"
 
+#include "base/ranges/algorithm.h"
+#include "base/run_loop.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "components/media_router/browser/media_router_factory.h"
 #include "ui/events/base_event_utils.h"
@@ -26,24 +28,6 @@ ui::MouseEvent CreateMouseReleasedEvent() {
   return CreateMouseEvent(ui::ET_MOUSE_RELEASED);
 }
 
-// Routes observer that calls a callback once there are no routes.
-class NoRoutesObserver : public MediaRoutesObserver {
- public:
-  NoRoutesObserver(MediaRouter* router, base::OnceClosure callback)
-      : MediaRoutesObserver(router), callback_(std::move(callback)) {}
-  ~NoRoutesObserver() override = default;
-
-  void OnRoutesUpdated(
-      const std::vector<MediaRoute>& routes,
-      const std::vector<MediaRoute::Id>& joinable_route_ids) override {
-    if (callback_ && routes.empty())
-      std::move(callback_).Run();
-  }
-
- private:
-  base::OnceClosure callback_;
-};
-
 }  // namespace
 
 void MediaRouterUiForTestBase::TearDown() {
@@ -57,15 +41,6 @@ void MediaRouterUiForTestBase::StartCasting(const std::string& sink_name) {
 
 void MediaRouterUiForTestBase::StopCasting(const std::string& sink_name) {
   StopCasting(GetSinkButton(sink_name));
-}
-
-void MediaRouterUiForTestBase::WaitUntilNoRoutes() {
-  base::RunLoop run_loop;
-  NoRoutesObserver no_routes_observer(
-      MediaRouterFactory::GetApiForBrowserContext(
-          web_contents_->GetBrowserContext()),
-      run_loop.QuitClosure());
-  run_loop.Run();
 }
 
 MediaRoute::Id MediaRouterUiForTestBase::GetRouteIdForSink(
@@ -110,11 +85,10 @@ void MediaRouterUiForTestBase::StopCasting(CastDialogSinkButton* sink_button) {
 CastDialogSinkButton* MediaRouterUiForTestBase::GetSinkButtonWithName(
     const std::vector<CastDialogSinkButton*>& sink_buttons,
     const std::string& sink_name) {
-  auto it = std::find_if(sink_buttons.begin(), sink_buttons.end(),
-                         [sink_name](CastDialogSinkButton* sink_button) {
-                           return sink_button->sink().friendly_name ==
-                                  base::UTF8ToUTF16(sink_name);
-                         });
+  auto it = base::ranges::find(sink_buttons, base::UTF8ToUTF16(sink_name),
+                               [](CastDialogSinkButton* sink_button) {
+                                 return sink_button->sink().friendly_name;
+                               });
   if (it == sink_buttons.end()) {
     NOTREACHED() << "Sink button not found for sink: " << sink_name;
     return nullptr;

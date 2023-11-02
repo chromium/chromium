@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/cable/v2_constants.h"
@@ -35,7 +36,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Discovery : public FidoDeviceDiscovery {
   using AdvertEventStream = EventStream<base::span<const uint8_t, kAdvertSize>>;
 
   Discovery(
-      FidoRequestType request_type,
+      CableRequestType request_type,
       network::mojom::NetworkContext* network_context,
       absl::optional<base::span<const uint8_t, kQRKeySize>> qr_generator_key,
       std::unique_ptr<AdvertEventStream> advert_stream,
@@ -46,10 +47,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Discovery : public FidoDeviceDiscovery {
       std::unique_ptr<EventStream<size_t>> contact_device_stream,
       const std::vector<CableDiscoveryData>& extension_contents,
       // pairing_callback will be called when a QR-initiated connection
-      // receives pairing information from the peer, or when an existing
-      // pairing is found to be invalid.
-      absl::optional<base::RepeatingCallback<void(PairingEvent)>>
-          pairing_callback);
+      // receives pairing information from the peer.
+      absl::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
+          pairing_callback,
+      // invalidated_pairing_callback will be called when a pairing is reported
+      // to be invalid by the tunnel server.
+      absl::optional<base::RepeatingCallback<void(size_t)>>
+          invalidated_pairing_callback);
   ~Discovery() override;
   Discovery(const Discovery&) = delete;
   Discovery& operator=(const Discovery&) = delete;
@@ -68,22 +72,23 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Discovery : public FidoDeviceDiscovery {
 
   void OnBLEAdvertSeen(base::span<const uint8_t, kAdvertSize> advert);
   void OnContactDevice(size_t pairing_index);
-  void AddPairing(std::unique_ptr<Pairing> pairing);
   void PairingIsInvalid(size_t pairing_index);
   static absl::optional<UnpairedKeys> KeysFromQRGeneratorKey(
       absl::optional<base::span<const uint8_t, kQRKeySize>> qr_generator_key);
-  static absl::optional<UnpairedKeys> KeysFromExtension(
+  static std::vector<UnpairedKeys> KeysFromExtension(
       const std::vector<CableDiscoveryData>& extension_contents);
 
-  const FidoRequestType request_type_;
-  network::mojom::NetworkContext* const network_context_;
+  const CableRequestType request_type_;
+  const raw_ptr<network::mojom::NetworkContext> network_context_;
   const absl::optional<UnpairedKeys> qr_keys_;
-  const absl::optional<UnpairedKeys> extension_keys_;
+  const std::vector<UnpairedKeys> extension_keys_;
   std::unique_ptr<AdvertEventStream> advert_stream_;
   std::vector<std::unique_ptr<Pairing>> pairings_;
   std::unique_ptr<EventStream<size_t>> contact_device_stream_;
-  const absl::optional<base::RepeatingCallback<void(PairingEvent)>>
+  const absl::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
       pairing_callback_;
+  const absl::optional<base::RepeatingCallback<void(size_t)>>
+      invalidated_pairing_callback_;
   std::vector<std::unique_ptr<FidoTunnelDevice>> tunnels_pending_advert_;
   base::flat_set<std::array<uint8_t, kAdvertSize>> observed_adverts_;
   bool started_ = false;

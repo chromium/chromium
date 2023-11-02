@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,10 @@
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
+#include "base/observer_list.h"
 #include "base/path_service.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -22,18 +24,17 @@ namespace syncer {
 
 namespace {
 
-// Obsolete pref that used to store whether a platform specific passphrase error
-// prompt has been shown to the user (e.g. an Android system notification).
-const char kObsoleteSyncPassphrasePrompted[] = "sync.passphrase_prompted";
-
-// Obsolete pref that used to store the product version from the last restart of
-// Chrome.
-const char kObsoleteSyncLastRunVersion[] = "sync.last_run_version";
-
 // Obsolete pref that used to store if sync should be prevented from
 // automatically starting up. This is now replaced by its inverse
 // kSyncRequested.
 const char kSyncSuppressStart[] = "sync.suppress_start";
+
+#if BUILDFLAG(IS_ANDROID)
+// Obsolete pref that used to store whether sync should no longer respect the
+// state of the master toggle for this user. This is now always the case.
+const char kObsoleteSyncDecoupledFromAndroidMasterSync[] =
+    "sync.decoupled_from_master_sync";
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -77,11 +78,14 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterBooleanPref(prefs::kOsSyncPrefsMigrated, false);
-  registry->RegisterBooleanPref(prefs::kOsSyncFeatureEnabled, false);
   registry->RegisterBooleanPref(prefs::kSyncAllOsTypes, true);
   registry->RegisterBooleanPref(prefs::kSyncOsApps, false);
   registry->RegisterBooleanPref(prefs::kSyncOsPreferences, false);
   // The pref for Wi-Fi configurations is registered in the loop above.
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  registry->RegisterBooleanPref(prefs::kSyncAppsEnabledByOs, false);
 #endif
 
   // The encryption bootstrap token represents a user-entered passphrase.
@@ -93,15 +97,13 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 0);
   registry->RegisterBooleanPref(prefs::kEnableLocalSyncBackend, false);
   registry->RegisterFilePathPref(prefs::kLocalSyncBackendDir, base::FilePath());
-#if defined(OS_ANDROID)
-  registry->RegisterBooleanPref(prefs::kSyncDecoupledFromAndroidMasterSync,
-                                false);
-#endif  // defined(OS_ANDROID)
 
   // Obsolete prefs.
   registry->RegisterBooleanPref(kSyncSuppressStart, false);
-  registry->RegisterBooleanPref(kObsoleteSyncPassphrasePrompted, false);
-  registry->RegisterStringPref(kObsoleteSyncLastRunVersion, std::string());
+#if BUILDFLAG(IS_ANDROID)
+  registry->RegisterBooleanPref(kObsoleteSyncDecoupledFromAndroidMasterSync,
+                                false);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void SyncPrefs::AddSyncPrefObserver(SyncPrefObserver* sync_pref_observer) {
@@ -202,14 +204,15 @@ bool SyncPrefs::IsSyncAllOsTypesEnabled() const {
 
 UserSelectableOsTypeSet SyncPrefs::GetSelectedOsTypes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (IsSyncAllOsTypesEnabled()) {
-    return UserSelectableOsTypeSet::All();
-  }
   UserSelectableOsTypeSet selected_types;
+  const bool sync_all_os_types = IsSyncAllOsTypesEnabled();
   for (UserSelectableOsType type : UserSelectableOsTypeSet::All()) {
     const char* pref_name = GetPrefNameForOsType(type);
     DCHECK(pref_name);
-    if (pref_service_->GetBoolean(pref_name)) {
+    // If the preference is managed, |sync_all_os_types| is ignored for this
+    // preference.
+    if (pref_service_->GetBoolean(pref_name) ||
+        (sync_all_os_types && !pref_service_->IsManagedPreference(pref_name))) {
       selected_types.Put(type);
     }
   }
@@ -231,16 +234,6 @@ void SyncPrefs::SetSelectedOsTypes(bool sync_all_os_types,
   }
 }
 
-bool SyncPrefs::IsOsSyncFeatureEnabled() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return pref_service_->GetBoolean(prefs::kOsSyncFeatureEnabled);
-}
-
-void SyncPrefs::SetOsSyncFeatureEnabled(bool enabled) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pref_service_->SetBoolean(prefs::kOsSyncFeatureEnabled, enabled);
-}
-
 // static
 const char* SyncPrefs::GetPrefNameForOsType(UserSelectableOsType type) {
   switch (type) {
@@ -256,7 +249,22 @@ const char* SyncPrefs::GetPrefNameForOsType(UserSelectableOsType type) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-bool SyncPrefs::IsManaged() const {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+bool SyncPrefs::IsAppsSyncEnabledByOs() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return pref_service_->GetBoolean(prefs::kSyncAppsEnabledByOs);
+}
+
+void SyncPrefs::SetAppsSyncEnabledByOs(bool apps_sync_enabled) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  pref_service_->SetBoolean(prefs::kSyncAppsEnabledByOs, apps_sync_enabled);
+  for (SyncPrefObserver& observer : sync_pref_observers_) {
+    observer.OnPreferredDataTypesPrefChange();
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+bool SyncPrefs::IsSyncClientDisabledByPolicy() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return pref_service_->GetBoolean(prefs::kSyncManaged);
 }
@@ -326,11 +334,6 @@ void SyncPrefs::OnSyncRequestedPrefChange() {
     observer.OnSyncRequestedPrefChange(*pref_sync_requested_);
 }
 
-void SyncPrefs::SetManagedForTest(bool is_managed) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pref_service_->SetBoolean(prefs::kSyncManaged, is_managed);
-}
-
 // static
 void SyncPrefs::RegisterTypeSelectedPref(PrefRegistrySimple* registry,
                                          UserSelectableType type) {
@@ -338,18 +341,6 @@ void SyncPrefs::RegisterTypeSelectedPref(PrefRegistrySimple* registry,
   DCHECK(pref_name);
   registry->RegisterBooleanPref(pref_name, false);
 }
-
-#if defined(OS_ANDROID)
-void SyncPrefs::SetDecoupledFromAndroidMasterSync() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pref_service_->SetBoolean(prefs::kSyncDecoupledFromAndroidMasterSync, true);
-}
-
-bool SyncPrefs::GetDecoupledFromAndroidMasterSync() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return pref_service_->GetBoolean(prefs::kSyncDecoupledFromAndroidMasterSync);
-}
-#endif  // defined(OS_ANDROID)
 
 bool SyncPrefs::IsLocalSyncEnabled() const {
   return local_sync_enabled_;
@@ -369,44 +360,46 @@ void SyncPrefs::ClearPassphrasePromptMutedProductVersion() {
   pref_service_->ClearPref(prefs::kSyncPassphrasePromptMutedProductVersion);
 }
 
-void ClearObsoletePassphrasePromptPrefs(PrefService* pref_service) {
-  pref_service->ClearPref(kObsoleteSyncLastRunVersion);
-  pref_service->ClearPref(kObsoleteSyncPassphrasePrompted);
+#if BUILDFLAG(IS_ANDROID)
+void ClearObsoleteSyncDecoupledFromAndroidMasterSync(
+    PrefService* pref_service) {
+  pref_service->ClearPref(kObsoleteSyncDecoupledFromAndroidMasterSync);
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
-void MigrateSyncSuppressedPref(PrefService* pref_service) {
-  // If the new kSyncRequested already has a value, there's nothing to be
-  // done: Either the migration already happened, or we wrote to the new pref
-  // directly.
-  if (pref_service->GetUserPrefValue(prefs::kSyncRequested)) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+void MigrateSyncRequestedPrefPostMice(PrefService* pref_service) {
+  // Before MICe, there was a toggle in Sync settings that corresponded to the
+  // SyncRequested bit. After MICe, there's no such toggle anymore, but some
+  // users may still be in the legacy state where SyncRequested is false, for
+  // various reasons:
+  // * The original MICE implementation set SyncRequested to false if all data
+  //   types were disabled, for migration / backwards compatibility reasons.
+  //   This is no longer the case as of M104 (see crbug.com/1311270,
+  //   crbug.com/1291946).
+  // * On Android, users might have had the OS-level "auto sync" toggle
+  //   disabled since before M90 or so (see crbug.com/1105795). Since then,
+  //   Chrome does not integrate with the Android "auto sync" toggle anymore,
+  //   but not all users were migrated.
+  // Migrate all these users into a supported and equivalent state, where
+  // SyncRequested is true but all data types are off.
+
+  if (pref_service->GetBoolean(prefs::kSyncRequested) ||
+      !pref_service->GetBoolean(prefs::kSyncFirstSetupComplete)) {
+    // Either SyncRequested is already true, or FirstSetupComplete is false
+    // meaning Sync isn't enabled. Either way, there's nothing to be done here.
     return;
   }
 
-  // If the old kSyncSuppressed has an explicit value, migrate it over.
-  if (pref_service->GetUserPrefValue(kSyncSuppressStart)) {
-    pref_service->SetBoolean(prefs::kSyncRequested,
-                             !pref_service->GetBoolean(kSyncSuppressStart));
-    pref_service->ClearPref(kSyncSuppressStart);
-    DCHECK(pref_service->GetUserPrefValue(prefs::kSyncRequested));
-    return;
+  // Disable all data types.
+  pref_service->SetBoolean(prefs::kSyncKeepEverythingSynced, false);
+  for (UserSelectableType type : UserSelectableTypeSet::All()) {
+    pref_service->ClearPref(SyncPrefs::GetPrefNameForType(type));
   }
 
-  // Neither old nor new pref have an explicit value. There should be nothing to
-  // migrate, but it turns out some users are in a state that depends on the
-  // implicit default value of the old pref (which was that Sync is NOT
-  // suppressed, i.e. Sync is requested), see crbug.com/973770. To migrate these
-  // users to the new pref correctly, use kSyncFirstSetupComplete as a signal
-  // that Sync should be considered requested.
-  if (pref_service->GetBoolean(prefs::kSyncFirstSetupComplete)) {
-    // CHECK rather than DCHECK to make sure we never accidentally enable Sync
-    // for users which had it previously disabled.
-    CHECK(!pref_service->GetBoolean(kSyncSuppressStart));
-    pref_service->SetBoolean(prefs::kSyncRequested, true);
-    DCHECK(pref_service->GetUserPrefValue(prefs::kSyncRequested));
-    return;
-  }
-  // Otherwise, nothing to be done: Sync was likely never enabled in this
-  // profile.
+  // ...but turn on SyncRequested.
+  pref_service->SetBoolean(prefs::kSyncRequested, true);
 }
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 }  // namespace syncer

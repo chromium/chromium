@@ -1,9 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/mojo/mojom/audio_decoder_config_mojom_traits.h"
 
+#include "base/time/time.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 
 namespace mojo {
@@ -45,6 +46,10 @@ bool StructTraits<media::mojom::AudioDecoderConfigDataView,
   if (!input.ReadTargetOutputChannelLayout(&target_output_channel_layout))
     return false;
 
+  media::SampleFormat target_output_sample_format;
+  if (!input.ReadTargetOutputSampleFormat(&target_output_sample_format))
+    return false;
+
   std::vector<uint8_t> aac_extra_data;
   if (!input.ReadAacExtraData(&aac_extra_data))
     return false;
@@ -54,6 +59,7 @@ bool StructTraits<media::mojom::AudioDecoderConfigDataView,
                      encryption_scheme, seek_preroll, input.codec_delay());
   output->set_profile(profile);
   output->set_target_output_channel_layout(target_output_channel_layout);
+  output->set_target_output_sample_format(target_output_sample_format);
   output->set_aac_extra_data(std::move(aac_extra_data));
 
   if (!input.should_discard_decoder_delay())

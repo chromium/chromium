@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,18 +15,16 @@
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
 #include "chrome/android/chrome_jni_headers/ContextualSearchManager_jni.h"
-#include "chrome/browser/android/contextualsearch/contextual_search_delegate.h"
-#include "chrome/browser/android/contextualsearch/contextual_search_observer.h"
-#include "chrome/browser/android/contextualsearch/resolved_search_term.h"
+#include "chrome/browser/android/contextualsearch/native_contextual_search_context.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "components/contextual_search/content/browser/contextual_search_js_api_service_impl.h"
+#include "components/contextual_search/core/browser/contextual_search_delegate_impl.h"
+#include "components/contextual_search/core/browser/resolved_search_term.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "net/url_request/url_fetcher_impl.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 using base::android::JavaParamRef;
@@ -43,15 +41,9 @@ ContextualSearchManager::ContextualSearchManager(JNIEnv* env,
   Java_ContextualSearchManager_setNativeManager(
       env, obj, reinterpret_cast<intptr_t>(this));
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  delegate_ = std::make_unique<ContextualSearchDelegate>(
+  delegate_ = std::make_unique<ContextualSearchDelegateImpl>(
       profile->GetURLLoaderFactory(),
-      TemplateURLServiceFactory::GetForProfile(profile),
-      base::BindRepeating(
-          &ContextualSearchManager::OnSearchTermResolutionResponse,
-          base::Unretained(this)),
-      base::BindRepeating(
-          &ContextualSearchManager::OnTextSurroundingSelectionAvailable,
-          base::Unretained(this)));
+      TemplateURLServiceFactory::GetForProfile(profile));
 }
 
 ContextualSearchManager::~ContextualSearchManager() {
@@ -72,12 +64,15 @@ void ContextualSearchManager::StartSearchTermResolutionRequest(
   WebContents* base_web_contents =
       WebContents::FromJavaWebContents(j_base_web_contents);
   DCHECK(base_web_contents);
-  base::WeakPtr<ContextualSearchContext> contextual_search_context =
-      ContextualSearchContext::FromJavaContextualSearchContext(
+  base::WeakPtr<NativeContextualSearchContext> contextual_search_context =
+      NativeContextualSearchContext::FromJavaContextualSearchContext(
           j_contextual_search_context);
   // Calls back to OnSearchTermResolutionResponse.
-  delegate_->StartSearchTermResolutionRequest(contextual_search_context,
-                                              base_web_contents);
+  delegate_->StartSearchTermResolutionRequest(
+      contextual_search_context, base_web_contents,
+      base::BindRepeating(
+          &ContextualSearchManager::OnSearchTermResolutionResponse,
+          base::Unretained(this)));
 }
 
 void ContextualSearchManager::GatherSurroundingText(
@@ -88,11 +83,14 @@ void ContextualSearchManager::GatherSurroundingText(
   WebContents* base_web_contents =
       WebContents::FromJavaWebContents(j_base_web_contents);
   DCHECK(base_web_contents);
-  base::WeakPtr<ContextualSearchContext> contextual_search_context =
-      ContextualSearchContext::FromJavaContextualSearchContext(
+  base::WeakPtr<NativeContextualSearchContext> contextual_search_context =
+      NativeContextualSearchContext::FromJavaContextualSearchContext(
           j_contextual_search_context);
-  delegate_->GatherAndSaveSurroundingText(contextual_search_context,
-                                          base_web_contents);
+  delegate_->GatherAndSaveSurroundingText(
+      contextual_search_context, base_web_contents,
+      base::BindRepeating(
+          &ContextualSearchManager::OnTextSurroundingSelectionAvailable,
+          base::Unretained(this)));
 }
 
 void ContextualSearchManager::OnSearchTermResolutionResponse(
@@ -137,8 +135,7 @@ void ContextualSearchManager::OnSearchTermResolutionResponse(
       resolved_search_term.selection_start_adjust,
       resolved_search_term.selection_end_adjust, j_context_language,
       j_thumbnail_url, j_caption, j_quick_action_uri,
-      resolved_search_term.quick_action_category,
-      resolved_search_term.logged_event_id, j_search_url_full,
+      resolved_search_term.quick_action_category, j_search_url_full,
       j_search_url_preload, resolved_search_term.coca_card_tag,
       j_related_searches_json);
 }
@@ -156,53 +153,6 @@ void ContextualSearchManager::OnTextSurroundingSelectionAvailable(
   Java_ContextualSearchManager_onTextSurroundingSelectionAvailable(
       env, java_manager_, j_encoding, j_surrounding_text, start_offset,
       end_offset);
-}
-
-void ContextualSearchManager::EnableContextualSearchJsApiForWebContents(
-    JNIEnv* env,
-    jobject obj,
-    const JavaParamRef<jobject>& j_overlay_web_contents) {
-  DCHECK(j_overlay_web_contents);
-  WebContents* overlay_web_contents =
-      WebContents::FromJavaWebContents(j_overlay_web_contents);
-  DCHECK(overlay_web_contents);
-
-  // It's safe to use a raw pointer since the lifetime of |this| matches the
-  // application lifetime, and therefore spans multiple WebContents.
-  contextual_search::ContextualSearchObserver::SetHandlerForWebContents(
-      overlay_web_contents, this);
-}
-
-void ContextualSearchManager::AllowlistContextualSearchJsApiUrl(
-    JNIEnv* env,
-    jobject obj,
-    const base::android::JavaParamRef<jstring>& j_url) {
-  DCHECK(j_url);
-  overlay_gurl_ = GURL(base::android::ConvertJavaStringToUTF8(env, j_url));
-}
-
-void ContextualSearchManager::ShouldEnableJsApi(
-    const GURL& gurl,
-    contextual_search::mojom::ContextualSearchJsApiService::
-        ShouldEnableJsApiCallback callback) {
-  bool should_enable = (gurl == overlay_gurl_);
-  std::move(callback).Run(should_enable);
-}
-
-void ContextualSearchManager::SetCaption(const std::string& caption,
-                                         bool does_answer) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jstring> j_caption =
-      base::android::ConvertUTF8ToJavaString(env, caption.c_str());
-  Java_ContextualSearchManager_onSetCaption(env, java_manager_, j_caption,
-                                            does_answer);
-}
-
-void ContextualSearchManager::ChangeOverlayPosition(
-    contextual_search::mojom::OverlayPosition desired_position) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_ContextualSearchManager_onChangeOverlayPosition(
-      env, java_manager_, static_cast<int>(desired_position));
 }
 
 jlong JNI_ContextualSearchManager_Init(JNIEnv* env,

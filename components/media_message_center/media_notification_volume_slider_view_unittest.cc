@@ -1,9 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/media_message_center/media_notification_volume_slider_view.h"
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
@@ -56,7 +57,7 @@ class MediaNotificationVolumeSliderViewTest : public views::ViewsTestBase {
 
  private:
   std::unique_ptr<views::Widget> widget_;
-  MediaNotificationVolumeSliderView* volume_slider_;
+  raw_ptr<MediaNotificationVolumeSliderView> volume_slider_;
 };
 
 TEST_F(MediaNotificationVolumeSliderViewTest, SetVolume) {

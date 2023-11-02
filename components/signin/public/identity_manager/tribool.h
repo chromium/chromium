@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 namespace signin {
 
 // The values are persisted to disk and must not be changed.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.signin
 enum class Tribool { kUnknown = -1, kFalse = 0, kTrue = 1 };
 
 // Returns the string representation of a tribool.

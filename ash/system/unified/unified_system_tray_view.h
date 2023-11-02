@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -101,7 +101,8 @@ class ASH_EXPORT UnifiedSystemTrayView : public views::View,
   void FocusEntered(bool reverse);
 
   // Change the expanded state. 0.0 if collapsed, and 1.0 if expanded.
-  // Otherwise, it shows intermediate state.
+  // Otherwise, it shows intermediate state. This is triggered during the
+  // progress of expand/collapse animation, updating the children accordingly.
   void SetExpandedAmount(double expanded_amount);
 
   // Get height of the system tray (excluding the message center) when

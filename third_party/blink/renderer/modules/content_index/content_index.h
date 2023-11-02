@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,17 +46,17 @@ class ContentIndex final : public ScriptWrappable {
   mojom::blink::ContentIndexService* GetService();
 
   // Callbacks.
-  void DidGetIconSizes(ScriptPromiseResolver* resolver,
-                       mojom::blink::ContentDescriptionPtr description,
+  void DidGetIconSizes(mojom::blink::ContentDescriptionPtr description,
+                       ScriptPromiseResolver* resolver,
                        const Vector<gfx::Size>& icon_sizes);
   void DidGetIcons(ScriptPromiseResolver* resolver,
                    mojom::blink::ContentDescriptionPtr description,
                    Vector<SkBitmap> icons);
   void DidCheckOfflineCapability(
-      ScriptPromiseResolver* resolver,
       KURL launch_url,
       mojom::blink::ContentDescriptionPtr description,
       Vector<SkBitmap> icons,
+      ScriptPromiseResolver* resolver,
       bool is_offline_capable);
   void DidAdd(ScriptPromiseResolver* resolver,
               mojom::blink::ContentIndexError error);

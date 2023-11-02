@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ namespace sequence_manager {
 namespace internal {
 
 TaskQueueSelector::TaskQueueSelector(
-    scoped_refptr<AssociatedThreadId> associated_thread,
+    scoped_refptr<const AssociatedThreadId> associated_thread,
     const SequenceManager::Settings& settings)
     : associated_thread_(std::move(associated_thread)),
 #if DCHECK_IS_ON()
@@ -215,10 +215,10 @@ WorkQueue* TaskQueueSelector::SelectWorkQueueToService(
   return queue;
 }
 
-Value TaskQueueSelector::AsValue() const {
+Value::Dict TaskQueueSelector::AsValue() const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
-  Value state(Value::Type::DICTIONARY);
-  state.SetIntKey("immediate_starvation_count", immediate_starvation_count_);
+  Value::Dict state;
+  state.Set("immediate_starvation_count", immediate_starvation_count_);
   return state;
 }
 
@@ -249,7 +249,7 @@ TaskQueueSelector::GetHighestPendingPriority(SelectTaskOption option) const {
 }
 
 void TaskQueueSelector::SetImmediateStarvationCountForTest(
-    size_t immediate_starvation_count) {
+    int immediate_starvation_count) {
   immediate_starvation_count_ = immediate_starvation_count;
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,10 +30,9 @@ class SkiaOutputDeviceOffscreen : public SkiaOutputDevice {
   ~SkiaOutputDeviceOffscreen() override;
 
   // SkiaOutputDevice implementation:
-  bool Reshape(const gfx::Size& size,
-               float device_scale_factor,
+  bool Reshape(const SkSurfaceCharacterization& characterization,
                const gfx::ColorSpace& color_space,
-               gfx::BufferFormat format,
+               float device_scale_factor,
                gfx::OverlayTransform transform) override;
   void SwapBuffers(BufferPresentedCallback feedback,
                    OutputSurfaceFrame frame) override;
@@ -43,7 +42,6 @@ class SkiaOutputDeviceOffscreen : public SkiaOutputDevice {
   void EnsureBackbuffer() override;
   void DiscardBackbuffer() override;
   SkSurface* BeginPaint(
-      bool allocate_frame_buffer,
       std::vector<GrBackendSemaphore>* end_semaphores) override;
   void EndPaint() override;
 
@@ -54,8 +52,9 @@ class SkiaOutputDeviceOffscreen : public SkiaOutputDevice {
   GrBackendTexture backend_texture_;
   bool supports_rgbx_ = true;
   gfx::Size size_;
-  gfx::BufferFormat format_ = gfx::BufferFormat::RGBA_8888;
+  SkColorType sk_color_type_ = kUnknown_SkColorType;
   sk_sp<SkColorSpace> sk_color_space_;
+  int sample_count_ = 1;
 
  private:
   uint64_t backbuffer_estimated_size_ = 0;

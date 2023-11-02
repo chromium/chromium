@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,17 +31,23 @@ class VideoAutoFullscreenFrameHost : public FakeLocalFrameHost {
   void EnterFullscreen(mojom::blink::FullscreenOptionsPtr options,
                        EnterFullscreenCallback callback) override {
     std::move(callback).Run(true);
-    Thread::Current()->GetTaskRunner()->PostTask(
-        FROM_HERE,
-        WTF::Bind([](WebViewImpl* web_view) { web_view->DidEnterFullscreen(); },
-                  WTF::Unretained(web_view_)));
+    web_view_->MainFrameImpl()
+        ->GetTaskRunner(TaskType::kInternalNavigationAssociated)
+        ->PostTask(FROM_HERE, WTF::BindOnce(
+                                  [](WebViewImpl* web_view) {
+                                    web_view->DidEnterFullscreen();
+                                  },
+                                  WTF::Unretained(web_view_)));
   }
 
   void ExitFullscreen() override {
-    Thread::Current()->GetTaskRunner()->PostTask(
-        FROM_HERE,
-        WTF::Bind([](WebViewImpl* web_view) { web_view->DidExitFullscreen(); },
-                  WTF::Unretained(web_view_)));
+    web_view_->MainFrameImpl()
+        ->GetTaskRunner(TaskType::kInternalNavigationAssociated)
+        ->PostTask(FROM_HERE, WTF::BindOnce(
+                                  [](WebViewImpl* web_view) {
+                                    web_view->DidExitFullscreen();
+                                  },
+                                  WTF::Unretained(web_view_)));
   }
 
   void set_web_view(WebViewImpl* web_view) { web_view_ = web_view; }
@@ -60,7 +66,8 @@ class VideoAutoFullscreenFrameClient
       WebMediaPlayerEncryptedMediaClient*,
       WebContentDecryptionModule*,
       const WebString& sink_id,
-      const cc::LayerTreeSettings& settings) final {
+      const cc::LayerTreeSettings& settings,
+      scoped_refptr<base::TaskRunner> compositor_worker_task_runner) final {
     return new EmptyWebMediaPlayer();
   }
 };
@@ -70,9 +77,9 @@ class VideoAutoFullscreen : public testing::Test,
  public:
   VideoAutoFullscreen() : ScopedVideoAutoFullscreenForTest(true) {}
   void SetUp() override {
-    web_view_helper_.Initialize(&web_frame_client_);
     frame_host_.Init(
         web_frame_client_.GetRemoteNavigationAssociatedInterfaces());
+    web_view_helper_.Initialize(&web_frame_client_);
     GetWebView()->GetSettings()->SetAutoplayPolicy(
         mojom::AutoplayPolicy::kUserGestureRequired);
 

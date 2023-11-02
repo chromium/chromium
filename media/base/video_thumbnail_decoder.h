@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,9 +39,9 @@ class MEDIA_EXPORT VideoThumbnailDecoder {
   void Start(VideoFrameCallback video_frame_callback);
 
  private:
-  void OnVideoDecoderInitialized(Status status);
-  void OnVideoBufferDecoded(Status status);
-  void OnEosBufferDecoded(Status status);
+  void OnVideoDecoderInitialized(DecoderStatus status);
+  void OnVideoBufferDecoded(DecoderStatus status);
+  void OnEosBufferDecoded(DecoderStatus status);
 
   // Called when the output frame is generated.
   void OnVideoFrameDecoded(scoped_refptr<VideoFrame> frame);

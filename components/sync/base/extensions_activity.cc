@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,9 +22,7 @@ void ExtensionsActivity::GetAndClearRecords(Records* buffer) {
 
 void ExtensionsActivity::PutRecords(const Records& records) {
   base::AutoLock lock(records_lock_);
-  for (const auto& id_and_record : records) {
-    const std::string& id = id_and_record.first;
-    const Record& record = id_and_record.second;
+  for (const auto& [id, record] : records) {
     records_[id].extension_id = record.extension_id;
     records_[id].bookmark_write_count += record.bookmark_write_count;
   }

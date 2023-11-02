@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,7 +55,7 @@ class ProcessProxy : public base::RefCountedThreadSafe<ProcessProxy> {
       const OutputCallback& callback);
 
   // Sends some data to the process.
-  bool Write(const std::string& text);
+  void Write(const std::string& text, base::OnceCallback<void(bool)> callback);
 
   // Closes the process.
   void Close();
@@ -92,12 +92,9 @@ class ProcessProxy : public base::RefCountedThreadSafe<ProcessProxy> {
   // Gets called by output watcher when the process writes something to its
   // output streams. If set, |callback| should be called when the output is
   // handled.
-  void OnProcessOutput(ProcessOutputType type,
-                       const std::string& output,
-                       base::OnceClosure callback);
+  void OnProcessOutput(ProcessOutputType type, const std::string& output);
   void CallOnProcessOutputCallback(ProcessOutputType type,
-                                   const std::string& output,
-                                   base::OnceClosure callback);
+                                   const std::string& output);
 
   void StopWatching();
 
@@ -113,9 +110,6 @@ class ProcessProxy : public base::RefCountedThreadSafe<ProcessProxy> {
   bool callback_set_;
   // Callback used to report process output detected by proces output watcher.
   OutputCallback callback_;
-  // Callback received by process output watcher in |OnProcessOutput|.
-  // Process output watcher will be paused until this is run.
-  base::OnceClosure output_ack_callback_;
   scoped_refptr<base::TaskRunner> callback_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> watcher_runner_;
 

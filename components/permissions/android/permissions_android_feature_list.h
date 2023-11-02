@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 namespace permissions {
 // Alphabetical:
-extern const base::Feature kAndroidApproximateLocationPermissionSupport;
+BASE_DECLARE_FEATURE(kAndroidApproximateLocationPermissionSupport);
 }  // namespace permissions
 
 #endif  // COMPONENTS_PERMISSIONS_ANDROID_PERMISSIONS_ANDROID_FEATURE_LIST_H_

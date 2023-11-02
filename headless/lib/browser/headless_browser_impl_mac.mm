@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,8 +38,7 @@ class HeadlessPopUpMethods {
   HeadlessPopUpMethods& operator=(const HeadlessPopUpMethods&) = delete;
 
   static void Init() {
-    static base::NoDestructor<HeadlessPopUpMethods> swizzler;
-    ALLOW_UNUSED_LOCAL(swizzler);
+    [[maybe_unused]] static base::NoDestructor<HeadlessPopUpMethods> swizzler;
   }
 
  private:
@@ -66,6 +65,7 @@ const NSActivityOptions kActivityOptions =
 }  // namespace
 
 void HeadlessBrowserImpl::PlatformInitialize() {
+  screen_ = std::make_unique<display::ScopedNativeScreen>();
   HeadlessPopUpMethods::Init();
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,11 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_restore/app_launch_handler.h"
+#include "chrome/browser/ash/crosapi/browser_manager.h"
+#include "chrome/browser/ash/crosapi/browser_manager_observer.h"
 #include "chrome/browser/sessions/session_restore_observer.h"
 #include "components/app_restore/restore_data.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 
 namespace apps {
 class AppUpdate;
@@ -20,8 +22,7 @@ enum class AppTypeName;
 
 class Profile;
 
-namespace ash {
-namespace full_restore {
+namespace ash::full_restore {
 
 // This is used for logging, so do not remove or reorder existing entries.
 enum class RestoreTabResult {
@@ -70,7 +71,8 @@ enum class SessionRestoreWindowCount {
 // the notification dialog.
 // 3. The app is ready.
 class FullRestoreAppLaunchHandler : public AppLaunchHandler,
-                                    public SessionRestoreObserver {
+                                    public SessionRestoreObserver,
+                                    public crosapi::BrowserManagerObserver {
  public:
   explicit FullRestoreAppLaunchHandler(Profile* profile,
                                        bool should_init_service = false);
@@ -94,10 +96,14 @@ class FullRestoreAppLaunchHandler : public AppLaunchHandler,
 
   // AppLaunchHandler:
   void OnAppUpdate(const apps::AppUpdate& update) override;
-  void OnAppTypeInitialized(apps::mojom::AppType app_type) override;
+  void OnAppTypeInitialized(apps::AppType app_type) override;
 
   // SessionRestoreObserver:
   void OnGotSession(Profile* profile, bool for_apps, int window_count) override;
+
+  // crosapi::BrowserManagerObserver:
+  void OnMojoDisconnected() override;
+  void OnStateChanged() override;
 
   // Force launch browser for testing.
   void ForceLaunchBrowserForTesting();
@@ -130,6 +136,8 @@ class FullRestoreAppLaunchHandler : public AppLaunchHandler,
   // browsers when upgrading to the full restore version.
   void LaunchBrowserForFirstRunFullRestore();
 
+  void MaybeRestoreLacros();
+
   // AppLaunchHandler:
   void RecordRestoredAppLaunch(apps::AppTypeName app_type_name) override;
 
@@ -139,6 +147,10 @@ class FullRestoreAppLaunchHandler : public AppLaunchHandler,
 
   // If the restore process finish, start the save timer.
   void MaybeStartSaveTimer();
+
+  // Returns true if the previous session is reported to have ended with a
+  // crash.
+  bool IsLastSessionExitTypeCrashed();
 
   bool should_restore_ = false;
 
@@ -157,6 +169,10 @@ class FullRestoreAppLaunchHandler : public AppLaunchHandler,
   int browser_app_window_count_ = 0;
   int browser_window_count_ = 0;
 
+  base::ScopedObservation<crosapi::BrowserManager,
+                          crosapi::BrowserManagerObserver>
+      observation_{this};
+
   base::WeakPtrFactory<FullRestoreAppLaunchHandler> weak_ptr_factory_{this};
 };
 
@@ -169,7 +185,6 @@ class ScopedLaunchBrowserForTesting {
   ~ScopedLaunchBrowserForTesting();
 };
 
-}  // namespace full_restore
-}  // namespace ash
+}  // namespace ash::full_restore
 
 #endif  // CHROME_BROWSER_ASH_APP_RESTORE_FULL_RESTORE_APP_LAUNCH_HANDLER_H_

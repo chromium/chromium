@@ -1,13 +1,15 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/page_load_metrics/browser/observers/use_counter_page_load_metrics_observer.h"
 
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom.h"
 
 using FeatureType = blink::mojom::UseCounterFeatureType;
@@ -15,6 +17,12 @@ using UkmFeatureList = UseCounterPageLoadMetricsObserver::UkmFeatureList;
 using WebFeature = blink::mojom::WebFeature;
 using CSSSampleId = blink::mojom::CSSSampleId;
 using PermissionsPolicyFeature = blink::mojom::PermissionsPolicyFeature;
+using UserAgentOverrideHistogram =
+    blink::UserAgentOverride::UserAgentOverrideHistogram;
+
+#define FEATURE_HISTOGRAM_NAME(name, is_in_fenced_frames)     \
+  is_in_fenced_frames ? "Blink.UseCounter.FencedFrames." name \
+                      : "Blink.UseCounter." name
 
 namespace {
 
@@ -64,13 +72,23 @@ UseCounterPageLoadMetricsObserver::~UseCounterPageLoadMetricsObserver() =
     default;
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
-UseCounterPageLoadMetricsObserver::OnCommit(
+UseCounterPageLoadMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
-    ukm::SourceId source_id) {
+    const GURL& currently_committed_url) {
+  // Continue even if this instance is bound to a FencedFrames page. In such
+  // cases, report metrics prefixed by "Blink.UseCounter.FencedFrames".
+  is_in_fenced_frames_page_ = true;
+  return CONTINUE_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+UseCounterPageLoadMetricsObserver::OnCommit(
+    content::NavigationHandle* navigation_handle) {
   // Verify that no feature usage is observed before commit
   DCHECK_EQ(features_recorded_.count(), 0ul);
   DCHECK_EQ(main_frame_features_recorded_.count(), 0ul);
   DCHECK_EQ(ukm_features_recorded_.count(), 0ul);
+  DCHECK_EQ(webdev_metrics_ukm_features_recorded_.count(), 0ul);
   DCHECK_EQ(css_properties_recorded_.count(), 0ul);
   DCHECK_EQ(animated_css_properties_recorded_.count(), 0ul);
   DCHECK_EQ(violated_permissions_policy_features_recorded_.count(), 0ul);
@@ -82,7 +100,9 @@ UseCounterPageLoadMetricsObserver::OnCommit(
   auto web_feature_page_visit =
       static_cast<blink::UseCounterFeature::EnumValue>(WebFeature::kPageVisits);
 
-  ukm::builders::Blink_UseCounter(source_id)
+  // Each Page including FencedFrames Page will report with the SourceId that is
+  // bound with the outermost main frame.
+  ukm::builders::Blink_UseCounter(GetDelegate().GetPageUkmSourceId())
       .SetFeature(web_feature_page_visit)
       .SetIsMainFrameFeature(1)
       .Record(ukm::UkmRecorder::Get());
@@ -135,11 +155,9 @@ UseCounterPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 UseCounterPageLoadMetricsObserver::ShouldObserveMimeType(
     const std::string& mime_type) const {
-  return PageLoadMetricsObserver::ShouldObserveMimeType(mime_type) ==
-                     CONTINUE_OBSERVING ||
-                 mime_type == "image/svg+xml"
-             ? CONTINUE_OBSERVING
-             : STOP_OBSERVING;
+  if (mime_type == "image/svg+xml")
+    return CONTINUE_OBSERVING;
+  return PageLoadMetricsObserver::ShouldObserveMimeType(mime_type);
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
@@ -151,22 +169,16 @@ UseCounterPageLoadMetricsObserver::OnEnterBackForwardCache(
 void UseCounterPageLoadMetricsObserver::RecordUseCounterFeature(
     content::RenderFrameHost* rfh,
     const blink::UseCounterFeature& feature) {
-  // Note: UMA_HISTOGRAM_ENUMERATION does accept a 3rd parameter as value bound,
-  // when the second parameter is a general integer type, but it requires the
-  // 3rd parameter to be constexpr in order to pass an internal static check.
-  // Writing something like
-  // UMA_HISTOGRAM_ENUMERATION(histogram_name, feature.value(),
-  //                           feature.max_value());
-  // will cause compile error.
   switch (feature.type()) {
-    case FeatureType::kWebFeature: {
-      auto web_feature = static_cast<WebFeature>(feature.value());
+    case FeatureType::kWebFeature:
       if (TestAndSet(features_recorded_, feature.value()))
         return;
-      UMA_HISTOGRAM_ENUMERATION(internal::kFeaturesHistogramName, web_feature);
-      PossiblyWarnFeatureDeprecation(rfh, web_feature);
+      base::UmaHistogramEnumeration(
+          FEATURE_HISTOGRAM_NAME("Features", is_in_fenced_frames_page_),
+          static_cast<WebFeature>(feature.value()));
+      PossiblyWarnFeatureDeprecation(rfh,
+                                     static_cast<WebFeature>(feature.value()));
       break;
-    }
     // There are about 600 enums, so the memory required for a vector
     // histogram is about 600 * 8 byes = 5KB 50% of the time there are about
     // 100 CSS properties recorded per page load. Storage in sparce
@@ -179,39 +191,53 @@ void UseCounterPageLoadMetricsObserver::RecordUseCounterFeature(
     case FeatureType::kCssProperty:
       if (TestAndSet(css_properties_recorded_, feature.value()))
         return;
-      UMA_HISTOGRAM_ENUMERATION(internal::kCssPropertiesHistogramName,
-                                static_cast<CSSSampleId>(feature.value()));
+      base::UmaHistogramEnumeration(
+          FEATURE_HISTOGRAM_NAME("CSSProperties", is_in_fenced_frames_page_),
+          static_cast<CSSSampleId>(feature.value()));
       break;
     case FeatureType::kAnimatedCssProperty:
       if (TestAndSet(animated_css_properties_recorded_, feature.value()))
         return;
-      UMA_HISTOGRAM_ENUMERATION(internal::kAnimatedCssPropertiesHistogramName,
-                                static_cast<CSSSampleId>(feature.value()));
+      base::UmaHistogramEnumeration(
+          FEATURE_HISTOGRAM_NAME("AnimatedCSSProperties",
+                                 is_in_fenced_frames_page_),
+          static_cast<CSSSampleId>(feature.value()));
       break;
 
     case FeatureType::kPermissionsPolicyViolationEnforce:
       if (TestAndSet(violated_permissions_policy_features_recorded_,
                      feature.value()))
         return;
-      UMA_HISTOGRAM_ENUMERATION(
-          internal::kPermissionsPolicyViolationHistogramName,
+      base::UmaHistogramEnumeration(
+          FEATURE_HISTOGRAM_NAME("PermissionsPolicy.Violation.Enforce",
+                                 is_in_fenced_frames_page_),
           static_cast<PermissionsPolicyFeature>(feature.value()));
       break;
     case FeatureType::kPermissionsPolicyHeader:
       if (TestAndSet(header_permissions_policy_features_recorded_,
                      feature.value()))
         return;
-      UMA_HISTOGRAM_ENUMERATION(
-          internal::kPermissionsPolicyHeaderHistogramName,
+      base::UmaHistogramEnumeration(
+          FEATURE_HISTOGRAM_NAME("PermissionsPolicy.Header2",
+                                 is_in_fenced_frames_page_),
           static_cast<PermissionsPolicyFeature>(feature.value()));
       break;
     case FeatureType::kPermissionsPolicyIframeAttribute:
       if (TestAndSet(iframe_permissions_policy_features_recorded_,
                      feature.value()))
         return;
-      UMA_HISTOGRAM_ENUMERATION(
-          internal::kPermissionsPolicyIframeAttributeHistogramName,
+      base::UmaHistogramEnumeration(
+          FEATURE_HISTOGRAM_NAME("PermissionsPolicy.Allow2",
+                                 is_in_fenced_frames_page_),
           static_cast<PermissionsPolicyFeature>(feature.value()));
+      break;
+    case FeatureType::kUserAgentOverride:
+      if (TestAndSet(user_agent_override_features_recorded_, feature.value()))
+        return;
+      base::UmaHistogramEnumeration(
+          FEATURE_HISTOGRAM_NAME("UserAgentOverride",
+                                 is_in_fenced_frames_page_),
+          static_cast<UserAgentOverrideHistogram>(feature.value()));
       break;
   }
 }
@@ -219,15 +245,19 @@ void UseCounterPageLoadMetricsObserver::RecordUseCounterFeature(
 void UseCounterPageLoadMetricsObserver::RecordMainFrameWebFeature(
     content::RenderFrameHost* rfh,
     blink::mojom::WebFeature web_feature) {
-  if (rfh->GetParentOrOuterDocument() != nullptr)
+  // Don't check if the primary main frame of not, but just ignore sub-frame
+  // cases as we record metrics also for non-primary main frame, e.g.
+  // FencedFrames, if the instance is bound with the FencedFrames page.
+  if (rfh->GetParent())
     return;
 
   if (TestAndSet(main_frame_features_recorded_,
                  static_cast<size_t>(web_feature))) {
     return;
   }
-  UMA_HISTOGRAM_ENUMERATION(internal::kFeaturesHistogramMainFrameName,
-                            web_feature);
+  base::UmaHistogramEnumeration(
+      FEATURE_HISTOGRAM_NAME("MainFrame.Features", is_in_fenced_frames_page_),
+      web_feature);
 }
 
 void UseCounterPageLoadMetricsObserver::RecordUkmFeatures() {
@@ -241,6 +271,22 @@ void UseCounterPageLoadMetricsObserver::RecordUkmFeatures() {
       continue;
 
     ukm::builders::Blink_UseCounter(GetDelegate().GetPageUkmSourceId())
+        .SetFeature(feature_enum_value)
+        .SetIsMainFrameFeature(
+            main_frame_features_recorded_.test(feature_enum_value))
+        .Record(ukm::UkmRecorder::Get());
+  }
+  for (WebFeature web_feature : GetAllowedWebDevMetricsUkmFeatures()) {
+    auto feature_enum_value =
+        static_cast<blink::UseCounterFeature::EnumValue>(web_feature);
+    if (!features_recorded_.test(feature_enum_value))
+      continue;
+
+    if (TestAndSet(webdev_metrics_ukm_features_recorded_, feature_enum_value))
+      continue;
+
+    ukm::builders::Blink_DeveloperMetricsRare(
+        GetDelegate().GetPageUkmSourceId())
         .SetFeature(feature_enum_value)
         .SetIsMainFrameFeature(
             main_frame_features_recorded_.test(feature_enum_value))

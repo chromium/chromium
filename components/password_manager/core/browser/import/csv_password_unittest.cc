@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,15 +28,9 @@ TEST(CSVPasswordTest, Construction) {
   };
   // Use const to check that ParseValid does not mutate the CSVPassword.
   const CSVPassword csv_pwd(kColMap, "http://example.com,user,password");
-  const PasswordForm result = csv_pwd.ParseValid();
-  const GURL expected_origin("http://example.com");
-  EXPECT_EQ(expected_origin, result.url);
-  EXPECT_EQ(expected_origin.DeprecatedGetOriginAsURL().spec(),
-            result.signon_realm);
-  EXPECT_EQ(u"user", result.username_value);
-  EXPECT_EQ(u"password", result.password_value);
-  EXPECT_EQ(base::Time::Now(), result.date_created);
-  EXPECT_EQ(base::Time::Now(), result.date_password_modified);
+  EXPECT_EQ(GURL("http://example.com"), csv_pwd.GetURL());
+  EXPECT_EQ("user", csv_pwd.GetUsername());
+  EXPECT_EQ("password", csv_pwd.GetPassword());
 }
 
 struct TestCase {
@@ -107,24 +101,15 @@ class CSVPasswordTestSuccess : public ::testing::TestWithParam<TestCase> {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
-TEST_P(CSVPasswordTestSuccess, Parse) {
+TEST_P(CSVPasswordTestSuccess, ShouldParse) {
   const TestCase& test_case = GetParam();
   SCOPED_TRACE(test_case.name);
   const CSVPassword csv_pwd(test_case.map, test_case.csv);
-  EXPECT_EQ(Status::kOK, csv_pwd.TryParse());
+  EXPECT_EQ(Status::kOK, csv_pwd.GetParseStatus());
 
-  const PasswordForm result = csv_pwd.ParseValid();
-
-  const GURL expected_origin(test_case.origin);
-  EXPECT_EQ(expected_origin, result.url);
-  EXPECT_EQ(expected_origin.DeprecatedGetOriginAsURL().spec(),
-            result.signon_realm);
-
-  EXPECT_EQ(base::UTF8ToUTF16(test_case.username), result.username_value);
-  EXPECT_EQ(base::UTF8ToUTF16(test_case.password), result.password_value);
-  EXPECT_EQ(base::Time::Now(), result.date_created);
-
-  EXPECT_EQ(result, csv_pwd.ParseValid());
+  EXPECT_EQ(GURL(test_case.origin), csv_pwd.GetURL());
+  EXPECT_EQ(test_case.username, csv_pwd.GetUsername());
+  EXPECT_EQ(test_case.password, csv_pwd.GetPassword());
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -165,9 +150,9 @@ INSTANTIATE_TEST_SUITE_P(
             .Map({{2, Label::kOrigin},
                   {1, Label::kUsername},
                   {0, Label::kPassword}})
-            .CSV("pwd,the-user,android://example,Y,X")
-            .Origin("android://example")
-            .SignonRealm("android://example")
+            .CSV("pwd,the-user,android://host@example,Y,X")
+            .Origin("android://host@example")
+            .SignonRealm("android://host@example")
             .Username("the-user")
             .Password("pwd")
             .Build(),
@@ -260,100 +245,47 @@ INSTANTIATE_TEST_SUITE_P(
 
 class CSVPasswordTestFailure : public ::testing::TestWithParam<TestCase> {};
 
-TEST_P(CSVPasswordTestFailure, Parse) {
+TEST_P(CSVPasswordTestFailure, ShouldFailWithStatus) {
   const TestCase& test_case = GetParam();
   SCOPED_TRACE(test_case.name);
   EXPECT_EQ(test_case.status,
-            CSVPassword(test_case.map, test_case.csv).TryParse());
+            CSVPassword(test_case.map, test_case.csv).GetParseStatus());
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     CSVPasswordTestFailure,
-    ::testing::Values(
-        TestCaseBuilder("no columns specified")
-            .Map({})
-            .CSV("http://example.com,user,password")
-            .Status(Status::kSemanticError)
-            .Build(),
-        TestCaseBuilder("not ASCII")
-            .Map({{0, Label::kOrigin},
-                  {1, Label::kUsername},
-                  {2, Label::kPassword}})
-            .CSV("http://example.com/ř,user,password")
-            .Status(Status::kSyntaxError)
-            .Build(),
-        TestCaseBuilder("no origin in map")
-            .Map({{1, Label::kUsername}, {2, Label::kPassword}})
-            .CSV("http://example.com,user,password")
-            .Status(Status::kSemanticError)
-            .Build(),
-        TestCaseBuilder("no username in map")
-            .Map({{0, Label::kOrigin}, {2, Label::kPassword}})
-            .CSV("http://example.com,user,password")
-            .Status(Status::kSemanticError)
-            .Build(),
-        TestCaseBuilder("no password in map")
-            .Map({{0, Label::kOrigin}, {1, Label::kUsername}})
-            .CSV("http://example.com,user,password")
-            .Status(Status::kSemanticError)
-            .Build(),
-        TestCaseBuilder("no origin in CSV")
-            .Map({{0, Label::kUsername},
-                  {1, Label::kPassword},
-                  {2, Label::kOrigin}})
-            .CSV("user,password")
-            .Status(Status::kSemanticError)
-            .Build(),
-        TestCaseBuilder("no username in CSV")
-            .Map({{0, Label::kOrigin},
-                  {1, Label::kPassword},
-                  {2, Label::kUsername}})
-            .CSV("http://example.com,password")
-            .Status(Status::kSemanticError)
-            .Build(),
-        TestCaseBuilder("no password in CSV")
-            .Map({{0, Label::kOrigin},
-                  {1, Label::kUsername},
-                  {2, Label::kPassword}})
-            .CSV("http://example.com,user")
-            .Status(Status::kSemanticError)
-            .Build(),
-        TestCaseBuilder("malformed CSV")
-            .Map({{0, Label::kOrigin},
-                  {1, Label::kUsername},
-                  {2, Label::kPassword}})
-            .CSV("\"")
-            .Status(Status::kSyntaxError)
-            .Build(),
-        TestCaseBuilder("another malformed CSV")
-            .Map({{0, Label::kOrigin},
-                  {1, Label::kUsername},
-                  {2, Label::kPassword}})
-            .CSV("Url,Username,\"Password\n")
-            .Status(Status::kSyntaxError)
-            .Build(),
-        TestCaseBuilder("no ASCII")
-            .Map({{0, Label::kOrigin},
-                  {1, Label::kUsername},
-                  {2, Label::kPassword}})
-            .CSV("https://aččountš.googľe.čom/,test@gmail.com,test1\n")
-            .Status(Status::kSyntaxError)
-            .Build(),
-        TestCaseBuilder("invalid URI")
-            .Map({{0, Label::kOrigin},
-                  {1, Label::kUsername},
-                  {2, Label::kPassword}})
-            .CSV(":,test@gmail.com,test1\n")
-            .Status(Status::kSemanticError)
-            .Build(),
-        TestCaseBuilder("map not injective")
-            .Map({{0, Label::kOrigin},
-                  {1, Label::kUsername},
-                  {2, Label::kPassword},
-                  {3, Label::kUsername}})
-            .CSV("http://example.com,user,pwd,user2")
-            .Status(Status::kSemanticError)
-            .Build()));
+    ::testing::Values(TestCaseBuilder("no columns specified")
+                          .Map({})
+                          .CSV("http://example.com,user,password")
+                          .Status(Status::kSemanticError)
+                          .Build(),
+                      TestCaseBuilder("empty line")
+                          .Map({})
+                          .CSV("")
+                          .Status(Status::kSemanticError)
+                          .Build(),
+                      TestCaseBuilder("malformed CSV")
+                          .Map({{0, Label::kOrigin},
+                                {1, Label::kUsername},
+                                {2, Label::kPassword}})
+                          .CSV("\"")
+                          .Status(Status::kSyntaxError)
+                          .Build(),
+                      TestCaseBuilder("another malformed CSV")
+                          .Map({{0, Label::kOrigin},
+                                {1, Label::kUsername},
+                                {2, Label::kPassword}})
+                          .CSV("Url,Username,\"Password\n")
+                          .Status(Status::kSyntaxError)
+                          .Build(),
+                      TestCaseBuilder("map not injective")
+                          .Map({{0, Label::kOrigin},
+                                {1, Label::kUsername},
+                                {2, Label::kPassword},
+                                {3, Label::kUsername}})
+                          .CSV("http://example.com,user,pwd,user2")
+                          .Status(Status::kSemanticError)
+                          .Build()));
 
 }  // namespace password_manager

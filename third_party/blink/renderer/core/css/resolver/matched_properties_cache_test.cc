@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,6 +32,7 @@ class MatchedPropertiesCacheTestKey {
                                 const TreeScope& tree_scope) {
     result_.FinishAddingUARules();
     result_.FinishAddingUserRules();
+    result_.FinishAddingPresentationalHints();
     auto* set = css_test_helpers::ParseDeclarationBlock(block_text);
     result_.AddMatchedProperties(set);
     result_.FinishAddingAuthorRulesForTreeScope(tree_scope);
@@ -65,7 +66,8 @@ class MatchedPropertiesCacheTestCache {
   const CachedMatchedProperties* Find(const TestKey& key,
                                       const ComputedStyle& style,
                                       const ComputedStyle& parent_style) {
-    StyleResolverState state(document_, *document_.body(), StyleRecalcContext(),
+    StyleResolverState state(document_, *document_.body(),
+                             nullptr /* StyleRecalcContext */,
                              StyleRequest(&parent_style));
     state.SetStyle(ComputedStyle::Clone(style));
     return cache_.Find(key.InnerKey(), state);

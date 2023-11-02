@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/network/network_cert_loader.h"
+#include "chromeos/ash/components/network/system_token_cert_db_storage_test_util.h"
+#include "chromeos/ash/components/tpm/tpm_token_loader.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
-#include "chromeos/dbus/userdataauth/userdataauth_client.h"
-#include "chromeos/network/network_cert_loader.h"
-#include "chromeos/network/system_token_cert_db_storage_test_util.h"
-#include "chromeos/tpm/tpm_token_loader.h"
 #include "content/public/test/browser_task_environment.h"
 #include "crypto/nss_util.h"
 #include "crypto/scoped_test_system_nss_key_slot.h"
@@ -31,7 +31,7 @@ class SystemTokenCertDbInitializerTest : public testing::Test {
     UserDataAuthClient::InitializeFake();
     SystemTokenCertDbStorage::Initialize();
     NetworkCertLoader::Initialize();
-    TpmManagerClient::InitializeFake();
+    chromeos::TpmManagerClient::InitializeFake();
 
     system_token_cert_db_initializer_ =
         std::make_unique<SystemTokenCertDBInitializer>();
@@ -45,7 +45,7 @@ class SystemTokenCertDbInitializerTest : public testing::Test {
   ~SystemTokenCertDbInitializerTest() override {
     system_token_cert_db_initializer_.reset();
 
-    TpmManagerClient::Shutdown();
+    chromeos::TpmManagerClient::Shutdown();
     NetworkCertLoader::Shutdown();
     SystemTokenCertDbStorage::Shutdown();
     UserDataAuthClient::Shutdown();
@@ -79,16 +79,16 @@ class SystemTokenCertDbInitializerTest : public testing::Test {
 // 5 minutes after being requested, and the system slot uses software fallback
 // when it's allowed and TPM is disabled.
 TEST_F(SystemTokenCertDbInitializerTest, GetDatabaseSuccessSoftwareFallback) {
-  TpmManagerClient::Get()
+  chromeos::TpmManagerClient::Get()
       ->GetTestInterface()
       ->mutable_nonsensitive_status_reply()
       ->set_is_enabled(false);
-  TpmManagerClient::Get()
+  chromeos::TpmManagerClient::Get()
       ->GetTestInterface()
       ->mutable_nonsensitive_status_reply()
       ->set_is_owned(false);
   system_token_cert_db_initializer()
-      ->set_is_system_slot_software_fallback_allowed(true);
+      ->set_is_nss_slots_software_fallback_allowed_for_testing(true);
 
   GetSystemTokenCertDbCallbackWrapper get_system_token_cert_db_callback_wrapper;
   SystemTokenCertDbStorage::Get()->GetDatabase(
@@ -117,16 +117,16 @@ TEST_F(SystemTokenCertDbInitializerTest, GetDatabaseSuccessSoftwareFallback) {
 // successfully by SystemTokenCertDbInitializer if TPM is disabled and system
 // slot software fallback is not allowed.
 TEST_F(SystemTokenCertDbInitializerTest, GetDatabaseFailureDisabledTPM) {
-  TpmManagerClient::Get()
+  chromeos::TpmManagerClient::Get()
       ->GetTestInterface()
       ->mutable_nonsensitive_status_reply()
       ->set_is_enabled(false);
-  TpmManagerClient::Get()
+  chromeos::TpmManagerClient::Get()
       ->GetTestInterface()
       ->mutable_nonsensitive_status_reply()
       ->set_is_owned(false);
   system_token_cert_db_initializer()
-      ->set_is_system_slot_software_fallback_allowed(false);
+      ->set_is_nss_slots_software_fallback_allowed_for_testing(false);
 
   GetSystemTokenCertDbCallbackWrapper get_system_token_cert_db_callback_wrapper;
   SystemTokenCertDbStorage::Get()->GetDatabase(

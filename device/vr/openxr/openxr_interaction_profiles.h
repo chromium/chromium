@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,8 @@ enum class OpenXrButtonType {
   kButton1 = 5,
   kButton2 = 6,
   kGrasp = 7,
-  kMaxValue = 7,
+  kShoulder = 8,
+  kMaxValue = 8,
 };
 
 enum class OpenXrAxisType {

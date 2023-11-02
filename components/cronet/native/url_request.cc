@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/cronet/cronet_upload_data_stream.h"
@@ -173,7 +174,7 @@ class VerifyDestructionRunnable : public Cronet_Runnable {
 
  private:
   // Event indicating destructor is called.
-  base::WaitableEvent* const destroyed_;
+  const raw_ptr<base::WaitableEvent> destroyed_;
 };
 #endif  // DCHECK_IS_ON()
 
@@ -297,11 +298,13 @@ class Cronet_UrlRequestImpl::NetworkTasks : public CronetURLRequest::Callback {
                           const base::TimeTicks& request_end,
                           bool socket_reused,
                           int64_t sent_bytes_count,
-                          int64_t received_bytes_count)
+                          int64_t received_bytes_count,
+                          bool quic_connection_migration_attempted,
+                          bool quic_connection_migration_successful)
       LOCKS_EXCLUDED(url_request_->lock_) override;
 
   // The UrlRequest which owns context that owns the callback.
-  Cronet_UrlRequestImpl* const url_request_ = nullptr;
+  const raw_ptr<Cronet_UrlRequestImpl> url_request_ = nullptr;
 
   // URL chain contains the URL currently being requested, and
   // all URLs previously requested. New URLs are added before
@@ -377,8 +380,6 @@ Cronet_RESULT Cronet_UrlRequestImpl::InitWithParams(
       engine_->cronet_url_request_context(), std::move(network_tasks),
       GURL(url), ConvertRequestPriority(params->priority),
       params->disable_cache, true /* params->disableConnectionMigration */,
-      request_finished_listener_ != nullptr ||
-          engine_->HasRequestFinishedListener() /* params->enableMetrics */,
       // TODO(pauljensen): Consider exposing TrafficStats API via C++ API.
       false /* traffic_stats_tag_set */, 0 /* traffic_stats_tag */,
       false /* traffic_stats_uid_set */, 0 /* traffic_stats_uid */,
@@ -819,7 +820,10 @@ void Cronet_UrlRequestImpl::NetworkTasks::OnMetricsCollected(
     const base::TimeTicks& request_end,
     bool socket_reused,
     int64_t sent_bytes_count,
-    int64_t received_bytes_count) {
+    int64_t received_bytes_count,
+    bool,  // quic_connection_migration_attempted
+    bool   // quic_connection_migration_successful
+) {
   DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
   base::AutoLock lock(url_request_->lock_);
   DCHECK_EQ(url_request_->request_finished_info_, nullptr)

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,16 +7,20 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_menus_provider.h"
+
 namespace web {
 class WebState;
 }
+@class BrowserActionFactory;
 class OverlayPresenter;
+class TemplateURLService;
 @protocol ToolbarConsumer;
 class WebStateList;
 
 // A mediator object that provides the relevant properties of a web state
 // to a consumer.
-@interface ToolbarMediator : NSObject
+@interface ToolbarMediator : NSObject <AdaptiveToolbarMenusProvider>
 
 // Whether the search icon should be in dark mode or not.
 @property(nonatomic, assign, getter=isIncognito) BOOL incognito;
@@ -34,7 +38,14 @@ class WebStateList;
 // should be enabled.
 @property(nonatomic, assign) OverlayPresenter* webContentAreaOverlayPresenter;
 
-// Updates the consumer to conforms to |webState|.
+// The template url service to use for checking whether search by image is
+// available.
+@property(nonatomic, assign) TemplateURLService* templateURLService;
+
+// Action factory.
+@property(nonatomic, strong) BrowserActionFactory* actionFactory;
+
+// Updates the consumer to conforms to `webState`.
 - (void)updateConsumerForWebState:(web::WebState*)webState;
 
 // Stops observing all objects.

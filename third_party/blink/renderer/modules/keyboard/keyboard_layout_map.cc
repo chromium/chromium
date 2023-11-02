@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,8 @@
 namespace blink {
 
 class KeyboardLayoutMapIterationSource final
-    : public PairIterable<String, String>::IterationSource {
+    : public PairIterable<String, IDLString, String, IDLString>::
+          IterationSource {
  public:
   KeyboardLayoutMapIterationSource(const KeyboardLayoutMap& map)
       : map_(map), iterator_(map_->Map().begin()) {}
@@ -26,7 +27,8 @@ class KeyboardLayoutMapIterationSource final
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(map_);
-    PairIterable<String, String>::IterationSource::Trace(visitor);
+    PairIterable<String, IDLString, String, IDLString>::IterationSource::Trace(
+        visitor);
   }
 
  private:
@@ -38,7 +40,7 @@ class KeyboardLayoutMapIterationSource final
 KeyboardLayoutMap::KeyboardLayoutMap(const HashMap<String, String>& map)
     : layout_map_(map) {}
 
-PairIterable<String, String>::IterationSource*
+PairIterable<String, IDLString, String, IDLString>::IterationSource*
 KeyboardLayoutMap::StartIteration(ScriptState*, ExceptionState&) {
   return MakeGarbageCollected<KeyboardLayoutMapIterationSource>(*this);
 }

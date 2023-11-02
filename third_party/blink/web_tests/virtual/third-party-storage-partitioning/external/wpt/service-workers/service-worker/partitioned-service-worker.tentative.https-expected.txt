@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-PASS Services workers under different top-level sites are partitioned.
-Harness: the test ran to completion.
-

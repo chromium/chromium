@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,21 +11,17 @@ ExistingBaseSubMenuModel::ExistingBaseSubMenuModel(
     ui::SimpleMenuModel::Delegate* parent_delegate,
     TabStripModel* model,
     int context_index,
-    int min_command_id)
+    int min_command_id,
+    int parent_new_command_id)
     : SimpleMenuModel(this),
       parent_delegate_(parent_delegate),
       model_(model),
       context_contents_(model->GetWebContentsAt(context_index)),
-      min_command_id_(min_command_id) {}
-
-bool ExistingBaseSubMenuModel::GetAcceleratorForCommandId(
-    int command_id,
-    ui::Accelerator* accelerator) const {
-  return false;
-}
+      min_command_id_(min_command_id),
+      parent_new_command_id_(parent_new_command_id) {}
 
 const gfx::FontList* ExistingBaseSubMenuModel::GetLabelFontListAt(
-    int index) const {
+    size_t index) const {
   if (GetTypeAt(index) == ui::MenuModel::TYPE_TITLE) {
     return &ui::ResourceBundle::GetSharedInstance().GetFontList(
         ui::ResourceBundle::BoldFont);
@@ -33,12 +29,9 @@ const gfx::FontList* ExistingBaseSubMenuModel::GetLabelFontListAt(
   return nullptr;
 }
 
-bool ExistingBaseSubMenuModel::IsCommandIdChecked(int command_id) const {
-  return false;
-}
-
-bool ExistingBaseSubMenuModel::IsCommandIdEnabled(int command_id) const {
-  return true;
+bool ExistingBaseSubMenuModel::IsCommandIdAlerted(int command_id) const {
+  return IsNewCommand(command_id) &&
+         parent_delegate()->IsCommandIdAlerted(parent_new_command_id_);
 }
 
 constexpr int ExistingBaseSubMenuModel::kMinExistingWindowCommandId;
@@ -46,7 +39,7 @@ constexpr int ExistingBaseSubMenuModel::kMinExistingTabGroupCommandId;
 
 void ExistingBaseSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
   if (IsNewCommand(command_id)) {
-    ExecuteNewCommand(event_flags);
+    parent_delegate()->ExecuteCommand(parent_new_command_id_, event_flags);
     return;
   }
   ExecuteExistingCommand(command_id_to_target_index_[command_id]);
@@ -82,7 +75,7 @@ void ExistingBaseSubMenuModel::Build(
   int command_id = min_command_id_ + 1;
   for (size_t i = 0; i < menu_item_infos.size(); ++i) {
     const MenuItemInfo& item = menu_item_infos[i];
-    if (command_id > min_command_id_ + max_size)
+    if (command_id > min_command_id_ + static_cast<int>(max_size))
       break;
 
     if (item.target_index.has_value()) {
@@ -110,9 +103,11 @@ void ExistingBaseSubMenuModel::ClearMenu() {
   command_id_to_target_index_.clear();
 }
 
-void ExistingBaseSubMenuModel::ExecuteNewCommand(int event_flags) {}
+bool ExistingBaseSubMenuModel::IsNewCommand(int command_id) const {
+  return command_id == min_command_id_;
+}
 
-void ExistingBaseSubMenuModel::ExecuteExistingCommand(int target_index) {}
+void ExistingBaseSubMenuModel::ExecuteExistingCommand(size_t target_index) {}
 
 int ExistingBaseSubMenuModel::GetContextIndex() const {
   return model_->GetIndexOfWebContents(context_contents_);

@@ -36,6 +36,9 @@ font-roboto/*
 # iron-checked-element-behavior
 iron-checked-element-behavior/*
 
+# iron-flex-layout
+iron-flex-layout/iron-flex-layout.*
+
 # iron-form-element-behavior
 iron-form-element-behavior/*
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,143 +28,29 @@
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
-#include "ipc/ipc_message_macros.h"
-#include "ipc/ipc_platform_file.h"
 #include "remoting/base/auto_thread_task_runner.h"
-#include "remoting/host/chromoting_messages.h"
+#include "remoting/host/base/screen_resolution.h"
+#include "remoting/host/base/switches.h"
 #include "remoting/host/daemon_process.h"
 #include "remoting/host/desktop_session.h"
 #include "remoting/host/host_main.h"
 #include "remoting/host/ipc_constants.h"
 #include "remoting/host/sas_injector.h"
-#include "remoting/host/screen_resolution.h"
-#include "remoting/host/switches.h"
 // MIDL-generated declarations and definitions.
 #include "remoting/host/win/chromoting_lib.h"
 #include "remoting/host/win/host_service.h"
+#include "remoting/host/win/trust_util.h"
 #include "remoting/host/win/worker_process_launcher.h"
 #include "remoting/host/win/wts_session_process_delegate.h"
 #include "remoting/host/win/wts_terminal_monitor.h"
 #include "remoting/host/win/wts_terminal_observer.h"
 #include "remoting/host/worker_process_ipc_delegate.h"
 
-// These are Windows headers which would typically be listed first in the
-// include list however they conflict with ipc_message_macros.h if placed there.
-// TODO(joedow): Move these includes to the top of the file after
-// ipc_message_macros.h is no longer needed.
-#include <Softpub.h>
-#include <wintrust.h>
-
 using base::win::ScopedHandle;
 
 namespace remoting {
 
 namespace {
-
-// This function uses the WinVerifyTrust function to validate the signature for
-// the provided |binary_path|. More information on the structures and function
-// used here can be found at:
-// https://docs.microsoft.com/en-us/windows/win32/api/wintrust/nf-wintrust-winverifytrust
-bool IsBinaryTrusted(const base::FilePath& binary_path) {
-#if defined(OFFICIAL_BUILD)
-  WINTRUST_FILE_INFO file_info = {0};
-  file_info.cbStruct = sizeof(file_info);
-  file_info.pcwszFilePath = binary_path.value().c_str();
-  file_info.hFile = NULL;
-  file_info.pgKnownSubject = NULL;
-
-  WINTRUST_DATA wintrust_data = {0};
-  wintrust_data.cbStruct = sizeof(wintrust_data);
-  wintrust_data.pPolicyCallbackData = NULL;
-  wintrust_data.pSIPClientData = NULL;
-  wintrust_data.dwUIChoice = WTD_UI_NONE;
-  wintrust_data.fdwRevocationChecks = WTD_REVOKE_NONE;
-  wintrust_data.dwUnionChoice = WTD_CHOICE_FILE;
-  wintrust_data.dwStateAction = WTD_STATEACTION_VERIFY;
-  wintrust_data.hWVTStateData = NULL;
-  wintrust_data.pwszURLReference = NULL;
-  wintrust_data.dwUIContext = WTD_UICONTEXT_EXECUTE;
-  wintrust_data.dwProvFlags = WTD_CACHE_ONLY_URL_RETRIEVAL;
-  wintrust_data.pFile = &file_info;
-
-  GUID policy_guid = WINTRUST_ACTION_GENERIC_VERIFY_V2;
-
-  LONG trust_status = WinVerifyTrust(static_cast<HWND>(INVALID_HANDLE_VALUE),
-                                     &policy_guid, &wintrust_data);
-
-  DWORD dwLastError;
-  switch (trust_status) {
-    case ERROR_SUCCESS:
-      // Indicates that the binary is trusted:
-      //   - The hash that represents the subject is trusted
-      //   - The publisher is trusted
-      //   - No verification or time stamp chain errors
-      LOG(INFO) << "Signature verified for " << binary_path.value();
-      return true;
-
-    case TRUST_E_NOSIGNATURE:
-      // The file was not signed or had a signature that was not valid.
-      // The reason for this status is retrieved via GetLastError(). Note that
-      // the last error is a DWORD but the expected values set by this function
-      // are HRESULTS so we need to cast.
-      dwLastError = GetLastError();
-      switch (static_cast<HRESULT>(dwLastError)) {
-        case TRUST_E_NOSIGNATURE:
-          LOG(ERROR) << "No signature found for " << binary_path.value()
-                     << ". ErrorReason: 0x" << std::hex << dwLastError;
-          break;
-        case TRUST_E_SUBJECT_FORM_UNKNOWN:
-          LOG(ERROR) << "The trust provider does not support the form "
-                     << "specified for the subject for " << binary_path.value()
-                     << ". ErrorReason: 0x" << std::hex << dwLastError;
-          break;
-        case TRUST_E_PROVIDER_UNKNOWN:
-          LOG(ERROR) << "The trust provider is not recognized on this system "
-                     << "for " << binary_path.value() << ". ErrorReason: 0x"
-                     << std::hex << dwLastError;
-          break;
-        default:
-          // The signature was not valid or there was an error opening the file.
-          LOG(ERROR) << "Could not verify signature for " << binary_path.value()
-                     << ". ErrorReason: " << dwLastError << ", 0x" << std::hex
-                     << dwLastError;
-          break;
-      }
-      return false;
-
-    case TRUST_E_EXPLICIT_DISTRUST:
-      // The hash that represents the subject or the publisher is not allowed by
-      // the admin or user.
-      LOG(ERROR) << "Signature for " << binary_path.value() << " is present, "
-                 << "but is explicitly distrusted.";
-      return false;
-
-    case TRUST_E_SUBJECT_NOT_TRUSTED:
-      LOG(ERROR) << "Signature for " << binary_path.value() << " is present, "
-                 << "but not trusted.";
-      return false;
-
-    case CRYPT_E_SECURITY_SETTINGS:
-      LOG(ERROR) << "Verification failed for " << binary_path.value() << ". "
-                 << "The hash representing the subject or the publisher wasn't "
-                 << "explicitly trusted by the admin and admin policy has "
-                 << "disabled user trust. No signature, publisher or timestamp "
-                 << "errors.";
-      return false;
-
-    default:
-      LOG(ERROR) << "Signature verification error for " << binary_path.value()
-                 << ": 0x" << std::hex << trust_status;
-      return false;
-  }
-#else
-  // Binaries are only signed in official builds so running the code above for
-  // local builds won't work w/o setting up a test certificate and signing the
-  // binaries using it. To simplify local development, bypass the signature
-  // checks.
-  return true;
-#endif
-}
 
 // The security descriptor of the daemon IPC endpoint. It gives full access
 // to SYSTEM and denies access by anyone else.
@@ -575,7 +461,8 @@ ULONG STDMETHODCALLTYPE RdpSession::EventHandler::Release() {
   return ref_count_;
 }
 
-STDMETHODIMP RdpSession::EventHandler::QueryInterface(REFIID riid, void** ppv) {
+STDMETHODIMP
+RdpSession::EventHandler::QueryInterface(REFIID riid, void** ppv) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   if (riid == IID_IUnknown ||
@@ -716,15 +603,6 @@ void DesktopSessionWin::OnChannelConnected(int32_t peer_pid) {
   VLOG(1) << "IPC: daemon <- desktop (" << peer_pid << ")";
 }
 
-bool DesktopSessionWin::OnMessageReceived(const IPC::Message& message) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
-
-  LOG(ERROR) << "Received unexpected IPC type: " << message.type();
-  CrashDesktopProcess(FROM_HERE);
-
-  return false;
-}
-
 void DesktopSessionWin::OnPermanentError(int exit_code) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
@@ -791,7 +669,7 @@ void DesktopSessionWin::OnSessionAttached(uint32_t session_id) {
   target->AppendSwitchASCII(kProcessTypeSwitchName, kProcessTypeDesktop);
   // Copy the command line switches enabling verbose logging.
   target->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
-                           kCopiedSwitchNames, base::size(kCopiedSwitchNames));
+                           kCopiedSwitchNames, std::size(kCopiedSwitchNames));
 
   // Create a delegate capable of launching a process in a different session.
   std::unique_ptr<WtsSessionProcessDelegate> delegate(
@@ -830,7 +708,7 @@ void DesktopSessionWin::ConnectDesktopChannel(
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   if (!daemon_process()->OnDesktopSessionAgentAttached(
-          id(), session_id_, desktop_pipe.release())) {
+          id(), session_id_, std::move(desktop_pipe))) {
     CrashDesktopProcess(FROM_HERE);
   }
 }

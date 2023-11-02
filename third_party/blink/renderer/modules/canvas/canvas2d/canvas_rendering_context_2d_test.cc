@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/callback.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -15,6 +16,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
+#include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
@@ -40,6 +42,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_layer_bridge.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/color_correction_test_utils.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
@@ -47,7 +50,7 @@
 #include "third_party/blink/renderer/platform/graphics/test/gpu_memory_buffer_test_platform.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -57,7 +60,7 @@
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/third_party/skcms/skcms.h"
+#include "third_party/skia/modules/skcms/skcms.h"
 
 using testing::_;
 using testing::InSequence;
@@ -69,16 +72,16 @@ enum BitmapOpacity { kOpaqueBitmap, kTransparentBitmap };
 
 class FakeImageSource : public CanvasImageSource {
  public:
-  FakeImageSource(IntSize, BitmapOpacity);
+  FakeImageSource(gfx::Size, BitmapOpacity);
 
   scoped_refptr<Image> GetSourceImageForCanvas(SourceImageStatus*,
-                                               const FloatSize&,
+                                               const gfx::SizeF&,
                                                const AlphaDisposition) override;
 
   bool WouldTaintOrigin() const override { return false; }
-  FloatSize ElementSize(const FloatSize&,
-                        const RespectImageOrientationEnum) const override {
-    return FloatSize(size_);
+  gfx::SizeF ElementSize(const gfx::SizeF&,
+                         const RespectImageOrientationEnum) const override {
+    return gfx::SizeF(size_);
   }
   bool IsOpaque() const override { return is_opaque_; }
   bool IsAccelerated() const override { return false; }
@@ -86,12 +89,12 @@ class FakeImageSource : public CanvasImageSource {
   ~FakeImageSource() override = default;
 
  private:
-  IntSize size_;
+  gfx::Size size_;
   scoped_refptr<Image> image_;
   bool is_opaque_;
 };
 
-FakeImageSource::FakeImageSource(IntSize size, BitmapOpacity opacity)
+FakeImageSource::FakeImageSource(gfx::Size size, BitmapOpacity opacity)
     : size_(size), is_opaque_(opacity == kOpaqueBitmap) {
   sk_sp<SkSurface> surface(
       SkSurface::MakeRasterN32Premul(size_.width(), size_.height()));
@@ -102,7 +105,7 @@ FakeImageSource::FakeImageSource(IntSize size, BitmapOpacity opacity)
 
 scoped_refptr<Image> FakeImageSource::GetSourceImageForCanvas(
     SourceImageStatus* status,
-    const FloatSize&,
+    const gfx::SizeF&,
     const AlphaDisposition alpha_disposition = kPremultiplyAlpha) {
   // Only cover premultiply alpha cases.
   DCHECK_EQ(alpha_disposition, kPremultiplyAlpha);
@@ -146,6 +149,8 @@ class CanvasRenderingContext2DTest : public ::testing::Test,
 
   enum class ReadFrequencyMode { kWillReadFrequency, kWillNotReadFrequency };
 
+  static constexpr size_t kMaxPinnedImageBytes = 1000;
+
   void CreateContext(
       OpacityMode,
       LatencyMode = kNormalLatency,
@@ -161,7 +166,7 @@ class CanvasRenderingContext2DTest : public ::testing::Test,
 
   void TearDown() override;
   void UnrefCanvas();
-  std::unique_ptr<Canvas2DLayerBridge> MakeBridge(const IntSize&, RasterMode);
+  std::unique_ptr<Canvas2DLayerBridge> MakeBridge(const gfx::Size&, RasterMode);
 
   Document& GetDocument() const {
     return *web_view_helper_->GetWebView()
@@ -221,8 +226,8 @@ INSTANTIATE_PAINT_TEST_SUITE_P(CanvasRenderingContext2DTest);
 
 CanvasRenderingContext2DTest::CanvasRenderingContext2DTest()
     : wrap_gradients_(MakeGarbageCollected<WrapGradients>()),
-      opaque_bitmap_(IntSize(10, 10), kOpaqueBitmap),
-      alpha_bitmap_(IntSize(10, 10), kTransparentBitmap) {}
+      opaque_bitmap_(gfx::Size(10, 10), kOpaqueBitmap),
+      alpha_bitmap_(gfx::Size(10, 10), kTransparentBitmap) {}
 
 void CanvasRenderingContext2DTest::CreateContext(
     OpacityMode opacity_mode,
@@ -238,6 +243,8 @@ void CanvasRenderingContext2DTest::CreateContext(
 }
 
 void CanvasRenderingContext2DTest::SetUp() {
+  CanvasResourceProvider::SetMaxPinnedImageBytesForTesting(
+      kMaxPinnedImageBytes);
   test_context_provider_ = CreateContextProvider();
   InitializeSharedGpuContext(test_context_provider_.get());
   allow_accelerated_ =
@@ -260,8 +267,8 @@ void CanvasRenderingContext2DTest::SetUp() {
   partial_image_data_ = ImageData::Create(2, 2, settings, ASSERT_NO_EXCEPTION);
 
   NonThrowableExceptionState exception_state;
-  auto* opaque_gradient =
-      MakeGarbageCollected<CanvasGradient>(FloatPoint(0, 0), FloatPoint(10, 0));
+  auto* opaque_gradient = MakeGarbageCollected<CanvasGradient>(
+      gfx::PointF(0, 0), gfx::PointF(10, 0));
   opaque_gradient->addColorStop(0, String("green"), exception_state);
   EXPECT_FALSE(exception_state.HadException());
   opaque_gradient->addColorStop(1, String("blue"), exception_state);
@@ -270,8 +277,8 @@ void CanvasRenderingContext2DTest::SetUp() {
       V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>(
       opaque_gradient);
 
-  auto* alpha_gradient =
-      MakeGarbageCollected<CanvasGradient>(FloatPoint(0, 0), FloatPoint(10, 0));
+  auto* alpha_gradient = MakeGarbageCollected<CanvasGradient>(
+      gfx::PointF(0, 0), gfx::PointF(10, 0));
   alpha_gradient->addColorStop(0, String("green"), exception_state);
   EXPECT_FALSE(exception_state.HadException());
   alpha_gradient->addColorStop(1, String("rgba(0, 0, 255, 0.5)"),
@@ -287,6 +294,8 @@ void CanvasRenderingContext2DTest::SetUp() {
 }
 
 void CanvasRenderingContext2DTest::TearDown() {
+  CanvasResourceProvider::ResetMaxPinnedImageBytesForTesting();
+
   ThreadState::Current()->CollectAllGarbageForTesting(
       ThreadState::StackState::kNoHeapPointers);
 
@@ -305,7 +314,7 @@ void CanvasRenderingContext2DTest::TearDown() {
 }
 
 std::unique_ptr<Canvas2DLayerBridge> CanvasRenderingContext2DTest::MakeBridge(
-    const IntSize& size,
+    const gfx::Size& size,
     RasterMode raster_mode) {
   std::unique_ptr<Canvas2DLayerBridge> bridge =
       std::make_unique<Canvas2DLayerBridge>(size, raster_mode, kNonOpaque);
@@ -317,7 +326,7 @@ std::unique_ptr<Canvas2DLayerBridge> CanvasRenderingContext2DTest::MakeBridge(
 
 class FakeCanvas2DLayerBridge : public Canvas2DLayerBridge {
  public:
-  FakeCanvas2DLayerBridge(const IntSize& size,
+  FakeCanvas2DLayerBridge(const gfx::Size& size,
                           OpacityMode opacity_mode,
                           RasterModeHint hint)
       : Canvas2DLayerBridge(size, RasterMode::kCPU, opacity_mode),
@@ -370,7 +379,7 @@ class FakeCanvasResourceProvider : public CanvasResourceProvider {
 
 class MockImageBufferSurfaceForOverwriteTesting : public Canvas2DLayerBridge {
  public:
-  MockImageBufferSurfaceForOverwriteTesting(const IntSize& size,
+  MockImageBufferSurfaceForOverwriteTesting(const gfx::Size& size,
                                             OpacityMode opacity_mode)
       : Canvas2DLayerBridge(size, RasterMode::kCPU, opacity_mode) {}
   ~MockImageBufferSurfaceForOverwriteTesting() override = default;
@@ -404,7 +413,7 @@ void CanvasRenderingContext2DOverdrawTest::SetUp() {
   CanvasRenderingContext2DTest::SetUp();
   histogram_tester_ = std::make_unique<base::HistogramTester>();
   CreateContext(kNonOpaque);
-  IntSize size(10, 10);
+  gfx::Size size(10, 10);
   std::unique_ptr<MockImageBufferSurfaceForOverwriteTesting> mock_surface =
       std::make_unique<MockImageBufferSurfaceForOverwriteTesting>(size,
                                                                   kNonOpaque);
@@ -558,8 +567,8 @@ TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_ExactCoverage) {
       BaseRenderingContext2D::OverdrawOp::kDrawImage,
   });
   NonThrowableExceptionState exception_state;
-  Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 0, 0,
-                         10, 10, exception_state);
+  Context2D()->drawImage(&opaque_bitmap_, 0, 0, 10, 10, 0, 0, 10, 10,
+                         exception_state);
   EXPECT_FALSE(exception_state.HadException());
   VerifyExpectations();
 }
@@ -570,8 +579,8 @@ TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_Magnified) {
       BaseRenderingContext2D::OverdrawOp::kDrawImage,
   });
   NonThrowableExceptionState exception_state;
-  Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 1, 1, 0, 0,
-                         10, 10, exception_state);
+  Context2D()->drawImage(&opaque_bitmap_, 0, 0, 1, 1, 0, 0, 10, 10,
+                         exception_state);
   EXPECT_FALSE(exception_state.HadException());
   VerifyExpectations();
 }
@@ -580,8 +589,8 @@ TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_GlobalAlpha) {
   ExpectNoOverdraw();
   NonThrowableExceptionState exception_state;
   Context2D()->setGlobalAlpha(0.5f);
-  Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 0, 0,
-                         10, 10, exception_state);
+  Context2D()->drawImage(&opaque_bitmap_, 0, 0, 10, 10, 0, 0, 10, 10,
+                         exception_state);
   EXPECT_FALSE(exception_state.HadException());
   VerifyExpectations();
 }
@@ -589,8 +598,8 @@ TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_GlobalAlpha) {
 TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_TransparentBitmap) {
   ExpectNoOverdraw();
   NonThrowableExceptionState exception_state;
-  Context2D()->drawImage(GetScriptState(), &alpha_bitmap_, 0, 0, 10, 10, 0, 0,
-                         10, 10, exception_state);
+  Context2D()->drawImage(&alpha_bitmap_, 0, 0, 10, 10, 0, 0, 10, 10,
+                         exception_state);
   EXPECT_FALSE(exception_state.HadException());
   VerifyExpectations();
 }
@@ -601,8 +610,8 @@ TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_Filter) {
   V8UnionCanvasFilterOrString* filter =
       MakeGarbageCollected<V8UnionCanvasFilterOrString>("blur(4px)");
   Context2D()->setFilter(GetExecutionContext(), filter);
-  Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 0, 0,
-                         10, 10, exception_state);
+  Context2D()->drawImage(&opaque_bitmap_, 0, 0, 10, 10, 0, 0, 10, 10,
+                         exception_state);
   EXPECT_FALSE(exception_state.HadException());
   VerifyExpectations();
 }
@@ -610,8 +619,8 @@ TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_Filter) {
 TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_PartialCoverage1) {
   ExpectNoOverdraw();
   NonThrowableExceptionState exception_state;
-  Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 1, 0,
-                         10, 10, exception_state);
+  Context2D()->drawImage(&opaque_bitmap_, 0, 0, 10, 10, 1, 0, 10, 10,
+                         exception_state);
   EXPECT_FALSE(exception_state.HadException());
   VerifyExpectations();
 }
@@ -619,8 +628,8 @@ TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_PartialCoverage1) {
 TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_PartialCoverage2) {
   ExpectNoOverdraw();
   NonThrowableExceptionState exception_state;
-  Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 0, 0,
-                         9, 9, exception_state);
+  Context2D()->drawImage(&opaque_bitmap_, 0, 0, 10, 10, 0, 0, 9, 9,
+                         exception_state);
   EXPECT_FALSE(exception_state.HadException());
   VerifyExpectations();
 }
@@ -631,8 +640,8 @@ TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_FullCoverage) {
       BaseRenderingContext2D::OverdrawOp::kDrawImage,
   });
   NonThrowableExceptionState exception_state;
-  Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 0, 0,
-                         11, 11, exception_state);
+  Context2D()->drawImage(&opaque_bitmap_, 0, 0, 10, 10, 0, 0, 11, 11,
+                         exception_state);
   EXPECT_FALSE(exception_state.HadException());
   VerifyExpectations();
 }
@@ -645,8 +654,8 @@ TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_TransformFullCoverage) {
   });
   NonThrowableExceptionState exception_state;
   Context2D()->translate(-1, 0),
-      Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 1,
-                             0, 10, 10, exception_state);
+      Context2D()->drawImage(&opaque_bitmap_, 0, 0, 10, 10, 1, 0, 10, 10,
+                             exception_state);
   EXPECT_FALSE(exception_state.HadException());
   VerifyExpectations();
 }
@@ -656,8 +665,8 @@ TEST_P(CanvasRenderingContext2DOverdrawTest,
   ExpectNoOverdraw();
   NonThrowableExceptionState exception_state;
   Context2D()->translate(-1, 0),
-      Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 0,
-                             0, 10, 10, exception_state);
+      Context2D()->drawImage(&opaque_bitmap_, 0, 0, 10, 10, 0, 0, 10, 10,
+                             exception_state);
   EXPECT_FALSE(exception_state.HadException());
   VerifyExpectations();
 }
@@ -667,8 +676,8 @@ TEST_P(CanvasRenderingContext2DOverdrawTest,
   ExpectNoOverdraw();
   NonThrowableExceptionState exception_state;
   Context2D()->setFillStyle(OpaqueGradient());
-  Context2D()->drawImage(GetScriptState(), &alpha_bitmap_, 0, 0, 10, 10, 0, 0,
-                         10, 10, exception_state);
+  Context2D()->drawImage(&alpha_bitmap_, 0, 0, 10, 10, 0, 0, 10, 10,
+                         exception_state);
   EXPECT_FALSE(exception_state.HadException());
   VerifyExpectations();
 }
@@ -681,8 +690,8 @@ TEST_P(CanvasRenderingContext2DOverdrawTest,
   });
   NonThrowableExceptionState exception_state;
   Context2D()->setFillStyle(AlphaGradient());
-  Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 0, 0,
-                         10, 10, exception_state);
+  Context2D()->drawImage(&opaque_bitmap_, 0, 0, 10, 10, 0, 0, 10, 10,
+                         exception_state);
   EXPECT_FALSE(exception_state.HadException());
   VerifyExpectations();
 }
@@ -693,8 +702,8 @@ TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_CopyPartialCoverage) {
   ExpectNoOverdraw();
   NonThrowableExceptionState exception_state;
   Context2D()->setGlobalCompositeOperation(String("copy"));
-  Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 1, 0,
-                         10, 10, exception_state);
+  Context2D()->drawImage(&opaque_bitmap_, 0, 0, 10, 10, 1, 0, 10, 10,
+                         exception_state);
   EXPECT_FALSE(exception_state.HadException());
   VerifyExpectations();
 }
@@ -707,8 +716,8 @@ TEST_P(CanvasRenderingContext2DOverdrawTest,
   NonThrowableExceptionState exception_state;
   Context2D()->setGlobalCompositeOperation(String("copy"));
   Context2D()->translate(1, 1);
-  Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 1, 0,
-                         10, 10, exception_state);
+  Context2D()->drawImage(&opaque_bitmap_, 0, 0, 10, 10, 1, 0, 10, 10,
+                         exception_state);
   EXPECT_FALSE(exception_state.HadException());
   VerifyExpectations();
 }
@@ -718,8 +727,8 @@ TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_Clipped) {
   NonThrowableExceptionState exception_state;
   Context2D()->rect(0, 0, 5, 5);
   Context2D()->clip();
-  Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 0, 0,
-                         10, 10, exception_state);
+  Context2D()->drawImage(&opaque_bitmap_, 0, 0, 10, 10, 0, 0, 10, 10,
+                         exception_state);
   EXPECT_FALSE(exception_state.HadException());
   VerifyExpectations();
 }
@@ -748,17 +757,17 @@ TEST_P(CanvasRenderingContext2DOverdrawTest, Path_FullCoverage) {
 TEST_P(CanvasRenderingContext2DTest, ImageResourceLifetime) {
   auto* canvas = To<HTMLCanvasElement>(
       GetDocument().CreateRawElement(html_names::kCanvasTag));
-  canvas->SetSize(IntSize(40, 40));
+  canvas->SetSize(gfx::Size(40, 40));
   ImageBitmap* image_bitmap_derived = nullptr;
   {
     const ImageBitmapOptions* default_options = ImageBitmapOptions::Create();
-    absl::optional<IntRect> crop_rect =
-        IntRect(0, 0, canvas->width(), canvas->height());
+    absl::optional<gfx::Rect> crop_rect =
+        gfx::Rect(0, 0, canvas->width(), canvas->height());
     auto* image_bitmap_from_canvas =
         MakeGarbageCollected<ImageBitmap>(canvas, crop_rect, default_options);
     ASSERT_TRUE(image_bitmap_from_canvas);
 
-    crop_rect = IntRect(0, 0, 20, 20);
+    crop_rect = gfx::Rect(0, 0, 20, 20);
     image_bitmap_derived = MakeGarbageCollected<ImageBitmap>(
         image_bitmap_from_canvas, crop_rect, default_options);
     ASSERT_TRUE(image_bitmap_derived);
@@ -769,13 +778,13 @@ TEST_P(CanvasRenderingContext2DTest, ImageResourceLifetime) {
   DummyExceptionStateForTesting exception_state;
   auto* image_source =
       MakeGarbageCollected<V8CanvasImageSource>(image_bitmap_derived);
-  context->drawImage(GetScriptState(), image_source, 0, 0, exception_state);
+  context->drawImage(image_source, 0, 0, exception_state);
 }
 
 TEST_P(CanvasRenderingContext2DTest, GPUMemoryUpdateForAcceleratedCanvas) {
   CreateContext(kNonOpaque);
 
-  IntSize size(10, 10);
+  gfx::Size size(10, 10);
   std::unique_ptr<FakeCanvasResourceProvider> fake_resource_provider =
       std::make_unique<FakeCanvasResourceProvider>(
           SkImageInfo::MakeN32Premul(size.width(), size.height()),
@@ -804,7 +813,7 @@ TEST_P(CanvasRenderingContext2DTest, GPUMemoryUpdateForAcceleratedCanvas) {
       To<HTMLCanvasElement>(GetDocument().getElementById("d"));
   CanvasContextCreationAttributesCore attributes;
   anotherCanvas->GetCanvasRenderingContext("2d", attributes);
-  IntSize size2(10, 5);
+  gfx::Size size2(10, 5);
   std::unique_ptr<FakeCanvas2DLayerBridge> fake_2d_layer_bridge2 =
       std::make_unique<FakeCanvas2DLayerBridge>(size2, kNonOpaque,
                                                 RasterModeHint::kPreferGPU);
@@ -817,11 +826,11 @@ TEST_P(CanvasRenderingContext2DTest, GPUMemoryUpdateForAcceleratedCanvas) {
       size2);
 
   // Tear down the first image buffer that resides in current canvas element
-  CanvasElement().SetSize(IntSize(20, 20));
+  CanvasElement().SetSize(gfx::Size(20, 20));
   Mock::VerifyAndClearExpectations(fake_2d_layer_bridge_ptr);
 
   // Tear down the second image buffer
-  anotherCanvas->SetSize(IntSize(20, 20));
+  anotherCanvas->SetSize(gfx::Size(20, 20));
 }
 
 TEST_P(CanvasRenderingContext2DTest, CanvasDisposedBeforeContext) {
@@ -854,7 +863,7 @@ TEST_P(CanvasRenderingContext2DTest,
   // certain code paths in canvas 2d (that depend on the existence of
   // CanvasResourceProvider) will be changed too, causing bad regressions.
   CreateContext(kNonOpaque);
-  IntSize size(10, 10);
+  gfx::Size size(10, 10);
   auto fake_accelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>(
       size, kNonOpaque, RasterModeHint::kPreferGPU);
   CanvasElement().SetResourceProviderForTesting(
@@ -868,7 +877,7 @@ TEST_P(CanvasRenderingContext2DTest,
        DISABLED_DisableAcceleration_UpdateGPUMemoryUsage) {
   CreateContext(kNonOpaque);
 
-  IntSize size(10, 10);
+  gfx::Size size(10, 10);
   auto fake_accelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>(
       size, kNonOpaque, RasterModeHint::kPreferGPU);
   CanvasElement().SetResourceProviderForTesting(
@@ -894,7 +903,7 @@ TEST_P(CanvasRenderingContext2DTest,
   InSequence s;
 
   CreateContext(kNonOpaque);
-  IntSize size(10, 10);
+  gfx::Size size(10, 10);
   auto fake_accelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>(
       size, kNonOpaque, RasterModeHint::kPreferGPU);
   CanvasElement().SetResourceProviderForTesting(
@@ -926,11 +935,12 @@ TEST_P(CanvasRenderingContext2DTest,
 static void TestDrawSingleHighBitDepthPNGOnCanvas(
     String filepath,
     CanvasRenderingContext2D* context,
+    PredefinedColorSpace context_color_space,
     Document& document,
     ImageDataSettings* color_setting,
     ScriptState* script_state) {
   scoped_refptr<SharedBuffer> pixel_buffer = test::ReadFromFile(filepath);
-  ASSERT_EQ(false, pixel_buffer->IsEmpty());
+  ASSERT_EQ(false, pixel_buffer->empty());
 
   ImageResourceContent* resource_content =
       ImageResourceContent::CreateNotStarted();
@@ -950,7 +960,7 @@ static void TestDrawSingleHighBitDepthPNGOnCanvas(
   context->clearRect(0, 0, 2, 2);
   NonThrowableExceptionState exception_state;
   auto* image_union = MakeGarbageCollected<V8CanvasImageSource>(image_element);
-  context->drawImage(script_state, image_union, 0, 0, exception_state);
+  context->drawImage(image_union, 0, 0, exception_state);
 
   ImageData* image_data =
       context->getImageData(0, 0, 2, 2, color_setting, exception_state);
@@ -964,7 +974,7 @@ static void TestDrawSingleHighBitDepthPNGOnCanvas(
       resource_content->GetImage()->PaintImageForCurrentFrame().GetSwSkImage();
   ASSERT_EQ(kRGBA_F16_SkColorType, decoded_image->colorType());
   sk_sp<SkImage> color_converted_image = decoded_image->makeColorSpace(
-      context->ColorParamsForTest().GetSkColorSpace());
+      PredefinedColorSpaceToSkColorSpace(context_color_space));
   float expected_pixels[16];
   SkImageInfo expected_info_no_color_space = SkImageInfo::Make(
       2, 2, kRGBA_F32_SkColorType, kUnpremul_SkAlphaType, nullptr);
@@ -976,15 +986,15 @@ static void TestDrawSingleHighBitDepthPNGOnCanvas(
 }
 
 static void TestDrawHighBitDepthPNGsOnWideGamutCanvas(
-    String canvas_color_space,
+    PredefinedColorSpace color_space,
     Document& document,
     Persistent<HTMLCanvasElement> canvas,
     ScriptState* script_state) {
   // Prepare the wide gamut context with the given color space.
   CanvasContextCreationAttributesCore attributes;
   attributes.alpha = true;
-  attributes.color_space = canvas_color_space;
-  attributes.pixel_format = "float16";
+  attributes.color_space = color_space;
+  attributes.pixel_format = CanvasPixelFormat::kF16;
   CanvasRenderingContext2D* context = static_cast<CanvasRenderingContext2D*>(
       canvas->GetCanvasRenderingContext("2d", attributes));
 
@@ -998,8 +1008,9 @@ static void TestDrawHighBitDepthPNGsOnWideGamutCanvas(
   path.Append(test::CoreTestDataPath());
   path.Append("/png-16bit/");
   ImageDataSettings* color_setting = ImageDataSettings::Create();
-  color_setting->setStorageFormat(kFloat32ArrayStorageFormatName);
-  color_setting->setColorSpace(canvas_color_space);
+  color_setting->setStorageFormat(
+      ImageDataStorageFormatName(ImageDataStorageFormat::kFloat32));
+  color_setting->setColorSpace(PredefinedColorSpaceName(color_space));
   for (auto interlace : interlace_status) {
     for (auto color_profile : color_profiles) {
       for (auto alpha : alpha_status) {
@@ -1011,8 +1022,8 @@ static void TestDrawHighBitDepthPNGsOnWideGamutCanvas(
         full_path.Append(alpha);
         full_path.Append(".png");
         TestDrawSingleHighBitDepthPNGOnCanvas(full_path.ToString(), context,
-                                              document, color_setting,
-                                              script_state);
+                                              color_space, document,
+                                              color_setting, script_state);
       }
     }
   }
@@ -1020,21 +1031,21 @@ static void TestDrawHighBitDepthPNGsOnWideGamutCanvas(
 
 TEST_P(CanvasRenderingContext2DTest, DrawHighBitDepthPngOnP3Canvas) {
   TestDrawHighBitDepthPNGsOnWideGamutCanvas(
-      "display-p3", GetDocument(),
+      PredefinedColorSpace::kP3, GetDocument(),
       Persistent<HTMLCanvasElement>(CanvasElement()), GetScriptState());
 }
 
 TEST_P(CanvasRenderingContext2DTest, DrawHighBitDepthPngOnRec2020Canvas) {
   TestDrawHighBitDepthPNGsOnWideGamutCanvas(
-      "rec2020", GetDocument(), Persistent<HTMLCanvasElement>(CanvasElement()),
-      GetScriptState());
+      PredefinedColorSpace::kRec2020, GetDocument(),
+      Persistent<HTMLCanvasElement>(CanvasElement()), GetScriptState());
 }
 
 // The color settings of the surface of the canvas always remaines loyal to the
 // first created context 2D. Therefore, we have to test different canvas color
 // space settings for CanvasRenderingContext2D::putImageData() in different
 // tests.
-enum class CanvasColorSpaceSettings : uint8_t {
+enum class PredefinedColorSpaceSettings : uint8_t {
   CANVAS_SRGB = 0,
   CANVAS_REC2020 = 1,
   CANVAS_P3 = 2,
@@ -1046,30 +1057,27 @@ enum class CanvasColorSpaceSettings : uint8_t {
 // color managed mode.
 void TestPutImageDataOnCanvasWithColorSpaceSettings(
     HTMLCanvasElement& canvas_element,
-    CanvasColorSpaceSettings canvas_colorspace_setting) {
+    PredefinedColorSpaceSettings canvas_colorspace_setting) {
   unsigned num_image_data_color_spaces = 3;
-  CanvasColorSpace image_data_color_spaces[] = {
-      CanvasColorSpace::kSRGB,
-      CanvasColorSpace::kRec2020,
-      CanvasColorSpace::kP3,
+  PredefinedColorSpace image_data_color_spaces[] = {
+      PredefinedColorSpace::kSRGB,
+      PredefinedColorSpace::kRec2020,
+      PredefinedColorSpace::kP3,
   };
 
   unsigned num_image_data_storage_formats = 3;
   ImageDataStorageFormat image_data_storage_formats[] = {
-      kUint8ClampedArrayStorageFormat, kUint16ArrayStorageFormat,
-      kFloat32ArrayStorageFormat,
+      ImageDataStorageFormat::kUint8,
+      ImageDataStorageFormat::kUint16,
+      ImageDataStorageFormat::kFloat32,
   };
 
-  CanvasColorSpace canvas_color_spaces[] = {
-      CanvasColorSpace::kSRGB,
-      CanvasColorSpace::kSRGB,
-      CanvasColorSpace::kRec2020,
-      CanvasColorSpace::kP3,
+  PredefinedColorSpace predefined_color_spaces[] = {
+      PredefinedColorSpace::kSRGB,
+      PredefinedColorSpace::kSRGB,
+      PredefinedColorSpace::kRec2020,
+      PredefinedColorSpace::kP3,
   };
-
-  String canvas_color_space_names[] = {
-      kSRGBCanvasColorSpaceName, kSRGBCanvasColorSpaceName,
-      kRec2020CanvasColorSpaceName, kP3CanvasColorSpaceName};
 
   CanvasPixelFormat canvas_pixel_formats[] = {
       CanvasPixelFormat::kUint8,
@@ -1077,11 +1085,6 @@ void TestPutImageDataOnCanvasWithColorSpaceSettings(
       CanvasPixelFormat::kF16,
       CanvasPixelFormat::kF16,
   };
-
-  String canvas_pixel_format_names[] = {
-      kUint8CanvasPixelFormatName, kF16CanvasPixelFormatName,
-      kF16CanvasPixelFormatName, kF16CanvasPixelFormatName,
-      kF16CanvasPixelFormatName};
 
   // Source pixels in RGBA32
   uint8_t u8_pixels[] = {255, 0,   0,   255,  // Red
@@ -1124,34 +1127,34 @@ void TestPutImageDataOnCanvasWithColorSpaceSettings(
     for (unsigned j = 0; j < num_image_data_storage_formats; j++) {
       NotShared<DOMArrayBufferView> data_array;
       switch (image_data_storage_formats[j]) {
-        case kUint8ClampedArrayStorageFormat:
+        case ImageDataStorageFormat::kUint8:
           data_array = data_u8;
           break;
-        case kUint16ArrayStorageFormat:
+        case ImageDataStorageFormat::kUint16:
           data_array = data_u16;
           break;
-        case kFloat32ArrayStorageFormat:
+        case ImageDataStorageFormat::kFloat32:
           data_array = data_f32;
           break;
         default:
           NOTREACHED();
       }
 
-      image_data = ImageData::CreateForTest(IntSize(2, 2), data_array,
+      image_data = ImageData::CreateForTest(gfx::Size(2, 2), data_array,
                                             image_data_color_spaces[i],
                                             image_data_storage_formats[j]);
       unsigned k = static_cast<unsigned>(canvas_colorspace_setting);
       ImageDataSettings* canvas_color_setting = ImageDataSettings::Create();
       canvas_color_setting->setColorSpace(
-          ImageData::CanvasColorSpaceName(canvas_color_spaces[k]));
+          PredefinedColorSpaceName(predefined_color_spaces[k]));
       switch (canvas_pixel_formats[k]) {
         case CanvasPixelFormat::kUint8:
           canvas_color_setting->setStorageFormat(
-              kUint8ClampedArrayStorageFormatName);
+              ImageDataStorageFormatName(ImageDataStorageFormat::kUint8));
           break;
         case CanvasPixelFormat::kF16:
           canvas_color_setting->setStorageFormat(
-              kFloat32ArrayStorageFormatName);
+              ImageDataStorageFormatName(ImageDataStorageFormat::kFloat32));
           break;
         default:
           NOTREACHED();
@@ -1164,15 +1167,15 @@ void TestPutImageDataOnCanvasWithColorSpaceSettings(
               ConvertPixelsToColorSpaceAndPixelFormatForTest(
                   data_array->BaseAddress(), data_length,
                   image_data_color_spaces[i], image_data_storage_formats[j],
-                  canvas_color_spaces[k], canvas_pixel_formats[k],
+                  predefined_color_spaces[k], canvas_pixel_formats[k],
                   pixels_converted_manually, kPixelFormat_ffff));
 
       // Create a canvas and call putImageData and getImageData to make sure
       // the conversion is done correctly.
       CanvasContextCreationAttributesCore attributes;
       attributes.alpha = true;
-      attributes.color_space = canvas_color_space_names[k];
-      attributes.pixel_format = canvas_pixel_format_names[k];
+      attributes.color_space = predefined_color_spaces[k];
+      attributes.pixel_format = canvas_pixel_formats[k];
       CanvasRenderingContext2D* context =
           static_cast<CanvasRenderingContext2D*>(
               canvas_element.GetCanvasRenderingContext("2d", attributes));
@@ -1200,17 +1203,17 @@ void TestPutImageDataOnCanvasWithColorSpaceSettings(
 // Test disabled due to crbug.com/780925
 TEST_P(CanvasRenderingContext2DTest, ColorManagedPutImageDataOnSRGBCanvas) {
   TestPutImageDataOnCanvasWithColorSpaceSettings(
-      CanvasElement(), CanvasColorSpaceSettings::CANVAS_SRGB);
+      CanvasElement(), PredefinedColorSpaceSettings::CANVAS_SRGB);
 }
 
 TEST_P(CanvasRenderingContext2DTest, ColorManagedPutImageDataOnRec2020Canvas) {
   TestPutImageDataOnCanvasWithColorSpaceSettings(
-      CanvasElement(), CanvasColorSpaceSettings::CANVAS_REC2020);
+      CanvasElement(), PredefinedColorSpaceSettings::CANVAS_REC2020);
 }
 
 TEST_P(CanvasRenderingContext2DTest, ColorManagedPutImageDataOnP3Canvas) {
   TestPutImageDataOnCanvasWithColorSpaceSettings(
-      CanvasElement(), CanvasColorSpaceSettings::CANVAS_P3);
+      CanvasElement(), PredefinedColorSpaceSettings::CANVAS_P3);
 }
 
 TEST_P(CanvasRenderingContext2DTest,
@@ -1229,7 +1232,6 @@ TEST_P(CanvasRenderingContext2DTest,
 
 TEST_P(CanvasRenderingContext2DTest,
        UnacceleratedIfNormalLatencyWillReadFrequently) {
-  ScopedNewCanvas2DAPIForTest new_api(true);
   CreateContext(kNonOpaque, kNormalLatency,
                 ReadFrequencyMode::kWillReadFrequency);
   DrawSomething();
@@ -1240,7 +1242,6 @@ TEST_P(CanvasRenderingContext2DTest,
 
 TEST_P(CanvasRenderingContext2DTest,
        UnacceleratedIfLowLatencyWillReadFrequently) {
-  ScopedNewCanvas2DAPIForTest new_api(true);
   CreateContext(kNonOpaque, kLowLatency, ReadFrequencyMode::kWillReadFrequency);
   // No need to set-up the layer bridge when testing low latency mode.
   DrawSomething();
@@ -1249,9 +1250,10 @@ TEST_P(CanvasRenderingContext2DTest,
 }
 
 TEST_P(CanvasRenderingContext2DTest, RemainAcceleratedAfterGetImageData) {
-  ScopedNewCanvas2DAPIForTest new_api(true);
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndEnableFeature(features::kCanvas2dStaysGPUOnReadback);
   CreateContext(kNonOpaque);
-  IntSize size(10, 10);
+  gfx::Size size(10, 10);
   auto fake_accelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>(
       size, kNonOpaque, RasterModeHint::kPreferGPU);
   CanvasElement().SetResourceProviderForTesting(
@@ -1265,9 +1267,8 @@ TEST_P(CanvasRenderingContext2DTest, RemainAcceleratedAfterGetImageData) {
 }
 
 TEST_P(CanvasRenderingContext2DTest, AutoFlush) {
-  ScopedNewCanvas2DAPIForTest new_api(true);
   CreateContext(kNonOpaque);
-  IntSize size(10, 10);
+  gfx::Size size(10, 10);
   auto fake_accelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>(
       size, kNonOpaque, RasterModeHint::kPreferGPU);
   CanvasElement().SetResourceProviderForTesting(
@@ -1290,9 +1291,8 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlush) {
 }
 
 TEST_P(CanvasRenderingContext2DTest, AutoFlushPinnedImages) {
-  ScopedNewCanvas2DAPIForTest new_api(true);
   CreateContext(kNonOpaque);
-  IntSize size(10, 10);
+  gfx::Size size(10, 10);
   auto fake_accelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>(
       size, kNonOpaque, RasterModeHint::kPreferGPU);
   CanvasElement().SetResourceProviderForTesting(
@@ -1300,8 +1300,8 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushPinnedImages) {
 
   Context2D()->fillRect(0, 0, 1, 1);  // Ensure resource provider is created.
 
-  constexpr unsigned int kImageSize = 1024;
-  constexpr unsigned int kBytesPerImage = 4 * kImageSize * kImageSize;
+  constexpr unsigned int kImageSize = 10;
+  constexpr unsigned int kBytesPerImage = 400;
 
   const size_t initial_op_count =
       CanvasElement().ResourceProvider()->TotalOpCount();
@@ -1310,14 +1310,13 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushPinnedImages) {
   // reset by the Flush.
   for (int repeat = 0; repeat < 2; ++repeat) {
     size_t expected_op_count = initial_op_count;
-    for (size_t pinned_bytes = 0;
-         pinned_bytes <= CanvasResourceProvider::kMaxPinnedImageBytes;
+    for (size_t pinned_bytes = 0; pinned_bytes <= kMaxPinnedImageBytes;
          pinned_bytes += kBytesPerImage) {
-      FakeImageSource unique_image(IntSize(kImageSize, kImageSize),
+      FakeImageSource unique_image(gfx::Size(kImageSize, kImageSize),
                                    kOpaqueBitmap);
       NonThrowableExceptionState exception_state;
-      Context2D()->drawImage(GetScriptState(), &unique_image, 0, 0, 1, 1, 0, 0,
-                             1, 1, exception_state);
+      Context2D()->drawImage(&unique_image, 0, 0, 1, 1, 0, 0, 1, 1,
+                             exception_state);
       EXPECT_FALSE(exception_state.HadException());
       ++expected_op_count;
       ASSERT_EQ(CanvasElement().ResourceProvider()->TotalOpCount(),
@@ -1330,21 +1329,21 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushPinnedImages) {
 }
 
 TEST_P(CanvasRenderingContext2DTest, OverdrawResetsPinnedImageBytes) {
-  ScopedNewCanvas2DAPIForTest new_api(true);
   CreateContext(kNonOpaque);
-  IntSize size(10, 10);
+  gfx::Size size(10, 10);
   auto fake_accelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>(
       size, kNonOpaque, RasterModeHint::kPreferGPU);
   CanvasElement().SetResourceProviderForTesting(
       nullptr, std::move(fake_accelerate_surface), size);
 
-  constexpr unsigned int kImageSize = 1024;
-  constexpr unsigned int kBytesPerImage = 4 * kImageSize * kImageSize;
+  constexpr unsigned int kImageSize = 10;
+  constexpr unsigned int kBytesPerImage = 400;
 
-  FakeImageSource unique_image(IntSize(kImageSize, kImageSize), kOpaqueBitmap);
+  FakeImageSource unique_image(gfx::Size(kImageSize, kImageSize),
+                               kOpaqueBitmap);
   NonThrowableExceptionState exception_state;
-  Context2D()->drawImage(GetScriptState(), &unique_image, 0, 0, 10, 10, 0, 0,
-                         10, 10, exception_state);
+  Context2D()->drawImage(&unique_image, 0, 0, 10, 10, 0, 0, 10, 10,
+                         exception_state);
   size_t initial_op_count = CanvasElement().ResourceProvider()->TotalOpCount();
   ASSERT_EQ(CanvasElement().ResourceProvider()->TotalPinnedImageBytes(),
             kBytesPerImage);
@@ -1356,9 +1355,8 @@ TEST_P(CanvasRenderingContext2DTest, OverdrawResetsPinnedImageBytes) {
 }
 
 TEST_P(CanvasRenderingContext2DTest, AutoFlushSameImage) {
-  ScopedNewCanvas2DAPIForTest new_api(true);
   CreateContext(kNonOpaque);
-  IntSize size(10, 10);
+  gfx::Size size(10, 10);
   auto fake_accelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>(
       size, kNonOpaque, RasterModeHint::kPreferGPU);
   CanvasElement().SetResourceProviderForTesting(
@@ -1367,17 +1365,15 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushSameImage) {
   Context2D()->fillRect(0, 0, 1, 1);  // Ensure resource provider is created.
   size_t expected_op_count = CanvasElement().ResourceProvider()->TotalOpCount();
 
-  constexpr unsigned int kImageSize = 1024;
-  constexpr unsigned int kBytesPerImage = 4 * kImageSize * kImageSize;
+  constexpr unsigned int kImageSize = 10;
+  constexpr unsigned int kBytesPerImage = 400;
 
-  FakeImageSource image(IntSize(kImageSize, kImageSize), kOpaqueBitmap);
+  FakeImageSource image(gfx::Size(kImageSize, kImageSize), kOpaqueBitmap);
 
-  for (size_t pinned_bytes = 0;
-       pinned_bytes <= 2 * CanvasResourceProvider::kMaxPinnedImageBytes;
+  for (size_t pinned_bytes = 0; pinned_bytes <= 2 * kMaxPinnedImageBytes;
        pinned_bytes += kBytesPerImage) {
     NonThrowableExceptionState exception_state;
-    Context2D()->drawImage(GetScriptState(), &image, 0, 0, 1, 1, 0, 0, 1, 1,
-                           exception_state);
+    Context2D()->drawImage(&image, 0, 0, 1, 1, 0, 0, 1, 1, exception_state);
     EXPECT_FALSE(exception_state.HadException());
     ++expected_op_count;
     ASSERT_EQ(CanvasElement().ResourceProvider()->TotalOpCount(),
@@ -1386,9 +1382,8 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushSameImage) {
 }
 
 TEST_P(CanvasRenderingContext2DTest, AutoFlushDelayedByLayer) {
-  ScopedNewCanvas2DAPIForTest new_api(true);
   CreateContext(kNonOpaque);
-  IntSize size(10, 10);
+  gfx::Size size(10, 10);
   auto fake_accelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>(
       size, kNonOpaque, RasterModeHint::kPreferGPU);
   CanvasElement().SetResourceProviderForTesting(
@@ -1423,11 +1418,9 @@ INSTANTIATE_PAINT_TEST_SUITE_P(CanvasRenderingContext2DTestAccelerated);
 TEST_P(CanvasRenderingContext2DTestAccelerated,
        ElementRequestsCompositingUpdateOnHibernateAndWakeUp) {
   CreateContext(kNonOpaque);
-  IntSize size(300, 300);
+  gfx::Size size(300, 300);
   std::unique_ptr<Canvas2DLayerBridge> bridge =
       std::make_unique<Canvas2DLayerBridge>(size, RasterMode::kGPU, kNonOpaque);
-  // Force hibernatation to occur in an immediate task.
-  bridge->DontUseIdleSchedulingForTesting();
   CanvasElement().SetResourceProviderForTesting(nullptr, std::move(bridge),
                                                 size);
   CanvasElement().GetCanvas2DLayerBridge()->SetCanvasResourceHost(
@@ -1438,56 +1431,48 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CanvasElement().GetCanvas2DLayerBridge()->NewImageSnapshot();
   EXPECT_TRUE(!!CanvasElement().ResourceProvider());
   EXPECT_TRUE(CanvasElement().ResourceProvider()->IsAccelerated());
-  EXPECT_TRUE(CanvasElement().GetLayoutBoxModelObject());
-  PaintLayer* layer = CanvasElement().GetLayoutBoxModelObject()->Layer();
-  EXPECT_TRUE(layer);
+  auto* box = CanvasElement().GetLayoutBoxModelObject();
+  EXPECT_TRUE(box);
+  PaintLayer* painting_layer = box->PaintingLayer();
+  EXPECT_TRUE(painting_layer);
   UpdateAllLifecyclePhasesForTest();
 
   // Hide element to trigger hibernation (if enabled).
   GetDocument().GetPage()->SetVisibilityState(
       mojom::blink::PageVisibilityState::kHidden,
       /*is_initial_state=*/false);
-  blink::test::RunPendingTasks();  // Run hibernation task.
-  // If enabled, hibernation should cause compositing update.
-  EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED,
-            layer->GetLayoutObject().NeedsPaintPropertyUpdate());
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED, layer->SelfNeedsRepaint());
-  } else {
-    EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED,
-              layer->NeedsCompositingInputsUpdate());
-  }
-  EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED,
+  // Run hibernation task.
+  scheduler::RunIdleTasksForTesting(
+      scheduler::WebThreadScheduler::MainThreadScheduler(),
+      base::BindOnce([]() {}));
+  blink::test::RunPendingTasks();
+  // If enabled, hibernation should cause repaint of the painting layer.
+  EXPECT_FALSE(box->NeedsPaintPropertyUpdate());
+  EXPECT_EQ(Canvas2DLayerBridge::IsHibernationEnabled(),
+            painting_layer->SelfNeedsRepaint());
+  EXPECT_EQ(Canvas2DLayerBridge::IsHibernationEnabled(),
             !CanvasElement().ResourceProvider());
 
   // The page is hidden so it doesn't make sense to paint, and doing so will
   // DCHECK. Update all other lifecycle phases.
   GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
-  EXPECT_FALSE(layer->NeedsCompositingInputsUpdate());
 
-  // Wake up again, which should request a compositing update synchronously.
+  // Wake up again, which should request repaint of the painting layer.
   GetDocument().GetPage()->SetVisibilityState(
       mojom::blink::PageVisibilityState::kVisible,
       /*is_initial_state=*/false);
-  EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED,
-            layer->GetLayoutObject().NeedsPaintPropertyUpdate());
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED, layer->SelfNeedsRepaint());
-  } else {
-    EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED,
-              layer->NeedsCompositingInputsUpdate());
-  }
+  EXPECT_FALSE(box->NeedsPaintPropertyUpdate());
+  EXPECT_EQ(Canvas2DLayerBridge::IsHibernationEnabled(),
+            painting_layer->SelfNeedsRepaint());
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,
        NoHibernationIfNoResourceProvider) {
   CreateContext(kNonOpaque);
-  IntSize size(300, 300);
+  gfx::Size size(300, 300);
   std::unique_ptr<Canvas2DLayerBridge> bridge =
       std::make_unique<Canvas2DLayerBridge>(size, RasterMode::kGPU, kNonOpaque);
-  // Force hibernatation to occur in an immediate task.
-  bridge->DontUseIdleSchedulingForTesting();
   CanvasElement().SetResourceProviderForTesting(nullptr, std::move(bridge),
                                                 size);
   CanvasElement().GetCanvas2DLayerBridge()->SetCanvasResourceHost(
@@ -1495,10 +1480,11 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   EXPECT_TRUE(CanvasElement().GetCanvas2DLayerBridge()->IsAccelerated());
 
   EXPECT_TRUE(CanvasElement().GetLayoutBoxModelObject());
-  PaintLayer* layer = CanvasElement().GetLayoutBoxModelObject()->Layer();
-  EXPECT_TRUE(layer);
+  auto* box = CanvasElement().GetLayoutBoxModelObject();
+  EXPECT_TRUE(box);
+  PaintLayer* painting_layer = box->PaintingLayer();
+  EXPECT_TRUE(painting_layer);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(layer->NeedsCompositingInputsUpdate());
 
   // The resource provider gets lazily created. Force it to be dropped.
   canvas_element_->ReplaceResourceProvider(nullptr);
@@ -1507,10 +1493,15 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   GetDocument().GetPage()->SetVisibilityState(
       mojom::blink::PageVisibilityState::kHidden,
       /*is_initial_state=*/false);
-  blink::test::RunPendingTasks();  // Run hibernation task.
+  // Run hibernation task.
+  scheduler::RunIdleTasksForTesting(
+      scheduler::WebThreadScheduler::MainThreadScheduler(),
+      base::BindOnce([]() {}));
+  blink::test::RunPendingTasks();
 
-  // Never hibernate a canvas with no resource provider
-  EXPECT_FALSE(layer->NeedsCompositingInputsUpdate());
+  // Never hibernate a canvas with no resource provider.
+  EXPECT_FALSE(box->NeedsPaintPropertyUpdate());
+  EXPECT_FALSE(painting_layer->SelfNeedsRepaint());
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated, LowLatencyIsNotSingleBuffered) {
@@ -1538,7 +1529,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, DrawImage_Video_Flush) {
   gfx::Size visible_size(10, 10);
   scoped_refptr<media::VideoFrame> media_frame =
       media::VideoFrame::WrapVideoFrame(
-          media::VideoFrame::CreateBlackFrame(/*coded_size=*/gfx::Size(16, 16)),
+          media::VideoFrame::CreateBlackFrame(/*size=*/gfx::Size(16, 16)),
           media::PIXEL_FORMAT_I420,
           /*visible_rect=*/gfx::Rect(visible_size),
           /*natural_size=*/visible_size);
@@ -1550,8 +1541,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, DrawImage_Video_Flush) {
   Context2D()->fillRect(0, 0, 5, 5);
   EXPECT_TRUE(CanvasElement().ResourceProvider()->HasRecordedDrawOps());
 
-  Context2D()->drawImage(GetScriptState(), frame, 0, 0, 10, 10, 0, 0, 10, 10,
-                         exception_state);
+  Context2D()->drawImage(frame, 0, 0, 10, 10, 0, 0, 10, 10, exception_state);
   EXPECT_FALSE(exception_state.HadException());
   // The drawImage Operation is supposed to trigger a flush, which means that
   // There should not be any Recorded ops at this point.
@@ -1615,9 +1605,7 @@ class CanvasRenderingContext2DTestSwapChain
     : public CanvasRenderingContext2DTestAccelerated {
  protected:
   CanvasRenderingContext2DTestSwapChain()
-      : CanvasRenderingContext2DTestAccelerated() {
-    feature_list_.InitAndEnableFeature(features::kLowLatencyCanvas2dSwapChain);
-  }
+      : CanvasRenderingContext2DTestAccelerated() {}
 
   scoped_refptr<viz::TestContextProvider> CreateContextProvider() override {
     auto context_provider = viz::TestContextProvider::Create();

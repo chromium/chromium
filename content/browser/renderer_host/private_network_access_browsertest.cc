@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,20 @@
 #include <string>
 #include <vector>
 
+#include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
+#include "base/synchronization/lock.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/thread_annotations.h"
+#include "build/build_config.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -25,13 +32,24 @@
 #include "content/test/resource_load_observer.h"
 #include "content/test/test_content_browser_client.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_byte_range.h"
+#include "net/http/http_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
 namespace {
+
+using ::net::test_server::METHOD_GET;
+using ::net::test_server::METHOD_OPTIONS;
+using ::testing::ElementsAre;
 
 // These domains are mapped to the IP addresses above using the
 // `--host-resolver-rules` command-line switch. The exact values come from the
@@ -53,12 +71,43 @@ constexpr char kCorsPath[] = "/set-header?Access-Control-Allow-Origin: *";
 
 // Path to a response that passes Private Network Access checks.
 constexpr char kPnaPath[] =
-    "/set-header?"
-    "Access-Control-Allow-Origin: *&"
-    "Access-Control-Allow-Private-Network: true";
+    "/set-header"
+    "?Access-Control-Allow-Origin: *"
+    "&Access-Control-Allow-Private-Network: true";
 
 // Path to a cacheable response.
 constexpr char kCacheablePath[] = "/cachetime";
+
+// Path to a cacheable variant of `kCorsPath`.
+constexpr char kCacheableCorsPath[] =
+    "/set-header"
+    "?Cache-Control: max-age%3D60"
+    "&Access-Control-Allow-Origin: *";
+
+// Path to a cacheable variant of `kPnaPath`.
+constexpr char kCacheablePnaPath[] =
+    "/set-header"
+    "?Cache-Control: max-age%3D60"
+    "&Access-Control-Allow-Origin: *"
+    "&Access-Control-Allow-Private-Network: true";
+
+// Returns a path to a response that passes Private Network Access checks.
+//
+// This can be used to construct the `src` URL for an iframe.
+std::string MakePnaPathForIframe(const url::Origin& initiator_origin) {
+  return base::StrCat({
+      "/set-header"
+      // Apparently a wildcard `*` is not sufficient in this case, so we need
+      // to explicitly allow the initiator origin instead.
+      "?Access-Control-Allow-Origin: ",
+      initiator_origin.Serialize(),
+      "&Access-Control-Allow-Private-Network: true"
+      // It seems navigation requests carry credentials...
+      "&Access-Control-Allow-Credentials: true"
+      // And the following couple headers.
+      "&Access-Control-Allow-Headers: upgrade-insecure-requests,accept",
+  });
+}
 
 // Returns a snippet of Javascript that fetch()es the given URL.
 //
@@ -116,56 +165,214 @@ class ContentBrowserClientRegistration {
   }
 
  private:
-  ContentBrowserClient* const old_client_;
+  const raw_ptr<ContentBrowserClient> old_client_;
 };
 
-// A `net::EmbeddedTestServer` that only starts on demand and pretends to be
-// in a particular IP address space.
-//
-// NOTE(titouan): The IP address space overrides CLI switch is copied to utility
-// processes when said processes are started. If we start a lazy server after
-// the network process has started, any updates we make to our own CLI switches
-// will not propagate to the network process, yielding inconsistent results.
-// These tests currently do not rely on this behavior - the IP address space of
-// documents is calculated in the browser process, and all network resources
-// fetched in this test are `local`. If we want to fix this, we can get rid of
-// the fancy lazy-initialization and simply start all servers at test fixture
-// construction time, then set up the CLI switch in `SetUpCommandLine()`.
-class LazyServer {
+// An embedded test server connection listener that simply counts connections.
+// Thread-safe.
+class ConnectionCounter
+    : public net::test_server::EmbeddedTestServerConnectionListener {
  public:
-  LazyServer(net::EmbeddedTestServer::Type type,
-             network::mojom::IPAddressSpace ip_address_space,
-             base::FilePath test_data_path)
-      : type_(type),
-        ip_address_space_(ip_address_space),
-        test_data_path_(std::move(test_data_path)) {}
+  ConnectionCounter() = default;
 
-  net::EmbeddedTestServer& Get() {
-    if (!server_) {
-      Initialize();
-    }
-    return *server_;
+  // Instances of this class are neither copyable nor movable.
+  ConnectionCounter(const ConnectionCounter&) = delete;
+  ConnectionCounter& operator=(const ConnectionCounter&) = delete;
+  ConnectionCounter(ConnectionCounter&&) = delete;
+  ConnectionCounter& operator=(ConnectionCounter&&) = delete;
+
+  // Returns the number of sockets accepted by the servers we are listening to.
+  int count() const {
+    base::AutoLock guard(lock_);
+    return count_;
   }
 
  private:
-  void Initialize() {
-    server_ = std::make_unique<net::EmbeddedTestServer>(type_);
+  // EmbeddedTestServerConnectionListener implementation.
 
-    // Use a certificate valid for multiple domains, which we can use to
-    // distinguish `local`, `private` and `public` address spaces.
-    server_->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-
-    server_->AddDefaultHandlers(test_data_path_);
-    EXPECT_TRUE(server_->Start());
-
-    AddCommandLineOverride();
+  std::unique_ptr<net::StreamSocket> AcceptedSocket(
+      std::unique_ptr<net::StreamSocket> socket) override {
+    {
+      base::AutoLock guard(lock_);
+      count_++;
+    }
+    return socket;
   }
 
-  // Sets up the command line in order for this server to be considered a part
-  // of `ip_address_space_`, irrespective of the actual IP it binds to.
-  void AddCommandLineOverride() const {
-    DCHECK(server_);
+  void ReadFromSocket(const net::StreamSocket& socket, int rv) override {}
 
+  // `count_` is incremented on the embedded test server thread and read on the
+  // test thread, so we synchronize accesses with a lock.
+  mutable base::Lock lock_;
+  int count_ GUARDED_BY(lock_) = 0;
+};
+
+class RequestObserver {
+ public:
+  RequestObserver() = default;
+
+  // The returned callback must not outlive this instance.
+  net::test_server::EmbeddedTestServer::MonitorRequestCallback BindCallback() {
+    return base::BindRepeating(&RequestObserver::Observe,
+                               base::Unretained(this));
+  }
+
+  // The origin of the URL is not checked for equality.
+  std::vector<net::test_server::HttpMethod> RequestMethodsForUrl(
+      const GURL& url) const {
+    std::string path = url.PathForRequest();
+    std::vector<net::test_server::HttpMethod> methods;
+    {
+      base::AutoLock guard(lock_);
+      for (const auto& request : requests_) {
+        if (request.GetURL().PathForRequest() == path) {
+          methods.push_back(request.method);
+        }
+      }
+    }
+    return methods;
+  }
+
+ private:
+  void Observe(const net::test_server::HttpRequest& request) {
+    base::AutoLock guard(lock_);
+    requests_.push_back(request);
+  }
+
+  // `requests_` is mutated on the embedded test server thread and read on the
+  // test thread, so we synchronize accesses with a lock.
+  mutable base::Lock lock_;
+  std::vector<net::test_server::HttpRequest> requests_ GUARDED_BY(lock_);
+};
+
+// Removes `prefix` from the start of `str`, if present.
+// Returns nullopt otherwise.
+absl::optional<base::StringPiece> StripPrefix(base::StringPiece str,
+                                              base::StringPiece prefix) {
+  if (!base::StartsWith(str, prefix)) {
+    return absl::nullopt;
+  }
+
+  return str.substr(prefix.size());
+}
+
+// Returns a pointer to the value of the `header` header in `request`, if any.
+// Returns nullptr otherwise.
+const std::string* FindRequestHeader(
+    const net::test_server::HttpRequest& request,
+    base::StringPiece header) {
+  const auto it = request.headers.find(header);
+  if (it == request.headers.end()) {
+    return nullptr;
+  }
+
+  return &it->second;
+}
+
+// Returns the `Content-Range` header value for a given `range` of bytes out of
+// the given `total_size` number of bytes.
+std::string GetContentRangeHeader(const net::HttpByteRange& range,
+                                  size_t total_size) {
+  std::string first = base::NumberToString(range.first_byte_position());
+  std::string last = base::NumberToString(range.last_byte_position());
+  std::string total = base::NumberToString(total_size);
+  return base::StrCat({"bytes ", first, "-", last, "/", total});
+}
+
+// An `EmbeddedTestServer` request handler function.
+//
+// Knows how to respond to CORS and PNA preflight requests, as well as regular
+// and range requests.
+//
+// Route: /echorange?<body>
+std::unique_ptr<net::test_server::HttpResponse> HandleRangeRequest(
+    const net::test_server::HttpRequest& request) {
+  absl::optional<base::StringPiece> query =
+      StripPrefix(request.relative_url, "/echorange?");
+  if (!query) {
+    return nullptr;
+  }
+
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+
+  constexpr std::pair<base::StringPiece, base::StringPiece> kCopiedHeaders[] = {
+      {"Origin", "Access-Control-Allow-Origin"},
+      {"Access-Control-Request-Private-Network",
+       "Access-Control-Allow-Private-Network"},
+      {"Access-Control-Request-Headers", "Access-Control-Allow-Headers"},
+  };
+  for (const auto& pair : kCopiedHeaders) {
+    const std::string* value = FindRequestHeader(request, pair.first);
+    if (value) {
+      response->AddCustomHeader(pair.second, *value);
+    }
+  }
+
+  // No body for a preflight response.
+  if (request.method == net::test_server::METHOD_OPTIONS) {
+    response->AddCustomHeader("Access-Control-Max-Age", "60");
+    return response;
+  }
+
+  // Cache-Control: max-age=X does not work for range request caching. Use a
+  // strong ETag instead, along with a last modified date. Both are required.
+  response->AddCustomHeader("ETag", "foo");
+  response->AddCustomHeader("Last-Modified", "Fri, 1 Apr 2022 12:34:56 UTC");
+
+  const std::string* range_header = FindRequestHeader(request, "Range");
+  if (!range_header) {
+    // Not a range request. Respond with 200 and the whole query as the body.
+    response->set_content(*query);
+    return response;
+  }
+
+  std::vector<net::HttpByteRange> ranges;
+  if (!net::HttpUtil::ParseRangeHeader(*range_header, &ranges) ||
+      ranges.size() != 1) {
+    response->set_code(net::HTTP_BAD_REQUEST);
+    return response;
+  }
+
+  net::HttpByteRange& range = ranges[0];
+  if (!range.ComputeBounds(query->size())) {
+    response->set_code(net::HTTP_REQUESTED_RANGE_NOT_SATISFIABLE);
+    return response;
+  }
+
+  response->set_code(net::HTTP_PARTIAL_CONTENT);
+  response->AddCustomHeader("Content-Range",
+                            GetContentRangeHeader(range, query->size()));
+  response->set_content(query->substr(range.first_byte_position(),
+                                      range.last_byte_position() + 1));
+  return response;
+}
+
+// A `net::EmbeddedTestServer` that pretends to be in a given IP address space.
+//
+// NOTE(titouan): The IP address space overrides CLI switch is copied to utility
+// processes when said processes are started. Thus if any server is instantiated
+// after the network process has started, updates we make to our own CLI
+// switches will not propagate to the network process, yielding inconsistent
+// results.
+class FakeAddressSpaceServer {
+ public:
+  FakeAddressSpaceServer(net::EmbeddedTestServer::Type type,
+                         net::test_server::HttpConnection::Protocol protocol,
+                         network::mojom::IPAddressSpace ip_address_space,
+                         const base::FilePath& test_data_path)
+      : server_(type, protocol) {
+    // Use a certificate valid for multiple domains, which we can use to
+    // distinguish `local`, `private` and `public` address spaces.
+    server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+
+    server_.SetConnectionListener(&connection_counter_);
+    server_.RegisterRequestMonitor(request_observer_.BindCallback());
+    server_.RegisterRequestHandler(base::BindRepeating(&HandleRangeRequest));
+    server_.AddDefaultHandlers(test_data_path);
+    StartServer(server_);
+
+    // Set up the command line in order for this server to be considered a part
+    // of `ip_address_space`, irrespective of the actual IP it binds to.
     base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
     std::string switch_str = command_line.GetSwitchValueASCII(
         network::switches::kIpAddressSpaceOverrides);
@@ -176,13 +383,28 @@ class LazyServer {
     base::StrAppend(&switch_str,
                     {
                         ",",
-                        server_->host_port_pair().ToString(),
+                        server_.host_port_pair().ToString(),
                         "=",
-                        IPAddressSpaceToSwitchValue(ip_address_space_),
+                        IPAddressSpaceToSwitchValue(ip_address_space),
                     });
 
     command_line.AppendSwitchASCII(network::switches::kIpAddressSpaceOverrides,
                                    switch_str);
+  }
+
+  // Returns the underlying test server.
+  net::EmbeddedTestServer& Get() { return server_; }
+
+  // Returns the total number of sockets accepted by this server.
+  int ConnectionCount() const { return connection_counter_.count(); }
+
+  const RequestObserver& request_observer() const { return request_observer_; }
+
+ private:
+  // Constructor helper.
+  // ASSERT macros can only be used in functions returning void.
+  static void StartServer(net::EmbeddedTestServer& server) {
+    ASSERT_TRUE(server.Start());
   }
 
   static base::StringPiece IPAddressSpaceToSwitchValue(
@@ -200,10 +422,9 @@ class LazyServer {
     }
   }
 
-  net::EmbeddedTestServer::Type type_;
-  network::mojom::IPAddressSpace ip_address_space_;
-  base::FilePath test_data_path_;
-  std::unique_ptr<net::EmbeddedTestServer> server_;
+  ConnectionCounter connection_counter_;
+  RequestObserver request_observer_;
+  net::EmbeddedTestServer server_;
 };
 
 }  // namespace
@@ -217,8 +438,7 @@ class LazyServer {
 //    - private network request policy
 //  - testing the inheritance semantics of these properties
 //  - testing the correct handling of the CSP: treat-as-public-address directive
-//  - testing that insecure private network requests are blocked when the right
-//    feature flag is enabled
+//  - testing that subresource requests are subject to PNA checks
 //  - and a few other odds and ends
 //
 // We use the `--ip-address-space-overrides` command-line switch to test against
@@ -236,32 +456,43 @@ class PrivateNetworkAccessBrowserTestBase : public ContentBrowserTest {
  public:
   RenderFrameHostImpl* root_frame_host() {
     return static_cast<RenderFrameHostImpl*>(
-        shell()->web_contents()->GetMainFrame());
+        shell()->web_contents()->GetPrimaryMainFrame());
   }
 
  protected:
   // Allows subclasses to construct instances with different features enabled.
   explicit PrivateNetworkAccessBrowserTestBase(
-      const std::vector<base::Feature>& enabled_features,
-      const std::vector<base::Feature>& disabled_features)
-      : insecure_local_server_(net::EmbeddedTestServer::TYPE_HTTP,
-                               network::mojom::IPAddressSpace::kLocal,
-                               GetTestDataFilePath()),
-        insecure_private_server_(net::EmbeddedTestServer::TYPE_HTTP,
-                                 network::mojom::IPAddressSpace::kPrivate,
-                                 GetTestDataFilePath()),
-        insecure_public_server_(net::EmbeddedTestServer::TYPE_HTTP,
-                                network::mojom::IPAddressSpace::kPublic,
-                                GetTestDataFilePath()),
+      const std::vector<base::test::FeatureRef>& enabled_features,
+      const std::vector<base::test::FeatureRef>& disabled_features)
+      : insecure_local_server_(
+            net::EmbeddedTestServer::TYPE_HTTP,
+            net::test_server::HttpConnection::Protocol::kHttp1,
+            network::mojom::IPAddressSpace::kLocal,
+            GetTestDataFilePath()),
+        insecure_private_server_(
+            net::EmbeddedTestServer::TYPE_HTTP,
+            net::test_server::HttpConnection::Protocol::kHttp1,
+            network::mojom::IPAddressSpace::kPrivate,
+            GetTestDataFilePath()),
+        insecure_public_server_(
+            net::EmbeddedTestServer::TYPE_HTTP,
+            net::test_server::HttpConnection::Protocol::kHttp1,
+            network::mojom::IPAddressSpace::kPublic,
+            GetTestDataFilePath()),
         secure_local_server_(net::EmbeddedTestServer::TYPE_HTTPS,
+                             net::test_server::HttpConnection::Protocol::kHttp1,
                              network::mojom::IPAddressSpace::kLocal,
                              GetTestDataFilePath()),
-        secure_private_server_(net::EmbeddedTestServer::TYPE_HTTPS,
-                               network::mojom::IPAddressSpace::kPrivate,
-                               GetTestDataFilePath()),
-        secure_public_server_(net::EmbeddedTestServer::TYPE_HTTPS,
-                              network::mojom::IPAddressSpace::kPublic,
-                              GetTestDataFilePath()) {
+        secure_private_server_(
+            net::EmbeddedTestServer::TYPE_HTTPS,
+            net::test_server::HttpConnection::Protocol::kHttp1,
+            network::mojom::IPAddressSpace::kPrivate,
+            GetTestDataFilePath()),
+        secure_public_server_(
+            net::EmbeddedTestServer::TYPE_HTTPS,
+            net::test_server::HttpConnection::Protocol::kHttp1,
+            network::mojom::IPAddressSpace::kPublic,
+            GetTestDataFilePath()) {
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
@@ -272,6 +503,30 @@ class PrivateNetworkAccessBrowserTestBase : public ContentBrowserTest {
     host_resolver()->AddRule(kLocalHost, "127.0.0.1");
     host_resolver()->AddRule(kPrivateHost, "127.0.0.1");
     host_resolver()->AddRule(kPublicHost, "127.0.0.1");
+  }
+
+  const FakeAddressSpaceServer& InsecureLocalServer() const {
+    return insecure_local_server_;
+  }
+
+  const FakeAddressSpaceServer& InsecurePrivateServer() const {
+    return insecure_private_server_;
+  }
+
+  const FakeAddressSpaceServer& InsecurePublicServer() const {
+    return insecure_public_server_;
+  }
+
+  const FakeAddressSpaceServer& SecureLocalServer() const {
+    return secure_local_server_;
+  }
+
+  const FakeAddressSpaceServer& SecurePrivateServer() const {
+    return secure_private_server_;
+  }
+
+  const FakeAddressSpaceServer& SecurePublicServer() const {
+    return secure_public_server_;
   }
 
   GURL InsecureLocalURL(const std::string& path) {
@@ -301,28 +556,42 @@ class PrivateNetworkAccessBrowserTestBase : public ContentBrowserTest {
  private:
   base::test::ScopedFeatureList feature_list_;
 
-  // All servers are started on demand. Most tests require the use of one or
-  // two servers, never six at the same time.
-  LazyServer insecure_local_server_;
-  LazyServer insecure_private_server_;
-  LazyServer insecure_public_server_;
-  LazyServer secure_local_server_;
-  LazyServer secure_private_server_;
-  LazyServer secure_public_server_;
+  FakeAddressSpaceServer insecure_local_server_;
+  FakeAddressSpaceServer insecure_private_server_;
+  FakeAddressSpaceServer insecure_public_server_;
+  FakeAddressSpaceServer secure_local_server_;
+  FakeAddressSpaceServer secure_private_server_;
+  FakeAddressSpaceServer secure_public_server_;
 };
 
 // Test with insecure private network subresource requests from the `public`
-// address space blocked.
+// address space blocked and preflights otherwise enabled but not enforced.
 class PrivateNetworkAccessBrowserTest
     : public PrivateNetworkAccessBrowserTestBase {
  public:
   PrivateNetworkAccessBrowserTest()
       : PrivateNetworkAccessBrowserTestBase(
             {
+                blink::features::kPlzDedicatedWorker,
                 features::kBlockInsecurePrivateNetworkRequests,
-                features::kWarnAboutSecurePrivateNetworkRequests,
+                features::kPrivateNetworkAccessSendPreflights,
+                // TODO(https://crbug.com/1332598): Remove all the filesystem:
+                // URL tests when removing filesystem: navigation for good.
+                blink::features::kFileSystemUrlNavigation,
             },
             {}) {}
+};
+
+class PrivateNetworkAccessBrowserTestDisableWebSecurity
+    : public PrivateNetworkAccessBrowserTest {
+ public:
+  PrivateNetworkAccessBrowserTestDisableWebSecurity() = default;
+
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PrivateNetworkAccessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kDisableWebSecurity);
+  }
 };
 
 // Test with insecure private network subresource requests blocked, including
@@ -335,9 +604,8 @@ class PrivateNetworkAccessBrowserTestBlockFromPrivate
             {
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kBlockInsecurePrivateNetworkRequestsFromPrivate,
-                // This feature should be superseded by the one above.
                 features::kPrivateNetworkAccessRespectPreflightResults,
-                features::kWarnAboutSecurePrivateNetworkRequests,
+                network::features::kNetworkServiceMemoryCache,
             },
             {}) {}
 };
@@ -352,9 +620,8 @@ class PrivateNetworkAccessBrowserTestBlockFromUnknown
             {
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kBlockInsecurePrivateNetworkRequestsFromUnknown,
-                // This feature should be superseded by the one above.
                 features::kPrivateNetworkAccessRespectPreflightResults,
-                features::kWarnAboutSecurePrivateNetworkRequests,
+                network::features::kNetworkServiceMemoryCache,
             },
             {}) {}
 };
@@ -368,24 +635,27 @@ class PrivateNetworkAccessBrowserTestBlockNavigations
             {
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kBlockInsecurePrivateNetworkRequestsFromPrivate,
-                features::kWarnAboutSecurePrivateNetworkRequests,
                 features::kBlockInsecurePrivateNetworkRequestsForNavigations,
+                features::kPrivateNetworkAccessRespectPreflightResults,
+                network::features::kNetworkServiceMemoryCache,
             },
             {}) {}
 };
 
-// Test with the feature to send preflights (unenforced) enabled, and insecure
+// Test with the feature to send preflights (unenforced) disabled, and insecure
 // private network subresource requests blocked.
-class PrivateNetworkAccessBrowserTestSendPreflights
+class PrivateNetworkAccessBrowserTestNoPreflights
     : public PrivateNetworkAccessBrowserTestBase {
  public:
-  PrivateNetworkAccessBrowserTestSendPreflights()
+  PrivateNetworkAccessBrowserTestNoPreflights()
       : PrivateNetworkAccessBrowserTestBase(
             {
                 features::kBlockInsecurePrivateNetworkRequests,
-                features::kPrivateNetworkAccessSendPreflights,
+                network::features::kNetworkServiceMemoryCache,
             },
-            {}) {}
+            {
+                features::kPrivateNetworkAccessSendPreflights,
+            }) {}
 };
 
 // Test with the feature to send preflights (enforced) enabled, and insecure
@@ -398,6 +668,37 @@ class PrivateNetworkAccessBrowserTestRespectPreflightResults
             {
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kPrivateNetworkAccessRespectPreflightResults,
+                network::features::kNetworkServiceMemoryCache,
+            },
+            {}) {}
+};
+
+// Test with PNA checks for worker-related fetches enabled.
+class PrivateNetworkAccessBrowserTestForWorkers
+    : public PrivateNetworkAccessBrowserTestBase {
+ public:
+  PrivateNetworkAccessBrowserTestForWorkers()
+      : PrivateNetworkAccessBrowserTestBase(
+            {
+                features::kBlockInsecurePrivateNetworkRequests,
+                features::kPrivateNetworkAccessForWorkers,
+                network::features::kNetworkServiceMemoryCache,
+            },
+            {}) {}
+};
+
+// Test with PNA checks for worker-related fetches enabled and preflight
+// enforcement enabled.
+class PrivateNetworkAccessBrowserTestRespectPreflightResultsForWorkers
+    : public PrivateNetworkAccessBrowserTestBase {
+ public:
+  PrivateNetworkAccessBrowserTestRespectPreflightResultsForWorkers()
+      : PrivateNetworkAccessBrowserTestBase(
+            {
+                features::kBlockInsecurePrivateNetworkRequests,
+                features::kPrivateNetworkAccessRespectPreflightResults,
+                features::kPrivateNetworkAccessForWorkers,
+                network::features::kNetworkServiceMemoryCache,
             },
             {}) {}
 };
@@ -412,8 +713,9 @@ class PrivateNetworkAccessBrowserTestNoBlocking
             {
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kBlockInsecurePrivateNetworkRequestsFromPrivate,
-                features::kWarnAboutSecurePrivateNetworkRequests,
                 features::kBlockInsecurePrivateNetworkRequestsForNavigations,
+                features::kPrivateNetworkAccessSendPreflights,
+                network::features::kNetworkServiceMemoryCache,
             }) {}
 };
 
@@ -813,7 +1115,7 @@ RenderFrameHostImpl* AddChildWithScript(RenderFrameHostImpl* parent,
 //
 // |parent| must not be nullptr.
 RenderFrameHostImpl* AddChildFromURL(RenderFrameHostImpl* parent,
-                                     const GURL& url) {
+                                     base::StringPiece url) {
   std::string script_template = R"(
     new Promise((resolve) => {
       const iframe = document.createElement("iframe");
@@ -825,8 +1127,13 @@ RenderFrameHostImpl* AddChildFromURL(RenderFrameHostImpl* parent,
   return AddChildWithScript(parent, JsReplace(script_template, url));
 }
 
+RenderFrameHostImpl* AddChildFromURL(RenderFrameHostImpl* parent,
+                                     const GURL& url) {
+  return AddChildFromURL(parent, url.spec());
+}
+
 RenderFrameHostImpl* AddChildFromAboutBlank(RenderFrameHostImpl* parent) {
-  return AddChildFromURL(parent, GURL("about:blank"));
+  return AddChildFromURL(parent, "about:blank");
 }
 
 RenderFrameHostImpl* AddChildInitialEmptyDoc(RenderFrameHostImpl* parent) {
@@ -850,11 +1157,11 @@ RenderFrameHostImpl* AddChildFromSrcdoc(RenderFrameHostImpl* parent) {
 }
 
 RenderFrameHostImpl* AddChildFromDataURL(RenderFrameHostImpl* parent) {
-  return AddChildFromURL(parent, GURL("data:text/html,foo"));
+  return AddChildFromURL(parent, "data:text/html,foo");
 }
 
 RenderFrameHostImpl* AddChildFromJavascriptURL(RenderFrameHostImpl* parent) {
-  return AddChildFromURL(parent, GURL("javascript:'foo'"));
+  return AddChildFromURL(parent, "javascript:'foo'");
 }
 
 RenderFrameHostImpl* AddChildFromBlob(RenderFrameHostImpl* parent) {
@@ -929,9 +1236,9 @@ RenderFrameHostImpl* AddSandboxedChildFromFilesystem(
 // |shell| must not be nullptr.
 //
 // Helper for OpenWindow*().
-RenderFrameHostImpl* GetMainFrameHostImpl(Shell* shell) {
+RenderFrameHostImpl* GetPrimaryMainFrameHostImpl(Shell* shell) {
   return static_cast<RenderFrameHostImpl*>(
-      shell->web_contents()->GetMainFrame());
+      shell->web_contents()->GetPrimaryMainFrame());
 }
 
 // Opens a new window from within |parent|, pointed at the given |url|.
@@ -941,7 +1248,7 @@ RenderFrameHostImpl* GetMainFrameHostImpl(Shell* shell) {
 // |parent| must not be nullptr.
 RenderFrameHostImpl* OpenWindowFromURL(RenderFrameHostImpl* parent,
                                        const GURL& url) {
-  return GetMainFrameHostImpl(OpenPopup(parent, url, "_blank"));
+  return GetPrimaryMainFrameHostImpl(OpenPopup(parent, url, "_blank"));
 }
 
 RenderFrameHostImpl* OpenWindowFromAboutBlank(RenderFrameHostImpl* parent) {
@@ -954,9 +1261,9 @@ RenderFrameHostImpl* OpenWindowFromAboutBlankNoOpener(
   // Setting the "noopener" window feature makes `window.open()` return `null`.
   constexpr bool kNoExpectReturnFromWindowOpen = false;
 
-  return GetMainFrameHostImpl(OpenPopup(parent, GURL("about:blank"), "_blank",
-                                        "noopener",
-                                        kNoExpectReturnFromWindowOpen));
+  return GetPrimaryMainFrameHostImpl(OpenPopup(parent, GURL("about:blank"),
+                                               "_blank", "noopener",
+                                               kNoExpectReturnFromWindowOpen));
 }
 
 RenderFrameHostImpl* OpenWindowFromURLExpectNoCommit(
@@ -970,7 +1277,7 @@ RenderFrameHostImpl* OpenWindowFromURLExpectNoCommit(
   )";
   EXPECT_TRUE(ExecJs(parent, JsReplace(script_template, url, features)));
 
-  return GetMainFrameHostImpl(observer.GetShell());
+  return GetPrimaryMainFrameHostImpl(observer.GetShell());
 }
 
 RenderFrameHostImpl* OpenWindowInitialEmptyDoc(RenderFrameHostImpl* parent) {
@@ -2163,6 +2470,32 @@ IN_PROC_BROWSER_TEST_F(
 // These tests verify the correct setting of
 // `ClientSecurityState.private_network_request_policy` in various situations.
 
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestDisableWebSecurity,
+                       PrivateNetworkPolicyIsAllowInsecure) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kAllow);
+}
+
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestDisableWebSecurity,
+                       PrivateNetworkPolicyIsAllowSecure) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_TRUE(security_state->is_web_secure_context);
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kAllow);
+}
+
 // This test verifies that with the blocking feature disabled, the private
 // network request policy used by RenderFrameHostImpl is to warn about requests
 // from non-secure contexts.
@@ -2180,10 +2513,10 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoBlocking,
 }
 
 // This test verifies that with the blocking feature disabled, the private
-// network request policy used by RenderFrameHostImpl is to allow requests from
-// secure contexts.
+// network request policy used by RenderFrameHostImpl is to send unenforced
+// preflight requests from secure contexts.
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoBlocking,
-                       PrivateNetworkPolicyIsAllowByDefaultForSecureContexts) {
+                       PrivateNetworkPolicyIsWarnByDefaultForSecureContexts) {
   EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
   const network::mojom::ClientSecurityStatePtr security_state =
@@ -2214,8 +2547,9 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 // This test verifies that by default, the private network request policy used
 // by RenderFrameHostImpl for requests is set to allow requests from non-secure
 // contexts in the `private` address space.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
-                       PrivateNetworkPolicyIsAllowByDefaultForInsecurePrivate) {
+IN_PROC_BROWSER_TEST_F(
+    PrivateNetworkAccessBrowserTest,
+    PrivateNetworkPolicyIsPreflightWarnByDefaultForInsecurePrivate) {
   EXPECT_TRUE(NavigateToURL(shell(), InsecurePrivateURL(kDefaultPath)));
 
   const network::mojom::ClientSecurityStatePtr security_state =
@@ -2224,7 +2558,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 
   EXPECT_FALSE(security_state->is_web_secure_context);
   EXPECT_EQ(security_state->private_network_request_policy,
-            network::mojom::PrivateNetworkRequestPolicy::kWarn);
+            network::mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
 }
 
 // This test verifies that when the right feature is enabled, the private
@@ -2278,7 +2612,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestBlockFromUnknown,
 // This test verifies that by default, the private network request policy used
 // by RenderFrameHostImpl for requests is set to allow requests from secure
 // contexts.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoPreflights,
                        PrivateNetworkPolicyIsAllowByDefaultForSecureContexts) {
   EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
@@ -2288,12 +2622,12 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 
   EXPECT_TRUE(security_state->is_web_secure_context);
   EXPECT_EQ(security_state->private_network_request_policy,
-            network::mojom::PrivateNetworkRequestPolicy::kWarn);
+            network::mojom::PrivateNetworkRequestPolicy::kAllow);
 }
 
 // This test verifies that when sending preflights is enabled, the private
 // network request policy for secure contexts is `kPreflightWarn`.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestSendPreflights,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
                        PrivateNetworkPolicyIsPreflightWarnForSecureContexts) {
   EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
@@ -2311,7 +2645,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestSendPreflights,
 // space is `kPreflightWarn`.
 // This checks that as long as the "block from insecure private" feature flag
 // is not enabled, we will send preflights for these requests.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestSendPreflights,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
                        PrivateNetworkPolicyIsPreflightWarnForInsecurePrivate) {
   EXPECT_TRUE(NavigateToURL(shell(), InsecurePrivateURL(kDefaultPath)));
 
@@ -2326,7 +2660,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestSendPreflights,
 
 // This test verifies that blocking insecure private network requests from the
 // `kPublic` address space takes precedence over sending preflight requests.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestSendPreflights,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
                        PrivateNetworkPolicyIsBlockForInsecurePublic) {
   EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
 
@@ -2496,6 +2830,85 @@ IN_PROC_BROWSER_TEST_F(
             network::mojom::PrivateNetworkRequestPolicy::kBlock);
 }
 
+// This test verifies that sandboxed iframes, which commit an opaque origin
+// derived from the navigation initiator's origin, do not inherit their private
+// network request policy.
+IN_PROC_BROWSER_TEST_F(
+    PrivateNetworkAccessBrowserTest,
+    PrivateNetworkRequestPolicyNotInheritedForSandboxedInitialEmptyDoc) {
+  GURL url = InsecurePublicURL(kDefaultPath);
+
+  PolicyTestContentBrowserClient client;
+  client.SetAllowInsecurePrivateNetworkRequestsFrom(url::Origin::Create(url));
+
+  // Register the client before we navigate, so that the navigation commits the
+  // correct PrivateNetworkRequestPolicy.
+  ContentBrowserClientRegistration registration(&client);
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderFrameHostImpl* child_frame =
+      AddSandboxedChildInitialEmptyDoc(root_frame_host());
+
+  network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kBlock);
+}
+
+// This test verifies that sandboxed iframes, which commit an opaque origin
+// derived from the navigation initiator's origin, do not inherit their private
+// network request policy. "about:blank" behaves slightly differently from the
+// initial empty doc in code, but should have the same policy in the end.
+IN_PROC_BROWSER_TEST_F(
+    PrivateNetworkAccessBrowserTest,
+    PrivateNetworkRequestPolicyNotInheritedForSandboxedAboutBlank) {
+  GURL url = InsecurePublicURL(kDefaultPath);
+
+  PolicyTestContentBrowserClient client;
+  client.SetAllowInsecurePrivateNetworkRequestsFrom(url::Origin::Create(url));
+
+  // Register the client before we navigate, so that the navigation commits the
+  // correct PrivateNetworkRequestPolicy.
+  ContentBrowserClientRegistration registration(&client);
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderFrameHostImpl* child_frame =
+      AddSandboxedChildFromAboutBlank(root_frame_host());
+
+  network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kBlock);
+}
+
+// This test verifies that error pages have a set private network request
+// policy of `kAllow` irrespective of the navigation initiator.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+                       PrivateNetworkRequestPolicyIsAllowForErrorPage) {
+  GURL url = InsecurePublicURL(kDefaultPath);
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderFrameHostImpl* child_frame =
+      AddChildFromURL(root_frame_host(), "/close-socket");
+
+  network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kAllow);
+}
+
 // ==================================================
 // SECURE CONTEXT RESTRICTION DEPRECATION TRIAL TESTS
 // ==================================================
@@ -2560,6 +2973,101 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
             network::mojom::PrivateNetworkRequestPolicy::kBlock);
 }
 
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+                       DeprecationTrialSettingInheritedByInitialEmptyDoc) {
+  DeprecationTrialURLLoaderInterceptor interceptor;
+
+  EXPECT_TRUE(NavigateToURL(shell(), interceptor.EnabledUrl()));
+
+  RenderFrameHostImpl* child_frame = AddChildInitialEmptyDoc(root_frame_host());
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  // TODO(https://crbug.com/1170335): Expect `kAllow` here once inheritance is
+  // properly implemented.
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kBlock);
+}
+
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+                       DeprecationTrialSettingInheritedByAboutBlank) {
+  DeprecationTrialURLLoaderInterceptor interceptor;
+
+  EXPECT_TRUE(NavigateToURL(shell(), interceptor.EnabledUrl()));
+
+  RenderFrameHostImpl* child_frame = AddChildFromAboutBlank(root_frame_host());
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  // TODO(https://crbug.com/1170335): Expect `kAllow` here once inheritance is
+  // properly implemented.
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kBlock);
+}
+
+// `data:` URLs do not inherit their navigation initiator's origin, so they
+// should not inherit deprecation trials.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+                       DeprecationTrialSettingNotInheritedByDataURL) {
+  DeprecationTrialURLLoaderInterceptor interceptor;
+
+  EXPECT_TRUE(NavigateToURL(shell(), interceptor.EnabledUrl()));
+
+  RenderFrameHostImpl* child_frame = AddChildFromDataURL(root_frame_host());
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kBlock);
+}
+
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+                       DeprecationTrialSettingNotInheritedBySandboxedIframe) {
+  DeprecationTrialURLLoaderInterceptor interceptor;
+
+  EXPECT_TRUE(NavigateToURL(shell(), interceptor.EnabledUrl()));
+
+  RenderFrameHostImpl* child_frame =
+      AddSandboxedChildFromAboutBlank(root_frame_host());
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kBlock);
+}
+
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+                       DeprecationTrialSettingNotInheritedByErrorPage) {
+  DeprecationTrialURLLoaderInterceptor interceptor;
+
+  EXPECT_TRUE(NavigateToURL(shell(), interceptor.EnabledUrl()));
+
+  RenderFrameHostImpl* child_frame =
+      AddChildFromURL(root_frame_host(), "/close-socket");
+
+  // The iframe committed an error page.
+  EXPECT_EQ(GURL(kUnreachableWebDataURL),
+            EvalJs(child_frame, "document.location.href"));
+  EXPECT_TRUE(child_frame->GetLastCommittedOrigin().opaque());
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  // TODO(https://crbug.com/1175787): Expect `kBlock` once error pages have
+  // stricter policies, or decide that this is right and remove this test.
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kAllow);
+}
+
 // =======================
 // SUBRESOURCE FETCH TESTS
 // =======================
@@ -2575,6 +3083,17 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 // are not blocked.
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoBlocking,
                        PrivateNetworkRequestIsNotBlockedByDefault) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
+
+  // Check that the page can load a local resource.
+  EXPECT_EQ(true, EvalJs(root_frame_host(),
+                         FetchSubresourceScript(InsecureLocalURL(kCorsPath))));
+}
+
+// Check that the `--disable-web-security` command-line switch disables PNA
+// checks.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestDisableWebSecurity,
+                       PrivateNetworkRequestIsNotBlocked) {
   EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
 
   // Check that the page can load a local resource.
@@ -2601,7 +3120,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 //  - from a secure page served from a public IP address
 //  - to a local IP address
 // are not blocked.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoPreflights,
                        FromSecurePublicToLocalIsNotBlocked) {
   EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
@@ -2616,21 +3135,16 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 //  - to a local IP address
 //  - for which the target server does not respond OK to the preflight request
 // are not blocked.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestSendPreflights,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
                        FromSecurePublicToLocalIsNotBlocked) {
   EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
   // Check that the page can load a local resource.
   //
-  // TODO(https://crbug.com/1256775): The page should be able to load this
-  // resource, since in this feature flag configuration we should send CORS
-  // preflight requests but not gate the actual request based on the preflight's
-  // outcome.
-  //
   // We load the resource from a secure origin to avoid running afoul of mixed
   // content restrictions.
-  EXPECT_EQ(false, EvalJs(root_frame_host(),
-                          FetchSubresourceScript(SecureLocalURL(kCorsPath))));
+  EXPECT_EQ(true, EvalJs(root_frame_host(),
+                         FetchSubresourceScript(SecureLocalURL(kCorsPath))));
 }
 
 // This test verifies that when preflights are sent and enforced, requests:
@@ -2652,7 +3166,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
 //  - from a secure page served from a private IP address
 //  - to a local IP address
 // are not blocked.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoPreflights,
                        FromSecurePrivateToLocalIsNotBlocked) {
   EXPECT_TRUE(NavigateToURL(shell(), SecurePrivateURL(kDefaultPath)));
 
@@ -2667,21 +3181,16 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 //  - to a local IP address
 //  - for which the target server does not respond OK to the preflight request
 // are not blocked.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestSendPreflights,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
                        FromSecurePrivateToLocalIsNotBlocked) {
   EXPECT_TRUE(NavigateToURL(shell(), SecurePrivateURL(kDefaultPath)));
 
   // Check that the page can load a local resource.
   //
-  // TODO(https://crbug.com/1256775): The page should be able to load this
-  // resource, since in this feature flag configuration we should send CORS
-  // preflight requests but not gate the actual request based on the preflight's
-  // outcome.
-  //
   // We load it from a secure origin to avoid running afoul of mixed content
   // restrictions.
-  EXPECT_EQ(false, EvalJs(root_frame_host(),
-                          FetchSubresourceScript(SecureLocalURL(kCorsPath))));
+  EXPECT_EQ(true, EvalJs(root_frame_host(),
+                         FetchSubresourceScript(SecureLocalURL(kCorsPath))));
 }
 
 // This test verifies that when preflights are sent and enforced, requests:
@@ -2703,7 +3212,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
 //  - from a secure page served from a local IP address
 //  - to a local IP address
 // are not blocked.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoPreflights,
                        FromSecureLocalToLocalIsNotBlocked) {
   EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
@@ -2717,7 +3226,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 //  - from a secure page served from a local IP address
 //  - to a local IP address
 // are not blocked.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestSendPreflights,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
                        FromSecureLocalToLocalIsNotBlocked) {
   EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
@@ -2747,7 +3256,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
 //  - to a local IP address
 //  - for which the target server responds OK to the preflight request
 // are not blocked.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestSendPreflights,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
                        FromSecurePublicToLocalPreflightOK) {
   EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
@@ -2770,6 +3279,59 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
   // origin to avoid running afoul of mixed content restrictions.
   EXPECT_EQ(true, EvalJs(root_frame_host(),
                          FetchSubresourceScript(SecureLocalURL(kPnaPath))));
+}
+
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
+                       PreflightConnectionReusedHttp1) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  EXPECT_EQ(true, EvalJs(root_frame_host(),
+                         FetchSubresourceScript(SecureLocalURL(kPnaPath))));
+
+  // Expect 3 requests, but only 2 connections:
+  //
+  // 1. The initial request opens a connection, then is cancelled when the
+  //    private network request is detected.
+  // 2. The preflight request likely reuses this connection.
+  // 3. The actual request opens a new connection (the embedded test server does
+  //    not handle keep-alives).
+  //
+  // The socket opened by the initial request is returned to the socket pools
+  // asynchronously, so there is the potential for a race condition here, if
+  // the following requests are sent very quickly. Sometimes the preflight
+  // request might not reuse the initial connection and opens its own. In those
+  // cases, it is extremely likely that the final request will reuse the first
+  // socket.
+  //
+  // TODO(https://crbug.com/1315068): Find out why the connection is not re-used
+  // on Mac 11. Likely culprit is some kind of race condition, since the socket
+  // closure during 1) above is not synchronized with 2) and 3).
+#if BUILDFLAG(IS_MAC)
+  int connection_count = SecureLocalServer().ConnectionCount();
+  EXPECT_GE(connection_count, 2);  // At least 2 connections.
+  EXPECT_LE(connection_count, 3);  // No more than 3 connections.
+#else
+  EXPECT_EQ(SecureLocalServer().ConnectionCount(), 2);
+#endif
+}
+
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
+                       PreflightConnectionReusedHttp2) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  ConnectionCounter counter;
+  net::EmbeddedTestServer http2_server(
+      net::EmbeddedTestServer::TYPE_HTTPS,
+      net::test_server::HttpConnection::Protocol::kHttp2);
+  http2_server.SetConnectionListener(&counter);
+  http2_server.AddDefaultHandlers(GetTestDataFilePath());
+  ASSERT_TRUE(http2_server.Start());
+
+  EXPECT_EQ(true,
+            EvalJs(root_frame_host(),
+                   FetchSubresourceScript(http2_server.GetURL(kPnaPath))));
+
+  EXPECT_EQ(counter.count(), 1);
 }
 
 // This test verifies that when the right feature is enabled but the content
@@ -2914,41 +3476,166 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // This test verifies that even when the right feature is enabled, requests:
+//  - from a non-secure context in the `local` IP address space
+//  - to a subresource cached from a `local` IP address
+// are not blocked.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+                       FromInsecureLocalToCachedLocalIsNotBlocked) {
+  GURL target = InsecureLocalURL(kCacheablePath);
+
+  // Cache the resource first. The server receives a GET request.
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
+  EXPECT_EQ(true, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
+  EXPECT_THAT(
+      InsecureLocalServer().request_observer().RequestMethodsForUrl(target),
+      ElementsAre(METHOD_GET));
+
+  // Check that the page can still load the subresource from cache. The server
+  // does not receive any new request.
+  EXPECT_EQ(true, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
+  EXPECT_THAT(
+      InsecureLocalServer().request_observer().RequestMethodsForUrl(target),
+      ElementsAre(METHOD_GET));
+}
+
+// This test verifies that when the right feature is enabled, requests:
 //  - from a non-secure context in the `public` IP address space
 //  - to a subresource cached from a `local` IP address
-//  are not blocked.
-//
-// TODO(https://crbug.com/1124340): Decide whether this is bad and either change
-// this test or delete this todo.
+// are blocked.
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
                        FromInsecurePublicToCachedLocalIsBlocked) {
-  GURL cached_url = SecureLocalURL(kCacheablePath);
+  GURL target = InsecureLocalURL(kCacheablePath);
 
   // Cache the resource first, by fetching it from a document in the same IP
-  // address space.
-  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
-  EXPECT_EQ(true,
-            EvalJs(root_frame_host(), FetchSubresourceScript(cached_url)));
+  // address space. The server receives a GET request.
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
+  EXPECT_EQ(true, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
+  EXPECT_THAT(
+      InsecureLocalServer().request_observer().RequestMethodsForUrl(target),
+      ElementsAre(METHOD_GET));
 
   // Now navigate to a document in the `public` address space belonging to the
   // same site as the previous document (this will use the same cache key).
   EXPECT_TRUE(
+      NavigateToURL(shell(), InsecureLocalURL(kTreatAsPublicAddressPath)));
+
+  // Check that the page cannot load the resource, even from cache. The server
+  // does not receive any new request.
+  EXPECT_EQ(false, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
+  EXPECT_THAT(
+      InsecureLocalServer().request_observer().RequestMethodsForUrl(target),
+      ElementsAre(METHOD_GET));
+}
+
+// This test verifies that when preflights are sent and enforced, requests:
+//  - from a secure context in the `local` IP address space
+//  - to a subresource cached from a `local` IP address
+//  - for which the target server does not respond OK to the preflight request
+// are not blocked.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
+                       FromSecureLocalToCachedLocalIsNotBlocked) {
+  GURL target = SecureLocalURL(kCacheablePath);
+
+  // Cache the resource first. The server receives a GET request.
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
+  EXPECT_EQ(true, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
+  EXPECT_THAT(
+      SecureLocalServer().request_observer().RequestMethodsForUrl(target),
+      ElementsAre(METHOD_GET));
+
+  // Check that the page can still load the subresource from cache. The server
+  // does not receive any new request.
+  EXPECT_EQ(true, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
+  EXPECT_THAT(
+      SecureLocalServer().request_observer().RequestMethodsForUrl(target),
+      ElementsAre(METHOD_GET));
+}
+
+// This test verifies that when preflights are sent but not enforced, requests:
+//  - from a secure page served in the `public` IP address space
+//  - to a subresource cached from a `local` IP address
+//  - for which the target server does not respond OK to the preflight request
+// are not blocked.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+                       FromSecurePublicToCachedLocalIsNotBlocked) {
+  GURL target = SecureLocalURL(kCacheablePath);
+
+  // Cache the resource first.
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
+  EXPECT_EQ(true, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
+  EXPECT_THAT(
+      SecureLocalServer().request_observer().RequestMethodsForUrl(target),
+      ElementsAre(METHOD_GET));
+
+  EXPECT_TRUE(
       NavigateToURL(shell(), SecureLocalURL(kTreatAsPublicAddressPath)));
 
-  ResourceLoadObserver observer(shell());
+  // Check that the page can still load the subresource from cache.
+  EXPECT_EQ(true, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
 
-  // Check that the page can still load the subresource. This fetch would fail
-  // were the subresource not cached.
-  EXPECT_EQ(true,
-            EvalJs(root_frame_host(), FetchSubresourceScript(cached_url)));
+  // The server receives a preflight request because the preflight response is
+  // not cached, but no second GET request.
+  EXPECT_THAT(
+      SecureLocalServer().request_observer().RequestMethodsForUrl(target),
+      ElementsAre(METHOD_GET, METHOD_OPTIONS));
+}
 
-  observer.WaitForResourceCompletion(cached_url);
+// This test verifies that when preflights are sent and enforced, requests:
+//  - from a secure page served in the `public` IP address space
+//  - to a subresource cached from a `local` IP address
+//  - for which the target server does not respond OK to the preflight request
+// are blocked.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
+                       FromSecurePublicToCachedLocalIsBlocked) {
+  GURL target = SecureLocalURL(kCacheableCorsPath);
 
-  // And that the resource was loaded from the cache.
-  blink::mojom::ResourceLoadInfoPtr* info = observer.GetResource(cached_url);
-  ASSERT_TRUE(info);
-  ASSERT_TRUE(*info);
-  EXPECT_TRUE((*info)->was_cached);
+  // Cache the resource first.
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
+  EXPECT_EQ(true, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
+  EXPECT_THAT(
+      SecureLocalServer().request_observer().RequestMethodsForUrl(target),
+      ElementsAre(METHOD_GET));
+
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureLocalURL(kTreatAsPublicAddressPath)));
+
+  // Check that the page cannot load the subresource from cache.
+  EXPECT_EQ(false, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
+
+  // The server receives a preflight request because the preflight response is
+  // not cached, but no second GET request.
+  EXPECT_THAT(
+      SecureLocalServer().request_observer().RequestMethodsForUrl(target),
+      ElementsAre(METHOD_GET, METHOD_OPTIONS));
+}
+
+// This test verifies that when preflights are sent and enforced, requests:
+//  - from a secure page served in the `public` IP address space
+//  - to a subresource cached from a `local` IP address
+//  - for which the target server responds OK to the preflight request
+//  are not blocked.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
+                       FromSecurePublicToCachedLocalIsNotBlocked) {
+  GURL target = SecureLocalURL(kCacheablePnaPath);
+
+  // Cache the resource first.
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
+  EXPECT_EQ(true, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
+  EXPECT_THAT(
+      SecureLocalServer().request_observer().RequestMethodsForUrl(target),
+      ElementsAre(METHOD_GET));
+
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureLocalURL(kTreatAsPublicAddressPath)));
+
+  // Check that the page can still load the subresource from cache.
+  EXPECT_EQ(true, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
+
+  // The server receives a preflight request because the preflight response is
+  // not cached, but no second GET request.
+  EXPECT_THAT(
+      SecureLocalServer().request_observer().RequestMethodsForUrl(target),
+      ElementsAre(METHOD_GET, METHOD_OPTIONS));
 }
 
 // This test verifies that even with the blocking feature disabled, an insecure
@@ -2977,6 +3664,270 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoBlocking,
   // Check that the page cannot load a `file:` URL.
   EXPECT_EQ(false, EvalJs(root_frame_host(), FetchSubresourceScript(GetTestUrl(
                                                  "", "empty.html"))));
+}
+
+// This test verifies that if a page redirects after responding to a private
+// network request to a server in a different address space, the request does
+// not fail.
+// Regression test for https://crbug.com/1293891.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest, Redirect) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePrivateURL(kDefaultPath)));
+
+  GURL target =
+      SecureLocalURL("/server-redirect?" + SecurePrivateURL(kCorsPath).spec());
+
+  EXPECT_EQ(true, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
+}
+
+// This test verifies that if a request is made for a resource of which a
+// partial prefix range of bytes was cached, a preflight is correctly sent for
+// the non-cached portion, and the renderer does not crash.
+// Regression test for https://crbug.com/1279376.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest, PrefixRangePreflight) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  const GURL url = SecureLocalURL("/echorange?this-is-a-test");
+
+  constexpr base::StringPiece kFetchRangeScript = R"(
+    (async () => {
+      const url = $1;
+      const range = $2;
+
+      const headers = {};
+      if (range) {
+        headers["Range"] = range;
+      }
+
+      const response = await fetch(url, { headers });
+      const body = await response.text();
+      return body;
+    })()
+  )";
+
+  // Cache a portion of the target resource.
+  EXPECT_EQ("this", EvalJs(root_frame_host(),
+                           JsReplace(kFetchRangeScript, url, "bytes=0-3")));
+
+  // The server received a preflight request, followed by a GET request.
+  EXPECT_THAT(SecureLocalServer().request_observer().RequestMethodsForUrl(url),
+              ElementsAre(net::test_server::METHOD_OPTIONS,
+                          net::test_server::METHOD_GET));
+
+  // Fetch the whole resource.
+  EXPECT_EQ(
+      "this-is-a-test",
+      EvalJs(root_frame_host(), JsReplace(kFetchRangeScript, url, "bytes=0-")));
+
+  // The server received a single GET request for the non-cached suffix. The
+  // preflight response was previously cached, so there is no second preflight.
+  EXPECT_THAT(
+      SecureLocalServer().request_observer().RequestMethodsForUrl(url),
+      ElementsAre(net::test_server::METHOD_OPTIONS,
+                  net::test_server::METHOD_GET, net::test_server::METHOD_GET));
+}
+
+// =========================
+// WORKER SCRIPT FETCH TESTS
+// =========================
+
+namespace {
+
+// Path to a worker script that posts a message to its creator once loaded.
+constexpr char kWorkerScriptPath[] = "/workers/post_ready.js";
+
+// Same as above, but with PNA headers set correctly for preflight requests.
+constexpr char kWorkerScriptWithPnaHeadersPath[] =
+    "/workers/post_ready_with_pna_headers.js";
+
+// Instantiates a dedicated worker script from `path`.
+// If it loads successfully, the worker should post a message to its creator to
+// signal success.
+std::string FetchWorkerScript(base::StringPiece path) {
+  constexpr char kTemplate[] = R"(
+    new Promise((resolve) => {
+      const worker = new Worker($1);
+      worker.addEventListener("message", () => resolve(true));
+      worker.addEventListener("error", () => resolve(false));
+    })
+  )";
+
+  return JsReplace(kTemplate, path);
+}
+
+// Path to a worker script that posts a message to each client that connects.
+constexpr char kSharedWorkerScriptPath[] = "/workers/shared_post_ready.js";
+
+// Same as above, but with PNA headers set correctly for preflight requests.
+constexpr char kSharedWorkerScriptWithPnaHeadersPath[] =
+    "/workers/shared_post_ready_with_pna_headers.js";
+
+// Instantiates a shared worker script from `path`.
+// If it loads successfully, the worker should post a message to each client
+// that connects to it to signal success.
+std::string FetchSharedWorkerScript(base::StringPiece path) {
+  constexpr char kTemplate[] = R"(
+    new Promise((resolve) => {
+      const worker = new SharedWorker($1);
+      worker.port.addEventListener("message", () => resolve(true));
+      worker.addEventListener("error", () => resolve(false));
+      worker.port.start();
+    })
+  )";
+
+  return JsReplace(kTemplate, path);
+}
+
+// TODO(https://crbug.com/154571): Remove this and replace calls below with
+// calls to `EXPECT_EQ` directly once Shared Workers are supported on Android.
+void ExpectFetchSharedWorkerScriptResult(bool expected,
+                                         const EvalJsResult& result) {
+#if !BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ(expected, result);
+#else
+  EXPECT_NE("", result.error);
+#endif
+}
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+                       FetchWorkerFromInsecureTreatAsPublicToLocal) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), InsecureLocalURL(kTreatAsPublicAddressPath)));
+
+  EXPECT_EQ(true,
+            EvalJs(root_frame_host(), FetchWorkerScript(kWorkerScriptPath)));
+}
+
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForWorkers,
+                       FetchWorkerFromInsecureTreatAsPublicToLocal) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), InsecureLocalURL(kTreatAsPublicAddressPath)));
+
+  EXPECT_EQ(false,
+            EvalJs(root_frame_host(), FetchWorkerScript(kWorkerScriptPath)));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrivateNetworkAccessBrowserTestRespectPreflightResultsForWorkers,
+    FetchWorkerFromInsecureTreatAsPublicToLocal) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), InsecureLocalURL(kTreatAsPublicAddressPath)));
+
+  EXPECT_EQ(false,
+            EvalJs(root_frame_host(), FetchWorkerScript(kWorkerScriptPath)));
+}
+
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+                       FetchWorkerFromSecureTreatAsPublicToLocal) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureLocalURL(kTreatAsPublicAddressPath)));
+
+  EXPECT_EQ(true,
+            EvalJs(root_frame_host(), FetchWorkerScript(kWorkerScriptPath)));
+}
+
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForWorkers,
+                       FetchWorkerFromSecureTreatAsPublicToLocal) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureLocalURL(kTreatAsPublicAddressPath)));
+
+  EXPECT_EQ(true,
+            EvalJs(root_frame_host(), FetchWorkerScript(kWorkerScriptPath)));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrivateNetworkAccessBrowserTestRespectPreflightResultsForWorkers,
+    FetchWorkerFromSecureTreatAsPublicToLocalFailedPreflight) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureLocalURL(kTreatAsPublicAddressPath)));
+
+  EXPECT_EQ(false,
+            EvalJs(root_frame_host(), FetchWorkerScript(kWorkerScriptPath)));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrivateNetworkAccessBrowserTestRespectPreflightResultsForWorkers,
+    FetchWorkerFromSecureTreatAsPublicToLocalSuccess) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureLocalURL(kTreatAsPublicAddressPath)));
+
+  EXPECT_EQ(true, EvalJs(root_frame_host(),
+                         FetchWorkerScript(kWorkerScriptWithPnaHeadersPath)));
+}
+
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+                       FetchSharedWorkerFromInsecureTreatAsPublicToLocal) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), InsecureLocalURL(kTreatAsPublicAddressPath)));
+
+  ExpectFetchSharedWorkerScriptResult(
+      true, EvalJs(root_frame_host(),
+                   FetchSharedWorkerScript(kSharedWorkerScriptPath)));
+}
+
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForWorkers,
+                       FetchSharedWorkerFromInsecureTreatAsPublicToLocal) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), InsecureLocalURL(kTreatAsPublicAddressPath)));
+
+  ExpectFetchSharedWorkerScriptResult(
+      false, EvalJs(root_frame_host(),
+                    FetchSharedWorkerScript(kSharedWorkerScriptPath)));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrivateNetworkAccessBrowserTestRespectPreflightResultsForWorkers,
+    FetchSharedWorkerFromInsecureTreatAsPublicToLocal) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), InsecureLocalURL(kTreatAsPublicAddressPath)));
+
+  ExpectFetchSharedWorkerScriptResult(
+      false, EvalJs(root_frame_host(),
+                    FetchSharedWorkerScript(kSharedWorkerScriptPath)));
+}
+
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+                       FetchSharedWorkerFromSecureTreatAsPublicToLocal) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureLocalURL(kTreatAsPublicAddressPath)));
+
+  ExpectFetchSharedWorkerScriptResult(
+      true, EvalJs(root_frame_host(),
+                   FetchSharedWorkerScript(kSharedWorkerScriptPath)));
+}
+
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForWorkers,
+                       FetchSharedWorkerFromSecureTreatAsPublicToLocal) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureLocalURL(kTreatAsPublicAddressPath)));
+
+  ExpectFetchSharedWorkerScriptResult(
+      true, EvalJs(root_frame_host(),
+                   FetchSharedWorkerScript(kSharedWorkerScriptPath)));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrivateNetworkAccessBrowserTestRespectPreflightResultsForWorkers,
+    FetchSharedWorkerFromSecureTreatAsPublicToLocalFailedPreflight) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureLocalURL(kTreatAsPublicAddressPath)));
+
+  ExpectFetchSharedWorkerScriptResult(
+      false, EvalJs(root_frame_host(),
+                    FetchSharedWorkerScript(kSharedWorkerScriptPath)));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrivateNetworkAccessBrowserTestRespectPreflightResultsForWorkers,
+    FetchSharedWorkerFromSecureTreatAsPublicToLocalSuccess) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureLocalURL(kTreatAsPublicAddressPath)));
+
+  ExpectFetchSharedWorkerScriptResult(
+      true,
+      EvalJs(root_frame_host(),
+             FetchSharedWorkerScript(kSharedWorkerScriptWithPnaHeadersPath)));
 }
 
 // ======================
@@ -3063,6 +4014,87 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
   RenderFrameHostImpl* child_frame =
       root_frame_host()->child_at(0)->current_frame_host();
   EXPECT_EQ(url, EvalJs(child_frame, "document.location.href"));
+}
+
+// This test verifies that when the right feature is enabled, iframe requests:
+//  - from a secure page with the "treat-as-public-address" CSP directive
+//  - to a local IP address
+// are preceded by a preflight request which must succeed.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestBlockNavigations,
+                       IframeFromSecureTreatAsPublicToLocalIsBlocked) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureLocalURL(kTreatAsPublicAddressPath)));
+
+  GURL url = SecureLocalURL("/empty.html");
+
+  TestNavigationManager child_navigation_manager(shell()->web_contents(), url);
+
+  EXPECT_TRUE(ExecJs(root_frame_host(), R"(
+    const iframe = document.createElement("iframe");
+    iframe.src = "/empty.html";
+    document.body.appendChild(iframe);
+  )"));
+
+  child_navigation_manager.WaitForNavigationFinished();
+
+  // Check that the child iframe failed to fetch.
+  EXPECT_FALSE(child_navigation_manager.was_successful());
+
+  ASSERT_EQ(1ul, root_frame_host()->child_count());
+  RenderFrameHostImpl* child_frame =
+      root_frame_host()->child_at(0)->current_frame_host();
+  EXPECT_EQ(GURL(kUnreachableWebDataURL),
+            EvalJs(child_frame, "document.location.href"));
+
+  // The frame committed an error page but retains the original URL so that
+  // reloading the page does the right thing. The committed origin on the other
+  // hand is opaque, which it would not be if the navigation had succeeded.
+  EXPECT_EQ(url, child_frame->GetLastCommittedURL());
+  EXPECT_TRUE(child_frame->GetLastCommittedOrigin().opaque());
+
+  // A preflight request only.
+  EXPECT_THAT(SecureLocalServer().request_observer().RequestMethodsForUrl(url),
+              ElementsAre(METHOD_OPTIONS));
+}
+
+// This test verifies that when the right feature is enabled, iframe requests:
+//  - from a secure page with the "treat-as-public-address" CSP directive
+//  - to a local IP address
+// are preceded by a preflight request, to which the server must respond
+// correctly.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestBlockNavigations,
+                       IframeFromSecureTreatAsPublicToLocalIsNotBlocked) {
+  GURL initiator_url = SecureLocalURL(kTreatAsPublicAddressPath);
+  EXPECT_TRUE(NavigateToURL(shell(), initiator_url));
+
+  GURL url =
+      SecureLocalURL(MakePnaPathForIframe(url::Origin::Create(initiator_url)));
+
+  TestNavigationManager child_navigation_manager(shell()->web_contents(), url);
+
+  constexpr base::StringPiece kIframeScript = R"(
+    const iframe = document.createElement("iframe");
+    iframe.src = $1;
+    console.log("Navigating child to", iframe.src);
+    document.body.appendChild(iframe);
+  )";
+
+  EXPECT_TRUE(ExecJs(root_frame_host(), JsReplace(kIframeScript, url)));
+
+  child_navigation_manager.WaitForNavigationFinished();
+
+  // Check that the child iframe navigated successfully.
+  EXPECT_TRUE(child_navigation_manager.was_successful());
+
+  ASSERT_EQ(1ul, root_frame_host()->child_count());
+  RenderFrameHostImpl* child_frame =
+      root_frame_host()->child_at(0)->current_frame_host();
+  EXPECT_EQ(url, EvalJs(child_frame, "document.location.href"));
+  EXPECT_EQ(url, child_frame->GetLastCommittedURL());
+
+  // A preflight request first, then the GET request.
+  EXPECT_THAT(SecureLocalServer().request_observer().RequestMethodsForUrl(url),
+              ElementsAre(METHOD_OPTIONS, METHOD_GET));
 }
 
 // Similar to IframeFromInsecureTreatAsPublicToLocalIsBlocked, but in

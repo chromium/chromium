@@ -1,13 +1,14 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import {SelectorItem} from 'chrome://resources/ash/common/navigation_selector.js';
 import {NavigationViewPanelElement} from 'chrome://resources/ash/common/navigation_view_panel.js';
-import {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {eventToPromise, flushTasks} from '../../test_util.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+
+import {assertEquals, assertFalse, assertThrows, assertTrue} from '../../chai_assert.js';
+import {eventToPromise} from '../../test_util.js';
 
 export function navigationViewPanelTestSuite() {
   /** @type {?NavigationViewPanelElement} */
@@ -181,7 +182,7 @@ export function navigationViewPanelTestSuite() {
 
     await addNavigationSections([
       viewElement.createSelectorItem('dummyPage1', 'dummy-page1', '', 'page1'),
-      viewElement.createSelectorItem('dummyPage1', 'dummy-page2', '', 'page2')
+      viewElement.createSelectorItem('dummyPage1', 'dummy-page2', '', 'page2'),
     ]);
 
 
@@ -253,5 +254,29 @@ export function navigationViewPanelTestSuite() {
     await eventToPromise('close', drawer);
     assertFalse(drawer.open);
     assertTrue(drawer.wasCanceled());
+  });
+
+  test('removeSelectedPage', async () => {
+    await addNavigationSections([
+      viewElement.createSelectorItem(
+          'Page 1', 'dummy-page1', /*icon=*/ '', 'dummy1'),
+      viewElement.createSelectorItem(
+          'Page 2', 'dummy-page2', /*icon=*/ '', 'dummy2'),
+    ]);
+
+    const navElements = getNavElements();
+    navElements[1].click();
+    await flushTasks();
+
+    viewElement.removeSelectorById('dummy2');
+    assertEquals('dummy1', viewElement.selectedItem.id);
+  });
+
+  test('removeLastPage', async () => {
+    await addNavigationSection('dummyPage1', 'dummy-page1', '', 'dummy1');
+    await flushTasks();
+    assertThrows(
+        () => viewElement.removeSelectorById('dummy1'),
+        'Removing the last selector is not supported.');
   });
 }

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "components/webapps/browser/android/webapk/webapk_types.h"
 #include "components/webapps/browser/android/webapps_jni_headers/WebappsUtils_jni.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
@@ -55,6 +56,13 @@ bool WebappsUtils::AreWebManifestUrlsWebApkCompatible(
   // WebAPKs.
   return IsUrlWebApkCompatible(manifest.start_url) &&
          IsUrlWebApkCompatible(manifest.scope);
+}
+
+// static
+void WebappsUtils::ShowWebApkInstallResultToast(
+    webapps::WebApkInstallResult result) {
+  Java_WebappsUtils_showWebApkInstallResultToast(
+      base::android::AttachCurrentThread(), (int)result);
 }
 
 }  // namespace webapps

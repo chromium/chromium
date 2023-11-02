@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,12 +13,13 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/test/scoped_views_test_helper.h"
 #include "ui/views/test/test_views_delegate.h"
 #include "ui/views/widget/widget.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/base/win/scoped_ole_initializer.h"
 #endif
 
@@ -86,6 +87,8 @@ class ViewsTestBase : public PlatformTest {
   virtual std::unique_ptr<Widget> CreateTestWidget(
       Widget::InitParams::Type type =
           Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+
+  virtual std::unique_ptr<Widget> CreateTestWidget(Widget::InitParams params);
 
   bool HasCompositingManager() const;
 
@@ -163,7 +166,7 @@ class ViewsTestBase : public PlatformTest {
   bool teardown_called_ = false;
   bool has_compositing_manager_ = false;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ui::ScopedOleInitializer ole_initializer_;
 #endif
 };
@@ -204,6 +207,14 @@ class ViewsTestWithDesktopNativeWidget : public ViewsTestBase {
 
   // ViewsTestBase:
   void SetUp() override;
+};
+
+class ScopedAXModeSetter {
+ public:
+  explicit ScopedAXModeSetter(ui::AXMode new_mode) {
+    ui::AXPlatformNode::SetAXMode(new_mode);
+  }
+  ~ScopedAXModeSetter() { ui::AXPlatformNode::SetAXMode(ui::AXMode::kNone); }
 };
 
 }  // namespace views

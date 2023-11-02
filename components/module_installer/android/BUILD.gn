@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -33,15 +33,18 @@ android_library("module_installer_java") {
 
   deps = [
     "//base:base_java",
+    "//base:jni_java",
     "//components/crash/android:java",
     "//third_party/android_deps:com_google_android_play_core_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 
+  public_deps = [ "//build/android:build_java" ]
+
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
-junit_binary("module_installer_junit_tests") {
+robolectric_binary("module_installer_junit_tests") {
   sources = [
     "junit/src/org/chromium/components/module_installer/builder/ModuleEngineTest.java",
     "junit/src/org/chromium/components/module_installer/builder/ModuleTest.java",
@@ -75,10 +78,10 @@ java_annotation_processor("module_interface_processor") {
       [ "//third_party/android_deps:auto_service_processor" ]
   deps = [
     ":module_interface_java",
+    "//build/android:build_java",
     "//third_party/android_deps:com_google_auto_service_auto_service_annotations_java",
     "//third_party/android_deps:com_google_guava_guava_java",
     "//third_party/android_deps:com_squareup_javapoet_java",
-    "//third_party/android_deps:javax_annotation_jsr250_api_java",
   ]
 }
 

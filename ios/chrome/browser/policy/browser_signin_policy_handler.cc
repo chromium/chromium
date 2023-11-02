@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,9 +15,8 @@
 #include "components/prefs/pref_value_map.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/strings/grit/components_strings.h"
-#include "ios/chrome/browser/policy/policy_features.h"
 #include "ios/chrome/browser/policy/policy_util.h"
-#include "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 
 namespace policy {
 BrowserSigninPolicyHandler::BrowserSigninPolicyHandler(Schema chrome_schema)
@@ -31,7 +30,9 @@ BrowserSigninPolicyHandler::~BrowserSigninPolicyHandler() {}
 bool BrowserSigninPolicyHandler::CheckPolicySettings(
     const policy::PolicyMap& policies,
     policy::PolicyErrorMap* errors) {
-  const base::Value* value = policies.GetValue(policy_name());
+  // `GetValueUnsafe` is used to differentiate between the policy value being
+  // unset vs being set with an incorrect type.
+  const base::Value* value = policies.GetValueUnsafe(policy_name());
   if (!value)
     return true;
 
@@ -43,15 +44,12 @@ bool BrowserSigninPolicyHandler::CheckPolicySettings(
 
 void BrowserSigninPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                      PrefValueMap* prefs) {
-  const base::Value* value = policies.GetValue(policy_name());
+  const base::Value* value =
+      policies.GetValue(policy_name(), base::Value::Type::INTEGER);
   if (!value)
     return;
 
-  absl::optional<int> optional_int_value = value->GetIfInt();
-  if (!optional_int_value)
-    return;
-
-  const int int_value = optional_int_value.value();
+  const int int_value = value->GetInt();
   if (static_cast<int>(BrowserSigninMode::kDisabled) > int_value ||
       static_cast<int>(BrowserSigninMode::kForced) < int_value) {
     SYSLOG(ERROR) << "Unexpected value for BrowserSigninMode: " << int_value;

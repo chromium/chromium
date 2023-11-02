@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayer;
@@ -336,7 +335,7 @@ public class StaticLayout extends Layout {
     }
 
     private void updateStaticTab(Tab tab) {
-        if (!mIsActive || mModel.get(LayoutTab.TAB_ID) != tab.getId()) return;
+        if (mModel.get(LayoutTab.TAB_ID) != tab.getId()) return;
 
         TopUiThemeColorProvider topUiTheme = mTopUiThemeColorProvider.get();
         mModel.set(LayoutTab.BACKGROUND_COLOR, topUiTheme.getBackgroundColor(tab));
@@ -410,11 +409,6 @@ public class StaticLayout extends Layout {
     }
 
     @Override
-    public boolean handlesCloseAll() {
-        return mHandlesTabLifecycles;
-    }
-
-    @Override
     public boolean shouldDisplayContentOverlay() {
         return true;
     }
@@ -431,10 +425,10 @@ public class StaticLayout extends Layout {
 
     @Override
     protected void updateSceneLayer(RectF viewport, RectF contentViewport,
-            LayerTitleCache layerTitleCache, TabContentManager tabContentManager,
-            ResourceManager resourceManager, BrowserControlsStateProvider browserControls) {
-        super.updateSceneLayer(viewport, contentViewport, layerTitleCache, tabContentManager,
-                resourceManager, browserControls);
+            TabContentManager tabContentManager, ResourceManager resourceManager,
+            BrowserControlsStateProvider browserControls) {
+        super.updateSceneLayer(
+                viewport, contentViewport, tabContentManager, resourceManager, browserControls);
         assert mSceneLayer != null;
 
         // TODO(dtrainor, crbug.com/1070281): Find the best way to properly track this metric for

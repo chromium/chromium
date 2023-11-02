@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/token.h"
-#include "media/capture/mojom/video_capture_types.mojom-shared.h"
 #include "media/capture/video_capture_types.h"
 #include "third_party/blink/public/common/media/video_capture.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -71,6 +70,11 @@ class BLINK_PLATFORM_EXPORT WebVideoCaptureImplManager {
   // |deliver_frame_cb| will be called on the IO thread when a video
   // frame is ready.
   //
+  // |crop_version_cb| will be called on the IO thread when a new crop
+  // version is successfully applied, and it is guaranteed that all
+  // subsequent frames delivered to |deliver_frame_cb|, will have this
+  // crop version or later.
+  //
   // Returns a callback that is used to stop capturing. Note that stopping
   // video capture is not synchronous. Client should handle the case where
   // callbacks are called after capturing is instructed to stop, typically
@@ -79,7 +83,8 @@ class BLINK_PLATFORM_EXPORT WebVideoCaptureImplManager {
       const media::VideoCaptureSessionId& id,
       const media::VideoCaptureParams& params,
       const VideoCaptureStateUpdateCB& state_update_cb,
-      const VideoCaptureDeliverFrameCB& deliver_frame_cb);
+      const VideoCaptureDeliverFrameCB& deliver_frame_cb,
+      const VideoCaptureCropVersionCB& crop_version_cb);
 
   // Requests that the video capturer send a frame "soon" (e.g., to resolve
   // picture loss or quality issues).
@@ -88,14 +93,6 @@ class BLINK_PLATFORM_EXPORT WebVideoCaptureImplManager {
   // Requests frame delivery be suspended/resumed for a given capture session.
   void Suspend(const media::VideoCaptureSessionId& id);
   void Resume(const media::VideoCaptureSessionId& id);
-
-  // Start/stop cropping a video track.
-  // Non-empty |crop_id| sets (or changes) the crop-target.
-  // Empty |crop_id| reverts the capture to its original, uncropped state.
-  // The callback reports success/failure.
-  void Crop(const media::VideoCaptureSessionId& id,
-            const base::Token& crop_id,
-            base::OnceCallback<void(media::mojom::CropRequestResult)> callback);
 
   // Get supported formats supported by the device for the given session
   // ID. |callback| will be called on the IO thread.
@@ -119,9 +116,6 @@ class BLINK_PLATFORM_EXPORT WebVideoCaptureImplManager {
   void OnFrameDropped(const media::VideoCaptureSessionId& id,
                       media::VideoCaptureFrameDropReason reason);
 
-  virtual std::unique_ptr<VideoCaptureImpl> CreateVideoCaptureImplForTesting(
-      const media::VideoCaptureSessionId& session_id) const;
-
   // Get the feedback callback for the corresponding capture session.
   // Consumers may call the returned callback in any thread to provide
   // the capturer with feedback information.
@@ -131,6 +125,10 @@ class BLINK_PLATFORM_EXPORT WebVideoCaptureImplManager {
  private:
   // Holds bookkeeping info for each VideoCaptureImpl shared by clients.
   struct DeviceEntry;
+
+  virtual std::unique_ptr<VideoCaptureImpl> CreateVideoCaptureImpl(
+      const media::VideoCaptureSessionId& session_id,
+      BrowserInterfaceBrokerProxy* browser_interface_broker) const;
 
   static void ProcessFeedback(VideoCaptureFeedbackCB callback_to_io_thread,
                               const media::VideoCaptureFeedback& feedback);

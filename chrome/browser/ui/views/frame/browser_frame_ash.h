@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,6 +41,7 @@ class BrowserFrameAsh : public views::NativeWidgetAura,
   bool HandleKeyboardEvent(
       const content::NativeWebKeyboardEvent& event) override;
   bool ShouldRestorePreviousBrowserWidgetState() const override;
+  bool ShouldUseInitialVisibleOnAllWorkspaces() const override;
 
  private:
   // Set the window into the auto managed mode.
@@ -48,6 +49,9 @@ class BrowserFrameAsh : public views::NativeWidgetAura,
 
   // The BrowserView is our ClientView. This is a pointer to it.
   BrowserView* browser_view_;
+
+  // Set true when dragging a tab to create a browser window.
+  bool created_from_drag_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_ASH_H_

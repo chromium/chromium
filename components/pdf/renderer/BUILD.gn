@@ -1,7 +1,8 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/services/screen_ai/buildflags/features.gni")
 import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
 
@@ -14,42 +15,40 @@ static_library("renderer") {
     "internal_plugin_renderer_helpers.h",
     "pdf_accessibility_tree.h",
     "pdf_ax_action_target.h",
-    "pdf_find_in_page.h",
     "pdf_internal_plugin_delegate.h",
-    "pepper_pdf_host.h",
   ]
 
   sources = [
     "internal_plugin_renderer_helpers.cc",
     "pdf_accessibility_tree.cc",
     "pdf_ax_action_target.cc",
-    "pdf_find_in_page.cc",
     "pdf_internal_plugin_delegate.cc",
     "pdf_view_web_plugin_client.cc",
     "pdf_view_web_plugin_client.h",
-    "pepper_pdf_host.cc",
   ]
 
   deps = [
     "//base",
     "//components/resources:components_resources",
     "//components/resources:components_scaled_resources",
+    "//components/services/screen_ai/buildflags",
+    "//components/services/screen_ai/public/mojom",
     "//components/strings",
     "//content/public/common",
     "//gin",
     "//ipc",
+    "//net",
     "//pdf:accessibility",
     "//pdf:buildflags",
     "//pdf:features",
     "//pdf:pdf_view_web_plugin",
-    "//ppapi/host",
-    "//ppapi/proxy",
-    "//ppapi/proxy:ipc",
-    "//ppapi/shared_impl",
     "//printing/buildflags",
+    "//skia",
     "//third_party/blink/public:blink",
-    "//third_party/blink/public/strings:strings_grit",
+    "//third_party/blink/public/strings:accessibility_strings",
     "//third_party/icu",
+    "//ui/display",
+    "//ui/gfx/geometry",
     "//url",
     "//v8",
   ]

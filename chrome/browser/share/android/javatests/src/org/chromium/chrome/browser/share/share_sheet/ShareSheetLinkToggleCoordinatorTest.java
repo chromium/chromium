@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -69,11 +69,6 @@ public class ShareSheetLinkToggleCoordinatorTest {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         testValues.addFeatureFlagOverride(
                 ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION, true);
-        testValues.addFeatureFlagOverride(ChromeFeatureList.SHARING_HUB_LINK_TOGGLE, true);
-        testValues.addFieldTrialParamOverride(ChromeFeatureList.SHARING_HUB_LINK_TOGGLE,
-                ShareSheetLinkToggleCoordinator.IMAGE_ENABLED_BY_DEFAULT, "true");
-        testValues.addFieldTrialParamOverride(ChromeFeatureList.SHARING_HUB_LINK_TOGGLE,
-                ShareSheetLinkToggleCoordinator.SCREENSHOT_ENABLED_BY_DEFAULT, "true");
         FeatureList.setTestValues(testValues);
     }
 
@@ -243,6 +238,20 @@ public class ShareSheetLinkToggleCoordinatorTest {
                         .build());
         assertFalse("Should not enable toggle by default.",
                 shareSheetLinkToggleCoordinator.shouldEnableToggleByDefault());
+
+        shareSheetLinkToggleCoordinator.setShareParamsAndExtras(shareParams,
+                new ChromeShareExtras.Builder()
+                        .setDetailedContentType(DetailedContentType.SCREENSHOT)
+                        .build());
+        assertFalse("Should not enable toggle by default.",
+                shareSheetLinkToggleCoordinator.shouldEnableToggleByDefault());
+
+        shareSheetLinkToggleCoordinator.setShareParamsAndExtras(shareParams,
+                new ChromeShareExtras.Builder()
+                        .setDetailedContentType(DetailedContentType.IMAGE)
+                        .build());
+        assertFalse("Should not enable toggle by default.",
+                shareSheetLinkToggleCoordinator.shouldEnableToggleByDefault());
     }
 
     @Test
@@ -251,7 +260,7 @@ public class ShareSheetLinkToggleCoordinatorTest {
                 new ShareParams.Builder(/*window=*/null, /*title=*/"", /*url=*/"").build();
         ChromeShareExtras chromeShareExtras =
                 new ChromeShareExtras.Builder()
-                        .setDetailedContentType(DetailedContentType.IMAGE)
+                        .setDetailedContentType(DetailedContentType.HIGHLIGHTED_TEXT)
                         .build();
         ShareSheetLinkToggleCoordinator shareSheetLinkToggleCoordinator =
                 new ShareSheetLinkToggleCoordinator(
@@ -262,21 +271,14 @@ public class ShareSheetLinkToggleCoordinatorTest {
 
         shareSheetLinkToggleCoordinator.setShareParamsAndExtras(shareParams,
                 new ChromeShareExtras.Builder()
-                        .setDetailedContentType(DetailedContentType.HIGHLIGHTED_TEXT)
-                        .build());
-        assertTrue("Should enable toggle by default.",
-                shareSheetLinkToggleCoordinator.shouldEnableToggleByDefault());
-
-        shareSheetLinkToggleCoordinator.setShareParamsAndExtras(shareParams,
-                new ChromeShareExtras.Builder()
-                        .setDetailedContentType(DetailedContentType.SCREENSHOT)
-                        .build());
-        assertTrue("Should enable toggle by default.",
-                shareSheetLinkToggleCoordinator.shouldEnableToggleByDefault());
-
-        shareSheetLinkToggleCoordinator.setShareParamsAndExtras(shareParams,
-                new ChromeShareExtras.Builder()
                         .setDetailedContentType(DetailedContentType.WEB_NOTES)
+                        .build());
+        assertTrue("Should enable toggle by default.",
+                shareSheetLinkToggleCoordinator.shouldEnableToggleByDefault());
+
+        shareSheetLinkToggleCoordinator.setShareParamsAndExtras(shareParams,
+                new ChromeShareExtras.Builder()
+                        .setDetailedContentType(DetailedContentType.LIGHTWEIGHT_REACTION)
                         .build());
         assertTrue("Should enable toggle by default.",
                 shareSheetLinkToggleCoordinator.shouldEnableToggleByDefault());

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,16 +10,17 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/bind.h"
-#include "base/location.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_store.h"
@@ -30,7 +31,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include "base/ios/ios_util.h"
 #endif
 
@@ -144,37 +145,38 @@ class CookieStoreTest : public testing::Test {
   std::string GetCookies(
       CookieStore* cs,
       const GURL& url,
-      const CookiePartitionKeychain& cookie_partition_keychain =
-          CookiePartitionKeychain()) {
+      const CookiePartitionKeyCollection& cookie_partition_key_collection =
+          CookiePartitionKeyCollection()) {
     DCHECK(cs);
     CookieOptions options;
     if (!CookieStoreTestTraits::supports_http_only)
       options.set_include_httponly();
     options.set_same_site_cookie_context(
         net::CookieOptions::SameSiteCookieContext::MakeInclusive());
-    return GetCookiesWithOptions(cs, url, options, cookie_partition_keychain);
+    return GetCookiesWithOptions(cs, url, options,
+                                 cookie_partition_key_collection);
   }
 
   std::string GetCookiesWithOptions(
       CookieStore* cs,
       const GURL& url,
       const CookieOptions& options,
-      const CookiePartitionKeychain& cookie_partition_keychain =
-          CookiePartitionKeychain()) {
-    return CanonicalCookie::BuildCookieLine(
-        GetCookieListWithOptions(cs, url, options, cookie_partition_keychain));
+      const CookiePartitionKeyCollection& cookie_partition_key_collection =
+          CookiePartitionKeyCollection()) {
+    return CanonicalCookie::BuildCookieLine(GetCookieListWithOptions(
+        cs, url, options, cookie_partition_key_collection));
   }
 
   CookieList GetCookieListWithOptions(
       CookieStore* cs,
       const GURL& url,
       const CookieOptions& options,
-      const CookiePartitionKeychain& cookie_partition_keychain =
-          CookiePartitionKeychain()) {
+      const CookiePartitionKeyCollection& cookie_partition_key_collection =
+          CookiePartitionKeyCollection()) {
     DCHECK(cs);
     GetCookieListCallback callback;
-    cs->GetCookieListWithOptionsAsync(url, options, cookie_partition_keychain,
-                                      callback.MakeCallback());
+    cs->GetCookieListWithOptionsAsync(
+        url, options, cookie_partition_key_collection, callback.MakeCallback());
     callback.WaitUntilDone();
     return callback.cookies();
   }
@@ -183,21 +185,23 @@ class CookieStoreTest : public testing::Test {
   CookieList GetAllCookiesForURL(
       CookieStore* cs,
       const GURL& url,
-      const CookiePartitionKeychain& cookie_partition_keychain =
-          CookiePartitionKeychain()) {
+      const CookiePartitionKeyCollection& cookie_partition_key_collection =
+          CookiePartitionKeyCollection()) {
     return GetCookieListWithOptions(cs, url, CookieOptions::MakeAllInclusive(),
-                                    cookie_partition_keychain);
+                                    cookie_partition_key_collection);
   }
 
   // This does not update the access time on the cookies.
-  CookieAccessResultList GetExcludedCookiesForURL(CookieStore* cs,
-                                                  const GURL& url) {
+  CookieAccessResultList GetExcludedCookiesForURL(
+      CookieStore* cs,
+      const GURL& url,
+      const CookiePartitionKeyCollection& cookie_partition_key_collection) {
     DCHECK(cs);
     GetCookieListCallback callback;
     CookieOptions options = CookieOptions::MakeAllInclusive();
     options.set_return_excluded_cookies();
     cs->GetCookieListWithOptionsAsync(
-        url, options, CookiePartitionKeychain::Todo(), callback.MakeCallback());
+        url, options, cookie_partition_key_collection, callback.MakeCallback());
     callback.WaitUntilDone();
     return callback.excluded_cookies();
   }
@@ -218,9 +222,14 @@ class CookieStoreTest : public testing::Test {
       absl::optional<base::Time> server_time = absl::nullopt,
       absl::optional<base::Time> system_time = absl::nullopt,
       absl::optional<CookiePartitionKey> cookie_partition_key = absl::nullopt) {
-    auto cookie = CanonicalCookie::Create(
-        url, cookie_line, system_time.value_or(base::Time::Now()), server_time,
-        cookie_partition_key);
+    // Ensure a different Creation date to guarantee sort order for testing
+    static base::Time last = base::Time::Min();
+    last = base::Time::Now() == last ? last + base::Microseconds(1)
+                                     : base::Time::Now();
+
+    auto cookie =
+        CanonicalCookie::Create(url, cookie_line, system_time.value_or(last),
+                                server_time, cookie_partition_key);
 
     if (!cookie)
       return false;
@@ -415,14 +424,14 @@ class CookieStoreTest : public testing::Test {
         base::Milliseconds(
             CookieStoreTestTraits::creation_time_granularity_in_ms);
 
-    while (!matched &&  base::Time::Now() <= polling_end_date) {
+    while (!matched && base::Time::Now() <= polling_end_date) {
       base::PlatformThread::Sleep(base::Milliseconds(10));
       cookies = GetCookies(cs, url);
       matched = (TokenizeCookieLine(line) == TokenizeCookieLine(cookies));
     }
 
-    EXPECT_TRUE(matched) << "\"" << cookies
-                         << "\" does not match \"" << line << "\"";
+    EXPECT_TRUE(matched) << "\"" << cookies << "\" does not match \"" << line
+                         << "\"";
   }
 
   const CookieURLHelper http_www_foo_;
@@ -596,28 +605,28 @@ TYPED_TEST_P(CookieStoreTest, SetCanonicalCookieTest) {
       cs,
       CanonicalCookie::CreateUnsafeCookieForTesting(
           "A", "B", foo_foo_host, "/foo", one_hour_ago, one_hour_from_now,
-          base::Time(), false /* secure */, false /* httponly */,
+          base::Time(), base::Time(), false /* secure */, false /* httponly */,
           CookieSameSite::LAX_MODE, COOKIE_PRIORITY_DEFAULT, false),
       this->www_foo_foo_.url(), true));
   EXPECT_TRUE(this->SetCanonicalCookie(
       cs,
       CanonicalCookie::CreateUnsafeCookieForTesting(
           "C", "D", "." + foo_bar_domain, "/bar", two_hours_ago, base::Time(),
-          one_hour_ago, false, true, CookieSameSite::LAX_MODE,
+          one_hour_ago, one_hour_ago, false, true, CookieSameSite::LAX_MODE,
           COOKIE_PRIORITY_DEFAULT, false),
       this->www_foo_bar_.url(), true));
 
   // A secure source is required for setting secure cookies.
-  EXPECT_TRUE(
-      this->SetCanonicalCookieReturnAccessResult(
-              cs,
-              CanonicalCookie::CreateUnsafeCookieForTesting(
-                  "E", "F", http_foo_host, "/", base::Time(), base::Time(),
-                  base::Time(), true, false, CookieSameSite::NO_RESTRICTION,
-                  COOKIE_PRIORITY_DEFAULT, false),
-              this->http_www_foo_.url(), true)
-          .status.HasExclusionReason(
-              CookieInclusionStatus::EXCLUDE_SECURE_ONLY));
+  EXPECT_TRUE(this->SetCanonicalCookieReturnAccessResult(
+                      cs,
+                      CanonicalCookie::CreateUnsafeCookieForTesting(
+                          "E", "F", http_foo_host, "/", base::Time(),
+                          base::Time(), base::Time(), base::Time(), true, false,
+                          CookieSameSite::NO_RESTRICTION,
+                          COOKIE_PRIORITY_DEFAULT, false),
+                      this->http_www_foo_.url(), true)
+                  .status.HasExclusionReason(
+                      CookieInclusionStatus::EXCLUDE_SECURE_ONLY));
 
   // A Secure cookie can be created from an insecure URL, but is rejected upon
   // setting.
@@ -639,21 +648,22 @@ TYPED_TEST_P(CookieStoreTest, SetCanonicalCookieTest) {
       cs,
       CanonicalCookie::CreateUnsafeCookieForTesting(
           "E", "F", https_foo_host, "/", base::Time(), base::Time(),
-          base::Time(), true /* secure */, false /* httponly */,
+          base::Time(), base::Time(), true /* secure */, false /* httponly */,
           CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
           false /* same_party */),
       this->https_www_foo_.url(), true /* modify_http_only */));
 
-  EXPECT_TRUE(this->SetCanonicalCookieReturnAccessResult(
-                      cs,
-                      CanonicalCookie::CreateUnsafeCookieForTesting(
-                          "E", "F", http_foo_host, "/", base::Time(),
-                          base::Time(), base::Time(), true /* secure */,
-                          false /* httponly */, CookieSameSite::NO_RESTRICTION,
-                          COOKIE_PRIORITY_DEFAULT, false /* same_party */),
-                      this->http_www_foo_.url(), true /* modify_http_only */)
-                  .status.HasExclusionReason(
-                      CookieInclusionStatus::EXCLUDE_SECURE_ONLY));
+  EXPECT_TRUE(
+      this->SetCanonicalCookieReturnAccessResult(
+              cs,
+              CanonicalCookie::CreateUnsafeCookieForTesting(
+                  "E", "F", http_foo_host, "/", base::Time(), base::Time(),
+                  base::Time(), base::Time(), true /* secure */,
+                  false /* httponly */, CookieSameSite::NO_RESTRICTION,
+                  COOKIE_PRIORITY_DEFAULT, false /* same_party */),
+              this->http_www_foo_.url(), true /* modify_http_only */)
+          .status.HasExclusionReason(
+              CookieInclusionStatus::EXCLUDE_SECURE_ONLY));
 
   if (TypeParam::supports_http_only) {
     // Permission to modify http only cookies is required to set an
@@ -662,9 +672,10 @@ TYPED_TEST_P(CookieStoreTest, SetCanonicalCookieTest) {
                         cs,
                         CanonicalCookie::CreateUnsafeCookieForTesting(
                             "G", "H", http_foo_host, "/unique", base::Time(),
-                            base::Time(), base::Time(), false /* secure */,
-                            true /* httponly */, CookieSameSite::LAX_MODE,
-                            COOKIE_PRIORITY_DEFAULT, false /* same_party */),
+                            base::Time(), base::Time(), base::Time(),
+                            false /* secure */, true /* httponly */,
+                            CookieSameSite::LAX_MODE, COOKIE_PRIORITY_DEFAULT,
+                            false /* same_party */),
                         this->http_www_foo_.url(), false /* modify_http_only */)
                     .status.HasExclusionReason(
                         CookieInclusionStatus::EXCLUDE_HTTP_ONLY));
@@ -690,7 +701,7 @@ TYPED_TEST_P(CookieStoreTest, SetCanonicalCookieTest) {
         cs,
         CanonicalCookie::CreateUnsafeCookieForTesting(
             "G", "H", http_foo_host, "/unique", base::Time(), base::Time(),
-            base::Time(), false /* secure */, true /* httponly */,
+            base::Time(), base::Time(), false /* secure */, true /* httponly */,
             CookieSameSite::LAX_MODE, COOKIE_PRIORITY_DEFAULT,
             false /* same_party */),
         this->http_www_foo_.url(), true /* modify_http_only */));
@@ -699,9 +710,10 @@ TYPED_TEST_P(CookieStoreTest, SetCanonicalCookieTest) {
                         cs,
                         CanonicalCookie::CreateUnsafeCookieForTesting(
                             "G", "H", http_foo_host, "/unique", base::Time(),
-                            base::Time(), base::Time(), false /* secure */,
-                            true /* httponly */, CookieSameSite::LAX_MODE,
-                            COOKIE_PRIORITY_DEFAULT, false /* same_party */),
+                            base::Time(), base::Time(), base::Time(),
+                            false /* secure */, true /* httponly */,
+                            CookieSameSite::LAX_MODE, COOKIE_PRIORITY_DEFAULT,
+                            false /* same_party */),
                         this->http_www_foo_.url(), false /* modify_http_only */)
                     .status.HasExclusionReason(
                         CookieInclusionStatus::EXCLUDE_HTTP_ONLY));
@@ -711,7 +723,7 @@ TYPED_TEST_P(CookieStoreTest, SetCanonicalCookieTest) {
         cs,
         CanonicalCookie::CreateUnsafeCookieForTesting(
             "G", "H", http_foo_host, "/unique", base::Time(), base::Time(),
-            base::Time(), false /* secure */, true /* httponly */,
+            base::Time(), base::Time(), false /* secure */, true /* httponly */,
             CookieSameSite::LAX_MODE, COOKIE_PRIORITY_DEFAULT,
             false /* same_party */),
         this->http_www_foo_.url(), true /* modify_http_only */));
@@ -790,28 +802,28 @@ TYPED_TEST_P(CookieStoreTest, SecureEnforcement) {
       cs,
       CanonicalCookie::CreateUnsafeCookieForTesting(
           "A", "B", http_domain, "/", base::Time::Now(), base::Time(),
-          base::Time(), true, false, CookieSameSite::STRICT_MODE,
+          base::Time(), base::Time(), true, false, CookieSameSite::STRICT_MODE,
           COOKIE_PRIORITY_DEFAULT, false /* same_party */),
       http_url, true /*modify_httponly*/));
   EXPECT_TRUE(this->SetCanonicalCookie(
       cs,
       CanonicalCookie::CreateUnsafeCookieForTesting(
           "A", "B", http_domain, "/", base::Time::Now(), base::Time(),
-          base::Time(), true, false, CookieSameSite::STRICT_MODE,
+          base::Time(), base::Time(), true, false, CookieSameSite::STRICT_MODE,
           COOKIE_PRIORITY_DEFAULT, false /* same_party */),
       https_url, true /*modify_httponly*/));
   EXPECT_TRUE(this->SetCanonicalCookie(
       cs,
       CanonicalCookie::CreateUnsafeCookieForTesting(
           "A", "B", http_domain, "/", base::Time::Now(), base::Time(),
-          base::Time(), false, false, CookieSameSite::STRICT_MODE,
+          base::Time(), base::Time(), false, false, CookieSameSite::STRICT_MODE,
           COOKIE_PRIORITY_DEFAULT, false /* same_party */),
       https_url, true /*modify_httponly*/));
   EXPECT_TRUE(this->SetCanonicalCookie(
       cs,
       CanonicalCookie::CreateUnsafeCookieForTesting(
           "A", "B", http_domain, "/", base::Time::Now(), base::Time(),
-          base::Time(), false, false, CookieSameSite::STRICT_MODE,
+          base::Time(), base::Time(), false, false, CookieSameSite::STRICT_MODE,
           COOKIE_PRIORITY_DEFAULT, false /* same_party */),
       http_url, true /*modify_httponly*/));
 }
@@ -842,7 +854,7 @@ TYPED_TEST_P(CookieStoreTest, SecureCookieLocalhost) {
 // behavior of most UAs in some cases, which we try to replicate. See
 // https://crbug.com/638389 for more information.
 TYPED_TEST_P(CookieStoreTest, EmptyKeyTest) {
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   CookieStore* cs = this->GetCookieStore();
 
   GURL url1("http://foo1.bar.com");
@@ -1000,15 +1012,6 @@ TYPED_TEST_P(CookieStoreTest, InvalidDomainTest) {
   // More specific sub-domain than allowed.
   EXPECT_FALSE(this->SetCookie(cs, url_foobar, "a=1; domain=.yo.foo.bar.com"));
 
-// The iOS networking stack uses the iOS cookie parser, which we do not
-// control. Its handling of multiple domain= values in cookie string varies
-// depending on iOS version. See https://crbug.com/639167
-#if !defined(OS_IOS)
-  // Regression test for https://crbug.com/601786
-  EXPECT_FALSE(
-      this->SetCookie(cs, url_foobar, "a=1; domain=.yo.foo.bar.com; domain="));
-#endif  // !defined(OS_IOS)
-
   EXPECT_FALSE(this->SetCookie(cs, url_foobar, "b=2; domain=.foo.com"));
   EXPECT_FALSE(this->SetCookie(cs, url_foobar, "c=3; domain=.bar.foo.com"));
 
@@ -1094,15 +1097,28 @@ TYPED_TEST_P(CookieStoreTest, TestIpAddress) {
 TYPED_TEST_P(CookieStoreTest, TestIpAddressNoDomainCookies) {
   GURL url_ip("http://1.2.3.4/weee");
   CookieStore* cs = this->GetCookieStore();
-  EXPECT_FALSE(this->SetCookie(cs, url_ip, "b=2; domain=.1.2.3.4"));
   EXPECT_FALSE(this->SetCookie(cs, url_ip, "c=3; domain=.3.4"));
   this->MatchCookieLines(std::string(), this->GetCookies(cs, url_ip));
   // It should be allowed to set a cookie if domain= matches the IP address
-  // exactly.  This matches IE/Firefox, even though it seems a bit wrong.
+  // by ignoring case and ignoring a leading dot.  This matches IE/Firefox, even
+  // though it seems a bit wrong.
   EXPECT_FALSE(this->SetCookie(cs, url_ip, "b=2; domain=1.2.3.3"));
   this->MatchCookieLines(std::string(), this->GetCookies(cs, url_ip));
   EXPECT_TRUE(this->SetCookie(cs, url_ip, "b=2; domain=1.2.3.4"));
   this->MatchCookieLines("b=2", this->GetCookies(cs, url_ip));
+  EXPECT_TRUE(this->SetCookie(cs, url_ip, "b=2; domain=.1.2.3.4"));
+  this->MatchCookieLines("b=2", this->GetCookies(cs, url_ip));
+
+#if !BUILDFLAG(IS_IOS)
+  // Test a couple of IPv6 addresses
+  GURL url_ip6("http://[2606:2800:220:1:248:1893:25c8:1946]");
+  EXPECT_FALSE(this->SetCookie(
+      cs, url_ip6, "e=1; domain=.2606:2800:220:1:248:1893:25c8:1946"));
+  this->MatchCookieLines(std::string(), this->GetCookies(cs, url_ip6));
+  EXPECT_TRUE(this->SetCookie(
+      cs, url_ip6, "d=1; domain=[2606:2800:220:1:248:1893:25c8:1946]"));
+  this->MatchCookieLines("d=1", this->GetCookies(cs, url_ip6));
+#endif  // !BUILDFLAG(IS_IOS)
 }
 
 // Test a TLD setting cookies on itself.
@@ -1378,9 +1394,9 @@ TYPED_TEST_P(CookieStoreTest, TestCookieDeletion) {
                          this->GetCookies(cs, this->http_www_foo_.url()));
 
   // Create a persistent cookie.
-  EXPECT_TRUE(this->SetCookie(
-      cs, this->http_www_foo_.url(),
-      std::string(kValidCookieLine) + "; expires=Mon, 18-Apr-22 22:50:13 GMT"));
+  EXPECT_TRUE(
+      this->SetCookie(cs, this->http_www_foo_.url(),
+                      kValidCookieLine + FutureCookieExpirationString()));
 
   this->MatchCookieLines("A=B",
                          this->GetCookies(cs, this->http_www_foo_.url()));
@@ -1391,9 +1407,9 @@ TYPED_TEST_P(CookieStoreTest, TestCookieDeletion) {
                                    std::string());
 
   // Create a persistent cookie.
-  EXPECT_TRUE(this->SetCookie(
-      cs, this->http_www_foo_.url(),
-      std::string(kValidCookieLine) + "; expires=Mon, 18-Apr-22 22:50:13 GMT"));
+  EXPECT_TRUE(
+      this->SetCookie(cs, this->http_www_foo_.url(),
+                      kValidCookieLine + FutureCookieExpirationString()));
   this->MatchCookieLines("A=B",
                          this->GetCookies(cs, this->http_www_foo_.url()));
   // Delete it via Expires.
@@ -1404,15 +1420,15 @@ TYPED_TEST_P(CookieStoreTest, TestCookieDeletion) {
                          this->GetCookies(cs, this->http_www_foo_.url()));
 
   // Create a persistent cookie.
-  EXPECT_TRUE(this->SetCookie(
-      cs, this->http_www_foo_.url(),
-      std::string(kValidCookieLine) + "; expires=Mon, 18-Apr-22 22:50:13 GMT"));
+  EXPECT_TRUE(
+      this->SetCookie(cs, this->http_www_foo_.url(),
+                      kValidCookieLine + FutureCookieExpirationString()));
   this->MatchCookieLines("A=B",
                          this->GetCookies(cs, this->http_www_foo_.url()));
   // Check that it is not deleted with significant enough clock skew.
   base::Time server_time;
-  EXPECT_TRUE(base::Time::FromString("Sun, 17-Apr-1977 22:50:13 GMT",
-                                     &server_time));
+  EXPECT_TRUE(
+      base::Time::FromString("Sun, 17-Apr-1977 22:50:13 GMT", &server_time));
   EXPECT_TRUE(this->SetCookieWithServerTime(
       cs, this->http_www_foo_.url(),
       std::string(kValidCookieLine) + "; expires=Mon, 18-Apr-1977 22:50:13 GMT",
@@ -1421,9 +1437,9 @@ TYPED_TEST_P(CookieStoreTest, TestCookieDeletion) {
                          this->GetCookies(cs, this->http_www_foo_.url()));
 
   // Create a persistent cookie.
-  EXPECT_TRUE(this->SetCookie(
-      cs, this->http_www_foo_.url(),
-      std::string(kValidCookieLine) + "; expires=Mon, 18-Apr-22 22:50:13 GMT"));
+  EXPECT_TRUE(
+      this->SetCookie(cs, this->http_www_foo_.url(),
+                      kValidCookieLine + FutureCookieExpirationString()));
   this->MatchCookieLines("A=B",
                          this->GetCookies(cs, this->http_www_foo_.url()));
   // Delete it via Expires, with a unix epoch of 0.
@@ -1443,7 +1459,7 @@ TYPED_TEST_P(CookieStoreTest, TestDeleteAll) {
 
   // Set a persistent cookie.
   EXPECT_TRUE(this->SetCookie(cs, this->http_www_foo_.url(),
-                              "C=D; expires=Mon, 18-Apr-22 22:50:13 GMT"));
+                              "C=D" + FutureCookieExpirationString()));
 
   EXPECT_EQ(2u, this->GetAllCookies(cs).size());
 
@@ -1587,14 +1603,12 @@ TYPED_TEST_P(CookieStoreTest, OverwritePersistentCookie) {
   CookieStore* cs = this->GetCookieStore();
 
   // Insert a cookie "a" for path "/path1"
-  EXPECT_TRUE(this->SetCookie(cs, url_foo,
-                              "a=val1; path=/path1; "
-                              "expires=Mon, 18-Apr-22 22:50:13 GMT"));
+  EXPECT_TRUE(this->SetCookie(
+      cs, url_foo, "a=val1; path=/path1" + FutureCookieExpirationString()));
 
   // Insert a cookie "b" for path "/path1"
-  EXPECT_TRUE(this->SetCookie(cs, url_foo,
-                              "b=val1; path=/path1; "
-                              "expires=Mon, 18-Apr-22 22:50:14 GMT"));
+  EXPECT_TRUE(this->SetCookie(
+      cs, url_foo, "b=val1; path=/path1" + FutureCookieExpirationString()));
 
   // Insert a cookie "b" for path "/path1", that is httponly. This should
   // overwrite the non-http-only version.
@@ -1602,28 +1616,26 @@ TYPED_TEST_P(CookieStoreTest, OverwritePersistentCookie) {
   allow_httponly.set_include_httponly();
   allow_httponly.set_same_site_cookie_context(
       net::CookieOptions::SameSiteCookieContext::MakeInclusive());
-  EXPECT_TRUE(this->CreateAndSetCookie(cs, url_foo,
-                                       "b=val2; path=/path1; httponly; "
-                                       "expires=Mon, 18-Apr-22 22:50:14 GMT",
-                                       allow_httponly));
+  EXPECT_TRUE(this->CreateAndSetCookie(
+      cs, url_foo,
+      "b=val2; path=/path1; httponly" + FutureCookieExpirationString(),
+      allow_httponly));
 
   // Insert a cookie "a" for path "/path1". This should overwrite.
-  EXPECT_TRUE(this->SetCookie(cs, url_foo,
-                              "a=val33; path=/path1; "
-                              "expires=Mon, 18-Apr-22 22:50:14 GMT"));
+  EXPECT_TRUE(this->SetCookie(
+      cs, url_foo, "a=val33; path=/path1" + FutureCookieExpirationString()));
 
   // Insert a cookie "a" for path "/path2". This should NOT overwrite
   // cookie "a", since the path is different.
-  EXPECT_TRUE(this->SetCookie(cs, url_foo,
-                              "a=val9; path=/path2; "
-                              "expires=Mon, 18-Apr-22 22:50:14 GMT"));
+  EXPECT_TRUE(this->SetCookie(
+      cs, url_foo, "a=val9; path=/path2" + FutureCookieExpirationString()));
 
   // Insert a cookie "a" for path "/path1", but this time for "chromium.org".
   // Although the name and path match, the hostnames do not, so shouldn't
   // overwrite.
-  EXPECT_TRUE(this->SetCookie(cs, url_chromium,
-                              "a=val99; path=/path1; "
-                              "expires=Mon, 18-Apr-22 22:50:14 GMT"));
+  EXPECT_TRUE(
+      this->SetCookie(cs, url_chromium,
+                      "a=val99; path=/path1" + FutureCookieExpirationString()));
 
   if (TypeParam::supports_http_only) {
     this->MatchCookieLines(
@@ -1857,8 +1869,8 @@ TYPED_TEST_P(CookieStoreTest, DeleteSessionCookie) {
                               std::string(kValidCookieLine)));
   EXPECT_TRUE(this->SetCookie(
       cs, this->http_www_foo_.url(),
-      this->http_www_foo_.Format("C=D; path=/; domain=%D;"
-                                 "expires=Mon, 18-Apr-22 22:50:13 GMT")));
+      this->http_www_foo_.Format("C=D; path=/; domain=%D" +
+                                 FutureCookieExpirationString())));
   this->MatchCookieLines("A=B; C=D",
                          this->GetCookies(cs, this->http_www_foo_.url()));
   // Delete the session cookie.

@@ -1,6 +1,7 @@
 #include "third_party/blink/renderer/platform/scheduler/common/thread_load_tracker.h"
 
 #include "base/bind.h"
+#include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"

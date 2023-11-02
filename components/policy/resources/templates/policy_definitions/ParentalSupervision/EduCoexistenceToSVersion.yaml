@@ -1,0 +1,26 @@
+caption: The valid version of Edu Coexistence Terms of Service
+desc: |-
+  This policy indicates current valid version of Edu Coexistence Terms of Service.
+        It is compared with the version last accepted by the parent and used to prompt parent permission renewal when needed.
+
+        When this policy is set Terms of Service version can be validated.
+        When this policy is unset it is not possible to verify validity of Edu Coexistence Terms of Service.
+
+        This policy is only used for Family Link users.
+example_value: '333024512'
+features:
+  dynamic_refresh: true
+  per_profile: false
+owners:
+- agawronska@chromium.org
+- danan@chromium.org
+- yilkal@chromium.org
+- cros-families-eng@google.com
+schema:
+  description: The valid version of Terms of Service derived from Google3 cl that
+    introduced new Terms version.
+  type: string
+supported_on:
+- chrome_os:89-
+tags: []
+type: string

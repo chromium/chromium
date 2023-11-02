@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -23,10 +23,7 @@ cast_source_set("metrics") {
     "//components/metrics",
     "//components/metrics:net",
     "//components/prefs",
-
-    # TODO(crbug.com/1241702): Clean up version_info when the Variations Safe
-    # Mode experiment is over.
-    "//components/version_info",
+    "//components/variations:variations",
     "//services/network/public/cpp",
   ]
 }

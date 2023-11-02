@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -218,6 +218,15 @@ MessageOptions ParseMessageOptions(v8::Local<v8::Context> context,
       // NOTE(devlin): JS bindings coerce any negative value to -1. For
       // backwards compatibility, we do the same here.
       options.frame_id = frame_id < 0 ? -1 : frame_id;
+    }
+
+    v8::Local<v8::Value> v8_document_id;
+    success = options_dict.Get("documentId", &v8_document_id);
+    DCHECK(success);
+
+    if (!v8_document_id->IsUndefined()) {
+      DCHECK(v8_document_id->IsString());
+      options.document_id = gin::V8ToString(isolate, v8_document_id);
     }
   }
 

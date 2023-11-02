@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
@@ -216,25 +217,27 @@ LoginEventRecorder::Stats LoginEventRecorder::Stats::DeserializeFromString(
   if (source.empty())
     return Stats();
 
-  std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(source);
-  base::DictionaryValue* dictionary;
-  if (!value || !value->GetAsDictionary(&dictionary)) {
+  absl::optional<base::Value> maybe_value = base::JSONReader::Read(source);
+  if (!maybe_value || !maybe_value->is_dict()) {
     LOG(ERROR) << "LoginEventRecorder::Stats::DeserializeFromString(): not a "
                   "dictionary: '"
                << source << "'";
     return Stats();
   }
 
-  Stats result;
-  if (!dictionary->GetString(kUptime, &result.uptime_) ||
-      !dictionary->GetString(kDisk, &result.disk_)) {
+  auto* uptime = maybe_value->GetDict().FindString(kUptime);
+  auto* disk = maybe_value->GetDict().FindString(kDisk);
+  if (!uptime || !disk) {
     LOG(ERROR)
         << "LoginEventRecorder::Stats::DeserializeFromString(): format error: '"
         << source << "'";
     return Stats();
   }
 
-  return result;
+  Stats stats;
+  stats.uptime_ = *uptime;
+  stats.disk_ = *disk;
+  return stats;
 }
 
 bool LoginEventRecorder::Stats::UptimeDouble(double* result) const {
@@ -297,6 +300,13 @@ LoginEventRecorder::LoginEventRecorder()
   DCHECK(base::CurrentUIThread::IsSet());
   login_time_markers_.reserve(30);
   logout_time_markers_.reserve(30);
+
+  // Remember login events for later retrieval by tests.
+  constexpr char kKeepLoginEventsForTesting[] = "keep-login-events-for-testing";
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kKeepLoginEventsForTesting)) {
+    PrepareEventCollectionForTesting();  // IN-TEST
+  }
 }
 
 LoginEventRecorder::~LoginEventRecorder() = default;
@@ -320,6 +330,11 @@ void LoginEventRecorder::AddLoginTimeMarkerWithURL(
     bool write_to_file) {
   AddMarker(&login_time_markers_,
             TimeMarker(marker_name, url, send_to_uma, write_to_file));
+  // Store a copy for testing.
+  if (login_time_markers_for_testing_.has_value()) {
+    login_time_markers_for_testing_.value().push_back(
+        login_time_markers_.back());
+  }
 }
 
 void LoginEventRecorder::AddLogoutTimeMarker(const char* marker_name,
@@ -371,6 +386,19 @@ void LoginEventRecorder::WriteLogoutTimes(const std::string base_name,
                                           const std::string uma_name,
                                           const std::string uma_prefix) {
   WriteTimes(base_name, uma_name, uma_prefix, std::move(logout_time_markers_));
+}
+
+void LoginEventRecorder::PrepareEventCollectionForTesting() {
+  if (login_time_markers_for_testing_.has_value())
+    return;
+
+  login_time_markers_for_testing_ = login_time_markers_;
+}
+
+const std::vector<LoginEventRecorder::TimeMarker>&
+LoginEventRecorder::GetCollectedLoginEventsForTesting() {
+  PrepareEventCollectionForTesting();  // IN-TEST
+  return login_time_markers_for_testing_.value();
 }
 
 void LoginEventRecorder::AddMarker(std::vector<TimeMarker>* vector,

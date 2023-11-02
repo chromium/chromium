@@ -1,35 +1,24 @@
 <!DOCTYPE html>
 <html>
+<script src="utility.js" type="text/javascript"></script>
 <script>
-function selectPart1() {
-  selectText('div1');
-}
-function selectPart2() {
-  selectText('div2');
-}
-
-// The helper function to select the element specified by id.
-function selectText(id) {
-  const input = document.getElementById(id);
-  var range = document.createRange();
-  range.selectNodeContents(input);
-  var selection = window.getSelection();
-  selection.removeAllRanges();
-  selection.addRange(range);
-}
-
-function copyToClipboard() {
-  document.execCommand("copy");
-}
+  function selectPart1() {
+    selectText('div1');
+  }
+  function selectPart2() {
+    selectText('div2');
+  }
 </script>
+
 <body>
   <div id="div1">
-    <img src="../images/icon16.png">
+    <img src="icon16.png">
     <p> first part </p>
   </div>
   <div id="div2">
-    <img src="../images/icon128.png">
+    <img src="icon128.png">
     <p> second part </p>
   </div>
 </body>
+
 </html>

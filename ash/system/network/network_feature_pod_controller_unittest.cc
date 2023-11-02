@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -21,11 +22,12 @@
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/network/network_handler_callbacks.h"
-#include "chromeos/network/network_state_handler.h"
-#include "chromeos/network/network_state_test_helper.h"
-#include "chromeos/network/network_type_pattern.h"
+#include "chromeos/ash/components/network/network_handler_callbacks.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state_test_helper.h"
+#include "chromeos/ash/components/network/network_type_pattern.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -37,8 +39,6 @@
 
 namespace ash {
 namespace {
-
-using chromeos::NetworkTypePattern;
 
 const char* kStubCellularDevice = "/device/stub_cellular_device";
 
@@ -108,7 +108,7 @@ class NetworkFeaturePodControllerTest : public AshTestBase {
                                       shill::kTypeEthernet, "stub_eth_device");
 
     network_state_handler()->SetTetherTechnologyState(
-        chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED);
+        NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED);
 
     base::RunLoop().RunUntilIdle();
   }
@@ -182,6 +182,10 @@ class NetworkFeaturePodControllerTest : public AshTestBase {
         network_state_handler()->AssociateTetherNetworkStateWithWifiNetwork(
             /*tether_network_guid=*/kNetworkGuidTether,
             /*wifi_network_guid=*/kNetworkGuidTetherWiFi));
+
+    network_state_handler()->SetTetherNetworkStateConnected(
+        /*guid=*/kNetworkGuidTether);
+
     SetServiceProperty(/*service_path=*/tether_wifi_path_,
                        /*key=*/shill::kStateProperty,
                        /*value=*/base::Value(shill::kStateOnline));
@@ -210,7 +214,8 @@ class NetworkFeaturePodControllerTest : public AshTestBase {
     const views::View::Views& children =
         tray_view()->detailed_view()->children();
     EXPECT_EQ(1u, children.size());
-    EXPECT_STREQ("NetworkListView", children.at(0)->GetClassName());
+    EXPECT_STREQ("NetworkDetailedNetworkViewImpl",
+                 children.at(0)->GetClassName());
   }
 
   void CheckSignalStrengthSubLabel(
@@ -241,11 +246,11 @@ class NetworkFeaturePodControllerTest : public AshTestBase {
               feature_pod_label_button()->GetSubLabelText());
   }
 
-  chromeos::NetworkStateTestHelper* network_state_helper() {
+  NetworkStateTestHelper* network_state_helper() {
     return &network_config_helper_.network_state_helper();
   }
 
-  chromeos::NetworkStateHandler* network_state_handler() {
+  NetworkStateHandler* network_state_handler() {
     return network_state_helper()->network_state_handler();
   }
 
@@ -260,7 +265,9 @@ class NetworkFeaturePodControllerTest : public AshTestBase {
   }
 
   UnifiedSystemTrayController* tray_controller() {
-    return GetPrimaryUnifiedSystemTray()->bubble()->controller_for_test();
+    return GetPrimaryUnifiedSystemTray()
+        ->bubble()
+        ->unified_system_tray_controller();
   }
 
   UnifiedSystemTrayView* tray_view() {
@@ -749,6 +756,48 @@ TEST_F(NetworkFeaturePodControllerTest, HasCorrectIcons) {
           /*animating=*/nullptr)),
       gfx::Image(
           feature_pod_icon_button()->GetImage(views::Button::STATE_NORMAL))));
+}
+
+TEST_F(NetworkFeaturePodControllerTest, UMATracking) {
+  // No metrics logged before clicking on any views.
+  auto histogram_tester = std::make_unique<base::HistogramTester>();
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
+      /*count=*/0);
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
+      /*count=*/0);
+  histogram_tester->ExpectTotalCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
+                                     /*count=*/0);
+
+  // Disable WiFi.
+  PressIcon();
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
+      /*count=*/0);
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
+      /*count=*/1);
+  histogram_tester->ExpectBucketCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
+      QsFeatureCatalogName::kNetwork,
+      /*expected_count=*/1);
+  histogram_tester->ExpectTotalCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
+                                     /*count=*/0);
+
+  // Go to the detailed page.
+  PressLabel();
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
+      /*count=*/0);
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
+      /*count=*/1);
+  histogram_tester->ExpectTotalCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
+                                     /*count=*/1);
+  histogram_tester->ExpectBucketCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
+                                      QsFeatureCatalogName::kNetwork,
+                                      /*expected_count=*/1);
 }
 
 }  // namespace ash

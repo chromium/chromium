@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,7 @@ ConsoleLogger::ConsoleLogger(Log* log)
     : log_(log) {}
 
 Status ConsoleLogger::OnConnected(DevToolsClient* client) {
-  base::DictionaryValue params;
+  base::Value::Dict params;
   Status status = client->SendCommand("Log.enable", params);
   if (status.IsError()) {
     return status;
@@ -60,27 +60,26 @@ Status ConsoleLogger::OnEvent(
 }
 
 Status ConsoleLogger::OnLogEntryAdded(const base::DictionaryValue& params) {
-  const base::DictionaryValue* entry = nullptr;
-  if (!params.GetDictionary("entry", &entry))
+  const base::Value::Dict* entry = params.GetDict().FindDict("entry");
+  if (!entry)
     return Status(kUnknownError, "missing or invalid 'entry'");
 
-  std::string level_name;
+  const std::string* level_name = entry->FindString("level");
   Log::Level level;
-  if (!entry->GetString("level", &level_name) ||
-      !ConsoleLevelToLogLevel(level_name, &level))
+  if (!level_name || !ConsoleLevelToLogLevel(*level_name, &level))
     return Status(kUnknownError, "missing or invalid 'entry.level'");
 
-  std::string source;
-  if (!entry->GetString("source", &source))
+  const std::string* source = entry->FindString("source");
+  if (!source)
     return Status(kUnknownError, "missing or invalid 'entry.source'");
 
-  std::string origin;
-  if (!entry->GetString("url", &origin))
+  const std::string* origin = entry->FindString("url");
+  if (!origin)
     origin = source;
 
   std::string line_number;
-  int line = -1;
-  if (entry->GetInteger("lineNumber", &line)) {
+  int line = entry->FindInt("lineNumber").value_or(-1);
+  if (line >= 0) {
     line_number = base::StringPrintf("%d", line);
   } else {
     // No line number, but print anyway, just to maintain the number of fields
@@ -88,14 +87,13 @@ Status ConsoleLogger::OnLogEntryAdded(const base::DictionaryValue& params) {
     line_number = "-";
   }
 
-  std::string text;
-  if (!entry->GetString("text", &text))
+  const std::string* text = entry->FindString("text");
+  if (!text)
     return Status(kUnknownError, "missing or invalid 'entry.text'");
 
-  log_->AddEntry(level, source, base::StringPrintf("%s %s %s",
-                                                   origin.c_str(),
-                                                   line_number.c_str(),
-                                                   text.c_str()));
+  log_->AddEntry(level, *source,
+                 base::StringPrintf("%s %s %s", origin->c_str(),
+                                    line_number.c_str(), text->c_str()));
   return Status(kOk);
 }
 
@@ -124,11 +122,11 @@ Status ConsoleLogger::OnRuntimeConsoleApiCalled(
         return Status(kUnknownError, "missing or invalid url");
       if (!url.empty())
         origin = url;
-      int line = -1;
-      if (!call_frame.GetInteger("lineNumber", &line))
+      int line = call_frame.FindIntKey("lineNumber").value_or(-1);
+      if (line < 0)
         return Status(kUnknownError, "missing or invalid lineNumber");
-      int column = -1;
-      if (!call_frame.GetInteger("columnNumber", &column))
+      int column = call_frame.FindIntKey("columnNumber").value_or(-1);
+      if (column < 0)
         return Status(kUnknownError, "missing or invalid columnNumber");
       line_column = base::StringPrintf("%d:%d", line, column);
     }
@@ -155,8 +153,8 @@ Status ConsoleLogger::OnRuntimeConsoleApiCalled(
     if (current_arg.GetString("type", &arg_type) && arg_type == "undefined") {
       temp_text = "undefined";
     } else if (!current_arg.GetString("description", &temp_text)) {
-      const base::Value* value = nullptr;
-      if (!current_arg.Get("value", &value)) {
+      const base::Value* value = current_arg.FindKey("value");
+      if (value == nullptr) {
         return Status(kUnknownError, "missing or invalid arg value");
       }
       if (!base::JSONWriter::Write(*value, &temp_text)) {
@@ -187,11 +185,11 @@ Status ConsoleLogger::OnRuntimeExceptionThrown(
   if (!exception_details->GetString("url", &origin))
     origin = "javascript";
 
-  int line = -1;
-  if (!exception_details->GetInteger("lineNumber", &line))
+  int line = exception_details->FindIntKey("lineNumber").value_or(-1);
+  if (line < 0)
     return Status(kUnknownError, "missing or invalid lineNumber");
-  int column = -1;
-  if (!exception_details->GetInteger("columnNumber", &column))
+  int column = exception_details->FindIntKey("columnNumber").value_or(-1);
+  if (column < 0)
     return Status(kUnknownError, "missing or invalid columnNumber");
   std::string line_column = base::StringPrintf("%d:%d", line, column);
 

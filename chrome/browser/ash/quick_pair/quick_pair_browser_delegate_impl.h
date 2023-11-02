@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_QUICK_PAIR_QUICK_PAIR_BROWSER_DELEGATE_IMPL_H_
 
 #include "ash/quick_pair/common/quick_pair_browser_delegate.h"
-#include "ash/services/quick_pair/public/mojom/quick_pair_service.mojom-forward.h"
+#include "chromeos/ash/services/quick_pair/public/mojom/quick_pair_service.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 class Profile;
@@ -31,6 +31,7 @@ class QuickPairBrowserDelegateImpl final : public QuickPairBrowserDelegate {
   // QuickPairBrowserDelegate:
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   signin::IdentityManager* GetIdentityManager() override;
+  std::unique_ptr<image_fetcher::ImageFetcher> GetImageFetcher() override;
   PrefService* GetActivePrefService() override;
   void RequestService(
       mojo::PendingReceiver<mojom::QuickPairService> receiver) override;

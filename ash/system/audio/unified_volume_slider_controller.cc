@@ -1,18 +1,19 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/audio/unified_volume_slider_controller.h"
 
-#include "ash/metrics/user_metrics_action.h"
-#include "ash/metrics/user_metrics_recorder.h"
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/shell.h"
 #include "ash/system/audio/unified_volume_view.h"
 #include "ash/system/machine_learning/user_settings_event_logger.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
 
 namespace ash {
+
+UnifiedVolumeSliderController::Delegate::Delegate() = default;
+
+UnifiedVolumeSliderController::Delegate::~Delegate() = default;
 
 UnifiedVolumeSliderController::UnifiedVolumeSliderController(
     UnifiedVolumeSliderController::Delegate* delegate)
@@ -26,6 +27,10 @@ views::View* UnifiedVolumeSliderController::CreateView() {
   return new UnifiedVolumeView(this, delegate_);
 }
 
+QsSliderCatalogName UnifiedVolumeSliderController::GetCatalogName() {
+  return QsSliderCatalogName::kVolume;
+}
+
 void UnifiedVolumeSliderController::SliderValueChanged(
     views::Slider* sender,
     float value,
@@ -37,8 +42,8 @@ void UnifiedVolumeSliderController::SliderValueChanged(
   const int level = value * 100;
 
   if (level != CrasAudioHandler::Get()->GetOutputVolumePercent()) {
-    Shell::Get()->metrics()->RecordUserMetricsAction(
-        UMA_STATUS_AREA_CHANGED_VOLUME_MENU);
+    TrackValueChangeUMA(/*going_up=*/level >
+                        CrasAudioHandler::Get()->GetOutputVolumePercent());
   }
 
   CrasAudioHandler::Get()->SetOutputVolumePercent(level);
@@ -53,10 +58,9 @@ void UnifiedVolumeSliderController::SliderValueChanged(
 void UnifiedVolumeSliderController::SliderButtonPressed() {
   auto* const audio_handler = CrasAudioHandler::Get();
   const bool mute = !audio_handler->IsOutputMuted();
-  if (mute)
-    base::RecordAction(base::UserMetricsAction("StatusArea_Audio_Muted"));
-  else
-    base::RecordAction(base::UserMetricsAction("StatusArea_Audio_Unmuted"));
+
+  TrackToggleUMA(/*target_toggle_state=*/mute);
+
   audio_handler->SetOutputMute(mute);
 }
 

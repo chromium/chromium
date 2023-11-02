@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,8 +42,8 @@ UnifiedIMEDetailedViewController::~UnifiedIMEDetailedViewController() {
 
 views::View* UnifiedIMEDetailedViewController::CreateView() {
   DCHECK(!view_);
-  view_ = new tray::IMEDetailedView(detailed_view_delegate_.get(),
-                                    Shell::Get()->ime_controller());
+  view_ = new IMEDetailedView(detailed_view_delegate_.get(),
+                              Shell::Get()->ime_controller());
   view_->Init(ShouldShowKeyboardToggle(), GetSingleImeBehavior());
   return view_;
 }

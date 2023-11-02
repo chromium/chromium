@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,18 +31,6 @@ WebRtcVideoFormatToMediaVideoCodecProfile(const webrtc::SdpVideoFormat& format);
 
 media::VideoColorSpace PLATFORM_EXPORT
 WebRtcToMediaVideoColorSpace(const webrtc::ColorSpace& color_space);
-
-// Returns the number of spatial layers that is used in the specified
-// scalability mode. An empty return value means that the specified scalability
-// mode is unsupported.
-absl::optional<int> PLATFORM_EXPORT
-WebRtcScalabilityModeSpatialLayers(const std::string& scalability_mode);
-
-// Returns the number of dependent spatial layers that is used in the specified
-// scalability mode. An empty return value means that the specified scalability
-// mode is unsupported.
-absl::optional<int> PLATFORM_EXPORT WebRtcScalabilityModeDependentSpatialLayers(
-    const std::string& scalability_mode);
 
 }  // namespace blink
 

@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_TEST_HELPER_H_
 #define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_TEST_HELPER_H_
 
+#include "base/observer_list.h"
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
 #include "content/public/browser/presentation_request.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -26,9 +27,8 @@ class MockWebContentsPresentationManager
   bool HasDefaultPresentationRequest() const override;
   const content::PresentationRequest& GetDefaultPresentationRequest()
       const override;
-  void AddObserver(WebContentsPresentationManager::Observer* observer) override;
-  void RemoveObserver(
-      WebContentsPresentationManager::Observer* observer) override;
+  void AddObserver(content::PresentationObserver* observer) override;
+  void RemoveObserver(content::PresentationObserver* observer) override;
   base::WeakPtr<WebContentsPresentationManager> GetWeakPtr() override;
 
   MOCK_METHOD(void,
@@ -40,7 +40,7 @@ class MockWebContentsPresentationManager
 
  private:
   absl::optional<content::PresentationRequest> default_presentation_request_;
-  base::ObserverList<WebContentsPresentationManager::Observer> observers_;
+  base::ObserverList<content::PresentationObserver> observers_;
   base::WeakPtrFactory<MockWebContentsPresentationManager> weak_factory_{this};
 };
 

@@ -1,4 +1,4 @@
-// Copyright 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "cc/metrics/compositor_timing_history.h"
 #include "cc/metrics/dropped_frame_counter.h"
@@ -141,7 +142,7 @@ class TestScheduler : public Scheduler {
   base::TimeTicks Now() const override;
 
  private:
-  const base::TickClock* now_src_;
+  raw_ptr<const base::TickClock> now_src_;
 };
 
 }  // namespace cc

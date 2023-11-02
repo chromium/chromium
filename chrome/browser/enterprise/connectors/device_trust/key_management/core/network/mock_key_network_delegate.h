@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,9 +19,12 @@ class MockKeyNetworkDelegate : public KeyNetworkDelegate {
   MockKeyNetworkDelegate();
   ~MockKeyNetworkDelegate() override;
 
-  MOCK_METHOD(std::string,
-              SendPublicKeyToDmServerSync,
-              (const GURL&, const std::string&, const std::string&),
+  MOCK_METHOD(void,
+              SendPublicKeyToDmServer,
+              (const GURL&,
+               const std::string&,
+               const std::string&,
+               UploadKeyCompletedCallback),
               (override));
 };
 

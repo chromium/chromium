@@ -23,6 +23,7 @@ base/allocator/
 # TODO(bartekn): Update the list of dependencies.
 base/logging.h
 base/synchronization/lock_impl.h
+base/check.h
 
 # Exclude - deprecated and contains legacy C++ and pre-C++11 code.
 ppapi/
@@ -65,11 +66,11 @@ android_webview/public/
 # Also, note that isInThirdPartyLocation AST matcher in
 # RewriteRawPtrFields.cpp explicitly includes third_party/blink
 # (because it is in the same git repository as the rest of Chromium),
-# but we go ahead and exclude it below.
-/renderer/  # (e.g. //content/renderer/ or //components/visitedlink/renderer/).
-third_party/blink/
-!third_party/blink/public/common/
-!third_party/blink/common/
+# but we go ahead and exclude most of it below (as Renderer-only code).
+/renderer/  # (e.g. //content/renderer/ or //components/visitedlink/renderer/
+            #  or //third_party/blink/renderer)
+third_party/blink/public/web/  # TODO: Consider renaming this directory to
+                               # public/renderer?
 
 # Exclude paths in separate repositories - i.e. in directories that
 # 1. Contain a ".git" subdirectory
@@ -89,17 +90,17 @@ chrome/app/theme/default_100_percent/google_chrome/
 chrome/app/theme/default_200_percent/google_chrome/
 chrome/app/theme/google_chrome/
 chrome/app/vector_icons/google_chrome/
+chrome/browser/enterprise/connectors/internal/
 chrome/browser/google/linkdoctor_internal/
 chrome/browser/internal/
 chrome/browser/media/engagement_internal/
 chrome/browser/resources/chromeos/quickoffice/
-chrome/browser/resources/media_router/extension/src/
 chrome/browser/resources/media_router_internal/
+chrome/browser/resources/preinstalled_web_apps/internal/
 chrome/browser/resources/settings_internal/
 chrome/browser/spellchecker/internal/
 chrome/browser/ui/media_router/internal/
 chrome/installer/mac/internal/
-chrome/services/soda/internal/
 chrome/test/data/firefox3_profile/searchplugins/
 chrome/test/data/firefox3_searchplugins/
 chrome/test/data/gpu/vt/
@@ -113,23 +114,17 @@ chrome/test/media_router/internal/
 chrome/test/python_tests/
 chrome/tools/memory/
 clank/
+components/history_clusters/internal/
 components/ntp_tiles/resources/internal/
+components/optimization_guide/internal/
 components/resources/default_100_percent/google_chrome/
 components/resources/default_200_percent/google_chrome/
 components/resources/default_300_percent/google_chrome/
 components/site_isolation/internal/
 content/test/data/plugin/
-data/autodiscovery/
-data/dom_perf/
-data/mach_ports/
-data/memory_test/
-data/mozilla_js_tests/
-data/page_cycler/
-data/selenium_core/
-data/tab_switching/
+docs/website/
 google_apis/internal/
 media/cdm/api/
-mojo/internal/
 native_client/
 remoting/android/internal/
 remoting/host/installer/linux/internal/
@@ -137,7 +132,6 @@ remoting/internal/
 remoting/test/internal/
 remoting/tools/internal/
 remoting/webapp/app_remoting/internal/
-skia/tools/clusterfuzz-data/
 tools/page_cycler/acid3/
 tools/perf/data/
 ui/file_manager/internal/

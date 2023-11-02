@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -812,7 +812,7 @@ public class OfflinePageUtils {
         }
 
         @Override
-        public void willCloseTab(Tab tab, boolean animate) {
+        public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
             Profile profile = mTabModelSelector.getModel(tab.isIncognito()).getProfile();
             OfflinePageBridge bridge = OfflinePageBridge.getForProfile(profile);
             if (bridge == null) return;
@@ -822,8 +822,8 @@ public class OfflinePageUtils {
         }
 
         @Override
-        public void didCloseTab(int tabId, boolean incognito) {
-            Profile profile = mTabModelSelector.getModel(incognito).getProfile();
+        public void onFinishingTabClosure(Tab tab) {
+            Profile profile = mTabModelSelector.getModel(tab.isIncognito()).getProfile();
             OfflinePageBridge bridge = OfflinePageBridge.getForProfile(profile);
             if (bridge == null) return;
 
@@ -831,7 +831,7 @@ public class OfflinePageUtils {
             // the UI will no longer show the page, and the page would also be cleaned up by GC
             // given enough time.
             ClientId clientId =
-                    new ClientId(OfflinePageBridge.LAST_N_NAMESPACE, Integer.toString(tabId));
+                    new ClientId(OfflinePageBridge.LAST_N_NAMESPACE, Integer.toString(tab.getId()));
             List<ClientId> clientIds = new ArrayList<>();
             clientIds.add(clientId);
 

@@ -1,0 +1,15 @@
+{
+  token_namespace: 'cros.ref',
+  options: {
+    ColorMappings: {
+      set_name: 'CrosRef'
+    },
+    proto: {
+      field_name: 'test_colors',
+      field_id: 2,
+    },
+  },
+  colors: {
+    primary50: "#202124",
+  },
+}

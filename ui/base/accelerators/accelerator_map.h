@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,10 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "build/build_config.h"
 #include "ui/base/accelerators/accelerator.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #endif
@@ -78,7 +79,7 @@ class COMPONENT_EXPORT(UI_BASE) AcceleratorMap {
   }
 
   V& GetOrInsertDefault(const Accelerator& accelerator) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     // Ensure the DomCode is NONE before registering. The DomCode is only
     // used during lookup to select the correct VKEY.
     if (accelerator.code() != DomCode::NONE) {
@@ -95,10 +96,12 @@ class COMPONENT_EXPORT(UI_BASE) AcceleratorMap {
     return map_.erase(accelerator) > 0;
   }
 
+  void Clear() { map_.clear(); }
+
   // Inserts a new accelerator and value into the map. DCHECKs if the
   // accelerator was already in the map.
   void InsertNew(const std::pair<const Accelerator, V>& value) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     // Ensure the DomCode is NONE before registering. The DomCode is only
     // used during lookup to select the correct VKEY.
     if (value.first.code() != DomCode::NONE) {
@@ -124,7 +127,7 @@ class COMPONENT_EXPORT(UI_BASE) AcceleratorMap {
   // Returns true if the map is empty.
   bool empty() const { return map_.empty(); }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // When true, lookup operators on the map will remap the |key_code| of
   // position-based keys based on the |code|.
   void set_use_positional_lookup(bool use_positional_lookup) {
@@ -135,7 +138,7 @@ class COMPONENT_EXPORT(UI_BASE) AcceleratorMap {
  private:
   std::map<Accelerator, V> map_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   bool use_positional_lookup_ = false;
 
   // For the shortcuts that use positional mapping, the lookup is done based
@@ -167,15 +170,15 @@ class COMPONENT_EXPORT(UI_BASE) AcceleratorMap {
     return Accelerator(lookup_key_code, DomCode::NONE, accelerator.modifiers(),
                        accelerator.key_state());
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   const_iterator FindImpl(const Accelerator& accelerator) const {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     auto iter = map_.find(RemapAcceleratorForLookup(accelerator));
     // Sanity check that a DomCode was never inserted into the map.
     DCHECK(iter == map_.end() || iter->first.code() == DomCode::NONE);
     return iter;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     return map_.find(accelerator);
   }

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -260,7 +260,7 @@ void ListItemOrdinal::InvalidateAllItemsForOrderedList(
 void ListItemOrdinal::ItemUpdated(const LayoutObject* layout_list_item,
                                   UpdateType type) {
   const Node* item_node = layout_list_item->GetNode();
-  if (item_node->GetDocument().IsSlotAssignmentOrLegacyDistributionDirty())
+  if (item_node->GetDocument().IsSlotAssignmentDirty())
     return;
   if (item_node->GetDocument().IsFlatTreeTraversalForbidden())
     return;

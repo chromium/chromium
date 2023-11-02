@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -72,9 +72,6 @@ class ChromeUserManagerImpl
   // Registers user manager preferences.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  // Resets platform specific delegates that were set for public accounts.
-  static void ResetPublicAccountDelegatesForTesting();
-
   // UserManagerInterface implementation:
   MultiProfileUserController* GetMultiProfileUserController() override;
   UserImageManager* GetUserImageManager(const AccountId& account_id) override;
@@ -99,6 +96,7 @@ class ChromeUserManagerImpl
   bool IsGuestSessionAllowed() const override;
   bool IsGaiaUserAllowed(const user_manager::User& user) const override;
   bool IsUserAllowed(const user_manager::User& user) const override;
+  bool AreEphemeralUsersEnabled() const override;
   const AccountId& GetGuestAccountId() const override;
   bool IsFirstExecAfterBoot() const override;
   void AsyncRemoveCryptohome(const AccountId& account_id) const override;
@@ -133,7 +131,6 @@ class ChromeUserManagerImpl
   void OnProfileAdded(Profile* profile) override;
 
   // UserManagerBase:
-  bool AreEphemeralUsersEnabled() const override;
   void OnUserRemoved(const AccountId& account_id) override;
 
   // ChromeUserManager:
@@ -142,8 +139,6 @@ class ChromeUserManagerImpl
       const AccountId& account_id,
       const AffiliationIDSet& user_affiliation_ids) override;
   bool ShouldReportUser(const std::string& user_id) const override;
-  bool IsManagedSessionEnabledForUser(
-      const user_manager::User& active_user) const override;
   bool IsFullManagementDisclosureNeeded(
       policy::DeviceLocalAccountPolicyBroker* broker) const override;
   void CacheRemovedUser(const std::string& user_email,
@@ -240,6 +235,8 @@ class ChromeUserManagerImpl
       const AccountId& account_id,
       const policy::DeviceLocalAccount::Type type) const;
 
+  void UpdateOwnerId();
+
   // Interface to the signed settings store.
   CrosSettings* cros_settings_;
 
@@ -271,6 +268,8 @@ class ChromeUserManagerImpl
   // Cros settings change subscriptions.
   base::CallbackListSubscription allow_guest_subscription_;
   base::CallbackListSubscription users_subscription_;
+  base::CallbackListSubscription family_link_accounts_subscription_;
+  base::CallbackListSubscription owner_subscription_;
 
   base::CallbackListSubscription local_accounts_subscription_;
 

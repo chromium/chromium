@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -10,6 +10,8 @@ source_set("shared_storage_worklet") {
     "console.h",
     "module_script_downloader.cc",
     "module_script_downloader.h",
+    "private_aggregation.cc",
+    "private_aggregation.h",
     "shared_storage.cc",
     "shared_storage.h",
     "shared_storage_iterator.cc",
@@ -28,11 +30,14 @@ source_set("shared_storage_worklet") {
 
   configs += [
     "//build/config/compiler:wexit_time_destructors",
+    "//content:content_implementation",
     "//v8:external_startup_data",
   ]
 
   deps = [
     "//base",
+    "//content:export",
+    "//content/services/worklet_utils",
     "//gin",
     "//mojo/public/cpp/bindings",
     "//services/network/public/cpp",
@@ -41,33 +46,13 @@ source_set("shared_storage_worklet") {
     "//v8",
   ]
 
-  public_deps = [ "public/mojom" ]
+  public_deps = [ "//content/common:mojo_bindings" ]
 }
 
-source_set("tests") {
-  testonly = true
-
-  sources = [
-    "module_script_downloader_unittest.cc",
-    "shared_storage_worklet_global_scope_unittest.cc",
-  ]
-
-  deps = [
-    ":shared_storage_worklet",
-    "public/mojom",
-    "//base",
-    "//base/test:test_support",
-    "//gin",
-    "//services/network:test_support",
-    "//services/network:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//v8",
-  ]
-
-  if (is_android) {
-    deps += [ "//v8:v8_external_startup_data_assets" ]
+# See comment at the top of //content/BUILD.gn for how this works.
+group("for_content_tests") {
+  visibility = [ "//content/test/*" ]
+  if (!is_component_build) {
+    public_deps = [ ":shared_storage_worklet" ]
   }
-
-  configs += [ "//v8:external_startup_data" ]
 }

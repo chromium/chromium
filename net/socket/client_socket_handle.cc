@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,13 +21,7 @@
 namespace net {
 
 ClientSocketHandle::ClientSocketHandle()
-    : is_initialized_(false),
-      pool_(nullptr),
-      higher_pool_(nullptr),
-      reuse_type_(ClientSocketHandle::UNUSED),
-      group_generation_(-1),
-      resolve_error_info_(ResolveErrorInfo(OK)),
-      is_ssl_error_(false) {}
+    : resolve_error_info_(ResolveErrorInfo(OK)) {}
 
 ClientSocketHandle::~ClientSocketHandle() {
   Reset();

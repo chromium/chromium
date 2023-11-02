@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,14 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "build/build_config.h"
 #include "media/cdm/cdm_module.h"
 #include "media/media_buildflags.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include <vector>
 #include "sandbox/mac/seatbelt_extension.h"
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
 #include "media/cdm/cdm_host_file.h"
@@ -33,9 +34,9 @@ CdmServiceBroker::~CdmServiceBroker() = default;
 
 void CdmServiceBroker::GetService(
     const base::FilePath& cdm_path,
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     mojo::PendingRemote<mojom::SeatbeltExtensionTokenProvider> token_provider,
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
     mojo::PendingReceiver<mojom::CdmService> service_receiver) {
   if (!client_) {
     DVLOG(1) << __func__ << ": CdmService can only be bound once";
@@ -43,9 +44,9 @@ void CdmServiceBroker::GetService(
   }
 
   bool success = InitializeAndEnsureSandboxed(
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       std::move(token_provider),
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
       cdm_path);
 
   if (!success) {
@@ -59,14 +60,14 @@ void CdmServiceBroker::GetService(
 }
 
 bool CdmServiceBroker::InitializeAndEnsureSandboxed(
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     mojo::PendingRemote<mojom::SeatbeltExtensionTokenProvider> token_provider,
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
     const base::FilePath& cdm_path) {
   DVLOG(1) << __func__ << ": cdm_path = " << cdm_path.value();
   DCHECK(client_);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   std::vector<std::unique_ptr<sandbox::SeatbeltExtension>> extensions;
 
   if (token_provider) {
@@ -85,7 +86,7 @@ bool CdmServiceBroker::InitializeAndEnsureSandboxed(
       extensions.push_back(std::move(extension));
     }
   }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   CdmModule* instance = CdmModule::GetInstance();
 
@@ -101,10 +102,10 @@ bool CdmServiceBroker::InitializeAndEnsureSandboxed(
   // sandboxed.
   client_->EnsureSandboxed();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   for (auto&& extension : extensions)
     extension->Revoke();
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   // Always called within the sandbox.
   if (success)

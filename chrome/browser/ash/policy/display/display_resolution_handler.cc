@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,18 +7,18 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "base/bind.h"
 #include "base/values.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
 using DisplayUnitTraits =
-    mojo::StructTraits<::ash::mojom::DisplayUnitInfo::DataView,
-                       ::ash::mojom::DisplayUnitInfoPtr>;
+    mojo::StructTraits<crosapi::mojom::DisplayUnitInfo::DataView,
+                       crosapi::mojom::DisplayUnitInfoPtr>;
 
 struct DisplayResolutionHandler::InternalDisplaySettings {
   int scale_percentage = 0;
@@ -36,8 +36,8 @@ struct DisplayResolutionHandler::InternalDisplaySettings {
 
   // Create display config for the internal display using policy settings from
   // |internal_display_settings_|.
-  ash::mojom::DisplayConfigPropertiesPtr ToDisplayConfigProperties() {
-    auto new_config = ash::mojom::DisplayConfigProperties::New();
+  crosapi::mojom::DisplayConfigPropertiesPtr ToDisplayConfigProperties() {
+    auto new_config = crosapi::mojom::DisplayConfigProperties::New();
     // Converting percentage to factor.
     new_config->display_zoom_factor = scale_percentage / 100.0;
     return new_config;
@@ -46,12 +46,10 @@ struct DisplayResolutionHandler::InternalDisplaySettings {
   // Get settings for the internal display from
   // |ash::kDeviceDisplayResolution| setting value.
   static std::unique_ptr<InternalDisplaySettings> FromPolicySetting(
-      const base::DictionaryValue* pref) {
-    const base::Value* scale_value =
-        pref->FindKeyOfType(ash::kDeviceDisplayResolutionKeyInternalScale,
-                            base::Value::Type::INTEGER);
-    return scale_value ? std::make_unique<InternalDisplaySettings>(
-                             scale_value->GetInt())
+      const base::Value::Dict* pref) {
+    const absl::optional<int> scale_value =
+        pref->FindInt(ash::kDeviceDisplayResolutionKeyInternalScale);
+    return scale_value ? std::make_unique<InternalDisplaySettings>(*scale_value)
                        : nullptr;
   }
 };
@@ -73,7 +71,7 @@ struct DisplayResolutionHandler::ExternalDisplaySettings {
 
   // Check if either |use_native| flag is set and mode is native or the mode
   // has required resolution.
-  bool IsSuitableDisplayMode(const ash::mojom::DisplayModePtr& mode) {
+  bool IsSuitableDisplayMode(const crosapi::mojom::DisplayModePtr& mode) {
     return (use_native && mode->is_native) ||
            (!use_native && width == mode->size.width() &&
             height == mode->size.height());
@@ -81,11 +79,11 @@ struct DisplayResolutionHandler::ExternalDisplaySettings {
 
   // Create display config for the external display using policy settings from
   // |external_display_settings_|.
-  ash::mojom::DisplayConfigPropertiesPtr ToDisplayConfigProperties(
-      const std::vector<ash::mojom::DisplayModePtr>& display_modes) {
+  crosapi::mojom::DisplayConfigPropertiesPtr ToDisplayConfigProperties(
+      const std::vector<crosapi::mojom::DisplayModePtr>& display_modes) {
     bool found_suitable_mode = false;
-    auto new_config = ash::mojom::DisplayConfigProperties::New();
-    for (const ash::mojom::DisplayModePtr& mode : display_modes) {
+    auto new_config = crosapi::mojom::DisplayConfigProperties::New();
+    for (const crosapi::mojom::DisplayModePtr& mode : display_modes) {
       // Check if the current display mode has required resolution and its
       // refresh rate is higher than refresh rate of the already found mode.
       if (IsSuitableDisplayMode(mode) &&
@@ -98,7 +96,7 @@ struct DisplayResolutionHandler::ExternalDisplaySettings {
     // If we couldn't find the required mode and and scale percentage doesn't
     // need to be changed, we have nothing to do.
     if (!found_suitable_mode && !scale_percentage) {
-      return ash::mojom::DisplayConfigPropertiesPtr();
+      return crosapi::mojom::DisplayConfigPropertiesPtr();
     }
 
     if (scale_percentage) {
@@ -112,34 +110,27 @@ struct DisplayResolutionHandler::ExternalDisplaySettings {
   // Get settings for the external displays from
   // |ash::kDeviceDisplayResolution| setting value;
   static std::unique_ptr<ExternalDisplaySettings> FromPolicySetting(
-      const base::DictionaryValue* pref) {
-    const base::Value* width_value =
-        pref->FindKeyOfType(ash::kDeviceDisplayResolutionKeyExternalWidth,
-                            base::Value::Type::INTEGER);
-    const base::Value* height_value =
-        pref->FindKeyOfType(ash::kDeviceDisplayResolutionKeyExternalHeight,
-                            base::Value::Type::INTEGER);
-    const base::Value* scale_value =
-        pref->FindKeyOfType(ash::kDeviceDisplayResolutionKeyExternalScale,
-                            base::Value::Type::INTEGER);
-    const base::Value* use_native_value =
-        pref->FindKeyOfType(ash::kDeviceDisplayResolutionKeyExternalUseNative,
-                            base::Value::Type::BOOLEAN);
-
+      const base::Value::Dict* pref) {
     auto result = std::make_unique<ExternalDisplaySettings>();
 
     // Scale can be used for both native and non-native modes
-    if (scale_value)
-      result->scale_percentage = scale_value->GetInt();
+    result->scale_percentage =
+        pref->FindInt(ash::kDeviceDisplayResolutionKeyExternalScale);
 
-    if (use_native_value && use_native_value->GetBool()) {
+    const absl::optional<bool> use_native_value =
+        pref->FindBool(ash::kDeviceDisplayResolutionKeyExternalUseNative);
+    if (use_native_value && *use_native_value) {
       result->use_native = true;
       return result;
     }
 
+    const absl::optional<int> width_value =
+        pref->FindInt(ash::kDeviceDisplayResolutionKeyExternalWidth);
+    const absl::optional<int> height_value =
+        pref->FindInt(ash::kDeviceDisplayResolutionKeyExternalHeight);
     if (width_value && height_value) {
-      result->width = width_value->GetInt();
-      result->height = height_value->GetInt();
+      result->width = *width_value;
+      result->height = *height_value;
       return result;
     }
 
@@ -160,7 +151,7 @@ const char* DisplayResolutionHandler::SettingName() {
 // |internal_display_settings_|. Also updates |policy_enabled_| flag.
 void DisplayResolutionHandler::OnSettingUpdate() {
   policy_enabled_ = false;
-  const base::DictionaryValue* resolution_pref = nullptr;
+  const base::Value::Dict* resolution_pref = nullptr;
   ash::CrosSettings::Get()->GetDictionary(ash::kDeviceDisplayResolution,
                                           &resolution_pref);
   if (!resolution_pref)
@@ -173,11 +164,11 @@ void DisplayResolutionHandler::OnSettingUpdate() {
 
   bool new_recommended = false;
   policy_enabled_ = new_external_config || new_internal_config;
-  const base::Value* recommended_value = resolution_pref->FindKeyOfType(
-      ash::kDeviceDisplayResolutionKeyRecommended, base::Value::Type::BOOLEAN);
+  const absl::optional<bool> recommended_value =
+      resolution_pref->FindBool(ash::kDeviceDisplayResolutionKeyRecommended);
 
   if (recommended_value)
-    new_recommended = recommended_value->GetBool();
+    new_recommended = *recommended_value;
 
   // We should reset locally stored settings and clear list of already updated
   // displays if any of the policy values were updated.
@@ -204,11 +195,12 @@ void DisplayResolutionHandler::OnSettingUpdate() {
 // Applies settings received with |OnSettingUpdate| to each supported display
 // from |info_list| if |policy_enabled_| is true.
 void DisplayResolutionHandler::ApplyChanges(
-    ash::mojom::CrosDisplayConfigController* cros_display_config,
-    const std::vector<ash::mojom::DisplayUnitInfoPtr>& info_list) {
+    crosapi::mojom::CrosDisplayConfigController* cros_display_config,
+    const std::vector<crosapi::mojom::DisplayUnitInfoPtr>& info_list) {
   if (!policy_enabled_)
     return;
-  for (const ash::mojom::DisplayUnitInfoPtr& display_unit_info : info_list) {
+  for (const crosapi::mojom::DisplayUnitInfoPtr& display_unit_info :
+       info_list) {
     std::string display_id = display_unit_info->id;
     // If policy value is marked as "recommended" we need to change the
     // resolution just once for each display. So we're just skipping the display
@@ -218,7 +210,7 @@ void DisplayResolutionHandler::ApplyChanges(
       continue;
     }
 
-    ash::mojom::DisplayConfigPropertiesPtr new_config;
+    crosapi::mojom::DisplayConfigPropertiesPtr new_config;
     if (display_unit_info->is_internal && internal_display_settings_) {
       new_config = internal_display_settings_->ToDisplayConfigProperties();
     } else if (!display_unit_info->is_internal && external_display_settings_) {
@@ -232,9 +224,9 @@ void DisplayResolutionHandler::ApplyChanges(
     resized_display_ids_.insert(display_id);
     cros_display_config->SetDisplayProperties(
         display_unit_info->id, std::move(new_config),
-        ash::mojom::DisplayConfigSource::kPolicy,
-        base::BindOnce([](ash::mojom::DisplayConfigResult result) {
-          if (result == ash::mojom::DisplayConfigResult::kSuccess) {
+        crosapi::mojom::DisplayConfigSource::kPolicy,
+        base::BindOnce([](crosapi::mojom::DisplayConfigResult result) {
+          if (result == crosapi::mojom::DisplayConfigResult::kSuccess) {
             VLOG(1) << "Successfully changed display mode.";
           } else {
             LOG(ERROR) << "Couldn't change display mode. Error code: "

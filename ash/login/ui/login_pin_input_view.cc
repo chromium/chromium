@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,6 +52,10 @@ class LoginPinInput : public FixedLengthCodeInput {
   // views::view
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
+  void UpdatePalette(const LoginPalette& palette) {
+    SetInputColor(palette.pin_input_text_color);
+  }
+
  private:
   int length_ = 0;
   LoginPinInputView::OnPinSubmit on_submit_;
@@ -90,6 +94,7 @@ void LoginPinInput::OnModified(bool last_field_active, bool complete) {
   if (last_field_active && complete) {
     absl::optional<std::string> user_input = GetCode();
     DCHECK(on_submit_);
+    LOG(WARNING) << "crbug.com/1339004 : Submitting PIN " << IsReadOnly();
     SetReadOnly(true);
     on_submit_.Run(base::UTF8ToUTF16(user_input.value_or(std::string())));
   }
@@ -154,6 +159,10 @@ absl::optional<std::string> LoginPinInputView::TestApi::GetCode() {
   return view_->code_input_->GetCode();
 }
 
+bool LoginPinInputView::TestApi::IsEmpty() {
+  return view_->code_input_->IsEmpty();
+}
+
 LoginPinInputView::LoginPinInputView(const LoginPalette& palette)
     : length_(kDefaultLength), palette_(palette) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -194,16 +203,9 @@ void LoginPinInputView::UpdateLength(const size_t pin_length) {
     return;
 
   length_ = pin_length;
-  UpdateView();
-}
 
-void LoginPinInputView::UpdatePalette(const LoginPalette& palette) {
-  palette_ = palette;
-  UpdateView();
-}
-
-void LoginPinInputView::UpdateView() {
-  bool was_visible = GetVisible();
+  const bool was_readonly = IsReadOnly();
+  const bool was_visible = GetVisible();
 
   // Hide the view before deleting.
   SetVisible(false);
@@ -216,9 +218,16 @@ void LoginPinInputView::UpdateView() {
                           base::Unretained(this)),
       base::BindRepeating(&LoginPinInputView::OnChanged,
                           base::Unretained(this))));
-  is_read_only_ = false;
+
+  SetReadOnly(was_readonly);
   Layout();
   SetVisible(was_visible);
+}
+
+void LoginPinInputView::UpdatePalette(const LoginPalette& palette) {
+  palette_ = palette;
+  DCHECK(code_input_);
+  code_input_->UpdatePalette(palette_);
 }
 
 void LoginPinInputView::SetAuthenticateWithEmptyPinOnReturnKey(bool enabled) {
@@ -237,13 +246,17 @@ void LoginPinInputView::Backspace() {
 
 void LoginPinInputView::InsertDigit(int digit) {
   DCHECK(code_input_);
-  if (!is_read_only_)
+  if (!IsReadOnly())
     code_input_->InsertDigit(digit);
 }
 
 void LoginPinInputView::SetReadOnly(bool read_only) {
   is_read_only_ = read_only;
   code_input_->SetReadOnly(read_only);
+}
+
+bool LoginPinInputView::IsReadOnly() const {
+  return is_read_only_;
 }
 
 gfx::Size LoginPinInputView::CalculatePreferredSize() const {
@@ -263,7 +276,7 @@ bool LoginPinInputView::OnKeyPressed(const ui::KeyEvent& event) {
   // It just performs an unlock attempt with an empty PIN, which triggers a
   // SmartLock attempt in LoginAuthUserView. The user's PIN is only submitted
   // when the last digit is inserted.
-  if (event.key_code() == ui::KeyboardCode::VKEY_RETURN && !is_read_only_ &&
+  if (event.key_code() == ui::KeyboardCode::VKEY_RETURN && !IsReadOnly() &&
       authenticate_with_empty_pin_on_return_key_) {
     SubmitPin(u"");
     return true;

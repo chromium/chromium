@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -301,7 +301,7 @@ LayoutUnit InitialColumnHeightFinder::SpaceUsedByStrutsAt(
 void InitialColumnHeightFinder::AddContentRun(
     LayoutUnit end_offset_in_flow_thread) {
   end_offset_in_flow_thread -= SpaceUsedByStrutsAt(end_offset_in_flow_thread);
-  if (!content_runs_.IsEmpty() &&
+  if (!content_runs_.empty() &&
       end_offset_in_flow_thread <= content_runs_.back().BreakOffset())
     return;
   // Append another item as long as we haven't exceeded used column count. What

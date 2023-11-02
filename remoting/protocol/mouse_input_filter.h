@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,11 @@
 #define REMOTING_PROTOCOL_MOUSE_INPUT_FILTER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "remoting/protocol/display_size.h"
 #include "remoting/protocol/input_filter.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // Filtering InputStub implementation which scales mouse events based on the
 // supplied input and output dimensions, and clamps their coordinates to the
@@ -28,7 +26,7 @@ class MouseInputFilter : public InputFilter {
   ~MouseInputFilter() override;
 
   // Specify the input dimensions (DIPs or pixels) for mouse events.
-  // Deoending on the protocol, the input size can be in either pixels (for
+  // Depending on the protocol, the input size can be in either pixels (for
   // ICE protocol) or DIPs (for webrtc - except for Mac, which is pixels).
   void set_input_size(const int32_t x, const int32_t y);
 
@@ -54,7 +52,6 @@ class MouseInputFilter : public InputFilter {
   webrtc::DesktopVector output_offset_;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_MOUSE_INPUT_FILTER_H_

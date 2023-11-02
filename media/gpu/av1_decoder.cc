@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
 #include "media/base/limits.h"
 #include "media/gpu/av1_picture.h"
@@ -55,11 +56,6 @@ bool SequenceUsesScalability(int operating_point_idc) {
   return operating_point_idc != 0;
 }
 
-bool IsYUV420Sequence(const libgav1::ColorConfig& color_config) {
-  return color_config.subsampling_x == 1u && color_config.subsampling_y == 1u &&
-         !color_config.is_monochrome;
-}
-
 bool IsValidBitDepth(uint8_t bit_depth, VideoCodecProfile profile) {
   // Spec 6.4.1.
   switch (profile) {
@@ -71,6 +67,28 @@ bool IsValidBitDepth(uint8_t bit_depth, VideoCodecProfile profile) {
     default:
       NOTREACHED();
       return false;
+  }
+}
+
+VideoChromaSampling GetAV1ChromaSampling(
+    const libgav1::ColorConfig& color_config) {
+  // Spec section 6.4.2
+  int8_t subsampling_x = color_config.subsampling_x;
+  int8_t subsampling_y = color_config.subsampling_y;
+  bool monochrome = color_config.is_monochrome;
+  if (monochrome) {
+    return VideoChromaSampling::k400;
+  } else {
+    if (subsampling_x == 0 && subsampling_y == 0) {
+      return VideoChromaSampling::k444;
+    } else if (subsampling_x == 1u && subsampling_y == 0) {
+      return VideoChromaSampling::k422;
+    } else if (subsampling_x == 1u && subsampling_y == 1u) {
+      return VideoChromaSampling::k420;
+    } else {
+      DLOG(WARNING) << "Unknown chroma sampling format.";
+      return VideoChromaSampling::kUnknown;
+    }
   }
 }
 }  // namespace
@@ -229,7 +247,15 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
         }
 
         current_sequence_header_ = parser_->sequence_header();
-        if (!IsYUV420Sequence(current_sequence_header_->color_config)) {
+        VideoChromaSampling new_chroma_sampling =
+            GetAV1ChromaSampling(current_sequence_header_->color_config);
+        if (new_chroma_sampling != chroma_sampling_) {
+          chroma_sampling_ = new_chroma_sampling;
+          base::UmaHistogramEnumeration(
+              "Media.PlatformVideoDecoding.ChromaSampling", chroma_sampling_);
+        }
+
+        if (chroma_sampling_ != VideoChromaSampling::k420) {
           DVLOG(1) << "Only YUV 4:2:0 is supported";
           return kDecodeError;
         }
@@ -508,6 +534,11 @@ VideoCodecProfile AV1Decoder::GetProfile() const {
 uint8_t AV1Decoder::GetBitDepth() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return bit_depth_;
+}
+
+VideoChromaSampling AV1Decoder::GetChromaSampling() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return chroma_sampling_;
 }
 
 size_t AV1Decoder::GetRequiredNumOfPictures() const {

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/strings/string_piece.h"
 #include "content/browser/devtools/network_service_devtools_observer.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
@@ -221,11 +222,12 @@ URLLoaderFactoryParamsHelper::CreateForWorker(
       static_cast<StoragePartitionImpl*>(process->GetStoragePartition())
           ->CreateCookieAccessObserverForServiceWorker(),
       std::move(url_loader_network_observer), std::move(devtools_observer),
-      // Since ExecutionContext::IsFeatureEnabled returns
-      // false in non-Document contexts, no worker should ever
-      // execute a trust token redemption or signing operation,
-      // as these operations require the Permissions Policy feature.
-      network::mojom::TrustTokenRedemptionPolicy::kForbid, debug_tag);
+      // Trust Token redemption and signing operations require the Permissions
+      // Policy. It seems Permissions Policy in worker contexts
+      // is currently an open issue (as of 06/21/2022):
+      // https://github.com/w3c/webappsec-permissions-policy/issues/207.
+      network::mojom::TrustTokenRedemptionPolicy::kPotentiallyPermit,
+      debug_tag);
 }
 
 // static

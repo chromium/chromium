@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,14 +70,14 @@ class WilcoDtcSupportdNotificationControllerTest
     // The created profile is owned by ProfileManager.
     Profile* profile = profile_manager_.CreateTestingProfile(kProfileName);
     profile_manager_.UpdateLastUser(profile);
-    ProfileHelper::Get()->SetActiveUserIdForTesting(kProfileName);
 
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         std::make_unique<FakeChromeUserManager>());
 
     auto account = AccountId::FromUserEmail(kProfileName);
-    GetFakeUserManager()->AddUser(account);
+    auto* user = GetFakeUserManager()->AddUser(account);
     GetFakeUserManager()->LoginUser(account);
+    ProfileHelper::Get()->ActiveUserHashChanged(user->username_hash());
 
     service_tester_ =
         std::make_unique<NotificationDisplayServiceTester>(profile);

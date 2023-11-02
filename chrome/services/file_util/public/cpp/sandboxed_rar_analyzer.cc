@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/process/process_handle.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
@@ -48,23 +49,29 @@ SandboxedRarAnalyzer::~SandboxedRarAnalyzer() = default;
 void SandboxedRarAnalyzer::AnalyzeFile(base::File file, base::File temp_file) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!file_path_.value().empty());
-  remote_analyzer_->AnalyzeRarFile(
-      std::move(file), std::move(temp_file),
-      base::BindOnce(&SandboxedRarAnalyzer::AnalyzeFileDone, this));
+  if (remote_analyzer_) {
+    remote_analyzer_->AnalyzeRarFile(
+        std::move(file), std::move(temp_file),
+        base::BindOnce(&SandboxedRarAnalyzer::AnalyzeFileDone, this));
+  } else {
+    AnalyzeFileDone(safe_browsing::ArchiveAnalyzerResults());
+  }
 }
 
 void SandboxedRarAnalyzer::AnalyzeFileDone(
     const safe_browsing::ArchiveAnalyzerResults& results) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   remote_analyzer_.reset();
-  std::move(callback_).Run(results);
+  if (callback_) {
+    std::move(callback_).Run(results);
+  }
 }
 
 void SandboxedRarAnalyzer::PrepareFileToAnalyze() {
   if (file_path_.value().empty()) {
     // TODO(vakh): Add UMA metrics here to check how often this happens.
     DLOG(ERROR) << "file_path_ empty!";
-    ReportFileFailure();
+    ReportFileFailure(safe_browsing::ArchiveAnalysisResult::kFailedToOpen);
     return;
   }
 
@@ -72,7 +79,7 @@ void SandboxedRarAnalyzer::PrepareFileToAnalyze() {
   if (!file.IsValid()) {
     // TODO(vakh): Add UMA metrics here to check how often this happens.
     DLOG(ERROR) << "Could not open file: " << file_path_.value();
-    ReportFileFailure();
+    ReportFileFailure(safe_browsing::ArchiveAnalysisResult::kFailedToOpen);
     return;
   }
 
@@ -81,13 +88,14 @@ void SandboxedRarAnalyzer::PrepareFileToAnalyze() {
   if (base::CreateTemporaryFile(&temp_path)) {
     temp_file.Initialize(
         temp_path, (base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_READ |
-                    base::File::FLAG_WRITE | base::File::FLAG_TEMPORARY |
+                    base::File::FLAG_WRITE | base::File::FLAG_WIN_TEMPORARY |
                     base::File::FLAG_DELETE_ON_CLOSE));
   }
 
   if (!temp_file.IsValid()) {
     DLOG(ERROR) << "Could not open temp file: " << temp_path.value();
-    ReportFileFailure();
+    ReportFileFailure(
+        safe_browsing::ArchiveAnalysisResult::kFailedToOpenTempFile);
     return;
   }
 
@@ -96,10 +104,15 @@ void SandboxedRarAnalyzer::PrepareFileToAnalyze() {
                                 std::move(file), std::move(temp_file)));
 }
 
-void SandboxedRarAnalyzer::ReportFileFailure() {
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback_),
-                                safe_browsing::ArchiveAnalyzerResults()));
+void SandboxedRarAnalyzer::ReportFileFailure(
+    safe_browsing::ArchiveAnalysisResult reason) {
+  if (callback_) {
+    safe_browsing::ArchiveAnalyzerResults results;
+    results.analysis_result = reason;
+
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback_), results));
+  }
 }
 
 std::string SandboxedRarAnalyzer::DebugString() const {

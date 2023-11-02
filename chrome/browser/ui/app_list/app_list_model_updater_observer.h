@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,9 +25,6 @@ class AppListModelUpdaterObserver : public base::CheckedObserver {
 
   // Triggered after an item has moved, changed folders, or changed properties.
   virtual void OnAppListItemUpdated(ChromeAppListItem* item) {}
-
-  // Triggered when setting app list sort order.
-  virtual void OnAppListPreferredOrderChanged(ash::AppListSortOrder order) {}
 };
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_APP_LIST_MODEL_UPDATER_OBSERVER_H_

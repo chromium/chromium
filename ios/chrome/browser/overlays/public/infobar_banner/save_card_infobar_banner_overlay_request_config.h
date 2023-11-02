@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,9 +45,6 @@ class SaveCardBannerRequestConfig
   // The button label text.
   std::u16string button_label_text() const { return button_label_text_; }
 
-  // The name of the icon image.
-  NSString* icon_image_name() const { return icon_image_name_; }
-
   // Whether the action is an upload or a local save.
   bool should_upload_credentials() const { return should_upload_credentials_; }
 
@@ -60,14 +57,13 @@ class SaveCardBannerRequestConfig
 
   // The InfoBar causing this banner.
   infobars::InfoBar* infobar_ = nullptr;
-  // Configuration data extracted from |infobar_|'s save card delegate.
+  // Configuration data extracted from `infobar_`'s save card delegate.
   std::u16string message_text_;
   std::u16string card_label_;
   std::u16string cardholder_name_;
   std::u16string expiration_date_month_;
   std::u16string expiration_date_year_;
   std::u16string button_label_text_;
-  NSString* icon_image_name_ = nil;
   bool should_upload_credentials_ = false;
 };
 

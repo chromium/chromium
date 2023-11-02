@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,8 @@
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/test_browser_accessibility_delegate.h"
+#include "content/public/browser/browser_accessibility_state.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
@@ -16,10 +18,9 @@
 
 namespace content {
 
-class BrowserAccessibilityManagerAuraLinuxTest : public testing::Test {
+class BrowserAccessibilityManagerAuraLinuxTest : public ::testing::Test {
  public:
-  BrowserAccessibilityManagerAuraLinuxTest()
-      : ax_mode_setter_(ui::kAXModeComplete) {}
+  BrowserAccessibilityManagerAuraLinuxTest() = default;
 
   BrowserAccessibilityManagerAuraLinuxTest(
       const BrowserAccessibilityManagerAuraLinuxTest&) = delete;
@@ -34,12 +35,18 @@ class BrowserAccessibilityManagerAuraLinuxTest : public testing::Test {
 
  private:
   void SetUp() override;
-  ui::testing::ScopedAxModeSetter ax_mode_setter_;
+  std::unique_ptr<content::testing::ScopedContentAXModeSetter> ax_mode_setter_;
+
+  // See crbug.com/1349124
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 void BrowserAccessibilityManagerAuraLinuxTest::SetUp() {
   test_browser_accessibility_delegate_ =
       std::make_unique<TestBrowserAccessibilityDelegate>();
+  ax_mode_setter_ =
+      std::make_unique<content::testing::ScopedContentAXModeSetter>(
+          ui::kAXModeComplete);
 }
 
 TEST_F(BrowserAccessibilityManagerAuraLinuxTest, TestEmitChildrenChanged) {
@@ -63,7 +70,8 @@ TEST_F(BrowserAccessibilityManagerAuraLinuxTest, TestEmitChildrenChanged) {
       BrowserAccessibilityManager::Create(
           initial_state, test_browser_accessibility_delegate_.get()));
 
-  AtkObject* atk_root = manager->GetRoot()->GetNativeViewAccessible();
+  AtkObject* atk_root =
+      manager->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
   ui::AXPlatformNodeAuraLinux* root_document_root_node =
       static_cast<ui::AXPlatformNodeAuraLinux*>(
           ui::AXPlatformNode::FromNativeViewAccessible(atk_root));
@@ -80,7 +88,7 @@ TEST_F(BrowserAccessibilityManagerAuraLinuxTest, TestEmitChildrenChanged) {
                    }),
                    nullptr);
   BrowserAccessibility* static_text_accessible =
-      manager->GetRoot()->PlatformGetChild(0);
+      manager->GetBrowserAccessibilityRoot()->PlatformGetChild(0);
   // StaticText node triggers 'children-changed' event to the parent,
   // ATK_ROLE_DOCUMENT_WEB, when subtree is changed.
   BrowserAccessibilityManagerAuraLinux* aura_linux_manager =
@@ -103,8 +111,12 @@ TEST_F(BrowserAccessibilityManagerAuraLinuxTest, TestEmitChildrenChanged) {
                    }),
                    nullptr);
 
+  // The static text is a platform leaf.
+  ASSERT_EQ(0U, static_text_accessible->PlatformChildCount());
+  ASSERT_EQ(1U, static_text_accessible->InternalChildCount());
+
   BrowserAccessibility* inline_text_accessible =
-      static_text_accessible->PlatformGetChild(0);
+      static_text_accessible->InternalGetChild(0);
   // PlatformLeaf node such as InlineText should not trigger
   // 'children-changed' event to the parent when subtree is changed.
   aura_linux_manager->FireSubtreeCreatedEvent(inline_text_accessible);

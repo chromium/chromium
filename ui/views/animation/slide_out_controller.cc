@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,7 +37,7 @@ SlideOutController::~SlideOutController() = default;
 void SlideOutController::CaptureControlOpenState() {
   if (!has_swipe_control_)
     return;
-  if (mode_ == SlideMode::kFull &&
+  if ((mode_ == SlideMode::kFull || mode_ == SlideMode::kPartial) &&
       fabs(gesture_amount_) >= swipe_control_width_) {
     control_open_state_ = gesture_amount_ < 0
                               ? SwipeControlOpenState::kOpenOnRight

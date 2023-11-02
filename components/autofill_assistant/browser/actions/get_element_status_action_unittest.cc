@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,10 +14,11 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill_assistant/browser/actions/action_test_utils.h"
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
-#include "components/autofill_assistant/browser/mock_website_login_manager.h"
+#include "components/autofill_assistant/browser/public/password_change/mock_website_login_manager.h"
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/user_model.h"
+#include "components/autofill_assistant/browser/web/element_finder_result.h"
 #include "components/autofill_assistant/browser/web/element_store.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
 #include "content/public/test/browser_task_environment.h"
@@ -51,6 +52,8 @@ class GetElementStatusActionTest : public testing::Test {
 
     ON_CALL(mock_action_delegate_, GetUserData)
         .WillByDefault(Return(&user_data_));
+    ON_CALL(mock_action_delegate_, GetUserModel)
+        .WillByDefault(Return(&user_model_));
     ON_CALL(mock_action_delegate_, GetWebController)
         .WillByDefault(Return(&mock_web_controller_));
     ON_CALL(mock_action_delegate_, GetWebsiteLoginManager)
@@ -149,9 +152,9 @@ TEST_F(GetElementStatusActionTest, ActionReportsAllVariationsForSelector) {
 }
 
 TEST_F(GetElementStatusActionTest, ActionReportsAllVariationsForClientId) {
-  ElementFinder::Result element;
+  ElementFinderResult element;
   mock_action_delegate_.GetElementStore()->AddElement("element",
-                                                      element.dom_object);
+                                                      element.dom_object());
   proto_.mutable_client_id()->set_identifier("element");
   proto_.mutable_expected_value_match()
       ->mutable_text_match()
@@ -700,9 +703,10 @@ TEST_F(GetElementStatusActionTest, SucceedsWithPasswordManagerValue) {
 
   EXPECT_CALL(mock_action_delegate_, FindElement(_, _))
       .WillOnce(WithArgs<1>([this](auto&& callback) {
-        std::unique_ptr<ElementFinder::Result> element =
-            std::make_unique<ElementFinder::Result>();
-        element->container_frame_host = web_contents_->GetMainFrame();
+        std::unique_ptr<ElementFinderResult> element =
+            std::make_unique<ElementFinderResult>();
+        element->SetRenderFrameHostForTest(
+            web_contents_->GetPrimaryMainFrame());
         std::move(callback).Run(OkClientStatus(), std::move(element));
       }));
   EXPECT_CALL(mock_website_login_manager_, GetPasswordForLogin(_, _))

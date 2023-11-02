@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,10 @@
 #include <dwrite_2.h>
 #include <dwrite_3.h>
 #include <wrl.h>
+
 #include <string>
 #include <vector>
 
-#include "base/location.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/renderer_host/dwrite_font_lookup_table_builder_win.h"

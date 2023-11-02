@@ -35,11 +35,11 @@
 #include "pitch.h"
 #include "x86cpu.h"
 
-#if (defined(OPUS_X86_MAY_HAVE_SSE) && !defined(OPUS_X86_PRESUME_SSE)) || \
+#if defined(OPUS_HAVE_RTCD) && \
+  ((defined(OPUS_X86_MAY_HAVE_SSE) && !defined(OPUS_X86_PRESUME_SSE)) || \
   (defined(OPUS_X86_MAY_HAVE_SSE2) && !defined(OPUS_X86_PRESUME_SSE2)) || \
   (defined(OPUS_X86_MAY_HAVE_SSE4_1) && !defined(OPUS_X86_PRESUME_SSE4_1)) || \
-  (defined(OPUS_X86_MAY_HAVE_AVX) && !defined(OPUS_X86_PRESUME_AVX))
-
+  (defined(OPUS_X86_MAY_HAVE_AVX) && !defined(OPUS_X86_PRESUME_AVX)))
 
 #if defined(_MSC_VER)
 
@@ -68,7 +68,8 @@ static void cpuid(unsigned int CPUInfo[4], unsigned int InfoType)
         "=r" (CPUInfo[1]),
         "=c" (CPUInfo[2]),
         "=d" (CPUInfo[3]) :
-        "0" (InfoType)
+        /* We clear ECX to avoid a valgrind false-positive prior to v3.17.0. */
+        "0" (InfoType), "2" (0)
     );
 #else
     __asm__ __volatile__ (
@@ -77,11 +78,22 @@ static void cpuid(unsigned int CPUInfo[4], unsigned int InfoType)
         "=b" (CPUInfo[1]),
         "=c" (CPUInfo[2]),
         "=d" (CPUInfo[3]) :
-        "0" (InfoType)
+        /* We clear ECX to avoid a valgrind false-positive prior to v3.17.0. */
+        "0" (InfoType), "2" (0)
     );
 #endif
 #elif defined(CPU_INFO_BY_C)
-    __get_cpuid(InfoType, &(CPUInfo[0]), &(CPUInfo[1]), &(CPUInfo[2]), &(CPUInfo[3]));
+    /* We use __get_cpuid_count to clear ECX to avoid a valgrind false-positive
+        prior to v3.17.0.*/
+    if (!__get_cpuid_count(InfoType, 0, &(CPUInfo[0]), &(CPUInfo[1]), &(CPUInfo[2]), &(CPUInfo[3]))) {
+        /* Our function cannot fail, but __get_cpuid{_count} can.
+           Returning all zeroes will effectively disable all SIMD, which is
+            what we want on CPUs that don't support CPUID. */
+        CPUInfo[3] = CPUInfo[2] = CPUInfo[1] = CPUInfo[0] = 0;
+    }
+#else
+# error "Configured to use x86 RTCD, but no CPU detection method available. " \
+ "Reconfigure with --disable-rtcd (or send patches)."
 #endif
 }
 
@@ -98,7 +110,7 @@ typedef struct CPU_Feature{
 
 static void opus_cpu_feature_check(CPU_Feature *cpu_feature)
 {
-    unsigned int info[4] = {0};
+    unsigned int info[4];
     unsigned int nIds = 0;
 
     cpuid(info, 0);
@@ -119,7 +131,7 @@ static void opus_cpu_feature_check(CPU_Feature *cpu_feature)
     }
 }
 
-int opus_select_arch(void)
+static int opus_select_arch_impl(void)
 {
     CPU_Feature cpu_feature;
     int arch;
@@ -151,6 +163,15 @@ int opus_select_arch(void)
     }
     arch++;
 
+    return arch;
+}
+
+int opus_select_arch(void) {
+    int arch = opus_select_arch_impl();
+#ifdef FUZZING
+    /* Randomly downgrade the architecture. */
+    arch = rand()%(arch+1);
+#endif
     return arch;
 }
 

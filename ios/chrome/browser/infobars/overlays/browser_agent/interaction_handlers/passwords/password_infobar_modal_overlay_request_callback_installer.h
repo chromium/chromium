@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,38 +18,38 @@ class PasswordInfobarModalOverlayRequestCallbackInstaller
     : public InfobarModalOverlayRequestCallbackInstaller {
  public:
   // Constructor for an instance that installs callbacks that forward
-  // interaction events to |interaction_handler| for an Password Infobar Overlay
-  // of type |action_type|.
+  // interaction events to `interaction_handler` for an Password Infobar Overlay
+  // of type `action_type`.
   explicit PasswordInfobarModalOverlayRequestCallbackInstaller(
       PasswordInfobarModalInteractionHandler* interaction_handler,
       password_modal::PasswordAction action_type);
   ~PasswordInfobarModalOverlayRequestCallbackInstaller() override;
 
  private:
-  // Used as a callback for OverlayResponses dispatched through |request|'s
+  // Used as a callback for OverlayResponses dispatched through `request`'s
   // callback manager.  The OverlayDispatchCallback is created with an
-  // OverlayResponseSupport that guarantees that |response| is created with an
+  // OverlayResponseSupport that guarantees that `response` is created with an
   // password_infobar_modal_responses::UpdateCredentialsInfo.
   void UpdateCredentialsCallback(OverlayRequest* request,
                                  OverlayResponse* response);
-  // Used as a callback for OverlayResponses dispatched through |request|'s
+  // Used as a callback for OverlayResponses dispatched through `request`'s
   // callback manager.  The OverlayDispatchCallback is created with an
-  // OverlayResponseSupport that guarantees that |response| is created with a
+  // OverlayResponseSupport that guarantees that `response` is created with a
   // password_infobar_modal_responses::NeverSaveCredentials.
   void NeverSaveCredentialsCallback(OverlayRequest* request,
                                     OverlayResponse* response);
-  // Used as a callback for OverlayResponses dispatched through |request|'s
+  // Used as a callback for OverlayResponses dispatched through `request`'s
   // callback manager.  The OverlayDispatchCallback is created with an
-  // OverlayResponseSupport that guarantees that |response| is created with a
+  // OverlayResponseSupport that guarantees that `response` is created with a
   // password_infobar_modal_responses::PresentPasswordSettings.
   void PresentPasswordsSettingsCallback(OverlayRequest* request,
                                         OverlayResponse* response);
 
-  // Used as an optional completion callback for |request|.  Removes the
+  // Used as an optional completion callback for `request`.  Removes the
   // request's infobar from its manager upon completion.
   void RemoveInfobarCompletionCallback(OverlayRequest* request,
                                        OverlayResponse* response);
-  // Used as an optional completion callback for |request|.  Presents the
+  // Used as an optional completion callback for `request`.  Presents the
   // password settings.
   void PresentPasswordSettingsCompletionCallback(OverlayRequest* request,
                                                  OverlayResponse* response);

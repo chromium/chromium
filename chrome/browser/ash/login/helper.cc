@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
@@ -20,14 +19,14 @@
 #include "chrome/browser/password_manager/password_reuse_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/login/auth/user_context.h"
-#include "chromeos/network/managed_network_configuration_handler.h"
-#include "chromeos/network/network_connection_handler.h"
-#include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_handler_callbacks.h"
-#include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
-#include "chromeos/network/network_util.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/network/managed_network_configuration_handler.h"
+#include "chromeos/ash/components/network/network_connection_handler.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_handler_callbacks.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_util.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "content/public/browser/browser_thread.h"
@@ -48,7 +47,7 @@ gfx::Rect CalculateScreenBounds(const gfx::Size& size) {
   if (!size.IsEmpty()) {
     int horizontal_diff = bounds.width() - size.width();
     int vertical_diff = bounds.height() - size.height();
-    bounds.Inset(horizontal_diff / 2, vertical_diff / 2);
+    bounds.Inset(gfx::Insets::VH(vertical_diff / 2, horizontal_diff / 2));
   }
   return bounds;
 }
@@ -88,17 +87,18 @@ std::u16string NetworkStateHelper::GetCurrentNetworkName() const {
 }
 
 bool NetworkStateHelper::IsConnected() const {
-  chromeos::NetworkStateHandler* nsh =
-      chromeos::NetworkHandler::Get()->network_state_handler();
-  return nsh->ConnectedNetworkByType(chromeos::NetworkTypePattern::Default()) !=
-         nullptr;
+  NetworkStateHandler* nsh = NetworkHandler::Get()->network_state_handler();
+  return nsh->ConnectedNetworkByType(NetworkTypePattern::Default()) != nullptr;
+}
+
+bool NetworkStateHelper::IsConnectedToEthernet() const {
+  NetworkStateHandler* nsh = NetworkHandler::Get()->network_state_handler();
+  return nsh->ConnectedNetworkByType(NetworkTypePattern::Ethernet()) != nullptr;
 }
 
 bool NetworkStateHelper::IsConnecting() const {
-  chromeos::NetworkStateHandler* nsh =
-      chromeos::NetworkHandler::Get()->network_state_handler();
-  return nsh->ConnectingNetworkByType(
-             chromeos::NetworkTypePattern::Default()) != nullptr;
+  NetworkStateHandler* nsh = NetworkHandler::Get()->network_state_handler();
+  return nsh->ConnectingNetworkByType(NetworkTypePattern::Default()) != nullptr;
 }
 
 void NetworkStateHelper::OnCreateConfiguration(
@@ -119,6 +119,19 @@ content::StoragePartition* GetSigninPartition() {
   if (!signin_partition_manager->IsInSigninSession())
     return nullptr;
   return signin_partition_manager->GetCurrentStoragePartition();
+}
+
+content::StoragePartition* GetLockScreenPartition() {
+  Profile* lock_screen_profile = ProfileHelper::GetLockScreenProfile();
+  // TODO(http://crbug/1348126): dependency on SigninPartitionManager should be
+  // refactored after we clarify when and how do we clear data from the lock
+  // screen profile.
+  SigninPartitionManager* partition_manager =
+      SigninPartitionManager::Factory::GetForBrowserContext(
+          lock_screen_profile);
+  if (!partition_manager->IsInSigninSession())
+    return nullptr;
+  return partition_manager->GetCurrentStoragePartition();
 }
 
 network::mojom::NetworkContext* GetSigninNetworkContext() {

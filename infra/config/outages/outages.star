@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -33,7 +33,7 @@ def _disable_cq_experiments(ctx):
         for b in c.verifiers.tryjob.builders:
             if not b.experiment_percentage:
                 continue
-            project, bucket, builder = b.name.split("/", 2)
+            project, bucket, _ = b.name.split("/", 2)
             if project == "chromium" and bucket == "try":
                 b.includable_only = True
                 b.experiment_percentage = 0

@@ -23,23 +23,14 @@ ResourceLoadingTaskRunnerHandleImpl::WrapTaskRunner(
 ResourceLoadingTaskRunnerHandleImpl::ResourceLoadingTaskRunnerHandleImpl(
     scoped_refptr<MainThreadTaskQueue> task_queue)
     : task_queue_(std::move(task_queue)),
-      task_runner_(task_queue_->CreateTaskRunner(
-          TaskType::kNetworkingWithURLLoaderAnnotation)) {}
+      task_runner_(task_queue_->CreateTaskRunner(TaskType::kNetworking)) {}
 
-ResourceLoadingTaskRunnerHandleImpl::~ResourceLoadingTaskRunnerHandleImpl() {
-  if (task_queue_->GetFrameScheduler()) {
-    task_queue_->GetFrameScheduler()->OnShutdownResourceLoadingTaskQueue(
-        task_queue_);
-  }
-}
+ResourceLoadingTaskRunnerHandleImpl::~ResourceLoadingTaskRunnerHandleImpl() =
+    default;
 
 void ResourceLoadingTaskRunnerHandleImpl::DidChangeRequestPriority(
     net::RequestPriority priority) {
-  task_queue_->SetNetRequestPriority(priority);
-  FrameSchedulerImpl* frame_scheduler = task_queue_->GetFrameScheduler();
-  if (frame_scheduler) {
-    frame_scheduler->DidChangeResourceLoadingPriority(task_queue_, priority);
-  }
+  // TODO(crbug.com/860545): Decide whether this method should be removed.
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>

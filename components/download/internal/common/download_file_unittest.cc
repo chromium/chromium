@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
 #endif
 
@@ -122,7 +122,7 @@ class TestDownloadFileImpl : public DownloadFileImpl {
     return base::Milliseconds(0);
   }
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   // On Posix, we don't encounter transient errors during renames, except
   // possibly EAGAIN, which is difficult to replicate reliably. So we resort to
   // simulating a transient error using ACCESS_DENIED instead.
@@ -174,7 +174,7 @@ class DownloadFileTest : public testing::Test {
   }
 
   void SetUp() override {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     ASSERT_TRUE(com_initializer_.Succeeded());
 #endif
     EXPECT_CALL(*(observer_.get()), DestinationUpdate(_, _, _))
@@ -483,7 +483,7 @@ class DownloadFileTest : public testing::Test {
   }
 
  private:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // This must occur early in the member list to ensure COM is initialized first
   // and uninitialized last.
   base::win::ScopedCOMInitializer com_initializer_;
@@ -725,8 +725,14 @@ TEST_F(DownloadFileTest, RenameRecognizesSelfConflict) {
   EXPECT_EQ(initial_path.value(), new_path.value());
 }
 
+#if BUILDFLAG(IS_FUCHSIA)
+// TODO(crbug.com/1314071): Re-enable when RenameError works on Fuchsia.
+#define MAYBE_RenameError DISABLED_RenameError
+#else
+#define MAYBE_RenameError RenameError
+#endif
 // Test to make sure we get the proper error on failure.
-TEST_P(DownloadFileTestWithRename, RenameError) {
+TEST_P(DownloadFileTestWithRename, MAYBE_RenameError) {
   ASSERT_TRUE(CreateDownloadFile(true));
   base::FilePath initial_path(download_file_->FullPath());
 
@@ -772,6 +778,13 @@ void TestRenameCompletionCallback(base::OnceClosure closure,
 
 }  // namespace
 
+#if BUILDFLAG(IS_FUCHSIA)
+// TODO(crbug.com/1314072): Re-enable when RenameWithErrorRetry works on
+// Fuchsia.
+#define MAYBE_RenameWithErrorRetry DISABLED_RenameWithErrorRetry
+#else
+#define MAYBE_RenameWithErrorRetry RenameWithErrorRetry
+#endif
 // Test that the retry logic works. This test assumes that DownloadFileImpl will
 // post tasks to the current message loop (acting as the download sequence)
 // asynchronously to retry the renames. We will stuff RunLoop::QuitClosures()
@@ -781,7 +794,7 @@ void TestRenameCompletionCallback(base::OnceClosure closure,
 // Note that there is only one queue of tasks to run, and that is in the tests'
 // base::CurrentThread::Get(). Each RunLoop processes that queue until it
 // sees a QuitClosure() targeted at itself, at which point it stops processing.
-TEST_P(DownloadFileTestWithRename, RenameWithErrorRetry) {
+TEST_P(DownloadFileTestWithRename, MAYBE_RenameWithErrorRetry) {
   ASSERT_TRUE(CreateDownloadFile(true));
   base::FilePath initial_path(download_file_->FullPath());
 
@@ -800,7 +813,7 @@ TEST_P(DownloadFileTestWithRename, RenameWithErrorRetry) {
   base::RunLoop succeeding_run;
   {
 // (Scope for the base::File or base::FilePermissionRestorer below.)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // On Windows we test with an actual transient error, a sharing violation.
     // The rename will fail because we are holding the file open for READ. On
     // Posix this doesn't cause a failure.

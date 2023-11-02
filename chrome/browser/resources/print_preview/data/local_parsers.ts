@@ -1,54 +1,54 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {isChromeOS, isLacros} from 'chrome://resources/js/cr.m.js';
 
-import {Destination, DestinationConnectionStatus, DestinationOptionalParams, DestinationOrigin, DestinationProvisionalType, DestinationType} from './destination.js';
-import {PrinterType} from './destination_match.js';
+import {Destination, DestinationOptionalParams, DestinationOrigin, PrinterType} from './destination.js';
+// <if expr="is_chromeos">
+import {DestinationProvisionalType} from './destination.js';
+// </if>
 
-type ObjectMap = {
-  [k: string]: any
-};
+interface ObjectMap {
+  [k: string]: any;
+}
 
-export type LocalDestinationInfo = {
-  deviceName: string,
-  printerName: string,
-  printerDescription?: string,
-  cupsEnterprisePrinter?: boolean,
-  printerOptions?: ObjectMap,
-};
+export interface LocalDestinationInfo {
+  deviceName: string;
+  printerName: string;
+  printerDescription?: string;
+  cupsEnterprisePrinter?: boolean;
+  printerOptions?: ObjectMap;
+}
 
-export type ProvisionalDestinationInfo = {
-  extensionId: string,
-  extensionName: string,
-  id: string,
-  name: string,
-  description?: string,
-  provisional?: boolean,
-};
+export interface ExtensionDestinationInfo {
+  extensionId: string;
+  extensionName: string;
+  id: string;
+  name: string;
+  description?: string;
+  provisional?: boolean;
+}
 
 /**
  * @param type The type of printer to parse.
  * @param printer Information about the printer.
  *       Type expected depends on |type|:
  *       For LOCAL_PRINTER => LocalDestinationInfo
- *       For EXTENSION_PRINTER => ProvisionalDestinationInfo
+ *       For EXTENSION_PRINTER => ExtensionDestinationInfo
  * @return Destination, or null if an invalid value is provided for |type|.
  */
 export function parseDestination(
     type: PrinterType,
-    printer: (LocalDestinationInfo|ProvisionalDestinationInfo)): (Destination|
-                                                                  null) {
-  if (type === PrinterType.LOCAL_PRINTER) {
+    printer: (LocalDestinationInfo|ExtensionDestinationInfo)): Destination {
+  if (type === PrinterType.LOCAL_PRINTER || type === PrinterType.PDF_PRINTER) {
     return parseLocalDestination(printer as LocalDestinationInfo);
   }
   if (type === PrinterType.EXTENSION_PRINTER) {
-    return parseExtensionDestination(printer as ProvisionalDestinationInfo);
+    return parseExtensionDestination(printer as ExtensionDestinationInfo);
   }
   assertNotReached('Unknown printer type ' + type);
-  return null;
 }
 
 /**
@@ -60,19 +60,22 @@ function parseLocalDestination(destinationInfo: LocalDestinationInfo):
   const options: DestinationOptionalParams = {
     description: destinationInfo.printerDescription,
     isEnterprisePrinter: destinationInfo.cupsEnterprisePrinter,
+    location: '',
   };
+  const locationOptions = new Set(['location', 'printer-location']);
   if (destinationInfo.printerOptions) {
-    // Convert options into cloud print tags format.
-    options.tags =
-        Object.keys(destinationInfo.printerOptions).map(function(key) {
-          return '__cp__' + key + '=' + destinationInfo.printerOptions![key];
-        });
+    // The only printer option currently used by Print Preview's UI is location.
+    for (const printerOption of Object.keys(destinationInfo.printerOptions)) {
+      if (locationOptions.has(printerOption)) {
+        options.location = destinationInfo.printerOptions[printerOption] || '';
+      }
+    }
   }
   return new Destination(
-      destinationInfo.deviceName, DestinationType.LOCAL,
+      destinationInfo.deviceName,
       (isChromeOS || isLacros) ? DestinationOrigin.CROS :
                                  DestinationOrigin.LOCAL,
-      destinationInfo.printerName, DestinationConnectionStatus.ONLINE, options);
+      destinationInfo.printerName, options);
 }
 
 /**
@@ -80,17 +83,20 @@ function parseLocalDestination(destinationInfo: LocalDestinationInfo):
  * description.
  */
 export function parseExtensionDestination(
-    destinationInfo: ProvisionalDestinationInfo): Destination {
+    destinationInfo: ExtensionDestinationInfo): Destination {
+  // <if expr="is_chromeos">
   const provisionalType = destinationInfo.provisional ?
       DestinationProvisionalType.NEEDS_USB_PERMISSION :
       DestinationProvisionalType.NONE;
+  // </if>
 
   return new Destination(
-      destinationInfo.id, DestinationType.LOCAL, DestinationOrigin.EXTENSION,
-      destinationInfo.name, DestinationConnectionStatus.ONLINE, {
+      destinationInfo.id, DestinationOrigin.EXTENSION, destinationInfo.name, {
         description: destinationInfo.description || '',
         extensionId: destinationInfo.extensionId,
         extensionName: destinationInfo.extensionName || '',
-        provisionalType: provisionalType
+        // <if expr="is_chromeos">
+        provisionalType: provisionalType,
+        // </if>
       });
 }

@@ -1,19 +1,19 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "gpu/command_buffer/service/native_image_buffer.h"
 
-// #include <stdint.h>
-
 #include <list>
 
+#include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
 #include "ui/gl/gl_image.h"
 #include "ui/gl/gl_implementation.h"
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 #include "ui/gl/gl_surface_egl.h"
 #endif
 
@@ -22,7 +22,7 @@ namespace gles2 {
 
 namespace {
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 class NativeImageBufferEGL : public NativeImageBuffer {
  public:
   static scoped_refptr<NativeImageBufferEGL> Create(GLuint texture_id);
@@ -47,24 +47,25 @@ class NativeImageBufferEGL : public NativeImageBuffer {
     explicit ClientInfo(gl::GLImage* client);
     ~ClientInfo();
 
-    gl::GLImage* client;
+    raw_ptr<gl::GLImage> client;
     bool needs_wait_before_read;
   };
   std::list<ClientInfo> client_infos_;
-  gl::GLImage* write_client_;
+  raw_ptr<gl::GLImage> write_client_;
 };
 
 scoped_refptr<NativeImageBufferEGL> NativeImageBufferEGL::Create(
     GLuint texture_id) {
-  EGLDisplay egl_display = gl::GLSurfaceEGL::GetHardwareDisplay();
+  gl::GLDisplayEGL* display = gl::GLSurfaceEGL::GetGLDisplayEGL();
+  EGLDisplay egl_display = display->GetDisplay();
   EGLContext egl_context = eglGetCurrentContext();
 
   DCHECK_NE(EGL_NO_CONTEXT, egl_context);
   DCHECK_NE(EGL_NO_DISPLAY, egl_display);
   DCHECK(glIsTexture(texture_id));
 
-  DCHECK(gl::g_driver_egl.ext.b_EGL_KHR_image_base &&
-         gl::g_driver_egl.ext.b_EGL_KHR_gl_texture_2D_image &&
+  DCHECK(display->ext->b_EGL_KHR_image_base &&
+         display->ext->b_EGL_KHR_gl_texture_2D_image &&
          gl::g_current_gl_driver->ext.b_GL_OES_EGL_image);
 
   const EGLint egl_attrib_list[] = {
@@ -161,7 +162,7 @@ class NativeImageBufferStub : public NativeImageBuffer {
 // static
 scoped_refptr<NativeImageBuffer> NativeImageBuffer::Create(GLuint texture_id) {
   switch (gl::GetGLImplementation()) {
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
     case gl::kGLImplementationEGLGLES2:
     case gl::kGLImplementationEGLANGLE:
       return NativeImageBufferEGL::Create(texture_id);

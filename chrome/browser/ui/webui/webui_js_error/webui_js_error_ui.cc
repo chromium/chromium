@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,20 +16,10 @@
 #include "chrome/grit/webui_js_error_resources.h"
 #include "chrome/grit/webui_js_error_resources_map.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "content/public/common/content_features.h"
 
 WebUIJsErrorUI::WebUIJsErrorUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
-#if !defined(OS_WIN) && !defined(OS_FUCHSIA)
-  VLOG(3) << std::boolalpha << "chrome://webuijserror loading. "
-          << "Experiment state: send javascript errors is "
-          << base::FeatureList::IsEnabled(
-                 features::kSendWebUIJavaScriptErrorReports)
-          << " and send to prod is "
-          << features::kWebUIJavaScriptErrorReportsSendToProductionParam.Get();
-#else
   VLOG(3) << "chrome://webuijserror loading.";
-#endif
 
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUIWebUIJsErrorHost);

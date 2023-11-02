@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,21 +19,6 @@ namespace autofill {
 // Note: This is only used for virtual card related errors.
 class AutofillErrorDialogController {
  public:
-  // Keep in sync with `AutofillErrorDialogType` in enums.xml
-  enum AutofillErrorDialogType {
-    // Error shown when the server returns a temporary error for unmasking a
-    // virtual card.
-    VIRTUAL_CARD_TEMPORARY_ERROR,
-    // Error shown when the server returns a permanent error for unmasking a
-    // virtual card.
-    VIRTUAL_CARD_PERMANENT_ERROR,
-    // Error shown when the server says that the virtual card being unmasked is
-    // not eligible for the virtual card feature.
-    VIRTUAL_CARD_NOT_ELIGIBLE_ERROR,
-    // kMaxValue is required for logging histograms.
-    kMaxValue = VIRTUAL_CARD_NOT_ELIGIBLE_ERROR,
-  };
-
   // Callback received when the error dialog is dismissed.
   virtual void OnDismissed() = 0;
 

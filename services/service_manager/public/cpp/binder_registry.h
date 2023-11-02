@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/service_manager/public/cpp/export.h"
@@ -19,6 +20,7 @@
 
 namespace service_manager {
 
+// (DEPRECATED) Prefer mojo::BinderMap instead.
 template <typename... BinderArgs>
 class BinderRegistryWithArgs {
  public:
@@ -71,6 +73,9 @@ class BinderRegistryWithArgs {
     if (it != binders_.end())
       binders_.erase(it);
   }
+
+  // Removes all the binders from the registry.
+  void clear() { binders_.clear(); }
 
   // Returns true if an InterfaceBinder is registered for |interface_name|.
   bool CanBindInterface(const std::string& interface_name) const {

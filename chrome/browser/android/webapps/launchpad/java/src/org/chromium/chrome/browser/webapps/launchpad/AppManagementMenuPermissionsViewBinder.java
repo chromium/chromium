@@ -1,11 +1,12 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package org.chromium.chrome.browser.webapps.launchpad;
 
-import android.content.res.ColorStateList;
 import android.view.View;
 import android.widget.ImageView;
+
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -53,13 +54,13 @@ class AppManagementMenuPermissionsViewBinder {
             case ContentSettingValues.ALLOW:
                 // Permission is ALLOW, showing the enabled icon with the default tint.
                 resId = enabledIcon;
-                tintId = R.color.default_icon_color;
+                tintId = R.color.default_icon_color_tint_list;
                 break;
             case ContentSettingValues.BLOCK:
                 // Permission is BLOCK, showing the disabled icon (crossed-out icon), with the
                 // default tint.
                 resId = disabledIcon;
-                tintId = R.color.default_icon_color;
+                tintId = R.color.default_icon_color_tint_list;
                 break;
             case ContentSettingValues.ASK:
             case ContentSettingValues.DEFAULT:
@@ -74,6 +75,6 @@ class AppManagementMenuPermissionsViewBinder {
                 return;
         }
         icon.setImageResource(resId);
-        icon.setImageTintList(ColorStateList.valueOf(view.getResources().getColor(tintId)));
+        icon.setImageTintList(AppCompatResources.getColorStateList(view.getContext(), tintId));
     }
 }

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,6 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-namespace base {
-class ListValue;
-}
 
 namespace settings {
 
@@ -32,8 +28,8 @@ class AccessibilityMainHandler : public ::settings::SettingsPageUIHandler {
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;
 
-  void HandleA11yPageReady(const base::ListValue* args);
-  void HandleCheckAccessibilityImageLabels(const base::ListValue* args);
+  void HandleA11yPageReady(const base::Value::List& args);
+  void HandleCheckAccessibilityImageLabels(const base::Value::List& args);
 
  private:
   void SendScreenReaderStateChanged();

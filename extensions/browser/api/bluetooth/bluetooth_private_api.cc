@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -149,7 +149,7 @@ void BluetoothPrivateAPI::Shutdown() {
 void BluetoothPrivateAPI::OnListenerAdded(const EventListenerInfo& details) {
   // This function can be called multiple times for the same JS listener, for
   // example, once for the addListener call and again if it is a lazy listener.
-  if (!details.browser_context)
+  if (details.is_lazy)
     return;
 
   BluetoothAPI::Get(browser_context_)
@@ -160,7 +160,7 @@ void BluetoothPrivateAPI::OnListenerAdded(const EventListenerInfo& details) {
 void BluetoothPrivateAPI::OnListenerRemoved(const EventListenerInfo& details) {
   // This function can be called multiple times for the same JS listener, for
   // example, once for the addListener call and again if it is a lazy listener.
-  if (!details.browser_context)
+  if (details.is_lazy)
     return;
 
   BluetoothAPI::Get(browser_context_)
@@ -193,8 +193,8 @@ bool ValidatePairingResponseOptions(
     const device::BluetoothDevice* device,
     const bt_private::SetPairingResponseOptions& options) {
   bool response = options.response != bt_private::PAIRING_RESPONSE_NONE;
-  bool pincode = options.pincode != nullptr;
-  bool passkey = options.passkey != nullptr;
+  bool pincode = options.pincode.has_value();
+  bool passkey = options.passkey.has_value();
 
   if (!response && !pincode && !passkey)
     return false;
@@ -247,9 +247,9 @@ void BluetoothPrivateSetAdapterStateFunction::DoWork(
   const bt_private::NewAdapterState& new_state = params_->adapter_state;
 
   // These properties are not owned.
-  std::string* name = new_state.name.get();
-  bool* powered = new_state.powered.get();
-  bool* discoverable = new_state.discoverable.get();
+  const auto& name = new_state.name;
+  const auto& powered = new_state.powered;
+  const auto& discoverable = new_state.discoverable;
 
   if (name && adapter->GetName() != *name) {
     BLUETOOTH_LOG(USER) << "SetAdapterState: name=" << *name;
@@ -371,9 +371,9 @@ void BluetoothPrivateSetPairingResponseFunction::DoWork(
     return;
   }
 
-  if (options.pincode.get()) {
+  if (options.pincode) {
     device->SetPinCode(*options.pincode);
-  } else if (options.passkey.get()) {
+  } else if (options.passkey) {
     device->SetPasskey(*options.passkey);
   } else {
     switch (options.response) {
@@ -500,7 +500,7 @@ void BluetoothPrivateSetDiscoveryFilterFunction::DoWork(
 
   // If all filter fields are empty, we are clearing filter. If any field is
   // set, then create proper filter.
-  if (df_param.uuids.get() || df_param.rssi.get() || df_param.pathloss.get() ||
+  if (df_param.uuids || df_param.rssi || df_param.pathloss ||
       df_param.transport != bt_private::TransportType::TRANSPORT_TYPE_NONE) {
     device::BluetoothTransport transport;
 
@@ -519,13 +519,13 @@ void BluetoothPrivateSetDiscoveryFilterFunction::DoWork(
     discovery_filter =
         std::make_unique<device::BluetoothDiscoveryFilter>(transport);
 
-    if (df_param.uuids.get()) {
-      if (df_param.uuids->as_string.get()) {
+    if (df_param.uuids) {
+      if (df_param.uuids->as_string) {
         device::BluetoothDiscoveryFilter::DeviceInfoFilter device_filter;
         device_filter.uuids.insert(
             device::BluetoothUUID(*df_param.uuids->as_string));
         discovery_filter->AddDeviceFilter(std::move(device_filter));
-      } else if (df_param.uuids->as_strings.get()) {
+      } else if (df_param.uuids->as_strings) {
         for (const auto& iter : *df_param.uuids->as_strings) {
           device::BluetoothDiscoveryFilter::DeviceInfoFilter device_filter;
           device_filter.uuids.insert(device::BluetoothUUID(iter));
@@ -534,10 +534,10 @@ void BluetoothPrivateSetDiscoveryFilterFunction::DoWork(
       }
     }
 
-    if (df_param.rssi.get())
+    if (df_param.rssi)
       discovery_filter->SetRSSI(*df_param.rssi);
 
-    if (df_param.pathloss.get())
+    if (df_param.pathloss)
       discovery_filter->SetPathloss(*df_param.pathloss);
   }
 

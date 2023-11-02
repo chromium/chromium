@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "gpu/config/gpu_info.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/video/video_encode_accelerator.h"
 
@@ -32,15 +33,15 @@ class MEDIA_GPU_EXPORT GpuVideoEncodeAcceleratorFactory {
       const VideoEncodeAccelerator::Config& config,
       VideoEncodeAccelerator::Client* client,
       const gpu::GpuPreferences& gpu_perferences,
-      const gpu::GpuDriverBugWorkarounds& gpu_workarounds);
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
+      const gpu::GPUInfo::GPUDevice& gpu_device,
+      std::unique_ptr<MediaLog> media_log = nullptr);
 
   // Gets the supported codec profiles for video encoding on the platform.
-  // If |populate_extended_info| it false, this function will only populate:
-  // codec, framerate range and resolution range. It's faster.
   static VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles(
       const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-      bool populate_extended_info = true);
+      const gpu::GPUInfo::GPUDevice& gpu_device);
 };
 
 }  // namespace media

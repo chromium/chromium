@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/command_line.h"
 #include "base/no_destructor.h"
 #include "base/win/current_module.h"
@@ -21,7 +21,7 @@
 
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 typedef decltype(::GetFontData)* GetFontDataPtr;
 GetFontDataPtr g_original_get_font_data = nullptr;
 
@@ -46,18 +46,17 @@ DWORD WINAPI GetFontDataPatch(HDC hdc,
   }
   return rv;
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
 void MaybePatchGdiGetFontData() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Only patch utility processes which explicitly need GDI.
   auto& command_line = *base::CommandLine::ForCurrentProcess();
   auto service_sandbox_type =
       sandbox::policy::SandboxTypeFromCommandLine(command_line);
   bool need_gdi =
-      service_sandbox_type == sandbox::mojom::Sandbox::kPpapi ||
       service_sandbox_type == sandbox::mojom::Sandbox::kPrintCompositor ||
       service_sandbox_type == sandbox::mojom::Sandbox::kPdfConversion ||
       (service_sandbox_type == sandbox::mojom::Sandbox::kRenderer &&
@@ -80,5 +79,5 @@ void MaybePatchGdiGetFontData() {
       reinterpret_cast<void*>(GetFontDataPatch));
   g_original_get_font_data = reinterpret_cast<GetFontDataPtr>(
       patch_get_font_data->original_function());
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }

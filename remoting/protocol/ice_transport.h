@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <list>
 #include <map>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "remoting/protocol/datagram_channel_factory.h"
@@ -16,8 +16,7 @@
 #include "remoting/protocol/jingle_messages.h"
 #include "remoting/protocol/transport.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class ChannelMultiplexer;
 class PseudoTcpChannelFactory;
@@ -90,7 +89,7 @@ class IceTransport : public Transport,
   void OnChannelError(int error);
 
   scoped_refptr<TransportContext> transport_context_;
-  EventHandler* event_handler_;
+  raw_ptr<EventHandler> event_handler_;
 
   SendTransportInfoCallback send_transport_info_callback_;
 
@@ -113,7 +112,6 @@ class IceTransport : public Transport,
   base::WeakPtrFactory<IceTransport> weak_factory_{this};
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_ICE_TRANSPORT_H_

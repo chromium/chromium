@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,15 +18,28 @@ namespace {
 
 // Array of features exposed through the Java ExternalIntentsFeatures API.
 const base::Feature* kFeaturesExposedToJava[] = {
-    &kIntentBlockExternalFormRedirectsNoGesture,
-};
+    &kAutofillAssistantGoogleInitiatorOriginCheck,
+    &kBlockExternalFormSubmitWithoutGesture, &kExternalNavigationDebugLogs};
 
 }  // namespace
 
 // Alphabetical:
-const base::Feature kIntentBlockExternalFormRedirectsNoGesture{
-    "IntentBlockExternalFormRedirectsNoGesture",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Uses the initiator origin to check whether a navigation was started from a
+// Google domain.
+BASE_FEATURE(kAutofillAssistantGoogleInitiatorOriginCheck,
+             "AutofillAssistantGoogleInitiatorOriginCheck",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Kill switch for blocking form submissions redirecting to apps without an
+// associated user gesture.
+BASE_FEATURE(kBlockExternalFormSubmitWithoutGesture,
+             "BlockExternalFormSubmitWithoutGesture",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kExternalNavigationDebugLogs,
+             "ExternalNavigationDebugLogs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 static jlong JNI_ExternalIntentsFeatures_GetFeature(JNIEnv* env, jint ordinal) {
   return reinterpret_cast<jlong>(kFeaturesExposedToJava[ordinal]);

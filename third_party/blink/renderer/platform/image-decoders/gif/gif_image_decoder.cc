@@ -206,8 +206,8 @@ void GIFImageDecoder::InitializeNewFrame(wtf_size_t index) {
   // the current frame. Because of this, rather than correctly filling in the
   // frame rect, we set the frame rect to be the image's full size.
   // The original frame rect is not used, anyway.
-  IntSize full_image_size = Size();
-  frame.SetOriginalFrameRect(IntRect(gfx::Point(), full_image_size));
+  gfx::Size full_image_size = Size();
+  frame.SetOriginalFrameRect(gfx::Rect(full_image_size));
 
   SkCodec::FrameInfo frame_info;
   bool frame_info_received = codec_->getFrameInfo(index, &frame_info);

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,10 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/demuxer_memory_limit.h"
 #include "media/base/media_switches.h"
+#include "media/base/stream_parser_buffer.h"
 #include "media/base/timestamp_constants.h"
 
 namespace media {
@@ -655,7 +655,7 @@ void SourceBufferStream::ResetLastAppendedState() {
   last_appended_buffer_timestamp_ = kNoTimestamp;
   last_appended_buffer_duration_ = kNoTimestamp;
   last_appended_buffer_is_keyframe_ = false;
-  last_appended_buffer_decode_timestamp_ = kNoDecodeTimestamp();
+  last_appended_buffer_decode_timestamp_ = kNoDecodeTimestamp;
   highest_timestamp_in_append_sequence_ = kNoTimestamp;
   highest_buffered_end_time_in_append_sequence_ = kNoTimestamp;
 }
@@ -677,7 +677,7 @@ bool SourceBufferStream::IsDtsMonotonicallyIncreasing(
        itr != buffers.end(); ++itr) {
     DecodeTimestamp current_dts = (*itr)->GetDecodeTimestamp();
     bool current_is_keyframe = (*itr)->is_key_frame();
-    DCHECK(current_dts != kNoDecodeTimestamp());
+    DCHECK(current_dts != kNoDecodeTimestamp);
     DCHECK((*itr)->duration() >= base::TimeDelta())
         << "Packet with invalid duration."
         << " pts " << (*itr)->timestamp().InMicroseconds() << "us dts "
@@ -693,10 +693,10 @@ bool SourceBufferStream::IsDtsMonotonicallyIncreasing(
     // decode sequence since the last keyframe.
     if (current_is_keyframe) {
       // Reset prev_dts tracking since a new GOP is starting.
-      prev_dts = kNoDecodeTimestamp();
+      prev_dts = kNoDecodeTimestamp;
     }
 
-    if (prev_dts != kNoDecodeTimestamp()) {
+    if (prev_dts != kNoDecodeTimestamp) {
       if (current_dts < prev_dts) {
         MEDIA_LOG(ERROR, media_log_)
             << "Buffers did not monotonically increase.";
@@ -725,12 +725,12 @@ bool SourceBufferStream::UpdateMaxInterbufferDtsDistance(
   for (BufferQueue::const_iterator itr = buffers.begin();
        itr != buffers.end(); ++itr) {
     DecodeTimestamp current_dts = (*itr)->GetDecodeTimestamp();
-    DCHECK(current_dts != kNoDecodeTimestamp());
+    DCHECK(current_dts != kNoDecodeTimestamp);
 
     base::TimeDelta interbuffer_distance = (*itr)->duration();
     DCHECK(interbuffer_distance >= base::TimeDelta());
 
-    if (prev_dts != kNoDecodeTimestamp()) {
+    if (prev_dts != kNoDecodeTimestamp) {
       interbuffer_distance =
           std::max(current_dts - prev_dts, interbuffer_distance);
     }
@@ -1654,6 +1654,16 @@ void SourceBufferStream::WarnIfTrackBufferExhaustionSkipsForward(
         << "ms beyond last overlapped frame. Media may appear temporarily "
            "frozen.";
   }
+}
+
+bool SourceBufferStream::IsNextBufferConfigChanged() {
+  if (!track_buffer_.empty())
+    return track_buffer_.front()->GetConfigId() != current_config_index_;
+
+  if (!selected_range_ || !selected_range_->HasNextBuffer())
+    return false;
+
+  return selected_range_->GetNextConfigId() != current_config_index_;
 }
 
 base::TimeDelta SourceBufferStream::GetNextBufferTimestamp() {

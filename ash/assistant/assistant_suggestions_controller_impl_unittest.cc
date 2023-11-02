@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,13 @@
 #include "ash/assistant/model/assistant_suggestions_model.h"
 #include "ash/assistant/test/assistant_ash_test_base.h"
 #include "ash/public/cpp/assistant/controller/assistant_suggestions_controller.h"
-#include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 
 namespace ash {
 
 namespace {
 
-using chromeos::assistant::prefs::AssistantOnboardingMode;
+using assistant::prefs::AssistantOnboardingMode;
 
 const AssistantSuggestionsModel* GetModel() {
   return AssistantSuggestionsController::Get()->GetModel();

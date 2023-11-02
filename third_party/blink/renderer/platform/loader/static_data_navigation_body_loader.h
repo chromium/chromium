@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,9 +27,8 @@ class PLATFORM_EXPORT StaticDataNavigationBodyLoader
   void Finish();
 
   void SetDefersLoading(LoaderFreezeMode) override;
-  void StartLoadingBody(WebNavigationBodyLoader::Client*,
-                        CodeCacheHost* host) override;
-  void StartLoadingCodeCache(CodeCacheHost* code_cache_host) override;
+  void StartLoadingBody(WebNavigationBodyLoader::Client*) override;
+  BodyLoaderType GetType() const override { return BodyLoaderType::kStatic; }
 
  private:
   void Continue();

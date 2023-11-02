@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -110,6 +110,15 @@ class COMPONENT_EXPORT(X11) XF86VidMode {
   };
 
   struct ModeInfo {
+    bool operator==(const ModeInfo& other) const {
+      return dotclock == other.dotclock && hdisplay == other.hdisplay &&
+             hsyncstart == other.hsyncstart && hsyncend == other.hsyncend &&
+             htotal == other.htotal && hskew == other.hskew &&
+             vdisplay == other.vdisplay && vsyncstart == other.vsyncstart &&
+             vsyncend == other.vsyncend && vtotal == other.vtotal &&
+             flags == other.flags && privsize == other.privsize;
+    }
+
     DotClock dotclock{};
     uint16_t hdisplay{};
     uint16_t hsyncstart{};
@@ -126,42 +135,63 @@ class COMPONENT_EXPORT(X11) XF86VidMode {
 
   struct BadClockError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };
 
   struct BadHTimingsError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };
 
   struct BadVTimingsError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };
 
   struct ModeUnsuitableError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };
 
   struct ExtensionDisabledError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };
 
   struct ClientNotLocalError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };
 
   struct ZoomLockedError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };

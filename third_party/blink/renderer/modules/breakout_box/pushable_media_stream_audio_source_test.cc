@@ -1,17 +1,19 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_audio_source.h"
 
 #include "base/run_loop.h"
+#include "base/time/time.h"
 #include "media/base/bind_to_current_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
-#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -130,17 +132,19 @@ class PushableMediaStreamAudioSourceTest : public testing::Test {
   PushableMediaStreamAudioSourceTest() {
     // Use the IO thread for testing purposes. This is stricter than an audio
     // sequenced task runner needs to be.
-    audio_task_runner_ = Platform::Current()->GetIOTaskRunner();
-    main_task_runner_ = Thread::MainThread()->GetTaskRunner();
+    audio_task_runner_ = platform_->GetIOTaskRunner();
+    main_task_runner_ = scheduler::GetSingleThreadTaskRunnerForTesting();
 
-    pushable_audio_source_ = new PushableMediaStreamAudioSource(
-        main_task_runner_, audio_task_runner_);
+    auto pushable_audio_source =
+        std::make_unique<PushableMediaStreamAudioSource>(main_task_runner_,
+                                                         audio_task_runner_);
+    pushable_audio_source_ = pushable_audio_source.get();
     stream_source_ = MakeGarbageCollected<MediaStreamSource>(
         "dummy_source_id", MediaStreamSource::kTypeAudio, "dummy_source_name",
-        false /* remote */);
-    stream_source_->SetPlatformSource(base::WrapUnique(pushable_audio_source_));
-    stream_component_ = MakeGarbageCollected<MediaStreamComponent>(
-        stream_source_->Id(), stream_source_);
+        false /* remote */, std::move(pushable_audio_source));
+    stream_component_ = MakeGarbageCollected<MediaStreamComponentImpl>(
+        stream_source_->Id(), stream_source_,
+        std::make_unique<MediaStreamAudioTrack>(true /* is_local_track */));
   }
 
   void TearDown() override {
@@ -150,7 +154,7 @@ class PushableMediaStreamAudioSourceTest : public testing::Test {
   }
 
   bool ConnectSourceToTrack() {
-    return pushable_audio_source_->ConnectToTrack(stream_component_);
+    return pushable_audio_source_->ConnectToInitializedTrack(stream_component_);
   }
 
   void SendEmptyBufferAndVerifyParams(FakeMediaStreamAudioSink* fake_sink,

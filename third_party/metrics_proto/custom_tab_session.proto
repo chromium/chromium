@@ -1,0 +1,42 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.metrics";
+
+option java_outer_classname = "CustomTabSessionProtos";
+
+package metrics;
+
+// Stores information about a Custom Tabs session. Custom Tabs are a Chrome on
+// Android feature that allow a Chrome tab to be launched as part of another
+// application. The launching app has the ability to close the Custom Tab. This
+// proto will let us detect apps that open a Custom Tab (loading a given URL
+// with the user's cookie jar) and then kill it without the user interacting.
+// Next tag: 7
+message CustomTabSessionProto {
+  // The time the recording was taken. Recorded as seconds since epoch.
+  optional int64 time_sec = 1;
+
+  // The package name of the app that launched the Custom Tab.
+  optional string package_name = 2;
+
+  // How long the Custom Tab was open for. It is recorded in seconds with a 10%
+  // fuzzing (real numbers will be fuzzed uniformity in the range of -10% to 10%
+  // before recording). It is capped at 300 seconds (exclusive).
+  optional int32 session_duration_sec = 3;
+
+  // Did the user interact with the page displayed by the Custom Tab?
+  optional bool did_user_interact = 4;
+
+  // True if the Custom Tab was closed through a user action (for example
+  // hitting the Close Button or the Android Back button).
+  optional bool was_user_closed = 5;
+
+  // Was the Custom Tab launched as a Partial Custom Tab
+  // (go/prd-partial-custom-tabs)
+  optional bool is_partial = 6;
+}

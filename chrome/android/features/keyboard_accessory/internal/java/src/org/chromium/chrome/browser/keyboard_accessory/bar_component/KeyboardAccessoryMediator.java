@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetTrigger;
@@ -103,6 +104,7 @@ class KeyboardAccessoryMediator
     @Override
     public void onItemAvailable(
             @AccessoryAction int typeId, KeyboardAccessoryData.Action[] actions) {
+        TraceEvent.begin("KeyboardAccessoryMediator#onItemAvailable");
         assert typeId != DEFAULT_TYPE : "Did not specify which Action type has been updated.";
         List<BarItem> retainedItems = collectItemsToRetain(typeId);
         retainedItems.addAll(0, toBarItems(actions));
@@ -110,6 +112,7 @@ class KeyboardAccessoryMediator
             retainedItems.add(retainedItems.size(), mModel.get(TAB_LAYOUT_ITEM));
         }
         mModel.get(BAR_ITEMS).set(retainedItems);
+        TraceEvent.end("KeyboardAccessoryMediator#onItemAvailable");
     }
 
     private List<BarItem> collectItemsToRetain(@AccessoryAction int actionType) {
@@ -337,10 +340,6 @@ class KeyboardAccessoryMediator
             return FeatureConstants.KEYBOARD_ACCESSORY_PASSWORD_FILLING_FEATURE;
         }
         if (containsCreditCardInfo(suggestion)) {
-            if (!suggestion.getItemTag().isEmpty()) {
-                // Prefer showing a linked cashback over the general IPH.
-                return FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE;
-            }
             return FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_FILLING_FEATURE;
         }
         if (containsAddressInfo(suggestion)) {

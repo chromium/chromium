@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chromeos/tpm/install_attributes.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
@@ -27,10 +27,11 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
-namespace em = enterprise_management;
-
 namespace policy {
+
 namespace {
+
+namespace em = ::enterprise_management;
 
 // List of consumer-only domains from the server side logic. See
 // `KNOWN_INVALID_DOMAINS` from GetAgencySignupStateProducerModule.java.
@@ -79,7 +80,7 @@ const char* const kKnownConsumerDomains[] = {"123mail.org",
                                              "blader.com",
                                              "boardermail.com",
                                              "brazilmail.com",
-                                             "brew-master.com",
+                                             "brew-master.com",  // nocheck
                                              "brew-meister.com",
                                              "bsdmail.com",
                                              "californiamail.com",
@@ -524,7 +525,7 @@ void AccountStatusCheckFetcher::Fetch(FetchCallback callback) {
       std::make_unique<DMServerJobConfiguration>(
           service_,
           DeviceManagementService::JobConfiguration::TYPE_CHECK_USER_ACCOUNT,
-          random_device_id_, /*critical=*/false, policy::DMAuth::NoAuth(),
+          random_device_id_, /*critical=*/false, DMAuth::NoAuth(),
           /*oauth_token=*/absl::nullopt, url_loader_factory_,
           base::BindOnce(
               &AccountStatusCheckFetcher::OnAccountStatusCheckReceived,
@@ -537,29 +538,31 @@ void AccountStatusCheckFetcher::Fetch(FetchCallback callback) {
 }
 
 void AccountStatusCheckFetcher::OnAccountStatusCheckReceived(
-    DeviceManagementService::Job* job,
-    DeviceManagementStatus dm_status,
-    int net_error,
-    const em::DeviceManagementResponse& response) {
-  VLOG(1) << "Account check response received. DM Status: " << dm_status;
+    DMServerJobResult result) {
+  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // in the logs.
+  LOG(WARNING) << "Account check response received. DM Status: "
+               << result.dm_status;
+
   fetch_request_job_.reset();
   std::string user_id;
   bool fetch_succeeded = false;
-  switch (dm_status) {
-    case policy::DM_STATUS_SUCCESS: {
-      if (!response.has_check_user_account_response()) {
+  switch (result.dm_status) {
+    case DM_STATUS_SUCCESS: {
+      if (!result.response.has_check_user_account_response()) {
         LOG(WARNING) << "Invalid Account check response.";
         break;
       }
 
       // Fetch has succeeded.
       fetch_succeeded = true;
-      result_ = ParseStatus(response.check_user_account_response(), email_);
+      result_ =
+          ParseStatus(result.response.check_user_account_response(), email_);
       RecordAccountStatusCheckResult(result_);
       break;
     }
     default: {  // All other error cases
-      LOG(ERROR) << "Account check failed. DM Status: " << dm_status;
+      LOG(ERROR) << "Account check failed. DM Status: " << result.dm_status;
       break;
     }
   }

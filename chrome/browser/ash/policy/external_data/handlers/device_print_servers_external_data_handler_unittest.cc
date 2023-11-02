@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 #include <memory>
 #include <string>
 
-#include "chrome/browser/chromeos/printing/print_server.h"
-#include "chrome/browser/chromeos/printing/print_servers_provider.h"
-#include "chrome/browser/chromeos/printing/print_servers_provider_factory.h"
+#include "chrome/browser/ash/printing/print_server.h"
+#include "chrome/browser/ash/printing/print_servers_provider.h"
+#include "chrome/browser/ash/printing/print_servers_provider_factory.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/policy_constants.h"
@@ -19,12 +19,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using ::testing::Pointee;
-using ::testing::UnorderedElementsAre;
-
 namespace policy {
 
 namespace {
+
+using ::testing::Pointee;
+using ::testing::UnorderedElementsAre;
 
 // An example device native printers configuration file.
 constexpr char kDeviceExternalPrintServersContentsJson[] = R"json(
@@ -42,23 +42,22 @@ constexpr char kDeviceExternalPrintServersContentsJson[] = R"json(
 
 constexpr char kAllowlistPrefName[] = "test";
 
-class TestObserver : public chromeos::PrintServersProvider::Observer {
+class TestObserver : public ash::PrintServersProvider::Observer {
  public:
   ~TestObserver() override = default;
 
   // Callback from PrintServersProvider::Observer.
-  void OnServersChanged(
-      bool complete,
-      const std::vector<chromeos::PrintServer>& servers) override {
+  void OnServersChanged(bool complete,
+                        const std::vector<ash::PrintServer>& servers) override {
     print_servers_ = servers;
   }
 
-  const std::vector<chromeos::PrintServer>* GetPrintServers() {
+  const std::vector<ash::PrintServer>* GetPrintServers() {
     return &print_servers_;
   }
 
  private:
-  std::vector<chromeos::PrintServer> print_servers_;
+  std::vector<ash::PrintServer> print_servers_;
 };
 
 }  // namespace
@@ -66,15 +65,14 @@ class TestObserver : public chromeos::PrintServersProvider::Observer {
 class DevicePrintServersExternalDataHandlerTest : public testing::Test {
  protected:
   void SetUp() override {
-    EXPECT_CALL(policy_service_,
-                AddObserver(policy::POLICY_DOMAIN_CHROME, testing::_))
+    EXPECT_CALL(policy_service_, AddObserver(POLICY_DOMAIN_CHROME, testing::_))
         .Times(1);
     EXPECT_CALL(policy_service_,
-                RemoveObserver(policy::POLICY_DOMAIN_CHROME, testing::_))
+                RemoveObserver(POLICY_DOMAIN_CHROME, testing::_))
         .Times(1);
 
     print_servers_provider_ =
-        chromeos::PrintServersProviderFactory::Get()->GetForDevice();
+        ash::PrintServersProviderFactory::Get()->GetForDevice();
     pref_service_.registry()->RegisterListPref(kAllowlistPrefName);
     print_servers_provider_->SetAllowlistPref(&pref_service_,
                                               kAllowlistPrefName);
@@ -84,7 +82,7 @@ class DevicePrintServersExternalDataHandlerTest : public testing::Test {
   }
 
   void TearDown() override {
-    chromeos::PrintServersProviderFactory::Get()->Shutdown();
+    ash::PrintServersProviderFactory::Get()->Shutdown();
     device_print_servers_external_data_handler_->Shutdown();
   }
 
@@ -96,7 +94,7 @@ class DevicePrintServersExternalDataHandlerTest : public testing::Test {
   MockPolicyService policy_service_;
   std::unique_ptr<DevicePrintServersExternalDataHandler>
       device_print_servers_external_data_handler_;
-  base::WeakPtr<chromeos::PrintServersProvider> print_servers_provider_;
+  base::WeakPtr<ash::PrintServersProvider> print_servers_provider_;
 };
 
 TEST_F(DevicePrintServersExternalDataHandlerTest, OnDataFetched) {
@@ -112,9 +110,8 @@ TEST_F(DevicePrintServersExternalDataHandlerTest, OnDataFetched) {
       base::FilePath());
   task_environment_.RunUntilIdle();
 
-  chromeos::PrintServer first("First", GURL("http://192.168.1.5:631"),
-                              "LexaPrint");
-  chromeos::PrintServer second(
+  ash::PrintServer first("First", GURL("http://192.168.1.5:631"), "LexaPrint");
+  ash::PrintServer second(
       "Second", GURL("https://print-server.intranet.example.com:443/ipp/cl2k4"),
       "Color Laser");
 

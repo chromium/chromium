@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,21 +7,42 @@
 #include <algorithm>
 #include <cstring>
 
+#include "base/command_line.h"
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/system/sys_info.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "crypto/random.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace memory {
 
+const char kUXStudy1Switch[] = "ux-study-1";
+const char kUXStudy1A[] = "A";
+const char kUXStudy1B[] = "B";
+const char kUXStudy1C[] = "C";
+const char kUXStudy1D[] = "D";
+
 namespace {
 
+// These values are logged to UMA. Entries should not be renumbered and numeric
+// values should never be reused. Please keep in sync with "UXStudy1Arm" in
+// src/tools/metrics/histograms/enums.xml.
+enum class UXStudy1Arm {
+  A = 0,
+  B = 1,
+  C = 2,
+  D = 3,
+  kMaxValue = D,
+};
+
 // The name of the Finch study that turns on the experiment.
-const base::Feature kMemoryAblationStudy{"MemoryAblationStudy",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kMemoryAblationStudy,
+             "MemoryAblationStudy",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The total amount of memory to ablate in MB.
 const char kAblationSizeMb[] = "ablation-size-mb";
@@ -40,27 +61,58 @@ constexpr int kUncompressibleRegionSize = 4096;
 
 // Theres some variance on exact ram values so we use values slightly under 2GB
 // and 4GB.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 constexpr int kMinimumRamMB = 1700;
 #else
 constexpr int kMinimumRamMB = 3700;
 #endif
 
+// The forced amount to ablate in MB, set by command line.
+absl::optional<int32_t> ForcedAblationMB() {
+  base::CommandLine* line = base::CommandLine::ForCurrentProcess();
+  std::string value = line->GetSwitchValueASCII(kUXStudy1Switch);
+
+  int32_t ablation = 0;
+  UXStudy1Arm study = UXStudy1Arm::A;
+  if (value == kUXStudy1A) {
+    ablation = 0;
+    study = UXStudy1Arm::A;
+  } else if (value == kUXStudy1B) {
+    ablation = 300;
+    study = UXStudy1Arm::B;
+  } else if (value == kUXStudy1C) {
+    ablation = 700;
+    study = UXStudy1Arm::C;
+  } else if (value == kUXStudy1D) {
+    ablation = 1000;
+    study = UXStudy1Arm::D;
+  } else {
+    return absl::nullopt;
+  }
+  UMA_HISTOGRAM_ENUMERATION("Memory.UX.Study.1", study);
+  return ablation;
+}
+
 }  // namespace
 
 MemoryAblationStudy::MemoryAblationStudy() {
-  // On Android we restrict to 2GB+ devices.
-  // On Desktop we restrict to 4GB+ devices.
-  if (base::SysInfo::AmountOfPhysicalMemoryMB() < kMinimumRamMB)
-    return;
+  absl::optional<int32_t> forced_ablation = ForcedAblationMB();
+  if (forced_ablation) {
+    remaining_allocation_mb_ = forced_ablation.value();
+  } else {
+    // On Android we restrict to 2GB+ devices.
+    // On Desktop we restrict to 4GB+ devices.
+    if (base::SysInfo::AmountOfPhysicalMemoryMB() < kMinimumRamMB)
+      return;
 
-  // This class does nothing if the study is disabled.
-  if (!base::FeatureList::IsEnabled(kMemoryAblationStudy)) {
-    return;
+    // This class does nothing if the study is disabled.
+    if (!base::FeatureList::IsEnabled(kMemoryAblationStudy)) {
+      return;
+    }
+
+    remaining_allocation_mb_ = base::GetFieldTrialParamByFeatureAsInt(
+        kMemoryAblationStudy, kAblationSizeMb, /*default_value=*/0);
   }
-
-  remaining_allocation_mb_ = base::GetFieldTrialParamByFeatureAsInt(
-      kMemoryAblationStudy, kAblationSizeMb, /*default_value=*/0);
   if (remaining_allocation_mb_ <= 0)
     return;
 

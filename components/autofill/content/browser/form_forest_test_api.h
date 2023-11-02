@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CONTENT_BROWSER_FORM_FOREST_TEST_API_H_
 
 #include "base/containers/stack.h"
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/content/browser/form_forest.h"
 
 namespace autofill {
@@ -67,7 +68,7 @@ class FormForestTestApi {
   void ExpandForm(base::stack<FrameForm>& frontier, FrameForm frame_and_form);
 
   // Non-null pointer to wrapped FormForest.
-  FormForest* ff_;
+  raw_ptr<FormForest> ff_;
 };
 
 template <typename UnaryFunction>

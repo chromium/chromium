@@ -1,9 +1,10 @@
-
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.keyboard_accessory;
+
+import static org.chromium.base.ThreadUtils.assertOnUiThread;
 
 import android.app.Activity;
 import android.util.SparseArray;
@@ -64,6 +65,7 @@ class ManualFillingComponentBridge {
 
     @CalledByNative
     private void onItemsAvailable(Object objAccessorySheetData) {
+        assertOnUiThread();
         AccessorySheetData accessorySheetData = (AccessorySheetData) objAccessorySheetData;
         PropertyProvider<AccessorySheetData> provider =
                 getOrCreateProvider(accessorySheetData.getSheetType());

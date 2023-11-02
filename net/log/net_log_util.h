@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,13 +18,13 @@ class URLRequestContext;
 // Utility methods for creating NetLog dumps.
 
 // Creates a dictionary containing a legend for net/ constants.
-NET_EXPORT base::Value GetNetConstants();
+NET_EXPORT base::Value::Dict GetNetConstants();
 
 // Retrieves a dictionary containing information about the current state of
 // |context|.
 //
 // May only be called on |context|'s thread.
-NET_EXPORT base::Value GetNetInfo(URLRequestContext* context);
+NET_EXPORT base::Value::Dict GetNetInfo(URLRequestContext* context);
 
 // Takes in a set of contexts and a NetLog::Observer, and passes in
 // NetLog::Entries to the observer for certain NetLogSources with pending

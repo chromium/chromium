@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,10 @@
 namespace site_isolation {
 namespace features {
 
-extern const base::Feature kSiteIsolationForPasswordSites;
-extern const base::Feature kSiteIsolationForOAuthSites;
-extern const base::Feature kSiteIsolationMemoryThresholds;
+BASE_DECLARE_FEATURE(kCacheSiteIsolationMemoryThreshold);
+BASE_DECLARE_FEATURE(kSiteIsolationForPasswordSites);
+BASE_DECLARE_FEATURE(kSiteIsolationForOAuthSites);
+BASE_DECLARE_FEATURE(kSiteIsolationMemoryThresholds);
 extern const char kStrictSiteIsolationMemoryThresholdParamName[];
 extern const char kPartialSiteIsolationMemoryThresholdParamName[];
 

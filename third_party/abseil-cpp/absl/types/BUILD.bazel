@@ -314,6 +314,7 @@ cc_library(
     name = "compare",
     hdrs = ["compare.h"],
     copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         "//absl/base:core_headers",
         "//absl/meta:type_traits",

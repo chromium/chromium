@@ -1,0 +1,21 @@
+// Copyright 2017 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 2
+
+module arc.mojom;
+
+interface TracingInstance {
+  // Queries available tracing categories in the container.
+  QueryAvailableCategories@0() => (array<string> categories);
+
+  // Starts tracing in the container with the given categories. A handle is
+  // passed to the client for sending trace events back to the host. The client
+  // should send trace event as a JSON object in each write.
+  StartTracing@1(array<string> categories,
+                 [MinVersion=1] handle? socket) => (bool success);
+
+  // Stops tracing in the container.
+  StopTracing@2() => (bool success);
+};

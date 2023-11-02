@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
@@ -58,13 +58,13 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationImpl
             const FileSystemURL& dest_url,
             CopyOrMoveOptionSet options,
             ErrorBehavior error_behavior,
-            const CopyOrMoveProgressCallback& progress_callback,
+            std::unique_ptr<CopyOrMoveHookDelegate> copy_or_move_hook_delegate,
             StatusCallback callback) override;
   void Move(const FileSystemURL& src_url,
             const FileSystemURL& dest_url,
             CopyOrMoveOptionSet options,
             ErrorBehavior error_behavior,
-            const CopyOrMoveProgressCallback& progress_callback,
+            std::unique_ptr<CopyOrMoveHookDelegate> copy_or_move_hook_delegate,
             StatusCallback callback) override;
   void DirectoryExists(const FileSystemURL& url,
                        StatusCallback callback) override;
@@ -93,7 +93,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationImpl
                  const base::Time& last_modified_time,
                  StatusCallback callback) override;
   void OpenFile(const FileSystemURL& url,
-                int file_flags,
+                uint32_t file_flags,
                 OpenFileCallback callback) override;
   void Cancel(StatusCallback cancel_callback) override;
   void CreateSnapshotFile(const FileSystemURL& path,
@@ -166,7 +166,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationImpl
                   int64_t length);
   void DoOpenFile(const FileSystemURL& url,
                   OpenFileCallback callback,
-                  int file_flags);
+                  uint32_t file_flags);
 
   // Callback for CreateFile for |exclusive|=true cases.
   void DidEnsureFileExistsExclusive(StatusCallback callback,
@@ -201,7 +201,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationImpl
   scoped_refptr<FileSystemContext> file_system_context_;
 
   std::unique_ptr<FileSystemOperationContext> operation_context_;
-  AsyncFileUtil* async_file_util_;  // Not owned.
+  raw_ptr<AsyncFileUtil> async_file_util_;  // Not owned.
 
   std::unique_ptr<FileWriterDelegate> file_writer_delegate_;
   std::unique_ptr<RecursiveOperationDelegate> recursive_operation_delegate_;

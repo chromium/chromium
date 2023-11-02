@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/format_macros.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -24,21 +25,21 @@
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/extensions_activity.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/base/model_type_test_util.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/cycle/sync_cycle.h"
 #include "components/sync/engine/events/protocol_event.h"
+#include "components/sync/engine/net/http_post_provider.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
-#include "components/sync/engine/net/http_post_provider_interface.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/polling_constants.h"
 #include "components/sync/engine/sync_scheduler.h"
 #include "components/sync/protocol/encryption.pb.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync/protocol/sync_enums.pb.h"
-#include "components/sync/test/engine/fake_sync_scheduler.h"
-#include "components/sync/test/engine/test_engine_components_factory.h"
 #include "components/sync/test/fake_sync_encryption_handler.h"
+#include "components/sync/test/fake_sync_scheduler.h"
+#include "components/sync/test/model_type_test_util.h"
+#include "components/sync/test/test_engine_components_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -53,13 +54,14 @@ namespace syncer {
 
 namespace {
 
-class TestHttpPostProviderInterface : public HttpPostProviderInterface {
+class TestHttpPostProvider : public HttpPostProvider {
  public:
   void SetExtraRequestHeaders(const char* headers) override {}
   void SetURL(const GURL& url) override {}
   void SetPostPayload(const char* content_type,
                       int content_length,
                       const char* content) override {}
+  void SetAllowBatching(bool allow_batching) override {}
   bool MakeSynchronousPost(int* net_error_code,
                            int* http_status_code) override {
     return false;
@@ -73,14 +75,14 @@ class TestHttpPostProviderInterface : public HttpPostProviderInterface {
   void Abort() override {}
 
  private:
-  ~TestHttpPostProviderInterface() override = default;
+  ~TestHttpPostProvider() override = default;
 };
 
 class TestHttpPostProviderFactory : public HttpPostProviderFactory {
  public:
   ~TestHttpPostProviderFactory() override = default;
-  scoped_refptr<HttpPostProviderInterface> Create() override {
-    return new TestHttpPostProviderInterface();
+  scoped_refptr<HttpPostProvider> Create() override {
+    return new TestHttpPostProvider();
   }
 };
 
@@ -107,7 +109,6 @@ class SyncEncryptionHandlerObserverMock
   MOCK_METHOD(void, OnPassphraseAccepted, (), (override));
   MOCK_METHOD(void, OnTrustedVaultKeyRequired, (), (override));
   MOCK_METHOD(void, OnTrustedVaultKeyAccepted, (), (override));
-  MOCK_METHOD(void, OnBootstrapTokenUpdated, (const std::string&), (override));
   MOCK_METHOD(void, OnEncryptedTypesChanged, (ModelTypeSet, bool), (override));
   MOCK_METHOD(void,
               OnCryptographerStateChanged,
@@ -214,8 +215,9 @@ class SyncManagerImplTest : public testing::Test {
   CancelationSignal cancelation_signal_;
   StrictMock<SyncManagerObserverMock> manager_observer_;
   // Owned by |sync_manager_|.
-  StrictMock<SyncEncryptionHandlerObserverMock>* encryption_observer_ = nullptr;
-  MockSyncScheduler* scheduler_ = nullptr;
+  raw_ptr<StrictMock<SyncEncryptionHandlerObserverMock>> encryption_observer_ =
+      nullptr;
+  raw_ptr<MockSyncScheduler> scheduler_ = nullptr;
 };
 
 // Test that the configuration params are properly created and sent to

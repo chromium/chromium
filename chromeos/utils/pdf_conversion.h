@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,9 +25,9 @@ bool ConvertJpgImagesToPdf(const std::vector<std::string>& jpg_images,
                            bool rotate_alternate_pages,
                            absl::optional<int> dpi);
 
-// Converts `jpg_image` to a single PDF, and saved the result into `output`.
-bool ConvertJpgImageToPdf(const std::vector<uint8_t>& jpg_image,
-                          std::vector<uint8_t>* output);
+// Converts `jpg_images` to a single PDF, and saved the result into `output`.
+bool ConvertJpgImagesToPdf(const std::vector<std::vector<uint8_t>>& jpg_images,
+                           std::vector<uint8_t>* output);
 
 }  // namespace chromeos
 

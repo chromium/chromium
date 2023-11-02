@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/sync/driver/test_sync_service.h"
+#include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -40,10 +40,6 @@ TEST_F(DevToolsUIBindingsTest, SanitizeFrontendURL) {
        "?service-backend=ws://localhost:9222/services",
        "devtools://devtools/"
        "?service-backend=ws://localhost:9222/services"},
-      {"devtools://devtools/?dockSide=undocked",
-       "devtools://devtools/?dockSide=undocked"},
-      {"devtools://devtools/?dockSide=dock-to-bottom", "devtools://devtools/"},
-      {"devtools://devtools/?dockSide=bottom", "devtools://devtools/"},
       {"devtools://devtools/?remoteBase="
        "http://example.com:1234/remote-base#hash",
        "devtools://devtools/?remoteBase="
@@ -147,9 +143,10 @@ TEST_F(DevToolsUIBindingsSyncInfoTest, SyncDisabled) {
 }
 
 TEST_F(DevToolsUIBindingsSyncInfoTest, PreferencesNotSynced) {
-  syncer::ModelTypeSet activeDataTypes;
-  activeDataTypes.Put(syncer::ModelType::BOOKMARKS);
-  sync_service_->SetActiveDataTypes(activeDataTypes);
+  sync_service_->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kBookmarks));
 
   base::Value info =
       DevToolsUIBindings::GetSyncInformationForProfile(&profile_);

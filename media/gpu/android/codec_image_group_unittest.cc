@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,8 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread.h"
+#include "gpu/command_buffer/service/ref_counted_lock_for_test.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "media/base/android/mock_android_overlay.h"
 #include "media/gpu/android/codec_surface_bundle.h"
 #include "media/gpu/android/mock_codec_image.h"
@@ -31,7 +33,9 @@ class CodecImageGroupWithDestructionHook : public CodecImageGroup {
       scoped_refptr<CodecSurfaceBundle> surface_bundle)
       : CodecImageGroup(std::move(task_runner),
                         std::move(surface_bundle),
-                        /*lock=*/nullptr) {}
+                        features::NeedThreadSafeAndroidMedia()
+                            ? base::MakeRefCounted<gpu::RefCountedLockForTest>()
+                            : nullptr) {}
 
   void SetDestructionCallback(base::OnceClosure cb) {
     destruction_cb_ = std::move(cb);
@@ -113,8 +117,11 @@ TEST_F(CodecImageGroupTest, SurfaceBundleWithoutOverlayDoesntCrash) {
   scoped_refptr<CodecSurfaceBundle> surface_bundle =
       base::MakeRefCounted<CodecSurfaceBundle>();
   scoped_refptr<CodecImageGroup> image_group =
-      base::MakeRefCounted<CodecImageGroup>(gpu_task_runner_, surface_bundle,
-                                            /*lock=*/nullptr);
+      base::MakeRefCounted<CodecImageGroup>(
+          gpu_task_runner_, surface_bundle,
+          features::NeedThreadSafeAndroidMedia()
+              ? base::MakeRefCounted<gpu::RefCountedLockForTest>()
+              : nullptr);
   // TODO(liberato): we should also make sure that adding an image doesn't call
   // ReleaseCodecBuffer when it's added.
 }

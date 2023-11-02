@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/posix/eintr_wrapper.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
@@ -74,6 +75,7 @@ std::vector<gfx::BufferUsageAndFormat> CreateSupportedConfigList(
            gfx::BufferUsage::SCANOUT,
            gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
            gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
+           gfx::BufferUsage::SCANOUT_VDA_WRITE,
        }) {
     for (gfx::BufferFormat format : {
              gfx::BufferFormat::R_8,
@@ -146,6 +148,32 @@ std::unique_ptr<GbmBuffer> GpuMemoryBufferSupportX11::CreateBuffer(
 
   return device_->CreateBuffer(GetFourCCFormatFromBufferFormat(format), size,
                                BufferUsageToGbmFlags(usage));
+}
+
+bool GpuMemoryBufferSupportX11::CanCreateNativePixmapForFormat(
+    gfx::BufferFormat format) {
+  return device_ && device_->CanCreateBufferForFormat(
+                        GetFourCCFormatFromBufferFormat(format));
+}
+
+std::unique_ptr<GbmBuffer> GpuMemoryBufferSupportX11::CreateBufferFromHandle(
+    const gfx::Size& size,
+    gfx::BufferFormat format,
+    gfx::NativePixmapHandle handle) {
+  if (!device_) {
+    LOG(ERROR) << "Can't create buffer from handle -- gbm  device is missing.";
+    return nullptr;
+  }
+
+  static base::debug::CrashKeyString* crash_key_string =
+      base::debug::AllocateCrashKeyString("buffer_from_handle_format",
+                                          base::debug::CrashKeySize::Size64);
+  std::string buffer_from_handle_format = gfx::BufferFormatToString(format);
+  base::debug::ScopedCrashKeyString scoped_crash_key(
+      crash_key_string, buffer_from_handle_format.c_str());
+
+  return device_->CreateBufferFromHandle(
+      GetFourCCFormatFromBufferFormat(format), size, std::move(handle));
 }
 
 }  // namespace ui

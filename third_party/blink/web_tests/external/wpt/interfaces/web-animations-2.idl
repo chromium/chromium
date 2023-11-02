@@ -29,6 +29,8 @@ partial interface AnimationEffect {
 };
 
 partial dictionary EffectTiming {
+    double delay;
+    double endDelay;
     double playbackRate = 1.0;
     (unrestricted double or CSSNumericValue or DOMString) duration = "auto";
 };
@@ -42,7 +44,6 @@ partial dictionary ComputedEffectTiming {
     CSSNumberish         endTime;
     CSSNumberish         activeDuration;
     CSSNumberish?        localTime;
-    CSSNumberish?        progress;
 };
 
 [Exposed=Window]

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,6 +45,8 @@ class LogBuffer;
     "Source of country for address requirements: ")                            \
   T(ImportAddressProfileFromFormAddressRequirements,                           \
     "Requirements for the address import: ")                                   \
+  T(ImportAddressProfileFromFormRemoveInvalidValue,                            \
+    "Removing value because validation failed: ")                              \
   T(FormSubmissionDetected, "Form submission detected: ")                      \
   T(SendFillingData, "Sending data to fill to renderer: ")                     \
   T(CreditCardUploadEnabled, "Credit card upload is enabled.")                 \
@@ -53,7 +55,10 @@ class LogBuffer;
   T(CardUploadDecisionUploadNotOffered, "Credit card upload was not offered.") \
   T(SuggestionSuppressed, "Autofill suggestion(s) suppressed.")                \
   T(Rationalization, "Rationalization: ")                                      \
-  T(ProcessingServerData, "Processing server data.")
+  T(ProcessingServerData, "Processing server data.")                           \
+  T(JavaScriptChangedAutofilledValue,                                          \
+    "JavaScript set value of autofilled "                                      \
+    "field: ")
 
 // Log messages for chrome://autofill-internals.
 

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "base/unguessable_token.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/network.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/canonical_cookie.h"
@@ -70,7 +71,8 @@ class NetworkHandler : public DevToolsDomainHandler,
   NetworkHandler(const std::string& host_id,
                  const base::UnguessableToken& devtools_token,
                  DevToolsIOContext* io_context,
-                 base::RepeatingClosure update_loader_factories_callback);
+                 base::RepeatingClosure update_loader_factories_callback,
+                 bool allow_file_access);
 
   NetworkHandler(const NetworkHandler&) = delete;
   NetworkHandler& operator=(const NetworkHandler&) = delete;
@@ -107,6 +109,12 @@ class NetworkHandler : public DevToolsDomainHandler,
 #if BUILDFLAG(ENABLE_REPORTING)
   void OnReportAdded(const net::ReportingReport& report) override;
   void OnReportUpdated(const net::ReportingReport& report) override;
+  void OnEndpointsUpdatedForOrigin(
+      const std::vector<net::ReportingEndpoint>& endpoints) override;
+  std::unique_ptr<protocol::Network::ReportingApiReport> BuildProtocolReport(
+      const net::ReportingReport& report);
+  std::unique_ptr<protocol::Network::ReportingApiEndpoint>
+  BuildProtocolEndpoint(const net::ReportingEndpoint& endpoint);
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
   Response EnableReportingApi(bool enable) override;
@@ -145,6 +153,7 @@ class NetworkHandler : public DevToolsDomainHandler,
                  Maybe<bool> same_party,
                  Maybe<std::string> source_scheme,
                  Maybe<int> source_port,
+                 Maybe<std::string> partition_key,
                  std::unique_ptr<SetCookieCallback> callback) override;
   void SetCookies(
       std::unique_ptr<protocol::Array<Network::CookieParam>> cookies,
@@ -179,6 +188,9 @@ class NetworkHandler : public DevToolsDomainHandler,
       const String& interception_id,
       std::unique_ptr<GetResponseBodyForInterceptionCallback> callback)
       override;
+  void GetResponseBody(
+      const String& request_id,
+      std::unique_ptr<GetResponseBodyCallback> callback) override;
   void TakeResponseBodyForInterceptionAsStream(
       const String& interception_id,
       std::unique_ptr<TakeResponseBodyForInterceptionAsStreamCallback> callback)
@@ -202,6 +214,11 @@ class NetworkHandler : public DevToolsDomainHandler,
       bool* disable_cache,
       absl::optional<std::vector<net::SourceStream::SourceType>>*
           accepted_stream_types);
+  void PrefetchRequestWillBeSent(const std::string& request_id,
+                                 const network::ResourceRequest& request,
+                                 const GURL& initiator_url,
+                                 Maybe<std::string> frame_token,
+                                 base::TimeTicks timestamp);
   void NavigationRequestWillBeSent(const NavigationRequest& nav_request,
                                    base::TimeTicks timestamp);
   void RequestSent(const std::string& request_id,
@@ -294,6 +311,10 @@ class NetworkHandler : public DevToolsDomainHandler,
   static std::unique_ptr<protocol::Network::CorsErrorStatus>
   BuildCorsErrorStatus(const network::CorsErrorStatus& status);
 
+  void BodyDataReceived(const String& request_id,
+                        const String& body,
+                        bool is_base64_encoded);
+
  private:
   void OnLoadNetworkResourceFinished(DevToolsNetworkResourceLoader* loader,
                                      const net::HttpResponseHeaders* rh,
@@ -308,8 +329,6 @@ class NetworkHandler : public DevToolsDomainHandler,
       Response response,
       mojo::ScopedDataPipeConsumerHandle pipe,
       const std::string& mime_type);
-  std::unique_ptr<protocol::Network::ReportingApiReport> BuildProtocolReport(
-      const net::ReportingReport& report);
 
   // TODO(dgozman): Remove this.
   const std::string host_id_;
@@ -337,6 +356,8 @@ class NetworkHandler : public DevToolsDomainHandler,
       loaders_;
   absl::optional<std::set<net::SourceStream::SourceType>>
       accepted_stream_types_;
+  const bool allow_file_access_;
+  std::unordered_map<String, std::pair<String, bool>> received_body_data_;
   base::WeakPtrFactory<NetworkHandler> weak_factory_{this};
 };
 

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,16 @@
 
 #include <cstdint>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
-#include "base/bits.h"
-#include "base/compiler_specific.h"
 
-namespace base {
-namespace internal {
-namespace {
+namespace partition_alloc::internal {
+
+// Don't use an anonymous namespace for the constants because it can inhibit
+// collapsing them together, even when they are tagged as inline.
 
 // Precalculate some shift and mask constants used in the hot path.
 // Example: malloc(41) == 101001 binary.
@@ -39,14 +40,14 @@ constexpr size_t OrderSubIndexMask(uint8_t order) {
 }
 
 #if defined(PA_HAS_64_BITS_POINTERS)
-#define BITS_PER_SIZE_T 64
+#define PA_BITS_PER_SIZE_T 64
 static_assert(kBitsPerSizeT == 64, "");
 #else
-#define BITS_PER_SIZE_T 32
+#define PA_BITS_PER_SIZE_T 32
 static_assert(kBitsPerSizeT == 32, "");
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
 
-constexpr uint8_t kOrderIndexShift[BITS_PER_SIZE_T + 1] = {
+inline constexpr uint8_t kOrderIndexShift[PA_BITS_PER_SIZE_T + 1] = {
     OrderIndexShift(0),  OrderIndexShift(1),  OrderIndexShift(2),
     OrderIndexShift(3),  OrderIndexShift(4),  OrderIndexShift(5),
     OrderIndexShift(6),  OrderIndexShift(7),  OrderIndexShift(8),
@@ -58,7 +59,7 @@ constexpr uint8_t kOrderIndexShift[BITS_PER_SIZE_T + 1] = {
     OrderIndexShift(24), OrderIndexShift(25), OrderIndexShift(26),
     OrderIndexShift(27), OrderIndexShift(28), OrderIndexShift(29),
     OrderIndexShift(30), OrderIndexShift(31), OrderIndexShift(32),
-#if BITS_PER_SIZE_T == 64
+#if PA_BITS_PER_SIZE_T == 64
     OrderIndexShift(33), OrderIndexShift(34), OrderIndexShift(35),
     OrderIndexShift(36), OrderIndexShift(37), OrderIndexShift(38),
     OrderIndexShift(39), OrderIndexShift(40), OrderIndexShift(41),
@@ -73,7 +74,7 @@ constexpr uint8_t kOrderIndexShift[BITS_PER_SIZE_T + 1] = {
 #endif
 };
 
-constexpr size_t kOrderSubIndexMask[BITS_PER_SIZE_T + 1] = {
+inline constexpr size_t kOrderSubIndexMask[PA_BITS_PER_SIZE_T + 1] = {
     OrderSubIndexMask(0),  OrderSubIndexMask(1),  OrderSubIndexMask(2),
     OrderSubIndexMask(3),  OrderSubIndexMask(4),  OrderSubIndexMask(5),
     OrderSubIndexMask(6),  OrderSubIndexMask(7),  OrderSubIndexMask(8),
@@ -85,7 +86,7 @@ constexpr size_t kOrderSubIndexMask[BITS_PER_SIZE_T + 1] = {
     OrderSubIndexMask(24), OrderSubIndexMask(25), OrderSubIndexMask(26),
     OrderSubIndexMask(27), OrderSubIndexMask(28), OrderSubIndexMask(29),
     OrderSubIndexMask(30), OrderSubIndexMask(31), OrderSubIndexMask(32),
-#if BITS_PER_SIZE_T == 64
+#if PA_BITS_PER_SIZE_T == 64
     OrderSubIndexMask(33), OrderSubIndexMask(34), OrderSubIndexMask(35),
     OrderSubIndexMask(36), OrderSubIndexMask(37), OrderSubIndexMask(38),
     OrderSubIndexMask(39), OrderSubIndexMask(40), OrderSubIndexMask(41),
@@ -100,12 +101,13 @@ constexpr size_t kOrderSubIndexMask[BITS_PER_SIZE_T + 1] = {
 #endif
 };
 
-}  // namespace
-
 // The class used to generate the bucket lookup table at compile-time.
 class BucketIndexLookup final {
  public:
-  ALWAYS_INLINE constexpr static size_t GetIndex(size_t size);
+  PA_ALWAYS_INLINE constexpr static uint16_t GetIndexForDenserBuckets(
+      size_t size);
+  PA_ALWAYS_INLINE constexpr static uint16_t GetIndexFor8Buckets(size_t size);
+  PA_ALWAYS_INLINE constexpr static uint16_t GetIndex(size_t size);
 
   constexpr BucketIndexLookup() {
     constexpr uint16_t sentinel_bucket_index = kNumBuckets;
@@ -202,12 +204,37 @@ class BucketIndexLookup final {
       bucket_index_lookup_[((kBitsPerSizeT + 1) * kNumBucketsPerOrder) + 1]{};
 };
 
+PA_ALWAYS_INLINE constexpr size_t RoundUpToPowerOfTwo(size_t size) {
+  const size_t n = 1 << base::bits::Log2Ceiling(static_cast<uint32_t>(size));
+  PA_DCHECK(size <= n);
+  return n;
+}
+
+PA_ALWAYS_INLINE constexpr size_t RoundUpSize(size_t size) {
+  const size_t next_power = RoundUpToPowerOfTwo(size);
+  const size_t prev_power = next_power >> 1;
+  PA_DCHECK(size <= next_power);
+  PA_DCHECK(prev_power < size);
+  if (size <= prev_power * 5 / 4) {
+    return prev_power * 5 / 4;
+  } else {
+    return next_power;
+  }
+}
+
+PA_ALWAYS_INLINE constexpr uint16_t RoundUpToOdd(uint16_t size) {
+  return (size % 2 == 0) + size;
+}
+
 // static
-ALWAYS_INLINE constexpr size_t BucketIndexLookup::GetIndex(size_t size) {
+PA_ALWAYS_INLINE constexpr uint16_t BucketIndexLookup::GetIndexFor8Buckets(
+    size_t size) {
   // This forces the bucket table to be constant-initialized and immediately
   // materialized in the binary.
   constexpr BucketIndexLookup lookup{};
-  const uint8_t order = kBitsPerSizeT - bits::CountLeadingZeroBitsSizeT(size);
+  const size_t order =
+      kBitsPerSizeT -
+      static_cast<size_t>(base::bits::CountLeadingZeroBits(size));
   // The order index is simply the next few bits after the most significant
   // bit.
   const size_t order_index =
@@ -221,7 +248,51 @@ ALWAYS_INLINE constexpr size_t BucketIndexLookup::GetIndex(size_t size) {
   return index;
 }
 
-}  // namespace internal
-}  // namespace base
+// static
+PA_ALWAYS_INLINE constexpr uint16_t BucketIndexLookup::GetIndexForDenserBuckets(
+    size_t size) {
+  const auto index = GetIndexFor8Buckets(size);
+  // Below the minimum size, 4 and 8 bucket distributions are the same, since we
+  // can't fit any more buckets per order; this is due to alignment
+  // requirements: each bucket must be a multiple of the alignment, which
+  // implies the difference between buckets must also be a multiple of the
+  // alignment. In smaller orders, this limits the number of buckets we can
+  // have per order. So, for these small order, we do not want to skip every
+  // second bucket.
+  //
+  // We also do not want to go about the index for the max bucketed size.
+  if (size > kAlignment * kNumBucketsPerOrder &&
+      index < GetIndexFor8Buckets(kMaxBucketed))
+    return RoundUpToOdd(index);
+  else
+    return index;
+}
+
+// static
+PA_ALWAYS_INLINE constexpr uint16_t BucketIndexLookup::GetIndex(size_t size) {
+  // For any order 2^N, under the denser bucket distribution ("Distribution A"),
+  // we have 4 evenly distributed buckets: 2^N, 1.25*2^N, 1.5*2^N, and 1.75*2^N.
+  // These numbers represent the maximum size of an allocation that can go into
+  // a given bucket.
+  //
+  // Under the less dense bucket distribution ("Distribution B"), we only have
+  // 2 buckets for the same order 2^N: 2^N and 1.25*2^N.
+  //
+  // Everything that would be mapped to the last two buckets of an order under
+  // Distribution A is instead mapped to the first bucket of the next order
+  // under Distribution B. The following diagram shows roughly what this looks
+  // like for the order starting from 2^10, as an example.
+  //
+  // A: ... | 2^10 | 1.25*2^10 | 1.5*2^10 | 1.75*2^10 | 2^11 | ...
+  // B: ... | 2^10 | 1.25*2^10 | -------- | --------- | 2^11 | ...
+  //
+  // So, an allocation of size 1.4*2^10 would go into the 1.5*2^10 bucket under
+  // Distribution A, but to the 2^11 bucket under Distribution B.
+  if (1 << 8 < size && size < kHighThresholdForAlternateDistribution)
+    return BucketIndexLookup::GetIndexForDenserBuckets(RoundUpSize(size));
+  return BucketIndexLookup::GetIndexForDenserBuckets(size);
+}
+
+}  // namespace partition_alloc::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_BUCKET_LOOKUP_H_

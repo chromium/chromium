@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,12 +28,12 @@
 // is fixed.
 - (void)getAllCookies:(void (^)(NSArray<NSHTTPCookie*>*))completionHandler;
 
-// Sets |cookie| to the store, and invokes |completionHandler| after cookie is
+// Sets `cookie` to the store, and invokes `completionHandler` after cookie is
 // set.
 - (void)setCookie:(NSHTTPCookie*)cookie
     completionHandler:(void (^)(void))completionHandler;
 
-// Deletes |cookie| from the store, and invokes |completionHandler| after cookie
+// Deletes `cookie` from the store, and invokes `completionHandler` after cookie
 // is deleted.
 - (void)deleteCookie:(NSHTTPCookie*)cookie
     completionHandler:(void (^)(void))completionHandler;

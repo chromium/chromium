@@ -1,17 +1,18 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/reading_list/core/reading_list_model.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_clock.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/reading_list/core/reading_list_model_storage.h"
 #include "components/reading_list/core/reading_list_store_delegate.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/test/model/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_model_type_change_processor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -145,8 +146,8 @@ class TestReadingListStorage : public ReadingListModelStorage {
 
  private:
   std::unique_ptr<ReadingListStoreDelegate::ReadingListEntries> entries_;
-  TestReadingListStorageObserver* observer_;
-  base::SimpleTestClock* clock_;
+  raw_ptr<TestReadingListStorageObserver> observer_;
+  raw_ptr<base::SimpleTestClock> clock_;
 };
 
 class ReadingListModelTest : public ReadingListModelObserver,

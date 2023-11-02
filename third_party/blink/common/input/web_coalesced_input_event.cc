@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -113,11 +113,6 @@ void WebCoalescedInputEvent::CoalesceWith(
   event_->Coalesce(*newer_event.event_);
   event_->SetTimeStamp(time_stamp);
   AddCoalescedEvent(*newer_event.event_);
-
-  // If this is a GestureScrollUpdate event, update the old event's last
-  // timestamp and scroll delta using the newer event's latency info.
-  if (event_->GetType() == WebInputEvent::Type::kGestureScrollUpdate)
-    latency_.CoalesceScrollUpdateWith(newer_event.latency_);
 }
 
 }  // namespace blink

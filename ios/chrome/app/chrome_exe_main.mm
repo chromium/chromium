@@ -1,18 +1,19 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import <UIKit/UIKit.h>
 
-#include "base/at_exit.h"
-#include "base/debug/crash_logging.h"
-#include "base/strings/sys_string_conversions.h"
-#include "ios/chrome/app/startup/ios_chrome_main.h"
-#include "ios/chrome/app/startup/ios_enable_sandbox_dump_buildflags.h"
-#include "ios/chrome/browser/crash_report/crash_helper.h"
+#import "base/at_exit.h"
+#import "base/debug/crash_logging.h"
+#import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/app/startup/ios_chrome_main.h"
+#import "ios/chrome/app/startup/ios_enable_sandbox_dump_buildflags.h"
+#import "ios/chrome/browser/crash_report/crash_helper.h"
+#import "ios/public/provider/chrome/browser/primes/primes_api.h"
 
 #if BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
-#include "ios/chrome/app/startup/sandbox_dump.h"  // nogncheck
+#import "ios/chrome/app/startup/sandbox_dump.h"  // nogncheck
 #endif  // BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -86,6 +87,11 @@ int main(int argc, char* argv[]) {
 
   // Create this here since it's needed to start the crash handler.
   base::AtExitManager at_exit;
+
+  // Start Primes logging if it's supported.
+  if (ios::provider::IsPrimesSupported()) {
+    ios::provider::PrimesStartLogging();
+  }
 
   // The Crash Controller is started here even if the user opted out since we
   // don't have yet preferences. Later on it is stopped if the user opted out.

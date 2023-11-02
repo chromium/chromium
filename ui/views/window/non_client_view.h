@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
@@ -72,7 +73,7 @@ class VIEWS_EXPORT NonClientFrameView : public View,
   // used.
   virtual bool GetClientMask(const gfx::Size& size, SkPath* mask) const;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Returns the point in screen physical coordinates at which the system menu
   // should be opened.
   virtual gfx::Point GetSystemMenuScreenPixelLocation() const;
@@ -108,7 +109,7 @@ class VIEWS_EXPORT NonClientFrameView : public View,
   virtual void InsertClientView(ClientView* client_view);
 
  private:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Returns the y coordinate, in local coordinates, at which the system menu
   // should be opened.  Since this is in DIP, it does not include the 1 px
   // offset into the caption area; the caller will take care of this.
@@ -208,9 +209,6 @@ class VIEWS_EXPORT NonClientView : public View, public ViewTargeterDelegate {
   // Get/Set client_view property.
   ClientView* client_view() const { return client_view_; }
 
-  // Set the accessible name of this view.
-  void SetAccessibleName(const std::u16string& name);
-
   // NonClientView, View overrides:
   gfx::Size CalculatePreferredSize() const override;
   gfx::Size GetMinimumSize() const override;
@@ -228,22 +226,19 @@ class VIEWS_EXPORT NonClientView : public View, public ViewTargeterDelegate {
   // ViewTargeterDelegate:
   View* TargetForRect(View* root, const gfx::Rect& rect) override;
 
-  // A ClientView object or subclass, responsible for sizing the contents view
-  // of the window, hit testing and perhaps other tasks depending on the
-  // implementation.
-  ClientView* const client_view_;
-
   // The NonClientFrameView that renders the non-client portions of the window.
   // This object is not owned by the view hierarchy because it can be replaced
   // dynamically as the system settings change.
   std::unique_ptr<NonClientFrameView> frame_view_;
 
+  // A ClientView object or subclass, responsible for sizing the contents view
+  // of the window, hit testing and perhaps other tasks depending on the
+  // implementation.
+  const raw_ptr<ClientView> client_view_;
+
   // The overlay view, when non-NULL and visible, takes up the entire widget and
   // is placed on top of the ClientView and NonClientFrameView.
-  View* overlay_view_ = nullptr;
-
-  // The accessible name of this view.
-  std::u16string accessible_name_;
+  raw_ptr<View> overlay_view_ = nullptr;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, NonClientFrameView, View)

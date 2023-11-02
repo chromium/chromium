@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/i18n/streaming_utf8_validator.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/checked_math.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
@@ -42,12 +43,16 @@ void AnalyzeRarFile(base::File rar_file,
   bool too_big_to_unpack =
       base::checked_cast<uint64_t>(rar_file.GetLength()) >
       FileTypePolicies::GetInstance()->GetMaxFileSizeToAnalyze("rar");
-  if (too_big_to_unpack)
+  if (too_big_to_unpack) {
+    results->analysis_result = ArchiveAnalysisResult::kTooLarge;
     return;
+  }
 
   third_party_unrar::RarReader reader;
-  if (!reader.Open(std::move(rar_file), temp_file.Duplicate()))
+  if (!reader.Open(std::move(rar_file), temp_file.Duplicate())) {
+    results->analysis_result = ArchiveAnalysisResult::kUnknown;
     return;
+  }
 
   bool timeout = false;
   while (reader.ExtractNextEntry()) {
@@ -67,6 +72,8 @@ void AnalyzeRarFile(base::File rar_file,
       results->file_count++;
   }
 
+  results->analysis_result =
+      timeout ? ArchiveAnalysisResult::kTimeout : ArchiveAnalysisResult::kValid;
   results->success = !timeout;
 }
 

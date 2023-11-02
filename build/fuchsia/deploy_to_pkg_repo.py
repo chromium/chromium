@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
+#!/usr/bin/env vpython3
 #
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Deploys Fuchsia packages to a package repository in a Fuchsia
@@ -10,8 +10,6 @@ import pkg_repo
 import argparse
 import os
 import sys
-
-
 
 def main():
   parser = argparse.ArgumentParser()
@@ -29,7 +27,12 @@ def main():
   assert args.package
 
   fuchsia_out_dir = os.path.expanduser(args.fuchsia_out_dir)
-  repo = pkg_repo.ExternalPkgRepo(os.path.join(fuchsia_out_dir, 'amber-files'),
+  fuchsia_amber_files_dir = os.path.join(fuchsia_out_dir, 'amber-files')
+  assert os.path.exists(fuchsia_amber_files_dir), \
+     '{} not found, check that --fuchsia-out-dir points to a valid out dir.' \
+     ' eg. /path/to/fuchsia/out/default'.format(fuchsia_amber_files_dir)
+
+  repo = pkg_repo.ExternalPkgRepo(fuchsia_amber_files_dir,
                                   os.path.join(fuchsia_out_dir, '.build-id'))
   print('Installing packages and symbols in package repo %s...' %
         repo.GetPath())

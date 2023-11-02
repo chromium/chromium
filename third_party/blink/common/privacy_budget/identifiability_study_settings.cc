@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -117,7 +117,13 @@ bool IdentifiabilityStudySettings::IsActive() const {
   return is_enabled_;
 }
 
-bool IdentifiabilityStudySettings::IsSurfaceAllowed(
+bool IdentifiabilityStudySettings::ShouldSampleWebFeature(
+    mojom::WebFeature feature) const {
+  return ShouldSampleSurface(IdentifiableSurface::FromTypeAndToken(
+      IdentifiableSurface::Type::kWebFeature, feature));
+}
+
+bool IdentifiabilityStudySettings::ShouldSampleSurface(
     IdentifiableSurface surface) const {
   if (LIKELY(!is_enabled_))
     return false;
@@ -128,7 +134,7 @@ bool IdentifiabilityStudySettings::IsSurfaceAllowed(
   return provider_->IsSurfaceAllowed(surface);
 }
 
-bool IdentifiabilityStudySettings::IsTypeAllowed(
+bool IdentifiabilityStudySettings::ShouldSampleType(
     IdentifiableSurface::Type type) const {
   if (LIKELY(!is_enabled_))
     return false;
@@ -139,20 +145,15 @@ bool IdentifiabilityStudySettings::IsTypeAllowed(
   return provider_->IsTypeAllowed(type);
 }
 
-bool IdentifiabilityStudySettings::IsWebFeatureAllowed(
-    mojom::WebFeature feature) const {
-  return IsSurfaceAllowed(IdentifiableSurface::FromTypeAndToken(
-      IdentifiableSurface::Type::kWebFeature, feature));
+bool IdentifiabilityStudySettings::ShouldActivelySample() const {
+  if (LIKELY(!is_enabled_))
+    return false;
+  return provider_->ShouldActivelySample();
 }
 
-bool IdentifiabilityStudySettings::ShouldSample(
-    IdentifiableSurface surface) const {
-  return IsSurfaceAllowed(surface);
-}
-
-bool IdentifiabilityStudySettings::ShouldSample(
-    IdentifiableSurface::Type type) const {
-  return IsTypeAllowed(type);
+std::vector<std::string>
+IdentifiabilityStudySettings::FontFamiliesToActivelySample() const {
+  return provider_->FontFamiliesToActivelySample();
 }
 
 }  // namespace blink

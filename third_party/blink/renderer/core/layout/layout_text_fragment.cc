@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
+#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/text.h"
@@ -60,24 +61,36 @@ LayoutTextFragment* LayoutTextFragment::Create(Node* node,
                                                  length, legacy);
 }
 
-LayoutTextFragment* LayoutTextFragment::CreateAnonymous(PseudoElement& pseudo,
+LayoutTextFragment* LayoutTextFragment::CreateAnonymous(Document& doc,
                                                         StringImpl* text,
                                                         unsigned start,
                                                         unsigned length,
                                                         LegacyLayout legacy) {
   LayoutTextFragment* fragment =
       LayoutTextFragment::Create(nullptr, text, start, length, legacy);
-  fragment->SetDocumentForAnonymous(&pseudo.GetDocument());
+  fragment->SetDocumentForAnonymous(&doc);
   if (length)
-    pseudo.GetDocument().View()->IncrementVisuallyNonEmptyCharacterCount(
-        length);
+    doc.View()->IncrementVisuallyNonEmptyCharacterCount(length);
   return fragment;
+}
+
+LayoutTextFragment* LayoutTextFragment::CreateAnonymous(PseudoElement& pseudo,
+                                                        StringImpl* text,
+                                                        unsigned start,
+                                                        unsigned length,
+                                                        LegacyLayout legacy) {
+  return CreateAnonymous(pseudo.GetDocument(), text, start, length, legacy);
 }
 
 LayoutTextFragment* LayoutTextFragment::CreateAnonymous(PseudoElement& pseudo,
                                                         StringImpl* text,
                                                         LegacyLayout legacy) {
   return CreateAnonymous(pseudo, text, 0, text ? text->length() : 0, legacy);
+}
+
+void LayoutTextFragment::Trace(Visitor* visitor) const {
+  visitor->Trace(first_letter_pseudo_element_);
+  LayoutText::Trace(visitor);
 }
 
 void LayoutTextFragment::WillBeDestroyed() {
@@ -194,11 +207,16 @@ LayoutText* LayoutTextFragment::GetFirstLetterPart() const {
   NOT_DESTROYED();
   if (!is_remaining_text_layout_object_)
     return nullptr;
-  // Node: We assume first letter pseudo element has only one child and it
-  // is LayoutTextFragment.
   LayoutObject* const first_letter_container =
       GetFirstLetterPseudoElement()->GetLayoutObject();
-  LayoutObject* const child = first_letter_container->SlowFirstChild();
+  LayoutObject* child = first_letter_container->SlowFirstChild();
+  if (!child->IsText()) {
+    DCHECK(!IsInLayoutNGInlineFormattingContext());
+    // In legacy layout there may also be a list item marker here. The next
+    // sibling better be the LayoutTextFragment of the ::first-letter, then.
+    child = child->NextSibling();
+    DCHECK(child);
+  }
   CHECK(child->IsText());
   DCHECK_EQ(child, first_letter_container->SlowLastChild());
   return To<LayoutTextFragment>(child);
@@ -218,6 +236,12 @@ void LayoutTextFragment::UpdateHitTestResult(
   if (is_remaining_text_layout_object_ || !GetFirstLetterPseudoElement())
     return;
   result.SetInnerNode(GetFirstLetterPseudoElement());
+}
+
+DOMNodeId LayoutTextFragment::OwnerNodeId() const {
+  NOT_DESTROYED();
+  Node* node = AssociatedTextNode();
+  return node ? DOMNodeIds::IdForNode(node) : kInvalidDOMNodeId;
 }
 
 Position LayoutTextFragment::PositionForCaretOffset(unsigned offset) const {

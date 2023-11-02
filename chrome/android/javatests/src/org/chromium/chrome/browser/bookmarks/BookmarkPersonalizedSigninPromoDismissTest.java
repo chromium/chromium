@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,11 +13,14 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.components.browser_ui.widget.RecyclerViewTestUtils.activeInRecyclerView;
 
 import android.support.test.InstrumentationRegistry;
 
+import androidx.annotation.IdRes;
+import androidx.test.espresso.ViewInteraction;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -28,8 +31,8 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -39,7 +42,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncTestRule;
-import org.chromium.chrome.browser.ui.signin.SigninPromoController;
+import org.chromium.chrome.browser.ui.signin.SyncPromoController;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.BookmarkTestRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
@@ -47,7 +50,6 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.UiDisableIf;
 
 /**
  * Tests different scenarios when the bookmark personalized signin promo is not shown.
@@ -71,7 +73,7 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
     @Before
     public void setUp() throws Exception {
         BookmarkPromoHeader.forcePromoStateForTests(null);
-        SigninPromoController.setPrefSigninPromoDeclinedBookmarksForTests(false);
+        SyncPromoController.setPrefSigninPromoDeclinedBookmarksForTests(false);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             BookmarkModel bookmarkModel = new BookmarkModel(Profile.fromWebContents(
@@ -84,85 +86,81 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
     @After
     public void tearDown() {
         SharedPreferencesManager.getInstance().removeKey(
-                SigninPromoController.getPromoShowCountPreferenceName(
+                SyncPromoController.getPromoShowCountPreferenceName(
                         SigninAccessPoint.BOOKMARK_MANAGER));
         SharedPreferencesManager.getInstance().removeKey(
                 ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT);
-        SigninPromoController.setPrefSigninPromoDeclinedBookmarksForTests(false);
+        SyncPromoController.setPrefSigninPromoDeclinedBookmarksForTests(false);
     }
 
     @Test
     @MediumTest
     public void testPromoNotShownAfterBeingDismissed() {
         mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
-        onViewWaiting(allOf(withId(R.id.signin_promo_view_container), isDisplayed()));
-        onView(withId(R.id.signin_promo_close_button)).perform(click());
-        onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
+        onActiveViewId(R.id.signin_promo_view_container).check(matches(isDisplayed()));
+        onActiveViewId(R.id.sync_promo_close_button).perform(click());
+        onActiveViewId(R.id.signin_promo_view_container).check(doesNotExist());
 
         closeBookmarkManager();
         mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
-        onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
+        onActiveViewId(R.id.signin_promo_view_container).check(doesNotExist());
     }
 
     @Test
     @MediumTest
-    // BookmarkPromoHeader is created twice per test in tablets.
-    // So testing histogram count is not possible.
-    // TODO(https://crbug.com/1266342): Remove DisableIf for tablets.
-    @DisableIf.Device(type = {UiDisableIf.TABLET})
     public void testPromoDismissedHistogramRecordedAfterBeingDismissed() {
-        HistogramDelta dismissHistogram =
-                new HistogramDelta("Signin.SyncPromo.Dismissed.Count.Bookmarks", 1);
-
         mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
-        onViewWaiting(allOf(withId(R.id.signin_promo_view_container), isDisplayed()));
-        onView(withId(R.id.signin_promo_close_button)).perform(click());
-        onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
+        onActiveViewId(R.id.signin_promo_view_container).check(matches(isDisplayed()));
+        onActiveViewId(R.id.sync_promo_close_button).perform(click());
+        onActiveViewId(R.id.signin_promo_view_container).check(doesNotExist());
 
         closeBookmarkManager();
         mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
-        onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
-        Assert.assertEquals(1, dismissHistogram.getDelta());
+        onActiveViewId(R.id.signin_promo_view_container).check(doesNotExist());
+        int histogramRecordCount = RecordHistogram.getHistogramTotalCountForTesting(
+                "Signin.SyncPromo.Dismissed.Count.Bookmarks");
+        assertTrue("Expected at least one, but found " + histogramRecordCount,
+                histogramRecordCount >= 1);
     }
 
     @Test
     @MediumTest
     public void testPromoNotExistWhenImpressionLimitReached() {
         SharedPreferencesManager.getInstance().writeInt(
-                SigninPromoController.getPromoShowCountPreferenceName(
+                SyncPromoController.getPromoShowCountPreferenceName(
                         SigninAccessPoint.BOOKMARK_MANAGER),
-                SigninPromoController.getMaxImpressionsBookmarksForTests());
+                SyncPromoController.getMaxImpressionsBookmarksForTests());
         mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
-        onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
+        onActiveViewId(R.id.signin_promo_view_container).check(doesNotExist());
     }
 
     @Test
     @MediumTest
-    // BookmarkPromoHeader is created twice per test in tablets.
-    // So testing histogram count is not possible.
-    // TODO(https://crbug.com/1266342): Remove DisableIf for tablets.
-    @DisableIf.Device(type = {UiDisableIf.TABLET})
     public void testPromoImpressionCountIncrementAfterDisplayingSigninPromo() {
         Assert.assertEquals(0,
                 SharedPreferencesManager.getInstance().readInt(
                         ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT));
         assertEquals(0,
                 SharedPreferencesManager.getInstance().readInt(
-                        SigninPromoController.getPromoShowCountPreferenceName(
+                        SyncPromoController.getPromoShowCountPreferenceName(
                                 SigninAccessPoint.BOOKMARK_MANAGER)));
         HistogramDelta showCountHistogram =
                 new HistogramDelta("Signin.SyncPromo.Shown.Count.Bookmarks", 1);
 
         mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
-        onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
+        onActiveViewId(R.id.signin_promo_view_container).check(matches(isDisplayed()));
 
-        assertEquals(1,
-                SharedPreferencesManager.getInstance().readInt(
-                        SigninPromoController.getPromoShowCountPreferenceName(
-                                SigninAccessPoint.BOOKMARK_MANAGER)));
-        Assert.assertEquals(1,
-                SharedPreferencesManager.getInstance().readInt(
-                        ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT));
+        // If a profile update happens while the promo in bookmarks is being shown, these will be
+        // counted multiple times. The RecyclerView recreates the promo view at its current index,
+        // triggering all metrics again.
+        int bookmarkShownCount = SharedPreferencesManager.getInstance().readInt(
+                SyncPromoController.getPromoShowCountPreferenceName(
+                        SigninAccessPoint.BOOKMARK_MANAGER));
+        assertTrue(
+                "Expected at least one, but found " + bookmarkShownCount, bookmarkShownCount >= 1);
+        int totalShownCount = SharedPreferencesManager.getInstance().readInt(
+                ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT);
+        assertTrue("Expected at least one, but found " + totalShownCount, totalShownCount >= 1);
         Assert.assertEquals(1, showCountHistogram.getDelta());
     }
 
@@ -173,7 +171,12 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
             ChromeTabUtils.closeCurrentTab(
                     InstrumentationRegistry.getInstrumentation(), chromeTabbedActivity);
         } else {
+            // This is not within the RecyclerView, don't need to verify active.
             onView(withId(R.id.close_menu_id)).perform(click());
         }
+    }
+
+    private static ViewInteraction onActiveViewId(@IdRes int id) {
+        return onView(allOf(withId(id), activeInRecyclerView()));
     }
 }

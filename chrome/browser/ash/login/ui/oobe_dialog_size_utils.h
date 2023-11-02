@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,17 +10,6 @@
 #include "ui/gfx/geometry/size.h"
 
 namespace ash {
-
-// Enum that specifies how inner padding of OOBE dialog should be calculated.
-enum class OobeDialogPaddingMode {
-  // Oobe dialog is displayed full screen, padding will be calculated
-  // via css depending on media size.
-  PADDING_AUTO,
-  // Oobe dialog have enough free space around and should use wide padding.
-  PADDING_WIDE,
-  // Oobe dialog is positioned in limited space and should use narrow padding.
-  PADDING_NARROW
-};
 
 // Exposed for testing.
 extern const gfx::Size kMaxDialogSize;
@@ -48,8 +37,7 @@ gfx::Size CalculateOobeDialogSizeForPrimaryDisplay();
 void CalculateOobeDialogBounds(const gfx::Rect& host_bounds,
                                int shelf_height,
                                bool is_horizontal,
-                               gfx::Rect* result,
-                               OobeDialogPaddingMode* result_padding);
+                               gfx::Rect* result);
 
 }  // namespace ash
 
@@ -58,7 +46,6 @@ void CalculateOobeDialogBounds(const gfx::Rect& host_bounds,
 namespace chromeos {
 using ::ash::CalculateOobeDialogSize;
 using ::ash::CalculateOobeDialogSizeForPrimaryDisplay;
-using ::ash::OobeDialogPaddingMode;
 using ::ash::kMaxLandscapeDialogSize;
 using ::ash::kMaxPortraitDialogSize;
 using ::ash::kMinLandscapeDialogSize;

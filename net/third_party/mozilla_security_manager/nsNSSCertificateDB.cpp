@@ -64,12 +64,17 @@ bool ImportCACerts(PK11SlotInfo* slot,
   // Mozilla had some code here to check if a perm version of the cert exists
   // already and use that, but CERT_NewTempCertificate actually does that
   // itself, so we skip it here.
+  PRBool root_is_perm;
+  if (net::x509_util::GetCertIsPerm(root, &root_is_perm) != SECSuccess) {
+    LOG(ERROR) << "CERT_GetCertIsPerm failed with error " << PORT_GetError();
+    return false;
+  }
 
   if (!CERT_IsCACert(root, NULL)) {
     not_imported->push_back(net::NSSCertDatabase::ImportCertFailure(
         net::x509_util::DupCERTCertificate(root),
         net::ERR_IMPORT_CA_CERT_NOT_CA));
-  } else if (root->isperm) {
+  } else if (root_is_perm) {
     // Mozilla just returns here, but we continue in case there are other certs
     // in the list which aren't already imported.
     // TODO(mattm): should we set/add trust if it differs from the present
@@ -118,7 +123,12 @@ bool ImportCACerts(PK11SlotInfo* slot,
       continue;
     }
 
-    if (cert->isperm) {
+    PRBool cert_is_perm;
+    if (net::x509_util::GetCertIsPerm(cert, &cert_is_perm) != SECSuccess) {
+      LOG(ERROR) << "CERT_GetCertIsPerm failed with error " << PORT_GetError();
+      return false;
+    }
+    if (cert_is_perm) {
       not_imported->push_back(net::NSSCertDatabase::ImportCertFailure(
           net::x509_util::DupCERTCertificate(cert),
           net::ERR_IMPORT_CERT_ALREADY_EXISTS));

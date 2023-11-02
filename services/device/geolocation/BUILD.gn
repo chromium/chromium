@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -44,8 +44,8 @@ source_set("geolocation") {
     "wifi_data.h",
     "wifi_data_provider.cc",
     "wifi_data_provider.h",
-    "wifi_data_provider_manager.cc",
-    "wifi_data_provider_manager.h",
+    "wifi_data_provider_handle.cc",
+    "wifi_data_provider_handle.h",
     "wifi_polling_policy.cc",
     "wifi_polling_policy.h",
   ]
@@ -103,7 +103,7 @@ source_set("geolocation") {
       "wifi_data_provider_chromeos.cc",
       "wifi_data_provider_chromeos.h",
     ]
-    deps += [ "//chromeos/network" ]
+    deps += [ "//chromeos/ash/components/network" ]
   } else if (is_linux && use_dbus) {
     sources += [
       "wifi_data_provider_linux.cc",
@@ -136,7 +136,7 @@ source_set("geolocation") {
       "wifi_data_provider_win.h",
     ]
   } else {
-    # WifiDataProviderManager declares a static factory method that is defined
+    # WifiDataProviderHandle declares a static factory method that is defined
     # by the platform implementation. Platforms with no Wi-Fi data provider must
     # include EmptyWifiDataProvider to provide this definition.
     sources += [
@@ -167,7 +167,10 @@ if (is_android) {
       "$google_play_services_package:google_play_services_base_java",
       "$google_play_services_package:google_play_services_basement_java",
       "$google_play_services_package:google_play_services_location_java",
+      "$google_play_services_package:google_play_services_tasks_java",
       "//base:base_java",
+      "//base:jni_java",
+      "//build/android:build_java",
       "//components/location/android:location_java",
       "//services/device/public/java:geolocation_java",
       "//third_party/android_deps:chromium_play_services_availability_java",
@@ -196,6 +199,6 @@ source_set("test_support") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [ "//chromeos/dbus/shill" ]
+    deps += [ "//chromeos/ash/components/dbus/shill" ]
   }
 }

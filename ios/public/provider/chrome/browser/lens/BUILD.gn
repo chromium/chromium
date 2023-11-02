@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,16 +8,11 @@ source_set("lens_api") {
     "lens_api.h",
     "lens_configuration.h",
     "lens_configuration.mm",
+    "lens_query.h",
+    "lens_query.mm",
   ]
-  deps = [ "//base" ]
-}
-
-source_set("test_lens") {
-  testonly = true
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [ "test_lens.mm" ]
   deps = [
-    ":lens_api",
     "//base",
+    "//ios/web/public/navigation:navigation",
   ]
 }

@@ -1,11 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_connector.h"
 
 #include "base/bind.h"
-#include "base/task/task_runner_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 
@@ -58,7 +57,7 @@ void WaylandBufferManagerConnector::OnGpuServiceLaunched(
       std::move(pending_remote), buffer_formats_with_modifiers,
       supports_dma_buf, buffer_manager_host_->SupportsViewporter(),
       buffer_manager_host_->SupportsAcquireFence(),
-      buffer_manager_host_->SupportsNonBackedSolidColorBuffers());
+      buffer_manager_host_->GetSurfaceAugmentorVersion());
 }
 
 void WaylandBufferManagerConnector::OnTerminateGpuProcess(std::string message) {

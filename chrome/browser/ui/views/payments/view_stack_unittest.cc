@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -191,7 +191,6 @@ TEST_F(ViewStackTest, TestLayoutUpdatesAnimations) {
           new gfx::TestAnimationDelegate()));
 
   view_stack_->SetBounds(10, 10, 30, 30);
-  view_stack_->Layout();
 
   base::RunLoop().Run();
   AssertViewOnTopOfStack(view_ptr);

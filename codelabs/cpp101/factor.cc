@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -69,9 +69,9 @@ int main(int argc, char* argv[]) {
 
   absl::optional<int> result;
   // Notice that we're posting the long-running factoring operation to
-  // |base::ThreadPool| to avoid blocking the main thread
+  // `base::ThreadPool` to avoid blocking the main thread.
   //
-  // |run_loop.QuitClosure()| will be called once the factoring task completes.
+  // `run_loop.QuitClosure()` will be called once the factoring task completes.
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, base::BindOnce(&FindNonTrivialFactorHelper, n, &result),
       run_loop.QuitClosure());

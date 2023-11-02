@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,7 +66,7 @@ V8DOMActivityLogger* V8DOMActivityLogger::ActivityLogger(
     return it == loggers.end() ? nullptr : it->value.get();
   }
 
-  if (extension_id.IsEmpty())
+  if (extension_id.empty())
     return nullptr;
 
   DOMActivityLoggerMapForMainWorld& loggers = DomActivityLoggersForMainWorld();
@@ -128,7 +128,7 @@ V8DOMActivityLogger::CurrentActivityLoggerIfIsolatedWorld() {
 V8DOMActivityLogger*
 V8DOMActivityLogger::CurrentActivityLoggerIfIsolatedWorldForMainThread() {
   DCHECK(IsMainThread());
-  if (DomActivityLoggersForIsolatedWorld().IsEmpty())
+  if (DomActivityLoggersForIsolatedWorld().empty())
     return nullptr;
   return CurrentActivityLoggerIfIsolatedWorld(
       V8PerIsolateData::MainThreadIsolate());

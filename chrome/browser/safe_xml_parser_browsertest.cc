@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,6 +50,7 @@ class SafeXmlParserTest : public InProcessBrowserTest {
 
     data_decoder::DataDecoder::ParseXmlIsolated(
         std::string(xml),
+        data_decoder::mojom::XmlParser::WhitespaceBehavior::kIgnore,
         base::BindOnce(&SafeXmlParserTest::XmlParsingDone,
                        base::Unretained(this), run_loop.QuitClosure(),
                        std::move(expected_value)));
@@ -62,13 +63,11 @@ class SafeXmlParserTest : public InProcessBrowserTest {
                       data_decoder::DataDecoder::ValueOrError result) {
     base::ScopedClosureRunner runner(std::move(quit_loop_closure));
     if (!expected_value) {
-      EXPECT_FALSE(result.value);
-      EXPECT_TRUE(result.error);
+      EXPECT_FALSE(result.has_value());
       return;
     }
-    EXPECT_FALSE(result.error);
-    ASSERT_TRUE(result.value);
-    EXPECT_EQ(*expected_value, *result.value);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(*expected_value, *result);
   }
 };
 

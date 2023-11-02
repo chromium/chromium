@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,6 +41,7 @@ class TestSettingsProvider : public IdentifiabilityStudySettingsProvider {
   bool IsAnyTypeOrSurfaceBlocked() const override { return false; }
   bool IsSurfaceAllowed(IdentifiableSurface) const override { return true; }
   bool IsTypeAllowed(IdentifiableSurface::Type) const override { return true; }
+  bool ShouldActivelySample() const override { return false; }
 };
 
 }  // namespace

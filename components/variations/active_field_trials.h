@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,6 +40,14 @@ struct COMPONENT_EXPORT(VARIATIONS) ActiveGroupIdCompare {
   }
 };
 
+// Populates |name_group_ids| based on |active_groups|. Field trial names are
+// suffixed with |suffix| before hashing is executed.
+COMPONENT_EXPORT(VARIATIONS)
+void GetFieldTrialActiveGroupIdsForActiveGroups(
+    base::StringPiece suffix,
+    const base::FieldTrial::ActiveGroups& active_groups,
+    std::vector<ActiveGroupId>* name_group_ids);
+
 // Fills the supplied vector |name_group_ids| (which must be empty when called)
 // with unique ActiveGroupIds for each Field Trial that has a chosen group.
 // Field Trials for which a group has not been chosen yet are NOT returned in
@@ -67,6 +75,17 @@ void GetFieldTrialActiveGroupIdsAsStrings(base::StringPiece suffix,
 // which hasn't been chosen yet are NOT returned in this list.
 COMPONENT_EXPORT(VARIATIONS)
 void GetSyntheticTrialGroupIdsAsString(std::vector<std::string>* output);
+
+// Returns true if a synthetic trial with the name `trial_name` is currently
+// active, i.e. the named trial has chosen a group. Returns false otherwise.
+COMPONENT_EXPORT(VARIATIONS)
+bool HasSyntheticTrial(const std::string& trial_name);
+
+// Returns true if a synthetic trial with the name `trial_name` is active
+// with its chosen group matching `trial_group`. Returns false otherwise.
+COMPONENT_EXPORT(VARIATIONS)
+bool IsInSyntheticTrialGroup(const std::string& trial_name,
+                             const std::string& trial_group);
 
 // Sets the version of the seed that the current set of FieldTrials was
 // generated from.

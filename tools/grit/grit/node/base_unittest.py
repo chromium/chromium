@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -161,7 +161,9 @@ class NodeUnittest(unittest.TestCase):
     node.AddChild(message.PhNode())
     node.AppendContent(u" space before two after  '''")
 
-    order = [message.MessageNode, message.PhNode, message.ExNode, message.PhNode]
+    order = [
+        message.MessageNode, message.PhNode, message.ExNode, message.PhNode
+    ]
     for n in node:
       self.failUnless(type(n) == order[0])
       order = order[1:]
@@ -209,7 +211,18 @@ class NodeUnittest(unittest.TestCase):
     AssertExpr(True, "'foo' in defs", {'foo': 'bar'}, 'ios', {})
     AssertExpr(False, "'foo' in defs", {'baz': 'bar'}, 'ios', {})
     AssertExpr(False, "'foo' in defs", {}, 'ios', {})
-    AssertExpr(True, "is_linux", {}, 'linux2', {})
+    AssertExpr(True, "is_linux", {}, 'linux', {})
+    AssertExpr(False, "is_linux", {}, 'linux2', {})  # Python 2 used 'linux2'.
+    AssertExpr(False, "is_linux", {}, 'linux-foo', {})  # Must match exactly.
+    AssertExpr(False, "is_linux", {}, 'foollinux', {})
+    AssertExpr(False, "is_linux", {'chromeos_ash': True}, 'chromeos', {})
+    AssertExpr(False, "is_linux", {'chromeos_lacros': True}, 'chromeos', {})
+    # `is_chromeos` is not used with GRIT and is thus ignored.
+    AssertExpr(True, "is_linux", {'is_chromeos': True}, 'linux', {})
+    AssertExpr(True, "is_chromeos", {'chromeos_ash': True}, 'chromeos', {})
+    AssertExpr(True, "is_chromeos", {'chromeos_lacros': True}, 'chromeos', {})
+    AssertExpr(False, "is_chromeos", {}, 'linux', {})
+    AssertExpr(False, "is_fuchsia", {}, 'linux', {})
     AssertExpr(False, "is_linux", {}, 'win32', {})
     AssertExpr(True, "is_macosx", {}, 'darwin', {})
     AssertExpr(False, "is_macosx", {}, 'ios', {})
@@ -219,12 +232,16 @@ class NodeUnittest(unittest.TestCase):
     AssertExpr(False, "is_android", {}, 'linux3', {})
     AssertExpr(True, "is_ios", {}, 'ios', {})
     AssertExpr(False, "is_ios", {}, 'darwin', {})
-    AssertExpr(True, "is_posix", {}, 'linux2', {})
+    AssertExpr(True, "is_posix", {}, 'linux', {})
+    AssertExpr(True, "is_posix", {'chromeos_ash': True}, 'chromeos', {})
+    AssertExpr(True, "is_posix", {'chromeos_lacros': True}, 'chromeos', {})
     AssertExpr(True, "is_posix", {}, 'darwin', {})
     AssertExpr(True, "is_posix", {}, 'android', {})
     AssertExpr(True, "is_posix", {}, 'ios', {})
     AssertExpr(True, "is_posix", {}, 'freebsd7', {})
+    AssertExpr(False, "is_posix", {}, 'fuchsia', {})
     AssertExpr(False, "is_posix", {}, 'win32', {})
+    AssertExpr(True, "is_fuchsia", {}, 'fuchsia', {})
     AssertExpr(True, "pp_ifdef('foo')", {'foo': True}, 'win32', {})
     AssertExpr(True, "pp_ifdef('foo')", {'foo': False}, 'win32', {})
     AssertExpr(False, "pp_ifdef('foo')", {'bar': True}, 'win32', {})
@@ -233,27 +250,69 @@ class NodeUnittest(unittest.TestCase):
     AssertExpr(False, "pp_if('foo')", {'bar': True}, 'win32', {})
     AssertExpr(True, "foo", {'foo': True}, 'win32', {})
     AssertExpr(False, "foo", {'foo': False}, 'win32', {})
-    AssertExpr(False, "foo", {'bar': True}, 'win32', {})
+    AssertExpr(False, "foo", {'bar': True, 'foo': False}, 'win32', {})
     AssertExpr(True, "foo == 'baz'", {'foo': 'baz'}, 'win32', {})
     AssertExpr(False, "foo == 'baz'", {'foo': True}, 'win32', {})
-    AssertExpr(False, "foo == 'baz'", {}, 'win32', {})
+    AssertExpr(False, "foo == 'baz'", {'foo': True, 'baz': False}, 'win32', {})
     AssertExpr(True, "lang == 'de'", {}, 'win32', {'lang': 'de'})
     AssertExpr(False, "lang == 'de'", {}, 'win32', {'lang': 'fr'})
-    AssertExpr(False, "lang == 'de'", {}, 'win32', {})
 
     # Test a couple more complex expressions for good measure.
     AssertExpr(True, "is_ios and (lang in ['de', 'fr'] or foo)",
                {'foo': 'bar'}, 'ios', {'lang': 'fr', 'context': 'today'})
     AssertExpr(False, "is_ios and (lang in ['de', 'fr'] or foo)",
-               {'foo': False}, 'linux2', {'lang': 'fr', 'context': 'today'})
-    AssertExpr(False, "is_ios and (lang in ['de', 'fr'] or foo)",
-               {'baz': 'bar'}, 'ios', {'lang': 'he', 'context': 'today'})
-    AssertExpr(True, "foo == 'bar' or not baz",
-               {'foo': 'bar', 'fun': True}, 'ios', {'lang': 'en'})
-    AssertExpr(True, "foo == 'bar' or not baz",
-               {}, 'ios', {'lang': 'en', 'context': 'java'})
+               {'foo': False}, 'linux', {
+                   'lang': 'fr',
+                   'context': 'today'
+               })
+    AssertExpr(False, "is_ios and (lang in ['de', 'fr'] or foo)", {
+        'baz': 'bar',
+        'is_ios': True,
+        'foo': False
+    }, 'ios', {
+        'lang': 'he',
+        'context': 'today'
+    })
+    AssertExpr(True, "foo == 'bar' or not baz", {
+        'foo': 'bar',
+        'baz': True
+    }, 'ios', {
+        'lang': 'en',
+        'context': 'java'
+    })
     AssertExpr(False, "foo == 'bar' or not baz",
                {'foo': 'ruz', 'baz': True}, 'ios', {'lang': 'en'})
+
+  def testEvaluateExpressionThrows(self):
+    def AssertThrows(expr, defs, target_platform, message):
+      with self.assertRaises(AssertionError) as cm:
+        base.Node.EvaluateExpression(expr, defs, target_platform, {})
+      self.assertTrue(str(cm.exception) == message)
+
+    # Test undefined variables.
+    AssertThrows("foo == 'baz'", {}, 'linux',
+                 'undefined Grit variable found: foo')
+    AssertThrows("foo == 'bar' or not baz", {
+        'foo': 'bar',
+        'fun': True
+    }, 'linux', 'undefined Grit variable found: baz')
+
+    # Test invalid chromeos configurations.
+    AssertThrows("is_chromeos", {}, 'chromeos',
+                 'The chromeos target must be either ash or lacros')
+    AssertThrows("is_chromeos", {
+        'chromeos_ash': True,
+        'chromeos_lacros': True
+    }, 'chromeos', 'The chromeos target must be either ash or lacros')
+    AssertThrows("is_linux", {'chromeos_ash': True}, 'linux',
+                 'Non-chromeos targets cannot be ash or lacros')
+    AssertThrows("is_linux", {'chromeos_lacros': True}, 'linux',
+                 'Non-chromeos targets cannot be ash or lacros')
+    AssertThrows("is_linux", {
+        'chromeos_ash': True,
+        'chromeos_lacros': True
+    }, 'linux', 'Non-chromeos targets cannot be ash or lacros')
+
 
 if __name__ == '__main__':
   unittest.main()

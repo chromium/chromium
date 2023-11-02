@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "content/browser/background_fetch/background_fetch.pb.h"
 #include "content/browser/background_fetch/background_fetch_registration_id.h"
@@ -105,7 +106,7 @@ class DatabaseTask : public DatabaseTaskHost {
   ServiceWorkerContextWrapper* service_worker_context();
   std::set<std::string>& ref_counted_unique_ids();
   ChromeBlobStorageContext* blob_storage_context();
-  storage::QuotaManagerProxy* quota_manager_proxy();
+  const scoped_refptr<storage::QuotaManagerProxy>& quota_manager_proxy();
 
   // DatabaseTaskHost implementation.
   void OnTaskFinished(DatabaseTask* finished_subtask) override;
@@ -164,7 +165,7 @@ class DatabaseTask : public DatabaseTaskHost {
 
   base::WeakPtr<DatabaseTaskHost> GetWeakPtr() override;
 
-  DatabaseTaskHost* host_;
+  raw_ptr<DatabaseTaskHost> host_;
 
   // Map the raw pointer to its unique_ptr, to make lookups easier.
   std::map<DatabaseTask*, std::unique_ptr<DatabaseTask>> active_subtasks_;

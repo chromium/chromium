@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,9 +43,6 @@ class ASH_EXPORT SearchResultTileItemView
 
   void OnResultChanged() override;
 
-  // Overridden from SearchResultBaseView:
-  std::u16string ComputeAccessibleName() const override;
-
   // Informs the SearchResultTileItemView of its parent's background color. The
   // controls within the SearchResultTileItemView will adapt to suit the given
   // color.
@@ -63,6 +60,7 @@ class ASH_EXPORT SearchResultTileItemView
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   void StateChanged(ButtonState old_state) override;
   void PaintButtonContents(gfx::Canvas* canvas) override;
+  void OnThemeChanged() override;
 
   // Overridden from SearchResultObserver:
   void OnMetadataChanged() override;

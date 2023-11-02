@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,10 +29,19 @@ class COMPOSITOR_EXPORT CompositorAnimationObserver {
 
   bool is_active_for_test() const { return !!start_; }
 
+  // This must be set before adding to the compositor.
+  void set_check_active_duration(bool check_active_duration) {
+    check_active_duration_ = check_active_duration;
+  }
+
+  // Disables
+  static void DisableCheckActiveDuration();
+
  protected:
   virtual void NotifyFailure();
 
  private:
+  bool check_active_duration_ = true;
   base::Location location_;
   absl::optional<base::TimeTicks> start_;
 };

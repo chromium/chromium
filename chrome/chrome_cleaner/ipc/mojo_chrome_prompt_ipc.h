@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #ifndef CHROME_CHROME_CLEANER_IPC_MOJO_CHROME_PROMPT_IPC_H_
@@ -14,12 +14,13 @@
 #include "chrome/chrome_cleaner/ipc/chrome_prompt_ipc.h"
 #include "chrome/chrome_cleaner/ipc/mojo_task_runner.h"
 #include "chrome/chrome_cleaner/mojom/chrome_prompt.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace chrome_cleaner {
 
-// Simple wrapper to control lifetime of the ChromePromptPtr object and post
-// tasks in the IPC thread kept by the MojoTaskRunner. Once created, this
-// object lives until the cleaner process ends.
+// Simple wrapper to control lifetime of the mojo::Remote<ChromePrompt> object
+// and post tasks in the IPC thread kept by the MojoTaskRunner. Once created,
+// this object lives until the cleaner process ends.
 //
 // Sample usage:
 //   scoped_refptr<MojoTaskRunner> task_runner = MojoTaskRunner::Create();
@@ -98,7 +99,7 @@ class MojoChromePromptIPC : public ChromePromptIPC {
  private:
   scoped_refptr<MojoTaskRunner> task_runner_;
   std::string chrome_mojo_pipe_token_;
-  std::unique_ptr<mojom::ChromePromptPtr> chrome_prompt_service_;
+  std::unique_ptr<mojo::Remote<mojom::ChromePrompt>> chrome_prompt_service_;
 };
 
 }  // namespace chrome_cleaner

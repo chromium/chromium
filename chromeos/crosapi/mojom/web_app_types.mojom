@@ -1,0 +1,60 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+import "skia/public/mojom/skcolor.mojom";
+import "ui/gfx/image/mojom/image.mojom";
+import "url/mojom/url.mojom";
+
+// See |webapps::InstallResultCode|.
+[Stable, Extensible]
+enum WebAppInstallResultCode {
+  kSuccessNewInstall,
+  kSuccessAlreadyInstalled,
+  kGetWebAppInstallInfoFailed,
+  kPreviouslyUninstalled,
+  kWebContentsDestroyed,
+  kWriteDataFailed,
+  kUserInstallDeclined,
+  kNotValidManifestForWebApp,
+  kIntentToPlayStore,
+  kWebAppDisabled,
+  kInstallURLRedirected,
+  kInstallURLLoadFailed,
+  kExpectedAppIdCheckFailed,
+  kInstallURLLoadTimeOut,
+  kFailedPlaceholderUninstall,
+  kNotInstallable,
+  kApkWebAppInstallFailed,
+  kCancelledOnWebAppProviderShuttingDown,
+  kWebAppProviderNotReady,
+  kSuccessOfflineOnlyInstall,
+  kSuccessOfflineFallbackInstall,
+  kInstallTaskDestroyed,
+  kUpdateTaskFailed,
+  [MinVersion=1] kAppNotInRegistrarAfterCommit,
+  [MinVersion=2] kHaltedBySyncUninstall,
+};
+
+// See |webapps::UninstallResultCode|.
+[Stable, Extensible]
+enum WebAppUninstallResultCode {
+  kSuccess,
+  kNoAppToUninstall,
+  kCancelled,
+  kError,
+};
+
+// A subset of |WebAppInstallInfo| necessary to install a web app originated in
+// ARC. See |web_app::WebAppInstallManager::InstallWebAppFromInfo|.
+[Stable]
+struct ArcWebAppInstallInfo {
+  mojo_base.mojom.String16 title@0;
+  url.mojom.Url start_url@1;
+  url.mojom.Url scope@2;
+  skia.mojom.SkColor? theme_color@3;
+  gfx.mojom.ImageSkia icon@4;
+};

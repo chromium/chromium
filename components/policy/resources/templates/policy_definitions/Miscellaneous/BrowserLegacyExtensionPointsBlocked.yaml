@@ -1,0 +1,27 @@
+caption: Block Browser Legacy Extension Points
+default: true
+desc: |-
+  Setting the policy to Enabled or leaving it unset will permit <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to apply the additional extension point security mitigation to block legacy extension points in the Browser process.
+
+        Setting the policy to Disabled has a detrimental effect on <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s security and stability as unknown and potentially hostile code can load inside <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s browser process. Only turn off the policy if there are compatibility issues with third-party software that must run inside <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s browser process.
+
+        Note: Read more about Process mitigation policies ( https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies ).
+example_value: false
+features:
+  dynamic_refresh: false
+  per_profile: false
+items:
+- caption: Block legacy extension points in the Browser process
+  value: true
+- caption: Do not block legacy extension points in the Browser process
+  value: false
+owners:
+- wfh@chromium.org
+- ssmole@microsoft.com
+schema:
+  type: boolean
+supported_on:
+- chrome.win:95-
+tags:
+- system-security
+type: main

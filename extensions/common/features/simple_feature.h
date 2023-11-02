@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,6 @@
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "components/version_info/version_info.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature.h"
@@ -32,7 +31,7 @@ class ExtensionAPITest;
 
 class SimpleFeature : public Feature {
  public:
-  // Used by tests to override the cached --whitelisted-extension-id.
+  // Used by tests to override the cached --allowlisted-extension-id.
   // NOTE: Not thread-safe! This is because it sets extension id on global
   // singleton during its construction and destruction.
   class ScopedThreadUnsafeAllowlistForTest {
@@ -58,18 +57,31 @@ class SimpleFeature : public Feature {
   ~SimpleFeature() override;
 
   Availability IsAvailableToContext(const Extension* extension,
-                                    Context context) const {
-    return IsAvailableToContext(extension, context, GURL());
+                                    Context context,
+                                    int context_id) const {
+    return IsAvailableToContext(extension, context, GURL(), context_id);
   }
   Availability IsAvailableToContext(const Extension* extension,
                                     Context context,
-                                    Platform platform) const {
-    return IsAvailableToContext(extension, context, GURL(), platform);
+                                    Platform platform,
+                                    int context_id) const {
+    return IsAvailableToContextImpl(extension, context, GURL(), platform,
+                                    context_id, true);
   }
   Availability IsAvailableToContext(const Extension* extension,
                                     Context context,
-                                    const GURL& url) const {
-    return IsAvailableToContext(extension, context, url, GetCurrentPlatform());
+                                    const GURL& url,
+                                    int context_id) const {
+    return IsAvailableToContextImpl(extension, context, url,
+                                    GetCurrentPlatform(), context_id, true);
+  }
+  Availability IsAvailableToContext(const Extension* extension,
+                                    Context context,
+                                    const GURL& url,
+                                    Platform platform,
+                                    int context_id) const {
+    return IsAvailableToContextImpl(extension, context, url, platform,
+                                    context_id, true);
   }
 
   // extension::Feature:
@@ -77,12 +89,9 @@ class SimpleFeature : public Feature {
                                      Manifest::Type type,
                                      mojom::ManifestLocation location,
                                      int manifest_version,
-                                     Platform platform) const override;
-  Availability IsAvailableToContext(const Extension* extension,
-                                    Context context,
-                                    const GURL& url,
-                                    Platform platform) const override;
-  Availability IsAvailableToEnvironment() const override;
+                                     Platform platform,
+                                     int context_id) const override;
+  Availability IsAvailableToEnvironment(int context_id) const override;
   bool IsInternal() const override;
   bool IsIdInBlocklist(const HashedExtensionId& hashed_id) const override;
   bool IsIdInAllowlist(const HashedExtensionId& hashed_id) const override;
@@ -119,9 +128,10 @@ class SimpleFeature : public Feature {
   void set_session_types(
       std::initializer_list<mojom::FeatureSessionType> types);
   void set_internal(bool is_internal) { is_internal_ = is_internal; }
-  void set_disallow_for_service_workers(bool disallow) {
-    disallow_for_service_workers_ = disallow;
+  void set_developer_mode_only(bool is_developer_mode_only) {
+    developer_mode_only_ = is_developer_mode_only;
   }
+  void set_disallow_for_service_workers(bool disallow);
   void set_location(Location location) { location_ = location; }
   // set_matches() is an exception to pass-by-value since we construct an
   // URLPatternSet from the vector of strings.
@@ -188,6 +198,14 @@ class SimpleFeature : public Feature {
   Availability CreateAvailability(AvailabilityResult result,
                                   mojom::FeatureSessionType session_type) const;
 
+  Availability IsAvailableToContextImpl(
+      const Extension* extension,
+      Context context,
+      const GURL& url,
+      Platform platform,
+      int context_id,
+      bool check_developer_mode) const override;
+
  private:
   friend struct FeatureComparator;
   FRIEND_TEST_ALL_PREFIXES(FeatureProviderTest, ManifestFeatureTypes);
@@ -197,6 +215,14 @@ class SimpleFeature : public Feature {
 
   // Holds String to Enum value mappings.
   struct Mappings;
+
+  static Feature::Availability IsAvailableToContextForBind(
+      const Extension* extension,
+      Feature::Context context,
+      const GURL& url,
+      Feature::Platform platform,
+      int context_id,
+      const Feature* feature);
 
   static bool IsIdInList(const HashedExtensionId& hashed_id,
                          const std::vector<std::string>& list);
@@ -219,7 +245,9 @@ class SimpleFeature : public Feature {
   Availability GetEnvironmentAvailability(
       Platform platform,
       version_info::Channel channel,
-      mojom::FeatureSessionType session_type) const;
+      mojom::FeatureSessionType session_type,
+      int context_id,
+      bool check_developer_mode) const;
 
   // Returns the availability of the feature with respect to a given extension's
   // properties.
@@ -259,6 +287,7 @@ class SimpleFeature : public Feature {
 
   bool component_extensions_auto_granted_;
   bool is_internal_;
+  bool developer_mode_only_{false};
   bool disallow_for_service_workers_;
 };
 

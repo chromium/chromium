@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,11 +54,19 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagSupportsContentCapabilities |
          APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kCrashReportPrivate, "crashReportPrivate"},
+    {APIPermissionID::kDeclarativeNetRequest,
+     declarative_net_request::kDeclarativeNetRequestPermission,
+     APIPermissionInfo::kFlagCannotBeOptional},
+    {APIPermissionID::kDeclarativeNetRequestFeedback,
+     declarative_net_request::kFeedbackAPIPermission,
+     APIPermissionInfo::kFlagRequiresManagementUIWarning},
+    {APIPermissionID::kDeclarativeNetRequestWithHostAccess,
+     "declarativeNetRequestWithHostAccess"},
     {APIPermissionID::kDeclarativeWebRequest, "declarativeWebRequest"},
     {APIPermissionID::kDiagnostics, "diagnostics",
      APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kDns, "dns"},
-    {APIPermissionID::kExternallyConnectableAllUrls,
+    {APIPermissionID::kDeprecated_ExternallyConnectableAllUrls,
      "externally_connectable.all_urls",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kFeedbackPrivate, "feedbackPrivate",
@@ -81,7 +89,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kFileSystemWrite, "fileSystem.write",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
-
     {APIPermissionID::kHid, "hid"},
     {APIPermissionID::kImeWindowEnabled, "app.window.ime"},
     {APIPermissionID::kOverrideEscFullscreen,
@@ -108,6 +115,8 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
     {APIPermissionID::kNewTabPageOverride, "newTabPageOverride",
      APIPermissionInfo::kFlagCannotBeOptional |
          APIPermissionInfo::kFlagRequiresManagementUIWarning},
+    {APIPermissionID::kOffscreen, "offscreen",
+     APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kPower, "power",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kPrinterProvider, "printerProvider",
@@ -118,6 +127,7 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagRequiresManagementUIWarning},
     {APIPermissionID::kSerial, "serial",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
+    {APIPermissionID::kSharedStoragePrivate, "sharedStoragePrivate"},
     {APIPermissionID::kSocket, "socket",
      APIPermissionInfo::kFlagCannotBeOptional |
          APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning,
@@ -151,21 +161,12 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagCannotBeOptional |
          APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kWebRequest, "webRequest"},
+    {APIPermissionID::kWebRequestAuthProvider, "webRequestAuthProvider"},
     {APIPermissionID::kWebRequestBlocking, "webRequestBlocking"},
-    {APIPermissionID::kDeclarativeNetRequest,
-     declarative_net_request::kDeclarativeNetRequestPermission,
-     APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kWebView, "webview",
      APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kWindowShape, "app.window.shape"},
-    {APIPermissionID::kFileSystemRequestDownloads,
-     "fileSystem.requestDownloads"},
-    {APIPermissionID::kDeclarativeNetRequestFeedback,
-     declarative_net_request::kFeedbackAPIPermission,
-     APIPermissionInfo::kFlagRequiresManagementUIWarning},
     {APIPermissionID::kWmDesksPrivate, "wmDesksPrivate"},
-    {APIPermissionID::kDeclarativeNetRequestWithHostAccess,
-     "declarativeNetRequestWithHostAccess"},
 };
 
 }  // namespace

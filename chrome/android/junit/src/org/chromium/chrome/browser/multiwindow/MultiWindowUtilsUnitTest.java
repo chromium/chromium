@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -137,6 +137,41 @@ public class MultiWindowUtilsUnitTest {
         writeInstanceInfo(INSTANCE_ID_1, URL_2, /*tabCount=*/0, /*incognitoTabCount=*/2,
                 MultiWindowUtils.INVALID_TASK_ID);
         assertEquals(2, MultiWindowUtils.getInstanceCount());
+    }
+
+    @Test
+    public void testGetInstanceIdForViewIntent_LesserThanMaxWindowsOpen() {
+        when(mTabModelSelector.getModel(false)).thenReturn(mNormalTabModel);
+        when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
+
+        int maxInstances = MultiWindowUtils.getMaxInstances();
+        // Simulate opening of 1 less than the max number of instances.
+        for (int i = 0; i < maxInstances - 1; i++) {
+            writeInstanceInfo(i, URL_1, /*tabCount=*/3, /*incognitoTabCount=*/0, i + 5);
+        }
+
+        int instanceId = MultiWindowUtils.getInstanceIdForViewIntent();
+        assertEquals("The default instance ID should be returned.",
+                MultiWindowUtils.INVALID_INSTANCE_ID, instanceId);
+    }
+
+    @Test
+    public void testGetInstanceIdForViewIntent_MaxWindowsOpen() {
+        when(mTabModelSelector.getModel(false)).thenReturn(mNormalTabModel);
+        when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
+
+        int maxInstances = MultiWindowUtils.getMaxInstances();
+        // Simulate opening of max number of instances.
+        for (int i = 0; i < maxInstances; i++) {
+            writeInstanceInfo(i, URL_1, /*tabCount=*/3, /*incognitoTabCount=*/0, i + 5);
+        }
+
+        // Simulate last access of instance ID 0.
+        writeInstanceInfo(INSTANCE_ID_0, URL_1, /*tabCount=*/3, /*incognitoTabCount=*/0, TASK_ID_5);
+
+        int instanceId = MultiWindowUtils.getInstanceIdForViewIntent();
+        assertEquals(
+                "The last accessed instance ID should be returned.", INSTANCE_ID_0, instanceId);
     }
 
     private void writeInstanceInfo(

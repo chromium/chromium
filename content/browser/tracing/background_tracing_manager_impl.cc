@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -41,7 +42,7 @@
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/browser/tracing/background_reached_code_tracing_observer_android.h"
 #endif
 
@@ -59,7 +60,7 @@ const char BackgroundTracingManager::kContentTriggerConfig[] =
     "content-trigger-config";
 
 // static
-BackgroundTracingManager* BackgroundTracingManager::GetInstance() {
+BackgroundTracingManager& BackgroundTracingManager::GetInstance() {
   return BackgroundTracingManagerImpl::GetInstance();
 }
 
@@ -70,9 +71,9 @@ void BackgroundTracingManagerImpl::RecordMetric(Metrics metric) {
 }
 
 // static
-BackgroundTracingManagerImpl* BackgroundTracingManagerImpl::GetInstance() {
+BackgroundTracingManagerImpl& BackgroundTracingManagerImpl::GetInstance() {
   static base::NoDestructor<BackgroundTracingManagerImpl> manager;
-  return manager.get();
+  return *manager;
 }
 
 // static
@@ -94,8 +95,8 @@ void BackgroundTracingManagerImpl::ActivateForProcess(
 BackgroundTracingManagerImpl::BackgroundTracingManagerImpl()
     : delegate_(GetContentClient()->browser()->GetTracingDelegate()),
       trigger_handle_ids_(0) {
-  AddEnabledStateObserver(BackgroundStartupTracingObserver::GetInstance());
-#if defined(OS_ANDROID)
+  AddEnabledStateObserver(&BackgroundStartupTracingObserver::GetInstance());
+#if BUILDFLAG(IS_ANDROID)
   AddEnabledStateObserver(&BackgroundReachedCodeTracingObserver::GetInstance());
 #endif
 }
@@ -145,8 +146,8 @@ bool BackgroundTracingManagerImpl::SetActiveScenarioWithReceiveCallback(
   std::unique_ptr<BackgroundTracingConfigImpl> config_impl(
       static_cast<BackgroundTracingConfigImpl*>(config.release()));
   config_impl = BackgroundStartupTracingObserver::GetInstance()
-                    ->IncludeStartupConfigIfNeeded(std::move(config_impl));
-#if defined(OS_ANDROID)
+                    .IncludeStartupConfigIfNeeded(std::move(config_impl));
+#if BUILDFLAG(IS_ANDROID)
   config_impl = BackgroundReachedCodeTracingObserver::GetInstance()
                     .IncludeReachedCodeConfigIfNeeded(std::move(config_impl));
 
@@ -157,7 +158,7 @@ bool BackgroundTracingManagerImpl::SetActiveScenarioWithReceiveCallback(
   } else
 #endif
       if (BackgroundStartupTracingObserver::GetInstance()
-              ->enabled_in_current_session()) {
+              .enabled_in_current_session()) {
     // Anonymize data for startup tracing by default. We currently do not
     // support storing the config in preferences for next session.
     data_filtering = DataFiltering::ANONYMIZE_DATA;
@@ -351,7 +352,7 @@ BackgroundTracingManagerImpl::GetBackgroundTracingConfig(
   if (!value->is_dict())
     return nullptr;
 
-  return BackgroundTracingConfig::FromDict(std::move(*value));
+  return BackgroundTracingConfig::FromDict(std::move(*value).TakeDict());
 }
 
 void BackgroundTracingManagerImpl::OnHistogramTrigger(
@@ -449,7 +450,7 @@ bool BackgroundTracingManagerImpl::IsAllowedFinalization(
               is_crash_scenario));
 }
 
-absl::optional<base::Value>
+absl::optional<base::Value::Dict>
 BackgroundTracingManagerImpl::GenerateMetadataDict() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!active_scenario_)
@@ -508,14 +509,14 @@ void BackgroundTracingManagerImpl::AddPendingAgent(
   provider.set_disconnect_handler(base::BindOnce(
       &BackgroundTracingManagerImpl::ClearPendingAgent, child_process_id));
 
-  GetInstance()->pending_agents_[child_process_id] = std::move(provider);
-  GetInstance()->MaybeConstructPendingAgents();
+  GetInstance().pending_agents_[child_process_id] = std::move(provider);
+  GetInstance().MaybeConstructPendingAgents();
 }
 
 // static
 void BackgroundTracingManagerImpl::ClearPendingAgent(int child_process_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  GetInstance()->pending_agents_.erase(child_process_id);
+  GetInstance().pending_agents_.erase(child_process_id);
 }
 
 void BackgroundTracingManagerImpl::MaybeConstructPendingAgents() {

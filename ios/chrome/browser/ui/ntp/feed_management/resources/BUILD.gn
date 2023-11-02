@@ -1,0 +1,13 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/asset_catalog.gni")
+
+imageset("following_empty") {
+  sources = [
+    "following_empty.imageset/Contents.json",
+    "following_empty.imageset/following_empty.pdf",
+    "following_empty.imageset/following_empty_dark.pdf",
+  ]
+}

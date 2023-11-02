@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,6 +41,7 @@ constexpr char kSXGResultCertFetchError[] = "sxg.cert_fetch_error";
 constexpr char kSXGResultCertParseError[] = "sxg.cert_parse_error";
 constexpr char kSXGResultVariantMismatch[] = "sxg.variant_mismatch";
 constexpr char kSXGHeaderIntegrityMismatch[] = "sxg.header_integrity_mismatch";
+constexpr char kSXGResultHadCookie[] = "sxg.had_cookie";
 
 const char* GetResultTypeString(SignedExchangeLoadResult result) {
   switch (result) {
@@ -80,6 +81,12 @@ const char* GetResultTypeString(SignedExchangeLoadResult result) {
       // TODO(crbug/910516): Need to update the spec to send the report in this
       // case.
       return kSXGResultVariantMismatch;
+    case SignedExchangeLoadResult::kHadCookieForCookielessOnlySXG:
+      // TODO(crbug/910516): Need to update the spec to send the report in this
+      // case.
+      return kSXGResultHadCookie;
+    case SignedExchangeLoadResult::kPKPViolationError:
+      return kSXGResultCertVerificationError;
   }
   NOTREACHED();
   return kSXGResultFailed;
@@ -119,7 +126,7 @@ bool ShouldDowngradeReport(const char* result_string,
 
 void ReportResult(int frame_tree_node_id,
                   network::mojom::SignedExchangeReportPtr report,
-                  const net::NetworkIsolationKey& network_isolation_key) {
+                  const net::NetworkAnonymizationKey& network_isolation_key) {
   FrameTreeNode* frame_tree_node =
       FrameTreeNode::GloballyFindByID(frame_tree_node_id);
   if (!frame_tree_node)
@@ -143,7 +150,7 @@ std::unique_ptr<SignedExchangeReporter> SignedExchangeReporter::MaybeCreate(
     const GURL& outer_url,
     const std::string& referrer,
     const network::mojom::URLResponseHead& response,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_isolation_key,
     int frame_tree_node_id) {
   if (!signed_exchange_utils::
           IsSignedExchangeReportingForDistributorsEnabled()) {
@@ -158,7 +165,7 @@ SignedExchangeReporter::SignedExchangeReporter(
     const GURL& outer_url,
     const std::string& referrer,
     const network::mojom::URLResponseHead& response,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_isolation_key,
     int frame_tree_node_id)
     : report_(network::mojom::SignedExchangeReport::New()),
       request_start_(response.load_timing.request_start),

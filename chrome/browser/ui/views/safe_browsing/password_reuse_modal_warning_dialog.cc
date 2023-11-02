@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -217,11 +217,11 @@ void PasswordReuseModalWarningDialog::CreateGaiaPasswordReuseModalWarningDialog(
       provider->GetDistanceMetric(DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE) +
       provider->GetDistanceMetric(DISTANCE_UNRELATED_CONTROL_HORIZONTAL);
   if (base::i18n::IsRTL()) {
-    message_body_label->SetBorder(
-        views::CreateEmptyBorder(0, 0, 0, horizontal_adjustment));
+    message_body_label->SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::TLBR(0, 0, 0, horizontal_adjustment)));
   } else {
-    message_body_label->SetBorder(
-        views::CreateEmptyBorder(0, horizontal_adjustment, 0, 0));
+    message_body_label->SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::TLBR(0, horizontal_adjustment, 0, 0)));
   }
   AddChildView(message_body_label);
 }
@@ -249,7 +249,7 @@ ui::ImageModel PasswordReuseModalWarningDialog::GetWindowIcon() {
                  ReusedPasswordAccountType::SAVED_PASSWORD
              ? ui::ImageModel()
              : ui::ImageModel::FromVectorIcon(
-                   kSecurityIcon, gfx::kChromeIconGrey,
+                   kSecurityIcon, ui::kColorIcon,
                    ChromeLayoutProvider::Get()->GetDistanceMetric(
                        DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE));
 }

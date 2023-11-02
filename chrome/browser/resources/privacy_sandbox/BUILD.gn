@@ -1,0 +1,29 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/resources/tools/build_webui.gni")
+import("//chrome/common/features.gni")
+
+assert(!is_android, "!is_android check failed")
+
+build_webui("build") {
+  grd_prefix = "privacy_sandbox"
+
+  static_files = [
+    "privacy_sandbox_dialog.html",
+    "images/privacy_sandbox_confirmation_banner.svg",
+    "images/privacy_sandbox_confirmation_banner_dark.svg",
+  ]
+
+  web_component_files = [ "privacy_sandbox_dialog_app.ts" ]
+
+  non_web_component_files = [ "privacy_sandbox_dialog_browser_proxy.ts" ]
+
+  ts_composite = true
+  ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+  ]
+}

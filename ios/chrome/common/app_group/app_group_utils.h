@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 namespace app_group {
 
-// Synchronously clears the |ApplicationGroup| and the |CommonApplicationGroup|
+// Synchronously clears the `ApplicationGroup` and the `CommonApplicationGroup`
 // app group sandbox (folder and NSUserDefaults).
 // The function will be executed on the calling thread.
 // Disclaimer: This method may delete data that were not created by Chrome. Its

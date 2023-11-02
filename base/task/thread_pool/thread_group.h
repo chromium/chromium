@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/thread_pool/priority_queue.h"
 #include "base/task/thread_pool/task.h"
@@ -18,9 +18,11 @@
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_windows_thread_environment.h"
 #endif
+
+#include "base/record_replay_ordered_atomic.h"
 
 namespace base {
 namespace internal {
@@ -46,12 +48,10 @@ class BASE_EXPORT ThreadGroup {
   enum class WorkerEnvironment {
     // No special worker environment required.
     NONE,
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Initialize a COM MTA on the worker.
     COM_MTA,
-    // Initialize a COM STA on the worker.
-    COM_STA,
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   };
 
   ThreadGroup(const ThreadGroup&) = delete;
@@ -125,6 +125,10 @@ class BASE_EXPORT ThreadGroup {
 
   virtual void OnShutdownStarted() = 0;
 
+  bool RecordReplayUnordered() const {
+    return record_replay_unordered_;
+  }
+
  protected:
   // Derived classes must implement a ScopedCommandsExecutor that derives from
   // this to perform operations at the end of a scope, when all locks have been
@@ -165,7 +169,7 @@ class BASE_EXPORT ThreadGroup {
     // should be enqueued.
     absl::optional<TransactionWithRegisteredTaskSource>
         transaction_with_task_source_;
-    ThreadGroup* destination_thread_group_ = nullptr;
+    raw_ptr<ThreadGroup> destination_thread_group_ = nullptr;
   };
 
   // |predecessor_thread_group| is a ThreadGroup whose lock can be acquired
@@ -179,7 +183,7 @@ class BASE_EXPORT ThreadGroup {
               TrackedRef<Delegate> delegate,
               ThreadGroup* predecessor_thread_group = nullptr);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   static std::unique_ptr<win::ScopedWindowsThreadEnvironment>
   GetScopedWindowsThreadEnvironment(WorkerEnvironment environment);
 #endif
@@ -256,13 +260,16 @@ class BASE_EXPORT ThreadGroup {
   // released. It is annotated as GUARDED_BY(lock_) because it is always updated
   // under the lock (to avoid races with other state during the update) but it
   // is nonetheless always safe to read it without the lock (since it's atomic).
-  std::atomic<YieldSortKey> max_allowed_sort_key_ GUARDED_BY(lock_){
+  recordreplay::OrderedAtomic<YieldSortKey> max_allowed_sort_key_ GUARDED_BY(lock_){
       kMaxYieldSortKey};
 
   // If |replacement_thread_group_| is non-null, this ThreadGroup is invalid and
   // all task sources should be scheduled on |replacement_thread_group_|. Used
   // to support the UseNativeThreadPool experiment.
-  ThreadGroup* replacement_thread_group_ = nullptr;
+  raw_ptr<ThreadGroup> replacement_thread_group_ = nullptr;
+
+  // Whether operations on this thread group may be unordered when recording/replaying.
+  bool record_replay_unordered_ = false;
 };
 
 }  // namespace internal

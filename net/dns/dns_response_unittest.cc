@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -493,8 +493,7 @@ TEST(DnsResponseTest, InitParse) {
   const char qname_data[] = "\x0A""codereview""\x08""chromium""\x03""org";
   const base::StringPiece qname(qname_data, sizeof(qname_data));
   // Compilers want to copy when binding temporary to const &, so must use heap.
-  std::unique_ptr<DnsQuery> query(
-      new DnsQuery(0xcafe, qname, dns_protocol::kTypeA));
+  auto query = std::make_unique<DnsQuery>(0xcafe, qname, dns_protocol::kTypeA);
 
   const uint8_t response_data[] = {
       // Header
@@ -559,8 +558,8 @@ TEST(DnsResponseTest, InitParse) {
   EXPECT_THAT(resp.id(), testing::Optional(0xcafe));
 
   // Reject wrong question.
-  std::unique_ptr<DnsQuery> wrong_query(
-      new DnsQuery(0xcafe, qname, dns_protocol::kTypeCNAME));
+  auto wrong_query =
+      std::make_unique<DnsQuery>(0xcafe, qname, dns_protocol::kTypeCNAME);
   EXPECT_FALSE(resp.InitParse(sizeof(response_data), *wrong_query));
   EXPECT_FALSE(resp.IsValid());
   EXPECT_THAT(resp.id(), testing::Optional(0xcafe));
@@ -605,8 +604,7 @@ TEST(DnsResponseTest, InitParseInvalidFlags) {
       "org";
   const base::StringPiece qname(qname_data, sizeof(qname_data));
   // Compilers want to copy when binding temporary to const &, so must use heap.
-  std::unique_ptr<DnsQuery> query(
-      new DnsQuery(0xcafe, qname, dns_protocol::kTypeA));
+  auto query = std::make_unique<DnsQuery>(0xcafe, qname, dns_protocol::kTypeA);
 
   const uint8_t response_data[] = {
       // Header
@@ -1321,8 +1319,11 @@ TEST(DnsResponseWriteTest, SingleARecordAnswerWithQuestion) {
   std::string dotted_name("www.example.com");
   std::string dns_name;
   ASSERT_TRUE(DNSDomainFromDot(dotted_name, &dns_name));
+
   OptRecordRdata opt_rdata;
-  opt_rdata.AddOpt(OptRecordRdata::Opt(255, "\xde\xad\xbe\xef"));
+  opt_rdata.AddOpt(
+      OptRecordRdata::UnknownOpt::CreateForTesting(255, "\xde\xad\xbe\xef"));
+
   absl::optional<DnsQuery> query;
   query.emplace(0x1234 /* id */, dns_name, dns_protocol::kTypeA, &opt_rdata);
   net::DnsResourceRecord answer;

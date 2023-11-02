@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_TAB_HELPER_H_
 
 #import "base/containers/flat_map.h"
-#import "base/macros.h"
 #import "base/memory/weak_ptr.h"
 #import "components/optimization_guide/core/insertion_ordered_set.h"
 #import "components/optimization_guide/core/optimization_guide_navigation_data.h"
@@ -27,11 +26,11 @@ class IOSOptimizationGuideNavigationData
   IOSOptimizationGuideNavigationData& operator=(
       const IOSOptimizationGuideNavigationData&) = delete;
 
-  // Notifies the navigation started with |url| to update the redirect chain and
+  // Notifies the navigation started with `url` to update the redirect chain and
   // navigation data.
   void NotifyNavigationStart(const GURL& url);
 
-  // Notifies the navigation redireced to |url| to update the redirect chain and
+  // Notifies the navigation redireced to `url` to update the redirect chain and
   // navigation data.
   void NotifyNavigationRedirect(const GURL& url);
 
@@ -39,7 +38,7 @@ class IOSOptimizationGuideNavigationData
 
  private:
   // The redirect chain of this navigation, including the starting URL, and all
-  // its redirects.  The |navigation_context| does not provide a way to get
+  // its redirects.  The `navigation_context` does not provide a way to get
   // this directly, so its maintained here.
   std::vector<GURL> redirect_chain_;
 };
@@ -59,10 +58,6 @@ class OptimizationGuideTabHelper
   OptimizationGuideTabHelper& operator=(const OptimizationGuideTabHelper&) =
       delete;
 
-  // Creates OptimizationGuideTabHelper and attaches to |web_state|. |web_state|
-  // must not be null.
-  static void CreateForWebState(web::WebState* web_state);
-
  private:
   friend class web::WebStateUserData<OptimizationGuideTabHelper>;
 
@@ -81,13 +76,13 @@ class OptimizationGuideTabHelper
   void WebStateDestroyed(web::WebState* web_state) override;
 
   // Gets the IOSOptimizationGuideNavigationData associated with the
-  // |navigation_context|. If one does not exist already, one will be created
+  // `navigation_context`. If one does not exist already, one will be created
   // for it.
   IOSOptimizationGuideNavigationData*
   GetOrCreateOptimizationGuideNavigationData(
       web::NavigationContext* navigation_context);
 
-  // Notifies |optimization_guide_service_| that the navigation has finished.
+  // Notifies `optimization_guide_service_` that the navigation has finished.
   void NotifyNavigationFinish(
       int64_t navigation_id,
       const std::vector<GURL>& navigation_redirect_chain);

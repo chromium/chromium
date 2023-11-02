@@ -1,10 +1,9 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/vr/elements/controller.h"
 
-#include "base/cxx17_backports.h"
 #include "base/numerics/math_constants.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/vr/ui_element_renderer.h"
@@ -75,8 +74,7 @@ std::unique_ptr<gfx::FloatAnimationCurve> CreateAlphaCurve(
 void AddVertex(const gfx::Point3F& local_vertex,
                const gfx::Transform& transform,
                std::vector<float>* vertices) {
-  gfx::Point3F vertex(local_vertex);
-  transform.TransformPoint(&vertex);
+  gfx::Point3F vertex = transform.MapPoint(local_vertex);
   vertices->push_back(vertex.x());
   vertices->push_back(vertex.y());
   vertices->push_back(vertex.z());
@@ -278,9 +276,9 @@ Controller::Renderer::Renderer()
   opacity_handle_ = glGetUniformLocation(program_handle_, "u_Opacity");
 
   auto body_alpha_curve =
-      CreateAlphaCurve(kBodyAlphaStops, base::size(kBodyAlphaStops));
+      CreateAlphaCurve(kBodyAlphaStops, std::size(kBodyAlphaStops));
   auto top_alpha_curve =
-      CreateAlphaCurve(kTopAlphaStops, base::size(kTopAlphaStops));
+      CreateAlphaCurve(kTopAlphaStops, std::size(kTopAlphaStops));
 
   gfx::Transform transform;
   transform.Translate3d(0.0, 0.0, (kControllerLength - kControllerWidth) / 2);

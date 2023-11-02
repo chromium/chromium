@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "media/base/test_data_util.h"
 #include "media/gpu/h264_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -23,7 +24,6 @@ using ::testing::_;
 using ::testing::Args;
 using ::testing::Expectation;
 using ::testing::InSequence;
-using ::testing::Invoke;
 using ::testing::MakeMatcher;
 using ::testing::Matcher;
 using ::testing::MatcherInterface;
@@ -73,8 +73,6 @@ H264Decoder::H264Accelerator::Status ParseSliceHeader(
     const std::vector<uint8_t>& sps_nalu_data,
     const std::vector<uint8_t>& pps_nalu_data,
     H264SliceHeader* slice_hdr_out) {
-  EXPECT_TRUE(!sps_nalu_data.empty());
-  EXPECT_TRUE(!pps_nalu_data.empty());
   // Construct the bitstream for parsing.
   std::vector<uint8_t> full_data;
   const std::vector<uint8_t> start_code = {0u, 0u, 1u};
@@ -119,12 +117,11 @@ class MockH264Accelerator : public H264Decoder::H264Accelerator {
   MockH264Accelerator() = default;
 
   MOCK_METHOD0(CreateH264Picture, scoped_refptr<H264Picture>());
+
   MOCK_METHOD1(SubmitDecode, Status(scoped_refptr<H264Picture> pic));
-  MOCK_METHOD5(ParseEncryptedSliceHeader,
+  MOCK_METHOD3(ParseEncryptedSliceHeader,
                Status(const std::vector<base::span<const uint8_t>>& data,
                       const std::vector<SubsampleEntry>& subsamples,
-                      const std::vector<uint8_t>& sps_nalu_data,
-                      const std::vector<uint8_t>& pps_nalu_data,
                       H264SliceHeader* slice_hdr_out));
   MOCK_METHOD7(SubmitFrameMetadata,
                Status(const H264SPS* sps,
@@ -149,6 +146,19 @@ class MockH264Accelerator : public H264Decoder::H264Accelerator {
                       const DecryptConfig* decrypt_config));
 
   void Reset() override {}
+
+  void ProcessSPS(const H264SPS* sps,
+                  base::span<const uint8_t> sps_nalu_data) override {
+    last_sps_nalu_data.assign(sps_nalu_data.begin(), sps_nalu_data.end());
+  }
+
+  void ProcessPPS(const H264PPS* pps,
+                  base::span<const uint8_t> pps_nalu_data) override {
+    last_pps_nalu_data.assign(pps_nalu_data.begin(), pps_nalu_data.end());
+  }
+
+  std::vector<uint8_t> last_sps_nalu_data;
+  std::vector<uint8_t> last_pps_nalu_data;
 };
 
 // Test H264Decoder by feeding different of h264 frame sequences and make
@@ -173,7 +183,7 @@ class H264DecoderTest : public ::testing::Test {
 
  protected:
   std::unique_ptr<H264Decoder> decoder_;
-  MockH264Accelerator* accelerator_;
+  raw_ptr<MockH264Accelerator> accelerator_;
 
  private:
   base::queue<std::string> input_frame_files_;
@@ -188,9 +198,9 @@ void H264DecoderTest::SetUp() {
                                            VIDEO_CODEC_PROFILE_UNKNOWN);
 
   // Sets default behaviors for mock methods for convenience.
-  ON_CALL(*accelerator_, CreateH264Picture()).WillByDefault(Invoke([]() {
+  ON_CALL(*accelerator_, CreateH264Picture()).WillByDefault([]() {
     return new H264Picture();
-  }));
+  });
   ON_CALL(*accelerator_, SubmitFrameMetadata(_, _, _, _, _, _, _))
       .WillByDefault(Return(H264Decoder::H264Accelerator::Status::kOk));
   ON_CALL(*accelerator_, SubmitDecode(_))
@@ -298,8 +308,14 @@ TEST_F(H264DecoderTest, DecodeSingleEncryptedFrame) {
 
   {
     InSequence sequence;
-    EXPECT_CALL(*accelerator_, ParseEncryptedSliceHeader(_, _, _, _, _))
-        .WillOnce(Invoke(&ParseSliceHeader));
+    EXPECT_CALL(*accelerator_, ParseEncryptedSliceHeader(_, _, _))
+        .WillOnce([this](const std::vector<base::span<const uint8_t>>& data,
+                         const std::vector<SubsampleEntry>& subsamples,
+                         H264SliceHeader* slice_hdr_out) {
+          return ParseSliceHeader(
+              data, subsamples, accelerator_->last_sps_nalu_data,
+              accelerator_->last_pps_nalu_data, slice_hdr_out);
+        });
     EXPECT_CALL(*accelerator_, CreateH264Picture());
     EXPECT_CALL(*accelerator_, SubmitFrameMetadata(_, _, _, _, _, _, _));
     EXPECT_CALL(*accelerator_, SubmitSlice(_, _, _, _, _, _, _, _));
@@ -607,21 +623,27 @@ TEST_F(H264DecoderTest, ParseEncryptedSliceHeaderRetry) {
   EXPECT_EQ(H264PROFILE_BASELINE, decoder_->GetProfile());
   EXPECT_LE(9u, decoder_->GetRequiredNumOfPictures());
 
-  EXPECT_CALL(*accelerator_, ParseEncryptedSliceHeader(_, _, _, _, _))
+  EXPECT_CALL(*accelerator_, ParseEncryptedSliceHeader(_, _, _))
       .WillOnce(Return(H264Decoder::H264Accelerator::Status::kTryAgain));
   ASSERT_EQ(AcceleratedVideoDecoder::kTryAgain, Decode(true));
 
   // Try again, assuming key still not set. Only ParseEncryptedSliceHeader()
   // should be called again.
-  EXPECT_CALL(*accelerator_, ParseEncryptedSliceHeader(_, _, _, _, _))
+  EXPECT_CALL(*accelerator_, ParseEncryptedSliceHeader(_, _, _))
       .WillOnce(Return(H264Decoder::H264Accelerator::Status::kTryAgain));
   ASSERT_EQ(AcceleratedVideoDecoder::kTryAgain, Decode(true));
 
   // Assume key has been provided now, next call to Decode() should proceed.
   {
     InSequence sequence;
-    EXPECT_CALL(*accelerator_, ParseEncryptedSliceHeader(_, _, _, _, _))
-        .WillOnce(Invoke(&ParseSliceHeader));
+    EXPECT_CALL(*accelerator_, ParseEncryptedSliceHeader(_, _, _))
+        .WillOnce([this](const std::vector<base::span<const uint8_t>>& data,
+                         const std::vector<SubsampleEntry>& subsamples,
+                         H264SliceHeader* slice_hdr_out) {
+          return ParseSliceHeader(
+              data, subsamples, accelerator_->last_sps_nalu_data,
+              accelerator_->last_pps_nalu_data, slice_hdr_out);
+        });
     EXPECT_CALL(*accelerator_, CreateH264Picture());
     EXPECT_CALL(*accelerator_, SubmitFrameMetadata(_, _, _, _, _, _, _));
     EXPECT_CALL(*accelerator_, SubmitSlice(_, _, _, _, _, _, _, _));

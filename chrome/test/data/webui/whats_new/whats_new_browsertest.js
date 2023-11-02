@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ GEN('#include "content/public/test/browser_test.h"');
 const WhatsNewBrowserTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
-    throw 'this is abstract and should be overridden by subclasses';
+    throw new Error('this is abstract and should be overridden by subclasses');
   }
 
   /** @override */
@@ -28,7 +28,6 @@ const WhatsNewBrowserTest = class extends PolymerTest {
   }
 };
 
-// eslint-disable-next-line no-var
 var WhatsNewAppTest = class extends WhatsNewBrowserTest {
   /** @override */
   get browsePreload() {

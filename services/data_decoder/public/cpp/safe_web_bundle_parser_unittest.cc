@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,11 @@
 
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,6 +47,9 @@ class MockFactory final : public web_package::mojom::WebBundleParserFactory {
     MockParser(const MockParser&) = delete;
     MockParser& operator=(const MockParser&) = delete;
 
+    bool IsParseIntegrityBlockCalled() {
+      return !integrity_block_callback_.is_null();
+    }
     bool IsParseMetadataCalled() { return !metadata_callback_.is_null(); }
     bool IsParseResponseCalled() { return !response_callback_.is_null(); }
 
@@ -53,7 +57,11 @@ class MockFactory final : public web_package::mojom::WebBundleParserFactory {
 
    private:
     // web_package::mojom::WebBundleParser implementation.
-    void ParseMetadata(ParseMetadataCallback callback) override {
+    void ParseIntegrityBlock(ParseIntegrityBlockCallback callback) override {
+      integrity_block_callback_ = std::move(callback);
+    }
+    void ParseMetadata(int64_t offset,
+                       ParseMetadataCallback callback) override {
       metadata_callback_ = std::move(callback);
     }
     void ParseResponse(uint64_t response_offset,
@@ -62,6 +70,7 @@ class MockFactory final : public web_package::mojom::WebBundleParserFactory {
       response_callback_ = std::move(callback);
     }
 
+    ParseIntegrityBlockCallback integrity_block_callback_;
     ParseMetadataCallback metadata_callback_;
     ParseResponseCallback response_callback_;
     mojo::Receiver<web_package::mojom::WebBundleParser> receiver_;
@@ -114,6 +123,10 @@ class MockDataSource final : public web_package::mojom::BundleDataSource {
   // Implements web_package::mojom::BundledDataSource.
   void Read(uint64_t offset, uint64_t length, ReadCallback callback) override {}
 
+  void Length(LengthCallback) override {}
+
+  void IsRandomAccessContext(IsRandomAccessContextCallback) override {}
+
   mojo::Receiver<web_package::mojom::BundleDataSource> receiver_;
 };
 
@@ -144,47 +157,27 @@ TEST_F(SafeWebBundleParserTest, ParseGoldenFile) {
       OpenTestFile(base::FilePath(FILE_PATH_LITERAL("hello_b2.wbn")));
   ASSERT_EQ(base::File::FILE_OK, parser.OpenFile(std::move(test_file)));
 
-  web_package::mojom::BundleMetadataPtr metadata_result;
-  {
-    base::RunLoop run_loop;
-    parser.ParseMetadata(base::BindOnce(
-        [](base::OnceClosure quit_closure,
-           web_package::mojom::BundleMetadataPtr* metadata_result,
-           web_package::mojom::BundleMetadataPtr metadata,
-           web_package::mojom::BundleMetadataParseErrorPtr error) {
-          EXPECT_TRUE(metadata);
-          EXPECT_FALSE(error);
-          if (metadata)
-            *metadata_result = std::move(metadata);
-          std::move(quit_closure).Run();
-        },
-        run_loop.QuitClosure(), &metadata_result));
-    run_loop.Run();
-  }
-  ASSERT_TRUE(metadata_result);
-  const auto& requests = metadata_result->requests;
+  base::test::TestFuture<web_package::mojom::BundleMetadataPtr,
+                         web_package::mojom::BundleMetadataParseErrorPtr>
+      metadata_future;
+  parser.ParseMetadata(/*offset=*/-1, metadata_future.GetCallback());
+  auto [metadata, metadata_error] = metadata_future.Take();
+  ASSERT_TRUE(metadata);
+  ASSERT_FALSE(metadata_error);
+  const auto& requests = metadata->requests;
   ASSERT_EQ(requests.size(), 4u);
 
   std::map<std::string, web_package::mojom::BundleResponsePtr> responses;
   for (auto& entry : requests) {
-    base::RunLoop run_loop;
-    parser.ParseResponse(
-        entry.second->response_locations[0]->offset,
-        entry.second->response_locations[0]->length,
-        base::BindOnce(
-            [](base::OnceClosure quit_closure, const std::string url,
-               std::map<std::string, web_package::mojom::BundleResponsePtr>*
-                   responses,
-               web_package::mojom::BundleResponsePtr response,
-               web_package::mojom::BundleResponseParseErrorPtr error) {
-              EXPECT_TRUE(response);
-              EXPECT_FALSE(error);
-              if (response)
-                responses->insert({url, std::move(response)});
-              std::move(quit_closure).Run();
-            },
-            run_loop.QuitClosure(), entry.first.spec(), &responses));
-    run_loop.Run();
+    base::test::TestFuture<web_package::mojom::BundleResponsePtr,
+                           web_package::mojom::BundleResponseParseErrorPtr>
+        response_future;
+    parser.ParseResponse(entry.second->offset, entry.second->length,
+                         response_future.GetCallback());
+    auto [response, response_error] = response_future.Take();
+    ASSERT_TRUE(response);
+    ASSERT_FALSE(response_error);
+    responses.insert({entry.first.spec(), std::move(response)});
   }
 
   ASSERT_TRUE(responses["https://test.example.org/"]);
@@ -205,16 +198,19 @@ TEST_F(SafeWebBundleParserTest, OpenInvalidFile) {
 TEST_F(SafeWebBundleParserTest, CallWithoutOpen) {
   SafeWebBundleParser parser;
   bool metadata_parsed = false;
-  parser.ParseMetadata(base::BindOnce(
-      [](bool* metadata_parsed, web_package::mojom::BundleMetadataPtr metadata,
-         web_package::mojom::BundleMetadataParseErrorPtr error) {
-        EXPECT_FALSE(metadata);
-        EXPECT_TRUE(error);
-        if (error)
-          EXPECT_EQ(kConnectionError, error->message);
-        *metadata_parsed = true;
-      },
-      &metadata_parsed));
+  parser.ParseMetadata(
+      /*offset=*/-1,
+      base::BindOnce(
+          [](bool* metadata_parsed,
+             web_package::mojom::BundleMetadataPtr metadata,
+             web_package::mojom::BundleMetadataParseErrorPtr error) {
+            EXPECT_FALSE(metadata);
+            EXPECT_TRUE(error);
+            if (error)
+              EXPECT_EQ(kConnectionError, error->message);
+            *metadata_parsed = true;
+          },
+          &metadata_parsed));
   EXPECT_TRUE(metadata_parsed);
 
   bool response_parsed = false;
@@ -243,16 +239,25 @@ TEST_F(SafeWebBundleParserTest, UseMockFactory) {
       OpenTestFile(base::FilePath(FILE_PATH_LITERAL("hello_b2.wbn")));
   ASSERT_EQ(base::File::FILE_OK, parser.OpenFile(std::move(test_file)));
   ASSERT_TRUE(raw_factory->GetCreatedParser());
+  EXPECT_FALSE(raw_factory->GetCreatedParser()->IsParseIntegrityBlockCalled());
   EXPECT_FALSE(raw_factory->GetCreatedParser()->IsParseMetadataCalled());
   EXPECT_FALSE(raw_factory->GetCreatedParser()->IsParseResponseCalled());
 
-  parser.ParseMetadata(base::DoNothing());
+  parser.ParseIntegrityBlock(base::DoNothing());
   base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(raw_factory->GetCreatedParser()->IsParseIntegrityBlockCalled());
+  EXPECT_FALSE(raw_factory->GetCreatedParser()->IsParseMetadataCalled());
+  EXPECT_FALSE(raw_factory->GetCreatedParser()->IsParseResponseCalled());
+
+  parser.ParseMetadata(/*offset=*/-1, base::DoNothing());
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(raw_factory->GetCreatedParser()->IsParseIntegrityBlockCalled());
   EXPECT_TRUE(raw_factory->GetCreatedParser()->IsParseMetadataCalled());
   EXPECT_FALSE(raw_factory->GetCreatedParser()->IsParseResponseCalled());
 
   parser.ParseResponse(0u, 0u, base::DoNothing());
   base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(raw_factory->GetCreatedParser()->IsParseIntegrityBlockCalled());
   EXPECT_TRUE(raw_factory->GetCreatedParser()->IsParseMetadataCalled());
   EXPECT_TRUE(raw_factory->GetCreatedParser()->IsParseResponseCalled());
 }
@@ -269,18 +274,20 @@ TEST_F(SafeWebBundleParserTest, ConnectionError) {
 
   base::RunLoop run_loop;
   bool parsed = false;
-  parser.ParseMetadata(base::BindOnce(
-      [](base::OnceClosure quit_closure, bool* parsed,
-         web_package::mojom::BundleMetadataPtr metadata,
-         web_package::mojom::BundleMetadataParseErrorPtr error) {
-        EXPECT_FALSE(metadata);
-        EXPECT_TRUE(error);
-        if (error)
-          EXPECT_EQ(kConnectionError, error->message);
-        *parsed = true;
-        std::move(quit_closure).Run();
-      },
-      run_loop.QuitClosure(), &parsed));
+  parser.ParseMetadata(
+      /*offset=*/-1,
+      base::BindOnce(
+          [](base::OnceClosure quit_closure, bool* parsed,
+             web_package::mojom::BundleMetadataPtr metadata,
+             web_package::mojom::BundleMetadataParseErrorPtr error) {
+            EXPECT_FALSE(metadata);
+            EXPECT_TRUE(error);
+            if (error)
+              EXPECT_EQ(kConnectionError, error->message);
+            *parsed = true;
+            std::move(quit_closure).Run();
+          },
+          run_loop.QuitClosure(), &parsed));
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(parsed);
   EXPECT_TRUE(raw_factory->GetCreatedParser()->IsParseMetadataCalled());
@@ -292,6 +299,53 @@ TEST_F(SafeWebBundleParserTest, ConnectionError) {
   // Passed callback is called by SafeWebBundleParser on the interface
   // disconnection, but remote parser still holds the proxy callback.
   EXPECT_TRUE(raw_factory->GetCreatedParser()->IsParseMetadataCalled());
+}
+
+TEST_F(SafeWebBundleParserTest, ParseSignedWebBundle) {
+  SafeWebBundleParser parser;
+  base::File test_file =
+      OpenTestFile(base::FilePath(FILE_PATH_LITERAL("simple_b2_signed.wbn")));
+  ASSERT_EQ(base::File::FILE_OK, parser.OpenFile(std::move(test_file)));
+
+  base::test::TestFuture<web_package::mojom::BundleIntegrityBlockPtr,
+                         web_package::mojom::BundleIntegrityBlockParseErrorPtr>
+      integrity_block_future;
+  parser.ParseIntegrityBlock(integrity_block_future.GetCallback());
+  auto [integrity_block, integrity_block_error] = integrity_block_future.Take();
+  ASSERT_TRUE(integrity_block);
+  ASSERT_FALSE(integrity_block_error);
+  ASSERT_EQ(integrity_block->size, 135u);
+  ASSERT_EQ(integrity_block->signature_stack.size(), 1u);
+
+  base::test::TestFuture<web_package::mojom::BundleMetadataPtr,
+                         web_package::mojom::BundleMetadataParseErrorPtr>
+      metadata_future;
+  parser.ParseMetadata(integrity_block->size, metadata_future.GetCallback());
+  auto [metadata, metadata_error] = metadata_future.Take();
+  ASSERT_TRUE(metadata);
+  ASSERT_FALSE(metadata_error);
+  const auto& requests = metadata->requests;
+  ASSERT_EQ(requests.size(), 2u);
+
+  std::map<std::string, web_package::mojom::BundleResponsePtr> responses;
+  for (auto& entry : requests) {
+    base::test::TestFuture<web_package::mojom::BundleResponsePtr,
+                           web_package::mojom::BundleResponseParseErrorPtr>
+        response_future;
+    parser.ParseResponse(entry.second->offset, entry.second->length,
+                         response_future.GetCallback());
+    auto [response, response_error] = response_future.Take();
+    ASSERT_TRUE(response);
+    ASSERT_FALSE(response_error);
+    responses.insert({entry.first.spec(), std::move(response)});
+  }
+
+  ASSERT_TRUE(responses["https://test.example.org/"]);
+  EXPECT_EQ(responses["https://test.example.org/"]->response_code, 200);
+  EXPECT_EQ(
+      responses["https://test.example.org/"]->response_headers["content-type"],
+      "text/html; charset=UTF-8");
+  EXPECT_TRUE(responses["https://test.example.org/index.html"]);
 }
 
 }  // namespace data_decoder

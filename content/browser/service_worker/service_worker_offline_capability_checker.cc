@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,10 @@
 #include "base/callback_helpers.h"
 #include "base/guid.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
+#include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_version.h"
-#include "content/browser/storage_partition_impl.h"
 #include "content/common/fetch/fetch_request_type_converters.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -140,8 +140,6 @@ void ServiceWorkerOfflineCapabilityChecker::OnFetchResult(
        result == ServiceWorkerFetchDispatcher::FetchEventResult::kGotResponse &&
        (200 <= response->status_code && response->status_code <= 399)) ||
       status == blink::ServiceWorkerStatusCode::kErrorTimeout) {
-    ServiceWorkerMetrics::RecordOfflineCapableReason(status,
-                                                     response->status_code);
     std::move(callback_).Run(OfflineCapability::kSupported,
                              version->registration_id());
   } else {

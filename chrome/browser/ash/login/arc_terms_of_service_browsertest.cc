@@ -1,9 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/screens/arc_terms_of_service_screen.h"
 
+#include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/arc_util.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/callback_helpers.h"
@@ -12,15 +15,15 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/recommend_apps_screen.h"
-#include "chrome/browser/ash/login/test/embedded_test_server_setup_mixin.h"
+#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
-#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
@@ -43,9 +46,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/interactive_test_utils.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
-#include "components/arc/arc_prefs.h"
-#include "components/arc/arc_util.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "components/consent_auditor/fake_consent_auditor.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/prefs/pref_service.h"
@@ -143,7 +144,11 @@ ArcGoogleLocationServiceConsent BuildArcGoogleLocationServiceConsent(
 
 class ArcTermsOfServiceScreenTest : public OobeBaseTest {
  public:
-  ArcTermsOfServiceScreenTest() = default;
+  ArcTermsOfServiceScreenTest() {
+    // ARC ToS screen is not shown when OobeConsolidatedConsent is enabled, and
+    // its content is moved to the consolidated consent screen.
+    feature_list_.InitAndDisableFeature(features::kOobeConsolidatedConsent);
+  }
 
   ArcTermsOfServiceScreenTest(const ArcTermsOfServiceScreenTest&) = delete;
   ArcTermsOfServiceScreenTest& operator=(const ArcTermsOfServiceScreenTest&) =
@@ -294,6 +299,7 @@ class ArcTermsOfServiceScreenTest : public OobeBaseTest {
 
   bool serve_tos_with_privacy_policy_footer_ = false;
 
+  base::test::ScopedFeatureList feature_list_;
   absl::optional<ArcTermsOfServiceScreen::Result> screen_exit_result_;
   ArcTermsOfServiceScreen::ScreenExitCallback original_callback_;
   base::OnceClosure on_screen_exit_called_ = base::DoNothing();
@@ -350,9 +356,7 @@ IN_PROC_BROWSER_TEST_F(ArcTermsOfServiceScreenTest, LearnMoreDialogs) {
       {"learnMoreLinkPai", "arcPaiPopup"}};
 
   for (const auto& pair : learn_more_links) {
-    std::string html_element_id;
-    std::string popup_html_element_id;
-    std::tie(html_element_id, popup_html_element_id) = pair;
+    auto [html_element_id, popup_html_element_id] = pair;
     test::OobeJS().ExpectAttributeEQ(
         "open", {kArcTosID, popup_html_element_id}, false);
     test::OobeJS().ClickOnPath({kArcTosID, html_element_id});
@@ -612,6 +616,9 @@ IN_PROC_BROWSER_TEST_P(ParameterizedArcTermsOfServiceScreenTest, ClickAccept) {
   histogram_tester_.ExpectTotalCount(
       "OOBE.StepCompletionTimeByExitReason.Arc-tos.Back", 0);
   histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Arc_tos", 1);
+
+  histogram_tester_.ExpectTotalCount(
+      "OOBE.WebViewLoader.FirstLoadResult.ArcTosView", 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -632,7 +639,7 @@ class PublicAccountArcTermsOfServiceScreenTest
 
   void SetUpInProcessBrowserTestFixture() override {
     ArcTermsOfServiceScreenTest::SetUpInProcessBrowserTestFixture();
-    chromeos::SessionManagerClient::InitializeFakeInMemory();
+    SessionManagerClient::InitializeFakeInMemory();
     InitializePolicy();
   }
 
@@ -650,9 +657,9 @@ class PublicAccountArcTermsOfServiceScreenTest
 
   void UploadDeviceLocalAccountPolicy() {
     BuildDeviceLocalAccountPolicy();
-    ASSERT_TRUE(local_policy_mixin_.server()->UpdatePolicy(
+    policy_test_server_mixin_.UpdatePolicy(
         policy::dm_protocol::kChromePublicAccountPolicyType, kAccountId,
-        device_local_account_policy_.payload().SerializeAsString()));
+        device_local_account_policy_.payload().SerializeAsString());
   }
 
   void UploadAndInstallDeviceLocalAccountPolicy() {
@@ -665,7 +672,7 @@ class PublicAccountArcTermsOfServiceScreenTest
     em::ChromeDeviceSettingsProto& proto(device_policy()->payload());
     policy::DeviceLocalAccountTestHelper::AddPublicSession(&proto, kAccountId);
     RefreshDevicePolicy();
-    ASSERT_TRUE(local_policy_mixin_.UpdateDevicePolicy(proto));
+    policy_test_server_mixin_.UpdateDevicePolicy(proto);
   }
 
   void WaitForDisplayName() {
@@ -694,8 +701,8 @@ class PublicAccountArcTermsOfServiceScreenTest
   }
 
  private:
-  chromeos::FakeSessionManagerClient* session_manager_client() {
-    return chromeos::FakeSessionManagerClient::Get();
+  FakeSessionManagerClient* session_manager_client() {
+    return FakeSessionManagerClient::Get();
   }
 
   void RefreshDevicePolicy() { policy_helper()->RefreshDevicePolicy(); }
@@ -714,7 +721,7 @@ class PublicAccountArcTermsOfServiceScreenTest
           policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION));
   policy::DevicePolicyCrosTestHelper policy_helper_;
   policy::UserPolicyBuilder device_local_account_policy_;
-  LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
+  EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
 };

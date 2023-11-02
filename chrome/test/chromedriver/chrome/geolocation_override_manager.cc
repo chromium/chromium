@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,8 +34,7 @@ Status GeolocationOverrideManager::OnEvent(
     const std::string& method,
     const base::DictionaryValue& params) {
   if (method == "Page.frameNavigated") {
-    const base::Value* unused_value;
-    if (!params.Get("frame.parentId", &unused_value))
+    if (!params.FindPath("frame.parentId"))
       return ApplyOverrideIfNeeded();
   }
   return Status(kOk);
@@ -45,9 +44,9 @@ Status GeolocationOverrideManager::ApplyOverrideIfNeeded() {
   if (!overridden_geoposition_)
     return Status(kOk);
 
-  base::DictionaryValue params;
-  params.SetDoubleKey("latitude", overridden_geoposition_->latitude);
-  params.SetDoubleKey("longitude", overridden_geoposition_->longitude);
-  params.SetDoubleKey("accuracy", overridden_geoposition_->accuracy);
+  base::Value::Dict params;
+  params.Set("latitude", overridden_geoposition_->latitude);
+  params.Set("longitude", overridden_geoposition_->longitude);
+  params.Set("accuracy", overridden_geoposition_->accuracy);
   return client_->SendCommand("Page.setGeolocationOverride", params);
 }

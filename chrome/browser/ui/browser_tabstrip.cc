@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -18,6 +19,8 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
 namespace chrome {
@@ -38,6 +41,10 @@ void AddTabAt(Browser* browser,
   params.tabstrip_index = idx;
   params.group = group;
   Navigate(&params);
+
+  if (!params.navigated_or_inserted_contents)
+    return;
+
   CoreTabHelper* core_tab_helper =
       CoreTabHelper::FromWebContents(params.navigated_or_inserted_contents);
   core_tab_helper->set_new_tab_start_time(new_tab_start_time);
@@ -57,7 +64,8 @@ void AddWebContents(Browser* browser,
                     std::unique_ptr<content::WebContents> new_contents,
                     const GURL& target_url,
                     WindowOpenDisposition disposition,
-                    const gfx::Rect& initial_rect) {
+                    const blink::mojom::WindowFeatures& window_features,
+                    NavigateParams::WindowAction window_action) {
   // No code for this yet.
   DCHECK(disposition != WindowOpenDisposition::SAVE_TO_DISK);
   // Can't create a new contents for the current tab - invalid case.
@@ -67,8 +75,8 @@ void AddWebContents(Browser* browser,
   params.source_contents = source_contents;
   params.url = target_url;
   params.disposition = disposition;
-  params.window_bounds = initial_rect;
-  params.window_action = NavigateParams::SHOW_WINDOW;
+  params.window_bounds = window_features.bounds;
+  params.window_action = window_action;
   // At this point, we're already beyond the popup blocker. Even if the popup
   // was created without a user gesture, we have to set |user_gesture| to true,
   // so it gets correctly focused.
@@ -89,8 +97,8 @@ void CloseWebContents(Browser* browser,
   }
 
   browser->tab_strip_model()->CloseWebContentsAt(
-      index, add_to_history ? TabStripModel::CLOSE_CREATE_HISTORICAL_TAB
-                            : TabStripModel::CLOSE_NONE);
+      index, add_to_history ? TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB
+                            : TabCloseTypes::CLOSE_NONE);
 }
 
 void ConfigureTabGroupForNavigation(NavigateParams* nav_params) {
@@ -114,54 +122,16 @@ void ConfigureTabGroupForNavigation(NavigateParams* nav_params) {
   if (source_index == TabStripModel::kNoTab)
     return;
 
-  switch (nav_params->transition) {
-    // Do not set the group when the navigation is from bookmarks.
-    case ui::PAGE_TRANSITION_AUTO_BOOKMARK:
-      break;
-    default: {
-      if (nav_params->disposition ==
-              WindowOpenDisposition::NEW_FOREGROUND_TAB ||
-          nav_params->disposition ==
-              WindowOpenDisposition::NEW_BACKGROUND_TAB) {
-        nav_params->group = model->GetTabGroupForTab(source_index);
-
-        // Because the target tab has not opened yet, adding the source tab, and
-        // the tab immediately to the right of the source tab will also result
-        // in the target tab getting added to this group.
-        if (ShouldAutoCreateGroupForNavigation(nav_params)) {
-          nav_params->group =
-              model->AddToNewGroup({source_index, source_index + 1});
-          model->OpenTabGroupEditor(nav_params->group.value());
-        }
-      }
-    }
+  // Do not set the group when the navigation is from bookmarks.
+  if (ui::PageTransitionCoreTypeIs(nav_params->transition,
+                                   ui::PAGE_TRANSITION_AUTO_BOOKMARK)) {
+    return;
   }
-}
 
-bool ShouldAutoCreateGroupForNavigation(NavigateParams* nav_params) {
-  TabStripModel* model = nav_params->browser->tab_strip_model();
-  const int source_index =
-      model->GetIndexOfWebContents(nav_params->source_contents);
-  if (!base::FeatureList::IsEnabled(features::kTabGroupsAutoCreate) ||
-      nav_params->group.has_value() || model->IsTabPinned(source_index)) {
-    return false;
+  if (nav_params->disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
+      nav_params->disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB) {
+    nav_params->group = model->GetTabGroupForTab(source_index);
   }
-  const GURL& source_url = nav_params->source_contents->GetLastCommittedURL();
-  const GURL& target_url = nav_params->url;
-
-  // If the opener of the tab to the right has the same domain as the
-  // souce URL, create a new group.
-  if (target_url.DomainIs(source_url.host_piece()) &&
-      model->ContainsIndex(source_index + 1)) {
-    content::WebContents* neighbor_opener_contents =
-        model->GetOpenerOfWebContentsAt(source_index + 1);
-    if (neighbor_opener_contents &&
-        source_url.DomainIs(
-            neighbor_opener_contents->GetLastCommittedURL().host_piece())) {
-      return true;
-    }
-  }
-  return false;
 }
 
 }  // namespace chrome

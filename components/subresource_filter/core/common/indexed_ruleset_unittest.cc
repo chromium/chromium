@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -226,12 +226,12 @@ TEST_F(SubresourceFilterIndexedRulesetTest, NonAsciiDomain) {
   std::string non_ascii_domain = base::WideToUTF8(L"\x0491\x0493.com");
 
   auto rule = MakeUrlRule(UrlPattern(kUrl, testing::kSubstring));
-  testing::AddDomains({non_ascii_domain}, &rule);
+  testing::AddInitiatorDomains({non_ascii_domain}, &rule);
   ASSERT_FALSE(AddUrlRule(rule));
 
   rule = MakeUrlRule(UrlPattern(kUrl, testing::kSubstring));
   std::string non_ascii_excluded_domain = "~" + non_ascii_domain;
-  testing::AddDomains({non_ascii_excluded_domain}, &rule);
+  testing::AddInitiatorDomains({non_ascii_excluded_domain}, &rule);
   ASSERT_FALSE(AddUrlRule(rule));
 
   Finish();
@@ -253,7 +253,7 @@ TEST_F(SubresourceFilterIndexedRulesetTest, PercentEncodedDomain) {
   std::string percent_encoded_host = "%2C.com";
 
   auto rule = MakeUrlRule(UrlPattern(kUrl, testing::kSubstring));
-  testing::AddDomains({percent_encoded_host}, &rule);
+  testing::AddInitiatorDomains({percent_encoded_host}, &rule);
   ASSERT_TRUE(AddUrlRule(rule));
   Finish();
 

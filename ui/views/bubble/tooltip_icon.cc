@@ -1,9 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/views/bubble/tooltip_icon.h"
 
+#include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "components/vector_icons/vector_icons.h"
@@ -60,7 +61,7 @@ bool TooltipIcon::OnMousePressed(const ui::MouseEvent& event) {
 
 void TooltipIcon::OnFocus() {
   ShowBubble();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Tooltip text does not announce on Windows; crbug.com/1245470
   NotifyAccessibilityEvent(ax::mojom::Event::kFocus, true);
 #endif
@@ -85,7 +86,7 @@ void TooltipIcon::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // static text for screenreader users, since that's the role it serves here
   // anyway.
   node_data->role = ax::mojom::Role::kStaticText;
-  node_data->SetName(tooltip_);
+  node_data->SetNameChecked(tooltip_);
 }
 
 void TooltipIcon::OnThemeChanged() {

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -58,8 +59,15 @@ void SpeechRecognitionClientBrowserInterface::
   OnSpeechRecognitionAvailabilityChanged();
 }
 
-void SpeechRecognitionClientBrowserInterface::OnSodaInstalled() {
+void SpeechRecognitionClientBrowserInterface::OnSodaInstalled(
+    speech::LanguageCode language_code) {
+  if (!prefs::IsLanguageCodeForLiveCaption(language_code, profile_prefs_))
+    return;
   NotifyObservers(profile_prefs_->GetBoolean(prefs::kLiveCaptionEnabled));
+
+  if (base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
+    OnSpeechRecognitionLanguageChanged();
+  }
 }
 
 void SpeechRecognitionClientBrowserInterface::
@@ -72,8 +80,7 @@ void SpeechRecognitionClientBrowserInterface::
   if (enabled) {
     const std::string live_caption_locale =
         prefs::GetLiveCaptionLanguageCode(profile_prefs_);
-    if (!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) ||
-        speech::SodaInstaller::GetInstance()->IsSodaInstalled(
+    if (speech::SodaInstaller::GetInstance()->IsSodaInstalled(
             speech::GetLanguageCode(live_caption_locale))) {
       NotifyObservers(enabled);
     }

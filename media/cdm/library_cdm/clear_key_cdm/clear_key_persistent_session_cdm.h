@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/content_decryption_module.h"
@@ -110,7 +111,7 @@ class ClearKeyPersistentSessionCdm : public ContentDecryptionModule {
                         const std::vector<uint8_t>& message);
 
   scoped_refptr<AesDecryptor> cdm_;
-  CdmHostProxy* const cdm_host_proxy_ = nullptr;
+  const raw_ptr<CdmHostProxy> cdm_host_proxy_ = nullptr;
 
   // Callbacks for firing session events. Other events aren't intercepted.
   SessionMessageCB session_message_cb_;

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "printing/mojom/print.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/types/expected.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace printing {
 
@@ -37,7 +41,7 @@ class PrintBackendTest : public testing::Test {
 TEST_F(PrintBackendTest, MANUAL_EnumeratePrintersSomeInstalled) {
   PrinterList printer_list;
 
-  EXPECT_EQ(GetPrintBackend()->EnumeratePrinters(&printer_list),
+  EXPECT_EQ(GetPrintBackend()->EnumeratePrinters(printer_list),
             mojom::ResultCode::kSuccess);
   EXPECT_FALSE(printer_list.empty());
 
@@ -50,9 +54,27 @@ TEST_F(PrintBackendTest, MANUAL_EnumeratePrintersSomeInstalled) {
 TEST_F(PrintBackendTest, MANUAL_EnumeratePrintersNoneInstalled) {
   PrinterList printer_list;
 
-  EXPECT_EQ(GetPrintBackend()->EnumeratePrinters(&printer_list),
+  EXPECT_EQ(GetPrintBackend()->EnumeratePrinters(printer_list),
             mojom::ResultCode::kSuccess);
   EXPECT_TRUE(printer_list.empty());
 }
+
+#if BUILDFLAG(IS_WIN)
+
+// This test is for the XPS API that read the XML capabilities of a
+// specific printer.
+TEST_F(PrintBackendTest, MANUAL_GetXmlPrinterCapabilitiesForXpsDriver) {
+  PrinterList printer_list;
+  EXPECT_EQ(GetPrintBackend()->EnumeratePrinters(printer_list),
+            mojom::ResultCode::kSuccess);
+  for (const auto& printer : printer_list) {
+    base::expected<std::string, mojom::ResultCode> result =
+        GetPrintBackend()->GetXmlPrinterCapabilitiesForXpsDriver(
+            printer.printer_name);
+    EXPECT_TRUE(result.has_value());
+  }
+}
+
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace printing

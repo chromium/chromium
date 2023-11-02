@@ -1,6 +1,6 @@
 <style include="cr-hidden-style cr-icons">
   :host {
-    --icon-button-color-active: var(--google-grey-refresh-700);
+    --icon-button-color-active: var(--google-grey-700);
     --icon-button-color: var(--google-grey-600);
     --icon-size: 48px;
     --tile-background-color: rgb(229, 231, 232);
@@ -11,12 +11,12 @@
 
   @media (prefers-color-scheme: dark) {
     :host {
-      --tile-background-color: var(--google-grey-refresh-100);
+      --tile-background-color: var(--google-grey-100);
     }
   }
 
   :host([is-dark_]) {
-    --icon-button-color-active: var(--google-grey-refresh-300);
+    --icon-button-color-active: var(--google-grey-300);
     --icon-button-color: white;
     --tile-hover-color: rgba(255, 255, 255, .1);
   }
@@ -44,17 +44,27 @@
 
   #addShortcutIcon,
   .query-tile-icon {
-    -webkit-mask-image: url(chrome://resources/images/add.svg);
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-size: 100%;
-    background-color: var(--google-grey-900);
     height: 24px;
     width: 24px;
+  }
+
+  #addShortcutIcon {
+    -webkit-mask-image: url(chrome://resources/images/add.svg);
+    background-color: var(--google-grey-900);
   }
 
   .query-tile-icon {
     -webkit-mask-image: url(chrome://resources/images/icon_search.svg);
     background-color: var(--google-grey-700);
+  }
+
+  @media (forced-colors: active) {
+    #addShortcutIcon,
+    .query-tile-icon {
+      background-color: ButtonText;
+    }
   }
 
   :host([use-white-tile-icon_]) #addShortcutIcon {
@@ -93,6 +103,15 @@
   :host-context(.focus-outline-visible) .tile:focus,
   :host-context(.focus-outline-visible) #addShortcut:focus {
     box-shadow: var(--most-visited-focus-shadow);
+  }
+
+  @media (forced-colors: active) {
+    :host-context(.focus-outline-visible) .tile:focus,
+    :host-context(.focus-outline-visible) #addShortcut:focus {
+      /* Use outline instead of box-shadow (which does not work) in Windows
+         HCM. */
+      outline: var(--cr-focus-outline-hcm);
+    }
   }
 
   #addShortcut {
@@ -216,8 +235,8 @@
   <dom-repeat id="tiles" items="[[tiles_]]" on-dom-change="onTilesRendered_">
     <template>
       <a class="tile" href$="[[item.url.url]]" title$="[[item.title]]"
-          on-dragstart="onDragStart_" on-touchstart="onTouchStart_"
-          hidden$="[[isHidden_(index, maxVisibleTiles_)]]"
+          aria-label="[[item.title]]" on-dragstart="onDragStart_"
+          on-touchstart="onTouchStart_" hidden$="[[isHidden_(index, maxVisibleTiles_)]]"
           on-click="onTileClick_" on-keydown="onTileKeyDown_"
           query-tile$="[[item.isQueryTile]]">
         <cr-icon-button id="actionMenuButton" class="icon-more-vert"
@@ -239,7 +258,8 @@
     </template>
   </dom-repeat>
   <cr-button id="addShortcut" tabindex="0" on-click="onAdd_"
-      hidden$="[[!showAdd_]]" on-keydown="onAddShortcutKeyDown_" noink>
+      hidden$="[[!showAdd_]]" on-keydown="onAddShortcutKeyDown_"
+      aria-label="[[i18n('addLinkTitle')]]" title="[[i18n('addLinkTitle')]]" noink>
     <div class="tile-icon">
       <div id="addShortcutIcon" draggable="false"></div>
     </div>

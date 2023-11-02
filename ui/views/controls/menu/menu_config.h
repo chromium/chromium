@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -192,6 +192,9 @@ struct VIEWS_EXPORT MenuConfig {
 
   // Shadow elevation of touchable menus.
   int touchable_menu_shadow_elevation = 12;
+
+  // Shadow elevation of touchable submenus.
+  int touchable_submenu_shadow_elevation = 16;
 
   // Vertical padding for touchable menus.
   int vertical_touchable_menu_item_padding = 8;

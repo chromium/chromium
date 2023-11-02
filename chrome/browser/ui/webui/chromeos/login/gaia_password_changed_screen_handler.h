@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,30 +7,23 @@
 
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
-
-namespace ash {
-class GaiaPasswordChangedScreen;
-}
 
 namespace chromeos {
 
 // Interface for dependency injection between GaiaPasswordChangedScreen and its
 // WebUI representation.
-class GaiaPasswordChangedView {
+class GaiaPasswordChangedView
+    : public base::SupportsWeakPtr<GaiaPasswordChangedView> {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"gaia-password-changed"};
+  inline constexpr static StaticOobeScreenId kScreenId{
+      "gaia-password-changed", "GaiaPasswordChangedScreen"};
 
-  virtual ~GaiaPasswordChangedView() {}
+  virtual ~GaiaPasswordChangedView() = default;
 
   // Shows the contents of the screen.
   virtual void Show(const std::string& email, bool has_error) = 0;
-
-  // Binds `screen` to the view.
-  virtual void Bind(ash::GaiaPasswordChangedScreen* screen) = 0;
-
-  // Unbinds the screen from the view.
-  virtual void Unbind() = 0;
 };
 
 class GaiaPasswordChangedScreenHandler : public GaiaPasswordChangedView,
@@ -38,8 +31,7 @@ class GaiaPasswordChangedScreenHandler : public GaiaPasswordChangedView,
  public:
   using TView = GaiaPasswordChangedView;
 
-  explicit GaiaPasswordChangedScreenHandler(
-      JSCallsContainer* js_calls_container);
+  GaiaPasswordChangedScreenHandler();
   GaiaPasswordChangedScreenHandler(const GaiaPasswordChangedScreenHandler&) =
       delete;
   GaiaPasswordChangedScreenHandler& operator=(
@@ -48,17 +40,11 @@ class GaiaPasswordChangedScreenHandler : public GaiaPasswordChangedView,
 
  private:
   void Show(const std::string& email, bool has_error) override;
-  void Bind(ash::GaiaPasswordChangedScreen* screen) override;
-  void Unbind() override;
-
-  void HandleMigrateUserData(const std::string& old_password);
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void Initialize() override;
-
-  ash::GaiaPasswordChangedScreen* screen_ = nullptr;
+  void GetAdditionalParameters(base::Value::Dict* dict) override;
 };
 
 }  // namespace chromeos

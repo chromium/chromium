@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,31 +9,45 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_bind_group_layout.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_pipeline_layout.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_programmable_stage.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_shader_module.h"
 
 namespace blink {
 
 WGPUComputePipelineDescriptor AsDawnType(
+    GPUDevice* device,
     const GPUComputePipelineDescriptor* webgpu_desc,
     std::string* label,
-    OwnedProgrammableStageDescriptor* computeStageDescriptor,
-    GPUDevice* device) {
+    OwnedProgrammableStage* computeStage) {
   DCHECK(webgpu_desc);
   DCHECK(label);
-  DCHECK(computeStageDescriptor);
+  DCHECK(computeStage);
 
   WGPUComputePipelineDescriptor dawn_desc = {};
   dawn_desc.nextInChain = nullptr;
+
   if (webgpu_desc->hasLayout()) {
     dawn_desc.layout = AsDawnType(webgpu_desc->layout());
+  } else {
+    // TODO(crbug.com/1069302): Remove this branch after the deprecation period.
+    device->AddConsoleWarning(
+        "Leaving the layout of a compute pipeline undefined has been "
+        "deprecated, and specifying a pipeline layout will soon be required. "
+        "Set layout to 'auto' if an implicit pipeline layout is desired.");
   }
+
   if (webgpu_desc->hasLabel()) {
     *label = webgpu_desc->label().Utf8();
     dawn_desc.label = label->c_str();
   }
 
-  *computeStageDescriptor = AsDawnType(webgpu_desc->compute());
-  dawn_desc.compute = std::get<0>(*computeStageDescriptor);
+  GPUProgrammableStage* programmable_stage_desc = webgpu_desc->compute();
+  GPUProgrammableStageAsWGPUProgrammableStage(programmable_stage_desc,
+                                              computeStage);
+  dawn_desc.compute.constantCount = computeStage->constantCount;
+  dawn_desc.compute.constants = computeStage->constants.get();
+  dawn_desc.compute.module = programmable_stage_desc->module()->GetHandle();
+  dawn_desc.compute.entryPoint = computeStage->entry_point.c_str();
 
   return dawn_desc;
 }
@@ -46,9 +60,9 @@ GPUComputePipeline* GPUComputePipeline::Create(
   DCHECK(webgpu_desc);
 
   std::string label;
-  OwnedProgrammableStageDescriptor computeStageDescriptor;
+  OwnedProgrammableStage computeStage;
   WGPUComputePipelineDescriptor dawn_desc =
-      AsDawnType(webgpu_desc, &label, &computeStageDescriptor, device);
+      AsDawnType(device, webgpu_desc, &label, &computeStage);
 
   GPUComputePipeline* pipeline = MakeGarbageCollected<GPUComputePipeline>(
       device, device->GetProcs().deviceCreateComputePipeline(

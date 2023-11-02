@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -148,7 +148,8 @@ bool X11WholeScreenMoveLoop::RunMoveLoop(
   // restored when the move loop finishes.
   initial_cursor_ = old_cursor;
 
-  CreateDragInputWindow(x11::Connection::Get());
+  auto* connection = x11::Connection::Get();
+  CreateDragInputWindow(connection);
 
   // Only grab mouse capture of |grab_input_window_| if |can_grab_pointer| is
   // true aka the source that initiated the move loop doesn't have explicit

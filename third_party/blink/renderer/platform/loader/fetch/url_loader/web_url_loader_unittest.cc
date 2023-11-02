@@ -1,8 +1,6 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#include "third_party/blink/public/platform/web_url_loader.h"
 
 #include <stdint.h>
 #include <string.h>
@@ -11,7 +9,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -89,9 +86,7 @@ class MockResourceRequestSender : public WebResourceRequestSender {
       mojo::PendingRemote<mojom::BlobRegistry> download_to_blob_registry,
       scoped_refptr<WebRequestPeer> peer,
       std::unique_ptr<ResourceLoadInfoNotifierWrapper>
-          resource_load_info_notifier_wrapper,
-      WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
-      override {
+          resource_load_info_notifier_wrapper) override {
     *response = std::move(sync_load_response_);
   }
 
@@ -249,11 +244,13 @@ class TestWebURLLoaderClient : public WebURLLoaderClient {
     NOTREACHED();
   }
 
-  void DidFinishLoading(base::TimeTicks finishTime,
-                        int64_t totalEncodedDataLength,
-                        int64_t totalEncodedBodyLength,
-                        int64_t totalDecodedBodyLength,
-                        bool should_report_corb_blocking) override {
+  void DidFinishLoading(
+      base::TimeTicks finishTime,
+      int64_t totalEncodedDataLength,
+      int64_t totalEncodedBodyLength,
+      int64_t totalDecodedBodyLength,
+      bool should_report_corb_blocking,
+      absl::optional<bool> pervasive_payload_requested) override {
     EXPECT_TRUE(loader_);
     EXPECT_TRUE(did_receive_response_);
     EXPECT_FALSE(did_finish_);
@@ -381,9 +378,9 @@ class WebURLLoaderTest : public testing::Test {
     body_handle_.reset();
     base::RunLoop().RunUntilIdle();
     network::URLLoaderCompletionStatus status(net::OK);
-    status.encoded_data_length = base::size(kTestData);
-    status.encoded_body_length = base::size(kTestData);
-    status.decoded_body_length = base::size(kTestData);
+    status.encoded_data_length = std::size(kTestData);
+    status.encoded_body_length = std::size(kTestData);
+    status.decoded_body_length = std::size(kTestData);
     peer()->OnCompletedRequest(status);
     EXPECT_TRUE(client()->did_finish());
     // There should be no error.
@@ -396,9 +393,9 @@ class WebURLLoaderTest : public testing::Test {
     body_handle_.reset();
     base::RunLoop().RunUntilIdle();
     network::URLLoaderCompletionStatus status(net::ERR_FAILED);
-    status.encoded_data_length = base::size(kTestData);
-    status.encoded_body_length = base::size(kTestData);
-    status.decoded_body_length = base::size(kTestData);
+    status.encoded_data_length = std::size(kTestData);
+    status.encoded_body_length = std::size(kTestData);
+    status.decoded_body_length = std::size(kTestData);
     peer()->OnCompletedRequest(status);
     EXPECT_FALSE(client()->did_finish());
     ASSERT_TRUE(client()->error());
@@ -512,69 +509,28 @@ TEST_F(WebURLLoaderTest, ResponseIPEndpoint) {
 }
 
 TEST_F(WebURLLoaderTest, ResponseAddressSpace) {
-  using AddressSpace = network::mojom::IPAddressSpace;
+  KURL url("http://foo.example");
 
-  struct TestCase {
-    std::string url;
-    std::string ip;
-    AddressSpace expected;
-  } cases[] = {
-      {"http://localhost", "127.0.0.1", AddressSpace::kLocal},
-      {"http://localhost", "::1", AddressSpace::kLocal},
-      {"file:///a/path", "", AddressSpace::kLocal},
-      {"file:///a/path", "8.8.8.8", AddressSpace::kLocal},
-      {"http://router.local", "10.1.0.1", AddressSpace::kPrivate},
-      {"http://router.local", "::ffff:192.168.2.128", AddressSpace::kPrivate},
-      {"https://bleep.test", "8.8.8.8", AddressSpace::kPublic},
-      {"http://a.test", "2001:db8:85a3::8a2e:370:7334", AddressSpace::kPublic},
-      {"http://invalid", "", AddressSpace::kUnknown},
-  };
-
-  for (const auto& test : cases) {
-    SCOPED_TRACE(test.url + ", " + test.ip);
-
-    KURL url(test.url.c_str());
-
-    // We are forced to use the result of AssignFromIPLiteral(), and we cannot
-    // just assign it to an unused variable. Check that all non-empty literals
-    // are correctly parsed.
-    net::IPAddress address;
-    EXPECT_EQ(!test.ip.empty(), address.AssignFromIPLiteral(test.ip));
-
-    network::mojom::URLResponseHead head;
-    head.remote_endpoint = net::IPEndPoint(address, 443);
-
-    WebURLResponse response;
-    WebURLLoader::PopulateURLResponse(url, head, &response, true, -1);
-
-    EXPECT_EQ(test.expected, response.AddressSpace());
-  }
-}
-
-// This test verifies that the IPAddressSpace set on WebURLResponse takes into
-// account WebURLResponse::ResponseUrl() instead of
-// WebURLResponse::CurrentRequestUrl().
-TEST_F(WebURLLoaderTest, ResponseAddressSpaceConsidersResponseUrl) {
-  KURL request_url("http://request.test");
-
-  // The remote endpoint contains a public IP address, but the response was
-  // ultimately fetched by a service worker from a file URL.
   network::mojom::URLResponseHead head;
-  head.remote_endpoint = net::IPEndPoint(net::IPAddress(8, 8, 8, 8), 80);
-  head.was_fetched_via_service_worker = true;
-  head.url_list_via_service_worker = {
-      GURL("http://redirect.test"),
-      GURL("file:///a/path"),
-  };
+  head.response_address_space = network::mojom::IPAddressSpace::kPrivate;
 
   WebURLResponse response;
-  WebURLLoader::PopulateURLResponse(request_url, head, &response, true, -1);
+  WebURLLoader::PopulateURLResponse(url, head, &response, true, -1);
 
-  // The address space of the response reflects the fact the it was fetched
-  // from a file, even though the request was initially to a public website.
-  EXPECT_EQ(KURL("http://request.test"), KURL(response.CurrentRequestUrl()));
-  EXPECT_EQ(KURL("file:///a/path"), KURL(response.ResponseUrl()));
-  EXPECT_EQ(network::mojom::IPAddressSpace::kLocal, response.AddressSpace());
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPrivate, response.AddressSpace());
+}
+
+TEST_F(WebURLLoaderTest, ClientAddressSpace) {
+  KURL url("http://foo.example");
+
+  network::mojom::URLResponseHead head;
+  head.client_address_space = network::mojom::IPAddressSpace::kPublic;
+
+  WebURLResponse response;
+  WebURLLoader::PopulateURLResponse(url, head, &response, true, -1);
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            response.ClientAddressSpace());
 }
 
 TEST_F(WebURLLoaderTest, SSLInfo) {
@@ -617,14 +573,14 @@ TEST_F(WebURLLoaderTest, SyncLengths) {
   const KURL url(kTestURL);
 
   auto request = std::make_unique<network::ResourceRequest>();
-  request->url = url;
+  request->url = GURL(url);
   request->destination = network::mojom::RequestDestination::kEmpty;
   request->priority = net::HIGHEST;
 
   // Prepare a mock response
   SyncLoadResponse sync_load_response;
   sync_load_response.error_code = net::OK;
-  sync_load_response.url = url;
+  sync_load_response.url = GURL(url);
   sync_load_response.data.Assign(WebData(kBodyData));
   ASSERT_EQ(17u, sync_load_response.data.size());
   sync_load_response.head->encoded_body_length = kEncodedBodyLength;

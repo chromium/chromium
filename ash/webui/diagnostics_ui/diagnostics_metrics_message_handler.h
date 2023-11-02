@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,7 +45,7 @@ class DiagnosticsMetricsMessageHandler : public content::WebUIMessageHandler {
 
  private:
   // Records navigation events between screens within Diagnostics App.
-  void HandleRecordNavigation(base::Value::ConstListView args);
+  void HandleRecordNavigation(const base::Value::List& args);
 
   NavigationView current_view_;
   base::Time navigation_started_;

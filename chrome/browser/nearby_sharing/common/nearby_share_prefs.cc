@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,7 +55,8 @@ const char kNearbySharingSchedulerUploadDeviceNamePrefName[] =
     "nearby_sharing.scheduler.upload_device_name";
 const char kNearbySharingSchedulerUploadLocalDeviceCertificatesPrefName[] =
     "nearby_sharing.scheduler.upload_local_device_certificates";
-
+const char kNearbySharingNextVisibilityReminderTimePrefName[] =
+    "nearby_sharing.next_visibility_reminder_time";
 }  // namespace prefs
 
 void RegisterNearbySharingPrefs(PrefRegistrySimple* registry) {
@@ -90,6 +91,9 @@ void RegisterNearbySharingPrefs(PrefRegistrySimple* registry) {
                                /*default_value=*/std::string());
   registry->RegisterTimePref(
       prefs::kNearbySharingNearbyDeviceTryingToShareDismissedTimePrefName,
+      /*default_value=*/base::Time());
+  registry->RegisterTimePref(
+      prefs::kNearbySharingNextVisibilityReminderTimePrefName,
       /*default_value=*/base::Time());
   registry->RegisterDictionaryPref(
       prefs::kNearbySharingPublicCertificateExpirationDictPrefName);

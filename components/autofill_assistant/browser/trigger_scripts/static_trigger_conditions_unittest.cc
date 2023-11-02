@@ -1,11 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/autofill_assistant/browser/trigger_scripts/static_trigger_conditions.h"
 
+#include "base/test/task_environment.h"
 #include "components/autofill_assistant/browser/fake_starter_platform_delegate.h"
-#include "components/autofill_assistant/browser/mock_website_login_manager.h"
+#include "components/autofill_assistant/browser/public/password_change/mock_website_login_manager.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
 
 #include "base/containers/flat_map.h"
@@ -16,6 +17,7 @@
 namespace autofill_assistant {
 
 using ::base::test::RunOnceCallback;
+using ::base::test::TaskEnvironment;
 using ::testing::_;
 using ::testing::NiceMock;
 
@@ -33,9 +35,12 @@ class StaticTriggerConditionsTest : public testing::Test {
   ~StaticTriggerConditionsTest() override = default;
 
  protected:
+  base::test::TaskEnvironment task_environment_;
   base::MockCallback<base::OnceCallback<void(void)>> mock_callback_;
   NiceMock<MockWebsiteLoginManager> mock_website_login_manager_;
-  FakeStarterPlatformDelegate fake_platform_delegate_;
+  FakeStarterPlatformDelegate fake_platform_delegate_ =
+      FakeStarterPlatformDelegate(std::make_unique<FakeCommonDependencies>(
+          /*identity_manager=*/nullptr));
 };
 
 TEST_F(StaticTriggerConditionsTest, Update) {
@@ -44,7 +49,7 @@ TEST_F(StaticTriggerConditionsTest, Update) {
   TriggerContext trigger_context = {std::make_unique<ScriptParameters>(),
                                     options};
   StaticTriggerConditions static_trigger_conditions = {
-      &fake_platform_delegate_, &trigger_context, GURL(kFakeUrl)};
+      fake_platform_delegate_.GetWeakPtr(), &trigger_context, GURL(kFakeUrl)};
   fake_platform_delegate_.is_first_time_user_ = true;
   EXPECT_CALL(mock_website_login_manager_, GetLoginsForUrl(GURL(kFakeUrl), _))
       .WillOnce(RunOnceCallback<1>(std::vector<WebsiteLoginManager::Login>{
@@ -63,7 +68,7 @@ TEST_F(StaticTriggerConditionsTest, Update) {
 TEST_F(StaticTriggerConditionsTest, HasResults) {
   TriggerContext trigger_context;
   StaticTriggerConditions static_trigger_conditions = {
-      &fake_platform_delegate_, &trigger_context, GURL(kFakeUrl)};
+      fake_platform_delegate_.GetWeakPtr(), &trigger_context, GURL(kFakeUrl)};
   EXPECT_FALSE(static_trigger_conditions.has_results());
 
   EXPECT_CALL(mock_website_login_manager_, GetLoginsForUrl(GURL(kFakeUrl), _))
@@ -81,7 +86,7 @@ TEST_F(StaticTriggerConditionsTest, ScriptParameterMatches) {
               {"must_match", "matching_value"}}),
       {}};
   StaticTriggerConditions static_trigger_conditions = {
-      &fake_platform_delegate_, &trigger_context, GURL(kFakeUrl)};
+      fake_platform_delegate_.GetWeakPtr(), &trigger_context, GURL(kFakeUrl)};
 
   ScriptParameterMatchProto must_match;
   must_match.set_name("must_match");
@@ -98,7 +103,7 @@ TEST_F(StaticTriggerConditionsTest, CachesFirstTimeUserFlag) {
   TriggerContext trigger_context = {std::make_unique<ScriptParameters>(),
                                     TriggerContext::Options{}};
   StaticTriggerConditions static_trigger_conditions = {
-      &fake_platform_delegate_, &trigger_context, GURL(kFakeUrl)};
+      fake_platform_delegate_.GetWeakPtr(), &trigger_context, GURL(kFakeUrl)};
   fake_platform_delegate_.is_first_time_user_ = true;
   EXPECT_CALL(mock_website_login_manager_, GetLoginsForUrl)
       .WillRepeatedly(

@@ -1,19 +1,21 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/ui_devtools/dom_agent.h"
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "base/containers/adapters.h"
+#include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "components/ui_devtools/devtools_server.h"
 #include "components/ui_devtools/root_element.h"
+#include "components/ui_devtools/ui_devtools_features.h"
 #include "components/ui_devtools/ui_element.h"
 #include "ui/base/interaction/element_identifier.h"
 
@@ -150,7 +152,7 @@ void DOMAgent::OnUIElementAdded(UIElement* parent, UIElement* child) {
   child->set_is_updating(true);
 
   const auto& children = parent->children();
-  auto iter = std::find(children.begin(), children.end(), child);
+  auto iter = base::ranges::find(children, child);
   int prev_node_id =
       (iter == children.begin()) ? 0 : (*std::prev(iter))->node_id();
   frontend()->childNodeInserted(parent->node_id(), prev_node_id,
@@ -165,7 +167,7 @@ void DOMAgent::OnUIElementReordered(UIElement* parent, UIElement* child) {
   DCHECK(node_id_to_ui_element_.count(parent->node_id()));
 
   const auto& children = parent->children();
-  auto iter = std::find(children.begin(), children.end(), child);
+  auto iter = base::ranges::find(children, child);
   int prev_node_id =
       (iter == children.begin()) ? 0 : (*std::prev(iter))->node_id();
   RemoveDomNode(child, false);
@@ -409,6 +411,9 @@ Response DOMAgent::discardSearchResults(const protocol::String& search_id) {
 protocol::Response DOMAgent::dispatchMouseEvent(
     int node_id,
     std::unique_ptr<protocol::DOM::MouseEvent> event) {
+  if (!base::FeatureList::IsEnabled(
+          ui_devtools::kUIDebugToolsEnableSyntheticEvents))
+    return Response::ServerError("Dispatch mouse events is not enabled.");
   if (node_id_to_ui_element_.count(node_id) == 0)
     return Response::ServerError("Element not found on node id");
   if (!node_id_to_ui_element_[node_id]->DispatchMouseEvent(event.get()))
@@ -419,6 +424,9 @@ protocol::Response DOMAgent::dispatchMouseEvent(
 protocol::Response DOMAgent::dispatchKeyEvent(
     int node_id,
     std::unique_ptr<protocol::DOM::KeyEvent> event) {
+  if (!base::FeatureList::IsEnabled(
+          ui_devtools::kUIDebugToolsEnableSyntheticEvents))
+    return Response::ServerError("Dispatch key events is not enabled.");
   if (node_id_to_ui_element_.count(node_id) == 0)
     return Response::ServerError("Element not found on node id");
   if (!node_id_to_ui_element_[node_id]->DispatchKeyEvent(event.get()))

@@ -1,0 +1,11 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN
+++++++TEXT_FIELD focusable actions='{DEFAULT, SET_VALUE}' value='1/1/2015 1:00AM'
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='1/1/2015 1:00AM'
+++++++++++++UNKNOWN label='1/1/2015 1:00AM'
+++++++TEXT_FIELD focusable label='Launch' actions='{DEFAULT, SET_VALUE}' value='1/1/2015 1:00AM'
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='1/1/2015 1:00AM'
+++++++++++++UNKNOWN label='1/1/2015 1:00AM'

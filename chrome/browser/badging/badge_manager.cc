@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,9 +30,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/badging/badge_manager_delegate_mac.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include "chrome/browser/badging/badge_manager_delegate_win.h"
 #endif
 
@@ -71,9 +71,9 @@ BadgeManager::BadgeManager(Profile* profile,
       sync_bridge_(sync_bridge) {
   // The delegate is also set for Chrome OS but is set from the constructor of
   // web_apps_chromeos.cc.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   SetDelegate(std::make_unique<BadgeManagerDelegateMac>(profile, this));
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   SetDelegate(std::make_unique<BadgeManagerDelegateWin>(profile, this));
 #endif
 }
@@ -84,13 +84,18 @@ void BadgeManager::SetDelegate(std::unique_ptr<BadgeManagerDelegate> delegate) {
   delegate_ = std::move(delegate);
 }
 
-void BadgeManager::BindFrameReceiver(
+void BadgeManager::BindFrameReceiverIfAllowed(
     content::RenderFrameHost* frame,
     mojo::PendingReceiver<blink::mojom::BadgeService> receiver) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  auto* profile = Profile::FromBrowserContext(
-      content::WebContents::FromRenderFrameHost(frame)->GetBrowserContext());
+  // The Badging API is not allowed for the fenced frames.
+  if (frame->IsNestedWithinFencedFrame()) {
+    mojo::ReportBadMessage("The Badging API is not allowed in a fenced frame");
+    return;
+  }
+
+  auto* profile = Profile::FromBrowserContext(frame->GetBrowserContext());
 
   auto* badge_manager =
       badging::BadgeManagerFactory::GetInstance()->GetForProfile(profile);
@@ -103,11 +108,18 @@ void BadgeManager::BindFrameReceiver(
                                 std::move(context));
 }
 
-void BadgeManager::BindServiceWorkerReceiver(
+void BadgeManager::BindServiceWorkerReceiverIfAllowed(
     content::RenderProcessHost* service_worker_process_host,
-    const GURL& service_worker_scope,
+    const content::ServiceWorkerVersionBaseInfo& info,
     mojo::PendingReceiver<blink::mojom::BadgeService> receiver) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // The Badging API is not allowed for the fenced frames.
+  if (info.ancestor_frame_type ==
+      blink::mojom::AncestorFrameType::kFencedFrame) {
+    mojo::ReportBadMessage("The Badging API is not allowed in a fenced frame");
+    return;
+  }
 
   auto* profile = Profile::FromBrowserContext(
       service_worker_process_host->GetBrowserContext());
@@ -118,7 +130,7 @@ void BadgeManager::BindServiceWorkerReceiver(
     return;
 
   auto context = std::make_unique<BadgeManager::ServiceWorkerBindingContext>(
-      service_worker_process_host->GetID(), service_worker_scope);
+      service_worker_process_host->GetID(), info.scope);
 
   badge_manager->receivers_.Add(badge_manager, std::move(receiver),
                                 std::move(context));
@@ -257,13 +269,8 @@ BadgeManager::FrameBindingContext::GetAppIdsAndUrlsForBadging() const {
   if (!frame)
     return std::vector<std::tuple<web_app::AppId, GURL>>{};
 
-  content::WebContents* contents =
-      content::WebContents::FromRenderFrameHost(frame);
-  if (!contents)
-    return std::vector<std::tuple<web_app::AppId, GURL>>{};
-
   const WebAppProvider* provider = WebAppProvider::GetForLocalAppsUnchecked(
-      Profile::FromBrowserContext(contents->GetBrowserContext()));
+      Profile::FromBrowserContext(frame->GetBrowserContext()));
   if (!provider)
     return std::vector<std::tuple<web_app::AppId, GURL>>{};
 

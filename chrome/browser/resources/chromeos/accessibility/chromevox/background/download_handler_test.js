@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@ ChromeVoxDownloadTest = class extends ChromeVoxNextE2ETest {
     chrome.downloads.State = {
       IN_PROGRESS: 'in_progress',
       COMPLETE: 'complete',
-      INTERRUPTED: 'interrupted'
+      INTERRUPTED: 'interrupted',
     };
   }
 
@@ -36,6 +36,13 @@ ChromeVoxDownloadTest = class extends ChromeVoxNextE2ETest {
   setUp() {
     super.setUp();
     window.simulateEvent = this.simulateEvent.bind(this);
+  }
+
+  /** @override */
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule(
+        'DownloadHandler', '/chromevox/background/download_handler.js');
   }
 
   /**
@@ -109,7 +116,7 @@ TEST_F('ChromeVoxDownloadTest', 'DownloadCompletedTest', function() {
     state: {
       current: chrome.downloads.State.COMPLETE,
       previous: chrome.downloads.State.IN_PROGRESS,
-    }
+    },
   }));
 
   mockFeedback.expectSpeech('Download started test.pdf')
@@ -136,7 +143,7 @@ TEST_F('ChromeVoxDownloadTest', 'DownloadInterruptedTest', function() {
     state: {
       current: chrome.downloads.State.INTERRUPTED,
       previous: chrome.downloads.State.IN_PROGRESS,
-    }
+    },
   }));
   mockFeedback.expectSpeech('Download started test.pdf')
       .expectSpeech('Download stopped test.pdf')
@@ -162,7 +169,7 @@ TEST_F('ChromeVoxDownloadTest', 'DownloadPausedTest', function() {
     paused: {
       current: true,
       previous: false,
-    }
+    },
   }));
   mockFeedback.expectSpeech('Download started test.pdf')
       .expectSpeech('Download paused test.pdf')
@@ -187,7 +194,7 @@ TEST_F('ChromeVoxDownloadTest', 'DownloadResumedTest', function() {
     paused: {
       current: false,
       previous: true,
-    }
+    },
   }));
   mockFeedback.expectSpeech('Download started test.pdf')
       .expectSpeech('Download resumed test.pdf')

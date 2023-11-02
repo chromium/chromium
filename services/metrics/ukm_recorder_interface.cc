@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/metrics/ukm_recorder_interface.h"
 
 #include "base/atomic_sequence_num.h"
+#include "base/record_replay.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -13,9 +14,13 @@
 namespace metrics {
 
 UkmRecorderInterface::UkmRecorderInterface(ukm::UkmRecorder* ukm_recorder)
-    : ukm_recorder_(ukm_recorder) {}
+    : ukm_recorder_(ukm_recorder) {
+  recordreplay::RegisterPointer("UkmRecorderInterface", this);
+}
 
-UkmRecorderInterface::~UkmRecorderInterface() = default;
+UkmRecorderInterface::~UkmRecorderInterface() {
+  recordreplay::UnregisterPointer(this);
+}
 
 // static
 void UkmRecorderInterface::Create(

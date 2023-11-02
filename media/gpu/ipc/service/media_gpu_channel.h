@@ -1,10 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MEDIA_GPU_IPC_SERVICE_MEDIA_GPU_CHANNEL_H_
 #define MEDIA_GPU_IPC_SERVICE_MEDIA_GPU_CHANNEL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
 #include "media/base/android_overlay_mojo_factory.h"
 #include "media/mojo/mojom/gpu_accelerated_video_decoder.mojom.h"
@@ -32,7 +33,7 @@ class MediaGpuChannel {
       gpu::CommandBufferStub* stub,
       mojo::GenericPendingAssociatedReceiver receiver);
 
-  gpu::GpuChannel* const channel_;
+  const raw_ptr<gpu::GpuChannel> channel_;
   AndroidOverlayMojoFactoryCB overlay_factory_cb_;
   mojo::UniqueAssociatedReceiverSet<mojom::GpuAcceleratedVideoDecoderProvider>
       accelerated_video_decoder_providers_;

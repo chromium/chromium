@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,10 +17,6 @@ BackgroundFetchPermissionContext::BackgroundFetchPermissionContext(
     : PermissionContextBase(browser_context,
                             ContentSettingsType::BACKGROUND_FETCH,
                             blink::mojom::PermissionsPolicyFeature::kNotFound) {
-}
-
-bool BackgroundFetchPermissionContext::IsRestrictedToSecureOrigins() const {
-  return true;
 }
 
 ContentSetting BackgroundFetchPermissionContext::GetPermissionStatusInternal(
@@ -73,7 +69,6 @@ ContentSetting BackgroundFetchPermissionContext::GetPermissionStatusInternal(
 }
 
 void BackgroundFetchPermissionContext::DecidePermission(
-    content::WebContents* web_contents,
     const permissions::PermissionRequestID& id,
     const GURL& requesting_origin,
     const GURL& embedding_origin,

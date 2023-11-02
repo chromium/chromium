@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,7 +31,7 @@ const char* const kWebLayerCrashKeyAllowList[] = {
 
     // gpu
     "gpu-driver", "gpu-psver", "gpu-vsver", "gpu-gl-vendor", "gpu-gl-renderer",
-    "oop_read_failure",
+    "oop_read_failure", "gpu-gl-error-message",
 
     // content/:
     "bad_message_reason", "discardable-memory-allocated",

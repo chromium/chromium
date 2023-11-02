@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -124,6 +124,15 @@ MessagePortDescriptor WebMessagePort::PassPort() {
   return port;
 }
 
+const base::UnguessableToken& WebMessagePort::GetEmbedderAgentClusterID() {
+  // This is creating a single agent cluster ID that would represent the
+  // embedder in MessagePort IPCs. While we could create a new ID on each call,
+  // providing a consistent one saves RNG work and could be useful in the future
+  // if we'd want to consistently identify messages from the embedder.
+  static const auto agent_cluster_id = base::UnguessableToken::Create();
+  return agent_cluster_id;
+}
+
 WebMessagePort::WebMessagePort(MessagePortDescriptor&& port)
     : port_(std::move(port)), is_closed_(false), is_transferable_(true) {
   DCHECK(port_.IsValid());
@@ -152,13 +161,14 @@ bool WebMessagePort::PostMessage(Message&& message) {
   // Build the message.
   // TODO(chrisha): Finally kill off MessagePortChannel, once
   // MessagePortDescriptor more thoroughly plays that role.
-  blink::TransferableMessage transferable_message;
-  transferable_message.owned_encoded_message =
-      blink::EncodeStringMessage(message.data);
-  transferable_message.encoded_message =
-      transferable_message.owned_encoded_message;
+  blink::TransferableMessage transferable_message =
+      blink::EncodeWebMessagePayload(WebMessagePayload(message.data));
   transferable_message.ports =
       blink::MessagePortChannel::CreateFromHandles(std::move(ports));
+
+  // Get the embedder assigned cluster ID, as these messages originate from the
+  // embedder.
+  transferable_message.sender_agent_cluster_id = GetEmbedderAgentClusterID();
 
   // TODO(chrisha): Notify the instrumentation delegate of a message being sent!
 
@@ -228,8 +238,14 @@ bool WebMessagePort::Accept(mojo::Message* mojo_message) {
 
   // Decode the string portion of the message.
   Message message;
-  if (!blink::DecodeStringMessage(transferable_message.encoded_message,
-                                  &message.data)) {
+  absl::optional<WebMessagePayload> optional_payload =
+      blink::DecodeToWebMessagePayload(transferable_message);
+  if (!optional_payload)
+    return false;
+  auto& payload = optional_payload.value();
+  if (auto* str = absl::get_if<std::u16string>(&payload)) {
+    message.data = std::move(*str);
+  } else {
     return false;
   }
 

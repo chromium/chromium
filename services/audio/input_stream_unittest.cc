@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,11 +25,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using testing::_;
 using testing::NiceMock;
 using testing::NotNull;
 using testing::Return;
 using testing::StrictMock;
-using testing::_;
 
 namespace audio {
 
@@ -123,7 +123,7 @@ class AudioServiceInputStreamTest : public testing::Test {
  public:
   AudioServiceInputStreamTest()
       : audio_manager_(std::make_unique<media::TestAudioThread>(false)),
-        stream_factory_(&audio_manager_),
+        stream_factory_(&audio_manager_, /*aecdump_recording_manager=*/nullptr),
         stream_factory_receiver_(
             &stream_factory_,
             remote_stream_factory_.BindNewPipeAndPassReceiver()) {}
@@ -152,7 +152,7 @@ class AudioServiceInputStreamTest : public testing::Test {
         observer_.MakeRemote(), log_.MakeRemote(), kDefaultDeviceId,
         media::AudioParameters::UnavailableDeviceParams(),
         kDefaultSharedMemoryCount, enable_agc,
-        base::ReadOnlySharedMemoryRegion(),
+        base::ReadOnlySharedMemoryRegion(), nullptr,
         base::BindOnce(&AudioServiceInputStreamTest::OnCreated,
                        base::Unretained(this)));
     return remote_stream;
@@ -166,6 +166,7 @@ class AudioServiceInputStreamTest : public testing::Test {
         observer_.MakeRemote(), mojo::NullRemote(), kDefaultDeviceId,
         media::AudioParameters::UnavailableDeviceParams(),
         kDefaultSharedMemoryCount, false, base::ReadOnlySharedMemoryRegion(),
+        nullptr,
         base::BindOnce(&AudioServiceInputStreamTest::OnCreated,
                        base::Unretained(this)));
     return remote_stream;
@@ -179,6 +180,7 @@ class AudioServiceInputStreamTest : public testing::Test {
         mojo::NullRemote(), log_.MakeRemote(), kDefaultDeviceId,
         media::AudioParameters::UnavailableDeviceParams(),
         kDefaultSharedMemoryCount, false, base::ReadOnlySharedMemoryRegion(),
+        nullptr,
         base::BindOnce(&AudioServiceInputStreamTest::OnCreated,
                        base::Unretained(this)));
     return remote_stream;

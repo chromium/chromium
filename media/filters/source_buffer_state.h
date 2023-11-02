@@ -1,14 +1,14 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MEDIA_FILTERS_SOURCE_BUFFER_STATE_H_
 #define MEDIA_FILTERS_SOURCE_BUFFER_STATE_H_
 
-#include <list>
-
 #include "base/bind.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/demuxer.h"
 #include "media/base/demuxer_stream.h"
@@ -222,7 +222,7 @@ class MEDIA_EXPORT SourceBufferState {
   // timestamp offset then |*timestamp_offset_during_append_| is also updated
   // so Append()'s caller can know the new offset. This pointer is only non-NULL
   // during the lifetime of an Append() call.
-  base::TimeDelta* timestamp_offset_during_append_;
+  raw_ptr<base::TimeDelta> timestamp_offset_during_append_;
 
   // During Append(), coded frame processing triggered by OnNewBuffers()
   // requires these two attributes. These are only valid during the lifetime of
@@ -249,7 +249,7 @@ class MEDIA_EXPORT SourceBufferState {
 
   std::unique_ptr<FrameProcessor> frame_processor_;
   const CreateDemuxerStreamCB create_demuxer_stream_cb_;
-  MediaLog* media_log_;
+  raw_ptr<MediaLog> media_log_;
 
   StreamParser::InitCB init_cb_;
   StreamParser::EncryptedMediaInitDataCB encrypted_media_init_data_cb_;

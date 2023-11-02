@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,7 +52,7 @@ const char* kGaiaDomain = "accounts.google.com";
 // Returns the registered, organization-identifying host, but no subdomains,
 // from the given GURL. Returns an empty string if the GURL is invalid.
 static std::string GetDomainFromUrl(const GURL& url) {
-  if (gaia::IsGaiaSignonRealm(url.DeprecatedGetOriginAsURL())) {
+  if (gaia::HasGaiaSchemeHostPort(url)) {
     return kGaiaDomain;
   }
   return net::registry_controlled_domains::GetDomainAndRegistry(
@@ -107,7 +107,7 @@ class AccountConsistencyService::AccountConsistencyHandler
                             AccountConsistencyService* service,
                             AccountReconcilor* account_reconcilor,
                             signin::IdentityManager* identity_manager,
-                            id<ManageAccountsDelegate> delegate);
+                            ManageAccountsDelegate* delegate);
 
   void WebStateDestroyed(web::WebState* web_state) override;
 
@@ -137,12 +137,15 @@ class AccountConsistencyService::AccountConsistencyHandler
   // Handles the AddAccount request depending on |has_cookie_changed|.
   void HandleAddAccountRequest(GURL url, BOOL has_cookie_changed);
 
-  bool show_consistency_promo_ = false;
+  // The consistency web sign-in needs to be shown once the page is loaded.
+  // It is required to avoid having the keyboard showing up on top of the web
+  // sign-in dialog.
+  bool show_consistency_web_signin_ = false;
   AccountConsistencyService* account_consistency_service_;  // Weak.
   AccountReconcilor* account_reconcilor_;                   // Weak.
   signin::IdentityManager* identity_manager_;
   web::WebState* web_state_;
-  __weak id<ManageAccountsDelegate> delegate_;
+  ManageAccountsDelegate* delegate_;  // Weak.
   base::WeakPtrFactory<AccountConsistencyHandler> weak_ptr_factory_;
 };
 
@@ -151,7 +154,7 @@ AccountConsistencyService::AccountConsistencyHandler::AccountConsistencyHandler(
     AccountConsistencyService* service,
     AccountReconcilor* account_reconcilor,
     signin::IdentityManager* identity_manager,
-    id<ManageAccountsDelegate> delegate)
+    ManageAccountsDelegate* delegate)
     : web::WebStatePolicyDecider(web_state),
       account_consistency_service_(service),
       account_reconcilor_(account_reconcilor),
@@ -199,12 +202,7 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
         {url, GURL(kGoogleUrl)});
   }
 
-  // Reset boolean that tracks displaying the sign-in consistency promo. This
-  // ensures that the promo is cancelled once navigation has started and the
-  // WKWebView is cancelling previous navigations.
-  show_consistency_promo_ = false;
-
-  if (!gaia::IsGaiaSignonRealm(url.DeprecatedGetOriginAsURL())) {
+  if (!gaia::HasGaiaSchemeHostPort(url)) {
     std::move(callback).Run(PolicyDecision::Allow());
     return;
   }
@@ -218,7 +216,7 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
     NSString* x_autologin_header = [[http_response allHeaderFields]
         objectForKey:[NSString stringWithUTF8String:signin::kAutoLoginHeader]];
     if (x_autologin_header) {
-      show_consistency_promo_ = true;
+      show_consistency_web_signin_ = true;
     }
     std::move(callback).Run(PolicyDecision::Allow());
     return;
@@ -234,7 +232,8 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
       GURL continue_url = GURL(params.continue_url);
       DLOG_IF(ERROR, !params.continue_url.empty() && !continue_url.is_valid())
           << "Invalid continuation URL: \"" << continue_url << "\"";
-      [delegate_ onGoIncognito:continue_url];
+      if (delegate_)
+        delegate_->OnGoIncognito(continue_url);
       break;
     }
     case signin::GAIA_SERVICE_TYPE_SIGNUP:
@@ -254,19 +253,14 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
           // have been restored.
           return;
         }
-      } else if (!identity_manager_->GetAccountsWithRefreshTokens().empty()) {
-        show_consistency_promo_ = true;
-        // Allows the URL response to load before showing the consistency promo.
-        // The promo should always be displayed in the foreground of Gaia
-        // sign-on.
-        std::move(callback).Run(PolicyDecision::Allow());
-        return;
       }
-      [delegate_ onAddAccount];
+      if (delegate_)
+        delegate_->OnAddAccount();
       break;
     case signin::GAIA_SERVICE_TYPE_SIGNOUT:
     case signin::GAIA_SERVICE_TYPE_DEFAULT:
-      [delegate_ onManageAccounts];
+      if (delegate_)
+        delegate_->OnManageAccounts();
       break;
     case signin::GAIA_SERVICE_TYPE_NONE:
       NOTREACHED();
@@ -290,13 +284,15 @@ void AccountConsistencyService::AccountConsistencyHandler::
     // is not in an inconsistent state (where the identities on the device
     // are different than those on the web). Fallback to asking the user to
     // add an account.
-    [delegate_ onAddAccount];
+    if (delegate_)
+      delegate_->OnAddAccount();
     return;
   }
   web_state_->OpenURL(web::WebState::OpenURLParams(
       url, web::Referrer(), WindowOpenDisposition::CURRENT_TAB,
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false));
-  [delegate_ onRestoreGaiaCookies];
+  if (delegate_)
+    delegate_->OnRestoreGaiaCookies();
   LogIOSGaiaCookiesState(
       GaiaCookieStateOnSignedInNavigation::kGaiaCookieRestoredOnShowInfobar);
 }
@@ -312,11 +308,11 @@ void AccountConsistencyService::AccountConsistencyHandler::PageLoaded(
     return;
   }
 
-  if (show_consistency_promo_ &&
-      gaia::IsGaiaSignonRealm(url.DeprecatedGetOriginAsURL())) {
-    [delegate_ onShowConsistencyPromo:url webState:web_state];
-    show_consistency_promo_ = false;
+  if (delegate_ && show_consistency_web_signin_ &&
+      gaia::HasGaiaSchemeHostPort(url)) {
+    delegate_->OnShowConsistencyPromo(url, web_state);
   }
+  show_consistency_web_signin_ = false;
 }
 
 void AccountConsistencyService::AccountConsistencyHandler::WebStateDestroyed(
@@ -359,7 +355,7 @@ BOOL AccountConsistencyService::RestoreGaiaCookies(
     cookie_manager->GetCookieList(
         GaiaUrls::GetInstance()->secure_google_url(),
         net::CookieOptions::MakeAllInclusive(),
-        net::CookiePartitionKeychain::Todo(),
+        net::CookiePartitionKeyCollection::Todo(),
         base::BindOnce(
             &AccountConsistencyService::TriggerGaiaCookieChangeIfDeleted,
             base::Unretained(this), std::move(cookies_restored_callback)));
@@ -406,7 +402,7 @@ void AccountConsistencyService::RunGaiaCookiesRestoredCallbacks(
 
 void AccountConsistencyService::SetWebStateHandler(
     web::WebState* web_state,
-    id<ManageAccountsDelegate> delegate) {
+    ManageAccountsDelegate* delegate) {
   DCHECK(!is_shutdown_) << "SetWebStateHandler called after Shutdown";
   DCHECK(handlers_map_.find(web_state) == handlers_map_.end());
   handlers_map_.insert(std::make_pair(

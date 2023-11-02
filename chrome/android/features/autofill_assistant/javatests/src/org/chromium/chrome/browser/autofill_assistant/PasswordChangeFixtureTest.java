@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.anyOf;
 
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntil;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
@@ -39,12 +40,16 @@ import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
+import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.PasswordChangeLauncher;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -82,7 +87,6 @@ public class PasswordChangeFixtureTest implements PasswordStoreBridge.PasswordSt
 
     @Before
     public void setUp() throws Exception {
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
         mParameters = PasswordChangeFixtureParameters.loadFromCommandLine();
 
         AutofillAssistantTestEndpointService testService =
@@ -91,15 +95,24 @@ public class PasswordChangeFixtureTest implements PasswordStoreBridge.PasswordSt
 
         Log.i(TAG, "[Test started]");
 
-        mTestRule.startCustomTabActivityWithIntent(CustomTabsTestUtils.createMinimalCustomTabIntent(
-                InstrumentationRegistry.getTargetContext(), mParameters.getDomainUrl().getSpec()));
+        mTestRule.startCustomTabActivityWithIntent(
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
+                        InstrumentationRegistry.getTargetContext(),
+                        mParameters.getDomainUrl().getSpec()));
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+            prefService.setBoolean(Pref.AUTOFILL_ASSISTANT_CONSENT, true);
+            prefService.setBoolean(Pref.AUTOFILL_ASSISTANT_ENABLED, true);
+        });
 
         /**
          * PasswordStoreBridge requests credentials from the password store on initialization. The
          * request needs to be posted from the main thread.
          */
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPasswordStoreBridge = new PasswordStoreBridge(this);
+            mPasswordStoreBridge = new PasswordStoreBridge();
+            mPasswordStoreBridge.addObserver(this, /* callImmediatelyIfReady= */ true);
             // Load initial credentials.
             PasswordStoreCredential[] seedCredentials = mParameters.getSeedCredentials();
             for (int i = 0; i < seedCredentials.length; i++) {
@@ -108,12 +121,19 @@ public class PasswordChangeFixtureTest implements PasswordStoreBridge.PasswordSt
         });
 
         // Wait until operation finishes and credentials cache is updated.
-        waitUntil(() -> mCredentials.length == mParameters.getSeedCredentials().length);
+        waitUntil(()
+                          -> mCredentials != null
+                        && mCredentials.length == mParameters.getSeedCredentials().length);
     }
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mPasswordStoreBridge.destroy(); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            if (mPasswordStoreBridge != null) {
+                mPasswordStoreBridge.removeObserver(this);
+                mPasswordStoreBridge.destroy();
+            }
+        });
     }
 
     /**
@@ -123,7 +143,7 @@ public class PasswordChangeFixtureTest implements PasswordStoreBridge.PasswordSt
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> PasswordChangeLauncher.start(getWebContents().getTopLevelNativeWindow(),
-                                mParameters.getDomainUrl(), username,
+                                mParameters.getDomainUrl(), username, /*skipLogin=*/false,
                                 mParameters.getDebugBundleId(), mParameters.getDebugSocketId()));
     }
 
@@ -212,7 +232,10 @@ public class PasswordChangeFixtureTest implements PasswordStoreBridge.PasswordSt
 
         // Should fail during login. Wait for error opening site's settings.
         waitUntilViewMatchesCondition(
-                withText("Can't change your password"), isDisplayed(), MAX_WAIT_TIME_IN_MS);
+                anyOf(withText("Can't change your password"),
+                        withText(
+                                "Sign in with your current password. If you don’t know it, reset it.")),
+                isDisplayed(), MAX_WAIT_TIME_IN_MS);
 
         // Assert initial credential has not changed.
         PasswordStoreCredential newCredential = getCredentialForDomainAndUser(

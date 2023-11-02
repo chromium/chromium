@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,7 +39,7 @@ class LnkParserTest : public testing::Test {
         temp_dir_.GetPath().AppendASCII("test_shortcut.lnk");
     if (!base::win::CreateOrUpdateShortcutLink(
             shortcut_path, properties,
-            base::win::ShortcutOperation::SHORTCUT_CREATE_ALWAYS)) {
+            base::win::ShortcutOperation::kCreateAlways)) {
       LOG(ERROR) << "Could not create shortcut";
       return base::win::ScopedHandle(INVALID_HANDLE_VALUE);
     }

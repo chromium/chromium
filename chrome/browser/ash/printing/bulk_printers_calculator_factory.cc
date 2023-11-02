@@ -1,10 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/printing/bulk_printers_calculator_factory.h"
 
-#include "base/no_destructor.h"
 #include "chrome/browser/ash/printing/bulk_printers_calculator.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"

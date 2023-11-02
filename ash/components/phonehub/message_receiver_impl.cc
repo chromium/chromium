@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,9 @@
 #include "ash/constants/ash_features.h"
 #include "base/logging.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
+
 namespace {
 
 std::string GetMessageTypeName(proto::MessageType message_type) {
@@ -39,6 +40,8 @@ std::string GetMessageTypeName(proto::MessageType message_type) {
       return "FETCH_CAMERA_ROLL_ITEMS_RESPONSE";
     case proto::MessageType::FETCH_CAMERA_ROLL_ITEM_DATA_RESPONSE:
       return "FETCH_CAMERA_ROLL_ITEM_DATA_RESPONSE";
+    case proto::MessageType::FEATURE_SETUP_RESPONSE:
+      return "FEATURE_SETUP_RESPONSE";
     default:
       return "UNKOWN_MESSAGE";
   }
@@ -97,6 +100,18 @@ void MessageReceiverImpl::OnMessageReceived(const std::string& payload) {
     return;
   }
 
+  if (features::IsPhoneHubFeatureSetupErrorHandlingEnabled() &&
+      message_type == proto::MessageType::FEATURE_SETUP_RESPONSE) {
+    proto::FeatureSetupResponse response;
+    // Serialized proto is after the first two bytes of |payload|.
+    if (!response.ParseFromString(payload.substr(2))) {
+      PA_LOG(ERROR) << "OnMessageReceived() could not deserialize the "
+                    << "FeatureSetupResponse proto message.";
+      return;
+    }
+    NotifyFeatureSetupResponseReceived(response);
+  }
+
   if (features::IsPhoneHubCameraRollEnabled() &&
       message_type == proto::MessageType::FETCH_CAMERA_ROLL_ITEMS_RESPONSE) {
     proto::FetchCameraRollItemsResponse response;
@@ -126,4 +141,4 @@ void MessageReceiverImpl::OnMessageReceived(const std::string& payload) {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

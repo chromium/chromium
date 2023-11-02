@@ -1,6 +1,6 @@
 #!/usr/bin/env vpython3
 #
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Helps launch lacros-chrome with mojo connection established on Linux
@@ -29,8 +29,12 @@
 import argparse
 import array
 import contextlib
+import getpass
+import grp
 import os
 import pathlib
+import pwd
+import resource
 import socket
 import sys
 import subprocess
@@ -55,12 +59,12 @@ class NullContext:
 def _ReceiveFDs(sock):
   """Receives FDs from ash-chrome that will be used to launch lacros-chrome.
 
-  Args:
-    sock: A connected unix domain socket.
+    Args:
+      sock: A connected unix domain socket.
 
-  Returns:
-    File objects for the mojo connection and maybe startup data file.
-  """
+    Returns:
+      File objects for the mojo connection and maybe startup data file.
+    """
   # This function is borrowed from with modifications:
   # https://docs.python.org/3/library/socket.html#socket.socket.recvmsg
   fds = array.array("i")  # Array of ints
@@ -88,32 +92,58 @@ def _ReceiveFDs(sock):
           'CMSG_LEN is unexpected: %d' % (len(cmsg_data), ))
       fds.frombytes(cmsg_data[:])
 
-  if version == b'\x00':
-    assert len(fds) in (1, 2, 3), 'Expecting exactly 1, 2, or 3 FDs'
-    legacy_mojo_fd = os.fdopen(fds[0])
-    startup_fd = None if len(fds) < 2 else os.fdopen(fds[1])
-    mojo_fd = None if len(fds) < 3 else os.fdopen(fds[2])
-  elif version == b'\x01':
+  if version == b'\x01':
     assert len(fds) == 2, 'Expecting exactly 2 FDs'
-    legacy_mojo_fd = None
     startup_fd = os.fdopen(fds[0])
     mojo_fd = os.fdopen(fds[1])
+  elif version:
+    raise AssertionError('Unknown version: \\x%s' % version.hex())
   else:
-    raise AssertionError('Unknown version: \\x%s' % version.encode('hex'))
-  return legacy_mojo_fd, startup_fd, mojo_fd
+    raise AssertionError('Failed to receive startup message from ash-chrome. '
+                         'Make sure you\'re logged in to Chrome OS.')
+  return startup_fd, mojo_fd
 
 
 def _MaybeClosing(fileobj):
   """Returns closing context manager, if given fileobj is not None.
 
-  If the given fileobj is none, return nullcontext.
-  """
+    If the given fileobj is none, return nullcontext.
+    """
   return (contextlib.closing if fileobj else NullContext)(fileobj)
+
+
+def _ApplyCgroups():
+  """Applies cgroups used in ChromeOS to lacros chrome as well."""
+  # Cgroup directories taken from ChromeOS session_manager job configuration.
+  UI_FREEZER_CGROUP_DIR = '/sys/fs/cgroup/freezer/ui'
+  UI_CPU_CGROUP_DIR = '/sys/fs/cgroup/cpu/ui'
+  pid = os.getpid()
+  with open(os.path.join(UI_CPU_CGROUP_DIR, 'tasks'), 'a') as f:
+    f.write(str(pid) + '\n')
+  with open(os.path.join(UI_FREEZER_CGROUP_DIR, 'cgroup.procs'), 'a') as f:
+    f.write(str(pid) + '\n')
+
+
+def _PreExec(uid, gid, groups):
+  """Set environment up for running the chrome binary."""
+  # Nice and realtime priority values taken ChromeOSs session_manager job
+  # configuration.
+  resource.setrlimit(resource.RLIMIT_NICE, (40, 40))
+  resource.setrlimit(resource.RLIMIT_RTPRIO, (10, 10))
+  os.setgroups(groups)
+  os.setgid(gid)
+  os.setuid(uid)
 
 
 def Main():
   arg_parser = argparse.ArgumentParser()
   arg_parser.usage = __doc__
+  arg_parser.add_argument(
+      '-r',
+      '--root-env-setup',
+      action='store_true',
+      help='Set typical cgroups and environment for chrome. '
+      'If this is set, this script must be run as root.')
   arg_parser.add_argument(
       '-s',
       '--socket-path',
@@ -126,24 +156,25 @@ def Main():
   assert 'XDG_RUNTIME_DIR' in os.environ
   assert os.environ.get('EGL_PLATFORM') == 'surfaceless'
 
+  if flags.root_env_setup:
+    # Check if we are actually root and error otherwise.
+    assert getpass.getuser() == 'root', \
+        'Root required environment flag specified, but user is not root.'
+    # Apply necessary cgroups to our own process, so they will be inherited by
+    # lacros chrome.
+    _ApplyCgroups()
+  else:
+    print('WARNING: Running chrome without appropriate environment. '
+          'This may affect performance test results. '
+          'Set -r and run as root to avoid this.')
+
   with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
     sock.connect(flags.socket_path.as_posix())
-    legacy_mojo_connection, startup_connection, mojo_connection = (
-        _ReceiveFDs(sock))
+    startup_connection, mojo_connection = (_ReceiveFDs(sock))
 
-  with _MaybeClosing(legacy_mojo_connection), \
-       _MaybeClosing(startup_connection), \
-       _MaybeClosing(mojo_connection):
+  with _MaybeClosing(startup_connection), _MaybeClosing(mojo_connection):
     cmd = args[:]
     pass_fds = []
-    if legacy_mojo_connection:
-      cmd.append('--mojo-platform-channel-handle=%d' %
-                 legacy_mojo_connection.fileno())
-      pass_fds.append(legacy_mojo_connection.fileno())
-    else:
-      # TODO(crbug.com/1188020): This is for backward compatibility.
-      # We should remove this after M93 lacros is spread enough.
-      cmd.append('--mojo-platform-channel-handle=-1')
     if startup_connection:
       cmd.append('--cros-startup-data-fd=%d' % startup_connection.fileno())
       pass_fds.append(startup_connection.fileno())
@@ -151,7 +182,26 @@ def Main():
       cmd.append('--crosapi-mojo-platform-channel-handle=%d' %
                  mojo_connection.fileno())
       pass_fds.append(mojo_connection.fileno())
-    proc = subprocess.Popen(cmd, pass_fds=pass_fds)
+
+    env = os.environ.copy()
+    if flags.root_env_setup:
+      username = 'chronos'
+      p = pwd.getpwnam(username)
+      uid = p.pw_uid
+      gid = p.pw_gid
+      groups = [g.gr_gid for g in grp.getgrall() if username in g.gr_mem]
+      env['HOME'] = p.pw_dir
+      env['LOGNAME'] = username
+      env['USER'] = username
+
+      def fn():
+        return _PreExec(uid, gid, groups)
+    else:
+
+      def fn():
+        return None
+
+    proc = subprocess.Popen(cmd, pass_fds=pass_fds, preexec_fn=fn)
 
   return proc.wait()
 

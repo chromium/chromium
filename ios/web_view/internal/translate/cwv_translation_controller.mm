@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,9 +31,8 @@ NSErrorDomain const CWVTranslationErrorDomain =
     @"org.chromium.chromewebview.TranslationErrorDomain";
 
 namespace {
-// Converts a |translate::TranslateErrors::Type| to a |CWVTranslationError|.
-CWVTranslationError CWVConvertTranslateError(
-    translate::TranslateErrors::Type type) {
+// Converts a |translate::TranslateErrors| to a |CWVTranslationError|.
+CWVTranslationError CWVConvertTranslateError(translate::TranslateErrors type) {
   switch (type) {
     case translate::TranslateErrors::NONE:
       return CWVTranslationErrorNone;
@@ -117,7 +116,7 @@ CWVTranslationError CWVConvertTranslateError(
 - (void)updateTranslateStep:(translate::TranslateStep)step
              sourceLanguage:(const std::string&)sourceLanguage
              targetLanguage:(const std::string&)targetLanguage
-                  errorType:(translate::TranslateErrors::Type)errorType
+                  errorType:(translate::TranslateErrors)errorType
           triggeredFromMenu:(bool)triggeredFromMenu {
   if (_webState->IsBeingDestroyed()) {
     return;

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,9 +44,7 @@ class MockJobInterceptor : public URLRequestInterceptor {
 }  // namespace
 
 URLRequestHangingReadJob::URLRequestHangingReadJob(URLRequest* request)
-    : URLRequestJob(request),
-      // non-zero content-length
-      content_length_(10) {}
+    : URLRequestJob(request) {}
 
 URLRequestHangingReadJob::~URLRequestHangingReadJob() = default;
 

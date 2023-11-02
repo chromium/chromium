@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,14 +36,10 @@ class IOSTranslateInternalsHandler
   // translate::TranslateInternalsHandler.
   translate::TranslateClient* GetTranslateClient() override;
   variations::VariationsService* GetVariationsService() override;
-  void RegisterMessageCallback(const std::string& message,
+  void RegisterMessageCallback(base::StringPiece message,
                                MessageCallback callback) override;
-  void RegisterDeprecatedMessageCallback(
-      const std::string& message,
-      const DeprecatedMessageCallback& callback) override;
-  void CallJavascriptFunction(
-      const std::string& function_name,
-      const std::vector<const base::Value*>& args) override;
+  void CallJavascriptFunction(base::StringPiece function_name,
+                              base::span<const base::ValueView> args) override;
 
   // web::WebUIIOSMessageHandler.
   void RegisterMessages() override;
@@ -55,14 +51,14 @@ class IOSTranslateInternalsHandler
       language::IOSLanguageDetectionTabHelper* tab_helper) override;
 
   // Adds this instance as an observer of the IOSLanguageDetectionTabHelper
-  // associated with |web_state|.
+  // associated with `web_state`.
   void AddLanguageDetectionObserverForWebState(web::WebState* web_state);
   // Removes this instance as an observer of the IOSLanguageDetectionTabHelper
-  // associated with |web_state|.
+  // associated with `web_state`.
   void RemoveLanguageDetectionObserverForWebState(web::WebState* web_state);
 
  private:
-  // Inner observer class, owned by the |registrar_|.
+  // Inner observer class, owned by the `registrar_`.
   class Observer : public WebStateListObserver {
    public:
     explicit Observer(IOSTranslateInternalsHandler* handler);

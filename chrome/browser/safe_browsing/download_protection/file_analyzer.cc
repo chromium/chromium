@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "chrome/browser/file_util_service.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "chrome/common/safe_browsing/document_analyzer_results.h"
@@ -18,8 +18,9 @@
 #include "components/safe_browsing/content/common/file_type_policies.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_thread.h"
+#include "url/gurl.h"
 
-#if defined(OS_LINUX) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/safe_browsing/download_protection/document_analysis_service.h"
 #endif
 
@@ -84,30 +85,30 @@ void FileAnalyzer::Start(const base::FilePath& target_path,
   target_path_ = target_path;
   tmp_path_ = tmp_path;
   callback_ = std::move(callback);
-
-  results_.type = download_type_util::GetDownloadType(target_path_);
+  start_time_ = base::Time::Now();
 
   DownloadFileType::InspectionType inspection_type =
       FileTypePolicies::GetInstance()
-          ->PolicyForFile(target_path_)
+          ->PolicyForFile(target_path_, GURL{}, nullptr)
           .inspection_type();
 
   if (inspection_type == DownloadFileType::ZIP) {
     StartExtractZipFeatures();
   } else if (inspection_type == DownloadFileType::RAR) {
     StartExtractRarFeatures();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   } else if (inspection_type == DownloadFileType::DMG) {
     StartExtractDmgFeatures();
 #endif
-#if defined(OS_LINUX) || defined(OS_WIN)
-  } else if (base::FeatureList::IsEnabled(
-                 safe_browsing::kClientSideDetectionDocumentScanning) &&
-             inspection_type == DownloadFileType::OFFICE_DOCUMENT) {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+  } else if (inspection_type == DownloadFileType::OFFICE_DOCUMENT) {
     StartExtractDocumentFeatures();
 #endif
+  } else if (base::FeatureList::IsEnabled(kSevenZipEvaluationEnabled) &&
+             inspection_type == DownloadFileType::SEVEN_ZIP) {
+    StartExtractSevenZipFeatures();
   } else {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // Checks for existence of "koly" signature even if file doesn't have
     // archive-type extension, then calls ExtractFileOrDmgFeatures() with
     // result.
@@ -136,6 +137,7 @@ void FileAnalyzer::StartExtractFileFeatures() {
 }
 
 void FileAnalyzer::OnFileAnalysisFinished(FileAnalyzer::Results results) {
+  LogAnalysisDurationWithAndWithoutSuffix("Executable");
   results.type = download_type_util::GetDownloadType(target_path_);
   std::move(callback_).Run(results);
 }
@@ -143,7 +145,6 @@ void FileAnalyzer::OnFileAnalysisFinished(FileAnalyzer::Results results) {
 void FileAnalyzer::StartExtractZipFeatures() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  zip_analysis_start_time_ = base::TimeTicks::Now();
   // We give the zip analyzer a weak pointer to this object.  Since the
   // analyzer is refcounted, it might outlive the request.
   zip_analyzer_ = new SandboxedZipAnalyzer(
@@ -156,36 +157,45 @@ void FileAnalyzer::StartExtractZipFeatures() {
 
 void FileAnalyzer::OnZipAnalysisFinished(
     const ArchiveAnalyzerResults& archive_results) {
+  base::UmaHistogramEnumeration("SBClientDownload.ZipArchiveAnalysisResult",
+                                archive_results.analysis_result);
+  LogAnalysisDurationWithAndWithoutSuffix("Zip");
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Even if !results.success, some of the zip may have been parsed.
   // Some unzippers will successfully unpack archives that we cannot,
   // so we're lenient here.
-  results_.archive_is_valid =
-      (archive_results.success ? ArchiveValid::VALID : ArchiveValid::INVALID);
+  if (archive_results.success) {
+    results_.archive_summary.set_parser_status(
+        ClientDownloadRequest::ArchiveSummary::VALID);
+  } else if (archive_results.analysis_result ==
+             ArchiveAnalysisResult::kTimeout) {
+    results_.archive_summary.set_parser_status(
+        ClientDownloadRequest::ArchiveSummary::PARSER_TIMED_OUT);
+  } else if (archive_results.analysis_result ==
+             ArchiveAnalysisResult::kTooLarge) {
+    results_.archive_summary.set_parser_status(
+        ClientDownloadRequest::ArchiveSummary::TOO_LARGE);
+  }
   results_.archived_executable = archive_results.has_executable;
   results_.archived_archive = archive_results.has_archive;
   CopyArchivedBinaries(archive_results.archived_binary,
                        &results_.archived_binaries);
 
-  // Log metrics for ZIP analysis
-  UMA_HISTOGRAM_MEDIUM_TIMES("SBClientDownload.ExtractZipFeaturesTimeMedium",
-                             base::TimeTicks::Now() - zip_analysis_start_time_);
-
-  if (!results_.archived_executable) {
-    if (archive_results.has_archive) {
-      results_.type = ClientDownloadRequest::ZIPPED_ARCHIVE;
-    } else if (!archive_results.success) {
-      // .zip files that look invalid to Chrome can often be successfully
-      // unpacked by other archive tools, so they may be a real threat.
-      results_.type = ClientDownloadRequest::INVALID_ZIP;
-    }
-  } else {
+  if (archive_results.has_executable) {
     results_.type = ClientDownloadRequest::ZIPPED_EXECUTABLE;
+  } else if (archive_results.has_archive) {
+    results_.type = ClientDownloadRequest::ZIPPED_ARCHIVE;
+  } else if (!archive_results.success) {
+    // .zip files that look invalid to Chrome can often be successfully
+    // unpacked by other archive tools, so they may be a real threat.
+    results_.type = ClientDownloadRequest::INVALID_ZIP;
+  } else {
+    results_.type = download_type_util::GetDownloadType(target_path_);
   }
 
-  results_.file_count = archive_results.file_count;
-  results_.directory_count = archive_results.directory_count;
+  results_.archive_summary.set_file_count(archive_results.file_count);
+  results_.archive_summary.set_directory_count(archive_results.directory_count);
 
   std::move(callback_).Run(std::move(results_));
 }
@@ -206,33 +216,46 @@ void FileAnalyzer::StartExtractRarFeatures() {
 void FileAnalyzer::OnRarAnalysisFinished(
     const ArchiveAnalyzerResults& archive_results) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  base::UmaHistogramEnumeration("SBClientDownload.RarArchiveAnalysisResult",
+                                archive_results.analysis_result);
+  LogAnalysisDurationWithAndWithoutSuffix("Rar");
 
-  results_.archive_is_valid =
-      (archive_results.success ? ArchiveValid::VALID : ArchiveValid::INVALID);
+  if (archive_results.success) {
+    results_.archive_summary.set_parser_status(
+        ClientDownloadRequest::ArchiveSummary::VALID);
+  } else if (archive_results.analysis_result ==
+             ArchiveAnalysisResult::kTimeout) {
+    results_.archive_summary.set_parser_status(
+        ClientDownloadRequest::ArchiveSummary::PARSER_TIMED_OUT);
+  } else if (archive_results.analysis_result ==
+             ArchiveAnalysisResult::kTooLarge) {
+    results_.archive_summary.set_parser_status(
+        ClientDownloadRequest::ArchiveSummary::TOO_LARGE);
+  }
   results_.archived_executable = archive_results.has_executable;
   results_.archived_archive = archive_results.has_archive;
   CopyArchivedBinaries(archive_results.archived_binary,
                        &results_.archived_binaries);
 
-  if (!results_.archived_executable) {
-    if (archive_results.has_archive) {
-      results_.type = ClientDownloadRequest::RAR_COMPRESSED_ARCHIVE;
-    } else if (!archive_results.success) {
-      // .rar files that look invalid to Chrome may be successfully unpacked by
-      // other archive tools, so they may be a real threat.
-      results_.type = ClientDownloadRequest::INVALID_RAR;
-    }
-  } else {
+  if (archive_results.has_executable) {
     results_.type = ClientDownloadRequest::RAR_COMPRESSED_EXECUTABLE;
+  } else if (archive_results.has_archive) {
+    results_.type = ClientDownloadRequest::RAR_COMPRESSED_ARCHIVE;
+  } else if (!archive_results.success) {
+    // .rar files that look invalid to Chrome may be successfully unpacked by
+    // other archive tools, so they may be a real threat.
+    results_.type = ClientDownloadRequest::INVALID_RAR;
+  } else {
+    results_.type = download_type_util::GetDownloadType(target_path_);
   }
 
-  results_.file_count = archive_results.file_count;
-  results_.directory_count = archive_results.directory_count;
+  results_.archive_summary.set_file_count(archive_results.file_count);
+  results_.archive_summary.set_directory_count(archive_results.directory_count);
 
   std::move(callback_).Run(std::move(results_));
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // This is called for .DMGs and other files that can be parsed by
 // SandboxedDMGAnalyzer.
 void FileAnalyzer::StartExtractDmgFeatures() {
@@ -262,6 +285,9 @@ void FileAnalyzer::ExtractFileOrDmgFeatures(
 void FileAnalyzer::OnDmgAnalysisFinished(
     const safe_browsing::ArchiveAnalyzerResults& archive_results) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  base::UmaHistogramEnumeration("SBClientDownload.DmgArchiveAnalysisResult",
+                                archive_results.analysis_result);
+  LogAnalysisDurationWithAndWithoutSuffix("Dmg");
 
   if (archive_results.signature_blob.size() > 0) {
     results_.disk_image_signature =
@@ -272,8 +298,6 @@ void FileAnalyzer::OnDmgAnalysisFinished(
       archive_results.detached_code_signatures);
 
   // Even if !results.success, some of the DMG may have been parsed.
-  results_.archive_is_valid =
-      (archive_results.success ? ArchiveValid::VALID : ArchiveValid::INVALID);
   results_.archived_executable = archive_results.has_executable;
   results_.archived_archive = archive_results.has_archive;
   CopyArchivedBinaries(archive_results.archived_binary,
@@ -285,11 +309,24 @@ void FileAnalyzer::OnDmgAnalysisFinished(
     results_.type = ClientDownloadRequest::MAC_ARCHIVE_FAILED_PARSING;
   }
 
+  if (archive_results.success) {
+    results_.archive_summary.set_parser_status(
+        ClientDownloadRequest::ArchiveSummary::VALID);
+  } else if (archive_results.analysis_result ==
+             ArchiveAnalysisResult::kTimeout) {
+    results_.archive_summary.set_parser_status(
+        ClientDownloadRequest::ArchiveSummary::PARSER_TIMED_OUT);
+  } else if (archive_results.analysis_result ==
+             ArchiveAnalysisResult::kTooLarge) {
+    results_.archive_summary.set_parser_status(
+        ClientDownloadRequest::ArchiveSummary::TOO_LARGE);
+  }
+
   std::move(callback_).Run(std::move(results_));
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
-#if defined(OS_LINUX) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 void FileAnalyzer::StartExtractDocumentFeatures() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -309,11 +346,9 @@ void FileAnalyzer::OnDocumentAnalysisFinished(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Log metrics for Document Analysis.
-  UMA_HISTOGRAM_BOOLEAN("SBClientDownload.DocumentAnalysisSuccess",
-                        document_results.success);
-  UMA_HISTOGRAM_MEDIUM_TIMES(
-      "SBClientDownload.ExtractDocumentFeaturesTimeMedium",
-      base::TimeTicks::Now() - document_analysis_start_time_);
+  base::UmaHistogramBoolean("SBClientDownload.DocumentAnalysisSuccess",
+                            document_results.success);
+  LogAnalysisDurationWithAndWithoutSuffix("Document");
 
   ClientDownloadRequest::DocumentSummary document_summary;
   ClientDownloadRequest::DocumentInfo* document_info =
@@ -335,4 +370,72 @@ void FileAnalyzer::OnDocumentAnalysisFinished(
   std::move(callback_).Run(std::move(results_));
 }
 #endif
+
+void FileAnalyzer::StartExtractSevenZipFeatures() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  seven_zip_analyzer_ = new SandboxedSevenZipAnalyzer(
+      tmp_path_,
+      base::BindOnce(&FileAnalyzer::OnSevenZipAnalysisFinished,
+                     weakptr_factory_.GetWeakPtr()),
+      LaunchFileUtilService());
+  seven_zip_analyzer_->Start();
+}
+
+void FileAnalyzer::OnSevenZipAnalysisFinished(
+    const ArchiveAnalyzerResults& archive_results) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  base::UmaHistogramEnumeration(
+      "SBClientDownload.SevenZipArchiveAnalysisResult",
+      archive_results.analysis_result);
+  LogAnalysisDurationWithAndWithoutSuffix("SevenZip");
+
+  // Even if !results.success, some of the 7z may have been parsed.
+  // Some unzippers will successfully unpack archives that we cannot,
+  // so we're lenient here.
+  if (archive_results.success) {
+    results_.archive_summary.set_parser_status(
+        ClientDownloadRequest::ArchiveSummary::VALID);
+  } else if (archive_results.analysis_result ==
+             ArchiveAnalysisResult::kTimeout) {
+    results_.archive_summary.set_parser_status(
+        ClientDownloadRequest::ArchiveSummary::PARSER_TIMED_OUT);
+  } else if (archive_results.analysis_result ==
+             ArchiveAnalysisResult::kTooLarge) {
+    results_.archive_summary.set_parser_status(
+        ClientDownloadRequest::ArchiveSummary::TOO_LARGE);
+  }
+  results_.archived_executable = archive_results.has_executable;
+  results_.archived_archive = archive_results.has_archive;
+  CopyArchivedBinaries(archive_results.archived_binary,
+                       &results_.archived_binaries);
+
+  if (archive_results.has_executable) {
+    results_.type = ClientDownloadRequest::SEVEN_ZIP_COMPRESSED_EXECUTABLE;
+  } else if (archive_results.has_archive) {
+    results_.type = ClientDownloadRequest::SEVEN_ZIP_COMPRESSED_ARCHIVE;
+  } else if (!archive_results.success) {
+    // .7z files that look invalid to Chrome can sometimes be successfully
+    // unpacked by other archive tools, so they may be a real threat.
+    results_.type = ClientDownloadRequest::INVALID_SEVEN_ZIP;
+  } else {
+    results_.type = download_type_util::GetDownloadType(target_path_);
+  }
+
+  results_.archive_summary.set_file_count(archive_results.file_count);
+  results_.archive_summary.set_directory_count(archive_results.directory_count);
+
+  std::move(callback_).Run(std::move(results_));
+}
+
+void FileAnalyzer::LogAnalysisDurationWithAndWithoutSuffix(
+    const std::string& suffix) {
+  base::UmaHistogramMediumTimes("SBClientDownload.FileAnalysisDuration",
+                                base::Time::Now() - start_time_);
+  base::UmaHistogramMediumTimes(
+      "SBClientDownload.FileAnalysisDuration." + suffix,
+      base::Time::Now() - start_time_);
+}
+
 }  // namespace safe_browsing

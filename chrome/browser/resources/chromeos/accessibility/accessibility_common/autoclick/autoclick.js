@@ -1,6 +1,8 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+import {EventHandler} from '../../common/event_handler.js';
 
 /**
  * The hex color for the focus rings.
@@ -73,7 +75,7 @@ export class Autoclick {
     this.scrollableBoundsListener_ = (x, y) =>
         this.findScrollingContainerForPoint_(x, y);
 
-    chrome.automation.getDesktop((desktop) => {
+    chrome.automation.getDesktop(desktop => {
       this.desktop_ = desktop;
 
       // We use a hit test at a point to determine what automation node is

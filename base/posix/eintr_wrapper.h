@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 
 #include <errno.h>
 
@@ -58,11 +58,11 @@
   eintr_wrapper_result; \
 })
 
-#else  // !OS_POSIX
+#else  // !BUILDFLAG(IS_POSIX)
 
 #define HANDLE_EINTR(x) (x)
 #define IGNORE_EINTR(x) (x)
 
-#endif  // !OS_POSIX
+#endif  // !BUILDFLAG(IS_POSIX)
 
 #endif  // BASE_POSIX_EINTR_WRAPPER_H_

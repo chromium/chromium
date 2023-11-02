@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,6 @@
 #include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/public/execution_context/execution_context_registry.h"
 #include "components/performance_manager/v8_memory/v8_context_tracker.h"
-#include "content/public/browser/background_tracing_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -25,26 +24,24 @@ namespace {
 
 void FireBackgroundTracingTriggerOnUI(
     const std::string& trigger_name,
-    content::BackgroundTracingManager* manager) {
+    content::BackgroundTracingManager& manager) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Don't fire a trigger unless we're in an active tracing scenario.
   // Renderer-initiated background tracing triggers are always "preemptive"
   // traces so we expect a scenario to be active.
-  if (!manager)
-    manager = content::BackgroundTracingManager::GetInstance();
-  if (!manager->HasActiveScenario())
+  if (!manager.HasActiveScenario())
     return;
 
   static content::BackgroundTracingManager::TriggerHandle trigger_handle = -1;
   if (trigger_handle == -1) {
-    trigger_handle = manager->RegisterTriggerType(
+    trigger_handle = manager.RegisterTriggerType(
         content::BackgroundTracingManager::kContentTriggerConfig);
   }
 
   // Actually fire the trigger. We don't need to know when the trace is being
   // finalized so pass an empty callback.
-  manager->TriggerNamedEvent(
+  manager.TriggerNamedEvent(
       trigger_handle,
       content::BackgroundTracingManager::StartedFinalizingCallback());
 }
@@ -152,7 +149,9 @@ void ProcessNodeImpl::FireBackgroundTracingTrigger(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&FireBackgroundTracingTriggerOnUI, trigger_name, nullptr));
+      base::BindOnce(
+          &FireBackgroundTracingTriggerOnUI, trigger_name,
+          std::ref(content::BackgroundTracingManager::GetInstance())));
 }
 
 void ProcessNodeImpl::SetProcessExitStatus(int32_t exit_status) {
@@ -168,8 +167,13 @@ void ProcessNodeImpl::SetProcessExitStatus(int32_t exit_status) {
   receiver_.reset();
 }
 
+void ProcessNodeImpl::SetProcessMetricsName(const std::string& metrics_name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  metrics_name_ = metrics_name;
+}
+
 void ProcessNodeImpl::SetProcess(base::Process process,
-                                 base::Time launch_time) {
+                                 base::TimeTicks launch_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(process.IsValid());
   // Either this is the initial process associated with this process node,
@@ -184,6 +188,11 @@ void ProcessNodeImpl::SetProcess(base::Process process,
 const base::flat_set<FrameNodeImpl*>& ProcessNodeImpl::frame_nodes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return frame_nodes_;
+}
+
+const base::flat_set<WorkerNodeImpl*>& ProcessNodeImpl::worker_nodes() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return worker_nodes_;
 }
 
 PageNodeImpl* ProcessNodeImpl::GetPageNodeIfExclusive() const {
@@ -242,7 +251,7 @@ void ProcessNodeImpl::add_hosted_content_type(ContentType content_type) {
 // static
 void ProcessNodeImpl::FireBackgroundTracingTriggerOnUIForTesting(
     const std::string& trigger_name,
-    content::BackgroundTracingManager* manager) {
+    content::BackgroundTracingManager& manager) {
   FireBackgroundTracingTriggerOnUI(trigger_name, manager);
 }
 
@@ -258,8 +267,9 @@ base::WeakPtr<ProcessNodeImpl> ProcessNodeImpl::GetWeakPtr() {
 
 void ProcessNodeImpl::SetProcessImpl(base::Process process,
                                      base::ProcessId new_pid,
-                                     base::Time launch_time) {
+                                     base::TimeTicks launch_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(process.IsValid());
 
   graph()->BeforeProcessPidChange(this, new_pid);
 
@@ -293,7 +303,7 @@ const base::Process& ProcessNodeImpl::GetProcess() const {
   return process();
 }
 
-base::Time ProcessNodeImpl::GetLaunchTime() const {
+base::TimeTicks ProcessNodeImpl::GetLaunchTime() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return launch_time();
 }
@@ -301,6 +311,11 @@ base::Time ProcessNodeImpl::GetLaunchTime() const {
 absl::optional<int32_t> ProcessNodeImpl::GetExitStatus() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return exit_status();
+}
+
+const std::string& ProcessNodeImpl::GetMetricsName() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return metrics_name();
 }
 
 bool ProcessNodeImpl::VisitFrameNodes(const FrameNodeVisitor& visitor) const {

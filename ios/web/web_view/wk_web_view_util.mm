@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,12 +12,6 @@
 
 namespace web {
 
-bool RequiresProvisionalNavigationFailureWorkaround() {
-  if (@available(iOS 12.2, *))
-    return true;
-  return false;
-}
-
 void CreateFullPagePdf(WKWebView* web_view,
                        base::OnceCallback<void(NSData*)> callback) {
 
@@ -26,21 +20,13 @@ void CreateFullPagePdf(WKWebView* web_view,
     return;
   }
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
-  if (@available(iOS 14, *)) {
-    __block base::OnceCallback<void(NSData*)> callback_for_block =
-        std::move(callback);
-    WKPDFConfiguration* pdf_configuration = [[WKPDFConfiguration alloc] init];
-    [web_view createPDFWithConfiguration:pdf_configuration
-                       completionHandler:^(NSData* pdf_document_data,
-                                           NSError* error) {
-                         std::move(callback_for_block).Run(pdf_document_data);
-                       }];
-    return;
-  }
-#endif
-
-  // PDF generation is only supported on iOS 14+.
-  std::move(callback).Run(nil);
+  __block base::OnceCallback<void(NSData*)> callback_for_block =
+      std::move(callback);
+  WKPDFConfiguration* pdf_configuration = [[WKPDFConfiguration alloc] init];
+  [web_view
+      createPDFWithConfiguration:pdf_configuration
+               completionHandler:^(NSData* pdf_document_data, NSError* error) {
+                 std::move(callback_for_block).Run(pdf_document_data);
+               }];
 }
 }  // namespace web

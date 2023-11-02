@@ -1,8 +1,9 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/graphics/parkable_image.h"
+#include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -40,17 +41,16 @@ class ParkableImageBaseTest : public ::testing::Test {
                   ThreadPoolExecutionMode::DEFAULT) {}
 
   void SetUp() override {
-    Platform::SetMainThreadTaskRunnerForTesting();
     auto& manager = ParkableImageManager::Instance();
     manager.ResetForTesting();
     manager.SetDataAllocatorForTesting(
         std::make_unique<InMemoryDataAllocator>());
+    manager.SetTaskRunnerForTesting(task_env_.GetMainThreadTaskRunner());
   }
 
   void TearDown() override {
     CHECK_EQ(ParkableImageManager::Instance().Size(), 0u);
     task_env_.FastForwardUntilNoTasksRemain();
-    Platform::UnsetMainThreadTaskRunnerForTesting();
   }
 
  protected:
@@ -72,27 +72,27 @@ class ParkableImageBaseTest : public ::testing::Test {
     return task_env_.GetPendingMainThreadTaskCount();
   }
 
-  static bool MaybePark(scoped_refptr<ParkableImage> pi) {
-    return pi->impl_->MaybePark();
+  bool MaybePark(scoped_refptr<ParkableImage> pi) {
+    return pi->impl_->MaybePark(task_env_.GetMainThreadTaskRunner());
   }
   static void Unpark(scoped_refptr<ParkableImage> pi) {
-    MutexLocker lock(pi->impl_->lock_);
+    base::AutoLock lock(pi->impl_->lock_);
     pi->impl_->Unpark();
   }
   static void Lock(scoped_refptr<ParkableImage> pi) {
-    MutexLocker lock(pi->impl_->lock_);
+    base::AutoLock lock(pi->impl_->lock_);
     pi->LockData();
   }
   static void Unlock(scoped_refptr<ParkableImage> pi) {
-    MutexLocker lock(pi->impl_->lock_);
+    base::AutoLock lock(pi->impl_->lock_);
     pi->UnlockData();
   }
   static bool is_on_disk(scoped_refptr<ParkableImage> pi) {
-    MutexLocker lock(pi->impl_->lock_);
+    base::AutoLock lock(pi->impl_->lock_);
     return pi->is_on_disk();
   }
   static bool is_locked(scoped_refptr<ParkableImage> pi) {
-    MutexLocker lock(pi->impl_->lock_);
+    base::AutoLock lock(pi->impl_->lock_);
     return pi->impl_->is_locked();
   }
   static bool is_frozen(scoped_refptr<ParkableImage> pi) {
@@ -117,7 +117,7 @@ class ParkableImageBaseTest : public ::testing::Test {
       return false;
     }
 
-    MutexLocker lock(pi->impl_->lock_);
+    base::AutoLock lock(pi->impl_->lock_);
     pi->LockData();
 
     auto ro_buffer = pi->impl_->rw_buffer_->MakeROBufferSnapshot();
@@ -166,6 +166,8 @@ class ParkableImageBaseTest : public ::testing::Test {
                                        expected_count);
     histogram_tester_.ExpectTotalCount("Memory.ParkableImage.Read.Throughput",
                                        expected_count);
+    histogram_tester_.ExpectTotalCount(
+        "Memory.ParkableImage.Read.TimeSinceFreeze", expected_count);
   }
 
   base::HistogramTester histogram_tester_;

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,8 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "chromeos/dbus/concierge/concierge_service.pb.h"
+#include "chromeos/ash/components/dbus/cicerone/cicerone_service.pb.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
 
 // This file contains simple C++ types. Simple isn't a precise term, but as a
 // guideline enums and PoD structs are simple while structs/classes with methods
@@ -28,6 +29,7 @@ namespace crostini {
 // If you add anything here make sure to also update enums.xml and the plx
 // scripts in
 // https://plx.corp.google.com/home2/home/collections/c16e3c1474497b821
+// and CrostiniResultString in crostini_simple_types.cc.
 enum class CrostiniResult {
   SUCCESS = 0,
   // DBUS_ERROR = 1,
@@ -95,13 +97,36 @@ enum class CrostiniResult {
   SHARE_PATHS_FAILED = 63,
   UNREGISTERED_APPLICATION = 64,
   VSH_CONNECT_FAILED = 65,
-  kMaxValue = VSH_CONNECT_FAILED,
+  CONTAINER_STOP_FAILED = 66,
+  CONTAINER_STOP_CANCELLED = 67,
+  WAYLAND_SERVER_CREATION_FAILED = 68,
+  CONFIGURE_CONTAINER_TIMED_OUT = 69,
+  // Prior to M104, RESTART_ABORTED was used for this.
+  RESTART_REQUEST_CANCELLED = 70,
+  CREATE_DISK_IMAGE_NO_RESPONSE = 71,
+  CREATE_DISK_IMAGE_ALREADY_EXISTS = 72,
+  UNINSTALL_TERMINA_FAILED = 73,
+  START_LXD_FAILED_SIGNAL = 74,
+  CONTAINER_CREATE_FAILED_SIGNAL = 75,
+  STOP_VM_NO_RESPONSE = 76,
+  SIGNAL_NOT_CONNECTED = 77,
+  INSTALL_TERMINA_CANCELLED = 78,
+  kMaxValue = INSTALL_TERMINA_CANCELLED,
   // When adding a new value, check you've followed the steps in the comment at
   // the top of this enum.
 };
 
+// Returns the string name of the CrostiniResult.
+const char* CrostiniResultString(const CrostiniResult res);
+
 using CrostiniSuccessCallback =
     base::OnceCallback<void(bool success, const std::string& failure_reason)>;
+
+enum class RestartSource {
+  kOther,
+  kInstaller,
+  kMultiContainerCreation,
+};
 
 enum class InstallLinuxPackageProgressStatus {
   SUCCEEDED,
@@ -120,15 +145,6 @@ enum class UninstallPackageProgressStatus {
   SUCCEEDED,
   FAILED,
   UNINSTALLING,  // In progress
-};
-
-// TODO(juwa): delete this once the new version of tremplin has shipped.
-enum class ExportContainerProgressStatus {
-  // Deprecated. Has been replaced by STREAMING.
-  PACK,
-  // Deprecated. Has been replaced by STREAMING.
-  DOWNLOAD,
-  STREAMING,
 };
 
 enum class ImportContainerProgressStatus {
@@ -167,7 +183,8 @@ struct ContainerInfo {
   ContainerInfo(std::string name,
                 std::string username,
                 std::string homedir,
-                std::string ipv4_address);
+                std::string ipv4_address,
+                uint32_t sftp_vsock_port = 0);
   ~ContainerInfo();
   ContainerInfo(ContainerInfo&&);
   ContainerInfo(const ContainerInfo&);
@@ -178,14 +195,18 @@ struct ContainerInfo {
   std::string username;
   base::FilePath homedir;
   std::string ipv4_address;
+  uint32_t sftp_vsock_port;
 };
 
 // Return type when getting app icons from within a container.
 struct Icon {
   std::string desktop_file_id;
 
-  // Icon file content in PNG format.
+  // Icon file content in specified format.
   std::string content;
+
+  // Icon format (e.g. PNG, SVG)
+  vm_tools::cicerone::DesktopIcon::Format format;
 };
 
 struct LinuxPackageInfo {

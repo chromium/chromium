@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -130,6 +130,11 @@ TEST_F(CrashLoggingTest, Macros) {
   {
     SCOPED_CRASH_KEY_STRING256("category", "string256-value", "餅");
     EXPECT_THAT(data(), ElementsAre(Pair("category-string256-value", "餅")));
+  }
+
+  {
+    SCOPED_CRASH_KEY_STRING1024("category", "string1024-value", "餅");
+    EXPECT_THAT(data(), ElementsAre(Pair("category-string1024-value", "餅")));
   }
 }
 

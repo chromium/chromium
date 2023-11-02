@@ -1,17 +1,17 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_BROWSER_UI_START_SURFACE_START_SURFACE_RECENT_TAB_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_UI_START_SURFACE_START_SURFACE_RECENT_TAB_BROWSER_AGENT_H_
 
-#include "base/observer_list.h"
-#include "base/scoped_observation.h"
-#include "components/favicon/ios/web_favicon_driver.h"
-#include "ios/chrome/browser/main/browser_observer.h"
+#import "base/observer_list.h"
+#import "base/scoped_observation.h"
+#import "components/favicon/ios/web_favicon_driver.h"
+#import "ios/chrome/browser/main/browser_observer.h"
 #import "ios/chrome/browser/main/browser_user_data.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
-#include "ios/web/public/web_state_observer.h"
+#import "ios/web/public/web_state_observer.h"
 
 namespace web {
 class WebState;
@@ -32,8 +32,10 @@ class StartSurfaceRecentTabObserver {
   // Notifies the receiver that the most recent tab was removed.
   virtual void MostRecentTabRemoved(web::WebState* web_state) {}
   // Notifies the receiver that the favicon for the current page of the most
-  // recent tab was updated to |image|.
+  // recent tab was updated to `image`.
   virtual void MostRecentTabFaviconUpdated(UIImage* image) {}
+
+  virtual void MostRecentTabTitleUpdated(const std::u16string& title) {}
 
  protected:
   virtual ~StartSurfaceRecentTabObserver() = default;
@@ -66,10 +68,11 @@ class StartSurfaceRecentTabBrowserAgent
       const StartSurfaceRecentTabBrowserAgent&) = delete;
 
  private:
-  // Constructor used by CreateForBrowser().
   friend class BrowserUserData<StartSurfaceRecentTabBrowserAgent>;
-  explicit StartSurfaceRecentTabBrowserAgent(Browser* browser);
   BROWSER_USER_DATA_KEY_DECL();
+
+  // Constructor used by CreateForBrowser().
+  explicit StartSurfaceRecentTabBrowserAgent(Browser* browser);
 
   // BrowserObserver
   void BrowserDestroyed(Browser* browser) override;
@@ -81,6 +84,7 @@ class StartSurfaceRecentTabBrowserAgent
 
   // web::WebStateObserver
   void WebStateDestroyed(web::WebState* web_state) override;
+  void TitleWasSet(web::WebState* web_state) override;
 
   // favicon::FaviconDriverObserver
   void OnFaviconUpdated(favicon::FaviconDriver* driver,
@@ -92,11 +96,11 @@ class StartSurfaceRecentTabBrowserAgent
   // A list of observers notified when the most recent tab is removed. Weak
   // references.
   base::ObserverList<StartSurfaceRecentTabObserver, true>::Unchecked observers_;
-  // Manages observation relationship between |this| and favicon::FaviconDriver.
+  // Manages observation relationship between `this` and favicon::FaviconDriver.
   base::ScopedObservation<favicon::FaviconDriver,
                           favicon::FaviconDriverObserver>
       favicon_driver_observer_{this};
-  // Manages observation relationship between |this| and web::WebState.
+  // Manages observation relationship between `this` and web::WebState.
   base::ScopedObservation<web::WebState, web::WebStateObserver>
       web_state_observation_{this};
   // The most recent tab managed by this Browser Agent.

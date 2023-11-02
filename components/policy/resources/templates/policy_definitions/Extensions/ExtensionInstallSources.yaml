@@ -1,0 +1,27 @@
+caption: Configure extension, app, and user script install sources
+desc: |-
+  Setting the policy specifies which URLs may install extensions, apps, and themes. Before <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> 21, users could click on a link to a *.crx file, and <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> would offer to install the file after a few warnings. Afterwards, such files must be downloaded and dragged to the <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> settings page. This setting allows specific URLs to have the old, easier installation flow.
+
+        Each item in this list is an extension-style match pattern (see https://developer.chrome.com/extensions/match_patterns). Users can easily install items from any URL that matches an item in this list. Both the location of the *.crx file and the page where the download is started from (the referrer) must be allowed by these patterns.
+
+        <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME">ExtensionInstallBlocklist</ph> takes precedence over this policy. That is, an extension on the blocklist won't be installed, even if it happens from a site on this list.
+example_value:
+- https://corp.mycompany.com/*
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+label: URL patterns to allow extension, app, and user script installs from
+owners:
+- dbertoni@chromium.org
+- file://extensions/OWNERS
+schema:
+  $ref: ExtensionInstallSources
+supported_on:
+- chrome.*:21-
+- chrome_os:21-
+tags:
+- full-admin-access
+- system-security
+type: list

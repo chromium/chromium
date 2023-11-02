@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 #include "base/bind.h"
 #include "base/synchronization/waitable_event.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
-#include "gpu/ipc/scheduler_sequence.h"
-#include "gpu/ipc/shared_image_interface_in_process.h"
+#include "gpu/command_buffer/service/scheduler_sequence.h"
+#include "gpu/command_buffer/service/shared_image_interface_in_process.h"
 
 namespace viz {
 
@@ -23,35 +23,15 @@ DisplayCompositorMemoryAndTaskController::
   DCHECK(gpu_task_scheduler_);
   base::WaitableEvent event(base::WaitableEvent::ResetPolicy::MANUAL,
                             base::WaitableEvent::InitialState::NOT_SIGNALED);
-  auto callback = base::BindOnce(
-      &DisplayCompositorMemoryAndTaskController::InitializeOnGpuSkia,
-      base::Unretained(this), skia_dependency_.get(), &event);
+  auto callback =
+      base::BindOnce(&DisplayCompositorMemoryAndTaskController::InitializeOnGpu,
+                     base::Unretained(this), skia_dependency_.get(), &event);
   gpu_task_scheduler_->ScheduleGpuTask(std::move(callback), {});
   event.Wait();
 
   shared_image_interface_ =
       std::make_unique<gpu::SharedImageInterfaceInProcess>(
-          gpu_task_scheduler_->GetTaskSequence(), controller_on_gpu_.get(),
-          nullptr /* command_buffer_helper*/);
-}
-
-DisplayCompositorMemoryAndTaskController::
-    DisplayCompositorMemoryAndTaskController(
-        gpu::CommandBufferTaskExecutor* task_executor,
-        gpu::ImageFactory* image_factory)
-    : gpu_task_scheduler_(
-          std::make_unique<gpu::GpuTaskSchedulerHelper>(task_executor)) {
-  DCHECK(gpu_task_scheduler_);
-  base::WaitableEvent event(base::WaitableEvent::ResetPolicy::MANUAL,
-                            base::WaitableEvent::InitialState::NOT_SIGNALED);
-  auto callback = base::BindOnce(
-      &DisplayCompositorMemoryAndTaskController::InitializeOnGpuGL,
-      base::Unretained(this), task_executor, image_factory, &event);
-  gpu_task_scheduler_->GetTaskSequence()->ScheduleTask(std::move(callback), {});
-  event.Wait();
-
-  // TODO(weiliangc): Move VizProcessContextProvider initialization here to take
-  // ownership of the shared image interface.
+          gpu_task_scheduler_->GetTaskSequence(), controller_on_gpu_.get());
 }
 
 DisplayCompositorMemoryAndTaskController::
@@ -72,7 +52,7 @@ DisplayCompositorMemoryAndTaskController::
   event.Wait();
 }
 
-void DisplayCompositorMemoryAndTaskController::InitializeOnGpuSkia(
+void DisplayCompositorMemoryAndTaskController::InitializeOnGpu(
     SkiaOutputSurfaceDependency* skia_dependency,
     base::WaitableEvent* event) {
   DCHECK(event);
@@ -86,17 +66,6 @@ void DisplayCompositorMemoryAndTaskController::InitializeOnGpuSkia(
           skia_dependency->GetGpuPreferences(),
           skia_dependency->GetGpuDriverBugWorkarounds(),
           skia_dependency->GetGpuFeatureInfo());
-  event->Signal();
-}
-
-void DisplayCompositorMemoryAndTaskController::InitializeOnGpuGL(
-    gpu::CommandBufferTaskExecutor* task_executor,
-    gpu::ImageFactory* image_factory,
-    base::WaitableEvent* event) {
-  DCHECK(event);
-  controller_on_gpu_ =
-      std::make_unique<gpu::DisplayCompositorMemoryAndTaskControllerOnGpu>(
-          task_executor, image_factory);
   event->Signal();
 }
 

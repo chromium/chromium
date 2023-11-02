@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,20 +62,20 @@
 // copy of the MojoSystemThunks struct definition.
 struct MojoSystemThunks;
 
-namespace chromeos {
+namespace ash {
 namespace ime {
 
-// Callback upon async completion of DownloadToFile(), passing the originally
-// issued |request_id| (as returned by DownloadToFile()) and an |error_code| (as
-// defined at
-// https://cs.chromium.org/chromium/src/net/base/net_error_list.h?rcl=f9c935b73381772d508eebba1e216c437139d475).
-typedef void (*ImeCrosDownloadCallback)(int request_id, int status_code);
-
-// A simple downloading callback.
-typedef void (*SimpleDownloadCallback)(int status_code, const char* file_path);
+enum SimpleDownloadStatusCode {
+  // The download succeeded.
+  SIMPLE_DOWNLOAD_STATUS_OK = 0,
+  // The download failed due to an invalid url or path.
+  SIMPLE_DOWNLOAD_STATUS_INVALID_ARGUMENT = -1,
+  // The download failed because Chrome disconnected from IME Service.
+  SIMPLE_DOWNLOAD_STATUS_ABORTED = -2,
+};
 
 // A simple downloading callback with the downloading URL as return.
-typedef void (*SimpleDownloadCallbackV2)(int status_code,
+typedef void (*SimpleDownloadCallbackV2)(SimpleDownloadStatusCode status_code,
                                          const char* url,
                                          const char* file_path);
 
@@ -85,113 +85,54 @@ typedef void (*ImeSequencedTask)(int task_id);
 // A logger function pointer from chrome.
 typedef void (*ChromeLoggerFunc)(int severity, const char* message);
 
-// Based on RequestPriority defined at
-// https://cs.chromium.org/chromium/src/net/base/request_priority.h?rcl=f9c935b73381772d508eebba1e216c437139d475
-enum DownloadPriority {
-  THROTTLED = 0,
-  MINIMUM_PRIORITY = THROTTLED,
-  IDLE = 1,
-  LOWEST = 2,
-  DEFAULT_PRIORITY = LOWEST,
-  LOW = 3,
-  MEDIUM = 4,
-  HIGHEST = 5,
-  MAXIMUM_PRIORITY = HIGHEST,
-};
-
-// Extendable extra options for a download.
-struct DownloadOptions {
-  // Duration (in milliseconds) to wait before giving up on the download and
-  // considering it an error. Negative value means it can take indefinitely.
-  long timeout_ms;
-
-  // Priority level for the download.
-  DownloadPriority priority;
-
-  // Max number of times to retry a download (exclusive of the initial attempt).
-  unsigned int max_retries;
-
-  // Always add more stuff at the end only. Just like protobuf, refrain from
-  // deleting or re-ordering for maximal API stability and backward
-  // compatibility. Simply mark fields as "deprecated" if need be.
-};
-
-// Provides CrOS network download service to the shared library.
-class ImeCrosDownloader {
- protected:
-  virtual ~ImeCrosDownloader() = default;
-
- public:
-  // Download data from the given |url| and store into a file located at the
-  // given |file_path|, using the specified download |options|. The method
-  // returns a |request_id| (unique among those issued by the same Downloader),
-  // while actual download operation takes place asynchronously. Upon async
-  // completion of the download (either success or failure), the given
-  // |callback| function will be invoked, passing a matching |request_id| and
-  // the status via an |error_code|. All arguments are const and completely
-  // owned by the caller at all times; they should remain alive till the sync
-  // return of this method.
-  virtual int DownloadToFile(const char* url,
-                             const DownloadOptions& options,
-                             const char* file_path,
-                             ImeCrosDownloadCallback callback) = 0;
-
-  // Cancel the download whose |request_id| is given (|request_id| is issued
-  // in the return value of each DownloadToFile() call). The callback of a
-  // cancelled download will never be invoked. If the |request_id| is invalid
-  // or belongs to an already completed download (either success or failure),
-  // this method will just no-op.
-  virtual void Cancel(int request_id) = 0;
-};
-
-// This defines the `ImeCrosPlatform` interface, which is used throughout the
-// shared library to manage platform-specific data/operations.
-//
-// This class should be provided by the IME service before creating an
-// `ImeEngineMainEntry` and be always owned by the IME service.
+// ============================================================================
+// [Proto + Mojo modes] [IME shared lib --> IME service container]
+// ============================================================================
+// Used by the IME shared lib to access platform-specific data and operations.
+// Provided by the IME service container upon invoking ImeDecoderInitOnce "C"
+// API entry point of IME shared lib. Always owned by the IME service container.
+// ============================================================================
 class ImeCrosPlatform {
  protected:
   virtual ~ImeCrosPlatform() = default;
 
  public:
-  // The three methods below are Getters of the local data directories on the
-  // platform. It's possible for the IME service to be running in a mode where
-  // some local directories are unavailable, in which case these directories
-  // will be empty.
-  //
-  // The returned pointer must remain valid until the `Platform` is destroyed.
-
-  // Get the local IME bundle directory, which is read-only.
+  // Get the read-only local IME bundle directory. IME service could be running
+  // in a mode where the directory is unavailable, in which case this will
+  // return empty. Returned pointer remains valid until `Platform` is destroyed.
   virtual const char* GetImeBundleDir() = 0;
 
-  // Get the IME global directory, which is accessible to all users.
-  virtual const char* GetImeGlobalDir() = 0;
+  // Obsolete, thus deprecated and must not be used. Kept for ABI vtable compat.
+  virtual void Unused3() = 0;
 
-  // Get the local IME directory in home directory of the active user, which
-  // is only accessible to the user itself.
+  // Get the local IME directory in home directory of the active user, which is
+  // only accessible to the user itself. IME service could be running in a mode
+  // where the directory is unavailable, in which case this will return empty.
+  // Returned pointer remains valid until `Platform` is destroyed.
   virtual const char* GetImeUserHomeDir() = 0;
 
-  // Get the Downloader that provides CrOS network download service. Ownership
-  // of the returned Downloader instance is never transferred, i.e. it remains
-  // owned by the IME service / Platform at all times.
-  virtual ImeCrosDownloader* GetDownloader() = 0;
+  // Obsolete, thus deprecated and must not be used. Kept for ABI vtable compat.
+  virtual void Unused1() = 0;
 
-  // A shortcut for starting a downloading by the network |SimpleURLLoader|.
-  // Each SimpleDownloadToFile can only be used for a single request.
-  // Make a call after the previous task completes or cancels.
-  virtual int SimpleDownloadToFile(const char* url,
-                                   const char* file_path,
-                                   SimpleDownloadCallback callback) = 0;
+  // Obsolete, thus deprecated and must not be used. Kept for ABI vtable compat.
+  virtual void Unused2() = 0;
 
   // This is used for decoder to run some Mojo-specific operation which is
   // required to run in the thread creating its remote.
   virtual void RunInMainSequence(ImeSequencedTask task, int task_id) = 0;
 
-  // Returns whether a Chrome OS experimental feature is enabled or not.
+  // Returns whether a Chrome OS experimental feature is enabled or not. Only a
+  // subset of CrOS features are considered (features not considered appear as
+  // disabled), |feature_name| may or may not correspond to base::Feature::name
+  // of the CrOS feature, and there could be extra logic (see impl for details).
+  // TODO(b/218815885): Use consistent feature flag names as in CrOS
+  // base::Feature::name (instead of slightly-different bespoke names), and
+  // always wire 1:1 to CrOS feature flags (instead of having any extra logic).
   virtual bool IsFeatureEnabled(const char* feature_name) = 0;
 
-  // Version 2 for |SimpleDownloadToFile|. Downloading URL is added into its
-  // callback.
+  // Start a download using |SimpleURLLoader|. Each SimpleDownloadToFileV2 can
+  // only be used for a single request. Make a call after the previous task
+  // completes or cancels. There's download URL included in the callback.
   virtual int SimpleDownloadToFileV2(const char* url,
                                      const char* file_path,
                                      SimpleDownloadCallbackV2 callback) = 0;
@@ -203,13 +144,26 @@ class ImeCrosPlatform {
   // shared library
   virtual const MojoSystemThunks* GetMojoSystemThunks() = 0;
 
+  // Retrieves the string value of a CrOS feature's Finch param. Only a subset
+  // of CrOS features are considered (see impl for details). |feature_name| is
+  // defined in base::Feature::name for each CrOS feature. If the feature isn't
+  // enabled or isn't considered, or the param doesn't exist, returns an empty
+  // string. Ownership of the returned string is transferred to the caller who
+  // should be in charge of releasing its memory when it's no longer in use.
+  virtual const char* GetFieldTrialParamValueByFeature(
+      const char* feature_name,
+      const char* param_name) = 0;
+
   // TODO(https://crbug.com/837156): Provide Logger for main entry.
 };
 
-// The wrapper of Mojo InterfacePtr on an IME client.
-//
-// This is used to send messages to connected IME client from an IME engine.
-// IME service will create then pass it to the engine.
+// ============================================================================
+// [Proto mode only] [IME shared lib --> IME service container]
+// ============================================================================
+// Used to send messages to connected IME client from an IME engine. IME service
+// container will create an instance then pass it to the IME shared lib via
+// Proto-mode ImeDecoderActivateIme "C" API entry point.
+// ============================================================================
 class ImeClientDelegate {
  protected:
   virtual ~ImeClientDelegate() = default;
@@ -219,7 +173,7 @@ class ImeClientDelegate {
   // The IME specification will be invalidated by its `Destroy` method.
   virtual const char* ImeSpec() = 0;
 
-  // Process response data from the engine instance in its connected IME client.
+  // Process response data from the IME shared lib in the connected IME client.
   // The data will be invalidated by the engine soon after this call.
   virtual void Process(const uint8_t* data, size_t size) = 0;
 
@@ -228,50 +182,106 @@ class ImeClientDelegate {
   virtual void Destroy() = 0;
 };
 
-// For use when bridging logs logged in IME shared library to Chrome logging.
-typedef void (*ImeEngineLoggerSetterFn)(ChromeLoggerFunc);
-
-// Functions blow are exported by the IME decoder shared library that we expose
-// through a loader.
-
-// Initialize the IME decoder.
-//
-// Any user of IME decoder must make a call on this function before any others.
-//
-// The provided `ImeCrosPlatform` must remain valid during the whole life of
-// shared libraray
-typedef void (*ImeDecoderInitOnceFn)(ImeCrosPlatform*);
-
-// Returns whether a specific IME is supported by this IME shared library.
-// The argument is the specfiation name of an IME, and the caller should
-// explicitly know the IME engine's naming rules.
-typedef bool (*ImeDecoderSupportsFn)(const char*);
-
-// Activate an IME instance in the shared library with an IME specfiation name
-// and a bound `ImeClientDelegate` which is a channel from the IME instance to
-// its client.
-//
-// The ownership of `ImeClientDelegate` will be passed to the IME instance.
-typedef bool (*ImeDecoderActivateImeFn)(const char*, ImeClientDelegate*);
-
-// Process IME events by the activated IME instance.
-// The data passed in  should be invalidated by the IME instance soon after it's
-// consumed.
-typedef void (*ImeDecoderProcessFn)(const uint8_t*, size_t);
-
-// Release resources used by the IME decoder.
-typedef void (*ImeDecoderCloseFn)();
-
-// Set up a direct connection with the shared library via Mojo.
-typedef bool (*ConnectToInputMethodFn)(const char*,
-                                       uint32_t,
-                                       uint32_t,
-                                       uint32_t);
-
-// Whether there's a direct connection with Mojo.
-typedef bool (*IsInputMethodConnectedFn)();
-
 }  // namespace ime
-}  // namespace chromeos
+}  // namespace ash
+
+// ============================================================================
+// [Proto + Mojo modes] [IME service container --> IME shared lib]
+// ============================================================================
+// "C" API exposed by the "CrOS 1P IME shared lib", to be dynamically looked up
+// and invoked via reflection by "CrOS IME Service container" in Chrome-on-CrOS
+// ============================================================================
+//
+// The IME shared lib should be in either "Proto mode" (default) or "Mojo mode".
+// Most "C" API entry points are associated with one particular mode each. When
+// such an entry point is invoked, the runtime should switch to its mode if not
+// already in that mode; the other mode's state is destroyed upon switching.
+//
+// - Proto mode: IME service container and IME shared lib talk to each other by
+// serialised protobufs sent via the "C" API specified here. Used for VK and
+// extension-based PK hosted in the VK+IME extension.
+//
+// - Mojo mode: IME service container bootstraps Mojo connection with IME shared
+// lib via the "C" API specified here. The connection is then used for CrOS IMF
+// to talk directly with IME shared lib. Used for non-extension System PK.
+//
+extern "C" {
+
+// ****************************************************************************
+// ************************** (mode agnostic) *********************************
+// ****************************************************************************
+
+// Sets logger for the shared library. Releases the previous logger if there
+// was one. If the new logger is null, then no logger will be used.
+__attribute__((visibility("default"))) void SetImeEngineLogger(
+    ash::ime::ChromeLoggerFunc logger_func);
+
+// ****************************************************************************
+// ***************************** PROTO MODE ***********************************
+// ****************************************************************************
+
+// Initialises the IME shared lib's Proto mode. In Proto mode, client must
+// call this function before any other Proto-mode functions. `platform` must
+// remain valid during the whole life of the IME shared lib.
+__attribute__((visibility("default"))) void InitProtoMode(
+    ash::ime::ImeCrosPlatform* platform);
+
+// Closes the IME shared lib's Proto mode and releases resources used by it.
+__attribute__((visibility("default"))) void CloseProtoMode();
+
+// Returns whether an IME is supported by this IME shared lib. `ime_spec` is
+// the IME's specification name; caller should know its naming rules.
+__attribute__((visibility("default"))) bool ImeDecoderSupports(
+    const char* ime_spec);
+
+// Activates an IME in the IME shared lib, with a bound `delegate` for callback
+// to the client. Ownership of `delegate` is passed to the IME instance.
+// TODO(googleo): Remove this and pass `delegate` upon ImeDecoderInitOnce.
+__attribute__((visibility("default"))) bool ImeDecoderActivateIme(
+    const char* ime_spec,
+    ash::ime::ImeClientDelegate* delegate);
+
+// Processes IME events sent from client in serialised protobuf `data` which
+// should be invalidated by this IME shared lib soon after it's consumed.
+__attribute__((visibility("default"))) void ImeDecoderProcess(
+    const uint8_t* data,
+    size_t size);
+
+// ****************************************************************************
+// ************************* DEPRECATED MOJO MODE *****************************
+// ****************************************************************************
+// DEPRECATED: This method of bootstrapping a Mojo connection has been
+// deprecated in favor of the InitializeConnectionFactory method below.
+//
+// Bootstraps a direct Mojo connection with an input method in this IME shared
+// lib. Returns false if the connection attempt was unsuccessful.
+__attribute__((visibility("default"))) bool ConnectToInputMethod(
+    const char* ime_spec,
+    uint32_t receiver_input_method_handle,
+    uint32_t remote_input_method_host_handle,
+    uint32_t remote_input_method_host_version);
+
+// ****************************************************************************
+// ***************************** MOJO MODE ************************************
+// ****************************************************************************
+
+// Initialises the IME shared lib's Mojo mode. In Mojo mode, client must
+// call this function before any other Mojo-mode functions. `platform` must
+// remain valid during the whole life of the IME shared lib.
+__attribute__((visibility("default"))) void InitMojoMode(
+    ash::ime::ImeCrosPlatform* platform);
+
+// Closes the IME shared lib's Mojo mode and releases resources used by it.
+__attribute__((visibility("default"))) void CloseMojoMode();
+
+// Bootstraps an implementation of a ConnectionFactory in the IME shared lib.
+// Returns false if the connection attempt was unsuccessful.
+__attribute__((visibility("default"))) bool InitializeConnectionFactory(
+    uint32_t receiver_connection_factory_handle);
+
+// Returns whether there's a direct Mojo connection to an input method.
+__attribute__((visibility("default"))) bool IsInputMethodConnected();
+
+}  // extern "C"
 
 #endif  // ASH_SERVICES_IME_PUBLIC_CPP_SHARED_LIB_INTERFACES_H_

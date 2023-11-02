@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,16 +64,15 @@ class DataDevice : public WMHelper::DragDropObserver,
   aura::client::DragUpdateInfo OnDragUpdated(
       const ui::DropTargetEvent& event) override;
   void OnDragExited() override;
-  ui::mojom::DragOperation OnPerformDrop(
-      const ui::DropTargetEvent& event) override;
-  WMHelper::DragDropObserver::DropCallback GetDropCallback(
-      const ui::DropTargetEvent& event) override;
+  WMHelper::DragDropObserver::DropCallback GetDropCallback() override;
 
   // Overridden from ui::ClipboardObserver:
   void OnClipboardDataChanged() override;
 
   // Overridden from SeatObserver:
-  void OnSurfaceFocused(Surface* surface) override;
+  void OnSurfaceFocused(Surface* surface,
+                        Surface* lost_focus,
+                        bool has_focused_client) override;
 
   // Overridden from DataOfferObserver:
   void OnDataOfferDestroying(DataOffer* data_offer) override;
@@ -88,7 +87,6 @@ class DataDevice : public WMHelper::DragDropObserver,
   void SetSelectionToCurrentClipboardData();
 
   void PerformDropOrExitDrag(base::ScopedClosureRunner exit_drag,
-                             const ui::DropTargetEvent& event,
                              ui::mojom::DragOperation& output_drag_op);
 
   DataDeviceDelegate* const delegate_;

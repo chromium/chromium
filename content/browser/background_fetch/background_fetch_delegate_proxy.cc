@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "content/browser/background_fetch/background_fetch_job_controller.h"
-#include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/background_fetch_description.h"
@@ -18,8 +17,10 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/download_manager.h"
-#include "content/public/browser/permission_type.h"
+#include "content/public/browser/download_manager_delegate.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size.h"
@@ -56,32 +57,48 @@ void BackgroundFetchDelegateProxy::GetIconDisplaySize(
 
 void BackgroundFetchDelegateProxy::GetPermissionForOrigin(
     const url::Origin& origin,
+    RenderProcessHost* rph,
     RenderFrameHostImpl* rfh,
     GetPermissionForOriginCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // Permissions need to go through the DownloadRequestLimiter for top level
+  // frames. (This may be missing in unit tests.)
+  if (rfh && !rfh->GetParent() &&
+      rfh->GetBrowserContext()->GetDownloadManager()->GetDelegate()) {
+    WebContents::Getter web_contents_getter(base::BindRepeating(
+        [](GlobalRenderFrameHostId rfh_id) {
+          return WebContents::FromRenderFrameHost(
+              RenderFrameHost::FromID(rfh_id));
+        },
+        rfh->GetGlobalId()));
+    rfh->GetBrowserContext()
+        ->GetDownloadManager()
+        ->GetDelegate()
+        ->CheckDownloadAllowed(
+            std::move(web_contents_getter), origin.GetURL(), "GET",
+            absl::nullopt, false /* from_download_cross_origin_redirect */,
+            true /* content_initiated */,
+            base::BindOnce(&BackgroundFetchDelegateProxy::
+                               DidGetPermissionFromDownloadRequestLimiter,
+                           weak_ptr_factory_.GetWeakPtr(),
+                           std::move(callback)));
+    return;
+  }
+
   BackgroundFetchPermission result = BackgroundFetchPermission::BLOCKED;
 
   if (auto* controller = GetPermissionController()) {
-    // Use GetPermissionStatusForFrame() only if the fetch is started from
-    // a top-level document. Permissions need to go through the
-    // DownloadRequestLimiter in that case.
-    // TODO(falken): Consider using GetPermissionStatusForFrame() for any `rfh`.
-    // The code may currently not be doing that just for historical reasons.
-    // Previously a WebContents was plumbed here instead of a
-    // RenderFrameHostImpl, and it was only set for the top-level document, so
-    // there was no way to get the RenderFrameHostImpl for subframes.
-    if (rfh && rfh->GetParent())
-      rfh = nullptr;
-
     blink::mojom::PermissionStatus permission_status =
-        rfh ? controller->GetPermissionStatusForFrame(
-                  PermissionType::BACKGROUND_FETCH, rfh,
-                  /*requesting_origin=*/origin.GetURL())
-            : controller->GetPermissionStatus(
-                  PermissionType::BACKGROUND_FETCH,
-                  /*requesting_origin=*/origin.GetURL(),
-                  /*embedding_origin=*/origin.GetURL());
+        blink::mojom::PermissionStatus::DENIED;
+    if (rfh) {
+      DCHECK(origin == rfh->GetLastCommittedOrigin());
+      permission_status = controller->GetPermissionStatusForCurrentDocument(
+          blink::PermissionType::BACKGROUND_FETCH, rfh);
+    } else if (rph) {
+      permission_status = controller->GetPermissionStatusForWorker(
+          blink::PermissionType::BACKGROUND_FETCH, rph, origin);
+    }
     switch (permission_status) {
       case blink::mojom::PermissionStatus::GRANTED:
         result = BackgroundFetchPermission::ALLOWED;
@@ -215,6 +232,7 @@ void BackgroundFetchDelegateProxy::MarkJobComplete(
 
 void BackgroundFetchDelegateProxy::OnJobCancelled(
     const std::string& job_unique_id,
+    const std::string& download_guid,
     blink::mojom::BackgroundFetchFailureReason reason_to_abort) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(
@@ -227,8 +245,20 @@ void BackgroundFetchDelegateProxy::OnJobCancelled(
   if (it == controller_map_.end())
     return;
 
-  if (const auto& controller = it->second)
+  if (const auto& controller = it->second) {
+    if (reason_to_abort ==
+        blink::mojom::BackgroundFetchFailureReason::DOWNLOAD_TOTAL_EXCEEDED) {
+      // Mark the request as complete and failed to avoid leaking information
+      // about the size of the resource.
+      controller->DidCompleteRequest(
+          download_guid,
+          std::make_unique<BackgroundFetchResult>(
+              nullptr /* response */, base::Time::Now(),
+              BackgroundFetchResult::FailureReason::FETCH_ERROR));
+    }
+
     controller->AbortFromDelegate(reason_to_abort);
+  }
 }
 
 void BackgroundFetchDelegateProxy::OnDownloadStarted(
@@ -324,12 +354,20 @@ BackgroundFetchDelegate* BackgroundFetchDelegateProxy::GetDelegate() {
   return browser_context->GetBackgroundFetchDelegate();
 }
 
-PermissionControllerImpl*
-BackgroundFetchDelegateProxy::GetPermissionController() {
+PermissionController* BackgroundFetchDelegateProxy::GetPermissionController() {
   auto* browser_context = GetBrowserContext();
   if (!browser_context)
     return nullptr;
-  return PermissionControllerImpl::FromBrowserContext(browser_context);
+  return browser_context->GetPermissionController();
+}
+
+void BackgroundFetchDelegateProxy::DidGetPermissionFromDownloadRequestLimiter(
+    GetPermissionForOriginCallback callback,
+    bool has_permission) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  std::move(callback).Run(has_permission
+                              ? content::BackgroundFetchPermission::ALLOWED
+                              : content::BackgroundFetchPermission::BLOCKED);
 }
 
 }  // namespace content

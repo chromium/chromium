@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,17 +11,21 @@
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/unified_consent/pref_names.h"
+#include "components/version_info/channel.h"
 
 namespace {
 
@@ -52,6 +56,23 @@ std::string GetHatsTriggerForFeatureArea(
       return kHatsSurveyTriggerTrustSafetyTrustedSurface;
     case (TrustSafetySentimentService::FeatureArea::kTransactions):
       return kHatsSurveyTriggerTrustSafetyTransactions;
+    case (TrustSafetySentimentService::FeatureArea::
+              kPrivacySandbox3ConsentAccept):
+      return kHatsSurveyTriggerTrustSafetyPrivacySandbox3ConsentAccept;
+    case (TrustSafetySentimentService::FeatureArea::
+              kPrivacySandbox3ConsentDecline):
+      return kHatsSurveyTriggerTrustSafetyPrivacySandbox3ConsentDecline;
+    case (TrustSafetySentimentService::FeatureArea::
+              kPrivacySandbox3NoticeDismiss):
+      return kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeDismiss;
+    case (TrustSafetySentimentService::FeatureArea::kPrivacySandbox3NoticeOk):
+      return kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeOk;
+    case (TrustSafetySentimentService::FeatureArea::
+              kPrivacySandbox3NoticeSettings):
+      return kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeSettings;
+    case (TrustSafetySentimentService::FeatureArea::
+              kPrivacySandbox3NoticeLearnMore):
+      return kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeLearnMore;
     default:
       NOTREACHED();
       return "";
@@ -71,6 +92,41 @@ bool ProbabilityCheck(TrustSafetySentimentService::FeatureArea feature_area) {
     case (TrustSafetySentimentService::FeatureArea::kTransactions):
       return base::RandDouble() <
              features::kTrustSafetySentimentSurveyTransactionsProbability.Get();
+    case (TrustSafetySentimentService::FeatureArea::
+              kPrivacySandbox3ConsentAccept):
+      return base::RandDouble() <
+             features::
+                 kTrustSafetySentimentSurveyPrivacySandbox3ConsentAcceptProbability
+                     .Get();
+    case (TrustSafetySentimentService::FeatureArea::
+              kPrivacySandbox3ConsentDecline):
+      return base::RandDouble() <
+             features::
+                 kTrustSafetySentimentSurveyPrivacySandbox3ConsentDeclineProbability
+                     .Get();
+    case (TrustSafetySentimentService::FeatureArea::
+              kPrivacySandbox3NoticeDismiss):
+      return base::RandDouble() <
+             features::
+                 kTrustSafetySentimentSurveyPrivacySandbox3NoticeDismissProbability
+                     .Get();
+    case (TrustSafetySentimentService::FeatureArea::kPrivacySandbox3NoticeOk):
+      return base::RandDouble() <
+             features::
+                 kTrustSafetySentimentSurveyPrivacySandbox3NoticeOkProbability
+                     .Get();
+    case (TrustSafetySentimentService::FeatureArea::
+              kPrivacySandbox3NoticeSettings):
+      return base::RandDouble() <
+             features::
+                 kTrustSafetySentimentSurveyPrivacySandbox3NoticeSettingsProbability
+                     .Get();
+    case (TrustSafetySentimentService::FeatureArea::
+              kPrivacySandbox3NoticeLearnMore):
+      return base::RandDouble() <
+             features::
+                 kTrustSafetySentimentSurveyPrivacySandbox3NoticeLearnMoreProbability
+                     .Get();
     default:
       NOTREACHED();
       return false;
@@ -134,7 +190,7 @@ bool HasNonDefaultPrivacySetting(Profile* profile) {
         content_settings::WebsiteSettingsRegistry::GetInstance()
             ->Get(content_setting_type)
             ->initial_default_value()
-            ->GetInt());
+            .GetInt());
 
     if (current_value != default_value && user_controlled) {
       has_non_default_content_setting = true;
@@ -323,6 +379,29 @@ void TrustSafetySentimentService::OpenedPasswordManager(
 
 void TrustSafetySentimentService::SavedCard() {
   TriggerOccurred(FeatureArea::kTransactions, {{"Saved password", false}});
+}
+
+void TrustSafetySentimentService::InteractedWithPrivacySandbox3(
+    FeatureArea feature_area) {
+  std::map<std::string, bool> product_specific_data;
+  product_specific_data["Stable channel"] =
+      (chrome::GetChannel() == version_info::Channel::STABLE) ? true : false;
+  bool blockCookies =
+      HostContentSettingsMapFactory::GetForProfile(profile_)
+          ->GetDefaultContentSetting(ContentSettingsType::COOKIES,
+                                     /*provider_id=*/nullptr) ==
+      ContentSetting::CONTENT_SETTING_BLOCK;
+  blockCookies =
+      blockCookies ||
+      (static_cast<content_settings::CookieControlsMode>(
+           profile_->GetPrefs()->GetInteger(prefs::kCookieControlsMode)) ==
+       content_settings::CookieControlsMode::kBlockThirdParty);
+  product_specific_data["3P cookies blocked"] = blockCookies ? true : false;
+  product_specific_data["Privacy Sandbox enabled"] =
+      profile_->GetPrefs()->GetBoolean(prefs::kPrivacySandboxApisEnabledV2)
+          ? true
+          : false;
+  TriggerOccurred(feature_area, product_specific_data);
 }
 
 void TrustSafetySentimentService::OnOffTheRecordProfileCreated(

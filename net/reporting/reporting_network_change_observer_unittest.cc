@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,7 +46,7 @@ class ReportingNetworkChangeObserverTest : public ReportingTestBase {
 
   const absl::optional<base::UnguessableToken> kReportingSource_ =
       absl::nullopt;
-  const NetworkIsolationKey kNik_;
+  const NetworkAnonymizationKey kNak_;
   const GURL kUrl_ = GURL("https://origin/path");
   const url::Origin kOrigin_ = url::Origin::Create(kUrl_);
   const GURL kEndpoint_ = GURL("https://endpoint/");
@@ -54,7 +54,7 @@ class ReportingNetworkChangeObserverTest : public ReportingTestBase {
   const std::string kGroup_ = "group";
   const std::string kType_ = "default";
   const ReportingEndpointGroupKey kGroupKey_ =
-      ReportingEndpointGroupKey(NetworkIsolationKey(), kOrigin_, kGroup_);
+      ReportingEndpointGroupKey(NetworkAnonymizationKey(), kOrigin_, kGroup_);
 };
 
 TEST_F(ReportingNetworkChangeObserverTest, ClearNothing) {
@@ -63,9 +63,9 @@ TEST_F(ReportingNetworkChangeObserverTest, ClearNothing) {
   new_policy.persist_clients_across_network_changes = true;
   UsePolicy(new_policy);
 
-  cache()->AddReport(kReportingSource_, kNik_, kUrl_, kUserAgent_, kGroup_,
-                     kType_, std::make_unique<base::DictionaryValue>(), 0,
-                     tick_clock()->NowTicks(), 0);
+  cache()->AddReport(kReportingSource_, kNak_, kUrl_, kUserAgent_, kGroup_,
+                     kType_, base::Value::Dict(), 0, tick_clock()->NowTicks(),
+                     0);
   SetEndpoint();
   ASSERT_EQ(1u, report_count());
   ASSERT_EQ(1u, cache()->GetEndpointCount());
@@ -82,9 +82,9 @@ TEST_F(ReportingNetworkChangeObserverTest, ClearReports) {
   new_policy.persist_clients_across_network_changes = true;
   UsePolicy(new_policy);
 
-  cache()->AddReport(kReportingSource_, kNik_, kUrl_, kUserAgent_, kGroup_,
-                     kType_, std::make_unique<base::DictionaryValue>(), 0,
-                     tick_clock()->NowTicks(), 0);
+  cache()->AddReport(kReportingSource_, kNak_, kUrl_, kUserAgent_, kGroup_,
+                     kType_, base::Value::Dict(), 0, tick_clock()->NowTicks(),
+                     0);
   SetEndpoint();
   ASSERT_EQ(1u, report_count());
   ASSERT_EQ(1u, cache()->GetEndpointCount());
@@ -101,9 +101,9 @@ TEST_F(ReportingNetworkChangeObserverTest, ClearClients) {
   new_policy.persist_clients_across_network_changes = false;
   UsePolicy(new_policy);
 
-  cache()->AddReport(kReportingSource_, kNik_, kUrl_, kUserAgent_, kGroup_,
-                     kType_, std::make_unique<base::DictionaryValue>(), 0,
-                     tick_clock()->NowTicks(), 0);
+  cache()->AddReport(kReportingSource_, kNak_, kUrl_, kUserAgent_, kGroup_,
+                     kType_, base::Value::Dict(), 0, tick_clock()->NowTicks(),
+                     0);
   SetEndpoint();
   ASSERT_EQ(1u, report_count());
   ASSERT_EQ(1u, cache()->GetEndpointCount());
@@ -120,9 +120,9 @@ TEST_F(ReportingNetworkChangeObserverTest, ClearReportsAndClients) {
   new_policy.persist_clients_across_network_changes = false;
   UsePolicy(new_policy);
 
-  cache()->AddReport(kReportingSource_, kNik_, kUrl_, kUserAgent_, kGroup_,
-                     kType_, std::make_unique<base::DictionaryValue>(), 0,
-                     tick_clock()->NowTicks(), 0);
+  cache()->AddReport(kReportingSource_, kNak_, kUrl_, kUserAgent_, kGroup_,
+                     kType_, base::Value::Dict(), 0, tick_clock()->NowTicks(),
+                     0);
   SetEndpoint();
   ASSERT_EQ(1u, report_count());
   ASSERT_EQ(1u, cache()->GetEndpointCount());

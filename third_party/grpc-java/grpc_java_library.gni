@@ -1,0 +1,27 @@
+# Copyright 2022 Google Inc. All Rights Reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Compile a java grpc service.
+#
+# Example:
+#  grpc_java_library("mylib") {
+#    sources = [
+#      "foo.proto",
+#    ]
+#  }
+
+import("//build/config/android/rules.gni")
+
+template("grpc_java_library") {
+  assert(defined(invoker.sources), "Need sources for proto_library")
+  proto_java_library(target_name) {
+    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY + [ "deps" ])
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    generator_plugin_label = "//third_party/grpc-java:grpc_java_plugin"
+    deps = [ "//third_party/grpc-java:grpc_runtime_java" ]
+    if (defined(invoker.deps)) {
+      deps += invoker.deps
+    }
+  }
+}

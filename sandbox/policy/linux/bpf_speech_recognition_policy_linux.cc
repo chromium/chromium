@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,9 +34,6 @@ ResultExpr SpeechRecognitionProcessPolicy::EvaluateSyscall(
     case __NR_getdents:
       return Allow();
 #endif
-    case __NR_sched_setscheduler:
-      // Used for starting an AudioStream when recognizing microphone data.
-      return RestrictSchedTarget(GetPolicyPid(), system_call_number);
     default:
       auto* sandbox_linux = SandboxLinux::GetInstance();
       if (sandbox_linux->ShouldBrokerHandleSyscall(system_call_number))

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -77,6 +77,9 @@ class USER_MANAGER_EXPORT User : public UserInfo {
 
   // Returns true if user type has gaia account.
   static bool TypeHasGaiaAccount(UserType user_type);
+
+  // Returns true if user represents any type of the kiosk.
+  static bool TypeIsKiosk(UserType user_type);
 
   explicit User(const AccountId& account_id);
 

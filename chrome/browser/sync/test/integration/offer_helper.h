@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_OFFER_HELPER_H_
 
 namespace autofill {
-struct AutofillOfferData;
+class AutofillOfferData;
 }  // namespace autofill
 
 namespace sync_pb {

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,27 +11,31 @@
 #include <memory>
 #include <set>
 #include <utility>
+#include <vector>
 
+#include "base/bind.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
-#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"
-#include "skia/ext/skia_utils_base.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/clipboard_metrics.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
+#include "ui/base/clipboard/clipboard_sequence_number_token.h"
 #include "ui/base/clipboard/custom_data_helper.h"
+#include "ui/base/clipboard/file_info.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
-#include "ui/gfx/geometry/size.h"
 
 namespace ui {
 
@@ -182,11 +186,46 @@ class ClipboardInternal {
   }
 
   // Reads png from the ClipboardData.
-  std::vector<uint8_t> ReadPng() const {
-    if (!HasFormat(ClipboardInternalFormat::kPng))
-      return std::vector<uint8_t>();
+  void ReadPng(Clipboard::ReadPngCallback callback) const {
+    if (!HasFormat(ClipboardInternalFormat::kPng)) {
+      std::move(callback).Run(std::vector<uint8_t>());
+      return;
+    }
 
-    return GetData()->png();
+    const ClipboardData* data = GetData();
+
+    // Check whether the clipboard contains an encoded PNG.
+    auto maybe_png = data->maybe_png();
+    if (maybe_png.has_value()) {
+      std::move(callback).Run(std::move(maybe_png.value()));
+      return;
+    }
+
+    // Check whether the clipboard contains an image which has not yet been
+    // encoded to a PNG. If so, encode it on a background thread and return the
+    // result asynchronously.
+    auto maybe_bitmap = data->GetBitmapIfPngNotEncoded();
+    DCHECK(maybe_bitmap.has_value())
+        << "We should not be showing that PNG format is on the "
+           "clipboard if neither a PNG or bitmap is available.";
+
+    // Creates a new entry if one doesn't exist.
+    auto& callbacks_for_image =
+        callbacks_awaiting_image_encoding_[sequence_number()];
+    callbacks_for_image.push_back(std::move(callback));
+
+    // Encoding of this bitmap to a PNG is already in progress. No need to
+    // kick off another encoding operation here. We'll respond to the callback
+    // once the in-progress image encoding completes.
+    if (callbacks_for_image.size() > 1)
+      return;
+
+    png_encoding_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&ClipboardData::EncodeBitmapData,
+                       std::move(maybe_bitmap.value())),
+        base::BindOnce(&ClipboardInternal::DidEncodePng,
+                       weak_factory_.GetMutableWeakPtr(), sequence_number()));
   }
 
   // Reads data of type |type| from the ClipboardData.
@@ -237,20 +276,23 @@ class ClipboardInternal {
     DCHECK(data);
     std::unique_ptr<ClipboardData> previous_data = std::move(data_);
     data_ = std::move(data);
-    sequence_number_ = ClipboardSequenceNumberToken();
+    sequence_number_ = data_->sequence_number_token();
     ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
     return previous_data;
   }
 
-  bool IsReadAllowed(const DataTransferEndpoint* data_dst) const {
+  bool IsReadAllowed(const DataTransferEndpoint* data_dst,
+                     absl::optional<ClipboardInternalFormat> format) const {
     DataTransferPolicyController* policy_controller =
         DataTransferPolicyController::Get();
     auto* data = GetData();
     if (!policy_controller || !data)
       return true;
     return policy_controller->IsClipboardReadAllowed(data->source(), data_dst,
-                                                     data->size());
+                                                     data->size(format));
   }
+
+  int NumImagesEncodedForTesting() { return num_images_encoded_for_testing_; }
 
  private:
   // True if the ClipboardData has format |format|.
@@ -259,11 +301,47 @@ class ClipboardInternal {
     return data ? data->format() & static_cast<int>(format) : false;
   }
 
+  void DidEncodePng(ClipboardSequenceNumberToken token,
+                    std::vector<uint8_t> png_data) {
+    num_images_encoded_for_testing_++;
+
+    if (token == sequence_number()) {
+      // Cache the encoded PNG.
+      data_->SetPngDataAfterEncoding(png_data);
+    }
+
+    auto callbacks = std::move(callbacks_awaiting_image_encoding_.at(token));
+    callbacks_awaiting_image_encoding_.erase(token);
+
+    DCHECK(!callbacks.empty());
+
+    for (auto& callback : callbacks) {
+      std::move(callback).Run(png_data);
+    }
+  }
+
   // Current ClipboardData.
   std::unique_ptr<ClipboardData> data_;
 
-  // Sequence number uniquely identifying clipboard state.
+  // Unique identifier for the current clipboard state.
   ClipboardSequenceNumberToken sequence_number_;
+
+  // Repeated image read requests shouldn't invoke multiple encoding operations.
+  // These callbacks will all be answered once the corresponding image finishes
+  // encoding.
+  mutable std::map<ClipboardSequenceNumberToken,
+                   std::vector<Clipboard::ReadPngCallback>>
+      callbacks_awaiting_image_encoding_;
+  // Keeps track of how many encoding operations actually complete.
+  int num_images_encoded_for_testing_ = 0;
+
+  // Runner used to asynchronously encode bitmaps into PNGs if the clipboard
+  // only contains a bitmap.
+  scoped_refptr<base::SequencedTaskRunner> png_encoding_runner_ =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::USER_VISIBLE});
+
+  base::WeakPtrFactory<ClipboardInternal> weak_factory_{this};
 };
 
 // Helper class to build a ClipboardData object and write it to clipboard.
@@ -275,6 +353,9 @@ class ClipboardDataBuilder {
       ClipboardInternal* clipboard,
       std::unique_ptr<DataTransferEndpoint> data_src) {
     ClipboardData* data = GetCurrentData();
+#if BUILDFLAG(IS_CHROMEOS)
+    data->set_commit_time(base::Time::Now());
+#endif  // BUILDFLAG(IS_CHROMEOS)
     data->set_source(std::move(data_src));
     clipboard->WriteData(TakeCurrentData());
   }
@@ -380,7 +461,7 @@ const ClipboardData* ClipboardNonBacked::GetClipboardData(
     DataTransferEndpoint* data_dst) const {
   DCHECK(CalledOnValidThread());
 
-  if (!clipboard_internal_->IsReadAllowed(data_dst))
+  if (!clipboard_internal_->IsReadAllowed(data_dst, absl::nullopt))
     return nullptr;
 
   return clipboard_internal_->GetData();
@@ -406,6 +487,11 @@ const ClipboardSequenceNumberToken& ClipboardNonBacked::GetSequenceNumber(
   return clipboard_internal_->sequence_number();
 }
 
+int ClipboardNonBacked::NumImagesEncodedForTesting() const {
+  DCHECK(CalledOnValidThread());
+  return clipboard_internal_->NumImagesEncodedForTesting();  // IN-TEST
+}
+
 bool ClipboardNonBacked::IsFormatAvailable(
     const ClipboardFormatType& format,
     ClipboardBuffer buffer,
@@ -413,32 +499,43 @@ bool ClipboardNonBacked::IsFormatAvailable(
   DCHECK(CalledOnValidThread());
   DCHECK(IsSupportedClipboardBuffer(buffer));
 
-  if (!clipboard_internal_->IsReadAllowed(data_dst))
-    return false;
-
   if (format == ClipboardFormatType::PlainTextType() ||
       format == ClipboardFormatType::UrlType())
-    return clipboard_internal_->IsFormatAvailable(
-        ClipboardInternalFormat::kText);
+    return clipboard_internal_->IsReadAllowed(data_dst,
+                                              ClipboardInternalFormat::kText) &&
+           clipboard_internal_->IsFormatAvailable(
+               ClipboardInternalFormat::kText);
   if (format == ClipboardFormatType::HtmlType())
-    return clipboard_internal_->IsFormatAvailable(
-        ClipboardInternalFormat::kHtml);
+    return clipboard_internal_->IsReadAllowed(data_dst,
+                                              ClipboardInternalFormat::kHtml) &&
+           clipboard_internal_->IsFormatAvailable(
+               ClipboardInternalFormat::kHtml);
   if (format == ClipboardFormatType::SvgType())
-    return clipboard_internal_->IsFormatAvailable(
-        ClipboardInternalFormat::kSvg);
+    return clipboard_internal_->IsReadAllowed(data_dst,
+                                              ClipboardInternalFormat::kSvg) &&
+           clipboard_internal_->IsFormatAvailable(
+               ClipboardInternalFormat::kSvg);
   if (format == ClipboardFormatType::RtfType())
-    return clipboard_internal_->IsFormatAvailable(
-        ClipboardInternalFormat::kRtf);
+    return clipboard_internal_->IsReadAllowed(data_dst,
+                                              ClipboardInternalFormat::kRtf) &&
+           clipboard_internal_->IsFormatAvailable(
+               ClipboardInternalFormat::kRtf);
   if (format == ClipboardFormatType::PngType() ||
       format == ClipboardFormatType::BitmapType())
-    return clipboard_internal_->IsFormatAvailable(
-        ClipboardInternalFormat::kPng);
+    return clipboard_internal_->IsReadAllowed(data_dst,
+                                              ClipboardInternalFormat::kPng) &&
+           clipboard_internal_->IsFormatAvailable(
+               ClipboardInternalFormat::kPng);
   if (format == ClipboardFormatType::WebKitSmartPasteType())
-    return clipboard_internal_->IsFormatAvailable(
-        ClipboardInternalFormat::kWeb);
+    return clipboard_internal_->IsReadAllowed(data_dst,
+                                              ClipboardInternalFormat::kWeb) &&
+           clipboard_internal_->IsFormatAvailable(
+               ClipboardInternalFormat::kWeb);
   if (format == ClipboardFormatType::FilenamesType())
-    return clipboard_internal_->IsFormatAvailable(
-        ClipboardInternalFormat::kFilenames);
+    return clipboard_internal_->IsReadAllowed(
+               data_dst, ClipboardInternalFormat::kFilenames) &&
+           clipboard_internal_->IsFormatAvailable(
+               ClipboardInternalFormat::kFilenames);
   const ClipboardData* data = clipboard_internal_->GetData();
   return data && data->custom_data_format() == format.GetName();
 }
@@ -479,7 +576,7 @@ void ClipboardNonBacked::ReadAvailableTypes(
   DCHECK(CalledOnValidThread());
   DCHECK(types);
 
-  if (!clipboard_internal_->IsReadAllowed(data_dst))
+  if (!clipboard_internal_->IsReadAllowed(data_dst, absl::nullopt))
     return;
 
   types->clear();
@@ -499,8 +596,13 @@ void ClipboardNonBacked::ReadText(ClipboardBuffer buffer,
                                   std::u16string* result) const {
   DCHECK(CalledOnValidThread());
 
-  if (!clipboard_internal_->IsReadAllowed(data_dst))
+  if (!clipboard_internal_->IsReadAllowed(data_dst,
+                                          ClipboardInternalFormat::kText))
     return;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  RecordTimeIntervalBetweenCommitAndRead(clipboard_internal_->GetData());
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   RecordRead(ClipboardFormatMetric::kText);
   clipboard_internal_->ReadText(result);
@@ -515,8 +617,13 @@ void ClipboardNonBacked::ReadAsciiText(ClipboardBuffer buffer,
                                        std::string* result) const {
   DCHECK(CalledOnValidThread());
 
-  if (!clipboard_internal_->IsReadAllowed(data_dst))
+  if (!clipboard_internal_->IsReadAllowed(data_dst,
+                                          ClipboardInternalFormat::kText))
     return;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  RecordTimeIntervalBetweenCommitAndRead(clipboard_internal_->GetData());
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   RecordRead(ClipboardFormatMetric::kText);
   clipboard_internal_->ReadAsciiText(result);
@@ -534,8 +641,13 @@ void ClipboardNonBacked::ReadHTML(ClipboardBuffer buffer,
                                   uint32_t* fragment_end) const {
   DCHECK(CalledOnValidThread());
 
-  if (!clipboard_internal_->IsReadAllowed(data_dst))
+  if (!clipboard_internal_->IsReadAllowed(data_dst,
+                                          ClipboardInternalFormat::kHtml))
     return;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  RecordTimeIntervalBetweenCommitAndRead(clipboard_internal_->GetData());
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   RecordRead(ClipboardFormatMetric::kHtml);
   clipboard_internal_->ReadHTML(markup, src_url, fragment_start, fragment_end);
@@ -550,11 +662,20 @@ void ClipboardNonBacked::ReadSvg(ClipboardBuffer buffer,
                                  std::u16string* result) const {
   DCHECK(CalledOnValidThread());
 
-  if (!clipboard_internal_->IsReadAllowed(data_dst))
+  if (!clipboard_internal_->IsReadAllowed(data_dst,
+                                          ClipboardInternalFormat::kSvg))
     return;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  RecordTimeIntervalBetweenCommitAndRead(clipboard_internal_->GetData());
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   RecordRead(ClipboardFormatMetric::kSvg);
   clipboard_internal_->ReadSvg(result);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ClipboardMonitor::GetInstance()->NotifyClipboardDataRead();
+#endif
 }
 
 void ClipboardNonBacked::ReadRTF(ClipboardBuffer buffer,
@@ -562,8 +683,13 @@ void ClipboardNonBacked::ReadRTF(ClipboardBuffer buffer,
                                  std::string* result) const {
   DCHECK(CalledOnValidThread());
 
-  if (!clipboard_internal_->IsReadAllowed(data_dst))
+  if (!clipboard_internal_->IsReadAllowed(data_dst,
+                                          ClipboardInternalFormat::kRtf))
     return;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  RecordTimeIntervalBetweenCommitAndRead(clipboard_internal_->GetData());
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   RecordRead(ClipboardFormatMetric::kRtf);
   clipboard_internal_->ReadRTF(result);
@@ -578,13 +704,18 @@ void ClipboardNonBacked::ReadPng(ClipboardBuffer buffer,
                                  ReadPngCallback callback) const {
   DCHECK(CalledOnValidThread());
 
-  if (!clipboard_internal_->IsReadAllowed(data_dst)) {
+  if (!clipboard_internal_->IsReadAllowed(data_dst,
+                                          ClipboardInternalFormat::kPng)) {
     std::move(callback).Run(std::vector<uint8_t>());
     return;
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  RecordTimeIntervalBetweenCommitAndRead(clipboard_internal_->GetData());
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   RecordRead(ClipboardFormatMetric::kPng);
-  std::move(callback).Run(clipboard_internal_->ReadPng());
+  clipboard_internal_->ReadPng(std::move(callback));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ClipboardMonitor::GetInstance()->NotifyClipboardDataRead();
@@ -597,8 +728,13 @@ void ClipboardNonBacked::ReadCustomData(ClipboardBuffer buffer,
                                         std::u16string* result) const {
   DCHECK(CalledOnValidThread());
 
-  if (!clipboard_internal_->IsReadAllowed(data_dst))
+  if (!clipboard_internal_->IsReadAllowed(data_dst,
+                                          ClipboardInternalFormat::kCustom))
     return;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  RecordTimeIntervalBetweenCommitAndRead(clipboard_internal_->GetData());
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   RecordRead(ClipboardFormatMetric::kCustomData);
   clipboard_internal_->ReadCustomData(type, result);
@@ -614,8 +750,13 @@ void ClipboardNonBacked::ReadFilenames(
     std::vector<ui::FileInfo>* result) const {
   DCHECK(CalledOnValidThread());
 
-  if (!clipboard_internal_->IsReadAllowed(data_dst))
+  if (!clipboard_internal_->IsReadAllowed(data_dst,
+                                          ClipboardInternalFormat::kFilenames))
     return;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  RecordTimeIntervalBetweenCommitAndRead(clipboard_internal_->GetData());
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   RecordRead(ClipboardFormatMetric::kFilenames);
   *result = clipboard_internal_->ReadFilenames();
@@ -630,8 +771,13 @@ void ClipboardNonBacked::ReadBookmark(const DataTransferEndpoint* data_dst,
                                       std::string* url) const {
   DCHECK(CalledOnValidThread());
 
-  if (!clipboard_internal_->IsReadAllowed(data_dst))
+  if (!clipboard_internal_->IsReadAllowed(data_dst,
+                                          ClipboardInternalFormat::kBookmark))
     return;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  RecordTimeIntervalBetweenCommitAndRead(clipboard_internal_->GetData());
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   RecordRead(ClipboardFormatMetric::kBookmark);
   clipboard_internal_->ReadBookmark(title, url);
@@ -646,8 +792,12 @@ void ClipboardNonBacked::ReadData(const ClipboardFormatType& format,
                                   std::string* result) const {
   DCHECK(CalledOnValidThread());
 
-  if (!clipboard_internal_->IsReadAllowed(data_dst))
+  if (!clipboard_internal_->IsReadAllowed(data_dst, absl::nullopt))
     return;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  RecordTimeIntervalBetweenCommitAndRead(clipboard_internal_->GetData());
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   RecordRead(ClipboardFormatMetric::kData);
   clipboard_internal_->ReadData(format.GetName(), result);

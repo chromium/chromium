@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,6 +29,8 @@ class WebGLUnownedTexture final : public WebGLTexture {
   // Used to notify the unowned texture that the owner has removed the texture
   // name and so that it should not be used anymore.
   void OnGLDeleteTextures();
+
+  bool IsOpaqueTexture() const override { return true; }
 
  private:
   void DeleteObjectImpl(gpu::gles2::GLES2Interface*) override;

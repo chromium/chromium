@@ -1,10 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/display/display_list.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/observer_list.h"
 #include "ui/display/display_observer.h"
 
 namespace display {
@@ -90,6 +91,10 @@ uint32_t DisplayList::UpdateDisplay(const Display& display, Type type) {
     local_display->set_depth_per_component(display.depth_per_component());
     local_display->set_color_depth(display.color_depth());
     changed_values |= DisplayObserver::DISPLAY_METRIC_COLOR_SPACE;
+  }
+  if (local_display->label() != display.label()) {
+    local_display->set_label(display.label());
+    changed_values |= DisplayObserver::DISPLAY_METRIC_LABEL;
   }
   if (local_display->GetSizeInPixel() != display.GetSizeInPixel()) {
     local_display->set_size_in_pixels(display.GetSizeInPixel());

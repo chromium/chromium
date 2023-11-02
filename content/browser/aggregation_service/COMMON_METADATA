@@ -1,4 +1,4 @@
 monorail {
-  component: "Internals>ConversionMeasurement"
+  component: "Internals>AttributionReporting"
 }
 team_email: "privacy-sandbox-dev@chromium.org"

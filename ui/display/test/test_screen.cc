@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,18 +10,33 @@
 
 namespace display {
 namespace test {
+namespace {
+TestScreen* test_screen = nullptr;
+}
 
 // static
 constexpr gfx::Rect TestScreen::kDefaultScreenBounds;
 
 TestScreen::TestScreen(bool create_display) {
+  DCHECK(!test_screen);
+  test_screen = this;
+
   if (!create_display)
     return;
   Display display(1, kDefaultScreenBounds);
   ProcessDisplayChanged(display, /* is_primary = */ true);
 }
 
-TestScreen::~TestScreen() {}
+TestScreen::~TestScreen() {
+  DCHECK_EQ(test_screen, this);
+  test_screen = nullptr;
+}
+
+// static
+TestScreen* TestScreen::Get() {
+  DCHECK_EQ(Screen::GetScreen(), test_screen);
+  return test_screen;
+}
 
 void TestScreen::set_cursor_screen_point(const gfx::Point& point) {
   cursor_screen_point_ = point;

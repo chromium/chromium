@@ -19,8 +19,8 @@
       <message name="IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE" desc="A message for the child user when they attempt to visit a site that is not permitted by their parent.">
         You need permission to visit this site
       </message>
-      <message name="IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_SAFE_SITES_BLOCKED" desc="Message to be shown when a site was blocked due to the SafeSites safety check.">
-        You need permission to visit this site. It may have inappropriate content.
+      <message name="IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_V2" desc="A message for the child user when they attempt to visit a site that is not permitted by their parent.">
+        A parent or guardian has to say that it's OK for you to visit this website
       </message>
       <message name="IDS_BLOCK_INTERSTITIAL_MESSAGE_SUPERVISED_USERS_DEPRECATED" desc="Message to be shown to a supervised user directing them to the supervisor.">
         Questions? Contact the person who supervises your profile.
@@ -33,6 +33,9 @@
       </message>
       <message name="IDS_BLOCK_INTERSTITIAL_ASK_IN_PERSON_BUTTON" desc="A button to show a dialog to request access to blocked sites.">
         Ask in person
+      </message>
+      <message name="IDS_BLOCK_INTERSTITIAL_ASK_IN_PERSON_INSTEAD_BUTTON" desc="A button to show a dialog to request access to blocked sites for users who have already asked for permission remotely.">
+        Ask in person instead
       </message>
       <message name="IDS_BLOCK_INTERSTITIAL_SEND_MESSAGE_BUTTON" desc="A button to send a message to request access to blocked sites.">
         Send a message
@@ -53,13 +56,13 @@
         You asked your parents if it's OK to visit this site
       </message>
       <message name="IDS_CHILD_BLOCK_INTERSTITIAL_WAITING_APPROVAL_MESSAGE" desc="The text that tells the child that a request has been sent to their parents.">
-        Waiting for parent approval
+        Waiting for permission...
       </message>
       <message name="IDS_CHILD_BLOCK_INTERSTITIAL_WAITING_APPROVAL_DESCRIPTION_SINGLE_PARENT" desc="The text that explains to a child the request sent to their parent.">
-        An approval request has been sent to your parent on their Google Family Link app and at families.google.com. You will get a notification if your parent approves the request.
+        You asked to visit this site. Your parent can reply in Family Link.
       </message>
       <message name="IDS_CHILD_BLOCK_INTERSTITIAL_WAITING_APPROVAL_DESCRIPTION_MULTI_PARENT" desc="The text that explains to a child the request sent to their parents.">
-        An approval request has been sent to your parents on their Google Family Link app and at families.google.com. You will get a notification if one of your parents approves the request.
+        You asked to visit this site. Your parents can reply in Family Link.
       </message>
       <message name="IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_FAILED_MESSAGE_SINGLE_PARENT" desc="The text that tells the child user that a request to their parent failed.">
         We could not reach your parent at the moment. Please try again.
@@ -76,17 +79,17 @@
       <message name="IDS_BLOCK_INTERSTITIAL_HIDE_DETAILS" desc="The text for the link to hide details about the interstitial.">
         Hide details
       </message>
+      <message name="IDS_GENERIC_SITE_BLOCK_HEADER" desc="Generic header to be shown with a more specific message about why a site is blocked.">
+        This site is blocked
+      </message>
       <message name="IDS_SUPERVISED_USER_BLOCK_HEADER" desc="Header for the message to be shown when a site was blocked.">
         This site is blocked because it may have mature content
       </message>
       <message name="IDS_CHILD_BLOCK_MESSAGE_DEFAULT_SINGLE_PARENT" desc="Message to be shown when a site was blocked due to the default fallback behavior and the child has one parent.">
-        Your parent hasn't approved it yet
+        Your parent hasn't said it's OK yet
       </message>
       <message name="IDS_CHILD_BLOCK_MESSAGE_DEFAULT_MULTI_PARENT" desc="Message to be shown when a site was blocked due to the default fallback behavior and the child has two parents.">
-        Your parents haven't approved it yet
-      </message>
-      <message name="IDS_SUPERVISED_USER_BLOCK_MESSAGE_DEFAULT" desc="Message to be show to a supervised user when a site was blocked due to the default fallback behaviour.">
-        Your manager hasn't approved it yet
+        Your parents haven't said it's OK yet
       </message>
       <message name="IDS_SUPERVISED_USER_BLOCK_MESSAGE_SAFE_SITES" desc="Message to be shown when a site was blocked due to the SafeSites safety check.">
         It may have mature content
@@ -96,9 +99,6 @@
       </message>
       <message name="IDS_CHILD_BLOCK_MESSAGE_MANUAL_MULTI_PARENT" desc="Message to be shown to a child when a site was blocked due to a manual blocklist entry and the child has two parents.">
         Your parents can unblock it for you
-      </message>
-      <message name="IDS_SUPERVISED_USER_BLOCK_MESSAGE_MANUAL" desc="Message to be shown to a supervised user when a site is blocked due to a manual blocklist entry">
-        Your manager can unblock it for you
       </message>
       <message name="IDS_SUPERVISED_USER_NOT_SIGNED_IN" desc="Message to be shown to a supervised user who is not signed in to Chrome">
         Please start and sign in to Chrome so that Chrome can check whether you are allowed to access this site.

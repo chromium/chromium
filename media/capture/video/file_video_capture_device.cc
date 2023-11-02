@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -223,7 +223,7 @@ bool Y4mFileParser::Initialize(VideoCaptureFormat* capture_format) {
 
 const uint8_t* Y4mFileParser::GetNextFrame(int* frame_size) {
   if (!video_frame_)
-    video_frame_.reset(new uint8_t[frame_size_]);
+    video_frame_ = std::make_unique<uint8_t[]>(frame_size_);
   int result =
       file_->Read(current_byte_index_,
                   reinterpret_cast<char*>(video_frame_.get()), frame_size_);
@@ -344,7 +344,8 @@ std::unique_ptr<uint8_t[]> FileVideoCaptureDevice::CropPTZRegion(
       if ([&frame, &frame_buffer_size, &frame_size, &jpeg_to_i420_buffer_]() {
             const size_t i420_buffer_size =
                 VideoFrame::AllocationSize(PIXEL_FORMAT_I420, frame_size);
-            jpeg_to_i420_buffer_.reset(new uint8_t[i420_buffer_size]);
+            jpeg_to_i420_buffer_ =
+                std::make_unique<uint8_t[]>(i420_buffer_size);
 
             uint8_t* dst_yp = jpeg_to_i420_buffer_.get();
             uint8_t* dst_up =
@@ -373,7 +374,7 @@ std::unique_ptr<uint8_t[]> FileVideoCaptureDevice::CropPTZRegion(
       frame_buffer_size =
           VideoFrame::AllocationSize(PIXEL_FORMAT_I420, frame_size);
       *final_pixel_format = PIXEL_FORMAT_I420;
-      FALLTHROUGH;
+      [[fallthrough]];
     case PIXEL_FORMAT_I420:
       fourcc = libyuv::FOURCC_I420;
       break;
@@ -394,7 +395,7 @@ std::unique_ptr<uint8_t[]> FileVideoCaptureDevice::CropPTZRegion(
                frame_size.height() - crop_height);
   const size_t crop_buffer_size =
       VideoFrame::AllocationSize(PIXEL_FORMAT_I420, crop_size);
-  std::unique_ptr<uint8_t[]> crop_frame(new uint8_t[crop_buffer_size]);
+  auto crop_frame = std::make_unique<uint8_t[]>(crop_buffer_size);
 
   uint8_t* crop_yp = crop_frame.get();
   uint8_t* crop_up =
@@ -423,7 +424,7 @@ std::unique_ptr<uint8_t[]> FileVideoCaptureDevice::CropPTZRegion(
   const auto& scale_size = frame_size;
   const size_t scale_buffer_size =
       VideoFrame::AllocationSize(PIXEL_FORMAT_I420, scale_size);
-  std::unique_ptr<uint8_t[]> scale_frame(new uint8_t[scale_buffer_size]);
+  auto scale_frame = std::make_unique<uint8_t[]>(scale_buffer_size);
 
   uint8_t* scale_yp = scale_frame.get();
   uint8_t* scale_up =

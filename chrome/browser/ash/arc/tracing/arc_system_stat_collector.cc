@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <unistd.h>
+
+#include <array>
 
 #include "base/bind.h"
 #include "base/cpu.h"
@@ -20,15 +22,19 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
-#include "base/task/post_task.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/arc/tracing/arc_system_model.h"
 #include "chrome/browser/ash/arc/tracing/arc_value_event_trimmer.h"
+
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
 
 namespace arc {
 
@@ -197,7 +203,6 @@ struct OneValueReaderInfo {
   SystemReader reader = SystemReader::kTotal;
   int64_t* value = nullptr;
   int64_t default_value = 0;
-  bool error_reported = false;
 };
 
 struct ArcSystemStatCollector::SystemReadersContext {
@@ -658,28 +663,29 @@ ArcSystemStatCollector::ReadSystemStatOnBackgroundThread(
 
   OneValueReaderInfo one_value_readers[] = {
       {SystemReader::kCpuTemperature, &context->current_frame.cpu_temperature,
-       std::numeric_limits<int>::min(), false},
-      {SystemReader::kCpuFrequency, &context->current_frame.cpu_frequency, 0,
-       false},
+       std::numeric_limits<int>::min()},
+      {SystemReader::kCpuFrequency, &context->current_frame.cpu_frequency, 0},
       {SystemReader::kPackagePowerConstraint,
-       &context->current_frame.package_power_constraint, 0, false},
-      {SystemReader::kCpuEnergy, &context->current_frame.cpu_energy, 0, false},
-      {SystemReader::kGpuEnergy, &context->current_frame.gpu_energy, 0, false},
-      {SystemReader::kMemoryEnergy, &context->current_frame.memory_energy, 0,
-       false},
+       &context->current_frame.package_power_constraint, 0},
+      {SystemReader::kCpuEnergy, &context->current_frame.cpu_energy, 0},
+      {SystemReader::kGpuEnergy, &context->current_frame.gpu_energy, 0},
+      {SystemReader::kMemoryEnergy, &context->current_frame.memory_energy, 0},
   };
 
-  for (size_t i = 0; i < base::size(one_value_readers); ++i) {
+  static bool one_value_readers_error_reported[std::size(one_value_readers)] = {
+      false};
+
+  for (size_t i = 0; i < std::size(one_value_readers); ++i) {
     if (!context->system_readers[one_value_readers[i].reader].is_valid() ||
         !ParseStatFile(
             context->system_readers[one_value_readers[i].reader].get(),
             kOneValueColumns, one_value_readers[i].value)) {
       *one_value_readers[i].value = one_value_readers[i].default_value;
-      if (one_value_readers[i].error_reported)
+      if (one_value_readers_error_reported[i])
         continue;
       LOG(ERROR) << "Failed to read one value system stat: "
                  << one_value_readers[i].reader;
-      one_value_readers[i].error_reported = true;
+      one_value_readers_error_reported[i] = true;
     }
   }
 

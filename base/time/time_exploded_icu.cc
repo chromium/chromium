@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,9 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/numerics/clamped_math.h"
 #include "build/build_config.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/icu/source/i18n/unicode/calendar.h"
@@ -138,7 +140,7 @@ bool Time::FromExplodedUsingIcu(bool is_local,
   return true;
 }
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 
 void Time::Explode(bool is_local, Exploded* exploded) const {
   return ExplodeUsingIcu(ToRoundedDownMillisecondsSinceUnixEpoch(), is_local,
@@ -154,6 +156,6 @@ bool Time::FromExploded(bool is_local, const Exploded& exploded, Time* time) {
   return false;
 }
 
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 }  // namespace base

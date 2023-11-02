@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/sqlite/sqlite3.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 using testing::AllOf;
 using testing::ElementsAre;
@@ -98,7 +99,7 @@ void VerifyDatabaseEmpty(sql::Database* db) {
 }
 
 // Helper to check that an expected mapping exists.
-WARN_UNUSED_RESULT bool CheckPageHasIcon(
+[[nodiscard]] bool CheckPageHasIcon(
     FaviconDatabase* db,
     const GURL& page_url,
     favicon_base::IconType expected_icon_type,
@@ -176,8 +177,8 @@ base::Time GetLastUpdated(FaviconDatabase* db, favicon_base::FaviconID icon) {
 
 class FaviconDatabaseTest : public testing::Test {
  public:
-  FaviconDatabaseTest() {}
-  ~FaviconDatabaseTest() override {}
+  FaviconDatabaseTest() = default;
+  ~FaviconDatabaseTest() override = default;
 
   // Initialize a favicon database instance from the SQL file at
   // |golden_path| in the "History/" subdirectory of test data.
@@ -1030,64 +1031,60 @@ TEST_F(FaviconDatabaseTest, Recovery) {
                                  kLargeSize, sizeof(kBlob2), kBlob2));
   }
 
-  // Corrupt the |icon_mapping.page_url| index by deleting an element
-  // from the backing table but not the index.
+  // Corrupt the `icon_mapping.page_url` index by zeroing its root page.
   {
     sql::Database raw_db;
     EXPECT_TRUE(raw_db.Open(file_name_));
-    ASSERT_EQ("ok", sql::test::IntegrityCheck(&raw_db));
+    ASSERT_EQ("ok", sql::test::IntegrityCheck(raw_db));
   }
   static const char kIndexName[] = "icon_mapping_page_url_idx";
-  static const char kDeleteSql[] =
-      "DELETE FROM icon_mapping WHERE page_url = 'http://yahoo.com/'";
-  EXPECT_TRUE(
-      sql::test::CorruptTableOrIndex(file_name_, kIndexName, kDeleteSql));
+  ASSERT_TRUE(sql::test::CorruptIndexRootPage(file_name_, kIndexName));
 
   // Database should be corrupt at the SQLite level.
   {
     sql::Database raw_db;
     EXPECT_TRUE(raw_db.Open(file_name_));
-    ASSERT_NE("ok", sql::test::IntegrityCheck(&raw_db));
+    EXPECT_NE("ok", sql::test::IntegrityCheck(raw_db));
   }
 
   // Open the database and access the corrupt index.
   {
-    sql::test::ScopedErrorExpecter expecter;
-    expecter.ExpectError(SQLITE_CORRUPT);
     FaviconDatabase db;
     ASSERT_EQ(sql::INIT_OK, db.Init(file_name_));
 
-    // Data for kPageUrl2 was deleted, but the index entry remains,
-    // this will throw SQLITE_CORRUPT.  The corruption handler will
-    // recover the database and poison the handle, so the outer call
-    // fails.
-    EXPECT_FALSE(db.GetIconMappingsForPageURL(kPageUrl2, nullptr));
-
-    ASSERT_TRUE(expecter.SawExpectedErrors());
+    {
+      sql::test::ScopedErrorExpecter expecter;
+      expecter.ExpectError(SQLITE_CORRUPT);
+      // Accessing the index will throw SQLITE_CORRUPT. The corruption handler
+      // will recover the database and poison the handle, so the outer call
+      // fails.
+      EXPECT_FALSE(db.GetIconMappingsForPageURL(kPageUrl2, nullptr));
+      ASSERT_TRUE(expecter.SawExpectedErrors());
+    }
   }
 
   // Check that the database is recovered at the SQLite level.
   {
     sql::Database raw_db;
     EXPECT_TRUE(raw_db.Open(file_name_));
-    ASSERT_EQ("ok", sql::test::IntegrityCheck(&raw_db));
+    ASSERT_EQ("ok", sql::test::IntegrityCheck(raw_db));
 
     // Check that the expected tables exist.
     VerifyTablesAndColumns(&raw_db);
   }
 
-  // Database should also be recovered at higher levels.
+  // Database should also be recovered at higher levels. Recovery should have
+  // regenerated the index with no data loss.
   {
     FaviconDatabase db;
     ASSERT_EQ(sql::INIT_OK, db.Init(file_name_));
 
-    // Now this fails because there is no mapping.
-    EXPECT_FALSE(db.GetIconMappingsForPageURL(kPageUrl2, nullptr));
-
-    // Other data was retained by recovery.
     EXPECT_TRUE(CheckPageHasIcon(&db, kPageUrl1,
                                  favicon_base::IconType::kFavicon, kIconUrl1,
                                  kLargeSize, sizeof(kBlob1), kBlob1));
+    EXPECT_TRUE(CheckPageHasIcon(&db, kPageUrl2,
+                                 favicon_base::IconType::kFavicon, kIconUrl2,
+                                 kLargeSize, sizeof(kBlob2), kBlob2));
   }
 
   // Corrupt the database again by adjusting the header.
@@ -1095,27 +1092,32 @@ TEST_F(FaviconDatabaseTest, Recovery) {
 
   // Database is unusable at the SQLite level.
   {
-    sql::test::ScopedErrorExpecter expecter;
-    expecter.ExpectError(SQLITE_CORRUPT);
     sql::Database raw_db;
-    EXPECT_TRUE(raw_db.Open(file_name_));
-    EXPECT_FALSE(raw_db.IsSQLValid("PRAGMA integrity_check"));
-    ASSERT_TRUE(expecter.SawExpectedErrors());
+    {
+      sql::test::ScopedErrorExpecter expecter;
+      expecter.ExpectError(SQLITE_CORRUPT);
+      EXPECT_TRUE(raw_db.Open(file_name_));
+      EXPECT_TRUE(expecter.SawExpectedErrors());
+    }
+    EXPECT_EQ("ok", sql::test::IntegrityCheck(raw_db));
   }
 
   // Database should be recovered during open.
   {
-    sql::test::ScopedErrorExpecter expecter;
-    expecter.ExpectError(SQLITE_CORRUPT);
     FaviconDatabase db;
-    ASSERT_EQ(sql::INIT_OK, db.Init(file_name_));
+    {
+      sql::test::ScopedErrorExpecter expecter;
+      expecter.ExpectError(SQLITE_CORRUPT);
+      ASSERT_EQ(sql::INIT_OK, db.Init(file_name_));
+      ASSERT_TRUE(expecter.SawExpectedErrors());
+    }
 
-    EXPECT_FALSE(db.GetIconMappingsForPageURL(kPageUrl2, nullptr));
     EXPECT_TRUE(CheckPageHasIcon(&db, kPageUrl1,
                                  favicon_base::IconType::kFavicon, kIconUrl1,
                                  kLargeSize, sizeof(kBlob1), kBlob1));
-
-    ASSERT_TRUE(expecter.SawExpectedErrors());
+    EXPECT_TRUE(CheckPageHasIcon(&db, kPageUrl2,
+                                 favicon_base::IconType::kFavicon, kIconUrl2,
+                                 kLargeSize, sizeof(kBlob2), kBlob2));
   }
 }
 
@@ -1124,65 +1126,60 @@ TEST_F(FaviconDatabaseTest, Recovery7) {
   // (which would upgrade it).
   EXPECT_TRUE(history::CreateDatabaseFromSQL(file_name_, "Favicons.v7.sql"));
 
-  // Corrupt the |icon_mapping.page_url| index by deleting an element
-  // from the backing table but not the index.
+  // Corrupt the `icon_mapping.page_url` index by zeroing its root page.
   {
     sql::Database raw_db;
     EXPECT_TRUE(raw_db.Open(file_name_));
-    ASSERT_EQ("ok", sql::test::IntegrityCheck(&raw_db));
+    ASSERT_EQ("ok", sql::test::IntegrityCheck(raw_db));
   }
   static const char kIndexName[] = "icon_mapping_page_url_idx";
-  static const char kDeleteSql[] =
-      "DELETE FROM icon_mapping WHERE page_url = 'http://yahoo.com/'";
-  EXPECT_TRUE(
-      sql::test::CorruptTableOrIndex(file_name_, kIndexName, kDeleteSql));
+  ASSERT_TRUE(sql::test::CorruptIndexRootPage(file_name_, kIndexName));
 
   // Database should be corrupt at the SQLite level.
   {
     sql::Database raw_db;
     EXPECT_TRUE(raw_db.Open(file_name_));
-    ASSERT_NE("ok", sql::test::IntegrityCheck(&raw_db));
+    EXPECT_NE("ok", sql::test::IntegrityCheck(raw_db));
   }
 
   // Open the database and access the corrupt index. Note that this upgrades
   // the database.
   {
-    sql::test::ScopedErrorExpecter expecter;
-    expecter.ExpectError(SQLITE_CORRUPT);
     FaviconDatabase db;
     ASSERT_EQ(sql::INIT_OK, db.Init(file_name_));
-
-    // Data for kPageUrl2 was deleted, but the index entry remains,
-    // this will throw SQLITE_CORRUPT.  The corruption handler will
-    // recover the database and poison the handle, so the outer call
-    // fails.
-    EXPECT_FALSE(db.GetIconMappingsForPageURL(kPageUrl2, nullptr));
-
-    ASSERT_TRUE(expecter.SawExpectedErrors());
+    {
+      sql::test::ScopedErrorExpecter expecter;
+      expecter.ExpectError(SQLITE_CORRUPT);
+      // Accessing the index will throw SQLITE_CORRUPT. The corruption handler
+      // will recover the database and poison the handle, so the outer call
+      // fails.
+      EXPECT_FALSE(db.GetIconMappingsForPageURL(kPageUrl2, nullptr));
+      EXPECT_TRUE(expecter.SawExpectedErrors());
+    }
   }
 
   // Check that the database is recovered at the SQLite level.
   {
     sql::Database raw_db;
     EXPECT_TRUE(raw_db.Open(file_name_));
-    ASSERT_EQ("ok", sql::test::IntegrityCheck(&raw_db));
+    ASSERT_EQ("ok", sql::test::IntegrityCheck(raw_db));
 
     // Check that the expected tables exist.
     VerifyTablesAndColumns(&raw_db);
   }
 
-  // Database should also be recovered at higher levels.
+  // Database should also be recovered at higher levels. Recovery should have
+  // regenerated the index with no data loss.
   {
     FaviconDatabase db;
     ASSERT_EQ(sql::INIT_OK, db.Init(file_name_));
 
-    // Now this fails because there is no mapping.
-    EXPECT_FALSE(db.GetIconMappingsForPageURL(kPageUrl2, nullptr));
-
-    // Other data was retained by recovery.
     EXPECT_TRUE(CheckPageHasIcon(&db, kPageUrl1,
                                  favicon_base::IconType::kFavicon, kIconUrl1,
                                  kLargeSize, sizeof(kBlob1), kBlob1));
+    EXPECT_TRUE(CheckPageHasIcon(&db, kPageUrl2,
+                                 favicon_base::IconType::kFavicon, kIconUrl2,
+                                 kLargeSize, sizeof(kBlob2), kBlob2));
   }
 
   // Corrupt the database again by adjusting the header.
@@ -1190,27 +1187,32 @@ TEST_F(FaviconDatabaseTest, Recovery7) {
 
   // Database is unusable at the SQLite level.
   {
-    sql::test::ScopedErrorExpecter expecter;
-    expecter.ExpectError(SQLITE_CORRUPT);
     sql::Database raw_db;
-    EXPECT_TRUE(raw_db.Open(file_name_));
-    EXPECT_FALSE(raw_db.IsSQLValid("PRAGMA integrity_check"));
-    ASSERT_TRUE(expecter.SawExpectedErrors());
+    {
+      sql::test::ScopedErrorExpecter expecter;
+      expecter.ExpectError(SQLITE_CORRUPT);
+      ASSERT_TRUE(raw_db.Open(file_name_));
+      EXPECT_TRUE(expecter.SawExpectedErrors());
+    }
+    EXPECT_EQ("ok", sql::test::IntegrityCheck(raw_db));
   }
 
   // Database should be recovered during open.
   {
-    sql::test::ScopedErrorExpecter expecter;
-    expecter.ExpectError(SQLITE_CORRUPT);
     FaviconDatabase db;
-    ASSERT_EQ(sql::INIT_OK, db.Init(file_name_));
+    {
+      sql::test::ScopedErrorExpecter expecter;
+      expecter.ExpectError(SQLITE_CORRUPT);
+      ASSERT_EQ(sql::INIT_OK, db.Init(file_name_));
+      EXPECT_TRUE(expecter.SawExpectedErrors());
+    }
 
-    EXPECT_FALSE(db.GetIconMappingsForPageURL(kPageUrl2, nullptr));
     EXPECT_TRUE(CheckPageHasIcon(&db, kPageUrl1,
                                  favicon_base::IconType::kFavicon, kIconUrl1,
                                  kLargeSize, sizeof(kBlob1), kBlob1));
-
-    ASSERT_TRUE(expecter.SawExpectedErrors());
+    EXPECT_TRUE(CheckPageHasIcon(&db, kPageUrl2,
+                                 favicon_base::IconType::kFavicon, kIconUrl2,
+                                 kLargeSize, sizeof(kBlob2), kBlob2));
   }
 }
 
@@ -1226,21 +1228,23 @@ TEST_F(FaviconDatabaseTest, Recovery6) {
 
   // Database is unusable at the SQLite level.
   {
-    sql::test::ScopedErrorExpecter expecter;
-    expecter.ExpectError(SQLITE_CORRUPT);
     sql::Database raw_db;
-    EXPECT_TRUE(raw_db.Open(file_name_));
-    EXPECT_FALSE(raw_db.IsSQLValid("PRAGMA integrity_check"));
-    ASSERT_TRUE(expecter.SawExpectedErrors());
+    {
+      sql::test::ScopedErrorExpecter expecter;
+      expecter.ExpectError(SQLITE_CORRUPT);
+      EXPECT_TRUE(raw_db.Open(file_name_));
+      EXPECT_TRUE(expecter.SawExpectedErrors());
+    }
+    EXPECT_EQ("ok", sql::test::IntegrityCheck(raw_db));
   }
 
   // Database open should succeed.
   {
+    FaviconDatabase db;
     sql::test::ScopedErrorExpecter expecter;
     expecter.ExpectError(SQLITE_CORRUPT);
-    FaviconDatabase db;
     ASSERT_EQ(sql::INIT_OK, db.Init(file_name_));
-    ASSERT_TRUE(expecter.SawExpectedErrors());
+    EXPECT_TRUE(expecter.SawExpectedErrors());
   }
 
   // The database should be usable at the SQLite level, with a current schema
@@ -1248,7 +1252,7 @@ TEST_F(FaviconDatabaseTest, Recovery6) {
   {
     sql::Database raw_db;
     EXPECT_TRUE(raw_db.Open(file_name_));
-    ASSERT_EQ("ok", sql::test::IntegrityCheck(&raw_db));
+    ASSERT_EQ("ok", sql::test::IntegrityCheck(raw_db));
 
     // Check that the expected tables exist.
     VerifyTablesAndColumns(&raw_db);
@@ -1270,12 +1274,14 @@ TEST_F(FaviconDatabaseTest, Recovery5) {
 
   // Database is unusable at the SQLite level.
   {
-    sql::test::ScopedErrorExpecter expecter;
-    expecter.ExpectError(SQLITE_CORRUPT);
     sql::Database raw_db;
-    EXPECT_TRUE(raw_db.Open(file_name_));
-    EXPECT_FALSE(raw_db.IsSQLValid("PRAGMA integrity_check"));
-    ASSERT_TRUE(expecter.SawExpectedErrors());
+    {
+      sql::test::ScopedErrorExpecter expecter;
+      expecter.ExpectError(SQLITE_CORRUPT);
+      EXPECT_TRUE(raw_db.Open(file_name_));
+      EXPECT_TRUE(expecter.SawExpectedErrors());
+    }
+    EXPECT_EQ("ok", sql::test::IntegrityCheck(raw_db));
   }
 
   // Database open should succeed.
@@ -1292,7 +1298,7 @@ TEST_F(FaviconDatabaseTest, Recovery5) {
   {
     sql::Database raw_db;
     EXPECT_TRUE(raw_db.Open(file_name_));
-    ASSERT_EQ("ok", sql::test::IntegrityCheck(&raw_db));
+    ASSERT_EQ("ok", sql::test::IntegrityCheck(raw_db));
 
     // Check that the expected tables exist.
     VerifyTablesAndColumns(&raw_db);
@@ -1440,6 +1446,65 @@ TEST_F(FaviconDatabaseTest, SetFaviconsOutOfDateBetween) {
   EXPECT_EQ(base::Time(), GetLastUpdated(&db, icon1));
   EXPECT_EQ(base::Time(), GetLastUpdated(&db, icon2));
   EXPECT_EQ(base::Time(), GetLastUpdated(&db, icon3));
+}
+
+// Test that GetFaviconIDForFaviconURL can filter by origin.
+TEST_F(FaviconDatabaseTest, GetFaviconIDForFaviconURLOriginFilter) {
+  // Setup DB with `kPageUrl1` mapped to `kIconUrl1`.
+  FaviconDatabase db;
+  ASSERT_EQ(sql::INIT_OK, db.Init(file_name_));
+  db.BeginTransaction();
+  scoped_refptr<base::RefCountedStaticMemory> favicon1(
+      new base::RefCountedStaticMemory(kBlob1, sizeof(kBlob1)));
+  const auto icon_id = db.AddFavicon(
+      kIconUrl1, favicon_base::IconType::kFavicon, favicon1,
+      FaviconBitmapType::ON_VISIT, base::Time::Now(), gfx::Size());
+  db.AddIconMapping(kPageUrl1, icon_id);
+  ASSERT_NE(0, icon_id);
+
+  // We should be able to find the `icon_id` via the non-filtered function.
+  auto icon_id_found =
+      db.GetFaviconIDForFaviconURL(kIconUrl1, favicon_base::IconType::kFavicon);
+  ASSERT_EQ(icon_id, icon_id_found);
+
+  // We should be able to find the `icon_id` via a the origin of `kPageUrl1`.
+  icon_id_found =
+      db.GetFaviconIDForFaviconURL(kIconUrl1, favicon_base::IconType::kFavicon,
+                                   url::Origin::Create(kPageUrl1));
+  ASSERT_EQ(icon_id, icon_id_found);
+
+  // We shouldn't be able to find the `icon_id` via a the origin of `kPageUrl2`.
+  icon_id_found =
+      db.GetFaviconIDForFaviconURL(kIconUrl1, favicon_base::IconType::kFavicon,
+                                   url::Origin::Create(kPageUrl2));
+  ASSERT_EQ(0, icon_id_found);
+
+  // We shouldn't be able to find the `icon_id` via a the origin of `kPageUrl3`.
+  icon_id_found =
+      db.GetFaviconIDForFaviconURL(kIconUrl1, favicon_base::IconType::kFavicon,
+                                   url::Origin::Create(kPageUrl3));
+  ASSERT_EQ(0, icon_id_found);
+
+  // If we map `kPageUrl2` then the situation changes.
+  db.AddIconMapping(kPageUrl2, icon_id);
+
+  // We should be able to find the `icon_id` via a the origin of `kPageUrl1`.
+  icon_id_found =
+      db.GetFaviconIDForFaviconURL(kIconUrl1, favicon_base::IconType::kFavicon,
+                                   url::Origin::Create(kPageUrl1));
+  ASSERT_EQ(icon_id, icon_id_found);
+
+  // We should be able to find the `icon_id` via a the origin of `kPageUrl2`.
+  icon_id_found =
+      db.GetFaviconIDForFaviconURL(kIconUrl1, favicon_base::IconType::kFavicon,
+                                   url::Origin::Create(kPageUrl2));
+  ASSERT_EQ(icon_id, icon_id_found);
+
+  // We shouldn't be able to find the `icon_id` via a the origin of `kPageUrl3`.
+  icon_id_found =
+      db.GetFaviconIDForFaviconURL(kIconUrl1, favicon_base::IconType::kFavicon,
+                                   url::Origin::Create(kPageUrl3));
+  ASSERT_EQ(0, icon_id_found);
 }
 
 }  // namespace favicon

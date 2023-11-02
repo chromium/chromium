@@ -1,16 +1,14 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROMECAST_BROWSER_CAST_CONTENT_WINDOW_AURA_H_
 #define CHROMECAST_BROWSER_CAST_CONTENT_WINDOW_AURA_H_
 
-#include "base/macros.h"
 #include "chromecast/browser/cast_content_gesture_handler.h"
 #include "chromecast/browser/cast_content_window.h"
 #include "chromecast/browser/cast_web_contents_observer.h"
 #include "chromecast/browser/mojom/cast_web_service.mojom.h"
-#include "chromecast/ui/media_control_ui.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/aura/window_observer.h"
@@ -21,6 +19,7 @@ class Window;
 
 namespace chromecast {
 
+class CastWindowManager;
 class TouchBlocker;
 
 class CastContentWindowAura : public CastContentWindow,
@@ -44,15 +43,11 @@ class CastContentWindowAura : public CastContentWindow,
   void RequestVisibility(VisibilityPriority visibility_priority) override;
   void SetActivityContext(base::Value activity_context) override;
   void SetHostContext(base::Value host_context) override;
-  void NotifyVisibilityChange(VisibilityType visibility_type) override;
-  void RequestMoveOut() override;
   void EnableTouchInput(bool enabled) override;
-  mojom::MediaControlUi* media_controls() override;
 
   // content::WebContentsObserver implementation:
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void PrimaryMainFrameWasResized(bool width_changed) override;
 
   // aura::WindowObserver implementation:
   void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
@@ -67,7 +62,6 @@ class CastContentWindowAura : public CastContentWindow,
   // Utility class for detecting and dispatching gestures to delegates.
   std::unique_ptr<CastContentGestureHandler> gesture_dispatcher_;
   std::unique_ptr<TouchBlocker> touch_blocker_;
-  std::unique_ptr<MediaControlUi> media_controls_;
 
   aura::Window* window_;
   bool has_screen_access_;

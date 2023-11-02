@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <set>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
@@ -57,7 +58,7 @@ class SubresourceFilterHistoryObserverTest : public testing::Test {
   std::unique_ptr<TestingProfile> testing_profile_;
 
   // Owned by the testing_profile_.
-  subresource_filter::SubresourceFilterContentSettingsManager*
+  raw_ptr<subresource_filter::SubresourceFilterContentSettingsManager>
       settings_manager_ = nullptr;
 };
 

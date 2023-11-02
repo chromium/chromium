@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-# Copyright 2019 The Chromium Authors. All rights reserved.
+#!/usr/bin/env vpython3
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -31,9 +31,9 @@ def run_extractor(file_path: Path) -> Tuple[bytes, bytes]:
 
 
 def get_expected_files(source_file: Path) -> Path:
-  stdout_file = (source_file.with_stem('%s-stdout' %
+  stdout_file = (source_file.with_name('%s-stdout' %
                                        source_file.stem).with_suffix('.txt'))
-  stderr_file = (source_file.with_stem('%s-stderr' %
+  stderr_file = (source_file.with_name('%s-stderr' %
                                        source_file.stem).with_suffix('.txt'))
   return (stdout_file, stderr_file)
 

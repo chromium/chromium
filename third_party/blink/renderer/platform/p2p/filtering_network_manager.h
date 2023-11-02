@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,7 +53,7 @@ class FilteringNetworkManager : public rtc::NetworkManagerBase,
   void Initialize() override;
   void StartUpdating() override;
   void StopUpdating() override;
-  void GetNetworks(NetworkList* networks) const override;
+  std::vector<const rtc::Network*> GetNetworks() const override;
 
   webrtc::MdnsResponderInterface* GetMdnsResponder() const override;
 

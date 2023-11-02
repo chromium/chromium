@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,10 +52,10 @@ uint64_t StrToHash64Bit(base::StringPiece str);
 uint32_t StrToHash32Bit(base::StringPiece str);
 
 // Reduce FieldSignature space (in UKM) to a small range for privacy reasons.
-int64_t HashFormSignature(autofill::FormSignature form_signature);
+int64_t HashFormSignature(FormSignature form_signature);
 
 // Reduce FieldSignature space (in UKM) to a small range for privacy reasons.
-int64_t HashFieldSignature(autofill::FieldSignature field_signature);
+int64_t HashFieldSignature(FieldSignature field_signature);
 
 }  // namespace autofill
 

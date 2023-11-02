@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -75,8 +75,9 @@ class LayoutObjectMethodMatcher : public MatchFinder::MatchCallback {
                 cxxRecordDecl(isSameOrDerivedFrom("::blink::LayoutObject"))),
             has(compoundStmt()),
             // Avoid matching the following cases
-            unless(anyOf(isConstexpr(), isDefaulted(), cxxConstructorDecl(),
-                         cxxDestructorDecl(), isStaticStorageClass(),
+            unless(anyOf(isConstexpr(), isDefaulted(), isPure(),
+                         cxxConstructorDecl(), cxxDestructorDecl(),
+                         isStaticStorageClass(),
                          // Do not trace lambdas (no name, possibly tracking
                          // more parameters than intended because of [&]).
                          hasParent(cxxRecordDecl(isLambda())),
@@ -88,19 +89,21 @@ class LayoutObjectMethodMatcher : public MatchFinder::MatchCallback {
     match_finder.addDynamicMatcher(function_call, this);
   }
 
-  void run(const MatchFinder::MatchResult& result) {
+  void run(const MatchFinder::MatchResult& result) override {
     auto* method =
         result.Nodes.getNodeAs<clang::CXXMethodDecl>("layout_method");
 
     const auto* stmt = method->getBody();
     assert(stmt);
 
-    auto* stmts = llvm::dyn_cast<clang::CompoundStmt>(stmt)->body_front();
-    if (clang::CXXMemberCallExpr::classof(stmts)) {
-      auto* call = llvm::dyn_cast<clang::CXXMemberCallExpr>(stmts);
-      const std::string& name = call->getMethodDecl()->getNameAsString();
-      if (name == "CheckIsNotDestroyed")
-        return;
+    if (!llvm::dyn_cast<clang::CompoundStmt>(stmt)->body_empty()) {
+      auto* stmts = llvm::dyn_cast<clang::CompoundStmt>(stmt)->body_front();
+      if (clang::CXXMemberCallExpr::classof(stmts)) {
+        auto* call = llvm::dyn_cast<clang::CXXMemberCallExpr>(stmts);
+        const std::string& name = call->getMethodDecl()->getNameAsString();
+        if (name == "CheckIsNotDestroyed")
+          return;
+      }
     }
 
     auto* type = method->getParent();

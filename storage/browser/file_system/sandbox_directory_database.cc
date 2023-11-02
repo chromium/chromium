@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,16 +8,15 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <memory>
 #include <set>
 
+#include "base/containers/contains.h"
 #include "base/containers/stack.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/pickle.h"
 #include "base/strings/string_number_conversions.h"
@@ -158,8 +157,8 @@ class DatabaseCheckHelper {
   bool ScanDirectory();
   bool ScanHierarchy();
 
-  SandboxDirectoryDatabase* dir_db_;
-  leveldb::DB* db_;
+  raw_ptr<SandboxDirectoryDatabase> dir_db_;
+  raw_ptr<leveldb::DB> db_;
   base::FilePath path_;
 
   std::set<base::FilePath> files_in_db_;
@@ -305,8 +304,7 @@ bool DatabaseCheckHelper::ScanDirectory() {
       if (!path_.AppendRelativePath(absolute_file_path, &relative_file_path))
         return false;
 
-      if (std::find(kExcludes, kExcludes + base::size(kExcludes),
-                    relative_file_path) != kExcludes + base::size(kExcludes))
+      if (base::Contains(kExcludes, relative_file_path))
         continue;
 
       if (find_info.IsDirectory()) {
@@ -746,7 +744,7 @@ bool SandboxDirectoryDatabase::Init(RecoveryOption recovery_option) {
                                 SandboxDirectoryRepairResult::DB_REPAIR_FAILED,
                                 SandboxDirectoryRepairResult::DB_REPAIR_MAX);
       LOG(WARNING) << "Failed to repair SandboxDirectoryDatabase.";
-      FALLTHROUGH;
+      [[fallthrough]];
     case DELETE_ON_CORRUPTION:
       LOG(WARNING) << "Clearing SandboxDirectoryDatabase.";
       if (!leveldb_chrome::DeleteDB(filesystem_data_directory_, options).ok())
@@ -918,7 +916,6 @@ bool SandboxDirectoryDatabase::RemoveFileInfoHelper(
     if (!ListChildren(file_id, &children))
       return false;
     if (children.size()) {
-      LOG(ERROR) << "Can't remove a directory with children.";
       return false;
     }
   }

@@ -1,4 +1,4 @@
-// Copyright 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/layers/layer_collections.h"
 #include "ui/gfx/geometry/rect.h"
@@ -157,7 +158,7 @@ class CC_EXPORT DamageTracker {
   struct SurfaceWithRect {
     SurfaceWithRect(RenderSurfaceImpl* rs, const gfx::Rect& rect)
         : render_surface(rs), rect_in_target_space(rect) {}
-    RenderSurfaceImpl* render_surface;
+    raw_ptr<RenderSurfaceImpl> render_surface;
     const gfx::Rect rect_in_target_space;
   };
 

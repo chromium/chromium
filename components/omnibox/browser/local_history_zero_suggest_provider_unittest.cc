@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/i18n/case_conversion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -16,8 +17,10 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/keyword_search_term.h"
+#include "components/history/core/browser/keyword_search_term_util.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -26,21 +29,23 @@
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/in_memory_url_index_test_util.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 
 using base::Time;
+using metrics::OmniboxEventProto;
 using OmniboxFieldTrial::GetLocalHistoryZeroSuggestAgeThreshold;
+using OmniboxFieldTrial::kLocalHistoryZeroSuggestRelevanceScore;
 
 namespace {
 
 // Used to populate the URLDatabase.
 struct TestURLData {
-  const TemplateURL* search_provider;
+  raw_ptr<const TemplateURL> search_provider;
   std::string search_terms;
   std::string additional_query_params;
   int age_in_seconds;
@@ -60,7 +65,7 @@ struct TestMatchData {
 }  // namespace
 
 class LocalHistoryZeroSuggestProviderTest
-    : public testing::Test,
+    : public testing::TestWithParam<bool>,
       public AutocompleteProviderListener {
  public:
   LocalHistoryZeroSuggestProviderTest() = default;
@@ -78,15 +83,22 @@ class LocalHistoryZeroSuggestProviderTest
 
     client_ = std::make_unique<FakeAutocompleteProviderClient>();
     client_->set_identity_manager(identity_env_->identity_manager());
+    CHECK(history_dir_.CreateUniqueTempDir());
+    client_->set_history_service(
+        history::CreateHistoryService(history_dir_.GetPath(), true));
+    client_->set_bookmark_model(bookmarks::TestBookmarkClient::CreateModel());
 
     provider_ = base::WrapRefCounted(
         LocalHistoryZeroSuggestProvider::Create(client_.get(), this));
 
-#if defined(OS_IOS)  // Only needed for iOS.
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitAndEnableFeature(
-        omnibox::kLocalHistoryZeroSuggest);
-#endif
+    if (GetParam()) {
+      scoped_feature_list_->InitAndEnableFeature(
+          omnibox::kLocalHistorySuggestRevamp);
+    } else {
+      scoped_feature_list_->InitAndDisableFeature(
+          omnibox::kLocalHistorySuggestRevamp);
+    }
 
     // Add the fallback default search provider to the TemplateURLService so
     // that it gets a valid unique identifier. Make the newly added provider the
@@ -109,7 +121,8 @@ class LocalHistoryZeroSuggestProviderTest
   }
 
   // AutocompleteProviderListener
-  void OnProviderUpdate(bool updated_matches) override;
+  void OnProviderUpdate(bool updated_matches,
+                        const AutocompleteProvider* provider) override;
 
   // Fills the URLDatabase with search URLs using the provided information.
   void LoadURLs(const std::vector<TestURLData>& url_data_list);
@@ -119,8 +132,9 @@ class LocalHistoryZeroSuggestProviderTest
 
   // Creates an input using the provided information and queries the provider.
   void StartProviderAndWaitUntilDone(const std::string& text,
-                                     OmniboxFocusType focus_type,
-                                     PageClassification page_classification);
+                                     metrics::OmniboxFocusType focus_type,
+                                     PageClassification page_classification,
+                                     const std::string& current_url);
 
   // Verifies that provider matches are as expected.
   void ExpectMatches(const std::vector<TestMatchData>& match_data_list);
@@ -136,6 +150,7 @@ class LocalHistoryZeroSuggestProviderTest
   }
 
   base::test::TaskEnvironment task_environment_;
+  base::ScopedTempDir history_dir_;
   // Used to spin the message loop until |provider_| is done with its async ops.
   std::unique_ptr<base::RunLoop> provider_run_loop_;
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
@@ -180,12 +195,14 @@ void LocalHistoryZeroSuggestProviderTest::WaitForHistoryService() {
 
 void LocalHistoryZeroSuggestProviderTest::StartProviderAndWaitUntilDone(
     const std::string& text = "",
-    OmniboxFocusType focus_type = OmniboxFocusType::ON_FOCUS,
-    PageClassification page_classification =
-        metrics::OmniboxEventProto::NTP_REALBOX) {
+    metrics::OmniboxFocusType focus_type =
+        metrics::OmniboxFocusType::INTERACTION_FOCUS,
+    PageClassification page_classification = OmniboxEventProto::NTP_REALBOX,
+    const std::string& current_url = "") {
   AutocompleteInput input(base::ASCIIToUTF16(text), page_classification,
                           TestSchemeClassifier());
   input.set_focus_type(focus_type);
+  input.set_current_url(GURL(current_url));
   provider_->Start(input, false);
   if (!provider_->done()) {
     provider_run_loop_ = std::make_unique<base::RunLoop>();
@@ -195,7 +212,8 @@ void LocalHistoryZeroSuggestProviderTest::StartProviderAndWaitUntilDone(
 }
 
 void LocalHistoryZeroSuggestProviderTest::OnProviderUpdate(
-    bool updated_matches) {
+    bool updated_matches,
+    const AutocompleteProvider* provider) {
   if (provider_->done() && provider_run_loop_)
     provider_run_loop_->Quit();
 }
@@ -223,8 +241,12 @@ void LocalHistoryZeroSuggestProviderTest::SignOut() {
   identity_env_->ClearPrimaryAccount();
 }
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         LocalHistoryZeroSuggestProviderTest,
+                         testing::Bool());
+
 // Tests that suggestions are returned only if when input is empty and focused.
-TEST_F(LocalHistoryZeroSuggestProviderTest, Input) {
+TEST_P(LocalHistoryZeroSuggestProviderTest, Input) {
   base::HistogramTester histogram_tester;
 
   LoadURLs({
@@ -241,7 +263,8 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Input) {
   histogram_tester.ExpectTotalCount(
       "Omnibox.LocalHistoryZeroSuggest.SearchTermsExtractionTime", 0);
 
-  StartProviderAndWaitUntilDone(/*text=*/"", OmniboxFocusType::DEFAULT);
+  StartProviderAndWaitUntilDone(/*text=*/"",
+                                metrics::OmniboxFocusType::INTERACTION_DEFAULT);
   ExpectMatches({});
 
   // Following histograms should not be logged if zero-prefix suggestions are
@@ -252,7 +275,8 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Input) {
       "Omnibox.LocalHistoryZeroSuggest.SearchTermsExtractionTime", 0);
 
   StartProviderAndWaitUntilDone();
-  ExpectMatches({{"hello world", kLocalHistoryZPSUnauthenticatedRelevance}});
+  ExpectMatches(
+      {{"hello world", kLocalHistoryZeroSuggestRelevanceScore.Get()}});
 
   // Following histograms should be logged when zero-prefix suggestions are
   // allowed and the keyword search terms database is queried.
@@ -269,7 +293,7 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Input) {
 
 // Tests that suggestions are returned only if user is not in an off-the-record
 // context.
-TEST_F(LocalHistoryZeroSuggestProviderTest, Incognito) {
+TEST_P(LocalHistoryZeroSuggestProviderTest, Incognito) {
   LoadURLs({
       {default_search_provider(), "hello world", "&foo=bar", 1},
   });
@@ -283,30 +307,84 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Incognito) {
   ExpectMatches({});
 
   StartProviderAndWaitUntilDone();
-  ExpectMatches({{"hello world", kLocalHistoryZPSUnauthenticatedRelevance}});
+  ExpectMatches(
+      {{"hello world", kLocalHistoryZeroSuggestRelevanceScore.Get()}});
 }
 
-// Tests that suggestions are returned only if FeatureFlags is configured
-// to return local history suggestions in the NTP.
-TEST_F(LocalHistoryZeroSuggestProviderTest, FeatureFlags) {
+// Tests that suggestions are allowed in the eligibile entry points.
+TEST_P(LocalHistoryZeroSuggestProviderTest, EntryPoint) {
   LoadURLs({
       {default_search_provider(), "hello world", "&foo=bar", 1},
   });
 
-  // Verify that local history zero-prefix suggestions are enabled by default
-  // on Desktop and Android NTP.
-  scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-  StartProviderAndWaitUntilDone();
-#if !defined(OS_IOS)  // Enabled by default on Desktop and Android NTP.
-  ExpectMatches({{"hello world", kLocalHistoryZPSUnauthenticatedRelevance}});
-#else
-  ExpectMatches({});
-#endif
+  {
+    // Disable local history zero-prefix suggestions beyond NTP.
+    base::test::ScopedFeatureList features;
+    features.InitAndDisableFeature(omnibox::kLocalHistoryZeroSuggestBeyondNTP);
+    StartProviderAndWaitUntilDone();
+
+    // Local history zero-prefix suggestions are enabled by default.
+    ExpectMatches(
+        {{"hello world", kLocalHistoryZeroSuggestRelevanceScore.Get()}});
+  }
+  {
+    // Enable on-focus for SRP.
+    // Disable local history zero-prefix suggestions beyond NTP.
+    base::test::ScopedFeatureList features;
+    features.InitWithFeatures(
+        /*enabled_features=*/{omnibox::kFocusTriggersSRPZeroSuggest},
+        /*disabled_features=*/{omnibox::kLocalHistoryZeroSuggestBeyondNTP});
+    StartProviderAndWaitUntilDone(
+        /*text=*/"https://example.com/",
+        metrics::OmniboxFocusType::INTERACTION_FOCUS,
+        OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
+        /*current_url=*/"https://example.com/");
+
+    // Local history zero-prefix suggestions are disabled for on-focus SRP.
+    ExpectMatches({});
+  }
+  {
+    // Enable on-focus for SRP.
+    // Enable local history zero-prefix suggestions beyond NTP.
+    base::test::ScopedFeatureList features;
+    features.InitWithFeatures(
+        /*enabled_features=*/
+        {
+            omnibox::kFocusTriggersSRPZeroSuggest,
+            omnibox::kLocalHistoryZeroSuggestBeyondNTP,
+        },
+        /*disabled_features=*/{});
+    StartProviderAndWaitUntilDone(
+        /*text=*/"https://example.com/",
+        metrics::OmniboxFocusType::INTERACTION_FOCUS,
+        OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
+        /*current_url=*/"https://example.com/");
+
+    // Local history zero-prefix suggestions are enabled for on-focus SRP.
+    ExpectMatches(
+        {{"hello world", kLocalHistoryZeroSuggestRelevanceScore.Get()}});
+  }
+  {
+    // Disable on-focus for SRP.
+    // Enable local history zero-prefix suggestions beyond NTP.
+    base::test::ScopedFeatureList features;
+    features.InitWithFeatures(
+        /*enabled_features=*/{omnibox::kLocalHistoryZeroSuggestBeyondNTP},
+        /*disabled_features=*/{omnibox::kFocusTriggersSRPZeroSuggest});
+    StartProviderAndWaitUntilDone(
+        /*text=*/"https://example.com/",
+        metrics::OmniboxFocusType::INTERACTION_FOCUS,
+        OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
+        /*current_url=*/"https://example.com/");
+
+    // Local history zero-prefix suggestions are disabled for on-focus SRP.
+    ExpectMatches({});
+  }
 }
 
 // Tests that search terms are extracted from the default search provider's
 // search history only and only when Google is the default search provider.
-TEST_F(LocalHistoryZeroSuggestProviderTest, DefaultSearchProvider) {
+TEST_P(LocalHistoryZeroSuggestProviderTest, DefaultSearchProvider) {
   auto* template_url_service = client_->GetTemplateURLService();
   auto* other_search_provider = template_url_service->Add(
       std::make_unique<TemplateURL>(*GenerateDummyTemplateURLData("other")));
@@ -316,7 +394,8 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, DefaultSearchProvider) {
   });
 
   StartProviderAndWaitUntilDone();
-  ExpectMatches({{"hello world", kLocalHistoryZPSUnauthenticatedRelevance}});
+  ExpectMatches(
+      {{"hello world", kLocalHistoryZeroSuggestRelevanceScore.Get()}});
 
   template_url_service->SetUserSelectedDefaultSearchProvider(
       other_search_provider);
@@ -331,7 +410,7 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, DefaultSearchProvider) {
 // Tests that extracted search terms are normalized (their whitespaces are
 // collapsed, are lowercased and deduplicated) without loss of unicode encoding.
 // Note: Disabled for now due to flakes; see: https://crbug.com/1174382
-TEST_F(LocalHistoryZeroSuggestProviderTest, DISABLED_Normalization) {
+TEST_P(LocalHistoryZeroSuggestProviderTest, DISABLED_Normalization) {
   LoadURLs({
       // Issued too closely to the original query; will be ignored:
       {default_search_provider(), "HELLO   WORLD  ", "&foo=bar4", 1},
@@ -347,12 +426,12 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, DISABLED_Normalization) {
 
   StartProviderAndWaitUntilDone();
   ExpectMatches(
-      {{"سلام دنیا", kLocalHistoryZPSUnauthenticatedRelevance},
-       {"hello world", kLocalHistoryZPSUnauthenticatedRelevance - 1}});
+      {{"سلام دنیا", kLocalHistoryZeroSuggestRelevanceScore.Get()},
+       {"hello world", kLocalHistoryZeroSuggestRelevanceScore.Get() - 1}});
 }
 
 // Tests that the suggestions are ranked correctly.
-TEST_F(LocalHistoryZeroSuggestProviderTest, Ranking) {
+TEST_P(LocalHistoryZeroSuggestProviderTest, Ranking) {
   int original_query_age =
       history::kAutocompleteDuplicateVisitIntervalThreshold.InSeconds() + 3;
   LoadURLs({
@@ -374,8 +453,9 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Ranking) {
   // More recent searches are ranked higher when searches are just as frequent.
   StartProviderAndWaitUntilDone();
   ExpectMatches(
-      {{"more recent search", kLocalHistoryZPSUnauthenticatedRelevance},
-       {"less recent search", kLocalHistoryZPSUnauthenticatedRelevance - 1}});
+      {{"more recent search", kLocalHistoryZeroSuggestRelevanceScore.Get()},
+       {"less recent search",
+        kLocalHistoryZeroSuggestRelevanceScore.Get() - 1}});
 
   // More frequent searches are ranked higher when searches are nearly as old.
   LoadURLs({
@@ -386,12 +466,13 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Ranking) {
 
   StartProviderAndWaitUntilDone();
   ExpectMatches(
-      {{"less recent search", kLocalHistoryZPSUnauthenticatedRelevance},
-       {"more recent search", kLocalHistoryZPSUnauthenticatedRelevance - 1}});
+      {{"less recent search", kLocalHistoryZeroSuggestRelevanceScore.Get()},
+       {"more recent search",
+        kLocalHistoryZeroSuggestRelevanceScore.Get() - 1}});
 }
 
 // Tests that suggestions are created from fresh search histories only.
-TEST_F(LocalHistoryZeroSuggestProviderTest, Freshness) {
+TEST_P(LocalHistoryZeroSuggestProviderTest, Freshness) {
   base::Time age_threshold = GetLocalHistoryZeroSuggestAgeThreshold();
   int fresh = (Time::Now() - age_threshold).InSeconds() - 60;
   int stale = (Time::Now() - age_threshold).InSeconds() + 60;
@@ -403,11 +484,12 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Freshness) {
   // With the new age threshold, one of the two searches qualifies as a
   // suggestion. With the old threshold, neither would have.
   StartProviderAndWaitUntilDone();
-  ExpectMatches({{"fresh search", kLocalHistoryZPSUnauthenticatedRelevance}});
+  ExpectMatches(
+      {{"fresh search", kLocalHistoryZeroSuggestRelevanceScore.Get()}});
 }
 
 // Tests that the provider supports deletion of matches.
-TEST_F(LocalHistoryZeroSuggestProviderTest, Deletion) {
+TEST_P(LocalHistoryZeroSuggestProviderTest, Deletion) {
   base::HistogramTester histogram_tester;
 
   auto* template_url_service = client_->GetTemplateURLService();
@@ -426,9 +508,9 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Deletion) {
   });
 
   StartProviderAndWaitUntilDone();
-  ExpectMatches(
-      {{"hello world", kLocalHistoryZPSUnauthenticatedRelevance},
-       {"not to be deleted", kLocalHistoryZPSUnauthenticatedRelevance - 1}});
+  ExpectMatches({{"hello world", kLocalHistoryZeroSuggestRelevanceScore.Get()},
+                 {"not to be deleted",
+                  kLocalHistoryZeroSuggestRelevanceScore.Get() - 1}});
 
   // The keyword search terms database should be queried for the search terms
   // submitted to the default search provider only; which are 2 unique
@@ -439,7 +521,7 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Deletion) {
   provider_->DeleteMatch(provider_->matches()[0]);
 
   // Histogram tracking the synchronous deletion duration should get logged
-  // synchrnously.
+  // synchronously.
   histogram_tester.ExpectTotalCount(
       "Omnibox.LocalHistoryZeroSuggest.SyncDeleteTime", 1);
   histogram_tester.ExpectTotalCount(
@@ -448,12 +530,12 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Deletion) {
   // Make sure the deletion takes effect immediately in the provider before the
   // history service asynchronously performs the deletion or even before the
   // provider is started again.
-  ExpectMatches(
-      {{"not to be deleted", kLocalHistoryZPSUnauthenticatedRelevance - 1}});
+  ExpectMatches({{"not to be deleted",
+                  kLocalHistoryZeroSuggestRelevanceScore.Get() - 1}});
 
   StartProviderAndWaitUntilDone();
   ExpectMatches(
-      {{"not to be deleted", kLocalHistoryZPSUnauthenticatedRelevance}});
+      {{"not to be deleted", kLocalHistoryZeroSuggestRelevanceScore.Get()}});
 
   // Wait until the history service performs the deletion.
   WaitForHistoryService();
@@ -465,23 +547,25 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Deletion) {
 
   StartProviderAndWaitUntilDone();
   ExpectMatches(
-      {{"not to be deleted", kLocalHistoryZPSUnauthenticatedRelevance}});
+      {{"not to be deleted", kLocalHistoryZeroSuggestRelevanceScore.Get()}});
 
   // Make sure all the search terms for the default search provider that would
   // produce the deleted match are deleted.
   history::URLDatabase* url_db =
       client_->GetHistoryService()->InMemoryDatabase();
-  std::vector<history::NormalizedKeywordSearchTermVisit> visits =
-      url_db->GetMostRecentNormalizedKeywordSearchTerms(
-          default_search_provider()->id(),
-          GetLocalHistoryZeroSuggestAgeThreshold());
+  std::vector<std::unique_ptr<history::KeywordSearchTermVisit>> visits;
+  url_db->GetMostRecentKeywordSearchTerms(
+      default_search_provider()->id(), GetLocalHistoryZeroSuggestAgeThreshold(),
+      &visits);
   EXPECT_EQ(1U, visits.size());
-  EXPECT_EQ(u"not to be deleted", visits[0].normalized_term);
+  EXPECT_EQ(u"not to be deleted", visits[0]->normalized_term);
 
   // Make sure search terms from other search providers that would produce the
   // deleted match are not deleted.
-  visits = url_db->GetMostRecentNormalizedKeywordSearchTerms(
-      other_search_provider->id(), GetLocalHistoryZeroSuggestAgeThreshold());
+  visits.clear();
+  url_db->GetMostRecentKeywordSearchTerms(
+      other_search_provider->id(), GetLocalHistoryZeroSuggestAgeThreshold(),
+      &visits);
   EXPECT_EQ(1U, visits.size());
-  EXPECT_EQ(u"hello world", visits[0].normalized_term);
+  EXPECT_EQ(u"hello world", visits[0]->normalized_term);
 }

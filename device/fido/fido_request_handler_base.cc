@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
@@ -18,11 +19,17 @@
 #include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/ble_adapter_manager.h"
+#include "device/fido/discoverable_credential_metadata.h"
+#include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_discovery_factory.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "device/fido/win/authenticator.h"
+#endif
+
+#if BUILDFLAG(IS_MAC)
+#include "base/process/process_info.h"
 #endif
 
 namespace device {
@@ -75,6 +82,21 @@ FidoRequestHandlerBase::TransportAvailabilityInfo::
 
 FidoRequestHandlerBase::Observer::~Observer() = default;
 
+// FidoRequestHandlerBase::ScopedAlwaysAllowBLECalls --------------------------
+
+static bool g_always_allow_ble_calls = false;
+
+FidoRequestHandlerBase::ScopedAlwaysAllowBLECalls::ScopedAlwaysAllowBLECalls() {
+  CHECK(!g_always_allow_ble_calls);
+  g_always_allow_ble_calls = true;
+}
+
+FidoRequestHandlerBase::ScopedAlwaysAllowBLECalls::
+    ~ScopedAlwaysAllowBLECalls() {
+  CHECK(g_always_allow_ble_calls);
+  g_always_allow_ble_calls = false;
+}
+
 // FidoRequestHandlerBase -----------------------------------------------------
 
 FidoRequestHandlerBase::FidoRequestHandlerBase()
@@ -91,7 +113,7 @@ FidoRequestHandlerBase::FidoRequestHandlerBase(
 void FidoRequestHandlerBase::InitDiscoveries(
     FidoDiscoveryFactory* fido_discovery_factory,
     base::flat_set<FidoTransportProtocol> available_transports) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Try to instantiate the discovery for proxying requests to the native
   // Windows WebAuthn API; or fall back to using the regular device transport
   // discoveries if the API is unavailable.
@@ -117,11 +139,10 @@ void FidoRequestHandlerBase::InitDiscoveries(
     // device communication block (only GetAssertionRequestHandler uses
     // caBLE). Otherwise, do not instantiate any other transports.
     base::EraseIf(available_transports, [](auto transport) {
-      return transport !=
-             FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy;
+      return transport != FidoTransportProtocol::kHybrid;
     });
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   transport_availability_info_.available_transports = available_transports;
   for (const auto transport : available_transports) {
@@ -144,14 +165,39 @@ void FidoRequestHandlerBase::InitDiscoveries(
   transport_availability_callback_readiness_->num_discoveries_pending =
       discoveries_.size();
 
+#if BUILDFLAG(IS_MAC)
+  // On recent macOS a process must have listed Bluetooth metadata in its
+  // Info.plist in order to call Bluetooth APIs. Failure to do so results in
+  // the system killing with process with SIGABRT once Bluetooth calls are
+  // made.
+  //
+  // However, unless Chromium is started from the Finder, or with special
+  // posix_spawn flags, then the responsible process—the one that needs to have
+  // the right Info.plist—is one of the parent processes, often the terminal
+  // emulator. This can lead to Chromium getting killed when trying to do
+  // WebAuthn. This also affects layout tests.
+  //
+  // Thus, if the responsible process is not Chromium itself, then we do not
+  // make any Bluetooth API calls.
+  const bool can_call_ble_apis =
+      g_always_allow_ble_calls || base::IsProcessSelfResponsible();
+  if (!can_call_ble_apis) {
+    FIDO_LOG(ERROR) << "Cannot test Bluetooth power status because process is "
+                       "not self-responsible. Launch from Finder to fix.";
+  }
+#else
+  const bool can_call_ble_apis = true;
+#endif
+
   // Check if the platform supports BLE before trying to get a power manager.
   // CaBLE might be in |available_transports| without actual BLE support under
   // the virtual environment.
   // TODO(nsatragno): Move the BLE power manager logic to CableDiscoveryFactory
   // so we don't need this additional check.
-  if (device::BluetoothAdapterFactory::Get()->IsLowEnergySupported() &&
+  if (can_call_ble_apis &&
+      device::BluetoothAdapterFactory::Get()->IsLowEnergySupported() &&
       base::Contains(transport_availability_info_.available_transports,
-                     FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy)) {
+                     FidoTransportProtocol::kHybrid)) {
     transport_availability_callback_readiness_->ble_information_pending = true;
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
@@ -197,7 +243,7 @@ void FidoRequestHandlerBase::OnBluetoothAdapterEnumerated(
     bool is_peripheral_role_supported) {
   if (!is_present) {
     transport_availability_info_.available_transports.erase(
-        FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy);
+        FidoTransportProtocol::kHybrid);
   }
 
   transport_availability_callback_readiness_->ble_information_pending = false;
@@ -329,8 +375,8 @@ void FidoRequestHandlerBase::AuthenticatorAdded(
     VLOG(2) << "Embedder controls the dispatch.";
   }
 
-#if defined(OS_WIN)
-  if (authenticator->IsWinNativeApiAuthenticator()) {
+#if BUILDFLAG(IS_WIN)
+  if (authenticator->GetType() == FidoAuthenticator::Type::kWinNative) {
     DCHECK(transport_availability_info_.has_win_native_api_authenticator);
     transport_availability_info_.win_native_api_authenticator_id =
         authenticator->GetId();
@@ -339,7 +385,11 @@ void FidoRequestHandlerBase::AuthenticatorAdded(
         static_cast<WinWebAuthnApiAuthenticator*>(authenticator)
             ->ShowsPrivacyNotice();
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
+}
+
+void FidoRequestHandlerBase::BleDenied() {
+  transport_availability_info_.ble_access_denied = true;
 }
 
 void FidoRequestHandlerBase::GetPlatformCredentialStatus(
@@ -349,16 +399,24 @@ void FidoRequestHandlerBase::GetPlatformCredentialStatus(
 }
 
 void FidoRequestHandlerBase::OnHavePlatformCredentialStatus(
-    std::vector<PublicKeyCredentialUserEntity> user_entities,
+    std::vector<DiscoverableCredentialMetadata> creds,
     bool have_credential) {
-  DCHECK(!transport_availability_info_
-              .has_recognized_platform_authenticator_credential.has_value());
-
-  transport_availability_info_
-      .has_recognized_platform_authenticator_credential = have_credential;
-  transport_availability_info_.recognized_platform_authenticator_credentials =
-      std::move(user_entities);
-
+  DCHECK_EQ(transport_availability_info_.has_platform_authenticator_credential,
+            RecognizedCredential::kUnknown);
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi) &&
+      !have_credential) {
+    transport_availability_info_.has_platform_authenticator_credential =
+        RecognizedCredential::kNoRecognizedCredential;
+    transport_availability_info_.available_transports.erase(
+        FidoTransportProtocol::kInternal);
+  } else {
+    transport_availability_info_.has_platform_authenticator_credential =
+        have_credential ? RecognizedCredential::kHasRecognizedCredential
+                        : RecognizedCredential::kNoRecognizedCredential;
+    transport_availability_info_.recognized_platform_authenticator_credentials =
+        std::move(creds);
+  }
   transport_availability_callback_readiness_
       ->platform_credential_check_pending = false;
   MaybeSignalTransportsEnumerated();

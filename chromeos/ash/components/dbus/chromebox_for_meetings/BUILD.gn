@@ -1,0 +1,43 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromebox_for_meetings/buildflags.gni")
+import("//build/config/ui.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
+assert(is_cfm, "Non-CfM builds cannot depend on this library")
+
+component("chromebox_for_meetings") {
+  defines = [ "IS_CFM_HOTLINE_CLIENT_IMPL" ]
+  public_deps = [
+    "//chromeos/ash/components/dbus",
+    "//chromeos/dbus/common",
+  ]
+  deps = [
+    "//base",
+    "//dbus",
+  ]
+  sources = [
+    "cfm_hotline_client.cc",
+    "cfm_hotline_client.h",
+    "cfm_observer.h",
+    "fake_cfm_hotline_client.cc",
+    "fake_cfm_hotline_client.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  public_deps = [ ":chromebox_for_meetings" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//dbus:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  sources = [ "cfm_hotline_client_unittest.cc" ]
+}

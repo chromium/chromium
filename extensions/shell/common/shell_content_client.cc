@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@
 #include "base/path_service.h"
 #include "components/nacl/common/nacl_constants.h"              // nogncheck
 #include "components/nacl/renderer/plugin/ppapi_entrypoints.h"  // nogncheck
-#include "content/public/common/pepper_plugin_info.h"           // nogncheck
+#include "content/public/common/content_plugin_info.h"          // nogncheck
 #include "ppapi/shared_impl/ppapi_permissions.h"                // nogncheck
 #endif
 
@@ -44,14 +44,14 @@ ShellContentClient::ShellContentClient() {
 ShellContentClient::~ShellContentClient() {
 }
 
-void ShellContentClient::AddPepperPlugins(
-    std::vector<content::PepperPluginInfo>* plugins) {
+void ShellContentClient::AddPlugins(
+    std::vector<content::ContentPluginInfo>* plugins) {
 #if BUILDFLAG(ENABLE_NACL)
   base::FilePath path;
   if (!GetNaClPluginPath(&path))
     return;
 
-  content::PepperPluginInfo nacl;
+  content::ContentPluginInfo nacl;
   // The nacl plugin is now built into the binary.
   nacl.is_internal = true;
   nacl.path = path;

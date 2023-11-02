@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -77,6 +77,13 @@ static jlong JNI_MockCertVerifier_CreateMockCertVerifier(
                                          verify_result, net::OK);
   }
 
+  return reinterpret_cast<jlong>(mock_cert_verifier);
+}
+
+static jlong JNI_MockCertVerifier_CreateFreeForAllMockCertVerifier(
+    JNIEnv* env) {
+  net::MockCertVerifier* mock_cert_verifier = new net::MockCertVerifier();
+  mock_cert_verifier->set_default_result(net::OK);
   return reinterpret_cast<jlong>(mock_cert_verifier);
 }
 

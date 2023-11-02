@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,12 +22,19 @@ class BluetoothEnabledProvider : public BaseEnabledProvider,
   BluetoothEnabledProvider();
   ~BluetoothEnabledProvider() override;
 
+ private:
   // BluetoothAdapter::Observer
   void AdapterPoweredChanged(device::BluetoothAdapter* adapter,
                              bool powered) override;
+  void AdapterPresentChanged(device::BluetoothAdapter* adapter,
+                             bool present) override;
+  void LowEnergyScanSessionHardwareOffloadingStatusChanged(
+      device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
+          status) override;
 
- private:
   void OnAdapterReceived(scoped_refptr<device::BluetoothAdapter> adapter);
+
+  void Update();
 
   base::ScopedObservation<device::BluetoothAdapter,
                           device::BluetoothAdapter::Observer>

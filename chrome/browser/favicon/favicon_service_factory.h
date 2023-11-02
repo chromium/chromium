@@ -1,11 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_FAVICON_FAVICON_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_FAVICON_FAVICON_SERVICE_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/service_access_type.h"
 
 namespace base {
@@ -20,7 +20,7 @@ class FaviconService;
 
 // Singleton that owns all FaviconService and associates them with
 // Profiles.
-class FaviconServiceFactory : public BrowserContextKeyedServiceFactory {
+class FaviconServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // |sat| defines what the caller plans to do with the service. See
   // the ServiceAccessType definition in profile.h.

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,13 @@
 #include <cstdint>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "chromecast/media/audio/mixer_service/mixer_connection.h"
 #include "chromecast/media/audio/mixer_service/mixer_socket.h"
 #include "net/base/io_buffer.h"
 
 namespace chromecast {
+class CastEventBuilder;
 class IOBufferPool;
 
 namespace media {
@@ -63,6 +63,10 @@ class OutputStreamConnection : public MixerConnection,
 
     // Called when an underrun happens on mixer input/output.
     virtual void OnMixerUnderrun(MixerUnderrunType type) {}
+
+    // Called when OutputStreamConnection records a cast event. It allows
+    // the Delegate to provide some extra data to the event.
+    virtual void ProcessCastEvent(CastEventBuilder* event) {}
 
    protected:
     virtual ~Delegate() = default;

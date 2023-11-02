@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/callback.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/domain_reliability/util.h"
 #include "net/base/elements_upload_data_stream.h"
@@ -71,7 +72,7 @@ class DomainReliabilityUploaderImpl : public DomainReliabilityUploader,
       const std::string& report_json,
       int max_upload_depth,
       const GURL& upload_url,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       DomainReliabilityUploader::UploadCallback callback) override {
     DVLOG(1) << "Uploading report to " << upload_url;
     DVLOG(2) << "Report JSON: " << report_json;
@@ -121,8 +122,9 @@ class DomainReliabilityUploaderImpl : public DomainReliabilityUploader,
     request->set_allow_credentials(false);
     request->SetExtraRequestHeaderByName(net::HttpRequestHeaders::kContentType,
                                          kJsonMimeType, true /* overwrite */);
-    request->set_isolation_info(net::IsolationInfo::CreatePartial(
-        net::IsolationInfo::RequestType::kOther, network_isolation_key));
+    request->set_isolation_info_from_network_anonymization_key(
+        network_anonymization_key);
+    request->SetLoadFlags(request->load_flags() | net::LOAD_DISABLE_CACHE);
     std::vector<char> report_data(report_json.begin(), report_json.end());
     auto upload_reader =
         std::make_unique<net::UploadOwnedBytesElementReader>(&report_data);
@@ -132,9 +134,7 @@ class DomainReliabilityUploaderImpl : public DomainReliabilityUploader,
         UploadDepthData::kUserDataKey,
         std::make_unique<UploadDepthData>(max_upload_depth + 1));
 
-    UploadMap::iterator it;
-    bool inserted;
-    std::tie(it, inserted) = uploads_.insert(
+    auto [it, inserted] = uploads_.insert(
         std::make_pair(std::move(request), std::move(callback)));
     DCHECK(inserted);
     it->first->Start();
@@ -192,8 +192,8 @@ class DomainReliabilityUploaderImpl : public DomainReliabilityUploader,
   }
 
  private:
-  MockableTime* time_;
-  net::URLRequestContext* url_request_context_;
+  raw_ptr<MockableTime> time_;
+  raw_ptr<net::URLRequestContext> url_request_context_;
   // Stores each in-flight upload request with the callback to notify its
   // initiating DRContext of its completion.
   using UploadMap = std::map<std::unique_ptr<net::URLRequest>,

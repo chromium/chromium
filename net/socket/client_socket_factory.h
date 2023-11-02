@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,17 +25,13 @@ struct NetLogSource;
 class SSLClientContext;
 class SSLClientSocket;
 struct SSLConfig;
-class ProxyClientSocket;
-class ProxyDelegate;
-class ProxyServer;
-class HttpAuthController;
 class NetworkQualityEstimator;
 
 // An interface used to instantiate StreamSocket objects.  Used to facilitate
 // testing code with mock socket implementations.
 class NET_EXPORT ClientSocketFactory {
  public:
-  virtual ~ClientSocketFactory() {}
+  virtual ~ClientSocketFactory() = default;
 
   // |source| is the NetLogSource for the entity trying to create the socket,
   // if it has one.
@@ -61,18 +57,6 @@ class NET_EXPORT ClientSocketFactory {
       std::unique_ptr<StreamSocket> stream_socket,
       const HostPortPair& host_and_port,
       const SSLConfig& ssl_config) = 0;
-
-  virtual std::unique_ptr<ProxyClientSocket> CreateProxyClientSocket(
-      std::unique_ptr<StreamSocket> stream_socket,
-      const std::string& user_agent,
-      const HostPortPair& endpoint,
-      const ProxyServer& proxy_server,
-      HttpAuthController* http_auth_controller,
-      bool tunnel,
-      bool using_spdy,
-      NextProto negotiated_protocol,
-      ProxyDelegate* proxy_delegate,
-      const NetworkTrafficAnnotationTag& traffic_annotation) = 0;
 
   // Returns the default ClientSocketFactory.
   static ClientSocketFactory* GetDefaultFactory();

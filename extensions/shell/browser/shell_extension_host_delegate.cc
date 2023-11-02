@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,7 @@ ShellExtensionHostDelegate::GetJavaScriptDialogManager() {
   // TODO(jamescook): Create a JavaScriptDialogManager or reuse the one from
   // content_shell.
   NOTREACHED();
-  return NULL;
+  return nullptr;
 }
 
 void ShellExtensionHostDelegate::CreateTab(
@@ -61,9 +61,7 @@ bool ShellExtensionHostDelegate::CheckMediaAccessPermission(
 
 content::PictureInPictureResult
 ShellExtensionHostDelegate::EnterPictureInPicture(
-    content::WebContents* web_contents,
-    const viz::SurfaceId& surface_id,
-    const gfx::Size& natural_size) {
+    content::WebContents* web_contents) {
   NOTREACHED();
   return content::PictureInPictureResult::kNotSupported;
 }

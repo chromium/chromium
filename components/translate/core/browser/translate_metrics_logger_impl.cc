@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -84,7 +84,7 @@ void TranslateMetricsLoggerImpl::LogApplicationStartMetrics(
     std::unique_ptr<TranslatePrefs> translate_prefs) {
   // TODO(1229371): These histograms are only recorded when Chrome starts up
   // using the preferences of whatever profile is logged in at the time. This
-  // information should be recroded each time a profile logs in.
+  // information should be recorded each time a profile logs in.
 
   std::vector<std::string> always_translate_languages =
       translate_prefs->GetAlwaysTranslateLanguages();
@@ -369,7 +369,7 @@ void TranslateMetricsLoggerImpl::LogTranslationStarted(
 
 void TranslateMetricsLoggerImpl::LogTranslationFinished(
     bool was_successful,
-    TranslateErrors::Type error_type) {
+    TranslateErrors error_type) {
   // Note that a translation can fail (i.e. was_successful is false) and have an
   // error type of NONE in some cases. One case where this happens is when a
   // translation is interrupted midway through.

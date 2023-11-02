@@ -1,3 +1,0 @@
-# For sandbox security review.
-per-file web_instance_host.*=set noparent
-per-file web_instance_host.*=file://fuchsia/SECURITY_OWNERS

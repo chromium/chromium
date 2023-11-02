@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,8 @@ namespace cc {
 // overlay scrollbars on Win/Linux.
 class CC_EXPORT PaintedOverlayScrollbarLayer : public ScrollbarLayerBase {
  public:
-  std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
+  std::unique_ptr<LayerImpl> CreateLayerImpl(
+      LayerTreeImpl* tree_impl) const override;
 
   static scoped_refptr<PaintedOverlayScrollbarLayer> CreateOrReuse(
       scoped_refptr<Scrollbar> scrollbar,
@@ -37,7 +38,8 @@ class CC_EXPORT PaintedOverlayScrollbarLayer : public ScrollbarLayerBase {
   bool Update() override;
   void SetLayerTreeHost(LayerTreeHost* host) override;
   void PushPropertiesTo(LayerImpl* layer,
-                        const CommitState& commit_state) override;
+                        const CommitState& commit_state,
+                        const ThreadUnsafeCommitState& unsafe_state) override;
 
   ScrollbarLayerType GetScrollbarLayerType() const override;
 
@@ -47,7 +49,7 @@ class CC_EXPORT PaintedOverlayScrollbarLayer : public ScrollbarLayerBase {
 
  private:
   template <typename T>
-  bool UpdateProperty(T value, T* prop) {
+  bool UpdateProperty(const T value, T* prop) {
     if (*prop == value)
       return false;
     *prop = value;
@@ -58,14 +60,14 @@ class CC_EXPORT PaintedOverlayScrollbarLayer : public ScrollbarLayerBase {
   bool PaintThumbIfNeeded();
   bool PaintTickmarks();
 
-  scoped_refptr<Scrollbar> scrollbar_;
+  ProtectedSequenceForbidden<scoped_refptr<Scrollbar>> scrollbar_;
 
-  gfx::Size thumb_size_;
-  gfx::Rect track_rect_;
-  gfx::Rect aperture_;
+  ProtectedSequenceReadable<gfx::Size> thumb_size_;
+  ProtectedSequenceReadable<gfx::Rect> track_rect_;
+  ProtectedSequenceReadable<gfx::Rect> aperture_;
 
-  std::unique_ptr<ScopedUIResource> thumb_resource_;
-  std::unique_ptr<ScopedUIResource> track_resource_;
+  ProtectedSequenceReadable<std::unique_ptr<ScopedUIResource>> thumb_resource_;
+  ProtectedSequenceReadable<std::unique_ptr<ScopedUIResource>> track_resource_;
 };
 
 }  // namespace cc

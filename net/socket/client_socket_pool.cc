@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,14 +46,15 @@ OnHostResolutionCallbackResult OnHostResolution(
     const SpdySessionKey& spdy_session_key,
     bool is_for_websockets,
     const HostPortPair& host_port_pair,
-    const AddressList& addresses) {
+    const std::vector<HostResolverEndpointResult>& endpoint_results,
+    const std::set<std::string>& aliases) {
   DCHECK(host_port_pair == spdy_session_key.host_port_pair());
 
   // It is OK to dereference spdy_session_pool, because the
   // ClientSocketPoolManager will be destroyed in the same callback that
   // destroys the SpdySessionPool.
   return spdy_session_pool->OnHostResolutionComplete(
-      spdy_session_key, is_for_websockets, addresses);
+      spdy_session_key, is_for_websockets, endpoint_results, aliases);
 }
 
 }  // namespace
@@ -75,17 +76,18 @@ ClientSocketPool::SocketParams::CreateForHttpForTesting() {
 ClientSocketPool::GroupId::GroupId()
     : privacy_mode_(PrivacyMode::PRIVACY_MODE_DISABLED) {}
 
-ClientSocketPool::GroupId::GroupId(url::SchemeHostPort destination,
-                                   PrivacyMode privacy_mode,
-                                   NetworkIsolationKey network_isolation_key,
-                                   SecureDnsPolicy secure_dns_policy)
+ClientSocketPool::GroupId::GroupId(
+    url::SchemeHostPort destination,
+    PrivacyMode privacy_mode,
+    NetworkAnonymizationKey network_anonymization_key,
+    SecureDnsPolicy secure_dns_policy)
     : destination_(std::move(destination)),
       privacy_mode_(privacy_mode),
-      network_isolation_key_(
+      network_anonymization_key_(
           base::FeatureList::IsEnabled(
               features::kPartitionConnectionsByNetworkIsolationKey)
-              ? std::move(network_isolation_key)
-              : NetworkIsolationKey()),
+              ? std::move(network_anonymization_key)
+              : NetworkAnonymizationKey()),
       secure_dns_policy_(secure_dns_policy) {
   DCHECK(destination_.IsValid());
 
@@ -114,7 +116,7 @@ std::string ClientSocketPool::GroupId::ToString() const {
   if (base::FeatureList::IsEnabled(
           features::kPartitionConnectionsByNetworkIsolationKey)) {
     result += " <";
-    result += network_isolation_key_.ToDebugString();
+    result += network_anonymization_key_.ToDebugString();
     result += ">";
   }
 
@@ -123,6 +125,9 @@ std::string ClientSocketPool::GroupId::ToString() const {
       break;
     case SecureDnsPolicy::kDisable:
       result = "dsd/" + result;
+      break;
+    case SecureDnsPolicy::kBootstrap:
+      result = "dns_bootstrap/" + result;
       break;
   }
 
@@ -153,17 +158,15 @@ ClientSocketPool::ClientSocketPool(
 void ClientSocketPool::NetLogTcpClientSocketPoolRequestedSocket(
     const NetLogWithSource& net_log,
     const GroupId& group_id) {
-  if (net_log.IsCapturing()) {
-    // TODO(eroman): Split out the host and port parameters.
-    net_log.AddEvent(NetLogEventType::TCP_CLIENT_SOCKET_POOL_REQUESTED_SOCKET,
-                     [&] { return NetLogGroupIdParams(group_id); });
-  }
+  // TODO(eroman): Split out the host and port parameters.
+  net_log.AddEvent(NetLogEventType::TCP_CLIENT_SOCKET_POOL_REQUESTED_SOCKET,
+                   [&] { return NetLogGroupIdParams(group_id); });
 }
 
 base::Value ClientSocketPool::NetLogGroupIdParams(const GroupId& group_id) {
-  base::Value event_params(base::Value::Type::DICTIONARY);
-  event_params.SetStringKey("group_id", group_id.ToString());
-  return event_params;
+  base::Value::Dict event_params;
+  event_params.Set("group_id", group_id.ToString());
+  return base::Value(std::move(event_params));
 }
 
 std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
@@ -186,7 +189,7 @@ std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
         SpdySessionKey(HostPortPair::FromSchemeHostPort(group_id.destination()),
                        proxy_server, group_id.privacy_mode(),
                        SpdySessionKey::IsProxySession::kFalse, socket_tag,
-                       group_id.network_isolation_key(),
+                       group_id.network_anonymization_key(),
                        group_id.secure_dns_policy()),
         is_for_websockets_);
   } else if (proxy_server.is_https()) {
@@ -195,7 +198,7 @@ std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
         SpdySessionKey(proxy_server.host_port_pair(), ProxyServer::Direct(),
                        group_id.privacy_mode(),
                        SpdySessionKey::IsProxySession::kTrue, socket_tag,
-                       group_id.network_isolation_key(),
+                       group_id.network_anonymization_key(),
                        group_id.secure_dns_policy()),
         is_for_websockets_);
   }
@@ -205,7 +208,7 @@ std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
       socket_params->ssl_config_for_origin(),
       socket_params->ssl_config_for_proxy(), is_for_websockets_,
       group_id.privacy_mode(), resolution_callback, request_priority,
-      socket_tag, group_id.network_isolation_key(),
+      socket_tag, group_id.network_anonymization_key(),
       group_id.secure_dns_policy(), common_connect_job_params_, delegate);
 }
 

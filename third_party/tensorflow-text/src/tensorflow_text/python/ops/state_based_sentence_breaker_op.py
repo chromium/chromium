@@ -65,22 +65,25 @@ class StateBasedSentenceBreaker(sentence_breaking_ops.SentenceBreakerWithOffsets
     """Splits `doc` into sentence fragments, returns text, start & end offsets.
 
     Example:
-                      1                  1         2         3
-            012345678901234    01234567890123456789012345678901234567
-      doc: 'Hello...foo bar', 'Welcome to the U.S. don't be surprised'
 
-      fragment_text: [
-        ['Hello...', 'foo bar'],
-        ['Welcome to the U.S.' , 'don't be surprised']
-      ]
-      start: [[0, 8],[0, 20]]
-      end: [[8, 15],[19, 38]]
+    ```
+                    1                  1         2         3
+          012345678901234    01234567890123456789012345678901234567
+    doc: 'Hello...foo bar', 'Welcome to the U.S. don't be surprised'
+
+    fragment_text: [
+      ['Hello...', 'foo bar'],
+      ['Welcome to the U.S.' , 'don't be surprised']
+    ]
+    start: [[0, 8],[0, 20]]
+    end: [[8, 15],[19, 38]]
+    ```
 
     Args:
-      doc: A string `Tensor` of shape [batch] or [batch, 1].
+      doc: A string `Tensor` of shape `[batch]` or `[batch, 1]`.
 
     Returns:
-      A tuple of (fragment_text, start, end) where:
+      A tuple of `(fragment_text, start, end)` where:
 
       fragment_text: A string `RaggedTensor` of shape [batch, (num_sentences)]
       with each input broken up into its constituent sentence fragments.

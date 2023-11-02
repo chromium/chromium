@@ -23,21 +23,35 @@
 </body>
 
 <script>
-
-var notify_on_first_name_input_change = false;
-var first_name_input_changed = false;
-
+// The initial fill is triggered on "firstname".
+//
+// Upon that fill, reset the "firstname" and "address1" fields and replace
+// the "state" options. This causes a refill.
+//
+// Upon the refill, reset the "firstname" field. This does not cause a refill
+// because the "firstname" field has been autofilled before.
 function CountryChanged() {
-  var first_name_input = document.getElementById("firstname");
-  // Reset the value of the first name field.
-  first_name_input.value = '';
-  first_name_input.addEventListener('change', function() {
-    first_name_input.value = '';
-    first_name_input_changed = true;
+  // This happens upon the initial fill.
+  document.getElementById("firstname").value = '';
+  document.getElementById("address1").value = '';
+  const state_select = document.getElementById("state");
+  for (let i=0; i<state_select.length; i++) {
+     state_select.remove(i);
+  }
+  state_select.options[0] = new Option('WA', 'WA');
+  state_select.options[1] = new Option('MA', 'MA');
+  state_select.options[2] = new Option('TX', 'TX');
 
+  document.getElementById("firstname").addEventListener('change', function() {
+    // This happens upon the refill.
+    document.getElementById("firstname").value = '';
+
+    // Note that 'TX' was an option before already.
+    // This must happen after the refill has finished because this 'change'
+    // handler is executed before the "state" field is refilled. That is,
+    // the refill would select 'TX'.
     setTimeout(function() {
-      // Re-change the select options.
-      for (var i=0; i<state_select.length; i++) {
+      for (let i=0; i<state_select.length; i++) {
          state_select.remove(i);
       }
       state_select.options[0] = new Option('CA', 'CA');
@@ -45,41 +59,11 @@ function CountryChanged() {
       state_select.options[2] = new Option('TX', 'TX');
     });
 
-    if (notify_on_first_name_input_change) {
-      // Give time to see if it fills.
-      setTimeout(function() {
-        window.domAutomationController.send(first_name_input.value != '');
-      }, 1000);
-    }
+    window['refill2'] = true;
+    console.log('An event happened that should not trigger a second refill.');
   });
 
-  // Reset the value of the address field.
-  document.getElementById("address1").value = '';
-
-  // Get the select object.
-  var state_select = document.getElementById("state");
-
-  // Remove the provinces options.
-  for (var i=0; i<state_select.length; i++) {
-     state_select.remove(i);
-  }
-
-  // Add the states options.
-  state_select.options[0] = new Option('WA', 'WA');
-  state_select.options[1] = new Option('MA', 'MA');
-  state_select.options[2] = new Option('TX', 'TX');
+  window['refill1'] = true;
+  console.log('An event happened that should trigger a refill.');
 }
-
-function hasRefilled() {
-  var first_name_input = document.getElementById('firstname');
-  if (first_name_input && first_name_input_changed) {
-    // Give time to see if it fills.
-    setTimeout(function() {
-      window.domAutomationController.send(document.getElementById("firstname").value != '');
-    }, 1000);
-  } else {
-    notify_on_first_name_input_change = true;
-  }
-}
-
 </script>

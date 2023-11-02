@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,16 @@
 #include "base/bits.h"
 #include "base/callback.h"
 #include "base/check_op.h"
+#include "base/record_replay.h"
 
 namespace base {
 namespace sequence_manager {
 namespace internal {
 
 AtomicFlagSet::AtomicFlagSet(
-    scoped_refptr<AssociatedThreadId> associated_thread)
-    : associated_thread_(std::move(associated_thread)) {}
+    scoped_refptr<const AssociatedThreadId> associated_thread)
+    : associated_thread_(std::move(associated_thread)),
+      ordered_lock_id_(recordreplay::CreateOrderedLock("AtomicFlagSet::Group")) {}
 
 AtomicFlagSet::~AtomicFlagSet() {
   DCHECK(!alloc_list_head_);
@@ -42,6 +44,8 @@ AtomicFlagSet::AtomicFlag::AtomicFlag(AtomicFlag&& other)
 
 void AtomicFlagSet::AtomicFlag::SetActive(bool active) {
   DCHECK(group_);
+  recordreplay::AutoOrderedLock lock(outer_->ordered_lock_id_);
+
   if (active) {
     // Release semantics are required to ensure that all memory accesses made on
     // this thread happen-before any others done on the thread running the
@@ -73,8 +77,9 @@ void AtomicFlagSet::AtomicFlag::ReleaseAtomicFlag() {
 
   // If |group_| has become empty delete it.
   if (group_->IsEmpty()) {
-    outer_->RemoveFromPartiallyFreeList(group_);
-    outer_->RemoveFromAllocList(group_);
+    auto ptr = group_.ExtractAsDangling();
+    outer_->RemoveFromPartiallyFreeList(ptr);
+    outer_->RemoveFromAllocList(ptr);
   }
 
   outer_ = nullptr;
@@ -107,12 +112,18 @@ AtomicFlagSet::AtomicFlag AtomicFlagSet::AddFlag(RepeatingClosure callback) {
 
 void AtomicFlagSet::RunActiveCallbacks() const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
+
   for (Group* iter = alloc_list_head_.get(); iter; iter = iter->next.get()) {
     // Acquire semantics are required to guarantee that all memory side-effects
     // made by other threads that were allowed to perform operations are
     // synchronized with this thread before it returns from this method.
-    size_t active_flags = std::atomic_exchange_explicit(
+    size_t active_flags;
+    {
+      recordreplay::AutoOrderedLock lock(ordered_lock_id_);
+      active_flags = std::atomic_exchange_explicit(
         &iter->flags, size_t{0}, std::memory_order_acquire);
+    }
+
     // This is O(number of bits set).
     while (active_flags) {
       int index = Group::IndexOfFirstFlagSet(active_flags);
@@ -123,7 +134,7 @@ void AtomicFlagSet::RunActiveCallbacks() const {
   }
 }
 
-AtomicFlagSet::Group::Group() = default;
+AtomicFlagSet::Group::Group() {}
 
 AtomicFlagSet::Group::~Group() {
   DCHECK_EQ(allocated_flags, 0u);

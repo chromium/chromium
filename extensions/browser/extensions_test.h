@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "build/chromeos_buildflags.h"
-#include "content/public/test/test_content_client_initializer.h"
 #include "content/public/test/test_renderer_host.h"
 #include "extensions/browser/mock_extension_system.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,7 +21,6 @@ class PrefService;
 
 namespace content {
 class BrowserContext;
-class ContentUtilityClient;
 class RenderViewHostTestEnabler;
 }
 
@@ -74,6 +72,10 @@ class ExtensionsTest : public testing::Test {
         extension_system_factory_.GetForBrowserContext(browser_context_.get()));
   }
 
+  content::BrowserTaskEnvironment* task_environment() {
+    return task_environment_.get();
+  }
+
   // testing::Test overrides:
   void SetUp() override;
   void TearDown() override;
@@ -88,8 +90,6 @@ class ExtensionsTest : public testing::Test {
   chromeos::ScopedLacrosServiceTestHelper lacros_service_test_helper_;
 #endif
 
-  content::TestContentClientInitializer content_client_initializer_;
-  std::unique_ptr<content::ContentUtilityClient> content_utility_client_;
   std::unique_ptr<content::BrowserContext> browser_context_;
   std::unique_ptr<content::BrowserContext> incognito_context_;
   std::unique_ptr<TestExtensionsBrowserClient> extensions_browser_client_;

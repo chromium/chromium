@@ -1,9 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 
+#include "base/no_destructor.h"
 #include "base/values.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 
@@ -12,8 +13,8 @@
 #endif
 
 namespace {
-const char kFillScriptName[] = "fill_js";
-const char kFormScriptName[] = "form_js";
+const char kFillScriptName[] = "fill";
+const char kFormScriptName[] = "form";
 }  // namespace
 
 namespace autofill {

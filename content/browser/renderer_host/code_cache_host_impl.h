@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -101,7 +102,9 @@ class CONTENT_EXPORT CodeCacheHostImpl : public blink::mojom::CodeCacheHost {
 
   // Helpers.
   GeneratedCodeCache* GetCodeCache(blink::mojom::CodeCacheType cache_type);
-  void OnReceiveCachedCode(FetchCachedCodeCallback callback,
+  void OnReceiveCachedCode(blink::mojom::CodeCacheType cache_type,
+                           base::TimeTicks start_time,
+                           FetchCachedCodeCallback callback,
                            const base::Time& response_time,
                            mojo_base::BigBuffer data);
 
@@ -109,8 +112,8 @@ class CONTENT_EXPORT CodeCacheHostImpl : public blink::mojom::CodeCacheHost {
   const int render_process_id_;
 
   // Used to override the CacheStorageControl from the RHPI as needed.
-  storage::mojom::CacheStorageControl* cache_storage_control_for_testing_ =
-      nullptr;
+  raw_ptr<storage::mojom::CacheStorageControl>
+      cache_storage_control_for_testing_ = nullptr;
 
   scoped_refptr<GeneratedCodeCacheContext> generated_code_cache_context_;
 

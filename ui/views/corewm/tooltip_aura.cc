@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -18,6 +20,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/owned_window_anchor.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -32,6 +35,7 @@
 #include "ui/views/border.h"
 #include "ui/views/painter.h"
 #include "ui/views/view.h"
+#include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -49,7 +53,7 @@ constexpr int kVerticalPaddingBottom = 5;
 bool CanUseTranslucentTooltipWidget() {
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || defined(OS_WIN)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || BUILDFLAG(IS_WIN)
   return false;
 #else
   return true;
@@ -61,9 +65,9 @@ class TooltipView : public views::View {
  public:
   METADATA_HEADER(TooltipView);
   TooltipView() : render_text_(gfx::RenderText::CreateRenderText()) {
-    SetBorder(views::CreateEmptyBorder(kVerticalPaddingTop, kHorizontalPadding,
-                                       kVerticalPaddingBottom,
-                                       kHorizontalPadding));
+    SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::TLBR(kVerticalPaddingTop, kHorizontalPadding,
+                          kVerticalPaddingBottom, kHorizontalPadding)));
 
     render_text_->SetWordWrapBehavior(gfx::WRAP_LONG_WORDS);
     render_text_->SetMultiline(true);
@@ -121,8 +125,9 @@ class TooltipView : public views::View {
 
       SetBorder(views::CreatePaddedBorder(
           views::CreateSolidBorder(1, border_color),
-          gfx::Insets(kVerticalPaddingTop - 1, kHorizontalPadding - 1,
-                      kVerticalPaddingBottom - 1, kHorizontalPadding - 1)));
+          gfx::Insets::TLBR(kVerticalPaddingTop - 1, kHorizontalPadding - 1,
+                            kVerticalPaddingBottom - 1,
+                            kHorizontalPadding - 1)));
     }
 
     // Force the text color to be readable when |background_color| is not
@@ -139,8 +144,8 @@ class TooltipView : public views::View {
   gfx::RenderText* render_text_for_test() { return render_text_.get(); }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    node_data->SetName(render_text_->GetDisplayText());
     node_data->role = ax::mojom::Role::kTooltip;
+    node_data->SetNameChecked(render_text_->GetDisplayText());
   }
 
  private:
@@ -157,8 +162,7 @@ END_METADATA
 
 }  // namespace
 
-namespace views {
-namespace corewm {
+namespace views::corewm {
 
 // static
 const char TooltipAura::kWidgetName[] = "TooltipAura";
@@ -180,7 +184,7 @@ class TooltipAura::TooltipWidget : public Widget {
   }
 
  private:
-  TooltipView* tooltip_view_ = nullptr;
+  raw_ptr<TooltipView> tooltip_view_ = nullptr;
 };
 
 gfx::RenderText* TooltipAura::GetRenderTextForTest() {
@@ -194,17 +198,18 @@ void TooltipAura::GetAccessibleNodeDataForTest(ui::AXNodeData* node_data) {
 }
 
 gfx::Rect TooltipAura::GetTooltipBounds(const gfx::Size& tooltip_size,
-                                        const TooltipPosition& position,
+                                        const gfx::Point& anchor_point,
+                                        const TooltipTrigger trigger,
                                         ui::OwnedWindowAnchor* anchor) {
-  gfx::Rect tooltip_rect(position.anchor_point, tooltip_size);
+  gfx::Rect tooltip_rect(anchor_point, tooltip_size);
   // When the tooltip is showing up as a result of a cursor event, the tooltip
   // needs to show up at the bottom-right corner of the cursor. When it's not,
   // it has to be centered with the anchor point with pass it.
-  switch (position.behavior) {
-    case TooltipPositionBehavior::kCentered:
+  switch (trigger) {
+    case TooltipTrigger::kKeyboard:
       tooltip_rect.Offset(-tooltip_size.width() / 2, 0);
       break;
-    case TooltipPositionBehavior::kRelativeToCursor: {
+    case TooltipTrigger::kCursor: {
       const int x_offset =
           base::i18n::IsRTL() ? -tooltip_size.width() : kCursorOffsetX;
       tooltip_rect.Offset(x_offset, kCursorOffsetY);
@@ -213,21 +218,20 @@ gfx::Rect TooltipAura::GetTooltipBounds(const gfx::Size& tooltip_size,
   }
 
   anchor->anchor_gravity = ui::OwnedWindowAnchorGravity::kBottomRight;
-  anchor->anchor_position =
-      position.behavior == TooltipPositionBehavior::kRelativeToCursor
-          ? ui::OwnedWindowAnchorPosition::kBottomRight
-          : ui::OwnedWindowAnchorPosition::kTop;
+  anchor->anchor_position = trigger == TooltipTrigger::kCursor
+                                ? ui::OwnedWindowAnchorPosition::kBottomRight
+                                : ui::OwnedWindowAnchorPosition::kTop;
   anchor->constraint_adjustment =
       ui::OwnedWindowConstraintAdjustment::kAdjustmentSlideX |
       ui::OwnedWindowConstraintAdjustment::kAdjustmentSlideY |
       ui::OwnedWindowConstraintAdjustment::kAdjustmentFlipY;
   // TODO(msisov): handle RTL.
   anchor->anchor_rect =
-      gfx::Rect(position.anchor_point, {kCursorOffsetX, kCursorOffsetY});
+      gfx::Rect(anchor_point, {kCursorOffsetX, kCursorOffsetY});
 
   display::Screen* screen = display::Screen::GetScreen();
   gfx::Rect display_bounds(
-      screen->GetDisplayNearestPoint(position.anchor_point).bounds());
+      screen->GetDisplayNearestPoint(anchor_point).bounds());
 
   // If tooltip is out of bounds on the x axis, we simply shift it
   // horizontally by the offset variation.
@@ -243,7 +247,7 @@ gfx::Rect TooltipAura::GetTooltipBounds(const gfx::Size& tooltip_size,
   // If tooltip is out of bounds on the y axis, we flip it to appear above the
   // mouse cursor instead of below.
   if (tooltip_rect.bottom() > display_bounds.bottom())
-    tooltip_rect.set_y(position.anchor_point.y() - tooltip_size.height());
+    tooltip_rect.set_y(anchor_point.y() - tooltip_size.height());
 
   tooltip_rect.AdjustToFit(display_bounds);
   return tooltip_rect;
@@ -293,7 +297,8 @@ int TooltipAura::GetMaxWidth(const gfx::Point& location) const {
 
 void TooltipAura::Update(aura::Window* window,
                          const std::u16string& tooltip_text,
-                         const TooltipPosition& position) {
+                         const gfx::Point& position,
+                         const TooltipTrigger trigger) {
   // Hide() must be called before showing the next tooltip.  See also the
   // comment in Hide().
   DCHECK(!widget_);
@@ -301,11 +306,13 @@ void TooltipAura::Update(aura::Window* window,
   tooltip_window_ = window;
 
   auto new_tooltip_view = std::make_unique<TooltipView>();
-  new_tooltip_view->SetMaxWidth(GetMaxWidth(position.anchor_point));
+  gfx::Point anchor_point =
+      position + window->GetBoundsInScreen().OffsetFromOrigin();
+  new_tooltip_view->SetMaxWidth(GetMaxWidth(anchor_point));
   new_tooltip_view->SetText(tooltip_text);
   ui::OwnedWindowAnchor anchor;
-  auto bounds =
-      GetTooltipBounds(new_tooltip_view->GetPreferredSize(), position, &anchor);
+  auto bounds = GetTooltipBounds(new_tooltip_view->GetPreferredSize(),
+                                 anchor_point, trigger, &anchor);
   CreateTooltipWidget(bounds, anchor);
   widget_->SetTooltipView(std::move(new_tooltip_view));
   widget_->AddObserver(this);
@@ -328,7 +335,10 @@ void TooltipAura::Update(aura::Window* window,
 void TooltipAura::Show() {
   if (widget_) {
     widget_->Show();
-    widget_->StackAtTop();
+
+    if (!base::FeatureList::IsEnabled(views::features::kWidgetLayering))
+      widget_->StackAtTop();
+
     widget_->GetTooltipView()->NotifyAccessibilityEvent(
         ax::mojom::Event::kTooltipOpened, true);
   }
@@ -362,5 +372,4 @@ void TooltipAura::OnWidgetDestroying(views::Widget* widget) {
   tooltip_window_ = nullptr;
 }
 
-}  // namespace corewm
-}  // namespace views
+}  // namespace views::corewm

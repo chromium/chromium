@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,11 @@
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_item_list_observer.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_model_delegate.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -43,10 +45,17 @@ class AppListItemListWithUpdater : public AppListModelDelegate {
     item_list_->SetItemPosition(item_list_->FindItem(id), new_position);
   }
   void RequestMoveItemToFolder(std::string id,
-                               const std::string& folder_id,
-                               RequestMoveToFolderReason reason) override {}
+                               const std::string& folder_id) override {}
   void RequestMoveItemToRoot(std::string id,
                              syncer::StringOrdinal target_position) override {}
+  std::string RequestFolderCreation(std::string merge_target_id,
+                                    std::string item_to_merge_id) override {
+    return "";
+  }
+  void RequestFolderRename(std::string folder_id,
+                           const std::string& name) override {}
+  void RequestAppListSort(AppListSortOrder order) override {}
+  void RequestAppListSortRevert() override {}
 
   AppListItemList* item_list() { return item_list_.get(); }
 
@@ -186,6 +195,26 @@ class AppListItemListTest : public testing::Test {
   AppListItemListWithUpdater item_updater_;
   TestObserver observer_;
   AppListItemList* item_list_ = nullptr;
+};
+
+class AppListItemListWithPageBreaksTest : public AppListItemListTest {
+ public:
+  AppListItemListWithPageBreaksTest() {
+    // Productivity launcher does not use page breaks (which are filtered out of
+    // the app list model in chrome), so disable productivity launcher for tests
+    // that use page breaks.
+    feature_list_.InitAndDisableFeature(features::kProductivityLauncher);
+  }
+
+  AppListItemListWithPageBreaksTest(const AppListItemListWithPageBreaksTest&) =
+      delete;
+  AppListItemListWithPageBreaksTest& operator=(
+      const AppListItemListWithPageBreaksTest&) = delete;
+
+  ~AppListItemListWithPageBreaksTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(AppListItemListTest, FindItemIndex) {
@@ -410,7 +439,7 @@ TEST_F(AppListItemListTest, SetItemPosition) {
 }
 
 // Test adding a page break item between two items with different position.
-TEST_F(AppListItemListTest, AddPageBreakItem) {
+TEST_F(AppListItemListWithPageBreaksTest, AddPageBreakItem) {
   AppListItem* item_0 = CreateAndAddItem(GetItemId(0));
   AppListItem* item_1 = CreateAndAddItem(GetItemId(1));
   EXPECT_EQ(item_0, item_list_->item_at(0));
@@ -426,7 +455,7 @@ TEST_F(AppListItemListTest, AddPageBreakItem) {
 }
 
 // Test adding a page break item between two items with the same position.
-TEST_F(AppListItemListTest, AddPageBreakItemWithSamePosition) {
+TEST_F(AppListItemListWithPageBreaksTest, AddPageBreakItemWithSamePosition) {
   AppListItem* item_0 = CreateAndAddItem(GetItemId(0));
   AppListItem* item_1 = CreateAndAddItem(GetItemId(1));
   item_list_->SetItemPosition(item_list_->item_at(1),

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.contextmenu;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
@@ -19,24 +18,23 @@ import android.widget.TextView;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver.PerformanceClass;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.DummyUiActivity;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 /**
  * Tests for ContextMenuHeader view and {@link ContextMenuHeaderViewBinder}
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class ContextMenuHeaderViewTest extends DummyUiActivityTestCase {
+@Batch(Batch.UNIT_TESTS)
+public class ContextMenuHeaderViewTest extends BlankUiTestActivityTestCase {
     private static final String TITLE_STRING = "Some Very Cool Title";
     private static final String URL_STRING = "www.website.com";
 
@@ -46,35 +44,29 @@ public class ContextMenuHeaderViewTest extends DummyUiActivityTestCase {
     private View mTitleAndUrl;
     private ImageView mImage;
     private View mCircleBg;
-    private View mPerformanceInfo;
+    private View mImageContainer;
     private PropertyModel mModel;
     private PropertyModelChangeProcessor mMCP;
-
-    @BeforeClass
-    public static void setUpBeforeActivityLaunched() {
-        DummyUiActivity.setTestLayout(R.layout.context_menu_header);
-    }
 
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            getActivity().setContentView(R.layout.context_menu_header);
             mHeaderView = getActivity().findViewById(android.R.id.content);
             mTitle = mHeaderView.findViewById(R.id.menu_header_title);
             mUrl = mHeaderView.findViewById(R.id.menu_header_url);
             mTitleAndUrl = mHeaderView.findViewById(R.id.title_and_url);
             mImage = mHeaderView.findViewById(R.id.menu_header_image);
             mCircleBg = mHeaderView.findViewById(R.id.circle_background);
-            mPerformanceInfo = mHeaderView.findViewById(R.id.menu_header_performance_info);
+            mImageContainer = mHeaderView.findViewById(R.id.menu_header_image_container);
             mModel = new PropertyModel.Builder(ContextMenuHeaderProperties.ALL_KEYS)
                              .with(ContextMenuHeaderProperties.TITLE, "")
                              .with(ContextMenuHeaderProperties.URL, "")
                              .with(ContextMenuHeaderProperties.TITLE_AND_URL_CLICK_LISTENER, null)
                              .with(ContextMenuHeaderProperties.IMAGE, null)
                              .with(ContextMenuHeaderProperties.CIRCLE_BG_VISIBLE, false)
-                             .with(ContextMenuHeaderProperties.URL_PERFORMANCE_CLASS,
-                                     PerformanceClass.PERFORMANCE_UNKNOWN)
                              .build();
 
             mMCP = PropertyModelChangeProcessor.create(
@@ -188,32 +180,5 @@ public class ContextMenuHeaderViewTest extends DummyUiActivityTestCase {
                 () -> mModel.set(ContextMenuHeaderProperties.IMAGE, bitmap));
         assertThat("Incorrect thumbnail bitmap.",
                 ((BitmapDrawable) mImage.getDrawable()).getBitmap(), equalTo(bitmap));
-    }
-
-    @Test
-    @SmallTest
-    public void testPerformanceInfo() {
-        assertThat("Incorrect initial performance info visibility.",
-                mPerformanceInfo.getVisibility(), equalTo(View.GONE));
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(ContextMenuHeaderProperties.URL_PERFORMANCE_CLASS,
-                    PerformanceClass.PERFORMANCE_FAST);
-        });
-
-        assertThat("Incorrect performance info visibility for FAST performance class.",
-                mPerformanceInfo.getVisibility(), equalTo(View.VISIBLE));
-
-        TextView performanceText = mHeaderView.findViewById(R.id.performance_info_text);
-        assertThat("Performance info text is empty.", performanceText.getText().length(),
-                greaterThan(0));
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(ContextMenuHeaderProperties.URL_PERFORMANCE_CLASS,
-                    PerformanceClass.PERFORMANCE_SLOW);
-        });
-
-        assertThat("Incorrect performance info visibility for SLOW performance class.",
-                mPerformanceInfo.getVisibility(), equalTo(View.GONE));
     }
 }

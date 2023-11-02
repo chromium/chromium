@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,10 @@ enum class ParseResult {
   ERROR_INVALID_RULE_PRIORITY,
   ERROR_NO_APPLICABLE_RESOURCE_TYPES,
   ERROR_EMPTY_DOMAINS_LIST,
+  ERROR_EMPTY_INITIATOR_DOMAINS_LIST,
+  ERROR_EMPTY_REQUEST_DOMAINS_LIST,
+  ERROR_DOMAINS_AND_INITIATOR_DOMAINS_BOTH_SPECIFIED,
+  ERROR_EXCLUDED_DOMAINS_AND_EXCLUDED_INITIATOR_DOMAINS_BOTH_SPECIFIED,
   ERROR_EMPTY_RESOURCE_TYPES_LIST,
   ERROR_EMPTY_REQUEST_METHODS_LIST,
   ERROR_EMPTY_URL_FILTER,
@@ -34,6 +38,10 @@ enum class ParseResult {
   ERROR_NON_ASCII_URL_FILTER,
   ERROR_NON_ASCII_DOMAIN,
   ERROR_NON_ASCII_EXCLUDED_DOMAIN,
+  ERROR_NON_ASCII_INITIATOR_DOMAIN,
+  ERROR_NON_ASCII_EXCLUDED_INITIATOR_DOMAIN,
+  ERROR_NON_ASCII_REQUEST_DOMAIN,
+  ERROR_NON_ASCII_EXCLUDED_REQUEST_DOMAIN,
 
   ERROR_INVALID_URL_FILTER,
   ERROR_INVALID_REDIRECT,
@@ -157,6 +165,7 @@ extern const char kErrorNonAscii[];
 extern const char kErrorInvalidKey[];
 extern const char kErrorInvalidTransformScheme[];
 extern const char kErrorQueryAndTransformBothSpecified[];
+extern const char kErrorDomainsAndInitiatorDomainsBothSpecified[];
 extern const char kErrorJavascriptRedirect[];
 extern const char kErrorMultipleFilters[];
 extern const char kErrorRegexSubstitutionWithoutFilter[];
@@ -202,6 +211,11 @@ extern const char kEnabledRulesetCountExceeded[];
 // setExtensionActionOptions API errors.
 extern const char kTabNotFoundError[];
 extern const char kIncrementActionCountWithoutUseAsBadgeTextError[];
+
+// testMatchOutcome API errors.
+extern const char kInvalidTestURLError[];
+extern const char kInvalidTestInitiatorError[];
+extern const char kInvalidTestTabIdError[];
 
 // Histogram names.
 extern const char kIndexAndPersistRulesTimeHistogram[];

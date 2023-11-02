@@ -25,13 +25,14 @@
 
 html {
     display: block;
+    page-transition-tag: root;
 }
 
 /* generic block-level elements */
 
 body {
     display: block;
-    margin: 8px
+    margin: 8px;
 }
 
 body:-webkit-full-page-media {
@@ -47,10 +48,6 @@ p {
 }
 
 div {
-    display: block
-}
-
-layer {
     display: block
 }
 
@@ -392,7 +389,7 @@ fieldset {
     padding-inline-start: 0.75em;
     padding-inline-end: 0.75em;
     padding-block-end: 0.625em;
-    border: 2px groove ThreeDFace;
+    border: 2px groove #C0C0C0;
     min-inline-size: min-content;
 }
 
@@ -402,14 +399,14 @@ button {
 
 /* Form controls don't go vertical. */
 input, textarea, select, button, meter, progress {
-    -webkit-writing-mode: horizontal-tb !important;
+    writing-mode: horizontal-tb !important;
 }
 
 input, textarea, select, button {
     margin: 0__qem;
     font: -webkit-small-control;
     text-rendering: auto; /* FIXME: Remove when tabs work with optimizeLegibility. */
-    color: -internal-light-dark(black, white);
+    color: FieldText;
     letter-spacing: normal;
     word-spacing: normal;
     line-height: normal;
@@ -430,7 +427,7 @@ textarea {
   padding: 2px;
   white-space: pre-wrap;
   word-wrap: break-word;
-  background-color: -internal-light-dark(#ffffff, #3B3B3B);
+  background-color: Field;
   font-family: monospace;
 }
 
@@ -440,7 +437,7 @@ input {
     border: 2px inset -internal-light-dark(#767676, #858585);
     -webkit-rtl-ordering: logical;
     cursor: text;
-    background-color: -internal-light-dark(#ffffff, #3B3B3B);
+    background-color: Field;
 }
 
 input[type="search" i] {
@@ -533,7 +530,7 @@ input:enabled:read-write:-webkit-any(:focus,:hover)::-webkit-inner-spin-button {
 
 input::-webkit-input-placeholder {
     text-overflow: inherit;
-    line-height: initial;
+    line-height: initial !important;
     white-space: pre;
     word-wrap: normal;
     overflow: hidden;
@@ -624,7 +621,7 @@ select:-internal-autofill-selected {
   appearance: menulist-button;
   background-image:none !important;
   background-color: -internal-light-dark(#E8F0FE, rgba(70,90,126,0.4)) !important;
-  color: -internal-light-dark(black, white) !important;
+  color: FieldText !important;
 }
 
 input[type="radio" i],
@@ -643,7 +640,7 @@ input[type="radio" i] {
 input[type="button" i], input[type="submit" i], input[type="reset" i] {
     -internal-empty-line-height: fabricated;
     appearance: auto;
-    -webkit-user-select: none;
+    user-select: none;
     white-space: pre
 }
 
@@ -665,10 +662,10 @@ button {
     text-align: center;
     cursor: default;
     padding: 1px 6px;
-    border: 2px outset -internal-light-dark(#767676, #858585);
+    border: 2px outset ButtonBorder;
     box-sizing: border-box;
-    background-color: -internal-light-dark(#efefef, #3B3B3B);
-    color: -internal-light-dark(black, white);
+    background-color: ButtonFace;
+    color: ButtonText;
 }
 
 input[type="checkbox" i]:disabled,
@@ -710,7 +707,7 @@ input[type="range" i]:-internal-has-datalist::-webkit-slider-container {
 input[type="range" i]::-webkit-slider-runnable-track {
     flex: 1;
     min-inline-size: 0;
-    -webkit-align-self: center;
+    align-self: center;
 
     box-sizing: border-box;
     -webkit-user-modify: read-only !important;
@@ -804,12 +801,12 @@ input[type="color" i] {
     width: 50px;
     height: 27px;
     /* Same as native_theme_base. */
-    border: 1px solid -internal-light-dark(#767676, #858585);
+    border: 1px solid ButtonBorder;
     padding: 1px 2px;
     cursor: default;
     box-sizing: border-box;
-    background-color: -internal-light-dark(#efefef, #3B3B3B);
-    color: -internal-light-dark(black, white);
+    background-color: ButtonFace;
+    color: ButtonText;
 }
 
 input[type="color" i]::-webkit-color-swatch-wrapper {
@@ -894,8 +891,8 @@ select {
     align-items: center;
     white-space: pre;
     -webkit-rtl-ordering: logical;
-    color: -internal-light-dark(black, white);
-    background-color: -internal-light-dark(#ffffff, #3B3B3B);
+    color: FieldText;
+    background-color: Field;
     border: 1px solid -internal-light-dark(#767676, #858585);
     cursor: default;
     border-radius: 0;
@@ -937,18 +934,14 @@ select:-internal-list-box optgroup {
    it breaks some WebUI menus. */
 select:-internal-list-box:focus option:checked,
 select:-internal-list-box:focus option:checked:hover {
-    /* TODO(crbug.com/1129658): The dark mode color here should be handled
-       within LayoutTheme::ActiveListBoxSelectionBackgroundColor(). */
-    background-color: -internal-light-dark(-internal-active-list-box-selection, #99C8FF) !important;
-    color: -internal-light-dark(-internal-active-list-box-selection-text, #3B3B3B) !important;
+    background-color: SelectedItem !important;
+    color: SelectedItemText !important;
 }
 
 /* TODO(crbug.com/1244986): We should be able to remove !important here, but
    it breaks some WebUI menus. */
 select:-internal-list-box:focus option:checked:disabled {
-    /* TODO(crbug.com/1129658): The dark mode color here should be handled
-       within LayoutTheme::ActiveListBoxSelectionBackgroundColor(). */
-    background-color: -internal-light-dark(-internal-inactive-list-box-selection, rgba(59, 59, 59, 0.3)) !important;
+    background-color: -internal-inactive-list-box-selection !important;
 }
 
 /* option selected, list-box not focused */
@@ -990,27 +983,6 @@ option {
     padding: 0 2px 1px 2px;
     white-space: nowrap;
     min-height: 1.2em;
-}
-
-/* selectmenu */
-
-selectmenu {
-    display: inline-block;
-}
-
-selectmenu option:hover {
-    background-color: lightgray;
-    cursor: default;
-    user-select: none;
-}
-
-selectmenu popup {
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  border-radius: 4px;
-  box-shadow: 0px 12.8px 28.8px rgba(0, 0, 0, 0.13), 0px 0px 9.2px rgba(0, 0, 0, 0.11);
-  box-sizing: border-box;
-  overflow: auto;
-  padding: 4px;
 }
 
 output {
@@ -1148,8 +1120,8 @@ pre, xmp, plaintext, listing {
 }
 
 mark {
-    background-color: yellow;
-    color: black
+    background-color: Mark;
+    color: MarkText;
 }
 
 big {
@@ -1179,6 +1151,10 @@ nobr {
 }
 
 /* states */
+
+:-internal-selector-fragment-anchor {
+    outline: Highlight 3px solid;
+}
 
 :-internal-spatial-navigation-interest {
     outline: auto 1px -webkit-focus-ring-color !important;
@@ -1225,15 +1201,11 @@ input[type="week" i]::-webkit-calendar-picker-indicator {
   background-origin: content-box;
   background-repeat: no-repeat;
   background-size: contain;
-  height: 1.2em;
-  margin-inline-start: 24px;
+  height: 1.0em;
+  width: 1.0em;
   opacity: 1;
   outline: none;
-  padding-bottom: 2px;
-  padding-inline-start: 3px;
-  padding-inline-end: 3px;
-  padding-top: 2px;
-  width: 1.2em;
+  padding: 2px;
 }
 
 input[type="date" i]::-webkit-calendar-picker-indicator:focus-visible,
@@ -1292,7 +1264,7 @@ input::-webkit-datetime-edit-hour-field[disabled],
 input::-webkit-datetime-edit-millisecond-field[disabled],
 input::-webkit-datetime-edit-minute-field[disabled],
 input::-webkit-datetime-edit-second-field[disabled] {
-    color: -internal-light-dark(GrayText, #000000);
+    color: -internal-light-dark(GrayText, rgb(165, 165, 165));
 }
 
 a:-webkit-any-link {
@@ -1313,6 +1285,12 @@ a:-webkit-any-link:focus-visible {
   outline-offset: 1px;
 }
 
+/* ensure that selected links are underlined.*/
+a:-webkit-any-link::target-text {
+    text-decoration:underline;
+    background-color:#E9D2FD;
+}
+
 /* HTML5 ruby elements */
 
 ruby, rt {
@@ -1321,7 +1299,7 @@ ruby, rt {
 
 rt {
     line-height: normal;
-    -webkit-text-emphasis: none;
+    text-emphasis: none;
 }
 
 ruby > rt {
@@ -1342,6 +1320,12 @@ frameset {
 
 iframe {
     border: 2px inset
+}
+
+fencedframe {
+    border: 2px inset;
+    object-fit: contain !important;
+    object-position: 50% 50% !important;
 }
 
 details {
@@ -1383,32 +1367,39 @@ textarea[dir=auto i] {
     unicode-bidi: plaintext;
 }
 
-dialog:not([open]) {
+/* The `,[popup]:-internal-popup-opening-or-open` is to support the pop-up API, and
+   has no effect if the HTMLPopupAttribute feature is disabled. */
+dialog:not([open],[popup]:-internal-popup-opening-or-open) {
+    /* https://html.spec.whatwg.org/multipage/rendering.html#flow-content-3 */
     display: none;
 }
 
 dialog {
     display: block;
+    /* https://html.spec.whatwg.org/multipage/rendering.html#flow-content-3 */
     position: absolute;
-    left: 0;
-    right: 0;
+    inset-inline-start: 0;
+    inset-inline-end: 0;
     width: fit-content;
     height: fit-content;
     margin: auto;
     border: solid;
     padding: 1em;
-    background: -internal-light-dark(white, black);
-    color: -internal-light-dark(black, white);
+    background-color: Canvas;
+    color: CanvasText;
 }
 
-dialog:-internal-modal {
+dialog:modal {
+    /* https://html.spec.whatwg.org/multipage/rendering.html#flow-content-3 */
     position: fixed;
     overflow: auto;
-    top: 0;
-    bottom: 0;
-    /* 6px + 2em = border + padding, as by default box-sizing is content-box. */
+    inset-block-start: 0;
+    inset-block-end: 0;
     max-width: calc(100% - 6px - 2em);
     max-height: calc(100% - 6px - 2em);
+    /* https://github.com/w3c/csswg-drafts/issues/6939#issuecomment-1016679588 */
+    user-select: text;
+    visibility: visible;
 }
 
 /* TODO(foolip): In the Fullscreen spec, there's a ::backdrop block with the
@@ -1419,6 +1410,7 @@ dialog::backdrop {
     right: 0;
     bottom: 0;
     left: 0;
+    /* https://html.spec.whatwg.org/multipage/rendering.html#flow-content-3 */
     background: rgba(0,0,0,0.1)
 }
 
@@ -1440,6 +1432,16 @@ slot {
 @media print {
     thead { break-inside:avoid; }
     tfoot { break-inside:avoid; }
+}
+
+/* spelling/grammar error pseudos */
+
+html::spelling-error {
+    text-decoration: -internal-spelling-error-color spelling-error;
+}
+
+html::grammar-error {
+    text-decoration: -internal-grammar-error-color grammar-error;
 }
 
 /* noscript is handled internally, as it depends on settings. */

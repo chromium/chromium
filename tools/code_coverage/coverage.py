@@ -1,5 +1,5 @@
-#!/usr/bin/env vpython
-# Copyright 2017 The Chromium Authors. All rights reserved.
+#!/usr/bin/env vpython3
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """This script helps to generate code coverage report.
@@ -17,7 +17,7 @@
       --args="use_clang_coverage=true is_component_build=false\\
               is_debug=false dcheck_always_on=true"
   gclient runhooks
-  vpython tools/code_coverage/coverage.py crypto_unittests url_unittests \\
+  vpython3 tools/code_coverage/coverage.py crypto_unittests url_unittests \\
       -b out/coverage -o out/report -c 'out/coverage/crypto_unittests' \\
       -c 'out/coverage/url_unittests --gtest_filter=URLParser.PathURL' \\
       -f url/ -f crypto/
@@ -32,7 +32,7 @@
 
   * Sample flow for running a test target with xvfb (e.g. unit_tests):
 
-  vpython tools/code_coverage/coverage.py unit_tests -b out/coverage \\
+  vpython3 tools/code_coverage/coverage.py unit_tests -b out/coverage \\
       -o out/report -c 'python testing/xvfb.py out/coverage/unit_tests'
 
   If you are building a fuzz target, you need to add "use_libfuzzer=true" GN
@@ -40,7 +40,7 @@
 
   * Sample workflow for a fuzz target (e.g. pdfium_fuzzer):
 
-  vpython tools/code_coverage/coverage.py pdfium_fuzzer \\
+  vpython3 tools/code_coverage/coverage.py pdfium_fuzzer \\
       -b out/coverage -o out/report \\
       -c 'out/coverage/pdfium_fuzzer -runs=0 <corpus_dir>' \\
       -f third_party/pdfium
@@ -53,7 +53,7 @@
 
   * Sample workflow for running Blink web tests:
 
-  vpython tools/code_coverage/coverage.py blink_tests \\
+  vpython3 tools/code_coverage/coverage.py blink_tests \\
       -wt -b out/coverage -o out/report -f third_party/blink
 
   If you need to pass arguments to run_web_tests.py, use
@@ -79,12 +79,8 @@ import re
 import shlex
 import shutil
 import subprocess
-import six
 
-if six.PY2:
-  from urllib2 import urlopen
-else:
-  from urllib.request import urlopen
+from urllib.request import urlopen
 
 sys.path.append(
     os.path.join(
@@ -252,8 +248,8 @@ def _GeneratePerFileLineByLineCoverageInFormat(binary_paths, profdata_file_path,
   logging.debug('Finished running "llvm-cov show" command.')
 
 
-def _GeneratePerFileLineByLineCoverageInLcov(binary_paths, profdata_file_path, filters,
-                                             ignore_filename_regex):
+def _GeneratePerFileLineByLineCoverageInLcov(binary_paths, profdata_file_path,
+                                             filters, ignore_filename_regex):
   """Generates per file line-by-line coverage using "llvm-cov export".
 
   Args:
@@ -862,7 +858,7 @@ def _GetCommandForWebTests(arguments):
       LLVM_PROFILE_FILE_PATH_SUBSTITUTION,
       '--child-processes=%d' % cpu_count, '--disable-breakpad',
       '--no-show-results', '--skip-failing-tests',
-      '--target=%s' % os.path.basename(BUILD_DIR), '--time-out-ms=30000'
+      '--target=%s' % os.path.basename(BUILD_DIR), '--timeout-ms=30000'
   ]
   if arguments.strip():
     command_list.append(arguments)

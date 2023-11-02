@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,11 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/mock_callback.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
@@ -17,11 +19,14 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/tree/tree_view.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_utils.h"
 
 using base::ASCIIToUTF16;
@@ -63,12 +68,14 @@ class BookmarkEditorViewTest : public testing::Test {
     return editor_->tree_model_.get();
   }
 
-  void CreateEditor(Profile* profile,
-                    const BookmarkNode* parent,
-                    const BookmarkEditor::EditDetails& details,
-                    BookmarkEditor::Configuration configuration) {
-    editor_ = std::make_unique<BookmarkEditorView>(profile, parent, details,
-                                                   configuration);
+  void CreateEditor(
+      Profile* profile,
+      const BookmarkNode* parent,
+      const BookmarkEditor::EditDetails& details,
+      BookmarkEditor::Configuration configuration,
+      BookmarkEditor::OnSaveCallback on_save_callback = base::DoNothing()) {
+    editor_ = std::make_unique<BookmarkEditorView>(
+        profile, parent, details, configuration, std::move(on_save_callback));
   }
 
   void SetTitleText(const std::u16string& title) {
@@ -124,7 +131,7 @@ class BookmarkEditorViewTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
 
-  BookmarkModel* model_;
+  raw_ptr<BookmarkModel> model_;
   std::unique_ptr<TestingProfile> profile_;
 
  private:
@@ -587,7 +594,7 @@ TEST_F(BookmarkEditorViewTest, EditorFullyShown) {
   do {
     tree->Expand(parent_node);
     parent_node = AddNewFolder(parent_node);
-    editor()->Layout();
+    views::test::RunScheduledLayout(editor());
   } while (tree->bounds().height() <= tree->parent()->bounds().height());
 
   // Edit the last node which also has the focus.
@@ -603,4 +610,17 @@ TEST_F(BookmarkEditorViewTest, EditorFullyShown) {
   views::View::ConvertPointToTarget(focus_ring, scroll_view, &bottom_right);
   // Confirm the bottom right of the focus ring is also visible.
   EXPECT_TRUE(scroll_view->GetVisibleRect().Contains(bottom_right));
+}
+
+// Test the on_save_callback is called if defined
+TEST_F(BookmarkEditorViewTest, OnSaveCallbackRunsOnSaveIfDefined) {
+  UNCALLED_MOCK_CALLBACK(BookmarkEditor::OnSaveCallback, on_save_callback);
+
+  CreateEditor(profile_.get(), nullptr,
+               BookmarkEditor::EditDetails::EditNode(GetNode("a")),
+               BookmarkEditorView::SHOW_TREE, on_save_callback.Get());
+
+  EXPECT_CALL_IN_SCOPE(
+      on_save_callback, Run,
+      ApplyEdits(editor_tree_model()->GetRoot()->children()[1].get()));
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,26 +27,27 @@ TEST(JsonSchemaCompilerAdditionalPropertiesTest,
     EXPECT_EQ(type->additional_properties, type_value);
   }
   {
-    auto type_value = std::make_unique<base::DictionaryValue>();
-    type_value->SetInteger("string", 3);
+    base::Value::Dict type_dict;
+    type_dict.Set("string", 3);
+    base::Value type_value(std::move(type_dict));
     auto type = std::make_unique<ap::AdditionalPropertiesType>();
     EXPECT_FALSE(
-        ap::AdditionalPropertiesType::Populate(*type_value, type.get()));
+        ap::AdditionalPropertiesType::Populate(type_value, type.get()));
   }
 }
 
 TEST(JsonSchemaCompilerAdditionalPropertiesTest,
     AdditionalPropertiesParamsCreate) {
-  auto param_object_value = std::make_unique<base::DictionaryValue>();
-  param_object_value->SetString("str", "a");
-  param_object_value->SetInteger("num", 1);
-  std::vector<base::Value> params_value;
-  params_value.push_back(param_object_value->Clone());
+  base::Value::Dict param_object_dict;
+  param_object_dict.Set("str", "a");
+  param_object_dict.Set("num", 1);
+  base::Value param_object_value(std::move(param_object_dict));
+  base::Value::List params_value;
+  params_value.Append(param_object_value.Clone());
   std::unique_ptr<ap::AdditionalProperties::Params> params(
       ap::AdditionalProperties::Params::Create(params_value));
   EXPECT_TRUE(params.get());
-  EXPECT_TRUE(params->param_object.additional_properties.Equals(
-      param_object_value.get()));
+  EXPECT_EQ(params->param_object.additional_properties, param_object_value);
 }
 
 TEST(JsonSchemaCompilerAdditionalPropertiesTest,
@@ -55,12 +56,12 @@ TEST(JsonSchemaCompilerAdditionalPropertiesTest,
   result_object.integer = 5;
   result_object.additional_properties["key"] = "value";
 
-  std::vector<base::Value> expected;
+  base::Value::List expected;
   {
     base::Value dict(base::Value::Type::DICTIONARY);
     dict.SetIntKey("integer", 5);
     dict.SetStringKey("key", "value");
-    expected.push_back(std::move(dict));
+    expected.Append(std::move(dict));
   }
 
   EXPECT_EQ(expected,

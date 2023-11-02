@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/guid.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
@@ -21,6 +20,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_suite.h"
 #include "base/token.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -708,7 +708,7 @@ TEST_F(ConnectTest, ConnectToClientProcess_Blocked) {
   base::Process process;
   mojom::ConnectResult result =
       service_manager::test::LaunchAndConnectToProcess(
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
           base::StrCat({kTestExeName, ".exe"}),
 #else
           kTestExeName,

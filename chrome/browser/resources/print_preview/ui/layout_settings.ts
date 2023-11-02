@@ -1,13 +1,14 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/md_select_css.m.js';
-import './print_preview_shared_css.js';
+import 'chrome://resources/cr_elements/md_select.css.js';
+import './print_preview_shared.css.js';
 import './settings_section.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './layout_settings.html.js';
 import {SelectMixin} from './select_mixin.js';
 import {SettingsMixin} from './settings_mixin.js';
 
@@ -21,7 +22,7 @@ export class PrintPreviewLayoutSettingsElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -29,6 +30,8 @@ export class PrintPreviewLayoutSettingsElement extends
       disabled: Boolean,
     };
   }
+
+  disabled: boolean;
 
   static get observers() {
     return ['onLayoutSettingChange_(settings.layout.value)'];
@@ -38,8 +41,14 @@ export class PrintPreviewLayoutSettingsElement extends
     this.selectedValue = newValue ? 'landscape' : 'portrait';
   }
 
-  onProcessSelectChange(value: string) {
+  override onProcessSelectChange(value: string) {
     this.setSetting('layout', value === 'landscape');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-layout-settings': PrintPreviewLayoutSettingsElement;
   }
 }
 

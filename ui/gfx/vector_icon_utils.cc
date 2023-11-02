@@ -1,10 +1,12 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/gfx/vector_icon_utils.h"
 
-#include "base/check.h"
+#include <ostream>
+
+#include "base/check_op.h"
 #include "ui/gfx/vector_icon_types.h"
 
 namespace gfx {

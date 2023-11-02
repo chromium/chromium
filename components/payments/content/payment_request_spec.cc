@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,11 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
+#include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
+#include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -30,31 +32,7 @@ namespace {
 
 // Validates the |method_data| and fills the output parameters.
 void PopulateValidatedMethodData(
-    const std::vector<PaymentMethodData>& method_data_vector,
-    std::vector<std::string>* supported_card_networks,
-    std::set<std::string>* basic_card_specified_networks,
-    std::set<std::string>* supported_card_networks_set,
-    std::vector<GURL>* url_payment_method_identifiers,
-    std::set<std::string>* payment_method_identifiers_set,
-    std::map<std::string, std::set<std::string>>* stringified_method_data) {
-  data_util::ParseSupportedMethods(method_data_vector, supported_card_networks,
-                                   basic_card_specified_networks,
-                                   url_payment_method_identifiers,
-                                   payment_method_identifiers_set);
-  if (!base::FeatureList::IsEnabled(::features::kPaymentRequestBasicCard)) {
-    // Clears the basic-card related items that ParseSupportedMethods() added.
-    supported_card_networks->clear();
-    basic_card_specified_networks->clear();
-  }
-  supported_card_networks_set->insert(supported_card_networks->begin(),
-                                      supported_card_networks->end());
-}
-
-void PopulateValidatedMethodData(
     const std::vector<mojom::PaymentMethodDataPtr>& method_data_mojom,
-    std::vector<std::string>* supported_card_networks,
-    std::set<std::string>* basic_card_specified_networks,
-    std::set<std::string>* supported_card_networks_set,
     std::vector<GURL>* url_payment_method_identifiers,
     std::set<std::string>* payment_method_identifiers_set,
     std::map<std::string, std::set<std::string>>* stringified_method_data) {
@@ -68,11 +46,9 @@ void PopulateValidatedMethodData(
     method_data_vector.push_back(ConvertPaymentMethodData(method_data_entry));
   }
 
-  PopulateValidatedMethodData(
-      method_data_vector, supported_card_networks,
-      basic_card_specified_networks, supported_card_networks_set,
-      url_payment_method_identifiers, payment_method_identifiers_set,
-      stringified_method_data);
+  data_util::ParseSupportedMethods(method_data_vector,
+                                   url_payment_method_identifiers,
+                                   payment_method_identifiers_set);
 }
 
 }  // namespace
@@ -98,10 +74,9 @@ PaymentRequestSpec::PaymentRequestSpec(
   if (!details_->modifiers)
     details_->modifiers = std::vector<mojom::PaymentDetailsModifierPtr>();
   UpdateSelectedShippingOption(/*after_update=*/false);
-  PopulateValidatedMethodData(
-      method_data_, &supported_card_networks_, &basic_card_specified_networks_,
-      &supported_card_networks_set_, &url_payment_method_identifiers_,
-      &payment_method_identifiers_set_, &stringified_method_data_);
+  PopulateValidatedMethodData(method_data_, &url_payment_method_identifiers_,
+                              &payment_method_identifiers_set_,
+                              &stringified_method_data_);
 
   query_for_quota_ = stringified_method_data_;
 
@@ -284,11 +259,6 @@ PaymentShippingType PaymentRequestSpec::shipping_type() const {
   return PaymentShippingType::SHIPPING;
 }
 
-bool PaymentRequestSpec::IsMethodSupportedThroughBasicCard(
-    const std::string& method_name) {
-  return basic_card_specified_networks_.count(method_name) > 0;
-}
-
 std::u16string PaymentRequestSpec::GetFormattedCurrencyAmount(
     const mojom::PaymentCurrencyAmountPtr& currency_amount) {
   CurrencyFormatter* formatter =
@@ -315,11 +285,11 @@ void PaymentRequestSpec::StartWaitingForUpdateWith(
 bool PaymentRequestSpec::IsMixedCurrency() const {
   DCHECK(details_->display_items);
   const std::string& total_currency = details_->total->amount->currency;
-  return std::any_of(details_->display_items->begin(),
-                     details_->display_items->end(),
-                     [&total_currency](const mojom::PaymentItemPtr& item) {
-                       return item->amount->currency != total_currency;
-                     });
+  return base::ranges::any_of(
+      *details_->display_items,
+      [&total_currency](const mojom::PaymentItemPtr& item) {
+        return item->amount->currency != total_currency;
+      });
 }
 
 const mojom::PaymentItemPtr& PaymentRequestSpec::GetTotal(
@@ -379,23 +349,8 @@ PaymentRequestSpec::GetApplicableModifier(PaymentApp* selected_app) const {
 
   DCHECK(details_->modifiers);
   for (const auto& modifier : *details_->modifiers) {
-    std::set<std::string> supported_card_networks_set;
-    // The following 4 are unused but required by PopulateValidatedMethodData.
-    std::set<std::string> basic_card_specified_networks;
-    std::vector<std::string> supported_networks;
-    std::vector<GURL> url_payment_method_identifiers;
-    std::set<std::string> payment_method_identifiers_set;
-    std::map<std::string, std::set<std::string>> stringified_method_data;
-    PopulateValidatedMethodData(
-        {ConvertPaymentMethodData(modifier->method_data)}, &supported_networks,
-        &basic_card_specified_networks, &supported_card_networks_set,
-        &url_payment_method_identifiers, &payment_method_identifiers_set,
-        &stringified_method_data);
-
     if (selected_app->IsValidForModifier(
-            modifier->method_data->supported_method,
-            !modifier->method_data->supported_networks.empty(),
-            supported_card_networks_set)) {
+            modifier->method_data->supported_method)) {
       return &modifier;
     }
   }
@@ -440,11 +395,9 @@ void PaymentRequestSpec::UpdateSelectedShippingOption(bool after_update) {
   // As per the spec, the selected shipping option should initially be the last
   // one in the array that has its selected field set to true. If none are
   // selected by the merchant, |selected_shipping_option_| stays nullptr.
-  auto selected_shipping_option_it = std::find_if(
-      details_->shipping_options->rbegin(), details_->shipping_options->rend(),
-      [](const payments::mojom::PaymentShippingOptionPtr& element) {
-        return element->selected;
-      });
+  auto selected_shipping_option_it =
+      base::ranges::find_if(base::Reversed(*details_->shipping_options),
+                            &payments::mojom::PaymentShippingOption::selected);
   if (selected_shipping_option_it != details_->shipping_options->rend()) {
     selected_shipping_option_ = selected_shipping_option_it->get();
   }

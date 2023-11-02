@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,15 +18,14 @@
 @property(nonatomic, readonly) web::DownloadTask::State* state;
 
 // Download task for which
-// downloadManagerTabHelper:decidePolicyForDownload:completionHandler: was
-// called. null if decidePolicyForDownload was never called or |decidePolicy:|
-// was called.
+// `downloadManagerTabHelper:decidePolicyForDownload:completionHandler:` was
+// called. Null if it was never called or if `decidePolicy:` was called.
 @property(nonatomic, readonly) web::DownloadTask* decidingPolicyForDownload;
 
-// Calls downloadManagerTabHelper:decidePolicyForDownload:completionHandler:
-// completion handler. Returns YES if decidePolicyForDownload: was called.
-// nulls out decidingPolicyForDownload.
-- (BOOL)decidePolicy:(NewDownloadPolicy)policy WARN_UNUSED_RESULT;
+// Calls `downloadManagerTabHelper:decidePolicyForDownload:completionHandler:`
+// completion handler. Returns YES if the method was called.
+// Nulls out `decidingPolicyForDownload`.
+- (BOOL)decidePolicy:(NewDownloadPolicy)policy [[nodiscard]];
 
 @end
 

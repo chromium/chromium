@@ -1,0 +1,7 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea", hasImage="true"]
+++View viewIdResName:"parent" actions:[AX_FOCUS] bundle:[chromeRole="genericContainer", hasImage="true"]
+++++Image text:"alternative text" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="image", hasImage="true", roleDescription="graphic"]
+++++TextView text:" " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
+++++TextView text:"DOM text" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
+++++TextView text:" " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
+++++Image actions:[AX_FOCUS] bundle:[chromeRole="image", hasImage="true", roleDescription="graphic"]

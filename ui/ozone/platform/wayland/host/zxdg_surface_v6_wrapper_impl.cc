@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,7 +43,7 @@ bool ZXDGSurfaceV6WrapperImpl::Initialize() {
 
   zxdg_surface_v6_add_listener(zxdg_surface_v6_.get(),
                                &zxdg_surface_v6_listener, this);
-  connection_->ScheduleFlush();
+  connection_->Flush();
   return true;
 }
 
@@ -74,7 +74,15 @@ void ZXDGSurfaceV6WrapperImpl::Configure(
   auto* surface = static_cast<ZXDGSurfaceV6WrapperImpl*>(data);
   DCHECK(surface);
 
-  surface->wayland_window_->HandleSurfaceConfigure(serial);
+  // Calls to HandleSurfaceConfigure() might end up hiding the enclosing
+  // toplevel window, and deleting this object.
+  auto weak_window = surface->wayland_window_->AsWeakPtr();
+  weak_window->HandleSurfaceConfigure(serial);
+
+  if (!weak_window)
+    return;
+
+  weak_window->OnSurfaceConfigureEvent();
 }
 
 zxdg_surface_v6* ZXDGSurfaceV6WrapperImpl::zxdg_surface() const {

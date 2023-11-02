@@ -1,5 +1,5 @@
-#!/usr/bin/env vpython
-# Copyright 2019 The Chromium Authors. All rights reserved.
+#!/usr/bin/env vpython3
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Unittests for wpr_runner.py."""
@@ -9,6 +9,7 @@ import logging
 import os
 import subprocess
 import unittest
+from unittest.mock import Mock, call
 
 import iossim_util
 import test_runner
@@ -24,8 +25,8 @@ class WprProxySimulatorTestRunnerTest(test_runner_test.TestCase):
 
     self.mock(test_runner, 'get_current_xcode_info', lambda: {
         'version': 'test version', 'build': 'test build', 'path': 'test/path'})
-    self.mock(test_runner.subprocess, 'check_output',
-              lambda _: 'fake-bundle-id')
+    self.mock(test_runner.subprocess,
+              'check_output', lambda _: b'fake-bundle-id')
     self.mock(os.path, 'abspath', lambda path: '/abs/path/to/%s' % path)
     self.mock(os.path, 'exists', lambda _: True)
     self.mock(test_runner.TestRunner, 'set_sigterm_handler',
@@ -35,7 +36,7 @@ class WprProxySimulatorTestRunnerTest(test_runner_test.TestCase):
     self.mock(test_runner.SimulatorTestRunner, 'deleteSimulator',
               lambda a, b: True)
     self.mock(wpr_runner.WprProxySimulatorTestRunner,
-              'copy_trusted_certificate', lambda a: True)
+              'copy_trusted_certificate', lambda a, b: True)
     self.mock(iossim_util, 'get_simulator',
               lambda a, b: 'E4E66320-177A-450A-9BA1-488D85B7278E')
 
@@ -90,6 +91,78 @@ class WprProxySimulatorTestRunnerTest(test_runner_test.TestCase):
           'out-dir',
       )
 
+  def test_cert_not_found(self):
+    """Ensures CertPathNotFoundError is raised"""
+
+    runner = wpr_runner.WprProxySimulatorTestRunner(
+        'fake-app',
+        'fake-host-app',
+        'fake-iossim',
+        'replay-path',
+        'platform',
+        'os',
+        'wpr-tools-path',
+        'out-dir',
+    )
+
+    class FakeOsPath():
+
+      def __init__(self):
+        self.numCalls = 0
+
+      def __call__(self, a):
+        if self.numCalls == 0:
+          self.numCalls += 1
+          return True
+        self.numCalls += 1
+        return not a.endswith('wpr-tools-path/web_page_replay_go/wpr_cert.pem')
+
+    self.mock(os.path, 'exists', FakeOsPath())
+    self.mock(subprocess, 'check_call', lambda *args: None)
+
+    self.unmock(wpr_runner.WprProxySimulatorTestRunner,
+                'copy_trusted_certificate')
+
+    with self.assertRaises(wpr_runner.CertPathNotFoundError):
+      runner.copy_trusted_certificate('fake-udid')
+
+  def test_copy_cert(self):
+    """Ensures right commands are issued to copy cert"""
+
+    runner = wpr_runner.WprProxySimulatorTestRunner(
+        'fake-app',
+        'fake-host-app',
+        'fake-iossim',
+        'replay-path',
+        'platform',
+        'os',
+        'wpr-tools-path',
+        'out-dir',
+    )
+
+    self.unmock(wpr_runner.WprProxySimulatorTestRunner,
+                'copy_trusted_certificate')
+
+    check_call_mock = Mock()
+
+    self.mock(subprocess, 'check_call', check_call_mock)
+
+    runner.copy_trusted_certificate('UDID')
+
+    calls = [
+        call(['xcrun', 'simctl', 'boot', 'UDID']),
+        call([
+            'xcrun', 'simctl', 'keychain', 'UDID', 'add-root-cert',
+            'wpr-tools-path/web_page_replay_go/wpr_cert.pem'
+        ]),
+        call(['xcrun', 'simctl', 'shutdown', 'UDID'])
+    ]
+
+    check_call_mock.assert_has_calls(calls)
+
+    # ensure subprocess.check_call was only called 3 times
+    self.assertEqual(check_call_mock.call_count, 3)
+
   def test_init(self):
     """Ensures instance is created."""
     tr = wpr_runner.WprProxySimulatorTestRunner(
@@ -113,14 +186,14 @@ class WprProxySimulatorTestRunnerTest(test_runner_test.TestCase):
       def __init__(self):
         self.line_index = 0
         self.lines = [
-            'Test Case \'-[a 1]\' started.',
-            'Test Case \'-[a 1]\' has uninteresting logs.',
-            'Test Case \'-[a 1]\' passed (0.1 seconds)',
-            'Test Case \'-[b 2]\' started.',
-            'Test Case \'-[b 2]\' passed (0.1 seconds)',
-            'Test Case \'-[c 3]\' started.',
-            'Test Case \'-[c 3]\' has interesting failure info.',
-            'Test Case \'-[c 3]\' failed (0.1 seconds)',
+            b'Test Case \'-[a 1]\' started.',
+            b'Test Case \'-[a 1]\' has uninteresting logs.',
+            b'Test Case \'-[a 1]\' passed (0.1 seconds)',
+            b'Test Case \'-[b 2]\' started.',
+            b'Test Case \'-[b 2]\' passed (0.1 seconds)',
+            b'Test Case \'-[c 3]\' started.',
+            b'Test Case \'-[c 3]\' has interesting failure info.',
+            b'Test Case \'-[c 3]\' failed (0.1 seconds)',
         ]
 
       def readline(self):

@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,6 +6,7 @@ import("//build/buildflag_header.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
+import("//build_overrides/wayland.gni")
 import("//testing/test.gni")
 import("features.gni")
 
@@ -21,6 +22,9 @@ if (enable_vulkan) {
     defines = [ "VK_NO_PROTOTYPES" ]
     if (use_vulkan_xcb) {
       defines += [ "USE_VULKAN_XCB" ]
+    }
+    if (ozone_platform_wayland && !use_system_libwayland) {
+      configs = [ "//third_party/wayland:wayland_config" ]
     }
   }
 
@@ -102,6 +106,10 @@ if (enable_vulkan) {
 
     defines = [ "IS_VULKAN_IMPL" ]
 
+    if (ozone_platform == "x11") {
+      defines += [ "OZONE_PLATFORM_IS_X11" ]
+    }
+
     deps = [
       ":buildflags",
       "//base",
@@ -132,6 +140,10 @@ if (enable_vulkan) {
       sources += [ "vulkan_image_android.cc" ]
     }
 
+    if (is_fuchsia) {
+      sources += [ "vulkan_util_fuchsia.cc" ]
+    }
+
     if (is_win) {
       sources += [
         "vulkan_image_win.cc",
@@ -151,8 +163,12 @@ if (enable_vulkan) {
       # libraries and configs need to be included in the generated Fuchsia
       # package.
       if (is_debug || dcheck_always_on) {
-        data_deps += [ "//third_party/fuchsia-sdk:vulkan_validation" ]
+        data_deps += [ "//third_party/fuchsia-sdk/sdk/pkg/vulkan_layers:VkLayer_khronos_validation" ]
       }
+    }
+
+    if (is_apple) {
+      sources += [ "vulkan_image_mac.cc" ]
     }
   }
 

@@ -1,15 +1,13 @@
-#!/usr/bin/env python2
-# Copyright 2021 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
-from __future__ import print_function
 
 import argparse
 import json
 import os
 import re
-import urllib2
+import urllib.request
 
 _FILE_URL = 'https://dl.google.com/dl/android/maven2/com/android/tools/build/aapt2/{0}/aapt2-{0}-linux.jar'
 _GROUP_INDEX_URL = 'https://dl.google.com/dl/android/maven2/com/android/tools/build/group-index.xml'
@@ -17,8 +15,9 @@ _FILE_NAME = 'aapt2-{0}-linux.jar'
 
 
 def do_latest():
-    response = urllib2.urlopen(_GROUP_INDEX_URL)
-    match = re.search(r'<aapt2 versions="([^"]+)"', response.read())
+    response = urllib.request.urlopen(_GROUP_INDEX_URL)
+    match = re.search(r'<aapt2 versions="([^"]+)"',
+                      response.read().decode('utf-8'))
     versions = match.group(1).split(',')
     # The versions appear to be sorted already, no need to deal with sorting
     # their weird version scheme ourselves. Just print the last one.

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.price_tracking;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -54,7 +55,7 @@ public class PriceTrackingNotificationBridgeUnitTest {
     private static final String ACTION_ID_0 = "visit_site";
     private static final String ACTION_ID_1 = "turn_off_alert";
     private static final String ACTION_TEXT_0 = "Visit site";
-    private static final String ACTION_TEXT_1 = "Turn off alert";
+    private static final String ACTION_TEXT_1 = "Stop tracking product";
 
     private PriceTrackingNotificationBridge mPriceTrackingNotificationBridge;
 
@@ -65,6 +66,8 @@ public class PriceTrackingNotificationBridgeUnitTest {
 
     @Mock
     PriceDropNotifier mNotifier;
+    @Mock
+    PriceDropNotificationManager mPriceDropNotificationManager;
 
     @Captor
     ArgumentCaptor<PriceDropNotifier.NotificationData> mNotificationDataCaptor;
@@ -79,7 +82,9 @@ public class PriceTrackingNotificationBridgeUnitTest {
                 .when(currencyFormatterJniMock)
                 .format(Mockito.anyLong(), Mockito.any(CurrencyFormatter.class),
                         Mockito.anyString());
-        mPriceTrackingNotificationBridge = new PriceTrackingNotificationBridge(0, mNotifier);
+        mPriceTrackingNotificationBridge =
+                new PriceTrackingNotificationBridge(0, mNotifier, mPriceDropNotificationManager);
+        when(mPriceDropNotificationManager.canPostNotification()).thenReturn(true);
     }
 
     // Creates a ChromeNotification.Builder that sets a valid ChromeNotification proto.
@@ -154,6 +159,14 @@ public class PriceTrackingNotificationBridgeUnitTest {
     }
 
     @Test
+    public void testShowNotification_ChannelNotCreated() {
+        when(mPriceDropNotificationManager.canPostNotification()).thenReturn(false);
+        mPriceTrackingNotificationBridge.showNotification(
+                createValidChromeNotification().build().toByteArray());
+        verify(mNotifier, times(0)).showNotification(any());
+    }
+
+    @Test
     public void testShowNotification_GarbageBytePayload() {
         mPriceTrackingNotificationBridge.showNotification(new byte[2]);
         verify(mNotifier, times(0)).showNotification(any());
@@ -172,6 +185,17 @@ public class PriceTrackingNotificationBridgeUnitTest {
         PriceDropNotificationPayload.Builder priceDropNotificationPayload =
                 createValidPriceDropNotificationPayload();
         priceDropNotificationPayload.clearDestinationUrl();
+        ChromeNotification.Builder builder =
+                createChromeNotification(createValidChromeMessage(), priceDropNotificationPayload);
+        mPriceTrackingNotificationBridge.showNotification(builder.build().toByteArray());
+        verify(mNotifier, times(0)).showNotification(any());
+    }
+
+    @Test
+    public void testShowNotification_InvalidDestinationURL() {
+        PriceDropNotificationPayload.Builder priceDropNotificationPayload =
+                createValidPriceDropNotificationPayload();
+        priceDropNotificationPayload.setDestinationUrl("test");
         ChromeNotification.Builder builder =
                 createChromeNotification(createValidChromeMessage(), priceDropNotificationPayload);
         mPriceTrackingNotificationBridge.showNotification(builder.build().toByteArray());

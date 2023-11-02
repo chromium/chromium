@@ -1,0 +1,23 @@
+caption: Enables auto-select for multi screen captures
+desc: |-
+  The <ph name="GET_DISPLAY_MEDIA_SET_NAME">getDisplayMediaSet</ph> API allows web applications to capture multiple surfaces at once.
+        This policy unlocks the <ph name="AUTO_SELECT_ALL_SCREENS_NAME">autoSelectAllScreens</ph> property for web applications at defined origins.
+        If the <ph name="AUTO_SELECT_ALL_SCREENS_NAME">autoSelectAllScreens</ph> property is defined in a <ph name="GET_DISPLAY_MEDIA_SET_NAME">getDisplayMediaSet</ph> request, all screen surfaces are automatically captured without requiring explicit user permission.
+        If the policy is not set, <ph name="AUTO_SELECT_ALL_SCREENS_NAME">autoSelectAllScreens</ph> is not available for any web application.
+example_value:
+- https://www.example.com
+- '[*.]example.edu'
+features:
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- file://chrome/browser/media/webrtc/OWNERS
+- simonha@chromium.org
+schema:
+  items:
+    type: string
+  type: array
+supported_on:
+- chrome_os:102-
+tags: []
+type: list

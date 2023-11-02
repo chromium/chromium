@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,12 @@
 #include "base/check.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
 #include "chrome/common/extensions/api/speech/tts_engine_manifest_handler.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/services/tts/public/mojom/tts_service.mojom.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/tts_controller.h"
@@ -82,7 +80,7 @@ void UpdateGoogleSpeechSynthesisKeepAliveCountOnReload(
 
 // Factory to load one instance of TtsExtensionLoaderChromeOs per profile.
 class TtsEngineExtensionObserverChromeOSFactory
-    : public BrowserContextKeyedServiceFactory {
+    : public ProfileKeyedServiceFactory {
  public:
   static TtsEngineExtensionObserverChromeOS* GetForProfile(Profile* profile) {
     return static_cast<TtsEngineExtensionObserverChromeOS*>(
@@ -98,20 +96,15 @@ class TtsEngineExtensionObserverChromeOSFactory
       TtsEngineExtensionObserverChromeOSFactory>;
 
   TtsEngineExtensionObserverChromeOSFactory()
-      : BrowserContextKeyedServiceFactory(
+      : ProfileKeyedServiceFactory(
             "TtsEngineExtensionObserverChromeOS",
-            BrowserContextDependencyManager::GetInstance()) {
+            // If given an incognito profile (including the Chrome OS login
+            // profile), share the service with the original profile.
+            ProfileSelections::BuildRedirectedInIncognito()) {
     DependsOn(extensions::EventRouterFactory::GetInstance());
   }
 
   ~TtsEngineExtensionObserverChromeOSFactory() override {}
-
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override {
-    // If given an incognito profile (including the Chrome OS login
-    // profile), share the service with the original profile.
-    return chrome::GetBrowserContextRedirectedInIncognito(context);
-  }
 
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override {

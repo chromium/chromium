@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -142,16 +142,16 @@ class V8ProcessMemoryReporter : public RefCounted<V8ProcessMemoryReporter> {
       MainMeasurementComplete(mojom::blink::PerIsolateV8MemoryUsage::New());
     } else {
       auto delegate = std::make_unique<FrameAssociatedMeasurementDelegate>(
-          WTF::Bind(&V8ProcessMemoryReporter::MainV8MeasurementComplete,
-                    scoped_refptr<V8ProcessMemoryReporter>(this)));
+          WTF::BindOnce(&V8ProcessMemoryReporter::MainV8MeasurementComplete,
+                        scoped_refptr<V8ProcessMemoryReporter>(this)));
 
       isolate_->MeasureMemory(std::move(delegate),
                               ToV8MeasureMemoryExecution(mode));
     }
     // 2. Start measurement of all worker isolates.
     V8WorkerMemoryReporter::GetMemoryUsage(
-        WTF::Bind(&V8ProcessMemoryReporter::WorkerMeasurementComplete,
-                  scoped_refptr<V8ProcessMemoryReporter>(this)),
+        WTF::BindOnce(&V8ProcessMemoryReporter::WorkerMeasurementComplete,
+                      scoped_refptr<V8ProcessMemoryReporter>(this)),
         ToV8MeasureMemoryExecution(mode));
   }
 
@@ -167,9 +167,9 @@ class V8ProcessMemoryReporter : public RefCounted<V8ProcessMemoryReporter> {
     // heap given by ThreadState::Current() is attached to the main V8
     // isolate given by v8::Isolate::GetCurrent().
     ThreadState::Current()->CollectNodeAndCssStatistics(
-        WTF::Bind(&V8ProcessMemoryReporter::MainBlinkMeasurementComplete,
-                  scoped_refptr<V8ProcessMemoryReporter>(this),
-                  std::move(isolate_memory_usage)));
+        WTF::BindOnce(&V8ProcessMemoryReporter::MainBlinkMeasurementComplete,
+                      scoped_refptr<V8ProcessMemoryReporter>(this),
+                      std::move(isolate_memory_usage)));
   }
 
   void MainBlinkMeasurementComplete(

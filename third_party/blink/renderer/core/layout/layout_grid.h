@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_GRID_H_
 
 #include <memory>
+
 #include "third_party/blink/renderer/core/layout/grid.h"
 #include "third_party/blink/renderer/core/layout/grid_layout_utils.h"
 #include "third_party/blink/renderer/core/layout/grid_track_sizing_algorithm.h"
@@ -34,6 +35,7 @@
 #include "third_party/blink/renderer/core/layout/ng/grid/layout_ng_grid_interface.h"
 #include "third_party/blink/renderer/core/layout/order_iterator.h"
 #include "third_party/blink/renderer/core/style/grid_positions_resolver.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 
 namespace blink {
 
@@ -99,11 +101,13 @@ class LayoutGrid final : public LayoutBlock, public LayoutNGGridInterface {
 
   wtf_size_t AutoRepeatCountForDirection(
       GridTrackSizingDirection direction) const final {
+    NOT_DESTROYED();
     return base::checked_cast<wtf_size_t>(grid_->AutoRepeatTracks(direction));
   }
 
   wtf_size_t ExplicitGridStartForDirection(
       GridTrackSizingDirection direction) const final {
+    NOT_DESTROYED();
     return base::checked_cast<wtf_size_t>(grid_->ExplicitGridStart(direction));
   }
 
@@ -140,7 +144,7 @@ class LayoutGrid final : public LayoutBlock, public LayoutNGGridInterface {
   // Exposed for testing *ONLY*.
   Grid* InternalGrid() const {
     NOT_DESTROYED();
-    return grid_.get();
+    return grid_;
   }
 
  protected:
@@ -328,7 +332,7 @@ class LayoutGrid final : public LayoutBlock, public LayoutNGGridInterface {
   bool AspectRatioPrefersInline(const LayoutBox& child,
                                 bool block_flow_is_column_axis);
 
-  std::unique_ptr<Grid> grid_;
+  Member<Grid> grid_;
   Member<GridTrackSizingAlgorithm> track_sizing_algorithm_;
 
   Vector<LayoutUnit> row_positions_;

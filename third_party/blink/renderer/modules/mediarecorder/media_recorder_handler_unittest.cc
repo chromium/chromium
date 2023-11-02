@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/time/time.h"
@@ -23,11 +22,13 @@
 #include "third_party/blink/renderer/modules/mediarecorder/fake_encoded_video_frame.h"
 #include "third_party/blink/renderer/modules/mediarecorder/media_recorder.h"
 #include "third_party/blink/renderer/modules/mediarecorder/media_recorder_handler.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track_impl.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_registry.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -86,9 +87,9 @@ MediaStream* CreateMediaStream(V8TestingScope& scope) {
   auto* source = MakeGarbageCollected<MediaStreamSource>(
       "sourceId", MediaStreamSource::kTypeAudio, "sourceName", false);
   auto* component =
-      MakeGarbageCollected<MediaStreamComponent>("audioTrack", source);
+      MakeGarbageCollected<MediaStreamComponentImpl>("audioTrack", source);
 
-  auto* track = MakeGarbageCollected<MediaStreamTrack>(
+  auto* track = MakeGarbageCollected<MediaStreamTrackImpl>(
       scope.GetExecutionContext(), component);
 
   HeapVector<Member<MediaStreamTrack>> tracks;
@@ -107,7 +108,7 @@ class MockMediaRecorder : public MediaRecorder {
                       CreateMediaStream(scope),
                       MediaRecorderOptions::Create(),
                       scope.GetExceptionState()) {}
-  virtual ~MockMediaRecorder() = default;
+  ~MockMediaRecorder() override = default;
 
   MOCK_METHOD4(WriteData, void(const char*, size_t, bool, double));
   MOCK_METHOD1(OnError, void(const String& message));
@@ -139,10 +140,10 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
 
   bool recording() const { return media_recorder_handler_->recording_; }
   bool hasVideoRecorders() const {
-    return !media_recorder_handler_->video_recorders_.IsEmpty();
+    return !media_recorder_handler_->video_recorders_.empty();
   }
   bool hasAudioRecorders() const {
-    return !media_recorder_handler_->audio_recorders_.IsEmpty();
+    return !media_recorder_handler_->audio_recorders_.empty();
   }
 
   void OnVideoFrameForTesting(scoped_refptr<media::VideoFrame> frame) {
@@ -284,15 +285,15 @@ TEST_P(MediaRecorderHandlerTest, SupportsBitrateMode) {
 
   EXPECT_TRUE(media_recorder_handler_->Initialize(
       recorder, registry_.test_stream(), mime_type, codecs, 0, 0,
-      AudioTrackRecorder::BitrateMode::VARIABLE));
+      AudioTrackRecorder::BitrateMode::kVariable));
   EXPECT_EQ(media_recorder_handler_->AudioBitrateMode(),
-            AudioTrackRecorder::BitrateMode::VARIABLE);
+            AudioTrackRecorder::BitrateMode::kVariable);
 
   EXPECT_TRUE(media_recorder_handler_->Initialize(
       recorder, registry_.test_stream(), mime_type, codecs, 0, 0,
-      AudioTrackRecorder::BitrateMode::CONSTANT));
+      AudioTrackRecorder::BitrateMode::kConstant));
   EXPECT_EQ(media_recorder_handler_->AudioBitrateMode(),
-            AudioTrackRecorder::BitrateMode::CONSTANT);
+            AudioTrackRecorder::BitrateMode::kConstant);
 }
 
 // Checks that the initialization-destruction sequence works fine.
@@ -304,7 +305,7 @@ TEST_P(MediaRecorderHandlerTest, InitializeStartStop) {
   const String codecs(GetParam().codecs);
   EXPECT_TRUE(media_recorder_handler_->Initialize(
       recorder, registry_.test_stream(), mime_type, codecs, 0, 0,
-      AudioTrackRecorder::BitrateMode::VARIABLE));
+      AudioTrackRecorder::BitrateMode::kVariable));
   EXPECT_FALSE(recording());
   EXPECT_FALSE(hasVideoRecorders());
   EXPECT_FALSE(hasAudioRecorders());
@@ -336,7 +337,7 @@ TEST_P(MediaRecorderHandlerTest, EncodeVideoFrames) {
   const String codecs(GetParam().codecs);
   EXPECT_TRUE(media_recorder_handler_->Initialize(
       recorder, registry_.test_stream(), mime_type, codecs, 0, 0,
-      AudioTrackRecorder::BitrateMode::VARIABLE));
+      AudioTrackRecorder::BitrateMode::kVariable));
   EXPECT_TRUE(media_recorder_handler_->Start(0));
 
   InSequence s;
@@ -423,7 +424,7 @@ TEST_P(MediaRecorderHandlerTest, OpusEncodeAudioFrames) {
   const String codecs(GetParam().codecs);
   EXPECT_TRUE(media_recorder_handler_->Initialize(
       recorder, registry_.test_stream(), mime_type, codecs, 0, 0,
-      AudioTrackRecorder::BitrateMode::VARIABLE));
+      AudioTrackRecorder::BitrateMode::kVariable));
   EXPECT_TRUE(media_recorder_handler_->Start(0));
 
   InSequence s;
@@ -431,8 +432,8 @@ TEST_P(MediaRecorderHandlerTest, OpusEncodeAudioFrames) {
   const std::unique_ptr<media::AudioBus> audio_bus2 = NextAudioBus();
 
   media::AudioParameters params(
-      media::AudioParameters::AUDIO_PCM_LINEAR, media::CHANNEL_LAYOUT_STEREO,
-      kTestAudioSampleRate,
+      media::AudioParameters::AUDIO_PCM_LINEAR,
+      media::ChannelLayoutConfig::Stereo(), kTestAudioSampleRate,
       kTestAudioSampleRate * kTestAudioBufferDurationMs / 1000);
   SetAudioFormatForTesting(params);
 
@@ -486,7 +487,7 @@ TEST_P(MediaRecorderHandlerTest, WebmMuxerErrorWhileEncoding) {
   const String codecs(GetParam().codecs);
   EXPECT_TRUE(media_recorder_handler_->Initialize(
       recorder, registry_.test_stream(), mime_type, codecs, 0, 0,
-      AudioTrackRecorder::BitrateMode::VARIABLE));
+      AudioTrackRecorder::BitrateMode::kVariable));
   EXPECT_TRUE(media_recorder_handler_->Start(0));
 
   InSequence s;
@@ -535,7 +536,7 @@ TEST_P(MediaRecorderHandlerTest, ActualMimeType) {
   const String codecs(GetParam().codecs);
   EXPECT_TRUE(media_recorder_handler_->Initialize(
       recorder, registry_.test_stream(), mime_type, codecs, 0, 0,
-      AudioTrackRecorder::BitrateMode::VARIABLE));
+      AudioTrackRecorder::BitrateMode::kVariable));
 
   StringBuilder actual_mime_type;
   actual_mime_type.Append(GetParam().mime_type);
@@ -566,7 +567,7 @@ TEST_P(MediaRecorderHandlerTest, PauseRecorderForVideo) {
 
   EXPECT_TRUE(media_recorder_handler_->Initialize(
       recorder, registry_.test_stream(), mime_type, codecs, 0, 0,
-      AudioTrackRecorder::BitrateMode::VARIABLE));
+      AudioTrackRecorder::BitrateMode::kVariable));
   EXPECT_TRUE(media_recorder_handler_->Start(0));
 
   Mock::VerifyAndClearExpectations(recorder);
@@ -599,7 +600,7 @@ TEST_P(MediaRecorderHandlerTest, StartStopStartRecorderForVideo) {
 
   EXPECT_TRUE(media_recorder_handler_->Initialize(
       recorder, registry_.test_stream(), mime_type, codecs, 0, 0,
-      AudioTrackRecorder::BitrateMode::VARIABLE));
+      AudioTrackRecorder::BitrateMode::kVariable));
   EXPECT_TRUE(media_recorder_handler_->Start(0));
   media_recorder_handler_->Stop();
 
@@ -658,7 +659,7 @@ TEST_P(MediaRecorderHandlerH264ProfileTest, ActualMimeType) {
   const String codecs(GetParam().codecs);
   EXPECT_TRUE(media_recorder_handler_->Initialize(
       recorder, registry_.test_stream(), mime_type, codecs, 0, 0,
-      AudioTrackRecorder::BitrateMode::VARIABLE));
+      AudioTrackRecorder::BitrateMode::kVariable));
 
   String actual_mime_type =
       String(GetParam().mime_type) + ";codecs=" + GetParam().codecs;
@@ -732,7 +733,7 @@ TEST_P(MediaRecorderHandlerPassthroughTest, PassesThrough) {
   auto* recorder = MakeGarbageCollected<MockMediaRecorder>(scope);
   media_recorder_handler_->Initialize(
       recorder, registry_.test_stream(), "", "", 0, 0,
-      AudioTrackRecorder::BitrateMode::VARIABLE);
+      AudioTrackRecorder::BitrateMode::kVariable);
   media_recorder_handler_->Start(0);
 
   const size_t kFrameSize = 42;
@@ -761,7 +762,7 @@ TEST_F(MediaRecorderHandlerPassthroughTest, ErrorsOutOnCodecSwitch) {
   auto* recorder = MakeGarbageCollected<MockMediaRecorder>(scope);
   EXPECT_TRUE(media_recorder_handler_->Initialize(
       recorder, registry_.test_stream(), "", "", 0, 0,
-      AudioTrackRecorder::BitrateMode::VARIABLE));
+      AudioTrackRecorder::BitrateMode::kVariable));
   EXPECT_TRUE(media_recorder_handler_->Start(0));
 
   // NOTE, Asan: the prototype of WriteData which has a const char* as data

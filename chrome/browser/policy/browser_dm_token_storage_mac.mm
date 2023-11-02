@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,15 +17,13 @@
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
-#include "base/no_destructor.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/syslog_logging.h"
-#include "base/task/post_task.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -55,6 +53,15 @@ const char kEnrollmentMandatoryOption[] = "Mandatory";
 // policies.
 const CFStringRef kBundleId = CFSTR("com.google.Chrome");
 
+constexpr char kEnrollmentTokenMetricsName[] =
+    "Enterprise.CloudManagementEnrollmentTokenLocation.Mac";
+
+enum EnrollmentTokenLocation {
+  kPolicy = 0,
+  kFile = 1,
+  kMaxValue = kFile,
+};
+
 bool GetDmTokenFilePath(base::FilePath* token_file_path,
                         const std::string& client_id,
                         bool create_dir) {
@@ -77,12 +84,22 @@ bool GetDmTokenFilePath(base::FilePath* token_file_path,
 bool StoreDMTokenInDirAppDataDir(const std::string& token,
                                  const std::string& client_id) {
   base::FilePath token_file_path;
-  if (!GetDmTokenFilePath(&token_file_path, client_id, true)) {
+  if (!GetDmTokenFilePath(&token_file_path, client_id, /*create_dir=*/true)) {
     NOTREACHED();
     return false;
   }
 
   return base::ImportantFileWriter::WriteFileAtomically(token_file_path, token);
+}
+
+bool DeleteDMTokenFromAppDataDir(const std::string& client_id) {
+  base::FilePath token_file_path;
+  if (!GetDmTokenFilePath(&token_file_path, client_id, /*create_dir=*/false)) {
+    NOTREACHED();
+    return false;
+  }
+
+  return base::DeleteFile(token_file_path);
 }
 
 // Get the enrollment token from policy file: /Library/com.google.Chrome.plist.
@@ -163,18 +180,25 @@ std::string BrowserDMTokenStorageMac::InitClientId() {
 
 std::string BrowserDMTokenStorageMac::InitEnrollmentToken() {
   std::string enrollment_token;
-  if (GetEnrollmentTokenFromPolicy(&enrollment_token))
+  if (GetEnrollmentTokenFromPolicy(&enrollment_token)) {
+    base::UmaHistogramEnumeration(kEnrollmentTokenMetricsName,
+                                  EnrollmentTokenLocation::kPolicy);
     return enrollment_token;
+  }
 
-  if (GetEnrollmentTokenFromFile(&enrollment_token))
+  if (GetEnrollmentTokenFromFile(&enrollment_token)) {
+    base::UmaHistogramEnumeration(kEnrollmentTokenMetricsName,
+                                  EnrollmentTokenLocation::kFile);
     return enrollment_token;
+  }
 
   return std::string();
 }
 
 std::string BrowserDMTokenStorageMac::InitDMToken() {
   base::FilePath token_file_path;
-  if (!GetDmTokenFilePath(&token_file_path, InitClientId(), false))
+  if (!GetDmTokenFilePath(&token_file_path, InitClientId(),
+                          /*create_dir=*/false))
     return std::string();
 
   std::string token;
@@ -196,6 +220,11 @@ BrowserDMTokenStorage::StoreTask BrowserDMTokenStorageMac::SaveDMTokenTask(
     const std::string& token,
     const std::string& client_id) {
   return base::BindOnce(&StoreDMTokenInDirAppDataDir, token, client_id);
+}
+
+BrowserDMTokenStorage::StoreTask BrowserDMTokenStorageMac::DeleteDMTokenTask(
+    const std::string& client_id) {
+  return base::BindOnce(&DeleteDMTokenFromAppDataDir, client_id);
 }
 
 scoped_refptr<base::TaskRunner>

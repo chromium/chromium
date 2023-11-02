@@ -1,11 +1,10 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
-import("//ui/file_manager/base/gn/js_test_gen_html.gni")
-import("//ui/webui/resources/js/cr.gni")
+import("//ui/file_manager/base/gn/js_test_type_check.gni")
 
 visibility = [
   "//ash/webui/file_manager/resources/*",
@@ -16,7 +15,7 @@ group("closure_compile") {
   testonly = true
   deps = [
     ":closure_compile_jsmodules",
-    ":js_test_gen_html_modules_type_check_auto",
+    ":js_test_type_check",
     ":test_support_modules_type_check",
   ]
 }
@@ -25,22 +24,23 @@ group("js_modules") {
   deps = [
     ":api",
     ":app_util",
+    ":array_data_model",
     ":async_util",
     ":dialog_type",
     ":error_counter",
     ":file_operation_common",
     ":file_type",
+    ":file_types_data",
     ":files_app_entry_types",
     ":filtered_volume_manager",
     ":glitch",
-    ":importer_common",
+    ":icon_util",
     ":lru_cache",
-    ":mediasession_types",
     ":metrics",
     ":metrics_base",
     ":notifications_browser_proxy",
-    ":power",
     ":progress_center_common",
+    ":recent_date_bucket",
     ":storage_adapter",
     ":trash",
     ":url_constants",
@@ -54,22 +54,24 @@ js_type_check("closure_compile_jsmodules") {
   deps = [
     ":api",
     ":app_util",
+    ":array_data_model",
     ":async_util",
     ":error_counter",
     ":file_operation_common",
     ":file_type",
+    ":file_types_data",
     ":files_app_entry_types",
     ":filtered_volume_manager",
     ":glitch",
-    ":importer_common",
+    ":icon_util",
     ":lru_cache",
     ":metrics",
     ":metrics_base",
     ":mock_entry",
     ":mock_util",
     ":notifications_browser_proxy",
-    ":power",
     ":progress_center_common",
+    ":recent_date_bucket",
     ":storage_adapter",
     ":trash",
     ":url_constants",
@@ -79,8 +81,9 @@ js_type_check("closure_compile_jsmodules") {
   ]
 
   closure_flags = strict_error_checking_closure_args + [
+                    "language_in=ECMASCRIPT_2020",
                     "js_module_root=./gen/ui",
-                    "js_module_root=../../ui",
+                    "js_module_root=" + rebase_path("//ui", root_build_dir),
                     "hide_warnings_for=third_party/",
                   ]
 }
@@ -90,15 +93,15 @@ js_type_check("test_support_modules_type_check") {
   deps = [
     ":mock_chrome",
     ":test_error_reporting",
-    ":test_importer_common",
     ":unittest_util",
   ]
 
   closure_flags =
       strict_error_checking_closure_args + [
+        "language_in=ECMASCRIPT_2020",
         "js_module_root=./gen/ui",
-        "js_module_root=../../ui",
-        "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
+        "js_module_root=" + rebase_path("//ui", root_build_dir),
+        "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
       ]
 }
 
@@ -110,10 +113,23 @@ js_library("app_util") {
     ":storage_adapter",
     "//ui/file_manager/file_manager/externs:file_manager_private",
     "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/file_manager/file_manager/externs/background:background_base",
   ]
   externs_list =
       [ "//ui/file_manager/file_manager/externs/app_window_common.js" ]
+}
+
+js_library("array_data_model") {
+  deps = [
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js/cr:event_target",
+  ]
+}
+
+js_unittest("array_data_model_unittest") {
+  deps = [
+    ":array_data_model",
+    "//chrome/test/data/webui:chai_assert",
+  ]
 }
 
 js_library("async_util") {
@@ -130,19 +146,20 @@ js_library("glitch") {
 js_library("dialog_type") {
 }
 
-js_unittest("files_app_entry_types_unittest.m") {
+js_unittest("files_app_entry_types_unittest") {
   deps = [
     ":files_app_entry_types",
     ":mock_entry",
     "//chrome/test/data/webui:chai_assert",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
     "//ui/file_manager/file_manager/externs:volume_info",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
 }
 
 js_library("files_app_entry_types") {
   deps = [
+    ":icon_util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_info",
   ]
@@ -155,16 +172,22 @@ js_library("files_app_state") {
   ]
 }
 
+js_library("file_types_data") {
+  sources = [ "$target_gen_dir/file_types_data.js" ]
+  extra_deps = [ "//ui/file_manager/base/gn:file_types_data_gen_js" ]
+}
+
 js_library("file_type") {
   deps = [
+    ":file_types_data",
     ":files_app_entry_types",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
 }
 
-js_unittest("file_type_unittest.m") {
+js_unittest("file_type_unittest") {
   deps = [
     ":file_type",
     ":mock_entry",
@@ -182,6 +205,8 @@ js_library("file_operation_common") {
 
 js_library("filtered_volume_manager") {
   deps = [
+    ":array_data_model",
+    ":util",
     "//ui/file_manager/file_manager/common/js:files_app_entry_types",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:entry_location",
@@ -189,60 +214,30 @@ js_library("filtered_volume_manager") {
     "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/file_manager/file_manager/externs:volume_info_list",
     "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr:event_target.m",
-    "//ui/webui/resources/js/cr/ui:array_data_model.m",
+    "//ui/webui/resources/js/cr:event_target",
   ]
 }
 
-# These importer files actually belong here. Nothing outside the Files app uses
-# them, so restrict visibility. TODO(tapted): Simplify visibility when
-# everything else moves to //ui/file_manager/base.
-
-js_library("importer_common") {
+js_unittest("filtered_volume_manager_unittest") {
   deps = [
-    ":file_type",
-    ":url_constants",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
-    "//ui/file_manager/file_manager/externs:volume_info",
-    "//ui/file_manager/file_manager/externs:volume_manager",
-  ]
-}
-
-js_library("test_importer_common") {
-  deps = [
-    ":importer_common",
-    ":unittest_util",
-  ]
-}
-
-js_unittest("importer_common_unittest.m") {
-  deps = [
-    ":importer_common",
-    ":mock_entry",
-    ":test_importer_common",
+    ":filtered_volume_manager",
     "//chrome/test/data/webui:chai_assert",
     "//ui/file_manager/file_manager/background/js:mock_volume_manager",
-    "//ui/file_manager/file_manager/common/js:mock_chrome",
-    "//ui/file_manager/file_manager/common/js:test_error_reporting",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/externs:volume_info",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 
 js_library("lru_cache") {
 }
 
-js_unittest("lru_cache_unittest.m") {
+js_unittest("lru_cache_unittest") {
   deps = [
     ":lru_cache",
     "//chrome/test/data/webui:chai_assert",
   ]
-}
-
-js_library("mediasession_types") {
 }
 
 js_library("metrics") {
@@ -257,6 +252,7 @@ js_library("metrics_base") {
 
 js_library("mock_chrome") {
   testonly = true
+  deps = [ "//ui/file_manager/file_manager/externs:file_manager_private" ]
 }
 
 js_library("mock_entry") {
@@ -275,10 +271,31 @@ js_library("notifications_browser_proxy") {
 js_library("progress_center_common") {
 }
 
-js_library("power") {
+js_library("recent_date_bucket") {
+  deps = [
+    ":util",
+    "//ui/file_manager/file_manager/externs:file_manager_private",
+  ]
+}
+
+js_unittest("recent_date_bucket_unittest") {
+  deps = [
+    ":mock_chrome",
+    ":recent_date_bucket",
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
 }
 
 js_library("storage_adapter") {
+  externs_list = [ "$externs_path/chrome_extensions.js" ]
+}
+
+js_unittest("storage_adapter_unittest") {
+  deps = [
+    ":storage_adapter",
+    "//chrome/test/data/webui:chai_assert",
+  ]
 }
 
 js_library("test_error_reporting") {
@@ -288,7 +305,6 @@ js_library("test_error_reporting") {
 js_library("xfm") {
   deps = [
     ":notifications_browser_proxy",
-    ":power",
     ":storage_adapter",
   ]
 }
@@ -296,11 +312,11 @@ js_library("xfm") {
 js_library("trash") {
   deps = [
     ":files_app_entry_types",
+    ":metrics",
     ":util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/webui/resources/js:assert.m",
   ]
 }
 
@@ -321,10 +337,9 @@ js_library("util") {
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:util.m",
-    "//ui/webui/resources/js/cr:ui.m",
+    "//ui/webui/resources/js/cr:ui",
   ]
 
   externs_list = [
@@ -333,7 +348,7 @@ js_library("util") {
   ]
 }
 
-js_unittest("util_unittest.m") {
+js_unittest("util_unittest") {
   deps = [
     ":files_app_entry_types",
     ":mock_entry",
@@ -344,32 +359,40 @@ js_unittest("util_unittest.m") {
   ]
 }
 
-js_unittest("volume_manager_types_unittest.m") {
+js_unittest("volume_manager_types_unittest") {
   deps = [ ":volume_manager_types" ]
 }
 
 js_library("volume_manager_types") {
   deps = [
     "//ui/file_manager/file_manager/externs:file_manager_private",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
 }
 
-js_test_gen_html("js_test_gen_html_modules") {
+js_library("icon_util") {
+  deps = [ "//ui/file_manager/file_manager/externs:file_manager_private" ]
+}
+
+js_test_type_check("js_test_type_check") {
   deps = [
-    ":file_type_unittest.m",
-    ":files_app_entry_types_unittest.m",
-    ":importer_common_unittest.m",
-    ":lru_cache_unittest.m",
-    ":util_unittest.m",
-    ":volume_manager_types_unittest.m",
+    ":array_data_model_unittest",
+    ":file_type_unittest",
+    ":files_app_entry_types_unittest",
+    ":filtered_volume_manager_unittest",
+    ":lru_cache_unittest",
+    ":recent_date_bucket_unittest",
+    ":storage_adapter_unittest",
+    ":util_unittest",
+    ":volume_manager_types_unittest",
   ]
 
   closure_flags =
       strict_error_checking_closure_args + [
+        "language_in=ECMASCRIPT_2020",
         "js_module_root=./gen/ui",
-        "js_module_root=../../ui",
-        "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
+        "js_module_root=" + rebase_path("//ui", root_build_dir),
+        "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
         "hide_warnings_for=third_party/",
       ]
 }

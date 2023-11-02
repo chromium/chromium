@@ -287,6 +287,16 @@ declare class DomRepeat extends
   modelForElement(el: HTMLElement): TemplateInstanceBase|null;
 }
 
+interface DomRepeatItem<M> {
+  model: {
+    item: M,
+    index: number,
+  }
+}
+
+/** Event interface for dom-repeat events. */
+export type DomRepeatEvent<M, E extends Event = Event> = DomRepeatItem<M>&E;
+
 declare global {
 
   interface HTMLElementTagNameMap {

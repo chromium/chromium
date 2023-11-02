@@ -1,4 +1,4 @@
-# Copyright 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,13 +8,16 @@ for more details on the presubmit API built into depot_tools.
 """
 
 USE_PYTHON3 = True
+PRESUBMIT_VERSION = '2.0.0'
 
 
 def GetPrettyPrintErrors(input_api, output_api, cwd, rel_path, results):
   """Runs pretty-print command for specified file."""
-  exit_code = input_api.subprocess.call(
-      [input_api.python_executable, 'pretty_print.py', rel_path, '--presubmit',
-       '--non-interactive'], cwd=cwd)
+  args = [
+      input_api.python3_executable, 'pretty_print.py', rel_path, '--presubmit',
+      '--non-interactive'
+  ]
+  exit_code = input_api.subprocess.call(args, cwd=cwd)
 
   if exit_code != 0:
     error_msg = (
@@ -25,7 +28,7 @@ def GetPrettyPrintErrors(input_api, output_api, cwd, rel_path, results):
 def GetPrefixErrors(input_api, output_api, cwd, rel_path, results):
   """Validates histogram prefixes in specified file."""
   exit_code = input_api.subprocess.call(
-      [input_api.python_executable, 'validate_prefix.py', rel_path], cwd=cwd)
+      [input_api.python3_executable, 'validate_prefix.py', rel_path], cwd=cwd)
 
   if exit_code != 0:
     error_msg = ('%s contains histogram(s) with disallowed prefix, please run '
@@ -36,7 +39,8 @@ def GetPrefixErrors(input_api, output_api, cwd, rel_path, results):
 def GetObsoleteXmlErrors(input_api, output_api, cwd, results):
   """Validates all histograms in the file are obsolete."""
   exit_code = input_api.subprocess.call(
-      [input_api.python_executable, 'validate_obsolete_histograms.py'], cwd=cwd)
+      [input_api.python3_executable, 'validate_obsolete_histograms.py'],
+      cwd=cwd)
 
   if exit_code != 0:
     error_msg = (
@@ -48,7 +52,7 @@ def GetObsoleteXmlErrors(input_api, output_api, cwd, results):
 def GetValidateHistogramsError(input_api, output_api, cwd, results):
   """Validates histograms format and index file."""
   exit_code = input_api.subprocess.call(
-      [input_api.python_executable, 'validate_format.py'], cwd=cwd)
+      [input_api.python3_executable, 'validate_format.py'], cwd=cwd)
 
   if exit_code != 0:
     error_msg = (
@@ -57,7 +61,7 @@ def GetValidateHistogramsError(input_api, output_api, cwd, results):
     results.append(output_api.PresubmitError(error_msg))
 
   exit_code = input_api.subprocess.call(
-      [input_api.python_executable, 'validate_histograms_index.py'], cwd=cwd)
+      [input_api.python3_executable, 'validate_histograms_index.py'], cwd=cwd)
 
   if exit_code != 0:
     error_msg = (
@@ -114,7 +118,7 @@ def ValidateSingleFile(input_api, output_api, file_obj, cwd, results):
   return False
 
 
-def CheckChange(input_api, output_api):
+def CheckHistogramFormatting(input_api, output_api):
   """Checks that histograms.xml is pretty-printed and well-formatted."""
   results = []
   cwd = input_api.PresubmitLocalPath()
@@ -133,11 +137,3 @@ def CheckChange(input_api, output_api):
     GetValidateHistogramsError(input_api, output_api, cwd, results)
 
   return results
-
-
-def CheckChangeOnUpload(input_api, output_api):
-  return CheckChange(input_api, output_api)
-
-
-def CheckChangeOnCommit(input_api, output_api):
-  return CheckChange(input_api, output_api)

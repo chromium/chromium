@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,7 +31,7 @@ MockPostProcessor::MockPostProcessor(MockPostProcessorFactory* factory,
   }
 
   // Parse |filter_description_list| for parameters.
-  for (const base::Value& elem : filter_description_list->GetList()) {
+  for (const base::Value& elem : filter_description_list->GetListDeprecated()) {
     CHECK(elem.is_dict());
     const base::Value* processor_val =
         elem.FindKeyOfType("processor", base::Value::Type::STRING);

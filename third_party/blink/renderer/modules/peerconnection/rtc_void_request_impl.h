@@ -36,7 +36,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_peer_connection_error_callback.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_session_description_enums.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_void_request.h"
 
 namespace blink {
@@ -50,7 +50,6 @@ class RTCVoidRequestImpl final : public RTCVoidRequest,
                                  public ExecutionContextLifecycleObserver {
  public:
   RTCVoidRequestImpl(ExecutionContext*,
-                     absl::optional<RTCSetSessionDescriptionOperation>,
                      RTCPeerConnection*,
                      V8VoidFunction*,
                      V8RTCPeerConnectionErrorCallback*);
@@ -68,7 +67,6 @@ class RTCVoidRequestImpl final : public RTCVoidRequest,
  private:
   void Clear();
 
-  absl::optional<RTCSetSessionDescriptionOperation> operation_;
   Member<V8VoidFunction> success_callback_;
   Member<V8RTCPeerConnectionErrorCallback> error_callback_;
 

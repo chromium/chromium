@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,6 +45,7 @@ class NoteActionLaunchButtonTest : public LoginTestBase {
   ~NoteActionLaunchButtonTest() override = default;
 
   void SetUp() override {
+    set_start_session(true);
     LoginTestBase::SetUp();
 
     Shell::Get()->tray_action()->SetClient(

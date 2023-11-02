@@ -21,9 +21,6 @@
     "account_capabilities_origin_url": {
       "url": "https://accountcapabilities.will-be-overridden.com"
     },
-    "captcha_base_url": {
-      "url": "http://accounts.example.com/"
-    },
     "client_login_url": {
       "url": "https://accounts.example.com/ClientLogin"
     },
@@ -59,9 +56,6 @@
     },
     "continue_url_for_logout": {
       "url": "https://accounts.example.com/chrome/blank.html"
-    },
-    "get_user_info_url": {
-      "url": "https://accounts.example.com/GetUserInfo"
     },
     "token_auth_url": {
       "url": "https://accounts.example.com/TokenAuth"
@@ -125,9 +119,6 @@
     },
     "reauth_api_url": {
       "url": "https://www.exampleapis.com/reauth/v1beta/users/"
-    },
-    "gaia_login_form_realm": {
-      "url": "https://accounts.example.com/LoginFormRealm"
     }
   }
 }

@@ -1,4 +1,4 @@
-// Copyright 2021 The Crashpad Authors. All rights reserved.
+// Copyright 2021 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +21,8 @@
 #include <sys/sysctl.h>
 #include <time.h>
 
-#include "base/cxx17_backports.h"
+#include <iterator>
+
 #include "build/build_config.h"
 #include "snapshot/snapshot_constants.h"
 #include "util/ios/ios_intermediate_dump_writer.h"
@@ -117,12 +118,26 @@ void WriteProperty(IOSIntermediateDumpWriter* writer,
 //! \param[in] writer The dump writer
 //! \param[in] key The key to write.
 //! \param[in] value Memory to be written.
-//! \param[in] count Length of \a data.
+//! \param[in] value_length Length of \a data.
 void WritePropertyBytes(IOSIntermediateDumpWriter* writer,
                         IntermediateDumpKey key,
                         const void* value,
                         size_t value_length) {
   if (!writer->AddPropertyBytes(key, value, value_length))
+    WriteError(key);
+}
+
+//! \brief Call AddPropertyCString with raw error log.
+//!
+//! \param[in] writer The dump writer
+//! \param[in] key The key to write.
+//! \param[in] max_length The maximum string length.
+//! \param[in] value Memory to be written.
+void WritePropertyCString(IOSIntermediateDumpWriter* writer,
+                          IntermediateDumpKey key,
+                          size_t max_length,
+                          const char* value) {
+  if (!writer->AddPropertyCString(key, max_length, value))
     WriteError(key);
 }
 
@@ -428,7 +443,7 @@ void CaptureMemoryPointedToByThreadState(IOSIntermediateDumpWriter* writer,
   MaybeCaptureMemoryAround(writer, thread_state.__rip);
 #elif defined(ARCH_CPU_ARM_FAMILY)
   MaybeCaptureMemoryAround(writer, thread_state.__pc);
-  for (size_t i = 0; i < base::size(thread_state.__x); ++i) {
+  for (size_t i = 0; i < std::size(thread_state.__x); ++i) {
     MaybeCaptureMemoryAround(writer, thread_state.__x[i]);
   }
 #endif
@@ -497,80 +512,6 @@ void WriteAppleCrashReporterAnnotations(
   }
 }
 
-void WriteDyldErrorStringAnnotation(
-    IOSIntermediateDumpWriter* writer,
-    const uint64_t address,
-    const symtab_command* symtab_command_ptr,
-    const dysymtab_command* dysymtab_command_ptr,
-    const segment_command_64* text_seg_ptr,
-    const segment_command_64* linkedit_seg_ptr,
-    vm_size_t slide) {
-  if (text_seg_ptr == nullptr || linkedit_seg_ptr == nullptr ||
-      symtab_command_ptr == nullptr) {
-    return;
-  }
-
-  ScopedVMRead<symtab_command> symtab_command;
-  ScopedVMRead<dysymtab_command> dysymtab_command;
-  ScopedVMRead<segment_command_64> text_seg;
-  ScopedVMRead<segment_command_64> linkedit_seg;
-  if (!symtab_command.Read(symtab_command_ptr) ||
-      !text_seg.Read(text_seg_ptr) || !linkedit_seg.Read(linkedit_seg_ptr) ||
-      (dysymtab_command_ptr && !dysymtab_command.Read(dysymtab_command_ptr))) {
-    CRASHPAD_RAW_LOG("Unable to load dyld symbol table.");
-  }
-
-  uint64_t file_slide =
-      (linkedit_seg->vmaddr - text_seg->vmaddr) - linkedit_seg->fileoff;
-  uint64_t strings = address + (symtab_command->stroff + file_slide);
-  nlist_64* symbol_ptr = reinterpret_cast<nlist_64*>(
-      address + (symtab_command->symoff + file_slide));
-
-  // If a dysymtab is present, use it to filter the symtab for just the
-  // portion used for extdefsym. If no dysymtab is present, the entire symtab
-  // will need to be consulted.
-  uint32_t symbol_count = symtab_command->nsyms;
-  if (dysymtab_command_ptr) {
-    symbol_ptr += dysymtab_command->iextdefsym;
-    symbol_count = dysymtab_command->nextdefsym;
-  }
-
-  for (uint32_t i = 0; i < symbol_count; i++, symbol_ptr++) {
-    ScopedVMRead<nlist_64> symbol;
-    if (!symbol.Read(symbol_ptr)) {
-      CRASHPAD_RAW_LOG("Unable to load dyld symbol table symbol.");
-      return;
-    }
-
-    if (!symbol->n_value)
-      continue;
-
-    ScopedVMRead<const char> symbol_name;
-    if (!symbol_name.Read(strings + symbol->n_un.n_strx)) {
-      CRASHPAD_RAW_LOG("Unable to load dyld symbol name.");
-    }
-
-    if (strcmp(symbol_name.get(), "_error_string") == 0) {
-      ScopedVMRead<const char> symbol_value;
-      if (!symbol_value.Read(symbol->n_value + slide)) {
-        CRASHPAD_RAW_LOG("Unable to load dyld symbol value.");
-      }
-      // 1024 here is distinct from kMaxMessageSize above, because it refers to
-      // a precisely-sized buffer inside dyld.
-      const size_t value_len = strnlen(symbol_value.get(), 1024);
-      if (value_len) {
-        WriteProperty(writer,
-                      IntermediateDumpKey::kAnnotationsDyldErrorString,
-                      symbol_value.get(),
-                      value_len);
-      }
-      return;
-    }
-
-    continue;
-  }
-}
-
 }  // namespace
 
 // static
@@ -598,7 +539,7 @@ void InProcessIntermediateDumpHandler::WriteProcessInfo(
   kinfo_proc kern_proc_info;
   int mib[] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, getpid()};
   size_t len = sizeof(kern_proc_info);
-  if (sysctl(mib, base::size(mib), &kern_proc_info, &len, nullptr, 0) == 0) {
+  if (sysctl(mib, std::size(mib), &kern_proc_info, &len, nullptr, 0) == 0) {
     WriteProperty(
         writer, IntermediateDumpKey::kPID, &kern_proc_info.kp_proc.p_pid);
     WriteProperty(writer,
@@ -646,7 +587,7 @@ void InProcessIntermediateDumpHandler::WriteProcessInfo(
                   IntermediateDumpKey::kSystemTime,
                   &task_thread_times.system_time);
   } else {
-    CRASHPAD_RAW_LOG("task_info task_basic_info");
+    CRASHPAD_RAW_LOG("task_info thread_times_info");
   }
 
   if (!annotations.empty()) {
@@ -810,6 +751,22 @@ void InProcessIntermediateDumpHandler::WriteThreadInfo(
       CRASHPAD_RAW_LOG_ERROR(kr, "thread_info::THREAD_BASIC_INFO");
     }
 
+    thread_extended_info extended_info;
+    count = THREAD_EXTENDED_INFO_COUNT;
+    kr = thread_info(thread,
+                     THREAD_EXTENDED_INFO,
+                     reinterpret_cast<thread_info_t>(&extended_info),
+                     &count);
+    if (kr == KERN_SUCCESS) {
+      WritePropertyBytes(
+          writer,
+          IntermediateDumpKey::kThreadName,
+          reinterpret_cast<const void*>(extended_info.pth_name),
+          strnlen(extended_info.pth_name, sizeof(extended_info.pth_name)));
+    } else {
+      CRASHPAD_RAW_LOG_ERROR(kr, "thread_info::THREAD_EXTENDED_INFO");
+    }
+
     thread_precedence_policy precedence;
     count = THREAD_PRECEDENCE_POLICY_COUNT;
     boolean_t get_default = FALSE;
@@ -962,10 +919,10 @@ void InProcessIntermediateDumpHandler::WriteModuleInfo(
       return;
     }
 
-    WriteProperty(writer,
-                  IntermediateDumpKey::kName,
-                  image->imageFilePath,
-                  strlen(image->imageFilePath));
+    if (image->imageFilePath) {
+      WritePropertyCString(
+          writer, IntermediateDumpKey::kName, PATH_MAX, image->imageFilePath);
+    }
     uint64_t address = FromPointerCast<uint64_t>(image->imageLoadAddress);
     WriteProperty(writer, IntermediateDumpKey::kAddress, &address);
     WriteProperty(
@@ -975,7 +932,10 @@ void InProcessIntermediateDumpHandler::WriteModuleInfo(
 
   {
     IOSIntermediateDumpWriter::ScopedArrayMap modules(writer);
-    WriteProperty(writer, IntermediateDumpKey::kName, image_infos->dyldPath);
+    if (image_infos->dyldPath) {
+      WritePropertyCString(
+          writer, IntermediateDumpKey::kName, PATH_MAX, image_infos->dyldPath);
+    }
     uint64_t address =
         FromPointerCast<uint64_t>(image_infos->dyldImageLoadAddress);
     WriteProperty(writer, IntermediateDumpKey::kAddress, &address);
@@ -1093,132 +1053,96 @@ void InProcessIntermediateDumpHandler::WriteModuleInfoAtAddress(
     return;
   }
 
-  const load_command* command_ptr = reinterpret_cast<const load_command*>(
-      reinterpret_cast<const mach_header_64*>(address) + 1);
+  const load_command* unsafe_command_ptr =
+      reinterpret_cast<const load_command*>(
+          reinterpret_cast<const mach_header_64*>(address) + 1);
 
-  ScopedVMRead<load_command> command;
-  if (!command.Read(command_ptr)) {
-    CRASHPAD_RAW_LOG("Invalid module command");
+  // Rather than using an individual ScopedVMRead for each load_command, load
+  // the entire block of commands at once.
+  ScopedVMRead<char> all_commands;
+  if (!all_commands.Read(unsafe_command_ptr, header->sizeofcmds)) {
+    CRASHPAD_RAW_LOG("Unable to read module load_commands.");
     return;
   }
+
+  // All the *_vm_read_ptr variables in the load_command loop below have been
+  // vm_read in `all_commands` above, and may be dereferenced without additional
+  // ScopedVMReads.
+  const load_command* command_vm_read_ptr =
+      reinterpret_cast<const load_command*>(all_commands.get());
 
   // Make sure that the basic load command structure doesn’t overflow the
   // space allotted for load commands, as well as iterating through ncmds.
   vm_size_t slide = 0;
-  const symtab_command* symtab_command = nullptr;
-  const dysymtab_command* dysymtab_command = nullptr;
-  const segment_command_64* linkedit_seg = nullptr;
-  const segment_command_64* text_seg = nullptr;
   for (uint32_t cmd_index = 0, cumulative_cmd_size = 0;
-       cmd_index <= header->ncmds && cumulative_cmd_size < header->sizeofcmds;
-       ++cmd_index, cumulative_cmd_size += command->cmdsize) {
-    if (command->cmd == LC_SEGMENT_64) {
-      ScopedVMRead<segment_command_64> segment;
-      if (!segment.Read(command_ptr)) {
-        CRASHPAD_RAW_LOG("Invalid LC_SEGMENT_64 segment");
-        return;
+       cmd_index < header->ncmds && cumulative_cmd_size < header->sizeofcmds;
+       ++cmd_index) {
+    if (command_vm_read_ptr->cmd == LC_SEGMENT_64) {
+      const segment_command_64* segment_vm_read_ptr =
+          reinterpret_cast<const segment_command_64*>(command_vm_read_ptr);
+      if (strcmp(segment_vm_read_ptr->segname, SEG_TEXT) == 0) {
+        WriteProperty(
+            writer, IntermediateDumpKey::kSize, &segment_vm_read_ptr->vmsize);
+        slide = address - segment_vm_read_ptr->vmaddr;
+      } else if (strcmp(segment_vm_read_ptr->segname, SEG_DATA) == 0) {
+        WriteDataSegmentAnnotations(writer, segment_vm_read_ptr, slide);
       }
-      const segment_command_64* segment_ptr =
-          reinterpret_cast<const segment_command_64*>(command_ptr);
-      if (strcmp(segment->segname, SEG_TEXT) == 0) {
-        text_seg = segment_ptr;
-        WriteProperty(writer, IntermediateDumpKey::kSize, &segment->vmsize);
-        slide = address - segment->vmaddr;
-      } else if (strcmp(segment->segname, SEG_DATA) == 0) {
-        WriteDataSegmentAnnotations(writer, segment_ptr, slide);
-      } else if (strcmp(segment->segname, SEG_LINKEDIT) == 0) {
-        linkedit_seg = segment_ptr;
-      }
-    } else if (command->cmd == LC_SYMTAB) {
-      symtab_command =
-          reinterpret_cast<const struct symtab_command*>(command_ptr);
-    } else if (command->cmd == LC_DYSYMTAB) {
-      dysymtab_command =
-          reinterpret_cast<const struct dysymtab_command*>(command_ptr);
-    } else if (command->cmd == LC_ID_DYLIB) {
-      ScopedVMRead<dylib_command> dylib;
-      if (!dylib.Read(command_ptr)) {
-        CRASHPAD_RAW_LOG("Invalid LC_ID_DYLIB segment");
-        return;
-      }
+    } else if (command_vm_read_ptr->cmd == LC_ID_DYLIB) {
+      const dylib_command* dylib_vm_read_ptr =
+          reinterpret_cast<const dylib_command*>(command_vm_read_ptr);
       WriteProperty(writer,
                     IntermediateDumpKey::kDylibCurrentVersion,
-                    &dylib->dylib.current_version);
-    } else if (command->cmd == LC_SOURCE_VERSION) {
-      ScopedVMRead<source_version_command> source_version;
-      if (!source_version.Read(command_ptr)) {
-        CRASHPAD_RAW_LOG("Invalid LC_SOURCE_VERSION segment");
-        return;
-      }
+                    &dylib_vm_read_ptr->dylib.current_version);
+    } else if (command_vm_read_ptr->cmd == LC_SOURCE_VERSION) {
+      const source_version_command* source_version_vm_read_ptr =
+          reinterpret_cast<const source_version_command*>(command_vm_read_ptr);
       WriteProperty(writer,
                     IntermediateDumpKey::kSourceVersion,
-                    &source_version->version);
-    } else if (command->cmd == LC_UUID) {
-      ScopedVMRead<uuid_command> uuid;
-      if (!uuid.Read(command_ptr)) {
-        CRASHPAD_RAW_LOG("Invalid LC_UUID segment");
-        return;
-      }
-      WriteProperty(writer, IntermediateDumpKey::kUUID, &uuid->uuid);
+                    &source_version_vm_read_ptr->version);
+    } else if (command_vm_read_ptr->cmd == LC_UUID) {
+      const uuid_command* uuid_vm_read_ptr =
+          reinterpret_cast<const uuid_command*>(command_vm_read_ptr);
+      WriteProperty(
+          writer, IntermediateDumpKey::kUUID, &uuid_vm_read_ptr->uuid);
     }
 
-    command_ptr = reinterpret_cast<const load_command*>(
-        reinterpret_cast<const uint8_t*>(command_ptr) + command->cmdsize);
-    if (!command.Read(command_ptr)) {
-      CRASHPAD_RAW_LOG("Invalid module command");
-      return;
-    }
+    cumulative_cmd_size += command_vm_read_ptr->cmdsize;
+    command_vm_read_ptr = reinterpret_cast<const load_command*>(
+        reinterpret_cast<const uint8_t*>(command_vm_read_ptr) +
+        command_vm_read_ptr->cmdsize);
   }
 
   WriteProperty(writer, IntermediateDumpKey::kFileType, &header->filetype);
-
-  if (is_dyld && header->filetype == MH_DYLINKER) {
-    WriteDyldErrorStringAnnotation(writer,
-                                   address,
-                                   symtab_command,
-                                   dysymtab_command,
-                                   text_seg,
-                                   linkedit_seg,
-                                   slide);
-  }
 }
 
 void InProcessIntermediateDumpHandler::WriteDataSegmentAnnotations(
     IOSIntermediateDumpWriter* writer,
-    const segment_command_64* segment_ptr,
+    const segment_command_64* segment_vm_read_ptr,
     vm_size_t slide) {
-  ScopedVMRead<segment_command_64> segment;
-  if (!segment.Read(segment_ptr)) {
-    CRASHPAD_RAW_LOG("Unable to read SEG_DATA.");
-    return;
-  }
-  const section_64* section_ptr = reinterpret_cast<const section_64*>(
-      reinterpret_cast<uint64_t>(segment_ptr) + sizeof(segment_command_64));
-  for (uint32_t sect_index = 0; sect_index <= segment->nsects; ++sect_index) {
-    ScopedVMRead<section_64> section;
-    if (!section.Read(section_ptr)) {
-      CRASHPAD_RAW_LOG("Unable to read SEG_DATA section.");
-      return;
-    }
-    if (strcmp(section->sectname, "crashpad_info") == 0) {
+  const section_64* section_vm_read_ptr = reinterpret_cast<const section_64*>(
+      reinterpret_cast<uint64_t>(segment_vm_read_ptr) +
+      sizeof(segment_command_64));
+  for (uint32_t sect_index = 0; sect_index <= segment_vm_read_ptr->nsects;
+       ++sect_index) {
+    if (strcmp(section_vm_read_ptr->sectname, "crashpad_info") == 0) {
       ScopedVMRead<CrashpadInfo> crashpad_info;
-      if (crashpad_info.Read(section->addr + slide) &&
+      if (crashpad_info.Read(section_vm_read_ptr->addr + slide) &&
           crashpad_info->size() == sizeof(CrashpadInfo) &&
           crashpad_info->signature() == CrashpadInfo::kSignature &&
           crashpad_info->version() == 1) {
         WriteCrashpadAnnotationsList(writer, crashpad_info.get());
         WriteCrashpadSimpleAnnotationsDictionary(writer, crashpad_info.get());
       }
-    } else if (strcmp(section->sectname, "__crash_info") == 0) {
+    } else if (strcmp(section_vm_read_ptr->sectname, "__crash_info") == 0) {
       ScopedVMRead<crashreporter_annotations_t> crash_info;
-      if (!crash_info.Read(section->addr + slide) ||
+      if (!crash_info.Read(section_vm_read_ptr->addr + slide) ||
           (crash_info->version != 4 && crash_info->version != 5)) {
         continue;
       }
       WriteAppleCrashReporterAnnotations(writer, crash_info.get());
     }
-    section_ptr = reinterpret_cast<const section_64*>(
-        reinterpret_cast<uint64_t>(section_ptr) + sizeof(section_64));
+    section_vm_read_ptr = reinterpret_cast<const section_64*>(
+        reinterpret_cast<uint64_t>(section_vm_read_ptr) + sizeof(section_64));
   }
 }
 
@@ -1262,12 +1186,10 @@ void InProcessIntermediateDumpHandler::WriteCrashpadAnnotationsList(
     }
 
     IOSIntermediateDumpWriter::ScopedArrayMap annotation_map(writer);
-    const size_t name_len = strnlen(reinterpret_cast<const char*>(node->name()),
-                                    Annotation::kNameMaxLength);
-    WritePropertyBytes(writer,
-                       IntermediateDumpKey::kAnnotationName,
-                       reinterpret_cast<const void*>(node->name()),
-                       name_len);
+    WritePropertyCString(writer,
+                         IntermediateDumpKey::kAnnotationName,
+                         Annotation::kNameMaxLength,
+                         reinterpret_cast<const char*>(node->name()));
     WritePropertyBytes(writer,
                        IntermediateDumpKey::kAnnotationValue,
                        reinterpret_cast<const void*>(node->value()),

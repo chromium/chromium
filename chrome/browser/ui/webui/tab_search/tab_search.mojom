@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@ import "components/tab_groups/public/mojom/tab_group_types.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/token.mojom";
 import "url/mojom/url.mojom";
+import "chrome/browser/ui/webui/tabs/tabs.mojom";
 
 // Collection of tab searching details associated with a profile.
 struct ProfileData {
@@ -29,6 +30,9 @@ struct Window {
 struct Tab {
   // Whether the tab is active.
   bool active;
+
+  // The alert states of the tab.
+  array<tabs.mojom.TabAlertState> alert_states;
 
   // The index of the tab in the current tab strip.
   int32 index;

@@ -27,7 +27,7 @@ Commits updates back to Impl thread for activation. Specifically, the main threa
 Rasterization may occur asynchronously on separate threads, or even another process (OOP-R, or out-of-process rasterization). If rasterization cannot be finished before the deadline for activation, the pipeline will not perform the copying from pending tree to the active tree in step [7], and will instead proceed to step [8] with whatever is already in the active tree.
 
 ### `[7]` Activation
-Activation is the process of pushing layer trees and properties from the pending tree to the active tree (active_tree_). Note that Impl thread can also directly manipulate the activate tree to reflect updates the impl thread makes in step [2]. 
+Activation is the process of pushing layer trees and properties from the pending tree to the active tree (active_tree_). Note that Impl thread can also directly manipulate the activate tree to reflect updates the impl thread makes in step [2].
 
 ### `[8]` Wait for deadline
 The deadline for compositor frame submission is provided by the GPU process (Scheduler::BeginImplFrameWithDeadline()).
@@ -39,7 +39,7 @@ All activated updates will be submitted to the GPU process as a compositor frame
 After each client submitted CompositorFrame (or signalled that it DidNotProduceFrame) the Display Compositor can proceed with the draw. Note that if the DisplayScheduler hits a deadline it will still draw if any client has submitted a new CompositorFrame, even if it's still waiting on a response for other clients. Before the actual draw could happen SurfaceAggregator will recursively walk over compositor frames and replace SurfaceQuads (quads produced by SurfaceLayer) with contents of the embedded compositor frame. This step produces single CompositorFrame in the end that can be drawn by the Display Compositor.
 
 ### `[11]` Draw Frame
-During draw Display Compositor will go over quads and render passes in the aggregated compositor frame and produce draw commands. For GLRenderer it's gl calls recorded by InProcessCommandBuffer and for SkiaRenderer it's recording of Deferred Display Lists (DDL).
+During draw Display Compositor will go over quads and render passes in the aggregated compositor frame and produce draw commands. For SkiaRenderer it's recording of Deferred Display Lists (DDL).
 
 ### `[12]` RequestSwap
 After commands were recorded they will be submitted to the GPU thread to replay along with SwapBuffers request to show the result on screen.
@@ -51,7 +51,7 @@ When the draw was submitted to GPU Main Thread some of the resources may be not 
 GPU Main Thread does all the GPU work and by the time display compositor is ready to draw it might still be busy doing other tasks (e.g raster for next frame). gpu::Scheduler uses cooperative multi-tasking and can't preempt the current task unless it yields, so the task submitted by the display compositor might have to wait until the current task (and potentially some other high priority tasks) are finished.
 
 ### `[15]` GPU draw
-Finally tasks that DisplayCompositor posted to GPU Main thread executed and we replay draw commands recorded during Draw Frame [11]. For GLRenderer InProcessCommand buffer will be issuing recorded GL calls, for SkiaRenderer Skia will be replaying DDLs and issue commands to the GPU. This step is when we finally submit the job to the GPU (not GPU thread on CPU).
+Finally tasks that DisplayCompositor posted to GPU Main thread executed and we replay draw commands recorded during Draw Frame [11]. For SkiaRenderer Skia will be replaying DDLs and issue commands to the GPU. This step is when we finally submit the job to the GPU (not GPU thread on CPU).
 
 ### `[16]` Swap
 The GPU work has been submitted and we signal that we want to present the result (Submits commands to request displaying framebuffer and/or overlays after drawing new content into them). Depending on the platform this step can be blocking or not and take a substantial amount of time (eg. if we have too many queued swaps sometimes this will just block until the next vblank).

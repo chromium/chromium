@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,6 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/extensions/extension_icon_manager.h"
 #include "content/public/browser/web_ui_message_handler.h"
-
-namespace base {
-class ListValue;
-}
 
 // Handles requests for app icon "dominant" color, i.e. the stripe that appears
 // at the bottom of an app tile that has been generated from a link.
@@ -32,7 +28,7 @@ class AppIconWebUIHandler : public content::WebUIMessageHandler,
   void RegisterMessages() override;
 
   // The sole argument is the extension ID.
-  void HandleGetAppIconDominantColor(const base::ListValue* args);
+  void HandleGetAppIconDominantColor(const base::Value::List& args);
 
   // ExtensionIconManager::Observer:
   void OnImageLoaded(const std::string& extension_id) override;

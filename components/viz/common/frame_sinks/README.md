@@ -56,8 +56,8 @@ properties:
    Note that all coordinates are constrained to be integer values, to avoid
    introducing alignment, rounding or other "fuzz" issues.
 
- * Result format: An RGBA-interleaved bitmap (SkBitmap) or I420 Y+U+V image
-   planes.
+ * Result format: An RGBA-interleaved bitmap (SkBitmap), I420 Y+U+V image
+   planes, or NV12 Y+UV image planes.
 
 For efficient video capture, the above are used as follows: An issuer of
 CopyOutputRequests "locks into" a target area within the Surface (usually the

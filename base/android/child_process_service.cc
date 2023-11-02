@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,7 @@ void JNI_ChildProcessService_RegisterFileDescriptors(
     const JavaParamRef<jlongArray>& j_sizes) {
   std::vector<absl::optional<std::string>> keys;
   JavaObjectArrayReader<jstring> keys_array(j_keys);
-  keys.reserve(keys_array.size());
+  keys.reserve(checked_cast<size_t>(keys_array.size()));
   for (auto str : keys_array) {
     absl::optional<std::string> key;
     if (str) {
@@ -54,7 +54,7 @@ void JNI_ChildProcessService_RegisterFileDescriptors(
     base::MemoryMappedFile::Region region = {offsets.at(i),
                                              static_cast<size_t>(sizes.at(i))};
     const absl::optional<std::string>& key = keys.at(i);
-    int id = ids.at(i);
+    const auto id = static_cast<GlobalDescriptors::Key>(ids.at(i));
     int fd = fds.at(i);
     if (key) {
       base::FileDescriptorStore::GetInstance().Set(*key, base::ScopedFD(fd),

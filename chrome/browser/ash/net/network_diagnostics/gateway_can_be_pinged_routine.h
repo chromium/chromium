@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_routine.h"
-#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -21,8 +21,7 @@ namespace network_diagnostics {
 // Tests whether a device can ping all the gateways it is connected to.
 class GatewayCanBePingedRoutine : public NetworkDiagnosticsRoutine {
  public:
-  explicit GatewayCanBePingedRoutine(
-      chromeos::DebugDaemonClient* debug_daemon_client);
+  explicit GatewayCanBePingedRoutine(DebugDaemonClient* debug_daemon_client);
   GatewayCanBePingedRoutine(const GatewayCanBePingedRoutine&) = delete;
   GatewayCanBePingedRoutine& operator=(const GatewayCanBePingedRoutine&) =
       delete;
@@ -30,7 +29,7 @@ class GatewayCanBePingedRoutine : public NetworkDiagnosticsRoutine {
 
   // NetworkDiagnosticsRoutine:
   bool CanRun() override;
-  mojom::RoutineType Type() override;
+  chromeos::network_diagnostics::mojom::RoutineType Type() override;
   void Run() override;
   void AnalyzeResultsAndExecuteCallback() override;
 
@@ -53,16 +52,17 @@ class GatewayCanBePingedRoutine : public NetworkDiagnosticsRoutine {
   // |status| corresponds to that of the default network.
   void OnTestICMPCompleted(bool is_default_network_ping_result,
                            const absl::optional<std::string> status);
-  chromeos::DebugDaemonClient* debug_daemon_client() const {
+  DebugDaemonClient* debug_daemon_client() const {
     DCHECK(debug_daemon_client_);
     return debug_daemon_client_;
   }
 
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       remote_cros_network_config_;
-  std::vector<mojom::GatewayCanBePingedProblem> problems_;
+  std::vector<chromeos::network_diagnostics::mojom::GatewayCanBePingedProblem>
+      problems_;
   // An unowned pointer to the DebugDaemonClient instance.
-  chromeos::DebugDaemonClient* debug_daemon_client_;
+  DebugDaemonClient* debug_daemon_client_;
   std::vector<std::string> gateways_;
   bool unreachable_gateways_ = true;
   int non_default_network_unsuccessful_ping_count_ = 0;

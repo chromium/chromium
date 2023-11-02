@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@ class DevToolsRendererChannel;
 class NavigationHandle;
 class NavigationRequest;
 class NavigationThrottle;
+class RenderFrameDevToolsAgentHost;
 
 namespace protocol {
 
@@ -38,6 +39,7 @@ class TargetAutoAttacher {
     virtual std::unique_ptr<NavigationThrottle> CreateThrottleForNavigation(
         TargetAutoAttacher* auto_attacher,
         NavigationHandle* navigation_handle) = 0;
+    virtual void TargetInfoChanged(DevToolsAgentHost* host) = 0;
 
    protected:
     Client() = default;
@@ -61,8 +63,9 @@ class TargetAutoAttacher {
       NavigationHandle* navigation_handle,
       std::vector<std::unique_ptr<NavigationThrottle>>* throttles);
 
-  DevToolsAgentHost* AutoAttachToFrame(NavigationRequest* navigation_request,
-                                       bool wait_for_debugger_on_start);
+  scoped_refptr<RenderFrameDevToolsAgentHost> HandleNavigation(
+      NavigationRequest* navigation_request,
+      bool wait_for_debugger_on_start);
 
  protected:
   using Hosts = base::flat_set<scoped_refptr<DevToolsAgentHost>>;
@@ -74,11 +77,12 @@ class TargetAutoAttacher {
 
   virtual void UpdateAutoAttach(base::OnceClosure callback);
 
-  bool DispatchAutoAttach(DevToolsAgentHost* host, bool waiting_for_debugger);
+  void DispatchAutoAttach(DevToolsAgentHost* host, bool waiting_for_debugger);
   void DispatchAutoDetach(DevToolsAgentHost* host);
   void DispatchSetAttachedTargetsOfType(
       const base::flat_set<scoped_refptr<DevToolsAgentHost>>& hosts,
       const std::string& type);
+  void DispatchTargetInfoChanged(DevToolsAgentHost* host);
 
  private:
   base::ObserverList<Client, false, true> clients_;

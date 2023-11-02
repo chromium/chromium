@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/print_preview/pdf_printer_handler.h"
@@ -88,7 +89,8 @@ class HoldingSpaceServicePrintToPdfIntegrationBrowserTest
     pdf_printer_handler_->SetPrintToPdfPathForTesting(file_path);
 
     std::string data;
-    pdf_printer_handler_->StartPrint(job_title, /*settings=*/base::Value(),
+    pdf_printer_handler_->StartPrint(job_title,
+                                     /*settings=*/base::Value::Dict(),
                                      base::RefCountedString::TakeString(&data),
                                      /*callback=*/base::DoNothing());
 
@@ -124,7 +126,7 @@ class HoldingSpaceServicePrintToPdfIntegrationBrowserTest
   }
 
   std::unique_ptr<printing::PdfPrinterHandler> pdf_printer_handler_;
-  Browser* incognito_browser_ = nullptr;
+  raw_ptr<Browser> incognito_browser_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

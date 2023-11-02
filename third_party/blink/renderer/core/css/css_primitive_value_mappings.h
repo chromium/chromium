@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PRIMITIVE_VALUE_MAPPINGS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PRIMITIVE_VALUE_MAPPINGS_H_
 
+#include "base/notreached.h"
 #include "cc/input/scroll_snap_data.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
@@ -1633,8 +1634,6 @@ inline Containment CSSIdentifierValue::ConvertTo() const {
       return kContainsSize;
     case CSSValueID::kInlineSize:
       return kContainsInlineSize;
-    case CSSValueID::kBlockSize:
-      return kContainsBlockSize;
     default:
       break;
   }
@@ -1645,19 +1644,17 @@ inline Containment CSSIdentifierValue::ConvertTo() const {
 template <>
 inline EContainerType CSSIdentifierValue::ConvertTo() const {
   switch (GetValueID()) {
-    case CSSValueID::kNone:
-      return kContainerTypeNone;
+    case CSSValueID::kNormal:
+      return kContainerTypeNormal;
     case CSSValueID::kInlineSize:
       return kContainerTypeInlineSize;
-    case CSSValueID::kBlockSize:
-      return kContainerTypeBlockSize;
     case CSSValueID::kSize:
       return kContainerTypeSize;
     default:
       break;
   }
   NOTREACHED();
-  return kContainerTypeNone;
+  return kContainerTypeNormal;
 }
 
 template <>
@@ -1732,6 +1729,70 @@ inline ScrollbarGutter CSSIdentifierValue::ConvertTo() const {
   }
   NOTREACHED();
   return kScrollbarGutterAuto;
+}
+
+template <>
+inline CSSIdentifierValue::CSSIdentifierValue(TimelineAxis axis)
+    : CSSValue(kIdentifierClass) {
+  switch (axis) {
+    case TimelineAxis::kBlock:
+      value_id_ = CSSValueID::kBlock;
+      break;
+    case TimelineAxis::kInline:
+      value_id_ = CSSValueID::kInline;
+      break;
+    case TimelineAxis::kVertical:
+      value_id_ = CSSValueID::kVertical;
+      break;
+    case TimelineAxis::kHorizontal:
+      value_id_ = CSSValueID::kHorizontal;
+      break;
+  }
+}
+
+template <>
+inline TimelineAxis CSSIdentifierValue::ConvertTo() const {
+  switch (GetValueID()) {
+    case CSSValueID::kBlock:
+      return TimelineAxis::kBlock;
+    case CSSValueID::kInline:
+      return TimelineAxis::kInline;
+    case CSSValueID::kVertical:
+      return TimelineAxis::kVertical;
+    case CSSValueID::kHorizontal:
+      return TimelineAxis::kHorizontal;
+    default:
+      break;
+  }
+  NOTREACHED();
+  return TimelineAxis::kBlock;
+}
+
+template <>
+inline CSSIdentifierValue::CSSIdentifierValue(TimelineScroller scroller)
+    : CSSValue(kIdentifierClass) {
+  switch (scroller) {
+    case TimelineScroller::kNearest:
+      value_id_ = CSSValueID::kNearest;
+      break;
+    case TimelineScroller::kRoot:
+      value_id_ = CSSValueID::kRoot;
+      break;
+  }
+}
+
+template <>
+inline TimelineScroller CSSIdentifierValue::ConvertTo() const {
+  switch (GetValueID()) {
+    case CSSValueID::kNearest:
+      return TimelineScroller::kNearest;
+    case CSSValueID::kRoot:
+      return TimelineScroller::kRoot;
+    default:
+      break;
+  }
+  NOTREACHED();
+  return TimelineScroller::kNearest;
 }
 
 }  // namespace blink

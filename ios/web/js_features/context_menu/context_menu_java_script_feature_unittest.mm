@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #import <CoreGraphics/CoreGraphics.h>
 
-#include "base/test/ios/wait_util.h"
+#import "base/test/ios/wait_util.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "ios/web/public/ui/context_menu_params.h"
@@ -43,7 +43,7 @@ TEST_F(ContextMenuJavaScriptFeatureTest, FetchLinkElement) {
                            const web::ContextMenuParams& params) {
             EXPECT_EQ(request_id, callback_request_id);
             EXPECT_EQ(true, params.is_main_frame);
-            EXPECT_NSEQ(@"link", params.link_text);
+            EXPECT_NSEQ(@"link", params.text);
             EXPECT_NSEQ(nil, params.title_attribute);
             EXPECT_NSEQ(nil, params.alt_text);
             EXPECT_EQ("http://destination/", params.link_url.spec());
@@ -77,7 +77,7 @@ TEST_F(ContextMenuJavaScriptFeatureTest, FetchImageElement) {
                            const web::ContextMenuParams& params) {
             EXPECT_EQ(request_id, callback_request_id);
             EXPECT_EQ(true, params.is_main_frame);
-            EXPECT_NSEQ(nil, params.link_text);
+            EXPECT_NSEQ(nil, params.text);
             EXPECT_NSEQ(@"MyTitle", params.title_attribute);
             EXPECT_NSEQ(@"alt text", params.alt_text);
             EXPECT_EQ("http://destination/", params.link_url.spec());

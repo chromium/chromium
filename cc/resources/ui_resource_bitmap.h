@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,6 +51,8 @@ class CC_EXPORT UIResourceBitmap {
   }
   size_t SizeInBytes() const;
   size_t row_bytes() const { return pixel_ref_ ? pixel_ref_->rowBytes() : 0; }
+
+  bool IsUniquelyOwned() const { return pixel_ref_->unique(); }
 
  private:
   friend class AutoLockUIResourceBitmap;

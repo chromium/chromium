@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,9 @@
 
 #include <utility>
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_util.h"
+#include "base/types/optional_util.h"
 #include "chrome/android/chrome_jni_headers/SaveUpdateAddressProfilePromptController_jni.h"
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/browser_process.h"
@@ -100,11 +101,8 @@ std::u16string SaveUpdateAddressProfilePromptController::GetSubtitle() {
   const std::string locale = g_browser_process->GetApplicationLocale();
   std::vector<ProfileValueDifference> differences =
       GetProfileDifferenceForUi(original_profile_.value(), profile_, locale);
-  bool address_updated =
-      std::find_if(differences.begin(), differences.end(),
-                   [](const ProfileValueDifference& diff) {
-                     return diff.type == ADDRESS_HOME_ADDRESS;
-                   }) != differences.end();
+  bool address_updated = base::Contains(differences, ADDRESS_HOME_ADDRESS,
+                                        &ProfileValueDifference::type);
   return GetProfileDescription(
       original_profile_.value(), locale,
       /*include_address_and_contacts=*/!address_updated);

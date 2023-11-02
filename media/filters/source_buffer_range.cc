@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/logging.h"
+#include "media/base/stream_parser_buffer.h"
 #include "media/base/timestamp_constants.h"
 
 namespace media {
@@ -117,7 +118,7 @@ void SourceBufferRange::AppendBuffersToEnd(
   for (BufferQueue::const_iterator itr = new_buffers.begin();
        itr != new_buffers.end(); ++itr) {
     DCHECK((*itr)->timestamp() != kNoTimestamp);
-    DCHECK((*itr)->GetDecodeTimestamp() != kNoDecodeTimestamp());
+    DCHECK((*itr)->GetDecodeTimestamp() != kNoDecodeTimestamp);
 
     buffers_.push_back(*itr);
     UpdateEndTime(*itr);
@@ -951,9 +952,9 @@ std::string SourceBufferRange::ToStringForDebugging() const {
          << ", buffers.size()=" << buffers_.size()
          << ", keyframe_map_.size()=" << keyframe_map_.size()
          << ", keyframe_map_:\n";
-  for (const auto& entry : keyframe_map_) {
-    result << "\t pts " << entry.first.InMicroseconds()
-           << ", unadjusted idx = " << entry.second << "\n";
+  for (const auto& [time_delta, idx] : keyframe_map_) {
+    result << "\t pts " << time_delta.InMicroseconds()
+           << ", unadjusted idx = " << idx << "\n";
   }
 #endif  // !defined(NDEBUG) || defined(DCHECK_ALWAYS_ON)
 

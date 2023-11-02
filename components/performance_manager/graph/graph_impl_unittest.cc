@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/performance_manager/graph/graph_impl.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
 #include "base/time/time.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
@@ -40,7 +41,8 @@ TEST_F(GraphImplTest, GetProcessNodeByPid) {
   const base::Process self = base::Process::Current();
 
   EXPECT_EQ(nullptr, graph()->GetProcessNodeByPid(self.Pid()));
-  process->SetProcess(self.Duplicate(), base::Time::Now());
+  process->SetProcess(self.Duplicate(),
+                      /* launch_time=*/base::TimeTicks::Now());
   EXPECT_TRUE(process->process().IsValid());
   EXPECT_EQ(self.Pid(), process->process_id());
   EXPECT_EQ(process.get(), graph()->GetProcessNodeByPid(self.Pid()));
@@ -67,7 +69,8 @@ TEST_F(GraphImplTest, PIDReuse) {
   TestNodeWrapper<ProcessNodeImpl> process2 =
       TestNodeWrapper<ProcessNodeImpl>::Create(graph());
 
-  process1->SetProcess(self.Duplicate(), base::Time::Now());
+  process1->SetProcess(self.Duplicate(),
+                       /* launch_time=*/base::TimeTicks::Now());
   EXPECT_EQ(process1.get(), graph()->GetProcessNodeByPid(self.Pid()));
 
   // First process exits, but hasn't been deleted yet.
@@ -75,7 +78,8 @@ TEST_F(GraphImplTest, PIDReuse) {
   EXPECT_EQ(process1.get(), graph()->GetProcessNodeByPid(self.Pid()));
 
   // The second registration for the same PID should override the first one.
-  process2->SetProcess(self.Duplicate(), base::Time::Now());
+  process2->SetProcess(self.Duplicate(),
+                       /* launch_time=*/base::TimeTicks::Now());
   EXPECT_EQ(process2.get(), graph()->GetProcessNodeByPid(self.Pid()));
 
   // The destruction of the first process node shouldn't clear the PID
@@ -120,7 +124,7 @@ using testing::Invoke;
 }  // namespace
 
 TEST_F(GraphImplTest, ObserverWorks) {
-  std::unique_ptr<GraphImpl> graph = base::WrapUnique(new GraphImpl());
+  std::unique_ptr<GraphImpl> graph = std::make_unique<GraphImpl>();
   Graph* raw_graph = graph.get();
 
   MockObserver obs;
@@ -155,7 +159,7 @@ class Foo : public GraphOwned {
  private:
   bool passed_to_called_ = false;
   bool taken_from_called_ = false;
-  int* destructor_count_ = nullptr;
+  raw_ptr<int> destructor_count_ = nullptr;
 };
 
 }  // namespace
@@ -163,13 +167,13 @@ class Foo : public GraphOwned {
 TEST_F(GraphImplTest, GraphOwned) {
   int destructor_count = 0;
 
-  std::unique_ptr<Foo> foo1 = base::WrapUnique(new Foo(&destructor_count));
-  std::unique_ptr<Foo> foo2 = base::WrapUnique(new Foo(&destructor_count));
+  std::unique_ptr<Foo> foo1 = std::make_unique<Foo>(&destructor_count);
+  std::unique_ptr<Foo> foo2 = std::make_unique<Foo>(&destructor_count);
   auto* raw1 = foo1.get();
   auto* raw2 = foo2.get();
 
   // Pass both objects to the graph.
-  std::unique_ptr<GraphImpl> graph = base::WrapUnique(new GraphImpl());
+  std::unique_ptr<GraphImpl> graph = std::make_unique<GraphImpl>();
   EXPECT_EQ(0u, graph->GraphOwnedCountForTesting());
   EXPECT_FALSE(raw1->passed_to_called());
   graph->PassToGraph(std::move(foo1));
@@ -251,7 +255,7 @@ void AssertDictValueContainsListKey(const base::Value& descr,
   const base::Value* v = descr.FindListKey(key);
   ASSERT_NE(nullptr, v);
 
-  const auto list = v->GetList();
+  const auto& list = v->GetList();
   ASSERT_EQ(2u, list.size());
   ASSERT_EQ(list[0], base::Value(s1));
   ASSERT_EQ(list[1], base::Value(s2));

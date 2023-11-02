@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,7 @@ class DelegatedInkPointDataView;
 // the screen, connected to the end of the already rendered ink stroke.
 //
 // Explainer for the feature:
-// https://github.com/WICG/ink-enhancement/blob/master/README.md
+// https://github.com/WICG/ink-enhancement/blob/main/README.md
 class GFX_EXPORT DelegatedInkPoint {
  public:
   DelegatedInkPoint() = default;
@@ -44,6 +44,12 @@ class GFX_EXPORT DelegatedInkPoint {
   std::string ToString() const;
 
   bool MatchesDelegatedInkMetadata(const DelegatedInkMetadata* metadata) const;
+  uint64_t trace_id() const {
+    // Use mask to distinguish from DelegatedInkMetadata::trace_id().
+    // Using microseconds provides uniqueness of trace_id per
+    // DelegatedInkPoint.
+    return timestamp_.since_origin().InMicroseconds() & 0x7fffffffffffffff;
+  }
 
  private:
   friend struct mojo::StructTraits<mojom::DelegatedInkPointDataView,

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -238,6 +237,18 @@ void ServiceWorkerMetrics::RecordStartInstalledWorkerStatus(
   }
 }
 
+void ServiceWorkerMetrics::RecordRunAfterStartWorkerStatus(
+    EmbeddedWorkerStatus running_status,
+    EventType purpose) {
+  UMA_HISTOGRAM_ENUMERATION("ServiceWorker.MaybeStartWorker.RunningStatus",
+                            running_status);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"ServiceWorker.MaybeStartWorker.RunningStatusByPurpose",
+                    EventTypeToSuffix(purpose)}),
+      running_status);
+  UMA_HISTOGRAM_ENUMERATION("ServiceWorker.MaybeStartWorker.Purpose", purpose);
+}
+
 void ServiceWorkerMetrics::RecordStartWorkerTime(base::TimeDelta time,
                                                  bool is_installed,
                                                  StartSituation start_situation,
@@ -366,7 +377,7 @@ void ServiceWorkerMetrics::RecordEventDuration(EventType event,
       UMA_HISTOGRAM_MEDIUM_TIMES("ServiceWorker.AbortPaymentEvent.Time", time);
       break;
     case EventType::COOKIE_CHANGE:
-      UMA_HISTOGRAM_MEDIUM_TIMES("ServiceWorker.CookieChangeEvent.Time", time);
+      // Do nothing: the histogram has been removed.
       break;
     case EventType::PERIODIC_SYNC:
       UMA_HISTOGRAM_MEDIUM_TIMES(
@@ -464,25 +475,32 @@ void ServiceWorkerMetrics::RecordStartWorkerTimingClockConsistency(
   UMA_HISTOGRAM_ENUMERATION("ServiceWorker.StartTiming.ClockConsistency", type);
 }
 
-void ServiceWorkerMetrics::RecordOfflineCapableReason(
-    blink::ServiceWorkerStatusCode status,
-    int status_code) {
-  if (status == blink::ServiceWorkerStatusCode::kErrorTimeout) {
-    base::UmaHistogramEnumeration("ServiceWorker.OfflineCapable.Reason",
-                                  OfflineCapableReason::kTimeout);
-    return;
-  } else if (status == blink::ServiceWorkerStatusCode::kOk) {
-    if (200 <= status_code && status_code <= 299) {
-      base::UmaHistogramEnumeration("ServiceWorker.OfflineCapable.Reason",
-                                    OfflineCapableReason::kSuccess);
-      return;
-    } else if (300 <= status_code && status_code <= 399) {
-      base::UmaHistogramEnumeration("ServiceWorker.OfflineCapable.Reason",
-                                    OfflineCapableReason::kRedirect);
-      return;
+void ServiceWorkerMetrics::RecordSkipServiceWorkerOnNavigationOnBrowserStartup(
+    bool skip_service_worker) {
+  static bool is_first_call = true;
+  if (is_first_call) {
+    is_first_call = false;
+    if (!GetContentClient()->browser()->IsBrowserStartupComplete()) {
+      base::UmaHistogramBoolean(
+          "ServiceWorker.OnBrowserStartup.SkipServiceWorkerOnFirstNavigation",
+          skip_service_worker);
     }
   }
-  NOTREACHED();
+}
+
+void ServiceWorkerMetrics::
+    RecordFirstFindRegistrationForClientUrlTimeOnBrowserStartup(
+        base::TimeDelta time) {
+  static bool is_first_call = true;
+  if (is_first_call) {
+    is_first_call = false;
+    if (!GetContentClient()->browser()->IsBrowserStartupComplete()) {
+      base::UmaHistogramMediumTimes(
+          "ServiceWorker.OnBrowserStartup.FirstFindRegistrationForClientUrl."
+          "Time",
+          time);
+    }
+  }
 }
 
 }  // namespace content

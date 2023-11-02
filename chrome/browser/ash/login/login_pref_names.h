@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,9 @@ extern const char kOobeComplete[];
 extern const char kOobeOnboardingTime[];
 extern const char kOobeMarketingOptInScreenFinished[];
 extern const char kOobeMarketingOptInChoice[];
+// TODO(https://crbug.com/1322394): deprecate this pref once update from
+// CloudReady won't be available anymore.
+extern const char kOobeRevenUpdatedToFlex[];
 extern const char kOobeScreenPending[];
 extern const char kGaiaOfflineSigninTimeLimitDays[];
 extern const char kGaiaLastOnlineSignInTime[];
@@ -25,6 +28,13 @@ extern const char kSamlPasswordExpirationAdvanceWarningDays[];
 extern const char kLockScreenReauthenticationEnabled[];
 extern const char kSamlPasswordSyncToken[];
 extern const char kActivityTimeAfterOnboarding[];
+extern const char kOobeGuestMetricsEnabled[];
+extern const char kOobeGuestAcceptedTos[];
+extern const char kOobeLocaleChangedOnWelcomeScreen[];
+// TODO(https://crbug.com/1322394): deprecate this pref once update from
+// CloudReady won't be available anymore.
+extern const char kRevenOobeConsolidatedConsentAccepted[];
+extern const char kUrlParameterToAutofillSAMLUsername[];
 
 }  // namespace prefs
 }  // namespace ash

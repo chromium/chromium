@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,6 +43,7 @@
   await nodeResolved(div, 'inspectedElement');
   await nodeResolved(div, 'inspectedElement with RGB format', 'rgb');
   await nodeResolved(div, 'inspectedElement with HSL format', 'hsl');
+  await nodeResolved(div, 'inspectedElement with HWB format', 'hwb');
 
   let textNode = await ElementsTestRunner.findNodePromise(node => {
       return node.nodeType() === Node.TEXT_NODE && node.parentNode && node.parentNode.nodeName() === 'P' && node.parentNode.children()[0] === node;

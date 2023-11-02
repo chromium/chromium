@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,23 +9,18 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
-#include "base/files/file.h"
-#include "base/files/file_error_or.h"
+#include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/file_manager/copy_or_move_io_task_impl.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
-#include "chrome/browser/ash/file_manager/speedometer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "storage/browser/file_system/file_system_context.h"
-#include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace file_manager {
-namespace io_task {
+namespace file_manager::io_task {
 
 // This class represents a copy or move operation. It checks whether there is
-// enough space for the copy or moveto occur, and also sends the copy or move
+// enough space for the copy or move to occur, and also sends the copy or move
 // requests to the storage backend.
 class CopyOrMoveIOTask : public IOTask {
  public:
@@ -35,7 +30,19 @@ class CopyOrMoveIOTask : public IOTask {
       std::vector<storage::FileSystemURL> source_urls,
       storage::FileSystemURL destination_folder,
       Profile* profile,
-      scoped_refptr<storage::FileSystemContext> file_system_context);
+      scoped_refptr<storage::FileSystemContext> file_system_context,
+      bool show_notification = true);
+  // Use this constructor if you require the destination entries to have
+  // different file names to the source entries. The size of `source_urls` and
+  // `destination_file_names` must be the same.
+  CopyOrMoveIOTask(
+      OperationType type,
+      std::vector<storage::FileSystemURL> source_urls,
+      std::vector<base::FilePath> destination_file_names,
+      storage::FileSystemURL destination_folder,
+      Profile* profile,
+      scoped_refptr<storage::FileSystemContext> file_system_context,
+      bool show_notification = true);
   ~CopyOrMoveIOTask() override;
 
   // Starts the copy or move.
@@ -45,51 +52,22 @@ class CopyOrMoveIOTask : public IOTask {
   void Cancel() override;
 
  private:
-  void Complete(State state);
-  void GetFileSize(size_t idx);
-  void GotFileSize(size_t idx,
-                   base::File::Error error,
-                   const base::File::Info& file_info);
-  void GotFreeDiskSpace(int64_t free_space);
-  void GenerateDestinationURL(size_t idx);
-  void CopyOrMoveFile(
-      size_t idx,
-      base::FileErrorOr<storage::FileSystemURL> destination_result);
-  void OnCopyOrMoveProgress(
-      storage::FileSystemOperation::CopyOrMoveProgressType type,
-      const storage::FileSystemURL& source_url,
-      const storage::FileSystemURL& destination_url,
-      int64_t size);
-  void OnCopyOrMoveComplete(size_t idx, base::File::Error error);
-  void SetCurrentOperationID(
-      storage::FileSystemOperationRunner::OperationID id);
-
   Profile* profile_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
 
-  // Stores the size of each source so we know what to increment the progress
-  // bytes by for each copy or move completion.
-  std::vector<int64_t> source_sizes_;
+  std::vector<storage::FileSystemURL> source_urls_;
+  // Stores a list of file names (i.e. base::FilePath::BaseName, not full paths)
+  // that will serve as the name for the source URLs in progress_.sources. These
+  // names are prior to conflict resolution so in the event they conflict they
+  // may be renamed to include a numbered suffix (e.g. foo.txt (1)). The
+  // std::vector::size here MUST be the same as progress_.sources size.
+  std::vector<base::FilePath> destination_file_names_;
 
-  // Stores the size reported by the last progress update so we can compute the
-  // delta on the next progress update.
-  int64_t last_progress_size_;
-
-  // Stores the id of the copy or move operation if one is in progress. Used so
-  // the transfer can be cancelled.
-  absl::optional<storage::FileSystemOperationRunner::OperationID> operation_id_;
-
-  // Speedometer for this operation, used to calculate the remaining time to
-  // finish the operation.
-  Speedometer speedometer_;
-
-  ProgressCallback progress_callback_;
-  CompleteCallback complete_callback_;
+  std::unique_ptr<CopyOrMoveIOTaskImpl> impl_;
 
   base::WeakPtrFactory<CopyOrMoveIOTask> weak_ptr_factory_{this};
 };
 
-}  // namespace io_task
-}  // namespace file_manager
+}  // namespace file_manager::io_task
 
 #endif  // CHROME_BROWSER_ASH_FILE_MANAGER_COPY_OR_MOVE_IO_TASK_H_

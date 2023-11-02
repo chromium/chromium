@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,7 +44,7 @@ class CC_PAINT_EXPORT PaintRecorder {
   size_t num_paint_ops() const;
 
   size_t TotalOpCount() const { return display_item_list_->TotalOpCount(); }
-  size_t BytesUsed() const { return display_item_list_->BytesUsed(); }
+  size_t OpBytesUsed() const { return display_item_list_->OpBytesUsed(); }
 
  protected:
   virtual std::unique_ptr<RecordPaintCanvas> CreateCanvas(DisplayItemList* list,

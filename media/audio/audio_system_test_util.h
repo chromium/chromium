@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -105,18 +105,18 @@ class AudioSystemTestTemplate : public T {
 
   void SetUp() override {
     T::SetUp();
-    input_params_ =
-        AudioParameters(AudioParameters::AUDIO_PCM_LINEAR, CHANNEL_LAYOUT_MONO,
-                        AudioParameters::kTelephoneSampleRate,
-                        AudioParameters::kTelephoneSampleRate / 10);
-    output_params_ =
-        AudioParameters(AudioParameters::AUDIO_PCM_LINEAR, CHANNEL_LAYOUT_MONO,
-                        AudioParameters::kTelephoneSampleRate,
-                        AudioParameters::kTelephoneSampleRate / 20);
-    default_output_params_ =
-        AudioParameters(AudioParameters::AUDIO_PCM_LINEAR, CHANNEL_LAYOUT_MONO,
-                        AudioParameters::kTelephoneSampleRate,
-                        AudioParameters::kTelephoneSampleRate / 30);
+    input_params_ = AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
+                                    ChannelLayoutConfig::Mono(),
+                                    AudioParameters::kTelephoneSampleRate,
+                                    AudioParameters::kTelephoneSampleRate / 10);
+    output_params_ = AudioParameters(
+        AudioParameters::AUDIO_PCM_LINEAR, ChannelLayoutConfig::Mono(),
+        AudioParameters::kTelephoneSampleRate,
+        AudioParameters::kTelephoneSampleRate / 20);
+    default_output_params_ = AudioParameters(
+        AudioParameters::AUDIO_PCM_LINEAR, ChannelLayoutConfig::Mono(),
+        AudioParameters::kTelephoneSampleRate,
+        AudioParameters::kTelephoneSampleRate / 30);
     audio_manager()->SetInputStreamParameters(input_params_);
     audio_manager()->SetOutputStreamParameters(output_params_);
     audio_manager()->SetDefaultOutputStreamParameters(default_output_params_);

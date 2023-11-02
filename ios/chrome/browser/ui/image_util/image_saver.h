@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,9 +22,9 @@ struct Referrer;
 // Init the ImageSaver.
 - (instancetype)initWithBrowser:(Browser*)browser;
 
-// Fetches and saves the image at |url| to the system's album. |web_state| is
+// Fetches and saves the image at `url` to the system's album. `web_state` is
 // used for fetching image data by JavaScript and must not be nullptr.
-// |referrer| is used for download. |baseViewController| used to display alerts.
+// `referrer` is used for download. `baseViewController` used to display alerts.
 - (void)saveImageAtURL:(const GURL&)url
               referrer:(const web::Referrer&)referrer
               webState:(web::WebState*)webState

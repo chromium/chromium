@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <dwrite.h>
 #include <dwrite_2.h>
+
 #include <set>
 #include <utility>
 
@@ -22,13 +23,13 @@
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/optional_util.h"
 #include "base/version.h"
 #include "base/win/registry.h"
 #include "content/browser/renderer_host/dwrite_font_file_util_win.h"
@@ -190,7 +191,8 @@ void DWriteFontLookupTableBuilder::InitializeDirectWrite() {
   }
 }
 
-std::string DWriteFontLookupTableBuilder::ComputePersistenceHash() {
+std::string DWriteFontLookupTableBuilder::ComputePersistenceHash(
+    const std::string& browser_version) {
   // Build a hash from DWrite product version, browser major version and font
   // names and file paths as stored in the registry. The browser major version
   // is included to ensure that the cache is rebuild at least once for every
@@ -218,9 +220,7 @@ std::string DWriteFontLookupTableBuilder::ComputePersistenceHash() {
     to_hash.append(base::WideToUTF8(it.Value()));
   }
 
-  // Recreating version_info::GetMajorVersion as it is not linkable here.
-  base::Version full_version = base::Version(
-      GetContentClient()->browser()->GetUserAgentMetadata().full_version);
+  base::Version full_version = base::Version(browser_version);
 
   // Version can be an empty string on trybots.
   if (full_version.IsValid()) {
@@ -358,13 +358,16 @@ void DWriteFontLookupTableBuilder::
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 
+  std::string browser_version =
+      GetContentClient()->browser()->GetUserAgentMetadata().full_version;
   results_collection_task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&DWriteFontLookupTableBuilder::PrepareFontUniqueNameTable,
-                     base::Unretained(this)));
+                     base::Unretained(this), browser_version));
 }
 
-void DWriteFontLookupTableBuilder::PrepareFontUniqueNameTable() {
+void DWriteFontLookupTableBuilder::PrepareFontUniqueNameTable(
+    const std::string& browser_version) {
   TRACE_EVENT0("dwrite,fonts",
                "DWriteFontLookupTableBuilder::PrepareFontUniqueNameTable");
   DCHECK(!HasDWriteUniqueFontLookups());
@@ -378,7 +381,7 @@ void DWriteFontLookupTableBuilder::PrepareFontUniqueNameTable() {
         !font_table.ParseFromArray(font_table_memory_.mapping.memory(),
                                    font_table_memory_.mapping.size()) ||
         font_table.stored_for_platform_version_identifier() !=
-            ComputePersistenceHash();
+            ComputePersistenceHash(browser_version);
 
     UMA_HISTOGRAM_BOOLEAN("DirectWrite.Fonts.Proxy.LookupTableDiskCacheHit",
                           !update_needed);
@@ -400,7 +403,7 @@ void DWriteFontLookupTableBuilder::PrepareFontUniqueNameTable() {
   // persisting the table to disk and identifying whether an update to the
   // table is needed when loading it back.
   font_unique_name_table_->set_stored_for_platform_version_identifier(
-      ComputePersistenceHash());
+      ComputePersistenceHash(browser_version));
 
   {
     base::ScopedBlockingCall scoped_blocking_call(
@@ -426,7 +429,7 @@ void DWriteFontLookupTableBuilder::PrepareFontUniqueNameTable() {
         base::BindOnce(
             &ExtractPathAndNamesFromFamily, collection_, family_index,
             start_time_table_build_, slow_down_mode_for_testing_,
-            OptionalOrNullptr(hang_event_for_testing_), IndexingTimeout()),
+            OptionalToPtr(hang_event_for_testing_), IndexingTimeout()),
         base::BindOnce(&DWriteFontLookupTableBuilder::
                            AppendFamilyResultAndFinalizeIfNeeded,
                        base::Unretained(this)));

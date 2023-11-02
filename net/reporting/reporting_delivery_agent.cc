@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,12 +15,14 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/tick_clock.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "net/base/isolation_info.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/url_util.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_cache_observer.h"
@@ -45,17 +47,17 @@ void RecordReportingUploadHeaderType(ReportingUploadHeaderType header_type) {
 }
 
 std::string SerializeReports(const ReportList& reports, base::TimeTicks now) {
-  base::ListValue reports_value;
+  base::Value::List reports_value;
 
   for (const ReportingReport* report : reports) {
-    std::unique_ptr<base::DictionaryValue> report_value =
-        std::make_unique<base::DictionaryValue>();
+    base::Value::Dict report_value;
 
-    report_value->SetInteger("age", (now - report->queued).InMilliseconds());
-    report_value->SetString("type", report->type);
-    report_value->SetString("url", report->url.spec());
-    report_value->SetString("user_agent", report->user_agent);
-    report_value->SetKey("body", report->body->Clone());
+    report_value.Set("age", base::saturated_cast<int>(
+                                (now - report->queued).InMilliseconds()));
+    report_value.Set("type", report->type);
+    report_value.Set("url", report->url.spec());
+    report_value.Set("user_agent", report->user_agent);
+    report_value.Set("body", report->body.Clone());
 
     reports_value.Append(std::move(report_value));
   }
@@ -84,23 +86,24 @@ class Delivery {
   // to the same endpoint URL.
   // |isolation_info| is the IsolationInfo struct associated with the reporting
   // endpoint, and is used to determine appropriate credentials for the upload.
-  // |network_isolation_key| is the NIK from the ReportingEndpoint, which may
-  // have been cleared in the ReportingService if reports are not being
+  // |network_anonymization_key| is the NIK from the ReportingEndpoint, which
+  // may have been cleared in the ReportingService if reports are not being
   // partitioned by NIK. (This is why a separate parameter is used here, rather
   // than simply using the computed NIK from |isolation_info|.)
   struct Target {
     Target(const IsolationInfo& isolation_info,
-           const NetworkIsolationKey& network_isolation_key,
+           const NetworkAnonymizationKey& network_anonymization_key,
            const url::Origin& origin,
            const GURL& endpoint_url,
            const absl::optional<base::UnguessableToken> reporting_source)
         : isolation_info(isolation_info),
-          network_isolation_key(network_isolation_key),
+          network_anonymization_key(network_anonymization_key),
           origin(origin),
           endpoint_url(endpoint_url),
           reporting_source(reporting_source) {
-      DCHECK(network_isolation_key.IsEmpty() ||
-             network_isolation_key == isolation_info.network_isolation_key());
+      DCHECK(network_anonymization_key.IsEmpty() ||
+             network_anonymization_key ==
+                 isolation_info.network_anonymization_key());
     }
 
     ~Target() = default;
@@ -109,14 +112,14 @@ class Delivery {
       // Note that sorting by NIK here is required for V0 reports; V1 reports
       // should not need this (but it doesn't hurt). We can remove that as a
       // comparison key when V0 reporting endpoints are removed.
-      return std::tie(network_isolation_key, origin, endpoint_url,
+      return std::tie(network_anonymization_key, origin, endpoint_url,
                       reporting_source) <
-             std::tie(other.network_isolation_key, other.origin,
+             std::tie(other.network_anonymization_key, other.origin,
                       other.endpoint_url, other.reporting_source);
     }
 
     IsolationInfo isolation_info;
-    NetworkIsolationKey network_isolation_key;
+    NetworkAnonymizationKey network_anonymization_key;
     url::Origin origin;
     GURL endpoint_url;
     absl::optional<base::UnguessableToken> reporting_source;
@@ -133,13 +136,13 @@ class Delivery {
                   const ReportList::const_iterator reports_begin,
                   const ReportList::const_iterator reports_end) {
     DCHECK(reports_begin != reports_end);
-    DCHECK_EQ(endpoint.group_key.network_isolation_key,
-              network_isolation_key());
+    DCHECK(endpoint.group_key.network_anonymization_key ==
+           network_anonymization_key());
     DCHECK(IsSubdomainOf(target_.origin.host() /* subdomain */,
                          endpoint.group_key.origin.host() /* superdomain */));
     for (auto it = reports_begin; it != reports_end; ++it) {
       DCHECK_EQ((*reports_begin)->GetGroupKey(), (*it)->GetGroupKey());
-      DCHECK_EQ((*it)->network_isolation_key, network_isolation_key());
+      DCHECK((*it)->network_anonymization_key == network_anonymization_key());
       DCHECK_EQ(url::Origin::Create((*it)->url), target_.origin);
       DCHECK_EQ((*it)->group, endpoint.group_key.group_name);
       // Report origin is equal to, or a subdomain of, the endpoint
@@ -176,8 +179,8 @@ class Delivery {
     }
   }
 
-  const NetworkIsolationKey& network_isolation_key() const {
-    return target_.network_isolation_key;
+  const NetworkAnonymizationKey& network_anonymization_key() const {
+    return target_.network_anonymization_key;
   }
   const GURL& endpoint_url() const { return target_.endpoint_url; }
   const ReportList& reports() const { return reports_; }
@@ -320,7 +323,7 @@ class ReportingDeliveryAgentImpl : public ReportingDeliveryAgent,
 
       // Add the reports to the appropriate delivery.
       Delivery::Target target(isolation_info,
-                              report_group_key.network_isolation_key,
+                              report_group_key.network_anonymization_key,
                               report_group_key.origin, endpoint.info.url,
                               endpoint.group_key.reporting_source);
       auto delivery_it = deliveries.find(target);
@@ -372,7 +375,8 @@ class ReportingDeliveryAgentImpl : public ReportingDeliveryAgent,
     delivery->ProcessOutcome(cache(), success);
 
     endpoint_manager_->InformOfEndpointRequest(
-        delivery->network_isolation_key(), delivery->endpoint_url(), success);
+        delivery->network_anonymization_key(), delivery->endpoint_url(),
+        success);
 
     // TODO(chlily): This leaks information across NIKs. If the endpoint URL is
     // configured for both NIK1 and NIK2, and it responds with a 410 on a NIK1
@@ -395,7 +399,7 @@ class ReportingDeliveryAgentImpl : public ReportingDeliveryAgent,
   ReportingCache* cache() { return context_->cache(); }
   ReportingUploader* uploader() { return context_->uploader(); }
 
-  ReportingContext* context_;
+  raw_ptr<ReportingContext> context_;
 
   std::unique_ptr<base::OneShotTimer> timer_;
 

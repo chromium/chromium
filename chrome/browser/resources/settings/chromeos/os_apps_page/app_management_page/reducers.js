@@ -1,8 +1,6 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 
 /**
  * @fileoverview Module of functions which produce a new page state in response
@@ -10,6 +8,8 @@ import {assertNotReached} from 'chrome://resources/js/assert.m.js';
  * pure functions: they must not modify existing state objects, or make any API
  * calls.
  */
+
+import {assertNotReached} from 'chrome://resources/js/assert.js';
 
 export const AppState = {};
 

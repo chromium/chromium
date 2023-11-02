@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,21 +8,22 @@
  * linear UI range to a range of real values.  When |value| does not map exactly
  * to a tick mark, it interpolates to the nearest tick.
  */
-import '../settings_vars_css.js';
+import '../settings_vars.css.js';
 import '//resources/cr_elements/cr_slider/cr_slider.js';
 
 import {CrSliderElement, SliderTick} from '//resources/cr_elements/cr_slider/cr_slider.js';
-import {assert} from '//resources/js/assert.m.js';
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from '//resources/js/assert_ts.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
-import {CrPolicyPrefMixin, CrPolicyPrefMixinInterface} from './cr_policy_pref_mixin.js';
+import {CrPolicyPrefMixin} from './cr_policy_pref_mixin.js';
+import {getTemplate} from './settings_slider.html.js';
 
 export interface SettingsSliderElement {
   $: {
     slider: CrSliderElement,
-  }
+  };
 }
 
 const SettingsSliderElementBase = CrPolicyPrefMixin(PolymerElement);
@@ -33,7 +34,7 @@ export class SettingsSliderElement extends SettingsSliderElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -93,8 +94,8 @@ export class SettingsSliderElement extends SettingsSliderElementBase {
     ];
   }
 
-  pref: chrome.settingsPrivate.PrefObject;
-  ticks: Array<SliderTick>|Array<number>;
+  pref: chrome.settingsPrivate.PrefObject<number>;
+  ticks: SliderTick[]|number[];
   scale: number;
   min: number;
   max: number;
@@ -107,13 +108,13 @@ export class SettingsSliderElement extends SettingsSliderElementBase {
   updateValueInstantly: boolean;
   private loaded_: boolean;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.loaded_ = true;
   }
 
-  focus() {
+  override focus() {
     this.$.slider.focus();
   }
 

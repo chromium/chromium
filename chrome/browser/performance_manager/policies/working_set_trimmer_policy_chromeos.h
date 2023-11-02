@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/arc/process/arc_process_service.h"
+#include "chrome/browser/performance_manager/mechanisms/working_set_trimmer_chromeos.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chrome/browser/performance_manager/policies/working_set_trimmer_policy.h"
 #include "content/public/browser/browser_thread.h"
@@ -41,14 +42,19 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy {
    public:
     virtual ~ArcVmDelegate() = default;
 
-    // Returns true when ARCVM has been idle for more than
-    // |arcvm_inactivity_time| and therefore is safe to reclaim its memory.
-    // The function is called only on the UI thread.
-    // If |trim_once_after_arcvm_boot| is true, the function returns true when
-    // the function is called for the first time after ARCVM boot.
-    virtual bool IsEligibleForReclaim(
+    // Returns ReclaimType other than kReclaimNone when ARCVM has been idle for
+    // more than |arcvm_inactivity_time| and therefore is safe to reclaim its
+    // memory. The function is called only on the UI thread.
+    // If |trim_once_type_after_arcvm_boot| is not kReclaimNone, the function
+    // returns |trim_once_type_after_arcvm_boot| when the function is called for
+    // the first time after ARCVM boot - in which case it will set the
+    // value of |is_first_trim_post_boot| output parameter to true.
+    // Use NULL for |is_first_trim_post_boot| if you don't care about
+    // whether it is the first call post-boot or not.
+    virtual mechanism::ArcVmReclaimType IsEligibleForReclaim(
         const base::TimeDelta& arcvm_inactivity_time,
-        bool trim_once_after_arcvm_boot) = 0;
+        mechanism::ArcVmReclaimType trim_once_type_after_arcvm_boot,
+        bool* is_first_trim_post_boot) = 0;
   };
 
   WorkingSetTrimmerPolicyChromeOS(const WorkingSetTrimmerPolicyChromeOS&) =
@@ -77,7 +83,6 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy {
   void SetArcProcessLastTrimTime(base::ProcessId pid, base::TimeTicks time);
 
   bool trim_on_freeze() const { return trim_on_freeze_; }
-  bool trim_on_memory_pressure() const { return trim_on_memory_pressure_; }
   bool trim_arc_on_memory_pressure() const {
     return trim_arc_on_memory_pressure_;
   }
@@ -93,11 +98,10 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy {
   // virtual for testing
   virtual void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel level);
+  virtual mechanism::WorkingSetTrimmerChromeOS* GetTrimmer();
 
   void set_trim_on_freeze(bool enabled) { trim_on_freeze_ = enabled; }
-  void set_trim_on_memory_pressure(bool enabled) {
-    trim_on_memory_pressure_ = enabled;
-  }
+
   void set_trim_arc_on_memory_pressure(bool enabled) {
     trim_arc_on_memory_pressure_ = enabled;
   }
@@ -118,12 +122,39 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy {
   // from ARCVM, and do that when it is. These are virtual for testing.
   virtual void TrimArcVmProcesses(
       base::MemoryPressureListener::MemoryPressureLevel level);
+
+  // The functions below form a chain of callbacks that carry along
+  // a WeakPtr to an instance of WorkingSetTrimmerPolicyChromeOS.
+  // That instance can be destroyed at any point in the chain.
+  // The following constraints apply:
+  // - The WeakPtr is built on the PM thread, so it can only be
+  //   checked for validity or dereferenced in the PM thread.
+  // - For member functions, there is an automatic pointer check inside
+  //   BindOnce at invocation, if the "this" is a WeakPtr.
+  // Because of the combination of constraints above, the methods that
+  // execute on threads other than the PM thread must be made static,
+  // and they must not use the WeakPtr except to pass it down the chain.
   static void TrimArcVmProcessesOnUIThread(
       base::MemoryPressureListener::MemoryPressureLevel level,
       features::TrimOnMemoryPressureParams params,
       base::WeakPtr<WorkingSetTrimmerPolicyChromeOS> ptr);
-  virtual void OnTrimArcVmProcesses(bool need_reclaim);
-  static void DoTrimArcVmOnUIThread();
+  virtual void OnTrimArcVmProcesses(mechanism::ArcVmReclaimType reclaim_type,
+                                    bool is_first_trim_post_boot,
+                                    int pages_per_minute,
+                                    int max_pages_per_iteration);
+  virtual void OnArcVmTrimStarting();
+  static void DoTrimArcVmOnUIThread(
+      base::WeakPtr<WorkingSetTrimmerPolicyChromeOS> ptr,
+      mechanism::WorkingSetTrimmerChromeOS* trimmer,
+      mechanism::ArcVmReclaimType reclaim_type,
+      int page_limit);
+  static void OnTrimArcVmWorkingSetOnUIThread(
+      base::WeakPtr<WorkingSetTrimmerPolicyChromeOS> ptr,
+      mechanism::ArcVmReclaimType reclaim_type,
+      bool success,
+      const std::string& failure_reason);
+  virtual void OnArcVmTrimEnded(mechanism::ArcVmReclaimType reclaim_type,
+                                bool success);
 
   features::TrimOnMemoryPressureParams params_;
 
@@ -136,6 +167,7 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy {
 
   // We also keep track of the last time we reclaimed memory from ARCVM.
   absl::optional<base::TimeTicks> last_arcvm_trim_;
+  absl::optional<base::TimeTicks> last_arcvm_trim_success_;
 
   absl::optional<base::MemoryPressureListener> memory_pressure_listener_;
 
@@ -152,7 +184,6 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy {
   Graph* graph_ = nullptr;
 
   bool trim_on_freeze_ = false;
-  bool trim_on_memory_pressure_ = false;
   bool trim_arc_on_memory_pressure_ = false;
   bool trim_arcvm_on_memory_pressure_ = false;
 
@@ -163,6 +194,7 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy {
   base::RepeatingTimer arcvm_trim_metric_report_timer_;
 
   size_t arcvm_trim_count_ = 0;
+  size_t arcvm_trim_fail_count_ = 0;
   base::ElapsedTimer time_since_last_arcvm_trim_metric_report_;
 
   base::WeakPtrFactory<WorkingSetTrimmerPolicyChromeOS> weak_ptr_factory_{this};

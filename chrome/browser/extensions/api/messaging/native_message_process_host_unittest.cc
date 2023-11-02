@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,11 +47,11 @@
 #include "extensions/common/features/feature_channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include "base/files/file_descriptor_watcher_posix.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include "base/win/scoped_handle.h"
 #else
@@ -76,7 +76,7 @@ class FakeLauncher : public NativeProcessLauncher {
       base::FilePath write_file) {
     int read_flags = base::File::FLAG_OPEN | base::File::FLAG_READ;
     int write_flags = base::File::FLAG_CREATE | base::File::FLAG_WRITE;
-#if !defined(OS_POSIX)
+#if !BUILDFLAG(IS_POSIX)
     read_flags |= base::File::FLAG_ASYNC;
     write_flags |= base::File::FLAG_ASYNC;
 #endif
@@ -89,7 +89,7 @@ class FakeLauncher : public NativeProcessLauncher {
       base::File read_pipe,
       base::FilePath write_file) {
     int write_flags = base::File::FLAG_CREATE | base::File::FLAG_WRITE;
-#if !defined(OS_POSIX)
+#if !BUILDFLAG(IS_POSIX)
     write_flags |= base::File::FLAG_ASYNC;
 #endif
 
@@ -186,12 +186,12 @@ class NativeMessagingTest : public ::testing::Test,
 // Read a single message from a local file.
 TEST_F(NativeMessagingTest, SingleSendMessageRead) {
   base::FilePath temp_output_file = temp_dir_.GetPath().AppendASCII("output");
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::FilePath temp_input_file = CreateTempFileWithMessage(kTestMessage);
   ASSERT_FALSE(temp_input_file.empty());
   std::unique_ptr<NativeProcessLauncher> launcher =
       FakeLauncher::Create(temp_input_file, temp_output_file);
-#else   // defined(OS_WIN)
+#else   // BUILDFLAG(IS_WIN)
   base::PlatformFile pipe_handles[2];
   ASSERT_EQ(0, pipe(pipe_handles));
   base::File read_file(pipe_handles[0]);
@@ -201,7 +201,7 @@ TEST_F(NativeMessagingTest, SingleSendMessageRead) {
   base::File write_file(pipe_handles[1]);
   std::unique_ptr<NativeProcessLauncher> launcher =
       FakeLauncher::CreateWithPipeInput(std::move(read_file), temp_output_file);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   native_message_host_ = NativeMessageProcessHost::CreateWithLauncher(
       ScopedTestNativeMessagingHost::kExtensionId, "empty_app.py",
       std::move(launcher));
@@ -221,7 +221,7 @@ TEST_F(NativeMessagingTest, SingleSendMessageWrite) {
   base::FilePath temp_output_file = temp_dir_.GetPath().AppendASCII("output");
 
   base::File read_file;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::wstring pipe_name = base::StringPrintf(
       L"\\\\.\\pipe\\chrome.nativeMessaging.out.%llx", base::RandUint64());
   base::File write_handle =
@@ -240,12 +240,12 @@ TEST_F(NativeMessagingTest, SingleSendMessageWrite) {
   ASSERT_TRUE(read_handle.IsValid());
 
   read_file = std::move(read_handle);
-#else  // defined(OS_WIN)
+#else   // BUILDFLAG(IS_WIN)
   base::PlatformFile pipe_handles[2];
   ASSERT_EQ(0, pipe(pipe_handles));
   read_file = base::File(pipe_handles[0]);
   base::File write_file(pipe_handles[1]);
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
 
   std::unique_ptr<NativeProcessLauncher> launcher =
       FakeLauncher::CreateWithPipeInput(std::move(read_file), temp_output_file);
@@ -288,25 +288,36 @@ TEST_F(NativeMessagingTest, EchoConnect) {
   run_loop_->Run();
   ASSERT_FALSE(last_message_.empty());
   ASSERT_TRUE(last_message_parsed_);
+  ASSERT_TRUE(last_message_parsed_->is_dict());
 
   std::string expected_url = std::string("chrome-extension://") +
-      ScopedTestNativeMessagingHost::kExtensionId + "/";
-  EXPECT_EQ(1, last_message_parsed_->FindIntKey("id"));
-  std::string text;
-  EXPECT_TRUE(last_message_parsed_->GetString("echo.text", &text));
-  EXPECT_EQ("Hello.", text);
-  std::string url;
-  EXPECT_TRUE(last_message_parsed_->GetString("caller_url", &url));
-  EXPECT_EQ(expected_url, url);
+                             ScopedTestNativeMessagingHost::kExtensionId + "/";
+
+  {
+    const base::Value::Dict& dict = last_message_parsed_->GetDict();
+    EXPECT_EQ(1, last_message_parsed_->FindIntKey("id"));
+    const std::string* text = dict.FindStringByDottedPath("echo.text");
+    ASSERT_TRUE(text);
+    EXPECT_EQ("Hello.", *text);
+    const std::string* url = dict.FindString("caller_url");
+    EXPECT_TRUE(url);
+    EXPECT_EQ(expected_url, *url);
+  }
 
   native_message_host_->OnMessage("{\"foo\": \"bar\"}");
   run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
-  EXPECT_EQ(2, last_message_parsed_->FindIntKey("id"));
-  EXPECT_TRUE(last_message_parsed_->GetString("echo.foo", &text));
-  EXPECT_EQ("bar", text);
-  EXPECT_TRUE(last_message_parsed_->GetString("caller_url", &url));
-  EXPECT_EQ(expected_url, url);
+
+  {
+    const base::Value::Dict& dict = last_message_parsed_->GetDict();
+    EXPECT_EQ(2, last_message_parsed_->FindIntKey("id"));
+    const std::string* text = dict.FindStringByDottedPath("echo.foo");
+    ASSERT_TRUE(text);
+    EXPECT_EQ("bar", *text);
+    const std::string* url = dict.FindString("caller_url");
+    ASSERT_TRUE(url);
+    EXPECT_EQ(expected_url, *url);
+  }
 
   const base::Value* args = nullptr;
   ASSERT_TRUE(last_message_parsed_->Get("args", &args));
@@ -321,7 +332,7 @@ TEST_F(NativeMessagingTest, EchoConnect) {
 // native messaging host should contain reconnect args.
 //
 // TODO(crbug.com/1026121): Fix it. This test is flaky on Win7 bots.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ReconnectArgs DISABLED_ReconnectArgs
 #else
 #define MAYBE_ReconnectArgs ReconnectArgs
@@ -353,7 +364,7 @@ TEST_F(NativeMessagingTest, MAYBE_ReconnectArgs) {
   args.reserve(args_value->GetList().size());
   for (auto& arg : args_value->GetList()) {
     ASSERT_TRUE(arg.is_string());
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     args.push_back(base::UTF8ToWide(arg.GetString()));
 #else
     args.push_back(arg.GetString());

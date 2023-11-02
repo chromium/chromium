@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/services/app_service/public/cpp/capability_access_update.h"
 
 #include "base/logging.h"
+#include "components/services/app_service/public/cpp/macros.h"
 
 namespace apps {
 
@@ -33,10 +34,42 @@ void CapabilityAccessUpdate::Merge(apps::mojom::CapabilityAccess* state,
   // should also be updated.
 }
 
+// static
+void CapabilityAccessUpdate::Merge(CapabilityAccess* state,
+                                   const CapabilityAccess* delta) {
+  DCHECK(state);
+  if (!delta) {
+    return;
+  }
+
+  if (delta->app_id != state->app_id) {
+    LOG(ERROR) << "inconsistent (app_id): (" << delta->app_id << ") vs ("
+               << state->app_id << ") ";
+    DCHECK(false);
+    return;
+  }
+
+  SET_OPTIONAL_VALUE(camera);
+  SET_OPTIONAL_VALUE(microphone);
+
+  // When adding new fields to the CapabilityAccess Mojo type, this function
+  // should also be updated.
+}
+
 CapabilityAccessUpdate::CapabilityAccessUpdate(
     const apps::mojom::CapabilityAccess* state,
     const apps::mojom::CapabilityAccess* delta,
     const ::AccountId& account_id)
+    : mojom_state_(state), mojom_delta_(delta), account_id_(account_id) {
+  DCHECK(mojom_state_ || mojom_delta_);
+  if (mojom_state_ && mojom_delta_) {
+    DCHECK(mojom_state_->app_id == delta->app_id);
+  }
+}
+
+CapabilityAccessUpdate::CapabilityAccessUpdate(const CapabilityAccess* state,
+                                               const CapabilityAccess* delta,
+                                               const ::AccountId& account_id)
     : state_(state), delta_(delta), account_id_(account_id) {
   DCHECK(state_ || delta_);
   if (state_ && delta_) {
@@ -45,46 +78,64 @@ CapabilityAccessUpdate::CapabilityAccessUpdate(
 }
 
 bool CapabilityAccessUpdate::StateIsNull() const {
-  return state_ == nullptr;
+  if (ShouldUseNonMojomStruct()) {
+    return state_ == nullptr;
+  }
+
+  return mojom_state_ == nullptr;
 }
 
 const std::string& CapabilityAccessUpdate::AppId() const {
-  return delta_ ? delta_->app_id : state_->app_id;
+  if (ShouldUseNonMojomStruct()) {
+    return delta_ ? delta_->app_id : state_->app_id;
+  }
+
+  return mojom_delta_ ? mojom_delta_->app_id : mojom_state_->app_id;
 }
 
-apps::mojom::OptionalBool CapabilityAccessUpdate::Camera() const {
-  if (delta_ && (delta_->camera != apps::mojom::OptionalBool::kUnknown)) {
-    return delta_->camera;
+absl::optional<bool> CapabilityAccessUpdate::Camera() const {
+  if (ShouldUseNonMojomStruct()) {
+    GET_VALUE_WITH_FALLBACK(camera, absl::nullopt)
   }
-  if (state_) {
-    return state_->camera;
-  }
-  return apps::mojom::OptionalBool::kUnknown;
+
+  CONVERT_MOJOM_OPTIONALBOOL_TO_OPTIONAL_VALUE(camera);
 }
 
 bool CapabilityAccessUpdate::CameraChanged() const {
-  return delta_ && (delta_->camera != apps::mojom::OptionalBool::kUnknown) &&
-         (!state_ || (delta_->camera != state_->camera));
+  if (ShouldUseNonMojomStruct()) {
+    RETURN_OPTIONAL_VALUE_CHANGED(camera)
+  }
+
+  return mojom_delta_ &&
+         (mojom_delta_->camera != apps::mojom::OptionalBool::kUnknown) &&
+         (!mojom_state_ || (mojom_delta_->camera != mojom_state_->camera));
 }
 
-apps::mojom::OptionalBool CapabilityAccessUpdate::Microphone() const {
-  if (delta_ && (delta_->microphone != apps::mojom::OptionalBool::kUnknown)) {
-    return delta_->microphone;
+absl::optional<bool> CapabilityAccessUpdate::Microphone() const {
+  if (ShouldUseNonMojomStruct()) {
+    GET_VALUE_WITH_FALLBACK(microphone, absl::nullopt)
   }
-  if (state_) {
-    return state_->microphone;
-  }
-  return apps::mojom::OptionalBool::kUnknown;
+
+  CONVERT_MOJOM_OPTIONALBOOL_TO_OPTIONAL_VALUE(microphone);
 }
 
 bool CapabilityAccessUpdate::MicrophoneChanged() const {
-  return delta_ &&
-         (delta_->microphone != apps::mojom::OptionalBool::kUnknown) &&
-         (!state_ || (delta_->microphone != state_->microphone));
+  if (ShouldUseNonMojomStruct()) {
+    RETURN_OPTIONAL_VALUE_CHANGED(microphone)
+  }
+
+  return mojom_delta_ &&
+         (mojom_delta_->microphone != apps::mojom::OptionalBool::kUnknown) &&
+         (!mojom_state_ ||
+          (mojom_delta_->microphone != mojom_state_->microphone));
 }
 
 const ::AccountId& CapabilityAccessUpdate::AccountId() const {
   return account_id_;
+}
+
+bool CapabilityAccessUpdate::ShouldUseNonMojomStruct() const {
+  return state_ || delta_;
 }
 
 }  // namespace apps

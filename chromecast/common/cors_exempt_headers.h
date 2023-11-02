@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define CHROMECAST_COMMON_CORS_EXEMPT_HEADERS_H_
 
 #include "base/containers/span.h"
+#include "base/strings/string_piece.h"
 
 namespace chromecast {
 
@@ -14,6 +15,9 @@ namespace chromecast {
 // TODO(b/154337552): Remove this list once all the servers support CORS
 // preflight requests.
 base::span<const char*> GetLegacyCorsExemptHeaders();
+
+// Returns true if |header| is CORS exempt.
+bool IsCorsExemptHeader(base::StringPiece header);
 
 }  // namespace chromecast
 

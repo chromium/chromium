@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/render_process_host_observer.h"
 
@@ -69,18 +69,31 @@ class MimeHandlerViewAttachHelper : content::RenderProcessHostObserver {
 
   // Starts the attaching process for the |guest_view|'s WebContents to its
   // outer WebContents (embedder WebContents) on the UI thread.
-  void AttachToOuterWebContents(MimeHandlerViewGuest* guest_view,
-                                int32_t embedder_render_process_id,
-                                content::RenderFrameHost* outer_contents_frame,
-                                int32_t element_instance_id,
-                                bool is_full_page_plugin);
+  void AttachToOuterWebContents(
+      std::unique_ptr<MimeHandlerViewGuest> guest_view,
+      int32_t embedder_render_process_id,
+      content::RenderFrameHost* outer_contents_frame,
+      int32_t element_instance_id,
+      bool is_full_page_plugin);
+
+  // When set, the next asynchronous guestview attachment operation will call
+  // `callback` when it reaches ResumeAttachOrDestroy() rather than continuing.
+  // The attachment must then be continued manually by the caller, by invoking
+  // the closure provided as an argument to `callback`, when desired.  Used
+  // only in tests to exercise races which depend on tasks running between
+  // AttachToOuterWebContents() and ResumeAttachOrDestroy().
+  void set_resume_attach_callback_for_testing(
+      base::OnceCallback<void(base::OnceClosure)> callback) {
+    resume_attach_callback_for_testing_ = std::move(callback);
+  }
 
  private:
   // Called after the content layer finishes preparing a frame for attaching to
   // the embedder WebContents. If |plugin_rfh| is nullptr then attaching is not
   // possible and the guest should be destroyed; otherwise it is safe to proceed
   // to attaching the WebContentses.
-  void ResumeAttachOrDestroy(int32_t element_instance_id,
+  void ResumeAttachOrDestroy(std::unique_ptr<MimeHandlerViewGuest> guest_view,
+                             int32_t element_instance_id,
                              bool is_full_page_plugin,
                              content::RenderFrameHost* plugin_rfh);
 
@@ -97,15 +110,11 @@ class MimeHandlerViewAttachHelper : content::RenderProcessHostObserver {
   explicit MimeHandlerViewAttachHelper(
       content::RenderProcessHost* render_process_host);
 
-  // From the time the MimeHandlerViewGuest starts the attach process
-  // (AttachToOuterWebContents) to when the inner WebContents of GuestView
-  // attaches to the outer WebContents, there is a gap where the embedder
-  // RenderFrameHost (parent frame to the outer contents frame) can go away.
-  // Therefore, we keep a weak pointer to the GuestViews here (see
-  // https://crbug.com/959572).
-  base::flat_map<int32_t, base::WeakPtr<MimeHandlerViewGuest>> pending_guests_;
+  const raw_ptr<content::RenderProcessHost> render_process_host_;
 
-  content::RenderProcessHost* const render_process_host_;
+  // Allows delaying ResumeAttachOrDestroy for testing.
+  base::OnceCallback<void(base::OnceClosure)>
+      resume_attach_callback_for_testing_;
 
   base::WeakPtrFactory<MimeHandlerViewAttachHelper> weak_factory_{this};
 };

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_tokenizer.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -71,6 +72,7 @@
 #include "chrome/browser/chromeos/extensions/device_local_account_management_policy_provider.h"
 #include "chrome/browser/chromeos/extensions/extensions_permissions_tracker.h"
 #include "chrome/browser/chromeos/extensions/signin_screen_policy_provider.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/user_manager/user_manager.h"
 #endif
@@ -146,7 +148,7 @@ void ExtensionSystemImpl::Shared::RegisterManagementPolicyProviders() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Lazy creation of SigninScreenPolicyProvider.
   if (!signin_screen_policy_provider_) {
-    if (chromeos::ProfileHelper::IsSigninProfile(profile_)) {
+    if (ash::ProfileHelper::IsSigninProfile(profile_)) {
       signin_screen_policy_provider_ =
           std::make_unique<chromeos::SigninScreenPolicyProvider>();
     }
@@ -206,7 +208,7 @@ void ExtensionSystemImpl::Shared::Init(bool extensions_enabled) {
                             !profile_->IsSystemProfile();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!extensions_enabled ||
-      chromeos::ProfileHelper::IsLockScreenAppProfile(profile_)) {
+      ash::ProfileHelper::IsLockScreenAppProfile(profile_)) {
     autoupdate_enabled = false;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -240,9 +242,7 @@ void ExtensionSystemImpl::Shared::Init(bool extensions_enabled) {
     // or the normal one should be displayed. The next time on the login screen
     // of the managed-guest sessions the warning will be decided according to
     // the value saved from the last session.
-    if (chromeos::LoginState::IsInitialized() &&
-        chromeos::LoginState::Get()->IsPublicSessionUser() &&
-        !chromeos::LoginState::Get()->ArePublicSessionRestrictionsEnabled()) {
+    if (profiles::IsPublicSession()) {
       extensions_permissions_tracker_ =
           std::make_unique<ExtensionsPermissionsTracker>(
               ExtensionRegistry::Get(profile_), profile_);
@@ -261,9 +261,8 @@ void ExtensionSystemImpl::Shared::Init(bool extensions_enabled) {
   // Skip loading session extensions if we are not in a user session or if the
   // profile is the sign-in or lock screen app profile, which don't correspond
   // to a user session.
-  skip_session_extensions =
-      !chromeos::LoginState::Get()->IsUserLoggedIn() ||
-      !chromeos::ProfileHelper::IsRegularProfile(profile_);
+  skip_session_extensions = !chromeos::LoginState::Get()->IsUserLoggedIn() ||
+                            !ash::ProfileHelper::IsRegularProfile(profile_);
   if (chrome::IsRunningInForcedAppMode()) {
     extension_service_->component_loader()->
         AddDefaultComponentExtensionsForKioskMode(skip_session_extensions);
@@ -507,11 +506,10 @@ void ExtensionSystemImpl::RegisterExtensionWithRequestContexts(
 }
 
 void ExtensionSystemImpl::UnregisterExtensionWithRequestContexts(
-    const std::string& extension_id,
-    const UnloadedExtensionReason reason) {
+    const std::string& extension_id) {
   content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&InfoMap::RemoveExtension, info_map(),
-                                extension_id, reason));
+      FROM_HERE,
+      base::BindOnce(&InfoMap::RemoveExtension, info_map(), extension_id));
 }
 
 }  // namespace extensions

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "media/cast/net/transport_util.h"
@@ -28,7 +29,7 @@ namespace cast {
 namespace {
 
 const char kOptionDscp[] = "DSCP";
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const char kOptionDisableNonBlockingIO[] = "disable_non_blocking_io";
 #endif
 const char kOptionSendBufferMinSize[] = "send_buffer_min_size";
@@ -37,7 +38,7 @@ bool IsEmpty(const net::IPEndPoint& addr) {
   return (addr.address().empty() || addr.address().IsZero()) && !addr.port();
 }
 
-int32_t GetTransportSendBufferSize(const base::DictionaryValue& options) {
+int32_t GetTransportSendBufferSize(const base::Value::Dict& options) {
   // Socket send buffer size needs to be at least greater than one burst
   // size.
   int32_t max_burst_size =
@@ -142,7 +143,7 @@ void UdpTransportImpl::SetDscp(net::DiffServCodePoint dscp) {
   next_dscp_value_ = dscp;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void UdpTransportImpl::UseNonBlockingIO() {
   DCHECK(io_thread_proxy_->RunsTasksInCurrentSequence());
   if (!udp_socket_)
@@ -329,15 +330,15 @@ void UdpTransportImpl::OnSent(const scoped_refptr<net::IOBuffer>& buf,
   }
 }
 
-void UdpTransportImpl::SetUdpOptions(const base::DictionaryValue& options) {
+void UdpTransportImpl::SetUdpOptions(const base::Value::Dict& options) {
   SetSendBufferSize(GetTransportSendBufferSize(options));
-  if (options.HasKey(kOptionDscp)) {
+  if (options.contains(kOptionDscp)) {
     // The default DSCP value for cast is AF41. Which gives it a higher
     // priority over other traffic.
     SetDscp(net::DSCP_AF41);
   }
-#if defined(OS_WIN)
-  if (!options.HasKey(kOptionDisableNonBlockingIO)) {
+#if BUILDFLAG(IS_WIN)
+  if (!options.contains(kOptionDisableNonBlockingIO)) {
     UseNonBlockingIO();
   }
 #endif

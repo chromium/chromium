@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/bubble_menu_item_factory.h"
-#include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -24,14 +24,12 @@
 
 ExtensionsMenuButton::ExtensionsMenuButton(
     Browser* browser,
-    ToolbarActionViewController* controller,
-    bool allow_pinning)
+    ToolbarActionViewController* controller)
     : HoverButton(base::BindRepeating(&ExtensionsMenuButton::ButtonPressed,
                                       base::Unretained(this)),
                   std::u16string()),
       browser_(browser),
-      controller_(controller),
-      allow_pinning_(allow_pinning) {
+      controller_(controller) {
   controller_->SetDelegate(this);
   // TODO(pbos): This currently inherits HoverButton, is this not a no-op?
   // Also see call in OnThemeChanged() to
@@ -42,10 +40,6 @@ ExtensionsMenuButton::ExtensionsMenuButton(
 }
 
 ExtensionsMenuButton::~ExtensionsMenuButton() = default;
-
-bool ExtensionsMenuButton::CanShowIconInToolbar() const {
-  return allow_pinning_;
-}
 
 void ExtensionsMenuButton::AddedToWidget() {
   ConfigureBubbleMenuItem(this, 0);
@@ -77,23 +71,29 @@ content::WebContents* ExtensionsMenuButton::GetCurrentWebContents() const {
 }
 
 void ExtensionsMenuButton::UpdateState() {
-  SetImage(
-      Button::STATE_NORMAL,
-      controller_
-          ->GetIcon(GetCurrentWebContents(), ExtensionsMenuItemView::kIconSize)
-          .AsImageSkia());
+  ChromeLayoutProvider* const provider = ChromeLayoutProvider::Get();
+  const int icon_size =
+      provider->GetDistanceMetric(DISTANCE_EXTENSIONS_MENU_EXTENSION_ICON_SIZE);
+  SetImage(Button::STATE_NORMAL, controller_
+                                     ->GetIcon(GetCurrentWebContents(),
+                                               gfx::Size(icon_size, icon_size))
+                                     .AsImageSkia());
+
   SetText(controller_->GetActionName());
   SetTooltipText(controller_->GetTooltip(GetCurrentWebContents()));
   SetEnabled(controller_->IsEnabled(GetCurrentWebContents()));
+
+  // The vertical insets need to take into account the icon spacing, since this
+  // button's icon is larger, to align with others buttons heights.
+  const int vertical_inset =
+      provider->GetDistanceMetric(DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN) -
+      provider->GetDistanceMetric(DISTANCE_EXTENSIONS_MENU_ICON_SPACING);
   // The horizontal insets reasonably align the extension icons with text inside
-  // the dialog. Note that |kIconSize| also contains space for badging, so we
-  // can't trivially use dialog-text insets (empty space inside the icon).
-  constexpr gfx::Insets kBorderInsets =
-      gfx::Insets((ExtensionsMenuItemView::kMenuItemHeightDp -
-                   ExtensionsMenuItemView::kIconSize.height()) /
-                      2,
-                  12);
-  SetBorder(views::CreateEmptyBorder(kBorderInsets));
+  // the dialog with the default button margin.
+  const int horizontal_inset =
+      provider->GetDistanceMetric(DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN);
+  SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::VH(vertical_inset, horizontal_inset)));
 }
 
 void ExtensionsMenuButton::ShowContextMenuAsFallback() {
@@ -106,8 +106,8 @@ void ExtensionsMenuButton::ShowContextMenuAsFallback() {
 void ExtensionsMenuButton::ButtonPressed() {
   base::RecordAction(
       base::UserMetricsAction("Extensions.Toolbar.ExtensionActivatedFromMenu"));
-  controller_->ExecuteAction(
-      true, ToolbarActionViewController::InvocationSource::kMenuEntry);
+  controller_->ExecuteUserAction(
+      ToolbarActionViewController::InvocationSource::kMenuEntry);
 }
 
 BEGIN_METADATA(ExtensionsMenuButton, views::LabelButton)

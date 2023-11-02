@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -53,11 +53,15 @@ static_library("app") {
   ]
 
   if (is_linux || is_chromeos) {
+    sources += [ "crashpad_linux.cc" ]
+  }
+
+  if (is_chromeos || is_castos) {
     sources += [
       "breakpad_linux.cc",
       "breakpad_linux.h",
+      "breakpad_linux_impl.cc",
       "breakpad_linux_impl.h",
-      "crashpad_linux.cc",
     ]
   }
 
@@ -68,13 +72,17 @@ static_library("app") {
     "//base",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
+    "//components/crash/core/common:crash_key_lib",
     "//content/public/common:content_descriptors",
     "//third_party/crashpad/crashpad/client",
     "//third_party/crashpad/crashpad/util",
   ]
 
   if (is_ios) {
-    deps -= [ "//content/public/common:content_descriptors" ]
+    deps -= [
+      "//components/crash/core/common:crash_key_lib",
+      "//content/public/common:content_descriptors",
+    ]
   }
 
   if (is_android) {
@@ -96,7 +104,7 @@ static_library("app") {
     ]
   }
 
-  if (is_linux || is_chromeos) {
+  if (is_chromeos || is_castos) {
     deps += [ "//third_party/breakpad:client" ]
   }
 
@@ -127,6 +135,7 @@ static_library("app") {
 
   if (is_ios) {
     sources += [ "crashpad_ios.mm" ]
+    deps += [ "//third_party/crashpad/crashpad/minidump" ]
   }
 }
 
@@ -286,10 +295,22 @@ source_set("unit_tests") {
     ]
     deps += [
       ":run_as_crashpad_handler",
+      "//components/crash/win:unit_tests",
       "//third_party/breakpad:client",
       "//third_party/crashpad/crashpad/client:client",
       "//third_party/crashpad/crashpad/snapshot:snapshot",
       "//third_party/crashpad/crashpad/util",
+    ]
+  }
+  if (is_ios) {
+    configs += [ "//build/config/compiler:enable_arc" ]
+
+    sources += [ "crashpad_ios_unittest.mm" ]
+    deps += [
+      ":app",
+      "//components/crash/core/common:reporter_running_ios",
+      "//third_party/crashpad/crashpad/client:common",
+      "//third_party/crashpad/crashpad/test",
     ]
   }
 }

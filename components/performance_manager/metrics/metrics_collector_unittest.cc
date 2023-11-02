@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/performance_manager/public/metrics/metrics_collector.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
@@ -12,34 +13,34 @@
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/common/process_type.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
 namespace performance_manager {
+
+using ContentType = ProcessNode::ContentType;
+using testing::ElementsAre;
+using testing::Pair;
 
 const base::TimeDelta kTestMetricsReportDelayTimeout =
     kMetricsReportDelayTimeout + base::Seconds(1);
 const char kHtmlMimeType[] = "text/html";
 
-// TODO(crbug.com/759905) Enable on Windows once this bug is fixed.
-#if defined(OS_WIN)
-#define MAYBE_MetricsCollectorTest DISABLED_MetricsCollectorTest
-#else
-#define MAYBE_MetricsCollectorTest MetricsCollectorTest
-#endif
-class MAYBE_MetricsCollectorTest : public GraphTestHarness {
+class MetricsCollectorTest : public GraphTestHarness {
  public:
   using Super = GraphTestHarness;
 
-  MAYBE_MetricsCollectorTest() : GraphTestHarness() {}
+  MetricsCollectorTest() = default;
 
-  MAYBE_MetricsCollectorTest(const MAYBE_MetricsCollectorTest&) = delete;
-  MAYBE_MetricsCollectorTest& operator=(const MAYBE_MetricsCollectorTest&) =
-      delete;
+  MetricsCollectorTest(const MetricsCollectorTest&) = delete;
+  MetricsCollectorTest& operator=(const MetricsCollectorTest&) = delete;
 
   void SetUp() override {
     Super::SetUp();
-    metrics_collector_ = new MetricsCollector();
-    graph()->PassToGraph(base::WrapUnique(metrics_collector_));
+    auto metrics_collector = std::make_unique<MetricsCollector>();
+    metrics_collector_ = metrics_collector.get();
+    graph()->PassToGraph(std::move(metrics_collector));
   }
 
   void TearDown() override {
@@ -54,10 +55,10 @@ class MAYBE_MetricsCollectorTest : public GraphTestHarness {
   base::HistogramTester histogram_tester_;
 
  private:
-  MetricsCollector* metrics_collector_ = nullptr;
+  raw_ptr<MetricsCollector> metrics_collector_ = nullptr;
 };
 
-TEST_F(MAYBE_MetricsCollectorTest, FromBackgroundedToFirstTitleUpdatedUMA) {
+TEST_F(MetricsCollectorTest, FromBackgroundedToFirstTitleUpdatedUMA) {
   auto page_node = CreateNode<PageNodeImpl>();
 
   page_node->OnMainFrameNavigationCommitted(
@@ -90,7 +91,7 @@ TEST_F(MAYBE_MetricsCollectorTest, FromBackgroundedToFirstTitleUpdatedUMA) {
                                      2);
 }
 
-TEST_F(MAYBE_MetricsCollectorTest,
+TEST_F(MetricsCollectorTest,
        FromBackgroundedToFirstTitleUpdatedUMA5MinutesTimeout) {
   auto page_node = CreateNode<PageNodeImpl>();
 
@@ -109,7 +110,7 @@ TEST_F(MAYBE_MetricsCollectorTest,
                                      1);
 }
 
-TEST_F(MAYBE_MetricsCollectorTest,
+TEST_F(MetricsCollectorTest,
        FromBackgroundedToFirstNonPersistentNotificationCreatedUMA) {
   auto process_node = CreateNode<ProcessNodeImpl>();
   auto page_node = CreateNode<PageNodeImpl>();
@@ -146,7 +147,7 @@ TEST_F(MAYBE_MetricsCollectorTest,
 }
 
 TEST_F(
-    MAYBE_MetricsCollectorTest,
+    MetricsCollectorTest,
     FromBackgroundedToFirstNonPersistentNotificationCreatedUMA5MinutesTimeout) {
   auto process_node = CreateNode<ProcessNodeImpl>();
   auto page_node = CreateNode<PageNodeImpl>();
@@ -167,7 +168,7 @@ TEST_F(
       kTabFromBackgroundedToFirstNonPersistentNotificationCreatedUMA, 1);
 }
 
-TEST_F(MAYBE_MetricsCollectorTest, FromBackgroundedToFirstFaviconUpdatedUMA) {
+TEST_F(MetricsCollectorTest, FromBackgroundedToFirstFaviconUpdatedUMA) {
   auto page_node = CreateNode<PageNodeImpl>();
 
   page_node->OnMainFrameNavigationCommitted(
@@ -200,7 +201,7 @@ TEST_F(MAYBE_MetricsCollectorTest, FromBackgroundedToFirstFaviconUpdatedUMA) {
       kTabFromBackgroundedToFirstFaviconUpdatedUMA, 2);
 }
 
-TEST_F(MAYBE_MetricsCollectorTest,
+TEST_F(MetricsCollectorTest,
        FromBackgroundedToFirstFaviconUpdatedUMA5MinutesTimeout) {
   auto page_node = CreateNode<PageNodeImpl>();
 
@@ -217,6 +218,183 @@ TEST_F(MAYBE_MetricsCollectorTest,
   page_node->OnFaviconUpdated();
   histogram_tester_.ExpectTotalCount(
       kTabFromBackgroundedToFirstFaviconUpdatedUMA, 1);
+}
+
+TEST_F(MetricsCollectorTest, ProcessLifetime_LaunchAndExit) {
+  auto process_node = CreateNode<ProcessNodeImpl>();
+  process_node->SetProcess(base::Process::Current(), base::TimeTicks::Now());
+  process_node->SetProcessExitStatus(42);
+  EXPECT_THAT(
+      histogram_tester_.GetTotalCountsForPrefix("Renderer.ProcessLifetime3"),
+      ElementsAre(Pair("Renderer.ProcessLifetime3", 1),
+                  Pair("Renderer.ProcessLifetime3.Empty", 1)));
+}
+
+TEST_F(MetricsCollectorTest, ProcessLifetime_LaunchAndDelete) {
+  auto process_node = CreateNode<ProcessNodeImpl>();
+  process_node->SetProcess(base::Process::Current(), base::TimeTicks::Now());
+  process_node.reset();
+  EXPECT_THAT(
+      histogram_tester_.GetTotalCountsForPrefix("Renderer.ProcessLifetime3"),
+      ElementsAre(Pair("Renderer.ProcessLifetime3", 1),
+                  Pair("Renderer.ProcessLifetime3.Empty", 1)));
+}
+
+TEST_F(MetricsCollectorTest, ProcessLifetime_ExitWithoutLaunch) {
+  auto process_node = CreateNode<ProcessNodeImpl>();
+  process_node->SetProcessExitStatus(42);
+  EXPECT_THAT(
+      histogram_tester_.GetTotalCountsForPrefix("Renderer.ProcessLifetime3"),
+      ElementsAre(Pair("Renderer.ProcessLifetime3", 1),
+                  Pair("Renderer.ProcessLifetime3.Empty", 1)));
+  histogram_tester_.ExpectUniqueTimeSample("Renderer.ProcessLifetime3",
+                                           base::TimeDelta(), 1);
+  histogram_tester_.ExpectUniqueTimeSample("Renderer.ProcessLifetime3.Empty",
+                                           base::TimeDelta(), 1);
+}
+
+TEST_F(MetricsCollectorTest, ProcessLifetime_NoLaunchAndNoExit) {
+  auto process_node = CreateNode<ProcessNodeImpl>();
+  process_node.reset();
+  EXPECT_THAT(
+      histogram_tester_.GetTotalCountsForPrefix("Renderer.ProcessLifetime3"),
+      ElementsAre());
+}
+
+TEST_F(MetricsCollectorTest, ProcessLifetime_Extension) {
+  auto process_node = CreateNode<ProcessNodeImpl>();
+  process_node->add_hosted_content_type(ContentType::kMainFrame);
+  process_node->add_hosted_content_type(ContentType::kExtension);
+  process_node->SetProcess(base::Process::Current(), base::TimeTicks::Now());
+  process_node.reset();
+  EXPECT_THAT(
+      histogram_tester_.GetTotalCountsForPrefix("Renderer.ProcessLifetime3"),
+      ElementsAre(Pair("Renderer.ProcessLifetime3", 1),
+                  Pair("Renderer.ProcessLifetime3.Extension", 1)));
+}
+
+TEST_F(MetricsCollectorTest, ProcessLifetime_Extension_Mixed) {
+  auto process_node = CreateNode<ProcessNodeImpl>();
+  process_node->add_hosted_content_type(ContentType::kMainFrame);
+  process_node->add_hosted_content_type(ContentType::kExtension);
+  process_node->add_hosted_content_type(ContentType::kNavigatedFrame);
+  process_node->add_hosted_content_type(ContentType::kSubframe);
+  process_node->add_hosted_content_type(ContentType::kExtension);
+  process_node->add_hosted_content_type(ContentType::kWorker);
+  process_node->SetProcess(base::Process::Current(), base::TimeTicks::Now());
+  process_node.reset();
+  EXPECT_THAT(
+      histogram_tester_.GetTotalCountsForPrefix("Renderer.ProcessLifetime3"),
+      ElementsAre(Pair("Renderer.ProcessLifetime3", 1),
+                  Pair("Renderer.ProcessLifetime3.Extension", 1)));
+}
+
+TEST_F(MetricsCollectorTest, ProcessLifetime_Worker) {
+  auto process_node = CreateNode<ProcessNodeImpl>();
+  process_node->add_hosted_content_type(ContentType::kWorker);
+  process_node->SetProcess(base::Process::Current(), base::TimeTicks::Now());
+  process_node.reset();
+  EXPECT_THAT(
+      histogram_tester_.GetTotalCountsForPrefix("Renderer.ProcessLifetime3"),
+      ElementsAre(Pair("Renderer.ProcessLifetime3", 1),
+                  Pair("Renderer.ProcessLifetime3.Worker", 1)));
+}
+
+TEST_F(MetricsCollectorTest, ProcessLifetime_Speculative) {
+  auto process_node = CreateNode<ProcessNodeImpl>();
+  process_node->add_hosted_content_type(ContentType::kMainFrame);
+  process_node->add_hosted_content_type(ContentType::kSubframe);
+  process_node->SetProcess(base::Process::Current(), base::TimeTicks::Now());
+  process_node.reset();
+  EXPECT_THAT(
+      histogram_tester_.GetTotalCountsForPrefix("Renderer.ProcessLifetime3"),
+      ElementsAre(Pair("Renderer.ProcessLifetime3", 1),
+                  Pair("Renderer.ProcessLifetime3.Speculative", 1)));
+}
+
+TEST_F(MetricsCollectorTest, ProcessLifetime_Empty) {
+  auto process_node = CreateNode<ProcessNodeImpl>();
+  process_node->SetProcess(base::Process::Current(), base::TimeTicks::Now());
+  process_node.reset();
+  EXPECT_THAT(
+      histogram_tester_.GetTotalCountsForPrefix("Renderer.ProcessLifetime3"),
+      ElementsAre(Pair("Renderer.ProcessLifetime3", 1),
+                  Pair("Renderer.ProcessLifetime3.Empty", 1)));
+}
+
+TEST_F(MetricsCollectorTest, ProcessLifetime_MainFrame) {
+  auto process_node = CreateNode<ProcessNodeImpl>();
+  process_node->add_hosted_content_type(ContentType::kMainFrame);
+  process_node->add_hosted_content_type(ContentType::kNavigatedFrame);
+  process_node->SetProcess(base::Process::Current(), base::TimeTicks::Now());
+  process_node.reset();
+  EXPECT_THAT(
+      histogram_tester_.GetTotalCountsForPrefix("Renderer.ProcessLifetime3"),
+      ElementsAre(Pair("Renderer.ProcessLifetime3", 1),
+                  Pair("Renderer.ProcessLifetime3.MainFrame", 1)));
+}
+
+TEST_F(MetricsCollectorTest, ProcessLifetime_MainFrame_Mixed) {
+  auto process_node = CreateNode<ProcessNodeImpl>();
+  process_node->add_hosted_content_type(ContentType::kMainFrame);
+  process_node->add_hosted_content_type(ContentType::kNavigatedFrame);
+  process_node->add_hosted_content_type(ContentType::kSubframe);
+  process_node->add_hosted_content_type(ContentType::kAd);
+  process_node->add_hosted_content_type(ContentType::kWorker);
+  process_node->SetProcess(base::Process::Current(), base::TimeTicks::Now());
+  process_node.reset();
+  EXPECT_THAT(
+      histogram_tester_.GetTotalCountsForPrefix("Renderer.ProcessLifetime3"),
+      ElementsAre(Pair("Renderer.ProcessLifetime3", 1),
+                  Pair("Renderer.ProcessLifetime3.MainFrame", 1)));
+}
+
+TEST_F(MetricsCollectorTest, ProcessLifetime_Subframe_Ad) {
+  auto process_node = CreateNode<ProcessNodeImpl>();
+  process_node->add_hosted_content_type(ContentType::kSubframe);
+  process_node->add_hosted_content_type(ContentType::kAd);
+  process_node->add_hosted_content_type(ContentType::kNavigatedFrame);
+  process_node->SetProcess(base::Process::Current(), base::TimeTicks::Now());
+  process_node.reset();
+  EXPECT_THAT(
+      histogram_tester_.GetTotalCountsForPrefix("Renderer.ProcessLifetime3"),
+      ElementsAre(Pair("Renderer.ProcessLifetime3", 1),
+                  Pair("Renderer.ProcessLifetime3.Subframe_Ad", 1)));
+}
+
+TEST_F(MetricsCollectorTest, ProcessLifetime_Subframe_NoAd) {
+  auto process_node = CreateNode<ProcessNodeImpl>();
+  process_node->add_hosted_content_type(ContentType::kSubframe);
+  process_node->add_hosted_content_type(ContentType::kNavigatedFrame);
+  process_node->SetProcess(base::Process::Current(), base::TimeTicks::Now());
+  process_node.reset();
+  EXPECT_THAT(
+      histogram_tester_.GetTotalCountsForPrefix("Renderer.ProcessLifetime3"),
+      ElementsAre(Pair("Renderer.ProcessLifetime3", 1),
+                  Pair("Renderer.ProcessLifetime3.Subframe_NoAd", 1)));
+}
+
+TEST_F(MetricsCollectorTest, ProcessLifetime_Subframe_NoAd_Mixed) {
+  auto process_node = CreateNode<ProcessNodeImpl>();
+  process_node->add_hosted_content_type(ContentType::kSubframe);
+  process_node->add_hosted_content_type(ContentType::kNavigatedFrame);
+  process_node->add_hosted_content_type(ContentType::kWorker);
+  process_node->SetProcess(base::Process::Current(), base::TimeTicks::Now());
+  process_node.reset();
+  EXPECT_THAT(
+      histogram_tester_.GetTotalCountsForPrefix("Renderer.ProcessLifetime3"),
+      ElementsAre(Pair("Renderer.ProcessLifetime3", 1),
+                  Pair("Renderer.ProcessLifetime3.Subframe_NoAd", 1)));
+}
+
+TEST_F(MetricsCollectorTest, ProcessLifetime_Utility) {
+  auto process_node =
+      CreateNode<ProcessNodeImpl>(content::PROCESS_TYPE_UTILITY);
+  process_node->SetProcess(base::Process::Current(), base::TimeTicks::Now());
+  process_node.reset();
+  EXPECT_THAT(histogram_tester_.GetTotalCountsForPrefix(
+                  "ChildProcess.ProcessLifetime.Utility"),
+              ElementsAre(Pair("ChildProcess.ProcessLifetime.Utility", 1)));
 }
 
 }  // namespace performance_manager

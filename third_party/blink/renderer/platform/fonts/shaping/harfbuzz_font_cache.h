@@ -1,17 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_HARFBUZZ_FONT_CACHE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_HARFBUZZ_FONT_CACHE_H_
 
-#include <hb.h>
-
-#include <memory>
-
 #include "third_party/blink/renderer/platform/fonts/font_metrics.h"
 #include "third_party/blink/renderer/platform/fonts/unicode_range_set.h"
-#include "third_party/harfbuzz-ng/utils/hb_scoped.h"
 
 namespace blink {
 
@@ -24,31 +19,37 @@ struct HarfBuzzFontData;
 // need one for each unique SkTypeface.
 // FIXME, crbug.com/609099: We should fix the FontCache to only keep one
 // FontPlatformData object independent of size, then consider using this here.
-class HbFontCacheEntry : public RefCounted<HbFontCacheEntry> {
-  USING_FAST_MALLOC(HbFontCacheEntry);
 
+// The HarfBuzzFontCache is thread specific cache for mapping
+//  from |FontPlatformData| to |HarfBuzzFace|, and
+//  from |FontPlatformData::UniqueID()| to |HarfBuzzFontData|.
+//
+//  |HarfBuzzFace| holds shared |HarfBuzzData| per unique id.
+//
+//  |FontPlatformData-1| |FontPlatformData-2|
+//         |                    |
+//    |HarfBuzzFace-1|     |HarfBuzzFace-2|
+//         |                    |
+//         +----------+---------+
+//                    |
+//               |HarfBuzzFontData|
+//
+class HarfBuzzFontCache final {
  public:
-  static scoped_refptr<HbFontCacheEntry> Create(hb_font_t* hb_font);
+  HarfBuzzFontCache();
+  ~HarfBuzzFontCache();
 
-  hb_font_t* HbFont() { return hb_font_.get(); }
-  HarfBuzzFontData* HbFontData() { return hb_font_data_.get(); }
-
-  ~HbFontCacheEntry();
+  scoped_refptr<HarfBuzzFontData> GetOrCreateFontData(
+      FontPlatformData* platform_data);
 
  private:
-  explicit HbFontCacheEntry(hb_font_t* font);
+  using FontDataMap = HashMap<uint64_t,
+                              scoped_refptr<HarfBuzzFontData>,
+                              WTF::IntHash<uint64_t>,
+                              WTF::UnsignedWithZeroKeyHashTraits<uint64_t>>;
 
-  HbScoped<hb_font_t> hb_font_;
-  std::unique_ptr<HarfBuzzFontData> hb_font_data_;
+  FontDataMap font_map_;
 };
-
-// Declare as derived class in order to be able to forward-declare it as class
-// in FontGlobalContext.
-class HarfBuzzFontCache
-    : public HashMap<uint64_t,
-                     scoped_refptr<HbFontCacheEntry>,
-                     WTF::IntHash<uint64_t>,
-                     WTF::UnsignedWithZeroKeyHashTraits<uint64_t>> {};
 
 }  // namespace blink
 

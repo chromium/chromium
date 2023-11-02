@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,18 +11,24 @@
 #include "base/test/mock_callback.h"
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
 #include "components/autofill_assistant/browser/client_status.h"
-#include "components/autofill_assistant/browser/mock_website_login_manager.h"
+#include "components/autofill_assistant/browser/public/password_change/mock_website_login_manager.h"
 #include "components/autofill_assistant/browser/value_util.h"
+#include "components/password_manager/core/browser/mock_password_change_success_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace {
 const char kMemoryKeyForGeneratedPassword[] = "memory-key-for-generation";
+const char kOrigin[] = "https://example.com";
+const char kUsername[] = "username";
 const char kGeneratedPassword[] = "mX.12pq";
+const bool kPhished = false;
 }  // namespace
 
 namespace autofill_assistant {
 
 using ::base::test::RunOnceCallback;
+using password_manager::MockPasswordChangeSuccessTracker;
+using password_manager::PasswordChangeSuccessTracker;
 using ::testing::_;
 using ::testing::Pointee;
 using ::testing::Property;
@@ -33,6 +39,9 @@ class SaveGeneratedPasswordActionTest : public testing::Test {
   void SetUp() override {
     ON_CALL(mock_action_delegate_, GetWebsiteLoginManager)
         .WillByDefault(Return(&mock_website_login_manager_));
+
+    ON_CALL(mock_action_delegate_, GetPasswordChangeSuccessTracker)
+        .WillByDefault(Return(&mock_password_change_success_tracker_));
 
     ON_CALL(mock_action_delegate_, GetUserData)
         .WillByDefault(Return(&user_data_));
@@ -45,6 +54,7 @@ class SaveGeneratedPasswordActionTest : public testing::Test {
  protected:
   MockActionDelegate mock_action_delegate_;
   MockWebsiteLoginManager mock_website_login_manager_;
+  MockPasswordChangeSuccessTracker mock_password_change_success_tracker_;
   base::MockCallback<Action::ProcessActionCallback> callback_;
   ActionProto proto_;
   UserData user_data_;
@@ -55,10 +65,11 @@ TEST_F(SaveGeneratedPasswordActionTest, SavedPassword) {
       proto_.mutable_save_generated_password();
   save_password_proto->set_memory_key(kMemoryKeyForGeneratedPassword);
 
+  user_data_.selected_login_.emplace(GURL(kOrigin), kUsername);
   user_data_.SetAdditionalValue(kMemoryKeyForGeneratedPassword,
                                 SimpleValue(std::string(kGeneratedPassword)));
 
-  ON_CALL(mock_website_login_manager_, ReadyToCommitGeneratedPassword)
+  ON_CALL(mock_website_login_manager_, ReadyToSaveGeneratedPassword)
       .WillByDefault(Return(true));
 
   SaveGeneratedPasswordAction action(&mock_action_delegate_, proto_);
@@ -67,7 +78,13 @@ TEST_F(SaveGeneratedPasswordActionTest, SavedPassword) {
       callback_,
       Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
 
-  EXPECT_CALL(mock_website_login_manager_, CommitGeneratedPassword).Times(1);
+  EXPECT_CALL(mock_website_login_manager_, SaveGeneratedPassword);
+  EXPECT_CALL(
+      mock_password_change_success_tracker_,
+      OnChangePasswordFlowCompleted(GURL(kOrigin), kUsername,
+                                    PasswordChangeSuccessTracker::EndEvent::
+                                        kAutomatedFlowGeneratedPasswordChosen,
+                                    kPhished));
 
   action.ProcessAction(callback_.Get());
 
@@ -92,7 +109,7 @@ TEST_F(SaveGeneratedPasswordActionTest, PresaveNotCalledPreconditionFails) {
   user_data_.SetAdditionalValue(kMemoryKeyForGeneratedPassword,
                                 SimpleValue(std::string(kGeneratedPassword)));
 
-  ON_CALL(mock_website_login_manager_, ReadyToCommitGeneratedPassword)
+  ON_CALL(mock_website_login_manager_, ReadyToSaveGeneratedPassword)
       .WillByDefault(Return(false));
 
   SaveGeneratedPasswordAction action(&mock_action_delegate_, proto_);
@@ -100,9 +117,9 @@ TEST_F(SaveGeneratedPasswordActionTest, PresaveNotCalledPreconditionFails) {
   EXPECT_CALL(callback_, Run(Pointee(Property(&ProcessedActionProto::status,
                                               PRECONDITION_FAILED))));
 
-  EXPECT_CALL(mock_website_login_manager_, ReadyToCommitGeneratedPassword)
+  EXPECT_CALL(mock_website_login_manager_, ReadyToSaveGeneratedPassword)
       .Times(1);
-  EXPECT_CALL(mock_website_login_manager_, CommitGeneratedPassword).Times(0);
+  EXPECT_CALL(mock_website_login_manager_, SaveGeneratedPassword).Times(0);
 
   action.ProcessAction(callback_.Get());
 }

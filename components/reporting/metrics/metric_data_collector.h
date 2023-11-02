@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,15 @@
 
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/reporting/client/report_queue.h"
-#include "components/reporting/proto/metric_data.pb.h"
+#include "components/reporting/metrics/event_driven_telemetry_sampler_pool.h"
+#include "components/reporting/metrics/sampler.h"
+#include "components/reporting/proto/synced/metric_data.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -23,7 +27,6 @@ class MetricRateController;
 class MetricReportQueue;
 class MetricReportingController;
 class ReportingSettings;
-class Sampler;
 
 // A base class for metric data collection and reporting.
 class CollectorBase {
@@ -38,17 +41,18 @@ class CollectorBase {
  protected:
   virtual void Collect();
 
-  virtual void OnMetricDataCollected(MetricData metric_data) = 0;
+  virtual void OnMetricDataCollected(
+      absl::optional<MetricData> metric_data) = 0;
 
   virtual void ReportMetricData(
-      const MetricData& metric_data,
+      MetricData metric_data,
       base::OnceClosure on_data_reported = base::DoNothing());
 
   SEQUENCE_CHECKER(sequence_checker_);
 
  private:
-  Sampler* const sampler_;
-  MetricReportQueue* const metric_report_queue_;
+  const raw_ptr<Sampler> sampler_;
+  const raw_ptr<MetricReportQueue> metric_report_queue_;
 
   base::WeakPtrFactory<CollectorBase> weak_ptr_factory_{this};
 };
@@ -61,6 +65,7 @@ class OneShotCollector : public CollectorBase {
                    MetricReportQueue* metric_report_queue,
                    ReportingSettings* reporting_settings,
                    const std::string& setting_path,
+                   bool setting_enabled_default_value,
                    base::OnceClosure on_data_reported = base::DoNothing());
 
   OneShotCollector(const OneShotCollector& other) = delete;
@@ -71,7 +76,7 @@ class OneShotCollector : public CollectorBase {
  protected:
   void Collect() override;
 
-  void OnMetricDataCollected(MetricData metric_data) override;
+  void OnMetricDataCollected(absl::optional<MetricData> metric_data) override;
 
  private:
   std::unique_ptr<MetricReportingController> reporting_controller_;
@@ -89,6 +94,7 @@ class PeriodicCollector : public CollectorBase {
                     MetricReportQueue* metric_report_queue,
                     ReportingSettings* reporting_settings,
                     const std::string& enable_setting_path,
+                    bool setting_enabled_default_value,
                     const std::string& rate_setting_path,
                     base::TimeDelta default_rate,
                     int rate_unit_to_ms = 1);
@@ -99,7 +105,7 @@ class PeriodicCollector : public CollectorBase {
   ~PeriodicCollector() override;
 
  protected:
-  void OnMetricDataCollected(MetricData metric_data) override;
+  void OnMetricDataCollected(absl::optional<MetricData> metric_data) override;
 
  private:
   virtual void StartPeriodicCollection();
@@ -117,11 +123,11 @@ class PeriodicCollector : public CollectorBase {
 class EventDetector {
  public:
   virtual ~EventDetector() = default;
-  // Check if there is a new event present in `current_metric_data`.
-  // If an event is detected add it to `current_metric_data` and return true,
-  // otherwise return false.
-  virtual bool DetectEvent(const MetricData& previous_metric_data,
-                           MetricData* current_metric_data) = 0;
+  // Check if there is a new event present in `current_metric_data` and return
+  // it if found.
+  virtual absl::optional<MetricEventType> DetectEvent(
+      const MetricData& previous_metric_data,
+      const MetricData& current_metric_data) = 0;
 };
 
 // Class to collect metric data periodically, check the collected data for
@@ -130,10 +136,11 @@ class PeriodicEventCollector : public PeriodicCollector {
  public:
   PeriodicEventCollector(Sampler* sampler,
                          std::unique_ptr<EventDetector> event_detector,
-                         std::vector<Sampler*> additional_samplers,
+                         EventDrivenTelemetrySamplerPool* sampler_pool,
                          MetricReportQueue* metric_report_queue,
                          ReportingSettings* reporting_settings,
                          const std::string& enable_setting_path,
+                         bool setting_enabled_default_value,
                          const std::string& rate_setting_path,
                          base::TimeDelta default_rate,
                          int rate_unit_to_ms = 1);
@@ -145,20 +152,19 @@ class PeriodicEventCollector : public PeriodicCollector {
   ~PeriodicEventCollector() override;
 
  protected:
-  void OnMetricDataCollected(MetricData metric_data) override;
+  void OnMetricDataCollected(absl::optional<MetricData> metric_data) override;
 
  private:
-  void CollectAdditionalMetricData(uint64_t sampler_index,
-                                   MetricData metric_data,
-                                   MetricData new_metric_data);
+  void MergeAndReport(MetricData event_metric_data,
+                      absl::optional<MetricData> telemetry_metric_data);
 
-  std::vector<Sampler*> additional_samplers_;
+  const std::unique_ptr<EventDetector> event_detector_;
 
-  std::unique_ptr<EventDetector> event_detector_;
+  raw_ptr<EventDrivenTelemetrySamplerPool> sampler_pool_;
 
   MetricData last_collected_data_;
 
-  base::WeakPtrFactory<PeriodicEventCollector> weak_ptr_factory_{this};
+  base::WeakPtrFactory<PeriodicEventCollector> event_weak_ptr_factory_{this};
 };
 }  // namespace reporting
 

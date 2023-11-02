@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,10 +14,11 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_test_info.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
+#include "third_party/blink/renderer/platform/testing/font_test_base.h"
 
 namespace blink {
 
-class ShapeResultViewTest : public testing::Test {
+class ShapeResultViewTest : public FontTestBase {
  protected:
   void SetUp() override {
     font_description.SetComputedSize(12.0);
@@ -465,6 +466,26 @@ TEST_F(ShapeResultViewTest, TabulationCharactersInRTL) {
   const auto view2 = ShapeResultView::Create(result.get(), 1, 2);
   EXPECT_EQ(view2->NumCharacters(), 1u);
   EXPECT_EQ(view2->NumGlyphs(), 1u);
+}
+
+// https://crbug.com/1304876
+// In a text containing only Latin characters and without ligatures (or where
+// ligatures are not close to the end of the view), PreviousSafeToBreakOffset in
+// some cases used to return the length of the view, rather than a position into
+// the view.
+TEST_F(ShapeResultViewTest, PreviousSafeOffsetInsideView) {
+  HarfBuzzShaper shaper("Blah bla test something. ");
+  scoped_refptr<const ShapeResult> result =
+      shaper.Shape(&font, TextDirection::kLtr);
+
+  // Used to be 14 - 9 = 5, which is before the start of the view.
+  auto view1 = ShapeResultView::Create(result.get(), 9, 14);
+  EXPECT_EQ(view1->PreviousSafeToBreakOffset(14), 14u);
+
+  // Used to be 25 - 9 = 16, which is inside the view's range, but not the last
+  // safe offset.
+  auto view2 = ShapeResultView::Create(result.get(), 9, 25);
+  EXPECT_EQ(view2->PreviousSafeToBreakOffset(24), 24u);
 }
 
 }  // namespace blink

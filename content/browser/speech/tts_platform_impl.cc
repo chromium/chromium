@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@ TtsPlatform* TtsPlatform::GetInstance() {
     return result;
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // On Chrome OS, the platform TTS definition is provided by the content
   // client.
   //
@@ -57,8 +57,10 @@ void TtsPlatformImpl::SetError(const std::string& error) {
 
 void TtsPlatformImpl::Shutdown() {}
 
-bool TtsPlatformImpl::PreferEngineDelegateVoices() {
-  return false;
+void TtsPlatformImpl::FinalizeVoiceOrdering(std::vector<VoiceData>& voices) {}
+
+ExternalPlatformDelegate* TtsPlatformImpl::GetExternalPlatformDelegate() {
+  return nullptr;
 }
 
 }  // namespace content

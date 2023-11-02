@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "build/build_config.h"
@@ -18,7 +18,7 @@
 #include "weblayer/browser/profile_disk_operations.h"
 #include "weblayer/public/profile.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <jni.h>
 #include "base/android/scoped_java_ref.h"
 #endif
@@ -118,7 +118,7 @@ class ProfileImpl : public Profile {
       base::OnceCallback<void(gfx::Image)> callback) override;
   void PrepareForPossibleCrossOriginNavigation() override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   ProfileImpl(JNIEnv* env,
               const base::android::JavaParamRef<jstring>& path,
               const base::android::JavaParamRef<jobject>& java_profile,
@@ -198,15 +198,16 @@ class ProfileImpl : public Profile {
 
   base::FilePath download_directory_;
 
-  DownloadDelegate* download_delegate_ = nullptr;
-  GoogleAccountAccessTokenFetchDelegate* access_token_fetch_delegate_ = nullptr;
+  raw_ptr<DownloadDelegate> download_delegate_ = nullptr;
+  raw_ptr<GoogleAccountAccessTokenFetchDelegate> access_token_fetch_delegate_ =
+      nullptr;
 
   base::CallbackListSubscription locale_change_subscription_;
 
   std::unique_ptr<CookieManagerImpl> cookie_manager_;
   std::unique_ptr<PrerenderControllerImpl> prerender_controller_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaGlobalRef<jobject> java_profile_;
 #endif
 

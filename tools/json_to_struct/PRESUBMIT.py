@@ -1,4 +1,4 @@
-# Copyright 2012 The Chromium Authors. All rights reserved.
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -18,7 +18,7 @@ def CheckChangeOnUpload(input_api, output_api):
       output_api,
       '.',
       files_to_check=ALLOWEDLIST,
-      skip_shebang_check=True)
+      run_on_python2=False)
 
 
 def CheckChangeOnCommit(input_api, output_api):
@@ -27,4 +27,4 @@ def CheckChangeOnCommit(input_api, output_api):
       output_api,
       '.',
       files_to_check=ALLOWEDLIST,
-      skip_shebang_check=True)
+      run_on_python2=False)

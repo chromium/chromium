@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -40,7 +40,7 @@ class CORE_EXPORT ResizeViewportAnchor final
     ResizeViewportAnchor* anchor_;
   };
 
-  void ResizeFrameView(const IntSize&);
+  void ResizeFrameView(const gfx::Size&);
 
   void Trace(Visitor* visitor) const { visitor->Trace(page_); }
 

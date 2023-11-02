@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 // Whether the default promo is currently showing.
 - (BOOL)defaultNonModalPromoIsShowing;
 
-// Asks the delegate to dismiss the promo, |animated|, and call |completion|
+// Asks the delegate to dismiss the promo, `animated`, and call `completion`
 // when the dismissal is done.
 - (void)dismissDefaultNonModalPromoAnimated:(BOOL)animated
                                  completion:(void (^)())completion;

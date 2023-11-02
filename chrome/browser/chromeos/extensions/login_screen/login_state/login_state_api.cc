@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,6 +62,8 @@ api::login_state::SessionState ToApiEnum(crosapi::mojom::SessionState state) {
       return api::login_state::SessionState::SESSION_STATE_IN_SESSION;
     case crosapi::mojom::SessionState::kInLockScreen:
       return api::login_state::SessionState::SESSION_STATE_IN_LOCK_SCREEN;
+    case crosapi::mojom::SessionState::kInRmaScreen:
+      return api::login_state::SessionState::SESSION_STATE_IN_RMA_SCREEN;
   }
   NOTREACHED();
   return api::login_state::SessionState::SESSION_STATE_UNKNOWN;
@@ -84,8 +86,7 @@ ExtensionFunction::ResponseAction LoginStateGetProfileTypeFunction::Run() {
       is_signin_profile
           ? api::login_state::ProfileType::PROFILE_TYPE_SIGNIN_PROFILE
           : api::login_state::ProfileType::PROFILE_TYPE_USER_PROFILE;
-  return RespondNow(
-      OneArgument(base::Value(api::login_state::ToString(profile_type))));
+  return RespondNow(WithArguments(api::login_state::ToString(profile_type)));
 }
 
 ExtensionFunction::ResponseAction LoginStateGetSessionStateFunction::Run() {
@@ -96,8 +97,8 @@ ExtensionFunction::ResponseAction LoginStateGetSessionStateFunction::Run() {
   }
 #endif
 
-  auto callback = base::BindOnce(&LoginStateGetSessionStateFunction::OnResult,
-                                 base::Unretained(this));
+  auto callback =
+      base::BindOnce(&LoginStateGetSessionStateFunction::OnResult, this);
 
   GetLoginStateApi()->GetSessionState(std::move(callback));
   return did_respond() ? AlreadyResponded() : RespondLater();
@@ -107,14 +108,13 @@ void LoginStateGetSessionStateFunction::OnResult(
     crosapi::mojom::GetSessionStateResultPtr result) {
   using Result = crosapi::mojom::GetSessionStateResult;
   switch (result->which()) {
-    case Result::Tag::ERROR_MESSAGE:
+    case Result::Tag::kErrorMessage:
       Respond(Error(result->get_error_message()));
       return;
-    case Result::Tag::SESSION_STATE:
+    case Result::Tag::kSessionState:
       api::login_state::SessionState session_state =
           ToApiEnum(result->get_session_state());
-      Respond(
-          OneArgument(base::Value(api::login_state::ToString(session_state))));
+      Respond(WithArguments(api::login_state::ToString(session_state)));
       return;
   }
 }

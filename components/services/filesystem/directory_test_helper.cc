@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,9 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "components/services/filesystem/directory_impl.h"
-#include "components/services/filesystem/lock_table.h"
 #include "components/services/filesystem/public/mojom/directory.mojom.h"
 #include "components/services/filesystem/shared_temp_dir.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
@@ -22,12 +20,11 @@ namespace filesystem {
 
 class DirectoryTestHelper::BlockingState {
  public:
-  BlockingState() : lock_table_(base::MakeRefCounted<LockTable>()) {}
+  BlockingState() = default;
+  ~BlockingState() = default;
 
   BlockingState(const BlockingState&) = delete;
   BlockingState& operator=(const BlockingState&) = delete;
-
-  ~BlockingState() = default;
 
   void BindNewTempDirectory(mojo::PendingReceiver<mojom::Directory> receiver) {
     auto temp_dir = std::make_unique<base::ScopedTempDir>();
@@ -35,13 +32,11 @@ class DirectoryTestHelper::BlockingState {
     base::FilePath path = temp_dir->GetPath();
     directories_.Add(
         std::make_unique<DirectoryImpl>(
-            path, base::MakeRefCounted<SharedTempDir>(std::move(temp_dir)),
-            lock_table_),
+            path, base::MakeRefCounted<SharedTempDir>(std::move(temp_dir))),
         std::move(receiver));
   }
 
  private:
-  const scoped_refptr<LockTable> lock_table_;
   mojo::UniqueReceiverSet<mojom::Directory> directories_;
 };
 

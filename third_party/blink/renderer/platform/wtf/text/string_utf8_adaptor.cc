@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@ namespace WTF {
 
 StringUTF8Adaptor::StringUTF8Adaptor(StringView string,
                                      UTF8ConversionMode mode) {
-  if (string.IsEmpty())
+  if (string.empty())
     return;
   // Unfortunately, 8 bit WTFStrings are encoded in Latin-1 and GURL uses
   // UTF-8 when processing 8 bit strings. If |relative| is entirely ASCII, we

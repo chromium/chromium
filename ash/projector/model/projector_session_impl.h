@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,6 +31,7 @@ class ASH_EXPORT ProjectorSessionImpl : public ProjectorSession {
   const absl::optional<base::FilePath>& screencast_container_path() const {
     return screencast_container_path_;
   }
+  const std::string& screencast_name() const { return screencast_name_; }
 
   // Start a projector session. `storage_dir` is the container directory name
   // for screencasts and will be used to create the storage path.
@@ -39,6 +40,10 @@ class ASH_EXPORT ProjectorSessionImpl : public ProjectorSession {
 
   void AddObserver(ProjectorSessionObserver* observer) override;
   void RemoveObserver(ProjectorSessionObserver* observer) override;
+
+  // Get the screencast file path without file extension. This will be used
+  // to construct media and metadata file path.
+  base::FilePath GetScreencastFilePathNoExtension() const;
 
  private:
   void NotifySessionActiveStateChanged(bool active);
@@ -49,6 +54,9 @@ class ASH_EXPORT ProjectorSessionImpl : public ProjectorSession {
   // recording is started and the container directory is created. Value will be
   // reset when Projector session is stopped.
   absl::optional<base::FilePath> screencast_container_path_;
+  // The name of screencast should be consistent with container folder, metadata
+  // file and media file.
+  std::string screencast_name_;
 
   base::ObserverList<ProjectorSessionObserver> observers_;
 };

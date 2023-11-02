@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,11 @@
 #define CHROME_UPDATER_MAC_SETUP_KS_TICKETS_H_
 
 #import <Foundation/Foundation.h>
+
+#include "chrome/updater/update_service.h"
+
+extern NSString* _Nonnull const kCRUTicketBrandKey;
+extern NSString* _Nonnull const kCRUTicketTagKey;
 
 @interface KSPathExistenceChecker : NSObject <NSSecureCoding>
 @property(nonnull, readonly) NSString* path;
@@ -36,6 +41,9 @@
 - (nullable NSString*)determineTag;      // ap
 - (nullable NSString*)determineBrand;    // brand
 - (nullable NSString*)determineVersion;  // version
+
+- (nullable instancetype)initWithAppState:
+    (const updater::UpdateService::AppState&)state;
 
 @end
 

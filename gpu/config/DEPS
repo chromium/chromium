@@ -4,5 +4,5 @@ include_rules = [
   "+skia/buildflags.h",
   "+third_party/skia",
   "+third_party/vulkan_headers/include/vulkan/vulkan.h",
-  "+third_party/dawn/src/include",
+  "+third_party/dawn/include",
 ]

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,11 @@ namespace tests_hook {
 // required entitlements.
 // This is used by internal code.
 bool DisableAppGroupAccess();
+
+// Returns true if client-side field trials should be disabled, so
+// that their associated base::Features always use the default
+// behavior, avoiding unexpected randomness during testing.
+bool DisableClientSideFieldTrials();
 
 // Returns true if ContentSuggestions should be disabled to allow other tests to
 // run unimpeded.

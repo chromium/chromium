@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@ import android.util.Size;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.UnguessableToken;
-import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.components.paintpreview.player.PlayerCompositorDelegate;
 
 /**
@@ -24,13 +23,10 @@ public class PlayerFrameBitmapStateController {
     private final Size mContentSize;
     private final PlayerCompositorDelegate mCompositorDelegate;
     private final PlayerFrameMediatorDelegate mMediatorDelegate;
-    private final SequencedTaskRunner mTaskRunner;
-    private final boolean mShouldCompressBitmaps;
 
     PlayerFrameBitmapStateController(UnguessableToken guid, PlayerFrameViewport viewport,
             Size contentSize, PlayerCompositorDelegate compositorDelegate,
-            PlayerFrameMediatorDelegate mediatorDelegate, SequencedTaskRunner taskRunner,
-            boolean shouldCompressBitmaps) {
+            PlayerFrameMediatorDelegate mediatorDelegate) {
         mGuid = guid;
         mViewport = viewport;
         mContentSize = contentSize;
@@ -39,11 +35,9 @@ public class PlayerFrameBitmapStateController {
             mCompositorDelegate.addMemoryPressureListener(this::onMemoryPressure);
         }
         mMediatorDelegate = mediatorDelegate;
-        mTaskRunner = taskRunner;
-        mShouldCompressBitmaps = shouldCompressBitmaps;
     }
 
-    void destroy() {
+    void deleteAll() {
         if (mLoadingBitmapState != null) {
             mLoadingBitmapState.destroy();
             mLoadingBitmapState = null;
@@ -52,6 +46,10 @@ public class PlayerFrameBitmapStateController {
             mVisibleBitmapState.destroy();
             mVisibleBitmapState = null;
         }
+    }
+
+    void destroy() {
+        deleteAll();
     }
 
     @VisibleForTesting
@@ -77,9 +75,10 @@ public class PlayerFrameBitmapStateController {
                 (mLoadingBitmapState == null) ? mVisibleBitmapState : mLoadingBitmapState;
         if (scaleUpdated || activeLoadingState == null) {
             invalidateLoadingBitmaps();
-            mLoadingBitmapState = new PlayerFrameBitmapState(mGuid, mViewport.getWidth(),
-                    Math.round(mViewport.getHeight() / 2.0f), mViewport.getScale(), mContentSize,
-                    mCompositorDelegate, this, mTaskRunner, mShouldCompressBitmaps);
+            Size tileSize = mViewport.getBitmapTileSize();
+            mLoadingBitmapState =
+                    new PlayerFrameBitmapState(mGuid, tileSize.getWidth(), tileSize.getHeight(),
+                            mViewport.getScale(), mContentSize, mCompositorDelegate, this);
             if (mVisibleBitmapState == null) {
                 mLoadingBitmapState.skipWaitingForVisibleBitmaps();
                 swap(mLoadingBitmapState);
@@ -129,7 +128,11 @@ public class PlayerFrameBitmapStateController {
     }
 
     void onStartScaling() {
+        if (mVisibleBitmapState == null) return;
         invalidateLoadingBitmaps();
+
+        if (mVisibleBitmapState == null) return;
+
         mVisibleBitmapState.lock();
     }
 

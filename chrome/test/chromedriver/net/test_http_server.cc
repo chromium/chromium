@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -149,7 +149,7 @@ void TestHttpServer::OnClose(int connection_id) {
 void TestHttpServer::StartOnServerThread(bool* success,
                                          base::WaitableEvent* event) {
   std::unique_ptr<net::ServerSocket> server_socket(
-      new net::TCPServerSocket(NULL, net::NetLogSource()));
+      new net::TCPServerSocket(nullptr, net::NetLogSource()));
   server_socket->ListenWithAddressAndPort("127.0.0.1", 0, 1);
   server_ = std::make_unique<net::HttpServer>(std::move(server_socket), this);
 
@@ -161,13 +161,13 @@ void TestHttpServer::StartOnServerThread(bool* success,
     web_socket_url_ = GURL(base::StringPrintf("ws://127.0.0.1:%d",
                                               address.port()));
   } else {
-    server_.reset(NULL);
+    server_.reset();
   }
   *success = server_.get();
   event->Signal();
 }
 
 void TestHttpServer::StopOnServerThread(base::WaitableEvent* event) {
-  server_.reset(NULL);
+  server_.reset();
   event->Signal();
 }

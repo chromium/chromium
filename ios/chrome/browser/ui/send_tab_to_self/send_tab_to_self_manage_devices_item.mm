@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,11 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_modal_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cell.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
+#import "ios/chrome/common/ui/util/text_view_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -28,14 +29,12 @@ const CGFloat kAvatarSize = 24;
 #pragma mark - SendTabtoSelfManageDevicesCell
 
 // Cell class for SendTabToSelfManageDevicesItem.
-@interface SendTabtoSelfManageDevicesCell : TableViewCell <UITextViewDelegate>
+@interface SendTabtoSelfManageDevicesCell : TableViewCell
 
 // A left-aligned round badge showing the account avatar.
 @property(nonatomic, readonly, strong) UIImageView* avatarBadge;
 // A view containing the account email and the link to the devices page.
 @property(nonatomic, readonly, strong) UITextView* linkAndEmailTextView;
-// Delegate to open the link upon click.
-@property(nonatomic, weak) id<SendTabToSelfModalDelegate> delegate;
 
 @end
 
@@ -56,7 +55,7 @@ const CGFloat kAvatarSize = 24;
   _avatarBadge.clipsToBounds = YES;
   [self.contentView addSubview:_avatarBadge];
 
-  _linkAndEmailTextView = [[UITextView alloc] init];
+  _linkAndEmailTextView = CreateUITextViewWithTextKit1();
   _linkAndEmailTextView.translatesAutoresizingMaskIntoConstraints = NO;
   _linkAndEmailTextView.scrollEnabled = NO;
   _linkAndEmailTextView.editable = NO;
@@ -67,7 +66,6 @@ const CGFloat kAvatarSize = 24;
   // Remove built-in padding.
   _linkAndEmailTextView.textContainer.lineFragmentPadding = 0;
   [_linkAndEmailTextView setTextContainerInset:UIEdgeInsetsZero];
-  _linkAndEmailTextView.delegate = self;
   [self.contentView addSubview:_linkAndEmailTextView];
 
   [NSLayoutConstraint activateConstraints:@[
@@ -99,6 +97,15 @@ const CGFloat kAvatarSize = 24;
   return self;
 }
 
+@end
+
+#pragma mark - SendTabToSelfManageDevicesItem
+
+@interface SendTabToSelfManageDevicesItem () <UITextViewDelegate>
+@end
+
+@implementation SendTabToSelfManageDevicesItem
+
 #pragma mark - UITextViewDelegate
 
 - (BOOL)textView:(UITextView*)textView
@@ -110,15 +117,12 @@ const CGFloat kAvatarSize = 24;
   // correct page. So use a custom handling in the delegate to ensure Chrome
   // opens the page.
   DCHECK(self.delegate) << "Delegate not set";
+  DCHECK(self.showManageDevicesLink);
   [self.delegate openManageDevicesTab];
   return NO;
 }
 
-@end
-
 #pragma mark - SendTabToSelfManageDevicesItem
-
-@implementation SendTabToSelfManageDevicesItem
 
 - (instancetype)initWithType:(NSInteger)type {
   self = [super initWithType:type];
@@ -134,23 +138,27 @@ const CGFloat kAvatarSize = 24;
   SendTabtoSelfManageDevicesCell* accountCell =
       base::mac::ObjCCastStrict<SendTabtoSelfManageDevicesCell>(cell);
 
-  NSString* text =
-      l10n_util::GetNSStringF(IDS_SEND_TAB_TO_SELF_MANAGE_DEVICES_LINK,
-                              base::SysNSStringToUTF16(self.accountEmail));
-  NSDictionary* textAttributes = @{
-    NSFontAttributeName :
-        [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline],
-    NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor]
-  };
-  // Opening the link is handled by the delegate, so |NSLinkAttributeName|
-  // can be arbitrary.
-  NSDictionary* linkAttributes = @{NSLinkAttributeName : @""};
-  accountCell.linkAndEmailTextView.attributedText =
-      AttributedStringFromStringWithLink(text, textAttributes, linkAttributes);
+  if (self.showManageDevicesLink) {
+    NSString* text =
+        l10n_util::GetNSStringF(IDS_SEND_TAB_TO_SELF_MANAGE_DEVICES_LINK,
+                                base::SysNSStringToUTF16(self.accountEmail));
+    NSDictionary* textAttributes = @{
+      NSFontAttributeName :
+          [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
+      NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor]
+    };
+    // Opening the link is handled by the delegate, so `NSLinkAttributeName`
+    // can be arbitrary.
+    NSDictionary* linkAttributes = @{NSLinkAttributeName : @""};
+    accountCell.linkAndEmailTextView.attributedText =
+        AttributedStringFromStringWithLink(text, textAttributes,
+                                           linkAttributes);
+    accountCell.linkAndEmailTextView.delegate = self;
+  } else {
+    accountCell.linkAndEmailTextView.text = self.accountEmail;
+  }
 
   accountCell.avatarBadge.image = self.accountAvatar;
-
-  accountCell.delegate = self.delegate;
 }
 
 @end

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,7 @@ class HyphenationImpl : public blink::mojom::Hyphenation {
 
   static scoped_refptr<base::SequencedTaskRunner> GetTaskRunner();
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   static void RegisterGetDictionary();
 #endif
 
@@ -34,7 +34,7 @@ class HyphenationImpl : public blink::mojom::Hyphenation {
                       OpenDictionaryCallback callback) override;
 
  private:
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   static void SetDirectory(const base::FilePath& dir);
 #endif
 };

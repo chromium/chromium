@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/location.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
@@ -64,7 +62,7 @@ namespace media {
 
 ChunkDemuxerStream::ChunkDemuxerStream(Type type, MediaTrack::Id media_track_id)
     : type_(type),
-      liveness_(DemuxerStream::LIVENESS_UNKNOWN),
+      liveness_(StreamLiveness::kUnknown),
       media_track_id_(media_track_id),
       state_(UNINITIALIZED),
       is_enabled_(true) {}
@@ -311,7 +309,7 @@ void ChunkDemuxerStream::Read(ReadCB read_cb) {
 
 DemuxerStream::Type ChunkDemuxerStream::type() const { return type_; }
 
-DemuxerStream::Liveness ChunkDemuxerStream::liveness() const {
+StreamLiveness ChunkDemuxerStream::liveness() const {
   base::AutoLock auto_lock(lock_);
   return liveness_;
 }
@@ -366,7 +364,7 @@ void ChunkDemuxerStream::SetStreamMemoryLimit(size_t memory_limit) {
   stream_->set_memory_limit(memory_limit);
 }
 
-void ChunkDemuxerStream::SetLiveness(Liveness liveness) {
+void ChunkDemuxerStream::SetLiveness(StreamLiveness liveness) {
   base::AutoLock auto_lock(lock_);
   liveness_ = liveness;
 }
@@ -451,8 +449,7 @@ ChunkDemuxer::ChunkDemuxer(
       encrypted_media_init_data_cb_(std::move(encrypted_media_init_data_cb)),
       media_log_(media_log),
       duration_(kNoTimestamp),
-      user_specified_duration_(-1),
-      liveness_(DemuxerStream::LIVENESS_UNKNOWN) {
+      user_specified_duration_(-1) {
   DCHECK(open_cb_);
   DCHECK(encrypted_media_init_data_cb_);
   MEDIA_LOG(INFO, media_log_) << GetDisplayName();
@@ -886,9 +883,9 @@ void ChunkDemuxer::OnMemoryPressure(
     return;
   }
   base::AutoLock auto_lock(lock_);
-  for (const auto& itr : source_state_map_) {
-    itr.second->OnMemoryPressure(currentMediaTime, memory_pressure_level,
-                                 force_instant_gc);
+  for (const auto& [source, state] : source_state_map_) {
+    state->OnMemoryPressure(currentMediaTime, memory_pressure_level,
+                            force_instant_gc);
   }
 }
 
@@ -1323,7 +1320,7 @@ ChunkDemuxer::~ChunkDemuxer() {
 void ChunkDemuxer::ReportError_Locked(PipelineStatus error) {
   DVLOG(1) << "ReportError_Locked(" << error << ")";
   lock_.AssertAcquired();
-  DCHECK_NE(error, PIPELINE_OK);
+  DCHECK(error != PIPELINE_OK);
 
   ChangeState_Locked(PARSE_ERROR);
 
@@ -1388,7 +1385,7 @@ void ChunkDemuxer::OnSourceInitDone(
     timeline_offset_ = params.timeline_offset;
   }
 
-  if (params.liveness != DemuxerStream::LIVENESS_UNKNOWN) {
+  if (params.liveness != StreamLiveness::kUnknown) {
     for (const auto& s : audio_streams_)
       s->SetLiveness(params.liveness);
     for (const auto& s : video_streams_)

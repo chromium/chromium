@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<title>Warnings when setting document.domain without Origin-Agent-Cluster header</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<iframe src="https://{{domains[www]}}:{{location[port]}}/wpt_internal/origin-agent-cluster-default/resources/frame.html"></iframe>
+<script>
+
+// These tests ensure that deprecation warnings are issued when document.domain
+// is set, and when a cross-origin access based on that document.domain setting
+// is made. This requires the OriginAgentClusterDefaultWarning flag.
+//
+// The ReportingObserver infrastructure seems to coalescs deprecation warnings,
+// so that multiple waring events only result in a single warning. To accomodate
+// this, we'll move each test into a single file, despite this making the test
+// suite somewhat harder to follow.
+
+// Wait for onload event, since that guarantees the iframe has loaded.
+const onload = new Promise((resolve, reject) => {
+  window.onload = _ => { resolve(); };
+});
+
+// Wait for a message from (any of) our frame(s).
+function onmessage() {
+  return new Promise((resolve, reject) => {
+    window.addEventListener("message", msg => { resolve(msg); },
+                            { once: true });
+  });
+}
+
+// Wait for a ReportingObserver report.
+const onreport = new Promise((resolve, reject) => {
+    new ReportingObserver((reports, observer) => {
+      resolve(reports[reports.length - 1]);
+      observer.takeRecords();
+    }, {buffered: true}).observe();
+  });
+
+// Test that reaching into a cross-origin iframe (after document.domain setting)
+// will succeed, but cause a deprecation warning (id
+// kCrossOriginAccessBasedOnDocumentDomain).
+promise_test(async t => {
+  await onload;
+
+  frames[0].postMessage("relax", "*");
+  var msg = await onmessage();
+  assert_equals(msg.data.type, "relaxed");
+  assert_equals(msg.data.body, "{{host}}");
+
+  document.domain = document.domain;
+  frames[0].document.body;
+  var report = await onreport;
+  assert_equals(report.type, "deprecation");
+  assert_equals(report.body.id, "4171");
+}, "Deprecation warning for document-domain mediated cross-origin access.");
+</script>

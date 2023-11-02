@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,9 +28,7 @@ views::BubbleBorder::Arrow GetArrow(ash::ShelfAlignment alignment) {
 
 namespace ash {
 
-ShelfBubble::ShelfBubble(views::View* anchor,
-                         ShelfAlignment alignment,
-                         SkColor background_color)
+ShelfBubble::ShelfBubble(views::View* anchor, ShelfAlignment alignment)
     : views::BubbleDialogDelegateView(anchor, GetArrow(alignment)),
       background_animator_(
           /* Don't pass the Shelf so the translucent color is always used. */

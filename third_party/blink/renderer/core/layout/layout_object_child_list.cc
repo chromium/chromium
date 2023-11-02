@@ -36,6 +36,8 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_items.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 
+#include "base/record_replay.h"
+
 namespace blink {
 
 namespace {
@@ -233,11 +235,8 @@ void LayoutObjectChildList::InsertChildNode(LayoutObject* owner,
     new_child->RegisterSubtreeChangeListenerOnDescendants(true);
 
   if (UNLIKELY(!new_child->IsLayoutNGObject())) {
-    if (owner->ForceLegacyLayout()) {
+    if (owner->ForceLegacyLayoutForChildren()) {
       new_child->SetForceLegacyLayout();
-    } else if (const auto* element = DynamicTo<Element>(new_child->GetNode())) {
-      if (element->ShouldForceLegacyLayout())
-        new_child->SetForceLegacyLayout();
     }
   }
 

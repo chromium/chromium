@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,17 +9,16 @@
 
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_export.h"
+#include "device/bluetooth/bluetooth_socket_thread.h"
+#include "device/bluetooth/floss/bluetooth_pairing_floss.h"
 #include "device/bluetooth/floss/floss_adapter_client.h"
 
 namespace floss {
 
 class BluetoothAdapterFloss;
-struct Error;
-struct FlossDeviceId;
 
 // BluetoothDeviceFloss implements device::BluetoothDevice for platforms using
 // Floss (Linux front-end for Fluoride). Objects of this type should be managed
@@ -32,8 +31,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   BluetoothDeviceFloss(const BluetoothDeviceFloss&) = delete;
   BluetoothDeviceFloss& operator=(const BluetoothDeviceFloss&) = delete;
 
-  BluetoothDeviceFloss(BluetoothAdapterFloss* adapter,
-                       const FlossDeviceId& device);
+  BluetoothDeviceFloss(
+      BluetoothAdapterFloss* adapter,
+      const FlossDeviceId& device,
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
+      scoped_refptr<device::BluetoothSocketThread> socket_thread);
   ~BluetoothDeviceFloss() override;
 
   // BluetoothDevice override
@@ -48,13 +50,13 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   uint16_t GetAppearance() const override;
   absl::optional<std::string> GetName() const override;
   bool IsPaired() const override;
+#if BUILDFLAG(IS_CHROMEOS)
+  bool IsBonded() const override;
+#endif  // BUILDFLAG(IS_CHROMEOS)
   bool IsConnected() const override;
   bool IsGattConnected() const override;
   bool IsConnectable() const override;
   bool IsConnecting() const override;
-#if defined(OS_CHROMEOS)
-  bool IsBlockedByPolicy() const override;
-#endif
   UUIDSet GetUUIDs() const override;
   absl::optional<int8_t> GetInquiryRSSI() const override;
   absl::optional<int8_t> GetInquiryTxPower() const override;
@@ -67,6 +69,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
                             ErrorCallback error_callback) override;
   void Connect(device::BluetoothDevice::PairingDelegate* pairing_delegate,
                ConnectCallback callback) override;
+#if BUILDFLAG(IS_CHROMEOS)
+  void ConnectClassic(
+      device::BluetoothDevice::PairingDelegate* pairing_delegate,
+      ConnectCallback callback) override;
+#endif  // BUILDFLAG(IS_CHROMEOS)
   void SetPinCode(const std::string& pincode) override;
   void SetPasskey(uint32_t passkey) override;
   void ConfirmPairing() override;
@@ -89,16 +96,31 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   bool IsGattServicesDiscoveryComplete() const override;
   void Pair(device::BluetoothDevice::PairingDelegate* pairing_delegate,
             ConnectCallback callback) override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void ExecuteWrite(base::OnceClosure callback,
                     ExecuteWriteErrorCallback error_callback) override;
   void AbortWrite(base::OnceClosure callback,
                   AbortWriteErrorCallback error_callback) override;
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
+  FlossDeviceId AsFlossDeviceId() const;
+  // Floss always distinguishes between IsBonded and IsPaired so provide
+  // a publicly accessible implementation.
+  bool IsBondedImpl() const;
   void SetName(const std::string& name);
+  FlossAdapterClient::BondState GetBondState() { return bond_state_; }
   void SetBondState(FlossAdapterClient::BondState bond_state);
   void SetIsConnected(bool is_connected);
+  void SetConnectionState(uint32_t state);
+  void ConnectAllEnabledProfiles();
+  void ResetPairing();
+  // Triggers the pending callback of Connect() method.
+  void TriggerConnectCallback(
+      absl::optional<BluetoothDevice::ConnectErrorCode> error_code);
+
+  BluetoothPairingFloss* pairing() const { return pairing_.get(); }
+
+  void InitializeDeviceProperties(base::OnceClosure callback);
 
  protected:
   // BluetoothDevice override
@@ -107,23 +129,27 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   void DisconnectGatt() override;
 
  private:
-  // Method for connecting to this device.
-  void ConnectInternal(ConnectCallback callback);
-  void OnConnect(ConnectCallback callback);
-  void OnConnectError(ConnectCallback callback, const Error& error);
+  void OnGetRemoteType(DBusResult<FlossAdapterClient::BluetoothDeviceType> ret);
+  void OnGetRemoteClass(DBusResult<uint32_t> ret);
+  void OnGetRemoteUuids(DBusResult<UUIDList> ret);
+  void OnConnectAllEnabledProfiles(DBusResult<Void> ret);
+  void OnDisconnectAllEnabledProfiles(base::OnceClosure callback,
+                                      ErrorCallback error_callback,
+                                      DBusResult<Void> ret);
 
-  // Used if a Connect() is called but requires Pairing.
-  void OnPairDuringConnect(ConnectCallback callback);
-  void OnPairDuringConnectError(ConnectCallback callback, const Error& error);
+  void OnConnectToServiceError(ConnectToServiceErrorCallback error_callback,
+                               const std::string& error_message);
 
-  void OnDisconnect(base::OnceClosure callback);
-  void OnDisconnectError(ErrorCallback error_callback, const Error& error);
+  void TriggerInitDevicePropertiesCallback();
 
-  void OnPair(ConnectCallback callback);
-  void OnPairError(ConnectCallback callback, const Error& error);
+  absl::optional<ConnectCallback> pending_callback_on_connect_profiles_ =
+      absl::nullopt;
 
-  void OnCancelPairingError(const Error& error);
-  void OnForgetError(ErrorCallback error_callback, const Error& error);
+  absl::optional<base::OnceClosure> pending_callback_on_init_props_ =
+      absl::nullopt;
+
+  // Number of pending device properties to initialize
+  int num_pending_properties_ = 0;
 
   // Address of this device. Changing this should necessitate creating a new
   // BluetoothDeviceFloss object.
@@ -132,17 +158,40 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   // Name of this device. Can be queried later and isn't mandatory for creation.
   std::string name_;
 
+  // Transport type of device.
+  // TODO(b/204708206): Update with property framework when available
+  device::BluetoothTransport transport_;
+
+  // Class of device.
+  // TODO(b/204708206): Update with property framework when available
+  uint32_t cod_ = 0;
+
   // Whether the device is bonded/paired.
   FlossAdapterClient::BondState bond_state_ =
       FlossAdapterClient::BondState::kNotBonded;
 
   // Whether the device is connected at link layer level (not profile level).
-  // Mirrors the connection state of Floss:
-  // 0 if not connected; 1 if connected and > 1 if connection is encrypted
+  // Updated via |SetIsConnected| only.
+  bool is_acl_connected_ = false;
+
+  // Similar to is_acl_connected_ but contains the full connection state
+  // (including encryption). This is updated when |SetConnectionState| is called
+  // or when |SetIsConnected| is called.
   // (https://android.googlesource.com/platform/system/bt/+/refs/heads/android10-c2f2-release/btif/src/btif_dm.cc#737),
-  // but squashing all connected states >= 1 as a single "connected" since it's
-  // not used in the Chrome layer.
-  bool is_connected_ = false;
+  // This is used for determining if the device is paired.
+  uint32_t connection_state_ = 0;
+
+  // Number of ongoing calls to Connect(). Incremented with a call to Connect()
+  // and decremented when either profiles are connected or pairing was
+  // cancelled.
+  int num_connecting_calls_ = 0;
+
+  // UI thread task runner and socket thread used to create sockets.
+  scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
+  scoped_refptr<device::BluetoothSocketThread> socket_thread_;
+
+  // Represents currently ongoing pairing with this remote device.
+  std::unique_ptr<BluetoothPairingFloss> pairing_;
 
   base::WeakPtrFactory<BluetoothDeviceFloss> weak_ptr_factory_{this};
 };

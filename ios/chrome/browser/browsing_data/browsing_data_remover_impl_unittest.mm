@@ -1,27 +1,26 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/browsing_data/browsing_data_remover_impl.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
-#include "base/check_op.h"
-#include "base/macros.h"
-#include "base/run_loop.h"
-#include "base/scoped_observation.h"
+#import "base/bind.h"
+#import "base/callback_helpers.h"
+#import "base/check_op.h"
+#import "base/run_loop.h"
+#import "base/scoped_observation.h"
 #import "base/test/ios/wait_util.h"
-#include "base/test/metrics/histogram_tester.h"
-#include "components/open_from_clipboard/clipboard_recent_content.h"
-#include "components/open_from_clipboard/fake_clipboard_recent_content.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#include "ios/chrome/browser/browsing_data/browsing_data_remover_observer.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "components/open_from_clipboard/clipboard_recent_content.h"
+#import "components/open_from_clipboard/fake_clipboard_recent_content.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/browsing_data/browsing_data_remover_observer.h"
 #import "ios/chrome/browser/sessions/session_service_ios.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -70,7 +69,7 @@ class TestBrowsingDataRemoverObserver : public BrowsingDataRemoverObserver {
   void OnBrowsingDataRemoved(BrowsingDataRemover* remover,
                              BrowsingDataRemoveMask mask) override;
 
-  // Returns the |mask| value passed to the last call of OnBrowsingDataRemoved.
+  // Returns the `mask` value passed to the last call of OnBrowsingDataRemoved.
   // Returns BrowsingDataRemoveMask::REMOVE_NOTHING if it has not been called.
   BrowsingDataRemoveMask last_remove_mask() const { return last_remove_mask_; }
 

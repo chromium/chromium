@@ -1,17 +1,20 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_PERFORMANCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_PERFORMANCE_H_
 
+#include "base/check.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
-// This class collects performance data for font-related operations.
+// This class collects performance data for font-related operations in main
+// thread.
 class PLATFORM_EXPORT FontPerformance {
  public:
   static void Reset() {
@@ -40,13 +43,26 @@ class PLATFORM_EXPORT FontPerformance {
   // The aggregated time spent in |FallbackFontForCharacter|.
   static base::TimeDelta SystemFallbackFontTime() { return system_fallback_; }
   static void AddSystemFallbackFontTime(base::TimeDelta time) {
+    if (UNLIKELY(!IsMainThread()))
+      return;
     system_fallback_ += time;
   }
 
-  static void AddShapingTime(base::TimeDelta time) { shaping_ += time; }
+  static void AddShapingTime(base::TimeDelta time) {
+    if (UNLIKELY(!IsMainThread()))
+      return;
+    shaping_ += time;
+  }
 
   static void MarkFirstContentfulPaint();
   static void MarkDomContentLoaded();
+
+  struct ShapeTextTimingScope final {
+    ~ShapeTextTimingScope() {
+      FontPerformance::AddShapingTime(shaping_timer.Elapsed());
+    }
+    base::ElapsedTimer shaping_timer;
+  };
 
   class StyleScope {
    public:

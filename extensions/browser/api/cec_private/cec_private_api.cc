@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/notreached.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/cec_service/cec_service_client.h"
 #include "extensions/common/api/cec_private.h"
 #include "extensions/common/manifest_handlers/kiosk_mode_info.h"
 
@@ -19,26 +19,26 @@ const char kKioskOnlyError[] =
 
 extensions::api::cec_private::DisplayCecPowerState
 ConvertCecServiceClientPowerState(
-    chromeos::CecServiceClient::PowerState power_state) {
+    ash::CecServiceClient::PowerState power_state) {
   switch (power_state) {
-    case chromeos::CecServiceClient::PowerState::kError:
+    case ash::CecServiceClient::PowerState::kError:
       return extensions::api::cec_private::DISPLAY_CEC_POWER_STATE_ERROR;
-    case chromeos::CecServiceClient::PowerState::kAdapterNotConfigured:
+    case ash::CecServiceClient::PowerState::kAdapterNotConfigured:
       return extensions::api::cec_private::
           DISPLAY_CEC_POWER_STATE_ADAPTERNOTCONFIGURED;
-    case chromeos::CecServiceClient::PowerState::kNoDevice:
+    case ash::CecServiceClient::PowerState::kNoDevice:
       return extensions::api::cec_private::DISPLAY_CEC_POWER_STATE_NODEVICE;
-    case chromeos::CecServiceClient::PowerState::kOn:
+    case ash::CecServiceClient::PowerState::kOn:
       return extensions::api::cec_private::DISPLAY_CEC_POWER_STATE_ON;
-    case chromeos::CecServiceClient::PowerState::kStandBy:
+    case ash::CecServiceClient::PowerState::kStandBy:
       return extensions::api::cec_private::DISPLAY_CEC_POWER_STATE_STANDBY;
-    case chromeos::CecServiceClient::PowerState::kTransitioningToOn:
+    case ash::CecServiceClient::PowerState::kTransitioningToOn:
       return extensions::api::cec_private::
           DISPLAY_CEC_POWER_STATE_TRANSITIONINGTOON;
-    case chromeos::CecServiceClient::PowerState::kTransitioningToStandBy:
+    case ash::CecServiceClient::PowerState::kTransitioningToStandBy:
       return extensions::api::cec_private::
           DISPLAY_CEC_POWER_STATE_TRANSITIONINGTOSTANDBY;
-    case chromeos::CecServiceClient::PowerState::kUnknown:
+    case ash::CecServiceClient::PowerState::kUnknown:
       return extensions::api::cec_private::DISPLAY_CEC_POWER_STATE_UNKNOWN;
   }
 
@@ -72,7 +72,7 @@ CecPrivateSendStandByFunction::CecPrivateSendStandByFunction() = default;
 CecPrivateSendStandByFunction::~CecPrivateSendStandByFunction() = default;
 
 ExtensionFunction::ResponseAction CecPrivateSendStandByFunction::Run() {
-  chromeos::DBusThreadManager::Get()->GetCecServiceClient()->SendStandBy();
+  ash::CecServiceClient::Get()->SendStandBy();
   return RespondNow(NoArguments());
 }
 
@@ -81,7 +81,7 @@ CecPrivateSendWakeUpFunction::CecPrivateSendWakeUpFunction() = default;
 CecPrivateSendWakeUpFunction::~CecPrivateSendWakeUpFunction() = default;
 
 ExtensionFunction::ResponseAction CecPrivateSendWakeUpFunction::Run() {
-  chromeos::DBusThreadManager::Get()->GetCecServiceClient()->SendWakeUp();
+  ash::CecServiceClient::Get()->SendWakeUp();
   return RespondNow(NoArguments());
 }
 
@@ -93,19 +93,16 @@ CecPrivateQueryDisplayCecPowerStateFunction::
 
 ExtensionFunction::ResponseAction
 CecPrivateQueryDisplayCecPowerStateFunction::Run() {
-  chromeos::DBusThreadManager::Get()
-      ->GetCecServiceClient()
-      ->QueryDisplayCecPowerState(base::BindOnce(
-          &CecPrivateQueryDisplayCecPowerStateFunction::HandlePowerStates,
-          this));
+  ash::CecServiceClient::Get()->QueryDisplayCecPowerState(base::BindOnce(
+      &CecPrivateQueryDisplayCecPowerStateFunction::HandlePowerStates, this));
   return RespondLater();
 }
 
 void CecPrivateQueryDisplayCecPowerStateFunction::HandlePowerStates(
-    const std::vector<chromeos::CecServiceClient::PowerState>& power_states) {
+    const std::vector<ash::CecServiceClient::PowerState>& power_states) {
   std::vector<cec_private::DisplayCecPowerState> result_power_states;
 
-  for (const chromeos::CecServiceClient::PowerState& state : power_states) {
+  for (const ash::CecServiceClient::PowerState& state : power_states) {
     result_power_states.push_back(ConvertCecServiceClientPowerState(state));
   }
 

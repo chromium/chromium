@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,16 @@ class BluetoothDevice;
 class DEVICE_BLUETOOTH_EXPORT BluetoothSocket
     : public base::RefCountedThreadSafe<BluetoothSocket> {
  public:
-  enum ErrorReason { kSystemError, kIOPending, kDisconnected };
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused. This enum should be kept in sync
+  // with the BluetoothSocketErrorReason enum in
+  // src/tools/metrics/histograms/enums.xml.
+  enum ErrorReason {
+    kSystemError = 0,
+    kIOPending = 1,
+    kDisconnected = 2,
+    kMaxValue = kDisconnected,
+  };
 
   using SendCompletionCallback = base::OnceCallback<void(int)>;
   using ReceiveCompletionCallback =

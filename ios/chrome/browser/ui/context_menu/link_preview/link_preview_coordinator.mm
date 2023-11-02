@@ -1,13 +1,13 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/context_menu/link_preview/link_preview_coordinator.h"
 
-#include "base/metrics/field_trial_params.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/url_formatter/url_formatter.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "base/metrics/field_trial_params.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/url_formatter/url_formatter.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/history/history_tab_helper.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/tabs/tab_helper_util.h"
@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
-#include "url/gurl.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -102,9 +102,18 @@
       self.browser->GetWebStateList()->GetActiveWebState();
   ChromeBrowserState* browserState =
       ChromeBrowserState::FromBrowserState(currentWebState->GetBrowserState());
+
+  // Use web::WebState::CreateWithStorageSession to clone the
+  // currentWebState navigation history. This may create an
+  // unrealized WebState, however, LinkPreview needs a realized
+  // one, so force the realization.
+  // TODO(crbug.com/1291626): remove when there is a way to
+  // clone a WebState navigation history.
   web::WebState::CreateParams createParams(browserState);
+  createParams.last_active_time = base::Time::Now();
   _previewWebState = web::WebState::CreateWithStorageSession(
       createParams, currentWebState->BuildSessionStorage());
+  _previewWebState->ForceRealized();
 
   // Attach tab helpers to use _previewWebState as a browser tab. It ensures
   // _previewWebState has all the expected tab helpers, including the

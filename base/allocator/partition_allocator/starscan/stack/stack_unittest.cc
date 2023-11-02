@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,18 +7,17 @@
 #include <memory>
 #include <ostream>
 
-#include "base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
-#if defined(OS_LINUX) && (defined(ARCH_CPU_X86) || defined(ARCH_CPU_X86_64))
+#if BUILDFLAG(IS_LINUX) && (defined(ARCH_CPU_X86) || defined(ARCH_CPU_X86_64))
 #include <xmmintrin.h>
 #endif
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 namespace {
 
@@ -66,8 +65,7 @@ TEST_F(PartitionAllocStackTest, IteratePointersFindsOnStackValue) {
   // No check that the needle is initially not found as on some platforms it
   // may be part of temporaries after setting it up through StackScanner.
   {
-    int* volatile tmp = scanner->needle();
-    ALLOW_UNUSED_LOCAL(tmp);
+    [[maybe_unused]] int* volatile tmp = scanner->needle();
     GetStack()->IteratePointers(scanner.get());
     EXPECT_TRUE(scanner->found());
   }
@@ -80,10 +78,8 @@ TEST_F(PartitionAllocStackTest,
   // No check that the needle is initially not found as on some platforms it
   // may be part of  temporaries after setting it up through StackScanner.
   {
-    char a = 'c';
-    ALLOW_UNUSED_LOCAL(a);
-    int* volatile tmp = scanner->needle();
-    ALLOW_UNUSED_LOCAL(tmp);
+    [[maybe_unused]] char a = 'c';
+    [[maybe_unused]] int* volatile tmp = scanner->needle();
     GetStack()->IteratePointers(scanner.get());
     EXPECT_TRUE(scanner->found());
   }
@@ -95,16 +91,16 @@ namespace {
 // must not actually be materialized.
 //
 // Parameter positiosn are explicit to test various calling conventions.
-NOINLINE void* RecursivelyPassOnParameterImpl(void* p1,
-                                              void* p2,
-                                              void* p3,
-                                              void* p4,
-                                              void* p5,
-                                              void* p6,
-                                              void* p7,
-                                              void* p8,
-                                              Stack* stack,
-                                              StackVisitor* visitor) {
+PA_NOINLINE void* RecursivelyPassOnParameterImpl(void* p1,
+                                                 void* p2,
+                                                 void* p3,
+                                                 void* p4,
+                                                 void* p5,
+                                                 void* p6,
+                                                 void* p7,
+                                                 void* p8,
+                                                 Stack* stack,
+                                                 StackVisitor* visitor) {
   if (p1) {
     return RecursivelyPassOnParameterImpl(nullptr, p1, nullptr, nullptr,
                                           nullptr, nullptr, nullptr, nullptr,
@@ -140,10 +136,10 @@ NOINLINE void* RecursivelyPassOnParameterImpl(void* p1,
   return nullptr;
 }
 
-NOINLINE void* RecursivelyPassOnParameter(size_t num,
-                                          void* parameter,
-                                          Stack* stack,
-                                          StackVisitor* visitor) {
+PA_NOINLINE void* RecursivelyPassOnParameter(size_t num,
+                                             void* parameter,
+                                             Stack* stack,
+                                             StackVisitor* visitor) {
   switch (num) {
     case 0:
       stack->IteratePointers(visitor);
@@ -264,7 +260,7 @@ TEST_F(PartitionAllocStackTest, IteratePointersFindsParameterNesting8) {
 // to verify that the stack-scanning trampoline pushes callee-saved registers.
 //
 // The test uses a macro loop as asm() can only be passed string literals.
-#if defined(__clang__) && defined(ARCH_CPU_X86_64) && !defined(OS_WIN)
+#if defined(__clang__) && defined(ARCH_CPU_X86_64) && !BUILDFLAG(IS_WIN)
 
 // Excluded from test: rbp
 #define FOR_ALL_CALLEE_SAVED_REGS(V) \
@@ -301,7 +297,7 @@ TEST_F(PartitionAllocStackTest, IteratePointersFindsCalleeSavedRegisters) {
 // (Ignoring implementation-dependent dirty registers/stack.)
 #define KEEP_ALIVE_FROM_CALLEE_SAVED(reg)                                \
   local_scanner->Reset();                                                \
-  [local_stack, local_scanner]() NOINLINE {                              \
+  [local_stack, local_scanner]() PA_NOINLINE {                           \
     asm volatile("   mov %0, %%" reg                                     \
                  "\n mov %1, %%rdi"                                      \
                  "\n mov %2, %%rsi"                                      \
@@ -321,16 +317,15 @@ TEST_F(PartitionAllocStackTest, IteratePointersFindsCalleeSavedRegisters) {
 #undef FOR_ALL_CALLEE_SAVED_REGS
 }
 
-#endif  // defined(__clang__) && defined(ARCH_CPU_X86_64) && !defined(OS_WIN)
+#endif  // defined(__clang__) && defined(ARCH_CPU_X86_64) && !BUILDFLAG(IS_WIN)
 
-#if defined(OS_LINUX) && (defined(ARCH_CPU_X86) || defined(ARCH_CPU_X86_64))
+#if BUILDFLAG(IS_LINUX) && (defined(ARCH_CPU_X86) || defined(ARCH_CPU_X86_64))
 class CheckStackAlignmentVisitor final : public StackVisitor {
  public:
   void VisitStack(uintptr_t*, uintptr_t*) final {
     // Check that the stack doesn't get misaligned by asm trampolines.
     float f[4] = {0.};
-    volatile auto xmm = ::_mm_load_ps(f);
-    ALLOW_UNUSED_LOCAL(xmm);
+    [[maybe_unused]] volatile auto xmm = ::_mm_load_ps(f);
   }
 };
 
@@ -338,10 +333,9 @@ TEST_F(PartitionAllocStackTest, StackAlignment) {
   auto checker = std::make_unique<CheckStackAlignmentVisitor>();
   GetStack()->IteratePointers(checker.get());
 }
-#endif  // defined(OS_LINUX) && (defined(ARCH_CPU_X86) ||
+#endif  // BUILDFLAG(IS_LINUX) && (defined(ARCH_CPU_X86) ||
         // defined(ARCH_CPU_X86_64))
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal
 
 #endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)

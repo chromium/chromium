@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "base/strings/string_util.h"
 #include "components/link_header_util/link_header_util.h"
 #include "third_party/blink/public/common/web_package/signed_exchange_consts.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
 
 namespace blink {
@@ -33,6 +34,8 @@ static LinkHeader::LinkParameterName ParameterNameFromString(
     return LinkHeader::kLinkParameterType;
   if (base::EqualsCaseInsensitiveASCII(name, "rev"))
     return LinkHeader::kLinkParameterRev;
+  if (base::EqualsCaseInsensitiveASCII(name, "referrerpolicy"))
+    return LinkHeader::kLinkParameterReferrerPolicy;
   if (base::EqualsCaseInsensitiveASCII(name, "hreflang"))
     return LinkHeader::kLinkParameterHreflang;
   if (base::EqualsCaseInsensitiveASCII(name, "as"))
@@ -56,6 +59,12 @@ static LinkHeader::LinkParameterName ParameterNameFromString(
     return LinkHeader::kLinkParameterVariants;
   if (base::EqualsCaseInsensitiveASCII(name, kSignedExchangeVariantKeyHeader))
     return LinkHeader::kLinkParameterVariantKey;
+
+  if (RuntimeEnabledFeatures::BlockingAttributeEnabled() &&
+      base::EqualsCaseInsensitiveASCII(name, "blocking")) {
+    return LinkHeader::kLinkParameterBlocking;
+  }
+
   return LinkHeader::kLinkParameterUnknown;
 }
 
@@ -86,6 +95,10 @@ void LinkHeader::SetValue(LinkParameterName name, const String& value) {
     variants_ = value;
   else if (name == kLinkParameterVariantKey)
     variant_key_ = value;
+  else if (name == kLinkParameterBlocking)
+    blocking_ = value;
+  else if (name == kLinkParameterReferrerPolicy)
+    referrer_policy_ = value;
 }
 
 template <typename Iterator>

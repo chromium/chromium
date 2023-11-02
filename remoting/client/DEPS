@@ -1,6 +1,5 @@
 include_rules = [
-  "+ppapi",
-  "+jingle/glue",
+  "+components/webrtc",
   "+mojo/core/embedder",
   "+net",
   "+ui/events/keycodes/dom",

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
@@ -109,11 +110,11 @@ class NET_EXPORT_PRIVATE HttpAuthNegotiateAndroid : public HttpAuthMechanism {
  private:
   void SetResultInternal(int result, const std::string& token);
 
-  const HttpAuthPreferences* prefs_ = nullptr;
+  raw_ptr<const HttpAuthPreferences> prefs_ = nullptr;
   bool can_delegate_ = false;
   bool first_challenge_ = true;
   std::string server_auth_token_;
-  std::string* auth_token_ = nullptr;
+  raw_ptr<std::string> auth_token_ = nullptr;
   base::android::ScopedJavaGlobalRef<jobject> java_authenticator_;
   net::CompletionOnceCallback completion_callback_;
 

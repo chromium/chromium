@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,7 +41,7 @@ class MockNetworkContext : public network::TestNetworkContext {
   MOCK_METHOD(void,
               LookUpProxyForURL,
               (const GURL& url,
-               const net::NetworkIsolationKey& network_isolation_key,
+               const net::NetworkAnonymizationKey& network_isolation_key,
                mojo::PendingRemote<::network::mojom::ProxyLookupClient>
                    proxy_lookup_client),
               (override));
@@ -53,7 +53,7 @@ class MockNetworkContext : public network::TestNetworkContext {
  private:
   void LookUpProxyForURLInternal(
       const GURL& url,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_isolation_key,
       mojo::PendingRemote<::network::mojom::ProxyLookupClient>
           proxy_lookup_client) {
     mojo::Remote<::network::mojom::ProxyLookupClient> client(

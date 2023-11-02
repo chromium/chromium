@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,12 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
+import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -25,8 +28,10 @@ import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCss
 
 import android.os.Bundle;
 
+import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -39,8 +44,10 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.chrome.autofill_assistant.R;
+import org.chromium.base.test.util.CriteriaNotSatisfiedException;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.DirectActionProto;
@@ -56,17 +63,27 @@ import org.chromium.chrome.browser.directactions.DirectActionHandler;
 import org.chromium.chrome.browser.directactions.FakeDirectActionReporter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.autofill_assistant.AssistantDependencies;
+import org.chromium.components.autofill_assistant.AssistantFeatures;
+import org.chromium.components.autofill_assistant.AutofillAssistantModuleEntry;
+import org.chromium.components.autofill_assistant.AutofillAssistantModuleEntryProvider;
+import org.chromium.components.autofill_assistant.R;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
 /**
- * Tests autofill-assistant direct actions.
+ * Tests Autofill Assistant direct actions.
  */
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class DirectActionsIntegrationTest {
     public DirectActionsIntegrationTest() {}
@@ -85,7 +102,6 @@ public class DirectActionsIntegrationTest {
     Callback<Bundle> mDirectActionResultCallback;
 
     private AutofillAssistantModuleEntry mModuleEntry;
-    private AssistantDependenciesImpl mAssistantDependencies;
     private DirectActionHandler mDirectActionHandler;
     private FakeDirectActionReporter mDirectActionReporter;
 
@@ -96,28 +112,46 @@ public class DirectActionsIntegrationTest {
             mModuleEntry =
                     AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntryIfInstalled();
             assert mModuleEntry != null;
-            mAssistantDependencies =
-                    (AssistantDependenciesImpl) AutofillAssistantFacade.createDependencies(
-                            mTestRule.getActivity(), mModuleEntry);
+            AssistantDependencies dependencies =
+                    new AssistantStaticDependenciesChrome().createDependencies(
+                            mTestRule.getActivity());
             mDirectActionHandler = AutofillAssistantFacade.createDirectActionHandler(
-                    mTestRule.getActivity(), mAssistantDependencies.getBottomSheetController(),
-                    mAssistantDependencies.getBrowserControls(),
-                    mAssistantDependencies.getCompositorViewHolder(),
-                    mAssistantDependencies.getActivityTabProvider());
+                    mTestRule.getActivity(), dependencies.getBottomSheetController(),
+                    mTestRule.getActivity().getBrowserControlsManager(), dependencies.getRootView(),
+                    mTestRule.getActivity().getActivityTabProvider());
+        });
+    }
+
+    @After
+    public void tearDown() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+            prefService.clearPref(Pref.AUTOFILL_ASSISTANT_CONSENT);
+            prefService.clearPref(Pref.AUTOFILL_ASSISTANT_ENABLED);
+        });
+    }
+
+    /** Sets the value of @param preference to @param value. */
+    private void setBooleanPref(String preference, boolean value) {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+            prefService.setBoolean(preference, value);
         });
     }
 
     @Test
     @MediumTest
-    @Features.
-    EnableFeatures({ChromeFeatureList.DIRECT_ACTIONS, ChromeFeatureList.AUTOFILL_ASSISTANT,
-            ChromeFeatureList.AUTOFILL_ASSISTANT_DIRECT_ACTIONS})
+    @EnableFeatures({ChromeFeatureList.DIRECT_ACTIONS, AssistantFeatures.AUTOFILL_ASSISTANT_NAME,
+            AssistantFeatures.AUTOFILL_ASSISTANT_DIRECT_ACTIONS_NAME})
     public void
     testOnboardingAndStart() {
-        AutofillAssistantPreferencesUtil.setInitialPreferences(false);
-        mDirectActionHandler.reportAvailableDirectActions(mDirectActionReporter);
-        Assert.assertThat(mDirectActionReporter.getDirectActions(),
-                containsInAnyOrder("onboarding", "onboarding_and_start"));
+        setBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT, false);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mDirectActionHandler.reportAvailableDirectActions(mDirectActionReporter);
+            Assert.assertThat(mDirectActionReporter.getDirectActions(),
+                    containsInAnyOrder("onboarding", "onboarding_and_start"));
+        });
 
         ArrayList<ActionProto> list = new ArrayList<>();
         // Tapping touch_area_one will make it disappear.
@@ -154,15 +188,16 @@ public class DirectActionsIntegrationTest {
 
     @Test
     @MediumTest
-    @Features.
-    EnableFeatures({ChromeFeatureList.DIRECT_ACTIONS, ChromeFeatureList.AUTOFILL_ASSISTANT,
-            ChromeFeatureList.AUTOFILL_ASSISTANT_DIRECT_ACTIONS})
+    @EnableFeatures({ChromeFeatureList.DIRECT_ACTIONS, AssistantFeatures.AUTOFILL_ASSISTANT_NAME,
+            AssistantFeatures.AUTOFILL_ASSISTANT_DIRECT_ACTIONS_NAME})
     public void
     testOnboardingAndStartShowsErrorMessageIfRequested() {
-        AutofillAssistantPreferencesUtil.setInitialPreferences(false);
-        mDirectActionHandler.reportAvailableDirectActions(mDirectActionReporter);
-        Assert.assertThat(mDirectActionReporter.getDirectActions(),
-                containsInAnyOrder("onboarding", "onboarding_and_start"));
+        setBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT, false);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mDirectActionHandler.reportAvailableDirectActions(mDirectActionReporter);
+            Assert.assertThat(mDirectActionReporter.getDirectActions(),
+                    containsInAnyOrder("onboarding", "onboarding_and_start"));
+        });
 
         // No scripts available.
         AutofillAssistantTestService testService =
@@ -180,7 +215,7 @@ public class DirectActionsIntegrationTest {
         waitUntilViewMatchesCondition(withText("I agree"), isDisplayed());
         onView(withText("I agree")).perform(click());
 
-        waitUntilViewMatchesCondition(withText("Sorry, something went wrong."), isDisplayed());
+        waitUntilViewMatchesCondition(withText("Something went wrong"), isDisplayed());
         verify(mDirectActionResultCallback)
                 .onResult(argThat(bundle -> !bundle.getBoolean("success")));
     }
@@ -190,15 +225,17 @@ public class DirectActionsIntegrationTest {
      */
     @Test
     @MediumTest
-    @Features.
-    EnableFeatures({ChromeFeatureList.DIRECT_ACTIONS, ChromeFeatureList.AUTOFILL_ASSISTANT,
-            ChromeFeatureList.AUTOFILL_ASSISTANT_DIRECT_ACTIONS})
+    @EnableFeatures({ChromeFeatureList.DIRECT_ACTIONS, AssistantFeatures.AUTOFILL_ASSISTANT_NAME,
+            AssistantFeatures.AUTOFILL_ASSISTANT_DIRECT_ACTIONS_NAME})
     public void
     testOnboardingTwice() {
-        AutofillAssistantPreferencesUtil.setInitialPreferences(false);
-        mDirectActionHandler.reportAvailableDirectActions(mDirectActionReporter);
-        Assert.assertThat(mDirectActionReporter.getDirectActions(),
-                containsInAnyOrder("onboarding", "onboarding_and_start"));
+        setBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT, false);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mDirectActionHandler.reportAvailableDirectActions(mDirectActionReporter);
+            Assert.assertThat(mDirectActionReporter.getDirectActions(),
+                    containsInAnyOrder("onboarding", "onboarding_and_start"));
+        });
 
         ArrayList<ActionProto> list = new ArrayList<>();
         // Tapping touch_area_one will make it disappear.
@@ -245,12 +282,12 @@ public class DirectActionsIntegrationTest {
      */
     @Test
     @MediumTest
-    @Features.
-    EnableFeatures({ChromeFeatureList.DIRECT_ACTIONS, ChromeFeatureList.AUTOFILL_ASSISTANT,
-            ChromeFeatureList.AUTOFILL_ASSISTANT_DIRECT_ACTIONS})
+    @EnableFeatures({ChromeFeatureList.DIRECT_ACTIONS, AssistantFeatures.AUTOFILL_ASSISTANT_NAME,
+            AssistantFeatures.AUTOFILL_ASSISTANT_DIRECT_ACTIONS_NAME})
+    @DisabledTest(message = "https://crbug.com/1272997")
     public void
     testStatusMessageResetsBetweenRuns() {
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
+        setBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT, true);
 
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(ActionProto.newBuilder()
@@ -313,5 +350,126 @@ public class DirectActionsIntegrationTest {
         onView(withText("InfoBox message from previous run")).check(doesNotExist());
         onView(withId(R.id.info_box_explanation)).check(matches(not(isDisplayed())));
         onView(withText("Status message from previous run")).check(doesNotExist());
+    }
+
+    /**
+     * Regression test for b/195417125.
+     */
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.DIRECT_ACTIONS, AssistantFeatures.AUTOFILL_ASSISTANT_NAME,
+            AssistantFeatures.AUTOFILL_ASSISTANT_DIRECT_ACTIONS_NAME})
+    public void
+    testLastTellMessageDisplayedAfterStop() {
+        ArrayList<ActionProto> list = new ArrayList<>();
+        list.add(ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder().addChoices(
+                                 PromptProto.Choice.newBuilder().setChip(
+                                         ChipProto.newBuilder().setText("Prompt"))))
+                         .build());
+        list.add(ActionProto.newBuilder()
+                         .setTell(TellProto.newBuilder().setMessage("Last tell message"))
+                         .build());
+        list.add(ActionProto.newBuilder().setStop(StopProto.newBuilder()).build());
+
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
+                SupportedScriptProto.newBuilder()
+                        .setPath("autofill_assistant_target_website.html")
+                        .setPresentation(PresentationProto.newBuilder().setDirectAction(
+                                DirectActionProto.newBuilder()
+                                        .addNames("some_direct_action")
+                                        .build()))
+                        .build(),
+                list);
+        AutofillAssistantTestService testService =
+                new AutofillAssistantTestService(Collections.singletonList(script));
+        testService.scheduleForInjection();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mDirectActionHandler.reportAvailableDirectActions(mDirectActionReporter);
+            Assert.assertThat(mDirectActionReporter.getDirectActions(),
+                    containsInAnyOrder("fetch_website_actions"));
+            mDirectActionHandler.performDirectAction(
+                    "fetch_website_actions", new Bundle(), mDirectActionResultCallback);
+            verify(mDirectActionResultCallback)
+                    .onResult(argThat(bundle -> bundle.getBoolean("success")));
+
+            mDirectActionHandler.reportAvailableDirectActions(mDirectActionReporter);
+            Assert.assertThat(mDirectActionReporter.getDirectActions(),
+                    containsInAnyOrder("fetch_website_actions", "some_direct_action"));
+            mDirectActionHandler.performDirectAction(
+                    "some_direct_action", new Bundle(), mDirectActionResultCallback);
+        });
+        waitUntilViewMatchesCondition(withText("Prompt"), isDisplayed());
+        onView(withText("Prompt")).perform(click());
+        waitUntilViewMatchesCondition(withText("Last tell message"), isDisplayed());
+        // The last tell message should still be visible (and not disappear
+        // immediately) after the script stops.
+        try {
+            waitUntilViewMatchesCondition(withText("Last tell message"), not(isDisplayed()), 200);
+        } catch (AssertionError e) {
+            if (e.getCause() instanceof CriteriaNotSatisfiedException) {
+                // This is ok, the view is still there, the test succeeds.
+                return;
+            }
+            throw e;
+        }
+        throw new CriteriaNotSatisfiedException(
+                "Expected last tell message to be visible after stop");
+    }
+
+    /**
+     * Regression test for b/224759196.
+     */
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.DIRECT_ACTIONS, AssistantFeatures.AUTOFILL_ASSISTANT_NAME,
+            AssistantFeatures.AUTOFILL_ASSISTANT_DIRECT_ACTIONS_NAME})
+    public void
+    testCloseDirectAction() {
+        ArrayList<ActionProto> list = new ArrayList<>();
+        list.add(ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder().addChoices(
+                                 PromptProto.Choice.newBuilder().setChip(
+                                         ChipProto.newBuilder().setText("Prompt"))))
+                         .build());
+        list.add(ActionProto.newBuilder()
+                         .setTell(TellProto.newBuilder().setMessage("Last tell message"))
+                         .build());
+        list.add(ActionProto.newBuilder().setStop(StopProto.newBuilder()).build());
+
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
+                SupportedScriptProto.newBuilder()
+                        .setPath("autofill_assistant_target_website.html")
+                        .setPresentation(PresentationProto.newBuilder().setDirectAction(
+                                DirectActionProto.newBuilder()
+                                        .addNames("some_direct_action")
+                                        .build()))
+                        .build(),
+                list);
+        AutofillAssistantTestService testService =
+                new AutofillAssistantTestService(Collections.singletonList(script));
+        testService.scheduleForInjection();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mDirectActionHandler.reportAvailableDirectActions(mDirectActionReporter);
+            Assert.assertThat(mDirectActionReporter.getDirectActions(),
+                    containsInAnyOrder("fetch_website_actions"));
+            mDirectActionHandler.performDirectAction(
+                    "fetch_website_actions", new Bundle(), mDirectActionResultCallback);
+            verify(mDirectActionResultCallback)
+                    .onResult(argThat(bundle -> bundle.getBoolean("success")));
+
+            mDirectActionHandler.reportAvailableDirectActions(mDirectActionReporter);
+            Assert.assertThat(mDirectActionReporter.getDirectActions(),
+                    containsInAnyOrder("fetch_website_actions", "some_direct_action"));
+            mDirectActionHandler.performDirectAction(
+                    "some_direct_action", new Bundle(), mDirectActionResultCallback);
+        });
+        waitUntilViewMatchesCondition(withText("Prompt"), isDisplayed());
+        onView(withText("Prompt")).perform(click());
+        waitUntilViewMatchesCondition(withText("Last tell message"), isDisplayed());
+        onView(allOf(withContentDescription("Close"), withEffectiveVisibility(Visibility.VISIBLE)))
+                .perform(click());
     }
 }

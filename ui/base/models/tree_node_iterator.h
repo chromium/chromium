@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/containers/stack.h"
+#include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 
 namespace ui {
 
@@ -34,10 +36,9 @@ class TreeNodeIterator {
     // Position at the top of the _positions list must point to a node the
     // iterator will be returning.
     const auto i =
-        std::find_if(node->children().cbegin(), node->children().cend(),
-                     [prune](const auto& child) {
-                       return prune.is_null() || !prune.Run(child.get());
-                     });
+        base::ranges::find_if(node->children(), [prune](const auto& child) {
+          return prune.is_null() || !prune.Run(child.get());
+        });
     if (i != node->children().cend())
       positions_.emplace(node, i - node->children().cbegin());
   }
@@ -90,7 +91,7 @@ class TreeNodeIterator {
   struct Position {
     Position(PositionNodeType* node, size_t index) : node(node), index(index) {}
 
-    PositionNodeType* node;
+    raw_ptr<PositionNodeType> node;
     size_t index;
   };
 

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,6 +40,7 @@ extern const char kDirectoryBotJidValue[];
 extern const char kIsEnterpriseAdminUser[];
 extern const char kSuppressUserDialogs[];
 extern const char kSuppressNotifications[];
+extern const char kCurtainLocalUserSession[];
 extern const char kTerminateUponInput[];
 extern const char kUseElevatedHost[];
 extern const char kUseSignalingProxy[];

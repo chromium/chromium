@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -13,11 +13,11 @@
 
 #include "base/auto_reset.h"
 #include "base/strings/string_piece.h"
+#include "base/values.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 
 namespace base {
-class DictionaryValue;
 class FilePath;
 }
 
@@ -62,24 +62,24 @@ void SetPreferredLocale(const std::string& locale);
 
 // Returns default locale in form "en-US" or "sr" or empty string if
 // "default_locale" section was not defined in the manifest.json file.
-std::string GetDefaultLocaleFromManifest(const base::DictionaryValue& manifest,
+std::string GetDefaultLocaleFromManifest(const base::Value::Dict& manifest,
                                          std::string* error);
 
 // Returns true iff the extension was localized, and the current locale
 // doesn't match the locale written into info.extension_manifest.
-bool ShouldRelocalizeManifest(const base::DictionaryValue* manifest);
+bool ShouldRelocalizeManifest(const base::Value::Dict& manifest);
 
 // Localize extension name, description, browser_action and other fields
 // in the manifest.
 bool LocalizeManifest(const extensions::MessageBundle& messages,
-                      base::DictionaryValue* manifest,
+                      base::Value::Dict* manifest,
                       std::string* error);
 
 // Load message catalogs, localize manifest and attach message bundle to the
 // extension. |gzip_permission| will be passed to LoadMessageCatalogs
 // (see below for details).
 bool LocalizeExtension(const base::FilePath& extension_path,
-                       base::DictionaryValue* manifest,
+                       base::Value::Dict* manifest,
                        GzippedMessagesPermission gzip_permission,
                        std::string* error);
 
@@ -132,7 +132,7 @@ extensions::MessageBundle* LoadMessageCatalogs(
 // Loads message catalogs for all locales to check for validity. Used for
 // validating unpacked extensions.
 bool ValidateExtensionLocales(const base::FilePath& extension_path,
-                              const base::DictionaryValue* manifest,
+                              const base::Value::Dict& manifest,
                               std::string* error);
 
 // Returns true if directory has "." in the name (for .svn) or if it doesn't

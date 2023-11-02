@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #import "ios/web/public/web_state.h"
@@ -38,27 +37,18 @@ class WebUIIOSImpl : public web::WebUIIOS,
   void SetController(std::unique_ptr<WebUIIOSController> controller) override;
   void AddMessageHandler(
       std::unique_ptr<WebUIIOSMessageHandler> handler) override;
-  using MessageCallback =
-      base::RepeatingCallback<void(base::Value::ConstListView)>;
-  void RegisterMessageCallback(const std::string& message,
+  void RegisterMessageCallback(base::StringPiece message,
                                MessageCallback callback) override;
-  using DeprecatedMessageCallback =
-      base::RepeatingCallback<void(const base::ListValue*)>;
-  void RegisterDeprecatedMessageCallback(
-      const std::string& message,
-      const DeprecatedMessageCallback& callback) override;
   void ProcessWebUIIOSMessage(const GURL& source_url,
-                              const std::string& message,
-                              const base::Value& args) override;
-  void CallJavascriptFunction(
-      const std::string& function_name,
-      const std::vector<const base::Value*>& args) override;
-  void ResolveJavascriptCallback(const base::Value& callback_id,
-                                 const base::Value& response) override;
-  void RejectJavascriptCallback(const base::Value& callback_id,
-                                const base::Value& response) override;
-  void FireWebUIListener(const std::string& event_name,
-                         const std::vector<const base::Value*>& args) override;
+                              base::StringPiece message,
+                              const base::Value::List& args) override;
+  void CallJavascriptFunction(base::StringPiece function_name,
+                              base::span<const base::ValueView> args) override;
+  void ResolveJavascriptCallback(const base::ValueView callback_id,
+                                 const base::ValueView response) override;
+  void RejectJavascriptCallback(const base::ValueView callback_id,
+                                const base::ValueView response) override;
+  void FireWebUIListenerSpan(base::span<const base::ValueView> values) override;
 
  private:
   void OnJsMessage(const base::Value& message,
@@ -70,13 +60,9 @@ class WebUIIOSImpl : public web::WebUIIOS,
   void ExecuteJavascript(const std::u16string& javascript);
 
   // A map of message name -> message handling callback.
-  using MessageCallbackMap = std::map<std::string, MessageCallback>;
+  using MessageCallbackMap =
+      std::map<std::string, MessageCallback, std::less<>>;
   MessageCallbackMap message_callbacks_;
-
-  // A map of message name -> message handling callback.
-  using DeprecatedMessageCallbackMap =
-      std::map<std::string, DeprecatedMessageCallback>;
-  DeprecatedMessageCallbackMap deprecated_message_callbacks_;
 
   // The WebUIIOSMessageHandlers we own.
   std::vector<std::unique_ptr<WebUIIOSMessageHandler>> handlers_;

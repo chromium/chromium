@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/android/jni_string.h"
 #include "base/callback.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/trace_event.h"
 
 #include "chrome/android/features/keyboard_accessory/jni_headers/AutofillKeyboardAccessoryViewBridge_jni.h"
 #include "chrome/browser/android/resource_mapper.h"
@@ -31,7 +32,7 @@ using base::android::ScopedJavaLocalRef;
 namespace autofill {
 
 AutofillKeyboardAccessoryView::AutofillKeyboardAccessoryView(
-    AutofillPopupController* controller)
+    base::WeakPtr<AutofillPopupController> controller)
     : controller_(controller) {
   java_object_.Reset(Java_AutofillKeyboardAccessoryViewBridge_create(
       base::android::AttachCurrentThread()));
@@ -56,11 +57,13 @@ bool AutofillKeyboardAccessoryView::Initialize() {
 }
 
 void AutofillKeyboardAccessoryView::Hide() {
+  TRACE_EVENT0("passwords", "AutofillKeyboardAccessoryView::Hide");
   Java_AutofillKeyboardAccessoryViewBridge_dismiss(
       base::android::AttachCurrentThread(), java_object_);
 }
 
 void AutofillKeyboardAccessoryView::Show() {
+  TRACE_EVENT0("passwords", "AutofillKeyboardAccessoryView::Show");
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobjectArray> data_array =
       Java_AutofillKeyboardAccessoryViewBridge_createAutofillSuggestionArray(
@@ -79,27 +82,20 @@ void AutofillKeyboardAccessoryView::Show() {
     std::u16string label;
     if (controller_->GetSuggestionMinorTextAt(i).empty()) {
       value = controller_->GetSuggestionMainTextAt(i);
-      label = controller_->GetSuggestionLabelAt(i);
+      std::vector<std::vector<autofill::Suggestion::Text>> suggestion_labels =
+          controller_->GetSuggestionLabelsAt(i);
+      if (!suggestion_labels.empty()) {
+        DCHECK_EQ(suggestion_labels[0].size(), 1U);
+        label = std::move(suggestion_labels[0][0].value);
+      }
     } else {
       value = controller_->GetSuggestionMainTextAt(i);
       label = controller_->GetSuggestionMinorTextAt(i);
     }
 
-    // Set the offer title to display as the item tag.
-    std::u16string item_tag = std::u16string();
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableOffersInClankKeyboardAccessory) &&
-        !suggestion.offer_label.empty()) {
-      item_tag = suggestion.offer_label;
-      // If the offer label is not empty then replace the network icon by the
-      // offer tag.
-      android_icon_id =
-          ResourceMapper::MapToJavaDrawableId(GetIconResourceID("offerTag"));
-    }
     Java_AutofillKeyboardAccessoryViewBridge_addToAutofillSuggestionArray(
         env, data_array, position++, ConvertUTF16ToJavaString(env, value),
-        ConvertUTF16ToJavaString(env, label),
-        ConvertUTF16ToJavaString(env, item_tag), android_icon_id,
+        ConvertUTF16ToJavaString(env, label), android_icon_id,
         suggestion.frontend_id,
         controller_->GetRemovalConfirmationText(i, nullptr, nullptr),
         ConvertUTF8ToJavaString(env, suggestion.feature_for_iph),

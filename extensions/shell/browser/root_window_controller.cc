@@ -1,8 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "extensions/shell/browser/root_window_controller.h"
+#include "base/memory/raw_ptr.h"
 
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/native_app_window.h"
@@ -62,7 +63,7 @@ class FillLayout : public aura::LayoutManager {
     SetChildBoundsDirect(child, requested_bounds);
   }
 
-  aura::Window* owner_;  // Not owned.
+  raw_ptr<aura::Window> owner_;  // Not owned.
 };
 
 // A simple screen positioning client that translates bounds to screen
@@ -114,7 +115,8 @@ RootWindowController::RootWindowController(
       std::make_unique<ScreenPositionClient>(host_->window());
 
   // Ensure the window fills the display.
-  host_->window()->SetLayoutManager(new FillLayout(host_->window()));
+  host_->window()->SetLayoutManager(
+      std::make_unique<FillLayout>(host_->window()));
 
   host_->AddObserver(this);
   host_->Show();

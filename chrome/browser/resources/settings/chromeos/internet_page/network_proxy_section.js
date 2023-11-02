@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,25 +8,28 @@
  * shared networks'.
  */
 
-import '//resources/cr_components/chromeos/network/cr_policy_network_indicator_mojo.m.js';
-import '//resources/cr_components/chromeos/network/network_proxy.m.js';
-import '//resources/cr_elements/cr_button/cr_button.m.js';
-import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import '//resources/cr_elements/hidden_style_css.m.js';
-import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import 'chrome://resources/ash/common/network/cr_policy_network_indicator_mojo.js';
+import 'chrome://resources/ash/common/network/network_proxy.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
+import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../../controls/extension_controlled_indicator.js';
-import '../../settings_vars_css.js';
+import '../../settings_vars.css.js';
 import './internet_shared_css.js';
 import '../../controls/settings_toggle_button.js';
+import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 
-import {CrPolicyNetworkBehaviorMojo} from '//resources/cr_components/chromeos/network/cr_policy_network_behavior_mojo.m.js';
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrPolicyNetworkBehaviorMojo, CrPolicyNetworkBehaviorMojoInterface} from 'chrome://resources/ash/common/network/cr_policy_network_behavior_mojo.js';
+import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {ManagedProperties, ManagedString} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {OncSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Route, Router} from '../../router.js';
-import {routes} from '../os_route.m.js';
-import {PrefsBehavior} from '../prefs_behavior.js';
-import {RouteObserverBehavior} from '../route_observer_behavior.js';
+import {routes} from '../os_route.js';
+import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 /**
  * @typedef {{name: (string|undefined),
@@ -35,74 +38,97 @@ import {RouteObserverBehavior} from '../route_observer_behavior.js';
  */
 let ExtensionInfo;
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'network-proxy-section',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {CrPolicyNetworkBehaviorMojoInterface}
+ * @implements {I18nBehaviorInterface}
+ * @implements {PrefsBehaviorInterface}
+ * @implements {RouteObserverBehaviorInterface}
+ */
+const NetworkProxySectionElementBase = mixinBehaviors(
+    [
+      CrPolicyNetworkBehaviorMojo,
+      I18nBehavior,
+      PrefsBehavior,
+      RouteObserverBehavior,
+    ],
+    PolymerElement);
 
-  behaviors: [
-    CrPolicyNetworkBehaviorMojo,
-    I18nBehavior,
-    PrefsBehavior,
-    RouteObserverBehavior,
-  ],
+/** @polymer */
+class NetworkProxySectionElement extends NetworkProxySectionElementBase {
+  static get is() {
+    return 'network-proxy-section';
+  }
 
-  properties: {
-    disabled: {
-      type: Boolean,
-      value: false,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @type {!chromeos.networkConfig.mojom.ManagedProperties|undefined} */
-    managedProperties: Object,
+  static get properties() {
+    return {
+      disabled: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * Reflects prefs.settings.use_shared_proxies for data binding.
-     * @private
-     */
-    useSharedProxies_: Boolean,
+      /** @type {!ManagedProperties|undefined} */
+      managedProperties: Object,
 
-    /**
-     * Indicates if the proxy if set by an extension in the Lacros primary
-     * profile.
-     * @private
-     */
-    isProxySetByLacrosExtension_: Boolean,
+      /**
+       * Reflects prefs.settings.use_shared_proxies for data binding.
+       * @private
+       */
+      useSharedProxies_: Boolean,
 
-    /**
-     * Information about the extension in the Ash or Lacros browser which
-     * controlling the proxy. Can be null is the proxy is not controlled by an
-     * extension.
-     * @type {!ExtensionInfo|undefined}
-     * @private
-     */
-    extensionInfo_: Object,
-  },
+      /**
+       * Indicates if the proxy if set by an extension in the Lacros primary
+       * profile.
+       * @private
+       */
+      isProxySetByLacrosExtension_: Boolean,
 
-  observers: [
-    'useSharedProxiesChanged_(prefs.settings.use_shared_proxies.value)',
-    'extensionProxyChanged_(prefs.ash.lacros_proxy_controlling_extension)',
-  ],
+      /**
+       * Information about the extension in the Ash or Lacros browser which
+       * controlling the proxy. Can be null is the proxy is not controlled by an
+       * extension.
+       * @type {!ExtensionInfo|undefined}
+       * @private
+       */
+      extensionInfo_: Object,
+    };
+  }
+
+  static get observers() {
+    return [
+      'useSharedProxiesChanged_(prefs.settings.use_shared_proxies.value)',
+      'extensionProxyChanged_(prefs.ash.lacros_proxy_controlling_extension)',
+    ];
+  }
 
   /**
    * Returns the allow shared CrToggleElement.
    * @return {?CrToggleElement}
    */
   getAllowSharedToggle() {
-    return /** @type {?CrToggleElement} */ (this.$$('#allowShared'));
-  },
+    return /** @type {?CrToggleElement} */ (
+        this.shadowRoot.querySelector('#allowShared'));
+  }
 
   /** @protected RouteObserverBehavior */
   currentRouteChanged(newRoute) {
     if (newRoute === routes.NETWORK_DETAIL) {
-      /** @type {NetworkProxyElement} */ (this.$$('network-proxy')).reset();
+      /** @type {NetworkProxyElement} */ (
+          this.shadowRoot.querySelector('network-proxy'))
+          .reset();
     }
-  },
+  }
 
   /** @private */
   useSharedProxiesChanged_() {
     const pref = this.getPref('settings.use_shared_proxies');
     this.useSharedProxies_ = !!pref && !!pref.value;
-  },
+  }
 
   /** @private */
   extensionProxyChanged_() {
@@ -116,10 +142,10 @@ Polymer({
       this.extensionInfo_ = {
         id: pref.value['extension_id_key'],
         name: pref.value['extension_name_key'],
-        canBeDisabled: pref.value['can_be_disabled_key']
+        canBeDisabled: pref.value['can_be_disabled_key'],
       };
     }
-  },
+  }
 
   /**
    * @return {boolean}
@@ -133,10 +159,10 @@ Polymer({
     this.extensionInfo_ = {
       id: this.prefs.proxy.extensionId,
       name: this.prefs.proxy.controlledByName,
-      canBeDisabled: this.prefs.proxy.extensionCanBeDisabled
+      canBeDisabled: this.prefs.proxy.extensionCanBeDisabled,
     };
     return true;
-  },
+  }
 
   /**
    * Return true if the proxy is controlled by an extension in the Ash Browser
@@ -146,20 +172,19 @@ Polymer({
    */
   isProxySetByExtension_() {
     return this.proxySetByAshExtension_() || this.isProxySetByLacrosExtension_;
-  },
+  }
 
   /**
    * @return {boolean}
    * @private
    */
   isShared_() {
-    const mojom = chromeos.networkConfig.mojom;
-    return this.managedProperties.source === mojom.OncSource.kDevice ||
-        this.managedProperties.source === mojom.OncSource.kDevicePolicy;
-  },
+    return this.managedProperties.source === OncSource.kDevice ||
+        this.managedProperties.source === OncSource.kDevicePolicy;
+  }
 
   /**
-   * @return {!chromeos.networkConfig.mojom.ManagedString|undefined}
+   * @return {!ManagedString|undefined}
    * @private
    */
   getProxySettingsTypeProperty_() {
@@ -168,7 +193,7 @@ Polymer({
     }
     const proxySettings = this.managedProperties.proxySettings;
     return proxySettings ? proxySettings.type : undefined;
-  },
+  }
 
   /**
    * @param {boolean} allowShared
@@ -180,7 +205,7 @@ Polymer({
       return this.i18n('networkProxyAllowSharedDisableWarningTitle');
     }
     return this.i18n('networkProxyAllowSharedEnableWarningTitle');
-  },
+  }
 
   /**
    * @return {boolean}
@@ -190,7 +215,7 @@ Polymer({
     const property = this.getProxySettingsTypeProperty_();
     return !!property && !this.isProxySetByExtension_() &&
         this.isNetworkPolicyEnforced(property);
-  },
+  }
 
   /**
    * @param {!OncMojo.ManagedProperty} property
@@ -205,7 +230,7 @@ Polymer({
     // controlling the proxy setting, so always show the 'allow shared'
     // toggle for shared networks. http://crbug.com/662529.
     return true;
-  },
+  }
 
   /**
    * Handles the change event for the shared proxy checkbox. Shows a
@@ -215,7 +240,7 @@ Polymer({
    */
   onAllowSharedProxiesChange_(event) {
     this.$.confirmAllowSharedDialog.showModal();
-  },
+  }
 
   /**
    * Handles the shared proxy confirmation dialog 'Confirm' button.
@@ -225,7 +250,7 @@ Polymer({
     /** @type {!SettingsToggleButtonElement} */ (this.$.allowShared)
         .sendPrefChange();
     this.$.confirmAllowSharedDialog.close();
-  },
+  }
 
   /**
    * Handles the shared proxy confirmation dialog 'Cancel' button or a cancel
@@ -236,10 +261,13 @@ Polymer({
     /** @type {!SettingsToggleButtonElement} */ (this.$.allowShared)
         .resetToPrefValue();
     this.$.confirmAllowSharedDialog.close();
-  },
+  }
 
   /** @private */
   onAllowSharedDialogClose_() {
     this.$.allowShared.focus();
-  },
-});
+  }
+}
+
+customElements.define(
+    NetworkProxySectionElement.is, NetworkProxySectionElement);

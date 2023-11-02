@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-# Copyright 2019 The Chromium Authors. All rights reserved.
+#!/usr/bin/env vpython3
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -70,20 +70,20 @@ class AnnotationTokenizerTest(unittest.TestCase):
   def testAdvanceErrorPaths(self):
     tokenizer = Tokenizer('  hello , ', 'foo.txt', 33)
     tokenizer.advance('symbol')
-    with self.assertRaisesRegexp(SourceCodeParsingError,
-                                 'Expected symbol.+at foo.txt:33'):
+    with self.assertRaisesRegex(SourceCodeParsingError,
+                                'Expected symbol.+at foo.txt:33'):
       # There are no more tokens.
       tokenizer.advance('symbol')
 
     tokenizer = Tokenizer('"hello"', 'foo.txt', 33)
-    with self.assertRaisesRegexp(SourceCodeParsingError,
-                                 'Expected comma.+at foo.txt:33'):
+    with self.assertRaisesRegex(SourceCodeParsingError,
+                                'Expected comma.+at foo.txt:33'):
       # The type doesn't match.
       tokenizer.advance('comma')
 
     tokenizer = Tokenizer('{', 'foo.txt', 33)
-    with self.assertRaisesRegexp(SourceCodeParsingError,
-                                 'Expected string_literal.+at foo.txt:33'):
+    with self.assertRaisesRegex(SourceCodeParsingError,
+                                'Expected string_literal.+at foo.txt:33'):
       # Not a valid token at all.
       tokenizer.advance('string_literal')
 
@@ -95,6 +95,15 @@ class AnnotationTokenizerTest(unittest.TestCase):
     self.assertEqual(None, tokenizer.maybe_advance('left_paren'))
     self.assertEqual('world', tokenizer.maybe_advance('symbol'))
     self.assertEqual(None, tokenizer.maybe_advance('right_paren'))
+
+  def testEscaping(self):
+    tokenizer = Tokenizer(
+        '''
+      "\\"abc \\\\\\" def \\\\\\""
+      "string ends here:\\\\" this is not part of the string"
+    ''', 'foo.txt', 33)
+    self.assertEqual('"abc \\" def \\"', tokenizer.advance('string_literal'))
+    self.assertEqual('string ends here:\\', tokenizer.advance('string_literal'))
 
 
 if __name__ == '__main__':

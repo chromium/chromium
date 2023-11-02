@@ -1,9 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <stddef.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/bind.h"
@@ -18,12 +19,10 @@
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/history_delete_directive_specifics.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
-#include "components/sync/test/fake_server/fake_server.h"
+#include "components/sync/test/fake_server.h"
 #include "content/public/test/browser_test.h"
 
 namespace {
-
-using sync_pb::HistoryDeleteDirectiveSpecifics;
 
 int64_t TimeToUnixUsec(base::Time time) {
   DCHECK(!time.is_null());
@@ -65,7 +64,7 @@ class HistoryDeleteDirectivesEqualityChecker
   }
 
  private:
-  fake_server::FakeServer* const fake_server_;
+  const raw_ptr<fake_server::FakeServer> fake_server_;
   const size_t num_expected_directives_;
 };
 
@@ -78,7 +77,7 @@ class SingleClientHistoryDeleteDirectivesSyncTest : public SyncTest {
   SingleClientHistoryDeleteDirectivesSyncTest& operator=(
       const SingleClientHistoryDeleteDirectivesSyncTest&) = delete;
 
-  ~SingleClientHistoryDeleteDirectivesSyncTest() override {}
+  ~SingleClientHistoryDeleteDirectivesSyncTest() override = default;
 
   bool WaitForHistoryDeleteDirectives(size_t num_expected_directives) {
     return HistoryDeleteDirectivesEqualityChecker(

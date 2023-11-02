@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,18 +7,20 @@
 
 #include "base/component_export.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include "ui/gfx/geometry/insets.h"
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 namespace gfx {
 class Rect;
 class Size;
+class PointF;
 }  // namespace gfx
 
 class SkPath;
@@ -26,6 +28,7 @@ class SkPath;
 namespace ui {
 
 class Event;
+struct OwnedWindowAnchor;
 
 enum class PlatformWindowState {
   kUnknown,
@@ -33,6 +36,11 @@ enum class PlatformWindowState {
   kMinimized,
   kNormal,
   kFullScreen,
+
+  // Currently, only used by ChromeOS.
+  kSnappedPrimary,
+  kSnappedSecondary,
+  kFloated,
 };
 
 enum class PlatformWindowOcclusionState {
@@ -45,14 +53,15 @@ enum class PlatformWindowOcclusionState {
 class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
  public:
   struct COMPONENT_EXPORT(PLATFORM_WINDOW) BoundsChange {
-    BoundsChange();
-    BoundsChange(const gfx::Rect& bounds);
-    ~BoundsChange();
+    BoundsChange() = delete;
+    constexpr BoundsChange(bool origin_changed)
+        : origin_changed(origin_changed) {}
+    ~BoundsChange() = default;
 
-    // The dimensions of the window, in physical window coordinates.
-    gfx::Rect bounds;
+    // True if the bounds change resulted in the origin change.
+    bool origin_changed : 1;
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
     // The widths of border regions which are obscured by overlapping
     // platform UI elements like onscreen keyboards.
     //
@@ -67,7 +76,7 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
     // |    onscreen keyboard   |   |  overlap    |
     // +------------------------+  ---           ---
     gfx::Insets system_ui_overlap;
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
   };
 
   PlatformWindowDelegate();
@@ -87,6 +96,11 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   virtual void OnWindowStateChanged(PlatformWindowState old_state,
                                     PlatformWindowState new_state) = 0;
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Notifies the delegate that the tiled state of the window edges has changed.
+  virtual void OnWindowTiledStateChanged(WindowTiledEdges new_tiled_edges);
+#endif
+
   virtual void OnLostCapture() = 0;
 
   virtual void OnAcceleratedWidgetAvailable(gfx::AcceleratedWidget widget) = 0;
@@ -101,7 +115,7 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
 
   virtual void OnActivationChanged(bool active) = 0;
 
-  // Requests size constraints for the PlatformWindow.
+  // Requests size constraints for the PlatformWindow in DIP.
   virtual absl::optional<gfx::Size> GetMinimumSizeForWindow();
   virtual absl::optional<gfx::Size> GetMaximumSizeForWindow();
 
@@ -134,7 +148,19 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   // positioning. Useful for such backends as Wayland as it provides flexibility
   // in positioning child windows, which must be repositioned if the originally
   // intended position caused the surface to be constrained.
-  virtual absl::optional<OwnedWindowAnchor> GetOwnedWindowAnchorAndRectInPx();
+  virtual absl::optional<OwnedWindowAnchor> GetOwnedWindowAnchorAndRectInDIP();
+
+  // Enables or disables frame rate throttling.
+  virtual void SetFrameRateThrottleEnabled(bool enabled);
+
+  // Convert gfx::Rect in pixels to DIP in screen, and vice versa.
+  virtual gfx::Rect ConvertRectToPixels(const gfx::Rect& rect_in_dp) const;
+  virtual gfx::Rect ConvertRectToDIP(const gfx::Rect& rect_in_pixells) const;
+
+  // Convert gfx::Point in screen pixels to dip in the window's local
+  // coordinate.
+  virtual gfx::PointF ConvertScreenPointToLocalDIP(
+      const gfx::Point& screen_in_pixels) const;
 };
 
 }  // namespace ui

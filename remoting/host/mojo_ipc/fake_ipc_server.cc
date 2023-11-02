@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,6 +32,10 @@ void FakeIpcServer::set_disconnect_handler(base::RepeatingClosure handler) {
 
 mojo::ReceiverId FakeIpcServer::current_receiver() const {
   return test_state_->current_receiver;
+}
+
+base::ProcessId FakeIpcServer::current_peer_pid() const {
+  return test_state_->current_peer_pid;
 }
 
 }  // namespace remoting

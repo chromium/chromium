@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/scoped_persistent.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
 
@@ -25,7 +25,7 @@ ReadableStreamDefaultControllerWithScriptScope::
   DCHECK(controller_);
 }
 
-void ReadableStreamDefaultControllerWithScriptScope::NoteHasBeenCanceled() {
+void ReadableStreamDefaultControllerWithScriptScope::Deactivate() {
   controller_ = nullptr;
 }
 
@@ -65,7 +65,8 @@ void ReadableStreamDefaultControllerWithScriptScope::Enqueue(
   ExceptionState exception_state(isolate, ExceptionState::kUnknownContext, "",
                                  "");
   v8::MicrotasksScope microtasks_scope(
-      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
+      isolate, ToMicrotaskQueue(script_state_),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
   ReadableStreamDefaultController::Enqueue(script_state_, controller_, js_chunk,
                                            exception_state);
   if (exception_state.HadException()) {

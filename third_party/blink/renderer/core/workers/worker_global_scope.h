@@ -28,8 +28,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_WORKER_GLOBAL_SCOPE_H_
 
 #include <memory>
+
+#include "base/time/time.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
-#include "services/network/public/mojom/ip_address_space.mojom-blink-forward.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -40,23 +41,27 @@
 #include "third_party/blink/renderer/core/dom/frame_request_callback_collection.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
+#include "third_party/blink/renderer/core/frame/policy_container.h"
 #include "third_party/blink/renderer/core/script/script.h"
-#include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/worker_classic_script_loader.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_settings.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "v8/include/v8-inspector.h"
 
 namespace blink {
 
 struct BlinkTransferableMessage;
+struct GlobalScopeCreationParams;
 class ConsoleMessage;
 class FetchClientSettingsObjectSnapshot;
 class FontFaceSet;
 class FontMatchingMetrics;
+struct GlobalScopeCreationParams;
 class InstalledScriptsManager;
 class OffscreenFontSelector;
 class WorkerResourceTimingNotifier;
@@ -80,7 +85,7 @@ class CORE_EXPORT WorkerGlobalScope
   // use it because we don't create a CachedMetadtaHandler. Only service workers
   // override this method and provide a valid handler. We need to implement it
   // for Dedicated / Shared workers too so we can benefit from code caches.
-  virtual SingleCachedMetadataHandler* CreateWorkerScriptCachedMetadataHandler(
+  virtual CachedMetadataHandler* CreateWorkerScriptCachedMetadataHandler(
       const KURL& script_url,
       std::unique_ptr<Vector<uint8_t>> meta_data) {
     return nullptr;
@@ -101,9 +106,7 @@ class CORE_EXPORT WorkerGlobalScope
   WorkerLocation* location() const;
   WorkerNavigator* navigator() const override;
   void close();
-  bool isSecureContextForBindings() const {
-    return ExecutionContext::IsSecureContext();
-  }
+  bool isSecureContextForBindings() const { return IsSecureContext(); }
 
   String origin() const;
 
@@ -135,6 +138,11 @@ class CORE_EXPORT WorkerGlobalScope
   void AddConsoleMessageImpl(ConsoleMessage*, bool discard_duplicates) final;
   const BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() const final;
 
+  scoped_refptr<base::SingleThreadTaskRunner>
+  GetAgentGroupSchedulerCompositorTaskRunner() final {
+    return agent_group_scheduler_compositor_task_runner_;
+  }
+
   OffscreenFontSelector* GetFontSelector() { return font_selector_; }
 
   CoreProbeSink* GetProbeSink() final;
@@ -154,7 +162,6 @@ class CORE_EXPORT WorkerGlobalScope
   virtual void Initialize(
       const KURL& response_url,
       network::mojom::ReferrerPolicy response_referrer_policy,
-      network::mojom::IPAddressSpace response_address_space,
       Vector<network::mojom::blink::ContentSecurityPolicyPtr> response_csp,
       const Vector<String>* response_origin_trial_tokens) = 0;
 
@@ -179,6 +186,7 @@ class CORE_EXPORT WorkerGlobalScope
       const KURL& script_url,
       std::unique_ptr<WorkerMainScriptLoadParameters>
           worker_main_script_load_params_for_modules,
+      std::unique_ptr<PolicyContainer> policy_container,
       const FetchClientSettingsObjectSnapshot& outside_settings_object,
       WorkerResourceTimingNotifier& outside_resource_timing_notifier,
       const v8_inspector::V8StackTraceId& stack_id) = 0;
@@ -188,6 +196,7 @@ class CORE_EXPORT WorkerGlobalScope
       const KURL& module_url_record,
       std::unique_ptr<WorkerMainScriptLoadParameters>
           worker_main_script_load_params_for_modules,
+      std::unique_ptr<PolicyContainer> policy_container,
       const FetchClientSettingsObjectSnapshot& outside_settings_object,
       WorkerResourceTimingNotifier& outside_resource_timing_notifier,
       network::mojom::CredentialsMode,
@@ -234,10 +243,20 @@ class CORE_EXPORT WorkerGlobalScope
 
   bool IsUrlValid() { return url_.IsValid(); }
 
+  void SetMainResoureIdentifier(uint64_t identifier) {
+    DCHECK(!main_resource_identifier_.has_value());
+    main_resource_identifier_ = identifier;
+  }
+
+  absl::optional<uint64_t> MainResourceIdentifier() const {
+    return main_resource_identifier_;
+  }
+
  protected:
   WorkerGlobalScope(std::unique_ptr<GlobalScopeCreationParams>,
                     WorkerThread*,
-                    base::TimeTicks time_origin);
+                    base::TimeTicks time_origin,
+                    bool is_service_worker_global_scope);
 
   // ExecutionContext
   void ExceptionThrown(ErrorEvent*) override;
@@ -289,6 +308,11 @@ class CORE_EXPORT WorkerGlobalScope
 
   WorkerThread* thread_;
 
+  // The compositor task runner associated with the |AgentGroupScheduler| this
+  // worker belongs to.
+  scoped_refptr<base::SingleThreadTaskRunner>
+      agent_group_scheduler_compositor_task_runner_;
+
   bool closing_ = false;
 
   const base::TimeTicks time_origin_;
@@ -330,6 +354,11 @@ class CORE_EXPORT WorkerGlobalScope
   // shared workers.
   std::unique_ptr<WorkerMainScriptLoadParameters>
       worker_main_script_load_params_for_modules_;
+
+  // |main_resource_identifier_| is used to track main script that was started
+  // in the browser process. This field not having a value does not imply
+  // anything.
+  absl::optional<uint64_t> main_resource_identifier_;
 
   // This is the interface that handles generated code cache
   // requests both to fetch code cache when loading resources.

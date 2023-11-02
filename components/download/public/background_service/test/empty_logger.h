@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,8 +23,8 @@ class EmptyLogger : public Logger {
   // Logger implementation.
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  base::Value GetServiceStatus() override;
-  base::Value GetServiceDownloads() override;
+  base::Value::Dict GetServiceStatus() override;
+  base::Value::List GetServiceDownloads() override;
 };
 
 }  // namespace test

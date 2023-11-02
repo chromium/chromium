@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,6 +28,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.R;
@@ -35,7 +36,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.MockSafeBrowsingApiHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
+import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -180,13 +181,14 @@ public class TabSuspensionTest {
         doReturn(true).when(mSuspensionTracker).isWebsiteSuspended(STARTING_FQDN);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mActivity.getTabModelSelector().getCurrentModel().setIndex(
-                    originalTabIndex, TabSelectionType.FROM_USER);
+                    originalTabIndex, TabSelectionType.FROM_USER, false);
         });
         waitForSuspendedTabToShow(mTab, STARTING_FQDN);
     }
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1345655")
     public void testEagerSuspension() {
         mActivityTestRule.loadUrl(mStartingUrl);
         CriteriaHelper.pollUiThread(() -> !mTab.isLoading());
@@ -232,6 +234,7 @@ public class TabSuspensionTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1345655")
     public void testMultiWindow() {
         mActivityTestRule.loadUrl(mStartingUrl);
         Tab tab2 = mActivityTestRule.loadUrlInNewTab(mDifferentUrl);
@@ -272,7 +275,7 @@ public class TabSuspensionTest {
     @Test
     @MediumTest
     public void testTabAddedFromCustomTab() {
-        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(
+        Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                 InstrumentationRegistry.getTargetContext(), mStartingUrl);
         IntentUtils.addTrustedIntentExtras(intent);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
@@ -311,7 +314,7 @@ public class TabSuspensionTest {
             mPageViewObserver.notifySiteSuspensionChanged(STARTING_FQDN, false);
             doReturn(false).when(mSuspensionTracker).isWebsiteSuspended(STARTING_FQDN);
             mActivity.getTabModelSelector().getCurrentModel().setIndex(
-                    originalTabIndex, TabSelectionType.FROM_USER);
+                    originalTabIndex, TabSelectionType.FROM_USER, false);
         });
 
         assertSuspendedTabHidden(mTab);
@@ -319,13 +322,13 @@ public class TabSuspensionTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1345655")
     public void testNavigationFromSuspendedTabToInterstitial() {
         doReturn(true).when(mSuspensionTracker).isWebsiteSuspended(STARTING_FQDN);
         startLoadingUrl(mTab, mStartingUrl);
         waitForSuspendedTabToShow(mTab, STARTING_FQDN);
 
-        SafeBrowsingApiBridge.setSafeBrowsingHandlerType(
-                new MockSafeBrowsingApiHandler().getClass());
+        SafeBrowsingApiBridge.setHandler(new MockSafeBrowsingApiHandler());
         MockSafeBrowsingApiHandler.addMockResponse(
                 mDifferentUrl, "{\"matches\":[{\"threat_type\":\"5\"}]}");
         startLoadingUrl(mTab, mDifferentUrl);

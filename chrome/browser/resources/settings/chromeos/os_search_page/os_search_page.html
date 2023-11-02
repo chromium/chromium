@@ -18,7 +18,7 @@
       </settings-search-engine>
     </template>
     <template is="dom-if" if="[[shouldShowQuickAnswersSettings_]]">
-      <cr-link-row id="search"
+      <cr-link-row
           id="searchSubpageTrigger"
           label="$i18n{searchSubpageTitle}"
           on-click="onSearchTap_"
@@ -55,10 +55,3 @@
     </template>
   </template>
 </settings-animated-pages>
-
-<!-- Default Search Engine Selection Dialog -->
-<template is="dom-if" if="[[showSearchSelectionDialog_]]" restamp>
-  <os-settings-search-selection-dialog
-      on-close="onSearchSelectionDialogClose_">
-  </os-settings-search-selection-dialog>
-</template>

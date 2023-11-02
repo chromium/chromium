@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,7 +63,7 @@ bool UnzipWithExe(const base::FilePath& src_path,
   return exit_code <= 1;
 }
 
-absl::optional<base::FilePath> GetUpdaterFolderPath(UpdaterScope scope) {
+absl::optional<base::FilePath> GetBaseInstallDirectory(UpdaterScope scope) {
   absl::optional<base::FilePath> path = GetLibraryFolderPath(scope);
   if (!path)
     return absl::nullopt;
@@ -74,14 +74,14 @@ absl::optional<base::FilePath> GetExecutableFolderPathForVersion(
     UpdaterScope scope,
     const base::Version& version) {
   absl::optional<base::FilePath> path =
-      GetVersionedUpdaterFolderPathForVersion(scope, version);
+      GetVersionedInstallDirectory(scope, version);
   if (!path)
     return absl::nullopt;
   return path->Append(ExecutableFolderPath());
 }
 
 absl::optional<base::FilePath> GetUpdaterAppBundlePath(UpdaterScope scope) {
-  absl::optional<base::FilePath> path = GetVersionedUpdaterFolderPath(scope);
+  absl::optional<base::FilePath> path = GetVersionedInstallDirectory(scope);
   if (!path)
     return absl::nullopt;
   return path->Append(
@@ -89,7 +89,7 @@ absl::optional<base::FilePath> GetUpdaterAppBundlePath(UpdaterScope scope) {
 }
 
 absl::optional<base::FilePath> GetUpdaterExecutablePath(UpdaterScope scope) {
-  absl::optional<base::FilePath> path = GetVersionedUpdaterFolderPath(scope);
+  absl::optional<base::FilePath> path = GetVersionedInstallDirectory(scope);
   if (!path)
     return absl::nullopt;
   return path->Append(ExecutableFolderPath())

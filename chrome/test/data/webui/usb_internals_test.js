@@ -1,17 +1,17 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://usb-internals/app.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import 'chrome://test/mojo_webui_test_support.js';
-
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
+import {setSetupFn} from 'chrome://usb-internals/app.js';
 import {UsbControlTransferParams, UsbControlTransferRecipient, UsbControlTransferType, UsbDeviceCallbackRouter, UsbDeviceRemote, UsbOpenDeviceError, UsbTransferStatus} from 'chrome://usb-internals/usb_device.mojom-webui.js';
 import {UsbInternalsPageHandler, UsbInternalsPageHandlerReceiver, UsbInternalsPageHandlerRemote} from 'chrome://usb-internals/usb_internals.mojom-webui.js';
 import {UsbDeviceManagerReceiver, UsbDeviceManagerRemote} from 'chrome://usb-internals/usb_manager.mojom-webui.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 /** @implements {UsbInternalsPageHandlerRemote} */
 class FakePageHandlerRemote extends TestBrowserProxy {
@@ -108,7 +108,7 @@ class FakeUsbDeviceRemote extends TestBrowserProxy {
     // device.mojom.UsbDevice defines lots of methods we don't care to mock
     // here. UsbDeviceCallbackRouter callback silently discards messages
     // that have no listeners.
-    this.router = new UsbDeviceCallbackRouter;
+    this.router = new UsbDeviceCallbackRouter();
     this.router.open.addListener(async () => {
       return {error: UsbOpenDeviceError.OK};
     });
@@ -193,8 +193,24 @@ function createDeviceWithValidDeviceDescriptor() {
   deviceRemote.setDeviceDescriptor({
     status: UsbTransferStatus.COMPLETED,
     data: [
-      0x12, 0x01, 0x00, 0x02, 0x00, 0x00, 0x00, 0x40, 0x50, 0x10, 0xEF, 0x17,
-      0x21, 0x03, 0x01, 0x02, 0x00, 0x01
+      0x12,
+      0x01,
+      0x00,
+      0x02,
+      0x00,
+      0x00,
+      0x00,
+      0x40,
+      0x50,
+      0x10,
+      0xEF,
+      0x17,
+      0x21,
+      0x03,
+      0x01,
+      0x02,
+      0x00,
+      0x01,
     ],
   });
   return deviceRemote;
@@ -233,24 +249,17 @@ function usbControlTransferParamsToString(params) {
 }
 
 const setupResolver = new PromiseResolver();
-const deviceManagerGetDevicesResolver = new PromiseResolver();
-const deviceTabInitializedResolver = new PromiseResolver();
-let deviceDescriptorRenderResolver = new PromiseResolver();
+let deviceDescriptorRenderPromise =
+    eventToPromise('device-descriptor-complete-for-test', document.body);
 let pageHandler = null;
 
-window.deviceListCompleteFn = () => {
-  deviceManagerGetDevicesResolver.resolve();
-};
+const deviceTabInitializedPromise =
+    eventToPromise('device-tab-initialized-for-test', document.body);
 
-window.deviceTabInitializedFn = () => {
-  deviceTabInitializedResolver.resolve();
-};
+const deviceManagerGetDevicesPromise =
+    eventToPromise('device-list-complete-for-test', document.body);
 
-window.deviceDescriptorCompleteFn = () => {
-  deviceDescriptorRenderResolver.resolve();
-};
-
-window.setupFn = () => {
+setSetupFn(() => {
   const pageHandlerInterceptor =
       new MojoInterfaceInterceptor(UsbInternalsPageHandler.$interfaceName);
   pageHandlerInterceptor.oninterfacerequest = (e) => {
@@ -260,7 +269,7 @@ window.setupFn = () => {
   pageHandlerInterceptor.start();
 
   return Promise.resolve();
-};
+});
 
 
 suite('UsbInternalsUITest', function() {
@@ -286,24 +295,24 @@ suite('UsbInternalsUITest', function() {
 
     // Totally 2 tables: 'TestDevice' table and 'Device' table.
     const tables = app.shadowRoot.querySelectorAll('table');
-    expectEquals(2, tables.length);
+    assertEquals(2, tables.length);
 
     // Only 2 tabs after loading page.
-    const tabs = app.shadowRoot.querySelectorAll('tab');
-    expectEquals(2, tabs.length);
-    const tabPanels = app.shadowRoot.querySelectorAll('tabpanel');
-    expectEquals(2, tabPanels.length);
+    const tabs = app.shadowRoot.querySelectorAll('div[slot=\'tab\']');
+    assertEquals(2, tabs.length);
+    const tabPanels = app.shadowRoot.querySelectorAll('div[slot=\'panel\']');
+    assertEquals(2, tabPanels.length);
 
     // The second is the devices table, which has 8 columns.
     const devicesTable = app.shadowRoot.querySelectorAll('table')[1];
     const columns = devicesTable.querySelector('thead')
                         .querySelector('tr')
                         .querySelectorAll('th');
-    expectEquals(8, columns.length);
+    assertEquals(8, columns.length);
 
-    await deviceManagerGetDevicesResolver.promise;
+    await deviceManagerGetDevicesPromise;
     const devices = devicesTable.querySelectorAll('tbody tr');
-    expectEquals(EXPECT_DEVICES_NUM, devices.length);
+    assertEquals(EXPECT_DEVICES_NUM, devices.length);
   });
 
   test('DeviceTabAdded', function() {
@@ -311,25 +320,31 @@ suite('UsbInternalsUITest', function() {
     // Click the inspect button to open information about the first device.
     // The device info is opened as a third tab panel.
     devicesTable.querySelectorAll('button')[0].click();
-    assertEquals(3, app.shadowRoot.querySelectorAll('tab').length);
-    assertEquals(3, app.shadowRoot.querySelectorAll('tabpanel').length);
-    expectTrue(app.shadowRoot.querySelectorAll('tabpanel')[2].selected);
+    assertEquals(
+        3, app.shadowRoot.querySelectorAll('div[slot=\'tab\']').length);
+    let panels = app.shadowRoot.querySelectorAll('div[slot=\'panel\']');
+    assertEquals(3, panels.length);
+    assertTrue(panels[2].hasAttribute('selected'));
 
     // Check that clicking the inspect button for another device will open a
     // new tabpanel.
     devicesTable.querySelectorAll('button')[1].click();
-    assertEquals(4, app.shadowRoot.querySelectorAll('tab').length);
-    assertEquals(4, app.shadowRoot.querySelectorAll('tabpanel').length);
-    expectTrue(app.shadowRoot.querySelectorAll('tabpanel')[3].selected);
-    expectFalse(app.shadowRoot.querySelectorAll('tabpanel')[2].selected);
+    assertEquals(
+        4, app.shadowRoot.querySelectorAll('div[slot=\'tab\']').length);
+    panels = app.shadowRoot.querySelectorAll('div[slot=\'panel\']');
+    assertEquals(4, panels.length);
+    assertTrue(panels[3].hasAttribute('selected'));
+    assertFalse(panels[2].hasAttribute('selected'));
 
     // Check that clicking the inspect button for the same device a second
     // time will open the same tabpanel.
     devicesTable.querySelectorAll('button')[0].click();
-    assertEquals(4, app.shadowRoot.querySelectorAll('tab').length);
-    assertEquals(4, app.shadowRoot.querySelectorAll('tabpanel').length);
-    expectTrue(app.shadowRoot.querySelectorAll('tabpanel')[2].selected);
-    expectFalse(app.shadowRoot.querySelectorAll('tabpanel')[3].selected);
+    assertEquals(
+        4, app.shadowRoot.querySelectorAll('div[slot=\'tab\']').length);
+    panels = app.shadowRoot.querySelectorAll('div[slot=\'panel\']');
+    assertEquals(4, panels.length);
+    assertTrue(panels[2].hasAttribute('selected'));
+    assertFalse(panels[3].hasAttribute('selected'));
   });
 
   test('RenderDeviceInfoTree', function() {
@@ -337,20 +352,26 @@ suite('UsbInternalsUITest', function() {
     // showing WebUSB information. Check the tree displays correct data.
     // The tab panel of the first device is opened in previous test as the
     // third tab panel.
-    const deviceTab = app.shadowRoot.querySelectorAll('tabpanel')[2];
-    const tree = deviceTab.querySelector('tree');
-    const treeItems = tree.querySelectorAll('.tree-item');
+    const deviceTab = app.shadowRoot.querySelectorAll('div[slot=\'panel\']')[2];
+    const tree = deviceTab.querySelector('cr-tree');
+    const treeItems = tree.items;
     assertEquals(11, treeItems.length);
 
     const labels = [
-      'USB Version: 2.0.0', 'Class Code: 0 (Device)', 'Subclass Code: 0',
-      'Protocol Code: 0', 'Port Number: 0', 'Vendor Id: 0x1050',
-      'Product Id: 0x17EF', 'Device Version: 3.2.1', 'Manufacturer Name: test',
-      'WebUSB Landing Page: http://google.com', 'Active Configuration: 1'
+      'USB Version: 2.0.0',
+      'Class Code: 0 (Device)',
+      'Subclass Code: 0',
+      'Protocol Code: 0',
+      'Port Number: 0',
+      'Vendor Id: 0x1050',
+      'Product Id: 0x17EF',
+      'Device Version: 3.2.1',
+      'Manufacturer Name: test',
+      'WebUSB Landing Page: http://google.com',
+      'Active Configuration: 1',
     ];
     labels.forEach((label, i) => {
-      expectEquals(
-          label, treeItems[i].querySelector('.tree-label').textContent);
+      assertEquals(label, treeItems[i].labelElement.textContent);
     });
   });
 
@@ -358,145 +379,156 @@ suite('UsbInternalsUITest', function() {
     // Test the tab opened by clicking inspect button contains a panel that
     // can manually retrieve device descriptor from device. Check the response
     // can be rendered correctly.
-    await deviceTabInitializedResolver.promise;
+    await deviceTabInitializedPromise;
     // The tab panel of the first device is opened in previous test as the
     // third tab panel. This device has correct device descriptor.
-    const deviceTab = app.shadowRoot.querySelectorAll('tabpanel')[2];
+    const deviceTab = app.shadowRoot.querySelectorAll('div[slot=\'panel\']')[2];
     deviceTab.querySelector('.device-descriptor-button').click();
 
-    await deviceDescriptorRenderResolver.promise;
+    await deviceDescriptorRenderPromise;
     const panel = deviceTab.querySelector('.device-descriptor-panel');
-    expectEquals(1, panel.querySelectorAll('descriptorpanel').length);
-    expectEquals(0, panel.querySelectorAll('error').length);
-    const treeItems = panel.querySelectorAll('.tree-item');
+    assertEquals(1, panel.querySelectorAll('descriptorpanel').length);
+    assertEquals(0, panel.querySelectorAll('error').length);
+    const treeItems = panel.querySelector('cr-tree').items;
     assertEquals(14, treeItems.length);
 
     const labels = [
-      'Length (should be 18): 18', 'Descriptor Type (should be 0x01): 0x01',
-      'USB Version: 2.0.0', 'Class Code: 0 (Device)', 'Subclass Code: 0',
-      'Protocol Code: 0', 'Control Pipe Maximum Packet Size: 64',
-      'Vendor ID: 0x1050', 'Product ID: 0x17EF', 'Device Version: 3.2.1',
-      'Manufacturer String Index: 1GET', 'Product String Index: 2GET',
-      'Serial Number Index: 0', 'Number of Configurations: 1'
+      'Length (should be 18): 18',
+      'Descriptor Type (should be 0x01): 0x01',
+      'USB Version: 2.0.0',
+      'Class Code: 0 (Device)',
+      'Subclass Code: 0',
+      'Protocol Code: 0',
+      'Control Pipe Maximum Packet Size: 64',
+      'Vendor ID: 0x1050',
+      'Product ID: 0x17EF',
+      'Device Version: 3.2.1',
+      'Manufacturer String Index: 1GET',
+      'Product String Index: 2GET',
+      'Serial Number Index: 0',
+      'Number of Configurations: 1',
     ];
     labels.forEach((label, i) => {
-      expectEquals(
-          label, treeItems[i].querySelector('.tree-label').textContent);
+      assertEquals(label, treeItems[i].labelElement.textContent);
     });
 
     const byteElements = panel.querySelectorAll('.raw-data-byte-view span');
-    expectEquals(18, byteElements.length);
-    expectEquals(
+    assertEquals(18, byteElements.length);
+    assertEquals(
         '12010002000000405010EF17210301020001',
         panel.querySelector('.raw-data-byte-view').textContent);
 
     // Click a single byte tree item (Length) and check that both the item
     // and the related byte are highlighted.
-    treeItems[0].querySelector('.tree-row').click();
-    expectTrue(treeItems[0].selected);
-    expectTrue(byteElements[0].classList.contains('selected-field'));
+    treeItems[0].rowElement.click();
+    assertTrue(treeItems[0].hasAttribute('selected'));
+    assertTrue(byteElements[0].classList.contains('selected-field'));
     // Click a multi-byte tree item (Vendor ID) and check that both the
     // item and the related bytes are highlighted, and other items and bytes
     // are not highlighted.
-    treeItems[7].querySelector('.tree-row').click();
-    expectFalse(treeItems[0].selected);
-    expectTrue(treeItems[7].selected);
-    expectFalse(byteElements[0].classList.contains('selected-field'));
-    expectTrue(byteElements[8].classList.contains('selected-field'));
-    expectTrue(byteElements[9].classList.contains('selected-field'));
+    treeItems[7].rowElement.click();
+    assertFalse(treeItems[0].hasAttribute('selected'));
+    assertTrue(treeItems[7].hasAttribute('selected'));
+    assertFalse(byteElements[0].classList.contains('selected-field'));
+    assertTrue(byteElements[8].classList.contains('selected-field'));
+    assertTrue(byteElements[9].classList.contains('selected-field'));
     // Click a single byte element (Descriptor Type) and check that both the
     // byte and the related item are highlighted, and other items and bytes
     // are not highlighted.
     byteElements[1].click();
-    expectFalse(treeItems[7].selected);
-    expectTrue(treeItems[1].selected);
-    expectTrue(byteElements[1].classList.contains('selected-field'));
+    assertFalse(treeItems[7].hasAttribute('selected'));
+    assertTrue(treeItems[1].hasAttribute('selected'));
+    assertTrue(byteElements[1].classList.contains('selected-field'));
     // Click any byte element of a multi-byte element (Product ID) and check
     // that both the bytes and the related item are highlighted, and other
     // items and bytes are not highlighted.
     byteElements[11].click();
-    expectFalse(treeItems[1].selected);
-    expectTrue(treeItems[8].selected);
-    expectTrue(byteElements[10].classList.contains('selected-field'));
-    expectTrue(byteElements[11].classList.contains('selected-field'));
+    assertFalse(treeItems[1].hasAttribute('selected'));
+    assertTrue(treeItems[8].hasAttribute('selected'));
+    assertTrue(byteElements[10].classList.contains('selected-field'));
+    assertTrue(byteElements[11].classList.contains('selected-field'));
   });
 
   test('RenderShortDeviceDescriptor', async function() {
-    await deviceManagerGetDevicesResolver.promise;
+    await deviceManagerGetDevicesPromise;
     const devicesTable = app.$('#device-list');
     // Inspect the second device, which has short device descriptor.
     devicesTable.querySelectorAll('button')[1].click();
     // The fourth is the device tab (a third tab was opened in a previous test).
-    const deviceTab = app.shadowRoot.querySelectorAll('tabpanel')[3];
+    const deviceTab = app.shadowRoot.querySelectorAll('div[slot=\'panel\']')[3];
 
-    await deviceTabInitializedResolver.promise;
-    deviceDescriptorRenderResolver = new PromiseResolver();
+    await deviceTabInitializedPromise;
+    deviceDescriptorRenderPromise =
+        eventToPromise('device-descriptor-complete-for-test', document.body);
     deviceTab.querySelector('.device-descriptor-button').click();
 
-    await deviceDescriptorRenderResolver.promise;
+    await deviceDescriptorRenderPromise;
     const panel = deviceTab.querySelector('.device-descriptor-panel');
 
-    expectEquals(1, panel.querySelectorAll('descriptorpanel').length);
+    assertEquals(1, panel.querySelectorAll('descriptorpanel').length);
     const errors = panel.querySelectorAll('error');
     assertEquals(2, errors.length);
-    expectEquals('Field at offset 8 is invalid.', errors[0].textContent);
-    expectEquals('Descriptor is too short.', errors[1].textContent);
+    assertEquals('Field at offset 8 is invalid.', errors[0].textContent);
+    assertEquals('Descriptor is too short.', errors[1].textContent);
     // For the short response, the returned data should still be rendered.
-    const treeItems = panel.querySelectorAll('.tree-item');
+    const treeItems = panel.querySelector('cr-tree').items;
     assertEquals(7, treeItems.length);
 
     const labels = [
-      'Length (should be 18): 18', 'Descriptor Type (should be 0x01): 0x01',
-      'USB Version: 2.0.0', 'Class Code: 0 (Device)', 'Subclass Code: 0',
-      'Protocol Code: 0', 'Control Pipe Maximum Packet Size: 64'
+      'Length (should be 18): 18',
+      'Descriptor Type (should be 0x01): 0x01',
+      'USB Version: 2.0.0',
+      'Class Code: 0 (Device)',
+      'Subclass Code: 0',
+      'Protocol Code: 0',
+      'Control Pipe Maximum Packet Size: 64',
     ];
     labels.forEach((label, i) => {
-      expectEquals(
-          label, treeItems[i].querySelector('.tree-label').textContent);
+      assertEquals(label, treeItems[i].labelElement.textContent);
     });
 
     const byteElements = panel.querySelectorAll('.raw-data-byte-view span');
-    expectEquals(9, byteElements.length);
-    expectEquals(
+    assertEquals(9, byteElements.length);
+    assertEquals(
         '120100020000004050',
         panel.querySelector('.raw-data-byte-view').textContent);
 
 
     // Click a single byte tree item (Length) and check that both the item
     // and the related byte are highlighted.
-    treeItems[0].querySelector('.tree-row').click();
-    expectTrue(treeItems[0].selected);
-    expectTrue(byteElements[0].classList.contains('selected-field'));
+    treeItems[0].rowElement.click();
+    assertTrue(treeItems[0].hasAttribute('selected'));
+    assertTrue(byteElements[0].classList.contains('selected-field'));
     // Click a multi-byte tree item (USB Version) and check that both the
     // item and the related bytes are highlighted, and other items and bytes
     // are not highlighted.
-    treeItems[2].querySelector('.tree-row').click();
-    expectFalse(treeItems[0].selected);
-    expectTrue(treeItems[2].selected);
-    expectFalse(byteElements[0].classList.contains('selected-field'));
-    expectTrue(byteElements[2].classList.contains('selected-field'));
-    expectTrue(byteElements[3].classList.contains('selected-field'));
+    treeItems[2].rowElement.click();
+    assertFalse(treeItems[0].hasAttribute('selected'));
+    assertTrue(treeItems[2].hasAttribute('selected'));
+    assertFalse(byteElements[0].classList.contains('selected-field'));
+    assertTrue(byteElements[2].classList.contains('selected-field'));
+    assertTrue(byteElements[3].classList.contains('selected-field'));
     // Click a single byte element (Descriptor Type) and check that both the
     // byte and the related item are highlighted, and other items and bytes
     // are not highlighted.
     byteElements[1].click();
-    expectFalse(treeItems[2].selected);
-    expectTrue(treeItems[1].selected);
-    expectTrue(byteElements[1].classList.contains('selected-field'));
+    assertFalse(treeItems[2].hasAttribute('selected'));
+    assertTrue(treeItems[1].hasAttribute('selected'));
+    assertTrue(byteElements[1].classList.contains('selected-field'));
     // Click any byte element of a multi-byte element (USB Version) and
     // check that both the bytes and the related item are highlighted, and
     // other items and bytes are not highlighted.
     byteElements[3].click();
-    expectFalse(treeItems[1].selected);
-    expectTrue(treeItems[2].selected);
-    expectTrue(byteElements[2].classList.contains('selected-field'));
-    expectTrue(byteElements[3].classList.contains('selected-field'));
+    assertFalse(treeItems[1].hasAttribute('selected'));
+    assertTrue(treeItems[2].hasAttribute('selected'));
+    assertTrue(byteElements[2].classList.contains('selected-field'));
+    assertTrue(byteElements[3].classList.contains('selected-field'));
     // Click the invalid field's byte (Vendor ID) will do nothing, check the
     // highlighted item and bytes are not changed.
     byteElements[8].click();
-    expectTrue(treeItems[2].selected);
-    expectTrue(byteElements[2].classList.contains('selected-field'));
-    expectTrue(byteElements[3].classList.contains('selected-field'));
-    expectFalse(byteElements[8].classList.contains('selected-field'));
+    assertTrue(treeItems[2].hasAttribute('selected'));
+    assertTrue(byteElements[2].classList.contains('selected-field'));
+    assertTrue(byteElements[3].classList.contains('selected-field'));
+    assertFalse(byteElements[8].classList.contains('selected-field'));
   });
 });

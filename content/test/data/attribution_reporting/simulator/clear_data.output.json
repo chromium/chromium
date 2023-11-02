@@ -1,0 +1,35 @@
+{
+  "event_level_reports": [
+    {
+     "report": {
+         "attribution_destination": "https://d2.test",
+         "randomized_trigger_rate": 0.0024,
+         "source_event_id": "456",
+         "source_type": "navigation",
+         "trigger_data": "7"
+      },
+      "report_time": "1643408373000",
+      "report_url": "https://r.test/.well-known/attribution-reporting/report-event-attribution",
+      "test_info": {
+         "randomized_trigger": false
+      }
+    }
+  ],
+  "rejected_triggers": [
+    {
+      "event_level_reason": "noMatchingSources",
+      "trigger": {
+        "timestamp": "1643235575000",
+        "reporting_origin": "https://r.test",
+        "destination_origin": "https://d1.test",
+        "Attribution-Reporting-Register-Trigger": {
+          "event_trigger_data": [
+            {
+              "trigger_data": "6"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

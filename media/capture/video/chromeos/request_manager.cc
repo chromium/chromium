@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,11 +17,12 @@
 #include "base/containers/contains.h"
 #include "base/posix/safe_strerror.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "media/capture/video/chromeos/camera_app_device_bridge_impl.h"
 #include "media/capture/video/chromeos/camera_buffer_factory.h"
 #include "media/capture/video/chromeos/camera_metadata_utils.h"
+#include "media/capture/video/chromeos/camera_trace_utils.h"
 #include "media/capture/video/chromeos/video_capture_features_chromeos.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -456,10 +457,10 @@ bool RequestManager::TryPrepareReprocessRequest(
 
   // Consume reprocess task.
   ReprocessJobInfo* reprocess_job_info;
-  for (auto& it : buffer_id_reprocess_job_info_map_) {
-    if (processing_buffer_ids_.count(it.first) == 0) {
-      *input_buffer_id = it.first;
-      reprocess_job_info = &it.second;
+  for (auto& [buffer_id, job_info] : buffer_id_reprocess_job_info_map_) {
+    if (processing_buffer_ids_.count(buffer_id) == 0) {
+      *input_buffer_id = buffer_id;
+      reprocess_job_info = &job_info;
       break;
     }
   }
@@ -593,10 +594,20 @@ void RequestManager::ProcessCaptureResult(
     cros::mojom::Camera3CaptureResultPtr result) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
 
+  uint32_t frame_number = result->frame_number;
   if (!capturing_) {
+    if (result->output_buffers) {
+      for (auto& stream_buffer : result->output_buffers.value()) {
+        TRACE_EVENT_END("camera",
+                        GetTraceTrack(CameraTraceEvent::kCaptureStream,
+                                      frame_number, stream_buffer->stream_id));
+      }
+    }
+    TRACE_EVENT("camera", "Capture Result", "frame_number", frame_number);
+    TRACE_EVENT_END("camera", GetTraceTrack(CameraTraceEvent::kCaptureRequest,
+                                            frame_number));
     return;
   }
-  uint32_t frame_number = result->frame_number;
   // A new partial result may be created in either ProcessCaptureResult or
   // Notify.
   CaptureResult& pending_result = pending_results_[frame_number];
@@ -641,16 +652,17 @@ void RequestManager::ProcessCaptureResult(
     }
 
     for (auto& stream_buffer : result->output_buffers.value()) {
+      auto stream_id = stream_buffer->stream_id;
       DVLOG(2) << "Received capture result for frame " << frame_number
-               << " stream_id: " << stream_buffer->stream_id;
-      StreamType stream_type = StreamIdToStreamType(stream_buffer->stream_id);
+               << " stream_id: " << stream_id;
+      StreamType stream_type = StreamIdToStreamType(stream_id);
       if (stream_type == StreamType::kUnknown) {
         device_context_->SetErrorState(
             media::VideoCaptureError::
                 kCrosHalV3BufferManagerInvalidTypeOfOutputBuffersReceived,
             FROM_HERE,
             std::string("Invalid type of output buffers received: ") +
-                base::NumberToString(stream_buffer->stream_id));
+                base::NumberToString(stream_id));
         return;
       }
 
@@ -668,7 +680,7 @@ void RequestManager::ProcessCaptureResult(
               std::string("Received multiple result buffers for frame ") +
                   base::NumberToString(frame_number) +
                   std::string(" for stream ") +
-                  base::NumberToString(stream_buffer->stream_id));
+                  base::NumberToString(stream_id));
           return;
         } else if (last_received_frame_number_map_[stream_type] >
                    frame_number) {
@@ -697,10 +709,12 @@ void RequestManager::ProcessCaptureResult(
       } else {
         pending_result.buffers[stream_type] = std::move(stream_buffer);
       }
+      TRACE_EVENT_END("camera", GetTraceTrack(CameraTraceEvent::kCaptureStream,
+                                              frame_number, stream_id));
     }
   }
 
-  TRACE_EVENT1("camera", "Capture Result", "frame_number", frame_number);
+  TRACE_EVENT("camera", "Capture Result", "frame_number", frame_number);
   TrySubmitPendingBuffers(frame_number);
 }
 
@@ -732,6 +746,8 @@ void RequestManager::TrySubmitPendingBuffers(uint32_t frame_number) {
       SubmitCaptureResult(frame_number, it.first, std::move(it.second));
     }
   }
+  TRACE_EVENT_END(
+      "camera", GetTraceTrack(CameraTraceEvent::kCaptureRequest, frame_number));
 }
 
 void RequestManager::Notify(cros::mojom::Camera3NotifyMsgPtr message) {

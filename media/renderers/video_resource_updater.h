@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <list>
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -29,10 +29,6 @@ namespace gfx {
 class Rect;
 class Transform;
 }  // namespace gfx
-
-namespace gpu {
-class SharedImageInterface;
-}  // namespace gpu
 
 namespace viz {
 class ClientResourceProvider;
@@ -201,19 +197,14 @@ class MEDIA_EXPORT VideoResourceUpdater
   void ReturnTexture(scoped_refptr<VideoFrame> video_frame,
                      const gpu::SyncToken& sync_token,
                      bool lost_resource);
-  void DestroyMailbox(gpu::Mailbox mailbox,
-                      scoped_refptr<VideoFrame> video_frame,
-                      const gpu::SyncToken& sync_token,
-                      bool lost_resource);
 
   // base::trace_event::MemoryDumpProvider implementation.
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
-  gpu::SharedImageInterface* SharedImageInterface() const;
-  viz::ContextProvider* const context_provider_;
-  viz::RasterContextProvider* const raster_context_provider_;
-  viz::SharedBitmapReporter* const shared_bitmap_reporter_;
-  viz::ClientResourceProvider* const resource_provider_;
+  const raw_ptr<viz::ContextProvider> context_provider_;
+  const raw_ptr<viz::RasterContextProvider> raster_context_provider_;
+  const raw_ptr<viz::SharedBitmapReporter> shared_bitmap_reporter_;
+  const raw_ptr<viz::ClientResourceProvider> resource_provider_;
   const bool use_stream_video_draw_quad_;
   const bool use_gpu_memory_buffer_resources_;
   // TODO(crbug.com/759456): Remove after r16 is used without the flag.

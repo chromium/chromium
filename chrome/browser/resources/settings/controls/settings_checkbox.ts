@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,15 @@
  * @fileoverview
  * `settings-checkbox` is a checkbox that controls a supplied preference.
  */
-import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
-import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
-import '../settings_shared_css.js';
+import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.js';
+import '../settings_shared.css.js';
 
-import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsBooleanControlMixin} from './settings_boolean_control_mixin.js';
+import {getTemplate} from './settings_checkbox.html.js';
 
 export interface SettingsCheckboxElement {
   $: {
@@ -30,7 +31,7 @@ export class SettingsCheckboxElement extends SettingsCheckboxElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -54,7 +55,7 @@ export class SettingsCheckboxElement extends SettingsCheckboxElementBase {
   }
 
   private onSubLabelChanged_() {
-    this.$.checkbox.ariaDescription = this.$.subLabel.textContent;
+    this.$.checkbox.ariaDescription = this.$.subLabel.textContent!;
   }
 
   /**

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -109,6 +109,47 @@ public class AssistantVoiceSearchServiceTest {
                                     + AssistantVoiceSearchService.STARTUP_HISTOGRAM_SUFFIX,
                             EligibilityFailureReason.NO_CHROME_ACCOUNT));
             Assert.assertEquals(3,
+                    RecordHistogram.getHistogramTotalCountForTesting(
+                            AssistantVoiceSearchService.USER_ELIGIBILITY_FAILURE_REASON_HISTOGRAM
+                            + AssistantVoiceSearchService.STARTUP_HISTOGRAM_SUFFIX));
+        });
+    }
+
+    @Test
+    @MediumTest
+    @CommandLineFlags.
+    Add({"enable-features=" + ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH})
+    public void testStartupHistograms_NonPersonalizedRecognition() {
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+
+        CriteriaHelper.pollUiThread(() -> {
+            // Not eligible for Assistant voice search due to apps being unsigned.
+            Assert.assertEquals(1,
+                    RecordHistogram.getHistogramValueCountForTesting(
+                            AssistantVoiceSearchService.USER_ELIGIBILITY_HISTOGRAM
+                                    + AssistantVoiceSearchService.STARTUP_HISTOGRAM_SUFFIX,
+                            /* false */ 0));
+            Assert.assertEquals(1,
+                    RecordHistogram.getHistogramTotalCountForTesting(
+                            AssistantVoiceSearchService.USER_ELIGIBILITY_HISTOGRAM
+                            + AssistantVoiceSearchService.STARTUP_HISTOGRAM_SUFFIX));
+
+            Assert.assertEquals(1,
+                    RecordHistogram.getHistogramValueCountForTesting(
+                            AssistantVoiceSearchService.USER_ELIGIBILITY_FAILURE_REASON_HISTOGRAM
+                                    + AssistantVoiceSearchService.STARTUP_HISTOGRAM_SUFFIX,
+                            EligibilityFailureReason.CHROME_NOT_GOOGLE_SIGNED));
+            Assert.assertEquals(1,
+                    RecordHistogram.getHistogramValueCountForTesting(
+                            AssistantVoiceSearchService.USER_ELIGIBILITY_FAILURE_REASON_HISTOGRAM
+                                    + AssistantVoiceSearchService.STARTUP_HISTOGRAM_SUFFIX,
+                            EligibilityFailureReason.AGSA_NOT_GOOGLE_SIGNED));
+            Assert.assertEquals(0,
+                    RecordHistogram.getHistogramValueCountForTesting(
+                            AssistantVoiceSearchService.USER_ELIGIBILITY_FAILURE_REASON_HISTOGRAM
+                                    + AssistantVoiceSearchService.STARTUP_HISTOGRAM_SUFFIX,
+                            EligibilityFailureReason.NO_CHROME_ACCOUNT));
+            Assert.assertEquals(2,
                     RecordHistogram.getHistogramTotalCountForTesting(
                             AssistantVoiceSearchService.USER_ELIGIBILITY_FAILURE_REASON_HISTOGRAM
                             + AssistantVoiceSearchService.STARTUP_HISTOGRAM_SUFFIX));

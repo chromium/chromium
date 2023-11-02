@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -127,11 +127,6 @@ content::WebUIDataSource* CreateBookmarksUIHTMLSource(Profile* profile) {
   };
   for (const auto& str : kStrings)
     AddLocalizedString(source, str.name, str.id);
-
-  source->AddString("enableBrandingUpdateAttribute",
-                    base::FeatureList::IsEnabled(features::kWebUIBrandingUpdate)
-                        ? "enable-branding-update"
-                        : "");
 
   return source;
 }

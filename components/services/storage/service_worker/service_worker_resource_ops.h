@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -126,10 +126,8 @@ class ServiceWorkerResourceReaderImpl
 
   // mojom::ServiceWorkerResourceReader implementations:
   void ReadResponseHead(ReadResponseHeadCallback callback) override;
-  void ReadData(
-      int64_t size,
-      mojo::PendingRemote<mojom::ServiceWorkerDataPipeStateNotifier> notifier,
-      ReadDataCallback callback) override;
+  void PrepareReadData(int64_t size, PrepareReadDataCallback callback) override;
+  void ReadData(ReadDataCallback callback) override;
 
  private:
   class DataReader;
@@ -164,6 +162,7 @@ class ServiceWorkerResourceReaderImpl
   enum class State {
     kIdle,
     kReadResponseHeadStarted,
+    kReadDataPrepared,
     kReadDataStarted,
     kCacheEntryOpened,
     kResponseInfoRead,

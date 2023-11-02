@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_store.h"
-#include "components/sync/test/model/model_type_store_test_util.h"
+#include "components/sync/test/model_type_store_test_util.h"
 
 namespace web_app {
 
@@ -21,7 +21,7 @@ FakeWebAppDatabaseFactory::FakeWebAppDatabaseFactory() {
   store_ = syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest();
 }
 
-FakeWebAppDatabaseFactory::~FakeWebAppDatabaseFactory() {}
+FakeWebAppDatabaseFactory::~FakeWebAppDatabaseFactory() = default;
 
 syncer::OnceModelTypeStoreFactory FakeWebAppDatabaseFactory::GetStoreFactory() {
   return syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
@@ -78,11 +78,11 @@ void FakeWebAppDatabaseFactory::WriteProtos(
 
   store_->CommitWriteBatch(
       std::move(write_batch),
-      base::BindOnce(base::BindLambdaForTesting(
+      base::BindLambdaForTesting(
           [&](const absl::optional<syncer::ModelError>& error) {
             DCHECK(!error);
             run_loop.Quit();
-          })));
+          }));
 
   run_loop.Run();
 }

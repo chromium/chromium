@@ -1,10 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_MESSAGE_CENTER_VIEWS_NOTIFICATION_VIEW_H_
 #define UI_MESSAGE_CENTER_VIEWS_NOTIFICATION_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/views/notification_view_base.h"
 
@@ -31,6 +32,8 @@ class MESSAGE_CENTER_EXPORT NotificationView : public NotificationViewBase {
   // does not depend on this class.
   void Layout() override;
 
+  SkColor GetActionButtonColorForTesting(views::LabelButton* action_button);
+
  private:
   friend class NotificationViewTest;
 
@@ -47,6 +50,7 @@ class MESSAGE_CENTER_EXPORT NotificationView : public NotificationViewBase {
       const std::u16string& label) override;
   void UpdateViewForExpandedState(bool expanded) override;
   gfx::Size GetIconViewSize() const override;
+  int GetLargeImageViewMaxWidth() const override;
   void OnThemeChanged() override;
   void UpdateCornerRadius(int top_radius, int bottom_radius) override;
   void ToggleInlineSettings(const ui::Event& event) override;
@@ -69,20 +73,24 @@ class MESSAGE_CENTER_EXPORT NotificationView : public NotificationViewBase {
   // destroyed when the ink drop is visible.
   std::vector<views::View*> GetChildrenForLayerAdjustment();
 
+  void HeaderRowPressed();
+
   // Notification title, which is dynamically created inside view hierarchy.
-  views::Label* title_view_ = nullptr;
+  raw_ptr<views::Label> title_view_ = nullptr;
 
   // Views for inline settings.
-  views::RadioButton* block_all_button_ = nullptr;
-  views::RadioButton* dont_block_button_ = nullptr;
-  views::LabelButton* settings_done_button_ = nullptr;
+  raw_ptr<views::RadioButton> block_all_button_ = nullptr;
+  raw_ptr<views::RadioButton> dont_block_button_ = nullptr;
+  raw_ptr<views::LabelButton> settings_done_button_ = nullptr;
 
   // Ink drop container used in background animations.
-  views::InkDropContainerView* const ink_drop_container_;
+  const raw_ptr<views::InkDropContainerView> ink_drop_container_;
 
   // Owned by views properties. Guaranteed to be not null for the lifetime of
   // |this| because views properties are the last thing cleaned up.
-  NotificationViewPathGenerator* highlight_path_generator_ = nullptr;
+  raw_ptr<NotificationViewPathGenerator> highlight_path_generator_ = nullptr;
+
+  base::WeakPtrFactory<NotificationView> weak_ptr_factory_{this};
 };
 
 }  // namespace message_center

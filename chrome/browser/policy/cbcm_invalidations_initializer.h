@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 
 namespace network {
@@ -47,7 +48,7 @@ class CBCMInvalidationsInitializer {
   // ready.
   void AccountInitCallback(const std::string& account_email, bool success);
 
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
   std::unique_ptr<MachineLevelDeviceAccountInitializerHelper>
       account_initializer_helper_;
 };

@@ -1,9 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/api/storage/policy_value_store.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/logging.h"
@@ -29,10 +30,10 @@ ValueStore::Status ReadOnlyError() {
 
 PolicyValueStore::PolicyValueStore(
     const std::string& extension_id,
-    scoped_refptr<SettingsObserverList> observers,
+    SequenceBoundSettingsChangedCallback observer,
     std::unique_ptr<ValueStore> delegate)
     : extension_id_(extension_id),
-      observers_(std::move(observers)),
+      observer_(std::move(observer)),
       delegate_(std::move(delegate)) {}
 
 PolicyValueStore::~PolicyValueStore() {}
@@ -41,10 +42,10 @@ void PolicyValueStore::SetCurrentPolicy(const policy::PolicyMap& policy) {
   DCHECK(IsOnBackendSequence());
   // Convert |policy| to a dictionary value. Only include mandatory policies
   // for now.
-  base::DictionaryValue current_policy;
+  base::Value::Dict current_policy;
   for (const auto& it : policy) {
     if (it.second.level == policy::POLICY_LEVEL_MANDATORY) {
-      current_policy.SetKey(it.first, it.second.value()->Clone());
+      current_policy.Set(it.first, it.second.value_unsafe()->Clone());
     }
   }
 
@@ -52,7 +53,7 @@ void PolicyValueStore::SetCurrentPolicy(const policy::PolicyMap& policy) {
   // TODO(joaodasilva): it'd be better to have a less expensive way of
   // determining which keys are currently stored, or of determining which keys
   // must be removed.
-  base::DictionaryValue previous_policy;
+  base::Value::Dict previous_policy;
   ValueStore::ReadResult read_result = delegate_->Get();
 
   if (!read_result.status().ok()) {
@@ -61,17 +62,16 @@ void PolicyValueStore::SetCurrentPolicy(const policy::PolicyMap& policy) {
     // Leave |previous_policy| empty, so that events are generated for every
     // policy in |current_policy|.
   } else {
-    read_result.settings().Swap(&previous_policy);
+    std::swap(read_result.settings(), previous_policy);
   }
 
   // Now get two lists of changes: changes after setting the current policies,
   // and changes after removing old policies that aren't in |current_policy|
   // anymore.
   std::vector<std::string> removed_keys;
-  for (base::DictionaryValue::Iterator it(previous_policy);
-       !it.IsAtEnd(); it.Advance()) {
-    if (!current_policy.HasKey(it.key()))
-      removed_keys.push_back(it.key());
+  for (auto kv : previous_policy) {
+    if (!current_policy.Find(kv.first))
+      removed_keys.push_back(kv.first);
   }
 
   value_store::ValueStoreChangeList changes;
@@ -100,10 +100,8 @@ void PolicyValueStore::SetCurrentPolicy(const policy::PolicyMap& policy) {
   }
 
   if (!changes.empty()) {
-    observers_->Notify(
-        FROM_HERE, &SettingsObserver::OnSettingsChanged, extension_id_,
-        StorageAreaNamespace::kManaged,
-        value_store::ValueStoreChange::ToValue(std::move(changes)));
+    observer_->Run(extension_id_, StorageAreaNamespace::kManaged,
+                   value_store::ValueStoreChange::ToValue(std::move(changes)));
   }
 }
 
@@ -151,7 +149,7 @@ ValueStore::WriteResult PolicyValueStore::Set(WriteOptions options,
 
 ValueStore::WriteResult PolicyValueStore::Set(
     WriteOptions options,
-    const base::DictionaryValue& settings) {
+    const base::Value::Dict& settings) {
   return WriteResult(ReadOnlyError());
 }
 

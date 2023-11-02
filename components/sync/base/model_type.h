@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,8 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/containers/enum_set.h"
-
-namespace base {
-class ListValue;
-class Value;
-}  // namespace base
+#include "base/values.h"
 
 namespace sync_pb {
 class EntitySpecifics;
@@ -73,6 +68,8 @@ enum ModelType {
   // Offers and rewards from the user's account. These are read-only on the
   // client side.
   AUTOFILL_WALLET_OFFER,
+  // Autofill usage data of a payment method related to a specific merchant.
+  AUTOFILL_WALLET_USAGE,
   // A theme object.
   THEMES,
   // A typed_url object, i.e. a URL the user has typed into the Omnibox.
@@ -109,7 +106,7 @@ enum ModelType {
   ARC_PACKAGE,
   // Printer device information. ChromeOS only.
   PRINTERS,
-  // Reading list items. iOS only.
+  // Reading list items.
   READING_LIST,
   // Commit only user events.
   USER_EVENTS,
@@ -135,6 +132,12 @@ enum ModelType {
   // used by the server and Play Services, not Chrome itself.
   // (crbug.com/1223853)
   // WEBAUTHN_CREDENTIAL,
+  // Synced history. An entity roughly corresponds to a navigation.
+  HISTORY,
+  // Trusted Authorization Servers for printers. ChromeOS only.
+  PRINTERS_AUTHORIZATION_SERVERS,
+  // Contact information from the Google Address Storage.
+  CONTACT_INFO,
 
   // Proxy types are excluded from the sync protocol, but are still considered
   // real user types. By convention, we prefix them with 'PROXY_' to distinguish
@@ -231,7 +234,11 @@ enum class ModelTypeForHistograms {
   kSharingMessage = 48,
   kAutofillWalletOffer = 49,
   kWorkspaceDesk = 50,
-  kMaxValue = kWorkspaceDesk
+  kHistory = 51,
+  kPrintersAuthorizationServers = 52,
+  kContactInfo = 53,
+  kAutofillWalletUsage = 54,
+  kMaxValue = kAutofillWalletUsage
 };
 
 // Used to mark the type of EntitySpecifics that has no actual data.
@@ -248,12 +255,14 @@ constexpr ModelTypeSet ProtocolTypes() {
   return ModelTypeSet(
       BOOKMARKS, PREFERENCES, PASSWORDS, AUTOFILL_PROFILE, AUTOFILL,
       AUTOFILL_WALLET_DATA, AUTOFILL_WALLET_METADATA, AUTOFILL_WALLET_OFFER,
-      THEMES, TYPED_URLS, EXTENSIONS, SEARCH_ENGINES, SESSIONS, APPS,
-      APP_SETTINGS, EXTENSION_SETTINGS, HISTORY_DELETE_DIRECTIVES, DICTIONARY,
-      DEVICE_INFO, PRIORITY_PREFERENCES, SUPERVISED_USER_SETTINGS, APP_LIST,
-      ARC_PACKAGE, PRINTERS, READING_LIST, USER_EVENTS, NIGORI, USER_CONSENTS,
-      SEND_TAB_TO_SELF, SECURITY_EVENTS, WEB_APPS, WIFI_CONFIGURATIONS,
-      OS_PREFERENCES, OS_PRIORITY_PREFERENCES, SHARING_MESSAGE, WORKSPACE_DESK);
+      AUTOFILL_WALLET_USAGE, THEMES, TYPED_URLS, EXTENSIONS,
+      SEARCH_ENGINES, SESSIONS, APPS, APP_SETTINGS, EXTENSION_SETTINGS,
+      HISTORY_DELETE_DIRECTIVES, DICTIONARY, DEVICE_INFO, PRIORITY_PREFERENCES,
+      SUPERVISED_USER_SETTINGS, APP_LIST, ARC_PACKAGE, PRINTERS, READING_LIST,
+      USER_EVENTS, NIGORI, USER_CONSENTS, SEND_TAB_TO_SELF, SECURITY_EVENTS,
+      WEB_APPS, WIFI_CONFIGURATIONS, OS_PREFERENCES, OS_PRIORITY_PREFERENCES,
+      SHARING_MESSAGE, WORKSPACE_DESK, HISTORY, PRINTERS_AUTHORIZATION_SERVERS,
+      CONTACT_INFO);
 }
 
 // These are the normal user-controlled types. This is to distinguish from
@@ -263,10 +272,11 @@ constexpr ModelTypeSet UserTypes() {
   return ModelTypeSet::FromRange(FIRST_USER_MODEL_TYPE, LAST_USER_MODEL_TYPE);
 }
 
-// User types, which are not user-controlled.
+// User types which are not user-controlled.
 constexpr ModelTypeSet AlwaysPreferredUserTypes() {
   return ModelTypeSet(DEVICE_INFO, USER_CONSENTS, SECURITY_EVENTS,
-                      SUPERVISED_USER_SETTINGS, SHARING_MESSAGE);
+                      SEND_TAB_TO_SELF, SUPERVISED_USER_SETTINGS,
+                      SHARING_MESSAGE);
 }
 
 // User types which are always encrypted.
@@ -282,7 +292,7 @@ constexpr ModelTypeSet AlwaysEncryptedUserTypes() {
 // This mostly matters during initial sync, since priority types can become
 // active before all the data for non-prio types has been downloaded (which may
 // be a lot of data).
-constexpr ModelTypeSet PriorityUserTypes() {
+constexpr ModelTypeSet HighPriorityUserTypes() {
   return ModelTypeSet(
       // The "Send to Your Devices" feature needs fast updating of the list of
       // your devices and also fast sending of the actual messages.
@@ -302,6 +312,20 @@ constexpr ModelTypeSet PriorityUserTypes() {
       THEMES);
 }
 
+// This is the subset of UserTypes() that have a *lower* priority than other
+// types. These types are synced only after all other user types (both for
+// get_updates and commits). This mostly matters during initial sync, since
+// high-priority and regular types can become active before all the data for
+// low-priority types has been downloaded (which may be a lot of data).
+constexpr ModelTypeSet LowPriorityUserTypes() {
+  return ModelTypeSet(
+      // Downloading History may take a while, but should not block the download
+      // of other data types.
+      HISTORY,
+      // User Events should not block or delay commits for other data types.
+      USER_EVENTS);
+}
+
 // Returns a list of all control types.
 //
 // The control types are intended to contain metadata nodes that are essential
@@ -316,18 +340,19 @@ constexpr ModelTypeSet ControlTypes() {
   return ModelTypeSet(NIGORI);
 }
 
-// Returns true if this is a control type.
-//
-// See comment above for more information on what makes these types special.
-constexpr bool IsControlType(ModelType model_type) {
-  return ControlTypes().Has(model_type);
-}
-
 // Types that may commit data, but should never be included in a GetUpdates.
 // These are never encrypted.
 constexpr ModelTypeSet CommitOnlyTypes() {
   return ModelTypeSet(USER_EVENTS, USER_CONSENTS, SECURITY_EVENTS,
                       SHARING_MESSAGE);
+}
+
+// Types for which downloaded updates are applied immediately, before all
+// updates are downloaded and the Sync cycle finishes.
+// For these types, ModelTypeSyncBridge::MergeSyncData() will never be called
+// (since without downloading all the data, no initial merge is possible).
+constexpr ModelTypeSet ApplyUpdatesImmediatelyTypes() {
+  return ModelTypeSet(HISTORY);
 }
 
 // User types that can be encrypted, which is a subset of UserTypes() and a
@@ -337,24 +362,27 @@ ModelTypeSet EncryptableUserTypes();
 // Determine a model type from the field number of its associated
 // EntitySpecifics field.  Returns UNSPECIFIED if the field number is
 // not recognized.
-//
-// If you're putting the result in a ModelTypeSet, you should use the
-// following pattern:
-//
-//   ModelTypeSet model_types;
-//   // Say we're looping through a list of items, each of which has a
-//   // field number.
-//   for (...) {
-//     int field_number = ...;
-//     ModelType model_type =
-//         GetModelTypeFromSpecificsFieldNumber(field_number);
-//     if (!IsRealDataType(model_type)) {
-//       DLOG(WARNING) << "Unknown field number " << field_number;
-//       continue;
-//     }
-//     model_types.Put(model_type);
-//   }
 ModelType GetModelTypeFromSpecificsFieldNumber(int field_number);
+
+namespace internal {
+// Obtain model type from field_number and add to model_types if valid.
+void GetModelTypeSetFromSpecificsFieldNumberListHelper(
+    ModelTypeSet& model_types,
+    int field_number);
+}  // namespace internal
+
+// Build a ModelTypeSet from a list of field numbers. Any unknown field numbers
+// are ignored.
+template <typename ContainerT>
+ModelTypeSet GetModelTypeSetFromSpecificsFieldNumberList(
+    const ContainerT& field_numbers) {
+  ModelTypeSet model_types;
+  for (int field_number : field_numbers) {
+    internal::GetModelTypeSetFromSpecificsFieldNumberListHelper(model_types,
+                                                                field_number);
+  }
+  return model_types;
+}
 
 // Return the field number of the EntitySpecifics field associated with
 // a model type.
@@ -364,7 +392,7 @@ int GetSpecificsFieldNumberFromModelType(ModelType model_type);
 
 // Returns a string with application lifetime that represents the name of
 // |model_type|.
-const char* ModelTypeToString(ModelType model_type);
+const char* ModelTypeToDebugString(ModelType model_type);
 
 // Returns a string with application lifetime that is used as the histogram
 // suffix for |model_type|.
@@ -383,20 +411,14 @@ int ModelTypeToStableIdentifier(ModelType model_type);
 // Handles all model types, and not just real ones.
 std::unique_ptr<base::Value> ModelTypeToValue(ModelType model_type);
 
-// Returns the ModelType corresponding to the name |model_type_string|.
-ModelType ModelTypeFromString(const std::string& model_type_string);
-
 // Returns the comma-separated string representation of |model_types|.
-std::string ModelTypeSetToString(ModelTypeSet model_types);
+std::string ModelTypeSetToDebugString(ModelTypeSet model_types);
 
 // Necessary for compatibility with EXPECT_EQ and the like.
 std::ostream& operator<<(std::ostream& out, ModelTypeSet model_type_set);
 
-// Returns the set of comma-separated model types from |model_type_string|.
-ModelTypeSet ModelTypeSetFromString(const std::string& model_type_string);
-
-// Generates a base::ListValue from |model_types|.
-std::unique_ptr<base::ListValue> ModelTypeSetToValue(ModelTypeSet model_types);
+// Generates a base::Value::List from |model_types|.
+base::Value::List ModelTypeSetToValue(ModelTypeSet model_types);
 
 // Returns a string corresponding to the syncable tag for this datatype.
 std::string ModelTypeToRootTag(ModelType type);
@@ -416,8 +438,9 @@ bool RealModelTypeToNotificationType(ModelType model_type,
 // Converts a notification type to a real model type.  Returns true
 // iff |notification_type| was the notification type of a real model
 // type and |model_type| was filled in.
-bool NotificationTypeToRealModelType(const std::string& notification_type,
-                                     ModelType* model_type) WARN_UNUSED_RESULT;
+[[nodiscard]] bool NotificationTypeToRealModelType(
+    const std::string& notification_type,
+    ModelType* model_type);
 
 // Returns true if |model_type| is a real datatype
 bool IsRealDataType(ModelType model_type);

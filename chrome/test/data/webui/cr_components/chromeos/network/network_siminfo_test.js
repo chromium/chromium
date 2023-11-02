@@ -1,28 +1,26 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/strings.m.js';
-// #import 'chrome://resources/cr_components/chromeos/network/network_siminfo.m.js';
+import 'chrome://os-settings/strings.m.js';
+import 'chrome://resources/ash/common/network/network_siminfo.js';
 
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
-// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// clang-format on
+import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
+import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('NetworkSiminfoTest', function() {
   /** @type {!NetworkSiminfo|undefined} */
   let simInfo;
 
   const TEST_ICCID = '11111111111111111';
-  const mojom = chromeos.networkConfig.mojom;
 
   setup(async function() {
     simInfo = document.createElement('network-simInfo');
 
     const cellularNetwork =
-        OncMojo.getDefaultNetworkState(mojom.NetworkType.kCellular, 'cellular');
+        OncMojo.getDefaultNetworkState(NetworkType.kCellular, 'cellular');
     cellularNetwork.typeState.cellular.iccid = TEST_ICCID;
 
     simInfo.networkState = cellularNetwork;
@@ -31,7 +29,7 @@ suite('NetworkSiminfoTest', function() {
   });
 
   async function flushAsync() {
-    Polymer.dom.flush();
+    flush();
     // Use setTimeout to wait for the next macrotask.
     return new Promise(resolve => setTimeout(resolve));
   }
@@ -51,8 +49,8 @@ suite('NetworkSiminfoTest', function() {
       simLockStatus: {
         lockEnabled: lockEnabled,
         lockType: isLocked ? 'sim-pin' : '',
-        retriesLeft: 3
-      }
+        retriesLeft: 3,
+      },
     };
     await flushAsync();
   }
@@ -142,6 +140,76 @@ suite('NetworkSiminfoTest', function() {
     updateDeviceState(
         /*isPrimary=*/ true, /*lockEnabled=*/ true, /*isLocked=*/ false);
     verifyExistsAndClickOpensDialog('changePinButton');
+  });
+
+  test('Policy controlled SIM lock setting', async () => {
+    const getChangePinButton = () => simInfo.$$('#changePinButton');
+    const getSimLockButton = () => simInfo.$$('#simLockButton');
+    const getSimLockButtonTooltip = () => simInfo.$$('#inActiveSimLockTooltip');
+    const getSimLockPolicyIcon = () => simInfo.$$('#simLockPolicyIcon');
+
+    // No icon if policy does not disable SIM PIN locking.
+    assertFalse(!!getSimLockPolicyIcon());
+
+    simInfo.globalPolicy = {
+      allowCellularSimLock: false,
+    };
+    await flushAsync();
+
+    // Unlocked primary SIM with lock setting enabled. Change button should not
+    // be visible, and toggle should be visible, on, and enabled to allow users
+    // to turn off the SIM Lock setting.
+    updateDeviceState(
+        /*isPrimary=*/ true, /*lockEnabled=*/ true, /*isLocked=*/ false);
+    assertTrue(getChangePinButton().hidden);
+    assertFalse(getSimLockButton().disabled);
+    assertTrue(getSimLockButton().checked);
+    assertFalse(!!getSimLockButtonTooltip());
+    assertTrue(!!getSimLockPolicyIcon());
+
+    // Policy controlled icon should not show if SIM PIN locking is not
+    // restricted.
+    simInfo.globalPolicy = {
+      allowCellularSimLock: true,
+    };
+    await flushAsync();
+    assertFalse(!!getSimLockPolicyIcon());
+
+    simInfo.globalPolicy = {
+      allowCellularSimLock: false,
+    };
+    await flushAsync();
+
+    // Unlocked primary SIM with lock setting disabled. Change button should not
+    // be visible, and toggle should be visible, off, and disabled to prevent
+    // users to turn on the SIM Lock setting.
+    updateDeviceState(
+        /*isPrimary=*/ true, /*lockEnabled=*/ false, /*isLocked=*/ false);
+    assertTrue(getChangePinButton().hidden);
+    assertTrue(getSimLockButton().disabled);
+    assertFalse(getSimLockButton().checked);
+    assertFalse(!!getSimLockButtonTooltip());
+    assertTrue(!!getSimLockPolicyIcon());
+
+    // Non-primary unlocked SIM with lock setting enabled. Change button should
+    // be hidden, and toggle should be visible, off, and disabled.
+    updateDeviceState(
+        /*isPrimary=*/ false, /*lockEnabled=*/ true, /*isLocked=*/ false);
+    assertTrue(getChangePinButton().hidden);
+    assertTrue(getSimLockButton().disabled);
+    assertFalse(getSimLockButton().checked);
+    assertTrue(!!getSimLockButtonTooltip());
+    assertFalse(!!getSimLockPolicyIcon());
+
+    // Non-primary unlocked SIM with lock setting disabled. Change button should
+    // be hidden, and toggle should be visible, off, and disabled.
+    updateDeviceState(
+        /*isPrimary=*/ false, /*lockEnabled=*/ false, /*isLocked=*/ false);
+    assertTrue(getChangePinButton().hidden);
+    assertTrue(getSimLockButton().disabled);
+    assertFalse(getSimLockButton().checked);
+    assertTrue(!!getSimLockButtonTooltip());
+    assertFalse(!!getSimLockPolicyIcon());
   });
 
   test('Primary vs. non-primary SIM', function() {

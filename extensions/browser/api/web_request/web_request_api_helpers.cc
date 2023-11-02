@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <cmath>
 #include <tuple>
 #include <utility>
@@ -17,10 +16,8 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -50,15 +47,6 @@
 #include "net/log/net_log_event_type.h"
 #include "services/network/public/cpp/features.h"
 #include "url/url_constants.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/login/login_state/login_state.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"  // nogncheck
-#include "chromeos/lacros/lacros_service.h"
-#endif
 
 // TODO(battre): move all static functions into an anonymous namespace at the
 // top of this file.
@@ -135,7 +123,7 @@ void RecordDNRRequestHeaderChanged(RequestHeaderType type) {
 }
 
 bool IsStringLowerCaseASCII(base::StringPiece s) {
-  return std::none_of(s.begin(), s.end(), base::IsAsciiUpper<char>);
+  return base::ranges::none_of(s, base::IsAsciiUpper<char>);
 }
 
 constexpr auto kRequestHeaderEntries =
@@ -546,26 +534,26 @@ bool ExtraInfoSpec::InitFromValue(content::BrowserContext* browser_context,
   *extra_info_spec = 0;
   if (!value.is_list())
     return false;
-  base::Value::ConstListView value_list = value.GetList();
-  for (size_t i = 0; i < value_list.size(); ++i) {
-    const std::string* str = value_list[i].GetIfString();
+  for (const auto& item : value.GetList()) {
+    const std::string* str = item.GetIfString();
     if (!str)
       return false;
 
-    if (*str == "requestHeaders")
+    if (*str == "requestHeaders") {
       *extra_info_spec |= REQUEST_HEADERS;
-    else if (*str == "responseHeaders")
+    } else if (*str == "responseHeaders") {
       *extra_info_spec |= RESPONSE_HEADERS;
-    else if (*str == "blocking")
+    } else if (*str == "blocking") {
       *extra_info_spec |= BLOCKING;
-    else if (*str == "asyncBlocking")
+    } else if (*str == "asyncBlocking") {
       *extra_info_spec |= ASYNC_BLOCKING;
-    else if (*str == "requestBody")
+    } else if (*str == "requestBody") {
       *extra_info_spec |= REQUEST_BODY;
-    else if (*str == "extraHeaders")
+    } else if (*str == "extraHeaders") {
       *extra_info_spec |= EXTRA_HEADERS;
-    else
+    } else {
       return false;
+    }
   }
   // BLOCKING and ASYNC_BLOCKING are mutually exclusive.
   if ((*extra_info_spec & BLOCKING) && (*extra_info_spec & ASYNC_BLOCKING))
@@ -718,7 +706,7 @@ base::Value StringToCharList(const std::string& s) {
   return result;
 }
 
-bool CharListToString(base::Value::ConstListView list, std::string* out) {
+bool CharListToString(const base::Value::List& list, std::string* out) {
   const size_t list_length = list.size();
   out->resize(list_length);
   int value = 0;
@@ -820,10 +808,9 @@ EventResponseDelta CalculateOnHeadersReceivedDelta(
         continue;
       if (ShouldHideResponseHeader(extra_info_spec, name))
         continue;
-      std::string name_lowercase = base::ToLowerASCII(name);
       bool header_found = false;
       for (const auto& i : *new_response_headers) {
-        if (base::LowerCaseEqualsASCII(i.first, name_lowercase) &&
+        if (base::EqualsCaseInsensitiveASCII(i.first, name) &&
             value == i.second) {
           header_found = true;
           break;
@@ -841,13 +828,12 @@ EventResponseDelta CalculateOnHeadersReceivedDelta(
         continue;
       if (ShouldHideResponseHeader(extra_info_spec, i.first))
         continue;
-      std::string name_lowercase = base::ToLowerASCII(i.first);
       size_t iter = 0;
       std::string name;
       std::string value;
       bool header_found = false;
       while (old_response_headers->EnumerateHeaderLines(&iter, &name, &value)) {
-        if (base::LowerCaseEqualsASCII(name, name_lowercase) &&
+        if (base::EqualsCaseInsensitiveASCII(name, i.first) &&
             value == i.second) {
           header_found = true;
           break;
@@ -1252,10 +1238,8 @@ void MergeOnBeforeSendHeadersResponses(
   };
 
   // Some sanity checks.
-  DCHECK(std::all_of(removed_headers->begin(), removed_headers->end(),
-                     IsStringLowerCaseASCII));
-  DCHECK(std::all_of(set_headers->begin(), set_headers->end(),
-                     IsStringLowerCaseASCII));
+  DCHECK(base::ranges::all_of(*removed_headers, IsStringLowerCaseASCII));
+  DCHECK(base::ranges::all_of(*set_headers, IsStringLowerCaseASCII));
   DCHECK(base::ranges::includes(
       *set_headers,
       base::STLSetUnion<std::set<std::string>>(
@@ -1478,7 +1462,7 @@ void MergeCookiesInOnHeadersReceivedResponses(
     return;
 
   // Only create a copy if we really want to modify the response headers.
-  if (override_response_headers->get() == NULL) {
+  if (override_response_headers->get() == nullptr) {
     *override_response_headers = base::MakeRefCounted<net::HttpResponseHeaders>(
         original_response_headers->raw_headers());
   }
@@ -1621,7 +1605,7 @@ void MergeOnHeadersReceivedResponses(
   MergeRedirectUrlOfResponses(request.url, deltas, &new_url, ignored_actions);
   if (new_url.is_valid()) {
     // Only create a copy if we really want to modify the response headers.
-    if (override_response_headers->get() == NULL) {
+    if (override_response_headers->get() == nullptr) {
       *override_response_headers =
           base::MakeRefCounted<net::HttpResponseHeaders>(
               original_response_headers->raw_headers());
@@ -1669,12 +1653,9 @@ void MergeOnHeadersReceivedResponses(
         modified_header_names.insert(header.first);
     }
 
-    DCHECK(std::all_of(modified_header_names.begin(),
-                       modified_header_names.end(), IsStringLowerCaseASCII));
-    DCHECK(std::all_of(added_header_names.begin(), added_header_names.end(),
-                       IsStringLowerCaseASCII));
-    DCHECK(std::all_of(removed_header_names.begin(), removed_header_names.end(),
-                       IsStringLowerCaseASCII));
+    DCHECK(base::ranges::all_of(modified_header_names, IsStringLowerCaseASCII));
+    DCHECK(base::ranges::all_of(added_header_names, IsStringLowerCaseASCII));
+    DCHECK(base::ranges::all_of(removed_header_names, IsStringLowerCaseASCII));
 
     record_response_headers(modified_header_names,
                             &RecordResponseHeaderChanged);
@@ -1718,16 +1699,14 @@ void ClearCacheOnNavigation() {
 
 // Converts the |name|, |value| pair of a http header to a HttpHeaders
 // dictionary.
-std::unique_ptr<base::DictionaryValue> CreateHeaderDictionary(
-    const std::string& name,
-    const std::string& value) {
-  auto header = std::make_unique<base::DictionaryValue>();
-  header->SetString(keys::kHeaderNameKey, name);
+base::Value::Dict CreateHeaderDictionary(const std::string& name,
+                                         const std::string& value) {
+  base::Value::Dict header;
+  header.Set(keys::kHeaderNameKey, name);
   if (base::IsStringUTF8(value)) {
-    header->SetString(keys::kHeaderValueKey, value);
+    header.Set(keys::kHeaderValueKey, value);
   } else {
-    header->Set(keys::kHeaderBinaryValueKey,
-                std::make_unique<base::Value>(StringToCharList(value)));
+    header.Set(keys::kHeaderBinaryValueKey, StringToCharList(value));
   }
   return header;
 }
@@ -1745,20 +1724,7 @@ bool ShouldHideRequestHeader(content::BrowserContext* browser_context,
 
 bool ShouldHideResponseHeader(int extra_info_spec, const std::string& name) {
   return !(extra_info_spec & ExtraInfoSpec::EXTRA_HEADERS) &&
-         base::LowerCaseEqualsASCII(name, "set-cookie");
-}
-
-bool ArePublicSessionRestrictionsEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return chromeos::LoginState::IsInitialized() &&
-         chromeos::LoginState::Get()->ArePublicSessionRestrictionsEnabled();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  DCHECK(chromeos::LacrosService::Get());
-  return chromeos::LacrosService::Get()->init_params()->session_type ==
-         crosapi::mojom::SessionType::kPublicSession;
-#else
-  return false;
-#endif
+         base::EqualsCaseInsensitiveASCII(name, "set-cookie");
 }
 
 }  // namespace extension_web_request_api_helpers

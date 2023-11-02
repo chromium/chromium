@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_path_override.h"
 #include "build/build_config.h"
 #include "components/nacl/browser/nacl_browser.h"
@@ -44,7 +45,8 @@ class NaClFileHostTest : public testing::Test {
 
   void SetUp() override {
     nacl_browser_delegate_ = new FileHostTestNaClBrowserDelegate;
-    nacl::NaClBrowser::SetDelegate(base::WrapUnique(nacl_browser_delegate_));
+    nacl::NaClBrowser::SetDelegate(
+        base::WrapUnique(nacl_browser_delegate_.get()));
   }
 
   void TearDown() override {
@@ -57,7 +59,7 @@ class NaClFileHostTest : public testing::Test {
   }
 
  private:
-  FileHostTestNaClBrowserDelegate* nacl_browser_delegate_;
+  raw_ptr<FileHostTestNaClBrowserDelegate> nacl_browser_delegate_;
 };
 
 NaClFileHostTest::NaClFileHostTest() : nacl_browser_delegate_(nullptr) {}
@@ -110,7 +112,7 @@ TEST_F(NaClFileHostTest, TestFilenamesWithPnaclPath) {
   EXPECT_FALSE(PnaclCanOpenFile(std::string(), &out_path));
   EXPECT_FALSE(PnaclCanOpenFile(".", &out_path));
   EXPECT_FALSE(PnaclCanOpenFile("..", &out_path));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_FALSE(PnaclCanOpenFile("..\\llc", &out_path));
   EXPECT_FALSE(PnaclCanOpenFile("%SystemRoot%", &out_path));
   EXPECT_FALSE(PnaclCanOpenFile("%SystemRoot%\\explorer.exe", &out_path));

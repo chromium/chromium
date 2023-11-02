@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,8 +25,7 @@ class DesktopMediaPickerFactory {
 
   virtual ~DesktopMediaPickerFactory();
 
-  virtual std::unique_ptr<DesktopMediaPicker> CreatePicker(
-      const content::MediaStreamRequest* request) = 0;
+  virtual std::unique_ptr<DesktopMediaPicker> CreatePicker() = 0;
 
   virtual std::vector<std::unique_ptr<DesktopMediaList>> CreateMediaList(
       const std::vector<DesktopMediaList::Type>& types,

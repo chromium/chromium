@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,7 +44,7 @@ bool AudioSilenceDetector::IsSilence(const int16_t* samples,
   bool silent_packet = true;
   // Potentially this loop can be optimized (e.g. using SSE or adding special
   // case for threshold_==0), but it's not worth worrying about because the
-  // amount of data it processes is relaively small.
+  // amount of data it processes is relatively small.
   for (int i = 0; i < samples_count; ++i) {
     if (abs(samples[i]) > threshold_) {
       silent_packet = false;

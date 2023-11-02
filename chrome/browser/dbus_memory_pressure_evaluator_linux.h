@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -119,7 +120,7 @@ class DbusMemoryPressureEvaluatorLinux
 
   scoped_refptr<dbus::Bus> system_bus_;
   scoped_refptr<dbus::Bus> session_bus_;
-  dbus::ObjectProxy* object_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> object_proxy_ = nullptr;
 
   // The values used to determine how to translate LMM memory pressure levels to
   // Chrome's are stored here, gathered from feature params.

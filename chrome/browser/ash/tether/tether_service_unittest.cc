@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,19 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/services/device_sync/cryptauth_device_manager.h"
+#include "ash/services/device_sync/cryptauth_enroller.h"
+#include "ash/services/device_sync/cryptauth_enrollment_manager.h"
+#include "ash/services/device_sync/fake_cryptauth_enrollment_manager.h"
+#include "ash/services/device_sync/fake_remote_device_provider.h"
+#include "ash/services/device_sync/public/cpp/device_sync_client_impl.h"
+#include "ash/services/device_sync/public/cpp/fake_device_sync_client.h"
+#include "ash/services/device_sync/remote_device_provider_impl.h"
+#include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
+#include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client_impl.h"
+#include "ash/services/multidevice_setup/public/cpp/prefs.h"
+#include "ash/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
+#include "ash/services/secure_channel/public/cpp/client/secure_channel_client_impl.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
@@ -21,37 +34,24 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/components/multidevice/remote_device_test_util.h"
-#include "chromeos/components/multidevice/software_feature.h"
-#include "chromeos/components/tether/fake_notification_presenter.h"
-#include "chromeos/components/tether/fake_tether_component.h"
-#include "chromeos/components/tether/fake_tether_host_fetcher.h"
-#include "chromeos/components/tether/tether_component_impl.h"
-#include "chromeos/components/tether/tether_host_fetcher_impl.h"
+#include "chromeos/ash/components/dbus/shill/shill_device_client.h"
+#include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
+#include "chromeos/ash/components/dbus/shill/shill_service_client.h"
+#include "chromeos/ash/components/multidevice/remote_device_test_util.h"
+#include "chromeos/ash/components/multidevice/software_feature.h"
+#include "chromeos/ash/components/network/network_connect.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_type_pattern.h"
+#include "chromeos/ash/components/tether/fake_notification_presenter.h"
+#include "chromeos/ash/components/tether/fake_tether_component.h"
+#include "chromeos/ash/components/tether/fake_tether_host_fetcher.h"
+#include "chromeos/ash/components/tether/tether_component_impl.h"
+#include "chromeos/ash/components/tether/tether_host_fetcher_impl.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
-#include "chromeos/dbus/shill/shill_device_client.h"
-#include "chromeos/dbus/shill/shill_manager_client.h"
-#include "chromeos/dbus/shill/shill_service_client.h"
-#include "chromeos/network/network_connect.h"
-#include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_handler_test_helper.h"
-#include "chromeos/network/network_state_handler.h"
-#include "chromeos/network/network_type_pattern.h"
-#include "chromeos/services/device_sync/cryptauth_device_manager.h"
-#include "chromeos/services/device_sync/cryptauth_enroller.h"
-#include "chromeos/services/device_sync/cryptauth_enrollment_manager.h"
-#include "chromeos/services/device_sync/fake_cryptauth_enrollment_manager.h"
-#include "chromeos/services/device_sync/fake_remote_device_provider.h"
-#include "chromeos/services/device_sync/public/cpp/device_sync_client_impl.h"
-#include "chromeos/services/device_sync/public/cpp/fake_device_sync_client.h"
-#include "chromeos/services/device_sync/remote_device_provider_impl.h"
-#include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
-#include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client_impl.h"
-#include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
-#include "chromeos/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
-#include "chromeos/services/secure_channel/public/cpp/client/secure_channel_client_impl.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -73,16 +73,15 @@ using ::testing::NiceMock;
 const char kTestUserPrivateKey[] = "kTestUserPrivateKey";
 const size_t kNumTestDevices = 5;
 
-chromeos::multidevice::RemoteDeviceRefList CreateTestDevices() {
-  chromeos::multidevice::RemoteDeviceRefList list;
+multidevice::RemoteDeviceRefList CreateTestDevices() {
+  multidevice::RemoteDeviceRefList list;
   for (size_t i = 0; i < kNumTestDevices; ++i) {
-    list.push_back(
-        chromeos::multidevice::RemoteDeviceRefBuilder()
-            .SetSupportsMobileHotspot(true)
-            .SetSoftwareFeatureState(
-                chromeos::multidevice::SoftwareFeature::kBetterTogetherHost,
-                chromeos::multidevice::SoftwareFeatureState::kSupported)
-            .Build());
+    list.push_back(multidevice::RemoteDeviceRefBuilder()
+                       .SetSupportsMobileHotspot(true)
+                       .SetSoftwareFeatureState(
+                           multidevice::SoftwareFeature::kBetterTogetherHost,
+                           multidevice::SoftwareFeatureState::kSupported)
+                       .Build());
   }
   return list;
 }
@@ -92,11 +91,10 @@ class TestTetherService : public TetherService {
   TestTetherService(
       Profile* profile,
       chromeos::PowerManagerClient* power_manager_client,
-      chromeos::device_sync::DeviceSyncClient* device_sync_client,
-      chromeos::secure_channel::SecureChannelClient* secure_channel_client,
-      chromeos::multidevice_setup::MultiDeviceSetupClient*
-          multidevice_setup_client,
-      chromeos::NetworkStateHandler* network_state_handler,
+      device_sync::DeviceSyncClient* device_sync_client,
+      secure_channel::SecureChannelClient* secure_channel_client,
+      multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
+      NetworkStateHandler* network_state_handler,
       session_manager::SessionManager* session_manager)
       : TetherService(profile,
                       power_manager_client,
@@ -121,8 +119,7 @@ class TestTetherService : public TetherService {
   int updated_technology_state_count_ = 0;
 };
 
-class FakeTetherComponentWithDestructorCallback
-    : public chromeos::tether::FakeTetherComponent {
+class FakeTetherComponentWithDestructorCallback : public FakeTetherComponent {
  public:
   FakeTetherComponentWithDestructorCallback(
       base::OnceClosure destructor_callback)
@@ -137,8 +134,7 @@ class FakeTetherComponentWithDestructorCallback
   base::OnceClosure destructor_callback_;
 };
 
-class TestTetherComponentFactory final
-    : public chromeos::tether::TetherComponentImpl::Factory {
+class TestTetherComponentFactory final : public TetherComponentImpl::Factory {
  public:
   TestTetherComponentFactory() {}
 
@@ -148,20 +144,19 @@ class TestTetherComponentFactory final
     return active_tether_component_;
   }
 
-  // chromeos::tether::TetherComponentImpl::Factory:
-  std::unique_ptr<chromeos::tether::TetherComponent> CreateInstance(
-      chromeos::device_sync::DeviceSyncClient* device_sync_client,
-      chromeos::secure_channel::SecureChannelClient* secure_channel_client,
-      chromeos::tether::TetherHostFetcher* tether_host_fetcher,
-      chromeos::tether::NotificationPresenter* notification_presenter,
-      chromeos::tether::GmsCoreNotificationsStateTrackerImpl*
+  // TetherComponentImpl::Factory:
+  std::unique_ptr<TetherComponent> CreateInstance(
+      device_sync::DeviceSyncClient* device_sync_client,
+      secure_channel::SecureChannelClient* secure_channel_client,
+      TetherHostFetcher* tether_host_fetcher,
+      NotificationPresenter* notification_presenter,
+      GmsCoreNotificationsStateTrackerImpl*
           gms_core_notifications_state_tracker,
       PrefService* pref_service,
-      chromeos::NetworkStateHandler* network_state_handler,
-      chromeos::ManagedNetworkConfigurationHandler*
-          managed_network_configuration_handler,
-      chromeos::NetworkConnect* network_connect,
-      chromeos::NetworkConnectionHandler* network_connection_handler,
+      NetworkStateHandler* network_state_handler,
+      ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
+      NetworkConnect* network_connect,
+      NetworkConnectionHandler* network_connection_handler,
       scoped_refptr<device::BluetoothAdapter> adapter,
       session_manager::SessionManager* session_manager) override {
     active_tether_component_ =
@@ -174,8 +169,7 @@ class TestTetherComponentFactory final
 
   bool was_tether_component_active() { return was_tether_component_active_; }
 
-  const chromeos::tether::TetherComponent::ShutdownReason&
-  last_shutdown_reason() {
+  const TetherComponent::ShutdownReason& last_shutdown_reason() {
     return last_shutdown_reason_;
   }
 
@@ -187,114 +181,105 @@ class TestTetherComponentFactory final
 
   FakeTetherComponentWithDestructorCallback* active_tether_component_ = nullptr;
   bool was_tether_component_active_ = false;
-  chromeos::tether::TetherComponent::ShutdownReason last_shutdown_reason_;
+  TetherComponent::ShutdownReason last_shutdown_reason_;
 };
 
 class FakeRemoteDeviceProviderFactory
-    : public chromeos::device_sync::RemoteDeviceProviderImpl::Factory {
+    : public device_sync::RemoteDeviceProviderImpl::Factory {
  public:
   FakeRemoteDeviceProviderFactory() = default;
   ~FakeRemoteDeviceProviderFactory() override = default;
 
-  // chromeos::device_sync::RemoteDeviceProviderImpl::Factory:
-  std::unique_ptr<chromeos::device_sync::RemoteDeviceProvider> CreateInstance(
-      chromeos::device_sync::CryptAuthDeviceManager* device_manager,
-      chromeos::device_sync::CryptAuthV2DeviceManager* v2_device_manager,
+  // device_sync::RemoteDeviceProviderImpl::Factory:
+  std::unique_ptr<device_sync::RemoteDeviceProvider> CreateInstance(
+      device_sync::CryptAuthDeviceManager* device_manager,
+      device_sync::CryptAuthV2DeviceManager* v2_device_manager,
       const std::string& user_email,
       const std::string& user_private_key) override {
-    return std::make_unique<chromeos::device_sync::FakeRemoteDeviceProvider>();
+    return std::make_unique<device_sync::FakeRemoteDeviceProvider>();
   }
 };
 
-class FakeTetherHostFetcherFactory
-    : public chromeos::tether::TetherHostFetcherImpl::Factory {
+class FakeTetherHostFetcherFactory : public TetherHostFetcherImpl::Factory {
  public:
   FakeTetherHostFetcherFactory(
-      const chromeos::multidevice::RemoteDeviceRefList& initial_devices)
+      const multidevice::RemoteDeviceRefList& initial_devices)
       : initial_devices_(initial_devices) {}
   virtual ~FakeTetherHostFetcherFactory() = default;
 
-  chromeos::tether::FakeTetherHostFetcher* last_created() {
-    return last_created_;
-  }
+  FakeTetherHostFetcher* last_created() { return last_created_; }
 
   void SetNoInitialDevices() { initial_devices_.clear(); }
 
-  // chromeos::tether::TetherHostFetcherImpl::Factory :
-  std::unique_ptr<chromeos::tether::TetherHostFetcher> CreateInstance(
-      chromeos::device_sync::DeviceSyncClient* device_sync_client,
-      chromeos::multidevice_setup::MultiDeviceSetupClient*
-          multidevice_setup_client) override {
-    last_created_ =
-        new chromeos::tether::FakeTetherHostFetcher(initial_devices_);
+  // TetherHostFetcherImpl::Factory :
+  std::unique_ptr<TetherHostFetcher> CreateInstance(
+      device_sync::DeviceSyncClient* device_sync_client,
+      multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client)
+      override {
+    last_created_ = new FakeTetherHostFetcher(initial_devices_);
     return base::WrapUnique(last_created_);
   }
 
  private:
-  chromeos::multidevice::RemoteDeviceRefList initial_devices_;
-  chromeos::tether::FakeTetherHostFetcher* last_created_ = nullptr;
+  multidevice::RemoteDeviceRefList initial_devices_;
+  FakeTetherHostFetcher* last_created_ = nullptr;
 };
 
 class FakeDeviceSyncClientImplFactory
-    : public chromeos::device_sync::DeviceSyncClientImpl::Factory {
+    : public device_sync::DeviceSyncClientImpl::Factory {
  public:
   FakeDeviceSyncClientImplFactory() = default;
 
   ~FakeDeviceSyncClientImplFactory() override = default;
 
-  // chromeos::device_sync::DeviceSyncClientImpl::Factory:
-  std::unique_ptr<chromeos::device_sync::DeviceSyncClient> CreateInstance()
-      override {
+  // device_sync::DeviceSyncClientImpl::Factory:
+  std::unique_ptr<device_sync::DeviceSyncClient> CreateInstance() override {
     auto fake_device_sync_client =
-        std::make_unique<chromeos::device_sync::FakeDeviceSyncClient>();
+        std::make_unique<device_sync::FakeDeviceSyncClient>();
     fake_device_sync_client->NotifyReady();
     return fake_device_sync_client;
   }
 };
 
 class FakeSecureChannelClientImplFactory
-    : public chromeos::secure_channel::SecureChannelClientImpl::Factory {
+    : public secure_channel::SecureChannelClientImpl::Factory {
  public:
   FakeSecureChannelClientImplFactory() = default;
 
   ~FakeSecureChannelClientImplFactory() override = default;
 
-  // chromeos::secure_channel::SecureChannelClientImpl::Factory:
-  std::unique_ptr<chromeos::secure_channel::SecureChannelClient> CreateInstance(
-      mojo::PendingRemote<chromeos::secure_channel::mojom::SecureChannel>
-          channel,
+  // secure_channel::SecureChannelClientImpl::Factory:
+  std::unique_ptr<secure_channel::SecureChannelClient> CreateInstance(
+      mojo::PendingRemote<secure_channel::mojom::SecureChannel> channel,
       scoped_refptr<base::TaskRunner> task_runner) override {
-    return std::make_unique<
-        chromeos::secure_channel::FakeSecureChannelClient>();
+    return std::make_unique<secure_channel::FakeSecureChannelClient>();
   }
 };
 
 class FakeMultiDeviceSetupClientImplFactory
-    : public chromeos::multidevice_setup::MultiDeviceSetupClientImpl::Factory {
+    : public multidevice_setup::MultiDeviceSetupClientImpl::Factory {
  public:
   FakeMultiDeviceSetupClientImplFactory() = default;
 
   ~FakeMultiDeviceSetupClientImplFactory() override = default;
 
-  // chromeos::multidevice_setup::MultiDeviceSetupClientImpl::Factory:
-  std::unique_ptr<chromeos::multidevice_setup::MultiDeviceSetupClient>
-  CreateInstance(
-      mojo::PendingRemote<chromeos::multidevice_setup::mojom::MultiDeviceSetup>)
+  // multidevice_setup::MultiDeviceSetupClientImpl::Factory:
+  std::unique_ptr<multidevice_setup::MultiDeviceSetupClient> CreateInstance(
+      mojo::PendingRemote<multidevice_setup::mojom::MultiDeviceSetup>)
       override {
-    auto fake_multidevice_setup_client = std::make_unique<
-        chromeos::multidevice_setup::FakeMultiDeviceSetupClient>();
+    auto fake_multidevice_setup_client =
+        std::make_unique<multidevice_setup::FakeMultiDeviceSetupClient>();
     fake_multidevice_setup_client_ = fake_multidevice_setup_client.get();
     return fake_multidevice_setup_client;
   }
 
-  chromeos::multidevice_setup::FakeMultiDeviceSetupClient*
+  multidevice_setup::FakeMultiDeviceSetupClient*
   fake_multidevice_setup_client() {
     return fake_multidevice_setup_client_;
   }
 
  private:
-  chromeos::multidevice_setup::FakeMultiDeviceSetupClient*
-      fake_multidevice_setup_client_;
+  multidevice_setup::FakeMultiDeviceSetupClient* fake_multidevice_setup_client_;
 };
 
 }  // namespace
@@ -312,7 +297,7 @@ class TetherServiceTest : public testing::Test {
     fake_notification_presenter_ = nullptr;
     mock_timer_ = nullptr;
 
-    chromeos::NetworkConnect::Initialize(nullptr);
+    NetworkConnect::Initialize(nullptr);
 
     TestingProfile::Builder builder;
     profile_ = builder.Build();
@@ -324,32 +309,32 @@ class TetherServiceTest : public testing::Test {
     chromeos::PowerManagerClient::InitializeFake();
 
     fake_device_sync_client_ =
-        std::make_unique<chromeos::device_sync::FakeDeviceSyncClient>();
+        std::make_unique<device_sync::FakeDeviceSyncClient>();
     fake_device_sync_client_->NotifyReady();
 
     fake_device_sync_client_impl_factory_ =
         std::make_unique<FakeDeviceSyncClientImplFactory>();
-    chromeos::device_sync::DeviceSyncClientImpl::Factory::SetFactoryForTesting(
+    device_sync::DeviceSyncClientImpl::Factory::SetFactoryForTesting(
         fake_device_sync_client_impl_factory_.get());
 
     fake_secure_channel_client_ =
-        std::make_unique<chromeos::secure_channel::FakeSecureChannelClient>();
+        std::make_unique<secure_channel::FakeSecureChannelClient>();
     fake_secure_channel_client_impl_factory_ =
         std::make_unique<FakeSecureChannelClientImplFactory>();
-    chromeos::secure_channel::SecureChannelClientImpl::Factory::
-        SetFactoryForTesting(fake_secure_channel_client_impl_factory_.get());
+    secure_channel::SecureChannelClientImpl::Factory::SetFactoryForTesting(
+        fake_secure_channel_client_impl_factory_.get());
 
-    fake_multidevice_setup_client_ = std::make_unique<
-        chromeos::multidevice_setup::FakeMultiDeviceSetupClient>();
+    fake_multidevice_setup_client_ =
+        std::make_unique<multidevice_setup::FakeMultiDeviceSetupClient>();
     fake_multidevice_setup_client_impl_factory_ =
         std::make_unique<FakeMultiDeviceSetupClientImplFactory>();
-    chromeos::multidevice_setup::MultiDeviceSetupClientImpl::Factory::
+    multidevice_setup::MultiDeviceSetupClientImpl::Factory::
         SetFactoryForTesting(fake_multidevice_setup_client_impl_factory_.get());
     initial_feature_state_ =
-        chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser;
+        multidevice_setup::mojom::FeatureState::kEnabledByUser;
 
-    fake_enrollment_manager_ = std::make_unique<
-        chromeos::device_sync::FakeCryptAuthEnrollmentManager>();
+    fake_enrollment_manager_ =
+        std::make_unique<device_sync::FakeCryptAuthEnrollmentManager>();
     fake_enrollment_manager_->set_user_private_key(kTestUserPrivateKey);
 
     mock_adapter_ =
@@ -364,18 +349,18 @@ class TetherServiceTest : public testing::Test {
 
     test_tether_component_factory_ =
         base::WrapUnique(new TestTetherComponentFactory());
-    chromeos::tether::TetherComponentImpl::Factory::SetFactoryForTesting(
+    TetherComponentImpl::Factory::SetFactoryForTesting(
         test_tether_component_factory_.get());
     shutdown_reason_verified_ = false;
 
     fake_remote_device_provider_factory_ =
         base::WrapUnique(new FakeRemoteDeviceProviderFactory());
-    chromeos::device_sync::RemoteDeviceProviderImpl::Factory::
-        SetFactoryForTesting(fake_remote_device_provider_factory_.get());
+    device_sync::RemoteDeviceProviderImpl::Factory::SetFactoryForTesting(
+        fake_remote_device_provider_factory_.get());
 
     fake_tether_host_fetcher_factory_ =
         base::WrapUnique(new FakeTetherHostFetcherFactory(test_devices_));
-    chromeos::tether::TetherHostFetcherImpl::Factory::SetFactoryForTesting(
+    TetherHostFetcherImpl::Factory::SetFactoryForTesting(
         fake_tether_host_fetcher_factory_.get());
 
     TestingBrowserProcess::GetGlobal()->SetLocalState(&local_pref_service_);
@@ -385,11 +370,10 @@ class TetherServiceTest : public testing::Test {
   void TearDown() override {
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
 
-    chromeos::device_sync::DeviceSyncClientImpl::Factory::SetFactoryForTesting(
+    device_sync::DeviceSyncClientImpl::Factory::SetFactoryForTesting(nullptr);
+    secure_channel::SecureChannelClientImpl::Factory::SetFactoryForTesting(
         nullptr);
-    chromeos::secure_channel::SecureChannelClientImpl::Factory::
-        SetFactoryForTesting(nullptr);
-    chromeos::multidevice_setup::MultiDeviceSetupClientImpl::Factory::
+    multidevice_setup::MultiDeviceSetupClientImpl::Factory::
         SetFactoryForTesting(nullptr);
 
     ShutdownTetherService();
@@ -407,7 +391,7 @@ class TetherServiceTest : public testing::Test {
               shutdown_reason_verified_);
 
     chromeos::PowerManagerClient::Shutdown();
-    chromeos::NetworkConnect::Shutdown();
+    NetworkConnect::Shutdown();
   }
 
   void SetPrimaryUserLoggedIn() {
@@ -422,7 +406,7 @@ class TetherServiceTest : public testing::Test {
 
   void CreateTetherService() {
     fake_multidevice_setup_client_->SetFeatureState(
-        chromeos::multidevice_setup::mojom::Feature::kInstantTethering,
+        multidevice_setup::mojom::Feature::kInstantTethering,
         initial_feature_state_);
 
     tether_service_ = base::WrapUnique(new TestTetherService(
@@ -431,8 +415,7 @@ class TetherServiceTest : public testing::Test {
         fake_multidevice_setup_client_.get(), network_state_handler(),
         nullptr /* session_manager */));
 
-    fake_notification_presenter_ =
-        new chromeos::tether::FakeNotificationPresenter();
+    fake_notification_presenter_ = new FakeNotificationPresenter();
     mock_timer_ = new base::MockOneShotTimer();
     tether_service_->SetTestDoubles(
         base::WrapUnique(fake_notification_presenter_),
@@ -442,10 +425,9 @@ class TetherServiceTest : public testing::Test {
 
     // Ensure that TetherService does not prematurely update its
     // TechnologyState before it fetches the BluetoothAdapter.
-    EXPECT_EQ(
-        chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE,
-        network_state_handler()->GetTechnologyState(
-            chromeos::NetworkTypePattern::Tether()));
+    EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE,
+              network_state_handler()->GetTechnologyState(
+                  NetworkTypePattern::Tether()));
     VerifyTetherActiveStatus(false /* expected_active */);
 
     if (!fake_device_sync_client_->is_ready()) {
@@ -463,16 +445,14 @@ class TetherServiceTest : public testing::Test {
 
   void SetTetherTechnologyStateEnabled(bool enabled) {
     network_state_handler()->SetTetherTechnologyState(
-        enabled
-            ? chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED
-            : chromeos::NetworkStateHandler::TechnologyState::
-                  TECHNOLOGY_AVAILABLE);
+        enabled ? NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED
+                : NetworkStateHandler::TechnologyState::TECHNOLOGY_AVAILABLE);
   }
 
   void SetCellularTechnologyStateEnabled(bool enabled) {
     network_state_handler()->SetTechnologyEnabled(
-        chromeos::NetworkTypePattern::Cellular(), enabled,
-        chromeos::network_handler::ErrorCallback());
+        NetworkTypePattern::Cellular(), enabled,
+        network_handler::ErrorCallback());
     base::RunLoop().RunUntilIdle();
   }
 
@@ -493,7 +473,7 @@ class TetherServiceTest : public testing::Test {
   }
 
   void DisconnectDefaultShillNetworks() {
-    const chromeos::NetworkState* default_state;
+    const NetworkState* default_state;
     while ((default_state = network_state_handler()->DefaultNetwork())) {
       network_handler_test_helper_.service_test()->SetServiceProperty(
           default_state->path(), shill::kStateProperty,
@@ -517,25 +497,24 @@ class TetherServiceTest : public testing::Test {
   }
 
   void VerifyLastShutdownReason(
-      const chromeos::tether::TetherComponent::ShutdownReason&
-          expected_shutdown_reason) {
+      const TetherComponent::ShutdownReason& expected_shutdown_reason) {
     EXPECT_EQ(expected_shutdown_reason,
               test_tether_component_factory_->last_shutdown_reason());
     shutdown_reason_verified_ = true;
   }
 
-  chromeos::ShillManagerClient::TestInterface* manager_test() {
+  ShillManagerClient::TestInterface* manager_test() {
     return network_handler_test_helper_.manager_test();
   }
 
-  chromeos::NetworkStateHandler* network_state_handler() {
-    return chromeos::NetworkHandler::Get()->network_state_handler();
+  NetworkStateHandler* network_state_handler() {
+    return NetworkHandler::Get()->network_state_handler();
   }
 
-  const chromeos::multidevice::RemoteDeviceRefList test_devices_;
+  const multidevice::RemoteDeviceRefList test_devices_;
   const content::BrowserTaskEnvironment task_environment_;
 
-  chromeos::NetworkHandlerTestHelper network_handler_test_helper_;
+  NetworkHandlerTestHelper network_handler_test_helper_;
   std::unique_ptr<TestingProfile> profile_;
   FakeChromeUserManager* fake_chrome_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
@@ -546,24 +525,23 @@ class TetherServiceTest : public testing::Test {
       fake_remote_device_provider_factory_;
   std::unique_ptr<FakeTetherHostFetcherFactory>
       fake_tether_host_fetcher_factory_;
-  chromeos::tether::FakeNotificationPresenter* fake_notification_presenter_;
+  FakeNotificationPresenter* fake_notification_presenter_;
   base::MockOneShotTimer* mock_timer_;
-  std::unique_ptr<chromeos::device_sync::FakeDeviceSyncClient>
-      fake_device_sync_client_;
+  std::unique_ptr<device_sync::FakeDeviceSyncClient> fake_device_sync_client_;
   std::unique_ptr<FakeDeviceSyncClientImplFactory>
       fake_device_sync_client_impl_factory_;
-  std::unique_ptr<chromeos::secure_channel::FakeSecureChannelClient>
+  std::unique_ptr<secure_channel::FakeSecureChannelClient>
       fake_secure_channel_client_;
   std::unique_ptr<FakeSecureChannelClientImplFactory>
       fake_secure_channel_client_impl_factory_;
-  std::unique_ptr<chromeos::multidevice_setup::FakeMultiDeviceSetupClient>
+  std::unique_ptr<multidevice_setup::FakeMultiDeviceSetupClient>
       fake_multidevice_setup_client_;
   std::unique_ptr<FakeMultiDeviceSetupClientImplFactory>
       fake_multidevice_setup_client_impl_factory_;
-  std::unique_ptr<chromeos::device_sync::FakeCryptAuthEnrollmentManager>
+  std::unique_ptr<device_sync::FakeCryptAuthEnrollmentManager>
       fake_enrollment_manager_;
 
-  chromeos::multidevice_setup::mojom::FeatureState initial_feature_state_;
+  multidevice_setup::mojom::FeatureState initial_feature_state_;
 
   scoped_refptr<device::MockBluetoothAdapter> mock_adapter_;
   bool is_adapter_present_;
@@ -587,12 +565,11 @@ TEST_F(TetherServiceTest, TestShutdown) {
   // The TechnologyState should not have changed due to Shutdown() being called.
   // If it had changed, any settings UI that was previously open would have
   // shown visual jank.
-  EXPECT_EQ(chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
             network_state_handler()->GetTechnologyState(
-                chromeos::NetworkTypePattern::Tether()));
+                NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(false /* expected_active */);
-  VerifyLastShutdownReason(
-      chromeos::tether::TetherComponent::ShutdownReason::USER_LOGGED_OUT);
+  VerifyLastShutdownReason(TetherComponent::ShutdownReason::USER_LOGGED_OUT);
 }
 
 // TODO(https://crbug.com/893878): Fix disabled test.
@@ -600,9 +577,9 @@ TEST_F(TetherServiceTest, DISABLED_TestAsyncTetherShutdown) {
   CreateTetherService();
 
   // Tether should be ENABLED, and there should be no AsyncShutdownTask.
-  EXPECT_EQ(chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
             network_state_handler()->GetTechnologyState(
-                chromeos::NetworkTypePattern::Tether()));
+                NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(true /* expected_active */);
 
   // Use an asynchronous shutdown.
@@ -616,22 +593,20 @@ TEST_F(TetherServiceTest, DISABLED_TestAsyncTetherShutdown) {
   // Tether should be active, but shutting down.
   VerifyTetherActiveStatus(true /* expected_active */);
   EXPECT_EQ(
-      chromeos::tether::TetherComponent::Status::SHUTTING_DOWN,
+      TetherComponent::Status::SHUTTING_DOWN,
       test_tether_component_factory_->active_tether_component()->status());
 
   // Tether should be AVAILABLE.
-  EXPECT_EQ(
-      chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_AVAILABLE,
-      network_state_handler()->GetTechnologyState(
-          chromeos::NetworkTypePattern::Tether()));
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_AVAILABLE,
+            network_state_handler()->GetTechnologyState(
+                NetworkTypePattern::Tether()));
 
   // Complete the shutdown process; TetherService should delete its
   // TetherComponent instance.
   test_tether_component_factory_->active_tether_component()
       ->FinishAsynchronousShutdown();
   VerifyTetherActiveStatus(false /* expected_active */);
-  VerifyLastShutdownReason(
-      chromeos::tether::TetherComponent::ShutdownReason::PREF_DISABLED);
+  VerifyLastShutdownReason(TetherComponent::ShutdownReason::PREF_DISABLED);
 }
 
 TEST_F(TetherServiceTest, TestSuspend) {
@@ -641,17 +616,16 @@ TEST_F(TetherServiceTest, TestSuspend) {
   chromeos::FakePowerManagerClient::Get()->SendSuspendImminent(
       power_manager::SuspendImminent_Reason_OTHER);
 
-  EXPECT_EQ(
-      chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE,
-      network_state_handler()->GetTechnologyState(
-          chromeos::NetworkTypePattern::Tether()));
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE,
+            network_state_handler()->GetTechnologyState(
+                NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(false /* expected_active */);
 
   chromeos::FakePowerManagerClient::Get()->SendSuspendDone();
 
-  EXPECT_EQ(chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
             network_state_handler()->GetTechnologyState(
-                chromeos::NetworkTypePattern::Tether()));
+                NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(true /* expected_active */);
 
   chromeos::FakePowerManagerClient::Get()->SendSuspendImminent(
@@ -659,77 +633,72 @@ TEST_F(TetherServiceTest, TestSuspend) {
 
   VerifyTetherFeatureStateRecorded(TetherService::TetherFeatureState::SUSPENDED,
                                    2 /* expected_count */);
-  VerifyLastShutdownReason(
-      chromeos::tether::TetherComponent::ShutdownReason::USER_CLOSED_LID);
+  VerifyLastShutdownReason(TetherComponent::ShutdownReason::USER_CLOSED_LID);
 }
 
 TEST_F(TetherServiceTest, TestDeviceSyncClientNotReady) {
   fake_device_sync_client_ =
-      std::make_unique<chromeos::device_sync::FakeDeviceSyncClient>();
+      std::make_unique<device_sync::FakeDeviceSyncClient>();
 
   CreateTetherService();
 
   fake_device_sync_client_->NotifyReady();
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
             network_state_handler()->GetTechnologyState(
-                chromeos::NetworkTypePattern::Tether()));
+                NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(true /* expected_active */);
 
   ShutdownTetherService();
-  VerifyLastShutdownReason(
-      chromeos::tether::TetherComponent::ShutdownReason::USER_LOGGED_OUT);
+  VerifyLastShutdownReason(TetherComponent::ShutdownReason::USER_LOGGED_OUT);
 }
 
 TEST_F(TetherServiceTest,
        TestMultiDeviceSetupClientInitiallyHasNoVerifiedHost) {
   fake_tether_host_fetcher_factory_->SetNoInitialDevices();
-  initial_feature_state_ = chromeos::multidevice_setup::mojom::FeatureState::
-      kUnavailableNoVerifiedHost;
+  initial_feature_state_ = multidevice_setup::mojom::FeatureState::
+      kUnavailableNoVerifiedHost_NoEligibleHosts;
 
   CreateTetherService();
 
-  EXPECT_EQ(
-      chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE,
-      network_state_handler()->GetTechnologyState(
-          chromeos::NetworkTypePattern::Tether()));
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE,
+            network_state_handler()->GetTechnologyState(
+                NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(false /* expected_active */);
 
   fake_tether_host_fetcher_factory_->last_created()->set_tether_hosts(
       test_devices_);
   fake_multidevice_setup_client_->SetFeatureState(
-      chromeos::multidevice_setup::mojom::Feature::kInstantTethering,
-      chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser);
+      multidevice_setup::mojom::Feature::kInstantTethering,
+      multidevice_setup::mojom::FeatureState::kEnabledByUser);
 
-  EXPECT_EQ(chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
             network_state_handler()->GetTechnologyState(
-                chromeos::NetworkTypePattern::Tether()));
+                NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(true /* expected_active */);
 
   ShutdownTetherService();
-  VerifyLastShutdownReason(
-      chromeos::tether::TetherComponent::ShutdownReason::USER_LOGGED_OUT);
+  VerifyLastShutdownReason(TetherComponent::ShutdownReason::USER_LOGGED_OUT);
 }
 
 TEST_F(TetherServiceTest, TestMultiDeviceSetupClientLosesVerifiedHost) {
   CreateTetherService();
 
-  EXPECT_EQ(chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
             network_state_handler()->GetTechnologyState(
-                chromeos::NetworkTypePattern::Tether()));
+                NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(true /* expected_active */);
 
   fake_tether_host_fetcher_factory_->last_created()->set_tether_hosts({});
   fake_multidevice_setup_client_->SetFeatureState(
-      chromeos::multidevice_setup::mojom::Feature::kInstantTethering,
-      chromeos::multidevice_setup::mojom::FeatureState::
-          kUnavailableNoVerifiedHost);
+      multidevice_setup::mojom::Feature::kInstantTethering,
+      multidevice_setup::mojom::FeatureState::
+          kUnavailableNoVerifiedHost_HostExistsButNotSetAndVerified);
 
-  EXPECT_EQ(
-      chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE,
-      network_state_handler()->GetTechnologyState(
-          chromeos::NetworkTypePattern::Tether()));
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE,
+            network_state_handler()->GetTechnologyState(
+                NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(false /* expected_active */);
 
   mock_timer_->Fire();
@@ -737,61 +706,57 @@ TEST_F(TetherServiceTest, TestMultiDeviceSetupClientLosesVerifiedHost) {
   VerifyTetherFeatureStateRecorded(
       TetherService::TetherFeatureState::NO_AVAILABLE_HOSTS,
       1 /* expected_count */);
-  VerifyLastShutdownReason(chromeos::tether::TetherComponent::ShutdownReason::
-                               MULTIDEVICE_HOST_UNVERIFIED);
+  VerifyLastShutdownReason(
+      TetherComponent::ShutdownReason::MULTIDEVICE_HOST_UNVERIFIED);
 }
 
 TEST_F(TetherServiceTest, TestBetterTogetherSuiteInitiallyDisabled) {
-  initial_feature_state_ = chromeos::multidevice_setup::mojom::FeatureState::
-      kUnavailableSuiteDisabled;
+  initial_feature_state_ =
+      multidevice_setup::mojom::FeatureState::kUnavailableSuiteDisabled;
 
   CreateTetherService();
 
-  EXPECT_EQ(
-      chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE,
-      network_state_handler()->GetTechnologyState(
-          chromeos::NetworkTypePattern::Tether()));
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE,
+            network_state_handler()->GetTechnologyState(
+                NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(false /* expected_active */);
 
   fake_multidevice_setup_client_->SetFeatureState(
-      chromeos::multidevice_setup::mojom::Feature::kInstantTethering,
-      chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser);
+      multidevice_setup::mojom::Feature::kInstantTethering,
+      multidevice_setup::mojom::FeatureState::kEnabledByUser);
 
-  EXPECT_EQ(chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
             network_state_handler()->GetTechnologyState(
-                chromeos::NetworkTypePattern::Tether()));
+                NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(true /* expected_active */);
 
   ShutdownTetherService();
-  VerifyLastShutdownReason(
-      chromeos::tether::TetherComponent::ShutdownReason::USER_LOGGED_OUT);
+  VerifyLastShutdownReason(TetherComponent::ShutdownReason::USER_LOGGED_OUT);
 }
 
 TEST_F(TetherServiceTest, TestBetterTogetherSuiteBecomesDisabled) {
   CreateTetherService();
 
-  EXPECT_EQ(chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
             network_state_handler()->GetTechnologyState(
-                chromeos::NetworkTypePattern::Tether()));
+                NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(true /* expected_active */);
 
   fake_multidevice_setup_client_->SetFeatureState(
-      chromeos::multidevice_setup::mojom::Feature::kInstantTethering,
-      chromeos::multidevice_setup::mojom::FeatureState::
-          kUnavailableSuiteDisabled);
+      multidevice_setup::mojom::Feature::kInstantTethering,
+      multidevice_setup::mojom::FeatureState::kUnavailableSuiteDisabled);
 
-  EXPECT_EQ(
-      chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE,
-      network_state_handler()->GetTechnologyState(
-          chromeos::NetworkTypePattern::Tether()));
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE,
+            network_state_handler()->GetTechnologyState(
+                NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(false /* expected_active */);
 
   ShutdownTetherService();
   VerifyTetherFeatureStateRecorded(
       TetherService::TetherFeatureState::BETTER_TOGETHER_SUITE_DISABLED,
       1 /* expected_count */);
-  VerifyLastShutdownReason(chromeos::tether::TetherComponent::ShutdownReason::
-                               BETTER_TOGETHER_SUITE_DISABLED);
+  VerifyLastShutdownReason(
+      TetherComponent::ShutdownReason::BETTER_TOGETHER_SUITE_DISABLED);
 }
 
 TEST_F(TetherServiceTest, TestGet_NotPrimaryUser_FeatureFlagDisabled) {
@@ -825,8 +790,7 @@ TEST_F(TetherServiceTest, DISABLED_TestGet_PrimaryUser_FeatureFlagEnabled) {
   base::RunLoop().RunUntilIdle();
   tether_service->Shutdown();
 
-  VerifyLastShutdownReason(
-      chromeos::tether::TetherComponent::ShutdownReason::USER_LOGGED_OUT);
+  VerifyLastShutdownReason(TetherComponent::ShutdownReason::USER_LOGGED_OUT);
 }
 
 // TODO(https://crbug.com/893878): Fix disabled test.
@@ -846,8 +810,7 @@ TEST_F(
   base::RunLoop().RunUntilIdle();
   tether_service->Shutdown();
 
-  VerifyLastShutdownReason(
-      chromeos::tether::TetherComponent::ShutdownReason::USER_LOGGED_OUT);
+  VerifyLastShutdownReason(TetherComponent::ShutdownReason::USER_LOGGED_OUT);
 }
 
 // TODO(https://crbug.com/893878): Fix disabled test.
@@ -865,25 +828,22 @@ TEST_F(
   ASSERT_TRUE(tether_service);
 
   fake_multidevice_setup_client_impl_factory_->fake_multidevice_setup_client()
-      ->SetFeatureState(
-          chromeos::multidevice_setup::mojom::Feature::kInstantTethering,
-          chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser);
+      ->SetFeatureState(multidevice_setup::mojom::Feature::kInstantTethering,
+                        multidevice_setup::mojom::FeatureState::kEnabledByUser);
 
   base::RunLoop().RunUntilIdle();
   tether_service->Shutdown();
 
-  VerifyLastShutdownReason(
-      chromeos::tether::TetherComponent::ShutdownReason::USER_LOGGED_OUT);
+  VerifyLastShutdownReason(TetherComponent::ShutdownReason::USER_LOGGED_OUT);
 }
 
 TEST_F(TetherServiceTest, TestNoTetherHosts) {
   fake_tether_host_fetcher_factory_->SetNoInitialDevices();
   CreateTetherService();
 
-  EXPECT_EQ(
-      chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE,
-      network_state_handler()->GetTechnologyState(
-          chromeos::NetworkTypePattern::Tether()));
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE,
+            network_state_handler()->GetTechnologyState(
+                NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(false /* expected_active */);
 
   // Simulate this being the final state of Tether by passing time.
@@ -897,14 +857,13 @@ TEST_F(TetherServiceTest, TestNoTetherHosts) {
 // TODO(https://crbug.com/893878): Fix disabled test.
 TEST_F(TetherServiceTest, DISABLED_TestProhibitedByPolicy) {
   profile_->GetPrefs()->SetBoolean(
-      chromeos::multidevice_setup::kInstantTetheringAllowedPrefName, false);
+      multidevice_setup::kInstantTetheringAllowedPrefName, false);
 
   CreateTetherService();
 
-  EXPECT_EQ(
-      chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_PROHIBITED,
-      network_state_handler()->GetTechnologyState(
-          chromeos::NetworkTypePattern::Tether()));
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_PROHIBITED,
+            network_state_handler()->GetTechnologyState(
+                NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(false /* expected_active */);
 
   VerifyTetherFeatureStateRecorded(
@@ -916,10 +875,9 @@ TEST_F(TetherServiceTest, TestBluetoothNotPresent) {
 
   CreateTetherService();
 
-  EXPECT_EQ(
-      chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE,
-      network_state_handler()->GetTechnologyState(
-          chromeos::NetworkTypePattern::Tether()));
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE,
+            network_state_handler()->GetTechnologyState(
+                NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(false /* expected_active */);
 
   // Simulate this being the final state of Tether by passing time.
@@ -938,19 +896,18 @@ TEST_F(TetherServiceTest, TestMetricsFalsePositives) {
   set_is_adapter_present(true);
   SetIsBluetoothPowered(true);
 
-  EXPECT_EQ(
-      chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE,
-      network_state_handler()->GetTechnologyState(
-          chromeos::NetworkTypePattern::Tether()));
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE,
+            network_state_handler()->GetTechnologyState(
+                NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(false /* expected_active */);
 
   fake_tether_host_fetcher_factory_->last_created()->set_tether_hosts(
       test_devices_);
   fake_tether_host_fetcher_factory_->last_created()->NotifyTetherHostsUpdated();
 
-  EXPECT_EQ(chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
             network_state_handler()->GetTechnologyState(
-                chromeos::NetworkTypePattern::Tether()));
+                NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(true /* expected_active */);
 
   // No metric should have been recorded for BLE_NOT_PRESENT and
@@ -968,8 +925,7 @@ TEST_F(TetherServiceTest, TestMetricsFalsePositives) {
   ASSERT_FALSE(mock_timer_->IsRunning());
 
   ShutdownTetherService();
-  VerifyLastShutdownReason(
-      chromeos::tether::TetherComponent::ShutdownReason::USER_LOGGED_OUT);
+  VerifyLastShutdownReason(TetherComponent::ShutdownReason::USER_LOGGED_OUT);
 }
 
 TEST_F(TetherServiceTest, TestWifiNotPresent) {
@@ -977,10 +933,9 @@ TEST_F(TetherServiceTest, TestWifiNotPresent) {
 
   CreateTetherService();
 
-  EXPECT_EQ(
-      chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE,
-      network_state_handler()->GetTechnologyState(
-          chromeos::NetworkTypePattern::Tether()));
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE,
+            network_state_handler()->GetTechnologyState(
+                NetworkTypePattern::Tether()));
 
   VerifyTetherFeatureStateRecorded(
       TetherService::TetherFeatureState::WIFI_NOT_PRESENT,
@@ -992,57 +947,51 @@ TEST_F(TetherServiceTest, TestIsBluetoothPowered) {
 
   CreateTetherService();
 
-  EXPECT_EQ(
-      chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_UNINITIALIZED,
-      network_state_handler()->GetTechnologyState(
-          chromeos::NetworkTypePattern::Tether()));
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_UNINITIALIZED,
+            network_state_handler()->GetTechnologyState(
+                NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(false /* expected_active */);
 
   SetIsBluetoothPowered(true);
 
-  EXPECT_EQ(chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
             network_state_handler()->GetTechnologyState(
-                chromeos::NetworkTypePattern::Tether()));
+                NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(true /* expected_active */);
 
   SetIsBluetoothPowered(false);
 
-  EXPECT_EQ(
-      chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_UNINITIALIZED,
-      network_state_handler()->GetTechnologyState(
-          chromeos::NetworkTypePattern::Tether()));
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_UNINITIALIZED,
+            network_state_handler()->GetTechnologyState(
+                NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(false /* expected_active */);
 
   VerifyTetherFeatureStateRecorded(
       TetherService::TetherFeatureState::BLUETOOTH_DISABLED,
       2 /* expected_count */);
-  VerifyLastShutdownReason(
-      chromeos::tether::TetherComponent::ShutdownReason::BLUETOOTH_DISABLED);
+  VerifyLastShutdownReason(TetherComponent::ShutdownReason::BLUETOOTH_DISABLED);
 }
 
 // TODO(https://crbug.com/893878): Fix disabled test.
 TEST_F(TetherServiceTest, DISABLED_TestCellularIsUnavailable) {
   manager_test()->RemoveTechnology(shill::kTypeCellular);
-  ASSERT_EQ(
-      chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE,
-      network_state_handler()->GetTechnologyState(
-          chromeos::NetworkTypePattern::Cellular()));
+  ASSERT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE,
+            network_state_handler()->GetTechnologyState(
+                NetworkTypePattern::Cellular()));
 
   CreateTetherService();
 
   SetTetherTechnologyStateEnabled(false);
-  EXPECT_EQ(
-      chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_AVAILABLE,
-      network_state_handler()->GetTechnologyState(
-          chromeos::NetworkTypePattern::Tether()));
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_AVAILABLE,
+            network_state_handler()->GetTechnologyState(
+                NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(false /* expected_active */);
-  VerifyLastShutdownReason(
-      chromeos::tether::TetherComponent::ShutdownReason::PREF_DISABLED);
+  VerifyLastShutdownReason(TetherComponent::ShutdownReason::PREF_DISABLED);
 
   SetTetherTechnologyStateEnabled(true);
-  EXPECT_EQ(chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
             network_state_handler()->GetTechnologyState(
-                chromeos::NetworkTypePattern::Tether()));
+                NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(true /* expected_active */);
 
   VerifyTetherFeatureStateRecorded(TetherService::TetherFeatureState::ENABLED,
@@ -1060,44 +1009,40 @@ TEST_F(TetherServiceTest, DISABLED_TestCellularIsAvailable) {
 
   // Cellular disabled
   SetCellularTechnologyStateEnabled(false);
-  ASSERT_EQ(
-      chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_AVAILABLE,
-      network_state_handler()->GetTechnologyState(
-          chromeos::NetworkTypePattern::Cellular()));
+  ASSERT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_AVAILABLE,
+            network_state_handler()->GetTechnologyState(
+                NetworkTypePattern::Cellular()));
   VerifyTetherActiveStatus(false /* expected_active */);
 
   SetTetherTechnologyStateEnabled(false);
-  EXPECT_EQ(
-      chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE,
-      network_state_handler()->GetTechnologyState(
-          chromeos::NetworkTypePattern::Tether()));
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE,
+            network_state_handler()->GetTechnologyState(
+                NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(false /* expected_active */);
 
   SetTetherTechnologyStateEnabled(true);
-  EXPECT_EQ(
-      chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE,
-      network_state_handler()->GetTechnologyState(
-          chromeos::NetworkTypePattern::Tether()));
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE,
+            network_state_handler()->GetTechnologyState(
+                NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(false /* expected_active */);
 
   // Cellular enabled
   SetCellularTechnologyStateEnabled(true);
-  ASSERT_EQ(chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
+  ASSERT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
             network_state_handler()->GetTechnologyState(
-                chromeos::NetworkTypePattern::Cellular()));
+                NetworkTypePattern::Cellular()));
   VerifyTetherActiveStatus(true /* expected_active */);
 
   SetTetherTechnologyStateEnabled(false);
-  EXPECT_EQ(
-      chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_AVAILABLE,
-      network_state_handler()->GetTechnologyState(
-          chromeos::NetworkTypePattern::Tether()));
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_AVAILABLE,
+            network_state_handler()->GetTechnologyState(
+                NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(false /* expected_active */);
 
   SetTetherTechnologyStateEnabled(true);
-  EXPECT_EQ(chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
             network_state_handler()->GetTechnologyState(
-                chromeos::NetworkTypePattern::Tether()));
+                NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(true /* expected_active */);
 
   SetCellularTechnologyStateEnabled(false);
@@ -1105,23 +1050,21 @@ TEST_F(TetherServiceTest, DISABLED_TestCellularIsAvailable) {
   VerifyTetherFeatureStateRecorded(
       TetherService::TetherFeatureState::CELLULAR_DISABLED,
       2 /* expected_count */);
-  VerifyLastShutdownReason(
-      chromeos::tether::TetherComponent::ShutdownReason::CELLULAR_DISABLED);
+  VerifyLastShutdownReason(TetherComponent::ShutdownReason::CELLULAR_DISABLED);
 }
 
 // TODO(https://crbug.com/893878): Fix disabled test.
 TEST_F(TetherServiceTest, DISABLED_TestDisabled) {
   profile_->GetPrefs()->SetBoolean(
-      chromeos::multidevice_setup::kInstantTetheringEnabledPrefName, false);
+      multidevice_setup::kInstantTetheringEnabledPrefName, false);
 
   CreateTetherService();
 
-  EXPECT_EQ(
-      chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_AVAILABLE,
-      network_state_handler()->GetTechnologyState(
-          chromeos::NetworkTypePattern::Tether()));
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_AVAILABLE,
+            network_state_handler()->GetTechnologyState(
+                NetworkTypePattern::Tether()));
   EXPECT_FALSE(profile_->GetPrefs()->GetBoolean(
-      chromeos::multidevice_setup::kInstantTetheringEnabledPrefName));
+      multidevice_setup::kInstantTetheringEnabledPrefName));
   VerifyTetherActiveStatus(false /* expected_active */);
 
   VerifyTetherFeatureStateRecorded(
@@ -1133,29 +1076,28 @@ TEST_F(TetherServiceTest, DISABLED_TestDisabled) {
 TEST_F(TetherServiceTest, DISABLED_TestEnabled) {
   CreateTetherService();
 
-  EXPECT_EQ(chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
             network_state_handler()->GetTechnologyState(
-                chromeos::NetworkTypePattern::Tether()));
+                NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(true /* expected_active */);
 
   SetTetherTechnologyStateEnabled(false);
-  EXPECT_EQ(
-      chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_AVAILABLE,
-      network_state_handler()->GetTechnologyState(
-          chromeos::NetworkTypePattern::Tether()));
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_AVAILABLE,
+            network_state_handler()->GetTechnologyState(
+                NetworkTypePattern::Tether()));
   EXPECT_FALSE(profile_->GetPrefs()->GetBoolean(
-      chromeos::multidevice_setup::kInstantTetheringEnabledPrefName));
+      multidevice_setup::kInstantTetheringEnabledPrefName));
   VerifyTetherActiveStatus(false /* expected_active */);
   histogram_tester_.ExpectBucketCount(
       "InstantTethering.UserPreference.OnToggle", false,
       1u /* expected_count */);
 
   SetTetherTechnologyStateEnabled(true);
-  EXPECT_EQ(chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
             network_state_handler()->GetTechnologyState(
-                chromeos::NetworkTypePattern::Tether()));
+                NetworkTypePattern::Tether()));
   EXPECT_TRUE(profile_->GetPrefs()->GetBoolean(
-      chromeos::multidevice_setup::kInstantTetheringEnabledPrefName));
+      multidevice_setup::kInstantTetheringEnabledPrefName));
   VerifyTetherActiveStatus(true /* expected_active */);
   histogram_tester_.ExpectBucketCount(
       "InstantTethering.UserPreference.OnToggle", true,
@@ -1163,27 +1105,26 @@ TEST_F(TetherServiceTest, DISABLED_TestEnabled) {
 
   VerifyTetherFeatureStateRecorded(TetherService::TetherFeatureState::ENABLED,
                                    2 /* expected_count */);
-  VerifyLastShutdownReason(
-      chromeos::tether::TetherComponent::ShutdownReason::PREF_DISABLED);
+  VerifyLastShutdownReason(TetherComponent::ShutdownReason::PREF_DISABLED);
 }
 
 TEST_F(TetherServiceTest, TestUserPrefChangesViaFeatureStateChange) {
   // Start with the feature disabled.
   initial_feature_state_ =
-      chromeos::multidevice_setup::mojom::FeatureState::kDisabledByUser;
+      multidevice_setup::mojom::FeatureState::kDisabledByUser;
   profile_->GetPrefs()->SetBoolean(
-      chromeos::multidevice_setup::kInstantTetheringEnabledPrefName, false);
+      multidevice_setup::kInstantTetheringEnabledPrefName, false);
   CreateTetherService();
 
   // Enable the feature.
   profile_->GetPrefs()->SetBoolean(
-      chromeos::multidevice_setup::kInstantTetheringEnabledPrefName, true);
+      multidevice_setup::kInstantTetheringEnabledPrefName, true);
   fake_multidevice_setup_client_->SetFeatureState(
-      chromeos::multidevice_setup::mojom::Feature::kInstantTethering,
-      chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser);
-  EXPECT_EQ(chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
+      multidevice_setup::mojom::Feature::kInstantTethering,
+      multidevice_setup::mojom::FeatureState::kEnabledByUser);
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
             network_state_handler()->GetTechnologyState(
-                chromeos::NetworkTypePattern::Tether()));
+                NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(true /* expected_active */);
   VerifyTetherFeatureStateRecorded(TetherService::TetherFeatureState::ENABLED,
                                    1 /* expected_count */);
@@ -1193,14 +1134,13 @@ TEST_F(TetherServiceTest, TestUserPrefChangesViaFeatureStateChange) {
 
   // Disable the feature.
   profile_->GetPrefs()->SetBoolean(
-      chromeos::multidevice_setup::kInstantTetheringEnabledPrefName, false);
+      multidevice_setup::kInstantTetheringEnabledPrefName, false);
   fake_multidevice_setup_client_->SetFeatureState(
-      chromeos::multidevice_setup::mojom::Feature::kInstantTethering,
-      chromeos::multidevice_setup::mojom::FeatureState::kDisabledByUser);
-  EXPECT_EQ(
-      chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_AVAILABLE,
-      network_state_handler()->GetTechnologyState(
-          chromeos::NetworkTypePattern::Tether()));
+      multidevice_setup::mojom::Feature::kInstantTethering,
+      multidevice_setup::mojom::FeatureState::kDisabledByUser);
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_AVAILABLE,
+            network_state_handler()->GetTechnologyState(
+                NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(false /* expected_active */);
   VerifyTetherFeatureStateRecorded(
       TetherService::TetherFeatureState::USER_PREFERENCE_DISABLED,
@@ -1211,13 +1151,13 @@ TEST_F(TetherServiceTest, TestUserPrefChangesViaFeatureStateChange) {
 
   // Enable the feature.
   profile_->GetPrefs()->SetBoolean(
-      chromeos::multidevice_setup::kInstantTetheringEnabledPrefName, true);
+      multidevice_setup::kInstantTetheringEnabledPrefName, true);
   fake_multidevice_setup_client_->SetFeatureState(
-      chromeos::multidevice_setup::mojom::Feature::kInstantTethering,
-      chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser);
-  EXPECT_EQ(chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
+      multidevice_setup::mojom::Feature::kInstantTethering,
+      multidevice_setup::mojom::FeatureState::kEnabledByUser);
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
             network_state_handler()->GetTechnologyState(
-                chromeos::NetworkTypePattern::Tether()));
+                NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(true /* expected_active */);
   VerifyTetherFeatureStateRecorded(TetherService::TetherFeatureState::ENABLED,
                                    2 /* expected_count */);
@@ -1225,32 +1165,30 @@ TEST_F(TetherServiceTest, TestUserPrefChangesViaFeatureStateChange) {
       "InstantTethering.UserPreference.OnToggle", true,
       2u /* expected_count */);
 
-  VerifyLastShutdownReason(
-      chromeos::tether::TetherComponent::ShutdownReason::PREF_DISABLED);
+  VerifyLastShutdownReason(TetherComponent::ShutdownReason::PREF_DISABLED);
 }
 
 TEST_F(TetherServiceTest, TestUserPrefChangesViaTechnologyStateChange) {
   CreateTetherService();
 
-  EXPECT_EQ(chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
             network_state_handler()->GetTechnologyState(
-                chromeos::NetworkTypePattern::Tether()));
+                NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(true /* expected_active */);
 
   SetTetherTechnologyStateEnabled(false);
   fake_multidevice_setup_client_->InvokePendingSetFeatureEnabledStateCallback(
-      chromeos::multidevice_setup::mojom::Feature::kInstantTethering,
+      multidevice_setup::mojom::Feature::kInstantTethering,
       false /* expected_enabled */, absl::nullopt /* expected_auth_token */,
       true /* success */);
   profile_->GetPrefs()->SetBoolean(
-      chromeos::multidevice_setup::kInstantTetheringEnabledPrefName, false);
+      multidevice_setup::kInstantTetheringEnabledPrefName, false);
   fake_multidevice_setup_client_->SetFeatureState(
-      chromeos::multidevice_setup::mojom::Feature::kInstantTethering,
-      chromeos::multidevice_setup::mojom::FeatureState::kDisabledByUser);
-  EXPECT_EQ(
-      chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_AVAILABLE,
-      network_state_handler()->GetTechnologyState(
-          chromeos::NetworkTypePattern::Tether()));
+      multidevice_setup::mojom::Feature::kInstantTethering,
+      multidevice_setup::mojom::FeatureState::kDisabledByUser);
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_AVAILABLE,
+            network_state_handler()->GetTechnologyState(
+                NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(false /* expected_active */);
   histogram_tester_.ExpectBucketCount(
       "InstantTethering.UserPreference.OnToggle", false,
@@ -1258,17 +1196,17 @@ TEST_F(TetherServiceTest, TestUserPrefChangesViaTechnologyStateChange) {
 
   SetTetherTechnologyStateEnabled(true);
   fake_multidevice_setup_client_->InvokePendingSetFeatureEnabledStateCallback(
-      chromeos::multidevice_setup::mojom::Feature::kInstantTethering,
+      multidevice_setup::mojom::Feature::kInstantTethering,
       true /* expected_enabled */, absl::nullopt /* expected_auth_token */,
       false /* success */);
   profile_->GetPrefs()->SetBoolean(
-      chromeos::multidevice_setup::kInstantTetheringEnabledPrefName, true);
+      multidevice_setup::kInstantTetheringEnabledPrefName, true);
   fake_multidevice_setup_client_->SetFeatureState(
-      chromeos::multidevice_setup::mojom::Feature::kInstantTethering,
-      chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser);
-  EXPECT_EQ(chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
+      multidevice_setup::mojom::Feature::kInstantTethering,
+      multidevice_setup::mojom::FeatureState::kEnabledByUser);
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
             network_state_handler()->GetTechnologyState(
-                chromeos::NetworkTypePattern::Tether()));
+                NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(true /* expected_active */);
   histogram_tester_.ExpectBucketCount(
       "InstantTethering.UserPreference.OnToggle", true,
@@ -1276,8 +1214,7 @@ TEST_F(TetherServiceTest, TestUserPrefChangesViaTechnologyStateChange) {
 
   VerifyTetherFeatureStateRecorded(TetherService::TetherFeatureState::ENABLED,
                                    2 /* expected_count */);
-  VerifyLastShutdownReason(
-      chromeos::tether::TetherComponent::ShutdownReason::PREF_DISABLED);
+  VerifyLastShutdownReason(TetherComponent::ShutdownReason::PREF_DISABLED);
 }
 
 // TODO(https://crbug.com/893878): Fix disabled test.
@@ -1309,8 +1246,7 @@ TEST_F(TetherServiceTest, DISABLED_TestEnabledMultipleChanges) {
   EXPECT_EQ(updated_technology_state_count,
             tether_service_->updated_technology_state_count());
 
-  VerifyLastShutdownReason(
-      chromeos::tether::TetherComponent::ShutdownReason::PREF_DISABLED);
+  VerifyLastShutdownReason(TetherComponent::ShutdownReason::PREF_DISABLED);
 }
 
 }  // namespace tether

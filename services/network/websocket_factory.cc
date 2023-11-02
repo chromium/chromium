@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@ WebSocketFactory::WebSocketFactory(NetworkContext* context)
 WebSocketFactory::~WebSocketFactory() {
   // Subtle: This is important to avoid WebSocketFactory::Remove calls during
   // |connections_| destruction.
-  connections_.clear();
+  WebSocketSet connections = std::move(connections_);
 }
 
 void WebSocketFactory::CreateWebSocket(

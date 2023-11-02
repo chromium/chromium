@@ -24,7 +24,6 @@
 
 #include "third_party/blink/renderer/core/paint/theme_painter_default.h"
 
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/public/resources/grit/blink_image_resources.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -41,6 +40,7 @@
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
+#include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/native_theme.h"
@@ -48,8 +48,6 @@
 namespace blink {
 
 namespace {
-
-const unsigned kDefaultButtonBackgroundColor = 0xffdddddd;
 
 bool IsIndeterminate(const Element& element) {
   if (const auto* input = DynamicTo<HTMLInputElement>(element))
@@ -78,7 +76,9 @@ class DirectionFlippingScope {
   STACK_ALLOCATED();
 
  public:
-  DirectionFlippingScope(const LayoutObject&, const PaintInfo&, const IntRect&);
+  DirectionFlippingScope(const LayoutObject&,
+                         const PaintInfo&,
+                         const gfx::Rect&);
   ~DirectionFlippingScope();
 
  private:
@@ -89,7 +89,7 @@ class DirectionFlippingScope {
 DirectionFlippingScope::DirectionFlippingScope(
     const LayoutObject& layout_object,
     const PaintInfo& paint_info,
-    const IntRect& rect)
+    const gfx::Rect& rect)
     : needs_flipping_(!layout_object.StyleRef().IsLeftToRightDirection()),
       paint_info_(paint_info) {
   if (!needs_flipping_)
@@ -105,42 +105,43 @@ DirectionFlippingScope::~DirectionFlippingScope() {
   paint_info_.context.Restore();
 }
 
-IntRect DeterminateProgressValueRectFor(const LayoutProgress& layout_progress,
-                                        const IntRect& rect) {
+gfx::Rect DeterminateProgressValueRectFor(const LayoutProgress& layout_progress,
+                                          const gfx::Rect& rect) {
   int dx = rect.width() * layout_progress.GetPosition();
-  return IntRect(rect.x(), rect.y(), dx, rect.height());
+  return gfx::Rect(rect.x(), rect.y(), dx, rect.height());
 }
 
-IntRect IndeterminateProgressValueRectFor(const LayoutProgress& layout_progress,
-                                          const IntRect& rect) {
+gfx::Rect IndeterminateProgressValueRectFor(
+    const LayoutProgress& layout_progress,
+    const gfx::Rect& rect) {
   // Value comes from default of GTK+.
   static const int kProgressActivityBlocks = 5;
 
   int value_width = rect.width() / kProgressActivityBlocks;
   int movable_width = rect.width() - value_width;
   if (movable_width <= 0)
-    return IntRect();
+    return gfx::Rect();
 
   double progress = layout_progress.AnimationProgress();
   if (progress < 0.5) {
-    return IntRect(rect.x() + progress * 2 * movable_width, rect.y(),
-                   value_width, rect.height());
+    return gfx::Rect(rect.x() + progress * 2 * movable_width, rect.y(),
+                     value_width, rect.height());
   }
-  return IntRect(rect.x() + (1.0 - progress) * 2 * movable_width, rect.y(),
-                 value_width, rect.height());
+  return gfx::Rect(rect.x() + (1.0 - progress) * 2 * movable_width, rect.y(),
+                   value_width, rect.height());
 }
 
-IntRect ProgressValueRectFor(const LayoutProgress& layout_progress,
-                             const IntRect& rect) {
+gfx::Rect ProgressValueRectFor(const LayoutProgress& layout_progress,
+                               const gfx::Rect& rect) {
   return layout_progress.IsDeterminate()
              ? DeterminateProgressValueRectFor(layout_progress, rect)
              : IndeterminateProgressValueRectFor(layout_progress, rect);
 }
 
-IntRect ConvertToPaintingRect(const LayoutObject& input_layout_object,
-                              const LayoutObject& part_layout_object,
-                              PhysicalRect part_rect,
-                              const IntRect& local_offset) {
+gfx::Rect ConvertToPaintingRect(const LayoutObject& input_layout_object,
+                                const LayoutObject& part_layout_object,
+                                PhysicalRect part_rect,
+                                const gfx::Rect& local_offset) {
   // Compute an offset between the partLayoutObject and the inputLayoutObject.
   PhysicalOffset offset_from_input_layout_object =
       -part_layout_object.OffsetFromAncestor(&input_layout_object);
@@ -149,13 +150,10 @@ IntRect ConvertToPaintingRect(const LayoutObject& input_layout_object,
   // Account for the local drawing offset.
   part_rect.Move(PhysicalOffset(local_offset.origin()));
 
-  return PixelSnappedIntRect(part_rect);
+  return ToPixelSnappedRect(part_rect);
 }
 
 absl::optional<SkColor> GetAccentColor(const ComputedStyle& style) {
-  if (!RuntimeEnabledFeatures::CSSAccentColorEnabled())
-    return absl::nullopt;
-
   absl::optional<Color> css_accent_color = style.AccentColorResolved();
   if (css_accent_color)
     return css_accent_color->Rgb();
@@ -178,7 +176,7 @@ bool ThemePainterDefault::PaintCheckbox(const Element& element,
                                         const Document&,
                                         const ComputedStyle& style,
                                         const PaintInfo& paint_info,
-                                        const IntRect& rect) {
+                                        const gfx::Rect& rect) {
   WebThemeEngine::ExtraParams extra_params;
   extra_params.button = WebThemeEngine::ButtonExtraParams();
   extra_params.button.checked = IsChecked(element);
@@ -190,7 +188,7 @@ bool ThemePainterDefault::PaintCheckbox(const Element& element,
   gfx::Rect unzoomed_rect =
       ApplyZoomToRect(rect, paint_info, state_saver, zoom_level);
 
-  Platform::Current()->ThemeEngine()->Paint(
+  WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       paint_info.context.Canvas(), WebThemeEngine::kPartCheckbox,
       GetWebThemeState(element), unzoomed_rect, &extra_params,
       style.UsedColorScheme(), GetAccentColor(style));
@@ -201,7 +199,7 @@ bool ThemePainterDefault::PaintRadio(const Element& element,
                                      const Document&,
                                      const ComputedStyle& style,
                                      const PaintInfo& paint_info,
-                                     const IntRect& rect) {
+                                     const gfx::Rect& rect) {
   WebThemeEngine::ExtraParams extra_params;
   extra_params.button = WebThemeEngine::ButtonExtraParams();
   extra_params.button.checked = IsChecked(element);
@@ -212,7 +210,7 @@ bool ThemePainterDefault::PaintRadio(const Element& element,
   gfx::Rect unzoomed_rect =
       ApplyZoomToRect(rect, paint_info, state_saver, zoom_level);
 
-  Platform::Current()->ThemeEngine()->Paint(
+  WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       paint_info.context.Canvas(), WebThemeEngine::kPartRadio,
       GetWebThemeState(element), unzoomed_rect, &extra_params,
       style.UsedColorScheme(), GetAccentColor(style));
@@ -223,28 +221,23 @@ bool ThemePainterDefault::PaintButton(const Element& element,
                                       const Document&,
                                       const ComputedStyle& style,
                                       const PaintInfo& paint_info,
-                                      const IntRect& rect) {
+                                      const gfx::Rect& rect) {
   WebThemeEngine::ExtraParams extra_params;
   extra_params.button = WebThemeEngine::ButtonExtraParams();
   extra_params.button.has_border = true;
-  extra_params.button.background_color = kDefaultButtonBackgroundColor;
   extra_params.button.zoom = style.EffectiveZoom();
-  if (style.HasBackground()) {
-    extra_params.button.background_color =
-        style.VisitedDependentColor(GetCSSPropertyBackgroundColor()).Rgb();
-  }
 
-  Platform::Current()->ThemeEngine()->Paint(
+  WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       paint_info.context.Canvas(), WebThemeEngine::kPartButton,
-      GetWebThemeState(element), ToGfxRect(rect), &extra_params,
-      style.UsedColorScheme(), GetAccentColor(style));
+      GetWebThemeState(element), rect, &extra_params, style.UsedColorScheme(),
+      GetAccentColor(style));
   return false;
 }
 
 bool ThemePainterDefault::PaintTextField(const Element& element,
                                          const ComputedStyle& style,
                                          const PaintInfo& paint_info,
-                                         const IntRect& rect) {
+                                         const gfx::Rect& rect) {
   // WebThemeEngine does not handle border rounded corner and background image
   // so return true to draw CSS border and background.
   if (style.HasBorderRadius() || style.HasBackgroundImage())
@@ -262,12 +255,14 @@ bool ThemePainterDefault::PaintTextField(const Element& element,
       style.VisitedDependentColor(GetCSSPropertyBackgroundColor());
   extra_params.text_field.background_color = background_color.Rgb();
   extra_params.text_field.auto_complete_active =
-      DynamicTo<HTMLFormControlElement>(element)->HighlightAutofilled();
+      DynamicTo<HTMLFormControlElement>(element)->HighlightAutofilled() ||
+      DynamicTo<HTMLFormControlElement>(element)->GetAutofillState() ==
+          WebAutofillState::kPreviewed;
 
-  Platform::Current()->ThemeEngine()->Paint(
+  WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       paint_info.context.Canvas(), WebThemeEngine::kPartTextField,
-      GetWebThemeState(element), ToGfxRect(rect), &extra_params,
-      style.UsedColorScheme(), GetAccentColor(style));
+      GetWebThemeState(element), rect, &extra_params, style.UsedColorScheme(),
+      GetAccentColor(style));
   return false;
 }
 
@@ -275,7 +270,7 @@ bool ThemePainterDefault::PaintMenuList(const Element& element,
                                         const Document& document,
                                         const ComputedStyle& style,
                                         const PaintInfo& paint_info,
-                                        const IntRect& rect) {
+                                        const gfx::Rect& rect) {
   WebThemeEngine::ExtraParams extra_params;
   // Match Chromium Win behaviour of showing all borders if any are shown.
   extra_params.menu_list.has_border = style.HasBorder();
@@ -299,10 +294,10 @@ bool ThemePainterDefault::PaintMenuList(const Element& element,
 
   SetupMenuListArrow(document, style, rect, extra_params);
 
-  Platform::Current()->ThemeEngine()->Paint(
+  WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       paint_info.context.Canvas(), WebThemeEngine::kPartMenuList,
-      GetWebThemeState(element), ToGfxRect(rect), &extra_params,
-      style.UsedColorScheme(), GetAccentColor(style));
+      GetWebThemeState(element), rect, &extra_params, style.UsedColorScheme(),
+      GetAccentColor(style));
   return false;
 }
 
@@ -310,25 +305,25 @@ bool ThemePainterDefault::PaintMenuListButton(const Element& element,
                                               const Document& document,
                                               const ComputedStyle& style,
                                               const PaintInfo& paint_info,
-                                              const IntRect& rect) {
+                                              const gfx::Rect& rect) {
   WebThemeEngine::ExtraParams extra_params;
   extra_params.menu_list.has_border = false;
   extra_params.menu_list.has_border_radius = style.HasBorderRadius();
-  extra_params.menu_list.background_color = Color::kTransparent;
+  extra_params.menu_list.background_color = SK_ColorTRANSPARENT;
   extra_params.menu_list.fill_content_area = false;
   SetupMenuListArrow(document, style, rect, extra_params);
 
-  Platform::Current()->ThemeEngine()->Paint(
+  WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       paint_info.context.Canvas(), WebThemeEngine::kPartMenuList,
-      GetWebThemeState(element), ToGfxRect(rect), &extra_params,
-      style.UsedColorScheme(), GetAccentColor(style));
+      GetWebThemeState(element), rect, &extra_params, style.UsedColorScheme(),
+      GetAccentColor(style));
   return false;
 }
 
 void ThemePainterDefault::SetupMenuListArrow(
     const Document& document,
     const ComputedStyle& style,
-    const IntRect& rect,
+    const gfx::Rect& rect,
     WebThemeEngine::ExtraParams& extra_params) {
   const int left = rect.x() + floorf(style.BorderLeftWidth());
   const int right = rect.x() + rect.width() - floorf(style.BorderRightWidth());
@@ -356,7 +351,7 @@ void ThemePainterDefault::SetupMenuListArrow(
 bool ThemePainterDefault::PaintSliderTrack(const Element& element,
                                            const LayoutObject& layout_object,
                                            const PaintInfo& paint_info,
-                                           const IntRect& rect,
+                                           const gfx::Rect& rect,
                                            const ComputedStyle& style) {
   WebThemeEngine::ExtraParams extra_params;
   extra_params.slider.vertical =
@@ -377,7 +372,7 @@ bool ThemePainterDefault::PaintSliderTrack(const Element& element,
     LayoutBox* thumb = thumb_element ? thumb_element->GetLayoutBox() : nullptr;
     LayoutBox* input_box = input->GetLayoutBox();
     if (thumb) {
-      IntRect thumb_rect = PixelSnappedIntRect(thumb->FrameRect());
+      gfx::Rect thumb_rect = ToPixelSnappedRect(thumb->FrameRect());
       extra_params.slider.thumb_x = thumb_rect.x() +
                                     input_box->PaddingLeft().ToInt() +
                                     input_box->BorderLeft().ToInt();
@@ -387,17 +382,17 @@ bool ThemePainterDefault::PaintSliderTrack(const Element& element,
     }
   }
 
-  Platform::Current()->ThemeEngine()->Paint(
+  WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       paint_info.context.Canvas(), WebThemeEngine::kPartSliderTrack,
-      GetWebThemeState(element), ToGfxRect(rect), &extra_params,
-      style.UsedColorScheme(), GetAccentColor(style));
+      GetWebThemeState(element), rect, &extra_params, style.UsedColorScheme(),
+      GetAccentColor(style));
   return false;
 }
 
 bool ThemePainterDefault::PaintSliderThumb(const Element& element,
                                            const ComputedStyle& style,
                                            const PaintInfo& paint_info,
-                                           const IntRect& rect) {
+                                           const gfx::Rect& rect) {
   WebThemeEngine::ExtraParams extra_params;
   extra_params.slider.vertical =
       style.EffectiveAppearance() == kSliderThumbVerticalPart;
@@ -414,17 +409,17 @@ bool ThemePainterDefault::PaintSliderThumb(const Element& element,
   absl::optional<SkColor> accent_color =
       GetAccentColor(*slider_element->HostInput()->EnsureComputedStyle());
 
-  Platform::Current()->ThemeEngine()->Paint(
+  WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       paint_info.context.Canvas(), WebThemeEngine::kPartSliderThumb,
-      GetWebThemeState(element), ToGfxRect(rect), &extra_params,
-      style.UsedColorScheme(), accent_color);
+      GetWebThemeState(element), rect, &extra_params, style.UsedColorScheme(),
+      accent_color);
   return false;
 }
 
 bool ThemePainterDefault::PaintInnerSpinButton(const Element& element,
                                                const ComputedStyle& style,
                                                const PaintInfo& paint_info,
-                                               const IntRect& rect) {
+                                               const gfx::Rect& rect) {
   WebThemeEngine::ExtraParams extra_params;
 
   bool spin_up = false;
@@ -440,23 +435,23 @@ bool ThemePainterDefault::PaintInnerSpinButton(const Element& element,
   extra_params.inner_spin.spin_up = spin_up;
   extra_params.inner_spin.read_only = read_only;
 
-  Platform::Current()->ThemeEngine()->Paint(
+  WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       paint_info.context.Canvas(), WebThemeEngine::kPartInnerSpinButton,
-      GetWebThemeState(element), ToGfxRect(rect), &extra_params,
-      style.UsedColorScheme(), GetAccentColor(style));
+      GetWebThemeState(element), rect, &extra_params, style.UsedColorScheme(),
+      GetAccentColor(style));
   return false;
 }
 
 bool ThemePainterDefault::PaintProgressBar(const Element& element,
                                            const LayoutObject& layout_object,
                                            const PaintInfo& paint_info,
-                                           const IntRect& rect,
+                                           const gfx::Rect& rect,
                                            const ComputedStyle& style) {
   const auto* layout_progress = DynamicTo<LayoutProgress>(layout_object);
   if (!layout_progress)
     return true;
 
-  IntRect value_rect = ProgressValueRectFor(*layout_progress, rect);
+  gfx::Rect value_rect = ProgressValueRectFor(*layout_progress, rect);
 
   WebThemeEngine::ExtraParams extra_params;
   extra_params.progress_bar.determinate = layout_progress->IsDeterminate();
@@ -467,31 +462,31 @@ bool ThemePainterDefault::PaintProgressBar(const Element& element,
   extra_params.progress_bar.zoom = style.EffectiveZoom();
 
   DirectionFlippingScope scope(layout_object, paint_info, rect);
-  Platform::Current()->ThemeEngine()->Paint(
+  WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       paint_info.context.Canvas(), WebThemeEngine::kPartProgressBar,
-      GetWebThemeState(element), ToGfxRect(rect), &extra_params,
-      style.UsedColorScheme(), GetAccentColor(style));
+      GetWebThemeState(element), rect, &extra_params, style.UsedColorScheme(),
+      GetAccentColor(style));
   return false;
 }
 
 bool ThemePainterDefault::PaintTextArea(const Element& element,
                                         const ComputedStyle& style,
                                         const PaintInfo& paint_info,
-                                        const IntRect& rect) {
+                                        const gfx::Rect& rect) {
   return PaintTextField(element, style, paint_info, rect);
 }
 
 bool ThemePainterDefault::PaintSearchField(const Element& element,
                                            const ComputedStyle& style,
                                            const PaintInfo& paint_info,
-                                           const IntRect& rect) {
+                                           const gfx::Rect& rect) {
   return PaintTextField(element, style, paint_info, rect);
 }
 
 bool ThemePainterDefault::PaintSearchFieldCancelButton(
     const LayoutObject& cancel_button_object,
     const PaintInfo& paint_info,
-    const IntRect& r) {
+    const gfx::Rect& r) {
   // Get the layoutObject of <input> element.
   Node* input = cancel_button_object.GetNode()->OwnerShadowHost();
   const LayoutObject& base_layout_object = input && input->GetLayoutObject()
@@ -515,7 +510,7 @@ bool ThemePainterDefault::PaintSearchFieldCancelButton(
       input_content_box.Y() +
           (input_content_box.Height() - cancel_button_size + 1) / 2,
       cancel_button_size, cancel_button_size);
-  IntRect painting_rect = ConvertToPaintingRect(
+  gfx::Rect painting_rect = ConvertToPaintingRect(
       input_layout_box, cancel_button_object, cancel_button_rect, r);
   mojom::blink::ColorScheme color_scheme =
       cancel_button_object.StyleRef().UsedColorScheme();
@@ -544,8 +539,9 @@ bool ThemePainterDefault::PaintSearchFieldCancelButton(
     Color search_field_text_color =
         cancel_button_object.StyleRef().VisitedDependentColor(
             GetCSSPropertyColor());
-    bool text_is_dark = color_utils::GetRelativeLuminance(
-                            SkColor(search_field_text_color)) < 0.5;
+    bool text_is_dark =
+        color_utils::GetRelativeLuminance(
+            search_field_text_color.ToSkColorDeprecated()) < 0.5;
     color_scheme_adjusted_cancel_image =
         text_is_dark ? cancel_image_hc_light_mode : cancel_image_dark_mode;
     color_scheme_adjusted_cancel_pressed_image =
@@ -562,23 +558,23 @@ bool ThemePainterDefault::PaintSearchFieldCancelButton(
             ? cancel_pressed_image
             : cancel_pressed_image_dark_mode;
   }
+  Image* target_image = To<Element>(cancel_button_object.GetNode())->IsActive()
+                            ? color_scheme_adjusted_cancel_pressed_image
+                            : color_scheme_adjusted_cancel_image;
+  // TODO(penglin): It's no need to do further classification here but
+  // force Dark mode may not pick up the correct resource image now.
   paint_info.context.DrawImage(
-      To<Element>(cancel_button_object.GetNode())->IsActive()
-          ? color_scheme_adjusted_cancel_pressed_image
-          : color_scheme_adjusted_cancel_image,
-      Image::kSyncDecode,
-      PaintAutoDarkMode(cancel_button_object.StyleRef(),
-                        DarkModeFilter::ElementRole::kBackground),
-      FloatRect(painting_rect));
+      target_image, Image::kSyncDecode, ImageAutoDarkMode::Disabled(),
+      ImagePaintTimingInfo(), gfx::RectF(painting_rect));
   return false;
 }
 
 gfx::Rect ThemePainterDefault::ApplyZoomToRect(
-    const IntRect& rect,
+    const gfx::Rect& rect,
     const PaintInfo& paint_info,
     GraphicsContextStateSaver& state_saver,
     float zoom_level) {
-  gfx::Rect unzoomed_rect = ToGfxRect(rect);
+  gfx::Rect unzoomed_rect = rect;
   if (zoom_level != 1) {
     state_saver.Save();
     unzoomed_rect.set_width(unzoomed_rect.width() / zoom_level);

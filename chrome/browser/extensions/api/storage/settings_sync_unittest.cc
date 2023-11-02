@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -21,8 +22,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/sync/model/sync_change_processor.h"
 #include "components/sync/model/sync_error_factory.h"
-#include "components/sync/test/model/sync_change_processor_wrapper_for_test.h"
-#include "components/sync/test/model/sync_error_factory_mock.h"
+#include "components/sync/test/sync_change_processor_wrapper_for_test.h"
+#include "components/sync/test/sync_error_factory_mock.h"
 #include "components/value_store/test_value_store_factory.h"
 #include "components/value_store/testing_value_store.h"
 #include "content/public/test/browser_task_environment.h"
@@ -79,7 +80,7 @@ testing::AssertionResult ValuesEq(
     return testing::AssertionFailure() <<
         "Expected: " << GetJson(*expected) << ", actual NULL";
   }
-  if (!expected->Equals(actual)) {
+  if (*expected != *actual) {
     return testing::AssertionFailure() <<
         "Expected: " << GetJson(*expected) << ", actual: " << GetJson(*actual);
   }
@@ -97,7 +98,8 @@ testing::AssertionResult SettingsEq(const char* _1,
            << "Expected: " << expected
            << ", actual has error: " << actual.status().message;
   }
-  return ValuesEq(_1, _2, &expected, &actual.settings());
+  base::Value settings(actual.PassSettings());
+  return ValuesEq(_1, _2, &expected, &settings);
 }
 
 // SyncChangeProcessor which just records the changes made, accessed after
@@ -295,7 +297,7 @@ class ExtensionSettingsSyncTest : public testing::Test {
   std::unique_ptr<MockSyncChangeProcessor> sync_processor_;
   std::unique_ptr<syncer::SyncChangeProcessorWrapperForTest>
       sync_processor_wrapper_;
-  SyncValueStoreCache* sync_cache_;
+  raw_ptr<SyncValueStoreCache> sync_cache_;
 };
 
 // Get a semblance of coverage for both EXTENSION_SETTINGS and APP_SETTINGS
@@ -379,7 +381,7 @@ TEST_F(ExtensionSettingsSyncTest, InSyncDataDoesNotInvokeSync) {
     EXPECT_EQ(1u, sync_processor_->changes().size());
     SettingSyncData* change = sync_processor_->GetOnlyChange("s1", "foo");
     EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE, change->change_type());
-    EXPECT_TRUE(value2.Equals(&change->value()));
+    EXPECT_EQ(value2, change->value());
 
     GetSyncableService(model_type)->StopSyncing(model_type);
   });
@@ -410,10 +412,10 @@ TEST_F(ExtensionSettingsSyncTest, LocalDataWithNoSyncDataIsPushedToSync) {
     EXPECT_EQ(2u, sync_processor_->changes().size());
     SettingSyncData* change = sync_processor_->GetOnlyChange("s1", "foo");
     EXPECT_EQ(syncer::SyncChange::ACTION_ADD, change->change_type());
-    EXPECT_TRUE(value1.Equals(&change->value()));
+    EXPECT_EQ(value1, change->value());
     change = sync_processor_->GetOnlyChange("s2", "bar");
     EXPECT_EQ(syncer::SyncChange::ACTION_ADD, change->change_type());
-    EXPECT_TRUE(value2.Equals(&change->value()));
+    EXPECT_EQ(value2, change->value());
 
     GetSyncableService(model_type)->StopSyncing(model_type);
   });
@@ -577,16 +579,16 @@ TEST_F(ExtensionSettingsSyncTest, PushToSync) {
 
     SettingSyncData* change = sync_processor_->GetOnlyChange("s1", "bar");
     EXPECT_EQ(syncer::SyncChange::ACTION_ADD, change->change_type());
-    EXPECT_TRUE(value2.Equals(&change->value()));
+    EXPECT_EQ(value2, change->value());
     sync_processor_->GetOnlyChange("s2", "bar");
     EXPECT_EQ(syncer::SyncChange::ACTION_ADD, change->change_type());
-    EXPECT_TRUE(value2.Equals(&change->value()));
+    EXPECT_EQ(value2, change->value());
     change = sync_processor_->GetOnlyChange("s3", "foo");
     EXPECT_EQ(syncer::SyncChange::ACTION_ADD, change->change_type());
-    EXPECT_TRUE(value1.Equals(&change->value()));
+    EXPECT_EQ(value1, change->value());
     change = sync_processor_->GetOnlyChange("s4", "foo");
     EXPECT_EQ(syncer::SyncChange::ACTION_ADD, change->change_type());
-    EXPECT_TRUE(value1.Equals(&change->value()));
+    EXPECT_EQ(value1, change->value());
 
     // Change something locally, storage1/3 the new setting and storage2/4 the
     // initial setting, for all combinations of local vs sync intialisation and
@@ -599,16 +601,16 @@ TEST_F(ExtensionSettingsSyncTest, PushToSync) {
 
     change = sync_processor_->GetOnlyChange("s1", "bar");
     EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE, change->change_type());
-    EXPECT_TRUE(value1.Equals(&change->value()));
+    EXPECT_EQ(value1, change->value());
     change = sync_processor_->GetOnlyChange("s2", "foo");
     EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE, change->change_type());
-    EXPECT_TRUE(value2.Equals(&change->value()));
+    EXPECT_EQ(value2, change->value());
     change = sync_processor_->GetOnlyChange("s3", "bar");
     EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE, change->change_type());
-    EXPECT_TRUE(value1.Equals(&change->value()));
+    EXPECT_EQ(value1, change->value());
     change = sync_processor_->GetOnlyChange("s4", "foo");
     EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE, change->change_type());
-    EXPECT_TRUE(value2.Equals(&change->value()));
+    EXPECT_EQ(value2, change->value());
 
     // Remove something locally, storage1/3 the new setting and storage2/4 the
     // initial setting, for all combinations of local vs sync intialisation and
@@ -1433,7 +1435,7 @@ TEST_F(ExtensionSettingsSyncTest, Dots) {
       EXPECT_EQ(syncer::SyncChange::ACTION_ADD, sync_data->change_type());
       EXPECT_EQ("ext", sync_data->extension_id());
       EXPECT_EQ("key.with.spot", sync_data->key());
-      EXPECT_TRUE(sync_data->value().Equals(string_value.get()));
+      EXPECT_EQ(sync_data->value(), *string_value);
     }
   });
 }
@@ -1449,25 +1451,24 @@ namespace {
 static void UnlimitedSyncStorageTestCallback(ValueStore* sync_storage) {
   // Sync storage should still run out after ~100K; the unlimitedStorage
   // permission can't apply to sync.
-  std::unique_ptr<base::Value> kilobyte = settings_test_util::CreateKilobyte();
+  base::Value kilobyte = settings_test_util::CreateKilobyte();
   for (int i = 0; i < 100; ++i) {
-    sync_storage->Set(ValueStore::DEFAULTS, base::NumberToString(i), *kilobyte);
+    sync_storage->Set(ValueStore::DEFAULTS, base::NumberToString(i), kilobyte);
   }
 
-  EXPECT_FALSE(sync_storage->Set(ValueStore::DEFAULTS, "WillError", *kilobyte)
+  EXPECT_FALSE(sync_storage->Set(ValueStore::DEFAULTS, "WillError", kilobyte)
                    .status()
                    .ok());
 }
 
 static void UnlimitedLocalStorageTestCallback(ValueStore* local_storage) {
   // Local storage should never run out.
-  std::unique_ptr<base::Value> megabyte = settings_test_util::CreateMegabyte();
+  base::Value megabyte = settings_test_util::CreateMegabyte();
   for (int i = 0; i < 7; ++i) {
-    local_storage->Set(ValueStore::DEFAULTS, base::NumberToString(i),
-                       *megabyte);
+    local_storage->Set(ValueStore::DEFAULTS, base::NumberToString(i), megabyte);
   }
 
-  EXPECT_TRUE(local_storage->Set(ValueStore::DEFAULTS, "WontError", *megabyte)
+  EXPECT_TRUE(local_storage->Set(ValueStore::DEFAULTS, "WontError", megabyte)
                   .status()
                   .ok());
 }

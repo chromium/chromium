@@ -1,10 +1,13 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -22,13 +25,48 @@
 #include "components/autofill/core/browser/test_event_waiter.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/prerender_test_util.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view_observer.h"
 
 namespace autofill {
+
+class ViewVisibilityWaiter : public views::ViewObserver {
+ public:
+  explicit ViewVisibilityWaiter(views::View* observed_view,
+                                bool expected_visible)
+      : view_(observed_view), expected_visible_(expected_visible) {
+    observation_.Observe(view_.get());
+  }
+  ViewVisibilityWaiter(const ViewVisibilityWaiter&) = delete;
+  ViewVisibilityWaiter& operator=(const ViewVisibilityWaiter&) = delete;
+
+  ~ViewVisibilityWaiter() override = default;
+
+  // Wait for changes to occur, or return immediately if view already has
+  // expected visibility.
+  void Wait() {
+    if (expected_visible_ != view_->GetVisible())
+      run_loop_.Run();
+  }
+
+ private:
+  // views::ViewObserver:
+  void OnViewVisibilityChanged(views::View* observed_view,
+                               views::View* starting_view) override {
+    if (expected_visible_ == observed_view->GetVisible())
+      run_loop_.Quit();
+  }
+
+  raw_ptr<views::View> view_;
+  const bool expected_visible_;
+  base::RunLoop run_loop_;
+  base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
+};
 
 class VirtualCardManualFallbackBubbleViewsInteractiveUiTest
     : public InProcessBrowserTest,
@@ -143,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
 
 // Invokes the bubble and verifies the bubble is dismissed upon page navigation.
 // Flaky on macOS, Linux, and Win. crbug.com/1254101
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_DismissBubbleUponNavigation DISABLED_DismissBubbleUponNavigation
 #else
 #define MAYBE_DismissBubbleUponNavigation DismissBubbleUponNavigation
@@ -200,8 +238,8 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
   EXPECT_EQ(clipboard_text, u"5454545454545454");
   histogram_tester.ExpectBucketCount(
       "Autofill.VirtualCardManualFallbackBubble.FieldClicked",
-      AutofillMetrics::VirtualCardManualFallbackBubbleFieldClickedMetric::
-          VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_FIELD_CLICKED_CARD_NUMBER,
+      autofill_metrics::VirtualCardManualFallbackBubbleFieldClicked::
+          kCardNumber,
       1);
 
   // Expiration month:
@@ -211,8 +249,8 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
   EXPECT_EQ(clipboard_text, base::ASCIIToUTF16(test::NextMonth().c_str()));
   histogram_tester.ExpectBucketCount(
       "Autofill.VirtualCardManualFallbackBubble.FieldClicked",
-      AutofillMetrics::VirtualCardManualFallbackBubbleFieldClickedMetric::
-          VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_FIELD_CLICKED_EXPIRATION_MONTH,
+      autofill_metrics::VirtualCardManualFallbackBubbleFieldClicked::
+          kExpirationMonth,
       1);
 
   // Expiration year:
@@ -222,8 +260,8 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
   EXPECT_EQ(clipboard_text, base::ASCIIToUTF16(test::NextYear().c_str()));
   histogram_tester.ExpectBucketCount(
       "Autofill.VirtualCardManualFallbackBubble.FieldClicked",
-      AutofillMetrics::VirtualCardManualFallbackBubbleFieldClickedMetric::
-          VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_FIELD_CLICKED_EXPIRATION_YEAR,
+      autofill_metrics::VirtualCardManualFallbackBubbleFieldClicked::
+          kExpirationYear,
       1);
 
   // Cardholder name:
@@ -233,8 +271,8 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
   EXPECT_EQ(clipboard_text, u"John Smith");
   histogram_tester.ExpectBucketCount(
       "Autofill.VirtualCardManualFallbackBubble.FieldClicked",
-      AutofillMetrics::VirtualCardManualFallbackBubbleFieldClickedMetric::
-          VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_FIELD_CLICKED_CARDHOLDER_NAME,
+      autofill_metrics::VirtualCardManualFallbackBubbleFieldClicked::
+          kCardholderName,
       1);
 
   // CVC:
@@ -244,9 +282,7 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
   EXPECT_EQ(clipboard_text, u"345");
   histogram_tester.ExpectBucketCount(
       "Autofill.VirtualCardManualFallbackBubble.FieldClicked",
-      AutofillMetrics::VirtualCardManualFallbackBubbleFieldClickedMetric::
-          VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_FIELD_CLICKED_CVC,
-      1);
+      autofill_metrics::VirtualCardManualFallbackBubbleFieldClicked::kCVC, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
@@ -270,9 +306,7 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
   // Confirm .FirstShow metrics.
   histogram_tester.ExpectUniqueSample(
       "Autofill.VirtualCardManualFallbackBubble.Result.FirstShow",
-      AutofillMetrics::VirtualCardManualFallbackBubbleResultMetric::
-          VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CLOSED,
-      1);
+      autofill_metrics::VirtualCardManualFallbackBubbleResult::kClosed, 1);
 
   // Bubble is reshown by the user.
   ReshowBubble();
@@ -290,9 +324,7 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
   // Confirm .Reshows metrics.
   histogram_tester.ExpectUniqueSample(
       "Autofill.VirtualCardManualFallbackBubble.Result.Reshows",
-      AutofillMetrics::VirtualCardManualFallbackBubbleResultMetric::
-          VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CLOSED,
-      1);
+      autofill_metrics::VirtualCardManualFallbackBubbleResult::kClosed, 1);
 
   // Bubble is reshown by the user. Closing a reshown bubble makes the browser
   // inactive for some reason, so we must reactivate it first.
@@ -321,8 +353,7 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
   // Confirm metrics.
   histogram_tester.ExpectBucketCount(
       "Autofill.VirtualCardManualFallbackBubble.Result.FirstShow",
-      AutofillMetrics::VirtualCardManualFallbackBubbleResultMetric::
-          VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_NOT_INTERACTED,
+      autofill_metrics::VirtualCardManualFallbackBubbleResult::kNotInteracted,
       1);
 }
 
@@ -367,6 +398,68 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
   EXPECT_EQ(clicked_button_tooltip, cardholder_name_button->GetTooltipText());
   EXPECT_EQ(u"Full Carter " + clicked_button_tooltip,
             cardholder_name_button->GetAccessibleName());
+}
+
+class VirtualCardManualFallbackBubbleViewsPrerenderTest
+    : public VirtualCardManualFallbackBubbleViewsInteractiveUiTest {
+ public:
+  VirtualCardManualFallbackBubbleViewsPrerenderTest()
+      : prerender_helper_(base::BindRepeating(
+            &VirtualCardManualFallbackBubbleViewsPrerenderTest::web_contents,
+            base::Unretained(this))) {}
+  ~VirtualCardManualFallbackBubbleViewsPrerenderTest() override = default;
+
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    ASSERT_TRUE(embedded_test_server()->Start());
+    InProcessBrowserTest::SetUp();
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ protected:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsPrerenderTest,
+                       KeepBubbleOnPrerenderNavigation) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate the primary page with the initial url.
+  const GURL& url = embedded_test_server()->GetURL("/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Show the bubble and wait until the icon visibility changes.
+  {
+    ShowBubble();
+    ViewVisibilityWaiter(GetIconView(), true).Wait();
+  }
+
+  ASSERT_TRUE(GetBubbleViews());
+  ASSERT_TRUE(IsIconVisible());
+
+  // Start a prerender.
+  prerender_helper_.AddPrerender(
+      embedded_test_server()->GetURL("/title1.html"));
+
+  // Ensure the bubble isn't closed by prerender navigation and isn't from the
+  // prerendered page.
+  EXPECT_TRUE(GetBubbleViews());
+  EXPECT_TRUE(IsIconVisible());
+  histogram_tester.ExpectBucketCount(
+      "Autofill.VirtualCardManualFallbackBubble.Shown", false, 1);
+
+  // Activate a prerendered page and wait until the icon visibility changes.
+  {
+    prerender_helper_.NavigatePrimaryPage(url);
+    ViewVisibilityWaiter(GetIconView(), false).Wait();
+  }
+
+  // Ensure the bubble hides after prerender Activation.
+  EXPECT_FALSE(GetBubbleViews());
+  EXPECT_FALSE(IsIconVisible());
 }
 
 }  // namespace autofill

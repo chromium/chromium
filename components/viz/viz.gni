@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -10,19 +10,17 @@ import("//testing/test.gni")
 # that code path.
 enable_gl_backend_tests = !is_fuchsia
 
-# Controls if GLRenderer related tests should be built and run. Platforms where
-# GLRenderer is no longer used (other than Linux) can stop running tests for it.
-enable_gl_renderer_tests = enable_gl_backend_tests && !is_android && !is_win
-
 # TODO(samans): Support more configurations.
 # CFI issue: https://crbug.com/967819
-# LSAN issue: https://crbug.com/971357
 # Fuchsia ARM64 https://crbug.com/1058247
 enable_vulkan_backend_tests =
-    enable_vulkan && ((is_linux && !is_chromecast && !is_cfi && !is_lsan) ||
-                      (is_fuchsia && target_cpu == "x64"))
+    enable_vulkan &&
+    ((is_linux && !is_castos && !is_cfi) || (is_fuchsia && target_cpu == "x64"))
 
 enable_dawn_backend_tests = skia_use_dawn && enable_skia_dawn_gtests
+
+# TODO(crbug.com/1336055): Determine whether is_cast_android needs this.
+enable_cast_overlay_strategy = is_castos || is_cast_android
 
 viz_remove_configs = []
 viz_add_configs = [ "//build/config:precompiled_headers" ]

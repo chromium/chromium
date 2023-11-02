@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/schemeful_site.h"
 #include "net/dns/public/secure_dns_policy.h"
@@ -55,9 +55,9 @@ TEST(ClientSocketPool, GroupIdOperators) {
 
   const SchemefulSite kSiteA(GURL("http://a.test/"));
   const SchemefulSite kSiteB(GURL("http://b.test/"));
-  const NetworkIsolationKey kNetworkIsolationKeys[] = {
-      NetworkIsolationKey(kSiteA, kSiteA),
-      NetworkIsolationKey(kSiteB, kSiteB),
+  const NetworkAnonymizationKey kNetworkAnonymizationKeys[] = {
+      NetworkAnonymizationKey(kSiteA, kSiteA, /*is_cross_site=*/false),
+      NetworkAnonymizationKey(kSiteB, kSiteB, /*is_cross_site=*/false),
   };
 
   const SecureDnsPolicy kDisableSecureDnsValues[] = {SecureDnsPolicy::kAllow,
@@ -76,12 +76,13 @@ TEST(ClientSocketPool, GroupIdOperators) {
         SCOPED_TRACE(host);
         for (const auto& privacy_mode : kPrivacyModes) {
           SCOPED_TRACE(privacy_mode);
-          for (const auto& network_isolation_key : kNetworkIsolationKeys) {
-            SCOPED_TRACE(network_isolation_key.ToString());
+          for (const auto& network_anonymization_key :
+               kNetworkAnonymizationKeys) {
+            SCOPED_TRACE(network_anonymization_key.ToDebugString());
             for (const auto& secure_dns_policy : kDisableSecureDnsValues) {
               ClientSocketPool::GroupId group_id(
                   url::SchemeHostPort(scheme, host, port), privacy_mode,
-                  network_isolation_key, secure_dns_policy);
+                  network_anonymization_key, secure_dns_policy);
               for (const auto& lower_group_id : group_ids) {
                 EXPECT_FALSE(lower_group_id == group_id);
                 EXPECT_TRUE(lower_group_id < group_id);
@@ -112,38 +113,38 @@ TEST(ClientSocketPool, GroupIdToString) {
   EXPECT_EQ("http://foo <null null>",
             ClientSocketPool::GroupId(
                 url::SchemeHostPort(url::kHttpScheme, "foo", 80),
-                PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
+                PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
                 SecureDnsPolicy::kAllow)
                 .ToString());
   EXPECT_EQ("http://bar:443 <null null>",
             ClientSocketPool::GroupId(
                 url::SchemeHostPort(url::kHttpScheme, "bar", 443),
-                PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
+                PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
                 SecureDnsPolicy::kAllow)
                 .ToString());
   EXPECT_EQ("pm/http://bar <null null>",
             ClientSocketPool::GroupId(
                 url::SchemeHostPort(url::kHttpScheme, "bar", 80),
-                PrivacyMode::PRIVACY_MODE_ENABLED, NetworkIsolationKey(),
+                PrivacyMode::PRIVACY_MODE_ENABLED, NetworkAnonymizationKey(),
                 SecureDnsPolicy::kAllow)
                 .ToString());
 
   EXPECT_EQ("https://foo:80 <null null>",
             ClientSocketPool::GroupId(
                 url::SchemeHostPort(url::kHttpsScheme, "foo", 80),
-                PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
+                PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
                 SecureDnsPolicy::kAllow)
                 .ToString());
   EXPECT_EQ("https://bar <null null>",
             ClientSocketPool::GroupId(
                 url::SchemeHostPort(url::kHttpsScheme, "bar", 443),
-                PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
+                PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
                 SecureDnsPolicy::kAllow)
                 .ToString());
   EXPECT_EQ("pm/https://bar:80 <null null>",
             ClientSocketPool::GroupId(
                 url::SchemeHostPort(url::kHttpsScheme, "bar", 80),
-                PrivacyMode::PRIVACY_MODE_ENABLED, NetworkIsolationKey(),
+                PrivacyMode::PRIVACY_MODE_ENABLED, NetworkAnonymizationKey(),
                 SecureDnsPolicy::kAllow)
                 .ToString());
 
@@ -151,15 +152,16 @@ TEST(ClientSocketPool, GroupIdToString) {
             ClientSocketPool::GroupId(
                 url::SchemeHostPort(url::kHttpsScheme, "foo", 443),
                 PrivacyMode::PRIVACY_MODE_DISABLED,
-                NetworkIsolationKey(SchemefulSite(GURL("https://foo.test")),
-                                    SchemefulSite(GURL("https://bar.test"))),
+                NetworkAnonymizationKey(SchemefulSite(GURL("https://foo.test")),
+                                        SchemefulSite(GURL("https://bar.test")),
+                                        /*is_cross_site=*/true),
                 SecureDnsPolicy::kAllow)
                 .ToString());
 
   EXPECT_EQ("dsd/pm/https://bar:80 <null null>",
             ClientSocketPool::GroupId(
                 url::SchemeHostPort(url::kHttpsScheme, "bar", 80),
-                PrivacyMode::PRIVACY_MODE_ENABLED, NetworkIsolationKey(),
+                PrivacyMode::PRIVACY_MODE_ENABLED, NetworkAnonymizationKey(),
                 SecureDnsPolicy::kDisable)
                 .ToString());
 }
@@ -174,17 +176,19 @@ TEST(ClientSocketPool, PartitionConnectionsByNetworkIsolationKeyDisabled) {
   ClientSocketPool::GroupId group_id1(
       url::SchemeHostPort(url::kHttpsScheme, "foo", 443),
       PrivacyMode::PRIVACY_MODE_DISABLED,
-      NetworkIsolationKey(kSiteFoo, kSiteFoo), SecureDnsPolicy::kAllow);
+      NetworkAnonymizationKey(kSiteFoo, kSiteFoo, /*is_cross_site=*/false),
+      SecureDnsPolicy::kAllow);
 
   ClientSocketPool::GroupId group_id2(
       url::SchemeHostPort(url::kHttpsScheme, "foo", 443),
       PrivacyMode::PRIVACY_MODE_DISABLED,
-      NetworkIsolationKey(kSiteBar, kSiteBar), SecureDnsPolicy::kAllow);
+      NetworkAnonymizationKey(kSiteBar, kSiteBar, /*is_cross_site=*/false),
+      SecureDnsPolicy::kAllow);
 
-  EXPECT_FALSE(group_id1.network_isolation_key().IsFullyPopulated());
-  EXPECT_FALSE(group_id2.network_isolation_key().IsFullyPopulated());
-  EXPECT_EQ(group_id1.network_isolation_key(),
-            group_id2.network_isolation_key());
+  EXPECT_FALSE(group_id1.network_anonymization_key().IsFullyPopulated());
+  EXPECT_FALSE(group_id2.network_anonymization_key().IsFullyPopulated());
+  EXPECT_EQ(group_id1.network_anonymization_key(),
+            group_id2.network_anonymization_key());
   EXPECT_EQ(group_id1, group_id2);
 
   EXPECT_EQ("https://foo", group_id1.ToString());

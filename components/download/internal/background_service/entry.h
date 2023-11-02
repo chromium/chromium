@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -72,6 +72,10 @@ struct Entry {
 
   // The parameters that define the actual download request to make.
   RequestParams request_params;
+
+  // Custom key value pair provided by client and will sent back to client. See
+  // |custom_data| in DownloadParams for more details.
+  DownloadParams::CustomData custom_data;
 
   // The state of the download to help the scheduler and loggers make the right
   // decisions about the download object.

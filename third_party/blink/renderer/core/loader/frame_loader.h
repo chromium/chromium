@@ -38,6 +38,7 @@
 #include "base/callback_helpers.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/page_state/page_state.mojom-blink-forward.h"
@@ -45,14 +46,13 @@
 #include "third_party/blink/public/web/web_document_loader.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
-#include "third_party/blink/public/web/web_origin_policy.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/frame_types.h"
-#include "third_party/blink/renderer/core/frame/policy_container.h"
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
 #include "third_party/blink/renderer/core/loader/history_item.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/core/loader/old_document_info_for_commit.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -64,8 +64,10 @@ class FetchClientSettingsObject;
 class Frame;
 class LocalFrame;
 class LocalFrameClient;
+class PolicyContainer;
 class ProgressTracker;
 class ResourceRequest;
+class StorageKey;
 class TracedValue;
 struct FrameLoadRequest;
 struct WebNavigationInfo;
@@ -83,7 +85,9 @@ class CORE_EXPORT FrameLoader final {
   FrameLoader& operator=(const FrameLoader&) = delete;
   ~FrameLoader();
 
-  void Init(std::unique_ptr<PolicyContainer> policy_container);
+  void Init(const DocumentToken& document_token,
+            std::unique_ptr<PolicyContainer> policy_container,
+            const StorageKey& storage_key);
 
   ResourceRequest ResourceRequestForReload(
       WebFrameLoadType,
@@ -141,6 +145,7 @@ class CORE_EXPORT FrameLoader final {
   void DidExplicitOpen();
 
   String UserAgent() const;
+  String FullUserAgent() const;
   String ReducedUserAgent() const;
   absl::optional<blink::UserAgentMetadata> UserAgentMetadata() const;
 
@@ -177,28 +182,26 @@ class CORE_EXPORT FrameLoader final {
   enum class NavigationFinishState { kSuccess, kFailure };
   void DidFinishNavigation(NavigationFinishState);
 
-  void DidFinishSameDocumentNavigation(const KURL&,
-                                       WebFrameLoadType,
-                                       HistoryItem*);
+  void ProcessScrollForSameDocumentNavigation(
+      const KURL&,
+      WebFrameLoadType,
+      absl::optional<HistoryItem::ViewState>,
+      mojom::blink::ScrollRestorationType);
 
   // This will attempt to detach the current document. It will dispatch unload
   // events and abort XHR requests. Returns true if the frame is ready to
   // receive the next document commit, or false otherwise.
-  bool DetachDocument(SecurityOrigin* committing_origin,
-                      absl::optional<Document::UnloadEventTiming>*);
+  bool DetachDocument();
 
   bool ShouldClose(bool is_reload = false);
 
-  // Dispatches the Unload event for the current document. If this is due to the
-  // commit of a navigation, both |committing_origin| and the
-  // Optional<Document::UnloadEventTiming>* should be non null.
-  // |committing_origin| is the origin of the document that is being committed.
-  // If it is allowed to access the unload timings of the current document, the
-  // Document::UnloadEventTiming will be created and populated.
-  // If the dispatch of the unload event is not due to a commit, both parameters
-  // should be null.
-  void DispatchUnloadEvent(SecurityOrigin* committing_origin,
-                           absl::optional<Document::UnloadEventTiming>*);
+  // Dispatches the Unload event for the current document and fills in this
+  // document's info in OldDocumentInfoForCommit if
+  // `will_commit_new_document_in_this_frame` is true (which will only be
+  // the case when the current document in this frame is being unloaded for
+  // committing a new document).
+  void DispatchUnloadEventAndFillOldDocumentInfoIfNeeded(
+      bool will_commit_new_document_in_this_frame);
 
   bool AllowPlugins();
 
@@ -212,7 +215,8 @@ class CORE_EXPORT FrameLoader final {
 
   // Like ClearClientNavigation, but also notifies the client to actually cancel
   // the navigation.
-  void CancelClientNavigation();
+  void CancelClientNavigation(
+      CancelNavigationReason reason = CancelNavigationReason::kOther);
 
   void Trace(Visitor*) const;
 
@@ -259,6 +263,7 @@ class CORE_EXPORT FrameLoader final {
 
  private:
   bool AllowRequestForThisFrame(const FrameLoadRequest&);
+
   WebFrameLoadType HandleInitialEmptyDocumentReplacementIfNeeded(
       const KURL& url,
       WebFrameLoadType);
@@ -286,18 +291,12 @@ class CORE_EXPORT FrameLoader final {
 
   // Commits the given |document_loader|.
   void CommitDocumentLoader(DocumentLoader* document_loader,
-                            const absl::optional<Document::UnloadEventTiming>&,
                             HistoryItem* previous_history_item,
                             CommitReason);
 
   LocalFrameClient* Client() const;
 
-  Member<LocalFrame> frame_;
-
-  Member<ProgressTracker> progress_tracker_;
-
-  // Document loader for frame loading.
-  Member<DocumentLoader> document_loader_;
+  String ApplyUserAgentOverrideAndLog(const String& user_agent) const;
 
   // This struct holds information about a navigation, which is being
   // initiated by the client through the browser process, until the navigation
@@ -306,6 +305,13 @@ class CORE_EXPORT FrameLoader final {
     KURL url;
   };
   std::unique_ptr<ClientNavigationState> client_navigation_;
+
+  Member<LocalFrame> frame_;
+
+  Member<ProgressTracker> progress_tracker_;
+
+  // Document loader for frame loading.
+  Member<DocumentLoader> document_loader_;
 
   // The state is set to kInitialized when Init() completes, and kDetached
   // during teardown in Detach().

@@ -1,16 +1,17 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/payments/payment_request.h"
 #include "third_party/blink/renderer/modules/payments/payment_test_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/googletest/src/googletest/include/gtest/gtest.h"
 
@@ -31,7 +32,7 @@ class MockPaymentProvider : public payments::mojom::blink::PaymentRequest {
     has_closed_ = true;
   }
 
-  void Show(bool is_user_gesture, bool wait_for_updated_details) override {}
+  void Show(bool wait_for_updated_details) override {}
   void Retry(
       payments::mojom::blink::PaymentValidationErrorsPtr errors) override {
     NOTREACHED();
@@ -106,6 +107,8 @@ TEST_F(PaymentRequestForInvalidOriginOrSslTest,
        ShowIsRejected_WhenShowBeforeIdle) {
   PaymentRequestV8TestingScope scope;
   PaymentRequest* request = CreatePaymentRequest(scope);
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   ScriptPromise promise =
       request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
   // PaymentRequest.OnError() runs in this idle.
@@ -122,6 +125,8 @@ TEST_F(PaymentRequestForInvalidOriginOrSslTest,
   // PaymentRequest.OnError() runs in this idle.
   platform_->RunUntilIdle();
 
+  // The show() will be rejected before user activation is checked, so there is
+  // no need to trigger user-activation here.
   ScriptPromise promise =
       request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
   EXPECT_EQ("NotSupportedError: mock error message",
@@ -135,6 +140,8 @@ TEST_F(PaymentRequestForInvalidOriginOrSslTest,
   // PaymentRequest.OnError() runs in this idle.
   platform_->RunUntilIdle();
 
+  // The show()s will be rejected before user activation is checked, so there is
+  // no need to trigger user-activation here.
   ScriptPromise promise1 =
       request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
   EXPECT_EQ("NotSupportedError: mock error message",

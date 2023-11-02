@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/syslog_logging.h"
-#include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
@@ -189,7 +188,7 @@ std::string SystemLogDelegate::GetPolicyAsJSON() {
   }
   auto client = std::make_unique<ChromePolicyConversionsClient>(
       ProfileManager::GetActiveUserProfile());
-  return policy::DictionaryPolicyConversions(std::move(client))
+  return DictionaryPolicyConversions(std::move(client))
       .EnableUserPolicies(include_user_policies)
       .EnableDeviceLocalAccountPolicies(true)
       .EnableDeviceInfo(true)
@@ -524,12 +523,12 @@ base::Time SystemLogUploader::UpdateLocalStateForLogs() {
   const base::Time now = base::Time::NowFromSystemTime();
   PrefService* local_state = g_browser_process->local_state();
 
-  const base::ListValue* prev_log_uploads =
-      local_state->GetList(policy::prefs::kStoreLogStatesAcrossReboots);
+  const base::Value::List& prev_log_uploads =
+      local_state->GetList(prefs::kStoreLogStatesAcrossReboots);
 
   std::vector<base::Time> updated_log_uploads;
 
-  for (const base::Value& item : prev_log_uploads->GetList()) {
+  for (const base::Value& item : prev_log_uploads) {
     // ListValue stores Value type and Value does not support base::Time,
     // so we store double and convert to base::Time here.
     const base::Time current_item_time =
@@ -558,7 +557,7 @@ base::Time SystemLogUploader::UpdateLocalStateForLogs() {
   for (auto it : updated_log_uploads) {
     updated_prev_log_uploads.Append(it.ToDoubleT());
   }
-  local_state->Set(policy::prefs::kStoreLogStatesAcrossReboots,
+  local_state->Set(prefs::kStoreLogStatesAcrossReboots,
                    updated_prev_log_uploads);
 
   // Write the changes to the disk to prevent loss of changes.
@@ -584,8 +583,7 @@ void SystemLogUploader::ScheduleNextSystemLogUpload(base::TimeDelta frequency) {
   // To ensure at most kLogThrottleCount logs are uploaded in
   // kLogThrottleWindowDuration time.
   if (g_browser_process->local_state()
-              ->GetList(policy::prefs::kStoreLogStatesAcrossReboots)
-              ->GetList()
+              ->GetList(prefs::kStoreLogStatesAcrossReboots)
               .size() >= kLogThrottleCount &&
       !frequency.is_zero()) {
     delay = std::max(delay, last_valid_log_upload + kLogThrottleWindowDuration -

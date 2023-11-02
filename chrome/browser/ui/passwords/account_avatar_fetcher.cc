@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,9 +56,11 @@ AccountAvatarFetcher::AccountAvatarFetcher(
 AccountAvatarFetcher::~AccountAvatarFetcher() = default;
 
 void AccountAvatarFetcher::Start(
-    network::mojom::URLLoaderFactory* loader_factory) {
-  fetcher_.Init(std::string(), net::ReferrerPolicy::NEVER_CLEAR,
-                network::mojom::CredentialsMode::kOmit);
+    network::mojom::URLLoaderFactory* loader_factory,
+    const url::Origin& initiator) {
+  fetcher_.Init(net::ReferrerPolicy::NEVER_CLEAR,
+                network::mojom::CredentialsMode::kOmit,
+                net::HttpRequestHeaders(), initiator);
   fetcher_.Start(loader_factory);
 }
 

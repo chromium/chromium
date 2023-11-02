@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -42,7 +42,8 @@
 #       And strip the leading "./" from the output files.
 #
 #   defines (optional)
-#       Extra defines to pass to grit (on top of the global grit_defines list).
+#       Extra defines to pass to grit (on top of the global defines in the
+#       grit_args list).
 #
 #   grit_flags (optional)
 #       List of strings containing extra command-line flags to pass to Grit.
@@ -91,7 +92,7 @@ import("//build/config/compiler/compiler.gni")
 import("//build/config/compute_inputs_for_analyze.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/gcc_toolchain.gni")
-import("//tools/grit/grit_defines.gni")
+import("//tools/grit/grit_args.gni")
 _strip_resource_files = is_android && is_official_build
 _js_minifier = "//tools/grit/minify_with_uglify.py"
 _css_minifier = "//tools/grit/minimize_css.py"
@@ -149,7 +150,7 @@ template("grit") {
     deps = [ "//tools/grit:grit_sources" ]
     outputs = [ "${depfile}.stamp" ] + _grit_outputs + _pak_info_outputs
 
-    _grit_flags = grit_defines
+    _grit_flags = grit_args
 
     # Add extra defines with -D flags.
     if (defined(invoker.defines)) {
@@ -390,12 +391,11 @@ if (is_android) {
     zip(_zip_target_name) {
       base_dir = _grit_output_dir
 
-      # This needs to get outputs from grit's internal target, not the final
-      # source_set.
-      inputs = filter_exclude(get_target_outputs(":${_grit_target_name}_grit"),
-                              [ "*.stamp" ])
+      # No need to depend on the source_set().
+      _grit_dep = ":${_grit_target_name}_grit"
+      deps = [ _grit_dep ]
+      inputs = filter_exclude(get_target_outputs(_grit_dep), [ "*.stamp" ])
       output = _resources_zip
-      deps = [ ":$_grit_target_name" ]
     }
 
     android_generated_resources(target_name) {

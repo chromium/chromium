@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+PASS show: When autofocus is not present, the first focusable shadow-including descendant must be focused
+PASS showModal: When autofocus is not present, the first focusable shadow-including descendant must be focused
+FAIL show: autofocus outside a shadow tree must take precedence over earlier in-shadow-tree focusable elements assert_equals: expected Element node <div></div> but got Element node <button tabindex="-1" autofocus="">Focusable</button>
+FAIL showModal: autofocus outside a shadow tree must take precedence over earlier in-shadow-tree focusable elements assert_equals: expected Element node <div></div> but got Element node <button tabindex="-1" autofocus="">Focusable</button>
+FAIL show: autofocus inside a shadow tree must be ignored: no focusable elements outside the shadow tree assert_equals: expected Element node <button tabindex="-1" class="focus-me">Focusable</button> but got Element node <button tabindex="-1" autofocus="">Focusable</button>
+FAIL showModal: autofocus inside a shadow tree must be ignored: no focusable elements outside the shadow tree assert_equals: expected Element node <button tabindex="-1" class="focus-me">Focusable</button> but got Element node <button tabindex="-1" autofocus="">Focusable</button>
+FAIL show: autofocus inside a shadow tree must be ignored: focusable element before the shadow tree assert_equals: expected Element node <button tabindex="-1" class="focus-me">Focusable</button> but got Element node <div></div>
+FAIL showModal: autofocus inside a shadow tree must be ignored: focusable element before the shadow tree assert_equals: expected Element node <button tabindex="-1" class="focus-me">Focusable</button> but got Element node <div></div>
+FAIL show: autofocus inside a shadow tree must be ignored: focusable element after the shadow tree assert_equals: expected Element node <button tabindex="-1" class="focus-me">Focusable</button> but got Element node <div></div>
+FAIL showModal: autofocus inside a shadow tree must be ignored: focusable element after the shadow tree assert_equals: expected Element node <button tabindex="-1" class="focus-me">Focusable</button> but got Element node <div></div>
+Harness: the test ran to completion.
+

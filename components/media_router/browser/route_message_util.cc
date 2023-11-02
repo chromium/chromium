@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,10 +45,9 @@ PresentationConnectionFromRouteMessage(RouteMessagePtr route_message) {
     case RouteMessage::Type::BINARY:
       return blink::mojom::PresentationConnectionMessage::NewData(
           route_message->data.value());
-    default:
-      NOTREACHED() << "Unknown RouteMessageType " << route_message->type;
-      return blink::mojom::PresentationConnectionMessage::New();
   }
+  NOTREACHED() << "Unknown RouteMessageType " << route_message->type;
+  return nullptr;
 }
 
 }  // namespace message_util

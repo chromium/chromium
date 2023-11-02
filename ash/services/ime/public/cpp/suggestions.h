@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <string>
 
-namespace chromeos {
+namespace ash {
 namespace ime {
 
 enum class TextSuggestionMode {
@@ -45,15 +45,6 @@ struct TextCompletionCandidate {
   float score;
 };
 
-}  // namespace ime
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-namespace ime {
-using ::chromeos::ime::TextCompletionCandidate;
-using ::chromeos::ime::TextSuggestion;
-using ::chromeos::ime::TextSuggestionMode;
 }  // namespace ime
 }  // namespace ash
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -275,7 +275,7 @@ TEST_P(DataPackTest, Write) {
   EXPECT_EQ(fifteen, data);
 
   EXPECT_EQ(5U, pack.GetResourceTableSizeForTesting());
-  EXPECT_EQ(0U, pack.GetAliasTableSizeForTesting());
+  EXPECT_EQ(0U, pack.GetAliasTableSize());
 }
 
 TEST_P(DataPackTest, WriteWithAliases) {
@@ -330,10 +330,10 @@ TEST_P(DataPackTest, WriteWithAliases) {
   EXPECT_EQ(data.data(), data2.data());
 
   EXPECT_EQ(5U, pack.GetResourceTableSizeForTesting());
-  EXPECT_EQ(2U, pack.GetAliasTableSizeForTesting());
+  EXPECT_EQ(2U, pack.GetAliasTableSize());
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 TEST(DataPackTest, ModifiedWhileUsed) {
   base::ScopedTempDir dir;
   ASSERT_TRUE(dir.CreateUniqueTempDir());

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,6 +36,7 @@ class DeviceCommandRefreshMachineCertificateJob : public RemoteCommandJob {
   ash::attestation::MachineCertificateUploader* machine_certificate_uploader_;
 
   // RemoteCommandJob:
+  bool IsExpired(base::TimeTicks now) override;
   void RunImpl(CallbackWithResult succeeded_callback,
                CallbackWithResult failed_callback) override;
 

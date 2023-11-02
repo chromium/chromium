@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,9 +42,9 @@ class POLICY_EXPORT ReportingJobConfigurationBase
   // Callback used once the job is complete.
   using UploadCompleteCallback =
       base::OnceCallback<void(DeviceManagementService::Job* job,
-                              DeviceManagementStatus code,
-                              int net_error,
-                              const base::Value&)>;
+                              DeviceManagementStatus status,
+                              int response_code,
+                              absl::optional<base::Value::Dict>)>;
 
   // Builds a Device dictionary for uploading information about the device to
   // the server.
@@ -53,8 +53,9 @@ class POLICY_EXPORT ReportingJobConfigurationBase
     // Dictionary Key Name
     static const char kDeviceKey[];
 
-    static base::Value BuildDeviceDictionary(const std::string& dm_token,
-                                             const std::string& client_id);
+    static base::Value::Dict BuildDeviceDictionary(
+        const std::string& dm_token,
+        const std::string& client_id);
 
     static std::string GetDMTokenPath();
     static std::string GetClientIdPath();
@@ -143,13 +144,13 @@ class POLICY_EXPORT ReportingJobConfigurationBase
   // Returns an identifying string for UMA.
   virtual std::string GetUmaString() const = 0;
 
-  base::Value payload_;
+  base::Value::Dict payload_;
 
   // Available to set additional fields by the child. An example of a context
   // being generated can be seen with the ::reporting::GetContext function. Once
   // |GetPayload| is called, |context_| will be merged into the payload and
   // reset.
-  absl::optional<base::Value> context_;
+  absl::optional<base::Value::Dict> context_;
 
   UploadCompleteCallback callback_;
 

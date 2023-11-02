@@ -10,6 +10,7 @@ include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/download/FileAccessPermissionHelper.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/init/ChromeBrowserInitializer.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/modules/ModuleInstallUi.java",
+  "+chrome/android/java/src/org/chromium/chrome/browser/sync/SyncService.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/notifications",
   "+chrome/android/java/src/org/chromium/chrome/browser/share",
   "+chrome/services/qrcode_generator",

@@ -1,15 +1,18 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/device_api/managed_configuration_api.h"
 
+#include <memory>
+#include <tuple>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/json/json_string_value_serializer.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/device_api/managed_configuration_store.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -23,6 +26,7 @@
 #include "extensions/browser/extension_file_task_runner.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace {
@@ -116,9 +120,7 @@ class ManagedConfigurationAPI::ManagedConfigurationDownloader {
 ManagedConfigurationAPI::ManagedConfigurationAPI(Profile* profile)
     : profile_(profile),
       stores_path_(
-          profile->GetPath().AppendASCII(kManagedConfigurationDirectoryName)),
-      backend_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
+          profile->GetPath().AppendASCII(kManagedConfigurationDirectoryName)) {
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(profile_->GetPrefs());
   pref_change_registrar_->Add(
@@ -142,20 +144,25 @@ void ManagedConfigurationAPI::RegisterProfilePrefs(
 void ManagedConfigurationAPI::GetOriginPolicyConfiguration(
     const url::Origin& origin,
     const std::vector<std::string>& keys,
-    base::OnceCallback<void(std::unique_ptr<base::DictionaryValue>)> callback) {
+    base::OnceCallback<void(absl::optional<base::Value::Dict>)> callback) {
   if (!CanHaveManagedStore(origin)) {
-    return std::move(callback).Run(nullptr);
+    return std::move(callback).Run(absl::nullopt);
   }
-  backend_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&ManagedConfigurationAPI::GetConfigurationOnBackend,
-                     base::Unretained(this), origin, keys),
-      std::move(callback));
+
+  if (!base::Contains(store_map_, origin))
+    return std::move(callback).Run(absl::nullopt);
+
+  store_map_[origin]
+      .AsyncCall(&ManagedConfigurationStore::Get)
+      .WithArgs(std::move(keys))
+      .Then(std::move(callback));
 }
 
 void ManagedConfigurationAPI::AddObserver(Observer* observer) {
-  if (CanHaveManagedStore(observer->GetOrigin())) {
-    GetOrLoadStoreForOrigin(observer->GetOrigin())->AddObserver(observer);
+  url::Origin origin = observer->GetOrigin();
+  if (CanHaveManagedStore(origin)) {
+    MaybeCreateStoreForOrigin(origin);
+    observers_[origin].AddObserver(observer);
   } else {
     unmanaged_observers_.insert(observer);
   }
@@ -168,7 +175,7 @@ void ManagedConfigurationAPI::RemoveObserver(Observer* observer) {
     return;
   }
 
-  GetOrLoadStoreForOrigin(observer->GetOrigin())->RemoveObserver(observer);
+  observers_[observer->GetOrigin()].RemoveObserver(observer);
 }
 
 bool ManagedConfigurationAPI::CanHaveManagedStore(const url::Origin& origin) {
@@ -181,12 +188,12 @@ const std::set<url::Origin>& ManagedConfigurationAPI::GetManagedOrigins()
 }
 
 void ManagedConfigurationAPI::OnConfigurationPolicyChanged() {
-  const base::Value* managed_configurations =
+  const base::Value::List& managed_configurations =
       profile_->GetPrefs()->GetList(prefs::kManagedConfigurationPerOrigin);
 
   std::set<url::Origin> current_origins;
 
-  for (const auto& entry : managed_configurations->GetList()) {
+  for (const auto& entry : managed_configurations) {
     const std::string* url = entry.FindStringKey(kOriginKey);
     if (!url)
       continue;
@@ -217,37 +224,17 @@ void ManagedConfigurationAPI::OnConfigurationPolicyChanged() {
   PromoteObservers();
 }
 
-ManagedConfigurationStore* ManagedConfigurationAPI::GetOrLoadStoreForOrigin(
+void ManagedConfigurationAPI::MaybeCreateStoreForOrigin(
     const url::Origin& origin) {
-  auto it = store_map_.find(origin);
-  if (it != store_map_.end())
-    return it->second.get();
+  if (base::Contains(store_map_, origin))
+    return;
+
   // Create the store now, and serve the cached policy until the PolicyService
   // sends updated values.
-  auto store = std::make_unique<ManagedConfigurationStore>(
-      backend_task_runner_, origin, GetStoreLocation(origin));
-  ManagedConfigurationStore* store_ptr = store.get();
-  store_map_[origin] = std::move(store);
-  return store_ptr;
-}
-
-std::unique_ptr<base::DictionaryValue>
-ManagedConfigurationAPI::GetConfigurationOnBackend(
-    const url::Origin& origin,
-    const std::vector<std::string>& keys) {
-  // If there was no policy set for this origin, there is no reason to create
-  // or load a store.
-  if (!base::Contains(store_map_, origin))
-    return nullptr;
-
-  value_store::LeveldbValueStore::ReadResult result =
-      store_map_[origin]->Get(keys);
-  if (!result.status().ok())
-    return nullptr;
-
-  auto dict = std::make_unique<base::DictionaryValue>();
-  dict->Swap(&result.settings());
-  return dict;
+  store_map_[origin] = base::SequenceBound<ManagedConfigurationStore>(
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}),
+      origin, GetStoreLocation(origin));
 }
 
 base::FilePath ManagedConfigurationAPI::GetStoreLocation(
@@ -261,15 +248,15 @@ void ManagedConfigurationAPI::UpdateStoredDataForOrigin(
     const std::string& configuration_hash) {
   const std::string* last_hash_value =
       profile_->GetPrefs()
-          ->GetDictionary(prefs::kLastManagedConfigurationHashForOrigin)
-          ->FindStringKey(GetOriginEncoded(origin));
+          ->GetDict(prefs::kLastManagedConfigurationHashForOrigin)
+          .FindString(GetOriginEncoded(origin));
 
   // Nothing to be stored here, the hash value is the same.
   if (last_hash_value && *last_hash_value == configuration_hash)
     return;
 
   if (configuration_url.empty()) {
-    PostStoreConfiguration(origin, base::DictionaryValue());
+    PostStoreConfiguration(origin, base::Value::Dict());
     return;
   }
 
@@ -309,23 +296,23 @@ void ManagedConfigurationAPI::ProcessDecodedConfiguration(
     const url::Origin& origin,
     const std::string& url_hash,
     const data_decoder::DataDecoder::ValueOrError decoding_result) {
-  if (!decoding_result.value || !decoding_result.value->is_dict()) {
+  if (!decoding_result.has_value() || !decoding_result->is_dict()) {
     VLOG(1) << "Could not fetch managed configuration for app with origin = "
             << origin.Serialize();
-    PostStoreConfiguration(origin, base::DictionaryValue());
+    PostStoreConfiguration(origin, base::Value::Dict());
     return;
   }
-  DictionaryPrefUpdate update(profile_->GetPrefs(),
+  ScopedDictPrefUpdate update(profile_->GetPrefs(),
                               prefs::kLastManagedConfigurationHashForOrigin);
-  update.Get()->SetStringKey(GetOriginEncoded(origin), url_hash);
+  update->Set(GetOriginEncoded(origin), url_hash);
 
   // We need to transform each value into a string.
-  base::DictionaryValue result_dict;
-  for (auto item : decoding_result.value->DictItems()) {
+  base::Value::Dict result_dict;
+  for (auto item : decoding_result->GetDict()) {
     std::string result;
     JSONStringValueSerializer serializer(&result);
     serializer.Serialize(item.second);
-    result_dict.SetString(item.first, result);
+    result_dict.SetByDottedPath(item.first, result);
   }
 
   PostStoreConfiguration(origin, std::move(result_dict));
@@ -333,18 +320,25 @@ void ManagedConfigurationAPI::ProcessDecodedConfiguration(
 
 void ManagedConfigurationAPI::PostStoreConfiguration(
     const url::Origin& origin,
-    base::DictionaryValue configuration) {
-  // Safe to use unretained here, since we own the task runner.
-  backend_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ManagedConfigurationAPI::StoreConfigurationOnBackend,
-                     base::Unretained(this), origin, std::move(configuration)));
+    base::Value::Dict configuration) {
+  MaybeCreateStoreForOrigin(origin);
+  store_map_[origin]
+      .AsyncCall(&ManagedConfigurationStore::SetCurrentPolicy)
+      .WithArgs(std::move(configuration))
+      .Then(base::BindOnce(
+          &ManagedConfigurationAPI::InformObserversIfConfigurationChanged,
+          weak_ptr_factory_.GetWeakPtr(), origin));
 }
 
-void ManagedConfigurationAPI::StoreConfigurationOnBackend(
+void ManagedConfigurationAPI::InformObserversIfConfigurationChanged(
     const url::Origin& origin,
-    base::DictionaryValue configuration) {
-  GetOrLoadStoreForOrigin(origin)->SetCurrentPolicy(configuration);
+    bool has_changed) {
+  if (!has_changed || !base::Contains(observers_, origin))
+    return;
+
+  for (auto& observer : observers_[origin]) {
+    observer.OnManagedConfigurationChanged();
+  }
 }
 
 void ManagedConfigurationAPI::PromoteObservers() {

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,10 +64,10 @@
 @property(nonatomic, strong) UILabel* textLabel;
 
 // Text field at the trailing edge of the cell. It displays the item's
-// |textFieldValue|.
+// `textFieldValue`.
 @property(nonatomic, readonly, strong) UITextField* textField;
 
-// UIImageView containing the icon identifying |textField| or its current value.
+// UIImageView containing the icon identifying `textField` or its current value.
 @property(nonatomic, readonly, strong) UIImageView* identifyingIconView;
 
 @end

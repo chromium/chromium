@@ -1,12 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/reporting/encryption/encryption_module_interface.h"
 
-#include <atomic>
+#include <utility>
 
+#include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
@@ -16,18 +18,10 @@
 
 namespace reporting {
 
-namespace {
-
 // Temporary: enable/disable encryption.
-const base::Feature kEncryptedReportingFeature{
-    EncryptionModuleInterface::kEncryptedReporting,
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
-}  // namespace
-
-// static
-const char EncryptionModuleInterface::kEncryptedReporting[] =
-    "EncryptedReporting";
+BASE_FEATURE(kEncryptedReportingFeature,
+             "EncryptedReporting",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // static
 bool EncryptionModuleInterface::is_enabled() {

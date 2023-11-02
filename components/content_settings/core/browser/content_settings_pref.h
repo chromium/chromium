@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -51,16 +52,10 @@ class ContentSettingsPref {
   std::unique_ptr<RuleIterator> GetRuleIterator(
       bool off_the_record) const;
 
-  bool SetWebsiteSetting(const ContentSettingsPattern& primary_pattern,
+  void SetWebsiteSetting(const ContentSettingsPattern& primary_pattern,
                          const ContentSettingsPattern& secondary_pattern,
-                         base::Time modified_time,
-                         std::unique_ptr<base::Value>&& value,
-                         const ContentSettingConstraints& constraints);
-
-  // Returns the |last_modified| date of a setting.
-  base::Time GetWebsiteSettingLastModified(
-      const ContentSettingsPattern& primary_pattern,
-      const ContentSettingsPattern& secondary_pattern);
+                         base::Value value,
+                         const RuleMetaData& metadata);
 
   void ClearPref();
 
@@ -85,9 +80,8 @@ class ContentSettingsPref {
   // preference changes.
   void UpdatePref(const ContentSettingsPattern& primary_pattern,
                   const ContentSettingsPattern& secondary_pattern,
-                  const base::Time last_modified,
-                  const base::Value* value,
-                  const ContentSettingConstraints& constraints);
+                  base::Value value,
+                  const RuleMetaData& metadata);
 
   // In the debug mode, asserts that |lock_| is not held by this thread. It's
   // ok if some other thread holds |lock_|, as long as it will eventually
@@ -98,10 +92,10 @@ class ContentSettingsPref {
   ContentSettingsType content_type_;
 
   // Weak; owned by the Profile and reset in ShutdownOnUIThread.
-  PrefService* prefs_;
+  raw_ptr<PrefService> prefs_;
 
   // Owned by the PrefProvider.
-  PrefChangeRegistrar* registrar_;
+  raw_ptr<PrefChangeRegistrar> registrar_;
 
   // Name of the dictionary preference managed by this class.
   const std::string& pref_name_;

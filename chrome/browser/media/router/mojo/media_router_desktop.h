@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_MEDIA_ROUTER_MOJO_MEDIA_ROUTER_DESKTOP_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/mojo/media_router_mojo_impl.h"
 #include "chrome/browser/media/router/mojo/media_sink_service_status.h"
@@ -22,8 +23,6 @@ class WiredDisplayMediaRouteProvider;
 // MediaRouter implementation that uses the desktop MediaRouteProviders.
 class MediaRouterDesktop : public MediaRouterMojoImpl {
  public:
-  // This constructor performs a firewall check on Windows and is not suitable
-  // for use in unit tests; instead use the constructor below.
   explicit MediaRouterDesktop(content::BrowserContext* context);
 
   MediaRouterDesktop(const MediaRouterDesktop&) = delete;
@@ -33,7 +32,7 @@ class MediaRouterDesktop : public MediaRouterMojoImpl {
 
   // MediaRouter implementation.
   void OnUserGesture() override;
-  base::Value GetState() const override;
+  base::Value::Dict GetState() const override;
   void GetProviderState(
       mojom::MediaRouteProviderId provider_id,
       mojom::MediaRouteProvider::GetStateCallback callback) const override;
@@ -44,13 +43,6 @@ class MediaRouterDesktop : public MediaRouterMojoImpl {
       const std::string& presentation_id) override;
 
  private:
-  friend class MediaRouterDesktopTest;
-
-  // Used by tests only. This constructor skips the firewall check so unit tests
-  // do not have to depend on the system's firewall configuration.
-  MediaRouterDesktop(content::BrowserContext* context,
-                     DualMediaSinkService* media_sink_service);
-
   // mojom::MediaRouter implementation.
   void RegisterMediaRouteProvider(mojom::MediaRouteProviderId provider_id,
                                   mojo::PendingRemote<mojom::MediaRouteProvider>
@@ -62,6 +54,8 @@ class MediaRouterDesktop : public MediaRouterMojoImpl {
   void GetMediaSinkServiceStatus(
       mojom::MediaRouter::GetMediaSinkServiceStatusCallback callback) override;
 
+  void Initialize() override;
+
   // Initializes MRPs and adds them to |media_route_providers_|.
   void InitializeMediaRouteProviders();
 
@@ -70,7 +64,7 @@ class MediaRouterDesktop : public MediaRouterMojoImpl {
   void InitializeCastMediaRouteProvider();
   void InitializeDialMediaRouteProvider();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Ensures that mDNS discovery is enabled in the Cast MRP. This can be
   // called many times but the MRPM will only be called once per registration
   // period.
@@ -96,7 +90,10 @@ class MediaRouterDesktop : public MediaRouterMojoImpl {
   std::unique_ptr<DialMediaRouteProvider, base::OnTaskRunnerDeleter>
       dial_provider_;
 
-  DualMediaSinkService* media_sink_service_;
+  // May be nullptr if default Media Route Providers are disabled for
+  // integration tests.
+  const raw_ptr<DualMediaSinkService> media_sink_service_;
+
   base::CallbackListSubscription media_sink_service_subscription_;
 
   // A status object that keeps track of sinks discovered by media sink

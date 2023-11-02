@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,6 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/task/post_task.h"
 #import "base/test/ios/wait_util.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -59,12 +58,12 @@ class FakeCardUnmaskDelegate : public autofill::CardUnmaskDelegate {
       const UserProvidedUnmaskDetails& unmask_details) override {
     unmask_details_ = unmask_details;
     // Fake the actual verification and just respond with success.
-    base::PostTask(FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
-                     autofill::AutofillClient::PaymentsRpcResult result =
-                         autofill::AutofillClient::PaymentsRpcResult::kSuccess;
-                     [credit_card_verifier_
-                         didReceiveUnmaskVerificationResult:result];
-                   }));
+    web::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(^{
+          autofill::AutofillClient::PaymentsRpcResult result =
+              autofill::AutofillClient::PaymentsRpcResult::kSuccess;
+          [credit_card_verifier_ didReceiveUnmaskVerificationResult:result];
+        }));
   }
   void OnUnmaskPromptClosed() override {}
   bool ShouldOfferFidoAuth() const override { return false; }
@@ -173,9 +172,9 @@ TEST_F(CWVCreditCardVerifierTest, IsExpirationDateValid) {
   EXPECT_FALSE(
       [credit_card_verifier_ isExpirationDateValidForMonth:@"11" year:@"2"]);
   EXPECT_TRUE(
-      [credit_card_verifier_ isExpirationDateValidForMonth:@"1" year:@"22"]);
+      [credit_card_verifier_ isExpirationDateValidForMonth:@"1" year:@"26"]);
   EXPECT_TRUE(
-      [credit_card_verifier_ isExpirationDateValidForMonth:@"11" year:@"2222"]);
+      [credit_card_verifier_ isExpirationDateValidForMonth:@"11" year:@"2226"]);
 }
 
 // Tests CWVCreditCardVerifier's verification method handles success case.

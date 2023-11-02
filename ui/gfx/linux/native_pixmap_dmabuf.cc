@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,6 +58,12 @@ gfx::BufferFormat NativePixmapDmaBuf::GetBufferFormat() const {
 
 size_t NativePixmapDmaBuf::GetNumberOfPlanes() const {
   return handle_.planes.size();
+}
+
+bool NativePixmapDmaBuf::SupportsZeroCopyWebGPUImport() const {
+  // TODO(crbug.com/1258986): Figure out how to import multi-planar pixmap into
+  // WebGPU without copy.
+  return false;
 }
 
 gfx::Size NativePixmapDmaBuf::GetBufferSize() const {

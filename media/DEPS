@@ -14,8 +14,11 @@ include_rules = [
   "+services/device/public",
   "+services/viz/public/cpp/gpu/context_provider_command_buffer.h",
   "+skia/ext",
+  "+third_party/re2",
   "+third_party/dav1d",
   "+third_party/ffmpeg",
+  "+third_party/libaom",
+  "+third_party/libdrm",
   "+third_party/libgav1",
   "+third_party/libvpx",
   "+third_party/libyuv",
@@ -35,13 +38,13 @@ include_rules = [
 
 specific_include_rules = {
   "audio_manager_unittest.cc": [
-    "+chromeos/dbus"
+    "+chromeos/ash/components/dbus"
   ],
   "cras_input_unittest.cc": [
-    "+chromeos/dbus"
+    "+chromeos/ash/components/dbus"
   ],
   "cras_unified_unittest.cc": [
-    "+chromeos/dbus"
+    "+chromeos/ash/components/dbus"
   ],
   "fuchsia_video_decoder_unittest.cc": [
     "+components/viz/test/test_context_support.h",

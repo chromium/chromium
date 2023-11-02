@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,7 +60,6 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequ
     public static class ChromePaymentRequestDelegateImpl
             implements ChromePaymentRequestService.Delegate {
         private final RenderFrameHost mRenderFrameHost;
-        private boolean mSkipUiForBasicCard;
 
         private ChromePaymentRequestDelegateImpl(RenderFrameHost renderFrameHost) {
             mRenderFrameHost = renderFrameHost;
@@ -104,11 +103,6 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequ
         }
 
         @Override
-        public boolean skipUiForBasicCard() {
-            return mSkipUiForBasicCard; // Only tests may set it to true.
-        }
-
-        @Override
         @Nullable
         public String getTwaPackageName() {
             WebContents liveWebContents =
@@ -120,11 +114,6 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequ
             CustomTabActivity customTabActivity = ((CustomTabActivity) activity);
             if (!customTabActivity.isInTwaMode()) return null;
             return customTabActivity.getTwaPackage();
-        }
-
-        @VisibleForTesting
-        public void setSkipUiForBasicCard() {
-            mSkipUiForBasicCard = true;
         }
     }
 

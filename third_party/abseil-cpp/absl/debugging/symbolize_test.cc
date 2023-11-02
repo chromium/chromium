@@ -392,12 +392,14 @@ TEST(Symbolize, InstallAndRemoveSymbolDecorators) {
                 DummySymbolDecorator, &c_message),
             0);
 
-  char *address = reinterpret_cast<char *>(1);
-  EXPECT_STREQ("abc", TrySymbolize(address++));
+  // Use addresses 4 and 8 here to ensure that we always use valid addresses
+  // even on systems that require instructions to be 32-bit aligned.
+  char *address = reinterpret_cast<char *>(4);
+  EXPECT_STREQ("abc", TrySymbolize(address));
 
   EXPECT_TRUE(absl::debugging_internal::RemoveSymbolDecorator(ticket_b));
 
-  EXPECT_STREQ("ac", TrySymbolize(address++));
+  EXPECT_STREQ("ac", TrySymbolize(address + 4));
 
   // Cleanup: remove all remaining decorators so other stack traces don't
   // get mystery "ac" decoration.
@@ -481,7 +483,8 @@ void ABSL_ATTRIBUTE_NOINLINE TestWithPCInsideInlineFunction() {
 }
 }
 
-#if defined(__arm__) && ABSL_HAVE_ATTRIBUTE(target)
+#if defined(__arm__) && ABSL_HAVE_ATTRIBUTE(target) && \
+    ((__ARM_ARCH >= 7) || !defined(__ARM_PCS_VFP))
 // Test that we correctly identify bounds of Thumb functions on ARM.
 //
 // Thumb functions have the lowest-order bit set in their addresses in the ELF
@@ -500,6 +503,10 @@ void ABSL_ATTRIBUTE_NOINLINE TestWithPCInsideInlineFunction() {
 // bit in the Thumb function's entry point. It will correctly compute the end of
 // the Thumb function, it will find no overlap between the Thumb and ARM
 // functions, and it will return the name of the ARM function.
+//
+// Unfortunately we cannot perform this test on armv6 or lower systems that use
+// the hard float ABI because gcc refuses to compile thumb functions on such
+// systems with a "sorry, unimplemented: Thumb-1 hard-float VFP ABI" error.
 
 __attribute__((target("thumb"))) int ArmThumbOverlapThumb(int x) {
   return x * x * x;
@@ -519,7 +526,8 @@ void ABSL_ATTRIBUTE_NOINLINE TestArmThumbOverlap() {
 #endif
 }
 
-#endif  // defined(__arm__) && ABSL_HAVE_ATTRIBUTE(target)
+#endif  // defined(__arm__) && ABSL_HAVE_ATTRIBUTE(target) && ((__ARM_ARCH >= 7)
+        // || !defined(__ARM_PCS_VFP))
 
 #elif defined(_WIN32)
 #if !defined(ABSL_CONSUME_DLL)
@@ -594,7 +602,8 @@ int main(int argc, char **argv) {
   TestWithPCInsideInlineFunction();
   TestWithPCInsideNonInlineFunction();
   TestWithReturnAddress();
-#if defined(__arm__) && ABSL_HAVE_ATTRIBUTE(target)
+#if defined(__arm__) && ABSL_HAVE_ATTRIBUTE(target) && \
+    ((__ARM_ARCH >= 7) || !defined(__ARM_PCS_VFP))
   TestArmThumbOverlap();
 #endif
 #endif

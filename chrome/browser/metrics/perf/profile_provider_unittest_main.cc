@@ -1,13 +1,14 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/metrics/perf/profile_provider_chromeos.h"
 
+#include <tuple>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
@@ -21,10 +22,11 @@
 #include "chrome/browser/metrics/perf/metric_provider.h"
 #include "chrome/browser/metrics/perf/perf_events_collector.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"
+#include "ui/aura/env.h"
 
 namespace metrics {
 
@@ -138,7 +140,7 @@ class ProfileProviderRealCollectionTest : public testing::Test {
       const ProfileProviderRealCollectionTest&) = delete;
 
   void SetUp() override {
-    chromeos::DBusThreadManager::Initialize();
+    ash::DBusThreadManager::Initialize();
     // ProfileProvider requires chromeos::LoginState and
     // chromeos::PowerManagerClient to be initialized.
     chromeos::PowerManagerClient::InitializeFake();
@@ -151,16 +153,17 @@ class ProfileProviderRealCollectionTest : public testing::Test {
     std::map<std::string, std::string> field_trial_params;
     // Only "cycles" event is supported.
     field_trial_params.insert(std::make_pair(
-        "PerfCommand::default::0", "50 perf record -a -e cycles -c 1000003"));
-    field_trial_params.insert(
-        std::make_pair("PerfCommand::default::1",
-                       "50 perf record -a -e cycles -g -c 4000037"));
+        "PerfCommand::default::0", "50 -- record -a -e cycles -c 1000003"));
+    field_trial_params.insert(std::make_pair(
+        "PerfCommand::default::1", "50 -- record -a -e cycles -g -c 4000037"));
     ASSERT_TRUE(variations::AssociateVariationParams(
         "ChromeOSWideProfilingCollection", "group_name", field_trial_params));
     field_trial_ = base::FieldTrialList::CreateFieldTrial(
         "ChromeOSWideProfilingCollection", "group_name");
     ASSERT_TRUE(field_trial_.get());
 
+    // JankMonitor requires aura::Env to be initialized.
+    aura_env_ = aura::Env::CreateInstance();
     profile_provider_ = std::make_unique<TestProfileProvider>();
     profile_provider_->Init();
 
@@ -183,7 +186,7 @@ class ProfileProviderRealCollectionTest : public testing::Test {
     TestingBrowserProcess::DeleteInstance();
     chromeos::LoginState::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
+    ash::DBusThreadManager::Shutdown();
     variations::testing::ClearAllVariationParams();
   }
 
@@ -214,7 +217,7 @@ class ProfileProviderRealCollectionTest : public testing::Test {
     ASSERT_TRUE(profile.has_perf_data());
 
     // Collection succeeded: don't output the error log.
-    ignore_result(scoped_log_error.Release());
+    std::ignore = scoped_log_error.Release();
   }
 
  protected:
@@ -265,6 +268,7 @@ class ProfileProviderRealCollectionTest : public testing::Test {
   std::atomic_bool spin_cpu_{false};
   base::WaitableEvent spin_cpu_done_;
 
+  std::unique_ptr<aura::Env> aura_env_;
   std::unique_ptr<TestProfileProvider> profile_provider_;
 };
 

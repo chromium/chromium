@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -61,7 +61,10 @@ absl_source_set("symbolize") {
 absl_source_set("examine_stack") {
   sources = [ "internal/examine_stack.cc" ]
   public = [ "internal/examine_stack.h" ]
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/abseil-cpp/absl/log/internal:*",
+  ]
   deps = [
     ":stacktrace",
     ":symbolize",
@@ -80,7 +83,6 @@ absl_source_set("failure_signal_handler") {
     "//third_party/abseil-cpp/absl/base",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
-    "//third_party/abseil-cpp/absl/base:errno_saver",
     "//third_party/abseil-cpp/absl/base:raw_logging_internal",
   ]
 }
@@ -129,35 +131,6 @@ absl_source_set("leak_check") {
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
   ]
-}
-
-absl_source_set("leak_check_disable") {
-  sources = [ "leak_check_disable.cc" ]
-  deps = [ "//third_party/abseil-cpp/absl/base:config" ]
-}
-
-if (is_lsan) {
-  absl_source_set("leak_check_api_enabled_for_testing") {
-    testonly = true
-    sources = [ "leak_check.cc" ]
-    public = [ "leak_check.h" ]
-    visibility = [ ":*" ]
-    deps = [
-      "//third_party/abseil-cpp/absl/base:config",
-      "//third_party/abseil-cpp/absl/base:core_headers",
-    ]
-  }
-} else {
-  absl_source_set("leak_check_api_disabled_for_testing") {
-    testonly = true
-    sources = [ "leak_check.cc" ]
-    public = [ "leak_check.h" ]
-    visibility = [ ":*" ]
-    deps = [
-      "//third_party/abseil-cpp/absl/base:config",
-      "//third_party/abseil-cpp/absl/base:core_headers",
-    ]
-  }
 }
 
 absl_source_set("stack_consumption") {

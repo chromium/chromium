@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/feed/core/v2/config.h"
 
+#include "base/command_line.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
 #include "base/metrics/field_trial_params.h"
@@ -29,121 +30,149 @@ bool CapabilityDisabled(feedwire::Capability capability) {
 }
 
 // Override any parameters that may be provided by Finch.
-void OverrideWithFinch(Config* config) {
-  config->max_feed_query_requests_per_day =
+void OverrideWithFinch(Config& config) {
+  config.max_feed_query_requests_per_day =
       base::GetFieldTrialParamByFeatureAsInt(
           kInterestFeedV2, "max_feed_query_requests_per_day",
-          config->max_feed_query_requests_per_day);
+          config.max_feed_query_requests_per_day);
 
-  config->max_next_page_requests_per_day =
+  config.max_next_page_requests_per_day =
       base::GetFieldTrialParamByFeatureAsInt(
           kInterestFeedV2, "max_next_page_requests_per_day",
-          config->max_next_page_requests_per_day);
+          config.max_next_page_requests_per_day);
 
-  config->max_action_upload_requests_per_day =
+  config.max_action_upload_requests_per_day =
       base::GetFieldTrialParamByFeatureAsInt(
           kInterestFeedV2, "max_action_upload_requests_per_day",
-          config->max_action_upload_requests_per_day);
+          config.max_action_upload_requests_per_day);
 
-  config->max_list_recommended_web_feeds_requests_per_day =
+  config.max_list_recommended_web_feeds_requests_per_day =
       base::GetFieldTrialParamByFeatureAsInt(
           kWebFeed, "max_list_recommended_web_feeds_requests_per_day",
-          config->max_list_recommended_web_feeds_requests_per_day);
+          config.max_list_recommended_web_feeds_requests_per_day);
 
-  config->max_list_web_feeds_requests_per_day =
+  config.max_list_web_feeds_requests_per_day =
       base::GetFieldTrialParamByFeatureAsInt(
           kWebFeed, "max_list_web_feeds_requests_per_day",
-          config->max_list_web_feeds_requests_per_day);
+          config.max_list_web_feeds_requests_per_day);
 
-  config->stale_content_threshold =
+  config.stale_content_threshold =
       base::Seconds(base::GetFieldTrialParamByFeatureAsDouble(
           kInterestFeedV2, "stale_content_threshold_seconds",
-          config->stale_content_threshold.InSecondsF()));
+          config.stale_content_threshold.InSecondsF()));
 
-  config->content_expiration_threshold =
+  config.content_expiration_threshold =
       base::Seconds(base::GetFieldTrialParamByFeatureAsDouble(
           kInterestFeedV2, "content_expiration_threshold_seconds",
-          config->content_expiration_threshold.InSecondsF()));
+          config.content_expiration_threshold.InSecondsF()));
 
-  config->background_refresh_window_length =
+  if (base::FeatureList::IsEnabled(kWebFeedOnboarding)) {
+    config.subscriptionless_content_expiration_threshold =
+        base::Seconds(base::GetFieldTrialParamByFeatureAsDouble(
+            kWebFeedOnboarding,
+            "subscriptionless_content_expiration_threshold_seconds",
+            config.subscriptionless_content_expiration_threshold.InSecondsF()));
+  }
+
+  config.background_refresh_window_length =
       base::Seconds(base::GetFieldTrialParamByFeatureAsDouble(
           kInterestFeedV2, "background_refresh_window_length_seconds",
-          config->background_refresh_window_length.InSecondsF()));
+          config.background_refresh_window_length.InSecondsF()));
 
-  config->default_background_refresh_interval =
+  config.default_background_refresh_interval =
       base::Seconds(base::GetFieldTrialParamByFeatureAsDouble(
           kInterestFeedV2, "default_background_refresh_interval_seconds",
-          config->default_background_refresh_interval.InSecondsF()));
+          config.default_background_refresh_interval.InSecondsF()));
 
-  config->max_action_upload_attempts = base::GetFieldTrialParamByFeatureAsInt(
+  config.max_action_upload_attempts = base::GetFieldTrialParamByFeatureAsInt(
       kInterestFeedV2, "max_action_upload_attempts",
-      config->max_action_upload_attempts);
+      config.max_action_upload_attempts);
 
-  config->max_action_age =
+  config.max_action_age =
       base::Seconds(base::GetFieldTrialParamByFeatureAsDouble(
           kInterestFeedV2, "max_action_age_seconds",
-          config->max_action_age.InSecondsF()));
+          config.max_action_age.InSecondsF()));
 
-  config->max_action_upload_bytes = base::GetFieldTrialParamByFeatureAsInt(
+  config.max_action_upload_bytes = base::GetFieldTrialParamByFeatureAsInt(
       kInterestFeedV2, "max_action_upload_bytes",
-      config->max_action_upload_bytes);
+      config.max_action_upload_bytes);
 
-  config->model_unload_timeout =
+  config.model_unload_timeout =
       base::Seconds(base::GetFieldTrialParamByFeatureAsDouble(
           kInterestFeedV2, "model_unload_timeout_seconds",
-          config->model_unload_timeout.InSecondsF()));
+          config.model_unload_timeout.InSecondsF()));
 
-  config->load_more_trigger_lookahead = base::GetFieldTrialParamByFeatureAsInt(
+  config.load_more_trigger_lookahead = base::GetFieldTrialParamByFeatureAsInt(
       kInterestFeedV2, "load_more_trigger_lookahead",
-      config->load_more_trigger_lookahead);
+      config.load_more_trigger_lookahead);
 
-  config->load_more_trigger_scroll_distance_dp =
+  config.load_more_trigger_scroll_distance_dp =
       base::GetFieldTrialParamByFeatureAsInt(
           kInterestFeedV2Scrolling, "load_more_trigger_scroll_distance_dp",
-          config->load_more_trigger_scroll_distance_dp);
+          config.load_more_trigger_scroll_distance_dp);
 
-  config->upload_actions_on_enter_background =
+  config.upload_actions_on_enter_background =
       base::GetFieldTrialParamByFeatureAsBool(
           kInterestFeedV2, "upload_actions_on_enter_background",
-          config->upload_actions_on_enter_background);
+          config.upload_actions_on_enter_background);
 
-  config->send_signed_out_session_logs =
-      base::GetFieldTrialParamByFeatureAsBool(
-          kInterestFeedV2, "send_signed_out_session_logs",
-          config->send_signed_out_session_logs);
+  config.send_signed_out_session_logs = base::GetFieldTrialParamByFeatureAsBool(
+      kInterestFeedV2, "send_signed_out_session_logs",
+      config.send_signed_out_session_logs);
 
-  config->session_id_max_age =
-      base::Days(base::GetFieldTrialParamByFeatureAsInt(
-          kInterestFeedV2, "session_id_max_age_days",
-          config->session_id_max_age.InDays()));
+  config.session_id_max_age = base::Days(base::GetFieldTrialParamByFeatureAsInt(
+      kInterestFeedV2, "session_id_max_age_days",
+      config.session_id_max_age.InDays()));
 
-  config->max_prefetch_image_requests_per_refresh =
+  config.max_prefetch_image_requests_per_refresh =
       base::GetFieldTrialParamByFeatureAsInt(
           kInterestFeedV2, "max_prefetch_image_requests_per_refresh",
-          config->max_prefetch_image_requests_per_refresh);
+          config.max_prefetch_image_requests_per_refresh);
 
-  config->webfeed_accelerator_recent_visit_history_days =
+  config.webfeed_accelerator_recent_visit_history_days =
       base::GetFieldTrialParamByFeatureAsInt(
           kWebFeed, "webfeed_accelerator_recent_visit_history_days",
-          config->webfeed_accelerator_recent_visit_history_days);
+          config.webfeed_accelerator_recent_visit_history_days);
 
-  config->recommended_feeds_staleness_threshold =
+  config.recommended_feeds_staleness_threshold =
       base::Days(base::GetFieldTrialParamByFeatureAsInt(
           kWebFeed, "recommended_feeds_staleness_threshold_days",
-          config->recommended_feeds_staleness_threshold.InDays()));
+          config.recommended_feeds_staleness_threshold.InDays()));
 
-  config->subscribed_feeds_staleness_threshold =
+  config.subscribed_feeds_staleness_threshold =
       base::Days(base::GetFieldTrialParamByFeatureAsInt(
           kWebFeed, "subscribed_feeds_staleness_threshold_days",
-          config->subscribed_feeds_staleness_threshold.InDays()));
+          config.subscribed_feeds_staleness_threshold.InDays()));
 
-  config->web_feed_stale_content_threshold =
+  config.web_feed_stale_content_threshold =
       base::Seconds(base::GetFieldTrialParamByFeatureAsDouble(
           kWebFeed, "web_feed_stale_content_threshold_seconds",
-          config->web_feed_stale_content_threshold.InSecondsF()));
+          config.web_feed_stale_content_threshold.InSecondsF()));
+
+  if (base::FeatureList::IsEnabled(kWebFeedOnboarding)) {
+    config.subscriptionless_web_feed_stale_content_threshold =
+        base::Seconds(base::GetFieldTrialParamByFeatureAsDouble(
+            kWebFeedOnboarding,
+            "subscriptionless_web_feed_stale_content_threshold_seconds",
+            config.subscriptionless_web_feed_stale_content_threshold
+                .InSecondsF()));
+  }
 
   // Erase any capabilities with "enable_CAPABILITY = false" set.
-  base::EraseIf(config->experimental_capabilities, CapabilityDisabled);
+  base::EraseIf(config.experimental_capabilities, CapabilityDisabled);
+
+  config.max_mid_entities_per_url_entry =
+      base::GetFieldTrialParamByFeatureAsInt(
+          kPersonalizeFeedUnsignedUsers, "max_mid_entities_per_url_entry",
+          config.max_mid_entities_per_url_entry);
+  config.max_url_entries_in_cache = GetFieldTrialParamByFeatureAsInt(
+      kPersonalizeFeedUnsignedUsers, "max_url_entries_in_cache",
+      config.max_url_entries_in_cache);
+}
+
+void OverrideWithSwitches(Config& config) {
+  config.use_feed_query_requests =
+      base::CommandLine::ForCurrentProcess()->HasSwitch("use-legacy-feedquery");
 }
 
 }  // namespace
@@ -152,16 +181,16 @@ const Config& GetFeedConfig() {
   static Config* s_config = nullptr;
   if (!s_config) {
     s_config = new Config;
-    OverrideWithFinch(s_config);
+    OverrideWithFinch(*s_config);
+    OverrideWithSwitches(*s_config);
   }
   return *s_config;
 }
 
 // This is a dev setting that updates Config, which is supposed to be constant.
-// TODO(crbug/1152592): remove when not needed anymore.
-void SetUseFeedQueryRequestsForWebFeeds(const bool use_legacy) {
+void SetUseFeedQueryRequests(const bool use_legacy) {
   Config& config = const_cast<Config&>(GetFeedConfig());
-  config.use_feed_query_requests_for_web_feeds = use_legacy;
+  config.use_feed_query_requests = use_legacy;
 }
 
 void SetFeedConfigForTesting(const Config& config) {
@@ -169,17 +198,22 @@ void SetFeedConfigForTesting(const Config& config) {
 }
 
 void OverrideConfigWithFinchForTesting() {
-  OverrideWithFinch(&const_cast<Config&>(GetFeedConfig()));
+  OverrideWithFinch(const_cast<Config&>(GetFeedConfig()));
 }
 
 Config::Config() = default;
 Config::Config(const Config& other) = default;
 Config::~Config() = default;
 
-base::TimeDelta Config::GetStalenessThreshold(
-    const StreamType& stream_type) const {
-  return stream_type.IsForYou() ? stale_content_threshold
-                                : web_feed_stale_content_threshold;
+base::TimeDelta Config::GetStalenessThreshold(const StreamType& stream_type,
+                                              bool has_subscriptions) const {
+  if (stream_type.IsForYou()) {
+    return stale_content_threshold;
+  }
+  if (has_subscriptions) {
+    return web_feed_stale_content_threshold;
+  }
+  return subscriptionless_web_feed_stale_content_threshold;
 }
 
 }  // namespace feed

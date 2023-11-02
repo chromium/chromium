@@ -16,12 +16,13 @@
       "name": "VerticalScrollbar",
       "position": [285, 0],
       "bounds": [15, 300],
+      "contentsOpaque": true,
       "transform": 1
     },
     {
       "name": "LayoutNGBlockFlow DIV id='content'",
       "bounds": [285, 1000],
-      "contentsOpaque": true,
+      "contentsOpaqueForText": true,
       "transform": 1
     }
   ],

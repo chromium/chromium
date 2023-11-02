@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
-#include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/sync/base/model_type.h"
@@ -68,6 +68,9 @@ class ModelTypeChangeProcessor {
   virtual void UntrackEntityForClientTagHash(
       const ClientTagHash& client_tag_hash) = 0;
 
+  // Returns the storage keys for all tracked entities (including tombstones).
+  virtual std::vector<std::string> GetAllTrackedStorageKeys() const = 0;
+
   // Returns true if a tracked entity has local changes. A commit may or may not
   // be in progress at this time.
   virtual bool IsEntityUnsynced(const std::string& storage_key) = 0;
@@ -103,11 +106,11 @@ class ModelTypeChangeProcessor {
 
   // Returns the account ID for which metadata is being tracked, or empty if not
   // tracking metadata.
-  virtual std::string TrackedAccountId() = 0;
+  virtual std::string TrackedAccountId() const = 0;
 
   // Returns the cache guid for which metadata is being tracked, or empty if not
   // tracking metadata.
-  virtual std::string TrackedCacheGuid() = 0;
+  virtual std::string TrackedCacheGuid() const = 0;
 
   // Report an error in the model to sync. Should be called for any persistence
   // or consistency error the bridge encounters outside of a method that allows
@@ -123,6 +126,18 @@ class ModelTypeChangeProcessor {
   // Returns the delegate for the controller.
   virtual base::WeakPtr<ModelTypeControllerDelegate>
   GetControllerDelegate() = 0;
+
+  // Returns the cached version of remote entity specifics for |storage_key| if
+  // available. These specifics can be fully or partially trimmed (proto fields
+  // cleared) according to the bridge's logic in
+  // TrimRemoteSpecificsForCaching().
+  // By default, empty EntitySpecifics is returned if the storage key is
+  // unknown, or the storage key is known but trimmed specifics is not
+  // available.
+  virtual const sync_pb::EntitySpecifics& GetPossiblyTrimmedRemoteSpecifics(
+      const std::string& storage_key) const = 0;
+
+  virtual base::WeakPtr<ModelTypeChangeProcessor> GetWeakPtr() = 0;
 };
 
 }  // namespace syncer

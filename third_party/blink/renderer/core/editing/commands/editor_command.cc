@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/ime/edit_context.h"
+#include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
 #include "third_party/blink/renderer/core/editing/kill_ring.h"
 #include "third_party/blink/renderer/core/editing/selection_modifier.h"
@@ -72,7 +73,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
@@ -94,7 +95,7 @@ const CommandNameEntry kCommandNameEntries[] = {
 };
 // Handles all commands except EditingCommandType::Invalid.
 static_assert(
-    base::size(kCommandNameEntries) + 1 ==
+    std::size(kCommandNameEntries) + 1 ==
         static_cast<size_t>(EditingCommandType::kNumberOfCommandTypes),
     "must handle all valid EditingCommandType");
 
@@ -349,7 +350,7 @@ static bool ExecuteCreateLink(LocalFrame& frame,
                               Event*,
                               EditorCommandSource,
                               const String& value) {
-  if (value.IsEmpty())
+  if (value.empty())
     return false;
   DCHECK(frame.GetDocument());
   return MakeGarbageCollected<CreateLinkCommand>(*frame.GetDocument(), value)
@@ -755,7 +756,7 @@ static bool ExecuteScrollPageBackward(LocalFrame& frame,
                                       const String&) {
   return frame.GetEventHandler().BubblingScroll(
       mojom::blink::ScrollDirection::kScrollBlockDirectionBackward,
-      ScrollGranularity::kScrollByPage);
+      ui::ScrollGranularity::kScrollByPage);
 }
 
 static bool ExecuteScrollPageForward(LocalFrame& frame,
@@ -764,7 +765,7 @@ static bool ExecuteScrollPageForward(LocalFrame& frame,
                                      const String&) {
   return frame.GetEventHandler().BubblingScroll(
       mojom::blink::ScrollDirection::kScrollBlockDirectionForward,
-      ScrollGranularity::kScrollByPage);
+      ui::ScrollGranularity::kScrollByPage);
 }
 
 static bool ExecuteScrollLineUp(LocalFrame& frame,
@@ -773,7 +774,7 @@ static bool ExecuteScrollLineUp(LocalFrame& frame,
                                 const String&) {
   return frame.GetEventHandler().BubblingScroll(
       mojom::blink::ScrollDirection::kScrollUpIgnoringWritingMode,
-      ScrollGranularity::kScrollByLine);
+      ui::ScrollGranularity::kScrollByLine);
 }
 
 static bool ExecuteScrollLineDown(LocalFrame& frame,
@@ -782,7 +783,7 @@ static bool ExecuteScrollLineDown(LocalFrame& frame,
                                   const String&) {
   return frame.GetEventHandler().BubblingScroll(
       mojom::blink::ScrollDirection::kScrollDownIgnoringWritingMode,
-      ScrollGranularity::kScrollByLine);
+      ui::ScrollGranularity::kScrollByLine);
 }
 
 static bool ExecuteScrollToBeginningOfDocument(LocalFrame& frame,
@@ -791,7 +792,7 @@ static bool ExecuteScrollToBeginningOfDocument(LocalFrame& frame,
                                                const String&) {
   return frame.GetEventHandler().BubblingScroll(
       mojom::blink::ScrollDirection::kScrollBlockDirectionBackward,
-      ScrollGranularity::kScrollByDocument);
+      ui::ScrollGranularity::kScrollByDocument);
 }
 
 static bool ExecuteScrollToEndOfDocument(LocalFrame& frame,
@@ -800,7 +801,7 @@ static bool ExecuteScrollToEndOfDocument(LocalFrame& frame,
                                          const String&) {
   return frame.GetEventHandler().BubblingScroll(
       mojom::blink::ScrollDirection::kScrollBlockDirectionForward,
-      ScrollGranularity::kScrollByDocument);
+      ui::ScrollGranularity::kScrollByDocument);
 }
 
 static bool ExecuteSelectAll(LocalFrame& frame,
@@ -1814,7 +1815,7 @@ static const EditorInternalCommand* InternalCommand(
   };
   // Handles all commands except EditingCommandType::Invalid.
   static_assert(
-      base::size(kEditorCommands) + 1 ==
+      std::size(kEditorCommands) + 1 ==
           static_cast<size_t>(EditingCommandType::kNumberOfCommandTypes),
       "must handle all valid EditingCommandType");
 
@@ -1825,7 +1826,7 @@ static const EditorInternalCommand* InternalCommand(
 
   int command_index = static_cast<int>(command_type) - 1;
   DCHECK(command_index >= 0 &&
-         command_index < static_cast<int>(base::size(kEditorCommands)));
+         command_index < static_cast<int>(std::size(kEditorCommands)));
   return &kEditorCommands[command_index];
 }
 
@@ -1887,13 +1888,13 @@ bool Editor::ExecuteCommand(const String& command_name, const String& value) {
   if (!CanEdit() && command_name == "moveToBeginningOfDocument") {
     return GetFrame().GetEventHandler().BubblingScroll(
         mojom::blink::ScrollDirection::kScrollUpIgnoringWritingMode,
-        ScrollGranularity::kScrollByDocument);
+        ui::ScrollGranularity::kScrollByDocument);
   }
 
   if (!CanEdit() && command_name == "moveToEndOfDocument") {
     return GetFrame().GetEventHandler().BubblingScroll(
         mojom::blink::ScrollDirection::kScrollDownIgnoringWritingMode,
-        ScrollGranularity::kScrollByDocument);
+        ui::ScrollGranularity::kScrollByDocument);
   }
 
   if (command_name == "ToggleSpellPanel") {
@@ -2052,13 +2053,18 @@ bool EditorCommand::IsTextInsertion() const {
   return command_ && command_->is_text_insertion;
 }
 
+bool EditorCommand::IsValueInterpretedAsHTML() const {
+  return IsSupported() &&
+         command_->command_type == EditingCommandType::kInsertHTML;
+}
+
 int EditorCommand::IdForHistogram() const {
   return IsSupported() ? static_cast<int>(command_->command_type) : 0;
 }
 
 const StaticRangeVector* EditorCommand::GetTargetRanges() const {
   const Node* target = EventTargetNodeForDocument(frame_->GetDocument());
-  if (!IsSupported() || !frame_ || !target || !HasRichlyEditableStyle(*target))
+  if (!IsSupported() || !frame_ || !target || !IsRichlyEditable(*target))
     return nullptr;
 
   switch (command_->command_type) {

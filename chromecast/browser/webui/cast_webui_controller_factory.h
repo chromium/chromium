@@ -1,11 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROMECAST_BROWSER_WEBUI_CAST_WEBUI_CONTROLLER_FACTORY_H_
 #define CHROMECAST_BROWSER_WEBUI_CAST_WEBUI_CONTROLLER_FACTORY_H_
 
-#include "base/macros.h"
 #include "chromecast/browser/webui/mojom/webui.mojom.h"
 #include "content/public/browser/web_ui_controller_factory.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

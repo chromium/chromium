@@ -1,18 +1,19 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
-import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
-import './navigation_shared_vars.js';
+import './navigation_shared_vars.css.js';
 import './page_toolbar.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SelectorItem} from './navigation_selector.js';
+import {getTemplate} from './navigation_view_panel.html.js';
 
 const navigationPageChanged = 'onNavigationPageChanged';
 
@@ -39,7 +40,7 @@ export class NavigationViewPanelElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -182,9 +183,38 @@ export class NavigationViewPanelElement extends PolymerElement {
    * @param {?Object} initialData
    */
   addSelector(name, pageIs, icon = '', id = null, initialData = null) {
-    const selectorItem =
-        this.createSelectorItem(name, pageIs, icon, id, initialData);
+    this.addSelectorItem(
+        this.createSelectorItem(name, pageIs, icon, id, initialData));
+  }
+
+  /**
+   * Adds a new section to the top level navigation. The name and icon will
+   * be displayed in the side navigation.
+   * @param {!SelectorItem} selectorItem
+   */
+  addSelectorItem(selectorItem) {
     this.push('selectorItems_', selectorItem);
+  }
+
+  /**
+   * Removes a section from the top level navigation. If the section is
+   * currently selected, the selection will be reset to the top item.
+   *
+   * @param {string} id The ID of the section to remove.
+   */
+  removeSelectorById(id) {
+    const index =
+        this.selectorItems_.findIndex((selector) => selector.id === id);
+    if (index < 0) {
+      throw new Error('Cannot find selector with ID "' + id + '" to remove.');
+    }
+    if (this.selectorItems_.length === 1) {
+      throw new Error('Removing the last selector is not supported.');
+    }
+    this.splice('selectorItems_', index, 1);
+    if (this.selectedItem && this.selectedItem.id === id) {
+      this.selectedItem = this.selectorItems_[0];
+    }
   }
 
   /** @protected */
@@ -212,7 +242,7 @@ export class NavigationViewPanelElement extends PolymerElement {
     // Notify all available child pages of the event.
     Array.from(components).map((c) => {
       const functionCall = c[functionName];
-      if (typeof functionCall === "function") {
+      if (typeof functionCall === 'function') {
         if (functionName === navigationPageChanged) {
           const event = {isActive: this.selectedItem.id === c.id};
           functionCall.call(c, event);

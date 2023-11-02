@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -193,6 +193,7 @@ TYPED_TEST(TrustTokenPersisterTest, StoresIssuerToplevelPairConfigs) {
                        // time to initialize.
 
   TrustTokenIssuerToplevelPairConfig config;
+  config.set_penultimate_redemption("four o'clock");
   config.set_last_redemption("five o'clock");
 
   auto config_to_store =
@@ -222,6 +223,7 @@ TYPED_TEST(TrustTokenPersisterTest, DeletesIssuerToplevelKeyedData) {
                        // time to initialize.
 
   TrustTokenIssuerToplevelPairConfig pair_config;
+  pair_config.set_penultimate_redemption("four o'clock");
   pair_config.set_last_redemption("five o'clock");
 
   auto toplevel = *SuitableTrustTokenOrigin::Create(GURL("https://a.com/"));

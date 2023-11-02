@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -12,7 +12,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -41,13 +40,13 @@ class TestingProvider : public EtwTraceProvider {
   TestingProvider& operator=(const TestingProvider&) = delete;
 
   void WaitForCallback() {
-    ::WaitForSingleObject(callback_event_.Get(), INFINITE);
-    ::ResetEvent(callback_event_.Get());
+    ::WaitForSingleObject(callback_event_.get(), INFINITE);
+    ::ResetEvent(callback_event_.get());
   }
 
  private:
-  void OnEventsEnabled() override { ::SetEvent(callback_event_.Get()); }
-  void PostEventsDisabled() override { ::SetEvent(callback_event_.Get()); }
+  void OnEventsEnabled() override { ::SetEvent(callback_event_.get()); }
+  void PostEventsDisabled() override { ::SetEvent(callback_event_.get()); }
 
   ScopedHandle callback_event_;
 };

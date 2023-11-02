@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 class PrefsTabHelperBrowserTest : public InProcessBrowserTest {
  protected:
@@ -49,7 +50,7 @@ class PrefsTabHelperBrowserTest : public InProcessBrowserTest {
       return false;
     }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Make the copy writable.  On POSIX we assume the umask allows files
     // we create to be writable.
     if (!::SetFileAttributesW(default_pref_file.value().c_str(),
@@ -78,3 +79,41 @@ IN_PROC_BROWSER_TEST_F(PrefsTabHelperBrowserTest, WebPrefs) {
   EXPECT_EQ("Tinos", prefs->GetString(prefs::kWebKitStandardFontFamily));
   EXPECT_EQ("DejaVu Sans", prefs->GetString(prefs::kWebKitSansSerifFontFamily));
 }
+
+// Tests that changes in browser preferences are reflected in Blink's web
+// preferences. Note that these preferences are not handled on Android, see
+// http://crbug.com/308033.
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(PrefsTabHelperBrowserTest, GenericFontFamilies) {
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  prefs->SetString(prefs::kWebKitStandardFontFamily, "CustomStandard");
+  prefs->SetString(prefs::kWebKitSerifFontFamily, "CustomSerif");
+  prefs->SetString(prefs::kWebKitSansSerifFontFamily, "CustomSansSerif");
+  prefs->SetString(prefs::kWebKitCursiveFontFamily, "CustomCursive");
+  prefs->SetString(prefs::kWebKitFantasyFontFamily, "CustomFantasy");
+  prefs->SetString(prefs::kWebKitFixedFontFamily, "CustomFixed");
+  prefs->SetString(prefs::kWebKitMathFontFamily, "CustomMath");
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  web_contents->NotifyPreferencesChanged();
+  blink::web_pref::WebPreferences web_prefs =
+      web_contents->GetOrCreateWebPreferences();
+
+  EXPECT_EQ(u"CustomStandard",
+            web_prefs.standard_font_family_map[blink::web_pref::kCommonScript]);
+  EXPECT_EQ(u"CustomSerif",
+            web_prefs.serif_font_family_map[blink::web_pref::kCommonScript]);
+  EXPECT_EQ(
+      u"CustomSansSerif",
+      web_prefs.sans_serif_font_family_map[blink::web_pref::kCommonScript]);
+  EXPECT_EQ(u"CustomCursive",
+            web_prefs.cursive_font_family_map[blink::web_pref::kCommonScript]);
+  EXPECT_EQ(u"CustomFantasy",
+            web_prefs.fantasy_font_family_map[blink::web_pref::kCommonScript]);
+  EXPECT_EQ(u"CustomFixed",
+            web_prefs.fixed_font_family_map[blink::web_pref::kCommonScript]);
+  EXPECT_EQ(u"CustomMath",
+            web_prefs.math_font_family_map[blink::web_pref::kCommonScript]);
+}
+#endif

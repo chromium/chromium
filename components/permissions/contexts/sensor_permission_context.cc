@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,10 +22,9 @@ SensorPermissionContext::SensorPermissionContext(
 
 SensorPermissionContext::~SensorPermissionContext() {}
 
-void SensorPermissionContext::UpdateTabContext(
-    const permissions::PermissionRequestID& id,
-    const GURL& requesting_frame,
-    bool allowed) {
+void SensorPermissionContext::UpdateTabContext(const PermissionRequestID& id,
+                                               const GURL& requesting_frame,
+                                               bool allowed) {
   auto* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
           id.render_process_id(), id.render_frame_id());
@@ -36,14 +35,6 @@ void SensorPermissionContext::UpdateTabContext(
     content_settings->OnContentAllowed(ContentSettingsType::SENSORS);
   else
     content_settings->OnContentBlocked(ContentSettingsType::SENSORS);
-}
-
-bool SensorPermissionContext::IsRestrictedToSecureOrigins() const {
-  // This is to allow non-secure origins that use DeviceMotion and
-  // DeviceOrientation Event to be able to access sensors that are provided
-  // by generic_sensor. The Generic Sensor API is not allowed in non-secure
-  // origins and this is enforced by the renderer.
-  return false;
 }
 
 }  // namespace permissions

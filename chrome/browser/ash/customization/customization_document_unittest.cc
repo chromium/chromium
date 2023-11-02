@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,10 +18,10 @@
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_handler_test_helper.h"
-#include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/testing_pref_service.h"
@@ -283,7 +283,7 @@ class ServicesCustomizationDocumentTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  chromeos::NetworkHandlerTestHelper network_handler_test_helper_;
+  NetworkHandlerTestHelper network_handler_test_helper_;
   chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   ScopedCrosSettingsTestHelper scoped_cros_settings_test_helper_;
   TestingPrefServiceSimple local_state_;
@@ -308,26 +308,26 @@ TEST_F(ServicesCustomizationDocumentTest, Basic) {
   EXPECT_FALSE(doc->GetDefaultWallpaperUrl(&wallpaper_url));
   EXPECT_EQ("", wallpaper_url.spec());
 
-  std::unique_ptr<base::DictionaryValue> default_apps(doc->GetDefaultApps());
+  auto default_apps = doc->GetDefaultApps();
   ASSERT_TRUE(default_apps);
-  EXPECT_EQ(default_apps->DictSize(), 2u);
+  EXPECT_EQ(default_apps->size(), 2u);
 
-  const base::DictionaryValue* app_entry = nullptr;
-  ASSERT_TRUE(default_apps->GetDictionary("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-                                          &app_entry));
-  EXPECT_EQ(app_entry->DictSize(), 1u);
-  EXPECT_TRUE(app_entry->FindKey(
-                  extensions::ExternalProviderImpl::kExternalUpdateUrl) !=
-              nullptr);
-
-  ASSERT_TRUE(default_apps->GetDictionary("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-                                          &app_entry));
-  EXPECT_EQ(app_entry->DictSize(), 2u);
-  EXPECT_TRUE(app_entry->FindKey(
-                  extensions::ExternalProviderImpl::kExternalUpdateUrl) !=
-              nullptr);
+  const base::Value::Dict* app_entry =
+      default_apps->FindDict("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+  ASSERT_TRUE(app_entry);
+  EXPECT_EQ(app_entry->size(), 1u);
   EXPECT_TRUE(
-      app_entry->FindKey(
+      app_entry->Find(extensions::ExternalProviderImpl::kExternalUpdateUrl) !=
+      nullptr);
+
+  app_entry = default_apps->FindDict("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
+  ASSERT_TRUE(app_entry);
+  EXPECT_EQ(app_entry->size(), 2u);
+  EXPECT_TRUE(
+      app_entry->Find(extensions::ExternalProviderImpl::kExternalUpdateUrl) !=
+      nullptr);
+  EXPECT_TRUE(
+      app_entry->Find(
           extensions::ExternalProviderImpl::kDoNotInstallForEnterprise) !=
       nullptr);
 

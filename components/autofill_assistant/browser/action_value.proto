@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,16 @@ message AutofillProfile {
 
 // A value expression.
 message ValueExpression {
+  // Used to perform regexp-based replacements.
+  message RegexpReplacement {
+    // If the text filter matches ...
+    optional TextFilter text_filter = 1;
+    // ... replace by this value.
+    optional string replacement = 2;
+    // If true, replaces all occurrences, otherwise the first one only.
+    optional bool global = 3;
+  }
+
   message Chunk {
     oneof chunk {
       // An integer representation to resolve a piece of Autofill information.
@@ -35,10 +45,29 @@ message ValueExpression {
       string memory_key = 4;
     }
 
-    // If the chunk fully matches the key, it will be replaced. When used
-    // in a regular expression context, the key needs to be quoted. Similarly,
-    // the replacement will be substituted as is, without being quoted.
+    // If the chunk fully matches the given case-sensitive key, it will be
+    // replaced with the specified value.
+    // When used in a regular expression context, no escaping is applied to
+    // either the key or value. As a result, both fields must be explicitly
+    // escaped in the message.
+    // Examples:
+    // - key: GB, value: (UK|GB)
+    // - key: United\ States, value: (United States|USA|U\.S\.A\.?)
     map<string, string> replacements = 3;
+    // If any of the replacements match, apply them. While not explicitly
+    // forbidden it should not be required to use this in combination with
+    // the key/value replacements. In case they are chained, the key/value
+    // replacements are applied first. Backslash-escaped digits (\1 to \9) can
+    // be used to insert text matching the corresponding parenthesized group
+    // from the pattern. \0 refers to the entire matching text.
+    // Examples:
+    // - text_filter: ^0, replacement: "", is_global: false
+    //   Replaces a leading 0 in the chunk
+    // - text_filter: \s+, replacement: "", is_global: true
+    //   Removes all whitespace in the chunk
+    // - text_filter: (\w+)\s(\w+), replacement: \2 \1
+    //   Flips two words
+    repeated RegexpReplacement regexp_replacements = 5;
   }
   repeated Chunk chunk = 1;
 }

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,19 +18,19 @@
 namespace blink {
 
 WGPUBindGroupLayoutEntry AsDawnType(
-    const GPUBindGroupLayoutEntry* webgpu_binding,
     GPUDevice* device,
+    const GPUBindGroupLayoutEntry* webgpu_binding,
     Vector<std::unique_ptr<WGPUExternalTextureBindingLayout>>*
-        externalTextureBindingLayouts) {
+        externalTextureBindingLayouts,
+    ExceptionState& exception_state) {
   WGPUBindGroupLayoutEntry dawn_binding = {};
 
   dawn_binding.binding = webgpu_binding->binding();
   dawn_binding.visibility =
-      AsDawnEnum<WGPUShaderStage>(webgpu_binding->visibility());
+      AsDawnFlags<WGPUShaderStage>(webgpu_binding->visibility());
 
   if (webgpu_binding->hasBuffer()) {
-    dawn_binding.buffer.type =
-        AsDawnEnum<WGPUBufferBindingType>(webgpu_binding->buffer()->type());
+    dawn_binding.buffer.type = AsDawnEnum(webgpu_binding->buffer()->type());
     dawn_binding.buffer.hasDynamicOffset =
         webgpu_binding->buffer()->hasDynamicOffset();
     dawn_binding.buffer.minBindingSize =
@@ -38,27 +38,30 @@ WGPUBindGroupLayoutEntry AsDawnType(
   }
 
   if (webgpu_binding->hasSampler()) {
-    dawn_binding.sampler.type =
-        AsDawnEnum<WGPUSamplerBindingType>(webgpu_binding->sampler()->type());
+    dawn_binding.sampler.type = AsDawnEnum(webgpu_binding->sampler()->type());
   }
 
   if (webgpu_binding->hasTexture()) {
-    dawn_binding.texture.sampleType = AsDawnEnum<WGPUTextureSampleType>(
-        webgpu_binding->texture()->sampleType());
-    dawn_binding.texture.viewDimension = AsDawnEnum<WGPUTextureViewDimension>(
-        webgpu_binding->texture()->viewDimension());
+    dawn_binding.texture.sampleType =
+        AsDawnEnum(webgpu_binding->texture()->sampleType());
+    dawn_binding.texture.viewDimension =
+        AsDawnEnum(webgpu_binding->texture()->viewDimension());
     dawn_binding.texture.multisampled =
         webgpu_binding->texture()->multisampled();
   }
 
   if (webgpu_binding->hasStorageTexture()) {
-    dawn_binding.storageTexture.access = AsDawnEnum<WGPUStorageTextureAccess>(
-        webgpu_binding->storageTexture()->access());
-    dawn_binding.storageTexture.format = AsDawnEnum<WGPUTextureFormat>(
-        webgpu_binding->storageTexture()->format());
+    if (!device->ValidateTextureFormatUsage(
+            webgpu_binding->storageTexture()->format(), exception_state)) {
+      return {};
+    }
+
+    dawn_binding.storageTexture.access =
+        AsDawnEnum(webgpu_binding->storageTexture()->access());
+    dawn_binding.storageTexture.format =
+        AsDawnEnum(webgpu_binding->storageTexture()->format());
     dawn_binding.storageTexture.viewDimension =
-        AsDawnEnum<WGPUTextureViewDimension>(
-            webgpu_binding->storageTexture()->viewDimension());
+        AsDawnEnum(webgpu_binding->storageTexture()->viewDimension());
   }
 
   if (webgpu_binding->hasExternalTexture()) {
@@ -78,16 +81,18 @@ WGPUBindGroupLayoutEntry AsDawnType(
 
 // TODO(crbug.com/1069302): Remove when unused.
 std::unique_ptr<WGPUBindGroupLayoutEntry[]> AsDawnType(
-    const HeapVector<Member<GPUBindGroupLayoutEntry>>& webgpu_objects,
     GPUDevice* device,
+    const HeapVector<Member<GPUBindGroupLayoutEntry>>& webgpu_objects,
     Vector<std::unique_ptr<WGPUExternalTextureBindingLayout>>*
-        externalTextureBindingLayouts) {
+        externalTextureBindingLayouts,
+    ExceptionState& exception_state) {
   wtf_size_t count = webgpu_objects.size();
   std::unique_ptr<WGPUBindGroupLayoutEntry[]> dawn_objects(
       new WGPUBindGroupLayoutEntry[count]);
   for (wtf_size_t i = 0; i < count; ++i) {
-    dawn_objects[i] = AsDawnType(webgpu_objects[i].Get(), device,
-                                 externalTextureBindingLayouts);
+    dawn_objects[i] =
+        AsDawnType(device, webgpu_objects[i].Get(),
+                   externalTextureBindingLayouts, exception_state);
   }
   return dawn_objects;
 }
@@ -106,8 +111,12 @@ GPUBindGroupLayout* GPUBindGroupLayout::Create(
       externalTextureBindingLayouts;
   entry_count = static_cast<uint32_t>(webgpu_desc->entries().size());
   if (entry_count > 0) {
-    entries = AsDawnType(webgpu_desc->entries(), device,
-                         &externalTextureBindingLayouts);
+    entries = AsDawnType(device, webgpu_desc->entries(),
+                         &externalTextureBindingLayouts, exception_state);
+  }
+
+  if (exception_state.HadException()) {
+    return nullptr;
   }
 
   std::string label;

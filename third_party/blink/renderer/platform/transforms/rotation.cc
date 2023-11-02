@@ -31,7 +31,6 @@ using gfx::Quaternion;
 
 namespace {
 
-const double kEpsilon = 1e-5;
 const double kAngleEpsilon = 1e-4;
 
 Quaternion ComputeQuaternion(const Rotation& rotation) {
@@ -39,23 +38,19 @@ Quaternion ComputeQuaternion(const Rotation& rotation) {
                                    rotation.axis.z(), Deg2rad(rotation.angle));
 }
 
-FloatPoint3D NormalizeAxis(FloatPoint3D axis) {
-  FloatPoint3D normalized(axis);
-  double length = normalized.length();
-  if (length > kEpsilon) {
-    normalized.Normalize();
-  } else {
-    // Rotation angle is zero so the axis is arbitrary.
-    normalized.SetPoint(0, 0, 1);
-  }
-  return normalized;
+gfx::Vector3dF NormalizeAxis(gfx::Vector3dF axis) {
+  gfx::Vector3dF normalized;
+  if (axis.GetNormalized(&normalized))
+    return normalized;
+  // Rotation angle is zero so the axis is arbitrary.
+  return gfx::Vector3dF(0, 0, 1);
 }
 
 Rotation ComputeRotation(Quaternion q) {
   double cos_half_angle = q.w();
   double interpolated_angle = Rad2deg(2 * std::acos(cos_half_angle));
-  FloatPoint3D interpolated_axis =
-      NormalizeAxis(FloatPoint3D(q.x(), q.y(), q.z()));
+  gfx::Vector3dF interpolated_axis =
+      NormalizeAxis(gfx::Vector3dF(q.x(), q.y(), q.z()));
   return Rotation(interpolated_axis, interpolated_angle);
 }
 
@@ -63,10 +58,10 @@ Rotation ComputeRotation(Quaternion q) {
 
 bool Rotation::GetCommonAxis(const Rotation& a,
                              const Rotation& b,
-                             FloatPoint3D& result_axis,
+                             gfx::Vector3dF& result_axis,
                              double& result_angle_a,
                              double& result_angle_b) {
-  result_axis = FloatPoint3D(0, 0, 1);
+  result_axis = gfx::Vector3dF(0, 0, 1);
   result_angle_a = 0;
   result_angle_b = 0;
 
@@ -100,7 +95,7 @@ bool Rotation::GetCommonAxis(const Rotation& a,
     return true;
   }
 
-  double dot = a.axis.Dot(b.axis);
+  double dot = gfx::DotProduct(a.axis, b.axis);
   if (dot < 0)
     return false;
 
@@ -121,7 +116,7 @@ Rotation Rotation::Slerp(const Rotation& from,
                          double progress) {
   double from_angle;
   double to_angle;
-  FloatPoint3D axis;
+  gfx::Vector3dF axis;
   if (GetCommonAxis(from, to, axis, from_angle, to_angle))
     return Rotation(axis, blink::Blend(from_angle, to_angle, progress));
 
@@ -135,7 +130,7 @@ Rotation Rotation::Slerp(const Rotation& from,
 Rotation Rotation::Add(const Rotation& a, const Rotation& b) {
   double angle_a;
   double angle_b;
-  FloatPoint3D axis;
+  gfx::Vector3dF axis;
   if (GetCommonAxis(a, b, axis, angle_a, angle_b))
     return Rotation(axis, angle_a + angle_b);
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/public/overlay_candidates_ozone.h"
 
@@ -29,7 +30,7 @@ class WaylandOverlayCandidates : public OverlayCandidatesOzone {
       std::vector<OverlaySurfaceCandidate>* candidates) override;
 
  private:
-  WaylandOverlayManager* const overlay_manager_;  // Not owned.
+  const raw_ptr<WaylandOverlayManager> overlay_manager_;  // Not owned.
   const gfx::AcceleratedWidget widget_;
 };
 

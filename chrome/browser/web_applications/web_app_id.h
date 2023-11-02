@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,11 @@ namespace web_app {
 
 // App ID matches Extension ID.
 using AppId = std::string;
+
+// Unhashed version of App ID. This can be hashed using
+// GenerateAppIdFromUnhashed(unhashed_app_id), see
+// chrome/browser/web_applications/web_app_helpers.h.
+using UnhashedAppId = std::string;
 
 }  // namespace web_app
 

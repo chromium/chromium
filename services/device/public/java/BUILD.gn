@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,7 +6,11 @@ import("//build/config/android/rules.gni")
 
 android_library("device_feature_list_java") {
   sources = [ "src/org/chromium/device/DeviceFeatureList.java" ]
-  deps = [ "//base:base_java" ]
+  deps = [
+    "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
+  ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
@@ -28,7 +32,6 @@ android_library("geolocation_java_test_support") {
   ]
   deps = [
     ":geolocation_java",
-    "//base:base_java",
 
     # Ideally this dependency should be removed. http://crbug.com/850357
     "//services/device/geolocation:geolocation_java",

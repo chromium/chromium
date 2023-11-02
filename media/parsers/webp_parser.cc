@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -104,7 +104,7 @@ std::unique_ptr<Vp8FrameHeader> ParseWebPImage(
 
   // Check that the size of the encoded data is consistent.
   const size_t vp8_padded_frame_size =
-      base::bits::AlignUp(base::strict_cast<size_t>(vp8_frame_size), 2u);
+      base::bits::AlignUp(size_t{vp8_frame_size}, size_t{2});
   if (encoded_data.size() - kWebPFileAndVp8ChunkHeaderSizeInBytes !=
       vp8_padded_frame_size) {
     return nullptr;

@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
@@ -22,12 +23,10 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/gpu_export.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace base {
 class SingleThreadTaskRunner;
-namespace trace_event {
-class ConvertableToTraceFormat;
-}
 }
 
 namespace gpu {
@@ -54,6 +53,19 @@ class GPU_EXPORT Scheduler {
     base::OnceClosure closure;
     std::vector<SyncToken> sync_token_fences;
     ReportingCallback report_callback;
+  };
+
+  struct ScopedAddWaitingPriority {
+   public:
+    ScopedAddWaitingPriority(Scheduler* scheduler,
+                             SequenceId sequence_id,
+                             SchedulingPriority priority);
+    ~ScopedAddWaitingPriority();
+
+   private:
+    const raw_ptr<Scheduler> scheduler_;
+    const SequenceId sequence_id_;
+    const SchedulingPriority priority_;
   };
 
   Scheduler(SyncPointManager* sync_point_manager,
@@ -131,8 +143,7 @@ class GPU_EXPORT Scheduler {
              std::tie(other.priority, other.order_num);
     }
 
-    std::unique_ptr<base::trace_event::ConvertableToTraceFormat> AsValue()
-        const;
+    void WriteIntoTrace(perfetto::TracedValue context) const;
 
     SequenceId sequence_id;
     SchedulingPriority priority = SchedulingPriority::kLow;
@@ -323,7 +334,7 @@ class GPU_EXPORT Scheduler {
     // running. Updated in |SetScheduled| and |UpdateRunningPriority|.
     SchedulingState scheduling_state_;
 
-    Scheduler* const scheduler_;
+    const raw_ptr<Scheduler> scheduler_;
     const SequenceId sequence_id_;
     scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
@@ -350,6 +361,10 @@ class GPU_EXPORT Scheduler {
     base::flat_set<CommandBufferId> client_waits_;
   };
 
+  void AddWaitingPriority(SequenceId sequence_id, SchedulingPriority priority);
+  void RemoveWaitingPriority(SequenceId sequence_id,
+                             SchedulingPriority priority);
+
   void SyncTokenFenceReleased(const SyncToken& sync_token,
                               uint32_t order_num,
                               SequenceId release_sequence_id,
@@ -368,7 +383,7 @@ class GPU_EXPORT Scheduler {
 
   void RunNextTask();
 
-  SyncPointManager* const sync_point_manager_;
+  const raw_ptr<SyncPointManager> sync_point_manager_;
   mutable base::Lock lock_;
   base::flat_map<SequenceId, std::unique_ptr<Sequence>> sequence_map_
       GUARDED_BY(lock_);
@@ -380,21 +395,27 @@ class GPU_EXPORT Scheduler {
     PerThreadState(PerThreadState&&);
     ~PerThreadState();
     PerThreadState& operator=(PerThreadState&&);
+
     // Used as a priority queue for scheduling sequences. Min heap of
     // SchedulingState with highest priority (lowest order) in front.
     std::vector<SchedulingState> scheduling_queue;
+
+    // Indicates if the scheduling queue for this thread should be rebuilt due
+    // to priority changes, sequences becoming unblocked, etc.
     bool rebuild_scheduling_queue = false;
+
+    // Indicates if the scheduler is actively running tasks on this thread.
     bool running = false;
+
+    // Indicates when the next task run was scheduled
+    base::TimeTicks run_next_task_scheduled;
   };
   base::flat_map<base::SingleThreadTaskRunner*, PerThreadState>
-      per_thread_state_map_;
+      per_thread_state_map_ GUARDED_BY(lock_);
 
   // Accumulated time the thread was blocked during running task
-  base::TimeDelta total_blocked_time_;
+  base::TimeDelta total_blocked_time_ GUARDED_BY(lock_);
   const bool blocked_time_collection_enabled_;
-
-  // Indicate when the next task run was scheduled
-  base::TimeTicks run_next_task_scheduled_;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SchedulerTest, StreamPriorities);

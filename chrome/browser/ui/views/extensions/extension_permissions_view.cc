@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,8 +34,7 @@ void ExtensionPermissionsView::AddItem(
     // If we have more details to provide, show them in collapsed form.
     std::vector<std::u16string> details_container;
     details_container.push_back(permission_details);
-    AddChildView(std::make_unique<ExpandableContainerView>(details_container,
-                                                           available_width_));
+    AddChildView(std::make_unique<ExpandableContainerView>(details_container));
   }
 }
 

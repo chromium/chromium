@@ -1,15 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/secure_channel/nearby_connector_factory.h"
 
+#include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "chrome/browser/ash/nearby/nearby_process_manager_factory.h"
 #include "chrome/browser/ash/secure_channel/nearby_connector_impl.h"
 #include "chrome/browser/ash/secure_channel/secure_channel_client_provider.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/services/secure_channel/public/cpp/client/secure_channel_client.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace ash {
 namespace secure_channel {
@@ -27,9 +26,7 @@ NearbyConnectorFactory* NearbyConnectorFactory::GetInstance() {
 }
 
 NearbyConnectorFactory::NearbyConnectorFactory()
-    : BrowserContextKeyedServiceFactory(
-          "NearbyConnector",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("NearbyConnector") {
   DependsOn(nearby::NearbyProcessManagerFactory::GetInstance());
 }
 

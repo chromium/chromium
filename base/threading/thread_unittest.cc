@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,12 +13,11 @@
 #include "base/bind.h"
 #include "base/debug/leak_annotations.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/current_thread.h"
-#include "base/task/post_task.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_executor.h"
@@ -104,7 +103,7 @@ class CaptureToEventList : public Thread {
   void CleanUp() override { event_list_->push_back(THREAD_EVENT_CLEANUP); }
 
  private:
-  EventList* event_list_;
+  raw_ptr<EventList> event_list_;
 };
 
 // Observer that writes a value into |event_list| when a message loop has been
@@ -128,7 +127,7 @@ class CapturingDestructionObserver
   }
 
  private:
-  EventList* event_list_;
+  raw_ptr<EventList> event_list_;
 };
 
 // Task that adds a destruction observer to the current message loop.
@@ -551,15 +550,15 @@ TEST_F(ThreadTest, GetTaskExecutorForCurrentThread) {
 
 namespace {
 
+using TaskQueue = base::sequence_manager::TaskQueue;
+
 class SequenceManagerThreadDelegate : public Thread::Delegate {
  public:
   SequenceManagerThreadDelegate()
       : sequence_manager_(
             base::sequence_manager::CreateUnboundSequenceManager()),
-        task_queue_(
-            sequence_manager_
-                ->CreateTaskQueueWithType<base::sequence_manager::TaskQueue>(
-                    base::sequence_manager::TaskQueue::Spec("default_tq"))) {
+        task_queue_(sequence_manager_->CreateTaskQueueWithType<TaskQueue>(
+            TaskQueue::Spec(base::sequence_manager::QueueName::DEFAULT_TQ))) {
     sequence_manager_->SetDefaultTaskRunner(GetDefaultTaskRunner());
   }
 
@@ -583,7 +582,7 @@ class SequenceManagerThreadDelegate : public Thread::Delegate {
 
  private:
   std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager_;
-  scoped_refptr<base::sequence_manager::TaskQueue> task_queue_;
+  scoped_refptr<TaskQueue> task_queue_;
 };
 
 }  // namespace

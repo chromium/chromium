@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/fuchsia/service_directory_test_base.h"
 
 #include <lib/fdio/directory.h>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -33,7 +34,7 @@ ServiceDirectoryTestBase::ServiceDirectoryTestBase()
                svc_directory.NewRequest().TakeChannel().release()),
            ZX_OK);
   public_service_directory_ =
-      std::make_unique<sys::ServiceDirectory>(std::move(svc_directory));
+      std::make_shared<sys::ServiceDirectory>(std::move(svc_directory));
 
   // Create the sys::ServiceDirectory, connected to the "debug" sub-directory.
   fidl::InterfaceHandle<::fuchsia::io::Directory> debug_directory;

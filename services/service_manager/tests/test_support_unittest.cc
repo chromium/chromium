@@ -1,11 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -129,6 +128,13 @@ TEST(ServiceManagerTestSupport, TestConnectorFactoryUniqueService) {
   base::RunLoop loop;
   c->C(loop.QuitClosure());
   loop.Run();
+
+  // Give the service a chance to process disconnection and clean up.
+  c.reset();
+  base::RunLoop cleanup_loop;
+  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                   cleanup_loop.QuitClosure());
+  cleanup_loop.Run();
 }
 
 TEST(ServiceManagerTestSupport, TestConnectorFactoryMultipleServices) {
@@ -154,6 +160,12 @@ TEST(ServiceManagerTestSupport, TestConnectorFactoryMultipleServices) {
     c->C(loop.QuitClosure());
     loop.Run();
   }
+
+  // Give the services a chance to process disconnection and clean up.
+  base::RunLoop cleanup_loop;
+  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                   cleanup_loop.QuitClosure());
+  cleanup_loop.Run();
 }
 
 }  // namespace service_manager

@@ -1,2 +1,2 @@
 # https://crbug.com/1241502
--OopRasterMode/PaintCanvasVideoRendererWithGLTest.*
+-PaintCanvasVideoRendererWithGLTest.*

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,9 +17,9 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <sys/stat.h>
 #include <unistd.h>
 #include <unordered_set>
@@ -58,23 +58,23 @@ class BASE_EXPORT FileEnumerator {
     // On POSIX systems, this is rounded down to the second.
     Time GetLastModifiedTime() const;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Note that the cAlternateFileName (used to hold the "short" 8.3 name)
     // of the WIN32_FIND_DATA will be empty. Since we don't use short file
     // names, we tell Windows to omit it which speeds up the query slightly.
     const WIN32_FIND_DATA& find_data() const {
       return *ChromeToWindowsType(&find_data_);
     }
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     const stat_wrapper_t& stat() const { return stat_; }
 #endif
 
    private:
     friend class FileEnumerator;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     CHROME_WIN32_FIND_DATA find_data_;
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     stat_wrapper_t stat_;
     FilePath filename_;
 #endif
@@ -84,7 +84,15 @@ class BASE_EXPORT FileEnumerator {
     FILES = 1 << 0,
     DIRECTORIES = 1 << 1,
     INCLUDE_DOT_DOT = 1 << 2,
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+
+    // Report only the names of entries and not their type, size, or
+    // last-modified time. May only be used for non-recursive enumerations, and
+    // implicitly includes both files and directories (neither of which may be
+    // specified). When used, an enumerator's `GetInfo()` method must not be
+    // called.
+    NAMES_ONLY = 1 << 3,
+
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     SHOW_SYM_LINKS = 1 << 4,
 #endif
   };
@@ -163,6 +171,7 @@ class BASE_EXPORT FileEnumerator {
   // particular, the GetLastModifiedTime() for the .. directory is 1601-01-01
   // on Fuchsia (https://crbug.com/1106172) and is equal to the last modified
   // time of the current directory on Windows (https://crbug.com/1119546).
+  // Must not be used with FileType::NAMES_ONLY.
   FileInfo GetInfo() const;
 
   // Once |Next()| returns an empty path, enumeration has been terminated. If
@@ -179,7 +188,7 @@ class BASE_EXPORT FileEnumerator {
 
   bool IsPatternMatched(const FilePath& src) const;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const WIN32_FIND_DATA& find_data() const {
     return *ChromeToWindowsType(&find_data_);
   }
@@ -188,20 +197,22 @@ class BASE_EXPORT FileEnumerator {
   bool has_find_data_ = false;
   CHROME_WIN32_FIND_DATA find_data_;
   HANDLE find_handle_ = INVALID_HANDLE_VALUE;
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // The files in the current directory
   std::vector<FileInfo> directory_entries_;
 
   // Set of visited directories. Used to prevent infinite looping along
   // circular symlinks.
-  std::unordered_set<ino_t> visited_directories_;
+  // The Android NDK (r23) does not declare `st_ino` as an `ino_t`, hence the
+  // need for the ugly decltype.
+  std::unordered_set<decltype(stat_wrapper_t::st_ino)> visited_directories_;
 
   // The next entry to use from the directory_entries_ vector
   size_t current_directory_entry_;
 #endif
   FilePath root_path_;
   const bool recursive_;
-  const int file_type_;
+  int file_type_;
   FilePath::StringType pattern_;
   const FolderSearchPolicy folder_search_policy_;
   const ErrorPolicy error_policy_;

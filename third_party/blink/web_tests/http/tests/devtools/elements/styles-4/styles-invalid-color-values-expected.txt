@@ -13,6 +13,7 @@ color: red
   shorthexa: #f00f
   rgb: rgb(255 0 0)
   hsl: hsl(0deg 100% 50%)
+  hwb: hwb(0deg 0% 0%)
 
 color: #F00
   simple: true
@@ -24,6 +25,7 @@ color: #F00
   shorthexa: #f00f
   rgb: rgb(255 0 0)
   hsl: hsl(0deg 100% 50%)
+  hwb: hwb(0deg 0% 0%)
 
 color: #F00F
   simple: true
@@ -35,6 +37,7 @@ color: #F00F
   shorthexa: #F00F
   rgb: rgb(255 0 0)
   hsl: hsl(0deg 100% 50%)
+  hwb: hwb(0deg 0% 0%)
 
 color: #FF0000
   simple: true
@@ -46,6 +49,7 @@ color: #FF0000
   shorthexa: #f00f
   rgb: rgb(255 0 0)
   hsl: hsl(0deg 100% 50%)
+  hwb: hwb(0deg 0% 0%)
 
 color: #FF0000FF
   simple: true
@@ -57,6 +61,7 @@ color: #FF0000FF
   shorthexa: #f00f
   rgb: rgb(255 0 0)
   hsl: hsl(0deg 100% 50%)
+  hwb: hwb(0deg 0% 0%)
 
 color: rgb(255,0,0)
   simple: true
@@ -68,6 +73,7 @@ color: rgb(255,0,0)
   shorthexa: #f00f
   rgb: rgb(255,0,0)
   hsl: hsl(0deg 100% 50%)
+  hwb: hwb(0deg 0% 0%)
 
 color: rgb(300,0,0)
   simple: true
@@ -79,6 +85,7 @@ color: rgb(300,0,0)
   shorthexa: #f00f
   rgb: rgb(255 0 0)
   hsl: hsl(0deg 100% 50%)
+  hwb: hwb(0deg 0% 0%)
 
 color: rgb(255,-10,0)
   simple: true
@@ -90,6 +97,7 @@ color: rgb(255,-10,0)
   shorthexa: #f00f
   rgb: rgb(255 0 0)
   hsl: hsl(0deg 100% 50%)
+  hwb: hwb(0deg 0% 0%)
 
 color: rgb(110%, 0%, 0%)
   simple: true
@@ -101,6 +109,7 @@ color: rgb(110%, 0%, 0%)
   shorthexa: #f00f
   rgb: rgb(255 0 0)
   hsl: hsl(0deg 100% 50%)
+  hwb: hwb(0deg 0% 0%)
 
 color: rgba(0,0,0,0.5)
   simple: false
@@ -111,6 +120,7 @@ color: rgba(0,0,0,0.5)
   rgba: rgba(0,0,0,0.5)
   hsl: hsl(0deg 0% 0% / 50%)
   hsla: hsl(0deg 0% 0% / 50%)
+  hwb: hwb(0deg 0% 100% / 50%)
 
 color: rgb(0,0,0,50%)
   simple: false
@@ -121,6 +131,7 @@ color: rgb(0,0,0,50%)
   rgba: rgb(0,0,0,50%)
   hsl: hsl(0deg 0% 0% / 50%)
   hsla: hsl(0deg 0% 0% / 50%)
+  hwb: hwb(0deg 0% 100% / 50%)
 
 color: rgb( 0  0   0   /   50%  )
   simple: false
@@ -131,6 +142,7 @@ color: rgb( 0  0   0   /   50%  )
   rgba: rgb( 0  0   0   /   50%  )
   hsl: hsl(0deg 0% 0% / 50%)
   hsla: hsl(0deg 0% 0% / 50%)
+  hwb: hwb(0deg 0% 100% / 50%)
 
 color: rgb(1 1 1/1)
   simple: true
@@ -140,6 +152,7 @@ color: rgb(1 1 1/1)
   shorthexa: null
   rgb: rgb(1 1 1)
   hsl: hsl(0deg 0% 0%)
+  hwb: hwb(0deg 0% 100%)
 
 color: rgb(1 1 1/ 1)
   simple: true
@@ -149,6 +162,7 @@ color: rgb(1 1 1/ 1)
   shorthexa: null
   rgb: rgb(1 1 1)
   hsl: hsl(0deg 0% 0%)
+  hwb: hwb(0deg 0% 100%)
 
 color: rgba(1.5 1.5 1.5)
   simple: true
@@ -158,6 +172,7 @@ color: rgba(1.5 1.5 1.5)
   shorthexa: null
   rgb: rgba(1.5 1.5 1.5)
   hsl: hsl(0deg 0% 1%)
+  hwb: hwb(0deg 1% 99%)
 
 color: hsl(-120, 100%, 50%)
   simple: true
@@ -169,6 +184,7 @@ color: hsl(-120, 100%, 50%)
   shorthexa: #00ff
   rgb: rgb(0 0 255)
   hsl: hsl(-120, 100%, 50%)
+  hwb: hwb(240deg 0% 0%)
 
 color: hsl(-120deg, 100%, 50%)
   simple: true
@@ -180,6 +196,7 @@ color: hsl(-120deg, 100%, 50%)
   shorthexa: #00ff
   rgb: rgb(0 0 255)
   hsl: hsl(-120deg, 100%, 50%)
+  hwb: hwb(240deg 0% 0%)
 
 color: hsl(-120, 200%, 200%)
   simple: true
@@ -191,6 +208,7 @@ color: hsl(-120, 200%, 200%)
   shorthexa: #ffff
   rgb: rgb(255 255 255)
   hsl: hsl(-120, 200%, 200%)
+  hwb: hwb(0deg 100% 0%)
 
 color: hsl(-120, -200%, -200%)
   simple: true
@@ -202,6 +220,7 @@ color: hsl(-120, -200%, -200%)
   shorthexa: #000f
   rgb: rgb(0 0 0)
   hsl: hsl(0deg 0% 0%)
+  hwb: hwb(0deg 0% 100%)
 
 color: hsla(-120, -200%, -200%, -5)
   simple: false
@@ -213,6 +232,7 @@ color: hsla(-120, -200%, -200%, -5)
   rgba: rgb(0 0 0 / 0%)
   hsl: hsl(0deg 0% 0% / 0%)
   hsla: hsl(0deg 0% 0% / 0%)
+  hwb: hwb(0deg 0% 100% / 0%)
 
 color: hsla(240,100%,50%,0.05)
   simple: false
@@ -223,6 +243,7 @@ color: hsla(240,100%,50%,0.05)
   rgba: rgb(0 0 255 / 5%)
   hsl: hsl(240deg 100% 50% / 5%)
   hsla: hsla(240,100%,50%,0.05)
+  hwb: hwb(240deg 0% 0% / 5%)
 
 color: hsl(200.5,0%,50%)
   simple: true
@@ -233,6 +254,7 @@ color: hsl(200.5,0%,50%)
   shorthexa: null
   rgb: rgb(128 128 128)
   hsl: hsl(200.5,0%,50%)
+  hwb: hwb(0deg 50% 50%)
 
 color: hsla(200,1.5%,50%,1)
   simple: true
@@ -242,6 +264,7 @@ color: hsla(200,1.5%,50%,1)
   shorthexa: null
   rgb: rgb(126 128 129)
   hsl: hsl(200deg 1% 50%)
+  hwb: hwb(200deg 49% 49%)
 
 color: rgba(0,0,0,.5)
   simple: false
@@ -252,6 +275,7 @@ color: rgba(0,0,0,.5)
   rgba: rgba(0,0,0,.5)
   hsl: hsl(0deg 0% 0% / 50%)
   hsla: hsl(0deg 0% 0% / 50%)
+  hwb: hwb(0deg 0% 100% / 50%)
 
 color: hsla(.5,.5%,.5%,.5)
   simple: false
@@ -262,6 +286,7 @@ color: hsla(.5,.5%,.5%,.5)
   rgba: rgb(1 1 1 / 50%)
   hsl: hsl(1deg 0% 1% / 50%)
   hsla: hsla(.5,.5%,.5%,.5)
+  hwb: hwb(1deg 0% 99% / 50%)
 
 color: hsla(100.5,50.5%,50.5%,.5)
   simple: false
@@ -272,6 +297,102 @@ color: hsla(100.5,50.5%,50.5%,.5)
   rgba: rgb(106 193 65 / 50%)
   hsl: hsl(101deg 50% 51% / 50%)
   hsla: hsla(100.5,50.5%,50.5%,.5)
+  hwb: hwb(101deg 26% 25% / 50%)
+
+color: hwb(-120 200% 200%)
+  simple: true
+  original: hwb(-120 200% 200%)
+  nickname: grey
+  hex: #808080
+  hexa: #808080ff
+  shorthexa: null
+  rgb: rgb(128 128 128)
+  hsl: hsl(0deg 0% 50%)
+  hwb: hwb(-120 200% 200%)
+
+color: hwb(-120 -200% -200%)
+  simple: true
+  original: hwb(-120 -200% -200%)
+  nickname: blue
+  hex: #0000ff
+  shorthex: #00f
+  hexa: #0000ffff
+  shorthexa: #00ff
+  rgb: rgb(0 0 255)
+  hsl: hsl(240deg 100% 50%)
+  hwb: hwb(240deg 0% 0%)
+
+color: hwb(-120 -200% -200% / -5)
+  simple: false
+  original: hwb(-120 -200% -200% / -5)
+  hexa: #0000ff00
+  shorthexa: #00f0
+  rgb: rgb(0 0 255 / 0%)
+  rgba: rgb(0 0 255 / 0%)
+  hsl: hsl(240deg 100% 50% / 0%)
+  hsla: hsl(240deg 100% 50% / 0%)
+  hwb: hwb(240deg 0% 0% / 0%)
+
+color: hwb(240 100% 50% / 0.05)
+  simple: false
+  original: hwb(240 100% 50% / 0.05)
+  hexa: #aaaaaa0d
+  shorthexa: null
+  rgb: rgb(170 170 170 / 5%)
+  rgba: rgb(170 170 170 / 5%)
+  hsl: hsl(0deg 0% 67% / 5%)
+  hsla: hsl(0deg 0% 67% / 5%)
+  hwb: hwb(0deg 67% 33% / 5%)
+
+color: hwb(200.5 0% 50%)
+  simple: true
+  original: hwb(200.5 0% 50%)
+  hex: #005480
+  hexa: #005480ff
+  shorthexa: null
+  rgb: rgb(0 84 128)
+  hsl: hsl(201deg 100% 25%)
+  hwb: hwb(200.5 0% 50%)
+
+color: hwb(200 1.5% 50% / 1)
+  simple: true
+  original: hwb(200 1.5% 50% / 1)
+  hex: #045680
+  hexa: #045680ff
+  shorthexa: null
+  rgb: rgb(4 86 128)
+  hsl: hsl(200deg 94% 26%)
+  hwb: hwb(200deg 2% 50%)
+
+color: hwb(100grad 20% 30%)
+  simple: true
+  original: hwb(100grad 20% 30%)
+  hex: #73b333
+  hexa: #73b333ff
+  shorthexa: null
+  rgb: rgb(115 179 51)
+  hsl: hsl(90deg 56% 45%)
+  hwb: hwb(100grad 20% 30%)
+
+color: hwb(1rad 5% 15%)
+  simple: true
+  original: hwb(1rad 5% 15%)
+  hex: #d9d00d
+  hexa: #d9d00dff
+  shorthexa: null
+  rgb: rgb(217 208 13)
+  hsl: hsl(57deg 89% 45%)
+  hwb: hwb(1rad 5% 15%)
+
+color: hwb(1turn 25% 15%)
+  simple: true
+  original: hwb(1turn 25% 15%)
+  hex: #d94040
+  hexa: #d94040ff
+  shorthexa: null
+  rgb: rgb(217 64 64)
+  hsl: hsl(0deg 67% 55%)
+  hwb: hwb(1turn 25% 15%)
 
 color: rgba(255, 0, 0, -5)
   simple: false
@@ -282,6 +403,7 @@ color: rgba(255, 0, 0, -5)
   rgba: rgb(255 0 0 / 0%)
   hsl: hsl(0deg 100% 50% / 0%)
   hsla: hsl(0deg 100% 50% / 0%)
+  hwb: hwb(0deg 0% 0% / 0%)
 
 color: rgba(255, 0, 0, 5)
   simple: true
@@ -293,6 +415,7 @@ color: rgba(255, 0, 0, 5)
   shorthexa: #f00f
   rgb: rgb(255 0 0)
   hsl: hsl(0deg 100% 50%)
+  hwb: hwb(0deg 0% 0%)
 
 Running: testInvalidColors
 
@@ -335,4 +458,18 @@ SUCCESS: parsed invalid color hsla(0 0% 0% 0) to null
 SUCCESS: parsed invalid color hsla(0 turn, 0, 0, 0) to null
 
 SUCCESS: parsed invalid color hsla to null
+
+SUCCESS: parsed invalid color hwb(0,0,1) to null
+
+SUCCESS: parsed invalid color hwb(0 0% 0) to null
+
+SUCCESS: parsed invalid color hwb(a b c) to null
+
+SUCCESS: parsed invalid color hwb(0 0 0 / 0) to null
+
+SUCCESS: parsed invalid color hwb(0 0% 0% 0) to null
+
+SUCCESS: parsed invalid color hwb(0 turn 0 0 0) to null
+
+SUCCESS: parsed invalid color hwb to null
 

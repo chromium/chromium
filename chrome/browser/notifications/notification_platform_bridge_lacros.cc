@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,22 +8,27 @@
 
 #include "base/check.h"
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "chrome/browser/notifications/notification_platform_bridge_delegate.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
+#include "chromeos/crosapi/mojom/notification.mojom-shared.h"
 #include "chromeos/crosapi/mojom/notification.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
+#include "ui/native_theme/native_theme.h"
 
 namespace {
 
 crosapi::mojom::NotificationType ToMojo(message_center::NotificationType type) {
   switch (type) {
     case message_center::NOTIFICATION_TYPE_SIMPLE:
-    case message_center::NOTIFICATION_TYPE_BASE_FORMAT:
-      // TYPE_BASE_FORMAT is displayed the same as TYPE_SIMPLE.
+    case message_center::DEPRECATED_NOTIFICATION_TYPE_BASE_FORMAT:
       return crosapi::mojom::NotificationType::kSimple;
     case message_center::NOTIFICATION_TYPE_IMAGE:
       return crosapi::mojom::NotificationType::kImage;
@@ -38,6 +43,23 @@ crosapi::mojom::NotificationType ToMojo(message_center::NotificationType type) {
   }
 }
 
+crosapi::mojom::NotifierType ToMojo(message_center::NotifierType type) {
+  switch (type) {
+    case message_center::NotifierType::APPLICATION:
+      return crosapi::mojom::NotifierType::kApplication;
+    case message_center::NotifierType::ARC_APPLICATION:
+      return crosapi::mojom::NotifierType::kArcApplication;
+    case message_center::NotifierType::WEB_PAGE:
+      return crosapi::mojom::NotifierType::kWebPage;
+    case message_center::NotifierType::SYSTEM_COMPONENT:
+      return crosapi::mojom::NotifierType::kSystemComponent;
+    case message_center::NotifierType::CROSTINI_APPLICATION:
+      return crosapi::mojom::NotifierType::kCrostiniApplication;
+    case message_center::NotifierType::PHONE_HUB:
+      return crosapi::mojom::NotifierType::kPhoneHub;
+  }
+}
+
 crosapi::mojom::FullscreenVisibility ToMojo(
     message_center::FullscreenVisibility visibility) {
   switch (visibility) {
@@ -49,7 +71,8 @@ crosapi::mojom::FullscreenVisibility ToMojo(
 }
 
 crosapi::mojom::NotificationPtr ToMojo(
-    const message_center::Notification& notification) {
+    const message_center::Notification& notification,
+    const ui::ColorProvider* color_provider) {
   auto mojo_note = crosapi::mojom::Notification::New();
   mojo_note->type = ToMojo(notification.type());
   mojo_note->id = notification.id();
@@ -58,7 +81,7 @@ crosapi::mojom::NotificationPtr ToMojo(
   mojo_note->display_source = notification.display_source();
   mojo_note->origin_url = notification.origin_url();
   if (!notification.icon().IsEmpty())
-    mojo_note->icon = notification.icon().AsImageSkia();
+    mojo_note->icon = notification.icon().Rasterize(color_provider);
   mojo_note->priority = base::clamp(notification.priority(), -2, 2);
   mojo_note->require_interaction = notification.never_timeout();
   mojo_note->timestamp = notification.timestamp();
@@ -90,6 +113,15 @@ crosapi::mojom::NotificationPtr ToMojo(
   mojo_note->accessible_name = notification.accessible_name();
   mojo_note->fullscreen_visibility =
       ToMojo(notification.fullscreen_visibility());
+  mojo_note->accent_color = notification.accent_color();
+
+  mojo_note->notifier_id = crosapi::mojom::NotifierId::New();
+  mojo_note->notifier_id->type = ToMojo(notification.notifier_id().type);
+  mojo_note->notifier_id->id = notification.notifier_id().id;
+  mojo_note->notifier_id->url = notification.notifier_id().url;
+  mojo_note->notifier_id->title = notification.notifier_id().title;
+  mojo_note->notifier_id->profile_id = notification.notifier_id().profile_id;
+
   return mojo_note;
 }
 
@@ -149,7 +181,7 @@ class NotificationPlatformBridgeLacros::RemoteNotificationDelegate
 
  private:
   const std::string notification_id_;
-  NotificationPlatformBridgeDelegate* const bridge_delegate_;
+  const raw_ptr<NotificationPlatformBridgeDelegate> bridge_delegate_;
   base::WeakPtr<NotificationPlatformBridgeLacros> owner_;
   mojo::Receiver<crosapi::mojom::NotificationDelegate> receiver_{this};
 };
@@ -177,13 +209,18 @@ void NotificationPlatformBridgeLacros::Display(
   // the notification ID. Lacros does not support Chrome OS multi-signin, so we
   // don't need to handle inactive user notification blockers in ash.
 
-  // Clean up any old notification with the same ID before creating the new one.
-  remote_notifications_.erase(notification.id());
-
   auto pending_notification = std::make_unique<RemoteNotificationDelegate>(
       notification.id(), bridge_delegate_, weak_factory_.GetWeakPtr());
+  // Display the notification, or update an existing one with the same ID.
+  // `profile` may be null for e.g. system notifications.
+  const auto* const color_provider =
+      profile
+          ? ThemeServiceFactory::GetForProfile(profile)->GetColorProvider()
+          : ui::ColorProviderManager::Get().GetColorProviderFor(
+                ui::NativeTheme::GetInstanceForNativeUi()->GetColorProviderKey(
+                    nullptr));
   (*message_center_remote_)
-      ->DisplayNotification(ToMojo(notification),
+      ->DisplayNotification(ToMojo(notification, color_provider),
                             pending_notification->BindNotificationDelegate());
   remote_notifications_[notification.id()] = std::move(pending_notification);
 }

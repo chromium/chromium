@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,6 +43,9 @@ class FakeBrowserManager : public BrowserManager {
   void NewFullscreenWindow(const GURL& url,
                            NewFullscreenWindowCallback callback) override;
   void GetFeedbackData(GetFeedbackDataCallback callback) override;
+
+  // session_manager::SessionManagerObserver:
+  void OnSessionStateChanged() override;
 
  private:
   // State indicating Lacros is running or not.

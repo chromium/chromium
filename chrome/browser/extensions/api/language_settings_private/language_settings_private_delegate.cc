@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -90,9 +90,9 @@ LanguageSettingsPrivateDelegate::GetHunspellDictionaryStatuses() {
     status.is_ready = dictionary->IsReady();
     if (!status.is_ready) {
       if (dictionary->IsDownloadInProgress())
-        status.is_downloading = std::make_unique<bool>(true);
+        status.is_downloading = true;
       if (dictionary->IsDownloadFailure())
-        status.download_failed = std::make_unique<bool>(true);
+        status.download_failed = true;
     }
     statuses.push_back(std::move(status));
   }

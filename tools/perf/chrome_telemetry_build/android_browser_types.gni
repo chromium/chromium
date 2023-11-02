@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -12,7 +12,6 @@ telemetry_android_browser_target_suffixes = [
   "_android_chrome",
   "_android_monochrome",
   "_android_monochrome_bundle",
-  "_android_weblayer",
   "_android_webview",
 ]
 

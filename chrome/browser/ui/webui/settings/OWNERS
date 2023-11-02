@@ -4,13 +4,12 @@ per-file people_handler*=msalama@chromium.org
 per-file people_handler*=treib@chromium.org
 
 per-file hats_handler*=sauski@google.com
-per-file privacy_sandbox_handler*=sauski@google.com
+per-file privacy_sandbox_handler*=file://components/privacy_sandbox/OWNERS
 per-file *site_settings*=msramek@chromium.org
 per-file *site_settings*=sauski@google.com
 per-file safe_browsing_handler*=msramek@chromium.org
 per-file safe_browsing_handler*=sauski@google.com
-per-file safety_check_handler*=andzaytsev@google.com
+per-file safety_check_handler*=andzaytsev@google.com,rainhard@chromium.org
 per-file settings_clear_browsing_data_handler*=sauski@google.com
-per-file settings_cookies_view_handler*=sauski@google.com
 per-file settings_localized_strings_provider*=sauski@google.com
 per-file settings_security_key_handler*=file://device/fido/OWNERS

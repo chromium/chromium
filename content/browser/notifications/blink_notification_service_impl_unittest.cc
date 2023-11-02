@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,11 +20,11 @@
 #include "content/browser/notifications/platform_notification_context_impl.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
-#include "content/public/browser/permission_type.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_permission_manager.h"
+#include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/mock_platform_notification_service.h"
@@ -36,6 +36,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/notifications/notification_constants.h"
 #include "third_party/blink/public/common/notifications/notification_resources.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/notifications/notification_service.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
@@ -100,7 +101,8 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
   BlinkNotificationServiceImplTest()
       : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP),
         embedded_worker_helper_(
-            std::make_unique<EmbeddedWorkerTestHelper>(base::FilePath())) {
+            std::make_unique<EmbeddedWorkerTestHelper>(base::FilePath())),
+        render_process_host_(&browser_context_) {
     browser_context_.SetPlatformNotificationService(
         std::make_unique<MockPlatformNotificationService>(&browser_context_));
   }
@@ -126,9 +128,10 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
 
     notification_service_ = std::make_unique<BlinkNotificationServiceImpl>(
         notification_context_.get(), &browser_context_,
-        embedded_worker_helper_->context_wrapper(),
+        embedded_worker_helper_->context_wrapper(), &render_process_host_,
         url::Origin::Create(GURL(kTestOrigin)),
         /*document_url=*/GURL(),
+        /*weak_document_ptr=*/WeakDocumentPtr(),
         notification_service_remote_.BindNewPipeAndPassReceiver());
 
     // Provide a mock permission manager to the |browser_context_|.
@@ -168,7 +171,8 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
               &BlinkNotificationServiceImplTest::DidRegisterServiceWorker,
               base::Unretained(this), &service_worker_registration_id,
               run_loop.QuitClosure()),
-          /*requesting_frame_id=*/GlobalRenderFrameHostId());
+          /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+          PolicyContainerPolicies());
       run_loop.Run();
     }
 
@@ -403,7 +407,12 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
             browser_context_.GetPermissionControllerDelegate());
 
     ON_CALL(*mock_permission_manager,
-            GetPermissionStatus(PermissionType::NOTIFICATIONS, _, _))
+            GetPermissionStatusForCurrentDocument(
+                blink::PermissionType::NOTIFICATIONS, _))
+        .WillByDefault(Return(permission_status));
+    ON_CALL(*mock_permission_manager,
+            GetPermissionStatusForWorker(blink::PermissionType::NOTIFICATIONS,
+                                         _, _))
         .WillByDefault(Return(permission_status));
   }
 
@@ -419,6 +428,8 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
   mojo::Remote<blink::mojom::NotificationService> notification_service_remote_;
 
   TestBrowserContext browser_context_;
+
+  MockRenderProcessHost render_process_host_;
 
   scoped_refptr<PlatformNotificationContextImpl> notification_context_;
 

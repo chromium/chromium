@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -126,6 +126,31 @@ public interface Tracker {
     @CheckResult
     @Nullable
     DisplayLockHandle acquireDisplayLock();
+
+    /**
+     * Called by the client to notify the tracker that a priority notification should be shown. If a
+     * handler has already been registered, the IPH will be shown right away. Otherwise, the tracker
+     * will cache the priority feature and will show the IPH whenever a handler is registered in
+     * future. All other IPHs will be blocked until then.
+     */
+    void setPriorityNotification(String feature);
+
+    /**
+     * Called to check if there is a priority notification scheduled to be shown next. Returns null
+     * if there is none scheduled to be shown or the notification has already been shown.
+     */
+    @Nullable
+    String getPendingPriorityNotification();
+
+    /**
+     * Called by the client to register a handler for priority notifications. This
+     * will essentially contain the code to spin up an IPH. The handler runs only once and
+     * unregisters itself.
+     */
+    void registerPriorityNotificationHandler(String feature, Runnable priorityNotificationHandler);
+
+    /** Unregister the handler. Must be called during client destruction. */
+    void unregisterPriorityNotificationHandler(String feature);
 
     /**
      * Returns whether the tracker has been successfully initialized. During startup, this will be

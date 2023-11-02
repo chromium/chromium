@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
@@ -25,6 +26,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.payments.AndroidPaymentAppFinder;
 import org.chromium.components.payments.AppCreationFailureReason;
+import org.chromium.components.payments.CSPChecker;
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppFactoryDelegate;
 import org.chromium.components.payments.PaymentAppFactoryInterface;
@@ -138,6 +140,18 @@ public class AndroidPaymentAppFinderTest
     @Override
     public void onDoneCreatingPaymentApps(PaymentAppFactoryInterface unusedFactory) {
         mAllPaymentAppsCreated = true;
+    }
+
+    // PaymentAppFactoryDelegate implementation.
+    @Override
+    public CSPChecker getCSPChecker() {
+        return new CSPChecker() {
+            @Override
+            public void allowConnectToSource(GURL url, GURL urlBeforeRedirects,
+                    boolean didFollowRedirect, Callback<Boolean> resultCallback) {
+                resultCallback.onResult(/*allow=*/true);
+            }
+        };
     }
 
     // PaymentAppFactoryParams implementation.

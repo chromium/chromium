@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Coordinator to show a modal dialog that is displayed when the user switches account they are
+ * A coordinator to show a modal dialog that is displayed when the user switches account they are
  * syncing to. It gives the option to merge the data of the two accounts or to keep them separate.
  */
 public class ConfirmImportSyncDataDialogCoordinator {
@@ -106,7 +106,7 @@ public class ConfirmImportSyncDataDialogCoordinator {
     }
 
     /**
-     * Dismisses the account picker dialog.
+     * Dismisses the confirm import sync data dialog.
      */
     @MainThread
     public void dismissDialog() {
@@ -139,7 +139,6 @@ public class ConfirmImportSyncDataDialogCoordinator {
                     RecordUserAction.record("Signin_ImportDataPrompt_Cancel");
                     mListener.onCancel();
                 }
-                mDialogManager.destroy();
             }
         };
     }

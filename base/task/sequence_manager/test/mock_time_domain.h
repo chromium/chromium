@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,10 +27,7 @@ class MockTimeDomain : public TimeDomain {
   TimeTicks NowTicks() const override;
 
   // TimeDomain implementation:
-  TimeTicks GetNextDelayedTaskTime(
-      DelayedWakeUp next_wake_up,
-      sequence_manager::LazyNow* lazy_now) const override;
-  bool MaybeFastForwardToWakeUp(absl::optional<DelayedWakeUp> next_wake_up,
+  bool MaybeFastForwardToWakeUp(absl::optional<WakeUp> next_wake_up,
                                 bool quit_when_idle_requested) override;
   const char* GetName() const override;
 

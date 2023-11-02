@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,6 +26,7 @@ extern const char kEnrollmentStepDeviceAttributes[];
 extern const char kEnrollmentStepSuccess[];
 extern const char kEnrollmentStepADJoin[];
 extern const char kEnrollmentStepError[];
+extern const char kEnrollmentStepKioskEnrollment[];
 extern const char kEnrollmentStepDeviceAttributesError[];
 extern const char kEnrollmentStepADJoinError[];
 
@@ -62,6 +63,7 @@ class EnrollmentUIMixin : public InProcessBrowserTestMixin {
 
   void ExpectErrorMessage(int error_message_id, bool can_retry);
   void RetryAfterError();
+  void CancelAfterError();
 
   // Fills out the UI with device attribute information and submits it.
   void SubmitDeviceAttributes(const std::string& asset_id,
@@ -70,6 +72,8 @@ class EnrollmentUIMixin : public InProcessBrowserTestMixin {
   void LeaveDeviceAttributeErrorScreen();
 
   void LeaveSuccessScreen();
+
+  void ConfirmKioskEnrollment();
 
   // Selects enrollment license.
   void SelectEnrollmentLicense(const std::string& license_type);

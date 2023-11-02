@@ -3,6 +3,12 @@
 <script type=module>
 import inputTypes from "./../input-types.js";
 
+const urlParams = new URLSearchParams(location.search);
+const documentDomain = urlParams.get('documentDomain');
+if (documentDomain) {
+  document.domain = documentDomain;
+}
+
 let securityErrors = [];
 for (const inputType of inputTypes) {
   const input = document.createElement("input");

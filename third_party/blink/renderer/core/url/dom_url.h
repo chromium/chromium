@@ -27,11 +27,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_URL_DOM_URL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_URL_DOM_URL_H_
 
+#include "base/notreached.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/url/dom_url_utils.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 

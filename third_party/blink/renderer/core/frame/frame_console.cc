@@ -31,7 +31,6 @@
 #include <memory>
 
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -40,7 +39,8 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/bindings/source_location.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -74,6 +74,7 @@ void FrameConsole::ReportMessageToClient(
     return;
 
   String url = location->Url();
+
   String stack_trace;
   if (source == mojom::blink::ConsoleMessageSource::kConsoleApi) {
     if (!frame_->GetPage())
@@ -132,7 +133,7 @@ void FrameConsole::DidFailLoading(DocumentLoader* loader,
 
   StringBuilder message;
   message.Append("Failed to load resource");
-  if (!error.LocalizedDescription().IsEmpty()) {
+  if (!error.LocalizedDescription().empty()) {
     message.Append(": ");
     message.Append(error.LocalizedDescription());
   }

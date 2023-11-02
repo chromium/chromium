@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FIELD_INFO_STORE_H_
 
 #include "base/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 
 namespace password_manager {
@@ -22,7 +23,8 @@ class FieldInfoStore {
 
   // Retrieves all field info and notifies |consumer| on completion. The request
   // will be cancelled if the consumer is destroyed.
-  virtual void GetAllFieldInfo(PasswordStoreConsumer* consumer) = 0;
+  virtual void GetAllFieldInfo(
+      base::WeakPtr<PasswordStoreConsumer> consumer) = 0;
 
   // Removes all leaked credentials in the given date range. If |completion| is
   // not null, it will be posted to the |main_task_runner_| after deletions have

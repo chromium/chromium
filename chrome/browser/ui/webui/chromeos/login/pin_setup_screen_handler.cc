@@ -1,34 +1,31 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/chromeos/login/pin_setup_screen_handler.h"
 
+#include <string>
+#include <utility>
+
 #include "base/i18n/number_formatting.h"
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/screens/pin_setup_screen.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId PinSetupScreenView::kScreenId;
+PinSetupScreenHandler::PinSetupScreenHandler() : BaseScreenHandler(kScreenId) {}
 
-PinSetupScreenHandler::PinSetupScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
-  set_user_acted_method_path("login.PinSetupScreen.userActed");
-}
-
-PinSetupScreenHandler::~PinSetupScreenHandler() {}
+PinSetupScreenHandler::~PinSetupScreenHandler() = default;
 
 void PinSetupScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   // TODO(crbug.com/1104120): clean up constant names
   builder->Add("discoverPinSetup", IDS_DISCOVER_PIN_SETUP);
 
-  builder->Add("back", IDS_EULA_BACK_BUTTON);
-  builder->Add("next", IDS_EULA_NEXT_BUTTON);
   builder->Add("discoverPinSetupDone", IDS_DISCOVER_PIN_SETUP_DONE);
 
   builder->Add("discoverPinSetupTitle1", IDS_DISCOVER_PIN_SETUP_TITLE1);
@@ -75,40 +72,16 @@ void PinSetupScreenHandler::DeclareLocalizedValues(
                IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_INTERNAL_ERROR);
 }
 
-void PinSetupScreenHandler::RegisterMessages() {
-  BaseScreenHandler::RegisterMessages();
-}
-
-void PinSetupScreenHandler::GetAdditionalParameters(
-    base::DictionaryValue* dict) {}
-
-void PinSetupScreenHandler::Bind(PinSetupScreen* screen) {
-  screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen);
-}
-
-void PinSetupScreenHandler::Hide() {}
-
-void PinSetupScreenHandler::Initialize() {
-}
-
 void PinSetupScreenHandler::Show(const std::string& token,
                                  bool is_child_account) {
-  base::DictionaryValue data;
-  data.SetKey("auth_token", base::Value(token));
-  data.SetBoolean("is_child_account", is_child_account);
-  ShowScreenWithData(kScreenId, &data);
+  base::Value::Dict data;
+  data.Set("auth_token", base::Value(token));
+  data.Set("is_child_account", is_child_account);
+  ShowInWebUI(std::move(data));
 }
 
 void PinSetupScreenHandler::SetLoginSupportAvailable(bool available) {
-  // TODO(crbug.com/1180291) - Remove once OOBE JS calls are fixed.
-  if (!IsSafeToCallJavascript()) {
-    LOG(ERROR)
-        << "Silently dropping login.PinSetupScreen.setHasLoginSupport request.";
-    return;
-  }
-
-  CallJS("login.PinSetupScreen.setHasLoginSupport", available);
+  CallExternalAPI("setHasLoginSupport", available);
 }
 
 }  // namespace chromeos

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,9 @@ import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.annotations.UsedByReflection;
+import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.components.autofill.AutofillProviderTestHelper;
+import org.chromium.components.browser_ui.accessibility.FontSizePrefs;
 import org.chromium.components.infobars.InfoBarAnimationListener;
 import org.chromium.components.infobars.InfoBarUiItem;
 import org.chromium.components.location.LocationUtils;
@@ -24,8 +25,8 @@ import org.chromium.components.media_router.BrowserMediaRouter;
 import org.chromium.components.media_router.MockMediaRouteProvider;
 import org.chromium.components.media_router.RouterTestUtils;
 import org.chromium.components.permissions.PermissionDialogController;
-import org.chromium.components.webauthn.Fido2ApiHandler;
-import org.chromium.components.webauthn.MockFido2ApiHandler;
+import org.chromium.components.webauthn.AuthenticatorImpl;
+import org.chromium.components.webauthn.MockFido2CredentialRequest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.device.geolocation.LocationProviderOverrider;
@@ -317,9 +318,10 @@ public final class TestWebLayerImpl extends ITestWebLayer.Stub {
     @Override
     public void setMockWebAuthnEnabled(boolean enabled) {
         if (enabled) {
-            Fido2ApiHandler.overrideInstanceForTesting(new MockFido2ApiHandler());
+            AuthenticatorImpl.overrideFido2CredentialRequestForTesting(
+                    new MockFido2CredentialRequest());
         } else {
-            Fido2ApiHandler.overrideInstanceForTesting(null);
+            AuthenticatorImpl.overrideFido2CredentialRequestForTesting(null);
         }
     }
 
@@ -335,6 +337,18 @@ public final class TestWebLayerImpl extends ITestWebLayer.Stub {
     public void grantLocationPermission(String url) {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { TestWebLayerImplJni.get().grantLocationPermission(url); });
+    }
+
+    @Override
+    public void setTextScaling(IProfile profile, float value) {
+        ProfileImpl profileImpl = (ProfileImpl) profile;
+        FontSizePrefs.getInstance(profileImpl).setUserFontScaleFactor(value);
+    }
+
+    @Override
+    public boolean getForceEnableZoom(IProfile profile) {
+        ProfileImpl profileImpl = (ProfileImpl) profile;
+        return FontSizePrefs.getInstance(profileImpl).getForceEnableZoom();
     }
 
     @NativeMethods

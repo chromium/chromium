@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -24,6 +25,7 @@
 #include "storage/browser/file_system/file_system_options.h"
 #include "storage/browser/file_system/file_system_quota_util.h"
 #include "storage/browser/file_system/task_runner_bound_observer_list.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -69,9 +71,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackendDelegate
     : public FileSystemQuotaUtil {
  public:
   using OpenFileSystemCallback = FileSystemBackend::OpenFileSystemCallback;
-
-  // The FileSystem directory name.
-  static const base::FilePath::CharType kFileSystemDirectory[];
+  using ResolveURLCallback = FileSystemBackend::ResolveURLCallback;
 
   // StorageKey enumerator interface.
   // An instance of this interface is assumed to be called on the file thread.
@@ -124,11 +124,20 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackendDelegate
       FileSystemType type,
       bool create);
 
+  // Gets a base directory path of the sandboxed filesystem that is specified by
+  // `bucket_locator` and `type`. Returns an empty path if invalid or directory
+  // does not exist when `create` is false.
+  base::FilePath GetBaseDirectoryForBucketAndType(
+      const BucketLocator& bucket_locator,
+      FileSystemType type,
+      bool create);
+
   // FileSystemBackend helpers.
   void OpenFileSystem(const blink::StorageKey& storage_key,
+                      const absl::optional<BucketLocator>& bucket_locator,
                       FileSystemType type,
                       OpenFileSystemMode mode,
-                      OpenFileSystemCallback callback,
+                      ResolveURLCallback callback,
                       const GURL& root_url);
   std::unique_ptr<FileSystemOperationContext> CreateFileSystemOperationContext(
       const FileSystemURL& url,
@@ -151,18 +160,23 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackendDelegate
       QuotaManagerProxy* proxy,
       const blink::StorageKey& storage_key,
       FileSystemType type) override;
+  base::File::Error DeleteBucketDataOnFileTaskRunner(
+      FileSystemContext* context,
+      QuotaManagerProxy* proxy,
+      const BucketLocator& bucket_locator,
+      FileSystemType type) override;
   void PerformStorageCleanupOnFileTaskRunner(FileSystemContext* context,
                                              QuotaManagerProxy* proxy,
                                              FileSystemType type) override;
   std::vector<blink::StorageKey> GetStorageKeysForTypeOnFileTaskRunner(
       FileSystemType type) override;
-  std::vector<blink::StorageKey> GetStorageKeysForHostOnFileTaskRunner(
-      FileSystemType type,
-      const std::string& host) override;
   int64_t GetStorageKeyUsageOnFileTaskRunner(
       FileSystemContext* context,
       const blink::StorageKey& storage_key,
       FileSystemType type) override;
+  int64_t GetBucketUsageOnFileTaskRunner(FileSystemContext* context,
+                                         const BucketLocator& bucket_locator,
+                                         FileSystemType type) override;
   scoped_refptr<QuotaReservation> CreateQuotaReservationOnFileTaskRunner(
       const blink::StorageKey& storage_key,
       FileSystemType type) override;
@@ -213,6 +227,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackendDelegate
     return file_system_options_;
   }
 
+  const scoped_refptr<QuotaManagerProxy> quota_manager_proxy() const {
+    return quota_manager_proxy_;
+  }
+
   FileSystemFileUtil* sync_file_util();
 
   base::WeakPtr<ObfuscatedFileUtilMemoryDelegate> memory_file_util_delegate();
@@ -232,19 +250,42 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackendDelegate
   bool IsAllowedScheme(const GURL& url) const;
 
   // Returns a path to the usage cache file.
-  base::FilePath GetUsageCachePathForStorageKeyAndType(
+  base::FileErrorOr<base::FilePath> GetUsageCachePathForStorageKeyAndType(
       const blink::StorageKey& storage_key,
       FileSystemType type);
 
   // Returns a path to the usage cache file (static version).
-  static base::FilePath GetUsageCachePathForStorageKeyAndType(
-      ObfuscatedFileUtil* sandbox_file_util,
-      const blink::StorageKey& storage_key,
-      FileSystemType type,
-      base::File::Error* error_out);
+  static base::FileErrorOr<base::FilePath>
+  GetUsageCachePathForStorageKeyAndType(ObfuscatedFileUtil* sandbox_file_util,
+                                        const blink::StorageKey& storage_key,
+                                        FileSystemType type);
 
+  // Returns a path to the usage cache file for a given bucket and type.
+  base::FileErrorOr<base::FilePath> GetUsageCachePathForBucketAndType(
+      const BucketLocator& bucket_locator,
+      FileSystemType type);
+
+  // Returns a path to the usage cache file for a given bucket and type(static
+  // version).
+  static base::FileErrorOr<base::FilePath> GetUsageCachePathForBucketAndType(
+      ObfuscatedFileUtil* sandbox_file_util,
+      const BucketLocator& bucket_locator,
+      FileSystemType type);
+
+  // Helper function to obtain usage for a StorageKey value and optionally a
+  // BucketLocator value. `storage_key` and `bucket_locator->storage_key` should
+  // be equivalent.
+  int64_t GetUsageOnFileTaskRunner(
+      FileSystemContext* context,
+      const blink::StorageKey& storage_key,
+      const absl::optional<BucketLocator>& bucket_locator,
+      FileSystemType type);
+
+  // If no bucket value is provided, usage will be recalculated for the default
+  // bucket for the provided StorageKey value.
   int64_t RecalculateUsage(FileSystemContext* context,
                            const blink::StorageKey& storage_key,
+                           const absl::optional<BucketLocator>& bucket_locator,
                            FileSystemType type);
 
   ObfuscatedFileUtil* obfuscated_file_util();

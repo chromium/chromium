@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -142,14 +142,14 @@ TEST_F(WebViewTest, EvaluateJavaScript) {
   GURL url = GetUrlForPageWithTitleAndBody("Title", "Body");
   ASSERT_TRUE(test::LoadUrl(web_view_, net::NSURLWithGURL(url)));
 
-  NSError* error = nil;
+  NSError* error;
   EXPECT_NSEQ(@"Body", test::EvaluateJavaScript(
                            web_view_, @"document.body.textContent", &error));
-  EXPECT_NSEQ(nil, error);
+  EXPECT_FALSE(error);
 
   // Calls a function which doesn't exist.
   test::EvaluateJavaScript(web_view_, @"hoge()", &error);
-  EXPECT_NSNE(nil, error);
+  EXPECT_TRUE(error);
 }
 
 }  // namespace ios_web_view

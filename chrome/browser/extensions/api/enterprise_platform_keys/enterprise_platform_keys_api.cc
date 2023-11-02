@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -132,12 +132,10 @@ bool IsExtensionAllowed(Profile* profile, const Extension* extension) {
     // allowed in chrome/common/extensions/api/_permission_features.json
     return true;
   }
-  const base::ListValue* list =
+  const base::Value::List& list =
       profile->GetPrefs()->GetList(prefs::kAttestationExtensionAllowlist);
-  DCHECK_NE(list, nullptr);
   base::Value value(extension->id());
-  return std::find(list->GetList().begin(), list->GetList().end(), value) !=
-         list->GetList().end();
+  return base::Contains(list, value);
 }
 
 }  // namespace platform_keys
@@ -244,13 +242,13 @@ void EnterprisePlatformKeysGetCertificatesFunction::OnGetCertificates(
   }
   DCHECK(result->is_certificates());
 
-  auto client_certs = std::make_unique<base::ListValue>();
+  base::Value::List client_certs;
   for (std::vector<uint8_t>& cert : result->get_certificates()) {
-    client_certs->Append(std::make_unique<base::Value>(std::move(cert)));
+    client_certs.Append(base::Value(std::move(cert)));
   }
 
-  auto results = std::make_unique<base::ListValue>();
-  results->Append(std::move(client_certs));
+  base::Value::List results;
+  results.Append(std::move(client_certs));
   Respond(ArgumentList(std::move(results)));
 }
 

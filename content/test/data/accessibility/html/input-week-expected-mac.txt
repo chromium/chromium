@@ -1,6 +1,6 @@
 AXWebArea AXRoleDescription='HTML content'
 ++AXGroup AXRoleDescription='group'
-++++AXDateField AXRoleDescription='date field'
+++++AXDateField AXRoleDescription='week picker'
 ++++++AXGroup AXRoleDescription='group'
 ++++++++AXGroup AXRoleDescription='group'
 ++++++++++AXStaticText AXRoleDescription='text' AXValue='Week '

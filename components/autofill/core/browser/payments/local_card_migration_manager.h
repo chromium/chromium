@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,10 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/local_card_migration_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/local_card_migration_strike_database.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
@@ -95,12 +97,13 @@ class LocalCardMigrationManager {
 
   // Returns true if all of the conditions for allowing local credit card
   // migration are satisfied. Initializes the local card list for upload. Stores
-  // a local copy of |imported_credit_card| and
+  // a local copy of |credit_card_import_candidate| and
   // |imported_credit_card_record_type| locally for later check whether the
-  // imported card is supported. |imported_credit_card| might be null if a user
-  // used server card.
-  bool ShouldOfferLocalCardMigration(const CreditCard* imported_credit_card,
-                                     int imported_credit_card_record_type);
+  // imported card is supported. |credit_card_import_candidate| might be null if
+  // a user used server card.
+  bool ShouldOfferLocalCardMigration(
+      const absl::optional<CreditCard>& credit_card_import_candidate,
+      int imported_credit_card_record_type);
 
   // Called from FormDataImporter or settings page when all migration
   // requirements are met. Fetches legal documents and triggers the
@@ -172,11 +175,11 @@ class LocalCardMigrationManager {
       std::unique_ptr<std::unordered_map<std::string, std::string>> save_result,
       const std::string& display_text);
 
-  AutofillClient* const client_;
+  const raw_ptr<AutofillClient> client_;
 
   // Handles Payments service requests.
   // Owned by BrowserAutofillManager.
-  payments::PaymentsClient* payments_client_;
+  raw_ptr<payments::PaymentsClient> payments_client_;
 
  private:
   friend class LocalCardMigrationBrowserTest;
@@ -226,7 +229,7 @@ class LocalCardMigrationManager {
   // web database.  This is overridden by the BrowserAutofillManagerTest.
   // Weak reference.
   // May be NULL.  NULL indicates OTR.
-  PersonalDataManager* personal_data_manager_;
+  raw_ptr<PersonalDataManager> personal_data_manager_;
 
   // The imported credit card number from the form submission.
   absl::optional<std::u16string> imported_credit_card_number_;
@@ -248,10 +251,10 @@ class LocalCardMigrationManager {
   bool user_accepted_main_migration_dialog_ = false;
 
   // Record the triggering source of the local card migration.
-  AutofillMetrics::LocalCardMigrationOrigin local_card_migration_origin_;
+  autofill_metrics::LocalCardMigrationOrigin local_card_migration_origin_;
 
   // Initialized only during tests.
-  ObserverForTest* observer_for_testing_ = nullptr;
+  raw_ptr<ObserverForTest> observer_for_testing_ = nullptr;
 
   std::unique_ptr<LocalCardMigrationStrikeDatabase>
       local_card_migration_strike_database_;

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,8 +29,7 @@
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
 
-namespace net {
-namespace internal {
+namespace net::internal {
 
 // Keeps track of network interface addresses using rtnetlink. Used by
 // NetworkChangeNotifier to provide signals to registered IPAddressObservers.
@@ -70,7 +69,7 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux {
 
   AddressMap GetAddressMap() const;
 
-  // Returns set of interface indicies for online interfaces.
+  // Returns set of interface indices for online interfaces.
   std::unordered_set<int> GetOnlineLinks() const;
 
   // Implementation of NetworkChangeNotifierLinux::GetCurrentConnectionType().
@@ -180,17 +179,17 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux {
   const std::unordered_set<std::string> ignored_interfaces_;
 
   base::Lock connection_type_lock_;
-  bool connection_type_initialized_;
+  bool connection_type_initialized_ = false;
   base::ConditionVariable connection_type_initialized_cv_;
-  NetworkChangeNotifier::ConnectionType current_connection_type_;
+  NetworkChangeNotifier::ConnectionType current_connection_type_ =
+      NetworkChangeNotifier::CONNECTION_NONE;
   bool tracking_;
-  int threads_waiting_for_connection_type_initialization_;
+  int threads_waiting_for_connection_type_initialization_ = 0;
 
   // Used to verify single-threaded access in non-tracking mode.
   base::ThreadChecker thread_checker_;
 };
 
-}  // namespace internal
-}  // namespace net
+}  // namespace net::internal
 
 #endif  // NET_BASE_ADDRESS_TRACKER_LINUX_H_

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "device/bluetooth/bluetooth_low_energy_defs_win.h"
@@ -104,7 +105,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicWin
                                      HRESULT hr);
   void ClearIncludedDescriptors();
 
-  BluetoothRemoteGattServiceWin* parent_service_;
+  raw_ptr<BluetoothRemoteGattServiceWin> parent_service_;
   scoped_refptr<BluetoothTaskManagerWin> task_manager_;
 
   // Characteristic info from OS and used to interact with OS.

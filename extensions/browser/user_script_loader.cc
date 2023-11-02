@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/memory/writable_shared_memory_region.h"
+#include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/types/pass_key.h"
 #include "base/version.h"
@@ -69,7 +70,7 @@ bool GetDeclarationValue(const base::StringPiece& line,
   std::string temp(line.data() + index + prefix.length(),
                    line.length() - index - prefix.length());
 
-  if (temp.empty() || !base::IsUnicodeWhitespace(temp[0]))
+  if (temp.empty() || !base::IsAsciiWhitespace(temp[0]))
     return false;
 
   base::TrimWhitespaceASCII(temp, base::TRIM_ALL, value);

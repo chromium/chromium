@@ -1,10 +1,8 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.feed;
-
-import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,7 +11,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.feed.NtpListContentManager.FeedContent;
-import org.chromium.chrome.browser.feed.sections.SectionType;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.SurfaceScope;
@@ -26,19 +23,13 @@ public interface Stream {
     default void destroy() {}
 
     /** Returns the section type for this stream. */
-    @SectionType
-    int getSectionType();
+    @StreamKind
+    int getStreamKind();
 
     /**
      * @param scrollState Previous saved scroll state to restore to.
      */
     void restoreSavedInstanceState(FeedScrollState scrollState);
-
-    /**
-     * Record that visibility of the feed was toggled through the header menu. Note that
-     * bind() should be called separately when this happens.
-     */
-    default void toggledArticlesListVisible(boolean visible) {}
 
     /**
      * Notifies that the header count has changed. Headers are views added to the Recyclerview
@@ -77,25 +68,6 @@ public interface Stream {
      */
     void hidePlaceholder();
 
-    /**
-     * Returns the options for this stream if one exists.
-     */
-    default View getOptionsView() {
-        return null;
-    }
-
-    /** Record that user tapped ManageInterests. */
-    default void recordActionManageInterests() {}
-
-    /** Record that user tapped Manage Activity. */
-    default void recordActionManageActivity() {}
-
-    /** Record that user tapped Manage Reactions. */
-    default void recordActionManageReactions() {}
-
-    /** Record that user tapped Learn More. */
-    default void recordActionLearnMore() {}
-
     /** Whether activity logging is enabled for this feed. */
     default boolean isActivityLoggingEnabled() {
         return false;
@@ -128,7 +100,8 @@ public interface Stream {
      */
     void bind(RecyclerView view, NtpListContentManager manager, FeedScrollState savedInstanceState,
             SurfaceScope surfaceScope, HybridListRenderer renderer,
-            FeedLaunchReliabilityLogger launchReliabilityLogger, int headerCount);
+            FeedLaunchReliabilityLogger launchReliabilityLogger, int headerCount,
+            boolean shouldScrollToTop);
 
     /**
      * Unbinds the feed. Stops this feed from updating the RecyclerView.
@@ -137,6 +110,13 @@ public interface Stream {
      *     prevent abrupt scroll jumps.
      */
     void unbind(boolean shouldPlaceSpacer);
+
+    /**
+     * Whether this stream supports alternate sort options.
+     */
+    default boolean supportsOptions() {
+        return false;
+    }
 
     /**
      * Returns a value that uniquely identifies the state of the Stream's content. If this value

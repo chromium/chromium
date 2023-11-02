@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,11 +25,11 @@ constexpr char kBaseDataDir[] = "content/test/data/origin_trials/";
 
 void NavigateViaRenderer(content::WebContents* web_contents, const GURL& url) {
   EXPECT_TRUE(
-      content::ExecJs(web_contents->GetMainFrame(),
+      content::ExecJs(web_contents->GetPrimaryMainFrame(),
                       base::StrCat({"location.href='", url.spec(), "';"})));
   // Enqueue a no-op script execution, which will block until the navigation
   // initiated above completes.
-  EXPECT_TRUE(content::ExecJs(web_contents->GetMainFrame(), "true"));
+  EXPECT_TRUE(content::ExecJs(web_contents->GetPrimaryMainFrame(), "true"));
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
   EXPECT_EQ(web_contents->GetLastCommittedURL(), url);
 }
@@ -80,8 +80,8 @@ class OriginTrialsBrowserTest : public content::ContentBrowserTest {
         base::BindRepeating(FrameMatchesName, frame_name));
   }
 
-  RenderFrameHost* GetMainFrame() {
-    return shell()->web_contents()->GetMainFrame();
+  RenderFrameHost* GetPrimaryMainFrame() {
+    return shell()->web_contents()->GetPrimaryMainFrame();
   }
 
   testing::AssertionResult HasTrialEnabled(RenderFrameHost* frame) {
@@ -104,43 +104,55 @@ class OriginTrialsBrowserTest : public content::ContentBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(OriginTrialsBrowserTest, Basic) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL("https://example.test/basic.html")));
-  EXPECT_TRUE(HasTrialEnabled(GetMainFrame()));
+  EXPECT_TRUE(HasTrialEnabled(GetPrimaryMainFrame()));
 }
 
 IN_PROC_BROWSER_TEST_F(OriginTrialsBrowserTest,
                        NonNavigationTrialNotActivatedAcrossNavigations) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL("https://example.test/basic.html")));
-  EXPECT_TRUE(HasTrialEnabled(GetMainFrame()));
+  EXPECT_TRUE(HasTrialEnabled(GetPrimaryMainFrame()));
   NavigateViaRenderer(shell()->web_contents(),
                       GURL("https://other.test/notrial.html"));
-  EXPECT_FALSE(HasTrialEnabled(GetMainFrame()));
+  EXPECT_FALSE(HasTrialEnabled(GetPrimaryMainFrame()));
 }
 
 IN_PROC_BROWSER_TEST_F(OriginTrialsBrowserTest, Navigation) {
   EXPECT_TRUE(
       NavigateToURL(shell(), GURL("https://example.test/navigation.html")));
-  EXPECT_TRUE(HasNavigationTrialEnabled(GetMainFrame()));
+  EXPECT_TRUE(HasNavigationTrialEnabled(GetPrimaryMainFrame()));
 }
 
 IN_PROC_BROWSER_TEST_F(OriginTrialsBrowserTest,
                        NavigationTrialActivatedAcrossNavigations) {
   EXPECT_TRUE(
       NavigateToURL(shell(), GURL("https://example.test/navigation.html")));
-  EXPECT_TRUE(HasNavigationTrialEnabled(GetMainFrame()));
+  EXPECT_TRUE(HasNavigationTrialEnabled(GetPrimaryMainFrame()));
 
   NavigateViaRenderer(shell()->web_contents(),
                       GURL("https://other.test/notrial.html"));
   // Navigation trial should be enabled after navigating from navigation.html,
   // because it is a cross-navigation OT.
-  EXPECT_TRUE(HasNavigationTrialEnabled(GetMainFrame()));
+  EXPECT_TRUE(HasNavigationTrialEnabled(GetPrimaryMainFrame()));
 
   NavigateViaRenderer(shell()->web_contents(),
                       GURL("https://other.test/basic.html"));
   // Navigation trial should not be enabled after a second navigation, because
   // cross-navigation OTs should only be forwarded to immediate navigations from
   // where the trial was activated.
-  EXPECT_FALSE(HasNavigationTrialEnabled(GetMainFrame()));
+  EXPECT_FALSE(HasNavigationTrialEnabled(GetPrimaryMainFrame()));
 }
+
+const char kCallWorkerScript[] =
+    "(() => {"
+    "  const worker = new Worker('/worker.js');"
+    "  const waitResult = new Promise((resolve, reject) => {"
+    "    worker.onmessage = function(e) {"
+    "      (e.data?resolve:reject)(`return ${e.data} from worker`);"
+    "    };"
+    "  });"
+    "  worker.postMessage('ping');"
+    "  return waitResult;"
+    "})()";
 
 class ForceEnabledOriginTrialsBrowserTest
     : public OriginTrialsBrowserTest,
@@ -181,11 +193,12 @@ IN_PROC_BROWSER_TEST_P(ForceEnabledOriginTrialsBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url_));
 
   // Trial should be enabled for main frame.
-  EXPECT_TRUE(HasTrialEnabled(GetMainFrame()));
+  EXPECT_TRUE(HasTrialEnabled(GetPrimaryMainFrame()));
 
   // OT are enabled per-frame. Subframes should not have OT.
   EXPECT_FALSE(HasTrialEnabled(GetFrameByName("same-origin")));
   EXPECT_FALSE(HasTrialEnabled(GetFrameByName("cross-origin")));
+  EXPECT_FALSE(ExecJs(GetFrameByName("same-origin"), kCallWorkerScript));
 
   // With site isolation, the cross-site iframe on |main_url_| will get its own
   // process.  Otherwise, we'll only get one main frame process.
@@ -195,7 +208,7 @@ IN_PROC_BROWSER_TEST_P(ForceEnabledOriginTrialsBrowserTest,
   // OT does not persist when we navigated away.
   NavigateViaRenderer(shell()->web_contents(),
                       GURL("https://other.test/notrial.html"));
-  EXPECT_FALSE(HasTrialEnabled(GetMainFrame()));
+  EXPECT_FALSE(HasTrialEnabled(GetPrimaryMainFrame()));
 }
 
 IN_PROC_BROWSER_TEST_P(ForceEnabledOriginTrialsBrowserTest,
@@ -205,13 +218,16 @@ IN_PROC_BROWSER_TEST_P(ForceEnabledOriginTrialsBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url_));
 
   // Main frame does not have trial.
-  EXPECT_FALSE(HasTrialEnabled(GetMainFrame()));
+  EXPECT_FALSE(HasTrialEnabled(GetPrimaryMainFrame()));
 
   // Same-origin frame (which loads notrial.html) has trial.
   EXPECT_TRUE(HasTrialEnabled(GetFrameByName("same-origin")));
 
   // Cross-origin frame has no trial.
   EXPECT_FALSE(HasTrialEnabled(GetFrameByName("cross-origin")));
+
+  // Worker in same-origin frame (which loads notrial.html>worker.js) has trial.
+  EXPECT_TRUE(ExecJs(GetFrameByName("same-origin"), kCallWorkerScript));
 
   // When Iframe navigates away, it loses origin trial.
   const GURL url("https://other.test/notrial.html");
@@ -232,9 +248,10 @@ IN_PROC_BROWSER_TEST_P(ForceEnabledOriginTrialsBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url_));
 
   // Main frame and all iframes don't have trial.
-  EXPECT_FALSE(HasTrialEnabled(GetMainFrame()));
+  EXPECT_FALSE(HasTrialEnabled(GetPrimaryMainFrame()));
   EXPECT_FALSE(HasTrialEnabled(GetFrameByName("same-origin")));
   EXPECT_FALSE(HasTrialEnabled(GetFrameByName("cross-origin")));
+  EXPECT_FALSE(ExecJs(GetFrameByName("same-origin"), kCallWorkerScript));
 
   // Create an iframe with origin trial and wait for it to load
   TestNavigationObserver navigation_observer(frame_url);

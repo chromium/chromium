@@ -1,16 +1,15 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/cr_button/cr_button.m.js';
-import '//resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
-import '//resources/cr_elements/shared_vars_css.m.js';
-import '../settings_shared_css.js';
+import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/policy/cr_policy_pref_indicator.js';
+import '//resources/cr_elements/cr_shared_vars.css.js';
+import '../settings_shared.css.js';
 
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {loadTimeData} from '../i18n_setup.js';
-
+import {getTemplate} from './controlled_button.html.js';
 import {CrPolicyPrefMixin} from './cr_policy_pref_mixin.js';
 import {PrefControlMixin} from './pref_control_mixin.js';
 
@@ -23,7 +22,7 @@ export class ControlledButtonElement extends ControlledButtonElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -58,7 +57,7 @@ export class ControlledButtonElement extends ControlledButtonElementBase {
   private actionClass_: string;
   private enforced_: boolean;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     if (this.classList.contains('action-button')) {
@@ -67,7 +66,7 @@ export class ControlledButtonElement extends ControlledButtonElementBase {
   }
 
   /** Focus on the inner cr-button. */
-  focus() {
+  override focus() {
     this.shadowRoot!.querySelector('cr-button')!.focus();
   }
 

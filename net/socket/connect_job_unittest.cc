@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "net/base/address_list.h"
@@ -44,8 +43,7 @@ class TestConnectJob : public ConnectJob {
                    nullptr /* net_log */,
                    NetLogSourceType::TRANSPORT_CONNECT_JOB,
                    NetLogEventType::TRANSPORT_CONNECT_JOB_CONNECT),
-        job_type_(job_type),
-        last_seen_priority_(DEFAULT_PRIORITY) {
+        job_type_(job_type) {
     switch (job_type_) {
       case JobType::kSyncSuccess:
         socket_data_provider_.set_connect_data(MockConnect(SYNCHRONOUS, OK));
@@ -70,8 +68,8 @@ class TestConnectJob : public ConnectJob {
     return ResolveErrorInfo(net::OK);
   }
   int ConnectInternal() override {
-    SetSocket(std::unique_ptr<StreamSocket>(new MockTCPClientSocket(
-                  AddressList(), net_log().net_log(), &socket_data_provider_)),
+    SetSocket(std::make_unique<MockTCPClientSocket>(
+                  AddressList(), net_log().net_log(), &socket_data_provider_),
               absl::nullopt /* dns_aliases */);
     return socket()->Connect(base::BindOnce(
         &TestConnectJob::NotifyDelegateOfCompletion, base::Unretained(this)));
@@ -88,7 +86,7 @@ class TestConnectJob : public ConnectJob {
  protected:
   const JobType job_type_;
   StaticSocketDataProvider socket_data_provider_;
-  RequestPriority last_seen_priority_;
+  RequestPriority last_seen_priority_ = DEFAULT_PRIORITY;
 };
 
 class ConnectJobTest : public testing::Test {

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -52,7 +53,7 @@ class TestChromeLocationBarModelDelegate
   }
 
  private:
-  Browser* const browser_;
+  const raw_ptr<Browser> browser_;
   net::CertStatus cert_status_ = 0;
 };
 

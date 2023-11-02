@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -159,18 +160,18 @@ public class ForeignSessionHelper {
     }
 
     /**
-     * @return The list of synced foreign sessions. {@code null} iff it fails to get them for some
-     *         reason.
+     * @return The list of synced foreign sessions. If it fails to get them for some reason will
+     * return an empty list.
      */
     List<ForeignSession> getForeignSessions() {
         if (!isTabSyncEnabled()) {
-            return null;
+            return Collections.emptyList();
         }
         List<ForeignSession> result = new ArrayList<ForeignSession>();
         boolean received = ForeignSessionHelperJni.get().getForeignSessions(
                 mNativeForeignSessionHelper, result);
         if (!received) {
-            result = null;
+            result = Collections.emptyList();
         }
 
         return result;

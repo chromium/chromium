@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/video_capture/texture_virtual_device_mojo_adapter.h"
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "media/base/bind_to_current_loop.h"
@@ -37,8 +38,8 @@ void TextureVirtualDeviceMojoAdapter::OnNewMailboxHolderBufferHandle(
   if (!video_frame_handler_.is_bound())
     return;
   media::mojom::VideoBufferHandlePtr buffer_handle =
-      media::mojom::VideoBufferHandle::New();
-  buffer_handle->set_mailbox_handles(std::move(mailbox_handles));
+      media::mojom::VideoBufferHandle::NewMailboxHandles(
+          std::move(mailbox_handles));
   video_frame_handler_->OnNewBuffer(buffer_id, std::move(buffer_handle));
 }
 
@@ -94,8 +95,8 @@ void TextureVirtualDeviceMojoAdapter::Start(
   // Notify receiver of known buffer handles */
   for (auto& entry : known_buffer_handles_) {
     media::mojom::VideoBufferHandlePtr buffer_handle =
-        media::mojom::VideoBufferHandle::New();
-    buffer_handle->set_mailbox_handles(entry.second->Clone());
+        media::mojom::VideoBufferHandle::NewMailboxHandles(
+            entry.second->Clone());
     video_frame_handler_->OnNewBuffer(entry.first, std::move(buffer_handle));
   }
 }
@@ -126,6 +127,10 @@ void TextureVirtualDeviceMojoAdapter::TakePhoto(TakePhotoCallback callback) {
 
 void TextureVirtualDeviceMojoAdapter::ProcessFeedback(
     const media::VideoCaptureFeedback& feedback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void TextureVirtualDeviceMojoAdapter::RequestRefreshFrame() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 

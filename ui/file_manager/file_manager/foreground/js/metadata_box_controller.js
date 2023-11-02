@@ -1,10 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {FileType} from '../../common/js/file_type.js';
+import {TrashEntry} from '../../common/js/trash.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {FilesQuickView} from '../elements/files_quick_view.js';
@@ -165,6 +166,12 @@ export class MetadataBoxController {
       this.metadataBox_.metadataRendered('size');
     }
 
+    if (entry.restoreEntry) {
+      this.metadataBox_.originalLocation =
+          this.getFileLocationLabel_(entry.restoreEntry);
+      this.metadataBox_.metadataRendered('originalLocation');
+    }
+
     this.updateModificationTime_(entry, items);
 
     if (!entry.isDirectory) {
@@ -241,12 +248,8 @@ export class MetadataBoxController {
   updateModificationTime_(entry, items) {
     const item = items[0];
 
-    if (item.modificationTime) {
-      this.metadataBox_.modificationTime =
-          this.fileMetadataFormatter_.formatModDate(item.modificationTime);
-    } else {
-      this.metadataBox_.modificationTime = '';
-    }
+    this.metadataBox_.modificationTime =
+        this.fileMetadataFormatter_.formatModDate(item.modificationTime);
   }
 
   /**
@@ -302,7 +305,7 @@ export class MetadataBoxController {
       }
 
       if (chrome.runtime.lastError) {
-        console.error(chrome.runtime.lastError);
+        console.warn(chrome.runtime.lastError);
         size = undefined;
       }
 

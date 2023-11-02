@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,6 @@ enum WMEventType {
   // Note that this does not mean the window will be in corresponding
   // state and the request may not be fullfilled.
 
-  // NORMAL is used as a restore operation with a few exceptions.
   WM_EVENT_NORMAL = 0,
   WM_EVENT_MAXIMIZE,
   WM_EVENT_MINIMIZE,
@@ -36,6 +35,10 @@ enum WMEventType {
   // SECONDARY is right.
   WM_EVENT_SNAP_SECONDARY,
 
+  // The restore event will change the window state back to its previous
+  // applicable window state.
+  WM_EVENT_RESTORE,
+
   // A window is requested to be the given bounds. The request may or
   // may not be fulfilled depending on the requested bounds and window's
   // state. This will not change the window state type.
@@ -43,9 +46,6 @@ enum WMEventType {
 
   // Following events are compond events which may lead to different
   // states depending on the current state.
-
-  // A user requested to make a window floating.
-  WM_EVENT_TOGGLE_FLOATING,
 
   // A user requested to toggle maximized state by double clicking window
   // header.
@@ -114,6 +114,9 @@ enum WMEventType {
   // TODO(oshima): Consider consolidating this into
   // WM_EVENT_WORKAREA_BOUNDS_CHANGED
   WM_EVENT_SYSTEM_UI_AREA_CHANGED,
+
+  // A user requested to float a window.
+  WM_EVENT_FLOAT,
 };
 
 class SetBoundsWMEvent;
@@ -152,6 +155,14 @@ class ASH_EXPORT WMEvent {
   // e.g. WM_EVENT_MAXIMIZED.
   bool IsTransitionEvent() const;
 
+  // True if the event is a window snap event.
+  bool IsSnapEvent() const;
+
+  // True if the event has |snap_ratio| value, which is only available for
+  // WindowSnapWMEvent types. Checks that snap events are created with valid
+  // |snap_ratio| to pass ASan tests.
+  virtual bool IsSnapInfoAvailable() const;
+
   // Utility methods to downcast to specific WMEvent types.
   const DisplayMetricsChangedWMEvent* AsDisplayMetricsChangedWMEvent() const;
 
@@ -186,6 +197,34 @@ class ASH_EXPORT SetBoundsWMEvent : public WMEvent {
   const int64_t display_id_ = display::kInvalidDisplayId;
   const bool animate_;
   const base::TimeDelta duration_;
+};
+
+// An WMEvent to snap a window.
+class ASH_EXPORT WindowSnapWMEvent : public WMEvent {
+ public:
+  enum class SnapRatio {
+    kDefaultSnapRatio,
+    kOneThirdSnapRatio,
+    kTwoThirdSnapRatio
+  };
+
+  explicit WindowSnapWMEvent(WMEventType type);
+  WindowSnapWMEvent(WMEventType type, SnapRatio snap_ratio);
+
+  WindowSnapWMEvent(const WindowSnapWMEvent&) = delete;
+  WindowSnapWMEvent& operator=(const WindowSnapWMEvent&) = delete;
+
+  ~WindowSnapWMEvent() override;
+
+  static float GetFloatValueForSnapRatio(SnapRatio snap_ratio);
+
+  // WMEvent:
+  bool IsSnapInfoAvailable() const override;
+
+  SnapRatio snap_ratio() const { return snap_ratio_; }
+
+ private:
+  const SnapRatio snap_ratio_ = SnapRatio::kDefaultSnapRatio;
 };
 
 // A WMEvent sent when display metrics have changed.

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,8 @@
 // animation blocks provided by observers).
 @interface OptionalPropertyAnimator : UIViewPropertyAnimator
 
-// Whether animations have been added to this animator.  |-startAnimation| and
-// |-startAnimationAfterDelay:| are no-ops if this property is NO.
+// Whether animations have been added to this animator.  `-startAnimation` and
+// `-startAnimationAfterDelay:` are no-ops if this property is NO.
 @property(nonatomic, readonly) BOOL hasAnimations;
 
 @end

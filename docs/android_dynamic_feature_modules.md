@@ -15,15 +15,8 @@ Bundles provide three main advantages over monolithic `.apk` files:
    * Resource splits can also be made on a per-screen-density basis (for drawables),
      but Chrome has not taken advantage of this (yet).
 2. Features can be packaged into lazily loaded `.apk` files, known as
-   "feature splits". Feature splits have no performance overhead until used.
-   * Except on versions prior to Android O, where support for
-     [android:isolatedSplits] was added. On prior versions, all installed splits
-     are loaded on application launch.
-   * E.g.: The `chrome` feature split makes renderers more efficient by having
-     them not load Java code that they don't need.
-   * E.g.: The `image_editor` feature split defers loading of Share-related code
-     until a Share action is performed.
-   * See also: [go/isolated-splits-dev-guide] (Googlers only).
+   "feature splits". Chrome enables [isolated splits], which means feature
+   splits have no performance overhead until used (on Android O+ at least).
 3. Feature splits can be downloaded on-demand, saving disk space for users that
    do not need the functionality they provide. These are known as
    "Dynamic feature modules", or "DFMs".
@@ -46,8 +39,7 @@ to do so:
 
 [android_build_instructions.md#multiple-chrome-targets]: android_build_instructions.md#multiple-chrome-targets
 [Android App Bundles]: https://developer.android.com/guide/app-bundle
-[android:isolatedSplits]: https://developer.android.com/reference/android/R.attr#isolatedSplits
-[go/isolated-splits-dev-guide]: http://go/isolated-splits-dev-guide
+[isolated splits]: android_isolated_splits.md
 
 ### Declaring App Bundles with GN Templates
 
@@ -285,9 +277,7 @@ Next, define an implementation that goes into the module in the new file
 package org.chromium.chrome.browser.foo;
 
 import org.chromium.base.Log;
-import org.chromium.base.annotations.UsedByReflection;
 
-@UsedByReflection("FooModule")
 public class FooImpl implements Foo {
     @Override
     public void bar() {
@@ -721,10 +711,8 @@ package org.chromium.chrome.browser.foo;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.chrome.browser.foo.R;
 
-@UsedByReflection("FooModule")
 public class FooImpl implements Foo {
     @Override
     public void bar() {

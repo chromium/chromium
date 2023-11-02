@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@ import org.chromium.content_public.browser.WebContents;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
@@ -130,32 +129,6 @@ public class TranslateBridge {
         TranslateBridgeJni.get().setDefaultTargetLanguage(targetLanguage);
     }
 
-    /**
-     * @return The ordered set of all languages that the user's knows, ordered by how well they know
-     *         them with the most familiar listed first.
-     */
-    public static LinkedHashSet<String> getModelLanguages() {
-        LinkedHashSet<String> set = new LinkedHashSet<String>();
-        // Calls back through addModelLanguageToSet repeatedly.
-        TranslateBridgeJni.get().getModelLanguages(set);
-        return set;
-    }
-
-    /**
-     * Called by {@link #TranslateBridgeJni.get().getModelLanguages} with the set to add to and the
-     * language to add.
-     */
-    @CalledByNative
-    private static void addModelLanguageToSet(
-            LinkedHashSet<String> languages, String languageCode) {
-        languages.add(languageCode);
-    }
-
-    @CalledByNative
-    private static void copyStringArrayToList(List<String> list, String[] source) {
-        list.addAll(Arrays.asList(source));
-    }
-
     @CalledByNative
     private static void addNewLanguageItemToList(List<LanguageItem> list, String code,
             String displayName, String nativeDisplayName, boolean supportTranslate) {
@@ -186,23 +159,19 @@ public class TranslateBridge {
      *         other platforms but not supported on Android.
      */
     public static List<String> getUserLanguageCodes() {
-        List<String> list = new ArrayList<>();
-        TranslateBridgeJni.get().getUserAcceptLanguages(list);
-        return list;
+        return new ArrayList<>(Arrays.asList(TranslateBridgeJni.get().getUserAcceptLanguages()));
     }
 
     /** @return List of languages to always translate. */
     public static List<String> getAlwaysTranslateLanguages() {
-        List<String> list = new ArrayList<>();
-        TranslateBridgeJni.get().getAlwaysTranslateLanguages(list);
-        return list;
+        return new ArrayList<>(
+                Arrays.asList(TranslateBridgeJni.get().getAlwaysTranslateLanguages()));
     }
 
     /** @return List of languages that translation should not be prompted for. */
     public static List<String> getNeverTranslateLanguages() {
-        List<String> list = new ArrayList<>();
-        TranslateBridgeJni.get().getNeverTranslateLanguages(list);
-        return list;
+        return new ArrayList<>(
+                Arrays.asList(TranslateBridgeJni.get().getNeverTranslateLanguages()));
     }
 
     public static void setLanguageAlwaysTranslateState(
@@ -297,12 +266,11 @@ public class TranslateBridge {
         String getCurrentLanguage(WebContents webContents);
         String getTargetLanguage();
         void setDefaultTargetLanguage(String targetLanguage);
-        void getModelLanguages(LinkedHashSet<String> set);
         void resetAcceptLanguages(String defaultLocale);
         void getChromeAcceptLanguages(List<LanguageItem> list);
-        void getUserAcceptLanguages(List<String> list);
-        void getAlwaysTranslateLanguages(List<String> list);
-        void getNeverTranslateLanguages(List<String> list);
+        String[] getUserAcceptLanguages();
+        String[] getAlwaysTranslateLanguages();
+        String[] getNeverTranslateLanguages();
         void setLanguageAlwaysTranslateState(String language, boolean alwaysTranslate);
         void updateUserAcceptLanguages(String language, boolean add);
         void moveAcceptLanguage(String language, int offset);

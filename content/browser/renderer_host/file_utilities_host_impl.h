@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,11 +25,11 @@ class FileUtilitiesHostImpl : public blink::mojom::FileUtilitiesHost {
   void GetFileInfo(const base::FilePath& path,
                    GetFileInfoCallback callback) override;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void SetLength(base::File file,
                  const int64_t length,
                  SetLengthCallback callback) override;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   const int process_id_;
 };

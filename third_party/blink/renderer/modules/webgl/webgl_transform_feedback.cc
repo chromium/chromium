@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,9 +23,9 @@ WebGLTransformFeedback::WebGLTransformFeedback(WebGL2RenderingContextBase* ctx,
   bound_indexed_transform_feedback_buffers_.resize(max_attribs);
 
   switch (type_) {
-    case TFTypeDefault:
+    case TFType::kDefault:
       break;
-    case TFTypeUser: {
+    case TFType::kUser: {
       GLuint tf;
       ctx->ContextGL()->GenTransformFeedbacks(1, &tf);
       object_ = tf;
@@ -45,9 +45,9 @@ void WebGLTransformFeedback::DispatchDetached(gpu::gles2::GLES2Interface* gl) {
 
 void WebGLTransformFeedback::DeleteObjectImpl(gpu::gles2::GLES2Interface* gl) {
   switch (type_) {
-    case TFTypeDefault:
+    case TFType::kDefault:
       break;
-    case TFTypeUser:
+    case TFType::kUser:
       gl->DeleteTransformFeedbacks(1, &object_);
       object_ = 0;
       break;

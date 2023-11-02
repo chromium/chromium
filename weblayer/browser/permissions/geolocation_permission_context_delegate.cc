@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "weblayer/browser/android/permission_request_utils.h"
 #include "weblayer/browser/browser_context_impl.h"
 #include "weblayer/browser/tab_impl.h"
@@ -15,7 +15,6 @@
 namespace weblayer {
 
 bool GeolocationPermissionContextDelegate::DecidePermission(
-    content::WebContents* web_contents,
     const permissions::PermissionRequestID& id,
     const GURL& requesting_origin,
     bool user_gesture,
@@ -24,7 +23,7 @@ bool GeolocationPermissionContextDelegate::DecidePermission(
   return false;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool GeolocationPermissionContextDelegate::IsInteractable(
     content::WebContents* web_contents) {
   auto* tab = TabImpl::FromWebContents(web_contents);
@@ -41,11 +40,6 @@ bool GeolocationPermissionContextDelegate::IsRequestingOriginDSE(
     const GURL& requesting_origin) {
   return false;
 }
-
-void GeolocationPermissionContextDelegate::FinishNotifyPermissionSet(
-    const permissions::PermissionRequestID& id,
-    const GURL& requesting_origin,
-    const GURL& embedding_origin) {}
 #endif
 
 }  // namespace weblayer

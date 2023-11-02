@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,6 +33,10 @@ bool SVGContainerPainter::CanUseCullRect() const {
   // paint its descendants so we cannot skip painting.
   if (layout_svg_container_.IsSVGHiddenContainer())
     return false;
+
+  if (layout_svg_container_.SVGDescendantMayHaveTransformRelatedAnimation())
+    return false;
+
   return SVGModelObjectPainter::CanUseCullRect(
       layout_svg_container_.StyleRef());
 }
@@ -54,6 +58,9 @@ void SVGContainerPainter::Paint(const PaintInfo& paint_info) {
             layout_svg_container_.VisualRectInLocalSVGCoordinates()))
       return;
     if (properties) {
+      // TODO(https://crbug.com/1278452): Also consider Translate, Rotate,
+      // Scale, and Offset, probably via a single transform operation to
+      // FirstFragment().PreTransform().
       if (const auto* transform = properties->Transform())
         paint_info_before_filtering.TransformCullRect(*transform);
     }
@@ -88,8 +95,8 @@ void SVGContainerPainter::Paint(const PaintInfo& paint_info) {
 
     for (LayoutObject* child = layout_svg_container_.FirstChild(); child;
          child = child->NextSibling()) {
-      if (auto* foreign_object = DynamicTo<LayoutSVGForeignObject>(*child)) {
-        SVGForeignObjectPainter(*foreign_object)
+      if (child->IsSVGForeignObjectIncludingNG()) {
+        SVGForeignObjectPainter(To<LayoutBlockFlow>(*child))
             .PaintLayer(paint_info_before_filtering);
       } else {
         child->Paint(paint_info_before_filtering);

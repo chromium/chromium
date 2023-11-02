@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/permissions/test/permission_test_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,19 +24,23 @@ class PlatformVerificationChromeOSTest
     : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+    profile()->SetPermissionControllerDelegate(
+        permissions::GetPermissionControllerDelegate(profile()));
     NavigateAndCommit(GetTestURL());
   }
 };
 
 // Tests the basic success case.
 TEST_F(PlatformVerificationChromeOSTest, Success) {
-  EXPECT_TRUE(platform_verification::PerformBrowserChecks(web_contents()));
+  EXPECT_TRUE(platform_verification::PerformBrowserChecks(
+      web_contents()->GetPrimaryMainFrame()));
 }
 
 TEST_F(PlatformVerificationChromeOSTest, BadURL) {
   GURL url("badurl");
   NavigateAndCommit(url);
-  EXPECT_FALSE(platform_verification::PerformBrowserChecks(web_contents()));
+  EXPECT_FALSE(platform_verification::PerformBrowserChecks(
+      web_contents()->GetPrimaryMainFrame()));
 }
 
 TEST_F(PlatformVerificationChromeOSTest, IncognitoProfile) {
@@ -47,7 +52,8 @@ TEST_F(PlatformVerificationChromeOSTest, IncognitoProfile) {
   content::WebContentsTester* tester =
       content::WebContentsTester::For(web_contents.get());
   tester->NavigateAndCommit(GetTestURL());
-  EXPECT_FALSE(platform_verification::PerformBrowserChecks(web_contents.get()));
+  EXPECT_FALSE(platform_verification::PerformBrowserChecks(
+      web_contents.get()->GetPrimaryMainFrame()));
 }
 
 TEST_F(PlatformVerificationChromeOSTest, ContentSettings) {
@@ -58,7 +64,8 @@ TEST_F(PlatformVerificationChromeOSTest, ContentSettings) {
       /*primary_url=*/GetTestURL(), /*secondary_url=*/GetTestURL(),
       ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER, CONTENT_SETTING_BLOCK);
 
-  EXPECT_FALSE(platform_verification::PerformBrowserChecks(web_contents()));
+  EXPECT_FALSE(platform_verification::PerformBrowserChecks(
+      web_contents()->GetPrimaryMainFrame()));
 }
 
 }  // namespace

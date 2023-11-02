@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace ime {
 
 namespace {
@@ -55,23 +55,24 @@ class ClientDelegate : public ImeClientDelegate {
 
 }  // namespace
 
-DecoderEngine::DecoderEngine(ImeCrosPlatform* platform) : platform_(platform) {
-  if (!TryLoadDecoder()) {
-    LOG(WARNING) << "DecoderEngine INIT INCOMPLETED.";
+DecoderEngine::DecoderEngine(
+    ImeCrosPlatform* platform,
+    absl::optional<ImeDecoder::EntryPoints> entry_points) {
+  if (!entry_points) {
+    LOG(WARNING) << "DecoderEngine INIT INCOMPLETE.";
+    return;
   }
+
+  decoder_entry_points_ = *entry_points;
+  decoder_entry_points_->init_proto_mode(platform);
 }
 
-DecoderEngine::~DecoderEngine() {}
-
-bool DecoderEngine::TryLoadDecoder() {
-  auto* decoder = ImeDecoder::GetInstance();
-  if (decoder->GetStatus() == ImeDecoder::Status::kSuccess &&
-      decoder->GetEntryPoints().is_ready) {
-    decoder_entry_points_ = decoder->GetEntryPoints();
-    decoder_entry_points_->init_once(platform_);
-    return true;
+DecoderEngine::~DecoderEngine() {
+  if (!decoder_entry_points_) {
+    return;
   }
-  return false;
+
+  decoder_entry_points_->close_proto_mode();
 }
 
 bool DecoderEngine::BindRequest(
@@ -79,25 +80,17 @@ bool DecoderEngine::BindRequest(
     mojo::PendingReceiver<mojom::InputChannel> receiver,
     mojo::PendingRemote<mojom::InputChannel> remote,
     const std::vector<uint8_t>& extra) {
-  if (IsImeSupportedByDecoder(ime_spec)) {
-    // Activates an IME engine via the shared library. Passing a
-    // |ClientDelegate| for engine instance created by the shared library to
-    // make safe calls on the client.
-    if (decoder_entry_points_->activate_ime(
-            ime_spec.c_str(),
-            new ClientDelegate(ime_spec, std::move(remote)))) {
-      decoder_channel_receivers_.Add(this, std::move(receiver));
-      // TODO(https://crbug.com/837156): Registry connection error handler.
-      return true;
-    }
-    return false;
+  // Activates an IME engine via the shared lib. Passing a |ClientDelegate| for
+  // engine instance created by the shared lib to make safe calls on the client.
+  if (decoder_entry_points_ &&
+      decoder_entry_points_->supports(ime_spec.c_str()) &&
+      decoder_entry_points_->activate_ime(
+          ime_spec.c_str(), new ClientDelegate(ime_spec, std::move(remote)))) {
+    decoder_channel_receivers_.Add(this, std::move(receiver));
+    // TODO(https://crbug.com/837156): Registry connection error handler.
+    return true;
   }
   return false;
-}
-
-bool DecoderEngine::IsImeSupportedByDecoder(const std::string& ime_spec) {
-  return decoder_entry_points_ &&
-         decoder_entry_points_->supports(ime_spec.c_str());
 }
 
 void DecoderEngine::ProcessMessage(const std::vector<uint8_t>& message,
@@ -114,4 +107,4 @@ void DecoderEngine::ProcessMessage(const std::vector<uint8_t>& message,
 }
 
 }  // namespace ime
-}  // namespace chromeos
+}  // namespace ash

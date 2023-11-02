@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,13 +28,14 @@ void CoreAppLauncherHandler::RegisterProfilePrefs(
 }
 
 void CoreAppLauncherHandler::HandleRecordAppLaunchByUrl(
-    const base::ListValue* args) {
-  const std::string& url = args->GetList()[0].GetString();
-  double source = args->GetList()[1].GetDouble();
+    const base::Value::List& args) {
+  const std::string& url = args[0].GetString();
+  double source = args[1].GetDouble();
+  int source_int = static_cast<int>(source);
 
+  CHECK(source_int < extension_misc::APP_LAUNCH_BUCKET_BOUNDARY);
   extension_misc::AppLaunchBucket bucket =
-      static_cast<extension_misc::AppLaunchBucket>(static_cast<int>(source));
-  CHECK(source < extension_misc::APP_LAUNCH_BUCKET_BOUNDARY);
+      static_cast<extension_misc::AppLaunchBucket>(source_int);
 
   RecordAppLaunchByUrl(Profile::FromWebUI(web_ui()), url, bucket);
 }
@@ -56,7 +57,7 @@ void CoreAppLauncherHandler::RecordAppLaunchByUrl(
 }
 
 void CoreAppLauncherHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "recordAppLaunchByURL",
       base::BindRepeating(&CoreAppLauncherHandler::HandleRecordAppLaunchByUrl,
                           base::Unretained(this)));

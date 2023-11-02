@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/net_export.h"
-#include "net/cert/internal/trust_store.h"
+#include "net/cert/pki/trust_store.h"
 
 namespace net {
 
@@ -74,11 +74,14 @@ class NET_EXPORT TrustStoreMac : public TrustStore {
     COPY_TRUST_SETTINGS_ERROR = 1 << 11,
   };
 
+  // NOTE: When updating this enum, also update ParamToTrustImplType in
+  // system_trust_store.cc
   enum class TrustImplType {
     kUnknown = 0,
     kDomainCache = 1,
     kSimple = 2,
     kLruCache = 3,
+    kDomainCacheFullCerts = 4,
   };
 
   class ResultDebugData : public base::SupportsUserData::Data {
@@ -121,10 +124,6 @@ class NET_EXPORT TrustStoreMac : public TrustStore {
   // Initializes the trust cache, if it isn't already initialized.
   void InitializeTrustCache() const;
 
-  // Returns true if the given certificate is present in the system trust
-  // domain.
-  bool IsKnownRoot(const ParsedCertificate* cert) const;
-
   // TrustStore implementation:
   void SyncGetIssuersOf(const ParsedCertificate* cert,
                         ParsedCertificateList* issuers) override;
@@ -134,14 +133,14 @@ class NET_EXPORT TrustStoreMac : public TrustStore {
  private:
   class TrustImpl;
   class TrustImplDomainCache;
+  class TrustImplDomainCacheFullCerts;
   class TrustImplNoCache;
   class TrustImplLRUCache;
 
-  FRIEND_TEST_ALL_PREFIXES(TrustStoreMacImplTest, MultiRootNotTrusted);
-
   // Finds certificates in the OS keychains whose Subject matches |name_data|.
-  // The result is an array of SecCertificateRef.
-  static base::ScopedCFTypeRef<CFArrayRef>
+  // The result is an array of CRYPTO_BUFFERs containing the DER certificate
+  // data.
+  static std::vector<bssl::UniquePtr<CRYPTO_BUFFER>>
   FindMatchingCertificatesForMacNormalizedSubject(CFDataRef name_data);
 
   // Returns the OS-normalized issuer of |cert|.

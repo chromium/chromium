@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@
 namespace extensions {
 
 const char kTestHostName[] = "com.chrome.test.native_host";
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const char kTestHostPath[] = "C:\\ProgramFiles\\host.exe";
 #else
 const char kTestHostPath[] = "/usr/bin/host";

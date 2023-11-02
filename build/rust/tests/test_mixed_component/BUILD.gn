@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -13,6 +13,10 @@ mixed_component("test_mixed_component") {
   rs_sources = [ "component.rs" ]
   rs_crate_root = "component.rs"
   rs_cxx_bindings = [ "component.rs" ]
+
+  # TODO(danakj): We should write a gtest binary instead of using native rust
+  # tests. Then remove this flag from mixed_target.gni.
+  rs_build_native_rust_unit_tests = true
 }
 
 executable("test_mixed_component_demo") {

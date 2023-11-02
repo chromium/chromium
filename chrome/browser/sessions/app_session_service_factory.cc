@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "chrome/browser/sessions/app_session_service.h"
 #include "chrome/browser/sessions/session_data_service.h"
 #include "chrome/browser/sessions/session_data_service_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 // static
 AppSessionService* AppSessionServiceFactory::GetForProfile(Profile* profile) {
@@ -61,9 +60,7 @@ AppSessionServiceFactory* AppSessionServiceFactory::GetInstance() {
 }
 
 AppSessionServiceFactory::AppSessionServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "AppSessionService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("AppSessionService") {
   // Ensure that session data is cleared before session restore can happen.
   DependsOn(SessionDataServiceFactory::GetInstance());
 }

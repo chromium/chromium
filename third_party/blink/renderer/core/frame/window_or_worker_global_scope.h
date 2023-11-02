@@ -86,6 +86,7 @@ class CORE_EXPORT WindowOrWorkerGlobalScope {
   static void clearInterval(EventTarget&, int timeout_id);
 
   static bool crossOriginIsolated(const ExecutionContext&);
+  static String crossOriginEmbedderPolicy(const ExecutionContext&);
 
   static ScriptValue structuredClone(ScriptState*,
                                      EventTarget&,

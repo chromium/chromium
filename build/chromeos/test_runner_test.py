@@ -1,5 +1,5 @@
 #!/usr/bin/env vpython3
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -293,10 +293,12 @@ class GTestTest(TestRunnerTest):
 class HostCmdTests(TestRunnerTest):
 
   @parameterized.expand([
-      [True],
-      [False],
+      [True, False, True],
+      [False, True, True],
+      [True, True, False],
+      [False, True, False],
   ])
-  def test_host_cmd(self, is_lacros):
+  def test_host_cmd(self, is_lacros, is_ash, strip_chrome):
     args = [
         'script_name',
         'host-cmd',
@@ -307,8 +309,10 @@ class HostCmdTests(TestRunnerTest):
     ]
     if is_lacros:
       args += ['--deploy-lacros']
-    else:
+    if is_ash:
       args += ['--deploy-chrome']
+    if strip_chrome:
+      args += ['--strip-chrome']
     args += [
         '--',
         'fake_cmd',
@@ -337,8 +341,10 @@ class HostCmdTests(TestRunnerTest):
             '--lacros-launcher-script',
             test_runner.LACROS_LAUNCHER_SCRIPT_PATH,
         ]
-      else:
-        expected_cmd += ['--mount', '--nostrip', '--deploy']
+      if is_ash:
+        expected_cmd += ['--mount', '--deploy']
+      if not strip_chrome:
+        expected_cmd += ['--nostrip']
 
       expected_cmd += [
           '--',

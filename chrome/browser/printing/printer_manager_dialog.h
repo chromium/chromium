@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,6 @@
 #if !BUILDFLAG(ENABLE_PRINTING)
 #error "Printing must be enabled"
 #endif
-
-class Profile;
 
 namespace printing {
 
@@ -25,7 +23,7 @@ class PrinterManagerDialog {
   PrinterManagerDialog& operator=(const PrinterManagerDialog&) = delete;
 
   // Displays the native printer manager dialog.
-  static void ShowPrinterManagerDialog(Profile* profile);
+  static void ShowPrinterManagerDialog();
 };
 
 }  // namespace printing

@@ -10,13 +10,13 @@
    "string_key2": "string_value2"
 } ]
 
-[08-20-2019 16:43:44.272071][DEBUG]: DevTools WebSocket Command: Log.enable (id=1) 7A66E25ABD1F05841E3DEF9B221CBB42 {
+[08-20-2019 16:43:44.272071][DEBUG]: DevTools WebSocket Command: Log.enable (id=1) (session_id=AQUA) 7A66E25ABD1F05841E3DEF9B221CBB42 {
 
 }
-[08-20-2019 16:43:44.276995][DEBUG]: DevTools WebSocket Command: DOM.getDocument (id=2) 7A66E25ABD1F05841E3DEF9B221CBB42 {
+[08-20-2019 16:43:44.276995][DEBUG]: DevTools WebSocket Command: DOM.getDocument (id=2) (session_id=AQUA) 7A66E25ABD1F05841E3DEF9B221CBB42 {
 
 }
-[08-20-2019 16:43:44.278068][DEBUG]: DevTools WebSocket Command: Target.setAutoAttach (id=3) 7A66E25ABD1F05841E3DEF9B221CBB42 {
+[08-20-2019 16:43:44.278068][DEBUG]: DevTools WebSocket Command: Target.setAutoAttach (id=3) (session_id=AQUA) 7A66E25ABD1F05841E3DEF9B221CBB42 {
    "autoAttach": true,
    "waitForDebuggerOnStart": false
 }

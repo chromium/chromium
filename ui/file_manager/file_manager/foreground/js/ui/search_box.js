@@ -1,20 +1,19 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import '../../elements/files_toggle_ripple.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
-import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-import {ListItem} from 'chrome://resources/js/cr/ui/list_item.m.js';
-import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 
 import {FileType} from '../../../common/js/file_type.js';
 import {metrics} from '../../../common/js/metrics.js';
 import {strf, util} from '../../../common/js/util.js';
 
 import {AutocompleteList} from './autocomplete_list.js';
+import {ListItem} from './list_item.js';
 
 /**
  * Search box.
@@ -59,8 +58,8 @@ export class SearchBox extends EventTarget {
      * @const
      */
     this.searchButtonToggleRipple_ =
-        /** @type {!FilesToggleRippleElement} */ (
-            queryRequiredElement('files-toggle-ripple', this.searchButton));
+        /** @type {!FilesToggleRippleElement} */ (util.queryRequiredElement(
+            'files-toggle-ripple', this.searchButton));
 
     /**
      * Text input of the search box.
@@ -312,6 +311,12 @@ export class SearchBox extends EventTarget {
   onClearButtonClick_() {
     this.inputElement.value = '';
     this.onInput_();
+    // The search box will be collapsed after Clear, so the search button will
+    // animate to a new position, we need to call focus() after the animation
+    // to make sure the tooltip shows at the correct position.
+    this.inputElement.addEventListener('transitionend', () => {
+      this.searchButton.focus();
+    }, {once: true});
   }
 }
 
@@ -323,7 +328,7 @@ SearchBox.EventType = {
   // Dispatched when the text in the search box is changed.
   TEXT_CHANGE: 'textchange',
   // Dispatched when the item in the auto complete list is selected.
-  ITEM_SELECT: 'itemselect'
+  ITEM_SELECT: 'itemselect',
 };
 
 /**

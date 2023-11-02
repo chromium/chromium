@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,6 +34,11 @@ class CrashingUtilWinImpl : public chrome::mojom::UtilWin {
   void IsPinnedToTaskbar(IsPinnedToTaskbarCallback callback) override {}
   void UnpinShortcuts(const std::vector<base::FilePath>& shortcuts,
                       UnpinShortcutsCallback result_callback) override {}
+  void CreateOrUpdateShortcuts(
+      const std::vector<base::FilePath>& shortcut_paths,
+      const std::vector<base::win::ShortcutProperties>& properties,
+      base::win::ShortcutOperation operation,
+      CreateOrUpdateShortcutsCallback callback) override {}
 
   void CallExecuteSelectFile(ui::SelectFileDialog::Type type,
                              uint32_t owner,

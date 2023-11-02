@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "components/offline_pages/core/client_namespace_constants.h"
-#include "components/offline_pages/core/offline_page_client_policy.h"
 
 namespace offline_pages {
 
@@ -64,7 +63,7 @@ PolicyData BuildPolicies() {
   {
     auto policy = OfflinePageClientPolicy::CreateTemporary(
         kSuggestedArticlesNamespace, base::Days(30));
-    policy.is_supported_by_download = 1;
+    policy.is_supported_by_download = true;
     policy.is_suggested = true;
     all_policies.push_back(policy);
   }

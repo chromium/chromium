@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/text_control_inner_elements.h"
 
+#include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/renderer/core/css/resolver/style_adjuster.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -66,10 +67,6 @@ scoped_refptr<ComputedStyle> EditingViewPortElement::CustomStyleForLayoutObject(
   return style;
 }
 
-bool EditingViewPortElement::TypeShouldForceLegacyLayout() const {
-  return !RuntimeEnabledFeatures::LayoutNGTextControlEnabled();
-}
-
 // ---------------------------
 
 TextControlInnerEditorElement::TextControlInnerEditorElement(Document& document)
@@ -101,7 +98,7 @@ void TextControlInnerEditorElement::DefaultEventHandler(Event& event) {
     // that the page can hear about the scroll.
     Element* shadow_ancestor = OwnerShadowHost();
     if (shadow_ancestor)
-      shadow_ancestor->DispatchEvent(event);
+      shadow_ancestor->DispatchEvent(event, "TextControlInnerEditorElement::DefaultEventHandler");
   }
 
   if (!event.DefaultHandled())
@@ -122,10 +119,6 @@ void TextControlInnerEditorElement::FocusChanged() {
   // for text-overflow. See TextControlElement::ValueForTextOverflow().
   SetNeedsStyleRecalc(kLocalStyleChange, StyleChangeReasonForTracing::Create(
                                              style_change_reason::kControl));
-}
-
-bool TextControlInnerEditorElement::TypeShouldForceLegacyLayout() const {
-  return !RuntimeEnabledFeatures::LayoutNGTextControlEnabled();
 }
 
 LayoutObject* TextControlInnerEditorElement::CreateLayoutObject(
@@ -210,7 +203,8 @@ TextControlInnerEditorElement::CreateInnerEditorStyle() const {
         GetDocument().GetStyleResolver().CreateComputedStyle();
     no_scrollbar_style->SetStyleType(kPseudoIdScrollbar);
     no_scrollbar_style->SetDisplay(EDisplay::kNone);
-    text_block_style->AddCachedPseudoElementStyle(no_scrollbar_style);
+    text_block_style->AddCachedPseudoElementStyle(
+        no_scrollbar_style, kPseudoIdScrollbar, g_null_atom);
     text_block_style->SetHasPseudoElementStyle(kPseudoIdScrollbar);
 
     text_block_style->SetDisplay(EDisplay::kFlowRoot);
@@ -259,10 +253,6 @@ bool SearchFieldCancelButtonElement::WillRespondToMouseClickEvents() {
     return true;
 
   return HTMLDivElement::WillRespondToMouseClickEvents();
-}
-
-bool SearchFieldCancelButtonElement::TypeShouldForceLegacyLayout() const {
-  return !RuntimeEnabledFeatures::LayoutNGTextControlEnabled();
 }
 
 // ----------------------------

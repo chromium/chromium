@@ -6,7 +6,7 @@ their own native printers using CUPS.
 
 The Chrome client code which is responsible for handling UI events from this
 page is located at
-`chrome/browser/ui/webui/settings/chromeos/cups_printers_handler.cc`
+`chrome/browser/ui/webui/settings/ash/cups_printers_handler.cc`
 
 The front-end code for this page is located at
 `chrome/browser/resources/settings/printing_page/`

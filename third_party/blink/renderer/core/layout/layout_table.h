@@ -334,7 +334,7 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
       return ColAndColGroup();
     return SlowColElementAtAbsoluteColumn(absolute_column_index);
   }
-  bool HasColElements() const final {
+  bool HasColElements() const {
     NOT_DESTROYED();
     return has_col_elements_;
   }
@@ -383,7 +383,7 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   void InvalidateCollapsedBorders();
   void InvalidateCollapsedBordersForAllCellsIfNeeded();
 
-  bool HasCollapsedBorders() const final {
+  bool HasCollapsedBorders() const {
     NOT_DESTROYED();
     DCHECK(collapsed_borders_valid_);
     return has_collapsed_borders_;
@@ -472,16 +472,15 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
     NOT_DESTROYED();
     return this;
   }
-  bool IsFixedTableLayout() const final {
-    NOT_DESTROYED();
-    return StyleRef().IsFixedTableLayout();
-  }
   LayoutNGTableSectionInterface* FirstBodyInterface() const final;
-  LayoutNGTableSectionInterface* TopSectionInterface() const final;
-  LayoutNGTableSectionInterface* TopNonEmptySectionInterface() const final;
-  LayoutNGTableSectionInterface* BottomSectionInterface() const final;
-  LayoutNGTableSectionInterface* BottomNonEmptySectionInterface() const final;
-  LayoutNGTableSectionInterface* SectionBelowInterface(
+  LayoutNGTableSectionInterface* FirstSectionInterface() const final;
+  LayoutNGTableSectionInterface* FirstNonEmptySectionInterface() const final;
+  LayoutNGTableSectionInterface* LastSectionInterface() const final;
+  LayoutNGTableSectionInterface* LastNonEmptySectionInterface() const final;
+  LayoutNGTableSectionInterface* NextSectionInterface(
+      const LayoutNGTableSectionInterface*,
+      SkipEmptySectionsValue) const final;
+  LayoutNGTableSectionInterface* PreviousSectionInterface(
       const LayoutNGTableSectionInterface*,
       SkipEmptySectionsValue) const final;
   bool IsFirstCell(const LayoutNGTableCellInterface&) const final;
@@ -502,7 +501,7 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
                    const PhysicalOffset& accumulated_offset,
-                   HitTestAction) override;
+                   HitTestPhase) override;
 
   LayoutUnit BaselinePosition(
       FontBaseline,

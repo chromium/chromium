@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -359,6 +359,7 @@ class ActiveSettingsProvider : public IdentifiabilityStudySettingsProvider {
   bool IsTypeAllowed(IdentifiableSurface::Type type) const override {
     return true;
   }
+  bool ShouldActivelySample() const override { return false; }
 
  private:
   const bool enabled_ = true;
@@ -404,12 +405,12 @@ TEST_F(CanvasRenderingContext2DAPITest, IdentifiabilityStudyMaxOperations) {
 
 // TODO(crbug.com/1239374): Fix test on Android L and re-enable.
 // TODO(crbug.com/1258605): Fix test on Windows and re-enable.
-#if defined(OS_ANDROID) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #define MAYBE_IdentifiabilityStudyDigest_Font \
   DISABLED_IdentifiabilityStudyDigest_Font
 #else
 #define MAYBE_IdentifiabilityStudyDigest_Font IdentifiabilityStudyDigest_Font
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(CanvasRenderingContext2DAPITest, MAYBE_IdentifiabilityStudyDigest_Font) {
   StudyParticipationRaii study_participation_raii;
@@ -441,13 +442,13 @@ TEST_F(CanvasRenderingContext2DAPITest, IdentifiabilityStudyDisabled) {
 
 // TODO(crbug.com/1239374): Fix test on Android and re-enable.
 // TODO(crbug.com/1258605): Fix test on Windows and re-enable.
-#if defined(OS_ANDROID) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #define MAYBE_IdentifiabilityStudyDigest_StrokeText \
   DISABLED_IdentifiabilityStudyDigest_StrokeText
 #else
 #define MAYBE_IdentifiabilityStudyDigest_StrokeText \
   IdentifiabilityStudyDigest_StrokeText
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(CanvasRenderingContext2DAPITest,
        MAYBE_IdentifiabilityStudyDigest_StrokeText) {
@@ -465,13 +466,13 @@ TEST_F(CanvasRenderingContext2DAPITest,
 
 // TODO(crbug.com/1239374): Fix test on Android and re-enable.
 // TODO(crbug.com/1258605): Fix test on Windows and re-enable.
-#if defined(OS_ANDROID) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #define MAYBE_IdentifiabilityStudyDigest_FillText \
   DISABLED_IdentifiabilityStudyDigest_FillText
 #else
 #define MAYBE_IdentifiabilityStudyDigest_FillText \
   IdentifiabilityStudyDigest_FillText
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(CanvasRenderingContext2DAPITest,
        MAYBE_IdentifiabilityStudyDigest_FillText) {
@@ -489,13 +490,13 @@ TEST_F(CanvasRenderingContext2DAPITest,
 
 // TODO(crbug.com/1239374): Fix test on Android and re-enable.
 // TODO(crbug.com/1258605): Fix test on Windows and re-enable.
-#if defined(OS_ANDROID) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #define MAYBE_IdentifiabilityStudyDigest_TextAlign \
   DISABLED_IdentifiabilityStudyDigest_TextAlign
 #else
 #define MAYBE_IdentifiabilityStudyDigest_TextAlign \
   IdentifiabilityStudyDigest_TextAlign
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(CanvasRenderingContext2DAPITest,
        MAYBE_IdentifiabilityStudyDigest_TextAlign) {
@@ -513,13 +514,13 @@ TEST_F(CanvasRenderingContext2DAPITest,
 
 // TODO(crbug.com/1239374): Fix test on Android and re-enable.
 // TODO(crbug.com/1258605): Fix test on Windows and re-enable.
-#if defined(OS_ANDROID) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #define MAYBE_IdentifiabilityStudyDigest_TextBaseline \
   DISABLED_IdentifiabilityStudyDigest_TextBaseline
 #else
 #define MAYBE_IdentifiabilityStudyDigest_TextBaseline \
   IdentifiabilityStudyDigest_TextBaseline
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(CanvasRenderingContext2DAPITest,
        MAYBE_IdentifiabilityStudyDigest_TextBaseline) {
@@ -537,13 +538,13 @@ TEST_F(CanvasRenderingContext2DAPITest,
 
 // TODO(crbug.com/1239374): Fix test on Android and re-enable.
 // TODO(crbug.com/1258605): Fix test on Windows and re-enable.
-#if defined(OS_ANDROID) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #define MAYBE_IdentifiabilityStudyDigest_StrokeStyle \
   DISABLED_IdentifiabilityStudyDigest_StrokeStyle
 #else
 #define MAYBE_IdentifiabilityStudyDigest_StrokeStyle \
   IdentifiabilityStudyDigest_StrokeStyle
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(CanvasRenderingContext2DAPITest,
        MAYBE_IdentifiabilityStudyDigest_StrokeStyle) {
@@ -563,13 +564,13 @@ TEST_F(CanvasRenderingContext2DAPITest,
 
 // TODO(crbug.com/1239374): Fix test on Android and re-enable.
 // TODO(crbug.com/1258605): Fix test on Windows and re-enable.
-#if defined(OS_ANDROID) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #define MAYBE_IdentifiabilityStudyDigest_FillStyle \
   DISABLED_IdentifiabilityStudyDigest_FillStyle
 #else
 #define MAYBE_IdentifiabilityStudyDigest_FillStyle \
   IdentifiabilityStudyDigest_FillStyle
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(CanvasRenderingContext2DAPITest,
        MAYBE_IdentifiabilityStudyDigest_FillStyle) {
@@ -589,12 +590,12 @@ TEST_F(CanvasRenderingContext2DAPITest,
 
 // TODO(crbug.com/1239374): Fix test on Android and re-enable.
 // TODO(crbug.com/1258605): Fix test on Windows and re-enable.
-#if defined(OS_ANDROID) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #define MAYBE_IdentifiabilityStudyDigest_Combo \
   DISABLED_IdentifiabilityStudyDigest_Combo
 #else
 #define MAYBE_IdentifiabilityStudyDigest_Combo IdentifiabilityStudyDigest_Combo
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(CanvasRenderingContext2DAPITest,
        MAYBE_IdentifiabilityStudyDigest_Combo) {
@@ -621,13 +622,13 @@ TEST_F(CanvasRenderingContext2DAPITest,
 
 // TODO(crbug.com/1239374): Fix test on Android L and re-enable.
 // TODO(crbug.com/1258605): Fix test on Windows and re-enable.
-#if defined(OS_ANDROID) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #define MAYBE_IdentifiabilityStudyDigest_putImageData \
   DISABLED_IdentifiabilityStudyDigest_putImageData
 #else
 #define MAYBE_IdentifiabilityStudyDigest_putImageData \
   IdentifiabilityStudyDigest_putImageData
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(CanvasRenderingContext2DAPITest,
        MAYBE_IdentifiabilityStudyDigest_putImageData) {
@@ -649,13 +650,13 @@ TEST_F(CanvasRenderingContext2DAPITest,
 
 // TODO(crbug.com/1239374): Fix test on Android L and re-enable.
 // TODO(crbug.com/1258605): Fix test on Windows and re-enable.
-#if defined(OS_ANDROID) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #define MAYBE_IdentifiabilityStudyDigest_drawImage \
   DISABLED_IdentifiabilityStudyDigest_drawImage
 #else
 #define MAYBE_IdentifiabilityStudyDigest_drawImage \
   IdentifiabilityStudyDigest_drawImage
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(CanvasRenderingContext2DAPITest,
        MAYBE_IdentifiabilityStudyDigest_drawImage) {
@@ -666,7 +667,7 @@ TEST_F(CanvasRenderingContext2DAPITest,
   // We can use our own canvas as the image source!
   auto* image_source =
       MakeGarbageCollected<V8CanvasImageSource>(&CanvasElement());
-  Context2D()->drawImage(/*script_state=*/nullptr, image_source, /*x=*/1,
+  Context2D()->drawImage(image_source, /*x=*/1,
                          /*y=*/1, exception_state);
   EXPECT_EQ(INT64_C(-4851825694092845811),
             Context2D()->IdentifiableTextToken().ToUkmMetricValue());

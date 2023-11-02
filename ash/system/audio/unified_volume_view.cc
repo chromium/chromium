@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,20 +10,17 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/system/tray/tray_popup_utils.h"
+#include "ash/style/style_util.h"
+#include "ash/system/tray/tray_constants.h"
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_utils.h"
-#include "ui/views/animation/flood_fill_ink_drop_ripple.h"
-#include "ui/views/animation/ink_drop_highlight.h"
-#include "ui/views/animation/ink_drop_impl.h"
-#include "ui/views/animation/ink_drop_mask.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/focus_ring.h"
@@ -44,7 +41,7 @@ const gfx::VectorIcon* const kVolumeLevelIcons[] = {
 };
 
 // The maximum index of kVolumeLevelIcons.
-constexpr int kVolumeLevels = base::size(kVolumeLevelIcons) - 1;
+constexpr int kVolumeLevels = std::size(kVolumeLevelIcons) - 1;
 
 // Get vector icon reference that corresponds to the given volume level. |level|
 // is between 0.0 to 1.0.
@@ -71,7 +68,7 @@ class UnifiedVolumeViewButton : public T {
   template <typename... Args>
   explicit UnifiedVolumeViewButton(Args... args)
       : T(std::forward<Args>(args)...) {
-    TrayPopupUtils::ConfigureTrayPopupButton(this);
+    StyleUtil::SetUpInkDropForButton(this);
 
     views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                   kTrayItemCornerRadius);
@@ -83,9 +80,7 @@ class UnifiedVolumeViewButton : public T {
 
   void OnThemeChanged() override {
     T::OnThemeChanged();
-    auto* color_provider = AshColorProvider::Get();
-    views::FocusRing::Get(this)->SetColor(color_provider->GetControlsLayerColor(
-        AshColorProvider::ControlsLayerType::kFocusRingColor));
+    views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
     T::background()->SetNativeControlColor(GetBackgroundColor());
   }
 
@@ -153,7 +148,7 @@ UnifiedVolumeView::UnifiedVolumeView(
       more_button_(new MoreButton(
           base::BindRepeating(&UnifiedVolumeSliderController::Delegate::
                                   OnAudioSettingsButtonClicked,
-                              base::Unretained(delegate)))) {
+                              delegate->weak_ptr_factory_.GetWeakPtr()))) {
   CrasAudioHandler::Get()->AddAudioObserver(this);
   AddChildView(more_button_);
   Update(false /* by_user */);

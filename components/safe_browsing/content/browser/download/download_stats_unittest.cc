@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "components/download/public/common/download_stats.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,6 +24,7 @@ namespace safe_browsing {
 
 TEST(SafeBrowsingDownloadStatsTest, RecordDangerousDownloadWarningShown) {
   base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
 
   RecordDangerousDownloadWarningShown(
       download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT,
@@ -37,6 +39,8 @@ TEST(SafeBrowsingDownloadStatsTest, RecordDangerousDownloadWarningShown) {
   histogram_tester.ExpectUniqueSample(
       "SBClientDownload.Warning.DownloadHasUserGesture.Malicious.Shown",
       /*sample=*/1, /*expected_bucket_count=*/1);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "SafeBrowsing.Download.WarningShown"));
 
   RecordDangerousDownloadWarningShown(
       download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT,
@@ -54,10 +58,13 @@ TEST(SafeBrowsingDownloadStatsTest, RecordDangerousDownloadWarningShown) {
       "SBClientDownload.Warning.DownloadHasUserGesture.Uncommon.Shown",
       /*sample=*/0,
       /*expected_count=*/1);
+  EXPECT_EQ(2, user_action_tester.GetActionCount(
+                   "SafeBrowsing.Download.WarningShown"));
 }
 
 TEST(SafeBrowsingDownloadStatsTest, RecordDangerousDownloadWarningBypassed) {
   base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
 
   RecordDangerousDownloadWarningBypassed(
       download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
@@ -73,6 +80,8 @@ TEST(SafeBrowsingDownloadStatsTest, RecordDangerousDownloadWarningBypassed) {
       "SBClientDownload.Warning.DownloadHasUserGesture.DangerousFileType."
       "Bypassed",
       /*sample=*/0, /*expected_bucket_count=*/1);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "SafeBrowsing.Download.WarningBypassed"));
 }
 
 TEST(SafeBrowsingDownloadStatsTest, RecordDownloadOpened) {
@@ -82,14 +91,14 @@ TEST(SafeBrowsingDownloadStatsTest, RecordDownloadOpened) {
   download::DownloadContent fake_content =
       download::DownloadContent::SPREADSHEET;
   // Not logged for dangerous downloads.
-  RecordDownloadOpened(
+  RecordDownloadOpenedLatency(
       download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT,
       fake_content, download_end_time + base::Days(1), download_end_time,
       /*show_download_in_folder=*/false);
   histogram_tester.ExpectTotalCount(
       "SBClientDownload.SafeDownloadOpenedLatency2.OpenDirectly", 0);
 
-  RecordDownloadOpened(
+  RecordDownloadOpenedLatency(
       download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
       fake_content, download_end_time + base::Days(1), download_end_time,
       /*show_download_in_folder=*/false);
@@ -98,7 +107,7 @@ TEST(SafeBrowsingDownloadStatsTest, RecordDownloadOpened) {
       /*sample=*/base::Days(1),
       /*count=*/1);
 
-  RecordDownloadOpened(
+  RecordDownloadOpenedLatency(
       download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
       fake_content, download_end_time + base::Hours(5), download_end_time,
       /*show_download_in_folder=*/true);
@@ -113,25 +122,25 @@ TEST(SafeBrowsingDownloadStatsTest, RecordDownloadOpenedFileType) {
 
   base::Time download_end_time = base::Time::Now();
 
-  RecordDownloadOpenedFileType(download::DownloadContent::SPREADSHEET,
-                               download_end_time + base::Days(1),
-                               download_end_time);
+  RecordDownloadOpenedLatencyFileType(download::DownloadContent::SPREADSHEET,
+                                      download_end_time + base::Days(1),
+                                      download_end_time);
   histogram_tester.ExpectTimeBucketCount(
       "SBClientDownload.SafeDownloadOpenedLatencyByContentType.SPREADSHEET",
       /*sample=*/base::Days(1),
       /*count=*/1);
 
-  RecordDownloadOpenedFileType(download::DownloadContent::PRESENTATION,
-                               download_end_time + base::Hours(5),
-                               download_end_time);
+  RecordDownloadOpenedLatencyFileType(download::DownloadContent::PRESENTATION,
+                                      download_end_time + base::Hours(5),
+                                      download_end_time);
   histogram_tester.ExpectTimeBucketCount(
       "SBClientDownload.SafeDownloadOpenedLatencyByContentType.PRESENTATION",
       /*sample=*/base::Hours(5),
       /*count=*/1);
 
-  RecordDownloadOpenedFileType(download::DownloadContent::ARCHIVE,
-                               download_end_time + base::Days(1),
-                               download_end_time);
+  RecordDownloadOpenedLatencyFileType(download::DownloadContent::ARCHIVE,
+                                      download_end_time + base::Days(1),
+                                      download_end_time);
   histogram_tester.ExpectTimeBucketCount(
       "SBClientDownload.SafeDownloadOpenedLatencyByContentType.ARCHIVE",
       /*sample=*/base::Days(1),

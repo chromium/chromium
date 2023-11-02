@@ -1,9 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/renderer/cart/commerce_hint_agent.h"
 
+#include "base/features.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/field_trial_params.h"
@@ -16,14 +17,18 @@
 #include "base/values.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/grit/renderer_resources.h"
-#include "chrome/renderer/cart/commerce_renderer_feature_list.h"
-#include "components/search/ntp_features.h"
+#include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/commerce_heuristics_data.h"
+#include "components/commerce/core/commerce_heuristics_data_metrics_helper.h"
+#include "components/commerce/core/heuristics/commerce_heuristics_provider.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
-#include "content/public/renderer/v8_value_converter.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "services/metrics/public/cpp/mojo_ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/loader/http_body_element_type.h"
+#include "third_party/blink/public/platform/web_http_body.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_element_collection.h"
@@ -32,6 +37,12 @@
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "v8/include/v8-isolate.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "components/commerce/core/commerce_feature_list.h"
+#else
+#include "components/search/ntp_features.h"
+#endif
 
 using base::UserMetricsAction;
 using blink::WebElement;
@@ -49,83 +60,58 @@ constexpr char kElectronicExpressDomain[] = "electronicexpress.com";
 constexpr char kGStoreHost[] = "store.google.com";
 
 constexpr base::FeatureParam<std::string> kSkipPattern{
-    &ntp_features::kNtpChromeCartModule, "product-skip-pattern",
-    // This regex does not match anything.
-    "\\b\\B"};
+#if !BUILDFLAG(IS_ANDROID)
+  &ntp_features::kNtpChromeCartModule, "product-skip-pattern",
+#else
+  &commerce::kCommerceHintAndroid, "product-skip-pattern",
+#endif
+      // This regex does not match anything.
+      "\\b\\B"
+};
 
 // This is based on top 30 US shopping sites.
 // TODO(crbug/1164236): cover more shopping sites.
 constexpr base::FeatureParam<std::string> kAddToCartPattern{
-    &ntp_features::kNtpChromeCartModule, "add-to-cart-pattern",
-    "(\\b|[^a-z])"
-    "((add(ed)?(-|_|(%20))?(item)?(-|_|(%20))?to(-|_|(%20))?(cart|basket|bag)"
-    ")|(cart\\/add)|(checkout\\/basket)|(cart_type)|(isquickaddtocartbutton))"
-    "(\\b|[^a-z])"};
+#if !BUILDFLAG(IS_ANDROID)
+  &ntp_features::kNtpChromeCartModule, "add-to-cart-pattern",
+#else
+  &commerce::kCommerceHintAndroid, "add-to-cart-pattern",
+#endif
+      "(\\b|[^a-z])"
+      "((add(ed)?(-|_|(%20)|\\s)?(item)?(-|_|(%20)|\\s)?to(-|_|(%20)|\\s)?("
+      "cart|"
+      "basket|bag)"
+      ")|(cart\\/add)|(checkout\\/basket)|(cart_type)|(isquickaddtocartbutton))"
+      "(\\b|[^a-z])"
+};
 
 constexpr base::FeatureParam<std::string> kSkipAddToCartMapping{
-    &ntp_features::kNtpChromeCartModule, "skip-add-to-cart-mapping",
-    // Empty JSON string.
-    ""};
-
-// The heuristics of cart pages are from top 100 US shopping domains.
-// https://colab.corp.google.com/drive/1fTGE_SQw_8OG4ubzQvWcBuyHEhlQ-pwQ?usp=sharing
-constexpr base::FeatureParam<std::string> kCartPattern{
-    &ntp_features::kNtpChromeCartModule, "cart-pattern",
-    // clang-format off
-    "(^https?://cart\\.)"
-    "|"
-    "(/("
-      "(((my|co|shopping)[-_]?)?(cart|bag)(view|display)?)"
-      "|"
-      "(checkout/([^/]+/)?(basket|bag))"
-      "|"
-      "(checkoutcart(display)?view)"
-      "|"
-      "(bundles/shop)"
-      "|"
-      "((ajax)?orderitemdisplay(view)?)"
-      "|"
-      "(cart-show)"
-    ")(/|\\.|$))"
-    // clang-format on
+#if !BUILDFLAG(IS_ANDROID)
+  &ntp_features::kNtpChromeCartModule, "skip-add-to-cart-mapping",
+#else
+  &commerce::kCommerceHintAndroid, "skip-add-to-cart-mapping",
+#endif
+      // Empty JSON string.
+      ""
 };
-
-constexpr base::FeatureParam<std::string> kCartPatternMapping{
-    &ntp_features::kNtpChromeCartModule, "cart-pattern-mapping",
-    // Empty JSON string.
-    ""};
-
-constexpr base::FeatureParam<std::string> kCheckoutPattern{
-    &ntp_features::kNtpChromeCartModule, "checkout-pattern",
-    // clang-format off
-    "/("
-    "("
-      "("
-        "(begin|billing|cart|payment|start|review|final|order|secure|new)"
-        "[-_]?"
-      ")?"
-      "(checkout|chkout)(s)?"
-      "([-_]?(begin|billing|cart|payment|start|review))?"
-    ")"
-    "|"
-    "(\\w+(checkout|chkout)(s)?)"
-    ")(/|\\.|$|\\?)"
-    // clang-format on
-};
-
-constexpr base::FeatureParam<std::string> kCheckoutPatternMapping{
-    &ntp_features::kNtpChromeCartModule, "checkout-pattern-mapping",
-    // Empty JSON string.
-    ""};
 
 constexpr base::FeatureParam<std::string> kPurchaseURLPatternMapping{
-    &ntp_features::kNtpChromeCartModule, "purchase-url-pattern-mapping",
-    // Empty JSON string.
-    ""};
+#if !BUILDFLAG(IS_ANDROID)
+  &ntp_features::kNtpChromeCartModule, "purchase-url-pattern-mapping",
+#else
+  &commerce::kCommerceHintAndroid, "purchase-url-pattern-mapping",
+#endif
+      // Empty JSON string.
+      ""
+};
 
 constexpr base::FeatureParam<std::string> kPurchaseButtonPattern{
-    &ntp_features::kNtpChromeCartModule, "purchase-button-pattern",
-    // clang-format off
+#if !BUILDFLAG(IS_ANDROID)
+  &ntp_features::kNtpChromeCartModule, "purchase-button-pattern",
+#else
+  &commerce::kCommerceHintAndroid, "purchase-button-pattern",
+#endif
+      // clang-format off
     "^("
     "("
       "(place|submit|complete|confirm|finalize|make)(\\s(an|your|my|this))?"
@@ -140,40 +126,76 @@ constexpr base::FeatureParam<std::string> kPurchaseButtonPattern{
     "|"
     "((\\W)*(buy|purchase|order|pay|checkout)(\\W)*)"
     ")$"
-    // clang-format on
+  // clang-format on
 };
 
 constexpr base::FeatureParam<std::string> kPurchaseButtonPatternMapping{
-    &ntp_features::kNtpChromeCartModule, "purchase-button-pattern-mapping",
-    // Empty JSON map.
-    "{}"};
+#if !BUILDFLAG(IS_ANDROID)
+  &ntp_features::kNtpChromeCartModule, "purchase-button-pattern-mapping",
+#else
+  &commerce::kCommerceHintAndroid, "purchase-button-pattern-mapping",
+#endif
+      // Empty JSON map.
+      "{}"
+};
 
 constexpr base::FeatureParam<base::TimeDelta> kCartExtractionGapTime{
-    &ntp_features::kNtpChromeCartModule, "cart-extraction-gap-time",
-    base::Seconds(2)};
+#if !BUILDFLAG(IS_ANDROID)
+  &ntp_features::kNtpChromeCartModule, "cart-extraction-gap-time",
+#else
+  &commerce::kCommerceHintAndroid, "cart-extraction-gap-time",
+#endif
+      base::Seconds(2)
+};
 
 constexpr base::FeatureParam<int> kCartExtractionMaxCount{
-    &ntp_features::kNtpChromeCartModule, "cart-extraction-max-count", 20};
+#if !BUILDFLAG(IS_ANDROID)
+  &ntp_features::kNtpChromeCartModule, "cart-extraction-max-count",
+#else
+  &commerce::kCommerceHintAndroid, "cart-extraction-max-count",
+#endif
+      20
+};
 
 constexpr base::FeatureParam<base::TimeDelta> kCartExtractionMinTaskTime{
-    &ntp_features::kNtpChromeCartModule, "cart-extraction-min-task-time",
-    base::Seconds(0.01)};
+#if !BUILDFLAG(IS_ANDROID)
+  &ntp_features::kNtpChromeCartModule, "cart-extraction-min-task-time",
+#else
+  &commerce::kCommerceHintAndroid, "cart-extraction-min-task-time",
+#endif
+      base::Seconds(0.01)
+};
 
 constexpr base::FeatureParam<double> kCartExtractionDutyCycle{
-    &ntp_features::kNtpChromeCartModule, "cart-extraction-duty-cycle", 0.05};
+#if !BUILDFLAG(IS_ANDROID)
+  &ntp_features::kNtpChromeCartModule, "cart-extraction-duty-cycle",
+#else
+  &commerce::kCommerceHintAndroid, "cart-extraction-duty-cycle",
+#endif
+      0.05
+};
 
 constexpr base::FeatureParam<base::TimeDelta> kCartExtractionTimeout{
-    &ntp_features::kNtpChromeCartModule, "cart-extraction-timeout",
-    base::Seconds(0.25)};
+#if !BUILDFLAG(IS_ANDROID)
+  &ntp_features::kNtpChromeCartModule, "cart-extraction-timeout",
+#else
+  &commerce::kCommerceHintAndroid, "cart-extraction-timeout",
+#endif
+      base::Seconds(0.25)
+};
 
 constexpr base::FeatureParam<std::string> kProductIdPatternMapping{
-    &ntp_features::kNtpChromeCartModule, "product-id-pattern-mapping",
-    // Empty JSON string.
-    ""};
+#if !BUILDFLAG(IS_ANDROID)
+  &ntp_features::kNtpChromeCartModule, "product-id-pattern-mapping",
+#else
+  &commerce::kCommerceHintAndroid, "product-id-pattern-mapping",
+#endif
+      // Empty JSON string.
+      ""
+};
 
 constexpr base::FeatureParam<std::string> kCouponProductIdPatternMapping{
-    &commerce_renderer_feature::kRetailCoupons,
-    "coupon-product-id-pattern-mapping",
+    &commerce::kRetailCoupons, "coupon-product-id-pattern-mapping",
     // Empty JSON string.
     ""};
 
@@ -183,9 +205,15 @@ std::string eTLDPlusOne(const GURL& url) {
 }
 
 bool IsCartHeuristicsImprovementEnabled() {
+#if !BUILDFLAG(IS_ANDROID)
   return base::GetFieldTrialParamByFeatureAsBool(
       ntp_features::kNtpChromeCartModule,
-      ntp_features::kNtpChromeCartModuleHeuristicsImprovementParam, false);
+      ntp_features::kNtpChromeCartModuleHeuristicsImprovementParam, true);
+#else
+  return base::GetFieldTrialParamByFeatureAsBool(
+      commerce::kCommerceHintAndroid,
+      commerce::kCommerceHintAndroidHeuristicsImprovementParam, true);
+#endif
 }
 
 enum class CommerceEvent {
@@ -232,6 +260,10 @@ mojo::Remote<mojom::CommerceHintObserver> GetObserver(
     content::RenderFrame* render_frame) {
   // Connect to Mojo service on browser to notify commerce signals.
   mojo::Remote<mojom::CommerceHintObserver> observer;
+
+  // Subframes including fenced frames shouldn't be reached here.
+  DCHECK(render_frame->IsMainFrame() && !render_frame->IsInFencedFrameTree());
+
   render_frame->GetBrowserInterfaceBroker()->GetInterface(
       observer.BindNewPipeAndPassReceiver());
   return observer;
@@ -311,6 +343,13 @@ bool PartialMatch(base::StringPiece str, const re2::RE2& re) {
 }
 
 const re2::RE2& GetAddToCartPattern() {
+  auto* pattern_from_component =
+      commerce_heuristics::CommerceHeuristicsData::GetInstance()
+          .GetAddToCartRequestPattern();
+  if (pattern_from_component &&
+      kAddToCartPattern.Get() == kAddToCartPattern.default_value) {
+    return *pattern_from_component;
+  }
   re2::RE2::Options options;
   options.set_case_sensitive(false);
   static base::NoDestructor<re2::RE2> instance(kAddToCartPattern.Get(),
@@ -318,64 +357,97 @@ const re2::RE2& GetAddToCartPattern() {
   return *instance;
 }
 
-// TODO(crbug.com/1189786): Using per-site pattern and full URL matching could
-// be unnecessary. Improve this later by using general pattern if possible and
-// more flexible matching.
-const re2::RE2& GetVisitCartPattern(const GURL& url) {
-  static base::NoDestructor<std::map<std::string, std::string>>
-      heuristic_string_map([] {
-        const base::StringPiece json_resource(
-            ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
-                IDR_CART_DOMAIN_CART_URL_REGEX_JSON));
-        const std::string& finch_param = kCartPatternMapping.Get();
-        const base::Value json(base::JSONReader::Read(finch_param.empty()
-                                                          ? json_resource
-                                                          : finch_param)
-                                   .value());
-        DCHECK(json.is_dict());
-        std::map<std::string, std::string> map;
-        for (auto item : json.DictItems()) {
-          map.insert(
-              {std::move(item.first), std::move(item.second.GetString())});
-        }
-        return map;
-      }());
-  static base::NoDestructor<std::map<std::string, std::unique_ptr<re2::RE2>>>
-      heuristic_regex_map;
-  static re2::RE2::Options options;
-  options.set_case_sensitive(false);
-  const std::string& domain = eTLDPlusOne(url);
-  if (heuristic_string_map->find(domain) == heuristic_string_map->end()) {
-    static base::NoDestructor<re2::RE2> instance(kCartPattern.Get(), options);
-    return *instance;
-  }
-  if (heuristic_regex_map->find(domain) == heuristic_regex_map->end()) {
-    heuristic_regex_map->insert(
-        {domain, std::make_unique<re2::RE2>(heuristic_string_map->at(domain),
-                                            options)});
-  }
-  return *heuristic_regex_map->at(domain);
+const std::map<std::string, std::string>& GetPurchaseURLPatternMapping() {
+  static base::NoDestructor<std::map<std::string, std::string>> pattern_map([] {
+    base::Value json(
+        base::JSONReader::Read(
+            kPurchaseURLPatternMapping.Get().empty()
+                ? ui::ResourceBundle::GetSharedInstance()
+                      .LoadDataResourceString(
+                          IDR_PURCHASE_URL_REGEX_DOMAIN_MAPPING_JSON)
+                : kPurchaseURLPatternMapping.Get())
+            .value());
+    DCHECK(json.is_dict());
+    std::map<std::string, std::string> map;
+    for (auto&& item : json.DictItems()) {
+      map.insert({std::move(item.first), std::move(item.second).TakeString()});
+    }
+    return map;
+  }());
+  return *pattern_map;
 }
 
-// TODO(crbug/1164236): cover more shopping sites.
-const re2::RE2& GetVisitCheckoutPattern() {
-  re2::RE2::Options options;
+const std::map<std::string, std::string>& GetPurchaseButtonPatternMapping() {
+  static base::NoDestructor<std::map<std::string, std::string>> pattern_map([] {
+    base::Value json(
+        base::JSONReader::Read(kPurchaseButtonPatternMapping.Get()).value());
+    DCHECK(json.is_dict());
+    std::map<std::string, std::string> map;
+    for (auto&& item : json.DictItems()) {
+      map.insert({std::move(item.first), std::move(item.second).TakeString()});
+    }
+    return map;
+  }());
+  return *pattern_map;
+}
+
+const re2::RE2* GetVisitPurchasePattern(const GURL& url) {
+  std::string domain = eTLDPlusOne(url);
+  auto* pattern_from_component =
+      commerce_heuristics::CommerceHeuristicsData::GetInstance()
+          .GetPurchasePageURLPatternForDomain(domain);
+  if (pattern_from_component && kPurchaseURLPatternMapping.Get() ==
+                                    kPurchaseURLPatternMapping.default_value) {
+    return pattern_from_component;
+  }
+  const std::map<std::string, std::string>& purchase_string_map =
+      GetPurchaseURLPatternMapping();
+  if (purchase_string_map.find(domain) == purchase_string_map.end()) {
+    return nullptr;
+  }
+  static base::NoDestructor<std::map<std::string, std::unique_ptr<re2::RE2>>>
+      purchase_regex_map;
+  static re2::RE2::Options options;
   options.set_case_sensitive(false);
-  static base::NoDestructor<re2::RE2> instance(kCheckoutPattern.Get(), options);
-  return *instance;
+  if (purchase_regex_map->find(domain) == purchase_regex_map->end()) {
+    purchase_regex_map->insert(
+        {domain,
+         std::make_unique<re2::RE2>(purchase_string_map.at(domain), options)});
+  }
+  return purchase_regex_map->at(domain).get();
 }
 
 const re2::RE2& GetSkipPattern() {
+  auto* pattern_from_component =
+      commerce_heuristics::CommerceHeuristicsData::GetInstance()
+          .GetProductSkipPattern();
+  if (pattern_from_component &&
+      kSkipPattern.Get() == kSkipPattern.default_value) {
+    DVLOG(1) << "SkipPattern = " << pattern_from_component->pattern();
+    CommerceHeuristicsDataMetricsHelper::RecordSkipProductPatternSource(
+        CommerceHeuristicsDataMetricsHelper::HeuristicsSource::FROM_COMPONENT);
+    return *pattern_from_component;
+  }
   static base::NoDestructor<re2::RE2> instance([] {
     const std::string& pattern = kSkipPattern.Get();
     DVLOG(1) << "SkipPattern = " << pattern;
     return pattern;
   }());
+  CommerceHeuristicsDataMetricsHelper::RecordSkipProductPatternSource(
+      CommerceHeuristicsDataMetricsHelper::HeuristicsSource::
+          FROM_FEATURE_PARAMETER);
   return *instance;
 }
 
 // TODO(crbug/1164236): need i18n.
 const re2::RE2& GetPurchaseTextPattern() {
+  auto* pattern_from_component =
+      commerce_heuristics::CommerceHeuristicsData::GetInstance()
+          .GetPurchaseButtonTextPattern();
+  if (pattern_from_component &&
+      kPurchaseButtonPattern.Get() == kPurchaseButtonPattern.default_value) {
+    return *pattern_from_component;
+  }
   re2::RE2::Options options;
   options.set_case_sensitive(false);
   static base::NoDestructor<re2::RE2> instance(kPurchaseButtonPattern.Get(),
@@ -405,73 +477,22 @@ bool IsSameDomainXHR(const std::string& host,
 
 const std::map<std::string, std::string>& GetSkipAddToCartMapping() {
   static base::NoDestructor<std::map<std::string, std::string>> skip_map([] {
-    const base::Value json(
+    base::Value json(
         base::JSONReader::Read(
             kSkipAddToCartMapping.Get().empty()
-                ? ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
-                      IDR_SKIP_ADD_TO_CART_REQUEST_DOMAIN_MAPPING_JSON)
+                ? ui::ResourceBundle::GetSharedInstance()
+                      .LoadDataResourceString(
+                          IDR_SKIP_ADD_TO_CART_REQUEST_DOMAIN_MAPPING_JSON)
                 : kSkipAddToCartMapping.Get())
             .value());
     DCHECK(json.is_dict());
     std::map<std::string, std::string> map;
-    for (auto item : json.DictItems()) {
-      map.insert({std::move(item.first), std::move(item.second.GetString())});
+    for (auto&& item : json.DictItems()) {
+      map.insert({std::move(item.first), std::move(item.second).TakeString()});
     }
     return map;
   }());
   return *skip_map;
-}
-
-const std::map<std::string, std::string>& GetCheckoutPatternMapping() {
-  static base::NoDestructor<std::map<std::string, std::string>> pattern_map([] {
-    const base::Value json(
-        base::JSONReader::Read(
-            kCheckoutPatternMapping.Get().empty()
-                ? ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
-                      IDR_CHECKOUT_URL_REGEX_DOMAIN_MAPPING_JSON)
-                : kCheckoutPatternMapping.Get())
-            .value());
-    DCHECK(json.is_dict());
-    std::map<std::string, std::string> map;
-    for (const auto item : json.DictItems()) {
-      map.insert({std::move(item.first), std::move(item.second.GetString())});
-    }
-    return map;
-  }());
-  return *pattern_map;
-}
-
-const std::map<std::string, std::string>& GetPurchaseURLPatternMapping() {
-  static base::NoDestructor<std::map<std::string, std::string>> pattern_map([] {
-    const base::Value json(
-        base::JSONReader::Read(
-            kPurchaseURLPatternMapping.Get().empty()
-                ? ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
-                      IDR_PURCHASE_URL_REGEX_DOMAIN_MAPPING_JSON)
-                : kPurchaseURLPatternMapping.Get())
-            .value());
-    DCHECK(json.is_dict());
-    std::map<std::string, std::string> map;
-    for (const auto item : json.DictItems()) {
-      map.insert({std::move(item.first), std::move(item.second.GetString())});
-    }
-    return map;
-  }());
-  return *pattern_map;
-}
-
-const std::map<std::string, std::string>& GetPurchaseButtonPatternMapping() {
-  static base::NoDestructor<std::map<std::string, std::string>> pattern_map([] {
-    const base::Value json(
-        base::JSONReader::Read(kPurchaseButtonPatternMapping.Get()).value());
-    DCHECK(json.is_dict());
-    std::map<std::string, std::string> map;
-    for (const auto item : json.DictItems()) {
-      map.insert({std::move(item.first), std::move(item.second.GetString())});
-    }
-    return map;
-  }());
-  return *pattern_map;
 }
 
 bool DetectAddToCart(content::RenderFrame* render_frame,
@@ -494,12 +515,15 @@ bool DetectAddToCart(content::RenderFrame* render_frame,
         GetProductIdFromRequest(url.spec().substr(0, kLengthLimit), nullptr);
   } else if (navigation_url.host() == kGStoreHost) {
     is_add_to_cart = url.spec().find("O2JPA") != std::string::npos;
+  } else if (url.DomainIs("zappos.com")) {
+    is_add_to_cart = url.spec().find("mobileapi/v1/cart?displayRewards=true") !=
+                     std::string::npos;
   } else {
     is_add_to_cart = CommerceHintAgent::IsAddToCart(url.path_piece());
   }
   if (is_add_to_cart) {
     std::string url_product_id;
-    if (commerce_renderer_feature::IsPartnerMerchant(navigation_url)) {
+    if (commerce::IsPartnerMerchant(navigation_url)) {
       GetProductIdFromRequest(url.spec().substr(0, kLengthLimit),
                               &url_product_id);
     }
@@ -554,9 +578,12 @@ bool DetectAddToCart(content::RenderFrame* render_frame,
     if (navigation_url.DomainIs("groupon.com") && buf.size() > 10000)
       return false;
 
-    if (CommerceHintAgent::IsAddToCart(str)) {
+    // Per-site skipping length limit when checking request text.
+    bool skip_length_limit = navigation_url.DomainIs("otterbox.com");
+
+    if (CommerceHintAgent::IsAddToCart(str, skip_length_limit)) {
       std::string product_id;
-      if (commerce_renderer_feature::IsPartnerMerchant(url)) {
+      if (commerce::IsPartnerMerchant(url)) {
         GetProductIdFromRequest(str.substr(0, kLengthLimit), &product_id);
       }
       RecordCommerceEvent(CommerceEvent::kAddToCartByForm);
@@ -576,9 +603,12 @@ std::string CanonicalURL(const GURL& url) {
                           "");
 }
 
-const WebString& GetProductExtractionScript() {
-  static base::NoDestructor<WebString> script([] {
-    std::string script_string =
+const WebString GetProductExtractionScript(
+    const std::string& product_id_json_component,
+    const std::string& cart_extraction_script_component) {
+  std::string script_string;
+  if (cart_extraction_script_component.empty()) {
+    script_string =
         ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
             IDR_CART_PRODUCT_EXTRACTION_JS);
     if (IsCartHeuristicsImprovementEnabled()) {
@@ -595,85 +625,82 @@ const WebString& GetProductExtractionScript() {
         ";\n";
     DVLOG(2) << config;
     script_string = config + script_string;
+    CommerceHeuristicsDataMetricsHelper::RecordCartExtractionScriptSource(
+        CommerceHeuristicsDataMetricsHelper::HeuristicsSource::FROM_RESOURCE);
+  } else {
+    script_string = cart_extraction_script_component;
+    CommerceHeuristicsDataMetricsHelper::RecordCartExtractionScriptSource(
+        CommerceHeuristicsDataMetricsHelper::HeuristicsSource::FROM_COMPONENT);
+  }
 
-    const std::string id_extraction_map =
-        kProductIdPatternMapping.Get().empty()
-            ? std::string(
-                  ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
-                      IDR_CART_DOMAIN_PRODUCT_ID_REGEX_JSON))
-            : kProductIdPatternMapping.Get();
-    script_string =
-        "var idExtractionMap = " + id_extraction_map + ";\n" + script_string;
-
-    const std::string coupon_id_extraction_map =
-        kCouponProductIdPatternMapping.Get();
-    if (!coupon_id_extraction_map.empty()) {
-      script_string =
-          "var couponIdExtractionMap = " + coupon_id_extraction_map + ";\n" +
-          script_string;
-    }
+  if (!product_id_json_component.empty()) {
+    script_string = "var idExtractionMap = " + product_id_json_component +
+                    ";\n" + script_string;
+    CommerceHeuristicsDataMetricsHelper::RecordProductIDExtractionPatternSource(
+        CommerceHeuristicsDataMetricsHelper::HeuristicsSource::FROM_COMPONENT);
     return WebString::FromUTF8(std::move(script_string));
-  }());
-  return *script;
+  }
+  CommerceHeuristicsDataMetricsHelper::RecordProductIDExtractionPatternSource(
+      CommerceHeuristicsDataMetricsHelper::HeuristicsSource::
+          FROM_FEATURE_PARAMETER);
+  const std::string id_extraction_map =
+      kProductIdPatternMapping.Get().empty()
+          ? ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+                IDR_CART_DOMAIN_PRODUCT_ID_REGEX_JSON)
+          : kProductIdPatternMapping.Get();
+  script_string =
+      "var idExtractionMap = " + id_extraction_map + ";\n" + script_string;
+
+  const std::string coupon_id_extraction_map =
+      kCouponProductIdPatternMapping.Get();
+  if (!coupon_id_extraction_map.empty()) {
+    script_string = "var couponIdExtractionMap = " + coupon_id_extraction_map +
+                    ";\n" + script_string;
+  }
+  return WebString::FromUTF8(std::move(script_string));
 }
 
 }  // namespace
+
+using commerce_heuristics::CommerceHeuristicsData;
 
 CommerceHintAgent::CommerceHintAgent(content::RenderFrame* render_frame)
     : content::RenderFrameObserver(render_frame),
       content::RenderFrameObserverTracker<CommerceHintAgent>(render_frame) {
   DCHECK(render_frame);
+
+  // Subframes including fenced frames shouldn't be reached here.
+  DCHECK(render_frame->IsMainFrame() && !render_frame->IsInFencedFrameTree());
+
+  mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> recorder;
+  content::RenderThread::Get()->BindHostReceiver(
+      recorder.InitWithNewPipeAndPassReceiver());
+  ukm_recorder_ = std::make_unique<ukm::MojoUkmRecorder>(std::move(recorder));
 }
 
 CommerceHintAgent::~CommerceHintAgent() = default;
 
-bool CommerceHintAgent::IsAddToCart(base::StringPiece str) {
-  return PartialMatch(str.substr(0, kLengthLimit), GetAddToCartPattern());
+bool CommerceHintAgent::IsAddToCart(base::StringPiece str,
+                                    bool skip_length_limit) {
+  return PartialMatch(skip_length_limit ? str : str.substr(0, kLengthLimit),
+                      GetAddToCartPattern());
 }
 
+// TODO(crbug.com/1310422): Remove below two APIs and move all related unit
+// tests to component.
 bool CommerceHintAgent::IsVisitCart(const GURL& url) {
-  return PartialMatch(CanonicalURL(url).substr(0, kLengthLimit),
-                      GetVisitCartPattern(url));
+  return commerce_heuristics::IsVisitCart(url);
 }
 
 bool CommerceHintAgent::IsVisitCheckout(const GURL& url) {
-  const std::map<std::string, std::string>& checkout_string_map =
-      GetCheckoutPatternMapping();
-  static base::NoDestructor<std::map<std::string, std::unique_ptr<re2::RE2>>>
-      checkout_regex_map;
-  std::string domain = eTLDPlusOne(url);
-  std::string url_string = CanonicalURL(url).substr(0, kLengthLimit);
-  if (checkout_string_map.find(domain) == checkout_string_map.end()) {
-    return PartialMatch(url_string, GetVisitCheckoutPattern());
-  }
-  static re2::RE2::Options options;
-  options.set_case_sensitive(false);
-  if (checkout_regex_map->find(domain) == checkout_regex_map->end()) {
-    checkout_regex_map->insert(
-        {domain,
-         std::make_unique<re2::RE2>(checkout_string_map.at(domain), options)});
-  }
-  return PartialMatch(url_string, *checkout_regex_map->at(domain));
+  return commerce_heuristics::IsVisitCheckout(url);
 }
 
 bool CommerceHintAgent::IsPurchase(const GURL& url) {
-  const std::map<std::string, std::string>& purchase_string_map =
-      GetPurchaseURLPatternMapping();
-  static base::NoDestructor<std::map<std::string, std::unique_ptr<re2::RE2>>>
-      purchase_regex_map;
-  std::string domain = eTLDPlusOne(url);
-  std::string url_string = CanonicalURL(url).substr(0, kLengthLimit);
-  if (purchase_string_map.find(domain) == purchase_string_map.end()) {
+  auto* pattern = GetVisitPurchasePattern(url);
+  if (!pattern)
     return false;
-  }
-  static re2::RE2::Options options;
-  options.set_case_sensitive(false);
-  if (purchase_regex_map->find(domain) == purchase_regex_map->end()) {
-    purchase_regex_map->insert(
-        {domain,
-         std::make_unique<re2::RE2>(purchase_string_map.at(domain), options)});
-  }
-  return PartialMatch(url_string, *purchase_regex_map->at(domain));
+  return PartialMatch(CanonicalURL(url).substr(0, kLengthLimit), *pattern);
 }
 
 bool CommerceHintAgent::IsPurchase(const GURL& url,
@@ -749,85 +776,98 @@ void CommerceHintAgent::ExtractProducts() {
         kCartExtractionGapTime.Get());
     return;
   }
+  // Use current script if it has already been initialized; otherwise fetch
+  // script from browser side.
+  mojo::Remote<mojom::CommerceHintObserver> observer =
+      GetObserver(render_frame());
+  // Use current script if it has already been initialized or the feature is
+  // disabled; otherwise fetch script from browser side.
+  if (extraction_script_initialized_ ||
+      !commerce::kOptimizeRendererSignal.Get()) {
+    ExtractCartWithUpdatedScript(std::move(observer),
+                                 /*product_id_json*/ std::string(),
+                                 /*cart_extraction_script*/ std::string());
+    return;
+  }
+  auto* observer_ptr = observer.get();
+  observer_ptr->OnCartExtraction(
+      base::BindOnce(&CommerceHintAgent::ExtractCartWithUpdatedScript,
+                     weak_factory_.GetWeakPtr(), std::move(observer)));
+  extraction_script_initialized_ = true;
+}
+
+void CommerceHintAgent::ExtractCartWithUpdatedScript(
+    mojo::Remote<mojom::CommerceHintObserver> observer,
+    const std::string& product_id_json,
+    const std::string& cart_extraction_script) {
   is_extraction_running_ = true;
   DVLOG(2) << "is_extraction_running_ = " << is_extraction_running_;
 
   blink::WebLocalFrame* main_frame = render_frame()->GetWebFrame();
   v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
-  blink::WebScriptSource source =
-      blink::WebScriptSource(GetProductExtractionScript());
+  blink::WebScriptSource source = blink::WebScriptSource(
+      GetProductExtractionScript(product_id_json, cart_extraction_script));
 
-  if (!javascript_request_) {
-    // This singleton never gets deleted, and will out-live CommerceHintAgen.
-    javascript_request_ = new JavaScriptRequest(weak_factory_.GetWeakPtr());
-  }
   main_frame->RequestExecuteScript(
-      ISOLATED_WORLD_ID_CHROME_INTERNAL, base::make_span(&source, 1), false,
-      blink::WebLocalFrame::kAsynchronous, javascript_request_,
+      ISOLATED_WORLD_ID_CHROME_INTERNAL, base::make_span(&source, 1),
+      blink::mojom::UserActivationOption::kDoNotActivate,
+      blink::mojom::EvaluationTiming::kAsynchronous,
+      blink::mojom::LoadEventBlockingOption::kDoNotBlock,
+      base::BindOnce(&CommerceHintAgent::OnProductsExtracted,
+                     weak_factory_.GetWeakPtr()),
       blink::BackForwardCacheAware::kAllow,
-      blink::WebLocalFrame::PromiseBehavior::kAwait);
+      blink::mojom::WantResultOption::kWantResult,
+      blink::mojom::PromiseResultOption::kAwait);
 }
 
-CommerceHintAgent::JavaScriptRequest::JavaScriptRequest(
-    base::WeakPtr<CommerceHintAgent> agent)
-    : agent_(std::move(agent)) {}
-
-CommerceHintAgent::JavaScriptRequest::~JavaScriptRequest() = default;
-
-void CommerceHintAgent::JavaScriptRequest::WillExecute() {
-  start_time_ = base::TimeTicks::Now();
-}
-
-void CommerceHintAgent::JavaScriptRequest::Completed(
-    const blink::WebVector<v8::Local<v8::Value>>& result) {
+void CommerceHintAgent::OnProductsExtracted(absl::optional<base::Value> results,
+                                            base::TimeTicks start_time) {
   // Only record when the start time is correctly captured.
-  DCHECK(!start_time_.is_null());
-  if (!start_time_.is_null()) {
-    base::UmaHistogramTimes("Commerce.Carts.ExtractionExecutionTime",
-                            base::TimeTicks::Now() - start_time_);
+  if (!results || !results->is_dict())
+    return;
+  if (!start_time.is_null()) {
+    results->GetDict().Set(
+        "execution_ms",
+        (base::TimeTicks::Now() - start_time).InMillisecondsF());
   }
-  if (!agent_)
-    return;
-  if (result.empty() || result[0].IsEmpty())
-    return;
-  blink::WebLocalFrame* main_frame = agent_->render_frame()->GetWebFrame();
-  v8::Local<v8::Context> context = main_frame->MainWorldScriptContext();
 
-  agent_->OnProductsExtracted(
-      content::V8ValueConverter::Create()->FromV8Value(result[0], context));
-}
-
-void CommerceHintAgent::OnProductsExtracted(
-    std::unique_ptr<base::Value> results) {
-  if (!results) {
-    DLOG(ERROR) << "OnProductsExtracted() got empty results";
-    return;
-  }
   DVLOG(2) << "OnProductsExtracted: " << *results;
-  if (!results->is_dict()) {
-    DLOG(ERROR) << "OnProductsExtracted() result is not dict";
-    return;
-  }
 
+  auto builder = ukm::builders::Shopping_CartExtraction(
+      render_frame()->GetWebFrame()->GetDocument().GetUkmSourceId());
   auto record_time = [&](const std::string& key,
-                         const std::string& histograme_name) {
+                         const std::string& metric_name) {
     auto* value = results->FindKey(key);
     if (!value)
       return;
     if (value->is_int() || value->is_double()) {
-      base::UmaHistogramTimes(histograme_name,
-                              base::Milliseconds(value->GetDouble()));
+      double time_value = value->GetDouble();
+      base::TimeDelta time = base::Milliseconds(time_value);
+      base::UmaHistogramTimes("Commerce.Carts." + metric_name, time);
+
+      if (metric_name == "ExtractionLongestTaskTime") {
+        builder.SetExtractionLongestTaskTime(time_value);
+      } else if (metric_name == "ExtractionTotalTasksTime") {
+        builder.SetExtractionTotalTasksTime(time_value);
+      } else if (metric_name == "ExtractionElapsedTime") {
+        builder.SetExtractionElapsedTime(time_value);
+      } else if (metric_name == "ExtractionExecutionTime") {
+        builder.SetExtractionExecutionTime(time_value);
+      }
     }
   };
-  record_time("longest_task_ms", "Commerce.Carts.ExtractionLongestTaskTime");
-  record_time("total_tasks_ms", "Commerce.Carts.ExtractionTotalTasksTime");
-  record_time("elapsed_ms", "Commerce.Carts.ExtractionElapsedTime");
+  record_time("longest_task_ms", "ExtractionLongestTaskTime");
+  record_time("total_tasks_ms", "ExtractionTotalTasksTime");
+  record_time("elapsed_ms", "ExtractionElapsedTime");
+  record_time("execution_ms", "ExtractionExecutionTime");
 
   auto* timedout = results->FindKey("timedout");
   if (timedout && timedout->is_bool()) {
     base::UmaHistogramBoolean("Commerce.Carts.ExtractionTimedOut",
                               timedout->GetBool());
+    builder.SetExtractionTimedOut(timedout->GetBool());
   }
+  builder.Record(ukm_recorder_.get());
 
   auto* extracted_products = results->FindKey("products");
   if (!extracted_products)
@@ -836,10 +876,10 @@ void CommerceHintAgent::OnProductsExtracted(
   // that the cart is not loaded.
   if (!extracted_products->is_list())
     return;
-  bool is_partner = commerce_renderer_feature::IsPartnerMerchant(
+  bool is_partner = commerce::IsPartnerMerchant(
       GURL(render_frame()->GetWebFrame()->GetDocument().Url()));
   std::vector<mojom::ProductPtr> products;
-  for (const auto& product : extracted_products->GetList()) {
+  for (const auto& product : extracted_products->GetListDeprecated()) {
     if (!product.is_dict())
       continue;
     const auto* image_url = product.FindKey("imageUrl");
@@ -877,13 +917,22 @@ void CommerceHintAgent::OnDestruct() {
 }
 
 void CommerceHintAgent::WillSendRequest(const blink::WebURLRequest& request) {
-  if (should_skip_) {
+  if (!should_skip_.has_value() || should_skip_.value()) {
     return;
   }
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
   const GURL& url(frame->GetDocument().Url());
   if (!url.SchemeIsHTTPOrHTTPS())
     return;
+
+  // The rest of this method is not concerned with data URLs but makes a copy of
+  // the URL which can be expensive for large data URLs.
+  // TODO(crbug.com/1321924): Clean up this method to avoid copies once this
+  // optimization has been measured in the field and launches.
+  if (base::FeatureList::IsEnabled(base::features::kOptimizeDataUrls) &&
+      request.Url().ProtocolIs(url::kDataScheme)) {
+    return;
+  }
 
   // Only check XHR POST requests for add-to-cart.
   // Other add-to-cart matches like navigation is handled in
@@ -911,46 +960,87 @@ void CommerceHintAgent::WillSendRequest(const blink::WebURLRequest& request) {
   }
 }
 
-void CommerceHintAgent::OnNavigation(const GURL& url,
-                                     OnNavigationCallback callback) {
-  if (!commerce_renderer_feature::kOptimizeRendererSignal.Get()) {
-    std::move(callback).Run(false);
-    return;
-  }
-  if (!navigation_observer_.is_bound() ||
-      !navigation_observer_.is_connected()) {
-    navigation_observer_ = GetObserver(render_frame());
-  }
-  navigation_observer_->OnNavigation(url, std::move(callback));
-}
-
 void CommerceHintAgent::DidStartNavigation(
     const GURL& url,
     absl::optional<blink::WebNavigationType> navigation_type) {
   if (!url.SchemeIsHTTPOrHTTPS())
     return;
   has_finished_loading_ = false;
-  OnNavigation(url,
-               base::BindOnce(&CommerceHintAgent::DidStartNavigationCallback,
-                              weak_factory_.GetWeakPtr(), url,
-                              std::move(navigation_type)));
+  starting_url_ = url;
+  mojo::Remote<mojom::CommerceHintObserver> observer =
+      GetObserver(render_frame());
+  if (!commerce::kOptimizeRendererSignal.Get()) {
+    DidStartNavigationCallback(url, std::move(observer), false,
+                               mojom::Heuristics::New());
+    return;
+  }
+  auto* observer_ptr = observer.get();
+  observer_ptr->OnNavigation(
+      url, CommerceHeuristicsData::GetInstance().GetVersion(),
+      base::BindOnce(&CommerceHintAgent::DidStartNavigationCallback,
+                     weak_factory_.GetWeakPtr(), url, std::move(observer)));
 }
 
 void CommerceHintAgent::DidStartNavigationCallback(
     const GURL& url,
-    absl::optional<blink::WebNavigationType> navigation_type,
-    bool should_skip) {
+    mojo::Remote<mojom::CommerceHintObserver> observer,
+    bool should_skip,
+    mojom::HeuristicsPtr heuristics) {
   should_skip_ = should_skip;
-  starting_url_ = url;
+  if (should_skip)
+    return;
+  if (!heuristics->version_number.empty() &&
+      heuristics->version_number !=
+          CommerceHeuristicsData::GetInstance().GetVersion()) {
+    bool is_populated =
+        CommerceHeuristicsData::GetInstance().PopulateDataFromComponent(
+            heuristics->hint_json_data, heuristics->global_json_data,
+            /*product_id_json_data*/ "", /*cart_extraction_script*/ "");
+    DCHECK(is_populated);
+    CommerceHeuristicsData::GetInstance().UpdateVersion(
+        base::Version(heuristics->version_number));
+  }
 }
 
 void CommerceHintAgent::DidCommitProvisionalLoad(
     ui::PageTransition transition) {
-  if (should_skip_) {
-    return;
-  }
   if (!starting_url_.is_valid())
     return;
+  DCHECK(starting_url_.SchemeIsHTTPOrHTTPS());
+  mojo::Remote<mojom::CommerceHintObserver> observer =
+      GetObserver(render_frame());
+  if (!commerce::kOptimizeRendererSignal.Get()) {
+    DidCommitProvisionalLoadCallback(starting_url_, std::move(observer), false,
+                                     mojom::Heuristics::New());
+    return;
+  }
+  auto* observer_ptr = observer.get();
+  observer_ptr->OnNavigation(
+      starting_url_, CommerceHeuristicsData::GetInstance().GetVersion(),
+      base::BindOnce(&CommerceHintAgent::DidCommitProvisionalLoadCallback,
+                     weak_factory_.GetWeakPtr(), starting_url_,
+                     std::move(observer)));
+}
+
+void CommerceHintAgent::DidCommitProvisionalLoadCallback(
+    const GURL& url,
+    mojo::Remote<mojom::CommerceHintObserver> observer,
+    bool should_skip,
+    mojom::HeuristicsPtr heuristics) {
+  should_skip_ = should_skip;
+  if (should_skip)
+    return;
+  if (!heuristics->version_number.empty() &&
+      heuristics->version_number !=
+          CommerceHeuristicsData::GetInstance().GetVersion()) {
+    bool is_populated =
+        CommerceHeuristicsData::GetInstance().PopulateDataFromComponent(
+            heuristics->hint_json_data, heuristics->global_json_data,
+            /*product_id_json_data*/ "", /*cart_extraction_script*/ "");
+    DCHECK(is_populated);
+    CommerceHeuristicsData::GetInstance().UpdateVersion(
+        base::Version(heuristics->version_number));
+  }
   if (IsAddToCart(starting_url_.PathForRequestPiece())) {
     RecordCommerceEvent(CommerceEvent::kAddToCartByURL);
     OnAddToCart(render_frame());
@@ -975,18 +1065,41 @@ void CommerceHintAgent::DidFinishLoad() {
   const GURL& url(frame->GetDocument().Url());
   if (!url.SchemeIs(url::kHttpsScheme))
     return;
-  OnNavigation(url, base::BindOnce(&CommerceHintAgent::DidFinishLoadCallback,
-                                   weak_factory_.GetWeakPtr()));
-}
-
-void CommerceHintAgent::DidFinishLoadCallback(bool should_skip) {
-  should_skip_ = should_skip;
-  if (should_skip_) {
-    return;
-  }
   has_finished_loading_ = true;
   extraction_count_ = 0;
-  const GURL& url(render_frame()->GetWebFrame()->GetDocument().Url());
+  mojo::Remote<mojom::CommerceHintObserver> observer =
+      GetObserver(render_frame());
+  if (!commerce::kOptimizeRendererSignal.Get()) {
+    DidFinishLoadCallback(url, std::move(observer), false,
+                          mojom::Heuristics::New());
+    return;
+  }
+  auto* observer_ptr = observer.get();
+  observer_ptr->OnNavigation(
+      url, CommerceHeuristicsData::GetInstance().GetVersion(),
+      base::BindOnce(&CommerceHintAgent::DidFinishLoadCallback,
+                     weak_factory_.GetWeakPtr(), url, std::move(observer)));
+}
+
+void CommerceHintAgent::DidFinishLoadCallback(
+    const GURL& url,
+    mojo::Remote<mojom::CommerceHintObserver> observer,
+    bool should_skip,
+    mojom::HeuristicsPtr heuristics) {
+  should_skip_ = should_skip;
+  if (should_skip)
+    return;
+  if (!heuristics->version_number.empty() &&
+      heuristics->version_number !=
+          CommerceHeuristicsData::GetInstance().GetVersion()) {
+    bool is_populated =
+        CommerceHeuristicsData::GetInstance().PopulateDataFromComponent(
+            heuristics->hint_json_data, heuristics->global_json_data,
+            /*product_id_json_data*/ "", /*cart_extraction_script*/ "");
+    DCHECK(is_populated);
+    CommerceHeuristicsData::GetInstance().UpdateVersion(
+        base::Version(heuristics->version_number));
+  }
   // Some URLs might satisfy the patterns for both cart and checkout (e.g.
   // https://www.foo.com/cart/checkout). In those cases, cart has higher
   // priority.
@@ -1002,9 +1115,8 @@ void CommerceHintAgent::DidFinishLoadCallback(bool should_skip) {
 }
 
 void CommerceHintAgent::WillSubmitForm(const blink::WebFormElement& form) {
-  if (should_skip_) {
+  if (!should_skip_.has_value() || should_skip_.value())
     return;
-  }
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
   const GURL url(frame->GetDocument().Url());
   if (!url.SchemeIsHTTPOrHTTPS())
@@ -1024,9 +1136,8 @@ void CommerceHintAgent::WillSubmitForm(const blink::WebFormElement& form) {
 
 // TODO(crbug/1164236): use MutationObserver on cart instead.
 void CommerceHintAgent::ExtractCartFromCurrentFrame() {
-  if (should_skip_) {
+  if (!should_skip_.has_value() || should_skip_.value())
     return;
-  }
   if (!has_finished_loading_)
     return;
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -262,6 +262,14 @@ struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
   static const std::vector<gfx::Size>& mapped_sizes(
       const media::VideoCaptureFeedback& feedback) {
     return feedback.mapped_sizes;
+  }
+
+  static bool has_frame_id(const media::VideoCaptureFeedback& feedback) {
+    return feedback.frame_id.has_value();
+  }
+
+  static int frame_id(const media::VideoCaptureFeedback& feedback) {
+    return feedback.frame_id.value_or(0);
   }
 
   static bool Read(media::mojom::VideoCaptureFeedbackDataView data,

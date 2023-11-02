@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/guid.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -29,6 +30,7 @@ class WorkspaceDeskSpecifics;
 
 namespace ash {
 class DeskTemplate;
+enum class DeskTemplateType;
 }  // namespace ash
 
 namespace desks_storage {
@@ -63,16 +65,21 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
 
   // DeskModel overrides.
-  void GetAllEntries(GetAllEntriesCallback callback) override;
-  void GetEntryByUUID(const std::string& uuid,
-                      GetEntryByUuidCallback callback) override;
+  DeskModel::GetAllEntriesResult GetAllEntries() override;
+  DeskModel::GetEntryByUuidResult GetEntryByUUID(
+      const base::GUID& uuid) override;
+
   void AddOrUpdateEntry(std::unique_ptr<ash::DeskTemplate> new_entry,
                         AddOrUpdateEntryCallback callback) override;
-  void DeleteEntry(const std::string& uuid,
+  void DeleteEntry(const base::GUID& uuid,
                    DeleteEntryCallback callback) override;
   void DeleteAllEntries(DeleteEntryCallback callback) override;
   std::size_t GetEntryCount() const override;
   std::size_t GetMaxEntryCount() const override;
+  std::size_t GetSaveAndRecallDeskEntryCount() const override;
+  std::size_t GetDeskTemplateEntryCount() const override;
+  std::size_t GetMaxSaveAndRecallDeskEntryCount() const override;
+  std::size_t GetMaxDeskTemplateEntryCount() const override;
   std::vector<base::GUID> GetAllEntryUuids() const override;
   bool IsReady() const override;
   // Whether this sync bridge is syncing local data to sync. This sync bridge
@@ -80,28 +87,40 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
   // for Workspace Desk model type.
   bool IsSyncing() const override;
 
+  ash::DeskTemplate* FindOtherEntryWithName(
+      const std::u16string& name,
+      ash::DeskTemplateType type,
+      const base::GUID& uuid) const override;
+
   // Other helper methods.
 
   // Converts an ash::DeskTemplate to its corresponding WorkspaceDesk proto.
   sync_pb::WorkspaceDeskSpecifics ToSyncProto(
       const ash::DeskTemplate* desk_template);
 
-  const ash::DeskTemplate* GetEntryByUUID(const base::GUID& uuid) const;
+  bool HasUuid(const base::GUID& uuid) const;
+
+  const ash::DeskTemplate* GetUserEntryByUUID(const base::GUID& uuid) const;
 
  private:
-  using DeskEntries = std::map<base::GUID, std::unique_ptr<ash::DeskTemplate>>;
+  friend class DeskModelWrapper;
+
+  using DeskEntries =
+      base::flat_map<base::GUID, std::unique_ptr<ash::DeskTemplate>>;
+
+  DeskModel::DeleteEntryStatus DeleteAllEntriesSync();
 
   // Notify all observers that the model is loaded;
   void NotifyDeskModelLoaded();
 
-  // Notify all observers of any |new_entries| when they are added/updated via
+  // Notify all observers of any `new_entries` when they are added/updated via
   // sync.
   void NotifyRemoteDeskTemplateAddedOrUpdated(
       const std::vector<const ash::DeskTemplate*>& new_entries);
 
-  // Notify all observers when the entries with |uuids| have been removed via
+  // Notify all observers when the entries with `uuids` have been removed via
   // sync or disabling sync locally.
-  void NotifyRemoteDeskTemplateDeleted(const std::vector<std::string>& uuids);
+  void NotifyRemoteDeskTemplateDeleted(const std::vector<base::GUID>& uuids);
 
   // Methods used as callbacks given to DataTypeStore.
   void OnStoreCreated(const absl::optional<syncer::ModelError>& error,
@@ -119,8 +138,11 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
   void UploadLocalOnlyData(syncer::MetadataChangeList* metadata_change_list,
                            const syncer::EntityChangeList& entity_data);
 
-  // |entries_| is keyed by UUIDs.
-  DeskEntries entries_;
+  // Returns true if `templates_` contains a desk template with `name`.
+  bool HasUserTemplateWithName(const std::u16string& name);
+
+  // `desk_template_entries_` is keyed by UUIDs.
+  DeskEntries desk_template_entries_;
 
   // Whether local data and metadata have finished loading and this sync bridge
   // is ready to be accessed.

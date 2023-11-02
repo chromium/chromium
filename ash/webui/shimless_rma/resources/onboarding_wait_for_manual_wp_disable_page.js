@@ -1,22 +1,16 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import './shimless_rma_shared_css.js';
 import './base_page.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {HardwareWriteProtectionStateObserverInterface, HardwareWriteProtectionStateObserverReceiver, QrCode, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
-
-// The size of each tile in pixels.
-const QR_CODE_TILE_SIZE = 5;
-// Amount of padding around the QR code in pixels.
-const QR_CODE_PADDING = 4 * QR_CODE_TILE_SIZE;
-// Styling for filled tiles in the QR code.
-const QR_CODE_FILL_STYLE = '#000000';
+import {HardwareWriteProtectionStateObserverInterface, HardwareWriteProtectionStateObserverReceiver, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {disableAllButtons, focusPageTitle} from './shimless_rma_util.js';
 
 /**
  * @fileoverview
@@ -50,18 +44,6 @@ export class OnboardingWaitForManualWpDisablePage extends
         type: Boolean,
         value: true,
       },
-
-      /** @protected */
-      canvasSize_: {
-        type: Number,
-        value: 0,
-      },
-
-      /** @protected */
-      helpUrl_: {
-        type: String,
-        value: '',
-      },
     };
   }
 
@@ -81,79 +63,47 @@ export class OnboardingWaitForManualWpDisablePage extends
     this.shimlessRmaService_.observeHardwareWriteProtectionState(
         this.hardwareWriteProtectionStateObserverReceiver_.$
             .bindNewPipeAndPassRemote());
-    this.shimlessRmaService_.getWriteProtectManuallyDisabledInstructions().then(
-        /*@type {!{string: displayUrl, qrCode: ?QrCode}}*/ (response) =>
-            this.updateHelpInstructions_(response));
+  }
+
+  /** @override */
+  ready() {
+    super.ready();
+
+    focusPageTitle(this);
   }
 
   /**
-   * @public
    * @param {boolean} enabled
+   * @public
    */
   onHardwareWriteProtectionStateChanged(enabled) {
     this.hwwpEnabled_ = enabled;
 
     if(!this.hidden) {
-      // TODO(gavindodd): Should this automatically progress to the next state?
-      this.dispatchEvent(new CustomEvent(
-          'disable-next-button',
-          {bubbles: true, composed: true, detail: this.hwwpEnabled_},
-          ));
-    }
-  }
-
-  /** @return {!Promise<!StateResult>} */
-  onNextButtonClick() {
-    if (!this.hwwpEnabled_) {
-      return this.shimlessRmaService_.writeProtectManuallyDisabled();
-    } else {
-      return Promise.reject(
-          new Error('Hardware Write Protection is not disabled.'));
-    }
-  }
-
-  /**
-   * @param {!{displayUrl: string, qrCode: ?QrCode}} response
-   * @private
-   */
-  updateHelpInstructions_(response) {
-    this.helpUrl_ = response.displayUrl;
-    this.updateQrCode_(response.qrCode);
-  }
-
-  /**
-   * @param {?QrCode} qrCode
-   * @private
-   */
-  updateQrCode_(qrCode) {
-    if (!qrCode) {
-      return;
-    }
-
-    this.canvasSize_ = qrCode.size * QR_CODE_TILE_SIZE + 2 * QR_CODE_PADDING;
-    const context = this.getCanvasContext_();
-    context.clearRect(0, 0, this.canvasSize_, this.canvasSize_);
-    context.fillStyle = QR_CODE_FILL_STYLE;
-    let index = 0;
-    for (let x = 0; x < qrCode.size; x++) {
-      for (let y = 0; y < qrCode.size; y++) {
-        if (qrCode.data[index]) {
-          context.fillRect(
-              x * QR_CODE_TILE_SIZE + QR_CODE_PADDING,
-              y * QR_CODE_TILE_SIZE + QR_CODE_PADDING, QR_CODE_TILE_SIZE,
-              QR_CODE_TILE_SIZE);
-        }
-        index++;
+      if (!this.hwwpEnabled_) {
+        disableAllButtons(this, /*showBusyStateOverlay=*/ false);
+        // TODO(swifton): Hide the cancel button.
       }
     }
   }
 
   /**
-   * @return {!CanvasRenderingContext2D}
-   * @private
+   * @return {string}
+   * @protected
    */
-  getCanvasContext_() {
-    return this.shadowRoot.querySelector('#qrCodeCanvas').getContext('2d');
+  getPageTitle_() {
+    return this.hwwpEnabled_ ? this.i18n('manuallyDisableWpTitleText') :
+                               this.i18n('manuallyDisableWpTitleTextReboot');
+  }
+
+  /**
+   * @return {string}
+   * @protected
+   */
+  getInstructions_() {
+    return this.hwwpEnabled_ ?
+        this.i18n('manuallyDisableWpInstructionsText') :
+        this.i18n('manuallyDisableWpInstructionsTextReboot');
   }
 }
 

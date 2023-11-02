@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,7 +50,7 @@ class PersistentPageConsistencyCheckTaskTest : public ModelTaskTestBase {
 
 // This test is affected by https://crbug.com/725685, which only affects windows
 // platform.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ClearExpiredPersistentPages DISABLED_ClearExpiredPersistentPages
 #else
 #define MAYBE_ClearExpiredPersistentPages ClearExpiredPersistentPages
@@ -119,7 +119,7 @@ TEST_F(PersistentPageConsistencyCheckTaskTest,
       static_cast<int>(SyncOperationResult::SUCCESS), 1);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ClearExpiredPersistentPagesByFilePath \
   DISABLED_ClearExpiredPersistentPagesByFilePath
 #else

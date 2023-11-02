@@ -1,10 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.suggestions.tile;
 
-import android.graphics.Bitmap;
 import android.util.SparseArray;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -29,8 +28,6 @@ import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.suggestions.SuggestionsOfflineModelObserver;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSites;
-import org.chromium.components.favicon.IconType;
-import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 
@@ -120,9 +117,9 @@ public class TileGroup implements MostVisitedSites.Observer {
 
         /**
          * Returns a callback to be invoked when the icon for the provided tile is loaded. It will
-         * be responsible for updating the tile data and triggering the visual refresh.
+         * be responsible for triggering the visual refresh.
          */
-        LargeIconBridge.LargeIconCallback createIconLoadCallback(Tile tile);
+        Runnable createIconLoadCallback(Tile tile);
     }
 
     /**
@@ -135,6 +132,13 @@ public class TileGroup implements MostVisitedSites.Observer {
          * @param clickRunnable The {@link Runnable} to be executed when tile is clicked.
          */
         void setOnClickRunnable(Runnable clickRunnable);
+
+        /**
+         * Set a runnable for remove events on the tile. Similarly to setOnClickRunnable, this is
+         * primarily used to track interaction with the tile used by feature engagement purposes.
+         * @param removeRunnable The {@link Runnable} to be executed when tile is removed.
+         */
+        void setOnRemoveRunnable(Runnable removeRunnable);
     }
 
     /**
@@ -222,13 +226,16 @@ public class TileGroup implements MostVisitedSites.Observer {
         }
 
         @Override
-        public LargeIconBridge.LargeIconCallback createIconLoadCallback(Tile tile) {
+        public Runnable createIconLoadCallback(Tile tile) {
             // TODO(dgn): We could save on fetches by avoiding a new one when there is one pending
             // for the same URL, and applying the result to all matched URLs.
             boolean trackLoad =
                     isLoadTracked() && tile.getSectionType() == TileSectionType.PERSONALIZED;
             if (trackLoad) addTask(TileTask.FETCH_ICON);
-            return new LargeIconCallbackImpl(tile.getData(), trackLoad);
+            return () -> {
+                mObserver.onTileIconChanged(tile);
+                if (trackLoad) removeTask(TileTask.FETCH_ICON);
+            };
         }
     };
 
@@ -291,8 +298,7 @@ public class TileGroup implements MostVisitedSites.Observer {
     @Override
     public void onIconMadeAvailable(GURL siteUrl) {
         for (Tile tile : findTilesForUrl(siteUrl)) {
-            mTileRenderer.updateIcon(tile.getData(),
-                    new LargeIconCallbackImpl(tile.getData(), /* trackLoadTask = */ false));
+            mTileRenderer.updateIcon(tile, mTileSetupDelegate);
         }
     }
 
@@ -502,41 +508,11 @@ public class TileGroup implements MostVisitedSites.Observer {
         mOfflineModelObserver.onDestroy();
     }
 
-    // TODO(dgn): I would like to move that to TileRenderer, but setting the data on the tile,
-    // notifying the observer and updating the tasks make it awkward.
-    private class LargeIconCallbackImpl implements LargeIconBridge.LargeIconCallback {
-        private final SiteSuggestion mSiteData;
-        private final boolean mTrackLoadTask;
-
-        private LargeIconCallbackImpl(SiteSuggestion suggestion, boolean trackLoadTask) {
-            mSiteData = suggestion;
-            mTrackLoadTask = trackLoadTask;
-        }
-
-        @Override
-        public void onLargeIconAvailable(@Nullable Bitmap icon, int fallbackColor,
-                boolean isFallbackColorDefault, @IconType int iconType) {
-            Tile tile = findTile(mSiteData);
-            if (tile != null) { // Do nothing if the tile was removed.
-                tile.setIconType(iconType);
-                if (icon == null) {
-                    mTileRenderer.setTileIconFromColor(tile, fallbackColor, isFallbackColorDefault);
-                } else {
-                    mTileRenderer.setTileIconFromBitmap(tile, icon);
-                }
-
-                mObserver.onTileIconChanged(tile);
-            }
-
-            // This call needs to be made after the tiles are completely initialised, for UMA.
-            if (mTrackLoadTask) removeTask(TileTask.FETCH_ICON);
-        }
-    }
-
     private class TileInteractionDelegateImpl
             implements TileInteractionDelegate, ContextMenuManager.Delegate {
         private final SiteSuggestion mSuggestion;
         private Runnable mOnClickRunnable;
+        private Runnable mOnRemoveRunnable;
 
         public TileInteractionDelegateImpl(SiteSuggestion suggestion) {
             mSuggestion = suggestion;
@@ -572,6 +548,8 @@ public class TileGroup implements MostVisitedSites.Observer {
         public void removeItem() {
             Tile tile = findTile(mSuggestion);
             if (tile == null) return;
+
+            if (mOnRemoveRunnable != null) mOnRemoveRunnable.run();
 
             // Note: This does not track all the removals, but will track the most recent one. If
             // that removal is committed, it's good enough for change detection.
@@ -616,6 +594,11 @@ public class TileGroup implements MostVisitedSites.Observer {
         @Override
         public void setOnClickRunnable(Runnable clickRunnable) {
             mOnClickRunnable = clickRunnable;
+        }
+
+        @Override
+        public void setOnRemoveRunnable(Runnable removeRunnable) {
+            mOnRemoveRunnable = removeRunnable;
         }
     }
 

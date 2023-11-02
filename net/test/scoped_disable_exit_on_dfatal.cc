@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,7 @@
 #include "base/callback.h"
 #include "base/strings/string_piece.h"
 
-namespace net {
-namespace test {
+namespace net::test {
 
 ScopedDisableExitOnDFatal::ScopedDisableExitOnDFatal()
     : assert_handler_(base::BindRepeating(LogAssertHandler)) {}
@@ -25,5 +24,4 @@ void ScopedDisableExitOnDFatal::LogAssertHandler(
   // Simply swallow the assert.
 }
 
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

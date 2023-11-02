@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,12 @@
 
 #include <utility>
 
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
@@ -16,12 +19,12 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/sync/base/bind_to_task_runner.h"
-#include "components/sync/base/sync_base_switches.h"
-#include "components/sync/driver/sync_driver_switches.h"
-#include "components/sync/engine/sync_engine_switches.h"
+#include "components/sync/base/command_line_switches.h"
+#include "components/sync/base/features.h"
 #include "components/sync/trusted_vault/standalone_trusted_vault_backend.h"
 #include "components/sync/trusted_vault/trusted_vault_access_token_fetcher_impl.h"
 #include "components/sync/trusted_vault/trusted_vault_connection_impl.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace syncer {
@@ -38,7 +41,7 @@ constexpr char kDefaultTrustedVaultServiceURL[] =
 GURL ExtractTrustedVaultServiceURLFromCommandLine() {
   std::string string_url =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kTrustedVaultServiceURL);
+          kTrustedVaultServiceURL);
   if (string_url.empty()) {
     // Command line switch is not specified or is not a valid ASCII string.
     return GURL(kDefaultTrustedVaultServiceURL);
@@ -65,6 +68,9 @@ class IdentityManagerObserver : public signin::IdentityManager::Observer {
   void OnAccountsInCookieUpdated(
       const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error) override;
+  void OnErrorStateOfRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info,
+      const GoogleServiceAuthError& error) override;
   void OnRefreshTokensLoaded() override;
 
  private:
@@ -75,7 +81,7 @@ class IdentityManagerObserver : public signin::IdentityManager::Observer {
   const scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
   const scoped_refptr<StandaloneTrustedVaultBackend> backend_;
   const base::RepeatingClosure notify_keys_changed_callback_;
-  signin::IdentityManager* const identity_manager_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
   CoreAccountInfo primary_account_;
 };
 
@@ -122,6 +128,22 @@ void IdentityManagerObserver::OnAccountsInCookieUpdated(
     const GoogleServiceAuthError& error) {
   UpdateAccountsInCookieJarInfoIfNeeded(accounts_in_cookie_jar_info);
   notify_keys_changed_callback_.Run();
+}
+
+void IdentityManagerObserver::OnErrorStateOfRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info,
+    const GoogleServiceAuthError& error) {
+  if (primary_account_.IsEmpty() ||
+      account_info.account_id != primary_account_.account_id) {
+    return;
+  }
+
+  const bool has_persistent_auth_error = error.IsPersistentError();
+
+  backend_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&StandaloneTrustedVaultBackend::SetPrimaryAccount,
+                     backend_, primary_account_, has_persistent_auth_error));
 }
 
 void IdentityManagerObserver::OnRefreshTokensLoaded() {
@@ -209,8 +231,7 @@ StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
   std::unique_ptr<TrustedVaultConnection> connection;
   GURL trusted_vault_service_gurl =
       ExtractTrustedVaultServiceURLFromCommandLine();
-  if (base::FeatureList::IsEnabled(
-          switches::kSyncTrustedVaultPassphraseRecovery) &&
+  if (base::FeatureList::IsEnabled(kSyncTrustedVaultPassphraseRecovery) &&
       trusted_vault_service_gurl.is_valid()) {
     connection = std::make_unique<TrustedVaultConnectionImpl>(
         trusted_vault_service_gurl, url_loader_factory->Clone(),
@@ -316,6 +337,16 @@ void StandaloneTrustedVaultClient::AddTrustedRecoveryMethod(
       base::BindOnce(&StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod,
                      backend_, gaia_id, public_key, method_type_hint,
                      BindToCurrentSequence(std::move(cb))));
+}
+
+void StandaloneTrustedVaultClient::ClearDataForAccount(
+    const CoreAccountInfo& account_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(backend_);
+  backend_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&StandaloneTrustedVaultBackend::ClearDataForAccount,
+                     backend_, account_info));
 }
 
 void StandaloneTrustedVaultClient::WaitForFlushForTesting(

@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "cc/metrics/lcd_text_metrics_reporter.h"
 
 #include "base/lazy_instance.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "cc/base/histograms.h"
 #include "cc/layers/picture_layer_impl.h"
@@ -74,7 +75,7 @@ void LCDTextMetricsReporter::NotifyPauseFrameProduction() {
 
   for (const auto* layer :
        layer_tree_host_impl_->active_tree()->picture_layers()) {
-    if (!layer->DrawsContent() || !layer->GetRasterSource())
+    if (!layer->draws_content() || !layer->GetRasterSource())
       continue;
     const scoped_refptr<DisplayItemList>& display_item_list =
         layer->GetRasterSource()->GetDisplayItemList();

@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 
 #include "base/auto_reset.h"
-#include "base/cxx17_backports.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/effect_stack.h"
@@ -63,7 +62,7 @@
 #include "third_party/blink/renderer/core/svg/svg_use_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/xml_names.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 
 namespace blink {
@@ -157,7 +156,7 @@ String SVGElement::title() const {
 
   if (InUseShadowTree()) {
     String use_title(OwnerShadowHost()->title());
-    if (!use_title.IsEmpty())
+    if (!use_title.empty())
       return use_title;
   }
 
@@ -291,7 +290,7 @@ void SVGElement::ClearAnimatedMotionTransform() {
 }
 
 bool SVGElement::HasNonCSSPropertyAnimations() const {
-  if (HasSVGRareData() && !SvgRareData()->WebAnimatedAttributes().IsEmpty())
+  if (HasSVGRareData() && !SvgRareData()->WebAnimatedAttributes().empty())
     return true;
   if (GetSMILAnimations() && GetSMILAnimations()->HasAnimations())
     return true;
@@ -306,7 +305,7 @@ AffineTransform SVGElement::LocalCoordinateSpaceTransform(CTMScope) const {
 
 bool SVGElement::HasTransform(
     ApplyMotionTransform apply_motion_transform) const {
-  return (GetLayoutObject() && GetLayoutObject()->StyleRef().HasTransform()) ||
+  return (GetLayoutObject() && GetLayoutObject()->HasTransform()) ||
          (apply_motion_transform == kIncludeMotionTransform &&
           HasSVGRareData());
 }
@@ -316,14 +315,14 @@ AffineTransform SVGElement::CalculateTransform(
   const LayoutObject* layout_object = GetLayoutObject();
 
   AffineTransform matrix;
-  if (layout_object && layout_object->StyleRef().HasTransform()) {
+  if (layout_object && layout_object->HasTransform()) {
     matrix = TransformHelper::ComputeTransform(
         *layout_object, ComputedStyle::kIncludeTransformOrigin);
   }
 
   // Apply any "motion transform" contribution if requested (and existing.)
   if (apply_motion_transform == kIncludeMotionTransform && HasSVGRareData())
-    matrix.PreMultiply(*SvgRareData()->AnimateMotionTransform());
+    matrix.PostConcat(*SvgRareData()->AnimateMotionTransform());
 
   return matrix;
 }
@@ -454,7 +453,7 @@ CSSPropertyID SVGElement::CssPropertyIdForSVGAttributeName(
         &svg_names::kWordSpacingAttr,
         &svg_names::kWritingModeAttr,
     };
-    for (size_t i = 0; i < base::size(attr_names); i++) {
+    for (size_t i = 0; i < std::size(attr_names); i++) {
       CSSPropertyID property_id =
           CssPropertyID(execution_context, attr_names[i]->LocalName());
       DCHECK_GT(property_id, CSSPropertyID::kInvalid);
@@ -528,8 +527,9 @@ void SVGElement::UpdateRelativeLengthsInformation(
 
 void SVGElement::InvalidateRelativeLengthClients(
     SubtreeLayoutScope* layout_scope) {
-  if (!isConnected())
+  if (!isConnected()) {
     return;
+  }
 
 #if DCHECK_IS_ON()
   DCHECK(!in_relative_length_clients_invalidation_);
@@ -550,8 +550,9 @@ void SVGElement::InvalidateRelativeLengthClients(
   }
 
   for (SVGElement* element : elements_with_relative_lengths_) {
-    if (element != this)
+    if (element != this) {
       element->InvalidateRelativeLengthClients(layout_scope);
+    }
   }
 }
 
@@ -585,34 +586,48 @@ SVGElement* SVGElement::viewportElement() const {
 
 void SVGElement::AddInstance(SVGElement* instance) {
   DCHECK(instance);
-  DCHECK(instance->InUseShadowTree());
+  // Called during the <use> shadow tree building's post-processing step, just
+  // after the target<->instance association.
+  DCHECK(!instance->isConnected());
+  DCHECK(instance->HasSVGRareData());
+  DCHECK_EQ(instance->SvgRareData()->CorrespondingElement(), this);
 
-  HeapHashSet<WeakMember<SVGElement>>& instances =
+  HeapHashSet<WeakMember<SVGElement>, WTF::MemberHashRecordReplayId<SVGElement>>& instances =
       EnsureSVGRareData()->ElementInstances();
   DCHECK(!instances.Contains(instance));
 
   instances.insert(instance);
+  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers",
+                                           "SVGElement"))
+    EnsureSVGRareData()->ReplayStrongElementInstances().insert(instance);
 }
 
 void SVGElement::RemoveInstance(SVGElement* instance) {
   DCHECK(instance);
-  // Called during instance->RemovedFrom() after removal from shadow tree
+  // Called during instance->RemovedFrom() after removal from shadow tree,
+  // before the target<->instance association is severed.
   DCHECK(!instance->isConnected());
+  DCHECK(instance->HasSVGRareData());
+  DCHECK_EQ(instance->SvgRareData()->CorrespondingElement(), this);
 
-  HeapHashSet<WeakMember<SVGElement>>& instances =
+  HeapHashSet<WeakMember<SVGElement>, WTF::MemberHashRecordReplayId<SVGElement>>& instances =
       SvgRareData()->ElementInstances();
 
   instances.erase(instance);
+
+  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers", "SVGElement"))
+    EnsureSVGRareData()->ReplayStrongElementInstances().erase(instance);
 }
 
-static HeapHashSet<WeakMember<SVGElement>>& EmptyInstances() {
-  DEFINE_STATIC_LOCAL(
-      Persistent<HeapHashSet<WeakMember<SVGElement>>>, empty_instances,
-      (MakeGarbageCollected<HeapHashSet<WeakMember<SVGElement>>>()));
+using ReplaySVGElementSet = HeapHashSet<WeakMember<SVGElement>,WTF::MemberHashRecordReplayId<SVGElement>>;
+
+static ReplaySVGElementSet& EmptyInstances() {
+  DEFINE_STATIC_LOCAL(Persistent<ReplaySVGElementSet>, empty_instances,
+                      (MakeGarbageCollected<ReplaySVGElementSet>()));
   return *empty_instances;
 }
 
-const HeapHashSet<WeakMember<SVGElement>>& SVGElement::InstancesForElement()
+const HeapHashSet<WeakMember<SVGElement>, WTF::MemberHashRecordReplayId<SVGElement>>& SVGElement::InstancesForElement()
     const {
   if (!HasSVGRareData())
     return EmptyInstances();
@@ -658,6 +673,10 @@ void SVGElement::ParseAttribute(const AttributeModificationParams& params) {
   if (params.name == html_names::kNonceAttr) {
     if (params.new_value != g_empty_atom)
       setNonce(params.new_value);
+  } else if (params.name.Matches(xml_names::kLangAttr)) {
+    PseudoStateChanged(CSSSelector::kPseudoLang);
+  } else if (params.name == svg_names::kLangAttr) {
+    PseudoStateChanged(CSSSelector::kPseudoLang);
   }
 
   const AtomicString& event_name =
@@ -688,7 +707,7 @@ AnimatedPropertyType SVGElement::AnimatedPropertyTypeForCSSAttribute(
     const QualifiedName& attribute_name) {
   DEFINE_STATIC_LOCAL(AttributeToPropertyTypeMap, css_property_map, ());
 
-  if (css_property_map.IsEmpty()) {
+  if (css_property_map.empty()) {
     // Fill the map for the first use.
     struct AttrToTypeEntry {
       const QualifiedName& attr;
@@ -749,7 +768,7 @@ AnimatedPropertyType SVGElement::AnimatedPropertyTypeForCSSAttribute(
         {svg_names::kVisibilityAttr, kAnimatedString},
         {svg_names::kWordSpacingAttr, kAnimatedLength},
     };
-    for (size_t i = 0; i < base::size(attr_to_types); i++)
+    for (size_t i = 0; i < std::size(attr_to_types); i++)
       css_property_map.Set(attr_to_types[i].attr, attr_to_types[i].prop_type);
   }
   auto it = css_property_map.find(attribute_name);
@@ -780,6 +799,10 @@ bool SVGElement::IsAnimatableCSSProperty(const QualifiedName& attr_name) {
 bool SVGElement::IsPresentationAttribute(const QualifiedName& name) const {
   if (const SVGAnimatedPropertyBase* property = PropertyFromAttribute(name))
     return property->HasPresentationAttributeMapping();
+  if (RuntimeEnabledFeatures::LangAttributeAwareSvgTextEnabled() &&
+      (name.Matches(xml_names::kLangAttr) || name == svg_names::kLangAttr)) {
+    return true;
+  }
   return CssPropertyIdForSVGAttributeName(GetExecutionContext(), name) >
          CSSPropertyID::kInvalid;
 }
@@ -790,8 +813,17 @@ void SVGElement::CollectStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
   CSSPropertyID property_id =
       CssPropertyIdForSVGAttributeName(GetExecutionContext(), name);
-  if (property_id > CSSPropertyID::kInvalid)
+  if (property_id > CSSPropertyID::kInvalid) {
     AddPropertyToPresentationAttributeStyle(style, property_id, value);
+  } else if (name.Matches(xml_names::kLangAttr)) {
+    if (RuntimeEnabledFeatures::LangAttributeAwareSvgTextEnabled())
+      MapLanguageAttributeToLocale(value, style);
+  } else if (name == svg_names::kLangAttr) {
+    if (RuntimeEnabledFeatures::LangAttributeAwareSvgTextEnabled() &&
+        !FastHasAttribute(xml_names::kLangAttr)) {
+      MapLanguageAttributeToLocale(value, style);
+    }
+  }
 }
 
 bool SVGElement::HaveLoadedRequiredResources() {
@@ -805,7 +837,7 @@ bool SVGElement::HaveLoadedRequiredResources() {
 
 static inline void CollectInstancesForSVGElement(
     SVGElement* element,
-    HeapHashSet<WeakMember<SVGElement>>& instances) {
+    HeapHashSet<WeakMember<SVGElement>, WTF::MemberHashRecordReplayId<SVGElement>>& instances) {
   DCHECK(element);
   if (element->ContainingShadowRoot())
     return;
@@ -822,7 +854,7 @@ void SVGElement::AddedEventListener(
   Node::AddedEventListener(event_type, registered_listener);
 
   // Add event listener to all shadow tree DOM element instances
-  HeapHashSet<WeakMember<SVGElement>> instances;
+  HeapHashSet<WeakMember<SVGElement>, WTF::MemberHashRecordReplayId<SVGElement>> instances;
   CollectInstancesForSVGElement(this, instances);
   AddEventListenerOptionsResolved* options = registered_listener.Options();
   EventListener* listener = registered_listener.Callback();
@@ -839,7 +871,7 @@ void SVGElement::RemovedEventListener(
   Node::RemovedEventListener(event_type, registered_listener);
 
   // Remove event listener from all shadow tree DOM element instances
-  HeapHashSet<WeakMember<SVGElement>> instances;
+  HeapHashSet<WeakMember<SVGElement>, WTF::MemberHashRecordReplayId<SVGElement>> instances;
   CollectInstancesForSVGElement(this, instances);
   EventListenerOptions* options = registered_listener.Options();
   const EventListener* listener = registered_listener.Callback();
@@ -875,7 +907,7 @@ bool SVGElement::SendSVGLoadEventIfPossible() {
     return false;
   if ((IsStructurallyExternal() || IsA<SVGSVGElement>(*this)) &&
       HasLoadListener(this))
-    DispatchEvent(*Event::Create(event_type_names::kLoad));
+    DispatchEvent(*Event::Create(event_type_names::kLoad), "SVGElement::SendSVGLoadEventIfPossible");
   return true;
 }
 
@@ -955,7 +987,7 @@ void SVGElement::UpdateWebAnimatedAttributeOnBaseValChange(
   if (!HasSVGRareData())
     return;
   const auto& animated_attributes = SvgRareData()->WebAnimatedAttributes();
-  if (animated_attributes.IsEmpty() || !animated_attributes.Contains(attribute))
+  if (animated_attributes.empty() || !animated_attributes.Contains(attribute))
     return;
   // TODO(alancutter): Only mark attributes as dirty if their animation depends
   // on the underlying value.
@@ -1080,8 +1112,8 @@ void SVGElement::InvalidateInstances() {
   if (InstanceUpdatesBlocked())
     return;
 
-  const HeapHashSet<WeakMember<SVGElement>>& set = InstancesForElement();
-  if (set.IsEmpty())
+  const HeapHashSet<WeakMember<SVGElement>, WTF::MemberHashRecordReplayId<SVGElement>>& set = InstancesForElement();
+  if (set.empty())
     return;
 
   // Mark all use elements referencing 'element' for rebuilding
@@ -1095,16 +1127,24 @@ void SVGElement::InvalidateInstances() {
   }
 
   SvgRareData()->ElementInstances().clear();
+
+  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers", "SVGElement"))
+    EnsureSVGRareData()->ReplayStrongElementInstances().clear();
 }
 
 void SVGElement::SetNeedsStyleRecalcForInstances(
     StyleChangeType change_type,
     const StyleChangeReasonForTracing& reason) {
-  const HeapHashSet<WeakMember<SVGElement>>& set = InstancesForElement();
-  if (set.IsEmpty())
+  const HeapHashSet<WeakMember<SVGElement>, WTF::MemberHashRecordReplayId<SVGElement>>& set = InstancesForElement();
+  if (set.empty())
     return;
 
+  std::vector<SVGElement*> members;
   for (SVGElement* instance : set)
+    members.push_back(instance);
+  std::sort(members.begin(), members.end(), recordreplay::CompareByRecordReplayId());
+
+  for (SVGElement* instance : members)
     instance->SetNeedsStyleRecalc(change_type, reason);
 }
 
@@ -1255,8 +1295,8 @@ void SVGElement::RebuildAllIncomingReferences() {
       SvgRareData()->IncomingReferences();
 
   // Iterate on a snapshot as |incoming_references| may be altered inside loop.
-  HeapVector<Member<SVGElement>> incoming_references_snapshot;
-  CopyToVector(incoming_references, incoming_references_snapshot);
+  HeapVector<Member<SVGElement>> incoming_references_snapshot(
+      incoming_references);
 
   // Force rebuilding the |source_element| so it knows about this change.
   const SvgAttributeChangedParams params(

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -64,7 +64,7 @@ class CONTENT_EXPORT DragDownloadFile : public ui::DownloadFileProvider {
   State state_ = INITIALIZED;
   scoped_refptr<ui::DownloadFileObserver> observer_;
   base::RunLoop nested_loop_;
-  DragDownloadFileUI* drag_ui_ = nullptr;
+  raw_ptr<DragDownloadFileUI> drag_ui_ = nullptr;
   base::WeakPtrFactory<DragDownloadFile> weak_ptr_factory_{this};
 };
 

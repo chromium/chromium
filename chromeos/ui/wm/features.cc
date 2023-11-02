@@ -1,23 +1,39 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chromeos/ui/wm/features.h"
 
-namespace chromeos {
-namespace wm {
-namespace features {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_params_proxy.h"
+#endif
 
-// Enables vertical snap for clamshell mode. This allows users to snap top and
-// bottom when the screen is in portrait orientation, while snap left and right
-// when the screen is in landscape orientation.
-const base::Feature kVerticalSnap{"VerticalSnap",
-                                  base::FEATURE_ENABLED_BY_DEFAULT};
+namespace chromeos::wm::features {
 
-bool IsVerticalSnapEnabled() {
-  return base::FeatureList::IsEnabled(kVerticalSnap);
+// Enables a window to float.
+// https://crbug.com/1240411
+BASE_FEATURE(kFloatWindow,
+             "CrOSLabsFloatWindow",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPartialSplit, "PartialSplit", base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsFloatWindowEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return base::FeatureList::IsEnabled(kFloatWindow);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  return chromeos::BrowserParamsProxy::Get()->IsFloatWindowEnabled();
+#else
+  return false;
+#endif
 }
 
-}  // namespace features
-}  // namespace wm
-}  // namespace chromeos
+bool IsPartialSplitEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return base::FeatureList::IsEnabled(kPartialSplit);
+#else
+  return false;
+#endif
+}
+
+}  // namespace chromeos::wm::features

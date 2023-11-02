@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
@@ -52,7 +53,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   struct COMPONENTS_DOWNLOAD_EXPORT RequestInfo {
     RequestInfo(const std::vector<GURL>& url_chain,
                 const GURL& referrer_url,
-                const GURL& site_url,
+                const std::string& serialized_embedder_download_data,
                 const GURL& tab_url,
                 const GURL& tab_referrer_url,
                 const absl::optional<url::Origin>& request_initiator,
@@ -63,7 +64,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
                 const std::string& remote_address,
                 base::Time start_time,
                 ::network::mojom::CredentialsMode credentials_mode,
-                const absl::optional<net::IsolationInfo>& isolation_info);
+                const absl::optional<net::IsolationInfo>& isolation_info,
+                int64_t range_request_from,
+                int64_t range_request_to);
     RequestInfo();
     explicit RequestInfo(const RequestInfo& other);
     explicit RequestInfo(const GURL& url);
@@ -75,8 +78,11 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
     // The URL of the page that initiated the download.
     GURL referrer_url;
 
-    // Site URL for the site instance that initiated this download.
-    GURL site_url;
+    // The serialized embedder download data for the site instance that
+    // initiated this download. The embedder can use this field to add
+    // additional information about the download, such as the
+    // StoragePartitionConfig that pertains to it.
+    std::string serialized_embedder_download_data;
 
     // The URL of the tab that initiated the download.
     GURL tab_url;
@@ -114,6 +120,11 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
 
     // Isolation info for the request.
     absl::optional<net::IsolationInfo> isolation_info;
+
+    // Range request offsets. Used only for explicitly download part of the
+    // content.
+    int64_t range_request_from = kInvalidRange;
+    int64_t range_request_to = kInvalidRange;
   };
 
   // Information about the current state of the download destination.
@@ -183,7 +194,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
       const base::FilePath& target_path,
       const std::vector<GURL>& url_chain,
       const GURL& referrer_url,
-      const GURL& site_url,
+      const std::string& serialized_embedder_download_data,
       const GURL& tab_url,
       const GURL& tab_referrer_url,
       const absl::optional<url::Origin>& request_initiator,
@@ -207,7 +218,8 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
       bool transient,
       const std::vector<DownloadItem::ReceivedSlice>& received_slices,
       const DownloadItemRerouteInfo& reroute_info,
-      absl::optional<DownloadSchedule> download_schedule,
+      int64_t range_request_from,
+      int64_t range_request_to,
       std::unique_ptr<DownloadEntry> download_entry);
 
   // Constructing for a regular download.
@@ -236,7 +248,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   void UpdateObservers() override;
   void ValidateDangerousDownload() override;
   void ValidateMixedContentDownload() override;
-  void AcceptIncognitoWarning() override;
   void StealDangerousDownload(bool need_removal,
                               AcquireFileCallback callback) override;
   void Pause() override;
@@ -258,11 +269,12 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   bool IsDone() const override;
   int64_t GetBytesWasted() const override;
   int32_t GetAutoResumeCount() const override;
+  bool IsOffTheRecord() const override;
   const GURL& GetURL() const override;
   const std::vector<GURL>& GetUrlChain() const override;
   const GURL& GetOriginalUrl() const override;
   const GURL& GetReferrerUrl() const override;
-  const GURL& GetSiteUrl() const override;
+  const std::string& GetSerializedEmbedderDownloadData() const override;
   const GURL& GetTabUrl() const override;
   const GURL& GetTabReferrerUrl() const override;
   const absl::optional<url::Origin>& GetRequestInitiator() const override;
@@ -293,7 +305,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   const DownloadItemRerouteInfo& GetRerouteInfo() const override;
   bool IsDangerous() const override;
   bool IsMixedContent() const override;
-  bool ShouldShowIncognitoWarning() const override;
   DownloadDangerType GetDangerType() const override;
   MixedContentStatus GetMixedContentStatus() const override;
   bool TimeRemaining(base::TimeDelta* remaining) const override;
@@ -315,16 +326,14 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   bool GetOpened() const override;
   base::Time GetLastAccessTime() const override;
   bool IsTransient() const override;
+  bool RequireSafetyChecks() const override;
   bool IsParallelDownload() const override;
   DownloadCreationType GetDownloadCreationType() const override;
-  const absl::optional<DownloadSchedule>& GetDownloadSchedule() const override;
   ::network::mojom::CredentialsMode GetCredentialsMode() const override;
   const absl::optional<net::IsolationInfo>& GetIsolationInfo() const override;
   void OnContentCheckCompleted(DownloadDangerType danger_type,
                                DownloadInterruptReason reason) override;
   void OnAsyncScanningCompleted(DownloadDangerType danger_type) override;
-  void OnDownloadScheduleChanged(
-      absl::optional<DownloadSchedule> schedule) override;
   void SetOpenWhenComplete(bool open) override;
   void SetOpened(bool opened) override;
   void SetLastAccessTime(base::Time last_access_time) override;
@@ -403,6 +412,8 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
 
   // Gets the approximate memory usage of this item.
   size_t GetApproximateMemoryUsage() const;
+
+  std::pair<int64_t, int64_t> GetRangeRequestOffset() const;
 
  private:
   // Fine grained states of a download.
@@ -580,31 +591,22 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   // be used (see TargetDisposition). |danger_type| is the danger level of
   // |target_path| as determined by the caller. |intermediate_path| is the path
   // to use to store the download until OnDownloadCompleting() is called.
+  // If |display_name| is empty, the download should keep its current display
+  // name. Otherwise, the new display name should be used.
   virtual void OnDownloadTargetDetermined(
       const base::FilePath& target_path,
       TargetDisposition disposition,
       DownloadDangerType danger_type,
       MixedContentStatus mixed_content_status,
       const base::FilePath& intermediate_path,
-      absl::optional<DownloadSchedule> download_schedule,
+      const base::FilePath& display_name,
+      const std::string& mime_type,
       DownloadInterruptReason interrupt_reason);
 
   void OnDownloadRenamedToIntermediateName(DownloadInterruptReason reason,
                                            const base::FilePath& full_path);
 
   void OnTargetResolved();
-
-  // If |download_schedule_| presents, maybe interrupt the download and start
-  // later. Returns whether the download should be started later.
-  bool MaybeDownloadLater();
-
-  // Returns whether the download should proceed later based on network
-  // condition and user scheduled start time defined in |download_schedule_|.
-  bool ShouldDownloadLater() const;
-
-  // Swap the |download_schedule_| with new data, may pass in absl::nullopt to
-  // remove the schedule.
-  void SwapDownloadSchedule(absl::optional<DownloadSchedule> download_schedule);
 
   // If all pre-requisites have been met, complete download processing, i.e. do
   // internal cleanup, file rename, and potentially auto-open.  (Dangerous
@@ -774,9 +776,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   // The current state of this download.
   DownloadInternalState state_ = INITIAL_INTERNAL;
 
-  // A flag for indicating whether user has accepted incognito warning or not
-  bool incognito_warning_accepted_ = false;
-
   // Current danger type for the download.
   DownloadDangerType danger_type_ = DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS;
 
@@ -784,7 +783,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   base::ObserverList<Observer>::Unchecked observers_;
 
   // Our delegate.
-  DownloadItemImplDelegate* delegate_ = nullptr;
+  raw_ptr<DownloadItemImplDelegate> delegate_ = nullptr;
 
   // A flag for indicating if the download should be opened at completion.
   bool open_when_complete_ = false;
@@ -819,6 +818,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
 
   // Whether the download item should be transient and not shown in the UI.
   bool transient_ = false;
+
+  // Whether the download requires safe browsing check.
+  bool require_safety_checks_ = true;
 
   // Did the delegate delay calling Complete on this download?
   bool delegate_delayed_complete_ = false;
@@ -890,9 +892,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
 
   // The MixedContentStatus if determined.
   MixedContentStatus mixed_content_status_ = MixedContentStatus::UNKNOWN;
-
-  // Defines when to start the download. Used by download later feature.
-  absl::optional<DownloadSchedule> download_schedule_;
 
   // A handler for renaming and helping with display the item.
   std::unique_ptr<DownloadItemRenameHandler> rename_handler_;

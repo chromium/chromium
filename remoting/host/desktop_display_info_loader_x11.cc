@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,9 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/numerics/safe_conversions.h"
+#include "base/memory/raw_ptr.h"
 #include "remoting/base/logging.h"
+#include "remoting/host/x11_display_util.h"
 #include "ui/base/x/x11_display_util.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/x/connection.h"
@@ -23,9 +24,6 @@ namespace {
 
 // Monitors were added in XRANDR 1.5.
 constexpr int kMinRandrVersion = 105;
-
-constexpr int kDefaultScreenDpi = 96;
-constexpr double kMillimetersPerInch = 25.4;
 
 class DesktopDisplayInfoLoaderX11 : public DesktopDisplayInfoLoader,
                                     public x11::EventObserver {
@@ -47,8 +45,8 @@ class DesktopDisplayInfoLoaderX11 : public DesktopDisplayInfoLoader,
   // XRANDR version as MAJOR * 100 + MINOR, or 0 if XRANDR is not present.
   int xrandr_version_ = 0;
 
-  x11::Connection* connection_ = nullptr;
-  x11::RandR* randr_ = nullptr;
+  raw_ptr<x11::Connection> connection_ = nullptr;
+  raw_ptr<x11::RandR> randr_ = nullptr;
 
   // Selector for root window events.
   std::unique_ptr<x11::XScopedEventSelector> root_window_events_;
@@ -90,27 +88,19 @@ DesktopDisplayInfo DesktopDisplayInfoLoaderX11::GetCurrentDisplayInfo() {
   DesktopDisplayInfo result;
 
   for (const auto& monitor : monitors_) {
-    auto info = std::make_unique<DisplayGeometry>();
+    DisplayGeometry info;
 
     // webrtc::ScreenCapturerX11 uses the |name| Atom as the monitor ID.
-    info->id = static_cast<int32_t>(monitor.name);
-    info->is_default = monitor.primary;
-    info->x = monitor.x;
-    info->y = monitor.y;
-    info->width = monitor.width;
-    info->height = monitor.height;
-    info->dpi = kDefaultScreenDpi;
-    info->bpp = 24;
+    info.id = static_cast<int32_t>(monitor.name);
+    info.is_default = monitor.primary;
+    info.x = monitor.x;
+    info.y = monitor.y;
+    info.width = monitor.width;
+    info.height = monitor.height;
+    info.dpi = GetMonitorDpi(monitor).x();
+    info.bpp = 24;
 
-    // Calculate DPI if possible, using width in millimeters.
-    if (monitor.width_in_millimeters != 0) {
-      double pixelsPerMillimeter =
-          static_cast<double>(monitor.width) / monitor.width_in_millimeters;
-      double pixelsPerInch = pixelsPerMillimeter * kMillimetersPerInch;
-      info->dpi = base::ClampRound(pixelsPerInch);
-    }
-
-    result.AddDisplay(std::move(info));
+    result.AddDisplay(info);
   }
   return result;
 }

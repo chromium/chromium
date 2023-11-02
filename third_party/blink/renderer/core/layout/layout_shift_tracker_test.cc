@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -113,7 +113,7 @@ TEST_F(LayoutShiftTrackerTest, IgnoreAfterChangeEvent) {
   )HTML");
   auto* select = To<HTMLSelectElement>(GetDocument().getElementById("sel"));
   DCHECK(select);
-  select->focus();
+  select->Focus();
   select->SelectOptionByPopup(1);
   GetDocument().getElementById("j")->setAttribute(html_names::kStyleAttr,
                                                   AtomicString("top: 60px"));
@@ -322,8 +322,7 @@ void LayoutShiftTrackerNavigationTest::RunTest(bool is_browser_initiated) {
       ClientRedirectPolicy::kNotClientRedirect,
       false /* has_transient_user_activation */, nullptr /* initiator_origin */,
       false /* is_synchronously_committed */,
-      mojom::blink::TriggeringEventInfo::kNotFromEvent, is_browser_initiated,
-      nullptr);
+      mojom::blink::TriggeringEventInfo::kNotFromEvent, is_browser_initiated);
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -1115,14 +1114,14 @@ TEST_F(LayoutShiftTrackerTest, ClipByVisualViewport) {
     <div id=target></div>
   )HTML");
 
-  GetDocument().GetPage()->GetVisualViewport().SetSize(IntSize(200, 500));
-  GetDocument().GetPage()->GetVisualViewport().SetLocation(FloatPoint(0, 100));
+  GetDocument().GetPage()->GetVisualViewport().SetSize(gfx::Size(200, 500));
+  GetDocument().GetPage()->GetVisualViewport().SetLocation(gfx::PointF(0, 100));
   UpdateAllLifecyclePhasesForTest();
   // The visual viewport.
-  EXPECT_EQ(IntRect(0, 100, 200, 500),
+  EXPECT_EQ(gfx::Rect(0, 100, 200, 500),
             GetDocument().View()->GetScrollableArea()->VisibleContentRect());
   // The layout viewport .
-  EXPECT_EQ(IntRect(0, 0, 800, 600),
+  EXPECT_EQ(gfx::Rect(0, 0, 800, 600),
             GetDocument().View()->LayoutViewport()->VisibleContentRect());
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
 

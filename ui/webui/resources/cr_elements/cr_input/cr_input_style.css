@@ -1,0 +1,103 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=../../cr_elements/cr_shared_vars.css.js
+ * #css_wrapper_metadata_end */
+
+      :host {
+        --cr-input-background-color: var(--google-grey-100);
+        --cr-input-color: var(--cr-primary-text-color);
+        --cr-input-error-color: var(--google-red-600);
+        --cr-input-focus-color: var(--google-blue-600);
+        display: block;
+        /* Avoid showing outline when focus() programmatically called multiple
+           times in a row. */
+        outline: none;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :host {
+          --cr-input-background-color: rgba(0, 0, 0, .3);
+          --cr-input-error-color: var(--google-red-300);
+          --cr-input-focus-color: var(--google-blue-300);
+        }
+      }
+
+      :host([focused_]:not([readonly]):not([invalid])) #label {
+        color: var(--cr-input-focus-color);
+      }
+
+      /* Input styling below. */
+      #input-container {
+        border-radius: var(--cr-input-border-radius, 4px);
+        overflow: hidden;
+        position: relative;
+        width: var(--cr-input-width, 100%);
+      }
+
+      #inner-input-container {
+        background-color: var(--cr-input-background-color);
+        box-sizing: border-box;
+        padding: 0;
+      }
+
+      #input {
+        -webkit-appearance: none;
+        /* Transparent, #inner-input-container will apply background. */
+        background-color: transparent;
+        border: none;
+        box-sizing: border-box;
+        caret-color: var(--cr-input-focus-color);
+        color: var(--cr-input-color);
+        font-family: inherit;
+        font-size: inherit;
+        font-weight: inherit;
+        line-height: inherit;
+        min-height: var(--cr-input-min-height, auto);
+        outline: none;
+
+        /**
+         * When using mixins, avoid using padding shorthand. Using both the
+         * shorthand and top/bottom/start/end can lead to style override issues.
+         * This is only noticable when the |optimize_webui=true| build argument
+         * is used.
+         *
+         * See https://crbug.com/846254 and associated CL for more information.
+         */
+        padding-bottom: var(--cr-input-padding-bottom, 6px);
+        padding-inline-end: var(--cr-input-padding-end, 8px);
+        padding-inline-start: var(--cr-input-padding-start, 8px);
+        padding-top: var(--cr-input-padding-top, 6px);
+
+        text-align: inherit;
+        text-overflow: ellipsis;
+        width: 100%;
+      }
+
+      /* Underline styling below. */
+      #underline {
+        border-bottom: 2px solid var(--cr-input-focus-color);
+        border-radius: var(--cr-input-underline-border-radius, 0);
+        bottom: 0;
+        box-sizing: border-box;
+        display: var(--cr-input-underline-display);
+        height: var(--cr-input-underline-height, 0);
+        left: 0;
+        margin: auto;
+        opacity: 0;
+        position: absolute;
+        right: 0;
+        transition: opacity 120ms ease-out, width 0s linear 180ms;
+        width: 0;
+      }
+
+      :host([invalid]) #underline,
+      :host([force-underline]) #underline,
+      :host([focused_]) #underline {
+        opacity: 1;
+        transition: opacity 120ms ease-in, width 180ms ease-out;
+        width: 100%;
+      }

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,9 +16,7 @@ namespace sync_pb {
 class CommitMessage;
 }
 
-namespace syncer {
-
-namespace commit_util {
+namespace syncer::commit_util {
 
 // Adds bookmark extensions activity report to |message|.
 void AddExtensionsActivityToMessage(
@@ -32,11 +30,12 @@ void AddClientConfigParamsToMessage(
     bool proxy_tabs_datatype_enabled,
     bool cookie_jar_mismatch,
     bool single_client,
-    const std::vector<std::string>& fcm_registration_tokens,
+    bool single_client_with_standalone_invalidations,
+    const std::vector<std::string>& all_fcm_registration_tokens,
+    const std::vector<std::string>&
+        fcm_registration_tokens_for_interested_clients,
     sync_pb::CommitMessage* message);
 
-}  // namespace commit_util
-
-}  // namespace syncer
+}  // namespace syncer::commit_util
 
 #endif  // COMPONENTS_SYNC_ENGINE_COMMIT_UTIL_H_

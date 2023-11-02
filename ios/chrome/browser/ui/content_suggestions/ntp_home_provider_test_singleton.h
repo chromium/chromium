@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,14 +21,14 @@ class AdditionalSuggestionsHelper;
 // Shared instance of this singleton.
 + (instancetype)sharedInstance;
 
-// Resets the stored additionalSuggestions helper with |URL|.
+// Resets the stored additionalSuggestions helper with `URL`.
 - (void)resetAdditionalSuggestionsHelperWithURL:(const GURL&)URL;
 // Returns the stored additionalSuggestionsHelper.
 - (ntp_snippets::AdditionalSuggestionsHelper*)additionalSuggestionsHelper;
 
 // Returns the provider registered.
 - (ntp_snippets::MockContentSuggestionsProvider*)provider;
-// Registers a provider in the |service|.
+// Registers a provider in the `service`.
 - (void)registerArticleProvider:
     (ntp_snippets::ContentSuggestionsService*)service;
 

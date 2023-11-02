@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@
 namespace blink {
 
 SynchronousCompositorProxy::SynchronousCompositorProxy(
-    blink::SynchronousInputHandlerProxy* input_handler_proxy)
+    InputHandlerProxy* input_handler_proxy)
     : input_handler_proxy_(input_handler_proxy),
       animation_power_mode_voter_(
           power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
@@ -62,8 +62,8 @@ void SynchronousCompositorProxy::SetLayerTreeFrameSink(
 }
 
 void SynchronousCompositorProxy::UpdateRootLayerState(
-    const gfx::Vector2dF& total_scroll_offset,
-    const gfx::Vector2dF& max_scroll_offset,
+    const gfx::PointF& total_scroll_offset,
+    const gfx::PointF& max_scroll_offset,
     const gfx::SizeF& scrollable_size,
     float page_scale_factor,
     float min_page_scale_factor,
@@ -215,7 +215,7 @@ void SynchronousCompositorProxy::DoDemandDrawSw(
   }
   SkCanvas canvas(bitmap);
   canvas.clipRect(gfx::RectToSkRect(params->clip));
-  canvas.concat(SkMatrix(params->transform.matrix()));
+  canvas.concat(gfx::TransformToFlattenedSkMatrix(params->transform));
 
   layer_tree_frame_sink_->DemandDrawSw(&canvas);
 }
@@ -293,7 +293,7 @@ void SynchronousCompositorProxy::BeginFrame(
 }
 
 void SynchronousCompositorProxy::SetScroll(
-    const gfx::Vector2dF& new_total_scroll_offset) {
+    const gfx::PointF& new_total_scroll_offset) {
   if (total_scroll_offset_ == new_total_scroll_offset)
     return;
   total_scroll_offset_ = new_total_scroll_offset;
@@ -313,6 +313,15 @@ void SynchronousCompositorProxy::ReclaimResources(
     return;
   layer_tree_frame_sink_->ReclaimResources(layer_tree_frame_sink_id,
                                            std::move(resources));
+}
+
+void SynchronousCompositorProxy::OnCompositorFrameTransitionDirectiveProcessed(
+    uint32_t layer_tree_frame_sink_id,
+    uint32_t sequence_id) {
+  if (!layer_tree_frame_sink_)
+    return;
+  layer_tree_frame_sink_->OnCompositorFrameTransitionDirectiveProcessed(
+      layer_tree_frame_sink_id, sequence_id);
 }
 
 void SynchronousCompositorProxy::SetSharedMemory(

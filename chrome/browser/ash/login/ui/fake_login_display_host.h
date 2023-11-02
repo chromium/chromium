@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,10 +31,12 @@ class FakeLoginDisplayHost : public LoginDisplayHost {
   LoginDisplay* GetLoginDisplay() override;
   ExistingUserController* GetExistingUserController() override;
   gfx::NativeWindow GetNativeWindow() const override;
+  views::Widget* GetLoginWindowWidget() const override;
   OobeUI* GetOobeUI() const override;
   content::WebContents* GetOobeWebContents() const override;
   WebUILoginView* GetWebUILoginView() const override;
   void BeforeSessionStart() override;
+  bool IsFinalizing() override;
   void Finalize(base::OnceClosure) override;
   void FinalizeImmediately() override;
   void SetStatusAreaVisible(bool visible) override;
@@ -44,10 +46,9 @@ class FakeLoginDisplayHost : public LoginDisplayHost {
   void StartUserAdding(base::OnceClosure completion_callback) override;
   void CancelUserAdding() override;
   void StartSignInScreen() override;
-  void OnPreferencesChanged() override;
   void StartKiosk(const KioskAppId& kiosk_app_id, bool is_auto_launch) override;
   void AttemptShowEnableConsumerKioskScreen() override;
-  void CompleteLogin(const chromeos::UserContext& user_context) override;
+  void CompleteLogin(const UserContext& user_context) override;
   void OnGaiaScreenReady() override;
   void SetDisplayEmail(const std::string& email) override;
   void SetDisplayAndGivenName(const std::string& display_name,
@@ -58,9 +59,10 @@ class FakeLoginDisplayHost : public LoginDisplayHost {
       const AccountId& account_id,
       const absl::optional<user_manager::UserType>& user_type) override;
   void ShowGaiaDialog(const AccountId& prefilled_account) override;
+  void ShowAllowlistCheckFailedError() override;
   void ShowOsInstallScreen() override;
   void ShowGuestTosScreen() override;
-  void HideOobeDialog() override;
+  void HideOobeDialog(bool saml_page_closed = false) override;
   void SetShelfButtonsEnabled(bool enabled) override;
   void UpdateOobeDialogState(OobeDialogState state) override;
   void CancelPasswordChangedFlow() override;
@@ -82,6 +84,9 @@ class FakeLoginDisplayHost : public LoginDisplayHost {
       base::RepeatingClosure on_created) final;
   bool IsWizardControllerCreated() const final;
   WizardContext* GetWizardContextForTesting() final;
+  bool IsWebUIStarted() const final;
+  base::WeakPtr<ash::quick_start::TargetDeviceBootstrapController>
+  GetQuickStartBootstrapController() final;
 
  private:
   class FakeBaseScreen;

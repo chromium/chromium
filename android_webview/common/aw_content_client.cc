@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,6 +58,11 @@ base::RefCountedMemory* AwContentClient::GetDataResourceBytes(int resource_id) {
       resource_id);
 }
 
+std::string AwContentClient::GetDataResourceString(int resource_id) {
+  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+      resource_id);
+}
+
 void AwContentClient::SetGpuInfo(const gpu::GPUInfo& gpu_info) {
   gpu::SetKeysForCrashLogging(gpu_info);
 }
@@ -77,7 +82,7 @@ void AwContentClient::ExposeInterfacesToBrowser(
   // This creates a process-wide heap_profiling::ProfilingClient that listens
   // for requests from the HeapProfilingService to start profiling the current
   // process.
-  binders->Add(
+  binders->Add<heap_profiling::mojom::ProfilingClient>(
       base::BindRepeating(
           [](mojo::PendingReceiver<heap_profiling::mojom::ProfilingClient>
                  receiver) {

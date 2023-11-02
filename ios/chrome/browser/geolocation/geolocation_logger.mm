@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,11 @@
 
 #import <CoreLocation/CoreLocation.h>
 
-#include "base/metrics/histogram_macros.h"
-#include "components/google/core/common/google_util.h"
+#import "base/metrics/histogram_macros.h"
+#import "components/google/core/common/google_util.h"
 #import "ios/chrome/app/tests_hook.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/web/public/navigation/navigation_item.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 
@@ -112,8 +112,8 @@ enum class PermissionStatus {
     switch (locationManager.authorizationStatus) {
       case kCLAuthorizationStatusNotDetermined:
         // We may get a spurious notification about a transition to
-        // |kCLAuthorizationStatusNotDetermined| when we first start location
-        // services. Ignore it and don't reset |systemPrompt_| until we get a
+        // `kCLAuthorizationStatusNotDetermined` when we first start location
+        // services. Ignore it and don't reset `systemPrompt_` until we get a
         // real change.
         break;
 

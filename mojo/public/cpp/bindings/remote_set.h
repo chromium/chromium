@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/id_type.h"
@@ -80,8 +79,8 @@ class RemoteSetImpl {
 
     reference operator*() const { return it_->second; }
     pointer operator->() const { return &it_->second; }
-    bool operator==(const self_type& rhs) { return it_ == rhs.it_; }
-    bool operator!=(const self_type& rhs) { return it_ != rhs.it_; }
+    bool operator==(const self_type& rhs) const { return it_ == rhs.it_; }
+    bool operator!=(const self_type& rhs) const { return it_ != rhs.it_; }
 
    private:
     typename Storage::const_iterator it_;

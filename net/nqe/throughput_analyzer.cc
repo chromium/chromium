@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,9 +38,7 @@ bool ShouldDiscardRequest(const URLRequest& request) {
 
 }  // namespace
 
-namespace nqe {
-
-namespace internal {
+namespace nqe::internal {
 // The default content size of a HTML response body. It is set to the median
 // HTML response content size, i.e. 1.8kB.
 constexpr int64_t kDefaultContentSizeBytes = 1800;
@@ -59,10 +57,6 @@ ThroughputAnalyzer::ThroughputAnalyzer(
       tick_clock_(tick_clock),
       last_connection_change_(tick_clock_->NowTicks()),
       window_start_time_(base::TimeTicks()),
-      bits_received_at_window_start_(0),
-      total_response_content_size_(0),
-      disable_throughput_measurements_(false),
-      use_localhost_requests_for_tests_(false),
       net_log_(net_log) {
   DCHECK(tick_clock_);
   DCHECK(network_quality_estimator_);
@@ -271,6 +265,9 @@ bool ThroughputAnalyzer::IsHangingWindow(int64_t bits_received,
   if (params_->use_small_responses())
     return false;
 
+  if (!duration.is_positive())
+    return false;
+
   // Initial congestion window size for TCP connections.
   static constexpr size_t kCwndSizeKilobytes = 10 * 1.5;
   static constexpr size_t kCwndSizeBits = kCwndSizeKilobytes * 1000 * 8;
@@ -362,8 +359,8 @@ void ThroughputAnalyzer::OnConnectionTypeChanged() {
   // computation are now spanning a connection change event. These requests
   // would now degrade the throughput computation accuracy. So, move them to
   // |accuracy_degrading_requests_|.
-  for (auto it = requests_.begin(); it != requests_.end(); ++it) {
-    accuracy_degrading_requests_.insert(it->first);
+  for (const auto& request : requests_) {
+    accuracy_degrading_requests_.insert(request.first);
   }
   requests_.clear();
   BoundRequestsSize();
@@ -490,8 +487,6 @@ void ThroughputAnalyzer::EraseHangingRequests(const URLRequest& request) {
   }
 }
 
-}  // namespace internal
-
-}  // namespace nqe
+}  // namespace nqe::internal
 
 }  // namespace net

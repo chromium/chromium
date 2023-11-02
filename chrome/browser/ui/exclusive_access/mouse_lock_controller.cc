@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -166,7 +166,7 @@ void MouseLockController::UnlockMouse() {
 
   content::RenderWidgetHostView* mouse_lock_view = nullptr;
   RenderViewHost* const rvh =
-      exclusive_access_tab()->GetMainFrame()->GetRenderViewHost();
+      exclusive_access_tab()->GetPrimaryMainFrame()->GetRenderViewHost();
   if (rvh)
     mouse_lock_view = rvh->GetWidget()->GetView();
 

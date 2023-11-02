@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,18 +8,28 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/sequence_bound.h"
 #include "base/types/pass_key.h"
 #include "content/common/agent_scheduling_group.mojom.h"
+#include "content/common/shared_storage_worklet_service.mojom.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
+#include "content/public/renderer/content_renderer_client.h"
 #include "content/renderer/render_frame_impl.h"
-#include "content/renderer/render_frame_proxy.h"
 #include "content/renderer/render_thread_impl.h"
-#include "content/renderer/render_view_impl.h"
-#include "content/services/shared_storage_worklet/public/mojom/shared_storage_worklet_service.mojom.h"
+#include "content/services/shared_storage_worklet/shared_storage_worklet_service_impl.h"
 #include "ipc/ipc_channel_mojo.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sync_channel.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom.h"
+#include "third_party/blink/public/mojom/page/page.mojom.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
+#include "third_party/blink/public/web/web_remote_frame.h"
+#include "third_party/blink/public/web/web_view.h"
+#include "third_party/blink/public/web/web_view_client.h"
 
 namespace content {
 
@@ -49,6 +59,57 @@ static features::MBIMode GetMBIMode() {
              ? features::kMBIModeParam.Get()
              : features::MBIMode::kLegacy;
 }
+
+// Blink inappropriately makes decisions if there is a WebViewClient set,
+// so currently we need to always create a WebViewClient.
+class SelfOwnedWebViewClient : public blink::WebViewClient {
+ public:
+  void OnDestruct() override { delete this; }
+};
+
+// A thread for running shared storage worklet operations. It hosts a worklet
+// environment belonging to one Document. The object owns itself, cleaning up
+// when the worklet has shut down.
+class SelfOwnedSharedStorageWorkletThread {
+ public:
+  SelfOwnedSharedStorageWorkletThread(
+      scoped_refptr<base::SingleThreadTaskRunner> main_thread_runner,
+      mojo::PendingReceiver<
+          shared_storage_worklet::mojom::SharedStorageWorkletService> receiver)
+      : main_thread_runner_(std::move(main_thread_runner)) {
+    DCHECK(main_thread_runner_->BelongsToCurrentThread());
+
+    auto disconnect_handler = base::BindPostTask(
+        main_thread_runner_,
+        base::BindOnce(&SelfOwnedSharedStorageWorkletThread::
+                           OnSharedStorageWorkletServiceDestroyed,
+                       weak_factory_.GetWeakPtr()));
+
+    auto task_runner = base::ThreadPool::CreateSingleThreadTaskRunner(
+        {base::TaskPriority::BEST_EFFORT,
+         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+        base::SingleThreadTaskRunnerThreadMode::DEDICATED);
+
+    // Initialize the worklet service in a new thread.
+    worklet_thread_ = base::SequenceBound<
+        shared_storage_worklet::SharedStorageWorkletServiceImpl>(
+        task_runner, std::move(receiver), std::move(disconnect_handler));
+  }
+
+ private:
+  void OnSharedStorageWorkletServiceDestroyed() {
+    DCHECK(main_thread_runner_->BelongsToCurrentThread());
+    worklet_thread_.Reset();
+    delete this;
+  }
+
+  scoped_refptr<base::SingleThreadTaskRunner> main_thread_runner_;
+
+  base::SequenceBound<shared_storage_worklet::SharedStorageWorkletServiceImpl>
+      worklet_thread_;
+
+  base::WeakPtrFactory<SelfOwnedSharedStorageWorkletThread> weak_factory_{this};
+};
 
 }  // namespace
 
@@ -197,80 +258,107 @@ void AgentSchedulingGroup::DidUnloadRenderFrame(
   host_remote_->DidUnloadRenderFrame(frame_token);
 }
 
-mojom::RouteProvider* AgentSchedulingGroup::GetRemoteRouteProvider() {
-  DCHECK(remote_route_provider_);
-  return remote_route_provider_.get();
-}
-
 void AgentSchedulingGroup::CreateView(mojom::CreateViewParamsPtr params) {
   RenderThreadImpl& renderer = ToImpl(render_thread_);
   renderer.SetScrollAnimatorEnabled(
       params->web_preferences.enable_scroll_animator, PassKey());
 
-  RenderViewImpl::Create(*this, std::move(params),
-                         /*was_created_by_renderer=*/false,
-                         agent_group_scheduler_->DefaultTaskRunner());
+  CreateWebView(std::move(params),
+                /*was_created_by_renderer=*/false);
 }
 
-void AgentSchedulingGroup::DestroyView(int32_t view_id) {
-  RenderViewImpl* view = RenderViewImpl::FromRoutingID(view_id);
-  DCHECK(view);
+blink::WebView* AgentSchedulingGroup::CreateWebView(
+    mojom::CreateViewParamsPtr params,
+    bool was_created_by_renderer) {
+  DCHECK(RenderThread::IsMainThread());
 
-  // This IPC can be called from re-entrant contexts. We can't destroy a
-  // RenderViewImpl while references still exist on the stack, so we dispatch a
-  // non-nestable task. This method is called exactly once by the browser
-  // process, and is used to release ownership of the corresponding
-  // RenderViewImpl instance. https://crbug.com/1000035.
-  agent_group_scheduler_->DefaultTaskRunner()->PostNonNestableTask(
-      FROM_HERE,
-      base::BindOnce(&RenderViewImpl::Destroy, base::Unretained(view)));
+  blink::WebFrame* opener_frame = nullptr;
+  if (params->opener_frame_token)
+    opener_frame =
+        blink::WebFrame::FromFrameToken(params->opener_frame_token.value());
+
+  blink::WebView* web_view = blink::WebView::Create(
+      new SelfOwnedWebViewClient(), params->hidden, params->is_prerendering,
+      params->type == mojom::ViewWidgetType::kPortal ? true : false,
+      params->type == mojom::ViewWidgetType::kFencedFrame
+          ? absl::make_optional(params->fenced_frame_mode)
+          : absl::nullopt,
+      /*compositing_enabled=*/true, params->never_composited,
+      opener_frame ? opener_frame->View() : nullptr,
+      std::move(params->blink_page_broadcast), agent_group_scheduler(),
+      params->session_storage_namespace_id, params->base_background_color);
+
+  bool local_main_frame = params->main_frame->is_local_params();
+
+  web_view->SetRendererPreferences(params->renderer_preferences);
+  web_view->SetWebPreferences(params->web_preferences);
+
+  if (local_main_frame) {
+    RenderFrameImpl::CreateMainFrame(
+        *this, web_view, opener_frame,
+        /*is_for_nested_main_frame=*/params->type !=
+            mojom::ViewWidgetType::kTopLevel,
+        /*is_for_scalable_page=*/params->type !=
+            mojom::ViewWidgetType::kFencedFrame,
+        std::move(params->replication_state), params->devtools_main_frame_token,
+        std::move(params->main_frame->get_local_params()));
+  } else {
+    blink::WebRemoteFrame::CreateMainFrame(
+        web_view, params->main_frame->get_remote_params()->token,
+        params->devtools_main_frame_token, opener_frame,
+        std::move(params->main_frame->get_remote_params()
+                      ->frame_interfaces->frame_host),
+        std::move(params->main_frame->get_remote_params()
+                      ->frame_interfaces->frame_receiver),
+        std::move(params->replication_state));
+    // Root frame proxy has no ancestors to point to their RenderWidget.
+
+    // The WebRemoteFrame created here was already attached to the Page as its
+    // main frame, so we can call WebView's DidAttachRemoteMainFrame().
+    web_view->DidAttachRemoteMainFrame(
+        std::move(params->main_frame->get_remote_params()
+                      ->main_frame_interfaces->main_frame_host),
+        std::move(params->main_frame->get_remote_params()
+                      ->main_frame_interfaces->main_frame));
+  }
+
+  // TODO(davidben): Move this state from Blink into content.
+  if (params->window_was_opened_by_another_window)
+    web_view->SetOpenedByDOM();
+
+  GetContentClient()->renderer()->WebViewCreated(
+      web_view, was_created_by_renderer,
+      params->outermost_origin ? &params->outermost_origin.value() : nullptr);
+  return web_view;
 }
 
 void AgentSchedulingGroup::CreateFrame(mojom::CreateFrameParamsPtr params) {
   RenderFrameImpl::CreateFrame(
-      *this, params->token, params->routing_id, std::move(params->frame),
-      std::move(params->interface_broker), params->previous_routing_id,
-      params->opener_frame_token, params->parent_routing_id,
-      params->previous_sibling_routing_id, params->devtools_frame_token,
-      params->tree_scope_type, std::move(params->replication_state),
-      std::move(params->widget_params),
+      *this, params->frame_token, params->routing_id, std::move(params->frame),
+      std::move(params->interface_broker),
+      std::move(params->associated_interface_provider_remote),
+      params->previous_frame_token, params->opener_frame_token,
+      params->parent_frame_token, params->previous_sibling_frame_token,
+      params->devtools_frame_token, params->tree_scope_type,
+      std::move(params->replication_state), std::move(params->widget_params),
       std::move(params->frame_owner_properties),
-      params->is_on_initial_empty_document,
+      params->is_on_initial_empty_document, params->document_token,
       std::move(params->policy_container));
-}
-
-void AgentSchedulingGroup::CreateFrameProxy(
-    const blink::RemoteFrameToken& token,
-    int32_t routing_id,
-    const absl::optional<blink::FrameToken>& opener_frame_token,
-    int32_t view_routing_id,
-    int32_t parent_routing_id,
-    blink::mojom::TreeScopeType tree_scope_type,
-    blink::mojom::FrameReplicationStatePtr replicated_state,
-    const base::UnguessableToken& devtools_frame_token,
-    mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces) {
-  RenderFrameProxy::CreateFrameProxy(
-      *this, token, routing_id, opener_frame_token, view_routing_id,
-      parent_routing_id, tree_scope_type, std::move(replicated_state),
-      devtools_frame_token, std::move(remote_main_frame_interfaces));
 }
 
 void AgentSchedulingGroup::CreateSharedStorageWorkletService(
     mojo::PendingReceiver<
         shared_storage_worklet::mojom::SharedStorageWorkletService> receiver) {
-  RenderThreadImpl& renderer = ToImpl(render_thread_);
-  renderer.CreateSharedStorageWorkletService(std::move(receiver));
+  new SelfOwnedSharedStorageWorkletThread(
+      agent_group_scheduler_->DefaultTaskRunner(), std::move(receiver));
 }
 
 void AgentSchedulingGroup::BindAssociatedInterfaces(
     mojo::PendingAssociatedRemote<mojom::AgentSchedulingGroupHost> remote_host,
-    mojo::PendingAssociatedRemote<mojom::RouteProvider> remote_route_provider,
     mojo::PendingAssociatedReceiver<mojom::RouteProvider>
         route_provider_receiever) {
   host_remote_.Bind(std::move(remote_host),
                     agent_group_scheduler_->DefaultTaskRunner());
-  remote_route_provider_.Bind(std::move(remote_route_provider),
-                              agent_group_scheduler_->DefaultTaskRunner());
   route_provider_receiver_.Bind(std::move(route_provider_receiever),
                                 agent_group_scheduler_->DefaultTaskRunner());
 }

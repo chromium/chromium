@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "url/gurl.h"
@@ -128,10 +129,10 @@ class TestFileErrorInjector
   size_t total_file_count_ = 0;
 
   // The factory we created. May outlive this class.
-  DownloadFileWithErrorFactory* created_factory_ = nullptr;
+  raw_ptr<DownloadFileWithErrorFactory> created_factory_ = nullptr;
 
   // The download manager we set the factory on.
-  DownloadManagerImpl* download_manager_ = nullptr;
+  raw_ptr<DownloadManagerImpl> download_manager_ = nullptr;
 };
 
 }  // namespace content

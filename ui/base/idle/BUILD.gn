@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -18,7 +18,11 @@ component("idle") {
   # All targets in this file are allowed to access any of the headers.
   friend = [ ":*" ]
 
-  public = [ "idle.h" ]
+  public = [
+    "idle.h",
+    "idle_polling_service.h",
+    "idle_time_provider.h",
+  ]
 
   deps = [
     "//base",
@@ -26,7 +30,7 @@ component("idle") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [ "//chromeos/dbus/session_manager" ]
+    deps += [ "//chromeos/ash/components/dbus/session_manager" ]
   }
 
   sources = [
@@ -34,6 +38,9 @@ component("idle") {
     "idle.h",
     "idle_internal.cc",
     "idle_internal.h",
+    "idle_polling_service.cc",
+    "idle_polling_service.h",
+    "idle_time_provider.h",
   ]
 
   if (is_chromeos_ash) {

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,16 +12,14 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 
-import androidx.test.core.app.ApplicationProvider;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.ContextUtils;
-import org.chromium.testing.local.LocalRobolectricTestRunner;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
@@ -29,7 +27,7 @@ import java.lang.ref.WeakReference;
 /**
  * Unit tests for SmsProviderGms.
  */
-@RunWith(LocalRobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SmsProviderGmsTest {
     private Context mContext;
@@ -40,8 +38,7 @@ public class SmsProviderGmsTest {
 
     @Before
     public void setUp() {
-        mContext = ApplicationProvider.getApplicationContext();
-        ContextUtils.initApplicationContextForTests(mContext);
+        mContext = RuntimeEnvironment.application;
 
         mWindowAndroid = Mockito.mock(WindowAndroid.class);
         when(mWindowAndroid.getContext()).thenReturn(new WeakReference<Context>(mContext));

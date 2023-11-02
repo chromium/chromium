@@ -1,4 +1,5 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -24,8 +25,6 @@ chrome://version/?show-variations-cmd.
 Run with --help to get a complete list of options this script runs with.
 """
 
-from __future__ import print_function
-
 import logging
 import optparse
 import os
@@ -37,7 +36,7 @@ import tempfile
 import split_variations_cmd
 
 _CHROME_PATH_WIN = {
-    # The following three paths are relative to %ProgramFiles(x86)%
+    # The following three paths are relative to %ProgramFiles%
     "stable": r"Google\Chrome\Application\chrome.exe",
     "beta": r"Google\Chrome Beta\Application\chrome.exe",
     "dev": r"Google\Chrome Dev\Application\chrome.exe",
@@ -61,6 +60,11 @@ _CHROME_PATH_LINUX = {
   "chromium": r"/usr/bin/chromium",
 }
 
+# Maximum command length is 32767. Constant below is reduced to leave space
+# for executable and chrome arguments.
+_MAX_ARGS_LENGTH_WIN = 32000
+
+
 def _GetSupportedBrowserTypes():
   """Returns the supported browser types on this platform."""
   if sys.platform.startswith('win'):
@@ -82,7 +86,7 @@ def _LocateBrowser_Win(browser_type):
       Browser executable path.
   """
   if browser_type in ['stable', 'beta', 'dev']:
-    return os.path.join(os.getenv('ProgramFiles(x86)'),
+    return os.path.join(os.getenv('ProgramFiles'),
                         _CHROME_PATH_WIN[browser_type])
   else:
     assert browser_type in ['canary', 'chromium']
@@ -223,8 +227,8 @@ def _AskCanReproduce(exit_status, stdout, stderr):
   """
   # Loop until we get a response that we can parse.
   while True:
-    response = raw_input('Can we reproduce with given variations file '
-                         '[(y)es/(n)o/(r)etry/(s)tdout/(q)uit]: ').lower()
+    response = input('Can we reproduce with given variations file '
+                     '[(y)es/(n)o/(r)etry/(s)tdout/(q)uit]: ').lower()
     if response in ('y', 'n', 'r'):
       return response
     if response == 'q':
@@ -247,7 +251,11 @@ def Bisect(browser_type, url, extra_browser_args, variations_file, output_dir):
       output_dir: A folder where intermediate bisecting data are stored.
   """
   browser_path = _LocateBrowser(browser_type)
-  runs = [variations_file]
+  if sys.platform.startswith('win'):
+    runs = _EnsureCommandLineLength(variations_file, output_dir)
+  else:
+    runs = [variations_file]
+
   while runs:
     run = runs[0]
     print('Run Chrome with variations file', run)
@@ -266,11 +274,40 @@ def Bisect(browser_type, url, extra_browser_args, variations_file, output_dir):
         return
     elif answer == 'n':
       if len(runs) == 1:
-        raise Exception('Bisecting failed: should reproduce but did not: %s' %
-                        ' '.join(variations_args))
+        raise ValueError('Bisecting failed: should reproduce but did not: %s' %
+                         ' '.join(variations_args))
       runs = runs[1:]
     else:
       assert answer == 'r'
+
+
+def _EnsureCommandLineLength(filename, output_dir):
+  """Splits command-line to ensure it isn't too long for Windows.
+
+  Args:
+      filename: A file that contains variations commandline switches.
+      output_dir: A folder where intermediate bisecting data are stored.
+  Returns:
+       List of files containing variations from the input file, split
+       such that no file has a command line too long for Windows.
+  """
+  files_to_process = [filename]
+
+  result = []
+  while len(files_to_process) > 0:
+    new_files = []
+    for f in files_to_process:
+      variations_args = ' '.join(_LoadVariations(f))
+      if len(variations_args) <= _MAX_ARGS_LENGTH_WIN:
+        result.append(f)
+      else:
+        split = split_variations_cmd.SplitVariationsCmdFromFile(f, output_dir)
+        if len(split) == 1:
+          raise ValueError('Can not split long argument list %s' %
+                           variations_args)
+        new_files.extend(split)
+    files_to_process = new_files
+  return result
 
 
 def main():

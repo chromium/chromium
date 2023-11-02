@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,12 @@
 
 #include "base/values.h"
 #include "content/browser/tracing/background_tracing_config_impl.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/background_tracing_manager.h"
 #include "third_party/perfetto/protos/perfetto/trace/chrome/chrome_metadata.pbzero.h"
 
 namespace content {
 
-class CONTENT_EXPORT BackgroundTracingRule {
+class BackgroundTracingRule {
  public:
   using MetadataProto =
       perfetto::protos::pbzero::BackgroundTracingMetadata::TriggerRule;
@@ -28,7 +27,7 @@ class CONTENT_EXPORT BackgroundTracingRule {
 
   virtual ~BackgroundTracingRule();
 
-  void Setup(const base::Value& dict);
+  void Setup(const base::Value::Dict& dict);
   BackgroundTracingConfigImpl::CategoryPreset category_preset() const {
     return category_preset_;
   }
@@ -38,7 +37,7 @@ class CONTENT_EXPORT BackgroundTracingRule {
   }
 
   virtual void Install() {}
-  virtual base::Value ToDict() const;
+  virtual base::Value::Dict ToDict() const;
   virtual void GenerateMetadataProto(MetadataProto* out) const;
   virtual bool ShouldTriggerNamedEvent(const std::string& named_event) const;
   virtual void OnHistogramTrigger(const std::string& histogram_name) const {}
@@ -54,10 +53,10 @@ class CONTENT_EXPORT BackgroundTracingRule {
   }
 
   static std::unique_ptr<BackgroundTracingRule> CreateRuleFromDict(
-      const base::Value& dict);
+      const base::Value::Dict& dict);
 
-  void SetArgs(const base::Value& args) { args_ = args.CreateDeepCopy(); }
-  const base::Value* args() const { return args_.get(); }
+  void SetArgs(const base::Value& args) { args_ = args.Clone(); }
+  const base::Value* args() const { return &args_; }
 
   const std::string& rule_id() const { return rule_id_; }
 
@@ -74,7 +73,7 @@ class CONTENT_EXPORT BackgroundTracingRule {
   BackgroundTracingConfigImpl::CategoryPreset category_preset_ =
       BackgroundTracingConfigImpl::CATEGORY_PRESET_UNSET;
   bool is_crash_ = false;
-  std::unique_ptr<base::Value> args_;
+  base::Value args_;
 };
 
 }  // namespace content

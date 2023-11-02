@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,9 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
+#include "base/time/time.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "content/public/browser/storage_partition.h"
 #include "net/cookies/canonical_cookie.h"
 #include "sql/database.h"
 #include "sql/init_status.h"
@@ -31,8 +33,8 @@ class AccessContextAuditDatabase
     kServiceWorker = 5,
     kCacheStorage = 6,
     kIndexedDB = 7,
-    kAppCache = 8,
-    kMaxValue = kAppCache
+    kAppCacheDeprecated = 8,
+    kMaxValue = kAppCacheDeprecated
   };
 
   // An individual record of a Storage API access, associating the individual
@@ -133,11 +135,11 @@ class AccessContextAuditDatabase
       const ContentSettingsForOneType& content_settings);
 
   // Remove storage API access records for which the storage type is a member of
-  // |storage_api_types|, the timestamp is between |begin| and |end|, and the
-  // |origin_matcher| callback, if set, returns true for the storage origin.
+  // `storage_api_types`, the timestamp is between `begin` and `end`, and the
+  // `storage_key_matcher` callback, if set, returns true for the storage key.
   void RemoveStorageApiRecords(
       const std::set<StorageAPIType>& storage_api_types,
-      base::RepeatingCallback<bool(const url::Origin&)> origin_matcher,
+      content::StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
       base::Time begin,
       base::Time end);
 

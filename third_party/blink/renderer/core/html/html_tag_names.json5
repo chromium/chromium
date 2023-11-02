@@ -7,6 +7,7 @@
     export: "CORE_EXPORT",
   },
 
+  // If you add any tag names here, remember to update html_tree_builder_test.cc.
   data: [
     {
       name: "a",
@@ -299,7 +300,10 @@
     },
     "marquee",
     "menu",
-    "meta",
+    {
+      name: "meta",
+      constructorNeedsCreateElementFlags: true,
+    },
     {
       name: "meter",
       interfaceName: "HTMLMeterElement",
@@ -358,11 +362,6 @@
     {
       name: "plaintext",
       interfaceName: "HTMLElement",
-    },
-    {
-      name: "popup",
-      interfaceName: "HTMLPopupElement",
-      runtimeEnabled: "HTMLPopupElement",
     },
     {
       name: "portal",

@@ -1,11 +1,15 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(is_chromeos_ash)
 
 mojom("mojom") {
   sources = [
+    "connection_factory.mojom",
     "ime_service.mojom",
     "input_engine.mojom",
     "input_method.mojom",
@@ -22,23 +26,23 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "chromeos.ime.mojom.CompletionCandidate"
-          cpp = "::chromeos::ime::TextCompletionCandidate"
+          mojom = "ash.ime.mojom.CompletionCandidate"
+          cpp = "::ash::ime::TextCompletionCandidate"
         },
         {
-          mojom = "chromeos.ime.mojom.SuggestionMode"
-          cpp = "::chromeos::ime::TextSuggestionMode"
+          mojom = "ash.ime.mojom.SuggestionMode"
+          cpp = "::ash::ime::TextSuggestionMode"
         },
         {
-          mojom = "chromeos.ime.mojom.SuggestionType"
-          cpp = "::chromeos::ime::TextSuggestionType"
+          mojom = "ash.ime.mojom.SuggestionType"
+          cpp = "::ash::ime::TextSuggestionType"
         },
         {
-          mojom = "chromeos.ime.mojom.SuggestionCandidate"
-          cpp = "::chromeos::ime::TextSuggestion"
+          mojom = "ash.ime.mojom.SuggestionCandidate"
+          cpp = "::ash::ime::TextSuggestion"
         },
         {
-          mojom = "chromeos.ime.mojom.TextRange"
+          mojom = "ash.ime.mojom.TextRange"
           cpp = "::gfx::Range"
         },
       ]

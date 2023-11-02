@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,11 @@
 
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
+#include "base/record_replay.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
+#include "cc/metrics/frame_sorter.h"
 #include "cc/metrics/video_playback_roughness_reporter.h"
 #include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/client/shared_bitmap_reporter.h"
@@ -94,6 +96,12 @@ class PLATFORM_EXPORT VideoFrameSubmitter
   // requested.
   void OnReceivedContextProvider(
       bool use_gpu_compositing,
+      scoped_refptr<viz::RasterContextProvider> context_provider);
+
+  // Adopts `context_provider` if it's non-null and in a usable state. Returns
+  // true on success and false on failure, implying that a new ContextProvider
+  // should be requested.
+  bool MaybeAcceptContextProvider(
       scoped_refptr<viz::RasterContextProvider> context_provider);
 
   // Starts submission and calls UpdateSubmissionState(); which may submit.
@@ -199,7 +207,15 @@ class PLATFORM_EXPORT VideoFrameSubmitter
 
   absl::optional<int> last_frame_id_;
 
+  // We use cc::FrameSorter directly, rather than via
+  // cc::CompositorFrameReportingController because video frames do not progress
+  // through all of the pipeline stages that traditional CompositorFrames do.
+  // Instead they are a specialized variant of compositor-only frames, submitted
+  // via a batch. So track the mapping of FrameToken to viz::BeginFrameArgs in
+  // `pending_frames_`, and denote their completion directly to `frame_sorter_`.
+  base::flat_map<uint32_t, viz::BeginFrameArgs> pending_frames_;
   cc::FrameSequenceTrackerCollection frame_trackers_;
+  cc::FrameSorter frame_sorter_;
 
   // The BeginFrameArgs passed to the most recent call of OnBeginFrame().
   // Required for FrameSequenceTrackerCollection::NotifySubmitFrame
@@ -210,7 +226,7 @@ class PLATFORM_EXPORT VideoFrameSubmitter
   // presented.
   base::flat_set<uint32_t> ignorable_submitted_frames_;
 
-  std::unique_ptr<power_scheduler::PowerModeVoter> power_mode_voter_;
+  recordreplay::unique_leaky_ptr<power_scheduler::PowerModeVoter> power_mode_voter_;
 
   THREAD_CHECKER(thread_checker_);
 

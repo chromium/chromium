@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -392,7 +391,7 @@ TEST_P(MultizoneBackendTest, RateChanges) {
   const TestParams& params = GetParam();
   int sample_rate = testing::get<0>(params);
   double* sequence = testing::get<1>(params);
-  Initialize(sample_rate, sequence, base::size(kTestRateSequence1));
+  Initialize(sample_rate, sequence, std::size(kTestRateSequence1));
   AddEffectsStreams();
   Start();
 }

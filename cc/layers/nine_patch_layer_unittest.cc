@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,7 +54,7 @@ TEST_F(NinePatchLayerTest, SetLayerProperties) {
 
   test_layer->Update();
 
-  EXPECT_FALSE(test_layer->DrawsContent());
+  EXPECT_FALSE(test_layer->draws_content());
 
   bool is_opaque = false;
   std::unique_ptr<ScopedUIResource> resource =
@@ -67,7 +67,7 @@ TEST_F(NinePatchLayerTest, SetLayerProperties) {
   test_layer->SetFillCenter(fill_center);
   test_layer->Update();
 
-  EXPECT_TRUE(test_layer->DrawsContent());
+  EXPECT_TRUE(test_layer->draws_content());
 }
 
 }  // namespace

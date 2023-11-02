@@ -1,8 +1,8 @@
-/* Copyright 2021 The Chromium Authors. All rights reserved.
+/* Copyright 2021 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-body:is(:not(.video), :not(.expert), :not(.show-gif-recording-option), .taking, .camera-configuring, .should-handle-intent-result) #record-types-group {
+body:is(:not(.video), .taking, .camera-configuring, .should-handle-intent-result) #record-types-group {
   display: none;
 }
 

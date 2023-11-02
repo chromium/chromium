@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,12 @@
 #include "base/containers/contains.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/lacros/lacros_extension_apps_utility.h"
+#include "chrome/browser/lacros/lacros_extensions_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -37,18 +38,18 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest, OpenNativeSettings) {
 
   // It doesn't matter what the URL is, it shouldn't be related to the
   // extension.
-  ASSERT_FALSE(
-      base::Contains(GetActiveWebContents()->GetURL().spec(), extension->id()));
+  ASSERT_FALSE(base::Contains(GetActiveWebContents()->GetVisibleURL().spec(),
+                              extension->id()));
 
   // Send the message to open native settings.
-  std::string muxed_id =
-      lacros_extension_apps_utility::MuxId(profile(), extension);
-  LacrosExtensionAppsController controller;
-  controller.OpenNativeSettings(muxed_id);
+  std::string muxed_id = lacros_extensions_util::MuxId(profile(), extension);
+  std::unique_ptr<LacrosExtensionAppsController> controller =
+      LacrosExtensionAppsController::MakeForChromeApps();
+  controller->OpenNativeSettings(muxed_id);
 
   // Now the URL should be on a settings page that has the extension id.
-  ASSERT_TRUE(
-      base::Contains(GetActiveWebContents()->GetURL().spec(), extension->id()));
+  ASSERT_TRUE(base::Contains(GetActiveWebContents()->GetVisibleURL().spec(),
+                             extension->id()));
 }
 
 // Test uninstalling an app.
@@ -60,19 +61,23 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest, Uninstall) {
   std::string extension_id = extension->id();
 
   // Check that the app is installed.
-  EXPECT_TRUE(lacros_extension_apps_utility::MaybeGetPackagedV2App(
-      profile(), extension_id));
+  {
+    const extensions::Extension* installed_extension =
+        lacros_extensions_util::MaybeGetExtension(profile(), extension_id);
+    EXPECT_TRUE(installed_extension && installed_extension->is_platform_app());
+  }
 
   // Uninstall the extension.
-  LacrosExtensionAppsController controller;
-  controller.Uninstall(
-      lacros_extension_apps_utility::MuxId(profile(), extension),
-      apps::mojom::UninstallSource::kAppList, /*clear_site_data=*/true,
-      /*report_abuse=*/true);
+  std::unique_ptr<LacrosExtensionAppsController> controller =
+      LacrosExtensionAppsController::MakeForChromeApps();
+  controller->Uninstall(lacros_extensions_util::MuxId(profile(), extension),
+                        apps::UninstallSource::kAppList,
+                        /*clear_site_data=*/true,
+                        /*report_abuse=*/true);
 
   // Check that the app is no longer installed.
-  EXPECT_FALSE(lacros_extension_apps_utility::MaybeGetPackagedV2App(
-      profile(), extension_id));
+  EXPECT_FALSE(
+      lacros_extensions_util::MaybeGetExtension(profile(), extension_id));
 }
 
 // Test loading an icon
@@ -106,14 +111,13 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest, LoadIcon) {
           &run_loop, &output);
 
       // Load the icon
-      auto icon_key = apps::mojom::IconKey::New(0, 0, 0);
       auto icon_type = compressed ? apps::IconType::kCompressed
                                   : apps::IconType::kUncompressed;
-      LacrosExtensionAppsController controller;
-      controller.LoadIcon(
-          lacros_extension_apps_utility::MuxId(profile(), extension),
-          std::move(icon_key), icon_type,
-          /*size_hint_in_dip=*/1, std::move(callback));
+      std::unique_ptr<LacrosExtensionAppsController> controller =
+          LacrosExtensionAppsController::MakeForChromeApps();
+      controller->LoadIcon(lacros_extensions_util::MuxId(profile(), extension),
+                           std::make_unique<apps::IconKey>(0, 0, 0), icon_type,
+                           /*size_hint_in_dip=*/1, std::move(callback));
       run_loop.Run();
 
       if (compressed) {

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define CONTENT_COMMON_INPUT_SYNTHETIC_POINTER_ACTION_PARAMS_H_
 
 #include "base/check_op.h"
+#include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/common/input/synthetic_gesture_params.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"

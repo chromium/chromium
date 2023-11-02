@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,12 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/types/id_type.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/origin.h"
 
 namespace autofill {
 
@@ -55,6 +57,40 @@ enum class AutofillProfileImportType {
   kMaxValue = kUnusableIncompleteProfile
 };
 
+// Specifies the status of the imported phone number.
+enum class PhoneImportStatus {
+  // Phone number is not present. Default.
+  kNone,
+  // User imported the phone number as it was.
+  kValid,
+  // The phone number was removed from the profile import as it was invalid.
+  kInvalid,
+  kMaxValue = kInvalid
+};
+
+// Metadata about the import, which is passed through from FormDataImporter to
+// ProfileImportProcess. This is required to do metric collection, depending on
+// the user's decision to (not) import, based on how we construct the candidate
+// profile in FormDataImporter.
+struct ProfileImportMetadata {
+  // Whether the profile's country was complemented automatically.
+  bool did_complement_country = false;
+  // Whether the form original contained an invalid country, that was ignored
+  // due to AutofillOverwriteInvalidCountryOnImport.
+  // TODO(crbug.com/1362472): Cleanup when launched.
+  bool did_ignore_invalid_country = false;
+  // Whether the form originally contained an invalid phone number, that was:
+  // - Removed due to AutofillRemoveInvalidPhoneNumberOnImport.
+  // - The only requirement preventing an import.
+  // TODO(crbug.com/1298424): Cleanup when launched.
+  PhoneImportStatus phone_import_status = PhoneImportStatus::kNone;
+  // Whether the profile import from any field that contained an unrecognized
+  // autocomplete attribute.
+  bool did_import_from_unrecognized_autocomplete_field = false;
+  // The origin that the form was submitted on.
+  url::Origin origin;
+};
+
 // This class holds the state associated with the import of an AutofillProfile
 // observed in a form submission and should be used as the follows:
 //
@@ -77,7 +113,8 @@ class ProfileImportProcess {
                        const std::string& app_locale,
                        const GURL& form_source_url,
                        const PersonalDataManager* personal_data_manager,
-                       bool allow_only_silent_updates);
+                       bool allow_only_silent_updates,
+                       ProfileImportMetadata import_metadata = {});
 
   ProfileImportProcess(const ProfileImportProcess&);
   ProfileImportProcess& operator=(const ProfileImportProcess& other);
@@ -89,6 +126,10 @@ class ProfileImportProcess {
 
   const absl::optional<AutofillProfile>& import_candidate() const {
     return import_candidate_;
+  }
+
+  const absl::optional<AutofillProfile>& confirmed_import_candidate() const {
+    return confirmed_import_candidate_;
   }
 
   const absl::optional<AutofillProfile>& merge_candidate() const {
@@ -104,6 +145,10 @@ class ProfileImportProcess {
   const AutofillProfile& observed_profile() const { return observed_profile_; }
 
   AutofillProfileImportType import_type() const { return import_type_; }
+
+  const ProfileImportMetadata& import_metadata() const {
+    return import_metadata_;
+  }
 
   AutofillClient::SaveAddressProfileOfferUserDecision user_decision() const {
     return user_decision_;
@@ -156,9 +201,10 @@ class ProfileImportProcess {
       AutofillClient::SaveAddressProfileOfferUserDecision decision,
       absl::optional<AutofillProfile> edited_profile = absl::nullopt);
 
-  // Records UMA metrics. Should only be called after a user decision was
-  // supplied.
-  void CollectMetrics() const;
+  // Records UMA and UKM metrics. Should only be called after a user decision
+  // was supplied or a silent update happens.
+  void CollectMetrics(ukm::UkmRecorder* ukm_recorder,
+                      ukm::SourceId source_id) const;
 
  private:
   // Determines the import type of |observed_profile_| with respect to
@@ -212,13 +258,17 @@ class ProfileImportProcess {
 
   // A pointer to the persona data manager that is used to retrieve additional
   // information about existing profiles.
-  const PersonalDataManager* personal_data_manager_;
+  raw_ptr<const PersonalDataManager> personal_data_manager_;
 
   // Counts the number of blocked profile updates.
   int number_of_blocked_profile_updates_{0};
 
   // If true, denotes that the import process allows only silent updates.
   bool allow_only_silent_updates_;
+
+  // Metadata about the import, used for metric collection after the user's
+  // decision.
+  ProfileImportMetadata import_metadata_;
 };
 
 }  // namespace autofill

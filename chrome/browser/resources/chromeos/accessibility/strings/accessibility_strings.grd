@@ -3,12 +3,14 @@
 <grit base_dir="." current_release="1" latest_public_release="0"
       output_all_resource_defines="false" enc_check="möl" source_lang_id="en">
   <outputs>
+    <output filename="_locales/af/messages.json.gz" type="chrome_messages_json_gzip" lang="af"/>
     <output filename="_locales/am/messages.json.gz" type="chrome_messages_json_gzip" lang="am"/>
     <output filename="_locales/ar/messages.json.gz" type="chrome_messages_json_gzip" lang="ar"/>
     <output filename="_locales/bg/messages.json.gz" type="chrome_messages_json_gzip" lang="bg"/>
     <output filename="_locales/bn/messages.json.gz" type="chrome_messages_json_gzip" lang="bn"/>
     <output filename="_locales/ca/messages.json.gz" type="chrome_messages_json_gzip" lang="ca"/>
     <output filename="_locales/cs/messages.json.gz" type="chrome_messages_json_gzip" lang="cs"/>
+    <output filename="_locales/cy/messages.json.gz" type="chrome_messages_json_gzip" lang="cy"/>
     <output filename="_locales/da/messages.json.gz" type="chrome_messages_json_gzip" lang="da"/>
     <output filename="_locales/de/messages.json.gz" type="chrome_messages_json_gzip" lang="de"/>
     <output filename="_locales/el/messages.json.gz" type="chrome_messages_json_gzip" lang="el"/>
@@ -17,16 +19,19 @@
     <output filename="_locales/es/messages.json.gz" type="chrome_messages_json_gzip" lang="es"/>
     <output filename="_locales/es_419/messages.json.gz" type="chrome_messages_json_gzip" lang="es-419"/>
     <output filename="_locales/et/messages.json.gz" type="chrome_messages_json_gzip" lang="et"/>
+    <output filename="_locales/eu/messages.json.gz" type="chrome_messages_json_gzip" lang="eu"/>
     <output filename="_locales/fa/messages.json.gz" type="chrome_messages_json_gzip" lang="fa"/>
     <output filename="_locales/fi/messages.json.gz" type="chrome_messages_json_gzip" lang="fi"/>
     <output filename="_locales/fil/messages.json.gz" type="chrome_messages_json_gzip" lang="fil"/>
     <output filename="_locales/fr/messages.json.gz" type="chrome_messages_json_gzip" lang="fr"/>
+    <output filename="_locales/gl/messages.json.gz" type="chrome_messages_json_gzip" lang="gl"/>
     <output filename="_locales/gu/messages.json.gz" type="chrome_messages_json_gzip" lang="gu"/>
     <output filename="_locales/he/messages.json.gz" type="chrome_messages_json_gzip" lang="he"/>
     <output filename="_locales/hi/messages.json.gz" type="chrome_messages_json_gzip" lang="hi"/>
     <output filename="_locales/hr/messages.json.gz" type="chrome_messages_json_gzip" lang="hr"/>
     <output filename="_locales/hu/messages.json.gz" type="chrome_messages_json_gzip" lang="hu"/>
     <output filename="_locales/id/messages.json.gz" type="chrome_messages_json_gzip" lang="id"/>
+    <output filename="_locales/is/messages.json.gz" type="chrome_messages_json_gzip" lang="is"/>
     <output filename="_locales/it/messages.json.gz" type="chrome_messages_json_gzip" lang="it"/>
     <output filename="_locales/ja/messages.json.gz" type="chrome_messages_json_gzip" lang="ja"/>
     <output filename="_locales/kn/messages.json.gz" type="chrome_messages_json_gzip" lang="kn"/>
@@ -56,6 +61,7 @@
     <output filename="_locales/vi/messages.json.gz" type="chrome_messages_json_gzip" lang="vi"/>
     <output filename="_locales/zh_CN/messages.json.gz" type="chrome_messages_json_gzip" lang="zh-CN"/>
     <output filename="_locales/zh_TW/messages.json.gz" type="chrome_messages_json_gzip" lang="zh-TW"/>
+    <output filename="_locales/zu/messages.json.gz" type="chrome_messages_json_gzip" lang="zu"/>
   </outputs>
   <translations>
     <file path="accessibility_strings_af.xtb" lang="af" />
@@ -69,6 +75,7 @@
     <file path="accessibility_strings_bs.xtb" lang="bs" />
     <file path="accessibility_strings_ca.xtb" lang="ca" />
     <file path="accessibility_strings_cs.xtb" lang="cs" />
+    <file path="accessibility_strings_cy.xtb" lang="cy" />
     <file path="accessibility_strings_da.xtb" lang="da" />
     <file path="accessibility_strings_de.xtb" lang="de" />
     <file path="accessibility_strings_el.xtb" lang="el" />

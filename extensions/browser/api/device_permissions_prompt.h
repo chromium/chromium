@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/public/mojom/hid.mojom.h"
@@ -121,9 +121,9 @@ class DevicePermissionsPrompt {
    private:
     friend class base::RefCounted<Prompt>;
 
-    const extensions::Extension* extension_ = nullptr;
-    Observer* observer_ = nullptr;
-    content::BrowserContext* browser_context_ = nullptr;
+    raw_ptr<const extensions::Extension> extension_ = nullptr;
+    raw_ptr<Observer> observer_ = nullptr;
+    raw_ptr<content::BrowserContext> browser_context_ = nullptr;
     bool multiple_ = false;
   };
 
@@ -166,7 +166,7 @@ class DevicePermissionsPrompt {
 
  private:
   // Parent web contents of the device permissions UI dialog.
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
   // Parameters available to the UI implementation.
   scoped_refptr<Prompt> prompt_;

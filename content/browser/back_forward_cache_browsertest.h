@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,13 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_logging_settings.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/browser/back_forward_cache_test_util.h"
 #include "content/browser/renderer_host/page_lifecycle_state_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_frame_host_manager.h"
@@ -20,15 +23,20 @@
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom-blink.h"
 
 namespace content {
+
+using NotRestoredReasons =
+    BackForwardCacheCanStoreDocumentResult::NotRestoredReasons;
+using NotRestoredReason = BackForwardCacheMetrics::NotRestoredReason;
 
 // Match RenderFrameHostImpl* that are in the BackForwardCache.
 MATCHER(InBackForwardCache, "") {
   return arg->IsInBackForwardCache();
 }
 
-// Match RenderFrameDeleteObserver* which observed deletion of the RenderFrame.
+// Match RenderFrameDeletedObserver* which observed deletion of the RenderFrame.
 MATCHER(Deleted, "") {
   return arg->deleted();
 }
@@ -38,40 +46,21 @@ MATCHER(Deleted, "") {
 std::initializer_list<RenderFrameHostImpl*> Elements(
     std::initializer_list<RenderFrameHostImpl*> t);
 
-namespace {
-
-// hash for std::unordered_map.
-struct FeatureHash {
-  size_t operator()(base::Feature feature) const {
-    return base::FastHash(feature.name);
-  }
-};
-
-// compare operator for std::unordered_map.
-struct FeatureEqualOperator {
-  bool operator()(base::Feature feature1, base::Feature feature2) const {
-    return std::strcmp(feature1.name, feature2.name) == 0;
-  }
-};
-
-}  // namespace
-
 // Test about the BackForwardCache.
-class BackForwardCacheBrowserTest : public ContentBrowserTest,
-                                    public WebContentsObserver {
+class BackForwardCacheBrowserTest
+    : public ContentBrowserTest,
+      public WebContentsObserver,
+      public BackForwardCacheMetrics::TestObserver,
+      public BackForwardCacheMetricsTestMatcher {
  public:
   BackForwardCacheBrowserTest();
   ~BackForwardCacheBrowserTest() override;
 
+  // TestObserver:
+  void NotifyNotRestoredReasons(
+      std::unique_ptr<BackForwardCacheCanStoreTreeResult> tree_result) override;
+
  protected:
-  using UkmMetrics = ukm::TestUkmRecorder::HumanReadableUkmMetrics;
-
-  // Disables checking metrics that are recorded recardless of the domains. By
-  // default, this class' Expect* function checks the metrics both for the
-  // specific domain and for all domains at the same time. In the case when the
-  // test results need to be different, call this function.
-  void DisableCheckingMetricsForAllSites();
-
   void SetUpCommandLine(base::CommandLine* command_line) override;
 
   void SetUpInProcessBrowserTestFixture() override;
@@ -80,11 +69,11 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
 
   void SetupFeaturesAndParameters();
 
-  void EnableFeatureAndSetParams(base::Feature feature,
+  void EnableFeatureAndSetParams(const base::Feature& feature,
                                  std::string param_name,
                                  std::string param_value);
 
-  void DisableFeature(base::Feature feature);
+  void DisableFeature(const base::Feature& feature);
 
   void SetUpOnMainThread() override;
 
@@ -101,41 +90,12 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
   bool HistogramContainsIntValue(base::HistogramBase::Sample sample,
                                  std::vector<base::Bucket> histogram_values);
 
-  // Tests that the observed outcomes match the current expected outcomes
-  // without adding any new expected outcomes.
-  void ExpectOutcomeDidNotChange(base::Location location);
-
-  void ExpectRestored(base::Location location);
-
-  void ExpectNotRestored(
-      std::vector<BackForwardCacheMetrics::NotRestoredReason> not_restored,
-      std::vector<blink::scheduler::WebSchedulerTrackedFeature> block_listed,
-      const std::vector<ShouldSwapBrowsingInstance>& not_swapped,
-      const std::vector<BackForwardCache::DisabledReason>&
-          disabled_for_render_frame_host,
-      const std::vector<uint64_t>& disallow_activation,
-      base::Location location);
-
-  void ExpectNotRestoredDidNotChange(base::Location location);
-
-  void ExpectBlocklistedFeature(
-      blink::scheduler::WebSchedulerTrackedFeature feature,
-      base::Location location);
-
-  void ExpectBrowsingInstanceNotSwappedReason(ShouldSwapBrowsingInstance reason,
-                                              base::Location location);
-
-  void ExpectEvictedAfterCommitted(
-      std::vector<BackForwardCacheMetrics::EvictedAfterDocumentRestoredReason>
-          reasons,
-      base::Location location);
-
   void EvictByJavaScript(RenderFrameHostImpl* rfh);
 
   void StartRecordingEvents(RenderFrameHostImpl* rfh);
 
   void MatchEventList(RenderFrameHostImpl* rfh,
-                      base::ListValue list,
+                      base::Value list,
                       base::Location location = base::Location::Current());
 
   // Creates a minimal HTTPS server, accessible through https_server().
@@ -143,16 +103,6 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
   net::EmbeddedTestServer* CreateHttpsServer();
 
   net::EmbeddedTestServer* https_server();
-
-  void ExpectTotalCount(base::StringPiece name,
-                        base::HistogramBase::Count count);
-
-  template <typename T>
-  void ExpectBucketCount(base::StringPiece name,
-                         T sample,
-                         base::HistogramBase::Count expected_count) {
-    histogram_tester_.ExpectBucketCount(name, sample, expected_count);
-  }
 
   // Do not fail this test if a message from a renderer arrives at the browser
   // for a cached page.
@@ -166,87 +116,131 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
 
   void ReleaseKeyboardLock(RenderFrameHostImpl* rfh);
 
-  base::HistogramTester histogram_tester_;
+  // Start a navigation to |url| but block it on an error. If |history_offset|
+  // is not 0, then the navigation will be a history navigation and this will
+  // assert that the URL after navigation is |url|.
+  void NavigateAndBlock(GURL url, int history_offset);
 
-  bool same_site_back_forward_cache_enabled_ = true;
-  bool skip_same_site_if_unload_exists_ = false;
-  bool check_eligibility_after_pagehide_ = false;
-  std::string unload_support_ = "always";
+  static testing::Matcher<BackForwardCacheCanStoreDocumentResult>
+  MatchesDocumentResult(testing::Matcher<NotRestoredReasons> not_stored,
+                        BlockListedFeatures block_listed);
 
-  const int kMaxBufferedBytesPerRequest = 7000;
+  using ReasonsMatcher = testing::Matcher<
+      const blink::mojom::BackForwardCacheNotRestoredReasonsPtr&>;
+  using SameOriginMatcher = testing::Matcher<
+      const blink::mojom::SameOriginBfcacheNotRestoredDetailsPtr&>;
+  ReasonsMatcher MatchesNotRestoredReasons(
+      const testing::Matcher<bool>& blocked,
+      const SameOriginMatcher* same_origin_details);
+  SameOriginMatcher MatchesSameOriginDetails(
+      const testing::Matcher<std::string>& id,
+      const testing::Matcher<std::string>& name,
+      const testing::Matcher<std::string>& src,
+      const testing::Matcher<std::string>& url,
+      const std::vector<testing::Matcher<std::string>>& reasons,
+      const std::vector<ReasonsMatcher>& children);
+
+  // Access the tree result of NotRestoredReason for the last main frame
+  // navigation.
+  BackForwardCacheCanStoreTreeResult* GetTreeResult() {
+    return tree_result_.get();
+  }
+
+  void InstallUnloadHandlerOnMainFrame();
+  void InstallUnloadHandlerOnSubFrame();
+  EvalJsResult GetUnloadRunCount();
+
+  bool IsUnloadAllowedToEnterBackForwardCache();
+
+  // Adds a blocklisted feature to the document to prevent caching. Currently
+  // this means adding a plugin. We expect that plugins will never become
+  // cacheable, so this should be stable (at least until plugins cease to
+  // exist). If you need the feature to be sticky, then
+  // `RenderFrameHostImpl::UseDummyStickyBackForwardCacheDisablingFeatureForTesting`
+  // provides that.
+  [[nodiscard]] bool AddBlocklistedFeature(RenderFrameHost* rfh);
+  // Check that the document was not restored for the reason added by
+  // `AddBlocklistedFeature`.
+  void ExpectNotRestoredDueToBlocklistedFeature(base::Location location);
+
+  const ukm::TestAutoSetUkmRecorder& ukm_recorder() override;
+  const base::HistogramTester& histogram_tester() override;
+
   const int kMaxBufferedBytesPerProcess = 10000;
   const base::TimeDelta kGracePeriodToFinishLoading = base::Seconds(5);
 
  private:
-  void AddSampleToBuckets(std::vector<base::Bucket>* buckets,
-                          base::HistogramBase::Sample sample);
-
-  // Adds a new outcome to the set of expected outcomes (restored or not) and
-  // tests that it occurred.
-  void ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome outcome,
-                     base::Location location);
-
-  void ExpectReasons(
-      std::vector<BackForwardCacheMetrics::NotRestoredReason> not_restored,
-      std::vector<blink::scheduler::WebSchedulerTrackedFeature> block_listed,
-      const std::vector<ShouldSwapBrowsingInstance>& not_swapped,
-      const std::vector<BackForwardCache::DisabledReason>&
-          disabled_for_render_frame_host,
-      const std::vector<uint64_t>& disallow_activation,
-      base::Location location);
-
-  void ExpectNotRestoredReasons(
-      std::vector<BackForwardCacheMetrics::NotRestoredReason> reasons,
-      base::Location location);
-
-  void ExpectBlocklistedFeatures(
-      std::vector<blink::scheduler::WebSchedulerTrackedFeature> features,
-      base::Location location);
-
-  void ExpectDisabledWithReasons(
-      const std::vector<BackForwardCache::DisabledReason>& reasons,
-      base::Location location);
-
-  void ExpectDisallowActivationReasons(const std::vector<uint64_t>& reasons,
-                                       base::Location location);
-
-  void ExpectBrowsingInstanceNotSwappedReasons(
-      const std::vector<ShouldSwapBrowsingInstance>& reasons,
-      base::Location location);
-
   content::ContentMockCertVerifier mock_cert_verifier_;
 
   base::test::ScopedFeatureList feature_list_;
+  logging::ScopedVmoduleSwitches vmodule_switches_;
 
   FrameTreeVisualizer visualizer_;
-  std::vector<base::Bucket> expected_outcomes_;
-  std::vector<base::Bucket> expected_not_restored_;
-  std::vector<base::Bucket> expected_blocklisted_features_;
-  std::vector<base::Bucket> expected_disabled_reasons_;
-  std::vector<base::Bucket> expected_disallow_activation_reasons_;
-  std::vector<base::Bucket> expected_browsing_instance_not_swapped_reasons_;
-  std::vector<base::Bucket> expected_eviction_after_committing_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-  std::unordered_map<base::Feature,
-                     std::map<std::string, std::string>,
-                     FeatureHash,
-                     FeatureEqualOperator>
+  std::map<base::test::FeatureRef, std::map<std::string, std::string>>
       features_with_params_;
-  std::vector<base::Feature> disabled_features_;
+  std::vector<base::test::FeatureRef> disabled_features_;
 
-  std::vector<UkmMetrics> expected_ukm_outcomes_;
-  std::vector<UkmMetrics> expected_ukm_not_restored_reasons_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
 
-  // Indicates whether metrics for all sites regardless of the domains are
-  // checked or not.
-  bool check_all_sites_ = true;
+  // Store the tree result of NotRestoredReasons for the last main frame
+  // navigation.
+  std::unique_ptr<BackForwardCacheCanStoreTreeResult> tree_result_;
+
   // Whether we should fail the test if a message arrived at the browser from a
   // renderer for a bfcached page.
   bool fail_for_unexpected_messages_while_cached_ = true;
 };
 
-void WaitForDOMContentLoaded(RenderFrameHostImpl* rfh);
+[[nodiscard]] bool WaitForDOMContentLoaded(RenderFrameHostImpl* rfh);
+
+class HighCacheSizeBackForwardCacheBrowserTest
+    : public BackForwardCacheBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override;
+
+  // The number of pages the BackForwardCache can hold per tab.
+  // The number 5 was picked since Android ASAN trybot failed to keep more than
+  // 6 pages in memory.
+  const size_t kBackForwardCacheSize = 5;
+};
+
+// An implementation of PageLifecycleStateManager::TestDelegate for testing.
+class PageLifecycleStateManagerTestDelegate
+    : public PageLifecycleStateManager::TestDelegate {
+ public:
+  explicit PageLifecycleStateManagerTestDelegate(
+      PageLifecycleStateManager* manager);
+
+  ~PageLifecycleStateManagerTestDelegate() override;
+
+  // Waits for the renderer finishing to set the state of being in back/forward
+  // cache.
+  void WaitForInBackForwardCacheAck();
+
+  void OnStoreInBackForwardCacheSent(base::OnceClosure cb);
+  void OnDisableJsEvictionSent(base::OnceClosure cb);
+  void OnRestoreFromBackForwardCacheSent(base::OnceClosure cb);
+
+ private:
+  // PageLifecycleStateManager::TestDelegate:
+  void OnLastAcknowledgedStateChanged(
+      const blink::mojom::PageLifecycleState& old_state,
+      const blink::mojom::PageLifecycleState& new_state) override;
+  void OnUpdateSentToRenderer(
+      const blink::mojom::PageLifecycleState& new_state) override;
+  void OnDeleted() override;
+
+  raw_ptr<PageLifecycleStateManager, DanglingUntriaged> manager_;
+  base::OnceClosure store_in_back_forward_cache_sent_;
+  base::OnceClosure store_in_back_forward_cache_ack_received_;
+  base::OnceClosure restore_from_back_forward_cache_sent_;
+  base::OnceClosure disable_eviction_sent_;
+};
+
+// Gets the value of a key in local storage by evaluating JS.
+EvalJsResult GetLocalStorage(RenderFrameHostImpl* rfh, std::string key);
 
 }  // namespace content
 

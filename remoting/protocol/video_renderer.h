@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ class VideoStub;
 // TODO(sergeyu): Reconsider this design.
 class VideoRenderer {
  public:
-  virtual ~VideoRenderer() {}
+  virtual ~VideoRenderer() = default;
 
   // Initializes the video renderer. This allows the renderer to be initialized
   // after it is constructed. Returns true if initialization succeeds and false

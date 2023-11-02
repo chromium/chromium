@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include "media/gpu/codec_picture.h"
 #include "media/parsers/vp8_parser.h"
+#include "media/video/video_encode_accelerator.h"
 
 namespace media {
 
@@ -24,6 +25,8 @@ class VP8Picture : public CodecPicture {
   virtual VaapiVP8Picture* AsVaapiVP8Picture();
 
   std::unique_ptr<Vp8FrameHeader> frame_hdr;
+
+  absl::optional<Vp8Metadata> metadata_for_encoding;
 
  protected:
   ~VP8Picture() override;

@@ -1,11 +1,10 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
-import("//build/config/linux/gtk/gtk.gni")
 import("//build/config/ozone.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
@@ -27,10 +26,15 @@ if (is_android) {
   import("//third_party/icu/config.gni")
   import("//ui/gl/features.gni")
   import("//v8/gni/v8.gni")
+} else if (is_fuchsia) {
+  import("//build/config/fuchsia/generate_runner_scripts.gni")
+  import("//third_party/fuchsia-sdk/sdk/build/component.gni")
+  import("//third_party/fuchsia-sdk/sdk/build/package.gni")
 }
 
-# TODO(spang): Investigate using shell_views with is_chromecast=true.
-shell_use_toolkit_views = toolkit_views && !is_chromecast
+# TODO(crbug.com/1336055, spang): Investigate using shell_views with cast builds as
+# true.
+shell_use_toolkit_views = toolkit_views && !is_castos
 
 declare_args() {
   content_shell_product_name = "Content Shell"
@@ -131,6 +135,8 @@ static_library("content_shell_lib") {
     "browser/shell_devtools_manager_delegate.h",
     "browser/shell_download_manager_delegate.cc",
     "browser/shell_download_manager_delegate.h",
+    "browser/shell_federated_permission_context.cc",
+    "browser/shell_federated_permission_context.h",
     "browser/shell_javascript_dialog.h",
     "browser/shell_javascript_dialog_manager.cc",
     "browser/shell_javascript_dialog_manager.h",
@@ -148,6 +154,8 @@ static_library("content_shell_lib") {
     "browser/shell_speech_recognition_manager_delegate.h",
     "browser/shell_web_contents_view_delegate.h",
     "browser/shell_web_contents_view_delegate_creator.h",
+    "common/main_frame_counter_test_impl.cc",
+    "common/main_frame_counter_test_impl.h",
     "common/power_monitor_test_impl.cc",
     "common/power_monitor_test_impl.h",
     "common/shell_content_client.cc",
@@ -158,6 +166,8 @@ static_library("content_shell_lib") {
     "common/shell_switches.h",
     "gpu/shell_content_gpu_client.cc",
     "gpu/shell_content_gpu_client.h",
+    "renderer/render_frame_test_helper.cc",
+    "renderer/render_frame_test_helper.h",
     "renderer/shell_content_renderer_client.cc",
     "renderer/shell_content_renderer_client.h",
     "renderer/shell_render_frame_observer.cc",
@@ -232,10 +242,14 @@ static_library("content_shell_lib") {
     "//build:chromeos_buildflags",
     "//cc/base",
     "//components/cdm/renderer",
+    "//components/custom_handlers",
+    "//components/custom_handlers:test_support",
     "//components/keyed_service/content",
     "//components/metrics",
     "//components/metrics:net",
     "//components/metrics:test_support",
+    "//components/network_hints/browser:browser",
+    "//components/network_hints/renderer",
     "//components/network_session_configurator/common",
     "//components/performance_manager",
     "//components/permissions",
@@ -247,7 +261,7 @@ static_library("content_shell_lib") {
     "//components/web_cache/renderer",
     "//content:content_resources",
     "//content:dev_ui_content_resources",
-    "//content/app/resources",
+    "//content/common:main_frame_counter",
     "//content/public/common",
     "//content/test:content_test_mojo_bindings",
     "//content/test:test_support",
@@ -265,6 +279,7 @@ static_library("content_shell_lib") {
     "//third_party/blink/public:image_resources",
     "//third_party/blink/public:resources",
     "//third_party/blink/public/strings",
+    "//third_party/blink/public/strings:accessibility_strings",
     "//ui/base",
     "//ui/base/clipboard",
     "//ui/base/ime/init",
@@ -289,8 +304,8 @@ static_library("content_shell_lib") {
       "browser/shell_plugin_service_filter.cc",
       "browser/shell_plugin_service_filter.h",
     ]
-    deps += [ "//ppapi/shared_impl" ]
   }
+
   if (enable_cast_renderer) {
     deps += [ "//media/mojo/services" ]
   }
@@ -303,8 +318,12 @@ static_library("content_shell_lib") {
     deps += [ "//gin" ]
   }
 
-  if (use_gtk) {
-    deps += [ "//ui/gtk" ]
+  if (is_linux) {
+    deps += [ "//ui/linux:linux_ui_factory" ]
+  }
+
+  if (is_mac) {
+    deps += [ "//ui/display:test_support" ]
   }
 
   if (is_android) {
@@ -360,13 +379,13 @@ static_library("content_shell_lib") {
   }
 
   if (is_chromeos_ash) {
-    deps += [ "//chromeos/dbus" ]
+    deps += [ "//chromeos/ash/components/dbus" ]
   }
 
   if (is_chromeos_lacros) {
     deps += [
       "//chromeos/dbus/constants",
-      "//chromeos/lacros",
+      "//chromeos/lacros/dbus",
     ]
   }
 
@@ -410,11 +429,12 @@ repack("pak") {
   testonly = true
 
   sources = [
-    "$root_gen_dir/content/app/resources/content_resources_100_percent.pak",
+    "$root_gen_dir/base/tracing/protos/tracing_proto_resources.pak",
     "$root_gen_dir/content/browser/resources/media/media_internals_resources.pak",
     "$root_gen_dir/content/browser/webrtc/resources/webrtc_internals_resources.pak",
     "$root_gen_dir/content/content_resources.pak",
     "$root_gen_dir/content/dev_ui_content_resources.pak",
+    "$root_gen_dir/content/quota_internals_resources.pak",
     "$root_gen_dir/content/shell/shell_resources.pak",
     "$root_gen_dir/content/test/web_ui_mojo_test_resources.pak",
     "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
@@ -422,19 +442,21 @@ repack("pak") {
     "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
     "$root_gen_dir/third_party/blink/public/resources/inspector_overlay_resources.pak",
+    "$root_gen_dir/third_party/blink/public/strings/blink_accessibility_strings_en-US.pak",
     "$root_gen_dir/third_party/blink/public/strings/blink_strings_en-US.pak",
     "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
     "$root_gen_dir/ui/resources/webui_generated_resources.pak",
-    "$root_gen_dir/ui/resources/webui_resources.pak",
     "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
+    "$root_gen_dir/ui/strings/ax_strings_en-US.pak",
     "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
   ]
 
   deps = [
     ":resources",
+    "//base/tracing/protos:chrome_track_event_resources",
     "//content:content_resources",
     "//content:dev_ui_content_resources",
-    "//content/app/resources",
+    "//content/browser/resources:resources",
     "//content/browser/resources/media:resources",
     "//content/browser/webrtc/resources",
     "//content/test:web_ui_mojo_test_resources",
@@ -444,6 +466,7 @@ repack("pak") {
     "//third_party/blink/public:resources",
     "//third_party/blink/public:scaled_resources_100_percent",
     "//third_party/blink/public/strings",
+    "//third_party/blink/public/strings:accessibility_strings",
     "//ui/resources",
     "//ui/strings",
   ]
@@ -486,10 +509,18 @@ if (is_android) {
     output_name = content_shell_product_name
     sources = [ "app/shell_main_mac.cc" ]
     defines = [ "SHELL_PRODUCT_NAME=\"$content_shell_product_name\"" ]
+
+    # Must have minimal dependencies. In particular cannot depend on //base.
+    # Depending on //base leads to loading //base twice (once in the exe, once
+    # in the main framework).
     deps = [
       ":content_shell_framework_bundle_data",
       ":content_shell_resources_bundle_data",
-      "//sandbox",
+
+      # Despite its path, this does not add a //base dependency, see comments in
+      # the .cc file.
+      "//base/allocator:early_zone_registration_mac",
+      "//sandbox/mac:seatbelt",
     ]
     info_plist_target = ":content_shell_plist"
     data_deps = [ ":content_shell_app" ]
@@ -551,15 +582,25 @@ if (is_android) {
   }
 
   if (is_fuchsia) {
-    cr_fuchsia_package("content_shell_pkg") {
+    fuchsia_component("content_shell_component") {
       testonly = true
-      binary = ":content_shell"
+      manifest = "fuchsia/content_shell.cml"
+      data_deps = [ ":content_shell" ]
+      visibility = [ ":*" ]
+    }
+
+    fuchsia_package("content_shell_pkg") {
+      testonly = true
       package_name = "content_shell"
-      manifest = "fuchsia/content_shell.cmx"
+      deps = [ ":content_shell_component" ]
     }
 
     fuchsia_package_installer("content_shell_fuchsia") {
       testonly = true
+      visibility = [
+        ":*",  # See https://crbug.com/1328459#c4.
+        "//:*",
+      ]
       package = ":content_shell_pkg"
       package_name = "content_shell"
     }
@@ -591,7 +632,7 @@ if (is_mac) {
     outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
   }
 
-  if (enable_plugins) {
+  if (enable_ppapi) {
     bundle_data("content_shell_framework_plugins") {
       sources = [
         "$root_out_dir/blink_deprecated_test_plugin.plugin",
@@ -669,7 +710,7 @@ if (is_mac) {
       ":content_shell_swiftshader_library",
     ]
 
-    if (enable_plugins) {
+    if (enable_ppapi) {
       deps += [ ":content_shell_framework_plugins" ]
     }
 
@@ -727,7 +768,10 @@ if (is_mac) {
         "CONTENT_SHELL_HELPER_SUFFIX=${invoker.helper_name_suffix}",
         "CONTENT_SHELL_HELPER_BUNDLE_ID_SUFFIX=${invoker.helper_bundle_id_suffix}",
       ]
-      deps = [ "//sandbox/mac:seatbelt" ]
+      deps = [
+        "//base/allocator:early_zone_registration_mac",
+        "//sandbox/mac:seatbelt",
+      ]
 
       info_plist_target = ":content_shell_helper_plist"
 
@@ -795,16 +839,11 @@ if (is_mac) {
     # Add the SwiftShader .dylibs in the Libraries directory of the Framework.
     bundle_data("content_shell_swiftshader_binaries") {
       sources = [
-        "$root_out_dir/egl_intermediates/libswiftshader_libEGL.dylib",
-        "$root_out_dir/egl_intermediates/libswiftshader_libGLESv2.dylib",
         "$root_out_dir/vk_intermediates/libvk_swiftshader.dylib",
         "$root_out_dir/vk_intermediates/vk_swiftshader_icd.json",
       ]
       outputs = [ "{{bundle_contents_dir}}/Libraries/{{source_file_part}}" ]
-      public_deps = [
-        "//ui/gl:swiftshader_egl_library_copy",
-        "//ui/gl:swiftshader_vk_library_copy",
-      ]
+      public_deps = [ "//ui/gl:swiftshader_vk_library_copy" ]
     }
   }
 
@@ -822,8 +861,15 @@ if (is_mac) {
 }
 
 mojom("content_browsertests_mojom") {
-  sources = [ "common/power_monitor_test.mojom" ]
-  public_deps = [ "//sandbox/policy/mojom" ]
+  sources = [
+    "common/main_frame_counter_test.mojom",
+    "common/power_monitor_test.mojom",
+    "common/render_frame_test_helper.mojom",
+  ]
+  public_deps = [
+    "//sandbox/policy/mojom",
+    "//third_party/blink/public/mojom/tokens",
+  ]
 }
 
 group("content_shell_crash_test") {

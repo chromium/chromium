@@ -1,0 +1,26 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=vars
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=chrome://resources/polymer/v3_0/paper-styles/color.js
+ * #css_wrapper_metadata_end */
+
+html {
+  /* Note: error-color is used for many warnings. There's also an orange-y
+   * warning color in 1 place. */
+  --error-color: var(--google-red-700);
+  /* Copied from 'ui/gfx/color_palette.h' kGoogleYellow700 (#f29900) */
+  --warning-color: rgb(242, 153, 0);
+  --extensions-card-height: 160px;
+  --separator-gap: 9px;
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    --error-color: var(--google-red-300);
+    --warning-color: var(--google-yellow-300);
+  }
+}

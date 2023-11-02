@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,21 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "snapshot/mac/process_types.h"
-
 #include <stddef.h>
 #include <string.h>
 #include <sys/types.h>
 
 #include <algorithm>
+#include <iterator>
 #include <limits>
 #include <type_traits>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/stringprintf.h"
+#include "snapshot/mac/process_types.h"
 #include "snapshot/mac/process_types/internal.h"
 #include "util/mac/mac_util.h"
 #include "util/process/process_memory_mac.h"
@@ -150,8 +149,8 @@ size_t dyld_all_image_infos<Traits>::ExpectedSizeForVersion(
       sizeof(dyld_all_image_infos<Traits>),  // 18
   };
 
-  if (version >= base::size(kSizeForVersion)) {
-    return kSizeForVersion[base::size(kSizeForVersion) - 1];
+  if (version >= std::size(kSizeForVersion)) {
+    return kSizeForVersion[std::size(kSizeForVersion) - 1];
   }
 
   static_assert(std::is_unsigned<decltype(version)>::value,

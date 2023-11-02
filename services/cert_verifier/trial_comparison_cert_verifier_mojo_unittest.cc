@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,15 +11,16 @@
 #include "net/cert/cert_verify_proc_builtin.h"
 #include "net/der/encode_values.h"
 #include "net/der/parse_values.h"
+#include "net/net_buildflags.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "net/cert/cert_verify_proc_mac.h"
 #include "net/cert/internal/trust_store_mac.h"
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "net/cert/cert_verify_proc_win.h"
 #endif
 
@@ -109,7 +110,7 @@ TEST(TrialComparisonCertVerifierMojoTest, SendReportDebugInfo) {
 
   base::Time time = base::Time::Now();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   constexpr uint32_t kExpectedTrustResult = 4;
   constexpr int32_t kExpectedResultCode = -12345;
   std::vector<net::CertVerifyProcMac::ResultDebugData::CertEvidenceInfo>
@@ -136,10 +137,14 @@ TEST(TrialComparisonCertVerifierMojoTest, SendReportDebugInfo) {
   mac_trust_debug_info->UpdateTrustDebugInfo(
       kExpectedTrustDebugInfo, net::TrustStoreMac::TrustImplType::kSimple);
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::vector<uint8_t> authroot_sequence{'T', 'E', 'S', 'T'};
   net::CertVerifyProcWin::ResultDebugData::Create(time, authroot_sequence,
                                                   &primary_result);
+#endif
+  absl::optional<int64_t> chrome_root_store_version = absl::nullopt;
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  chrome_root_store_version = 42;
 #endif
 
   net::der::GeneralizedTime der_time;
@@ -149,8 +154,8 @@ TEST(TrialComparisonCertVerifierMojoTest, SendReportDebugInfo) {
   der_time.hours = 22;
   der_time.minutes = 11;
   der_time.seconds = 8;
-  net::CertVerifyProcBuiltinResultDebugData::Create(&trial_result, time,
-                                                    der_time);
+  net::CertVerifyProcBuiltinResultDebugData::Create(
+      &trial_result, time, der_time, chrome_root_store_version);
 
   mojo::PendingRemote<
       cert_verifier::mojom::TrialComparisonCertVerifierReportClient>
@@ -158,7 +163,8 @@ TEST(TrialComparisonCertVerifierMojoTest, SendReportDebugInfo) {
   FakeReportClient report_client(
       report_client_remote.InitWithNewPipeAndPassReceiver());
   cert_verifier::TrialComparisonCertVerifierMojo tccvm(
-      true, {}, std::move(report_client_remote), nullptr, nullptr);
+      true, {}, std::move(report_client_remote), nullptr, nullptr, nullptr,
+      nullptr);
 
   tccvm.OnSendTrialReport("example.com", unverified_cert, false, false, false,
                           false, "stapled ocsp", "sct list", primary_result,
@@ -180,7 +186,7 @@ TEST(TrialComparisonCertVerifierMojoTest, SendReportDebugInfo) {
             std::string(report.sct_list.begin(), report.sct_list.end()));
 
   ASSERT_TRUE(report.debug_info);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   ASSERT_TRUE(report.debug_info->mac_platform_debug_info);
   EXPECT_EQ(kExpectedTrustResult,
             report.debug_info->mac_platform_debug_info->trust_result);
@@ -203,13 +209,19 @@ TEST(TrialComparisonCertVerifierMojoTest, SendReportDebugInfo) {
       cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::kSimple,
       report.debug_info->mac_trust_impl);
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ASSERT_TRUE(report.debug_info->win_platform_debug_info);
   EXPECT_EQ(time,
             report.debug_info->win_platform_debug_info->authroot_this_update);
   EXPECT_EQ(
       authroot_sequence,
       report.debug_info->win_platform_debug_info->authroot_sequence_number);
+#endif
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  ASSERT_TRUE(report.debug_info->chrome_root_store_debug_info);
+  EXPECT_EQ(chrome_root_store_version.value(),
+            report.debug_info->chrome_root_store_debug_info
+                ->chrome_root_store_version);
 #endif
 
   EXPECT_EQ(time, report.debug_info->trial_verification_time);

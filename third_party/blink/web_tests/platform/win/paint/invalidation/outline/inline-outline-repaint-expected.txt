@@ -8,6 +8,24 @@
       "invalidations": [
         [5, 153, 92, 45]
       ]
+    },
+    {
+      "name": "Caret",
+      "position": [44, 176],
+      "bounds": [1, 19],
+      "contentsOpaque": true,
+      "invalidations": [
+        [0, 0, 1, 19]
+      ]
+    },
+    {
+      "name": "LayoutNGBlockFlow HTML",
+      "position": [5, 153],
+      "bounds": [85, 45],
+      "contentsOpaqueForText": true,
+      "invalidations": [
+        [0, 0, 85, 45]
+      ]
     }
   ]
 }

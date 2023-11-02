@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,10 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/record_replay.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "components/power_scheduler/power_mode_voter.h"
 #include "net/base/request_priority.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -37,9 +39,6 @@ namespace base {
 namespace sequence_manager {
 class TaskQueue;
 }  // namespace sequence_manager
-namespace trace_event {
-class BlameContext;
-}  // namespace trace_event
 }  // namespace base
 
 namespace ukm {
@@ -75,7 +74,7 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
  public:
   FrameSchedulerImpl(PageSchedulerImpl* page_scheduler,
                      FrameScheduler::Delegate* delegate,
-                     base::trace_event::BlameContext* blame_context,
+                     bool is_in_embedded_frame_tree,
                      FrameScheduler::FrameType frame_type);
   FrameSchedulerImpl(const FrameSchedulerImpl&) = delete;
   FrameSchedulerImpl& operator=(const FrameSchedulerImpl&) = delete;
@@ -93,21 +92,21 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   void SetPaused(bool frame_paused) override;
   void SetShouldReportPostedTasksWhenDisabled(bool should_report) override;
 
-  void SetCrossOriginToMainFrame(bool cross_origin) override;
-  bool IsCrossOriginToMainFrame() const override;
+  void SetCrossOriginToNearestMainFrame(bool cross_origin) override;
+  bool IsCrossOriginToNearestMainFrame() const override;
 
   void SetIsAdFrame(bool is_ad_frame) override;
   bool IsAdFrame() const override;
+
+  bool IsInEmbeddedFrameTree() const override;
 
   void TraceUrlChange(const String& url) override;
   void AddTaskTime(base::TimeDelta time) override;
   FrameScheduler::FrameType GetFrameType() const override;
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(TaskType) override;
 
-  // Returns a wrapper around an instance of MainThreadTaskQueue which is
-  // maintained in |resource_loading_task_queues_| map. The main thread task
-  // queue is removed from the map and detached from both the main thread and
-  // the frame schedulers when the wrapper instance goes out of scope.
+  // Returns a wrapper around an instance of MainThreadTaskQueue.
+  // TODO(crbug.com/860545): Decide whether this method should be removed.
   std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
   CreateResourceLoadingTaskRunnerHandle() override;
 
@@ -115,15 +114,15 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   CreateResourceLoadingMaybeUnfreezableTaskRunnerHandle() override;
   WebAgentGroupScheduler* GetAgentGroupScheduler() override;
   PageScheduler* GetPageScheduler() const override;
-  void DidStartProvisionalLoad(bool is_main_frame) override;
+  void DidStartProvisionalLoad() override;
   void DidCommitProvisionalLoad(bool is_web_history_inert_commit,
                                 NavigationType navigation_type) override;
   WebScopedVirtualTimePauser CreateWebScopedVirtualTimePauser(
       const WTF::String& name,
       WebScopedVirtualTimePauser::VirtualTaskDuration duration) override;
+  scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override;
 
   void OnFirstContentfulPaintInMainFrame() override;
-  void OnDomContentLoaded() override;
   void OnFirstMeaningfulPaint() override;
   void OnLoad() override;
   bool IsWaitingForContentfulPaint() const;
@@ -204,19 +203,12 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   FrameSchedulerImpl(MainThreadSchedulerImpl* main_thread_scheduler,
                      PageSchedulerImpl* parent_page_scheduler,
                      FrameScheduler::Delegate* delegate,
-                     base::trace_event::BlameContext* blame_context,
+                     bool is_in_embedded_frame_tree,
                      FrameScheduler::FrameType frame_type);
 
   // This will construct a subframe that is not linked to any main thread or
   // page scheduler. Should be used only for testing purposes.
   FrameSchedulerImpl();
-
-  void OnShutdownResourceLoadingTaskQueue(
-      scoped_refptr<MainThreadTaskQueue> task_queue);
-
-  void DidChangeResourceLoadingPriority(
-      scoped_refptr<MainThreadTaskQueue> task_queue,
-      net::RequestPriority priority);
 
   scoped_refptr<MainThreadTaskQueue> GetTaskQueue(TaskType);
 
@@ -305,7 +297,11 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
 
   const FrameScheduler::FrameType frame_type_;
 
-  bool is_ad_frame_;
+  // Whether this scheduler is created for a frame that is contained
+  // inside an embedded frame tree. See /docs/frame_trees.md.
+  const bool is_in_embedded_frame_tree_;
+
+  bool is_ad_frame_ = false;
 
   // A running tally of (wall) time spent in tasks for this frame.
   // This is periodically forwarded and zeroed out.
@@ -314,32 +310,22 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   TraceableVariableController tracing_controller_;
   std::unique_ptr<FrameTaskQueueController> frame_task_queue_controller_;
 
-  using ResourceLoadingTaskQueuePriorityMap =
-      WTF::HashMap<scoped_refptr<MainThreadTaskQueue>,
-                   base::sequence_manager::TaskQueue::QueuePriority>;
-
-  // Queue to priority map of resource loading task queues created by
-  // |frame_task_queue_controller_| via CreateResourceLoadingTaskRunnerHandle.
-  ResourceLoadingTaskQueuePriorityMap resource_loading_task_queue_priorities_;
-
   MainThreadSchedulerImpl* const main_thread_scheduler_;  // NOT OWNED
   PageSchedulerImpl* parent_page_scheduler_;              // NOT OWNED
   FrameScheduler::Delegate* delegate_;                    // NOT OWNED
-  base::trace_event::BlameContext* blame_context_;        // NOT OWNED
   SchedulingLifecycleState throttling_state_;
-  TraceableState<bool, TracingCategoryName::kInfo> frame_visible_;
-  TraceableState<bool, TracingCategoryName::kInfo> frame_paused_;
-  TraceableState<FrameOriginType, TracingCategoryName::kInfo>
-      frame_origin_type_;
-  TraceableState<bool, TracingCategoryName::kInfo> subresource_loading_paused_;
-  StateTracer<TracingCategoryName::kInfo> url_tracer_;
-  TraceableState<bool, TracingCategoryName::kInfo> task_queues_throttled_;
+  TraceableState<bool, TracingCategory::kInfo> frame_visible_;
+  TraceableState<bool, TracingCategory::kInfo> frame_paused_;
+  TraceableState<FrameOriginType, TracingCategory::kInfo> frame_origin_type_;
+  TraceableState<bool, TracingCategory::kInfo> subresource_loading_paused_;
+  StateTracer<TracingCategory::kInfo> url_tracer_;
+  TraceableState<bool, TracingCategory::kInfo> task_queues_throttled_;
   Vector<MainThreadTaskQueue::ThrottleHandle> throttled_task_queue_handles_;
-  TraceableState<bool, TracingCategoryName::kInfo>
+  TraceableState<bool, TracingCategory::kInfo>
       preempted_for_cooperative_scheduling_;
   // TODO(https://crbug.com/827113): Trace the count of opt-outs.
   int aggressive_throttling_opt_out_count_;
-  TraceableState<bool, TracingCategoryName::kInfo>
+  TraceableState<bool, TracingCategory::kInfo>
       opted_out_from_aggressive_throttling_;
   size_t subresource_loading_pause_count_;
 
@@ -353,19 +339,14 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   // These are the states of the Page.
   // They should be accessed via GetPageScheduler()->SetPageState().
   // they are here because we don't support page-level tracing yet.
-  TraceableState<bool, TracingCategoryName::kInfo> page_frozen_for_tracing_;
-  TraceableState<PageVisibilityState, TracingCategoryName::kInfo>
+  TraceableState<bool, TracingCategory::kInfo> page_frozen_for_tracing_;
+  TraceableState<PageVisibilityState, TracingCategory::kInfo>
       page_visibility_for_tracing_;
 
-  TraceableState<bool, TracingCategoryName::kInfo>
-      waiting_for_dom_content_loaded_;
-  TraceableState<bool, TracingCategoryName::kInfo>
-      waiting_for_contentful_paint_;
-  TraceableState<bool, TracingCategoryName::kInfo>
-      waiting_for_meaningful_paint_;
-  TraceableState<bool, TracingCategoryName::kInfo> waiting_for_load_;
+  TraceableState<bool, TracingCategory::kInfo> waiting_for_contentful_paint_;
+  TraceableState<bool, TracingCategory::kInfo> waiting_for_meaningful_paint_;
 
-  std::unique_ptr<power_scheduler::PowerModeVoter> loading_power_mode_voter_;
+  recordreplay::unique_leaky_ptr<power_scheduler::PowerModeVoter> loading_power_mode_voter_;
 
   // TODO(altimin): Remove after we have have 1:1 relationship between frames
   // and documents.

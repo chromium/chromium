@@ -124,7 +124,7 @@ int ScriptRegexp::Match(StringView string,
   }
 
   if (group_list) {
-    DCHECK(group_list->IsEmpty());
+    DCHECK(group_list->empty());
     for (uint32_t i = 1; i < result->Length(); ++i) {
       v8::Local<v8::Value> group;
       if (!result->Get(context, i).ToLocal(&group))

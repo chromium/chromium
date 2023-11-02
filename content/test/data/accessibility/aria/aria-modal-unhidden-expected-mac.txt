@@ -1,0 +1,4 @@
+AXWebArea
+++AXGroup AXSubrole=AXApplicationAlertDialog
+++++AXStaticText AXValue='Modal contents:'
+++++AXButton AXTitle='cancel'

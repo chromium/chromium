@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 
 #include "base/check_op.h"
 #include "base/memory/aligned_memory.h"
+#include "base/memory/raw_ptr_exclusion.h"
 
 namespace {
 const size_t kDefaultNumElementTypesToReserve = 32;
@@ -262,7 +263,10 @@ class ListContainerHelper::CharAllocator {
   size_t last_list_index_;
 
   // This is equivalent to |storage_[last_list_index_]|.
-  InnerList* last_list_;
+  //
+  // `last_list_` is not a raw_ptr<...> for performance reasons (based on
+  // analysis of sampling profiler data and tab_search:top100:2020).
+  RAW_PTR_EXCLUSION InnerList* last_list_;
 };
 
 // PositionInCharAllocator

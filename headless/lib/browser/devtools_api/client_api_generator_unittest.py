@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -15,7 +15,7 @@ class ClientApiGeneratorTest(unittest.TestCase):
 
   def test_ArgumentParsing(self):
     with tempfile.NamedTemporaryFile() as f:
-      f.write('{"foo": true}')
+      f.write(b'{"foo": true}')
       f.flush()
       json_api, output_dir = client_api_generator.ParseArguments([
           '--protocol', f.name, '--output_dir', 'out'])

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/guest_view/browser/guest_view.h"
 #include "content/public/browser/global_routing_id.h"
@@ -84,16 +83,17 @@ class StreamContainer {
 class MimeHandlerViewGuest
     : public guest_view::GuestView<MimeHandlerViewGuest> {
  public:
+  ~MimeHandlerViewGuest() override;
   MimeHandlerViewGuest(const MimeHandlerViewGuest&) = delete;
   MimeHandlerViewGuest& operator=(const MimeHandlerViewGuest&) = delete;
 
-  static guest_view::GuestViewBase* Create(
+  static std::unique_ptr<GuestViewBase> Create(
       content::WebContents* owner_web_contents);
 
   static const char Type[];
 
   // GuestViewBase overrides.
-  bool CanBeEmbeddedInsideCrossProcessFrames() override;
+  bool CanBeEmbeddedInsideCrossProcessFrames() const override;
   content::RenderWidgetHost* GetOwnerRenderWidgetHost() override;
   content::SiteInstance* GetOwnerSiteInstance() override;
 
@@ -129,7 +129,6 @@ class MimeHandlerViewGuest
 
  protected:
   explicit MimeHandlerViewGuest(content::WebContents* owner_web_contents);
-  ~MimeHandlerViewGuest() override;
 
  private:
   friend class TestMimeHandlerViewGuest;
@@ -137,13 +136,13 @@ class MimeHandlerViewGuest
   // GuestViewBase implementation.
   const char* GetAPINamespace() const final;
   int GetTaskPrefix() const final;
-  void CreateWebContents(const base::DictionaryValue& create_params,
+  void CreateWebContents(std::unique_ptr<GuestViewBase> owned_this,
+                         const base::Value::Dict& create_params,
                          WebContentsCreatedCallback callback) override;
   void DidAttachToEmbedder() override;
-  void DidInitialize(const base::DictionaryValue& create_params) final;
+  void DidInitialize(const base::Value::Dict& create_params) final;
   void EmbedderFullscreenToggled(bool entered_fullscreen) final;
   bool ZoomPropagatesFromEmbedderToGuest() const final;
-  bool ShouldDestroyOnDetach() const final;
 
   // WebContentsDelegate implementation.
   content::WebContents* OpenURLFromTab(
@@ -161,7 +160,6 @@ class MimeHandlerViewGuest
   bool SaveFrame(const GURL& url,
                  const content::Referrer& referrer,
                  content::RenderFrameHost* rfh) final;
-  void OnRenderFrameHostDeleted(int process_id, int routing_id) final;
   void EnterFullscreenModeForTab(
       content::RenderFrameHost* requesting_frame,
       const blink::mojom::FullscreenOptions& options) override;
@@ -181,7 +179,7 @@ class MimeHandlerViewGuest
       const GURL& opener_url,
       const std::string& frame_name,
       const GURL& target_url,
-      const content::StoragePartitionId& partition_id,
+      const content::StoragePartitionConfig& partition_config,
       content::SessionStorageNamespace* session_storage_namespace) override;
 
   // Updates the fullscreen state for the guest. Returns whether the change
@@ -189,8 +187,7 @@ class MimeHandlerViewGuest
   bool SetFullscreenState(bool is_fullscreen);
 
   // content::WebContentsObserver implementation.
-  void DocumentOnLoadCompletedInMainFrame(
-      content::RenderFrameHost* render_frame_host) final;
+  void DocumentOnLoadCompletedInPrimaryMainFrame() final;
   void ReadyToCommitNavigation(
       content::NavigationHandle* navigation_handle) final;
   void DidFinishNavigation(content::NavigationHandle* navigation_handle) final;

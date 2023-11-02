@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -13,7 +13,7 @@ import zlib
 from optparse import OptionParser
 from subprocess import call
 
-_LICENSE = """// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+_LICENSE = """// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,6 +33,7 @@ _OS_TYPE_MAP = {
     'android': 'kOsAndroid',
     'linux': 'kOsLinux',
     'chromeos': 'kOsChromeOS',
+    'fuchsia': 'kOsFuchsia',
     '': 'kOsAny',
   }
 
@@ -73,8 +74,8 @@ def check_nvidia_driver_version(version):
   ver_list = version.split('.')
   # Allow "456" to match "456.*", so allow a single-entry list.
   if len(ver_list) == 0 or len(ver_list) > 2:
-    return False;
-  elif len(ver_list) == 2 and len(ver_list[1]) != 2:
+    return False
+  if len(ver_list) == 2 and len(ver_list[1]) != 2:
     return False
   # Must start with three digits, whether it's "456.*" or "456.78".
   if len(ver_list[0]) != 3:
@@ -102,7 +103,7 @@ def load_software_rendering_list_features(feature_type_filename):
       assert start
       start = False
       break
-    elif line.startswith('GPU_FEATURE_TYPE_'):
+    if line.startswith('GPU_FEATURE_TYPE_'):
       name = line[len('GPU_FEATURE_TYPE_'):]
       features.append(name.lower())
     else:
@@ -187,7 +188,7 @@ def write_disabled_extension_list(entry_kind, entry_id, data, data_file,
       data_helper_file.write(',\n')
     data_helper_file.write('};\n\n')
     # use the list
-    data_file.write('base::size(%s),  // %s size\n' % (var_name, entry_kind))
+    data_file.write('std::size(%s),  // %s size\n' % (var_name, entry_kind))
     data_file.write('%s,  // %s\n' % (var_name, entry_kind))
   else:
     data_file.write('0,  // %s size\n' % entry_kind)
@@ -293,7 +294,7 @@ def write_number_list(entry_id, data_type, name_tag, data, is_exception,
       data_helper_file.write(',\n')
     data_helper_file.write('};\n\n')
     # reference the list
-    data_file.write('base::size(%s),  // %s size\n' % (var_name, name_tag))
+    data_file.write('std::size(%s),  // %s size\n' % (var_name, name_tag))
     data_file.write('%s,  // %s\n' % (var_name, name_tag))
   else:
     data_file.write('0,  // %s size\n' % name_tag)
@@ -349,7 +350,7 @@ def write_device_list(entry_id, device_id, device_revision, is_exception,
                              (device_id[ii], device_revision[ii]))
     data_helper_file.write('};\n\n')
     # reference the list
-    data_file.write('base::size(%s),  // Devices size\n' % var_name)
+    data_file.write('std::size(%s),  // Devices size\n' % var_name)
     data_file.write('%s,  // Devices\n' % var_name)
   else:
     assert not device_revision
@@ -381,7 +382,7 @@ def write_machine_model_info(entry_id, is_exception, exception_id,
     data_helper_file.write(
       'const GpuControlList::MachineModelInfo %s = {\n' % var_name)
     if machine_model_name:
-      data_helper_file.write('base::size(%s),  // machine model name size\n' %
+      data_helper_file.write('std::size(%s),  // machine model name size\n' %
                              model_name_var_name)
       data_helper_file.write('%s,  // machine model names\n' %
                              model_name_var_name)
@@ -492,30 +493,30 @@ def write_conditions(entry_id, is_exception, exception_id, entry,
       assert not is_exception
       assert entry['id'] == entry_id
       continue
-    elif key == 'description':
+    if key == 'description':
       assert not is_exception
       continue
-    elif key == 'driver_update_url':
+    if key == 'driver_update_url':
       assert not is_exception
       continue
-    elif key == 'features':
+    if key == 'features':
       assert not is_exception
       continue
-    elif key == 'disabled_extensions':
+    if key == 'disabled_extensions':
       assert not is_exception
       continue
-    elif key == 'disabled_webgl_extensions':
+    if key == 'disabled_webgl_extensions':
       assert not is_exception
       continue
-    elif key == 'comment':
+    if key == 'comment':
       continue
-    elif key == 'webkit_bugs':
+    if key == 'webkit_bugs':
       assert not is_exception
       continue
-    elif key == 'cr_bugs':
+    if key == 'cr_bugs':
       assert not is_exception
       continue
-    elif key == 'os':
+    if key == 'os':
       os_info = entry[key]
       os_type = os_info['type']
       if 'version' in os_info:
@@ -589,6 +590,8 @@ def write_conditions(entry_id, is_exception, exception_id, entry,
   write_multi_gpu_style(multi_gpu_style, data_file)
   # group driver info
   if driver_vendor != '' or driver_version != None:
+    if multi_gpu_category != '':
+      assert vendor_id != 0, 'Need vendor_id in entry with id: '+ str(entry_id)
     if driver_version and driver_version.get('schema') == 'intel_driver':
       assert os_type == 'win', 'Intel driver schema is only for Windows'
       is_intel = (format(vendor_id, '#04x') == '0x8086' or
@@ -681,7 +684,8 @@ def write_intel_gpu_series_list(entry_id, is_exception, exception_id,
       'tigerlake': 'kTigerlake',
       'rocketlake': 'kRocketlake',
       'dg1': 'kDG1',
-      'alderlake': 'kAlderlake'
+      'alderlake': 'kAlderlake',
+      'alchemist': 'kAlchemist'
     }
     for series in intel_gpu_series_list:
       assert series in intel_gpu_series_map
@@ -689,7 +693,7 @@ def write_intel_gpu_series_list(entry_id, is_exception, exception_id,
                              intel_gpu_series_map[series])
     data_helper_file.write('};\n\n')
 
-    data_file.write('base::size(%s),  // intel_gpu_series size\n' % var_name)
+    data_file.write('std::size(%s),  // intel_gpu_series size\n' % var_name)
     data_file.write('%s,  // intel_gpu_series\n' % var_name)
   else:
     data_file.write('0,  // intel_gpu_series size\n')
@@ -745,13 +749,13 @@ def write_entry(entry, total_feature_set, feature_name_prefix,
   if 'driver_update_url' in entry:
     description += (' Please update your graphics driver via this link: ' +
                     entry['driver_update_url'])
-  data_file.write('"%s",\n' % description);
+  data_file.write('"%s",\n' % description)
   # Features
   if 'features' in entry:
     var_name = 'kFeatureListFor%sEntry%d' % (unique_symbol_id, entry_id)
     features = entry['features']
     feature_set = get_feature_set(features, total_feature_set)
-    data_file.write('base::size(%s),  // features size\n' % var_name)
+    data_file.write('std::size(%s),  // features size\n' % var_name)
     data_file.write('%s,  // features\n' % var_name)
     write_features(feature_set, feature_name_prefix, var_name, data_helper_file)
   else:
@@ -794,7 +798,7 @@ def write_entry(entry, total_feature_set, feature_name_prefix,
                        data_exception_file, data_helper_file, None)
       data_exception_file.write('},\n')
     data_exception_file.write('};\n\n')
-    data_file.write('base::size(%s),  // exceptions count\n' % exception_var)
+    data_file.write('std::size(%s),  // exceptions count\n' % exception_var)
     data_file.write('%s,  // exceptions\n' % exception_var)
   else:
     data_file.write('0,  // exceptions count\n')
@@ -835,6 +839,7 @@ def process_json_file(json_filepath, list_tag,
   data_file.write(_LICENSE)
   data_file.write(_DO_NOT_EDIT_WARNING)
   data_file.write('#include "%s/%s"\n\n' % (path, output_header_filename))
+  data_file.write('#include <iterator>\n\n')
   data_file.write('#include "%s/%s"\n' % (path, output_helper_filename))
   data_file.write('#include "%s/%s"\n\n' % (path, output_exception_filename))
   data_helper_file = open(output_helper_filepath, 'w')
@@ -865,7 +870,7 @@ def process_json_file(json_filepath, list_tag,
       if os_type not in _OS_TYPE_MAP:
         raise Exception('Unknown OS type "%s" for entry %d' %
                         (os_type, entry_id))
-      if os_filter != None and os_type != os_filter:
+      if os_filter not in (None, os_type):
         continue
     entry_count += 1
     write_entry(entry, total_features, feature_tag, unique_symbol_id,

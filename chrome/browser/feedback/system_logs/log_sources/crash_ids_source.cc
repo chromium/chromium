@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,10 +16,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "chromeos/dbus/dbus_thread_manager.h"  // nogncheck
-#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 #endif
 
 namespace system_logs {
@@ -68,8 +66,7 @@ void CrashIdsSource::Fetch(SysLogsSourceCallback callback) {
   // Non-chromeOS systems upload crashes shortly after they happen. ChromeOS is
   // unique in that it has a separate process (crash_sender) that uploads
   // crashes periodically (by default every 5 minutes).
-  chromeos::DebugDaemonClient* debugd_client =
-      chromeos::DBusThreadManager::Get()->GetDebugDaemonClient();
+  ash::DebugDaemonClient* debugd_client = ash::DebugDaemonClient::Get();
   if (debugd_client) {
     debugd_client->UploadCrashes(base::BindOnce(
         [](base::OnceClosure load_crash_list_cb, bool success) {

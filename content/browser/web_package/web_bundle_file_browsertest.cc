@@ -1,9 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/files/file_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "content/browser/web_package/web_bundle_browsertest_base.h"
 #include "content/browser/web_package/web_bundle_utils.h"
 
@@ -32,12 +33,12 @@ class WebBundleFileBrowserTest
         web_bundle_browsertest_utils::TestFilePathMode::kNormalFilePath) {
       content_uri = net::FilePathToFileURL(file_path);
     } else {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       DCHECK_EQ(web_bundle_browsertest_utils::TestFilePathMode::kContentURI,
                 GetParam());
       web_bundle_browsertest_utils::CopyFileAndGetContentUri(
           file_path, &content_uri, nullptr /* new_file_path */);
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
     }
     return content_uri;
   }
@@ -60,74 +61,6 @@ class WebBundleFileBrowserTest
         shell()->web_contents(), test_data_url, url_origin,
         base::BindRepeating(&web_bundle_utils::GetSynthesizedUrlForWebBundle,
                             test_data_url));
-  }
-
-  void RunNoLocalFileSchemeTest(std::string version_suffix) {
-    const GURL test_data_url =
-        GetTestUrlForFile(web_bundle_browsertest_utils::GetTestDataPath(
-            "web_bundle_browsertest_" + version_suffix + ".wbn"));
-    NavigateToBundleAndWaitForReady(
-        test_data_url,
-        web_bundle_utils::GetSynthesizedUrlForWebBundle(
-            test_data_url, GURL(web_bundle_browsertest_utils::kTestPageUrl)));
-
-    auto* expected_title = u"load failed";
-    TitleWatcher title_watcher(shell()->web_contents(), expected_title);
-    title_watcher.AlsoWaitForTitle(u"Local Script");
-
-    const GURL script_file_url = net::FilePathToFileURL(
-        web_bundle_browsertest_utils::GetTestDataPath("local_script.js"));
-    const std::string script =
-        base::StringPrintf(R"(
-      const script = document.createElement("script");
-      script.onerror = () => { document.title = "load failed";};
-      script.src = "%s";
-      document.body.appendChild(script);)",
-                           script_file_url.spec().c_str());
-    EXPECT_TRUE(ExecJs(shell()->web_contents(), script));
-
-    EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
-  }
-
-  void RunIframeNavigationNoCrashTest(std::string version_suffix) {
-    const GURL test_data_url =
-        GetTestUrlForFile(web_bundle_browsertest_utils::GetTestDataPath(
-            "web_bundle_browsertest_" + version_suffix + ".wbn"));
-    NavigateToBundleAndWaitForReady(
-        test_data_url,
-        web_bundle_utils::GetSynthesizedUrlForWebBundle(
-            test_data_url, GURL(web_bundle_browsertest_utils::kTestPageUrl)));
-
-    const std::string empty_page_path = "/web_bundle/empty_page.html";
-    ASSERT_TRUE(embedded_test_server()->Start());
-    const GURL empty_page_url = embedded_test_server()->GetURL(empty_page_path);
-
-    ExecuteScriptAndWaitForTitle(
-        base::StringPrintf(R"(
-      (async function() {
-        const empty_page_url = '%s';
-        const iframe = document.createElement('iframe');
-        const onload = () => {
-          iframe.removeEventListener('load', onload);
-          document.title = 'Iframe loaded';
-        }
-        iframe.addEventListener('load', onload);
-        iframe.src = empty_page_url;
-        document.body.appendChild(iframe);
-      })();)",
-                           empty_page_url.spec().c_str()),
-        "Iframe loaded");
-
-    ExecuteScriptAndWaitForTitle(R"(
-      (async function() {
-        const iframe = document.querySelector("iframe");
-        const onload = () => {
-          document.title = 'Iframe loaded again';
-        }
-        iframe.addEventListener('load', onload);
-        iframe.src = iframe.src + '?';
-      })();)",
-                                 "Iframe loaded again");
   }
 
  private:
@@ -189,7 +122,7 @@ IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, IframeSameDocumentNavigation) {
 }
 
 // TODO(https://crbug.com/1225178): flaky
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_InvalidWebBundleFile DISABLED_InvalidWebBundleFile
 #else
 #define MAYBE_InvalidWebBundleFile InvalidWebBundleFile
@@ -203,13 +136,48 @@ IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, MAYBE_InvalidWebBundleFile) {
                                                      test_data_url);
 
   EXPECT_EQ(
-      "Failed to read metadata of Web Bundle file: Wrong CBOR array size of "
-      "the top-level structure",
+      "Failed to read metadata of Web Bundle file: Invalid bundle length.",
       console_message);
 }
 
 // TODO(https://crbug.com/1225178): flaky
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_InvalidExchangeUrl DISABLED_InvalidExchangeUrl
+#else
+#define MAYBE_InvalidExchangeUrl InvalidExchangeUrl
+#endif
+IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, MAYBE_InvalidExchangeUrl) {
+  const GURL test_data_url =
+      GetTestUrlForFile(web_bundle_browsertest_utils::GetTestDataPath(
+          "foo_base_url_bundle_b2.wbn"));
+
+  std::string console_message = web_bundle_browsertest_utils::
+      ExpectNavigationFailureAndReturnConsoleMessage(shell()->web_contents(),
+                                                     test_data_url);
+
+  EXPECT_EQ(web_bundle_utils::kInvalidExchangeUrlErrorMessage, console_message);
+}
+
+// TODO(https://crbug.com/1225178): flaky
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_InvalidPrimaryUrl DISABLED_InvalidPrimaryUrl
+#else
+#define MAYBE_InvalidPrimaryUrl InvalidPrimaryUrl
+#endif
+IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, MAYBE_InvalidPrimaryUrl) {
+  const GURL test_data_url =
+      GetTestUrlForFile(web_bundle_browsertest_utils::GetTestDataPath(
+          "foo_primary_url_bundle_b2.wbn"));
+
+  std::string console_message = web_bundle_browsertest_utils::
+      ExpectNavigationFailureAndReturnConsoleMessage(shell()->web_contents(),
+                                                     test_data_url);
+
+  EXPECT_EQ(web_bundle_utils::kInvalidPrimaryUrlErrorMessage, console_message);
+}
+
+// TODO(https://crbug.com/1225178): flaky
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_ResponseParseErrorInMainResource \
   DISABLED_ResponseParseErrorInMainResource
 #else
@@ -261,12 +229,30 @@ IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest,
       base::UTF16ToUTF8(console_observer.messages()[0].message));
 }
 
-IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, NoLocalFileSchemeB1) {
-  RunNoLocalFileSchemeTest("b2");
-}
+IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, NoLocalFileScheme) {
+  const GURL test_data_url =
+      GetTestUrlForFile(web_bundle_browsertest_utils::GetTestDataPath(
+          "web_bundle_browsertest_b2.wbn"));
+  NavigateToBundleAndWaitForReady(
+      test_data_url,
+      web_bundle_utils::GetSynthesizedUrlForWebBundle(
+          test_data_url, GURL(web_bundle_browsertest_utils::kTestPageUrl)));
 
-IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, NoLocalFileSchemeB2) {
-  RunNoLocalFileSchemeTest("b1");
+  auto* expected_title = u"load failed";
+  TitleWatcher title_watcher(shell()->web_contents(), expected_title);
+  title_watcher.AlsoWaitForTitle(u"Local Script");
+
+  const GURL script_file_url = net::FilePathToFileURL(
+      web_bundle_browsertest_utils::GetTestDataPath("local_script.js"));
+  const std::string script = base::StringPrintf(R"(
+      const script = document.createElement("script");
+      script.onerror = () => { document.title = "load failed";};
+      script.src = "%s";
+      document.body.appendChild(script);)",
+                                                script_file_url.spec().c_str());
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), script));
+
+  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 }
 
 IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, DataDecoderRestart) {
@@ -306,8 +292,8 @@ IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, DataDecoderRestart) {
 }
 
 // TODO(https://crbug.com/1225178): flaky
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_ANDROID) || \
-    defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_MAC)
 #define MAYBE_ParseMetadataCrash DISABLED_ParseMetadataCrash
 #else
 #define MAYBE_ParseMetadataCrash ParseMetadataCrash
@@ -330,7 +316,7 @@ IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, MAYBE_ParseMetadataCrash) {
 }
 
 // TODO(https://crbug.com/1225178): flaky
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_ParseResponseCrash DISABLED_ParseResponseCrash
 #else
 #define MAYBE_ParseResponseCrash ParseResponseCrash
@@ -352,73 +338,47 @@ IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, MAYBE_ParseResponseCrash) {
       console_message);
 }
 
-IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, Variants) {
-  SetAcceptLangs("ja,en");
-  const GURL test_data_url = GetTestUrlForFile(
-      web_bundle_browsertest_utils::GetTestDataPath("variants_test_b1.wbn"));
-  web_bundle_browsertest_utils::NavigateAndWaitForTitle(
-      shell()->web_contents(), test_data_url,
-      web_bundle_utils::GetSynthesizedUrlForWebBundle(
-          test_data_url, GURL(web_bundle_browsertest_utils::kTestPageUrl)),
-      "lang=ja");
-  SetAcceptLangs("en,ja");
-  web_bundle_browsertest_utils::NavigateAndWaitForTitle(
-      shell()->web_contents(), test_data_url,
-      web_bundle_utils::GetSynthesizedUrlForWebBundle(
-          test_data_url, GURL(web_bundle_browsertest_utils::kTestPageUrl)),
-      "lang=en");
-
-  ExecuteScriptAndWaitForTitle(R"(
-    (async function() {
-      const headers = {Accept: 'application/octet-stream'};
-      const resp = await fetch('/type', {headers});
-      const data = await resp.json();
-      document.title = data.text;
-    })();)",
-                               "octet-stream");
-  ExecuteScriptAndWaitForTitle(R"(
-    (async function() {
-      const headers = {Accept: 'application/json'};
-      const resp = await fetch('/type', {headers});
-      const data = await resp.json();
-      document.title = data.text;
-    })();)",
-                               "json");
-  ExecuteScriptAndWaitForTitle(R"(
-    (async function() {
-      const headers = {Accept: 'foo/bar'};
-      const resp = await fetch('/type', {headers});
-      const data = await resp.json();
-      document.title = data.text;
-    })();)",
-                               "octet-stream");
-
-  ExecuteScriptAndWaitForTitle(R"(
-    (async function() {
-      const resp = await fetch('/lang');
-      const data = await resp.json();
-      document.title = data.text;
-    })();)",
-                               "ja");
-  // If Accept-Language header is explicitly set, respect it.
-  ExecuteScriptAndWaitForTitle(R"(
-    (async function() {
-      const headers = {'Accept-Language': 'fr'};
-      const resp = await fetch('/lang', {headers});
-      const data = await resp.json();
-      document.title = data.text;
-    })();)",
-                               "fr");
-}
-
-IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, IframeNavigationNoCrashB1) {
+IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, IframeNavigationNoCrash) {
   // Regression test for crbug.com/1058721. There was a bug that navigation of
   // OOPIF's remote iframe in Web Bundle file cause crash.
-  RunIframeNavigationNoCrashTest("b1");
-}
+  const GURL test_data_url =
+      GetTestUrlForFile(web_bundle_browsertest_utils::GetTestDataPath(
+          "web_bundle_browsertest_b2.wbn"));
+  NavigateToBundleAndWaitForReady(
+      test_data_url,
+      web_bundle_utils::GetSynthesizedUrlForWebBundle(
+          test_data_url, GURL(web_bundle_browsertest_utils::kTestPageUrl)));
 
-IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, IframeNavigationNoCrashB2) {
-  RunIframeNavigationNoCrashTest("b2");
+  const std::string empty_page_path = "/web_bundle/empty_page.html";
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL empty_page_url = embedded_test_server()->GetURL(empty_page_path);
+
+  ExecuteScriptAndWaitForTitle(
+      base::StringPrintf(R"(
+      (async function() {
+        const empty_page_url = '%s';
+        const iframe = document.createElement('iframe');
+        const onload = () => {
+          iframe.removeEventListener('load', onload);
+          document.title = 'Iframe loaded';
+        }
+        iframe.addEventListener('load', onload);
+        iframe.src = empty_page_url;
+        document.body.appendChild(iframe);
+      })();)",
+                         empty_page_url.spec().c_str()),
+      "Iframe loaded");
+
+  ExecuteScriptAndWaitForTitle(R"(
+      (async function() {
+        const iframe = document.querySelector("iframe");
+        const onload = () => {
+          document.title = 'Iframe loaded again';
+        }
+        iframe.addEventListener('load', onload);
+        iframe.src = iframe.src + '?';
+      })();)",
+                               "Iframe loaded again");
 }
 
 IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, Iframe) {
@@ -464,7 +424,7 @@ IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, WindowOpen) {
 }
 
 // TODO(https://crbug.com/1225178): flaky
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_NoPrimaryURLFound DISABLED_NoPrimaryURLFound
 #else
 #define MAYBE_NoPrimaryURLFound NoPrimaryURLFound

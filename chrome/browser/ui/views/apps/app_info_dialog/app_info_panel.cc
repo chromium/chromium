@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,10 +24,7 @@ const int kSpacingBetweenKeyAndStartOfValue = 3;
 }
 
 AppInfoPanel::AppInfoPanel(Profile* profile, const extensions::Extension* app)
-    : profile_(profile), app_(app) {
-  // Bookmark Apps have been replaced by Web Apps.
-  DCHECK(!app_->from_bookmark());
-}
+    : profile_(profile), app_(app) {}
 
 AppInfoPanel::~AppInfoPanel() {
 }

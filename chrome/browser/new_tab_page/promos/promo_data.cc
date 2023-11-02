@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,7 @@ PromoData& PromoData::operator=(const PromoData&) = default;
 PromoData& PromoData::operator=(PromoData&&) = default;
 
 bool operator==(const PromoData& lhs, const PromoData& rhs) {
-  return lhs.promo_html == rhs.promo_html &&
-         lhs.middle_slot_json == rhs.middle_slot_json &&
+  return lhs.middle_slot_json == rhs.middle_slot_json &&
          lhs.promo_log_url == rhs.promo_log_url && lhs.promo_id == rhs.promo_id;
 }
 

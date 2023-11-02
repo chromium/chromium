@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/update_client/activity_data_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace update_client {
@@ -30,16 +31,21 @@ namespace protocol_request {
 
 struct HW {
   uint32_t physmemory = 0;  // Physical memory rounded down to the closest GB.
+  bool sse = false;
+  bool sse2 = false;
+  bool sse3 = false;
+  bool sse41 = false;
+  bool sse42 = false;
+  bool ssse3 = false;
+  bool avx = false;
 };
 
 struct OS {
   OS();
-
   OS(const OS&) = delete;
   OS& operator=(const OS&) = delete;
-
   OS(OS&&);
-
+  OS& operator=(OS&&);
   ~OS();
 
   std::string platform;
@@ -69,6 +75,24 @@ struct UpdateCheck {
   bool is_update_disabled = false;
   std::string target_version_prefix;
   bool rollback_allowed = false;
+  bool same_version_update_allowed = false;
+};
+
+// `data` element.
+struct Data {
+  Data();
+  Data(const Data& other);
+  Data& operator=(const Data& other);
+  Data(const std::string& name,
+       const std::string& install_data_index,
+       const std::string& untrusted_data);
+  ~Data();
+
+  // `name` can be either "install" or "untrusted", corresponding to
+  // `install_data_index` and `untrusted_data`.
+  std::string name;
+  std::string install_data_index;
+  std::string untrusted_data;
 };
 
 // didrun element. The element is named "ping" for legacy reasons.
@@ -90,12 +114,10 @@ struct Ping {
 
 struct App {
   App();
-
   App(const App&) = delete;
   App& operator=(const App&) = delete;
-
   App(App&&);
-
+  App& operator=(App&&);
   ~App();
 
   std::string app_id;
@@ -104,6 +126,7 @@ struct App {
   base::flat_map<std::string, std::string> installer_attributes;
   std::string lang;
   std::string brand_code;
+  int install_date = kDateUnknown;
   std::string install_source;
   std::string install_location;
   std::string fingerprint;
@@ -120,6 +143,9 @@ struct App {
   // Optional update check.
   absl::optional<UpdateCheck> update_check;
 
+  // Optional `data` elements.
+  std::vector<Data> data;
+
   // Optional 'did run' ping.
   absl::optional<Ping> ping;
 
@@ -129,12 +155,10 @@ struct App {
 
 struct Request {
   Request();
-
   Request(const Request&) = delete;
   Request& operator=(const Request&) = delete;
-
   Request(Request&&);
-
+  Request& operator=(Request&&);
   ~Request();
 
   std::string protocol_version;
@@ -152,14 +176,13 @@ struct Request {
   std::string updatername;
   std::string updaterversion;
   std::string prodversion;
-  std::string lang;
   std::string updaterchannel;
   std::string prodchannel;
   std::string operating_system;
   std::string arch;
   std::string nacl_arch;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   bool is_wow64 = false;
 #endif
 

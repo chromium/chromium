@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -56,10 +57,13 @@ class HintCacheTest : public ProtoDatabaseProviderTestBase,
     optimization_guide_store_ =
         IsBackedByPersistentStore()
             ? std::make_unique<OptimizationGuideStore>(
-                  db_provider_.get(), database_path, database_task_runner)
+                  db_provider_.get(), database_path, database_task_runner,
+                  /*pref_service_=*/nullptr)
             : nullptr;
-    hint_cache_ = std::make_unique<HintCache>(optimization_guide_store_.get(),
-                                              memory_cache_size);
+    hint_cache_ = std::make_unique<HintCache>(
+        optimization_guide_store_ ? optimization_guide_store_->AsWeakPtr()
+                                  : nullptr,
+        memory_cache_size);
     is_store_initialized_ = false;
     hint_cache_->Initialize(purge_existing_data,
                             base::BindOnce(&HintCacheTest::OnStoreInitialized,
@@ -170,7 +174,7 @@ class HintCacheTest : public ProtoDatabaseProviderTestBase,
 
   std::unique_ptr<OptimizationGuideStore> optimization_guide_store_;
   std::unique_ptr<HintCache> hint_cache_;
-  const proto::Hint* loaded_hint_;
+  raw_ptr<const proto::Hint> loaded_hint_;
 
   bool is_store_initialized_;
   bool are_component_hints_updated_;

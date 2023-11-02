@@ -180,6 +180,7 @@ impl Discriminant {
         }
     }
 
+    #[cfg(feature = "experimental-enum-variants-from-header")]
     pub const fn checked_succ(self) -> Option<Self> {
         match self.sign {
             Sign::Negative => {

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,9 +35,13 @@
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_context_getter.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/proxy_resolution/proxy_config_service_fixed.h"
+#endif
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#include "net/cert/internal/trust_store_chrome.h"
 #endif
 
 namespace {
@@ -51,7 +55,7 @@ void SetUpOnNetworkThread(
     base::WaitableEvent* initialization_complete_event) {
   net::URLRequestContextBuilder url_request_context_builder;
   url_request_context_builder.set_user_agent(GetUserAgent());
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // On Linux, use a fixed ProxyConfigService, since the default one
   // depends on glib.
   //
@@ -123,7 +127,7 @@ class CertVerifyImpl {
 std::unique_ptr<CertVerifyImpl> CreateCertVerifyImplFromName(
     base::StringPiece impl_name,
     scoped_refptr<net::CertNetFetcher> cert_net_fetcher) {
-#if !(defined(OS_FUCHSIA) || defined(OS_LINUX) || defined(OS_CHROMEOS))
+#if !(BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
   if (impl_name == "platform") {
     return std::make_unique<CertVerifyImpl>(
         "CertVerifyProc (system)", net::CertVerifyProc::CreateSystemVerifyProc(
@@ -132,11 +136,14 @@ std::unique_ptr<CertVerifyImpl> CreateCertVerifyImplFromName(
 #endif
 
   if (impl_name == "builtin") {
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
     return std::make_unique<CertVerifyImpl>(
         "CertVerifyProcBuiltin",
         net::CreateCertVerifyProcBuiltin(
             std::move(cert_net_fetcher),
-            net::CreateSslSystemTrustStoreChromeRoot()));
+            net::CreateSslSystemTrustStoreChromeRoot(
+                std::make_unique<net::TrustStoreChrome>())));
+#endif
   }
 
   std::cerr << "WARNING: Unrecognized impl: " << impl_name << "\n";
@@ -214,6 +221,8 @@ std::string TrialComparisonResultToString(net::TrialComparisonResult result) {
     case net::TrialComparisonResult::
         kIgnoredBuiltinAuthorityInvalidPlatformSymantec:
       return "ignored_builtin_authority_invalid_platform_symantec";
+    case net::TrialComparisonResult::kIgnoredLetsEncryptExpiredRoot:
+      return "ignored_lets_encrypt_expired_root";
   }
 }
 

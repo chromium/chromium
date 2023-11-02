@@ -1,26 +1,28 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/bind.h"
-#include "base/ios/ios_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
+#import "base/bind.h"
+#import "base/ios/ios_util.h"
+#import "base/strings/stringprintf.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/translate/core/browser/translate_pref_names.h"
 #import "ios/chrome/browser/ui/fullscreen/test/fullscreen_app_interface.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
+#import "ios/chrome/test/earl_grey/scoped_block_popups_pref.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/test/http_server/error_page_response_provider.h"
 #import "ios/web/public/test/http_server/http_server.h"
-#include "ios/web/public/test/http_server/http_server_util.h"
-#include "url/gurl.h"
+#import "ios/web/public/test/http_server/http_server_util.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -43,7 +45,7 @@ void HideToolbarUsingUI() {
       performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
 }
 
-// Asserts that the current URL is the |expectedURL| one.
+// Asserts that the current URL is the `expectedURL` one.
 void AssertURLIs(const GURL& expectedURL) {
   NSString* description = [NSString
       stringWithFormat:@"Timeout waiting for the url to be %@",
@@ -90,6 +92,21 @@ void WaitforPDFExtensionView() {
 
 - (void)setUp {
   [super setUp];
+
+  // Disable translate to avoid the info bar that block the top toolbar.
+  [ChromeEarlGreyAppInterface
+      setBoolValue:NO
+       forUserPref:base::SysUTF8ToNSString(
+                       translate::prefs::kOfferTranslateEnabled)];
+}
+
+- (void)tearDown {
+  // Reactivate translation.
+  [ChromeEarlGreyAppInterface
+      setBoolValue:YES
+       forUserPref:base::SysUTF8ToNSString(
+                       translate::prefs::kOfferTranslateEnabled)];
+  [super tearDown];
 }
 
 // Verifies that the content offset of the web view is set up at the correct
@@ -119,7 +136,7 @@ void WaitforPDFExtensionView() {
   // Test that the toolbar is still visible after a user swipes down.
   // Use a slow swipe here because in this combination of conditions (one
   // page PDF, overscroll actions enabled, fast swipe), the
-  // |UIScrollViewDelegate scrollViewDidEndDecelerating:| is not called leading
+  // `UIScrollViewDelegate scrollViewDidEndDecelerating:` is not called leading
   // to an EarlGrey infinite wait.
   [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
       performAction:grey_swipeSlowInDirection(kGREYDirectionDown)];
@@ -173,7 +190,7 @@ void WaitforPDFExtensionView() {
                       "document.body.innerHTML += \"<meta name='viewport' "
                       "content='width=10'>\""
                       "})()";
-  [ChromeEarlGrey executeJavaScript:script];
+  [ChromeEarlGrey evaluateJavaScriptForSideEffect:script];
 
   // Scroll up to be sure the toolbar can be dismissed by scrolling down.
   [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
@@ -258,7 +275,7 @@ void WaitforPDFExtensionView() {
       kPageHeightEM, javaScript.c_str());
 
   web::test::SetUpSimpleHttpServer(responses);
-  [ChromeEarlGrey setContentSettings:CONTENT_SETTING_ALLOW];
+  ScopedBlockPopupsPref prefSetter(CONTENT_SETTING_ALLOW);
 
   [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGrey waitForWebStateContainingText:"link1"];

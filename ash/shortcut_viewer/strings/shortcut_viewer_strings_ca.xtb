@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">Obre una finestra nova en mode d'incògnit</translation>
 <translation id="152892567002884378">Apuja el volum</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> i després <ph name="ESC" /></translation>
+<translation id="1586324912145647027">Ves a l'escriptori de l'1 al 8</translation>
 <translation id="1652741121070700329">Mou el cursor a l'inici de la paraula anterior</translation>
 <translation id="1679841710523778799">Augmenta la brillantor</translation>
 <translation id="168356808214100546">Mantén premuda la tecla <ph name="ALT" />, toca <ph name="TAB" /> fins a arribar a la finestra que vulguis obrir i deixa anar la tecla.</translation>
@@ -70,6 +71,7 @@
 <translation id="3140353188828248647">Mou el focus a la barra d'adreces</translation>
 <translation id="3256109297135787951">Deixa de destacar un element del prestatge</translation>
 <translation id="3288816184963444640">Tanca la finestra actual</translation>
+<translation id="3322797428033495633">Posa el focus a la finestra de pantalla en pantalla</translation>
 <translation id="3350805006883559974">Fes flotar la finestra activa al damunt</translation>
 <translation id="3407560819924487926">Obre el gestor de tasques</translation>
 <translation id="3417835166382867856">Cerca pestanyes</translation>
@@ -91,6 +93,7 @@
 <translation id="3949671998904569433">coma</translation>
 <translation id="3976863468609830880">Fes clic a la darrera icona del prestatge</translation>
 <translation id="3994783594793697310">Restableix el nivell de zoom de la pantalla</translation>
+<translation id="4026837045671473537">Activa el mode d'inversió de colors</translation>
 <translation id="4026843240379844265">Mou la finestra activa entre pantalles</translation>
 <translation id="4035482366624727273">Selecciona tot el contingut de la pàgina</translation>
 <translation id="4060703249685950734">Torna a obrir la darrera pestanya o finestra que s'ha tancat</translation>
@@ -129,6 +132,7 @@
 <translation id="5563050856984839829">Prem <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> i fes clic en un enllaç</translation>
 <translation id="561814908794220892">Obre la pàgina web en una pestanya nova</translation>
 <translation id="5620219513321115856">Mou la finestra activa a l'escriptori de la dreta</translation>
+<translation id="5699366815052349604">Assigna una finestra activa a tots els escriptoris</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> o <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Obre l'enllaç a la pestanya</translation>
 <translation id="5757474750054631686">Atenua el teclat (només als teclats retroil·luminats)</translation>
@@ -138,7 +142,6 @@
 <translation id="5921745308587794300">Gira la finestra</translation>
 <translation id="5926306472221400972">Fes una captura de pantalla completa</translation>
 <translation id="6022924867608035986">Esborra el text del quadre de cerca</translation>
-<translation id="6045998054441862242">Activa el mode d'alt contrast</translation>
 <translation id="6052614013050385269">Fes clic amb el botó secundari del ratolí en un enllaç</translation>
 <translation id="6129953537138746214">Espai</translation>
 <translation id="6143669479988153888">Amplia la pàgina</translation>
@@ -155,6 +158,7 @@
 <translation id="6445033640292336367">Torna a col·locar la pestanya a la posició original</translation>
 <translation id="6474744297082284761">Redueix (quan la lupa de pantalla completa O la lupa acoblada estiguin activades)</translation>
 <translation id="649811797655257835">Selecciona el fitxer i prem <ph name="SPACE" /></translation>
+<translation id="6515089016094047210">Obre o tanca el widget de calendari.</translation>
 <translation id="6551886416582667425">Fes una gravació o una captura de pantalla parcial</translation>
 <translation id="6556040137485212400">Obre la finestra que fa més temps que no s'utilitza</translation>
 <translation id="666343722268997814">Obre el menú contextual de l'element destacat</translation>
@@ -198,12 +202,12 @@
 <translation id="8388247778047144397">Arrossega l'enllaç a una àrea buida de la barra de pestanyes</translation>
 <translation id="8389638407792712197">Obre una finestra nova</translation>
 <translation id="8429696719963529183">Fes servir les tecles de funció (F1 a F12)</translation>
-<translation id="8537650670971624753">Surt del mode de cerca</translation>
 <translation id="85690795166292698">Obre l'enllaç en una pestanya nova</translation>
 <translation id="8609384513243082612">Obre una pestanya nova</translation>
 <translation id="8644639153978066712">Mostra els fitxers amagats a l'aplicació Fitxers</translation>
 <translation id="8717459106217102612">Selecciona la paraula o la lletra anterior</translation>
 <translation id="8727232706774971183">Mostra les notificacions</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> de l'1 al 8</translation>
 <translation id="8855885154700222542">Tecla de pantalla completa</translation>
 <translation id="8881584919399569791">Mou la finestra activa a l'escriptori de l'esquerra</translation>
 <translation id="88986195241502842">Av Pàg</translation>

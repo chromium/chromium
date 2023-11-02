@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,16 +8,19 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_tracker.h"
 #include "chrome/browser/media/router/test/mock_mojo_media_router.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
-#include "components/cast_channel/cast_test_util.h"
+#include "components/media_router/common/providers/cast/channel/cast_test_util.h"
 #include "components/media_router/common/test/test_helper.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
+#include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -26,6 +29,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
+using testing::Mock;
 using ::testing::NiceMock;
 using testing::WithArg;
 
@@ -39,11 +43,11 @@ constexpr char kCastSource[] =
     "\"mobile\"}";
 static constexpr char kPresentationId[] = "presentationId";
 static constexpr char kOrigin[] = "https://www.youtube.com";
-static constexpr int kTabId = 1;
+static constexpr int kFrameTreeNodeId = 1;
 static constexpr base::TimeDelta kRouteTimeout = base::Seconds(30);
 
-base::Value MakeReceiverStatus() {
-  return base::test::ParseJson(R"({
+base::Value::Dict MakeReceiverStatus() {
+  return base::test::ParseJsonDict(R"({
         "applications": [{
           "appId": "ABCDEFGH",
           "displayName": "theDisplayName",
@@ -56,6 +60,14 @@ base::Value MakeReceiverStatus() {
           "transportId": "theTransportId",
         }],
       })");
+}
+
+MediaSinkInternal CreateCastSinkWithModelName(const std::string model_name) {
+  MediaSinkInternal cast_sink = CreateCastSink(1);
+  auto cast_data = cast_sink.cast_data();
+  cast_data.model_name = model_name;
+  cast_sink.set_cast_data(cast_data);
+  return cast_sink;
 }
 }  // namespace
 
@@ -96,20 +108,20 @@ class CastMediaRouteProviderTest : public testing::Test {
       const absl::optional<MediaRoute>& route,
       mojom::RoutePresentationConnectionPtr presentation_connections,
       const absl::optional<std::string>& error,
-      RouteRequestResult::ResultCode result) {
+      mojom::RouteRequestResultCode result) {
     EXPECT_TRUE(route);
     EXPECT_TRUE(presentation_connections);
     EXPECT_FALSE(error);
-    EXPECT_EQ(RouteRequestResult::ResultCode::OK, result);
+    EXPECT_EQ(mojom::RouteRequestResultCode::OK, result);
     route_ = std::make_unique<MediaRoute>(*route);
   }
 
   void ExpectCreateRouteFailure(
-      RouteRequestResult::ResultCode expected_result,
+      mojom::RouteRequestResultCode expected_result,
       const absl::optional<MediaRoute>& route,
       mojom::RoutePresentationConnectionPtr presentation_connections,
       const absl::optional<std::string>& error,
-      RouteRequestResult::ResultCode result) {
+      mojom::RouteRequestResultCode result) {
     EXPECT_FALSE(route);
     EXPECT_FALSE(presentation_connections);
     EXPECT_TRUE(error);
@@ -117,9 +129,9 @@ class CastMediaRouteProviderTest : public testing::Test {
   }
 
   void ExpectTerminateRouteSuccess(const absl::optional<std::string>& error,
-                                   RouteRequestResult::ResultCode result) {
+                                   mojom::RouteRequestResultCode result) {
     EXPECT_FALSE(error);
-    EXPECT_EQ(RouteRequestResult::ResultCode::OK, result);
+    EXPECT_EQ(mojom::RouteRequestResultCode::OK, result);
     route_.reset();
   }
 
@@ -127,14 +139,14 @@ class CastMediaRouteProviderTest : public testing::Test {
     cast_channel::LaunchSessionResponse response;
     response.result = cast_channel::LaunchSessionResponse::Result::kOk;
     response.receiver_status = MakeReceiverStatus();
-    std::move(launch_session_callback_).Run(std::move(response));
+    std::move(launch_session_callback_).Run(std::move(response), nullptr);
     base::RunLoop().RunUntilIdle();
   }
 
   void SendLaunchSessionResponseFailure() {
     cast_channel::LaunchSessionResponse response;
     response.result = cast_channel::LaunchSessionResponse::Result::kError;
-    std::move(launch_session_callback_).Run(std::move(response));
+    std::move(launch_session_callback_).Run(std::move(response), nullptr);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -194,11 +206,12 @@ TEST_F(CastMediaRouteProviderTest, BroadcastRequest) {
 TEST_F(CastMediaRouteProviderTest, CreateRouteFailsInvalidSink) {
   // Sink does not exist.
   provider_->CreateRoute(
-      kCastSource, "sinkId", kPresentationId, origin_, kTabId, kRouteTimeout,
+      kCastSource, "sinkId", kPresentationId, origin_, kFrameTreeNodeId,
+      kRouteTimeout,
       /* incognito */ false,
       base::BindOnce(&CastMediaRouteProviderTest::ExpectCreateRouteFailure,
                      base::Unretained(this),
-                     RouteRequestResult::ResultCode::SINK_NOT_FOUND));
+                     mojom::RouteRequestResultCode::SINK_NOT_FOUND));
 }
 
 TEST_F(CastMediaRouteProviderTest, CreateRouteFailsInvalidSource) {
@@ -206,11 +219,11 @@ TEST_F(CastMediaRouteProviderTest, CreateRouteFailsInvalidSource) {
   media_sink_service_.AddOrUpdateSink(sink);
 
   provider_->CreateRoute(
-      "invalidSource", sink.sink().id(), kPresentationId, origin_, kTabId,
-      kRouteTimeout, /* incognito */ false,
+      "invalidSource", sink.sink().id(), kPresentationId, origin_,
+      kFrameTreeNodeId, kRouteTimeout, /* incognito */ false,
       base::BindOnce(&CastMediaRouteProviderTest::ExpectCreateRouteFailure,
                      base::Unretained(this),
-                     RouteRequestResult::ResultCode::NO_SUPPORTED_PROVIDER));
+                     mojom::RouteRequestResultCode::NO_SUPPORTED_PROVIDER));
 }
 
 TEST_F(CastMediaRouteProviderTest, CreateRoute) {
@@ -226,7 +239,7 @@ TEST_F(CastMediaRouteProviderTest, CreateRoute) {
         launch_session_callback_ = std::move(callback);
       }));
   provider_->CreateRoute(
-      kCastSource, sink.sink().id(), kPresentationId, origin_, kTabId,
+      kCastSource, sink.sink().id(), kPresentationId, origin_, kFrameTreeNodeId,
       kRouteTimeout, /* incognito */ false,
       base::BindOnce(
           &CastMediaRouteProviderTest::ExpectCreateRouteSuccessAndSetRoute,
@@ -245,7 +258,7 @@ TEST_F(CastMediaRouteProviderTest, TerminateRoute) {
         launch_session_callback_ = std::move(callback);
       }));
   provider_->CreateRoute(
-      kCastSource, sink.sink().id(), kPresentationId, origin_, kTabId,
+      kCastSource, sink.sink().id(), kPresentationId, origin_, kFrameTreeNodeId,
       kRouteTimeout, /* incognito */ false,
       base::BindOnce(
           &CastMediaRouteProviderTest::ExpectCreateRouteSuccessAndSetRoute,
@@ -268,7 +281,8 @@ TEST_F(CastMediaRouteProviderTest, TerminateRoute) {
 TEST_F(CastMediaRouteProviderTest, GetState) {
   MediaSinkInternal sink = CreateCastSink(1);
   media_sink_service_.AddOrUpdateSink(sink);
-  session_tracker_->HandleReceiverStatusMessage(sink, base::test::ParseJson(R"({
+  session_tracker_->HandleReceiverStatusMessage(sink,
+                                                base::test::ParseJsonDict(R"({
     "status": {
       "applications": [{
         "appId": "ABCDEFGH",
@@ -299,4 +313,71 @@ TEST_F(CastMediaRouteProviderTest, GetState) {
   }));
 }
 
+TEST_F(CastMediaRouteProviderTest, GetRemotePlaybackCompatibleSinks) {
+  MediaSinkInternal cc = CreateCastSinkWithModelName("Chromecast");
+  MediaSinkInternal cc_ultra = CreateCastSinkWithModelName("Chromecast Ultra");
+  MediaSinkInternal nest = CreateCastSinkWithModelName("Nest");
+
+  // It should not update sinks for RemotePlayback MediaSource when the feature
+  // is disabled.
+  EXPECT_CALL(mock_router_, OnSinksReceived(_, _, _, _)).Times(0);
+  provider_->OnSinkQueryUpdated(
+      "remote-playback:media-session?tab_id=1&video_codec=vp8&audio_codec=aac",
+      {cc, cc_ultra, nest});
+  base::RunLoop().RunUntilIdle();
+  Mock::VerifyAndClearExpectations(&mock_router_);
+
+  // Enable the feature and it should return sinks compatible with the
+  // RemotePlayback MediaSource.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kMediaRemotingWithoutFullscreen);
+
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  EXPECT_CALL(mock_router_,
+              OnSinksReceived(mojom::MediaRouteProviderId::CAST, _,
+                              std::vector<MediaSinkInternal>{cc, cc_ultra}, _));
+  provider_->OnSinkQueryUpdated(
+      "remote-playback:media-session?tab_id=1&video_codec=h264&audio_codec=aac",
+      {cc, cc_ultra, nest});
+  base::RunLoop().RunUntilIdle();
+  Mock::VerifyAndClearExpectations(&mock_router_);
+
+  EXPECT_CALL(mock_router_,
+              OnSinksReceived(mojom::MediaRouteProviderId::CAST, _,
+                              std::vector<MediaSinkInternal>{cc_ultra}, _));
+  provider_->OnSinkQueryUpdated(
+      "remote-playback:media-session?tab_id=1&video_codec=hevc&audio_codec=aac",
+      {cc, cc_ultra, nest});
+  base::RunLoop().RunUntilIdle();
+  Mock::VerifyAndClearExpectations(&mock_router_);
+#else
+  EXPECT_CALL(mock_router_,
+              OnSinksReceived(mojom::MediaRouteProviderId::CAST, _,
+                              std::vector<MediaSinkInternal>{}, _));
+  provider_->OnSinkQueryUpdated(
+      "remote-playback:media-session?tab_id=1&video_codec=h264&audio_codec=aac",
+      {cc, cc_ultra, nest});
+  base::RunLoop().RunUntilIdle();
+  Mock::VerifyAndClearExpectations(&mock_router_);
+
+  EXPECT_CALL(mock_router_,
+              OnSinksReceived(mojom::MediaRouteProviderId::CAST, _,
+                              std::vector<MediaSinkInternal>{cc, cc_ultra}, _));
+  provider_->OnSinkQueryUpdated(
+      "remote-playback:media-session?tab_id=1&video_codec=vp8&audio_codec=opus",
+      {cc, cc_ultra, nest});
+  base::RunLoop().RunUntilIdle();
+  Mock::VerifyAndClearExpectations(&mock_router_);
+#endif
+
+  EXPECT_CALL(mock_router_,
+              OnSinksReceived(mojom::MediaRouteProviderId::CAST, _,
+                              std::vector<MediaSinkInternal>{}, _));
+  provider_->OnSinkQueryUpdated(
+      "remote-playback:media-session?tab_id=1&video_codec=vp8&audio_codec="
+      "invalid",
+      {cc, cc_ultra, nest});
+  base::RunLoop().RunUntilIdle();
+  Mock::VerifyAndClearExpectations(&mock_router_);
+}
 }  // namespace media_router

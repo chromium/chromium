@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,13 +32,13 @@ class AssistantTestApiImpl : public AssistantTestApi {
   void DisableAnimations() override;
   bool IsVisible() override;
   void SendTextQuery(const std::string& query) override;
+  void EnableAssistantAndWait() override;
   void SetAssistantEnabled(bool enable) override;
   void SetScreenContextEnabled(bool enabled) override;
   void SetTabletMode(bool enable) override;
-  void SetConsentStatus(chromeos::assistant::prefs::ConsentStatus) override;
+  void SetConsentStatus(assistant::prefs::ConsentStatus) override;
   void SetNumberOfSessionsWhereOnboardingShown(int number_of_sessions) override;
-  void SetOnboardingMode(
-      chromeos::assistant::prefs::AssistantOnboardingMode) override;
+  void SetOnboardingMode(assistant::prefs::AssistantOnboardingMode) override;
   void SetPreferVoice(bool value) override;
   void SetTimeOfLastInteraction(base::Time time) override;
   void StartOverview() override;

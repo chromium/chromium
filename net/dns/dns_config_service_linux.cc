@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,8 @@
 #include "base/files/file_path_watcher.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -203,11 +205,10 @@ enum class IncompatibleNsswitchReason {
 void RecordIncompatibleNsswitchReason(
     IncompatibleNsswitchReason reason,
     absl::optional<NsswitchReader::Service> service_token) {
-  UMA_HISTOGRAM_ENUMERATION("Net.DNS.DnsConfig.Nsswitch.IncompatibleReason",
-                            reason);
   if (service_token) {
-    UMA_HISTOGRAM_ENUMERATION("Net.DNS.DnsConfig.Nsswitch.IncompatibleService",
-                              service_token.value());
+    base::UmaHistogramEnumeration(
+        "Net.DNS.DnsConfig.Nsswitch.IncompatibleService",
+        service_token.value());
   }
 }
 
@@ -276,6 +277,7 @@ bool IsNsswitchConfigCompatible(
       case NsswitchReader::Service::kMdns4:
       case NsswitchReader::Service::kMdns6:
       case NsswitchReader::Service::kResolve:
+      case NsswitchReader::Service::kNis:
         RecordIncompatibleNsswitchReason(
             IncompatibleNsswitchReason::kIncompatibleService,
             specification.service);
@@ -299,7 +301,6 @@ bool IsNsswitchConfigCompatible(
         break;
 
       case NsswitchReader::Service::kMyHostname:
-      case NsswitchReader::Service::kNis:
         // Similar enough to Chrome behavior (or unlikely to matter for Chrome
         // resolutions) to be considered compatible unless the actions do
         // something very weird to skip remaining services without a result.
@@ -370,12 +371,12 @@ class DnsConfigServiceLinux::Watcher : public DnsConfigService::Watcher {
 
  private:
   void OnResolvFilePathWatcherChange(const base::FilePath& path, bool error) {
-    UMA_HISTOGRAM_BOOLEAN("Net.DNS.DnsConfig.Resolv.FileChange", true);
+    base::UmaHistogramBoolean("Net.DNS.DnsConfig.Resolv.FileChange", true);
     OnConfigChanged(!error);
   }
 
   void OnNsswitchFilePathWatcherChange(const base::FilePath& path, bool error) {
-    UMA_HISTOGRAM_BOOLEAN("Net.DNS.DnsConfig.Nsswitch.FileChange", true);
+    base::UmaHistogramBoolean("Net.DNS.DnsConfig.Nsswitch.FileChange", true);
     OnConfigChanged(!error);
   }
 
@@ -414,7 +415,7 @@ class DnsConfigServiceLinux::ConfigReader : public SerialWorker {
     return std::move(work_item_);
   }
 
-  void OnWorkFinished(std::unique_ptr<SerialWorker::WorkItem>
+  bool OnWorkFinished(std::unique_ptr<SerialWorker::WorkItem>
                           serial_worker_work_item) override {
     DCHECK(serial_worker_work_item);
     DCHECK(!work_item_);
@@ -423,8 +424,10 @@ class DnsConfigServiceLinux::ConfigReader : public SerialWorker {
     work_item_.reset(static_cast<WorkItem*>(serial_worker_work_item.release()));
     if (work_item_->dns_config_.has_value()) {
       service_->OnConfigRead(std::move(work_item_->dns_config_).value());
+      return true;
     } else {
       LOG(WARNING) << "Failed to read DnsConfig.";
+      return false;
     }
   }
 
@@ -443,20 +446,21 @@ class DnsConfigServiceLinux::ConfigReader : public SerialWorker {
       base::ScopedBlockingCall scoped_blocking_call(
           FROM_HERE, base::BlockingType::MAY_BLOCK);
 
-      std::unique_ptr<struct __res_state> res = resolv_reader_->GetResState();
-      if (res) {
-        dns_config_ = ConvertResStateToDnsConfig(*res.get());
-        resolv_reader_->CloseResState(res.get());
+      {
+        std::unique_ptr<ScopedResState> res = resolv_reader_->GetResState();
+        if (res) {
+          dns_config_ = ConvertResStateToDnsConfig(res->state());
+        }
       }
 
-      UMA_HISTOGRAM_BOOLEAN("Net.DNS.DnsConfig.Resolv.Read",
-                            dns_config_.has_value());
+      base::UmaHistogramBoolean("Net.DNS.DnsConfig.Resolv.Read",
+                                dns_config_.has_value());
       if (!dns_config_.has_value())
         return;
-      UMA_HISTOGRAM_BOOLEAN("Net.DNS.DnsConfig.Resolv.Valid",
-                            dns_config_->IsValid());
-      UMA_HISTOGRAM_BOOLEAN("Net.DNS.DnsConfig.Resolv.Compatible",
-                            !dns_config_->unhandled_options);
+      base::UmaHistogramBoolean("Net.DNS.DnsConfig.Resolv.Valid",
+                                dns_config_->IsValid());
+      base::UmaHistogramBoolean("Net.DNS.DnsConfig.Resolv.Compatible",
+                                !dns_config_->unhandled_options);
 
       // Override `fallback_period` value to match default setting on
       // Windows.
@@ -465,12 +469,10 @@ class DnsConfigServiceLinux::ConfigReader : public SerialWorker {
       if (dns_config_ && !dns_config_->unhandled_options) {
         std::vector<NsswitchReader::ServiceSpecification> nsswitch_hosts =
             nsswitch_reader_->ReadAndParseHosts();
-        UMA_HISTOGRAM_COUNTS_100("Net.DNS.DnsConfig.Nsswitch.NumServices",
-                                 nsswitch_hosts.size());
         dns_config_->unhandled_options =
             !IsNsswitchConfigCompatible(nsswitch_hosts);
-        UMA_HISTOGRAM_BOOLEAN("Net.DNS.DnsConfig.Nsswitch.Compatible",
-                              !dns_config_->unhandled_options);
+        base::UmaHistogramBoolean("Net.DNS.DnsConfig.Nsswitch.Compatible",
+                                  !dns_config_->unhandled_options);
       }
     }
 
@@ -482,7 +484,7 @@ class DnsConfigServiceLinux::ConfigReader : public SerialWorker {
   };
 
   // Raw pointer to owning DnsConfigService.
-  DnsConfigServiceLinux* const service_;
+  const raw_ptr<DnsConfigServiceLinux> service_;
 
   // Null while the `WorkItem` is running on the `ThreadPool`.
   std::unique_ptr<WorkItem> work_item_;

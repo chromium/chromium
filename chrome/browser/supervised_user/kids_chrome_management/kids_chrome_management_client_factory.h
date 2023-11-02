@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace content {
 class BrowserContext;
@@ -18,8 +18,7 @@ class KidsChromeManagementClient;
 // Singleton that owns all KidsChromeManagementClient instances and associates
 // them with Profiles. Listens for the Profile's destruction
 // notification and cleans up the associated KidsChromeManagementClient.
-class KidsChromeManagementClientFactory
-    : public BrowserContextKeyedServiceFactory {
+class KidsChromeManagementClientFactory : public ProfileKeyedServiceFactory {
  public:
   static KidsChromeManagementClient* GetForBrowserContext(Profile* profile);
 

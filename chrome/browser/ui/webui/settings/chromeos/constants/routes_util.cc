@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,6 +45,7 @@ bool IsOSSettingsSubPage(const std::string& sub_page) {
       chromeos::settings::mojom::kPeopleSectionPath,
       chromeos::settings::mojom::kMyAccountsSubpagePath,
       chromeos::settings::mojom::kSyncSubpagePath,
+      chromeos::settings::mojom::kSyncSetupSubpagePath,
 
       // Device section.
       chromeos::settings::mojom::kDeviceSectionPath,
@@ -52,15 +53,13 @@ bool IsOSSettingsSubPage(const std::string& sub_page) {
       chromeos::settings::mojom::kKeyboardSubpagePath,
       chromeos::settings::mojom::kStylusSubpagePath,
       chromeos::settings::mojom::kDisplaySubpagePath,
+      chromeos::settings::mojom::kAudioSubpagePath,
       chromeos::settings::mojom::kStorageSubpagePath,
       chromeos::settings::mojom::kExternalStorageSubpagePath,
       chromeos::settings::mojom::kPowerSubpagePath,
 
       // Personalization section.
       chromeos::settings::mojom::kPersonalizationSectionPath,
-      chromeos::settings::mojom::kChangePictureSubpagePath,
-      chromeos::settings::mojom::kAmbientModeSubpagePath,
-      chromeos::settings::mojom::kDarkModeSubpagePath,
 
       // Search and Assistant section.
       chromeos::settings::mojom::kSearchAndAssistantSectionPath,
@@ -73,6 +72,7 @@ bool IsOSSettingsSubPage(const std::string& sub_page) {
       chromeos::settings::mojom::kAppDetailsSubpagePath,
       chromeos::settings::mojom::kGooglePlayStoreSubpagePath,
       chromeos::settings::mojom::kPluginVmSharedPathsSubpagePath,
+      chromeos::settings::mojom::kArcVmUsbPreferencesSubpagePath,
 
       // Crostini section.
       chromeos::settings::mojom::kCrostiniSectionPath,
@@ -83,6 +83,8 @@ bool IsOSSettingsSubPage(const std::string& sub_page) {
       chromeos::settings::mojom::kCrostiniDevelopAndroidAppsSubpagePath,
       chromeos::settings::mojom::kCrostiniPortForwardingSubpagePath,
       chromeos::settings::mojom::kCrostiniExtraContainersSubpagePath,
+      chromeos::settings::mojom::kBruschettaDetailsSubpagePath,
+      chromeos::settings::mojom::kBruschettaUsbPreferencesSubpagePath,
 
       // Date and Time section.
       chromeos::settings::mojom::kDateAndTimeSectionPath,
@@ -94,6 +96,7 @@ bool IsOSSettingsSubPage(const std::string& sub_page) {
       chromeos::settings::mojom::kFingerprintSubpagePathV2,
       chromeos::settings::mojom::kManageOtherPeopleSubpagePathV2,
       chromeos::settings::mojom::kSmartPrivacySubpagePath,
+      chromeos::settings::mojom::kPrivacyHubSubpagePath,
 
       // Languages and Input section.
       chromeos::settings::mojom::kLanguagesAndInputSectionPath,
@@ -102,6 +105,7 @@ bool IsOSSettingsSubPage(const std::string& sub_page) {
       chromeos::settings::mojom::kLanguagesSubpagePath,
       chromeos::settings::mojom::kInputSubpagePath,
       chromeos::settings::mojom::kEditDictionarySubpagePath,
+      chromeos::settings::mojom::kJapaneseManageUserDictionarySubpagePath,
 
       // Files section.
       chromeos::settings::mojom::kFilesSectionPath,
@@ -114,6 +118,11 @@ bool IsOSSettingsSubPage(const std::string& sub_page) {
       // Accessibility section.
       chromeos::settings::mojom::kAccessibilitySectionPath,
       chromeos::settings::mojom::kManageAccessibilitySubpagePath,
+      chromeos::settings::mojom::kTextToSpeechPagePath,
+      chromeos::settings::mojom::kDisplayAndMagnificationSubpagePath,
+      chromeos::settings::mojom::kKeyboardAndTextInputSubpagePath,
+      chromeos::settings::mojom::kCursorAndTouchpadSubpagePath,
+      chromeos::settings::mojom::kAudioAndCaptionsSubpagePath,
       chromeos::settings::mojom::kTextToSpeechSubpagePath,
       chromeos::settings::mojom::kSwitchAccessOptionsSubpagePath,
       chromeos::settings::mojom::kCaptionsSubpagePath,

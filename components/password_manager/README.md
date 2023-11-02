@@ -114,7 +114,7 @@ Here is a summary of the core responsibilities of the classes and interfaces:
     This is the [content](https://www.chromium.org/developers/content-module)
     specific implementation of the `PasswordManagerDriver` interfaces.
 
-  * [`IOSChromePasswordManagerDriver`]
+  * [`IOSPasswordManagerDriver`]
 
     This is the iOS specific implementation.
 
@@ -147,7 +147,7 @@ Here is a summary of the core responsibilities of the classes and interfaces:
 [`ChromePasswordManagerClient`]: https://cs.chromium.org/search?q=file:/chrome_password_manager_client.h$
 [`ContentPasswordManagerDriver`]: https://cs.chromium.org/search?q=file:/content_password_manager_driver.h$
 [`IOSChromePasswordManagerClient`]: https://cs.chromium.org/search?q=file:/ios_chrome_password_manager_client.h$
-[`IOSChromePasswordManagerDriver`]: https://cs.chromium.org/search?q=file:/ios_chrome_password_manager_driver.h$
+[`IOSPasswordManagerDriver`]: https://cs.chromium.org/search?q=file:/ios_password_manager_driver.h$
 [`mojom::AutofillAgent`]: https://cs.chromium.org/search?q=file:autofill_agent.mojom+"interface+AutofillAgent"
 [`mojom::PasswordAutofillAgent`]: https://cs.chromium.org/search?q=file:autofill_agent.mojom+"interface+PasswordAutofillAgent"
 [`mojom::PasswordGenerationAgent`]: https://cs.chromium.org/search?q=file:autofill_agent.mojom+"interface+PasswordGenerationAgent"

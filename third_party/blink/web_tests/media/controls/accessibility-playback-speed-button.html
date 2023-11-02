@@ -36,7 +36,7 @@ video.onloadeddata = t.step_func(_ => {
         var playbackSpeedListItem = playbackSpeedListItemAtPlaybackRate(video, playbackSpeed);
         assert_equals(playbackSpeedListItem.innerText, playbackSpeed == 1.0 ? 'Normal' : `${playbackSpeed}`);
         assert_equals(playbackSpeedListItem.getAttribute('role'), 'menuitemcheckbox');
-        assert_equals(playbackSpeedListItem.getAttribute('aria-setsize'), '9');
+        assert_equals(playbackSpeedListItem.getAttribute('aria-setsize'), `${playbackSpeeds.length}`);
         assert_equals(playbackSpeedListItem.getAttribute('aria-posinset'), `${index + 1}`);
       });
     }));

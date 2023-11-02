@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,10 +31,12 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.xsurface.ListContentManagerObserver;
+import org.chromium.chrome.browser.xsurface.LoggingParameters;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /** Unit tests for {@link NtpListContentManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -57,6 +59,10 @@ public class NtpListContentManagerTest implements ListContentManagerObserver {
     private int mItemMovedCurIndex;
     private int mItemMovedNewIndex;
     private String mObservedChanges = "";
+    private final FeedLoggingParameters mLoggingParametersA = new FeedLoggingParameters(
+            "instance-id", "A", /*loggingEnabled=*/true, /*viewActionsEnabled=*/true, null);
+    private final FeedLoggingParameters mLoggingParametersB = new FeedLoggingParameters(
+            "instance-id", "B", /*loggingEnabled=*/true, /*viewActionsEnabled=*/true, null);
 
     @Before
     public void setUp() {
@@ -202,6 +208,12 @@ public class NtpListContentManagerTest implements ListContentManagerObserver {
         assertFalse(mManager.isNativeView(3));
         assertTrue(mManager.isNativeView(4));
 
+        assertFalse(mManager.isFullSpan(0));
+        assertTrue(mManager.isFullSpan(1));
+        assertTrue(mManager.isFullSpan(2));
+        assertFalse(mManager.isFullSpan(3));
+        assertTrue(mManager.isFullSpan(4));
+
         assertArrayEquals("foo".getBytes(), mManager.getExternalViewBytes(0));
         assertEquals(v2, getNativeView(mManager.getViewType(1)));
         assertEquals(v3, getNativeView(mManager.getViewType(2)));
@@ -227,6 +239,46 @@ public class NtpListContentManagerTest implements ListContentManagerObserver {
         addContents(0, Arrays.asList(new NtpListContentManager.FeedContent[] {c}));
         assertEquals(v, getNativeView(mManager.getViewType(0)));
         assertNotEquals(p, v.getParent());
+    }
+
+    @Test
+    @SmallTest
+    public void testGetContextValuesReturnsLoggingParameters() {
+        addContents(0,
+                Arrays.asList(new NtpListContentManager.FeedContent[] {
+                        createExternalViewContent("A", mLoggingParametersA),
+                        createExternalViewContent("B", mLoggingParametersB)}));
+
+        LoggingParameters parameters1 =
+                (LoggingParameters) mManager.getContextValues(0).get(LoggingParameters.KEY);
+        LoggingParameters parameters2 =
+                (LoggingParameters) mManager.getContextValues(1).get(LoggingParameters.KEY);
+        assertEquals(parameters1, mLoggingParametersA);
+        assertEquals(parameters2, mLoggingParametersB);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetContextValues_SetHandlersAfterAddingContent() {
+        addContents(0,
+                Arrays.asList(new NtpListContentManager.FeedContent[] {
+                        createExternalViewContent("A", mLoggingParametersA)}));
+        mManager.setHandlers(Map.of("HKEY1", "someHandler"));
+
+        assertEquals(Map.of("HKEY1", "someHandler", LoggingParameters.KEY, mLoggingParametersA),
+                mManager.getContextValues(0));
+    }
+
+    @Test
+    @SmallTest
+    public void testGetContextValues_SetHandlersBeforeAddingContent() {
+        mManager.setHandlers(Map.of("HKEY1", "someHandler"));
+        addContents(0,
+                Arrays.asList(new NtpListContentManager.FeedContent[] {
+                        createExternalViewContent("A", mLoggingParametersA)}));
+
+        assertEquals(Map.of("HKEY1", "someHandler", LoggingParameters.KEY, mLoggingParametersA),
+                mManager.getContextValues(0));
     }
 
     @Test
@@ -507,7 +559,12 @@ public class NtpListContentManagerTest implements ListContentManagerObserver {
     }
 
     private NtpListContentManager.FeedContent createExternalViewContent(String s) {
-        return new NtpListContentManager.ExternalViewContent(s, s.getBytes());
+        return createExternalViewContent(s, mLoggingParametersA);
+    }
+
+    private NtpListContentManager.FeedContent createExternalViewContent(
+            String s, FeedLoggingParameters loggingParameters) {
+        return new NtpListContentManager.ExternalViewContent(s, s.getBytes(), loggingParameters);
     }
 
     private NtpListContentManager.FeedContent createNativeViewContent(View v) {

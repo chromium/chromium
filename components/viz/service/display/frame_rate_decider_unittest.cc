@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/callback_helpers.h"
+#include "base/time/time.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/service/surfaces/surface.h"
@@ -28,7 +29,9 @@ class FrameRateDeciderTest : public testing::Test,
   ~FrameRateDeciderTest() override = default;
 
   void SetUp() override {
-    surface_manager_ = std::make_unique<SurfaceManager>(this, absl::nullopt);
+    surface_manager_ = std::make_unique<SurfaceManager>(
+        this, /*activation_deadline_in_frames=*/absl::nullopt,
+        /*max_uncommitted_frames=*/0);
     bool hw_support_for_multiple_refresh_rates = true;
     frame_rate_decider_ = std::make_unique<FrameRateDecider>(
         surface_manager_.get(), this, hw_support_for_multiple_refresh_rates,
@@ -286,6 +289,23 @@ TEST_F(FrameRateDeciderTest, MinFrameSinkIntervalIsPicked) {
     frame_rate_decider_->OnSurfaceWillBeDrawn(surface2);
   }
   EXPECT_EQ(display_interval_, min_supported_interval * 2);
+
+  FrameSinkId frame_sink_id3(1u, 3u);
+  preferred_intervals_[frame_sink_id3] = min_supported_interval * 1.8;
+  auto* surface3 = CreateAndDrawSurface(frame_sink_id3);
+  UpdateFrame(surface1);
+  UpdateFrame(surface2);
+  UpdateFrame(surface3);
+  {
+    FrameRateDecider::ScopedAggregate scope(frame_rate_decider_.get());
+    frame_rate_decider_->OnSurfaceWillBeDrawn(surface1);
+    frame_rate_decider_->OnSurfaceWillBeDrawn(surface2);
+    frame_rate_decider_->OnSurfaceWillBeDrawn(surface3);
+  }
+  // Even though surface3 has a frame interval that is closer to
+  // min_supported_interval * 2, we need to pick a smaller interval
+  // so that frames from that surface are not dropped.
+  EXPECT_EQ(display_interval_, min_supported_interval);
 }
 
 TEST_F(FrameRateDeciderTest, TogglesAfterMinNumOfFrames) {

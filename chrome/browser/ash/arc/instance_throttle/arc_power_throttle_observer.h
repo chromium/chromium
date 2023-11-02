@@ -1,15 +1,17 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ASH_ARC_INSTANCE_THROTTLE_ARC_POWER_THROTTLE_OBSERVER_H_
 #define CHROME_BROWSER_ASH_ARC_INSTANCE_THROTTLE_ARC_POWER_THROTTLE_OBSERVER_H_
 
+#include "ash/components/arc/power/arc_power_bridge.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/throttle_observer.h"
-#include "components/arc/power/arc_power_bridge.h"
 
 namespace arc {
+
+constexpr char kArcPowerThrottleObserverName[] = "ArcPower";
 
 // Listens ARC power events and lifts CPU throttling when needed.
 class ArcPowerThrottleObserver : public chromeos::ThrottleObserver,

@@ -1,11 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module network.mojom;
 
-import "url/mojom/url.mojom";
-import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/source_location.mojom";
 
 enum CoopAccessReportType {
@@ -51,21 +49,30 @@ struct CrossOriginOpenerPolicyReporterParams {
 
 // Cross-Origin-Opener-Policy enum representing parsed values.
 enum CrossOriginOpenerPolicyValue {
-  // Severs the opener relationship with openers/opened documents that are not
-  // same-origin.
-  kSameOrigin,
+  // No restriction is applied, the relationship is kept with openers and
+  // opened documents.
+  kUnsafeNone,
 
   // Severs the opener relationship with openers that are not same-origin while
   // keeping the relationship with opened documents, provided they don't have a
   // Cross-Origin-Opener-Policy themselves.
   kSameOriginAllowPopups,
 
-  // No restriction is applied, the relationship is kept with openers and
-  // opened documents.
-  kUnsafeNone,
+  // Severs the opener relationship with openers/opened documents that are not
+  // same-origin.
+  kSameOrigin,
 
-  // Same origin with Cross-Origin-Embedder-Policy: require-corp.
+  // COOP: same-origin with a COEP value compatible with crossOriginIsolation.
   kSameOriginPlusCoep,
+
+  // Restrict which window properties other pages can interact with and vice
+  // versa. Access of "closed" and "postMessage" remains possible across
+  // openers.
+  kRestrictProperties,
+
+  // COOP: restrict-properties with a COEP value compatible with
+  // crossOriginIsolation.
+  kRestrictPropertiesPlusCoep,
 };
 
 // Cross-Origin-Opener-Policy enum representing parsed values.

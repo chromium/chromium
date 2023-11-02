@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,17 +11,17 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/io_buffer.h"
 #include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
 #include "net/test/embedded_test_server/http_connection.h"
 #include "net/test/embedded_test_server/http_request.h"
-#include "net/third_party/quiche/src/http2/adapter/http2_visitor_interface.h"
-#include "net/third_party/quiche/src/http2/adapter/oghttp2_adapter.h"
+#include "net/third_party/quiche/src/quiche/http2/adapter/http2_visitor_interface.h"
+#include "net/third_party/quiche/src/quiche/http2/adapter/oghttp2_adapter.h"
 
-namespace net {
-namespace test_server {
+namespace net::test_server {
 
 using StreamId = http2::adapter::Http2StreamId;
 template <class T>
@@ -56,7 +56,7 @@ class Http2Connection : public HttpConnection,
                                    absl::string_view value) override;
   bool OnEndHeadersForStream(StreamId stream_id) override;
   void OnEndStream(StreamId stream_id) override;
-  void OnCloseStream(StreamId stream_id,
+  bool OnCloseStream(StreamId stream_id,
                      http2::adapter::Http2ErrorCode error_code) override;
   // Unused functions
   void OnConnectionError(ConnectionError /*error*/) override {}
@@ -71,6 +71,7 @@ class Http2Connection : public HttpConnection,
   bool OnBeginHeadersForStream(StreamId stream_id) override;
   bool OnBeginDataForStream(StreamId stream_id, size_t payload_length) override;
   bool OnDataForStream(StreamId stream_id, absl::string_view data) override;
+  bool OnDataPaddingLength(StreamId stream_id, size_t padding_length) override;
   void OnRstStream(StreamId stream_id,
                    http2::adapter::Http2ErrorCode error_code) override {}
   void OnPriorityForStream(StreamId stream_id,
@@ -122,8 +123,8 @@ class Http2Connection : public HttpConnection,
   std::queue<StreamId> ready_streams_;
   std::unique_ptr<http2::adapter::OgHttp2Adapter> adapter_;
   std::unique_ptr<StreamSocket> socket_;
-  EmbeddedTestServerConnectionListener* const connection_listener_;
-  EmbeddedTestServer* const embedded_test_server_;
+  const raw_ptr<EmbeddedTestServerConnectionListener> connection_listener_;
+  const raw_ptr<EmbeddedTestServer> embedded_test_server_;
   scoped_refptr<IOBufferWithSize> read_buf_;
   // Frames can be submitted asynchronusly, so frames will be pulled one at a
   // time by the data frame through ReadyToSend. If the buffer is not null, it
@@ -139,7 +140,6 @@ class Http2Connection : public HttpConnection,
   base::WeakPtrFactory<Http2Connection> weak_factory_{this};
 };
 
-}  // namespace test_server
-}  // namespace net
+}  // namespace net::test_server
 
 #endif  // NET_TEST_EMBEDDED_TEST_SERVER_HTTP2_CONNECTION_H_

@@ -1,12 +1,13 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_DESKS_STORAGE_CORE_DESK_MODEL_OBSERVER_H_
 #define COMPONENTS_DESKS_STORAGE_CORE_DESK_MODEL_OBSERVER_H_
 
-#include <string>
 #include <vector>
+
+#include "base/guid.h"
 
 namespace ash {
 class DeskTemplate;
@@ -36,13 +37,7 @@ class DeskModelObserver {
   // the model to clients.
   virtual void EntriesAddedOrUpdatedRemotely(
       const std::vector<const ash::DeskTemplate*>& new_entries) = 0;
-  virtual void EntriesRemovedRemotely(
-      const std::vector<std::string>& uuids) = 0;
-
-  // Invoked when desk templates are added/updated, removed locally.
-  virtual void EntriesAddedOrUpdatedLocally(
-      const std::vector<const ash::DeskTemplate*>& new_entries) = 0;
-  virtual void EntriesRemovedLocally(const std::vector<std::string>& uuids) = 0;
+  virtual void EntriesRemovedRemotely(const std::vector<base::GUID>& uuids) = 0;
 
  protected:
   virtual ~DeskModelObserver() = default;

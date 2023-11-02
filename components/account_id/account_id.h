@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -65,12 +65,12 @@ class AccountId {
 
   void SetUserEmail(const std::string& email);
 
+  static AccountId FromNonCanonicalEmail(const std::string& email,
+                                         const std::string& gaia_id,
+                                         const AccountType& account_type);
   // This method is to be used during transition period only.
   // AccountId with UNKNOWN AccountType;
   static AccountId FromUserEmail(const std::string& user_email);
-  // AccountId with GOOGLE AccountType;
-  // This method is to be used during transition period only.
-  static AccountId FromGaiaId(const std::string& gaia_id);
   // This method is the preferred way to construct AccountId if you have
   // full account information.
   // AccountId with GOOGLE AccountType;
@@ -80,8 +80,6 @@ class AccountId {
   // AccountId with ACTIVE_DIRECTORY AccountType;
   static AccountId AdFromUserEmailObjGuid(const std::string& email,
                                           const std::string& obj_guid);
-  // AccountId with ACTIVE_DIRECTORY AccountType;
-  static AccountId AdFromObjGuid(const std::string& obj_guid);
 
   // Translation functions between AccountType and std::string. Used for
   // serialization.

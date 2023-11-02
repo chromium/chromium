@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/modules/accessibility/ax_menu_list_popup.h"
 
+#include "base/auto_reset.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_menu_list_option.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
@@ -110,7 +111,7 @@ void AXMenuListPopup::AddChildren() {
   if (!html_select_element)
     return;
 
-  DCHECK(children_.IsEmpty());
+  DCHECK(children_.empty());
   DCHECK(children_dirty_);
   children_dirty_ = false;
 
@@ -157,9 +158,9 @@ void AXMenuListPopup::DidUpdateActiveOption(int option_index,
 
   if (option_index >= 0 && option_index < static_cast<int>(children_.size())) {
     AXObject* child = children_[option_index].Get();
-    cache.PostNotification(this, ax::mojom::Event::kChildrenChanged);
-    cache.PostNotification(this, ax::mojom::Event::kActiveDescendantChanged);
     cache.MarkAXObjectDirtyWithCleanLayout(child);
+    cache.PostNotification(this,
+                           ax::mojom::blink::Event::kActiveDescendantChanged);
   }
 }
 
@@ -167,10 +168,9 @@ void AXMenuListPopup::DidHide() {
   AXObjectCacheImpl& cache = AXObjectCache();
   AXObject* descendant = ActiveDescendant();
   cache.PostNotification(this, ax::mojom::Event::kHide);
-  if (descendant) {
+  if (descendant)
     cache.PostNotification(this, ax::mojom::Event::kChildrenChanged);
-    cache.MarkAXObjectDirtyWithCleanLayout(descendant);
-  }
+  cache.MarkAXSubtreeDirtyWithCleanLayout(ParentObject());
 }
 
 void AXMenuListPopup::DidShow() {
@@ -185,6 +185,7 @@ void AXMenuListPopup::DidShow() {
   } else {
     cache.PostNotification(parent_, ax::mojom::Event::kFocus);
   }
+  cache.MarkAXSubtreeDirtyWithCleanLayout(ParentObject());
 }
 
 AXObject* AXMenuListPopup::ActiveDescendant() {

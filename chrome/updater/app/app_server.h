@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/updater/app/app.h"
+#include "chrome/updater/configurator.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/prefs.h"
 
@@ -35,6 +36,10 @@ class AppServer : public App {
     return external_constants_;
   }
 
+  scoped_refptr<const UpdaterPrefs> prefs() const { return prefs_; }
+
+  scoped_refptr<Configurator> config() const { return config_; }
+
   // Overrides of App.
   void Uninitialize() override;
 
@@ -50,13 +55,11 @@ class AppServer : public App {
   virtual void ActiveDutyInternal(
       scoped_refptr<UpdateServiceInternal> update_service_internal) = 0;
 
-  // Sets up all non-side-by-side RPC interfaces to point to this candidate
-  // server.
-  virtual bool SwapRPCInterfaces() = 0;
+  // Sets up all non-side-by-side registration to point to the new version.
+  virtual bool SwapInNewVersion() = 0;
 
-  // Ingests metadata from incompatible legacy updaters, then replaces those
-  // updaters with shims.
-  virtual bool ConvertLegacyUpdaters(
+  // Imports metadata from legacy updaters, then replaces them with shims.
+  virtual bool MigrateLegacyUpdaters(
       base::RepeatingCallback<void(const RegistrationRequest&)>
           register_callback) = 0;
 
@@ -81,6 +84,7 @@ class AppServer : public App {
   base::OnceClosure first_task_;
   scoped_refptr<ExternalConstants> external_constants_;
   scoped_refptr<UpdaterPrefs> prefs_;
+  scoped_refptr<Configurator> config_;
 
   // If true, this version of the updater should uninstall itself during
   // shutdown.

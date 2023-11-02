@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,7 +51,7 @@ class LocalFileChangeTrackerTest : public testing::Test {
       delete;
 
   void SetUp() override {
-    file_system_.SetUp(CannedSyncableFileSystem::QUOTA_ENABLED);
+    file_system_.SetUp();
 
     ASSERT_TRUE(base_dir_.CreateUniqueTempDir());
     sync_context_ =

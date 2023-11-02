@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,6 @@
 #include "components/viz/common/quads/picture_draw_quad.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
-#include "components/viz/common/quads/stream_video_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
@@ -131,9 +130,6 @@ DrawQuad* AggregatedRenderPass::CopyFromAndAppendDrawQuad(
       break;
     case DrawQuad::Material::kTiledContent:
       CopyFromAndAppendTypedDrawQuad<TileDrawQuad>(quad);
-      break;
-    case DrawQuad::Material::kStreamVideoContent:
-      CopyFromAndAppendTypedDrawQuad<StreamVideoDrawQuad>(quad);
       break;
     case DrawQuad::Material::kSurfaceContent:
       CopyFromAndAppendTypedDrawQuad<SurfaceDrawQuad>(quad);

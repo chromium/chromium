@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <cstdint>
 #include <memory>
 #include <string>
 
@@ -66,7 +67,7 @@ struct IgnoredValue {
 // may include a lambda that refers to protozero message types (which aren't
 // available in the stub). This may trigger "unused variable" errors at the
 // callsite, which have to be addressed at the callsite (e.g. via
-// ignore_result()).
+// [[maybe_unused]]).
 #define TRACE_EVENT_BEGIN(category, name, ...) \
   INTERNAL_TRACE_IGNORE(category, name)
 #define TRACE_EVENT_END(category, ...) INTERNAL_TRACE_IGNORE(category)
@@ -133,27 +134,6 @@ class BASE_EXPORT TracedValueJSON : public TracedValue {
   std::unique_ptr<base::Value> ToBaseValue() const { return nullptr; }
   std::string ToJSON() const { return ""; }
   std::string ToFormattedJSON() const { return ""; }
-};
-
-class BASE_EXPORT BlameContext {
- public:
-  BlameContext(const char* category,
-               const char* name,
-               const char* type,
-               const char* scope,
-               int64_t id,
-               const BlameContext* parent_context) {}
-
-  void Initialize() {}
-  void Enter() {}
-  void Leave() {}
-  void TakeSnapshot() {}
-
-  const char* category() const { return nullptr; }
-  const char* name() const { return nullptr; }
-  const char* type() const { return nullptr; }
-  const char* scope() const { return nullptr; }
-  int64_t id() const { return 0; }
 };
 
 struct MemoryDumpArgs;
@@ -246,6 +226,29 @@ class TracedArray {
 template <class T>
 void WriteIntoTracedValue(TracedValue, T&&) {}
 
+namespace protos::pbzero::SequenceManagerTask {
+enum class QueueName {
+  UNKNOWN_TQ = 0,
+  DEFAULT_TQ = 1,
+  TASK_ENVIRONMENT_DEFAULT_TQ = 2,
+  TEST2_TQ = 3,
+  TEST_TQ = 4,
+};
+inline const char* QueueName_Name(QueueName value) {
+  switch (value) {
+    case QueueName::UNKNOWN_TQ:
+      return "UNKNOWN_TQ";
+    case QueueName::DEFAULT_TQ:
+      return "DEFAULT_TQ";
+    case QueueName::TASK_ENVIRONMENT_DEFAULT_TQ:
+      return "TASK_ENVIRONMENT_DEFAULT_TQ";
+    case QueueName::TEST2_TQ:
+      return "TEST2_TQ";
+    case QueueName::TEST_TQ:
+      return "TEST_TQ";
+  }
+}
+}  // namespace protos::pbzero::SequenceManagerTask
 }  // namespace perfetto
 
 #endif  // BASE_TRACE_EVENT_TRACE_EVENT_STUB_H_

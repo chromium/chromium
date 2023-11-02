@@ -1,11 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chromeos/printing/uri_unittest.h"
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "chromeos/printing/uri.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -180,13 +183,7 @@ TEST(UriTest, UriWithAllPrintableASCII) {
   ASSERT_EQ(uri.GetLastParsingError().status, Uri::ParserStatus::kNoErrors);
 
   // Host is case-insensitive, uppercase letters are normalized to lowercase.
-  std::for_each(host.begin(), host.end(), [](char& c) {
-    if (c >= 'A' && c <= 'Z')
-      c += 'a' - 'A';
-  });
-  // In Query, all occurrences of '+' on the input are treated as ' ' (space).
-  std::replace(query[0].first.begin(), query[0].first.end(), '+', ' ');
-  std::replace(query[0].second.begin(), query[0].second.end(), '+', ' ');
+  base::ranges::transform(host, host.begin(), &base::ToLowerASCII<char>);
 
   EXPECT_EQ(uri.GetUserinfo(), kPrintableASCII);
   EXPECT_EQ(uri.GetHost(), host);
@@ -380,6 +377,19 @@ TEST(UriTest, ParserErrorInFragment) {
   EXPECT_EQ(pe.status, Uri::ParserStatus::kDisallowedASCIICharacter);
   EXPECT_EQ(pe.parsed_chars, 68u);
   EXPECT_EQ(pe.parsed_strings, 0u);
+}
+
+TEST(UriTest, GetQueryAsMap) {
+  Uri uri("ipp://example.org?p1&p2=val&p1=123&p3=aa&p1=&p2=val&other=x&end");
+  EXPECT_EQ(uri.GetLastParsingError().status, Uri::ParserStatus::kNoErrors);
+  using KeyValue = std::pair<std::string, std::vector<std::string>>;
+  // Parameters from the query sorted by keys.
+  const KeyValue e1("end", {""});
+  const KeyValue e2("other", {"x"});
+  const KeyValue e3("p1", {"", "123", ""});
+  const KeyValue e4("p2", {"val", "val"});
+  const KeyValue e5("p3", {"aa"});
+  EXPECT_THAT(uri.GetQueryAsMap(), testing::ElementsAre(e1, e2, e3, e4, e5));
 }
 
 }  // namespace

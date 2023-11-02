@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,8 +42,9 @@ class MEDIA_MOJO_EXPORT MojoAudioEncoderService final
   void Flush(FlushCallback callback) final;
 
  private:
-  using MojoDoneCallback = base::OnceCallback<void(const media::Status&)>;
-  void OnDone(MojoDoneCallback callback, Status error);
+  using MojoDoneCallback =
+      base::OnceCallback<void(const media::EncoderStatus&)>;
+  void OnDone(MojoDoneCallback callback, EncoderStatus error);
   void OnOutput(EncodedAudioBuffer output,
                 absl::optional<media::AudioEncoder::CodecDescription> desc);
 

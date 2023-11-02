@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@ Browser* TestTabStripModelDelegate::CreateNewStripWithContents(
     std::vector<NewStripContents> contentses,
     const gfx::Rect& window_bounds,
     bool maximize) {
-  return NULL;
+  return nullptr;
 }
 
 void TestTabStripModelDelegate::WillAddWebContents(
@@ -98,6 +98,22 @@ bool TestTabStripModelDelegate::CanReload() const {
 void TestTabStripModelDelegate::AddToReadLater(
     content::WebContents* web_contents) {}
 
+bool TestTabStripModelDelegate::SupportsReadLater() {
+  return true;
+}
+
 void TestTabStripModelDelegate::CacheWebContents(
     const std::vector<std::unique_ptr<TabStripModel::DetachedWebContents>>&
         web_contents) {}
+
+void TestTabStripModelDelegate::FollowSite(content::WebContents* web_contents) {
+}
+
+void TestTabStripModelDelegate::UnfollowSite(
+    content::WebContents* web_contents) {}
+
+bool TestTabStripModelDelegate::IsForWebApp() {
+  return false;
+}
+
+void TestTabStripModelDelegate::CopyURL(content::WebContents* web_contents) {}

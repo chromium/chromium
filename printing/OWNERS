@@ -2,6 +2,4 @@ set noparent
 awscreen@chromium.org
 rbpotter@chromium.org
 thestig@chromium.org
-weili@chromium.org
 
-per-file printing_context_android*=ctzsm@chromium.org

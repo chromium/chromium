@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,18 +12,19 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "components/policy/core/browser/url_util.h"
+#include "base/values.h"
 #include "components/policy/policy_export.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/url_matcher/url_matcher.h"
+#include "components/url_matcher/url_util.h"
 #include "url/gurl.h"
 
 class PrefService;
 
 namespace base {
-class ListValue;
 class SequencedTaskRunner;
 }  // namespace base
 
@@ -54,11 +55,11 @@ class POLICY_EXPORT URLBlocklist {
   // URLs matching one of the |filters| will be blocked. The filter format is
   // documented at
   // http://www.chromium.org/administrators/url-blocklist-filter-format.
-  void Block(const base::ListValue* filters);
+  void Block(const base::Value::List& filters);
 
   // URLs matching one of the |filters| will be allowed. If a URL is both
   // Blocked and Allowed, Allow takes precedence.
-  void Allow(const base::ListValue* filters);
+  void Allow(const base::Value::List& filters);
 
   // Returns true if the URL is blocked.
   bool IsURLBlocked(const GURL& url) const;
@@ -70,11 +71,12 @@ class POLICY_EXPORT URLBlocklist {
 
  private:
   // Returns true if |lhs| takes precedence over |rhs|.
-  static bool FilterTakesPrecedence(const url_util::FilterComponents& lhs,
-                                    const url_util::FilterComponents& rhs);
+  static bool FilterTakesPrecedence(
+      const url_matcher::util::FilterComponents& lhs,
+      const url_matcher::util::FilterComponents& rhs);
 
-  url_matcher::URLMatcherConditionSet::ID id_;
-  std::map<url_matcher::URLMatcherConditionSet::ID, url_util::FilterComponents>
+  base::MatcherStringPattern::ID id_ = 0;
+  std::map<base::MatcherStringPattern::ID, url_matcher::util::FilterComponents>
       filters_;
   std::unique_ptr<url_matcher::URLMatcher> url_matcher_;
 };
@@ -82,8 +84,11 @@ class POLICY_EXPORT URLBlocklist {
 // Tracks the blocklist policies for a given profile, and updates it on changes.
 class POLICY_EXPORT URLBlocklistManager {
  public:
-  // Must be constructed on the UI thread.
-  explicit URLBlocklistManager(PrefService* pref_service);
+  // Must be constructed on the UI thread and either of |blocklist_pref_path| or
+  // |allowlist_pref_path| should be valid.
+  URLBlocklistManager(PrefService* pref_service,
+                      absl::optional<std::string> blocklist_pref_path,
+                      absl::optional<std::string> allowlist_pref_path);
   URLBlocklistManager(const URLBlocklistManager&) = delete;
   URLBlocklistManager& operator=(const URLBlocklistManager&) = delete;
   virtual ~URLBlocklistManager();
@@ -112,7 +117,10 @@ class POLICY_EXPORT URLBlocklistManager {
  private:
   // Used to track the policies and update the blocklist on changes.
   PrefChangeRegistrar pref_change_registrar_;
-  PrefService* pref_service_;  // Weak.
+  raw_ptr<PrefService> pref_service_;  // Weak.
+
+  const absl::optional<std::string> blocklist_pref_path_;
+  const absl::optional<std::string> allowlist_pref_path_;
 
   // Used to post tasks to a background thread.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;

@@ -1,0 +1,20 @@
+specific_include_rules = {
+  "input_data_provider_unittest\.cc": [
+    "+device/udev_linux/fake_udev_loader.h",
+  ],
+  "network_health_provider_unittest\.cc": [
+    "+ash/system/diagnostics/network_log.h",
+  ],
+  "session_log_handler_unittest\.cc": [
+    "+ash/system/diagnostics/log_test_helpers.h",
+    "+ash/system/diagnostics/network_log.h",
+    "+ash/system/diagnostics/routine_log.h",
+    "+ash/system/diagnostics/telemetry_log.h",
+  ],
+  "system_data_provider_unittest\.cc": [
+    "+ash/system/diagnostics/telemetry_log.h",
+  ],
+  "system_routine_controller_unittest\.cc": [
+    "+ash/system/diagnostics/routine_log.h",
+  ],
+}

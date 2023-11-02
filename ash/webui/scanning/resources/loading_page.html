@@ -29,8 +29,8 @@
   }
 
   paper-progress {
-    --paper-progress-active-color: var(--google-blue-600);
-    --paper-progress-container-color: var(--google-blue-200);
+    --paper-progress-active-color: var(--scanning-progress-bar);
+    --paper-progress-container-color: var(--scanning-progress-bar-track);
     border-radius: 4px;
     height: 4px;
     margin-bottom: 80px;
@@ -47,14 +47,19 @@
     height: 256px;
   }
 </style>
+<iron-media-query query="(prefers-color-scheme: dark)"
+  query-matches="{{isDarkModeEnabled_}}">
+</iron-media-query>
 <div id="loadingContainer">
   <div id="loadingDiv" hidden="[[noScannersAvailable_]]">
-    <img src="svg/scanners_loading.svg" alt="[[i18n('scannersLoadingText')]]">
+    <img src$="[[getScannersLoadingSvgSrc_(isDarkModeEnabled_)]]"
+        alt="[[i18n('scannersLoadingText')]]">
     <h1>[[i18n('scannersLoadingText')]]</h1>
     <paper-progress indeterminate></paper-progress>
   </div>
   <div id="noScannersDiv" hidden="[[!noScannersAvailable_]]">
-    <img src="svg/no_scanners.svg" alt="[[i18n('noScannersText')]]">
+    <img src$="[[getNoScannersSvgSrc_(isDarkModeEnabled_)]]"
+        alt="[[i18n('noScannersText')]]">
     <h1>[[i18n('noScannersText')]]</h1>
     <span id="noScannersSubtext">[[i18n('noScannersSubtext')]]</span>
     <div id="buttonDiv">

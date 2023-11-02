@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "third_party/skia/include/core/SkTraceMemoryDump.h"
 
@@ -66,7 +66,7 @@ class SK_API SkiaTraceMemoryDumpImpl : public SkTraceMemoryDump {
  private:
   std::string dump_name_prefix_;
 
-  base::trace_event::ProcessMemoryDump* process_memory_dump_;
+  raw_ptr<base::trace_event::ProcessMemoryDump> process_memory_dump_;
 
   // Stores the level of detail for the current dump.
   LevelOfDetail request_level_;

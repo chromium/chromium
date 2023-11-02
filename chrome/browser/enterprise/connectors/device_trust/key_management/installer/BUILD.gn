@@ -1,14 +1,18 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 source_set("elevated_rotation") {
-  public = [ "key_rotation_manager.h" ]
+  public = [
+    "key_rotation_manager.h",
+    "metrics_util.h",
+  ]
 
   sources = [
     "key_rotation_manager.cc",
     "key_rotation_manager_impl.cc",
     "key_rotation_manager_impl.h",
+    "metrics_util.cc",
   ]
 
   deps = [
@@ -17,8 +21,6 @@ source_set("elevated_rotation") {
     "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence",
     "//components/policy/proto",
     "//crypto",
-    "//net",
-    "//third_party/abseil-cpp:absl",
     "//url",
   ]
 

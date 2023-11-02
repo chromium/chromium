@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,12 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/values.h"
 #include "third_party/blink/public/platform/web_crypto.h"
 
 namespace webcrypto {
 
-class CryptoData;
 class Status;
 
 // Helper class for parsing a JWK from JSON.
@@ -40,7 +40,7 @@ class JwkReader {
   //   * Have an "alg" matching |expected_alg|
   //
   // NOTE: If |expected_alg| is empty, then the test on "alg" is skipped.
-  Status Init(const CryptoData& bytes,
+  Status Init(base::span<const uint8_t> bytes,
               bool expected_extractable,
               blink::WebCryptoKeyUsageMask expected_usages,
               const std::string& expected_kty,
@@ -69,20 +69,21 @@ class JwkReader {
   //
   // NOTE: |*result| is owned by the JwkReader.
   Status GetOptionalList(const std::string& member_name,
-                         const base::ListValue** result,
+                         const base::Value::List** result,
                          bool* member_exists) const;
 
   // Extracts the required string member |member_name| and saves the
   // base64url-decoded bytes to |*result|. If the member does not exist or is
   // not a string, or could not be base64url-decoded, returns an error.
-  Status GetBytes(const std::string& member_name, std::string* result) const;
+  Status GetBytes(const std::string& member_name,
+                  std::vector<uint8_t>* result) const;
 
   // Extracts the required base64url member, which is interpreted as being a
   // big-endian unsigned integer.
   //
   // Sequences that contain leading zeros will be rejected.
   Status GetBigInteger(const std::string& member_name,
-                       std::string* result) const;
+                       std::vector<uint8_t>* result) const;
 
   // Extracts the optional boolean member |member_name| and saves the result to
   // |*result| if it was found. If the member exists and is not a boolean,
@@ -117,7 +118,8 @@ class JwkWriter {
   void SetString(const std::string& member_name, const std::string& value);
 
   // Sets a bytes member |value| to |value| by base64 url-safe encoding it.
-  void SetBytes(const std::string& member_name, const CryptoData& value);
+  void SetBytes(const std::string& member_name,
+                base::span<const uint8_t> value);
 
   // Flattens the JWK to JSON (UTF-8 encoded if necessary, however in practice
   // it will be ASCII).
@@ -130,7 +132,7 @@ class JwkWriter {
 // Converts a JWK "key_ops" array to the corresponding WebCrypto usages. Used by
 // testing.
 Status GetWebCryptoUsagesFromJwkKeyOpsForTest(
-    const base::ListValue* key_ops,
+    const base::Value::List& key_ops,
     blink::WebCryptoKeyUsageMask* usages);
 
 }  // namespace webcrypto

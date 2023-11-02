@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 // On Mac, one can't make shortcuts with command-line arguments. Instead, we
@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/allocator/early_zone_registration_mac.h"
 #include "base/at_exit.h"
 #include "base/bind.h"
 #include "base/check.h"
@@ -63,6 +64,12 @@ __attribute__((visibility("default"))) int APP_SHIM_ENTRY_POINT_NAME(
 }  // extern "C"
 
 int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
+  // The static constructor in //base will have registered PartitionAlloc as the
+  // default zone. Allow the //base instance in the main library to register it
+  // as well. Otherwise we end up passing memory to free() which was allocated
+  // by an unknown zone. See crbug.com/1274236 for details.
+  partition_alloc::AllowDoublePartitionAllocZoneRegistration();
+
   base::CommandLine::Init(info->argc, info->argv);
 
   @autoreleasepool {
@@ -75,6 +82,12 @@ int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
     base::mac::SetOverrideFrameworkBundlePath(
         base::FilePath(info->chrome_framework_path));
 
+    // Note that `info->user_data_dir` for shims contains the app data path,
+    // <user_data_dir>/<profile_dir>/Web Applications/_crx_extensionid/.
+    const base::FilePath user_data_dir =
+        base::FilePath(info->user_data_dir).DirName().DirName().DirName();
+
+    // TODO(https://crbug.com/1274807): Specify `user_data_dir` to  CrashPad.
     ChromeCrashReporterClient::Create();
     crash_reporter::InitializeCrashpad(true, "app_shim");
 
@@ -120,7 +133,11 @@ int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
     base::Thread* io_thread = new base::Thread("CrAppShimIO");
     io_thread->StartWithOptions(std::move(io_thread_options));
 
-    mojo::core::Init();
+    // We're using an isolated Mojo connection between the browser and this
+    // process, so this process must act as a broker.
+    mojo::core::Configuration config;
+    config.is_broker_process = true;
+    mojo::core::Init(config);
     mojo::core::ScopedIPCSupport ipc_support(
         io_thread->task_runner(),
         mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST);
@@ -136,10 +153,7 @@ int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
     base::PlatformThread::SetName("CrAppShimMain");
 
     AppShimController::Params controller_params;
-    // Note that |info->user_data_dir| for shims contains the app data path,
-    // <user_data_dir>/<profile_dir>/Web Applications/_crx_extensionid/.
-    controller_params.user_data_dir =
-        base::FilePath(info->user_data_dir).DirName().DirName().DirName();
+    controller_params.user_data_dir = user_data_dir;
     // Similarly, extract the full profile path from |info->user_data_dir|.
     // Ignore |info->profile_dir| because it is only the relative path (unless
     // it is empty, in which case this is a profile-agnostic app).

@@ -1,29 +1,29 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/task/post_task.h"
-#include "base/task/thread_pool.h"
-#include "base/time/time.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
+#import "base/bind.h"
+#import "base/callback.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/task/thread_pool.h"
+#import "components/metrics/metrics_reporting_default_state.h"
+#import "components/policy/core/common/policy_loader_ios_constants.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/app/tests_hook.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/crash_report/crash_helper.h"
-#include "ios/chrome/browser/first_run/first_run.h"
+#import "ios/chrome/browser/first_run/first_run.h"
 #import "ios/chrome/browser/first_run/first_run_configuration.h"
-#include "ios/chrome/browser/first_run/first_run_metrics.h"
-#include "ios/chrome/browser/signin/identity_manager_factory.h"
-#include "ios/chrome/browser/system_flags.h"
+#import "ios/chrome/browser/first_run/first_run_metrics.h"
+#import "ios/chrome/browser/flags/system_flags.h"
+#import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
-#include "ios/web/public/thread/web_thread.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/web/public/thread/web_thread.h"
 #import "ui/gfx/ios/NSString+CrStringDrawing.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -36,6 +36,8 @@ NSString* const kChromeFirstRunUIWillFinishNotification =
 NSString* const kChromeFirstRunUIDidFinishNotification =
     @"kChromeFirstRunUIDidFinishNotification";
 
+constexpr BOOL kDefaultMetricsReportingCheckboxValue = YES;
+
 namespace {
 
 // Trampoline method for Bind to create the sentinel file.
@@ -45,9 +47,11 @@ void CreateSentinel() {
       FirstRun::CreateSentinel(&file_error);
   base::UmaHistogramEnumeration("FirstRun.Sentinel.Created", sentinel_created,
                                 FirstRun::SentinelResult::SENTINEL_RESULT_MAX);
-  if (sentinel_created == FirstRun::SentinelResult::SENTINEL_RESULT_FILE_ERROR)
+  if (sentinel_created ==
+      FirstRun::SentinelResult::SENTINEL_RESULT_FILE_ERROR) {
     base::UmaHistogramExactLinear("FirstRun.Sentinel.CreatedFileError",
                                   -file_error, -base::File::FILE_ERROR_MAX);
+  }
 }
 
 bool kFirstRunSentinelCreated = false;
@@ -99,10 +103,72 @@ void RecordFirstRunSignInMetrics(
       case first_run::SignInAttemptStatus::SKIPPED_BY_POLICY:
         sign_in_status = first_run::SIGNIN_SKIPPED_POLICY;
         break;
+      case first_run::SignInAttemptStatus::NOT_SUPPORTED:
+        sign_in_status = first_run::SIGNIN_NOT_SUPPORTED;
+        break;
     }
   }
   base::UmaHistogramEnumeration("FirstRun.SignIn", sign_in_status,
                                 first_run::SIGNIN_SIZE);
+}
+
+void RecordFirstRunScrollButtonVisibilityMetrics(
+    first_run::FirstRunScreenType screen_type,
+    BOOL scroll_button_visible) {
+  switch (screen_type) {
+    case first_run::FirstRunScreenType::kDefaultBrowserPromoScreen:
+      base::UmaHistogramBoolean(
+          "IOS.FirstRun.ScrollButtonVisible.DefaultBrowserPromoScreen",
+          scroll_button_visible);
+      break;
+    case first_run::FirstRunScreenType::kSignInScreenWithFooter:
+      base::UmaHistogramBoolean(
+          "IOS.FirstRun.ScrollButtonVisible.SignInScreenWithFooter",
+          scroll_button_visible);
+      break;
+    case first_run::FirstRunScreenType::
+        kSignInScreenWithFooterAndIdentityPicker:
+      base::UmaHistogramBoolean("IOS.FirstRun.ScrollButtonVisible."
+                                "SignInScreenWithFooterAndIdentityPicker",
+                                scroll_button_visible);
+      break;
+    case first_run::FirstRunScreenType::kSignInScreenWithIdentityPicker:
+      base::UmaHistogramBoolean(
+          "IOS.FirstRun.ScrollButtonVisible.SignInScreenWithIdentityPicker",
+          scroll_button_visible);
+      break;
+    case first_run::FirstRunScreenType::
+        kSignInScreenWithoutFooterOrIdentityPicker:
+      base::UmaHistogramBoolean("IOS.FirstRun.ScrollButtonVisible."
+                                "SignInScreenWithoutFooterOrIdentityPicker",
+                                scroll_button_visible);
+      break;
+    case first_run::FirstRunScreenType::kSyncScreenWithoutIdentityPicker:
+      base::UmaHistogramBoolean(
+          "IOS.FirstRun.ScrollButtonVisible.SyncScreenWithoutIdentityPicker",
+          scroll_button_visible);
+      break;
+    case first_run::FirstRunScreenType::kSyncScreenWithIdentityPicker:
+      base::UmaHistogramBoolean(
+          "IOS.FirstRun.ScrollButtonVisible.SyncScreenWithIdentityPicker",
+          scroll_button_visible);
+      break;
+    case first_run::FirstRunScreenType::kWelcomeScreenWithoutUMACheckbox:
+      base::UmaHistogramBoolean(
+          "IOS.FirstRun.ScrollButtonVisible.WelcomeScreenWithoutUMACheckbox",
+          scroll_button_visible);
+      break;
+    case first_run::FirstRunScreenType::kWelcomeScreenWithUMACheckbox:
+      base::UmaHistogramBoolean(
+          "IOS.FirstRun.ScrollButtonVisible.WelcomeScreenWithUMACheckbox",
+          scroll_button_visible);
+      break;
+    case first_run::FirstRunScreenType::kTangibleSyncScreen:
+      base::UmaHistogramBoolean(
+          "IOS.FirstRun.ScrollButtonVisible.TangibleSyncScreen",
+          scroll_button_visible);
+      break;
+  }
 }
 
 void FinishFirstRun(ChromeBrowserState* browserState,
@@ -147,4 +213,24 @@ bool ShouldPresentFirstRunExperience() {
     return false;
 
   return FirstRun::IsChromeFirstRun();
+}
+
+void RecordMetricsReportingDefaultState() {
+  // Record metrics reporting as opt-in/opt-out only once.
+  static dispatch_once_t once;
+  dispatch_once(&once, ^{
+    // Don't call RecordMetricsReportingDefaultState twice. This can happen if
+    // the app is quit before accepting the TOS, or via experiment settings.
+    if (metrics::GetMetricsReportingDefaultState(
+            GetApplicationContext()->GetLocalState()) !=
+        metrics::EnableMetricsDefault::DEFAULT_UNKNOWN) {
+      return;
+    }
+
+    metrics::RecordMetricsReportingDefaultState(
+        GetApplicationContext()->GetLocalState(),
+        kDefaultMetricsReportingCheckboxValue
+            ? metrics::EnableMetricsDefault::OPT_OUT
+            : metrics::EnableMetricsDefault::OPT_IN);
+  });
 }

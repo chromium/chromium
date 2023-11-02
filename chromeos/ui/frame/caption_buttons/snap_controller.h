@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,6 +28,12 @@ enum class SnapDirection {
                // top and secondary position is the bottom.
 };
 
+enum class SnapRatio {
+  kDefaultSnapRatio,   // 0.5f
+  kOneThirdSnapRatio,  // 0.33f
+  kTwoThirdSnapRatio   // 0.67f
+};
+
 // This interface handles snap actions to be performed on a top level window.
 // The singleton that implements the interface is provided by Ash.
 class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) SnapController {
@@ -40,11 +46,17 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) SnapController {
   virtual bool CanSnap(aura::Window* window) = 0;
 
   // Shows a preview (phantom window) for the given snap direction.
-  virtual void ShowSnapPreview(aura::Window* window, SnapDirection snap) = 0;
+  // `allow_haptic_feedback` indicates if it should send haptic feedback.
+  virtual void ShowSnapPreview(aura::Window* window,
+                               SnapDirection snap,
+                               bool allow_haptic_feedback) = 0;
 
   // Snaps the window in the given direction, if not kNone. Destroys the preview
   // window, if any.
-  virtual void CommitSnap(aura::Window* window, SnapDirection snap) = 0;
+  virtual void CommitSnap(
+      aura::Window* window,
+      SnapDirection snap,
+      SnapRatio snap_ratio = SnapRatio::kDefaultSnapRatio) = 0;
 
  protected:
   SnapController();

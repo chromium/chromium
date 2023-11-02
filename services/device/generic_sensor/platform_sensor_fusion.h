@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "services/device/generic_sensor/platform_sensor.h"
 #include "services/device/generic_sensor/platform_sensor_provider_base.h"
 
@@ -59,6 +59,9 @@ class PlatformSensorFusion : public PlatformSensor,
   bool IsSuspended() override;
 
   virtual bool GetSourceReading(mojom::SensorType type, SensorReading* result);
+  bool IsSignificantlyDifferent(const SensorReading& reading1,
+                                const SensorReading& reading2,
+                                mojom::SensorType sensor_type) override;
 
  protected:
   class Factory;
@@ -73,8 +76,15 @@ class PlatformSensorFusion : public PlatformSensor,
   bool StartSensor(const PlatformSensorConfiguration& configuration) override;
   void StopSensor() override;
 
+  PlatformSensorFusionAlgorithm* fusion_algorithm() const {
+    return fusion_algorithm_.get();
+  }
+
+  FRIEND_TEST_ALL_PREFIXES(PlatformSensorFusionTest, OnSensorReadingChanged);
+  FRIEND_TEST_ALL_PREFIXES(PlatformSensorFusionTest,
+                           FusionIsSignificantlyDifferent);
+
  private:
-  SensorReading reading_;
   std::unique_ptr<PlatformSensorFusionAlgorithm> fusion_algorithm_;
   SourcesMap source_sensors_;
   mojom::ReportingMode reporting_mode_;

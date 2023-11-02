@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,20 +6,19 @@
 
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
-#include "ios/chrome/browser/overlays/overlay_request_queue_impl.h"
-#include "ios/chrome/browser/overlays/public/overlay_modality.h"
-#include "ios/chrome/browser/overlays/public/overlay_presenter_observer.h"
-#include "ios/chrome/browser/overlays/public/overlay_request.h"
-#include "ios/chrome/browser/overlays/test/fake_overlay_presentation_context.h"
-#include "ios/chrome/browser/overlays/test/fake_overlay_request_cancel_handler.h"
-#include "ios/chrome/browser/overlays/test/fake_overlay_user_data.h"
-#import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
+#import "ios/chrome/browser/overlays/overlay_request_queue_impl.h"
+#import "ios/chrome/browser/overlays/public/overlay_modality.h"
+#import "ios/chrome/browser/overlays/public/overlay_presenter_observer.h"
+#import "ios/chrome/browser/overlays/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/test/fake_overlay_presentation_context.h"
+#import "ios/chrome/browser/overlays/test/fake_overlay_request_cancel_handler.h"
+#import "ios/chrome/browser/overlays/test/fake_overlay_user_data.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/platform_test.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/gmock/include/gmock/gmock.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -30,7 +29,7 @@ namespace {
 class MockOverlayPresenterObserver : public OverlayPresenterObserver {
  public:
   MockOverlayPresenterObserver() {}
-  ~MockOverlayPresenterObserver() {}
+  ~MockOverlayPresenterObserver() override {}
 
   MOCK_METHOD3(WillShowOverlay, void(OverlayPresenter*, OverlayRequest*, bool));
   MOCK_METHOD2(DidHideOverlay, void(OverlayPresenter*, OverlayRequest*));
@@ -51,11 +50,9 @@ class MockOverlayPresenterObserver : public OverlayPresenterObserver {
 // Test fixture for OverlayPresenterImpl.
 class OverlayPresenterImplTest : public PlatformTest {
  public:
-  OverlayPresenterImplTest() : web_state_list_(&web_state_list_delegate_) {
-    TestChromeBrowserState::Builder browser_state_builder;
-    chrome_browser_state_ = browser_state_builder.Build();
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get(),
-                                             &web_state_list_);
+  OverlayPresenterImplTest() {
+    chrome_browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
     OverlayPresenterImpl::Container::CreateForUserData(browser_.get(),
                                                        browser_.get());
     presenter().AddObserver(&observer_);
@@ -64,10 +61,9 @@ class OverlayPresenterImplTest : public PlatformTest {
     if (browser_)
       presenter().RemoveObserver(&observer_);
   }
-
-  WebStateList& web_state_list() { return web_state_list_; }
+  WebStateList* web_state_list() { return browser_->GetWebStateList(); }
   web::WebState* active_web_state() {
-    return web_state_list_.GetActiveWebState();
+    return web_state_list()->GetActiveWebState();
   }
   OverlayPresenterImpl& presenter() {
     return *OverlayPresenterImpl::Container::FromUserData(browser_.get())
@@ -113,8 +109,6 @@ class OverlayPresenterImplTest : public PlatformTest {
 
  private:
   web::WebTaskEnvironment task_environment_;
-  FakeWebStateListDelegate web_state_list_delegate_;
-  WebStateList web_state_list_;
   FakeOverlayPresentationContext presentation_context_;
   MockOverlayPresenterObserver observer_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
@@ -125,7 +119,7 @@ class OverlayPresenterImplTest : public PlatformTest {
 // before the delegate is provided.
 TEST_F(OverlayPresenterImplTest, PresentAfterSettingPresentationContext) {
   // Add a WebState to the list and add a request to that WebState's queue.
-  web_state_list().InsertWebState(
+  web_state_list()->InsertWebState(
       /*index=*/0, std::make_unique<web::FakeWebState>(),
       WebStateList::InsertionFlags::INSERT_ACTIVATE, WebStateOpener());
   OverlayRequest* request = AddRequest(active_web_state());
@@ -144,7 +138,7 @@ TEST_F(OverlayPresenterImplTest, PresentAfterSettingPresentationContext) {
 TEST_F(OverlayPresenterImplTest, PresentAfterRequestAddedToActiveQueue) {
   // Add a WebState to the list and add a request to that WebState's queue.
   presenter().SetPresentationContext(&presentation_context());
-  web_state_list().InsertWebState(
+  web_state_list()->InsertWebState(
       /*index=*/0, std::make_unique<web::FakeWebState>(),
       WebStateList::InsertionFlags::INSERT_ACTIVATE, WebStateOpener());
   OverlayRequest* request = AddRequest(active_web_state());
@@ -160,7 +154,7 @@ TEST_F(OverlayPresenterImplTest,
        PresentAfterRequestInsertedToFrontOfActiveQueue) {
   // Add a WebState to the list and add a request to that WebState's queue.
   presenter().SetPresentationContext(&presentation_context());
-  web_state_list().InsertWebState(
+  web_state_list()->InsertWebState(
       /*index=*/0, std::make_unique<web::FakeWebState>(),
       WebStateList::InsertionFlags::INSERT_ACTIVATE, WebStateOpener());
   OverlayRequest* request = AddRequest(active_web_state());
@@ -168,8 +162,8 @@ TEST_F(OverlayPresenterImplTest,
   EXPECT_EQ(FakeOverlayPresentationContext::PresentationState::kPresented,
             presentation_context().GetPresentationState(request));
   EXPECT_TRUE(presenter().IsShowingOverlayUI());
-  // Insert a request in front of the |request| and verify that the inserted
-  // request's UI is presented while |request|'s UI is hidden.
+  // Insert a request in front of the `request` and verify that the inserted
+  // request's UI is presented while `request`'s UI is hidden.
   EXPECT_CALL(observer(), DidHideOverlay(&presenter(), request));
   OverlayRequest* inserted_request =
       InsertRequest(active_web_state(), /*index=*/0);
@@ -178,7 +172,7 @@ TEST_F(OverlayPresenterImplTest,
   EXPECT_EQ(FakeOverlayPresentationContext::PresentationState::kHidden,
             presentation_context().GetPresentationState(request));
   EXPECT_TRUE(presenter().IsShowingOverlayUI());
-  // Dismiss |inserted_request|'s UI check that the |request|'s UI is presented
+  // Dismiss `inserted_request`'s UI check that the `request`'s UI is presented
   // again.
   EXPECT_CALL(observer(), DidHideOverlay(&presenter(), inserted_request));
   EXPECT_CALL(observer(), WillShowOverlay(&presenter(), request,
@@ -199,7 +193,7 @@ TEST_F(OverlayPresenterImplTest, PresentAfterContextActivation) {
   presentation_context().SetPresentationCapabilities(
       OverlayPresentationContext::UIPresentationCapabilities::kNone);
   presenter().SetPresentationContext(&presentation_context());
-  web_state_list().InsertWebState(
+  web_state_list()->InsertWebState(
       /*index=*/0, std::make_unique<web::FakeWebState>(),
       WebStateList::InsertionFlags::INSERT_ACTIVATE, WebStateOpener());
   OverlayRequest* request = AddRequest(active_web_state());
@@ -219,7 +213,7 @@ TEST_F(OverlayPresenterImplTest, PresentAfterContextActivation) {
 TEST_F(OverlayPresenterImplTest, HideAfterContextDeactivation) {
   // Add a WebState to the list and add a request to that WebState's queue.
   presenter().SetPresentationContext(&presentation_context());
-  web_state_list().InsertWebState(
+  web_state_list()->InsertWebState(
       /*index=*/0, std::make_unique<web::FakeWebState>(),
       WebStateList::InsertionFlags::INSERT_ACTIVATE, WebStateOpener());
   OverlayRequest* request = AddRequest(active_web_state());
@@ -240,7 +234,7 @@ TEST_F(OverlayPresenterImplTest, HideAfterContextDeactivation) {
 TEST_F(OverlayPresenterImplTest, ResetPresentationContext) {
   // Add a WebState to the list and add a request to that WebState's queue.
   presenter().SetPresentationContext(&presentation_context());
-  web_state_list().InsertWebState(
+  web_state_list()->InsertWebState(
       /*index=*/0, std::make_unique<web::FakeWebState>(),
       WebStateList::InsertionFlags::INSERT_ACTIVATE, WebStateOpener());
   web::WebState* web_state = active_web_state();
@@ -266,7 +260,7 @@ TEST_F(OverlayPresenterImplTest, ResetPresentationContext) {
   EXPECT_TRUE(presenter().IsShowingOverlayUI());
 
   // Reset the UI delegate to nullptr and verify that the overlay UI is
-  // cancelled in |new_presentation_context|'s context.
+  // cancelled in `new_presentation_context`'s context.
   EXPECT_CALL(observer(), DidHideOverlay(&presenter(), request));
   presenter().SetPresentationContext(nullptr);
   EXPECT_EQ(FakeOverlayPresentationContext::PresentationState::kCancelled,
@@ -280,7 +274,7 @@ TEST_F(OverlayPresenterImplTest, ResetPresentationContext) {
 TEST_F(OverlayPresenterImplTest, ChangeActiveWebStateWhileNotPresenting) {
   // Add a WebState to the list and activate it.
   presenter().SetPresentationContext(&presentation_context());
-  web_state_list().InsertWebState(
+  web_state_list()->InsertWebState(
       /*index=*/0, std::make_unique<web::FakeWebState>(),
       WebStateList::InsertionFlags::INSERT_ACTIVATE, WebStateOpener());
 
@@ -289,9 +283,9 @@ TEST_F(OverlayPresenterImplTest, ChangeActiveWebStateWhileNotPresenting) {
   auto passed_web_state = std::make_unique<web::FakeWebState>();
   web::WebState* second_web_state = passed_web_state.get();
   OverlayRequest* request = AddRequest(second_web_state);
-  web_state_list().InsertWebState(/*index=*/1, std::move(passed_web_state),
-                                  WebStateList::InsertionFlags::INSERT_ACTIVATE,
-                                  WebStateOpener());
+  web_state_list()->InsertWebState(
+      /*index=*/1, std::move(passed_web_state),
+      WebStateList::InsertionFlags::INSERT_ACTIVATE, WebStateOpener());
 
   // Verify that the new active WebState's overlay is being presented.
   EXPECT_EQ(FakeOverlayPresentationContext::PresentationState::kPresented,
@@ -303,7 +297,7 @@ TEST_F(OverlayPresenterImplTest, ChangeActiveWebStateWhileNotPresenting) {
 TEST_F(OverlayPresenterImplTest, ChangeActiveWebStateWhilePresenting) {
   // Add a WebState to the list and add a request to that WebState's queue.
   presenter().SetPresentationContext(&presentation_context());
-  web_state_list().InsertWebState(
+  web_state_list()->InsertWebState(
       /*index=*/0, std::make_unique<web::FakeWebState>(),
       WebStateList::InsertionFlags::INSERT_ACTIVATE, WebStateOpener());
   web::WebState* first_web_state = active_web_state();
@@ -318,9 +312,9 @@ TEST_F(OverlayPresenterImplTest, ChangeActiveWebStateWhilePresenting) {
   web::WebState* second_web_state = passed_web_state.get();
   OverlayRequest* second_request = AddRequest(second_web_state);
   EXPECT_CALL(observer(), DidHideOverlay(&presenter(), first_request));
-  web_state_list().InsertWebState(/*index=*/1, std::move(passed_web_state),
-                                  WebStateList::InsertionFlags::INSERT_ACTIVATE,
-                                  WebStateOpener());
+  web_state_list()->InsertWebState(
+      /*index=*/1, std::move(passed_web_state),
+      WebStateList::InsertionFlags::INSERT_ACTIVATE, WebStateOpener());
 
   // Verify that the previously shown overlay is hidden and that the overlay for
   // the new active WebState is presented.
@@ -335,7 +329,7 @@ TEST_F(OverlayPresenterImplTest, ChangeActiveWebStateWhilePresenting) {
   EXPECT_CALL(observer(), DidHideOverlay(&presenter(), second_request));
   EXPECT_CALL(observer(), WillShowOverlay(&presenter(), first_request,
                                           /*initial_presentation=*/false));
-  web_state_list().ActivateWebStateAt(0);
+  web_state_list()->ActivateWebStateAt(0);
   EXPECT_EQ(FakeOverlayPresentationContext::PresentationState::kPresented,
             presentation_context().GetPresentationState(first_request));
   EXPECT_EQ(FakeOverlayPresentationContext::PresentationState::kHidden,
@@ -347,7 +341,7 @@ TEST_F(OverlayPresenterImplTest, ChangeActiveWebStateWhilePresenting) {
 TEST_F(OverlayPresenterImplTest, ReplaceActiveWebState) {
   // Add a WebState to the list and add a request to that WebState's queue.
   presenter().SetPresentationContext(&presentation_context());
-  web_state_list().InsertWebState(
+  web_state_list()->InsertWebState(
       /*index=*/0, std::make_unique<web::FakeWebState>(),
       WebStateList::InsertionFlags::INSERT_ACTIVATE, WebStateOpener());
   web::WebState* first_web_state = active_web_state();
@@ -356,12 +350,12 @@ TEST_F(OverlayPresenterImplTest, ReplaceActiveWebState) {
             presentation_context().GetPresentationState(first_request));
   ASSERT_TRUE(presenter().IsShowingOverlayUI());
 
-  // Replace |first_web_state| with a new active WebState with a queued request.
+  // Replace `first_web_state` with a new active WebState with a queued request.
   auto passed_web_state = std::make_unique<web::FakeWebState>();
   web::WebState* replacement_web_state = passed_web_state.get();
   OverlayRequest* replacement_request = AddRequest(replacement_web_state);
   EXPECT_CALL(observer(), DidHideOverlay(&presenter(), first_request));
-  web_state_list().ReplaceWebStateAt(/*index=*/0, std::move(passed_web_state));
+  web_state_list()->ReplaceWebStateAt(/*index=*/0, std::move(passed_web_state));
 
   // Verify that the previously shown overlay is canceled and that the overlay
   // for the replacement WebState is presented.
@@ -376,7 +370,7 @@ TEST_F(OverlayPresenterImplTest, ReplaceActiveWebState) {
 TEST_F(OverlayPresenterImplTest, RemoveActiveWebState) {
   // Add a WebState to the list and add a request to that WebState's queue.
   presenter().SetPresentationContext(&presentation_context());
-  web_state_list().InsertWebState(
+  web_state_list()->InsertWebState(
       /*index=*/0, std::make_unique<web::FakeWebState>(),
       WebStateList::InsertionFlags::INSERT_ACTIVATE, WebStateOpener());
   web::WebState* web_state = active_web_state();
@@ -387,7 +381,7 @@ TEST_F(OverlayPresenterImplTest, RemoveActiveWebState) {
 
   // Remove the WebState and verify that its overlay was cancelled.
   EXPECT_CALL(observer(), DidHideOverlay(&presenter(), request));
-  web_state_list().CloseWebStateAt(/*index=*/0, /* close_flags= */ 0);
+  web_state_list()->CloseWebStateAt(/*index=*/0, /* close_flags= */ 0);
   EXPECT_EQ(FakeOverlayPresentationContext::PresentationState::kCancelled,
             presentation_context().GetPresentationState(request));
 }
@@ -397,7 +391,7 @@ TEST_F(OverlayPresenterImplTest, RemoveActiveWebState) {
 TEST_F(OverlayPresenterImplTest, DetachWebStateRemoveDelegate) {
   // Add a WebState to the list and add a request to that WebState's queue.
   presenter().SetPresentationContext(&presentation_context());
-  web_state_list().InsertWebState(
+  web_state_list()->InsertWebState(
       /*index=*/0, std::make_unique<web::FakeWebState>(),
       WebStateList::InsertionFlags::INSERT_ACTIVATE, WebStateOpener());
   web::WebState* web_state = active_web_state();
@@ -409,7 +403,7 @@ TEST_F(OverlayPresenterImplTest, DetachWebStateRemoveDelegate) {
   presentation_context().SetDismissalCallbacksEnabled(false);
   // Remove the WebState and verify that its overlay was cancelled.
   std::unique_ptr<web::WebState> detached_web_state =
-      web_state_list().DetachWebStateAt(/*index=*/0);
+      web_state_list()->DetachWebStateAt(/*index=*/0);
   EXPECT_CALL(observer(), DidHideOverlay(&presenter(), request));
   GetQueueForWebState(detached_web_state.get())->SetDelegate(nullptr);
   presentation_context().SetDismissalCallbacksEnabled(true);
@@ -424,7 +418,7 @@ TEST_F(OverlayPresenterImplTest,
        DetachWebStateCancelRequestBeforeDismissalCallback) {
   // Add a WebState to the list and add a request to that WebState's queue.
   presenter().SetPresentationContext(&presentation_context());
-  web_state_list().InsertWebState(
+  web_state_list()->InsertWebState(
       /*index=*/0, std::make_unique<web::FakeWebState>(),
       WebStateList::InsertionFlags::INSERT_ACTIVATE, WebStateOpener());
   web::WebState* web_state = active_web_state();
@@ -436,7 +430,7 @@ TEST_F(OverlayPresenterImplTest,
   presentation_context().SetDismissalCallbacksEnabled(false);
   // Remove the WebState and verify that its overlay was cancelled.
   std::unique_ptr<web::WebState> detached_web_state =
-      web_state_list().DetachWebStateAt(/*index=*/0);
+      web_state_list()->DetachWebStateAt(/*index=*/0);
   GetQueueForWebState(detached_web_state.get())->CancelAllRequests();
   EXPECT_CALL(observer(), DidHideOverlay(&presenter(), request));
   presentation_context().SetDismissalCallbacksEnabled(true);
@@ -448,7 +442,7 @@ TEST_F(OverlayPresenterImplTest,
        DetachWebStateDismissalCallbackCallsDidHideOverlay) {
   // Add a WebState to the list and add a request to that WebState's queue.
   presenter().SetPresentationContext(&presentation_context());
-  web_state_list().InsertWebState(
+  web_state_list()->InsertWebState(
       /*index=*/0, std::make_unique<web::FakeWebState>(),
       WebStateList::InsertionFlags::INSERT_ACTIVATE, WebStateOpener());
   web::WebState* web_state = active_web_state();
@@ -460,7 +454,7 @@ TEST_F(OverlayPresenterImplTest,
   presentation_context().SetDismissalCallbacksEnabled(false);
   // Remove the WebState and verify that its overlay was cancelled.
   std::unique_ptr<web::WebState> detached_web_state =
-      web_state_list().DetachWebStateAt(/*index=*/0);
+      web_state_list()->DetachWebStateAt(/*index=*/0);
   EXPECT_CALL(observer(), DidHideOverlay(&presenter(), request));
   presentation_context().SetDismissalCallbacksEnabled(true);
 }
@@ -469,7 +463,7 @@ TEST_F(OverlayPresenterImplTest,
 TEST_F(OverlayPresenterImplTest, DismissForUserInteraction) {
   // Add a WebState to the list and add two request to that WebState's queue.
   presenter().SetPresentationContext(&presentation_context());
-  web_state_list().InsertWebState(
+  web_state_list()->InsertWebState(
       /*index=*/0, std::make_unique<web::FakeWebState>(),
       WebStateList::InsertionFlags::INSERT_ACTIVATE, WebStateOpener());
   web::WebState* web_state = active_web_state();
@@ -502,9 +496,9 @@ TEST_F(OverlayPresenterImplTest, DismissForUserInteraction) {
 TEST_F(OverlayPresenterImplTest, CancelRequests) {
   // Add a WebState to the list and a request to that WebState's queue.
   presenter().SetPresentationContext(&presentation_context());
-  web_state_list().InsertWebState(0, std::make_unique<web::FakeWebState>(),
-                                  WebStateList::InsertionFlags::INSERT_ACTIVATE,
-                                  WebStateOpener());
+  web_state_list()->InsertWebState(
+      0, std::make_unique<web::FakeWebState>(),
+      WebStateList::InsertionFlags::INSERT_ACTIVATE, WebStateOpener());
   OverlayRequestQueueImpl* queue = GetQueueForWebState(active_web_state());
   OverlayRequest* active_request = AddRequest(active_web_state());
   OverlayRequest* queued_request =
@@ -530,20 +524,20 @@ TEST_F(OverlayPresenterImplTest,
        ChangePresentationCapabilitiesDuringDismissalForInactiveWebState) {
   // Insert an activated WebState to the list and add a request.
   presenter().SetPresentationContext(&presentation_context());
-  web_state_list().InsertWebState(0, std::make_unique<web::FakeWebState>(),
-                                  WebStateList::InsertionFlags::INSERT_ACTIVATE,
-                                  WebStateOpener());
+  web_state_list()->InsertWebState(
+      0, std::make_unique<web::FakeWebState>(),
+      WebStateList::InsertionFlags::INSERT_ACTIVATE, WebStateOpener());
   OverlayRequest* request = AddRequest(active_web_state());
 
   // Disable dismissal callbacks in the fake context and activate a new
   // WebState.
   presentation_context().SetDismissalCallbacksEnabled(false);
-  web_state_list().InsertWebState(1, std::make_unique<web::FakeWebState>(),
-                                  WebStateList::InsertionFlags::INSERT_ACTIVATE,
-                                  WebStateOpener());
+  web_state_list()->InsertWebState(
+      1, std::make_unique<web::FakeWebState>(),
+      WebStateList::InsertionFlags::INSERT_ACTIVATE, WebStateOpener());
 
   // Reset the presentation capabilities to kNone.  Since the context can no
-  // longer support presenting |request|, it will be hidden.
+  // longer support presenting `request`, it will be hidden.
   presentation_context().SetPresentationCapabilities(
       OverlayPresentationContext::UIPresentationCapabilities::kNone);
 
@@ -562,9 +556,9 @@ TEST_F(OverlayPresenterImplTest,
        ChangePresentationCapabilitiesDuringDismissalForCancelledRequest) {
   // Insert an activated WebState to the list.
   presenter().SetPresentationContext(&presentation_context());
-  web_state_list().InsertWebState(0, std::make_unique<web::FakeWebState>(),
-                                  WebStateList::InsertionFlags::INSERT_ACTIVATE,
-                                  WebStateOpener());
+  web_state_list()->InsertWebState(
+      0, std::make_unique<web::FakeWebState>(),
+      WebStateList::InsertionFlags::INSERT_ACTIVATE, WebStateOpener());
   OverlayRequestQueueImpl* queue = GetQueueForWebState(active_web_state());
 
   // Add a request with a fake cancel handler.
@@ -585,7 +579,7 @@ TEST_F(OverlayPresenterImplTest,
   EXPECT_FALSE(queue->front_request());
 
   // Reset the presentation capabilities to kNone.  Since the context can no
-  // longer support presenting |request|, it will be hidden.
+  // longer support presenting `request`, it will be hidden.
   presentation_context().SetPresentationCapabilities(
       OverlayPresentationContext::UIPresentationCapabilities::kNone);
 

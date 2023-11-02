@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,17 +23,17 @@ RemoteChangeProcessorOnWorker::RemoteChangeProcessorOnWorker(
     : wrapper_(wrapper),
       ui_task_runner_(ui_task_runner),
       worker_task_runner_(worker_task_runner) {
-  sequence_checker_.DetachFromSequence();
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 RemoteChangeProcessorOnWorker::~RemoteChangeProcessorOnWorker() {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 void RemoteChangeProcessorOnWorker::PrepareForProcessRemoteChange(
     const storage::FileSystemURL& url,
     PrepareChangeCallback callback) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ui_task_runner_->PostTask(
       FROM_HERE,
@@ -49,7 +49,7 @@ void RemoteChangeProcessorOnWorker::ApplyRemoteChange(
     const base::FilePath& local_path,
     const storage::FileSystemURL& url,
     SyncStatusCallback callback) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ui_task_runner_->PostTask(
       FROM_HERE,
@@ -64,7 +64,7 @@ void RemoteChangeProcessorOnWorker::FinalizeRemoteSync(
     const storage::FileSystemURL& url,
     bool clear_local_changes,
     base::OnceClosure completion_callback) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ui_task_runner_->PostTask(
       FROM_HERE,
@@ -79,7 +79,7 @@ void RemoteChangeProcessorOnWorker::RecordFakeLocalChange(
     const storage::FileSystemURL& url,
     const FileChange& change,
     SyncStatusCallback callback) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ui_task_runner_->PostTask(
       FROM_HERE,
@@ -91,7 +91,7 @@ void RemoteChangeProcessorOnWorker::RecordFakeLocalChange(
 }
 
 void RemoteChangeProcessorOnWorker::DetachFromSequence() {
-  sequence_checker_.DetachFromSequence();
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 }  // namespace drive_backend

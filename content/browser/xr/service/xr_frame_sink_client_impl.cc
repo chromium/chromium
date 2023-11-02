@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,18 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "build/build_config.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/browser_thread_impl.h"
 #include "content/browser/compositor/surface_utils.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #endif
 
@@ -113,23 +116,21 @@ void XrFrameSinkClientImpl::ConfigureDOMOverlay() {
   // This is left outside of the OS_ANDROID ifdef to prevent warnings about the
   // render_process_id and render_frame_id from being unused. Since we check
   // the render_frame_host for an early return, it is in fact used.
-  RenderFrameHost* render_frame_host =
-      RenderFrameHost::FromID(render_process_id_, render_frame_id_);
-  // If this is a cross-process iframe (OOPIF), its RenderWidgetHostView is a
-  // RenderWidgetHostViewChildFrame. Use the main frame instead which uses a
-  // RenderWidgetHostViewAndroid so that we can subscribe to surface ID changes.
-  if (render_frame_host->IsCrossProcessSubframe()) {
-    render_frame_host = render_frame_host->GetMainFrame();
-  }
+  RenderFrameHostImpl* render_frame_host =
+      RenderFrameHostImpl::FromID(render_process_id_, render_frame_id_);
   if (!render_frame_host)
     return;
+
+  RenderWidgetHostViewBase* root_view = static_cast<RenderWidgetHostViewBase*>(
+      render_frame_host->GetOutermostMainFrameOrEmbedder()->GetView());
+  CHECK(!root_view || !root_view->IsRenderWidgetHostViewChildFrame());
 
 // Since we don't have the ability to get updates to the surface id on non-
 // Android OS's, we let it stay null, which callers can use to as a signal that
 // DOMOverlay will not work.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   RenderWidgetHostViewAndroid* view =
-      static_cast<RenderWidgetHostViewAndroid*>(render_frame_host->GetView());
+      static_cast<RenderWidgetHostViewAndroid*>(root_view);
   if (!view)
     return;
 

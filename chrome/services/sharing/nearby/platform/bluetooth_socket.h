@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,13 @@
 #define CHROME_SERVICES_SHARING_NEARBY_PLATFORM_BLUETOOTH_SOCKET_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/lock.h"
 #include "chrome/services/sharing/nearby/platform/bidirectional_stream.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_device.h"
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/nearby/src/cpp/platform/api/bluetooth_classic.h"
+#include "third_party/nearby/src/internal/platform/implementation/bluetooth_classic.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -61,6 +62,11 @@ class BluetoothSocket : public api::BluetoothSocket {
   api::BluetoothDevice* GetRemoteDevice() override;
 
  private:
+  void CloseMojoSocketIfNecessary();
+
+  // Protects |socket_| while closing.
+  base::Lock lock_;
+
   // If this BluetoothSocket is created by connecting to a discovered device, a
   // reference to that device will be provided to set |remote_device_ref_|, and
   // |remote_device_| will be left unset.

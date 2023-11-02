@@ -1,4 +1,4 @@
-// Copyright 2015 The Crashpad Authors. All rights reserved.
+// Copyright 2015 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 #include <limits>
 
+#include "build/build_config.h"
 #include "gtest/gtest.h"
 
 namespace crashpad {
@@ -71,7 +72,7 @@ TEST(Time, TimeConversions) {
     EXPECT_TRUE(TimespecToTimeval(kEndOfTime, &end_of_timeval));
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   constexpr uint64_t kBirthdateFiletimeIntervals = 130512285140000324;
   FILETIME filetime_birthdate;
   filetime_birthdate.dwLowDateTime = 0xffffffff & kBirthdateFiletimeIntervals;
@@ -112,10 +113,10 @@ TEST(Time, TimeConversions) {
   elapsed_timeval = FiletimeToTimevalInterval(elapsed_filetime);
   EXPECT_EQ(elapsed_timeval.tv_sec, 429);
   EXPECT_EQ(elapsed_timeval.tv_usec, 496729);
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 TEST(Time, GetTimeOfDay) {
   timeval t;
@@ -125,7 +126,7 @@ TEST(Time, GetTimeOfDay) {
   EXPECT_LT(approx_now - 100, t.tv_sec);
 }
 
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 }  // namespace test

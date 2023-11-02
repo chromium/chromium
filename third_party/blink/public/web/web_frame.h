@@ -31,10 +31,12 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_FRAME_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_FRAME_H_
 
-#include "cc/paint/paint_canvas.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-shared.h"
+#include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-shared.h"
+#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/public/web/web_node.h"
@@ -80,7 +82,14 @@ class BLINK_EXPORT WebFrame {
   virtual WebRemoteFrame* ToWebRemoteFrame() = 0;
   virtual const WebRemoteFrame* ToWebRemoteFrame() const = 0;
 
-  bool Swap(WebFrame*);
+  bool Swap(WebLocalFrame* new_frame);
+  bool Swap(
+      WebRemoteFrame* new_frame,
+      CrossVariantMojoAssociatedRemote<mojom::RemoteFrameHostInterfaceBase>
+          remote_frame_host,
+      CrossVariantMojoAssociatedReceiver<mojom::RemoteFrameInterfaceBase>
+          receiver,
+      mojom::FrameReplicationStatePtr replicated_state);
 
   // This method closes and deletes the WebFrame. This is typically called by
   // the embedder in response to a frame detached callback to the WebFrame
@@ -135,6 +144,13 @@ class BLINK_EXPORT WebFrame {
   // Returns the next frame in "frame traversal order".
   WebFrame* TraverseNext() const;
 
+  // Returns true if this frame is the top-level main frame (associated with
+  // the root Document in a WebContents). See content::Page for detailed
+  // documentation.
+  // This is false for main frames created for fenced-frames.
+  // TODO(khushalsagar) : Should also be the case for portals.
+  bool IsOutermostMainFrame() const;
+
   // Scripting ----------------------------------------------------------
 
   // Returns the global proxy object.
@@ -154,7 +170,7 @@ class BLINK_EXPORT WebFrame {
 
   // True if the frame is thought (heuristically) to be created for
   // advertising purposes.
-  virtual bool IsAdSubframe() const = 0;
+  virtual bool IsAdFrame() const = 0;
 
   // Utility -------------------------------------------------------------
 

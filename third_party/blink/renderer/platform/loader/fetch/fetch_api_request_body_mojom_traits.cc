@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_api_request_body_mojom_traits.h"
 
+#include "base/time/time.h"
 #include "mojo/public/cpp/base/file_mojom_traits.h"
 #include "mojo/public/cpp/base/file_path_mojom_traits.h"
 #include "mojo/public/cpp/bindings/array_traits_wtf_vector.h"
@@ -26,14 +27,12 @@ StructTraits<blink::mojom::FetchAPIRequestBodyDataView,
   if (auto form_body = mutable_body.FormBody()) {
     // Here we need to keep the original body, because other members such as
     // `identifier` are on the form body.
-    network_body = NetworkResourceRequestBodyFor(
-        blink::ResourceRequestBody(form_body),
-        /*allow_http1_for_streaming_upload=*/false);
+    network_body =
+        NetworkResourceRequestBodyFor(blink::ResourceRequestBody(form_body));
   } else if (mutable_body.StreamBody()) {
     // Here we don't need to keep the original body (and it's impossible to do
     // so, because the streaming body is not copyable).
-    network_body = NetworkResourceRequestBodyFor(
-        std::move(mutable_body), /*allow_http1_for_streaming_upload=*/false);
+    network_body = NetworkResourceRequestBodyFor(std::move(mutable_body));
   }
   if (!network_body) {
     return WTF::Vector<network::DataElement>();

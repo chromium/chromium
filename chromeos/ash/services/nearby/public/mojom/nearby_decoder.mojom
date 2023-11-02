@@ -1,0 +1,20 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module sharing.mojom;
+
+import "chromeos/ash/services/nearby/public/mojom/nearby_decoder_types.mojom";
+
+// Decode raw data into structured. Runs in the sharing utility process.
+// Called by the NearbySharingService running in the browser process.
+interface NearbySharingDecoder {
+  // Decode the advertisement. The advertisement is sent by a device in
+  // the receiver mode, and may be advertising to everyone or only
+  // known contacts.
+  DecodeAdvertisement(array<uint8> data) => (Advertisement? advertisement);
+
+  // Decode a payload frame. The frame may be one of several types, and is
+  // used by NearbySharingService to manage the connections protocol.
+  DecodeFrame(array<uint8> data) => (Frame? frame);
+};

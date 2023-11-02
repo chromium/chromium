@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,6 +51,9 @@ class ArcDocumentsProviderRootMap : public KeyedService {
   // it is okay to call this function only from chromeos::FileSystemBackend and
   // its delegates.
   static ArcDocumentsProviderRootMap* GetForArcBrowserContext();
+
+  // Checks if a given document provider root is read only or not.
+  static bool IsDocumentProviderRootReadOnly();
 
   // Looks up a root corresponding to |url|.
   // |path| is set to the remaining path part of |url|.

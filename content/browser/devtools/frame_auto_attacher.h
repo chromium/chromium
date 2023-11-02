@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #ifndef CONTENT_BROWSER_DEVTOOLS_FRAME_AUTO_ATTACHER_H_
@@ -12,6 +12,7 @@
 namespace content {
 
 class DevToolsRendererChannel;
+class FrameTree;
 class NavigationRequest;
 class RenderFrameHostImpl;
 class ServiceWorkerDevToolsAgentHost;
@@ -26,6 +27,7 @@ class FrameAutoAttacher : public protocol::RendererAutoAttacherBase,
   void SetRenderFrameHost(RenderFrameHostImpl* render_frame_host);
   void DidFinishNavigation(NavigationRequest* navigation_request);
   void UpdatePages();
+  void AutoAttachToPage(FrameTree* frame_tree, bool wait_for_debugger_on_start);
 
  protected:
   // Base overrides.

@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/clipboard/views/clipboard_history_item_view.h"
 
 #include "ash/clipboard/clipboard_history_item.h"
+#include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/views/clipboard_history_bitmap_item_view.h"
 #include "ash/clipboard/views/clipboard_history_delete_button.h"
 #include "ash/clipboard/views/clipboard_history_file_item_view.h"
@@ -14,7 +15,6 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -26,7 +26,7 @@
 
 namespace ash {
 namespace {
-using Action = ClipboardHistoryUtil::Action;
+using Action = clipboard_history_util::Action;
 }  // namespace
 
 ClipboardHistoryItemView::ContentsView::ContentsView(
@@ -78,17 +78,17 @@ ClipboardHistoryItemView::CreateFromClipboardHistoryItem(
     const ClipboardHistoryResourceManager* resource_manager,
     views::MenuItemView* container) {
   const auto display_format =
-      ClipboardHistoryUtil::CalculateDisplayFormat(item.data());
+      clipboard_history_util::CalculateDisplayFormat(item.data());
   UMA_HISTOGRAM_ENUMERATION(
       "Ash.ClipboardHistory.ContextMenu.DisplayFormatShown", display_format);
   switch (display_format) {
-    case ClipboardHistoryUtil::ClipboardHistoryDisplayFormat::kText:
+    case clipboard_history_util::DisplayFormat::kText:
       return std::make_unique<ClipboardHistoryTextItemView>(&item, container);
-    case ClipboardHistoryUtil::ClipboardHistoryDisplayFormat::kPng:
-    case ClipboardHistoryUtil::ClipboardHistoryDisplayFormat::kHtml:
+    case clipboard_history_util::DisplayFormat::kPng:
+    case clipboard_history_util::DisplayFormat::kHtml:
       return std::make_unique<ClipboardHistoryBitmapItemView>(
           &item, resource_manager, container);
-    case ClipboardHistoryUtil::ClipboardHistoryDisplayFormat::kFile:
+    case clipboard_history_util::DisplayFormat::kFile:
       return std::make_unique<ClipboardHistoryFileItemView>(&item, container);
   }
 }
@@ -160,8 +160,6 @@ void ClipboardHistoryItemView::HandleMainButtonPressEvent(
 
 void ClipboardHistoryItemView::Init() {
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kMenuItem);
-
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   // Ensures that MainButton is below any other child views.
@@ -240,18 +238,17 @@ void ClipboardHistoryItemView::OnMouseClickOnDescendantCanceled() {
   // the one where the click event started. A typical way is to move the mouse
   // while pressing the mouse left button. Hence, update the menu selection due
   // to the mouse location change.
-  Activate(ClipboardHistoryUtil::Action::kSelectItemHoveredByMouse,
-           ui::EF_NONE);
+  Activate(Action::kSelectItemHoveredByMouse, ui::EF_NONE);
 }
 
 void ClipboardHistoryItemView::MaybeRecordButtonPressedHistogram() const {
   switch (action_) {
     case Action::kDelete:
-      ClipboardHistoryUtil::RecordClipboardHistoryItemDeleted(
+      clipboard_history_util::RecordClipboardHistoryItemDeleted(
           *clipboard_history_item_);
       return;
     case Action::kPaste:
-      ClipboardHistoryUtil::RecordClipboardHistoryItemPasted(
+      clipboard_history_util::RecordClipboardHistoryItemPasted(
           *clipboard_history_item_);
       return;
     case Action::kSelect:
@@ -270,6 +267,9 @@ gfx::Size ClipboardHistoryItemView::CalculatePreferredSize() const {
 }
 
 void ClipboardHistoryItemView::GetAccessibleNodeData(ui::AXNodeData* data) {
+  // A valid role must be set in the AXNodeData prior to setting the name
+  // via AXNodeData::SetName.
+  data->role = ax::mojom::Role::kMenuItem;
   data->SetName(GetAccessibleName());
 }
 

@@ -1,0 +1,10 @@
+{
+  "aggregation_service_payloads": [ {
+     "key_id": "example_id",
+     "payload": "0xJTQXpWySmhg30YZCaa7WoEoDskHoyOxa4P3g3DJAUaEjBX1WWFinKZ53P9GlX6y/nDufrtgPPXDhgQd6n8ujkpItzahUQCgRxuACEbNctbY94+rYRuRqXuOByi+OXOtN5RpCBnHXhxTGLv4+hVF0pLLWybTS6LiX15VykhK0KiQzjMqeV2fv0da/52YdC7FApQ"
+  } ],
+  "attribution_destination": "https://conversion.test",
+  "shared_info": "{\"privacy_budget_key\":\"aOEbtVxG8dYzAR2K/xuW/OppNaQikp5RdjAXshOQ9w8=\",\"report_id\":\"21abd97f-73e8-4b88-9389-a9fee6abda5e\",\"reporting_origin\":\"https://report.test\",\"scheduled_report_time\":\"1234486500\",\"version\":\"\"}",
+  "source_registration_time": "1234483200",
+  "source_site": "https://impression.test"
+}

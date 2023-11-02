@@ -1,11 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_COMPONENTS_PHONEHUB_USER_ACTION_RECORDER_H_
 #define ASH_COMPONENTS_PHONEHUB_USER_ACTION_RECORDER_H_
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 // Records actions that a user may take via Phone Hub.
@@ -49,6 +49,6 @@ class UserActionRecorder {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_USER_ACTION_RECORDER_H_

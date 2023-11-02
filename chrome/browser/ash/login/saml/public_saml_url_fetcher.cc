@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chromeos/tpm/install_attributes.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
@@ -89,22 +89,20 @@ void PublicSamlUrlFetcher::Fetch(base::OnceClosure callback) {
 }
 
 void PublicSamlUrlFetcher::OnPublicSamlUrlReceived(
-    policy::DeviceManagementService::Job* job,
-    policy::DeviceManagementStatus dm_status,
-    int net_error,
-    const enterprise_management::DeviceManagementResponse& response) {
-  VLOG(1) << "Public SAML url response received. DM Status: " << dm_status;
+    policy::DMServerJobResult result) {
+  VLOG(1) << "Public SAML url response received. DM Status: "
+          << result.dm_status;
   fetch_request_job_.reset();
   std::string user_id;
 
-  switch (dm_status) {
+  switch (result.dm_status) {
     case policy::DM_STATUS_SUCCESS: {
-      if (!response.has_public_saml_user_response()) {
+      if (!result.response.has_public_saml_user_response()) {
         LOG(WARNING) << "Invalid public SAML url response.";
         break;
       }
       const em::PublicSamlUserResponse& saml_url_response =
-          response.public_saml_user_response();
+          result.response.public_saml_user_response();
 
       if (!saml_url_response.has_saml_parameters()) {
         LOG(WARNING) << "Invalid public SAML url response.";
@@ -118,7 +116,8 @@ void PublicSamlUrlFetcher::OnPublicSamlUrlReceived(
       break;
     }
     default: {  // All other error cases
-      LOG(ERROR) << "Fetching public SAML url failed. DM Status: " << dm_status;
+      LOG(ERROR) << "Fetching public SAML url failed. DM Status: "
+                 << result.dm_status;
       break;
     }
   }

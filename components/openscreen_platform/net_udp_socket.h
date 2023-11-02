@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_OPENSCREEN_PLATFORM_NET_UDP_SOCKET_H_
 #define COMPONENTS_OPENSCREEN_PLATFORM_NET_UDP_SOCKET_H_
 
+#include "base/memory/raw_ptr.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
 #include "net/socket/udp_socket.h"
@@ -46,7 +47,7 @@ class NetUdpSocket final : public openscreen::UdpSocket {
                    const openscreen::IPEndpoint& dest) override;
   void SetDscp(openscreen::UdpSocket::DscpMode state) override;
 
-  Client* const client_;
+  const raw_ptr<Client> client_;
 
   // The local endpoint can change as a result of Bind() calls.
   openscreen::IPEndpoint local_endpoint_;

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,21 +13,24 @@
 #include <unordered_set>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/socket_permission_request.h"
 #include "extensions/browser/api/api_resource_manager.h"
 #include "extensions/browser/api/async_api_function.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/api/socket.h"
+#include "extensions/common/permissions/api_permission.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/address_list.h"
 #include "net/base/network_change_notifier.h"
+#include "net/dns/public/host_resolver_results.h"
 #include "net/socket/tcp_client_socket.h"
 #include "services/network/public/cpp/resolve_host_client_base.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
@@ -44,7 +47,7 @@ class BrowserContext;
 
 namespace net {
 class IOBuffer;
-}
+}  // namespace net
 
 namespace network {
 namespace mojom {
@@ -54,6 +57,11 @@ class TCPConnectedSocket;
 }  // namespace network
 
 namespace extensions {
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+extern const char kCrOSTerminal[];
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 class Socket;
 
 // A simple interface to ApiResourceManager<Socket> or derived class. The goal
@@ -117,7 +125,7 @@ class SocketResourceManager : public SocketResourceManagerInterface {
   }
 
  private:
-  ApiResourceManager<T>* manager_;
+  raw_ptr<ApiResourceManager<T>> manager_;
 };
 
 // Base class for socket API functions, with some helper functions.
@@ -137,6 +145,16 @@ class SocketApiFunction : public ExtensionFunction {
   // Convenience wrapper for ErrorWithArguments(), where the arguments are just
   // one integer value.
   ResponseValue ErrorWithCode(int error_code, const std::string& error);
+
+  // Either extension_id() or url origin for CrOS Terminal.
+  std::string GetOriginId() const;
+
+  // Checks extension()->permissions_data(), or returns true for CrOS Terminal.
+  bool CheckPermission(const APIPermission::CheckParam& param) const;
+
+  // Checks SocketsManifestData::CheckRequest() if extension(), or returns true
+  // for CrOS Terminal.
+  bool CheckRequest(const content::SocketPermissionRequest& param) const;
 
   virtual std::unique_ptr<SocketResourceManagerInterface>
   CreateSocketResourceManager();
@@ -163,17 +181,19 @@ class SocketExtensionWithDnsLookupFunction
   SocketExtensionWithDnsLookupFunction();
   ~SocketExtensionWithDnsLookupFunction() override;
 
-  void StartDnsLookup(const net::HostPortPair& host_port_pair);
+  void StartDnsLookup(const net::HostPortPair& host_port_pair,
+                      net::DnsQueryType dns_query_type);
   virtual void AfterDnsLookup(int lookup_result) = 0;
 
   net::AddressList addresses_;
 
  private:
   // network::mojom::ResolveHostClient implementation:
-  void OnComplete(
-      int result,
-      const net::ResolveErrorInfo& resolve_error_info,
-      const absl::optional<net::AddressList>& resolved_addresses) override;
+  void OnComplete(int result,
+                  const net::ResolveErrorInfo& resolve_error_info,
+                  const absl::optional<net::AddressList>& resolved_addresses,
+                  const absl::optional<net::HostResolverEndpointResults>&
+                      endpoint_results_with_metadata) override;
 
   mojo::PendingRemote<network::mojom::HostResolver> pending_host_resolver_;
   mojo::Remote<network::mojom::HostResolver> host_resolver_;

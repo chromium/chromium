@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,13 @@ package org.chromium.components.permissions;
 
 import android.os.Build;
 
+import androidx.core.app.NotificationManagerCompat;
+
+import org.chromium.base.BuildInfo;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.ui.permissions.ContextualNotificationPermissionRequester;
 
 import java.util.Arrays;
 
@@ -31,6 +36,10 @@ public class PermissionUtil {
     /** The android permissions associated with requesting access to the microphone. */
     private static final String[] MICROPHONE_PERMISSIONS = {
             android.Manifest.permission.RECORD_AUDIO};
+    /** The required android permissions associated with posting notifications post-Android T. */
+    private static final String[] NOTIFICATION_PERMISSIONS_POST_T = {
+            "android.permission.POST_NOTIFICATIONS"};
+
     /** Signifies there are no permissions associated. */
     private static final String[] EMPTY_PERMISSIONS = {};
 
@@ -72,6 +81,12 @@ public class PermissionUtil {
             case ContentSettingsType.MEDIASTREAM_CAMERA:
             case ContentSettingsType.AR:
                 return Arrays.copyOf(CAMERA_PERMISSIONS, CAMERA_PERMISSIONS.length);
+            case ContentSettingsType.NOTIFICATIONS:
+                if (BuildInfo.isAtLeastT()) {
+                    return Arrays.copyOf(NOTIFICATION_PERMISSIONS_POST_T,
+                            NOTIFICATION_PERMISSIONS_POST_T.length);
+                }
+                return EMPTY_PERMISSIONS;
             default:
                 return EMPTY_PERMISSIONS;
         }
@@ -98,5 +113,20 @@ public class PermissionUtil {
             default:
                 return EMPTY_PERMISSIONS;
         }
+    }
+
+    @CalledByNative
+    private static boolean doesAppLevelSettingsAllowSiteNotifications() {
+        ContextualNotificationPermissionRequester contextualPermissionRequester =
+                ContextualNotificationPermissionRequester.getInstance();
+        return contextualPermissionRequester != null
+                && contextualPermissionRequester.doesAppLevelSettingsAllowSiteNotifications();
+    }
+
+    @CalledByNative
+    private static boolean areAppLevelNotificationsEnabled() {
+        NotificationManagerCompat manager =
+                NotificationManagerCompat.from(ContextUtils.getApplicationContext());
+        return manager.areNotificationsEnabled();
     }
 }

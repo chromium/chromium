@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 
 #include <utility>
 
-#include "ash/components/settings/cros_settings_names.h"
-#include "ash/components/settings/cros_settings_provider.h"
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
@@ -18,21 +16,25 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace policy {
+
 namespace {
 
 constexpr base::TimeDelta kAdbSideloadingPlannedNotificationWaitTime =
     base::Days(1);
 
-absl::optional<policy::AdbSideloadingAllowanceMode>
-GetAdbSideloadingDevicePolicyMode(const ash::CrosSettings* cros_settings,
-                                  const base::RepeatingClosure callback) {
+absl::optional<AdbSideloadingAllowanceMode> GetAdbSideloadingDevicePolicyMode(
+    const ash::CrosSettings* cros_settings,
+    const base::RepeatingClosure callback) {
   auto status = cros_settings->PrepareTrustedValues(callback);
 
   // If the policy value is still not trusted, return optional null
@@ -47,7 +49,7 @@ GetAdbSideloadingDevicePolicyMode(const ash::CrosSettings* cros_settings,
     // Here we do not return null because we want to handle this case separately
     // and to reset all the prefs for the notifications so that they can be
     // displayed again if the policy changes
-    return policy::AdbSideloadingAllowanceMode::kNotSet;
+    return AdbSideloadingAllowanceMode::kNotSet;
   }
 
   using Mode =
@@ -55,18 +57,17 @@ GetAdbSideloadingDevicePolicyMode(const ash::CrosSettings* cros_settings,
 
   switch (sideloading_mode) {
     case Mode::DISALLOW:
-      return policy::AdbSideloadingAllowanceMode::kDisallow;
+      return AdbSideloadingAllowanceMode::kDisallow;
     case Mode::DISALLOW_WITH_POWERWASH:
-      return policy::AdbSideloadingAllowanceMode::kDisallowWithPowerwash;
+      return AdbSideloadingAllowanceMode::kDisallowWithPowerwash;
     case Mode::ALLOW_FOR_AFFILIATED_USERS:
-      return policy::AdbSideloadingAllowanceMode::kAllowForAffiliatedUser;
+      return AdbSideloadingAllowanceMode::kAllowForAffiliatedUser;
     default:
       return absl::nullopt;
   }
 }
-}  // namespace
 
-namespace policy {
+}  // namespace
 
 // static
 void AdbSideloadingAllowanceModePolicyHandler::RegisterPrefs(
@@ -125,7 +126,7 @@ void AdbSideloadingAllowanceModePolicyHandler::SetNotificationTimerForTesting(
 }
 
 void AdbSideloadingAllowanceModePolicyHandler::MaybeShowNotification() {
-  absl::optional<policy::AdbSideloadingAllowanceMode> mode =
+  absl::optional<AdbSideloadingAllowanceMode> mode =
       GetAdbSideloadingDevicePolicyMode(
           cros_settings_,
           base::BindRepeating(
@@ -175,9 +176,9 @@ void AdbSideloadingAllowanceModePolicyHandler::CheckSideloadingStatus(
     return;
   }
 
-  using ResponseCode = chromeos::SessionManagerClient::AdbSideloadResponseCode;
+  using ResponseCode = ash::SessionManagerClient::AdbSideloadResponseCode;
 
-  auto* client = chromeos::SessionManagerClient::Get();
+  auto* client = ash::SessionManagerClient::Get();
   client->QueryAdbSideload(base::BindOnce(
       [](base::OnceCallback<void(bool)> callback, ResponseCode response_code,
          bool enabled) {

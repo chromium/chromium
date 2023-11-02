@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2020 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -9,6 +11,8 @@
     android:id="@+id/cc_details"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:minHeight="30dp"
+    android:layout_marginBottom="3dp"
     android:orientation="horizontal"
     android:gravity="center_vertical" >
 
@@ -17,20 +21,22 @@
         app:srcCompat="@drawable/google_pay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:minHeight="24dp"
         android:importantForAccessibility="no" />
 
     <ImageView
         android:id="@+id/message_divider"
-        android:background="@color/divider_line_bg_color"
+        android:background="@macro/divider_line_bg_color"
         android:importantForAccessibility="no"
-        android:layout_height="match_parent"
+        android:layout_height="16dp"
         android:layout_width="1dp"
-        android:layout_marginStart="15dp"
-        android:layout_marginEnd="15dp" />
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp" />
 
     <TextView
         android:id="@+id/cc_details_masked"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+        android:minHeight="24dp"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
 </LinearLayout>

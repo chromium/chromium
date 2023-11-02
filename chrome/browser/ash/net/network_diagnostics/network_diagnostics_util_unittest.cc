@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,11 +20,11 @@ const char kHttpsScheme[] = "https://";
 }  // namespace
 
 TEST(NetworkDiagnosticsUtilTest, TestGetRandomString) {
-  int length = 8;
-  auto random_string = util::GetRandomString(length);
+  size_t kLength = 8;
+  auto random_string = util::GetRandomString(kLength);
   // Ensure that the length equals |length| and all characters are in between
   // 'a'-'z', inclusive.
-  EXPECT_EQ(length, random_string.size());
+  EXPECT_EQ(kLength, random_string.size());
   for (char const& c : random_string) {
     EXPECT_TRUE(c >= 'a' && c <= 'z');
   }

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,88 +14,33 @@
 namespace history_clusters {
 namespace features {
 
-const base::Feature kOnDeviceClustering{"HistoryClustersOnDeviceClustering",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kOnDeviceClustering,
+             "HistoryClustersOnDeviceClustering",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-base::TimeDelta ClusterNavigationTimeCutoff() {
-  return base::Minutes(GetFieldTrialParamByFeatureAsInt(
-      kOnDeviceClustering, "navigation_time_cutoff_minutes", 60));
-}
+BASE_FEATURE(kOnDeviceClusteringContentClustering,
+             "JourneysOnDeviceClusteringContentClustering",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool ContentClusteringEnabled() {
-  return GetFieldTrialParamByFeatureAsBool(kOnDeviceClustering,
-                                           "content_clustering_enabled", true);
-}
+BASE_FEATURE(kUseEngagementScoreCache,
+             "JourneysUseEngagementScoreCache",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-float ContentClusteringEntitySimilarityWeight() {
-  return GetFieldTrialParamByFeatureAsDouble(
-      kOnDeviceClustering, "content_clustering_entity_similarity_weight", 1.0);
-}
+BASE_FEATURE(kSplitClusteringTasksToSmallerBatches,
+             "JourneysSplitClusteringTasksToSmallerBatches",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-float ContentClusteringCategorySimilarityWeight() {
-  return GetFieldTrialParamByFeatureAsDouble(
-      kOnDeviceClustering, "content_clustering_category_similarity_weight",
-      1.0);
-}
+BASE_FEATURE(kOnDeviceClusteringBlocklists,
+             "JourneysOnDeviceClusteringBlocklist",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-float ContentClusteringSimilarityThreshold() {
-  float threshold = GetFieldTrialParamByFeatureAsDouble(
-      kOnDeviceClustering, "content_clustering_similarity_threshold", 0.2);
-  // Ensure that the value is [0.0 and 1.0].
-  return std::max(0.0f, std::min(1.0f, threshold));
-}
+BASE_FEATURE(kOnDeviceClusteringKeywordFiltering,
+             "JourneysKeywordFiltering",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-float ContentVisibilityThreshold() {
-  float threshold = GetFieldTrialParamByFeatureAsDouble(
-      kOnDeviceClustering, "content_visibility_threshold", 0.7);
-  // Ensure that the value is [0.0 and 1.0].
-  return std::max(0.0f, std::min(1.0f, threshold));
-}
-
-int64_t GetMinPageTopicsModelVersionToUseContentVisibilityFrom() {
-  std::string value_as_string = GetFieldTrialParamValueByFeature(
-      kOnDeviceClustering, "min_page_topics_model_version_for_visibility");
-  int64_t value_as_int = 0;
-  if (!base::StringToInt64(value_as_string, &value_as_int)) {
-    value_as_int = INT64_MAX;
-  }
-  return value_as_int;
-}
-
-bool ShouldHideSingleVisitClustersOnProminentUISurfaces() {
-  return GetFieldTrialParamByFeatureAsBool(
-      kOnDeviceClustering,
-      "hide_single_visit_clusters_on_prominent_ui_surfaces", true);
-}
-
-bool ShouldDedupeSimilarVisits() {
-  return GetFieldTrialParamByFeatureAsBool(kOnDeviceClustering,
-                                           "dedupe_similar_visits", true);
-}
-
-float VisitDurationRankingWeight() {
-  float weight = GetFieldTrialParamByFeatureAsDouble(
-      kOnDeviceClustering, "visit_duration_ranking_weight", 1.0);
-  return std::max(0.f, weight);
-}
-
-float ForegroundDurationRankingWeight() {
-  float weight = GetFieldTrialParamByFeatureAsDouble(
-      kOnDeviceClustering, "foreground_duration_ranking_weight", 1.5);
-  return std::max(0.f, weight);
-}
-
-float BookmarkRankingWeight() {
-  float weight = GetFieldTrialParamByFeatureAsDouble(
-      kOnDeviceClustering, "bookmark_ranking_weight", 1.0);
-  return std::max(0.f, weight);
-}
-
-float SearchResultsPageRankingWeight() {
-  float weight = GetFieldTrialParamByFeatureAsDouble(
-      kOnDeviceClustering, "search_results_page_ranking_weight", 2.0);
-  return std::max(0.f, weight);
-}
+BASE_FEATURE(kOnDeviceClusteringCategoryFiltering,
+             "JourneysCategoryFiltering",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace history_clusters

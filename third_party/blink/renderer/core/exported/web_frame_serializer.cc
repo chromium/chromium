@@ -108,7 +108,7 @@ WebThreadSafeData WebFrameSerializer::GenerateMHTMLParts(
                    "resource count", static_cast<uint64_t>(resources.size()));
 
   // There was an error serializing the frame (e.g. of an image resource).
-  if (resources.IsEmpty())
+  if (resources.empty())
     return WebThreadSafeData();
 
   // Encode serialized resources as MHTML.
@@ -121,7 +121,7 @@ WebThreadSafeData WebFrameSerializer::GenerateMHTMLParts(
     MHTMLArchive::GenerateMHTMLPart(
         boundary, FrameSerializerDelegateImpl::GetContentID(frame),
         encoding_policy, resources.TakeFirst(), *output->MutableData());
-    while (!resources.IsEmpty()) {
+    while (!resources.empty()) {
       TRACE_EVENT0("page-serialization",
                    "WebFrameSerializer::generateMHTMLParts encoding");
       MHTMLArchive::GenerateMHTMLPart(boundary, String(), encoding_policy,

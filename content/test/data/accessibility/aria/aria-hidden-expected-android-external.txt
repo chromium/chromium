@@ -1,0 +1,6 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++TextView text:"blockDisplay" viewIdResName:"blockDisplay" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
+++TextView text:"blockDisplay Hiddenfalse" viewIdResName:"blockDisplayAriaHiddenFalse" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
+++TextView viewIdResName:"noneDisplayAriaHiddenFalse" notVisibleToUser actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
+++TextView text:"blockDisplay Hiddentruefocusable" viewIdResName:"blockDisplayAriaHiddenTrueFocusable" focusable notVisibleToUser actions:[FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
+++TextView text:"noneDisplayParent Hiddenfalse" notVisibleToUser actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="heading", roleDescription="heading 1"]

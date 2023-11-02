@@ -1,5 +1,5 @@
 #!/usr/bin/env vpython3
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -27,7 +27,7 @@ def CheckBuildTypeSupportsFlags(device, command_line_flags_file):
     raise device_errors.CommandFailedError(
         'WebView only respects flags on a userdebug or eng device, yours '
         'is a user build.', device)
-  elif device.IsUserBuild():
+  if device.IsUserBuild():
     logging.warning(
         'Your device (%s) is a user build; Chrome may or may not pick up '
         'your commandline flags. Check your '

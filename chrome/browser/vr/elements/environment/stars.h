@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_VR_ELEMENTS_ENVIRONMENT_STARS_H_
 #define CHROME_BROWSER_VR_ELEMENTS_ENVIRONMENT_STARS_H_
 
+#include "base/time/time.h"
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/renderers/base_renderer.h"
 

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -112,8 +112,9 @@ void ClipWindow(aura::Window* window, const gfx::Rect& clip_rect) {
     return;
 
   gfx::Rect new_clip_rect = clip_rect;
-  if (new_clip_rect.IsEmpty() && animator->is_animating()) {
-    // Animate to a clip the size of |window|. Create a self deleting object
+  if (new_clip_rect.IsEmpty() && animator->is_animating() &&
+      !animator->GetTransitionDuration().is_zero()) {
+    // Animate to a clip the size of `window`. Create a self deleting object
     // which removes the clip when the animation is finished.
     new_clip_rect = gfx::Rect(window->bounds().size());
     new RemoveClipObserver(window);
@@ -162,7 +163,7 @@ ScopedOverviewTransformWindow::ScopedOverviewTransformWindow(
     : overview_item_(overview_item),
       window_(window),
       original_opacity_(window->layer()->GetTargetOpacity()),
-      original_clip_rect_(window_->layer()->clip_rect()) {
+      original_clip_rect_(window_->layer()->GetTargetClipRect()) {
   type_ = GetWindowDimensionsType(window->bounds().size());
 
   std::vector<aura::Window*> transient_children_to_hide;
@@ -218,11 +219,12 @@ ScopedOverviewTransformWindow::ScopedOverviewTransformWindow(
 }
 
 ScopedOverviewTransformWindow::~ScopedOverviewTransformWindow() {
-  // Reset clipping in the case RestoreWindow() is not called, such as when
-  // |this| is dragged to another display. This is a no-op if SetClipping() was
-  // called in RestoreWindow().
-  // See crbug.com/1140639.
-  SetClipping({ClippingType::kExit, gfx::SizeF()});
+  // Reset clipping in the case `RestoreWindow()` is not called, such as when
+  // `this` is dragged to another display. Without this check, `SetClipping`
+  // would override the one we called in `RestoreWindow()` which would result in
+  // the same final clip but may remove the animation. See crbug.com/1140639.
+  if (reset_clip_on_shutdown_)
+    SetClipping({ClippingType::kExit, gfx::SizeF()});
 
   for (auto* transient : GetTransientTreeIterator(window_)) {
     transient->ClearProperty(chromeos::kIsShowingInOverviewKey);
@@ -257,15 +259,23 @@ ScopedOverviewTransformWindow::GetWindowDimensionsType(const gfx::Size& size) {
   return OverviewGridWindowFillMode::kNormal;
 }
 
-void ScopedOverviewTransformWindow::RestoreWindow(bool reset_transform) {
+void ScopedOverviewTransformWindow::RestoreWindow(
+    bool reset_transform,
+    bool was_desk_templates_grid_showing) {
   // Shadow controller may be null on shutdown.
   if (Shell::Get()->shadow_controller())
     Shell::Get()->shadow_controller()->UpdateShadowForWindow(window_);
 
-  if (IsMinimized()) {
+  // We will handle clipping here, no need to do anything in the destructor.
+  reset_clip_on_shutdown_ = false;
+
+  if (IsMinimized() || was_desk_templates_grid_showing) {
     // Minimized windows may have had their transforms altered by swiping up
     // from the shelf.
+    ScopedOverviewAnimationSettings animation_settings(OVERVIEW_ANIMATION_NONE,
+                                                       window_);
     SetTransform(window_, gfx::Transform());
+    SetClipping({ClippingType::kExit, gfx::SizeF()});
     return;
   }
 
@@ -391,7 +401,7 @@ void ScopedOverviewTransformWindow::SetClipping(
       } else {
         // Transform affects the clip rect, so take that into account.
         const gfx::Vector2dF scale =
-            window_->layer()->GetTargetTransform().Scale2d();
+            window_->layer()->GetTargetTransform().To2dScale();
         size.Scale(1 / scale.x(), 1 / scale.y());
       }
       break;
@@ -406,7 +416,7 @@ void ScopedOverviewTransformWindow::SetClipping(
   // TODO(afakhry|sammiequon): Investigate a proper fix for this.
   const int top_inset = GetTopInset();
   if (top_inset > 0)
-    clip_rect.Inset(gfx::Insets(top_inset + 1, 0, 0, 0));
+    clip_rect.Inset(gfx::Insets::TLBR(top_inset + 1, 0, 0, 0));
   ClipWindow(window_, clip_rect);
 }
 
@@ -444,7 +454,7 @@ gfx::RectF ScopedOverviewTransformWindow::ShrinkRectToFitPreservingAspectRatio(
       } else {
         const float new_height = bounds.width() / window_ratio;
         new_bounds = bounds;
-        new_bounds.Inset(0, title_height, 0, 0);
+        new_bounds.Inset(gfx::InsetsF::TLBR(title_height, 0, 0, 0));
         if (top_view_inset) {
           new_bounds.set_height(new_height);
           // Calculate `scaled_top_view_inset` without considering `title_height`
@@ -452,14 +462,14 @@ gfx::RectF ScopedOverviewTransformWindow::ShrinkRectToFitPreservingAspectRatio(
           // We also do not consider `top_view_inset` in our calculation of
           // `new_scale` because we want to find out the height of the inset when
           // the whole window, including the inset, is scaled down to `new_bounds`.
-          const float new_scale = 
+          const float new_scale =
               GetItemScale(rect.size(), new_bounds.size(), 0, 0);
           const float scaled_top_view_inset = top_view_inset * new_scale;
-          // Offset `new_bounds` to be at a point in the overview item frame where 
-          // it will be centered when we clip the `top_view_inset`.
-          new_bounds.Offset(0, (bounds.height() - title_height) / 2 - 
-                               (new_height - scaled_top_view_inset) / 2 - 
-                               scaled_top_view_inset);
+          // Offset `new_bounds` to be at a point in the overview item frame
+          // where it will be centered when we clip the `top_view_inset`.
+          new_bounds.Offset(0, (bounds.height() - title_height) / 2 -
+                                   (new_height - scaled_top_view_inset) / 2 -
+                                   scaled_top_view_inset);
         } else {
           new_bounds.ClampToCenteredSize(gfx::SizeF(bounds.width(), new_height));
         }
@@ -531,7 +541,7 @@ void ScopedOverviewTransformWindow::UpdateRoundedCorners(bool show) {
     DCHECK(!show);
 
   ui::Layer* layer = window_->layer();
-  const float scale = layer->transform().Scale2d().x();
+  const float scale = layer->transform().To2dScale().x();
   const int radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
       views::Emphasis::kLow);
   const gfx::RoundedCornersF radii(show ? (radius / scale) : 0.0f);
@@ -611,6 +621,11 @@ void ScopedOverviewTransformWindow::OnWindowBoundsChanged(
 
   overview_item_->SetBounds(overview_item_->target_bounds(),
                             OVERVIEW_ANIMATION_NONE);
+}
+
+void ScopedOverviewTransformWindow::OnWindowDestroying(aura::Window* window) {
+  DCHECK(window_observations_.IsObservingSource(window));
+  window_observations_.RemoveObservation(window);
 }
 
 // static

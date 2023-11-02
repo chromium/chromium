@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@
 #include <stdint.h>
 #include <memory>
 #include <vector>
+
+#include "base/memory/raw_ptr.h"
 
 namespace crypto {
 class ECPrivateKey;
@@ -56,8 +58,8 @@ class VapidKeyManager {
   bool InitWithPreference();
 
   // Used for storing and fetching VAPID key from preferences.
-  SharingSyncPreference* sharing_sync_preference_;
-  syncer::SyncService* sync_service_;
+  raw_ptr<SharingSyncPreference> sharing_sync_preference_;
+  raw_ptr<syncer::SyncService> sync_service_;
   std::unique_ptr<crypto::ECPrivateKey> vapid_key_;
   std::vector<uint8_t> vapid_key_info_;
 };

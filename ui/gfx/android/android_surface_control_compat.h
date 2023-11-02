@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,14 @@
 #include <vector>
 
 #include "base/files/scoped_file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/gfx_export.h"
+#include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/overlay_transform.h"
 
 extern "C" {
@@ -51,6 +55,9 @@ class GFX_EXPORT SurfaceControl {
   // Returns true if OnCommit callback is supported.
   static bool SupportsOnCommit();
 
+  // Returns true if tagging a transaction with vsync id is supported.
+  static GFX_EXPORT bool SupportsSetFrameTimeline();
+
   // Applies transaction. Used to emulate webview functor interface, where we
   // pass raw ASurfaceTransaction object. For use inside Chromium use
   // Transaction class below instead.
@@ -77,8 +84,8 @@ class GFX_EXPORT SurfaceControl {
     friend class base::RefCounted<Surface>;
     ~Surface();
 
-    ASurfaceControl* surface_ = nullptr;
-    ASurfaceControl* owned_surface_ = nullptr;
+    raw_ptr<ASurfaceControl> surface_ = nullptr;
+    raw_ptr<ASurfaceControl> owned_surface_ = nullptr;
   };
 
   struct GFX_EXPORT SurfaceStats {
@@ -88,7 +95,7 @@ class GFX_EXPORT SurfaceControl {
     SurfaceStats(SurfaceStats&& other);
     SurfaceStats& operator=(SurfaceStats&& other);
 
-    ASurfaceControl* surface = nullptr;
+    raw_ptr<ASurfaceControl> surface = nullptr;
 
     // The fence which is signaled when the reads for the previous buffer for
     // the given |surface| are finished.
@@ -139,11 +146,14 @@ class GFX_EXPORT SurfaceControl {
     void SetDamageRect(const Surface& surface, const gfx::Rect& rect);
     void SetColorSpace(const Surface& surface,
                        const gfx::ColorSpace& color_space);
+    void SetHDRMetadata(const Surface& surface,
+                        const absl::optional<HDRMetadata>& hdr_metadata);
     void SetFrameRate(const Surface& surface, float frame_rate);
     void SetParent(const Surface& surface, Surface* new_parent);
     void SetPosition(const Surface& surface, const gfx::Point& position);
     void SetScale(const Surface& surface, float sx, float sy);
     void SetCrop(const Surface& surface, const gfx::Rect& rect);
+    void SetFrameTimelineId(int64_t vsync_id);
 
     // Sets the callback which will be dispatched when the transaction is acked
     // by the framework.

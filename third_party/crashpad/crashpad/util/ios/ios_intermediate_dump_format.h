@@ -1,4 +1,4 @@
-// Copyright 2021 The Crashpad Authors. All rights reserved.
+// Copyright 2021 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -99,6 +99,7 @@ namespace internal {
     TD(kThreadContextMemoryRegions, 6011) \
     TD(kThreadContextMemoryRegionAddress, 6012) \
     TD(kThreadContextMemoryRegionData, 6013) \
+    TD(kThreadName, 6014) \
   TD(kMaxValue, 65535) \
 // clang-format on
 

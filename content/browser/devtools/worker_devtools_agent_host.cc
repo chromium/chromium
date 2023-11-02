@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -100,9 +100,7 @@ BrowserContext* WorkerDevToolsAgentHost::GetBrowserContext() {
 }
 
 RenderProcessHost* WorkerDevToolsAgentHost::GetProcessHost() {
-  DedicatedWorkerHost* host = GetDedicatedWorkerHost();
-  DCHECK(host);
-  return host->GetProcessHost();
+  return RenderProcessHost::FromID(process_id_);
 }
 
 std::string WorkerDevToolsAgentHost::GetType() {
@@ -133,12 +131,13 @@ bool WorkerDevToolsAgentHost::Close() {
 
 bool WorkerDevToolsAgentHost::AttachSession(DevToolsSession* session,
                                             bool acquire_wake_lock) {
-  session->AddHandler(std::make_unique<protocol::IOHandler>(GetIOContext()));
-  session->AddHandler(std::make_unique<protocol::TargetHandler>(
+  session->CreateAndAddHandler<protocol::IOHandler>(GetIOContext());
+  session->CreateAndAddHandler<protocol::TargetHandler>(
       protocol::TargetHandler::AccessMode::kAutoAttachOnly, GetId(),
-      auto_attacher_.get(), session->GetRootSession()));
-  session->AddHandler(std::make_unique<protocol::NetworkHandler>(
-      GetId(), devtools_worker_token_, GetIOContext(), base::DoNothing()));
+      auto_attacher_.get(), session);
+  session->CreateAndAddHandler<protocol::NetworkHandler>(
+      GetId(), devtools_worker_token_, GetIOContext(), base::DoNothing(),
+      session->GetClient()->MayReadLocalFiles());
   return true;
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -108,7 +108,7 @@ void RendererFreezer::OnCheckCanFreezeRenderersComplete(bool can_freeze) {
   if (!can_freeze)
     return;
 
-  PowerManagerClient::Get()->SetRenderProcessManagerDelegate(
+  chromeos::PowerManagerClient::Get()->SetRenderProcessManagerDelegate(
       weak_factory_.GetWeakPtr());
 
   registrar_.Add(

@@ -1,10 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/subresource_filter/content/browser/navigation_console_logger.h"
 
 #include "base/memory/ptr_util.h"
+#include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
+#include "content/public/browser/frame_type.h"
 #include "content/public/browser/navigation_handle.h"
 
 namespace subresource_filter {
@@ -14,7 +16,10 @@ void NavigationConsoleLogger::LogMessageOnCommit(
     content::NavigationHandle* handle,
     blink::mojom::ConsoleMessageLevel level,
     const std::string& message) {
-  DCHECK(handle->IsInMainFrame());
+  DCHECK(IsInSubresourceFilterRoot(handle));
+  DCHECK_NE(handle->GetNavigatingFrameType(),
+            content::FrameType::kFencedFrameRoot);
+
   if (handle->HasCommitted() && !handle->IsErrorPage()) {
     handle->GetRenderFrameHost()->AddMessageToConsole(level, message);
   } else {
@@ -26,7 +31,9 @@ void NavigationConsoleLogger::LogMessageOnCommit(
 // static
 NavigationConsoleLogger* NavigationConsoleLogger::CreateIfNeededForNavigation(
     content::NavigationHandle* handle) {
-  DCHECK(handle->IsInMainFrame());
+  DCHECK(IsInSubresourceFilterRoot(handle));
+  DCHECK_NE(handle->GetNavigatingFrameType(),
+            content::FrameType::kFencedFrameRoot);
   return GetOrCreateForNavigationHandle(*handle);
 }
 
@@ -41,7 +48,7 @@ void NavigationConsoleLogger::DidFinishNavigation(
   if (handle != handle_)
     return;
 
-  // The main frame navigation has finished.
+  // The root frame navigation has finished.
   if (handle->HasCommitted() && !handle->IsErrorPage()) {
     for (const auto& message : commit_messages_) {
       handle->GetRenderFrameHost()->AddMessageToConsole(message.first,

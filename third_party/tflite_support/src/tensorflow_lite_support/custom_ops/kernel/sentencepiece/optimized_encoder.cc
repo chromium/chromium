@@ -39,7 +39,9 @@ std::tuple<std::string, std::vector<int>> process_string(
   std::vector<int> result_offsets;
   result_offsets.reserve(offsets.size());
   for (int i = 0, j = 0; i < input.size();) {
-    auto [consumed, new_string] = pc(input.data() + i, input.size() - i);
+    auto result = pc(input.data() + i, input.size() - i);
+    auto consumed = std::get<0>(result);
+    auto new_string = std::get<1>(result);
     if (consumed == 0) {
       // Skip the current byte and move forward.
       result_string.push_back(input[i]);

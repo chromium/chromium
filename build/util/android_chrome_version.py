@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Different build variants of Chrome for Android have different version codes.
@@ -23,6 +23,13 @@ b) Firebase project support (used by official builders) requires unique
 WEBVIEW_STABLE, WEBVIEW_BETA, WEBVIEW_DEV are all used for standalone webview,
 whereas the others are used for various chrome APKs.
 
+TRICHROME_BETA is used for TrichromeChrome, TrichromeWebView, and
+TrichromeLibrary when these are compiled to use the stable package name. Similar
+to how WEBVIEW_STABLE/WEBVIEW_BETA work, this allows users to opt into the open
+Beta Track for the stable package. When Trichrome is configured to use a
+distinct package name for the Beta package, the version code will use TRICHROME
+instead of TRICHROME_BETA.
+
 Note that a package digit of '3' for Webview is reserved for Trichrome Webview.
 The same versionCode is used for both Trichrome Chrome and Trichrome Webview.
 
@@ -43,16 +50,21 @@ _PACKAGE_NAMES = {
     'CHROME_MODERN': 10,
     'MONOCHROME': 20,
     'TRICHROME': 30,
+    'TRICHROME_BETA': 40,
     'WEBVIEW_STABLE': 0,
     'WEBVIEW_BETA': 10,
     'WEBVIEW_DEV': 20,
 }
 
-""" "Next" builds get +5 on their package version code digit.
+""" "Next" builds get +500 on their patch number.
 
-We choose 5 because it won't conflict with values in _PACKAGE_NAMES.
+This ensures that they are considered "newer" than any non-next build of the
+same branch number; this is a workaround for Android requiring a total ordering
+of versions when we only really have a partial ordering. This assumes that the
+actual patch number will never reach 500, which has never even come close in
+the past.
 """
-_NEXT_BUILD_VERSION_CODE_DIFF = 50
+_NEXT_BUILD_VERSION_CODE_DIFF = 50000
 
 """List of version numbers to be created for each build configuration.
 Tuple format:
@@ -70,6 +82,7 @@ _APKS = {
         ('CHROME_MODERN', 'CHROME_MODERN', '32'),
         ('MONOCHROME', 'MONOCHROME', '32'),
         ('TRICHROME', 'TRICHROME', '32'),
+        ('TRICHROME_BETA', 'TRICHROME_BETA', '32'),
         ('WEBVIEW_STABLE', 'WEBVIEW_STABLE', '32'),
         ('WEBVIEW_BETA', 'WEBVIEW_BETA', '32'),
         ('WEBVIEW_DEV', 'WEBVIEW_DEV', '32'),
@@ -87,6 +100,11 @@ _APKS = {
         ('TRICHROME_32_64', 'TRICHROME', '32_64'),
         ('TRICHROME_64_32', 'TRICHROME', '64_32'),
         ('TRICHROME_64', 'TRICHROME', '64'),
+        ('TRICHROME_BETA', 'TRICHROME_BETA', '32_64'),
+        ('TRICHROME_32_BETA', 'TRICHROME_BETA', '32'),
+        ('TRICHROME_32_64_BETA', 'TRICHROME_BETA', '32_64'),
+        ('TRICHROME_64_32_BETA', 'TRICHROME_BETA', '64_32'),
+        ('TRICHROME_64_BETA', 'TRICHROME_BETA', '64'),
         ('WEBVIEW_STABLE', 'WEBVIEW_STABLE', '32_64'),
         ('WEBVIEW_BETA', 'WEBVIEW_BETA', '32_64'),
         ('WEBVIEW_DEV', 'WEBVIEW_DEV', '32_64'),
@@ -168,6 +186,67 @@ _ABIS_TO_BIT_MASK = {
         '32': 2,
     }
 }
+
+
+def TranslateVersionCode(version_code, is_webview=False):
+  """Translates a version code to its component parts.
+
+  Returns:
+    A 5-tuple with the form:
+      - Build number - integer
+      - Patch number - integer
+      - Package name - string
+      - ABI - string : if the build is 32_64 or 64_32 or 64, that is just
+                       appended to 'arm' or 'x86' with an underscore
+      - Whether the build is a "next" build - boolean
+
+    So, for build 100.0.5678.99, built for Monochrome on arm 64_32, not a next
+    build, you should get:
+      5678, 99, 'MONOCHROME', 'arm_64_32', False
+  """
+  if len(version_code) == 9:
+    build_number = int(version_code[:4])
+  else:
+    # At one branch per day, we'll hit 5 digits in the year 2035.
+    build_number = int(version_code[:5])
+
+  is_next_build = False
+  patch_number_plus_extra = int(version_code[-5:])
+  if patch_number_plus_extra >= _NEXT_BUILD_VERSION_CODE_DIFF:
+    is_next_build = True
+    patch_number_plus_extra -= _NEXT_BUILD_VERSION_CODE_DIFF
+  patch_number = patch_number_plus_extra // 100
+
+  # From branch 3992 the name and abi bits in the version code are swapped.
+  if build_number >= 3992:
+    abi_digit = int(version_code[-1])
+    package_digit = int(version_code[-2])
+  else:
+    abi_digit = int(version_code[-2])
+    package_digit = int(version_code[-1])
+
+  # Before branch 4844 we added 5 to the package digit to indicate a 'next'
+  # build.
+  if build_number < 4844 and package_digit >= 5:
+    is_next_build = True
+    package_digit -= 5
+
+  for package, number in _PACKAGE_NAMES.items():
+    if number == package_digit * 10:
+      if is_webview == ('WEBVIEW' in package):
+        package_name = package
+        break
+
+  for arch, bitness_to_number in _ABIS_TO_BIT_MASK.items():
+    for bitness, number in bitness_to_number.items():
+      if abi_digit == number:
+        abi = arch if arch != 'intel' else 'x86'
+        if bitness != '32':
+          abi += '_' + bitness
+        break
+
+  return build_number, patch_number, package_name, abi, is_next_build
+
 
 def GenerateVersionCodes(version_values, arch, is_next_build):
   """Build dict of version codes for the specified build architecture. Eg:

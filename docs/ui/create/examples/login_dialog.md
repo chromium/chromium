@@ -19,7 +19,7 @@ To create this simple dialog, you would need to add the following files:
 `login_bubble_dialog_example.h`
 
 ``` cpp
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,7 +48,7 @@ class LoginBubbleDialogView : public views::BubbleDialogDelegateView {
 `login_bubble_dialog_example.cc`
 
 ``` cpp
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -94,7 +94,7 @@ LoginBubbleDialogView::LoginBubbleDialogView(
     views::BubbleBorder::Arrow anchor_position)
     : BubbleDialogDelegateView(anchor_view, anchor_position) {
   ...
- const LayoutProvider* provider = LayoutProvider::Get();
+  const LayoutProvider* provider = LayoutProvider::Get();
   set_margins(provider->GetDialogInsetsForContentType(
       views::DialogContentType::kControl, views::DialogContentType::kControl));
   const int related_control_padding =
@@ -106,11 +106,11 @@ LoginBubbleDialogView::LoginBubbleDialogView(
       ->AddColumn(views::LayoutAlignment::kStart,
                   views::LayoutAlignment::kStretch,
                   views::TableLayout::kFixedSize,
-                  views::TableLayout::kUsePreferred, 0, 0)
+                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
       .AddPaddingColumn(TableLayout::kFixedSize, label_padding)
       .AddColumn(views::LayoutAlignment::kStretch,
                  views::LayoutAlignment::kStretch, 1.0f,
-                 views::TableLayout::kUsePreferred, 0, 0)
+                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
       .AddRows(1, views::TableLayout::kFixedSize)
       .AddPaddingRow(TableLayout::kFixedSize, related_control_padding)
       .AddRows(1, views::TableLayout::kFixedSize);
@@ -134,8 +134,8 @@ and relevant headers.
 #include <string>
 
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/table_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/layout/table_layout.h"
 ...
 namespace {
 
@@ -253,8 +253,8 @@ class LoginBubbleDialogView : public views::BubbleDialogDelegateView {
 
  private:
  LoginBubbleDialogView(View* anchor_view,
-                        BubbleBorder::Arrow anchor_position,
-                        OnSubmitCallback accept_callback);
+                       BubbleBorder::Arrow anchor_position,
+                       OnSubmitCallback accept_callback);
 ...
 }
 ```
@@ -379,7 +379,7 @@ The final code should resemble the following:
 
 
 ```
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -392,6 +392,8 @@ The final code should resemble the following:
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
+
+namespace views::examples {
 
 class LoginBubbleDialogView : public BubbleDialogDelegateView,
                               public TextfieldController {
@@ -418,6 +420,8 @@ class LoginBubbleDialogView : public BubbleDialogDelegateView,
   Textfield* password_ = nullptr;
 };
 
+}  // namespace views::examples
+
 #endif  // LOGIN_BUBBLE_DIALOG_EXAMPLE_H_
 ```
 
@@ -426,7 +430,7 @@ class LoginBubbleDialogView : public BubbleDialogDelegateView,
 
 
 ```
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -441,6 +445,8 @@ class LoginBubbleDialogView : public BubbleDialogDelegateView,
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/layout/layout_provider.h"
+
+namespace views::examples {
 
 namespace {
 
@@ -503,24 +509,24 @@ LoginBubbleDialogView::LoginBubbleDialogView(
 
   const LayoutProvider* provider = LayoutProvider::Get();
   set_margins(provider->GetDialogInsetsForContentType(
-      views::DialogContentType::kControl, views::DialogContentType::kControl));
+      DialogContentType::kControl, DialogContentType::kControl));
   const int related_control_padding =
-      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL);
+      provider->GetDistanceMetric(DISTANCE_RELATED_CONTROL_VERTICAL);
   const int label_padding =
-      provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL);
+      provider->GetDistanceMetric(DISTANCE_RELATED_LABEL_HORIZONTAL);
 
-  SetLayoutManager(std::make_unique<views::TableLayout>())
-      ->AddColumn(views::LayoutAlignment::kStart,
-                  views::LayoutAlignment::kStretch,
-                  views::TableLayout::kFixedSize,
-                  views::TableLayout::kUsePreferred, 0, 0)
+  SetLayoutManager(std::make_unique<TableLayout>())
+      ->AddColumn(LayoutAlignment::kStart,
+                  LayoutAlignment::kStretch,
+                  TableLayout::kFixedSize,
+                  TableLayout::ColumnSize::kUsePreferred, 0, 0)
       .AddPaddingColumn(TableLayout::kFixedSize, label_padding)
-      .AddColumn(views::LayoutAlignment::kStretch,
-                 views::LayoutAlignment::kStretch, 1.0f,
-                 views::TableLayout::kUsePreferred, 0, 0)
-      .AddRows(1, views::TableLayout::kFixedSize)
+      .AddColumn(LayoutAlignment::kStretch,
+                 LayoutAlignment::kStretch, 1.0f,
+                 TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddRows(1, TableLayout::kFixedSize)
       .AddPaddingRow(TableLayout::kFixedSize, related_control_padding)
-      .AddRows(1, views::TableLayout::kFixedSize);
+      .AddRows(1, TableLayout::kFixedSize);
 
   username_ =
       AddFormRow(this,
@@ -533,8 +539,7 @@ LoginBubbleDialogView::LoginBubbleDialogView(
   password_->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples
 ```
 
 The generated UI would be:

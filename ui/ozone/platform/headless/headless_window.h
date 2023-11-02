@@ -1,10 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_OZONE_PLATFORM_HEADLESS_HEADLESS_WINDOW_H_
 #define UI_OZONE_PLATFORM_HEADLESS_HEADLESS_WINDOW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/platform_window/platform_window_delegate.h"
@@ -26,7 +27,7 @@ class HeadlessWindow : public StubWindow {
   ~HeadlessWindow() override;
 
  private:
-  HeadlessWindowManager* manager_;
+  raw_ptr<HeadlessWindowManager> manager_;
   gfx::AcceleratedWidget widget_;
 };
 

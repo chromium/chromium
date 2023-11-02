@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/posix/eintr_wrapper.h"
@@ -40,7 +41,6 @@ bool IsSurfaceControl(TextureOwner::Mode mode) {
     case TextureOwner::Mode::kAImageReaderSecureSurfaceControl:
       return true;
     case TextureOwner::Mode::kAImageReaderInsecure:
-    case TextureOwner::Mode::kAImageReaderInsecureMultithreaded:
       return false;
     case TextureOwner::Mode::kSurfaceTextureInsecure:
       NOTREACHED();
@@ -64,21 +64,10 @@ bool IsSurfaceControl(TextureOwner::Mode mode) {
 // display compositor, 1 frame in flight and 1 frame being prepared by the
 // renderer.
 uint32_t NumRequiredMaxImages(TextureOwner::Mode mode) {
-  if (IsSurfaceControl(mode) ||
-      mode == TextureOwner::Mode::kAImageReaderInsecureMultithreaded) {
+  if (IsSurfaceControl(mode)) {
     DCHECK(!features::LimitAImageReaderMaxSizeToOne());
     if (features::IncreaseBufferCountForHighFrameRate())
       return 5;
-
-    // WebView overlays relies on WebView zero copy at the moment, which
-    // requires at least 3 buffers (one renderer prepares, one is locked by
-    // display compositor in latest compositor frame and one is pending
-    // deletion). These are additional to normal 3 that we need to surface
-    // control.
-    // TODO(vasilyt): This needs to be resolved before feature launch, but
-    // should work for dogfoog.
-    if (features::IncreaseBufferCountForWebViewOverlays())
-      return 6;
 
     return 3;
   }
@@ -121,16 +110,18 @@ class ImageReaderGLOwner::ScopedHardwareBufferImpl
  private:
   base::ScopedFD read_fence_;
   scoped_refptr<ImageReaderGLOwner> texture_owner_;
-  AImage* image_;
+  raw_ptr<AImage> image_;
 };
 
 ImageReaderGLOwner::ImageReaderGLOwner(
     std::unique_ptr<gles2::AbstractTexture> texture,
     Mode mode,
-    scoped_refptr<SharedContextState> context_state)
+    scoped_refptr<SharedContextState> context_state,
+    scoped_refptr<RefCountedLock> drdc_lock)
     : TextureOwner(false /* binds_texture_on_image_update */,
                    std::move(texture),
                    std::move(context_state)),
+      RefCountedLockHelperDrDc(std::move(drdc_lock)),
       loader_(base::android::AndroidImageReader::GetInstance()),
       context_(gl::GLContext::GetCurrent()),
       surface_(gl::GLSurface::GetCurrent()) {
@@ -331,9 +322,11 @@ void ImageReaderGLOwner::UpdateTexImage() {
 }
 
 void ImageReaderGLOwner::EnsureTexImageBound(GLuint service_id) {
-  base::AutoLock auto_lock(lock_);
-  if (current_image_ref_)
-    current_image_ref_->EnsureBound(service_id);
+  // This method is supposed to be called only if the TextureOwner instance
+  // binds the texture on update, which ImageReaderGLOwner does not. If this
+  // method *is* ever called on this class it will not work as the caller is
+  // expecting; hence CHECK to ensure that any such instances are caught.
+  CHECK(false);
 }
 
 std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
@@ -398,10 +391,17 @@ void ImageReaderGLOwner::ReleaseRefOnImage(AImage* image,
 void ImageReaderGLOwner::ReleaseRefOnImageLocked(AImage* image,
                                                  base::ScopedFD fence_fd) {
   lock_.AssertAcquired();
+
   // During cleanup on losing the texture, all images are synchronously released
   // and the |image_reader_| is destroyed.
   if (!image_reader_)
     return;
+
+  // Ensure that DrDc lock is held when |buffer_available_cb| can be triggered
+  // because we do not want any other thread to steal the free buffer slot which
+  // is meant to be used by |buffer_available_cb| and hence resulting in wrong
+  // FrameInfo for all future frames.
+  AssertAcquiredDrDcLock();
 
   auto it = image_refs_.find(image);
   DCHECK(it != image_refs_.end());
@@ -426,21 +426,19 @@ void ImageReaderGLOwner::ReleaseRefOnImageLocked(AImage* image,
   DCHECK_GT(max_images_, static_cast<int32_t>(image_refs_.size()));
   auto buffer_available_cb = std::move(buffer_available_cb_);
 
-  {
-    // |buffer_available_cb| will try to acquire lock again via
-    // UpdatetexImage(), hence we need to unlock here. Note that when
-    // |max_images_| is 1, this callback will always be empty here since it will
-    // be run immediately in RunWhenBufferIsAvailable(). Hence resetting
-    // |current_image_ref_| in UpdateTexImage() can not trigger this callback.
-    // Otherwise triggering this callback from UpdateTexImage() on
-    // |current_image_ref_| reset would cause callback and hence FrameInfoHelper
-    // to run and eventually call UpdateTexImage() from there which could have
-    // been filmsy.
+  // |buffer_available_cb| will try to acquire lock again via
+  // UpdatetexImage(), hence we need to unlock here. Note that when
+  // |max_images_| is 1, this callback will always be empty here since it will
+  // be run immediately in RunWhenBufferIsAvailable(). Hence resetting
+  // |current_image_ref_| in UpdateTexImage() can not trigger this callback.
+  // Otherwise triggering this callback from UpdateTexImage() on
+  // |current_image_ref_| reset would cause callback and hence FrameInfoHelper
+  // to run and eventually call UpdateTexImage() from there which could have
+  // been filmsy.
+  if (buffer_available_cb) {
     base::AutoUnlock auto_unlock(lock_);
-    if (buffer_available_cb) {
-      DCHECK_GT(max_images_, 1);
-      std::move(buffer_available_cb).Run();
-    }
+    DCHECK_GT(max_images_, 1);
+    std::move(buffer_available_cb).Run();
   }
 }
 
@@ -491,14 +489,16 @@ void ImageReaderGLOwner::RunWhenBufferIsAvailable(base::OnceClosure callback) {
     // queue to become full. In that case callback will not be able to render
     // and acquire updated image and hence will use FrameInfo of the previous
     // image which will result in wrong coded size for all future frames. To
-    // avoid, this no other threads should try to UpdateTexImage() when this
-    // callback is run. lock held by the caller (GetFrameInfo()) of this
-    // method ensures that this never happens.
+    // avoid this, no other thread should try to UpdateTexImage() when this
+    // callback is run. Hence drdc_lock should be held from all the places from
+    // where the callback could be run which is either OnGpu::GetFrameInfo() or
+    // ImageReaderGLOwner::ReleaseRefOnImageLocked() and
+    // OnGpu::GetFrameInfoImpl() should assume that the drdc_lock is always
+    // held.
     std::move(callback).Run();
   } else {
     base::AutoLock auto_lock(lock_);
-    buffer_available_cb_ = base::BindPostTask(
-        base::ThreadTaskRunnerHandle::Get(), std::move(callback));
+    buffer_available_cb_ = std::move(callback);
   }
 }
 
@@ -555,42 +555,12 @@ ImageReaderGLOwner::ScopedCurrentImageRef::ScopedCurrentImageRef(
 
 ImageReaderGLOwner::ScopedCurrentImageRef::~ScopedCurrentImageRef() {
   texture_owner_->lock_.AssertAcquired();
-  base::ScopedFD release_fence;
-  // If there is no |image_reader_|, we are in tear down so no fence is
-  // required.
-  if (image_bound_ && texture_owner_->image_reader_)
-    release_fence = CreateEglFenceAndExportFd();
-  else
-    release_fence = std::move(ready_fence_);
-  texture_owner_->ReleaseRefOnImageLocked(image_, std::move(release_fence));
+  texture_owner_->ReleaseRefOnImageLocked(image_, std::move(ready_fence_));
 }
 
 base::ScopedFD ImageReaderGLOwner::ScopedCurrentImageRef::GetReadyFence()
     const {
   return base::ScopedFD(HANDLE_EINTR(dup(ready_fence_.get())));
-}
-
-void ImageReaderGLOwner::ScopedCurrentImageRef::EnsureBound(GLuint service_id) {
-  // Same |image_| can be bound multiple times to different |service_id|. So
-  // even if |image_bound_| is true, it might not be for current |service_id|.
-  // Hence we still need to create and bind egl image to the |service_id|.
-  // Also continue to wait on the fence even if it was waited upon during
-  // previous EnsureBound() calls on same image since this call could be on a
-  // different context. Insert an EGL fence and make server wait for image to be
-  // available.
-  if (!InsertEglFenceAndWait(GetReadyFence()))
-    return;
-
-  // CreateAndBindEglImage will bind texture with service_id to current unit. We
-  // never should alter gl binding without updating state tracking, which we
-  // can't do here, so restore previous after we done.
-  ScopedRestoreTextureBinding scoped_restore_texture;
-
-  // Create EGL image from the AImage and bind it to the texture.
-  if (!CreateAndBindEglImage(image_, service_id, &texture_owner_->loader_))
-    return;
-
-  image_bound_ = true;
 }
 
 }  // namespace gpu

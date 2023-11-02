@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,10 +62,19 @@
     "channel": "stable",
     "extension_types": ["extension", "platform_app"]
   },
-  "content_scripts": {
-    "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app"]
-  },
+  "content_scripts": [
+    {
+      "channel": "stable",
+      "extension_types": ["extension", "legacy_packaged_app"]
+    },
+    {
+      // The URLs that can be matched with content scripts added by login screen
+      // extensions are restricted to the Imprivata IdP.
+      "channel": "stable",
+      "dependencies": ["behavior:imprivata_login_screen_extension"],
+      "extension_types": ["login_screen_extension"]
+    }
+  ],
   "converted_from_user_script": {
     "channel": "stable",
     "extension_types": [
@@ -140,7 +149,7 @@
   }, {
     "channel": "stable",
     "extension_types": ["legacy_packaged_app"],
-    "platforms": ["chromeos"],
+    "platforms": ["chromeos", "lacros"],
     "allowlist": [
       "0EA6B717932AD64C469C1CCB6911457733295907",  // http://crbug.com/673004
       "58B0C2968C335964D5433E89CA4D86628A0E3D4B"   // http://crbug.com/673004
@@ -209,6 +218,11 @@
   "short_name": {
     "channel": "stable",
     "extension_types": "all"
+  },
+  "side_panel": {
+    "channel": "canary",
+    "extension_types": ["extension"],
+    "min_manifest_version": 3
   },
   "storage": {
     "channel": "stable",

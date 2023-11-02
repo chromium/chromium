@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,11 +12,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 
-namespace net {
-namespace ntlm {
+namespace net::ntlm {
 
 NtlmBufferWriter::NtlmBufferWriter(size_t buffer_len)
-    : buffer_(buffer_len, 0), cursor_(0) {}
+    : buffer_(buffer_len, 0) {}
 
 NtlmBufferWriter::~NtlmBufferWriter() = default;
 
@@ -179,5 +178,4 @@ void NtlmBufferWriter::SetCursor(size_t cursor) {
   cursor_ = cursor;
 }
 
-}  // namespace ntlm
-}  // namespace net
+}  // namespace net::ntlm

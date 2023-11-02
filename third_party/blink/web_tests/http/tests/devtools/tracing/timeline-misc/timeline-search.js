@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Test search in Timeline FlameChart View.\n`);
-  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
   var sessionId = '4.20';
@@ -199,7 +199,7 @@
   ];
 
   var timeline = UI.panels.timeline;
-  var model = PerformanceTestRunner.createPerformanceModelWithEvents(testData);
+  var model = await PerformanceTestRunner.createPerformanceModelWithEvents(testData);
   timeline.setModel(model);
   var flameChartView = timeline.flameChart;
   var searchConfig = new UI.SearchableView.SearchConfig('Paint', false, false);

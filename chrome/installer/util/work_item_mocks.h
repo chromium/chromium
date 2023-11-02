@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ class MockWorkItem : public WorkItem {
   MockWorkItem(const MockWorkItem&) = delete;
   MockWorkItem& operator=(const MockWorkItem&) = delete;
 
-  ~MockWorkItem();
+  ~MockWorkItem() override;
 
   MOCK_METHOD0(DoImpl, bool());
   MOCK_METHOD0(RollbackImpl, void());
@@ -29,7 +29,7 @@ class MockCondition : public WorkItem::Condition {
   MockCondition(const MockCondition&) = delete;
   MockCondition& operator=(const MockCondition&) = delete;
 
-  ~MockCondition();
+  ~MockCondition() override;
 
   MOCK_CONST_METHOD0(ShouldRun, bool());
 };

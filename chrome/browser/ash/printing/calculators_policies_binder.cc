@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,13 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/printing/bulk_printers_calculator.h"
 #include "chrome/browser/ash/printing/bulk_printers_calculator_factory.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -35,13 +35,10 @@ BulkPrintersCalculator::AccessMode ConvertToAccessMode(int mode_val) {
   return BulkPrintersCalculator::ALL_ACCESS;
 }
 
-std::vector<std::string> ConvertToVector(const base::ListValue* list) {
+std::vector<std::string> ConvertToVector(const base::Value::List& list) {
   std::vector<std::string> string_list;
-  if (!list) {
-    return string_list;
-  }
 
-  for (const base::Value& value : list->GetList()) {
+  for (const base::Value& value : list) {
     if (value.is_string()) {
       string_list.push_back(value.GetString());
     }
@@ -107,11 +104,9 @@ class SettingsBinder : public CalculatorsPoliciesBinder {
   }
 
   std::vector<std::string> GetStringList(const char* name) const override {
-    const base::ListValue* list;
-    if (!settings_->GetList(name, &list)) {
-      list = nullptr;
-    }
-    return ConvertToVector(list);
+    const base::Value* pref = settings_->GetPref(name);
+    return pref && pref->is_list() ? ConvertToVector(pref->GetList())
+                                   : std::vector<std::string>();
   }
 
  private:

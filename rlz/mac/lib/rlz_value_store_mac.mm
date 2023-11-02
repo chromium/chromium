@@ -1,13 +1,14 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "rlz/mac/lib/rlz_value_store_mac.h"
 
+#include <tuple>
+
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/mac/foundation_util.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "rlz/lib/assert.h"
@@ -320,7 +321,7 @@ ScopedRlzValueStoreLock::~ScopedRlzValueStoreLock() {
 
   if (g_lock_depth > 0) {
     // Other locks are still using store_, don't free it yet.
-    ignore_result(store_.release());
+    std::ignore = store_.release();
     return;
   }
 

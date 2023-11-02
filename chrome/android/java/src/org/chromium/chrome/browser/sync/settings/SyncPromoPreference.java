@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -21,7 +20,7 @@ import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
-import org.chromium.chrome.browser.ui.signin.SigninPromoController;
+import org.chromium.chrome.browser.ui.signin.SyncPromoController;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
@@ -49,14 +48,14 @@ public class SyncPromoPreference extends Preference
     private final AccountManagerFacade mAccountManagerFacade;
     private @State int mState;
     private Runnable mStateChangedCallback;
-    private @Nullable SigninPromoController mSigninPromoController;
+    private @Nullable SyncPromoController mSyncPromoController;
 
     /**
      * Constructor for inflating from XML.
      */
     public SyncPromoPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
-        setLayoutResource(R.layout.personalized_signin_promo_view_settings);
+        setLayoutResource(R.layout.sync_promo_view_settings);
 
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
@@ -75,8 +74,7 @@ public class SyncPromoPreference extends Preference
         mAccountManagerFacade.addObserver(this);
         signinManager.addSignInStateObserver(this);
         mProfileDataCache.addObserver(this);
-        FirstRunSignInProcessor.updateSigninManagerFirstRunCheckDone();
-        mSigninPromoController = new SigninPromoController(
+        mSyncPromoController = new SyncPromoController(
                 SigninAccessPoint.SETTINGS, SyncConsentActivityLauncherImpl.get());
 
         update();
@@ -91,17 +89,7 @@ public class SyncPromoPreference extends Preference
         mAccountManagerFacade.removeObserver(this);
         signinManager.removeSignInStateObserver(this);
         mProfileDataCache.removeObserver(this);
-        mSigninPromoController = null;
-    }
-
-    /**
-     * Should be called when the {@link PreferenceFragmentCompat} which used {@link
-     * SyncPromoPreference} gets destroyed. Used to record "ImpressionsTilDismiss" histogram.
-     */
-    public void onPreferenceFragmentDestroyed() {
-        if (mSigninPromoController != null) {
-            mSigninPromoController.onPromoDestroyed();
-        }
+        mSyncPromoController = null;
     }
 
     /** Returns the state of the preference. Not valid until registerForUpdates is called. */
@@ -122,7 +110,7 @@ public class SyncPromoPreference extends Preference
                 && (state == State.PERSONALIZED_SIGNIN_PROMO
                         || state == State.PERSONALIZED_SYNC_PROMO);
         if (hasStateChangedFromHiddenToShown) {
-            mSigninPromoController.increasePromoShowCount();
+            mSyncPromoController.increasePromoShowCount();
         }
 
         mState = state;
@@ -139,7 +127,7 @@ public class SyncPromoPreference extends Preference
             return;
         }
 
-        if (SigninPromoController.canShowSyncPromo(SigninAccessPoint.SETTINGS)) {
+        if (SyncPromoController.canShowSyncPromo(SigninAccessPoint.SETTINGS)) {
             IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
                     Profile.getLastUsedRegularProfile());
             if (!identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
@@ -176,7 +164,7 @@ public class SyncPromoPreference extends Preference
 
         PersonalizedSigninPromoView syncPromoView =
                 (PersonalizedSigninPromoView) holder.findViewById(R.id.signin_promo_view_container);
-        mSigninPromoController.setUpSyncPromoView(
+        mSyncPromoController.setUpSyncPromoView(
                 mProfileDataCache, syncPromoView, this::onPromoDismissClicked);
     }
 

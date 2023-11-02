@@ -83,11 +83,11 @@ inline void CollectDescendantSelectorIdentifierHashes(
     unsigned*& hash) {
   switch (selector.Match()) {
     case CSSSelector::kId:
-      if (!selector.Value().IsEmpty())
+      if (!selector.Value().empty())
         (*hash++) = selector.Value().Impl()->ExistingHash() * kIdSalt;
       break;
     case CSSSelector::kClass:
-      if (!selector.Value().IsEmpty())
+      if (!selector.Value().empty())
         (*hash++) = selector.Value().Impl()->ExistingHash() * kClassSalt;
       break;
     case CSSSelector::kTag:
@@ -121,10 +121,9 @@ inline void CollectDescendantSelectorIdentifierHashes(
 
 void SelectorFilter::PushParentStackFrame(Element& parent) {
   DCHECK(ancestor_identifier_filter_);
-  DCHECK(parent_stack_.IsEmpty() ||
-         parent_stack_.back().element ==
-             FlatTreeTraversal::ParentElement(parent));
-  DCHECK(!parent_stack_.IsEmpty() || !FlatTreeTraversal::ParentElement(parent));
+  DCHECK(parent_stack_.empty() || parent_stack_.back().element ==
+                                      FlatTreeTraversal::ParentElement(parent));
+  DCHECK(!parent_stack_.empty() || !FlatTreeTraversal::ParentElement(parent));
   parent_stack_.push_back(ParentStackFrame(parent));
   ParentStackFrame& parent_frame = parent_stack_.back();
   // Mix tags, class names and ids into some sort of weird bouillabaisse.
@@ -136,14 +135,14 @@ void SelectorFilter::PushParentStackFrame(Element& parent) {
 }
 
 void SelectorFilter::PopParentStackFrame() {
-  DCHECK(!parent_stack_.IsEmpty());
+  DCHECK(!parent_stack_.empty());
   DCHECK(ancestor_identifier_filter_);
   const ParentStackFrame& parent_frame = parent_stack_.back();
   wtf_size_t count = parent_frame.identifier_hashes.size();
   for (wtf_size_t i = 0; i < count; ++i)
     ancestor_identifier_filter_->Remove(parent_frame.identifier_hashes[i]);
   parent_stack_.pop_back();
-  if (parent_stack_.IsEmpty()) {
+  if (parent_stack_.empty()) {
 #if DCHECK_IS_ON()
     DCHECK(ancestor_identifier_filter_->LikelyEmpty());
 #endif
@@ -154,7 +153,7 @@ void SelectorFilter::PopParentStackFrame() {
 void SelectorFilter::PushParent(Element& parent) {
   DCHECK(parent.GetDocument().InStyleRecalc());
   DCHECK(parent.InActiveDocument());
-  if (parent_stack_.IsEmpty()) {
+  if (parent_stack_.empty()) {
     DCHECK_EQ(parent, parent.GetDocument().documentElement());
     DCHECK(!ancestor_identifier_filter_);
     ancestor_identifier_filter_ = std::make_unique<IdentifierFilter>();

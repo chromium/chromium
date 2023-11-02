@@ -1,11 +1,11 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ASH_NOTIFICATIONS_ECHO_DIALOG_VIEW_H_
 #define CHROME_BROWSER_ASH_NOTIFICATIONS_ECHO_DIALOG_VIEW_H_
 
-#include "base/compiler_specific.h"
+#include "base/callback.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -44,6 +44,10 @@ class EchoDialogView : public views::DialogDelegateView {
 
   // Shows the dialog.
   void Show(gfx::NativeWindow parent);
+
+  // The callback is invoked after any dialog is shown. Test-only.
+  using ShowCallback = base::OnceCallback<void(EchoDialogView*)>;
+  static void AddShowCallbackForTesting(ShowCallback callback);
 
  private:
   friend class ExtensionEchoPrivateApiTest;

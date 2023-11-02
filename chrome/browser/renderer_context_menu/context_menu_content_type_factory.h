@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,13 +12,13 @@
 class ContextMenuContentType;
 
 namespace content {
-class WebContents;
+class RenderFrameHost;
 }
 
 class ContextMenuContentTypeFactory {
  public:
   static std::unique_ptr<ContextMenuContentType> Create(
-      content::WebContents* web_contents,
+      content::RenderFrameHost* render_frame_host,
       const content::ContextMenuParams& params);
 
   ContextMenuContentTypeFactory(const ContextMenuContentTypeFactory&) = delete;
@@ -30,7 +30,7 @@ class ContextMenuContentTypeFactory {
   virtual ~ContextMenuContentTypeFactory();
 
   static std::unique_ptr<ContextMenuContentType> CreateInternal(
-      content::WebContents* web_contents,
+      content::RenderFrameHost* render_frame_host,
       const content::ContextMenuParams& params);
 };
 

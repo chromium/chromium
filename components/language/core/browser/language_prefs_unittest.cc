@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,15 +71,9 @@ TEST_F(LanguagePrefsTest, UpdateLanguageList) {
   content_languages_tester.ExpectAcceptLanguagePrefs("en,ja,it");
 
   // Locale-specific codes.
-  // The list is exanded by adding the base languagese.
   languages = {"en-US", "ja", "en-CA", "fr-CA"};
   language_prefs_->SetUserSelectedLanguagesList(languages);
   content_languages_tester.ExpectAcceptLanguagePrefs("en-US,ja,en-CA,fr-CA");
-
-  // List already expanded.
-  languages = {"en-US", "en", "fr", "fr-CA"};
-  language_prefs_->SetUserSelectedLanguagesList(languages);
-  content_languages_tester.ExpectAcceptLanguagePrefs("en-US,en,fr,fr-CA");
 }
 
 TEST_F(LanguagePrefsTest, UpdateForcedLanguageList) {
@@ -160,8 +154,16 @@ TEST_F(LanguagePrefsTest, ResetLanguagePrefs) {
   language_prefs_->SetUserSelectedLanguagesList({"en", "es", "fr"});
   content_languages_tester.ExpectSelectedLanguagePrefs("en,es,fr");
   content_languages_tester.ExpectAcceptLanguagePrefs("en,es,fr");
+#if BUILDFLAG(IS_ANDROID)
+  language_prefs_->SetULPLanguages({"a", "b", "c"});
+  EXPECT_THAT(language_prefs_->GetULPLanguages(),
+              testing::ElementsAre("a", "b", "c"));
+#endif
 
   ResetLanguagePrefs(prefs_.get());
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_THAT(language_prefs_->GetULPLanguages(), testing::IsEmpty());
+#endif
   content_languages_tester.ExpectSelectedLanguagePrefs("");
   // Accept languages pref is reset to the default value, not cleared.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -173,5 +175,26 @@ TEST_F(LanguagePrefsTest, ResetLanguagePrefs) {
       prefs_->GetDefaultPrefValue(language::prefs::kAcceptLanguages)
           ->GetString());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+TEST_F(LanguagePrefsTest, ULPLanguagesPref) {
+#if BUILDFLAG(IS_ANDROID)
+  // ULPLanguagesPref is initially empty.
+  EXPECT_THAT(language_prefs_->GetULPLanguages(), testing::IsEmpty());
+
+  // Set ULP Language Preference.
+  language_prefs_->SetULPLanguages({"a", "b", "c"});
+  EXPECT_THAT(language_prefs_->GetULPLanguages(),
+              testing::ElementsAre("a", "b", "c"));
+
+  // Setting ULP languages to a new list clears the old list.
+  language_prefs_->SetULPLanguages({"d", "e", "f"});
+  EXPECT_THAT(language_prefs_->GetULPLanguages(),
+              testing::ElementsAre("d", "e", "f"));
+
+  // Setting ULP languages to a an empty list clears it.
+  language_prefs_->SetULPLanguages({});
+  EXPECT_THAT(language_prefs_->GetULPLanguages(), testing::IsEmpty());
+#endif
 }
 }  // namespace language

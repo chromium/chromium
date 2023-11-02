@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,14 @@
 #include <set>
 #include <string>
 
+#include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
+#include "base/strings/string_piece.h"
 #include "components/prefs/persistent_pref_store.h"
+#include "components/prefs/pref_name_set.h"
 #include "components/prefs/prefs_export.h"
 
 // Provides a unified PersistentPrefStore implementation that splits its storage
@@ -40,7 +44,7 @@ class COMPONENTS_PREFS_EXPORT SegregatedPrefStore : public PersistentPrefStore {
   // method.
   SegregatedPrefStore(scoped_refptr<PersistentPrefStore> default_pref_store,
                       scoped_refptr<PersistentPrefStore> selected_pref_store,
-                      std::set<std::string> selected_pref_names);
+                      PrefNameSet selected_pref_names);
 
   SegregatedPrefStore(const SegregatedPrefStore&) = delete;
   SegregatedPrefStore& operator=(const SegregatedPrefStore&) = delete;
@@ -50,13 +54,13 @@ class COMPONENTS_PREFS_EXPORT SegregatedPrefStore : public PersistentPrefStore {
   void RemoveObserver(Observer* observer) override;
   bool HasObservers() const override;
   bool IsInitializationComplete() const override;
-  bool GetValue(const std::string& key,
+  bool GetValue(base::StringPiece key,
                 const base::Value** result) const override;
-  std::unique_ptr<base::DictionaryValue> GetValues() const override;
+  base::Value::Dict GetValues() const override;
 
   // WriteablePrefStore implementation
   void SetValue(const std::string& key,
-                std::unique_ptr<base::Value> value,
+                base::Value value,
                 uint32_t flags) override;
   void RemoveValue(const std::string& key, uint32_t flags) override;
   void RemoveValuesByPrefixSilently(const std::string& prefix) override;
@@ -65,7 +69,7 @@ class COMPONENTS_PREFS_EXPORT SegregatedPrefStore : public PersistentPrefStore {
   bool GetMutableValue(const std::string& key, base::Value** result) override;
   void ReportValueChanged(const std::string& key, uint32_t flags) override;
   void SetValueSilently(const std::string& key,
-                        std::unique_ptr<base::Value> value,
+                        base::Value value,
                         uint32_t flags) override;
   bool ReadOnly() const override;
   PrefReadError GetReadError() const override;
@@ -101,7 +105,7 @@ class COMPONENTS_PREFS_EXPORT SegregatedPrefStore : public PersistentPrefStore {
     bool initialization_succeeded() const { return initialization_succeeded_; }
 
    private:
-    SegregatedPrefStore* const outer_;
+    const raw_ptr<SegregatedPrefStore> outer_;
     bool initialization_succeeded_ = false;
   };
 
@@ -111,12 +115,12 @@ class COMPONENTS_PREFS_EXPORT SegregatedPrefStore : public PersistentPrefStore {
 
   // Returns |selected_pref_store| if |key| is selected and
   // |default_pref_store| otherwise.
-  PersistentPrefStore* StoreForKey(const std::string& key);
-  const PersistentPrefStore* StoreForKey(const std::string& key) const;
+  PersistentPrefStore* StoreForKey(base::StringPiece key);
+  const PersistentPrefStore* StoreForKey(base::StringPiece key) const;
 
   const scoped_refptr<PersistentPrefStore> default_pref_store_;
   const scoped_refptr<PersistentPrefStore> selected_pref_store_;
-  const std::set<std::string> selected_preference_names_;
+  const PrefNameSet selected_preference_names_;
 
   std::unique_ptr<PersistentPrefStore::ReadErrorDelegate> read_error_delegate_;
   base::ObserverList<PrefStore::Observer, true>::Unchecked observers_;

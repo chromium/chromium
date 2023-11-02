@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 
 namespace base {
@@ -88,6 +87,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingNetworkInterceptor {
   bool IsOffline();
 
   void SetSuspendWhenOffline(bool suspend);
+
+  // Calculates buffer len to pass to network transaction Read call.
+  int GetReadBufLen(int buf_len) const;
 
  private:
   struct ThrottleRecord {

@@ -1,0 +1,101 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Definitions for the event API exposed by the cros_healthd daemon. This API is
+// normally consumed by the browser.
+
+// NOTE: This mojom should be kept in sync with the copy in Chromium OS's repo
+// in src/platform2/diagnostics/mojom/public/wilco_ec.mojom.
+
+module ash.cros_healthd.mojom;
+
+// A packet of data sent by the EC when it notices certain events have
+// occurred, such as the battery, AC adapter, or USB-C state changing.
+// The format of this packet is a variable length sequence of 16-bit words.
+// Word 0 is the |size| word, representing the number of following
+// words in the struct. Word 1 is the |type| word. The following |size|-1
+// words are the |payload|. Depending on the value of |type|, the |payload|
+// is interpreted in different ways. There are other possible values of |type|
+// and other interpretations of |payload| than those listed here. There will
+// be, at most, 6 words in the |payload|. See section 2.3 "ACPI EC Event
+// notification" of the Wilco EC specification at go/wilco-ec-spec for more
+// information.
+//
+// NextMinVersion: 1, NextIndex: 3
+[Stable]
+struct EcEvent {
+  // Derived value representing the reason/cause of the EC event.
+  //
+  // NOTE: This is a computed value and not sent by the EC.
+  //
+  // NextMinVersion: 1, NextIndex: 10
+  [Stable, Extensible]
+  enum Reason {
+    // This is required for backwards compatibility, should not be used.
+    [Default] kUnmappedEnumField = 9,
+    // |kSystemNotify| EC event types:
+    //
+    // An AC adapter event indicating a non-Wilco charger.
+    kNonWilcoCharger = 0,
+    // An AC adapter event indicating a low power charger.
+    kLowPowerCharger = 1,
+    // A battery event indicating an incompatible battery.
+    kBatteryAuth = 2,
+    // A USB-C event indicating an HDMI conflict.
+    kDockDisplay = 3,
+    // A USB-C event indicating a lack of thunderbolt support.
+    kDockThunderbolt = 4,
+    // A USB-C event indicating an incompatible dock.
+    kIncompatibleDock = 5,
+    // A USB-C event indicating the attached dock has overheated.
+    kDockError = 6,
+
+    // |kSystemNotify| EC event type with no appropriate subtype.
+    kSysNotification = 7,
+    // Non |kSystemNotify| EC event type.
+    kNonSysNotification = 8,
+  };
+
+  // The |type| member will be one of these.
+  [Stable, Extensible]
+  enum Type {
+    // This is required for backwards compatibility, should not be used.
+    [Default] kUnmappedEnumField = 0,
+    // Interpret |payload| as a system notify payload.
+    kSystemNotify = 0x0012,
+  };
+
+  Type type@0;
+  array<uint16> payload@1;
+  Reason reason@2;
+};
+
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct GetEcTelemetryResponse {
+  // NextMinVersion: 2, NextIndex: 5
+  [Stable, Extensible]
+  enum Status {
+    // This is required for backwards compatibility, should not be used.
+    [MinVersion=1, Default] kUnmappedEnumField = 4,
+    // The EC telemetry command was successfully completed.
+    kStatusOk = 0,
+    // The EC telemetry command was rejected due to the empty request payload.
+    kStatusErrorInputPayloadEmpty = 1,
+    // The EC telemetry command was rejected due to the request payload being
+    // too large.
+    kStatusErrorInputPayloadMaxSizeExceeded = 2,
+    // The EC telemetry command was failed due to EC driver error.
+    kStatusErrorAccessingDriver = 3,
+  };
+  Status status@0;
+  string payload@1;
+};
+
+// Implemented by clients who desire EC notifications.
+[Stable]
+interface WilcoEcObserver {
+  // Fired when an EC event occurs.
+  OnEcEvent@0(EcEvent ec_event);
+};

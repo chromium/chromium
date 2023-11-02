@@ -1,5 +1,5 @@
 <!--
-Copyright 2020 The Chromium Authors. All rights reserved.
+Copyright 2020 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
@@ -37,7 +37,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.Browser.RasterTaskTotalDuration"
-    units="microseconds" expires_after="2022-04-24">
+    units="microseconds" expires_after="2023-03-05">
   <owner>khushalsagar@chromium.org</owner>
   <owner>chrome-gpu@google.com</owner>
   <summary>
@@ -72,61 +72,71 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.GpuImageDecodeState" enum="GpuImageUsageState"
-    expires_after="2021-08-09">
-  <owner>cblume@chromium.org</owner>
+    expires_after="2023-03-05">
   <owner>vmpstr@chromium.org</owner>
+  <owner>thiabaud@google.com</owner>
   <summary>
     Gpu image decode usage statistics. Images are decoded and locked prior to
     upload; this indicates how that decode is used during tile management.
+    Warning: this histogram was expired from 2021-08-09 to 2022-05-20; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Renderer4.GpuImageDecodeState.CachePeakUsagePercent"
-    units="units" expires_after="2021-08-09">
+    units="units" expires_after="2023-03-05">
   <owner>sashamcintosh@chromium.org</owner>
-  <owner>ericrk@chromium.org</owner>
+  <owner>vmpstr@chromium.org</owner>
+  <owner>thiabaud@google.com</owner>
   <summary>
     The current number of bytes locked by the GpuImageDecodeCache compared to
     the maximum allowed number of bytes to lock. This value is recorded every
-    time the tile manager assigns GPU memory to tiles.
+    time the tile manager assigns GPU memory to tiles. Warning: this histogram
+    was expired from 2021-08-09 to 2022-05-20; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Renderer4.GpuImageDecodeState.FirstLockWasted"
-    enum="BooleanWasted" expires_after="2021-06-06">
-  <owner>cblume@chromium.org</owner>
+    enum="BooleanWasted" expires_after="2023-03-05">
   <owner>vmpstr@chromium.org</owner>
+  <owner>thiabaud@google.com</owner>
   <summary>
     Indication whether the first lock of an image decode was wasted (image was
     not used). Images are decoded and locked prior to raster; this indicates
-    whether the decode was used or not during the first lock.
+    whether the decode was used or not during the first lock. Warning: this
+    histogram was expired from 2021-06-06 to 2022-05-20; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Renderer4.GpuImageUploadState" enum="GpuImageUsageState"
-    expires_after="2021-06-06">
-  <owner>cblume@chromium.org</owner>
+    expires_after="2023-03-05">
   <owner>khushalsagar@chromium.org</owner>
+  <owner>vmpstr@chromium.org</owner>
+  <owner>thiabaud@google.com</owner>
   <summary>
     Gpu image upload usage statistics. Images are uploaded and locked prior to
-    use; this indicates how that upload is used during tile management.
+    use; this indicates how that upload is used during tile management. Warning:
+    this histogram was expired from 2021-06-06 to 2022-05-20; data may be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="Renderer4.GpuImageUploadState.FirstLockWasted"
-    enum="BooleanWasted" expires_after="M77">
-  <owner>ericrk@chromium.org</owner>
+    enum="BooleanWasted" expires_after="2022-12-31">
+  <owner>vmpstr@chromium.org</owner>
+  <owner>thiabaud@google.com</owner>
   <summary>
     Indication whether the first lock of an image upload was wasted (image was
     not used). Images are uploaded and locked prior to raster; this indicates
-    whether the upload was used or not during the first lock.
+    whether the upload was used or not during the first lock. Warning: this
+    histogram was expired from M77 to 2022-05-20; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Renderer4.GpuRasterizationEnabled" enum="BooleanEnabled"
-    expires_after="2022-04-17">
-  <owner>ericrk@chromium.org</owner>
-  <owner>enne@chromium.org</owner>
+    expires_after="2023-02-26">
+  <owner>jonross@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     Whether gpu rasterization is enabled (checked once after the page is painted
     for the first time).
@@ -134,7 +144,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Renderer4.ImageDecodeTaskDurationUs"
-    units="microseconds" expires_after="2022-04-10">
+    units="microseconds" expires_after="2023-02-19">
 <!-- Name completed by histogram_suffixes name="DecodedImageType" -->
 
 <!-- Name completed by histogram_suffixes name="OutOfRaster" -->
@@ -179,33 +189,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Renderer4.MainThreadGestureScrollReason"
-    enum="MainThreadScrollingReason" expires_after="2022-04-10">
+<histogram name="Renderer4.MainThreadGestureScrollReason2"
+    enum="MainThreadScrollingReason2" expires_after="2023-03-26">
   <owner>flackr@chromium.org</owner>
   <owner>pdr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Ideally we'd always scroll on the impl thread, but there are a variety of
     situations where we need to scroll on main. We should try to drive these
-    down. For every gesture, we record whether or not the scroll occurred on the
-    main thread or it should scroll on the impl thread but is blocked on main
-    thread, and if it did, what the reasons were. One report is made for each
-    reason preventing scrolling on the impl thread.
+    down. For every gesture, we record whether the scroll occurred on the impl
+    thread (&quot;Not scrolling on main (no reason)&quot;), or the main thread
+    (&quot;Scrolling on main (any reason)&quot;) along with the reasons. There
+    can be multiple main-thread reasons for each scroll, so the percentage of a
+    reason shown in the UMA page is not the percentage of gesture scrolls with
+    the reason in all gesture scrolls. The actual percentage of gesture scrolls
+    with a reason would be count(the reason) / (count(&quot;Not scrolling on
+    main (no reason)&quot; + count(&quot;Scrolling on main (any reason)&quot;)).
   </summary>
 </histogram>
 
-<histogram name="Renderer4.MainThreadWheelScrollReason"
-    enum="MainThreadScrollingReason" expires_after="2022-04-03">
+<histogram name="Renderer4.MainThreadWheelScrollReason2"
+    enum="MainThreadScrollingReason2" expires_after="2022-12-11">
   <owner>flackr@chromium.org</owner>
   <owner>pdr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Ideally we'd always scroll on the impl thread, but there are a variety of
     situations where we need to scroll on main. We should try to drive these
-    down. For every wheel tick, we record whether or not the the scroll occurred
-    on the main thread or it should scroll on the impl thread but is blocked on
-    main thread, and if it did, what the reasons were. One report is made for
-    each reason preventing scrolling on the impl thread.
+    down. For every wheel tick, we record whether the scroll occurred on the
+    impl thread (&quot;Not scrolling on main (no reason)&quot;), or the main
+    thread (&quot;Scrolling on main (any reason)&quot;) along with the reasons.
+    There can be multiple main-thread reasons for each wheel tick, so the
+    percentage of a reason shown in the UMA page is not the percentage of wheel
+    scrolls with the reason in all wheel scrolls. The actual percentage of wheel
+    scrolls with a reason would be count(the reason) / (count(&quot;Not
+    scrolling on main (no reason)&quot; + count(&quot;Scrolling on main (any
+    reason)&quot;)).
   </summary>
 </histogram>
 
@@ -247,7 +266,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.Renderer.RasterTaskTotalDuration"
-    units="microseconds" expires_after="2022-04-10">
+    units="microseconds" expires_after="2023-02-19">
   <owner>khushalsagar@chromium.org</owner>
   <owner>chrome-gpu@google.com</owner>
   <summary>
@@ -273,7 +292,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.ScrollingThread" enum="ScrollingThreadStatus"
-    expires_after="2022-04-17">
+    expires_after="2023-02-26">
 <!-- Name completed by histogram_suffixes name="ScrollSourceDevice" -->
 
   <owner>bokan@chromium.org</owner>
@@ -287,23 +306,26 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.SoftwareImageDecodeState"
-    enum="SoftwareImageDecodeState" expires_after="2021-06-08">
-  <owner>cblume@chromium.org</owner>
+    enum="SoftwareImageDecodeState" expires_after="2022-12-31">
   <owner>vmpstr@chromium.org</owner>
+  <owner>thiabaud@google.com</owner>
   <summary>
     Software image decode usage statistics. Images are decoded and locked prior
     to raster; this indicates how that decode is used during tile management.
+    Warning: this histogram was expired from 2021-06-08 to 2022-05-20; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Renderer4.SoftwareImageDecodeState.FirstLockWasted"
-    enum="BooleanWasted" expires_after="2021-06-08">
-  <owner>cblume@chromium.org</owner>
+    enum="BooleanWasted" expires_after="2022-12-31">
   <owner>vmpstr@chromium.org</owner>
+  <owner>thiabaud@google.com</owner>
   <summary>
     Indication whether the first lock of an image decode was wasted (image was
     not used). Images are decoded and locked prior to raster; this indicates
-    whether the decode was used or not during the first lock.
+    whether the decode was used or not during the first lock. Warning: this
+    histogram was expired from 2021-06-08 to 2022-05-20; data may be missing.
   </summary>
 </histogram>
 

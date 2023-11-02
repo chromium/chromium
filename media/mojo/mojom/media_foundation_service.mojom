@@ -1,14 +1,21 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module media.mojom;
 
+import "gpu/ipc/common/gpu_info.mojom";
 import "media/mojo/mojom/frame_interface_factory.mojom";
 import "media/mojo/mojom/interface_factory.mojom";
 import "media/mojo/mojom/key_system_support.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
+
+// An observer on GpuInfo updates.
+interface GpuInfoObserver {
+  // Notifies that a new GpuInfo update is available.
+  OnGpuInfoUpdate(gpu.mojom.GpuInfo gpu_info);
+};
 
 // A service to provide Windows MediaFoundation-based InterfaceFactory and
 // KeySystemCapability. See comments on MediaFoundationServiceBroker for the
@@ -40,6 +47,13 @@ interface MediaFoundationService {
 // allow CDM preloading. After `GetService()` the process is fully sandboxed.
 [ServiceSandbox=sandbox.mojom.Sandbox.kMediaFoundationCdm]
 interface MediaFoundationServiceBroker {
+  // Updates `GpuInfo` stored in the `MediaFoundationService` process. The
+  // service will also provide a `gpu_info_observer` to get notified of any
+  // future `GpuInfo` updates. This info will be used for crash reporting and
+  // other purposes.
+  UpdateGpuInfo(gpu.mojom.GpuInfo gpu_info)
+    => (pending_remote<GpuInfoObserver> gpu_info_observer);
+
   // Loads the CDM at `cdm_path` into the process and returns the
   // `MediaFoundationService`.
   GetService(

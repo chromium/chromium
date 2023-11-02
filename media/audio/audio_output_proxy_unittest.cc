@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -173,7 +173,7 @@ class AudioOutputProxyTest : public testing::Test {
     // FakeAudioOutputStream will keep the message loop busy indefinitely; i.e.,
     // RunUntilIdle() will never terminate.
     params_ = AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
-                              CHANNEL_LAYOUT_STEREO, 8000, 2048);
+                              ChannelLayoutConfig::Stereo(), 8000, 2048);
     InitDispatcher(base::Milliseconds(kTestCloseDelayMs));
   }
 
@@ -501,8 +501,9 @@ class AudioOutputResamplerTest : public AudioOutputProxyTest {
     // Use a low sample rate and large buffer size when testing otherwise the
     // FakeAudioOutputStream will keep the message loop busy indefinitely; i.e.,
     // RunUntilIdle() will never terminate.
-    resampler_params_ = AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                        CHANNEL_LAYOUT_STEREO, 16000, 1024);
+    resampler_params_ =
+        AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                        ChannelLayoutConfig::Stereo(), 16000, 1024);
     resampler_ = std::make_unique<AudioOutputResampler>(
         &manager(), params_, resampler_params_, std::string(), close_delay,
         base::BindRepeating(&RegisterDebugRecording));
@@ -709,7 +710,7 @@ TEST_F(AudioOutputResamplerTest, HighLatencyFallbackFailed) {
 
 // Only Windows has a high latency output driver that is not the same as the low
 // latency path.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   static const int kFallbackCount = 2;
 #else
   static const int kFallbackCount = 1;
@@ -745,7 +746,7 @@ TEST_F(AudioOutputResamplerTest, HighLatencyFallbackFailed) {
 TEST_F(AudioOutputResamplerTest, AllFallbackFailed) {
 // Only Windows has a high latency output driver that is not the same as the low
 // latency path.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   static const int kFallbackCount = 3;
 #else
   static const int kFallbackCount = 2;
@@ -823,7 +824,7 @@ TEST_F(AudioOutputResamplerTest, FallbackRecovery) {
   MockAudioOutputStream fake_stream(&manager_, params_);
 
   // Trigger the fallback mechanism until a fake output stream is created.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   static const int kFallbackCount = 2;
 #else
   static const int kFallbackCount = 1;

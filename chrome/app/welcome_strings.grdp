@@ -107,6 +107,12 @@
   <message name="IDS_WELCOME_LANDING_EXISTING_USER" desc="Label for a button that prompts existing users to sign in.">
     Already a Chrome user? Sign in
   </message>
+  <message name="IDS_WELCOME_LANDING_PAUSE_ANIMATIONS" desc="Label for a button that pauses all animations on the page.">
+    Pause animations
+  </message>
+  <message name="IDS_WELCOME_LANDING_PLAY_ANIMATIONS" desc="Label for a button that plays all animations on the page.">
+    Play animations
+  </message>
 
   <!-- Sign-in view -->
   <message name="IDS_WELCOME_SIGNIN_VIEW_HEADER" desc="Header for the page that prompts user to sign in to chrome.">

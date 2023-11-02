@@ -1,13 +1,8 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
-
-// parkable_string.h is a widely included header and its size impacts build
-// time. Try not to raise this limit unless necessary. See
-// https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
-#pragma clang max_tokens_here 760000
 
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
@@ -17,9 +12,12 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/memory.h"
+#include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/typed_macros.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string_manager.h"
 #include "third_party/blink/renderer/platform/crypto.h"
@@ -30,11 +28,14 @@
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/sanitizers.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/snappy/src/snappy.h"
 #include "third_party/zlib/google/compression_utils.h"
 
 namespace blink {
@@ -99,10 +100,9 @@ void AsanPoisonString(const String& string) {
 #if defined(ADDRESS_SANITIZER)
   if (string.IsNull())
     return;
-  // Since |string| is not deallocated, it remains in the per-thread
-  // AtomicStringTable, where its content can be accessed for equality
-  // comparison for instance, triggering a poisoned memory access.
-  // See crbug.com/883344 for an example.
+  // Since |string| is not deallocated, it remains in the AtomicStringTable,
+  // where its content can be accessed for equality comparison for instance,
+  // triggering a poisoned memory access. See crbug.com/883344 for an example.
   if (string.Impl()->IsAtomic())
     return;
 
@@ -125,9 +125,10 @@ class NullableCharBuffer final {
 
  public:
   explicit NullableCharBuffer(size_t size) {
-    data_ =
-        reinterpret_cast<char*>(WTF::Partitions::BufferPartition()->AllocFlags(
-            base::PartitionAllocReturnNull, size, "NullableCharBuffer"));
+    data_ = reinterpret_cast<char*>(
+        WTF::Partitions::BufferPartition()->AllocWithFlags(
+            partition_alloc::AllocFlags::kReturnNull, size,
+            "NullableCharBuffer"));
     size_ = size;
   }
 
@@ -219,7 +220,7 @@ enum class ParkableStringImpl::Status : uint8_t {
 ParkableStringImpl::ParkableMetadata::ParkableMetadata(
     String string,
     std::unique_ptr<SecureDigest> digest)
-    : mutex_(),
+    : lock_(),
       lock_depth_(0),
       state_(State::kUnparked),
       background_task_in_progress_(false),
@@ -301,7 +302,7 @@ void ParkableStringImpl::Lock() {
   if (!may_be_parked())
     return;
 
-  MutexLocker locker(metadata_->mutex_);
+  base::AutoLock locker(metadata_->lock_);
   metadata_->lock_depth_ += 1;
   CHECK_NE(metadata_->lock_depth_, 0u);
   // Make young as this is a strong (but not certain) indication that the string
@@ -313,7 +314,7 @@ void ParkableStringImpl::Unlock() {
   if (!may_be_parked())
     return;
 
-  MutexLocker locker(metadata_->mutex_);
+  base::AutoLock locker(metadata_->lock_);
   metadata_->lock_depth_ -= 1;
   CHECK_NE(metadata_->lock_depth_, std::numeric_limits<unsigned int>::max());
 
@@ -340,7 +341,7 @@ const String& ParkableStringImpl::ToString() {
   if (!may_be_parked())
     return string_;
 
-  MutexLocker locker(metadata_->mutex_);
+  base::AutoLock locker(metadata_->lock_);
   MakeYoung();
   AsanUnpoisonString(string_);
   Unpark();
@@ -374,7 +375,7 @@ size_t ParkableStringImpl::MemoryFootprintForDump() const {
 }
 
 ParkableStringImpl::AgeOrParkResult ParkableStringImpl::MaybeAgeOrParkString() {
-  MutexLocker locker(metadata_->mutex_);
+  base::AutoLock locker(metadata_->lock_);
   AssertOnValidThread();
   DCHECK(may_be_parked());
   DCHECK(!is_on_disk());
@@ -414,7 +415,7 @@ ParkableStringImpl::AgeOrParkResult ParkableStringImpl::MaybeAgeOrParkString() {
 }
 
 bool ParkableStringImpl::Park(ParkingMode mode) {
-  MutexLocker locker(metadata_->mutex_);
+  base::AutoLock locker(metadata_->lock_);
   AssertOnValidThread();
   DCHECK(may_be_parked());
 
@@ -517,7 +518,11 @@ ParkableStringImpl::Status ParkableStringImpl::CurrentStatus() const {
 
 bool ParkableStringImpl::CanParkNow() const {
   return CurrentStatus() == Status::kUnreferencedExternally &&
-         metadata_->age_ != Age::kYoung;
+         metadata_->age_ != Age::kYoung &&
+         // Never park strings when recording/replaying, as they can be unparked
+         // at non-deterministic points (e.g. during script compilation) and
+         // perform file accesses.
+         !recordreplay::IsRecordingOrReplaying("no-park-strings");
 }
 
 void ParkableStringImpl::Unpark() {
@@ -558,7 +563,7 @@ void ParkableStringImpl::Unpark() {
 String ParkableStringImpl::UnparkInternal() {
   AssertOnValidThread();
   DCHECK(is_parked() || is_on_disk());
-  // Note: No need for |mutex_| to be held, this doesn't touch any member
+  // Note: No need for |lock_| to be held, this doesn't touch any member
   // variable protected by it.
 
   base::ElapsedTimer timer;
@@ -587,34 +592,47 @@ String ParkableStringImpl::UnparkInternal() {
   String uncompressed;
   base::StringPiece uncompressed_string_piece;
   size_t size = CharactersSizeInBytes();
+  char* char_data;
   if (is_8bit()) {
     LChar* data;
     uncompressed = String::CreateUninitialized(length(), data);
-    uncompressed_string_piece =
-        base::StringPiece(reinterpret_cast<const char*>(data), size);
+    char_data = reinterpret_cast<char*>(data);
   } else {
     UChar* data;
     uncompressed = String::CreateUninitialized(length(), data);
-    uncompressed_string_piece =
-        base::StringPiece(reinterpret_cast<const char*>(data), size);
+    char_data = reinterpret_cast<char*>(data);
   }
+  uncompressed_string_piece = base::StringPiece(char_data, size);
 
-  // If the buffer size is incorrect, then we have a corrupted data issue,
-  // and in such case there is nothing else to do than crash.
-  CHECK_EQ(compression::GetUncompressedSize(compressed_string_piece),
-           uncompressed_string_piece.size());
-  // If decompression fails, this is either because:
-  // 1. Compressed data is corrupted
-  // 2. Cannot allocate memory in zlib
-  //
-  // (1) is data corruption, and (2) is OOM. In all cases, we cannot
-  // recover the string we need, nothing else to do than to abort.
-  if (!compression::GzipUncompress(compressed_string_piece,
-                                   uncompressed_string_piece)) {
-    // Since this is almost always OOM, report it as such. We don't have
-    // certainty, but memory corruption should be much rarer, and could make us
-    // crash anywhere else.
-    OOM_CRASH(uncompressed_string_piece.size());
+  if (!features::ParkableStringsUseSnappy()) {
+    // If the buffer size is incorrect, then we have a corrupted data issue,
+    // and in such case there is nothing else to do than crash.
+    CHECK_EQ(compression::GetUncompressedSize(compressed_string_piece),
+             uncompressed_string_piece.size());
+    // If decompression fails, this is either because:
+    // 1. Compressed data is corrupted
+    // 2. Cannot allocate memory in zlib
+    //
+    // (1) is data corruption, and (2) is OOM. In all cases, we cannot
+    // recover the string we need, nothing else to do than to abort.
+    if (!compression::GzipUncompress(compressed_string_piece,
+                                     uncompressed_string_piece)) {
+      // Since this is almost always OOM, report it as such. We don't have
+      // certainty, but memory corruption should be much rarer, and could make
+      // us crash anywhere else.
+      OOM_CRASH(uncompressed_string_piece.size());
+    }
+  } else {
+    size_t uncompressed_size;
+
+    // As above, if size is incorrect, or if data is corrupted, prefer crashing.
+    CHECK(snappy::GetUncompressedLength(compressed_string_piece.data(),
+                                        compressed_string_piece.size(),
+                                        &uncompressed_size));
+    CHECK_EQ(uncompressed_size, size);
+    CHECK(snappy::RawUncompress(compressed_string_piece.data(),
+                                compressed_string_piece.size(), char_data))
+        << "Decompression failed, corrupted data?";
   }
 
   base::TimeDelta elapsed = timer.Elapsed();
@@ -629,10 +647,12 @@ void ParkableStringImpl::PostBackgroundCompressionTask() {
   // |string_|'s data should not be touched except in the compression task.
   AsanPoisonString(string_);
   metadata_->background_task_in_progress_ = true;
+  auto& manager = ParkableStringManager::Instance();
+  DCHECK(manager.task_runner()->BelongsToCurrentThread());
   // |params| keeps |this| alive until |OnParkingCompleteOnMainThread()|.
   auto params = std::make_unique<BackgroundTaskParams>(
       this, string_.Bytes(), string_.CharactersSizeInBytes(),
-      Thread::Current()->GetTaskRunner());
+      manager.task_runner());
   worker_pool::PostTask(
       FROM_HERE, CrossThreadBindOnce(&ParkableStringImpl::CompressInBackground,
                                      std::move(params)));
@@ -671,9 +691,16 @@ void ParkableStringImpl::CompressInBackground(
   // Hence, report thread time instead of wall clock time.
   base::ElapsedThreadTimer thread_timer;
   {
-    // Temporary vector. As we don't want to waste memory, the temporary buffer
-    // has the same size as the initial data. Compression will fail if this is
-    // not large enough.
+    // Create a temporary buffer for compressed data. After compression the
+    // output bytes are _copied_ to a new vector sized according to the newly
+    // discovered compressed size. This is done as a memory saving measure
+    // because Vector::Shrink() does not resize the memory allocation.
+    //
+    // For zlib: the temporary buffer has the same size as the initial data.
+    // Compression will fail if this is not large enough.
+    // For snappy: the temporary buffer has size
+    // GetMaxCompressedLength(inital_data_size). If the compression does not
+    // compress, the result is discarded.
     //
     // This is not using:
     // - malloc() or any STL container: this is discouraged in blink, and there
@@ -681,18 +708,28 @@ void ParkableStringImpl::CompressInBackground(
     // - WTF::Vector<> as allocation failures result in an OOM crash, whereas
     //   we can fail gracefully. See crbug.com/905777 for an example of OOM
     //   triggered from there.
-    NullableCharBuffer buffer(params->size);
+    size_t buffer_size = features::ParkableStringsUseSnappy()
+                             ? snappy::MaxCompressedLength(params->size)
+                             : params->size;
+    NullableCharBuffer buffer(buffer_size);
     ok = buffer.data();
     size_t compressed_size;
+
     if (ok) {
-      // Use partition alloc for zlib's temporary data. This is crucial to avoid
-      // leaking memory on Android, see the details in crbug.com/931553.
-      auto fast_malloc = [](size_t size) {
-        return WTF::Partitions::FastMalloc(size, "ZlibTemporaryData");
-      };
-      ok = compression::GzipCompress(data, buffer.data(), buffer.size(),
-                                     &compressed_size, fast_malloc,
-                                     WTF::Partitions::FastFree);
+      if (features::ParkableStringsUseSnappy()) {
+        snappy::RawCompress(data.data(), params->size, buffer.data(),
+                            &compressed_size);
+
+        if (compressed_size > params->size) {
+          ok = false;
+        }
+
+        base::UmaHistogramBoolean(
+            "Memory.ParkableString.Snappy.CompressedLargerThanOriginal", !ok);
+      } else {
+        ok = compression::GzipCompress(data, buffer.data(), buffer.size(),
+                                       &compressed_size, nullptr, nullptr);
+      }
     }
 
 #if defined(ADDRESS_SANITIZER)
@@ -730,7 +767,7 @@ void ParkableStringImpl::OnParkingCompleteOnMainThread(
     std::unique_ptr<Vector<uint8_t>> compressed,
     base::TimeDelta parking_thread_time) {
   DCHECK(metadata_->background_task_in_progress_);
-  MutexLocker locker(metadata_->mutex_);
+  base::AutoLock locker(metadata_->lock_);
   DCHECK_EQ(State::kUnparked, metadata_->state_);
   metadata_->background_task_in_progress_ = false;
 
@@ -762,12 +799,13 @@ void ParkableStringImpl::PostBackgroundWritingTask() {
   DCHECK(!metadata_->background_task_in_progress_);
   DCHECK_EQ(State::kParked, metadata_->state_);
   auto& manager = ParkableStringManager::Instance();
+  DCHECK(manager.task_runner()->BelongsToCurrentThread());
   auto& data_allocator = manager.data_allocator();
   if (!has_on_disk_data() && data_allocator.may_write()) {
     metadata_->background_task_in_progress_ = true;
     auto params = std::make_unique<BackgroundTaskParams>(
         this, metadata_->compressed_->data(), metadata_->compressed_->size(),
-        Thread::Current()->GetTaskRunner());
+        manager.task_runner());
     worker_pool::PostTask(
         FROM_HERE, {base::MayBlock()},
         CrossThreadBindOnce(&ParkableStringImpl::WriteToDiskInBackground,
@@ -828,7 +866,12 @@ void ParkableStringImpl::OnWritingCompleteOnMainThread(
   ParkableStringManager::Instance().RecordDiskWriteTime(writing_time);
 }
 
-ParkableString::ParkableString(scoped_refptr<StringImpl>&& impl) {
+ParkableString::ParkableString(scoped_refptr<StringImpl>&& impl)
+    : ParkableString(std::move(impl), nullptr) {}
+
+ParkableString::ParkableString(
+    scoped_refptr<StringImpl>&& impl,
+    std::unique_ptr<ParkableStringImpl::SecureDigest> digest) {
   if (!impl) {
     impl_ = nullptr;
     return;
@@ -836,7 +879,8 @@ ParkableString::ParkableString(scoped_refptr<StringImpl>&& impl) {
 
   bool is_parkable = ParkableStringManager::ShouldPark(*impl);
   if (is_parkable) {
-    impl_ = ParkableStringManager::Instance().Add(std::move(impl));
+    impl_ = ParkableStringManager::Instance().Add(std::move(impl),
+                                                  std::move(digest));
   } else {
     impl_ = ParkableStringImpl::MakeNonParkable(std::move(impl));
   }

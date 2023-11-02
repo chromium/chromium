@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,22 +16,21 @@
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/policy/off_hours/off_hours_proto_parser.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/policy/weekly_time/time_utils.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/policy/weekly_time/time_utils.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace em = enterprise_management;
+namespace policy::off_hours {
 
-namespace policy {
-namespace off_hours {
+namespace em = ::enterprise_management;
 
 DeviceOffHoursController::DeviceOffHoursController()
     : timer_(std::make_unique<base::WallClockTimer>()),
       clock_(base::DefaultClock::GetInstance()) {
-  auto* system_clock_client = chromeos::SystemClockClient::Get();
+  auto* system_clock_client = ash::SystemClockClient::Get();
   if (system_clock_client) {
     system_clock_client->AddObserver(this);
     system_clock_client->WaitForServiceToBeAvailable(
@@ -41,8 +40,8 @@ DeviceOffHoursController::DeviceOffHoursController()
 }
 
 DeviceOffHoursController::~DeviceOffHoursController() {
-  if (chromeos::SystemClockClient::Get())
-    chromeos::SystemClockClient::Get()->RemoveObserver(this);
+  if (ash::SystemClockClient::Get())
+    ash::SystemClockClient::Get()->RemoveObserver(this);
 }
 
 void DeviceOffHoursController::AddObserver(Observer* observer) {
@@ -126,7 +125,7 @@ void DeviceOffHoursController::UpdateOffHoursMode() {
     return;
   }
 
-  namespace wtu = ::policy::weekly_time_utils;
+  namespace wtu = weekly_time_utils;
   const base::Time now = clock_->Now();
   const bool in_interval = wtu::Contains(now, off_hours_intervals_);
   const absl::optional<base::Time> update_time =
@@ -175,7 +174,7 @@ void DeviceOffHoursController::SystemClockUpdated() {
   // current device time. Ask SystemClockClient to update information about the
   // system time synchronization with the network time asynchronously.
   // Information will be received by NetworkSynchronizationUpdated method.
-  chromeos::SystemClockClient::Get()->GetLastSyncInfo(
+  ash::SystemClockClient::Get()->GetLastSyncInfo(
       base::BindOnce(&DeviceOffHoursController::NetworkSynchronizationUpdated,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -184,7 +183,7 @@ void DeviceOffHoursController::SystemClockInitiallyAvailable(
     bool service_is_available) {
   if (!service_is_available)
     return;
-  chromeos::SystemClockClient::Get()->GetLastSyncInfo(
+  ash::SystemClockClient::Get()->GetLastSyncInfo(
       base::BindOnce(&DeviceOffHoursController::NetworkSynchronizationUpdated,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -197,5 +196,4 @@ void DeviceOffHoursController::NetworkSynchronizationUpdated(
   UpdateOffHoursMode();
 }
 
-}  // namespace off_hours
-}  // namespace policy
+}  // namespace policy::off_hours

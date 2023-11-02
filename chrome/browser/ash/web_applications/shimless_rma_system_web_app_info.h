@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,18 +6,18 @@
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_SHIMLESS_RMA_SYSTEM_WEB_APP_INFO_H_
 
 #include "ash/webui/shimless_rma/url_constants.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "ui/gfx/geometry/size.h"
 
-struct WebApplicationInfo;
+struct WebAppInstallInfo;
 
-class ShimlessRMASystemAppDelegate : public web_app::SystemWebAppDelegate {
+class ShimlessRMASystemAppDelegate : public ash::SystemWebAppDelegate {
  public:
   explicit ShimlessRMASystemAppDelegate(Profile* profile);
 
-  // web_app::SystemWebAppDelegate overrides:
-  std::unique_ptr<WebApplicationInfo> GetWebAppInfo() const override;
+  // ash::SystemWebAppDelegate overrides:
+  std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
   bool ShouldCaptureNavigations() const override;
   bool ShouldShowInLauncher() const override;
   bool ShouldShowInSearch() const override;
@@ -26,8 +26,7 @@ class ShimlessRMASystemAppDelegate : public web_app::SystemWebAppDelegate {
   bool IsAppEnabled() const override;
 };
 
-// Returns a WebApplicationInfo used to install the app.
-std::unique_ptr<WebApplicationInfo>
-CreateWebAppInfoForShimlessRMASystemWebApp();
+// Returns a WebAppInstallInfo used to install the app.
+std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForShimlessRMASystemWebApp();
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_SHIMLESS_RMA_SYSTEM_WEB_APP_INFO_H_

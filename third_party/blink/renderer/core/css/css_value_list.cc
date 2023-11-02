@@ -98,7 +98,7 @@ String CSSValueList::CustomCSSText() const {
 
   StringBuilder result;
   for (const auto& value : values_) {
-    if (!result.IsEmpty())
+    if (!result.empty())
       result.Append(separator);
     // TODO(crbug.com/1213338): value_[i] can be null by CSSMathExpressionNode
     // which is implemented by css-values-3. Until fully implement the

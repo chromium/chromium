@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,14 @@
 
 #include <cmath>
 
+#include "base/memory/raw_ptr.h"
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/net/rtp/packet_storage.h"
 
 namespace media {
 namespace cast {
 
+struct EncodedFrame;
 class PacedSender;
 
 struct RtpPacketizerConfig {
@@ -51,13 +53,13 @@ class RtpPacketizer {
   size_t send_octet_count() const { return send_octet_count_; }
 
  private:
-  void BuildCommonRTPheader(Packet* packet,
+  void BuildCommonRtpHeader(Packet* packet,
                             bool marker_bit,
                             RtpTimeTicks rtp_timestamp);
 
   RtpPacketizerConfig config_;
-  PacedSender* const transport_;  // Not owned by this class.
-  PacketStorage* packet_storage_;
+  const raw_ptr<PacedSender> transport_;  // Not owned by this class.
+  raw_ptr<PacketStorage> packet_storage_;
 
   uint16_t sequence_number_;
 

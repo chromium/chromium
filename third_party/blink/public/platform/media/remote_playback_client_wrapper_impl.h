@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "media/renderers/remote_playback_client_wrapper.h"
 #include "third_party/blink/public/platform/web_common.h"
 
@@ -25,7 +26,7 @@ class BLINK_PLATFORM_EXPORT RemotePlaybackClientWrapperImpl
   std::string GetActivePresentationId() override;
 
  private:
-  WebRemotePlaybackClient* remote_playback_client_;
+  raw_ptr<WebRemotePlaybackClient> remote_playback_client_;
 };
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,26 +14,29 @@
 #include <string>
 
 #include "base/base_export.h"
+#include "base/third_party/icu/icu_utf.h"
+#include "build/build_config.h"
 
 namespace base {
 
-inline bool IsValidCodepoint(uint32_t code_point) {
+inline bool IsValidCodepoint(base_icu::UChar32 code_point) {
   // Excludes code points that are not Unicode scalar values, i.e.
   // surrogate code points ([0xD800, 0xDFFF]). Additionally, excludes
   // code points larger than 0x10FFFF (the highest codepoint allowed).
   // Non-characters and unassigned code points are allowed.
   // https://unicode.org/glossary/#unicode_scalar_value
-  return code_point < 0xD800u ||
-         (code_point >= 0xE000u && code_point <= 0x10FFFFu);
+  return (code_point >= 0 && code_point < 0xD800) ||
+         (code_point >= 0xE000 && code_point <= 0x10FFFF);
 }
 
-inline bool IsValidCharacter(uint32_t code_point) {
+inline bool IsValidCharacter(base_icu::UChar32 code_point) {
   // Excludes non-characters (U+FDD0..U+FDEF, and all code points
   // ending in 0xFFFE or 0xFFFF) from the set of valid code points.
   // https://unicode.org/faq/private_use.html#nonchar1
-  return code_point < 0xD800u || (code_point >= 0xE000u &&
-      code_point < 0xFDD0u) || (code_point > 0xFDEFu &&
-      code_point <= 0x10FFFFu && (code_point & 0xFFFEu) != 0xFFFEu);
+  return (code_point >= 0 && code_point < 0xD800) ||
+         (code_point >= 0xE000 && code_point < 0xFDD0) ||
+         (code_point > 0xFDEF && code_point <= 0x10FFFF &&
+          (code_point & 0xFFFE) != 0xFFFE);
 }
 
 // ReadUnicodeCharacter --------------------------------------------------------
@@ -46,42 +49,43 @@ inline bool IsValidCharacter(uint32_t code_point) {
 //
 // Returns true on success. On false, |*code_point| will be invalid.
 BASE_EXPORT bool ReadUnicodeCharacter(const char* src,
-                                      int32_t src_len,
-                                      int32_t* char_index,
-                                      uint32_t* code_point_out);
+                                      size_t src_len,
+                                      size_t* char_index,
+                                      base_icu::UChar32* code_point_out);
 
 // Reads a UTF-16 character. The usage is the same as the 8-bit version above.
 BASE_EXPORT bool ReadUnicodeCharacter(const char16_t* src,
-                                      int32_t src_len,
-                                      int32_t* char_index,
-                                      uint32_t* code_point);
+                                      size_t src_len,
+                                      size_t* char_index,
+                                      base_icu::UChar32* code_point);
 
 #if defined(WCHAR_T_IS_UTF32)
 // Reads UTF-32 character. The usage is the same as the 8-bit version above.
 BASE_EXPORT bool ReadUnicodeCharacter(const wchar_t* src,
-                                      int32_t src_len,
-                                      int32_t* char_index,
-                                      uint32_t* code_point);
+                                      size_t src_len,
+                                      size_t* char_index,
+                                      base_icu::UChar32* code_point);
 #endif  // defined(WCHAR_T_IS_UTF32)
 
 // WriteUnicodeCharacter -------------------------------------------------------
 
 // Appends a UTF-8 character to the given 8-bit string.  Returns the number of
 // bytes written.
-BASE_EXPORT size_t WriteUnicodeCharacter(uint32_t code_point,
+BASE_EXPORT size_t WriteUnicodeCharacter(base_icu::UChar32 code_point,
                                          std::string* output);
 
 // Appends the given code point as a UTF-16 character to the given 16-bit
 // string.  Returns the number of 16-bit values written.
-BASE_EXPORT size_t WriteUnicodeCharacter(uint32_t code_point,
+BASE_EXPORT size_t WriteUnicodeCharacter(base_icu::UChar32 code_point,
                                          std::u16string* output);
 
 #if defined(WCHAR_T_IS_UTF32)
 // Appends the given UTF-32 character to the given 32-bit string.  Returns the
 // number of 32-bit values written.
-inline size_t WriteUnicodeCharacter(uint32_t code_point, std::wstring* output) {
+inline size_t WriteUnicodeCharacter(base_icu::UChar32 code_point,
+                                    std::wstring* output) {
   // This is the easy case, just append the character.
-  output->push_back(code_point);
+  output->push_back(static_cast<wchar_t>(code_point));
   return 1;
 }
 #endif  // defined(WCHAR_T_IS_UTF32)

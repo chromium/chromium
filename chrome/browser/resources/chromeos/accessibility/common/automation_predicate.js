@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,17 +6,11 @@
  * @fileoverview ChromeVox predicates for the automation extension API.
  */
 
-goog.provide('AutomationPredicate');
-goog.provide('AutomationPredicate.Binary');
-goog.provide('AutomationPredicate.Unary');
+import {constants} from './constants.js';
 
-goog.require('constants');
-
-goog.scope(function() {
 const AutomationNode = chrome.automation.AutomationNode;
 const InvalidState = chrome.automation.InvalidState;
 const MarkerType = chrome.automation.MarkerType;
-const Dir = constants.Dir;
 const Restriction = chrome.automation.Restriction;
 const Role = chrome.automation.RoleType;
 const State = chrome.automation.StateType;
@@ -110,9 +104,7 @@ const nodeNameContainedInStaticTextChildren = function(node) {
   return true;
 };
 
-AutomationPredicate = class {
-  constructor() {}
-
+export class AutomationPredicate {
   /**
    * Constructs a predicate given a list of roles.
    * @param {!Array<Role>} roles
@@ -176,7 +168,7 @@ AutomationPredicate = class {
    */
   static editText(node) {
     return node.role === Role.TEXT_FIELD ||
-        (node.state[State.EDITABLE] && !!node.parent &&
+        (node.state[State.EDITABLE] && Boolean(node.parent) &&
          !node.parent.state[State.EDITABLE]);
   }
 
@@ -185,7 +177,7 @@ AutomationPredicate = class {
    * @return {boolean}
    */
   static image(node) {
-    return node.isImage && !!(node.name || node.url);
+    return node.isImage && Boolean(node.name || node.url);
   }
 
   /**
@@ -211,13 +203,14 @@ AutomationPredicate = class {
    * @return {boolean}
    */
   static touchLeaf(node) {
-    return !!(!node.firstChild && node.name) || node.role === Role.BUTTON ||
-        node.role === Role.CHECK_BOX || node.role === Role.POP_UP_BUTTON ||
-        node.role === Role.PORTAL || node.role === Role.RADIO_BUTTON ||
-        node.role === Role.SLIDER || node.role === Role.SWITCH ||
-        node.role === Role.TEXT_FIELD ||
+    return Boolean(!node.firstChild && node.name) ||
+        node.role === Role.BUTTON || node.role === Role.CHECK_BOX ||
+        node.role === Role.POP_UP_BUTTON || node.role === Role.PORTAL ||
+        node.role === Role.RADIO_BUTTON || node.role === Role.SLIDER ||
+        node.role === Role.SWITCH || node.role === Role.TEXT_FIELD ||
         node.role === Role.TEXT_FIELD_WITH_COMBO_BOX ||
         (node.role === Role.MENU_ITEM && !hasActionableDescendant(node)) ||
+        AutomationPredicate.image(node) ||
         // Simple list items should be leaves.
         AutomationPredicate.simpleListItem(node);
   }
@@ -228,7 +221,9 @@ AutomationPredicate = class {
    * @return {boolean}
    */
   static isInvalid(node) {
-    return node.invalidState === InvalidState.TRUE;
+    return node.invalidState === InvalidState.TRUE ||
+        AutomationPredicate.hasInvalidGrammarMarker(node) ||
+        AutomationPredicate.hasInvalidSpellingMarker(node);
   }
 
 
@@ -267,18 +262,19 @@ AutomationPredicate = class {
    * @return {boolean}
    */
   static leaf(node) {
-    return AutomationPredicate.touchLeaf(node) ||
+    return Boolean(
+        AutomationPredicate.touchLeaf(node) || node.role === Role.LIST_BOX ||
         // A node acting as a label should be a leaf if it has no actionable
         // controls.
-        (!!node.labelFor && node.labelFor.length > 0 &&
+        (node.labelFor && node.labelFor.length > 0 &&
          !isActionableOrHasActionableDescendant(node)) ||
-        (!!node.descriptionFor && node.descriptionFor.length > 0 &&
+        (node.descriptionFor && node.descriptionFor.length > 0 &&
          !isActionableOrHasActionableDescendant(node)) ||
         (node.activeDescendantFor && node.activeDescendantFor.length > 0) ||
         node.state[State.INVISIBLE] || node.children.every(function(n) {
           return n.state[State.INVISIBLE];
         }) ||
-        !!AutomationPredicate.math(node);
+        AutomationPredicate.math(node));
   }
 
   /**
@@ -286,7 +282,7 @@ AutomationPredicate = class {
    * @return {boolean}
    */
   static leafWithText(node) {
-    return AutomationPredicate.leaf(node) && !!(node.name || node.value);
+    return AutomationPredicate.leaf(node) && Boolean(node.name || node.value);
   }
 
   /**
@@ -392,6 +388,19 @@ AutomationPredicate = class {
   }
 
   /**
+   * Matches against nodes visited during object navigation with a gesture.
+   * @param {!AutomationNode} node
+   * @return {boolean}
+   */
+  static gestureObject(node) {
+    if (node.role === Role.LIST_BOX) {
+      return false;
+    }
+    return AutomationPredicate.object(node);
+  }
+
+
+  /**
    * @param {!AutomationNode} first
    * @param {!AutomationNode} second
    * @return {boolean}
@@ -441,11 +450,19 @@ AutomationPredicate = class {
 
     return AutomationPredicate.match({
       anyRole: [
-        Role.GENERIC_CONTAINER, Role.DOCUMENT, Role.GROUP, Role.LIST,
-        Role.LIST_ITEM, Role.TOOLBAR, Role.WINDOW
+        Role.GENERIC_CONTAINER,
+        Role.DOCUMENT,
+        Role.GROUP,
+        Role.LIST,
+        Role.LIST_ITEM,
+        Role.TAB,
+        Role.TAB_PANEL,
+        Role.TOOLBAR,
+        Role.WINDOW,
       ],
       anyPredicate: [
-        AutomationPredicate.landmark, AutomationPredicate.structuralContainer,
+        AutomationPredicate.landmark,
+        AutomationPredicate.structuralContainer,
         function(node) {
           // For example, crosh.
           return node.role === Role.TEXT_FIELD &&
@@ -455,8 +472,8 @@ AutomationPredicate = class {
           return (
               node.state[State.EDITABLE] && node.parent &&
               !node.parent.state[State.EDITABLE]);
-        }
-      ]
+        },
+      ],
     })(node);
   }
 
@@ -476,12 +493,12 @@ AutomationPredicate = class {
         return true;
       case Role.DIALOG:
         if (node.root.role !== Role.DESKTOP) {
-          return !!node.modal;
+          return Boolean(node.modal);
         }
 
         // The below logic handles nested dialogs properly in the desktop tree
         // like that found in a bubble view.
-        return !!node.parent && node.parent.role === Role.WINDOW &&
+        return Boolean(node.parent) && node.parent.role === Role.WINDOW &&
             node.parent.children.every(function(child) {
               return node.role === Role.WINDOW || node.role === Role.DIALOG;
             });
@@ -549,6 +566,14 @@ AutomationPredicate = class {
       return true;
     }
 
+    // Ignore list markers that are followed by a static text.
+    // The bullet will be added before the static text (or static text's inline
+    // text box) in output.js.
+    if (node.role === Role.LIST_MARKER && node.nextSibling &&
+        node.nextSibling.role === Role.STATIC_TEXT) {
+      return true;
+    }
+
     // Don't ignore nodes with names or name-like attribute.
     if (node.name || node.value || node.description || node.url) {
       return false;
@@ -561,9 +586,17 @@ AutomationPredicate = class {
 
     // Ignore some roles.
     return AutomationPredicate.leaf(node) && (AutomationPredicate.roles([
-             Role.CLIENT, Role.COLUMN, Role.GENERIC_CONTAINER, Role.GROUP,
-             Role.IMAGE, Role.PARAGRAPH, Role.STATIC_TEXT, Role.SVG_ROOT,
-             Role.TABLE_HEADER_CONTAINER, Role.UNKNOWN
+             Role.CLIENT,
+             Role.COLUMN,
+             Role.GENERIC_CONTAINER,
+             Role.GROUP,
+             Role.IMAGE,
+             Role.PARAGRAPH,
+             Role.SCROLL_VIEW,
+             Role.STATIC_TEXT,
+             Role.SVG_ROOT,
+             Role.TABLE_HEADER_CONTAINER,
+             Role.UNKNOWN,
            ])(node));
   }
 
@@ -573,14 +606,14 @@ AutomationPredicate = class {
    * @return {boolean}
    */
   static checkable(node) {
-    return !!node.checked;
+    return Boolean(node.checked);
   }
 
   /**
    * Returns a predicate that will match against the directed next cell taking
    * into account the current ancestor cell's position in the table.
    * @param {AutomationNode} start
-   * @param {{dir: (Dir|undefined),
+   * @param {{dir: (constants.Dir|undefined),
    *           row: (boolean|undefined),
    *          col: (boolean|undefined)}} opts
    * |dir|, specifies direction for |row or/and |col| movement by one cell.
@@ -595,10 +628,11 @@ AutomationPredicate = class {
       throw new Error('You must set either row or col to true');
     }
 
-    const dir = opts.dir || Dir.FORWARD;
+    const dir = opts.dir || constants.Dir.FORWARD;
 
     // Compute the row/col index defaulting to 0.
-    let rowIndex = 0, colIndex = 0;
+    let rowIndex = 0;
+    let colIndex = 0;
     let tableNode = start;
     while (tableNode) {
       if (AutomationPredicate.table(tableNode)) {
@@ -622,7 +656,7 @@ AutomationPredicate = class {
         throw 'Unsupported option.';
       }
 
-      if (dir === Dir.FORWARD) {
+      if (dir === constants.Dir.FORWARD) {
         return function(node) {
           return AutomationPredicate.cellLike(node) &&
               node.tableCellColumnIndex === colIndex &&
@@ -639,10 +673,10 @@ AutomationPredicate = class {
 
     // Adjust for the next/previous row/col.
     if (opts.row) {
-      rowIndex = dir === Dir.FORWARD ? rowIndex + 1 : rowIndex - 1;
+      rowIndex = dir === constants.Dir.FORWARD ? rowIndex + 1 : rowIndex - 1;
     }
     if (opts.col) {
-      colIndex = dir === Dir.FORWARD ? colIndex + 1 : colIndex - 1;
+      colIndex = dir === constants.Dir.FORWARD ? colIndex + 1 : colIndex - 1;
     }
 
     return function(node) {
@@ -693,7 +727,7 @@ AutomationPredicate = class {
    * @return {boolean}
    */
   static autoScrollable(node) {
-    return !!node.scrollable &&
+    return Boolean(node.scrollable) &&
         (node.standardActions.includes(
              chrome.automation.ActionType.SCROLL_FORWARD) ||
          node.standardActions.includes(
@@ -707,7 +741,8 @@ AutomationPredicate = class {
    * @return {boolean}
    */
   static math(node) {
-    return node.role === Role.MATH || !!node.htmlAttributes['data-mathml'];
+    return node.role === Role.MATH ||
+        Boolean(node.htmlAttributes['data-mathml']);
   }
 
   /**
@@ -723,9 +758,11 @@ AutomationPredicate = class {
     return AutomationPredicate.match({
       anyRole: [Role.HEADING, Role.LIST, Role.PARAGRAPH],
       anyPredicate: [
-        AutomationPredicate.editText, AutomationPredicate.formField,
-        AutomationPredicate.object, AutomationPredicate.table
-      ]
+        AutomationPredicate.editText,
+        AutomationPredicate.formField,
+        AutomationPredicate.object,
+        AutomationPredicate.table,
+      ],
     })(node);
   }
 
@@ -770,7 +807,7 @@ AutomationPredicate = class {
       return AutomationPredicate.listLike(autoNode) && (autoNode !== avoidNode);
     };
   }
-};
+}
 
 /**
  * @typedef {function(!AutomationNode) : boolean}
@@ -803,21 +840,27 @@ AutomationPredicate.listLike =
 /** @type {AutomationPredicate.Unary} */
 AutomationPredicate.simpleListItem = AutomationPredicate.match({
   anyPredicate:
-      [(node) => node.role === Role.LIST_ITEM && node.children.length === 2 &&
+      [node => node.role === Role.LIST_ITEM && node.children.length === 2 &&
            node.firstChild.role === Role.LIST_MARKER &&
-           node.lastChild.role === Role.STATIC_TEXT]
+           node.lastChild.role === Role.STATIC_TEXT],
 });
 
 /** @type {AutomationPredicate.Unary} */
 AutomationPredicate.formField = AutomationPredicate.match({
   anyPredicate: [
-    AutomationPredicate.button, AutomationPredicate.comboBox,
-    AutomationPredicate.editText
+    AutomationPredicate.button,
+    AutomationPredicate.comboBox,
+    AutomationPredicate.editText,
   ],
   anyRole: [
-    Role.CHECK_BOX, Role.COLOR_WELL, Role.LIST_BOX, Role.SLIDER, Role.SWITCH,
-    Role.TAB, Role.TREE
-  ]
+    Role.CHECK_BOX,
+    Role.COLOR_WELL,
+    Role.LIST_BOX,
+    Role.SLIDER,
+    Role.SWITCH,
+    Role.TAB,
+    Role.TREE,
+  ],
 });
 
 /** @type {AutomationPredicate.Unary} */
@@ -826,9 +869,13 @@ AutomationPredicate.control = AutomationPredicate.match({
     AutomationPredicate.formField,
   ],
   anyRole: [
-    Role.DISCLOSURE_TRIANGLE, Role.MENU_ITEM, Role.MENU_ITEM_CHECK_BOX,
-    Role.MENU_ITEM_RADIO, Role.MENU_LIST_OPTION, Role.SCROLL_BAR
-  ]
+    Role.DISCLOSURE_TRIANGLE,
+    Role.MENU_ITEM,
+    Role.MENU_ITEM_CHECK_BOX,
+    Role.MENU_ITEM_RADIO,
+    Role.MENU_LIST_OPTION,
+    Role.SCROLL_BAR,
+  ],
 });
 
 
@@ -838,8 +885,15 @@ AutomationPredicate.linkOrControl = AutomationPredicate.match(
 
 /** @type {AutomationPredicate.Unary} */
 AutomationPredicate.landmark = AutomationPredicate.roles([
-  Role.APPLICATION, Role.BANNER, Role.COMPLEMENTARY, Role.CONTENT_INFO,
-  Role.FORM, Role.MAIN, Role.NAVIGATION, Role.REGION, Role.SEARCH
+  Role.APPLICATION,
+  Role.BANNER,
+  Role.COMPLEMENTARY,
+  Role.CONTENT_INFO,
+  Role.FORM,
+  Role.MAIN,
+  Role.NAVIGATION,
+  Role.REGION,
+  Role.SEARCH,
 ]);
 
 /**
@@ -849,10 +903,22 @@ AutomationPredicate.landmark = AutomationPredicate.roles([
  * @return {boolean}
  */
 AutomationPredicate.structuralContainer = AutomationPredicate.roles([
-  Role.ALERT_DIALOG, Role.CLIENT, Role.DIALOG, Role.LAYOUT_TABLE,
-  Role.LAYOUT_TABLE_CELL, Role.LAYOUT_TABLE_ROW, Role.ROOT_WEB_AREA,
-  Role.WEB_VIEW, Role.WINDOW, Role.EMBEDDED_OBJECT, Role.IFRAME,
-  Role.IFRAME_PRESENTATIONAL, Role.PLUGIN_OBJECT, Role.UNKNOWN, Role.PANE
+  Role.ALERT_DIALOG,
+  Role.CLIENT,
+  Role.DIALOG,
+  Role.LAYOUT_TABLE,
+  Role.LAYOUT_TABLE_CELL,
+  Role.LAYOUT_TABLE_ROW,
+  Role.ROOT_WEB_AREA,
+  Role.WEB_VIEW,
+  Role.WINDOW,
+  Role.EMBEDDED_OBJECT,
+  Role.IFRAME,
+  Role.IFRAME_PRESENTATIONAL,
+  Role.PLUGIN_OBJECT,
+  Role.UNKNOWN,
+  Role.PANE,
+  Role.SCROLL_VIEW,
 ]);
 
 
@@ -863,13 +929,29 @@ AutomationPredicate.structuralContainer = AutomationPredicate.roles([
  */
 AutomationPredicate.clickable = AutomationPredicate.match({
   anyPredicate: [
-    AutomationPredicate.button, AutomationPredicate.link,
-    (node) => {
+    AutomationPredicate.button,
+    AutomationPredicate.link,
+    node => {
       return node.defaultActionVerb ===
           chrome.automation.DefaultActionVerb.CLICK;
-    }
+    },
   ],
-  anyAttribute: {clickable: true}
+  anyAttribute: {clickable: true},
+});
+
+/**
+ * Returns if the node is long clickable.
+ * @param {!AutomationNode} node
+ * @return {boolean}
+ */
+AutomationPredicate.longClickable = AutomationPredicate.match({
+  anyPredicate: [
+    node => {
+      return node.standardActions.includes(
+          chrome.automation.ActionType.LONG_CLICK);
+    },
+  ],
+  anyAttribute: {longClickable: true},
 });
 
 // Table related predicates.
@@ -906,4 +988,27 @@ AutomationPredicate.menuItem = AutomationPredicate.roles(
  */
 AutomationPredicate.text = AutomationPredicate.roles(
     [Role.STATIC_TEXT, Role.INLINE_TEXT_BOX, Role.LINE_BREAK]);
-});  // goog.scope
+
+/**
+ * Matches against selecteable text like nodes.
+ * @param {!AutomationNode} node
+ * @return {boolean}
+ */
+AutomationPredicate.selectableText = AutomationPredicate.roles([
+  Role.STATIC_TEXT,
+  Role.INLINE_TEXT_BOX,
+  Role.LINE_BREAK,
+  Role.LIST_MARKER,
+]);
+
+/**
+ * Matches against pop-up button like nodes.
+ * Historically, single value <select> controls were represented as a
+ * popup button, but they are distinct from <button aria-haspopup='menu'>.
+ * @param {!AutomationNode} node
+ * @return {boolean}
+ */
+AutomationPredicate.popUpButton = AutomationPredicate.roles([
+  Role.COMBO_BOX_SELECT,
+  Role.POP_UP_BUTTON,
+]);

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,9 +46,10 @@ class RelaunchNotificationControllerPlatformImpl : public views::WidgetObserver,
   // Checks whether the required dialog is shown or not.
   bool IsRequiredNotificationShown() const;
 
+  views::Widget* GetWidgetForTesting() { return widget_; }
+
  protected:
   // views::WidgetObserver:
-  void OnWidgetClosing(views::Widget* widget) override;
   void OnWidgetDestroying(views::Widget* widget) override;
 
   // BrowserListObserver:

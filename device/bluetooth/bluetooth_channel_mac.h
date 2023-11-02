@@ -1,16 +1,16 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef DEVICE_BLUETOOTH_BLUETOOTH_CHANNEL_MAC_H_
 #define DEVICE_BLUETOOTH_BLUETOOTH_CHANNEL_MAC_H_
 
+#include "base/memory/raw_ptr.h"
+
 #import <IOKit/IOReturn.h>
 #include <stdint.h>
 
 #include <string>
-
-#include "base/macros.h"
 
 @class IOBluetoothDevice;
 
@@ -59,7 +59,7 @@ class BluetoothChannelMac {
 
  private:
   // The socket that owns |this|.
-  BluetoothSocketMac* socket_;
+  raw_ptr<BluetoothSocketMac> socket_;
 };
 
 }  // namespace device

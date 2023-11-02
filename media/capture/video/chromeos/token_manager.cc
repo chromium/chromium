@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,10 @@
 #include <grp.h>
 #include <sys/types.h>
 #include <unistd.h>
+
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -99,8 +101,7 @@ bool TokenManager::GenerateTestClientToken() {
 base::UnguessableToken TokenManager::GetTokenForTrustedClient(
     cros::mojom::CameraClientType type) {
   base::AutoLock l(client_token_map_lock_);
-  if (std::find(kTrustedClientTypes.begin(), kTrustedClientTypes.end(), type) ==
-      kTrustedClientTypes.end()) {
+  if (!base::Contains(kTrustedClientTypes, type)) {
     return base::UnguessableToken();
   }
   auto& token_set = client_token_map_[type];
@@ -149,10 +150,9 @@ absl::optional<cros::mojom::CameraClientType> TokenManager::AuthenticateClient(
     const base::UnguessableToken& token) {
   base::AutoLock l(client_token_map_lock_);
   if (type == cros::mojom::CameraClientType::UNKNOWN) {
-    for (const auto& client_token_map_pair : client_token_map_) {
-      const auto& token_set = client_token_map_pair.second;
+    for (const auto& [client_type, token_set] : client_token_map_) {
       if (token_set.find(token) != token_set.end()) {
-        return client_token_map_pair.first;
+        return client_type;
       }
     }
     return absl::nullopt;

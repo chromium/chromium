@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
@@ -58,9 +58,9 @@ class BrowserViewLayout : public views::LayoutManager {
                     views::View* toolbar,
                     InfoBarContainerView* infobar_container,
                     views::View* contents_container,
-                    views::View* left_aligned_side_panel,
+                    views::View* side_search_side_panel,
                     views::View* left_aligned_side_panel_separator,
-                    views::View* right_aligned_side_panel,
+                    views::View* unified_side_panel,
                     views::View* right_aligned_side_panel_separator,
                     views::View* lens_side_panel,
                     ImmersiveModeController* immersive_mode_controller,
@@ -88,6 +88,16 @@ class BrowserViewLayout : public views::LayoutManager {
   }
   views::Widget* contents_border_widget() { return contents_border_widget_; }
 
+  // Sets the bounds for the contents border.
+  // * If nullopt, no specific bounds are set, and the border will be drawn
+  //   around the entire contents area.
+  // * Otherwise, the blue border will be drawn around the indicated Rect,
+  //   which is in View coordinates.
+  // Note that *whether* the border is drawn is an orthogonal issue;
+  // this function only controls where it's drawn when it is in fact drawn.
+  void SetContentBorderBounds(
+      const absl::optional<gfx::Rect>& region_capture_rect);
+
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost();
 
   // Returns the view against which the dialog is positioned and parented.
@@ -103,6 +113,9 @@ class BrowserViewLayout : public views::LayoutManager {
   void Layout(views::View* host) override;
   gfx::Size GetMinimumSize(const views::View* host) const override;
   gfx::Size GetPreferredSize(const views::View* host) const override;
+
+  // Returns the minimum acceptable width for the browser web contents.
+  int GetMinWebContentsWidthForTesting() const;
 
   // Returns true if an infobar is showing.
   bool IsInfobarVisible() const;
@@ -140,8 +153,14 @@ class BrowserViewLayout : public views::LayoutManager {
   // control, for laying out the previous control.
   int LayoutDownloadShelf(int bottom);
 
+  // Layout the contents border, which indicates the tab is being captured.
+  void LayoutContentBorder();
+
   // Returns the y coordinate of the client area.
   int GetClientAreaTop();
+
+  // Returns the minimum acceptable width for the browser web contents.
+  int GetMinWebContentsWidth() const;
 
   // The delegate interface. May be a mock in tests.
   const std::unique_ptr<BrowserViewLayoutDelegate> delegate_;
@@ -150,33 +169,33 @@ class BrowserViewLayout : public views::LayoutManager {
   gfx::NativeView const host_view_;
 
   // The owning browser view.
-  BrowserView* const browser_view_;
+  const raw_ptr<BrowserView> browser_view_;
 
   // Child views that the layout manager manages.
   // NOTE: If you add a view, try to add it as a views::View, which makes
   // testing much easier.
-  views::View* const top_container_;
-  TabStripRegionView* const tab_strip_region_view_;
-  views::View* const toolbar_;
-  InfoBarContainerView* const infobar_container_;
-  views::View* const contents_container_;
-  views::View* const left_aligned_side_panel_;
-  views::View* const left_aligned_side_panel_separator_;
-  views::View* const right_aligned_side_panel_;
-  views::View* const right_aligned_side_panel_separator_;
-  views::View* const lens_side_panel_;
-  ImmersiveModeController* const immersive_mode_controller_;
-  views::View* const contents_separator_;
+  const raw_ptr<views::View> top_container_;
+  const raw_ptr<TabStripRegionView> tab_strip_region_view_;
+  const raw_ptr<views::View> toolbar_;
+  const raw_ptr<InfoBarContainerView> infobar_container_;
+  const raw_ptr<views::View> contents_container_;
+  const raw_ptr<views::View> side_search_side_panel_;
+  const raw_ptr<views::View> left_aligned_side_panel_separator_;
+  const raw_ptr<views::View> unified_side_panel_;
+  const raw_ptr<views::View> right_aligned_side_panel_separator_;
+  const raw_ptr<views::View> lens_side_panel_;
+  const raw_ptr<ImmersiveModeController> immersive_mode_controller_;
+  const raw_ptr<views::View> contents_separator_;
 
-  views::View* webui_tab_strip_ = nullptr;
-  views::View* loading_bar_ = nullptr;
-  TabStrip* tab_strip_ = nullptr;
-  BookmarkBarView* bookmark_bar_ = nullptr;
-  views::View* download_shelf_ = nullptr;
+  raw_ptr<views::View> webui_tab_strip_ = nullptr;
+  raw_ptr<views::View> loading_bar_ = nullptr;
+  raw_ptr<TabStrip> tab_strip_ = nullptr;
+  raw_ptr<BookmarkBarView> bookmark_bar_ = nullptr;
+  raw_ptr<views::View> download_shelf_ = nullptr;
 
   // The widget displaying a border on top of contents container for
   // highlighting the content. Not created by default.
-  views::Widget* contents_border_widget_ = nullptr;
+  raw_ptr<views::Widget> contents_border_widget_ = nullptr;
 
   // The bounds within which the vertically-stacked contents of the BrowserView
   // should be laid out within. This is just the local bounds of the
@@ -193,6 +212,9 @@ class BrowserViewLayout : public views::LayoutManager {
   // The latest contents bounds applied during a layout pass, in screen
   // coordinates.
   gfx::Rect latest_contents_bounds_;
+
+  // Directly tied to SetContentBorderBounds() - more details there.
+  absl::optional<gfx::Rect> dynamic_content_border_bounds_;
 
   // The distance the web contents modal dialog is from the top of the window,
   // in pixels.

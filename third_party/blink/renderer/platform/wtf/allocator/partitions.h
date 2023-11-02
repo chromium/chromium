@@ -58,20 +58,17 @@ class WTF_EXPORT Partitions {
     return array_buffer_root_ != nullptr;
   }
 
-  ALWAYS_INLINE static base::ThreadSafePartitionRoot* ArrayBufferPartition() {
+  ALWAYS_INLINE static partition_alloc::ThreadSafePartitionRoot*
+  ArrayBufferPartition() {
     DCHECK(initialized_);
     DCHECK(ArrayBufferPartitionInitialized());
     return array_buffer_root_;
   }
 
-  ALWAYS_INLINE static base::ThreadSafePartitionRoot* BufferPartition() {
+  ALWAYS_INLINE static partition_alloc::ThreadSafePartitionRoot*
+  BufferPartition() {
     DCHECK(initialized_);
     return buffer_root_;
-  }
-
-  ALWAYS_INLINE static base::ThreadUnsafePartitionRoot* LayoutPartition() {
-    DCHECK(initialized_);
-    return layout_root_;
   }
 
   ALWAYS_INLINE static size_t ComputeAllocationSize(size_t count, size_t size) {
@@ -84,42 +81,40 @@ class WTF_EXPORT Partitions {
 
   static size_t TotalActiveBytes();
 
-  static void DumpMemoryStats(bool is_light_dump, base::PartitionStatsDumper*);
+  static void DumpMemoryStats(bool is_light_dump,
+                              partition_alloc::PartitionStatsDumper*);
 
-  static void* MALLOC_FN BufferMalloc(size_t n,
-                                      const char* type_name) MALLOC_ALIGNED;
+  static void* PA_MALLOC_FN BufferMalloc(size_t n, const char* type_name)
+      PA_MALLOC_ALIGNED;
   static void* BufferTryRealloc(void* p,
                                 size_t n,
-                                const char* type_name) MALLOC_ALIGNED;
+                                const char* type_name) PA_MALLOC_ALIGNED;
   static void BufferFree(void* p);
   static size_t BufferPotentialCapacity(size_t n);
 
-  static void* MALLOC_FN FastMalloc(size_t n,
-                                    const char* type_name) MALLOC_ALIGNED;
-  static void* MALLOC_FN FastZeroedMalloc(size_t n,
-                                          const char* type_name) MALLOC_ALIGNED;
+  static void* PA_MALLOC_FN FastMalloc(size_t n,
+                                       const char* type_name) PA_MALLOC_ALIGNED;
+  static void* PA_MALLOC_FN FastZeroedMalloc(size_t n, const char* type_name)
+      PA_MALLOC_ALIGNED;
   static void FastFree(void* p);
 
   static void HandleOutOfMemory(size_t size);
 
  private:
-#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  ALWAYS_INLINE static base::ThreadSafePartitionRoot* FastMallocPartition() {
+  ALWAYS_INLINE static partition_alloc::ThreadSafePartitionRoot*
+  FastMallocPartition() {
     DCHECK(initialized_);
     return fast_malloc_root_;
   }
-#endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
   static bool InitializeOnce();
 
   static bool initialized_;
+  static bool scan_is_enabled_;
   // See Allocator.md for a description of these partitions.
-#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  static base::ThreadSafePartitionRoot* fast_malloc_root_;
-#endif
-  static base::ThreadSafePartitionRoot* array_buffer_root_;
-  static base::ThreadSafePartitionRoot* buffer_root_;
-  static base::ThreadUnsafePartitionRoot* layout_root_;
+  static partition_alloc::ThreadSafePartitionRoot* fast_malloc_root_;
+  static partition_alloc::ThreadSafePartitionRoot* array_buffer_root_;
+  static partition_alloc::ThreadSafePartitionRoot* buffer_root_;
 };
 
 }  // namespace WTF

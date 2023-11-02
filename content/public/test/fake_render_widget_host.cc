@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -94,6 +94,8 @@ void FakeRenderWidgetHost::ShowPopup(const gfx::Rect& initial_rect,
 void FakeRenderWidgetHost::SetTouchActionFromMain(
     cc::TouchAction touch_action) {}
 
+void FakeRenderWidgetHost::SetPanAction(blink::mojom::PanAction pan_action) {}
+
 void FakeRenderWidgetHost::DidOverscroll(
     blink::mojom::DidOverscrollParamsPtr params) {}
 
@@ -125,7 +127,8 @@ void FakeRenderWidgetHost::StartDragging(
     blink::mojom::DragDataPtr drag_data,
     blink::DragOperationsMask operations_allowed,
     const SkBitmap& bitmap,
-    const gfx::Vector2d& bitmap_offset_in_dip,
+    const gfx::Vector2d& cursor_offset_in_dip,
+    const gfx::Rect& drag_obj_rect_in_dip,
     blink::mojom::DragEventSourceInfoPtr event_info) {}
 
 blink::mojom::WidgetInputHandler*

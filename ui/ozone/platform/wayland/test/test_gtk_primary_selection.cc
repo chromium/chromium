@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 
 #include "base/notreached.h"
 #include "ui/ozone/platform/wayland/test/test_selection_device_manager.h"
+#include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 
 // GtkPrimarySelection* classes contain protocol-specific implementation of
 // TestSelection*::Delegate interfaces, such that primary selection test
@@ -37,7 +38,7 @@ struct GtkPrimarySelectionOffer final : public TestSelectionOffer::Delegate {
 
 struct GtkPrimarySelectionDevice final : public TestSelectionDevice::Delegate {
   TestSelectionOffer* CreateAndSendOffer() override {
-    const struct gtk_primary_selection_offer_interface kOfferImpl = {
+    static const struct gtk_primary_selection_offer_interface kOfferImpl = {
         &TestSelectionOffer::Receive, &Destroy};
     wl_resource* device_resource = device->resource();
     const int version = wl_resource_get_version(device_resource);
@@ -75,11 +76,19 @@ struct GtkPrimarySelectionSource : public TestSelectionSource::Delegate {
                 base::ScopedFD write_fd) override {
     gtk_primary_selection_source_send_send(source->resource(),
                                            mime_type.c_str(), write_fd.get());
-    wl_client_flush(wl_resource_get_client(source->resource()));
+    TestWaylandServerThread::FlushClientForResource(source->resource());
+  }
+
+  void SendFinished() override {
+    NOTREACHED() << "The interface does not support this method.";
   }
 
   void SendCancelled() override {
     gtk_primary_selection_source_send_cancelled(source->resource());
+  }
+
+  void SendDndAction(uint32_t action) override {
+    NOTREACHED() << "The interface does not support this method.";
   }
 
   void OnDestroying() override { delete this; }
@@ -94,7 +103,7 @@ struct GtkPrimarySelectionDeviceManager
   ~GtkPrimarySelectionDeviceManager() override = default;
 
   TestSelectionDevice* CreateDevice(wl_client* client, uint32_t id) override {
-    const struct gtk_primary_selection_device_interface
+    static const struct gtk_primary_selection_device_interface
         kTestSelectionDeviceImpl = {&TestSelectionDevice::SetSelection,
                                     &Destroy};
     auto* delegate = new GtkPrimarySelectionDevice;
@@ -106,7 +115,7 @@ struct GtkPrimarySelectionDeviceManager
   }
 
   TestSelectionSource* CreateSource(wl_client* client, uint32_t id) override {
-    const struct gtk_primary_selection_source_interface
+    static const struct gtk_primary_selection_source_interface
         kTestSelectionSourceImpl = {&TestSelectionSource::Offer, &Destroy};
     auto* delegate = new GtkPrimarySelectionSource;
     wl_resource* resource = CreateResourceWithImpl<TestSelectionSource>(
@@ -126,7 +135,7 @@ struct GtkPrimarySelectionDeviceManager
 
 TestSelectionDeviceManager* CreateTestSelectionManagerGtk() {
   constexpr uint32_t kVersion = 1;
-  const struct gtk_primary_selection_device_manager_interface
+  static const struct gtk_primary_selection_device_manager_interface
       kTestSelectionManagerImpl = {&TestSelectionDeviceManager::CreateSource,
                                    &TestSelectionDeviceManager::GetDevice,
                                    &Destroy};

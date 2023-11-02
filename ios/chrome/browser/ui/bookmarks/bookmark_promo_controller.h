@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ class ChromeBrowserState;
 // Controls the state of the promo.
 - (void)promoStateChanged:(BOOL)promoEnabled;
 
-// Configures the sign-in promo view using |configurator|, and reloads the view
+// Configures the sign-in promo view using `configurator`, and reloads the view
 // needed.
 - (void)configureSigninPromoWithConfigurator:
             (SigninPromoViewConfigurator*)configurator
@@ -48,7 +48,7 @@ class ChromeBrowserState;
 // Hides the promo cell. It won't be presented again on this profile.
 - (void)hidePromoCell;
 
-// Updates |shouldShowSigninPromo| based on the sign-in state of the user.
+// Updates `shouldShowSigninPromo` based on the sign-in state of the user.
 - (void)updateShouldShowSigninPromo;
 
 @end

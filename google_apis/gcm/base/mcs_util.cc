@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -40,7 +39,7 @@ const char* const kProtoNames[] = {
   "mcs_proto.BindAccountResponse",
   "mcs_proto.TalkMetadata"
 };
-static_assert(base::size(kProtoNames) == kNumProtoTypes,
+static_assert(std::size(kProtoNames) == kNumProtoTypes,
               "Proto Names Must Include All Tags");
 
 const char kLoginId[] = "chrome-";

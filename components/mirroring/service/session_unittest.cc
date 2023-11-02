@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,14 +13,17 @@
 #include "base/callback.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/mirroring/service/fake_network_service.h"
 #include "components/mirroring/service/fake_video_capture_host.h"
 #include "components/mirroring/service/mirror_settings.h"
+#include "components/mirroring/service/mirroring_features.h"
 #include "components/mirroring/service/receiver_response.h"
 #include "components/mirroring/service/value_util.h"
+#include "media/capture/video_capture_types.h"
 #include "media/cast/test/utility/default_config.h"
 #include "media/cast/test/utility/net_utility.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -32,6 +35,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/openscreen/src/cast/streaming/ssrc.h"
+#include "ui/gfx/geometry/size.h"
 
 using media::cast::FrameSenderConfig;
 using media::cast::Packet;
@@ -46,6 +50,7 @@ using ::testing::AtLeast;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Mock;
 using ::testing::NiceMock;
+using ::testing::SaveArg;
 
 namespace mirroring {
 
@@ -125,24 +130,25 @@ class SessionTest : public mojom::ResourceProvider,
   // Called when sends an outbound message.
   MOCK_METHOD1(OnOutboundMessage, void(const std::string& message_type));
 
-  // mojom::CastMessageHandler implementation. For outbound messages.
-  void Send(mojom::CastMessagePtr message) override {
+  MOCK_METHOD0(OnInitDone, void());
+
+  // mojom::CastMessageChannel implementation (outbound messages).
+  void OnMessage(mojom::CastMessagePtr message) override {
     EXPECT_TRUE(message->message_namespace == mojom::kWebRtcNamespace ||
                 message->message_namespace == mojom::kRemotingNamespace);
-    std::unique_ptr<base::Value> value =
-        base::JSONReader::ReadDeprecated(message->json_format_data);
+    absl::optional<base::Value> value =
+        base::JSONReader::Read(message->json_format_data);
     ASSERT_TRUE(value);
     std::string message_type;
     EXPECT_TRUE(GetString(*value, "type", &message_type));
     if (message_type == "OFFER") {
       EXPECT_TRUE(GetInt(*value, "seqNum", &offer_sequence_number_));
-      auto* offer = value->FindKey("offer");
+      base::Value::Dict* offer = value->GetDict().FindDict("offer");
       ASSERT_TRUE(offer);
-      auto* raw_streams = offer->FindKey("supportedStreams");
+      base::Value* raw_streams = offer->Find("supportedStreams");
       if (raw_streams) {
-        base::Value::ListView streams = raw_streams->GetList();
-        for (auto it = streams.begin(); it != streams.end(); ++it) {
-          EXPECT_EQ(it->FindKey("targetDelay")->GetInt(),
+        for (auto& list_value : raw_streams->GetList()) {
+          EXPECT_EQ(*list_value.GetDict().FindInt("targetDelay"),
                     target_playout_delay_ms_);
         }
       }
@@ -232,6 +238,10 @@ class SessionTest : public mojom::ResourceProvider,
     task_environment_.RunUntilIdle();
   }
 
+  Session::AsyncInitializeDoneCB MakeInitDoneCB() {
+    return base::BindOnce(&SessionTest::OnInitDone, base::Unretained(this));
+  }
+
   // Create a mirroring session. Expect to send OFFER message.
   void CreateSession(SessionType session_type) {
     session_type_ = session_type;
@@ -258,11 +268,14 @@ class SessionTest : public mojom::ResourceProvider,
     EXPECT_CALL(*this, OnGetNetworkContext()).Times(1);
     EXPECT_CALL(*this, OnError(_)).Times(0);
     EXPECT_CALL(*this, OnOutboundMessage("OFFER")).Times(1);
+    EXPECT_CALL(*this, OnInitDone()).Times(1);
+
     session_ = std::make_unique<Session>(
         std::move(session_params), gfx::Size(1920, 1080),
         std::move(session_observer_remote), std::move(resource_provider_remote),
         std::move(outbound_channel_remote),
         inbound_channel_.BindNewPipeAndPassReceiver(), nullptr);
+    session_->AsyncInitialize(MakeInitDoneCB());
     task_environment_.RunUntilIdle();
     Mock::VerifyAndClear(this);
   }
@@ -390,6 +403,9 @@ class SessionTest : public mojom::ResourceProvider,
     answer_ = std::move(answer);
   }
 
+ protected:
+  std::unique_ptr<FakeVideoCaptureHost> video_host_;
+
  private:
   base::test::TaskEnvironment task_environment_;
   const net::IPEndPoint receiver_endpoint_ =
@@ -407,7 +423,6 @@ class SessionTest : public mojom::ResourceProvider,
   int32_t target_playout_delay_ms_ = kDefaultPlayoutDelay;
 
   std::unique_ptr<Session> session_;
-  std::unique_ptr<FakeVideoCaptureHost> video_host_;
   std::unique_ptr<MockNetworkContext> network_context_;
   std::unique_ptr<openscreen::cast::Answer> answer_;
 };
@@ -435,9 +450,31 @@ TEST_F(SessionTest, AudioAndVideoMirroring) {
 
 TEST_F(SessionTest, AnswerWithConstraints) {
   SetAnswer(std::make_unique<openscreen::cast::Answer>(kAnswerWithConstraints));
+  media::VideoCaptureParams::SuggestedConstraints expected_constraints = {
+      .min_frame_size = gfx::Size(2, 2),
+      .max_frame_size = gfx::Size(1280, 720),
+      .fixed_aspect_ratio = false};
   CreateSession(SessionType::AUDIO_AND_VIDEO);
   StartSession();
   StopSession();
+  EXPECT_EQ(video_host_->GetVideoCaptureParams().SuggestConstraints(),
+            expected_constraints);
+}
+
+// TODO(crbug.com/1363512): Remove support for sender side letterboxing.
+TEST_F(SessionTest, AnswerWithConstraintsLetterboxEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kCastDisableLetterboxing);
+  SetAnswer(std::make_unique<openscreen::cast::Answer>(kAnswerWithConstraints));
+  media::VideoCaptureParams::SuggestedConstraints expected_constraints = {
+      .min_frame_size = gfx::Size(320, 180),
+      .max_frame_size = gfx::Size(1280, 720),
+      .fixed_aspect_ratio = true};
+  CreateSession(SessionType::AUDIO_AND_VIDEO);
+  StartSession();
+  StopSession();
+  EXPECT_EQ(video_host_->GetVideoCaptureParams().SuggestConstraints(),
+            expected_constraints);
 }
 
 TEST_F(SessionTest, AnswerTimeout) {

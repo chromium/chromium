@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 #include "url/origin.h"
 
@@ -21,14 +22,16 @@ namespace storage {
 // `expiration` and `quota`, may get out of sync with the database. The
 // database is the source of truth.
 struct COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT) BucketInfo {
-  BucketInfo();
   BucketInfo(BucketId bucket_id,
              blink::StorageKey storage_key,
              blink::mojom::StorageType type,
              std::string name,
              base::Time expiration,
-             int64_t quota);
+             int64_t quota,
+             bool persistent,
+             blink::mojom::BucketDurability durability);
 
+  BucketInfo() = delete;
   ~BucketInfo();
 
   BucketInfo(const BucketInfo&);
@@ -53,11 +56,16 @@ struct COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT) BucketInfo {
 
   BucketId id;
   blink::StorageKey storage_key;
-  blink::mojom::StorageType type = blink::mojom::StorageType::kUnknown;
+  blink::mojom::StorageType type;
   std::string name;
   base::Time expiration;
-  int64_t quota = 0;
+  int64_t quota;
+  bool persistent;
+  blink::mojom::BucketDurability durability;
 };
+
+std::set<BucketLocator> COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT)
+    BucketInfosToBucketLocators(const std::set<BucketInfo>& bucket_infos);
 
 }  // namespace storage
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,12 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/android/remote_database_manager.h"
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
+#include "content/public/browser/global_routing_id.h"
 #include "weblayer/browser/browser_context_impl.h"
 #include "weblayer/browser/browser_process.h"
 #include "weblayer/browser/safe_browsing/client_side_detection_service_factory.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_service.h"
+#include "weblayer/browser/verdict_cache_manager_factory.h"
 
 namespace weblayer {
 
@@ -47,14 +49,22 @@ WebLayerClientSideDetectionHostDelegate::GetSafeBrowsingUIManager() {
   return sb_service->GetSafeBrowsingUIManager();
 }
 
-safe_browsing::ClientSideDetectionService*
+base::WeakPtr<safe_browsing::ClientSideDetectionService>
 WebLayerClientSideDetectionHostDelegate::GetClientSideDetectionService() {
   return ClientSideDetectionServiceFactory::GetForBrowserContext(
-      web_contents_->GetBrowserContext());
+             web_contents_->GetBrowserContext())
+      ->GetWeakPtr();
 }
 
 void WebLayerClientSideDetectionHostDelegate::AddReferrerChain(
     safe_browsing::ClientPhishingRequest* verdict,
-    GURL current_url) {}
+    GURL current_url,
+    const content::GlobalRenderFrameHostId& current_outermost_main_frame_id) {}
+
+raw_ptr<safe_browsing::VerdictCacheManager>
+WebLayerClientSideDetectionHostDelegate::GetCacheManager() {
+  return VerdictCacheManagerFactory::GetForBrowserContext(
+      web_contents_->GetBrowserContext());
+}
 
 }  // namespace weblayer

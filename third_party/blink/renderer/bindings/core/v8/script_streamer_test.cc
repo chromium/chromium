@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,18 +19,19 @@
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
-#include "third_party/blink/renderer/core/script/classic_pending_script.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/script/mock_script_element_base.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cross_origin_attribute_value.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
@@ -39,9 +40,12 @@
 #include "third_party/blink/renderer/platform/loader/testing/mock_fetch_context.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 #include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "v8/include/v8.h"
 
@@ -168,23 +172,8 @@ class ScriptStreamingTest : public testing::Test {
         std::move(consumer_handle_));
   }
 
-  ScriptSourceCode GetScriptSourceCode() const {
-    ScriptStreamer* streamer = resource_->TakeStreamer();
-    ScriptCacheConsumer* cache_consumer = resource_->TakeCacheConsumer();
-    if (streamer) {
-      if (streamer->IsStreamingSuppressed()) {
-        return ScriptSourceCode(nullptr, cache_consumer, resource_,
-                                streamer->StreamingSuppressedReason());
-      }
-      return ScriptSourceCode(streamer, cache_consumer, resource_,
-                              ScriptStreamer::NotStreamingReason::kInvalid);
-    }
-    return ScriptSourceCode(nullptr, cache_consumer, resource_,
-                            resource_->NoStreamerReason());
-  }
-
-  Settings* GetSettings() const {
-    return &dummy_page_holder_->GetPage().GetSettings();
+  ClassicScript* CreateClassicScript() const {
+    return ClassicScript::CreateFromResource(resource_, ScriptFetchOptions());
   }
 
  protected:
@@ -236,8 +225,6 @@ class ScriptStreamingTest : public testing::Test {
   Persistent<ScriptResource> resource_;
   mojo::ScopedDataPipeProducerHandle producer_handle_;
   mojo::ScopedDataPipeConsumerHandle consumer_handle_;
-
-  std::unique_ptr<DummyPageHolder> dummy_page_holder_;
 };
 
 TEST_F(ScriptStreamingTest, CompilingStreamedScript) {
@@ -256,21 +243,20 @@ TEST_F(ScriptStreamingTest, CompilingStreamedScript) {
   // has finished loading.
   RunUntilResourceLoaded();
   EXPECT_TRUE(resource_client_->Finished());
-  ScriptSourceCode source_code = GetScriptSourceCode();
-  EXPECT_TRUE(source_code.Streamer());
+  ClassicScript* classic_script = CreateClassicScript();
+  EXPECT_TRUE(classic_script->Streamer());
   v8::TryCatch try_catch(scope.GetIsolate());
   v8::Local<v8::Script> script;
-  v8::Local<v8::Data> host_defined_options;
   v8::ScriptCompiler::CompileOptions compile_options;
   V8CodeCache::ProduceCacheOptions produce_cache_options;
   v8::ScriptCompiler::NoCacheReason no_cache_reason;
   std::tie(compile_options, produce_cache_options, no_cache_reason) =
       V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions::kDefault,
-                                     source_code);
+                                     *classic_script);
   EXPECT_TRUE(V8ScriptRunner::CompileScript(
-                  scope.GetScriptState(), source_code,
-                  SanitizeScriptErrors::kDoNotSanitize, compile_options,
-                  no_cache_reason, host_defined_options)
+                  scope.GetScriptState(), *classic_script,
+                  classic_script->CreateScriptOrigin(scope.GetIsolate()),
+                  compile_options, no_cache_reason)
                   .ToLocal(&script));
   EXPECT_FALSE(try_catch.HasCaught());
 }
@@ -292,21 +278,20 @@ TEST_F(ScriptStreamingTest, CompilingStreamedScriptWithParseError) {
   // has finished loading.
   RunUntilResourceLoaded();
   EXPECT_TRUE(resource_client_->Finished());
-  ScriptSourceCode source_code = GetScriptSourceCode();
-  EXPECT_TRUE(source_code.Streamer());
+  ClassicScript* classic_script = CreateClassicScript();
+  EXPECT_TRUE(classic_script->Streamer());
   v8::TryCatch try_catch(scope.GetIsolate());
   v8::Local<v8::Script> script;
-  v8::Local<v8::Data> host_defined_options;
   v8::ScriptCompiler::CompileOptions compile_options;
   V8CodeCache::ProduceCacheOptions produce_cache_options;
   v8::ScriptCompiler::NoCacheReason no_cache_reason;
   std::tie(compile_options, produce_cache_options, no_cache_reason) =
       V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions::kDefault,
-                                     source_code);
+                                     *classic_script);
   EXPECT_FALSE(V8ScriptRunner::CompileScript(
-                   scope.GetScriptState(), source_code,
-                   SanitizeScriptErrors::kDoNotSanitize, compile_options,
-                   no_cache_reason, host_defined_options)
+                   scope.GetScriptState(), *classic_script,
+                   classic_script->CreateScriptOrigin(scope.GetIsolate()),
+                   compile_options, no_cache_reason)
                    .ToLocal(&script));
   EXPECT_TRUE(try_catch.HasCaught());
 }
@@ -370,7 +355,7 @@ TEST_F(ScriptStreamingTest, SuppressingStreaming) {
   // script is loaded.
   V8TestingScope scope;
 
-  SingleCachedMetadataHandler* cache_handler = resource_->CacheHandler();
+  CachedMetadataHandler* cache_handler = resource_->CacheHandler();
   EXPECT_TRUE(cache_handler);
   cache_handler->DisableSendToPlatformForTesting();
   // CodeCacheHost can be nullptr since we disabled sending data to
@@ -385,11 +370,11 @@ TEST_F(ScriptStreamingTest, SuppressingStreaming) {
   RunUntilResourceLoaded();
   EXPECT_TRUE(resource_client_->Finished());
 
-  ScriptSourceCode source_code = GetScriptSourceCode();
-  // ScriptSourceCode doesn't refer to the streamer, since we have suppressed
+  ClassicScript* classic_script = CreateClassicScript();
+  // ClassicScript doesn't refer to the streamer, since we have suppressed
   // the streaming and resumed the non-streaming code path for script
   // compilation.
-  EXPECT_FALSE(source_code.Streamer());
+  EXPECT_FALSE(classic_script->Streamer());
 }
 
 TEST_F(ScriptStreamingTest, EmptyScripts) {
@@ -403,8 +388,8 @@ TEST_F(ScriptStreamingTest, EmptyScripts) {
   RunUntilResourceLoaded();
   EXPECT_TRUE(resource_client_->Finished());
 
-  ScriptSourceCode source_code = GetScriptSourceCode();
-  EXPECT_FALSE(source_code.Streamer());
+  ClassicScript* classic_script = CreateClassicScript();
+  EXPECT_FALSE(classic_script->Streamer());
 }
 
 TEST_F(ScriptStreamingTest, SmallScripts) {
@@ -421,8 +406,8 @@ TEST_F(ScriptStreamingTest, SmallScripts) {
   RunUntilResourceLoaded();
   EXPECT_TRUE(resource_client_->Finished());
 
-  ScriptSourceCode source_code = GetScriptSourceCode();
-  EXPECT_FALSE(source_code.Streamer());
+  ClassicScript* classic_script = CreateClassicScript();
+  EXPECT_FALSE(classic_script->Streamer());
 }
 
 TEST_F(ScriptStreamingTest, ScriptsWithSmallFirstChunk) {
@@ -445,21 +430,20 @@ TEST_F(ScriptStreamingTest, ScriptsWithSmallFirstChunk) {
   Finish();
   RunUntilResourceLoaded();
   EXPECT_TRUE(resource_client_->Finished());
-  ScriptSourceCode source_code = GetScriptSourceCode();
-  EXPECT_TRUE(source_code.Streamer());
+  ClassicScript* classic_script = CreateClassicScript();
+  EXPECT_TRUE(classic_script->Streamer());
   v8::TryCatch try_catch(scope.GetIsolate());
   v8::Local<v8::Script> script;
-  v8::Local<v8::Data> host_defined_options;
   v8::ScriptCompiler::CompileOptions compile_options;
   V8CodeCache::ProduceCacheOptions produce_cache_options;
   v8::ScriptCompiler::NoCacheReason no_cache_reason;
   std::tie(compile_options, produce_cache_options, no_cache_reason) =
       V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions::kDefault,
-                                     source_code);
+                                     *classic_script);
   EXPECT_TRUE(V8ScriptRunner::CompileScript(
-                  scope.GetScriptState(), source_code,
-                  SanitizeScriptErrors::kDoNotSanitize, compile_options,
-                  no_cache_reason, host_defined_options)
+                  scope.GetScriptState(), *classic_script,
+                  classic_script->CreateScriptOrigin(scope.GetIsolate()),
+                  compile_options, no_cache_reason)
                   .ToLocal(&script));
   EXPECT_FALSE(try_catch.HasCaught());
 }
@@ -480,21 +464,20 @@ TEST_F(ScriptStreamingTest, EncodingChanges) {
 
   RunUntilResourceLoaded();
   EXPECT_TRUE(resource_client_->Finished());
-  ScriptSourceCode source_code = GetScriptSourceCode();
-  EXPECT_TRUE(source_code.Streamer());
+  ClassicScript* classic_script = CreateClassicScript();
+  EXPECT_TRUE(classic_script->Streamer());
   v8::TryCatch try_catch(scope.GetIsolate());
   v8::Local<v8::Script> script;
-  v8::Local<v8::Data> host_defined_options;
   v8::ScriptCompiler::CompileOptions compile_options;
   V8CodeCache::ProduceCacheOptions produce_cache_options;
   v8::ScriptCompiler::NoCacheReason no_cache_reason;
   std::tie(compile_options, produce_cache_options, no_cache_reason) =
       V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions::kDefault,
-                                     source_code);
+                                     *classic_script);
   EXPECT_TRUE(V8ScriptRunner::CompileScript(
-                  scope.GetScriptState(), source_code,
-                  SanitizeScriptErrors::kDoNotSanitize, compile_options,
-                  no_cache_reason, host_defined_options)
+                  scope.GetScriptState(), *classic_script,
+                  classic_script->CreateScriptOrigin(scope.GetIsolate()),
+                  compile_options, no_cache_reason)
                   .ToLocal(&script));
   EXPECT_FALSE(try_catch.HasCaught());
 }
@@ -516,21 +499,20 @@ TEST_F(ScriptStreamingTest, EncodingFromBOM) {
   Finish();
   RunUntilResourceLoaded();
   EXPECT_TRUE(resource_client_->Finished());
-  ScriptSourceCode source_code = GetScriptSourceCode();
-  EXPECT_TRUE(source_code.Streamer());
+  ClassicScript* classic_script = CreateClassicScript();
+  EXPECT_TRUE(classic_script->Streamer());
   v8::TryCatch try_catch(scope.GetIsolate());
   v8::Local<v8::Script> script;
-  v8::Local<v8::Data> host_defined_options;
   v8::ScriptCompiler::CompileOptions compile_options;
   V8CodeCache::ProduceCacheOptions produce_cache_options;
   v8::ScriptCompiler::NoCacheReason no_cache_reason;
   std::tie(compile_options, produce_cache_options, no_cache_reason) =
       V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions::kDefault,
-                                     source_code);
+                                     *classic_script);
   EXPECT_TRUE(V8ScriptRunner::CompileScript(
-                  scope.GetScriptState(), source_code,
-                  SanitizeScriptErrors::kDoNotSanitize, compile_options,
-                  no_cache_reason, host_defined_options)
+                  scope.GetScriptState(), *classic_script,
+                  classic_script->CreateScriptOrigin(scope.GetIsolate()),
+                  compile_options, no_cache_reason)
                   .ToLocal(&script));
   EXPECT_FALSE(try_catch.HasCaught());
 }
@@ -568,5 +550,54 @@ TEST_F(ScriptStreamingTest, ResourceSetRevalidatingRequest) {
   EXPECT_EQ(resource_->NoStreamerReason(),
             ScriptStreamer::NotStreamingReason::kRevalidate);
 }
+
+class InlineScriptStreamingTest
+    : public ScriptStreamingTest,
+      public ::testing::WithParamInterface<
+          std::pair<bool /* 16 bit source */,
+                    v8::ScriptCompiler::CompileOptions>> {};
+
+TEST_P(InlineScriptStreamingTest, InlineScript) {
+  // Test that we can successfully compile an inline script.
+  V8TestingScope scope;
+
+  String source = "function foo() {return 5;} foo();";
+  if (GetParam().first)
+    source.Ensure16Bit();
+  auto streamer = base::MakeRefCounted<BackgroundInlineScriptStreamer>(
+      source, GetParam().second);
+  worker_pool::PostTask(
+      FROM_HERE, {},
+      CrossThreadBindOnce(&BackgroundInlineScriptStreamer::Run, streamer));
+
+  ClassicScript* classic_script = ClassicScript::Create(
+      source, KURL(), KURL(), ScriptFetchOptions(),
+      ScriptSourceLocationType::kUnknown, SanitizeScriptErrors::kSanitize,
+      nullptr, TextPosition::MinimumPosition(),
+      ScriptStreamer::NotStreamingReason::kInvalid,
+      InlineScriptStreamer::From(streamer));
+
+  DummyPageHolder holder;
+  ScriptEvaluationResult result = classic_script->RunScriptAndReturnValue(
+      holder.GetFrame().DomWindow(),
+      ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
+  EXPECT_EQ(result.GetResultType(),
+            ScriptEvaluationResult::ResultType::kSuccess);
+  EXPECT_EQ(
+      5, result.GetSuccessValue()->Int32Value(scope.GetContext()).FromJust());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    InlineScriptStreamingTest,
+    testing::ValuesIn(
+        {std::make_pair(true,
+                        v8::ScriptCompiler::CompileOptions::kNoCompileOptions),
+         std::make_pair(false,
+                        v8::ScriptCompiler::CompileOptions::kNoCompileOptions),
+         std::make_pair(true,
+                        v8::ScriptCompiler::CompileOptions::kEagerCompile),
+         std::make_pair(false,
+                        v8::ScriptCompiler::CompileOptions::kEagerCompile)}));
 
 }  // namespace blink

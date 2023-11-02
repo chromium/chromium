@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,7 +31,7 @@ std::ostream& operator<<(
 
 class HttpPriorityDependencyTest : public PlatformTest {
  public:
-  HttpPriorityDependencyTest() : next_id_(0u) {}
+  HttpPriorityDependencyTest() = default;
 
   // Fixed priority values to use for testing.
   enum {
@@ -92,7 +92,7 @@ class HttpPriorityDependencyTest : public PlatformTest {
   }
 
  private:
-  spdy::SpdyStreamId next_id_;
+  spdy::SpdyStreamId next_id_ = 0u;
   Http2PriorityDependencies dependency_state_;
 };
 

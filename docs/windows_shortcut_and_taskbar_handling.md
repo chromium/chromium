@@ -3,7 +3,7 @@
 When Chrome is installed on Windows, it creates a shortcut on the desktop that
 launches Chrome. It also adds the same shortcut to the start menu. These
 shortcuts do not specify a profile, so they launch Chrome with the most recently
-used profile. 
+used profile.
 
 Windows allows users to pin applications to the taskbar. When a user
 pins an application to the taskbar, Windows looks for a desktop shortcut that
@@ -67,9 +67,12 @@ This badged icon is also used in the tab preview for a Chrome window.
 ## Diagnosing Issues
 To dump a taskbar icon's properties, run this command:
 
-`python \src\chromium\src\chrome\installer\tools\shortcut_properties.py --dump-all <user dir>\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar`
+```
+vpython3 \src\chromium\src\chrome\installer\tools\shortcut_properties.py \
+    --dump-all \
+    "%APPDATA%\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar"
+```
 
 This shows you the properties of all the taskbar pinned icons. If the taskbar
 icon is in a subdirectory of ImplicitApps, pass that directory to
 shortcut_properties.py.
-

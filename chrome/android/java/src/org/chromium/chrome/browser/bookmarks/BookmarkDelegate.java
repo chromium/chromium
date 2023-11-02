@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,14 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectableListL
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.favicon.LargeIconBridge;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Interface used by UI components in the main bookmarks UI to broadcast UI change notifications
  * and get bookmark data model.
  */
-interface BookmarkDelegate {
-
+public interface BookmarkDelegate {
     /**
      * Delegate used to open urls for main fragment on tablet.
      */
@@ -57,11 +59,21 @@ interface BookmarkDelegate {
     void notifyStateChange(BookmarkUIObserver observer);
 
     /**
-     * Closes the Bookmark UI (if on phone) and opens the given bookmark.
-     * @param bookmark       bookmark to open.
+     * Closes the Bookmark UI (if on phone) and opens the given bookmark in the current tab.
+     * @param bookmark The bookmark to open.
      */
-    void openBookmark(BookmarkId bookmark);
+    default void openBookmark(BookmarkId bookmark) {
+        openBookmarks(Arrays.asList(bookmark), /*openInNewTab=*/false, /*incognito=*/null);
+    }
 
+    /**
+     * Closes the Bookmark UI (if on phone) and opens the given bookmark in new tabs.
+     * @param bookmarks The bookmarks to open.
+     * @param openInNewTab Whether the boomkarks should be opened in a new tab.
+     * @param incognito Whether the bookmarks should open in an incognito window. If this is null
+     *                  then the current incognito context will be used.
+     */
+    void openBookmarks(List<BookmarkId> bookmarks, boolean openInNewTab, Boolean incognito);
     /**
      * Shows the search UI.
      */

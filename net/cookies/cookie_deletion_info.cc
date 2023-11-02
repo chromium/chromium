@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -128,6 +128,11 @@ bool CookieDeletionInfo::Matches(const CanonicalCookie& cookie,
 
   if (!domains_and_ips_to_ignore.empty() &&
       DomainMatchesDomains(cookie, domains_and_ips_to_ignore)) {
+    return false;
+  }
+
+  if (cookie.IsPartitioned() &&
+      !cookie_partition_key_collection.Contains(*cookie.PartitionKey())) {
     return false;
   }
 

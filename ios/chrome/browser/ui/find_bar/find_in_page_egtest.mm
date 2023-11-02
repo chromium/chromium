@@ -1,13 +1,13 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import <XCTest/XCTest.h>
 
-#include "base/ios/ios_util.h"
-#include "base/strings/string_number_conversions.h"
+#import "base/ios/ios_util.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "components/strings/grit/components_strings.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_constants.h"
 #import "ios/chrome/browser/ui/find_bar/find_in_page_controller_app_interface.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
@@ -19,8 +19,8 @@
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/http_server/http_server.h"
-#include "ios/web/public/test/http_server/http_server_util.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "ios/web/public/test/http_server/http_server_util.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -36,7 +36,7 @@ const std::string kFindInPageResponse = "Find in page. Find in page.";
 // Tests for Find in Page.
 @interface FindInPageTestCase : WebHttpServerChromeTestCase
 
-// URL for a test page with |kFindInPageResponse|.
+// URL for a test page with `kFindInPageResponse`.
 @property(nonatomic, assign) GURL testURL;
 
 // Opens Find in Page.
@@ -47,14 +47,14 @@ const std::string kFindInPageResponse = "Find in page. Find in page.";
 - (void)typeFindInPageText:(NSString*)text;
 // Matcher for find in page textfield.
 - (id<GREYMatcher>)findInPageInputField;
-// Asserts that there is a string "|resultIndex| of |resultCount|" present on
+// Asserts that there is a string "`resultIndex` of `resultCount`" present on
 // screen. Waits for up to 2 seconds for this to happen.
 - (void)assertResultStringIsResult:(int)resultIndex outOfTotal:(int)resultCount;
 // Taps Next button in Find in page.
 - (void)advanceToNextResult;
 // Taps Previous button in Find in page.
 - (void)advanceToPreviousResult;
-// Navigates to |self.testURL| and waits for the page to load.
+// Navigates to `self.testURL` and waits for the page to load.
 - (void)navigateToTestPage;
 
 @end
@@ -64,7 +64,7 @@ const std::string kFindInPageResponse = "Find in page. Find in page.";
 
 #pragma mark - XCTest.
 
-// After setup, a page with |kFindInPageResponse| is displayed and Find In Page
+// After setup, a page with `kFindInPageResponse` is displayed and Find In Page
 // bar is opened.
 - (void)setUp {
   [super setUp];

@@ -161,18 +161,19 @@ a manual review, please fill out a manual review
 
 #### Reasons an appeal might be denied
 
-There are several reasons that may lead us to deny your appeal. Most commonly,
-appeals are denied for domains that are only used internally (i.e. for testing
-or in an enterprise setting) or where we think few users will see the warning.
+There are several reasons that may lead us to deny your appeal. The following
+are some of the most common reasons that don't qualify for manual appeals:
 
-For sites that are used for testing or in an enterprise setting, we recommend
-using the [Enterprise
-Policy](https://cloud.google.com/docs/chrome-enterprise/policies/?policy=LookalikeWarningAllowlistDomains)
-to suppress the warning for impacted users.
+  * **Domains that are only used internally**, such as for testing or in
+    enterprise settings. We recommend using the [Enterprise
+    Policy](https://cloud.google.com/docs/chrome-enterprise/policies/?policy=LookalikeWarningAllowlistDomains)
+    in this case.
+  * **For new sites or where very few users are impacted**. We encourage domain
+    owners to choose domains that do not look like domains used by other sites
+    commonly visited by your users.
+  * **For high-risk sites**. In some cases, some domains might be particularly
+    vulnerable to spoofing attacks (for instance, where money exchange is
+    involved). In these cases, we deny appeals that aren't from the site owner.
 
-For newly created sites, we encourage domain owners to choose domains that do
-not look like domains used by other sites commonly visited by your users.
-
-Please keep in mind that many warnings are only encountered by a small fraction
-of users (those who visit both sites). See
-[above](#not-all-users-see-all-warning) for details.
+Please note that the [automated process](#automated-warning-removal) is not
+subject to these restrictions.

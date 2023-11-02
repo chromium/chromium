@@ -1,25 +1,26 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
-import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
+import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
-import './print_preview_shared_css.js';
+import './print_preview_shared.css.js';
 import './settings_section.js';
 
-import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
-import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
-import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
-import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {State} from '../data/state.js';
 
 import {InputMixin} from './input_mixin.js';
+import {getTemplate} from './pin_settings.html.js';
 import {SettingsMixin} from './settings_mixin.js';
 
-interface PrintPreviewPinSettingsElement {
+export interface PrintPreviewPinSettingsElement {
   $: {
     pin: CrCheckboxElement,
     pinValue: CrInputElement,
@@ -29,14 +30,14 @@ interface PrintPreviewPinSettingsElement {
 const PrintPreviewPinSettingsElementBase =
     WebUIListenerMixin(InputMixin(SettingsMixin(I18nMixin(PolymerElement))));
 
-class PrintPreviewPinSettingsElement extends
+export class PrintPreviewPinSettingsElement extends
     PrintPreviewPinSettingsElementBase {
   static get is() {
     return 'print-preview-pin-settings';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -84,14 +85,14 @@ class PrintPreviewPinSettingsElement extends
   private inputValid_: boolean;
   private pinEnabled_: boolean;
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addEventListener('input-change', e => this.onInputChange_(e));
   }
 
   /** @return The cr-input field element for InputMixin. */
-  getInput() {
+  override getInput() {
     return this.$.pinValue;
   }
 
@@ -159,6 +160,14 @@ class PrintPreviewPinSettingsElement extends
     if (this.settings === undefined) {
       return;
     }
+
+    // Return early if pinValue is not available; unavailable settings should
+    // not be set, but this function observes |state| which may change
+    // regardless of pin availability.
+    if (!this.settings.pinValue.available) {
+      return;
+    }
+
     // If the state is not READY and current pinValue is valid (so it's not the
     // cause of the error) we need to wait until the state will be READY again.
     // It's done because we don't permit multiple simultaneous validation errors
@@ -193,6 +202,13 @@ class PrintPreviewPinSettingsElement extends
     return this.inputValid_ ? '' : this.i18n('pinErrorMessage');
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-pin-settings': PrintPreviewPinSettingsElement;
+  }
+}
+
 
 customElements.define(
     PrintPreviewPinSettingsElement.is, PrintPreviewPinSettingsElement);

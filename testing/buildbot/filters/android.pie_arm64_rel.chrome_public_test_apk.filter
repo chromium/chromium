@@ -34,10 +34,6 @@
 -org.chromium.chrome.browser.suggestions.tile.TileGroupTest.testDismissTileUndo
 -org.chromium.chrome.browser.suggestions.tile.TileGroupTest.testDismissTileWithContextMenu
 
-# crbug.com/1036552
--org.chromium.chrome.browser.tasks.tab_management.TabGridDialogViewTest.testDialog_ZoomInFadeOut
--org.chromium.chrome.browser.tasks.tab_management.TabGridDialogViewTest.testDialog_ZoomInZoomOut
-
 # crbug.com/1036556
 -org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testMediaSuspension
 -org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testMultiWindow
@@ -63,8 +59,8 @@
 -org.chromium.chrome.browser.shape_detection.ShapeDetectionTest.testTextDetection
 
 # crbug.com/1034412
--org.chromium.chrome.browser.media.ui.PictureInPictureControllerTest.testEnterPip
--org.chromium.chrome.browser.media.ui.PictureInPictureControllerTest.testReenterPip
+-org.chromium.chrome.browser.media.ui.FullscreenVideoPictureInPictureControllerTest.testEnterPip
+-org.chromium.chrome.browser.media.ui.FullscreenVideoPictureInPictureControllerTest.testReenterPip
 
 # crbug.com/1039522
 -org.chromium.chrome.browser.settings.privacy.BrowsingDataBridgeTest.testClearingSiteSettingsAndCacheWithImportantSites

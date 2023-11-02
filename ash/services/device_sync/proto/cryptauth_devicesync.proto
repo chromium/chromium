@@ -1,0 +1,318 @@
+// Copyright 2019 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Contains the request and response messages used in the CryptAuth v2
+// DeviceSync protocol. Specifically,
+//
+// -- SyncMetadata --
+// * Request: The device sends its metadata to CryptAuth, some of it encrypted
+//     with the the device's version of the group public key. This version of
+//     the group public key is also sent in the request.
+// * Response: If CryptAuth can confirm that the device is in possession of the
+//     correct group public key, then CryptAuth returns metadata for the user's
+//     devices in the DeviceSync group. The group public key and/or the
+//     encrypted group private key might also be returned.
+//
+// -- ShareGroupPrivateKey --
+// * Request: The device shares the group private key by encrypting it with the
+//     public key of the user's other devices. These encrypted group private
+//     keys are persisted by CryptAuth for the other devices to retrieve as
+//     necessary.
+// * Response: Trivial
+//
+// -- BatchNotifyGroupDevices --
+// * Request: The client sends a list of the devices that it wants to tickle via
+//     a GCM message.
+// * Response: Trivial
+//
+// -- BatchGetFeatureStatuses --
+// * Request: The client queries CryptAuth for the state of features on the
+//     user's devices, for example, whether or not Magic Tether is enabled on
+//     any of the user's phones.
+// * Response: The query results.
+//
+// -- BatchSetFeatureStatuses --
+// * Request: The client requests CryptAuth to set the state of various features
+//     for the user's devices. Optionally, features can be enabled exclusively,
+//     meaning enabled on one device and disabled on all others.
+// * Response: Trivial
+//
+// -- GetDevicesActivityStatus --
+// * Request: Trivial
+// * Response: The state of activity for the user's devices. This includes if
+//     the device is currently online and the time the device was last active.
+syntax = "proto3";
+
+package cryptauthv2;
+
+option optimize_for = LITE_RUNTIME;
+
+import "cryptauth_common.proto";
+import "cryptauth_directive.proto";
+
+// A common context for requests.
+//
+// Note: This message is encoded as query parameters for some requests. If any
+// field or subfield of this proto changes, update the files
+// cryptauth_proto_to_query_parameters_util.{h,cc}.
+message RequestContext {
+  // The group name.
+  // A device can join multiple groups. Each group will be identified by a
+  // unique name.
+  // The device should have previously enrolled a public key with this name with
+  // the server, using the Enrollment API.
+  // The key material associated with the key of this name is used by other
+  // devices in the group to communicate securely with this device.
+  string group = 1;
+
+  // Common metadata about this request.
+  ClientMetadata client_metadata = 2;
+
+  // Device identifier.
+  string device_id = 3;
+
+  // Used to authenticate device_id.
+  string device_id_token = 4;
+}
+
+// Requests from a client to sync its metadata and receive encrypted copy of
+// other metadata updated since its last sync.
+message SyncMetadataRequest {
+  // The context of this request.
+  RequestContext context = 1;
+
+  // Public key material intended for group use. Will either be created by the
+  // device upon first joining, or will be existing group public key in its
+  // possession.
+  // May be discarded if device is joining an existing group that already has a
+  // group key pair.
+  bytes group_public_key = 3;
+
+  // Device's metadata encrypted with the given group public key.
+  bytes encrypted_metadata = 4;
+
+  // Set to true if the device needs the group's private key.
+  bool need_group_private_key = 5;
+
+  // Used to obtain only updated metadata, since the last request.
+  // If not set, all metadata will be sent.
+  bytes freshness_token = 6;
+}
+
+// One device's metadata, containing an identifier for the particular device,
+// along with its encrypted metadata.
+message DeviceMetadataPacket {
+  // Device identifier.
+  string device_id = 1;
+
+  // This device's metadata, encrypted with the group's private key.
+  bytes encrypted_metadata = 2;
+
+  // Indicates that the associated device needs the group's private key.
+  bool need_group_private_key = 3;
+
+  // The associated device's public key, to be used with
+  // EncryptedGroupPrivateKey below.
+  bytes device_public_key = 4;
+
+  // A name known to the server or which was assigned by the user to the device.
+  string device_name = 5;
+}
+
+// Response from server with any new devices' encrypted metadata and public key.
+message SyncMetadataResponse {
+  // Collection of encrypted metadata from devices that have been updated since
+  // last provided refresh_token. All metadata if none was provided.
+  repeated DeviceMetadataPacket encrypted_metadata = 1;
+
+  // Public key associated with the group, used to encrypt all metadata.
+  // May be different than key received in the request.
+  // If not set, the server is indicating a new group key pair must be created
+  // by this device.
+  bytes group_public_key = 2;
+
+  // An encrypted group private key that contains device public key used for
+  // encryption. Encrypted with the public key of the device.
+  EncryptedGroupPrivateKey encrypted_group_private_key = 3;
+
+  // Updated freshness token from the server.
+  // Use this value in subsequent requests, to obtain only data updated since
+  // the last request.
+  bytes freshness_token = 4;
+
+  // The updated client-specific directives.
+  ClientDirective client_directive = 5;
+}
+
+// Encrypted group private key, including identifiers for both sender and
+// recipient devices.
+message EncryptedGroupPrivateKey {
+  // Identifier for device receiving group private key.
+  string recipient_device_id = 1;
+
+  // Identifier for device sending group private key.
+  string sender_device_id = 2;
+
+  // Group private key, encrypted with the public key of the recipient device.
+  bytes encrypted_private_key = 3;
+
+  // Hash of the group public key used to encrypt this device’s metadata.
+  int64 group_public_key_hash = 7;
+}
+
+// Share the group's private key with another device.
+message ShareGroupPrivateKeyRequest {
+  // The context of this request.
+  RequestContext context = 1;
+
+  // A collection of encrypted group private keys, each identified with the
+  // device public key of both the sender and the recipient.
+  repeated EncryptedGroupPrivateKey encrypted_group_private_keys = 2;
+}
+
+// The server's response to sharing the group's private key.
+message ShareGroupPrivateKeyResponse {}
+
+// Allows a device, which is part of the group, notify another group device.
+// This allows setup to work, e.g. by letting the other device know it needs to
+// turn on the bluetooth radio.
+//
+// Note: This request is encoded as query parameters in a GET request. If any
+// field or subfield of this proto changes, update the files
+// cryptauth_proto_to_query_parameters_util.{h,cc}.
+message BatchNotifyGroupDevicesRequest {
+  // The context of this request.
+  RequestContext context = 1;
+
+  // Group devices to notify.
+  repeated string notify_device_ids = 2;
+
+  // Target service & feature type to specify in the notification.
+  TargetService target_service = 3;
+  // Feature type.
+  string feature_type = 4;
+}
+
+// Response to BatchNotifyGroupDevices.
+message BatchNotifyGroupDevicesResponse {}
+
+// Requests feature enabled/disabled statuses per device in the group.
+//
+// Note: This request is encoded as query parameters in a GET request. If any
+// field or subfield of this proto changes, update the files
+// cryptauth_proto_to_query_parameters_util.{h,cc}.
+message BatchGetFeatureStatusesRequest {
+  // The context of this request.
+  RequestContext context = 1;
+
+  // Which devices to query.
+  // Leave unset if all group devices should be queried.
+  repeated string device_ids = 2;
+
+  // Which feature types to query.
+  repeated string feature_types = 3;
+}
+
+// Enabled/disabled status of a single device.
+message DeviceFeatureStatus {
+  // Enabled/disabled status of a named feature.
+  message FeatureStatus {
+    // Feature type name.
+    string feature_type = 1;
+
+    // If the feature is enabled.
+    bool enabled = 2;
+
+    // The last time the feature was set. Only set for BatchGetFeatureStatuses.
+    int64 last_modified_time_millis = 3;
+
+    // Set to true to disable all group devices other than the specified device.
+    // This can only be used when enabling features. Only set for
+    // BatchSetFeatureStatuses.
+    bool enable_exclusively = 4;
+  }
+
+  // Device identifier.
+  string device_id = 1;
+
+  // The status of features associated with this device.
+  repeated FeatureStatus feature_statuses = 2;
+}
+
+// Response to BatchGetFeatureStatuses.
+message BatchGetFeatureStatusesResponse {
+  // The status of all queried group devices.
+  // Only the requested devices and requested features will be populated.
+  repeated DeviceFeatureStatus device_feature_statuses = 1;
+}
+
+// Sets feature types enable/disable statuses per device in the group.
+message BatchSetFeatureStatusesRequest {
+  // The context of this request.
+  RequestContext context = 1;
+
+  // The feature statuses to set for specific devices.
+  repeated DeviceFeatureStatus device_feature_statuses = 2;
+
+  // Set to true to disable all group devices other than the specified device.
+  // This can only be used with a single device and only when enabling features.
+  bool enable_exclusively = 3 [deprecated = true];
+}
+
+// Response to BatchSetFeatureStatuses.
+message BatchSetFeatureStatusesResponse {}
+
+// Request for GetDevicesActivityStatus.
+message GetDevicesActivityStatusRequest {
+  // The context of this request.
+  RequestContext context = 1;
+}
+
+// Describes the device's network reachability.
+enum ConnectivityStatus {
+  // Default value.
+  UNKNOWN_CONNECTIVITY = 0;
+  // The device appears to be unreachable.
+  OFFLINE = 1;
+  // The device appears to be online and reachable.
+  ONLINE = 2;
+}
+
+// Copied from
+// https://cs.chromium.org/chromium/src/third_party/protobuf/src/google/protobuf/timestamp.proto?rcl=b51864c7aae4372308052b9fd5c1913ceeee3884
+message Timestamp {
+  // Represents seconds of UTC time since Unix epoch
+  // 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to
+  // 9999-12-31T23:59:59Z inclusive.
+  int64 seconds = 1;
+
+  // Non-negative fractions of a second at nanosecond resolution. Negative
+  // second values with fractions must still have non-negative nanos values
+  // that count forward in time. Must be from 0 to 999,999,999
+  // inclusive.
+  int32 nanos = 2;
+}
+
+// Activity status of a single device.
+message DeviceActivityStatus {
+  // Device identifier.
+  string device_id = 1;
+
+  // The last time this device was active as retrieved from Bond. Freshness
+  // is on the order of minutes.
+  int64 last_activity_time_sec = 2;
+
+  // Online status of the device as inferred by reachability via FCM.
+  ConnectivityStatus connectivity_status = 3;
+
+  // When the device last enrolled its DeviceSync key or when its metadata was
+  // last updated, the most recent of these two timestamps.
+  Timestamp last_update_time = 4;
+}
+
+// Response for GetDevicesActivityStatus.
+message GetDevicesActivityStatusResponse {
+  // The status of all group devices.
+  repeated DeviceActivityStatus device_activity_statuses = 1;
+}

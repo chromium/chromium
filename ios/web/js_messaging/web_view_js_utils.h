@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,24 +36,21 @@ enum JSEvaluationErrorCode {
 std::unique_ptr<base::Value> ValueResultFromWKResult(id result);
 
 // Executes JavaScript on WKWebView. If the web view cannot execute JS at the
-// moment, |completion_handler| is called with an NSError.
+// moment, `completion_handler` is called with an NSError.
 void ExecuteJavaScript(WKWebView* web_view,
                        NSString* script,
                        void (^completion_handler)(id, NSError*));
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
-// Executes JavaScript for |web_view| in |frame_info| within |content_world| and
-// calls |completion_handler| with the result. |content_world| is optional,
-// however, if specified and not equal to WKContentWorld.pageWorld, |frame_info|
+// Executes JavaScript for `web_view` in `frame_info` within `content_world` and
+// calls `completion_handler` with the result. `content_world` is optional,
+// however, if specified and not equal to WKContentWorld.pageWorld, `frame_info`
 // is required. If the web view cannot execute JS at the moment,
-// |completion_handler| is called with an NSError.
+// `completion_handler` is called with an NSError.
 void ExecuteJavaScript(WKWebView* web_view,
                        WKContentWorld* content_world,
                        WKFrameInfo* frame_info,
                        NSString* script,
-                       void (^completion_handler)(id, NSError*))
-    API_AVAILABLE(ios(14.0));
-#endif  // defined(__IPHONE14_0)
+                       void (^completion_handler)(id, NSError*));
 
 }  // namespace web
 

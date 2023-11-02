@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -139,6 +139,10 @@ void Checkbox::SetAssociatedLabel(View* labelling_view) {
       node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }
 
+void Checkbox::SetCheckedIconImageColor(SkColor color) {
+  checked_icon_image_color_ = color;
+}
+
 void Checkbox::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   LabelButton::GetAccessibleNodeData(node_data);
   node_data->role = ax::mojom::Role::kCheckBox;
@@ -179,15 +183,20 @@ void Checkbox::OnThemeChanged() {
 SkPath Checkbox::GetFocusRingPath() const {
   SkPath path;
   gfx::Rect bounds = image()->GetMirroredContentsBounds();
-  bounds.Inset(1, 1);
+  bounds.Inset(1);
   path.addRect(RectToSkRect(bounds));
   return path;
 }
 
 SkColor Checkbox::GetIconImageColor(int icon_state) const {
-  const SkColor active_color = GetColorProvider()->GetColor(
+  SkColor active_color = GetColorProvider()->GetColor(
       (icon_state & IconState::CHECKED) ? ui::kColorButtonForegroundChecked
                                         : ui::kColorButtonForegroundUnchecked);
+
+  // Use the overridden checked icon image color instead if set.
+  if (icon_state & IconState::CHECKED && checked_icon_image_color_.has_value())
+    active_color = checked_icon_image_color_.value();
+
   return (icon_state & IconState::ENABLED)
              ? active_color
              : color_utils::BlendTowardMaxContrast(active_color,

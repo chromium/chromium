@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/file_manager/file_tasks_notifier.h"
@@ -27,10 +26,9 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/cros_action_history/cros_action_recorder.h"
-#include "chrome/browser/ui/app_list/search/search_controller.h"
+#include "chrome/browser/ui/app_list/search/ranking/ranking_item_util.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/app_search_result_ranker.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/histogram_util.h"
-#include "chrome/browser/ui/app_list/search/search_result_ranker/ranking_item_util.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/recurrence_ranker.h"
 #include "url/gurl.h"
 
@@ -144,8 +142,7 @@ SearchResultRanker::~SearchResultRanker() {
   }
 }
 
-void SearchResultRanker::InitializeRankers(
-    SearchController* search_controller) {
+void SearchResultRanker::InitializeRankers() {
   if (app_list_features::IsZeroStateMixedTypesRankerEnabled()) {
     zero_state_item_coeff_ = base::GetFieldTrialParamByFeatureAsDouble(
         app_list_features::kEnableZeroStateMixedTypesRanker, "item_coeff",
@@ -186,7 +183,7 @@ void SearchResultRanker::InitializeRankers(
                       ranker->profile_->GetPath().AppendASCII(
                           "zero_state_group_ranker.pb"),
                       parsed_config ? parsed_config.value() : default_config,
-                      chromeos::ProfileHelper::IsEphemeralUserProfile(
+                      ash::ProfileHelper::IsEphemeralUserProfile(
                           ranker->profile_));
             },
             base::Unretained(this), default_config));
@@ -206,7 +203,7 @@ void SearchResultRanker::InitializeRankers(
 
   app_ranker_ = std::make_unique<RecurrenceRanker>(
       "AppRanker", profile_->GetPath().AppendASCII("app_ranker.pb"), config,
-      chromeos::ProfileHelper::IsEphemeralUserProfile(profile_));
+      ash::ProfileHelper::IsEphemeralUserProfile(profile_));
 }
 
 void SearchResultRanker::FetchRankings(const std::u16string& query) {
@@ -281,9 +278,13 @@ void SearchResultRanker::ScoreZeroStateItem(
     Mixer::SortData* result,
     RankingItemType type,
     base::flat_map<RankingItemType, int>* type_counts) const {
-  DCHECK(type == RankingItemType::kOmniboxGeneric ||
-         type == RankingItemType::kZeroStateFile ||
-         type == RankingItemType::kDriveQuickAccess);
+  if (type != RankingItemType::kOmniboxGeneric &&
+      type != RankingItemType::kZeroStateFile &&
+      type != RankingItemType::kDriveQuickAccess) {
+    // Sometimes search results are scored as zero-state results due to timing
+    // issues. Early-exit if that is the case. See crbug.com/1282329.
+    return;
+  }
 
   const float item_score =
       1.0f -

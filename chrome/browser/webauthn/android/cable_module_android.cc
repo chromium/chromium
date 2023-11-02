@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,9 +34,10 @@
 #include "third_party/boringssl/src/include/openssl/mem.h"
 #include "third_party/boringssl/src/include/openssl/obj.h"
 
-// This "header" actually contains function definitions and thus can only be
+// These "headers" actually contains function definitions and thus can only be
 // included once across Chromium.
 #include "chrome/browser/webauthn/android/jni_headers/CableAuthenticatorModuleProvider_jni.h"
+#include "chrome/browser/webauthn/android/jni_headers/PrivacySettingsFragment_jni.h"
 
 using device::cablev2::authenticator::Registration;
 
@@ -217,11 +218,6 @@ RegistrationState* GetRegistrationState() {
 void RegisterForCloudMessages() {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
-  if (!base::FeatureList::IsEnabled(device::kWebAuthCableSecondFactor) &&
-      !base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport)) {
-    return;
-  }
-
   GetRegistrationState()->Register();
 }
 
@@ -233,8 +229,7 @@ absl::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo>
 GetSyncDataIfRegistered() {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
-  if (!base::FeatureList::IsEnabled(device::kWebAuthCableSecondFactor) ||
-      !Java_CableAuthenticatorModuleProvider_canDeviceSupportCable(
+  if (!Java_CableAuthenticatorModuleProvider_canDeviceSupportCable(
           base::android::AttachCurrentThread())) {
     return absl::nullopt;
   }
@@ -325,4 +320,14 @@ static jboolean
 JNI_CableAuthenticatorModuleProvider_IsMetricsAndCrashReportingEnabled(
     JNIEnv* env) {
   return webauthn::authenticator::IsMetricsAndCrashReportingEnabled::value();
+}
+
+static void JNI_PrivacySettingsFragment_RevokeAllLinkedDevices(JNIEnv* env) {
+  // Invalidates the current cloud messaging (GCM) token and creates a new one.
+  // This causes the tunnel server to reject connection attempts with a 410
+  // (Gone) error. Since linking keys are derived from the root secret by using
+  // the GCM token, this also invalidates all existing linking keys.
+  webauthn::authenticator::GetRegistrationState()
+      ->linking_registration()
+      ->RotateContactID();
 }

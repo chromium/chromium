@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,12 +45,12 @@ public class UsageStatsConsentDialog {
         if (mIsRevocation) {
             builder.with(ModalDialogProperties.TITLE, resources,
                            R.string.usage_stats_revocation_prompt)
-                    .with(ModalDialogProperties.MESSAGE,
+                    .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
                             resources.getString(R.string.usage_stats_revocation_explanation))
                     .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources, R.string.remove);
         } else {
             builder.with(ModalDialogProperties.TITLE, resources, R.string.usage_stats_consent_title)
-                    .with(ModalDialogProperties.MESSAGE,
+                    .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
                             resources.getString(R.string.usage_stats_consent_prompt))
                     .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources, R.string.show);
         }

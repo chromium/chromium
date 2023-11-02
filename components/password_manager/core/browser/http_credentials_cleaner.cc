@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,7 +37,7 @@ void HttpCredentialCleaner::StartCleaning(Observer* observer) {
   DCHECK(observer);
   DCHECK(!observer_);
   observer_ = observer;
-  store_->GetAutofillableLogins(this);
+  store_->GetAutofillableLogins(weak_ptr_factory_.GetWeakPtr());
 }
 
 void HttpCredentialCleaner::OnGetPasswordStoreResults(

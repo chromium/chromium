@@ -1,20 +1,23 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js';
 import 'chrome://resources/mojo/skia/public/mojom/image_info.mojom-lite.js';
 import 'chrome://resources/mojo/skia/public/mojom/bitmap.mojom-lite.js';
 import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
 import '/app-management/file_path.mojom-lite.js';
 import '/app-management/image.mojom-lite.js';
+import '/app-management/safe_base_name.mojom-lite.js';
 import '/app-management/types.mojom-lite.js';
+import '/app-management/app_management.mojom-lite.js';
 import '/os_apps_page/app_notification_handler.mojom-lite.js';
 
+import {createBoolPermissionValue, createTriStatePermissionValue, isBoolValue, isPermissionEnabled, isTriStateValue} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {recordSettingChange} from '../../metrics_recorder.m.js';
-import {createBoolPermissionValue, createTriStatePermissionValue, isBoolValue, isPermissionEnabled, isTriStateValue} from '../permission_util.js';
+import {recordSettingChange} from '../../metrics_recorder.js';
 
 import {getAppNotificationProvider} from './mojo_interface_provider.js';
 
@@ -43,7 +46,7 @@ export class AppNotificationRowElement extends PolymerElement {
       checked_: {
         type: Boolean,
         value: false,
-      }
+      },
     };
   }
 
@@ -71,8 +74,8 @@ export class AppNotificationRowElement extends PolymerElement {
           createBoolPermissionValue(this.checked_ ? false : true);
     } else if (isTriStateValue(permission.value)) {
       permission.value = createTriStatePermissionValue(
-          this.checked_ ? apps.mojom.TriState.kBlock :
-                          apps.mojom.TriState.kAllow);
+          this.checked_ ? appManagement.mojom.TriState.kBlock :
+                          appManagement.mojom.TriState.kAllow);
     }
 
     this.mojoInterfaceProvider_.setNotificationPermission(

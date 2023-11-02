@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/compositor/test/multi_layer_animator_test_controller.h"
 #include "ui/compositor/test/multi_layer_animator_test_controller_delegate.h"
 #include "ui/views/animation/ink_drop_impl.h"
@@ -109,7 +110,7 @@ class InkDropImplTestApi
 
  private:
   // The InkDrop to provide internal access to.
-  InkDropImpl* ink_drop_;
+  raw_ptr<InkDropImpl> ink_drop_;
 };
 
 }  // namespace test

@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/cxx17_backports.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/json/string_escape.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -90,10 +90,11 @@ Status ParseFilePath(base::FilePath* to_set,
 Status ParseDict(std::unique_ptr<base::DictionaryValue>* to_set,
                  const base::Value& option,
                  Capabilities* capabilities) {
-  const base::DictionaryValue* dict = NULL;
+  const base::DictionaryValue* dict = nullptr;
   if (!option.GetAsDictionary(&dict))
     return Status(kInvalidArgument, "must be a dictionary");
-  to_set->reset(dict->DeepCopy());
+  *to_set =
+      base::DictionaryValue::From(base::Value::ToUniquePtrValue(dict->Clone()));
   return Status(kOk);
 }
 
@@ -137,62 +138,66 @@ Status ParseDeviceName(const std::string& device_name,
 
 Status ParseMobileEmulation(const base::Value& option,
                             Capabilities* capabilities) {
-  const base::DictionaryValue* mobile_emulation;
-  if (!option.GetAsDictionary(&mobile_emulation))
+  const base::Value::Dict* mobile_emulation = option.GetIfDict();
+  if (!mobile_emulation)
     return Status(kInvalidArgument, "'mobileEmulation' must be a dictionary");
 
-  if (mobile_emulation->FindKey("deviceName")) {
+  if (mobile_emulation->Find("deviceName")) {
     // Cannot use any other options with deviceName.
-    if (mobile_emulation->DictSize() > 1)
+    if (mobile_emulation->size() > 1)
       return Status(kInvalidArgument, "'deviceName' must be used alone");
 
-    std::string device_name;
-    if (!mobile_emulation->GetString("deviceName", &device_name))
+    const std::string* device_name = mobile_emulation->FindString("deviceName");
+    if (!device_name)
       return Status(kInvalidArgument, "'deviceName' must be a string");
 
-    return ParseDeviceName(device_name, capabilities);
+    return ParseDeviceName(*device_name, capabilities);
   }
 
-  if (mobile_emulation->FindKey("deviceMetrics")) {
-    const base::DictionaryValue* metrics;
-    if (!mobile_emulation->GetDictionary("deviceMetrics", &metrics))
+  if (mobile_emulation->Find("deviceMetrics")) {
+    const base::Value::Dict* metrics =
+        mobile_emulation->FindDict("deviceMetrics");
+    if (!metrics)
       return Status(kInvalidArgument, "'deviceMetrics' must be a dictionary");
 
-    int width = 0;
-    int height = 0;
-    bool touch = true;
-    bool mobile = true;
-
-    if (metrics->FindKey("width") && !metrics->GetInteger("width", &width))
+    const base::Value* width_value = metrics->Find("width");
+    if (width_value && !width_value->is_int())
       return Status(kInvalidArgument, "'width' must be an integer");
 
-    if (metrics->FindKey("height") && !metrics->GetInteger("height", &height))
+    int width = width_value ? width_value->GetInt() : 0;
+
+    const base::Value* height_value = metrics->Find("height");
+    if (height_value && !height_value->is_int())
       return Status(kInvalidArgument, "'height' must be an integer");
 
+    int height = height_value ? height_value->GetInt() : 0;
+
     absl::optional<double> maybe_device_scale_factor =
-        metrics->FindDoubleKey("pixelRatio");
-    if (metrics->FindKey("pixelRatio") &&
-        !maybe_device_scale_factor.has_value())
+        metrics->FindDouble("pixelRatio");
+    if (metrics->Find("pixelRatio") && !maybe_device_scale_factor.has_value())
       return Status(kInvalidArgument, "'pixelRatio' must be a double");
 
-    if (metrics->FindKey("touch") && !metrics->GetBoolean("touch", &touch))
+    absl::optional<bool> touch = metrics->FindBool("touch");
+    if (metrics->Find("touch") && !touch.has_value())
       return Status(kInvalidArgument, "'touch' must be a boolean");
 
-    if (metrics->FindKey("mobile") && !metrics->GetBoolean("mobile", &mobile))
+    absl::optional<bool> mobile = metrics->FindBool("mobile");
+    if (metrics->Find("mobile") && !mobile.has_value())
       return Status(kInvalidArgument, "'mobile' must be a boolean");
 
-    DeviceMetrics* device_metrics = new DeviceMetrics(
-        width, height, maybe_device_scale_factor.value_or(0), touch, mobile);
+    DeviceMetrics* device_metrics =
+        new DeviceMetrics(width, height, maybe_device_scale_factor.value_or(0),
+                          touch.value_or(true), mobile.value_or(true));
     capabilities->device_metrics =
         std::unique_ptr<DeviceMetrics>(device_metrics);
   }
 
-  if (mobile_emulation->FindKey("userAgent")) {
-    std::string user_agent;
-    if (!mobile_emulation->GetString("userAgent", &user_agent))
+  if (mobile_emulation->Find("userAgent")) {
+    const std::string* user_agent = mobile_emulation->FindString("userAgent");
+    if (!user_agent)
       return Status(kInvalidArgument, "'userAgent' must be a string");
 
-    capabilities->switches.SetSwitch("user-agent", user_agent);
+    capabilities->switches.SetSwitch("user-agent", *user_agent);
   }
 
   return Status(kOk);
@@ -227,10 +232,10 @@ Status ParseUnhandledPromptBehavior(const base::Value& option,
 }
 
 Status ParseTimeouts(const base::Value& option, Capabilities* capabilities) {
-  const base::DictionaryValue* timeouts;
-  if (!option.GetAsDictionary(&timeouts))
+  const base::Value::Dict* timeouts = option.GetIfDict();
+  if (!timeouts)
     return Status(kInvalidArgument, "'timeouts' must be a JSON object");
-  for (auto it : timeouts->DictItems()) {
+  for (auto it : *timeouts) {
     int64_t timeout_ms_int64 = -1;
     base::TimeDelta timeout;
     const std::string& type = it.first;
@@ -240,7 +245,7 @@ Status ParseTimeouts(const base::Value& option, Capabilities* capabilities) {
       else
         return Status(kInvalidArgument, "timeout can not be null");
     } else {
-      if (!GetOptionalSafeInt(timeouts, it.first, &timeout_ms_int64) ||
+      if (!GetOptionalSafeInt(*timeouts, it.first, &timeout_ms_int64) ||
           timeout_ms_int64 < 0)
         return Status(kInvalidArgument, "value must be a non-negative integer");
       else
@@ -292,23 +297,24 @@ Status ParseExtensions(const base::Value& option, Capabilities* capabilities) {
 Status ParseProxy(bool w3c_compliant,
                   const base::Value& option,
                   Capabilities* capabilities) {
-  const base::DictionaryValue* proxy_dict;
-  if (!option.GetAsDictionary(&proxy_dict))
+  const base::Value::Dict* proxy_dict = option.GetIfDict();
+  if (!proxy_dict)
     return Status(kInvalidArgument, "must be a dictionary");
-  std::string proxy_type;
-  if (!proxy_dict->GetString("proxyType", &proxy_type))
+  const std::string* proxy_type_str = proxy_dict->FindString("proxyType");
+  if (!proxy_type_str)
     return Status(kInvalidArgument, "'proxyType' must be a string");
-  if (!w3c_compliant)
-    proxy_type = base::ToLowerASCII(proxy_type);
+  std::string proxy_type =
+      w3c_compliant ? *proxy_type_str : base::ToLowerASCII(*proxy_type_str);
   if (proxy_type == "direct") {
     capabilities->switches.SetSwitch("no-proxy-server");
   } else if (proxy_type == "system") {
     // Chrome default.
   } else if (proxy_type == "pac") {
-    std::string proxy_pac_url;
-    if (!proxy_dict->GetString("proxyAutoconfigUrl", &proxy_pac_url))
+    const std::string* proxy_pac_url =
+        proxy_dict->FindString("proxyAutoconfigUrl");
+    if (!proxy_pac_url)
       return Status(kInvalidArgument, "'proxyAutoconfigUrl' must be a string");
-    capabilities->switches.SetSwitch("proxy-pac-url", proxy_pac_url);
+    capabilities->switches.SetSwitch("proxy-pac-url", *proxy_pac_url);
   } else if (proxy_type == "autodetect") {
     capabilities->switches.SetSwitch("proxy-auto-detect");
   } else if (proxy_type == "manual") {
@@ -316,26 +322,21 @@ Status ParseProxy(bool w3c_compliant,
         {"ftpProxy", "ftp"}, {"httpProxy", "http"}, {"sslProxy", "https"},
         {"socksProxy", "socks"}};
     const std::string kSocksProxy = "socksProxy";
-    const base::Value* option_value = NULL;
+    const base::Value* option_value = nullptr;
     std::string proxy_servers;
-    for (size_t i = 0; i < base::size(proxy_servers_options); ++i) {
-      if (!proxy_dict->Get(proxy_servers_options[i][0], &option_value) ||
-          option_value->is_none()) {
+    for (const char* const* proxy_servers_option : proxy_servers_options) {
+      option_value = proxy_dict->Find(proxy_servers_option[0]);
+      if (option_value == nullptr || option_value->is_none()) {
         continue;
       }
       if (!option_value->is_string()) {
-        return Status(
-            kInvalidArgument,
-            base::StringPrintf("'%s' must be a string",
-                               proxy_servers_options[i][0]));
+        return Status(kInvalidArgument,
+                      base::StringPrintf("'%s' must be a string",
+                                         proxy_servers_option[0]));
       }
       std::string value = option_value->GetString();
-      if (proxy_servers_options[i][0] == kSocksProxy) {
-        int socksVersion;
-        if (!proxy_dict->GetInteger("socksVersion", &socksVersion))
-          return Status(
-              kInvalidArgument,
-              "Specifying 'socksProxy' requires an integer for 'socksVersion'");
+      if (proxy_servers_option[0] == kSocksProxy) {
+        int socksVersion = proxy_dict->FindInt("socksVersion").value_or(-1);
         if (socksVersion < 0 || socksVersion > 255)
           return Status(
               kInvalidArgument,
@@ -346,12 +347,13 @@ Status ParseProxy(bool w3c_compliant,
       // Example: "http=localhost:9000;ftp=localhost:8000".
       if (!proxy_servers.empty())
         proxy_servers += ";";
-      proxy_servers += base::StringPrintf(
-          "%s=%s", proxy_servers_options[i][1], value.c_str());
+      proxy_servers +=
+          base::StringPrintf("%s=%s", proxy_servers_option[1], value.c_str());
     }
 
     std::string proxy_bypass_list;
-    if (proxy_dict->Get("noProxy", &option_value) && !option_value->is_none()) {
+    option_value = proxy_dict->Find("noProxy");
+    if (option_value != nullptr && !option_value->is_none()) {
       // W3C requires noProxy to be a list of strings, while legacy protocol
       // requires noProxy to be a string of comma-separated items.
       // In practice, library implementations are not always consistent,
@@ -456,15 +458,14 @@ Status ParseNetAddress(NetAddress* to_set,
 
 Status ParseLoggingPrefs(const base::Value& option,
                          Capabilities* capabilities) {
-  const base::DictionaryValue* logging_prefs = NULL;
-  if (!option.GetAsDictionary(&logging_prefs))
+  const base::Value::Dict* logging_prefs = option.GetIfDict();
+  if (!logging_prefs)
     return Status(kInvalidArgument, "must be a dictionary");
 
-  for (base::DictionaryValue::Iterator pref(*logging_prefs);
-       !pref.IsAtEnd(); pref.Advance()) {
-    std::string type = pref.key();
+  for (const auto pref : *logging_prefs) {
+    const std::string& type = pref.first;
     Log::Level level;
-    const std::string* level_name = pref.value().GetIfString();
+    const std::string* level_name = pref.second.GetIfString();
     if (!level_name || !WebDriverLog::NameToLevel(*level_name, &level)) {
       return Status(kInvalidArgument,
                     "invalid log level for '" + type + "' log");
@@ -489,8 +490,8 @@ Status ParseInspectorDomainStatus(
 
 Status ParsePerfLoggingPrefs(const base::Value& option,
                              Capabilities* capabilities) {
-  const base::DictionaryValue* perf_logging_prefs = NULL;
-  if (!option.GetAsDictionary(&perf_logging_prefs))
+  const base::Value::Dict* perf_logging_prefs = option.GetIfDict();
+  if (!perf_logging_prefs)
     return Status(kInvalidArgument, "must be a dictionary");
 
   std::map<std::string, Parser> parser_map;
@@ -504,14 +505,13 @@ Status ParsePerfLoggingPrefs(const base::Value& option,
   parser_map["traceCategories"] = base::BindRepeating(
       &ParseString, &capabilities->perf_logging_prefs.trace_categories);
 
-  for (base::DictionaryValue::Iterator it(*perf_logging_prefs); !it.IsAtEnd();
-       it.Advance()) {
-     if (parser_map.find(it.key()) == parser_map.end())
-       return Status(kInvalidArgument,
-                     "unrecognized performance logging option: " + it.key());
-     Status status = parser_map[it.key()].Run(it.value(), capabilities);
-     if (status.IsError())
-       return Status(kInvalidArgument, "cannot parse " + it.key(), status);
+  for (const auto item : *perf_logging_prefs) {
+    if (parser_map.find(item.first) == parser_map.end())
+      return Status(kInvalidArgument,
+                    "unrecognized performance logging option: " + item.first);
+    Status status = parser_map[item.first].Run(item.second, capabilities);
+    if (status.IsError())
+      return Status(kInvalidArgument, "cannot parse " + item.first, status);
   }
   return Status(kOk);
 }
@@ -547,12 +547,12 @@ Status ParseWindowTypes(const base::Value& option, Capabilities* capabilities) {
 Status ParseChromeOptions(
     const base::Value& capability,
     Capabilities* capabilities) {
-  const base::DictionaryValue* chrome_options = NULL;
-  if (!capability.GetAsDictionary(&chrome_options))
+  const base::Value::Dict* chrome_options = capability.GetIfDict();
+  if (!chrome_options)
     return Status(kInvalidArgument, "must be a dictionary");
 
-  bool is_android = chrome_options->FindKey("androidPackage") != nullptr;
-  bool is_remote = chrome_options->FindKey("debuggerAddress") != nullptr;
+  bool is_android = chrome_options->Find("androidPackage") != nullptr;
+  bool is_remote = chrome_options->Find("debuggerAddress") != nullptr;
 
   std::map<std::string, Parser> parser_map;
   // Ignore 'args', 'binary' and 'extensions' capabilities by default, since the
@@ -618,18 +618,17 @@ Status ParseChromeOptions(
         base::BindRepeating(&IgnoreDeprecatedOption, "useAutomationExtension");
   }
 
-  for (base::DictionaryValue::Iterator it(*chrome_options); !it.IsAtEnd();
-       it.Advance()) {
-    if (parser_map.find(it.key()) == parser_map.end()) {
+  for (const auto item : *chrome_options) {
+    if (parser_map.find(item.first) == parser_map.end()) {
       return Status(
           kInvalidArgument,
           base::StringPrintf("unrecognized %s option: %s",
                              base::ToLowerASCII(kBrowserShortName).c_str(),
-                             it.key().c_str()));
+                             item.first.c_str()));
     }
-    Status status = parser_map[it.key()].Run(it.value(), capabilities);
+    Status status = parser_map[item.first].Run(item.second, capabilities);
     if (status.IsError())
-      return Status(kInvalidArgument, "cannot parse " + it.key(), status);
+      return Status(kInvalidArgument, "cannot parse " + item.first, status);
   }
   return Status(kOk);
 }
@@ -637,30 +636,45 @@ Status ParseChromeOptions(
 Status ParseSeleniumOptions(
     const base::Value& capability,
     Capabilities* capabilities) {
-  const base::DictionaryValue* selenium_options = NULL;
-  if (!capability.GetAsDictionary(&selenium_options))
+  const base::Value::Dict* selenium_options = capability.GetIfDict();
+  if (!selenium_options)
     return Status(kInvalidArgument, "must be a dictionary");
   std::map<std::string, Parser> parser_map;
   parser_map["loggingPrefs"] = base::BindRepeating(&ParseLoggingPrefs);
 
-  for (base::DictionaryValue::Iterator it(*selenium_options); !it.IsAtEnd();
-       it.Advance()) {
-    if (parser_map.find(it.key()) == parser_map.end())
+  for (const auto item : *selenium_options) {
+    if (parser_map.find(item.first) == parser_map.end())
       continue;
-    Status status = parser_map[it.key()].Run(it.value(), capabilities);
+    Status status = parser_map[item.first].Run(item.second, capabilities);
     if (status.IsError())
-      return Status(kInvalidArgument, "cannot parse " + it.key(), status);
+      return Status(kInvalidArgument, "cannot parse " + item.first, status);
   }
   return Status(kOk);
 }
 }  // namespace
 
-bool GetChromeOptionsDictionary(const base::DictionaryValue& params,
-                                const base::DictionaryValue** out) {
+bool GetChromeOptionsDictionaryDeprecated(const base::DictionaryValue& params,
+                                          const base::DictionaryValue** out) {
   if (params.GetDictionary(kChromeDriverOptionsKeyPrefixed, out)) {
     return true;
   }
   return params.GetDictionary(kChromeDriverOptionsKey, out);
+}
+
+bool GetChromeOptionsDictionary(const base::Value::Dict& params,
+                                const base::Value::Dict** out) {
+  const base::Value::Dict* result =
+      params.FindDict(kChromeDriverOptionsKeyPrefixed);
+  if (result) {
+    *out = result;
+    return true;
+  }
+  result = params.FindDict(kChromeDriverOptionsKey);
+  if (result) {
+    *out = result;
+    return true;
+  }
+  return false;
 }
 
 Switches::Switches() {}
@@ -674,7 +688,7 @@ void Switches::SetSwitch(const std::string& name) {
 }
 
 void Switches::SetSwitch(const std::string& name, const std::string& value) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   switch_map_[name] = base::UTF8ToWide(value);
 #else
   switch_map_[name] = value;
@@ -685,12 +699,34 @@ void Switches::SetSwitch(const std::string& name, const base::FilePath& value) {
   switch_map_[name] = value.value();
 }
 
+void Switches::SetMultivaluedSwitch(const std::string& name,
+                                    const std::string& value) {
+#if BUILDFLAG(IS_WIN)
+  auto native_value = base::UTF8ToWide(value);
+  auto delimiter = L',';
+#else
+  const auto& native_value = value;
+  const auto delimiter = ',';
+#endif
+  NativeString& switch_value = switch_map_[name];
+  if (switch_value.size() > 0 && switch_value.back() != delimiter) {
+    switch_value += delimiter;
+  }
+  switch_value += native_value;
+}
+
 void Switches::SetFromSwitches(const Switches& switches) {
   for (auto iter = switches.switch_map_.begin();
        iter != switches.switch_map_.end(); ++iter) {
     switch_map_[iter->first] = iter->second;
   }
 }
+
+namespace {
+constexpr auto kMultivaluedSwitches = base::MakeFixedFlatSet<base::StringPiece>(
+    {"enable-blink-features", "disable-blink-features", "enable-features",
+     "disable-features"});
+}  // namespace
 
 void Switches::SetUnparsedSwitch(const std::string& unparsed_switch) {
   std::string value;
@@ -704,7 +740,10 @@ void Switches::SetUnparsedSwitch(const std::string& unparsed_switch) {
     start_index = 2;
   name = unparsed_switch.substr(start_index, equals_index - start_index);
 
-  SetSwitch(name, value);
+  if (kMultivaluedSwitches.contains(name))
+    SetMultivaluedSwitch(name, value);
+  else
+    SetSwitch(name, value);
 }
 
 void Switches::RemoveSwitch(const std::string& name) {
@@ -717,7 +756,7 @@ bool Switches::HasSwitch(const std::string& name) const {
 
 std::string Switches::GetSwitchValue(const std::string& name) const {
   NativeString value = GetSwitchValueNative(name);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::WideToUTF8(value);
 #else
   return value;
@@ -852,29 +891,29 @@ Status Capabilities::Parse(const base::DictionaryValue& desired_caps,
   // mobile emulation is on.
 
   const base::DictionaryValue* chrome_options = nullptr;
-  if (GetChromeOptionsDictionary(desired_caps, &chrome_options) &&
+  if (GetChromeOptionsDictionaryDeprecated(desired_caps, &chrome_options) &&
       chrome_options->GetDictionary("mobileEmulation", nullptr)) {
     parser_map["networkConnectionEnabled"] =
         base::BindRepeating(&ParseBoolean, &network_emulation_enabled);
   }
 
-  for (base::DictionaryValue::Iterator it(desired_caps); !it.IsAtEnd();
-       it.Advance()) {
-    if (it.value().is_none())
+  for (const auto item : desired_caps.GetDict()) {
+    if (item.second.is_none())
       continue;
-    if (parser_map.find(it.key()) == parser_map.end()) {
+    if (parser_map.find(item.first) == parser_map.end()) {
       // The specified capability is unrecognized. W3C spec requires us to
       // return an error if capability does not contain ":".
       // In legacy mode, for backward compatibility reasons,
       // we ignore unrecognized capabilities.
-      if (w3c_compliant && it.key().find(':') == std::string::npos)
-        return Status(kInvalidArgument, "unrecognized capability: " + it.key());
-      else
-        continue;
+      if (w3c_compliant && item.first.find(':') == std::string::npos) {
+        return Status(kInvalidArgument,
+                      "unrecognized capability: " + item.first);
+      }
+      continue;
     }
-    Status status = parser_map[it.key()].Run(it.value(), this);
+    Status status = parser_map[item.first].Run(item.second, this);
     if (status.IsError()) {
-      return Status(kInvalidArgument, "cannot parse capability: " + it.key(),
+      return Status(kInvalidArgument, "cannot parse capability: " + item.first,
                     status);
     }
   }
@@ -882,7 +921,7 @@ Status Capabilities::Parse(const base::DictionaryValue& desired_caps,
   LoggingPrefs::const_iterator iter = logging_prefs.find(
       WebDriverLog::kPerformanceType);
   if (iter == logging_prefs.end() || iter->second == Log::kOff) {
-    if (GetChromeOptionsDictionary(desired_caps, &chrome_options) &&
+    if (GetChromeOptionsDictionaryDeprecated(desired_caps, &chrome_options) &&
         chrome_options->FindKey("perfLoggingPrefs")) {
       return Status(kInvalidArgument,
                     "perfLoggingPrefs specified, "
@@ -893,7 +932,7 @@ Status Capabilities::Parse(const base::DictionaryValue& desired_caps,
       WebDriverLog::kDevToolsType);
   if (dt_events_logging_iter == logging_prefs.end()
       || dt_events_logging_iter->second == Log::kOff) {
-    if (GetChromeOptionsDictionary(desired_caps, &chrome_options) &&
+    if (GetChromeOptionsDictionaryDeprecated(desired_caps, &chrome_options) &&
         chrome_options->FindKey("devToolsEventsToLog")) {
       return Status(kInvalidArgument,
                     "devToolsEventsToLog specified, "

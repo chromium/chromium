@@ -3,6 +3,7 @@ description: Various tensorflow ops related to text-processing.
 <div itemscope itemtype="http://developers.google.com/ReferenceObject">
 <meta itemprop="name" content="text" />
 <meta itemprop="path" content="Stable" />
+<meta itemprop="property" content="__version__"/>
 </div>
 
 # Module: text
@@ -52,6 +53,9 @@ n-gram op.
 [`class RegexSplitter`](./text/RegexSplitter.md): `RegexSplitter` splits text on
 the given regular expression.
 
+[`class RoundRobinTrimmer`](./text/RoundRobinTrimmer.md): A `Trimmer` that
+allocates a length budget to segments via round robin.
+
 [`class SentencepieceTokenizer`](./text/SentencepieceTokenizer.md): Tokenizes a
 tensor of UTF-8 strings.
 
@@ -63,6 +67,9 @@ of UTF-8 string into words according to labels.
 
 [`class Splitter`](./text/Splitter.md): An abstract base class for splitting
 text.
+
+[`class SplitterWithOffsets`](./text/SplitterWithOffsets.md): An abstract base
+class for splitters that return offsets.
 
 [`class StateBasedSentenceBreaker`](./text/StateBasedSentenceBreaker.md): A
 `Splitter` that uses a state machine to determine sentence breaks.
@@ -76,8 +83,8 @@ tokenizer implementations that return offsets.
 [`class UnicodeCharTokenizer`](./text/UnicodeCharTokenizer.md): Tokenizes a
 tensor of UTF-8 strings on Unicode character boundaries.
 
-[`class UnicodeScriptTokenizer`](./text/UnicodeScriptTokenizer.md): Tokenizes a
-tensor of UTF-8 strings on Unicode script boundaries.
+[`class UnicodeScriptTokenizer`](./text/UnicodeScriptTokenizer.md): Tokenizes
+UTF-8 by splitting when there is a change in Unicode script.
 
 [`class WaterfallTrimmer`](./text/WaterfallTrimmer.md): A `Trimmer` that
 allocates a length budget to segments in order.
@@ -149,3 +156,17 @@ fragments in a given text. (deprecated)
 
 [`wordshape(...)`](./text/wordshape.md): Determine wordshape features for each input string.
 
+<!-- Tabular view -->
+ <table class="responsive fixed orange">
+<colgroup><col width="214px"><col></colgroup>
+<tr><th colspan="2"><h2 class="add-link">Other Members</h2></th></tr>
+
+<tr>
+<td>
+**version**<a id="__version__"></a>
+</td>
+<td>
+`'2.7.0-rc0'`
+</td>
+</tr>
+</table>

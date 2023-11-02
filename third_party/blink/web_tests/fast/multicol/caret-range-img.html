@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<style>
+  body {
+    margin: 0;
+  }
+
+  #mc {
+    columns: 2;
+    column-gap: 20px;
+    column-fill: auto;
+    width: 340px;
+    height: 40px;
+    margin:20px 100px;
+    font: 20px/1 Ahem;
+  }
+  img {
+    width: 20px;
+    height: 10px;
+  }
+</style>
+
+<div id="mc">
+  <br>
+  <br>
+  <br>
+  <span>x <img id="img" src="resources/blimp.png"> x</span>
+</div>
+
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+  if (window.internals)
+    internals.settings.setEditingBehavior('win');
+
+  test(()=> {
+    assert_equals(document.caretRangeFromPoint(329,50).startOffset, 1);
+  }, "Inside the left part of the blimp");
+  test(()=> {
+    assert_equals(document.caretRangeFromPoint(331,50).startOffset, 2);
+  }, "Inside the right part of the blimp");
+  test(()=> {
+    assert_equals(document.caretRangeFromPoint(329,41).startOffset, 1);
+  }, "Above the left part of the blimp");
+  test(()=> {
+    assert_equals(document.caretRangeFromPoint(331,41).startOffset, 2);
+  }, "Above the right part of the blimp");
+  test(()=> {
+    assert_equals(document.caretRangeFromPoint(329,59).startOffset, 1);
+  }, "Below the left part of the blimp");
+  test(()=> {
+    assert_equals(document.caretRangeFromPoint(331,59).startOffset, 2);
+  }, "Below the right part of the blimp");
+</script>

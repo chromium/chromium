@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_gatt_notify_session.h"
 #include "device/bluetooth/bluetooth_remote_gatt_descriptor.h"
 
@@ -115,7 +114,7 @@ void BluetoothRemoteGattCharacteristic::StartNotifySession(
                              std::move(error_callback));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void BluetoothRemoteGattCharacteristic::StartNotifySession(
     NotificationType notification_type,
     NotifySessionCallback callback,
@@ -123,7 +122,7 @@ void BluetoothRemoteGattCharacteristic::StartNotifySession(
   StartNotifySessionInternal(notification_type, std::move(callback),
                              std::move(error_callback));
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool BluetoothRemoteGattCharacteristic::AddDescriptor(
     std::unique_ptr<BluetoothRemoteGattDescriptor> descriptor) {
@@ -154,7 +153,7 @@ void BluetoothRemoteGattCharacteristic::StartNotifySessionInternal(
           &BluetoothRemoteGattCharacteristic::CancelStartNotifySession,
           GetWeakPtr(),
           base::BindOnce(std::move(split_error_callback.second),
-                         BluetoothGattService::GATT_ERROR_FAILED)));
+                         BluetoothGattService::GattErrorCode::kFailed)));
 
   if (!notify_command_running_ && pending_notify_commands_.size() == 1) {
     notify_command_running_ = true;
@@ -200,7 +199,7 @@ void BluetoothRemoteGattCharacteristic::ExecuteStartNotifySession(
         base::BindOnce(
             &BluetoothRemoteGattCharacteristic::OnStartNotifySessionError,
             GetWeakPtr(), std::move(error_callback),
-            BluetoothGattService::GATT_ERROR_NOT_SUPPORTED));
+            BluetoothGattService::GattErrorCode::kNotSupported));
     return;
   }
 
@@ -230,8 +229,8 @@ void BluetoothRemoteGattCharacteristic::ExecuteStartNotifySession(
             &BluetoothRemoteGattCharacteristic::OnStartNotifySessionError,
             GetWeakPtr(), std::move(error_callback),
             (ccc_descriptor.size() == 0)
-                ? BluetoothGattService::GATT_ERROR_NOT_SUPPORTED
-                : BluetoothGattService::GATT_ERROR_FAILED));
+                ? BluetoothGattService::GattErrorCode::kNotSupported
+                : BluetoothGattService::GattErrorCode::kFailed));
     return;
   }
 
@@ -240,11 +239,11 @@ void BluetoothRemoteGattCharacteristic::ExecuteStartNotifySession(
   // do whatever else is needed to get the notifications flowing.
   SubscribeToNotifications(
       ccc_descriptor[0],
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       notification_type.value_or((GetProperties() & PROPERTY_NOTIFY)
                                      ? NotificationType::kNotification
                                      : NotificationType::kIndication),
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
       base::BindOnce(
           &BluetoothRemoteGattCharacteristic::OnStartNotifySessionSuccess,
           GetWeakPtr(), std::move(callback)),
@@ -338,7 +337,7 @@ void BluetoothRemoteGattCharacteristic::ExecuteStopNotifySession(
         base::BindOnce(
             &BluetoothRemoteGattCharacteristic::OnStopNotifySessionError,
             GetWeakPtr(), session, std::move(callback),
-            BluetoothGattService::GATT_ERROR_FAILED));
+            BluetoothGattService::GattErrorCode::kFailed));
     return;
   }
 
@@ -365,7 +364,7 @@ void BluetoothRemoteGattCharacteristic::ExecuteStopNotifySession(
         base::BindOnce(
             &BluetoothRemoteGattCharacteristic::OnStopNotifySessionError,
             GetWeakPtr(), session, std::move(callback),
-            BluetoothGattService::GATT_ERROR_FAILED));
+            BluetoothGattService::GattErrorCode::kFailed));
     return;
   }
 

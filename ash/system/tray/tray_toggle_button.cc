@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,12 @@
 
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
+#include "ash/utility/haptics_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/events/devices/haptic_touchpad_effects.h"
+#include "ui/events/event.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/focus_ring.h"
 
@@ -20,8 +25,9 @@ TrayToggleButton::TrayToggleButton(PressedCallback callback,
   const int horizontal_padding =
       (kTrayToggleButtonWidth - toggle_size.width()) / 2;
   SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(vertical_padding, horizontal_padding)));
+      gfx::Insets::VH(vertical_padding, horizontal_padding)));
   SetAccessibleName(l10n_util::GetStringUTF16(accessible_name_id));
+  views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
 }
 
 void TrayToggleButton::OnThemeChanged() {
@@ -35,8 +41,15 @@ void TrayToggleButton::OnThemeChanged() {
       AshColorProvider::ContentLayerType::kSwitchTrackColorActive));
   SetTrackOffColor(color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kSwitchTrackColorInactive));
-  views::FocusRing::Get(this)->SetColor(color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor));
 }
+
+void TrayToggleButton::NotifyClick(const ui::Event& event) {
+  haptics_util::PlayHapticToggleEffect(
+      !GetIsOn(), ui::HapticTouchpadEffectStrength::kMedium);
+  views::ToggleButton::NotifyClick(event);
+}
+
+BEGIN_METADATA(TrayToggleButton, views::ToggleButton)
+END_METADATA
 
 }  // namespace ash

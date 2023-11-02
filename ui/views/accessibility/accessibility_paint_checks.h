@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,14 @@
 namespace views {
 
 class View;
+class Widget;
 
-// This runs CHECKs related to the view's state when painting. Generally, when a
-// View is ready to be displayed to the user it should also be accessible.
-void RunAccessibilityPaintChecks(View* view);
+// This runs DCHECKs related to the view's state when painting. Generally, when
+// a View is ready to be displayed to the user it should also be accessible.
+VIEWS_EXPORT void RunAccessibilityPaintChecks(View* view);
+
+// Runs the paint checks recursively starting from the Widget's RootView.
+VIEWS_EXPORT void RunAccessibilityPaintChecks(Widget* widget);
 
 // Skip accessibility paint checks on a specific View.
 // TODO(pbos): Remove this key. Do not add new uses to it, instead make sure

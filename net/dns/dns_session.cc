@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,17 +12,14 @@
 #include "base/bind.h"
 #include "base/rand_util.h"
 #include "net/dns/dns_config.h"
-#include "net/dns/dns_socket_allocator.h"
 #include "net/log/net_log.h"
 
 namespace net {
 
 DnsSession::DnsSession(const DnsConfig& config,
-                       std::unique_ptr<DnsSocketAllocator> socket_allocator,
                        const RandIntCallback& rand_int_callback,
                        NetLog* net_log)
     : config_(config),
-      socket_allocator_(std::move(socket_allocator)),
       rand_callback_(base::BindRepeating(rand_int_callback,
                                          0,
                                          std::numeric_limits<uint16_t>::max())),

@@ -1,13 +1,14 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
 
+#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/optimization_guide/chrome_hints_manager.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/optimization_guide/core/hints_fetcher.h"
@@ -37,7 +38,7 @@ bool IsValidOptimizationGuideNavigation(
     // Not a NSP navigation if there is no NSP manager.
     return true;
   }
-  return !(no_state_prefetch_manager->IsWebContentsPrerendering(
+  return !(no_state_prefetch_manager->IsWebContentsPrefetching(
       navigation_handle->GetWebContents()));
 }
 
@@ -45,7 +46,9 @@ bool IsValidOptimizationGuideNavigation(
 
 OptimizationGuideWebContentsObserver::OptimizationGuideWebContentsObserver(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<OptimizationGuideWebContentsObserver>(
+          *web_contents) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   optimization_guide_keyed_service_ =
@@ -140,7 +143,7 @@ void OptimizationGuideWebContentsObserver::DidFinishNavigation(
 void OptimizationGuideWebContentsObserver::PostFetchHintsUsingManager() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!web_contents()
-           ->GetMainFrame()
+           ->GetPrimaryMainFrame()
            ->GetLastCommittedURL()
            .SchemeIsHTTPOrHTTPS())
     return;

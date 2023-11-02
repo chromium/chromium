@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,8 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "ash/webui/diagnostics_ui/backend/networking_log.h"
+#include "ash/system/diagnostics/networking_log.h"
+#include "ash/webui/diagnostics_ui/backend/histogram_util.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
@@ -128,9 +129,29 @@ mojom::IPConfigPropertiesPtr CreateIPConfigProperties(
     const network_mojom::IPConfigPropertiesPtr& ip_config_props) {
   mojom::IPConfigPropertiesPtr ip_config = mojom::IPConfigProperties::New();
   ip_config->ip_address = ip_config_props->ip_address;
-  ip_config->routing_prefix = ip_config_props->routing_prefix;
   ip_config->gateway = ip_config_props->gateway;
   ip_config->name_servers = ip_config_props->name_servers;
+  // Default to 0 means an unset value.
+  ip_config->routing_prefix = 0;
+  auto routing_prefix = ip_config_props->routing_prefix;
+  bool isIPv4 = ip_config_props->type == network_mojom::IPConfigType::kIPv4;
+  if (isnan(routing_prefix)) {
+    LOG(ERROR) << "routing_prefix is not a number.";
+    EmitNetworkDataError(metrics::DataError::kNotANumber);
+  } else if (isIPv4 && (routing_prefix < 0 || routing_prefix > 32)) {
+    LOG(ERROR) << "IPv4 routing_prefix should be larger/equal to zero and "
+                  "smaller/equal to 32. It is now: "
+               << routing_prefix;
+    EmitNetworkDataError(metrics::DataError::kExpectationNotMet);
+  } else if (!isIPv4 && (routing_prefix < 0 || routing_prefix > 128)) {
+    // TODO(wenyu): Add unit test to cover this scenario.
+    LOG(ERROR) << "IPv6 routing_prefix should be larger/equal to zero and "
+                  "smaller/equal to 128. It is now: "
+               << routing_prefix;
+    EmitNetworkDataError(metrics::DataError::kExpectationNotMet);
+  } else {
+    ip_config->routing_prefix = routing_prefix;
+  }
   return ip_config;
 }
 
@@ -230,13 +251,13 @@ constexpr mojom::LockType GetLockType(const std::string& lock_type) {
 void UpdateNetwork(
     const network_mojom::NetworkTypeStateProperties& network_type_props,
     mojom::Network* network) {
-  auto type_properties = mojom::NetworkTypeProperties::New();
   switch (network->type) {
     case mojom::NetworkType::kWiFi:
-      type_properties->set_wifi(CreateWiFiStateProperties(network_type_props));
+      network->type_properties = mojom::NetworkTypeProperties::NewWifi(
+          CreateWiFiStateProperties(network_type_props));
       break;
     case mojom::NetworkType::kEthernet:
-      type_properties->set_ethernet(
+      network->type_properties = mojom::NetworkTypeProperties::NewEthernet(
           CreateEthernetStateProperties(network_type_props));
       break;
     case mojom::NetworkType::kCellular: {
@@ -252,15 +273,14 @@ void UpdateNetwork(
         cellular_props->roaming_state =
             network->type_properties->get_cellular()->roaming_state;
       }
-      type_properties->set_cellular(std::move(cellular_props));
+      network->type_properties =
+          mojom::NetworkTypeProperties::NewCellular(std::move(cellular_props));
       break;
     }
     case mojom::NetworkType::kUnsupported:
       NOTREACHED();
       break;
   }
-
-  network->type_properties = std::move(type_properties);
 }
 
 void UpdateNetwork(
@@ -284,10 +304,9 @@ void UpdateNetwork(
 }
 
 void CreateEmptyCellularPropertiesForNetwork(mojom::Network* network) {
-  auto type_properties = mojom::NetworkTypeProperties::New();
   auto cellular_props = mojom::CellularStateProperties::New();
-  type_properties->set_cellular(std::move(cellular_props));
-  network->type_properties = std::move(type_properties);
+  network->type_properties =
+      mojom::NetworkTypeProperties::NewCellular(std::move(cellular_props));
 }
 
 void UpdateNetwork(const network_mojom::DeviceStatePropertiesPtr& device,
@@ -423,8 +442,6 @@ void NetworkHealthProvider::ObserveNetwork(
   NotifyNetworkStateObserver(iter->second);
 }
 
-void NetworkHealthProvider::OnNetworkStateListChanged() {}
-
 void NetworkHealthProvider::OnDeviceStateListChanged() {
   GetDeviceState();
 }
@@ -438,9 +455,6 @@ void NetworkHealthProvider::OnNetworkStateChanged(
     network_mojom::NetworkStatePropertiesPtr network) {
   UpdateMatchingNetwork(std::move(network), /*must_match_existing_guid=*/true);
 }
-
-void NetworkHealthProvider::OnVpnProvidersChanged() {}
-void NetworkHealthProvider::OnNetworkCertificatesChanged() {}
 
 void NetworkHealthProvider::OnActiveNetworkStateListReceived(
     std::vector<network_mojom::NetworkStatePropertiesPtr> networks) {
@@ -619,19 +633,8 @@ void NetworkHealthProvider::OnManagedPropertiesReceived(
 void NetworkHealthProvider::BindInterface(
     mojo::PendingReceiver<mojom::NetworkHealthProvider> pending_receiver) {
   DCHECK(features::IsNetworkingInDiagnosticsAppEnabled());
-  DCHECK(!ReceiverIsBound());
-  receiver_.Bind(std::move(pending_receiver));
-  receiver_.set_disconnect_handler(
-      base::BindOnce(&NetworkHealthProvider::OnBoundInterfaceDisconnect,
-                     base::Unretained(this)));
-}
-
-bool NetworkHealthProvider::ReceiverIsBound() {
-  return receiver_.is_bound();
-}
-
-void NetworkHealthProvider::OnBoundInterfaceDisconnect() {
   receiver_.reset();
+  receiver_.Bind(std::move(pending_receiver));
 }
 
 void NetworkHealthProvider::NotifyNetworkListObservers() {

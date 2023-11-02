@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,6 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace metrics {
-
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -50,8 +49,7 @@ Profile* CachedMetricsProfile::GetMetricsProfile() {
       user_manager::UserManager::Get()->GetPrimaryUser();
   if (!primary_user || !primary_user->is_profile_created())
     return nullptr;
-  cached_profile_ =
-      chromeos::ProfileHelper::Get()->GetProfileByUser(primary_user);
+  cached_profile_ = ash::ProfileHelper::Get()->GetProfileByUser(primary_user);
 #else
   // Find a suitable profile to use, and cache it so that we continue to report
   // statistics on the same profile.

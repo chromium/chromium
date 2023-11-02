@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,10 @@
 #include "services/device/public/cpp/generic_sensor/sensor_traits.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/modules/sensor/sensor_provider_proxy.h"
 #include "third_party/blink/renderer/modules/sensor/sensor_reading_remapper.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
@@ -32,10 +33,13 @@ void SensorProxyInspectorImpl::Initialize() {
 
   state_ = kInitializing;
 
-  auto callback = WTF::Bind(&SensorProxyInspectorImpl::OnSensorCreated,
-                            WrapWeakPersistent(this));
+  auto callback = WTF::BindOnce(&SensorProxyInspectorImpl::OnSensorCreated,
+                                WrapWeakPersistent(this));
 
-  Thread::Current()->GetTaskRunner()->PostTask(FROM_HERE, std::move(callback));
+  sensor_provider_proxy()
+      ->GetSupplementable()
+      ->GetTaskRunner(TaskType::kSensor)
+      ->PostTask(FROM_HERE, std::move(callback));
 }
 
 void SensorProxyInspectorImpl::AddConfiguration(

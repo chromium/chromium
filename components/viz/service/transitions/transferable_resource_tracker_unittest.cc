@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -94,14 +94,14 @@ TEST_F(TransferableResourceTrackerTest, ExhaustedIdLoops) {
 TEST_F(TransferableResourceTrackerTest, UnrefWithCount) {
   TransferableResourceTracker tracker(&shared_bitmap_manager_);
   auto frame = tracker.ImportResources(CreateFrameWithResult());
-  for (int i = 0; i < 100; ++i)
+  for (int i = 0; i < 1000; ++i)
     tracker.RefResource(frame.root.resource.id);
   ASSERT_FALSE(tracker.is_empty());
   tracker.UnrefResource(frame.root.resource.id, 1);
   EXPECT_FALSE(tracker.is_empty());
   tracker.UnrefResource(frame.root.resource.id, 1);
   EXPECT_FALSE(tracker.is_empty());
-  tracker.UnrefResource(frame.root.resource.id, 99);
+  tracker.UnrefResource(frame.root.resource.id, 999);
   EXPECT_TRUE(tracker.is_empty());
 }
 

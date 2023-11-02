@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -67,7 +67,7 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionMenuRunner {
 
   // Creates and displays the quick menu, if there is any command available.
   // |anchor_rect| is in screen coordinates.
-  virtual void OpenMenu(TouchSelectionMenuClient* client,
+  virtual void OpenMenu(base::WeakPtr<TouchSelectionMenuClient> client,
                         const gfx::Rect& anchor_rect,
                         const gfx::Size& handle_image_size,
                         aura::Window* context) = 0;

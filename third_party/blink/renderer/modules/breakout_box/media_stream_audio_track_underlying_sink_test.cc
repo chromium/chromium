@@ -1,14 +1,16 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/breakout_box/media_stream_audio_track_underlying_sink.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
@@ -20,7 +22,8 @@
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_audio_sink.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/to_v8.h"
-#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 
@@ -33,14 +36,14 @@ class MediaStreamAudioTrackUnderlyingSinkTest : public testing::Test {
  public:
   MediaStreamAudioTrackUnderlyingSinkTest() {
     // Use the IO thread for testing purposes, instead of an audio task runner.
-    pushable_audio_source_ = new PushableMediaStreamAudioSource(
-        Thread::MainThread()->GetTaskRunner(),
-        Platform::Current()->GetIOTaskRunner());
+    auto pushable_audio_source =
+        std::make_unique<PushableMediaStreamAudioSource>(
+            scheduler::GetSingleThreadTaskRunnerForTesting(),
+            platform_->GetIOTaskRunner());
+    pushable_audio_source_ = pushable_audio_source.get();
     media_stream_source_ = MakeGarbageCollected<MediaStreamSource>(
         "dummy_source_id", MediaStreamSource::kTypeAudio, "dummy_source_name",
-        /*remote=*/false);
-    media_stream_source_->SetPlatformSource(
-        base::WrapUnique(pushable_audio_source_));
+        /*remote=*/false, std::move(pushable_audio_source));
   }
 
   ~MediaStreamAudioTrackUnderlyingSinkTest() override {
@@ -55,9 +58,10 @@ class MediaStreamAudioTrackUnderlyingSinkTest : public testing::Test {
   }
 
   void CreateTrackAndConnectToSource() {
-    media_stream_component_ = MakeGarbageCollected<MediaStreamComponent>(
-        media_stream_source_->Id(), media_stream_source_);
-    pushable_audio_source_->ConnectToTrack(media_stream_component_);
+    media_stream_component_ = MakeGarbageCollected<MediaStreamComponentImpl>(
+        media_stream_source_->Id(), media_stream_source_,
+        std::make_unique<MediaStreamAudioTrack>(true /* is_local_track */));
+    pushable_audio_source_->ConnectToInitializedTrack(media_stream_component_);
   }
 
   ScriptValue CreateAudioData(ScriptState* script_state,
@@ -72,9 +76,9 @@ class MediaStreamAudioTrackUnderlyingSinkTest : public testing::Test {
         MakeGarbageCollected<AudioData>(std::move(media_buffer));
     if (audio_data_out)
       *audio_data_out = audio_data;
-    return ScriptValue(script_state->GetIsolate(),
-                       ToV8(audio_data, script_state->GetContext()->Global(),
-                            script_state->GetIsolate()));
+    return ScriptValue(
+        script_state->GetIsolate(),
+        ToV8Traits<AudioData>::ToV8(script_state, audio_data).ToLocalChecked());
   }
 
  protected:

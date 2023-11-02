@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,7 +31,7 @@ DNRManifestHandler::DNRManifestHandler() = default;
 DNRManifestHandler::~DNRManifestHandler() = default;
 
 bool DNRManifestHandler::Parse(Extension* extension, std::u16string* error) {
-  DCHECK(extension->manifest()->HasKey(
+  DCHECK(extension->manifest()->FindKey(
       dnr_api::ManifestKeys::kDeclarativeNetRequest));
 
   bool has_permission =
@@ -49,7 +49,8 @@ bool DNRManifestHandler::Parse(Extension* extension, std::u16string* error) {
 
   dnr_api::ManifestKeys manifest_keys;
   if (!dnr_api::ManifestKeys::ParseFromDictionary(
-          extension->manifest()->available_values(), &manifest_keys, error)) {
+          extension->manifest()->available_values().GetDict(), &manifest_keys,
+          error)) {
     return false;
   }
   std::vector<dnr_api::Ruleset> rulesets =

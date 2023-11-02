@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -96,7 +96,7 @@ class SystemLogUploader : public UploadJob::Delegate {
 
   // Enum used for UMA. Do NOT reorder or remove entry.
   // Don't forget to update enums.xml when adding new entries.
-  enum SystemLogUploadResult {
+  enum SystemLogUploadResult : uint8_t {
     NON_ZIPPED_LOGS_UPLOAD_SUCCESS = 0,
     ZIPPED_LOGS_UPLOAD_SUCCESS = 1,
     NON_ZIPPED_LOGS_UPLOAD_FAILURE = 2,

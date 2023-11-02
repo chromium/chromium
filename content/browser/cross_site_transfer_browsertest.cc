@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -30,7 +31,6 @@
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/shell/common/shell_switches.h"
 #include "content/test/content_browser_test_utils_internal.h"
-#include "net/base/escape.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -49,7 +49,7 @@ class NoTransferRequestDelegate : public WebContentsDelegate {
       delete;
 
   bool ShouldAllowRendererInitiatedCrossProcessNavigation(
-      bool is_main_frame_navigation) override {
+      bool is_outermost_main_frame_navigation) override {
     // Intentionally cancel the transfer.
     return false;
   }
@@ -297,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest, PostWithFileData) {
 
   // Remember the old process id for a sanity check below.
   int old_process_id =
-      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID();
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
 
   // Submit the form.
   TestNavigationObserver form_post_observer(shell()->web_contents(), 1);
@@ -311,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest, PostWithFileData) {
 
   // Verify that the test really verifies access of a *new* renderer process.
   int new_process_id =
-      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID();
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
   ASSERT_NE(new_process_id, old_process_id);
 
   // MAIN VERIFICATION: Check if the new renderer process is able to read the
@@ -365,8 +365,8 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest, MaliciousPostWithFileData) {
   // and |form_contents|.
   EXPECT_EQ(initial_target_url, target_contents->GetLastCommittedURL());
   EXPECT_EQ(form_url, form_contents->GetLastCommittedURL());
-  EXPECT_NE(target_contents->GetMainFrame()->GetProcess()->GetID(),
-            form_contents->GetMainFrame()->GetProcess()->GetID());
+  EXPECT_NE(target_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+            form_contents->GetPrimaryMainFrame()->GetProcess()->GetID());
 
   // Prepare a file to upload.
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -389,20 +389,21 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest, MaliciousPostWithFileData) {
   ChildProcessSecurityPolicyImpl* security_policy =
       ChildProcessSecurityPolicyImpl::GetInstance();
   EXPECT_TRUE(security_policy->CanReadFile(
-      form_contents->GetMainFrame()->GetProcess()->GetID(), file_path));
+      form_contents->GetPrimaryMainFrame()->GetProcess()->GetID(), file_path));
 
   // Simulate a malicious situation, where the renderer doesn't really have
   // access to the file.
   security_policy->RevokeAllPermissionsForFile(
-      form_contents->GetMainFrame()->GetProcess()->GetID(), file_path);
+      form_contents->GetPrimaryMainFrame()->GetProcess()->GetID(), file_path);
   EXPECT_FALSE(security_policy->CanReadFile(
-      form_contents->GetMainFrame()->GetProcess()->GetID(), file_path));
+      form_contents->GetPrimaryMainFrame()->GetProcess()->GetID(), file_path));
   EXPECT_FALSE(security_policy->CanReadFile(
-      target_contents->GetMainFrame()->GetProcess()->GetID(), file_path));
+      target_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      file_path));
 
   // Submit the form and wait until the malicious renderer gets killed.
   RenderProcessHostBadIpcMessageWaiter kill_waiter(
-      form_contents->GetMainFrame()->GetProcess());
+      form_contents->GetPrimaryMainFrame()->GetProcess());
   EXPECT_TRUE(ExecJs(
       form_contents,
       "setTimeout(\n"
@@ -416,9 +417,10 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest, MaliciousPostWithFileData) {
 
   // Both processes still shouldn't have access.
   EXPECT_FALSE(security_policy->CanReadFile(
-      form_contents->GetMainFrame()->GetProcess()->GetID(), file_path));
+      form_contents->GetPrimaryMainFrame()->GetProcess()->GetID(), file_path));
   EXPECT_FALSE(security_policy->CanReadFile(
-      target_contents->GetMainFrame()->GetProcess()->GetID(), file_path));
+      target_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      file_path));
 }
 
 // Regression test for https://crbug.com/538784 -- ensures that one can't
@@ -441,7 +443,7 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest, NoDeliveryToDetachedFrame) {
   TestNavigationManager target_navigation(shell()->web_contents(),
                                           target_resource);
   EXPECT_TRUE(
-      ExecJs(shell()->web_contents()->GetMainFrame(),
+      ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
              base::StringPrintf("document.getElementById('child-0').src='%s'",
                                 target_resource.spec().c_str())));
 

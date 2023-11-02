@@ -1,8 +1,10 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/web_test/renderer/web_test_render_thread_observer.h"
+
+#include <utility>
 
 #include "content/public/common/content_client.h"
 #include "content/public/renderer/render_thread.h"
@@ -39,9 +41,10 @@ WebTestRenderThreadObserver::~WebTestRenderThreadObserver() {
 
 void WebTestRenderThreadObserver::RegisterMojoInterfaces(
     blink::AssociatedInterfaceRegistry* associated_interfaces) {
-  associated_interfaces->AddInterface(base::BindRepeating(
-      &WebTestRenderThreadObserver::OnWebTestRenderThreadAssociatedRequest,
-      base::Unretained(this)));
+  associated_interfaces->AddInterface<mojom::WebTestRenderThread>(
+      base::BindRepeating(
+          &WebTestRenderThreadObserver::OnWebTestRenderThreadAssociatedRequest,
+          base::Unretained(this)));
 }
 
 void WebTestRenderThreadObserver::UnregisterMojoInterfaces(
@@ -62,13 +65,9 @@ void WebTestRenderThreadObserver::SetupRendererProcessForNonTestWindow() {
 }
 
 void WebTestRenderThreadObserver::ReplicateWebTestRuntimeFlagsChanges(
-    base::Value changed_layout_test_runtime_flags) {
-  base::DictionaryValue* changed_web_test_runtime_flags_dictionary = nullptr;
-  bool ok = changed_layout_test_runtime_flags.GetAsDictionary(
-      &changed_web_test_runtime_flags_dictionary);
-  DCHECK(ok);
+    base::Value::Dict changed_layout_test_runtime_flags) {
   test_runner_->ReplicateWebTestRuntimeFlagsChanges(
-      *changed_web_test_runtime_flags_dictionary);
+      std::move(changed_layout_test_runtime_flags));
 }
 
 void WebTestRenderThreadObserver::TestFinishedFromSecondaryRenderer() {
@@ -85,11 +84,8 @@ void WebTestRenderThreadObserver::ProcessWorkItem(
 }
 
 void WebTestRenderThreadObserver::ReplicateWorkQueueStates(
-    base::Value work_queue_states) {
-  base::DictionaryValue* work_queue_states_dict = nullptr;
-  bool ok = work_queue_states.GetAsDictionary(&work_queue_states_dict);
-  DCHECK(ok);
-  test_runner_->ReplicateWorkQueueStates(*work_queue_states_dict);
+    base::Value::Dict work_queue_states) {
+  test_runner_->ReplicateWorkQueueStates(std::move(work_queue_states));
 }
 
 }  // namespace content

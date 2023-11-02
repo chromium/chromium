@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -75,6 +76,12 @@ class VIEWS_EXPORT WidgetFadeAnimator : public AnimationDelegateViews,
   // will be made visible.
   void FadeIn();
 
+  // Cancels any pending fade-in, leaves the widget at the current opacity to
+  // avoid abrupt visual changes. CancelFadeIn() should be followed with
+  // something, either another FadeIn(), or widget closing. It has no effect
+  // if the widget is not fading in.
+  void CancelFadeIn();
+
   // Plays the fade-out animation. At the end of the fade, the widget will be
   // hidden or closed, as per |close_on_hide|. If the widget is already hidden
   // or closed, completes immediately.
@@ -96,7 +103,7 @@ class VIEWS_EXPORT WidgetFadeAnimator : public AnimationDelegateViews,
   // WidgetObserver:
   void OnWidgetDestroying(Widget* widget) override;
 
-  Widget* widget_;
+  raw_ptr<Widget> widget_;
   base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
   gfx::LinearAnimation fade_animation_{this};
   FadeType animation_type_ = FadeType::kNone;

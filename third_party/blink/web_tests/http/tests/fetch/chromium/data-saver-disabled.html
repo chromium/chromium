@@ -1,0 +1,28 @@
+<html>
+<title>Tests for 'Save-Data' header when Data Saver is disabled.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+internals.setSaveDataEnabled(false);
+</script>
+<iframe srcdoc="
+<!DOCTYPE html>
+<script src='/resources/testharness.js'></script>
+<script src='/resources/testharnessreport.js'></script>
+<script>
+var CHECK_PATH = './resources/check-save-data-header.php';
+var METHODS = ['GET', 'POST', 'PUT'];
+var REQUESTS =
+    METHODS.map(method => new Request(CHECK_PATH, {method: method}));
+window.top.promise_test(t => {
+  return Promise.all(REQUESTS.map(request => fetch(request.clone())))
+    .then(responses => Promise.all(responses.map(response => response.text())))
+    .then(texts => {
+        for (var i = 0; i < METHODS.length; ++i) {
+          assert_equals(texts[i], 'No Save-Data');
+        }
+      });
+}, 'Save-Data should not be sent when disabled.');
+</script>
+"></iframe>
+</html>

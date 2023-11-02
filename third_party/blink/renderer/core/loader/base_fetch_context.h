@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,13 +15,14 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/web_feature_forward.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_context.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 
 namespace blink {
 
+class ClientHintsPreferences;
 class ConsoleMessage;
 class DOMWrapperWorld;
 class DetachableResourceFetcherProperties;
@@ -95,15 +96,6 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
       ResourceType type,
       const FetchInitiatorInfo& initiator_info) override;
 
-  // Returns whether a request to |url| is a conversion registration request.
-  // Conversion registration requests are redirects to a well-known conversion
-  // registration endpoint.
-  virtual bool SendConversionRequestInsteadOfRedirecting(
-      const KURL& url,
-      const absl::optional<ResourceRequest::RedirectInfo>& redirect_info,
-      ReportingDisposition reporting_disposition,
-      const String& devtools_request_id) const;
-
   void AddClientHintsIfNecessary(
       const ClientHintsPreferences& hints_preferences,
       const url::Origin& resource_origin,
@@ -112,6 +104,7 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
       const PermissionsPolicy* policy,
       const absl::optional<ClientHintImageInfo>& image_info,
       const absl::optional<WTF::AtomicString>& prefers_color_scheme,
+      const absl::optional<WTF::AtomicString>& prefers_reduced_motion,
       ResourceRequest& request);
 
  protected:
@@ -136,6 +129,7 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
   virtual bool IsSVGImageChromeClient() const = 0;
   virtual bool ShouldBlockFetchByMixedContentCheck(
       mojom::blink::RequestContextType request_context,
+      network::mojom::blink::IPAddressSpace target_address_space,
       const absl::optional<ResourceRequest::RedirectInfo>& redirect_info,
       const KURL& url,
       ReportingDisposition reporting_disposition,
@@ -147,9 +141,6 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
 
   // TODO(yhirano): Remove this.
   virtual void AddConsoleMessage(ConsoleMessage*) const = 0;
-
-  void AddBackForwardCacheExperimentHTTPHeaderIfNeeded(
-      ResourceRequest& request);
 
   virtual ExecutionContext* GetExecutionContext() const = 0;
 
@@ -178,9 +169,7 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
       ResourceRequest::RedirectStatus redirect_status,
       ContentSecurityPolicy::CheckHeaderType) const;
 
-  enum class ClientHintsMode { kLegacy, kStandard };
-  bool ShouldSendClientHint(ClientHintsMode mode,
-                            const PermissionsPolicy*,
+  bool ShouldSendClientHint(const PermissionsPolicy*,
                             const url::Origin&,
                             bool is_1p_origin,
                             network::mojom::blink::WebClientHintsType,

@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -32,7 +32,7 @@ def CheckCharacterComposerData(input_api, output_api):
   # to ensure that it is not hand-editied and stays in sync with the sources.
   (tempfd, tempname) = input_api.tempfile.mkstemp()
   os.close(tempfd)
-  generator = [input_api.python_executable,
+  generator = [input_api.python3_executable,
                CHARACTER_COMPOSER_DATA_GENERATOR,
                '--output',
                tempname,

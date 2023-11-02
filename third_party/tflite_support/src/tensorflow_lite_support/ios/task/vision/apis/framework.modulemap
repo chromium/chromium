@@ -1,0 +1,4 @@
+framework module TensorFlowLiteTaskVision {
+    umbrella header "TFLTaskVision.h"
+    export *
+}

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,6 +52,9 @@ enum RequestContext {
   CONTEXT_BATCH_UPDATE_ACTIVE_TABS = 5;
   // Requesting a batch of models to update.
   CONTEXT_BATCH_UPDATE_MODELS = 6;
+  // Requesting page load metadata for a user's bookmarks when visiting the
+  // bookmarks surface.
+  CONTEXT_BOOKMARKS = 7;
 }
 
 message FieldTrial {
@@ -109,4 +112,28 @@ message Any {
 message StringValue {
   // The string value.
   optional string value = 1;
+}
+
+// Information about the request origin, common to all Cacao requests.
+message OriginInfo {
+  // The platform for the user's Chrome.
+  optional Platform platform = 1;
+}
+
+// The platform for the user's Chrome on which the request was made.
+enum Platform {
+  // Unknown is used when the user's platform cannot be resolved.
+  PLATFORM_UNKNOWN = 0;
+  // Android based platforms.
+  PLATFORM_ANDROID = 1;
+  // ChromeOS platforms including all architectures.
+  PLATFORM_CHROMEOS = 2;
+  // IOS based platforms.
+  PLATFORM_IOS = 3;
+  // Linux platforms including all architectures.
+  PLATFORM_LINUX = 4;
+  // Mac based platforms.
+  PLATFORM_MAC = 5;
+  // Windows based platforms.
+  PLATFORM_WINDOWS = 6;
 }

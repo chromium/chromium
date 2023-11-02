@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "net/base/net_errors.h"
@@ -16,13 +17,28 @@ namespace safe_browsing {
 
 class MultipartDataPipeGetterTest : public testing::Test {
  public:
-  base::File CreateFile(const std::string& content) {
+  absl::optional<base::File> CreateFile(const std::string& content) {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     base::FilePath path = temp_dir_.GetPath().AppendASCII("test.txt");
     base::File file(path, base::File::FLAG_CREATE | base::File::FLAG_READ |
                               base::File::FLAG_WRITE);
-    file.WriteAtCurrentPos(content.data(), content.size());
+    if (!file.IsValid())
+      return absl::nullopt;
+
+    if (file.WriteAtCurrentPos(content.data(), content.size()) < 0)
+      return absl::nullopt;
+
     return file;
+  }
+
+  base::ReadOnlySharedMemoryRegion CreatePage(const std::string& content) {
+    base::MappedReadOnlyRegion region =
+        base::ReadOnlySharedMemoryRegion::Create(content.size());
+    if (!region.IsValid())
+      return base::ReadOnlySharedMemoryRegion();
+
+    std::memcpy(region.mapping.memory(), content.data(), content.size());
+    return std::move(region.region);
   }
 
   std::string GetBodyFromPipe(MultipartDataPipeGetter* data_pipe_getter,
@@ -80,7 +96,53 @@ TEST_F(MultipartDataPipeGetterTest, InvalidFile) {
                                                      base::File()));
 }
 
-TEST_F(MultipartDataPipeGetterTest, SmallFile) {
+TEST_F(MultipartDataPipeGetterTest, InvalidPage) {
+  ASSERT_EQ(nullptr,
+            MultipartDataPipeGetter::Create(
+                "boundary", "metadata", base::ReadOnlySharedMemoryRegion()));
+}
+
+// Parametrization to share tests between the file and page implementations.
+class MultipartDataPipeGetterParametrizedTest
+    : public MultipartDataPipeGetterTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  bool is_file_data_pipe() { return GetParam(); }
+  bool is_page_data_pipe() { return !GetParam(); }
+
+  // Helper to create a data pipe with its content either in memory or in a
+  // files. If there is no space left on the device, return nullptr so the test
+  // can end early.
+  std::unique_ptr<MultipartDataPipeGetter> CreateDataPipeGetter(
+      const std::string& content) {
+    if (is_file_data_pipe()) {
+      absl::optional<base::File> file = CreateFile(content);
+      if (!file)
+        return nullptr;
+
+      return MultipartDataPipeGetter::Create("boundary", metadata_,
+                                             std::move(*file));
+    } else {
+      base::ReadOnlySharedMemoryRegion page = CreatePage(content);
+      if (!page.IsValid())
+        return nullptr;
+
+      return MultipartDataPipeGetter::Create("boundary", metadata_,
+                                             std::move(page));
+    }
+  }
+
+  void set_metadata(const std::string& metadata) { metadata_ = metadata; }
+
+ private:
+  std::string metadata_ = "metadata";
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         MultipartDataPipeGetterParametrizedTest,
+                         testing::Bool());
+
+TEST_P(MultipartDataPipeGetterParametrizedTest, SmallFile) {
   std::string expected_body =
       "--boundary\r\n"
       "Content-Type: application/octet-stream\r\n"
@@ -92,15 +154,17 @@ TEST_F(MultipartDataPipeGetterTest, SmallFile) {
       "small file content\r\n"
       "--boundary--\r\n";
 
-  base::File file = CreateFile("small file content");
   std::unique_ptr<MultipartDataPipeGetter> data_pipe_getter =
-      MultipartDataPipeGetter::Create("boundary", "metadata", std::move(file));
+      CreateDataPipeGetter("small file content");
+  EXPECT_TRUE(data_pipe_getter);
+  EXPECT_EQ(data_pipe_getter->is_page_data_pipe(), is_page_data_pipe());
+  EXPECT_EQ(data_pipe_getter->is_file_data_pipe(), is_file_data_pipe());
 
   ASSERT_EQ(expected_body,
             GetBodyFromPipe(data_pipe_getter.get(), expected_body.size()));
 }
 
-TEST_F(MultipartDataPipeGetterTest, LargeFile) {
+TEST_P(MultipartDataPipeGetterParametrizedTest, LargeFile) {
   std::string large_file_content = std::string(100 * 1024 * 1024, 'a');
   std::string expected_body =
       "--boundary\r\n"
@@ -114,15 +178,21 @@ TEST_F(MultipartDataPipeGetterTest, LargeFile) {
       "\r\n"
       "--boundary--\r\n";
 
-  base::File file = CreateFile(large_file_content);
   std::unique_ptr<MultipartDataPipeGetter> data_pipe_getter =
-      MultipartDataPipeGetter::Create("boundary", "metadata", std::move(file));
+      CreateDataPipeGetter(large_file_content);
+  // It's possible the large file couldn't be created due to a lack of space on
+  // the device, in this case stop the test early.
+  if (!data_pipe_getter)
+    return;
+
+  EXPECT_EQ(data_pipe_getter->is_page_data_pipe(), is_page_data_pipe());
+  EXPECT_EQ(data_pipe_getter->is_file_data_pipe(), is_file_data_pipe());
 
   ASSERT_EQ(expected_body,
             GetBodyFromPipe(data_pipe_getter.get(), expected_body.size()));
 }
 
-TEST_F(MultipartDataPipeGetterTest, LargeFileAndMetadata) {
+TEST_P(MultipartDataPipeGetterParametrizedTest, LargeFileAndMetadata) {
   std::string large_data = std::string(100 * 1024 * 1024, 'a');
   std::string expected_body =
       "--boundary\r\n"
@@ -137,15 +207,22 @@ TEST_F(MultipartDataPipeGetterTest, LargeFileAndMetadata) {
       "\r\n"
       "--boundary--\r\n";
 
-  base::File file = CreateFile(large_data);
+  set_metadata(large_data);
   std::unique_ptr<MultipartDataPipeGetter> data_pipe_getter =
-      MultipartDataPipeGetter::Create("boundary", large_data, std::move(file));
+      CreateDataPipeGetter(large_data);
+  // It's possible the large file couldn't be created due to a lack of space on
+  // the device, in this case stop the test early.
+  if (!data_pipe_getter)
+    return;
+
+  EXPECT_EQ(data_pipe_getter->is_page_data_pipe(), is_page_data_pipe());
+  EXPECT_EQ(data_pipe_getter->is_file_data_pipe(), is_file_data_pipe());
 
   ASSERT_EQ(expected_body,
             GetBodyFromPipe(data_pipe_getter.get(), expected_body.size()));
 }
 
-TEST_F(MultipartDataPipeGetterTest, MultipleReads) {
+TEST_P(MultipartDataPipeGetterParametrizedTest, MultipleReads) {
   std::string expected_body =
       "--boundary\r\n"
       "Content-Type: application/octet-stream\r\n"
@@ -157,9 +234,11 @@ TEST_F(MultipartDataPipeGetterTest, MultipleReads) {
       "small file content\r\n"
       "--boundary--\r\n";
 
-  base::File file = CreateFile("small file content");
   std::unique_ptr<MultipartDataPipeGetter> data_pipe_getter =
-      MultipartDataPipeGetter::Create("boundary", "metadata", std::move(file));
+      CreateDataPipeGetter("small file content");
+  EXPECT_TRUE(data_pipe_getter);
+  EXPECT_EQ(data_pipe_getter->is_page_data_pipe(), is_page_data_pipe());
+  EXPECT_EQ(data_pipe_getter->is_file_data_pipe(), is_file_data_pipe());
 
   for (int i = 0; i < 4; ++i) {
     ASSERT_EQ(expected_body,
@@ -167,7 +246,7 @@ TEST_F(MultipartDataPipeGetterTest, MultipleReads) {
   }
 }
 
-TEST_F(MultipartDataPipeGetterTest, ResetsCorrectly) {
+TEST_P(MultipartDataPipeGetterParametrizedTest, ResetsCorrectly) {
   std::string large_file_content = std::string(100 * 1024 * 1024, 'a');
   std::string expected_body =
       "--boundary\r\n"
@@ -181,9 +260,15 @@ TEST_F(MultipartDataPipeGetterTest, ResetsCorrectly) {
       "\r\n"
       "--boundary--\r\n";
 
-  base::File file = CreateFile(large_file_content);
   std::unique_ptr<MultipartDataPipeGetter> data_pipe_getter =
-      MultipartDataPipeGetter::Create("boundary", "metadata", std::move(file));
+      CreateDataPipeGetter(large_file_content);
+  // It's possible the large file couldn't be created due to a lack of space on
+  // the device, in this case stop the test early.
+  if (!data_pipe_getter)
+    return;
+
+  EXPECT_EQ(data_pipe_getter->is_page_data_pipe(), is_page_data_pipe());
+  EXPECT_EQ(data_pipe_getter->is_file_data_pipe(), is_file_data_pipe());
 
   // Reads part of the body, which validates that the next read is able to read
   // the entire body correctly after a reset.
@@ -194,6 +279,8 @@ TEST_F(MultipartDataPipeGetterTest, ResetsCorrectly) {
 
   data_pipe_getter->Reset();
 
+  EXPECT_EQ(data_pipe_getter->is_page_data_pipe(), is_page_data_pipe());
+  EXPECT_EQ(data_pipe_getter->is_file_data_pipe(), is_file_data_pipe());
   ASSERT_EQ(expected_body,
             GetBodyFromPipe(data_pipe_getter.get(), expected_body.size()));
 }

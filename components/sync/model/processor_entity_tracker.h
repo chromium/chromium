@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,12 @@
 
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
-#include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
+
+namespace sync_pb {
+class EntityMetadata;
+class EntitySpecifics;
+}  // namespace sync_pb
 
 namespace syncer {
 
@@ -45,8 +49,18 @@ class ProcessorEntityTracker {
   // Returns number of entities with non-deleted metadata.
   size_t CountNonTombstoneEntries() const;
 
-  // Creates new processor entity (must not be deleted outside current object).
-  ProcessorEntity* Add(const std::string& storage_key, const EntityData& data);
+  // Starts tracking new locally-created entity (must not be deleted outside
+  // current object). The entity will be created unsynced with pending commit
+  // data.
+  ProcessorEntity* AddUnsyncedLocal(const std::string& storage_key,
+                                    std::unique_ptr<EntityData> data,
+                                    sync_pb::EntitySpecifics trimmed_specifics);
+
+  // Starts tracking new remotely-created entity (must not be deleted outside
+  // current object).
+  ProcessorEntity* AddRemote(const std::string& storage_key,
+                             const UpdateResponseData& update_data,
+                             sync_pb::EntitySpecifics trimmed_specifics);
 
   // Removes item from |entities_| and |storage_key_to_tag_hash|. If entity does
   // not exist, does nothing.
@@ -104,6 +118,12 @@ class ProcessorEntityTracker {
                                   const std::string& storage_key);
 
  private:
+  // Creates a new processor entity (must not be deleted outside current
+  // object).
+  ProcessorEntity* AddInternal(const std::string& storage_key,
+                               const EntityData& data,
+                               int64_t server_version);
+
   // A map of client tag hash to sync entities known to this tracker. This
   // should contain entries and metadata, although the entities may not always
   // contain model type data/specifics.

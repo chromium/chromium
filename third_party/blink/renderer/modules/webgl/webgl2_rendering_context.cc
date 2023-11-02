@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -104,6 +104,10 @@ CanvasRenderingContext* WebGL2RenderingContext::Factory::Create(
     host->HostDispatchEvent(
         WebGLContextEvent::Create(event_type_names::kWebglcontextcreationerror,
                                   "Could not create a WebGL2 context."));
+    // We must dispose immediately so that when rendering_context is
+    // garbage-collected, it will not interfere with a subsequently created
+    // rendering context.
+    rendering_context->Dispose();
     return nullptr;
   }
 
@@ -115,7 +119,7 @@ CanvasRenderingContext* WebGL2RenderingContext::Factory::Create(
 void WebGL2RenderingContext::Factory::OnError(HTMLCanvasElement* canvas,
                                               const String& error) {
   canvas->DispatchEvent(*WebGLContextEvent::Create(
-      event_type_names::kWebglcontextcreationerror, error));
+      event_type_names::kWebglcontextcreationerror, error), "WebGL2RenderingContext::Factory::OnError");
 }
 
 WebGL2RenderingContext::WebGL2RenderingContext(
@@ -156,7 +160,7 @@ void WebGL2RenderingContext::RegisterContextExtensions() {
   RegisterExtension(ext_texture_filter_anisotropic_);
   RegisterExtension(ext_texture_norm16_);
   RegisterExtension(khr_parallel_shader_compile_);
-  RegisterExtension(oes_draw_buffers_indexed_, kDraftExtension);
+  RegisterExtension(oes_draw_buffers_indexed_);
   RegisterExtension(oes_texture_float_linear_);
   RegisterExtension(webgl_compressed_texture_astc_);
   RegisterExtension(webgl_compressed_texture_etc_);

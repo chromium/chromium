@@ -1,6 +1,4 @@
-alcooper@chromium.org
-bajones@chromium.org
-bialpio@chromium.org
+file://components/webxr/OWNERS
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS

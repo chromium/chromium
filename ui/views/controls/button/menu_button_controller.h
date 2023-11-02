@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,9 @@
 #define UI_VIEWS_CONTROLS_BUTTON_MENU_BUTTON_CONTROLLER_H_
 
 #include <memory>
+#include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "ui/views/controls/button/button_controller.h"
@@ -79,6 +81,10 @@ class VIEWS_EXPORT MenuButtonController : public ButtonController {
   // menu, this is distinct from IsTriggerableEvent().
   bool IsTriggerableEventType(const ui::Event& event);
 
+  void SetCallback(Button::PressedCallback callback) {
+    callback_ = std::move(callback);
+  }
+
  private:
   // Increment/decrement the number of "pressed" locks this button has, and
   // set the state accordingly. The ink drop is snapped to the final ACTIVATED
@@ -111,7 +117,7 @@ class VIEWS_EXPORT MenuButtonController : public ButtonController {
   int pressed_lock_count_ = 0;
 
   // Used to let Activate() know if IncrementPressedLocked() was called.
-  bool* increment_pressed_lock_called_ = nullptr;
+  raw_ptr<bool> increment_pressed_lock_called_ = nullptr;
 
   // True if the button was in a disabled state when a menu was run, and
   // should return to it once the press is complete. This can happen if, e.g.,

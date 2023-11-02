@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2021 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
-<RelativeLayout
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<org.chromium.chrome.browser.ui.autofill.OtpVerificationDialogView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -44,4 +46,4 @@
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:visibility="gone"/>
-</RelativeLayout>
+</org.chromium.chrome.browser.ui.autofill.OtpVerificationDialogView>

@@ -1,0 +1,135 @@
+<head>
+<style>
+div, center, table {
+  border: 1px solid blue;
+  font-size: 8px;
+}
+
+div, center {
+  padding: 1px;
+}
+
+.fixedMargin {
+  margin-left: 2px;
+  margin-right: 2px;
+}
+
+.autoWidth {
+  border: 1px solid green;
+  break-inside: avoid;
+  margin-top: 2px;
+}
+
+.fixedWidth {
+  border: 1px solid purple;
+  margin-top: 2px;
+}
+
+.fixedWidth > * {
+  width: 200px;
+}
+
+.full {
+  width: 100%;
+}
+
+section {
+  columns: 2;
+  font-size: 8px;
+}
+</style>
+</head>
+
+This is a test of all the various HTML alignments using LTR direction.
+<section style="columns:2;">
+
+<div class="autoWidth">
+  <div>Normal div inside normal div</div>
+  <div align=left>Left div inside normal div</div>
+  <div align=center>Center div inside normal div</div>
+  <div align=right>Right div inside normal div</div>
+  <center>Center tag inside normal div</center>
+  <table><tr><td>Normal table.</tr></td></table>
+  <table align="center"><tr><td>Center aligned table.</tr></td></table>
+  <table align="center" class="fixedMargin"><tr><td>Center table (fixed margins).</tr></td></table>
+</div>
+
+<div class="fixedWidth">
+  <div>Normal fixed width div inside normal div</div>
+  <div align=left>Left fixed width div inside normal div</div>
+  <div align=center>Center fixed width div inside normal div</div>
+  <div align=right>Right fixed width div inside normal div</div>
+  <center>Center tag (fixed width) inside normal div</center>
+  <table><tr><td>Normal table.</tr></td></table>
+  <table align="center"><tr><td>Center aligned table.</tr></td></table>
+  <table align="center" class="fixedMargin"><tr><td>Center table (fixed margins).</tr></td></table>
+</div>
+
+<div align=left class="autoWidth">
+  <div>Normal div inside align=left div</div>
+  <div align=left>Left div inside align=left div</div>
+  <div align=center>Center div inside align=left div</div>
+  <div align=right>Right div inside align=left div</div>
+  <center>Center tag inside align=left div</center>
+  <table><tr><td>Normal table.</tr></td></table>
+  <table align="center"><tr><td>Center aligned table.</tr></td></table>
+  <table align="center" class="fixedMargin"><tr><td>Center table (fixed margins).</tr></td></table>
+</div>
+
+<div align=left class="fixedWidth">
+  <div>Normal fixed width div inside align=left div</div>
+  <div align=left>Left fixed width div inside align=left div</div>
+  <div align=center>Center fixed width div inside align=left div</div>
+  <div align=right>Right fixed width div inside align=left div</div>
+  <center>Center tag (fixed width) inside align=left div</center>
+  <table><tr><td>Normal table.</tr></td></table>
+  <table align="center"><tr><td>Center aligned table.</tr></td></table>
+  <table align="center" class="fixedMargin"><tr><td>Center table (fixed margins).</tr></td></table>
+</div>
+
+<div align=center class="autoWidth">
+  <div>Normal div inside align= center div</div>
+  <div align=left>Left div inside align=center div</div>
+  <div align=center>Center div inside align=center div</div>
+  <div align=right>Right div inside align=center div</div>
+  <center>Center tag inside align=center div</center>
+  <table><tr><td>Normal table.</tr></td></table>
+  <table align="center"><tr><td>Center aligned table.</tr></td></table>
+  <table align="center" class="fixedMargin"><tr><td>Center table (fixed margins).</tr></td></table>
+</div>
+
+<div align=center class="fixedWidth">
+  <div>Normal fixed width div inside align=center div</div>
+  <div style="margin-left: auto">Normal fixed width div (auto left margin) inside align=center div</div>
+  <div style="margin-right: auto">Normal fixed width div (auto right margin) inside align=center div</div>
+  <div align=left>Left fixed width div inside align=center div</div>
+  <div align=center>Center fixed width div inside align=center div</div>
+  <div align=right>Right fixed width div inside align=center div</div>
+  <center>Center tag (fixed width) inside align=center div</center>
+  <table><tr><td>Normal table.</tr></td></table>
+  <table align="center"><tr><td>Center aligned table.</tr></td></table>
+  <table align="center" class="fixedMargin"><tr><td>Center table (fixed margins).</tr></td></table>
+</div>
+
+<div align=right class="autoWidth">
+  <div>Normal div inside align=right div</div>
+  <div align=left>Left div inside align=right div</div>
+  <div align=center>Center div inside align=right div</div>
+  <div align=right>Right div inside align=right div</div>
+  <center>Center tag inside align=right div</center>
+  <table><tr><td>Normal table.</tr></td></table>
+  <table align="center"><tr><td>Center aligned table.</tr></td></table>
+  <table align="center" class="fixedMargin"><tr><td>Center table (fixed margins).</tr></td></table>
+</div>
+
+<div align=right class="fixedWidth">
+  <div>Normal fixed width div inside align=right div</div>
+  <div align=left>Left fixed width div inside align=right div</div>
+  <div align=center>Center fixed width div inside align=right div</div>
+  <div align=right>Right fixed width div inside align=right div</div>
+  <center>Center tag (fixed width) inside align=right div</center>
+  <table><tr><td>Normal table.</tr></td></table>
+  <table align="center"><tr><td>Center aligned table.</tr></td></table>
+  <table align="center" class="fixedMargin"><tr><td>Center table (fixed margins).</tr></td></table>
+</div>
+

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,12 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_tick_clock.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
-#include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/interface_registry.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/finder/find_buffer.h"
+#include "third_party/blink/renderer/core/editing/iterators/character_iterator.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
 #include "third_party/blink/renderer/core/editing/range_in_flat_tree.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_anchor_metrics.h"
@@ -21,8 +21,10 @@
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_selector.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/platform/text/text_boundaries.h"
+#include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
 using LinkGenerationError = shared_highlighting::LinkGenerationError;
+using LinkGenerationStatus = shared_highlighting::LinkGenerationStatus;
 
 namespace blink {
 
@@ -36,7 +38,7 @@ bool IsFirstVisiblePosition(Node* node, unsigned pos_offset) {
   return node->getNodeType() == Node::kElementNode || pos_offset == 0 ||
          PlainText(EphemeralRangeInFlatTree(range_start, range_end))
              .StripWhiteSpace()
-             .IsEmpty();
+             .empty();
 }
 
 // Returns true if text from |pos_offset| until end of |node| can be considered
@@ -48,21 +50,16 @@ bool IsLastVisiblePosition(Node* node, unsigned pos_offset) {
          pos_offset == node->textContent().length() ||
          PlainText(EphemeralRangeInFlatTree(range_start, range_end))
              .StripWhiteSpace()
-             .IsEmpty();
+             .empty();
 }
 
-struct ForwadDirection {
+struct ForwardDirection {
   static Node* Next(const Node& node) { return FlatTreeTraversal::Next(node); }
   static Node* Next(const Node& node, const Node* stay_within) {
     return FlatTreeTraversal::Next(node, stay_within);
   }
   static Node* GetVisibleTextNode(Node& start_node) {
     return FindBuffer::ForwardVisibleTextNode(start_node);
-  }
-  // |IsInSameUninterruptedBlock| is diraction specific because |start| and
-  // |end| should be in right order.
-  static bool IsInSameUninterruptedBlock(Node& start, Node& end) {
-    return FindBuffer::IsInSameUninterruptedBlock(start, end);
   }
 };
 
@@ -73,11 +70,6 @@ struct BackwardDirection {
   static Node* GetVisibleTextNode(Node& start_node) {
     return FindBuffer::BackwardVisibleTextNode(start_node);
   }
-  // |IsInSameUninterruptedBlock| is diraction specific because |start| and
-  // |end| should be in right order.
-  static bool IsInSameUninterruptedBlock(Node& start, Node& end) {
-    return FindBuffer::IsInSameUninterruptedBlock(end, start);
-  }
 };
 
 template <class Direction>
@@ -85,29 +77,16 @@ Node* NextNonEmptyVisibleTextNode(Node* start_node) {
   if (!start_node)
     return nullptr;
 
-  // Filter out nodes without layout object.
-  if (base::FeatureList::IsEnabled(
-          shared_highlighting::kSharedHighlightingLayoutObjectFix)) {
-    for (Node* node = start_node; node; node = Direction::Next(*node)) {
-      Node* next_node = Direction::GetVisibleTextNode(*node);
-      if (!next_node)
-        return nullptr;
-      if (next_node->GetLayoutObject() &&
-          !PlainText(EphemeralRange::RangeOfContents(*next_node))
-               .StripWhiteSpace()
-               .IsEmpty())
-        return next_node;
-      node = next_node;
-    }
-    return nullptr;
-  }
-
   // Move forward/backward until non empty visible text node is found.
   for (Node* node = start_node; node; node = Direction::Next(*node)) {
     Node* next_node = Direction::GetVisibleTextNode(*node);
-    if (!next_node || !PlainText(EphemeralRange::RangeOfContents(*next_node))
-                           .StripWhiteSpace()
-                           .IsEmpty())
+    if (!next_node)
+      return nullptr;
+    // Filter out nodes without layout object.
+    if (next_node->GetLayoutObject() &&
+        !PlainText(EphemeralRange::RangeOfContents(*next_node))
+             .StripWhiteSpace()
+             .empty())
       return next_node;
     node = next_node;
   }
@@ -116,68 +95,11 @@ Node* NextNonEmptyVisibleTextNode(Node* start_node) {
 
 // Returns the next/previous visible node to |start_node|.
 Node* FirstNonEmptyVisibleTextNode(Node* start_node) {
-  return NextNonEmptyVisibleTextNode<ForwadDirection>(start_node);
+  return NextNonEmptyVisibleTextNode<ForwardDirection>(start_node);
 }
 
 Node* BackwardNonEmptyVisibleTextNode(Node* start_node) {
   return NextNonEmptyVisibleTextNode<BackwardDirection>(start_node);
-}
-
-// Returns the furthest node within same block as |start_node| without crossing
-// block boundaries.
-// Returns the next/previous visible node to |start_node|.
-template <class Direction>
-Node* FurthestVisibleTextNodeWithinBlock(Node* start_node) {
-  // Move forward/backward until no next/previous node is available within same
-  // |block_ancestor|.
-  Node* last_node = nullptr;
-  for (Node* node = start_node; node; node = Direction::Next(*node)) {
-    node = Direction::GetVisibleTextNode(*node);
-    if (node && !node->GetLayoutObject())
-      continue;
-
-    // Stop, if crossed block boundaries.
-    if (!node || !Direction::IsInSameUninterruptedBlock(*start_node, *node))
-      break;
-    last_node = node;
-  }
-  return last_node;
-}
-
-Node* FirstVisibleTextNodeWithinBlock(Node* start_node) {
-  return FurthestVisibleTextNodeWithinBlock<ForwadDirection>(start_node);
-}
-
-Node* LastVisibleTextNodeWithinBlock(Node* start_node) {
-  return FurthestVisibleTextNodeWithinBlock<BackwardDirection>(start_node);
-}
-
-// Returns whitespace-trimmed substring of |text| containing the final
-// |word_num| words.
-String GetWordsFromEnd(String text, int word_num) {
-  if (text.IsEmpty())
-    return "";
-
-  int pos = text.length() - 1;
-  text.Ensure16Bit();
-  while (word_num-- > 0)
-    pos = FindNextWordBackward(text.Characters16(), text.length(), pos);
-
-  return text.Substring(pos, text.length()).StripWhiteSpace();
-}
-
-// Returns whitespace-trimmed substring of |text| containing the first
-// |word_num| words.
-String GetWordsFromStart(String text, int word_num) {
-  if (text.IsEmpty())
-    return "";
-
-  int pos = 0;
-  text.Ensure16Bit();
-  while (word_num-- > 0)
-    pos = FindNextWordForward(text.Characters16(), text.length(), pos);
-
-  return text.Substring(0, pos).StripWhiteSpace();
 }
 
 // For Element-based Position returns the node that its pointing to, otherwise
@@ -200,11 +122,21 @@ constexpr int kNoContextMinChars = 20;
 constexpr int kMaxContextWords = 10;
 constexpr int kMaxRangeWords = 10;
 constexpr int kMaxIterationCountToRecord = 10;
-constexpr int kMinWordCount_ = 3;
+constexpr int kMinWordCount = 3;
+
+absl::optional<int> g_exactTextMaxCharsOverride;
 
 TextFragmentSelectorGenerator::TextFragmentSelectorGenerator(
     LocalFrame* main_frame)
-    : frame_(main_frame) {}
+    : frame_(main_frame) {
+  if (base::FeatureList::IsEnabled(
+          shared_highlighting::kSharedHighlightingRefinedMaxContextWords)) {
+    max_context_words_ =
+        shared_highlighting::kSharedHighlightingMaxContextWords.Get();
+  } else {
+    max_context_words_ = kMaxContextWords;
+  }
+}
 
 void TextFragmentSelectorGenerator::Generate(const RangeInFlatTree& range,
                                              GenerateCallback callback) {
@@ -223,12 +155,12 @@ void TextFragmentSelectorGenerator::Reset() {
 
   generation_start_time_ = base::DefaultTickClock::GetInstance()->NowTicks();
   state_ = kNotStarted;
-  error_.reset();
+  error_ = LinkGenerationError::kNone;
   step_ = kExact;
-  max_available_prefix_ = "";
-  max_available_suffix_ = "";
-  max_available_range_start_ = "";
-  max_available_range_end_ = "";
+  prefix_iterator_ = nullptr;
+  suffix_iterator_ = nullptr;
+  range_start_iterator_ = nullptr;
+  range_end_iterator_ = nullptr;
   num_context_words_ = 0;
   num_range_words_ = 0;
   iteration_ = 0;
@@ -241,6 +173,10 @@ void TextFragmentSelectorGenerator::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   visitor->Trace(range_);
   visitor->Trace(finder_);
+  visitor->Trace(prefix_iterator_);
+  visitor->Trace(suffix_iterator_);
+  visitor->Trace(range_start_iterator_);
+  visitor->Trace(range_end_iterator_);
 }
 
 void TextFragmentSelectorGenerator::RecordSelectorStateUma() const {
@@ -248,10 +184,18 @@ void TextFragmentSelectorGenerator::RecordSelectorStateUma() const {
                                 state_);
 }
 
-void TextFragmentSelectorGenerator::DidFindMatch(
-    const RangeInFlatTree& match,
-    const TextFragmentAnchorMetrics::Match match_metrics,
-    bool is_unique) {
+String TextFragmentSelectorGenerator::GetSelectorTargetText() const {
+  if (!range_)
+    return g_empty_string;
+
+  return PlainText(range_->ToEphemeralRange()).StripWhiteSpace();
+}
+
+void TextFragmentSelectorGenerator::DidFindMatch(const RangeInFlatTree& match,
+                                                 bool is_unique) {
+  if (did_find_match_callback_for_testing_)
+    std::move(did_find_match_callback_for_testing_).Run(is_unique);
+
   if (is_unique &&
       PlainText(match.ToEphemeralRange()).StripWhiteSpace().length() ==
           PlainText(range_->ToEphemeralRange()).StripWhiteSpace().length()) {
@@ -382,7 +326,7 @@ void TextFragmentSelectorGenerator::StartGeneration() {
 
   // Shouldn't continue if selection is empty.
   String selected_text = PlainText(ephemeral_range).StripWhiteSpace();
-  if (selected_text.IsEmpty()) {
+  if (selected_text.empty()) {
     state_ = kFailure;
     error_ = LinkGenerationError::kEmptySelection;
     ResolveSelectorState();
@@ -451,67 +395,31 @@ void TextFragmentSelectorGenerator::RunTextFinder() {
   finder_->FindMatch();
 }
 
-String TextFragmentSelectorGenerator::GetPreviousTextBlock(
-    const Position& prefix_end_position) {
-  Node* prefix_end = prefix_end_position.ComputeContainerNode();
-  unsigned prefix_end_offset =
-      prefix_end_position.ComputeOffsetInContainerNode();
-
-  // If given position point to the first visible text in its containiner node,
-  // use the preceding visible node for the suffix.
-  if (IsFirstVisiblePosition(prefix_end, prefix_end_offset)) {
-    prefix_end = BackwardNonEmptyVisibleTextNode(
-        FlatTreeTraversal::Previous(*prefix_end));
-
-    if (!prefix_end)
-      return "";
-    prefix_end_offset = prefix_end->textContent().length();
+PositionInFlatTree TextFragmentSelectorGenerator::GetPreviousTextEndPosition(
+    const PositionInFlatTree& position) {
+  PositionInFlatTree search_end_position =
+      PositionInFlatTree::FirstPositionInNode(
+          *frame_->GetDocument()->documentElement()->firstChild());
+  PositionInFlatTree previous_text_position =
+      TextFragmentFinder::PreviousTextPosition(position, search_end_position);
+  if (previous_text_position == search_end_position) {
+    return PositionInFlatTree();
   }
-
-  // The furthest node within same block without crossing block boundaries would
-  // be the prefix start.
-  Node* prefix_start = LastVisibleTextNodeWithinBlock(prefix_end);
-  if (!prefix_start)
-    return "";
-
-  auto range_start = Position(prefix_start, 0);
-  auto range_end = Position(prefix_end, prefix_end_offset);
-  // TODO(gayane): Find test case when this happens, seems related to shadow
-  // root. See crbug.com/1220830
-  if (range_start >= range_end)
-    return "";
-  return PlainText(EphemeralRange(range_start, range_end)).StripWhiteSpace();
+  return previous_text_position;
 }
 
-String TextFragmentSelectorGenerator::GetNextTextBlock(
-    const Position& suffix_start_position) {
-  Node* suffix_start = suffix_start_position.ComputeContainerNode();
-  unsigned suffix_start_offset =
-      suffix_start_position.ComputeOffsetInContainerNode();
-  // If given position point to the last visible text in its containiner node,
-  // use the following visible node for the suffix.
-  if (IsLastVisiblePosition(suffix_start, suffix_start_offset)) {
-    suffix_start = FirstNonEmptyVisibleTextNode(
-        FlatTreeTraversal::NextSkippingChildren(*suffix_start));
-    suffix_start_offset = 0;
+PositionInFlatTree TextFragmentSelectorGenerator::GetNextTextStartPosition(
+    const PositionInFlatTree& position) {
+  PositionInFlatTree search_end_position =
+      PositionInFlatTree::LastPositionInNode(
+          *frame_->GetDocument()->documentElement()->lastChild());
+  PositionInFlatTree next_text_position =
+      TextFragmentFinder::NextTextPosition(position, search_end_position);
+
+  if (next_text_position == search_end_position) {
+    return PositionInFlatTree();
   }
-  if (!suffix_start)
-    return "";
-
-  // The furthest node within same block without crossing block boundaries would
-  // be the suffix end.
-  Node* suffix_end = FirstVisibleTextNodeWithinBlock(suffix_start);
-  if (!suffix_end)
-    return "";
-
-  auto range_start = Position(suffix_start, suffix_start_offset);
-  auto range_end = Position(suffix_end, suffix_end->textContent().length());
-
-  // TODO(gayane): Find test case when this happens, seems related to shadow
-  // root. See crbug.com/1220830
-  if (range_start >= range_end)
-    return "";
-  return PlainText(EphemeralRange(range_start, range_end)).StripWhiteSpace();
+  return next_text_position;
 }
 
 void TextFragmentSelectorGenerator::GenerateExactSelector() {
@@ -536,7 +444,7 @@ void TextFragmentSelectorGenerator::GenerateExactSelector() {
   }
   String selected_text = PlainText(ephemeral_range).StripWhiteSpace();
   // If too long should use ranges.
-  if (selected_text.length() > kExactTextMaxChars) {
+  if (selected_text.length() > GetExactTextMaxChars()) {
     step_ = kRange;
     return;
   }
@@ -562,57 +470,107 @@ void TextFragmentSelectorGenerator::ExtendRangeSelector() {
     return;
   }
 
+  int num_words_to_add = 1;
+
+  // Determine length of target string for verifictaion.
+  unsigned target_length = PlainText(range_->ToEphemeralRange()).length();
+
   // Initialize range start/end and word min count, if needed.
-  if (max_available_range_start_.IsEmpty() &&
-      max_available_range_end_.IsEmpty()) {
-    EphemeralRangeInFlatTree ephemeral_range = range_->ToEphemeralRange();
+  if (!range_start_iterator_ && !range_end_iterator_) {
+    PositionInFlatTree range_start_position =
+        GetNextTextStartPosition(range_->StartPosition());
+    PositionInFlatTree range_end_position =
+        GetPreviousTextEndPosition(range_->EndPosition());
 
-    // If selection starts and ends in the same block, then split selected text
-    // roughly in the middle.
-    if (TextFragmentFinder::IsInSameUninterruptedBlock(
-            ephemeral_range.StartPosition(), ephemeral_range.EndPosition())) {
-      String selection_text = PlainText(ephemeral_range);
-      selection_text.Ensure16Bit();
-      int selection_length = selection_text.length();
-      int mid_point =
-          FindNextWordForward(selection_text.Characters16(),
-                              selection_text.length(), selection_length / 2);
-      max_available_range_start_ = selection_text.Left(mid_point);
-
-      // If from middle till end of selection there is no word break, then we
-      // cannot use it for range end.
-      if (mid_point == selection_length) {
-        state_ = kFailure;
-        error_ = LinkGenerationError::kNoRange;
-        return;
-      }
-
-      max_available_range_end_ =
-          selection_text.Right(selection_text.length() - mid_point - 1);
-    } else {
-      // If not the same node, then we use first and last block of the selection
-      // range.
-      max_available_range_start_ =
-          GetNextTextBlock(ToPositionInDOMTree(range_->StartPosition()));
-      max_available_range_end_ =
-          GetPreviousTextBlock(ToPositionInDOMTree(range_->EndPosition()));
+    if (range_start_position.IsNotNull()) {
+      range_start_iterator_ =
+          MakeGarbageCollected<ForwardSameBlockWordIterator>(
+              range_start_position);
     }
 
-    // Use at least 3 words from both sides for more robust link to text.
-    num_range_words_ = kMinWordCount_;
+    if (range_end_position.IsNotNull()) {
+      range_end_iterator_ = MakeGarbageCollected<BackwardSameBlockWordIterator>(
+          range_end_position);
+    }
+
+    // Use at least 3 words from both sides for more robust link to text unless
+    // the selected text is shorter than 6 words.
+    if (TextFragmentFinder::IsInSameUninterruptedBlock(range_start_position,
+                                                       range_end_position)) {
+      num_words_to_add = 0;
+      auto* range_start_counter =
+          MakeGarbageCollected<ForwardSameBlockWordIterator>(
+              range_start_position);
+      // TODO(crbug.com/1302719) ForwardSameBlockWordIterator Should be made to
+      // return the current posision in a form that is comparable against
+      // range_end_position directly.
+
+      while (num_words_to_add < kMinWordCount * 2 &&
+             range_start_counter->AdvanceNextWord() &&
+             range_start_counter->TextFromStart().length() <= target_length) {
+        num_words_to_add++;
+      }
+      num_words_to_add = num_words_to_add / 2;
+      if (num_words_to_add == 0) {
+        // If there is only one word found in the range selection explicitly set
+        // exact selector to avoid round tripping.
+        EphemeralRangeInFlatTree ephemeral_range = range_->ToEphemeralRange();
+        String selected_text = PlainText(ephemeral_range).StripWhiteSpace();
+        step_ = kExact;
+        state_ = kTestCandidate;
+        selector_ = std::make_unique<TextFragmentSelector>(
+            TextFragmentSelector::SelectorType::kExact, selected_text, "", "",
+            "");
+        return;
+      }
+    } else {
+      // If the the start and end are in different blocks overlaps dont need to
+      // be prevented as the number of words will limited by the block
+      // boundaries.
+      num_words_to_add = kMinWordCount;
+    }
+  }
+
+  if (!range_start_iterator_ && !range_end_iterator_) {
+    state_ = kFailure;
+    error_ = LinkGenerationError::kNoRange;
+    return;
+  }
+
+  for (int i = 0; i < num_words_to_add; i++) {
+    if (range_start_iterator_)
+      range_start_iterator_->AdvanceNextWord();
+
+    if (range_end_iterator_)
+      range_end_iterator_->AdvanceNextWord();
+
+    num_range_words_++;
   }
 
   String start =
-      GetWordsFromStart(max_available_range_start_, num_range_words_);
-  String end = GetWordsFromEnd(max_available_range_end_, num_range_words_);
-  num_range_words_++;
+      range_start_iterator_ ? range_start_iterator_->TextFromStart() : "";
+  String end = range_end_iterator_ ? range_end_iterator_->TextFromStart() : "";
 
-  // If the start and end didn't change, it means we exhausted the selected
-  // text and should try adding context.
-  if (selector_ && start == selector_->Start() && end == selector_->End()) {
+  if (start.length() + end.length() > target_length) {
+    if (!selector_) {
+      state_ = kFailure;
+      error_ = LinkGenerationError::kNoRange;
+      return;
+    }
+
+    // If start and end overlap but its not the first attempt, then proceed with
+    // adding context.
     step_ = kContext;
     return;
   }
+
+  if (selector_ && start == selector_->Start() && end == selector_->End()) {
+    // If the start and end didn't change, it means we
+    // exhausted the selected text and should try adding context.
+    step_ = kContext;
+    return;
+  }
+
   selector_ = std::make_unique<TextFragmentSelector>(
       TextFragmentSelector::SelectorType::kRange, start, end, "", "");
   state_ = kTestCandidate;
@@ -624,32 +582,52 @@ void TextFragmentSelectorGenerator::ExtendContext() {
   DCHECK(selector_);
 
   // Give up if context is already too long.
-  if (num_context_words_ == kMaxContextWords) {
+  if (num_context_words_ >= max_context_words_) {
     state_ = kFailure;
     error_ = LinkGenerationError::kContextLimitReached;
     return;
   }
 
+  int num_words_to_add = 1;
   // Try initiating properties necessary for calculating prefix and suffix.
-  if (max_available_prefix_.IsEmpty() && max_available_suffix_.IsEmpty()) {
-    max_available_prefix_ =
-        GetPreviousTextBlock(ToPositionInDOMTree(range_->StartPosition()));
-    max_available_suffix_ =
-        GetNextTextBlock(ToPositionInDOMTree(range_->EndPosition()));
+  if (!suffix_iterator_ && !prefix_iterator_) {
+    PositionInFlatTree suffix_start_position =
+        GetNextTextStartPosition(range_->EndPosition());
+    PositionInFlatTree prefix_end_position =
+        GetPreviousTextEndPosition(range_->StartPosition());
+
+    if (suffix_start_position.IsNotNull()) {
+      suffix_iterator_ = MakeGarbageCollected<ForwardSameBlockWordIterator>(
+          suffix_start_position);
+    }
+
+    if (prefix_end_position.IsNotNull()) {
+      prefix_iterator_ = MakeGarbageCollected<BackwardSameBlockWordIterator>(
+          prefix_end_position);
+    }
 
     // Use at least 3 words from both sides for more robust link to text.
-    num_context_words_ = kMinWordCount_;
+    num_words_to_add = kMinWordCount;
   }
 
-  if (max_available_prefix_.IsEmpty() && max_available_suffix_.IsEmpty()) {
+  if (!suffix_iterator_ && !prefix_iterator_) {
     state_ = kFailure;
     error_ = LinkGenerationError::kNoContext;
     return;
   }
 
-  String prefix = GetWordsFromEnd(max_available_prefix_, num_context_words_);
-  String suffix = GetWordsFromStart(max_available_suffix_, num_context_words_);
-  num_context_words_++;
+  for (int i = 0; i < num_words_to_add; i++) {
+    if (suffix_iterator_)
+      suffix_iterator_->AdvanceNextWord();
+
+    if (prefix_iterator_)
+      prefix_iterator_->AdvanceNextWord();
+
+    num_context_words_++;
+  }
+
+  String prefix = prefix_iterator_ ? prefix_iterator_->TextFromStart() : "";
+  String suffix = suffix_iterator_ ? suffix_iterator_->TextFromStart() : "";
 
   // Give up if we were unable to get new prefix and suffix.
   if (prefix == selector_->Prefix() && suffix == selector_->Suffix()) {
@@ -665,9 +643,11 @@ void TextFragmentSelectorGenerator::ExtendContext() {
 
 void TextFragmentSelectorGenerator::RecordAllMetrics(
     const TextFragmentSelector& selector) {
-  UMA_HISTOGRAM_BOOLEAN(
-      "SharedHighlights.LinkGenerated",
-      selector.Type() != TextFragmentSelector::SelectorType::kInvalid);
+  LinkGenerationStatus status =
+      selector.Type() == TextFragmentSelector::SelectorType::kInvalid
+          ? LinkGenerationStatus::kFailure
+          : LinkGenerationStatus::kSuccess;
+  shared_highlighting::LogLinkGenerationStatus(status);
 
   ukm::UkmRecorder* recorder = frame_->GetDocument()->UkmRecorder();
   ukm::SourceId source_id = frame_->GetDocument()->UkmSourceID();
@@ -693,12 +673,11 @@ void TextFragmentSelectorGenerator::RecordAllMetrics(
     UMA_HISTOGRAM_TIMES("SharedHighlights.LinkGenerated.Error.TimeToGenerate",
                         base::DefaultTickClock::GetInstance()->NowTicks() -
                             generation_start_time_);
-
-    LinkGenerationError error =
-        error_.has_value() ? error_.value() : LinkGenerationError::kUnknown;
-    shared_highlighting::LogLinkGenerationErrorReason(error);
+    if (error_ == LinkGenerationError::kNone)
+      error_ = LinkGenerationError::kUnknown;
+    shared_highlighting::LogLinkGenerationErrorReason(error_);
     shared_highlighting::LogLinkGeneratedErrorUkmEvent(recorder, source_id,
-                                                       error);
+                                                       error_);
   }
 }
 
@@ -709,14 +688,24 @@ void TextFragmentSelectorGenerator::OnSelectorReady(
 
   RecordAllMetrics(selector);
   if (pending_generate_selector_callback_) {
-    NotifyClientSelectorReady(selector);
+    std::move(pending_generate_selector_callback_).Run(selector, error_);
   }
 }
 
-void TextFragmentSelectorGenerator::NotifyClientSelectorReady(
-    const TextFragmentSelector& selector) {
-  DCHECK(pending_generate_selector_callback_);
-  std::move(pending_generate_selector_callback_).Run(selector);
+// static
+void TextFragmentSelectorGenerator::OverrideExactTextMaxCharsForTesting(
+    int value) {
+  if (value < 0)
+    g_exactTextMaxCharsOverride.reset();
+  else
+    g_exactTextMaxCharsOverride = value;
+}
+
+unsigned TextFragmentSelectorGenerator::GetExactTextMaxChars() {
+  if (g_exactTextMaxCharsOverride)
+    return g_exactTextMaxCharsOverride.value();
+  else
+    return kExactTextMaxChars;
 }
 
 }  // namespace blink

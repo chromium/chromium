@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -115,14 +115,17 @@ class COMPONENT_EXPORT(X11) XPrint {
   };
 
   struct Printer {
+    bool operator==(const Printer& other) const {
+      return name == other.name && description == other.description;
+    }
+
     std::vector<String8> name{};
     std::vector<String8> description{};
   };
 
   struct NotifyEvent {
-    static constexpr int type_id = 50;
+    static constexpr int type_id = 52;
     static constexpr uint8_t opcode = 0;
-    bool send_event{};
     uint8_t detail{};
     uint16_t sequence{};
     PContext context{};
@@ -132,9 +135,8 @@ class COMPONENT_EXPORT(X11) XPrint {
   };
 
   struct AttributNotifyEvent {
-    static constexpr int type_id = 51;
+    static constexpr int type_id = 53;
     static constexpr uint8_t opcode = 1;
-    bool send_event{};
     uint8_t detail{};
     uint16_t sequence{};
     PContext context{};
@@ -144,12 +146,18 @@ class COMPONENT_EXPORT(X11) XPrint {
 
   struct BadContextError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };
 
   struct BadSequenceError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };

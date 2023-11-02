@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -82,7 +82,7 @@ ReportBadMessageCallback ReceiverSetState::GetBadMessageCallback() {
   return base::BindOnce(
       [](ReportBadMessageCallback error_callback,
          base::WeakPtr<ReceiverSetState> receiver_set, ReceiverId receiver_id,
-         const std::string& error) {
+         base::StringPiece error) {
         std::move(error_callback).Run(error);
         if (receiver_set)
           receiver_set->Remove(receiver_id);
@@ -138,7 +138,7 @@ void ReceiverSetState::FlushForTesting() {
   }
 }
 
-void ReceiverSetState::SetDispatchContext(const void* context,
+void ReceiverSetState::SetDispatchContext(void* context,
                                           ReceiverId receiver_id) {
   current_context_ = context;
   current_receiver_ = receiver_id;

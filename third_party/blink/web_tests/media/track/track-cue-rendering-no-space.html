@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../media-controls.js"></script>
+<style>
+::cue { font-size: 24px; }
+</style>
+<video src="../content/test.ogv" width="640"></video>
+<script>
+
+function animationFrame() {
+  return new Promise(resolve => { requestAnimationFrame(resolve); });
+}
+
+promise_test(async () => {
+  let v = document.querySelector('video');
+  let track = v.addTextTrack('subtitles', 'label', 'en');
+  track.mode = 'showing';
+  track.addCue(new VTTCue(1, 60, 'First subtitle'));
+  let vertical_cue = new VTTCue(1, 60, 'Second substitle');
+  vertical_cue.vertical = 'rl';
+  track.addCue(vertical_cue);
+  v.currentTime = 3;
+  await new Promise(resolve => { v.addEventListener('seeked', resolve, {once:true}); });
+  await animationFrame();
+  await animationFrame();
+  // Now cues are shown.
+
+  // The first cue occupies the full width of the video. So there are no spaces
+  // for the vertical cue which occupies the full height of the video.
+  let vertical_rect = textTrackCueElementByIndex(v, 1);
+  assert_true(vertical_rect.offsetTop > v.offsetHeight || vertical_rect.offsetLeft > v.offsetWidth);
+}, 'A cue should be invisible if there are no spaces.');
+</script>

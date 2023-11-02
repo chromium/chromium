@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://bugs.chromium.org/p/chromium/issues/detail?id=1321616">
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="../resources/common.js"></script>
+<script src="../resources/picker-common.js"></script>
+<script src="resources/calendar-picker-common.js"></script>
+
+<input type=month id=picker>
+
+<script>
+const openPickerAndGetThumb = async () => {
+  await openPicker(picker);
+  const scrubby = internals.pagePopupWindow.global.picker.yearListView_.scrubbyScrollBar;
+  const thumb = scrubby.element.querySelector('.scrubby-scroll-thumb');
+  const originalTop = thumb.style.top;
+  const thumbOffset = cumulativeOffset(thumb);
+  return { thumb, thumbX: thumbOffset[0] + 1, thumbY: thumbOffset[1] + 1, originalTop };
+}
+
+promise_test(async () => {
+  const {thumb, thumbX, thumbY, originalTop} = await openPickerAndGetThumb();
+
+  eventSender.mouseMoveTo(thumbX, thumbY);
+  eventSender.mouseDown();
+  eventSender.mouseMoveTo(thumbX, thumbY - 15);
+  skipAnimation();
+  eventSender.mouseUp();
+  skipAnimation();
+  assert_equals(thumb.style.top, originalTop);
+}, `Verifies that the date picker's scrubby scrollbar returns to its initial state after being clicked and dragged.`);
+
+promise_test(async () => {
+  const {thumb, thumbX, thumbY, originalTop} = await openPickerAndGetThumb();
+
+  eventSender.clearTouchPoints();
+  eventSender.addTouchPoint(thumbX, thumbY);
+  eventSender.touchStart();
+  eventSender.updateTouchPoint(0, thumbX, thumbY - 15);
+  eventSender.touchMove();
+  skipAnimation();
+  eventSender.releaseTouchPoint(0);
+  eventSender.touchEnd();
+  skipAnimation();
+  assert_equals(thumb.style.top, originalTop);
+}, `Verifies that the date picker's scrubby scrollbar returns to its initial state after being touched and dragged.`);
+
+</script>

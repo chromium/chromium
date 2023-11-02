@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,11 @@
 #include <memory>
 #include <set>
 
+#include "base/containers/flat_set.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-struct WebApplicationInfo;
+struct WebAppInstallInfo;
 
 namespace web_app {
 
@@ -27,48 +28,47 @@ class FakeInstallFinalizer final : public WebAppInstallFinalizer {
   ~FakeInstallFinalizer() override;
 
   // WebAppInstallFinalizer:
-  void FinalizeInstall(const WebApplicationInfo& web_app_info,
+  void FinalizeInstall(const WebAppInstallInfo& web_app_info,
                        const FinalizeOptions& options,
                        InstallFinalizedCallback callback) override;
-  void FinalizeUpdate(const WebApplicationInfo& web_app_info,
+  void FinalizeUpdate(const WebAppInstallInfo& web_app_info,
                       InstallFinalizedCallback callback) override;
-  void UninstallExternalWebApp(
-      const AppId& app_id,
-      webapps::WebappUninstallSource external_install_source,
-      UninstallWebAppCallback callback) override;
+  void UninstallExternalWebApp(const AppId& app_id,
+                               WebAppManagement::Type source,
+                               webapps::WebappUninstallSource uninstall_surface,
+                               UninstallWebAppCallback callback) override;
   void UninstallExternalWebAppByUrl(
       const GURL& app_url,
-      webapps::WebappUninstallSource external_install_source,
+      WebAppManagement::Type source,
+      webapps::WebappUninstallSource uninstall_surface,
       UninstallWebAppCallback callback) override;
-  void UninstallWithoutRegistryUpdateFromSync(
-      const std::vector<AppId>& web_apps,
-      RepeatingUninstallCallback callback) override;
   bool CanUserUninstallWebApp(const AppId& app_id) const override;
   void UninstallWebApp(const AppId& app_id,
                        webapps::WebappUninstallSource uninstall_source,
                        UninstallWebAppCallback callback) override;
   void RetryIncompleteUninstalls(
-      const std::vector<AppId>& apps_to_uninstall) override;
-  bool WasPreinstalledWebAppUninstalled(const AppId& app_id) const override;
+      const base::flat_set<AppId>& apps_to_uninstall) override;
   bool CanReparentTab(const AppId& app_id,
                       bool shortcut_created) const override;
   void ReparentTab(const AppId& app_id,
                    bool shortcut_created,
                    content::WebContents* web_contents) override;
-  void SetRemoveSourceCallbackForTesting(
+  void SetRemoveManagementTypeCallbackForTesting(
       base::RepeatingCallback<void(const AppId&)>) override;
 
   void SetNextFinalizeInstallResult(const AppId& app_id,
-                                    InstallResultCode code);
+                                    webapps::InstallResultCode code);
   void SetNextUninstallExternalWebAppResult(const GURL& app_url,
-                                            bool uninstalled);
+                                            webapps::UninstallResultCode code);
 
   // Uninstall the app and add |app_id| to the map of external extensions
   // uninstalled by the user. May be called on an app that isn't installed to
   // simulate that the app was uninstalled previously.
   void SimulateExternalAppUninstalledByUser(const AppId& app_id);
 
-  std::unique_ptr<WebApplicationInfo> web_app_info() {
+  bool WasPreinstalledWebAppUninstalled(const AppId& app_id);
+
+  std::unique_ptr<WebAppInstallInfo> web_app_info() {
     return std::move(web_app_info_copy_);
   }
 
@@ -80,20 +80,21 @@ class FakeInstallFinalizer final : public WebAppInstallFinalizer {
     return uninstall_external_web_app_urls_;
   }
 
-  int num_reparent_tab_calls() { return num_reparent_tab_calls_; }
+  int num_reparent_tab_calls() const { return num_reparent_tab_calls_; }
 
  private:
-  void Finalize(const WebApplicationInfo& web_app_info,
-                InstallResultCode code,
+  void Finalize(const WebAppInstallInfo& web_app_info,
+                webapps::InstallResultCode code,
                 InstallFinalizedCallback callback);
 
-  std::unique_ptr<WebApplicationInfo> web_app_info_copy_;
+  std::unique_ptr<WebAppInstallInfo> web_app_info_copy_;
   std::vector<FinalizeOptions> finalize_options_list_;
   std::vector<GURL> uninstall_external_web_app_urls_;
 
   absl::optional<AppId> next_app_id_;
-  absl::optional<InstallResultCode> next_result_code_;
-  std::map<GURL, bool> next_uninstall_external_web_app_results_;
+  absl::optional<webapps::InstallResultCode> next_result_code_;
+  std::map<GURL, webapps::UninstallResultCode>
+      next_uninstall_external_web_app_results_;
   std::set<AppId> user_uninstalled_external_apps_;
 
   int num_reparent_tab_calls_ = 0;

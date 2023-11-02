@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,13 +12,13 @@ function CreateWebViewAndGuest(callback) {
     webview.removeEventListener('loadabort', onLoadAbort);
     callback();
   };
-  webview.addEventListener('loadstop', onLoadStop);
-
   var onLoadAbort = function(e) {
     chrome.test.sendMessage('WebViewTest.FAILURE');
     webview.removeEventListener('loadstop', onLoadStop);
     webview.removeEventListener('loadabort', onLoadAbort);
   };
+  webview.addEventListener('loadstop', onLoadStop);
+  webview.addEventListener('loadabort', onLoadAbort);
   webview.src = 'data:text/html,<html><body>simple test</body></html>';
   return webview;
 }

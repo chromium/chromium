@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
+#include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 
@@ -49,7 +50,7 @@ struct ContentSettingPatternSource {
                               base::Value setting_value,
                               const std::string& source,
                               bool incognito,
-                              base::Time expiration = base::Time());
+                              content_settings::RuleMetaData metadata = {});
   ContentSettingPatternSource(const ContentSettingPatternSource& other);
   ContentSettingPatternSource();
   ContentSettingPatternSource& operator=(
@@ -61,7 +62,7 @@ struct ContentSettingPatternSource {
   ContentSettingsPattern primary_pattern;
   ContentSettingsPattern secondary_pattern;
   base::Value setting_value;
-  base::Time expiration;
+  content_settings::RuleMetaData metadata;
   std::string source;
   bool incognito;
 };
@@ -73,8 +74,20 @@ struct RendererContentSettingRules {
   // Any new type added below must also update this method.
   static bool IsRendererContentSetting(ContentSettingsType content_type);
 
+  // Filters all the rules by matching the primary pattern with
+  // |outermost_main_frame_url|. Any new type added below that needs to match
+  // the primary pattern with the outermost main frame's url should also update
+  // this method.
+  void FilterRulesByOutermostMainFrameURL(const GURL& outermost_main_frame_url);
+
   RendererContentSettingRules();
   ~RendererContentSettingRules();
+  RendererContentSettingRules(const RendererContentSettingRules& rules);
+  RendererContentSettingRules(RendererContentSettingRules&& rules);
+  RendererContentSettingRules& operator=(
+      const RendererContentSettingRules& rules);
+  RendererContentSettingRules& operator=(RendererContentSettingRules&& rules);
+
   ContentSettingsForOneType image_rules;
   ContentSettingsForOneType script_rules;
   ContentSettingsForOneType popup_redirect_rules;
@@ -105,7 +118,7 @@ struct SettingInfo {
   SettingSource source;
   ContentSettingsPattern primary_pattern;
   ContentSettingsPattern secondary_pattern;
-  SessionModel session_model;
+  RuleMetaData metadata;
 };
 
 }  // namespace content_settings

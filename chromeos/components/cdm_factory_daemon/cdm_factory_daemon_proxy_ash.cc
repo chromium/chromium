@@ -1,19 +1,20 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chromeos/components/cdm_factory_daemon/cdm_factory_daemon_proxy_ash.h"
 
+#include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/command_line.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/components/cdm_factory_daemon/output_protection_impl.h"
-#include "chromeos/dbus/cdm_factory_daemon/cdm_factory_daemon_client.h"
+#include "chromeos/ash/components/dbus/cdm_factory_daemon/cdm_factory_daemon_client.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -21,14 +22,115 @@
 #include "mojo/public/cpp/system/invitation.h"
 #include "ui/display/manager/display_manager.h"
 
-namespace {
-constexpr char kCdmFactoryDaemonPipeName[] = "cdm-factory-daemon-pipe";
-}  // namespace
-
 namespace chromeos {
 
-CdmFactoryDaemonProxyAsh::CdmFactoryDaemonProxyAsh()
-    : CdmFactoryDaemonProxy() {}
+namespace {
+constexpr char kCdmFactoryDaemonPipeName[] = "cdm-factory-daemon-pipe";
+
+// This is used as an implementation of cdm::mojom::BrowserCdmFactory when we
+// pass a mojo::PendingRemote to an OOP video
+// decoder so it can proxy the calls back to the browser process like the
+// corresponding methods do in ChromeOsCdmFactory and ArcCdmContext. The
+// methods marked as NOTREACHED() are never used during video decoding.
+class BrowserCdmFactoryProxy : public cdm::mojom::BrowserCdmFactory {
+ public:
+  BrowserCdmFactoryProxy()
+      : task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+  BrowserCdmFactoryProxy(const BrowserCdmFactoryProxy&) = delete;
+  BrowserCdmFactoryProxy& operator=(const BrowserCdmFactoryProxy&) = delete;
+  ~BrowserCdmFactoryProxy() override = default;
+
+  // chromeos::cdm::mojom::BrowserCdmFactoryDaemon:
+  void CreateFactory(const std::string& key_system,
+                     CreateFactoryCallback callback) override {
+    NOTREACHED();
+  }
+
+  void GetHwConfigData(GetHwConfigDataCallback callback) override {
+    if (!task_runner_->RunsTasksInCurrentSequence()) {
+      task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&BrowserCdmFactoryProxy::GetHwConfigData,
+                         weak_factory_.GetWeakPtr(), std::move(callback)));
+      return;
+    }
+    CdmFactoryDaemonProxyAsh::GetInstance().GetHwConfigData(
+        std::move(callback));
+  }
+
+  void GetOutputProtection(mojo::PendingReceiver<cdm::mojom::OutputProtection>
+                               output_protection) override {
+    NOTREACHED();
+  }
+
+  void GetScreenResolutions(GetScreenResolutionsCallback callback) override {
+    if (!task_runner_->RunsTasksInCurrentSequence()) {
+      task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&BrowserCdmFactoryProxy::GetScreenResolutions,
+                         weak_factory_.GetWeakPtr(), std::move(callback)));
+      return;
+    }
+    CdmFactoryDaemonProxyAsh::GetInstance().GetScreenResolutions(
+        std::move(callback));
+  }
+
+  void GetAndroidHwKeyData(const std::vector<uint8_t>& key_id,
+                           const std::vector<uint8_t>& hw_identifier,
+                           GetAndroidHwKeyDataCallback callback) override {
+    if (!task_runner_->RunsTasksInCurrentSequence()) {
+      task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&BrowserCdmFactoryProxy::GetAndroidHwKeyData,
+                         weak_factory_.GetWeakPtr(), key_id, hw_identifier,
+                         std::move(callback)));
+      return;
+    }
+    CdmFactoryDaemonProxyAsh::GetInstance().GetAndroidHwKeyData(
+        key_id, hw_identifier, std::move(callback));
+  }
+
+ private:
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  base::WeakPtrFactory<BrowserCdmFactoryProxy> weak_factory_{this};
+};
+
+}  // namespace
+
+CdmFactoryDaemonProxyAsh::CdmFactoryDaemonProxyAsh() : CdmFactoryDaemonProxy() {
+  // Check if there's a Chrome flag set to force a specific HDCP mode. We do
+  // that from here because this is a singleton we use in ash chrome and this is
+  // related to the OutputProtection class we have which is able to manage HDCP
+  // state across all displays easily.
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(ash::switches::kAlwaysEnableHdcp)) {
+    std::string hdcp_mode =
+        command_line->GetSwitchValueASCII(ash::switches::kAlwaysEnableHdcp);
+    if (!hdcp_mode.empty()) {
+      forced_output_protection_ =
+          std::make_unique<OutputProtectionImpl>(nullptr);
+      if (hdcp_mode == "type0") {
+        forced_output_protection_->EnableProtection(
+            cdm::mojom::OutputProtection::ProtectionType::HDCP_TYPE_0,
+            base::DoNothing());
+      } else if (hdcp_mode == "type1") {
+        forced_output_protection_->EnableProtection(
+            cdm::mojom::OutputProtection::ProtectionType::HDCP_TYPE_1,
+            base::DoNothing());
+      } else {
+        LOG(ERROR) << "Invalid HDCP mode of: " << hdcp_mode;
+      }
+    } else {
+      LOG(ERROR) << "Empty HDCP mode for: " << ash::switches::kAlwaysEnableHdcp;
+    }
+  }
+
+  ash::Shell::Get()
+      ->display_configurator()
+      ->content_protection_manager()
+      ->SetProvisionedKeyRequest(base::BindRepeating(
+          &CdmFactoryDaemonProxyAsh::GetHdcp14Key, base::Unretained(this)));
+}
 
 CdmFactoryDaemonProxyAsh::~CdmFactoryDaemonProxyAsh() = default;
 
@@ -48,6 +150,12 @@ void CdmFactoryDaemonProxyAsh::Create(
 CdmFactoryDaemonProxyAsh& CdmFactoryDaemonProxyAsh::GetInstance() {
   static base::NoDestructor<CdmFactoryDaemonProxyAsh> instance;
   return *instance;
+}
+
+// static
+std::unique_ptr<cdm::mojom::BrowserCdmFactory>
+CdmFactoryDaemonProxyAsh::CreateBrowserCdmFactoryProxy() {
+  return std::make_unique<BrowserCdmFactoryProxy>();
 }
 
 void CdmFactoryDaemonProxyAsh::ConnectOemCrypto(
@@ -126,6 +234,24 @@ void CdmFactoryDaemonProxyAsh::GetScreenResolutions(
   std::move(callback).Run(std::move(resolutions));
 }
 
+void CdmFactoryDaemonProxyAsh::GetAndroidHwKeyData(
+    const std::vector<uint8_t>& key_id,
+    const std::vector<uint8_t>& hw_identifier,
+    GetAndroidHwKeyDataCallback callback) {
+  DCHECK(mojo_task_runner_->RunsTasksInCurrentSequence());
+  DVLOG(1) << "CdmFactoryDaemonProxyAsh::GetAndroidHwKeyData called";
+  if (daemon_remote_.is_bound()) {
+    DVLOG(1) << "CdmFactoryDaemon mojo connection already exists, re-use it";
+    ProxyGetAndroidHwKeyData(key_id, hw_identifier, std::move(callback));
+    return;
+  }
+
+  // base::Unretained is safe below because this class is a singleton.
+  EstablishDaemonConnection(base::BindOnce(
+      &CdmFactoryDaemonProxyAsh::ProxyGetAndroidHwKeyData,
+      base::Unretained(this), key_id, hw_identifier, std::move(callback)));
+}
+
 void CdmFactoryDaemonProxyAsh::EstablishDaemonConnection(
     base::OnceClosure callback) {
   // This may have happened already.
@@ -185,9 +311,22 @@ void CdmFactoryDaemonProxyAsh::ProxyGetHwConfigData(
   daemon_remote_->GetHwConfigData(std::move(callback));
 }
 
+void CdmFactoryDaemonProxyAsh::ProxyGetAndroidHwKeyData(
+    const std::vector<uint8_t>& key_id,
+    const std::vector<uint8_t>& hw_identifier,
+    GetAndroidHwKeyDataCallback callback) {
+  if (!daemon_remote_) {
+    LOG(ERROR) << "daemon_remote_ interface is not connected";
+    std::move(callback).Run(media::Decryptor::Status::kError, {});
+    return;
+  }
+  daemon_remote_->GetAndroidHwKeyData(key_id, hw_identifier,
+                                      std::move(callback));
+}
+
 void CdmFactoryDaemonProxyAsh::SendDBusRequest(base::ScopedFD fd,
                                                base::OnceClosure callback) {
-  chromeos::CdmFactoryDaemonClient::Get()->BootstrapMojoConnection(
+  ash::CdmFactoryDaemonClient::Get()->BootstrapMojoConnection(
       std::move(fd),
       base::BindOnce(&CdmFactoryDaemonProxyAsh::OnBootstrapMojoConnection,
                      base::Unretained(this), std::move(callback)));
@@ -233,6 +372,27 @@ void CdmFactoryDaemonProxyAsh::OnDaemonMojoConnectionError() {
   // Reset the remote here to trigger reconnection to the daemon on the next
   // call to CreateFactory.
   daemon_remote_.reset();
+}
+
+void CdmFactoryDaemonProxyAsh::GetHdcp14Key(
+    cdm::mojom::CdmFactoryDaemon::GetHdcp14KeyCallback callback) {
+  if (!mojo_task_runner_->RunsTasksInCurrentSequence()) {
+    mojo_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&CdmFactoryDaemonProxyAsh::GetHdcp14Key,
+                                  base::Unretained(this), std::move(callback)));
+    return;
+  }
+
+  DVLOG(1) << "CdmFactoryDaemonProxyAsh::GetHdcp14Key called";
+  if (daemon_remote_) {
+    DVLOG(1) << "CdmFactoryDaemon mojo connection already exists, re-use it";
+    daemon_remote_->GetHdcp14Key(std::move(callback));
+    return;
+  }
+
+  EstablishDaemonConnection(
+      base::BindOnce(&CdmFactoryDaemonProxyAsh::GetHdcp14Key,
+                     base::Unretained(this), std::move(callback)));
 }
 
 }  // namespace chromeos

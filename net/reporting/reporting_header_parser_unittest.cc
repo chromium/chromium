@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,7 @@
 #include "net/reporting/reporting_endpoint.h"
 #include "net/reporting/reporting_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -71,10 +72,12 @@ class ReportingHeaderParserTestBase
   const url::Origin kOrigin1_ = url::Origin::Create(kUrl1_);
   const GURL kUrl2_ = GURL("https://origin2.test/path");
   const url::Origin kOrigin2_ = url::Origin::Create(kUrl2_);
-  const NetworkIsolationKey kNik_ =
-      NetworkIsolationKey(SchemefulSite(kOrigin1_), SchemefulSite(kOrigin1_));
-  const NetworkIsolationKey kOtherNik_ =
-      NetworkIsolationKey(SchemefulSite(kOrigin2_), SchemefulSite(kOrigin2_));
+  const NetworkAnonymizationKey kNik_ =
+      NetworkAnonymizationKey(SchemefulSite(kOrigin1_),
+                              SchemefulSite(kOrigin1_));
+  const NetworkAnonymizationKey kOtherNik_ =
+      NetworkAnonymizationKey(SchemefulSite(kOrigin2_),
+                              SchemefulSite(kOrigin2_));
   const IsolationInfo kIsolationInfo_ =
       IsolationInfo::Create(IsolationInfo::RequestType::kOther,
                             kOrigin1_,
@@ -183,14 +186,14 @@ class ReportingHeaderParserTest : public ReportingHeaderParserTestBase {
     return s.str();
   }
 
-  void ParseHeader(const NetworkIsolationKey& network_isolation_key,
+  void ParseHeader(const NetworkAnonymizationKey& network_anonymization_key,
                    const url::Origin& origin,
                    const std::string& json) {
-    std::unique_ptr<base::Value> value =
-        base::JSONReader::ReadDeprecated("[" + json + "]");
+    absl::optional<base::Value> value =
+        base::JSONReader::Read("[" + json + "]");
     if (value) {
       ReportingHeaderParser::ParseReportToHeader(
-          context(), network_isolation_key, origin, std::move(value));
+          context(), network_anonymization_key, origin, value->GetList());
     }
   }
 };
@@ -784,7 +787,7 @@ TEST_P(ReportingHeaderParserTest, EndpointGroupKey) {
       ReportingEndpointGroupKey(kOtherNik_, kOrigin2_, kGroup2_);
 
   const struct {
-    NetworkIsolationKey network_isolation_key;
+    NetworkAnonymizationKey network_anonymization_key;
     GURL url;
     ReportingEndpointGroupKey group1_key;
     ReportingEndpointGroupKey group2_key;
@@ -812,8 +815,8 @@ TEST_P(ReportingHeaderParserTest, EndpointGroupKey) {
     EXPECT_FALSE(EndpointGroupExistsInCache(source.group2_key,
                                             OriginSubdomains::DEFAULT));
 
-    ParseHeader(source.network_isolation_key, url::Origin::Create(source.url),
-                header1);
+    ParseHeader(source.network_anonymization_key,
+                url::Origin::Create(source.url), header1);
     endpoint_group_count += 2u;
     endpoint_count += 4u;
     EXPECT_EQ(endpoint_group_count, cache()->GetEndpointGroupCountForTesting());
@@ -863,7 +866,7 @@ TEST_P(ReportingHeaderParserTest, EndpointGroupKey) {
     EXPECT_TRUE(EndpointGroupExistsInCache(source.group2_key,
                                            OriginSubdomains::DEFAULT));
     EXPECT_TRUE(cache()->ClientExistsForTesting(
-        source.network_isolation_key, url::Origin::Create(source.url)));
+        source.network_anonymization_key, url::Origin::Create(source.url)));
   }
 
   // Test updating existing configurations
@@ -890,8 +893,8 @@ TEST_P(ReportingHeaderParserTest, EndpointGroupKey) {
               endpoint.info.priority);
     EXPECT_FALSE(FindEndpointInCache(source.group2_key, kEndpoint3_));
 
-    ParseHeader(source.network_isolation_key, url::Origin::Create(source.url),
-                header2);
+    ParseHeader(source.network_anonymization_key,
+                url::Origin::Create(source.url), header2);
     endpoint_group_count--;
     endpoint_count -= 2;
     EXPECT_EQ(endpoint_group_count, cache()->GetEndpointGroupCountForTesting());
@@ -947,7 +950,7 @@ TEST_P(ReportingHeaderParserTest, EndpointGroupKey) {
     EXPECT_TRUE(EndpointGroupExistsInCache(source.group2_key,
                                            OriginSubdomains::INCLUDE));
     EXPECT_TRUE(cache()->ClientExistsForTesting(
-        source.network_isolation_key, url::Origin::Create(source.url)));
+        source.network_anonymization_key, url::Origin::Create(source.url)));
   }
 }
 
@@ -1788,7 +1791,7 @@ class ReportingHeaderParserStructuredHeaderTest
     if (header_map) {
       ReportingHeaderParser::ProcessParsedReportingEndpointsHeader(
           context(), reporting_source, isolation_info,
-          isolation_info.network_isolation_key(), origin, *header_map);
+          isolation_info.network_anonymization_key(), origin, *header_map);
     }
   }
   void ProcessParsedHeader(
@@ -1799,7 +1802,7 @@ class ReportingHeaderParserStructuredHeaderTest
           header_map) {
     ReportingHeaderParser::ProcessParsedReportingEndpointsHeader(
         context(), reporting_source, isolation_info,
-        isolation_info.network_isolation_key(), origin, *header_map);
+        isolation_info.network_anonymization_key(), origin, *header_map);
   }
 
   const base::UnguessableToken kReportingSource_ =
@@ -1896,7 +1899,6 @@ TEST_P(ReportingHeaderParserStructuredHeaderTest, Basic) {
 
   IsolationInfo isolation_info = cache()->GetIsolationInfoForEndpoint(endpoint);
   EXPECT_TRUE(isolation_info.IsEqualForTesting(kIsolationInfo_));
-
   EXPECT_EQ(kOrigin1_, endpoint.group_key.origin);
   EXPECT_EQ(kGroup1_, endpoint.group_key.group_name);
   EXPECT_EQ(kEndpoint1_, endpoint.info.url);

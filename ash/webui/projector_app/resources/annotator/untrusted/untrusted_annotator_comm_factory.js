@@ -1,11 +1,21 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PostMessageAPIClient} from 'chrome-untrusted://projector/js/post_message_api_client.m.js';
-import {RequestHandler} from 'chrome-untrusted://projector/js/post_message_api_request_handler.m.js';
+import {PostMessageAPIClient} from '//resources/ash/common/post_message_api/post_message_api_client.js';
+import {RequestHandler} from '//resources/ash/common/post_message_api/post_message_api_request_handler.js';
 
-const TARGET_URL = 'chrome://projector/';
+const TARGET_URL = 'chrome://projector-annotator/';
+
+/**
+ * Returns the projector app element inside this current DOM.
+ * @return {projectorApp.AnnotatorApi}
+ */
+function getAnnotatorElement() {
+  return /** @type {projectorApp.AnnotatorApi} */ (
+      document.querySelector('projector-ink-canvas-wrapper'));
+}
+
 
 // A client that sends messages to the chrome://projector embedder.
 export class TrustedAnnotatorClient extends PostMessageAPIClient {
@@ -15,8 +25,6 @@ export class TrustedAnnotatorClient extends PostMessageAPIClient {
    */
   constructor(parentWindow) {
     super(TARGET_URL, parentWindow);
-    // TODO(b/196245932) Register the onUndoRedoAvailabilityChanged as callback
-    // to the ink library wrapper.
   }
 
   /**
@@ -28,6 +36,15 @@ export class TrustedAnnotatorClient extends PostMessageAPIClient {
   onUndoRedoAvailabilityChanged(undoAvailable, redoAvailable) {
     return this.callApiFn(
         'onUndoRedoAvailabilityChanged', [undoAvailable, redoAvailable]);
+  }
+
+  /**
+   * Notifies the native UI that the canvas has initialized.
+   * @param {boolean} success
+   * @return {Promise}
+   */
+  onCanvasInitialized(success) {
+    return this.callApiFn('onCanvasInitialized', [success]);
   }
 }
 
@@ -44,23 +61,23 @@ export class UntrustedAnnotatorRequestHandler extends RequestHandler {
     super(null, TARGET_URL, TARGET_URL);
     this.targetWindow_ = parentWindow;
 
-    this.registerMethod('setTool', (tool) => {
-      // TODO(b/196245932) Call into the Ink library to set tool.
+    this.registerMethod('setTool', (args) => {
+      getAnnotatorElement().setTool(args[0]);
       return true;
     });
 
     this.registerMethod('undo', () => {
-      // TODO(b/196245932) Call into the Ink wrapper to undo.
+      getAnnotatorElement().undo();
       return true;
     });
 
     this.registerMethod('redo', () => {
-      // TODO(b/196245932) Call into Ink wrapper to redo.
+      getAnnotatorElement().redo();
       return true;
     });
 
     this.registerMethod('clear', () => {
-      // TODO(b/196245932) call into Ink wrapper to clear.
+      getAnnotatorElement().clear();
       return true;
     });
   }
@@ -90,6 +107,14 @@ export class AnnotatorUntrustedCommFactory {
 
     AnnotatorUntrustedCommFactory.requestHandler_ =
         new UntrustedAnnotatorRequestHandler(window.parent);
+    const elem = getAnnotatorElement();
+    elem.addUndoRedoListener((undoAvailable, redoAvailable) => {
+      AnnotatorUntrustedCommFactory.client_.onUndoRedoAvailabilityChanged(
+          undoAvailable, redoAvailable);
+    });
+    elem.addCanvasInitializationCallback((success) => {
+      AnnotatorUntrustedCommFactory.client_.onCanvasInitialized(success);
+    });
   }
 
   /**
@@ -109,8 +134,12 @@ export class AnnotatorUntrustedCommFactory {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  // Create instances of the singletons(PostMessageAPIClient and
-  // RequestHandler) when the document has finished loading.
-  AnnotatorUntrustedCommFactory.maybeCreateInstances();
+const observer = new MutationObserver(() => {
+  if (getAnnotatorElement()) {
+    // Create instances of the singletons(PostMessageAPIClient and
+    // RequestHandler) when the annotator element has been added to DOM tree.
+    AnnotatorUntrustedCommFactory.maybeCreateInstances();
+  }
 });
+
+observer.observe(document, {childList: true, subtree: true});

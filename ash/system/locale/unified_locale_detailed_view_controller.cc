@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@ UnifiedLocaleDetailedViewController::~UnifiedLocaleDetailedViewController() =
 
 views::View* UnifiedLocaleDetailedViewController::CreateView() {
   DCHECK(!view_);
-  view_ = new tray::LocaleDetailedView(detailed_view_delegate_.get());
+  view_ = new LocaleDetailedView(detailed_view_delegate_.get());
   return view_;
 }
 

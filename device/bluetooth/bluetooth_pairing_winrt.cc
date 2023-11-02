@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,15 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/task/thread_pool.h"
 #include "base/win/com_init_util.h"
 #include "base/win/post_async_results.h"
 #include "base/win/scoped_hstring.h"
+#include "device/base/features.h"
 #include "device/bluetooth/bluetooth_device_winrt.h"
 #include "device/bluetooth/event_utils_winrt.h"
 
@@ -68,6 +71,40 @@ HRESULT CompleteDeferral(
   base::win::AssertComApartmentType(base::win::ComApartmentType::MTA);
   return deferral->Complete();
 }
+
+// TODO: https://crbug.com/1345471, once we refactor the
+// BluetoothDevice::ConfirmPasskey() to use std::u16string instead of uint32_t
+// we can then get rid of HstringToUint32()
+bool HstringToUint32(HSTRING in, uint32_t& out) {
+  if (!in) {
+    DVLOG(2) << "HstringToUint32: HSTRING PIN is NULL.";
+    return false;
+  }
+
+  base::win::ScopedHString scoped_hstring{in};
+  std::string str = scoped_hstring.GetAsUTF8();
+
+  // PIN has to be <= 6 digits
+  if (str.length() > 6) {
+    DVLOG(2) << "HstringToUint32: PIN code = " << str
+             << " which is more than 6 digits.";
+    return false;
+  }
+
+  // Remove leading '0' before being converted into uint32_t
+  str.erase(0, str.find_first_not_of('0'));
+
+  // If we failed to convert str into unsigned int we cancel pairing by return
+  // false
+  if (base::StringToUint(str, &out)) {
+    return true;
+  } else {
+    DVLOG(2) << "HstringToUint32: failed to convert pin = " << str
+             << " into uint32_t";
+    return false;
+  }
+}
+
 }  // namespace
 
 BluetoothPairingWinrt::BluetoothPairingWinrt(
@@ -150,6 +187,14 @@ void BluetoothPairingWinrt::OnSetPinCodeDeferralCompletion(HRESULT hr) {
   }
 }
 
+void BluetoothPairingWinrt::OnConfirmPairingDeferralCompletion(HRESULT hr) {
+  if (FAILED(hr)) {
+    DVLOG(2) << "Completing Deferred Pairing Request failed: "
+             << logging::SystemErrorCodeToString(hr);
+    std::move(callback_).Run(BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
+  }
+}
+
 void BluetoothPairingWinrt::SetPinCode(base::StringPiece pin_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << "BluetoothPairingWinrt::SetPinCode(" << pin_code << ")";
@@ -170,6 +215,26 @@ void BluetoothPairingWinrt::SetPinCode(base::StringPiece pin_code) {
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&CompleteDeferral, std::move(pairing_deferral_)),
       base::BindOnce(&BluetoothPairingWinrt::OnSetPinCodeDeferralCompletion,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void BluetoothPairingWinrt::ConfirmPairing() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DVLOG(2) << "BluetoothPairingWinrt::ConfirmPairing() is called";
+  DCHECK(pairing_requested_);
+  HRESULT hr = pairing_requested_->Accept();
+  if (FAILED(hr)) {
+    DVLOG(2) << "Accepting Pairing Request in ConfirmPairing failed: "
+             << logging::SystemErrorCodeToString(hr);
+    std::move(callback_).Run(BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
+    return;
+  }
+
+  DCHECK(pairing_deferral_);
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&CompleteDeferral, std::move(pairing_deferral_)),
+      base::BindOnce(&BluetoothPairingWinrt::OnConfirmPairingDeferralCompletion,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -245,11 +310,6 @@ void BluetoothPairingWinrt::OnPairingRequested(
   }
 
   DVLOG(2) << "DevicePairingKind: " << static_cast<int>(pairing_kind);
-  if (pairing_kind != DevicePairingKinds_ProvidePin) {
-    DVLOG(2) << "Unexpected DevicePairingKind.";
-    std::move(callback_).Run(BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
-    return;
-  }
 
   hr = pairing_requested->GetDeferral(&pairing_deferral_);
   if (FAILED(hr)) {
@@ -259,9 +319,54 @@ void BluetoothPairingWinrt::OnPairingRequested(
     return;
   }
 
-  pairing_requested_ = pairing_requested;
-  expecting_pin_code_ = true;
-  pairing_delegate_->RequestPinCode(device_);
+  switch (pairing_kind) {
+    case DevicePairingKinds_ProvidePin:
+      pairing_requested_ = pairing_requested;
+      expecting_pin_code_ = true;
+      pairing_delegate_->RequestPinCode(device_);
+      return;
+    case DevicePairingKinds_ConfirmOnly:
+      if (base::FeatureList::IsEnabled(
+              features::kWebBluetoothConfirmPairingSupport)) {
+        pairing_requested_ = pairing_requested;
+        pairing_delegate_->AuthorizePairing(device_);
+        return;
+      } else {
+        DVLOG(2) << "DevicePairingKind = " << static_cast<int>(pairing_kind)
+                 << " is not enabled by "
+                    "enable-web-bluetooth-confirm-pairing-support";
+      }
+      break;
+    case DevicePairingKinds_ConfirmPinMatch:
+      if (base::FeatureList::IsEnabled(
+              features::kWebBluetoothConfirmPairingSupport)) {
+        pairing_requested_ = pairing_requested;
+
+        HSTRING hstring_pin;
+        pairing_requested->get_Pin(&hstring_pin);
+
+        uint32_t pin;
+        if (HstringToUint32(hstring_pin, pin)) {
+          pairing_delegate_->ConfirmPasskey(device_, pin);
+          return;
+        } else {
+          DVLOG(2) << "DevicePairingKind = " << static_cast<int>(pairing_kind)
+                   << " has invalid PIN to display, cancel pairing procedure.";
+        }
+
+      } else {
+        DVLOG(2) << "DevicePairingKind = " << static_cast<int>(pairing_kind)
+                 << " is not enabled by "
+                    "enable-web-bluetooth-confirm-pairing-support";
+      }
+      break;
+    default:
+      DVLOG(2) << "Unsupported DevicePairingKind = "
+               << static_cast<int>(pairing_kind);
+      break;
+  }
+  std::move(callback_).Run(
+      BluetoothDevice::ConnectErrorCode::ERROR_AUTH_FAILED);
 }
 
 void BluetoothPairingWinrt::OnPair(

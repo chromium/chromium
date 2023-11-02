@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,13 +15,13 @@
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/dbus/cicerone/cicerone_client.h"
-#include "chromeos/dbus/cicerone/fake_cicerone_client.h"
-#include "chromeos/dbus/concierge/concierge_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/seneschal/fake_seneschal_client.h"
-#include "chromeos/dbus/seneschal/seneschal_client.h"
-#include "chromeos/dbus/seneschal/seneschal_service.pb.h"
+#include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
+#include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
+#include "chromeos/ash/components/dbus/cicerone/fake_cicerone_client.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/seneschal/fake_seneschal_client.h"
+#include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
+#include "chromeos/ash/components/dbus/seneschal/seneschal_service.pb.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -31,8 +31,6 @@
 namespace crostini {
 
 struct ExportProgressOptionalArguments {
-  int progress_percent{};  // TODO(juwa): remove this once tremplin has been
-                           // shipped.
   uint32_t total_files{};
   uint64_t total_bytes{};
   uint32_t files_streamed{};
@@ -47,16 +45,18 @@ struct ImportProgressOptionalArguments {
 
 class CrostiniExportImportTest : public testing::Test {
  public:
-  base::WeakPtr<CrostiniExportImportNotificationController> GetController() {
+  base::WeakPtr<CrostiniExportImportNotificationController> GetController(
+      const guest_os::GuestId& container_id) {
     return crostini_export_import_->GetNotificationControllerForTesting(
-        container_id_);
+        container_id);
   }
 
-  const message_center::Notification& GetNotification() {
+  const message_center::Notification& GetNotification(
+      const guest_os::GuestId& container_id) {
     // Assertions in this function are wrap in IILEs because you cannot assert
     // in a function with a non-void return type.
     const base::WeakPtr<CrostiniExportImportNotificationController>&
-        controller = GetController();
+        controller = GetController(container_id);
     [&] { ASSERT_NE(controller, nullptr); }();
     const message_center::Notification* controller_notification =
         controller->get_notification();
@@ -89,14 +89,14 @@ class CrostiniExportImportTest : public testing::Test {
   }
 
   void SendExportProgress(
+      const guest_os::GuestId& container_id,
       vm_tools::cicerone::ExportLxdContainerProgressSignal_Status status,
       const ExportProgressOptionalArguments& arguments = {}) {
     vm_tools::cicerone::ExportLxdContainerProgressSignal signal;
     signal.set_owner_id(CryptohomeIdForProfile(profile()));
-    signal.set_vm_name(kCrostiniDefaultVmName);
-    signal.set_container_name(kCrostiniDefaultContainerName);
+    signal.set_vm_name(container_id.vm_name);
+    signal.set_container_name(container_id.container_name);
     signal.set_status(status);
-    signal.set_progress_percent(arguments.progress_percent);
     signal.set_total_input_files(arguments.total_files);
     signal.set_total_input_bytes(arguments.total_bytes);
     signal.set_input_files_streamed(arguments.files_streamed);
@@ -105,12 +105,13 @@ class CrostiniExportImportTest : public testing::Test {
   }
 
   void SendImportProgress(
+      const guest_os::GuestId& container_id,
       vm_tools::cicerone::ImportLxdContainerProgressSignal_Status status,
       const ImportProgressOptionalArguments& arguments = {}) {
     vm_tools::cicerone::ImportLxdContainerProgressSignal signal;
     signal.set_owner_id(CryptohomeIdForProfile(profile()));
-    signal.set_vm_name(kCrostiniDefaultVmName);
-    signal.set_container_name(kCrostiniDefaultContainerName);
+    signal.set_vm_name(container_id.vm_name);
+    signal.set_container_name(container_id.container_name);
     signal.set_status(status);
     signal.set_progress_percent(arguments.progress_percent);
     signal.set_architecture_device("arch_dev");
@@ -121,23 +122,24 @@ class CrostiniExportImportTest : public testing::Test {
   }
 
   CrostiniExportImportTest()
-      : container_id_(kCrostiniDefaultVmName, kCrostiniDefaultContainerName) {
-    chromeos::DBusThreadManager::Initialize();
-    chromeos::CiceroneClient::InitializeFake();
-    chromeos::ConciergeClient::InitializeFake();
-    chromeos::SeneschalClient::InitializeFake();
-    fake_seneschal_client_ = chromeos::FakeSeneschalClient::Get();
-    fake_cicerone_client_ = chromeos::FakeCiceroneClient::Get();
+      : default_container_id_(DefaultContainerId()),
+        custom_container_id_(kCrostiniDefaultVmType, "MyVM", "MyContainer") {
+    ash::ChunneldClient::InitializeFake();
+    ash::CiceroneClient::InitializeFake();
+    ash::ConciergeClient::InitializeFake();
+    ash::SeneschalClient::InitializeFake();
+    fake_seneschal_client_ = ash::FakeSeneschalClient::Get();
+    fake_cicerone_client_ = ash::FakeCiceroneClient::Get();
   }
 
   CrostiniExportImportTest(const CrostiniExportImportTest&) = delete;
   CrostiniExportImportTest& operator=(const CrostiniExportImportTest&) = delete;
 
   ~CrostiniExportImportTest() override {
-    chromeos::SeneschalClient::Shutdown();
-    chromeos::ConciergeClient::Shutdown();
-    chromeos::CiceroneClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
+    ash::SeneschalClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
+    ash::CiceroneClient::Shutdown();
+    ash::ChunneldClient::Shutdown();
   }
 
   void SetUp() override {
@@ -151,7 +153,9 @@ class CrostiniExportImportTest : public testing::Test {
             NotificationDisplayServiceFactory::GetForProfile(profile()));
     ASSERT_NE(notification_display_service_, nullptr);
     CrostiniManager::GetForProfile(profile())->AddRunningVmForTesting(
-        kCrostiniDefaultVmName);
+        default_container_id_.vm_name);
+    CrostiniManager::GetForProfile(profile())->AddRunningVmForTesting(
+        custom_container_id_.vm_name);
     CrostiniManager::GetForProfile(profile())->set_skip_restart_for_testing();
     profile()->GetPrefs()->SetBoolean(
         crostini::prefs::kUserCrostiniExportImportUIAllowedByPolicy, true);
@@ -181,8 +185,8 @@ class CrostiniExportImportTest : public testing::Test {
  protected:
   Profile* profile() { return profile_.get(); }
 
-  chromeos::FakeCiceroneClient* fake_cicerone_client_;
-  chromeos::FakeSeneschalClient* fake_seneschal_client_;
+  ash::FakeCiceroneClient* fake_cicerone_client_;
+  ash::FakeSeneschalClient* fake_seneschal_client_;
 
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<CrostiniExportImport> crostini_export_import_;
@@ -191,7 +195,8 @@ class CrostiniExportImportTest : public testing::Test {
       notification_display_service_tester_;
   StubNotificationDisplayService* notification_display_service_;
 
-  ContainerId container_id_;
+  guest_os::GuestId default_container_id_;
+  guest_os::GuestId custom_container_id_;
   base::FilePath tarball_;
 
   content::BrowserTaskEnvironment task_environment_;
@@ -201,11 +206,13 @@ TEST_F(CrostiniExportImportTest, TestNotAllowed) {
   profile()->GetPrefs()->SetBoolean(
       crostini::prefs::kUserCrostiniExportImportUIAllowedByPolicy, false);
   crostini_export_import_->ExportContainer(
-      container_id_, tarball_, base::BindOnce([](CrostiniResult result) {
+      default_container_id_, tarball_,
+      base::BindOnce([](CrostiniResult result) {
         EXPECT_EQ(result, CrostiniResult::NOT_ALLOWED);
       }));
   crostini_export_import_->ImportContainer(
-      container_id_, tarball_, base::BindOnce([](CrostiniResult result) {
+      default_container_id_, tarball_,
+      base::BindOnce([](CrostiniResult result) {
         EXPECT_EQ(result, CrostiniResult::NOT_ALLOWED);
       }));
 }
@@ -215,14 +222,16 @@ TEST_F(CrostiniExportImportTest, TestExportSuccess) {
       tarball_, 0,
       crostini_export_import_->NewOperationData(ExportImportType::EXPORT));
   task_environment_.RunUntilIdle();
+  EXPECT_TRUE(fake_seneschal_client_->share_path_called());
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
-      GetController();
+      GetController(default_container_id_);
   ASSERT_NE(controller, nullptr);
   EXPECT_EQ(controller->status(),
             CrostiniExportImportStatusTracker::Status::RUNNING);
   std::string notification_id;
   {
-    const message_center::Notification& notification = GetNotification();
+    const message_center::Notification& notification =
+        GetNotification(default_container_id_);
     notification_id = notification.id();
     EXPECT_EQ(notification.progress(), 0);
     EXPECT_TRUE(notification.pinned());
@@ -230,6 +239,7 @@ TEST_F(CrostiniExportImportTest, TestExportSuccess) {
 
   // STREAMING 10% bytes done + 30% files done = 20% overall.
   SendExportProgress(
+      default_container_id_,
       vm_tools::cicerone::
           ExportLxdContainerProgressSignal_Status_EXPORTING_STREAMING,
       {.total_files = 100,
@@ -240,7 +250,8 @@ TEST_F(CrostiniExportImportTest, TestExportSuccess) {
   EXPECT_EQ(controller->status(),
             CrostiniExportImportStatusTracker::Status::RUNNING);
   {
-    const message_center::Notification& notification = GetNotification();
+    const message_center::Notification& notification =
+        GetNotification(default_container_id_);
     EXPECT_EQ(notification.id(), notification_id);
     EXPECT_EQ(notification.progress(), 20);
     EXPECT_TRUE(notification.pinned());
@@ -248,6 +259,7 @@ TEST_F(CrostiniExportImportTest, TestExportSuccess) {
 
   // STREAMING 66% bytes done + 55% files done then floored = 60% overall.
   SendExportProgress(
+      default_container_id_,
       vm_tools::cicerone::
           ExportLxdContainerProgressSignal_Status_EXPORTING_STREAMING,
       {.total_files = 100,
@@ -258,7 +270,8 @@ TEST_F(CrostiniExportImportTest, TestExportSuccess) {
   EXPECT_EQ(controller->status(),
             CrostiniExportImportStatusTracker::Status::RUNNING);
   {
-    const message_center::Notification& notification = GetNotification();
+    const message_center::Notification& notification =
+        GetNotification(default_container_id_);
     EXPECT_EQ(notification.id(), notification_id);
     EXPECT_EQ(notification.progress(), 60);
     EXPECT_TRUE(notification.pinned());
@@ -267,6 +280,7 @@ TEST_F(CrostiniExportImportTest, TestExportSuccess) {
   // Close notification and update progress. Should not update notification.
   controller->get_delegate()->Close(false);
   SendExportProgress(
+      default_container_id_,
       vm_tools::cicerone::
           ExportLxdContainerProgressSignal_Status_EXPORTING_STREAMING,
       {.total_files = 100,
@@ -277,7 +291,8 @@ TEST_F(CrostiniExportImportTest, TestExportSuccess) {
   EXPECT_EQ(controller->status(),
             CrostiniExportImportStatusTracker::Status::RUNNING);
   {
-    const message_center::Notification& notification = GetNotification();
+    const message_center::Notification& notification =
+        GetNotification(default_container_id_);
     EXPECT_EQ(notification.id(), notification_id);
     EXPECT_EQ(notification.progress(), 60);
     EXPECT_TRUE(notification.pinned());
@@ -285,8 +300,91 @@ TEST_F(CrostiniExportImportTest, TestExportSuccess) {
 
   // Done.
   SendExportProgress(
+      default_container_id_,
       vm_tools::cicerone::ExportLxdContainerProgressSignal_Status_DONE);
-  EXPECT_EQ(GetController(), nullptr);
+  EXPECT_EQ(GetController(default_container_id_), nullptr);
+  EXPECT_EQ(controller, nullptr);
+  {
+    const absl::optional<message_center::Notification> ui_notification =
+        notification_display_service_->GetNotification(notification_id);
+    ASSERT_NE(ui_notification, absl::nullopt);
+    EXPECT_FALSE(ui_notification->pinned());
+    std::string msg("Linux apps & files have been successfully backed up");
+    EXPECT_EQ(ui_notification->message(), base::UTF8ToUTF16(msg));
+  }
+
+  // CrostiniExportImport should've created the exported file.
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(base::PathExists(tarball_));
+}
+
+TEST_F(CrostiniExportImportTest, TestExportCustomVmContainerSuccess) {
+  crostini_export_import_->FileSelected(
+      tarball_, 0,
+      crostini_export_import_->NewOperationData(ExportImportType::EXPORT,
+                                                custom_container_id_));
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(fake_seneschal_client_->share_path_called());
+  base::WeakPtr<CrostiniExportImportNotificationController> controller =
+      GetController(custom_container_id_);
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(),
+            CrostiniExportImportStatusTracker::Status::RUNNING);
+  std::string notification_id;
+  {
+    const message_center::Notification& notification =
+        GetNotification(custom_container_id_);
+    notification_id = notification.id();
+    EXPECT_EQ(notification.progress(), 0);
+    EXPECT_TRUE(notification.pinned());
+  }
+
+  // STREAMING 66% bytes done + 55% files done then floored = 60% overall.
+  SendExportProgress(
+      custom_container_id_,
+      vm_tools::cicerone::
+          ExportLxdContainerProgressSignal_Status_EXPORTING_STREAMING,
+      {.total_files = 100,
+       .total_bytes = 100,
+       .files_streamed = 55,
+       .bytes_streamed = 66});
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(),
+            CrostiniExportImportStatusTracker::Status::RUNNING);
+  {
+    const message_center::Notification& notification =
+        GetNotification(custom_container_id_);
+    EXPECT_EQ(notification.id(), notification_id);
+    EXPECT_EQ(notification.progress(), 60);
+    EXPECT_TRUE(notification.pinned());
+  }
+
+  // Close notification and update progress. Should not update notification.
+  controller->get_delegate()->Close(false);
+  SendExportProgress(
+      custom_container_id_,
+      vm_tools::cicerone::
+          ExportLxdContainerProgressSignal_Status_EXPORTING_STREAMING,
+      {.total_files = 100,
+       .total_bytes = 100,
+       .files_streamed = 90,
+       .bytes_streamed = 85});
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(),
+            CrostiniExportImportStatusTracker::Status::RUNNING);
+  {
+    const message_center::Notification& notification =
+        GetNotification(custom_container_id_);
+    EXPECT_EQ(notification.id(), notification_id);
+    EXPECT_EQ(notification.progress(), 60);
+    EXPECT_TRUE(notification.pinned());
+  }
+
+  // Done.
+  SendExportProgress(
+      custom_container_id_,
+      vm_tools::cicerone::ExportLxdContainerProgressSignal_Status_DONE);
+  EXPECT_EQ(GetController(custom_container_id_), nullptr);
   EXPECT_EQ(controller, nullptr);
   {
     const absl::optional<message_center::Notification> ui_notification =
@@ -308,13 +406,14 @@ TEST_F(CrostiniExportImportTest, TestExportFail) {
       crostini_export_import_->NewOperationData(ExportImportType::EXPORT));
   task_environment_.RunUntilIdle();
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
-      GetController();
+      GetController(default_container_id_);
   ASSERT_NE(controller, nullptr);
   EXPECT_EQ(controller->status(),
             CrostiniExportImportStatusTracker::Status::RUNNING);
   std::string notification_id;
   {
-    const message_center::Notification& notification = GetNotification();
+    const message_center::Notification& notification =
+        GetNotification(default_container_id_);
     notification_id = notification.id();
     EXPECT_EQ(notification.progress(), 0);
     EXPECT_TRUE(notification.pinned());
@@ -322,8 +421,9 @@ TEST_F(CrostiniExportImportTest, TestExportFail) {
 
   // Failed.
   SendExportProgress(
+      default_container_id_,
       vm_tools::cicerone::ExportLxdContainerProgressSignal_Status_FAILED);
-  EXPECT_EQ(GetController(), nullptr);
+  EXPECT_EQ(GetController(default_container_id_), nullptr);
   EXPECT_EQ(controller, nullptr);
   {
     const absl::optional<message_center::Notification> ui_notification =
@@ -342,16 +442,18 @@ TEST_F(CrostiniExportImportTest, TestExportFail) {
 TEST_F(CrostiniExportImportTest, TestExportCancelled) {
   crostini_export_import_->FileSelected(
       tarball_, 0,
-      crostini_export_import_->NewOperationData(ExportImportType::EXPORT));
+      crostini_export_import_->NewOperationData(ExportImportType::EXPORT,
+                                                custom_container_id_));
   task_environment_.RunUntilIdle();
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
-      GetController();
+      GetController(custom_container_id_);
   ASSERT_NE(controller, nullptr);
   EXPECT_EQ(controller->status(),
             CrostiniExportImportStatusTracker::Status::RUNNING);
   std::string notification_id;
   {
-    const message_center::Notification& notification = GetNotification();
+    const message_center::Notification& notification =
+        GetNotification(custom_container_id_);
     notification_id = notification.id();
     EXPECT_EQ(notification.progress(), 0);
     EXPECT_TRUE(notification.pinned());
@@ -359,12 +461,13 @@ TEST_F(CrostiniExportImportTest, TestExportCancelled) {
 
   // CANCELLING:
   crostini_export_import_->CancelOperation(ExportImportType::EXPORT,
-                                           container_id_);
+                                           custom_container_id_);
   ASSERT_NE(controller, nullptr);
   EXPECT_EQ(controller->status(),
             CrostiniExportImportStatusTracker::Status::CANCELLING);
   {
-    const message_center::Notification& notification = GetNotification();
+    const message_center::Notification& notification =
+        GetNotification(custom_container_id_);
     EXPECT_EQ(notification.id(), notification_id);
     EXPECT_EQ(notification.progress(), -1);
     EXPECT_FALSE(notification.pinned());
@@ -373,6 +476,7 @@ TEST_F(CrostiniExportImportTest, TestExportCancelled) {
 
   // STREAMING: should not be displayed as cancel is in progress
   SendExportProgress(
+      custom_container_id_,
       vm_tools::cicerone::
           ExportLxdContainerProgressSignal_Status_EXPORTING_STREAMING,
       {.total_files = 100,
@@ -383,7 +487,8 @@ TEST_F(CrostiniExportImportTest, TestExportCancelled) {
   EXPECT_EQ(controller->status(),
             CrostiniExportImportStatusTracker::Status::CANCELLING);
   {
-    const message_center::Notification& notification = GetNotification();
+    const message_center::Notification& notification =
+        GetNotification(custom_container_id_);
     EXPECT_EQ(notification.id(), notification_id);
     EXPECT_EQ(notification.progress(), -1);
     EXPECT_FALSE(notification.pinned());
@@ -392,8 +497,9 @@ TEST_F(CrostiniExportImportTest, TestExportCancelled) {
 
   // CANCELLED:
   SendExportProgress(
+      custom_container_id_,
       vm_tools::cicerone::ExportLxdContainerProgressSignal_Status_CANCELLED);
-  EXPECT_EQ(GetController(), nullptr);
+  EXPECT_EQ(GetController(custom_container_id_), nullptr);
   EXPECT_EQ(controller, nullptr);
   {
     const absl::optional<message_center::Notification> ui_notification =
@@ -411,13 +517,14 @@ TEST_F(CrostiniExportImportTest, TestExportDoneBeforeCancelled) {
       crostini_export_import_->NewOperationData(ExportImportType::EXPORT));
   task_environment_.RunUntilIdle();
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
-      GetController();
+      GetController(default_container_id_);
   ASSERT_NE(controller, nullptr);
   EXPECT_EQ(controller->status(),
             CrostiniExportImportStatusTracker::Status::RUNNING);
   std::string notification_id;
   {
-    const message_center::Notification& notification = GetNotification();
+    const message_center::Notification& notification =
+        GetNotification(default_container_id_);
     notification_id = notification.id();
     EXPECT_EQ(notification.progress(), 0);
     EXPECT_TRUE(notification.pinned());
@@ -425,12 +532,13 @@ TEST_F(CrostiniExportImportTest, TestExportDoneBeforeCancelled) {
 
   // CANCELLING:
   crostini_export_import_->CancelOperation(ExportImportType::EXPORT,
-                                           container_id_);
+                                           default_container_id_);
   ASSERT_NE(controller, nullptr);
   EXPECT_EQ(controller->status(),
             CrostiniExportImportStatusTracker::Status::CANCELLING);
   {
-    const message_center::Notification& notification = GetNotification();
+    const message_center::Notification& notification =
+        GetNotification(default_container_id_);
     EXPECT_EQ(notification.id(), notification_id);
     EXPECT_EQ(notification.progress(), -1);
     EXPECT_FALSE(notification.pinned());
@@ -439,8 +547,9 @@ TEST_F(CrostiniExportImportTest, TestExportDoneBeforeCancelled) {
 
   // DONE: Completed before cancel processed, file should be deleted.
   SendExportProgress(
+      default_container_id_,
       vm_tools::cicerone::ExportLxdContainerProgressSignal_Status_DONE);
-  EXPECT_EQ(GetController(), nullptr);
+  EXPECT_EQ(GetController(default_container_id_), nullptr);
   EXPECT_EQ(controller, nullptr);
   {
     const absl::optional<message_center::Notification> ui_notification =
@@ -457,14 +566,16 @@ TEST_F(CrostiniExportImportTest, TestImportSuccess) {
       tarball_, 0,
       crostini_export_import_->NewOperationData(ExportImportType::IMPORT));
   task_environment_.RunUntilIdle();
+  EXPECT_TRUE(fake_seneschal_client_->share_path_called());
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
-      GetController();
+      GetController(default_container_id_);
   ASSERT_NE(controller, nullptr);
   EXPECT_EQ(controller->status(),
             CrostiniExportImportStatusTracker::Status::RUNNING);
   std::string notification_id;
   {
-    const message_center::Notification& notification = GetNotification();
+    const message_center::Notification& notification =
+        GetNotification(default_container_id_);
     notification_id = notification.id();
     EXPECT_EQ(notification.progress(), 0);
     EXPECT_TRUE(notification.pinned());
@@ -472,6 +583,7 @@ TEST_F(CrostiniExportImportTest, TestImportSuccess) {
 
   // 20% UPLOAD = 10% overall.
   SendImportProgress(
+      default_container_id_,
       vm_tools::cicerone::
           ImportLxdContainerProgressSignal_Status_IMPORTING_UPLOAD,
       {.progress_percent = 20});
@@ -479,7 +591,8 @@ TEST_F(CrostiniExportImportTest, TestImportSuccess) {
   EXPECT_EQ(controller->status(),
             CrostiniExportImportStatusTracker::Status::RUNNING);
   {
-    const message_center::Notification& notification = GetNotification();
+    const message_center::Notification& notification =
+        GetNotification(default_container_id_);
     EXPECT_EQ(notification.id(), notification_id);
     EXPECT_EQ(notification.progress(), 10);
     EXPECT_TRUE(notification.pinned());
@@ -487,6 +600,7 @@ TEST_F(CrostiniExportImportTest, TestImportSuccess) {
 
   // 20% UNPACK = 60% overall.
   SendImportProgress(
+      default_container_id_,
       vm_tools::cicerone::
           ImportLxdContainerProgressSignal_Status_IMPORTING_UNPACK,
       {.progress_percent = 20});
@@ -494,7 +608,8 @@ TEST_F(CrostiniExportImportTest, TestImportSuccess) {
   EXPECT_EQ(controller->status(),
             CrostiniExportImportStatusTracker::Status::RUNNING);
   {
-    const message_center::Notification& notification = GetNotification();
+    const message_center::Notification& notification =
+        GetNotification(default_container_id_);
     EXPECT_EQ(notification.id(), notification_id);
     EXPECT_EQ(notification.progress(), 60);
     EXPECT_TRUE(notification.pinned());
@@ -503,6 +618,7 @@ TEST_F(CrostiniExportImportTest, TestImportSuccess) {
   // Close notification and update progress. Should not update notification.
   controller->get_delegate()->Close(false);
   SendImportProgress(
+      default_container_id_,
       vm_tools::cicerone::
           ImportLxdContainerProgressSignal_Status_IMPORTING_UNPACK,
       {.progress_percent = 40});
@@ -510,7 +626,8 @@ TEST_F(CrostiniExportImportTest, TestImportSuccess) {
   EXPECT_EQ(controller->status(),
             CrostiniExportImportStatusTracker::Status::RUNNING);
   {
-    const message_center::Notification& notification = GetNotification();
+    const message_center::Notification& notification =
+        GetNotification(default_container_id_);
     EXPECT_EQ(notification.id(), notification_id);
     EXPECT_EQ(notification.progress(), 60);
     EXPECT_TRUE(notification.pinned());
@@ -518,8 +635,81 @@ TEST_F(CrostiniExportImportTest, TestImportSuccess) {
 
   // Done.
   SendImportProgress(
+      default_container_id_,
       vm_tools::cicerone::ImportLxdContainerProgressSignal_Status_DONE);
-  EXPECT_EQ(GetController(), nullptr);
+  EXPECT_EQ(GetController(default_container_id_), nullptr);
+  EXPECT_EQ(controller, nullptr);
+  {
+    const absl::optional<message_center::Notification> ui_notification =
+        notification_display_service_->GetNotification(notification_id);
+    ASSERT_NE(ui_notification, absl::nullopt);
+    EXPECT_FALSE(ui_notification->pinned());
+    std::string msg("Linux apps & files have been successfully replaced");
+    EXPECT_EQ(ui_notification->message(), base::UTF8ToUTF16(msg));
+  }
+}
+
+TEST_F(CrostiniExportImportTest, TestImportCustomVmContainerSuccess) {
+  crostini_export_import_->FileSelected(
+      tarball_, 0,
+      crostini_export_import_->NewOperationData(ExportImportType::IMPORT,
+                                                custom_container_id_));
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(fake_seneschal_client_->share_path_called());
+  base::WeakPtr<CrostiniExportImportNotificationController> controller =
+      GetController(custom_container_id_);
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(),
+            CrostiniExportImportStatusTracker::Status::RUNNING);
+  std::string notification_id;
+  {
+    const message_center::Notification& notification =
+        GetNotification(custom_container_id_);
+    notification_id = notification.id();
+    EXPECT_EQ(notification.progress(), 0);
+    EXPECT_TRUE(notification.pinned());
+  }
+
+  // 20% UNPACK = 60% overall.
+  SendImportProgress(
+      custom_container_id_,
+      vm_tools::cicerone::
+          ImportLxdContainerProgressSignal_Status_IMPORTING_UNPACK,
+      {.progress_percent = 20});
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(),
+            CrostiniExportImportStatusTracker::Status::RUNNING);
+  {
+    const message_center::Notification& notification =
+        GetNotification(custom_container_id_);
+    EXPECT_EQ(notification.id(), notification_id);
+    EXPECT_EQ(notification.progress(), 60);
+    EXPECT_TRUE(notification.pinned());
+  }
+
+  // Close notification and update progress. Should not update notification.
+  controller->get_delegate()->Close(false);
+  SendImportProgress(
+      custom_container_id_,
+      vm_tools::cicerone::
+          ImportLxdContainerProgressSignal_Status_IMPORTING_UNPACK,
+      {.progress_percent = 40});
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(),
+            CrostiniExportImportStatusTracker::Status::RUNNING);
+  {
+    const message_center::Notification& notification =
+        GetNotification(custom_container_id_);
+    EXPECT_EQ(notification.id(), notification_id);
+    EXPECT_EQ(notification.progress(), 60);
+    EXPECT_TRUE(notification.pinned());
+  }
+
+  // Done.
+  SendImportProgress(
+      custom_container_id_,
+      vm_tools::cicerone::ImportLxdContainerProgressSignal_Status_DONE);
+  EXPECT_EQ(GetController(custom_container_id_), nullptr);
   EXPECT_EQ(controller, nullptr);
   {
     const absl::optional<message_center::Notification> ui_notification =
@@ -537,13 +727,14 @@ TEST_F(CrostiniExportImportTest, TestImportFail) {
       crostini_export_import_->NewOperationData(ExportImportType::IMPORT));
   task_environment_.RunUntilIdle();
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
-      GetController();
+      GetController(default_container_id_);
   ASSERT_NE(controller, nullptr);
   EXPECT_EQ(controller->status(),
             CrostiniExportImportStatusTracker::Status::RUNNING);
   std::string notification_id;
   {
-    const message_center::Notification& notification = GetNotification();
+    const message_center::Notification& notification =
+        GetNotification(default_container_id_);
     notification_id = notification.id();
     EXPECT_EQ(notification.progress(), 0);
     EXPECT_TRUE(notification.pinned());
@@ -551,8 +742,9 @@ TEST_F(CrostiniExportImportTest, TestImportFail) {
 
   // Failed.
   SendImportProgress(
+      default_container_id_,
       vm_tools::cicerone::ImportLxdContainerProgressSignal_Status_FAILED);
-  EXPECT_EQ(GetController(), nullptr);
+  EXPECT_EQ(GetController(default_container_id_), nullptr);
   EXPECT_EQ(controller, nullptr);
   {
     const absl::optional<message_center::Notification> ui_notification =
@@ -570,13 +762,14 @@ TEST_F(CrostiniExportImportTest, TestImportCancelled) {
       crostini_export_import_->NewOperationData(ExportImportType::IMPORT));
   task_environment_.RunUntilIdle();
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
-      GetController();
+      GetController(default_container_id_);
   ASSERT_NE(controller, nullptr);
   EXPECT_EQ(controller->status(),
             CrostiniExportImportStatusTracker::Status::RUNNING);
   std::string notification_id;
   {
-    const message_center::Notification& notification = GetNotification();
+    const message_center::Notification& notification =
+        GetNotification(default_container_id_);
     notification_id = notification.id();
     EXPECT_EQ(notification.progress(), 0);
     EXPECT_TRUE(notification.pinned());
@@ -584,12 +777,13 @@ TEST_F(CrostiniExportImportTest, TestImportCancelled) {
 
   // CANCELLING:
   crostini_export_import_->CancelOperation(ExportImportType::IMPORT,
-                                           container_id_);
+                                           default_container_id_);
   ASSERT_NE(controller, nullptr);
   EXPECT_EQ(controller->status(),
             CrostiniExportImportStatusTracker::Status::CANCELLING);
   {
-    const message_center::Notification& notification = GetNotification();
+    const message_center::Notification& notification =
+        GetNotification(default_container_id_);
     EXPECT_EQ(notification.id(), notification_id);
     EXPECT_EQ(notification.progress(), -1);
     EXPECT_FALSE(notification.pinned());
@@ -597,6 +791,7 @@ TEST_F(CrostiniExportImportTest, TestImportCancelled) {
 
   // STREAMING: should not be displayed as cancel is in progress
   SendImportProgress(
+      default_container_id_,
       vm_tools::cicerone::
           ImportLxdContainerProgressSignal_Status_IMPORTING_UPLOAD,
       {.progress_percent = 50});
@@ -604,7 +799,8 @@ TEST_F(CrostiniExportImportTest, TestImportCancelled) {
   EXPECT_EQ(controller->status(),
             CrostiniExportImportStatusTracker::Status::CANCELLING);
   {
-    const message_center::Notification& notification = GetNotification();
+    const message_center::Notification& notification =
+        GetNotification(default_container_id_);
     EXPECT_EQ(notification.id(), notification_id);
     EXPECT_EQ(notification.progress(), -1);
     EXPECT_FALSE(notification.pinned());
@@ -612,8 +808,9 @@ TEST_F(CrostiniExportImportTest, TestImportCancelled) {
 
   // CANCELLED:
   SendImportProgress(
+      default_container_id_,
       vm_tools::cicerone::ImportLxdContainerProgressSignal_Status_CANCELLED);
-  EXPECT_EQ(GetController(), nullptr);
+  EXPECT_EQ(GetController(default_container_id_), nullptr);
   EXPECT_EQ(controller, nullptr);
   {
     const absl::optional<message_center::Notification> ui_notification =
@@ -628,13 +825,14 @@ TEST_F(CrostiniExportImportTest, TestImportDoneBeforeCancelled) {
       crostini_export_import_->NewOperationData(ExportImportType::IMPORT));
   task_environment_.RunUntilIdle();
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
-      GetController();
+      GetController(default_container_id_);
   ASSERT_NE(controller, nullptr);
   EXPECT_EQ(controller->status(),
             CrostiniExportImportStatusTracker::Status::RUNNING);
   std::string notification_id;
   {
-    const message_center::Notification& notification = GetNotification();
+    const message_center::Notification& notification =
+        GetNotification(default_container_id_);
     notification_id = notification.id();
     EXPECT_EQ(notification.progress(), 0);
     EXPECT_TRUE(notification.pinned());
@@ -642,12 +840,13 @@ TEST_F(CrostiniExportImportTest, TestImportDoneBeforeCancelled) {
 
   // CANCELLING:
   crostini_export_import_->CancelOperation(ExportImportType::IMPORT,
-                                           container_id_);
+                                           default_container_id_);
   ASSERT_NE(controller, nullptr);
   EXPECT_EQ(controller->status(),
             CrostiniExportImportStatusTracker::Status::CANCELLING);
   {
-    const message_center::Notification& notification = GetNotification();
+    const message_center::Notification& notification =
+        GetNotification(default_container_id_);
     EXPECT_EQ(notification.id(), notification_id);
     EXPECT_EQ(notification.progress(), -1);
     EXPECT_FALSE(notification.pinned());
@@ -655,8 +854,9 @@ TEST_F(CrostiniExportImportTest, TestImportDoneBeforeCancelled) {
 
   // DONE: Cancel couldn't be processed in time, done is displayed instead.
   SendImportProgress(
+      default_container_id_,
       vm_tools::cicerone::ImportLxdContainerProgressSignal_Status_DONE);
-  EXPECT_EQ(GetController(), nullptr);
+  EXPECT_EQ(GetController(default_container_id_), nullptr);
   EXPECT_EQ(controller, nullptr);
   {
     const absl::optional<message_center::Notification> ui_notification =
@@ -674,13 +874,14 @@ TEST_F(CrostiniExportImportTest, TestImportFailArchitecture) {
       crostini_export_import_->NewOperationData(ExportImportType::IMPORT));
   task_environment_.RunUntilIdle();
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
-      GetController();
+      GetController(default_container_id_);
   ASSERT_NE(controller, nullptr);
   EXPECT_EQ(controller->status(),
             CrostiniExportImportStatusTracker::Status::RUNNING);
   std::string notification_id;
   {
-    const message_center::Notification& notification = GetNotification();
+    const message_center::Notification& notification =
+        GetNotification(default_container_id_);
     notification_id = notification.id();
     EXPECT_EQ(notification.progress(), 0);
     EXPECT_TRUE(notification.pinned());
@@ -688,9 +889,10 @@ TEST_F(CrostiniExportImportTest, TestImportFailArchitecture) {
 
   // Failed Architecture.
   SendImportProgress(
+      default_container_id_,
       vm_tools::cicerone::
           ImportLxdContainerProgressSignal_Status_FAILED_ARCHITECTURE);
-  EXPECT_EQ(GetController(), nullptr);
+  EXPECT_EQ(GetController(default_container_id_), nullptr);
   EXPECT_EQ(controller, nullptr);
   {
     const absl::optional<message_center::Notification> ui_notification =
@@ -712,13 +914,14 @@ TEST_F(CrostiniExportImportTest, TestImportFailSpace) {
       crostini_export_import_->NewOperationData(ExportImportType::IMPORT));
   task_environment_.RunUntilIdle();
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
-      GetController();
+      GetController(default_container_id_);
   ASSERT_NE(controller, nullptr);
   EXPECT_EQ(controller->status(),
             CrostiniExportImportStatusTracker::Status::RUNNING);
   std::string notification_id;
   {
-    const message_center::Notification& notification = GetNotification();
+    const message_center::Notification& notification =
+        GetNotification(default_container_id_);
     notification_id = notification.id();
     EXPECT_EQ(notification.progress(), 0);
     EXPECT_TRUE(notification.pinned());
@@ -726,12 +929,13 @@ TEST_F(CrostiniExportImportTest, TestImportFailSpace) {
 
   // Failed Space.
   SendImportProgress(
+      default_container_id_,
       vm_tools::cicerone::ImportLxdContainerProgressSignal_Status_FAILED_SPACE,
       {
           .available_space = 20ul * 1'024 * 1'024 * 1'024,    // 20Gb
           .min_required_space = 35ul * 1'024 * 1'024 * 1'024  // 35Gb
       });
-  EXPECT_EQ(GetController(), nullptr);
+  EXPECT_EQ(GetController(default_container_id_), nullptr);
   EXPECT_EQ(controller, nullptr);
   {
     const absl::optional<message_center::Notification> ui_notification =

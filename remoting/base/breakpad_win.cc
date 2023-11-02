@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,6 @@
 
 #include "base/atomicops.h"
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/file_version_info.h"
 #include "base/lazy_instance.h"
 #include "base/notreached.h"
@@ -169,7 +168,7 @@ google_breakpad::CustomClientInfo* BreakpadWin::GetCustomInfo() {
   static google_breakpad::CustomInfoEntry entries[] = {
       ver_entry, prod_entry, plat_entry  };
   static google_breakpad::CustomClientInfo custom_info = {entries,
-                                                          base::size(entries)};
+                                                          std::size(entries)};
   return &custom_info;
 }
 

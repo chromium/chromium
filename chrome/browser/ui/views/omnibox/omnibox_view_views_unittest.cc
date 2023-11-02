@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,9 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/adapters.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -31,7 +33,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_edit_controller.h"
-#include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
@@ -187,10 +188,9 @@ void TestingOmniboxView::CheckUpdatePopupNotCalled() {
 absl::optional<SkColor> TestingOmniboxView::GetLatestColorForRange(
     const gfx::Range& range) {
   // Iterate backwards to get the most recently applied color for |range|.
-  for (auto range_color = range_colors_.rbegin();
-       range_color != range_colors_.rend(); range_color++) {
-    if (range == range_color->second)
-      return range_color->first;
+  for (const auto& [color, other_range] : base::Reversed(range_colors_)) {
+    if (range == other_range)
+      return color;
   }
   return absl::nullopt;
 }
@@ -198,11 +198,10 @@ absl::optional<SkColor> TestingOmniboxView::GetLatestColorForRange(
 absl::optional<std::pair<gfx::TextStyle, bool>>
 TestingOmniboxView::GetLatestStyleForRange(const gfx::Range& range) const {
   // Iterate backwards to get the most recently applied style for |range|.
-  for (auto range_style = range_styles_.rbegin();
-       range_style != range_styles_.rend(); range_style++) {
-    if (range == std::get<gfx::Range>(*range_style))
-      return std::make_pair(std::get<gfx::TextStyle>(*range_style),
-                            std::get<bool>(*range_style));
+  for (const auto& [style, value, other_range] :
+       base::Reversed(range_styles_)) {
+    if (range == other_range)
+      return std::make_pair(style, value);
   }
   return absl::nullopt;
 }
@@ -288,8 +287,8 @@ class TestingOmniboxEditController : public ChromeOmniboxEditController {
       omnibox_view_->Update();
   }
 
-  LocationBarModel* location_bar_model_;
-  OmniboxViewViews* omnibox_view_ = nullptr;
+  raw_ptr<LocationBarModel> location_bar_model_;
+  raw_ptr<OmniboxViewViews> omnibox_view_ = nullptr;
 };
 
 }  // namespace
@@ -301,7 +300,7 @@ class OmniboxViewViewsTestBase : public ChromeViewsTestBase {
  public:
   OmniboxViewViewsTestBase(
       const std::vector<FeatureAndParams>& enabled_features,
-      const std::vector<base::Feature>& disabled_features,
+      const std::vector<base::test::FeatureRef>& disabled_features,
       bool is_rtl_ui_test = false) {
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                        disabled_features);
@@ -314,13 +313,14 @@ class OmniboxViewViewsTestBase : public ChromeViewsTestBase {
 
 class OmniboxViewViewsTest : public OmniboxViewViewsTestBase {
  public:
-  OmniboxViewViewsTest(const std::vector<FeatureAndParams>& enabled_features,
-                       const std::vector<base::Feature>& disabled_features,
-                       bool is_rtl_ui_test = false);
+  OmniboxViewViewsTest(
+      const std::vector<FeatureAndParams>& enabled_features,
+      const std::vector<base::test::FeatureRef>& disabled_features,
+      bool is_rtl_ui_test = false);
 
   OmniboxViewViewsTest()
       : OmniboxViewViewsTest(std::vector<FeatureAndParams>(),
-                             std::vector<base::Feature>()) {}
+                             std::vector<base::test::FeatureRef>()) {}
   OmniboxViewViewsTest(const OmniboxViewViewsTest&) = delete;
   OmniboxViewViewsTest& operator=(const OmniboxViewViewsTest&) = delete;
 
@@ -390,14 +390,14 @@ class OmniboxViewViewsTest : public OmniboxViewViewsTestBase {
   std::unique_ptr<views::Widget> widget_;
 
   // Owned by |widget_|.
-  TestingOmniboxView* omnibox_view_;
+  raw_ptr<TestingOmniboxView> omnibox_view_;
 
   std::unique_ptr<views::TextfieldTestApi> test_api_;
 };
 
 OmniboxViewViewsTest::OmniboxViewViewsTest(
     const std::vector<FeatureAndParams>& enabled_features,
-    const std::vector<base::Feature>& disabled_features,
+    const std::vector<base::test::FeatureRef>& disabled_features,
     bool is_rtl_ui_test)
     : OmniboxViewViewsTestBase(enabled_features,
                                disabled_features,
@@ -769,7 +769,7 @@ TEST_F(OmniboxViewViewsTest, PasteAndGoToUrlOrSearchCommand) {
 
   // Test input that's a valid URL.
   std::u16string expected_text =
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       u"Pa&ste and Go to https://test.com";
 #else
       u"Pa&ste and go to https://test.com";
@@ -782,7 +782,7 @@ TEST_F(OmniboxViewViewsTest, PasteAndGoToUrlOrSearchCommand) {
 
   // Test input that's URL-like. (crbug.com/980002).
   expected_text =
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       u"Pa&ste and Go to test.com";
 #else
       u"Pa&ste and go to test.com";
@@ -794,7 +794,7 @@ TEST_F(OmniboxViewViewsTest, PasteAndGoToUrlOrSearchCommand) {
 
   // Test input that's search-like.
   expected_text =
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       u"Pa&ste and Search for \x201Cthis is a test sentence\x201D";
 #else
       u"Pa&ste and search for \x201Cthis is a test sentence\x201D";
@@ -994,7 +994,7 @@ TEST_P(OmniboxViewViewsClipboardTest, ClipboardCopyOrCutURL) {
   // Windows clipboard only supports text URLs.
   // Mac clipboard not reporting URL format available for some reason.
   // crbug.com/751031
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(clipboard->IsFormatAvailable(ui::ClipboardFormatType::UrlType(),
                                            clipboard_buffer,
                                            /* data_dst = */ nullptr));

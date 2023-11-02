@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@ enum BadMessageReason {
   EH_BAD_EVENT_ID = 3,
   AVG_BAD_INST_ID = 4,
   AVG_BAD_EXT_ID = 5,
-  AVG_NULL_AVG = 6,
+  OBSOLETE_AVG_NULL_AVG = 6,
   // Invalid decrement of an Extensions SW ref count.
   ESWMF_INVALID_DECREMENT_ACTIVITY = 7,
   EFD_BAD_MESSAGE = 8,
@@ -42,6 +42,9 @@ enum BadMessageReason {
   EMF_INVALID_EXTENSION_ID_FOR_CONTENT_SCRIPT = 16,
   EMF_INVALID_EXTENSION_ID_FOR_WORKER_CONTEXT = 17,
   EMF_INVALID_PORT_CONTEXT = 18,
+  AWCI_INVALID_CALL_FROM_NOT_PRIMARY_MAIN_FRAME = 19,
+  EFD_INVALID_EXTENSION_ID_FOR_PROCESS = 20,
+  EMF_INVALID_EXTENSION_ID_FOR_TAB_MSG = 21,
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. ExtensionHost becomes EH) plus a unique description of the
   // reason. After making changes, you MUST update histograms.xml by running:

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,12 @@
 
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/supervised_user/child_accounts/kids_management_api.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "components/google/core/common/google_util.h"
 #include "components/signin/public/base/consent_level.h"
@@ -24,7 +26,6 @@
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/google_api_keys.h"
-#include "net/base/escape.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -40,17 +41,13 @@ namespace {
 
 enum class RequestMethod {
   kClassifyUrl,
-  kListFamilyMembers,
-  kRequestRestrictedUrlAccess,
 };
 
 constexpr char kClassifyUrlDataContentType[] =
     "application/x-www-form-urlencoded";
 
 // Constants for ClassifyURL.
-constexpr char kClassifyUrlRequestApiPath[] =
-    "https://kidsmanagement-pa.googleapis.com/kidsmanagement/v1/people/"
-    "me:classifyUrl";
+constexpr char kClassifyUrlRequestApiPath[] = "people/me:classifyUrl";
 constexpr char kClassifyUrlOauthConsumerName[] = "kids_url_classifier";
 constexpr char kClassifyUrlDataFormat[] = "url=%s&region_code=%s";
 constexpr char kClassifyUrlAllowed[] = "allowed";
@@ -64,7 +61,7 @@ constexpr char kClassifyUrlRestricted[] = "restricted";
 std::string GetClassifyURLRequestString(
     kids_chrome_management::ClassifyUrlRequest* request_proto) {
   std::string query =
-      net::EscapeQueryParamValue(request_proto->url(), true /* use_plus */);
+      base::EscapeQueryParamValue(request_proto->url(), true /* use_plus */);
   return base::StringPrintf(kClassifyUrlDataFormat, query.c_str(),
                             request_proto->region_code().c_str());
 }
@@ -73,13 +70,16 @@ std::string GetClassifyURLRequestString(
 // ClassifyUrlResponse proto object.
 std::unique_ptr<kids_chrome_management::ClassifyUrlResponse>
 GetClassifyURLResponseProto(const std::string& response) {
-  absl::optional<base::Value> optional_value = base::JSONReader::Read(response);
-  const base::DictionaryValue* dict = nullptr;
+  absl::optional<base::Value> maybe_value = base::JSONReader::Read(response);
+  const base::Value::Dict* dict = nullptr;
+  if (maybe_value.has_value()) {
+    dict = maybe_value->GetIfDict();
+  }
 
   auto response_proto =
       std::make_unique<kids_chrome_management::ClassifyUrlResponse>();
 
-  if (!optional_value || !optional_value.value().GetAsDictionary(&dict)) {
+  if (!dict) {
     DLOG(WARNING)
         << "GetClassifyURLResponseProto failed to parse response dictionary";
     response_proto->set_display_classification(
@@ -88,9 +88,9 @@ GetClassifyURLResponseProto(const std::string& response) {
     return response_proto;
   }
 
-  const base::Value* classification_value =
-      dict->FindKey("displayClassification");
-  if (!classification_value) {
+  const std::string* maybe_classification_string =
+      dict->FindString("displayClassification");
+  if (!maybe_classification_string) {
     DLOG(WARNING)
         << "GetClassifyURLResponseProto failed to parse displayClassification";
     response_proto->set_display_classification(
@@ -99,7 +99,7 @@ GetClassifyURLResponseProto(const std::string& response) {
     return response_proto;
   }
 
-  const std::string classification_string = classification_value->GetString();
+  const std::string classification_string = *maybe_classification_string;
   if (classification_string == kClassifyUrlAllowed) {
     response_proto->set_display_classification(
         kids_chrome_management::ClassifyUrlResponse::ALLOWED);
@@ -120,7 +120,8 @@ GetClassifyURLResponseProto(const std::string& response) {
 std::unique_ptr<network::ResourceRequest>
 CreateResourceRequestForUrlClassifier() {
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = GURL(kClassifyUrlRequestApiPath);
+  resource_request->url =
+      kids_management_api::GetURL(kClassifyUrlRequestApiPath);
   resource_request->method = "POST";
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   return resource_request;

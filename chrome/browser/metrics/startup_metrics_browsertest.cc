@@ -1,8 +1,8 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <set>
+#include <vector>
 
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
@@ -10,38 +10,65 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "content/public/test/browser_test.h"
 
-using StartupMetricsTest = InProcessBrowserTest;
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#include "chrome/test/base/android/android_browser_test.h"
+#else
+#include "chrome/test/base/in_process_browser_test.h"
+#endif
+
+using StartupMetricsTest = PlatformBrowserTest;
 
 namespace {
 
 constexpr const char* kStartupMetrics[] = {
     "Startup.BrowserMessageLoopFirstIdle",
     "Startup.BrowserMessageLoopStartTime",
+
+// Desktop specific metrics
+#if !BUILDFLAG(IS_ANDROID)
     "Startup.BrowserWindow.FirstPaint",
     "Startup.BrowserWindowDisplay",
     "Startup.FirstWebContents.MainNavigationFinished",
     "Startup.FirstWebContents.MainNavigationStart",
     "Startup.FirstWebContents.NonEmptyPaint3",
     "Startup.FirstWebContents.RenderProcessHostInit.ToNonEmptyPaint",
-    "Startup.LoadTime.ApplicationStartToChromeMain",
-    "Startup.LoadTime.ProcessCreateToApplicationStart",
+#endif  // !BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     "Startup.Temperature",
 #endif
 };
+
+void AddProcessCreateMetrics(std::vector<const char*>& v) {
+  v.push_back("Startup.LoadTime.ProcessCreateToApplicationStart");
+  v.push_back("Startup.LoadTime.ApplicationStartToChromeMain");
+}
 
 }  // namespace
 
 // Verify that startup histograms are logged on browser startup.
 IN_PROC_BROWSER_TEST_F(StartupMetricsTest, ReportsValues) {
+  std::vector<const char*> startup_metrics{std::begin(kStartupMetrics),
+                                           std::end(kStartupMetrics)};
+
+#if !BUILDFLAG(IS_ANDROID)
+  AddProcessCreateMetrics(startup_metrics);
+#else
+  // On Android these metrics are based on Process.getStartUptimeMillis() - not
+  // available before N.
+  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
+      base::android::SDK_VERSION_NOUGAT) {
+    AddProcessCreateMetrics(startup_metrics);
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   // Wait for all histograms to be recorded. The test will hit a RunLoop timeout
   // if a histogram is not recorded.
-  for (auto* const histogram : kStartupMetrics) {
+  for (auto* const histogram : startup_metrics) {
     SCOPED_TRACE(histogram);
 
     // Continue if histograms was already recorded.

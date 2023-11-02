@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,7 +35,9 @@ enum class SchedulerClientType {
   kPrefetch = 3,
   // Reading list weekly notification.
   kReadingList = 4,
-  kMaxValue = kReadingList
+  // Feature guide specific notifications.
+  kFeatureGuide = 5,
+  kMaxValue = kFeatureGuide
 };
 
 // The type of user feedback from a displayed notification.

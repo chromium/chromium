@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,21 +44,22 @@ class HistoryApiTest : public ExtensionApiTest {
 
 IN_PROC_BROWSER_TEST_F(HistoryApiTest, MiscSearch) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(
-      RunExtensionTest("history/regular", {.page_url = "misc_search.html"}))
+  ASSERT_TRUE(RunExtensionTest("history/regular",
+                               {.extension_url = "misc_search.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(HistoryApiTest, TimedSearch) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(
-      RunExtensionTest("history/regular", {.page_url = "timed_search.html"}))
+  ASSERT_TRUE(RunExtensionTest("history/regular",
+                               {.extension_url = "timed_search.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(HistoryApiTest, Delete) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest("history/regular", {.page_url = "delete.html"}))
+  ASSERT_TRUE(
+      RunExtensionTest("history/regular", {.extension_url = "delete.html"}))
       << message_;
 }
 
@@ -67,21 +68,21 @@ IN_PROC_BROWSER_TEST_F(HistoryApiTest, DeleteProhibited) {
       SetBoolean(prefs::kAllowDeletingBrowserHistory, false);
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("history/regular",
-                               {.page_url = "delete_prohibited.html"}))
+                               {.extension_url = "delete_prohibited.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(HistoryApiTest, GetVisits) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(
-      RunExtensionTest("history/regular", {.page_url = "get_visits.html"}))
+      RunExtensionTest("history/regular", {.extension_url = "get_visits.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(HistoryApiTest, SearchAfterAdd) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("history/regular",
-                               {.page_url = "search_after_add.html"}))
+                               {.extension_url = "search_after_add.html"}))
       << message_;
 }
 
@@ -91,8 +92,8 @@ IN_PROC_BROWSER_TEST_F(HistoryApiTest, Incognito) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   // Setup.
   Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
-  ExtensionTestMessageListener regular_listener("regular ready", false);
-  ExtensionTestMessageListener incognito_listener("incognito ready", false);
+  ExtensionTestMessageListener regular_listener("regular ready");
+  ExtensionTestMessageListener incognito_listener("incognito ready");
   const Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("history/incognito"),
                     {.allow_in_incognito = true});

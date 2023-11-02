@@ -1,8 +1,8 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
+<translation id="2405260961377511836">El selector de fotos no s'obre</translation>
 <translation id="3240426699337459095">S'ha copiat l'enllaç.</translation>
-<translation id="5264323282659631142">Suprimeix <ph name="CHIP_LABEL" /></translation>
 <translation id="6315516427814392808">No es pot completar l'operació anterior perquè hi ha poca memòria.</translation>
 <translation id="6555463879959038093">No s'ha pogut copiar el contingut al porta-retalls.</translation>
 <translation id="793640675459356075">No s'ha pogut obrir fitxer sel.</translation>

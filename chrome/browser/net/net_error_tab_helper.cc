@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,6 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
-#include "ipc/ipc_message_macros.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -162,6 +161,7 @@ void NetErrorTabHelper::SetIsShowingDownloadButtonInErrorPage(
 
 NetErrorTabHelper::NetErrorTabHelper(WebContents* contents)
     : WebContentsObserver(contents),
+      content::WebContentsUserData<NetErrorTabHelper>(*contents),
       network_diagnostics_receivers_(contents, this),
       network_easter_egg_receivers_(contents, this),
       net_error_page_support_(contents, this),
@@ -252,7 +252,7 @@ void NetErrorTabHelper::SendInfo() {
   DCHECK(dns_error_page_committed_);
 
   DVLOG(1) << "Sending status " << DnsProbeStatusToString(dns_probe_status_);
-  content::RenderFrameHost* rfh = web_contents()->GetMainFrame();
+  content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
 
   mojo::AssociatedRemote<chrome::mojom::NetworkDiagnosticsClient> client;
   rfh->GetRemoteAssociatedInterfaces()->GetInterface(&client);
@@ -280,7 +280,7 @@ void NetErrorTabHelper::RunNetworkDiagnosticsHelper(
     return;
 
   if (network_diagnostics_receivers_.GetCurrentTargetFrame() !=
-      web_contents()->GetMainFrame()) {
+      web_contents()->GetPrimaryMainFrame()) {
     return;
   }
 

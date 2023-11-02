@@ -1,10 +1,11 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 from __future__ import print_function
 
 import json
+import six
 import unittest
 
 from blinkpy.common.checkout.git_mock import MockGit
@@ -23,8 +24,8 @@ from blinkpy.w3c.local_wpt_mock import MockLocalWPT
 from blinkpy.w3c.test_importer import TestImporter, ROTATIONS_URL, SHERIFF_EMAIL_FALLBACK, RUBBER_STAMPER_BOT
 from blinkpy.w3c.wpt_github_mock import MockWPTGitHub
 from blinkpy.w3c.wpt_manifest import BASE_MANIFEST_NAME
-from blinkpy.web_tests.port.android import PRODUCTS_TO_EXPECTATION_FILE_PATHS
 from blinkpy.web_tests.port.android import ANDROID_DISABLED_TESTS
+from blinkpy.web_tests.builder_list import BuilderList
 
 MOCK_WEB_TESTS = '/mock-checkout/' + RELATIVE_WEB_TESTS
 MANIFEST_INSTALL_CMD = [
@@ -37,8 +38,29 @@ class TestImporterTest(LoggingTestCase):
 
     def mock_host(self):
         host = MockHost()
-        for path in PRODUCTS_TO_EXPECTATION_FILE_PATHS.values():
-            host.filesystem.write_text_file(path, '')
+        host.builders = BuilderList({
+            'cq-builder-a': {
+                'port_name': 'linux-trusty',
+                'specifiers': ['Trusty', 'Release'],
+                'is_try_builder': True,
+            },
+            'cq-builder-b': {
+                'port_name': 'mac-mac12',
+                'specifiers': ['Mac12', 'Release'],
+                'is_try_builder': True,
+            },
+            'cq-wpt-builder-c': {
+                'port_name': 'linux-trusty',
+                'specifiers': ['Trusty', 'Release'],
+                'is_try_builder': True,
+            },
+            'CI Builder D': {
+                'port_name': 'linux-trusty',
+                'specifiers': ['Trusty', 'Release'],
+            },
+        })
+        port = host.port_factory.get()
+        MANIFEST_INSTALL_CMD[0] = port.python3_command()
         host.filesystem.write_text_file(ANDROID_DISABLED_TESTS, '')
         return host
 
@@ -60,6 +82,11 @@ class TestImporterTest(LoggingTestCase):
         self.assertFalse(success)
         self.assertLog([
             'INFO: Triggering try jobs for updating expectations.\n',
+            'INFO: For rebaselining:\n',
+            'INFO:   cq-builder-a\n',
+            'INFO:   cq-builder-b\n',
+            'INFO: For updating WPT metadata:\n',
+            'INFO:   cq-wpt-builder-c\n',
             'ERROR: No initial try job results, aborting.\n',
         ])
         self.assertEqual(importer.git_cl.calls[-1], ['git', 'cl', 'set-close'])
@@ -79,6 +106,11 @@ class TestImporterTest(LoggingTestCase):
         self.assertFalse(success)
         self.assertLog([
             'INFO: Triggering try jobs for updating expectations.\n',
+            'INFO: For rebaselining:\n',
+            'INFO:   cq-builder-a\n',
+            'INFO:   cq-builder-b\n',
+            'INFO: For updating WPT metadata:\n',
+            'INFO:   cq-wpt-builder-c\n',
             'ERROR: The CL was closed, aborting.\n',
         ])
 
@@ -96,6 +128,11 @@ class TestImporterTest(LoggingTestCase):
         success = importer.update_expectations_for_cl()
         self.assertLog([
             'INFO: Triggering try jobs for updating expectations.\n',
+            'INFO: For rebaselining:\n',
+            'INFO:   cq-builder-a\n',
+            'INFO:   cq-builder-b\n',
+            'INFO: For updating WPT metadata:\n',
+            'INFO:   cq-wpt-builder-c\n',
             'INFO: All jobs finished.\n',
         ])
         self.assertTrue(success)
@@ -117,6 +154,11 @@ class TestImporterTest(LoggingTestCase):
         self.assertTrue(success)
         self.assertLog([
             'INFO: Triggering try jobs for updating expectations.\n',
+            'INFO: For rebaselining:\n',
+            'INFO:   cq-builder-a\n',
+            'INFO:   cq-builder-b\n',
+            'INFO: For updating WPT metadata:\n',
+            'INFO:   cq-wpt-builder-c\n',
             'INFO: All jobs finished.\n',
         ])
 
@@ -431,7 +473,10 @@ class TestImporterTest(LoggingTestCase):
             'https://chromium.googlesource.com'
             '/chromium/src/+/main/docs/testing/web_platform_tests.md\n\n'
             'NOAUTOREVERT=true\n'
-            'No-Export: true')
+            'No-Export: true\n'
+            'Cq-Include-Trybots: luci.chromium.try:linux-wpt-identity-fyi-rel,'
+            'linux-wpt-input-fyi-rel,linux-blink-rel')
+        print(host.executive.calls)
         self.assertEqual(host.executive.calls,
                          [MANIFEST_INSTALL_CMD] +
                          [['git', 'log', '-1', '--format=%B']])
@@ -465,10 +510,16 @@ class TestImporterTest(LoggingTestCase):
         host = self.mock_host()
         importer = self._get_test_importer(host)
         self.assertEqual(SHERIFF_EMAIL_FALLBACK, importer.sheriff_email())
-        self.assertLog([
-            'ERROR: Exception while fetching current sheriff: '
-            'No JSON object could be decoded\n'
-        ])
+        if six.PY3:
+            self.assertLog([
+                'ERROR: Exception while fetching current sheriff: '
+                'Expecting value: line 1 column 1 (char 0)\n'
+            ])
+        else:
+            self.assertLog([
+                'ERROR: Exception while fetching current sheriff: '
+                'No JSON object could be decoded\n'
+            ])
 
     def test_sheriff_email_no_emails_field(self):
         host = self.mock_host()
@@ -529,17 +580,22 @@ class TestImporterTest(LoggingTestCase):
         self.assertEqual(importer.chromium_git.added_paths,
                          {MOCK_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME})
 
-    def test_only_wpt_manifest_changed(self):
+    def test_has_wpt_changes(self):
         host = self.mock_host()
         importer = self._get_test_importer(host)
         importer.chromium_git.changed_files = lambda: [
             RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME,
             RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html']
-        self.assertFalse(importer._only_wpt_manifest_changed())
+        self.assertTrue(importer._has_wpt_changes())
+
+        importer.chromium_git.changed_files = lambda: [
+            RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME,
+            RELATIVE_WEB_TESTS + 'TestExpectations']
+        self.assertFalse(importer._has_wpt_changes())
 
         importer.chromium_git.changed_files = lambda: [
             RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME]
-        self.assertTrue(importer._only_wpt_manifest_changed())
+        self.assertFalse(importer._has_wpt_changes())
 
     def test_need_sheriff_attention(self):
         host = self.mock_host()

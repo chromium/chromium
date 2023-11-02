@@ -1,12 +1,18 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# TODO(crbug.com/1344830): Migrate away from deprecated MDC APIs.
+config("disable_deprecated_declarations") {
+  cflags = [ "-Wno-deprecated-declarations" ]
+}
+
 source_set("fancy_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
+  configs += [
+    ":disable_deprecated_declarations",
+    "//build/config/compiler:enable_arc",
+  ]
   sources = [
-    "bidi_container_view.h",
-    "bidi_container_view.mm",
     "primary_action_button.h",
     "primary_action_button.mm",
   ]
@@ -14,22 +20,9 @@ source_set("fancy_ui") {
     "//base",
     "//base:i18n",
     "//ios/chrome/browser/ui:feature_flags",
-    "//ios/chrome/browser/ui/colors",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
   ]
   public_deps = [ "//ios/third_party/material_components_ios" ]
   frameworks = [ "UIKit.framework" ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "bidi_container_view_unittest.mm" ]
-  deps = [
-    ":fancy_ui",
-    "//base",
-    "//base:i18n",
-    "//testing/gtest",
-  ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

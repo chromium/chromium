@@ -1,6 +1,6 @@
 # Unrealized `WebState`
 
-> **Status**: implementation in progress.
+> **Status**: launched.
 
 On iOS, each tab is implemented by a `WebState` and some TabHelpers. As users
 can have many tabs open at the same time, but only few of them visible, an

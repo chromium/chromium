@@ -1,43 +1,37 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/icons.m.js';
-import '../icons.js';
-import '../settings_shared_css.js';
+import 'chrome://resources/cr_elements/icons.html.js';
+import '../icons.html.js';
+import '../settings_shared.css.js';
+import '../i18n_setup.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
-import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {DomRepeatEvent, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
-import {loadTimeData} from '../i18n_setup.js';
+import {FocusConfig} from '../focus_config.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {Route, Router} from '../router.js';
 import {ContentSetting, ContentSettingsTypes, NotificationSetting} from '../site_settings/constants.js';
 import {SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl} from '../site_settings/site_settings_prefs_browser_proxy.js';
 
-export type CategoryListItem = {
-  route: Route,
-  id: ContentSettingsTypes,
-  label: string,
-  icon?: string,
-  enabledLabel?: string,
-  disabledLabel?: string,
-  otherLabel?: string,
-  shouldShow?: () => boolean,
-};
+import {getTemplate} from './site_settings_list.html.js';
 
-type FocusConfig = Map<string, (string|(() => void))>;
-
-/** Event interface for dom-repeat. */
-interface RepeaterEvent extends CustomEvent {
-  model: {
-    index: number,
-  };
+export interface CategoryListItem {
+  route: Route;
+  id: ContentSettingsTypes;
+  label: string;
+  icon?: string;
+  enabledLabel?: string;
+  disabledLabel?: string;
+  otherLabel?: string;
+  shouldShow?: () => boolean;
 }
 
 export function defaultSettingLabel(
@@ -64,7 +58,7 @@ class SettingsSiteSettingsListElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -83,11 +77,11 @@ class SettingsSiteSettingsListElement extends
       // The prefs object is only populated for the instance of this element
       // which contains the notifications link row, avoiding non-actionable
       // firing of the observer.
-      'updateNotificationsLabel_(prefs.generated.notification.*)'
+      'updateNotificationsLabel_(prefs.generated.notification.*)',
     ];
   }
 
-  categoryList: Array<CategoryListItem>;
+  categoryList: CategoryListItem[];
   focusConfig: FocusConfig;
   private browserProxy_: SiteSettingsPrefsBrowserProxy =
       SiteSettingsPrefsBrowserProxyImpl.getInstance();
@@ -102,12 +96,15 @@ class SettingsSiteSettingsListElement extends
     // elements residing in this element's Shadow DOM.
     for (const item of this.categoryList) {
       this.focusConfig.set(item.route.path, () => microTask.run(() => {
-        focusWithoutInk(assert(this.shadowRoot!.querySelector(`#${item.id}`)!));
+        const toFocus =
+            this.shadowRoot!.querySelector<HTMLElement>(`#${item.id}`);
+        assert(!!toFocus);
+        focusWithoutInk(toFocus);
       }));
     }
   }
 
-  ready() {
+  override ready() {
     super.ready();
 
     Promise
@@ -237,7 +234,7 @@ class SettingsSiteSettingsListElement extends
     this.set(`categoryList.${index}.subLabel`, this.i18n(label));
   }
 
-  private onClick_(event: RepeaterEvent) {
+  private onClick_(event: DomRepeatEvent<CategoryListItem>) {
     Router.getInstance().navigateTo(this.categoryList[event.model.index].route);
   }
 }

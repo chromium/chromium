@@ -1,9 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/ozone/platform/wayland/host/proxy/wayland_proxy_impl.h"
 
+#include "base/ranges/algorithm.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_shm_buffer.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
@@ -26,7 +27,7 @@ void WaylandProxyImpl::SetDelegate(WaylandProxy::Delegate* delegate) {
   delegate_ = delegate;
   if (delegate_)
     connection_->wayland_window_manager()->AddObserver(this);
-  else if (!delegate_)
+  else
     connection_->wayland_window_manager()->RemoveObserver(this);
 }
 
@@ -49,9 +50,17 @@ wl_surface* WaylandProxyImpl::GetWlSurfaceForAcceleratedWidget(
   return window->root_surface()->surface();
 }
 
+ui::WaylandWindow* WaylandProxyImpl::GetWaylandWindowForAcceleratedWidget(
+    gfx::AcceleratedWidget widget) {
+  auto* window = connection_->wayland_window_manager()->GetWindow(widget);
+  DCHECK(window);
+  return window;
+}
+
 wl_buffer* WaylandProxyImpl::CreateShmBasedWlBuffer(
     const gfx::Size& buffer_size) {
-  ui::WaylandShmBuffer shm_buffer(connection_->shm(), buffer_size);
+  ui::WaylandShmBuffer shm_buffer(connection_->wayland_buffer_factory(),
+                                  buffer_size);
   auto* wlbuffer = shm_buffer.get();
   DCHECK(wlbuffer);
   shm_buffers_.emplace_back(std::move(shm_buffer));
@@ -60,14 +69,13 @@ wl_buffer* WaylandProxyImpl::CreateShmBasedWlBuffer(
 
 void WaylandProxyImpl::DestroyShmForWlBuffer(wl_buffer* buffer) {
   auto it =
-      std::find_if(shm_buffers_.begin(), shm_buffers_.end(),
-                   [buffer](const auto& buf) { return buf.get() == buffer; });
+      base::ranges::find(shm_buffers_, buffer, &ui::WaylandShmBuffer::get);
   DCHECK(it != shm_buffers_.end());
   shm_buffers_.erase(it);
 }
 
-void WaylandProxyImpl::ScheduleDisplayFlush() {
-  connection_->ScheduleFlush();
+void WaylandProxyImpl::FlushForTesting() {
+  connection_->Flush();
 }
 
 ui::PlatformWindowType WaylandProxyImpl::GetWindowType(
@@ -77,22 +85,16 @@ ui::PlatformWindowType WaylandProxyImpl::GetWindowType(
   return window->type();
 }
 
-gfx::Rect WaylandProxyImpl::GetWindowBounds(gfx::AcceleratedWidget widget) {
-  auto* window = connection_->wayland_window_manager()->GetWindow(widget);
-  DCHECK(window);
-  return window->GetBounds();
-}
-
 bool WaylandProxyImpl::WindowHasPointerFocus(gfx::AcceleratedWidget widget) {
   auto* window = connection_->wayland_window_manager()->GetWindow(widget);
   DCHECK(window);
-  return window->has_pointer_focus();
+  return window->HasPointerFocus();
 }
 
 bool WaylandProxyImpl::WindowHasKeyboardFocus(gfx::AcceleratedWidget widget) {
   auto* window = connection_->wayland_window_manager()->GetWindow(widget);
   DCHECK(window);
-  return window->has_keyboard_focus();
+  return window->HasKeyboardFocus();
 }
 
 void WaylandProxyImpl::OnWindowAdded(ui::WaylandWindow* window) {
@@ -109,6 +111,11 @@ void WaylandProxyImpl::OnWindowConfigured(ui::WaylandWindow* window) {
   DCHECK(delegate_);
   delegate_->OnWindowConfigured(window->GetWidget(),
                                 window->IsSurfaceConfigured());
+}
+
+void WaylandProxyImpl::OnWindowRoleAssigned(ui::WaylandWindow* window) {
+  DCHECK(delegate_);
+  delegate_->OnWindowRoleAssigned(window->GetWidget());
 }
 
 }  // namespace wl

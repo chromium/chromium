@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_LACROS_NET_PROXY_CONFIG_SERVICE_LACROS_H_
 #define CHROME_BROWSER_LACROS_NET_PROXY_CONFIG_SERVICE_LACROS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/crosapi/mojom/network_settings_service.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -56,7 +57,7 @@ class ProxyConfigServiceLacros
   void NotifyObservers();
 
   // Owned by the Profile instance.
-  PrefService* profile_prefs_ = nullptr;
+  raw_ptr<PrefService> profile_prefs_ = nullptr;
 
   PrefChangeRegistrar profile_pref_change_registrar_;
 

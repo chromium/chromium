@@ -1,5 +1,5 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
-# Use of this source code is governed by a BSD - style license that can be
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
@@ -75,7 +75,6 @@ static_library("report_queue_provider") {
     "//components/reporting/storage:storage_module",
     "//components/reporting/storage:storage_module_interface",
     "//components/reporting/storage_selector",
-    "//components/reporting/util:shared_queue",
     "//components/reporting/util:status",
     "//components/reporting/util:status_macros",
   ]
@@ -88,8 +87,6 @@ static_library("test_support") {
     "mock_dm_token_retriever.h",
     "mock_report_queue.cc",
     "mock_report_queue.h",
-    "mock_report_queue_provider.cc",
-    "mock_report_queue_provider.h",
   ]
   deps = [
     ":report_queue",
@@ -108,6 +105,29 @@ static_library("test_support") {
   ]
 }
 
+static_library("mock_report_queue_provider") {
+  testonly = true
+
+  sources = [
+    "mock_report_queue_provider.cc",
+    "mock_report_queue_provider.h",
+    "report_queue_provider_test_helper.cc",
+    "report_queue_provider_test_helper.h",
+  ]
+
+  deps = [
+    ":report_queue",
+    ":report_queue_configuration",
+    ":report_queue_provider",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/reporting/storage:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
 # All unit tests are built as part of the //components:components_unittests
 # target and must be one targets named "unit_tests".
 source_set("unit_tests") {
@@ -117,12 +137,11 @@ source_set("unit_tests") {
     "report_queue_configuration_unittest.cc",
     "report_queue_factory_unittest.cc",
     "report_queue_impl_unittest.cc",
-    "report_queue_provider_test_helper.cc",
-    "report_queue_provider_test_helper.h",
     "report_queue_provider_unittest.cc",
     "report_queue_unittest.cc",
   ]
   deps = [
+    ":mock_report_queue_provider",
     ":report_queue",
     ":report_queue_configuration",
     ":report_queue_factory",

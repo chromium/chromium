@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,11 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_timeouts.h"
-#include "components/captive_portal/content/captive_portal_service.h"
+#include "base/time/time.h"
 #include "components/captive_portal/core/captive_portal_testing_utils.h"
 #include "components/captive_portal/core/captive_portal_types.h"
 #include "components/embedder_support/pref_names.h"
@@ -59,7 +60,7 @@ class CaptivePortalObserver {
   CaptivePortalResult captive_portal_result_;
   int num_results_received_;
 
-  CaptivePortalService* captive_portal_service_;
+  raw_ptr<CaptivePortalService> captive_portal_service_;
 
   base::CallbackListSubscription subscription_;
 };

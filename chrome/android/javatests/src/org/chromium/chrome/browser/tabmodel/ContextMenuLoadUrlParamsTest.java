@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,6 +37,7 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Pattern;
@@ -138,6 +139,9 @@ public class ContextMenuLoadUrlParamsTest {
                 R.id.contextmenu_open_in_incognito_tab);
 
         Assert.assertNotNull(sOpenNewTabLoadUrlParams);
+        Assert.assertNotNull(sOpenNewTabLoadUrlParams.getInitiatorOrigin());
+        Assert.assertEquals(new GURL(sActivityTestRule.getTestServer().getURL(HTML_PATH)).getHost(),
+                sOpenNewTabLoadUrlParams.getInitiatorOrigin().getHost());
         Assert.assertNull(sOpenNewTabLoadUrlParams.getReferrer());
     }
 

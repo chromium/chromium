@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,8 +25,8 @@ CameraRollMenuModel::CameraRollMenuModel(
                   l10n_util::GetStringUTF16(
                       IDS_ASH_PHONE_HUB_CAMERA_ROLL_MENU_DOWNLOAD_LABEL),
                   ui::ImageModel::FromVectorIcon(
-                      kPhoneHubCameraRollMenuDownloadIcon, ui::kColorMenuIcon,
-                      kCameraRollMenuIconSize));
+                      kPhoneHubCameraRollMenuDownloadIcon,
+                      ui::kColorAshSystemUIMenuIcon, kCameraRollMenuIconSize));
 }
 
 CameraRollMenuModel::~CameraRollMenuModel() {}

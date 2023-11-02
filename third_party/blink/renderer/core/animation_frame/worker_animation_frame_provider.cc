@@ -1,13 +1,14 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/animation_frame/worker_animation_frame_provider.h"
 
 #include "base/trace_event/trace_event.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
 #include "third_party/blink/renderer/core/timing/worker_global_scope_performance.h"
-#include "third_party/blink/renderer/platform/bindings/microtask.h"
+#include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
@@ -42,7 +43,7 @@ void WorkerAnimationFrameProvider::BeginFrame(const viz::BeginFrameArgs& args) {
                          TRACE_ID_GLOBAL(args.trace_id),
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
 
-  Microtask::EnqueueMicrotask(WTF::Bind(
+  context_->GetAgent()->event_loop()->EnqueueMicrotask(WTF::BindOnce(
       [](WeakPersistent<WorkerAnimationFrameProvider> provider,
          const viz::BeginFrameArgs& args) {
         if (!provider)
@@ -68,6 +69,11 @@ void WorkerAnimationFrameProvider::BeginFrame(const viz::BeginFrameArgs& args) {
         provider->begin_frame_provider_->FinishBeginFrame(args);
       },
       WrapWeakPersistent(this), args));
+}
+
+scoped_refptr<base::SingleThreadTaskRunner>
+WorkerAnimationFrameProvider::GetCompositorTaskRunner() {
+  return context_->GetScheduler()->CompositorTaskRunner();
 }
 
 void WorkerAnimationFrameProvider::RegisterOffscreenCanvas(

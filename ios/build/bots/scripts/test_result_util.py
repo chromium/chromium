@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Test result related classes."""
@@ -11,7 +11,7 @@ from result_sink_util import ResultSinkClient
 
 _VALID_RESULT_COLLECTION_INIT_KWARGS = set(['test_results', 'crashed'])
 _VALID_TEST_RESULT_INIT_KWARGS = set(
-    ['attachments', 'expected_status', 'test_log'])
+    ['attachments', 'duration', 'expected_status', 'test_log'])
 _VALID_TEST_STATUSES = set(['PASS', 'FAIL', 'CRASH', 'ABORT', 'SKIP'])
 
 
@@ -64,6 +64,7 @@ class TestResult(object):
       status: (str) Outcome of the test.
       (Following are possible arguments in **kwargs):
       attachments: (dict): Dict of unique attachment name to abs path mapping.
+      duration: (int) Test duration in milliseconds or None if unknown.
       expected_status: (str) Expected test outcome for the run.
       test_log: (str) Logs of the test.
     """
@@ -75,6 +76,7 @@ class TestResult(object):
     self.status = status
 
     self.attachments = kwargs.get('attachments', {})
+    self.duration = kwargs.get('duration')
     self.expected_status = kwargs.get('expected_status', TestStatus.PASS)
     self.test_log = kwargs.get('test_log', '')
 
@@ -113,6 +115,7 @@ class TestResult(object):
           self.name,
           self.status,
           self.expected(),
+          duration=self.duration,
           test_log=self.test_log,
           tags=self._compose_result_sink_tags(),
           file_artifacts=self.attachments)
@@ -289,20 +292,17 @@ class ResultCollection(object):
     """A set of test names with only expected status in the collection."""
     return self.expected_tests().difference(self.unexpected_tests())
 
-  def add_and_report_crash(self, crash_message_prefix_line=''):
-    """Adds and reports a dummy failing test for crash.
+  def set_crashed_with_prefix(self, crash_message_prefix_line=''):
+    """Updates collection with the crash status and add prefix to crash message.
 
     Typically called at the end of runner run when runner reports failure due to
-    crash but there isn't unexpected tests.
+    crash but there isn't unexpected tests. The crash status and crash message
+    will reflect in LUCI build page step log.
     """
     self._crashed = True
-    self._crash_message = crash_message_prefix_line + '\n' + self.crash_message
-    crash_result = TestResult(
-        "BUILD_INTERRUPTED", TestStatus.CRASH, test_log=self.crash_message)
-    self.add_test_result(crash_result)
-    result_sink_client = ResultSinkClient()
-    crash_result.report_to_result_sink(result_sink_client)
-    result_sink_client.close()
+    if crash_message_prefix_line:
+      crash_message_prefix_line += '\n'
+    self._crash_message = crash_message_prefix_line + self.crash_message
 
   def report_to_result_sink(self):
     """Reports current results to result sink once.
@@ -400,9 +400,12 @@ class ResultCollection(object):
       logs['flaked tests'] = flaked
     if failed:
       logs['failed tests'] = failed
-    for test, log_lines in failed.iteritems():
+    for test, log_lines in failed.items():
       logs[test] = log_lines
-    for test, log_lines in flaked.iteritems():
+    for test, log_lines in flaked.items():
       logs[test] = log_lines
+
+    if self.crashed:
+      logs['test suite crash'] = self.crash_message.split('\n')
 
     return logs

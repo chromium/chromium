@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/zucchini/disassembler.h"
 #include "components/zucchini/image_utils.h"
 #include "components/zucchini/type_dex.h"
@@ -261,7 +262,7 @@ class DisassemblerDex : public Disassembler {
 
   bool ParseHeader();
 
-  const dex::HeaderItem* header_ = nullptr;
+  raw_ptr<const dex::HeaderItem> header_ = nullptr;
   int dex_version_ = 0;
   MapItemMap map_item_map_ = {};
   dex::MapItem string_map_item_ = {};

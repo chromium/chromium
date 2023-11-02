@@ -1,0 +1,30 @@
+caption: Use the legacy <ph name="CORS">CORS</ph> implementation rather than new <ph
+  name="CORS">CORS</ph>
+deprecated: true
+desc: |-
+  Use the legacy <ph name="CORS">CORS</ph> implementation rather than new <ph name="CORS">CORS</ph>.
+
+        If this setting is set to True, the legacy implementation is used that should be compatible with previous versions.
+
+        If this setting is set to False, or is not set, the new implementation is used that might cause enterprise specific compatibility issues potentially.
+
+        This policy will be removed after a couple of milestones.
+
+        For details on <ph name="CORS">CORS</ph>, visit: <ph name="CORS_HELP_URL">https://www.chromestatus.com/feature/5768642492891136</ph>.
+
+        Note that this policy was announced to be removed in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 82, but removed in version 84.
+example_value: false
+features:
+  dynamic_refresh: false
+  per_profile: true
+owners:
+- toyoshim@chromium.org
+- yhirano@chromium.org
+- kinuko@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:79-83
+- chrome_os:79-83
+tags: []
+type: main

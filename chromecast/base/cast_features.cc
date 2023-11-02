@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,8 +20,6 @@
 
 namespace chromecast {
 namespace {
-// A constant used to always activate a FieldTrial.
-const base::FieldTrial::Probability k100PercentProbability = 100;
 
 // The name of the default group to use for Cast DCS features.
 const char kDefaultDCSFeaturesGroup[] = "default_dcs_features_group";
@@ -40,11 +38,10 @@ std::vector<const base::Feature*>& GetTestFeatures() {
   return *features_for_test;
 }
 
-void SetExperimentIds(const base::Value& list) {
+void SetExperimentIds(const base::Value::List& list) {
   DCHECK(!g_experiment_ids_initialized);
-  DCHECK(list.is_list());
   std::unordered_set<int32_t> ids;
-  for (const auto& it : list.GetList()) {
+  for (const auto& it : list) {
     if (it.is_int()) {
       ids.insert(it.GetInt());
     } else {
@@ -72,8 +69,8 @@ void SetExperimentIds(const base::Value& list) {
 //    the value that the feature will hold until overriden by the server or the
 //    command line. Here's an exmaple:
 //
-//      const base::Feature kSuperSecretSauce{
-//          "enable_super_secret_sauce", base::FEATURE_DISABLED_BY_DEFAULT};
+//      BASE_FEATURE(kSuperSecretSauce, "SuperSecretSauce",
+//                   base::FEATURE_DISABLED_BY_DEFAULT);
 //
 //    IMPORTANT NOTE:
 //    The first parameter that you pass in the definition is the feature's name.
@@ -128,42 +125,48 @@ void SetExperimentIds(const base::Value& list) {
 
 // Allows applications to access media capture devices (webcams/microphones)
 // through getUserMedia API.
-const base::Feature kAllowUserMediaAccess{"allow_user_media_access",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kAllowUserMediaAccess,
+             "allow_user_media_access",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables the use of QUIC in Cast-specific NetworkContexts. See
 // chromecast/browser/cast_network_contexts.cc for usage.
-const base::Feature kEnableQuic{"enable_quic",
-                                base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableQuic, "enable_quic", base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables triple-buffer 720p graphics (overriding default graphics buffer
 // settings for a platform).
-const base::Feature kTripleBuffer720{"enable_triple_buffer_720",
-                                     base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kTripleBuffer720,
+             "enable_triple_buffer_720",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables single-buffered graphics (overriding default graphics buffer
 // settings and takes precedence over triple-buffer feature).
-const base::Feature kSingleBuffer{"enable_single_buffer",
-                                  base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kSingleBuffer,
+             "enable_single_buffer",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 // Disable idle sockets closing on memory pressure. See
 // chromecast/browser/cast_network_contexts.cc for usage.
-const base::Feature kDisableIdleSocketsCloseOnMemoryPressure{
-    "disable_idle_sockets_close_on_memory_pressure",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kDisableIdleSocketsCloseOnMemoryPressure,
+             "disable_idle_sockets_close_on_memory_pressure",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kEnableGeneralAudienceBrowsing{
-    "enable_general_audience_browsing", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableGeneralAudienceBrowsing,
+             "enable_general_audience_browsing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kEnableSideGesturePassThrough{
-    "enable_side_gesture_pass_through", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableSideGesturePassThrough,
+             "enable_side_gesture_pass_through",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Uses AudioManagerAndroid, instead of CastAudioManagerAndroid. This will
 // disable lots of Cast features, so it should only be used for development and
 // testing.
-const base::Feature kEnableChromeAudioManagerAndroid{
-    "enable_chrome_audio_manager_android", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableChromeAudioManagerAndroid,
+             "enable_chrome_audio_manager_android",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables CastAudioOutputDevice for audio output on Android. When disabled,
 // CastAudioManagerAndroid will be used.
-const base::Feature kEnableCastAudioOutputDevice{
-    "enable_cast_audio_output_device", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableCastAudioOutputDevice,
+             "enable_cast_audio_output_device",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // End Chromecast Feature definitions.
 const base::Feature* kFeatures[] = {
@@ -195,15 +198,13 @@ const std::vector<const base::Feature*>& GetFeatures() {
   return *features;
 }
 
-void InitializeFeatureList(const base::Value& dcs_features,
-                           const base::Value& dcs_experiment_ids,
+void InitializeFeatureList(const base::Value::Dict& dcs_features,
+                           const base::Value::List& dcs_experiment_ids,
                            const std::string& cmd_line_enable_features,
                            const std::string& cmd_line_disable_features,
                            const std::string& extra_enable_features,
                            const std::string& extra_disable_features) {
   DCHECK(!base::FeatureList::GetInstance());
-  DCHECK(dcs_features.is_dict());
-  DCHECK(dcs_experiment_ids.is_list());
 
   // Set the experiments.
   SetExperimentIds(dcs_experiment_ids);
@@ -219,7 +220,7 @@ void InitializeFeatureList(const base::Value& dcs_features,
                                           all_disable_features);
 
   // Override defaults from the DCS config.
-  for (const auto kv : dcs_features.DictItems()) {
+  for (const auto kv : dcs_features) {
     // Each feature must have its own FieldTrial object. Since experiments are
     // controlled server-side for Chromecast, and this class is designed with a
     // client-side experimentation framework in mind, these parameters are
@@ -228,17 +229,21 @@ void InitializeFeatureList(const base::Value& dcs_features,
     //     maintain a 1:1 mapping with Features in order to properly store and
     //     access parameters associated with each Feature. Therefore, use the
     //     Feature's name as the FieldTrial name to ensure uniqueness.
-    //   - The probability is hard-coded to 100% so that the FeatureList always
-    //     respects the value from DCS.
-    //   - The default group is unused; it will be the same for every feature.
-    //   - SESSION_RANDOMIZED is used to prevent the need for an
-    //     entropy_provider. However, this value doesn't matter.
     //   - We don't care about the group_id.
     //
     const std::string& feature_name = kv.first;
-    auto* field_trial = base::FieldTrialList::FactoryGetFieldTrial(
-        feature_name, k100PercentProbability, kDefaultDCSFeaturesGroup,
-        base::FieldTrial::SESSION_RANDOMIZED, nullptr);
+    auto* field_trial = base::FieldTrialList::CreateFieldTrial(
+        feature_name, kDefaultDCSFeaturesGroup);
+
+    // |field_trial| is null only if the trial has already been forced to
+    // another group. This shouldn't happen, unless we've processed a
+    // --force-fieldtrial commandline argument that overrides this to some other
+    // group.
+    if (!field_trial) {
+      LOG(ERROR) << "A trial was already created for a DCS feature: "
+                 << feature_name;
+      continue;
+    }
 
     if (kv.second.is_bool()) {
       // A boolean entry simply either enables or disables a feature.
@@ -293,41 +298,37 @@ bool IsFeatureEnabled(const base::Feature& feature) {
   return base::FeatureList::IsEnabled(feature);
 }
 
-base::Value GetOverriddenFeaturesForStorage(const base::Value& features) {
-  base::Value persistent_dict(base::Value::Type::DICTIONARY);
+base::Value::Dict GetOverriddenFeaturesForStorage(
+    const base::Value::Dict& features) {
+  base::Value::Dict persistent_dict;
 
   // |features| maps feature names to either a boolean or a dict of params.
-  for (const auto feature : features.DictItems()) {
+  for (const auto feature : features) {
     if (feature.second.is_bool()) {
-      persistent_dict.SetBoolKey(feature.first, feature.second.GetBool());
+      persistent_dict.Set(feature.first, feature.second.GetBool());
       continue;
     }
 
     if (feature.second.is_dict()) {
       const base::Value* params_dict = &feature.second;
-      base::Value params(base::Value::Type::DICTIONARY);
+      base::Value::Dict params;
 
-      for (const auto params_kv : params_dict->DictItems()) {
-        const auto& param_key = params_kv.first;
-        const auto& param_val = params_kv.second;
+      for (const auto [param_key, param_val] : params_dict->GetDict()) {
         if (param_val.is_bool()) {
-          params.SetStringKey(param_key,
-                              param_val.GetBool() ? "true" : "false");
+          params.Set(param_key, param_val.GetBool() ? "true" : "false");
         } else if (param_val.is_int()) {
-          params.SetStringKey(param_key,
-                              base::NumberToString(param_val.GetInt()));
+          params.Set(param_key, base::NumberToString(param_val.GetInt()));
         } else if (param_val.is_double()) {
-          params.SetStringKey(param_key,
-                              base::NumberToString(param_val.GetDouble()));
+          params.Set(param_key, base::NumberToString(param_val.GetDouble()));
         } else if (param_val.is_string()) {
-          params.SetStringKey(param_key, param_val.GetString());
+          params.Set(param_key, param_val.GetString());
         } else {
           LOG(ERROR) << "Entry in params dict for \"" << feature.first << "\""
                      << " is not of a supported type (key: " << param_key
                      << ", type: " << param_val.type();
         }
       }
-      persistent_dict.SetPath(feature.first, std::move(params));
+      persistent_dict.Set(feature.first, std::move(params));
       continue;
     }
 

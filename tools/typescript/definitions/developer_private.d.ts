@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,17 +19,17 @@ declare global {
         THEME = 'theme',
       }
 
-      export type ItemInspectView = {
-        path: string,
-        render_process_id: number,
-        render_view_id: number,
-        incognito: boolean,
-        generatedBackgroundPage: boolean,
-      };
+      export interface ItemInspectView {
+        path: string;
+        render_process_id: number;
+        render_view_id: number;
+        incognito: boolean;
+        generatedBackgroundPage: boolean;
+      }
 
-      export type InstallWarning = {
-        message: string,
-      };
+      export interface InstallWarning {
+        message: string;
+      }
 
       export enum ExtensionType {
         HOSTED_APP = 'HOSTED_APP',
@@ -44,6 +44,7 @@ declare global {
         FROM_STORE = 'FROM_STORE',
         UNPACKED = 'UNPACKED',
         THIRD_PARTY = 'THIRD_PARTY',
+        INSTALLED_BY_DEFAULT = 'INSTALLED_BY_DEFAULT',
         UNKNOWN = 'UNKNOWN',
       }
 
@@ -83,83 +84,83 @@ declare global {
         CHROME = 'CHROME',
       }
 
-      export type GetExtensionsInfoOptions = {
-        includeDisabled?: boolean,
-        includeTerminated?: boolean,
-      };
+      export interface GetExtensionsInfoOptions {
+        includeDisabled?: boolean;
+        includeTerminated?: boolean;
+      }
 
       export enum CommandScope {
         GLOBAL = 'GLOBAL',
         CHROME = 'CHROME',
       }
 
-      export type AccessModifier = {
-        isEnabled: boolean,
-        isActive: boolean,
-      };
+      export interface AccessModifier {
+        isEnabled: boolean;
+        isActive: boolean;
+      }
 
-      export type StackFrame = {
-        lineNumber: number,
-        columnNumber: number,
-        url: string,
-        functionName: string,
-      };
+      export interface StackFrame {
+        lineNumber: number;
+        columnNumber: number;
+        url: string;
+        functionName: string;
+      }
 
-      export type ManifestError = {
-        type: ErrorType,
-        extensionId: string,
-        fromIncognito: boolean,
-        source: string,
-        message: string,
-        id: number,
-        manifestKey: string,
-        manifestSpecific?: string,
-      };
+      export interface ManifestError {
+        type: ErrorType;
+        extensionId: string;
+        fromIncognito: boolean;
+        source: string;
+        message: string;
+        id: number;
+        manifestKey: string;
+        manifestSpecific?: string;
+      }
 
-      export type RuntimeError = {
-        type: ErrorType,
-        extensionId: string,
-        fromIncognito: boolean,
-        source: string,
-        message: string,
-        id: number,
-        severity: ErrorLevel,
-        contextUrl: string,
-        occurrences: number,
-        renderViewId: number,
-        renderProcessId: number,
-        canInspect: boolean,
-        stackTrace: StackFrame[],
-      };
+      export interface RuntimeError {
+        type: ErrorType;
+        extensionId: string;
+        fromIncognito: boolean;
+        source: string;
+        message: string;
+        id: number;
+        severity: ErrorLevel;
+        contextUrl: string;
+        occurrences: number;
+        renderViewId: number;
+        renderProcessId: number;
+        canInspect: boolean;
+        stackTrace: StackFrame[];
+      }
 
-      export type DisableReasons = {
-        suspiciousInstall: boolean,
-        corruptInstall: boolean,
-        updateRequired: boolean,
-        blockedByPolicy: boolean,
-        reloading: boolean,
-        custodianApprovalRequired: boolean,
-        parentDisabledPermissions: boolean,
-      };
+      export interface DisableReasons {
+        suspiciousInstall: boolean;
+        corruptInstall: boolean;
+        updateRequired: boolean;
+        blockedByPolicy: boolean;
+        reloading: boolean;
+        custodianApprovalRequired: boolean;
+        parentDisabledPermissions: boolean;
+      }
 
-      export type OptionsPage = {
-        openInTab: boolean,
-        url: string,
-      };
+      export interface OptionsPage {
+        openInTab: boolean;
+        url: string;
+      }
 
-      export type HomePage = {
-        url: string,
-        specified: boolean,
-      };
+      export interface HomePage {
+        url: string;
+        specified: boolean;
+      }
 
-      export type ExtensionView = {
-        url: string,
-        renderProcessId: number,
-        renderViewId: number,
-        incognito: boolean,
-        isIframe: boolean,
-        type: ViewType,
-      };
+      export interface ExtensionView {
+        url: string;
+        renderProcessId: number;
+        renderViewId: number;
+        incognito: boolean;
+        isIframe: boolean;
+        type: ViewType;
+      }
 
       export enum HostAccess {
         ON_CLICK = 'ON_CLICK',
@@ -167,120 +168,123 @@ declare global {
         ON_ALL_SITES = 'ON_ALL_SITES',
       }
 
-      export type ControlledInfo = {
-        text: string,
-      };
+      export interface ControlledInfo {
+        text: string;
+      }
 
-      export type Command = {
-        description: string,
-        keybinding: string,
-        name: string,
-        isActive: boolean,
-        scope: CommandScope,
-        isExtensionAction: boolean,
-      };
+      export interface Command {
+        description: string;
+        keybinding: string;
+        name: string;
+        isActive: boolean;
+        scope: CommandScope;
+        isExtensionAction: boolean;
+      }
 
-      export type DependentExtension = {
-        id: string,
-        name: string,
-      };
+      export interface DependentExtension {
+        id: string;
+        name: string;
+      }
 
-      export type Permission = {
-        message: string,
-        submessages: string[],
-      };
+      export interface Permission {
+        message: string;
+        submessages: string[];
+      }
 
-      export type SiteControl = {
-        host: string,
-        granted: boolean,
-      };
+      export interface SiteControl {
+        host: string;
+        granted: boolean;
+      }
 
-      export type RuntimeHostPermissions = {
-        hasAllHosts: boolean,
-        hostAccess: HostAccess,
-        hosts: chrome.developerPrivate.SiteControl[],
-      };
+      export interface RuntimeHostPermissions {
+        hasAllHosts: boolean;
+        hostAccess: HostAccess;
+        hosts: chrome.developerPrivate.SiteControl[];
+      }
 
-      export type Permissions = {
-        simplePermissions: chrome.developerPrivate.Permission[],
-        runtimeHostPermissions?: RuntimeHostPermissions,
-      };
+      export interface Permissions {
+        simplePermissions: chrome.developerPrivate.Permission[];
+        runtimeHostPermissions?: RuntimeHostPermissions;
+      }
 
-      export type ExtensionInfo = {
-        blacklistText?: string,
-        commands: Command[],
-        controlledInfo?: ControlledInfo,
-        dependentExtensions: DependentExtension[],
-        description: string,
-        disableReasons: DisableReasons,
-        errorCollection: AccessModifier,
-        fileAccess: AccessModifier,
-        homePage: HomePage,
-        iconUrl: string,
-        id: string,
-        incognitoAccess: AccessModifier,
-        installWarnings: string[],
-        launchUrl?: string, location: Location,
-        locationText?: string,
-        manifestErrors: ManifestError[],
-        manifestHomePageUrl: string,
-        mustRemainInstalled: boolean,
-        name: string,
-        offlineEnabled: boolean,
-        optionsPage?: OptionsPage,
-        path?: string,
-        permissions: Permissions,
-        prettifiedPath?: string,
-        runtimeErrors: RuntimeError[],
-        runtimeWarnings: string[],
-        state: ExtensionState,
-        type: ExtensionType,
-        updateUrl: string,
-        userMayModify: boolean,
-        version: string,
-        views: ExtensionView[],
-        webStoreUrl: string,
-        showSafeBrowsingAllowlistWarning: boolean,
-      };
+      export interface ExtensionInfo {
+        blacklistText?: string;
+        commands: Command[];
+        controlledInfo?: ControlledInfo;
+        dependentExtensions: DependentExtension[];
+        description: string;
+        disableReasons: DisableReasons;
+        errorCollection: AccessModifier;
+        fileAccess: AccessModifier;
+        homePage: HomePage;
+        iconUrl: string;
+        id: string;
+        incognitoAccess: AccessModifier;
+        installWarnings: string[];
+        launchUrl?: string;
+        location: Location;
+        locationText?: string;
+        manifestErrors: ManifestError[];
+        manifestHomePageUrl: string;
+        mustRemainInstalled: boolean;
+        name: string;
+        offlineEnabled: boolean;
+        optionsPage?: OptionsPage;
+        path?: string;
+        permissions: Permissions;
+        prettifiedPath?: string;
+        runtimeErrors: RuntimeError[];
+        runtimeWarnings: string[];
+        state: ExtensionState;
+        type: ExtensionType;
+        updateUrl: string;
+        userMayModify: boolean;
+        version: string;
+        views: ExtensionView[];
+        webStoreUrl: string;
+        showSafeBrowsingAllowlistWarning: boolean;
+        showAccessRequestsInToolbar: boolean;
+      }
 
-      export type ProfileInfo = {
-        canLoadUnpacked: boolean,
-        inDeveloperMode: boolean,
-        isDeveloperModeControlledByPolicy: boolean,
-        isIncognitoAvailable: boolean,
-        isSupervised: boolean,
-      };
+      export interface ProfileInfo {
+        canLoadUnpacked: boolean;
+        inDeveloperMode: boolean;
+        isDeveloperModeControlledByPolicy: boolean;
+        isIncognitoAvailable: boolean;
+        isChildAccount: boolean;
+      }
 
-      export type ExtensionConfigurationUpdate = {
-        extensionId: string,
-        fileAccess?: boolean,
-        incognitoAccess?: boolean,
-        errorCollection?: boolean,
-        hostAccess?: HostAccess,
-      };
+      export interface ExtensionConfigurationUpdate {
+        extensionId: string;
+        fileAccess?: boolean;
+        incognitoAccess?: boolean;
+        errorCollection?: boolean;
+        hostAccess?: HostAccess;
+        showAccessRequestsInToolbar?: boolean;
+      }
 
-      export type ProfileConfigurationUpdate = {
-        inDeveloperMode: boolean,
-      };
+      export interface ProfileConfigurationUpdate {
+        inDeveloperMode: boolean;
+      }
 
-      export type ExtensionCommandUpdate = {
-        extensionId: string,
-        commandName: string,
-        scope?: CommandScope,
-        keybinding?: string,
-      };
+      export interface ExtensionCommandUpdate {
+        extensionId: string;
+        commandName: string;
+        scope?: CommandScope;
+        keybinding?: string;
+      }
 
-      export type ReloadOptions = {
-        failQuietly?: boolean,
-        populateErrorForUnpacked?: boolean,
-      };
+      export interface ReloadOptions {
+        failQuietly?: boolean;
+        populateErrorForUnpacked?: boolean;
+      }
 
-      export type LoadUnpackedOptions = {
-        failQuietly?: boolean,
-        populateError?: boolean,
-        retryGuid?: string,
-        useDraggedPath?: boolean,
-      };
+      export interface LoadUnpackedOptions {
+        failQuietly?: boolean;
+        populateError?: boolean;
+        retryGuid?: string;
+        useDraggedPath?: boolean;
+      }
 
       export enum PackStatus {
         SUCCESS = 'SUCCESS',
@@ -316,63 +320,99 @@ declare global {
         SERVICE_WORKER_STOPPED = 'SERVICE_WORKER_STOPPED',
       }
 
-      export type PackDirectoryResponse = {
-        message: string,
-        item_path: string,
-        pem_path: string,
-        override_flags: number,
-        status: PackStatus,
-      };
+      export enum SiteSet {
+        USER_PERMITTED = 'USER_PERMITTED',
+        USER_RESTRICTED = 'USER_RESTRICTED',
+        EXTENSION_SPECIFIED = 'EXTENSION_SPECIFIED',
+      }
 
-      export type EventData = {
-        event_type: EventType,
-        item_id: string,
-        extensionInfo?: ExtensionInfo,
-      };
+      export interface PackDirectoryResponse {
+        message: string;
+        item_path: string;
+        pem_path: string;
+        override_flags: number;
+        status: PackStatus;
+      }
 
-      export type ErrorFileSource = {
-        beforeHighlight: string,
-        highlight: string,
-        afterHighlight: string,
-      };
+      export interface EventData {
+        event_type: EventType;
+        item_id: string;
+        extensionInfo?: ExtensionInfo;
+      }
 
-      export type LoadError = {
-        error: string,
-        path: string,
-        source?: ErrorFileSource, retryGuid: string,
-      };
+      export interface ErrorFileSource {
+        beforeHighlight: string;
+        highlight: string;
+        afterHighlight: string;
+      }
 
-      export type RequestFileSourceProperties = {
-        extensionId: string,
-        pathSuffix: string,
-        message: string,
-        manifestKey?: string,
-        manifestSpecific?: string,
-        lineNumber?: number,
-      };
+      export interface LoadError {
+        error: string;
+        path: string;
+        source?: ErrorFileSource;
+        retryGuid: string;
+      }
 
-      export type RequestFileSourceResponse = {
-        highlight: string,
-        beforeHighlight: string,
-        afterHighlight: string,
-        title: string,
-        message: string
-      };
+      export interface RequestFileSourceProperties {
+        extensionId: string;
+        pathSuffix: string;
+        message: string;
+        manifestKey?: string;
+        manifestSpecific?: string;
+        lineNumber?: number;
+      }
 
-      export type OpenDevToolsProperties = {
-        extensionId?: string, renderViewId: number, renderProcessId: number,
-        isServiceWorker?: boolean,
-        incognito?: boolean,
-        url?: string,
-        lineNumber?: number,
-        columnNumber?: number
-      };
+      export interface RequestFileSourceResponse {
+        highlight: string;
+        beforeHighlight: string;
+        afterHighlight: string;
+        title: string;
+        message: string;
+      }
 
-      export type DeleteExtensionErrorsProperties = {
-        extensionId: string,
-        errorIds?: number[],
-        type?: ErrorType,
-      };
+      export interface OpenDevToolsProperties {
+        extensionId?: string;
+        renderViewId: number;
+        renderProcessId: number;
+        isServiceWorker?: boolean;
+        incognito?: boolean;
+        url?: string;
+        lineNumber?: number;
+        columnNumber?: number;
+      }
+
+      export interface DeleteExtensionErrorsProperties {
+        extensionId: string;
+        errorIds?: number[];
+        type?: ErrorType;
+      }
+
+      export interface UserSiteSettings {
+        permittedSites: string[];
+        restrictedSites: string[];
+      }
+
+      export interface UserSiteSettingsOptions {
+        siteSet: SiteSet;
+        hosts: string[];
+      }
+
+      export interface SiteInfo {
+        siteSet: SiteSet;
+        numExtensions: number;
+        site: string;
+      }
+
+      export interface SiteGroup {
+        etldPlusOne: string;
+        numExtensions: number;
+        sites: SiteInfo[];
+      }
+
+      export interface MatchingExtensionInfo {
+        id: string;
+        siteAccess: HostAccess;
+      }
 
       type VoidCallback = () => void;
       type StringCallback = (s: string) => void;
@@ -425,10 +465,22 @@ declare global {
           update: ExtensionConfigurationUpdate, callback?: VoidCallback): void;
       export function updateProfileConfiguration(
           update: ProfileConfigurationUpdate, callback?: VoidCallback): void;
+      export function getUserSiteSettings(
+          callback: (result: UserSiteSettings) => void): void;
+      export function addUserSpecifiedSites(
+          options: UserSiteSettingsOptions, callback?: VoidCallback): void;
+      export function removeUserSpecifiedSites(
+          options: UserSiteSettingsOptions, callback?: VoidCallback): void;
+      export function getUserAndExtensionSitesByEtld(
+          callback: (result: SiteGroup[]) => void): void;
+      export function getMatchingExtensionsForSite(site: string):
+          Promise<MatchingExtensionInfo[]>;
 
       export const onItemStateChanged: ChromeEvent<(data: EventData) => void>;
       export const onProfileStateChanged:
           ChromeEvent<(info: ProfileInfo) => void>;
+      export const onUserSiteSettingsChanged:
+          ChromeEvent<(settings: UserSiteSettings) => void>;
     }
   }
 }

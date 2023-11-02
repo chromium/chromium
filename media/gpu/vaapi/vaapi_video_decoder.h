@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "base/containers/lru_cache.h"
 #include "base/containers/queue.h"
 #include "base/containers/small_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -130,7 +131,7 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   void HandleDecodeTask();
   // Clear the decode task queue. This is done when resetting or destroying the
   // decoder, or encountering an error.
-  void ClearDecodeTaskQueue(DecodeStatus status);
+  void ClearDecodeTaskQueue(DecoderStatus status);
 
   // Releases the local reference to the VideoFrame associated with the
   // specified |surface_id| on the decoder thread. This is called when
@@ -168,6 +169,29 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   // browser process for the screen sizes.
   void ApplyResolutionChangeWithScreenSizes(
       const std::vector<gfx::Size>& screen_resolution);
+
+  // Private static helper to allow using weak ptr instead of an unretained ptr.
+  static CroStatus::Or<scoped_refptr<VideoFrame>> AllocateCustomFrameProxy(
+      base::WeakPtr<VaapiVideoDecoder> decoder,
+      VideoPixelFormat format,
+      const gfx::Size& coded_size,
+      const gfx::Rect& visible_rect,
+      const gfx::Size& natural_size,
+      bool use_protected,
+      bool use_linear_buffers,
+      base::TimeDelta timestamp);
+
+  // Allocates a new VideoFrame using a new VASurface directly. Since this is
+  // only used on linux, it also sets the required YCbCr information for the
+  // frame it creates.
+  CroStatus::Or<scoped_refptr<VideoFrame>> AllocateCustomFrame(
+      VideoPixelFormat format,
+      const gfx::Size& coded_size,
+      const gfx::Rect& visible_rect,
+      const gfx::Size& natural_size,
+      bool use_protected,
+      bool use_linear_buffers,
+      base::TimeDelta timestamp);
 
   // Having too many decoder instances at once may cause us to run out of FDs
   // and subsequently crash (b/181264362). To avoid that, we limit the maximum
@@ -245,7 +269,7 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   scoped_refptr<VaapiWrapper> vaapi_wrapper_;
   // TODO(crbug.com/1022246): Instead of having the raw pointer here, getting
   // the pointer from AcceleratedVideoDecoder.
-  VaapiVideoDecoderDelegate* decoder_delegate_ = nullptr;
+  raw_ptr<VaapiVideoDecoderDelegate> decoder_delegate_ = nullptr;
 
   // This is used on AMD protected content implementations to indicate that the
   // DecoderBuffers we receive have been transcrypted and need special handling.

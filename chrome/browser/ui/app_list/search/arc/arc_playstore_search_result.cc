@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,20 +6,21 @@
 
 #include <utility>
 
+#include "ash/components/arc/mojom/app.mojom.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "base/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
-#include "chrome/browser/ash/arc/icon_decode_request.h"
+#include "chrome/browser/chromeos/arc/icon_decode_request.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/arc/arc_playstore_app_context_menu.h"
+#include "chrome/browser/ui/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ui/app_list/search/search_tags_util.h"
-#include "components/arc/mojom/app.mojom.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/arc_service_manager.h"
 #include "components/crx_file/id_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/canvas.h"
@@ -83,15 +84,12 @@ bool LaunchIntent(const std::string& intent_uri, int64_t display_id) {
 
   auto* arc_bridge = arc_service_manager->arc_bridge_service();
 
-  if (auto* app_instance =
-          ARC_GET_INSTANCE_FOR_METHOD(arc_bridge->app(), LaunchIntent)) {
-    app_instance->LaunchIntent(intent_uri, display_id);
-    return true;
-  }
-
   if (auto* app_instance = ARC_GET_INSTANCE_FOR_METHOD(
-          arc_bridge->app(), LaunchIntentDeprecated)) {
-    app_instance->LaunchIntentDeprecated(intent_uri, absl::nullopt);
+          arc_bridge->app(), LaunchIntentWithWindowInfo)) {
+    arc::mojom::WindowInfoPtr window_info = arc::mojom::WindowInfo::New();
+    window_info->display_id = display_id;
+    app_instance->LaunchIntentWithWindowInfo(intent_uri,
+                                             std::move(window_info));
     return true;
   }
 
@@ -118,7 +116,9 @@ ArcPlayStoreSearchResult::ArcPlayStoreSearchResult(
   SetCategory(Category::kPlayStore);
   SetDisplayType(ash::SearchResultDisplayType::kTile);
   // TODO: The badge icon should be updated to pass through a vector icon and
-  // color id rather than hardcoding the colors here.
+  // color id rather than hardcoding the colors here.  This will require
+  // tweaking sizes/paddings so we can set use_badge_icon_background to true and
+  // remove the superimposition onto a circle here.
   SetBadgeIcon(ui::ImageModel::FromImageSkia(CreateBadgeIcon(
       is_instant_app() ? ash::kBadgeInstantIcon : ash::kBadgePlayIcon,
       ash::SharedAppListConfig::instance().search_tile_badge_icon_dimension(),
@@ -162,7 +162,7 @@ AppContextMenu* ArcPlayStoreSearchResult::GetAppContextMenu() {
 }
 
 void ArcPlayStoreSearchResult::OnIconDecoded(const gfx::ImageSkia& icon) {
-  SetIcon(IconInfo(icon));
+  SetIcon(IconInfo(icon, GetAppIconDimension()));
 }
 
 }  // namespace app_list

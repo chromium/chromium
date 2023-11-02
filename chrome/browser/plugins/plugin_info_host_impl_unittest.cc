@@ -1,12 +1,15 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/plugins/plugin_info_host_impl.h"
 
-#include "base/at_exit.h"
+#include <map>
+#include <utility>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -25,7 +28,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "url/origin.h"
+#include "url/gurl.h"
 
 using content::PluginService;
 using testing::Eq;
@@ -42,7 +45,7 @@ class FakePluginServiceFilter : public content::PluginServiceFilter {
   FakePluginServiceFilter() = default;
   ~FakePluginServiceFilter() override = default;
 
-  bool IsPluginAvailable(int render_process_id,
+  bool IsPluginAvailable(content::BrowserContext* browser_context,
                          const content::WebPluginInfo& plugin) override;
 
   bool CanLoadPlugin(int render_process_id,
@@ -57,7 +60,7 @@ class FakePluginServiceFilter : public content::PluginServiceFilter {
 };
 
 bool FakePluginServiceFilter::IsPluginAvailable(
-    int render_process_id,
+    content::BrowserContext* browser_context,
     const content::WebPluginInfo& plugin) {
   auto it = plugin_state_.find(plugin.path);
   if (it == plugin_state_.end()) {
@@ -103,7 +106,7 @@ class PluginInfoHostImplTest : public ::testing::Test {
 
     PluginService::GetInstance()->SetFilter(&filter_);
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
     // Can't go out of process in unit tests.
     content::RenderProcessHost::SetRunRendererInProcess(true);
 #endif
@@ -111,7 +114,7 @@ class PluginInfoHostImplTest : public ::testing::Test {
     PluginService::GetInstance()->GetPlugins(
         base::BindOnce(&PluginsLoaded, run_loop.QuitClosure()));
     run_loop.Run();
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
     content::RenderProcessHost::SetRunRendererInProcess(false);
 #endif
   }
@@ -130,11 +133,10 @@ class PluginInfoHostImplTest : public ::testing::Test {
   FakePluginServiceFilter filter_;
 
  private:
-  base::ShadowingAtExitManager at_exit_manager_;  // Destroys the PluginService.
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile_;
   PluginInfoHostImpl::Context context_;
-  HostContentSettingsMap* host_content_settings_map_;
+  raw_ptr<HostContentSettingsMap> host_content_settings_map_;
 };
 
 TEST_F(PluginInfoHostImplTest, FindEnabledPlugin) {
@@ -144,9 +146,8 @@ TEST_F(PluginInfoHostImplTest, FindEnabledPlugin) {
     chrome::mojom::PluginStatus status;
     content::WebPluginInfo plugin;
     std::string actual_mime_type;
-    EXPECT_TRUE(context()->FindEnabledPlugin(0, GURL(), url::Origin(),
-                                             "foo/bar", &status, &plugin,
-                                             &actual_mime_type, nullptr));
+    EXPECT_TRUE(context()->FindEnabledPlugin(
+        GURL(), "foo/bar", &status, &plugin, &actual_mime_type, nullptr));
     EXPECT_EQ(chrome::mojom::PluginStatus::kAllowed, status);
     EXPECT_EQ(foo_plugin_path_.value(), plugin.path.value());
   }
@@ -156,9 +157,8 @@ TEST_F(PluginInfoHostImplTest, FindEnabledPlugin) {
     chrome::mojom::PluginStatus status;
     content::WebPluginInfo plugin;
     std::string actual_mime_type;
-    EXPECT_TRUE(context()->FindEnabledPlugin(0, GURL(), url::Origin(),
-                                             "foo/bar", &status, &plugin,
-                                             &actual_mime_type, nullptr));
+    EXPECT_TRUE(context()->FindEnabledPlugin(
+        GURL(), "foo/bar", &status, &plugin, &actual_mime_type, nullptr));
     EXPECT_EQ(chrome::mojom::PluginStatus::kAllowed, status);
     EXPECT_EQ(bar_plugin_path_.value(), plugin.path.value());
   }
@@ -170,9 +170,8 @@ TEST_F(PluginInfoHostImplTest, FindEnabledPlugin) {
     std::string actual_mime_type;
     std::string identifier;
     std::u16string plugin_name;
-    EXPECT_FALSE(context()->FindEnabledPlugin(0, GURL(), url::Origin(),
-                                              "foo/bar", &status, &plugin,
-                                              &actual_mime_type, nullptr));
+    EXPECT_FALSE(context()->FindEnabledPlugin(
+        GURL(), "foo/bar", &status, &plugin, &actual_mime_type, nullptr));
     EXPECT_EQ(chrome::mojom::PluginStatus::kDisabled, status);
     EXPECT_EQ(foo_plugin_path_.value(), plugin.path.value());
   }
@@ -180,9 +179,8 @@ TEST_F(PluginInfoHostImplTest, FindEnabledPlugin) {
     chrome::mojom::PluginStatus status;
     content::WebPluginInfo plugin;
     std::string actual_mime_type;
-    EXPECT_FALSE(context()->FindEnabledPlugin(0, GURL(), url::Origin(),
-                                              "baz/blurp", &status, &plugin,
-                                              &actual_mime_type, nullptr));
+    EXPECT_FALSE(context()->FindEnabledPlugin(
+        GURL(), "baz/blurp", &status, &plugin, &actual_mime_type, nullptr));
     EXPECT_EQ(chrome::mojom::PluginStatus::kNotFound, status);
     EXPECT_EQ(FILE_PATH_LITERAL(""), plugin.path.value());
   }

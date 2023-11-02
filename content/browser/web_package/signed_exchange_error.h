@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,7 +51,12 @@ enum class SignedExchangeLoadResult {
   kVariantMismatch,
   // Certificate's validity period is too long.
   kCertValidityPeriodTooLong,
-  kMaxValue = kCertValidityPeriodTooLong
+  // SXG had "Vary: Cookie" inner header but we had a cookie for the URL.
+  kHadCookieForCookielessOnlySXG,
+  // The certificate didn't match the built-in public key pins for the host
+  // name.
+  kPKPViolationError,
+  kMaxValue = kPKPViolationError
 };
 
 struct SignedExchangeError {

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/auto_reset.h"
 #include "base/barrier_closure.h"
+#include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
@@ -20,11 +21,14 @@
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/default_clock.h"
+#include "components/services/storage/filesystem_proxy_factory.h"
 #include "components/services/storage/indexed_db/leveldb/fake_leveldb_factory.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
-#include "components/services/storage/public/mojom/indexed_db_control.mojom-test-utils.h"
+#include "components/services/storage/privileged/mojom/indexed_db_control.mojom-test-utils.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
+#include "content/browser/indexed_db/indexed_db_bucket_state.h"
 #include "content/browser/indexed_db/indexed_db_class_factory.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
@@ -32,11 +36,11 @@
 #include "content/browser/indexed_db/indexed_db_factory_impl.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_env.h"
 #include "content/browser/indexed_db/indexed_db_pre_close_task_queue.h"
-#include "content/browser/indexed_db/indexed_db_storage_key_state.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
 #include "content/browser/indexed_db/mock_indexed_db_callbacks.h"
 #include "content/browser/indexed_db/mock_indexed_db_database_callbacks.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "net/base/features.h"
 #include "storage/browser/test/mock_quota_manager_proxy.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -88,22 +92,20 @@ class IndexedDBFactoryTest : public testing::Test {
       // Loop through all open storage keys, and force close them, and request
       // the deletion of the leveldb state. Once the states are no longer
       // around, delete all of the databases on disk.
-      auto open_factory_storage_keys = factory->GetOpenStorageKeys();
-      for (const auto& storage_key : open_factory_storage_keys) {
-        context_->ForceCloseSync(
-            storage_key,
-            storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN);
+      for (const auto& bucket_id : factory->GetOpenBuckets()) {
+        context_->ForceClose(
+            bucket_id,
+            storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN,
+            base::DoNothing());
       }
       // All leveldb databases are closed, and they can be deleted.
-      for (auto storage_key : context_->GetAllStorageKeys()) {
+      for (auto bucket_locator : context_->GetAllBuckets()) {
         bool success = false;
         storage::mojom::IndexedDBControlAsyncWaiter waiter(context_.get());
-        waiter.DeleteForStorageKey(storage_key, &success);
+        waiter.DeleteForStorageKey(bucket_locator.storage_key, &success);
         EXPECT_TRUE(success);
       }
     }
-    if (temp_dir_.IsValid())
-      ASSERT_TRUE(temp_dir_.Delete());
     IndexedDBClassFactory::Get()->SetLevelDBFactoryForTesting(nullptr);
     quota_manager_.reset();
   }
@@ -143,7 +145,7 @@ class IndexedDBFactoryTest : public testing::Test {
   // is no actual data in the database.
   std::tuple<std::unique_ptr<IndexedDBConnection>,
              scoped_refptr<MockIndexedDBDatabaseCallbacks>>
-  CreateConnectionForDatatabase(const blink::StorageKey& storage_key,
+  CreateConnectionForDatatabase(const storage::BucketLocator& bucket_locator,
                                 const std::u16string& name) {
     auto callbacks = base::MakeRefCounted<MockIndexedDBCallbacks>();
     auto db_callbacks = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
@@ -160,8 +162,8 @@ class IndexedDBFactoryTest : public testing::Test {
       base::RunLoop loop;
       callbacks->CallOnUpgradeNeeded(
           base::BindLambdaForTesting([&]() { loop.Quit(); }));
-      factory()->Open(name, std::move(connection), storage_key,
-                      context()->data_path());
+      factory()->Open(name, std::move(connection), bucket_locator,
+                      context()->GetDataPath(bucket_locator));
       loop.Run();
     }
 
@@ -201,14 +203,14 @@ class IndexedDBFactoryTest : public testing::Test {
     return task_environment_.get();
   }
 
-  IndexedDBStorageKeyState* StorageKeyStateFromHandle(
-      IndexedDBStorageKeyStateHandle& handle) {
-    return handle.storage_key_state();
+  IndexedDBBucketState* StorageBucketFromHandle(
+      IndexedDBBucketStateHandle& handle) {
+    return handle.bucket_state();
   }
 
   storage::MockQuotaManager* quota_manager() { return quota_manager_.get(); }
 
- private:
+ protected:
   std::unique_ptr<base::test::TaskEnvironment> task_environment_;
 
   base::ScopedTempDir temp_dir_;
@@ -230,40 +232,182 @@ class IndexedDBFactoryTestWithMockTime : public IndexedDBFactoryTest {
       const IndexedDBFactoryTestWithMockTime&) = delete;
 };
 
-TEST_F(IndexedDBFactoryTest, BasicFactoryCreationAndTearDown) {
+class IndexedDBFactoryTestWithStoragePartitioning
+    : public IndexedDBFactoryTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  IndexedDBFactoryTestWithStoragePartitioning() {
+    feature_list_.InitWithFeatureState(
+        net::features::kThirdPartyStoragePartitioning,
+        IsThirdPartyStoragePartitioningEnabled());
+  }
+
+  bool IsThirdPartyStoragePartitioningEnabled() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    IndexedDBFactoryTestWithStoragePartitioning,
+    testing::Bool());
+
+TEST_P(IndexedDBFactoryTestWithStoragePartitioning,
+       BasicFactoryCreationAndTearDown) {
+  auto filesystem_proxy = storage::CreateFilesystemProxy();
   SetupContext();
 
   const blink::StorageKey storage_key_1 =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
+  storage::BucketLocator bucket_locator_1 =
+      quota_manager()
+          ->GetOrCreateBucketSync(
+              storage::BucketInitParams::ForDefaultBucket(storage_key_1))
+          ->ToBucketLocator();
+  auto file_1 = context_->GetLevelDBPathForTesting(bucket_locator_1)
+                    .AppendASCII("1.json");
+  ASSERT_TRUE(CreateDirectory(file_1.DirName()));
+  ASSERT_TRUE(base::WriteFile(file_1, std::string(10, 'a')));
+
   const blink::StorageKey storage_key_2 =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:82");
+  storage::BucketLocator bucket_locator_2 =
+      quota_manager()
+          ->GetOrCreateBucketSync(
+              storage::BucketInitParams::ForDefaultBucket(storage_key_2))
+          ->ToBucketLocator();
+  auto file_2 = context_->GetLevelDBPathForTesting(bucket_locator_2)
+                    .AppendASCII("2.json");
+  ASSERT_TRUE(CreateDirectory(file_2.DirName()));
+  ASSERT_TRUE(base::WriteFile(file_2, std::string(100, 'a')));
 
-  IndexedDBStorageKeyStateHandle storage_key_state1_handle;
-  IndexedDBStorageKeyStateHandle storage_key_state2_handle;
+  const blink::StorageKey storage_key_3 =
+      blink::StorageKey::CreateFromStringForTesting("http://localhost2:82");
+  storage::BucketLocator bucket_locator_3 =
+      quota_manager()
+          ->GetOrCreateBucketSync(
+              storage::BucketInitParams::ForDefaultBucket(storage_key_3))
+          ->ToBucketLocator();
+  auto file_3 = context_->GetLevelDBPathForTesting(bucket_locator_3)
+                    .AppendASCII("3.json");
+  ASSERT_TRUE(CreateDirectory(file_3.DirName()));
+  ASSERT_TRUE(base::WriteFile(file_3, std::string(1000, 'a')));
+
+  const blink::StorageKey storage_key_4 =
+      blink::StorageKey::CreateWithOptionalNonce(
+          storage_key_1.origin(), net::SchemefulSite(storage_key_3.origin()),
+          nullptr, blink::mojom::AncestorChainBit::kCrossSite);
+  storage::BucketLocator bucket_locator_4 =
+      quota_manager()
+          ->GetOrCreateBucketSync(
+              storage::BucketInitParams::ForDefaultBucket(storage_key_4))
+          ->ToBucketLocator();
+  auto file_4 = context_->GetLevelDBPathForTesting(bucket_locator_4)
+                    .AppendASCII("4.json");
+  ASSERT_TRUE(CreateDirectory(file_4.DirName()));
+  ASSERT_TRUE(base::WriteFile(file_4, std::string(10000, 'a')));
+
+  const blink::StorageKey storage_key_5 = storage_key_1;
+  storage::BucketInitParams params(storage_key_5, "inbox");
+  storage::BucketLocator bucket_locator_5 =
+      quota_manager()->GetOrCreateBucketSync(params)->ToBucketLocator();
+  auto file_5 = context_->GetLevelDBPathForTesting(bucket_locator_5)
+                    .AppendASCII("5.json");
+  ASSERT_TRUE(CreateDirectory(file_5.DirName()));
+  ASSERT_TRUE(base::WriteFile(file_5, std::string(20000, 'a')));
+  EXPECT_NE(file_5.DirName(), file_1.DirName());
+
+  IndexedDBBucketStateHandle bucket_state1_handle;
+  IndexedDBBucketStateHandle bucket_state2_handle;
+  IndexedDBBucketStateHandle bucket_state3_handle;
+  IndexedDBBucketStateHandle bucket_state4_handle;
+  IndexedDBBucketStateHandle bucket_state5_handle;
   leveldb::Status s;
 
-  std::tie(storage_key_state1_handle, s, std::ignore, std::ignore,
-           std::ignore) =
-      factory()->GetOrOpenStorageKeyFactory(storage_key_1,
-                                            context()->data_path(),
-                                            /*create_if_missing=*/true);
-  EXPECT_TRUE(storage_key_state1_handle.IsHeld()) << s.ToString();
+  std::tie(bucket_state1_handle, s, std::ignore, std::ignore, std::ignore) =
+      factory()->GetOrOpenBucketFactory(
+          bucket_locator_1, context()->GetDataPath(bucket_locator_1),
+          /*create_if_missing=*/true);
+  EXPECT_TRUE(bucket_state1_handle.IsHeld()) << s.ToString();
   EXPECT_TRUE(s.ok()) << s.ToString();
 
-  std::tie(storage_key_state2_handle, s, std::ignore, std::ignore,
-           std::ignore) =
-      factory()->GetOrOpenStorageKeyFactory(storage_key_2,
-                                            context()->data_path(),
-                                            /*create_if_missing=*/true);
-  EXPECT_TRUE(storage_key_state2_handle.IsHeld()) << s.ToString();
+  std::tie(bucket_state2_handle, s, std::ignore, std::ignore, std::ignore) =
+      factory()->GetOrOpenBucketFactory(
+          bucket_locator_2, context()->GetDataPath(bucket_locator_2),
+          /*create_if_missing=*/true);
+  EXPECT_TRUE(bucket_state2_handle.IsHeld()) << s.ToString();
   EXPECT_TRUE(s.ok()) << s.ToString();
 
-  std::vector<storage::mojom::StorageUsageInfoPtr> origin_info;
+  std::tie(bucket_state3_handle, s, std::ignore, std::ignore, std::ignore) =
+      factory()->GetOrOpenBucketFactory(
+          bucket_locator_3, context()->GetDataPath(bucket_locator_3),
+          /*create_if_missing=*/true);
+  EXPECT_TRUE(bucket_state3_handle.IsHeld()) << s.ToString();
+  EXPECT_TRUE(s.ok()) << s.ToString();
+
+  std::tie(bucket_state4_handle, s, std::ignore, std::ignore, std::ignore) =
+      factory()->GetOrOpenBucketFactory(
+          bucket_locator_4, context()->GetDataPath(bucket_locator_4),
+          /*create_if_missing=*/true);
+  EXPECT_TRUE(bucket_state4_handle.IsHeld()) << s.ToString();
+  EXPECT_TRUE(s.ok()) << s.ToString();
+
+  std::tie(bucket_state5_handle, s, std::ignore, std::ignore, std::ignore) =
+      factory()->GetOrOpenBucketFactory(
+          bucket_locator_5, context()->GetDataPath(bucket_locator_5),
+          /*create_if_missing=*/true);
+  EXPECT_TRUE(bucket_state5_handle.IsHeld()) << s.ToString();
+  EXPECT_TRUE(s.ok()) << s.ToString();
+
+  std::vector<storage::mojom::StorageUsageInfoPtr> infos;
   storage::mojom::IndexedDBControlAsyncWaiter sync_control(context());
-  sync_control.GetUsage(&origin_info);
+  sync_control.GetUsage(&infos);
 
-  EXPECT_EQ(2ul, origin_info.size());
-  EXPECT_EQ(2ul, factory()->GetOpenStorageKeys().size());
+  int64_t bucket_size_1 =
+      filesystem_proxy->ComputeDirectorySize(file_1.DirName());
+  int64_t bucket_size_2 =
+      filesystem_proxy->ComputeDirectorySize(file_2.DirName());
+  int64_t bucket_size_3 =
+      filesystem_proxy->ComputeDirectorySize(file_3.DirName());
+  int64_t bucket_size_4 =
+      filesystem_proxy->ComputeDirectorySize(file_4.DirName());
+  int64_t bucket_size_5 =
+      filesystem_proxy->ComputeDirectorySize(file_5.DirName());
+
+  // Buckets 1, 4, and 5 merge if partitioning is on. If partitioning is off
+  // buckets 1 and 5 merge.
+  EXPECT_EQ(IsThirdPartyStoragePartitioningEnabled() ? 4ul : 3ul, infos.size());
+  for (const auto& info : infos) {
+    if (info->storage_key == bucket_locator_1.storage_key) {
+      // This is the size of the 10 and 10000 character files (buckets 1 and 4).
+      if (IsThirdPartyStoragePartitioningEnabled()) {
+        // If third party storage partitioning is on, additional space is taken
+        // by supporting files for the independent buckets.
+        EXPECT_NE(bucket_size_1, bucket_size_4);
+      } else {
+        EXPECT_NE(bucket_size_1, bucket_size_5);
+      }
+      EXPECT_NE(bucket_size_1, bucket_size_5);
+      EXPECT_EQ(info->total_size_bytes, bucket_size_1 + bucket_size_5);
+    } else if (info->storage_key == bucket_locator_2.storage_key) {
+      // This is the size of the 100 character file (bucket 2).
+      EXPECT_EQ(info->total_size_bytes, bucket_size_2);
+    } else if (info->storage_key == bucket_locator_3.storage_key) {
+      // This is the size of the 1000 character file (bucket 3).
+      EXPECT_EQ(info->total_size_bytes, bucket_size_3);
+    } else if (info->storage_key == bucket_locator_4.storage_key) {
+      // This is the size of the 1000 character file (bucket 4).
+      EXPECT_EQ(info->total_size_bytes, bucket_size_4);
+    } else {
+      NOTREACHED();
+    }
+  }
+  if (IsThirdPartyStoragePartitioningEnabled()) {
+    EXPECT_EQ(5ul, factory()->GetOpenBuckets().size());
+  } else {
+    EXPECT_EQ(4ul, factory()->GetOpenBuckets().size());
+  }
 }
 
 TEST_F(IndexedDBFactoryTest, CloseSequenceStarts) {
@@ -271,22 +415,24 @@ TEST_F(IndexedDBFactoryTest, CloseSequenceStarts) {
 
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-
-  IndexedDBStorageKeyStateHandle storage_key_state_handle;
+  auto bucket_locator = storage::BucketLocator();
+  bucket_locator.storage_key = storage_key;
+  IndexedDBBucketStateHandle bucket_state_handle;
   leveldb::Status s;
 
-  std::tie(storage_key_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenStorageKeyFactory(storage_key, context()->data_path(),
-                                            /*create_if_missing=*/true);
-  EXPECT_TRUE(storage_key_state_handle.IsHeld()) << s.ToString();
-  storage_key_state_handle.Release();
+  std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
+      factory()->GetOrOpenBucketFactory(bucket_locator,
+                                        context()->GetDataPath(bucket_locator),
+                                        /*create_if_missing=*/true);
+  EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
+  bucket_state_handle.Release();
 
-  EXPECT_TRUE(factory()->GetStorageKeyFactory(storage_key));
-  EXPECT_TRUE(factory()->GetStorageKeyFactory(storage_key)->IsClosing());
+  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator.id));
+  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator.id)->IsClosing());
 
-  factory()->ForceClose(storage_key, false);
+  factory()->ForceClose(bucket_locator.id, false);
   RunPostedTasks();
-  EXPECT_FALSE(factory()->GetStorageKeyFactory(storage_key));
+  EXPECT_FALSE(factory()->GetBucketFactory(bucket_locator.id));
 }
 
 TEST_F(IndexedDBFactoryTest, ImmediateClose) {
@@ -296,20 +442,22 @@ TEST_F(IndexedDBFactoryTest, ImmediateClose) {
 
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-
-  IndexedDBStorageKeyStateHandle storage_key_state_handle;
+  auto bucket_locator = storage::BucketLocator();
+  bucket_locator.storage_key = storage_key;
+  IndexedDBBucketStateHandle bucket_state_handle;
   leveldb::Status s;
 
-  std::tie(storage_key_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenStorageKeyFactory(storage_key, context()->data_path(),
-                                            /*create_if_missing=*/true);
-  EXPECT_TRUE(storage_key_state_handle.IsHeld()) << s.ToString();
-  storage_key_state_handle.Release();
+  std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
+      factory()->GetOrOpenBucketFactory(bucket_locator,
+                                        context()->GetDataPath(bucket_locator),
+                                        /*create_if_missing=*/true);
+  EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
+  bucket_state_handle.Release();
 
-  EXPECT_TRUE(factory()->GetStorageKeyFactory(storage_key));
+  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator.id));
   RunPostedTasks();
-  EXPECT_FALSE(factory()->GetStorageKeyFactory(storage_key));
-  EXPECT_EQ(0ul, factory()->GetOpenStorageKeys().size());
+  EXPECT_FALSE(factory()->GetBucketFactory(bucket_locator.id));
+  EXPECT_EQ(0ul, factory()->GetOpenBuckets().size());
 }
 
 TEST_F(IndexedDBFactoryTestWithMockTime, PreCloseTasksStart) {
@@ -319,97 +467,102 @@ TEST_F(IndexedDBFactoryTestWithMockTime, PreCloseTasksStart) {
 
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-
-  IndexedDBStorageKeyStateHandle storage_key_state_handle;
+  auto bucket_locator = storage::BucketLocator();
+  bucket_locator.storage_key = storage_key;
+  IndexedDBBucketStateHandle bucket_state_handle;
   leveldb::Status s;
 
   // Open a connection & immediately release it to cause the closing sequence to
   // start.
-  std::tie(storage_key_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenStorageKeyFactory(storage_key, context()->data_path(),
-                                            /*create_if_missing=*/true);
-  EXPECT_TRUE(storage_key_state_handle.IsHeld()) << s.ToString();
-  storage_key_state_handle.Release();
+  std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
+      factory()->GetOrOpenBucketFactory(bucket_locator,
+                                        context()->GetDataPath(bucket_locator),
+                                        /*create_if_missing=*/true);
+  EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
+  bucket_state_handle.Release();
 
-  EXPECT_TRUE(factory()->GetStorageKeyFactory(storage_key));
-  EXPECT_TRUE(factory()->GetStorageKeyFactory(storage_key)->IsClosing());
+  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator.id));
+  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator.id)->IsClosing());
 
-  EXPECT_EQ(IndexedDBStorageKeyState::ClosingState::kPreCloseGracePeriod,
-            factory()->GetStorageKeyFactory(storage_key)->closing_stage());
+  EXPECT_EQ(IndexedDBBucketState::ClosingState::kPreCloseGracePeriod,
+            factory()->GetBucketFactory(bucket_locator.id)->closing_stage());
 
   task_environment()->FastForwardBy(base::Seconds(2));
 
   // The factory should be closed, as the pre close tasks are delayed.
-  EXPECT_FALSE(factory()->GetStorageKeyFactory(storage_key));
+  EXPECT_FALSE(factory()->GetBucketFactory(bucket_locator.id));
 
   // Move the clock to run the tasks in the next close sequence.
   // NOTE: The constants rate-limiting sweeps and compaction are currently the
   // same. This test may need to be restructured if these values diverge.
-  clock.Advance(IndexedDBStorageKeyState::kMaxEarliestGlobalSweepFromNow);
+  clock.Advance(IndexedDBBucketState::kMaxEarliestGlobalSweepFromNow);
 
   // Open a connection & immediately release it to cause the closing sequence to
   // start again.
-  std::tie(storage_key_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenStorageKeyFactory(storage_key, context()->data_path(),
-                                            /*create_if_missing=*/true);
-  EXPECT_TRUE(storage_key_state_handle.IsHeld()) << s.ToString();
-  storage_key_state_handle.Release();
+  std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
+      factory()->GetOrOpenBucketFactory(bucket_locator,
+                                        context()->GetDataPath(bucket_locator),
+                                        /*create_if_missing=*/true);
+  EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
+  bucket_state_handle.Release();
 
   // Manually execute the timer so that the PreCloseTaskList task doesn't also
   // run.
-  factory()->GetStorageKeyFactory(storage_key)->close_timer()->FireNow();
+  factory()->GetBucketFactory(bucket_locator.id)->close_timer()->FireNow();
 
   // The pre-close tasks should be running now.
-  ASSERT_TRUE(factory()->GetStorageKeyFactory(storage_key));
-  EXPECT_EQ(IndexedDBStorageKeyState::ClosingState::kRunningPreCloseTasks,
-            factory()->GetStorageKeyFactory(storage_key)->closing_stage());
+  ASSERT_TRUE(factory()->GetBucketFactory(bucket_locator.id));
+  EXPECT_EQ(IndexedDBBucketState::ClosingState::kRunningPreCloseTasks,
+            factory()->GetBucketFactory(bucket_locator.id)->closing_stage());
   ASSERT_TRUE(
-      factory()->GetStorageKeyFactory(storage_key)->pre_close_task_queue());
+      factory()->GetBucketFactory(bucket_locator.id)->pre_close_task_queue());
   EXPECT_TRUE(factory()
-                  ->GetStorageKeyFactory(storage_key)
+                  ->GetBucketFactory(bucket_locator.id)
                   ->pre_close_task_queue()
                   ->started());
 
   // Stop sweep by opening a connection.
-  std::tie(storage_key_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenStorageKeyFactory(storage_key, context()->data_path(),
-                                            /*create_if_missing=*/true);
-  EXPECT_TRUE(storage_key_state_handle.IsHeld()) << s.ToString();
-  EXPECT_FALSE(StorageKeyStateFromHandle(storage_key_state_handle)
-                   ->pre_close_task_queue());
-  storage_key_state_handle.Release();
+  std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
+      factory()->GetOrOpenBucketFactory(bucket_locator,
+                                        context()->GetDataPath(bucket_locator),
+                                        /*create_if_missing=*/true);
+  EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
+  EXPECT_FALSE(
+      StorageBucketFromHandle(bucket_state_handle)->pre_close_task_queue());
+  bucket_state_handle.Release();
 
   // Move clock forward to trigger next sweep, but storage key has longer
   // sweep minimum, so no tasks should execute.
-  clock.Advance(IndexedDBStorageKeyState::kMaxEarliestGlobalSweepFromNow);
+  clock.Advance(IndexedDBBucketState::kMaxEarliestGlobalSweepFromNow);
 
-  storage_key_state_handle.Release();
-  EXPECT_TRUE(factory()->GetStorageKeyFactory(storage_key));
-  EXPECT_EQ(IndexedDBStorageKeyState::ClosingState::kPreCloseGracePeriod,
-            factory()->GetStorageKeyFactory(storage_key)->closing_stage());
+  bucket_state_handle.Release();
+  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator.id));
+  EXPECT_EQ(IndexedDBBucketState::ClosingState::kPreCloseGracePeriod,
+            factory()->GetBucketFactory(bucket_locator.id)->closing_stage());
 
   // Manually execute the timer so that the PreCloseTaskList task doesn't also
   // run.
-  factory()->GetStorageKeyFactory(storage_key)->close_timer()->FireNow();
-  EXPECT_TRUE(factory()->GetStorageKeyFactory(storage_key));
+  factory()->GetBucketFactory(bucket_locator.id)->close_timer()->FireNow();
+  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator.id));
   RunPostedTasks();
-  EXPECT_FALSE(factory()->GetStorageKeyFactory(storage_key));
+  EXPECT_FALSE(factory()->GetBucketFactory(bucket_locator.id));
 
   //  Finally, move the clock forward so the storage key should allow a sweep.
-  clock.Advance(IndexedDBStorageKeyState::kMaxEarliestStorageKeySweepFromNow);
-  std::tie(storage_key_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenStorageKeyFactory(storage_key, context()->data_path(),
-                                            /*create_if_missing=*/true);
-  storage_key_state_handle.Release();
-  factory()->GetStorageKeyFactory(storage_key)->close_timer()->FireNow();
+  clock.Advance(IndexedDBBucketState::kMaxEarliestBucketSweepFromNow);
+  std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
+      factory()->GetOrOpenBucketFactory(bucket_locator,
+                                        context()->GetDataPath(bucket_locator),
+                                        /*create_if_missing=*/true);
+  bucket_state_handle.Release();
+  factory()->GetBucketFactory(bucket_locator.id)->close_timer()->FireNow();
 
-  ASSERT_TRUE(factory()->GetStorageKeyFactory(storage_key));
-  EXPECT_EQ(IndexedDBStorageKeyState::ClosingState::kRunningPreCloseTasks,
-            factory()->GetStorageKeyFactory(storage_key)->closing_stage());
+  ASSERT_TRUE(factory()->GetBucketFactory(bucket_locator.id));
+  EXPECT_EQ(IndexedDBBucketState::ClosingState::kRunningPreCloseTasks,
+            factory()->GetBucketFactory(bucket_locator.id)->closing_stage());
   ASSERT_TRUE(
-      factory()->GetStorageKeyFactory(storage_key)->pre_close_task_queue());
+      factory()->GetBucketFactory(bucket_locator.id)->pre_close_task_queue());
   EXPECT_TRUE(factory()
-                  ->GetStorageKeyFactory(storage_key)
+                  ->GetBucketFactory(bucket_locator.id)
                   ->pre_close_task_queue()
                   ->started());
 }
@@ -421,39 +574,37 @@ TEST_F(IndexedDBFactoryTestWithMockTime, TombstoneSweeperTiming) {
 
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-
-  IndexedDBStorageKeyStateHandle storage_key_state_handle;
+  auto bucket_locator = storage::BucketLocator();
+  bucket_locator.storage_key = storage_key;
+  IndexedDBBucketStateHandle bucket_state_handle;
   leveldb::Status s;
 
   // Open a connection & immediately release it to cause the closing sequence to
   // start.
-  std::tie(storage_key_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenStorageKeyFactory(storage_key, context()->data_path(),
-                                            /*create_if_missing=*/true);
-  EXPECT_TRUE(storage_key_state_handle.IsHeld()) << s.ToString();
+  std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
+      factory()->GetOrOpenBucketFactory(bucket_locator,
+                                        context()->GetDataPath(bucket_locator),
+                                        /*create_if_missing=*/true);
+  EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
 
   // The factory should be closed, as the pre close tasks are delayed.
-  EXPECT_FALSE(storage_key_state_handle.storage_key_state()
-                   ->ShouldRunTombstoneSweeper());
+  EXPECT_FALSE(bucket_state_handle.bucket_state()->ShouldRunTombstoneSweeper());
 
   // Move the clock to run the tasks in the next close sequence.
-  clock.Advance(IndexedDBStorageKeyState::kMaxEarliestGlobalSweepFromNow);
+  clock.Advance(IndexedDBBucketState::kMaxEarliestGlobalSweepFromNow);
 
-  EXPECT_TRUE(storage_key_state_handle.storage_key_state()
-                  ->ShouldRunTombstoneSweeper());
+  EXPECT_TRUE(bucket_state_handle.bucket_state()->ShouldRunTombstoneSweeper());
 
   // Move clock forward to trigger next sweep, but storage key has longer
   // sweep minimum, so no tasks should execute.
-  clock.Advance(IndexedDBStorageKeyState::kMaxEarliestGlobalSweepFromNow);
+  clock.Advance(IndexedDBBucketState::kMaxEarliestGlobalSweepFromNow);
 
-  EXPECT_FALSE(storage_key_state_handle.storage_key_state()
-                   ->ShouldRunTombstoneSweeper());
+  EXPECT_FALSE(bucket_state_handle.bucket_state()->ShouldRunTombstoneSweeper());
 
   //  Finally, move the clock forward so the storage key should allow a sweep.
-  clock.Advance(IndexedDBStorageKeyState::kMaxEarliestStorageKeySweepFromNow);
+  clock.Advance(IndexedDBBucketState::kMaxEarliestBucketSweepFromNow);
 
-  EXPECT_TRUE(storage_key_state_handle.storage_key_state()
-                  ->ShouldRunTombstoneSweeper());
+  EXPECT_TRUE(bucket_state_handle.bucket_state()->ShouldRunTombstoneSweeper());
 }
 
 TEST_F(IndexedDBFactoryTestWithMockTime, CompactionTaskTiming) {
@@ -463,41 +614,38 @@ TEST_F(IndexedDBFactoryTestWithMockTime, CompactionTaskTiming) {
 
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-
-  IndexedDBStorageKeyStateHandle storage_key_state_handle;
+  auto bucket_locator = storage::BucketLocator();
+  bucket_locator.storage_key = storage_key;
+  IndexedDBBucketStateHandle bucket_state_handle;
   leveldb::Status s;
 
   // Open a connection & immediately release it to cause the closing sequence to
   // start.
-  std::tie(storage_key_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenStorageKeyFactory(storage_key, context()->data_path(),
-                                            /*create_if_missing=*/true);
-  EXPECT_TRUE(storage_key_state_handle.IsHeld()) << s.ToString();
+  std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
+      factory()->GetOrOpenBucketFactory(bucket_locator,
+                                        context()->GetDataPath(bucket_locator),
+                                        /*create_if_missing=*/true);
+  EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
 
   // The factory should be closed, as the pre close tasks are delayed.
-  EXPECT_FALSE(
-      storage_key_state_handle.storage_key_state()->ShouldRunCompaction());
+  EXPECT_FALSE(bucket_state_handle.bucket_state()->ShouldRunCompaction());
 
   // Move the clock to run the tasks in the next close sequence.
-  clock.Advance(IndexedDBStorageKeyState::kMaxEarliestGlobalCompactionFromNow);
+  clock.Advance(IndexedDBBucketState::kMaxEarliestGlobalCompactionFromNow);
 
-  EXPECT_TRUE(
-      storage_key_state_handle.storage_key_state()->ShouldRunCompaction());
+  EXPECT_TRUE(bucket_state_handle.bucket_state()->ShouldRunCompaction());
 
   // Move clock forward to trigger next compaction, but storage key has longer
   // compaction minimum, so no tasks should execute.
-  clock.Advance(IndexedDBStorageKeyState::kMaxEarliestGlobalCompactionFromNow);
+  clock.Advance(IndexedDBBucketState::kMaxEarliestGlobalCompactionFromNow);
 
-  EXPECT_FALSE(
-      storage_key_state_handle.storage_key_state()->ShouldRunCompaction());
+  EXPECT_FALSE(bucket_state_handle.bucket_state()->ShouldRunCompaction());
 
   //  Finally, move the clock forward so the storage key should allow a
   //  compaction.
-  clock.Advance(
-      IndexedDBStorageKeyState::kMaxEarliestStorageKeyCompactionFromNow);
+  clock.Advance(IndexedDBBucketState::kMaxEarliestBucketCompactionFromNow);
 
-  EXPECT_TRUE(
-      storage_key_state_handle.storage_key_state()->ShouldRunCompaction());
+  EXPECT_TRUE(bucket_state_handle.bucket_state()->ShouldRunCompaction());
 }
 
 // Remove this test when the kill switch is removed.
@@ -509,18 +657,20 @@ TEST_F(IndexedDBFactoryTest, CompactionKillSwitchWorks) {
 
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  IndexedDBStorageKeyStateHandle storage_key_state_handle;
+  auto bucket_locator = storage::BucketLocator();
+  bucket_locator.storage_key = storage_key;
+  IndexedDBBucketStateHandle bucket_state_handle;
   leveldb::Status s;
 
   // Open a connection & immediately release it to cause the closing sequence to
   // start.
-  std::tie(storage_key_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenStorageKeyFactory(storage_key, context()->data_path(),
-                                            /*create_if_missing=*/true);
-  EXPECT_TRUE(storage_key_state_handle.IsHeld()) << s.ToString();
+  std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
+      factory()->GetOrOpenBucketFactory(bucket_locator,
+                                        context()->GetDataPath(bucket_locator),
+                                        /*create_if_missing=*/true);
+  EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
 
-  EXPECT_FALSE(
-      storage_key_state_handle.storage_key_state()->ShouldRunCompaction());
+  EXPECT_FALSE(bucket_state_handle.bucket_state()->ShouldRunCompaction());
 }
 
 TEST_F(IndexedDBFactoryTest, InMemoryFactoriesStay) {
@@ -529,33 +679,39 @@ TEST_F(IndexedDBFactoryTest, InMemoryFactoriesStay) {
 
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-
-  IndexedDBStorageKeyStateHandle storage_key_state_handle;
+  storage::BucketLocator bucket_locator =
+      quota_manager()
+          ->GetOrCreateBucketSync(
+              storage::BucketInitParams::ForDefaultBucket(storage_key))
+          ->ToBucketLocator();
+  IndexedDBBucketStateHandle bucket_state_handle;
   leveldb::Status s;
 
-  std::tie(storage_key_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenStorageKeyFactory(storage_key, context()->data_path(),
-                                            /*create_if_missing=*/true);
-  EXPECT_TRUE(storage_key_state_handle.IsHeld()) << s.ToString();
-  EXPECT_TRUE(StorageKeyStateFromHandle(storage_key_state_handle)
+  std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
+      factory()->GetOrOpenBucketFactory(bucket_locator,
+                                        context()->GetDataPath(bucket_locator),
+                                        /*create_if_missing=*/true);
+  EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
+  EXPECT_TRUE(StorageBucketFromHandle(bucket_state_handle)
                   ->backing_store()
                   ->is_incognito());
-  storage_key_state_handle.Release();
+  bucket_state_handle.Release();
 
-  EXPECT_TRUE(factory()->GetStorageKeyFactory(storage_key));
-  EXPECT_FALSE(factory()->GetStorageKeyFactory(storage_key)->IsClosing());
+  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator.id));
+  EXPECT_FALSE(factory()->GetBucketFactory(bucket_locator.id)->IsClosing());
 
-  factory()->ForceClose(storage_key, false);
-  EXPECT_TRUE(factory()->GetStorageKeyFactory(storage_key));
+  factory()->ForceClose(bucket_locator.id, false);
+  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator.id));
 
-  factory()->ForceClose(storage_key, true);
-  EXPECT_FALSE(factory()->GetStorageKeyFactory(storage_key));
+  factory()->ForceClose(bucket_locator.id, true);
+  EXPECT_FALSE(factory()->GetBucketFactory(bucket_locator.id));
 }
 
 TEST_F(IndexedDBFactoryTest, TooLongOrigin) {
   SetupContext();
 
-  base::FilePath temp_dir = context()->data_path().DirName();
+  base::FilePath temp_dir =
+      context()->GetFirstPartyDataPathForTesting().DirName();
   int limit = base::GetMaximumPathComponentLength(temp_dir);
   EXPECT_GT(limit, 0);
 
@@ -563,15 +719,19 @@ TEST_F(IndexedDBFactoryTest, TooLongOrigin) {
   const blink::StorageKey too_long_storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://" + origin +
                                                     ":81/");
-
-  IndexedDBStorageKeyStateHandle storage_key_state_handle;
+  storage::BucketLocator bucket_locator =
+      quota_manager()
+          ->GetOrCreateBucketSync(
+              storage::BucketInitParams::ForDefaultBucket(too_long_storage_key))
+          ->ToBucketLocator();
+  IndexedDBBucketStateHandle bucket_state_handle;
   leveldb::Status s;
 
-  std::tie(storage_key_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenStorageKeyFactory(too_long_storage_key,
-                                            context()->data_path(),
-                                            /*create_if_missing=*/true);
-  EXPECT_FALSE(storage_key_state_handle.IsHeld());
+  std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
+      factory()->GetOrOpenBucketFactory(bucket_locator,
+                                        context()->GetDataPath(bucket_locator),
+                                        /*create_if_missing=*/true);
+  EXPECT_FALSE(bucket_state_handle.IsHeld());
   EXPECT_TRUE(s.IsIOError());
 }
 
@@ -579,6 +739,8 @@ TEST_F(IndexedDBFactoryTest, ContextDestructionClosesConnections) {
   SetupContext();
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
+  auto bucket_locator = storage::BucketLocator();
+  bucket_locator.storage_key = storage_key;
 
   auto callbacks = base::MakeRefCounted<MockIndexedDBCallbacks>();
   auto db_callbacks = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
@@ -590,8 +752,8 @@ TEST_F(IndexedDBFactoryTest, ContextDestructionClosesConnections) {
       callbacks, db_callbacks,
       transaction_id, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
       std::move(create_transaction_callback));
-  factory()->Open(u"db", std::move(connection), storage_key,
-                  context()->data_path());
+  factory()->Open(u"db", std::move(connection), bucket_locator,
+                  context()->GetDataPath(bucket_locator));
   RunPostedTasks();
 
   // Now simulate shutdown, which should clear all factories.
@@ -603,46 +765,52 @@ TEST_F(IndexedDBFactoryTest, ContextDestructionClosesHandles) {
   SetupContext();
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-
-  IndexedDBStorageKeyStateHandle storage_key_state_handle;
+  auto bucket_locator = storage::BucketLocator();
+  bucket_locator.storage_key = storage_key;
+  IndexedDBBucketStateHandle bucket_state_handle;
   leveldb::Status s;
 
-  std::tie(storage_key_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenStorageKeyFactory(storage_key, context()->data_path(),
-                                            /*create_if_missing=*/true);
-  EXPECT_TRUE(storage_key_state_handle.IsHeld()) << s.ToString();
+  std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
+      factory()->GetOrOpenBucketFactory(bucket_locator,
+                                        context()->GetDataPath(bucket_locator),
+                                        /*create_if_missing=*/true);
+  EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
 
   // Now simulate shutdown, which should clear all factories.
   factory()->ContextDestroyed();
-  EXPECT_FALSE(StorageKeyStateFromHandle(storage_key_state_handle));
-  EXPECT_FALSE(factory()->GetStorageKeyFactory(storage_key));
+  EXPECT_FALSE(StorageBucketFromHandle(bucket_state_handle));
+  EXPECT_FALSE(factory()->GetBucketFactory(bucket_locator.id));
 }
 
 TEST_F(IndexedDBFactoryTest, FactoryForceClose) {
   SetupContext();
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-
-  IndexedDBStorageKeyStateHandle storage_key_state_handle;
+  auto bucket_locator = storage::BucketLocator();
+  bucket_locator.storage_key = storage_key;
+  IndexedDBBucketStateHandle bucket_state_handle;
   leveldb::Status s;
 
-  std::tie(storage_key_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenStorageKeyFactory(storage_key, context()->data_path(),
-                                            /*create_if_missing=*/true);
-  EXPECT_TRUE(storage_key_state_handle.IsHeld()) << s.ToString();
+  std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
+      factory()->GetOrOpenBucketFactory(bucket_locator,
+                                        context()->GetDataPath(bucket_locator),
+                                        /*create_if_missing=*/true);
+  EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
 
-  StorageKeyStateFromHandle(storage_key_state_handle)->ForceClose();
-  storage_key_state_handle.Release();
+  StorageBucketFromHandle(bucket_state_handle)->ForceClose();
+  bucket_state_handle.Release();
 
-  EXPECT_TRUE(factory()->GetStorageKeyFactory(storage_key));
+  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator.id));
   RunPostedTasks();
-  EXPECT_FALSE(factory()->GetStorageKeyFactory(storage_key));
+  EXPECT_FALSE(factory()->GetBucketFactory(bucket_locator.id));
 }
 
 TEST_F(IndexedDBFactoryTest, ConnectionForceClose) {
   SetupContext();
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
+  auto bucket_locator = storage::BucketLocator();
+  bucket_locator.storage_key = storage_key;
 
   auto callbacks = base::MakeRefCounted<MockIndexedDBCallbacks>();
   auto db_callbacks = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
@@ -654,19 +822,19 @@ TEST_F(IndexedDBFactoryTest, ConnectionForceClose) {
       callbacks, db_callbacks,
       transaction_id, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
       std::move(create_transaction_callback));
-  factory()->Open(u"db", std::move(connection), storage_key,
-                  context()->data_path());
+  factory()->Open(u"db", std::move(connection), bucket_locator,
+                  context()->GetDataPath(bucket_locator));
   EXPECT_FALSE(callbacks->connection());
   RunPostedTasks();
   EXPECT_TRUE(callbacks->connection());
 
-  EXPECT_TRUE(factory()->GetStorageKeyFactory(storage_key));
-  EXPECT_FALSE(factory()->GetStorageKeyFactory(storage_key)->IsClosing());
+  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator.id));
+  EXPECT_FALSE(factory()->GetBucketFactory(bucket_locator.id)->IsClosing());
 
   callbacks->connection()->CloseAndReportForceClose();
 
-  EXPECT_TRUE(factory()->GetStorageKeyFactory(storage_key));
-  EXPECT_TRUE(factory()->GetStorageKeyFactory(storage_key)->IsClosing());
+  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator.id));
+  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator.id)->IsClosing());
 
   EXPECT_TRUE(db_callbacks->forced_close_called());
 }
@@ -675,6 +843,8 @@ TEST_F(IndexedDBFactoryTest, DatabaseForceCloseDuringUpgrade) {
   SetupContext();
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
+  auto bucket_locator = storage::BucketLocator();
+  bucket_locator.storage_key = storage_key;
 
   auto callbacks = base::MakeRefCounted<MockIndexedDBCallbacks>();
   auto db_callbacks = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
@@ -692,8 +862,8 @@ TEST_F(IndexedDBFactoryTest, DatabaseForceCloseDuringUpgrade) {
     base::RunLoop loop;
     callbacks->CallOnUpgradeNeeded(
         base::BindLambdaForTesting([&]() { loop.Quit(); }));
-    factory()->Open(u"db", std::move(connection), storage_key,
-                    context()->data_path());
+    factory()->Open(u"db", std::move(connection), bucket_locator,
+                    context()->GetDataPath(bucket_locator));
     loop.Run();
   }
 
@@ -705,14 +875,16 @@ TEST_F(IndexedDBFactoryTest, DatabaseForceCloseDuringUpgrade) {
 
   EXPECT_TRUE(db_callbacks->forced_close_called());
   // Since there are no more references the factory should be closing.
-  EXPECT_TRUE(factory()->GetStorageKeyFactory(storage_key));
-  EXPECT_TRUE(factory()->GetStorageKeyFactory(storage_key)->IsClosing());
+  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator.id));
+  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator.id)->IsClosing());
 }
 
 TEST_F(IndexedDBFactoryTest, ConnectionCloseDuringUpgrade) {
   SetupContext();
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
+  auto bucket_locator = storage::BucketLocator();
+  bucket_locator.storage_key = storage_key;
 
   auto callbacks = base::MakeRefCounted<MockIndexedDBCallbacks>();
   auto db_callbacks = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
@@ -730,8 +902,8 @@ TEST_F(IndexedDBFactoryTest, ConnectionCloseDuringUpgrade) {
     base::RunLoop loop;
     callbacks->CallOnUpgradeNeeded(
         base::BindLambdaForTesting([&]() { loop.Quit(); }));
-    factory()->Open(u"db", std::move(connection), storage_key,
-                    context()->data_path());
+    factory()->Open(u"db", std::move(connection), bucket_locator,
+                    context()->GetDataPath(bucket_locator));
     loop.Run();
   }
 
@@ -743,27 +915,29 @@ TEST_F(IndexedDBFactoryTest, ConnectionCloseDuringUpgrade) {
       IndexedDBConnection::CloseErrorHandling::kAbortAllReturnLastError);
 
   // Since there are no more references the factory should be closing.
-  EXPECT_TRUE(factory()->GetStorageKeyFactory(storage_key));
-  EXPECT_TRUE(factory()->GetStorageKeyFactory(storage_key)->IsClosing());
+  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator.id));
+  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator.id)->IsClosing());
 }
 
 TEST_F(IndexedDBFactoryTest, DatabaseForceCloseWithFullConnection) {
   SetupContext();
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
+  auto bucket_locator = storage::BucketLocator();
+  bucket_locator.storage_key = storage_key;
 
   std::unique_ptr<IndexedDBConnection> connection;
   scoped_refptr<MockIndexedDBDatabaseCallbacks> db_callbacks;
   std::tie(connection, db_callbacks) =
-      CreateConnectionForDatatabase(storage_key, u"db");
+      CreateConnectionForDatatabase(bucket_locator, u"db");
 
   // Force close the database.
   connection->database()->ForceCloseAndRunTasks();
 
   EXPECT_TRUE(db_callbacks->forced_close_called());
   // Since there are no more references the factory should be closing.
-  EXPECT_TRUE(factory()->GetStorageKeyFactory(storage_key));
-  EXPECT_TRUE(factory()->GetStorageKeyFactory(storage_key)->IsClosing());
+  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator.id));
+  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator.id)->IsClosing());
 }
 
 TEST_F(IndexedDBFactoryTest, DeleteDatabase) {
@@ -774,14 +948,16 @@ TEST_F(IndexedDBFactoryTest, DeleteDatabase) {
 
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
+  auto bucket_locator = storage::BucketLocator();
+  bucket_locator.storage_key = storage_key;
 
-  factory()->DeleteDatabase(u"db", callbacks, storage_key,
-                            context()->data_path(),
+  factory()->DeleteDatabase(u"db", callbacks, bucket_locator,
+                            context()->GetDataPath(bucket_locator),
                             /*force_close=*/false);
 
   // Since there are no more references the factory should be closing.
-  EXPECT_TRUE(factory()->GetStorageKeyFactory(storage_key));
-  EXPECT_TRUE(factory()->GetStorageKeyFactory(storage_key)->IsClosing());
+  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator.id));
+  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator.id)->IsClosing());
 }
 
 TEST_F(IndexedDBFactoryTest, DeleteDatabaseWithForceClose) {
@@ -789,33 +965,36 @@ TEST_F(IndexedDBFactoryTest, DeleteDatabaseWithForceClose) {
 
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
+  auto bucket_locator = storage::BucketLocator();
+  bucket_locator.storage_key = storage_key;
   const std::u16string name = u"db";
 
   std::unique_ptr<IndexedDBConnection> connection;
   scoped_refptr<MockIndexedDBDatabaseCallbacks> db_callbacks;
   std::tie(connection, db_callbacks) =
-      CreateConnectionForDatatabase(storage_key, name);
+      CreateConnectionForDatatabase(bucket_locator, name);
 
   base::RunLoop run_loop;
   factory()->CallOnDatabaseDeletedForTesting(base::BindLambdaForTesting(
-      [&storage_key, &run_loop](const blink::StorageKey& deleted_storage_key) {
-        if (deleted_storage_key == storage_key)
+      [&bucket_locator,
+       &run_loop](const storage::BucketLocator& deleted_bucket_locator) {
+        if (deleted_bucket_locator == bucket_locator)
           run_loop.Quit();
       }));
 
   auto callbacks = base::MakeRefCounted<MockIndexedDBCallbacks>(
       /*expect_connection=*/false);
 
-  factory()->DeleteDatabase(name, callbacks, storage_key,
-                            context()->data_path(),
+  factory()->DeleteDatabase(name, callbacks, bucket_locator,
+                            context()->GetDataPath(bucket_locator),
                             /*force_close=*/true);
 
   // Force close means the connection has been force closed, but the factory
   // isn't force closed, and instead is going through it's shutdown sequence.
   EXPECT_FALSE(connection->IsConnected());
   EXPECT_TRUE(db_callbacks->forced_close_called());
-  EXPECT_TRUE(factory()->GetStorageKeyFactory(storage_key));
-  EXPECT_TRUE(factory()->GetStorageKeyFactory(storage_key)->IsClosing());
+  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator.id));
+  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator.id)->IsClosing());
 
   // Wait until the DB is deleted before tearing down since these concurrent
   // operations may conflict.
@@ -830,12 +1009,15 @@ TEST_F(IndexedDBFactoryTest, GetDatabaseNames_NoFactory) {
 
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
+  auto bucket_locator = storage::BucketLocator();
+  bucket_locator.storage_key = storage_key;
 
-  factory()->GetDatabaseInfo(callbacks, storage_key, context()->data_path());
+  factory()->GetDatabaseInfo(callbacks, bucket_locator,
+                             context()->GetDataPath(bucket_locator));
 
   EXPECT_TRUE(callbacks->info_called());
   // Don't create a factory if one doesn't exist.
-  EXPECT_FALSE(factory()->GetStorageKeyFactory(storage_key));
+  EXPECT_FALSE(factory()->GetBucketFactory(bucket_locator.id));
 }
 
 TEST_F(IndexedDBFactoryTest, GetDatabaseNames_ExistingFactory) {
@@ -846,28 +1028,31 @@ TEST_F(IndexedDBFactoryTest, GetDatabaseNames_ExistingFactory) {
 
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-
-  IndexedDBStorageKeyStateHandle storage_key_state_handle;
+  auto bucket_locator = storage::BucketLocator();
+  bucket_locator.storage_key = storage_key;
+  IndexedDBBucketStateHandle bucket_state_handle;
   leveldb::Status s;
 
-  std::tie(storage_key_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenStorageKeyFactory(storage_key, context()->data_path(),
-                                            /*create_if_missing=*/true);
-  EXPECT_TRUE(storage_key_state_handle.IsHeld()) << s.ToString();
+  std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
+      factory()->GetOrOpenBucketFactory(bucket_locator,
+                                        context()->GetDataPath(bucket_locator),
+                                        /*create_if_missing=*/true);
+  EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
 
-  factory()->GetDatabaseInfo(callbacks, storage_key, context()->data_path());
+  factory()->GetDatabaseInfo(callbacks, bucket_locator,
+                             context()->GetDataPath(bucket_locator));
 
   EXPECT_TRUE(callbacks->info_called());
-  EXPECT_TRUE(factory()->GetStorageKeyFactory(storage_key));
+  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator.id));
   // GetDatabaseInfo didn't create the factory, so it shouldn't close it.
-  EXPECT_FALSE(factory()->GetStorageKeyFactory(storage_key)->IsClosing());
+  EXPECT_FALSE(factory()->GetBucketFactory(bucket_locator.id)->IsClosing());
 }
 
 class LookingForQuotaErrorMockCallbacks : public IndexedDBCallbacks {
  public:
   LookingForQuotaErrorMockCallbacks()
       : IndexedDBCallbacks(nullptr,
-                           blink::StorageKey(),
+                           storage::BucketLocator(),
                            mojo::NullAssociatedRemote(),
                            base::SequencedTaskRunnerHandle::Get()) {}
 
@@ -901,6 +1086,8 @@ TEST_F(IndexedDBFactoryTest, QuotaErrorOnDiskFull) {
           nullptr, mojo::NullAssociatedRemote(), context()->IDBTaskRunner());
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
+  auto bucket_locator = storage::BucketLocator();
+  bucket_locator.storage_key = storage_key;
   const std::u16string name(u"name");
   auto create_transaction_callback =
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
@@ -908,8 +1095,8 @@ TEST_F(IndexedDBFactoryTest, QuotaErrorOnDiskFull) {
       callbacks, dummy_database_callbacks,
       /*transaction_id=*/1, /*version=*/1,
       std::move(create_transaction_callback));
-  factory()->Open(name, std::move(connection), storage_key,
-                  context()->data_path());
+  factory()->Open(name, std::move(connection), bucket_locator,
+                  context()->GetDataPath(bucket_locator));
   EXPECT_TRUE(callbacks->error_called());
   base::RunLoop().RunUntilIdle();
 
@@ -922,15 +1109,18 @@ TEST_F(IndexedDBFactoryTest, NotifyQuotaOnDatabaseError) {
   SetupContext();
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("www.example.com");
-  factory()->OnDatabaseError(storage_key,
+  auto bucket_locator = storage::BucketLocator();
+  bucket_locator.storage_key = storage_key;
+  factory()->OnDatabaseError(bucket_locator,
                              leveldb::Status::Corruption("Corrupted stuff."),
                              "Corrupted stuff.");
   base::RunLoop().RunUntilIdle();
   // Quota should not be notified unless the status is IOError.
   ASSERT_EQ(0U, quota_manager()->write_error_tracker().size());
 
-  factory()->OnDatabaseError(
-      storage_key, leveldb::Status::IOError("Disk is full."), "Disk is full.");
+  factory()->OnDatabaseError(bucket_locator,
+                             leveldb::Status::IOError("Disk is full."),
+                             "Disk is full.");
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(1U, quota_manager()->write_error_tracker().size());
   EXPECT_EQ(storage_key, quota_manager()->write_error_tracker().begin()->first);
@@ -958,6 +1148,8 @@ TEST_F(IndexedDBFactoryTest, DatabaseFailedOpen) {
   SetupContext();
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
+  auto bucket_locator = storage::BucketLocator();
+  bucket_locator.storage_key = storage_key;
   const std::u16string db_name(u"db");
   const int64_t transaction_id = 1;
 
@@ -979,12 +1171,12 @@ TEST_F(IndexedDBFactoryTest, DatabaseFailedOpen) {
       base::RunLoop loop;
       callbacks->CallOnUpgradeNeeded(
           base::BindLambdaForTesting([&]() { loop.Quit(); }));
-      factory()->Open(db_name, std::move(connection), storage_key,
-                      context()->data_path());
+      factory()->Open(db_name, std::move(connection), bucket_locator,
+                      context()->GetDataPath(bucket_locator));
       loop.Run();
     }
     EXPECT_TRUE(callbacks->upgrade_called());
-    EXPECT_TRUE(factory()->IsDatabaseOpen(storage_key, db_name));
+    EXPECT_TRUE(factory()->IsDatabaseOpen(bucket_locator, db_name));
   }
 
   // Finish connecting, then close the connection.
@@ -999,7 +1191,7 @@ TEST_F(IndexedDBFactoryTest, DatabaseFailedOpen) {
     callbacks->connection()->AbortTransactionsAndClose(
         IndexedDBConnection::CloseErrorHandling::kAbortAllReturnLastError);
     RunPostedTasks();
-    EXPECT_FALSE(factory()->IsDatabaseOpen(storage_key, db_name));
+    EXPECT_FALSE(factory()->IsDatabaseOpen(bucket_locator, db_name));
   }
 
   // Open at version < 2, which will fail.
@@ -1010,12 +1202,12 @@ TEST_F(IndexedDBFactoryTest, DatabaseFailedOpen) {
     auto connection = std::make_unique<IndexedDBPendingConnection>(
         failed_open_callbacks, db_callbacks2,
         transaction_id, db_version, std::move(create_transaction_callback));
-    factory()->Open(db_name, std::move(connection), storage_key,
-                    context()->data_path());
-    EXPECT_TRUE(factory()->IsDatabaseOpen(storage_key, db_name));
+    factory()->Open(db_name, std::move(connection), bucket_locator,
+                    context()->GetDataPath(bucket_locator));
+    EXPECT_TRUE(factory()->IsDatabaseOpen(bucket_locator, db_name));
     RunPostedTasks();
     EXPECT_TRUE(failed_open_callbacks->saw_error());
-    EXPECT_FALSE(factory()->IsDatabaseOpen(storage_key, db_name));
+    EXPECT_FALSE(factory()->IsDatabaseOpen(bucket_locator, db_name));
   }
 }
 
@@ -1044,7 +1236,7 @@ class DataLossCallbacks final : public MockIndexedDBCallbacks {
 
 TEST_F(IndexedDBFactoryTest, DataFormatVersion) {
   SetupContext();
-  auto try_open = [this](const blink::StorageKey& storage_key,
+  auto try_open = [this](const storage::BucketLocator& bucket_locator,
                          const IndexedDBDataFormatVersion& version) {
     base::AutoReset<IndexedDBDataFormatVersion> override_version(
         &IndexedDBDataFormatVersion::GetMutableCurrentForTesting(), version);
@@ -1072,7 +1264,8 @@ TEST_F(IndexedDBFactoryTest, DataFormatVersion) {
           base::BindLambdaForTesting([&]() { loop.Quit(); }));
 
       this->factory()->Open(u"test_db", std::move(pending_connection),
-                            storage_key, context()->data_path());
+                            bucket_locator,
+                            context()->GetDataPath(bucket_locator));
       loop.Run();
 
       // If an upgrade was requested, then commit the upgrade transaction.
@@ -1093,7 +1286,7 @@ TEST_F(IndexedDBFactoryTest, DataFormatVersion) {
       }
     }
     RunPostedTasks();
-    factory()->ForceClose(storage_key, false);
+    factory()->ForceClose(bucket_locator.id, false);
     RunPostedTasks();
     return callbacks->data_loss();
   };
@@ -1111,10 +1304,12 @@ TEST_F(IndexedDBFactoryTest, DataFormatVersion) {
     SCOPED_TRACE(test.origin);
     const blink::StorageKey storage_key =
         blink::StorageKey::CreateFromStringForTesting(test.origin);
+    auto bucket_locator = storage::BucketLocator();
+    bucket_locator.storage_key = storage_key;
     ASSERT_EQ(blink::mojom::IDBDataLoss::None,
-              try_open(storage_key, test.open_version_1));
+              try_open(bucket_locator, test.open_version_1));
     EXPECT_EQ(test.expected_data_loss,
-              try_open(storage_key, test.open_version_2));
+              try_open(bucket_locator, test.open_version_2));
   }
 }
 

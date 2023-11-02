@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,7 +43,8 @@ class TimeZoneMonitor {
      */
     private TimeZoneMonitor(long nativePtr) {
         mNativePtr = nativePtr;
-        ContextUtils.getApplicationContext().registerReceiver(mBroadcastReceiver, mFilter);
+        ContextUtils.registerNonExportedBroadcastReceiver(
+                ContextUtils.getApplicationContext(), mBroadcastReceiver, mFilter);
     }
 
     @CalledByNative

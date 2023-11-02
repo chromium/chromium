@@ -29,7 +29,7 @@
 
 namespace blink {
 
-class HTMLButtonElement final : public HTMLFormControlElement {
+class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -46,7 +46,7 @@ class HTMLButtonElement final : public HTMLFormControlElement {
                          InputDeviceCapabilities*) override;
 
  private:
-  enum Type { SUBMIT, RESET, BUTTON };
+  enum Type { kSubmit, kReset, kButton };
 
   const AtomicString& FormControlType() const override;
 
@@ -60,6 +60,11 @@ class HTMLButtonElement final : public HTMLFormControlElement {
   bool IsPresentationAttribute(const QualifiedName&) const override;
   void DefaultEventHandler(Event&) override;
   bool HasActivationBehavior() const override;
+
+  // Buttons can trigger popups.
+  PopupTriggerSupport SupportsPopupTriggering() const override {
+    return PopupTriggerSupport::kSupported;
+  }
 
   void AppendToFormData(FormData&) override;
 
@@ -82,8 +87,8 @@ class HTMLButtonElement final : public HTMLFormControlElement {
 
   int DefaultTabIndex() const override;
 
-  Type type_;
-  bool is_activated_submit_;
+  Type type_ = kSubmit;
+  bool is_activated_submit_ = false;
 };
 
 }  // namespace blink

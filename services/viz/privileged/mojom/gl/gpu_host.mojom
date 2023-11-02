@@ -1,16 +1,20 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module viz.mojom;
 
+import "gpu/ipc/common/gpu_disk_cache_type.mojom";
 import "gpu/ipc/common/gpu_feature_info.mojom";
 import "gpu/ipc/common/gpu_info.mojom";
 import "gpu/ipc/common/surface_handle.mojom";
 import "mojo/public/mojom/base/byte_string.mojom";
 import "services/viz/privileged/mojom/gl/context_lost_reason.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "ui/gfx/mojom/gpu_extra_info.mojom";
 import "url/mojom/url.mojom";
+[EnableIf=is_win]
+import "ui/gfx/mojom/dxgi_info.mojom";
 
 // Communication channel from the gpu process to the gpu host. This interface
 // should never have any sync function calls.
@@ -46,22 +50,31 @@ interface GpuHost {
   [EnableIf=is_win]
   DidUpdateOverlayInfo(gpu.mojom.OverlayInfo overlay_info);
 
-  // Tells the GPU host that the HDR status has been updated in the GPU
-  // process.
+  // Tells the GPU host that the DXGI adapter and output information has been
+  // updated in the GPU process.
   [EnableIf=is_win]
-  DidUpdateHDRStatus(bool hdr_enabled);
+  DidUpdateDXGIInfo(gfx.mojom.DXGIInfo dxgi_info);
 
   // GPU process has decided to disable GPU compositing. Host process keeps
   // track of this decision in case the GPU process crashes.
   DisableGpuCompositing();
 
+  // Asks the host to pass an isolation key for a given token. The client id
+  // corresponds to the render process id.
+  // TODO(dawn:549) Consider using ExecutionContextToken if DocumentToken
+  //     becomes a part of the ExecutionContextToken.
+  GetIsolationKey(int32 client_id,
+                  blink.mojom.WebGPUExecutionContextToken wgpu_context_token)
+      => (string isolation_key);
+
   [EnableIf=is_win]
   SetChildSurface(gpu.mojom.SurfaceHandle parent,
                   gpu.mojom.SurfaceHandle child);
 
-  StoreShaderToDisk(int32 client_id,
-                    string key,
-                    mojo_base.mojom.ByteString shader);
+  // Tells the GPU host to store the blob on the given cache handle.
+  StoreBlobToDisk(gpu.mojom.GpuDiskCacheHandle cache_handle,
+                  string key,
+                  mojo_base.mojom.ByteString blob);
 
   RecordLogMessage(int32 severity, string header, string message);
 };

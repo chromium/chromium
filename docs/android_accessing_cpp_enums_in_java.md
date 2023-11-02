@@ -166,7 +166,7 @@ You may see an error like this when compiling:
 $ autoninja -C out/Default base/foo_java
 util.build_utils.CalledProcessError: Command failed: ...
 org/chromium/chrome/FooBar.java:13: error: symbol not found androidx.annotation.IntDef
-Please add //third_party/androidx:androidx_annotation_annotation_java dep to //base/foo_java. File a crbug if this suggestion is incorrect.
+Hint: Add "//third_party/androidx:androidx_annotation_annotation_java" to deps of //base/foo_java
 import androidx.annotation.IntDef;
        ^
 org/chromium/chrome/FooBar.java:18: error: could not resolve IntDef

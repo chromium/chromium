@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -14,7 +15,7 @@
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
 #include "chrome/browser/ash/input_method/ui/suggestion_details.h"
 #include "ui/base/ime/ash/ime_bridge.h"
-#include "ui/base/ime/ash/ime_input_context_handler_interface.h"
+#include "ui/base/ime/ash/text_input_target.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
@@ -36,19 +37,9 @@ const char16_t kIgnoreButtonMessage[] =
     u"Ignore suggestion. Button. Press enter to ignore the suggestion; escape "
     u"to dismiss.";
 
-void RecordGrammarAction(GrammarActions action,
-                         bool is_capitalization_correction) {
+void RecordGrammarAction(GrammarActions action) {
   base::UmaHistogramEnumeration("InputMethod.Assistive.Grammar.Actions",
                                 action);
-  if (is_capitalization_correction) {
-    base::UmaHistogramEnumeration(
-        "InputMethod.Assistive.Grammar.CapitalizationCorrection", action);
-  }
-}
-
-bool IsCapitalizationCorrection(const ui::GrammarFragment& fragment) {
-  return base::ToLowerASCII(fragment.suggestion) ==
-         base::ToLowerASCII(fragment.original_text);
 }
 
 bool IsValidSentence(const std::u16string& text, const Sentence& sentence) {
@@ -160,14 +151,11 @@ bool GrammarManager::OnKeyEvent(const ui::KeyEvent& event) {
   return false;
 }
 
-void GrammarManager::OnSurroundingTextChanged(const std::u16string& text,
-                                              int cursor_pos,
-                                              int anchor_pos) {
+bool GrammarManager::HandleSurroundingTextChange(const std::u16string& text,
+                                                 int cursor_pos,
+                                                 int anchor_pos) {
   if (text_input_flags_ & ui::TEXT_INPUT_FLAG_SPELLCHECK_OFF)
-    return;
-
-  if (suggestion_shown_)
-    DismissSuggestion();
+    return false;
 
   bool text_updated = text != current_text_;
   current_text_ = text;
@@ -175,11 +163,14 @@ void GrammarManager::OnSurroundingTextChanged(const std::u16string& text,
 
   if (new_to_context_) {
     new_to_context_ = false;
-  } else if (text_updated) {
-    ui::IMEInputContextHandlerInterface* input_context =
+    return false;
+  }
+
+  if (text_updated) {
+    ui::TextInputTarget* input_context =
         ui::IMEBridge::Get()->GetInputContextHandler();
     if (!input_context)
-      return;
+      return false;
 
     // Grammar check is cpu consuming, so we only send request to ml service
     // when the user has finished a sentence or stopped typing for some time.
@@ -196,51 +187,61 @@ void GrammarManager::OnSurroundingTextChanged(const std::u16string& text,
         FROM_HERE, kCheckDelay,
         base::BindOnce(&GrammarManager::Check, base::Unretained(this),
                        current_sentence_));
-    return;
+    return false;
   }
 
   // Do not show the suggestion when the user is selecting a range of text, so
   // that we will not show conflict with the system copy/paste popup.
   if (cursor_pos != anchor_pos)
-    return;
+    return false;
 
-  ui::IMEInputContextHandlerInterface* input_context =
+  ui::TextInputTarget* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   if (!input_context)
-    return;
+    return false;
 
   // Do not show suggestion when the cursor is within an auto correct range.
   const gfx::Range range = input_context->GetAutocorrectRange();
-  if (!range.is_empty() && cursor_pos >= range.start() &&
-      cursor_pos <= range.end()) {
-    return;
+  if (!range.is_empty() &&
+      cursor_pos >= base::checked_cast<int32_t>(range.start()) &&
+      cursor_pos <= base::checked_cast<int32_t>(range.end())) {
+    return false;
   }
 
   absl::optional<ui::GrammarFragment> grammar_fragment_opt =
-      input_context->GetGrammarFragment(gfx::Range(cursor_pos));
+      input_context->GetGrammarFragmentAtCursor();
 
-  if (grammar_fragment_opt) {
-    if (current_fragment_ != grammar_fragment_opt.value()) {
-      current_fragment_ = grammar_fragment_opt.value();
-      RecordGrammarAction(GrammarActions::kWindowShown,
-                          IsCapitalizationCorrection(current_fragment_));
-    }
-    std::string error;
-    AssistiveWindowProperties properties;
-    properties.type = ui::ime::AssistiveWindowType::kGrammarSuggestion;
-    properties.candidates = {base::UTF8ToUTF16(current_fragment_.suggestion)};
-    properties.visible = true;
-    properties.announce_string = kShowGrammarSuggestionMessage;
-    suggestion_button_.announce_string = base::UTF8ToUTF16(
-        base::StringPrintf(kSuggestionButtonMessageTemplate,
-                           current_fragment_.suggestion.c_str()));
-    suggestion_handler_->SetAssistiveWindowProperties(context_id_, properties,
-                                                      &error);
-    if (!error.empty()) {
-      LOG(ERROR) << "Fail to show suggestion. " << error;
-    }
-    highlighted_button_ = ui::ime::ButtonId::kNone;
-    suggestion_shown_ = true;
+  if (!grammar_fragment_opt)
+    return false;
+
+  if (current_fragment_ != grammar_fragment_opt.value()) {
+    current_fragment_ = grammar_fragment_opt.value();
+    RecordGrammarAction(GrammarActions::kWindowShown);
+  }
+
+  std::string error;
+  AssistiveWindowProperties properties;
+  properties.type = ui::ime::AssistiveWindowType::kGrammarSuggestion;
+  properties.candidates = {base::UTF8ToUTF16(current_fragment_.suggestion)};
+  properties.visible = true;
+  properties.announce_string = kShowGrammarSuggestionMessage;
+  suggestion_button_.announce_string = base::UTF8ToUTF16(base::StringPrintf(
+      kSuggestionButtonMessageTemplate, current_fragment_.suggestion.c_str()));
+  suggestion_handler_->SetAssistiveWindowProperties(context_id_, properties,
+                                                    &error);
+  if (!error.empty()) {
+    LOG(ERROR) << "Fail to show suggestion. " << error;
+  }
+  highlighted_button_ = ui::ime::ButtonId::kNone;
+  suggestion_shown_ = true;
+  return true;
+}
+
+void GrammarManager::OnSurroundingTextChanged(const std::u16string& text,
+                                              int cursor_pos,
+                                              int anchor_pos) {
+  if (!HandleSurroundingTextChange(text, cursor_pos, anchor_pos)) {
+    DismissSuggestion();
   }
 }
 
@@ -269,14 +270,11 @@ void GrammarManager::OnGrammarCheckDone(
       corrected_results.emplace_back(
           gfx::Range(fragment.range.start() + sentence.original_range.start(),
                      fragment.range.end() + sentence.original_range.start()),
-          fragment.suggestion,
-          base::UTF16ToUTF8(current_text_.substr(
-              fragment.range.start() + sentence.original_range.start(),
-              fragment.range.length())));
+          fragment.suggestion);
     }
   }
 
-  ui::IMEInputContextHandlerInterface* input_context =
+  ui::TextInputTarget* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   if (!input_context)
     return;
@@ -289,14 +287,16 @@ void GrammarManager::OnGrammarCheckDone(
       if (recorded_marker_hashes_.find(hashValue) ==
           recorded_marker_hashes_.end()) {
         recorded_marker_hashes_.insert(hashValue);
-        RecordGrammarAction(GrammarActions::kUnderlined,
-                            IsCapitalizationCorrection(fragment));
+        RecordGrammarAction(GrammarActions::kUnderlined);
       }
     }
   }
 }
 
 void GrammarManager::DismissSuggestion() {
+  if (!suggestion_shown_)
+    return;
+
   std::string error;
   suggestion_handler_->DismissSuggestion(context_id_, &error);
   if (!error.empty()) {
@@ -312,7 +312,7 @@ void GrammarManager::AcceptSuggestion() {
 
   DismissSuggestion();
 
-  ui::IMEInputContextHandlerInterface* input_context =
+  ui::TextInputTarget* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   if (!input_context) {
     LOG(ERROR) << "Failed to commit grammar suggestion.";
@@ -348,8 +348,7 @@ void GrammarManager::AcceptSuggestion() {
   }
 
   suggestion_handler_->Announce(kAcceptGrammarSuggestionMessage);
-  RecordGrammarAction(GrammarActions::kAccepted,
-                      IsCapitalizationCorrection(current_fragment_));
+  RecordGrammarAction(GrammarActions::kAccepted);
 }
 
 void GrammarManager::IgnoreSuggestion() {
@@ -358,7 +357,7 @@ void GrammarManager::IgnoreSuggestion() {
 
   DismissSuggestion();
 
-  ui::IMEInputContextHandlerInterface* input_context =
+  ui::TextInputTarget* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   if (!input_context)
     return;
@@ -376,8 +375,7 @@ void GrammarManager::IgnoreSuggestion() {
                                current_sentence_.original_range.start())));
 
   suggestion_handler_->Announce(kIgnoreGrammarSuggestionMessage);
-  RecordGrammarAction(GrammarActions::kIgnored,
-                      IsCapitalizationCorrection(current_fragment_));
+  RecordGrammarAction(GrammarActions::kIgnored);
 }
 
 void GrammarManager::SetButtonHighlighted(

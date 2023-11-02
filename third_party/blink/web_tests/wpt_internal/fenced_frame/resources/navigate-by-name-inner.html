@@ -14,8 +14,7 @@ async function init() {
   // Navigations to all of the above should fail, and thus should open a new
   // top-level popup window instead of navigating these frames.
 
-  const test_type = new URL(location.href).searchParams.get('test_type');
-  const ready_for_navigation_key = KEYS["ready_for_navigation"];
+  const [ready_for_navigation_key, test_type] = parseKeylist();
 
   switch (test_type) {
     case "top-level fenced frame":
@@ -33,8 +32,10 @@ async function init() {
     case "nested fenced frame":
       // This fenced frame will report to the outermost document when it is ready.
       const ff =
-          attachFencedFrame("fenced-frame-set-name-and-report-ready-for-" +
-                            "outermost-document-to-navigate.html");
+          attachFencedFrame(generateURL(
+              "fenced-frame-set-name-and-report-ready-for-" +
+              "outermost-document-to-navigate.html",
+              [ready_for_navigation_key]));
       break;
   }
 }

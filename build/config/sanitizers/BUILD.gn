@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -26,15 +26,17 @@ group("deps") {
       ":default_sanitizer_ldflags",
     ]
     deps = [ ":options_sources" ]
-    if (is_win) {
-      exe = ".exe"
-    } else {
-      exe = ""
+    if (!is_fuchsia) {
+      if (is_win) {
+        exe = ".exe"
+      } else {
+        exe = ""
+      }
+      data = [
+        "//tools/valgrind/asan/",
+        "$clang_base_path/bin/llvm-symbolizer${exe}",
+      ]
     }
-    data = [
-      "//tools/valgrind/asan/",
-      "$clang_base_path/bin/llvm-symbolizer${exe}",
-    ]
     if (use_prebuilt_instrumented_libraries ||
         use_locally_built_instrumented_libraries) {
       deps += [ "//third_party/instrumented_libraries:deps" ]
@@ -54,7 +56,7 @@ assert(!(is_win && is_asan && current_cpu == "x86"),
        "ASan is only supported in 64-bit builds on Windows.")
 
 if ((is_apple || is_win) && is_asan) {
-  if (is_mac) {
+  if (is_mac || (is_ios && target_environment == "catalyst")) {
     _clang_rt_dso_path = "darwin/libclang_rt.asan_osx_dynamic.dylib"
   } else if (is_ios) {
     _clang_rt_dso_path = "darwin/libclang_rt.asan_iossim_dynamic.dylib"
@@ -97,7 +99,7 @@ if ((is_apple || is_win) && is_asan) {
 
 config("sanitizer_options_link_helper") {
   if (is_apple) {
-    ldflags = [ "-Wl,-U,_sanitizer_options_link_helper" ]
+    ldflags = [ "-Wl,-u,__sanitizer_options_link_helper" ]
   } else if (!is_win) {
     ldflags = [ "-Wl,-u_sanitizer_options_link_helper" ]
   }
@@ -170,9 +172,6 @@ config("default_sanitizer_ldflags") {
     if (is_ubsan || is_ubsan_security) {
       ldflags += [ "-fsanitize=undefined" ]
     }
-    if (is_ubsan_null) {
-      ldflags += [ "-fsanitize=null" ]
-    }
     if (is_ubsan_vptr) {
       ldflags += [ "-fsanitize=vptr" ]
     }
@@ -216,19 +215,11 @@ config("default_sanitizer_ldflags") {
       # In the static-library build, ASan libraries are different for
       # executables and dlls, see link_executable and link_shared_library below.
       # This here handles only the component build.
-      if (current_cpu == "x64") {
-        # Windows 64-bit.
-        libs = [
-          "clang_rt.asan_dynamic-x86_64.lib",
-          "clang_rt.asan_dynamic_runtime_thunk-x86_64.lib",
-        ]
-      } else {
-        assert(current_cpu == "x86", "WinASan unsupported architecture")
-        libs = [
-          "clang_rt.asan_dynamic-i386.lib",
-          "clang_rt.asan_dynamic_runtime_thunk-i386.lib",
-        ]
-      }
+      assert(current_cpu == "x64", "WinASan unsupported architecture")
+      libs = [
+        "clang_rt.asan_dynamic-x86_64.lib",
+        "clang_rt.asan_dynamic_runtime_thunk-x86_64.lib",
+      ]
     }
     if (use_libfuzzer) {
       assert(current_cpu == "x64", "LibFuzzer unsupported architecture")
@@ -280,23 +271,15 @@ config("asan_flags") {
 
 config("link_executable") {
   if (is_asan && is_win && !is_component_build) {
-    if (current_cpu == "x64") {
-      ldflags = [ "-wholearchive:clang_rt.asan-x86_64.lib" ]
-    } else {
-      assert(current_cpu == "x86", "WinASan unsupported architecture")
-      ldflags = [ "-wholearchive:clang_rt.asan-i386.lib" ]
-    }
+    assert(current_cpu == "x64", "WinASan unsupported architecture")
+    ldflags = [ "-wholearchive:clang_rt.asan-x86_64.lib" ]
   }
 }
 
 config("link_shared_library") {
   if (is_asan && is_win && !is_component_build) {
-    if (current_cpu == "x64") {
-      libs = [ "clang_rt.asan_dll_thunk-x86_64.lib" ]
-    } else {
-      assert(current_cpu == "x86", "WinASan unsupported architecture")
-      libs = [ "clang_rt.asan_dll_thunk-i386.lib" ]
-    }
+    assert(current_cpu == "x64", "WinASan unsupported architecture")
+    libs = [ "clang_rt.asan_dll_thunk-x86_64.lib" ]
   }
 }
 
@@ -414,6 +397,12 @@ config("msan_flags") {
       "-fsanitize=memory",
       "-fsanitize-memory-track-origins=$msan_track_origins",
       "-fsanitize-ignorelist=$msan_ignorelist_path",
+
+      # TODO(https://crbug.com/1317909): evaluate and possibly enable
+      "-fno-sanitize-memory-use-after-dtor",
+
+      # TODO(https://crbug.com/1369167): evaluate and possibly enable
+      "-fno-sanitize-memory-param-retval",
     ]
   }
 }
@@ -446,6 +435,7 @@ config("ubsan_flags") {
       "-fsanitize=float-divide-by-zero",
       "-fsanitize=integer-divide-by-zero",
       "-fsanitize=null",
+      "-fsanitize=nonnull-attribute",
       "-fsanitize=object-size",
       "-fsanitize=return",
       "-fsanitize=returns-nonnull-attribute",
@@ -458,7 +448,7 @@ config("ubsan_flags") {
 
     # Chromecast ubsan builds fail to compile with these
     # experimental flags, so only add them to non-chromecast ubsan builds.
-    if (!is_chromecast) {
+    if (!is_castos && !is_cast_android) {
       cflags += [
         # Employ the experimental PBQP register allocator to avoid slow
         # compilation on files with too many basic blocks.
@@ -497,12 +487,6 @@ config("ubsan_security_flags") {
   }
 }
 
-config("ubsan_null_flags") {
-  if (is_ubsan_null) {
-    cflags = [ "-fsanitize=null" ]
-  }
-}
-
 config("ubsan_vptr_flags") {
   if (is_ubsan_vptr) {
     if (!defined(ubsan_vptr_ignorelist_path)) {
@@ -534,7 +518,6 @@ all_sanitizer_configs = [
   ":tsan_flags",
   ":ubsan_flags",
   ":ubsan_no_recover",
-  ":ubsan_null_flags",
   ":ubsan_security_flags",
   ":ubsan_vptr_flags",
   ":fuzzing_build_mode",

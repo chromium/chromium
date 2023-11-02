@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,38 +6,38 @@
 
 #import <CoreText/CoreText.h>
 
-#include "base/check_op.h"
-#include "base/command_line.h"
-#include "base/ios/ios_util.h"
-#include "base/mac/foundation_util.h"
-#include "base/notreached.h"
+#import "base/check_op.h"
+#import "base/command_line.h"
+#import "base/ios/ios_util.h"
+#import "base/mac/foundation_util.h"
+#import "base/notreached.h"
 
-#include "base/strings/sys_string_conversions.h"
-#include "components/grit/components_scaled_resources.h"
-#include "components/omnibox/browser/autocomplete_input.h"
-#include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/autocomplete/autocomplete_scheme_classifier_impl.h"
-#include "ios/chrome/browser/system_flags.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/grit/components_scaled_resources.h"
+#import "components/omnibox/browser/autocomplete_input.h"
+#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/autocomplete/autocomplete_scheme_classifier_impl.h"
+#import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/animation_util.h"
 #import "ios/chrome/browser/ui/util/dynamic_type_util.h"
 #import "ios/chrome/browser/ui/util/reversed_animation.h"
-#include "ios/chrome/browser/ui/util/rtl_geometry.h"
+#import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#include "ios/chrome/common/ui/util/dynamic_type_util.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ios/chrome/grit/ios_theme_resources.h"
-#include "skia/ext/skia_utils_ios.h"
-#include "ui/base/device_form_factor.h"
-#include "ui/base/l10n/l10n_util_mac.h"
-#include "ui/gfx/color_palette.h"
-#include "ui/gfx/image/image.h"
+#import "ios/chrome/common/ui/util/dynamic_type_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/grit/ios_theme_resources.h"
+#import "skia/ext/skia_utils_ios.h"
+#import "ui/base/device_form_factor.h"
+#import "ui/base/l10n/l10n_util_mac.h"
+#import "ui/gfx/color_palette.h"
+#import "ui/gfx/image/image.h"
 #import "ui/gfx/ios/NSString+CrStringDrawing.h"
-#include "ui/gfx/scoped_cg_context_save_gstate_mac.h"
+#import "ui/gfx/scoped_cg_context_save_gstate_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -77,7 +77,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
      autocompleteLength:(NSUInteger)autocompleteLength;
 // Override deleteBackward so that backspace can clear query refinement chips.
 - (void)deleteBackward;
-// Returns the layers affected by animations added by |-animateFadeWithStyle:|.
+// Returns the layers affected by animations added by `-animateFadeWithStyle:`.
 - (NSArray*)fadeAnimationLayers;
 // Font that should be used in current size class.
 - (UIFont*)currentFont;
@@ -277,18 +277,18 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   BOOL isFadingIn = (style == OMNIBOX_TEXT_FIELD_FADE_STYLE_IN);
   CGFloat beginOpacity = isFadingIn ? 0.0 : 1.0;
   CGFloat endOpacity = isFadingIn ? 1.0 : 0.0;
-  CAMediaTimingFunction* opacityTiming = ios::material::TimingFunction(
-      isFadingIn ? ios::material::CurveEaseOut : ios::material::CurveEaseIn);
-  CFTimeInterval delay = isFadingIn ? ios::material::kDuration8 : 0.0;
+  CAMediaTimingFunction* opacityTiming = MaterialTimingFunction(
+      isFadingIn ? MaterialCurveEaseOut : MaterialCurveEaseIn);
+  CFTimeInterval delay = isFadingIn ? kMaterialDuration8 : 0.0;
 
   CAAnimation* labelAnimation = OpacityAnimationMake(beginOpacity, endOpacity);
   labelAnimation.duration =
-      isFadingIn ? ios::material::kDuration6 : ios::material::kDuration8;
+      isFadingIn ? kMaterialDuration6 : kMaterialDuration8;
   labelAnimation.timingFunction = opacityTiming;
   labelAnimation = DelayedAnimationMake(labelAnimation, delay);
   CAAnimation* auxillaryViewAnimation =
       OpacityAnimationMake(beginOpacity, endOpacity);
-  auxillaryViewAnimation.duration = ios::material::kDuration8;
+  auxillaryViewAnimation.duration = kMaterialDuration8;
   auxillaryViewAnimation.timingFunction = opacityTiming;
   auxillaryViewAnimation = DelayedAnimationMake(auxillaryViewAnimation, delay);
 
@@ -311,8 +311,8 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 #pragma mark - UI Refresh animation public helpers
 
 - (CGFloat)offsetForString:(NSString*)string {
-  // Sometimes |string| is not contained in self.text, for example for
-  // https://en.m.wikipedia.org/foo the |string| might be "en.wikipedia.org" if
+  // Sometimes `string` is not contained in self.text, for example for
+  // https://en.m.wikipedia.org/foo the `string` might be "en.wikipedia.org" if
   // the scheme and the "m." trivial subdomain are stripped. In this case,
   // default to a reasonable prefix string to give a plausible offset.
   NSString* prefixString = @"https://";
@@ -428,7 +428,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
   // When editing, use the default text color for all text.
   if (self.editing) {
-    // Hide the text when the |_selection| label is displayed.
+    // Hide the text when the `_selection` label is displayed.
     UIColor* textColor = _selection ? UIColor.clearColor : _displayedTextColor;
     [mutableText addAttribute:NSForegroundColorAttributeName
                         value:textColor
@@ -618,12 +618,20 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
     return YES;
   }
 
-  // Allow key commands to be recognized.
-  if (action == @selector(keyCommandUp) ||
-      action == @selector(keyCommandDown) ||
-      action == @selector(keyCommandLeft) ||
-      action == @selector(keyCommandRight)) {
-    return YES;
+  // Arrow keys are handled by OmniboxKeyboardDelegates, if they don't handle
+  // them, default behavior of UITextField applies.
+  if (action == @selector(forwardKeyCommandUp)) {
+    return [self.omniboxKeyboardDelegate
+        canPerformKeyboardAction:OmniboxKeyboardActionUpArrow];
+  } else if (action == @selector(forwardKeyCommandDown)) {
+    return [self.omniboxKeyboardDelegate
+        canPerformKeyboardAction:OmniboxKeyboardActionDownArrow];
+  } else if (action == @selector(forwardKeyCommandLeft)) {
+    return [self.omniboxKeyboardDelegate
+        canPerformKeyboardAction:OmniboxKeyboardActionLeftArrow];
+  } else if (action == @selector(forwardKeyCommandRight)) {
+    return [self.omniboxKeyboardDelegate
+        canPerformKeyboardAction:OmniboxKeyboardActionRightArrow];
   }
 
   // Handle pre-edit shortcuts.
@@ -673,6 +681,24 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   [super paste:sender];
 }
 
+#pragma mark UIPasteConfigurationSupporting
+
+// Used by UIPasteControl to check if can paste.
+- (BOOL)canPasteItemProviders:(NSArray<NSItemProvider*>*)itemProviders {
+  if ([self.delegate respondsToSelector:@selector(canPasteItemProviders:)]) {
+    return [self.delegate canPasteItemProviders:itemProviders];
+  } else {
+    return NO;
+  }
+}
+
+// Used by UIPasteControl to paste.
+- (void)pasteItemProviders:(NSArray<NSItemProvider*>*)itemProviders {
+  if ([self.delegate respondsToSelector:@selector(pasteItemProviders:)]) {
+    [self.delegate pasteItemProviders:itemProviders];
+  }
+}
+
 #pragma mark UIKeyInput
 
 - (void)deleteBackward {
@@ -682,73 +708,58 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   [super deleteBackward];
 }
 
-#pragma mark Key Commands
+#pragma mark Key Command Forwarding
 
-- (NSArray<UIKeyCommand*>*)upDownCommands {
-  // These up/down arrow key commands override the standard UITextInput handling
-  // of up/down arrow key. The standard behavior is to go to the beginning/end
-  // of the text. Instead, the omnibox popup needs to highlight suggestions.
+- (void)forwardKeyCommandUp {
+  [self.omniboxKeyboardDelegate
+      performKeyboardAction:OmniboxKeyboardActionUpArrow];
+}
+
+- (void)forwardKeyCommandDown {
+  [self.omniboxKeyboardDelegate
+      performKeyboardAction:OmniboxKeyboardActionDownArrow];
+}
+
+- (void)forwardKeyCommandLeft {
+  [self.omniboxKeyboardDelegate
+      performKeyboardAction:OmniboxKeyboardActionLeftArrow];
+}
+
+- (void)forwardKeyCommandRight {
+  [self.omniboxKeyboardDelegate
+      performKeyboardAction:OmniboxKeyboardActionDownArrow];
+}
+
+- (NSArray<UIKeyCommand*>*)keyCommands {
   UIKeyCommand* commandUp =
       [UIKeyCommand keyCommandWithInput:UIKeyInputUpArrow
                           modifierFlags:0
-                                 action:@selector(keyCommandUp)];
+                                 action:@selector(forwardKeyCommandUp)];
   UIKeyCommand* commandDown =
       [UIKeyCommand keyCommandWithInput:UIKeyInputDownArrow
                           modifierFlags:0
-                                 action:@selector(keyCommandDown)];
+                                 action:@selector(forwardKeyCommandDown)];
+  UIKeyCommand* commandLeft =
+      [UIKeyCommand keyCommandWithInput:UIKeyInputLeftArrow
+                          modifierFlags:0
+                                 action:@selector(forwardKeyCommandLeft)];
+  UIKeyCommand* commandRight =
+      [UIKeyCommand keyCommandWithInput:UIKeyInputRightArrow
+                          modifierFlags:0
+                                 action:@selector(forwardKeyCommandRight)];
 
 #if defined(__IPHONE_15_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_0
   if (@available(iOS 15, *)) {
     commandUp.wantsPriorityOverSystemBehavior = YES;
     commandDown.wantsPriorityOverSystemBehavior = YES;
-  }
-#endif
-
-  return @[ commandUp, commandDown ];
-}
-
-- (NSArray<UIKeyCommand*>*)keyCommands {
-  NSMutableArray<UIKeyCommand*>* commands = [[self upDownCommands] mutableCopy];
-  if ([self isPreEditing] || [self hasAutocompleteText]) {
-    [commands addObjectsFromArray:[self leftRightCommands]];
-  }
-
-  return commands;
-}
-
-- (void)keyCommandUp {
-  [self.suggestionCommandsEndpoint highlightNextSuggestion];
-}
-
-- (void)keyCommandDown {
-  [self.suggestionCommandsEndpoint highlightPreviousSuggestion];
-}
-
-#pragma mark preedit and inline autocomplete key commands
-
-// React to left and right keys when in preedit state to exit preedit and put
-// cursor to the beginning/end of the textfield; or if there is inline
-// suggestion displayed, accept it and put the cursor before/after the
-// suggested text.
-- (NSArray<UIKeyCommand*>*)leftRightCommands {
-  UIKeyCommand* commandLeft =
-      [UIKeyCommand keyCommandWithInput:UIKeyInputLeftArrow
-                          modifierFlags:0
-                                 action:@selector(keyCommandLeft)];
-  UIKeyCommand* commandRight =
-      [UIKeyCommand keyCommandWithInput:UIKeyInputRightArrow
-                          modifierFlags:0
-                                 action:@selector(keyCommandRight)];
-
-#if defined(__IPHONE_15_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_0
-  if (@available(iOS 15, *)) {
     commandLeft.wantsPriorityOverSystemBehavior = YES;
     commandRight.wantsPriorityOverSystemBehavior = YES;
   }
 #endif
-
-  return @[ commandLeft, commandRight ];
+  return @[ commandUp, commandDown, commandLeft, commandRight ];
 }
+
+#pragma mark preedit and inline autocomplete key commands
 
 - (void)keyCommandLeft {
   DCHECK([self isPreEditing] || [self hasAutocompleteText]);
@@ -800,6 +811,44 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   NSAttributedString* string =
       [[NSAttributedString alloc] initWithString:_selection.text];
   [self setText:string userTextLength:string.length];
+}
+
+#pragma mark - OmniboxKeyboardDelegate
+
+- (BOOL)canPerformKeyboardAction:(OmniboxKeyboardAction)keyboardAction {
+  switch (keyboardAction) {
+      // These up/down arrow key commands override the standard UITextInput
+      // handling of up/down arrow key. The standard behavior is to go to the
+      // beginning/end of the text. Remove this behavior to avoid inconsistent
+      // behavior when popup can and cannot move up and down.
+    case OmniboxKeyboardActionUpArrow:
+    case OmniboxKeyboardActionDownArrow:
+      return YES;
+      // React to left and right keys when in preedit state to exit preedit and
+      // put cursor to the beginning/end of the textfield; or if there is inline
+      // suggestion displayed, accept it and put the cursor before/after the
+      // suggested text.
+    case OmniboxKeyboardActionLeftArrow:
+    case OmniboxKeyboardActionRightArrow:
+      return ([self isPreEditing] || [self hasAutocompleteText]);
+  }
+}
+
+- (void)performKeyboardAction:(OmniboxKeyboardAction)keyboardAction {
+  DCHECK([self canPerformKeyboardAction:keyboardAction]);
+  switch (keyboardAction) {
+    case OmniboxKeyboardActionUpArrow:
+    case OmniboxKeyboardActionDownArrow:
+      // Up and down arrow do nothing instead of standard behavior. The standard
+      // behavior is to go to the beginning/end of the text.
+      break;
+    case OmniboxKeyboardActionLeftArrow:
+      [self keyCommandLeft];
+      break;
+    case OmniboxKeyboardActionRightArrow:
+      [self keyCommandRight];
+      break;
+  }
 }
 
 #pragma mark - helpers
@@ -866,7 +915,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
       [text attributedSubstringFromRange:fieldRange];
 
   if (autocompleteLength > 0) {
-    // Creating |autocompleteText| from |[text string]| has the added bonus of
+    // Creating `autocompleteText` from `[text string]` has the added bonus of
     // removing all the previously set attributes. This way the autocomplete
     // text doesn't have a highlighted protocol, etc.
     NSMutableAttributedString* autocompleteText =
@@ -892,11 +941,11 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   // update the attributed text here is to change the colors of the omnibox
   // (such as host, protocol) when !self.editing, but also to hide real
   // UITextField text under the _selection text when self.editing. Since we will
-  // correct the omnibox editing text color anytime |self.text| is different
-  // than |fieldText|, it seems it's OK to skip calling self.attributedText
+  // correct the omnibox editing text color anytime `self.text` is different
+  // than `fieldText`, it seems it's OK to skip calling self.attributedText
   // during the condition added below. If we change mobile omnibox to match
   // desktop and also color the omnibox while self.editing, this workaround will
-  // no longer work. The check for |autocompleteLength| reduces the scope of
+  // no longer work. The check for `autocompleteLength` reduces the scope of
   // this workaround, without it having introduced crbug.com/740075.
   BOOL updateText = YES;
   if (experimental_flags::IsThirdPartyKeyboardWorkaroundEnabled()) {
@@ -963,7 +1012,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 // Aligns the selection UILabel to match the editing rect bounds. Takes iOS
 // version-specific text rendering differences into account.
 - (void)layoutSelectionViewWithNewEditingRectBounds:(CGRect)newBounds {
-  // The goal is to visually align the _selection label and the |self| textfield
+  // The goal is to visually align the _selection label and the `self` textfield
   // to avoid text jumping when inline autocomplete is shown or hidden.
   newBounds.origin.y -= kUILabelUITextfieldBaselineDeltaInPoints;
 

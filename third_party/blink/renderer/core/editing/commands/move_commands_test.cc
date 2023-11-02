@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -57,13 +57,13 @@ TEST_F(MoveCommandsTest, CaretBrowsingPositionAndFocusUpdate_MoveDown) {
   VerifyCaretBrowsingPositionAndFocusUpdate(
       "<div>a|b</div><div><a href=\"foo\">cd</a></div>", "body",
       MoveCommands::ExecuteMoveDown,
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
       "<div>ab</div><div><a href=\"foo\">c|d</a></div>", "a");
-#else   // defined(OS_MAC)
-        // MoveDown navigates visually, placing caret at different position for
-        // macOS.
+#else
+      // MoveDown navigates visually, placing caret at different position for
+      // macOS.
       "<div>ab</div><div><a href=\"foo\">|cd</a></div>", "a");
-#endif  // !defined(OS_MAC)
+#endif
 }
 
 TEST_F(MoveCommandsTest, CaretBrowsingPositionAndFocusUpdate_MoveForward) {
@@ -185,13 +185,13 @@ TEST_F(MoveCommandsTest, CaretBrowsingPositionAndFocusUpdate_MoveUp) {
   VerifyCaretBrowsingPositionAndFocusUpdate(
       "<div><a href=\"foo\">ab</a></div><div>c|d</div>", "body",
       MoveCommands::ExecuteMoveUp,
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
       "<div><a href=\"foo\">a|b</a></div><div>cd</div>", "a");
-#else   // defined(OS_MAC)
+#else
       // MoveUp navigates visually, placing caret at different position for
       // macOS.
       "<div><a href=\"foo\">|ab</a></div><div>cd</div>", "a");
-#endif  // !defined(OS_MAC)
+#endif
 }
 
 TEST_F(MoveCommandsTest, CaretBrowsingPositionAndFocusUpdate_MoveWordBackward) {

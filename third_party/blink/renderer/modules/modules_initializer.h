@@ -1,4 +1,4 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,6 +59,8 @@ class MODULES_EXPORT ModulesInitializer : public CoreInitializer {
   void SetSessionStorageArea(LocalFrame& frame,
                              mojo::PendingRemote<mojom::blink::StorageArea>
                                  session_storage_area) override;
+  mojom::blink::FileSystemManager& GetFileSystemManager(
+      ExecutionContext* context) override;
 };
 
 }  // namespace blink

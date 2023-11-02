@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -118,4 +118,12 @@ struct ResourceTimingInfo {
   // PerformanceResourceTiming. See
   // https://w3c.github.io/server-timing/#extension-to-the-performanceresourcetiming-interface
   array<ServerTimingInfo> server_timing;
+
+  // Holds the boolean used to determine |renderBlockingStatus| in
+  // PerformanceResourceTiming (http://www.w3.org/TR/resource-timing-2/).
+  bool render_blocking_status;
+
+  // Holds the HTTP status code corresponding to |responseStatus| in
+  // PerformanceResourceTiming (http://www.w3.org/TR/resource-timing-2/).
+  uint16 response_status;
 };

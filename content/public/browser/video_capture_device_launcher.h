@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -73,6 +73,7 @@ class CONTENT_EXPORT LaunchedVideoCaptureDevice
   virtual void ResumeDevice() = 0;
   virtual void Crop(
       const base::Token& crop_id,
+      uint32_t crop_version,
       base::OnceCallback<void(media::mojom::CropRequestResult)> callback) = 0;
   virtual void RequestRefreshFrame() = 0;
 

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/strings/strcat.h"
-#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromecast/base/cast_features.h"
@@ -47,8 +46,7 @@ ContentSettingPatternSource CreateContentSetting(
   return ContentSettingPatternSource(
       ContentSettingsPattern::FromString(primary_pattern),
       ContentSettingsPattern::FromString(secondary_pattern),
-      base::Value(setting), std::string(), /*incognito=*/false,
-      /*expiration=*/base::Time());
+      base::Value(setting), std::string(), /*incognito=*/false);
 }
 
 }  // namespace
@@ -229,7 +227,8 @@ void CastNetworkContexts::ConfigureDefaultNetworkContextParams(
   DCHECK(browser_context);
   network_context_params->file_paths =
       network::mojom::NetworkContextFilePaths::New();
-  network_context_params->file_paths->data_path = browser_context->GetPath();
+  network_context_params->file_paths->data_directory =
+      browser_context->GetPath();
   network_context_params->file_paths->cookie_database_name =
       base::FilePath(kCookieStoreFile);
   network_context_params->restore_old_session_cookies = false;

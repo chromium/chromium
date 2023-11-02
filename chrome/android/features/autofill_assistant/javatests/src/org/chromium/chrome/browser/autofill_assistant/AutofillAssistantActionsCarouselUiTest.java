@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,9 +17,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 
+import android.content.Context;
 import android.support.test.InstrumentationRegistry;
+import android.view.ContextThemeWrapper;
 import android.widget.LinearLayout;
 
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -28,13 +31,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantActionsCarouselCoordinator;
-import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantCarouselModel;
-import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChip;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
+import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.autofill_assistant.carousel.AssistantActionsCarouselCoordinator;
+import org.chromium.components.autofill_assistant.carousel.AssistantCarouselModel;
+import org.chromium.components.autofill_assistant.carousel.AssistantChip;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
@@ -50,19 +54,20 @@ public class AutofillAssistantActionsCarouselUiTest {
     @Rule
     public CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
 
+    Context mTargetContext = new ContextThemeWrapper(
+            InstrumentationRegistry.getTargetContext(), R.style.Theme_Chromium_Activity);
+
     /** Creates a coordinator for use in UI tests, and adds it to the global view hierarchy. */
     private AssistantActionsCarouselCoordinator createCoordinator(AssistantCarouselModel model)
             throws Exception {
         AssistantActionsCarouselCoordinator coordinator = TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> new AssistantActionsCarouselCoordinator(
-                                InstrumentationRegistry.getTargetContext(), model));
+                () -> new AssistantActionsCarouselCoordinator(mTargetContext, model));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Note: apparently, we need an intermediate container for this coordinator's view,
             // otherwise the view will be invisible.
             // @TODO(crbug.com/806868) figure out why this is the case.
-            LinearLayout container = new LinearLayout(InstrumentationRegistry.getTargetContext());
+            LinearLayout container = new LinearLayout(mTargetContext);
             container.addView(coordinator.getView());
             AutofillAssistantUiTestUtil.attachToCoordinator(mTestRule.getActivity(), container);
         });
@@ -72,8 +77,9 @@ public class AutofillAssistantActionsCarouselUiTest {
 
     @Before
     public void setUp() {
-        mTestRule.startCustomTabActivityWithIntent(CustomTabsTestUtils.createMinimalCustomTabIntent(
-                InstrumentationRegistry.getTargetContext(), "about:blank"));
+        mTestRule.startCustomTabActivityWithIntent(
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
+                        mTargetContext, "about:blank"));
     }
 
     /** Tests assumptions about the initial state of the carousel. */
@@ -164,6 +170,72 @@ public class AutofillAssistantActionsCarouselUiTest {
         // Scroll right, check that cancel is still visible.
         onView(is(coordinator.getView())).perform(swipeRight());
         onView(withText("Cancel")).check(matches(isDisplayed()));
+    }
+
+    /** Tests replacing a close button with a cancel button re-binds the view holder */
+    @Test
+    @MediumTest
+    public void testReplaceCancelWithClose() throws Exception {
+        AssistantCarouselModel model =
+                TestThreadUtils.runOnUiThreadBlocking(AssistantCarouselModel::new);
+        AssistantActionsCarouselCoordinator coordinator = createCoordinator(model);
+
+        AssistantChip close = AssistantChip.createHairlineAssistantChip(
+                AssistantChip.Icon.CLEAR, "", false, true, true, "", "close");
+        AssistantChip cancel = AssistantChip.createHairlineAssistantChip(
+                AssistantChip.Icon.CLEAR, "", false, true, true, "", "cancel");
+
+        // This counts are in an array so that they can be edited in the observer.
+        final int added_index = 0;
+        final int changed_index = 1;
+        final int[] counts = {0, 0};
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            coordinator.getView().getAdapter().registerAdapterDataObserver(
+                    new RecyclerView.AdapterDataObserver() {
+                        @Override
+                        public void onItemRangeInserted(int positionStart, int itemCount) {
+                            assertThat(positionStart, is(0));
+                            assertThat(itemCount, is(1));
+                            ++counts[added_index];
+                        }
+                        @Override
+                        public void onItemRangeChanged(int positionStart, int itemCount) {
+                            assertThat(positionStart, is(0));
+                            assertThat(itemCount, is(1));
+                            ++counts[changed_index];
+                        }
+                    });
+            model.set(AssistantCarouselModel.CHIPS, Collections.singletonList(cancel));
+        });
+        assertThat(model.get(AssistantCarouselModel.CHIPS).size(), is(1));
+        assertThat(counts[added_index], is(1));
+        assertThat(counts[changed_index], is(0));
+        assertThat(coordinator.getView().getAdapter().getItemCount(), is(1));
+
+        // Setting to cancel again doesn't change anything
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            model.set(AssistantCarouselModel.CHIPS, Collections.singletonList(cancel));
+        });
+        assertThat(counts[added_index], is(1));
+        assertThat(counts[changed_index], is(0));
+        assertThat(coordinator.getView().getAdapter().getItemCount(), is(1));
+
+        // Changing button to close will re-bind the button
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            model.set(AssistantCarouselModel.CHIPS, Collections.singletonList(close));
+        });
+        assertThat(counts[added_index], is(1));
+        assertThat(counts[changed_index], is(1));
+        assertThat(coordinator.getView().getAdapter().getItemCount(), is(1));
+
+        // Setting to close again won't change anything.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            model.set(AssistantCarouselModel.CHIPS, Collections.singletonList(close));
+        });
+        assertThat(counts[added_index], is(1));
+        assertThat(counts[changed_index], is(1));
+        assertThat(coordinator.getView().getAdapter().getItemCount(), is(1));
     }
 
     /**

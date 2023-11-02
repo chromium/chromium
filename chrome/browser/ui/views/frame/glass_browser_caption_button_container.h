@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_GLASS_BROWSER_CAPTION_BUTTON_CONTAINER_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_GLASS_BROWSER_CAPTION_BUTTON_CONTAINER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
@@ -15,10 +16,10 @@
 
 class GlassBrowserFrameView;
 class TabSearchBubbleHost;
-class Windows10CaptionButton;
-class Windows10TabSearchCaptionButton;
+class WindowsCaptionButton;
+class WindowsTabSearchCaptionButton;
 
-// Provides a container for Windows 10 caption buttons that can be moved between
+// Provides a container for Windows caption buttons that can be moved between
 // frame and browser window as needed. When extended horizontally, becomes a
 // grab bar for moving the window.
 class GlassBrowserCaptionButtonContainer : public views::View,
@@ -66,12 +67,12 @@ class GlassBrowserCaptionButtonContainer : public views::View,
   // hwnd which prevent tooltips being shown for the caption buttons.
   void UpdateButtonToolTipsForWindowControlsOverlay();
 
-  GlassBrowserFrameView* const frame_view_;
-  Windows10TabSearchCaptionButton* tab_search_button_ = nullptr;
-  Windows10CaptionButton* const minimize_button_;
-  Windows10CaptionButton* const maximize_button_;
-  Windows10CaptionButton* const restore_button_;
-  Windows10CaptionButton* const close_button_;
+  const raw_ptr<GlassBrowserFrameView> frame_view_;
+  raw_ptr<WindowsTabSearchCaptionButton> tab_search_button_ = nullptr;
+  const raw_ptr<WindowsCaptionButton> minimize_button_;
+  const raw_ptr<WindowsCaptionButton> maximize_button_;
+  const raw_ptr<WindowsCaptionButton> restore_button_;
+  const raw_ptr<WindowsCaptionButton> close_button_;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};

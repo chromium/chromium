@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/strings/string_piece.h"
@@ -19,7 +18,8 @@
 namespace tracing {
 
 using ObjectId = uint64_t;
-using RootType = ::perfetto::protos::pbzero::HeapGraphRoot_Type;
+using RootType = ::perfetto::protos::pbzero::HeapGraphRoot::Type;
+using HeapGraphRoot = ::perfetto::protos::pbzero::HeapGraphRoot;
 const uint64_t kInvalidObjectId = std::numeric_limits<uint64_t>::max();
 
 // This class takes in a temporary file_path where Java API endpoint
@@ -182,8 +182,8 @@ class COMPONENT_EXPORT(TRACING_CPP) HprofParser {
   ClassObject* FindClassObject(ObjectId id);
   // Returns true after setting the position of |hprof_buffer_| to point to the
   // |field_name| in class.
-  bool SeekToFieldPosition(ClassInstance* instance,
-                           base::StringPiece field_name) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool SeekToFieldPosition(ClassInstance* instance,
+                                         base::StringPiece field_name);
 
   std::unordered_map<ObjectId, std::unique_ptr<StringReference>> strings_;
 

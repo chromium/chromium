@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -148,36 +148,6 @@ export class RemoteCall {
       }
       return pending(
           caller, 'Window with the prefix %s is not found.', windowIdPrefix);
-    });
-  }
-
-  /**
-   * Closes a window and waits until the window is closed.
-   *
-   * @param {string} appId App window Id.
-   * @return {Promise} promise Promise to be fulfilled with the result (true:
-   *     success, false: failed).
-   */
-  async closeWindowAndWait(appId) {
-    const caller = getCaller();
-
-    // Closes the window.
-    if (!await this.callRemoteTestUtil('closeWindow', null, [appId])) {
-      // Returns false when the closing is failed.
-      return false;
-    }
-
-    return repeatUntil(async () => {
-      const windows = await this.callRemoteTestUtil('getWindows', null, []);
-      for (const id in windows) {
-        if (id === appId) {
-          // Window is still available. Continues waiting.
-          return pending(
-              caller, 'Window with the prefix %s is not found.', appId);
-        }
-      }
-      // Window is not available. Closing is done successfully.
-      return true;
     });
   }
 
@@ -457,23 +427,12 @@ export class RemoteCall {
  */
 export class RemoteCallFilesApp extends RemoteCall {
   /**
-   * @return {boolean} Returns whether the code is running in SWA mode.
-   */
-  isSwaMode() {
-    return this.origin_.startsWith('chrome://');
-  }
-
-  /**
    * Sends a test |message| to the test code running in the File Manager.
    * @param {!Object} message
    * @return {!Promise<*>}
    * @override
    */
   sendMessage(message) {
-    if (!this.isSwaMode()) {
-      return super.sendMessage(message);
-    }
-
     const command = {
       name: 'callSwaTestMessageListener',
       appId: message.appId,
@@ -498,20 +457,11 @@ export class RemoteCallFilesApp extends RemoteCall {
 
   /** @override */
   async waitForWindow(windowIdPrefix) {
-    if (!this.isSwaMode()) {
-      return super.waitForWindow(windowIdPrefix);
-    }
-
     return this.waitForSwaWindow();
   }
 
   async getWindows() {
-    if (!this.isSwaMode()) {
-      return this.callRemoteTestUtil('getWindows', null, []);
-    }
-
-    return JSON.parse(
-        await sendTestMessage({name: 'getWindowsSWA', isSWA: true}));
+    return JSON.parse(await sendTestMessage({name: 'getWindows'}));
   }
 
   /**
@@ -546,12 +496,7 @@ export class RemoteCallFilesApp extends RemoteCall {
    * @return {!Promise<*>} resolved with the return value of the `statement`.
    */
   async executeJsInPreviewTag(appId, query, statement) {
-    if (this.isSwaMode()) {
-      return this.executeJsInPreviewTagSwa_(statement);
-    }
-
-    return this.callRemoteTestUtil(
-        'deepExecuteScriptInWebView', appId, [query, statement]);
+    return this.executeJsInPreviewTagSwa_(statement);
   }
 
   /**
@@ -592,14 +537,45 @@ export class RemoteCallFilesApp extends RemoteCall {
   }
 
   /**
+   * Waits until the expected URL shows in the last opened browser tab.
+   * @param {string} expectedUrl
+   * @return {!Promise} Promise to be fulfilled when the expected URL is shown
+   *     in a browser window.
+   */
+  async waitForLastOpenedBrowserTabUrl(expectedUrl) {
+    const caller = getCaller();
+    return repeatUntil(async () => {
+      const command = {name: 'getLastActiveTabURL'};
+      const activeBrowserTabURL = await sendTestMessage(command);
+      if (activeBrowserTabURL !== expectedUrl) {
+        return pending(
+            caller, 'waitForActiveBrowserTabUrl: expected %j actual %j.',
+            expectedUrl, activeBrowserTabURL);
+      }
+    });
+  }
+
+  /**
+   * Returns whether an window exists with the expected URL.
+   * @param {string} expectedUrl
+   * @return {!Promise<boolean>} Promise resolved with true or false depending
+   *     on whether such window exists.
+   */
+  async windowUrlExists(expectedUrl) {
+    const command = {name: 'expectWindowURL', expectedUrl: expectedUrl};
+    const windowExists = await sendTestMessage(command);
+    return windowExists == 'true';
+  }
+
+  /**
    * Waits for the file list turns to the given contents.
    * @param {string} appId App window Id.
    * @param {Array<Array<string>>} expected Expected contents of file list.
-   * @param {{orderCheck:(?boolean|undefined),
-   *     ignoreLastModifiedTime:(?boolean|undefined)}=} opt_options Options of
-   *     the comparison. If orderCheck is true, it also compares the order of
-   *     files. If ignoreLastModifiedTime is true, it compares the file without
-   *     its last modified time.
+   * @param {{orderCheck:(?boolean|undefined), ignoreFileSize:
+   *     (?boolean|undefined), ignoreLastModifiedTime:(?boolean|undefined)}=}
+   *     opt_options Options of the comparison. If orderCheck is true, it also
+   *     compares the order of files. If ignoreLastModifiedTime is true, it
+   *     compares the file without its last modified time.
    * @return {Promise} Promise to be fulfilled when the file list turns to the
    *     given contents.
    */
@@ -723,6 +699,30 @@ export class RemoteCallFilesApp extends RemoteCall {
   }
 
   /**
+   * Returns a promise that repeatedly checks for a file with the given
+   * name to be selected in the app window with the given ID. Typical
+   * use
+   *
+   * await remoteCall.waitUntilSelected('file#0', 'hello.txt');
+   * ... // either the test timed out or hello.txt is currently selected.
+   *
+   * @param {string} appId App window Id.
+   * @param {string} fileName the name of the file to be selected.
+   * @return {Promise<boolean>} Promise that indicates if selection was
+   *     successful.
+   */
+  waitUntilSelected(appId, fileName) {
+    const caller = getCaller();
+    return repeatUntil(async () => {
+      const selected =
+          await this.callRemoteTestUtil('selectFile', appId, [fileName]);
+      if (!selected) {
+        return pending(caller, `File ${fileName} not yet selected`);
+      }
+    });
+  }
+
+  /**
    * Waits until the current directory is changed.
    * @param {string} appId App window Id.
    * @param {string} expectedPath Path to be changed to.
@@ -813,38 +813,6 @@ export class RemoteCallFilesApp extends RemoteCall {
   }
 
   /**
-   * Navigates to specified directory on the specified volume by using directory
-   * tree.
-   * DEPRECATED: Use background.js:navigateWithDirectoryTree instead
-   * crbug.com/996626.
-   */
-  async navigateWithDirectoryTree(
-      appId, path, rootLabel, volumeType = 'downloads') {
-    await this.expandDirectoryTreeFor(appId, path, volumeType);
-
-    // Select target path.
-    await this.callRemoteTestUtil(
-        'fakeMouseClick', appId, [`[full-path-for-testing="${path}"]`]);
-
-    // Entries within Drive starts with /root/ but it isn't displayed in the
-    // breadcrubms used by waitUntilCurrentDirectoryIsChanged.
-    path = path.replace(/^\/root/, '')
-               .replace(/^\/team_drives/, '')
-               .replace(/^\/Computers/, '');
-
-    // TODO(lucmult): Remove this once MyFilesVolume is rolled out.
-    // Remove /Downloads duplication when MyFilesVolume is enabled.
-    if (volumeType == 'downloads' && path.startsWith('/Downloads') &&
-        rootLabel.endsWith('/Downloads')) {
-      rootLabel = rootLabel.replace('/Downloads', '');
-    }
-
-    // Wait until the Files app is navigated to the path.
-    return this.waitUntilCurrentDirectoryIsChanged(
-        appId, `/${rootLabel}${path}`);
-  }
-
-  /**
    * Wait until the expected number of volumes is mounted.
    * @param {number} expectedVolumesCount Expected number of mounted volumes.
    * @return {Promise} promise Promise to be fulfilled.
@@ -883,5 +851,50 @@ export class RemoteCallFilesApp extends RemoteCall {
     await this.waitFor('isFileManagerLoaded', appId, true);
     chrome.test.assertTrue(
         await this.callRemoteTestUtil('disableBannersForTesting', appId, []));
+  }
+
+  /**
+   * Sends text to the search box in the Files app.
+   * @param {string} appId App window Id
+   * @param {string} text The text to type in the search box.
+   */
+  async typeSearchText(appId, text) {
+    const searchBoxInput = ['#search-box cr-input'];
+
+    // Focus the search box.
+    await this.waitAndClickElement(appId, '#search-button');
+
+    // Input the text.
+    await this.inputText(appId, searchBoxInput, text);
+
+    // Notify the element of the input.
+    chrome.test.assertTrue(await this.callRemoteTestUtil(
+        'fakeEvent', appId, ['#search-box cr-input', 'input']));
+  }
+
+  /**
+   * Waits for the search box auto complete list to appear.
+   * @param {string} appId
+   * @return {!Promise<!Array<string>>} Array of the names in the auto complete
+   *     list.
+   */
+  async waitForSearchAutoComplete(appId) {
+    // Wait for the list to appear.
+    await this.waitForElement(appId, '#autocomplete-list li');
+
+    // Return the result.
+    const elements = await this.callRemoteTestUtil(
+        'deepQueryAllElements', appId, ['#autocomplete-list li']);
+    return elements.map((element) => element.text);
+  }
+
+  /**
+   * Disable nudges from expiring for testing.
+   * @param {string} appId App window Id
+   */
+  async disableNudgeExpiry(appId) {
+    await this.waitFor('isFileManagerLoaded', appId, true);
+    chrome.test.assertTrue(
+        await this.callRemoteTestUtil('disableNudgeExpiry', appId, []));
   }
 }

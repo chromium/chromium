@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/default_capture_client.h"
@@ -95,8 +96,8 @@ class FocusNotificationObserver : public ActivationChangeObserver,
   int activation_changed_count_;
   int focus_changed_count_;
   int reactivation_count_;
-  aura::Window* reactivation_requested_window_;
-  aura::Window* reactivation_actual_window_;
+  raw_ptr<aura::Window> reactivation_requested_window_;
+  raw_ptr<aura::Window> reactivation_actual_window_;
 };
 
 class WindowDeleter {
@@ -167,10 +168,10 @@ class RecordingActivationAndFocusChangeObserver
   }
 
  private:
-  aura::Window* root_;
+  raw_ptr<aura::Window> root_;
 
   // Not owned.
-  WindowDeleter* deleter_;
+  raw_ptr<WindowDeleter> deleter_;
 
   // Whether the observer was notified about the loss of activation or the
   // loss of focus with a window already deleted by |deleter_| as the
@@ -210,8 +211,8 @@ class HideOnLoseActivationChangeObserver : public ActivationChangeObserver {
     }
   }
 
-  aura::Window* root_;
-  aura::Window* window_to_hide_;
+  raw_ptr<aura::Window> root_;
+  raw_ptr<aura::Window> window_to_hide_;
 };
 
 // ActivationChangeObserver that deletes the window losing activation.
@@ -275,12 +276,13 @@ class DeleteOnActivationChangeObserver : public ActivationChangeObserver,
 
   // Overridden from WindowDeleter:
   aura::Window* GetDeletedWindow() override {
-    return did_delete_ ? window_ : nullptr;
+    return did_delete_ ? window_.get() : nullptr;
   }
 
  private:
-  aura::Window* root_;
-  aura::Window* window_;
+  raw_ptr<aura::Window> root_;
+  // TODO(crbug.com/1298696): Breaks wm_unittests.
+  raw_ptr<aura::Window, DegradeToNoOpWhenMTE> window_;
   const bool delete_on_activating_;
   const bool delete_window_losing_active_;
   bool did_delete_;
@@ -316,12 +318,13 @@ class DeleteOnLoseFocusChangeObserver
 
   // Overridden from WindowDeleter:
   aura::Window* GetDeletedWindow() override {
-    return did_delete_ ? window_ : nullptr;
+    return did_delete_ ? window_.get() : nullptr;
   }
 
  private:
-  aura::Window* root_;
-  aura::Window* window_;
+  raw_ptr<aura::Window> root_;
+  // TODO(crbug.com/1298696): Breaks wm_unittests.
+  raw_ptr<aura::Window, DegradeToNoOpWhenMTE> window_;
   bool did_delete_;
 };
 
@@ -344,7 +347,7 @@ class ScopedFocusNotificationObserver : public FocusNotificationObserver {
   }
 
  private:
-  aura::Window* root_window_;
+  raw_ptr<aura::Window> root_window_;
 };
 
 class ScopedTargetFocusNotificationObserver : public FocusNotificationObserver {
@@ -369,7 +372,8 @@ class ScopedTargetFocusNotificationObserver : public FocusNotificationObserver {
   }
 
  private:
-  aura::Window* target_;
+  // TODO(crbug.com/1298696): Breaks wm_unittests.
+  raw_ptr<aura::Window, DegradeToNoOpWhenMTE> target_;
   aura::WindowTracker tracker_;
 };
 
@@ -418,8 +422,8 @@ class FocusShiftingActivationObserver : public ActivationChangeObserver {
     }
   }
 
-  aura::Window* activated_window_;
-  aura::Window* shift_focus_to_;
+  raw_ptr<aura::Window> activated_window_;
+  raw_ptr<aura::Window> shift_focus_to_;
 };
 
 class ActivateWhileActivatingObserver : public ActivationChangeObserver {
@@ -468,9 +472,9 @@ class ActivateWhileActivatingObserver : public ActivationChangeObserver {
         ->FocusWindow(window);
   }
 
-  aura::Window* to_observe_;
-  aura::Window* to_activate_;
-  aura::Window* to_focus_;
+  raw_ptr<aura::Window> to_observe_;
+  raw_ptr<aura::Window> to_activate_;
+  raw_ptr<aura::Window> to_focus_;
 };
 
 // BaseFocusRules subclass that allows basic overrides of focus/activation to
@@ -509,11 +513,11 @@ class TestFocusRules : public BaseFocusRules {
   }
   aura::Window* GetActivatableWindow(aura::Window* window) const override {
     return BaseFocusRules::GetActivatableWindow(
-        CanFocusOrActivate(window) ? window : focus_restriction_);
+        CanFocusOrActivate(window) ? window : focus_restriction_.get());
   }
   aura::Window* GetFocusableWindow(aura::Window* window) const override {
     return BaseFocusRules::GetFocusableWindow(
-        CanFocusOrActivate(window) ? window : focus_restriction_);
+        CanFocusOrActivate(window) ? window : focus_restriction_.get());
   }
   aura::Window* GetNextActivatableWindow(aura::Window* ignore) const override {
     aura::Window* next_activatable =
@@ -528,7 +532,7 @@ class TestFocusRules : public BaseFocusRules {
     return !focus_restriction_ || focus_restriction_->Contains(window);
   }
 
-  aura::Window* focus_restriction_;
+  raw_ptr<aura::Window> focus_restriction_;
 };
 
 // Common infrastructure shared by all FocusController test types.
@@ -641,7 +645,7 @@ class FocusControllerTestBase : public aura::test::AuraTestBase {
 
  private:
   std::unique_ptr<FocusController> focus_controller_;
-  TestFocusRules* test_focus_rules_;
+  raw_ptr<TestFocusRules> test_focus_rules_;
 };
 
 // Test base for tests where focus is directly set to a target window.

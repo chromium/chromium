@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -101,10 +101,10 @@ TEST_F(ReceiverResponseTest, ParseErrorMessage) {
   ASSERT_TRUE(response->error());
   EXPECT_EQ(42, response->error()->code);
   EXPECT_EQ("it is broken", response->error()->description);
-  std::unique_ptr<base::Value> parsed_details =
-      base::JSONReader::ReadDeprecated(response->error()->details);
+  absl::optional<base::Value> parsed_details =
+      base::JSONReader::Read(response->error()->details);
   ASSERT_TRUE(parsed_details && parsed_details->is_dict());
-  EXPECT_EQ(2u, parsed_details->DictSize());
+  EXPECT_EQ(2u, parsed_details->GetDict().size());
   int fool_value = 0;
   EXPECT_TRUE(GetInt(*parsed_details, "foo", &fool_value));
   EXPECT_EQ(-1, fool_value);

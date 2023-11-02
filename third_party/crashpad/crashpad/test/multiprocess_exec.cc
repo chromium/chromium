@@ -1,4 +1,4 @@
-// Copyright 2018 The Crashpad Authors. All rights reserved.
+// Copyright 2018 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,9 +15,11 @@
 #include "test/multiprocess_exec.h"
 
 #include <map>
+#include <ostream>
 
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "test/main_arguments.h"
 #include "test/test_paths.h"
 #include "util/stdlib/map_insert.h"
@@ -59,7 +61,7 @@ void MultiprocessExec::SetChildTestMainFunction(
                                 GetMainArguments().end());
   rest.push_back(internal::kChildTestFunction + function_name);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Instead of using argv[0] on Windows, use the actual binary name. This is
   // necessary because if originally the test isn't run with ".exe" on the
   // command line, then argv[0] also won't include ".exe". This argument is used

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,8 +60,9 @@ bool FakePaintedScrollbarLayer::Update() {
 
 void FakePaintedScrollbarLayer::PushPropertiesTo(
     LayerImpl* layer,
-    const CommitState& commit_state) {
-  PaintedScrollbarLayer::PushPropertiesTo(layer, commit_state);
+    const CommitState& commit_state,
+    const ThreadUnsafeCommitState& unsafe_state) {
+  PaintedScrollbarLayer::PushPropertiesTo(layer, commit_state, unsafe_state);
   ++push_properties_count_;
 }
 

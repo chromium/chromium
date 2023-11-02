@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,15 +11,16 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "components/autofill_assistant/browser/client_status.h"
-#include "components/autofill_assistant/browser/web/element_finder.h"
 
 namespace autofill_assistant {
+class ElementFinderResult;
+
 namespace element_action_util {
 namespace {
 
 template <typename T>
 void RetainElementAndExecuteGetCallback(
-    std::unique_ptr<ElementFinder::Result> element,
+    std::unique_ptr<ElementFinderResult> element,
     base::OnceCallback<void(const ClientStatus&, T)> callback,
     const ClientStatus& status,
     T result) {
@@ -30,20 +31,20 @@ void RetainElementAndExecuteGetCallback(
 }  // namespace
 
 using ElementActionCallback =
-    base::OnceCallback<void(const ElementFinder::Result&,
+    base::OnceCallback<void(const ElementFinderResult&,
                             base::OnceCallback<void(const ClientStatus&)>)>;
 
 using ElementActionVector = std::vector<ElementActionCallback>;
 
 template <typename T>
 using ElementActionGetCallback =
-    base::OnceCallback<void(const ElementFinder::Result&,
+    base::OnceCallback<void(const ElementFinderResult&,
                             base::OnceCallback<void(const ClientStatus&, T)>)>;
 
 // Run all |perform_actions| sequentially. Breaks the execution on any error
 // and executes the |done| callback with the final status.
 void PerformAll(std::unique_ptr<ElementActionVector> perform_actions,
-                const ElementFinder::Result& element,
+                const ElementFinderResult& element,
                 base::OnceCallback<void(const ClientStatus&)> done);
 
 // Take ownership of the |element| and execute the |perform| callback with the
@@ -52,7 +53,7 @@ void PerformAll(std::unique_ptr<ElementActionVector> perform_actions,
 void TakeElementAndPerform(ElementActionCallback perform,
                            base::OnceCallback<void(const ClientStatus&)> done,
                            const ClientStatus& element_status,
-                           std::unique_ptr<ElementFinder::Result> element);
+                           std::unique_ptr<ElementFinderResult> element);
 
 // Take ownership of the |element| and execute the |perform| callback with the
 // element and the |done| callback as arguments, while retaining the element.
@@ -64,14 +65,14 @@ void TakeElementAndGetProperty(
     T default_value,
     base::OnceCallback<void(const ClientStatus&, T)> done,
     const ClientStatus& element_status,
-    std::unique_ptr<ElementFinder::Result> element_result) {
+    std::unique_ptr<ElementFinderResult> element_result) {
   if (!element_status.ok()) {
     VLOG(1) << __func__ << " Failed to find element.";
     std::move(done).Run(element_status, default_value);
     return;
   }
 
-  const ElementFinder::Result* element_result_ptr = element_result.get();
+  const ElementFinderResult* element_result_ptr = element_result.get();
   std::move(perform_and_get)
       .Run(*element_result_ptr,
            base::BindOnce(&RetainElementAndExecuteGetCallback<T>,

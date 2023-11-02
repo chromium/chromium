@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 #include "components/autofill/core/browser/payments/full_card_request.h"
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 #include "components/autofill/core/browser/payments/credit_card_fido_authenticator.h"
 #endif
 
@@ -22,7 +22,7 @@ namespace autofill {
 
 // Test class for requesting authentication from CreditCardCVCAuthenticator or
 // CreditCardFIDOAuthenticator.
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 class TestAuthenticationRequester
     : public CreditCardCVCAuthenticator::Requester,
       public CreditCardOtpAuthenticator::Requester {
@@ -40,12 +40,12 @@ class TestAuthenticationRequester
   void OnCVCAuthenticationComplete(
       const CreditCardCVCAuthenticator::CVCAuthenticationResponse& response)
       override;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   bool ShouldOfferFidoAuth() const override;
   bool UserOptedInToFidoFromSettingsPageOnMobile() const override;
 #endif
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   // CreditCardFIDOAuthenticator::Requester:
   void OnFIDOAuthenticationComplete(
       const CreditCardFIDOAuthenticator::FidoAuthenticationResponse& response)

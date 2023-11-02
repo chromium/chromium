@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,6 +50,7 @@ import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.webapps.AddToHomescreenCoordinator;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.content_public.browser.GestureListenerManager;
+import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.GestureStateListenerWithScroll;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -62,6 +63,7 @@ import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
+import org.chromium.weblayer_private.autofill_assistant.WebLayerAssistantTabChangeObserver;
 import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.IContextMenuParams;
 import org.chromium.weblayer_private.interfaces.IErrorPageCallbackClient;
@@ -151,6 +153,9 @@ public final class TabImpl extends ITab.Stub {
 
     private WebLayerAccessibilityUtil.Observer mAccessibilityObserver;
 
+    private final WebLayerAssistantTabChangeObserver mWebLayerAssistantTabChangeObserver =
+            new WebLayerAssistantTabChangeObserver();
+
     private Set<FaviconCallbackProxy> mFaviconCallbackProxies = new HashSet<>();
 
     // Only non-null if scroll offsets have been requested.
@@ -222,6 +227,7 @@ public final class TabImpl extends ITab.Stub {
         @Override
         protected void onVerticalScrollDirectionChanged(
                 boolean directionUp, float currentScrollRatio) {
+            super.onVerticalScrollDirectionChanged(directionUp, currentScrollRatio);
             try {
                 mClient.onScrollNotification(directionUp
                                 ? ScrollNotificationType.DIRECTION_CHANGED_UP
@@ -270,11 +276,17 @@ public final class TabImpl extends ITab.Stub {
 
         mWebContentsObserver = new WebContentsObserver() {
             @Override
-            public void didStartNavigation(NavigationHandle navigationHandle) {
-                if (navigationHandle.isInPrimaryMainFrame() && !navigationHandle.isSameDocument()) {
+            public void didStartNavigationInPrimaryMainFrame(NavigationHandle navigationHandle) {
+                if (!navigationHandle.isSameDocument()) {
                     hideFindInPageUiAndNotifyClient();
                 }
             }
+
+            @Override
+            public void didStartNavigationNoop(NavigationHandle navigationHandle) {
+                if (!navigationHandle.isInPrimaryMainFrame()) return;
+            }
+
             @Override
             public void viewportFitChanged(@WebContentsObserver.ViewportFitType int value) {
                 ensureDisplayCutoutController();
@@ -314,6 +326,20 @@ public final class TabImpl extends ITab.Stub {
 
         mMediaSessionHelper = new MediaSessionHelper(
                 mWebContents, MediaSessionManager.createMediaSessionHelperDelegate(this));
+
+        GestureListenerManager.fromWebContents(mWebContents)
+                .addListener(new GestureStateListener() {
+                    @Override
+                    public void didOverscroll(
+                            float accumulatedOverscrollX, float accumulatedOverscrollY) {
+                        if (WebLayerFactoryImpl.getClientMajorVersion() < 101) return;
+                        try {
+                            mClient.onVerticalOverscroll(accumulatedOverscrollY);
+                        } catch (RemoteException e) {
+                            throw new APICallException(e);
+                        }
+                    }
+                });
     }
 
     private void doInitAfterSettingContainerView() {
@@ -339,7 +365,7 @@ public final class TabImpl extends ITab.Stub {
      * Sets the BrowserImpl this TabImpl is contained in.
      */
     public void attachToBrowser(BrowserImpl browser) {
-        // NOTE: during tab creation this is called with |mBrowser| set to |browser|. This happens
+        // NOTE: during tab creation this is called with |browser| set to |mBrowser|. This happens
         // because the tab is created with |mBrowser| already set (to avoid having a bunch of null
         // checks).
         mBrowser = browser;
@@ -384,6 +410,8 @@ public final class TabImpl extends ITab.Stub {
                         new AutofillActionModeCallback(mBrowser.getContext(), mAutofillProvider));
             }
         }
+
+        mWebLayerAssistantTabChangeObserver.onBrowserAttachmentChanged(mWebContents);
     }
 
     @VisibleForTesting
@@ -727,17 +755,34 @@ public final class TabImpl extends ITab.Stub {
     @Override
     public void executeScript(String script, boolean useSeparateIsolate, IObjectWrapper callback) {
         StrictModeWorkaround.apply();
-        Callback<String> nativeCallback = new Callback<String>() {
-            @Override
-            public void onResult(String result) {
-                ValueCallback<String> unwrappedCallback =
-                        (ValueCallback<String>) ObjectWrapper.unwrap(callback, ValueCallback.class);
-                if (unwrappedCallback != null) {
+
+        WebLayerOriginVerificationScheduler originVerifier =
+                WebLayerOriginVerificationScheduler.getInstance();
+        String url = mWebContents.getVisibleUrl().getSpec();
+        originVerifier.verify(url, mProfile, (verified) -> {
+            // Make sure the page hasn't changed since we started verification.
+            if (!url.equals(mWebContents.getVisibleUrl().getSpec())) {
+                return;
+            }
+
+            ValueCallback<String> unwrappedCallback =
+                    (ValueCallback<String>) ObjectWrapper.unwrap(callback, ValueCallback.class);
+            assert unwrappedCallback != null;
+
+            if (!verified) {
+                // TODO(swestphal): Propagate exception to calling api.
+                unwrappedCallback.onReceiveValue(null);
+                return;
+            }
+
+            Callback<String> nativeCallback = new Callback<String>() {
+                @Override
+                public void onResult(String result) {
                     unwrappedCallback.onReceiveValue(result);
                 }
-            }
-        };
-        TabImplJni.get().executeScript(mNativeTab, script, useSeparateIsolate, nativeCallback);
+            };
+            TabImplJni.get().executeScript(mNativeTab, script, useSeparateIsolate, nativeCallback);
+        });
     }
 
     @Override
@@ -985,6 +1030,8 @@ public final class TabImpl extends ITab.Stub {
         assert mInterceptNavigationDelegate != null;
 
         TabImplJni.get().removeTabFromBrowserBeforeDestroying(mNativeTab);
+
+        mWebLayerAssistantTabChangeObserver.onTabDestroyed(mWebContents);
 
         // Notify the client that this instance is being destroyed to prevent it from calling
         // back into this object if the embedder mistakenly tries to do so.

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,6 +28,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/dns/public/secure_dns_mode.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::RunLoop;
@@ -319,7 +320,7 @@ TEST_F(DnsProbeServiceTest, CurrentConfig_Automatic) {
 
   EXPECT_TRUE(overrides.secure_dns_mode.has_value());
   EXPECT_EQ(net::SecureDnsMode::kOff, overrides.secure_dns_mode.value());
-  EXPECT_FALSE(overrides.dns_over_https_servers.has_value());
+  EXPECT_FALSE(overrides.dns_over_https_config.has_value());
 }
 
 TEST_F(DnsProbeServiceTest, CurrentConfig_Secure) {
@@ -340,16 +341,12 @@ TEST_F(DnsProbeServiceTest, CurrentConfig_Secure) {
   EXPECT_TRUE(overrides.attempts.has_value());
   EXPECT_EQ(1, overrides.attempts.value());
 
-  EXPECT_TRUE(overrides.secure_dns_mode.has_value());
-  EXPECT_EQ(net::SecureDnsMode::kSecure, overrides.secure_dns_mode.value());
-  EXPECT_TRUE(overrides.dns_over_https_servers.has_value());
-  ASSERT_EQ(2u, overrides.dns_over_https_servers->size());
-  EXPECT_EQ(kDohTemplateGet,
-            overrides.dns_over_https_servers->at(0).server_template);
-  EXPECT_FALSE(overrides.dns_over_https_servers->at(0).use_post);
-  EXPECT_EQ(kDohTemplatePost,
-            overrides.dns_over_https_servers->at(1).server_template);
-  EXPECT_TRUE(overrides.dns_over_https_servers->at(1).use_post);
+  EXPECT_THAT(overrides.secure_dns_mode,
+              testing::Optional(net::SecureDnsMode::kSecure));
+  EXPECT_THAT(
+      overrides.dns_over_https_config,
+      testing::Optional(*net::DnsOverHttpsConfig::FromTemplatesForTesting(
+          {kDohTemplateGet, kDohTemplatePost})));
 }
 
 }  // namespace

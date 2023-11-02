@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,10 @@ class CONTENT_EXPORT ContentMainRunner {
 
   // Initialize all necessary content state.
   virtual int Initialize(ContentMainParams params) = 0;
+
+  // Some platforms (Android) can call Run() multiple times in different modes,
+  // use this method to reset the ContentMainParams it will use between runs.
+  virtual void ReInitializeParams(ContentMainParams new_params) = 0;
 
   // Perform the default run logic.
   virtual int Run() = 0;

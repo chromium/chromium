@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -173,6 +173,7 @@ const char RandomizedEncoder::FIELD_CSS_CLASS[] = "field-css-classes";
 const char RandomizedEncoder::FIELD_PLACEHOLDER[] = "field-placeholder";
 const char RandomizedEncoder::FIELD_INITIAL_VALUE_HASH[] =
     "field-initial-hash-value";
+const char RandomizedEncoder::FIELD_AUTOCOMPLETE[] = "field-autocomplete";
 
 // Copy of components/unified_consent/pref_names.cc
 // We could not use the constant from components/unified_constants because of a

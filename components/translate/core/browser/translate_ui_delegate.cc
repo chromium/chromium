@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/i18n/string_compare.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -22,6 +23,7 @@
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/translate/core/common/translate_constants.h"
+#include "components/translate/core/common/translate_util.h"
 #include "components/variations/variations_associated_data.h"
 #include "net/base/url_util.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
@@ -118,13 +120,10 @@ TranslateUIDelegate::TranslateUIDelegate(
   std::vector<std::string> language_codes;
   TranslateDownloadManager::GetSupportedLanguages(
       prefs_->IsTranslateAllowedByPolicy(), &language_codes);
-  // Reserve additional space for unknown language option on Android if feature
-  // is enabled, and on Desktop always.
+  // Reserve additional space for unknown language option on all platforms
+  // except iOS.
   std::vector<std::string>::size_type languages_size = language_codes.size();
-#if defined(OS_ANDROID)
-  if (base::FeatureList::IsEnabled(language::kDetectedSourceLanguageOption))
-    languages_size += 1;
-#elif !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   languages_size += 1;
 #endif
   languages_.reserve(languages_size);
@@ -163,26 +162,13 @@ TranslateUIDelegate::TranslateUIDelegate(
         return lhs.first < rhs.first;
       });
 
-  // Add unknown language option to the front of the list on Android if feature
-  // is enabled, and on Desktop always.
-  bool add_unknown_language_option = true;
-#if defined(OS_IOS)
-  add_unknown_language_option = false;
-#elif defined(OS_ANDROID)
-  if (!base::FeatureList::IsEnabled(language::kDetectedSourceLanguageOption))
-    add_unknown_language_option = false;
+  // Add unknown language option to the front of the list on all platforms
+  // except iOS.
+#if !BUILDFLAG(IS_IOS)
+  languages_.emplace_back(kUnknownLanguageCode,
+                          GetUnknownLanguageDisplayName());
+  std::rotate(languages_.rbegin(), languages_.rbegin() + 1, languages_.rend());
 #endif
-  if (add_unknown_language_option) {
-    //  Experiment in place to replace the "Unknown" string with "Detected
-    //  Language".
-    std::u16string unknown_language_string =
-        base::FeatureList::IsEnabled(language::kDetectedSourceLanguageOption)
-            ? l10n_util::GetStringUTF16(IDS_TRANSLATE_DETECTED_LANGUAGE)
-            : l10n_util::GetStringUTF16(IDS_TRANSLATE_UNKNOWN_SOURCE_LANGUAGE);
-    languages_.emplace_back(kUnknownLanguageCode, unknown_language_string);
-    std::rotate(languages_.rbegin(), languages_.rbegin() + 1,
-                languages_.rend());
-  }
 
   for (std::vector<LanguageNamePair>::const_iterator iter = languages_.begin();
        iter != languages_.end(); ++iter) {
@@ -206,7 +192,7 @@ void TranslateUIDelegate::MaybeSetContentLanguages() {
       locale, &translatable_content_languages_codes_);
 }
 
-void TranslateUIDelegate::OnErrorShown(TranslateErrors::Type error_type) {
+void TranslateUIDelegate::OnErrorShown(TranslateErrors error_type) {
   DCHECK_LE(TranslateErrors::NONE, error_type);
   DCHECK_LT(error_type, TranslateErrors::TRANSLATE_ERROR_MAX);
 
@@ -493,5 +479,86 @@ void TranslateUIDelegate::ReportUIInteraction(UIInteraction ui_interaction) {
         ui_interaction);
   }
 }
+
+void TranslateUIDelegate::ReportUIChange(bool is_ui_shown) {
+  if (translate_manager_) {
+    translate_manager_->GetActiveTranslateMetricsLogger()->LogUIChange(
+        is_ui_shown);
+  }
+}
+
+// static
+std::u16string TranslateUIDelegate::GetUnknownLanguageDisplayName() {
+  return l10n_util::GetStringUTF16(IDS_TRANSLATE_DETECTED_LANGUAGE);
+}
+
+bool TranslateUIDelegate::IsIncognito() const {
+  if (!translate_manager_)
+    return false;
+  TranslateClient* client = translate_manager_->translate_client();
+  TranslateDriver* driver = client->GetTranslateDriver();
+  return driver ? driver->IsIncognito() : false;
+}
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
+bool TranslateUIDelegate::ShouldAutoAlwaysTranslate() {
+  // Don't trigger if it's off the record or already set to always translate.
+  if (IsIncognito() || ShouldAlwaysTranslate())
+    return false;
+
+  const std::string& source_language = GetSourceLanguageCode();
+  // Don't trigger for unknown source language.
+  if (source_language == kUnknownLanguageCode)
+    return false;
+
+  bool always_translate =
+      (prefs_->GetTranslationAcceptedCount(source_language) >=
+           GetAutoAlwaysThreshold() &&
+       prefs_->GetTranslationAutoAlwaysCount(source_language) <
+           GetMaximumNumberOfAutoAlways());
+
+  if (always_translate) {
+    // Auto-always will be triggered. Need to increment the auto-always
+    // counter.
+    prefs_->IncrementTranslationAutoAlwaysCount(source_language);
+    // Reset translateAcceptedCount so that auto-always could be triggered
+    // again.
+    prefs_->ResetTranslationAcceptedCount(source_language);
+  }
+  return always_translate;
+}
+
+bool TranslateUIDelegate::ShouldAutoNeverTranslate() {
+  if (IsIncognito())
+    return false;
+
+  const std::string& source_language = GetSourceLanguageCode();
+  // Don't trigger if this language is already blocked.
+  if (!prefs_->CanTranslateLanguage(source_language))
+    return false;
+
+  int auto_never_count = prefs_->GetTranslationAutoNeverCount(source_language);
+
+  // At the beginning (auto_never_count == 0), deniedCount starts at 0 and is
+  // off-by-one (because this checking is done before increment). However,
+  // after auto-never is triggered once (auto_never_count > 0), deniedCount
+  // starts at 1. So there is no off-by-one by then.
+  int off_by_one = auto_never_count == 0 ? 1 : 0;
+
+  bool never_translate =
+      (prefs_->GetTranslationDeniedCount(source_language) + off_by_one >=
+           GetAutoNeverThreshold() &&
+       auto_never_count < GetMaximumNumberOfAutoNever());
+  if (never_translate) {
+    // Auto-never will be triggered. Need to increment the auto-never counter.
+    prefs_->IncrementTranslationAutoNeverCount(source_language);
+    // Reset translateDeniedCount so that auto-never could be triggered again.
+    prefs_->ResetTranslationDeniedCount(source_language);
+  }
+  return never_translate;
+}
+
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 }  // namespace translate

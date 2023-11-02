@@ -1,10 +1,9 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.components.browser_ui.share;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -166,7 +165,6 @@ public class ShareHelper {
                     && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1;
         }
 
-        @TargetApi(Build.VERSION_CODES.LOLLIPOP_MR1)
         public static void sendChooserIntent(WindowAndroid window, Intent sharingIntent,
                 @Nullable TargetChosenCallback callback) {
             final Context context = ContextUtils.getApplicationContext();
@@ -183,8 +181,8 @@ public class ShareHelper {
                     sLastRegisteredReceiver.cancel();
                 }
                 sLastRegisteredReceiver = new TargetChosenReceiver(callback);
-                context.registerReceiver(
-                        sLastRegisteredReceiver, new IntentFilter(sTargetChosenReceiveAction));
+                ContextUtils.registerNonExportedBroadcastReceiver(context, sLastRegisteredReceiver,
+                        new IntentFilter(sTargetChosenReceiveAction));
             }
 
             Intent intent = new Intent(sTargetChosenReceiveAction);
@@ -268,7 +266,7 @@ public class ShareHelper {
         final ShareDialogAdapter adapter =
                 new ShareDialogAdapter(context, manager, resolveInfoList);
         AlertDialog.Builder builder =
-                new AlertDialog.Builder(context, R.style.Theme_Chromium_AlertDialog);
+                new AlertDialog.Builder(context, R.style.ThemeOverlay_BrowserUI_AlertDialog);
         builder.setTitle(context.getString(R.string.share_link_chooser_title));
         builder.setAdapter(adapter, null);
 

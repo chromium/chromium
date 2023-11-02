@@ -1,13 +1,13 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/websockets/websocket_stream_create_test_base.h"
+#include "base/memory/raw_ptr.h"
 
 #include <utility>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "net/base/ip_endpoint.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
@@ -88,12 +88,11 @@ class WebSocketStreamCreateTestBase::TestConnectDelegate
   }
 
  private:
-  WebSocketStreamCreateTestBase* owner_;
+  raw_ptr<WebSocketStreamCreateTestBase> owner_;
   base::OnceClosure done_callback_;
 };
 
-WebSocketStreamCreateTestBase::WebSocketStreamCreateTestBase()
-    : has_failed_(false), ssl_fatal_(false), url_request_(nullptr) {}
+WebSocketStreamCreateTestBase::WebSocketStreamCreateTestBase() = default;
 
 WebSocketStreamCreateTestBase::~WebSocketStreamCreateTestBase() = default;
 
@@ -123,7 +122,7 @@ WebSocketStreamCreateTestBase::RequestHeadersToVector(
   HttpRequestHeaders::Iterator it(headers);
   std::vector<HeaderKeyValuePair> result;
   while (it.GetNext())
-    result.push_back(HeaderKeyValuePair(it.name(), it.value()));
+    result.emplace_back(it.name(), it.value());
   return result;
 }
 
@@ -134,7 +133,7 @@ WebSocketStreamCreateTestBase::ResponseHeadersToVector(
   std::string name, value;
   std::vector<HeaderKeyValuePair> result;
   while (headers.EnumerateHeaderLines(&iter, &name, &value))
-    result.push_back(HeaderKeyValuePair(name, value));
+    result.emplace_back(name, value);
   return result;
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,11 @@
 #include <memory>
 #include <string>
 
+#include "base/system/sys_info.h"
 #include "base/values.h"
 #include "components/metrics/structured/structured_metrics_client.h"
 
-namespace metrics {
-namespace structured {
+namespace metrics::structured {
 
 Event::MetricValue::MetricValue(MetricType type, base::Value value)
     : type(type), value(std::move(value)) {}
@@ -34,7 +34,8 @@ Event::~Event() = default;
 
 Event::Event(Event&& other)
     : project_name_(std::move(other.project_name_)),
-      event_name_(std::move(other.event_name_)) {
+      event_name_(std::move(other.event_name_)),
+      recorded_time_since_boot_(std::move(other.recorded_time_since_boot_)) {
   metric_values_.insert(std::make_move_iterator(other.metric_values_.begin()),
                         std::make_move_iterator(other.metric_values_.end()));
 }
@@ -44,7 +45,24 @@ Event& Event::operator=(Event&& other) {
   event_name_ = std::move(other.event_name_);
   metric_values_.insert(std::make_move_iterator(other.metric_values_.begin()),
                         std::make_move_iterator(other.metric_values_.end()));
+  recorded_time_since_boot_ = std::move(other.recorded_time_since_boot_);
   return *this;
+}
+
+bool Event::IsCrOSEvent() const {
+  return false;
+}
+
+Event Event::Clone() const {
+  auto clone = Event(project_name_, event_name_);
+  for (const auto& metric : metric_values()) {
+    const Event::MetricValue& metric_value = metric.second;
+    clone.AddMetric(metric.first, metric_value.type,
+                    metric_value.value.Clone());
+  }
+  clone.SetRecordedTimeSinceBoot(recorded_time_since_boot_);
+
+  return clone;
 }
 
 void Event::Record() {
@@ -61,6 +79,10 @@ const std::string& Event::event_name() const {
 
 const std::map<std::string, Event::MetricValue>& Event::metric_values() const {
   return metric_values_;
+}
+
+base::TimeDelta Event::recorded_time_since_boot() const {
+  return recorded_time_since_boot_;
 }
 
 bool Event::AddMetric(const std::string& metric_name,
@@ -96,5 +118,8 @@ bool Event::AddMetric(const std::string& metric_name,
   return pair.second;
 }
 
-}  // namespace structured
-}  // namespace metrics
+void Event::SetRecordedTimeSinceBoot(base::TimeDelta recorded_time_since_boot) {
+  recorded_time_since_boot_ = recorded_time_since_boot;
+}
+
+}  // namespace metrics::structured

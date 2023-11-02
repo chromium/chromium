@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -34,6 +35,7 @@
 #include "cc/animation/keyframe_effect.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/mirror_layer.h"
+#include "cc/paint/filter_operation.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -440,7 +442,7 @@ class TestCompositorAnimationObserver : public CompositorAnimationObserver {
     shutdown_ = true;
   }
 
-  ui::Compositor* compositor_;
+  raw_ptr<ui::Compositor> compositor_;
   size_t animation_step_count_;
   bool shutdown_;
 };
@@ -582,9 +584,9 @@ TEST(LayerStandaloneTest, ReleaseMailboxOnDestruction) {
   bool callback_run = false;
 
   constexpr gfx::Size size(64, 64);
-  auto resource = viz::TransferableResource::MakeGL(
+  auto resource = viz::TransferableResource::MakeGpu(
       gpu::Mailbox::Generate(), GL_LINEAR, GL_TEXTURE_2D, gpu::SyncToken(),
-      size, false /* is_overlay_candidate */);
+      size, viz::RGBA_8888, false /* is_overlay_candidate */);
   layer->SetTransferableResource(resource,
                                  base::BindOnce(ReturnMailbox, &callback_run),
                                  gfx::Size(10, 10));
@@ -771,13 +773,27 @@ TEST_F(LayerWithDelegateTest, Cloning) {
 
   gfx::Rect clip_rect(1, 1, 2, 2);
 
+  gfx::LinearGradient gradient_mask(45);
+  gradient_mask.AddStep(.5, 50);
+
+  cc::FilterOperation::Matrix color_matrix({
+      0, 0, 1, 2, 2, 0, 1, 9, 7, 3, 0, 7, 0, 2, 0, 0, 0, 0, 1, 4,
+  });
+
+  constexpr float initial_sepia_amount = 0.1973f;
+  constexpr float initial_hue_amount = 180.0f;
+
   layer->SetTransform(transform);
   layer->SetColor(SK_ColorRED);
   layer->SetLayerInverted(true);
+  layer->SetLayerSepia(initial_sepia_amount);
+  layer->SetLayerHueRotation(initial_hue_amount);
+  layer->SetLayerCustomColorMatrix(color_matrix);
   layer->AddCacheRenderSurfaceRequest();
   layer->AddTrilinearFilteringRequest();
   layer->SetClipRect(clip_rect);
   layer->SetRoundedCornerRadius({1, 2, 4, 5});
+  layer->SetGradientMask(gradient_mask);
   layer->SetIsFastRoundedCorner(true);
   layer->SetSubtreeCaptureId(viz::SubtreeCaptureId(1));
 
@@ -788,6 +804,10 @@ TEST_F(LayerWithDelegateTest, Cloning) {
   EXPECT_EQ(SK_ColorRED, clone->background_color());
   EXPECT_EQ(SK_ColorRED, clone->GetTargetColor());
   EXPECT_TRUE(clone->layer_inverted());
+  EXPECT_FLOAT_EQ(initial_sepia_amount, clone->layer_sepia());
+  EXPECT_FLOAT_EQ(initial_hue_amount, clone->layer_hue_rotation());
+  EXPECT_TRUE(clone->LayerHasCustomColorMatrix());
+  EXPECT_EQ(*(clone->GetLayerCustomColorMatrix()), color_matrix);
   // Cloning should not preserve cache_render_surface flag.
   EXPECT_NE(layer->cc_layer_for_testing()->cache_render_surface(),
             clone->cc_layer_for_testing()->cache_render_surface());
@@ -796,28 +816,44 @@ TEST_F(LayerWithDelegateTest, Cloning) {
             clone->cc_layer_for_testing()->trilinear_filtering());
   EXPECT_EQ(clip_rect, clone->clip_rect());
   EXPECT_EQ(layer->rounded_corner_radii(), clone->rounded_corner_radii());
+  EXPECT_EQ(layer->gradient_mask(), clone->gradient_mask());
   EXPECT_EQ(layer->is_fast_rounded_corner(), clone->is_fast_rounded_corner());
 
   // However, the SubtreeCaptureId is not cloned.
   EXPECT_TRUE(layer->GetSubtreeCaptureId().is_valid());
   EXPECT_FALSE(clone->GetSubtreeCaptureId().is_valid());
 
+  constexpr float new_layer_sepia = 0.1965f;
+  constexpr float new_layer_hue_rotation = 42.0f;
+
   layer->SetTransform(gfx::Transform());
   layer->SetColor(SK_ColorGREEN);
   layer->SetLayerInverted(false);
+  layer->SetLayerSepia(new_layer_sepia);
+  layer->SetLayerHueRotation(new_layer_hue_rotation);
+  layer->ClearLayerCustomColorMatrix();
   layer->SetClipRect(gfx::Rect(10, 10, 10, 10));
   layer->SetIsFastRoundedCorner(false);
   layer->SetRoundedCornerRadius({3, 6, 9, 12});
+
+  gradient_mask.set_angle(90);
+  gradient_mask.AddStep(.9, 30);
+  layer->SetGradientMask(gradient_mask);
 
   // The clone is an independent copy, so state changes do not propagate.
   EXPECT_EQ(transform, clone->GetTargetTransform());
   EXPECT_EQ(SK_ColorRED, clone->background_color());
   EXPECT_EQ(SK_ColorRED, clone->GetTargetColor());
   EXPECT_TRUE(clone->layer_inverted());
+  EXPECT_FLOAT_EQ(initial_sepia_amount, clone->layer_sepia());
+  EXPECT_FLOAT_EQ(initial_hue_amount, clone->layer_hue_rotation());
+  EXPECT_TRUE(clone->LayerHasCustomColorMatrix());
+  EXPECT_EQ(*(clone->GetLayerCustomColorMatrix()), color_matrix);
   EXPECT_EQ(clip_rect, clone->clip_rect());
   EXPECT_FALSE(layer->is_fast_rounded_corner());
   EXPECT_TRUE(clone->is_fast_rounded_corner());
   EXPECT_NE(layer->rounded_corner_radii(), clone->rounded_corner_radii());
+  EXPECT_NE(layer->gradient_mask(), clone->gradient_mask());
 
   constexpr SkColor kTransparent = SK_ColorTRANSPARENT;
   layer->SetColor(kTransparent);
@@ -833,6 +869,9 @@ TEST_F(LayerWithDelegateTest, Cloning) {
   EXPECT_EQ(kTransparent, clone->background_color());
   EXPECT_EQ(kTransparent, clone->GetTargetColor());
   EXPECT_FALSE(clone->layer_inverted());
+  EXPECT_FLOAT_EQ(new_layer_sepia, clone->layer_sepia());
+  EXPECT_FLOAT_EQ(new_layer_hue_rotation, clone->layer_hue_rotation());
+  EXPECT_FALSE(clone->LayerHasCustomColorMatrix());
   EXPECT_FALSE(clone->fills_bounds_opaquely());
 
   // A solid color layer with transparent color can be marked as opaque. The
@@ -846,6 +885,10 @@ TEST_F(LayerWithDelegateTest, Cloning) {
   EXPECT_EQ(kTransparent, clone->background_color());
   EXPECT_EQ(kTransparent, clone->GetTargetColor());
   EXPECT_FALSE(clone->layer_inverted());
+  // Sepia and hue rotation should be off by default.
+  EXPECT_FLOAT_EQ(0, layer->layer_sepia());
+  EXPECT_FLOAT_EQ(0, clone->layer_hue_rotation());
+  EXPECT_FALSE(clone->LayerHasCustomColorMatrix());
   EXPECT_TRUE(clone->fills_bounds_opaquely());
 
   layer = CreateLayer(LAYER_SOLID_COLOR);
@@ -1052,9 +1095,12 @@ TEST_F(LayerWithNullDelegateTest, SwitchLayerPreservesCCLayerState) {
   l1->SetIsFastRoundedCorner(true);
   constexpr viz::SubtreeCaptureId kSubtreeCaptureId(22);
   l1->SetSubtreeCaptureId(kSubtreeCaptureId);
+  gfx::LinearGradient gradient_mask(45);
+  gradient_mask.AddStep(.5, 50);
+  l1->SetGradientMask(gradient_mask);
 
   EXPECT_EQ(gfx::Point3F(), l1->cc_layer_for_testing()->transform_origin());
-  EXPECT_TRUE(l1->cc_layer_for_testing()->DrawsContent());
+  EXPECT_TRUE(l1->cc_layer_for_testing()->draws_content());
   EXPECT_TRUE(l1->cc_layer_for_testing()->contents_opaque());
   EXPECT_TRUE(l1->cc_layer_for_testing()->hide_layer_and_subtree());
   EXPECT_EQ(gfx::Size(4, 5), l1->cc_layer_for_testing()->bounds());
@@ -1064,14 +1110,16 @@ TEST_F(LayerWithNullDelegateTest, SwitchLayerPreservesCCLayerState) {
   EXPECT_EQ(kSubtreeCaptureId,
             l1->cc_layer_for_testing()->subtree_capture_id());
   EXPECT_EQ(kSubtreeCaptureId, l1->GetSubtreeCaptureId());
+  EXPECT_TRUE(l1->cc_layer_for_testing()->HasGradientMask());
+  EXPECT_EQ(l1->cc_layer_for_testing()->gradient_mask(), gradient_mask);
 
   cc::Layer* before_layer = l1->cc_layer_for_testing();
 
   bool callback1_run = false;
   constexpr gfx::Size size(64, 64);
-  auto resource = viz::TransferableResource::MakeGL(
+  auto resource = viz::TransferableResource::MakeGpu(
       gpu::Mailbox::Generate(), GL_LINEAR, GL_TEXTURE_2D, gpu::SyncToken(),
-      size, false /* is_overlay_candidate */);
+      size, viz::RGBA_8888, false /* is_overlay_candidate */);
   l1->SetTransferableResource(resource,
                               base::BindOnce(ReturnMailbox, &callback1_run),
                               gfx::Size(10, 10));
@@ -1079,7 +1127,7 @@ TEST_F(LayerWithNullDelegateTest, SwitchLayerPreservesCCLayerState) {
   EXPECT_NE(before_layer, l1->cc_layer_for_testing());
 
   EXPECT_EQ(gfx::Point3F(), l1->cc_layer_for_testing()->transform_origin());
-  EXPECT_TRUE(l1->cc_layer_for_testing()->DrawsContent());
+  EXPECT_TRUE(l1->cc_layer_for_testing()->draws_content());
   EXPECT_TRUE(l1->cc_layer_for_testing()->contents_opaque());
   EXPECT_TRUE(l1->cc_layer_for_testing()->hide_layer_and_subtree());
   EXPECT_EQ(gfx::Size(4, 5), l1->cc_layer_for_testing()->bounds());
@@ -1089,12 +1137,14 @@ TEST_F(LayerWithNullDelegateTest, SwitchLayerPreservesCCLayerState) {
   EXPECT_EQ(kSubtreeCaptureId,
             l1->cc_layer_for_testing()->subtree_capture_id());
   EXPECT_EQ(kSubtreeCaptureId, l1->GetSubtreeCaptureId());
+  EXPECT_TRUE(l1->cc_layer_for_testing()->HasGradientMask());
+  EXPECT_EQ(gradient_mask, l1->cc_layer_for_testing()->gradient_mask());
   EXPECT_FALSE(callback1_run);
 
   bool callback2_run = false;
-  resource = viz::TransferableResource::MakeGL(
+  resource = viz::TransferableResource::MakeGpu(
       gpu::Mailbox::Generate(), GL_LINEAR, GL_TEXTURE_2D, gpu::SyncToken(),
-      size, false /* is_overlay_candidate */);
+      size, viz::RGBA_8888, false /* is_overlay_candidate */);
   l1->SetTransferableResource(resource,
                               base::BindOnce(ReturnMailbox, &callback2_run),
                               gfx::Size(10, 10));
@@ -1104,22 +1154,23 @@ TEST_F(LayerWithNullDelegateTest, SwitchLayerPreservesCCLayerState) {
   // Show solid color instead.
   l1->SetShowSolidColorContent();
   EXPECT_EQ(gfx::Point3F(), l1->cc_layer_for_testing()->transform_origin());
-  EXPECT_TRUE(l1->cc_layer_for_testing()->DrawsContent());
+  EXPECT_TRUE(l1->cc_layer_for_testing()->draws_content());
   EXPECT_TRUE(l1->cc_layer_for_testing()->contents_opaque());
   EXPECT_TRUE(l1->cc_layer_for_testing()->hide_layer_and_subtree());
   EXPECT_EQ(gfx::Size(4, 5), l1->cc_layer_for_testing()->bounds());
   EXPECT_TRUE(l1->cc_layer_for_testing()->HasRoundedCorner());
   EXPECT_EQ(l1->cc_layer_for_testing()->corner_radii(), kCornerRadii);
   EXPECT_TRUE(l1->cc_layer_for_testing()->is_fast_rounded_corner());
+  EXPECT_EQ(l1->cc_layer_for_testing()->gradient_mask(), gradient_mask);
   EXPECT_TRUE(callback2_run);
 
   before_layer = l1->cc_layer_for_testing();
 
   // Back to a texture, without changing the bounds of the layer or the texture.
   bool callback3_run = false;
-  resource = viz::TransferableResource::MakeGL(
+  resource = viz::TransferableResource::MakeGpu(
       gpu::Mailbox::Generate(), GL_LINEAR, GL_TEXTURE_2D, gpu::SyncToken(),
-      size, false /* is_overlay_candidate */);
+      size, viz::RGBA_8888, false /* is_overlay_candidate */);
   l1->SetTransferableResource(resource,
                               base::BindOnce(ReturnMailbox, &callback3_run),
                               gfx::Size(10, 10));
@@ -1127,13 +1178,14 @@ TEST_F(LayerWithNullDelegateTest, SwitchLayerPreservesCCLayerState) {
   EXPECT_NE(before_layer, l1->cc_layer_for_testing());
 
   EXPECT_EQ(gfx::Point3F(), l1->cc_layer_for_testing()->transform_origin());
-  EXPECT_TRUE(l1->cc_layer_for_testing()->DrawsContent());
+  EXPECT_TRUE(l1->cc_layer_for_testing()->draws_content());
   EXPECT_TRUE(l1->cc_layer_for_testing()->contents_opaque());
   EXPECT_TRUE(l1->cc_layer_for_testing()->hide_layer_and_subtree());
   EXPECT_EQ(gfx::Size(4, 5), l1->cc_layer_for_testing()->bounds());
   EXPECT_TRUE(l1->cc_layer_for_testing()->HasRoundedCorner());
   EXPECT_EQ(l1->cc_layer_for_testing()->corner_radii(), kCornerRadii);
   EXPECT_TRUE(l1->cc_layer_for_testing()->is_fast_rounded_corner());
+  EXPECT_EQ(l1->cc_layer_for_testing()->gradient_mask(), gradient_mask);
   EXPECT_FALSE(callback3_run);
 
   // Release the on |l1| mailbox to clean up the test.
@@ -1325,6 +1377,29 @@ TEST_F(LayerWithDelegateTest, RoundedCorner) {
   EXPECT_EQ(kRadii, layer->rounded_corner_radii());
 }
 
+TEST_F(LayerWithDelegateTest, GradientMask) {
+  gfx::Rect layer_bounds(10, 20, 100, 100);
+  gfx::LinearGradient gradient_mask;
+  gradient_mask.AddStep(.5, 50);
+
+  auto layer = std::make_unique<Layer>(LAYER_TEXTURED);
+
+  NullLayerDelegate delegate;
+  layer->set_delegate(&delegate);
+  layer->SetVisible(true);
+  layer->SetBounds(layer_bounds);
+
+  compositor()->SetRootLayer(layer.get());
+  Draw();
+
+  EXPECT_TRUE(layer->rounded_corner_radii().IsEmpty());
+
+  // Setting a rounded corner radius should set an rrect with bounds same as the
+  // layer.
+  layer->SetGradientMask(gradient_mask);
+  EXPECT_EQ(gradient_mask, layer->gradient_mask());
+}
+
 // Checks that stacking-related methods behave as advertised.
 TEST_F(LayerWithNullDelegateTest, Stacking) {
   auto root = std::make_unique<Layer>(LAYER_NOT_DRAWN);
@@ -1440,9 +1515,9 @@ TEST_F(LayerWithNullDelegateTest, EmptyDamagedRect) {
 
   std::unique_ptr<Layer> root = CreateLayer(LAYER_SOLID_COLOR);
   constexpr gfx::Size size(64, 64);
-  auto resource = viz::TransferableResource::MakeGL(
+  auto resource = viz::TransferableResource::MakeGpu(
       gpu::Mailbox::Generate(), GL_LINEAR, GL_TEXTURE_2D, gpu::SyncToken(),
-      size, false /* is_overlay_candidate */);
+      size, viz::RGBA_8888, false /* is_overlay_candidate */);
   root->SetTransferableResource(resource, std::move(callback),
                                 gfx::Size(10, 10));
   compositor()->SetRootLayer(root.get());
@@ -1764,7 +1839,7 @@ TEST_F(LayerWithRealCompositorTest, SetRootLayer) {
 // TODO(vollick): could be reorganized into compositor_unittest.cc
 // Flaky on Windows. See https://crbug.com/784563.
 // Flaky on Linux tsan. See https://crbug.com/834026.
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CompositorObservers DISABLED_CompositorObservers
 #else
 #define MAYBE_CompositorObservers CompositorObservers
@@ -2068,7 +2143,7 @@ class SchedulePaintLayerDelegate : public LayerDelegate {
                                   float new_device_scale_factor) override {}
 
   int paint_count_;
-  Layer* layer_;
+  raw_ptr<Layer> layer_;
   gfx::Rect schedule_paint_rect_;
   gfx::Rect last_clip_rect_;
 };
@@ -2340,9 +2415,9 @@ TEST_F(LayerWithDelegateTest, TransferableResourceMirroring) {
   std::unique_ptr<Layer> layer = CreateLayer(LAYER_SOLID_COLOR);
 
   constexpr gfx::Size size(64, 64);
-  auto resource = viz::TransferableResource::MakeGL(
+  auto resource = viz::TransferableResource::MakeGpu(
       gpu::Mailbox::Generate(), GL_LINEAR, GL_TEXTURE_2D, gpu::SyncToken(),
-      size, false /* is_overlay_candidate */);
+      size, viz::RGBA_8888, false /* is_overlay_candidate */);
   bool release_callback_run = false;
 
   layer->SetTransferableResource(
@@ -2369,9 +2444,9 @@ TEST_F(LayerWithDelegateTest, TransferableResourceMirroring) {
   EXPECT_FALSE(layer->has_external_content());
   EXPECT_FALSE(mirror->has_external_content());
 
-  resource = viz::TransferableResource::MakeGL(
+  resource = viz::TransferableResource::MakeGpu(
       gpu::Mailbox::Generate(), GL_LINEAR, GL_TEXTURE_2D, gpu::SyncToken(),
-      size, false /* is_overlay_candidate */);
+      size, viz::RGBA_8888, false /* is_overlay_candidate */);
   release_callback_run = false;
 
   // Setting a transferable resource on the source layer should set it on the
@@ -2860,8 +2935,8 @@ class LayerRemovingLayerAnimationObserver : public LayerAnimationObserver {
   void OnLayerAnimationScheduled(LayerAnimationSequence* sequence) override {}
 
  private:
-  Layer* root_;
-  Layer* child_;
+  raw_ptr<Layer> root_;
+  raw_ptr<Layer> child_;
 };
 
 // Verifies that empty LayerAnimators are not left behind when removing child

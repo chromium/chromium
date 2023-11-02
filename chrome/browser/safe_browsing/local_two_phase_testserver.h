@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
 
@@ -28,7 +27,7 @@ class LocalTwoPhaseTestServer {
     return embedded_test_server_.GetURL(relative_path);
   }
 
-  bool Start() WARN_UNUSED_RESULT { return embedded_test_server_.Start(); }
+  [[nodiscard]] bool Start() { return embedded_test_server_.Start(); }
 
  private:
   net::EmbeddedTestServer embedded_test_server_;

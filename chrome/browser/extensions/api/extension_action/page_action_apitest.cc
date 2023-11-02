@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -100,7 +100,8 @@ IN_PROC_BROWSER_TEST_P(PageActionApiTest, Basic) {
 
   // We should not be creating icons asynchronously, so we don't need an
   // observer.
-  ExtensionActionIconFactory icon_factory(profile(), extension, action, NULL);
+  ExtensionActionIconFactory icon_factory(profile(), extension, action,
+                                          nullptr);
 
   // Test that we received the changes.
   tab_id = sessions::SessionTabHelper::FromWebContents(
@@ -222,7 +223,8 @@ IN_PROC_BROWSER_TEST_P(PageActionApiTest, TestTriggerPageAction) {
       browser(), embedded_test_server()->GetURL("/simple.html")));
   chrome::NewTab(browser());
   browser()->tab_strip_model()->ActivateTabAt(
-      0, {TabStripModel::GestureType::kOther});
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
 
   // Give the extension time to show the page action on the tab.
   WaitForPageActionVisibilityChangeTo(1);

@@ -1,11 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_WEB_VIEW_INTERNAL_PASSWORDS_WEB_VIEW_PASSWORD_FEATURE_MANAGER_H_
 #define IOS_WEB_VIEW_INTERNAL_PASSWORDS_WEB_VIEW_PASSWORD_FEATURE_MANAGER_H_
 
-#include "base/macros.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 
 namespace syncer {
@@ -29,7 +28,7 @@ class WebViewPasswordFeatureManager
   ~WebViewPasswordFeatureManager() override = default;
 
   bool IsGenerationEnabled() const override;
-
+  bool AreRequirementsForAutomatedPasswordChangeFulfilled() const override;
   bool IsOptedInForAccountStorage() const override;
   bool ShouldShowAccountStorageOptIn() const override;
   bool ShouldShowAccountStorageReSignin(
@@ -52,6 +51,7 @@ class WebViewPasswordFeatureManager
 
   void RecordMoveOfferedToNonOptedInUser() override;
   int GetMoveOfferedToNonOptedInUserCount() const override;
+  bool IsBiometricAuthenticationBeforeFillingEnabled() const override;
 
  private:
   PrefService* const pref_service_;

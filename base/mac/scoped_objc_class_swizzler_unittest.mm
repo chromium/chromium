@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -73,8 +73,7 @@
 }
 @end
 
-namespace base {
-namespace mac {
+namespace base::mac {
 
 TEST(ObjCClassSwizzlerTest, SwizzleInstanceMethods) {
   base::scoped_nsobject<ObjCClassSwizzlerTestOne> object_one(
@@ -155,5 +154,4 @@ TEST(ObjCClassSwizzlerTest, SwizzleViaInheritance) {
   EXPECT_EQ(3, [child method]);
 }
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac

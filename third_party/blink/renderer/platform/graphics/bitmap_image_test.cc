@@ -32,15 +32,16 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/time/time.h"
 #include "cc/paint/image_provider.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "cc/tiles/mipmap_util.h"
 #include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image_metrics.h"
 #include "third_party/blink/renderer/platform/graphics/deferred_image_decoder.h"
 #include "third_party/blink/renderer/platform/graphics/image_observer.h"
@@ -50,9 +51,9 @@
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 namespace {
@@ -129,7 +130,8 @@ class BitmapImageTest : public testing::Test {
 
     void DecodedSizeChangedTo(const Image*, size_t new_size) override {
       last_decoded_size_changed_delta_ =
-          SafeCast<int>(new_size) - SafeCast<int>(last_decoded_size_);
+          base::checked_cast<int>(new_size) -
+          base::checked_cast<int>(last_decoded_size_);
       last_decoded_size_ = new_size;
     }
     bool ShouldPauseAnimation(const Image*) override { return false; }
@@ -319,7 +321,7 @@ TEST_F(BitmapImageTest, correctDecodedDataSize) {
   LoadImage("anim_none.gif");
   image_->PaintImageForCurrentFrame();
   int frame_size =
-      static_cast<int>(image_->Size().Area() * sizeof(ImageFrame::PixelData));
+      static_cast<int>(image_->Size().Area64() * sizeof(ImageFrame::PixelData));
   EXPECT_EQ(frame_size, LastDecodedSizeChange());
 }
 

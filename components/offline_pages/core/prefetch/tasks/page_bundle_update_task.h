@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/prefetch/prefetch_types.h"
 #include "components/offline_pages/task/task.h"
@@ -54,10 +55,10 @@ class PageBundleUpdateTask : public Task {
 
   // Owned by PrefetchService which also transitively owns |this|, so raw
   // pointer is OK.
-  PrefetchStore* store_;
+  raw_ptr<PrefetchStore> store_;
   // PrefetchDispatcher owns the task queue which owns |this|, so raw pointer is
   // OK.
-  PrefetchDispatcher* dispatcher_;
+  raw_ptr<PrefetchDispatcher> dispatcher_;
   std::string operation_name_;
   std::vector<RenderPageInfo> pages_;
 

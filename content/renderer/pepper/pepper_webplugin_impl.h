@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,7 +43,6 @@ class PepperWebPluginImpl : public blink::WebPlugin {
   bool Initialize(blink::WebPluginContainer* container) override;
   void Destroy() override;
   v8::Local<v8::Object> V8ScriptableObject(v8::Isolate* isolate) override;
-  bool SupportsKeyboardFocus() const override;
   void UpdateAllLifecyclePhases(blink::DocumentUpdateReason) override {}
   void Paint(cc::PaintCanvas* canvas, const gfx::Rect& rect) override;
   void UpdateGeometry(const gfx::Rect& window_rect,
@@ -62,28 +61,12 @@ class PepperWebPluginImpl : public blink::WebPlugin {
   bool HasSelection() const override;
   blink::WebString SelectionAsText() const override;
   blink::WebString SelectionAsMarkup() const override;
-  bool CanEditText() const override;
-  bool HasEditableText() const override;
-  bool CanUndo() const override;
-  bool CanRedo() const override;
-  bool ExecuteEditCommand(const blink::WebString& name,
-                          const blink::WebString& value) override;
-  blink::WebURL LinkAtPosition(const gfx::Point& position) const override;
-  bool GetPrintPresetOptionsFromDocument(
-      blink::WebPrintPresetOptions* preset_options) override;
-  bool StartFind(const blink::WebString& search_text,
-                 bool case_sensitive,
-                 int identifier) override;
-  void SelectFindResult(bool forward, int identifier) override;
-  void StopFind() override;
   bool SupportsPaginatedPrint() override;
 
   int PrintBegin(const blink::WebPrintParams& print_params) override;
   void PrintPage(int page_number, cc::PaintCanvas* canvas) override;
   void PrintEnd() override;
 
-  bool CanRotateView() override;
-  void RotateView(blink::WebPlugin::RotationType type) override;
   bool IsPlaceholder() override;
   void DidLoseMouseLock() override;
   void DidReceiveMouseLockResult(bool success) override;

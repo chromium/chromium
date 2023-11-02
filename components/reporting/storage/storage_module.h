@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,26 +40,27 @@ class StorageModule : public StorageModuleInterface {
   // called.
   void AddRecord(Priority priority,
                  Record record,
-                 base::OnceCallback<void(Status)> callback) override;
+                 EnqueueCallback callback) override;
 
   // Initiates upload of collected records according to the priority.
   // Called usually for a queue with an infinite or very large upload period.
   // Multiple |Flush| calls can safely run in parallel.
   // Returns error if cannot start upload.
-  void Flush(Priority priority,
-             base::OnceCallback<void(Status)> callback) override;
+  void Flush(Priority priority, FlushCallback callback) override;
 
-  // Once a record has been successfully uploaded, the sequencing information
+  // Once a record has been successfully uploaded, the sequence information
   // can be passed back to the StorageModule here for record deletion.
   // If |force| is false (which is used in most cases), |sequence_information|
   // only affects Storage if no higher sequencing was confirmed before;
   // otherwise it is accepted unconditionally.
-  void ReportSuccess(SequenceInformation sequence_information,
-                     bool force) override;
+  // Declared virtual for testing purposes.
+  virtual void ReportSuccess(SequenceInformation sequence_information,
+                             bool force);
 
   // If the server attached signed encryption key to the response, it needs to
   // be paased here.
-  void UpdateEncryptionKey(SignedEncryptionInfo signed_encryption_key) override;
+  // Declared virtual for testing purposes.
+  virtual void UpdateEncryptionKey(SignedEncryptionInfo signed_encryption_key);
 
  protected:
   // Constructor can only be called by |Create| factory method.

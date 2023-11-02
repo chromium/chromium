@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,7 +39,7 @@ proto::UrlRule MakeProtoRule(proto::RuleSemantics semantics,
   rule.set_match_case(url_pattern.match_case());
   rule.set_url_pattern(std::string(url_pattern.url_pattern()));
 
-  testing::AddDomains(domains, &rule);
+  testing::AddInitiatorDomains(domains, &rule);
 
   return rule;
 }

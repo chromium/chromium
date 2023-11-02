@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,6 +51,11 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
   explicit DataTransferDlpController(const DlpRulesManager& dlp_rules_manager);
   ~DataTransferDlpController() override;
 
+  // Returns maximal time for which reporting can be skipped.
+  // See LastReportedEndpoints for details.
+  // Should be overridden in tests (increased).
+  virtual base::TimeDelta GetSkipReportingTimeout();
+
  private:
   virtual void NotifyBlockedPaste(
       const ui::DataTransferEndpoint* const data_src,
@@ -88,6 +93,13 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
                    const std::string& dst_pattern,
                    DlpRulesManager::Level level,
                    bool is_clipboard_event);
+
+  void MaybeReportEvent(const ui::DataTransferEndpoint* const data_src,
+                        const ui::DataTransferEndpoint* const data_dst,
+                        const std::string& src_pattern,
+                        const std::string& dst_pattern,
+                        DlpRulesManager::Level level,
+                        bool is_clipboard_event);
 
   // The solution for the issue of sending multiple reporting events for a
   // single user action. When a user triggers a paste (for instance by pressing

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,9 +15,9 @@ namespace {
 NSString* const kLastSessionExitedCleanly = @"LastSessionExitedCleanly";
 // Because variations are not initialized this early in startup, pair a user
 // defaults value with the variations config.
-const base::Feature kUseUserDefaultsForExitedCleanlyBeacon{
-    "UseUserDefaultsForExitedCleanlyBeaconEnabler",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kUseUserDefaultsForExitedCleanlyBeacon,
+             "UseUserDefaultsForExitedCleanlyBeaconEnabler",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 NSString* const kUserDefaultsFeatureFlagForExitedCleanlyBeacon =
     @"UserDefaultsFeatureFlagForExitedCleanlyBeacon";
 

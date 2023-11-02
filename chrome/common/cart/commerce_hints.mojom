@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,15 @@ struct Product {
   string name;
   // The product ID.
   string product_id;
+};
+
+struct Heuristics {
+  // Version number of the heuristics.
+  string version_number;
+  // JSON string of hint heuristics.
+  string hint_json_data;
+  // JSON string of global heuristics.
+  string global_json_data;
 };
 
 // This service is implemented in the browser process and is used by the
@@ -40,7 +49,14 @@ interface CommerceHintObserver {
   // An XMLHttpRequest is about to be sent.
   OnWillSendRequest(bool is_addtocart);
 
-  // A navigation is about to happen or has happened. Return whether
-  // we should skip collecting commerce hints on current URL or not.
-  OnNavigation(url.mojom.Url url) => (bool should_skip);
+  // A navigation is about to happen or has happened. Return whether we
+  // should skip collecting commerce hints on current domain or not, and
+  // the commerce heuristics that are applicable in this domain.
+  OnNavigation(url.mojom.Url url, string version_number)
+    => (bool should_skip, Heuristics heuristics);
+
+  // A cart content extraction is about to happen. Return JSON that
+  // contains product ID extraction heuristics and a JS script for cart
+  // content extraction.
+  OnCartExtraction() => (string product_id_json, string cart_extraction_script);
 };

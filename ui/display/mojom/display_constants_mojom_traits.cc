@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -203,6 +203,10 @@ display::mojom::PrivacyScreenState EnumTraits<
       return display::mojom::PrivacyScreenState::DISABLED;
     case display::PrivacyScreenState::kEnabled:
       return display::mojom::PrivacyScreenState::ENABLED;
+    case display::PrivacyScreenState::kDisabledLocked:
+      return display::mojom::PrivacyScreenState::DISABLED_LOCKED;
+    case display::PrivacyScreenState::kEnabledLocked:
+      return display::mojom::PrivacyScreenState::ENABLED_LOCKED;
     case display::PrivacyScreenState::kNotSupported:
       return display::mojom::PrivacyScreenState::NOT_SUPPORTED;
   }
@@ -221,6 +225,12 @@ bool EnumTraits<display::mojom::PrivacyScreenState,
       return true;
     case display::mojom::PrivacyScreenState::ENABLED:
       *out = display::PrivacyScreenState::kEnabled;
+      return true;
+    case display::mojom::PrivacyScreenState::DISABLED_LOCKED:
+      *out = display::PrivacyScreenState::kDisabledLocked;
+      return true;
+    case display::mojom::PrivacyScreenState::ENABLED_LOCKED:
+      *out = display::PrivacyScreenState::kEnabledLocked;
       return true;
     case display::mojom::PrivacyScreenState::NOT_SUPPORTED:
       *out = display::PrivacyScreenState::kNotSupported;

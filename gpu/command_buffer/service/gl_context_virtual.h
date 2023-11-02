@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define GPU_COMMAND_BUFFER_SERVICE_GL_CONTEXT_VIRTUAL_H_
 
 #include <string>
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -46,13 +45,15 @@ class GPU_GLES2_EXPORT GLContextVirtual : public gl::GLContext {
   void SetSafeToForceGpuSwitch() override;
   unsigned int CheckStickyGraphicsResetStatusImpl() override;
   void SetUnbindFboOnMakeCurrent() override;
-  gl::YUVToRGBConverter* GetYUVToRGBConverter(
-      const gfx::ColorSpace& color_space) override;
   void ForceReleaseVirtuallyCurrent() override;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   uint64_t BackpressureFenceCreate() override;
   void BackpressureFenceWait(uint64_t fence) override;
   void FlushForDriverCrashWorkaround() override;
+#endif
+
+#if defined(USE_EGL)
+  gl::GLDisplayEGL* GetGLDisplayEGL() override;
 #endif
 
  protected:

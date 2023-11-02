@@ -16,9 +16,9 @@ per-file extensions_strings.grdp=*
 per-file os_settings_strings.grdp=*
 per-file os_settings_search_tag_strings.grdp=file://chrome/browser/resources/settings/chromeos/OWNERS
 
-per-file app_management_strings.grdp=file://chrome/browser/ui/webui/app_management/OWNERS
+per-file access_code_cast_strings.grdp=file://chrome/browser/ui/webui/access_code_cast/OWNERS
 
-per-file web_time_limit_error_page_strings.grdp=file://chrome/browser/ash/child_accounts/OWNERS
+per-file app_management_strings.grdp=file://chrome/browser/ui/webui/app_management/OWNERS
 
 per-file gmc_strings.grdp=file://chrome/browser/ui/global_media_controls/OWNERS
 
@@ -40,7 +40,7 @@ per-file settings_chromium_strings.grdp=sauski@google.com
 per-file settings_google_chrome_strings.grdp=sauski@google.com
 per-file settings_strings.grdp=sauski@google.com
 
-per-file supervised_user_error_page_strings.grdp=file://chrome/browser/supervised_user/supervised_user_error_page/OWNERS
+per-file supervised_user_error_page_strings.grdp=file://chrome/browser/supervised_user/OWNERS
 
 per-file vr_strings.grdp=file://chrome/browser/vr/OWNERS
 
@@ -53,14 +53,14 @@ per-file *.plist=file://chrome/browser/ui/cocoa/OWNERS
 
 per-file chrome_crash_reporter_client*=rsesek@chromium.org
 
-per-file chrome_exe_main_mac.cc=kerrnel@chromium.org
 per-file chrome_exe_main_mac.cc=mark@chromium.org
+per-file chrome_exe_main_mac.cc=rsesek@chromium.org
 
 per-file main_dll_loader_win.cc=brucedawson@chromium.org
 per-file main_dll_loader_win.cc=wfh@chromium.org
 
 # Security-review owners for Fuchsia Component Manifests.
 per-file *.cml=set noparent
-per-file *.cml=file://fuchsia/SECURITY_OWNERS
+per-file *.cml=file://build/fuchsia/SECURITY_OWNERS
 per-file *.cmx=set noparent
-per-file *.cmx=file://fuchsia/SECURITY_OWNERS
+per-file *.cmx=file://build/fuchsia/SECURITY_OWNERS

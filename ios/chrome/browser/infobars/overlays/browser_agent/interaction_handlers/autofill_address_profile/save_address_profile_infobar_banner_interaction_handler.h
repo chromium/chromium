@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ class SaveAddressProfileInfobarBannerInteractionHandler
   void BannerDismissedByUser(InfoBarIOS* infobar) override;
 
  private:
-  // Returns the SaveAddressProfile delegate from |infobar|.
+  // Returns the SaveAddressProfile delegate from `infobar`.
   autofill::AutofillSaveUpdateAddressProfileDelegateIOS* GetInfobarDelegate(
       InfoBarIOS* infobar);
 };

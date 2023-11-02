@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@ namespace ash {
 
 namespace {
 // The global PowerDataCollector instance.
-PowerDataCollector* g_power_data_collector = NULL;
+PowerDataCollector* g_power_data_collector = nullptr;
 }  // namespace
 
 const int PowerDataCollector::kSampleTimeLimitSec = 24 * 60 * 60;
@@ -21,14 +21,14 @@ const int PowerDataCollector::kSampleTimeLimitSec = 24 * 60 * 60;
 void PowerDataCollector::Initialize() {
   // Check that power data collector is initialized only after the
   // PowerManagerClient is initialized.
-  CHECK(PowerManagerClient::Get());
-  CHECK(g_power_data_collector == NULL);
+  CHECK(chromeos::PowerManagerClient::Get());
+  CHECK(g_power_data_collector == nullptr);
   g_power_data_collector = new PowerDataCollector(true);
 }
 
 void PowerDataCollector::InitializeForTesting() {
-  CHECK(PowerManagerClient::Get());
-  CHECK(g_power_data_collector == NULL);
+  CHECK(chromeos::PowerManagerClient::Get());
+  CHECK(g_power_data_collector == nullptr);
   g_power_data_collector = new PowerDataCollector(false);
 }
 
@@ -37,7 +37,7 @@ void PowerDataCollector::Shutdown() {
   // Shutdown only if initialized.
   CHECK(g_power_data_collector);
   delete g_power_data_collector;
-  g_power_data_collector = NULL;
+  g_power_data_collector = nullptr;
 }
 
 // static
@@ -65,13 +65,13 @@ void PowerDataCollector::SuspendDone(base::TimeDelta sleep_duration) {
 }
 
 PowerDataCollector::PowerDataCollector(const bool start_cpu_data_collector) {
-  PowerManagerClient::Get()->AddObserver(this);
+  chromeos::PowerManagerClient::Get()->AddObserver(this);
   if (start_cpu_data_collector)
     cpu_data_collector_.Start();
 }
 
 PowerDataCollector::~PowerDataCollector() {
-  PowerManagerClient::Get()->RemoveObserver(this);
+  chromeos::PowerManagerClient::Get()->RemoveObserver(this);
 }
 
 PowerDataCollector::PowerSupplySample::PowerSupplySample()

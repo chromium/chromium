@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sync_socket.h"
 #include "base/test/mock_callback.h"
 #include "content/public/test/browser_task_environment.h"
@@ -20,6 +21,7 @@
 #include "services/audio/public/cpp/fake_stream_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 using ::testing::_;
 using ::testing::Test;
@@ -160,7 +162,7 @@ class MockStreamFactory final : public audio::FakeStreamFactory {
     IsMuting(group_id);
   }
 
-  StreamRequestData* stream_request_data_;
+  raw_ptr<StreamRequestData> stream_request_data_;
 };
 
 const bool kMuteSource = true;
@@ -226,7 +228,7 @@ TEST(AudioLoopbackStreamBrokerTest, StreamCreationSuccess_Propagates) {
   base::SyncSocket socket1, socket2;
   base::SyncSocket::CreatePair(&socket1, &socket2);
   std::move(stream_request_data.created_callback)
-      .Run({base::in_place,
+      .Run({absl::in_place,
             base::ReadOnlySharedMemoryRegion::Create(shmem_size).region,
             mojo::PlatformHandle(socket1.Take())});
 
@@ -256,7 +258,7 @@ TEST(AudioLoopbackStreamBrokerTest, MutedStreamCreation_Mutes) {
   base::SyncSocket socket1, socket2;
   base::SyncSocket::CreatePair(&socket1, &socket2);
   std::move(stream_request_data.created_callback)
-      .Run({base::in_place,
+      .Run({absl::in_place,
             base::ReadOnlySharedMemoryRegion::Create(shmem_size).region,
             mojo::PlatformHandle(socket1.Take())});
 
@@ -286,7 +288,7 @@ TEST(AudioLoopbackStreamBrokerTest, SourceGone_CallsDeleter) {
   base::SyncSocket socket1, socket2;
   base::SyncSocket::CreatePair(&socket1, &socket2);
   std::move(stream_request_data.created_callback)
-      .Run({base::in_place,
+      .Run({absl::in_place,
             base::ReadOnlySharedMemoryRegion::Create(shmem_size).region,
             mojo::PlatformHandle(socket1.Take())});
 

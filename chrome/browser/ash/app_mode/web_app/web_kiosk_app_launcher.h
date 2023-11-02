@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_task.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "components/account_id/account_id.h"
@@ -26,7 +27,6 @@ class BrowserWindow;
 class Profile;
 
 namespace web_app {
-class WebAppInstallTask;
 class WebAppUrlLoader;
 class WebAppDataRetriever;
 }  // namespace web_app
@@ -75,7 +75,8 @@ class WebKioskAppLauncher : public KioskAppLauncher,
 
   // Callback method triggered after web application and its icon are obtained
   // from `WebKioskAppManager`.
-  void OnAppDataObtained(std::unique_ptr<WebApplicationInfo> app_info);
+  void OnAppDataObtained(
+      web_app::WebAppInstallTask::WebAppInstallInfoOrErrorCode);
 
   // Callback method triggered after the lacros-chrome window is created.
   void OnLacrosWindowCreated(crosapi::mojom::CreationResult result);

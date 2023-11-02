@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,27 @@ enum class BiometricAuthUIResult {
   kFailed = 4,
 };
 
+// Different states for biometric availability for a given device. Either no
+// biometric hardware is available, hardware is available but the user has no
+// biometrics enrolled, or hardware is available and the user makes use of it.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.device_reauth
+enum class BiometricsAvailability {
+  kOtherError = 0,
+  kAvailable = 1,
+  kAvailableNoFallback = 2,
+  kNoHardware = 3,
+  kHwUnavailable = 4,
+  kNotEnrolled = 5,
+  kSecurityUpdateRequired = 6,
+  kAndroidVersionNotSupported = 7,
+
+  kMaxValue = kAndroidVersionNotSupported,
+};
+
 }  // namespace device_reauth
 
 // Interface for the biometric authenticator bridge connecting the C++ side
@@ -30,7 +51,11 @@ class BiometricAuthenticatorBridge {
   virtual ~BiometricAuthenticatorBridge() = default;
 
   // Checks whether biometrics are available.
-  virtual device_reauth::BiometricsAvailability CanAuthenticate() = 0;
+  virtual device_reauth::BiometricsAvailability
+  CanAuthenticateWithBiometric() = 0;
+
+  // Checks whether biometrics OR screen lock are available.
+  virtual bool CanAuthenticateWithBiometricOrScreenLock() = 0;
 
   // Trigges an authentication flow based on biometrics, with the
   // screen lock as fallback. Note: this only supports one authentication

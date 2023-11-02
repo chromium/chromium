@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,10 +13,12 @@
 #include "base/command_line.h"
 #include "base/containers/circular_deque.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "media/cast/test/utility/udp_proxy.h"
 #include "net/base/ip_address.h"
 
@@ -89,7 +91,7 @@ class ByteCounterPipe : public media::cast::test::PacketPipe {
     pipe_->Send(std::move(packet));
   }
  private:
-  ByteCounter* counter_;
+  raw_ptr<ByteCounter> counter_;
 };
 
 void SetupByteCounters(std::unique_ptr<media::cast::test::PacketPipe>* pipe,

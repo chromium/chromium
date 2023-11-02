@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define SERVICES_AUDIO_PUBLIC_CPP_SOUNDS_SOUNDS_MANAGER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/component_export.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
@@ -18,7 +18,7 @@ namespace audio {
 
 // This class is used for reproduction of system sounds. All methods
 // should be accessed from the Audio thread.
-class SoundsManager {
+class COMPONENT_EXPORT(AUDIO_PUBLIC_CPP) SoundsManager {
  public:
   typedef int SoundKey;
 

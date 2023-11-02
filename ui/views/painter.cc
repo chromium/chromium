@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -288,7 +288,7 @@ std::unique_ptr<Painter> Painter::CreateSolidFocusPainter(
   // on the thickness, callers had to add 1 to the bottom and right insets.
   // Subtract that here so it works the same way with the new
   // Canvas::DrawSolidFocusRect.
-  const gfx::Insets corrected_insets = insets - gfx::Insets(0, 0, 1, 1);
+  const gfx::InsetsF corrected_insets(insets - gfx::Insets::TLBR(0, 0, 1, 1));
   return std::make_unique<SolidFocusPainter>(color, 1, corrected_insets);
 }
 

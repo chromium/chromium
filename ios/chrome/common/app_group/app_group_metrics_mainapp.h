@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,12 +18,12 @@ typedef void (^ProceduralBlockWithData)(NSData*);
 namespace main_app {
 
 // Iterates through the extensions pending logs and deletes them.
-// Calls |callback| on each log before deleting.
+// Calls `callback` on each log before deleting.
 // TODO(crbug.com/782685): remove function.
 void ProcessPendingLogs(ProceduralBlockWithData callback);
 
 // Enables the metrics collecting in extensions. The extensions will
-// use |clientID| as client ID, and |brandCode| as brand code in the logs.
+// use `clientID` as client ID, and `brandCode` as brand code in the logs.
 // TODO(crbug.com/782685): remove function.
 void EnableMetrics(NSString* client_id,
                    NSString* brand_code,

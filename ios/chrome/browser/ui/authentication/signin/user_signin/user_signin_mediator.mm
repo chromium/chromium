@@ -1,18 +1,19 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_signin_mediator.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/check.h"
+#import "base/check.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/consent_auditor/consent_auditor.h"
 #import "components/unified_consent/unified_consent_service.h"
-#include "ios/chrome/browser/procedural_block_types.h"
+#import "ios/chrome/browser/procedural_block_types.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
@@ -28,6 +29,8 @@
 @property(nonatomic, strong) AuthenticationFlow* authenticationFlow;
 // Manager for user's Google identities.
 @property(nonatomic, assign) signin::IdentityManager* identityManager;
+// Manager for chrome identities.
+@property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
 // Auditor for user consent.
 @property(nonatomic, assign) consent_auditor::ConsentAuditor* consentAuditor;
 // Chrome interface to the iOS shared authentication library.
@@ -49,6 +52,8 @@
 - (instancetype)
     initWithAuthenticationService:(AuthenticationService*)authenticationService
                   identityManager:(signin::IdentityManager*)identityManager
+            accountManagerService:
+                (ChromeAccountManagerService*)accountManagerService
                    consentAuditor:
                        (consent_auditor::ConsentAuditor*)consentAuditor
             unifiedConsentService:
@@ -57,14 +62,25 @@
                       syncService:(syncer::SyncService*)syncService {
   self = [super init];
   if (self) {
-    _identityManager = identityManager;
-    _consentAuditor = consentAuditor;
     _authenticationService = authenticationService;
+    _identityManager = identityManager;
+    _accountManagerService = accountManagerService;
+    _consentAuditor = consentAuditor;
     _unifiedConsentService = unifiedConsentService;
     _syncSetupService = syncSetupService;
     _syncService = syncService;
   }
   return self;
+}
+
+- (void)dealloc {
+  DCHECK(!self.authenticationFlow);
+  DCHECK(!self.identityManager);
+  DCHECK(!self.accountManagerService);
+  DCHECK(!self.consentAuditor);
+  DCHECK(!self.authenticationService);
+  DCHECK(!self.syncService);
+  DCHECK(!self.delegate);
 }
 
 - (void)authenticateWithIdentity:(ChromeIdentity*)identity
@@ -104,42 +120,67 @@
 
 - (void)cancelSignin {
   // Cancelling the authentication flow has the side effect of setting
-  // |self.isAuthenticationInProgress| to false.
+  // `self.isAuthenticationInProgress` to false.
   // Ensure these conditions are handled separately by using a BOOL which
   // retains the initial authentication state. This way, the mediator does not
   // call sign-in finished if sign-in was in progress.
   BOOL shouldNotCallSigninFinishedOnDelegate = self.isAuthenticationInProgress;
-  [self cancelAndDismissAuthenticationFlowAnimated:NO];
-  if (!shouldNotCallSigninFinishedOnDelegate) {
-    [self.delegate userSigninMediatorSigninFinishedWithResult:
-                       SigninCoordinatorResultCanceledByUser];
-  }
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlock completion = ^() {
+    if (!shouldNotCallSigninFinishedOnDelegate) {
+      [weakSelf.delegate userSigninMediatorSigninFinishedWithResult:
+                             SigninCoordinatorResultCanceledByUser];
+    }
+  };
+  [self cancelAndDismissAuthenticationFlowAnimated:NO completion:completion];
 }
 
-- (void)cancelAndDismissAuthenticationFlowAnimated:(BOOL)animated {
+- (void)cancelAndDismissAuthenticationFlowAnimated:(BOOL)animated
+                                        completion:(ProceduralBlock)completion {
   [self.authenticationFlow cancelAndDismissAnimated:animated];
-  [self revertToSigninStateOnStart];
-}
 
-#pragma mark - Private
-
-// For users that cancel the sign-in flow, revert to the sign-in
-// state prior to starting sign-in coordinators.
-- (void)revertToSigninStateOnStart {
   self.syncService->GetUserSettings()->SetSyncRequested(false);
+  DCHECK(self.delegate);
   switch (self.delegate.signinStateOnStart) {
     case IdentitySigninStateSignedOut: {
       self.authenticationService->SignOut(signin_metrics::ABORT_SIGNIN,
                                           /*force_clear_browsing_data=*/false,
-                                          nil);
+                                          completion);
       break;
     }
     case IdentitySigninStateSignedInWithSyncDisabled: {
       DCHECK(!self.authenticationService->GetPrimaryIdentity(
           signin::ConsentLevel::kSync));
-      // Call StopAndClear() to clear the encryption passphrase, in case the
-      // user entered it before canceling the sync opt-in flow.
-      _syncService->StopAndClear();
+      if ([self.authenticationService->GetPrimaryIdentity(
+              signin::ConsentLevel::kSignin)
+              isEqual:self.delegate.signinIdentityOnStart]) {
+        // Call StopAndClear() to clear the encryption passphrase, in case the
+        // user entered it before canceling the sync opt-in flow.
+        _syncService->StopAndClear();
+        if (completion)
+          completion();
+      } else {
+        __weak __typeof(self) weakSelf = self;
+        self.authenticationService->SignOut(
+            signin_metrics::ABORT_SIGNIN,
+            /*force_clear_browsing_data=*/false, ^() {
+              AuthenticationService* authenticationService =
+                  weakSelf.authenticationService;
+              ChromeIdentity* identity =
+                  weakSelf.delegate.signinIdentityOnStart;
+              ChromeAccountManagerService* accountManagerService =
+                  weakSelf.accountManagerService;
+              if (authenticationService && identity &&
+                  accountManagerService->IsValidIdentity(identity)) {
+                // Make sure the mediator is still alive, and the identity is
+                // stil valid (for example the identity can be removed by
+                // another app.
+                authenticationService->SignIn(identity);
+              }
+              if (completion)
+                completion();
+            });
+      }
       break;
     }
     case IdentitySigninStateSignedInWithSyncEnabled: {
@@ -149,6 +190,18 @@
     }
   }
 }
+
+- (void)disconnect {
+  self.authenticationFlow = nil;
+  self.identityManager = nil;
+  self.accountManagerService = nil;
+  self.consentAuditor = nil;
+  self.authenticationService = nil;
+  self.syncService = nil;
+  self.delegate = nil;
+}
+
+#pragma mark - Private
 
 - (BOOL)isAuthenticationInProgress {
   return self.authenticationFlow != nil;
@@ -175,10 +228,12 @@
 
   int consentConfirmationId =
       [self.delegate userSigninMediatorGetConsentConfirmationId];
+  DCHECK_NE(consentConfirmationId, 0);
   syncConsent.set_confirmation_grd_id(consentConfirmationId);
 
   std::vector<int> consentTextIds =
       [self.delegate userSigninMediatorGetConsentStringIds];
+  DCHECK_NE(consentTextIds.size(), 0ul);
   for (int id : consentTextIds) {
     syncConsent.add_description_grd_ids(id);
   }

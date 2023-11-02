@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
@@ -39,6 +38,9 @@ class AudioTrackEncoder : public WTF::ThreadSafeRefCounted<AudioTrackEncoder> {
   virtual void OnSetFormat(const media::AudioParameters& params) = 0;
   virtual void EncodeAudio(std::unique_ptr<media::AudioBus> audio_bus,
                            base::TimeTicks capture_time) = 0;
+
+  // TODO(crbug.com/1363728): Remove this and use DeleteSoon instead.
+  virtual void Shutdown() = 0;
 
   void set_paused(bool paused) { paused_ = paused; }
 

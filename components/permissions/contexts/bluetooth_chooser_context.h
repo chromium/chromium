@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -68,6 +68,9 @@ class BluetoothChooserContext : public ObjectPermissionContextBase {
       const blink::mojom::WebBluetoothRequestDeviceOptions* options);
   bool HasDevicePermission(const url::Origin& origin,
                            const blink::WebBluetoothDeviceId& device_id);
+  void RevokeDevicePermissionWebInitiated(
+      const url::Origin& origin,
+      const blink::WebBluetoothDeviceId& device_id);
   bool IsAllowedToAccessAtLeastOneService(
       const url::Origin& origin,
       const blink::WebBluetoothDeviceId& device_id);

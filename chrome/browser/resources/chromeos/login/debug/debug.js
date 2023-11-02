@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,74 @@
 // #import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 // #import {loadTimeData} from '../i18n_setup.js';
 // #import {Oobe} from '../cr_ui.m.js'
-// #import {$} from 'chrome://resources/js/util.m.js';
+// #import {$} from 'chrome://resources/js/util.js';
+// #import './debug_util.js';
+// #import {AssistantNativeIconType} from '../../assistant_optin/utils.m.js';
+
+// #import {MessageType, ProblemType} from 'chrome://resources/ash/common/quick_unlock/setup_pin_keyboard.js';
+
+const createAssistantData = (isMinor) => {
+  const data = {};
+  data['valuePropTitle'] =
+      'Value ' + (isMinor ? 'minor ' : 'regular') + ' prop title';
+  data['valuePropNextButton'] = 'Value prop next button';
+  data['valuePropSkipButton'] = 'Value prop skip button';
+  data['valuePropFooter'] = 'Value prop footer';
+  data['equalWeightButtons'] = isMinor;
+  if (isMinor) {
+    data['childName'] = 'Child name';
+  }
+  return data;
+};
+
+const createAssistantZippy = (type, isMinor, isNativeIcons) => {
+  const zippy = {};
+  zippy['isMinorMode'] = isMinor;
+  zippy['title'] = 'Zippy ' + (isMinor ? 'minor ' : 'regular') + ' title';
+  zippy['identity'] = 'Zippy identity';
+  zippy['intro'] = 'Zippy intro';
+  zippy['name'] = 'Zippy ' + type + ' name';
+  zippy['description'] = 'Zippy ' + type + ' description';
+  if (isMinor) {
+    zippy['additionalInfo'] = 'Zippy additional info';
+  }
+  zippy['popupLink'] = 'Zippy popup link';
+  zippy['learnMoreDialogTitle'] = 'Zippy learn more dialog title';
+  zippy['learnMoreDialogContent'] = 'Zippy learn more dialog content';
+  zippy['learnMoreDialogButton'] = 'Zippy learn more dialog button';
+  zippy['useNativeIcons'] = !!isNativeIcons;
+
+  if (isNativeIcons) {
+    if (type === 'WAA') {
+      zippy['nativeIconType'] = AssistantNativeIconType.WAA;
+    } else if (type == 'DA') {
+      zippy['nativeIconType'] = AssistantNativeIconType.DA;
+    } else {
+      console.error('### Uknown zippy type ' + type);
+    }
+  } else {
+    if (type === 'WAA') {
+      if (isMinor) {
+        zippy['iconUri'] =
+            'https://www.gstatic.com/myactivity/icon/icon_fp_history_blue.svg';
+      } else {
+        zippy['iconUri'] =
+            'https://ssl.gstatic.com/identity/boq/consentflowtexts/icon_web_and_app_activity_grey600_72-fb2e66730dca510849d22bee9f0f29ba.png';
+      }
+    } else if (type === 'DA') {
+      if (isMinor) {
+        zippy['iconUri'] =
+            'https://www.gstatic.com/myactivity/icon/icon_fp_chromebook_blue.svg';
+      } else {
+        zippy['iconUri'] =
+            'https://ssl.gstatic.com/identity/boq/consentflowtexts/icon_device_information_vertical_grey600_72-be6f9c8691213019712cfa4106a509e0.png';
+      }
+    } else {
+      console.error('### Uknown zippy type ' + type);
+    }
+  }
+  return zippy;
+};
 
 cr.define('cr.ui.login.debug', function() {
   const DEBUG_BUTTON_STYLE = `
@@ -73,9 +140,6 @@ cr.define('cr.ui.login.debug', function() {
       border-color: #faa !important;
       color: #faa`;
 
-  const RECOMMENDED_APPS_CONTENT = `
-// <include src="../../arc_support/recommend_app_list_view.html">
-  `;
   /**
    * Indicates if screen is present in usual user flow, represents some error
    * state or is shown in some other cases. See KNOWN_SCREENS for more details.
@@ -212,9 +276,9 @@ cr.define('cr.ui.login.debug', function() {
           id: 'success',
           trigger: (screen) => {
             screen.updateCountdownString(
-                'Remove the USB and restart your device to start using \
-                 CloudReady 2.0. Otherwise your device will shut down in \
-                 60 seconds.');
+                'Your device will shut down in 60 seconds. Remove the USB \
+                 before turning your device back on. Then you can start using \
+                 ChromeOS Flex.');
             screen.showStep('success');
           },
         },
@@ -244,9 +308,9 @@ cr.define('cr.ui.login.debug', function() {
           id: 'error',
           trigger: (screen) => {
             screen.setError(
-                'Chrome OS was unable to connect to Public Wifi. ' +
+                'ChromeOS was unable to connect to Public Wifi. ' +
                 'Please select another network or try again.');
-          }
+          },
         },
       ],
     },
@@ -293,20 +357,6 @@ cr.define('cr.ui.login.debug', function() {
     {
       id: 'oobe-update',
       kind: ScreenKind.NORMAL,
-      states: [
-        {
-          // Checking for update
-          id: 'check-update',
-        },
-        {
-          // Ask for permission to update over celluar
-          id: 'require-permission-celluar',
-          trigger: (screen) => {
-            screen.onBeforeShow();
-            screen.setUpdateState('cellular');
-          },
-        },
-      ],
     },
     {
       id: 'auto-enrollment-check',
@@ -354,8 +404,33 @@ cr.define('cr.ui.login.debug', function() {
       // Remove this step from preview here, because it can only occur during
       // enterprise enrollment step and it is already available there in debug
       // overlay.
-      handledSteps: 'unlock',
+      handledSteps: 'unlock,creds',
       suffix: 'E',
+      states: [
+        {
+          id: 'unlock',
+          trigger: (screen) => {
+            screen.setUIStep('unlock');
+          },
+          data: {},
+        },
+        {
+          id: 'creds',
+          trigger: (screen) => {
+            screen.setUIStep('creds');
+            screen.isDomainJoin = false;
+          },
+          data: {},
+        },
+        {
+          id: 'creds(isDomainJoin)',
+          trigger: (screen) => {
+            screen.setUIStep('creds');
+            screen.isDomainJoin = true;
+          },
+          data: {},
+        },
+      ],
     },
     {
       id: 'enterprise-enrollment',
@@ -408,7 +483,7 @@ cr.define('cr.ui.login.debug', function() {
             screen.setErrorState(2);  // offline
             screen.allowGuestSignin(true);
             screen.allowOfflineLogin(true);
-          }
+          },
         },
       ],
     },
@@ -516,7 +591,15 @@ cr.define('cr.ui.login.debug', function() {
             helpLinkText: 'Learn more',
           },
         },
-      ]
+      ],
+    },
+    {
+      id: 'smart-privacy-protection',
+      kind: ScreenKind.NORMAL,
+    },
+    {
+      id: 'theme-selection',
+      kind: ScreenKind.NORMAL,
     },
     {
       id: 'reset',
@@ -560,6 +643,13 @@ cr.define('cr.ui.login.debug', function() {
             screen.setShouldShowConfirmationDialog(true);
           },
         },
+        {
+          id: 'rollback-error',
+          trigger: (screen) => {
+            screen.reset();
+            screen.setScreenState(3);
+          },
+        },
       ],
     },
     {
@@ -580,7 +670,7 @@ cr.define('cr.ui.login.debug', function() {
         {
           id: 'allowlist-customer',
           trigger: (screen) => {
-            screen.showAllowlistCheckFailedError(true, {
+            screen.showAllowlistCheckFailedError({
               enterpriseManaged: false,
             });
           },
@@ -594,14 +684,14 @@ cr.define('cr.ui.login.debug', function() {
         {
           id: 'default',
           trigger: (screen) => {
-            screen.loadParams({});
+            screen.onBeforeShow({});
           },
         },
         {
           // kAccountsPrefLoginScreenDomainAutoComplete value is set
           id: 'offline-gaia-domain',
           trigger: (screen) => {
-            screen.loadParams({
+            screen.onBeforeShow({
               emailDomain: 'somedomain.com',
             });
           },
@@ -610,7 +700,7 @@ cr.define('cr.ui.login.debug', function() {
           // Device is enterprise-managed.
           id: 'offline-gaia-enterprise',
           trigger: (screen) => {
-            screen.loadParams({
+            screen.onBeforeShow({
               enterpriseDomainManager: 'example.com',
             });
           },
@@ -625,10 +715,6 @@ cr.define('cr.ui.login.debug', function() {
           },
         },
       ],
-    },
-    {
-      id: 'tpm-error-message',
-      kind: ScreenKind.ERROR,
     },
     {
       // Failure during SAML flow.
@@ -710,9 +796,9 @@ cr.define('cr.ui.login.debug', function() {
           // Error dialog
           id: 'error-dialog',
           trigger: (screen) => {
-            let error = 'Some error text';
+            const error = 'Some error text';
             screen.showErrorDialog(error);
-          }
+          },
         },
       ],
     },
@@ -765,33 +851,33 @@ cr.define('cr.ui.login.debug', function() {
           // Password was scraped
           id: 'scraped',
           trigger: (screen) => {
-            screen.show(
-                'someone@example.com',
-                false,  // manualPasswordInput
-                0,      // attempt count
-                () => {});
+            screen.onBeforeShow({
+              email: 'someone@example.com',
+              manualPasswordInput: false,
+            });
+            screen.showPasswordStep(false);
           },
         },
         {
           // Password was scraped
           id: 'scraped-retry',
           trigger: (screen) => {
-            screen.show(
-                'someone@example.com',
-                false,  // manualPasswordInput
-                1,      // attempt count
-                () => {});
+            screen.onBeforeShow({
+              email: 'someone@example.com',
+              manualPasswordInput: false,
+            });
+            screen.showPasswordStep(true);
           },
         },
         {
           // No password was scraped
           id: 'manual',
           trigger: (screen) => {
-            screen.show(
-                'someone@example.com',
-                true,  // manualPasswordInput
-                0,     // attempt count
-                () => {});
+            screen.onBeforeShow({
+              email: 'someone@example.com',
+              manualPasswordInput: true,
+            });
+            screen.showPasswordStep(false);
           },
         },
       ],
@@ -821,7 +907,7 @@ cr.define('cr.ui.login.debug', function() {
             screen.setArcTransition(3);
             screen.setManagementEntity('example.com');
             screen.setUIStep('progress');
-          }
+          },
         },
         {
           id: 'add-management-unknown-admin',
@@ -829,26 +915,38 @@ cr.define('cr.ui.login.debug', function() {
             screen.setArcTransition(3);
             screen.setManagementEntity('');
             screen.setUIStep('progress');
-          }
+          },
         },
         {
           id: 'error-supervision',
           trigger: (screen) => {
             screen.setArcTransition(1);
             screen.setUIStep('error');
-          }
+          },
         },
         {
           id: 'error-management',
           trigger: (screen) => {
             screen.setArcTransition(3);
             screen.setUIStep('error');
-          }
+          },
         },
       ],
     },
     {
       id: 'lacros-data-migration',
+      kind: ScreenKind.OTHER,
+      defaultState: 'default',
+      handledSteps: 'skip-revealed',
+      states: [{
+        id: 'skip-revealed',
+        trigger: (screen) => {
+          screen.showSkipButton();
+        },
+      }],
+    },
+    {
+      id: 'lacros-data-backward-migration',
       kind: ScreenKind.OTHER,
     },
     {
@@ -881,14 +979,26 @@ cr.define('cr.ui.login.debug', function() {
     {
       id: 'sync-consent',
       kind: ScreenKind.NORMAL,
-      defaultState: 'step-no-split',
-      states: [{
-        id: 'minor-mode',
-        data: {
-          syncConsentOptionalEnabled: false,
-          isMinorMode: true,
+      defaultState: 'step-loaded',
+      states: [
+        {
+          id: 'minor-mode',
+          data: {
+            isChildAccount: true,
+            isArcRestricted: false,
+          },
+          trigger: (screen) => {
+            screen.setIsMinorMode(true);
+          },
         },
-      }]
+        {
+          id: 'arc-restricted',
+          data: {
+            isChildAccount: false,
+            isArcRestricted: true,
+          },
+        },
+      ],
     },
     {
       id: 'consolidated-consent',
@@ -898,25 +1008,88 @@ cr.define('cr.ui.login.debug', function() {
       // additionalTosUrl.
       states: [
         {
-          id: 'regular',
+          id: 'regular-owner',
+          trigger: (screen) => {
+            screen.setUsageOptinHidden(false);
+          },
           data: {
             isArcEnabled: true,
             isDemo: false,
             isChildAccount: false,
+            isTosHidden: false,
             googleEulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
             crosEulaUrl: 'https://www.google.com/intl/en/chrome/terms/',
             countryCode: 'us',
+            showRecoveryOption: false,
+            recoveryOptionDefault: false,
           },
         },
         {
-          id: 'child',
+          id: 'regular',
+          trigger: (screen) => {
+            screen.setUsageOptinHidden(true);
+          },
+          data: {
+            isArcEnabled: true,
+            isDemo: false,
+            isChildAccount: false,
+            isTosHidden: false,
+            googleEulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
+            crosEulaUrl: 'https://www.google.com/intl/en/chrome/terms/',
+            countryCode: 'us',
+            showRecoveryOption: false,
+            recoveryOptionDefault: false,
+          },
+        },
+        {
+          id: 'regular-recovery',
+          trigger: (screen) => {
+            screen.setUsageOptinHidden(true);
+          },
+          data: {
+            isArcEnabled: true,
+            isDemo: false,
+            isChildAccount: false,
+            isTosHidden: false,
+            googleEulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
+            crosEulaUrl: 'https://www.google.com/intl/en/chrome/terms/',
+            countryCode: 'us',
+            showRecoveryOption: true,
+            recoveryOptionDefault: true,
+          },
+        },
+        {
+          id: 'child-owner',
+          trigger: (screen) => {
+            screen.setUsageOptinHidden(false);
+          },
           data: {
             isArcEnabled: true,
             isDemo: false,
             isChildAccount: true,
+            isTosHidden: false,
             googleEulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
             crosEulaUrl: 'https://www.google.com/intl/en/chrome/terms/',
             countryCode: 'us',
+            showRecoveryOption: false,
+            recoveryOptionDefault: false,
+          },
+        },
+        {
+          id: 'child',
+          trigger: (screen) => {
+            screen.setUsageOptinHidden(true);
+          },
+          data: {
+            isArcEnabled: true,
+            isDemo: false,
+            isChildAccount: true,
+            isTosHidden: false,
+            googleEulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
+            crosEulaUrl: 'https://www.google.com/intl/en/chrome/terms/',
+            countryCode: 'us',
+            showRecoveryOption: false,
+            recoveryOptionDefault: false,
           },
         },
         {
@@ -925,38 +1098,87 @@ cr.define('cr.ui.login.debug', function() {
             isArcEnabled: true,
             isDemo: true,
             isChildAccount: false,
+            isTosHidden: false,
             googleEulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
             crosEulaUrl: 'https://www.google.com/intl/en/chrome/terms/',
             countryCode: 'us',
+            showRecoveryOption: false,
+            recoveryOptionDefault: false,
           },
         },
         {
-          id: 'arc-disabled',
+          id: 'arc-disabled-owner',
+          trigger: (screen) => {
+            screen.setUsageOptinHidden(false);
+          },
           data: {
             isArcEnabled: false,
             isDemo: false,
             isChildAccount: false,
+            isTosHidden: false,
             googleEulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
             crosEulaUrl: 'https://www.google.com/intl/en/chrome/terms/',
             countryCode: 'us',
+            showRecoveryOption: false,
+            recoveryOptionDefault: false,
+          },
+        },
+        {
+          id: 'arc-disabled',
+          trigger: (screen) => {
+            screen.setUsageOptinHidden(true);
+          },
+          data: {
+            isArcEnabled: false,
+            isDemo: false,
+            isChildAccount: false,
+            isTosHidden: false,
+            googleEulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
+            crosEulaUrl: 'https://www.google.com/intl/en/chrome/terms/',
+            countryCode: 'us',
+            showRecoveryOption: false,
+            recoveryOptionDefault: false,
+          },
+        },
+        {
+          id: 'managed-account',
+          trigger: (screen) => {
+            screen.setBackupMode(true, true);
+            screen.setLocationMode(false, true);
+            screen.setUsageOptinHidden(true);
+          },
+          data: {
+            isArcEnabled: true,
+            isDemo: false,
+            isChildAccount: false,
+            isTosHidden: true,
+            googleEulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
+            crosEulaUrl: 'https://www.google.com/intl/en/chrome/terms/',
+            countryCode: 'us',
+            showRecoveryOption: false,
+            recoveryOptionDefault: false,
           },
         },
         {
           id: 'error',
           trigger: (screen) => {
             screen.setUIStep('error');
+            screen.setUsageOptinHidden(false);
           },
           data: {
             isArcEnabled: true,
             isDemo: false,
             isChildAccount: false,
+            isTosHidden: false,
             googleEulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
             crosEulaUrl: 'https://www.google.com/intl/en/chrome/terms/',
             countryCode: 'us',
+            showRecoveryOption: false,
+            recoveryOptionDefault: false,
           },
         },
 
-      ]
+      ],
     },
     {
       id: 'guest-tos',
@@ -1005,7 +1227,15 @@ cr.define('cr.ui.login.debug', function() {
             crosEulaUrl: 'https://www.google.com/intl/en/chrome/terms/',
           },
         },
-      ]
+      ],
+    },
+    {
+      id: 'hw-data-collection',
+      kind: ScreenKind.OTHER,
+    },
+    {
+      id: 'local-state-error',
+      kind: ScreenKind.ERROR,
     },
     {
       id: 'fingerprint-setup',
@@ -1050,23 +1280,23 @@ cr.define('cr.ui.login.debug', function() {
           id: 'clear-error',
           trigger: (screen) => {
             (screen.$).pinKeyboard.hideProblem_();
-          }
+          },
         },
         {
           id: 'error-warning',
           trigger: (screen) => {
             (screen.$).pinKeyboard.showProblem_(
                 MessageType.TOO_WEAK, ProblemType.WARNING);
-          }
+          },
         },
         {
           id: 'error-error',
           trigger: (screen) => {
             (screen.$).pinKeyboard.showProblem_(
                 MessageType.TOO_LONG, ProblemType.ERROR);
-          }
-        }
-      ]
+          },
+        },
+      ],
     },
     {
       id: 'arc-tos',
@@ -1089,6 +1319,7 @@ cr.define('cr.ui.login.debug', function() {
       ],
     },
     {
+      // TODO(https://crbug.com/1261902): update debug overlay
       id: 'recommend-apps',
       kind: ScreenKind.NORMAL,
       handledSteps: 'list',
@@ -1118,7 +1349,7 @@ cr.define('cr.ui.login.debug', function() {
             // There can be up to 21 apps: see recommend_apps_fetcher_impl
             screen.reset();
             screen.setWebview(RECOMMENDED_APPS_CONTENT);
-            let apps = [];
+            const apps = [];
             for (let i = 1; i <= 21; i++) {
               apps.push({
                 name: 'Test app ' + i,
@@ -1137,6 +1368,150 @@ cr.define('cr.ui.login.debug', function() {
     {
       id: 'assistant-optin-flow',
       kind: ScreenKind.NORMAL,
+      states: [
+        {
+          id: 'loading',
+          trigger: (screen) => {
+            (screen.$).card.showStep('loading');
+          },
+        },
+        {
+          id: 'value_prop',
+          trigger: (screen) => {
+            (screen.$).card.onReload();
+            (screen.$).card.showStep('value-prop');
+            (screen.$).card.reloadContent(
+                createAssistantData(/*isMinor=*/ false));
+
+            const zippies = [[]];
+            zippies[0].push(createAssistantZippy(
+                'WAA', /*isMinor=*/ false, /*isNativeIcons=*/ false));
+            zippies[0].push(createAssistantZippy(
+                'DA', /*isMinor=*/ false, /*isNativeIcons=*/ false));
+
+            (screen.$).card.addSettingZippy('settings', zippies);
+          },
+        },
+        {
+          id: 'value_prop_minor',
+          trigger: (screen) => {
+            (screen.$).card.onReload();
+            (screen.$).card.showStep('value-prop');
+            (screen.$).card.reloadContent(
+                createAssistantData(/*isMinor=*/ true));
+
+            const zippies = [[]];
+            zippies[0].push(createAssistantZippy('WAA', /*isMinor=*/ true));
+            zippies[0].push(createAssistantZippy('DA', /*isMinor=*/ true));
+
+            (screen.$).card.addSettingZippy('settings', zippies);
+          },
+        },
+        {
+          id: 'value_prop_native_icons',
+          trigger: (screen) => {
+            (screen.$).card.onReload();
+            (screen.$).card.showStep('value-prop');
+            (screen.$).card.reloadContent(
+                createAssistantData(/*isMinor=*/ false));
+
+            const zippies = [[]];
+            zippies[0].push(createAssistantZippy(
+                'WAA', /*isMinor=*/ false, /*isNativeIcons=*/ true));
+            zippies[0].push(createAssistantZippy(
+                'DA', /*isMinor=*/ false, /*isNativeIcons=*/ true));
+
+            (screen.$).card.addSettingZippy('settings', zippies);
+          },
+        },
+        {
+          id: 'value_prop_minor_native_icons',
+          trigger: (screen) => {
+            (screen.$).card.onReload();
+            (screen.$).card.showStep('value-prop');
+            (screen.$).card.reloadContent(
+                createAssistantData(/*isMinor=*/ false));
+
+            const zippies = [[]];
+            zippies[0].push(createAssistantZippy(
+                'WAA', /*isMinor=*/ true, /*isNativeIcons=*/ true));
+            zippies[0].push(createAssistantZippy(
+                'DA', /*isMinor=*/ true, /*isNativeIcons=*/ true));
+
+            (screen.$).card.addSettingZippy('settings', zippies);
+          },
+        },
+        {
+          id: 'related_info',
+          trigger: (screen) => {
+            const data = createAssistantData(/*isMinor=*/ false);
+            data['activityControlNeeded'] = false;
+            (screen.$).card.reloadContent(data);
+            (screen.$).card.showStep('related-info');
+          },
+        },
+        {
+          id: 'related_info activityControlNeeded',
+          trigger: (screen) => {
+            const data = createAssistantData(/*isMinor=*/ false);
+            data['activityControlNeeded'] = true;
+            (screen.$).card.reloadContent(data);
+            (screen.$).card.showStep('related-info');
+          },
+        },
+        {
+          id: 'related_info native icons',
+          trigger: (screen) => {
+            const data = createAssistantData(/*isMinor=*/ false);
+            data['activityControlNeeded'] = false;
+            data['useNativeIcons'] = true;
+            (screen.$).card.reloadContent(data);
+            (screen.$).card.showStep('related-info');
+          },
+        },
+        {
+          id: 'related_info isMinor nativeIcons',
+          trigger: (screen) => {
+            const data = createAssistantData(/*isMinor=*/ true);
+            data['activityControlNeeded'] = false;
+            data['useNativeIcons'] = true;
+            (screen.$).card.reloadContent(data);
+            (screen.$).card.showStep('related-info');
+          },
+        },
+        {
+          id: 'voice_match_begin laptop',
+          trigger: (screen) => {
+            (screen.$).card.showStep('voice-match');
+            ((screen.$).card.$).voiceMatch.setUIStep('intro');
+            ((screen.$).card.$).voiceMatch.isTabletMode_ = false;
+          },
+        },
+        {
+          id: 'voice_match_begin tablet',
+          trigger: (screen) => {
+            (screen.$).card.showStep('voice-match');
+            ((screen.$).card.$).voiceMatch.setUIStep('intro');
+            ((screen.$).card.$).voiceMatch.isTabletMode_ = true;
+          },
+        },
+        {
+          id: 'voice_match_listen',
+          trigger: (screen) => {
+            (screen.$).card.showStep('voice-match');
+            ((screen.$).card.$).voiceMatch.setUIStep('recording');
+            ((screen.$).card.$).voiceMatch.listenForHotword();
+          },
+        },
+        {
+          id: 'voice_match_done',
+          trigger: (screen) => {
+            (screen.$).card.showStep('voice-match');
+            ((screen.$).card.$).voiceMatch.setUIStep('recording');
+            ((screen.$).card.$).voiceMatch.voiceMatchDone();
+          },
+        },
+      ],
     },
     {
       id: 'parental-handoff',
@@ -1157,8 +1532,13 @@ cr.define('cr.ui.login.debug', function() {
       kind: ScreenKind.NORMAL,
     },
     {
+      id: 'kiosk-enable',
+      kind: ScreenKind.NORMAL,
+    },
+    {
       id: 'marketing-opt-in',
       kind: ScreenKind.NORMAL,
+      handledSteps: 'overview',
       states: [
         {
           id: 'WithOptionToSubscribe',
@@ -1166,8 +1546,10 @@ cr.define('cr.ui.login.debug', function() {
             optInVisibility: true,
             optInDefaultState: true,
             legalFooterVisibility: false,
+            cloudGamingDevice: false,
           },
           trigger: (screen) => {
+            screen.setUIStep('overview');
             screen.updateA11ySettingsButtonVisibility(false);
           },
         },
@@ -1177,8 +1559,10 @@ cr.define('cr.ui.login.debug', function() {
             optInVisibility: false,
             optInDefaultState: false,
             legalFooterVisibility: false,
+            cloudGamingDevice: false,
           },
           trigger: (screen) => {
+            screen.setUIStep('overview');
             screen.updateA11ySettingsButtonVisibility(false);
           },
         },
@@ -1188,23 +1572,31 @@ cr.define('cr.ui.login.debug', function() {
             optInVisibility: true,
             optInDefaultState: true,
             legalFooterVisibility: true,
+            cloudGamingDevice: false,
           },
           trigger: (screen) => {
+            screen.setUIStep('overview');
             screen.updateA11ySettingsButtonVisibility(false);
           },
         },
         {
-          id: 'WithAceessibilityButton',
+          id: 'WithAccessibilityButton',
           data: {
             optInVisibility: true,
             optInDefaultState: true,
             legalFooterVisibility: true,
+            cloudGamingDevice: false,
           },
           trigger: (screen) => {
+            screen.setUIStep('overview');
             screen.updateA11ySettingsButtonVisibility(true);
           },
         },
       ],
+    },
+    {
+      id: 'cryptohome-recovery',
+      kind: ScreenKind.NORMAL,
     },
   ];
 
@@ -1244,7 +1636,7 @@ cr.define('cr.ui.login.debug', function() {
           /** @type {!HTMLElement} */ (document.createElement('h2'));
       this.titleDiv.textContent = title;
 
-      let panel = /** @type {!HTMLElement} */ (document.createElement('div'));
+      const panel = /** @type {!HTMLElement} */ (document.createElement('div'));
       panel.className = 'debug-tool-panel';
       panel.id = id;
 
@@ -1259,7 +1651,7 @@ cr.define('cr.ui.login.debug', function() {
     }
 
     clearContent() {
-      let range = document.createRange();
+      const range = document.createRange();
       range.selectNodeContents(this.content);
       range.deleteContents();
     }
@@ -1293,8 +1685,9 @@ cr.define('cr.ui.login.debug', function() {
     }
 
     showDebugUI() {
-      if (this.debuggerVisible_)
+      if (this.debuggerVisible_) {
         return;
+      }
       this.refreshScreensPanel();
       this.debuggerVisible_ = true;
       this.debuggerOverlay_.removeAttribute('hidden');
@@ -1315,10 +1708,12 @@ cr.define('cr.ui.login.debug', function() {
 
     getScreenshotId() {
       var result = 'unknown';
-      if (this.currentScreenId_)
+      if (this.currentScreenId_) {
         result = this.currentScreenId_;
-      if (this.lastScreenState_ && this.lastScreenState_ !== 'default')
+      }
+      if (this.lastScreenState_ && this.lastScreenState_ !== 'default') {
         result = result + '_' + this.lastScreenState_;
+      }
       return result;
     }
 
@@ -1327,14 +1722,15 @@ cr.define('cr.ui.login.debug', function() {
      * function with a delay before executing next one.
      */
     runIterator_() {
-      if (!this.commandIterator_)
+      if (!this.commandIterator_) {
         return;
-      let command = this.commandIterator_.next();
+      }
+      const command = this.commandIterator_.next();
       if (command.done) {
         this.commandIterator_ = undefined;
         return;
       }
-      let [func, timeout] = command.value;
+      const [func, timeout] = command.value;
       try {
         func();
       } finally {
@@ -1349,7 +1745,7 @@ cr.define('cr.ui.login.debug', function() {
         () => {
           this.debuggerButton_.setAttribute('hidden', true);
         },
-        BUTTON_COMMAND_DELAY
+        BUTTON_COMMAND_DELAY,
       ];
     }
 
@@ -1358,30 +1754,30 @@ cr.define('cr.ui.login.debug', function() {
         () => {
           this.debuggerButton_.removeAttribute('hidden');
         },
-        BUTTON_COMMAND_DELAY
+        BUTTON_COMMAND_DELAY,
       ];
     }
 
     showStateCommand(screenAndState) {
-      let [screenId, stateId] = screenAndState;
+      const [screenId, stateId] = screenAndState;
       // Switch to screen.
       return [
         () => {
           this.triggerScreenState(screenId, stateId);
         },
-        SCREEN_LOADING_DELAY
+        SCREEN_LOADING_DELAY,
       ];
     }
 
     makeScreenshotCommand() {
       // Make a screenshot.
-      let id = this.getScreenshotId();
+      const id = this.getScreenshotId();
       return [
         () => {
           console.info('Making screenshot for ' + id);
           chrome.send('debug.captureScreenshot', [id]);
         },
-        SCREENSHOT_CAPTURE_DELAY
+        SCREENSHOT_CAPTURE_DELAY,
       ];
     }
 
@@ -1392,7 +1788,7 @@ cr.define('cr.ui.login.debug', function() {
     * screenshotSeries_(statesList) {
       yield this.hideButtonCommand();
       // Make all screenshots
-      for (let screenAndState of statesList) {
+      for (const screenAndState of statesList) {
         yield this.showStateCommand(screenAndState);
         yield this.makeScreenshotCommand();
       }
@@ -1412,7 +1808,7 @@ cr.define('cr.ui.login.debug', function() {
      * Generator that returns all (screen, state) pairs for current screen.
      */
     * iterateStates(screenId) {
-      for (let state of this.screenMap[screenId].states) {
+      for (const state of this.screenMap[screenId].states) {
         yield [screenId, state.id];
       }
     }
@@ -1421,9 +1817,10 @@ cr.define('cr.ui.login.debug', function() {
      * Generator that returns (screen, state) pairs for all known screens.
      */
     * iterateScreens() {
-      for (let screen of this.knownScreens) {
-        if (screen.skipScreenshots)
+      for (const screen of this.knownScreens) {
+        if (screen.skipScreenshots) {
           continue;
+        }
         yield* this.iterateStates(screen.id);
       }
     }
@@ -1453,7 +1850,7 @@ cr.define('cr.ui.login.debug', function() {
         screen.index = index;
         // Create a default state
         if (!screen.states) {
-          let state = {
+          const state = {
             id: 'default',
           };
           screen.states = [state];
@@ -1464,7 +1861,7 @@ cr.define('cr.ui.login.debug', function() {
         }
         screen.stateMap_ = {};
         // For each state fall back to screen data if state data is not defined.
-        for (let state of screen.states) {
+        for (const state of screen.states) {
           if (!state.data) {
             state.data = screen.data;
           }
@@ -1473,8 +1870,22 @@ cr.define('cr.ui.login.debug', function() {
       });
     }
 
+    toggleGameMode() {
+      KNOWN_SCREENS.forEach((screen, index) => {
+        if (screen.id == 'marketing-opt-in') {
+          for (const state of screen.states) {
+            if (state.data) {
+              state.data.cloudGamingDevice = !state.data.cloudGamingDevice;
+            }
+          }
+        }
+      });
+
+      this.triggerScreenState(this.currentScreenId_, this.lastScreenState_);
+    }
+
     createLanguagePanel(parent) {
-      let langPanel = new ToolPanel(
+      const langPanel = new ToolPanel(
           this.debuggerOverlay_, 'Language', 'DebuggerPanelLanguage');
       const LANGUAGES = [
         ['English', 'en-US'],
@@ -1493,7 +1904,7 @@ cr.define('cr.ui.login.debug', function() {
     }
 
     createToolsPanel(parent) {
-      let panel =
+      const panel =
           new ToolPanel(this.debuggerOverlay_, 'Tools', 'DebuggerPanelTools');
       new DebugButton(
           panel.content, 'Capture screenshot', this.makeScreenshot.bind(this));
@@ -1503,10 +1914,17 @@ cr.define('cr.ui.login.debug', function() {
       new DebugButton(
           panel.content, 'Capture deck of all screens',
           this.makeScreenshotDeck.bind(this));
+      new DebugButton(panel.content, 'Toggle color mode', function() {
+        chrome.send('debug.toggleColorMode');
+      });
+      var button = new DebugButton(
+          panel.content, 'Toggle gaming mode', this.toggleGameMode.bind(this));
+
+      button.element.classList.add('gametoggle-button');
     }
 
     createScreensPanel(parent) {
-      let panel = new ToolPanel(
+      const panel = new ToolPanel(
           this.debuggerOverlay_, 'Screens', 'DebuggerPanelScreens');
       // List of screens will be created later, as not all screens
       // might be registered at this point.
@@ -1514,7 +1932,7 @@ cr.define('cr.ui.login.debug', function() {
     }
 
     createStatesPanel(parent) {
-      let panel = new ToolPanel(
+      const panel = new ToolPanel(
           this.debuggerOverlay_, 'Screen States', 'DebuggerPanelStates');
       // List of states is rebuilt every time to reflect current screen.
       this.statesPanel = panel;
@@ -1525,8 +1943,8 @@ cr.define('cr.ui.login.debug', function() {
     }
 
     triggerScreenState(screenId, stateId) {
-      let screen = this.screenMap[screenId];
-      let state = screen.stateMap_[stateId];
+      const screen = this.screenMap[screenId];
+      const state = screen.stateMap_[stateId];
       var data = {};
       if (state.data) {
         data = state.data;
@@ -1534,7 +1952,7 @@ cr.define('cr.ui.login.debug', function() {
       this.currentScreenId_ = screenId;
       this.lastScreenState_ = stateId;
       /** @suppress {visibility} */
-      let displayManager = cr.ui.Oobe.instance_;
+      const displayManager = cr.ui.Oobe.instance_;
       cr.ui.Oobe.instance_.showScreen({id: screen.id, data: data});
       if (state.trigger) {
         state.trigger(displayManager.currentScreen);
@@ -1543,7 +1961,7 @@ cr.define('cr.ui.login.debug', function() {
     }
 
     createScreensList() {
-      for (let screen of KNOWN_SCREENS) {
+      for (const screen of KNOWN_SCREENS) {
         this.screenMap[screen.id] = screen;
       }
       this.knownScreens = [];
@@ -1551,23 +1969,25 @@ cr.define('cr.ui.login.debug', function() {
       /** @suppress {visibility} */
       for (var id of cr.ui.Oobe.instance_.screens_) {
         if (id in this.screenMap) {
-          let screenDef = this.screenMap[id];
-          let screenElement = $(id);
+          const screenDef = this.screenMap[id];
+          const screenElement = $(id);
           if (screenElement.listSteps &&
               typeof screenElement.listSteps === 'function') {
             if (screenDef.stateMap_['default']) {
               screenDef.states = [];
               screenDef.stateMap_ = {};
             }
-            let handledSteps = new Set();
+            const handledSteps = new Set();
             if (screenDef.handledSteps) {
-              for (let step of screenDef.handledSteps.split(','))
+              for (const step of screenDef.handledSteps.split(',')) {
                 handledSteps.add(step);
+              }
             }
-            for (let step of screenElement.listSteps()) {
-              if (handledSteps.has(step))
+            for (const step of screenElement.listSteps()) {
+              if (handledSteps.has(step)) {
                 continue;
-              let state = {
+              }
+              const state = {
                 id: 'step-' + step,
                 data: screenDef.data,
                 trigger: (screen) => {
@@ -1577,14 +1997,15 @@ cr.define('cr.ui.login.debug', function() {
               screenDef.states.push(state);
               screenDef.stateMap_[state.id] = state;
             }
-            if (screenDef.defaultState === 'default')
+            if (screenDef.defaultState === 'default') {
               screenDef.defaultState = 'step-' + screenElement.defaultUIStep();
+            }
           }
           this.knownScreens.push(screenDef);
           this.screenMap[id] = screenDef;
         } else {
           console.error('### Screen not registered in debug overlay ' + id);
-          let unknownScreen = {
+          const unknownScreen = {
             id: id,
             kind: ScreenKind.UNKNOWN,
             suffix: '???',
@@ -1599,7 +2020,7 @@ cr.define('cr.ui.login.debug', function() {
         }
       }
       this.knownScreens = this.knownScreens.sort((a, b) => a.index - b.index);
-      let content = this.screensPanel.content;
+      const content = this.screensPanel.content;
       this.knownScreens.forEach((screen) => {
         var name = screen.id;
         if (screen.suffix) {
@@ -1617,7 +2038,7 @@ cr.define('cr.ui.login.debug', function() {
         this.createScreensList();
       }
       /** @suppress {visibility} */
-      let displayManager = cr.ui.Oobe.instance_;
+      const displayManager = cr.ui.Oobe.instance_;
       if (this.stateCachedFor_) {
         this.screenButtons[this.stateCachedFor_].element.classList.remove(
             'debug-button-selected');
@@ -1633,17 +2054,25 @@ cr.define('cr.ui.login.debug', function() {
             'debug-button-selected');
       }
 
-      let screen = this.screenMap[this.currentScreenId_];
+      const screen = this.screenMap[this.currentScreenId_];
 
       this.statesPanel.clearContent();
-      for (let state of screen.states) {
-        let button = new DebugButton(
+      for (const state of screen.states) {
+        const button = new DebugButton(
             this.statesPanel.content, state.id,
             this.triggerScreenState.bind(
                 this, this.currentScreenId_, state.id));
         if (state.id == this.lastScreenState_) {
           button.element.classList.add('debug-button-selected');
         }
+      }
+
+      if (this.currentScreenId_ == 'marketing-opt-in') {
+        document.getElementsByClassName('gametoggle-button')[0].removeAttribute(
+            'hidden');
+      } else {
+        document.getElementsByClassName('gametoggle-button')[0].setAttribute(
+            'hidden', true);
       }
 
       this.statesPanel.show();
@@ -1675,7 +2104,7 @@ cr.define('cr.ui.login.debug', function() {
       }
       {
         // Create UI Debugger button
-        let button =
+        const button =
             /** @type {!HTMLElement} */ (document.createElement('div'));
         button.id = 'invokeDebuggerButton';
         button.className = 'debugger-button';
@@ -1686,7 +2115,7 @@ cr.define('cr.ui.login.debug', function() {
       }
       {
         // Create base debugger panel.
-        let overlay =
+        const overlay =
             /** @type {!HTMLElement} */ (document.createElement('div'));
         overlay.id = 'debuggerOverlay';
         overlay.className = 'debugger-overlay';

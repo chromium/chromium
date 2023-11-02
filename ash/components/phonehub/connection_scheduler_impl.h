@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,16 +8,13 @@
 #include "ash/components/phonehub/connection_scheduler.h"
 #include "ash/components/phonehub/feature_status.h"
 #include "ash/components/phonehub/feature_status_provider.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "net/base/backoff_entry.h"
 
-namespace chromeos {
-
-namespace secure_channel {
-class ConnectionManager;
-}  // namespace secure_channel
-
+namespace ash {
 namespace phonehub {
 
 // ConnectionScheduler implementation that schedules calls to ConnectionManager
@@ -56,6 +53,6 @@ class ConnectionSchedulerImpl : public ConnectionScheduler,
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_CONNECTION_SCHEDULER_IMPL_H_

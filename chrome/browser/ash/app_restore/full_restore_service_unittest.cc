@@ -1,11 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -21,15 +23,17 @@
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
+#include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
-#include "components/app_restore/features.h"
-#include "components/app_restore/full_restore_info.h"
+#include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/full_restore_read_handler.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/restore_data.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/sync_change.h"
@@ -38,45 +42,49 @@
 #include "components/sync/model/syncable_service.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/preference_specifics.pb.h"
-#include "components/sync/test/model/fake_sync_change_processor.h"
-#include "components/sync/test/model/sync_error_factory_mock.h"
+#include "components/sync/test/fake_sync_change_processor.h"
+#include "components/sync/test/sync_error_factory_mock.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
-#include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 
-namespace ash {
-namespace full_restore {
+namespace ash::full_restore {
 
 namespace {
 
 constexpr int32_t kWindowId = 100;
 
-syncer::SyncData CreatePrefSyncData(const std::string& name,
-                                    const base::Value& value) {
+void SetPrefValue(const std::string& name,
+                  const base::Value& value,
+                  sync_pb::PreferenceSpecifics* destination) {
   std::string serialized;
   JSONStringValueSerializer json(&serialized);
   json.Serialize(value);
+  destination->set_name(name);
+  destination->set_value(serialized);
+}
+
+syncer::SyncData CreateRestoreOnStartupPrefSyncData(
+    SessionStartupPref::PrefValue value) {
   sync_pb::EntitySpecifics specifics;
-  sync_pb::PreferenceSpecifics* pref =
-      features::IsSyncSettingsCategorizationEnabled()
-          ? specifics.mutable_os_preference()->mutable_preference()
-          : specifics.mutable_preference();
-  pref->set_name(name);
-  pref->set_value(serialized);
+  SetPrefValue(::prefs::kRestoreOnStartup, base::Value(static_cast<int>(value)),
+               specifics.mutable_preference());
   return syncer::SyncData::CreateRemoteData(
       specifics, syncer::ClientTagHash::FromHashed("unused"));
 }
 
-// Returns true if we should restore apps and pages based on the restore setting
-// and the user's choice from the notification. Otherwise, returns false.
-bool ShouldRestore(const AccountId& account_id) {
-  return ::full_restore::FullRestoreInfo::GetInstance()->ShouldRestore(
-      account_id);
+syncer::SyncData CreateRestoreAppsAndPagesPrefSyncData(RestoreOption value) {
+  sync_pb::EntitySpecifics specifics;
+  SetPrefValue(kRestoreAppsAndPagesPrefName,
+               base::Value(static_cast<int>(value)),
+               specifics.mutable_os_preference()->mutable_preference());
+  return syncer::SyncData::CreateRemoteData(
+      specifics, syncer::ClientTagHash::FromHashed("unused"));
 }
 
 // Returns true if the restore pref is 'Always' or 'Ask every time', as we
@@ -84,7 +92,7 @@ bool ShouldRestore(const AccountId& account_id) {
 // notification for `account_id`. Otherwise, returns false, when the restore
 // pref is 'Do not restore'.
 bool CanPerformRestore(const AccountId& account_id) {
-  return ::full_restore::FullRestoreInfo::GetInstance()->CanPerformRestore(
+  return ::app_restore::AppRestoreInfo::GetInstance()->CanPerformRestore(
       account_id);
 }
 
@@ -101,9 +109,6 @@ class FullRestoreServiceTest : public testing::Test {
   FullRestoreServiceTest& operator=(const FullRestoreServiceTest&) = delete;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::full_restore::features::kFullRestore);
-
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     TestingProfile::Builder profile_builder;
     profile_builder.SetProfileName("user.test@gmail.com");
@@ -115,14 +120,11 @@ class FullRestoreServiceTest : public testing::Test {
         AccountId::FromUserEmailGaiaId("usertest@gmail.com", "1234567890");
     const auto* user = GetFakeUserManager()->AddUser(account_id_);
     GetFakeUserManager()->LoginUser(account_id_);
-    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
-        user, profile_.get());
+    ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
+                                                            profile_.get());
 
-    // Reset the restore flag and pref as the default value.
-    ::full_restore::FullRestoreInfo::GetInstance()->SetRestoreFlag(account_id_,
-                                                                   false);
-    ::full_restore::FullRestoreInfo::GetInstance()->SetRestorePref(account_id_,
-                                                                   false);
+    ::app_restore::AppRestoreInfo::GetInstance()->SetRestorePref(account_id_,
+                                                                 false);
 
     display_service_ =
         std::make_unique<NotificationDisplayServiceTester>(profile_.get());
@@ -157,17 +159,36 @@ class FullRestoreServiceTest : public testing::Test {
     return message_center_notification.has_value();
   }
 
+  void VerifyRestoreNotificationTitle(const std::string& notification_id,
+                                      bool is_reboot_notification) {
+    absl::optional<message_center::Notification> message_center_notification =
+        display_service()->GetNotification(notification_id);
+    ASSERT_TRUE(message_center_notification.has_value());
+    const std::u16string& title = message_center_notification.value().title();
+    if (is_reboot_notification) {
+      EXPECT_EQ(title,
+                l10n_util::GetStringUTF16(IDS_POLICY_DEVICE_POST_REBOOT_TITLE));
+    } else {
+      EXPECT_EQ(title,
+                l10n_util::GetStringUTF16(IDS_RESTORE_NOTIFICATION_TITLE));
+    }
+  }
+
   void VerifyNotification(bool has_crash_notification,
-                          bool has_restore_notification) {
+                          bool has_restore_notification,
+                          bool is_reboot_notification = false) {
     if (has_crash_notification)
       EXPECT_TRUE(HasNotificationFor(kRestoreForCrashNotificationId));
     else
       EXPECT_FALSE(HasNotificationFor(kRestoreForCrashNotificationId));
 
-    if (has_restore_notification)
+    if (has_restore_notification) {
       EXPECT_TRUE(HasNotificationFor(kRestoreNotificationId));
-    else
+      VerifyRestoreNotificationTitle(kRestoreNotificationId,
+                                     is_reboot_notification);
+    } else {
       EXPECT_FALSE(HasNotificationFor(kRestoreNotificationId));
+    }
   }
 
   void SimulateClick(const std::string& notification_id,
@@ -178,18 +199,70 @@ class FullRestoreServiceTest : public testing::Test {
   }
 
   // Simulates the initial sync of preferences.
-  syncer::SyncableService* SyncPreferences(
-      const syncer::SyncDataList& sync_data_list) {
-    syncer::ModelType model_type =
-        features::IsSyncSettingsCategorizationEnabled() ? syncer::OS_PREFERENCES
-                                                        : syncer::PREFERENCES;
-    syncer::SyncableService* sync =
-        profile()->GetTestingPrefService()->GetSyncableService(model_type);
-    sync->MergeDataAndStartSyncing(
-        model_type, sync_data_list,
+  void SyncPreferences(
+      SessionStartupPref::PrefValue restore_on_startup_value,
+      absl::optional<RestoreOption> maybe_restore_apps_and_pages_value) {
+    syncer::SyncDataList sync_data_list;
+    sync_data_list.push_back(
+        CreateRestoreOnStartupPrefSyncData(restore_on_startup_value));
+    syncer::SyncableService* sync_service =
+        profile()->GetTestingPrefService()->GetSyncableService(
+            syncer::PREFERENCES);
+
+    if (!maybe_restore_apps_and_pages_value.has_value()) {
+      sync_service->MergeDataAndStartSyncing(
+          syncer::PREFERENCES, sync_data_list,
+          std::make_unique<syncer::FakeSyncChangeProcessor>(),
+          std::make_unique<syncer::SyncErrorFactoryMock>());
+
+      // OS_PREFERENCES sync should be started separately.
+      syncer::SyncableService* os_sync_service =
+          profile()->GetTestingPrefService()->GetSyncableService(
+              syncer::OS_PREFERENCES);
+      os_sync_service->MergeDataAndStartSyncing(
+          syncer::OS_PREFERENCES, syncer::SyncDataList(),
+          std::make_unique<syncer::FakeSyncChangeProcessor>(),
+          std::make_unique<syncer::SyncErrorFactoryMock>());
+      return;
+    }
+
+    syncer::SyncDataList os_sync_data_list;
+    os_sync_data_list.push_back(CreateRestoreAppsAndPagesPrefSyncData(
+        maybe_restore_apps_and_pages_value.value()));
+    syncer::SyncableService* os_sync_service =
+        profile()->GetTestingPrefService()->GetSyncableService(
+            syncer::OS_PREFERENCES);
+    os_sync_service->MergeDataAndStartSyncing(
+        syncer::OS_PREFERENCES, os_sync_data_list,
         std::make_unique<syncer::FakeSyncChangeProcessor>(),
         std::make_unique<syncer::SyncErrorFactoryMock>());
-    return sync;
+
+    sync_service->MergeDataAndStartSyncing(
+        syncer::PREFERENCES, sync_data_list,
+        std::make_unique<syncer::FakeSyncChangeProcessor>(),
+        std::make_unique<syncer::SyncErrorFactoryMock>());
+  }
+
+  void ProcessSyncChanges(
+      SessionStartupPref::PrefValue restore_on_startup_value,
+      RestoreOption restore_apps_and_pages_value) {
+    syncer::SyncChangeList change_list;
+    change_list.push_back(syncer::SyncChange(
+        FROM_HERE, syncer::SyncChange::ACTION_UPDATE,
+        CreateRestoreOnStartupPrefSyncData(restore_on_startup_value)));
+    syncer::SyncableService* sync_service =
+        profile()->GetTestingPrefService()->GetSyncableService(
+            syncer::PREFERENCES);
+    sync_service->ProcessSyncChanges(FROM_HERE, change_list);
+
+    syncer::SyncChangeList os_change_list;
+    os_change_list.push_back(syncer::SyncChange(
+        FROM_HERE, syncer::SyncChange::ACTION_UPDATE,
+        CreateRestoreAppsAndPagesPrefSyncData(restore_apps_and_pages_value)));
+    syncer::SyncableService* os_sync_service =
+        profile()->GetTestingPrefService()->GetSyncableService(
+            syncer::OS_PREFERENCES);
+    os_sync_service->ProcessSyncChanges(FROM_HERE, os_change_list);
   }
 
   RestoreOption GetRestoreOption() const {
@@ -206,8 +279,6 @@ class FullRestoreServiceTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<TestingProfile> profile_;
@@ -230,7 +301,6 @@ TEST_F(FullRestoreServiceTest, Crash) {
   VerifyNotification(false /* has_crash_notification */,
                      false /* has_restore_notification */);
 
-  EXPECT_FALSE(ShouldRestore(account_id()));
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
 }
 
@@ -249,7 +319,6 @@ TEST_F(FullRestoreServiceTest, AskEveryTime) {
                      false /* has_restore_notification */);
 
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
-  EXPECT_FALSE(ShouldRestore(account_id()));
 }
 
 class FullRestoreServiceTestHavingFullRestoreFile
@@ -272,8 +341,8 @@ class FullRestoreServiceTestHavingFullRestoreFile
   void CreateRestoreData(Profile* profile) {
     // Add app launch infos.
     ::full_restore::SaveAppLaunchInfo(
-        profile->GetPath(), std::make_unique<app_restore::AppLaunchInfo>(
-                                extension_misc::kChromeAppId, kWindowId));
+        profile->GetPath(), std::make_unique<::app_restore::AppLaunchInfo>(
+                                app_constants::kChromeAppId, kWindowId));
 
     ::full_restore::FullRestoreSaveHandler* save_handler =
         ::full_restore::FullRestoreSaveHandler::GetInstance();
@@ -307,7 +376,6 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, CrashAndRestore) {
   SimulateClick(kRestoreForCrashNotificationId,
                 RestoreNotificationButtonIndex::kRestore);
 
-  EXPECT_TRUE(ShouldRestore(account_id()));
   EXPECT_TRUE(CanPerformRestore(account_id()));
   EXPECT_TRUE(allow_save());
 
@@ -329,7 +397,6 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, CrashAndCancel) {
   SimulateClick(kRestoreForCrashNotificationId,
                 RestoreNotificationButtonIndex::kCancel);
 
-  EXPECT_FALSE(ShouldRestore(account_id()));
   EXPECT_TRUE(CanPerformRestore(account_id()));
   EXPECT_TRUE(allow_save());
 }
@@ -348,7 +415,6 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, CrashAndCloseNotification) {
   VerifyNotification(false /* has_crash_notification */,
                      false /* has_restore_notification */);
 
-  EXPECT_FALSE(ShouldRestore(account_id()));
   EXPECT_TRUE(CanPerformRestore(account_id()));
   EXPECT_TRUE(allow_save());
 }
@@ -389,7 +455,6 @@ TEST_F(FullRestoreServiceTest, NewUserSyncOff) {
 
   VerifyNotification(false, false);
 
-  EXPECT_FALSE(ShouldRestore(account_id()));
   EXPECT_TRUE(CanPerformRestore(account_id()));
 }
 
@@ -404,41 +469,24 @@ TEST_F(FullRestoreServiceTest, NewUserSyncChromeRestoreSetting) {
 
   VerifyNotification(false, false);
 
-  EXPECT_FALSE(ShouldRestore(account_id()));
   EXPECT_TRUE(CanPerformRestore(account_id()));
 
   // Set the Chrome restore setting to simulate sync for the first time.
-  syncer::SyncDataList sync_data_list;
-  sync_data_list.push_back(CreatePrefSyncData(
-      prefs::kRestoreOnStartup,
-      base::Value(static_cast<int>(SessionStartupPref::kPrefValueLast))));
-  syncer::SyncableService* sync = SyncPreferences(sync_data_list);
+  SyncPreferences(SessionStartupPref::kPrefValueLast, absl::nullopt);
   content::RunAllTasksUntilIdle();
 
   EXPECT_EQ(RestoreOption::kAlways, GetRestoreOption());
 
   VerifyNotification(false, false);
 
-  EXPECT_FALSE(ShouldRestore(account_id()));
   EXPECT_TRUE(CanPerformRestore(account_id()));
 
   // Update the global values to simulate sync from other device.
-  syncer::SyncChangeList change_list;
-  change_list.push_back(syncer::SyncChange(
-      FROM_HERE, syncer::SyncChange::ACTION_UPDATE,
-      CreatePrefSyncData(prefs::kRestoreOnStartup,
-                         base::Value(static_cast<int>(
-                             SessionStartupPref::kPrefValueNewTab)))));
-  change_list.push_back(syncer::SyncChange(
-      FROM_HERE, syncer::SyncChange::ACTION_UPDATE,
-      CreatePrefSyncData(
-          kRestoreAppsAndPagesPrefName,
-          base::Value(static_cast<int>(RestoreOption::kDoNotRestore)))));
-  sync->ProcessSyncChanges(FROM_HERE, change_list);
+  ProcessSyncChanges(SessionStartupPref::kPrefValueNewTab,
+                     RestoreOption::kDoNotRestore);
   content::RunAllTasksUntilIdle();
 
   EXPECT_EQ(RestoreOption::kDoNotRestore, GetRestoreOption());
-  EXPECT_FALSE(ShouldRestore(account_id()));
   EXPECT_FALSE(CanPerformRestore(account_id()));
 }
 
@@ -453,41 +501,24 @@ TEST_F(FullRestoreServiceTest, NewUserSyncChromeNotRestoreSetting) {
 
   VerifyNotification(false, false);
 
-  EXPECT_FALSE(ShouldRestore(account_id()));
   EXPECT_TRUE(CanPerformRestore(account_id()));
 
   // Set the Chrome restore setting to simulate sync for the first time.
-  syncer::SyncDataList sync_data_list;
-  sync_data_list.push_back(CreatePrefSyncData(
-      prefs::kRestoreOnStartup,
-      base::Value(static_cast<int>(SessionStartupPref::kPrefValueNewTab))));
-  syncer::SyncableService* sync = SyncPreferences(sync_data_list);
+  SyncPreferences(SessionStartupPref::kPrefValueNewTab, absl::nullopt);
   content::RunAllTasksUntilIdle();
 
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
 
   VerifyNotification(false, false);
 
-  EXPECT_FALSE(ShouldRestore(account_id()));
   EXPECT_TRUE(CanPerformRestore(account_id()));
 
   // Update the global values to simulate sync from other device.
-  syncer::SyncChangeList change_list;
-  change_list.push_back(syncer::SyncChange(
-      FROM_HERE, syncer::SyncChange::ACTION_UPDATE,
-      CreatePrefSyncData(
-          prefs::kRestoreOnStartup,
-          base::Value(static_cast<int>(SessionStartupPref::kPrefValueLast)))));
-  change_list.push_back(syncer::SyncChange(
-      FROM_HERE, syncer::SyncChange::ACTION_UPDATE,
-      CreatePrefSyncData(
-          kRestoreAppsAndPagesPrefName,
-          base::Value(static_cast<int>(RestoreOption::kDoNotRestore)))));
-  sync->ProcessSyncChanges(FROM_HERE, change_list);
+  ProcessSyncChanges(SessionStartupPref::kPrefValueLast,
+                     RestoreOption::kDoNotRestore);
   content::RunAllTasksUntilIdle();
 
   EXPECT_EQ(RestoreOption::kDoNotRestore, GetRestoreOption());
-  EXPECT_FALSE(ShouldRestore(account_id()));
   EXPECT_FALSE(CanPerformRestore(account_id()));
 }
 
@@ -501,44 +532,25 @@ TEST_F(FullRestoreServiceTest, ReImage) {
 
   VerifyNotification(false, false);
 
-  EXPECT_FALSE(ShouldRestore(account_id()));
   EXPECT_TRUE(CanPerformRestore(account_id()));
 
   // Set the restore pref setting to simulate sync for the first time.
-  syncer::SyncDataList sync_data_list;
-  sync_data_list.push_back(CreatePrefSyncData(
-      prefs::kRestoreOnStartup,
-      base::Value(static_cast<int>(SessionStartupPref::kPrefValueLast))));
-  sync_data_list.push_back(CreatePrefSyncData(
-      kRestoreAppsAndPagesPrefName,
-      base::Value(static_cast<int>(RestoreOption::kAskEveryTime))));
-  syncer::SyncableService* sync = SyncPreferences(sync_data_list);
+  SyncPreferences(SessionStartupPref::kPrefValueLast,
+                  RestoreOption::kAskEveryTime);
   content::RunAllTasksUntilIdle();
 
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
 
   VerifyNotification(false, false);
 
-  EXPECT_FALSE(ShouldRestore(account_id()));
   EXPECT_TRUE(CanPerformRestore(account_id()));
 
   // Update the global values to simulate sync from other device.
-  syncer::SyncChangeList change_list;
-  change_list.push_back(syncer::SyncChange(
-      FROM_HERE, syncer::SyncChange::ACTION_UPDATE,
-      CreatePrefSyncData(prefs::kRestoreOnStartup,
-                         base::Value(static_cast<int>(
-                             SessionStartupPref::kPrefValueNewTab)))));
-  change_list.push_back(syncer::SyncChange(
-      FROM_HERE, syncer::SyncChange::ACTION_UPDATE,
-      CreatePrefSyncData(
-          kRestoreAppsAndPagesPrefName,
-          base::Value(static_cast<int>(RestoreOption::kAlways)))));
-  sync->ProcessSyncChanges(FROM_HERE, change_list);
+  ProcessSyncChanges(SessionStartupPref::kPrefValueNewTab,
+                     RestoreOption::kAlways);
   content::RunAllTasksUntilIdle();
 
   EXPECT_EQ(RestoreOption::kAlways, GetRestoreOption());
-  EXPECT_FALSE(ShouldRestore(account_id()));
   EXPECT_TRUE(CanPerformRestore(account_id()));
 }
 
@@ -547,7 +559,7 @@ TEST_F(FullRestoreServiceTest, ReImage) {
 // and don't show notifications, don't restore
 TEST_F(FullRestoreServiceTest, Upgrading) {
   profile()->GetPrefs()->SetInteger(
-      prefs::kRestoreOnStartup,
+      ::prefs::kRestoreOnStartup,
       static_cast<int>(SessionStartupPref::kPrefValueNewTab));
   CreateFullRestoreServiceForTesting();
 
@@ -556,17 +568,15 @@ TEST_F(FullRestoreServiceTest, Upgrading) {
 
   VerifyNotification(false, false);
 
-  EXPECT_FALSE(ShouldRestore(account_id()));
   EXPECT_FALSE(CanPerformRestore(account_id()));
 
   // Simulate the Chrome restore setting is changed.
   profile()->GetPrefs()->SetInteger(
-      prefs::kRestoreOnStartup,
+      ::prefs::kRestoreOnStartup,
       static_cast<int>(SessionStartupPref::kPrefValueLast));
 
   // The OS restore setting should not change.
   EXPECT_EQ(RestoreOption::kDoNotRestore, GetRestoreOption());
-  EXPECT_FALSE(ShouldRestore(account_id()));
   EXPECT_FALSE(CanPerformRestore(account_id()));
 }
 
@@ -588,13 +598,29 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, AskEveryTimeAndRestore) {
                 RestoreNotificationButtonIndex::kRestore);
 
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
-  EXPECT_TRUE(ShouldRestore(account_id()));
   EXPECT_TRUE(CanPerformRestore(account_id()));
   EXPECT_TRUE(allow_save());
 
   VerifyNotification(false, false);
 
   FullRestoreService::MaybeCloseNotification(profile());
+}
+
+// If the OS restore setting is 'Ask every time' and glanceables are enabled,
+// the notification is not shown.
+TEST_F(FullRestoreServiceTestHavingFullRestoreFile,
+       AskEveryTimeWithGlanceables) {
+  base::test::ScopedFeatureList feature_list(features::kGlanceables);
+
+  profile()->GetPrefs()->SetInteger(
+      kRestoreAppsAndPagesPrefName,
+      static_cast<int>(RestoreOption::kAskEveryTime));
+  CreateFullRestoreServiceForTesting();
+
+  EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
+
+  VerifyNotification(/*has_crash_notification=*/false,
+                     /*has_restore_notification=*/false);
 }
 
 // If the OS restore setting is 'Ask every time', after reboot, show the restore
@@ -617,7 +643,6 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, AskEveryTimeAndSettings) {
                 RestoreNotificationButtonIndex::kCancel);
 
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
-  EXPECT_FALSE(ShouldRestore(account_id()));
   EXPECT_TRUE(CanPerformRestore(account_id()));
   EXPECT_TRUE(allow_save());
 
@@ -649,11 +674,29 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile,
   FullRestoreService::MaybeCloseNotification(profile());
 
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
-  EXPECT_FALSE(ShouldRestore(account_id()));
   EXPECT_TRUE(CanPerformRestore(account_id()));
   EXPECT_TRUE(allow_save());
 
   VerifyNotification(false, false);
+}
+
+// If the OS restore setting is 'Ask every time' and the reboot occurred due to
+// DeviceScheduledReboot policy, after reboot show the restore notification with
+// post reboot notification title.
+TEST_F(FullRestoreServiceTestHavingFullRestoreFile,
+       AskEveryTimeWithPostRebootNotification) {
+  profile()->GetPrefs()->SetInteger(
+      kRestoreAppsAndPagesPrefName,
+      static_cast<int>(RestoreOption::kAskEveryTime));
+  profile()->GetPrefs()->SetBoolean(prefs::kShowPostRebootNotification, true);
+  CreateFullRestoreServiceForTesting();
+
+  EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
+  VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 1);
+
+  VerifyNotification(false /* has_crash_notification */,
+                     true /* has_restore_notification */,
+                     true /* is_reboot_notification*/);
 }
 
 // If the OS restore setting is 'Ask every time', after reboot, close the
@@ -682,7 +725,6 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, CloseNotificationEarly) {
                      false /* has_restore_notification */);
 
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
-  EXPECT_FALSE(ShouldRestore(account_id()));
   EXPECT_TRUE(CanPerformRestore(account_id()));
   EXPECT_TRUE(allow_save());
 }
@@ -699,7 +741,6 @@ TEST_F(FullRestoreServiceTest, Always) {
 
   VerifyNotification(false, false);
 
-  EXPECT_TRUE(ShouldRestore(account_id()));
   EXPECT_TRUE(CanPerformRestore(account_id()));
 }
 
@@ -716,7 +757,6 @@ TEST_F(FullRestoreServiceTest, NotRestore) {
 
   VerifyNotification(false, false);
 
-  EXPECT_FALSE(ShouldRestore(account_id()));
   EXPECT_FALSE(CanPerformRestore(account_id()));
 }
 
@@ -745,14 +785,12 @@ class FullRestoreServiceMultipleUsersTest
         profile2_->GetProfileUserName(), "111111");
     const auto* user = GetFakeUserManager()->AddUser(account_id2_);
     GetFakeUserManager()->LoginUser(account_id2_);
-    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
-        user, profile2_.get());
+    ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
+                                                            profile2_.get());
 
     // Reset the restore flag and pref as the default value.
-    ::full_restore::FullRestoreInfo::GetInstance()->SetRestoreFlag(account_id2_,
-                                                                   false);
-    ::full_restore::FullRestoreInfo::GetInstance()->SetRestorePref(account_id2_,
-                                                                   false);
+    ::app_restore::AppRestoreInfo::GetInstance()->SetRestorePref(account_id2_,
+                                                                 false);
 
     display_service2_ =
         std::make_unique<NotificationDisplayServiceTester>(profile2_.get());
@@ -854,7 +892,6 @@ TEST_F(FullRestoreServiceMultipleUsersTest, TwoUsersLoginAtTheSameTime) {
                 RestoreNotificationButtonIndex::kRestore);
 
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
-  EXPECT_TRUE(ShouldRestore(account_id()));
   EXPECT_TRUE(CanPerformRestore(account_id()));
   EXPECT_TRUE(allow_save());
 
@@ -876,7 +913,6 @@ TEST_F(FullRestoreServiceMultipleUsersTest, TwoUsersLoginAtTheSameTime) {
                            RestoreNotificationButtonIndex::kRestore);
 
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOptionForProfile2());
-  EXPECT_TRUE(ShouldRestore(account_id()));
   EXPECT_TRUE(CanPerformRestore(account_id()));
   EXPECT_TRUE(allow_save());
 
@@ -900,7 +936,6 @@ TEST_F(FullRestoreServiceMultipleUsersTest, TwoUsersLoginOneByOne) {
                 RestoreNotificationButtonIndex::kRestore);
 
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
-  EXPECT_TRUE(ShouldRestore(account_id()));
   EXPECT_TRUE(CanPerformRestore(account_id()));
   EXPECT_TRUE(allow_save());
 
@@ -929,7 +964,6 @@ TEST_F(FullRestoreServiceMultipleUsersTest, TwoUsersLoginOneByOne) {
                            RestoreNotificationButtonIndex::kRestore);
 
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOptionForProfile2());
-  EXPECT_TRUE(ShouldRestore(account_id()));
   EXPECT_TRUE(CanPerformRestore(account_id()));
   EXPECT_TRUE(allow_save());
 
@@ -971,7 +1005,6 @@ TEST_F(FullRestoreServiceMultipleUsersTest, TwoUsersLoginWithActiveUserLogin) {
 
   SimulateClickForProfile2(kRestoreNotificationId,
                            RestoreNotificationButtonIndex::kRestore);
-  EXPECT_TRUE(ShouldRestore(account_id2()));
   EXPECT_TRUE(CanPerformRestore(account_id2()));
 
   // Simulate switch to the first user.
@@ -985,7 +1018,6 @@ TEST_F(FullRestoreServiceMultipleUsersTest, TwoUsersLoginWithActiveUserLogin) {
 
   SimulateClick(kRestoreNotificationId,
                 RestoreNotificationButtonIndex::kRestore);
-  EXPECT_TRUE(ShouldRestore(account_id()));
   EXPECT_TRUE(CanPerformRestore(account_id()));
 
   // Simulate switch to the second user, and verify no more init process.
@@ -997,5 +1029,4 @@ TEST_F(FullRestoreServiceMultipleUsersTest, TwoUsersLoginWithActiveUserLogin) {
   VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 2);
 }
 
-}  // namespace full_restore
-}  // namespace ash
+}  // namespace ash::full_restore

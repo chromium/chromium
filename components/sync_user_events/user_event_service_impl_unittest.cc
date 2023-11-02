@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,15 +9,14 @@
 
 #include "base/test/task_environment.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/driver/test_sync_service.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
-#include "components/sync/test/model/mock_model_type_change_processor.h"
-#include "components/sync/test/model/model_type_store_test_util.h"
+#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/model_type_store_test_util.h"
+#include "components/sync/test/test_sync_service.h"
 #include "components/sync_user_events/user_event_sync_bridge.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using sync_pb::UserEventSpecifics;
-using testing::_;
 
 namespace syncer {
 
@@ -60,8 +59,9 @@ class TestGlobalIdMapper : public GlobalIdMapper {
 class UserEventServiceImplTest : public testing::Test {
  protected:
   UserEventServiceImplTest() {
-    sync_service_.SetPreferredDataTypes(
-        {HISTORY_DELETE_DIRECTIVES, USER_EVENTS});
+    sync_service_.GetUserSettings()->SetSelectedTypes(
+        /*sync_everything=*/false,
+        /*types=*/{syncer::UserSelectableType::kHistory});
     ON_CALL(mock_processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(true));
     ON_CALL(mock_processor_, TrackedAccountId())

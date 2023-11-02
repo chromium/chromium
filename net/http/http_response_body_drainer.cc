@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,14 +20,12 @@ const int HttpResponseBodyDrainer::kDrainBodyBufferSize;
 const int HttpResponseBodyDrainer::kTimeoutInSeconds;
 
 HttpResponseBodyDrainer::HttpResponseBodyDrainer(HttpStream* stream)
-    : stream_(stream),
-      next_state_(STATE_NONE),
-      total_read_(0),
-      session_(nullptr) {}
+    : stream_(stream) {}
 
 HttpResponseBodyDrainer::~HttpResponseBodyDrainer() = default;
 
 void HttpResponseBodyDrainer::Start(HttpNetworkSession* session) {
+  session_ = session;
   read_buf_ = base::MakeRefCounted<IOBuffer>(kDrainBodyBufferSize);
   next_state_ = STATE_DRAIN_RESPONSE_BODY;
   int rv = DoLoop(OK);
@@ -35,8 +33,6 @@ void HttpResponseBodyDrainer::Start(HttpNetworkSession* session) {
   if (rv == ERR_IO_PENDING) {
     timer_.Start(FROM_HERE, base::Seconds(kTimeoutInSeconds), this,
                  &HttpResponseBodyDrainer::OnTimerFired);
-    session_ = session;
-    session->AddResponseDrainer(base::WrapUnique(this));
     return;
   }
 
@@ -113,9 +109,6 @@ void HttpResponseBodyDrainer::OnTimerFired() {
 void HttpResponseBodyDrainer::Finish(int result) {
   DCHECK_NE(ERR_IO_PENDING, result);
 
-  if (session_)
-    session_->RemoveResponseDrainer(this);
-
   if (result < 0 || !stream_->CanReuseConnection()) {
     stream_->Close(true /* no keep-alive */);
   } else {
@@ -123,7 +116,7 @@ void HttpResponseBodyDrainer::Finish(int result) {
     stream_->Close(false /* keep-alive */);
   }
 
-  delete this;
+  session_->RemoveResponseDrainer(this);
 }
 
 }  // namespace net

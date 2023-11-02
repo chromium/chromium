@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/translate/translate_bubble_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -50,6 +51,8 @@
 
 using captured_sites_test_utils::CapturedSiteParams;
 using captured_sites_test_utils::GetCapturedSites;
+using captured_sites_test_utils::TestRecipeReplayer;
+using captured_sites_test_utils::WebPageReplayServerWrapper;
 
 namespace {
 
@@ -86,15 +89,22 @@ class AutofillCapturedSitesInteractiveTest
                     content::RenderFrameHost* frame) override {
     content::WebContents* web_contents =
         content::WebContents::FromRenderFrameHost(frame);
-    BrowserAutofillManager* autofill_manager =
+    auto* autofill_manager = static_cast<BrowserAutofillManager*>(
         ContentAutofillDriverFactory::FromWebContents(web_contents)
             ->DriverForFrame(frame->GetMainFrame())
-            ->browser_autofill_manager();
+            ->autofill_manager());
     autofill_manager->SetTestDelegate(test_delegate());
 
     int tries = 0;
     while (tries < attempts) {
       tries++;
+
+      // Translation bubbles and address-save prompts and others may overlap
+      // with and thus prevent the Autofill popup, so we preemptively close all
+      // bubbles.
+      translate::test_utils::CloseCurrentBubble(browser());
+      TryToCloseAllPrompts(web_contents);
+
       autofill_manager->client()->HideAutofillPopup(
           autofill::PopupHidingReason::kViewDestroyed);
 
@@ -178,8 +188,10 @@ class AutofillCapturedSitesInteractiveTest
           field_type;
     }
 
-    for (size_t i = HTML_TYPE_UNSPECIFIED; i < HTML_TYPE_UNRECOGNIZED; ++i) {
-      AutofillType field_type(static_cast<HtmlFieldType>(i), HTML_MODE_NONE);
+    for (size_t i = static_cast<size_t>(HtmlFieldType::kUnspecified);
+         i <= static_cast<size_t>(HtmlFieldType::kMaxValue); ++i) {
+      AutofillType field_type(static_cast<HtmlFieldType>(i),
+                              HtmlFieldMode::kNone);
       string_to_field_type_map_[field_type.ToString()] =
           field_type.GetStorableType();
     }
@@ -232,20 +244,26 @@ class AutofillCapturedSitesInteractiveTest
     AutofillUiTest::SetUpInProcessBrowserTestFixture();
   }
 
+  virtual void SetUpHostResolverRules(base::CommandLine* command_line) {
+    captured_sites_test_utils::TestRecipeReplayer::SetUpHostResolverRules(
+        command_line);
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Enable the autofill show typed prediction feature. When active this
     // feature forces input elements on a form to display their autofill type
     // prediction. Test will check this attribute on all the relevant input
     // elements in a form to determine if the form is ready for interaction.
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillAcrossIframes,
-                              features::kAutofillDisplaceRemovedForms,
-                              features::kAutofillShowTypePredictions,
-                              features::kAutofillUseUnassociatedListedElements},
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{features::kAutofillAcrossIframes, {}},
+                              {features::kAutofillShowTypePredictions, {}},
+                              {features::kAutofillParsingPatternProvider,
+                               {{"prediction_source", "nextgen"}}}},
         /*disabled_features=*/{});
     command_line->AppendSwitchASCII(
         variations::switches::kVariationsOverrideCountry, "us");
     AutofillUiTest::SetUpCommandLine(command_line);
+    SetUpHostResolverRules(command_line);
     captured_sites_test_utils::TestRecipeReplayer::SetUpCommandLine(
         command_line);
   }
@@ -270,15 +288,19 @@ class AutofillCapturedSitesInteractiveTest
     // First, automation should focus on the frame containg the autofill form.
     // Doing so ensures that Chrome scrolls the element into view if the
     // element is off the page.
+    test_delegate()->SetExpectations({ObservedUiEvents::kSuggestionShown},
+                                     autofill_wait_for_action_interval);
     if (!captured_sites_test_utils::TestRecipeReplayer::PlaceFocusOnElement(
-            target_element_xpath, iframe_path, frame))
+            target_element_xpath, iframe_path, frame)) {
       return false;
+    }
 
     gfx::Rect rect;
     if (!captured_sites_test_utils::TestRecipeReplayer::
             GetBoundingRectOfTargetElement(target_element_xpath, iframe_path,
-                                           frame, &rect))
+                                           frame, &rect)) {
       return false;
+    }
 
     test_delegate()->SetExpectations({ObservedUiEvents::kSuggestionShown},
                                      autofill_wait_for_action_interval);
@@ -311,8 +333,13 @@ IN_PROC_BROWSER_TEST_P(AutofillCapturedSitesInteractiveTest, Recipe) {
   captured_sites_test_utils::PrintInstructions(
       "autofill_captured_sites_interactive_uitest");
 
-  // Prints the path of the test to be executed.
-  VLOG(1) << GetParam().site_name;
+  // Prints the name of the site to be executed. Prints bug number if exists.
+  if (GetParam().bug_number) {
+    VLOG(1) << GetParam().site_name << ": crbug.com/"
+            << GetParam().bug_number.value();
+  } else {
+    VLOG(1) << GetParam().site_name;
+  }
 
   base::FilePath src_dir;
   ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &src_dir));
@@ -357,4 +384,89 @@ INSTANTIATE_TEST_SUITE_P(
     AutofillCapturedSitesInteractiveTest,
     testing::ValuesIn(GetCapturedSites(GetReplayFilesRootDirectory())),
     captured_sites_test_utils::GetParamAsString());
+
+class AutofillCapturedSitesRefresh
+    : public AutofillCapturedSitesInteractiveTest {
+ protected:
+  void SetUpOnMainThread() override {
+    AutofillCapturedSitesInteractiveTest::SetUpOnMainThread();
+    web_page_replay_server_wrapper_ =
+        std::make_unique<captured_sites_test_utils::WebPageReplayServerWrapper>(
+            false, 8082, 8083);
+  }
+
+  void SetUpHostResolverRules(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(
+        network::switches::kHostResolverRules,
+        base::StringPrintf(
+            "MAP *:80 127.0.0.1:%d,"
+            "MAP *.googleapis.com:443 127.0.0.1:%d,"
+            "MAP *:443 127.0.0.1:%d,"
+            // Set to always exclude, allows cache_replayer overwrite
+            "EXCLUDE localhost",
+            TestRecipeReplayer::kHostHttpPort,
+            TestRecipeReplayer::kHostHttpsRecordPort,
+            TestRecipeReplayer::kHostHttpsPort));
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // For refresh tests, ensure that responses for Server Predictions come from
+    // the Production Server and not the CacheReplayer so that we can capture
+    // new responses.
+    command_line->AppendSwitchASCII(test::kAutofillServerBehaviorParam,
+                                    "ProductionServer");
+    AutofillCapturedSitesInteractiveTest::SetUpCommandLine(command_line);
+  }
+
+  void TearDownOnMainThread() override {
+    AutofillCapturedSitesInteractiveTest::TearDownOnMainThread();
+    EXPECT_TRUE(web_page_replay_server_wrapper_->Stop())
+        << "Cannot stop the local Web Page Replay server.";
+  }
+
+  WebPageReplayServerWrapper* web_page_replay_server_wrapper() {
+    return web_page_replay_server_wrapper_.get();
+  }
+
+ private:
+  std::unique_ptr<WebPageReplayServerWrapper> web_page_replay_server_wrapper_;
+};
+
+// This test is to be run periodically to capture updated Autofill Server
+// Predictions. It run the same AutofillCapturedSitesInteractiveTest test suite
+// but allows the queries the to Autofill Server to get through WPR and hit the
+// live server and captures the new responses in separate .wpr archive files in
+// the refresh/ subdirectory of chrome/test/data/autofill/captured_sites
+IN_PROC_BROWSER_TEST_P(AutofillCapturedSitesRefresh, Recipe) {
+  VLOG(1) << "Recapturing Server Predictions for: " << GetParam().site_name;
+  web_page_replay_server_wrapper()->Start(GetParam().refresh_file_path);
+  bool test_completed = recipe_replayer()->ReplayTest(
+      GetParam().capture_file_path, GetParam().recipe_file_path,
+      captured_sites_test_utils::GetCommandFilePath());
+  if (!test_completed)
+    ADD_FAILURE() << "Full execution was unable to complete.";
+
+  std::vector<testing::AssertionResult> validation_failures =
+      recipe_replayer()->GetValidationFailures();
+  if (validation_failures.empty()) {
+    VLOG(1) << "No Change in Server Predictions for: " << GetParam().site_name;
+  } else {
+    LOG(INFO) << "There were " << validation_failures.size()
+              << " Validation Failure(s). This means Server Predictions "
+                 "respones have changed and likely need to be addressed.";
+    for (auto& validation_failure : validation_failures)
+      ADD_FAILURE() << validation_failure.message();
+  }
+}
+
+// This test is called with a dynamic list and will be empty during the Password
+// run instance, so adding GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST a la
+// crbug/1192206
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(AutofillCapturedSitesRefresh);
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AutofillCapturedSitesRefresh,
+    testing::ValuesIn(GetCapturedSites(GetReplayFilesRootDirectory())),
+    captured_sites_test_utils::GetParamAsString());
+
 }  // namespace autofill

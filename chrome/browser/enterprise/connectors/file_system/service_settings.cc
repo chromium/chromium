@@ -1,16 +1,18 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/enterprise/connectors/file_system/service_settings.h"
 
+#include "base/containers/contains.h"
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
-#include "components/policy/core/browser/url_util.h"
+#include "components/url_matcher/url_util.h"
 
 namespace enterprise_connectors {
 
-const base::Feature kFileSystemConnectorEnabled{
-    "FileSystemConnectorsEnabled", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kFileSystemConnectorEnabled,
+             "FileSystemConnectorsEnabled",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 FileSystemServiceSettings::FileSystemServiceSettings(
     const base::Value& settings_value,
@@ -24,12 +26,13 @@ FileSystemServiceSettings::FileSystemServiceSettings(
   // an existing provider.
   const std::string* service_provider_name =
       settings_value.FindStringKey(kKeyServiceProvider);
-  if (service_provider_name) {
-    service_provider_ =
-        service_provider_config.GetServiceProvider(*service_provider_name);
+  if (service_provider_name &&
+      service_provider_config.count(*service_provider_name)) {
+    file_system_config_ =
+        service_provider_config.at(*service_provider_name).file_system;
   }
-  if (!service_provider_) {
-    DLOG(ERROR) << "No service provider";
+  if (!file_system_config_) {
+    DLOG(ERROR) << "No file system config for corresponding service provider";
     return;
   }
 
@@ -48,9 +51,9 @@ FileSystemServiceSettings::FileSystemServiceSettings(
   url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
   URLMatchingID id(0);
   const base::Value* enable = settings_value.FindListKey(kKeyEnable);
-  if (enable && enable->is_list() && !enable->GetList().empty()) {
+  if (enable && enable->is_list() && !enable->GetListDeprecated().empty()) {
     filters_validated_ = true;
-    for (const base::Value& value : enable->GetList()) {
+    for (const base::Value& value : enable->GetListDeprecated()) {
       filters_validated_ &=
           AddUrlPatternSettings(value, /* enabled = */ true, &id);
     }
@@ -62,8 +65,8 @@ FileSystemServiceSettings::FileSystemServiceSettings(
   }
 
   const base::Value* disable = settings_value.FindListKey(kKeyDisable);
-  if (disable && disable->is_list() && !disable->GetList().empty()) {
-    for (const base::Value& value : disable->GetList()) {
+  if (disable && disable->is_list() && !disable->GetListDeprecated().empty()) {
+    for (const base::Value& value : disable->GetListDeprecated()) {
       filters_validated_ &=
           AddUrlPatternSettings(value, /* enabled = */ false, &id);
     }
@@ -95,26 +98,25 @@ FileSystemServiceSettings::GetGlobalSettings() const {
 
   FileSystemSettings settings;
   settings.service_provider = service_provider_name_;
-  settings.home = GURL(service_provider_->fs_home_url());
+  settings.home = GURL(file_system_config_->home);
   settings.authorization_endpoint =
-      GURL(service_provider_->fs_authorization_endpoint());
-  settings.token_endpoint = GURL(service_provider_->fs_token_endpoint());
+      GURL(file_system_config_->authorization_endpoint);
+  settings.token_endpoint = GURL(file_system_config_->token_endpoint);
   settings.enterprise_id = this->enterprise_id_;
   settings.email_domain = this->email_domain_;
-  settings.client_id = service_provider_->fs_client_id();
-  settings.client_secret = service_provider_->fs_client_secret();
-  settings.scopes = service_provider_->fs_scopes();
-  settings.max_direct_size = service_provider_->fs_max_direct_size();
+  settings.client_id = file_system_config_->client_id;
+  settings.client_secret = file_system_config_->client_secret;
+  settings.scopes = std::vector<std::string>(
+      file_system_config_->scopes.begin(), file_system_config_->scopes.end());
+  settings.max_direct_size = file_system_config_->max_direct_size;
 
   return settings;
 }
 
 absl::optional<FileSystemSettings> FileSystemServiceSettings::GetSettings(
     const GURL& url) const {
-  if (!IsValid())
+  if (!IsValid() || !url.is_valid())
     return absl::nullopt;
-
-  DCHECK(url.is_valid()) << "URL: " << url;
 
   absl::optional<FileSystemSettings> settings = GetGlobalSettings();
 
@@ -158,21 +160,21 @@ FileSystemServiceSettings::GetPatternSettings(const PatternSettings& patterns,
 
 bool FileSystemServiceSettings::IsValid() const {
   // The settings are valid only if a provider was given.
-  return service_provider_ && filters_validated_ && !enterprise_id_.empty();
+  return file_system_config_ && filters_validated_ && !enterprise_id_.empty();
 }
 
 bool FileSystemServiceSettings::AddUrlsDisabledByServiceProvider(
     URLMatchingID* id) {
   base::Value disable_value(base::Value::Type::DICTIONARY);
 
-  std::vector<base::Value> urls;
-  for (const std::string& url : service_provider_->fs_disable())
-    urls.emplace_back(url);
-  disable_value.SetKey(kKeyUrlList, base::Value(urls));
+  base::Value::List urls;
+  for (const std::string& url : file_system_config_->disable)
+    urls.Append(url);
+  disable_value.SetKey(kKeyUrlList, base::Value(std::move(urls)));
 
-  std::vector<base::Value> mime_types;
-  mime_types.emplace_back(kWildcardMimeType);
-  disable_value.SetKey(kKeyMimeTypes, base::Value(mime_types));
+  base::Value::List mime_types;
+  mime_types.Append(kWildcardMimeType);
+  disable_value.SetKey(kKeyMimeTypes, base::Value(std::move(mime_types)));
 
   bool validated =
       AddUrlPatternSettings(disable_value, /* enabled = */ false, id);
@@ -186,7 +188,7 @@ bool FileSystemServiceSettings::AddUrlPatternSettings(
     bool enabled,
     URLMatchingID* id) {
   DCHECK(id);
-  DCHECK(service_provider_);
+  DCHECK(file_system_config_);
   if (enabled) {
     if (!disabled_patterns_settings_.empty()) {
       DLOG(ERROR) << "disabled_patterns_settings_ must be empty when enabling: "
@@ -200,19 +202,21 @@ bool FileSystemServiceSettings::AddUrlPatternSettings(
   }
 
   // Add the URL patterns to the matcher and store the condition set IDs.
-  const base::Value* url_list = url_settings_value.FindListKey(kKeyUrlList);
-  if (!url_list) {
+  const base::Value* url_list_value =
+      url_settings_value.FindListKey(kKeyUrlList);
+  if (!url_list_value) {
     DLOG(ERROR) << "Can't find " << kKeyUrlList << url_settings_value;
     return false;
   }
 
-  for (const base::Value& url : url_list->GetList())
+  const base::Value::List& url_list = url_list_value->GetList();
+
+  for (const base::Value& url : url_list)
     CHECK(url.is_string());
 
   // This pre-increments the id by size of url_list_value.
   URLMatchingID pre_id = *id;
-  policy::url_util::AddFilters(url_matcher_.get(), enabled, id,
-                               &base::Value::AsListValue(*url_list));
+  url_matcher::util::AddFilters(url_matcher_.get(), enabled, id, url_list);
 
   const base::Value* mime_types = url_settings_value.FindListKey(kKeyMimeTypes);
   if (!mime_types)
@@ -220,7 +224,7 @@ bool FileSystemServiceSettings::AddUrlPatternSettings(
 
   URLPatternSettings setting;
   bool has_wildcard = false;
-  for (const base::Value& mime_type : mime_types->GetList()) {
+  for (const base::Value& mime_type : mime_types->GetListDeprecated()) {
     if (mime_type.is_string()) {
       const std::string& m = mime_type.GetString();
       setting.mime_types.insert(m);
@@ -261,8 +265,7 @@ FileSystemServiceSettings::GetMimeTypesFilterFromUrlMatches(
     if (maybe_pattern_setting.has_value()) {
       const auto& mime_types = maybe_pattern_setting.value().mime_types;
       this_match_has_wildcard_enable =
-          (std::find(mime_types.begin(), mime_types.end(), kWildcardMimeType) !=
-           mime_types.end());
+          base::Contains(mime_types, kWildcardMimeType);
       enable_mime_types.insert(mime_types.begin(), mime_types.end());
     }
 

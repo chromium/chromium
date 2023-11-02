@@ -1,0 +1,4 @@
+grid.accessibilityAttributeNames.has(AXSelectedRows)='yes'
+tree.accessibilityAttributeNames.has(AXSelectedRows)='yes'
+treegrid.accessibilityAttributeNames.has(AXSelectedRows)='yes'
+not_applicable.accessibilityAttributeNames.has(AXSelectedRows)='no'

@@ -209,8 +209,8 @@ class ServerBase(object):
             try:
                 self._remove_log_files(self._output_dir, log_prefix)
             except OSError:
-                _log.warning('Failed to remove old %s %s files', self._name,
-                             log_prefix)
+                _log.exception('Failed to remove old %s %s files', self._name,
+                               log_prefix)
 
     def _spawn_process(self):
         _log.debug('Starting %s server, cmd="%s"', self._name, self._start_cmd)

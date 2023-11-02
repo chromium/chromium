@@ -1,11 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_UPDATE_CLIENT_UPDATE_ENGINE_H_
 #define COMPONENTS_UPDATE_CLIENT_UPDATE_ENGINE_H_
 
-#include <list>
 #include <map>
 #include <memory>
 #include <string>
@@ -13,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -57,18 +57,21 @@ class UpdateEngine : public base::RefCountedThreadSafe<UpdateEngine> {
   // is not found.
   bool GetUpdateState(const std::string& id, CrxUpdateItem* update_state);
 
-  void Update(bool is_foreground,
-              const std::vector<std::string>& ids,
-              UpdateClient::CrxDataCallback crx_data_callback,
-              UpdateClient::CrxStateChangeCallback crx_state_change_callback,
-              Callback update_callback);
+  // Update the given app ids. Returns a closure that can be called to trigger
+  // cancellation of the operation. `update_callback` will be called when the
+  // operation is complete (even if cancelled). The cancellation callback
+  // should be called only on the main thread.
+  base::RepeatingClosure Update(
+      bool is_foreground,
+      bool is_install,
+      const std::vector<std::string>& ids,
+      UpdateClient::CrxDataCallback crx_data_callback,
+      UpdateClient::CrxStateChangeCallback crx_state_change_callback,
+      Callback update_callback);
 
   void SendUninstallPing(const CrxComponent& crx_component,
                          int reason,
                          Callback update_callback);
-
-  void SendRegistrationPing(const CrxComponent& crx_component,
-                            Callback update_callback);
 
  private:
   friend class base::RefCountedThreadSafe<UpdateEngine>;
@@ -118,6 +121,7 @@ struct UpdateContext : public base::RefCountedThreadSafe<UpdateContext> {
   UpdateContext(
       scoped_refptr<Configurator> config,
       bool is_foreground,
+      bool is_install,
       const std::vector<std::string>& ids,
       UpdateClient::CrxStateChangeCallback crx_state_change_callback,
       const UpdateEngine::NotifyObserversCallback& notify_observers_callback,
@@ -131,8 +135,11 @@ struct UpdateContext : public base::RefCountedThreadSafe<UpdateContext> {
   // True if the component is updated as a result of user interaction.
   bool is_foreground = false;
 
-  // True if the component updates are enabled in this context.
-  const bool enabled_component_updates;
+  // True if the component is updating in an installation flow.
+  bool is_install = false;
+
+  // True if and only if this operation has been canceled.
+  bool is_cancelled = false;
 
   // Contains the ids of all CRXs in this context in the order specified
   // by the caller of |UpdateClient::Update| or |UpdateClient:Install|.
@@ -181,7 +188,7 @@ struct UpdateContext : public base::RefCountedThreadSafe<UpdateContext> {
   const std::string session_id;
 
   // Persists data using the prefs service. Not owned by this class.
-  PersistedData* persisted_data = nullptr;
+  raw_ptr<PersistedData> persisted_data = nullptr;
 
  private:
   friend class base::RefCountedThreadSafe<UpdateContext>;

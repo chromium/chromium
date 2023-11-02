@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
  * |setGlobalScrollTarget| should only be called once.
  */
 
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from './router.js';
@@ -57,7 +57,7 @@ export const GlobalScrollTargetMixin = dedupingMixin(
         subpageRoute: Route;
         private active_: boolean;
 
-        connectedCallback() {
+        override connectedCallback() {
           super.connectedCallback();
 
           this.active_ =
@@ -67,6 +67,8 @@ export const GlobalScrollTargetMixin = dedupingMixin(
           });
         }
 
+        // TODO(dpapad): Figure out why adding the |override| keyword here
+        // throws an error.
         currentRouteChanged(route: Route) {
           // Immediately set the scroll target to active when this page is
           // activated, but wait a task to remove the scroll target when the

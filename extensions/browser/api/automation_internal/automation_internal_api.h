@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -95,6 +95,15 @@ class AutomationInternalEnableDesktopFunction : public ExtensionFunction {
                              AUTOMATIONINTERNAL_ENABLEDESKTOP)
  protected:
   ~AutomationInternalEnableDesktopFunction() override = default;
+
+  ResponseAction Run() override;
+};
+
+class AutomationInternalDisableDesktopFunction : public ExtensionFunction {
+  DECLARE_EXTENSION_FUNCTION("automationInternal.disableDesktop",
+                             AUTOMATIONINTERNAL_DISABLEDESKTOP)
+ protected:
+  ~AutomationInternalDisableDesktopFunction() override = default;
 
   ResponseAction Run() override;
 };

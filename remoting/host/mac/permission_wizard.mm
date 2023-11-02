@@ -1,8 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "remoting/host/mac/permission_wizard.h"
+
+#include "base/memory/raw_ptr.h"
 
 #import <Cocoa/Cocoa.h>
 
@@ -11,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -187,7 +188,7 @@ void PermissionWizard::Impl::OnPermissionCheckResult(bool result) {
 
   // Reference used for permission-checking. Its lifetime should outlast this
   // Controller.
-  PermissionWizard::Impl* _impl;
+  raw_ptr<PermissionWizard::Impl> _impl;
 }
 
 - (instancetype)initWithWindow:(NSWindow*)window

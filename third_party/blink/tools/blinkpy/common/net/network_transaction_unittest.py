@@ -29,7 +29,8 @@
 from blinkpy.common.net.network_transaction import NetworkTransaction, NetworkTimeout
 from blinkpy.common.system.log_testing import LoggingTestCase
 
-from six.moves.urllib.error import HTTPError
+from requests.exceptions import HTTPError
+from requests import Response
 
 
 class NetworkTransactionTest(LoggingTestCase):
@@ -62,22 +63,29 @@ class NetworkTransactionTest(LoggingTestCase):
     def _raise_500_error(self):
         self._run_count += 1
         if self._run_count < 3:
-            raise HTTPError('http://example.com/', 500,
-                            'internal server error', None, None)
+            response = Response()
+            response.status_code = 500
+            response.reason = 'internal server error'
+            response.url = 'http://example.com/'
+            raise HTTPError(response=response)
         return 42
 
     def _raise_404_error(self):
-        raise HTTPError('http://foo.com/', 404, 'not found', None, None)
+        response = Response()
+        response.status_code = 404
+        response.reason = 'not found'
+        response.url = 'http://foo.com/'
+        raise HTTPError(response=response)
 
     def test_retry(self):
         transaction = NetworkTransaction(initial_backoff_seconds=0)
         self.assertEqual(transaction.run(self._raise_500_error), 42)
         self.assertEqual(self._run_count, 3)
         self.assertLog([
-            'WARNING: Received HTTP status 500 loading "http://example.com/".  '
-            'Retrying in 0 seconds...\n',
-            'WARNING: Received HTTP status 500 loading "http://example.com/".  '
-            'Retrying in 0.0 seconds...\n'
+            'WARNING: Received HTTP status 500 loading "http://example.com/": internal server error. \n',
+            'WARNING: Retrying in 0.000 seconds...\n',
+            'WARNING: Received HTTP status 500 loading "http://example.com/": internal server error. \n',
+            'WARNING: Retrying in 0.000 seconds...\n'
         ])
 
     def test_convert_404_to_none(self):

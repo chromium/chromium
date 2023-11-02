@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,22 +36,14 @@ HttpProxyClientSocket::HttpProxyClientSocket(
     const std::string& user_agent,
     const HostPortPair& endpoint,
     const ProxyServer& proxy_server,
-    HttpAuthController* http_auth_controller,
-    bool tunnel,
-    bool using_spdy,
-    NextProto negotiated_protocol,
+    scoped_refptr<HttpAuthController> http_auth_controller,
     ProxyDelegate* proxy_delegate,
     const NetworkTrafficAnnotationTag& traffic_annotation)
     : io_callback_(base::BindRepeating(&HttpProxyClientSocket::OnIOComplete,
                                        base::Unretained(this))),
-      next_state_(STATE_NONE),
       socket_(std::move(socket)),
-      is_reused_(false),
       endpoint_(endpoint),
-      auth_(http_auth_controller),
-      tunnel_(tunnel),
-      using_spdy_(using_spdy),
-      negotiated_protocol_(negotiated_protocol),
+      auth_(std::move(http_auth_controller)),
       proxy_server_(proxy_server),
       proxy_delegate_(proxy_delegate),
       traffic_annotation_(traffic_annotation),
@@ -90,14 +82,6 @@ HttpProxyClientSocket::GetAuthController() const {
   return auth_;
 }
 
-bool HttpProxyClientSocket::IsUsingSpdy() const {
-  return using_spdy_;
-}
-
-NextProto HttpProxyClientSocket::GetProxyNegotiatedProtocol() const {
-  return negotiated_protocol_;
-}
-
 const HttpResponseInfo* HttpProxyClientSocket::GetConnectResponseInfo() const {
   return response_.headers.get() ? &response_ : nullptr;
 }
@@ -106,13 +90,6 @@ int HttpProxyClientSocket::Connect(CompletionOnceCallback callback) {
   DCHECK(socket_);
   DCHECK(user_callback_.is_null());
 
-  // TODO(rch): figure out the right way to set up a tunnel with SPDY.
-  // This approach sends the complete HTTPS request to the proxy
-  // which allows the proxy to see "private" data.  Instead, we should
-  // create an SSL tunnel to the origin server using the CONNECT method
-  // inside a single SPDY stream.
-  if (using_spdy_ || !tunnel_)
-    next_state_ = STATE_DONE;
   if (next_state_ == STATE_DONE)
     return OK;
 
@@ -155,29 +132,21 @@ bool HttpProxyClientSocket::WasEverUsed() const {
 }
 
 bool HttpProxyClientSocket::WasAlpnNegotiated() const {
-  if (socket_)
-    return socket_->WasAlpnNegotiated();
-  NOTREACHED();
+  // Do not delegate to `socket_`. While `socket_` may negotiate ALPN with the
+  // proxy, this object represents the tunneled TCP connection to the origin.
   return false;
 }
 
 NextProto HttpProxyClientSocket::GetNegotiatedProtocol() const {
-  if (socket_)
-    return socket_->GetNegotiatedProtocol();
-  NOTREACHED();
+  // Do not delegate to `socket_`. While `socket_` may negotiate ALPN with the
+  // proxy, this object represents the tunneled TCP connection to the origin.
   return kProtoUnknown;
 }
 
 bool HttpProxyClientSocket::GetSSLInfo(SSLInfo* ssl_info) {
-  if (socket_)
-    return socket_->GetSSLInfo(ssl_info);
-  NOTREACHED();
+  // Do not delegate to `socket_`. While `socket_` may connect to the proxy with
+  // TLS, this object represents the tunneled TCP connection to the origin.
   return false;
-}
-
-void HttpProxyClientSocket::GetConnectionAttempts(
-    ConnectionAttempts* out) const {
-  out->clear();
 }
 
 int64_t HttpProxyClientSocket::GetTotalReceivedBytes() const {

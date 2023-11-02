@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync_file_system/drive_backend/sync_task.h"
@@ -97,8 +98,8 @@ class SyncEngineInitializer : public SyncTask {
                              std::unique_ptr<google_apis::FileList> file_list);
   void PopulateDatabase(std::unique_ptr<SyncTaskToken> token);
 
-  SyncEngineContext* sync_context_;  // Not owned.
-  leveldb::Env* env_override_;
+  raw_ptr<SyncEngineContext> sync_context_;  // Not owned.
+  raw_ptr<leveldb::Env> env_override_;
 
   google_apis::CancelCallbackOnce cancel_callback_;
   base::FilePath database_path_;

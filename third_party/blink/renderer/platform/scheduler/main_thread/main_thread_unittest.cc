@@ -1,8 +1,8 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread.h"
+#include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_impl.h"
 
 #include <stddef.h>
 
@@ -57,10 +57,9 @@ class MainThreadTest : public testing::Test {
             base::MessagePump::Create(base::MessagePumpType::DEFAULT),
             base::sequence_manager::SequenceManager::Settings::Builder()
                 .SetTickClock(&clock_)
-                .Build()),
-        absl::nullopt);
-    scheduler_overrider_ =
-        std::make_unique<ScopedSchedulerOverrider>(scheduler_.get());
+                .Build()));
+    scheduler_overrider_ = std::make_unique<ScopedSchedulerOverrider>(
+        scheduler_.get(), scheduler_->DefaultTaskRunner());
     thread_ = Thread::Current();
   }
 
@@ -94,7 +93,7 @@ TEST_F(MainThreadTest, TestTaskObserver) {
   }
 
   scheduler_->DefaultTaskRunner()->PostTask(
-      FROM_HERE, WTF::Bind(&MockTask::Run, WTF::Unretained(&task)));
+      FROM_HERE, WTF::BindOnce(&MockTask::Run, WTF::Unretained(&task)));
   base::RunLoop().RunUntilIdle();
   thread_->RemoveTaskObserver(&observer);
 }
@@ -114,7 +113,7 @@ TEST_F(MainThreadTest, TestWorkBatchWithOneTask) {
   }
 
   scheduler_->DefaultTaskRunner()->PostTask(
-      FROM_HERE, WTF::Bind(&MockTask::Run, WTF::Unretained(&task)));
+      FROM_HERE, WTF::BindOnce(&MockTask::Run, WTF::Unretained(&task)));
   base::RunLoop().RunUntilIdle();
   thread_->RemoveTaskObserver(&observer);
 }
@@ -140,9 +139,9 @@ TEST_F(MainThreadTest, TestWorkBatchWithTwoTasks) {
   }
 
   scheduler_->DefaultTaskRunner()->PostTask(
-      FROM_HERE, WTF::Bind(&MockTask::Run, WTF::Unretained(&task1)));
+      FROM_HERE, WTF::BindOnce(&MockTask::Run, WTF::Unretained(&task1)));
   scheduler_->DefaultTaskRunner()->PostTask(
-      FROM_HERE, WTF::Bind(&MockTask::Run, WTF::Unretained(&task2)));
+      FROM_HERE, WTF::BindOnce(&MockTask::Run, WTF::Unretained(&task2)));
   base::RunLoop().RunUntilIdle();
   thread_->RemoveTaskObserver(&observer);
 }
@@ -174,11 +173,11 @@ TEST_F(MainThreadTest, TestWorkBatchWithThreeTasks) {
   }
 
   scheduler_->DefaultTaskRunner()->PostTask(
-      FROM_HERE, WTF::Bind(&MockTask::Run, WTF::Unretained(&task1)));
+      FROM_HERE, WTF::BindOnce(&MockTask::Run, WTF::Unretained(&task1)));
   scheduler_->DefaultTaskRunner()->PostTask(
-      FROM_HERE, WTF::Bind(&MockTask::Run, WTF::Unretained(&task2)));
+      FROM_HERE, WTF::BindOnce(&MockTask::Run, WTF::Unretained(&task2)));
   scheduler_->DefaultTaskRunner()->PostTask(
-      FROM_HERE, WTF::Bind(&MockTask::Run, WTF::Unretained(&task3)));
+      FROM_HERE, WTF::BindOnce(&MockTask::Run, WTF::Unretained(&task3)));
   base::RunLoop().RunUntilIdle();
   thread_->RemoveTaskObserver(&observer);
 }
@@ -187,8 +186,8 @@ void EnterRunLoop(scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   // Note: blink::Threads do not support nested run loops, which is why we use a
   // run loop directly.
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-  task_runner->PostTask(
-      FROM_HERE, WTF::Bind(&base::RunLoop::Quit, WTF::Unretained(&run_loop)));
+  task_runner->PostTask(FROM_HERE, WTF::BindOnce(&base::RunLoop::Quit,
+                                                 WTF::Unretained(&run_loop)));
   run_loop.Run();
 }
 

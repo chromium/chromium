@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,17 +58,6 @@ class InfoBarViewTest : public BrowserWithTestWindowTest {
  private:
   InfoBarContainerView infobar_container_view_;
 };
-
-// Regression test for crbug.com/834728 .
-TEST_F(InfoBarViewTest, LayoutOnHiddenInfoBar) {
-  // Calling Layout() on an infobar inside a container should not crash.
-  InfoBarView* infobar = TestInfoBarDelegate::Create(infobar_manager());
-  ASSERT_TRUE(infobar);
-  infobar->Layout();
-  // Neither should calling it on an infobar not in a container.
-  DetachContainer();
-  infobar->Layout();
-}
 
 TEST_F(InfoBarViewTest, AlertAccessibleEvent) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());

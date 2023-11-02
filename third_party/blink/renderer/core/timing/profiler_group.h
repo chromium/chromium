@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "v8/include/v8-profiler.h"
@@ -81,6 +81,10 @@ class CORE_EXPORT ProfilerGroup
   // Internal implementation of cancel.
   void CancelProfilerImpl(String profiler_id);
 
+  // Clean context independent resources for leaked profilers
+  void StopDetachedProfiler(String profiler_id);
+  void StopDetachedProfilers();
+
   // Generates an unused string identifier to use for a new profiling session.
   String NextProfilerId();
 
@@ -88,8 +92,10 @@ class CORE_EXPORT ProfilerGroup
   v8::CpuProfiler* cpu_profiler_;
   int next_profiler_id_;
   int num_active_profilers_;
-
   HeapHashSet<WeakMember<Profiler>> profilers_;
+
+  // Store the ids of leaked collected profilers that needs to be stopped
+  Vector<String> detached_profiler_ids_;
 
   // A set of observers, one for each ExecutionContext that has profiling
   // enabled.

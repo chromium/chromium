@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,12 +22,6 @@ namespace performance_manager {
 using WorkerNodeSet = base::flat_set<WorkerNodeImpl*>;
 
 namespace {
-
-// Emits a boolean value that indicates if the client frame's node was found
-// when trying to connect the worker to a client frame.
-void RecordWorkerClientFound(bool found) {
-  UMA_HISTOGRAM_BOOLEAN("PerformanceManager.WorkerClientFound", found);
-}
 
 // Helper function to add |client_frame_node| as a client of |worker_node| on
 // the PM sequence.
@@ -544,7 +538,6 @@ void WorkerWatcher::AddFrameClientConnection(
   // accessible. If it isn't, this means there is a missing
   // CreatePageNodeForWebContents() somewhere.
   if (!frame_node) {
-    RecordWorkerClientFound(false);
 #if DCHECK_IS_ON()
     // A call to RemoveFrameClientConnection() is still expected to be received
     // for this worker and frame pair.
@@ -552,8 +545,6 @@ void WorkerWatcher::AddFrameClientConnection(
 #endif  // DCHECK_IS_ON()
     return;
   }
-
-  RecordWorkerClientFound(true);
 
   // Keep track of the workers that this frame is a client to.
   bool is_first_child_worker = false;

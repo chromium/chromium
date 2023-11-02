@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,10 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
+
+namespace views {
+class ImageView;
+}
 
 namespace ash {
 namespace sharesheet {
@@ -33,11 +37,14 @@ class SharesheetTargetButton : public views::Button {
   SharesheetTargetButton(const SharesheetTargetButton&) = delete;
   SharesheetTargetButton& operator=(const SharesheetTargetButton&) = delete;
 
+  // views::Button:
+  void OnThemeChanged() override;
+
  private:
   void SetLabelProperties(views::Label* label);
 
-  // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  base::raw_ptr<views::ImageView> image_;
+  const gfx::VectorIcon* vector_icon_;
 };
 
 }  // namespace sharesheet

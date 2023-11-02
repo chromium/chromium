@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,12 +12,15 @@
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
+#include "ash/style/color_util.h"
 #include "ash/style/style_util.h"
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/ranges/algorithm.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
@@ -30,21 +33,20 @@ namespace ash {
 
 namespace {
 
-constexpr gfx::Insets kMenuGroupPadding{8, 0};
+constexpr auto kMenuGroupPadding = gfx::Insets::VH(8, 0);
 
-constexpr gfx::Insets kMenuHeaderPadding{8, 16};
+constexpr auto kMenuHeaderPadding = gfx::Insets::VH(8, 16);
 
-constexpr gfx::Insets kOptionPadding{8, 52, 8, 16};
+constexpr auto kOptionPadding = gfx::Insets::TLBR(8, 52, 8, 16);
 
-constexpr gfx::Insets kMenuItemPadding{10, 52, 10, 16};
+constexpr auto kMenuItemPadding = gfx::Insets::TLBR(10, 52, 10, 16);
 
 constexpr int kSpaceBetweenMenuItem = 0;
 
 constexpr gfx::Size kIconSize{20, 20};
 
 void ConfigLabelView(views::Label* label_view) {
-  label_view->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
+  label_view->SetEnabledColorId(kColorAshTextColorPrimary);
   label_view->SetBackgroundColor(SK_ColorTRANSPARENT);
   label_view->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label_view->SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_MIDDLE);
@@ -66,44 +68,79 @@ void SetInkDropForButton(views::Button* button) {
   views::InstallRectHighlightPathGenerator(button);
 }
 
+}  // namespace
+
 // -----------------------------------------------------------------------------
 // CaptureModeMenuHeader:
 
 // The header of the menu group, which has an icon and a text label. Not user
 // interactable.
-class CaptureModeMenuHeader : public views::View {
+class CaptureModeMenuHeader
+    : public views::View,
+      public CaptureModeSessionFocusCycler::HighlightableView {
  public:
   METADATA_HEADER(CaptureModeMenuHeader);
 
   CaptureModeMenuHeader(const gfx::VectorIcon& icon,
-                        std::u16string header_laber)
+                        std::u16string header_laber,
+                        bool managed_by_policy)
       : icon_view_(AddChildView(std::make_unique<views::ImageView>())),
         label_view_(AddChildView(
-            std::make_unique<views::Label>(std::move(header_laber)))) {
+            std::make_unique<views::Label>(std::move(header_laber)))),
+        managed_icon_view_(
+            managed_by_policy
+                ? AddChildView(std::make_unique<views::ImageView>())
+                : nullptr) {
     icon_view_->SetImageSize(kIconSize);
     icon_view_->SetPreferredSize(kIconSize);
-    icon_view_->SetImage(gfx::CreateVectorIcon(
-        icon, AshColorProvider::Get()->GetContentLayerColor(
-                  AshColorProvider::ContentLayerType::kButtonIconColor)));
+    icon_view_->SetImage(
+        ui::ImageModel::FromVectorIcon(icon, kColorAshButtonIconColor));
+
+    if (managed_icon_view_) {
+      managed_icon_view_->SetImageSize(kIconSize);
+      managed_icon_view_->SetPreferredSize(kIconSize);
+      managed_icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
+          kCaptureModeManagedIcon, kColorAshIconColorSecondary));
+      managed_icon_view_->SetTooltipText(
+          l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_MANAGED_BY_POLICY));
+    }
 
     SetBorder(views::CreateEmptyBorder(kMenuHeaderPadding));
     ConfigLabelView(label_view_);
-    CreateAndInitBoxLayoutForView(this);
+    auto* box_layout = CreateAndInitBoxLayoutForView(this);
+    box_layout->SetFlexForView(label_view_, 1);
   }
 
   CaptureModeMenuHeader(const CaptureModeMenuHeader&) = delete;
   CaptureModeMenuHeader& operator=(const CaptureModeMenuHeader&) = delete;
   ~CaptureModeMenuHeader() override = default;
 
+  bool is_managed_by_policy() const { return !!managed_icon_view_; }
+
+  const std::u16string& GetHeaderLabel() const {
+    return label_view_->GetText();
+  }
+
+  // views::View:
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
+    View::GetAccessibleNodeData(node_data);
+    node_data->role = ax::mojom::Role::kHeader;
+    node_data->SetName(GetHeaderLabel());
+  }
+
+  // CaptureModeSessionFocusCycler::HighlightableView:
+  views::View* GetView() override { return this; }
+
  private:
   views::ImageView* icon_view_;
   views::Label* label_view_;
+  // `nullptr` if the menu group is not for a setting that is managed by a
+  // policy.
+  views::ImageView* managed_icon_view_;
 };
 
 BEGIN_METADATA(CaptureModeMenuHeader, views::View)
 END_METADATA
-
-}  // namespace
 
 // -----------------------------------------------------------------------------
 // CaptureModeMenuItem:
@@ -168,10 +205,6 @@ class CaptureModeOption
         id_(option_id) {
     checked_icon_view_->SetImageSize(kIconSize);
     checked_icon_view_->SetPreferredSize(kIconSize);
-    checked_icon_view_->SetImage(gfx::CreateVectorIcon(
-        kHollowCheckCircleIcon,
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kButtonLabelColorBlue)));
 
     SetBorder(views::CreateEmptyBorder(kOptionPadding));
     ConfigLabelView(label_view_);
@@ -208,18 +241,23 @@ class CaptureModeOption
 
   // views::Button:
   void StateChanged(ButtonState old_state) override {
-    auto* provider = AshColorProvider::Get();
-    const auto enabled_color = provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary);
-    label_view_->SetEnabledColor(GetState() == STATE_DISABLED
-                                     ? provider->GetDisabledColor(enabled_color)
-                                     : enabled_color);
+    // Don't trigger `UpdateState` when the option is not added to the views
+    // hierarchy yet, since we need to get the color from the widget's color
+    // provider. When the option is added to the view hierarchy,
+    // `OnThemeChanged` will be triggered and then `UpdateState` will be called.
+    if (GetWidget())
+      UpdateState();
+  }
+
+  void OnThemeChanged() override {
+    views::Button::OnThemeChanged();
+    UpdateState();
   }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     Button::GetAccessibleNodeData(node_data);
-    node_data->SetName(GetOptionLabel());
     node_data->role = ax::mojom::Role::kRadioButton;
+    node_data->SetName(GetOptionLabel());
     node_data->SetCheckedState(IsOptionChecked()
                                    ? ax::mojom::CheckedState::kTrue
                                    : ax::mojom::CheckedState::kFalse);
@@ -229,6 +267,23 @@ class CaptureModeOption
   views::View* GetView() override { return this; }
 
  private:
+  // Dims out the label and the checked icon if this view is disabled.
+  void UpdateState() {
+    const auto* color_provider = GetColorProvider();
+    const auto label_enabled_color =
+        color_provider->GetColor(kColorAshTextColorPrimary);
+    const auto icon_enabled_color =
+        color_provider->GetColor(kColorAshButtonLabelColorBlue);
+    const bool is_disabled = GetState() == STATE_DISABLED;
+    label_view_->SetEnabledColor(
+        is_disabled ? ColorUtil::GetDisabledColor(label_enabled_color)
+                    : label_enabled_color);
+    checked_icon_view_->SetImage(gfx::CreateVectorIcon(
+        kHollowCheckCircleIcon,
+        is_disabled ? ColorUtil::GetDisabledColor(icon_enabled_color)
+                    : icon_enabled_color));
+  }
+
   views::Label* label_view_;
   views::ImageView* checked_icon_view_;
   const int id_;
@@ -242,10 +297,13 @@ END_METADATA
 
 CaptureModeMenuGroup::CaptureModeMenuGroup(Delegate* delegate,
                                            const gfx::VectorIcon& header_icon,
-                                           std::u16string header_label)
-    : delegate_(delegate) {
-  AddChildView(std::make_unique<CaptureModeMenuHeader>(
-      header_icon, std::move(header_label)));
+                                           std::u16string header_label,
+                                           bool managed_by_policy)
+    : delegate_(delegate),
+      menu_header_(AddChildView(
+          std::make_unique<CaptureModeMenuHeader>(header_icon,
+                                                  std::move(header_label),
+                                                  managed_by_policy))) {
   options_container_ = AddChildView(std::make_unique<views::View>());
   options_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
@@ -256,6 +314,10 @@ CaptureModeMenuGroup::CaptureModeMenuGroup(Delegate* delegate,
 
 CaptureModeMenuGroup::~CaptureModeMenuGroup() = default;
 
+bool CaptureModeMenuGroup::IsManagedByPolicy() const {
+  return menu_header_->is_managed_by_policy();
+}
+
 void CaptureModeMenuGroup::AddOption(std::u16string option_label,
                                      int option_id) {
   options_.push_back(
@@ -265,6 +327,12 @@ void CaptureModeMenuGroup::AddOption(std::u16string option_label,
           std::move(option_label), option_id,
           /*checked=*/delegate_->IsOptionChecked(option_id),
           /*enabled=*/delegate_->IsOptionEnabled(option_id))));
+}
+
+void CaptureModeMenuGroup::DeleteOptions() {
+  for (CaptureModeOption* option : options_)
+    options_container_->RemoveChildViewT(option);
+  options_.clear();
 }
 
 void CaptureModeMenuGroup::AddOrUpdateExistingOption(
@@ -307,9 +375,20 @@ bool CaptureModeMenuGroup::IsOptionChecked(int option_id) const {
   return option && option->IsOptionChecked();
 }
 
+bool CaptureModeMenuGroup::IsOptionEnabled(int option_id) const {
+  auto* option = GetOptionById(option_id);
+  return option && option->GetEnabled();
+}
+
 void CaptureModeMenuGroup::AppendHighlightableItems(
     std::vector<CaptureModeSessionFocusCycler::HighlightableView*>&
         highlightable_items) {
+  // The camera menu group can be hidden if there are no cameras connected. In
+  // this case no items in this group should be highlightable.
+  if (!GetVisible())
+    return;
+
+  highlightable_items.push_back(menu_header_);
   for (auto* option : options_) {
     if (option->GetEnabled())
       highlightable_items.push_back(option);
@@ -335,10 +414,7 @@ std::u16string CaptureModeMenuGroup::GetOptionLabelForTesting(
 }
 
 CaptureModeOption* CaptureModeMenuGroup::GetOptionById(int option_id) const {
-  auto iter =
-      base::ranges::find_if(options_, [option_id](CaptureModeOption* option) {
-        return option->id() == option_id;
-      });
+  auto iter = base::ranges::find(options_, option_id, &CaptureModeOption::id);
   return iter == options_.end() ? nullptr : *iter;
 }
 

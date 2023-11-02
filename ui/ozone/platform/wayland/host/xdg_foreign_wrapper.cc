@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@
 #include <xdg-foreign-unstable-v2-client-protocol.h>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/platform_window/platform_window_init_properties.h"
@@ -18,6 +20,8 @@ namespace ui {
 constexpr char XdgForeignWrapper::kInterfaceNameV1[];
 // static
 constexpr char XdgForeignWrapper::kInterfaceNameV2[];
+
+constexpr uint32_t kMinVersion = 1;
 
 using OnHandleExported = XdgForeignWrapper::OnHandleExported;
 
@@ -50,7 +54,7 @@ struct ExportedSurface {
   ~ExportedSurface() = default;
 
   // Surface that is exported.
-  wl_surface* surface_for_export = nullptr;
+  raw_ptr<wl_surface> surface_for_export = nullptr;
 
   // Exported |surface|.
   wl::Object<ExportedType> exported;
@@ -106,11 +110,9 @@ class XdgForeignWrapperImpl
   void ExportSurfaceInternal(wl_surface* surface, OnHandleExported cb);
 
   void OnWindowRemoved(WaylandWindow* window) override {
-    auto it = std::find_if(exported_surfaces_.begin(), exported_surfaces_.end(),
-                           [window](const auto& surface) {
-                             return window->root_surface()->surface() ==
-                                    surface.surface_for_export;
-                           });
+    auto it = base::ranges::find(
+        exported_surfaces_, window->root_surface()->surface(),
+        &ExportedSurface<ExportedType>::surface_for_export);
     if (it != exported_surfaces_.end())
       exported_surfaces_.erase(it);
   }
@@ -132,11 +134,9 @@ class XdgForeignWrapperImpl
         static_cast<XdgForeignWrapperImpl<ExporterType, ExportedType>*>(data);
     DCHECK(self);
 
-    auto exported_surface_it = std::find_if(
-        self->exported_surfaces_.begin(), self->exported_surfaces_.end(),
-        [exported](const auto& item) {
-          return item.exported.get() == exported;
-        });
+    auto exported_surface_it = base::ranges::find(
+        self->exported_surfaces_, exported,
+        [](const auto& item) { return item.exported.get(); });
     DCHECK(exported_surface_it != self->exported_surfaces_.end());
     exported_surface_it->exported_handle = handle;
 
@@ -146,7 +146,7 @@ class XdgForeignWrapperImpl
     exported_surface_it->callbacks.clear();
   }
 
-  WaylandConnection* const connection_;
+  const raw_ptr<WaylandConnection> connection_;
   wl::Object<ExporterType> exporter_;
   std::vector<ExportedSurface<ExportedType>> exported_surfaces_;
 };
@@ -162,7 +162,7 @@ void XdgForeignWrapperImpl<zxdg_exporter_v1, zxdg_exported_v1>::
   zxdg_exported_v1_add_listener(exported_surface.exported.get(),
                                 &kExportedListener, this);
   exported_surfaces_.emplace_back(std::move(exported_surface));
-  connection_->ScheduleFlush();
+  connection_->Flush();
 }
 
 template <>
@@ -176,7 +176,7 @@ void XdgForeignWrapperImpl<zxdg_exporter_v2, zxdg_exported_v2>::
   zxdg_exported_v2_add_listener(exported_surface.exported.get(),
                                 &kExportedListener, this);
   exported_surfaces_.emplace_back(std::move(exported_surface));
-  connection_->ScheduleFlush();
+  connection_->Flush();
 }
 
 // static
@@ -185,15 +185,17 @@ void XdgForeignWrapper::Instantiate(WaylandConnection* connection,
                                     uint32_t name,
                                     const std::string& interface,
                                     uint32_t version) {
-  if (connection->xdg_foreign_)
+  if (connection->xdg_foreign_ ||
+      !wl::CanBind(interface, version, kMinVersion, kMinVersion)) {
     return;
+  }
 
   if (interface == kInterfaceNameV1) {
-    connection->xdg_foreign_ =
-        CreateWrapper<zxdg_exporter_v1>(connection, registry, name, version);
+    connection->xdg_foreign_ = CreateWrapper<zxdg_exporter_v1>(
+        connection, registry, name, kMinVersion);
   } else if (interface == kInterfaceNameV2) {
-    connection->xdg_foreign_ =
-        CreateWrapper<zxdg_exporter_v2>(connection, registry, name, version);
+    connection->xdg_foreign_ = CreateWrapper<zxdg_exporter_v2>(
+        connection, registry, name, kMinVersion);
   } else {
     NOTREACHED() << " unexpected interface name: " << interface;
   }

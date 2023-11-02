@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
-#include "chromeos/network/mock_network_device_handler.h"
-#include "chromeos/network/network_device_handler.h"
+#include "chromeos/ash/components/network/mock_network_device_handler.h"
+#include "chromeos/ash/components/network/network_device_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -42,7 +42,7 @@ class DeviceDockMacAddressHandlerBaseTest : public testing::Test {
 
   ash::ScopedCrosSettingsTestHelper scoped_cros_settings_test_helper_;
 
-  testing::StrictMock<chromeos::MockNetworkDeviceHandler>
+  testing::StrictMock<ash::MockNetworkDeviceHandler>
       network_device_handler_mock_;
 
   std::unique_ptr<DeviceDockMacAddressHandler> device_dock_mac_address_handler_;

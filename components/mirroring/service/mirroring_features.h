@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,14 +12,19 @@
 namespace mirroring {
 namespace features {
 
-COMPONENT_EXPORT(MIRRORING_SERVICE)
-extern const base::Feature kOpenscreenCastStreamingSession;
+COMPONENT_EXPORT(MIRRORING_SERVICE) BASE_DECLARE_FEATURE(kCastStreamingAv1);
+
+COMPONENT_EXPORT(MIRRORING_SERVICE) BASE_DECLARE_FEATURE(kCastStreamingVp9);
 
 COMPONENT_EXPORT(MIRRORING_SERVICE)
-extern const base::Feature kCastStreamingAv1;
+BASE_DECLARE_FEATURE(kCastUseBlocklistForRemotingQuery);
 
 COMPONENT_EXPORT(MIRRORING_SERVICE)
-extern const base::Feature kCastStreamingVp9;
+BASE_DECLARE_FEATURE(kCastForceEnableRemotingQuery);
+
+// TODO(crbug.com/1363512): Remove support for sender side letterboxing.
+COMPONENT_EXPORT(MIRRORING_SERVICE)
+BASE_DECLARE_FEATURE(kCastDisableLetterboxing);
 
 bool IsCastStreamingAV1Enabled();
 

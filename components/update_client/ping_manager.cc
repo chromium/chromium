@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,11 +17,13 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/update_client/component.h"
 #include "components/update_client/configurator.h"
+#include "components/update_client/persisted_data.h"
 #include "components/update_client/protocol_definition.h"
 #include "components/update_client/protocol_handler.h"
 #include "components/update_client/protocol_serializer.h"
 #include "components/update_client/request_sender.h"
 #include "components/update_client/utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace update_client {
@@ -41,7 +43,9 @@ class PingSender : public base::RefCountedThreadSafe<PingSender> {
   PingSender(const PingSender&) = delete;
   PingSender& operator=(const PingSender&) = delete;
 
-  void SendPing(const Component& component, Callback callback);
+  void SendPing(const Component& component,
+                const PersistedData& metadata,
+                Callback callback);
 
  protected:
   virtual ~PingSender();
@@ -65,7 +69,9 @@ PingSender::~PingSender() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
-void PingSender::SendPing(const Component& component, Callback callback) {
+void PingSender::SendPing(const Component& component,
+                          const PersistedData& metadata,
+                          Callback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (component.events().empty()) {
@@ -89,18 +95,20 @@ void PingSender::SendPing(const Component& component, Callback callback) {
   callback_ = std::move(callback);
 
   std::vector<protocol_request::App> apps;
-  // TODO(crbug.com/1259972): We need to transmit cohort information as well.
-  // TODO(crbug.com/1259972): We need to transmit brand information as well.
   apps.push_back(MakeProtocolApp(
       component.id(), component.crx_component()->version,
-      component.crx_component()->ap, {} /* brand */, {} /* install_source */,
+      component.crx_component()->ap, component.crx_component()->brand,
+      config_->GetLang(), metadata.GetInstallDate(component.id()),
+      component.crx_component()->install_source,
       component.crx_component()->install_location,
       component.crx_component()->fingerprint,
-      component.crx_component()->installer_attributes, {} /* cohort */,
-      {} /* cohort name */, {} /* cohort hint */,
+      component.crx_component()->installer_attributes,
+      metadata.GetCohort(component.id()),
+      metadata.GetCohortHint(component.id()),
+      metadata.GetCohortName(component.id()),
       component.crx_component()->channel,
       component.crx_component()->disabled_reasons,
-      absl::nullopt /* update check */, absl::nullopt /* ping */,
+      absl::nullopt /* update check */, {} /* data */, absl::nullopt /* ping */,
       component.GetEvents()));
   request_sender_ = std::make_unique<RequestSender>(config_);
   request_sender_->Send(
@@ -109,9 +117,10 @@ void PingSender::SendPing(const Component& component, Callback callback) {
           MakeProtocolRequest(
               !config_->IsPerUserInstall(), component.session_id(),
               config_->GetProdId(), config_->GetBrowserVersion().GetString(),
-              config_->GetLang(), config_->GetChannel(),
-              config_->GetOSLongName(), config_->GetDownloadPreference(),
-              config_->ExtraRequestParams(), nullptr, std::move(apps))),
+              config_->GetChannel(), config_->GetOSLongName(),
+              config_->GetDownloadPreference(),
+              config_->IsMachineExternallyManaged(),
+              config_->ExtraRequestParams(), {}, std::move(apps))),
       false, base::BindOnce(&PingSender::SendPingComplete, this));
 }
 
@@ -131,11 +140,13 @@ PingManager::~PingManager() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
-void PingManager::SendPing(const Component& component, Callback callback) {
+void PingManager::SendPing(const Component& component,
+                           const PersistedData& metadata,
+                           Callback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   auto ping_sender = base::MakeRefCounted<PingSender>(config_);
-  ping_sender->SendPing(component, std::move(callback));
+  ping_sender->SendPing(component, metadata, std::move(callback));
 }
 
 }  // namespace update_client

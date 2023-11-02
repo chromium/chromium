@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "base/containers/flat_map.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "components/exo/key_state.h"
 #include "components/exo/keyboard_observer.h"
 #include "components/exo/seat_observer.h"
@@ -65,7 +66,10 @@ class Keyboard : public ui::EventHandler,
   void OnSurfaceDestroying(Surface* surface) override;
 
   // Overridden from SeatObserver:
-  void OnSurfaceFocused(Surface* gained_focus) override;
+  void OnSurfaceFocused(Surface* gained_focus,
+                        Surface* lost_focus,
+                        bool has_focused_surface) override;
+  void OnKeyboardModifierUpdated() override;
 
   // Overridden from ash::KeyboardControllerObserver:
   void OnKeyboardEnableFlagsChanged(

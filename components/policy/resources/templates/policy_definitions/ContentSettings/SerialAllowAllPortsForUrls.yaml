@@ -1,0 +1,28 @@
+caption: Automatically grant permission to sites to connect all serial ports.
+desc: |-
+  Setting the policy allows you to list sites which are automatically granted permission to access all available serial ports.
+
+        The URLs must be valid, otherwise the policy is ignored. Only the origin (scheme, host and port) of the URL is considered.
+
+        On <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>, this policy only applies to affiliated users.
+
+        This policy overrides <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME">DefaultSerialGuardSetting</ph>, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME">SerialAskForUrls</ph>, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME">SerialBlockedForUrls</ph> and the user's preferences.
+example_value:
+- https://www.example.com
+features:
+  dynamic_refresh: true
+  per_profile: false
+future_on:
+- fuchsia
+owners:
+- reillyg@chromium.org
+- file://content/browser/serial/OWNERS
+schema:
+  items:
+    type: string
+  type: array
+supported_on:
+- chrome_os:94-
+- chrome.*:94-
+tags: []
+type: list

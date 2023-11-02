@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 
 namespace chrome_test_util {
 
-// Returns a matcher for a TableViewIdentityCell based on the |email|.
+// Returns a matcher for a TableViewIdentityCell based on the `email`.
 id<GREYMatcher> IdentityCellMatcherForEmail(NSString* email);
 
 // Returns a matcher for the done button in advanced settings.

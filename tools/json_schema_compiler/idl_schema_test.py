@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -191,7 +191,7 @@ class IdlSchemaTest(unittest.TestCase):
   def testAllPlatformsNamespace(self):
     schema = idl_schema.Load('test/idl_namespace_all_platforms.idl')[0]
     self.assertEqual('idl_namespace_all_platforms', schema['namespace'])
-    expected = ['chromeos', 'linux', 'mac', 'win']
+    expected = ['chromeos', 'fuchsia', 'linux', 'mac', 'win']
     self.assertEqual(expected, schema['platforms'])
 
   def testNonSpecificPlatformsNamespace(self):

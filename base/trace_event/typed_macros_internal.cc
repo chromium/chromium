@@ -1,11 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/trace_event/typed_macros_internal.h"
 
+#include "base/notreached.h"
 #include "base/time/time.h"
-#include "base/trace_event/thread_instruction_count.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
 
@@ -15,12 +15,6 @@ base::ThreadTicks ThreadNow() {
   return base::ThreadTicks::IsSupported()
              ? base::subtle::ThreadTicksNowIgnoringOverride()
              : base::ThreadTicks();
-}
-
-base::trace_event::ThreadInstructionCount ThreadInstructionNow() {
-  return base::trace_event::ThreadInstructionCount::IsSupported()
-             ? base::trace_event::ThreadInstructionCount::Now()
-             : base::trace_event::ThreadInstructionCount();
 }
 
 base::trace_event::PrepareTrackEventFunction g_typed_event_callback = nullptr;
@@ -76,13 +70,15 @@ void ResetTypedTraceEventsForTesting() {
 
 TrackEventHandle::TrackEventHandle(TrackEvent* event,
                                    IncrementalState* incremental_state,
-                                   CompletionListener* listener)
+                                   CompletionListener* listener,
+                                   bool filter_debug_annotations)
     : event_(event),
       incremental_state_(incremental_state),
-      listener_(listener) {}
+      listener_(listener),
+      filter_debug_annotations_(filter_debug_annotations) {}
 
 TrackEventHandle::TrackEventHandle()
-    : TrackEventHandle(nullptr, nullptr, nullptr) {}
+    : TrackEventHandle(nullptr, nullptr, nullptr, false) {}
 
 TrackEventHandle::~TrackEventHandle() {
   if (listener_)
@@ -134,7 +130,7 @@ base::trace_event::TrackEventHandle CreateTrackEvent(
   if (!g_typed_event_callback)
     return base::trace_event::TrackEventHandle();
 
-  const int thread_id = static_cast<int>(base::PlatformThread::CurrentId());
+  const auto thread_id = base::PlatformThread::CurrentId();
   auto* trace_log = base::trace_event::TraceLog::GetInstance();
   DCHECK(trace_log);
 
@@ -164,16 +160,14 @@ base::trace_event::TrackEventHandle CreateTrackEvent(
   // Only emit thread time / instruction count for events on the default track
   // without explicit timestamp.
   base::ThreadTicks thread_now;
-  base::trace_event::ThreadInstructionCount thread_instruction_now;
   if ((flags & TRACE_EVENT_FLAG_EXPLICIT_TIMESTAMP) == 0 && !explicit_track) {
     thread_now = ThreadNow();
-    thread_instruction_now = ThreadInstructionNow();
   }
 
   base::trace_event::TraceEvent event(
-      thread_id, ts, thread_now, thread_instruction_now, phase,
-      category_group_enabled, name.value, trace_event_internal::kGlobalScope,
-      trace_event_internal::kNoId, trace_event_internal::kNoId, nullptr, flags);
+      thread_id, ts, thread_now, phase, category_group_enabled, name.value,
+      trace_event_internal::kGlobalScope, trace_event_internal::kNoId,
+      trace_event_internal::kNoId, nullptr, flags);
 
   return g_typed_event_callback(&event);
 }

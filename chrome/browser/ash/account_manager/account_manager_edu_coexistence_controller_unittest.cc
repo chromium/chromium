@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,17 +7,16 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/account_manager/account_manager_factory.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/values.h"
 #include "chrome/browser/ash/child_accounts/edu_coexistence_tos_store_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/browser/ui/webui/chromeos/edu_coexistence/edu_coexistence_login_handler_chromeos.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_facade.h"
@@ -108,7 +107,7 @@ class AccountManagerEducoexistenceControllerTest : public testing::Test {
 };
 
 void AccountManagerEducoexistenceControllerTest::SetUp() {
-  testing_profile_.SetSupervisedUserId(supervised_users::kChildAccountSUID);
+  testing_profile_.SetIsSupervisedProfile();
   account_manager_ = g_browser_process->platform_part()
                          ->GetAccountManagerFactory()
                          ->GetAccountManager(profile()->GetPath().value());

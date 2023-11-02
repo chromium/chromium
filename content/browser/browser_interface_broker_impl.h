@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_BROWSER_INTERFACE_BROKER_IMPL_H_
 #define CONTENT_BROWSER_BROWSER_INTERFACE_BROKER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/browser_interface_binders.h"
 #include "content/browser/mojo_binder_policy_applier.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
@@ -94,14 +95,14 @@ class BrowserInterfaceBrokerImpl : public blink::mojom::BrowserInterfaceBroker {
     }
   }
 
-  ExecutionContextHost* const host_;
+  const raw_ptr<ExecutionContextHost> host_;
   mojo::BinderMap binder_map_;
   mojo::BinderMapWithContext<InterfaceBinderContext> binder_map_with_context_;
 
   // The lifetime of `policy_applier_` is managed by the owner of this instance.
   // The owner should call `ReleaseMojoBinderPolicies()` when it destroys the
   // applier.
-  MojoBinderPolicyApplier* policy_applier_ = nullptr;
+  raw_ptr<MojoBinderPolicyApplier> policy_applier_ = nullptr;
 };
 
 }  // namespace content

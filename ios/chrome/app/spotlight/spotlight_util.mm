@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,11 @@
 
 #import <CoreSpotlight/CoreSpotlight.h>
 
-#include "base/metrics/histogram_macros.h"
-#include "base/notreached.h"
-#include "base/strings/sys_string_conversions.h"
-#include "build/branding_buildflags.h"
-#include "url/gurl.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
+#import "build/branding_buildflags.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -101,7 +101,7 @@ const char kSpotlightLastIndexingVersionKey[] = "SpotlightLastIndexingVersion";
 // The current version of the Spotlight index format.
 // Change this value if there are change int the information indexed in
 // Spotlight. This will force reindexation on next startup.
-// Value is stored in |kSpotlightLastIndexingVersionKey|.
+// Value is stored in `kSpotlightLastIndexingVersionKey`.
 const int kCurrentSpotlightIndexVersion = 3;
 
 Domain SpotlightDomainFromString(NSString* domain) {

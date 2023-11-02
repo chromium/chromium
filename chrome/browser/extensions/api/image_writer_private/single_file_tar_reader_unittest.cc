@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -81,6 +81,16 @@ TEST_F(SingleFileTarReaderTest, ReadOctalNumber) {
                                         0x00, 0x02, 0x0b, 0xc1, 0x3a, 0x00};
   EXPECT_EQ(8787147264u, SingleFileTarReader::ReadOctalNumber(
                              reinterpret_cast<const char*>(kBigNumber), 12));
+}
+
+// Verify that it handles empty file as "complete".
+TEST_F(SingleFileTarReaderTest, EmptyFile) {
+  base::FilePath test_data_dir;
+  ASSERT_TRUE(GetTestDataDirectory(&test_data_dir));
+  ASSERT_TRUE(OpenTarFile(test_data_dir.AppendASCII("empty_file.tar")));
+
+  EXPECT_EQ(SingleFileTarReader::Result::kSuccess, reader().ExtractChunk());
+  EXPECT_TRUE(reader().IsComplete());
 }
 
 }  // namespace image_writer

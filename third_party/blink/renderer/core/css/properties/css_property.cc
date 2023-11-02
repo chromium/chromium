@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,10 @@ namespace blink {
 
 const CSSProperty& GetCSSPropertyVariable() {
   return To<CSSProperty>(GetCSSPropertyVariableInternal());
+}
+
+bool CSSProperty::HasEqualCSSPropertyName(const CSSProperty& other) const {
+  return property_id_ == other.property_id_;
 }
 
 const CSSProperty& CSSProperty::Get(CSSPropertyID id) {

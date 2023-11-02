@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,11 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
+#include "build/build_config.h"
 #include "components/google/core/common/google_util.h"
 #include "components/variations/net/omnibox_http_headers.h"
 #include "components/variations/variations_features.h"
@@ -22,6 +24,12 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_IOS)
+#include "base/command_line.h"
+#include "components/variations/net/variations_flags.h"
+#include "net/base/url_util.h"
+#endif  // BUILDFLAG(IS_IOS)
 
 namespace variations {
 
@@ -76,12 +84,23 @@ void LogRequestContextHistogram(RequestContextCategory result) {
 // Returns a URLValidationResult for |url|. A valid URL for headers has the
 // following qualities: (i) it is well-formed, (ii) its scheme is HTTPS, and
 // (iii) it has a Google-associated domain.
+// On iOS, it is possible to pass the headers to localhost request if a flag
+// is passed. This is needed for tests as EmbeddedTestServer is only
+// accessible using 127.0.0.1. See crrev.com/c/3507791 for details.
 URLValidationResult GetUrlValidationResult(const GURL& url) {
   if (!url.is_valid())
     return URLValidationResult::kNotValidInvalidUrl;
 
   if (!url.SchemeIsHTTPOrHTTPS())
     return URLValidationResult::kNotValidNeitherHttpHttps;
+
+#if BUILDFLAG(IS_IOS)
+  if (net::IsLocalhost(url) &&
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kAppendVariationsHeadersToLocalhostForTesting)) {
+    return URLValidationResult::kShouldAppend;
+  }
+#endif  // BUILDFLAG(IS_IOS)
 
   if (!google_util::IsGoogleAssociatedDomainUrl(url))
     return URLValidationResult::kNotValidNotGoogleDomain;
@@ -138,15 +157,16 @@ bool IsFirstPartyContext(Owner owner,
     LogRequestContextHistogram(kNonGooglePageInitiated);
     return false;
   }
-  if (resource_request.is_main_frame) {
+  if (resource_request.is_outermost_main_frame) {
     // The request is from a Google-associated page--not a subframe--e.g. a
     // request from https://calendar.google.com/.
     LogRequestContextHistogram(kGooglePageInitiated);
     return true;
   }
-  // |is_main_frame| is false, so the request was initiated by a subframe, and
-  // we need to determine whether the top-level page in which the frame is
-  // embedded is a Google-owned web property.
+  // |is_outermost_main_frame| is false, so the request was initiated by a
+  // subframe (or embedded main frame like a fenced frame), and we need to
+  // determine whether the top-level page in which the frame is embedded is a
+  // Google-owned web property.
   //
   // If TrustedParams is populated, then we can use it to determine the request
   // context. If not, e.g. for subresource requests, we use |owner|.
@@ -285,7 +305,7 @@ class VariationsHeaderHelper {
         GetVisibilityKey(owner, resource_request));
   }
 
-  network::ResourceRequest* resource_request_;
+  raw_ptr<network::ResourceRequest> resource_request_;
   std::string variations_header_;
 };
 

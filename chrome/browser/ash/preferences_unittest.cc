@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_member.h"
 #include "components/sync/base/client_tag_hash.h"
@@ -32,8 +33,8 @@
 #include "components/sync/model/syncable_service.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/preference_specifics.pb.h"
-#include "components/sync/test/model/fake_sync_change_processor.h"
-#include "components/sync/test/model/sync_error_factory_mock.h"
+#include "components/sync/test/fake_sync_change_processor.h"
+#include "components/sync/test/sync_error_factory_mock.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -63,9 +64,7 @@ CreatePrefSyncData(const std::string& name, const base::Value& value) {
   json.Serialize(value);
   sync_pb::EntitySpecifics specifics;
   sync_pb::PreferenceSpecifics* pref =
-      features::IsSyncSettingsCategorizationEnabled()
-          ? specifics.mutable_os_preference()->mutable_preference()
-          : specifics.mutable_preference();
+      specifics.mutable_os_preference()->mutable_preference();
   pref->set_name(name);
   pref->set_value(serialized);
   return syncer::SyncData::CreateRemoteData(
@@ -101,10 +100,9 @@ class MyMockInputMethodManager : public MockInputMethodManagerImpl {
       *result = *input_method_extensions_;
     }
 
-    void AddInputMethodExtension(
-        const std::string& id,
-        const InputMethodDescriptors& descriptors,
-        ui::IMEEngineHandlerInterface* instance) override {
+    void AddInputMethodExtension(const std::string& id,
+                                 const InputMethodDescriptors& descriptors,
+                                 ui::TextInputMethod* instance) override {
       InputMethodDescriptor descriptor(
           id, std::string(), std::string(), std::string(),
           std::vector<std::string>(), false, GURL(), GURL());
@@ -152,15 +150,15 @@ class PreferencesTest : public testing::Test {
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
 
-    auto* user_manager = new FakeChromeUserManager();
+    user_manager_ = new FakeChromeUserManager();
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(user_manager));
+        base::WrapUnique(user_manager_));
 
     const char test_user_email[] = "test_user@example.com";
     const AccountId test_account_id(AccountId::FromUserEmail(test_user_email));
-    test_user_ = user_manager->AddUser(test_account_id);
-    user_manager->LoginUser(test_account_id);
-    user_manager->SwitchActiveUser(test_account_id);
+    test_user_ = user_manager_->AddUser(test_account_id);
+    user_manager_->LoginUser(test_account_id);
+    user_manager_->SwitchActiveUser(test_account_id);
 
     test_profile_ = profile_manager_->CreateTestingProfile(
         chrome::kInitialProfile);
@@ -172,15 +170,24 @@ class PreferencesTest : public testing::Test {
     current_input_method_.Init(
         prefs::kLanguageCurrentInputMethod, pref_service_);
     current_input_method_.SetValue("KeyboardB");
+    consumer_auto_update_toggle_.Init(::prefs::kConsumerAutoUpdateToggle,
+                                      g_browser_process->local_state());
+    consumer_auto_update_toggle_.SetValue(true);
 
     mock_manager_ = new input_method::MyMockInputMethodManager(
         &previous_input_method_, &current_input_method_);
     input_method::InitializeForTesting(mock_manager_);
 
+    fake_update_engine_client_ = UpdateEngineClient::InitializeFakeForTest();
+
     prefs_ = std::make_unique<Preferences>(mock_manager_);
   }
 
   void TearDown() override {
+    // `prefs_` accesses UpdateEngineClient in its destructor.
+    prefs_.reset();
+    UpdateEngineClient::Shutdown();
+
     input_method::Shutdown();
     // UserSessionManager doesn't listen to profile destruction, so make sure
     // the default IME state isn't still cached in case test_profile_ is
@@ -200,12 +207,16 @@ class PreferencesTest : public testing::Test {
   std::unique_ptr<Preferences> prefs_;
   StringPrefMember previous_input_method_;
   StringPrefMember current_input_method_;
+  BooleanPrefMember consumer_auto_update_toggle_;
+  base::test::ScopedFeatureList feature_list_;
 
   // Not owned.
+  FakeChromeUserManager* user_manager_;
   const user_manager::User* test_user_;
   TestingProfile* test_profile_;
   sync_preferences::TestingPrefServiceSyncable* pref_service_;
   input_method::MyMockInputMethodManager* mock_manager_;
+  FakeUpdateEngineClient* fake_update_engine_client_;
 };
 
 TEST_F(PreferencesTest, TestUpdatePrefOnBrowserScreenDetails) {
@@ -217,18 +228,55 @@ TEST_F(PreferencesTest, TestUpdatePrefOnBrowserScreenDetails) {
   EXPECT_EQ("KeyboardB", mock_manager_->last_input_method_id_);
 }
 
-class InputMethodPreferencesTest : public PreferencesTest,
-                                   public ::testing::WithParamInterface<bool> {
- public:
-  InputMethodPreferencesTest() {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(features::kSyncSettingsCategorization);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          features::kSyncSettingsCategorization);
-    }
-  }
+TEST_F(PreferencesTest, TestConsumerAutoUpdateToggleOnSignals) {
+  InitPreferences();
 
+  auto CreateCAUFeatureStatus = [](bool enabled) {
+    update_engine::StatusResult status;
+    auto* feature = status.add_features();
+    feature->set_name(update_engine::kFeatureConsumerAutoUpdate);
+    feature->set_enabled(enabled);
+    return status;
+  };
+
+  consumer_auto_update_toggle_.SetValue(true);
+
+  fake_update_engine_client_->NotifyObserversThatStatusChanged(
+      CreateCAUFeatureStatus(false));
+  EXPECT_FALSE(consumer_auto_update_toggle_.GetValue());
+
+  fake_update_engine_client_->NotifyObserversThatStatusChanged(
+      CreateCAUFeatureStatus(true));
+  EXPECT_TRUE(consumer_auto_update_toggle_.GetValue());
+}
+
+TEST_F(PreferencesTest, TestDeviceOwnerInitCAUFeatureEnabled) {
+  feature_list_.InitAndEnableFeature(
+      features::kConsumerAutoUpdateToggleAllowed);
+  user_manager_->SetOwnerId(test_user_->GetAccountId());
+  InitPreferences();
+  EXPECT_EQ(0, fake_update_engine_client_->toggle_feature_count());
+  EXPECT_EQ(1, fake_update_engine_client_->is_feature_enabled_count());
+}
+
+TEST_F(PreferencesTest, TestDeviceOwnerInitCAUFeatureDisabled) {
+  feature_list_.InitAndDisableFeature(
+      features::kConsumerAutoUpdateToggleAllowed);
+  user_manager_->SetOwnerId(test_user_->GetAccountId());
+  InitPreferences();
+  EXPECT_EQ(1, fake_update_engine_client_->toggle_feature_count());
+  EXPECT_EQ(0, fake_update_engine_client_->is_feature_enabled_count());
+}
+
+TEST_F(PreferencesTest, TestNonDeviceOwnerInitCAUCheck) {
+  InitPreferences();
+  EXPECT_EQ(0, fake_update_engine_client_->toggle_feature_count());
+  EXPECT_EQ(1, fake_update_engine_client_->is_feature_enabled_count());
+}
+
+class InputMethodPreferencesTest : public PreferencesTest {
+ public:
+  InputMethodPreferencesTest() = default;
   InputMethodPreferencesTest(const InputMethodPreferencesTest&) = delete;
   InputMethodPreferencesTest& operator=(const InputMethodPreferencesTest&) =
       delete;
@@ -381,13 +429,9 @@ class InputMethodPreferencesTest : public PreferencesTest,
   // Simulates the initial sync of preferences.
   syncer::SyncableService* SyncPreferences(
       const syncer::SyncDataList& sync_data_list) {
-    // SyncSettingsCategorization moves IME prefs to be OS prefs.
-    syncer::ModelType model_type =
-        features::IsSyncSettingsCategorizationEnabled() ? syncer::OS_PREFERENCES
-                                                        : syncer::PREFERENCES;
     syncer::SyncableService* sync =
-        pref_service_->GetSyncableService(model_type);
-    sync->MergeDataAndStartSyncing(model_type, sync_data_list,
+        pref_service_->GetSyncableService(syncer::OS_PREFERENCES);
+    sync->MergeDataAndStartSyncing(syncer::OS_PREFERENCES, sync_data_list,
                                    std::unique_ptr<syncer::SyncChangeProcessor>(
                                        new syncer::FakeSyncChangeProcessor),
                                    std::unique_ptr<syncer::SyncErrorFactory>(
@@ -402,12 +446,10 @@ class InputMethodPreferencesTest : public PreferencesTest,
   StringPrefMember preload_engines_syncable_;
   StringPrefMember enabled_imes_;
   StringPrefMember enabled_imes_syncable_;
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that the server values are added to the values chosen at OOBE.
-TEST_P(InputMethodPreferencesTest, TestOobeAndSync) {
+TEST_F(InputMethodPreferencesTest, TestOobeAndSync) {
   // Choose options at OOBE.
   pref_service_->SetBoolean(
       prefs::kLanguageShouldMergeInputMethods, true);
@@ -485,7 +527,7 @@ TEST_P(InputMethodPreferencesTest, TestOobeAndSync) {
 }
 
 // Tests that logging in after sync has completed changes nothing.
-TEST_P(InputMethodPreferencesTest, TestLogIn) {
+TEST_F(InputMethodPreferencesTest, TestLogIn) {
   // Set up existing preference values.
   std::string languages("es");
   std::string preload_engines(ToInputMethodIds("xkb:es::spa"));
@@ -524,7 +566,7 @@ TEST_P(InputMethodPreferencesTest, TestLogIn) {
 
 // Tests that logging in with preferences from before a) XKB component
 // extensions and b) the IME syncing logic doesn't overwrite settings.
-TEST_P(InputMethodPreferencesTest, TestLogInLegacy) {
+TEST_F(InputMethodPreferencesTest, TestLogInLegacy) {
   // Simulate existing local preferences from M-36.
   SetLocalValues("es", "xkb:es::spa", kIdentityIMEID);
   InitPreferences();
@@ -558,7 +600,7 @@ TEST_P(InputMethodPreferencesTest, TestLogInLegacy) {
 }
 
 // Tests some edge cases: empty strings, lots of values, duplicates.
-TEST_P(InputMethodPreferencesTest, MergeStressTest) {
+TEST_F(InputMethodPreferencesTest, MergeStressTest) {
   SetLocalValues("hr,lv,lt,es-419,he,el,da,ca,es,cs,bg",
                  ToInputMethodIds("xkb:es::spa,xkb:us::eng"),
                  std::string());
@@ -608,7 +650,7 @@ TEST_P(InputMethodPreferencesTest, MergeStressTest) {
 }
 
 // Tests non-existent IDs.
-TEST_P(InputMethodPreferencesTest, MergeInvalidValues) {
+TEST_F(InputMethodPreferencesTest, MergeInvalidValues) {
   SetLocalValues("es",
                  ToInputMethodIds("xkb:es::spa,xkb:us::eng"),
                  kIdentityIMEID);
@@ -643,7 +685,7 @@ TEST_P(InputMethodPreferencesTest, MergeInvalidValues) {
 
 // Tests that we merge input methods even if syncing has started before
 // initialization of Preferences.
-TEST_P(InputMethodPreferencesTest, MergeAfterSyncing) {
+TEST_F(InputMethodPreferencesTest, MergeAfterSyncing) {
   SetLocalValues("es",
                  ToInputMethodIds("xkb:es::spa,xkb:us::eng"),
                  kIdentityIMEID);
@@ -684,7 +726,5 @@ TEST_P(InputMethodPreferencesTest, MergeAfterSyncing) {
         std::string(kIdentityIMEID) + "," + kUnknownIMEID);
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(All, InputMethodPreferencesTest, testing::Bool());
 
 }  // namespace ash

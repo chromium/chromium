@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,11 @@
 #define CHROME_BROWSER_BITMAP_FETCHER_BITMAP_FETCHER_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class BitmapFetcherService;
 
-class BitmapFetcherServiceFactory : BrowserContextKeyedServiceFactory {
+class BitmapFetcherServiceFactory : ProfileKeyedServiceFactory {
  public:
   // TODO(groby): Maybe make this GetForProfile?
   static BitmapFetcherService* GetForBrowserContext(

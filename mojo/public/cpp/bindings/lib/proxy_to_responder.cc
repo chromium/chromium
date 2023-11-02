@@ -1,10 +1,12 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "mojo/public/cpp/bindings/lib/proxy_to_responder.h"
 
 #include <cstring>
+
+#include "mojo/public/cpp/bindings/message.h"
 
 namespace mojo {
 namespace internal {
@@ -20,7 +22,7 @@ ProxyToResponder::ProxyToResponder(
 ProxyToResponder::~ProxyToResponder() {
   // If the Callback was dropped then deleting the responder will close
   // the pipe so the calling application knows to stop waiting for a reply.
-  responder_ = nullptr;
+  responder_.reset();
 }
 
 }  // namespace internal

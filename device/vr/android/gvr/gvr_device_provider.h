@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "device/vr/public/cpp/vr_device_provider.h"
 #include "device/vr/vr_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -25,16 +24,7 @@ class DEVICE_VR_EXPORT GvrDeviceProvider : public VRDeviceProvider {
 
   ~GvrDeviceProvider() override;
 
-  void Initialize(
-      base::RepeatingCallback<void(mojom::XRDeviceId,
-                                   mojom::VRDisplayInfoPtr,
-                                   mojom::XRDeviceDataPtr,
-                                   mojo::PendingRemote<mojom::XRRuntime>)>
-          add_device_callback,
-      base::RepeatingCallback<void(mojom::XRDeviceId)> remove_device_callback,
-      base::OnceClosure initialization_complete,
-      XrFrameSinkClientFactory xr_frame_sink_client_factory) override;
-
+  void Initialize(VRDeviceProviderClient* client) override;
   bool Initialized() override;
 
  private:

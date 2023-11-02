@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,6 +31,8 @@ enum class PlatformKeyboardHookTypes;
 
 class CursorFactory;
 class GpuPlatformSupportHost;
+class ImeKeyEventDispatcher;
+class InputMethod;
 class InputController;
 class KeyEvent;
 class OverlayManagerOzone;
@@ -45,11 +47,6 @@ class PlatformUserInputMonitor;
 class PlatformUtils;
 class SurfaceFactoryOzone;
 class SystemInputInjector;
-
-namespace internal {
-class InputMethodDelegate;
-}  // namespace internal
-class InputMethod;
 
 struct PlatformWindowInitProperties;
 
@@ -125,16 +122,8 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // Determines if the platform supports vulkan swap chain.
     bool supports_vulkan_swap_chain = false;
 
-    // Linux only: determines if the platform uses the external Vulkan image
-    // factory.
-    bool uses_external_vulkan_image_factory = false;
-
     // Linux only: determines if Skia can fall back to the X11 output device.
     bool skia_can_fall_back_to_x11 = false;
-
-    // Wayland only: determines whether BufferQueue needs a background image to
-    // be stacked below an AcceleratedWidget to make a widget opaque.
-    bool needs_background_image = false;
 
     // Wayland only: determines whether windows which are not top level ones
     // should be given parents explicitly.
@@ -155,7 +144,7 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // back via gpu extra info.
     bool fetch_buffer_formats_for_gmb_on_gpu = false;
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
     // TODO(crbug.com/1116701): add vaapi support for other Ozone platforms on
     // Linux. At the moment, VA-API Linux implementation supports only X11
     // backend. This implementation must be refactored to support Ozone
@@ -195,6 +184,21 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // Wayland only: determines whether solid color overlays can be delegated
     // without a backing image via a wayland protocol.
     bool supports_non_backed_solid_color_buffers = false;
+
+    // Indicates whether the platform supports native pixmaps.
+    bool supports_native_pixmaps = false;
+
+    // Wayland only: determines whether BufferQueue needs a background image to
+    // be stacked below an AcceleratedWidget to make a widget opaque.
+    bool needs_background_image = false;
+
+    // Wayland only: determines whether clip rects can be delegated via the
+    // wayland protocol.
+    bool supports_clip_rect = false;
+
+    // Wayland only: determine whether toplevel surfaces can be activated and
+    // deactivated.
+    bool supports_activation = false;
   };
 
   // Corresponds to chrome_browser_main_extra_parts.h.
@@ -225,14 +229,19 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
   // Initializes the subsystems/resources necessary for the UI process (e.g.
   // events) with additional properties to customize the ozone platform
   // implementation. Ozone will not retain InitParams after returning from
-  // InitalizeForUI.
-  static void InitializeForUI(const InitParams& args);
+  // InitializeForUI.
+  // Returns whether the initialisation completed successfully.  Should this
+  // have returned false, the browser must stop the startup and exit because it
+  // would not be able to work normally.
+  static bool InitializeForUI(const InitParams& args);
 
   // Initializes the subsystems for rendering but with additional properties
   // provided by |args| as with InitalizeForUI.
   static void InitializeForGPU(const InitParams& args);
 
   static OzonePlatform* GetInstance();
+
+  static bool IsInitialized();
 
   // Returns the current ozone platform name.
   // Some tests may skip based on the platform name.
@@ -260,7 +269,7 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
   virtual void InitScreen(PlatformScreen* screen) = 0;
   virtual PlatformClipboard* GetPlatformClipboard();
   virtual std::unique_ptr<InputMethod> CreateInputMethod(
-      internal::InputMethodDelegate* delegate,
+      ImeKeyEventDispatcher* ime_key_event_dispatcher,
       gfx::AcceleratedWidget widget) = 0;
   virtual PlatformGLEGLUtility* GetPlatformGLEGLUtility();
   virtual PlatformMenuUtils* GetPlatformMenuUtils();
@@ -338,12 +347,26 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
 
   bool single_process() const { return single_process_; }
 
+  static bool ShouldFailInitializeUIForTest();
+
  private:
+  friend class OzonePlatformTest;
+
+  // For platforms that may fail at the early stage of initialising, sets so
+  // that they fail.
+  // See https://crbug.com/1280138.
+  static void SetFailInitializeUIForTest(bool fail);
+
   // Optional method for pre-early initialization. In case of X11, sets X11
   // error handlers so that errors can be caught if early initialization fails.
   virtual void PreEarlyInitialize();
 
-  virtual void InitializeUI(const InitParams& params) = 0;
+  // Initialises the platform in the UI process.  Returns whether that completed
+  // successfully, i. e., the startup process may proceed further.
+  // The platform implementation must check all conditions critical for normal
+  // operation, and return false if any of them are not met (e. g., the display
+  // server is not available).
+  virtual bool InitializeUI(const InitParams& params) = 0;
   virtual void InitializeGPU(const InitParams& params) = 0;
 
   bool initialized_ui_ = false;

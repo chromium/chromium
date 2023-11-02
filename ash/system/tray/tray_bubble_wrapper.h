@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,10 +18,16 @@ class TrayBubbleView;
 // Creates and manages the Widget and EventFilter components of a bubble.
 // TODO(tetsui): Remove this and use TrayBubbleBase for all bubbles.
 class ASH_EXPORT TrayBubbleWrapper : public TrayBubbleBase,
-                                     public views::WidgetObserver,
                                      public ::wm::ActivationChangeObserver {
  public:
-  TrayBubbleWrapper(TrayBackgroundView* tray, TrayBubbleView* bubble_view);
+  // `event_handling` When set to false disables the tray's event filtering
+  // and also ignores the activation events. Eche window is an example of a use
+  // case in which we do not want the keyboard events (both inside and outside
+  // of the bubble) be filtered and also we do not want activaion of other
+  // windows closes the bubble.
+  TrayBubbleWrapper(TrayBackgroundView* tray,
+                    TrayBubbleView* bubble_view,
+                    bool event_handling = true);
 
   TrayBubbleWrapper(const TrayBubbleWrapper&) = delete;
   TrayBubbleWrapper& operator=(const TrayBubbleWrapper&) = delete;
@@ -51,6 +57,13 @@ class ASH_EXPORT TrayBubbleWrapper : public TrayBubbleBase,
   TrayBackgroundView* tray_;
   TrayBubbleView* bubble_view_;  // unowned
   views::Widget* bubble_widget_;
+
+  // When set to false disables the tray's event filtering
+  // and also ignores the activation events. Eche window is an example of a use
+  // case in which we do not want the keyboard events (both inside and outside
+  // of the bubble) be filtered and also we do not want activaion of other
+  // windows closes the bubble.
+  const bool event_handling_;
 };
 
 }  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -83,15 +84,17 @@ enum MergeMode {
   kRecursivelyMergeSingleTokenSubset = 1 << 6,
   // If one is a substring of the other use the most recent one.
   kUseMostRecentSubstring = 1 << 7,
-  // Merge the child nodes and reformat the node from its children after merge
-  // if the value has changed.
+  // If the tokens match or one is a subset of the other, pick the shorter one.
   kPickShorterIfOneContainsTheOther = 1 << 8,
   // If the normalized values are different, use the better one in terms
   // of verification score or the most recent one if both scores are the same.
   kUseBetterOrMostRecentIfDifferent = 1 << 9,
-  // Defines the default merging behavior.
+  // Merge the child nodes and reformat the node from its children after merge
+  // if the value has changed.
   kMergeChildrenAndReformatIfNeeded = 1 << 10,
-  // If the tokens match or one is a subset of the other, pick the shorter one.
+  // Make a merge decision based on canonicalized values.
+  kMergeBasedOnCanonicalizedValues = 1 << 11,
+  // Defines the default merging behavior.
   kDefault = kRecursivelyMergeTokenEquivalentValues
 };
 
@@ -180,6 +183,10 @@ class AddressComponent {
   // Returns a constant reference to |value_.value()|. If the value is not
   // assigned, an empty string is returned.
   const std::u16string& GetValue() const;
+
+  // Returns a canonicalized version of the value or absl::nullopt if
+  // canonicalization is not possible or not implemented.
+  virtual absl::optional<std::u16string> GetCanonicalizedValue() const;
 
   // Returns true if the value of this AddressComponent is assigned.
   bool IsValueAssigned() const;
@@ -367,6 +374,12 @@ class AddressComponent {
                                         bool* validity_status,
                                         bool wipe_if_not = false);
 
+  // While merging two structured addresses, if only one of them has their
+  // country set, the other should assume the non-empty one while merging. This
+  // is required to do consistent address rewriting.
+  // Returns the common country to be used.
+  std::u16string GetCommonCountryForMerge(const AddressComponent& other) const;
+
   // Deletes the stored structure and returns true if |IsStructureValid()|
   // returns false.
   virtual bool WipeInvalidStructure();
@@ -415,8 +428,9 @@ class AddressComponent {
   void SetMergeModeForTesting(int merge_mode) { merge_mode_ = merge_mode; }
 
   // Returns the value used for comparison for testing purposes.
-  std::u16string ValueForComparisonForTesting() const {
-    return ValueForComparison();
+  std::u16string ValueForComparisonForTesting(
+      const AddressComponent& other) const {
+    return ValueForComparison(other);
   }
 #endif
 
@@ -503,7 +517,10 @@ class AddressComponent {
   // In the default implementation this is just the normalized value but this
   // function can be overridden in subclasses to apply further operations on
   // the normalized value.
-  virtual std::u16string ValueForComparison() const;
+  // |other| represents the component we are comparing with and is required
+  // for consistent rewriting rules.
+  virtual std::u16string ValueForComparison(
+      const AddressComponent& other) const;
 
   // Returns true if the merging of two token identical values should give
   // precedence to the newer value. By default, the newer component gets
@@ -574,7 +591,7 @@ class AddressComponent {
 
   // A pointer to the parent node. It is set to nullptr if the node is the root
   // node of the AddressComponent tree.
-  AddressComponent* const parent_;
+  const raw_ptr<AddressComponent> parent_;
 
   // Defines if and how two components can be merged.
   int merge_mode_;

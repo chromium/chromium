@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,10 @@
 
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
-#include "chromeos/dbus/authpolicy/authpolicy_client.h"
-#include "chromeos/dbus/authpolicy/fake_authpolicy_client.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/authpolicy/authpolicy_client.h"
+#include "chromeos/ash/components/dbus/authpolicy/fake_authpolicy_client.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
@@ -82,10 +82,10 @@ void AffiliationMixin::SetIsForActiveDirectory(bool is_for_active_directory) {
 }
 
 AffiliationTestHelper AffiliationMixin::GetAffiliationTestHelper() const {
-  auto* session_manager_client = chromeos::FakeSessionManagerClient::Get();
+  auto* session_manager_client = ash::FakeSessionManagerClient::Get();
   CHECK(session_manager_client);
   if (is_for_active_directory_) {
-    auto* fake_auth_policy_client = chromeos::FakeAuthPolicyClient::Get();
+    auto* fake_auth_policy_client = ash::FakeAuthPolicyClient::Get();
     CHECK(fake_auth_policy_client);
     return AffiliationTestHelper::CreateForActiveDirectory(
         session_manager_client, fake_auth_policy_client);

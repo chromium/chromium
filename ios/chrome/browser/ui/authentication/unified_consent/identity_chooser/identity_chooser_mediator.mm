@@ -1,10 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_mediator.h"
 
-#include "base/strings/sys_string_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_identity_item.h"
@@ -59,11 +59,11 @@
   self.accountManagerService = nullptr;
 }
 
-- (void)setSelectedIdentity:(ChromeIdentity*)selectedIdentity {
+- (void)setSelectedIdentity:(id<SystemIdentity>)selectedIdentity {
   if ([_selectedIdentity isEqual:selectedIdentity])
     return;
-  TableViewIdentityItem* previousSelectedItem = [self.consumer
-      tableViewIdentityItemWithGaiaID:self.selectedIdentity.gaiaID];
+  TableViewIdentityItem* previousSelectedItem =
+      [self.consumer tableViewIdentityItemWithGaiaID:_selectedIdentity.gaiaID];
   if (previousSelectedItem) {
     previousSelectedItem.selected = NO;
     [self.consumer itemHasChanged:previousSelectedItem];
@@ -72,8 +72,8 @@
   if (!_selectedIdentity) {
     return;
   }
-  TableViewIdentityItem* selectedItem = [self.consumer
-      tableViewIdentityItemWithGaiaID:self.selectedIdentity.gaiaID];
+  TableViewIdentityItem* selectedItem =
+      [self.consumer tableViewIdentityItemWithGaiaID:_selectedIdentity.gaiaID];
   DCHECK(selectedItem);
   selectedItem.selected = YES;
   [self.consumer itemHasChanged:selectedItem];
@@ -87,37 +87,37 @@
 #pragma mark - Private
 
 // Creates the identity section with its header item, and all the identity items
-// based on the ChromeIdentity.
+// based on the SystemIdentity.
 - (void)loadIdentitySection {
   if (!self.accountManagerService) {
     return;
   }
 
   // Create all the identity items.
-  NSArray<ChromeIdentity*>* identities =
+  NSArray<id<SystemIdentity>>* identities =
       self.accountManagerService->GetAllIdentities();
   NSMutableArray<TableViewIdentityItem*>* items = [NSMutableArray array];
-  for (ChromeIdentity* identity in identities) {
+  for (id<SystemIdentity> identity in identities) {
     TableViewIdentityItem* item =
         [[TableViewIdentityItem alloc] initWithType:0];
     item.identityViewStyle = IdentityViewStyleIdentityChooser;
-    [self updateTableViewIdentityItem:item withChromeIdentity:identity];
+    [self updateTableViewIdentityItem:item withIdentity:identity];
     [items addObject:item];
   }
 
   [self.consumer setIdentityItems:items];
 }
 
-// Updates an TableViewIdentityItem based on a ChromeIdentity.
+// Updates an TableViewIdentityItem based on a SystemIdentity.
 - (void)updateTableViewIdentityItem:(TableViewIdentityItem*)item
-                 withChromeIdentity:(ChromeIdentity*)identity {
+                       withIdentity:(id<SystemIdentity>)identity {
   item.gaiaID = identity.gaiaID;
   item.name = identity.userFullName;
   item.email = identity.userEmail;
   item.selected =
       [self.selectedIdentity.gaiaID isEqualToString:identity.gaiaID];
   item.avatar = self.accountManagerService->GetIdentityAvatarWithIdentity(
-      identity, IdentityAvatarSize::DefaultLarge);
+      identity, IdentityAvatarSize::Regular);
   [self.consumer itemHasChanged:item];
 }
 
@@ -135,16 +135,15 @@
 
   [self loadIdentitySection];
   // Updates the selection.
-  if (!self.selectedIdentity ||
-      !self.accountManagerService->IsValidIdentity(self.selectedIdentity)) {
+  if (!self.accountManagerService->IsValidIdentity(self.selectedIdentity)) {
     self.selectedIdentity = self.accountManagerService->GetDefaultIdentity();
   }
 }
 
-- (void)identityChanged:(ChromeIdentity*)identity {
+- (void)identityChanged:(id<SystemIdentity>)identity {
   TableViewIdentityItem* item =
       [self.consumer tableViewIdentityItemWithGaiaID:identity.gaiaID];
-  [self updateTableViewIdentityItem:item withChromeIdentity:identity];
+  [self updateTableViewIdentityItem:item withIdentity:identity];
 }
 
 @end

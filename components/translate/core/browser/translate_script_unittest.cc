@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -117,7 +117,7 @@ TEST_F(TranslateScriptTest, CheckScriptParameters) {
       url, TranslateScript::kCallbackQueryName, &callback);
   EXPECT_EQ(std::string(TranslateScript::kCallbackQueryValue), callback);
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   // iOS does not have specific loaders for the isolated world.
   std::string css_loader_callback;
   net::GetValueForKeyInQuery(
@@ -132,7 +132,7 @@ TEST_F(TranslateScriptTest, CheckScriptParameters) {
       &javascript_loader_callback);
   EXPECT_EQ(std::string(TranslateScript::kJavascriptLoaderCallbackQueryValue),
             javascript_loader_callback);
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 }
 
 TEST_F(TranslateScriptTest, CheckScriptURL) {

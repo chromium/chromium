@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include "ash/components/phonehub/phone_model_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 TEST(BrowserTabsModelTest, Initialization) {
@@ -36,4 +36,4 @@ TEST(BrowserTabsModelTest, Initialization) {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

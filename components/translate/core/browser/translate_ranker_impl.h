@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -46,9 +47,9 @@ extern const char kDefaultTranslateRankerModelURL[];
 
 // Features used to enable ranker query, enforcement and logging. Note that
 // enabling enforcement implies (forces) enabling queries.
-extern const base::Feature kTranslateRankerQuery;
-extern const base::Feature kTranslateRankerEnforcement;
-extern const base::Feature kTranslateRankerPreviousLanguageMatchesOverride;
+BASE_DECLARE_FEATURE(kTranslateRankerQuery);
+BASE_DECLARE_FEATURE(kTranslateRankerEnforcement);
+BASE_DECLARE_FEATURE(kTranslateRankerPreviousLanguageMatchesOverride);
 
 struct TranslateRankerFeatures {
   TranslateRankerFeatures();
@@ -139,10 +140,10 @@ class TranslateRankerImpl : public TranslateRanker {
                          ukm::SourceId ukm_source_id);
 
   // Used to log URL-keyed metrics. This pointer will outlive |this|.
-  ukm::UkmRecorder* ukm_recorder_;
+  raw_ptr<ukm::UkmRecorder> ukm_recorder_;
 
   // Used to sanity check the threading of this ranker.
-  base::SequenceChecker sequence_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // A helper to load the translate ranker model from disk cache or a URL.
   std::unique_ptr<assist_ranker::RankerModelLoader> model_loader_;

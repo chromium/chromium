@@ -1,8 +1,8 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {ImageOrientation, ImageTransformParam} from './image_orientation.js';
 
 
@@ -13,7 +13,7 @@ import {ImageOrientation, ImageTransformParam} from './image_orientation.js';
  */
 export const LoadImageResponseStatus = {
   SUCCESS: 'success',
-  ERROR: 'error'
+  ERROR: 'error',
 };
 
 /**
@@ -154,7 +154,7 @@ export class LoadImageRequest {
       width: request.width,
       height: request.height,
       maxWidth: request.maxWidth,
-      maxHeight: request.maxHeight
+      maxHeight: request.maxHeight,
     });
   }
 

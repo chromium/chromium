@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,9 +16,10 @@
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/sync/engine/net/http_post_provider.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
-#include "components/sync/engine/net/http_post_provider_interface.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
@@ -38,7 +39,7 @@ namespace syncer {
 // Provides a way for the sync backend to use Chromium directly for HTTP
 // requests rather than depending on a third party provider (e.g libcurl).
 // This is a one-time use bridge. Create one for each request you want to make.
-class HttpBridge : public HttpPostProviderInterface {
+class HttpBridge : public HttpPostProvider {
  public:
   HttpBridge(const std::string& user_agent,
              std::unique_ptr<network::PendingSharedURLLoaderFactory>
@@ -47,12 +48,13 @@ class HttpBridge : public HttpPostProviderInterface {
   HttpBridge(const HttpBridge&) = delete;
   HttpBridge& operator=(const HttpBridge&) = delete;
 
-  // HttpPostProviderInterface implementation.
+  // HttpPostProvider implementation.
   void SetExtraRequestHeaders(const char* headers) override;
   void SetURL(const GURL& url) override;
   void SetPostPayload(const char* content_type,
                       int content_length,
                       const char* content) override;
+  void SetAllowBatching(bool allow_batching) override;
   bool MakeSynchronousPost(int* net_error_code, int* http_status_code) override;
   void Abort() override;
 
@@ -131,6 +133,11 @@ class HttpBridge : public HttpPostProviderInterface {
   std::string request_content_;
   std::string extra_headers_;
 
+  // When true `fetch_state_.url_loader` is configured so that it can be
+  // batched in the network layer. See the comment in
+  // network::SimpleURLLoader::SetAllowBatching().
+  bool allow_batching_ = false;
+
   // A waitable event we use to provide blocking semantics to
   // MakeSynchronousPost. We block created_on_loop_ while the IO loop fetches
   // network request.
@@ -196,7 +203,7 @@ class HttpBridgeFactory : public HttpPostProviderFactory {
   ~HttpBridgeFactory() override;
 
   // HttpPostProviderFactory:
-  scoped_refptr<HttpPostProviderInterface> Create() override;
+  scoped_refptr<HttpPostProvider> Create() override;
 
  private:
   // The user agent to use in all requests.

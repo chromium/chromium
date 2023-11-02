@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,30 +9,32 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
-#include "chrome/browser/web_applications/web_app_installation_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
-#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/common/chrome_features.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
@@ -41,6 +43,22 @@
 namespace web_app {
 
 namespace {
+
+// This is used for metrics, so do not remove or reorder existing entries.
+enum class AppIdentityDisplayMetric {
+  kNoAppIdentityChange = 0,
+  kIconChanging = 1,
+  // Values 2 and 3 are reserved for Android (icon mask).
+  kAppNameChanging = 4,
+  kAppNameAndIconChanging = 5,
+  // Values 6 through 15 (inclusive) are reserved for Android (icon mask/app
+  // short name).
+  kLastAndroidSpecificValue = 15,
+
+  // Add any new values above this one, and update kMaxValue to the highest
+  // enumerator value.
+  kMaxValue = 15
+};
 
 // Returns a shared instance of UpdatePendingCallback.
 ManifestUpdateTask::UpdatePendingCallback* GetUpdatePendingCallbackMutable() {
@@ -86,27 +104,21 @@ void HaveIconContentsChanged(
       if (end_when_mismatch_detected) {
         icon_diff->diff_results |= ONE_OR_MORE_ICONS_CHANGED;
         return;
-      } else {
-        // Icons that are specified in new manifest are of special interest, the
-        // rest is auto-generated.
-        bool important_icon =
-            std::find(downloaded_sizes.begin(), downloaded_sizes.end(), size) !=
-            downloaded_sizes.end();
-        if (!important_icon) {
-          icon_diff->diff_results |= GENERATED_ICON_CHANGED;
-        } else if ((icon_diff->diff_results & SINGLE_ICON_CHANGED) == 0 &&
-                   (icon_diff->diff_results & MULTIPLE_ICONS_CHANGED) == 0) {
-          icon_diff->diff_results |= SINGLE_ICON_CHANGED;
+      }
+
+      if (size == kInstallIconSize) {
+        icon_diff->diff_results |= INSTALL_ICON_CHANGED;
+        icon_diff->before = disk_bitmap;
+        icon_diff->after = downloaded_bitmap;
+      } else if (size == kLauncherIconSize) {
+        icon_diff->diff_results |= LAUNCHER_ICON_CHANGED;
+        if (icon_diff->before.drawsNothing() &&
+            icon_diff->after.drawsNothing()) {
           icon_diff->before = disk_bitmap;
           icon_diff->after = downloaded_bitmap;
-        } else if (icon_diff->diff_results & SINGLE_ICON_CHANGED) {
-          icon_diff->diff_results &= ~SINGLE_ICON_CHANGED;
-          icon_diff->diff_results |= MULTIPLE_ICONS_CHANGED;
-          // The UI can only handle showing one image at a time, at the moment.
-          icon_diff->before = SkBitmap();
-          icon_diff->after = SkBitmap();
-          return;
         }
+      } else {
+        icon_diff->diff_results |= UNIMPORTANT_ICON_CHANGED;
       }
     }
   }
@@ -138,6 +150,19 @@ bool NeedsAppIdentityUpdateDialog(bool title_changing,
                                   bool icons_changing,
                                   const AppId& app_id,
                                   const WebAppRegistrar& registrar) {
+  // Shortcut apps can trigger the update check (https://crbug.com/1366600) on
+  // subsequent runs of the app, if the user changed the title of the app when
+  // creating the shortcut. But we should never run the App Identity dialog for
+  // shortcut apps. Also, ideally we should just use IsShortcutApp here instead
+  // of checking the install source, but as per https://crbug.com/1368592 there
+  // is a bug with that where it returns the wrong thing for Shortcut apps that
+  // specify `scope`.
+  if (registrar.IsShortcutApp(app_id) ||
+      registrar.GetAppInstallSourceForMetrics(app_id) ==
+          webapps::WebappInstallSource::MENU_CREATE_SHORTCUT) {
+    return false;
+  }
+
   if (title_changing && !AllowUnpromptedNameUpdate(app_id, registrar))
     return true;
   if (icons_changing && !AllowUnpromptedIconUpdate(app_id, registrar))
@@ -169,10 +194,10 @@ IconDiff HaveIconBitmapsChanged(
   downloaded_sizes[apps::IconInfo::Purpose::kMonochrome] =
       std::vector<SquareSizePx>();
   // Put each entry found into the right map (sort by purpose).
-  for (auto entry : disk_icon_info) {
+  for (const auto& entry : disk_icon_info) {
     on_disk_sizes[entry.purpose].push_back(entry.square_size_px.value_or(-1));
   }
-  for (auto entry : downloaded_icon_info) {
+  for (const auto& entry : downloaded_icon_info) {
     downloaded_sizes[entry.purpose].push_back(
         entry.square_size_px.value_or(-1));
   }
@@ -217,16 +242,15 @@ bool& ManifestUpdateTask::BypassWindowCloseWaitingForTesting() {
 ManifestUpdateTask::ManifestUpdateTask(
     const GURL& url,
     const AppId& app_id,
-    content::WebContents* web_contents,
+    base::WeakPtr<content::WebContents> web_contents,
     StoppedCallback stopped_callback,
-    bool hang_for_testing,
-    const WebAppRegistrar& registrar,
-    const WebAppIconManager& icon_manager,
+    WebAppRegistrar& registrar,
+    WebAppIconManager& icon_manager,
     WebAppUiManager* ui_manager,
     WebAppInstallFinalizer* install_finalizer,
     OsIntegrationManager& os_integration_manager,
     WebAppSyncBridge* sync_bridge)
-    : content::WebContentsObserver(web_contents),
+    : web_contents_(web_contents),
       registrar_(registrar),
       icon_manager_(icon_manager),
       ui_manager_(*ui_manager),
@@ -235,10 +259,8 @@ ManifestUpdateTask::ManifestUpdateTask(
       sync_bridge_(sync_bridge),
       url_(url),
       app_id_(app_id),
-      stopped_callback_(std::move(stopped_callback)),
-      hang_for_testing_(hang_for_testing) {
-  // Task starts by waiting for DidFinishLoad() to be called.
-  stage_ = Stage::kPendingPageLoad;
+      stopped_callback_(std::move(stopped_callback)) {
+  Start();
 }
 
 ManifestUpdateTask::~ManifestUpdateTask() {
@@ -250,50 +272,39 @@ ManifestUpdateTask::~ManifestUpdateTask() {
 #endif
 }
 
-// content::WebContentsObserver:
-void ManifestUpdateTask::DidFinishLoad(
-    content::RenderFrameHost* render_frame_host,
-    const GURL& validated_url) {
-  if (stage_ != Stage::kPendingPageLoad || hang_for_testing_)
+void ManifestUpdateTask::Start() {
+  // We perform this check at the start as an early exit in case
+  // web_contents are destroyed before the task has started as well
+  // as ensuring that the web_contents_ are not destroyed when the
+  // InstallableManager is being invoked.
+  if (IsWebContentsDestroyed()) {
+    DestroySelf(ManifestUpdateResult::kWebContentsDestroyed);
     return;
-
-  if (render_frame_host->GetParent() != nullptr)
-    return;
-
+  }
   stage_ = Stage::kPendingInstallableData;
   webapps::InstallableParams params;
   params.valid_primary_icon = true;
   params.valid_manifest = true;
   params.check_webapp_manifest_display = false;
-  webapps::InstallableManager::FromWebContents(web_contents())
+  webapps::InstallableManager::FromWebContents(web_contents_.get())
       ->GetData(params,
                 base::BindOnce(&ManifestUpdateTask::OnDidGetInstallableData,
                                AsWeakPtr()));
 }
 
-// content::WebContentsObserver:
-void ManifestUpdateTask::WebContentsDestroyed() {
-  switch (stage_) {
-    case Stage::kPendingPageLoad:
-    case Stage::kPendingInstallableData:
-    case Stage::kPendingIconDownload:
-    case Stage::kPendingIconReadFromDisk:
-    case Stage::kPendingAppIdentityCheck:
-      DestroySelf(ManifestUpdateResult::kWebContentsDestroyed);
-      return;
-    case Stage::kPendingWindowsClosed:
-    case Stage::kPendingMaybeReadExistingIcons:
-    case Stage::kPendingInstallation:
-    case Stage::kPendingAssociationsUpdate:
-      // These stages should have stopped listening to the web contents.
-      NOTREACHED() << static_cast<int>(stage_);
-      Observe(nullptr);
-      break;
-  }
+bool ManifestUpdateTask::IsWebContentsDestroyed() {
+  return !web_contents_ || web_contents_->IsBeingDestroyed();
 }
 
 void ManifestUpdateTask::OnDidGetInstallableData(
     const webapps::InstallableData& data) {
+  // At this point, the ManifestUpdateTask is still collecting data, and this
+  // check ensures that the web_contents are still alive by the time we
+  // load icon contents.
+  if (IsWebContentsDestroyed()) {
+    DestroySelf(ManifestUpdateResult::kWebContentsDestroyed);
+    return;
+  }
   DCHECK_EQ(stage_, Stage::kPendingInstallableData);
 
   if (!data.NoBlockingErrors()) {
@@ -301,9 +312,11 @@ void ManifestUpdateTask::OnDidGetInstallableData(
     return;
   }
 
-  web_application_info_.emplace();
+  CHECK(!web_contents_->IsBeingDestroyed());
+
+  install_info_.emplace();
   UpdateWebAppInfoFromManifest(data.manifest, data.manifest_url,
-                               &web_application_info_.value());
+                               &install_info_.value());
 
   // We cannot allow the app ID to change via the manifest changing. We rely on
   // fixed app IDs to determine whether web apps installed in the user sync
@@ -312,8 +325,8 @@ void ManifestUpdateTask::OnDidGetInstallableData(
   // additionally the new app ID would get added to the sync profile. This has
   // the potential to flood the user sync profile with an infinite number of
   // apps should the site be serving a random start_url on every navigation.
-  if (app_id_ != GenerateAppId(web_application_info_->manifest_id,
-                               web_application_info_->start_url)) {
+  if (app_id_ !=
+      GenerateAppId(install_info_->manifest_id, install_info_->start_url)) {
     DestroySelf(ManifestUpdateResult::kAppIdMismatch);
     return;
   }
@@ -322,14 +335,14 @@ void ManifestUpdateTask::OnDidGetInstallableData(
 }
 
 bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
-  DCHECK(web_application_info_.has_value());
+  DCHECK(install_info_.has_value());
   const WebApp* app = registrar_.GetAppById(app_id_);
   DCHECK(app);
 
+  // TODO(crbug.com/1259777): Check whether translations have been updated.
   bool title_changing =
-      web_application_info_->title != base::UTF8ToUTF16(app->name());
-  bool icons_changing =
-      web_application_info_->manifest_icons != app->manifest_icons();
+      install_info_->title != base::UTF8ToUTF16(app->untranslated_name());
+  bool icons_changing = install_info_->manifest_icons != app->manifest_icons();
   if (!NeedsAppIdentityUpdateDialog(title_changing, icons_changing, app_id_,
                                     registrar_)) {
     if (title_changing && AllowUnpromptedNameUpdate(app_id_, registrar_)) {
@@ -340,73 +353,81 @@ bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
     }
   }
 
-  // Allows updating start_url and manifest_id when kWebAppEnableManifestId is
-  // enabled. Both fields are allowed to change as long as the app_id generated
-  // from them doesn't change.
-  if (base::FeatureList::IsEnabled(blink::features::kWebAppEnableManifestId)) {
-    if (web_application_info_->manifest_id != app->manifest_id())
+  // Allows updating start_url and manifest_id. Both fields are allowed to
+  // change as long as the app_id generated from them doesn't change.
+  {
+    if (install_info_->manifest_id != app->manifest_id())
       return true;
-    if (web_application_info_->start_url != app->start_url())
+    if (install_info_->start_url != app->start_url())
       return true;
   }
 
-  if (web_application_info_->theme_color != app->theme_color())
+  if (install_info_->theme_color != app->theme_color())
     return true;
 
-  if (web_application_info_->scope != app->scope())
+  if (install_info_->scope != app->scope())
     return true;
 
-  if (web_application_info_->display_mode != app->display_mode())
+  if (install_info_->display_mode != app->display_mode())
     return true;
 
-  if (web_application_info_->display_override != app->display_mode_override())
+  if (install_info_->display_override != app->display_mode_override())
     return true;
 
-  if (web_application_info_->shortcuts_menu_item_infos !=
+  if (install_info_->shortcuts_menu_item_infos !=
       app->shortcuts_menu_item_infos()) {
     return true;
   }
 
-  if (web_application_info_->share_target != app->share_target())
+  if (install_info_->share_target != app->share_target())
     return true;
 
-  if (web_application_info_->protocol_handlers != app->protocol_handlers())
+  if (install_info_->protocol_handlers != app->protocol_handlers())
     return true;
 
-  if (web_application_info_->url_handlers != app->url_handlers())
+  if (install_info_->url_handlers != app->url_handlers())
     return true;
 
-  if (web_application_info_->note_taking_new_note_url !=
+  if (base::FeatureList::IsEnabled(
+          blink::features::kWebAppManifestLockScreen) &&
+      install_info_->lock_screen_start_url != app->lock_screen_start_url()) {
+    return true;
+  }
+
+  if (install_info_->note_taking_new_note_url !=
       app->note_taking_new_note_url()) {
     return true;
   }
 
-  if (web_application_info_->capture_links != app->capture_links())
+  if (install_info_->capture_links != app->capture_links())
     return true;
 
-  if (os_integration_manager_.IsFileHandlingAPIAvailable(app_id_) &&
-      app->file_handlers() != web_application_info_->file_handlers) {
-    return true;
-  }
-
-  if (web_application_info_->background_color != app->background_color())
+  if (app->file_handlers() != install_info_->file_handlers)
     return true;
 
-  if (web_application_info_->dark_mode_theme_color !=
-      app->dark_mode_theme_color()) {
+  if (install_info_->background_color != app->background_color())
+    return true;
+
+  if (install_info_->dark_mode_theme_color != app->dark_mode_theme_color()) {
     return true;
   }
 
-  if (web_application_info_->dark_mode_background_color !=
+  if (install_info_->dark_mode_background_color !=
       app->dark_mode_background_color()) {
     return true;
   }
 
-  if (web_application_info_->manifest_url != app->manifest_url())
+  if (install_info_->manifest_url != app->manifest_url())
     return true;
 
-  if (web_application_info_->launch_handler != app->launch_handler())
+  if (install_info_->launch_handler != app->launch_handler())
     return true;
+
+  if (install_info_->permissions_policy != app->permissions_policy())
+    return true;
+
+  // TODO(crbug.com/897314): Check changes to tab_strip field once icons are
+  // stored.
 
   // TODO(crbug.com/1212849): Handle changes to is_storage_isolated.
 
@@ -415,19 +436,26 @@ bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
 }
 
 void ManifestUpdateTask::UpdateAfterWindowsClose() {
+  // Ensure that the web_contents are still alive when the profile is being
+  // constructed from the browser context.
+  if (IsWebContentsDestroyed()) {
+    DestroySelf(ManifestUpdateResult::kWebContentsDestroyed);
+    return;
+  }
   DCHECK(stage_ == Stage::kPendingInstallableData ||
          stage_ == Stage::kPendingAppIdentityCheck);
   stage_ = Stage::kPendingWindowsClosed;
 
   Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+      Profile::FromBrowserContext(web_contents_.get()->GetBrowserContext());
   keep_alive_ = std::make_unique<ScopedKeepAlive>(
       KeepAliveOrigin::APP_MANIFEST_UPDATE, KeepAliveRestartOption::DISABLED);
-  profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
-      profile, ProfileKeepAliveOrigin::kWebAppUpdate);
-
-  Observe(nullptr);
-
+  if (!profile->IsOffTheRecord()) {
+    // TODO(crbug.com/1369117): The DevTools Protocol's OTR profile can be
+    // destroyed at any time, which causes crashes...
+    profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
+        profile, ProfileKeepAliveOrigin::kWebAppUpdate);
+  }
   if (BypassWindowCloseWaitingForTesting()) {
     OnAllAppWindowsClosed();
   } else {
@@ -441,14 +469,20 @@ void ManifestUpdateTask::UpdateAfterWindowsClose() {
 }
 
 void ManifestUpdateTask::LoadAndCheckIconContents() {
+  // We need this check to ensure that the web_contents_ are still alive
+  // when the icon_downloader_ has started.
+  if (IsWebContentsDestroyed()) {
+    DestroySelf(ManifestUpdateResult::kWebContentsDestroyed);
+    return;
+  }
   DCHECK_EQ(stage_, Stage::kPendingInstallableData);
   stage_ = Stage::kPendingIconDownload;
 
-  DCHECK(web_application_info_.has_value());
-  std::vector<GURL> icon_urls =
-      GetValidIconUrlsToDownload(*web_application_info_);
+  DCHECK(install_info_.has_value());
+  base::flat_set<GURL> icon_urls = GetValidIconUrlsToDownload(*install_info_);
+
   icon_downloader_.emplace(
-      web_contents(), std::move(icon_urls),
+      web_contents_.get(), std::move(icon_urls),
       base::BindOnce(&ManifestUpdateTask::OnIconsDownloaded, AsWeakPtr()));
   icon_downloader_->SkipPageFavicons();
   icon_downloader_->FailAllIfAnyFail();
@@ -459,15 +493,26 @@ void ManifestUpdateTask::OnIconsDownloaded(
     IconsDownloadedResult result,
     IconsMap icons_map,
     DownloadedIconsHttpResults icons_http_results) {
+  // At this point the ManifestUpdateTask is still at the kPendingIconDownload
+  // stage, so it is better to do a web_contents check before ending all icon
+  // reads.
+  if (IsWebContentsDestroyed()) {
+    DestroySelf(ManifestUpdateResult::kWebContentsDestroyed);
+    return;
+  }
   DCHECK_EQ(stage_, Stage::kPendingIconDownload);
+
+  // TODO(crbug.com/1238622): Report `result` and `icons_http_results` in
+  // internals.
+  UMA_HISTOGRAM_ENUMERATION("WebApp.Icon.DownloadedResultOnUpdate", result);
+  RecordDownloadedIconHttpStatusCodes(
+      "WebApp.Icon.DownloadedHttpStatusCodeOnUpdate", icons_http_results);
 
   if (result != IconsDownloadedResult::kCompleted) {
     DestroySelf(ManifestUpdateResult::kIconDownloadFailed);
     return;
   }
 
-  // TODO(crbug.com/1238622): Report `result` and `DownloadedIconsHttpResults`in
-  // UMA and internals.
   RecordDownloadedIconsHttpResultsCodeClass(
       "WebApp.Icon.HttpStatusCodeClassOnUpdate", result, icons_http_results);
 
@@ -479,87 +524,144 @@ void ManifestUpdateTask::OnIconsDownloaded(
 
 void ManifestUpdateTask::OnAllIconsRead(IconsMap downloaded_icons_map,
                                         IconBitmaps disk_icon_bitmaps) {
+  // We still need to ensure that the web_contents_ are kept alive throughout
+  // the app identity check call to invoke the web_app identity update dialog
+  // in the end.
+  if (IsWebContentsDestroyed()) {
+    DestroySelf(ManifestUpdateResult::kWebContentsDestroyed);
+    return;
+  }
   DCHECK_EQ(stage_, Stage::kPendingIconReadFromDisk);
 
   if (disk_icon_bitmaps.empty()) {
     DestroySelf(ManifestUpdateResult::kIconReadFromDiskFailed);
     return;
   }
-  DCHECK(web_application_info_.has_value());
+  DCHECK(install_info_.has_value());
 
   stage_ = Stage::kPendingAppIdentityCheck;
 
-  // These calls populate the |web_application_info_| with all icon bitmap
-  // data.
-  // If this data does not match what we already have on disk, then an update
-  // is necessary.
-  PopulateOtherIcons(&web_application_info_.value(), downloaded_icons_map);
-  PopulateProductIcons(&web_application_info_.value(), &downloaded_icons_map);
+  // These calls populate the |install_info_| with all icon bitmap
+  // data. If this data does not match what we already have on disk, then an
+  // update is necessary.
+  PopulateOtherIcons(&install_info_.value(), downloaded_icons_map);
+  PopulateProductIcons(&install_info_.value(), &downloaded_icons_map);
 
   IconDiff icon_diff = IsUpdateNeededForIconContents(disk_icon_bitmaps);
   std::u16string old_title =
       base::UTF8ToUTF16(registrar_.GetAppShortName(app_id_));
-  std::u16string new_title = web_application_info_->title;
+  std::u16string new_title = install_info_->title;
 
   bool title_change = old_title != new_title;
   bool icon_change = icon_diff.mismatch();
 
-  if (!title_change && !icon_change) {
-    OnPostAppIdentityUpdateCheck(AppIdentityUpdate::kSkipped);
-    return;
+  AppIdentityDisplayMetric app_id_changes =
+      AppIdentityDisplayMetric::kNoAppIdentityChange;
+  if (title_change && icon_change) {
+    app_id_changes = AppIdentityDisplayMetric::kAppNameAndIconChanging;
+  } else if (title_change || icon_change) {
+    app_id_changes = title_change ? AppIdentityDisplayMetric::kAppNameChanging
+                                  : AppIdentityDisplayMetric::kIconChanging;
   }
 
+  // This catches the cases where the App Identity Dialog is not needed. That
+  // includes:
+  // - All Default-installed apps (since they are pre-approved for all updates).
+  // - Policy-installed apps w/kWebAppManifestPolicyAppIdentityUpdate exemption.
+  // - All icon changes when the kWebAppManifestIconUpdating override is set.
+  // - ... and apps that simply aren't requesting any app identity changes.
   if (!NeedsAppIdentityUpdateDialog(title_change, icon_change, app_id_,
                                     registrar_)) {
-    // The app identity update can be skipped, because any update not requiring
-    // the AppIdentityUpdate dialog should have been triggered already by
-    // running IsUpdateNeededForManifest. It doesn't matter a great deal whether
-    // kSkipped or kAllowed is used here, except that updating should also work
-    // without approval here. So to be safe we return kSkipped.
+    UMA_HISTOGRAM_ENUMERATION("Webapp.AppIdentityDialog.AlreadyApproved",
+                              app_id_changes);
     OnPostAppIdentityUpdateCheck(AppIdentityUpdate::kSkipped);
     return;
   }
 
-  if (!base::FeatureList::IsEnabled(features::kPwaUpdateDialogForNameAndIcon)) {
-    // Update dialog required, but not enabled --- restore the original product
-    // icons and proceed with update, if needed.
-    web_application_info_->icon_bitmaps = std::move(disk_icon_bitmaps);
-    web_application_info_->manifest_icons =
-        registrar_.GetAppById(app_id_)->manifest_icons();
-    OnPostAppIdentityUpdateCheck(AppIdentityUpdate::kSkipped);
-    return;
-  }
-
-  if (icon_change && !icon_diff.supported_for_app_identity_check()) {
-    OnPostAppIdentityUpdateCheck(AppIdentityUpdate::kSkipped);
-    return;
-  }
-
-  // Note: If icon and name changes are to be actually used later and not
-  // overridden, then OnPostAppIdentityUpdateCheck must be called with
-  // |AppIdentityUpdate::kAllowed| so |app_identity_update_allowed_| is true.
   SkBitmap* before_icon = nullptr;
   SkBitmap* after_icon = nullptr;
-  if (icon_diff.mismatch()) {
+  if (icon_change &&
+      base::FeatureList::IsEnabled(features::kPwaUpdateDialogForIcon)) {
     before_icon = &icon_diff.before;
     after_icon = &icon_diff.after;
   } else {
-    auto it = disk_icon_bitmaps.any.find(web_app::kWebAppIconSmall);
+    auto it = disk_icon_bitmaps.any.find(kInstallIconSize);
+    if (it == disk_icon_bitmaps.any.end())
+      it = disk_icon_bitmaps.any.find(kLauncherIconSize);
+    if (it == disk_icon_bitmaps.any.end())
+      it = disk_icon_bitmaps.any.begin();
     if (it != disk_icon_bitmaps.any.end()) {
       before_icon = &it->second;
       after_icon = &it->second;
     }
   }
 
-  if (before_icon == nullptr || after_icon == nullptr ||
-      before_icon->drawsNothing() || after_icon->drawsNothing()) {
+  // If there are any cases of Default-installed or Policy-installed apps that
+  // haven't been granted exceptions above (such as Policy apps without the
+  // special exemption), they should bail out now (with the icon set reset) so
+  // as to avoid showing the app identity dialog and allow other non-app
+  // identity changes to occur.
+  const WebApp* web_app = registrar_.GetAppById(app_id_);
+  if (web_app->IsPreinstalledApp() || web_app->IsPolicyInstalledApp()) {
+    UMA_HISTOGRAM_ENUMERATION("Webapp.AppIdentityDialog.NotShowing",
+                              app_id_changes);
+    install_info_->icon_bitmaps = std::move(disk_icon_bitmaps);
+    install_info_->manifest_icons = web_app->manifest_icons();
+    install_info_->is_generated_icon = web_app->is_generated_icon();
     OnPostAppIdentityUpdateCheck(AppIdentityUpdate::kSkipped);
     return;
   }
 
+  // At this point we are only dealing with user-installed apps. Apps that don't
+  // ask for any identity updates are dealt with above, so this needs to handle
+  // updates to either the app title or icons.
+  if (icon_change &&
+      !base::FeatureList::IsEnabled(features::kPwaUpdateDialogForIcon)) {
+    // Icon changes are not supported, revert them and continue.
+    install_info_->icon_bitmaps = std::move(disk_icon_bitmaps);
+    install_info_->manifest_icons = web_app->manifest_icons();
+    install_info_->is_generated_icon = web_app->is_generated_icon();
+    icon_change = false;
+  }
+
+  if (title_change &&
+      !base::FeatureList::IsEnabled(features::kPwaUpdateDialogForName)) {
+    // Title changes are not supported, revert and continue.
+    install_info_->title = old_title;
+    new_title = old_title;
+    title_change = false;
+  }
+
+  // A title change requires showing the dialog, but unimportant icon changes
+  // are allowed to proceed.
+  if (!title_change && icon_change &&
+      !icon_diff.requires_app_identity_check()) {
+    UMA_HISTOGRAM_ENUMERATION("Webapp.AppIdentityDialog.AlreadyApproved",
+                              app_id_changes);
+    OnPostAppIdentityUpdateCheck(AppIdentityUpdate::kAllowed);
+    return;
+  }
+
+  if (!title_change && !icon_change) {
+    UMA_HISTOGRAM_ENUMERATION("Webapp.AppIdentityDialog.NotShowing",
+                              app_id_changes);
+    OnPostAppIdentityUpdateCheck(AppIdentityUpdate::kSkipped);
+    return;
+  }
+
+  if (before_icon == nullptr || after_icon == nullptr ||
+      before_icon->drawsNothing() || after_icon->drawsNothing()) {
+    UMA_HISTOGRAM_ENUMERATION("Webapp.AppIdentityDialog.NotShowing",
+                              app_id_changes);
+    OnPostAppIdentityUpdateCheck(AppIdentityUpdate::kSkipped);
+    return;
+  }
+
+  UMA_HISTOGRAM_ENUMERATION("Webapp.AppIdentityDialog.Showing", app_id_changes);
+
   ui_manager_.ShowWebAppIdentityUpdateDialog(
-      app_id_, title_change, icon_diff.mismatch(), old_title, new_title,
-      *before_icon, *after_icon, web_contents(),
+      app_id_, title_change, icon_change, old_title, new_title, *before_icon,
+      *after_icon, web_contents_.get(),
       base::BindOnce(&ManifestUpdateTask::OnPostAppIdentityUpdateCheck,
                      AsWeakPtr()));
 
@@ -569,6 +671,12 @@ void ManifestUpdateTask::OnAllIconsRead(IconsMap downloaded_icons_map,
 
 void ManifestUpdateTask::OnPostAppIdentityUpdateCheck(
     AppIdentityUpdate app_identity_update_allowed) {
+  // Perform an early exit if the web_contents are destroyed before calling
+  // UpdateAfterWindowsClose().
+  if (IsWebContentsDestroyed()) {
+    DestroySelf(ManifestUpdateResult::kWebContentsDestroyed);
+    return;
+  }
   DCHECK_EQ(stage_, Stage::kPendingAppIdentityCheck);
 
   app_identity_update_allowed_ =
@@ -590,21 +698,27 @@ void ManifestUpdateTask::OnPostAppIdentityUpdateCheck(
 
 IconDiff ManifestUpdateTask::IsUpdateNeededForIconContents(
     const IconBitmaps& disk_icon_bitmaps) const {
-  DCHECK(web_application_info_.has_value());
+  DCHECK(install_info_.has_value());
   const WebApp* app = registrar_.GetAppById(app_id_);
   DCHECK(app);
 
-  return HaveIconBitmapsChanged(
-      disk_icon_bitmaps, web_application_info_->icon_bitmaps,
-      web_application_info_->manifest_icons, app->manifest_icons(),
-      /* end_when_mismatch_detected= */ false);
+  return HaveIconBitmapsChanged(disk_icon_bitmaps, install_info_->icon_bitmaps,
+                                install_info_->manifest_icons,
+                                app->manifest_icons(),
+                                /* end_when_mismatch_detected= */ false);
 }
 
 void ManifestUpdateTask::OnAllShortcutsMenuIconsRead(
     ShortcutsMenuIconBitmaps disk_shortcuts_menu_icon_bitmaps) {
+  // Perform an early exit if the web_contents are destroyed before calling
+  // UpdateAfterWindowsClose().
+  if (IsWebContentsDestroyed()) {
+    DestroySelf(ManifestUpdateResult::kWebContentsDestroyed);
+    return;
+  }
   DCHECK_EQ(stage_, Stage::kPendingAppIdentityCheck);
 
-  DCHECK(web_application_info_.has_value());
+  DCHECK(install_info_.has_value());
 
   if (IsUpdateNeededForShortcutsMenuIconsContents(
           disk_shortcuts_menu_icon_bitmaps)) {
@@ -617,9 +731,9 @@ void ManifestUpdateTask::OnAllShortcutsMenuIconsRead(
 
 bool ManifestUpdateTask::IsUpdateNeededForShortcutsMenuIconsContents(
     const ShortcutsMenuIconBitmaps& disk_shortcuts_menu_icon_bitmaps) const {
-  DCHECK(web_application_info_.has_value());
+  DCHECK(install_info_.has_value());
   const ShortcutsMenuIconBitmaps& downloaded_shortcuts_menu_icon_bitmaps =
-      web_application_info_->shortcuts_menu_icon_bitmaps;
+      install_info_->shortcuts_menu_icon_bitmaps;
   if (downloaded_shortcuts_menu_icon_bitmaps.size() !=
       disk_shortcuts_menu_icon_bitmaps.size()) {
     return true;
@@ -632,7 +746,7 @@ bool ManifestUpdateTask::IsUpdateNeededForShortcutsMenuIconsContents(
         downloaded_shortcuts_menu_icon_bitmaps[i];
     const IconBitmaps& disk_icon_bitmaps = disk_shortcuts_menu_icon_bitmaps[i];
     if (HaveIconBitmapsChanged(disk_icon_bitmaps, downloaded_icon_bitmaps,
-                               web_application_info_->manifest_icons,
+                               install_info_->manifest_icons,
                                app->manifest_icons(),
                                /* end_when_mismatch_detected= */ true)
             .mismatch())
@@ -646,15 +760,13 @@ bool ManifestUpdateTask::IsUpdateNeededForWebAppOriginAssociations() const {
   // Web app origin association update is tied to the manifest update process.
   // If there are url handlers for the current app, associations need to be
   // revalidated.
-  DCHECK(web_application_info_.has_value());
-  return !web_application_info_->url_handlers.empty();
+  DCHECK(install_info_.has_value());
+  return !install_info_->url_handlers.empty();
 }
 
 void ManifestUpdateTask::NoManifestUpdateRequired() {
   DCHECK_EQ(stage_, Stage::kPendingAppIdentityCheck);
   stage_ = Stage::kPendingAssociationsUpdate;
-
-  Observe(nullptr);
 
   if (!IsUpdateNeededForWebAppOriginAssociations()) {
     DestroySelf(ManifestUpdateResult::kAppUpToDate);
@@ -676,30 +788,29 @@ void ManifestUpdateTask::OnWebAppOriginAssociationsUpdated(bool success) {
 void ManifestUpdateTask::OnAllAppWindowsClosed() {
   DCHECK_EQ(stage_, Stage::kPendingWindowsClosed);
 
-  DCHECK(web_application_info_.has_value());
+  DCHECK(install_info_.has_value());
 
   if (!AllowUnpromptedNameUpdate(app_id_, registrar_) &&
       !app_identity_update_allowed_) {
     // The app's name must not change due to an automatic update, except for
     // default installed apps (that have been vetted).
-    web_application_info_->title =
+    install_info_->title =
         base::UTF8ToUTF16(registrar_.GetAppShortName(app_id_));
   }
 
   // Preserve the user's choice of form factor to open the app with.
-  web_application_info_->user_display_mode =
-      registrar_.GetAppUserDisplayMode(app_id_);
+  install_info_->user_display_mode = registrar_.GetAppUserDisplayMode(app_id_);
 
   stage_ = Stage::kPendingInstallation;
 
   install_finalizer_.FinalizeUpdate(
-      *web_application_info_,
+      *install_info_,
       base::BindOnce(&ManifestUpdateTask::OnInstallationComplete, AsWeakPtr()));
 }
 
-void ManifestUpdateTask::OnInstallationComplete(
-    const AppId& app_id,
-    InstallResultCode code) {
+void ManifestUpdateTask::OnInstallationComplete(const AppId& app_id,
+                                                webapps::InstallResultCode code,
+                                                OsHooksErrors os_hooks_errors) {
   DCHECK_EQ(stage_, Stage::kPendingInstallation);
 
   if (!IsSuccess(code)) {
@@ -709,7 +820,7 @@ void ManifestUpdateTask::OnInstallationComplete(
 
   DCHECK_EQ(app_id_, app_id);
   DCHECK(!IsUpdateNeededForManifest());
-  DCHECK_EQ(code, InstallResultCode::kSuccessAlreadyInstalled);
+  DCHECK_EQ(code, webapps::InstallResultCode::kSuccessAlreadyInstalled);
 
   sync_bridge_->SetAppManifestUpdateTime(app_id, base::Time::Now());
 

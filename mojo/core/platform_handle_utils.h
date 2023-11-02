@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,14 +19,14 @@ namespace core {
 // Converts a base shared memory platform handle into one (maybe two on POSIX)
 // PlatformHandle(s).
 MOJO_SYSTEM_IMPL_EXPORT void ExtractPlatformHandlesFromSharedMemoryRegionHandle(
-    base::subtle::PlatformSharedMemoryRegion::ScopedPlatformHandle handle,
+    base::subtle::ScopedPlatformSharedMemoryHandle handle,
     PlatformHandle* extracted_handle,
     PlatformHandle* extracted_readonly_handle);
 
 // Converts one (maybe two on POSIX) PlatformHandle(s) to a base shared memory
 // platform handle.
 MOJO_SYSTEM_IMPL_EXPORT
-base::subtle::PlatformSharedMemoryRegion::ScopedPlatformHandle
+base::subtle::ScopedPlatformSharedMemoryHandle
 CreateSharedMemoryRegionHandleFromPlatformHandles(
     PlatformHandle handle,
     PlatformHandle readonly_handle);

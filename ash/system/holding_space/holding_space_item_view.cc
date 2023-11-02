@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,15 +9,18 @@
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
+#include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/holding_space/holding_space_util.h"
 #include "ash/system/holding_space/holding_space_view_delegate.h"
 #include "base/bind.h"
 #include "ui/base/class_property.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -132,9 +135,16 @@ HoldingSpaceItemView::HoldingSpaceItemView(HoldingSpaceViewDelegate* delegate,
   SetNotifyEnterExitOnChild(true);
 
   // Accessibility.
-  GetViewAccessibility().OverrideName(item->GetAccessibleName());
-  GetViewAccessibility().OverrideDescription(base::EmptyString16());
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kListItem);
+  GetViewAccessibility().OverrideName(item->GetAccessibleName());
+
+  // When the description is not specified, tooltip text will be used.
+  // That text is redundant to the name, but different enough that it is
+  // still exposed to assistive technologies which may then present both.
+  // To avoid that redundant presentation, set the description explicitly
+  // to the empty string. See crrev.com/c/3218112.
+  GetViewAccessibility().OverrideDescription(
+      std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
 
   // Layer.
   SetPaintToLayer();
@@ -267,8 +277,9 @@ void HoldingSpaceItemView::OnThemeChanged() {
       kCheckmarkBackgroundSize));
   checkmark_->SetImage(gfx::CreateVectorIcon(
       kCheckIcon, kHoldingSpaceIconSize,
-      ash_color_provider->IsDarkModeEnabled() ? gfx::kGoogleGrey900
-                                              : SK_ColorWHITE));
+      DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
+          ? gfx::kGoogleGrey900
+          : SK_ColorWHITE));
 
   // Focused/selected layers.
   InvalidateLayer(focused_layer_owner_->layer());
@@ -280,18 +291,20 @@ void HoldingSpaceItemView::OnThemeChanged() {
   // Cancel.
   const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kButtonIconColor);
-  primary_action_cancel_->SetImage(
+  primary_action_cancel_->SetImageModel(
       views::Button::STATE_NORMAL,
-      gfx::CreateVectorIcon(kCancelIcon, kHoldingSpaceIconSize, icon_color));
+      ui::ImageModel::FromVectorIcon(kCancelIcon, icon_color,
+                                     kHoldingSpaceIconSize));
 
   // Pin.
-  const gfx::ImageSkia unpinned_icon = gfx::CreateVectorIcon(
-      views::kUnpinIcon, kHoldingSpaceIconSize, icon_color);
-  const gfx::ImageSkia pinned_icon =
-      gfx::CreateVectorIcon(views::kPinIcon, kHoldingSpaceIconSize, icon_color);
-  primary_action_pin_->SetImage(views::Button::STATE_NORMAL, unpinned_icon);
-  primary_action_pin_->SetToggledImage(views::Button::STATE_NORMAL,
-                                       &pinned_icon);
+  const ui::ImageModel unpinned_icon = ui::ImageModel::FromVectorIcon(
+      views::kUnpinIcon, icon_color, kHoldingSpaceIconSize);
+  const ui::ImageModel pinned_icon = ui::ImageModel::FromVectorIcon(
+      views::kPinIcon, icon_color, kHoldingSpaceIconSize);
+  primary_action_pin_->SetImageModel(views::Button::STATE_NORMAL,
+                                     unpinned_icon);
+  primary_action_pin_->SetToggledImageModel(views::Button::STATE_NORMAL,
+                                            pinned_icon);
 }
 
 void HoldingSpaceItemView::OnHoldingSpaceItemUpdated(
@@ -452,7 +465,10 @@ void HoldingSpaceItemView::OnPrimaryActionPressed() {
 
   // Cancel.
   if (primary_action_cancel_->GetVisible()) {
-    HoldingSpaceController::Get()->client()->CancelItems({item()});
+    if (!holding_space_util::ExecuteInProgressCommand(
+            item(), HoldingSpaceCommandId::kCancelItem)) {
+      NOTREACHED();
+    }
     return;
   }
 
@@ -485,10 +501,11 @@ void HoldingSpaceItemView::UpdatePrimaryAction() {
   }
 
   // Cancel.
-  // NOTE: Only download type items currently support cancellation.
+  // NOTE: Only in-progress items currently support cancellation.
   const bool is_item_in_progress = !item()->progress().IsComplete();
   primary_action_cancel_->SetVisible(
-      is_item_in_progress && HoldingSpaceItem::IsDownload(item()->type()));
+      is_item_in_progress && holding_space_util::SupportsInProgressCommand(
+                                 item(), HoldingSpaceCommandId::kCancelItem));
 
   // Pin.
   const bool is_item_pinned =

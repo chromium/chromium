@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -182,7 +182,7 @@ FileDescriptorWatcher::Controller::Controller(MessagePumpForIO::Mode mode,
 }
 
 FileDescriptorWatcher::Controller::~Controller() {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (io_thread_task_runner_->BelongsToCurrentThread()) {
     // If the MessagePumpForIO and the Controller live on the same thread.
@@ -222,7 +222,7 @@ FileDescriptorWatcher::Controller::~Controller() {
 }
 
 void FileDescriptorWatcher::Controller::StartWatching() {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (io_thread_task_runner_->BelongsToCurrentThread()) {
     // If the MessagePumpForIO and the Controller live on the same thread.
     watcher_->StartWatching();
@@ -237,7 +237,7 @@ void FileDescriptorWatcher::Controller::StartWatching() {
 }
 
 void FileDescriptorWatcher::Controller::RunCallback() {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   WeakPtr<Controller> weak_this = weak_factory_.GetWeakPtr();
 

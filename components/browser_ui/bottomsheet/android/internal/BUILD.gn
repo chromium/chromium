@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -33,21 +33,18 @@ android_library("java") {
   resources_package = "org.chromium.components.browser_ui.bottomsheet.internal"
 }
 
-android_library("junit_tests") {
-  bypass_platform_checks = true
-  testonly = true
+robolectric_library("junit_tests") {
   sources = [ "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetSwipeDetectorTest.java" ]
   deps = [
     ":java",
     "//base:base_java",
     "//base:base_junit_test_support",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]
 }
 
-android_library("javatests") {
+android_library("unit_device_javatests") {
   testonly = true
 
   sources = [ "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetObserverTest.java" ]
@@ -59,6 +56,7 @@ android_library("javatests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//components/browser_ui/widget/android:java",
+    "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//ui/android:ui_java_test_support",

@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright 2017 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -142,11 +142,13 @@ class ColorReferencesTest(unittest.TestCase):
                  ['<resources><color name="a">#f0f0f0</color></resources>']),
         MockFile('ui/android/java/res/values/semantic_colors_non_adaptive.xml',
                  [
-                     '<color name="b">@color/hello<color>',
-                     '<color name="c">@color/a<color>'
+                     '<resources>',
+                     '<color name="b">@color/hello</color>',
+                     '<color name="c">@color/a</color>',
+                     '</resources>'
                  ]),
         MockFile('ui/android/java/res/values/semantic_colors_adaptive.xml',
-                 ['<color name="c">@color/a<color>'])
+                 ['<color name="c">@color/a</color>'])
     ]
     errors = checkxmlstyle._CheckSemanticColorsReferences(
       mock_input_api, MockOutputApi())
@@ -158,7 +160,7 @@ class ColorReferencesTest(unittest.TestCase):
         MockFile(helpers.COLOR_PALETTE_PATH,
                  ['<resources><color name="foo">#f0f0f0</color></resources>']),
         MockFile('ui/android/java/res/values/semantic_colors_adaptive.xml',
-                 ['<color name="b">@color/foo<color>']),
+                 ['<color name="b">@color/foo</color>']),
         MockFile('ui/android/java/res/values/colors.xml', [
             '<color name="c">@color/b</color>',
             '<color name="d">@color/b</color>',
@@ -168,6 +170,23 @@ class ColorReferencesTest(unittest.TestCase):
     warnings = checkxmlstyle._CheckColorPaletteReferences(
         mock_input_api, MockOutputApi())
     self.assertEqual(1, len(warnings))
+
+  def testValidReferenceInNonAdaptive(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        MockFile(helpers.COLOR_PALETTE_PATH,
+                 ['<resources><color name="a">#f0f0f0</color></resources>']),
+        MockFile('ui/android/java/res/values/semantic_colors_non_adaptive.xml',
+                 [
+                     '<resources>',
+                     '<color name="b">@color/a</color>',
+                     '<color name="c">@color/b</color>',
+                     '</resources>'
+                 ])
+    ]
+    errors = checkxmlstyle._CheckSemanticColorsReferences(
+        mock_input_api, MockOutputApi())
+    self.assertEqual(0, len(errors))
 
 
 class DuplicateColorsTest(unittest.TestCase):
@@ -194,6 +213,43 @@ class DuplicateColorsTest(unittest.TestCase):
     mock_input_api.files = [MockFile('chrome/java/res_test/colors.xml', lines)]
     errors = checkxmlstyle._CheckDuplicateColors(
         mock_input_api, MockOutputApi())
+    self.assertEqual(0, len(errors))
+
+
+class NonDynamicColorsTest(unittest.TestCase):
+  class MockColorStateListSet:
+    def get(self):
+      return {'color_state_list'}
+
+  def testFailure(self):
+    lines = [
+        'app:tint="@color/tint_color" />',
+        'android:background="@color/bg_color"',
+        '<color name="fake_semantic_color">@color/palettele_color</color>',
+    ]
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [MockFile('chrome/java/res_test/colors.xml', lines)]
+    errors = checkxmlstyle._CheckNonDynamicColorReference(
+        mock_input_api,
+        MockOutputApi(),
+        lazy_color_state_list_set=self.MockColorStateListSet())
+    self.assertEqual(1, len(errors))
+    self.assertEqual(len(lines), len(errors[0].items))
+
+  def testSuccess(self):
+    lines = [
+        'app:tint="@color/color_state_list" />',
+        'android:background="@color/color_state_list"',
+        '<color name="fake_semantic_color">@color/color_state_list</color>',
+    ]
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        MockFile('chrome/java/res_test/colors.xml', lines),
+    ]
+    errors = checkxmlstyle._CheckNonDynamicColorReference(
+        mock_input_api,
+        MockOutputApi(),
+        lazy_color_state_list_set=self.MockColorStateListSet())
     self.assertEqual(0, len(errors))
 
 
@@ -436,7 +492,7 @@ class UnfavoredWidgetsTest(unittest.TestCase):
 
 class StringResourcesTest(unittest.TestCase):
   def testInfavoredQuotations(self):
-    xmlChanges = (u'''<grit><release><messages>
+    xmlChanges = ('''<grit><release><messages>
       <message name="IDS_TEST_0">
           <ph><ex>Hi</ex></ph>, it\u0027s a good idea
       </message>
@@ -456,7 +512,7 @@ class StringResourcesTest(unittest.TestCase):
         \u201CMenus\u201D
       </message>
         <part file="site_settings.grdp" />
-          </messages></release></grit>'''.encode('utf-8')).splitlines()
+          </messages></release></grit>''').splitlines()
 
     mock_input_api = MockInputApi()
     mock_input_api.files = [
@@ -478,7 +534,7 @@ class StringResourcesTest(unittest.TestCase):
 
 
   def testInfavoredEllipsis(self):
-    xmlChanges = (u'''<grit><release><messages>
+    xmlChanges = ('''<grit><release><messages>
       <message name="IDS_TEST_0">
           <ph><ex>Hi</ex></ph>, file is downloading\u002E\u002E\u002E
       </message>
@@ -489,7 +545,7 @@ class StringResourcesTest(unittest.TestCase):
           <ph><ex>Oh</ex></ph>, file is downloaded\u002E
       </message>
         <part file="site_settings.grdp" />
-          </messages></release></grit>'''.encode('utf-8')).splitlines()
+          </messages></release></grit>''').splitlines()
 
     mock_input_api = MockInputApi()
     mock_input_api.files = [

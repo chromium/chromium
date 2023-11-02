@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,10 @@ NSString* const kTabGridRegularTabsPageButtonIdentifier =
 NSString* const kTabGridRemoteTabsPageButtonIdentifier =
     @"TabGridRemoteTabsPageButtonIdentifier";
 NSString* const kTabGridDoneButtonIdentifier = @"TabGridDoneButtonIdentifier";
+NSString* const kTabGridCancelButtonIdentifier =
+    @"TabGridCancelButtonIdentifier";
+NSString* const kTabGridSearchButtonIdentifier =
+    @"TabGridSearchButtonIdentifier";
 NSString* const kTabGridCloseAllButtonIdentifier =
     @"TabGridCloseAllButtonIdentifier";
 NSString* const kTabGridUndoCloseAllButtonIdentifier =
@@ -37,6 +41,9 @@ NSString* const kTabGridEditAddToButtonIdentifier =
     @"kTabGridEditAddToButtonIdentifier";
 NSString* const kTabGridEditShareButtonIdentifier =
     @"kTabGridEditShareButtonIdentifier";
+NSString* const kTabGridSearchBarIdentifier = @"kTabGridSearchBarIdentifier";
+NSString* const kTabGridSearchTextFieldIdentifierPrefix = @"kSearchTextId_";
+NSString* const kTabGridScrimIdentifier = @"kTabGridScrimIdentifier";
 
 // The color of the text buttons in the toolbars.
 const int kTabGridToolbarTextButtonColor = 0xFFFFFF;
@@ -58,6 +65,14 @@ extern const CGFloat kTabGridEmptyStateHorizontalInset = 80.0f;
 // The insets from the edges for the floating button.
 const CGFloat kTabGridFloatingButtonVerticalInset = 28.0f;
 const CGFloat kTabGridFloatingButtonHorizontalInset = 20.0f;
+
+// The Search bar original width ratio of the available space from the
+// containing toolbar before any width modifiers.
+const CGFloat kTabGridSearchBarWidthRatio = 0.9f;
+// The tab grid Search bar height.
+const CGFloat kTabGridSearchBarHeight = 44.0f;
+// The Search bar width ratio modifier for non-compact orientation.
+const CGFloat kTabGridSearchBarNonCompactWidthRatioModifier = 0.5f;
 
 // Intrinsic heights of the tab grid toolbars.
 const CGFloat kTabGridTopToolbarHeight = 52.0f;

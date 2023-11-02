@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -86,9 +86,9 @@ class EffectTreeLayerListIteratorTest : public LayerTreeImplTestBase,
     }
 
     target_surface_count_ = std::vector<int>(
-        host_impl()->active_tree()->property_trees()->effect_tree.size(), -1);
+        host_impl()->active_tree()->property_trees()->effect_tree().size(), -1);
     contributing_surface_count_ = std::vector<int>(
-        host_impl()->active_tree()->property_trees()->effect_tree.size(), -1);
+        host_impl()->active_tree()->property_trees()->effect_tree().size(), -1);
   }
 
  protected:

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2018 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- disabled -->
+    <item android:color="@android:color/transparent" android:state_enabled="false" />
+
+    <!-- selected -->
+    <item android:color="@macro/chip_bg_selected_color"
+        android:state_selected="true" />
+
+    <!-- default state -->
+    <item android:color="@macro/chip_bg_color" />
+</selector>

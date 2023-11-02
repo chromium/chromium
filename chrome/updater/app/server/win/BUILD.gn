@@ -1,10 +1,10 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/toolchain/win/midl.gni")
-import("//build/util/version.gni")
 import("//chrome/updater/branding.gni")
+import("//chrome/version.gni")
 
 # These GUIDs must depend on branding only.
 branding_only_placeholder_guids = [
@@ -12,7 +12,6 @@ branding_only_placeholder_guids = [
   "PLACEHOLDER-GUID-158428a4-6014-4978-83ba-9fad0dabe791",  # UpdaterUserClass
   "PLACEHOLDER-GUID-415FD747-D79E-42D7-93AC-1BA6E5FD4E93",  # UpdaterSystemClass
   "PLACEHOLDER-GUID-63B8FFB1-5314-48C9-9C57-93EC8BC6184B",  # IUpdater
-  "PLACEHOLDER-GUID-3FDEC4CB-8501-4ECD-A4CF-BF70326218D0",  # IUpdaterRegisterAppCallback
   "PLACEHOLDER-GUID-46ACF70B-AC13-406D-B53B-B2C4BF091FF6",  # IUpdateState
   "PLACEHOLDER-GUID-2FCD14AF-B645-4351-8359-E80A0E202A0B",  # ICompleteStatus
   "PLACEHOLDER-GUID-7B416CFD-4216-4FD6-BD83-7C586054676E",  # IUpdaterObserver
@@ -27,7 +26,6 @@ uuid5_guids = string_join(",", uuid5_guids)
 midl("updater_idl_idl") {
   dynamic_guids = "ignore_proxy_stub," + uuid5_guids
 
-  header_file = "updater_idl.h"
   sources = [ "updater_idl.template" ]
 
   writes_tlb = true
@@ -52,28 +50,78 @@ uuid5_guids = string_join(",", uuid5_guids)
 midl("updater_internal_idl_idl") {
   dynamic_guids = "ignore_proxy_stub," + uuid5_guids
 
-  header_file = "updater_internal_idl.h"
   sources = [ "updater_internal_idl.template" ]
 
   writes_tlb = true
 }
 
-midl("updater_legacy_idl_idl") {
-  header_file = "updater_legacy_idl.h"
+if (is_chrome_branded) {
+  idl_suffix = "chrome_branded"
+} else {
+  idl_suffix = "open_source"
+}
+
+# For cross compilation reasons, the IDL files are generated with different
+# names for chrome-branded and open source. The common template
+# `updater_legacy_idl.template` is copied to the appropriately  suffixed
+# template under the gen dir, and that copied template is used to then generate
+# the MIDL output with substitutible `defines` such as `UPDATER_LEGACY_LIB_UUID`
+# in the `midl("updater_legacy_idl_idl")` action.
+copy("copy_updater_legacy_idl_idl") {
   sources = [ "updater_legacy_idl.template" ]
+  outputs =
+      [ "$root_gen_dir/chrome/updater/updater_legacy_idl_$idl_suffix.template" ]
+}
 
-  # These are the Omaha 3 Legacy GUIDs that Omaha 4 supports.
-  defines = [
-    "UPDATER_LEGACY_LIB_UUID=69464FF0-D9EC-4037-A35F-8AE4358106CC",
-    "ICURRENTSTATE_IID=247954F9-9EDC-4E68-8CC3-150C2B89EADF",
-    "IGOOGLEUPDATE3WEB_IID=494B20CF-282E-4BDD-9F5D-B70CB09D351E",
-    "IAPPBUNDLEWEB_IID=DD42475D-6D46-496a-924E-BD5630B4CBBA",
-    "IAPPWEB_IID=18D0F672-18B4-48e6-AD36-6E6BF01DBBC4",
-    "IPROCESSLAUNCHER_IID=128C2DA6-2BC0-44c0-B3F6-4EC22E647964",
-    "IPROCESSLAUNCHER2_IID=D106AB5F-A70E-400E-A21B-96208C1D8DBB",
-  ]
-
+midl("updater_legacy_idl_idl") {
+  sources =
+      [ "$root_gen_dir/chrome/updater/updater_legacy_idl_$idl_suffix.template" ]
   writes_tlb = true
+
+  if (is_chrome_branded) {
+    # Google-specific Legacy GUIDs that Omaha 4 supports.
+    defines = [
+      "UPDATER_LEGACY_LIB_UUID=69464FF0-D9EC-4037-A35F-8AE4358106CC",
+      "GOOGLEUPDATE3WEBUSERCLASS_CLSID=22181302-A8A6-4F84-A541-E5CBFC70CC43",
+      "GOOGLEUPDATE3WEBSYSTEMCLASS_CLSID=8A1D4361-2C08-4700-A351-3EAA9CBFF5E4",
+      "POLICYSTATUSUSERCLASS_CLSID=6DDCE70D-A4AE-4E97-908C-BE7B2DB750AD",
+      "POLICYSTATUSSYSTEMCLASS_CLSID=521FDB42-7130-4806-822A-FC5163FAD983",
+      "PROCESSLAUNCHERCLASS_CLSID=ABC01078-F197-4B0B-ADBC-CFE684B39C82",
+      "ICURRENTSTATE_IID=247954F9-9EDC-4E68-8CC3-150C2B89EADF",
+      "IGOOGLEUPDATE3WEB_IID=494B20CF-282E-4BDD-9F5D-B70CB09D351E",
+      "IAPPBUNDLEWEB_IID=DD42475D-6D46-496A-924E-BD5630B4CBBA",
+      "IAPPWEB_IID=18D0F672-18B4-48E6-AD36-6E6BF01DBBC4",
+      "IAPPCOMMANDWEB_IID=8476CE12-AE1F-4198-805C-BA0F9B783F57",
+      "IPOLICYSTATUS_IID=F63F6F8B-ACD5-413C-A44B-0409136D26CB",
+      "IPOLICYSTATUS2_IID=34527502-D3DB-4205-A69B-789B27EE0414",
+      "IPOLICYSTATUS3_IID=05A30352-EB25-45B6-8449-BCA7B0542CE5",
+      "IPOLICYSTATUSVALUE_IID=27634814-8E41-4C35-8577-980134A96544",
+      "IPROCESSLAUNCHER_IID=128C2DA6-2BC0-44C0-B3F6-4EC22E647964",
+      "IPROCESSLAUNCHER2_IID=D106AB5F-A70E-400E-A21B-96208C1D8DBB",
+    ]
+  } else {
+    defines = [
+      "UPDATER_LEGACY_LIB_UUID=4C61BB05-94D1-4BAB-B69C-C34195AF92CA",
+      "GOOGLEUPDATE3WEBUSERCLASS_CLSID=75828ED1-7BE8-45D0-8950-AA85CBF74510",
+      "GOOGLEUPDATE3WEBSYSTEMCLASS_CLSID=283209B7-C761-41CA-BE8D-B5321CD78FD6",
+      "POLICYSTATUSUSERCLASS_CLSID=4DAC24AB-B340-4B7E-AD01-1504A7F59EEA",
+      "POLICYSTATUSSYSTEMCLASS_CLSID=83FE19AC-72A6-4A72-B136-724444121586",
+      "PROCESSLAUNCHERCLASS_CLSID=811A664F-703E-407C-A323-E6E31D1EFFA0",
+      "ICURRENTSTATE_IID=BE5D3E90-A66C-4A0A-9B7B-1A6B9BF3971E",
+      "IGOOGLEUPDATE3WEB_IID=027234BD-61BB-4F5C-9386-7FE804171C8C",
+      "IAPPBUNDLEWEB_IID=D734C877-21F4-496E-B857-3E5B2E72E4CC",
+      "IAPPWEB_IID=2C6218B9-088D-4D25-A4F8-570558124142",
+      "IAPPCOMMANDWEB_IID=87DBF75E-F590-4802-93FD-F8D07800E2E9",
+      "IPOLICYSTATUS_IID=7D908375-C9D0-44C5-BB98-206F3C24A74C",
+      "IPOLICYSTATUS2_IID=9D31EA63-2E06-4D41-98C7-CB1F307DB597",
+      "IPOLICYSTATUS3_IID=5C674FC1-80E3-48D2-987B-79D9D286065B",
+      "IPOLICYSTATUSVALUE_IID=47C8886A-A4B5-4F6C-865A-41A207074DFA",
+      "IPROCESSLAUNCHER_IID=EED70106-3604-4385-866E-6D540E99CA1A",
+      "IPROCESSLAUNCHER2_IID=BAEE6326-C925-4FA4-AFE9-5FA69902B021",
+    ]
+  }
+
+  deps = [ ":copy_updater_legacy_idl_idl" ]
 }
 
 # The COM server needs to work with Windows 7, so explicitly setting the defines

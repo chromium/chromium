@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,7 @@ namespace blink {
 BLINK_COMMON_EXPORT extern const char kChromeUIBadCastCrashURL[];
 BLINK_COMMON_EXPORT extern const char kChromeUICheckCrashURL[];
 BLINK_COMMON_EXPORT extern const char kChromeUIBrowserCrashURL[];
+BLINK_COMMON_EXPORT extern const char kChromeUIBrowserDcheckURL[];
 BLINK_COMMON_EXPORT extern const char kChromeUIBrowserUIHang[];
 BLINK_COMMON_EXPORT extern const char kChromeUICrashURL[];
 BLINK_COMMON_EXPORT extern const char kChromeUIDelayedBrowserUIHang[];
@@ -39,11 +40,12 @@ BLINK_COMMON_EXPORT extern const char kChromeUIMemoryPressureModerateURL[];
 BLINK_COMMON_EXPORT extern const char kChromeUINetworkErrorsListingURL[];
 BLINK_COMMON_EXPORT extern const char kChromeUINetworkErrorURL[];
 BLINK_COMMON_EXPORT extern const char kChromeUIProcessInternalsURL[];
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 BLINK_COMMON_EXPORT extern const char kChromeUIGpuJavaCrashURL[];
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 BLINK_COMMON_EXPORT extern const char kChromeUIBrowserHeapCorruptionURL[];
+BLINK_COMMON_EXPORT extern const char kChromeUICfgViolationCrashURL[];
 BLINK_COMMON_EXPORT extern const char kChromeUIHeapCorruptionCrashURL[];
 #endif
 
@@ -51,10 +53,10 @@ BLINK_COMMON_EXPORT extern const char kChromeUIHeapCorruptionCrashURL[];
 BLINK_COMMON_EXPORT extern const char kChromeUICrashHeapOverflowURL[];
 BLINK_COMMON_EXPORT extern const char kChromeUICrashHeapUnderflowURL[];
 BLINK_COMMON_EXPORT extern const char kChromeUICrashUseAfterFreeURL[];
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 BLINK_COMMON_EXPORT extern const char kChromeUICrashCorruptHeapBlockURL[];
 BLINK_COMMON_EXPORT extern const char kChromeUICrashCorruptHeapURL[];
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 #endif  // ADDRESS_SANITIZER
 
 #if DCHECK_IS_ON()

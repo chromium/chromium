@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,32 +17,13 @@
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId KioskEnableScreenView::kScreenId;
+KioskEnableScreenHandler::KioskEnableScreenHandler()
+    : BaseScreenHandler(kScreenId) {}
 
-KioskEnableScreenHandler::KioskEnableScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
-  set_user_acted_method_path("login.KioskEnableScreen.userActed");
-}
-
-KioskEnableScreenHandler::~KioskEnableScreenHandler() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
+KioskEnableScreenHandler::~KioskEnableScreenHandler() = default;
 
 void KioskEnableScreenHandler::Show() {
-  if (!page_is_ready()) {
-    show_on_init_ = true;
-    return;
-  }
-  ShowScreen(kScreenId);
-}
-
-void KioskEnableScreenHandler::SetScreen(KioskEnableScreen* screen) {
-  BaseScreenHandler::SetBaseScreen(screen);
-  screen_ = screen;
-  if (page_is_ready() && screen_)
-    Initialize();
+  ShowInWebUI();
 }
 
 void KioskEnableScreenHandler::DeclareLocalizedValues(
@@ -58,18 +39,8 @@ void KioskEnableScreenHandler::DeclareLocalizedValues(
   builder->Add("kioskEnableErrorMsg", IDS_KIOSK_ENABLE_SCREEN_ERROR);
 }
 
-void KioskEnableScreenHandler::Initialize() {
-  if (!page_is_ready() || !screen_)
-    return;
-
-  if (show_on_init_) {
-    Show();
-    show_on_init_ = false;
-  }
-}
-
 void KioskEnableScreenHandler::ShowKioskEnabled(bool success) {
-  CallJS("login.KioskEnableScreen.onCompleted", success);
+  CallExternalAPI("onCompleted", success);
 }
 
 }  // namespace chromeos

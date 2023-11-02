@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,8 @@
 #include <string>
 
 #include "net/base/net_export.h"
+
+class GURL;
 
 namespace net {
 
@@ -35,10 +37,10 @@ class NET_EXPORT WindowsSystemProxyResolver {
       delete;
   virtual ~WindowsSystemProxyResolver() = default;
 
-  // Asynchronously finds a proxy for |url|. The |callback_target| will be
-  // provided with the proxy resolution result.
+  // Asynchronously finds a proxy for `url`. The `callback_target` must outlive
+  // `this`.
   virtual std::unique_ptr<Request> GetProxyForUrl(
-      const std::string& url,
+      const GURL& url,
       WindowsSystemProxyResolutionRequest* callback_target) = 0;
 };
 

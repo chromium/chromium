@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,8 @@
 #include <memory>
 #include <utility>
 
-#include "components/autofill/core/browser/autofill_regex_constants.h"
+#include "components/autofill/core/browser/form_parsing/regex_patterns.h"
+#include "components/autofill/core/common/autofill_regex_constants.h"
 
 namespace autofill {
 
@@ -16,21 +17,19 @@ TravelField::~TravelField() = default;
 // static
 std::unique_ptr<FormField> TravelField::Parse(AutofillScanner* scanner,
                                               const LanguageCode& page_language,
+                                              PatternSource pattern_source,
                                               LogManager* log_manager) {
   if (!scanner || scanner->IsEnd())
     return nullptr;
 
-  const std::vector<MatchingPattern>& passport_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("PASSPORT",
-                                                      page_language);
-  const std::vector<MatchingPattern>& travel_origin_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("TRAVEL_ORIGIN",
-                                                      page_language);
-  const std::vector<MatchingPattern>& travel_destination_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("TRAVEL_DESTINATION",
-                                                      page_language);
-  const std::vector<MatchingPattern>& flight_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("FLIGHT", page_language);
+  base::span<const MatchPatternRef> passport_patterns =
+      GetMatchPatterns("PASSPORT", page_language, pattern_source);
+  base::span<const MatchPatternRef> travel_origin_patterns =
+      GetMatchPatterns("TRAVEL_ORIGIN", page_language, pattern_source);
+  base::span<const MatchPatternRef> travel_destination_patterns =
+      GetMatchPatterns("TRAVEL_DESTINATION", page_language, pattern_source);
+  base::span<const MatchPatternRef> flight_patterns =
+      GetMatchPatterns("FLIGHT", page_language, pattern_source);
 
   auto travel_field = std::make_unique<TravelField>();
   if (ParseField(scanner, kPassportRe, passport_patterns,
@@ -50,7 +49,7 @@ std::unique_ptr<FormField> TravelField::Parse(AutofillScanner* scanner,
 }
 
 void TravelField::AddClassifications(
-    FieldCandidatesMap* field_candidates) const {
+    FieldCandidatesMap& field_candidates) const {
   // Simply tag all the fields as unknown types. Travel is currently used as
   // filter.
   AddClassification(passport_, UNKNOWN_TYPE, kBaseTravelParserScore,

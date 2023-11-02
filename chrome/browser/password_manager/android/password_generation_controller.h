@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -113,9 +113,9 @@ class PasswordGenerationController {
   // Member accessors:
   // -----------------
 
-  virtual gfx::NativeWindow top_level_native_window() const = 0;
+  virtual gfx::NativeWindow top_level_native_window() = 0;
 
-  virtual content::WebContents* web_contents() const = 0;
+  virtual content::WebContents* web_contents() = 0;
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_GENERATION_CONTROLLER_H_

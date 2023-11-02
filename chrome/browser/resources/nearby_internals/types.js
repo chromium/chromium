@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,7 +36,7 @@ export const Rpc = {
   CERTIFICATE: 0,
   CONTACT: 1,
   DEVICE: 2,
-  DEVICE_STATE: 3
+  DEVICE_STATE: 3,
 };
 
 /**
@@ -47,7 +47,7 @@ export const Rpc = {
  */
 export const Direction = {
   REQUEST: 0,
-  RESPONSE: 1
+  RESPONSE: 1,
 };
 
 /**
@@ -115,7 +115,7 @@ export let ShareTarget;
  */
 export const ShareTargetDiscoveryChange = {
   DISCOVERED: 0,
-  LOST: 1
+  LOST: 1,
 };
 
 /**

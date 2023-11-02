@@ -62,7 +62,7 @@
 #include "third_party/blink/renderer/core/loader/subresource_filter.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_info.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
@@ -90,7 +90,6 @@ class FrameFetchContextMockLocalFrameClient : public EmptyLocalFrameClient {
                void(const ResourceRequest&, const ResourceResponse&));
   MOCK_METHOD0(UserAgent, String());
   MOCK_METHOD0(MayUseClientLoFiForImageRequests, bool());
-  MOCK_CONST_METHOD0(GetPreviewsStateForFrame, PreviewsState());
 };
 
 class FixedPolicySubresourceFilter : public WebDocumentSubresourceFilter {
@@ -109,6 +108,9 @@ class FixedPolicySubresourceFilter : public WebDocumentSubresourceFilter {
     return policy_;
   }
 
+  LoadPolicy GetLoadPolicyForWebTransportConnect(const WebURL&) override {
+    return policy_;
+  }
   void ReportDisallowedLoad() override { ++*filtered_load_counter_; }
 
   bool ShouldLogToConsole() override { return false; }
@@ -126,12 +128,11 @@ class FrameFetchContextTest : public testing::Test {
       const KURL& url = KURL(),
       const String& permissions_policy_header = String()) {
     dummy_page_holder = nullptr;
-    dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(500, 500));
-    dummy_page_holder->GetPage().SetDeviceScaleFactorDeprecated(1.0);
+    dummy_page_holder = std::make_unique<DummyPageHolder>(gfx::Size(500, 500));
     if (url.IsValid()) {
       auto params = WebNavigationParams::CreateWithHTMLBufferForTesting(
           SharedBuffer::Create(), url);
-      if (!permissions_policy_header.IsEmpty()) {
+      if (!permissions_policy_header.empty()) {
         params->response.SetHttpHeaderField(http_names::kFeaturePolicy,
                                             permissions_policy_header);
       }
@@ -175,23 +176,15 @@ class FrameFetchContextSubresourceFilterTest : public FrameFetchContextTest {
     filtered_load_callback_counter_ = 0;
   }
 
-  void TearDown() override {
-    document->Loader()->SetSubresourceFilter(nullptr);
-    FrameFetchContextTest::TearDown();
-  }
-
   int GetFilteredLoadCallCount() const {
     return filtered_load_callback_counter_;
   }
 
   void SetFilterPolicy(WebDocumentSubresourceFilter::LoadPolicy policy,
                        bool is_associated_with_ad_subframe = false) {
-    document->Loader()->SetSubresourceFilter(
-        MakeGarbageCollected<SubresourceFilter>(
-            document->GetExecutionContext(),
-            std::make_unique<FixedPolicySubresourceFilter>(
-                policy, &filtered_load_callback_counter_,
-                is_associated_with_ad_subframe)));
+    document->Loader()->SetSubresourceFilter(new FixedPolicySubresourceFilter(
+        policy, &filtered_load_callback_counter_,
+        is_associated_with_ad_subframe));
   }
 
   absl::optional<ResourceRequestBlockedReason> CanRequest() {
@@ -252,8 +245,7 @@ class FrameFetchContextMockedLocalFrameClientTest
     client = MakeGarbageCollected<
         testing::NiceMock<FrameFetchContextMockLocalFrameClient>>();
     dummy_page_holder =
-        std::make_unique<DummyPageHolder>(IntSize(500, 500), nullptr, client);
-    dummy_page_holder->GetPage().SetDeviceScaleFactorDeprecated(1.0);
+        std::make_unique<DummyPageHolder>(gfx::Size(500, 500), nullptr, client);
     Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
     document = &dummy_page_holder->GetDocument();
     document->SetURL(main_resource_url);
@@ -543,9 +535,10 @@ class FrameFetchContextHintsTest : public FrameFetchContextTest {
  public:
   FrameFetchContextHintsTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kUserAgentClientHint,
-                              blink::features::
-                                  kPrefersColorSchemeClientHintHeader},
+        /*enabled_features=*/
+        {blink::features::kUserAgentClientHint,
+         blink::features::kPrefersColorSchemeClientHintHeader,
+         blink::features::kPrefersReducedMotionClientHintHeader},
         /*disabled_features=*/{});
   }
 
@@ -563,7 +556,6 @@ class FrameFetchContextHintsTest : public FrameFetchContextTest {
                     const char* header_value,
                     float width = 0) {
     SCOPED_TRACE(testing::Message() << header_name);
-    ClientHintsPreferences hints_preferences;
 
     FetchParameters::ResourceWidth resource_width;
     if (width > 0) {
@@ -574,20 +566,19 @@ class FrameFetchContextHintsTest : public FrameFetchContextTest {
     const KURL input_url(input);
     ResourceRequest resource_request(input_url);
 
-    GetFetchContext()->AddClientHintsIfNecessary(
-        hints_preferences, resource_width, resource_request);
+    GetFetchContext()->AddClientHintsIfNecessary(resource_width,
+                                                 resource_request);
 
     EXPECT_EQ(is_present ? String(header_value) : String(),
               resource_request.HttpHeaderField(header_name));
   }
 
   String GetHeaderValue(const char* input, const char* header_name) {
-    ClientHintsPreferences hints_preferences;
     FetchParameters::ResourceWidth resource_width;
     const KURL input_url(input);
     ResourceRequest resource_request(input_url);
-    GetFetchContext()->AddClientHintsIfNecessary(
-        hints_preferences, resource_width, resource_request);
+    GetFetchContext()->AddClientHintsIfNecessary(resource_width,
+                                                 resource_request);
     return resource_request.HttpHeaderField(header_name);
   }
 
@@ -616,16 +607,8 @@ TEST_F(FrameFetchContextHintsTest, MonitorDeviceMemorySecureTransport) {
   ExpectHeader("https://www.example.com/1.gif", "Viewport-Width", false, "");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Viewport-Width", false,
                "");
-  // Without a permissions policy header, the client hints should be sent only
-  // to the first party origins. Device-memory is a legacy hint that's sent on
-  // Android regardless of Permissions Policy delegation.
-#if defined(OS_ANDROID)
-  ExpectHeader("https://www.someother-example.com/1.gif", "Device-Memory", true,
-               "4");
-#else
   ExpectHeader("https://www.someother-example.com/1.gif", "Device-Memory",
                false, "");
-#endif
   ExpectHeader("https://www.someother-example.com/1.gif",
                "Sec-CH-Device-Memory", false, "");
 }
@@ -717,7 +700,7 @@ TEST_F(FrameFetchContextHintsTest, MonitorDPRHints) {
   document->GetFrame()->GetClientHintsPreferences().UpdateFrom(preferences);
   ExpectHeader("https://www.example.com/1.gif", "DPR", true, "1");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-DPR", true, "1");
-  dummy_page_holder->GetPage().SetDeviceScaleFactorDeprecated(2.5);
+  document->GetFrame()->SetPageZoomFactor(2.5);
   ExpectHeader("https://www.example.com/1.gif", "DPR", true, "2.5");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-DPR", true, "2.5");
   ExpectHeader("https://www.example.com/1.gif", "Width", false, "");
@@ -730,7 +713,7 @@ TEST_F(FrameFetchContextHintsTest, MonitorDPRHints) {
 TEST_F(FrameFetchContextHintsTest, MonitorDPRHintsInsecureTransport) {
     ExpectHeader("http://www.example.com/1.gif", "DPR", false, "");
     ExpectHeader("http://www.example.com/1.gif", "Sec-CH-DPR", false, "");
-    dummy_page_holder->GetPage().SetDeviceScaleFactorDeprecated(2.5);
+    document->GetFrame()->SetPageZoomFactor(2.5);
     ExpectHeader("http://www.example.com/1.gif", "DPR", false, "  ");
     ExpectHeader("http://www.example.com/1.gif", "Sec-CH-DPR", false, "  ");
     ExpectHeader("http://www.example.com/1.gif", "Width", false, "");
@@ -755,7 +738,8 @@ TEST_F(FrameFetchContextHintsTest, MonitorResourceWidthHints) {
                666.6666);
   ExpectHeader("https://www.example.com/1.gif", "DPR", false, "");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-DPR", false, "");
-  dummy_page_holder->GetPage().SetDeviceScaleFactorDeprecated(2.5);
+
+  document->GetFrame()->SetPageZoomFactor(2.5);
   ExpectHeader("https://www.example.com/1.gif", "Width", true, "1250", 500);
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Width", true, "1250",
                500);
@@ -776,7 +760,7 @@ TEST_F(FrameFetchContextHintsTest, MonitorViewportWidthHints) {
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Viewport-Width", true,
                "500");
   dummy_page_holder->GetFrameView().SetLayoutSizeFixedToFrameSize(false);
-  dummy_page_holder->GetFrameView().SetLayoutSize(IntSize(800, 800));
+  dummy_page_holder->GetFrameView().SetLayoutSize(gfx::Size(800, 800));
   ExpectHeader("https://www.example.com/1.gif", "Viewport-Width", true, "800");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Viewport-Width", true,
                "800");
@@ -894,6 +878,29 @@ TEST_F(FrameFetchContextHintsTest, MonitorPrefersColorSchemeHint) {
                false, "");
 }
 
+TEST_F(FrameFetchContextHintsTest, MonitorPrefersReducedMotionHint) {
+  ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Prefers-Reduced-Motion",
+               false, "");
+  ExpectHeader("http://www.example.com/1.gif", "Sec-CH-Prefers-Reduced-Motion",
+               false, "");
+
+  ClientHintsPreferences preferences;
+  preferences.SetShouldSend(
+      network::mojom::WebClientHintsType::kPrefersReducedMotion);
+  document->GetFrame()->GetClientHintsPreferences().UpdateFrom(preferences);
+
+  ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Prefers-Reduced-Motion",
+               true, "no-preference");
+  ExpectHeader("http://www.example.com/1.gif", "Sec-CH-Prefers-Reduced-Motion",
+               false, "");
+
+  document->GetSettings()->SetPrefersReducedMotion(true);
+  ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Prefers-Reduced-Motion",
+               true, "reduce");
+  ExpectHeader("http://www.example.com/1.gif", "Sec-CH-Prefers-Reduced-Motion",
+               false, "");
+}
+
 TEST_F(FrameFetchContextHintsTest, MonitorAllHints) {
   ExpectHeader("https://www.example.com/1.gif", "Device-Memory", false, "");
   ExpectHeader("https://www.example.com/1.gif", "DPR", false, "");
@@ -907,6 +914,8 @@ TEST_F(FrameFetchContextHintsTest, MonitorAllHints) {
                false, "");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Model", false, "");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Prefers-Color-Scheme",
+               false, "");
+  ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Prefers-Reduced-Motion",
                false, "");
 
   // `Sec-CH-UA` is special.
@@ -938,6 +947,8 @@ TEST_F(FrameFetchContextHintsTest, MonitorAllHints) {
   preferences.SetShouldSend(network::mojom::WebClientHintsType::kUAModel);
   preferences.SetShouldSend(
       network::mojom::WebClientHintsType::kPrefersColorScheme);
+  preferences.SetShouldSend(
+      network::mojom::WebClientHintsType::kPrefersReducedMotion);
   ApproximatedDeviceMemory::SetPhysicalMemoryMBForTesting(4096);
   document->GetFrame()->GetClientHintsPreferences().UpdateFrom(preferences);
   ExpectHeader("https://www.example.com/1.gif", "Device-Memory", true, "4");
@@ -960,6 +971,8 @@ TEST_F(FrameFetchContextHintsTest, MonitorAllHints) {
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Model", true, "");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Prefers-Color-Scheme",
                true, "light");
+  ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Prefers-Reduced-Motion",
+               true, "no-preference");
 
   // Value of network quality client hints may vary, so only check if the
   // header is present and the values are non-negative/non-empty.
@@ -989,7 +1002,7 @@ TEST_F(FrameFetchContextHintsTest, MonitorAllHintsPermissionsPolicy) {
       "ch-dpr *; ch-device-memory *; ch-downlink *; ch-ect *; ch-rtt *; ch-ua "
       "*; ch-ua-arch *; ch-ua-platform *; ch-ua-platform-version *; "
       "ch-ua-model *; ch-viewport-width *; ch-width *; ch-prefers-color-scheme "
-      "*");
+      "*; ch-prefers-reduced-motion *");
   document->GetSettings()->SetScriptEnabled(true);
   ClientHintsPreferences preferences;
   preferences.SetShouldSend(
@@ -1017,6 +1030,8 @@ TEST_F(FrameFetchContextHintsTest, MonitorAllHintsPermissionsPolicy) {
   preferences.SetShouldSend(network::mojom::WebClientHintsType::kUAModel);
   preferences.SetShouldSend(
       network::mojom::WebClientHintsType::kPrefersColorScheme);
+  preferences.SetShouldSend(
+      network::mojom::WebClientHintsType::kPrefersReducedMotion);
   ApproximatedDeviceMemory::SetPhysicalMemoryMBForTesting(4096);
   document->GetFrame()->GetClientHintsPreferences().UpdateFrom(preferences);
 
@@ -1042,6 +1057,8 @@ TEST_F(FrameFetchContextHintsTest, MonitorAllHintsPermissionsPolicy) {
                "500");
   ExpectHeader("https://www.example.net/1.gif", "Sec-CH-Prefers-Color-Scheme",
                true, "light");
+  ExpectHeader("https://www.example.net/1.gif", "Sec-CH-Prefers-Reduced-Motion",
+               true, "no-preference");
 
   // Value of network quality client hints may vary, so only check if the
   // header is present and the values are non-negative/non-empty.
@@ -1082,15 +1099,8 @@ TEST_F(FrameFetchContextHintsTest, MonitorSomeHintsPermissionsPolicy) {
   ExpectHeader("https://www.example.net/1.gif", "Device-Memory", true, "4");
   ExpectHeader("https://www.example.net/1.gif", "Sec-CH-Device-Memory", true,
                "4");
-  // Device-memory is a legacy hint that's sent on Android regardless of
-  // Permissions Policy delegation.
-#if defined(OS_ANDROID)
-  ExpectHeader("https://www.someother-example.com/1.gif", "Device-Memory", true,
-               "4");
-#else
   ExpectHeader("https://www.someother-example.com/1.gif", "Device-Memory",
                false, "");
-#endif
   ExpectHeader("https://www.someother-example.com/1.gif",
                "Sec-CH-Device-Memory", false, "");
   // `Sec-CH-UA` is special.
@@ -1099,13 +1109,7 @@ TEST_F(FrameFetchContextHintsTest, MonitorSomeHintsPermissionsPolicy) {
   // Other hints not declared in the policy are still not attached.
   ExpectHeader("https://www.example.net/1.gif", "downlink", false, "");
   ExpectHeader("https://www.example.net/1.gif", "ect", false, "");
-  // DPR is a legacy hint that's sent on Android regardless of Permissions
-  // Policy delegation.
-#if defined(OS_ANDROID)
-  ExpectHeader("https://www.example.net/1.gif", "DPR", true, "1");
-#else
   ExpectHeader("https://www.example.net/1.gif", "DPR", false, "");
-#endif
   ExpectHeader("https://www.example.net/1.gif", "Sec-CH-DPR", false, "");
   ExpectHeader("https://www.example.net/1.gif", "Sec-CH-UA-Arch", false, "");
   ExpectHeader("https://www.example.net/1.gif", "Sec-CH-UA-Platform-Version",
@@ -1117,6 +1121,8 @@ TEST_F(FrameFetchContextHintsTest, MonitorSomeHintsPermissionsPolicy) {
   ExpectHeader("https://www.example.net/1.gif", "Sec-CH-Viewport-Width", false,
                "");
   ExpectHeader("https://www.example.net/1.gif", "Sec-CH-Prefers-Color-Scheme",
+               false, "");
+  ExpectHeader("https://www.example.net/1.gif", "Sec-CH-Prefers-Reduced-Motion",
                false, "");
 }
 
@@ -1195,57 +1201,51 @@ TEST_F(FrameFetchContextTest, SubResourceCachePolicy) {
 }
 
 // Tests if "Save-Data" header is correctly added on the first load and reload.
-TEST_F(FrameFetchContextTest, EnableDataSaver) {
+TEST_F(FrameFetchContextHintsTest, EnableDataSaver) {
   GetNetworkStateNotifier().SetSaveDataEnabledOverride(true);
   // Recreate the fetch context so that the updated save data settings are read.
-  RecreateFetchContext();
+  RecreateFetchContext(KURL("https://www.example.com/"));
+  document->GetSettings()->SetScriptEnabled(true);
 
-  ResourceRequest resource_request("http://www.example.com");
-  GetFetchContext()->AddAdditionalRequestHeaders(resource_request);
-  EXPECT_EQ("on", resource_request.HttpHeaderField("Save-Data"));
+  ExpectHeader("https://www.example.com/", "Save-Data", true, "on");
 
   // Subsequent call to addAdditionalRequestHeaders should not append to the
   // save-data header.
-  GetFetchContext()->AddAdditionalRequestHeaders(resource_request);
-  EXPECT_EQ("on", resource_request.HttpHeaderField("Save-Data"));
+  ExpectHeader("https://www.example.com/", "Save-Data", true, "on");
 }
 
 // Tests if "Save-Data" header is not added when the data saver is disabled.
-TEST_F(FrameFetchContextTest, DisabledDataSaver) {
+TEST_F(FrameFetchContextHintsTest, DisabledDataSaver) {
   GetNetworkStateNotifier().SetSaveDataEnabledOverride(false);
   // Recreate the fetch context so that the updated save data settings are read.
-  RecreateFetchContext();
+  RecreateFetchContext(KURL("https://www.example.com/"));
+  document->GetSettings()->SetScriptEnabled(true);
 
-  ResourceRequest resource_request("http://www.example.com");
-  GetFetchContext()->AddAdditionalRequestHeaders(resource_request);
-  EXPECT_EQ(String(), resource_request.HttpHeaderField("Save-Data"));
+  ExpectHeader("https://www.example.com/", "Save-Data", false, "");
 }
 
 // Tests if reload variants can reflect the current data saver setting.
-TEST_F(FrameFetchContextTest, ChangeDataSaverConfig) {
+TEST_F(FrameFetchContextHintsTest, ChangeDataSaverConfig) {
   GetNetworkStateNotifier().SetSaveDataEnabledOverride(true);
   // Recreate the fetch context so that the updated save data settings are read.
-  RecreateFetchContext();
-  ResourceRequest resource_request("http://www.example.com");
-  GetFetchContext()->AddAdditionalRequestHeaders(resource_request);
-  EXPECT_EQ("on", resource_request.HttpHeaderField("Save-Data"));
+  RecreateFetchContext(KURL("https://www.example.com/"));
+  document->GetSettings()->SetScriptEnabled(true);
+  ExpectHeader("https://www.example.com/", "Save-Data", true, "on");
 
   GetNetworkStateNotifier().SetSaveDataEnabledOverride(false);
-  RecreateFetchContext();
-  document->Loader()->SetLoadType(WebFrameLoadType::kReload);
-  GetFetchContext()->AddAdditionalRequestHeaders(resource_request);
-  EXPECT_EQ(String(), resource_request.HttpHeaderField("Save-Data"));
+  RecreateFetchContext(KURL("https://www.example.com/"));
+  document->GetSettings()->SetScriptEnabled(true);
+  ExpectHeader("https://www.example.com/", "Save-Data", false, "");
 
   GetNetworkStateNotifier().SetSaveDataEnabledOverride(true);
-  RecreateFetchContext();
-  GetFetchContext()->AddAdditionalRequestHeaders(resource_request);
-  EXPECT_EQ("on", resource_request.HttpHeaderField("Save-Data"));
+  RecreateFetchContext(KURL("https://www.example.com/"));
+  document->GetSettings()->SetScriptEnabled(true);
+  ExpectHeader("https://www.example.com/", "Save-Data", true, "on");
 
   GetNetworkStateNotifier().SetSaveDataEnabledOverride(false);
-  RecreateFetchContext();
-  document->Loader()->SetLoadType(WebFrameLoadType::kReload);
-  GetFetchContext()->AddAdditionalRequestHeaders(resource_request);
-  EXPECT_EQ(String(), resource_request.HttpHeaderField("Save-Data"));
+  RecreateFetchContext(KURL("https://www.example.com/"));
+  document->GetSettings()->SetScriptEnabled(true);
+  ExpectHeader("https://www.example.com/", "Save-Data", false, "");
 }
 
 TEST_F(FrameFetchContextSubresourceFilterTest, Filter) {
@@ -1366,7 +1366,8 @@ TEST_F(FrameFetchContextTest, AddResourceTimingWhenDetached) {
   scoped_refptr<ResourceTimingInfo> info =
       ResourceTimingInfo::Create("type", base::TimeTicks() + base::Seconds(0.3),
                                  mojom::blink::RequestContextType::UNSPECIFIED,
-                                 network::mojom::RequestDestination::kEmpty);
+                                 network::mojom::RequestDestination::kEmpty,
+                                 network::mojom::RequestMode::kSameOrigin);
 
   dummy_page_holder = nullptr;
 
@@ -1386,24 +1387,6 @@ TEST_F(FrameFetchContextTest, AllowImageWhenDetached) {
 TEST_F(FrameFetchContextTest, PopulateResourceRequestWhenDetached) {
   const KURL url("https://www.example.com/");
   ResourceRequest request(url);
-
-  ClientHintsPreferences client_hints_preferences;
-  client_hints_preferences.SetShouldSend(
-      network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED);
-  client_hints_preferences.SetShouldSend(
-      network::mojom::WebClientHintsType::kDeviceMemory);
-  client_hints_preferences.SetShouldSend(
-      network::mojom::WebClientHintsType::kDpr_DEPRECATED);
-  client_hints_preferences.SetShouldSend(
-      network::mojom::WebClientHintsType::kDpr);
-  client_hints_preferences.SetShouldSend(
-      network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED);
-  client_hints_preferences.SetShouldSend(
-      network::mojom::WebClientHintsType::kResourceWidth);
-  client_hints_preferences.SetShouldSend(
-      network::mojom::WebClientHintsType::kViewportWidth_DEPRECATED);
-  client_hints_preferences.SetShouldSend(
-      network::mojom::WebClientHintsType::kViewportWidth);
 
   FetchParameters::ResourceWidth resource_width;
   ResourceLoaderOptions options(nullptr /* world */);
@@ -1427,10 +1410,29 @@ TEST_F(FrameFetchContextTest, PopulateResourceRequestWhenDetached) {
 
   dummy_page_holder = nullptr;
 
-  GetFetchContext()->PopulateResourceRequest(ResourceType::kRaw,
-                                             client_hints_preferences,
-                                             resource_width, request, options);
+  GetFetchContext()->PopulateResourceRequest(ResourceType::kRaw, resource_width,
+                                             request, options);
   // Should not crash.
+}
+
+// TODO(victortan) Add corresponding web platform tests once feature on.
+TEST_F(FrameFetchContextTest, SetReduceAcceptLanguageWhenDetached) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      network::features::kReduceAcceptLanguage);
+
+  const KURL url("https://www.example.com/");
+  ResourceRequest request(url);
+
+  FetchParameters::ResourceWidth resource_width;
+  ResourceLoaderOptions options(/*world=*/nullptr);
+
+  document->GetFrame()->SetReducedAcceptLanguage("en-GB");
+  dummy_page_holder = nullptr;
+
+  GetFetchContext()->PopulateResourceRequest(ResourceType::kRaw, resource_width,
+                                             request, options);
+  EXPECT_EQ("en-GB", request.HttpHeaderField("Accept-Language"));
 }
 
 TEST_F(FrameFetchContextTest, SetFirstPartyCookieWhenDetached) {
@@ -1445,87 +1447,7 @@ TEST_F(FrameFetchContextTest, SetFirstPartyCookieWhenDetached) {
   SetFirstPartyCookie(request);
 
   EXPECT_TRUE(request.SiteForCookies().IsEquivalent(
-      net::SiteForCookies::FromUrl(document_url)));
-}
-
-TEST_F(FrameFetchContextTest,
-       SendConversionRequestInsteadOfRedirecting_RecordsDetachedMetric) {
-  const bool kDetach = true;
-  const bool kNoDetach = false;
-
-  const char kTriggerURL[] =
-      "https://www.example.com/.well-known/attribution-reporting/"
-      "trigger-attribution";
-  const char kNoTriggerURL[] = "https://www.example.com/";
-
-  struct {
-    KURL url;
-    bool detach;
-    int expected_bucket;
-  } test_cases[] = {
-      {KURL(kNoTriggerURL), kNoDetach, 0},
-      {KURL(kTriggerURL), kNoDetach, 1},
-      {KURL(kNoTriggerURL), kDetach, 0},
-      {KURL(kTriggerURL), kDetach, 1},
-  };
-
-  for (const auto& test_case : test_cases) {
-    if (test_case.detach)
-      dummy_page_holder = nullptr;
-
-    HistogramTester histograms;
-    GetFetchContext()->SendConversionRequestInsteadOfRedirecting(
-        test_case.url, /*redirect_info=*/absl::nullopt,
-        ReportingDisposition::kReport, /*devtools_request_id=*/"");
-    histograms.ExpectUniqueSample(
-        "Conversions.RedirectInterceptedFrameDetached", test_case.detach,
-        test_case.expected_bucket);
-
-    RecreateFetchContext();
-  }
-}
-
-TEST_F(FrameFetchContextTest,
-       SendConversionRequestInsteadOfRedirecting_RecordsFeaturePolicyMetric) {
-  const bool kEnabled = true;
-  const bool kDisabled = false;
-
-  const char kTriggerURL[] =
-      "https://www.example.com/.well-known/attribution-reporting/"
-      "trigger-attribution";
-  const char kNoTriggerURL[] = "https://www.example.com/";
-
-  // The feature policy is only checked if the URL is same-origin with the
-  // previous URL.
-  const ResourceRequest::RedirectInfo redirect_info(
-      /*original_url=*/KURL(),
-      /*previous_url=*/KURL("https://www.example.com/"));
-
-  struct {
-    KURL url;
-    bool enabled;
-    int expected_bucket;
-  } test_cases[] = {
-      {KURL(kNoTriggerURL), kDisabled, 0},
-      {KURL(kTriggerURL), kDisabled, 1},
-      {KURL(kNoTriggerURL), kEnabled, 0},
-      {KURL(kTriggerURL), kEnabled, 1},
-  };
-
-  for (const auto& test_case : test_cases) {
-    RecreateFetchContext(redirect_info.previous_url,
-                         /*permissions_policy_header=*/test_case.enabled
-                             ? ""
-                             : "attribution-reporting 'none'");
-
-    HistogramTester histograms;
-    GetFetchContext()->SendConversionRequestInsteadOfRedirecting(
-        test_case.url, redirect_info, ReportingDisposition::kReport,
-        /*devtools_request_id=*/"");
-    histograms.ExpectUniqueSample(
-        "Conversions.ConversionIgnoredByFeaturePolicy", !test_case.enabled,
-        test_case.expected_bucket);
-  }
+      net::SiteForCookies::FromUrl(GURL(document_url))));
 }
 
 TEST_F(FrameFetchContextTest, TopFrameOrigin) {
@@ -1550,69 +1472,6 @@ TEST_F(FrameFetchContextTest, TopFrameOriginDetached) {
   dummy_page_holder = nullptr;
 
   EXPECT_EQ(origin, GetTopFrameOrigin());
-}
-
-// Verify the value of the sec-bfcache-experiment HTTP header varies according
-// to whether BackForwardCacheExperimentHTTPHeader and BackForwardCacheSameSite
-// is enabled or not.
-TEST_F(FrameFetchContextTest, SameSiteBackForwardCache) {
-  base::FieldTrialParams params;
-
-  {
-    ScopedBackForwardCacheExperimentHTTPHeaderForTest back_forward_cache(false);
-    params[features::kBackForwardCacheABExperimentGroup] = "foo";
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
-        features::kBackForwardCacheABExperimentControl, params);
-
-    ResourceRequest resource_request("http://www.example.com");
-    GetFetchContext()->AddAdditionalRequestHeaders(resource_request);
-
-    // BackForwardCacheExperimentHTTPHeader is not enabled and
-    // BackForwardCacheSameSite's experiment group is "foo".
-    EXPECT_EQ(String(),
-              resource_request.HttpHeaderField("Sec-bfcache-experiment"));
-  }
-
-  {
-    ScopedBackForwardCacheExperimentHTTPHeaderForTest back_forward_cache(true);
-    ResourceRequest resource_request("http://www.example.com");
-    GetFetchContext()->AddAdditionalRequestHeaders(resource_request);
-
-    // BackForwardCacheExperimentHTTPHeader is enabled and
-    // BackForwardCacheSameSite's experiment group is not set.
-    EXPECT_EQ(String(),
-              resource_request.HttpHeaderField("Sec-bfcache-experiment"));
-  }
-
-  {
-    params[features::kBackForwardCacheABExperimentGroup] = "control";
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
-        features::kBackForwardCacheABExperimentControl, params);
-
-    ResourceRequest resource_request("http://www.example.com");
-    GetFetchContext()->AddAdditionalRequestHeaders(resource_request);
-
-    // BackForwardCacheExperimentHTTPHeader is enabled and
-    // BackForwardCacheSameSite's experiment group is "control".
-    EXPECT_EQ("control",
-              resource_request.HttpHeaderField("Sec-bfcache-experiment"));
-  }
-
-  {
-    params[features::kBackForwardCacheABExperimentGroup] = "enabled";
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
-        features::kBackForwardCacheABExperimentControl, params);
-    ResourceRequest resource_request("http://www.example.com");
-    GetFetchContext()->AddAdditionalRequestHeaders(resource_request);
-
-    // BackForwardCacheExperimentHTTPHeader is enabled and
-    // BackForwardCacheSameSite experiment group is "enabled".
-    EXPECT_EQ("enabled",
-              resource_request.HttpHeaderField("Sec-bfcache-experiment"));
-  }
 }
 
 // Tests that CanRequestCanRequestBasedOnSubresourceFilterOnly will block ads

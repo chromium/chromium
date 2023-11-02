@@ -1,1 +1,4 @@
-textField description='My name is Garaventathe weird. (QED) Where are my marbles?' descriptionFrom=relatedElement
+# Original expectation was missing a space ("Garaventathe"), but the spec is not
+# clear about this and it seems wrong, the result should match the rendered text
+# more closely. See: https://github.com/w3c/accname/issues/15
+textField description='My name is Garaventa the weird. (QED) Where are my marbles?' descriptionFrom=relatedElement

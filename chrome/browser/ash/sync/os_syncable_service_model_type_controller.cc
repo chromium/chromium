@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -34,32 +33,11 @@ OsSyncableServiceModelTypeController::OsSyncableServiceModelTypeController(
           DelegateMode::kTransportModeWithSingleModel),
       pref_service_(pref_service),
       sync_service_(sync_service) {
-  DCHECK(chromeos::features::IsSyncSettingsCategorizationEnabled());
   DCHECK(type == syncer::APP_LIST || type == syncer::OS_PREFERENCES ||
          type == syncer::OS_PRIORITY_PREFERENCES);
   DCHECK(pref_service_);
   DCHECK(sync_service_);
-
-  pref_registrar_.Init(pref_service_);
-  pref_registrar_.Add(
-      syncer::prefs::kOsSyncFeatureEnabled,
-      base::BindRepeating(
-          &OsSyncableServiceModelTypeController::OnUserPrefChanged,
-          base::Unretained(this)));
 }
 
 OsSyncableServiceModelTypeController::~OsSyncableServiceModelTypeController() =
     default;
-
-syncer::DataTypeController::PreconditionState
-OsSyncableServiceModelTypeController::GetPreconditionState() const {
-  DCHECK(CalledOnValidThread());
-  return pref_service_->GetBoolean(syncer::prefs::kOsSyncFeatureEnabled)
-             ? PreconditionState::kPreconditionsMet
-             : PreconditionState::kMustStopAndClearData;
-}
-
-void OsSyncableServiceModelTypeController::OnUserPrefChanged() {
-  DCHECK(CalledOnValidThread());
-  sync_service_->DataTypePreconditionChanged(type());
-}

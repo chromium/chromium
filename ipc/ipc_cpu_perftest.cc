@@ -1,12 +1,13 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
+#include <tuple>
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process_metrics.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -200,7 +201,7 @@ class ChannelSteadyPingPongListener : public Listener {
   void SendPong() { sender_->Send(new TestMsg_Ping(payload_)); }
 
  private:
-  Sender* sender_ = nullptr;
+  raw_ptr<Sender> sender_ = nullptr;
   TestParams params_;
   std::string payload_;
   std::string label_;
@@ -307,7 +308,7 @@ class MojoSteadyPingPongTest : public mojo::core::test::MojoTestBase {
 
     ping_receiver_->Quit();
 
-    ignore_result(ping_receiver_.Unbind().PassPipe().release());
+    std::ignore = ping_receiver_.Unbind().PassPipe().release();
   }
 
   void OnHello(const std::string& value) {

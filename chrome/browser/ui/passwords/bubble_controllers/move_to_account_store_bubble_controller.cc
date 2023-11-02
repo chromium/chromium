@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,8 +32,7 @@ MoveToAccountStoreBubbleController::MoveToAccountStoreBubbleController(
 MoveToAccountStoreBubbleController::~MoveToAccountStoreBubbleController() {
   // Make sure the interactions are reported even if Views didn't notify the
   // controller about the bubble being closed.
-  if (!interaction_reported_)
-    OnBubbleClosing();
+  OnBubbleClosing();
 }
 
 void MoveToAccountStoreBubbleController::RequestFavicon(
@@ -91,8 +90,8 @@ gfx::Image MoveToAccountStoreBubbleController::GetProfileIcon(int size) {
         profiles::GetPlaceholderAvatarIconResourceID());
   }
   return profiles::GetSizedAvatarIcon(account_icon,
-                                      /*is_rectangle=*/true, /*width=*/size,
-                                      /*height=*/size, profiles::SHAPE_CIRCLE);
+                                      /*width=*/size, /*height=*/size,
+                                      profiles::SHAPE_CIRCLE);
 }
 
 void MoveToAccountStoreBubbleController::ReportInteractions() {

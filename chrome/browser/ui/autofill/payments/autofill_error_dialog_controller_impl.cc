@@ -1,10 +1,12 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/autofill/payments/autofill_error_dialog_controller_impl.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -19,14 +21,24 @@ AutofillErrorDialogControllerImpl::~AutofillErrorDialogControllerImpl() {
 }
 
 void AutofillErrorDialogControllerImpl::Show(
-    AutofillErrorDialogController::AutofillErrorDialogType error_dialog_type) {
+    const AutofillErrorDialogContext& autofill_error_dialog_context) {
   if (autofill_error_dialog_view_)
     Dismiss();
 
   DCHECK(autofill_error_dialog_view_ == nullptr);
-  error_dialog_type_ = error_dialog_type;
+  error_dialog_context_ = autofill_error_dialog_context;
   autofill_error_dialog_view_ = AutofillErrorDialogView::CreateAndShow(this);
-  base::UmaHistogramEnumeration("Autofill.ErrorDialogShown", error_dialog_type);
+
+  base::UmaHistogramEnumeration("Autofill.ErrorDialogShown",
+                                autofill_error_dialog_context.type);
+
+  // If both |server_returned_title| and |server_returned_description| are
+  // populated, then the error dialog was displayed with the server-driven text.
+  if (error_dialog_context_.server_returned_title &&
+      error_dialog_context_.server_returned_description) {
+    base::UmaHistogramEnumeration("Autofill.ErrorDialogShown.WithServerText",
+                                  autofill_error_dialog_context.type);
+  }
 }
 
 void AutofillErrorDialogControllerImpl::OnDismissed() {
@@ -36,45 +48,56 @@ void AutofillErrorDialogControllerImpl::OnDismissed() {
 }
 
 const std::u16string AutofillErrorDialogControllerImpl::GetTitle() {
-  int title_string_resource_id = 0;
-  switch (error_dialog_type_) {
-    case VIRTUAL_CARD_TEMPORARY_ERROR:
-      title_string_resource_id =
-          IDS_AUTOFILL_VIRTUAL_CARD_TEMPORARY_ERROR_TITLE;
-      break;
-    case VIRTUAL_CARD_PERMANENT_ERROR:
-      title_string_resource_id =
-          IDS_AUTOFILL_VIRTUAL_CARD_PERMANENT_ERROR_TITLE;
-      break;
-    case VIRTUAL_CARD_NOT_ELIGIBLE_ERROR:
-      title_string_resource_id =
-          IDS_AUTOFILL_VIRTUAL_CARD_NOT_ELIGIBLE_ERROR_TITLE;
-      break;
+  // If the server returned a title to be displayed, we prefer it since this
+  // title will be more detailed to the specific error that occurred. We must
+  // ensure that both a title and a description were returned from the server
+  // before using this title.
+  if (error_dialog_context_.server_returned_title &&
+      error_dialog_context_.server_returned_description) {
+    return base::UTF8ToUTF16(*error_dialog_context_.server_returned_title);
   }
-  return title_string_resource_id != 0
-             ? l10n_util::GetStringUTF16(title_string_resource_id)
-             : std::u16string();
+
+  switch (error_dialog_context_.type) {
+    case AutofillErrorDialogType::kVirtualCardTemporaryError:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_VIRTUAL_CARD_TEMPORARY_ERROR_TITLE);
+    case AutofillErrorDialogType::kVirtualCardPermanentError:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_VIRTUAL_CARD_PERMANENT_ERROR_TITLE);
+    case AutofillErrorDialogType::kVirtualCardNotEligibleError:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_VIRTUAL_CARD_NOT_ELIGIBLE_ERROR_TITLE);
+    case AutofillErrorDialogType::kTypeUnknown:
+      NOTREACHED();
+      return std::u16string();
+  }
 }
 
 const std::u16string AutofillErrorDialogControllerImpl::GetDescription() {
-  int description_string_resource_id = 0;
-  switch (error_dialog_type_) {
-    case VIRTUAL_CARD_TEMPORARY_ERROR:
-      description_string_resource_id =
-          IDS_AUTOFILL_VIRTUAL_CARD_TEMPORARY_ERROR_DESCRIPTION;
-      break;
-    case VIRTUAL_CARD_PERMANENT_ERROR:
-      description_string_resource_id =
-          IDS_AUTOFILL_VIRTUAL_CARD_PERMANENT_ERROR_DESCRIPTION;
-      break;
-    case VIRTUAL_CARD_NOT_ELIGIBLE_ERROR:
-      description_string_resource_id =
-          IDS_AUTOFILL_VIRTUAL_CARD_NOT_ELIGIBLE_ERROR_DESCRIPTION;
-      break;
+  // If the server returned a description to be displayed, we prefer it since
+  // this description will be more detailed to the specific error that occurred.
+  // We must ensure that both a title and a description were returned from the
+  // server before using this description.
+  if (error_dialog_context_.server_returned_title &&
+      error_dialog_context_.server_returned_description) {
+    return base::UTF8ToUTF16(
+        *error_dialog_context_.server_returned_description);
   }
-  return description_string_resource_id != 0
-             ? l10n_util::GetStringUTF16(description_string_resource_id)
-             : std::u16string();
+
+  switch (error_dialog_context_.type) {
+    case AutofillErrorDialogType::kVirtualCardTemporaryError:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_VIRTUAL_CARD_TEMPORARY_ERROR_DESCRIPTION);
+    case AutofillErrorDialogType::kVirtualCardPermanentError:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_VIRTUAL_CARD_PERMANENT_ERROR_DESCRIPTION);
+    case AutofillErrorDialogType::kVirtualCardNotEligibleError:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_VIRTUAL_CARD_NOT_ELIGIBLE_ERROR_DESCRIPTION);
+    case AutofillErrorDialogType::kTypeUnknown:
+      NOTREACHED();
+      return std::u16string();
+  }
 }
 
 const std::u16string AutofillErrorDialogControllerImpl::GetButtonLabel() {

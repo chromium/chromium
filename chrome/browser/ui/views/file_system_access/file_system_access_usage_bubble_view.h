@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,10 +50,10 @@ class FileSystemAccessUsageBubbleView : public LocationBarBubbleDelegateView {
     FilePathListModel& operator=(const FilePathListModel&) = delete;
     ~FilePathListModel() override;
     // ui::TableModel:
-    int RowCount() override;
-    std::u16string GetText(int row, int column_id) override;
-    ui::ImageModel GetIcon(int row) override;
-    std::u16string GetTooltip(int row) override;
+    size_t RowCount() override;
+    std::u16string GetText(size_t row, int column_id) override;
+    ui::ImageModel GetIcon(size_t row) override;
+    std::u16string GetTooltip(size_t row) override;
     void SetObserver(ui::TableModelObserver*) override;
 
    private:

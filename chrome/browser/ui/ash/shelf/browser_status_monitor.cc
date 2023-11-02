@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -61,15 +62,8 @@ class BrowserStatusMonitor::LocalWebContentsObserver
   ~LocalWebContentsObserver() override = default;
 
   // content::WebContentsObserver
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override {
-    // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-    // frames. This caller was converted automatically to the primary main frame
-    // to preserve its semantics. Follow up to confirm correctness.
-    if (navigation_handle->IsInPrimaryMainFrame() &&
-        navigation_handle->HasCommitted()) {
-      monitor_->OnTabNavigationFinished(web_contents());
-    }
+  void PrimaryPageChanged(content::Page& page) override {
+    monitor_->OnTabNavigationFinished(web_contents());
   }
 
  private:
@@ -238,7 +232,7 @@ void BrowserStatusMonitor::OnTabStripModelChanged(
         {
           // The tab must be in the set of tabs in transit.
           size_t num_removed = tabs_in_transit_.erase(contents.contents);
-          DCHECK_EQ(num_removed, 1);
+          DCHECK_EQ(num_removed, 1u);
         }
 #endif
         OnTabMoved(tab_strip_model, contents.contents);
@@ -402,11 +396,13 @@ void BrowserStatusMonitor::OnTabInserted(TabStripModel* tab_strip_model,
                                          content::WebContents* contents) {
   if (!web_app::IsWebAppsCrosapiEnabled()) {
     UpdateAppItemState(contents, false /*remove*/);
-    // If the contents does not have a visible navigation entry, wait until a
-    // navigation status changes before setting the browser window Shelf ID
-    // (done by the web contents observer added by AddWebContentsObserver()).
+    // If the contents does not have a visible navigation entry that is not the
+    // initial entry, wait until a navigation status changes before setting the
+    // browser window Shelf ID (done by the web contents observer added by
+    // AddWebContentsObserver()).
     if (tab_strip_model->GetActiveWebContents() == contents &&
-        contents->GetController().GetVisibleEntry()) {
+        contents->GetController().GetVisibleEntry() &&
+        !contents->GetController().GetVisibleEntry()->IsInitialEntry()) {
       Browser* browser = chrome::FindBrowserWithWebContents(contents);
       SetShelfIDForBrowserWindowContents(browser, contents);
     }

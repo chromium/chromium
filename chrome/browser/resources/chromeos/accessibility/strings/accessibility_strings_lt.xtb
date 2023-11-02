@@ -30,7 +30,9 @@
 <translation id="1189258430971676908">Praktinių užduočių sritis: išskleidžiamieji sąrašai</translation>
 <translation id="1195238899008218998">Baigiamasis žodis</translation>
 <translation id="1197088940767939838">Oranžinė</translation>
+<translation id="1198865190323699001">Lietimo gestai</translation>
 <translation id="1201402288615127009">Kitas</translation>
+<translation id="1202112913213080585">atšaukti</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">Nėra kitos 4 lygio antraštės</translation>
 <translation id="1212770441379271564">Toliau nurodyti keli spartieji klavišai nėra „ChromeVox“ komandos, bet jie vis tiek labai naudingi norint išnaudoti visas „Chrome“ galimybes.
@@ -42,6 +44,7 @@
     Jei norite atidaryti „Chrome“ naršyklės meniu, paspauskite „Alt“ ir F.</translation>
 <translation id="1213216066620407844">„ChromeVox“ suteikia „Chrome“ balsą</translation>
 <translation id="1225969361094801578">Tamsiai pilka spalva su melsvu atspalviu</translation>
+<translation id="122928249241119550">pereiti prie ankstesnio sakinio</translation>
 <translation id="1230503547248836149">Pasirinkimo pradžia</translation>
 <translation id="1236794971743289975">Išnaša</translation>
 <translation id="1237797094773582699">Panašiai, perbraukus keturiais pirštais iš dešinės į kairę, galima pereiti į ankstesnę skiltį. Išbandykite dabar!</translation>
@@ -135,9 +138,9 @@
 <translation id="1812527064848182527">gulsčia</translation>
 <translation id="1829244130665387512">Surasti puslapyje</translation>
 <translation id="1834891354138622109">Stulpelis</translation>
-<translation id="1845944666972354496">Dukart palieskite, kad suaktyvintumėte</translation>
 <translation id="1846771122725914429">„Bluetooth“ Brailio rašmenų ekranas</translation>
 <translation id="1852018405765032699">Palietus ekraną keturiais pirštais atidaromi ir uždaromi „ChromeVox“ meniu. Šiuose meniu pateikiama naudingos informacijos apie komandas ir sparčiuosius klavišus. Kai meniu atidaryti, galite naršyti elementus perbraukdami vienu pirštu ir suaktyvinti elementus palietę juos du kartus. Jei norite tęsti, palieskite ekraną keturiais pirštais.</translation>
+<translation id="1864430479908918647">Paspauskite paieškos ir tarpo klavišus</translation>
 <translation id="1865601187525349519">Teksto pabaiga</translation>
 <translation id="1876229593313240038">doc</translation>
 <translation id="1902396333223336119">Langelis</translation>
@@ -212,6 +215,7 @@
 <translation id="2435422727584637732">Sodri šviesiai mėlyna spalva</translation>
 <translation id="2438712309510062123">Siūlyti</translation>
 <translation id="2450814015951372393">Žymimasis laukelis</translation>
+<translation id="2450992626945324272">pereiti prie kito sakinio</translation>
 <translation id="2461822463642141190">Dabartinė</translation>
 <translation id="2462626033734746142">Akučių grupė</translation>
 <translation id="2467741090055146971">atšaukti pasirinkimą</translation>
@@ -234,6 +238,7 @@
 <translation id="2619344480613750862">Taip pat galite pereiti iš vienos ekrano skilties į kitą. Pvz., galite pereiti iš paleidimo priemonės į lentyną, „Chrome“ skirtukus ir atvirkščiai. Jei norite pereiti į kitą skiltį, perbraukite keturiais pirštais iš kairės į dešinę. Išbandykite dabar, jei norite tęsti.</translation>
 <translation id="2624431853467395961">Atidarykite mokomąjį režimą</translation>
 <translation id="2626530649491650971">spustelėjamas</translation>
+<translation id="263637551280112393">Paspauskite paieškos klavišą + „Shift“ + tarpo klavišą</translation>
 <translation id="2637227747952042642">Matematika</translation>
 <translation id="2638785836053527382">„<ph name="FILE_NAME" />“ atsisiuntimas atnaujintas</translation>
 <translation id="2639750663247012216">„ChromeVox“ modifikatorius</translation>
@@ -389,7 +394,9 @@
 <translation id="3492609944033322585">{COUNT,plural, =1{uždaromasis laužtinis skliaustas}one{# uždaromasis laužtinis skliaustas}few{# uždaromieji laužtiniai skliaustai}many{# right brackets}other{# uždaromųjų laužtinių skliaustų}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
 <translation id="3497063866483065785">{COUNT,plural, =1{klaustukas}one{# klaustukas}few{# klaustukai}many{# question marks}other{# klaustukų}}</translation>
+<translation id="3505359110822747654">„ChromeVox“ meniu sutraukimas</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{stogelio ženklas}one{# stogelio ženklas}few{# stogelio ženklai}many{# carets}other{# stogelio ženklų}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{baltas ženklelis}one{# baltas ženklelis}few{# balti ženkleliai}many{# balto ženklelio}other{# baltų ženklelių}}</translation>
 <translation id="352577523970648069">Redaguotinas teksto laukas</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152">iškirpti „<ph name="TEXT" />“.</translation>
@@ -486,6 +493,7 @@
 <translation id="42164919740161077">Pilkšvai melsva spalva</translation>
 <translation id="4217571870635786043">Diktavimas</translation>
 <translation id="4218529045364428769">{COUNT,plural, =1{brūkšnys}one{# brūkšnys}few{# brūkšniai}many{# dashes}other{# brūkšnių}}</translation>
+<translation id="4220024144662591089">pasirinkti nuo „<ph name="START_PHRASE" />“ iki „<ph name="END_PHRASE" />“</translation>
 <translation id="4221012616705981690">Nėra ankstesnio sąrašo</translation>
 <translation id="4225355998815256469">Formos valdikliai</translation>
 <translation id="4230834257931120629">Šviesiai pilka spalva su melsvu atspalviu</translation>
@@ -504,6 +512,7 @@
 <translation id="4300318234632215983">Pranešti apie nuorodos URL</translation>
 <translation id="4322625298640984693">Ochros spalva</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{taškas}=3{daugtaškis}one{# taškas}few{# taškai}many{# dots}other{# taškų}}</translation>
+<translation id="4352022650330571548">įvesti tekstą „<ph name="PHRASE" />“</translation>
 <translation id="4372435075475052704">min. <ph name="X" /></translation>
 <translation id="4372705107434148843">Sustabdyti kalbą</translation>
 <translation id="4376316291247992553">Peržiūrėkite diagramą kaip brailio rašmenis</translation>
@@ -521,6 +530,7 @@
 <translation id="4479068155583208887">Plytų raudonumo spalva</translation>
 <translation id="4482330759234983253">Ankstesnė lentelė</translation>
 <translation id="4491109536499578614">Vaizdas</translation>
+<translation id="4507332368061453500">Ilgai spustelėti dabartinį elementą</translation>
 <translation id="4511186779140817916">Kreminė spalva</translation>
 <translation id="451510441928265982">Nėra ankstesnės 2 lygio antraštės</translation>
 <translation id="4515799157838123044">Užtamsinti fono turinį</translation>
@@ -533,6 +543,7 @@
 <translation id="4601367666219428522"><ph name="TABLENAME" /> (<ph name="TABLEROWS" />:<ph name="TABLECOLS" />)</translation>
 <translation id="4615592953348396470">Ignoruojamas kitas klavišo paspaudimas</translation>
 <translation id="4623097797855662355">Informacija apie leidimą</translation>
+<translation id="4624970070706497034">Naudojant „TalkBack“ nebeteikiama tinkinimo funkcija „Chromebook“ įrenginiuose. Vis tiek galite ją naudoti, bet turite naudoti numatytuosius „TalkBack“ sparčiuosius klavišus. Paspauskite paieškos klavišą ir A, tada K, kad peržiūrėtumėte pasiekiamus sparčiuosius klavišus. Jei vis tiek norite naudoti „TalkBack“, dar kartą paspauskite komandą.</translation>
 <translation id="463135993322337640">Paspauskite „ChromeVox“ o, n ir sužinokite, kas nauja</translation>
 <translation id="4649220074413114917">Liesdami ekraną dviem pirštais galite sustabdyti bet kurią dabartinę kalbą. Tai naudinga, jei nenorite, kad „ChromeVox“ skaitytų turinį. Jei norite tęsti, palieskite ekraną dviem pirštais.</translation>
 <translation id="4660783501463101648">Klasikinė versija pašalinta. Klaviatūros perjungimo jungiklis, skirtas grįžti į klasikinės versijos „ChromeVox“, pašalintas.</translation>
@@ -588,7 +599,6 @@
 <translation id="4993152509206108683">Tempas <ph name="PERCENT" /> proc.</translation>
 <translation id="4994420463726586413">Pateikti esamą akumuliatoriaus būseną</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, pasirinkta akutė</translation>
-<translation id="5011664330025416377">Kad suaktyvintumėte, paspauskite paieškos ir tarpo klavišus</translation>
 <translation id="5012724933919010465">„<ph name="NAME" />“, pasirinkta meniu elemento akutė</translation>
 <translation id="5020651427400641814">Įgalinti kalbos įrašymą į žurnalą</translation>
 <translation id="5041394372352067729">Perkelti Brailio rašmenų pateiktį į puslapio viršų</translation>
@@ -615,7 +625,6 @@
 <translation id="5170206230005240598">Brailio rašto antraštės įgalintos</translation>
 <translation id="5183440668879371625">Ankstesnė Brailio rašmenų eilutė</translation>
 <translation id="5189244881767082992">Linija</translation>
-<translation id="5234747236692380506">įvesti tekstą „<ph name="TEXT" />“</translation>
 <translation id="5263034204789987535">Šviesiai gelsva spalva</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">Baigti</translation>
@@ -642,6 +651,7 @@
 <translation id="5355014376930441909">Nėra kitos skilties</translation>
 <translation id="5368000168321181111">Garsiniai ženkleliai išjungti</translation>
 <translation id="5368505757342402527">Atsisiųsta <ph name="PROGRESS" /> proc. failo „<ph name="FILE_NAME" />“. Liko apie <ph name="TIME" /> <ph name="UNITS" />.</translation>
+<translation id="5381388086899614489">ilgas paspaudimas</translation>
 <translation id="5400836586163650660">Pilka spalva</translation>
 <translation id="5402367795255837559">Brailio rašmenys</translation>
 <translation id="5402791055281059602">Modalinis įspėjimas</translation>
@@ -655,7 +665,7 @@
 <translation id="5455441614648621694">Papildomas</translation>
 <translation id="5462510922370980473">Puslapių sąrašas</translation>
 <translation id="5471768120198416576">Sveiki, tai – jūsų teksto į kalbą balsas.</translation>
-<translation id="5495517933067991341">Pagrindiniai klavišai: antrojo lygio klavišas</translation>
+<translation id="5495517933067991341">Pagrindiniai klavišai: „Shift“</translation>
 <translation id="549602578321198708">Žodis</translation>
 <translation id="5513242761114685513">Kontekstinis meniu</translation>
 <translation id="551361796444814639">Vidutinio ryškumo mėlyna spalva</translation>
@@ -663,6 +673,7 @@
 <translation id="5522423213731659107">Sparčioji orientacija užbaigta!</translation>
 <translation id="5534303576632885660">hdr</translation>
 <translation id="5539820223028224601">Šviesiai pilka spalva</translation>
+<translation id="554893713779400387">Perjungti diktavimą</translation>
 <translation id="5549179427201066174">Įjunkite arba išjunkite garsinius atsiliepimus (garsinius ženklelius)</translation>
 <translation id="556042886152191864">Mygtukas</translation>
 <translation id="5561345396546889625">Kitas sąrašas</translation>
@@ -673,6 +684,7 @@
 <translation id="5597170376237141345">Kitas žymimasis laukelis</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, akutės pasirinkimas panaikintas</translation>
 <translation id="5601172225407283979">Atlikti numatytąjį veiksmą</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{kvadratinis ženklelis}one{# kvadratinis ženklelis}few{# kvadratiniai ženkleliai}many{# kvadratinio ženklelio}other{# kvadratinių ženklelių}}</translation>
 <translation id="5608798115546226984">Automatinis eilutės užbaigimas</translation>
 <translation id="5616029807486814372">Kita pamoka</translation>
 <translation id="561939826962581046">time</translation>
@@ -680,6 +692,8 @@
 <translation id="5623842676595125836">Žurnalas</translation>
 <translation id="5628125749885014029">h4</translation>
 <translation id="5632083598315326067">Grafikos simbolis</translation>
+<translation id="5648939288050772726">Sveikiname! Sužinojote pagrindus, kaip sėkmingai naudoti „ChromeVox“. Atminkite, kad bet kada galite atidaryti „ChromeVox“ komandų meniu paspausdami „Search“ ir taško klavišą. Jei norite sužinoti dar daugiau apie „ChromeVox“ ir „Chrome“ OS, žr. nurodytus straipsnius.
+    Kai peržiūrėsite visą mokymo programą, naudodami „ChromeVox“ pereikite prie uždarymo mygtuko ir spustelėkite jį.</translation>
 <translation id="5653397561111110475">„Chromebook“ jutiklinio ekrano pritaikymo neįgaliesiems funkcijų naudojimas</translation>
 <translation id="5655682562155942719">Praleisti komandas</translation>
 <translation id="56637627897541303">Teksto sritis</translation>
@@ -750,8 +764,10 @@
 <translation id="6100239002225743044">Perkelti į viršų per vieną eilutę</translation>
 <translation id="6118126368611144850">„Android“ programos, skirtos „Chrome“. Jei įrenginyje turite „Play“ parduotuvę, išbandykite „ChromeVox“ su „Android“ programomis. Išbandykite eksperimentinį palaikymą atsisiuntę „Google Chrome Canary“ iš „Play“ parduotuvės.</translation>
 <translation id="611827076493383239">vtd</translation>
+<translation id="6119846243427417423">suaktyvinti</translation>
 <translation id="6122013438240733403">btn</translation>
 <translation id="6132506484792346370">Sąrašo laukelis arba jungtinis laukelis</translation>
+<translation id="613344593214611552">ištrinti ankstesnį sakinį</translation>
 <translation id="6142308968191113180">4 antraštė</translation>
 <translation id="6150023170003443621">Gelsvai žalia spalva</translation>
 <translation id="6158882249329863701"><ph name="TABLECELLROWINDEX" /> eilutė, <ph name="TABLECELLCOLUMNINDEX" /> stulpelis</translation>
@@ -761,9 +777,11 @@
 <translation id="6186305613600865047">Pereinama į puslapio apačią</translation>
 <translation id="6187190722927752226">Žalsvai melsva spalva</translation>
 <translation id="6197361807490522975">Tamsiai mėlyna spalva</translation>
+<translation id="6218813441317556731">pakeisti „<ph name="DELETE_PHRASE" />“ į „<ph name="INSERT_PHRASE" />“</translation>
 <translation id="6236061028292614533">Kita antraštė</translation>
 <translation id="6254901459154107917">Kita teksto sritis, kurią galima redaguoti</translation>
 <translation id="6259464875943891919">Išeita iš <ph name="TYPE" />.</translation>
+<translation id="6280088282605782512">Dukart palieskite</translation>
 <translation id="6282062888058716985">nav</translation>
 <translation id="6295699829709583154">Pagrindiniai klavišai: paieškos klavišas</translation>
 <translation id="6305702903308659374">Leisti įprastu garsumu net tada, kai kalba „ChromeVox“</translation>
@@ -934,6 +952,7 @@
 <translation id="7533226154149229506">Blyški gelsva spalva</translation>
 <translation id="7543255924852002459">Atmesti etiketę</translation>
 <translation id="7552432549459840808">Naudingi „Chrome“ spartieji klavišai</translation>
+<translation id="7553679324939294712">įterpti „<ph name="INSERT_PHRASE" />“ prieš „<ph name="BEFORE_PHRASE" />“</translation>
 <translation id="7569983096843329377">Juoda</translation>
 <translation id="7579911500627256166">Taškas: <ph name="DOT" /></translation>
 <translation id="7592060599656252486">Kai kurie</translation>
@@ -957,16 +976,16 @@
 <translation id="7684431668231950609">Teksto redagavimas, URL įrašas</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">Ankstesnė akutė</translation>
+<translation id="7696631298608145306">pereiti prie kito žodžio</translation>
 <translation id="7701040980221191251">Nėra</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7713139339518499741">Natūralus balsas</translation>
 <translation id="7714340021005120797">Nėra kito jungtinio laukelio</translation>
-<translation id="772146615414628379">Sveikiname! Sužinojote pagrindus, kaip sėkmingai naudoti „ChromeVox“. Atminkite, kad bet kada galite atidaryti „ChromeVox“ komandų meniu paspausdami „Search“ ir taško klavišą. Jei norite sužinoti dar daugiau apie „ChromeVox“ ir „Chrome“ OS, žr. nurodytus straipsnius.
-    Kai peržiūrėsite visą mokymo programą, naudodami „ChromeVox“ pereikite prie uždarymo mygtuko ir spustelėkite jį.</translation>
 <translation id="7724603315864178912">Iškirpti</translation>
 <translation id="7731785449856576010">Nėra kito medijų valdiklio</translation>
 <translation id="7735498529470878067">Naudodami naršymo paliečiant funkciją galite sparčiai apžvelgti ekrano turinį.</translation>
 <translation id="773906353055481349">Jei norite naršyti po vieną langelį, paspauskite paieškos + „Ctrl“ + „Alt“ ir rodyklių klavišus</translation>
+<translation id="7746976083433980639"><ph name="ACTION" />, jei norite <ph name="LABEL" /></translation>
 <translation id="7763537600611320912">„<ph name="FILE_NAME" />“ atsisiuntimo procesas pradėtas</translation>
 <translation id="7768784765476638775">Teksto ištarimas</translation>
 <translation id="7776293189010177726">Atidaryti „ChromeVox“ meniu</translation>
@@ -1066,6 +1085,7 @@
 <translation id="8455868257606149352">Maks. <ph name="X" /></translation>
 <translation id="84575901236241018">turi prieigos klavišą, <ph name="KEY" /></translation>
 <translation id="8463645336674919227">Palikta gramatikos klaida</translation>
+<translation id="8465573210279050749">ištrinti ankstesnį žodį</translation>
 <translation id="847040613207937740">Nėra kito žymimojo laukelio</translation>
 <translation id="8473540203671727883">Įvesti sakomą tekstą ties pelės žymekliu</translation>
 <translation id="8476408756881832830">Pristabdyti atkūrimą, kai kalba „ChromeVox“</translation>
@@ -1096,11 +1116,13 @@
 <translation id="8659501358298941449">Išskleidžiamieji sąrašai</translation>
 <translation id="8666733765751421568">Skilties „<ph name="TYPE" />“ pabaiga</translation>
 <translation id="867187640362843212">5 antraštė</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}one{# įdėtinis lygis}few{# įdėtinis lygis}many{# įdėtinis lygis}other{# įdėtinis lygis}}</translation>
 <translation id="8693391540059827073">Mano mėgstamiausias metų laikas</translation>
 <translation id="8696284982970258155">Šviesiai žalsva spalva</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{statusis brūkšnys}one{# statusis brūkšnys}few{# statieji brūkšniai}many{# vertical pipes}other{# stačiųjų brūkšnių}}</translation>
 <translation id="8741370088760768424">Užuomina: paspauskite paieškos ir tarpo klavišus, kad suaktyvintumėte dabartinį elementą.</translation>
 <translation id="8743786158317878347">įveskite struktūrinį turinį, pvz., lenteles</translation>
+<translation id="8746846427395705317">pereiti prie ankstesnio žodžio</translation>
 <translation id="8747966237988593539">Rūšiuotas sąrašas</translation>
 <translation id="8749988712346667988">Sidabrinė spalva</translation>
 <translation id="875769700429317857">„<ph name="FILE_NAME" />“ atsisiuntimas baigtas</translation>
@@ -1128,6 +1150,7 @@
 <translation id="8970172509886453271">Nėra ankstesnės skilties</translation>
 <translation id="89720367119469899">Grįžimo klavišas</translation>
 <translation id="8978496506222343566">tltip</translation>
+<translation id="898089897833732740">ištrinti <ph name="PHRASE" /></translation>
 <translation id="8986362086234534611">Pamiršti</translation>
 <translation id="8989104346085848538">Jei norite sustabdyti bet kurią dabartinę „ChromeVox“ kalbą, paspauskite klavišą „Control“.</translation>
 <translation id="8993737615451556423">Teikiami skaitymo balsu spartinimo, lėtinimo ir pristabdymo valdikliai</translation>
@@ -1163,6 +1186,7 @@
 <translation id="9223032053830369045">Tamsiai raudona spalva</translation>
 <translation id="923331726185079994">„ChromeVox“ atnaujintas</translation>
 <translation id="93384979447910801">Tamsi jūros žalumo spalva</translation>
+<translation id="937605981140327129">Šiuo metu „TalkBack“ nėra įdiegta. Įdiekite „Android Accessibility Suite“ iš „Play“ parduotuvės ir bandykite dar kartą.</translation>
 <translation id="948171205378458592">Sumažinti kalbos tempą</translation>
 <translation id="957570623732056069">Jei norite naršyti šią pamoką, vienu pirštu perbraukite kairėn arba dešinėn</translation>
 <translation id="958854023026327378">Perbraukite vienu pirštu žemyn</translation>

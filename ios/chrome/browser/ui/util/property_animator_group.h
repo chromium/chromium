@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@
 // The animators in this group.
 @property(nonatomic, readonly) NSArray<UIViewPropertyAnimator*>* animators;
 
-// Adds |animator|, checking that it matches duration and delay with the other
+// Adds `animator`, checking that it matches duration and delay with the other
 // animators in the group.
 - (void)addAnimator:(UIViewPropertyAnimator*)animator;
 

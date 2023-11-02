@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -146,17 +146,18 @@ class EVENTS_EXPORT EventRewriter {
 
  protected:
   // Forwards an event, through any subsequent rewriters.
-  static EventDispatchDetails SendEvent(const Continuation continuation,
-                                        const Event* event) WARN_UNUSED_RESULT;
+  [[nodiscard]] static EventDispatchDetails SendEvent(
+      const Continuation continuation,
+      const Event* event);
 
   // Forwards an event, skipping any subsequent rewriters.
-  static EventDispatchDetails SendEventFinally(const Continuation continuation,
-                                               const Event* event)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] static EventDispatchDetails SendEventFinally(
+      const Continuation continuation,
+      const Event* event);
 
   // Discards an event, so that it will not be passed to the sink.
-  static EventDispatchDetails DiscardEvent(const Continuation continuation)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] static EventDispatchDetails DiscardEvent(
+      const Continuation continuation);
 
   // A helper that calls a protected EventSource function, which sends the event
   // to subsequent event rewriters on the source and onto its event sink.

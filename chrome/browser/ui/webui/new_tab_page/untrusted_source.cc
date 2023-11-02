@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,7 +71,7 @@ UntrustedSource::UntrustedSource(Profile* profile)
   // |one_google_bar_service_| is null in incognito, or when the feature is
   // disabled.
   if (one_google_bar_service_) {
-    one_google_bar_service_observation_.Observe(one_google_bar_service_);
+    one_google_bar_service_observation_.Observe(one_google_bar_service_.get());
   }
 }
 
@@ -94,6 +94,8 @@ std::string UntrustedSource::GetContentSecurityPolicy(
       return std::string();
     case network::mojom::CSPDirectiveName::TrustedTypes:
       return std::string();
+    case network::mojom::CSPDirectiveName::FormAction:
+      return "form-action https://ogs.google.com https://*.corp.google.com;";
     default:
       return content::URLDataSource::GetContentSecurityPolicy(directive);
   }
@@ -145,7 +147,7 @@ void UntrustedSource::StartDataRequest(
   }
   if (path == "background_image") {
     ServeBackgroundImage(url_param, GURL(), "cover", "no-repeat", "no-repeat",
-                         "center", "center", std::move(callback));
+                         "center", "center", "inherit", std::move(callback));
     return;
   }
   if (path == "custom_background_image") {
@@ -172,6 +174,7 @@ void UntrustedSource::StartDataRequest(
         params.count("repeatY") == 1 ? params["repeatY"] : "no-repeat",
         params.count("positionX") == 1 ? params["positionX"] : "center",
         params.count("positionY") == 1 ? params["positionY"] : "center",
+        params.count("scrimDisplay") == 1 ? params["scrimDisplay"] : "inherit",
         std::move(callback));
     return;
   }
@@ -191,8 +194,8 @@ void UntrustedSource::StartDataRequest(
   std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>());
 }
 
-std::string UntrustedSource::GetMimeType(const std::string& path) {
-  const std::string stripped_path = path.substr(0, path.find("?"));
+std::string UntrustedSource::GetMimeType(const GURL& url) {
+  const base::StringPiece stripped_path = url.path_piece();
   if (base::EndsWith(stripped_path, ".js",
                      base::CompareCase::INSENSITIVE_ASCII)) {
     return "application/javascript";
@@ -252,6 +255,12 @@ void UntrustedSource::OnOneGoogleBarDataUpdated() {
     replacements["afterBarScript"] = data->after_bar_script;
     replacements["endOfBodyHtml"] = data->end_of_body_html;
     replacements["endOfBodyScript"] = data->end_of_body_script;
+
+    replacements["ogbUnprotectedTextSelector"] =
+        ntp_features::kNtpOgbUnprotectedTextSelectorParam.Get();
+    replacements["ogbButtonSelector"] =
+        ntp_features::kNtpOgbButtonSelectorParam.Get();
+
     html = FormatTemplate(IDR_NEW_TAB_PAGE_UNTRUSTED_ONE_GOOGLE_BAR_HTML,
                           replacements);
   }
@@ -275,6 +284,7 @@ void UntrustedSource::ServeBackgroundImage(
     const std::string& repeat_y,
     const std::string& position_x,
     const std::string& position_y,
+    const std::string& scrim_display,
     content::URLDataSource::GotDataCallback callback) {
   if (!url.is_valid() || !(url.SchemeIs(url::kHttpsScheme) ||
                            url.SchemeIs(content::kChromeUIUntrustedScheme))) {
@@ -296,6 +306,7 @@ void UntrustedSource::ServeBackgroundImage(
   replacements["repeatY"] = repeat_y;
   replacements["positionX"] = position_x;
   replacements["positionY"] = position_y;
+  replacements["scrimDisplay"] = scrim_display;
   std::string html = FormatTemplate(
       IDR_NEW_TAB_PAGE_UNTRUSTED_BACKGROUND_IMAGE_HTML, replacements);
   std::move(callback).Run(base::RefCountedString::TakeString(&html));

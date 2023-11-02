@@ -1,39 +1,27 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/reading_list/reading_list_web_state_observer.h"
+#import "ios/chrome/browser/reading_list/reading_list_web_state_observer.h"
 
 #import <Foundation/Foundation.h>
 
-#include "base/bind.h"
-#include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
-#include "components/reading_list/core/reading_list_model.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/chrome/browser/reading_list/offline_url_utils.h"
-#include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
-#include "ios/web/public/navigation/navigation_item.h"
-#include "ios/web/public/navigation/navigation_manager.h"
-#include "ios/web/public/navigation/reload_type.h"
+#import "base/bind.h"
+#import "base/memory/ptr_util.h"
+#import "base/metrics/histogram_macros.h"
+#import "components/reading_list/core/reading_list_model.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/reading_list/offline_url_utils.h"
+#import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/navigation/reload_type.h"
 #import "ios/web/public/web_state_user_data.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-// static
-void ReadingListWebStateObserver::CreateForWebState(
-    web::WebState* web_state,
-    ReadingListModel* reading_list_model) {
-  DCHECK(web_state);
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(UserDataKey(),
-                           base::WrapUnique(new ReadingListWebStateObserver(
-                               web_state, reading_list_model)));
-  }
-}
 
 ReadingListWebStateObserver::~ReadingListWebStateObserver() {
   if (reading_list_model_) {
@@ -151,7 +139,7 @@ void ReadingListWebStateObserver::StartCheckingLoading() {
   bool reloading_from_offline = last_load_was_offline && is_reload;
 
   // No need to launch the timer either if there is no offline version to show.
-  // Track |pending_url_| to mark the entry as read in case of a successful
+  // Track `pending_url_` to mark the entry as read in case of a successful
   // load.
   if (reloading_from_offline || !IsUrlAvailableOffline(pending_url_)) {
     return;
@@ -234,7 +222,7 @@ void ReadingListWebStateObserver::VerifyIfReadingListEntryStartedLoading() {
   }
   if (try_number_ >= 3) {
     // Loading reached 75%, let the page finish normal loading.
-    // Do not call |StopCheckingProgress()| as |pending_url_| is still
+    // Do not call `StopCheckingProgress()` as `pending_url_` is still
     // needed to mark the entry read on success loading or to display
     // offline version on error.
     timer_->Stop();
@@ -250,8 +238,7 @@ void ReadingListWebStateObserver::LoadOfflineReadingListEntry() {
       reading_list_model_->GetEntryByURL(pending_url_);
   last_load_was_offline_ = true;
   DCHECK(entry->DistilledState() == ReadingListEntry::PROCESSED);
-  GURL url = reading_list::OfflineURLForPath(
-      entry->DistilledPath(), entry->URL(), entry->DistilledURL());
+  GURL url = reading_list::OfflineURLForURL(entry->URL());
   web::NavigationManager* navigationManager =
       web_state_->GetNavigationManager();
   web::NavigationItem* item = navigationManager->GetPendingItem();
@@ -265,7 +252,7 @@ void ReadingListWebStateObserver::LoadOfflineReadingListEntry() {
     item->SetURL(url);
     item->SetVirtualURL(pending_url_);
     // Changing navigation item from web to native an calling
-    // |navigationManager->Reload| will not insert NativeContent. This is a bug
+    // `navigationManager->Reload` will not insert NativeContent. This is a bug
     // which will not be fixed because NativeContent support is deprecated.
     // Offline Version will be eventually rewritten without relying on
     // NativeContent (crbug.com/725239).

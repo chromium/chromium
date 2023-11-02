@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -308,6 +308,23 @@ TEST(StringViewTest, ConstructionStringView16) {
   EXPECT_EQ("3", StringView(view16_bit, 2, 1));
 }
 
+TEST(StringViewTest, SubstringContainsOnlyWhitespaceOrEmpty) {
+  EXPECT_TRUE(StringView("  ").SubstringContainsOnlyWhitespaceOrEmpty(0, 1));
+  EXPECT_TRUE(StringView("  ").SubstringContainsOnlyWhitespaceOrEmpty(0, 2));
+  EXPECT_TRUE(StringView("\x20\x09\x0A\x0D")
+                  .SubstringContainsOnlyWhitespaceOrEmpty(0, 4));
+  EXPECT_FALSE(StringView(" a").SubstringContainsOnlyWhitespaceOrEmpty(0, 2));
+  EXPECT_TRUE(StringView(" ").SubstringContainsOnlyWhitespaceOrEmpty(1, 1));
+  EXPECT_TRUE(StringView("").SubstringContainsOnlyWhitespaceOrEmpty(0, 0));
+  EXPECT_TRUE(
+      StringView("  \nABC").SubstringContainsOnlyWhitespaceOrEmpty(0, 3));
+  EXPECT_FALSE(StringView(" \u090A\n")
+                   .SubstringContainsOnlyWhitespaceOrEmpty(
+                       0, StringView(" \u090A\n").length()));
+  EXPECT_FALSE(
+      StringView("\n\x08\x1B").SubstringContainsOnlyWhitespaceOrEmpty(0, 3));
+}
+
 TEST(StringViewTest, ConstructionLiteral8) {
   // StringView(const LChar* chars);
   ASSERT_TRUE(StringView(kChars8).Is8Bit());
@@ -358,15 +375,15 @@ TEST(StringViewTest, ConstructionLiteral16) {
 }
 
 TEST(StringViewTest, IsEmpty) {
-  EXPECT_FALSE(StringView(kChars).IsEmpty());
-  EXPECT_TRUE(StringView(kChars, 0).IsEmpty());
-  EXPECT_FALSE(StringView(String(kChars)).IsEmpty());
-  EXPECT_TRUE(StringView(String(kChars), 5).IsEmpty());
-  EXPECT_TRUE(StringView(String(kChars), 4, 0).IsEmpty());
-  EXPECT_TRUE(StringView().IsEmpty());
-  EXPECT_TRUE(StringView("").IsEmpty());
-  EXPECT_TRUE(StringView(reinterpret_cast<const UChar*>(u"")).IsEmpty());
-  EXPECT_FALSE(StringView(kChars16).IsEmpty());
+  EXPECT_FALSE(StringView(kChars).empty());
+  EXPECT_TRUE(StringView(kChars, 0).empty());
+  EXPECT_FALSE(StringView(String(kChars)).empty());
+  EXPECT_TRUE(StringView(String(kChars), 5).empty());
+  EXPECT_TRUE(StringView(String(kChars), 4, 0).empty());
+  EXPECT_TRUE(StringView().empty());
+  EXPECT_TRUE(StringView("").empty());
+  EXPECT_TRUE(StringView(reinterpret_cast<const UChar*>(u"")).empty());
+  EXPECT_FALSE(StringView(kChars16).empty());
 }
 
 TEST(StringViewTest, ToString) {

@@ -1,11 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_task_queue_controller.h"
 
 #include <memory>
-#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
@@ -49,14 +48,14 @@ class FrameTaskQueueControllerTest : public testing::Test,
     scheduler_ = std::make_unique<MainThreadSchedulerImpl>(
         base::sequence_manager::SequenceManagerForTest::Create(
             nullptr, task_environment_.GetMainThreadTaskRunner(),
-            task_environment_.GetMockTickClock()),
-        absl::nullopt);
+            task_environment_.GetMockTickClock()));
     agent_group_scheduler_ = scheduler_->CreateAgentGroupScheduler();
     page_scheduler_ =
         agent_group_scheduler_->AsAgentGroupScheduler().CreatePageScheduler(
             nullptr);
     frame_scheduler_ = page_scheduler_->CreateFrameScheduler(
-        nullptr, nullptr, FrameScheduler::FrameType::kSubframe);
+        nullptr, /*is_in_embedded_frame_tree=*/false,
+        FrameScheduler::FrameType::kSubframe);
     frame_task_queue_controller_ = std::make_unique<FrameTaskQueueController>(
         scheduler_.get(),
         static_cast<FrameSchedulerImpl*>(frame_scheduler_.get()), this);
@@ -109,10 +108,6 @@ class FrameTaskQueueControllerTest : public testing::Test,
   scoped_refptr<MainThreadTaskQueue> GetTaskQueue(
       QueueTraits queue_traits) const {
     return frame_task_queue_controller_->GetTaskQueue(queue_traits);
-  }
-
-  scoped_refptr<MainThreadTaskQueue> NewResourceLoadingTaskQueue() const {
-    return frame_task_queue_controller_->NewResourceLoadingTaskQueue();
   }
 
   size_t task_queue_created_count() const { return task_queue_created_count_; }
@@ -176,25 +171,12 @@ TEST_F(FrameTaskQueueControllerTest, CreateAllTaskQueues) {
   all_task_queues.insert(task_queue.get(), QueueCheckResult::kDidNotSeeQueue);
   EXPECT_EQ(all_task_queues.size(), task_queue_created_count());
 
-  // Add a couple resource loading task queues.
-  task_queue = NewResourceLoadingTaskQueue();
-  EXPECT_FALSE(all_task_queues.Contains(task_queue));
-  all_task_queues.insert(task_queue.get(), QueueCheckResult::kDidNotSeeQueue);
-  EXPECT_EQ(all_task_queues.size(), task_queue_created_count());
-
-  task_queue = NewResourceLoadingTaskQueue();
-  EXPECT_FALSE(all_task_queues.Contains(task_queue));
-  all_task_queues.insert(task_queue.get(), QueueCheckResult::kDidNotSeeQueue);
-  EXPECT_EQ(all_task_queues.size(), task_queue_created_count());
-
   // Verify that we get all of the queues that we added, and only those queues.
   EXPECT_EQ(all_task_queues.size(),
             frame_task_queue_controller_->GetAllTaskQueuesAndVoters().size());
   for (const auto& task_queue_and_voter :
        frame_task_queue_controller_->GetAllTaskQueuesAndVoters()) {
-    MainThreadTaskQueue* task_queue_ptr;
-    TaskQueue::QueueEnabledVoter* voter;
-    std::tie(task_queue_ptr, voter) = task_queue_and_voter;
+    auto [task_queue_ptr, voter] = task_queue_and_voter;
 
     EXPECT_NE(task_queue_ptr, nullptr);
     EXPECT_TRUE(all_task_queues.find(task_queue_ptr) != all_task_queues.end());
@@ -205,54 +187,6 @@ TEST_F(FrameTaskQueueControllerTest, CreateAllTaskQueues) {
     all_task_queues.Set(task_queue_ptr, QueueCheckResult::kDidSeeQueue);
     EXPECT_NE(voter, nullptr);
   }
-}
-
-TEST_F(FrameTaskQueueControllerTest, RemoveResourceLoadingTaskQueues) {
-  scoped_refptr<MainThreadTaskQueue> resource_loading_queue1 =
-      NewResourceLoadingTaskQueue();
-  EXPECT_EQ(1u,
-            frame_task_queue_controller_->GetAllTaskQueuesAndVoters().size());
-  scoped_refptr<MainThreadTaskQueue> resource_loading_queue2 =
-      NewResourceLoadingTaskQueue();
-  EXPECT_EQ(2u,
-            frame_task_queue_controller_->GetAllTaskQueuesAndVoters().size());
-
-  // Check that we can remove the resource loading queues.
-  bool was_removed =
-      frame_task_queue_controller_->RemoveResourceLoadingTaskQueue(
-          resource_loading_queue1);
-  EXPECT_TRUE(was_removed);
-  EXPECT_EQ(1u,
-            frame_task_queue_controller_->GetAllTaskQueuesAndVoters().size());
-  // Can't delete twice.
-  was_removed = frame_task_queue_controller_->RemoveResourceLoadingTaskQueue(
-      resource_loading_queue1);
-  EXPECT_FALSE(was_removed);
-  EXPECT_EQ(1u,
-            frame_task_queue_controller_->GetAllTaskQueuesAndVoters().size());
-
-  was_removed = frame_task_queue_controller_->RemoveResourceLoadingTaskQueue(
-      resource_loading_queue2);
-  EXPECT_TRUE(was_removed);
-  EXPECT_EQ(0u,
-            frame_task_queue_controller_->GetAllTaskQueuesAndVoters().size());
-  // Can't delete twice.
-  was_removed = frame_task_queue_controller_->RemoveResourceLoadingTaskQueue(
-      resource_loading_queue2);
-  EXPECT_FALSE(was_removed);
-  EXPECT_EQ(0u,
-            frame_task_queue_controller_->GetAllTaskQueuesAndVoters().size());
-}
-
-TEST_F(FrameTaskQueueControllerTest, CannotRemoveNonResourceLoadingTaskQueues) {
-  scoped_refptr<MainThreadTaskQueue> task_queue = LoadingTaskQueue();
-  EXPECT_EQ(1u,
-            frame_task_queue_controller_->GetAllTaskQueuesAndVoters().size());
-  bool was_removed =
-      frame_task_queue_controller_->RemoveResourceLoadingTaskQueue(task_queue);
-  EXPECT_FALSE(was_removed);
-  EXPECT_EQ(1u,
-            frame_task_queue_controller_->GetAllTaskQueuesAndVoters().size());
 }
 
 TEST_F(FrameTaskQueueControllerTest,

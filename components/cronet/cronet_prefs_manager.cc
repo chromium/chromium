@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,13 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/cronet/host_cache_persistence_manager.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -114,7 +116,7 @@ class PrefServiceAdapter : public net::HttpServerProperties::PrefDelegate {
 
   // PrefDelegate implementation.
   const base::Value* GetServerProperties() const override {
-    return pref_service_->Get(path_);
+    return &pref_service_->GetValue(path_);
   }
 
   void SetServerProperties(const base::Value& value,
@@ -132,7 +134,7 @@ class PrefServiceAdapter : public net::HttpServerProperties::PrefDelegate {
   }
 
  private:
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
   const std::string path_;
   PrefChangeRegistrar pref_change_registrar_;
 };  // class PrefServiceAdapter
@@ -154,10 +156,10 @@ class NetworkQualitiesPrefDelegateImpl
   ~NetworkQualitiesPrefDelegateImpl() override {}
 
   // net::NetworkQualitiesPrefsManager::PrefDelegate implementation.
-  void SetDictionaryValue(const base::DictionaryValue& value) override {
+  void SetDictionaryValue(const base::Value::Dict& dict) override {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-    pref_service_->Set(kNetworkQualitiesPref, value);
+    pref_service_->SetDict(kNetworkQualitiesPref, dict.Clone());
     if (lossy_prefs_writing_task_posted_)
       return;
 
@@ -177,11 +179,11 @@ class NetworkQualitiesPrefDelegateImpl
             weak_ptr_factory_.GetWeakPtr()),
         base::Seconds(kUpdatePrefsDelaySeconds));
   }
-  std::unique_ptr<base::DictionaryValue> GetDictionaryValue() override {
+
+  base::Value::Dict GetDictionaryValue() override {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     UMA_HISTOGRAM_EXACT_LINEAR("NQE.Prefs.ReadCount", 1, 2);
-    return pref_service_->GetDictionary(kNetworkQualitiesPref)
-        ->CreateDeepCopy();
+    return pref_service_->GetDict(kNetworkQualitiesPref).Clone();
   }
 
  private:
@@ -193,7 +195,7 @@ class NetworkQualitiesPrefDelegateImpl
     lossy_prefs_writing_task_posted_ = false;
   }
 
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
 
   // True if the task that schedules the writing of the lossy prefs has been
   // posted.
@@ -218,7 +220,7 @@ CronetPrefsManager::CronetPrefsManager(
   DCHECK(network_task_runner->BelongsToCurrentThread());
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::FilePath storage_file_path(
       base::FilePath::FromUTF8Unsafe(storage_path));
 #else

@@ -1,0 +1,13 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+// EmojiPicker is an interface to allow lacros to request for the platform
+// specific emoji picker to be opened.
+[Stable, Uuid="b52ff6c9-d8fb-438e-87cf-c6c7aaee3fa6"]
+interface EmojiPicker {
+  // Requests the system emoji picker to be opened.
+  ShowEmojiPicker@0();
+};

@@ -1,9 +1,11 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_RENDERER_HOST_LEGACY_RENDER_WIDGET_HOST_WIN_H_
 #define CONTENT_BROWSER_RENDERER_HOST_LEGACY_RENDER_WIDGET_HOST_WIN_H_
+
+#include "base/memory/raw_ptr.h"
 
 // Must be included before <atlapp.h>.
 #include "base/win/atl.h"   // NOLINT(build/include_order)
@@ -18,6 +20,7 @@
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "ui/accessibility/platform/ax_fragment_root_delegate_win.h"
+#include "ui/base/win/internal_constants.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -62,7 +65,7 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
                               ATL::CWinTraits<WS_CHILD>>,
       public ui::AXFragmentRootDelegateWin {
  public:
-  DECLARE_WND_CLASS_EX(L"Chrome_RenderWidgetHostHWND", CS_DBLCLKS, 0)
+  DECLARE_WND_CLASS_EX(ui::kLegacyRenderWidgetHostHwnd, CS_DBLCLKS, 0)
 
   typedef ATL::CWindowImpl<LegacyRenderWidgetHostHWND,
                            ATL::CWindow,
@@ -186,7 +189,7 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
   // Set to true if we turned on mouse tracking.
   bool mouse_tracking_enabled_;
 
-  RenderWidgetHostViewAura* host_;
+  raw_ptr<RenderWidgetHostViewAura> host_;
 
   // Some assistive software need to track the location of the caret.
   std::unique_ptr<ui::AXSystemCaretWin> ax_system_caret_;

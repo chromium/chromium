@@ -1,17 +1,17 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/autofill/manual_fill/passwords_fetcher.h"
 
-#include "base/containers/cxx20_erase.h"
-#include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
-#include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_list_sorter.h"
-#include "components/password_manager/core/browser/password_store_consumer.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/passwords/save_passwords_consumer.h"
+#import "base/containers/cxx20_erase.h"
+#import "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
+#import "components/password_manager/core/browser/password_form.h"
+#import "components/password_manager/core/browser/password_list_sorter.h"
+#import "components/password_manager/core/browser/password_store_consumer.h"
+#import "components/password_manager/core/browser/password_store_interface.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/passwords/save_passwords_consumer.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -106,12 +106,13 @@ class PasswordStoreObserverBridge
 
 - (void)fetchLogins {
   if (_URL.is_empty()) {
-    _passwordStore->GetAutofillableLogins(_savedPasswordsConsumer.get());
+    _passwordStore->GetAutofillableLogins(
+        _savedPasswordsConsumer->GetWeakPtr());
   } else {
     password_manager::PasswordFormDigest digest = {
         password_manager::PasswordForm::Scheme::kHtml, std::string(), _URL};
     digest.signon_realm = _URL.spec();
-    _passwordStore->GetLogins(digest, _savedPasswordsConsumer.get());
+    _passwordStore->GetLogins(digest, _savedPasswordsConsumer->GetWeakPtr());
   }
 }
 

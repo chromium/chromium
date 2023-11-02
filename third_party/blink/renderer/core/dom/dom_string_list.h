@@ -28,7 +28,6 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -42,7 +41,7 @@ class CORE_EXPORT DOMStringList final : public ScriptWrappable {
  public:
   explicit DOMStringList() = default;
 
-  bool IsEmpty() const { return strings_.IsEmpty(); }
+  bool IsEmpty() const { return strings_.empty(); }
   void clear() { strings_.clear(); }
   void Append(const String& string) { strings_.push_back(string); }
   void Sort();

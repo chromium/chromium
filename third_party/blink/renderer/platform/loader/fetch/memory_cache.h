@@ -26,13 +26,16 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_MEMORY_CACHE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_MEMORY_CACHE_H_
 
+#include "base/time/time.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/forward.h"
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/memory_cache_dump_provider.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -48,16 +51,32 @@ class KURL;
 // when the prefinalizer is executed.
 class MemoryCacheEntry final : public GarbageCollected<MemoryCacheEntry> {
  public:
-  explicit MemoryCacheEntry(Resource* resource) : resource_(resource) {}
+  explicit MemoryCacheEntry(Resource* resource) {
+    if (recordreplay::IsRecordingOrReplaying("leak-references", "MemoryCacheEntry")) {
+      strong_resource_ = resource;
+    } else {
+      resource_ = resource;
+    }
+  }
 
   void Trace(Visitor*) const;
-  Resource* GetResource() const { return resource_; }
+  Resource* GetResource() const { 
+    if (recordreplay::IsRecordingOrReplaying("leak-references", "MemoryCacheEntry")) {
+      return strong_resource_; 
+    } else {
+      return resource_; 
+    }
+  }
 
  private:
   void ClearResourceWeak(const LivenessBroker&);
 
   // We use UntracedMember<> here to do custom weak processing.
   UntracedMember<Resource> resource_;
+  
+  // Replay uses Member<> here to maintain a strong ref to avoid non-deterministic
+  // GC of resources.
+  Member<Resource> strong_resource_;
 };
 
 // This cache holds subresources used by Web pages: images, scripts,
@@ -70,6 +89,10 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
   MemoryCache(const MemoryCache&) = delete;
   MemoryCache& operator=(const MemoryCache&) = delete;
   ~MemoryCache() override;
+
+  // Return the memory cache.
+  // TODO(crbug.com/1127971): This should be per AgentCluster.
+  static MemoryCache* Get();
 
   void Trace(Visitor*) const override;
 
@@ -196,9 +219,6 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
 
   friend class MemoryCacheTest;
 };
-
-// Returns the global cache.
-PLATFORM_EXPORT MemoryCache* GetMemoryCache();
 
 // Sets the global cache, used to swap in a test instance. Returns the old
 // MemoryCache object.

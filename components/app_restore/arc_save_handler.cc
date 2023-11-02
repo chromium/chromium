@@ -1,13 +1,14 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/app_restore/arc_save_handler.h"
 
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "components/app_restore/app_launch_info.h"
+#include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/app_restore_utils.h"
-#include "components/app_restore/full_restore_info.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
@@ -46,14 +47,12 @@ void ArcSaveHandler::SaveAppLaunchInfo(AppLaunchInfoPtr app_launch_info) {
 
       // Go through `arc_window_candidates_`. If the window for `session_id` has
       // been created, call OnAppLaunched to save the window info.
-      auto window_it = std::find_if(
-          arc_window_candidates_.begin(), arc_window_candidates_.end(),
-          [session_id](aura::Window* window) {
-            return window->GetProperty(app_restore::kGhostWindowSessionIdKey) ==
-                   session_id;
+      auto window_it = base::ranges::find(
+          arc_window_candidates_, session_id, [](aura::Window* window) {
+            return window->GetProperty(app_restore::kGhostWindowSessionIdKey);
           });
       if (window_it != arc_window_candidates_.end()) {
-        FullRestoreInfo::GetInstance()->OnAppLaunched(*window_it);
+        app_restore::AppRestoreInfo::GetInstance()->OnAppLaunched(*window_it);
         arc_window_candidates_.erase(*window_it);
       }
     }
@@ -130,7 +129,7 @@ void ArcSaveHandler::OnWindowInitialized(aura::Window* window) {
 
   // If the task has been created, call OnAppLaunched to save the window
   // information.
-  FullRestoreInfo::GetInstance()->OnAppLaunched(window);
+  app_restore::AppRestoreInfo::GetInstance()->OnAppLaunched(window);
 }
 
 void ArcSaveHandler::OnWindowDestroyed(aura::Window* window) {
@@ -195,13 +194,12 @@ void ArcSaveHandler::OnTaskCreated(const std::string& app_id,
 
   // Go through |arc_window_candidates_|. If the window for |task_id| has been
   // created, call OnAppLaunched to save the window info.
-  auto window_it = std::find_if(
-      arc_window_candidates_.begin(), arc_window_candidates_.end(),
-      [task_id](aura::Window* window) {
-        return window->GetProperty(app_restore::kWindowIdKey) == task_id;
+  auto window_it = base::ranges::find(
+      arc_window_candidates_, task_id, [](aura::Window* window) {
+        return window->GetProperty(app_restore::kWindowIdKey);
       });
   if (window_it != arc_window_candidates_.end()) {
-    FullRestoreInfo::GetInstance()->OnAppLaunched(*window_it);
+    app_restore::AppRestoreInfo::GetInstance()->OnAppLaunched(*window_it);
     arc_window_candidates_.erase(*window_it);
   }
 }

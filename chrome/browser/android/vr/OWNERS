@@ -1,6 +1,2 @@
-alcooper@chromium.org
-bialpio@chromium.org
+file://components/webxr/OWNERS
 mthiesse@chromium.org
-
-# WebXR-related, including GvrSchedulerDelegate.
-klausw@chromium.org

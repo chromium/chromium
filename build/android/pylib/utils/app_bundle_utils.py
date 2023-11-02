@@ -1,13 +1,15 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import json
 import logging
 import os
+import pathlib
 import re
+import shutil
 import sys
-import tempfile
+import zipfile
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'gyp'))
 
@@ -16,21 +18,24 @@ from util import md5_check
 from util import resource_utils
 import bundletool
 
-# List of valid modes for GenerateBundleApks()
-BUILD_APKS_MODES = ('default', 'universal', 'system', 'system_compressed')
+# "system_apks" is "default", but with locale list and compressed dex.
+_SYSTEM_MODES = ('system', 'system_apks')
+BUILD_APKS_MODES = _SYSTEM_MODES + ('default', 'universal')
 OPTIMIZE_FOR_OPTIONS = ('ABI', 'SCREEN_DENSITY', 'LANGUAGE',
                         'TEXTURE_COMPRESSION_FORMAT')
-_SYSTEM_MODES = ('system_compressed', 'system')
 
 _ALL_ABIS = ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64']
 
 
+def _BundleMinSdkVersion(bundle_path):
+  manifest_data = bundletool.RunBundleTool(
+      ['dump', 'manifest', '--bundle', bundle_path])
+  return int(re.search(r'minSdkVersion.*?(\d+)', manifest_data).group(1))
+
+
 def _CreateDeviceSpec(bundle_path, sdk_version, locales):
   if not sdk_version:
-    manifest_data = bundletool.RunBundleTool(
-        ['dump', 'manifest', '--bundle', bundle_path])
-    sdk_version = int(
-        re.search(r'minSdkVersion.*?(\d+)', manifest_data).group(1))
+    sdk_version = _BundleMinSdkVersion(bundle_path)
 
   # Setting sdkVersion=minSdkVersion prevents multiple per-minSdkVersion .apk
   # files from being created within the .apks file.
@@ -40,6 +45,20 @@ def _CreateDeviceSpec(bundle_path, sdk_version, locales):
       'supportedAbis': _ALL_ABIS,  # Our .aab files are already split on abi.
       'supportedLocales': locales,
   }
+
+
+def _FixBundleDexCompressionGlob(src_bundle, dst_bundle):
+  # Modifies the BundleConfig.pb of the given .aab to add "classes*.dex" to the
+  # "uncompressedGlob" list.
+  with zipfile.ZipFile(src_bundle) as src, \
+      zipfile.ZipFile(dst_bundle, 'w') as dst:
+    for info in src.infolist():
+      data = src.read(info)
+      if info.filename == 'BundleConfig.pb':
+        # A classesX.dex entry is added by create_app_bundle.py so that we can
+        # modify it here in order to have it take effect. b/176198991
+        data = data.replace(b'classesX.dex', b'classes*.dex')
+      dst.writestr(info, data)
 
 
 def GenerateBundleApks(bundle_path,
@@ -98,17 +117,25 @@ def GenerateBundleApks(bundle_path,
 
   def rebuild():
     logging.info('Building %s', bundle_apks_path)
-    with tempfile.NamedTemporaryFile(suffix='.apks') as tmp_apks_file:
+    with build_utils.TempDir() as tmp_dir:
+      tmp_apks_file = os.path.join(tmp_dir, 'output.apks')
       cmd_args = [
           'build-apks',
           '--aapt2=%s' % aapt2_path,
-          '--output=%s' % tmp_apks_file.name,
-          '--bundle=%s' % bundle_path,
+          '--output=%s' % tmp_apks_file,
           '--ks=%s' % keystore_path,
           '--ks-pass=pass:%s' % keystore_password,
           '--ks-key-alias=%s' % keystore_alias,
           '--overwrite',
       ]
+      input_bundle_path = bundle_path
+      # Work around bundletool not respecting uncompressDexFiles setting.
+      # b/176198991
+      if mode not in _SYSTEM_MODES and _BundleMinSdkVersion(bundle_path) >= 27:
+        input_bundle_path = os.path.join(tmp_dir, 'system.aab')
+        _FixBundleDexCompressionGlob(bundle_path, input_bundle_path)
+
+      cmd_args += ['--bundle=%s' % input_bundle_path]
 
       if local_testing:
         cmd_args += ['--local-testing']
@@ -117,7 +144,11 @@ def GenerateBundleApks(bundle_path,
         if mode not in BUILD_APKS_MODES:
           raise Exception('Invalid mode parameter %s (should be in %s)' %
                           (mode, BUILD_APKS_MODES))
-        cmd_args += ['--mode=' + mode]
+        if mode != 'system_apks':
+          cmd_args += ['--mode=' + mode]
+        else:
+          # Specify --optimize-for to prevent language splits being created.
+          cmd_args += ['--optimize-for=device_tier']
 
       if optimize_for:
         if optimize_for not in OPTIMIZE_FOR_OPTIONS:
@@ -126,18 +157,16 @@ def GenerateBundleApks(bundle_path,
                           (mode, OPTIMIZE_FOR_OPTIONS))
         cmd_args += ['--optimize-for=' + optimize_for]
 
-      with tempfile.NamedTemporaryFile(mode='w', suffix='.json') as spec_file:
-        if device_spec:
-          json.dump(device_spec, spec_file)
-          spec_file.flush()
-          cmd_args += ['--device-spec=' + spec_file.name]
-        bundletool.RunBundleTool(cmd_args)
+      if device_spec:
+        data = json.dumps(device_spec)
+        logging.debug('Device Spec: %s', data)
+        spec_file = pathlib.Path(tmp_dir) / 'device.json'
+        spec_file.write_text(data)
+        cmd_args += ['--device-spec=' + str(spec_file)]
 
-      # Make the resulting .apks file hermetic.
-      with build_utils.TempDir() as temp_dir, \
-        build_utils.AtomicOutput(bundle_apks_path, only_if_changed=False) as f:
-        files = build_utils.ExtractAll(tmp_apks_file.name, temp_dir)
-        build_utils.DoZip(files, f, base_dir=temp_dir)
+      bundletool.RunBundleTool(cmd_args)
+
+      shutil.move(tmp_apks_file, bundle_apks_path)
 
   if check_for_noop:
     input_paths = [

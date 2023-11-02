@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "cc/benchmarks/micro_benchmark_impl.h"
 
 namespace cc {
@@ -29,7 +30,7 @@ class CC_EXPORT MicroBenchmarkControllerImpl {
  private:
   void CleanUpFinishedBenchmarks();
 
-  LayerTreeHostImpl* host_;
+  raw_ptr<LayerTreeHostImpl> host_;
   std::vector<std::unique_ptr<MicroBenchmarkImpl>> benchmarks_;
 };
 

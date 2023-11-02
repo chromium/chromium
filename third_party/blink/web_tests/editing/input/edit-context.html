@@ -7,6 +7,7 @@
 <body>
 <div id="test"></div>
 <div id="test2"></div>
+<div id="contenteditableDiv" contenteditable></div>
 <script>
 
 test(function() {
@@ -28,6 +29,13 @@ test(function() {
   assert_equals(editContext.inputPanelPolicy, "auto");
   assert_equals(editContext.enterKeyHint, "enter");
 }, 'Testing EditContext Dictionary Init');
+
+test(function() {
+  contenteditableDiv.editContext = new EditContext();
+  contenteditableDiv.editContext = null;
+  contenteditableDiv.focus();
+  assert_equals(document.activeElement, contenteditableDiv);
+}, 'A contenteditable element should remain editable after attaching and detaching EditContext.');
 
 test(function() {
   const editContext = new EditContext();
@@ -75,9 +83,10 @@ test(function() {
   assert_equals(disconnected_div.editContext, null);
 
   disconnected_div.editContext = editContext;
-  assert_equals(disconnected_div.editContext, null);
-  assert_equals(editContext.attachedElements().length, 0);
-}, 'EditContext can only be associated with an element that is in an active document.');
+  assert_equals(disconnected_div.editContext, editContext);
+  assert_equals(editContext.attachedElements().length, 1);
+  assert_equals(editContext.attachedElements()[0], disconnected_div);
+}, 'EditContext can be associated with an element that is not in the tree.');
 
 test(function() {
   const editContext = new EditContext();
@@ -93,9 +102,10 @@ test(function() {
   assert_equals(editContext.attachedElements()[0], div);
 
   document.body.removeChild(div);
-  assert_equals(div.editContext, null);
-  assert_equals(editContext.attachedElements().length, 0);
-}, 'If an element is removed from tree, it will disconnect its associated EditContext.');
+  assert_equals(div.editContext, editContext);
+  assert_equals(editContext.attachedElements().length, 1);
+  assert_equals(editContext.attachedElements()[0], div);
+}, 'If an element is removed from the tree, the associated EditContext remains connected to the element.');
 
 test(function() {
   const editContext = new EditContext();
@@ -112,9 +122,10 @@ test(function() {
   assert_equals(editContext.attachedElements()[0], div_child);
 
   document.body.removeChild(div_parent);
-  assert_equals(div_child.editContext, null);
-  assert_equals(editContext.attachedElements().length, 0);
-}, 'If an element\'s ancestor is removed from tree, the element will disconnect its associated EditContext.');
+  assert_equals(div_child.editContext, editContext);
+  assert_equals(editContext.attachedElements().length, 1);
+  assert_equals(editContext.attachedElements()[0], div_child);
+}, 'If an element\'s ancestor is removed from tree, the associated EditContext remains connected to the element.');
 
 test(function() {
   const editContext = new EditContext();
@@ -387,6 +398,21 @@ test(function() {
   assert_not_equals(editContext, null);
   const test = document.getElementById('test');
   test.innerHTML = "";
+  test.editContext = editContext;
+  test.focus();
+  assert_equals(editContext.text, "");
+  editContext.updateText(0, 0, "foo");
+  assert_equals(editContext.text, "foo");
+  // replace "oo" with "bar"
+  textInputController.setCompositionWithReplacementRange("bar", 1, 3);
+  assert_equals(editContext.text, "fbar");
+}, 'The new text should apply to the replacement range');
+
+test(function() {
+  const editContext = new EditContext();
+  assert_not_equals(editContext, null);
+  const test = document.getElementById('test');
+  test.innerHTML = "";
   // Add EditContext event listeners
   editContext.addEventListener("textupdate", e => {
     // Update the text in the div
@@ -584,7 +610,8 @@ test(function() {
   assert_equals(editContext.selectionEnd, 1);
   editContext.selectionStart = 1;
   assert_equals(editContext.selectionStart, 1);
-  editContext.updateBounds(viewRect, caretRect);
+  editContext.updateControlBounds(viewRect);
+  editContext.updateSelectionBounds(caretRect);
 }, 'Testing EditContext update text, selection and layout');
 
 test(function() {

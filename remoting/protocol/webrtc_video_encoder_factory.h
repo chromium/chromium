@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,11 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "remoting/base/session_options.h"
 #include "third_party/webrtc/api/video_codecs/video_encoder_factory.h"
 #include "third_party/webrtc/modules/video_coding/include/video_codec_interface.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class VideoChannelStateObserver;
 
@@ -35,15 +35,18 @@ class WebrtcVideoEncoderFactory : public webrtc::VideoEncoderFactory {
   void SetVideoChannelStateObserver(
       base::WeakPtr<VideoChannelStateObserver> video_channel_state_observer);
 
+  void ApplySessionOptions(const SessionOptions& options);
+
  private:
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
 
   std::vector<webrtc::SdpVideoFormat> formats_;
 
+  SessionOptions session_options_;
+
   base::WeakPtr<VideoChannelStateObserver> video_channel_state_observer_;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_WEBRTC_VIDEO_ENCODER_FACTORY_H_

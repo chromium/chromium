@@ -8,7 +8,7 @@ limited set of helper functions.
 ## Window Number
 
 Windows are numbered, through their `accessibilityIdentifier`, in the order they
-are created. The first window will be `@”0”`, the second window will be `@”1”`,
+are created. The first window will be `@"0"`, the second window will be `@"1"`,
 etc. In most helper functions, the integer is used to identify windows.
 
 Windows are not automatically renumbered so it is possible to end up with two
@@ -233,14 +233,14 @@ For example, the following code:
   [EarlGrey setRootMatcherForSubsequentInteractions:
                 chrome_test_util::WindowWithNumber(windowNumber)];
   [ChromeEarlGreyUI openToolsMenu];
-  [ChromeEarlGreyUI tapToolsMenuButton:HistoryButton()];
+  [ChromeEarlGreyUI tapToolsMenuButton:HistoryDestinationButton()];
 ```
 
 Can be reduced to:
 
 ```
   [ChromeEarlGreyUI openToolsMenuInWindowWithNumber:windowNumber];
-  [ChromeEarlGreyUI tapToolsMenuButton:HistoryButton()];
+  [ChromeEarlGreyUI tapToolsMenuButton:HistoryDestinationButton()];
 ```
 
 ## Actions

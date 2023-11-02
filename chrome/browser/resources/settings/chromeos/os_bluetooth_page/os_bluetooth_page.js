@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,19 +9,18 @@
  */
 
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import '../../settings_shared_css.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import '../../settings_shared.css.js';
 import '../../settings_page/settings_animated_pages.js';
 import './os_bluetooth_devices_subpage.js';
 import './os_bluetooth_summary.js';
 import './os_bluetooth_device_detail_subpage.js';
 import './os_bluetooth_pairing_dialog.js';
 
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {getBluetoothConfig} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
-
-import {loadTimeData} from '../../i18n_setup.js';
+import {getBluetoothConfig} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
+import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {BluetoothSystemProperties, BluetoothSystemState, SystemPropertiesObserverInterface, SystemPropertiesObserverReceiver} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * @constructor
@@ -49,7 +48,7 @@ class SettingsBluetoothPageElement extends SettingsBluetoothPageElementBase {
       },
 
       /**
-       * @private {!chromeos.bluetoothConfig.mojom.BluetoothSystemProperties}
+       * @private {!BluetoothSystemProperties}
        */
       systemProperties_: Object,
 
@@ -58,6 +57,13 @@ class SettingsBluetoothPageElement extends SettingsBluetoothPageElementBase {
         type: Boolean,
         value: false,
       },
+
+      /**
+       * Set by Saved Devices subpage. Controls spinner and loading label
+       * visibility in the subpage.
+       * @private
+       */
+      showSavedDevicesLoadingIndicators_: Boolean,
     };
   }
 
@@ -65,12 +71,12 @@ class SettingsBluetoothPageElement extends SettingsBluetoothPageElementBase {
     super();
 
     /**
-     * @private {!chromeos.bluetoothConfig.mojom.SystemPropertiesObserverReceiver}
+     * @private {!SystemPropertiesObserverReceiver}
      */
     this.systemPropertiesObserverReceiver_ =
-        new chromeos.bluetoothConfig.mojom.SystemPropertiesObserverReceiver(
+        new SystemPropertiesObserverReceiver(
             /**
-             * @type {!chromeos.bluetoothConfig.mojom.SystemPropertiesObserverInterface}
+             * @type {!SystemPropertiesObserverInterface}
              */
             (this));
   }
@@ -83,7 +89,7 @@ class SettingsBluetoothPageElement extends SettingsBluetoothPageElementBase {
 
   /**
    * SystemPropertiesObserverInterface override
-   * @param {!chromeos.bluetoothConfig.mojom.BluetoothSystemProperties}
+   * @param {!BluetoothSystemProperties}
    *     properties
    */
   onPropertiesUpdated(properties) {
@@ -98,6 +104,20 @@ class SettingsBluetoothPageElement extends SettingsBluetoothPageElementBase {
   /** @private */
   onClosePairingDialog_() {
     this.shouldShowPairingDialog_ = false;
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowPairNewDevice_() {
+    if (!this.systemProperties_) {
+      return false;
+    }
+
+    return this.systemProperties_.systemState ===
+        BluetoothSystemState.kEnabled ||
+        this.systemProperties_.systemState === BluetoothSystemState.kEnabling;
   }
 }
 

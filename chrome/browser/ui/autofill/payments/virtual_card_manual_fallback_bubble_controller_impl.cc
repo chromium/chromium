@@ -1,9 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/autofill/payments/virtual_card_manual_fallback_bubble_controller_impl.h"
 
+#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/browser.h"
@@ -101,9 +102,16 @@ VirtualCardManualFallbackBubbleControllerImpl::GetBubbleTitleText() const {
 }
 
 std::u16string
-VirtualCardManualFallbackBubbleControllerImpl::GetEducationalBodyLabel() const {
+VirtualCardManualFallbackBubbleControllerImpl::GetLearnMoreLinkText() const {
   return l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_EDUCATIONAL_BODY_LABEL);
+      IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL);
+}
+
+std::u16string
+VirtualCardManualFallbackBubbleControllerImpl::GetEducationalBodyLabel() const {
+  return l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_EDUCATIONAL_BODY_LABEL,
+      GetLearnMoreLinkText());
 }
 
 std::u16string
@@ -168,27 +176,33 @@ bool VirtualCardManualFallbackBubbleControllerImpl::ShouldIconBeVisible()
   return should_icon_be_visible_;
 }
 
+void VirtualCardManualFallbackBubbleControllerImpl::OnLinkClicked(
+    const GURL& url) {
+  web_contents()->OpenURL(content::OpenURLParams(
+      url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui::PAGE_TRANSITION_LINK, false));
+}
+
 void VirtualCardManualFallbackBubbleControllerImpl::OnBubbleClosed(
     PaymentsBubbleClosedReason closed_reason) {
   set_bubble_view(nullptr);
 
   // Log bubble result according to the closed reason.
-  AutofillMetrics::VirtualCardManualFallbackBubbleResultMetric metric;
+  autofill_metrics::VirtualCardManualFallbackBubbleResult metric;
   switch (closed_reason) {
     case PaymentsBubbleClosedReason::kClosed:
-      metric = AutofillMetrics::VirtualCardManualFallbackBubbleResultMetric::
-          VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CLOSED;
+      metric = autofill_metrics::VirtualCardManualFallbackBubbleResult::kClosed;
       break;
     case PaymentsBubbleClosedReason::kNotInteracted:
-      metric = AutofillMetrics::VirtualCardManualFallbackBubbleResultMetric::
-          VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_NOT_INTERACTED;
+      metric = autofill_metrics::VirtualCardManualFallbackBubbleResult::
+          kNotInteracted;
       break;
     default:
-      metric = AutofillMetrics::VirtualCardManualFallbackBubbleResultMetric::
-          VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_RESULT_UNKNOWN;
+      metric =
+          autofill_metrics::VirtualCardManualFallbackBubbleResult::kUnknown;
       break;
   }
-  AutofillMetrics::LogVirtualCardManualFallbackBubbleResultMetric(
+  autofill_metrics::LogVirtualCardManualFallbackBubbleResultMetric(
       metric, is_user_gesture_);
 
   UpdatePageActionIcon();
@@ -214,55 +228,41 @@ void VirtualCardManualFallbackBubbleControllerImpl::UpdateClipboard(
 void VirtualCardManualFallbackBubbleControllerImpl::
     LogVirtualCardManualFallbackBubbleFieldClicked(
         VirtualCardManualFallbackBubbleField field) const {
-  AutofillMetrics::VirtualCardManualFallbackBubbleFieldClickedMetric metric;
+  autofill_metrics::VirtualCardManualFallbackBubbleFieldClicked metric;
   switch (field) {
     case VirtualCardManualFallbackBubbleField::kCardNumber:
-      metric =
-          AutofillMetrics::VirtualCardManualFallbackBubbleFieldClickedMetric::
-              VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_FIELD_CLICKED_CARD_NUMBER;
+      metric = autofill_metrics::VirtualCardManualFallbackBubbleFieldClicked::
+          kCardNumber;
       break;
     case VirtualCardManualFallbackBubbleField::kExpirationMonth:
-      metric =
-          AutofillMetrics::VirtualCardManualFallbackBubbleFieldClickedMetric::
-              VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_FIELD_CLICKED_EXPIRATION_MONTH;
+      metric = autofill_metrics::VirtualCardManualFallbackBubbleFieldClicked::
+          kExpirationMonth;
       break;
     case VirtualCardManualFallbackBubbleField::kExpirationYear:
-      metric =
-          AutofillMetrics::VirtualCardManualFallbackBubbleFieldClickedMetric::
-              VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_FIELD_CLICKED_EXPIRATION_YEAR;
+      metric = autofill_metrics::VirtualCardManualFallbackBubbleFieldClicked::
+          kExpirationYear;
       break;
     case VirtualCardManualFallbackBubbleField::kCardholderName:
-      metric =
-          AutofillMetrics::VirtualCardManualFallbackBubbleFieldClickedMetric::
-              VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_FIELD_CLICKED_CARDHOLDER_NAME;
+      metric = autofill_metrics::VirtualCardManualFallbackBubbleFieldClicked::
+          kCardholderName;
       break;
     case VirtualCardManualFallbackBubbleField::kCvc:
       metric =
-          AutofillMetrics::VirtualCardManualFallbackBubbleFieldClickedMetric::
-              VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_FIELD_CLICKED_CVC;
+          autofill_metrics::VirtualCardManualFallbackBubbleFieldClicked::kCVC;
       break;
   }
-  AutofillMetrics::LogVirtualCardManualFallbackBubbleFieldClicked(metric);
+  autofill_metrics::LogVirtualCardManualFallbackBubbleFieldClicked(metric);
 }
 
 VirtualCardManualFallbackBubbleControllerImpl::
     VirtualCardManualFallbackBubbleControllerImpl(
         content::WebContents* web_contents)
-    : AutofillBubbleControllerBase(web_contents) {}
+    : AutofillBubbleControllerBase(web_contents),
+      content::WebContentsUserData<
+          VirtualCardManualFallbackBubbleControllerImpl>(*web_contents) {}
 
-void VirtualCardManualFallbackBubbleControllerImpl::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !navigation_handle->HasCommitted())
-    return;
-
-  // Don't react to same-document (fragment) navigations.
-  if (navigation_handle->IsSameDocument())
-    return;
-
+void VirtualCardManualFallbackBubbleControllerImpl::PrimaryPageChanged(
+    content::Page& page) {
   should_icon_be_visible_ = false;
   bubble_has_been_shown_ = false;
   UpdatePageActionIcon();
@@ -303,7 +303,7 @@ void VirtualCardManualFallbackBubbleControllerImpl::DoShowBubble() {
   DCHECK(bubble_view());
   bubble_has_been_shown_ = true;
 
-  AutofillMetrics::LogVirtualCardManualFallbackBubbleShown(is_user_gesture_);
+  autofill_metrics::LogVirtualCardManualFallbackBubbleShown(is_user_gesture_);
 
   if (observer_for_test_)
     observer_for_test_->OnBubbleShown();

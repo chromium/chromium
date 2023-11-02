@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,11 @@ namespace app_restore {
 
 AppLaunchInfo::AppLaunchInfo(const std::string& app_id,
                              int32_t window_id,
-                             apps::mojom::LaunchContainer container,
+                             apps::LaunchContainer container,
                              WindowOpenDisposition disposition,
                              int64_t display_id,
                              std::vector<base::FilePath> launch_files,
-                             apps::mojom::IntentPtr intent)
+                             apps::IntentPtr intent)
     : app_id(app_id),
       window_id(window_id),
       container(static_cast<int32_t>(container)),
@@ -27,11 +27,11 @@ AppLaunchInfo::AppLaunchInfo(const std::string& app_id, int32_t session_id)
     : app_id(app_id), window_id(session_id) {}
 
 AppLaunchInfo::AppLaunchInfo(const std::string& app_id,
-                             apps::mojom::LaunchContainer container,
+                             apps::LaunchContainer container,
                              WindowOpenDisposition disposition,
                              int64_t display_id,
                              std::vector<base::FilePath> launch_files,
-                             apps::mojom::IntentPtr intent)
+                             apps::IntentPtr intent)
     : app_id(app_id),
       container(static_cast<int32_t>(container)),
       disposition(static_cast<int32_t>(disposition)),
@@ -50,7 +50,7 @@ AppLaunchInfo::AppLaunchInfo(const std::string& app_id,
 
 AppLaunchInfo::AppLaunchInfo(const std::string& app_id,
                              int32_t event_flags,
-                             apps::mojom::IntentPtr intent,
+                             apps::IntentPtr intent,
                              int32_t arc_session_id,
                              int64_t display_id)
     : app_id(app_id),

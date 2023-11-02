@@ -1,17 +1,15 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef REMOTING_PROTOCOL_PAIRING_AUTHENTICATOR_BASE_H_
 #define REMOTING_PROTOCOL_PAIRING_AUTHENTICATOR_BASE_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/protocol/authenticator.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // The pairing authenticator builds on top of V2Authenticator to add
 // support for PIN-less authentication via device pairing:
@@ -87,7 +85,6 @@ class PairingAuthenticatorBase : public Authenticator {
   base::WeakPtrFactory<PairingAuthenticatorBase> weak_factory_{this};
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_PAIRING_AUTHENTICATOR_BASE_H_

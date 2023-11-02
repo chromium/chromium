@@ -1,0 +1,29 @@
+caption: Enable desktop sharing in the omnibox and 3-dot menu
+default: true
+desc: |-
+  Setting the policy to True or leaving it unset lets users share or save the current webpage using actions provided by the desktop sharing hub. The sharing hub is accessed through either an omnibox icon or the 3-dot menu.
+
+         Setting the policy to False removes the sharing icon from the omnibox and the entry from the 3-dot menu.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Enable desktop sharing hub
+  value: true
+- caption: Disable desktop sharing hub
+  value: false
+owners:
+- kristipark@chromium.org
+- jeffreycohen@chromium.org
+- file://components/send_tab_to_self/OWNERS
+schema:
+  type: boolean
+supported_on:
+- chrome.win:93-
+- chrome.linux:93-
+- chrome.mac:93-
+tags: []
+type: main

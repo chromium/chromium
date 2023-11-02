@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents.h"
 #include "net/http/http_request_headers.h"
 
 namespace safe_browsing {
@@ -44,7 +45,6 @@ class WebApiHandshakeChecker::CheckerOnIO
         std::move(delegate_getter_).Run();
     bool skip_checks =
         !url_checker_delegate ||
-        !url_checker_delegate->GetDatabaseManager()->IsSupported() ||
         url_checker_delegate->ShouldSkipRequestCheck(
             url, frame_tree_node_id_,
             /*render_process_id=*/content::ChildProcessHost::kInvalidUniqueID,
@@ -64,8 +64,8 @@ class WebApiHandshakeChecker::CheckerOnIO
         /*render_frame_id=*/MSG_ROUTING_NONE, frame_tree_node_id_,
         /*real_time_lookup_enabled=*/false,
         /*can_rt_check_subresource_url=*/false,
-        /*can_check_db=*/true, last_committed_url_,
-        content::GetUIThreadTaskRunner({}),
+        /*can_check_db=*/true, /*can_check_high_confidence_allowlist=*/true,
+        last_committed_url_, content::GetUIThreadTaskRunner({}),
         /*url_lookup_service=*/nullptr, WebUIInfoSingleton::GetInstance());
     url_checker_->CheckUrl(
         url, "GET",

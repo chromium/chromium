@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,8 @@ FileSystemAccessIconView::FileSystemAccessIconView(
     : PageActionIconView(nullptr,
                          0,
                          icon_label_bubble_delegate,
-                         page_action_icon_delegate) {
+                         page_action_icon_delegate,
+                         "FileSystemAccess") {
   SetVisible(false);
 }
 
@@ -40,7 +41,7 @@ void FileSystemAccessIconView::UpdateImpl() {
     has_write_access_ = false;
   } else {
     url::Origin origin =
-        GetWebContents()->GetMainFrame()->GetLastCommittedOrigin();
+        GetWebContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
     auto* context =
         FileSystemAccessPermissionContextFactory::GetForProfileIfExists(
             GetWebContents()->GetBrowserContext());
@@ -70,7 +71,8 @@ std::u16string FileSystemAccessIconView::GetTextForTooltipAndAccessibleName()
 
 void FileSystemAccessIconView::OnExecuting(ExecuteSource execute_source) {
   auto* web_contents = GetWebContents();
-  url::Origin origin = web_contents->GetMainFrame()->GetLastCommittedOrigin();
+  url::Origin origin =
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
 
   auto* context =
       FileSystemAccessPermissionContextFactory::GetForProfileIfExists(

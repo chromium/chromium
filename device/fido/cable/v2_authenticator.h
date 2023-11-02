@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,7 @@
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom-forward.h"
 
 namespace device {
 namespace cablev2 {
@@ -64,50 +65,26 @@ class Platform {
     NO_BLUETOOTH_PERMISSION = 111,
     QR_URI_ERROR = 112,
     EOF_WHILE_PROCESSING = 113,
+    AUTHENTICATOR_SELECTION_RECEIVED = 114,
+    DISCOVERABLE_CREDENTIALS_REQUEST = 115,
   };
 
-  using MakeCredentialCallback =
-      base::OnceCallback<void(uint32_t status,
-                              base::span<const uint8_t> attestation_obj)>;
+  using MakeCredentialCallback = base::OnceCallback<void(
+      uint32_t status,
+      base::span<const uint8_t> attestation_obj,
+      absl::optional<base::span<const uint8_t>> device_public_key_signature)>;
 
-  struct MakeCredentialParams {
-    MakeCredentialParams();
-    ~MakeCredentialParams();
-    MakeCredentialParams(const MakeCredentialParams&) = delete;
-    MakeCredentialParams& operator=(const MakeCredentialParams&) = delete;
-    MakeCredentialParams(MakeCredentialParams&&) = delete;
+  virtual void MakeCredential(
+      blink::mojom::PublicKeyCredentialCreationOptionsPtr params,
+      MakeCredentialCallback callback) = 0;
 
-    std::vector<uint8_t> client_data_hash;
-    std::string rp_id;
-    std::vector<uint8_t> user_id;
-    std::vector<int> algorithms;
-    std::vector<std::vector<uint8_t>> excluded_cred_ids;
-    bool resident_key_required = false;
-    MakeCredentialCallback callback;
-  };
+  using GetAssertionCallback = base::OnceCallback<void(
+      uint32_t status,
+      blink::mojom::GetAssertionAuthenticatorResponsePtr response)>;
 
-  virtual void MakeCredential(std::unique_ptr<MakeCredentialParams> params) = 0;
-
-  using GetAssertionCallback =
-      base::OnceCallback<void(uint32_t status,
-                              base::span<const uint8_t> cred_id,
-                              base::span<const uint8_t> auth_data,
-                              base::span<const uint8_t> sig)>;
-
-  struct GetAssertionParams {
-    GetAssertionParams();
-    ~GetAssertionParams();
-    GetAssertionParams(const GetAssertionParams&) = delete;
-    GetAssertionParams& operator=(const GetAssertionParams&) = delete;
-    GetAssertionParams(GetAssertionParams&&) = delete;
-
-    std::vector<uint8_t> client_data_hash;
-    std::string rp_id;
-    std::vector<std::vector<uint8_t>> allowed_cred_ids;
-    GetAssertionCallback callback;
-  };
-
-  virtual void GetAssertion(std::unique_ptr<GetAssertionParams> params) = 0;
+  virtual void GetAssertion(
+      blink::mojom::PublicKeyCredentialRequestOptionsPtr params,
+      GetAssertionCallback callback) = 0;
 
   // OnStatus is called when a new informative status is available.
   virtual void OnStatus(Status) = 0;
@@ -148,8 +125,6 @@ class Transport {
 // A Transaction is a handle to an ongoing caBLEv2 transaction with a peer.
 class Transaction {
  public:
-  using CompleteCallback = base::OnceCallback<void()>;
-
   virtual ~Transaction();
 };
 
@@ -162,6 +137,7 @@ std::unique_ptr<Transaction> TransactWithPlaintextTransport(
 // TransactFromQRCode starts a network-based transaction based on the decoded
 // contents of a QR code.
 std::unique_ptr<Transaction> TransactFromQRCode(
+    unsigned protocol_revision,
     std::unique_ptr<Platform> platform,
     network::mojom::NetworkContext* network_context,
     base::span<const uint8_t, kRootSecretSize> root_secret,
@@ -169,11 +145,13 @@ std::unique_ptr<Transaction> TransactFromQRCode(
     // TODO: name this constant.
     base::span<const uint8_t, 16> qr_secret,
     base::span<const uint8_t, kP256X962Length> peer_identity,
-    absl::optional<std::vector<uint8_t>> contact_id);
+    absl::optional<std::vector<uint8_t>> contact_id,
+    bool use_new_crypter_construction);
 
 // TransactFromFCM starts a network-based transaction based on the decoded
 // contents of a cloud message.
 std::unique_ptr<Transaction> TransactFromFCM(
+    unsigned protocol_revision,
     std::unique_ptr<Platform> platform,
     network::mojom::NetworkContext* network_context,
     base::span<const uint8_t, kRootSecretSize> root_secret,

@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_hide_callback.h"
@@ -77,8 +78,8 @@ class MouseLockController : public ExclusiveAccessControllerBase {
   // lock the mouse. This is granted only if the WebContents instance has
   // previously locked and displayed the permission bubble until the bubble
   // time out has expired. https://crbug.com/725370
-  content::WebContents* web_contents_granted_silent_mouse_lock_permission_ =
-      nullptr;
+  raw_ptr<content::WebContents>
+      web_contents_granted_silent_mouse_lock_permission_ = nullptr;
 
   // If true, does not call into the WebContents to lock the mouse. Just assumes
   // that it works. This may be necessary when calling

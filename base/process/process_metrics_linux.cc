@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/process/internal_linux.h"
 #include "base/process/process_metrics_iocounters.h"
 #include "base/strings/string_number_conversions.h"
@@ -33,7 +34,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -47,7 +47,7 @@ void TrimKeyValuePairs(StringPairs* pairs) {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 // Read a file with a single number string and return the number as a uint64_t.
 uint64_t ReadFileToUint64(const FilePath& file) {
   std::string file_contents;
@@ -107,7 +107,7 @@ size_t ReadProcStatusAndGetFieldAsSizeT(pid_t pid, StringPiece field) {
   return 0;
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_AIX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_AIX)
 // Read /proc/<pid>/status and look for |field|. On success, return true and
 // write the value for |field| into |result|.
 // Only works for fields in the form of "field    :     uint_value"
@@ -132,7 +132,7 @@ bool ReadProcStatusAndGetFieldAsUint64(pid_t pid,
   }
   return false;
 }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_AIX)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_AIX)
 
 // Get the total CPU from a proc stat buffer.  Return value is number of jiffies
 // on success or 0 if parsing failed.
@@ -174,7 +174,7 @@ std::unique_ptr<ProcessMetrics> ProcessMetrics::CreateProcessMetrics(
 
 size_t ProcessMetrics::GetResidentSetSize() const {
   return internal::ReadProcStatsAndGetFieldAsSizeT(process_, internal::VM_RSS) *
-      getpagesize();
+         checked_cast<size_t>(getpagesize());
 }
 
 TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
@@ -263,7 +263,7 @@ bool ProcessMetrics::GetIOCounters(IoCounters* io_counters) const {
   return true;
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 uint64_t ProcessMetrics::GetVmSwapBytes() const {
   return ReadProcStatusAndGetFieldAsSizeT(process_, "VmSwap") * 1024;
 }
@@ -284,7 +284,8 @@ bool ProcessMetrics::GetPageFaultCounts(PageFaultCounts* counts) const {
       internal::GetProcStatsFieldAsInt64(proc_stats, internal::VM_MAJFLT);
   return true;
 }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_ANDROID)
 
 int ProcessMetrics::GetOpenFdCount() const {
   // Use /proc/<pid>/fd to count the number of entries there.
@@ -329,7 +330,7 @@ int ProcessMetrics::GetOpenFdSoftLimit() const {
   return -1;
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_AIX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_AIX)
 ProcessMetrics::ProcessMetrics(ProcessHandle process)
     : process_(process), last_absolute_idle_wakeups_(0) {}
 #else
@@ -340,7 +341,8 @@ size_t GetSystemCommitCharge() {
   SystemMemoryInfoKB meminfo;
   if (!GetSystemMemoryInfo(&meminfo))
     return 0;
-  return meminfo.total - meminfo.free - meminfo.buffers - meminfo.cached;
+  return checked_cast<size_t>(meminfo.total - meminfo.free - meminfo.buffers -
+                              meminfo.cached);
 }
 
 int ParseProcStatCPU(StringPiece input) {
@@ -375,7 +377,7 @@ int ParseProcStatCPU(StringPiece input) {
   return -1;
 }
 
-int GetNumberOfThreads(ProcessHandle process) {
+int64_t GetNumberOfThreads(ProcessHandle process) {
   return internal::ReadProcStatsAndGetFieldAsInt64(process,
                                                    internal::VM_NUMTHREADS);
 }
@@ -431,7 +433,7 @@ bool ProcessMetrics::ParseProcTimeInState(
       if (time > 0) {
         time_in_state_per_thread.push_back(
             {tid, current_core_type, current_core_index, frequency,
-             internal::ClockTicksToTimeDelta(time)});
+             internal::ClockTicksToTimeDelta(checked_cast<int64_t>(time))});
       }
     } else {
       // Data without a header is not supported.
@@ -440,17 +442,17 @@ bool ProcessMetrics::ParseProcTimeInState(
 
     // Advance line.
     DCHECK_GT(num_chars, 0);
-    pos += num_chars;
+    pos += static_cast<size_t>(num_chars);
   }
 
   return true;
 }
 
-CPU::CoreType ProcessMetrics::GetCoreType(int core_index) {
+CPU::CoreType ProcessMetrics::GetCoreType(uint32_t core_index) {
   const std::vector<CPU::CoreType>& core_types = CPU::GetGuessedCoreTypes();
-  if (static_cast<size_t>(core_index) >= core_types.size())
+  if (core_index >= core_types.size())
     return CPU::CoreType::kUnknown;
-  return core_types[static_cast<size_t>(core_index)];
+  return core_types[core_index];
 }
 
 const char kProcSelfExe[] = "/proc/self/exe";
@@ -526,7 +528,7 @@ Value SystemMemoryInfoKB::ToValue() const {
   res.SetIntKey("swap_used", swap_total - swap_free);
   res.SetIntKey("dirty", dirty);
   res.SetIntKey("reclaimable", reclaimable);
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   res.SetIntKey("shmem", shmem);
   res.SetIntKey("slab", slab);
 #endif
@@ -588,7 +590,7 @@ bool ParseProcMeminfo(StringPiece meminfo_data, SystemMemoryInfoKB* meminfo) {
       target = &meminfo->dirty;
     else if (tokens[0] == "SReclaimable:")
       target = &meminfo->reclaimable;
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
     // Chrome OS has a tweaked kernel that allows querying Shmem, which is
     // usually video memory otherwise invisible to the OS.
     else if (tokens[0] == "Shmem:")
@@ -680,9 +682,11 @@ bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {
 
 Value VmStatInfo::ToValue() const {
   Value res(Value::Type::DICTIONARY);
-  res.SetIntKey("pswpin", pswpin);
-  res.SetIntKey("pswpout", pswpout);
-  res.SetIntKey("pgmajfault", pgmajfault);
+  // TODO(crbug.com/1334256): Make base::Value able to hold uint64_t and remove
+  // casts below.
+  res.SetIntKey("pswpin", static_cast<int>(pswpin));
+  res.SetIntKey("pswpout", static_cast<int>(pswpout));
+  res.SetIntKey("pgmajfault", static_cast<int>(pgmajfault));
   return res;
 }
 
@@ -849,7 +853,7 @@ TimeDelta GetUserCpuTimeSinceBoot() {
   return internal::GetUserCpuTimeSinceBoot();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 Value SwapInfo::ToValue() const {
   Value res(Value::Type::DICTIONARY);
 
@@ -1064,9 +1068,9 @@ bool GetGraphicsMemoryInfo(GraphicsMemoryInfoKB* gpu_meminfo) {
   return gpu_meminfo->gpu_memory_size != -1;
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_AIX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_AIX)
 int ProcessMetrics::GetIdleWakeupsPerSecond() {
   uint64_t num_switches;
   static const char kSwitchStat[] = "voluntary_ctxt_switches";
@@ -1074,6 +1078,6 @@ int ProcessMetrics::GetIdleWakeupsPerSecond() {
              ? CalculateIdleWakeupsPerSecond(num_switches)
              : 0;
 }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_AIX)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_AIX)
 
 }  // namespace base

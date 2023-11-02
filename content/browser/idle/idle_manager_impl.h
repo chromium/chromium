@@ -1,21 +1,22 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_IDLE_IDLE_MANAGER_IMPL_H_
 #define CONTENT_BROWSER_IDLE_IDLE_MANAGER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "content/browser/idle/idle_polling_service.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/blink/public/mojom/idle/idle_manager.mojom.h"
+#include "ui/base/idle/idle_polling_service.h"
 #include "url/origin.h"
 
 namespace content {
@@ -23,7 +24,7 @@ namespace content {
 class RenderFrameHost;
 
 class CONTENT_EXPORT IdleManagerImpl : public blink::mojom::IdleManager,
-                                       public IdlePollingService::Observer {
+                                       public ui::IdlePollingService::Observer {
  public:
   explicit IdleManagerImpl(RenderFrameHost* render_frame_host);
   ~IdleManagerImpl() override;
@@ -49,20 +50,21 @@ class CONTENT_EXPORT IdleManagerImpl : public blink::mojom::IdleManager,
   void OnMonitorDisconnected(mojo::RemoteSetElementId id);
 
   // Notifies |monitors_| of the new idle state.
-  void OnIdleStateChange(const IdlePollingService::State& state) override;
+  void OnIdleStateChange(const ui::IdlePollingService::State& state) override;
 
   blink::mojom::IdleStatePtr CreateIdleState(
-      const IdlePollingService::State& state);
+      const ui::IdlePollingService::State& state);
   blink::mojom::IdleStatePtr CheckIdleState();
 
   // |observer_| and |state_override_| are mutually exclusive as when DevTools
   // has provided an override we no longer need to poll for the actual state.
-  base::ScopedObservation<IdlePollingService, IdlePollingService::Observer>
+  base::ScopedObservation<ui::IdlePollingService,
+                          ui::IdlePollingService::Observer>
       observer_{this};
   bool state_override_ = false;
 
   // Raw pointer is safe because this object is owned by |render_frame_host_|.
-  RenderFrameHost* const render_frame_host_;
+  const raw_ptr<RenderFrameHost> render_frame_host_;
 
   // Registered clients.
   mojo::ReceiverSet<blink::mojom::IdleManager> receivers_;

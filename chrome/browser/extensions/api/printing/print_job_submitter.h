@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,12 @@
 
 #include "base/auto_reset.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/printing/print_job.h"
 #include "chrome/common/extensions/api/printing.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom-forward.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -35,6 +38,7 @@ namespace printing {
 namespace mojom {
 class PdfFlattener;
 }  // namespace mojom
+class PrintedDocument;
 class PrintSettings;
 }  // namespace printing
 
@@ -47,16 +51,16 @@ class PrintJobController;
 
 // Handles chrome.printing.submitJob() API request including parsing job
 // arguments, sending errors and submitting print job to the printer.
-class PrintJobSubmitter {
+class PrintJobSubmitter : public printing::PrintJob::Observer {
  public:
-  // In case of success |job_id| will contain unique job identifier returned
-  // by CUPS. In case of failure |job_id| is nullptr.
-  // We could use absl::optional but to be consistent with auto-generated API
-  // wrappers we use std::unique_ptr.
-  using SubmitJobCallback = base::OnceCallback<void(
-      absl::optional<api::printing::SubmitJobStatus> status,
-      std::unique_ptr<std::string> job_id,
-      absl::optional<std::string> error)>;
+  // At most one of `job_id` and `error` are set.
+  // Either `job_id`, `print_job`, and `document` are all set or none of them
+  // are set.
+  using SubmitJobCallback =
+      base::OnceCallback<void(absl::optional<int> job_id,
+                              printing::PrintJob* print_job,
+                              printing::PrintedDocument* document,
+                              absl::optional<std::string> error)>;
 
   PrintJobSubmitter(gfx::NativeWindow native_window,
                     content::BrowserContext* browser_context,
@@ -67,20 +71,25 @@ class PrintJobSubmitter {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
                     int local_printer_version,
 #endif
-                    crosapi::mojom::LocalPrinter* local_printer);
-  ~PrintJobSubmitter();
+                    crosapi::mojom::LocalPrinter* local_printer,
+                    SubmitJobCallback callback);
 
-  // Only one call to Start() should happen at a time.
-  // |callback| is called asynchronously with the success or failure of the
-  // process.
-  void Start(SubmitJobCallback callback);
+  ~PrintJobSubmitter() override;
+
+  static void Run(std::unique_ptr<PrintJobSubmitter> submitter);
 
   static base::AutoReset<bool> DisablePdfFlatteningForTesting();
 
   static base::AutoReset<bool> SkipConfirmationDialogForTesting();
 
+  // PrintJob::Observer:
+  void OnDocDone(int job_id, printing::PrintedDocument* document) override;
+  void OnFailed() override;
+
  private:
   friend class PrintingAPIHandler;
+
+  void Start();
 
   bool CheckContentType() const;
 
@@ -106,36 +115,33 @@ class PrintJobSubmitter {
 
   void StartPrintJob();
 
-  void OnPrintJobRejected();
-
-  void OnPrintJobSubmitted(std::unique_ptr<std::string> job_id);
-
   void FireErrorCallback(const std::string& error);
 
   gfx::NativeWindow native_window_;
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
 
   // Tracks whether |native_window_| got destroyed.
   std::unique_ptr<NativeWindowTracker> native_window_tracker_;
 
   // These objects are owned by PrintingAPIHandler.
-  PrintJobController* const print_job_controller_;
-  mojo::Remote<printing::mojom::PdfFlattener>* const pdf_flattener_;
+  const raw_ptr<PrintJobController> print_job_controller_;
+  const raw_ptr<mojo::Remote<printing::mojom::PdfFlattener>> pdf_flattener_;
 
   // TODO(crbug.com/996785): Consider tracking extension being unloaded instead
   // of storing scoped_refptr.
   scoped_refptr<const extensions::Extension> extension_;
+  scoped_refptr<printing::PrintJob> print_job_;
+
   api::printing::SubmitJobRequest request_;
   std::unique_ptr<printing::PrintSettings> settings_;
   std::u16string printer_name_;
   base::ReadOnlySharedMemoryMapping flattened_pdf_mapping_;
-  // This is cleared after the request is handled (successfully or not).
-  SubmitJobCallback callback_;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   const int local_printer_version_;
 #endif
-  crosapi::mojom::LocalPrinter* const local_printer_;
+  const raw_ptr<crosapi::mojom::LocalPrinter> local_printer_;
+  SubmitJobCallback callback_;
   base::WeakPtrFactory<PrintJobSubmitter> weak_ptr_factory_{this};
 };
 

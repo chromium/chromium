@@ -1,14 +1,16 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/html/custom/custom_element_reaction_stack.h"
 
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/html/custom/ce_reactions_scope.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_reaction_queue.h"
-#include "third_party/blink/renderer/platform/bindings/microtask.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 
 namespace blink {
 
@@ -88,14 +90,14 @@ void CustomElementReactionStack::EnqueueToBackupQueue(
   // https://html.spec.whatwg.org/C/#backup-element-queue
 
   DCHECK(!CEReactionsScope::Current());
-  DCHECK(stack_.IsEmpty());
+  DCHECK(stack_.empty());
   DCHECK(IsMainThread());
 
   // If the processing the backup element queue is not set:
-  if (!backup_queue_ || backup_queue_->IsEmpty()) {
-    Microtask::EnqueueMicrotask(
-        WTF::Bind(&CustomElementReactionStack::InvokeBackupQueue,
-                  Persistent<CustomElementReactionStack>(this)));
+  if (!backup_queue_ || backup_queue_->empty()) {
+    element.GetDocument().GetAgent()->event_loop()->EnqueueMicrotask(
+        WTF::BindOnce(&CustomElementReactionStack::InvokeBackupQueue,
+                      Persistent<CustomElementReactionStack>(this)));
   }
 
   Enqueue(backup_queue_, element, reaction);

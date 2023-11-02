@@ -72,7 +72,7 @@ void PageRuleCollector::MatchPageRules(RuleSet* rules,
   rules->CompactRulesIfNeeded();
   HeapVector<Member<StyleRulePage>> matched_page_rules;
   MatchPageRulesForList(matched_page_rules, rules->PageRules());
-  if (matched_page_rules.IsEmpty())
+  if (matched_page_rules.empty())
     return;
 
   std::stable_sort(

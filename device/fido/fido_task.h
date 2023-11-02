@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "device/fido/fido_device.h"
 
@@ -46,7 +46,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTask {
   }
 
  private:
-  FidoDevice* const device_;
+  const raw_ptr<FidoDevice> device_;
   base::WeakPtrFactory<FidoTask> weak_factory_{this};
 };
 

@@ -1,15 +1,17 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/app_restore/arc_ghost_window_view.h"
 
 #include "ash/public/cpp/app_list/app_list_config.h"
+#include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ash/app_restore/arc_window_handler.h"
+#include "chrome/browser/ash/app_restore/arc_ghost_window_handler.h"
+#include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "components/services/app_service/public/mojom/types.mojom-forward.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -18,10 +20,22 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
 
 namespace {
+
+constexpr char kGhostWindowTypeHistogram[] = "Arc.GhostWindowViewType";
+
+// Ghost window view type enumeration; Used for UMA counter.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class GhostWindowType {
+  kIconSpinning = 0,
+  kIconSpinningWithFixupText = 1,
+  kMaxValue = kIconSpinningWithFixupText,
+};
 
 class Throbber : public views::View {
  public:
@@ -43,6 +57,8 @@ class Throbber : public views::View {
   }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
+    // A valid role must be set prior to setting the name.
+    node_data->role = ax::mojom::Role::kProgressIndicator;
     node_data->SetName(
         l10n_util::GetStringUTF16(IDS_ARC_GHOST_WINDOW_APP_LAUNCHING_THROBBER));
   }
@@ -55,17 +71,20 @@ class Throbber : public views::View {
 
 }  // namespace
 
-namespace ash {
-namespace full_restore {
+namespace ash::full_restore {
 
-ArcGhostWindowView::ArcGhostWindowView(int throbber_diameter,
+ArcGhostWindowView::ArcGhostWindowView(arc::GhostWindowType type,
+                                       int throbber_diameter,
                                        uint32_t theme_color) {
-  InitLayout(theme_color, throbber_diameter);
+  // TODO(sstan): Show different content for different type.
+  InitLayout(type, theme_color, throbber_diameter);
 }
 
 ArcGhostWindowView::~ArcGhostWindowView() = default;
 
-void ArcGhostWindowView::InitLayout(uint32_t theme_color, int diameter) {
+void ArcGhostWindowView::InitLayout(arc::GhostWindowType type,
+                                    uint32_t theme_color,
+                                    int diameter) {
   SetBackground(views::CreateSolidBackground(theme_color));
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -81,9 +100,10 @@ void ArcGhostWindowView::InitLayout(uint32_t theme_color, int diameter) {
 
   auto* throbber = AddChildView(std::make_unique<Throbber>(
       color_utils::GetColorWithMaxContrast(theme_color)));
-  throbber->SetPreferredSize({diameter, diameter});
+  throbber->SetPreferredSize(gfx::Size(diameter, diameter));
   throbber->GetViewAccessibility().OverrideRole(ax::mojom::Role::kImage);
 
+  SetType(type);
   // TODO(sstan): Set window title and accessible name from saved data.
 }
 
@@ -92,25 +112,52 @@ void ArcGhostWindowView::LoadIcon(const std::string& app_id) {
       user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId());
   DCHECK(profile);
 
-  auto icon_type = apps::mojom::IconType::kStandard;
-
   DCHECK(
       apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile));
 
   apps::AppServiceProxyFactory::GetForProfile(profile)->LoadIcon(
-      apps::mojom::AppType::kArc, app_id, icon_type,
+      apps::AppType::kArc, app_id, apps::IconType::kStandard,
       ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
       /*allow_placeholder_icon=*/false,
       icon_loaded_cb_for_testing_.is_null()
           ? base::BindOnce(&ArcGhostWindowView::OnIconLoaded,
-                           weak_ptr_factory_.GetWeakPtr(), icon_type)
+                           weak_ptr_factory_.GetWeakPtr())
           : std::move(icon_loaded_cb_for_testing_));
 }
 
-void ArcGhostWindowView::OnIconLoaded(apps::mojom::IconType icon_type,
-                                      apps::mojom::IconValuePtr icon_value) {
-  if (icon_type != icon_value->icon_type)
+void ArcGhostWindowView::SetType(arc::GhostWindowType type) {
+  // Currently the only difference of App Fixup and other type of ghost window
+  // is that App Fixup ghost window has a message label.
+  if (type == arc::GhostWindowType::kFixup) {
+    if (!message_label_) {
+      auto label = std::make_unique<views::Label>(
+          l10n_util::GetStringUTF16(IDS_ARC_GHOST_WINDOW_APP_FIXUP_MESSAGE));
+      // TODO(sstan): Set font size or height, according to future UI update.
+      label->SetMultiLine(true);
+      message_label_ = label.get();
+      AddChildView(std::move(label));
+      Layout();
+
+      base::UmaHistogramEnumeration(
+          kGhostWindowTypeHistogram,
+          GhostWindowType::kIconSpinningWithFixupText);
+    }
+  } else {
+    if (message_label_) {
+      RemoveChildView(message_label_);
+      message_label_ = nullptr;
+      Layout();
+
+      base::UmaHistogramEnumeration(kGhostWindowTypeHistogram,
+                                    GhostWindowType::kIconSpinning);
+    }
+  }
+}
+
+void ArcGhostWindowView::OnIconLoaded(apps::IconValuePtr icon_value) {
+  if (!icon_value || icon_value->icon_type != apps::IconType::kStandard)
     return;
+
   icon_view_->SetImage(icon_value->uncompressed);
   icon_view_->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_ARC_GHOST_WINDOW_APP_LAUNCHING_ICON));
@@ -119,5 +166,4 @@ void ArcGhostWindowView::OnIconLoaded(apps::mojom::IconType icon_type,
 BEGIN_METADATA(ArcGhostWindowView, views::View)
 END_METADATA
 
-}  // namespace full_restore
-}  // namespace ash
+}  // namespace ash::full_restore

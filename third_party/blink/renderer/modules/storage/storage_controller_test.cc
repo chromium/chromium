@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -27,6 +26,8 @@
 #include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 #include "third_party/blink/renderer/platform/testing/scoped_mocked_url.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_mojo.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
 
@@ -95,9 +96,7 @@ TEST(StorageControllerTest, CacheLimit) {
           },
           connection.dom_storage_remote.BindNewPipeAndPassReceiver()));
 
-  StorageController controller(std::move(connection),
-                               scheduler::GetSingleThreadTaskRunnerForTesting(),
-                               kTestCacheLimit);
+  StorageController controller(std::move(connection), kTestCacheLimit);
 
   test::ScopedMockedURLLoad scoped_mocked_url_load(
       kPageUrl, test::CoreTestDataPath("foo.html"));
@@ -188,10 +187,12 @@ TEST(StorageControllerTest, CacheLimitSessionStorage) {
           std::move(mock_dom_storage),
           connection.dom_storage_remote.BindNewPipeAndPassReceiver()));
 
-  StorageController controller(std::move(connection), nullptr, kTestCacheLimit);
+  StorageController controller(std::move(connection), kTestCacheLimit);
 
-  StorageNamespace* ns1 = controller.CreateSessionStorageNamespace(kNamespace1);
-  StorageNamespace* ns2 = controller.CreateSessionStorageNamespace(kNamespace2);
+  StorageNamespace* ns1 = controller.CreateSessionStorageNamespace(
+      *local_dom_window_root->GetFrame()->GetPage(), kNamespace1);
+  StorageNamespace* ns2 = controller.CreateSessionStorageNamespace(
+      *local_dom_window_root->GetFrame()->GetPage(), kNamespace2);
 
   test::ScopedMockedURLLoad scoped_mocked_url_load(
       kPageUrl, test::CoreTestDataPath("foo.html"));

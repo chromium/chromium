@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "components/performance_manager/graph/node_base.h"
@@ -53,6 +54,9 @@ class WorkerNodeImpl
   // Sets the worker priority, and the reason behind it.
   void SetPriorityAndReason(const PriorityAndReason& priority_and_reason);
 
+  // Sets the Resident Set Size estimate.
+  void SetResidentSetKbEstimate(uint64_t rss_estimate);
+
   // Invoked when the worker script was fetched and the final response URL is
   // available.
   void OnFinalResponseURLDetermined(const GURL& url);
@@ -69,6 +73,7 @@ class WorkerNodeImpl
   const base::flat_set<WorkerNodeImpl*>& client_workers() const;
   const base::flat_set<WorkerNodeImpl*>& child_workers() const;
   const PriorityAndReason& priority_and_reason() const;
+  uint64_t resident_set_kb_estimate() const;
 
   base::WeakPtr<WorkerNodeImpl> GetWeakPtr() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -103,6 +108,7 @@ class WorkerNodeImpl
   const base::flat_set<const WorkerNode*> GetChildWorkers() const override;
   bool VisitChildDedicatedWorkers(const WorkerNodeVisitor&) const override;
   const PriorityAndReason& GetPriorityAndReason() const override;
+  uint64_t GetResidentSetKbEstimate() const override;
 
   // Invoked when |worker_node| becomes a child of this worker.
   void AddChildWorker(WorkerNodeImpl* worker_node);
@@ -115,7 +121,7 @@ class WorkerNodeImpl
   const WorkerType worker_type_;
 
   // The process in which this worker lives.
-  ProcessNodeImpl* const process_node_;
+  const raw_ptr<ProcessNodeImpl> process_node_;
 
   // A unique identifier shared with all representations of this worker across
   // content and blink. This token should only ever be sent between the browser
@@ -142,6 +148,8 @@ class WorkerNodeImpl
   // distinction between client workers and child workers.
   base::flat_set<WorkerNodeImpl*> child_workers_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  uint64_t resident_set_kb_estimate_ = 0;
 
   // Worker priority information. Set via ExecutionContextPriorityDecorator.
   ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<

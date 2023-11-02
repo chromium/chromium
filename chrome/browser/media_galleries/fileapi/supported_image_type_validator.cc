@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "base/files/file.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -45,7 +44,7 @@ std::unique_ptr<std::string> ReadOnFileThread(const base::FilePath& path) {
 
   result = std::make_unique<std::string>();
   result->resize(file_info.size);
-  if (file.Read(0, base::data(*result), file_info.size) != file_info.size) {
+  if (file.Read(0, std::data(*result), file_info.size) != file_info.size) {
     result.reset();
   }
 

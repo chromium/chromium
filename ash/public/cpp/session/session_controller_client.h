@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,8 +20,14 @@ class ASH_PUBLIC_EXPORT SessionControllerClient {
   // Requests to lock screen.
   virtual void RequestLockScreen() = 0;
 
+  // Requests to dismiss the lock screen.
+  virtual void RequestHideLockScreen() = 0;
+
   // Requests signing out all users, ending the current session.
   virtual void RequestSignOut() = 0;
+
+  // Requests to restart the system for OS update.
+  virtual void RequestRestartForUpdate() = 0;
 
   // Attempts to restart the chrome browser.
   virtual void AttemptRestartChrome() = 0;
@@ -45,6 +51,9 @@ class ASH_PUBLIC_EXPORT SessionControllerClient {
 
   // Returns the pref service for the given user if available.
   virtual PrefService* GetUserPrefService(const AccountId& account_id) = 0;
+
+  // Returns true if the device is enterprise managed.
+  virtual bool IsEnterpriseManaged() const = 0;
 
  protected:
   virtual ~SessionControllerClient() = default;

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,13 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
+#include "base/ranges/algorithm.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/autofill_assistant/password_change/apc_client.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
@@ -32,8 +36,8 @@
 #include "chrome/browser/ui/passwords/credential_leak_dialog_controller_impl.h"
 #include "chrome/browser/ui/passwords/credential_manager_dialog_controller_impl.h"
 #include "chrome/browser/ui/passwords/manage_passwords_icon_view.h"
-#include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/common/url_constants.h"
@@ -42,6 +46,7 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/form_saver_impl.h"
+#include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/move_password_to_account_store_helper.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
@@ -53,15 +58,17 @@
 #include "components/password_manager/core/browser/ui/password_check_referrer.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/password_manager/password_manager_util_win.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "chrome/browser/password_manager/password_manager_util_mac.h"
 #endif
 
@@ -100,10 +107,8 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyFormVector(
 const password_manager::InteractionsStats* FindStatsByUsername(
     base::span<const password_manager::InteractionsStats> stats,
     const std::u16string& username) {
-  auto it = std::find_if(stats.begin(), stats.end(),
-                         [&username](const auto& element) {
-                           return username == element.username_value;
-                         });
+  auto it = base::ranges::find(
+      stats, username, &password_manager::InteractionsStats::username_value);
   return it == stats.end() ? nullptr : &*it;
 }
 
@@ -112,6 +117,7 @@ const password_manager::InteractionsStats* FindStatsByUsername(
 ManagePasswordsUIController::ManagePasswordsUIController(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<ManagePasswordsUIController>(*web_contents),
       are_passwords_revealed_when_next_bubble_is_opened_(false) {
   passwords_data_.set_client(
       ChromePasswordManagerClient::FromWebContents(web_contents));
@@ -273,7 +279,8 @@ void ManagePasswordsUIController::OnPasswordAutofilled(
 
 void ManagePasswordsUIController::OnCredentialLeak(
     const password_manager::CredentialLeakType leak_type,
-    const GURL& origin) {
+    const GURL& url,
+    const std::u16string& username) {
   // Existing dialog shouldn't be closed.
   if (dialog_controller_)
     return;
@@ -284,8 +291,12 @@ void ManagePasswordsUIController::OnCredentialLeak(
   else
     ClearPopUpFlagForBubble();
 
-  auto* raw_controller =
-      new CredentialLeakDialogControllerImpl(this, leak_type);
+  auto* raw_controller = new CredentialLeakDialogControllerImpl(
+      this, leak_type, url, username,
+      std::make_unique<
+          password_manager::metrics_util::LeakDialogMetricsRecorder>(
+          web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId(),
+          password_manager::GetLeakDialogType(leak_type)));
   dialog_controller_.reset(raw_controller);
   raw_controller->ShowCredentialLeakPrompt(
       CreateCredentialLeakPrompt(raw_controller));
@@ -301,6 +312,43 @@ void ManagePasswordsUIController::OnShowMoveToAccountBubble(
     GetPasswordFeatureManager()->RecordMoveOfferedToNonOptedInUser();
   passwords_data_.OnPasswordMovable(std::move(form_to_move));
   // TODO(crbug.com/1100814): Add smartness like OnPasswordSubmitted?
+  bubble_status_ = BubbleStatus::SHOULD_POP_UP;
+  UpdateBubbleAndIconVisibility();
+}
+
+void ManagePasswordsUIController::OnBiometricAuthenticationForFilling(
+    PrefService* prefs) {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  const std::string promo_shown_counter =
+      password_manager::prefs::kBiometricAuthBeforeFillingPromoShownCounter;
+  // Checking GetIfBiometricAuthenticationPromoWasShown() prevents from
+  // displaying multiple prompts on the same tab (eg. when there are multiple
+  // password forms).
+  if (was_biometric_authentication_for_filling_promo_shown_ ||
+      prefs->GetBoolean(
+          password_manager::prefs::kHasUserInteractedWithBiometricAuthPromo) ||
+      prefs->GetInteger(promo_shown_counter) >=
+          kMaxNumberOfTimesBiometricAuthForFillingPromoWillBeShown ||
+      prefs->GetBoolean(
+          password_manager::prefs::kBiometricAuthenticationBeforeFilling)) {
+    return;
+  }
+  prefs->SetInteger(promo_shown_counter,
+                    prefs->GetInteger(promo_shown_counter) + 1);
+
+  passwords_data_.TransitionToState(
+      password_manager::ui::BIOMETRIC_AUTHENTICATION_FOR_FILLING_STATE);
+  bubble_status_ = BubbleStatus::SHOULD_POP_UP;
+  was_biometric_authentication_for_filling_promo_shown_ = true;
+  UpdateBubbleAndIconVisibility();
+#else
+  NOTIMPLEMENTED();
+#endif
+}
+
+void ManagePasswordsUIController::ShowBiometricActivationConfirmation() {
+  passwords_data_.TransitionToState(
+      password_manager::ui::BIOMETRIC_AUTHENTICATION_CONFIRMATION_STATE);
   bubble_status_ = BubbleStatus::SHOULD_POP_UP;
   UpdateBubbleAndIconVisibility();
 }
@@ -454,6 +502,8 @@ void ManagePasswordsUIController::OnBubbleHidden() {
   bubble_status_ = BubbleStatus::NOT_SHOWN;
   if (GetState() == password_manager::ui::CONFIRMATION_STATE ||
       GetState() == password_manager::ui::AUTO_SIGNIN_STATE ||
+      GetState() ==
+          password_manager::ui::BIOMETRIC_AUTHENTICATION_CONFIRMATION_STATE ||
       GetState() == password_manager::ui::PASSWORD_UPDATED_SAFE_STATE ||
       GetState() == password_manager::ui::PASSWORD_UPDATED_MORE_TO_FIX) {
     passwords_data_.TransitionToState(password_manager::ui::MANAGE_STATE);
@@ -629,10 +679,17 @@ void ManagePasswordsUIController::NavigateToPasswordCheckup(
   password_manager::LogPasswordCheckReferrer(referrer);
 }
 
+void ManagePasswordsUIController::StartAutomatedPasswordChange(
+    const GURL& origin,
+    const std::u16string& username) {
+  ApcClient* apc_client = ApcClient::GetOrCreateForWebContents(web_contents());
+  // Start checks that no other run is ongoing, so we can always call it.
+  apc_client->Start(origin, base::UTF16ToUTF8(username), /*skip_login=*/true);
+}
+
 void ManagePasswordsUIController::EnableSync(const AccountInfo& account) {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
   signin_ui_util::EnableSyncFromSingleAccountPromo(
-      browser, account,
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext()), account,
       signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE);
 }
 
@@ -655,7 +712,7 @@ void ManagePasswordsUIController::OnLeakDialogHidden() {
 }
 
 bool ManagePasswordsUIController::AuthenticateUser() {
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -665,6 +722,26 @@ bool ManagePasswordsUIController::AuthenticateUser() {
 #else
   return true;
 #endif
+}
+
+void ManagePasswordsUIController::AuthenticateUserWithMessage(
+    const std::u16string& message,
+    AvailabilityCallback callback) {
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
+  std::move(callback).Run(true);
+  return;
+#else
+  base::OnceClosure on_reauth_completed =
+      base::BindOnce(&ManagePasswordsUIController::OnReauthCompleted,
+                     weak_ptr_factory_.GetWeakPtr());
+
+  CancelAnyOngoingBiometricAuth();
+  biometric_authenticator_ =
+      passwords_data_.client()->GetBiometricAuthenticator();
+  biometric_authenticator_->AuthenticateWithMessage(
+      device_reauth::BiometricAuthRequester::kTouchToFill, message,
+      std::move(callback).Then(std::move(on_reauth_completed)));
+#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 }
 
 void ManagePasswordsUIController::
@@ -682,14 +759,12 @@ void ManagePasswordsUIController::
 
 void ManagePasswordsUIController::
     AuthenticateUserForAccountStoreOptInAfterSavingLocallyAndMovePassword() {
-  DCHECK(base::FeatureList::IsEnabled(
-      password_manager::features::kPasswordsAccountStorageRevisedOptInFlow));
   DCHECK(GetState() == password_manager::ui::MANAGE_STATE) << GetState();
   // Note: While saving the password locally earlier, the FormManager has been
   // updated with any edits the user made in the Save bubble. So at this point,
   // just using GetPendingCredentials() is safe.
   passwords_data_.client()->TriggerReauthForPrimaryAccount(
-      signin_metrics::ReauthAccessPoint::kPasswordSaveBubble,
+      signin_metrics::ReauthAccessPoint::kPasswordSaveLocallyBubble,
       base::BindOnce(&ManagePasswordsUIController::
                          MoveJustSavedPasswordAfterAccountStoreOptIn,
                      weak_ptr_factory_.GetWeakPtr(),
@@ -753,17 +828,8 @@ bool ManagePasswordsUIController::HasBrowserWindow() const {
   return chrome::FindBrowserWithWebContents(web_contents()) != nullptr;
 }
 
-void ManagePasswordsUIController::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !navigation_handle->HasCommitted() ||
-      // Don't react to same-document (fragment) navigations.
-      navigation_handle->IsSameDocument()) {
-    return;
-  }
+void ManagePasswordsUIController::PrimaryPageChanged(content::Page& page) {
+  CancelAnyOngoingBiometricAuth();
 
   // Keep the state if the bubble is currently open or the fallback for saving
   // should be still available.
@@ -847,11 +913,14 @@ void ManagePasswordsUIController::ReopenBubbleAfterAuth(
 }
 
 bool ManagePasswordsUIController::ShowAuthenticationDialog() {
-#if defined(OS_WIN)
+// TODO(crbug.com/1353344): Use biometric authentication to reveal password in
+// the bubble.
+#if BUILDFLAG(IS_WIN)
   return password_manager_util_win::AuthenticateUser(
       web_contents()->GetNativeView(),
-      password_manager::ReauthPurpose::VIEW_PASSWORD);
-#elif defined(OS_MAC)
+      password_manager_util_win::GetMessageForLoginPrompt(
+          password_manager::ReauthPurpose::VIEW_PASSWORD));
+#elif BUILDFLAG(IS_MAC)
   return password_manager_util_mac::AuthenticateUser(
       password_manager::ReauthPurpose::VIEW_PASSWORD);
 #else
@@ -929,9 +998,6 @@ void ManagePasswordsUIController::
 void ManagePasswordsUIController::MoveJustSavedPasswordAfterAccountStoreOptIn(
     password_manager::PasswordForm form,
     password_manager::PasswordManagerClient::ReauthSucceeded reauth_succeeded) {
-  DCHECK(base::FeatureList::IsEnabled(
-      password_manager::features::kPasswordsAccountStorageRevisedOptInFlow));
-
   // Successful opt-in means that the just-saved password should be moved to the
   // account.
   if (reauth_succeeded) {
@@ -962,6 +1028,18 @@ void ManagePasswordsUIController::
         std::list<std::unique_ptr<MovePasswordToAccountStoreHelper>>::iterator
             done_helper_it) {
   move_to_account_store_helpers_.erase(done_helper_it);
+}
+
+void ManagePasswordsUIController::OnReauthCompleted() {
+  biometric_authenticator_.reset();
+}
+
+void ManagePasswordsUIController::CancelAnyOngoingBiometricAuth() {
+  if (!biometric_authenticator_)
+    return;
+  biometric_authenticator_->Cancel(
+      device_reauth::BiometricAuthRequester::kTouchToFill);
+  biometric_authenticator_.reset();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ManagePasswordsUIController);

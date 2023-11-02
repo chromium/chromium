@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -87,30 +87,6 @@ void AppListMenuModelAdapter::RecordHistogramOnMenuClosed() {
             user_journey_time);
       }
       break;
-    case PEEKING_SUGGESTED:
-      UMA_HISTOGRAM_ENUMERATION(
-          "Apps.ContextMenuShowSourceV2.SuggestedAppPeeking", source_type(),
-          ui::MenuSourceType::MENU_SOURCE_TYPE_LAST);
-      UMA_HISTOGRAM_TIMES(
-          "Apps.ContextMenuUserJourneyTimeV2.SuggestedAppPeeking",
-          user_journey_time);
-      if (is_tablet_mode()) {
-        UMA_HISTOGRAM_ENUMERATION(
-            "Apps.ContextMenuShowSourceV2.SuggestedAppPeeking.TabletMode",
-            source_type(), ui::MenuSourceType::MENU_SOURCE_TYPE_LAST);
-        UMA_HISTOGRAM_TIMES(
-            "Apps.ContextMenuUserJourneyTimeV2.SuggestedAppPeeking.TabletMode",
-            user_journey_time);
-      } else {
-        UMA_HISTOGRAM_ENUMERATION(
-            "Apps.ContextMenuShowSourceV2.SuggestedAppPeeking.ClamshellMode",
-            source_type(), ui::MenuSourceType::MENU_SOURCE_TYPE_LAST);
-        UMA_HISTOGRAM_TIMES(
-            "Apps.ContextMenuUserJourneyTimeV2.SuggestedAppPeeking."
-            "ClamshellMode",
-            user_journey_time);
-      }
-      break;
     case PRODUCTIVITY_LAUNCHER_RECENT_APP:
       DCHECK(features::IsProductivityLauncherEnabled());
       if (is_tablet_mode()) {
@@ -155,7 +131,6 @@ void AppListMenuModelAdapter::RecordHistogramOnMenuClosed() {
             user_journey_time);
       }
       break;
-    case HALF_SEARCH_RESULT:
     case FULLSCREEN_SEARCH_RESULT:
       UMA_HISTOGRAM_ENUMERATION("Apps.ContextMenuShowSourceV2.SearchResult",
                                 source_type(),
@@ -177,11 +152,6 @@ void AppListMenuModelAdapter::RecordHistogramOnMenuClosed() {
             "Apps.ContextMenuUserJourneyTimeV2.SearchResult.ClamshellMode",
             user_journey_time);
       }
-      break;
-    case SEARCH_RESULT:
-      // SearchResult can use this class, but the code is dead and does not show
-      // a menu.
-      NOTREACHED();
       break;
     case APP_LIST_APP_TYPE_LAST:
       NOTREACHED();
@@ -211,19 +181,41 @@ void AppListMenuModelAdapter::MaybeRecordAppLaunched(int command_id) {
   if (!IsCommandIdAnAppLaunch(command_id))
     return;
 
-  // Note that |search_launch_type| only matters when |launched_from| is
-  // kLaunchedFromSearchBox. Early out if it is not launched as an app search
-  // result.
-  if (metric_params_.launched_from ==
-          AppListLaunchedFrom::kLaunchedFromSearchBox &&
-      metric_params_.search_launch_type !=
-          AppListLaunchType::kAppSearchResult) {
-    return;
-  }
+  switch (metric_params_.launch_type) {
+    case AppListLaunchType::kSearchResult:
+      break;
+    case AppListLaunchType::kAppSearchResult:
+    case AppListLaunchType::kApp:
+      RecordAppListAppLaunched(
+          metric_params_.launched_from, metric_params_.app_list_view_state,
+          metric_params_.is_tablet_mode, metric_params_.app_list_shown);
 
-  RecordAppListAppLaunched(
-      metric_params_.launched_from, metric_params_.app_list_view_state,
-      metric_params_.is_tablet_mode, metric_params_.app_list_shown);
+      switch (metric_params_.launched_from) {
+        case AppListLaunchedFrom::kLaunchedFromGrid:
+          RecordLauncherWorkflowMetrics(
+              AppListUserAction::kAppLaunchFromAppsGrid,
+              metric_params_.is_tablet_mode,
+              metric_params_.launcher_show_timestamp);
+          break;
+        case AppListLaunchedFrom::kLaunchedFromRecentApps:
+          RecordLauncherWorkflowMetrics(
+              AppListUserAction::kAppLaunchFromRecentApps,
+              metric_params_.is_tablet_mode,
+              metric_params_.launcher_show_timestamp);
+          break;
+        case AppListLaunchedFrom::kLaunchedFromSearchBox:
+          RecordLauncherWorkflowMetrics(AppListUserAction::kOpenAppSearchResult,
+                                        metric_params_.is_tablet_mode,
+                                        metric_params_.launcher_show_timestamp);
+          break;
+        case AppListLaunchedFrom::kLaunchedFromSuggestionChip:
+        case AppListLaunchedFrom::kLaunchedFromContinueTask:
+        case AppListLaunchedFrom::kLaunchedFromShelf:
+          NOTREACHED();
+          break;
+      }
+      break;
+  }
 }
 
 }  // namespace ash

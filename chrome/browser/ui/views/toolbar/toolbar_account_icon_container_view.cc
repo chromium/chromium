@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/save_payment_icon_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -41,6 +42,7 @@ ToolbarAccountIconContainerView::ToolbarAccountIconContainerView(
       PageActionIconType::kLocalCardMigration,
       PageActionIconType::kSaveCard,
       PageActionIconType::kVirtualCardManualFallback,
+      PageActionIconType::kVirtualCardEnroll,
   };
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillAddressProfileSavePrompt)) {
@@ -87,7 +89,7 @@ SkColor ToolbarAccountIconContainerView::GetIconLabelBubbleInkDropColor()
 
 SkColor ToolbarAccountIconContainerView::GetIconLabelBubbleBackgroundColor()
     const {
-  return GetThemeProvider()->GetColor(ThemeProperties::COLOR_TOOLBAR);
+  return GetColorProvider()->GetColor(kColorToolbar);
 }
 
 float ToolbarAccountIconContainerView::GetPageActionInkDropVisibleOpacity()
@@ -118,7 +120,7 @@ void ToolbarAccountIconContainerView::AddPageActionIcon(
     std::unique_ptr<views::View> icon) {
   // Add the page action icons to the end of the container, just before the
   // avatar icon.
-  AddChildViewAt(std::move(icon), GetIndexOf(avatar_));
+  AddChildViewAt(std::move(icon), GetIndexOf(avatar_).value());
 }
 
 BEGIN_METADATA(ToolbarAccountIconContainerView, ToolbarIconContainerView)

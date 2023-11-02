@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.clearInvocations;
@@ -57,17 +56,15 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.RecordHistogramJni;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_check.PasswordCheckProperties.ItemType;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckChangePasswordHelper;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckIconHelper;
+import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper;
-import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper.ReauthReason;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -82,7 +79,8 @@ import org.chromium.url.GURL;
  * properly.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE)
+@SuppressWarnings("DoNotMock") // Mocks GURL.
 public class PasswordCheckControllerTest {
     private static final CompromisedCredential ANA =
             new CompromisedCredential("https://m.a.xyz/signin", mock(GURL.class), "Ana", "m.a.xyz",
@@ -102,12 +100,10 @@ public class PasswordCheckControllerTest {
     private static final String PASSWORD_CHECK_RESOLUTION_HISTOGRAM_FOR_SCRIPTED_SITES =
             "PasswordManager.AutomaticChange.ForSitesWithScripts";
     private static final String PASSWORD_CHECK_REFERRER_HISTOGRAM =
-            "PasswordManager.BulkCheck.PasswordCheckReferrerAndroid";
+            "PasswordManager.BulkCheck.PasswordCheckReferrerAndroid2";
     private static final String PASSWORD_CHECK_USER_ACTION_HISTOGRAM =
             "PasswordManager.BulkCheck.UserActionAndroid";
-
-    @Rule
-    public final JniMocker mJniMocker = new JniMocker();
+    private static final boolean USE_LAST_VALID_AUTH = true;
 
     @Rule
     public Features.JUnitProcessor mFeaturesProcessor = new Features.JUnitProcessor();
@@ -126,8 +122,6 @@ public class PasswordCheckControllerTest {
     private SettingsLauncher mSettingsLauncher;
     @Mock
     private PasswordCheckIconHelper mIconHelper;
-    @Mock
-    private RecordHistogram.Natives mRecordHistogramBridge;
     @Captor
     private ArgumentCaptor<Callback<Boolean>> mCallbackCaptor;
 
@@ -137,9 +131,8 @@ public class PasswordCheckControllerTest {
 
     @Before
     public void setUp() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(RecordHistogramJni.TEST_HOOKS, mRecordHistogramBridge);
         mModel = PasswordCheckProperties.createDefaultModel();
         mMediator = new PasswordCheckMediator(mChangePasswordDelegate, mReauthenticationHelper,
                 mReauthenticatorBridge, mSettingsLauncher, mIconHelper);
@@ -245,37 +238,12 @@ public class PasswordCheckControllerTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.EDIT_PASSWORDS_IN_SETTINGS})
     public void testOnEditRecordsEditClick() {
         mMediator.onEdit(ANA, ApplicationProvider.getApplicationContext());
         assertThat(RecordHistogram.getHistogramValueCountForTesting(
                            PASSWORD_CHECK_USER_ACTION_HISTOGRAM,
                            PasswordCheckUserAction.EDIT_PASSWORD_CLICK),
                 is(1));
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.EDIT_PASSWORDS_IN_SETTINGS})
-    public void testEditTriggersCanReauthenticate() {
-        mMediator.onEdit(ANA, ApplicationProvider.getApplicationContext());
-        verify(mReauthenticationHelper).canReauthenticate();
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.EDIT_PASSWORDS_IN_SETTINGS})
-    public void testCannotReauthenticateDoesNothing() {
-        when(mReauthenticationHelper.canReauthenticate()).thenReturn(false);
-        mMediator.onEdit(ANA, ApplicationProvider.getApplicationContext());
-        verify(mReauthenticationHelper, never()).reauthenticate(anyInt(), any(Callback.class));
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.EDIT_PASSWORDS_IN_SETTINGS})
-    public void testCanReauthenticateTriggersReauthenticate() {
-        when(mReauthenticationHelper.canReauthenticate()).thenReturn(true);
-        mMediator.onEdit(ANA, ApplicationProvider.getApplicationContext());
-        verify(mReauthenticationHelper)
-                .reauthenticate(eq(ReauthReason.EDIT_PASSWORD), any(Callback.class));
     }
 
     @Test
@@ -541,6 +509,7 @@ public class PasswordCheckControllerTest {
     public void testOnChangePasswordButtonClick() {
         // No auto change button. A user clicks "Change password" (manually).
         mMediator.onChangePasswordButtonClick(ANA);
+        verify(mDelegate).onManualPasswordChangeStarted(eq(ANA));
         verify(mChangePasswordDelegate).launchAppOrCctWithChangePasswordUrl(eq(ANA));
 
         assertThat(RecordHistogram.getHistogramValueCountForTesting(
@@ -563,6 +532,7 @@ public class PasswordCheckControllerTest {
     public void testOnChangePasswordManuallyButtonClick() {
         // There is an auto change button, but a user clicks "Change manually".
         mMediator.onChangePasswordButtonClick(BOB);
+        verify(mDelegate).onManualPasswordChangeStarted(eq(BOB));
         verify(mChangePasswordDelegate).launchAppOrCctWithChangePasswordUrl(eq(BOB));
 
         assertThat(RecordHistogram.getHistogramValueCountForTesting(
@@ -587,6 +557,7 @@ public class PasswordCheckControllerTest {
         // There is a script but auto change button isn't shown. A user clicks "Change password"
         // (manually).
         mMediator.onChangePasswordButtonClick(CHARLIE);
+        verify(mDelegate).onManualPasswordChangeStarted(eq(CHARLIE));
         verify(mChangePasswordDelegate).launchAppOrCctWithChangePasswordUrl(eq(CHARLIE));
 
         assertThat(RecordHistogram.getHistogramValueCountForTesting(
@@ -612,6 +583,7 @@ public class PasswordCheckControllerTest {
         when(mReauthenticatorBridge.canUseAuthentication()).thenReturn(true);
         // There is a auto change button, a user clicks it.
         mMediator.onChangePasswordWithScriptButtonClick(BOB);
+        verify(mDelegate).onAutomatedPasswordChangeStarted(eq(BOB));
         verify(mChangePasswordDelegate).launchCctWithScript(eq(BOB));
 
         assertThat(RecordHistogram.getHistogramValueCountForTesting(
@@ -637,6 +609,7 @@ public class PasswordCheckControllerTest {
         when(mReauthenticatorBridge.canUseAuthentication()).thenReturn(false);
         // There is a auto change button, a user clicks it.
         mMediator.onChangePasswordWithScriptButtonClick(BOB);
+        verify(mDelegate).onAutomatedPasswordChangeStarted(eq(BOB));
         verify(mChangePasswordDelegate).launchCctWithScript(eq(BOB));
 
         assertThat(RecordHistogram.getHistogramValueCountForTesting(
@@ -666,9 +639,10 @@ public class PasswordCheckControllerTest {
             return true;
         })
                 .when(mReauthenticatorBridge)
-                .reauthenticate(notNull());
+                .reauthenticate(notNull(), eq(USE_LAST_VALID_AUTH));
         // There is a auto change button, a user clicks it.
         mMediator.onChangePasswordWithScriptButtonClick(BOB);
+        verify(mDelegate, never()).onAutomatedPasswordChangeStarted(eq(BOB));
         verify(mChangePasswordDelegate, never())
                 .launchCctWithScript(any(CompromisedCredential.class));
 
@@ -699,9 +673,10 @@ public class PasswordCheckControllerTest {
             return true;
         })
                 .when(mReauthenticatorBridge)
-                .reauthenticate(notNull());
+                .reauthenticate(notNull(), eq(USE_LAST_VALID_AUTH));
         // There is a auto change button, a user clicks it.
         mMediator.onChangePasswordWithScriptButtonClick(BOB);
+        verify(mDelegate).onAutomatedPasswordChangeStarted(eq(BOB));
         verify(mChangePasswordDelegate).launchCctWithScript(eq(BOB));
 
         assertThat(RecordHistogram.getHistogramValueCountForTesting(
@@ -722,22 +697,6 @@ public class PasswordCheckControllerTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.EDIT_PASSWORDS_IN_SETTINGS})
-    public void testOnEditPasswordButtonClick() {
-        when(mReauthenticationHelper.canReauthenticate()).thenReturn(true);
-        doAnswer(invocation -> {
-            Callback<Boolean> cb = invocation.getArgument(1);
-            cb.onResult(true);
-            return true;
-        })
-                .when(mReauthenticationHelper)
-                .reauthenticate(anyInt(), notNull());
-        mMediator.onEdit(ANA, ApplicationProvider.getApplicationContext());
-        verify(mChangePasswordDelegate).launchEditPage(eq(ANA));
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.EDIT_PASSWORDS_IN_SETTINGS})
     public void testOnEditTriggersDelegateWhenNewEditEnabled() {
         mMediator.onEdit(ANA, ApplicationProvider.getApplicationContext());
         verify(mDelegate).onEditCredential(ANA, ApplicationProvider.getApplicationContext());

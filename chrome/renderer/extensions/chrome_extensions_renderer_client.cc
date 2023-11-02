@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,10 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/features.h"
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -19,10 +20,8 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/renderer/chrome_render_thread_observer.h"
 #include "chrome/renderer/extensions/chrome_extensions_dispatcher_delegate.h"
-#include "chrome/renderer/extensions/extension_process_policy.h"
 #include "chrome/renderer/extensions/renderer_permissions_policy_delegate.h"
 #include "chrome/renderer/extensions/resource_request_policy.h"
-#include "components/guest_view/renderer/guest_view_container_dispatcher.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_frame.h"
@@ -35,6 +34,7 @@
 #include "extensions/common/switches.h"
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/extension_frame_helper.h"
+#include "extensions/renderer/extension_web_view_helper.h"
 #include "extensions/renderer/extensions_render_frame_observer.h"
 #include "extensions/renderer/extensions_renderer_client.h"
 #include "extensions/renderer/guest_view/mime_handler_view/mime_handler_view_container_manager.h"
@@ -148,11 +148,14 @@ void ChromeExtensionsRendererClient::RenderThreadStarted() {
   resource_request_policy_ =
       std::make_unique<extensions::ResourceRequestPolicy>(
           extension_dispatcher_.get());
-  guest_view_container_dispatcher_ =
-      std::make_unique<guest_view::GuestViewContainerDispatcher>();
 
   thread->AddObserver(extension_dispatcher_.get());
-  thread->AddObserver(guest_view_container_dispatcher_.get());
+}
+
+void ChromeExtensionsRendererClient::WebViewCreated(
+    blink::WebView* web_view,
+    const url::Origin* outermost_origin) {
+  new extensions::ExtensionWebViewHelper(web_view, outermost_origin);
 }
 
 void ChromeExtensionsRendererClient::RenderFrameCreated(
@@ -190,6 +193,7 @@ bool ChromeExtensionsRendererClient::AllowPopup() {
     case extensions::Feature::UNBLESSED_EXTENSION_CONTEXT:
     case extensions::Feature::WEBUI_CONTEXT:
     case extensions::Feature::WEBUI_UNTRUSTED_CONTEXT:
+    case extensions::Feature::OFFSCREEN_EXTENSION_CONTEXT:
     case extensions::Feature::LOCK_SCREEN_EXTENSION_CONTEXT:
       return false;
     case extensions::Feature::BLESSED_EXTENSION_CONTEXT:
@@ -197,7 +201,7 @@ bool ChromeExtensionsRendererClient::AllowPopup() {
     case extensions::Feature::CONTENT_SCRIPT_CONTEXT:
       return true;
     case extensions::Feature::BLESSED_WEB_PAGE_CONTEXT:
-      return !current_context->web_frame()->Parent();
+      return current_context->web_frame()->IsOutermostMainFrame();
   }
 }
 
@@ -214,6 +218,7 @@ ChromeExtensionsRendererClient::GetProtocolHandlerSecurityLevel() {
     case extensions::Feature::BLESSED_WEB_PAGE_CONTEXT:
     case extensions::Feature::CONTENT_SCRIPT_CONTEXT:
     case extensions::Feature::LOCK_SCREEN_EXTENSION_CONTEXT:
+    case extensions::Feature::OFFSCREEN_EXTENSION_CONTEXT:
     case extensions::Feature::UNBLESSED_EXTENSION_CONTEXT:
     case extensions::Feature::UNSPECIFIED_CONTEXT:
     case extensions::Feature::WEBUI_CONTEXT:
@@ -233,7 +238,6 @@ void ChromeExtensionsRendererClient::WillSendRequest(
     const url::Origin* initiator_origin,
     GURL* new_url) {
   std::string extension_id;
-  GURL request_url(url);
   if (initiator_origin &&
       initiator_origin->scheme() == extensions::kExtensionScheme) {
     extension_id = initiator_origin->host();
@@ -256,6 +260,12 @@ void ChromeExtensionsRendererClient::WillSendRequest(
     }
   }
 
+  // The rest of this method is only concerned with extensions URLs.
+  if (base::FeatureList::IsEnabled(base::features::kOptimizeDataUrls) &&
+      !url.ProtocolIs(extensions::kExtensionScheme)) {
+    return;
+  }
+
   if (url.ProtocolIs(extensions::kExtensionScheme) &&
       !resource_request_policy_->CanRequestResource(
           GURL(url), frame, transition_type,
@@ -264,6 +274,7 @@ void ChromeExtensionsRendererClient::WillSendRequest(
   }
 
   // TODO(https://crbug.com/588766): Remove metrics after bug is fixed.
+  GURL request_url(url);
   if (url.ProtocolIs(extensions::kExtensionScheme) &&
       request_url.host_piece() == extension_misc::kDocsOfflineExtensionId) {
     if (!ukm_recorder_) {

@@ -375,6 +375,11 @@ Format statements like so.
   such as `?NNN` or `:AAAA`, have few benefits in a codebase where the `Bind`
   statements are right next to the queries, and are less known to readers.
 
+* SQL statements should be embedded in C++ as string literals. The `char[]` type
+  makes it possible for us to compute query length at compile time in the
+  future. The `static` and `constexpr` qualifiers both ensure optimal code
+  generation.
+
 * Do not execute multiple SQL statements (e.g., by calling `Step()` or `Run()`
   on `sql::Statement`) on the same C++ line. It's difficult to get more than
   line numbers from crash reports' stack traces.
@@ -479,6 +484,10 @@ possibility of data corruption. Furthermore, foreign key constraints make it
 more difficult to reason about system behavior (Chrome feature code + SQLite)
 when the database gets corrupted. Foreign key constraints also make it more
 difficult to reason about query performance.
+
+Foreign key constraints are not enforced by default on SQLite databases opened
+with Chrome's `sql::Database` infrastructure. This is intended to steer feature
+developers away from the discouraged feature.
 
 After
 [WebSQL](https://www.w3.org/TR/webdatabase/) is removed from Chrome, we plan
@@ -616,3 +625,49 @@ Chrome code should not assume that transactions across multiple databases are
 atomic.
 
 We plan to remove all existing `ATTACH DATABASE` use from Chrome.
+
+
+### Disabled features
+
+We aim to disable SQLite features that should not be used in Chrome, subject to
+the constraint of keeping WebSQL's feature set stable. We currently disable all
+new SQLite features, to avoid expanding the attack surface exposed to WebSQL.
+This stance may change once WebSQL is removed from Chrome.
+
+The following SQLite features have been disabled in Chrome.
+
+#### JSON
+
+Chrome features should prefer
+[procotol buffers](https://developers.google.com/protocol-buffers) to JSON for
+on-disk (persistent) serialization of extensible structured data.
+
+Chrome features should store the values used by indexes directly in their own
+columns, instead of relying on
+[SQLite's JSON support](https://www.sqlite.org/json1.html).
+
+#### UPSERT
+
+[SQLite's UPSERT implementation](https://www.sqlite.org/lang_UPSERT.html) has
+been disabled in order to avoid increasing WebSQL's attack surface. UPSERT is
+disabled using the `SQLITE_OMIT_UPSERT` macro, which is not currently included
+in [the SQLite compile-time option list](https://www.sqlite.org/compile.html),
+but exists in the source code.
+
+We currently think that the new UPSERT functionality is not essential to
+implementing Chrome features efficiently. An example where UPSERT is necessary
+for the success of a Chrome feature would likely get UPSERT enabled.
+
+#### Window functions
+
+[Window functions](https://sqlite.org/windowfunctions.html#biwinfunc) have been
+disabled primarily because they cause a significant binary size increase, which
+leads to a corresponding large increase in the attack surface exposed to WebSQL.
+
+Window functions increase the difficulty of reviewing and maintaining the Chrome
+features that use them, because window functions add complexity to the mental
+model of query performance.
+
+We currently think that this maintenance overhead of window functions exceeds
+any convenience and performance benefits (compared to simpler queries
+coordinated in C++).

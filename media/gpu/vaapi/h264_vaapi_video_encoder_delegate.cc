@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,16 @@
 #include <va/va.h>
 #include <va/va_enc_h264.h>
 
+#include <climits>
 #include <utility>
 
 #include "base/bits.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/numerics/checked_math.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
+#include "media/base/video_bitrate_allocation.h"
+#include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/vaapi_common.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
@@ -45,8 +48,7 @@ constexpr uint32_t kCPBWindowSizeMs = 1500;
 
 // Subjectively chosen.
 // Generally use up to 2 reference frames.
-constexpr size_t kMaxNumReferenceFrames = 2;
-constexpr size_t kMaxRefIdxL0Size = kMaxNumReferenceFrames;
+constexpr size_t kMaxRefIdxL0Size = 2;
 
 // HRD parameters (ch. E.2.2 in H264 spec).
 constexpr int kBitRateScale = 0;  // bit_rate_scale for SPS HRD parameters.
@@ -58,66 +60,48 @@ constexpr int kChromaFormatIDC = 1;
 constexpr uint8_t kMinSupportedH264TemporalLayers = 2;
 constexpr uint8_t kMaxSupportedH264TemporalLayers = 3;
 
-void FillVAEncRateControlParams(
-    uint32_t bps,
-    uint32_t window_size,
-    uint32_t initial_qp,
-    uint32_t min_qp,
-    uint32_t max_qp,
-    uint32_t framerate,
-    uint32_t buffer_size,
-    VAEncMiscParameterRateControl& rate_control_param,
-    VAEncMiscParameterFrameRate& framerate_param,
-    VAEncMiscParameterHRD& hrd_param) {
-  memset(&rate_control_param, 0, sizeof(rate_control_param));
+template <typename VAEncMiscParam>
+VAEncMiscParam& AllocateMiscParameterBuffer(
+    std::vector<uint8_t>& misc_buffer,
+    VAEncMiscParameterType misc_param_type) {
+  constexpr size_t buffer_size =
+      sizeof(VAEncMiscParameterBuffer) + sizeof(VAEncMiscParam);
+  misc_buffer.resize(buffer_size);
+  auto* va_buffer =
+      reinterpret_cast<VAEncMiscParameterBuffer*>(misc_buffer.data());
+  va_buffer->type = misc_param_type;
+  return *reinterpret_cast<VAEncMiscParam*>(va_buffer->data);
+}
+
+void CreateVAEncRateControlParams(uint32_t bps,
+                                  uint32_t target_percentage,
+                                  uint32_t window_size,
+                                  uint32_t initial_qp,
+                                  uint32_t min_qp,
+                                  uint32_t max_qp,
+                                  uint32_t framerate,
+                                  uint32_t buffer_size,
+                                  std::vector<uint8_t> misc_buffers[3]) {
+  auto& rate_control_param =
+      AllocateMiscParameterBuffer<VAEncMiscParameterRateControl>(
+          misc_buffers[0], VAEncMiscParameterTypeRateControl);
   rate_control_param.bits_per_second = bps;
+  rate_control_param.target_percentage = target_percentage;
   rate_control_param.window_size = window_size;
   rate_control_param.initial_qp = initial_qp;
   rate_control_param.min_qp = min_qp;
   rate_control_param.max_qp = max_qp;
   rate_control_param.rc_flags.bits.disable_frame_skip = true;
 
-  memset(&framerate_param, 0, sizeof(framerate_param));
+  auto& framerate_param =
+      AllocateMiscParameterBuffer<VAEncMiscParameterFrameRate>(
+          misc_buffers[1], VAEncMiscParameterTypeFrameRate);
   framerate_param.framerate = framerate;
 
-  memset(&hrd_param, 0, sizeof(hrd_param));
+  auto& hrd_param = AllocateMiscParameterBuffer<VAEncMiscParameterHRD>(
+      misc_buffers[2], VAEncMiscParameterTypeHRD);
   hrd_param.buffer_size = buffer_size;
   hrd_param.initial_buffer_fullness = buffer_size / 2;
-}
-
-// TODO(hiroh): Put this to media/gpu/gpu_video_encode_accelerator_helpers.h
-VideoBitrateAllocation GetDefaultVideoBitrateAllocation(
-    const VideoEncodeAccelerator::Config& config) {
-  VideoBitrateAllocation bitrate_allocation;
-  if (!config.HasTemporalLayer() && !config.HasSpatialLayer()) {
-    bitrate_allocation.SetBitrate(0, 0, config.bitrate.target());
-    return bitrate_allocation;
-  }
-
-  auto& spatial_layer = config.spatial_layers[0];
-  const size_t num_temporal_layers = spatial_layer.num_of_temporal_layers;
-  // TODO(hiroh): support one temporal layer when moving this function.
-  DCHECK_GE(num_temporal_layers, 2u);
-  constexpr double kTemporalLayersBitrateScaleFactors[][3] = {
-      {0.60, 0.40, 0.00},  // For two temporal layers.
-      {0.50, 0.20, 0.30},  // For three temporal layers.
-  };
-
-  const uint32_t bitrate_bps = spatial_layer.bitrate_bps;
-  for (size_t tid = 0; tid < num_temporal_layers; ++tid) {
-    const double factor =
-        kTemporalLayersBitrateScaleFactors[num_temporal_layers - 2][tid];
-    bitrate_allocation.SetBitrate(
-        0, tid, base::checked_cast<int>(bitrate_bps * factor));
-  }
-
-  return bitrate_allocation;
-}
-
-static scoped_refptr<base::RefCountedBytes> MakeRefCountedBytes(void* ptr,
-                                                                size_t size) {
-  return base::MakeRefCounted<base::RefCountedBytes>(
-      reinterpret_cast<uint8_t*>(ptr), size);
 }
 
 static void InitVAPictureH264(VAPictureH264* va_pic) {
@@ -209,7 +193,7 @@ H264VaapiVideoEncoderDelegate::EncodeParams::EncodeParams()
       initial_qp(kDefaultQP),
       min_qp(kMinQP),
       max_qp(kMaxQP),
-      max_num_ref_frames(kMaxNumReferenceFrames),
+      max_num_ref_frames(kMaxRefIdxL0Size),
       max_ref_pic_list0_size(kMaxRefIdxL0Size) {}
 
 H264VaapiVideoEncoderDelegate::H264VaapiVideoEncoderDelegate(
@@ -246,24 +230,6 @@ bool H264VaapiVideoEncoderDelegate::Initialize(
     DVLOGF(1) << "Spatial layer encoding is not supported";
     return false;
   }
-  if (config.HasTemporalLayer() && !supports_temporal_layer_for_testing_) {
-    bool support_temporal_layer = false;
-#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
-    VAImplementation implementation = VaapiWrapper::GetImplementationType();
-    // TODO(b/199487660): Enable H.264 temporal layer encoding on AMD once their
-    // drivers support them.
-    support_temporal_layer =
-        base::FeatureList::IsEnabled(kVaapiH264TemporalLayerHWEncoding) &&
-        (implementation == VAImplementation::kIntelI965 ||
-         implementation == VAImplementation::kIntelIHD);
-#endif
-    if (!support_temporal_layer) {
-      DVLOGF(1) << "Temporal layer encoding is not supported";
-      return false;
-    }
-  }
-
-  native_input_mode_ = ave_config.native_input_mode;
 
   visible_size_ = config.input_visible_size;
   // For 4:2:0, the pixel sizes have to be even.
@@ -271,7 +237,7 @@ bool H264VaapiVideoEncoderDelegate::Initialize(
     DVLOGF(1) << "The pixel sizes are not even: " << visible_size_.ToString();
     return false;
   }
-  constexpr size_t kH264MacroblockSizeInPixels = 16;
+  constexpr int kH264MacroblockSizeInPixels = 16;
   coded_size_ = gfx::Size(
       base::bits::AlignUp(visible_size_.width(), kH264MacroblockSizeInPixels),
       base::bits::AlignUp(visible_size_.height(), kH264MacroblockSizeInPixels));
@@ -286,15 +252,15 @@ bool H264VaapiVideoEncoderDelegate::Initialize(
   // Checks if |level_| is valid. If it is invalid, set |level_| to a minimum
   // level that comforts Table A-1 in H.264 spec with specified bitrate,
   // framerate and dimension.
-  if (!CheckH264LevelLimits(profile_, level_, config.bitrate.target(),
+  if (!CheckH264LevelLimits(profile_, level_, config.bitrate.target_bps(),
                             initial_framerate, mb_width_ * mb_height_)) {
     absl::optional<uint8_t> valid_level =
-        FindValidH264Level(profile_, config.bitrate.target(), initial_framerate,
-                           mb_width_ * mb_height_);
+        FindValidH264Level(profile_, config.bitrate.target_bps(),
+                           initial_framerate, mb_width_ * mb_height_);
     if (!valid_level) {
       VLOGF(1) << "Could not find a valid h264 level for"
                << " profile=" << profile_
-               << " bitrate=" << config.bitrate.target()
+               << " bitrate=" << config.bitrate.target_bps()
                << " framerate=" << initial_framerate
                << " size=" << config.input_visible_size.ToString();
       return false;
@@ -312,23 +278,13 @@ bool H264VaapiVideoEncoderDelegate::Initialize(
                 << base::strict_cast<size_t>(num_temporal_layers_);
       return false;
     }
-
-    // |ave_config.max_num_ref_frames| represents the maximum number of
-    // reference frames for both the reference picture list 0 (bottom 16 bits)
-    // and the reference picture list 1 (top 16 bits) in H264 encoding.
-    const size_t max_p_frame_slots = ave_config.max_num_ref_frames & 0xffff;
-    if (max_p_frame_slots < num_temporal_layers_ - 1) {
-      DVLOGF(1) << "P frame slots is too short: " << max_p_frame_slots;
-      return false;
-    }
   }
 
   curr_params_.max_ref_pic_list0_size =
       num_temporal_layers_ > 1u
           ? num_temporal_layers_ - 1
           : std::min(kMaxRefIdxL0Size, ave_config.max_num_ref_frames & 0xffff);
-  curr_params_.max_num_ref_frames =
-      std::min(kMaxNumReferenceFrames, curr_params_.max_ref_pic_list0_size);
+  curr_params_.max_num_ref_frames = curr_params_.max_ref_pic_list0_size;
 
   bool submit_packed_sps = false;
   bool submit_packed_pps = false;
@@ -354,7 +310,12 @@ bool H264VaapiVideoEncoderDelegate::Initialize(
   UpdateSPS();
   UpdatePPS();
 
-  return UpdateRates(GetDefaultVideoBitrateAllocation(config),
+  // If we don't set the stored BitrateAllocation to the right type, UpdateRates
+  // will mistakenly reject the bitrate when the requested type in the config is
+  // not the default (constant bitrate).
+  curr_params_.bitrate_allocation =
+      VideoBitrateAllocation(config.bitrate.mode());
+  return UpdateRates(AllocateBitrateForDefaultEncoding(config),
                      initial_framerate);
 }
 
@@ -444,7 +405,7 @@ bool H264VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
   if (pic->type == H264SliceHeader::kISlice && submit_packed_headers_) {
     // We always generate SPS and PPS with I(DR) frame. This will help for Seek
     // operation on the generated stream.
-    if (!SubmitPackedHeaders(packed_sps_, packed_pps_)) {
+    if (!SubmitPackedHeaders(*packed_sps_, *packed_pps_)) {
       DVLOGF(1) << "Failed submitting keyframe headers";
       return false;
     }
@@ -454,10 +415,8 @@ bool H264VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
   // below maximum size, dropping oldest references.
   if (pic->ref) {
     ref_pic_list0_.push_front(pic);
-    const size_t max_num_ref_frames =
-        base::checked_cast<size_t>(current_sps_.max_num_ref_frames);
-    while (ref_pic_list0_.size() > max_num_ref_frames)
-      ref_pic_list0_.pop_back();
+    ref_pic_list0_.resize(
+        std::min(curr_params_.max_ref_pic_list0_size, ref_pic_list0_.size()));
   }
 
   num_encoded_frames_++;
@@ -469,6 +428,15 @@ bool H264VaapiVideoEncoderDelegate::UpdateRates(
     const VideoBitrateAllocation& bitrate_allocation,
     uint32_t framerate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (bitrate_allocation.GetMode() !=
+      curr_params_.bitrate_allocation.GetMode()) {
+    DVLOGF(1) << "Unexpected bitrate mode, requested rate "
+              << bitrate_allocation.GetSumBitrate().ToString()
+              << ", expected mode to match "
+              << curr_params_.bitrate_allocation.GetSumBitrate().ToString();
+    return false;
+  }
 
   uint32_t bitrate = bitrate_allocation.GetSumBps();
   if (bitrate == 0 || framerate == 0)
@@ -588,6 +556,11 @@ void H264VaapiVideoEncoderDelegate::UpdateSPS() {
   current_sps_.cpb_cnt_minus1 = 0;
   current_sps_.bit_rate_scale = kBitRateScale;
   current_sps_.cpb_size_scale = kCPBSizeScale;
+  // This implicitly converts from an unsigned rhs integer to a signed integer
+  // lhs (|bit_rate_value_minus1|). This is safe because
+  // |H264SPS::kBitRateScaleConstantTerm| is 6, so the bitshift is equivalent to
+  // dividing by 2^6. Therefore the resulting value is guaranteed to be in the
+  // range of a signed 32-bit integer.
   current_sps_.bit_rate_value_minus1[0] =
       (curr_params_.bitrate_allocation.GetSumBps() >>
        (kBitRateScale + H264SPS::kBitRateScaleConstantTerm)) -
@@ -596,7 +569,14 @@ void H264VaapiVideoEncoderDelegate::UpdateSPS() {
       (curr_params_.cpb_size_bits >>
        (kCPBSizeScale + H264SPS::kCPBSizeScaleConstantTerm)) -
       1;
-  current_sps_.cbr_flag[0] = true;
+  switch (curr_params_.bitrate_allocation.GetMode()) {
+    case (Bitrate::Mode::kConstant):
+      current_sps_.cbr_flag[0] = true;
+      break;
+    case (Bitrate::Mode::kVariable):
+      current_sps_.cbr_flag[0] = false;
+      break;
+  }
   current_sps_.initial_cpb_removal_delay_length_minus_1 =
       H264SPS::kDefaultInitialCPBRemovalDelayLength - 1;
   current_sps_.cpb_removal_delay_length_minus1 =
@@ -715,7 +695,7 @@ void H264VaapiVideoEncoderDelegate::GeneratePackedSPS() {
       packed_sps_->AppendBits(4, current_sps_.bit_rate_scale);
       packed_sps_->AppendBits(4, current_sps_.cpb_size_scale);
       CHECK_LT(base::checked_cast<size_t>(current_sps_.cpb_cnt_minus1),
-               base::size(current_sps_.bit_rate_value_minus1));
+               std::size(current_sps_.bit_rate_value_minus1));
       for (int i = 0; i <= current_sps_.cpb_cnt_minus1; ++i) {
         packed_sps_->AppendUE(current_sps_.bit_rate_value_minus1[i]);
         packed_sps_->AppendUE(current_sps_.cpb_size_value_minus1[i]);
@@ -889,34 +869,6 @@ H264VaapiVideoEncoderDelegate::GeneratePackedSliceHeader(
   return packed_slice_header;
 }
 
-bool H264VaapiVideoEncoderDelegate::SubmitH264BitstreamBuffer(
-    const H264BitstreamBuffer& buffer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  return vaapi_wrapper_->SubmitBuffer(VAEncPackedHeaderDataBufferType,
-                                      buffer.BytesInBuffer(), buffer.data());
-}
-
-bool H264VaapiVideoEncoderDelegate::SubmitVAEncMiscParamBuffer(
-    VAEncMiscParameterType type,
-    const void* data,
-    size_t size) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(b/202337642): We don't have to allocate a misc parameter by having
-  // VAEncMiscParameterBuffer + the size and filling VA enc misc data directly
-  // into VAEncMiscParameterBuffer::data.
-  const size_t temp_size = sizeof(VAEncMiscParameterBuffer) + size;
-  std::vector<uint8_t> temp(temp_size);
-
-  auto* const va_buffer =
-      reinterpret_cast<VAEncMiscParameterBuffer*>(temp.data());
-  va_buffer->type = type;
-  memcpy(va_buffer->data, data, size);
-
-  return vaapi_wrapper_->SubmitBuffer(VAEncMiscParameterBufferType, temp_size,
-                                      temp.data());
-}
-
 bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
     EncodeJob& job,
     const H264VaapiVideoEncoderDelegate::EncodeParams& encode_params,
@@ -927,6 +879,27 @@ bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
     const absl::optional<size_t>& ref_frame_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  const Bitrate bitrate = encode_params.bitrate_allocation.GetSumBitrate();
+  uint32_t bitrate_bps = bitrate.target_bps();
+  uint32_t target_percentage = 100u;
+  if (bitrate.mode() == Bitrate::Mode::kVariable) {
+    // In VA-API, the sequence parameter's bits_per_second represents the
+    // maximum bitrate. Above, we use the target_bps for |bitrate_bps|; this is
+    // because 1) for constant bitrates, peak and target are equal, and 2)
+    // |Bitrate| class does not store a peak_bps for constant bitrates. Here,
+    // we use the peak, because it exists for variable bitrates.
+    bitrate_bps = bitrate.peak_bps();
+    DCHECK_NE(bitrate.peak_bps(), 0u);
+    base::CheckedNumeric<uint32_t> checked_percentage =
+        base::CheckDiv(base::CheckMul<uint32_t>(bitrate.target_bps(), 100u),
+                       bitrate.peak_bps());
+    if (!checked_percentage.AssignIfValid(&target_percentage)) {
+      DVLOGF(1)
+          << "Integer overflow while computing target percentage for bitrate.";
+      return false;
+    }
+    target_percentage = checked_percentage.ValueOrDefault(100u);
+  }
   VAEncSequenceParameterBufferH264 seq_param = {};
 
 #define SPS_TO_SP(a) seq_param.a = sps.a;
@@ -936,7 +909,7 @@ bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
   seq_param.intra_period = kIPeriod;
   seq_param.intra_idr_period = kIDRPeriod;
   seq_param.ip_period = kIPPeriod;
-  seq_param.bits_per_second = encode_params.bitrate_allocation.GetSumBps();
+  seq_param.bits_per_second = bitrate_bps;
 
   SPS_TO_SP(max_num_ref_frames);
   absl::optional<gfx::Size> coded_size = sps.GetCodedSize();
@@ -1043,86 +1016,68 @@ bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
       slice_param.RefPicList0[j++] = va_pic_h264;
   }
 
-  VAEncMiscParameterRateControl rate_control_param;
-  VAEncMiscParameterFrameRate framerate_param;
-  VAEncMiscParameterHRD hrd_param;
-  FillVAEncRateControlParams(
-      encode_params.bitrate_allocation.GetSumBps(),
-      encode_params.cpb_window_size_ms,
+  std::vector<uint8_t> misc_buffers[3];
+  CreateVAEncRateControlParams(
+      bitrate_bps, target_percentage, encode_params.cpb_window_size_ms,
       base::strict_cast<uint32_t>(pic_param.pic_init_qp),
       base::strict_cast<uint32_t>(encode_params.min_qp),
       base::strict_cast<uint32_t>(encode_params.max_qp),
       encode_params.framerate,
-      base::strict_cast<uint32_t>(encode_params.cpb_size_bits),
-      rate_control_param, framerate_param, hrd_param);
+      base::strict_cast<uint32_t>(encode_params.cpb_size_bits), misc_buffers);
 
-  if (!vaapi_wrapper_->SubmitBuffer(VAEncSequenceParameterBufferType,
-                                    &seq_param) ||
-      !vaapi_wrapper_->SubmitBuffer(VAEncPictureParameterBufferType,
-                                    &pic_param) ||
-      !vaapi_wrapper_->SubmitBuffer(VAEncSliceParameterBufferType,
-                                    &slice_param) ||
-      !SubmitVAEncMiscParamBuffer(VAEncMiscParameterTypeRateControl,
-                                  &rate_control_param,
-                                  sizeof(rate_control_param)) ||
-      !SubmitVAEncMiscParamBuffer(VAEncMiscParameterTypeFrameRate,
-                                  &framerate_param, sizeof(framerate_param)) ||
-      !SubmitVAEncMiscParamBuffer(VAEncMiscParameterTypeHRD, &hrd_param,
-                                  sizeof(hrd_param))) {
-    return false;
-  }
+  std::vector<VaapiWrapper::VABufferDescriptor> va_buffers = {
+      {VAEncSequenceParameterBufferType, sizeof(seq_param), &seq_param},
+      {VAEncPictureParameterBufferType, sizeof(pic_param), &pic_param},
+      {VAEncSliceParameterBufferType, sizeof(slice_param), &slice_param},
+      {VAEncMiscParameterBufferType, misc_buffers[0].size(),
+       misc_buffers[0].data()},
+      {VAEncMiscParameterBufferType, misc_buffers[1].size(),
+       misc_buffers[1].data()},
+      {VAEncMiscParameterBufferType, misc_buffers[2].size(),
+       misc_buffers[2].data()}};
 
-  if (!submit_packed_headers_)
-    return true;
-
-  scoped_refptr<H264BitstreamBuffer> packed_slice_header =
-      GeneratePackedSliceHeader(pic_param, slice_param, *pic);
+  scoped_refptr<H264BitstreamBuffer> packed_slice_header;
   VAEncPackedHeaderParameterBuffer packed_slice_param_buffer;
-  packed_slice_param_buffer.type = VAEncPackedHeaderSlice;
-  packed_slice_param_buffer.bit_length = packed_slice_header->BitsInBuffer();
-  packed_slice_param_buffer.has_emulation_bytes = 0;
-
-  // Submit packed slice header.
-  if (!vaapi_wrapper_->SubmitBuffer(VAEncPackedHeaderParameterBufferType,
-                                    &packed_slice_param_buffer)) {
-    return false;
+  if (submit_packed_headers_) {
+    packed_slice_header =
+        GeneratePackedSliceHeader(pic_param, slice_param, *pic);
+    packed_slice_param_buffer.type = VAEncPackedHeaderSlice;
+    packed_slice_param_buffer.bit_length = packed_slice_header->BitsInBuffer();
+    packed_slice_param_buffer.has_emulation_bytes = 0;
+    va_buffers.push_back({VAEncPackedHeaderParameterBufferType,
+                          sizeof(packed_slice_param_buffer),
+                          &packed_slice_param_buffer});
+    va_buffers.push_back({VAEncPackedHeaderDataBufferType,
+                          packed_slice_header->BytesInBuffer(),
+                          packed_slice_header->data()});
   }
 
-  return SubmitH264BitstreamBuffer(*packed_slice_header);
+  return vaapi_wrapper_->SubmitBuffers(va_buffers);
 }
 
 bool H264VaapiVideoEncoderDelegate::SubmitPackedHeaders(
-    scoped_refptr<H264BitstreamBuffer> packed_sps,
-    scoped_refptr<H264BitstreamBuffer> packed_pps) {
+    const H264BitstreamBuffer& packed_sps,
+    const H264BitstreamBuffer& packed_pps) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(submit_packed_headers_);
-  DCHECK(packed_sps);
-  DCHECK(packed_pps);
 
   // Submit SPS.
-  VAEncPackedHeaderParameterBuffer par_buffer = {};
-  par_buffer.type = VAEncPackedHeaderSequence;
-  par_buffer.bit_length = packed_sps->BytesInBuffer() * 8;
+  VAEncPackedHeaderParameterBuffer packed_sps_param = {};
+  packed_sps_param.type = VAEncPackedHeaderSequence;
+  packed_sps_param.bit_length = packed_sps.BytesInBuffer() * CHAR_BIT;
+  VAEncPackedHeaderParameterBuffer packed_pps_param = {};
+  packed_pps_param.type = VAEncPackedHeaderPicture;
+  packed_pps_param.bit_length = packed_pps.BytesInBuffer() * CHAR_BIT;
 
-  if (!vaapi_wrapper_->SubmitBuffer(VAEncPackedHeaderParameterBufferType,
-                                    &par_buffer)) {
-    return false;
-  }
-
-  if (!SubmitH264BitstreamBuffer(*packed_sps))
-    return false;
-
-  // Submit PPS.
-  par_buffer = {};
-  par_buffer.type = VAEncPackedHeaderPicture;
-  par_buffer.bit_length = packed_pps->BytesInBuffer() * 8;
-
-  if (!vaapi_wrapper_->SubmitBuffer(VAEncPackedHeaderParameterBufferType,
-                                    &par_buffer)) {
-    return false;
-  }
-
-  return SubmitH264BitstreamBuffer(*packed_pps);
+  return vaapi_wrapper_->SubmitBuffers(
+      {{VAEncPackedHeaderParameterBufferType, sizeof(packed_sps_param),
+        &packed_sps_param},
+       {VAEncPackedHeaderDataBufferType, packed_sps.BytesInBuffer(),
+        packed_sps.data()},
+       {VAEncPackedHeaderParameterBufferType, sizeof(packed_pps_param),
+        &packed_pps_param},
+       {VAEncPackedHeaderDataBufferType, packed_pps.BytesInBuffer(),
+        packed_pps.data()}});
 }
 
 }  // namespace media

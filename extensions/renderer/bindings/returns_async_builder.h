@@ -1,11 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef EXTENSIONS_RENDERER_BINDINGS_RETURNS_ASYNC_BUILDER_H_
 #define EXTENSIONS_RENDERER_BINDINGS_RETURNS_ASYNC_BUILDER_H_
 
-#include "base/macros.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/api_signature.h"
 #include "extensions/renderer/bindings/argument_spec.h"

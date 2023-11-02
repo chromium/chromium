@@ -1,8 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/content_settings/core/common/pref_names.h"
+
+#include "build/build_config.h"
 
 namespace prefs {
 
@@ -23,6 +25,8 @@ const char kContentSettingsWindowLastTabIndex[] =
 // content settings.
 const char kManagedDefaultAdsSetting[] =
     "profile.managed_default_content_settings.ads";
+const char kManagedDefaultClipboardSetting[] =
+    "profile.managed_default_content_settings.clipboard";
 const char kManagedDefaultCookiesSetting[] =
     "profile.managed_default_content_settings.cookies";
 const char kManagedDefaultGeolocationSetting[] =
@@ -45,8 +49,6 @@ const char kManagedDefaultWebBluetoothGuardSetting[] =
     "profile.managed_default_content_settings.web_bluetooth_guard";
 const char kManagedDefaultWebUsbGuardSetting[] =
     "profile.managed_default_content_settings.web_usb_guard";
-const char kManagedDefaultFileHandlingGuardSetting[] =
-    "profile.managed_default_content_settings.file_handling_guard";
 const char kManagedDefaultFileSystemReadGuardSetting[] =
     "profile.managed_default_content_settings.file_system_read_guard";
 const char kManagedDefaultFileSystemWriteGuardSetting[] =
@@ -57,9 +59,19 @@ const char kManagedDefaultInsecurePrivateNetworkSetting[] =
     "profile.managed_default_content_settings.insecure_private_network";
 const char kManagedDefaultJavaScriptJitSetting[] =
     "profile.managed_default_content_settings.javascript_jit";
+const char kManagedDefaultWebHidGuardSetting[] =
+    "profile.managed_default_content_settings.web_hid_guard";
+const char kManagedDefaultWindowPlacementSetting[] =
+    "profile.managed_default_content_settings.window_placement";
+const char kManagedDefaultLocalFontsSetting[] =
+    "profile.managed_default_content_settings.local_fonts";
 
 // Preferences that are exclusively used to store managed
 // content settings patterns.
+const char kManagedClipboardAllowedForUrls[] =
+    "profile.managed_clipboard_allowed_for_urls";
+const char kManagedClipboardBlockedForUrls[] =
+    "profile.managed_clipboard_blocked_for_urls";
 const char kManagedAutoSelectCertificateForUrls[] =
     "profile.managed_auto_select_certificate_for_urls";
 const char kManagedCookiesAllowedForUrls[] =
@@ -68,6 +80,8 @@ const char kManagedCookiesBlockedForUrls[] =
     "profile.managed_cookies_blocked_for_urls";
 const char kManagedCookiesSessionOnlyForUrls[] =
     "profile.managed_cookies_sessiononly_for_urls";
+const char kManagedGetDisplayMediaSetSelectAllScreensAllowedForUrls[] =
+    "profile.managed_get_display_media_set_select_all_screens_allowed_for_urls";
 const char kManagedImagesAllowedForUrls[] =
     "profile.managed_images_allowed_for_urls";
 const char kManagedImagesBlockedForUrls[] =
@@ -120,6 +134,17 @@ const char kManagedJavaScriptJitAllowedForSites[] =
     "profile.managed_javascript_jit_allowed_for_sites";
 const char kManagedJavaScriptJitBlockedForSites[] =
     "profile.managed_javascript_jit_blocked_for_sites";
+const char kManagedWebHidAskForUrls[] = "profile.managed_web_hid_ask_for_urls";
+const char kManagedWebHidBlockedForUrls[] =
+    "profile.managed_web_hid_blocked_for_urls";
+const char kManagedWindowPlacementAllowedForUrls[] =
+    "profile.managed_window_placement_allowed_for_urls";
+const char kManagedWindowPlacementBlockedForUrls[] =
+    "profile.managed_window_placement_blocked_for_urls";
+const char kManagedLocalFontsAllowedForUrls[] =
+    "profile.managed_local_fonts_allowed_for_urls";
+const char kManagedLocalFontsBlockedForUrls[] =
+    "profile.managed_local_fonts_blocked_for_urls";
 
 // Boolean indicating whether the quiet UI is enabled for notification
 // permission requests.
@@ -139,9 +164,16 @@ const char kQuietNotificationPermissionUiEnablingMethod[] =
 const char kQuietNotificationPermissionUiDisabledTime[] =
     "profile.content_settings.disable_quiet_permission_ui_time.notifications";
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Enable vibration for web notifications.
 const char kNotificationsVibrateEnabled[] = "notifications.vibrate_enabled";
+// Peripheral setting for request desktop site. When enabled, we will always
+// request desktop site if a keyboard, trackpad, or mouse is attached.
+const char kDesktopSitePeripheralSettingEnabled[] =
+    "desktop_site.peripheral_setting";
+// Display setting for request desktop site. When enabled, we will always
+// request desktop site if a monitor is connected.
+const char kDesktopSiteDisplaySettingEnabled[] = "desktop_site.display_setting";
 #endif
 
 }  // namespace prefs

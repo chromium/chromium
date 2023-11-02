@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,7 @@
 #include "third_party/webrtc/api/peer_connection_interface.h"
 #include "third_party/webrtc/rtc_base/ref_count.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 const char kAudioStreamLabel[] = "audio_stream";
 const char kAudioTrackLabel[] = "system_audio";
@@ -57,5 +56,4 @@ void WebrtcAudioStream::Pause(bool pause) {
   source_adapter_->Pause(pause);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

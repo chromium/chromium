@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -91,7 +91,7 @@ class ValueStore {
   // The result of a read operation (Get).
   class ReadResult {
    public:
-    ReadResult(std::unique_ptr<base::DictionaryValue> settings, Status status);
+    ReadResult(base::Value::Dict settings, Status status);
     explicit ReadResult(Status status);
     ReadResult(ReadResult&& other);
     ~ReadResult();
@@ -104,16 +104,14 @@ class ValueStore {
     // be in |settings|.|foo|.
     //
     // Must only be called if there is no error.
-    base::DictionaryValue& settings() { return *settings_; }
-    std::unique_ptr<base::DictionaryValue> PassSettings() {
-      return std::move(settings_);
-    }
+    base::Value::Dict& settings() { return settings_; }
+    base::Value::Dict PassSettings() { return std::move(settings_); }
     Status PassStatus() { return std::move(status_); }
 
     const Status& status() const { return status_; }
 
    private:
-    std::unique_ptr<base::DictionaryValue> settings_;
+    base::Value::Dict settings_;
     Status status_;
   };
 
@@ -185,7 +183,7 @@ class ValueStore {
 
   // Sets multiple keys to new values.
   virtual WriteResult Set(WriteOptions options,
-                          const base::DictionaryValue& values) = 0;
+                          const base::Value::Dict& values) = 0;
 
   // Removes a key from the storage.
   virtual WriteResult Remove(const std::string& key) = 0;

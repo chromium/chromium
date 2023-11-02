@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,12 @@
 #include <cmath>
 #include <utility>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/power/ml/recent_events_counter.h"
@@ -24,7 +24,6 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "components/arc/arc_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/ukm/app_source_url_recorder.h"
 #include "extensions/common/extension.h"
@@ -37,8 +36,9 @@ namespace app_list {
 const int kEmptyTotal = -1;
 const int kTopRank = 1;
 
-const base::Feature kUkmAppLaunchEventLogging{"UkmAppLaunchEventLogging",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kUkmAppLaunchEventLogging,
+             "UkmAppLaunchEventLogging",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Keys for Arc app specific preferences. Defined in
 // chrome/browser/ui/app_list/arc/arc_app_list_prefs.cc.
@@ -189,13 +189,13 @@ void AppLaunchEventLogger::EnforceLoggingPolicy() {
   // Store all Arc apps.
   // arc_apps_ and arc_packages_ can be nullptr in tests.
   if (arc_apps_ && arc_packages_) {
-    for (const auto app : arc_apps_->DictItems()) {
+    for (const auto app : *arc_apps_) {
       const base::Value* package_name_value = app.second.FindKey(kPackageName);
       if (!package_name_value) {
         continue;
       }
       const base::Value* package =
-          arc_packages_->FindKey(package_name_value->GetString());
+          arc_packages_->Find(package_name_value->GetString());
       if (!package) {
         continue;
       }
@@ -223,8 +223,8 @@ void AppLaunchEventLogger::SetRegistryAndArcInfo() {
 
   PrefService* pref_service = profile->GetPrefs();
   if (pref_service) {
-    arc_apps_ = pref_service->GetDictionary(arc::prefs::kArcApps);
-    arc_packages_ = pref_service->GetDictionary(arc::prefs::kArcPackages);
+    arc_apps_ = &pref_service->GetDict(arc::prefs::kArcApps);
+    arc_packages_ = &pref_service->GetDict(arc::prefs::kArcPackages);
   }
 }
 
@@ -445,22 +445,23 @@ void AppLaunchEventLogger::LogClicksEachHour(
 }
 
 void AppLaunchEventLogger::Log(AppLaunchEvent app_launch_event) {
-  auto app = app_features_map_.find(app_launch_event.app_id());
-  if (app == app_features_map_.end()) {
+  auto app_iter = app_features_map_.find(app_launch_event.app_id());
+  if (app_iter == app_features_map_.end()) {
     RecordAppTypeClicked(AppLaunchEvent_AppType_OTHER);
     return;
   }
-  RecordAppTypeClicked(app->second.app_type());
+  const AppLaunchFeatures& features = app_iter->second;
+  RecordAppTypeClicked(features.app_type());
   ukm::SourceId launch_source_id =
-      GetSourceId(app->second.app_type(), app_launch_event.app_id(),
-                  app->second.arc_package_name(), app->second.pwa_url());
+      GetSourceId(features.app_type(), app_launch_event.app_id(),
+                  features.arc_package_name(), features.pwa_url());
 
   base::Time now(base::Time::Now());
   const base::TimeDelta duration = now - start_time_;
   all_clicks_last_hour_->Log(duration);
   all_clicks_last_24_hours_->Log(duration);
 
-  if (app->second.is_policy_compliant() &&
+  if (features.is_policy_compliant() &&
       launch_source_id != ukm::kInvalidSourceId) {
     ukm::builders::AppListAppLaunch app_launch(launch_source_id);
     if (app_launch_event.launched_from() ==
@@ -469,7 +470,7 @@ void AppLaunchEventLogger::Log(AppLaunchEvent app_launch_event) {
             AppLaunchEvent_LaunchedFrom_SEARCH_BOX) {
       app_launch.SetPositionIndex(app_launch_event.index());
     }
-    app_launch.SetAppType(app->second.app_type())
+    app_launch.SetAppType(features.app_type())
         .SetLaunchedFrom(app_launch_event.launched_from())
         .SetDayOfWeek(DayOfWeek(now))
         .SetHourOfDay(HourOfDay(now))

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -48,7 +49,7 @@ class ColorPickerHighlightPathGenerator : public views::HighlightPathGenerator {
   SkPath GetHighlightPath(const views::View* view) override {
     // Our highlight path should be slightly larger than the circle we paint.
     gfx::RectF bounds(view->GetContentsBounds());
-    bounds.Inset(gfx::Insets(-2.0f));
+    bounds.Inset(-2.0f);
     const gfx::PointF center = bounds.CenterPoint();
     return SkPath().addCircle(center.x(), center.y(), bounds.width() / 2.0f);
   }
@@ -149,7 +150,7 @@ class ColorPickerElementView : public views::Button {
     DCHECK_EQ(bounds.width(), bounds.height());
 
     const SkColor color =
-        GetThemeProvider()->GetColor(GetTabGroupDialogColorId(color_id_));
+        GetColorProvider()->GetColor(GetTabGroupDialogColorId(color_id_));
 
     cc::PaintFlags flags;
     flags.setStyle(cc::PaintFlags::kFill_Style);
@@ -195,7 +196,7 @@ class ColorPickerElementView : public views::Button {
 
   const base::RepeatingCallback<void(ColorPickerElementView*)>
       selected_callback_;
-  const views::BubbleDialogDelegateView* bubble_view_;
+  raw_ptr<const views::BubbleDialogDelegateView> bubble_view_;
   const tab_groups::TabGroupColorId color_id_;
   const std::u16string color_name_;
   bool selected_ = false;
@@ -230,8 +231,9 @@ ColorPickerView::ColorPickerView(
   // picker element, since that is the amount by which the color picker's
   // margins should be adjusted to make it visually align with other controls.
   gfx::Insets child_insets = elements_[0]->GetInsets();
-  SetProperty(views::kInternalPaddingKey,
-              gfx::Insets(0, child_insets.left(), 0, child_insets.right()));
+  SetProperty(
+      views::kInternalPaddingKey,
+      gfx::Insets::TLBR(0, child_insets.left(), 0, child_insets.right()));
 
   // Our children should take keyboard focus, not us.
   SetFocusBehavior(views::View::FocusBehavior::NEVER);

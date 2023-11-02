@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_item_rename_handler.h"
-#include "components/download/public/common/download_schedule.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/download/public/common/quarantine_connection.h"
 #include "content/common/content_export.h"
@@ -56,6 +55,9 @@ using SavePackagePathPickedCallback =
 //     |intermediate_path| could be the same as |target_path|. Both paths must
 //     be in the same directory.
 //
+// |display_name| specifies the suggested file name in case the file name cannot
+//     be determined from target_path. Could be empty.
+//
 // |interrupt_reason| should be set to DOWNLOAD_INTERRUPT_REASON_NONE in
 //     order to proceed with the download. DOWNLOAD_INTERRUPT_REASON_USER_CANCEL
 //     results in the download being marked cancelled. Any other value results
@@ -67,7 +69,8 @@ using DownloadTargetCallback = base::OnceCallback<void(
     download::DownloadDangerType danger_type,
     download::DownloadItem::MixedContentStatus mixed_content_status,
     const base::FilePath& intermediate_path,
-    absl::optional<download::DownloadSchedule> download_schedule,
+    const base::FilePath& display_name,
+    const std::string& mime_type,
     download::DownloadInterruptReason interrupt_reason)>;
 
 // Called when a download delayed by the delegate has completed.
@@ -176,7 +179,10 @@ class CONTENT_EXPORT DownloadManagerDelegate {
   // |filename| contains a basename with an extension, but without a path. This
   // should be the case on return as well. I.e. |filename| cannot specify a
   // relative path.
-  virtual void SanitizeSavePackageResourceName(base::FilePath* filename) {}
+  // |source_url| contains the URL from which the download originates and is
+  // needed to determine the file's danger level.
+  virtual void SanitizeSavePackageResourceName(base::FilePath* filename,
+                                               const GURL& source_url) {}
 
   // Sanitize a download parameters
   //

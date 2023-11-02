@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,9 +22,7 @@
 #include "services/network/cors/cors_util.h"
 #include "services/network/public/cpp/cors/cors.h"
 
-namespace network {
-
-namespace cors {
+namespace network::cors {
 
 namespace {
 
@@ -78,8 +76,8 @@ base::TimeDelta ParseAccessControlMaxAge(
   return base::Seconds(seconds);
 }
 
-// Parses |string| as a Access-Control-Allow-* header value, storing the result
-// in |set|. This function returns false when |string| does not satisfy the
+// Parses `string` as a Access-Control-Allow-* header value, storing the result
+// in `set`. This function returns false when `string` does not satisfy the
 // syntax here: https://fetch.spec.whatwg.org/#http-new-header-syntax.
 bool ParseAccessControlAllowList(const absl::optional<std::string>& string,
                                  base::flat_set<std::string>* set,
@@ -100,6 +98,12 @@ bool ParseAccessControlAllowList(const absl::optional<std::string>& string,
                                      : std::string(value));
   }
   return true;
+}
+
+// Joins the strings in the given `set ` with commas.
+std::string JoinSet(const base::flat_set<std::string>& set) {
+  std::vector<base::StringPiece> values(set.begin(), set.end());
+  return base::JoinString(values, ",");
 }
 
 }  // namespace
@@ -148,7 +152,7 @@ absl::optional<CorsErrorStatus> PreflightResult::EnsureAllowedCrossOriginMethod(
 
   // This should be consistent with `NetworkServiceCorsPreflightMethodAllowed`
   // in `tools/metrics/histograms/enums.xml`.
-  enum CorsPreflightMethodAllowed {
+  enum CorsPreflightMethodAllowed : uint8_t {
     kBothDisallowed = 0,
     kNormalizedMethodAllowed = 1,
     kMethodAllowed = 2,
@@ -270,17 +274,11 @@ bool PreflightResult::HasAuthorizationCoveredByWildcard(
          !headers_.contains(kAuthorization);
 }
 
-base::Value PreflightResult::NetLogParams() {
+base::Value PreflightResult::NetLogParams() const {
   base::Value dict(base::Value::Type::DICTIONARY);
-  std::vector<std::string> methods(methods_.begin(), methods_.end());
-  std::vector<std::string> headers(headers_.begin(), headers_.end());
-  dict.SetStringKey("access-control-allow-methods",
-                    base::JoinString(methods, ","));
-  dict.SetStringKey("access-control-allow-headers",
-                    base::JoinString(headers, ","));
+  dict.SetStringKey("access-control-allow-methods", JoinSet(methods_));
+  dict.SetStringKey("access-control-allow-headers", JoinSet(headers_));
   return dict;
 }
 
-}  // namespace cors
-
-}  // namespace network
+}  // namespace network::cors

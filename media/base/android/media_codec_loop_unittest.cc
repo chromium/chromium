@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -90,8 +90,9 @@ class MediaCodecLoopTest : public testing::Test {
     mock_task_runner_->FastForwardBy(base::Seconds(30));
   }
 
-  void ConstructCodecLoop(int sdk_int = base::android::SDK_VERSION_LOLLIPOP) {
-    std::unique_ptr<MediaCodecBridge> codec(new MockMediaCodecBridge());
+  void ConstructCodecLoop() {
+    int sdk_int = base::android::SDK_VERSION_NOUGAT;
+    auto codec = std::make_unique<MockMediaCodecBridge>();
     // Since we're providing a codec, we do not expect an error.
     EXPECT_CALL(*client_, OnCodecLoopError()).Times(0);
     codec_loop_ = std::make_unique<MediaCodecLoop>(
@@ -198,7 +199,7 @@ class MediaCodecLoopTest : public testing::Test {
 TEST_F(MediaCodecLoopTest, TestConstructionWithNullCodec) {
   std::unique_ptr<MediaCodecBridge> codec;
   EXPECT_CALL(*client_, OnCodecLoopError()).Times(1);
-  const int sdk_int = base::android::SDK_VERSION_LOLLIPOP;
+  const int sdk_int = base::android::SDK_VERSION_NOUGAT;
   codec_loop_ = std::make_unique<MediaCodecLoop>(
       sdk_int, client_.get(), std::move(codec),
       scoped_refptr<base::SingleThreadTaskRunner>());

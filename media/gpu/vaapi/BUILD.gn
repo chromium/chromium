@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -26,7 +26,10 @@ generate_stubs("libva_stubs") {
   sigs += [ "va_drm.sigs" ]
 
   output_name = "va_stubs"
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//media/gpu:buildflags",
+  ]
 }
 
 source_set("vaapi") {
@@ -55,7 +58,6 @@ source_set("vaapi") {
     "vaapi_picture.h",
     "vaapi_picture_factory.cc",
     "vaapi_picture_factory.h",
-    "vaapi_status.h",
     "vaapi_video_decode_accelerator.cc",
     "vaapi_video_decode_accelerator.h",
     "vaapi_video_decoder.cc",
@@ -72,16 +74,12 @@ source_set("vaapi") {
     "vp8_vaapi_video_decoder_delegate.h",
     "vp8_vaapi_video_encoder_delegate.cc",
     "vp8_vaapi_video_encoder_delegate.h",
-    "vp9_svc_layers.cc",
-    "vp9_svc_layers.h",
     "vp9_vaapi_video_decoder_delegate.cc",
     "vp9_vaapi_video_decoder_delegate.h",
     "vp9_vaapi_video_encoder_delegate.cc",
     "vp9_vaapi_video_encoder_delegate.h",
-    "vpx_rate_control.cc",
-    "vpx_rate_control.h",
   ]
-  if (enable_platform_hevc_decoding) {
+  if (enable_hevc_parser_and_hw_decoder) {
     sources += [
       "h265_vaapi_video_decoder_delegate.cc",
       "h265_vaapi_video_decoder_delegate.h",
@@ -95,6 +93,7 @@ source_set("vaapi") {
 
   deps = [
     ":common",
+    ":vaapi_status",
     "//base",
     "//build:chromeos_buildflags",
     "//gpu/config",
@@ -150,7 +149,10 @@ source_set("vaapi") {
   }
 
   if (use_ozone) {
-    deps += [ "//ui/ozone" ]
+    deps += [
+      "//media/gpu:buffer_validation",
+      "//ui/ozone",
+    ]
     sources += [
       "vaapi_picture_native_pixmap_ozone.cc",
       "vaapi_picture_native_pixmap_ozone.h",
@@ -163,6 +165,19 @@ source_set("vaapi") {
       "vaapi_picture_native_pixmap_egl.h",
     ]
   }
+}
+
+# The vaapi status functionality is in its own source set so that it can be
+# depended on without pulling the //media/gpu/vaapi:vaapi target.
+source_set("vaapi_status") {
+  sources = [ "vaapi_status.h" ]
+
+  visibility = [
+    ":vaapi",
+    "//media/mojo/mojom/stable:*",
+  ]
+
+  deps = [ "//media" ]
 }
 
 source_set("common") {
@@ -192,6 +207,7 @@ source_set("common") {
     "//third_party/libyuv",
     "//ui/base:features",
     "//ui/gfx:memory_buffer",
+    "//ui/gfx/linux:drm",
     "//ui/gl",
   ]
   if (use_ozone) {
@@ -228,7 +244,6 @@ source_set("unit_test") {
     "vaapi_video_decode_accelerator_unittest.cc",
     "vaapi_video_encode_accelerator_unittest.cc",
     "vaapi_wrapper_unittest.cc",
-    "vp9_svc_layers_unittest.cc",
     "vp9_vaapi_video_encoder_delegate_unittest.cc",
   ]
   configs += [ "//third_party/libvpx:libvpx_config" ]
@@ -340,6 +355,10 @@ test("vaapi_unittest") {
       ":webp_decoder_unit_test",
     ]
   }
+
+  if (use_ozone && is_linux) {
+    deps += [ "//ui/ozone" ]
+  }
 }
 
 group("vaapi_fuzzers") {
@@ -354,6 +373,12 @@ executable("decode_test") {
     "test/av1_decoder.cc",
     "test/av1_decoder.h",
     "test/decode.cc",
+    "test/h264_decoder.cc",
+    "test/h264_decoder.h",
+    "test/h264_dpb.cc",
+    "test/h264_dpb.h",
+    "test/h264_vaapi_wrapper.cc",
+    "test/h264_vaapi_wrapper.h",
     "test/macros.h",
     "test/scoped_va_config.cc",
     "test/scoped_va_config.h",
@@ -370,6 +395,18 @@ executable("decode_test") {
     "test/vp9_decoder.cc",
     "test/vp9_decoder.h",
   ]
+
+  if (enable_platform_hevc) {
+    sources += [
+      "test/h265_decoder.cc",
+      "test/h265_decoder.h",
+      "test/h265_dpb.cc",
+      "test/h265_dpb.h",
+      "test/h265_vaapi_wrapper.cc",
+      "test/h265_vaapi_wrapper.h",
+    ]
+  }
+
   deps = [
     ":libva_stubs",
     "//base",

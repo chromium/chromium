@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/google/core/common/google_util.h"
@@ -25,6 +26,7 @@
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/util.h"
+#include "components/search_provider_logos/switches.h"
 #include "net/base/url_util.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
@@ -98,14 +100,37 @@ jboolean TemplateUrlServiceAndroid::IsSearchByImageAvailable(
              template_url_service_->search_terms_data());
 }
 
-jboolean TemplateUrlServiceAndroid::IsDefaultSearchEngineGoogle(
+jboolean TemplateUrlServiceAndroid::DoesDefaultSearchEngineHaveLogo(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
+  // |kSearchProviderLogoURL| applies to all search engines (Google or
+  // third-party).
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          search_provider_logos::switches::kSearchProviderLogoURL)) {
+    return true;
+  }
+
+  // Google always has a logo.
+  if (IsDefaultSearchEngineGoogle(env, obj))
+    return true;
+
+  // Third-party search engines can have a doodle specified via the command
+  // line, or a static logo or doodle from the TemplateURLService.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          search_provider_logos::switches::kThirdPartyDoodleURL)) {
+    return true;
+  }
   const TemplateURL* default_search_provider =
       template_url_service_->GetDefaultSearchProvider();
   return default_search_provider &&
-         default_search_provider->url_ref().HasGoogleBaseURLs(
-             template_url_service_->search_terms_data());
+         (default_search_provider->doodle_url().is_valid() ||
+          default_search_provider->logo_url().is_valid());
+}
+
+jboolean TemplateUrlServiceAndroid::IsDefaultSearchEngineGoogle(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  return IsDefaultSearchEngineGoogle();
 }
 
 jboolean
@@ -116,6 +141,14 @@ TemplateUrlServiceAndroid::IsSearchResultsPageFromDefaultSearchProvider(
   std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, jurl);
   return template_url_service_->IsSearchResultsPageFromDefaultSearchProvider(
       *url);
+}
+
+bool TemplateUrlServiceAndroid::IsDefaultSearchEngineGoogle() {
+  const TemplateURL* default_search_provider =
+      template_url_service_->GetDefaultSearchProvider();
+  return default_search_provider &&
+         default_search_provider->url_ref().HasGoogleBaseURLs(
+             template_url_service_->search_terms_data());
 }
 
 void TemplateUrlServiceAndroid::OnTemplateURLServiceLoaded() {
@@ -198,7 +231,7 @@ TemplateUrlServiceAndroid::GetUrlForVoiceSearchQuery(
 
   if (!query.empty()) {
     GURL gurl(GetDefaultSearchURLForSearchTerms(template_url_service_, query));
-    if (google_util::IsGoogleSearchUrl(gurl))
+    if (IsDefaultSearchEngineGoogle())
       gurl = net::AppendQueryParameter(gurl, "inm", "vs");
     return url::GURLAndroid::FromNativeGURL(env, gurl);
   }
@@ -218,7 +251,7 @@ TemplateUrlServiceAndroid::GetUrlForContextualSearchQuery(
 
   if (!query.empty()) {
     GURL gurl(GetDefaultSearchURLForSearchTerms(template_url_service_, query));
-    if (google_util::IsGoogleSearchUrl(gurl)) {
+    if (IsDefaultSearchEngineGoogle()) {
       std::string protocol_version(
           base::android::ConvertJavaStringToUTF8(env, jprotocol_version));
       gurl = net::AppendQueryParameter(gurl, "ctxs", protocol_version);
@@ -286,9 +319,8 @@ jboolean TemplateUrlServiceAndroid::SetPlayAPISearchEngine(
   // Check if there is already a search engine created from Play API.
   TemplateURLService::TemplateURLVector template_urls =
       template_url_service_->GetTemplateURLs();
-  auto existing_play_api_turl = std::find_if(
-      template_urls.cbegin(), template_urls.cend(),
-      [](const TemplateURL* turl) { return turl->created_from_play_api(); });
+  auto existing_play_api_turl =
+      base::ranges::find_if(template_urls, &TemplateURL::created_from_play_api);
   if (existing_play_api_turl != template_urls.cend()) {
     // Migrate old Play API database entries that were incorrectly marked as
     // safe_for_autoreplace() before M89.
@@ -365,10 +397,7 @@ void TemplateUrlServiceAndroid::GetTemplateUrls(
   // Clean up duplication between a Play API template URL and a corresponding
   // prepopulated template URL.
   auto play_api_it =
-      std::find_if(template_urls.begin(), template_urls.end(),
-                   [](TemplateURL* template_url) {
-                     return template_url->created_from_play_api();
-                   });
+      base::ranges::find_if(template_urls, &TemplateURL::created_from_play_api);
   TemplateURL* play_api_turl =
       play_api_it != template_urls.end() ? *play_api_it : nullptr;
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,7 @@ enum SceneActivationLevel : NSUInteger;
 // Notifies when UIEnabled has been set to false. Is only fired once during the
 // scene's life period when the scene UI is tearing down.
 - (void)sceneStateDidDisableUI:(SceneState*)sceneState;
-// Notifies when URLContexts have been added to |URLContextsToOpen|.
+// Notifies when URLContexts have been added to `URLContextsToOpen`.
 - (void)sceneState:(SceneState*)sceneState
     hasPendingURLs:(NSSet<UIOpenURLContext*>*)URLContexts;
 // Notifies that a new activity request has been received.

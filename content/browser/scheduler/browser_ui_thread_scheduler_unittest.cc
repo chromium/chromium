@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/mock_callback.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -43,7 +42,7 @@ base::OnceClosure PostOnDestruction(
 TEST(BrowserUIThreadSchedulerTest, DestructorPostChainDuringShutdown) {
   auto browser_ui_thread_scheduler_ =
       std::make_unique<BrowserUIThreadScheduler>();
-  browser_ui_thread_scheduler_->GetHandle()->EnableAllQueues();
+  browser_ui_thread_scheduler_->GetHandle()->OnStartupComplete();
   auto task_queue =
       browser_ui_thread_scheduler_->GetHandle()->GetBrowserTaskRunner(
           BrowserUIThreadScheduler::QueueType::kDefault);

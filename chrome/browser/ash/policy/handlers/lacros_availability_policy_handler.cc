@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,19 +18,7 @@ namespace policy {
 
 LacrosAvailabilityPolicyHandler::LacrosAvailabilityPolicyHandler()
     : TypeCheckingPolicyHandler(key::kLacrosAvailability,
-                                base::Value::Type::STRING),
-      policy_value_to_enum_{
-          {"user_choice",
-           crosapi::browser_util::LacrosLaunchSwitch::kUserChoice},
-          {"lacros_disallowed",
-           crosapi::browser_util::LacrosLaunchSwitch::kLacrosDisallowed},
-          {"side_by_side",
-           crosapi::browser_util::LacrosLaunchSwitch::kSideBySide},
-          {"lacros_primary",
-           crosapi::browser_util::LacrosLaunchSwitch::kLacrosPrimary},
-          {"lacros_only",
-           crosapi::browser_util::LacrosLaunchSwitch::kLacrosOnly},
-      } {}
+                                base::Value::Type::STRING) {}
 
 LacrosAvailabilityPolicyHandler::~LacrosAvailabilityPolicyHandler() = default;
 
@@ -50,23 +38,20 @@ void LacrosAvailabilityPolicyHandler::ApplyPolicySettings(
   }
 }
 
-absl::optional<crosapi::browser_util::LacrosLaunchSwitch>
+absl::optional<crosapi::browser_util::LacrosAvailability>
 LacrosAvailabilityPolicyHandler::GetValue(const PolicyMap& policies,
                                           PolicyErrorMap* errors) {
   const base::Value* value;
   const bool value_found = CheckAndGetValue(policies, errors, &value) && value;
-  if (!value_found) {
+  if (!value_found)
     return absl::nullopt;
-  }
 
-  const auto value_it = policy_value_to_enum_.find(value->GetString());
-  if (value_it == policy_value_to_enum_.end()) {
-    if (errors)
-      errors->AddError(policy_name(), IDS_POLICY_VALUE_FORMAT_ERROR);
-    return absl::nullopt;
-  }
-
-  return value_it->second;
+  auto parsed =
+      crosapi::browser_util::ParseLacrosAvailability(value->GetString());
+  if (!parsed.has_value() && errors)
+    errors->AddError(policy_name(), IDS_POLICY_INVALID_SELECTION_ERROR,
+                     "LacrosAvailabilty value");
+  return parsed;
 }
 
 }  // namespace policy

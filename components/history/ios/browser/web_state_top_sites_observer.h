@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,8 +22,6 @@ class WebStateTopSitesObserver
   WebStateTopSitesObserver& operator=(const WebStateTopSitesObserver&) = delete;
 
   ~WebStateTopSitesObserver() override;
-
-  static void CreateForWebState(web::WebState* web_state, TopSites* top_sites);
 
  private:
   friend class web::WebStateUserData<WebStateTopSitesObserver>;

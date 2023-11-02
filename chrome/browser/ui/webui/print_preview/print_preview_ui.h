@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,10 +13,12 @@
 
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
 #include "chrome/services/printing/public/mojom/pdf_nup_converter.mojom.h"
 #include "components/printing/common/print.mojom.h"
@@ -68,7 +70,8 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
   void PrintPreviewCancelled(int32_t document_cookie,
                              int32_t request_id) override;
   void PrinterSettingsInvalid(int32_t document_cookie,
-                              int32_t request_id) override;
+                              int32_t request_id,
+                              const std::string& details) override;
   void DidGetDefaultPageLayout(mojom::PageSizeMarginsPtr page_layout_in_points,
                                const gfx::Rect& printable_area_in_points,
                                bool has_custom_page_size_style,
@@ -83,7 +86,9 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
 
   const std::u16string& initiator_title() const { return initiator_title_; }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   bool source_is_arc() const { return source_is_arc_; }
+#endif
 
   bool source_is_modifiable() const { return source_is_modifiable_; }
 
@@ -157,7 +162,12 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
   // Allows tests to wait until the print preview dialog is loaded.
   class TestDelegate {
    public:
+    // Provides the total number of pages requested for the preview.
     virtual void DidGetPreviewPageCount(uint32_t page_count) = 0;
+
+    // Notifies that a page was rendered for the preview.  This occurs after
+    // any possible N-up processing, so each rendered page could represent
+    // multiple pages that were counted in `DidGetPreviewPageCount()`.
     virtual void DidRenderPreviewPage(content::WebContents* preview_dialog) = 0;
 
    protected:
@@ -241,6 +251,8 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
                             mojom::PrintCompositor::Status status,
                             base::ReadOnlySharedMemoryRegion region);
 
+  WEB_UI_CONTROLLER_TYPE_DECL();
+
   base::TimeTicks initial_preview_start_time_;
 
   // The unique ID for this class instance. Stored here to avoid calling
@@ -253,10 +265,12 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
 #endif
 
   // Weak pointer to the WebUI handler.
-  PrintPreviewHandler* const handler_;
+  const raw_ptr<PrintPreviewHandler> handler_;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Indicates whether the source document is from ARC.
   bool source_is_arc_ = false;
+#endif
 
   // Indicates whether the source document can be modified.
   bool source_is_modifiable_ = true;

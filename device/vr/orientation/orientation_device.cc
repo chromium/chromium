@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,8 +60,6 @@ VROrientationDevice::VROrientationDevice(mojom::SensorProvider* sensor_provider,
   sensor_provider->GetSensor(kOrientationSensorType,
                              base::BindOnce(&VROrientationDevice::SensorReady,
                                             base::Unretained(this)));
-
-  SetVRDisplayInfo(mojom::VRDisplayInfo::New());
 
   SetSupportedFeatures(GetSupportedFeatures());
 }
@@ -156,9 +154,6 @@ void VROrientationDevice::RequestSession(
   auto* session = session_result->session.get();
 
   session->data_provider = std::move(data_provider);
-  if (display_info_) {
-    session->display_info = display_info_.Clone();
-  }
   session->device_config = device::mojom::XRSessionDeviceConfig::New();
   session->enviroment_blend_mode =
       device::mojom::XREnvironmentBlendMode::kOpaque;

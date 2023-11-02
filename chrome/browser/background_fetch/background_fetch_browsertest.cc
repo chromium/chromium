@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -31,10 +32,12 @@
 #include "components/offline_items_collection/core/offline_content_provider.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -116,21 +119,24 @@ class WaitableDownloadLoggerObserver : public download::Logger::Observer {
   }
 
   // download::Logger::Observer implementation:
-  void OnServiceStatusChanged(const base::Value& service_status) override {}
+  void OnServiceStatusChanged(
+      const base::Value::Dict& service_status) override {}
   void OnServiceDownloadsAvailable(
-      const base::Value& service_downloads) override {}
-  void OnServiceDownloadChanged(const base::Value& service_download) override {}
-  void OnServiceDownloadFailed(const base::Value& service_download) override {}
-  void OnServiceRequestMade(const base::Value& service_request) override {
-    const std::string& client = service_request.FindKey("client")->GetString();
-    const std::string& guid = service_request.FindKey("guid")->GetString();
-    const std::string& result = service_request.FindKey("result")->GetString();
+      const base::Value::List& service_downloads) override {}
+  void OnServiceDownloadChanged(
+      const base::Value::Dict& service_download) override {}
+  void OnServiceDownloadFailed(
+      const base::Value::Dict& service_download) override {}
+  void OnServiceRequestMade(const base::Value::Dict& service_request) override {
+    const std::string* client = service_request.FindString("client");
+    const std::string* guid = service_request.FindString("guid");
+    const std::string* result = service_request.FindString("result");
 
-    if (client != kBackgroundFetchClient)
+    if (*client != kBackgroundFetchClient)
       return;  // This event is not targeted to us.
 
-    if (result == kResultAccepted && download_accepted_callback_)
-      std::move(download_accepted_callback_).Run(guid);
+    if (*result == kResultAccepted && download_accepted_callback_)
+      std::move(download_accepted_callback_).Run(*guid);
   }
 
  private:
@@ -229,7 +235,7 @@ class OfflineContentProviderObserver final
 
   ItemsAddedCallback items_added_callback_;
   FinishedProcessingItemCallback finished_processing_item_callback_;
-  BackgroundFetchDelegateImpl* delegate_ = nullptr;
+  raw_ptr<BackgroundFetchDelegateImpl> delegate_ = nullptr;
   bool pause_ = false;
   bool resume_ = false;
 
@@ -280,8 +286,8 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
     offline_content_provider_observer_->set_delegate(delegate_);
   }
 
-  void SetUpBrowser(Browser* browser) {
-    active_browser_ = browser;
+  virtual void SetUpBrowser(Browser* browser) {
+    set_active_browser(browser);
     // Load the helper page that helps drive these tests.
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser, https_server_->GetURL(kHelperPage)));
@@ -357,7 +363,7 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
     return content::ExecuteScriptAndExtractString(
         active_browser_->tab_strip_model()
             ->GetActiveWebContents()
-            ->GetMainFrame(),
+            ->GetPrimaryMainFrame(),
         script, result);
   }
 
@@ -461,9 +467,13 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
     std::move(quit_closure).Run();
   }
 
+  void set_active_browser(Browser* browser) { active_browser_ = browser; }
+
+  net::EmbeddedTestServer* https_server() { return https_server_.get(); }
+
  protected:
-  BackgroundFetchDelegateImpl* delegate_ = nullptr;
-  download::BackgroundDownloadService* download_service_ = nullptr;
+  raw_ptr<BackgroundFetchDelegateImpl> delegate_ = nullptr;
+  raw_ptr<download::BackgroundDownloadService> download_service_ = nullptr;
   base::OnceClosure click_event_closure_;
 
   std::unique_ptr<WaitableDownloadLoggerObserver> download_observer_;
@@ -492,7 +502,7 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
 
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 
-  Browser* active_browser_ = nullptr;
+  raw_ptr<Browser> active_browser_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest, DownloadService_Acceptance) {
@@ -514,7 +524,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest, DownloadService_Acceptance) {
 }
 
 // Flaky on linux: crbug.com/1182296
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_RecordBackgroundFetchUkmEvent \
   DISABLED_RecordBackgroundFetchUkmEvent
 #else
@@ -556,7 +566,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
       -1);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Flaky on Mac: https://crbug.com/1259680
 #define MAYBE_OfflineItemCollection_SingleFileMetadata \
   DISABLED_OfflineItemCollection_SingleFileMetadata
@@ -619,7 +629,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
   // Get visuals associated with the newly added offline item.
   std::unique_ptr<OfflineItemVisuals> out_visuals;
   GetVisualsForOfflineItemSync(offline_item.id, &out_visuals);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(out_visuals->icon.IsEmpty());
   EXPECT_EQ(out_visuals->icon.Size().width(), 100);
   EXPECT_EQ(out_visuals->icon.Size().height(), 100);
@@ -663,9 +673,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(offline_item.progress.max.value(), kDownloadedResourceSizeInBytes);
 }
 
+// The test is flaky on all platforms. https://crbug.com/1161385.
 IN_PROC_BROWSER_TEST_F(
     BackgroundFetchBrowserTest,
-    OfflineItemCollection_VerifyResourceDownloadedWhenDownloadTotalSmallerThanActualSize) {
+    DISABLED_OfflineItemCollection_VerifyResourceDownloadedWhenDownloadTotalSmallerThanActualSize) {
   // Starts a Background Fetch for a single to-be-downloaded file and waits for
   // the fetch to be registered with the offline items collection.
   std::vector<OfflineItem> items;
@@ -696,9 +707,10 @@ IN_PROC_BROWSER_TEST_F(
             offline_items_collection::OfflineItemState::CANCELLED);
 }
 
+// TODO(crbug.com/1329696): Fix flaky timeouts and re-enable.
 IN_PROC_BROWSER_TEST_F(
     BackgroundFetchBrowserTest,
-    OfflineItemCollection_VerifyResourceDownloadedWhenCorrectDownloadTotalSpecified) {
+    DISABLED_OfflineItemCollection_VerifyResourceDownloadedWhenCorrectDownloadTotalSpecified) {
   // Starts a Background Fetch for a single to-be-downloaded file and waits for
   // the fetch to be registered with the offline items collection.
 
@@ -730,7 +742,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
 }
 
 // Flaky on Windows 7 (https://crbug.com/1039250)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_FetchesRunToCompletionAndUpdateTitle_Fetched \
   DISABLED_FetchesRunToCompletionAndUpdateTitle_Fetched
 #else
@@ -751,7 +763,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
 }
 
 // Flaky on Windows 7 (https://crbug.com/1039250)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_FetchesRunToCompletionAndUpdateTitle_Failed \
   DISABLED_FetchesRunToCompletionAndUpdateTitle_Failed
 #else
@@ -853,7 +865,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
 }
 
 // Flaky on Windows 7 (https://crbug.com/1039250)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_FetchFromServiceWorker DISABLED_FetchFromServiceWorker
 #else
 #define MAYBE_FetchFromServiceWorker FetchFromServiceWorker
@@ -882,8 +894,9 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
       "StartFetchFromServiceWorker()", "permissionerror"));
 }
 
+// TODO(crbug.com/1271962): Flaky on many platforms.
 IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
-                       FetchFromServiceWorkerWithAsk) {
+                       DISABLED_FetchFromServiceWorkerWithAsk) {
   auto* settings_map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   DCHECK(settings_map);
@@ -899,8 +912,9 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
             offline_items_collection::OfflineItemState::PAUSED);
 }
 
+// TODO(crbug.com/1271962): Flaky on many platforms.
 IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
-                       FetchFromChildFrameWithPermissions) {
+                       DISABLED_FetchFromChildFrameWithPermissions) {
   // Give the needed permissions. The fetch should still start in a paused
   // state.
   SetPermission(ContentSettingsType::AUTOMATIC_DOWNLOADS,
@@ -915,7 +929,9 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
             offline_items_collection::OfflineItemState::PAUSED);
 }
 
-IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest, FetchFromChildFrameWithAsk) {
+// TODO(crbug.com/1271962): Flaky on many platforms.
+IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
+                       DISABLED_FetchFromChildFrameWithAsk) {
   SetPermission(ContentSettingsType::AUTOMATIC_DOWNLOADS, CONTENT_SETTING_ASK);
 
   // The fetch starts in a paused state.
@@ -933,4 +949,128 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
                 CONTENT_SETTING_BLOCK);
   ASSERT_NO_FATAL_FAILURE(RunScriptAndCheckResultingMessage(
       "StartFetchFromIframe()", "permissionerror"));
+}
+
+class BackgroundFetchFencedFrameBrowserTest
+    : public BackgroundFetchBrowserTest {
+ public:
+  BackgroundFetchFencedFrameBrowserTest() = default;
+  ~BackgroundFetchFencedFrameBrowserTest() override = default;
+
+  void SetUpBrowser(Browser* browser) override {
+    set_active_browser(browser);
+    GURL url = https_server()->GetURL("/empty.html");
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url));
+
+    test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+  }
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_test_helper_;
+  }
+
+  void RegisterServiceWorker(content::RenderFrameHost* render_frame_host) {
+    std::string script_result;
+    ASSERT_TRUE(RunScript("RegisterServiceWorker()", &script_result,
+                          render_frame_host));
+    ASSERT_EQ("ok - service worker registered", script_result);
+  }
+
+  void StartSingleFileDownload(content::RenderFrameHost* render_frame_host,
+                               std::string expected_result) {
+    std::string script_result;
+    ASSERT_NO_FATAL_FAILURE(RunScript("StartSingleFileDownload()",
+                                      &script_result, render_frame_host));
+    ASSERT_EQ(expected_result, script_result);
+  }
+
+ private:
+  // Runs the `script` in `render_frame_host` and writes the output to
+  // `*result`.
+  bool RunScript(const std::string& script,
+                 std::string* result,
+                 content::RenderFrameHost* render_frame_host) {
+    return content::ExecuteScriptAndExtractString(render_frame_host, script,
+                                                  result);
+  }
+
+  content::test::FencedFrameTestHelper fenced_frame_test_helper_;
+};
+
+// Tests that background fetch UKM is not recorded in a fenced frame. The
+// renderer should have checked and disallowed the request for fenced frames.
+IN_PROC_BROWSER_TEST_F(BackgroundFetchFencedFrameBrowserTest,
+                       NoRecordBackgroundFetchUkmEvent) {
+  // Load a fenced frame.
+  GURL fenced_frame_url(https_server()->GetURL("/fenced_frames/title1.html"));
+  content::RenderFrameHost* fenced_frame =
+      fenced_frame_test_helper().CreateFencedFrame(browser()
+                                                       ->tab_strip_model()
+                                                       ->GetActiveWebContents()
+                                                       ->GetPrimaryMainFrame(),
+                                                   fenced_frame_url);
+
+  GURL fenced_frame_test_url(
+      https_server()->GetURL("/fenced_frames/background_fetch.html"));
+
+  // Navigate the fenced frame again.
+  fenced_frame = fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
+      fenced_frame, fenced_frame_test_url);
+
+  // Register the Service Worker that's required for Background Fetch.
+  RegisterServiceWorker(fenced_frame);
+
+  constexpr char kExpectedError[] =
+      "NotAllowedError - Failed to execute 'fetch' on "
+      "'BackgroundFetchManager': backgroundFetch is not allowed in fenced "
+      "frames.";
+  StartSingleFileDownload(fenced_frame, kExpectedError);
+
+  std::vector<const ukm::mojom::UkmEntry*> entries =
+      test_ukm_recorder_->GetEntriesByName(
+          ukm::builders::BackgroundFetch::kEntryName);
+  ASSERT_EQ(0u, entries.size());
+}
+
+// Tests that UKM record works based on the outer most main frame. This test is
+// to check non-same origin case, but actually the background fetch UKM is not
+// recorded in a fenced frame regardless of origin difference because the
+// renderer should have checked and disallowed the request for fenced frames.
+IN_PROC_BROWSER_TEST_F(BackgroundFetchFencedFrameBrowserTest,
+                       NoRecordBackgroundFetchUkmEventNotInSameOrigin) {
+  net::EmbeddedTestServer cross_origin_server(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  cross_origin_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  cross_origin_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(cross_origin_server.Start());
+
+  // Load a fenced frame.
+  GURL fenced_frame_url(
+      cross_origin_server.GetURL("/fenced_frames/title1.html"));
+  content::RenderFrameHost* fenced_frame =
+      fenced_frame_test_helper().CreateFencedFrame(browser()
+                                                       ->tab_strip_model()
+                                                       ->GetActiveWebContents()
+                                                       ->GetPrimaryMainFrame(),
+                                                   fenced_frame_url);
+
+  GURL fenced_frame_test_url(
+      cross_origin_server.GetURL("/fenced_frames/background_fetch.html"));
+  // Navigate the fenced frame again.
+  fenced_frame = fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
+      fenced_frame, fenced_frame_test_url);
+
+  // Register the Service Worker that's required for Background Fetch.
+  RegisterServiceWorker(fenced_frame);
+
+  constexpr char kExpectedError[] =
+      "NotAllowedError - Failed to execute 'fetch' on "
+      "'BackgroundFetchManager': backgroundFetch is not allowed in fenced "
+      "frames.";
+  StartSingleFileDownload(fenced_frame, kExpectedError);
+
+  std::vector<const ukm::mojom::UkmEntry*> entries =
+      test_ukm_recorder_->GetEntriesByName(
+          ukm::builders::BackgroundFetch::kEntryName);
+  ASSERT_EQ(0u, entries.size());
 }

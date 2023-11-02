@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,11 @@
 
 #include "net/cookies/cookie_options.h"
 
+#include <tuple>
+
 #include "base/metrics/histogram_functions.h"
 #include "net/cookies/cookie_util.h"
-#include "net/cookies/same_party_context.h"
+#include "net/first_party_sets/same_party_context.h"
 
 namespace net {
 
@@ -68,7 +70,10 @@ bool operator!=(const CookieOptions::SameSiteCookieContext& lhs,
 bool operator==(
     const CookieOptions::SameSiteCookieContext::ContextMetadata& lhs,
     const CookieOptions::SameSiteCookieContext::ContextMetadata& rhs) {
-  return lhs.cross_site_redirect_downgrade == rhs.cross_site_redirect_downgrade;
+  return std::tie(lhs.cross_site_redirect_downgrade,
+                  lhs.redirect_type_bug_1221316) ==
+         std::tie(rhs.cross_site_redirect_downgrade,
+                  rhs.redirect_type_bug_1221316);
 }
 
 bool operator!=(

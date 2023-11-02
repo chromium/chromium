@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
@@ -20,7 +21,7 @@
 #include "ui/gfx/image/image_skia.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "components/arc/mojom/intent_helper.mojom.h"
+#include "ash/components/arc/mojom/intent_helper.mojom.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace arc {
@@ -85,7 +86,7 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
 
   void LoadWebAppIcon(const std::string& web_app_id,
                       const GURL& launch_url,
-                      const web_app::WebAppIconManager& icon_manager,
+                      web_app::WebAppIconManager& icon_manager,
                       Profile* profile);
 
   void LoadExtensionIcon(const extensions::Extension* extension,
@@ -143,30 +144,30 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
 
   void MaybeLoadFallbackOrCompleteEmpty();
 
-  IconType icon_type_;
+  const IconType icon_type_ = IconType::kUnknown;
 
-  int size_hint_in_dip_ = 0;
-  int icon_size_in_px_ = 0;
+  const int size_hint_in_dip_ = 0;
+  const int icon_size_in_px_ = 0;
   // The scale factor the icon is intended for. See gfx::ImageSkiaRep::scale
   // comments.
-  float icon_scale_ = 0.0f;
+  const float icon_scale_ = 0.0f;
   // A scale factor to take as input for the IconType::kCompressed response. See
   // gfx::ImageSkia::GetRepresentation() comments.
   float icon_scale_for_compressed_response_ = 1.0f;
 
-  bool is_placeholder_icon_;
+  const bool is_placeholder_icon_ = false;
   apps::IconEffects icon_effects_;
 
   // If |fallback_favicon_url_| is populated, then the favicon service is the
   // first fallback method attempted in MaybeLoadFallbackOrCompleteEmpty().
   // These members are only populated from LoadWebAppIcon or LoadExtensionIcon.
   GURL fallback_favicon_url_;
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
   // If |fallback_icon_resource_| is not |kInvalidIconResource|, then it is the
   // second fallback method attempted in MaybeLoadFallbackOrCompleteEmpty()
   // (after the favicon service).
-  int fallback_icon_resource_;
+  int fallback_icon_resource_ = kInvalidIconResource;
 
   LoadIconCallback callback_;
 

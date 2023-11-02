@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "components/autofill/content/renderer/html_based_username_detector.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "google_apis/gaia/gaia_urls.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -64,13 +64,6 @@ std::vector<FieldRendererId> GetUsernamePredictions(
       control_elements, form_data, username_detector_cache, form);
 }
 
-bool HasGaiaSchemeAndHost(const WebFormElement& form) {
-  GURL form_url = form.GetDocument().Url();
-  GURL gaia_url = GaiaUrls::GetInstance()->gaia_url();
-  return form_url.scheme() == gaia_url.scheme() &&
-         form_url.host() == gaia_url.host();
-}
-
 }  // namespace
 
 re2::RE2* CreateMatcher(void* instance, const char* pattern) {
@@ -84,7 +77,7 @@ re2::RE2* CreateMatcher(void* instance, const char* pattern) {
 }
 
 bool IsGaiaReauthenticationForm(const blink::WebFormElement& form) {
-  if (!HasGaiaSchemeAndHost(form))
+  if (!gaia::HasGaiaSchemeHostPort(form.GetDocument().Url()))
     return false;
 
   bool has_rart_field = false;
@@ -93,19 +86,18 @@ bool IsGaiaReauthenticationForm(const blink::WebFormElement& form) {
   for (const WebFormControlElement& element : form.GetFormControlElements()) {
     // We're only interested in the presence
     // of <input type="hidden" /> elements.
-    static base::NoDestructor<WebString> kHidden("hidden");
-    const blink::WebInputElement* input = blink::ToWebInputElement(&element);
-    if (!input || input->FormControlTypeForAutofill() != *kHidden)
+    const WebInputElement input = element.DynamicTo<WebInputElement>();
+    if (input.IsNull() || input.FormControlTypeForAutofill() != "hidden")
       continue;
 
     // There must be a hidden input named "rart".
-    if (input->FormControlName() == "rart")
+    if (input.FormControlName() == "rart")
       has_rart_field = true;
 
     // There must be a hidden input named "continue", whose value points
     // to a password (or password testing) site.
-    if (input->FormControlName() == "continue" &&
-        re2::RE2::PartialMatch(input->Value().Utf8(),
+    if (input.FormControlName() == "continue" &&
+        re2::RE2::PartialMatch(input.Value().Utf8(),
                                g_password_site_matcher.Get())) {
       has_continue_field = true;
     }
@@ -114,7 +106,7 @@ bool IsGaiaReauthenticationForm(const blink::WebFormElement& form) {
 }
 
 bool IsGaiaWithSkipSavePasswordForm(const blink::WebFormElement& form) {
-  if (!HasGaiaSchemeAndHost(form))
+  if (!gaia::HasGaiaSchemeHostPort(form.GetDocument().Url()))
     return false;
 
   GURL url(form.GetDocument().Url());

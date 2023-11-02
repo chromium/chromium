@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -312,7 +312,7 @@ TEST(TransformOperationTest, ApplyOrder) {
   expected_translate_matrix.Translate3d(dx, dy, dz);
 
   gfx::Transform expected_combined_matrix = expected_scale_matrix;
-  expected_combined_matrix.PreconcatTransform(expected_translate_matrix);
+  expected_combined_matrix.PreConcat(expected_translate_matrix);
 
   EXPECT_TRANSFORM_EQ(expected_combined_matrix, operations.Apply());
 }
@@ -376,7 +376,7 @@ TEST(TransformOperationTest, BlendOrder) {
   blended_translate.Blend(translate_from, progress);
 
   gfx::Transform expected = blended_scale;
-  expected.PreconcatTransform(blended_translate);
+  expected.PreConcat(blended_translate);
 
   TransformOperations blended = operations_to.Blend(operations_from, progress);
 
@@ -401,7 +401,7 @@ TEST(TransformOperationTest, BlendOrder) {
 
   gfx::Transform blended_append_scale = appended_scale;
   blended_append_scale.Blend(gfx::Transform(), progress);
-  expected.PreconcatTransform(blended_append_scale);
+  expected.PreConcat(blended_append_scale);
 
   operations_expected.AppendScale(
       gfx::Tween::FloatValueBetween(progress, 1, sx3),
@@ -433,8 +433,8 @@ TEST(TransformOperationTest, BlendOrder) {
   blended_matrix.Blend(transform_from, progress);
 
   expected = blended_scale;
-  expected.PreconcatTransform(blended_translate);
-  expected.PreconcatTransform(blended_matrix);
+  expected.PreConcat(blended_translate);
+  expected.PreConcat(blended_matrix);
 
   operations_expected = base_operations_expected;
   operations_expected.AppendMatrix(blended_matrix);
@@ -914,7 +914,7 @@ TEST(TransformOperationTest, ExtrapolateMatrixBlending) {
 
 TEST(TransformOperationTest, NonDecomposableBlend) {
   TransformOperations non_decomposible_transform;
-  gfx::Transform non_decomposible_matrix(0, 0, 0, 0, 0, 0);
+  auto non_decomposible_matrix = gfx::Transform::MakeScale(0);
   non_decomposible_transform.AppendMatrix(non_decomposible_matrix);
 
   TransformOperations identity_transform;
@@ -1223,8 +1223,7 @@ static void EmpiricallyTestBounds(const TransformOperations& from,
     float t = step / (kNumSteps - 1.f);
     t = gfx::Tween::FloatValueBetween(t, min_progress, max_progress);
     gfx::Transform partial_transform = to.Blend(from, t).Apply();
-    gfx::BoxF transformed = box;
-    partial_transform.TransformBox(&transformed);
+    gfx::BoxF transformed = partial_transform.MapBox(box);
 
     if (first_time) {
       empirical_bounds = transformed;
@@ -1425,7 +1424,7 @@ TEST(TransformOperationTest, NonCommutativeRotations) {
   gfx::Transform blended_transform =
       operations_to.Blend(operations_from, max_progress).Apply();
   gfx::Point3F blended_point(0.9f, 0.9f, 0.0f);
-  blended_transform.TransformPoint(&blended_point);
+  blended_point = blended_transform.MapPoint(blended_point);
   gfx::BoxF expanded_bounds = bounds;
   expanded_bounds.ExpandTo(blended_point);
   EXPECT_EQ(bounds.ToString(), expanded_bounds.ToString());

@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -6,14 +6,14 @@
 #ifndef NET_QUIC_QUIC_CHROMIUM_PACKET_READER_H_
 #define NET_QUIC_QUIC_CHROMIUM_PACKET_READER_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_export.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/datagram_client_socket.h"
-#include "net/third_party/quiche/src/quic/core/quic_packets.h"
-#include "net/third_party/quiche/src/quic/core/quic_time.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_time.h"
 
 namespace quic {
 class QuicClock;
@@ -30,7 +30,7 @@ class NET_EXPORT_PRIVATE QuicChromiumPacketReader {
  public:
   class NET_EXPORT_PRIVATE Visitor {
    public:
-    virtual ~Visitor() {}
+    virtual ~Visitor() = default;
     // Called when the read operation failed. The visitor returns
     // whether the reader should keep reading.
     virtual bool OnReadError(int result,
@@ -62,12 +62,12 @@ class NET_EXPORT_PRIVATE QuicChromiumPacketReader {
   // Return true if reading should continue.
   bool ProcessReadResult(int result);
 
-  DatagramClientSocket* socket_;
+  raw_ptr<DatagramClientSocket> socket_;
 
-  Visitor* visitor_;
-  bool read_pending_;
-  int num_packets_read_;
-  const quic::QuicClock* clock_;  // Not owned.
+  raw_ptr<Visitor> visitor_;
+  bool read_pending_ = false;
+  int num_packets_read_ = 0;
+  raw_ptr<const quic::QuicClock> clock_;  // Not owned.
   int yield_after_packets_;
   quic::QuicTime::Delta yield_after_duration_;
   quic::QuicTime yield_after_;

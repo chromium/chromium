@@ -1,4 +1,4 @@
-// META: global=window,worker,jsshell
+// META: global=window,worker
 // META: script=../resources/recording-streams.js
 // META: script=../resources/test-utils.js
 'use strict';
@@ -61,8 +61,8 @@ for (const reason of [null, undefined, error1]) {
     const signal = abortController.signal;
     abortController.abort(reason);
     const pipeToPromise = rs.pipeTo(ws, { signal });
-    if (reason === error1) {
-      await promise_rejects_exactly(t, error1, pipeToPromise, 'pipeTo rejects with abort reason');
+    if (reason !== undefined) {
+      await promise_rejects_exactly(t, reason, pipeToPromise, 'pipeTo rejects with abort reason');
     } else {
       await promise_rejects_dom(t, 'AbortError', pipeToPromise, 'pipeTo rejects with AbortError');
     }
@@ -131,8 +131,8 @@ for (const reason of [null, undefined, error1]) {
       }
     });
     const pipeToPromise = rs.pipeTo(ws, { signal });
-    if (reason === error1) {
-      await promise_rejects_exactly(t, error1, pipeToPromise, 'pipeTo rejects with abort reason');
+    if (reason !== undefined) {
+      await promise_rejects_exactly(t, reason, pipeToPromise, 'pipeTo rejects with abort reason');
     } else {
       await promise_rejects_dom(t, 'AbortError', pipeToPromise, 'pipeTo rejects with AbortError');
     }
@@ -170,8 +170,8 @@ for (const reason of [null, undefined, error1]) {
     await abortController.abort(reason);
     await readController.close(); // Make sure the test terminates when signal is not implemented.
     await resolveWrite();
-    if (reason === error1) {
-      await promise_rejects_exactly(t, error1, pipeToPromise, 'pipeTo rejects with abort reason');
+    if (reason !== undefined) {
+      await promise_rejects_exactly(t, reason, pipeToPromise, 'pipeTo rejects with abort reason');
     } else {
       await promise_rejects_dom(t, 'AbortError', pipeToPromise, 'pipeTo rejects with AbortError');
     }
@@ -385,3 +385,24 @@ promise_test(t => {
     assert_array_equals(rs.events, ['pull'], 'cancel should not have been called');
   });
 }, 'abort should do nothing after the writable is errored');
+
+promise_test(async t => {
+  const rs = new ReadableStream({
+    pull(c) {
+      c.enqueue(new Uint8Array([]));
+    },
+    type: "bytes",
+  });
+  const ws = new WritableStream();
+  const [first, second] = rs.tee();
+
+  let aborted = false;
+  first.pipeTo(ws, { signal: AbortSignal.abort() }).catch(() => {
+    aborted = true;
+  });
+  await delay(0);
+  assert_true(!aborted, "pipeTo should not resolve yet");
+  await second.cancel();
+  await delay(0);
+  assert_true(aborted, "pipeTo should be aborted now");
+}, "pipeTo on a teed readable byte stream should only be aborted when both branches are aborted");

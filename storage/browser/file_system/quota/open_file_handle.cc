@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,11 +12,11 @@
 namespace storage {
 
 OpenFileHandle::~OpenFileHandle() {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 void OpenFileHandle::UpdateMaxWrittenOffset(int64_t offset) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   int64_t growth = context_->UpdateMaxWrittenOffset(offset);
   if (growth > 0)
@@ -24,7 +24,7 @@ void OpenFileHandle::UpdateMaxWrittenOffset(int64_t offset) {
 }
 
 void OpenFileHandle::AddAppendModeWriteAmount(int64_t amount) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (amount <= 0)
     return;
 
@@ -33,24 +33,24 @@ void OpenFileHandle::AddAppendModeWriteAmount(int64_t amount) {
 }
 
 int64_t OpenFileHandle::GetEstimatedFileSize() const {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return context_->GetEstimatedFileSize();
 }
 
 int64_t OpenFileHandle::GetMaxWrittenOffset() const {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return context_->GetMaxWrittenOffset();
 }
 
 const base::FilePath& OpenFileHandle::platform_path() const {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return context_->platform_path();
 }
 
 OpenFileHandle::OpenFileHandle(QuotaReservation* reservation,
                                OpenFileHandleContext* context)
     : reservation_(reservation), context_(context) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 }  // namespace storage

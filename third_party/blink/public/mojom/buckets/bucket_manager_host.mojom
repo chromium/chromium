@@ -1,28 +1,36 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module blink.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
+import "third_party/blink/public/mojom/cache_storage/cache_storage.mojom";
+import "third_party/blink/public/mojom/indexeddb/indexeddb.mojom";
+import "third_party/blink/public/mojom/locks/lock_manager.mojom";
 
 // Implementation of the proposed "Storage Buckets API".
 //
 // Proposal: https://github.com/WICG/storage-buckets
 
-const int64 kNoQuotaPolicyValue = -1;
-
-// The durability policy to apply to a single StorageBucket.
+// The durability policy to apply to a single StorageBucket. The values are
+// persisted to the quota DB and must not be changed.
 enum BucketDurability {
-  kRelaxed,
-  kStrict,
+  kRelaxed = 0,
+  kStrict = 1,
 };
 
 // The policies applied to a StorageBucket upon its creation.
 struct BucketPolicies {
   bool persisted;
+  bool has_persisted = false;
+
   BucketDurability durability;
+  bool has_durability = false;
+
   int64 quota;
+  bool has_quota = false;
+
   mojo_base.mojom.Time? expires;
 };
 
@@ -57,6 +65,15 @@ interface BucketHost {
   // null when there is not expiry policy set for the Storage Bucket. The
   // |expires| value is only valid when |success| is true.
   Expires() => (mojo_base.mojom.Time? expires, bool success);
+
+  // Connects to the IndexedDB factory implementation in the browser process.
+  GetIdbFactory(pending_receiver<IDBFactory> idb_factory);
+
+  // Connects a LockManager to this bucket.
+  GetLockManager(pending_receiver<LockManager> lock_manager);
+
+  // Connects a CacheStorage implementation in the browser process.
+  GetCaches(pending_receiver<CacheStorage> cache_storage);
 };
 
 // Origin-scoped entry point to the Storage Buckets API.
@@ -67,9 +84,10 @@ interface BucketHost {
 interface BucketManagerHost {
   // Open or create or bucket with the specified name and policies.
   // On success, it will return a mojo data pipe to the BucketHost in the
-  // browser process.
+  // browser process. Returns a null remote on error, e.g. if the storage bucket
+  // failed to be created or retrieved due to a database error.
   OpenBucket(string name, BucketPolicies policy)
-      => (pending_remote<BucketHost> remote);
+      => (pending_remote<BucketHost>? remote);
 
   // Returns a list of stored bucket names in alphabetical order.
   Keys() => (array<string> buckets, bool success);

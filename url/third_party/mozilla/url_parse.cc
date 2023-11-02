@@ -692,6 +692,11 @@ bool DoExtractQueryKeyValue(const CHAR* spec,
 
 }  // namespace
 
+COMPONENT_EXPORT(URL)
+std::ostream& operator<<(std::ostream& os, const Component& component) {
+  return os << '{' << component.begin << ", " << component.len << "}";
+}
+
 Parsed::Parsed() : potentially_dangling_markup(false), inner_parsed_(NULL) {}
 
 Parsed::Parsed(const Parsed& other)

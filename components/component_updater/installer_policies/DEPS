@@ -6,5 +6,6 @@ include_rules = [
   "+components/optimization_guide/core",
   "+components/prefs",
   "+components/reputation/core",
+  "+components/url_param_filter/core",
   "+services/network/public",
 ]

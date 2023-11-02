@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,6 +41,8 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderMac
   // Overridden from OSExchangeDataProvider:
   void MarkOriginatedFromRenderer() override;
   bool DidOriginateFromRenderer() const override;
+  void MarkAsFromPrivileged() override;
+  bool IsFromPrivileged() const override;
   void SetString(const std::u16string& data) override;
   void SetURL(const GURL& url, const std::u16string& title) override;
   void SetFilename(const base::FilePath& path) override;

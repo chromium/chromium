@@ -1,11 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/realtime_cpu_chart.js';
 
+import {RealtimeCpuChartElement} from 'chrome://diagnostics/realtime_cpu_chart.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+
 import {assertEquals, assertFalse, assertGT, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.js';
 
 import * as diagnostics_test_utils from './diagnostics_test_utils.js';
 
@@ -82,9 +84,12 @@ export function realtimeCpuChartTestSuite() {
     const system = 30;
     return initializeRealtimeCpuChart(user, system).then(() => {
       diagnostics_test_utils.assertElementContainsText(
-          realtimeCpuChartElement.$$('#legend-user>span'), `${user}`);
+          realtimeCpuChartElement.shadowRoot.querySelector('#legend-user>span'),
+          `${user}`);
       diagnostics_test_utils.assertElementContainsText(
-          realtimeCpuChartElement.$$('#legend-system>span'), `${system}`);
+          realtimeCpuChartElement.shadowRoot.querySelector(
+              '#legend-system>span'),
+          `${system}`);
 
       assertEquals(user, realtimeCpuChartElement.user);
       assertEquals(system, realtimeCpuChartElement.system);
@@ -95,8 +100,9 @@ export function realtimeCpuChartTestSuite() {
     const user = 10;
     const system = 30;
     return initializeRealtimeCpuChart(user, system).then(() => {
-      const svg = realtimeCpuChartElement.$$('#chart');
-      const boundary = realtimeCpuChartElement.$$('#defClip>rect');
+      const svg = realtimeCpuChartElement.shadowRoot.querySelector('#chart');
+      const boundary =
+          realtimeCpuChartElement.shadowRoot.querySelector('#defClip>rect');
 
       // Chart area boundary must fit within svg.
       assertGT(
@@ -106,7 +112,8 @@ export function realtimeCpuChartTestSuite() {
           Number(svg.getAttribute('height')),
           Number(boundary.getAttribute('height')));
 
-      const chartGroup = realtimeCpuChartElement.$$('#chartGroup');
+      const chartGroup =
+          realtimeCpuChartElement.shadowRoot.querySelector('#chartGroup');
 
       // Margins are in effect.
       assertEquals(
@@ -121,7 +128,8 @@ export function realtimeCpuChartTestSuite() {
 
     return initializeRealtimeCpuChart(user, system).then(() => {
       // yAxis is drawn.
-      assertTrue(!!realtimeCpuChartElement.$$('#gridLines>path.domain'));
+      assertTrue(!!realtimeCpuChartElement.shadowRoot.querySelector(
+          '#gridLines>path.domain'));
 
       // Correct number of yAxis ticks drawn.
       assertEquals(
@@ -131,9 +139,11 @@ export function realtimeCpuChartTestSuite() {
               .length);
 
       // Plot lines are drawn.
-      assertTrue(!!realtimeCpuChartElement.$$('#plotGroup>path.user-area')
+      assertTrue(!!realtimeCpuChartElement.shadowRoot
+                       .querySelector('#plotGroup>path.user-area')
                        .getAttribute('d'));
-      assertTrue(!!realtimeCpuChartElement.$$('#plotGroup>path.system-area')
+      assertTrue(!!realtimeCpuChartElement.shadowRoot
+                       .querySelector('#plotGroup>path.system-area')
                        .getAttribute('d'));
     });
   });

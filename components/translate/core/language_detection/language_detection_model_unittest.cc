@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,8 +55,7 @@ TEST(LanguageDetectionModelTest, EmptyFileProvided) {
       LanguageDetectionModelState::kModelFileInvalid, 1);
 }
 
-// TODO(crbug.com/1240561): Fix flaky test.
-TEST(LanguageDetectionModelTest, DISABLED_UnsupportedModelFileProvided) {
+TEST(LanguageDetectionModelTest, UnsupportedModelFileProvided) {
   base::HistogramTester histogram_tester;
 
   base::File file = CreateInvalidModelFile();

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,10 +19,6 @@ class WebLayerRenderThreadObserver : public content::RenderThreadObserver,
   WebLayerRenderThreadObserver();
   ~WebLayerRenderThreadObserver() override;
 
-  const RendererContentSettingRules* content_setting_rules() const {
-    return &content_setting_rules_;
-  }
-
   content_settings::mojom::ContentSettingsManager* content_settings_manager() {
     if (content_settings_manager_)
       return content_settings_manager_.get();
@@ -40,13 +36,10 @@ class WebLayerRenderThreadObserver : public content::RenderThreadObserver,
   void SetInitialConfiguration(
       mojo::PendingRemote<content_settings::mojom::ContentSettingsManager>
           content_settings_manager) override;
-  void SetContentSettingRules(
-      const RendererContentSettingRules& rules) override;
 
   void OnRendererConfigurationAssociatedRequest(
       mojo::PendingAssociatedReceiver<mojom::RendererConfiguration> receiver);
 
-  RendererContentSettingRules content_setting_rules_;
   mojo::Remote<content_settings::mojom::ContentSettingsManager>
       content_settings_manager_;
 

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -89,7 +89,7 @@ struct BookmarkNodeData {
    private:
     friend struct BookmarkNodeData;
 
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
     // For reading/writing this Element.
     void WriteToPickle(base::Pickle* pickle) const;
     bool ReadFromPickle(base::PickleIterator* iterator);
@@ -99,7 +99,7 @@ struct BookmarkNodeData {
     int64_t id_;
   };
 
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
   // The MIME type for the clipboard format for BookmarkNodeData. This type is
   // not used on the Mac.
   static const char kClipboardFormatString[];
@@ -146,7 +146,7 @@ struct BookmarkNodeData {
   bool Read(const ui::OSExchangeData& data);
 #endif
 
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
   // Writes the data for a drag to |pickle|.
   void WriteToPickle(const base::FilePath& profile_path,
                      base::Pickle* pickle) const;

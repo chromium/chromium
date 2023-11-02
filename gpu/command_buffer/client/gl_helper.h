@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/gpu_export.h"
 #include "ui/gfx/geometry/size.h"
@@ -34,7 +34,7 @@ class ScopedGLuint {
                GenFunc gen_func,
                DeleteFunc delete_func)
       : gl_(gl), id_(0u), delete_func_(delete_func) {
-    (gl_->*gen_func)(1, &id_);
+    (gl_.get()->*gen_func)(1, &id_);
   }
 
   operator GLuint() const { return id_; }
@@ -46,12 +46,12 @@ class ScopedGLuint {
 
   ~ScopedGLuint() {
     if (id_ != 0) {
-      (gl_->*delete_func_)(1, &id_);
+      (gl_.get()->*delete_func_)(1, &id_);
     }
   }
 
  private:
-  gles2::GLES2Interface* gl_;
+  raw_ptr<gles2::GLES2Interface> gl_;
   GLuint id_;
   DeleteFunc delete_func_;
 };
@@ -86,16 +86,16 @@ class ScopedBinder {
   typedef void (gles2::GLES2Interface::*BindFunc)(GLenum target, GLuint id);
   ScopedBinder(gles2::GLES2Interface* gl, GLuint id, BindFunc bind_func)
       : gl_(gl), bind_func_(bind_func) {
-    (gl_->*bind_func_)(Target, id);
+    (gl_.get()->*bind_func_)(Target, id);
   }
 
   ScopedBinder(const ScopedBinder&) = delete;
   ScopedBinder& operator=(const ScopedBinder&) = delete;
 
-  virtual ~ScopedBinder() { (gl_->*bind_func_)(Target, 0); }
+  virtual ~ScopedBinder() { (gl_.get()->*bind_func_)(Target, 0); }
 
  private:
-  gles2::GLES2Interface* gl_;
+  raw_ptr<gles2::GLES2Interface> gl_;
   BindFunc bind_func_;
 };
 
@@ -164,6 +164,8 @@ class GPU_EXPORT GLHelper {
                             GLenum texture_target,
                             const gfx::Size& dst_size,
                             unsigned char* out,
+                            size_t row_stride_bytes,
+                            bool flip_y,
                             GLenum format,
                             base::OnceCallback<void(bool)> callback);
 
@@ -349,8 +351,8 @@ class GPU_EXPORT GLHelper {
 
   enum ReadbackSwizzle { kSwizzleNone = 0, kSwizzleBGRA };
 
-  gles2::GLES2Interface* gl_;
-  ContextSupport* context_support_;
+  raw_ptr<gles2::GLES2Interface> gl_;
+  raw_ptr<ContextSupport> context_support_;
   std::unique_ptr<CopyTextureToImpl> copy_texture_to_impl_;
   std::unique_ptr<GLHelperScaling> scaler_impl_;
   std::unique_ptr<ReadbackYUVInterface> shared_readback_yuv_flip_;
@@ -420,8 +422,8 @@ class GPU_EXPORT I420Converter {
 // and read back a texture from the GPU into CPU-accessible RAM. A single
 // readback pipeline can handle multiple outstanding readbacks at the same time.
 //
-// TODO(crbug.com/870036): DEPRECATED. This will be removed soon, in favor of
-// I420Converter and readback implementation in GLRendererCopier.
+// TODO(crbug.com/870036): DEPRECATED. This will be removed soon in favor of
+// I420Converter.
 class GPU_EXPORT ReadbackYUVInterface {
  public:
   ReadbackYUVInterface() {}

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,12 +56,12 @@ class ScopedDevtoolsOpener {
 
   void EnableAdBlocking(bool enabled) {
     // Send Page.setAdBlockingEnabled, should force activation.
-    base::DictionaryValue ad_blocking_command;
-    ad_blocking_command.SetInteger("id", 1);
-    ad_blocking_command.SetString("method", "Page.setAdBlockingEnabled");
-    auto params = std::make_unique<base::DictionaryValue>();
-    params->SetBoolean("enabled", enabled);
-    ad_blocking_command.SetDictionary("params", std::move(params));
+    base::Value ad_blocking_command(base::Value::Type::DICTIONARY);
+    ad_blocking_command.SetIntKey("id", 1);
+    ad_blocking_command.SetStringKey("method", "Page.setAdBlockingEnabled");
+    base::Value params(base::Value::Type::DICTIONARY);
+    params.SetBoolKey("enabled", enabled);
+    ad_blocking_command.SetKey("params", std::move(params));
     std::string json_string;
     JSONStringValueSerializer serializer(&json_string);
     ASSERT_TRUE(serializer.Serialize(ad_blocking_command));
@@ -88,7 +88,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterDevtoolsBrowserTest,
 
   // Should not trigger activation, the URL is not on the blocklist.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 
   // Open up devtools and trigger forced activation.
   {
@@ -96,12 +97,14 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterDevtoolsBrowserTest,
     devtools.EnableAdBlocking(true);
 
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-    EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
+    EXPECT_FALSE(
+        WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 
     // Close devtools, should stop forced activation.
   }
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 }
 
 IN_PROC_BROWSER_TEST_F(SubresourceFilterListInsertingBrowserTest,
@@ -120,7 +123,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterListInsertingBrowserTest,
 
   // Should not trigger activation, the URL is not on the blocklist.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 
   content::WebContentsConsoleObserver console_observer(web_contents());
   console_observer.SetPattern(kActivationWarningConsoleMessage);
@@ -130,14 +134,16 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterListInsertingBrowserTest,
     ScopedDevtoolsOpener devtools(web_contents());
     devtools.EnableAdBlocking(true);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-    EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
+    EXPECT_FALSE(
+        WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
     console_observer.Wait();
     EXPECT_EQ(kActivationWarningConsoleMessage,
               console_observer.GetMessageAt(0u));
     // Close devtools, should stop forced activation.
   }
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 }
 
 IN_PROC_BROWSER_TEST_F(SubresourceFilterDevtoolsBrowserTest,
@@ -152,7 +158,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterDevtoolsBrowserTest,
   devtools.EnableAdBlocking(true);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
+  EXPECT_FALSE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
   EXPECT_FALSE(console_observer.messages().empty());
 }
 
@@ -180,7 +187,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterDevtoolsBrowserTestWithSitePerProcess,
   const GURL frame_with_script =
       GetTestUrl("subresource_filter/frame_with_included_script.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), frame_with_script));
-  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
+  EXPECT_FALSE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 
   const GURL cross_site_frames = embedded_test_server()->GetURL(
       "a.com", "/subresource_filter/frame_cross_site_set.html");
@@ -194,7 +202,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterDevtoolsBrowserTestWithSitePerProcess,
   }
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), frame_with_script));
-  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
+  EXPECT_FALSE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 }
 
 }  // namespace subresource_filter

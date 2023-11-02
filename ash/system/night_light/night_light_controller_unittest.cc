@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/system/night_light/night_light_controller_impl.h"
-#include "ash/system/night_light/time_of_day.h"
+#include "ash/system/time/time_of_day.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/test_shell_delegate.h"
@@ -80,8 +80,8 @@ gfx::Vector3dF GetDisplayCompositorRGBScaleFactors(int64_t display_id) {
   ui::Compositor* compositor = host->compositor();
   DCHECK(compositor);
 
-  const skia::Matrix44& matrix = compositor->display_color_matrix();
-  return gfx::Vector3dF(matrix.get(0, 0), matrix.get(1, 1), matrix.get(2, 2));
+  const SkM44& matrix = compositor->display_color_matrix();
+  return gfx::Vector3dF(matrix.rc(0, 0), matrix.rc(1, 1), matrix.rc(2, 2));
 }
 
 // Returns a vector with a Vector3dF for each compositor.
@@ -89,7 +89,7 @@ gfx::Vector3dF GetDisplayCompositorRGBScaleFactors(int64_t display_id) {
 std::vector<gfx::Vector3dF> GetAllDisplaysCompositorsRGBScaleFactors() {
   std::vector<gfx::Vector3dF> scale_factors;
   for (int64_t display_id :
-       Shell::Get()->display_manager()->GetCurrentDisplayIdList()) {
+       Shell::Get()->display_manager()->GetConnectedDisplayIdList()) {
     scale_factors.push_back(GetDisplayCompositorRGBScaleFactors(display_id));
   }
   return scale_factors;
@@ -114,7 +114,7 @@ void TestDisplayCompositorTemperature(int64_t display_id, float temperature) {
 // to the given |temperature|.
 void TestCompositorsTemperature(float temperature) {
   for (int64_t display_id :
-       Shell::Get()->display_manager()->GetCurrentDisplayIdList()) {
+       Shell::Get()->display_manager()->GetConnectedDisplayIdList()) {
     TestDisplayCompositorTemperature(display_id, temperature);
   }
 }
@@ -1630,7 +1630,7 @@ TEST_F(AutoNightLightTest, Notification) {
   // Since Auto Night Light is enabled, the schedule should be automatically set
   // to sunset-to-sunrise, even though the user never set that pref.
   NightLightControllerImpl* controller = GetController();
-  EXPECT_EQ(NightLightController::kSunsetToSunrise,
+  EXPECT_EQ(NightLightController::ScheduleType::kSunsetToSunrise,
             controller->GetScheduleType());
   EXPECT_FALSE(
       user1_pref_service()->HasPrefPath(prefs::kNightLightScheduleType));
@@ -1662,7 +1662,7 @@ TEST_F(AutoNightLightTest, Notification) {
 TEST_F(AutoNightLightTest, DismissNotificationOnTurningOff) {
   GetSessionControllerClient()->UnlockScreen();
   NightLightControllerImpl* controller = GetController();
-  EXPECT_EQ(NightLightController::kSunsetToSunrise,
+  EXPECT_EQ(NightLightController::ScheduleType::kSunsetToSunrise,
             controller->GetScheduleType());
 
   // Use a fake geoposition with sunset/sunrise times at 5pm/3am.
@@ -1716,7 +1716,8 @@ TEST_F(AutoNightLightTest, OverriddenByUser) {
   // Once the user sets the schedule to anything, even sunset-to-sunrise, the
   // auto-night light will never show.
   NightLightControllerImpl* controller = GetController();
-  controller->SetScheduleType(NightLightController::kSunsetToSunrise);
+  controller->SetScheduleType(
+      NightLightController::ScheduleType::kSunsetToSunrise);
 
   // Simulate reaching sunset.
   delegate()->SetFakeNow(TimeOfDay(20 * 60));  // Now is 8:00 PM.

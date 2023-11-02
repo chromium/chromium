@@ -1,8 +1,9 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // Uncomment as these modules are migrated to Polymer 3.
+import './crostini_page/bruschetta_subpage.js';
 import './crostini_page/crostini_arc_adb.js';
 import './crostini_page/crostini_arc_adb_confirmation_dialog.js';
 import './crostini_page/crostini_confirmation_dialog.js';
@@ -15,13 +16,21 @@ import './crostini_page/crostini_import_confirmation_dialog.js';
 import './crostini_page/crostini_page.js';
 import './crostini_page/crostini_port_forwarding.js';
 import './crostini_page/crostini_port_forwarding_add_port_dialog.js';
+import './crostini_page/crostini_shared_usb_devices.js';
 import './crostini_page/crostini_subpage.js';
 import './date_time_page/date_time_page.js';
 import './date_time_page/timezone_selector.js';
+import './guest_os/guest_os_container_select.js';
 import './guest_os/guest_os_shared_usb_devices.js';
+import './guest_os/guest_os_shared_usb_devices_add_dialog.js';
 import './guest_os/guest_os_shared_paths.js';
 import './os_a11y_page/os_a11y_page.js';
 import './os_a11y_page/manage_a11y_page.js';
+import './os_a11y_page/text_to_speech_page.js';
+import './os_a11y_page/display_and_magnification_page.js';
+import './os_a11y_page/keyboard_and_text_input_page.js';
+import './os_a11y_page/cursor_and_touchpad_page.js';
+import './os_a11y_page/audio_and_captions_page.js';
 import './os_a11y_page/switch_access_action_assignment_dialog.js';
 import './os_a11y_page/switch_access_action_assignment_pane.js';
 import './os_a11y_page/switch_access_setup_guide_dialog.js';
@@ -29,12 +38,13 @@ import './os_a11y_page/switch_access_setup_guide_warning_dialog.js';
 import './os_a11y_page/switch_access_subpage.js';
 import './os_a11y_page/tts_subpage.js';
 import './os_files_page/os_files_page.js';
-import './os_languages_page/input_method_options_page.m.js';
-import './os_languages_page/input_page.m.js';
-import './os_languages_page/os_edit_dictionary_page.m.js';
-import './os_languages_page/os_languages_page_v2.m.js';
-import './os_languages_page/os_languages_section.m.js';
-import './os_languages_page/smart_inputs_page.m.js';
+import './os_languages_page/input_method_options_page.js';
+import './os_languages_page/input_page.js';
+import './os_languages_page/os_edit_dictionary_page.js';
+import './os_languages_page/os_japanese_manage_user_dictionary_page.js';
+import './os_languages_page/os_languages_page_v2.js';
+import './os_languages_page/os_languages_section.js';
+import './os_languages_page/smart_inputs_page.js';
 import './os_printing_page/cups_add_print_server_dialog.js';
 import './os_printing_page/cups_add_printer_dialog.js';
 import './os_printing_page/cups_add_printer_manually_dialog.js';
@@ -48,8 +58,10 @@ import './os_printing_page/cups_printers.js';
 import './os_printing_page/cups_saved_printers.js';
 import './os_printing_page/cups_settings_add_printer_dialog.js';
 import './os_printing_page/os_printing_page.js';
+import './os_privacy_page/metrics_consent_toggle_button.js';
 import './os_privacy_page/os_privacy_page.js';
 import './os_privacy_page/peripheral_data_access_protection_dialog.js';
+import './os_privacy_page/privacy_hub_page.js';
 import './os_privacy_page/smart_privacy_page.js';
 import './os_reset_page/os_powerwash_dialog.js';
 import './os_reset_page/os_powerwash_dialog_esim_item.js';
@@ -58,7 +70,7 @@ import './os_files_page/smb_shares_page.js';
 import '../privacy_page/secure_dns.js';
 import '../privacy_page/secure_dns_input.js';
 
-export {SmbBrowserProxyImpl, SmbMountResult} from 'chrome://resources/cr_components/chromeos/smb_shares/smb_browser_proxy.js';
+export {SmbBrowserProxyImpl, SmbMountResult} from 'chrome://resources/ash/common/smb_shares/smb_browser_proxy.js';
 export {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
 export {PrivacyPageBrowserProxyImpl, SecureDnsMode, SecureDnsUiManagementMode} from '../privacy_page/privacy_page_browser_proxy.js';
 export {CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_page/crostini_browser_proxy.js';
@@ -66,9 +78,12 @@ export {TimeZoneAutoDetectMethod} from './date_time_page/date_time_types.js';
 export {TimeZoneBrowserProxyImpl} from './date_time_page/timezone_browser_proxy.js';
 export {CROSTINI_TYPE, GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsSharedUsbDevice, PLUGIN_VM_TYPE} from './guest_os/guest_os_browser_proxy.js';
 export {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from './os_languages_page/languages_browser_proxy.js';
-export {InputsShortcutReminderState, LanguagesMetricsProxy, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from './os_languages_page/languages_metrics_proxy.m.js';
+export {InputsShortcutReminderState, LanguagesMetricsProxy, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from './os_languages_page/languages_metrics_proxy.js';
 export {PrinterType} from './os_printing_page/cups_printer_types.js';
 export {CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, PrinterSetupResult, PrintServerResult} from './os_printing_page/cups_printers_browser_proxy.js';
 export {CupsPrintersEntryManager} from './os_printing_page/cups_printers_entry_manager.js';
+export {MediaDevicesProxy} from './os_privacy_page/media_devices_proxy.js';
+export {MetricsConsentBrowserProxy, MetricsConsentBrowserProxyImpl, MetricsConsentState} from './os_privacy_page/metrics_consent_browser_proxy.js';
 export {DataAccessPolicyState, PeripheralDataAccessBrowserProxy, PeripheralDataAccessBrowserProxyImpl} from './os_privacy_page/peripheral_data_access_browser_proxy.js';
+export {PrivacyHubBrowserProxy, PrivacyHubBrowserProxyImpl} from './os_privacy_page/privacy_hub_browser_proxy.js';
 export {OsResetBrowserProxyImpl} from './os_reset_page/os_reset_browser_proxy.js';

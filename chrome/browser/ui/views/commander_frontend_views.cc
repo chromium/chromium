@@ -1,16 +1,20 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/commander_frontend_views.h"
 
+#include <tuple>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/lifetime/termination_notification.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/commander/commander_backend.h"
@@ -21,15 +25,15 @@
 #include "chrome/browser/ui/webui/commander/commander_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "content/public/browser/notification_service.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/views/widget/native_widget_aura.h"
 #endif
 
@@ -72,7 +76,7 @@ class CommanderFocusLossWatcher : public views::WidgetObserver {
   }
 
  private:
-  commander::CommanderFrontend* frontend_;  // weak, owns us
+  raw_ptr<commander::CommanderFrontend> frontend_;  // weak, owns us
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
 };
@@ -89,6 +93,11 @@ class CommanderWebView : public views::WebView {
       const content::NativeWebKeyboardEvent& event) override {
     CHECK(owner_);
     return event_handler_.HandleKeyboardEvent(event, owner_->GetFocusManager());
+  }
+
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
+                         const content::ContextMenuParams& params) override {
+    return true;
   }
 
   void AddedToWidget() override {
@@ -119,19 +128,8 @@ CommanderFrontendViews::CommanderFrontendViews(
   backend_->SetUpdateCallback(
       base::BindRepeating(&CommanderFrontendViews::OnViewModelUpdated,
                           weak_ptr_factory_.GetWeakPtr()));
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  profile_manager->CreateProfileAsync(
-      ProfileManager::GetSystemProfilePath(),
-      base::BindRepeating(&CommanderFrontendViews::OnSystemProfileAvailable,
-                          weak_ptr_factory_.GetWeakPtr()));
-#else
-  // TODO(lgrey): ChromeOS doesn't have a system profile. Need to find
-  // a better way to do this before Commander is hooked up, but doing
-  // this for now to unblock.
-  CreateWebView(ProfileManager::GetPrimaryUserProfile());
-#endif
+  subscription_ = browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
+      &CommanderFrontendViews::OnAppTerminating, base::Unretained(this)));
 }
 
 CommanderFrontendViews::~CommanderFrontendViews() {
@@ -141,6 +139,9 @@ CommanderFrontendViews::~CommanderFrontendViews() {
 }
 void CommanderFrontendViews::ToggleForBrowser(Browser* browser) {
   DCHECK(browser);
+  // This ensures that quick commands are only available for normal browsers.
+  if (!browser->is_type_normal())
+    return;
   bool should_show = !browser_ || browser != browser_;
   if (browser_)
     Hide();
@@ -149,13 +150,8 @@ void CommanderFrontendViews::ToggleForBrowser(Browser* browser) {
 }
 
 void CommanderFrontendViews::Show(Browser* browser) {
-  if (!is_web_view_created()) {
-    browser_ = browser;
-    show_requested_ = true;
-    return;
-  }
   DCHECK(!is_showing());
-  show_requested_ = false;
+  DCHECK_EQ(nullptr, web_view_.get());
   browser_ = browser;
   BrowserList::AddObserver(this);
   views::View* parent = BrowserView::GetBrowserViewForBrowser(browser_);
@@ -167,24 +163,26 @@ void CommanderFrontendViews::Show(Browser* browser) {
   views::Widget::InitParams params(
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.delegate = widget_delegate_.get();
-  params.name = "Commander";
+  params.name = "Quick Commands";
   params.parent = parent->GetWidget()->GetNativeView();
+  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
 // On Windows, this defaults to DesktopNativeWidgetAura, which has incorrect
 // parenting behavior for this widget.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   params.native_widget = new views::NativeWidgetAura(widget_);
 #endif
   widget_->Init(std::move(params));
   focus_loss_watcher_ =
       std::make_unique<CommanderFocusLossWatcher>(this, widget_);
 
-  web_view_->SetOwner(parent);
-  web_view_->SetSize(kDefaultSize);
+  auto web_view = CreateWebView(browser->profile());
+  web_view->SetOwner(parent);
+  web_view->SetSize(kDefaultSize);
   CommanderUI* controller = static_cast<CommanderUI*>(
-      web_view_->GetWebContents()->GetWebUI()->GetController());
+      web_view->GetWebContents()->GetWebUI()->GetController());
   controller->handler()->PrepareToShow(this);
 
-  web_view_ptr_ = widget_->SetContentsView(std::move(web_view_));
+  web_view_ = widget_->SetContentsView(std::move(web_view));
 
   gfx::Rect bounds;
   bounds.set_size(kDefaultSize);
@@ -193,8 +191,8 @@ void CommanderFrontendViews::Show(Browser* browser) {
 
   widget_->Show();
 
-  web_view_ptr_->RequestFocus();
-  web_view_ptr_->GetWebContents()->Focus();
+  web_view_->RequestFocus();
+  web_view_->GetWebContents()->Focus();
 }
 
 void CommanderFrontendViews::Hide() {
@@ -204,15 +202,13 @@ void CommanderFrontendViews::Hide() {
       this);
   BrowserList::RemoveObserver(this);
   backend_->Reset();
-  show_requested_ = false;
   browser_ = nullptr;
 
-  web_view_ = widget_->GetRootView()->RemoveChildViewT(web_view_ptr_);
-  web_view_->SetOwner(nullptr);
+  widget_->GetRootView()->RemoveChildViewT(std::exchange(web_view_, nullptr));
 
   focus_loss_watcher_.reset();
   widget_delegate_->SetOwnedByWidget(true);
-  ignore_result(widget_delegate_.release());
+  std::ignore = widget_delegate_.release();
   widget_->Close();
   widget_ = nullptr;
 }
@@ -222,14 +218,9 @@ void CommanderFrontendViews::OnBrowserClosing(Browser* browser) {
     Hide();
 }
 
-void CommanderFrontendViews::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(chrome::NOTIFICATION_APP_TERMINATING, type);
+void CommanderFrontendViews::OnAppTerminating() {
   if (is_showing())
     Hide();
-  web_view_->SetWebContents(nullptr);
 }
 
 void CommanderFrontendViews::OnWidgetBoundsChanged(
@@ -269,7 +260,7 @@ void CommanderFrontendViews::OnHeightChanged(int new_height) {
   gfx::Size size = kDefaultSize;
   size.set_height(new_height);
   widget_->SetSize(size);
-  web_view_ptr_->SetSize(size);
+  web_view_->SetSize(size);
 }
 
 void CommanderFrontendViews::OnHandlerEnabled(bool is_enabled) {
@@ -288,34 +279,22 @@ void CommanderFrontendViews::OnViewModelUpdated(
     // and send it when the handler becomes available again.
     return;
   CommanderUI* controller = static_cast<CommanderUI*>(
-      web_view_ptr_->GetWebContents()->GetWebUI()->GetController());
+      web_view_->GetWebContents()->GetWebUI()->GetController());
   controller->handler()->ViewModelUpdated(std::move(view_model));
   // TODO(lgrey): Pass view model to WebUI.
 }
 
-void CommanderFrontendViews::OnSystemProfileAvailable(
-    Profile* profile,
-    Profile::CreateStatus status) {
-  if (status == Profile::CreateStatus::CREATE_STATUS_INITIALIZED &&
-      !is_showing()) {
-    CreateWebView(profile);
-  }
-}
-
-void CommanderFrontendViews::CreateWebView(Profile* profile) {
-  DCHECK(!is_web_view_created());
-
-  web_view_ = std::make_unique<CommanderWebView>(profile);
-  web_view_->set_allow_accelerators(true);
+std::unique_ptr<CommanderWebView> CommanderFrontendViews::CreateWebView(
+    Profile* profile) {
+  DCHECK(profile);
+  auto web_view = std::make_unique<CommanderWebView>(profile);
+  web_view->set_allow_accelerators(true);
   // Make the commander WebContents show up in the task manager.
-  content::WebContents* web_contents = web_view_->GetWebContents();
-  task_manager::WebContentsTags::CreateForToolContents(web_contents,
-                                                       IDS_COMMANDER_LABEL);
-  web_view_->LoadInitialURL(GURL(chrome::kChromeUICommanderURL));
-  if (show_requested_)
-    Show(browser_);
-  registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
-                 content::NotificationService::AllSources());
+  content::WebContents* web_contents = web_view->GetWebContents();
+  task_manager::WebContentsTags::CreateForToolContents(
+      web_contents, IDS_QUICK_COMMANDS_LABEL);
+  web_view->LoadInitialURL(GURL(chrome::kChromeUICommanderURL));
+  return web_view;
 }
 
 // static

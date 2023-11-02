@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/login/ui/auth_factor_model.h"
 #include "ash/login/ui/login_error_bubble.h"
 #include "ash/login/ui/login_password_view.h"
 #include "ash/login/ui/login_user_view.h"
@@ -49,15 +50,23 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
     AUTH_NONE = 0,                     // No extra auth methods.
     AUTH_PASSWORD = 1 << 0,            // Display password.
     AUTH_PIN = 1 << 1,                 // Display PIN keyboard.
-    AUTH_TAP = 1 << 2,                 // Tap to unlock.
+    AUTH_TAP = 1 << 2,                 // [DEPRECATED] Tap to unlock.
+                                       // TODO(b/217970801): Remove this field.
     AUTH_ONLINE_SIGN_IN = 1 << 3,      // Force online sign-in.
     AUTH_FINGERPRINT = 1 << 4,         // Use fingerprint to unlock.
-    AUTH_CHALLENGE_RESPONSE = 1 << 5,  // Authenticate via challenge-response
+    AUTH_SMART_LOCK = 1 << 5,          // Use Smart Lock to unlock.
+    AUTH_CHALLENGE_RESPONSE = 1 << 6,  // Authenticate via challenge-response
                                        // protocol using security token.
-    AUTH_DISABLED = 1 << 6,  // Disable all the auth methods and show a
+    AUTH_DISABLED = 1 << 7,  // Disable all the auth methods and show a
                              // message to user.
-    AUTH_DISABLED_TPM_LOCKED = 1 << 7,  // Disable all the auth methods due
+    AUTH_DISABLED_TPM_LOCKED = 1 << 8,  // Disable all the auth methods due
                                         // to the TPM being locked
+    AUTH_AUTH_FACTOR_IS_HIDING_PASSWORD =
+        1 << 9,  // Hide the password/pin fields and slide the auth factors
+                 // up. This happens, for example,  when an auth factor requires
+                 // the user to click a button as a final step. Note that if
+                 // this bit is set, the password/pin will be hidden even if
+                 // AUTH_PASSWORD and/or AUTH_PIN are set.
   };
 
   // Extra control parameters to be passed when setting the auth methods.
@@ -103,8 +112,12 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
     views::Button* challenge_response_button();
     views::Label* challenge_response_label();
     LoginAuthFactorsView* auth_factors_view() const;
+    AuthFactorModel* fingerprint_auth_factor_model() const;
+    AuthFactorModel* smart_lock_auth_factor_model() const;
     bool HasAuthMethod(AuthMethods auth_method) const;
     const std::u16string& GetDisabledAuthMessageContent() const;
+    void SetFingerprintState(FingerprintState state) const;
+    void SetSmartLockState(SmartLockState state) const;
 
    private:
     LoginAuthUserView* const view_;
@@ -134,6 +147,10 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
     OnEasyUnlockIconHovered on_easy_unlock_icon_hovered;
     // Called when the easy unlock icon is tapped.
     views::Button::PressedCallback on_easy_unlock_icon_tapped;
+    // Called when LoginAuthFactorsView enters/exits a state where an auth
+    // factor wants to hide the password and pin.
+    base::RepeatingCallback<void(bool)>
+        on_auth_factor_is_hiding_password_changed;
   };
 
   LoginAuthUserView(const LoginUserInfo& user, const Callbacks& callbacks);
@@ -170,6 +187,9 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
 
   // Update the current fingerprint state.
   void SetFingerprintState(FingerprintState state);
+
+  // Reset the fingerprint state by updating UI to reflect the current state.
+  void ResetFingerprintUIState();
 
   // Called to show a fingerprint authentication attempt result.
   void NotifyFingerprintAuthResult(bool success);
@@ -215,6 +235,11 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   // Called with the result of the request started in
   // |AttemptAuthenticateWithChallengeResponse|.
   void OnChallengeResponseAuthComplete(absl::optional<bool> auth_success);
+
+  // Called when the LoginAuthFactorsView "arrow button" is tapped for the
+  // Smart Lock auth factor; the user's phone is unlocked and the user has
+  // tapped this button in order to authenticate with Smart Lock.
+  void OnSmartLockArrowButtonTapped();
 
   // Called when the user view has been tapped. This will run |on_auth_| if tap
   // to unlock is enabled, or run |OnOnlineSignInMessageTap| if the online
@@ -289,7 +314,6 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
 
   LoginUserView* user_view_ = nullptr;
   LoginPasswordView* password_view_ = nullptr;
-  NonAccessibleView* password_view_container_ = nullptr;
   LoginPinInputView* pin_input_view_ = nullptr;
   views::LabelButton* pin_password_toggle_ = nullptr;
   LoginPinView* pin_view_ = nullptr;

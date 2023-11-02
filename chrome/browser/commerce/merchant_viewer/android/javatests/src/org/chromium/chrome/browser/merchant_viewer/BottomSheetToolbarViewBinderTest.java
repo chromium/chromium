@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@ import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -37,7 +37,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Tests for {@link BottomSheetToolbarViewBinder}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class BottomSheetToolbarViewBinderTest extends DummyUiActivityTestCase {
+public class BottomSheetToolbarViewBinderTest extends BlankUiTestActivityTestCase {
     private final AtomicBoolean mIconClicked = new AtomicBoolean();
 
     private BottomSheetToolbarView mItemView;

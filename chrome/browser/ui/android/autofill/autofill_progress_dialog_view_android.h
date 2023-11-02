@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <stddef.h>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/payments/autofill_progress_dialog_controller.h"
 #include "chrome/browser/ui/autofill/payments/autofill_progress_dialog_view.h"
 
@@ -37,7 +38,7 @@ class AutofillProgressDialogViewAndroid : public AutofillProgressDialogView {
   void ShowConfirmation(std::u16string confirmation_message);
 
  private:
-  AutofillProgressDialogController* controller_;
+  raw_ptr<AutofillProgressDialogController> controller_;
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
 };

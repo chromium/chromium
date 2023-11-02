@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/posix/unix_domain_socket.h"
 #include "base/run_loop.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
 #include "chromecast/net/socket_util.h"
 #include "content/public/test/test_content_client_initializer.h"
@@ -57,22 +58,24 @@ class AudioSocketBrokerTest : public content::RenderViewHostTestHarness {
     socket_path_ = test_dir_.GetPath().Append(kTestSocket).value();
     initializer_ = std::make_unique<content::TestContentClientInitializer>();
     content::RenderViewHostTestHarness::SetUp();
-    audio_socket_broker_ = new AudioSocketBroker(
-        main_rfh(), audio_socket_broker_remote_.BindNewPipeAndPassReceiver(),
+    audio_socket_broker_ = &AudioSocketBroker::CreateForTesting(
+        *main_rfh(), audio_socket_broker_remote_.BindNewPipeAndPassReceiver(),
         socket_path_);
   }
 
   void SetupServerSocket() {
+    base::WaitableEvent server_setup_finished;
     io_thread_ = std::make_unique<base::Thread>("test_io_thread");
     io_thread_->StartWithOptions(
         base::Thread::Options(base::MessagePumpType::IO, 0));
     io_thread_->task_runner()->PostTask(
         FROM_HERE,
         base::BindOnce(&AudioSocketBrokerTest::SetupServerSocketOnIoThread,
-                       base::Unretained(this)));
+                       base::Unretained(this), &server_setup_finished));
+    server_setup_finished.Wait();
   }
 
-  void SetupServerSocketOnIoThread() {
+  void SetupServerSocketOnIoThread(base::WaitableEvent* server_setup_finished) {
     auto unix_socket = std::make_unique<net::UnixDomainServerSocket>(
         base::BindRepeating(
             [](const net::UnixDomainServerSocket::Credentials&) {
@@ -87,6 +90,7 @@ class AudioSocketBrokerTest : public content::RenderViewHostTestHarness {
         &accepted_descriptor_,
         base::BindRepeating(&AudioSocketBrokerTest::OnAccept,
                             base::Unretained(this)));
+    server_setup_finished->Signal();
   }
 
   void OnAccept(int result) {

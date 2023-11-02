@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,6 +30,9 @@
 @property(nonatomic, copy) NSString* itemIdentifier;
 // Delegate to inform the TabStrip on the cell.
 @property(nonatomic, weak) id<TabStripCellDelegate> delegate;
+
+// Checks if cell has a specific identifier.
+- (BOOL)hasIdentifier:(NSString*)identifier;
 
 @end
 

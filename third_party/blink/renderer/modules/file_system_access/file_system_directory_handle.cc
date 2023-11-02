@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_directory_handle.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_get_directory_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_get_file_options.h"
@@ -87,19 +88,20 @@ FileSystemDirectoryIterator* FileSystemDirectoryHandle::values(
 ScriptPromise FileSystemDirectoryHandle::getFileHandle(
     ScriptState* script_state,
     const String& name,
-    const FileSystemGetFileOptions* options) {
+    const FileSystemGetFileOptions* options,
+    ExceptionState& exception_state) {
+  if (!mojo_ptr_.is_bound()) {
+    // TODO(crbug.com/1293949): Add an error message.
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError, "");
+    return ScriptPromise();
+  }
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise result = resolver->Promise();
 
-  if (!mojo_ptr_.is_bound()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError));
-    return result;
-  }
-
   mojo_ptr_->GetFile(
       name, options->create(),
-      WTF::Bind(
+      WTF::BindOnce(
           [](FileSystemDirectoryHandle*, ScriptPromiseResolver* resolver,
              const String& name, FileSystemAccessErrorPtr result,
              mojo::PendingRemote<mojom::blink::FileSystemAccessFileHandle>
@@ -124,19 +126,20 @@ ScriptPromise FileSystemDirectoryHandle::getFileHandle(
 ScriptPromise FileSystemDirectoryHandle::getDirectoryHandle(
     ScriptState* script_state,
     const String& name,
-    const FileSystemGetDirectoryOptions* options) {
+    const FileSystemGetDirectoryOptions* options,
+    ExceptionState& exception_state) {
+  if (!mojo_ptr_.is_bound()) {
+    // TODO(crbug.com/1293949): Add an error message.
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError, "");
+    return ScriptPromise();
+  }
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise result = resolver->Promise();
 
-  if (!mojo_ptr_.is_bound()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError));
-    return result;
-  }
-
   mojo_ptr_->GetDirectory(
       name, options->create(),
-      WTF::Bind(
+      WTF::BindOnce(
           [](FileSystemDirectoryHandle*, ScriptPromiseResolver* resolver,
              const String& name, FileSystemAccessErrorPtr result,
              mojo::PendingRemote<mojom::blink::FileSystemAccessDirectoryHandle>
@@ -161,19 +164,20 @@ ScriptPromise FileSystemDirectoryHandle::getDirectoryHandle(
 ScriptPromise FileSystemDirectoryHandle::removeEntry(
     ScriptState* script_state,
     const String& name,
-    const FileSystemRemoveOptions* options) {
+    const FileSystemRemoveOptions* options,
+    ExceptionState& exception_state) {
+  if (!mojo_ptr_.is_bound()) {
+    // TODO(crbug.com/1293949): Add an error message.
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError, "");
+    return ScriptPromise();
+  }
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise result = resolver->Promise();
 
-  if (!mojo_ptr_.is_bound()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError));
-    return result;
-  }
-
   mojo_ptr_->RemoveEntry(
       name, options->recursive(),
-      WTF::Bind(
+      WTF::BindOnce(
           [](FileSystemDirectoryHandle*, ScriptPromiseResolver* resolver,
              FileSystemAccessErrorPtr result) {
             // Keep `this` alive so the handle will not be garbage-collected
@@ -187,19 +191,20 @@ ScriptPromise FileSystemDirectoryHandle::removeEntry(
 
 ScriptPromise FileSystemDirectoryHandle::resolve(
     ScriptState* script_state,
-    FileSystemHandle* possible_child) {
+    FileSystemHandle* possible_child,
+    ExceptionState& exception_state) {
+  if (!mojo_ptr_.is_bound()) {
+    // TODO(crbug.com/1293949): Add an error message.
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError, "");
+    return ScriptPromise();
+  }
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise result = resolver->Promise();
 
-  if (!mojo_ptr_.is_bound()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError));
-    return result;
-  }
-
   mojo_ptr_->Resolve(
       possible_child->Transfer(),
-      WTF::Bind(
+      WTF::BindOnce(
           [](FileSystemDirectoryHandle*, ScriptPromiseResolver* resolver,
              FileSystemAccessErrorPtr result,
              const absl::optional<Vector<String>>& path) {
@@ -259,19 +264,6 @@ void FileSystemDirectoryHandle::RequestPermissionImpl(
   mojo_ptr_->RequestPermission(writable, std::move(callback));
 }
 
-void FileSystemDirectoryHandle::RenameImpl(
-    const String& new_entry_name,
-    base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr)> callback) {
-  if (!mojo_ptr_.is_bound()) {
-    std::move(callback).Run(mojom::blink::FileSystemAccessError::New(
-        mojom::blink::FileSystemAccessStatus::kInvalidState,
-        base::File::Error::FILE_ERROR_FAILED, "Context Destroyed"));
-    return;
-  }
-
-  mojo_ptr_->Rename(new_entry_name, std::move(callback));
-}
-
 void FileSystemDirectoryHandle::MoveImpl(
     mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken> dest,
     const String& new_entry_name,
@@ -283,7 +275,11 @@ void FileSystemDirectoryHandle::MoveImpl(
     return;
   }
 
-  mojo_ptr_->Move(std::move(dest), new_entry_name, std::move(callback));
+  if (dest.is_valid()) {
+    mojo_ptr_->Move(std::move(dest), new_entry_name, std::move(callback));
+  } else {
+    mojo_ptr_->Rename(new_entry_name, std::move(callback));
+  }
 }
 
 void FileSystemDirectoryHandle::RemoveImpl(
@@ -314,15 +310,24 @@ void FileSystemDirectoryHandle::IsSameEntryImpl(
 
   mojo_ptr_->Resolve(
       std::move(other),
-      WTF::Bind(
+      WTF::BindOnce(
           [](base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
                                      bool)> callback,
              FileSystemAccessErrorPtr result,
              const absl::optional<Vector<String>>& path) {
             std::move(callback).Run(std::move(result),
-                                    path.has_value() && path->IsEmpty());
+                                    path.has_value() && path->empty());
           },
           std::move(callback)));
+}
+
+void FileSystemDirectoryHandle::GetUniqueIdImpl(
+    base::OnceCallback<void(const WTF::String&)> callback) {
+  if (!mojo_ptr_.is_bound()) {
+    std::move(callback).Run("");
+    return;
+  }
+  mojo_ptr_->GetUniqueId(std::move(callback));
 }
 
 }  // namespace blink

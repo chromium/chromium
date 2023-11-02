@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,7 +60,7 @@ class MEDIA_EXPORT StreamParser {
     base::Time timeline_offset;
 
     // Indicates live stream.
-    DemuxerStream::Liveness liveness;
+    StreamLiveness liveness = StreamLiveness::kUnknown;
 
     // Counts of tracks detected by type within this stream. Not all of these
     // tracks may be selected for use by the parser.
@@ -119,15 +119,14 @@ class MEDIA_EXPORT StreamParser {
   // been parsed to determine the initial stream configurations, presentation
   // start time, and duration. If |ignore_text_track| is true, then no text
   // buffers should be passed later by the parser to |new_buffers_cb|.
-  virtual void Init(
-      InitCB init_cb,
-      const NewConfigCB& config_cb,
-      const NewBuffersCB& new_buffers_cb,
-      bool ignore_text_track,
-      const EncryptedMediaInitDataCB& encrypted_media_init_data_cb,
-      const NewMediaSegmentCB& new_segment_cb,
-      const EndMediaSegmentCB& end_of_segment_cb,
-      MediaLog* media_log) = 0;
+  virtual void Init(InitCB init_cb,
+                    NewConfigCB config_cb,
+                    NewBuffersCB new_buffers_cb,
+                    bool ignore_text_track,
+                    EncryptedMediaInitDataCB encrypted_media_init_data_cb,
+                    NewMediaSegmentCB new_segment_cb,
+                    EndMediaSegmentCB end_of_segment_cb,
+                    MediaLog* media_log) = 0;
 
   // Called during the reset parser state algorithm.  This flushes the current
   // parser and puts the parser in a state where it can receive data.  This

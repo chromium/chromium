@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <string.h>
 
 #include <utility>
-#include "build/chromeos_buildflags.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "base/timer/elapsed_timer.h"
@@ -16,7 +15,7 @@
 #include "third_party/blink/public/web/web_image.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/gfx/codec/png_codec.h"
 #endif
 
@@ -76,7 +75,7 @@ void ImageDecoderImpl::DecodeImage(mojo_base::BigBuffer encoded_data,
   }
 
   SkBitmap decoded_image;
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   if (codec == mojom::ImageCodec::kPng) {
     // Our PNG decoding is using libpng.
     if (encoded_data.size()) {
@@ -87,7 +86,7 @@ void ImageDecoderImpl::DecodeImage(mojo_base::BigBuffer encoded_data,
       }
     }
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   if (codec == mojom::ImageCodec::kDefault) {
     decoded_image = blink::WebImage::FromData(
         blink::WebData(reinterpret_cast<const char*>(encoded_data.data()),
@@ -112,6 +111,10 @@ void ImageDecoderImpl::DecodeAnimation(mojo_base::BigBuffer encoded_data,
 
   auto frames = blink::WebImage::AnimationFromData(blink::WebData(
       reinterpret_cast<const char*>(encoded_data.data()), encoded_data.size()));
+  if (frames.size() == 0) {
+    std::move(callback).Run({});
+    return;
+  }
 
   int64_t max_frame_size_in_bytes = max_size_in_bytes / frames.size();
   std::vector<mojom::AnimationFramePtr> decoded_images;

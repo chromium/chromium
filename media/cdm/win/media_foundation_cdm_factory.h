@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,8 +41,7 @@ class MEDIA_EXPORT MediaFoundationCdmFactory final : public CdmFactory {
       CreateCdmFactoryCB create_cdm_factory_cb);
 
   // CdmFactory implementation.
-  void Create(const std::string& key_system,
-              const CdmConfig& cdm_config,
+  void Create(const CdmConfig& cdm_config,
               const SessionMessageCB& session_message_cb,
               const SessionClosedCB& session_closed_cb,
               const SessionKeysChangeCB& session_keys_change_cb,
@@ -54,7 +53,6 @@ class MEDIA_EXPORT MediaFoundationCdmFactory final : public CdmFactory {
   using IsTypeSupportedResultCB = base::OnceCallback<void(bool is_supported)>;
 
   void OnCdmOriginIdObtained(
-      const std::string& key_system,
       const CdmConfig& cdm_config,
       const SessionMessageCB& session_message_cb,
       const SessionClosedCB& session_closed_cb,
@@ -72,19 +70,12 @@ class MEDIA_EXPORT MediaFoundationCdmFactory final : public CdmFactory {
                        IsTypeSupportedResultCB is_type_supported_result_cb);
 
   void StoreClientToken(const std::vector<uint8_t>& client_token);
+  void OnCdmEvent(CdmEvent event, HRESULT hresult);
 
-  HRESULT CreateMfCdmInternal(
-      const std::string& key_system,
-      const CdmConfig& cdm_config,
-      const base::UnguessableToken& cdm_origin_id,
-      const absl::optional<std::vector<uint8_t>>& cdm_client_token,
-      const base::FilePath& cdm_store_path_root,
-      Microsoft::WRL::ComPtr<IMFContentDecryptionModule>& mf_cdm);
-
-  // Same as `CreateMfCdmInternal()`, but returns the HRESULT in out parameter
-  // so we can bind it to a repeating callback using weak pointer.
-  void CreateMfCdm(const std::string& key_system,
-                   const CdmConfig& cdm_config,
+  // Creates `mf_cdm` based on the input parameters. Same as
+  // CreateMediaFoundationCdm() but returns the HRESULT in out parameter so we
+  // can bind it to a repeating callback using weak pointer.
+  void CreateMfCdm(const CdmConfig& cdm_config,
                    const base::UnguessableToken& cdm_origin_id,
                    const absl::optional<std::vector<uint8_t>>& cdm_client_token,
                    const base::FilePath& cdm_store_path_root,

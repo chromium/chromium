@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,7 @@ void AccessibilityLayer::Set(aura::Window* root_window,
   layer_rect_ = bounds;
   gfx::Rect layer_bounds = bounds;
   int inset = -(GetInset());
-  layer_bounds.Inset(inset, inset, inset, inset);
+  layer_bounds.Inset(inset);
   CreateOrUpdateLayer(root_window, "AccessibilityLayer", layer_bounds,
                       stack_at_top);
 }

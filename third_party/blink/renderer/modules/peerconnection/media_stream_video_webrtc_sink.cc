@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,9 +16,11 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_video_track_source.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_media.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
@@ -29,10 +31,6 @@ namespace {
 absl::optional<bool> ToAbslOptionalBool(const absl::optional<bool>& value) {
   return value ? absl::optional<bool>(*value) : absl::nullopt;
 }
-
-}  // namespace
-
-namespace {
 
 webrtc::VideoTrackInterface::ContentHint ContentHintTypeToWebRtcContentHint(
     WebMediaStreamTrack::ContentHintType content_hint) {
@@ -52,6 +50,25 @@ webrtc::VideoTrackInterface::ContentHint ContentHintTypeToWebRtcContentHint(
   }
   NOTREACHED();
   return webrtc::VideoTrackInterface::ContentHint::kNone;
+}
+
+void RequestRefreshFrameOnRenderTaskRunner(MediaStreamComponent* component) {
+  if (!component)
+    return;
+  if (MediaStreamVideoTrack* video_track =
+          MediaStreamVideoTrack::From(component)) {
+    if (MediaStreamVideoSource* source = video_track->source()) {
+      source->RequestRefreshFrame();
+    }
+  }
+}
+
+void RequestRefreshFrame(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    CrossThreadWeakPersistent<MediaStreamComponent> component) {
+  PostCrossThreadTask(*task_runner, FROM_HERE,
+                      CrossThreadBindOnce(RequestRefreshFrameOnRenderTaskRunner,
+                                          std::move(component)));
 }
 
 }  // namespace
@@ -82,12 +99,16 @@ class MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter
       std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
       base::TimeTicks estimated_capture_time);
 
+  void OnNotifyVideoFrameDroppedOnIO();
+
  private:
   friend class WTF::ThreadSafeRefCounted<WebRtcVideoSourceAdapter>;
 
   void OnVideoFrameOnNetworkThread(
       scoped_refptr<media::VideoFrame> frame,
       std::vector<scoped_refptr<media::VideoFrame>> scaled_frames);
+
+  void OnNotifyVideoFrameDroppedOnNetworkThread();
 
   virtual ~WebRtcVideoSourceAdapter();
 
@@ -158,6 +179,17 @@ void MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter::OnVideoFrameOnIO(
 }
 
 void MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter::
+    OnNotifyVideoFrameDroppedOnIO() {
+  DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
+  DVLOG(1) << __func__;
+  PostCrossThreadTask(
+      *libjingle_network_task_runner_.get(), FROM_HERE,
+      CrossThreadBindOnce(
+          &WebRtcVideoSourceAdapter::OnNotifyVideoFrameDroppedOnNetworkThread,
+          WrapRefCounted(this)));
+}
+
+void MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter::
     OnVideoFrameOnNetworkThread(
         scoped_refptr<media::VideoFrame> frame,
         std::vector<scoped_refptr<media::VideoFrame>> scaled_frames) {
@@ -165,6 +197,14 @@ void MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter::
   base::AutoLock auto_lock(video_source_stop_lock_);
   if (video_source_)
     video_source_->OnFrameCaptured(std::move(frame), std::move(scaled_frames));
+}
+
+void MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter::
+    OnNotifyVideoFrameDroppedOnNetworkThread() {
+  DCHECK(libjingle_network_task_runner_->BelongsToCurrentThread());
+  base::AutoLock auto_lock(video_source_stop_lock_);
+  if (video_source_)
+    video_source_->OnNotifyFrameDropped();
 }
 
 MediaStreamVideoWebRtcSink::MediaStreamVideoWebRtcSink(
@@ -182,12 +222,18 @@ MediaStreamVideoWebRtcSink::MediaStreamVideoWebRtcSink(
   MediaStreamVideoSource* source = video_track->source();
   VideoCaptureFeedbackCB feedback_cb =
       source ? source->GetFeedbackCallback() : base::DoNothing();
+  base::RepeatingClosure request_refresh_frame_closure =
+      source ? ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
+                   RequestRefreshFrame, task_runner,
+                   WrapCrossThreadWeakPersistent(component)))
+             : base::DoNothing();
+
   // TODO(pbos): Consolidate WebRtcVideoCapturerAdapter into WebRtcVideoSource
   // by removing the need for and dependency on a cricket::VideoCapturer.
   video_source_ = scoped_refptr<WebRtcVideoTrackSource>(
       new rtc::RefCountedObject<WebRtcVideoTrackSource>(
           is_screencast, needs_denoising, feedback_cb,
-          factory->GetGpuFactories()));
+          request_refresh_frame_closure, factory->GetGpuFactories()));
 
   // TODO(pbos): Consolidate the local video track with the source proxy and
   // move into PeerConnectionDependencyFactory. This now separately holds on a
@@ -212,6 +258,10 @@ MediaStreamVideoWebRtcSink::MediaStreamVideoWebRtcSink(
           &WebRtcVideoSourceAdapter::OnVideoFrameOnIO, source_adapter_)),
       MediaStreamVideoSink::IsSecure::kNo,
       MediaStreamVideoSink::UsesAlpha::kNo);
+  video_track->SetSinkNotifyFrameDroppedCallback(
+      this, ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
+                &WebRtcVideoSourceAdapter::OnNotifyVideoFrameDroppedOnIO,
+                source_adapter_)));
 
   DVLOG(3) << "MediaStreamVideoWebRtcSink ctor() : is_screencast "
            << is_screencast;

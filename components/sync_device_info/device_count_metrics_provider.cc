@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,20 +37,20 @@ void DeviceCountMetricsProvider::ProvideCurrentSessionData(
     int desktop_count = 0;
     int phone_count = 0;
     int tablet_count = 0;
-    for (const auto& device_type_and_count : count_by_type) {
-      total_devices += device_type_and_count.second;
-      switch (device_type_and_count.first) {
+    for (const auto& [device_type, count] : count_by_type) {
+      total_devices += count;
+      switch (device_type) {
         case sync_pb::SyncEnums_DeviceType_TYPE_CROS:
         case sync_pb::SyncEnums_DeviceType_TYPE_LINUX:
         case sync_pb::SyncEnums_DeviceType_TYPE_MAC:
         case sync_pb::SyncEnums_DeviceType_TYPE_WIN:
-          desktop_count += device_type_and_count.second;
+          desktop_count += count;
           break;
         case sync_pb::SyncEnums_DeviceType_TYPE_PHONE:
-          phone_count += device_type_and_count.second;
+          phone_count += count;
           break;
         case sync_pb::SyncEnums_DeviceType_TYPE_TABLET:
-          tablet_count += device_type_and_count.second;
+          tablet_count += count;
           break;
         case sync_pb::SyncEnums_DeviceType_TYPE_OTHER:
         case sync_pb::SyncEnums_DeviceType_TYPE_UNSET:

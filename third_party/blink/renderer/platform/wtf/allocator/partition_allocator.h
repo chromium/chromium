@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,9 @@
 // but uses the partition allocator for the backing store of the collections.
 
 #include <string.h>
+
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
+#include "base/check_op.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
@@ -23,7 +25,7 @@ class WTF_EXPORT PartitionAllocator {
 
   template <typename T>
   static size_t MaxElementCountInBackingStore() {
-    return base::MaxDirectMapped() / sizeof(T);
+    return partition_alloc::MaxDirectMapped() / sizeof(T);
   }
 
   template <typename T>

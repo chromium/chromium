@@ -34,9 +34,11 @@
 #include "third_party/blink/renderer/core/html/track/cue_timeline.h"
 #include "third_party/blink/renderer/core/html/track/text_track.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_entry.h"
+#include "ui/accessibility/accessibility_features.h"
 
 namespace blink {
 
@@ -102,8 +104,14 @@ void TextTrackContainer::RemovedFrom(ContainerNode& insertion_point) {
   }
 }
 
-LayoutObject* TextTrackContainer::CreateLayoutObject(const ComputedStyle&,
-                                                     LegacyLayout) {
+bool TextTrackContainer::TypeShouldForceLegacyLayout() const {
+  return !RuntimeEnabledFeatures::LayoutNGVTTCueEnabled();
+}
+
+LayoutObject* TextTrackContainer::CreateLayoutObject(const ComputedStyle& style,
+                                                     LegacyLayout legacy) {
+  if (RuntimeEnabledFeatures::LayoutNGVTTCueEnabled())
+    return LayoutObjectFactory::CreateBlockFlow(*this, style, legacy);
   // TODO(mstensho): Should use LayoutObjectFactory to create the right type of
   // object here, to enable LayoutNG, but currently we can't, because this will
   // typically be a child of LayoutVideo (a legacy type), and we'll typically
@@ -215,7 +223,10 @@ void TextTrackContainer::UpdateDisplay(HTMLMediaElement& media_element,
     if (!cue->track() || !cue->track()->IsRendered() || !cue->IsActive())
       continue;
 
-    cue->UpdateDisplay(*this);
+    if (!cue->track()->IsSpokenKind()) {
+      cue->UpdateDisplay(*this);
+    }
+
     cue->UpdatePastAndFutureNodes(movie_time);
   }
 

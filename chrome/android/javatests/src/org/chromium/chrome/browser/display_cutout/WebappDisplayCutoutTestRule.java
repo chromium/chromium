@@ -1,14 +1,15 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.display_cutout;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
+
+import androidx.annotation.RequiresApi;
 
 import org.hamcrest.Matchers;
 import org.junit.runner.Description;
@@ -28,7 +29,7 @@ import java.lang.annotation.Target;
 /**
  * Custom test rule for simulating a {@link WebappActivity} with a Display Cutout.
  */
-@TargetApi(Build.VERSION_CODES.P)
+@RequiresApi(Build.VERSION_CODES.P)
 public class WebappDisplayCutoutTestRule extends DisplayCutoutTestRule<WebappActivity> {
     /** Test data for the test webapp. */
     private static final String WEBAPP_ID = "webapp_id";

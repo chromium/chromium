@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,30 +53,30 @@ void PreProcessPaintOpBuffer(const cc::PaintOpBuffer* buffer,
   for (cc::PaintOpBuffer::Iterator it(buffer); it; ++it) {
     switch (it->GetType()) {
       case cc::PaintOpType::DrawTextBlob: {
-        auto* text_blob_op = static_cast<cc::DrawTextBlobOp*>(*it);
-        tracker->AddGlyphs(text_blob_op->blob.get());
+        const auto& text_blob_op = static_cast<const cc::DrawTextBlobOp&>(*it);
+        tracker->AddGlyphs(text_blob_op.blob.get());
         break;
       }
       case cc::PaintOpType::DrawRecord: {
         // Recurse into nested records if they contain text blobs (equivalent to
         // nested SkPictures).
-        auto* record_op = static_cast<cc::DrawRecordOp*>(*it);
-        PreProcessPaintOpBuffer(record_op->record.get(), tracker);
+        const auto& record_op = static_cast<const cc::DrawRecordOp&>(*it);
+        PreProcessPaintOpBuffer(record_op.record.get(), tracker);
         break;
       }
       case cc::PaintOpType::Annotate: {
-        auto* annotate_op = static_cast<cc::AnnotateOp*>(*it);
+        auto& annotate_op = static_cast<cc::AnnotateOp&>(*it);
         tracker->AnnotateLink(GURL(std::string(reinterpret_cast<const char*>(
-                                                   annotate_op->data->data()),
-                                               annotate_op->data->size())),
-                              annotate_op->rect);
+                                                   annotate_op.data->data()),
+                                               annotate_op.data->size())),
+                              annotate_op.rect);
         // Delete the data. We no longer need it.
-        annotate_op->data.reset();
+        annotate_op.data.reset();
         break;
       }
       case cc::PaintOpType::CustomData: {
-        auto* custom_op = static_cast<cc::CustomDataOp*>(*it);
-        tracker->TransformClipForFrame(custom_op->id);
+        const auto& custom_op = static_cast<const cc::CustomDataOp&>(*it);
+        tracker->TransformClipForFrame(custom_op.id);
         break;
       }
       case cc::PaintOpType::Save: {
@@ -96,41 +96,41 @@ void PreProcessPaintOpBuffer(const cc::PaintOpBuffer* buffer,
         break;
       }
       case cc::PaintOpType::SetMatrix: {
-        auto* matrix_op = static_cast<cc::SetMatrixOp*>(*it);
-        tracker->SetMatrix(matrix_op->matrix.asM33());
+        const auto& matrix_op = static_cast<const cc::SetMatrixOp&>(*it);
+        tracker->SetMatrix(matrix_op.matrix.asM33());
         break;
       }
       case cc::PaintOpType::Concat: {
-        auto* concat_op = static_cast<cc::ConcatOp*>(*it);
-        tracker->Concat(concat_op->matrix.asM33());
+        const auto& concat_op = static_cast<const cc::ConcatOp&>(*it);
+        tracker->Concat(concat_op.matrix.asM33());
         break;
       }
       case cc::PaintOpType::Scale: {
-        auto* scale_op = static_cast<cc::ScaleOp*>(*it);
-        tracker->Scale(scale_op->sx, scale_op->sy);
+        const auto& scale_op = static_cast<const cc::ScaleOp&>(*it);
+        tracker->Scale(scale_op.sx, scale_op.sy);
         break;
       }
       case cc::PaintOpType::Rotate: {
-        auto* rotate_op = static_cast<cc::RotateOp*>(*it);
-        tracker->Rotate(rotate_op->degrees);
+        const auto& rotate_op = static_cast<const cc::RotateOp&>(*it);
+        tracker->Rotate(rotate_op.degrees);
         break;
       }
       case cc::PaintOpType::Translate: {
-        auto* translate_op = static_cast<cc::TranslateOp*>(*it);
-        tracker->Translate(translate_op->dx, translate_op->dy);
+        const auto& translate_op = static_cast<const cc::TranslateOp&>(*it);
+        tracker->Translate(translate_op.dx, translate_op.dy);
         break;
       }
       case cc::PaintOpType::DrawImage: {
-        auto* image_op = static_cast<cc::DrawImageOp*>(*it);
-        if (image_op->image.IsTextureBacked()) {
-          image_op->image = MakeUnaccelerated(image_op->image);
+        auto& image_op = static_cast<cc::DrawImageOp&>(*it);
+        if (image_op.image.IsTextureBacked()) {
+          image_op.image = MakeUnaccelerated(image_op.image);
         }
         break;
       }
       case cc::PaintOpType::DrawImageRect: {
-        auto* image_op = static_cast<cc::DrawImageRectOp*>(*it);
-        if (image_op->image.IsTextureBacked()) {
-          image_op->image = MakeUnaccelerated(image_op->image);
+        auto& image_op = static_cast<cc::DrawImageRectOp&>(*it);
+        if (image_op.image.IsTextureBacked()) {
+          image_op.image = MakeUnaccelerated(image_op.image);
         }
         break;
       }

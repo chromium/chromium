@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<script>
+  if (window.testRunner)
+    testRunner.setPrinting();
+  if (window.internals)
+    internals.settings.setShouldPrintBackgrounds(true);
+</script>
+<div style="float:right; width:20%; height:150vh; background:hotpink;"></div>
+<div style="width:50%; height:250vh;">
+  There should be a hotpink rectangle to the right, taking up all of the first
+  page, and half of the second.
+</div>

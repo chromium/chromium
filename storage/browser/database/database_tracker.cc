@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,9 +20,9 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/user_metrics.h"
+#include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
@@ -425,8 +425,8 @@ bool DatabaseTracker::DeleteClosedDatabase(
     quota_manager_proxy_->NotifyStorageModified(
         QuotaClientType::kDatabase,
         blink::StorageKey(GetOriginFromIdentifier(origin_identifier)),
-        blink::mojom::StorageType::kTemporary, -db_file_size,
-        base::Time::Now());
+        blink::mojom::StorageType::kTemporary, -db_file_size, base::Time::Now(),
+        base::SequencedTaskRunnerHandle::Get(), base::DoNothing());
 
   // Clean up the main database and invalidate the cached record.
   databases_table_->DeleteDatabaseDetails(origin_identifier, database_name);
@@ -504,8 +504,8 @@ bool DatabaseTracker::DeleteOrigin(const std::string& origin_identifier,
     quota_manager_proxy_->NotifyStorageModified(
         QuotaClientType::kDatabase,
         blink::StorageKey(GetOriginFromIdentifier(origin_identifier)),
-        blink::mojom::StorageType::kTemporary, -deleted_size,
-        base::Time::Now());
+        blink::mojom::StorageType::kTemporary, -deleted_size, base::Time::Now(),
+        base::SequencedTaskRunnerHandle::Get(), base::DoNothing());
   }
 
   return true;
@@ -704,7 +704,8 @@ int64_t DatabaseTracker::UpdateOpenDatabaseInfoAndNotify(
           QuotaClientType::kDatabase,
           blink::StorageKey(GetOriginFromIdentifier(origin_id)),
           blink::mojom::StorageType::kTemporary, new_size - old_size,
-          base::Time::Now());
+          base::Time::Now(), base::SequencedTaskRunnerHandle::Get(),
+          base::DoNothing());
     for (auto& observer : observers_)
       observer.OnDatabaseSizeChanged(origin_id, name, new_size);
   }
@@ -947,7 +948,7 @@ void DatabaseTracker::ClearSessionOnlyOrigins() {
     for (const auto& database : databases) {
       base::File file(
           GetFullDBFilePath(origin, database),
-          base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_SHARE_DELETE |
+          base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_WIN_SHARE_DELETE |
               base::File::FLAG_DELETE_ON_CLOSE | base::File::FLAG_READ);
     }
     DeleteOrigin(origin, true);

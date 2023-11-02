@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "net/http/http_response_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/origin_trials/origin_trial_policy.h"
 #include "third_party/blink/public/common/origin_trials/origin_trial_public_key.h"
@@ -27,6 +28,51 @@ static const OriginTrialPublicKey kTestPublicKey = {
     0x64, 0x90, 0x08, 0x8e, 0xa8, 0xe0, 0x56, 0x3a, 0x04, 0xd0,
 };
 
+namespace {
+
+void AddHeader(net::HttpResponseHeaders* response_headers,
+               const std::string& header,
+               const std::string& value) {
+  response_headers->AddHeader(header, value);
+}
+
+void VerifyClientHintEnabledWithOriginTrialTokenInner(
+    net::HttpResponseHeaders* response_headers,
+    const std::string& token,
+    const GURL* third_party_url,
+    const WebClientHintsType client_hint_type,
+    bool expected_client_hint_enabled) {
+  AddHeader(response_headers, "Origin-Trial", token);
+  absl::optional<GURL> maybe_third_party_url;
+  if (third_party_url)
+    maybe_third_party_url = absl::make_optional(*third_party_url);
+
+  EnabledClientHints hints;
+  hints.SetIsEnabled(GURL(kOriginUrl), maybe_third_party_url, response_headers,
+                     client_hint_type, true);
+  EXPECT_TRUE(hints.IsEnabled(client_hint_type) ==
+              expected_client_hint_enabled);
+}
+
+}  // namespace
+
+class TestOriginTrialPolicy : public OriginTrialPolicy {
+ public:
+  bool IsOriginTrialsSupported() const override { return true; }
+  bool IsOriginSecure(const GURL& url) const override {
+    return url.SchemeIs("https");
+  }
+  const std::vector<OriginTrialPublicKey>& GetPublicKeys() const override {
+    return keys_;
+  }
+  void SetPublicKeys(const std::vector<OriginTrialPublicKey>& keys) {
+    keys_ = keys;
+  }
+
+ private:
+  std::vector<OriginTrialPublicKey> keys_;
+};
+
 class EnabledClientHintsTest : public testing::Test {
  public:
   EnabledClientHintsTest()
@@ -34,9 +80,7 @@ class EnabledClientHintsTest : public testing::Test {
     // The UserAgentClientHint feature is enabled, and the
     // PrefersColorSchemeClientHintHeader feature is disabled.
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kUserAgentClientHint,
-                              blink::features::
-                                  kUserAgentClientHintFullVersionList},
+        /*enabled_features=*/{blink::features::kUserAgentClientHint},
         /*disabled_features=*/{
             blink::features::kPrefersColorSchemeClientHintHeader});
     TrialTokenValidator::SetOriginTrialPolicyGetter(
@@ -53,28 +97,17 @@ class EnabledClientHintsTest : public testing::Test {
     return response_headers_.get();
   }
 
-  void AddHeader(const std::string& header, const std::string& value) {
-    response_headers_->AddHeader(header, value);
+  void VerifyClientHintEnabledWithOriginTrialToken(
+      const std::string& token,
+      const GURL* third_party_url,
+      const WebClientHintsType client_hint_type,
+      bool expected_client_hint_enabled) {
+    VerifyClientHintEnabledWithOriginTrialTokenInner(
+        response_headers_.get(), token, third_party_url, client_hint_type,
+        expected_client_hint_enabled);
   }
 
  private:
-  class TestOriginTrialPolicy : public OriginTrialPolicy {
-   public:
-    bool IsOriginTrialsSupported() const override { return true; }
-    bool IsOriginSecure(const GURL& url) const override {
-      return url.SchemeIs("https");
-    }
-    const std::vector<OriginTrialPublicKey>& GetPublicKeys() const override {
-      return keys_;
-    }
-    void SetPublicKeys(const std::vector<OriginTrialPublicKey>& keys) {
-      keys_ = keys;
-    }
-
-   private:
-    std::vector<OriginTrialPublicKey> keys_;
-  };
-
   base::test::ScopedFeatureList scoped_feature_list_;
   TestOriginTrialPolicy policy_;
   scoped_refptr<net::HttpResponseHeaders> response_headers_;
@@ -124,11 +157,10 @@ TEST_F(EnabledClientHintsTest,
       "LC"
       "AiZXhwaXJ5IjogMjAwMDAwMDAwMH0=";
 
-  AddHeader("Origin-Trial", kValidOriginTrialToken);
-  EnabledClientHints hints;
-  hints.SetIsEnabled(GURL(kOriginUrl), /*third_party_url=*/nullptr,
-                     response_headers(), WebClientHintsType::kUAReduced, true);
-  EXPECT_TRUE(hints.IsEnabled(WebClientHintsType::kUAReduced));
+  VerifyClientHintEnabledWithOriginTrialToken(
+      kValidOriginTrialToken,
+      /*third_party_url=*/nullptr, WebClientHintsType::kUAReduced,
+      /*expected_client_hint_enabled=*/true);
 }
 
 TEST_F(EnabledClientHintsTest,
@@ -142,11 +174,10 @@ TEST_F(EnabledClientHintsTest,
       "LC"
       "AiZXhwaXJ5IjogMjAwMDAwMDAwMH0=";
 
-  AddHeader("Origin-Trial", kInvalidOriginTrialToken);
-  EnabledClientHints hints;
-  hints.SetIsEnabled(GURL(kOriginUrl), /*third_party_url=*/nullptr,
-                     response_headers(), WebClientHintsType::kUAReduced, true);
-  EXPECT_FALSE(hints.IsEnabled(WebClientHintsType::kUAReduced));
+  VerifyClientHintEnabledWithOriginTrialToken(
+      kInvalidOriginTrialToken,
+      /*third_party_url=*/nullptr, WebClientHintsType::kUAReduced,
+      /*expected_client_hint_enabled=*/false);
 }
 
 TEST_F(EnabledClientHintsTest,
@@ -164,12 +195,10 @@ TEST_F(EnabledClientHintsTest,
       "nR5IjogdHJ1ZSwgImZlYXR1cmUiOiAiVXNlckFnZW50UmVkdWN0aW9uIiwgImV4cGlyeSI6I"
       "DIwMDAwMDAwMDB9";
 
-  AddHeader("Origin-Trial", kValidThirdPartyOriginTrialToken);
-  EnabledClientHints hints;
   const GURL third_party_url = GURL(kThirdPartyOriginUrl);
-  hints.SetIsEnabled(GURL(kOriginUrl), &third_party_url, response_headers(),
-                     WebClientHintsType::kUAReduced, true);
-  EXPECT_TRUE(hints.IsEnabled(WebClientHintsType::kUAReduced));
+  VerifyClientHintEnabledWithOriginTrialToken(
+      kValidThirdPartyOriginTrialToken, &third_party_url,
+      WebClientHintsType::kUAReduced, /*expected_client_hint_enabled=*/true);
 }
 
 TEST_F(EnabledClientHintsTest,
@@ -189,12 +218,94 @@ TEST_F(EnabledClientHintsTest,
       "ZmVhdHVyZSI6ICJVc2VyQWdlbnRSZWR1Y3Rpb24iLCAiZXhwaXJ5IjogMjAwMDAwMDAwMH0"
       "=";
 
-  AddHeader("Origin-Trial", kValidOriginTrialTokenForThirdPartyUrl);
-  EnabledClientHints hints;
   const GURL third_party_url = GURL(kThirdPartyOriginUrl);
-  hints.SetIsEnabled(GURL(kOriginUrl), &third_party_url, response_headers(),
-                     WebClientHintsType::kUAReduced, true);
-  EXPECT_FALSE(hints.IsEnabled(WebClientHintsType::kUAReduced));
+  VerifyClientHintEnabledWithOriginTrialToken(
+      kValidOriginTrialTokenForThirdPartyUrl, &third_party_url,
+      WebClientHintsType::kUAReduced, /*expected_client_hint_enabled=*/false);
+}
+
+TEST_F(EnabledClientHintsTest,
+       EnabledUADeprecationClientHintWithValidOriginTrialToken) {
+  // Generated by running (in tools/origin_trials):
+  // generate_token.py https://127.0.0.1:44444 SendFullUserAgentAfterReduction
+  // --expire-timestamp=2000000000
+  //
+  // The Origin Trial token expires in 2033.  Generate a new token by then, or
+  // find a better way to re-generate a test trial token.
+  static constexpr char kValidOriginTrialToken[] =
+      "A6+Ti/9KuXTgmFzOQwkTuO8k0QFH8vUaxmv0CllAET1/"
+      "307KShF6fhskMuBqFUvqO7ViAkZ+"
+      "NSeJhQI0n5aLggsAAABpeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0NDQiLCAi"
+      "ZmVhdHVyZSI6ICJTZW5kRnVsbFVzZXJBZ2VudEFmdGVyUmVkdWN0aW9uIiwgImV4cGlyeSI6"
+      "IDIwMDAwMDAwMDB9";
+
+  VerifyClientHintEnabledWithOriginTrialToken(
+      kValidOriginTrialToken,
+      /*third_party_url=*/nullptr, WebClientHintsType::kFullUserAgent,
+      /*expected_client_hint_enabled=*/true);
+}
+
+TEST_F(EnabledClientHintsTest,
+       EnabledUADeprecationClientHintWithInvalidOriginTrialToken) {
+  // A slight corruption (changing a character) of a valid OT token.
+  static constexpr char kInvalidOriginTrialToken[] =
+      "A6+Ti/9KuXTgmFzOQwkTuO8k0QFH8vUaxmv0CllAET1/"
+      "307KShF6fhskMuBqFUvqO7ViAkZ+"
+      "NSeJhQI0n5aLggsAAABpeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0NDQiLCAi"
+      "ZmVhdHVyZSI6ICTZW5kRnVsbFVzZXJBZ2VudEFmdGVyUmVkdWN0aW9uIiwgImV4cGlyeSI6"
+      "IDIwMDAwMDAwMDB9";
+
+  VerifyClientHintEnabledWithOriginTrialToken(
+      kInvalidOriginTrialToken,
+      /*third_party_url=*/nullptr, WebClientHintsType::kFullUserAgent,
+      /*expected_client_hint_enabled=*/false);
+}
+
+TEST_F(EnabledClientHintsTest,
+       EnabledUADeprecationClientHintWithValidThirdPartyOriginTrialToken) {
+  // Generated by running (in tools/origin_trials):
+  // generate_token.py https://127.0.0.1:44445 SendFullUserAgentAfterReduction
+  // --expire-timestamp=2000000000 --is-third-party
+  //
+  // The Origin Trial token expires in 2033.  Generate a new token by then, or
+  // find a better way to re-generate a test trial token.
+  static constexpr char kValidThirdPartyOriginTrialToken[] =
+      "A0q1jQxOoBMkORITt4dborMF2TE0MVT71JbLomfT4tg8nKuEiRcDNTLVEfSffhxcwqMYEmXs"
+      "p4CXXypHENjrvwgAAAB/"
+      "eyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0NDUiLCAiaXNUaGlyZFBhcnR5Ijog"
+      "dHJ1ZSwgImZlYXR1cmUiOiAiU2VuZEZ1bGxVc2VyQWdlbnRBZnRlclJlZHVjdGlvbiIsICJl"
+      "eHBpcnkiOiAyMDAwMDAwMDAwfQ==";
+
+  const GURL third_party_url = GURL(kThirdPartyOriginUrl);
+  VerifyClientHintEnabledWithOriginTrialToken(
+      kValidThirdPartyOriginTrialToken, &third_party_url,
+      WebClientHintsType::kFullUserAgent,
+      /*expected_client_hint_enabled=*/true);
+}
+
+TEST_F(EnabledClientHintsTest,
+       EnabledUADeprecationClientHintThirdPartyWithValidOriginTrialToken) {
+  // Generated by running (in tools/origin_trials):
+  // generate_token.py https://127.0.0.1:44445 SendFullUserAgentAfterReduction
+  // --expire-timestamp=2000000000
+  //
+  // We are using a valid first party OT token for the third-party URL, which
+  // should be rejected by the TrialTokenValidator for third-party contexts.
+  //
+  // The Origin Trial token expires in 2033.  Generate a new token by then, or
+  // find a better way to re-generate a test trial token.
+  static constexpr char kValidOriginTrialTokenForThirdPartyUrl[] =
+      "A0kGFcySC9Pfb0ouX/"
+      "Ks2SYCmUEIkhU0aje4kHgLaCTgeOKoUaIwcrVSsiZgs3Im2vmPHwcaoqwzr/"
+      "d0YqDtzQQAAABpeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0NDUiLCAiZmVhdH"
+      "VyZSI6ICJTZW5kRnVsbFVzZXJBZ2VudEFmdGVyUmVkdWN0aW9uIiwgImV4cGlyeSI6IDIwMD"
+      "AwMDAwMDB9";
+
+  const GURL third_party_url = GURL(kThirdPartyOriginUrl);
+  VerifyClientHintEnabledWithOriginTrialToken(
+      kValidOriginTrialTokenForThirdPartyUrl, &third_party_url,
+      WebClientHintsType::kFullUserAgent,
+      /*expected_client_hint_enabled=*/false);
 }
 
 TEST_F(EnabledClientHintsTest, GetEnabledHints) {

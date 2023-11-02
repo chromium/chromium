@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,6 @@
 #include "base/syslog_logging.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_get_routine_update_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_run_routine_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_screenshot_job.h"
@@ -26,10 +25,6 @@
 #include "chrome/browser/ash/policy/remote_commands/device_command_start_crd_session_job.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
-#include "chrome/browser/enterprise/remote_commands/clear_browsing_data_job.h"
-#endif
 
 namespace em = enterprise_management;
 
@@ -106,19 +101,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       &start_crd_session_job_delegate);
   DeviceCommandRunRoutineJob run_routine_job;
   DeviceCommandGetRoutineUpdateJob get_routine_update_job;
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
-  enterprise_commands::ClearBrowsingDataJob clear_browsing_data_job(
-      &env.profile_manager);
-#endif
   std::initializer_list<RemoteCommandJob* const> jobs = {
-    &screenshot_job,
-    &set_volume_job,
-    &start_crd_session_job,
-    &run_routine_job,
-    &get_routine_update_job,
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
-    &clear_browsing_data_job,
-#endif
+      &screenshot_job,  &set_volume_job,         &start_crd_session_job,
+      &run_routine_job, &get_routine_update_job,
   };
 
   // Select a random job.
@@ -131,8 +116,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   remote_command.set_age_of_command(1);
   remote_command.set_payload(
       fuzzed_data_provider.ConsumeRemainingBytesAsString());
-  job->Init(/*now=*/base::TimeTicks::Now(), remote_command,
-            /*signed_command=*/nullptr);
+  job->Init(/*now=*/base::TimeTicks::Now(), remote_command, em::SignedData());
 
   return 0;
 }

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,10 @@
 #define ASH_PUBLIC_CPP_CAPTURE_MODE_CAPTURE_MODE_TEST_API_H_
 
 #include "ash/ash_export.h"
+#include "ash/capture_mode/capture_mode_types.h"
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace aura {
 class Window;
@@ -16,6 +18,14 @@ class Window;
 namespace gfx {
 class Rect;
 }  // namespace gfx
+
+namespace media {
+class VideoFrame;
+}  // namespace media
+
+namespace views {
+class Widget;
+}  // namespace views
 
 namespace ash {
 
@@ -32,12 +42,18 @@ class ASH_EXPORT CaptureModeTestApi {
   ~CaptureModeTestApi() = default;
 
   // APIs to start capture mode from the three possible sources (fullscreen,
-  // window, or region). If |for_video| is true, a video will be recorded from
+  // window, or region). If `for_video` is true, a video will be recorded from
   // the chosen source once capture begins, otherwise an image will be
   // captured.
   void StartForFullscreen(bool for_video);
   void StartForWindow(bool for_video);
   void StartForRegion(bool for_video);
+
+  // API to set the capture mode source with given `source`.
+  void SetCaptureModeSource(CaptureModeSource source);
+
+  // Returns true if a capture mode session is currently active.
+  bool IsSessionActive() const;
 
   // Sets the user selected region for partial screen capture.
   void SetUserSelectedRegion(const gfx::Rect& region);
@@ -47,10 +63,21 @@ class ASH_EXPORT CaptureModeTestApi {
   // perform the capture of either an image or a video from the chosen source.
   // Note that for video capture, this skips the 3-second count down UIs, and
   // starts video recording immediately.
-  void PerformCapture();
+  void PerformCapture(bool skip_count_down = true);
 
   // Returns true if there is a video recording currently in progress.
   bool IsVideoRecordingInProgress() const;
+
+  // Returns true if capture mode is waiting for a reply from the DLP manager to
+  // check content restrictions.
+  bool IsPendingDlpCheck() const;
+
+  // Returns true if there's an active session in a waiting state for the DLP
+  // confirmation.
+  bool IsSessionWaitingForDlpConfirmation() const;
+
+  // Returns true if the 3-second countdown animation is in progress.
+  bool IsInCountDownAnimation() const;
 
   // Stops the video recording. Can only be called if a video recording was
   // in progress.
@@ -72,9 +99,17 @@ class ASH_EXPORT CaptureModeTestApi {
                               bool delete_successful)>;
   void SetOnCaptureFileDeletedCallback(OnFileDeletedCallback callback);
 
+  // Sets a callback that will be triggered once the video record countdown is
+  // finished.
+  void SetOnVideoRecordCountdownFinishedCallback(base::OnceClosure callback);
+
   // Sets whether or not audio will be recorded when capturing a video. Should
   // only be called before recording starts, otherwise it has no effect.
   void SetAudioRecordingEnabled(bool enabled);
+
+  // Returns the effective enabled state of audio recording which takes into
+  // account the `AudioCaptureAllowed` policy.
+  bool GetAudioRecordingEnabled() const;
 
   // Flushes the recording service pipe synchronously. Can only be called while
   // recording is in progress.
@@ -96,6 +131,27 @@ class ASH_EXPORT CaptureModeTestApi {
   // Returns a pointer to the folder selection dialog window or nullptr if no
   // such window exists.
   aura::Window* GetFolderSelectionDialogWindow();
+
+  // If `value` is true, the `kGpuMemoryBuffer` type will be requested even when
+  // running on linux-chromeos.
+  void SetForceUseGpuMemoryBufferForCameraFrames(bool value);
+
+  // Returns the number of cameras currently connected.
+  size_t GetNumberOfAvailableCameras() const;
+
+  // Sets the camera at `index` of
+  // `CaptureModeCameraController::available_cameras()` as the selected camera.
+  void SelectCameraAtIndex(size_t index);
+
+  // Unselects the currently selected camera (if any).
+  void TurnCameraOff();
+
+  using CameraVideoFrameCallback =
+      base::OnceCallback<void(scoped_refptr<media::VideoFrame>)>;
+  void SetOnCameraVideoFrameRendered(CameraVideoFrameCallback callback);
+
+  // Returns the camera preview widget if exists and nullptr otherwise.
+  views::Widget* GetCameraPreviewWidget();
 
  private:
   // Sets the capture mode type to a video capture if |for_video| is true, or

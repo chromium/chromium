@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,10 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/power/ml/boot_clock.h"
 #include "chrome/browser/ash/power/smart_charging/smart_charging_ukm_logger.h"
-#include "chrome/browser/ash/power/smart_charging/user_charging_event.pb.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "chromeos/dbus/power_manager/charge_history_state.pb.h"
+#include "chromeos/dbus/power_manager/user_charging_event.pb.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -30,14 +31,11 @@ namespace ml {
 class RecentEventsCounter;
 }  // namespace ml
 
-using PastEvent = PastChargingEvents::Event;
-using EventReason = UserChargingEvent::Event::Reason;
-
 // SmartChargingManager logs battery percentage and other features related to
 // user charging events. It is currently used to log data and will be
 // extended to do inference in the future.
 class SmartChargingManager : public ui::UserActivityObserver,
-                             public PowerManagerClient::Observer,
+                             public chromeos::PowerManagerClient::Observer,
                              public viz::mojom::VideoDetectorObserver,
                              public session_manager::SessionManagerObserver {
  public:
@@ -88,13 +86,16 @@ class SmartChargingManager : public ui::UserActivityObserver,
   friend class SmartChargingManagerTest;
 
   // Populates the UserChargingEvent proto for logging/inference.
-  void PopulateUserChargingEventProto(UserChargingEvent* proto);
+  void PopulateUserChargingEventProto(power_manager::UserChargingEvent* proto);
 
   // Log the event.
-  void LogEvent(const EventReason& reason);
+  void LogEvent(const power_manager::UserChargingEvent::Event::Reason& reason);
 
   // Called when the periodic timer triggers.
   void OnTimerFired();
+
+  // Get charge history from powerd and update it.
+  void UpdateChargeHistory();
 
   // Updates screen brightness percent from received value.
   void OnReceiveScreenBrightnessPercent(
@@ -115,16 +116,23 @@ class SmartChargingManager : public ui::UserActivityObserver,
   void MaybeSaveToDisk(const base::FilePath& profile_path);
 
   // Calls after saving from disk completes.
-  void OnLoadProtoFromDiskComplete(std::unique_ptr<PastChargingEvents> proto);
+  void OnLoadProtoFromDiskComplete(
+      std::unique_ptr<power_manager::PastChargingEvents> proto);
 
   // Adds a past events given it's reason to |past_events_|.
-  void AddPastEvent(const EventReason& reason);
+  void AddPastEvent(
+      const power_manager::UserChargingEvent::Event::Reason& reason);
 
   // Updates and deletes events.
   void UpdatePastEvents();
 
   // Gets the "plug in" and "unplug" events of the last charge.
-  std::tuple<PastEvent, PastEvent> GetLastChargeEvents();
+  std::tuple<power_manager::PastChargingEvents::Event,
+             power_manager::PastChargingEvents::Event>
+  GetLastChargeEvents();
+
+  void OnChargeHistoryReceived(
+      absl::optional<power_manager::ChargeHistoryState> proto);
 
   base::ScopedObservation<ui::UserActivityDetector, ui::UserActivityObserver>
       user_activity_observation_{this};
@@ -138,6 +146,16 @@ class SmartChargingManager : public ui::UserActivityObserver,
 
   // Timer to trigger periodically for logging data.
   const std::unique_ptr<base::RepeatingTimer> periodic_timer_;
+
+  // Timer to trigger the update of charge history periodically;
+  const std::unique_ptr<base::RepeatingTimer> charge_history_timer_ =
+      std::make_unique<base::RepeatingTimer>();
+
+  // Number of trials to get charge history again if failed.
+  int num_trials_getting_charge_history_ = 5;
+  const std::unique_ptr<base::OneShotTimer>
+      retry_getting_charge_history_timer_ =
+          std::make_unique<base::OneShotTimer>();
 
   // Checks if data is loaded from disk yet.
   bool loaded_from_disk_ = false;
@@ -168,13 +186,14 @@ class SmartChargingManager : public ui::UserActivityObserver,
 
   // TODO(crbug.com/1028853): This is for testing only. Need to remove when ukm
   // logger is available.
-  UserChargingEvent user_charging_event_for_test_;
-  std::vector<PastEvent> past_events_;
+  power_manager::UserChargingEvent user_charging_event_for_test_;
+  std::vector<power_manager::PastChargingEvents::Event> past_events_;
 
   absl::optional<double> battery_percent_;
   absl::optional<double> screen_brightness_percent_;
   absl::optional<power_manager::PowerSupplyProperties::ExternalPower>
       external_power_;
+  power_manager::ChargeHistoryState charge_history_;
   absl::optional<bool> is_charging_;
 
   absl::optional<base::FilePath> profile_path_;

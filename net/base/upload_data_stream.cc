@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,31 +17,31 @@ namespace {
 base::Value NetLogInitEndInfoParams(int result,
                                     int total_size,
                                     bool is_chunked) {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict;
 
-  dict.SetIntKey("net_error", result);
-  dict.SetIntKey("total_size", total_size);
-  dict.SetBoolKey("is_chunked", is_chunked);
-  return dict;
+  dict.Set("net_error", result);
+  dict.Set("total_size", total_size);
+  dict.Set("is_chunked", is_chunked);
+  return base::Value(std::move(dict));
 }
 
 base::Value CreateReadInfoParams(int current_position) {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict;
 
-  dict.SetIntKey("current_position", current_position);
-  return dict;
+  dict.Set("current_position", current_position);
+  return base::Value(std::move(dict));
 }
 
 }  // namespace
 
 UploadDataStream::UploadDataStream(bool is_chunked, int64_t identifier)
-    : total_size_(0),
-      current_position_(0),
-      identifier_(identifier),
+    : UploadDataStream(is_chunked, /*has_null_source=*/false, identifier) {}
+UploadDataStream::UploadDataStream(bool is_chunked,
+                                   bool has_null_source,
+                                   int64_t identifier)
+    : identifier_(identifier),
       is_chunked_(is_chunked),
-      initialized_successfully_(false),
-      is_eof_(false) {
-}
+      has_null_source_(has_null_source) {}
 
 UploadDataStream::~UploadDataStream() = default;
 

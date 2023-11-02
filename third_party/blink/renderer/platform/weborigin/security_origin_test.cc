@@ -32,8 +32,8 @@
 
 #include <stdint.h>
 
-#include "base/cxx17_backports.h"
 #include "base/test/scoped_command_line.h"
+#include "base/unguessable_token.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy_unittest.h"
 #include "services/network/public/cpp/network_switches.h"
@@ -58,14 +58,24 @@ namespace blink {
 const uint16_t kMaxAllowedPort = UINT16_MAX;
 
 class SecurityOriginTest : public testing::Test {
- private:
+ protected:
   void TearDown() override { SecurityPolicy::ClearOriginAccessList(); }
+
+  const absl::optional<url::Origin::Nonce>& GetNonceForOrigin(
+      const SecurityOrigin& origin) {
+    return origin.nonce_if_opaque_;
+  }
+
+  const base::UnguessableToken* GetNonceForSerializationForOrigin(
+      const SecurityOrigin& origin) {
+    return origin.GetNonceForSerialization();
+  }
 };
 
 TEST_F(SecurityOriginTest, ValidPortsCreateTupleOrigins) {
   uint16_t ports[] = {0, 80, 443, 5000, kMaxAllowedPort};
 
-  for (size_t i = 0; i < base::size(ports); ++i) {
+  for (size_t i = 0; i < std::size(ports); ++i) {
     scoped_refptr<const SecurityOrigin> origin =
         SecurityOrigin::CreateFromValidTuple("http", "example.com", ports[i]);
     EXPECT_FALSE(origin->IsOpaque())
@@ -100,7 +110,7 @@ TEST_F(SecurityOriginTest, LocalAccess) {
 }
 
 TEST_F(SecurityOriginTest, IsNullURLSecure) {
-  EXPECT_FALSE(network::IsUrlPotentiallyTrustworthy(NullURL()));
+  EXPECT_FALSE(network::IsUrlPotentiallyTrustworthy(GURL(NullURL())));
 }
 
 TEST_F(SecurityOriginTest, CanAccess) {
@@ -117,7 +127,7 @@ TEST_F(SecurityOriginTest, CanAccess) {
       {false, "file:///", "file://localhost/"},
   };
 
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     scoped_refptr<const SecurityOrigin> origin1 =
         SecurityOrigin::CreateFromString(tests[i].origin1);
     scoped_refptr<const SecurityOrigin> origin2 =
@@ -224,7 +234,7 @@ TEST_F(SecurityOriginTest, CanRequest) {
       {false, "https://foobar.com", "https://bazbar.com"},
   };
 
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     scoped_refptr<const SecurityOrigin> origin =
         SecurityOrigin::CreateFromString(tests[i].origin);
     blink::KURL url(tests[i].url);
@@ -647,7 +657,7 @@ TEST_F(SecurityOriginTest, EffectiveDomain) {
     if (test.expected_effective_domain) {
       EXPECT_EQ(test.expected_effective_domain, origin->Domain());
     } else {
-      EXPECT_TRUE(origin->Domain().IsEmpty());
+      EXPECT_TRUE(origin->Domain().empty());
     }
   }
 }
@@ -1096,6 +1106,47 @@ TEST_F(SecurityOriginTest, PercentEncodesHost) {
       "foo%2C.example.test");
 }
 
+TEST_F(SecurityOriginTest, NewOpaqueOriginLazyInitsNonce) {
+  scoped_refptr<SecurityOrigin> opaque_origin =
+      SecurityOrigin::CreateUniqueOpaque();
+
+  scoped_refptr<SecurityOrigin> tuple_origin =
+      SecurityOrigin::Create(KURL("https://example.com/"));
+  scoped_refptr<SecurityOrigin> derived_opaque_origin =
+      tuple_origin->DeriveNewOpaqueOrigin();
+
+  EXPECT_TRUE(opaque_origin->IsOpaque());
+  // There should be a nonce...
+  EXPECT_TRUE(GetNonceForOrigin(*opaque_origin).has_value());
+  // ...but it should not be initialised yet.
+  EXPECT_TRUE(GetNonceForOrigin(*opaque_origin)->raw_token().is_empty());
+
+  EXPECT_TRUE(derived_opaque_origin->IsOpaque());
+  // There should be a nonce...
+  EXPECT_TRUE(GetNonceForOrigin(*derived_opaque_origin).has_value());
+  // ...but it should not be initialised yet.
+  EXPECT_TRUE(
+      GetNonceForOrigin(*derived_opaque_origin)->raw_token().is_empty());
+
+  // Even checking CanAccess does not need to trigger initialisation: two
+  // uninitialised nonces can only be equal if they are the same object.
+  EXPECT_TRUE(opaque_origin->CanAccess(opaque_origin));
+  EXPECT_FALSE(opaque_origin->CanAccess(derived_opaque_origin));
+  EXPECT_TRUE(derived_opaque_origin->CanAccess(derived_opaque_origin));
+
+  EXPECT_TRUE(GetNonceForOrigin(*opaque_origin)->raw_token().is_empty());
+  EXPECT_TRUE(
+      GetNonceForOrigin(*derived_opaque_origin)->raw_token().is_empty());
+
+  // However, forcing the nonce to be serialized should trigger initialisation.
+  (void)GetNonceForSerializationForOrigin(*opaque_origin);
+  (void)GetNonceForSerializationForOrigin(*derived_opaque_origin);
+
+  EXPECT_FALSE(GetNonceForOrigin(*opaque_origin)->raw_token().is_empty());
+  EXPECT_FALSE(
+      GetNonceForOrigin(*derived_opaque_origin)->raw_token().is_empty());
+}
+
 }  // namespace blink
 
 // Apparently INSTANTIATE_TYPED_TEST_SUITE_P needs to be used in the same
@@ -1164,8 +1215,11 @@ class BlinkSecurityOriginTestTraits {
   }
 
   static bool IsUrlPotentiallyTrustworthy(base::StringPiece str) {
+    // Note: intentionally avoid constructing GURL() directly from `str`, since
+    // this is a test harness intended to exercise the behavior of `KURL` and
+    // `SecurityOrigin`.
     return network::IsUrlPotentiallyTrustworthy(
-        blink::KURL(String::FromUTF8(str)));
+        GURL(blink::KURL(String::FromUTF8(str))));
   }
 
   static bool IsOriginOfLocalhost(const OriginType& origin) {

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,8 @@
 #include "base/android/jni_string.h"
 #include "base/system/sys_info.h"
 #include "chromecast/base/cast_sys_info_util.h"
+#include "chromecast/base/jni_headers/CastSysInfoAndroid_jni.h"
 #include "chromecast/base/version.h"
-#include "chromecast/browser/jni_headers/CastSysInfoAndroid_jni.h"
 
 namespace chromecast {
 
@@ -110,8 +110,9 @@ std::string CastSysInfoAndroid::GetProductSsidSuffix() {
   return GetAndroidProperty("ro.odm.cast.ssid_suffix", "");
 }
 
-std::string CastSysInfoAndroid::GetAndroidProperty(const std::string& key,
-                               const std::string& default_value) {
+std::string CastSysInfoAndroid::GetAndroidProperty(
+    const std::string& key,
+    const std::string& default_value) {
   char value[PROP_VALUE_MAX];
   int ret = __system_property_get(key.c_str(), value);
   if (ret <= 0) {

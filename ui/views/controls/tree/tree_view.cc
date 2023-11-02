@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -61,6 +62,8 @@ static constexpr int kArrowRegionSize = 12;
 // Padding around the text (on each side).
 static constexpr int kTextVerticalPadding = 3;
 static constexpr int kTextHorizontalPadding = 2;
+// Padding between the auxiliary text and the end of the line, handles RTL.
+static constexpr int kAuxiliaryTextLineEndPadding = 5;
 // How much children are indented from their parent.
 static constexpr int kIndent = 20;
 
@@ -93,26 +96,25 @@ TreeView::TreeView()
       drawing_provider_(std::make_unique<TreeViewDrawingProvider>()) {
   // Always focusable, even on Mac (consistent with NSOutlineView).
   SetFocusBehavior(FocusBehavior::ALWAYS);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   constexpr bool kUseMdIcons = true;
 #else
   constexpr bool kUseMdIcons = false;
 #endif
   if (kUseMdIcons) {
-    closed_icon_ = open_icon_ =
-        gfx::CreateVectorIcon(vector_icons::kFolderIcon, gfx::kChromeIconGrey);
+    closed_icon_ = open_icon_ = ui::ImageModel::FromVectorIcon(
+        vector_icons::kFolderIcon, ui::kColorIcon);
   } else {
     // TODO(ellyjones): if the pre-Harmony codepath goes away, merge
     // closed_icon_ and open_icon_.
-    closed_icon_ = *ui::ResourceBundle::GetSharedInstance()
-                        .GetImageNamed(IDR_FOLDER_CLOSED)
-                        .ToImageSkia();
-    open_icon_ = *ui::ResourceBundle::GetSharedInstance()
-                      .GetImageNamed(IDR_FOLDER_OPEN)
-                      .ToImageSkia();
+    closed_icon_ = ui::ImageModel::FromImage(
+        ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+            IDR_FOLDER_CLOSED));
+    open_icon_ = ui::ImageModel::FromImage(
+        ui::ResourceBundle::GetSharedInstance().GetImageNamed(IDR_FOLDER_OPEN));
   }
-  text_offset_ =
-      closed_icon_.width() + kImagePadding + kImagePadding + kArrowRegionSize;
+  text_offset_ = closed_icon_.Size().width() + kImagePadding + kImagePadding +
+                 kArrowRegionSize;
 }
 
 TreeView::~TreeView() {
@@ -196,12 +198,16 @@ void TreeView::StartEditing(TreeModelNode* node) {
     editor_ = new Textfield;
     // Add the editor immediately as GetPreferredSize returns the wrong thing if
     // not parented.
-    AddChildView(editor_);
+    AddChildView(editor_.get());
     editor_->SetFontList(font_list_);
     empty_editor_size_ = editor_->GetPreferredSize();
     editor_->set_controller(this);
   }
   editor_->SetText(selected_node_->model_node()->GetTitle());
+  // TODO(crbug.com/1345828): Investigate whether accessible name should stay in
+  // sync during editing.
+  editor_->SetAccessibleName(
+      selected_node_->model_node()->GetAccessibleTitle());
   LayoutEditor();
   editor_->SetVisible(true);
   SchedulePaintForNode(selected_node_);
@@ -243,6 +249,7 @@ void TreeView::CommitEdit() {
   DCHECK(selected_node_);
   const bool editor_has_focus = editor_->HasFocus();
   model_->SetTitle(GetSelectedNode(), editor_->GetText());
+  editor_->SetAccessibleName(GetSelectedNode()->GetAccessibleTitle());
   CancelEdit();
   if (editor_has_focus)
     RequestFocus();
@@ -535,10 +542,8 @@ void TreeView::TreeNodesAdded(TreeModel* model,
     std::unique_ptr<AXVirtualView> ax_view =
         CreateAndSetAccessibilityView(child.get());
     parent_node->Add(std::move(child), i);
-    DCHECK_LE(static_cast<int>(i),
-              parent_node->accessibility_view()->GetChildCount());
-    parent_node->accessibility_view()->AddChildViewAt(std::move(ax_view),
-                                                      static_cast<int>(i));
+    DCHECK_LE(i, parent_node->accessibility_view()->GetChildCount());
+    parent_node->accessibility_view()->AddChildViewAt(std::move(ax_view), i);
   }
   if (IsExpanded(parent)) {
     NotifyAccessibilityEvent(ax::mojom::Event::kRowCountChanged, true);
@@ -646,30 +651,35 @@ void TreeView::OnDidChangeFocus(View* focused_before, View* focused_now) {
   CommitEdit();
 }
 
-int TreeView::GetRowCount() {
-  int row_count = root_.NumExpandedNodes();
+size_t TreeView::GetRowCount() {
+  size_t row_count = root_.NumExpandedNodes();
   if (!root_shown_)
     row_count--;
   return row_count;
 }
 
-int TreeView::GetSelectedRow() {
+absl::optional<size_t> TreeView::GetSelectedRow() {
   // Type-ahead searches should be relative to the active node, so return the
   // row of the active node for |PrefixSelector|.
   ui::TreeModelNode* model_node = GetActiveNode();
-  return model_node ? GetRowForNode(model_node) : -1;
+  if (!model_node)
+    return absl::nullopt;
+  const int row = GetRowForNode(model_node);
+  return (row == -1) ? absl::nullopt
+                     : absl::make_optional(static_cast<size_t>(row));
 }
 
-void TreeView::SetSelectedRow(int row) {
+void TreeView::SetSelectedRow(absl::optional<size_t> row) {
   // Type-ahead manipulates selection because active node is synced to selected
   // node, so call SetSelectedNode() instead of SetActiveNode().
   // TODO(crbug.com/1080944): Decouple active node from selected node by adding
   // new keyboard affordances.
-  SetSelectedNode(GetNodeForRow(row));
+  SetSelectedNode(
+      GetNodeForRow(row.has_value() ? static_cast<int>(row.value()) : -1));
 }
 
-std::u16string TreeView::GetTextForRow(int row) {
-  return GetNodeForRow(row)->GetTitle();
+std::u16string TreeView::GetTextForRow(size_t row) {
+  return GetNodeForRow(static_cast<int>(row))->GetTitle();
 }
 
 gfx::Point TreeView::GetKeyboardContextMenuLocation() {
@@ -966,12 +976,12 @@ void TreeView::PopulateAccessibilityData(InternalNode* node,
 
     // Per the ARIA Spec, aria-posinset and aria-setsize are 1-based
     // not 0-based.
-    int pos_in_parent = node->parent()->GetIndexOf(node) + 1;
-    int sibling_size = static_cast<int>(node->parent()->children().size());
+    size_t pos_in_parent = node->parent()->GetIndexOf(node).value() + 1;
+    size_t sibling_size = node->parent()->children().size();
     data->AddIntAttribute(ax::mojom::IntAttribute::kPosInSet,
-                          int32_t{pos_in_parent});
+                          static_cast<int32_t>(pos_in_parent));
     data->AddIntAttribute(ax::mojom::IntAttribute::kSetSize,
-                          int32_t{sibling_size});
+                          static_cast<int32_t>(sibling_size));
   }
 
   int ignored_depth;
@@ -1003,7 +1013,7 @@ void TreeView::UpdatePreferredSize() {
   preferred_size_.SetSize(
       root_.GetMaxWidth(this, text_offset_, root_shown_ ? 1 : 0) +
           kTextHorizontalPadding * 2,
-      row_height_ * GetRowCount());
+      row_height_ * base::checked_cast<int>(GetRowCount()));
 
   // When the editor is visible, more space is needed beyond the regular row,
   // such as for drawing the focus ring.
@@ -1032,9 +1042,11 @@ void TreeView::LayoutEditor() {
       GetMirroredXWithWidthInView(row_bounds.x(), row_bounds.width()));
   row_bounds.set_x(row_bounds.x() + text_offset_);
   row_bounds.set_width(row_bounds.width() - text_offset_);
-  row_bounds.Inset(kTextHorizontalPadding, kTextVerticalPadding);
-  row_bounds.Inset(-empty_editor_size_.width() / 2,
-                   -(empty_editor_size_.height() - font_list_.GetHeight()) / 2);
+  row_bounds.Inset(
+      gfx::Insets::VH(kTextVerticalPadding, kTextHorizontalPadding));
+  row_bounds.Inset(gfx::Insets::VH(
+      -(empty_editor_size_.height() - font_list_.GetHeight()) / 2,
+      -empty_editor_size_.width() / 2));
   // Give a little extra space for editing.
   row_bounds.set_width(row_bounds.width() + 50);
   // If contained within a ScrollView, make sure the editor doesn't extend past
@@ -1049,7 +1061,7 @@ void TreeView::LayoutEditor() {
   // The visible bounds should include the focus ring which is outside the
   // |row_bounds|.
   gfx::Rect outter_bounds = row_bounds;
-  outter_bounds.Inset(gfx::Insets(-GetSpaceThicknessForFocusRing()));
+  outter_bounds.Inset(-GetSpaceThicknessForFocusRing());
   // Scroll as necessary to ensure that the editor is visible.
   ScrollRectToVisible(outter_bounds);
   editor_->SetBoundsRect(row_bounds);
@@ -1127,7 +1139,8 @@ void TreeView::PaintRow(gfx::Canvas* canvas,
                                       : gfx::Canvas::TEXT_ALIGN_RIGHT;
       canvas->DrawStringRectWithFlags(
           aux_text, font_list_,
-          drawing_provider()->GetTextColorForNode(this, node->model_node()),
+          drawing_provider()->GetAuxiliaryTextColorForNode(this,
+                                                           node->model_node()),
           aux_text_bounds, align);
     }
   }
@@ -1157,8 +1170,9 @@ void TreeView::PaintExpandControl(gfx::Canvas* canvas,
                                    : SkBitmapOperations::ROTATION_90_CW);
   }
   gfx::Rect arrow_bounds = node_bounds;
-  arrow_bounds.Inset(gfx::Insets((node_bounds.height() - arrow.height()) / 2,
-                                 (kArrowRegionSize - arrow.width()) / 2));
+  arrow_bounds.Inset(
+      gfx::Insets::VH((node_bounds.height() - arrow.height()) / 2,
+                      (kArrowRegionSize - arrow.width()) / 2));
   canvas->DrawImageInt(arrow,
                        base::i18n::IsRTL()
                            ? arrow_bounds.right() - arrow.width()
@@ -1169,20 +1183,23 @@ void TreeView::PaintExpandControl(gfx::Canvas* canvas,
 void TreeView::PaintNodeIcon(gfx::Canvas* canvas,
                              InternalNode* node,
                              const gfx::Rect& bounds) {
-  int icon_index = model_->GetIconIndex(node->model_node());
+  absl::optional<size_t> icon_index = model_->GetIconIndex(node->model_node());
   int icon_x = kArrowRegionSize + kImagePadding;
-  if (icon_index == -1) {
+  if (!icon_index.has_value()) {
     // Flip just the |bounds| region of |canvas|.
     gfx::ScopedCanvas scoped_canvas(canvas);
     canvas->Translate(gfx::Vector2d(bounds.x(), 0));
     scoped_canvas.FlipIfRTL(bounds.width());
     // Now paint the icon local to that flipped region.
-    PaintRowIcon(canvas, node->is_expanded() ? open_icon_ : closed_icon_,
+    PaintRowIcon(canvas,
+                 (node->is_expanded() ? open_icon_ : closed_icon_)
+                     .Rasterize(GetColorProvider()),
                  icon_x,
                  gfx::Rect(0, bounds.y(), bounds.width(), bounds.height()));
   } else {
-    const gfx::ImageSkia& icon = icons_[icon_index];
-    icon_x += (open_icon_.width() - icon.width()) / 2;
+    const gfx::ImageSkia& icon =
+        icons_[icon_index.value()].Rasterize(GetColorProvider());
+    icon_x += (open_icon_.Size().width() - icon.width()) / 2;
     if (base::i18n::IsRTL())
       icon_x = bounds.width() - icon_x - icon.width();
     PaintRowIcon(canvas, icon, icon_x, bounds);
@@ -1204,7 +1221,8 @@ TreeView::InternalNode* TreeView::GetInternalNodeForModelNode(
     LoadChildren(parent_internal_node);
   }
   size_t index =
-      model_->GetIndexOf(parent_internal_node->model_node(), model_node);
+      model_->GetIndexOf(parent_internal_node->model_node(), model_node)
+          .value();
   return parent_internal_node->children()[index].get();
 }
 
@@ -1220,8 +1238,8 @@ TreeView::InternalNode* TreeView::GetInternalNodeForVirtualView(
   DCHECK(parent_internal_node->loaded_children());
   AXVirtualView* parent_ax_view = parent_internal_node->accessibility_view();
   DCHECK(parent_ax_view);
-  size_t index = parent_ax_view->GetIndexOf(ax_view);
-  return parent_internal_node->children()[index].get();
+  auto index = parent_ax_view->GetIndexOf(ax_view);
+  return parent_internal_node->children()[index.value()].get();
 }
 
 gfx::Rect TreeView::GetBoundsForNode(InternalNode* node) {
@@ -1245,9 +1263,9 @@ gfx::Rect TreeView::GetForegroundBoundsForNode(InternalNode* node) {
 gfx::Rect TreeView::GetTextBoundsForNode(InternalNode* node) {
   gfx::Rect bounds(GetForegroundBoundsForNode(node));
   if (drawing_provider()->ShouldDrawIconForNode(this, node->model_node()))
-    bounds.Inset(text_offset_, 0, 0, 0);
+    bounds.Inset(gfx::Insets::TLBR(0, text_offset_, 0, 0));
   else
-    bounds.Inset(kArrowRegionSize, 0, 0, 0);
+    bounds.Inset(gfx::Insets::TLBR(0, kArrowRegionSize, 0, 0));
   return bounds;
 }
 
@@ -1257,14 +1275,16 @@ gfx::Rect TreeView::GetTextBoundsForNode(InternalNode* node) {
 // leading aligned.
 gfx::Rect TreeView::GetAuxiliaryTextBoundsForNode(InternalNode* node) {
   gfx::Rect text_bounds = GetTextBoundsForNode(node);
-  int width = base::i18n::IsRTL() ? text_bounds.x() - kTextHorizontalPadding * 2
-                                  : bounds().width() - text_bounds.right() -
-                                        2 * kTextHorizontalPadding;
+  int width = base::i18n::IsRTL()
+                  ? text_bounds.x() - kTextHorizontalPadding -
+                        kAuxiliaryTextLineEndPadding
+                  : bounds().width() - text_bounds.right() -
+                        kTextHorizontalPadding - kAuxiliaryTextLineEndPadding;
   if (width < 0)
     return gfx::Rect();
   int x = base::i18n::IsRTL()
-              ? kTextHorizontalPadding
-              : bounds().right() - width - kTextHorizontalPadding;
+              ? kAuxiliaryTextLineEndPadding
+              : bounds().right() - width - kAuxiliaryTextLineEndPadding;
   return gfx::Rect(x, text_bounds.y(), width, text_bounds.height());
 }
 
@@ -1288,11 +1308,13 @@ int TreeView::GetRowForInternalNode(InternalNode* node, int* depth) {
   int row = -1;
   const InternalNode* tmp_node = node;
   while (tmp_node->parent()) {
-    size_t index_in_parent = tmp_node->parent()->GetIndexOf(tmp_node);
+    size_t index_in_parent = tmp_node->parent()->GetIndexOf(tmp_node).value();
     (*depth)++;
     row++;  // For node.
-    for (size_t i = 0; i < index_in_parent; ++i)
-      row += tmp_node->parent()->children()[i]->NumExpandedNodes();
+    for (size_t i = 0; i < index_in_parent; ++i) {
+      row += static_cast<int>(
+          tmp_node->parent()->children()[i]->NumExpandedNodes());
+    }
     tmp_node = tmp_node->parent();
   }
   if (root_shown_) {
@@ -1354,10 +1376,11 @@ void TreeView::IncrementSelection(IncrementType type) {
     if (root_.children().empty())
       return;
     if (type == IncrementType::kPrevious) {
-      int row_count = GetRowCount();
+      size_t row_count = GetRowCount();
       int depth = 0;
       DCHECK(row_count);
-      InternalNode* node = GetNodeByRow(row_count - 1, &depth);
+      InternalNode* node =
+          GetNodeByRow(static_cast<int>(row_count - 1), &depth);
       SetSelectedNode(node->model_node());
     } else if (root_shown_) {
       SetSelectedNode(root_.model_node());
@@ -1370,7 +1393,8 @@ void TreeView::IncrementSelection(IncrementType type) {
   int depth = 0;
   int delta = type == IncrementType::kPrevious ? -1 : 1;
   int row = GetRowForInternalNode(active_node_, &depth);
-  int new_row = base::clamp(row + delta, 0, GetRowCount() - 1);
+  int new_row =
+      base::clamp(row + delta, 0, base::checked_cast<int>(GetRowCount()) - 1);
   if (new_row == row)
     return;  // At the end/beginning.
   SetSelectedNode(GetNodeByRow(new_row, &depth)->model_node());
@@ -1463,8 +1487,8 @@ void TreeView::InternalNode::Reset(ui::TreeModelNode* node) {
   accessibility_view_ = nullptr;
 }
 
-int TreeView::InternalNode::NumExpandedNodes() const {
-  int result = 1;  // For this.
+size_t TreeView::InternalNode::NumExpandedNodes() const {
+  size_t result = 1;  // For this.
   if (!is_expanded_)
     return result;
   for (const auto& child : children())

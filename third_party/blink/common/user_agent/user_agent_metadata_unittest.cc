@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,7 @@ blink::UserAgentMetadata MakeToEncode() {
   to_encode.model = "unofficial";
   to_encode.mobile = false;
   to_encode.bitness = "8";
+  to_encode.wow64 = true;
   return to_encode;
 }
 

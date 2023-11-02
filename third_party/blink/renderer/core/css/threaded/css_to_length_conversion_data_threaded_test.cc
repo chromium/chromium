@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/threaded/multi_threaded_test_util.h"
+#include "third_party/blink/renderer/core/style/computed_style_initial_values.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
@@ -20,8 +21,9 @@ TSAN_TEST(CSSToLengthConversionDataThreadedTest, Construction) {
     CSSToLengthConversionData::FontSizes fontSizes(16, 16, &font, 1);
     CSSToLengthConversionData::ViewportSize viewportSize(0, 0);
     CSSToLengthConversionData::ContainerSizes container_sizes;
-    CSSToLengthConversionData conversionData(nullptr, fontSizes, viewportSize,
-                                             container_sizes, 1);
+    CSSToLengthConversionData conversionData(
+        nullptr, nullptr, WritingMode::kHorizontalTb, fontSizes, viewportSize,
+        container_sizes, 1);
   });
 }
 
@@ -32,8 +34,9 @@ TSAN_TEST(CSSToLengthConversionDataThreadedTest, ConversionEm) {
     CSSToLengthConversionData::FontSizes fontSizes(16, 16, &font, 1);
     CSSToLengthConversionData::ViewportSize viewportSize(0, 0);
     CSSToLengthConversionData::ContainerSizes container_sizes;
-    CSSToLengthConversionData conversionData(nullptr, fontSizes, viewportSize,
-                                             container_sizes, 1);
+    CSSToLengthConversionData conversionData(
+        nullptr, nullptr, WritingMode::kHorizontalTb, fontSizes, viewportSize,
+        container_sizes, 1);
 
     CSSPrimitiveValue& value = *CSSNumericLiteralValue::Create(
         3.14, CSSPrimitiveValue::UnitType::kEms);
@@ -50,8 +53,9 @@ TSAN_TEST(CSSToLengthConversionDataThreadedTest, ConversionPixel) {
     CSSToLengthConversionData::FontSizes fontSizes(16, 16, &font, 1);
     CSSToLengthConversionData::ViewportSize viewportSize(0, 0);
     CSSToLengthConversionData::ContainerSizes container_sizes;
-    CSSToLengthConversionData conversionData(nullptr, fontSizes, viewportSize,
-                                             container_sizes, 1);
+    CSSToLengthConversionData conversionData(
+        nullptr, nullptr, WritingMode::kHorizontalTb, fontSizes, viewportSize,
+        container_sizes, 1);
 
     CSSPrimitiveValue& value = *CSSNumericLiteralValue::Create(
         44, CSSPrimitiveValue::UnitType::kPixels);
@@ -68,8 +72,9 @@ TSAN_TEST(CSSToLengthConversionDataThreadedTest, ConversionViewport) {
     CSSToLengthConversionData::FontSizes fontSizes(16, 16, &font, 1);
     CSSToLengthConversionData::ViewportSize viewportSize(0, 0);
     CSSToLengthConversionData::ContainerSizes container_sizes;
-    CSSToLengthConversionData conversionData(nullptr, fontSizes, viewportSize,
-                                             container_sizes, 1);
+    CSSToLengthConversionData conversionData(
+        nullptr, nullptr, WritingMode::kHorizontalTb, fontSizes, viewportSize,
+        container_sizes, 1);
 
     CSSPrimitiveValue& value = *CSSNumericLiteralValue::Create(
         1, CSSPrimitiveValue::UnitType::kViewportWidth);
@@ -86,8 +91,9 @@ TSAN_TEST(CSSToLengthConversionDataThreadedTest, ConversionRem) {
     CSSToLengthConversionData::FontSizes fontSizes(16, 16, &font, 1);
     CSSToLengthConversionData::ViewportSize viewportSize(0, 0);
     CSSToLengthConversionData::ContainerSizes container_sizes;
-    CSSToLengthConversionData conversionData(nullptr, fontSizes, viewportSize,
-                                             container_sizes, 1);
+    CSSToLengthConversionData conversionData(
+        nullptr, nullptr, WritingMode::kHorizontalTb, fontSizes, viewportSize,
+        container_sizes, 1);
 
     CSSPrimitiveValue& value =
         *CSSNumericLiteralValue::Create(1, CSSPrimitiveValue::UnitType::kRems);

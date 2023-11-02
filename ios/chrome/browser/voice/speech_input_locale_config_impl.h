@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,7 +31,7 @@ class SpeechInputLocaleConfigImpl : public SpeechInputLocaleConfig {
 
   ~SpeechInputLocaleConfigImpl() override;
 
-  // Returns the available locale that matches |locale_code|.  Defaults to en-US
+  // Returns the available locale that matches `locale_code`.  Defaults to en-US
   // if a matching locale is not found.
   SpeechInputLocale GetMatchingLocale(const std::string& locale_code) const;
 
@@ -46,28 +46,28 @@ class SpeechInputLocaleConfigImpl : public SpeechInputLocaleConfig {
 
  private:
   // Returns a canonical locale code created from combining the UI language
-  // preference from NSLocale's |+preferredLanguages| and the country code from
+  // preference from NSLocale's |+preferredLanguages` and the country code from
   // the device's locale.
   std::string GetDefaultLocaleCode() const;
 
-  // Populates |available_locales_| using S3Kit's language manager.
+  // Populates `available_locales_` using S3Kit's language manager.
   void InitializeAvailableLocales(NSArray<VoiceSearchLanguage*>* languages);
 
   // Adds local matching data from speech_input_matches.plist into
-  // |locale_indices_for_codes_|.
+  // `locale_indices_for_codes_`.
   void InitializeLocaleMatches(
       NSArray<SpeechInputLocaleMatch*>* locale_matches);
 
-  // Populates |text_to_speech_languages_| with the available locales.
+  // Populates `text_to_speech_languages_` with the available locales.
   void InitializeTextToSpeechLanguages();
 
   // The list of available speech input locales.
   std::vector<SpeechInputLocale> available_locales_;
   // A map storing canonical locale codes with the index of their associated
-  // InputLocale within |available_locales_|.
+  // InputLocale within `available_locales_`.
   std::map<std::string, size_t> locale_indices_for_codes_;
   // A map storing the language portions of locale codes with the index of their
-  // associated InputLocale within |available_locales_|.
+  // associated InputLocale within `available_locales_`.
   std::map<std::string, size_t> default_locale_indices_for_languages_;
   // The languages available for Text To Speech search results.
   std::vector<std::string> text_to_speech_languages_;

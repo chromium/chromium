@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,6 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
@@ -586,7 +585,7 @@ TEST(BrokerProcess, OpenComplexFlagsNoClientCheck) {
   // expected.
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // Flaky on Linux NG bots: https://crbug.com/595199.
 #define MAYBE_RecvMsgDescriptorLeak DISABLED_RecvMsgDescriptorLeak
 #else
@@ -608,7 +607,7 @@ SANDBOX_TEST_ALLOW_NOISE(BrokerProcess, MAYBE_RecvMsgDescriptorLeak) {
 
   // Save one FD to send to the broker later, and close the others.
   base::ScopedFD message_fd(available_fds[0]);
-  for (size_t i = 1; i < base::size(available_fds); i++) {
+  for (size_t i = 1; i < std::size(available_fds); i++) {
     SANDBOX_ASSERT(0 == IGNORE_EINTR(close(available_fds[i])));
   }
 
@@ -618,7 +617,7 @@ SANDBOX_TEST_ALLOW_NOISE(BrokerProcess, MAYBE_RecvMsgDescriptorLeak) {
   // be assigned to newly-created descriptors allocated by the process.)
   const rlim_t fd_limit =
       1 + *std::max_element(available_fds,
-                            available_fds + base::size(available_fds));
+                            available_fds + std::size(available_fds));
 
   struct rlimit rlim;
   SANDBOX_ASSERT(0 == getrlimit(RLIMIT_NOFILE, &rlim));
@@ -1752,54 +1751,53 @@ TEST(BrokerProcess, UnlinkHost) {
 TEST(BrokerProcess, IsSyscallAllowed) {
   const base::flat_map<BrokerCommand, base::flat_set<int>> kSysnosForCommand = {
       {COMMAND_ACCESS,
-       {__NR_faccessat,
-        __NR_faccessat2,
-#if defined(__NR_access) && !defined(OS_ANDROID)
+       {__NR_faccessat, __NR_faccessat2,
+#if defined(__NR_access) && !BUILDFLAG(IS_ANDROID)
         __NR_access
 #endif
        }},
       {COMMAND_MKDIR,
        {__NR_mkdirat,
-#if defined(__NR_mkdir) && !defined(OS_ANDROID)
+#if defined(__NR_mkdir) && !BUILDFLAG(IS_ANDROID)
         __NR_mkdir
 #endif
        }},
       {COMMAND_OPEN,
        {__NR_openat,
-#if defined(__NR_open) && !defined(OS_ANDROID)
+#if defined(__NR_open) && !BUILDFLAG(IS_ANDROID)
         __NR_open
 #endif
        }},
       {COMMAND_READLINK,
        {__NR_readlinkat,
-#if defined(__NR_readlink) && !defined(OS_ANDROID)
+#if defined(__NR_readlink) && !BUILDFLAG(IS_ANDROID)
         __NR_readlink
 #endif
        }},
       {COMMAND_RENAME,
        {__NR_renameat,
-#if defined(__NR_rename) && !defined(OS_ANDROID)
+#if defined(__NR_rename) && !BUILDFLAG(IS_ANDROID)
         __NR_rename
 #endif
        }},
       {COMMAND_UNLINK,
        {__NR_unlinkat,
-#if defined(__NR_unlink) && !defined(OS_ANDROID)
+#if defined(__NR_unlink) && !BUILDFLAG(IS_ANDROID)
         __NR_unlink
 #endif
        }},
       {COMMAND_RMDIR,
        {__NR_unlinkat,
-#if defined(__NR_rmdir) && !defined(OS_ANDROID)
+#if defined(__NR_rmdir) && !BUILDFLAG(IS_ANDROID)
         __NR_rmdir
 #endif
        }},
       {COMMAND_STAT,
        {
-#if defined(__NR_stat) && !defined(OS_ANDROID)
+#if defined(__NR_stat) && !BUILDFLAG(IS_ANDROID)
            __NR_stat,
 #endif
-#if defined(__NR_lstat) && !defined(OS_ANDROID)
+#if defined(__NR_lstat) && !BUILDFLAG(IS_ANDROID)
            __NR_lstat,
 #endif
 #if defined(__NR_fstatat)

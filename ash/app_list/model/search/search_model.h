@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -57,15 +57,13 @@ class APP_LIST_MODEL_EXPORT SearchModel {
 
   SearchBoxModel* search_box() { return search_box_.get(); }
   SearchResults* results() { return results_.get(); }
+  std::vector<ash::AppListSearchResultCategory>* ordered_categories() {
+    return &ordered_categories_;
+  }
 
   void PublishResults(
       std::vector<std::unique_ptr<SearchResult>> new_results,
       const std::vector<ash::AppListSearchResultCategory>& categories);
-
-  // Fetches search result categories ordered by relevance to the active query.
-  std::vector<ash::AppListSearchResultCategory> ordered_categories() {
-    return ordered_categories_;
-  }
 
   SearchResult* FindSearchResult(const std::string& id);
 
@@ -73,7 +71,8 @@ class APP_LIST_MODEL_EXPORT SearchModel {
   // hidden by its source. Returns null if no such result exists.
   SearchResult* GetFirstVisibleResult();
 
-  // Deletes all search results. This is used in profile switches.
+  // Deletes all search results. This is used when moving from zero-state to a
+  // search query.
   void DeleteAllResults();
 
   // Delete result by the given id.

@@ -3,8 +3,6 @@
 ../../../third_party/jinja2/__init__.py
 ../../../third_party/jinja2/_compat.py
 ../../../third_party/jinja2/_identifier.py
-../../../third_party/jinja2/asyncfilters.py
-../../../third_party/jinja2/asyncsupport.py
 ../../../third_party/jinja2/bccache.py
 ../../../third_party/jinja2/compiler.py
 ../../../third_party/jinja2/defaults.py
@@ -24,7 +22,6 @@
 ../../../third_party/markupsafe/__init__.py
 ../../../third_party/markupsafe/_compat.py
 ../../../third_party/markupsafe/_native.py
-../../../third_party/six/src/six.py
 ../../gn_helpers.py
 compile_resources.py
 proto/Configuration_pb2.py

@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -43,6 +44,17 @@
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
+#include "base/record_replay.h"
+
+namespace {
+
+template <typename T>
+std::unique_ptr<T> ClonePtr(const std::unique_ptr<T>& value) {
+  return value ? std::make_unique<T>(*value) : nullptr;
+}
+
+}  // namespace
+
 namespace cc {
 LayerImpl::LayerImpl(LayerTreeImpl* tree_impl,
                      int id,
@@ -61,29 +73,29 @@ LayerImpl::LayerImpl(LayerTreeImpl* tree_impl,
       contributes_to_drawn_render_surface_(false),
       hit_testable_(false),
       is_inner_viewport_scroll_layer_(false),
-      background_color_(0),
-      safe_opaque_background_color_(0),
-      transform_tree_index_(TransformTree::kInvalidNodeId),
-      effect_tree_index_(EffectTree::kInvalidNodeId),
-      clip_tree_index_(ClipTree::kInvalidNodeId),
-      scroll_tree_index_(ScrollTree::kInvalidNodeId),
+      background_color_(SkColors::kTransparent),
+      safe_opaque_background_color_(SkColors::kTransparent),
+      transform_tree_index_(kInvalidPropertyNodeId),
+      effect_tree_index_(kInvalidPropertyNodeId),
+      clip_tree_index_(kInvalidPropertyNodeId),
+      scroll_tree_index_(kInvalidPropertyNodeId),
       current_draw_mode_(DRAW_MODE_NONE),
       needs_push_properties_(false),
       needs_show_scrollbars_(false),
       raster_even_if_not_drawn_(false),
       has_transform_node_(false) {
+  recordreplay::RegisterPointer("LayerImpl", this);
   DCHECK_GT(layer_id_, 0);
 
   DCHECK(layer_tree_impl_);
   layer_tree_impl_->RegisterLayer(this);
-  layer_tree_impl_->AddToElementLayerList(element_id_, this);
 
   SetNeedsPushProperties();
 }
 
 LayerImpl::~LayerImpl() {
+  recordreplay::UnregisterPointer(this);
   layer_tree_impl_->UnregisterLayer(this);
-  layer_tree_impl_->RemoveFromElementLayerList(element_id_);
   TRACE_EVENT_OBJECT_DELETED_WITH_ID(
       TRACE_DISABLED_BY_DEFAULT("cc.debug"), "cc::LayerImpl", this);
 }
@@ -114,6 +126,8 @@ void LayerImpl::UpdateDebugInfo(LayerDebugInfo* debug_info) {
 
 void LayerImpl::SetTransformTreeIndex(int index) {
   transform_tree_index_ = index;
+  recordreplay::Assert("[RUN-550-1329] LayerImpl::SetTransformTreeIndex %d %d",
+                       layer_id_, index);
 }
 
 void LayerImpl::SetClipTreeIndex(int index) {
@@ -220,7 +234,7 @@ bool LayerImpl::ShowDebugBorders(DebugBorderType type) const {
   return layer_tree_impl()->debug_state().show_debug_borders.test(type);
 }
 
-void LayerImpl::GetDebugBorderProperties(SkColor* color, float* width) const {
+void LayerImpl::GetDebugBorderProperties(SkColor4f* color, float* width) const {
   float device_scale_factor =
       layer_tree_impl() ? layer_tree_impl()->device_scale_factor() : 1;
 
@@ -239,7 +253,7 @@ void LayerImpl::AppendDebugBorderQuad(
     const gfx::Rect& quad_rect,
     const viz::SharedQuadState* shared_quad_state,
     AppendQuadsData* append_quads_data) const {
-  SkColor color;
+  SkColor4f color;
   float width;
   GetDebugBorderProperties(&color, &width);
   AppendDebugBorderQuad(render_pass, quad_rect, shared_quad_state,
@@ -251,7 +265,7 @@ void LayerImpl::AppendDebugBorderQuad(
     const gfx::Rect& quad_rect,
     const viz::SharedQuadState* shared_quad_state,
     AppendQuadsData* append_quads_data,
-    SkColor color,
+    SkColor4f color,
     float width) const {
   if (!ShowDebugBorders(DebugBorderType::LAYER))
     return;
@@ -265,17 +279,17 @@ void LayerImpl::AppendDebugBorderQuad(
   gfx::Rect visible_quad_rect(quad_rect);
   auto* debug_border_quad =
       render_pass->CreateAndAppendDrawQuad<viz::DebugBorderDrawQuad>();
-  debug_border_quad->SetNew(
-      shared_quad_state, quad_rect, visible_quad_rect, color, width);
+  debug_border_quad->SetNew(shared_quad_state, quad_rect, visible_quad_rect,
+                            color, width);
   if (contents_opaque()) {
     // When opaque, draw a second inner border that is thicker than the outer
     // border, but more transparent.
     static const float kFillOpacity = 0.3f;
-    SkColor fill_color = SkColorSetA(
-        color, static_cast<uint8_t>(SkColorGetA(color) * kFillOpacity));
+    SkColor4f fill_color = color;
+    fill_color.fA *= kFillOpacity;
     float fill_width = width * 3;
     gfx::Rect fill_rect = quad_rect;
-    fill_rect.Inset(fill_width / 2.f, fill_width / 2.f);
+    fill_rect.Inset(fill_width / 2.f);
     if (fill_rect.IsEmpty())
       return;
     gfx::Rect visible_fill_rect =
@@ -352,14 +366,13 @@ const Region& LayerImpl::GetAllTouchActionRegions() const {
   return *all_touch_action_regions_;
 }
 
-void LayerImpl::SetCaptureBounds(RegionCaptureBounds bounds) {
-  if (capture_bounds_ == bounds)
-    return;
-  capture_bounds_ = std::move(bounds);
+void LayerImpl::SetCaptureBounds(viz::RegionCaptureBounds bounds) {
+  if (rare_properties_ || !bounds.IsEmpty())
+    EnsureRareProperties().capture_bounds = std::move(bounds);
 }
 
 std::unique_ptr<LayerImpl> LayerImpl::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) {
+    LayerTreeImpl* tree_impl) const {
   return LayerImpl::Create(tree_impl, layer_id_);
 }
 
@@ -369,6 +382,9 @@ bool LayerImpl::IsSnappedToPixelGridInTarget() {
 
 void LayerImpl::PushPropertiesTo(LayerImpl* layer) {
   DCHECK(layer->IsActive());
+
+  recordreplay::Assert("[RUN-550-1329] LayerImpl::PushPropertiesTo %d %d %llu",
+                       transform_tree_index_, layer_id_, element_id_.GetStableId());
 
   // The element id should be set first because other setters may
   // depend on it. Referencing element id on a layer is
@@ -383,14 +399,8 @@ void LayerImpl::PushPropertiesTo(LayerImpl* layer) {
   layer->should_check_backface_visibility_ = should_check_backface_visibility_;
   layer->draws_content_ = draws_content_;
   layer->hit_testable_ = hit_testable_;
-  layer->non_fast_scrollable_region_ = non_fast_scrollable_region_;
   layer->touch_action_region_ = touch_action_region_;
-  layer->all_touch_action_regions_ =
-      all_touch_action_regions_
-          ? std::make_unique<Region>(*all_touch_action_regions_)
-          : nullptr;
-  layer->capture_bounds_ = capture_bounds_;
-  layer->wheel_event_handler_region_ = wheel_event_handler_region_;
+  layer->all_touch_action_regions_ = ClonePtr(all_touch_action_regions_);
   layer->background_color_ = background_color_;
   layer->safe_opaque_background_color_ = safe_opaque_background_color_;
   layer->transform_tree_index_ = transform_tree_index_;
@@ -415,6 +425,13 @@ void LayerImpl::PushPropertiesTo(LayerImpl* layer) {
 
   layer->UpdateDebugInfo(debug_info_.get());
 
+  if (rare_properties_) {
+    layer->rare_properties_ =
+        std::make_unique<RareProperties>(*rare_properties_);
+  } else {
+    layer->rare_properties_.reset();
+  }
+
   // Reset any state that should be cleared for the next update.
   needs_show_scrollbars_ = false;
   ResetChangeTracking();
@@ -433,15 +450,15 @@ bool LayerImpl::LayerPropertyChanged() const {
 
 bool LayerImpl::LayerPropertyChangedFromPropertyTrees() const {
   if (layer_property_changed_from_property_trees_ ||
-      GetPropertyTrees()->full_tree_damaged)
+      GetPropertyTrees()->full_tree_damaged())
     return true;
-  if (transform_tree_index() == TransformTree::kInvalidNodeId)
+  if (transform_tree_index() == kInvalidPropertyNodeId)
     return false;
   TransformNode* transform_node =
       GetTransformTree().Node(transform_tree_index());
   if (transform_node && transform_node->transform_changed)
     return true;
-  if (effect_tree_index() == EffectTree::kInvalidNodeId)
+  if (effect_tree_index() == kInvalidPropertyNodeId)
     return false;
   EffectNode* effect_node = GetEffectTree().Node(effect_tree_index());
   if (effect_node && effect_node->effect_changed)
@@ -561,7 +578,7 @@ bool LayerImpl::HitTestable() const {
   return should_hit_test;
 }
 
-void LayerImpl::SetBackgroundColor(SkColor background_color) {
+void LayerImpl::SetBackgroundColor(SkColor4f background_color) {
   if (background_color_ == background_color)
     return;
 
@@ -569,7 +586,7 @@ void LayerImpl::SetBackgroundColor(SkColor background_color) {
   NoteLayerPropertyChanged();
 }
 
-void LayerImpl::SetSafeOpaqueBackgroundColor(SkColor background_color) {
+void LayerImpl::SetSafeOpaqueBackgroundColor(SkColor4f background_color) {
   safe_opaque_background_color_ = background_color;
 }
 
@@ -596,10 +613,7 @@ void LayerImpl::SetElementId(ElementId element_id) {
 
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"), "LayerImpl::SetElementId",
                "element", element_id.ToString());
-
-  layer_tree_impl_->RemoveFromElementLayerList(element_id_);
   element_id_ = element_id;
-  layer_tree_impl_->AddToElementLayerList(element_id_, this);
 }
 
 void LayerImpl::UnionUpdateRect(const gfx::Rect& update_rect) {
@@ -610,7 +624,7 @@ gfx::Rect LayerImpl::GetDamageRect() const {
   return gfx::Rect();
 }
 
-void LayerImpl::SetCurrentScrollOffset(const gfx::Vector2dF& scroll_offset) {
+void LayerImpl::SetCurrentScrollOffset(const gfx::PointF& scroll_offset) {
   DCHECK(IsActive());
   if (GetScrollTree().SetScrollOffset(element_id(), scroll_offset))
     layer_tree_impl()->DidUpdateScrollOffset(element_id());
@@ -680,7 +694,7 @@ void LayerImpl::AsValueInto(base::trace_event::TracedValue* state) const {
 
   state->SetInteger("sorting_context_id", GetSortingContextId());
 
-  state->SetInteger("draws_content", DrawsContent());
+  state->SetInteger("draws_content", draws_content());
   state->SetInteger("gpu_memory_usage",
                     base::saturated_cast<int>(GPUMemoryUsageInBytes()));
 
@@ -701,16 +715,14 @@ void LayerImpl::AsValueInto(base::trace_event::TracedValue* state) const {
     GetAllTouchActionRegions().AsValueInto(state);
     state->EndArray();
   }
-  if (!wheel_event_handler_region_.IsEmpty()) {
-    state->BeginArray("wheel_event_handler_region");
-    wheel_event_handler_region_.AsValueInto(state);
-    state->EndArray();
-  }
-  if (!non_fast_scrollable_region_.IsEmpty()) {
-    state->BeginArray("non_fast_scrollable_region");
-    non_fast_scrollable_region_.AsValueInto(state);
-    state->EndArray();
-  }
+
+  state->BeginArray("wheel_event_handler_region");
+  wheel_event_handler_region().AsValueInto(state);
+  state->EndArray();
+
+  state->BeginArray("non_fast_scrollable_region");
+  non_fast_scrollable_region().AsValueInto(state);
+  state->EndArray();
 
   state->SetBoolean("hit_testable", HitTestable());
   state->SetBoolean("contents_opaque", contents_opaque());
@@ -780,7 +792,11 @@ gfx::Transform LayerImpl::ScreenSpaceTransform() const {
 }
 
 int LayerImpl::GetSortingContextId() const {
-  return GetTransformTree().Node(transform_tree_index())->sorting_context_id;
+  int rv = GetTransformTree().Node(transform_tree_index())->sorting_context_id;
+
+  recordreplay::Assert("[RUN-550] LayerImpl::GetSortingContextId %d %d", transform_tree_index(), rv);
+
+  return rv;
 }
 
 Region LayerImpl::GetInvalidationRegionForDebugging() {
@@ -799,7 +815,8 @@ gfx::Rect LayerImpl::GetScaledEnclosingVisibleRectInTargetSpace(
   DCHECK_GT(scale, 0.0);
 
   bool only_draws_visible_content = GetPropertyTrees()
-                                        ->effect_tree.Node(effect_tree_index())
+                                        ->effect_tree()
+                                        .Node(effect_tree_index())
                                         ->only_draws_visible_content;
   gfx::Rect drawable_bounds = visible_layer_rect();
   if (!only_draws_visible_content) {
@@ -890,19 +907,19 @@ PropertyTrees* LayerImpl::GetPropertyTrees() const {
 }
 
 ClipTree& LayerImpl::GetClipTree() const {
-  return GetPropertyTrees()->clip_tree;
+  return GetPropertyTrees()->clip_tree_mutable();
 }
 
 EffectTree& LayerImpl::GetEffectTree() const {
-  return GetPropertyTrees()->effect_tree;
+  return GetPropertyTrees()->effect_tree_mutable();
 }
 
 ScrollTree& LayerImpl::GetScrollTree() const {
-  return GetPropertyTrees()->scroll_tree;
+  return GetPropertyTrees()->scroll_tree_mutable();
 }
 
 TransformTree& LayerImpl::GetTransformTree() const {
-  return GetPropertyTrees()->transform_tree;
+  return GetPropertyTrees()->transform_tree_mutable();
 }
 
 void LayerImpl::EnsureValidPropertyTreeIndices() const {

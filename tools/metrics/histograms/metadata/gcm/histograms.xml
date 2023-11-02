@@ -1,5 +1,5 @@
 <!--
-Copyright 2020 The Chromium Authors. All rights reserved.
+Copyright 2020 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
@@ -33,7 +33,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GCM.CheckinRequestStatus" enum="GCMCheckinRequestStatus"
-    expires_after="2022-04-10">
+    expires_after="2023-02-19">
   <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>Status code of the outcome of a GCM checkin request.</summary>
@@ -276,7 +276,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GCM.RegistrationCacheStatus" enum="GCMRegistrationCacheStatus"
-    expires_after="2022-07-31">
+    expires_after="2023-02-12">
   <owner>nator@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
@@ -287,7 +287,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GCM.RegistrationRequest" units="requests"
-    expires_after="2018-08-30">
+    expires_after="2023-02-12">
   <owner>peter@chromium.org</owner>
   <summary>
     Number of registration requests sent to Google Cloud Messaging. Recorded
@@ -296,7 +296,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GCM.RegistrationRequest.NetErrorCode" enum="NetErrorCodes"
-    expires_after="2021-04-11">
+    expires_after="2023-02-12">
   <owner>peter@chromium.org</owner>
   <owner>platform-capabilities@chromium.org</owner>
   <summary>
@@ -306,7 +306,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GCM.RegistrationRequestStatus"
-    enum="GCMRegistrationRequestStatus" expires_after="2022-03-20">
+    enum="GCMRegistrationRequestStatus" expires_after="2023-04-02">
   <owner>peter@chromium.org</owner>
   <summary>
     Status code of the outcome of a GCM registration request. The Unknown error
@@ -314,15 +314,6 @@ chromium-metrics-reviews@google.com.
     Response parsing failed, Internal server error, Quota exceeded, and Device
     has too many registrations cases.
   </summary>
-</histogram>
-
-<histogram name="GCM.RegistrationSenderIdCount" units="units"
-    expires_after="M85">
-  <obsolete>
-    Removed 10/2020 because there no longer was a need for the data.
-  </obsolete>
-  <owner>jianli@chromium.org</owner>
-  <summary>Number of sender IDs specified in a registration request.</summary>
 </histogram>
 
 <histogram name="GCM.RemoveAccountMappingWhenLoading"
@@ -391,7 +382,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GCM.SendWebPushMessageResult" enum="SendWebPushMessageResult"
-    expires_after="2022-04-10">
+    expires_after="2023-02-12">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>

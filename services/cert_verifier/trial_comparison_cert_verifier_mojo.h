@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -19,8 +18,11 @@
 
 namespace net {
 class CertVerifyProc;
+class CertVerifyProcFactory;
+class CertNetFetcher;
 class CertVerifyResult;
 class TrialComparisonCertVerifier;
+class ChromeRootStoreData;
 }  // namespace net
 
 FORWARD_DECLARE_TEST(TrialComparisonCertVerifierMojoTest, SendReportDebugInfo);
@@ -30,7 +32,7 @@ namespace cert_verifier {
 // Wrapper around TrialComparisonCertVerifier that does trial configuration and
 // reporting over Mojo pipes.
 class TrialComparisonCertVerifierMojo
-    : public net::CertVerifier,
+    : public net::CertVerifierWithUpdatableProc,
       public mojom::TrialComparisonCertVerifierConfigClient {
  public:
   // |initial_allowed| is the initial setting for whether the trial is allowed.
@@ -46,7 +48,9 @@ class TrialComparisonCertVerifierMojo
       mojo::PendingRemote<mojom::TrialComparisonCertVerifierReportClient>
           report_client,
       scoped_refptr<net::CertVerifyProc> primary_verify_proc,
-      scoped_refptr<net::CertVerifyProc> trial_verify_proc);
+      scoped_refptr<net::CertVerifyProcFactory> primary_verify_proc_factory,
+      scoped_refptr<net::CertVerifyProc> trial_verify_proc,
+      scoped_refptr<net::CertVerifyProcFactory> trial_verify_proc_factory);
 
   TrialComparisonCertVerifierMojo(const TrialComparisonCertVerifierMojo&) =
       delete;
@@ -62,6 +66,9 @@ class TrialComparisonCertVerifierMojo
              std::unique_ptr<Request>* out_req,
              const net::NetLogWithSource& net_log) override;
   void SetConfig(const Config& config) override;
+  void UpdateChromeRootStoreData(
+      scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
+      const net::ChromeRootStoreData* root_store_data) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(::TrialComparisonCertVerifierMojoTest,

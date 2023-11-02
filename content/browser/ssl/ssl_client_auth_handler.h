@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "net/ssl/client_cert_identity.h"
@@ -32,7 +32,7 @@ class SSLClientAuthHandler {
  public:
   // Delegate interface for SSLClientAuthHandler. Method implementations may
   // delete the handler when called.
-  class CONTENT_EXPORT Delegate {
+  class Delegate {
    public:
     Delegate() {}
 
@@ -88,7 +88,7 @@ class SSLClientAuthHandler {
   scoped_refptr<net::SSLCertRequestInfo> cert_request_info_;
 
   // The delegate to call back with the result.
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   base::WeakPtrFactory<SSLClientAuthHandler> weak_factory_{this};
 };

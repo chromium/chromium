@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@ WaylandBufferHandle::WaylandBufferHandle(WaylandBufferBacking* backing)
     : backing_(backing), weak_factory_(this) {}
 
 WaylandBufferHandle::~WaylandBufferHandle() {
-  if (!released_callback_.is_null())
-    std::move(released_callback_).Run();
+  for (auto& cb : released_callbacks_)
+    std::move(cb.second).Run(wl_buffer());
 }
 
 void WaylandBufferHandle::OnWlBufferCreated(
@@ -24,27 +24,27 @@ void WaylandBufferHandle::OnWlBufferCreated(
   static struct wl_buffer_listener buffer_listener = {
       &WaylandBufferHandle::BufferRelease,
   };
-  wl_buffer_add_listener(wl_buffer_.get(), &buffer_listener, this);
+  if (!backing_->UseExplicitSyncRelease())
+    wl_buffer_add_listener(wl_buffer_.get(), &buffer_listener, this);
 
   if (!created_callback_.is_null())
     std::move(created_callback_).Run();
 }
 
-void WaylandBufferHandle::Attached() {
-  expected_wl_buffer_releases_++;
-  released_ = false;
-}
-
-void WaylandBufferHandle::Release(gfx::GpuFenceHandle fence) {
-  released_ = true;
-  release_fence_ = std::move(fence);
+void WaylandBufferHandle::OnExplicitRelease(WaylandSurface* requestor) {
+  auto it = released_callbacks_.find(requestor);
+  DCHECK(it != released_callbacks_.end());
+  released_callbacks_.erase(it);
 }
 
 void WaylandBufferHandle::OnWlBufferRelease(struct wl_buffer* wl_buff) {
   DCHECK_EQ(wl_buff, wl_buffer_.get());
-  expected_wl_buffer_releases_--;
-  if (!released_callback_.is_null() && expected_wl_buffer_releases_ == 0)
-    std::move(released_callback_).Run();
+  DCHECK(!backing_->UseExplicitSyncRelease());
+  DCHECK_LE(released_callbacks_.size(), 1u);
+
+  if (!released_callbacks_.empty())
+    std::move(released_callbacks_.begin()->second).Run(wl_buff);
+  released_callbacks_.clear();
 }
 
 base::WeakPtr<WaylandBufferHandle> WaylandBufferHandle::AsWeakPtr() {

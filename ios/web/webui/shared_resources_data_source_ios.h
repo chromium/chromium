@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define IOS_WEB_WEBUI_SHARED_RESOURCES_DATA_SOURCE_IOS_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ios/web/public/webui/url_data_source_ios.h"
 
 namespace web {

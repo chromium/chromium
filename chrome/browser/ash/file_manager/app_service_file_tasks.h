@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,12 +21,18 @@ namespace storage {
 class FileSystemURL;
 }
 
-namespace file_manager {
-namespace file_tasks {
+namespace file_manager::file_tasks {
 
 // Returns true if a file handler is enabled. Some handlers such as
 // import-crostini-image can be disabled at runtime by enterprise policy.
 bool FileHandlerIsEnabled(Profile* profile, const std::string& file_handler_id);
+
+// Returns a profile that has App Service available. App Service doesn't exist
+// in Incognito mode, so when the user opens a file from the downloads page
+// within an Incognito browser, we will use the base profile instead. If neither
+// the given profile nor the base profile have access to an available App
+// Service, we return a nullptr.
+Profile* GetProfileWithAppService(Profile* profile);
 
 // Finds the app services tasks that can handle |entries|, appends them to
 // |result_list|, and calls back to |callback|.
@@ -44,7 +50,30 @@ void ExecuteAppServiceTask(
     const std::vector<std::string>& mime_types,
     FileTaskFinishedCallback done);
 
-}  // namespace file_tasks
-}  // namespace file_manager
+// Returns the default handler specified in `DefaultHandlersForFileExtensions`
+// policy for the given |file_extension|, if any.
+absl::optional<std::string> GetPolicyDefaultHandlerForFileExtension(
+    Profile* profile,
+    const std::string& file_extension);
+
+// Checks `DefaultHandlersForFileExtensions` policy and maybe sets the default
+// task. Returns false to indicate that the caller may set the default task and
+// true if default has been set by this function or default should not be set
+// due to some assignment conflict.
+// The exact rules are
+//    * If there are no default handlers for the given |entries|, returns false
+//      to allow the caller to specify the default task on its own.
+//    * If there's exactly one unique default handler for the given |entries|
+//      and the corresponding task is listed in |resulting_tasks|, marks it as
+//      default, sets the policy default handler status to
+//      `kDefaultHandlerAssignedByPolicy` and returns true.
+//    * In all other cases sets the policy default handler status to
+//      `kIncorrectAssignment` and returns true.
+bool ChooseAndSetDefaultTaskFromPolicyPrefs(
+    Profile* profile,
+    const std::vector<extensions::EntryInfo>& entries,
+    ResultingTasks* resulting_tasks);
+
+}  // namespace file_manager::file_tasks
 
 #endif  // CHROME_BROWSER_ASH_FILE_MANAGER_APP_SERVICE_FILE_TASKS_H_

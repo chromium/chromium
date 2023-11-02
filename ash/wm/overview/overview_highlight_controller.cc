@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,19 @@
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
 #include "ash/accessibility/magnifier/magnifier_utils.h"
+#include "ash/accessibility/scoped_a11y_override_window_setter.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
+#include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
-#include "ash/wm/desks/templates/desks_templates_grid_view.h"
-#include "ash/wm/desks/templates/desks_templates_item_view.h"
+#include "ash/wm/desks/templates/saved_desk_grid_view.h"
+#include "ash/wm/desks/templates/saved_desk_item_view.h"
+#include "ash/wm/desks/templates/saved_desk_library_view.h"
+#include "ash/wm/desks/templates/saved_desk_name_view.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_highlightable_view.h"
@@ -23,31 +27,18 @@
 #include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/views/view.h"
 
 namespace ash {
 
-// -----------------------------------------------------------------------------
-// OverviewHighlightController::TestApi
-
-OverviewHighlightController::TestApi::TestApi(
-    OverviewHighlightController* highlight_controller)
-    : highlight_controller_(highlight_controller) {}
-
-OverviewHighlightController::TestApi::~TestApi() = default;
-
-OverviewHighlightableView*
-OverviewHighlightController::TestApi::GetHighlightView() const {
-  return highlight_controller_->highlighted_view_;
-}
-
-// -----------------------------------------------------------------------------
-// OverviewHighlightController
-
 OverviewHighlightController::OverviewHighlightController(
     OverviewSession* overview_session)
-    : overview_session_(overview_session) {}
+    : overview_session_(overview_session),
+      scoped_a11y_overrider_(
+          std::make_unique<ScopedA11yOverrideWindowSetter>()) {}
 
 OverviewHighlightController::~OverviewHighlightController() = default;
 
@@ -62,35 +53,54 @@ void OverviewHighlightController::MoveHighlight(bool reverse) {
     return;
 
   int index = 0;
+  bool item_was_deleted = false;
   if (!highlighted_view_) {
     // Pick up where we left off if |deleted_index_| has a value.
     if (deleted_index_) {
-      index = *deleted_index_ >= count ? count - 1 : *deleted_index_;
+      item_was_deleted = true;
+      index = *deleted_index_ >= count ? 0 : *deleted_index_;
       deleted_index_.reset();
     } else if (reverse) {
       index = count - 1;
     }
   } else {
-    auto it = std::find(traversable_views.begin(), traversable_views.end(),
-                        highlighted_view_);
+    auto it = base::ranges::find(traversable_views, highlighted_view_);
     DCHECK(it != traversable_views.end());
     const int current_index = std::distance(traversable_views.begin(), it);
     DCHECK_GE(current_index, 0);
     index = (((reverse ? -1 : 1) + current_index) + count) % count;
   }
 
+  // If we are moving over either end of the list of traversible views and there
+  // is an active toast with an undo button for desk removal  that can be
+  // highlighted, then we unfocus any traversible views while the dismiss button
+  // is focused.
+  if (((index == 0 && !reverse) || (index == count - 1 && reverse)) &&
+      !item_was_deleted &&
+      DesksController::Get()
+          ->MaybeToggleA11yHighlightOnUndoDeskRemovalToast()) {
+    SetFocusHighlightVisibility(false);
+    highlighted_view_ = nullptr;
+    return;
+  }
+
   UpdateHighlight(traversable_views[index]);
 }
 
+void OverviewHighlightController::UpdateA11yFocusWindow(
+    OverviewHighlightableView* name_view) {
+  scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(
+      name_view->GetView()->GetWidget()->GetNativeWindow());
+}
+
 void OverviewHighlightController::MoveHighlightToView(
-    OverviewHighlightableView* target_view) {
+    OverviewHighlightableView* target_view,
+    bool suppress_accessibility_event) {
   const std::vector<OverviewHighlightableView*> traversable_views =
       GetTraversableViews();
-  auto it = std::find(traversable_views.begin(), traversable_views.end(),
-                      target_view);
-  DCHECK(it != traversable_views.end());
+  DCHECK(base::Contains(traversable_views, target_view));
 
-  UpdateHighlight(target_view, /*suppress_accessibility_event=*/true);
+  UpdateHighlight(target_view, suppress_accessibility_event);
 }
 
 void OverviewHighlightController::OnViewDestroyingOrDisabling(
@@ -100,8 +110,7 @@ void OverviewHighlightController::OnViewDestroyingOrDisabling(
   // TODO(afakhry): Refactor this code.
   const std::vector<OverviewHighlightableView*> traversable_views =
       GetTraversableViews();
-  const auto it =
-      std::find(traversable_views.begin(), traversable_views.end(), view);
+  const auto it = base::ranges::find(traversable_views, view);
   if (it == traversable_views.end())
     return;
 
@@ -135,6 +144,11 @@ bool OverviewHighlightController::IsFocusHighlightVisible() const {
 }
 
 bool OverviewHighlightController::MaybeActivateHighlightedView() {
+  if (DesksController::Get()
+          ->MaybeActivateDeskRemovalUndoButtonOnHighlightedToast()) {
+    return true;
+  }
+
   if (!highlighted_view_)
     return false;
 
@@ -142,11 +156,12 @@ bool OverviewHighlightController::MaybeActivateHighlightedView() {
   return true;
 }
 
-bool OverviewHighlightController::MaybeCloseHighlightedView() {
+bool OverviewHighlightController::MaybeCloseHighlightedView(
+    bool primary_action) {
   if (!highlighted_view_)
     return false;
 
-  highlighted_view_->MaybeCloseHighlightedView();
+  highlighted_view_->MaybeCloseHighlightedView(primary_action);
   return true;
 }
 
@@ -178,6 +193,15 @@ OverviewItem* OverviewHighlightController::GetHighlightedItem() const {
   return nullptr;
 }
 
+void OverviewHighlightController::ResetHighlightedView() {
+  if (!highlighted_view_)
+    return;
+
+  deleted_index_.reset();
+  highlighted_view_->SetHighlightVisibility(false);
+  highlighted_view_ = nullptr;
+}
+
 void OverviewHighlightController::HideTabDragHighlight() {
   if (tab_dragged_view_)
     tab_dragged_view_->SetHighlightVisibility(false);
@@ -201,17 +225,24 @@ OverviewHighlightController::GetTraversableViews() const {
   std::vector<OverviewHighlightableView*> traversable_views;
   traversable_views.reserve(32);  // Conservative default.
 
+  // Note that this order matches the order of the chromevox cycling in
+  // `OverviewSession::UpdateAccessibilityFocus`.
   for (auto& grid : overview_session_->grid_list()) {
     // If the grid is visible, we shouldn't try to add any overview items.
     if (grid->IsShowingDesksTemplatesGrid()) {
-      views::Widget* templates_grid_widget =
-          grid->desks_templates_grid_widget();
-      DCHECK(templates_grid_widget);
-      auto* templates_grid_view = static_cast<DesksTemplatesGridView*>(
-          templates_grid_widget->GetContentsView());
-      for (DesksTemplatesItemView* template_item :
-           templates_grid_view->grid_items()) {
-        traversable_views.push_back(template_item);
+      SavedDeskLibraryView* desk_library_view = grid->GetSavedDeskLibraryView();
+      DCHECK(desk_library_view);
+      for (SavedDeskGridView* saved_desk_grid_view :
+           desk_library_view->grid_views()) {
+        for (SavedDeskItemView* saved_desk_item :
+             saved_desk_grid_view->grid_items()) {
+          traversable_views.push_back(saved_desk_item);
+
+          // Admin templates names cannot be edited or focused.
+          SavedDeskNameView* name_view = saved_desk_item->name_view();
+          if (name_view->IsFocusable())
+            traversable_views.push_back(name_view);
+        }
       }
     } else {
       for (auto& item : grid->window_list())
@@ -228,11 +259,12 @@ OverviewHighlightController::GetTraversableViews() const {
         // Desks templates buttons are only present if the feature is enabled.
         if (auto* desks_templates_button =
                 bar_view->zero_state_desks_templates_button()) {
-          traversable_views.push_back(desks_templates_button);
+          if (desks_templates_button->GetVisible())
+            traversable_views.push_back(desks_templates_button);
         }
       } else {
         for (auto* mini_view : bar_view->mini_views()) {
-          traversable_views.push_back(mini_view);
+          traversable_views.push_back(mini_view->desk_preview());
           traversable_views.push_back(mini_view->desk_name_view());
         }
 
@@ -245,11 +277,18 @@ OverviewHighlightController::GetTraversableViews() const {
                 bar_view->expanded_state_desks_templates_button()) {
           auto* inner_desks_templates_button =
               desks_templates_button->inner_button();
-          if (inner_desks_templates_button->GetEnabled())
+          if (desks_templates_button->GetVisible() &&
+              inner_desks_templates_button->GetEnabled()) {
             traversable_views.push_back(inner_desks_templates_button);
+          }
         }
       }
     }
+
+    if (grid->IsSaveDeskAsTemplateButtonVisible())
+      traversable_views.push_back(grid->GetSaveDeskAsTemplateButton());
+    if (grid->IsSaveDeskForLaterButtonVisible())
+      traversable_views.push_back(grid->GetSaveDeskForLaterButton());
   }
   return traversable_views;
 }
@@ -267,6 +306,8 @@ void OverviewHighlightController::UpdateHighlight(
   if (!suppress_accessibility_event) {
     // Don't emit if focusing since focusing will emit an accessibility event as
     // well.
+    scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(
+        highlighted_view_->GetView()->GetWidget()->GetNativeWindow());
     highlighted_view_->GetView()->NotifyAccessibilityEvent(
         ax::mojom::Event::kSelection, true);
   }

@@ -37,13 +37,13 @@
 #include <stdio.h>
 #include <algorithm>
 #include <complex>
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include <Accelerate/Accelerate.h>
 #endif
 
 namespace blink {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 const int kBiquadBufferSize = 1024;
 #endif
 
@@ -54,7 +54,7 @@ static double pow10(double x) {
 
 Biquad::Biquad(unsigned render_quantum_frames)
     : has_sample_accurate_values_(false) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Allocate two samples more for filter history
   input_buffer_.Allocate(kBiquadBufferSize + 2);
   output_buffer_.Allocate(kBiquadBufferSize + 2);
@@ -126,7 +126,7 @@ void Biquad::Process(const float* source_p,
     // path.  The structure of the state variable in these cases aren't well
     // documented so it's not clear how to update them anyway.
   } else {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     double* input_p = input_buffer_.Data();
     double* output_p = output_buffer_.Data();
 
@@ -191,7 +191,7 @@ void Biquad::Process(const float* source_p,
   }
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 
 // Here we have optimized version using Accelerate.framework
 
@@ -249,10 +249,10 @@ void Biquad::ProcessSliceFast(double* source_p,
   dest_p[1] = dest_p[frames_to_process - 1 + 2];
 }
 
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 void Biquad::Reset() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Two extra samples for filter history
   double* input_p = input_buffer_.Data();
   input_p[0] = 0;
@@ -654,8 +654,9 @@ static double RootFinder(double low,
   int iteration;
   for (iteration = 0; iteration < kMaxIterations; ++iteration) {
     root = (f_low * high - f_high * low) / (f_low - f_high);
-    if (fabs(high - low) < kAccuracyThreshold * fabs(high + low))
+    if (fabs(high - low) < kAccuracyThreshold * fabs(high + low)) {
       break;
+    }
     double fr = RepeatedRootResponse(root, c1, c2, r, log_eps);
 
     DCHECK(std::isfinite(fr));
@@ -669,8 +670,9 @@ static double RootFinder(double low,
       // fr and f_low have same sign. Copy root to f_low
       low = root;
       f_low = fr;
-      if (side == 1)
+      if (side == 1) {
         f_high /= 2;
+      }
       side = 1;
     } else {
       // f_low * fr looks like zero, so assume we've converged.

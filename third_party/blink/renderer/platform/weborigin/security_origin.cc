@@ -53,6 +53,8 @@
 #include "url/url_canon_ip.h"
 #include "url/url_util.h"
 
+#include "base/record_replay.h"
+
 namespace blink {
 
 namespace {
@@ -112,7 +114,7 @@ static bool ShouldTreatAsOpaqueOrigin(const KURL& url) {
   // host.
   DCHECK(!((relevant_url.ProtocolIsInHTTPFamily() ||
             relevant_url.ProtocolIs("ftp")) &&
-           relevant_url.Host().IsEmpty()));
+           relevant_url.Host().empty()));
 
   if (base::Contains(url::GetNoAccessSchemes(),
                      relevant_url.Protocol().Ascii()))
@@ -165,11 +167,14 @@ SecurityOrigin::SecurityOrigin(const url::Origin::Nonce& nonce,
                                const SecurityOrigin* precursor)
     : nonce_if_opaque_(nonce), precursor_origin_(precursor) {}
 
+SecurityOrigin::SecurityOrigin(NewUniqueOpaque, const SecurityOrigin* precursor)
+    : nonce_if_opaque_(absl::in_place), precursor_origin_(precursor) {}
+
 SecurityOrigin::SecurityOrigin(const SecurityOrigin* other,
                                ConstructIsolatedCopy)
-    : protocol_(other->protocol_.IsolatedCopy()),
-      host_(other->host_.IsolatedCopy()),
-      domain_(other->domain_.IsolatedCopy()),
+    : protocol_(other->protocol_),
+      host_(other->host_),
+      domain_(other->domain_),
       port_(other->port_),
       nonce_if_opaque_(other->nonce_if_opaque_),
       universal_access_(other->universal_access_),
@@ -235,8 +240,8 @@ scoped_refptr<SecurityOrigin> SecurityOrigin::Create(const KURL& url) {
 }
 
 scoped_refptr<SecurityOrigin> SecurityOrigin::CreateUniqueOpaque() {
-  scoped_refptr<SecurityOrigin> origin =
-      base::AdoptRef(new SecurityOrigin(url::Origin::Nonce(), nullptr));
+  scoped_refptr<SecurityOrigin> origin = base::AdoptRef(
+      new SecurityOrigin(NewUniqueOpaque::kWithLazyInitNonce, nullptr));
   DCHECK(origin->IsOpaque());
   DCHECK(!origin->precursor_origin_);
   return origin;
@@ -263,9 +268,9 @@ scoped_refptr<SecurityOrigin> SecurityOrigin::CreateFromUrlOrigin(
         CreateFromValidTuple(String::FromUTF8(tuple.scheme()),
                              String::FromUTF8(tuple.host()), tuple.port());
   }
-  absl::optional<base::UnguessableToken> nonce_if_opaque =
+  const base::UnguessableToken* nonce_if_opaque =
       origin.GetNonceForSerialization();
-  DCHECK_EQ(nonce_if_opaque.has_value(), origin.opaque());
+  DCHECK_EQ(!!nonce_if_opaque, origin.opaque());
   if (nonce_if_opaque) {
     return base::AdoptRef(new SecurityOrigin(
         url::Origin::Nonce(*nonce_if_opaque), tuple_origin.get()));
@@ -308,22 +313,22 @@ String SecurityOrigin::RegistrableDomain() const {
   OriginAccessEntry entry(
       *this, network::mojom::CorsDomainMatchMode::kAllowRegistrableDomains);
   String domain = entry.registrable_domain();
-  return domain.IsEmpty() ? String() : domain;
+  return domain.empty() ? String() : domain;
 }
 
-absl::optional<base::UnguessableToken>
-SecurityOrigin::GetNonceForSerialization() const {
+const base::UnguessableToken* SecurityOrigin::GetNonceForSerialization() const {
   // The call to token() forces initialization of the |nonce_if_opaque_| if
   // not already initialized.
-  // TODO(nasko): Consider not making a copy here, but return a reference to
-  // the nonce.
-  return nonce_if_opaque_ ? absl::make_optional(nonce_if_opaque_->token())
-                          : absl::nullopt;
+  return nonce_if_opaque_ ? &nonce_if_opaque_->token() : nullptr;
 }
 
 bool SecurityOrigin::CanAccess(const SecurityOrigin* other,
                                AccessResultDomainDetail& detail) const {
   if (universal_access_) {
+    detail = AccessResultDomainDetail::kDomainNotRelevant;
+    return true;
+  }
+  if (recordreplay::IsInReplayCode()) {
     detail = AccessResultDomainDetail::kDomainNotRelevant;
     return true;
   }
@@ -364,8 +369,8 @@ bool SecurityOrigin::CanRequest(const KURL& url) const {
     // (e.g., top-level worker script loading) because SecurityOrigin and
     // BlobURLNullOriginMap are thread-specific. For the case, check
     // BlobURLOpaqueOriginNonceMap.
-    absl::optional<base::UnguessableToken> nonce = GetNonceForSerialization();
-    if (nonce && BlobURLOpaqueOriginNonceMap::GetInstance().Get(url) == nonce)
+    const base::UnguessableToken* nonce = GetNonceForSerialization();
+    if (nonce && BlobURLOpaqueOriginNonceMap::GetInstance().Get(url) == *nonce)
       return true;
     return false;
   }
@@ -676,8 +681,9 @@ void SecurityOrigin::SetOpaqueOriginIsPotentiallyTrustworthy(
 }
 
 scoped_refptr<SecurityOrigin> SecurityOrigin::DeriveNewOpaqueOrigin() const {
-  return base::AdoptRef(new SecurityOrigin(
-      url::Origin::Nonce(), GetOriginOrPrecursorOriginIfOpaque()));
+  return base::AdoptRef(
+      new SecurityOrigin(NewUniqueOpaque::kWithLazyInitNonce,
+                         GetOriginOrPrecursorOriginIfOpaque()));
 }
 
 const SecurityOrigin* SecurityOrigin::GetOriginOrPrecursorOriginIfOpaque()

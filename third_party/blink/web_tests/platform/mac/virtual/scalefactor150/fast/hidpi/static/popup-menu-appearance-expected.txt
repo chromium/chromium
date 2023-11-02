@@ -1,8 +1,0 @@
-The font size in the popup should be same as the font size of the SELECT element except the third OPTION.
-
-
-FAIL picker didn't open
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

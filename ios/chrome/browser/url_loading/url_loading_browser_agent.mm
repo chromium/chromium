@@ -1,15 +1,14 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 
-#include "base/compiler_specific.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/task/thread_pool.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/chrome/browser/crash_report/crash_reporter_url_observer.h"
+#import "base/compiler_specific.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/task/thread_pool.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/crash_report/crash_reporter_url_observer.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
@@ -17,7 +16,8 @@
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/url_loading/scene_url_loading_service.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
@@ -25,7 +25,7 @@
 #import "ios/chrome/browser/web/load_timing_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
-#include "net/base/url_util.h"
+#import "net/base/url_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -97,7 +97,7 @@ NOINLINE void InduceBrowserCrash(const GURL& url) {
   if (!net::GetValueForKeyInQuery(url, "crash", &crash_string) ||
       (crash_string == "" || crash_string == "true")) {
     // Induce an intentional crash in the browser process.
-    CHECK(false);
+    CHECK(false) << "User triggered inducebrowsercrashforrealz.";
     // Call another function, so that the above CHECK can't be tail call
     // optimized. This ensures that this method's name will show up in the stack
     // for easier identification.
@@ -332,7 +332,7 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTab(const UrlLoadParams& params) {
        params.in_incognito != active_browser_state->IsOffTheRecord())) {
     // When sending a load request that switches modes, ensure the tab
     // ends up appended to the end of the model, not just next to what is
-    // currently selected in the other mode. This is done with the |append_to|
+    // currently selected in the other mode. This is done with the `append_to`
     // parameter.
     UrlLoadParams scene_params = params;
     scene_params.append_to = kLastTab;
@@ -395,8 +395,10 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTabImpl(const UrlLoadParams& params,
   TabInsertionBrowserAgent* insertion_agent =
       TabInsertionBrowserAgent::FromBrowser(browser_);
 
-  insertion_agent->InsertWebState(
+  web::WebState* web_state = insertion_agent->InsertWebState(
       params.web_params, parent_web_state, /*opened_by_dom=*/false,
-      insertion_index, params.in_background(), params.inherit_opener);
+      insertion_index, params.in_background(), params.inherit_opener,
+      /*should_show_start_surface=*/false, params.filtering_result);
+  web_state->GetNavigationManager()->LoadIfNecessary();
   notifier_->NewTabDidLoadUrl(params.web_params.url, params.user_initiated);
 }

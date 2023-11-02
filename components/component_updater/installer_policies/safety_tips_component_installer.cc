@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,10 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
+#include "base/callback.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "components/reputation/core/safety_tips.pb.h"
 #include "components/reputation/core/safety_tips_config.h"
@@ -119,7 +118,7 @@ void SafetyTipsComponentInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
   hash->assign(
       kSafetyTipsPublicKeySHA256,
-      kSafetyTipsPublicKeySHA256 + base::size(kSafetyTipsPublicKeySHA256));
+      kSafetyTipsPublicKeySHA256 + std::size(kSafetyTipsPublicKeySHA256));
 }
 
 std::string SafetyTipsComponentInstallerPolicy::GetName() const {

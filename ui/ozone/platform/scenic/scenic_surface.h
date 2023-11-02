@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -76,15 +77,6 @@ class ScenicSurface : public PlatformWindowSurface {
   // Sets the texture of the surface to an image resource.
   void SetTextureToImage(const scenic::Image& image);
 
-  // Presents a ViewHolder that is corresponding to the overlay content coming
-  // from BufferCollection specified by |id|.
-  bool PresentOverlayView(
-      gfx::SysmemBufferCollectionId id,
-      fuchsia::ui::views::ViewHolderToken view_holder_token);
-
-  // Remove ViewHolder specified by |id|.
-  bool RemoveOverlayView(gfx::SysmemBufferCollectionId id);
-
   // Creates a View for this surface, and returns a ViewHolderToken handle
   // that can be used to attach it into a scene graph.
   mojo::PlatformHandle CreateView();
@@ -141,6 +133,8 @@ class ScenicSurface : public PlatformWindowSurface {
   void OnPresentComplete(fuchsia::images::PresentationInfo presentation_info);
   void UpdateViewHolderScene();
 
+  void PresentEmptyImage();
+
   scenic::Session scenic_session_;
   std::unique_ptr<scenic::View> parent_;
 
@@ -183,12 +177,12 @@ class ScenicSurface : public PlatformWindowSurface {
   const gfx::AcceleratedWidget window_;
 
   struct OverlayViewInfo {
-    OverlayViewInfo(scenic::ViewHolder holder, scenic::EntityNode node);
+    OverlayViewInfo(scenic::Session* scenic_session,
+                    fuchsia::ui::views::ViewHolderToken view_holder_token);
 
     scenic::ViewHolder view_holder;
     scenic::EntityNode entity_node;
 
-    bool visible = false;
     int plane_z_order = 0;
     gfx::Rect display_bounds;
     gfx::RectF crop_rect;

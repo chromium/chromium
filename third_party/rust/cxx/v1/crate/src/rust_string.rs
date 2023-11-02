@@ -1,3 +1,4 @@
+#![cfg(feature = "alloc")]
 #![allow(missing_docs)]
 
 use alloc::string::String;

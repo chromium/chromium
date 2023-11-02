@@ -1,11 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SERVICES_AUDIO_IN_PROCESS_AUDIO_MANAGER_ACCESSOR_H_
 #define SERVICES_AUDIO_IN_PROCESS_AUDIO_MANAGER_ACCESSOR_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "services/audio/service.h"
 
 namespace media {
@@ -36,7 +36,7 @@ class InProcessAudioManagerAccessor final
   void SetAudioLogFactory(media::AudioLogFactory* factory) final;
 
  private:
-  media::AudioManager* const audio_manager_;
+  const raw_ptr<media::AudioManager> audio_manager_;
 };
 
 }  // namespace audio

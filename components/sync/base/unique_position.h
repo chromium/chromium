@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -96,12 +96,6 @@ class UniquePosition {
 
   // Returns the suffix.
   std::string GetSuffixForTest() const;
-
-  // Performs a lossy conversion to an int64_t position.  Positions converted to
-  // and from int64_ts using this and the FromInt64 function should maintain
-  // their
-  // relative orderings unless the int64_t values conflict.
-  int64_t ToInt64() const;
 
   bool IsValid() const;
 

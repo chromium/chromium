@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "media/cdm/cdm_auxiliary_helper.h"
@@ -47,10 +48,11 @@ class MEDIA_MOJO_EXPORT MojoCdmHelper final : public CdmAuxiliaryHelper,
                          const std::string& challenge,
                          ChallengePlatformCB callback) final;
   void GetStorageId(uint32_t version, StorageIdCB callback) final;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void GetMediaFoundationCdmData(GetMediaFoundationCdmDataCB callback) final;
   void SetCdmClientToken(const std::vector<uint8_t>& client_token) final;
-#endif  // defined(OS_WIN)
+  void OnCdmEvent(CdmEvent event, HRESULT hresult) final;
+#endif  // BUILDFLAG(IS_WIN)
 
   // MojoCdmFileIO::Delegate implementation.
   void CloseCdmFileIO(MojoCdmFileIO* cdm_file_io) final;
@@ -64,7 +66,7 @@ class MEDIA_MOJO_EXPORT MojoCdmHelper final : public CdmAuxiliaryHelper,
   CdmAllocator* GetAllocator();
 
   // Provides interfaces when needed.
-  mojom::FrameInterfaceFactory* frame_interfaces_;
+  raw_ptr<mojom::FrameInterfaceFactory> frame_interfaces_;
 
   // Connections to the additional services. Will try to reconnect if
   // disconnected, to handle cases like page refresh, where the document is

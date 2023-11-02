@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/binding_access_checker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -30,8 +29,10 @@ enum class PromisesAllowed {
   kDisallowed,
 };
 
-// A representation of the expected signature for an API method, along with the
+// A representation of the expected signature for an API, along with the
 // ability to match provided arguments and convert them to base::Values.
+// This is primarily used for API methods, but can also be used for API event
+// signatures.
 class APISignature {
  public:
   // Struct that bundles all the details about an asynchronous return.
@@ -69,7 +70,9 @@ class APISignature {
   static std::unique_ptr<APISignature> CreateFromValues(
       const base::Value& specification_list,
       const base::Value* returns_async,
-      BindingAccessChecker* access_checker);
+      BindingAccessChecker* access_checker,
+      const std::string& api_name,
+      bool is_event_signature);
 
   struct V8ParseResult {
     // Appease the Chromium style plugin (out of line ctor/dtor).
@@ -147,6 +150,15 @@ class APISignature {
                         const APITypeReferenceMap& type_refs,
                         std::string* error) const;
 
+  // Same as `ValidateResponse`, but verifies the given `arguments` against the
+  // `signature_` instead of the `returns_async_` types. This can be used when
+  // validating that APIs return proper values to an event (which has a
+  // signature, but no return).
+  bool ValidateCall(v8::Local<v8::Context> context,
+                    const std::vector<v8::Local<v8::Value>>& arguments,
+                    const APITypeReferenceMap& type_refs,
+                    std::string* error) const;
+
   // Returns a developer-readable string of the expected signature. For
   // instance, if this signature expects a string 'someStr' and an optional int
   // 'someInt', this would return "string someStr, optional integer someInt".
@@ -162,10 +174,10 @@ class APISignature {
   // |context|.
   PromisesAllowed CheckPromisesAllowed(v8::Local<v8::Context> context) const;
 
-  // The list of expected arguments for the API method.
-  std::vector<std::unique_ptr<ArgumentSpec>> method_signature_;
+  // The list of expected arguments for the API signature.
+  std::vector<std::unique_ptr<ArgumentSpec>> signature_;
 
-  // The details of any asynchronous return the API method may have. Will be
+  // The details of any asynchronous return an API method may have. This will be
   // nullptr if the the API doesn't have an asynchronous return.
   std::unique_ptr<APISignature::ReturnsAsync> returns_async_;
 

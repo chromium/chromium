@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,9 +39,9 @@ class IdentityManager;
 @property(nonatomic, assign) signin::IdentityManager* identityManager;
 
 // Designated initializer. All the paramters should not be null.
-// |userPrefService|: preference service from the browser state.
-// |localPrefService|: preference service from the application context.
-// |mode|: mode to display the Google services settings.
+// `userPrefService`: preference service from the browser state.
+// `localPrefService`: preference service from the application context.
+// `mode`: mode to display the Google services settings.
 - (instancetype)initWithUserPrefService:(PrefService*)userPrefService
                        localPrefService:(PrefService*)localPrefService
                   accountManagerService:

@@ -9,7 +9,7 @@
     {
       "name": "LayoutNGBlockFlow DIV id='content'",
       "bounds": [285, 1000],
-      "contentsOpaque": true,
+      "contentsOpaqueForText": true,
       "transform": 1
     }
   ],

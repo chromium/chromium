@@ -1,20 +1,20 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/crash_report/synthetic_crash_report_util.h"
+#import "ios/chrome/browser/crash_report/synthetic_crash_report_util.h"
 
-#include <stdlib.h>
+#import <stdlib.h>
 
-#include "base/files/memory_mapped_file.h"
-#include "base/ios/device_util.h"
-#include "base/notreached.h"
-#include "base/rand_util.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/system/sys_info.h"
+#import "base/files/memory_mapped_file.h"
+#import "base/ios/device_util.h"
+#import "base/notreached.h"
+#import "base/rand_util.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/strings/string_util.h"
+#import "base/strings/stringprintf.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/system/sys_info.h"
 #import "components/previous_session_info/previous_session_info.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -23,7 +23,7 @@
 
 namespace {
 
-// Appends |config| vector with key value pair, respecting max value length.
+// Appends `config` vector with key value pair, respecting max value length.
 void AppendConfig(std::vector<std::string>& config,
                   std::string key,
                   std::string value) {
@@ -44,7 +44,7 @@ void AppendConfig(std::vector<std::string>& config,
   }
 }
 
-// Appends |config| vector with key value pair, respecting max value length.
+// Appends `config` vector with key value pair, respecting max value length.
 // Key is prepent with BreakpadServerParameterPrefix_.
 void AppendConfigWithBreakpadServerParam(std::vector<std::string>& config,
                                          std::string key,

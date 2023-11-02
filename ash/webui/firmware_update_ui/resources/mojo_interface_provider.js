@@ -1,13 +1,12 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {fakeFirmwareUpdates} from './fake_data.js';
 import {FakeUpdateController} from './fake_update_controller.js';
 import {FakeUpdateProvider} from './fake_update_provider.js';
-import {UpdateControllerInterface, UpdateProviderInterface} from './firmware_update_types.js';
-
+import {InstallController, InstallControllerInterface, UpdateProvider, UpdateProviderInterface} from './firmware_update_types.js';
 /**
  * @fileoverview
  * Provides singleton access to mojo interfaces with the ability
@@ -15,14 +14,27 @@ import {UpdateControllerInterface, UpdateProviderInterface} from './firmware_upd
  */
 
 /**
+ * If true this will replace UpdateProvider with a fake.
+ * @type {boolean}
+ */
+let useFakeProviders = false;
+
+/**
  * @type {?UpdateProviderInterface}
  */
 let updateProvider = null;
 
 /**
- * @type {?UpdateControllerInterface}
+ * @type {?InstallControllerInterface}
  */
 let updateController = null;
+
+/**
+ * @param {boolean} value
+ */
+export function setUseFakeProviders(value) {
+  useFakeProviders = value;
+}
 
 /**
  * @param {!UpdateProviderInterface} testProvider
@@ -32,7 +44,7 @@ export function setUpdateProviderForTesting(testProvider) {
 }
 
 /**
- * @param {!UpdateControllerInterface} testUpdateController
+ * @param {!InstallControllerInterface} testUpdateController
  */
 export function setUpdateControllerForTesting(testUpdateController) {
   updateController = testUpdateController;
@@ -62,19 +74,27 @@ function setupFakeUpdateController() {
  */
 export function getUpdateProvider() {
   if (!updateProvider) {
-    // TODO(michaelcheco): Instantiate a real mojo interface here.
-    setupFakeUpdateProvider();
+    if (useFakeProviders) {
+      setupFakeUpdateProvider();
+    } else {
+      updateProvider = UpdateProvider.getRemote();
+    }
   }
 
   assert(!!updateProvider);
   return updateProvider;
 }
 
-/** @return {!UpdateControllerInterface} */
+/**
+ * @return {!InstallControllerInterface}
+ */
 export function getUpdateController() {
   if (!updateController) {
-    // TODO(michaelcheco): Instantiate a real mojo interface here.
-    setupFakeUpdateController();
+    if (useFakeProviders) {
+      setupFakeUpdateController();
+    } else {
+      updateController = InstallController.getRemote();
+    }
   }
 
   assert(!!updateController);

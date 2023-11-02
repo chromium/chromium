@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,18 @@
 #include "gpu/config/gpu_finch_features.h"
 
 namespace gpu {
+
+RefCountedLock::RefCountedLock() = default;
+
+RefCountedLock::~RefCountedLock() = default;
+
+base::Lock* RefCountedLock::GetDrDcLockPtr() {
+  return &lock_;
+}
+
+void RefCountedLock::AssertAcquired() {
+  lock_.AssertAcquired();
+}
 
 RefCountedLockHelperDrDc::RefCountedLockHelperDrDc(
     scoped_refptr<RefCountedLock> lock)

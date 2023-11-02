@@ -1,51 +1,25 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_PUBLIC_PROVIDER_CHROME_BROWSER_CHROME_BROWSER_PROVIDER_H_
 #define IOS_PUBLIC_PROVIDER_CHROME_BROWSER_CHROME_BROWSER_PROVIDER_H_
 
-#include <CoreGraphics/CoreGraphics.h>
-#import <Foundation/Foundation.h>
-#include <stddef.h>
-
 #include <memory>
-#include <string>
-#include <vector>
 
-#include "base/compiler_specific.h"
-#include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
-
-class DiscoverFeedProvider;
-class MailtoHandlerProvider;
-class UserFeedbackProvider;
-
-namespace base {
-class CommandLine;
-}
-
-namespace web {
-class WebState;
-}
-
-@protocol LogoVendor;
-@class UITextField;
-@class UIView;
-class Browser;
 
 namespace ios {
 
 class ChromeBrowserProvider;
 class ChromeIdentityService;
-class ChromeTrustedVaultService;
 
 // Getter and setter for the provider. The provider should be set early, before
 // any browser code is called (as the getter will fail if the provider has not
 // been set).
 ChromeBrowserProvider& GetChromeBrowserProvider();
-ChromeBrowserProvider* SetChromeBrowserProvider(ChromeBrowserProvider* provider)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] ChromeBrowserProvider* SetChromeBrowserProvider(
+    ChromeBrowserProvider* provider);
 
 // Factory function for the embedder specific provider. This function must be
 // implemented by the embedder and will be selected via linking (i.e. by the
@@ -79,53 +53,18 @@ class ChromeBrowserProvider {
   ChromeBrowserProvider();
   virtual ~ChromeBrowserProvider();
 
-  // Appends additional command-line flags. Called before web startup.
-  virtual void AppendSwitchesFromExperimentalSettings(
-      NSUserDefaults* experimental_settings,
-      base::CommandLine* command_line) const;
-
-  // This is called after web startup.
-  virtual void Initialize() const;
-
   // Sets the current instance of Chrome identity service. Used for testing.
   void SetChromeIdentityServiceForTesting(
       std::unique_ptr<ChromeIdentityService> service);
   // Returns an instance of a Chrome identity service.
   ChromeIdentityService* GetChromeIdentityService();
-  // Returns an instance of a Chrome trusted vault service.
-  virtual ChromeTrustedVaultService* GetChromeTrustedVaultService();
-  // Creates and returns a new styled text field.
-  virtual UITextField* CreateStyledTextField() const NS_RETURNS_RETAINED;
-
-  // Attaches any embedder-specific browser agents to the given |browser|.
-  virtual void AttachBrowserAgents(Browser* browser) const;
-
-  virtual id<LogoVendor> CreateLogoVendor(Browser* browser,
-                                          web::WebState* web_state) const
-      NS_RETURNS_RETAINED;
-
-  // Returns an instance of the user feedback provider.
-  virtual UserFeedbackProvider* GetUserFeedbackProvider() const;
-
-  // Hides immediately the modals related to this provider.
-  virtual void HideModalViewStack() const;
-
-  // Logs if any modals created by this provider are still presented. It does
-  // not dismiss them.
-  virtual void LogIfModalViewsArePresented() const;
-
-  // Returns a valid non-null instance of the mailto handler provider.
-  virtual MailtoHandlerProvider* GetMailtoHandlerProvider() const;
-
-  // Returns an instance of the DiscoverFeed provider;
-  virtual DiscoverFeedProvider* GetDiscoverFeedProvider() const;
 
   // Adds and removes observers.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
  protected:
-  // Fires |OnChromeIdentityServiceDidChange| on all observers.
+  // Fires `OnChromeIdentityServiceDidChange` on all observers.
   void FireChromeIdentityServiceDidChange(ChromeIdentityService* new_service);
 
   // Creates a ChromeIdentityService. This methods has to be be implemented
@@ -135,8 +74,8 @@ class ChromeBrowserProvider {
 
  private:
   base::ObserverList<Observer, true>::Unchecked observer_list_;
-  std::unique_ptr<MailtoHandlerProvider> mailto_handler_provider_;
   std::unique_ptr<ios::ChromeIdentityService> chrome_identity_service_;
+  bool chrome_identity_service_replaced_for_testing_ = false;
 };
 
 }  // namespace ios

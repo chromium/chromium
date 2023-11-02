@@ -30,6 +30,8 @@
 #include "third_party/blink/renderer/platform/wtf/hash_table_deleted_value_type.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
+#include "base/record_replay.h"
+
 namespace WTF {
 
 template <size_t size>
@@ -120,8 +122,10 @@ struct IntHash {
 template <typename T>
 struct FloatHash {
   typedef typename IntTypes<sizeof(T)>::UnsignedType Bits;
-  static unsigned GetHash(T key) { return HashInt(bit_cast<Bits>(key)); }
-  static bool Equal(T a, T b) { return bit_cast<Bits>(a) == bit_cast<Bits>(b); }
+  static unsigned GetHash(T key) { return HashInt(base::bit_cast<Bits>(key)); }
+  static bool Equal(T a, T b) {
+    return base::bit_cast<Bits>(a) == base::bit_cast<Bits>(b);
+  }
   static const bool safe_to_compare_to_empty_or_deleted = true;
 };
 
@@ -147,12 +151,51 @@ struct PtrHash {
 };
 
 template <typename T>
+struct RecordReplayPointerIdHash {
+  static unsigned GetHash(T* key) {
+#if defined(COMPILER_MSVC)
+#pragma warning(push)
+// work around what seems to be a bug in MSVC's conversion warnings
+#pragma warning(disable : 4244)
+#endif
+    if (recordreplay::IsRecordingOrReplaying("pointer-ids")) {
+      int id = recordreplay::PointerId(key);
+      if (id) {
+        return IntHash<int>::GetHash(id);
+      }
+    }
+    return IntHash<uintptr_t>::GetHash(reinterpret_cast<uintptr_t>(key));
+#if defined(COMPILER_MSVC)
+#pragma warning(pop)
+#endif
+  }
+  static bool Equal(T* a, T* b) { return a == b; }
+  static bool Equal(std::nullptr_t, T* b) { return !b; }
+  static bool Equal(T* a, std::nullptr_t) { return !a; }
+  static const bool safe_to_compare_to_empty_or_deleted = true;
+};
+
+template <typename T>
 struct RefPtrHash : PtrHash<T> {
   using PtrHash<T>::GetHash;
   static unsigned GetHash(const scoped_refptr<T>& key) {
     return GetHash(key.get());
   }
   using PtrHash<T>::Equal;
+  static bool Equal(const scoped_refptr<T>& a, const scoped_refptr<T>& b) {
+    return a == b;
+  }
+  static bool Equal(T* a, const scoped_refptr<T>& b) { return a == b; }
+  static bool Equal(const scoped_refptr<T>& a, T* b) { return a == b; }
+};
+
+template <typename T>
+struct RecordReplayRefPtrPointerIdHash : RecordReplayPointerIdHash<T> {
+  using RecordReplayPointerIdHash<T>::GetHash;
+  static unsigned GetHash(const scoped_refptr<T>& key) {
+    return GetHash(key.get());
+  }
+  using RecordReplayPointerIdHash<T>::Equal;
   static bool Equal(const scoped_refptr<T>& a, const scoped_refptr<T>& b) {
     return a == b;
   }

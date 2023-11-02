@@ -206,7 +206,7 @@ TEST_F(WebFrameSerializerSanitizationTest, FromBrokenImageDocument) {
   // is simpler to not generate only that instead of the full MHTML.
   String mhtml =
       GenerateMHTMLPartsFromPng("http://www.test.com", "broken-image.png");
-  EXPECT_TRUE(mhtml.IsEmpty());
+  EXPECT_TRUE(mhtml.empty());
 }
 
 TEST_F(WebFrameSerializerSanitizationTest, ImageLoadedFromSrcsetForHiDPI) {
@@ -216,7 +216,7 @@ TEST_F(WebFrameSerializerSanitizationTest, ImageLoadedFromSrcsetForHiDPI) {
                             "frameserialization/2x.png");
 
   // Set high DPR in order to load image from srcset, instead of src.
-  WebView()->SetDeviceScaleFactor(2.0f);
+  WebView()->SetZoomFactorForDeviceScaleFactor(2.0f);
 
   String mhtml =
       GenerateMHTMLFromHtml("http://www.test.com", "img_srcset.html");

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #error "This file requires ARC support."
 #endif
 
-#include "base/check.h"
+#import "base/check.h"
 
 @interface GridTransitionLayout ()
 @property(nonatomic, readwrite) NSArray<GridTransitionItem*>* inactiveItems;
@@ -81,8 +81,8 @@
                                                 withCapInsets:UIEdgeInsetsZero];
   CGSize viewSize = view.bounds.size;
   if (rect.origin.y > 0) {
-    // |rect| starts below the top of |view|, so section off the top part of
-    // |view|.
+    // `rect` starts below the top of `view`, so section off the top part of
+    // `view`.
     CGRect topRect = CGRectMake(0, 0, viewSize.width, rect.origin.y);
     self.cell.topTabView =
         [view resizableSnapshotViewFromRect:topRect
@@ -91,8 +91,8 @@
   }
   CGFloat middleRectBottom = CGRectGetMaxY(rect);
   if (middleRectBottom < viewSize.height) {
-    // |rect| ends above the bottom of |view|, so section off the bottom part of
-    // |view|.
+    // `rect` ends above the bottom of `view`, so section off the bottom part of
+    // `view`.
     CGFloat bottomHeight = viewSize.height - middleRectBottom;
     CGRect bottomRect =
         CGRectMake(0, middleRectBottom, viewSize.width, bottomHeight);

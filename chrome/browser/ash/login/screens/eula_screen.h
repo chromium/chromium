@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/eula_screen_handler.h"
@@ -29,14 +28,13 @@ class EulaScreen : public BaseScreen {
     ALREADY_ACCEPTED,
     // Eula already accepted, skip screen (demo mode)
     ALREADY_ACCEPTED_DEMO_MODE,
-    // The usage did not accept EULA - they clicked back button instead.
+    // The user did not accept EULA - they clicked back button instead.
     BACK,
+    // The user did not accept EULA - they clicked back button instead (demo
+    // mode).
+    BACK_DEMO_MODE,
     // Eula screen is skipped.
     NOT_APPLICABLE,
-    // Eula screen is skipped. EULA and Chrome & Chrome OS terms of service
-    // are added to the consolidated consent screen.
-    NOT_APPLICABLE_CONSOLIDATED_CONSENT_REGULAR,
-    NOT_APPLICABLE_CONSOLIDATED_CONSENT_DEMO,
   };
 
   // This enum is tied directly to a UMA enum defined in
@@ -57,7 +55,8 @@ class EulaScreen : public BaseScreen {
   static std::string GetResultString(Result result);
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
-  EulaScreen(EulaView* view, const ScreenExitCallback& exit_callback);
+  EulaScreen(base::WeakPtr<EulaView> view,
+             const ScreenExitCallback& exit_callback);
 
   EulaScreen(const EulaScreen&) = delete;
   EulaScreen& operator=(const EulaScreen&) = delete;
@@ -73,19 +72,15 @@ class EulaScreen : public BaseScreen {
   // Returns true if usage statistics reporting is enabled.
   bool IsUsageStatsEnabled() const;
 
-  // This method is called, when view is being destroyed. Note, if model
-  // is destroyed earlier then it has to call SetModel(NULL).
-  void OnViewDestroyed(EulaView* view);
-
  protected:
   ScreenExitCallback* exit_callback() { return &exit_callback_; }
 
  private:
   // BaseScreen:
-  bool MaybeSkip(WizardContext* context) override;
+  bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
   bool HandleAccelerator(LoginAcceleratorAction action) override;
 
   // EulaView:
@@ -103,7 +98,7 @@ class EulaScreen : public BaseScreen {
   // it's destroyed.
   std::string tpm_password_;
 
-  EulaView* view_;
+  base::WeakPtr<EulaView> view_;
 
   ScreenExitCallback exit_callback_;
 };

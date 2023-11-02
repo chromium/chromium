@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,8 +19,8 @@ constexpr size_t kBytesPerPixelBGRA = 4;
 
 }  // namespace
 
-GLSurfaceEglReadback::GLSurfaceEglReadback()
-    : PbufferGLSurfaceEGL(gfx::Size(1, 1)),
+GLSurfaceEglReadback::GLSurfaceEglReadback(gl::GLDisplayEGL* display)
+    : PbufferGLSurfaceEGL(display, gfx::Size(1, 1)),
       task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
 
 bool GLSurfaceEglReadback::Resize(const gfx::Size& size,
@@ -51,8 +51,8 @@ bool GLSurfaceEglReadback::IsOffscreen() {
   return false;
 }
 
-gfx::SwapResult GLSurfaceEglReadback::SwapBuffers(
-    PresentationCallback callback) {
+gfx::SwapResult GLSurfaceEglReadback::SwapBuffers(PresentationCallback callback,
+                                                  gl::FrameData data) {
   gfx::SwapResult swap_result = gfx::SwapResult::SWAP_FAILED;
   gfx::PresentationFeedback feedback;
 

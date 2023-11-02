@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,11 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "base/callback.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/one_shot_event.h"
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/extension_uninstaller.h"
@@ -22,7 +24,6 @@
 #include "chrome/browser/apps/app_service/publishers/extension_apps_enable_flow.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps_util.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/extension_uninstall_dialog.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -41,6 +42,7 @@
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/clear_site_data_utils.h"
@@ -53,6 +55,7 @@
 #include "extensions/common/switches.h"
 #include "net/base/url_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/window_open_disposition_utils.h"
 #include "url/url_constants.h"
 
 // TODO(crbug.com/826982): life cycle events. Extensions can be installed and
@@ -80,45 +83,45 @@ std::string GetSourceFromAppListSource(ash::ShelfLaunchSource source) {
   }
 }
 
-ash::ShelfLaunchSource ConvertLaunchSource(
-    apps::mojom::LaunchSource launch_source) {
+ash::ShelfLaunchSource ConvertLaunchSource(apps::LaunchSource launch_source) {
   switch (launch_source) {
-    case apps::mojom::LaunchSource::kUnknown:
-    case apps::mojom::LaunchSource::kFromParentalControls:
+    case apps::LaunchSource::kUnknown:
+    case apps::LaunchSource::kFromParentalControls:
       return ash::LAUNCH_FROM_UNKNOWN;
-    case apps::mojom::LaunchSource::kFromAppListGrid:
-    case apps::mojom::LaunchSource::kFromAppListGridContextMenu:
+    case apps::LaunchSource::kFromAppListGrid:
+    case apps::LaunchSource::kFromAppListGridContextMenu:
       return ash::LAUNCH_FROM_APP_LIST;
-    case apps::mojom::LaunchSource::kFromAppListQuery:
-    case apps::mojom::LaunchSource::kFromAppListQueryContextMenu:
-    case apps::mojom::LaunchSource::kFromAppListRecommendation:
+    case apps::LaunchSource::kFromAppListQuery:
+    case apps::LaunchSource::kFromAppListQueryContextMenu:
+    case apps::LaunchSource::kFromAppListRecommendation:
       return ash::LAUNCH_FROM_APP_LIST_SEARCH;
-    case apps::mojom::LaunchSource::kFromShelf:
+    case apps::LaunchSource::kFromShelf:
       return ash::LAUNCH_FROM_SHELF;
-    case apps::mojom::LaunchSource::kFromFileManager:
-    case apps::mojom::LaunchSource::kFromLink:
-    case apps::mojom::LaunchSource::kFromOmnibox:
-    case apps::mojom::LaunchSource::kFromChromeInternal:
-    case apps::mojom::LaunchSource::kFromKeyboard:
-    case apps::mojom::LaunchSource::kFromOtherApp:
-    case apps::mojom::LaunchSource::kFromMenu:
-    case apps::mojom::LaunchSource::kFromInstalledNotification:
-    case apps::mojom::LaunchSource::kFromTest:
-    case apps::mojom::LaunchSource::kFromArc:
-    case apps::mojom::LaunchSource::kFromSharesheet:
-    case apps::mojom::LaunchSource::kFromReleaseNotesNotification:
-    case apps::mojom::LaunchSource::kFromFullRestore:
-    case apps::mojom::LaunchSource::kFromSmartTextContextMenu:
-    case apps::mojom::LaunchSource::kFromDiscoverTabNotification:
-    case apps::mojom::LaunchSource::kFromManagementApi:
-    case apps::mojom::LaunchSource::kFromKiosk:
-    case apps::mojom::LaunchSource::kFromCommandLine:
-    case apps::mojom::LaunchSource::kFromBackgroundMode:
-    case apps::mojom::LaunchSource::kFromNewTabPage:
-    case apps::mojom::LaunchSource::kFromIntentUrl:
-    case apps::mojom::LaunchSource::kFromOsLogin:
-    case apps::mojom::LaunchSource::kFromProtocolHandler:
-    case apps::mojom::LaunchSource::kFromUrlHandler:
+    case apps::LaunchSource::kFromFileManager:
+    case apps::LaunchSource::kFromLink:
+    case apps::LaunchSource::kFromOmnibox:
+    case apps::LaunchSource::kFromChromeInternal:
+    case apps::LaunchSource::kFromKeyboard:
+    case apps::LaunchSource::kFromOtherApp:
+    case apps::LaunchSource::kFromMenu:
+    case apps::LaunchSource::kFromInstalledNotification:
+    case apps::LaunchSource::kFromTest:
+    case apps::LaunchSource::kFromArc:
+    case apps::LaunchSource::kFromSharesheet:
+    case apps::LaunchSource::kFromReleaseNotesNotification:
+    case apps::LaunchSource::kFromFullRestore:
+    case apps::LaunchSource::kFromSmartTextContextMenu:
+    case apps::LaunchSource::kFromDiscoverTabNotification:
+    case apps::LaunchSource::kFromManagementApi:
+    case apps::LaunchSource::kFromKiosk:
+    case apps::LaunchSource::kFromCommandLine:
+    case apps::LaunchSource::kFromBackgroundMode:
+    case apps::LaunchSource::kFromNewTabPage:
+    case apps::LaunchSource::kFromIntentUrl:
+    case apps::LaunchSource::kFromOsLogin:
+    case apps::LaunchSource::kFromProtocolHandler:
+    case apps::LaunchSource::kFromUrlHandler:
+    case apps::LaunchSource::kFromLockScreen:
       return ash::LAUNCH_FROM_UNKNOWN;
   }
 }
@@ -149,8 +152,8 @@ apps::mojom::InstallReason GetInstallReason(
 
 namespace apps {
 
-ExtensionAppsBase::ExtensionAppsBase(AppServiceProxy* proxy)
-    : AppPublisher(proxy), profile_(proxy->profile()) {}
+ExtensionAppsBase::ExtensionAppsBase(AppServiceProxy* proxy, AppType app_type)
+    : AppPublisher(proxy), profile_(proxy->profile()), app_type_(app_type) {}
 
 ExtensionAppsBase::~ExtensionAppsBase() = default;
 
@@ -168,7 +171,7 @@ void ExtensionAppsBase::OnExtensionUninstalled(
   // Construct an App with only the information required to identify an
   // uninstallation.
   apps::mojom::AppPtr mojom_app = apps::mojom::App::New();
-  mojom_app->app_type = apps::mojom::AppType::kExtension;
+  mojom_app->app_type = mojom_app_type();
   mojom_app->app_id = extension->id();
   mojom_app->readiness = reason == extensions::UNINSTALL_REASON_MIGRATED
                              ? apps::mojom::Readiness::kUninstalledByMigration
@@ -177,12 +180,22 @@ void ExtensionAppsBase::OnExtensionUninstalled(
   SetShowInFields(mojom_app, extension);
   PublisherBase::Publish(std::move(mojom_app), subscribers_);
 
-  std::unique_ptr<App> app =
-      std::make_unique<App>(AppType::kExtension, extension->id());
+  auto app = std::make_unique<App>(app_type(), extension->id());
   app->readiness = reason == extensions::UNINSTALL_REASON_MIGRATED
                        ? Readiness::kUninstalledByMigration
                        : Readiness::kUninstalledByUser;
   AppPublisher::Publish(std::move(app));
+}
+
+void ExtensionAppsBase::SetShowInFields(const extensions::Extension* extension,
+                                        App& app) {
+  auto show =
+      ShouldShow(extension, profile_) && ShouldShownInLauncher(extension);
+  app.show_in_launcher = show;
+  app.show_in_shelf = show;
+  app.show_in_search = show;
+  app.show_in_management = show;
+  app.handles_intents = show;
 }
 
 void ExtensionAppsBase::SetShowInFields(
@@ -206,14 +219,37 @@ void ExtensionAppsBase::SetShowInFields(
   }
 }
 
-std::unique_ptr<App> ExtensionAppsBase::CreateAppImpl(
-    const extensions::Extension* extension,
-    Readiness readiness) {
-  std::unique_ptr<App> app = AppPublisher::MakeApp(
-      AppType::kExtension, extension->id(), readiness, extension->name());
+AppPtr ExtensionAppsBase::CreateAppImpl(const extensions::Extension* extension,
+                                        Readiness readiness) {
+  auto install_reason = ConvertMojomInstallReasonToInstallReason(
+      GetInstallReason(profile_, extension));
+  auto app = AppPublisher::MakeApp(app_type(), extension->id(), readiness,
+                                   extension->name(), install_reason,
+                                   install_reason == InstallReason::kSystem
+                                       ? InstallSource::kSystem
+                                       : InstallSource::kChromeWebStore);
   app->short_name = extension->short_name();
   app->description = extension->description();
   app->version = extension->GetVersionForDisplay();
+  app->policy_ids = {extension->id()};
+
+  if (profile_) {
+    auto* prefs = extensions::ExtensionPrefs::Get(profile_);
+    if (prefs && prefs->GetInstalledExtensionInfo(extension->id())) {
+      app->last_launch_time = prefs->GetLastLaunchTime(extension->id());
+      app->install_time = prefs->GetInstallTime(extension->id());
+    }
+  }
+
+  app->is_platform_app = extension->is_platform_app();
+
+  SetShowInFields(extension, *app);
+
+  const extensions::ManagementPolicy* policy =
+      extensions::ExtensionSystem::Get(profile())->management_policy();
+  DCHECK(policy);
+  app->allow_uninstall = policy->UserMayModifySettings(extension, nullptr) &&
+                         !policy->MustRemainInstalled(extension, nullptr);
 
   // TODO(crbug.com/1253250): Add other fields for the App struct.
   return app;
@@ -224,12 +260,13 @@ apps::mojom::AppPtr ExtensionAppsBase::ConvertImpl(
     apps::mojom::Readiness readiness) {
   auto install_reason = GetInstallReason(profile_, extension);
   apps::mojom::AppPtr app =
-      PublisherBase::MakeApp(apps::mojom::AppType::kExtension, extension->id(),
-                             readiness, extension->name(), install_reason);
+      PublisherBase::MakeApp(mojom_app_type(), extension->id(), readiness,
+                             extension->name(), install_reason);
 
   app->short_name = extension->short_name();
   app->description = extension->description();
   app->version = extension->GetVersionForDisplay();
+  app->policy_ids = {extension->id()};
 
   if (profile_) {
     auto* prefs = extensions::ExtensionPrefs::Get(profile_);
@@ -273,10 +310,10 @@ IconEffects ExtensionAppsBase::GetIconEffects(
 content::WebContents* ExtensionAppsBase::LaunchAppWithIntentImpl(
     const std::string& app_id,
     int32_t event_flags,
-    apps::mojom::IntentPtr intent,
-    apps::mojom::LaunchSource launch_source,
-    apps::mojom::WindowInfoPtr window_info,
-    LaunchAppWithIntentCallback callback) {
+    IntentPtr intent,
+    LaunchSource launch_source,
+    WindowInfoPtr window_info,
+    base::OnceCallback<void(bool)> callback) {
   const auto* extension = MaybeGetExtension(app_id);
   if (!extension || !extensions::util::IsAppLaunchable(app_id, profile_)) {
     std::move(callback).Run(/*success=*/false);
@@ -286,7 +323,7 @@ content::WebContents* ExtensionAppsBase::LaunchAppWithIntentImpl(
   if (!extensions::util::IsAppLaunchableWithoutEnabling(app_id, profile_)) {
     RunExtensionEnableFlow(
         app_id,
-        base::BindOnce(&ExtensionAppsBase::ExtensionWasEnabled,
+        base::BindOnce(&ExtensionAppsBase::LaunchAppWithIntentWhenEnabled,
                        weak_factory_.GetWeakPtr(), app_id, event_flags,
                        std::move(intent), launch_source, std::move(window_info),
                        CallbackWrapper(std::move(callback))));
@@ -305,6 +342,14 @@ content::WebContents* ExtensionAppsBase::LaunchAppWithIntentImpl(
 
 content::WebContents* ExtensionAppsBase::LaunchImpl(AppLaunchParams&& params) {
   return ::OpenApplication(profile_, std::move(params));
+}
+
+void ExtensionAppsBase::LaunchAppWithParamsImpl(AppLaunchParams&& params,
+                                                LaunchCallback callback) {
+  LaunchImpl(std::move(params));
+
+  // TODO(crbug.com/1244506): Add launch return value.
+  std::move(callback).Run(LaunchResult());
 }
 
 const extensions::Extension* ExtensionAppsBase::MaybeGetExtension(
@@ -334,12 +379,24 @@ ExtensionAppsBase::CallbackWrapper::~CallbackWrapper() {
     std::move(callback).Run(false);
 }
 
-void ExtensionAppsBase::Initialize(
-    const mojo::Remote<apps::mojom::AppService>& app_service) {
-  DCHECK(profile_);
-  PublisherBase::Initialize(app_service, apps::mojom::AppType::kExtension);
+void ExtensionAppsBase::Initialize() {
+  RegisterPublisher(app_type());
 
-  std::vector<std::unique_ptr<App>> apps;
+  prefs_observation_.Observe(extensions::ExtensionPrefs::Get(profile_));
+  registry_observation_.Observe(extensions::ExtensionRegistry::Get(profile_));
+
+  DCHECK(profile_);
+  PublisherBase::Initialize(proxy()->AppService(), mojom_app_type());
+
+  // Publish apps after all extensions have been loaded, to include all apps
+  // including the disabled apps.
+  extensions::ExtensionSystem::Get(profile_)->ready().Post(
+      FROM_HERE, base::BindOnce(&ExtensionAppsBase::OnExtensionsReady,
+                                weak_factory_.GetWeakPtr()));
+}
+
+void ExtensionAppsBase::OnExtensionsReady() {
+  std::vector<AppPtr> apps;
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(profile_);
   CreateAppVector(registry->enabled_extensions(), Readiness::kReady, &apps);
@@ -347,17 +404,14 @@ void ExtensionAppsBase::Initialize(
                   &apps);
   CreateAppVector(registry->terminated_extensions(), Readiness::kTerminated,
                   &apps);
-  AppPublisher::Publish(std::move(apps));
+  AppPublisher::Publish(std::move(apps), app_type(),
+                        /*should_notify_initialized=*/true);
 
   // blocklisted_extensions and blocked_extensions, corresponding to
   // kDisabledByBlocklist and kDisabledByPolicy, are deliberately ignored.
   //
   // If making changes to which sets are consulted, also change ShouldShow,
   // OnHideWebStoreIconPrefChanged.
-
-  prefs_observation_.Observe(extensions::ExtensionPrefs::Get(profile_));
-  registry_observation_.Observe(extensions::ExtensionRegistry::Get(profile_));
-  app_service_ = app_service.get();
 }
 
 void ExtensionAppsBase::LoadIcon(const std::string& app_id,
@@ -369,6 +423,177 @@ void ExtensionAppsBase::LoadIcon(const std::string& app_id,
   LoadIconFromExtension(icon_type, size_hint_in_dip, profile_, app_id,
                         static_cast<IconEffects>(icon_key.icon_effects),
                         std::move(callback));
+}
+
+void ExtensionAppsBase::Launch(const std::string& app_id,
+                               int32_t event_flags,
+                               LaunchSource launch_source,
+                               WindowInfoPtr window_info) {
+  const auto* extension = MaybeGetExtension(app_id);
+  if (!extension || !extensions::util::IsAppLaunchable(app_id, profile_)) {
+    return;
+  }
+
+  if (!extensions::util::IsAppLaunchableWithoutEnabling(app_id, profile_)) {
+    RunExtensionEnableFlow(
+        app_id, base::BindOnce(&ExtensionAppsBase::LaunchWhenEnabled,
+                               weak_factory_.GetWeakPtr(), app_id, event_flags,
+                               launch_source, std::move(window_info)));
+    return;
+  }
+
+  switch (launch_source) {
+    case apps::LaunchSource::kUnknown:
+    case apps::LaunchSource::kFromParentalControls:
+      break;
+    case apps::LaunchSource::kFromAppListGrid:
+    case apps::LaunchSource::kFromAppListGridContextMenu:
+      extensions::RecordAppListMainLaunch(extension);
+      break;
+    case apps::LaunchSource::kFromAppListQuery:
+    case apps::LaunchSource::kFromAppListQueryContextMenu:
+      extensions::RecordAppListSearchLaunch(extension);
+      break;
+    case apps::LaunchSource::kFromAppListRecommendation:
+    case apps::LaunchSource::kFromShelf:
+    case apps::LaunchSource::kFromFileManager:
+    case apps::LaunchSource::kFromLink:
+    case apps::LaunchSource::kFromOmnibox:
+    case apps::LaunchSource::kFromChromeInternal:
+    case apps::LaunchSource::kFromKeyboard:
+    case apps::LaunchSource::kFromOtherApp:
+    case apps::LaunchSource::kFromMenu:
+    case apps::LaunchSource::kFromInstalledNotification:
+    case apps::LaunchSource::kFromTest:
+    case apps::LaunchSource::kFromArc:
+    case apps::LaunchSource::kFromSharesheet:
+    case apps::LaunchSource::kFromReleaseNotesNotification:
+    case apps::LaunchSource::kFromFullRestore:
+    case apps::LaunchSource::kFromSmartTextContextMenu:
+    case apps::LaunchSource::kFromDiscoverTabNotification:
+    case apps::LaunchSource::kFromManagementApi:
+    case apps::LaunchSource::kFromKiosk:
+    case apps::LaunchSource::kFromCommandLine:
+    case apps::LaunchSource::kFromBackgroundMode:
+    case apps::LaunchSource::kFromNewTabPage:
+    case apps::LaunchSource::kFromIntentUrl:
+    case apps::LaunchSource::kFromOsLogin:
+    case apps::LaunchSource::kFromProtocolHandler:
+    case apps::LaunchSource::kFromUrlHandler:
+    case apps::LaunchSource::kFromLockScreen:
+      break;
+  }
+
+  // The app will be created for the currently active profile.
+  AppLaunchParams params = CreateAppLaunchParamsWithEventFlags(
+      profile_, extension, event_flags, launch_source,
+      window_info ? window_info->display_id : display::kInvalidDisplayId);
+  ash::ShelfLaunchSource source = ConvertLaunchSource(launch_source);
+  if ((source == ash::LAUNCH_FROM_APP_LIST ||
+       source == ash::LAUNCH_FROM_APP_LIST_SEARCH) &&
+      app_id == extensions::kWebStoreAppId) {
+    // Get the corresponding source string.
+    std::string source_value = GetSourceFromAppListSource(source);
+
+    // Set an override URL to include the source.
+    GURL extension_url = extensions::AppLaunchInfo::GetFullLaunchURL(extension);
+    params.override_url = net::AppendQueryParameter(
+        extension_url, extension_urls::kWebstoreSourceField, source_value);
+  }
+
+  LaunchImpl(std::move(params));
+}
+
+void ExtensionAppsBase::LaunchAppWithFiles(
+    const std::string& app_id,
+    int32_t event_flags,
+    LaunchSource launch_source,
+    std::vector<base::FilePath> file_paths) {
+  const auto* extension = MaybeGetExtension(app_id);
+  AppLaunchParams params(
+      app_id,
+      extensions::GetLaunchContainer(extensions::ExtensionPrefs::Get(profile_),
+                                     extension),
+      ui::DispositionFromEventFlags(event_flags), launch_source,
+      display::kDefaultDisplayId);
+  params.launch_files = std::move(file_paths);
+  LaunchImpl(std::move(params));
+}
+
+void ExtensionAppsBase::LaunchAppWithIntent(const std::string& app_id,
+                                            int32_t event_flags,
+                                            IntentPtr intent,
+                                            LaunchSource launch_source,
+                                            WindowInfoPtr window_info,
+                                            LaunchCallback callback) {
+  LaunchAppWithIntentImpl(
+      app_id, event_flags, std::move(intent), launch_source,
+      std::move(window_info),
+      base::BindOnce(
+          [](LaunchCallback callback, bool success) {
+            std::move(callback).Run(ConvertBoolToLaunchResult(success));
+          },
+          std::move(callback)));
+}
+
+void ExtensionAppsBase::LaunchAppWithParams(AppLaunchParams&& params,
+                                            LaunchCallback callback) {
+  auto app_id = params.app_id;
+  const auto* extension = MaybeGetExtension(app_id);
+  if (!extension || !extensions::util::IsAppLaunchable(app_id, profile_)) {
+    return;
+  }
+
+  if (!extensions::util::IsAppLaunchableWithoutEnabling(app_id, profile_)) {
+    RunExtensionEnableFlow(
+        app_id, base::BindOnce(&ExtensionAppsBase::LaunchAppWithParams,
+                               weak_factory_.GetWeakPtr(), std::move(params),
+                               std::move(callback)));
+    return;
+  }
+
+  LaunchAppWithParamsImpl(std::move(params), std::move(callback));
+}
+
+void ExtensionAppsBase::Uninstall(const std::string& app_id,
+                                  UninstallSource uninstall_source,
+                                  bool clear_site_data,
+                                  bool report_abuse) {
+  // TODO(crbug.com/1009248): We need to add the error code, which could be used
+  // by ExtensionFunction, ManagementUninstallFunctionBase on the callback
+  // OnExtensionUninstallDialogClosed
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ExtensionRegistry::Get(profile())->GetInstalledExtension(
+          app_id);
+  if (!extension.get()) {
+    return;
+  }
+
+  // If the extension doesn't belong to this publisher, do nothing.
+  if (!Accepts(extension.get())) {
+    return;
+  }
+
+  std::u16string error;
+  extensions::ExtensionSystem::Get(profile())
+      ->extension_service()
+      ->UninstallExtension(
+          app_id, GetExtensionUninstallReason(uninstall_source), &error);
+
+  if (!report_abuse) {
+    return;
+  }
+
+  // If the extension specifies a custom uninstall page via
+  // chrome.runtime.setUninstallURL, then at uninstallation its uninstall
+  // page opens. To ensure that the CWS Report Abuse page is the active
+  // tab at uninstallation, navigates to the url to report abuse.
+  constexpr char kReferrerId[] = "chrome-remove-extension-dialog";
+  NavigateParams params(
+      profile(), extension_urls::GetWebstoreReportAbuseUrl(app_id, kReferrerId),
+      ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&params);
 }
 
 void ExtensionAppsBase::Connect(
@@ -394,31 +619,14 @@ void ExtensionAppsBase::Connect(
   }
   mojo::Remote<apps::mojom::Subscriber> subscriber(
       std::move(subscriber_remote));
-  subscriber->OnApps(std::move(apps), apps::mojom::AppType::kExtension,
+  subscriber->OnApps(std::move(apps), mojom_app_type(),
                      true /* should_notify_initialized */);
   subscribers_.Add(std::move(subscriber));
 }
 
-void ExtensionAppsBase::LoadIcon(const std::string& app_id,
-                                 apps::mojom::IconKeyPtr icon_key,
-                                 apps::mojom::IconType icon_type,
-                                 int32_t size_hint_in_dip,
-                                 bool allow_placeholder_icon,
-                                 LoadIconCallback callback) {
-  if (icon_key) {
-    LoadIconFromExtension(
-        ConvertMojomIconTypeToIconType(icon_type), size_hint_in_dip, profile_,
-        app_id, static_cast<IconEffects>(icon_key->icon_effects),
-        IconValueToMojomIconValueCallback(std::move(callback)));
-    return;
-  }
-  // On failure, we still run the callback, with the zero IconValue.
-  std::move(callback).Run(apps::mojom::IconValue::New());
-}
-
 void ExtensionAppsBase::Launch(const std::string& app_id,
                                int32_t event_flags,
-                               apps::mojom::LaunchSource launch_source,
+                               apps::mojom::LaunchSource mojom_launch_source,
                                apps::mojom::WindowInfoPtr window_info) {
   const auto* extension = MaybeGetExtension(app_id);
   if (!extension || !extensions::util::IsAppLaunchable(app_id, profile_)) {
@@ -427,13 +635,13 @@ void ExtensionAppsBase::Launch(const std::string& app_id,
 
   if (!extensions::util::IsAppLaunchableWithoutEnabling(app_id, profile_)) {
     RunExtensionEnableFlow(
-        app_id, base::BindOnce(&ExtensionAppsBase::Launch,
+        app_id, base::BindOnce(&ExtensionAppsBase::LaunchMojom,
                                weak_factory_.GetWeakPtr(), app_id, event_flags,
-                               launch_source, std::move(window_info)));
+                               mojom_launch_source, std::move(window_info)));
     return;
   }
 
-  switch (launch_source) {
+  switch (mojom_launch_source) {
     case apps::mojom::LaunchSource::kUnknown:
     case apps::mojom::LaunchSource::kFromParentalControls:
       break;
@@ -471,8 +679,12 @@ void ExtensionAppsBase::Launch(const std::string& app_id,
     case apps::mojom::LaunchSource::kFromOsLogin:
     case apps::mojom::LaunchSource::kFromProtocolHandler:
     case apps::mojom::LaunchSource::kFromUrlHandler:
+    case apps::mojom::LaunchSource::kFromLockScreen:
       break;
   }
+
+  auto launch_source =
+      ConvertMojomLaunchSourceToLaunchSource(mojom_launch_source);
 
   // The app will be created for the currently active profile.
   AppLaunchParams params = CreateAppLaunchParamsWithEventFlags(
@@ -504,7 +716,8 @@ void ExtensionAppsBase::LaunchAppWithFiles(
       app_id,
       extensions::GetLaunchContainer(extensions::ExtensionPrefs::Get(profile_),
                                      extension),
-      ui::DispositionFromEventFlags(event_flags), launch_source,
+      ui::DispositionFromEventFlags(event_flags),
+      ConvertMojomLaunchSourceToLaunchSource(launch_source),
       display::kDefaultDisplayId);
   for (const auto& file_path : file_paths->file_paths) {
     params.launch_files.push_back(file_path);
@@ -519,59 +732,21 @@ void ExtensionAppsBase::LaunchAppWithIntent(
     apps::mojom::LaunchSource launch_source,
     apps::mojom::WindowInfoPtr window_info,
     LaunchAppWithIntentCallback callback) {
-  LaunchAppWithIntentImpl(app_id, event_flags, std::move(intent), launch_source,
-                          std::move(window_info), std::move(callback));
+  LaunchAppWithIntentImpl(
+      app_id, event_flags, ConvertMojomIntentToIntent(intent),
+      ConvertMojomLaunchSourceToLaunchSource(launch_source),
+      ConvertMojomWindowInfoToWindowInfo(window_info), std::move(callback));
 }
 
-void ExtensionAppsBase::Uninstall(const std::string& app_id,
-                                  apps::mojom::UninstallSource uninstall_source,
-                                  bool clear_site_data,
-                                  bool report_abuse) {
-  // TODO(crbug.com/1009248): We need to add the error code, which could be used
-  // by ExtensionFunction, ManagementUninstallFunctionBase on the callback
-  // OnExtensionUninstallDialogClosed
-  scoped_refptr<const extensions::Extension> extension =
-      extensions::ExtensionRegistry::Get(profile())->GetInstalledExtension(
-          app_id);
-  if (!extension.get()) {
-    return;
-  }
-
-  // If the extension doesn't belong to this publisher, do nothing.
-  if (!Accepts(extension.get())) {
-    return;
-  }
-
-  std::u16string error;
-  extensions::ExtensionSystem::Get(profile())
-      ->extension_service()
-      ->UninstallExtension(
-          app_id, GetExtensionUninstallReason(uninstall_source), &error);
-
-  if (!report_abuse) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Extensions.UninstallDialogAction",
-        extensions::ExtensionUninstallDialog::CLOSE_ACTION_UNINSTALL,
-        extensions::ExtensionUninstallDialog::CLOSE_ACTION_LAST);
-    return;
-  }
-
-  UMA_HISTOGRAM_ENUMERATION(
-      "Extensions.UninstallDialogAction",
-      extensions::ExtensionUninstallDialog::
-          CLOSE_ACTION_UNINSTALL_AND_CHECKBOX_CHECKED,
-      extensions::ExtensionUninstallDialog::CLOSE_ACTION_LAST);
-
-  // If the extension specifies a custom uninstall page via
-  // chrome.runtime.setUninstallURL, then at uninstallation its uninstall
-  // page opens. To ensure that the CWS Report Abuse page is the active
-  // tab at uninstallation, navigates to the url to report abuse.
-  constexpr char kReferrerId[] = "chrome-remove-extension-dialog";
-  NavigateParams params(
-      profile(), extension_urls::GetWebstoreReportAbuseUrl(app_id, kReferrerId),
-      ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  Navigate(&params);
+void ExtensionAppsBase::Uninstall(
+    const std::string& app_id,
+    apps::mojom::UninstallSource mojom_uninstall_source,
+    bool clear_site_data,
+    bool report_abuse) {
+  Uninstall(
+      app_id,
+      ConvertMojomUninstallSourceToUninstallSource(mojom_uninstall_source),
+      clear_site_data, report_abuse);
 }
 
 void ExtensionAppsBase::OpenNativeSettings(const std::string& app_id) {
@@ -603,12 +778,16 @@ void ExtensionAppsBase::OnExtensionLastLaunchTimeChanged(
     return;
   }
 
-  apps::mojom::AppPtr app = apps::mojom::App::New();
-  app->app_type = apps::mojom::AppType::kExtension;
-  app->app_id = extension->id();
-  app->last_launch_time = last_launch_time;
+  apps::mojom::AppPtr mojom_app = apps::mojom::App::New();
+  mojom_app->app_type = mojom_app_type();
+  mojom_app->app_id = extension->id();
+  mojom_app->last_launch_time = last_launch_time;
 
-  PublisherBase::Publish(std::move(app), subscribers_);
+  PublisherBase::Publish(std::move(mojom_app), subscribers_);
+
+  auto app = std::make_unique<App>(app_type(), extension->id());
+  app->last_launch_time = last_launch_time;
+  AppPublisher::Publish(std::move(app));
 }
 
 void ExtensionAppsBase::OnExtensionPrefsWillBeDestroyed(
@@ -625,7 +804,7 @@ void ExtensionAppsBase::OnExtensionLoaded(
   }
 
   apps::mojom::AppPtr mojom_app = apps::mojom::App::New();
-  mojom_app->app_type = apps::mojom::AppType::kExtension;
+  mojom_app->app_type = mojom_app_type();
   mojom_app->app_id = extension->id();
   mojom_app->readiness = apps::mojom::Readiness::kReady;
   mojom_app->name = extension->name();
@@ -636,13 +815,7 @@ void ExtensionAppsBase::OnExtensionLoaded(
           : apps::mojom::InstallSource::kChromeWebStore;
   PublisherBase::Publish(std::move(mojom_app), subscribers_);
 
-  std::unique_ptr<App> app =
-      AppPublisher::MakeApp(AppType::kExtension, extension->id(),
-                            Readiness::kReady, extension->name());
-  app->short_name = extension->short_name();
-  app->description = extension->description();
-  app->version = extension->GetVersionForDisplay();
-  AppPublisher::Publish(std::move(app));
+  AppPublisher::Publish(CreateApp(extension, Readiness::kReady));
 }
 
 void ExtensionAppsBase::OnExtensionUnloaded(
@@ -678,13 +851,13 @@ void ExtensionAppsBase::OnExtensionUnloaded(
   }
 
   apps::mojom::AppPtr mojom_app = apps::mojom::App::New();
-  mojom_app->app_type = apps::mojom::AppType::kExtension;
+  mojom_app->app_type = mojom_app_type();
   mojom_app->app_id = extension->id();
   mojom_app->readiness = mojom_readiness;
   PublisherBase::Publish(std::move(mojom_app), subscribers_);
 
-  std::unique_ptr<App> app = AppPublisher::MakeApp(
-      AppType::kExtension, extension->id(), readiness, extension->name());
+  auto app = std::make_unique<App>(app_type(), extension->id());
+  app->readiness = readiness;
   AppPublisher::Publish(std::move(app));
 }
 
@@ -762,7 +935,7 @@ void ExtensionAppsBase::PopulateIntentFilters(
 void ExtensionAppsBase::CreateAppVector(
     const extensions::ExtensionSet& extensions,
     Readiness readiness,
-    std::vector<std::unique_ptr<App>>* apps_out) {
+    std::vector<AppPtr>* apps_out) {
   for (const auto& extension : extensions) {
     if (Accepts(extension.get())) {
       apps_out->push_back(CreateApp(extension.get(), readiness));
@@ -781,7 +954,38 @@ void ExtensionAppsBase::ConvertVector(
   }
 }
 
-void ExtensionAppsBase::ExtensionWasEnabled(
+void ExtensionAppsBase::LaunchWhenEnabled(const std::string& app_id,
+                                          int32_t event_flags,
+                                          LaunchSource launch_source,
+                                          WindowInfoPtr window_info) {
+  Launch(app_id, event_flags, launch_source, std::move(window_info));
+}
+
+void ExtensionAppsBase::LaunchAppWithIntentWhenEnabled(
+    const std::string& app_id,
+    int32_t event_flags,
+    IntentPtr intent,
+    LaunchSource launch_source,
+    WindowInfoPtr window_info,
+    CallbackWrapper wrapper) {
+  LaunchAppWithIntent(
+      app_id, event_flags, std::move(intent), std::move(launch_source),
+      std::move(window_info),
+      base::BindOnce(
+          [](LaunchAppWithIntentCallback callback, LaunchResult&& result) {
+            std::move(callback).Run(ConvertLaunchResultToBool(result));
+          },
+          std::move(wrapper.callback)));
+}
+
+void ExtensionAppsBase::LaunchMojom(const std::string& app_id,
+                                    int32_t event_flags,
+                                    apps::mojom::LaunchSource launch_source,
+                                    apps::mojom::WindowInfoPtr window_info) {
+  Launch(app_id, event_flags, std::move(launch_source), std::move(window_info));
+}
+
+void ExtensionAppsBase::LaunchAppWithIntentMojom(
     const std::string& app_id,
     int32_t event_flags,
     apps::mojom::IntentPtr intent,

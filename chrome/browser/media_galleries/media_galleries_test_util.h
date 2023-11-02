@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include "base/test/scoped_path_override.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/test/test_reg_util_win.h"
 #endif
 
@@ -27,10 +27,6 @@ class RegistryOverrideManager;
 }
 
 class Profile;
-
-#if defined(OS_MAC)
-class MockPreferences;
-#endif
 
 scoped_refptr<extensions::Extension> AddMediaGalleriesApp(
     const std::string& name,
@@ -54,7 +50,7 @@ class EnsureMediaDirectoriesExists {
   // Changes the directories for the media paths (music, pictures, videos)
   // overrides to new, different directories that are generated.
   void ChangeMediaPathOverrides();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::FilePath GetFakeLocalAppDataPath() const;
 #endif
 
@@ -71,13 +67,10 @@ class EnsureMediaDirectoriesExists {
   std::unique_ptr<base::ScopedPathOverride> music_override_;
   std::unique_ptr<base::ScopedPathOverride> pictures_override_;
   std::unique_ptr<base::ScopedPathOverride> video_override_;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::unique_ptr<base::ScopedPathOverride> local_app_data_override_;
 
   registry_util::RegistryOverrideManager registry_override_;
-#endif
-#if defined(OS_MAC)
-  std::unique_ptr<MockPreferences> mac_preferences_;
 #endif
 };
 

@@ -1,16 +1,16 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/test/variations_smoke_test/variations_smoke_test_app_interface.h"
 
-#include <sys/sysctl.h>
+#import <sys/sysctl.h>
 
-#include "base/process/process.h"
-#include "base/time/time.h"
-#include "components/prefs/pref_service.h"
-#include "components/variations/pref_names.h"
-#include "ios/chrome/browser/application_context.h"
+#import "base/process/process.h"
+#import "base/time/time.h"
+#import "components/prefs/pref_service.h"
+#import "components/variations/pref_names.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -27,7 +27,7 @@ base::Time GetProcessStartTime() {
   struct kinfo_proc info;
   size_t length = sizeof(struct kinfo_proc);
   int mib[4] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, (int)getpid()};
-  const int kr = sysctl(mib, base::size(mib), &info, &length, nullptr, 0);
+  const int kr = sysctl(mib, std::size(mib), &info, &length, nullptr, 0);
   DCHECK_EQ(KERN_SUCCESS, kr);
   return base::Time::FromTimeVal(info.kp_proc.p_starttime);
 }

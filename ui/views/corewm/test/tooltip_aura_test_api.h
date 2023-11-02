@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,10 @@
 
 #include <stddef.h>
 
+#include "base/memory/raw_ptr.h"
+
 namespace gfx {
+class Point;
 class Rect;
 class RenderText;
 class Size;
@@ -17,10 +20,9 @@ namespace ui {
 struct AXNodeData;
 }
 
-namespace views {
-namespace corewm {
+namespace views::corewm {
 class TooltipAura;
-struct TooltipPosition;
+enum class TooltipTrigger;
 
 namespace test {
 
@@ -37,14 +39,14 @@ class TooltipAuraTestApi {
   void GetAccessibleNodeData(ui::AXNodeData* node_data);
 
   gfx::Rect GetTooltipBounds(const gfx::Size& tooltip_size,
-                             const TooltipPosition& position);
+                             const gfx::Point& anchor_point,
+                             const TooltipTrigger trigger);
 
  private:
-  TooltipAura* tooltip_aura_;
+  raw_ptr<TooltipAura> tooltip_aura_;
 };
 
 }  // namespace test
-}  // namespace corewm
-}  // namespace views
+}  // namespace views::corewm
 
 #endif  // UI_VIEWS_COREWM_TEST_TOOLTIP_AURA_TEST_API_H_

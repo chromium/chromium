@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_PAYMENTS_INSTALLED_PAYMENT_APPS_FINDER_IMPL_H_
 #define CONTENT_BROWSER_PAYMENTS_INSTALLED_PAYMENT_APPS_FINDER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/payments/payment_app_context_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/installed_payment_apps_finder.h"
@@ -32,7 +33,7 @@ class CONTENT_EXPORT InstalledPaymentAppsFinderImpl
   void CheckPermissionForPaymentApps(GetAllPaymentAppsCallback callback,
                                      PaymentApps apps);
 
-  BrowserContext* browser_context_;
+  raw_ptr<BrowserContext> browser_context_;
   base::WeakPtrFactory<InstalledPaymentAppsFinderImpl> weak_ptr_factory_{this};
 };
 

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package org.chromium.android_webview.nonembedded;
@@ -32,6 +32,7 @@ import java.io.File;
  * registration. It has to be launched via JobScheduler. This is a JobService rather just a Service
  * because the new restrictions introduced in Android O+ on background execution.
  */
+// TODO(ntfschr): consider using BackgroundTaskScheduler
 @JNINamespace("android_webview")
 public class AwComponentUpdateService extends JobService {
     private static final String TAG = "AwCUS";

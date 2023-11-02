@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,12 @@
 #include <memory>
 
 #include "ash/public/cpp/accelerators.h"
+#include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -24,8 +23,7 @@ namespace message_center {
 class Notification;
 }  // namespace message_center
 
-namespace ash {
-namespace full_restore {
+namespace ash::full_restore {
 
 class FullRestoreAppLaunchHandler;
 class FullRestoreDataHandler;
@@ -54,11 +52,17 @@ enum class RestoreAction {
   kMaxValue = kCloseNotByUser,
 };
 
+// Returns true if FullRestoreService can be created to restore/launch Lacros
+// during the system startup phase when below conditions are matched:
+// 1. The FullRestoreForLacros flag is enabled.
+// 2. The WebAppsCrosapi or LacrosPrimary flag is enabled.
+// 3. FullRestoreService can be created for the primary profile.
+bool MaybeCreateFullRestoreServiceForLacros();
+
 // The FullRestoreService class calls AppService and Window Management
 // interfaces to restore the app launchings and app windows.
 class FullRestoreService : public KeyedService,
                            public message_center::NotificationObserver,
-                           public content::NotificationObserver,
                            public ash::AcceleratorController::Observer {
  public:
   static FullRestoreService* GetForProfile(Profile* profile);
@@ -69,7 +73,9 @@ class FullRestoreService : public KeyedService,
   FullRestoreService& operator=(const FullRestoreService&) = delete;
   ~FullRestoreService() override;
 
-  void Init();
+  // Initialize the full restore service. |show_notification| indicates whether
+  // a full restore notification has been shown.
+  void Init(bool& show_notification);
 
   void OnTransitionedToNewActiveUser(Profile* profile);
 
@@ -79,15 +85,13 @@ class FullRestoreService : public KeyedService,
 
   void MaybeCloseNotification(bool allow_save = true);
 
+  // Implement the restoration.
+  void Restore();
+
   // message_center::NotificationObserver:
   void Close(bool by_user) override;
   void Click(const absl::optional<int>& button_index,
              const absl::optional<std::u16string>& reply) override;
-
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
 
   // ash::AcceleratorController::Observer:
   void OnActionPerformed(AcceleratorAction action) override;
@@ -103,6 +107,10 @@ class FullRestoreService : public KeyedService,
 
  private:
   friend class FullRestoreServiceMultipleUsersTest;
+  FRIEND_TEST_ALL_PREFIXES(FullRestoreAppLaunchHandlerChromeAppBrowserTest,
+                           RestoreChromeApp);
+  FRIEND_TEST_ALL_PREFIXES(FullRestoreAppLaunchHandlerArcAppBrowserTest,
+                           RestoreArcApp);
 
   // KeyedService overrides.
   void Shutdown() override;
@@ -112,10 +120,8 @@ class FullRestoreService : public KeyedService,
   bool CanBeInited();
 
   // Show the restore notification on startup.
-  void MaybeShowRestoreNotification(const std::string& id);
-
-  // Implement the restoration.
-  void Restore();
+  void MaybeShowRestoreNotification(const std::string& id,
+                                    bool& show_notification);
 
   void RecordRestoreAction(const std::string& notification_id,
                            RestoreAction restore_action);
@@ -126,6 +132,8 @@ class FullRestoreService : public KeyedService,
   // Returns true if there are some restore data and this is not the first time
   // Chrome is run. Otherwise, returns false.
   bool ShouldShowNotification();
+
+  void OnAppTerminating();
 
   Profile* profile_ = nullptr;
   PrefChangeRegistrar pref_change_registrar_;
@@ -162,7 +170,7 @@ class FullRestoreService : public KeyedService,
 
   std::unique_ptr<message_center::Notification> notification_;
 
-  content::NotificationRegistrar notification_registrar_;
+  base::CallbackListSubscription on_app_terminating_subscription_;
 
   // Browser session restore exit type service lock. This is created when the
   // system is restored from crash to help set the browser saving flag.
@@ -183,7 +191,6 @@ class ScopedRestoreForTesting {
   ~ScopedRestoreForTesting();
 };
 
-}  // namespace full_restore
-}  // namespace ash
+}  // namespace ash::full_restore
 
 #endif  // CHROME_BROWSER_ASH_APP_RESTORE_FULL_RESTORE_SERVICE_H_

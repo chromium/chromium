@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -24,7 +25,6 @@ namespace {
 using base::Bucket;
 using base::test::RunOnceCallback;
 using device_reauth::BiometricAuthenticator;
-using device_reauth::BiometricAuthFinalResult;
 using device_reauth::BiometricAuthRequester;
 using device_reauth::BiometricAuthUIResult;
 using device_reauth::BiometricsAvailability;
@@ -34,7 +34,11 @@ using testing::Return;
 
 class MockBiometricAuthenticatorBridge : public BiometricAuthenticatorBridge {
  public:
-  MOCK_METHOD(BiometricsAvailability, CanAuthenticate, (), (override));
+  MOCK_METHOD(BiometricsAvailability,
+              CanAuthenticateWithBiometric,
+              (),
+              (override));
+  MOCK_METHOD(bool, CanAuthenticateWithBiometricOrScreenLock, (), (override));
   MOCK_METHOD(void,
               Authenticate,
               (base::OnceCallback<void(device_reauth::BiometricAuthUIResult)>
@@ -69,32 +73,31 @@ class BiometricAuthenticatorAndroidTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   // This is owned by the authenticator.
-  MockBiometricAuthenticatorBridge* bridge_ = nullptr;
+  raw_ptr<MockBiometricAuthenticatorBridge> bridge_ = nullptr;
 };
 
 TEST_F(BiometricAuthenticatorAndroidTest, CanAuthenticateCallsBridge) {
   base::HistogramTester histogram_tester;
 
-  EXPECT_CALL(bridge(), CanAuthenticate)
+  EXPECT_CALL(bridge(), CanAuthenticateWithBiometric)
       .WillOnce(Return(BiometricsAvailability::kAvailable));
-  EXPECT_EQ(BiometricsAvailability::kAvailable,
-            authenticator()->CanAuthenticate(
-                device_reauth::BiometricAuthRequester::kAllPasswordsList));
+  EXPECT_TRUE(authenticator()->CanAuthenticate(
+      device_reauth::BiometricAuthRequester::kAllPasswordsList));
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.BiometricAuthPwdFill.CanAuthenticate",
       BiometricsAvailability::kAvailable, 1);
 }
 
-TEST_F(BiometricAuthenticatorAndroidTest,
-       CanAuthenticateDoesNotReecordHistogramForNonPasswordManager) {
+TEST_F(
+    BiometricAuthenticatorAndroidTest,
+    CanAuthenticateDoesNotReecordHistogramForNonPasswordManagerForIncognito) {
   base::HistogramTester histogram_tester;
 
-  EXPECT_CALL(bridge(), CanAuthenticate)
-      .WillOnce(Return(BiometricsAvailability::kAvailable));
-  EXPECT_EQ(BiometricsAvailability::kAvailable,
-            authenticator()->CanAuthenticate(
-                device_reauth::BiometricAuthRequester::kIncognitoReauthPage));
+  EXPECT_CALL(bridge(), CanAuthenticateWithBiometricOrScreenLock)
+      .WillOnce(Return(true));
+  EXPECT_TRUE(authenticator()->CanAuthenticate(
+      device_reauth::BiometricAuthRequester::kIncognitoReauthPage));
 
   histogram_tester.ExpectTotalCount(
       "PasswordManager.BiometricAuthPwdFill.CanAuthenticate", 0);
@@ -104,10 +107,8 @@ TEST_F(BiometricAuthenticatorAndroidTest, AuthenticateRecordsRequester) {
   base::HistogramTester histogram_tester;
 
   authenticator()->Authenticate(BiometricAuthRequester::kAllPasswordsList,
-                                base::DoNothing());
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.BiometricAuthPwdFill.AuthRequester",
-      BiometricAuthRequester::kAllPasswordsList, 1);
+                                base::DoNothing(),
+                                /*use_last_valid_auth=*/true);
 
   histogram_tester.ExpectUniqueSample("Android.BiometricAuth.AuthRequester",
                                       BiometricAuthRequester::kAllPasswordsList,
@@ -121,7 +122,8 @@ TEST_F(BiometricAuthenticatorAndroidTest, DoesntTriggerAuthIfWithin60Seconds) {
       .WillOnce(
           RunOnceCallback<0>(BiometricAuthUIResult::kSuccessWithBiometrics));
   authenticator()->Authenticate(BiometricAuthRequester::kAllPasswordsList,
-                                base::DoNothing());
+                                base::DoNothing(),
+                                /*use_last_valid_auth=*/true);
 
   // The next call to `Authenticate()` should not re-trigger an authentication.
   EXPECT_CALL(bridge(), Authenticate(_)).Times(0);
@@ -129,7 +131,8 @@ TEST_F(BiometricAuthenticatorAndroidTest, DoesntTriggerAuthIfWithin60Seconds) {
       result_callback;
   EXPECT_CALL(result_callback, Run(/*auth_succeeded=*/true));
   authenticator()->Authenticate(BiometricAuthRequester::kAllPasswordsList,
-                                result_callback.Get());
+                                result_callback.Get(),
+                                /*use_last_valid_auth=*/true);
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
           "PasswordManager.BiometricAuthPwdFill.AuthResult"),
@@ -148,7 +151,8 @@ TEST_F(BiometricAuthenticatorAndroidTest, TriggersAuthIfMoreThan60Seconds) {
       .WillOnce(
           RunOnceCallback<0>(BiometricAuthUIResult::kSuccessWithBiometrics));
   authenticator()->Authenticate(BiometricAuthRequester::kAllPasswordsList,
-                                base::DoNothing());
+                                base::DoNothing(),
+                                /*use_last_valid_auth=*/true);
 
   task_environment().FastForwardBy(base::Seconds(60));
 
@@ -159,7 +163,40 @@ TEST_F(BiometricAuthenticatorAndroidTest, TriggersAuthIfMoreThan60Seconds) {
       result_callback;
   EXPECT_CALL(result_callback, Run(/*auth_succeeded=*/false));
   authenticator()->Authenticate(BiometricAuthRequester::kAllPasswordsList,
-                                result_callback.Get());
+                                result_callback.Get(),
+                                /*use_last_valid_auth=*/true);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "PasswordManager.BiometricAuthPwdFill.AuthResult"),
+      ElementsAre(
+          Bucket(static_cast<int>(
+                     BiometricAuthFinalResult::kSuccessWithBiometrics),
+                 1),
+          Bucket(static_cast<int>(BiometricAuthFinalResult::kFailed), 1)));
+}
+
+TEST_F(BiometricAuthenticatorAndroidTest,
+       TriggersAuthIfWithin60Seconds_AndUseLastValidAuthIsFalse) {
+  base::HistogramTester histogram_tester;
+  // Simulate a previous successful authentication
+  EXPECT_CALL(bridge(), Authenticate)
+      .WillOnce(
+          RunOnceCallback<0>(BiometricAuthUIResult::kSuccessWithBiometrics));
+  authenticator()->Authenticate(BiometricAuthRequester::kAllPasswordsList,
+                                base::DoNothing(),
+                                /*use_last_valid_auth=*/true);
+
+  // The next call to `Authenticate()` should re-trigger an authentication
+  // as |use_last_valid_auth| is set to false.
+  EXPECT_CALL(bridge(), Authenticate(_))
+      .WillOnce(RunOnceCallback<0>(BiometricAuthUIResult::kFailed));
+  base::MockCallback<BiometricAuthenticator::AuthenticateCallback>
+      result_callback;
+  EXPECT_CALL(result_callback, Run(/*auth_succeeded=*/false));
+  authenticator()->Authenticate(BiometricAuthRequester::kAllPasswordsList,
+                                result_callback.Get(),
+                                /*use_last_valid_auth=*/false);
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
@@ -177,7 +214,8 @@ TEST_F(BiometricAuthenticatorAndroidTest, TriggersAuthIfPreviousFailed) {
   EXPECT_CALL(bridge(), Authenticate)
       .WillOnce(RunOnceCallback<0>(BiometricAuthUIResult::kFailed));
   authenticator()->Authenticate(BiometricAuthRequester::kAllPasswordsList,
-                                base::DoNothing());
+                                base::DoNothing(),
+                                /*use_last_valid_auth=*/true);
 
   // The next call to `Authenticate()` should re-trigger an authentication.
   EXPECT_CALL(bridge(), Authenticate(_))
@@ -187,7 +225,8 @@ TEST_F(BiometricAuthenticatorAndroidTest, TriggersAuthIfPreviousFailed) {
       result_callback;
   EXPECT_CALL(result_callback, Run(/*auth_succeeded=*/true));
   authenticator()->Authenticate(BiometricAuthRequester::kAllPasswordsList,
-                                result_callback.Get());
+                                result_callback.Get(),
+                                /*use_last_valid_auth=*/true);
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
@@ -202,7 +241,8 @@ TEST_F(BiometricAuthenticatorAndroidTest, TriggersAuthIfPreviousFailed) {
 TEST_F(BiometricAuthenticatorAndroidTest, CancelsOngoingAuthIfSameRequester) {
   EXPECT_CALL(bridge(), Authenticate);
   authenticator()->Authenticate(BiometricAuthRequester::kAllPasswordsList,
-                                base::DoNothing());
+                                base::DoNothing(),
+                                /*use_last_valid_auth=*/true);
   EXPECT_CALL(bridge(), Cancel);
   authenticator()->Cancel(BiometricAuthRequester::kAllPasswordsList);
 }
@@ -210,7 +250,8 @@ TEST_F(BiometricAuthenticatorAndroidTest, CancelsOngoingAuthIfSameRequester) {
 TEST_F(BiometricAuthenticatorAndroidTest, DoesntCancelAuthIfNotSameRequester) {
   EXPECT_CALL(bridge(), Authenticate);
   authenticator()->Authenticate(BiometricAuthRequester::kAllPasswordsList,
-                                base::DoNothing());
+                                base::DoNothing(),
+                                /*use_last_valid_auth=*/true);
   EXPECT_CALL(bridge(), Cancel).Times(0);
   authenticator()->Cancel(BiometricAuthRequester::kAccountChooserDialog);
 }

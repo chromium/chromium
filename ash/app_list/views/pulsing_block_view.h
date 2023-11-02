@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,12 +15,12 @@ class Size;
 
 namespace ash {
 
-// PulsingBlockView shows a pulsing white block via layer animation.
+// PulsingBlockView shows a pulsing white circle via layer animation.
 class PulsingBlockView : public views::View {
  public:
-  // Constructs a PulsingBlockView of |size|. If |start_delay| is true,
-  // starts the pulsing animation after a random delay.
-  PulsingBlockView(const gfx::Size& size, bool start_delay);
+  // Constructs a PulsingBlockView of |size|. Starts the pulsing animation after
+  // a |animation_delay|.
+  PulsingBlockView(const gfx::Size& size, base::TimeDelta animation_delay);
 
   PulsingBlockView(const PulsingBlockView&) = delete;
   PulsingBlockView& operator=(const PulsingBlockView&) = delete;
@@ -29,14 +29,23 @@ class PulsingBlockView : public views::View {
 
   // views::View:
   const char* GetClassName() const override;
+  void OnThemeChanged() override;
+
+  // Returns true if the view has a layer animator attached and is currently
+  // running.
+  bool IsAnimating();
+
+  // Starts the animation by immediately firing `start_delay_timer`. Returns
+  // false if the timer was not running.
+  bool FireAnimationTimerForTest();
 
  private:
   void OnStartDelayTimer();
 
-  // views::View overrides:
-  void OnPaint(gfx::Canvas* canvas) override;
-
   base::OneShotTimer start_delay_timer_;
+
+  views::View* background_color_view_ = nullptr;
+  const gfx::Size block_size_;
 };
 
 }  // namespace ash

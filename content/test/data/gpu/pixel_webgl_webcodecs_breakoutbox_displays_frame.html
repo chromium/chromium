@@ -1,11 +1,4 @@
 <!DOCTYPE HTML>
-
-<!-- READ BEFORE UPDATING:
-If this test is updated make sure to increment the "revision" value of the
-associated test in content/test/gpu/page_sets/pixel_tests.py. This will ensure
-that the baseline images are regenerated on the next run.
--->
-
 <html>
 <head>
 <title>WebGL + WebCodecs + Breakout Box can display frame</title>
@@ -43,7 +36,7 @@ function runTest() {
   gl.viewport(0, 0, 300, 300);
   drawTriangle(gl);
 
-  let frame = new VideoFrame(canvas);
+  let frame = new VideoFrame(canvas, {timestamp: 0});
   let video = document.querySelector('video');
   video.requestVideoFrameCallback(async _ => {
     // Wait for several vsyncs before taking a snapshot, this deflakes the test.

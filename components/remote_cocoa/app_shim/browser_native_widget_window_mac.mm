@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,14 +51,6 @@
 
 - (BOOL)_shouldCenterTrafficLights {
   return YES;
-}
-
-// On 10.10, this prevents the window server from treating the title bar as an
-// unconditionally-draggable region, and allows -[BridgedContentView hitTest:]
-// to choose case-by-case whether to take a mouse event or let it turn into a
-// window drag. Not needed for newer macOS. See r549802 for details.
-- (NSRect)_draggableFrame NS_DEPRECATED_MAC(10_10, 10_11) {
-  return NSZeroRect;
 }
 
 @end

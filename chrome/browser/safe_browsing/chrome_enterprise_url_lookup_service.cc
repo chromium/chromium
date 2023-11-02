@@ -1,11 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service.h"
 
 #include "base/callback.h"
-#include "base/task/post_task.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -56,11 +55,6 @@ bool ChromeEnterpriseRealTimeUrlLookupService::
   return false;
 }
 
-bool ChromeEnterpriseRealTimeUrlLookupService::CanAttachReferrerChain() const {
-  return base::FeatureList::IsEnabled(
-      kRealTimeUrlLookupReferrerChainForEnterprise);
-}
-
 int ChromeEnterpriseRealTimeUrlLookupService::GetReferrerUserGestureLimit()
     const {
   return 2;
@@ -76,7 +70,21 @@ bool ChromeEnterpriseRealTimeUrlLookupService::CanCheckSubresourceURL() const {
 }
 
 bool ChromeEnterpriseRealTimeUrlLookupService::CanCheckSafeBrowsingDb() const {
+  // Check database if safe browsing is enabled.
   return safe_browsing::IsSafeBrowsingEnabled(*profile_->GetPrefs());
+}
+
+bool ChromeEnterpriseRealTimeUrlLookupService::
+    CanCheckSafeBrowsingHighConfidenceAllowlist() const {
+  // Check allowlist if it can check database and allowlist bypass is
+  // disabled. Check the feature value at the end. This ensures that with the
+  // finch experiment set to starts_active false, the active users in our
+  // control and experimental arms will be a comparable population (Enterprise
+  // users with SafeBrowsing and RTLookup enabled)
+  return CanCheckSafeBrowsingDb() &&
+         (!CanPerformFullURLLookup() ||
+          !base::FeatureList::IsEnabled(
+              safe_browsing::kRealTimeUrlLookupForEnterpriseAllowlistBypass));
 }
 
 void ChromeEnterpriseRealTimeUrlLookupService::GetAccessToken(
@@ -153,6 +161,11 @@ double ChromeEnterpriseRealTimeUrlLookupService::
   // Enterprise URL lookup is enabled at startup and managed by the admin, so
   // all referrer URLs should be included in the referrer chain.
   return 0;
+}
+
+bool ChromeEnterpriseRealTimeUrlLookupService::CanSendRTSampleRequest() const {
+  // Do not send sampled pings for enterprise users.
+  return false;
 }
 
 }  // namespace safe_browsing

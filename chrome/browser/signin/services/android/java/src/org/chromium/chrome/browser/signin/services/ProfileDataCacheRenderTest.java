@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,6 +49,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
@@ -56,11 +57,12 @@ import org.chromium.components.signin.identitymanager.AccountTrackerService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.IdentityManagerJni;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.widget.ChromeImageView;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -69,7 +71,7 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(ProfileDataCacheRenderTest.PROFILE_DATA_BATCH_NAME)
-public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
+public class ProfileDataCacheRenderTest extends BlankUiTestActivityTestCase {
     public static final String PROFILE_DATA_BATCH_NAME = "profile_data";
     public static final String ACCOUNT_EMAIL = "test@gmail.com";
     private static final long NATIVE_IDENTITY_MANAGER = 10002L;
@@ -87,7 +89,9 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().build();
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(ChromeRenderTestRule.Component.SERVICES_SIGN_IN)
+                    .build();
 
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
@@ -104,9 +108,9 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
     @Mock
     private IdentityManager.Natives mIdentityManagerNativeMock;
 
-    private final AccountInfo mAccountInfoWithAvatar =
-            new AccountInfo(new CoreAccountId("gaia-id-test"), ACCOUNT_EMAIL, "gaia-id-test",
-                    "full name", "given name", createAvatar());
+    private final AccountInfo mAccountInfoWithAvatar = new AccountInfo(
+            new CoreAccountId("gaia-id-test"), ACCOUNT_EMAIL, "gaia-id-test", "full name",
+            "given name", createAvatar(), new AccountCapabilities(new HashMap<>()));
 
     private FrameLayout mContentView;
     private ImageView mImageView;
@@ -160,7 +164,8 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
         when(mIdentityManagerNativeMock.findExtendedAccountInfoByEmailAddress(
                      anyLong(), eq(ACCOUNT_EMAIL)))
                 .thenReturn(mAccountInfoWithAvatar);
-        mAccountManagerTestRule.addAccount(ACCOUNT_EMAIL);
+        mAccountManagerTestRule.addAccount(ACCOUNT_EMAIL, mAccountInfoWithAvatar.getFullName(),
+                mAccountInfoWithAvatar.getGivenName(), mAccountInfoWithAvatar.getAccountImage());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mProfileDataCache =
@@ -189,7 +194,7 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
             mIdentityManager.onExtendedAccountInfoUpdated(mAccountInfoWithAvatar);
             final AccountInfo emptyAccountInfo = new AccountInfo(mAccountInfoWithAvatar.getId(),
                     mAccountInfoWithAvatar.getEmail(), mAccountInfoWithAvatar.getGaiaId(), null,
-                    null, null);
+                    null, null, new AccountCapabilities(new HashMap<>()));
             mIdentityManager.onExtendedAccountInfoUpdated(emptyAccountInfo);
             checkImageIsScaled(mAccountInfoWithAvatar.getEmail());
         });

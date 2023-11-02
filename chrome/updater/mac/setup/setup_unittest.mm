@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,12 @@
 #include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_timeouts.h"
+#include "base/time/time.h"
+#include "base/version.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/updater/mac/install_from_archive.h"
+#include "chrome/updater/updater_scope.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater_setup {
@@ -159,7 +163,10 @@ TEST_F(ChromeUpdaterMacSetupTest, InstallFromArchiveNoArgs) {
   const base::FilePath dmg_file_path =
       GetTestDir().Append(FILE_PATH_LITERAL(kUpdaterTestDMGName));
   ASSERT_TRUE(base::PathExists(dmg_file_path));
-  ASSERT_NE(updater::InstallFromArchive(dmg_file_path, {}, {}, {}), 0);
+  ASSERT_NE(updater::InstallFromArchive(
+                dmg_file_path, {}, {}, updater::UpdaterScope::kUser,
+                base::Version("0"), {}, {}, TestTimeouts::action_timeout()),
+            0);
 }
 
 TEST_F(ChromeUpdaterMacSetupTest, InstallFromArchiveWithArgsFail) {
@@ -168,7 +175,10 @@ TEST_F(ChromeUpdaterMacSetupTest, InstallFromArchiveWithArgsFail) {
   const base::FilePath dmg_file_path =
       GetTestDir().Append(FILE_PATH_LITERAL(kUpdaterTestDMGName));
   ASSERT_TRUE(base::PathExists(dmg_file_path));
-  ASSERT_NE(updater::InstallFromArchive(dmg_file_path, {}, {}, "arg2"), 0);
+  ASSERT_NE(updater::InstallFromArchive(
+                dmg_file_path, {}, {}, updater::UpdaterScope::kUser,
+                base::Version("0"), "arg2", {}, TestTimeouts::action_timeout()),
+            0);
 }
 
 TEST_F(ChromeUpdaterMacSetupTest, InstallFromArchiveWithArgsPass) {
@@ -183,7 +193,9 @@ TEST_F(ChromeUpdaterMacSetupTest, InstallFromArchiveWithArgsPass) {
   ASSERT_TRUE(base::PathExists(installed_app_path));
 
   ASSERT_EQ(updater::InstallFromArchive(dmg_file_path, installed_app_path, {},
-                                        kTestAppVersion),
+                                        updater::UpdaterScope::kUser,
+                                        base::Version(kTestAppVersion), {}, {},
+                                        TestTimeouts::action_timeout()),
             0);
 }
 
@@ -200,9 +212,11 @@ TEST_F(ChromeUpdaterMacSetupTest, InstallFromArchiveWithExtraneousArgsPass) {
   ASSERT_TRUE(base::PathExists(installed_app_path));
 
   std::string args = base::StrCat({kTestAppVersion, " arg1 arg2"});
-  ASSERT_EQ(
-      updater::InstallFromArchive(dmg_file_path, installed_app_path, {}, args),
-      0);
+  ASSERT_EQ(updater::InstallFromArchive(dmg_file_path, installed_app_path, {},
+                                        updater::UpdaterScope::kUser,
+                                        base::Version("0"), args, {},
+                                        TestTimeouts::action_timeout()),
+            0);
 }
 
 TEST_F(ChromeUpdaterMacSetupTest, InstallFromArchivePreinstallPostinstall) {
@@ -212,25 +226,30 @@ TEST_F(ChromeUpdaterMacSetupTest, InstallFromArchivePreinstallPostinstall) {
 
   ASSERT_EQ(updater::InstallFromArchive(
                 test_dir.Append("setup_test_envcheck").Append("marker.app"),
-                base::FilePath::FromASCII("xc_path"), "ap", "arg1 arg2"),
+                base::FilePath::FromASCII("xc_path"), "ap",
+                updater::UpdaterScope::kUser, base::Version("0"), "arg1 arg2",
+                {}, TestTimeouts::action_timeout()),
             0);
 
   ASSERT_EQ(
       updater::InstallFromArchive(
           test_dir.Append("setup_test_preinstallfailure").Append("marker.app"),
-          {}, {}, {}),
+          {}, {}, updater::UpdaterScope::kUser, base::Version("0"), {}, {},
+          TestTimeouts::action_timeout()),
       1);
 
   ASSERT_EQ(
       updater::InstallFromArchive(
           test_dir.Append("setup_test_installfailure").Append("marker.app"), {},
-          {}, {}),
+          {}, updater::UpdaterScope::kUser, base::Version("0"), {}, {},
+          TestTimeouts::action_timeout()),
       2);
 
   ASSERT_EQ(
       updater::InstallFromArchive(
           test_dir.Append("setup_test_postinstallfailure").Append("marker.app"),
-          {}, {}, {}),
+          {}, {}, updater::UpdaterScope::kUser, base::Version("0"), {}, {},
+          TestTimeouts::action_timeout()),
       3);
 }
 

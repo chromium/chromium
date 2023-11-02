@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -129,7 +129,7 @@ public class ChromeTabUtils {
     private static boolean loadComplete(Tab tab, String url) {
         return !tab.isLoading()
                 && (url == null || TextUtils.equals(getUrlStringOnUiThread(tab), url))
-                && !tab.getWebContents().isLoadingToDifferentDocument();
+                && !tab.getWebContents().shouldShowLoadingUI();
     }
 
     public static String getTitleOnUiThread(Tab tab) {
@@ -243,7 +243,7 @@ public class ChromeTabUtils {
                                 + "loading: %b, web contents init: %b, web contents loading: %b",
                         url, getUrlStringOnUiThread(tab), Math.round(100 * tab.getProgress()),
                         tab.isLoading(), webContents != null,
-                        webContents == null ? false : webContents.isLoadingToDifferentDocument()));
+                        webContents == null ? false : webContents.shouldShowLoadingUI()));
             }
         }
     }
@@ -371,7 +371,7 @@ public class ChromeTabUtils {
     public static void switchTabInCurrentTabModel(final ChromeActivity activity,
             final int tabIndex) {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { TabModelUtils.setIndex(activity.getCurrentTabModel(), tabIndex); });
+                () -> { TabModelUtils.setIndex(activity.getCurrentTabModel(), tabIndex, false); });
     }
 
     /**
@@ -557,7 +557,7 @@ public class ChromeTabUtils {
         final CallbackHelper closeCallback = new CallbackHelper();
         final TabModelObserver observer = new TabModelObserver() {
             @Override
-            public void willCloseTab(Tab tab, boolean animate) {
+            public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
                 closeCallback.notifyCalled();
             }
         };
@@ -834,13 +834,11 @@ public class ChromeTabUtils {
      * Issues a fake notification about the renderer being killed.
      *
      * @param tab {@link Tab} instance where the target renderer resides.
-     * @param wasOomProtected True if the renderer was protected from the OS out-of-memory killer
-     *                        (e.g. renderer for the currently selected tab)
      */
-    public static void simulateRendererKilledForTesting(Tab tab, boolean wasOomProtected) {
+    public static void simulateRendererKilledForTesting(Tab tab) {
         TabWebContentsObserver observer = TabWebContentsObserver.get(tab);
         if (observer != null) {
-            observer.simulateRendererKilledForTesting(wasOomProtected);
+            observer.simulateRendererKilledForTesting();
         }
     }
 

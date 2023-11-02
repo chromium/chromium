@@ -16,8 +16,8 @@ limitations under the License.
 #ifndef TENSORFLOW_LITE_SUPPORT_CC_COMMON_H_
 #define TENSORFLOW_LITE_SUPPORT_CC_COMMON_H_
 
-#include "absl/status/status.h"
-#include "absl/strings/string_view.h"
+#include "absl/status/status.h"        // from @com_google_absl
+#include "absl/strings/string_view.h"  // from @com_google_absl
 
 namespace tflite {
 namespace support {
@@ -53,6 +53,12 @@ enum class TfLiteSupportStatus {
   kInvalidArgumentError = 2,
   // Invalid FlatBuffer file or buffer specified.
   kInvalidFlatBufferError = 3,
+  // Model contains a builtin op that isn't supported by the OpResolver or
+  // delegates.
+  kUnsupportedBuiltinOp = 4,
+  // Model contains a custom op that isn't supported by the OpResolver or
+  // delegates.
+  kUnsupportedCustomOp = 5,
 
   // File I/O error codes.
 

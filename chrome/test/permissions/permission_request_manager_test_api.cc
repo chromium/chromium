@@ -1,16 +1,15 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
 
 #include <memory>
-
 #include "base/bind.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/permission_bubble/permission_prompt_bubble_view.h"
-#include "chrome/browser/ui/views/permission_bubble/permission_prompt_impl.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_bubble_view.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_desktop.h"
 #include "components/permissions/permission_request.h"
 #include "ui/views/widget/widget.h"
 
@@ -65,8 +64,8 @@ void PermissionRequestManagerTestApi::AddSimpleRequest(
 }
 
 views::Widget* PermissionRequestManagerTestApi::GetPromptWindow() {
-  PermissionPromptImpl* prompt =
-      static_cast<PermissionPromptImpl*>(manager_->view_.get());
+  PermissionPromptDesktop* prompt =
+      static_cast<PermissionPromptDesktop*>(manager_->view_.get());
   return prompt ? prompt->GetPromptBubbleWidgetForTesting() : nullptr;
 }
 

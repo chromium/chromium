@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/test/login_or_lock_screen_visible_waiter.h"
+#include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/webui_login_view.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
@@ -27,8 +28,9 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -127,7 +129,7 @@ class ShutdownPolicyInSessionTest
   // Returns true if the shutdown button's tooltip matches |tooltip|.
   bool HasShutdownButtonTooltip(const std::string& tooltip) {
     std::u16string actual_tooltip =
-        tray_test_api_->GetBubbleViewTooltip(VIEW_ID_POWER_BUTTON);
+        tray_test_api_->GetBubbleViewTooltip(VIEW_ID_QS_POWER_BUTTON);
     return base::UTF8ToUTF16(tooltip) == actual_tooltip;
   }
 };
@@ -241,6 +243,10 @@ class ShutdownPolicyLoginTest : public ShutdownPolicyBaseTest {
 
     // Wait for the login UI to be ready.
     WaitUntilOobeUIIsReady(host->GetOobeUI());
+
+    // Wait for GAIA screen, as it is the first screen and Shutdown button
+    // visibility depends on if it is first sign-in step or not.
+    OobeScreenWaiter(GaiaView::kScreenId).Wait();
   }
 
   void TearDownOnMainThread() override {

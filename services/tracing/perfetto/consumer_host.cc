@@ -1,23 +1,21 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/tracing/perfetto/consumer_host.h"
 
-#include <algorithm>
 #include <cstring>
 #include <string>
-#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_log.h"
 #include "base/values.h"
@@ -258,8 +256,8 @@ void ConsumerHost::TracingSession::OnPerfettoEvents(
   // Data sources are first reported as being stopped before starting, so once
   // all the data sources we know about have started we can declare tracing
   // begun.
-  bool all_data_sources_started = std::all_of(
-      data_source_states_.cbegin(), data_source_states_.cend(),
+  bool all_data_sources_started = base::ranges::all_of(
+      data_source_states_,
       [](std::pair<DataSourceHandle, bool> state) { return state.second; });
   if (!all_data_sources_started)
     return;
@@ -526,9 +524,7 @@ void ConsumerHost::TracingSession::OnTraceData(
     size_t position = 0;
     std::unique_ptr<uint8_t[]> data(new uint8_t[max_size]);
     for (perfetto::TracePacket& packet : packets) {
-      char* preamble;
-      size_t preamble_size;
-      std::tie(preamble, preamble_size) = packet.GetProtoPreamble();
+      auto [preamble, preamble_size] = packet.GetProtoPreamble();
       DCHECK_LT(position + preamble_size, max_size);
       memcpy(&data[position], preamble, preamble_size);
       position += preamble_size;
@@ -556,9 +552,7 @@ void ConsumerHost::TracingSession::OnTraceData(
   auto chunk = std::make_unique<StreamWriter::Slice>();
   chunk->reserve(max_size);
   for (auto& packet : packets) {
-    char* data;
-    size_t size;
-    std::tie(data, size) = packet.GetProtoPreamble();
+    auto [data, size] = packet.GetProtoPreamble();
     chunk->append(data, size);
     auto& slices = packet.slices();
     for (auto& slice : slices) {
@@ -662,7 +656,7 @@ void ConsumerHost::EnableTracing(
     }
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // TODO(crbug.com/1158482): Support writing to a file directly on Windows.
   DCHECK(!output_file.IsValid())
       << "Tracing directly to a file isn't supported yet on Windows";

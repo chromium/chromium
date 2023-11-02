@@ -1,20 +1,19 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef NET_QUIC_PLATFORM_IMPL_QUIC_CHROMIUM_CLOCK_H_
 #define NET_QUIC_PLATFORM_IMPL_QUIC_CHROMIUM_CLOCK_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
-#include "net/third_party/quiche/src/quic/core/quic_clock.h"
-#include "net/third_party/quiche/src/quic/platform/api/quic_export.h"
+#include "net/base/net_export.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_clock.h"
 
 namespace quic {
 
 // Clock to efficiently retrieve an approximately accurate time from an
 // net::EpollServer.
-class QUIC_EXPORT_PRIVATE QuicChromiumClock : public QuicClock {
+class NET_EXPORT_PRIVATE QuicChromiumClock : public QuicClock {
  public:
   static QuicChromiumClock* GetInstance();
 

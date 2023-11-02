@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/crash/core/app/crash_reporter_client.h"
 
 namespace chromecast {
@@ -36,7 +35,6 @@ class CastCrashReporterClientAndroid
   base::FilePath GetReporterLogFilename() override;
   bool GetCrashDumpLocation(base::FilePath* crash_dir) override;
   int GetAndroidMinidumpDescriptor() override;
-  bool GetCollectStatsConsent() override;
   bool EnableBreakpadForProcess(const std::string& process_type) override;
 
  private:

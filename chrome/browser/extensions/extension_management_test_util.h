@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_management_constants.h"
 #include "extensions/browser/pref_names.h"
@@ -103,18 +104,17 @@ class ExtensionManagementPrefUpdaterBase {
   void UnsetMinimumVersionRequired(const std::string& id);
 
   // Expose a read-only preference to user.
-  const base::DictionaryValue* GetPref();
+  const base::Value::Dict* GetPref();
 
  protected:
   // Set the preference with |pref|, pass the ownership of it as well.
   // This function must be called before accessing publicly exposed functions,
   // for example in constructor of subclass.
-  void SetPref(base::DictionaryValue* pref);
+  void SetPref(base::Value::Dict pref);
 
-  // Take the preference. Caller takes ownership of it as well.
-  // This function must be called after accessing publicly exposed functions,
-  // for example in destructor of subclass.
-  std::unique_ptr<base::DictionaryValue> TakePref();
+  // Take the preference. This function must be called after accessing publicly
+  // exposed functions, for example in destructor of subclass.
+  base::Value::Dict TakePref();
 
  private:
   // Helper functions for manipulating sub properties like list of strings.
@@ -122,7 +122,7 @@ class ExtensionManagementPrefUpdaterBase {
   void AddStringToList(const std::string& path, const std::string& str);
   void RemoveStringFromList(const std::string& path, const std::string& str);
 
-  std::unique_ptr<base::DictionaryValue> pref_;
+  base::Value::Dict pref_;
 };
 
 // A helper class to manipulate the extension management preference in unit
@@ -135,11 +135,11 @@ class ExtensionManagementPrefUpdater
       : service_(service) {
     const base::Value* pref_value =
         service_->GetManagedPref(pref_names::kExtensionManagement);
-    const base::DictionaryValue* dict_value = nullptr;
-    if (pref_value && pref_value->GetAsDictionary(&dict_value))
-      SetPref(dict_value->DeepCopy());
-    else
-      SetPref(new base::DictionaryValue);
+    base::Value::Dict dict;
+    if (pref_value && pref_value->is_dict()) {
+      dict = pref_value->GetDict().Clone();
+    }
+    SetPref(std::move(dict));
   }
 
   ExtensionManagementPrefUpdater(const ExtensionManagementPrefUpdater&) =
@@ -147,12 +147,13 @@ class ExtensionManagementPrefUpdater
   ExtensionManagementPrefUpdater& operator=(
       const ExtensionManagementPrefUpdater&) = delete;
 
-  virtual ~ExtensionManagementPrefUpdater() {
-    service_->SetManagedPref(pref_names::kExtensionManagement, TakePref());
+  ~ExtensionManagementPrefUpdater() override {
+    service_->SetManagedPref(pref_names::kExtensionManagement,
+                             base::Value(TakePref()));
   }
 
  private:
-  TestingPrefService* service_;
+  raw_ptr<TestingPrefService> service_;
 };
 
 // A helper class to manipulate the extension management policy in browser
@@ -171,7 +172,7 @@ class ExtensionManagementPolicyUpdater
   ~ExtensionManagementPolicyUpdater() override;
 
  private:
-  policy::MockConfigurationPolicyProvider* provider_;
+  raw_ptr<policy::MockConfigurationPolicyProvider> provider_;
   std::unique_ptr<policy::PolicyBundle> policies_;
 };
 

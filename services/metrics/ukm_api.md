@@ -61,7 +61,7 @@ main UKM dashboard) is done via the same
 [`tools/metrics/ukm/ukm.xml`](https://cs.chromium.org/chromium/src/tools/metrics/ukm/ukm.xml)
 file in the Chromium codebase. To have a metric aggregated, `<history>`,
 `<aggregation>` and `<statistics>` tags need to be added along with the type of
-statistic to be generated..
+statistic to be generated.
 
 ```xml
 <event name="Goat.Teleported">
@@ -103,15 +103,6 @@ Currently supported additional index fields are:
 *   `profile.country`
 *   `profile.form_factor`
 *   `profile.system_ram`
-
-### Aggregation by Metrics in the Same Event
-
-Aggregation can occur against other metrics of the same event by listing
-"metrics._foo_" as an index field. That other metric must also have `history`,
-`statistics`, and `**enumeration**` tags.
-
-**NOTE:** There is currently a limitation that only _one_ (1) `index` tag can
-include such a reference.
 
 ### Enumeration Proportions
 
@@ -180,18 +171,48 @@ ukm::builders::MyEvent(source_id)
     .Record(ukm_recorder.get());
 ```
 
-3) Within blink/renderer, use `blink::Document::UkmRecorder()`.
+3) Within blink/renderer, use one of the following methods:
+
+* `blink::Document::UkmRecorder()`
+* `blink::ExecutionContext::UkmRecorder()`
+* `blink::ResourceFetcher::UkmRecorder()`
+
+4) If you do not have access to any of the methods in 3), establish a remote
+connection to a UkmRecorderInterface and use a MojoUkmRecorder to get a
+UkmRecorder.
+
+```cpp
+mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> recorder;
+
+// This step depends on how the Metrics service is embedded in the application.
+BindUkmRecorderSomewhere(recorder.InitWithNewPipeAndPassReceiver());
+
+ukm_recorder = std::make_unique<ukm::MojoUkmRecorder>(std::move(recorder));
+ukm::builders::MyEvent(source_id)
+    .SetMyMetric(metric_value)
+    .Record(ukm_recorder.get());
+```
+Depending on which directory you are getting the UkmRecorder from, you need the
+correct interface binder to replace the `BindUkmRecorderSomewhere()` part above.
+Some options are:
+
+* blink/renderer: `Platform::Current()->GetBrowserInterfaceBroker()->GetInterface()`
+* content/renderer: `content::RenderThread::Get()->BindHostReceiver()`
+
+Note: Establishing a new remote connection each time (i.e. per frame, etc.) has
+overhead, so try to avoid opening a new one each time.
+
 
 ### Get A ukm::SourceId
 
-UKM identifies navigations by their source ID and you'll need to associate an ID with your event in order to tie it to a main frame URL.  Preferably, get an existing ID for the navigation from another object.
+UKM identifies navigations by their source ID and you'll need to associate an ID with your event in order to tie it to a main frame URL. Preferably, get an existing ID for the navigation from another object.
 
 Prefer using `ukm::SourceId` if only the underlying int64 value is required to identify a source and is used in Mojo interface, and no type conversion needs to be performed. If additional source type information is needed, `ukm::SourceIdObj` can be used.
 
 The main method for getting an existing ID is by converting from the navigation ID:
 
 ```cpp
-ukm::SourceId source_id = GetSourceIdForWebContentsDocument(web_contents);
+ukm::SourceId source_id = render_frame_host->GetPageUkmSourceId();
 ukm::SourceId source_id = ukm::ConvertToSourceId(
     navigation_handle->GetNavigationId(), ukm::SourceIdType::NAVIGATION_ID);
 ```
@@ -247,6 +268,8 @@ void OnGoatTeleported() {
 
 If the event name in the XML contains a period (`.`), it is replaced with an underscore (`_`) in the method name.
 
+To avoid having UKM report becoming unbounded in size, an upper limit is placed on the number of events recorded for each event type. Events that are recorded too frequently may be subject to downsampling (see go/ukm-sampling). As a rule of thumb, it is recommended that most entries be recorded at most once per 100 pageloads on average to limit data volume.
+
 ### Local Testing
 
 Build Chromium and run it with '--force-enable-metrics-reporting --metrics-upload-interval=N'. You may want some small N if you are interested in seeing behavior when UKM reports are emitted. Trigger your event locally and check chrome://ukm to make sure the data was recorded correctly.
@@ -276,16 +299,16 @@ The full metrics will not be keyed off the subframe URL. Rather, the subframe UR
   <summary>
     Recorded when a page uses on of a list of known web frameworks. This records various performance measurements.
   </summary>
- <metric name="WebFramework" enum=WebFrameworkName>
+  <metric name="WebFramework" enum="WebFrameworkName">
     <summary>
       Web Framework used.
-   </summary>
- </metric>
- <metric name="FrameworkLoadInMs">
+    </summary>
+  </metric>
+  <metric name="FrameworkLoadInMs">
     <summary>
       Time to load the framework in milliseconds.
-   </summary>
- </metric>
+    </summary>
+  </metric>
 </event>
 ```
 
@@ -293,10 +316,10 @@ And in the UKM enum.xml:
 
 ```xml
 <enum name="WebFrameworkName">
- <int value="0" label="Unknown"/>
- <int value="1" label="WebFramework1"/>
- <int value="1" label="WebFramework2"/>
-…
+  <int value="0" label="Unknown"/>
+  <int value="1" label="WebFramework1"/>
+  <int value="1" label="WebFramework2"/>
+  ...
 </enum>
 ```
 

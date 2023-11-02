@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,6 +62,9 @@ class PageInfoBubbleViewBase : public views::BubbleDialogDelegateView,
   // views::BubbleDialogDelegateView:
   void OnWidgetDestroying(views::Widget* widget) override;
 
+  // WebContentsObserver:
+  void WebContentsDestroyed() override;
+
  private:
   friend class SafetyTipPageInfoBubbleViewBrowserTest;
 
@@ -70,7 +73,6 @@ class PageInfoBubbleViewBase : public views::BubbleDialogDelegateView,
   void OnVisibilityChanged(content::Visibility visibility) override;
   void PrimaryPageChanged(content::Page& page) override;
   void DidChangeVisibleSecurityState() override;
-  void WebContentsDestroyed() override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_BUBBLE_VIEW_BASE_H_

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -100,6 +100,15 @@ std::unique_ptr<UiDevToolsServer> UiDevToolsServer::CreateForViews(
   return server;
 }
 
+void UiDevToolsServer::SetOnSocketConnectedForTesting(
+    base::OnceClosure on_socket_connected) {
+  if (server_) {
+    std::move(on_socket_connected).Run();
+    return;
+  }
+  on_socket_connected_ = std::move(on_socket_connected);
+}
+
 // static
 void UiDevToolsServer::CreateTCPServerSocket(
     mojo::PendingReceiver<network::mojom::TCPServerSocket>
@@ -192,6 +201,8 @@ void UiDevToolsServer::MakeServer(
       }
     }
   }
+  if (on_socket_connected_)
+    std::move(on_socket_connected_).Run();
 }
 
 // HttpServer::Delegate Implementation
@@ -212,8 +223,9 @@ void UiDevToolsServer::OnWebSocketRequest(
   size_t target_id = 0;
   if (info.path.empty() ||
       !base::StringToSizeT(info.path.substr(1), &target_id) ||
-      target_id > clients_.size())
+      target_id >= clients_.size()) {
     return;
+  }
 
   UiDevToolsClient* client = clients_[target_id].get();
   // Only one user can inspect the client at a time

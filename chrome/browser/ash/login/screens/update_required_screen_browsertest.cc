@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,12 +17,12 @@
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
-#include "chrome/browser/ash/login/test/network_portal_detector_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/version_updater/version_updater.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/net/network_portal_detector_test_impl.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_test_helpers.h"
@@ -32,10 +32,10 @@
 #include "chrome/browser/ui/webui/chromeos/login/update_required_screen_handler.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
+#include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/update_engine/fake_update_engine_client.h"
-#include "chromeos/network/network_state_test_helper.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "dbus/object_path.h"
@@ -57,7 +57,7 @@ const test::UIPath kUpdateRequiredSubtitle = {"update-required",
                                               "update-subtitle"};
 const test::UIPath kUpdateNowButton = {"update-required", "update-button"};
 const test::UIPath kUpdateProcessStep = {"update-required",
-                                         "checking-downloading-update"};
+                                         "downloadingUpdate"};
 const test::UIPath kUpdateRequiredEolDialog = {"update-required", "eolDialog"};
 const test::UIPath kEolAdminMessageContainer = {"update-required",
                                                 "adminMessageContainer"};
@@ -81,18 +81,17 @@ const test::UIPath kMeteredNetworkAcceptButton = {
 const test::UIPath kNoNetworkStep = {"update-required",
                                      "update-required-no-network-dialog"};
 
-// Elements in checking-downloading-update
-const test::UIPath kUpdateProcessCheckingStep = {"update-required",
-                                                 "checking-downloading-update",
-                                                 "checking-for-updates-dialog"};
+// Elements in downloadingUpdate
+const test::UIPath kUpdateProcessCheckingStep = {
+    "update-required", "downloadingUpdate", "checking-for-updates-dialog"};
 const test::UIPath kUpdateProcessUpdatingStep = {
-    "update-required", "checking-downloading-update", "updating-dialog"};
+    "update-required", "downloadingUpdate", "updating-dialog"};
 const test::UIPath kUpdateProcessCompleteStep = {
-    "update-required", "checking-downloading-update", "update-complete-dialog"};
+    "update-required", "downloadingUpdate", "update-complete-dialog"};
 const test::UIPath kCheckingForUpdatesMessage = {
-    "update-required", "checking-downloading-update", "checkingForUpdatesMsg"};
-const test::UIPath kUpdatingProgress = {
-    "update-required", "checking-downloading-update", "updating-progress"};
+    "update-required", "downloadingUpdate", "checkingForUpdatesMsg"};
+const test::UIPath kUpdatingProgress = {"update-required", "downloadingUpdate",
+                                        "updating-progress"};
 
 constexpr char kWifiServicePath[] = "/service/wifi2";
 constexpr char kCellularServicePath[] = "/service/cellular1";
@@ -154,9 +153,8 @@ class UpdateRequiredScreenTest : public OobeBaseTest {
     OobeBaseTest::SetUpOnMainThread();
 
     // Set up fake networks.
-    network_state_test_helper_ =
-        std::make_unique<chromeos::NetworkStateTestHelper>(
-            true /*use_default_devices_and_services*/);
+    network_state_test_helper_ = std::make_unique<NetworkStateTestHelper>(
+        true /*use_default_devices_and_services*/);
     network_state_test_helper_->manager_test()->SetupDefaultEnvironment();
     // Fake networks have been set up. Connect to WiFi network.
     SetConnected(kWifiServicePath);
@@ -203,11 +201,9 @@ class UpdateRequiredScreenTest : public OobeBaseTest {
   // Error screen - owned by OobeUI.
   // Version updater - owned by `update_required_screen_`.
   VersionUpdater* version_updater_ = nullptr;
-  // For testing captive portal
-  NetworkPortalDetectorMixin network_portal_detector_{&mixin_host_};
 
   // Handles network connections
-  std::unique_ptr<chromeos::NetworkStateTestHelper> network_state_test_helper_;
+  std::unique_ptr<NetworkStateTestHelper> network_state_test_helper_;
   policy::DevicePolicyCrosTestHelper policy_helper_;
   DeviceStateMixin device_state_mixin_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
@@ -217,8 +213,13 @@ class UpdateRequiredScreenTest : public OobeBaseTest {
 IN_PROC_BROWSER_TEST_F(UpdateRequiredScreenTest, TestCaptivePortal) {
   ShowUpdateRequiredScreen();
 
-  network_portal_detector_.SimulateDefaultNetworkState(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL);
+  network_state_test_helper_->ResetDevicesAndServices();
+  std::string wifi_path =
+      network_state_test_helper_->ConfigureWiFi(shill::kStateRedirectFound);
+
+  network_portal_detector::InitializeForTesting(
+      new NetworkPortalDetectorTestImpl());
+  network_portal_detector::GetInstance()->Enable();
 
   static_cast<UpdateRequiredScreen*>(
       WizardController::default_controller()->current_screen())
@@ -229,8 +230,7 @@ IN_PROC_BROWSER_TEST_F(UpdateRequiredScreenTest, TestCaptivePortal) {
   // Click update button to trigger the update process.
   test::OobeJS().ClickOnPath(kUpdateNowButton);
 
-  // If the network is a captive portal network, error message is shown with a
-  // delay.
+  // If the network is a captive portal network, the error message is shown.
   OobeScreenWaiter error_screen_waiter(ErrorScreenView::kScreenId);
   error_screen_waiter.set_assert_next_screen();
   error_screen_waiter.Wait();
@@ -246,15 +246,16 @@ IN_PROC_BROWSER_TEST_F(UpdateRequiredScreenTest, TestCaptivePortal) {
 
   // If network goes back online, the error screen should be hidden and update
   // process should start.
-  network_portal_detector_.SimulateDefaultNetworkState(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
-  EXPECT_EQ(OobeScreen::SCREEN_UNKNOWN.AsId(), error_screen->GetParentScreen());
+  network_state_test_helper_->SetServiceProperty(
+      wifi_path, shill::kStateProperty, base::Value(shill::kStateOnline));
+  EXPECT_EQ(ash::OOBE_SCREEN_UNKNOWN.AsId(), error_screen->GetParentScreen());
 
   SetUpdateEngineStatus(update_engine::Operation::CHECKING_FOR_UPDATE);
   SetUpdateEngineStatus(update_engine::Operation::UPDATE_AVAILABLE);
 
   test::OobeJS().ExpectVisiblePath(kUpdateRequiredScreen);
   test::OobeJS().ExpectVisiblePath(kUpdateProcessStep);
+  network_portal_detector::Shutdown();
 }
 
 IN_PROC_BROWSER_TEST_F(UpdateRequiredScreenTest, TestEolReached) {
@@ -509,7 +510,7 @@ IN_PROC_BROWSER_TEST_F(UpdateRequiredScreenTest, TestSubtitle) {
 
 class UpdateRequiredScreenFlexOrgTest : public UpdateRequiredScreenTest {
  public:
-  UpdateRequiredScreenFlexOrgTest() {}
+  UpdateRequiredScreenFlexOrgTest() = default;
   ~UpdateRequiredScreenFlexOrgTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -534,7 +535,7 @@ IN_PROC_BROWSER_TEST_F(UpdateRequiredScreenFlexOrgTest, TestSubtitle) {
 
 class UpdateRequiredScreenPolicyPresentTest : public OobeBaseTest {
  public:
-  UpdateRequiredScreenPolicyPresentTest() {}
+  UpdateRequiredScreenPolicyPresentTest() = default;
   ~UpdateRequiredScreenPolicyPresentTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -549,17 +550,13 @@ class UpdateRequiredScreenPolicyPresentTest : public OobeBaseTest {
         base::DefaultClock::GetInstance()->Now() - base::Days(1));
   }
 
-  void SetMinimumChromeVersionPolicy(const base::Value& value) {
+  void SetAndRefreshMinimumChromeVersionPolicy(base::Value::Dict value) {
     policy::DevicePolicyBuilder* const device_policy(
         policy_helper_.device_policy());
     em::ChromeDeviceSettingsProto& proto(device_policy->payload());
     std::string policy_value;
     EXPECT_TRUE(base::JSONWriter::Write(value, &policy_value));
     proto.mutable_device_minimum_version()->set_value(policy_value);
-  }
-
-  void SetAndRefreshMinimumChromeVersionPolicy(const base::Value& value) {
-    SetMinimumChromeVersionPolicy(value);
     policy_helper_.RefreshDevicePolicy();
   }
 

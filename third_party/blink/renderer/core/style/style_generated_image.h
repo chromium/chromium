@@ -25,7 +25,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_GENERATED_IMAGE_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -39,7 +42,10 @@ class ImageResourceObserver;
 // function. Use only for images that have no intrinsic dimensions.
 class CORE_EXPORT StyleGeneratedImage final : public StyleImage {
  public:
-  explicit StyleGeneratedImage(const CSSImageGeneratorValue&);
+  using ContainerSizes = CSSToLengthConversionData::ContainerSizes;
+
+  explicit StyleGeneratedImage(const CSSImageGeneratorValue&,
+                               const ContainerSizes&);
 
   WrappedImagePtr Data() const override { return image_generator_value_.Get(); }
 
@@ -49,9 +55,9 @@ class CORE_EXPORT StyleGeneratedImage final : public StyleImage {
 
   bool IsAccessAllowed(String&) const override { return true; }
 
-  FloatSize ImageSize(float multiplier,
-                      const FloatSize& default_object_size,
-                      RespectImageOrientationEnum) const override;
+  gfx::SizeF ImageSize(float multiplier,
+                       const gfx::SizeF& default_object_size,
+                       RespectImageOrientationEnum) const override;
   bool HasIntrinsicSize() const override { return false; }
   void AddClient(ImageResourceObserver*) override;
   void RemoveClient(ImageResourceObserver*) override;
@@ -59,11 +65,12 @@ class CORE_EXPORT StyleGeneratedImage final : public StyleImage {
   scoped_refptr<Image> GetImage(const ImageResourceObserver&,
                                 const Document&,
                                 const ComputedStyle&,
-                                const FloatSize& target_size) const override;
+                                const gfx::SizeF& target_size) const override;
   bool KnownToBeOpaque(const Document&, const ComputedStyle&) const override;
 
   bool IsUsingCustomProperty(const AtomicString& custom_property_name,
                              const Document&) const;
+  bool IsUsingCurrentColor() const;
 
   void Trace(Visitor*) const override;
 
@@ -73,6 +80,7 @@ class CORE_EXPORT StyleGeneratedImage final : public StyleImage {
   // TODO(sashab): Replace this with <const CSSImageGeneratorValue> once
   // Member<> supports const types.
   Member<CSSImageGeneratorValue> image_generator_value_;
+  ContainerSizes container_sizes_;
 };
 
 template <>

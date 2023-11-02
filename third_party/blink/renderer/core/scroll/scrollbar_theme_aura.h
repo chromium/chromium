@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLLBAR_THEME_AURA_H_
 
 #include "base/gtest_prod_util.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 
 namespace blink {
@@ -45,17 +46,21 @@ class CORE_EXPORT ScrollbarThemeAura : public ScrollbarTheme {
   bool NativeThemeHasButtons() override { return true; }
   bool HasThumb(const Scrollbar&) override;
 
-  IntRect BackButtonRect(const Scrollbar&) override;
-  IntRect ForwardButtonRect(const Scrollbar&) override;
-  IntRect TrackRect(const Scrollbar&) override;
+  gfx::Rect BackButtonRect(const Scrollbar&) override;
+  gfx::Rect ForwardButtonRect(const Scrollbar&) override;
+  gfx::Rect TrackRect(const Scrollbar&) override;
   int MinimumThumbLength(const Scrollbar&) override;
 
-  void PaintTrack(GraphicsContext&, const Scrollbar&, const IntRect&) override;
+  void PaintTrack(GraphicsContext&,
+                  const Scrollbar&,
+                  const gfx::Rect&) override;
   void PaintButton(GraphicsContext&,
                    const Scrollbar&,
-                   const IntRect&,
+                   const gfx::Rect&,
                    ScrollbarPart) override;
-  void PaintThumb(GraphicsContext&, const Scrollbar&, const IntRect&) override;
+  void PaintThumb(GraphicsContext&,
+                  const Scrollbar&,
+                  const gfx::Rect&) override;
 
   bool ShouldRepaintAllPartsOnInvalidation() const override;
   ScrollbarPart PartsToInvalidateOnThumbPositionChange(
@@ -71,6 +76,7 @@ class CORE_EXPORT ScrollbarThemeAura : public ScrollbarTheme {
   bool SupportsDragSnapBack() const override;
   bool ShouldSnapBackToDragOrigin(const Scrollbar&,
                                   const WebMouseEvent&) override;
+  virtual gfx::Size ButtonSize(const Scrollbar&) const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ScrollbarThemeAuraTest, ButtonSizeHorizontal);
@@ -78,7 +84,6 @@ class CORE_EXPORT ScrollbarThemeAura : public ScrollbarTheme {
   FRIEND_TEST_ALL_PREFIXES(ScrollbarThemeAuraTest, NoButtonsReturnsSize0);
 
   virtual bool HasScrollbarButtons(ScrollbarOrientation) const;
-  IntSize ButtonSize(const Scrollbar&);
 };
 
 }  // namespace blink

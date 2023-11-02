@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -201,8 +201,30 @@ void SnapshotManager::CreateManagedSnapshot(
     std::move(callback).Run(base::FilePath());
     return;
   }
+
   storage::FileSystemURL filesystem_url =
       context->CrackURLInFirstPartyContext(url);
+
+  ComputeSpaceNeedToBeFreed(
+      profile_, context, filesystem_url,
+      base::BindOnce(&SnapshotManager::CreateManagedSnapshotAfterSpaceComputed,
+                     weak_ptr_factory_.GetWeakPtr(), filesystem_url,
+                     std::move(callback)));
+}
+
+void SnapshotManager::CreateManagedSnapshot(
+    const storage::FileSystemURL& filesystem_url,
+    LocalPathCallback callback) {
+  scoped_refptr<storage::FileSystemContext> context(
+      util::GetFileManagerFileSystemContext(profile_));
+  DCHECK(context.get());
+
+  storage::ExternalFileSystemBackend* const backend =
+      context->external_backend();
+  if (!backend || !backend->CanHandleType(filesystem_url.type())) {
+    std::move(callback).Run(base::FilePath());
+    return;
+  }
 
   ComputeSpaceNeedToBeFreed(
       profile_, context, filesystem_url,

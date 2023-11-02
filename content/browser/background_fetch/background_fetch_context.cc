@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/observer_list.h"
 #include "content/browser/background_fetch/background_fetch_data_manager.h"
 #include "content/browser/background_fetch/background_fetch_job_controller.h"
 #include "content/browser/background_fetch/background_fetch_metrics.h"
@@ -145,6 +146,7 @@ void BackgroundFetchContext::StartFetch(
     blink::mojom::BackgroundFetchOptionsPtr options,
     const SkBitmap& icon,
     blink::mojom::BackgroundFetchUkmDataPtr ukm_data,
+    RenderProcessHost* rph,
     RenderFrameHostImpl* rfh,
     const net::IsolationInfo& isolation_info,
     blink::mojom::BackgroundFetchService::FetchCallback callback) {
@@ -159,7 +161,7 @@ void BackgroundFetchContext::StartFetch(
 
   auto rfh_id = rfh ? rfh->GetGlobalId() : GlobalRenderFrameHostId();
   delegate_proxy_.GetPermissionForOrigin(
-      registration_id.storage_key().origin(), rfh,
+      registration_id.storage_key().origin(), rph, rfh,
       base::BindOnce(&BackgroundFetchContext::DidGetPermission,
                      weak_factory_.GetWeakPtr(), registration_id,
                      std::move(requests), std::move(options), icon,

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -87,9 +87,9 @@ class ChromeNativeAppWindowViews
 
   std::unique_ptr<ShapeRects> shape_rects_;
 
-  bool has_frame_color_;
-  SkColor active_frame_color_;
-  SkColor inactive_frame_color_;
+  bool has_frame_color_ = false;
+  SkColor active_frame_color_ = SK_ColorBLACK;
+  SkColor inactive_frame_color_ = SK_ColorBLACK;
 
   // The class that registers for keyboard shortcuts for extension commands.
   std::unique_ptr<ExtensionKeybindingRegistryViews>

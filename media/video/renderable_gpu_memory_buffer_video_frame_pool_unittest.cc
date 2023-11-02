@@ -1,10 +1,12 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/video/renderable_gpu_memory_buffer_video_frame_pool.h"
 
 #include "base/memory/weak_ptr.h"
+#include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "media/base/video_frame.h"
 #include "media/video/fake_gpu_memory_buffer.h"
@@ -165,6 +167,105 @@ TEST(RenderableGpuMemoryBufferVideoFramePool, FrameFreedAfterPool) {
   EXPECT_CALL(*context, DestroySharedImage(_, _)).Times(2);
   task_environment.RunUntilIdle();
   EXPECT_FALSE(!!context);
+}
+
+TEST(RenderableGpuMemoryBufferVideoFramePool, CrossThread) {
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  const gfx::Size size0(128, 256);
+  const gfx::ColorSpace color_space0 = gfx::ColorSpace::CreateREC709();
+
+  // Create a pool on the main thread.
+  auto pool = RenderableGpuMemoryBufferVideoFramePool::Create(
+      std::make_unique<FakeContext>());
+
+  base::ThreadPool::CreateSequencedTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      // Create a frame on another thread.
+      base::BindLambdaForTesting(
+          [&]() { return pool->MaybeCreateVideoFrame(size0, color_space0); }),
+      // Destroy the video frame on the main thread.
+      base::BindLambdaForTesting(
+          [&](scoped_refptr<VideoFrame> video_frame0) {}));
+  task_environment.RunUntilIdle();
+
+  // Destroy the pool.
+  pool = nullptr;
+  task_environment.RunUntilIdle();
+}
+
+TEST(RenderableGpuMemoryBufferVideoFramePool,
+     VideoFramesDestroyedConcurrently) {
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  const gfx::BufferFormat format = gfx::BufferFormat::YUV_420_BIPLANAR;
+  const gfx::Size size0(128, 256);
+  const gfx::ColorSpace color_space0 = gfx::ColorSpace::CreateREC709();
+
+  // Create a pool and several frames on the main thread.
+  base::WeakPtr<FakeContext> context;
+  std::unique_ptr<RenderableGpuMemoryBufferVideoFramePool> pool;
+  {
+    auto context_strong = std::make_unique<FakeContext>();
+    context = context_strong->GetWeakPtr();
+    pool = RenderableGpuMemoryBufferVideoFramePool::Create(
+        std::move(context_strong));
+  }
+
+  std::vector<scoped_refptr<VideoFrame>> frames;
+  static constexpr int kNumFrames = 3;
+  for (int i = 0; i < kNumFrames; i++) {
+    EXPECT_CALL(*context, DoCreateGpuMemoryBuffer(size0, format));
+    EXPECT_CALL(*context,
+                DoCreateSharedImage(_, gfx::BufferPlane::Y, _, _, _, _));
+    EXPECT_CALL(*context,
+                DoCreateSharedImage(_, gfx::BufferPlane::UV, _, _, _, _));
+    frames.emplace_back(pool->MaybeCreateVideoFrame(size0, color_space0));
+  }
+  task_environment.RunUntilIdle();
+
+  // Expect all frames to be destroyed eventually.
+  EXPECT_CALL(*context, DestroySharedImage(_, _)).Times(kNumFrames * 2);
+
+  // Destroy frames on separate threads. TSAN will tell us if there's a problem.
+  for (int i = 0; i < kNumFrames; i++) {
+    base::ThreadPool::CreateSequencedTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce([](scoped_refptr<VideoFrame> video_frame0) {},
+                                  std::move(frames[i])));
+  }
+
+  pool.reset();
+  task_environment.RunUntilIdle();
+  EXPECT_FALSE(!!context);
+}
+
+TEST(RenderableGpuMemoryBufferVideoFramePool, ConcurrentCreateDestroy) {
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  const gfx::Size size0(128, 256);
+  const gfx::ColorSpace color_space0 = gfx::ColorSpace::CreateREC709();
+
+  // Create a pool on the main thread.
+  auto pool = RenderableGpuMemoryBufferVideoFramePool::Create(
+      std::make_unique<FakeContext>());
+
+  // Create a frame on the main thread.
+  auto video_frame0 = pool->MaybeCreateVideoFrame(size0, color_space0);
+  task_environment.RunUntilIdle();
+
+  // Destroy the frame on another thread. TSAN will tell us if there's a
+  // problem.
+  base::ThreadPool::CreateSequencedTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce([](scoped_refptr<VideoFrame> video_frame0) {},
+                                std::move(video_frame0)));
+
+  // Create another frame on the main thread.
+  auto video_frame1 = pool->MaybeCreateVideoFrame(size0, color_space0);
+  task_environment.RunUntilIdle();
+
+  video_frame1 = nullptr;
+  pool.reset();
+  task_environment.RunUntilIdle();
 }
 
 TEST(RenderableGpuMemoryBufferVideoFramePool, RespectSizeAndColorSpace) {

@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_BACKGROUND_FETCH_BACKGROUND_FETCH_TEST_DATA_MANAGER_H_
 #define CONTENT_BROWSER_BACKGROUND_FETCH_BACKGROUND_FETCH_TEST_DATA_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/background_fetch/background_fetch_data_manager.h"
@@ -48,7 +49,7 @@ class BackgroundFetchTestDataManager : public BackgroundFetchDataManager {
   friend class BackgroundFetchDataManagerTest;
 
   scoped_refptr<storage::MockQuotaManager> mock_quota_manager_;
-  BrowserContext* browser_context_;
+  raw_ptr<BrowserContext> browser_context_;
   base::WeakPtr<StoragePartition> storage_partition_;
   scoped_refptr<ChromeBlobStorageContext> blob_storage_context_;
 };

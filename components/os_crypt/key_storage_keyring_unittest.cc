@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/test/test_simple_task_runner.h"
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "components/os_crypt/keyring_util_linux.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -130,7 +131,8 @@ class GnomeKeyringTest : public testing::Test {
 };
 
 GnomeKeyringTest::GnomeKeyringTest()
-    : task_runner_(new base::TestSimpleTaskRunner()), keyring_(task_runner_, "chromium") {
+    : task_runner_(new base::TestSimpleTaskRunner()),
+      keyring_(task_runner_, kApplicationName) {
   MockGnomeKeyringLoader::ResetForOSCrypt();
 }
 

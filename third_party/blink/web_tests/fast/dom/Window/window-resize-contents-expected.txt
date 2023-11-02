@@ -1,6 +1,0 @@
-CONSOLE MESSAGE: Initial reference node dimensions 800 x 600
-CONSOLE MESSAGE: Increasing window size by 10 x 10
-CONSOLE MESSAGE: Post-resize reference node dimensions 810 x 610
-This test checks that the yellow reference DOM node (which should be as big as the window) gets resized when the window is resized.
-
-To avoid relayouts and repaints caused by DOM-based logging, it doesn't output anything. Please check the console for confirmation that the node dimensions increase by 10x10.

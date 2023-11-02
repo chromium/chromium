@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 
 #include "base/atomicops.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
@@ -136,8 +136,8 @@ class NET_EXPORT NetLog {
     friend class NetLog;
 
     // Both of these values are only modified by the NetLog.
-    NetLogCaptureMode capture_mode_;
-    NetLog* net_log_;
+    NetLogCaptureMode capture_mode_ = NetLogCaptureMode::kDefault;
+    raw_ptr<NetLog> net_log_ = nullptr;
   };
 
   // An observer that is notified of changes in the capture mode set, and has
@@ -173,7 +173,7 @@ class NET_EXPORT NetLog {
     friend class NetLog;
 
     // This value is only modified by the NetLog.
-    NetLog* net_log_ = nullptr;
+    raw_ptr<NetLog> net_log_ = nullptr;
   };
 
   // Returns the singleton NetLog object, which is never destructed and which
@@ -333,9 +333,6 @@ class NET_EXPORT NetLog {
   // Same as above but takes a base::Time. Should not be used if precise
   // timestamps are desired, but is suitable for e.g. expiration times.
   static std::string TimeToString(const base::Time& time);
-
-  // Returns a C-String symbolic name for |event_type|.
-  static const char* EventTypeToString(NetLogEventType event_type);
 
   // Returns a dictionary that maps event type symbolic names to their enum
   // values.

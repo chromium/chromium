@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,6 +52,12 @@ class TestMetricsRenderFrameObserver : public MetricsRenderFrameObserver,
     fake_timing_ = timing.Clone();
   }
 
+  void ExpectMainFrameIntersectionRect(
+      const gfx::Rect& main_frame_intersection_rect) {
+    validator_.UpdateExpectedMainFrameIntersectionRect(
+        main_frame_intersection_rect);
+  }
+
   Timing GetTiming() const override {
     EXPECT_NE(nullptr, fake_timing_.get());
     return Timing(std::move(fake_timing_),
@@ -96,6 +102,26 @@ TEST_F(MetricsRenderFrameObserverTest, SingleMetric) {
   observer.ExpectPageLoadTiming(timing);
 
   observer.DidChangePerformanceTiming();
+  observer.GetMockTimer()->Fire();
+}
+
+TEST_F(MetricsRenderFrameObserverTest,
+       MainFrameIntersectionUpdateBeforeMetricsSenderCreated) {
+  base::Time nav_start = base::Time::FromDoubleT(10);
+
+  TestMetricsRenderFrameObserver observer;
+  observer.OnMainFrameIntersectionChanged(gfx::Rect(1, 2, 3, 4));
+
+  mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+  timing.navigation_start = nav_start;
+  observer.ExpectPageLoadTiming(timing);
+  observer.DidStartNavigation(GURL(), absl::nullopt);
+  observer.ReadyToCommitNavigation(nullptr);
+  observer.DidCommitProvisionalLoad(ui::PAGE_TRANSITION_LINK);
+
+  observer.ExpectMainFrameIntersectionRect(gfx::Rect(1, 2, 3, 4));
+
   observer.GetMockTimer()->Fire();
 }
 

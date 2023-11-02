@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@ import {BookmarksCommandManagerElement, Command, createBookmark, DialogFocusMana
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {flushTasks} from 'chrome://webui-test/test_util.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestCommandManager} from './test_command_manager.js';
 import {TestStore} from './test_store.js';
@@ -264,12 +264,12 @@ suite('<bookmarks-command-manager>', function() {
     assertDeepEquals(['11', '12'], lastDelete);
   });
 
-  test('expandUrls_ expands one level of URLs', function() {
-    let urls = commandManager.expandUrls_(new Set(['1']));
-    assertDeepEquals(['http://13/'], urls);
+  test('expandIds_ expands one level of IDs', function() {
+    let ids = commandManager.expandIds_(new Set(['1']));
+    assertDeepEquals(['13'], ids);
 
-    urls = commandManager.expandUrls_(new Set(['11', '12', '13']));
-    assertDeepEquals(['http://111/', 'http://121/', 'http://13/'], urls);
+    ids = commandManager.expandIds_(new Set(['11', '12', '13']));
+    assertDeepEquals(['111', '121', '13'], ids);
   });
 
   test('shift-enter opens URLs in new window', function() {

@@ -1,4 +1,4 @@
-// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -90,12 +90,13 @@ void PEMTokenizer::Init(const StringPiece& str,
 
   // Construct PEM header/footer strings for all the accepted types, to
   // reduce parsing later.
-  for (auto it = allowed_block_types.begin(); it != allowed_block_types.end();
-       ++it) {
+  for (const auto& allowed_block_type : allowed_block_types) {
     PEMType allowed_type;
-    allowed_type.type = *it;
-    allowed_type.header = base::StringPrintf(kPEMBeginBlock, it->c_str());
-    allowed_type.footer = base::StringPrintf(kPEMEndBlock, it->c_str());
+    allowed_type.type = allowed_block_type;
+    allowed_type.header =
+        base::StringPrintf(kPEMBeginBlock, allowed_block_type.c_str());
+    allowed_type.footer =
+        base::StringPrintf(kPEMEndBlock, allowed_block_type.c_str());
     block_types_.push_back(allowed_type);
   }
 }

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,13 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -41,23 +44,22 @@ class SafeBrowsingMetricsCollectorTest : public ::testing::Test {
                            time.ToDeltaSinceWindowsEpoch().InSeconds());
   }
 
-  const base::Value* GetTsFromUserStateAndEventType(UserState state,
-                                                    EventType event_type) {
-    const base::DictionaryValue* state_dict =
-        pref_service_.GetDictionary(prefs::kSafeBrowsingEventTimestamps);
-    const base::Value* event_dict =
-        state_dict->FindDictKey(base::NumberToString(static_cast<int>(state)));
+  const base::Value::List& GetTsFromUserStateAndEventType(
+      UserState state,
+      EventType event_type) {
+    const base::Value::Dict& state_dict =
+        pref_service_.GetDict(prefs::kSafeBrowsingEventTimestamps);
+    const base::Value::Dict* event_dict =
+        state_dict.FindDict(base::NumberToString(static_cast<int>(state)));
     DCHECK(event_dict);
-    DCHECK(event_dict->is_dict());
-    const base::Value* timestamps = event_dict->FindListKey(
+    const base::Value::List* timestamps = event_dict->FindList(
         base::NumberToString(static_cast<int>(event_type)));
     DCHECK(timestamps);
-    DCHECK(timestamps->is_list());
-    return timestamps;
+    return *timestamps;
   }
 
-  bool IsSortedInChronologicalOrder(const base::Value* ts) {
-    return std::is_sorted(ts->GetList().begin(), ts->GetList().end(),
+  bool IsSortedInChronologicalOrder(const base::Value::List& ts) {
+    return std::is_sorted(ts.begin(), ts.end(),
                           [](const base::Value& ts_a, const base::Value& ts_b) {
                             return base::ValueToInt64(ts_a).value_or(0) <
                                    base::ValueToInt64(ts_b).value_or(0);
@@ -87,6 +89,8 @@ class SafeBrowsingMetricsCollectorTest : public ::testing::Test {
         prefs::kSafeBrowsingScoutReportingEnabled, false);
     pref_service_.registry()->RegisterDictionaryPref(
         prefs::kSafeBrowsingEventTimestamps);
+    pref_service_.registry()->RegisterBooleanPref(
+        prefs::kEnhancedProtectionEnabledViaTailoredSecurity, false);
   }
 };
 
@@ -195,6 +199,8 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
 
 TEST_F(SafeBrowsingMetricsCollectorTest,
        AddSafeBrowsingEventToPref_OldestTsRemoved) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnhancedProtection);
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
   metrics_collector_->AddSafeBrowsingEventToPref(
       EventType::DATABASE_INTERSTITIAL_BYPASS);
@@ -205,25 +211,27 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
         EventType::DATABASE_INTERSTITIAL_BYPASS);
   }
 
-  const base::Value* timestamps = GetTsFromUserStateAndEventType(
+  const base::Value::List& timestamps = GetTsFromUserStateAndEventType(
       UserState::kEnhancedProtection, EventType::DATABASE_INTERSTITIAL_BYPASS);
-  EXPECT_EQ(30u, timestamps->GetList().size());
+  EXPECT_EQ(30u, timestamps.size());
   EXPECT_TRUE(IsSortedInChronologicalOrder(timestamps));
 
   task_environment_.FastForwardBy(base::Days(1));
   metrics_collector_->AddSafeBrowsingEventToPref(
       EventType::DATABASE_INTERSTITIAL_BYPASS);
 
-  EXPECT_EQ(30u, timestamps->GetList().size());
+  EXPECT_EQ(30u, timestamps.size());
   EXPECT_TRUE(IsSortedInChronologicalOrder(timestamps));
   // The oldest timestamp should be removed.
-  EXPECT_EQ(timestamps->GetList()[0], timestamps->GetList()[1]);
+  EXPECT_EQ(timestamps[0], timestamps[1]);
   // The newest timestamp should be added as the last element.
-  EXPECT_NE(timestamps->GetList()[28], timestamps->GetList()[29]);
+  EXPECT_NE(timestamps[28], timestamps[29]);
 }
 
 TEST_F(SafeBrowsingMetricsCollectorTest,
        AddSafeBrowsingEventToPref_SafeBrowsingManaged) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnhancedProtection);
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
   metrics_collector_->AddSafeBrowsingEventToPref(
       EventType::DATABASE_INTERSTITIAL_BYPASS);
@@ -234,17 +242,19 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   metrics_collector_->AddSafeBrowsingEventToPref(
       EventType::DATABASE_INTERSTITIAL_BYPASS);
 
-  const base::Value* enhanced_timestamps = GetTsFromUserStateAndEventType(
+  const base::Value::List& enhanced_timestamps = GetTsFromUserStateAndEventType(
       UserState::kEnhancedProtection, EventType::DATABASE_INTERSTITIAL_BYPASS);
-  EXPECT_EQ(1u, enhanced_timestamps->GetList().size());
-  const base::Value* managed_timestamps = GetTsFromUserStateAndEventType(
+  EXPECT_EQ(1u, enhanced_timestamps.size());
+  const base::Value::List& managed_timestamps = GetTsFromUserStateAndEventType(
       UserState::kManaged, EventType::DATABASE_INTERSTITIAL_BYPASS);
-  EXPECT_EQ(2u, managed_timestamps->GetList().size());
+  EXPECT_EQ(2u, managed_timestamps.size());
 }
 
 TEST_F(SafeBrowsingMetricsCollectorTest,
        LogEnhancedProtectionDisabledMetrics_GetLastBypassEventType) {
   base::HistogramTester histograms;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnhancedProtection);
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
 
   FastForwardAndAddEvent(base::Hours(1),
@@ -328,6 +338,8 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
 TEST_F(SafeBrowsingMetricsCollectorTest,
        LogEnhancedProtectionDisabledMetrics_GetLastSecuritySensitiveEventType) {
   base::HistogramTester histograms;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnhancedProtection);
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
 
   FastForwardAndAddEvent(
@@ -427,6 +439,126 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
 }
 
 TEST_F(SafeBrowsingMetricsCollectorTest,
+       LogEnhancedProtectionDisabledMetrics_TimesDisabledLast28Days_Suffixes) {
+  base::HistogramTester histograms;
+
+  auto validate_total_counts =
+      [](base::HistogramTester* histogram_tester, int never_enabled_count,
+         int short_enabled_count, int medium_enabled_count,
+         int long_enabled_count) {
+        histogram_tester->ExpectTotalCount(
+            "SafeBrowsing.EsbDisabled.TimesDisabledLast28Days.NeverEnabled",
+            never_enabled_count);
+        histogram_tester->ExpectTotalCount(
+            "SafeBrowsing.EsbDisabled.TimesDisabledLast28Days.ShortEnabled",
+            short_enabled_count);
+        histogram_tester->ExpectTotalCount(
+            "SafeBrowsing.EsbDisabled.TimesDisabledLast28Days.MediumEnabled",
+            medium_enabled_count);
+        histogram_tester->ExpectTotalCount(
+            "SafeBrowsing.EsbDisabled.TimesDisabledLast28Days.LongEnabled",
+            long_enabled_count);
+      };
+
+  pref_service_.SetManagedPref(prefs::kSafeBrowsingEnabled,
+                               std::make_unique<base::Value>(true));
+  pref_service_.RemoveManagedPref(prefs::kSafeBrowsingEnabled);
+  validate_total_counts(&histograms, 0, 0, 0, 0);
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
+  validate_total_counts(&histograms, 1, 0, 0, 0);
+
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+  validate_total_counts(&histograms, 1, 0, 0, 0);
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
+  validate_total_counts(&histograms, 1, 1, 0, 0);
+
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+  task_environment_.FastForwardBy(base::Minutes(59));
+  validate_total_counts(&histograms, 1, 1, 0, 0);
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
+  validate_total_counts(&histograms, 1, 2, 0, 0);
+
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+  task_environment_.FastForwardBy(base::Hours(1));
+  validate_total_counts(&histograms, 1, 2, 0, 0);
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
+  validate_total_counts(&histograms, 1, 2, 1, 0);
+
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+  task_environment_.FastForwardBy(base::Hours(23));
+  validate_total_counts(&histograms, 1, 2, 1, 0);
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
+  validate_total_counts(&histograms, 1, 2, 2, 0);
+
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+  task_environment_.FastForwardBy(base::Days(1));
+  validate_total_counts(&histograms, 1, 2, 2, 0);
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
+  validate_total_counts(&histograms, 1, 2, 2, 1);
+
+  EXPECT_THAT(
+      histograms.GetAllSamples(
+          "SafeBrowsing.EsbDisabled.TimesDisabledLast28Days.NeverEnabled"),
+      testing::ElementsAre(base::Bucket(1, 1)));
+  EXPECT_THAT(
+      histograms.GetAllSamples(
+          "SafeBrowsing.EsbDisabled.TimesDisabledLast28Days.ShortEnabled"),
+      testing::ElementsAre(base::Bucket(2, 1), base::Bucket(3, 1)));
+  EXPECT_THAT(
+      histograms.GetAllSamples(
+          "SafeBrowsing.EsbDisabled.TimesDisabledLast28Days.MediumEnabled"),
+      testing::ElementsAre(base::Bucket(4, 1), base::Bucket(5, 1)));
+  EXPECT_THAT(
+      histograms.GetAllSamples(
+          "SafeBrowsing.EsbDisabled.TimesDisabledLast28Days.LongEnabled"),
+      testing::ElementsAre(base::Bucket(6, 1)));
+}
+
+TEST_F(SafeBrowsingMetricsCollectorTest,
+       LogEnhancedProtectionDisabledMetrics_TimesDisabledLast28Days_Resets) {
+  base::HistogramTester histograms;
+
+  for (int i = 0; i < 3; i++) {
+    SetSafeBrowsingState(&pref_service_,
+                         SafeBrowsingState::ENHANCED_PROTECTION);
+    SetSafeBrowsingState(&pref_service_,
+                         SafeBrowsingState::STANDARD_PROTECTION);
+  }
+  task_environment_.FastForwardBy(base::Days(27));
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
+  EXPECT_THAT(
+      histograms.GetAllSamples(
+          "SafeBrowsing.EsbDisabled.TimesDisabledLast28Days.ShortEnabled"),
+      testing::ElementsAre(base::Bucket(1, 1), base::Bucket(2, 1),
+                           base::Bucket(3, 1), base::Bucket(4, 1)));
+
+  // When we increase one more day, the first 3 disables get out of the range
+  // of the past 28 days, so now we log that there have only been 2 disables
+  // (the one yesterday and the one we're doing now)
+  task_environment_.FastForwardBy(base::Days(1));
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
+  EXPECT_THAT(
+      histograms.GetAllSamples(
+          "SafeBrowsing.EsbDisabled.TimesDisabledLast28Days.ShortEnabled"),
+      testing::ElementsAre(base::Bucket(1, 1), base::Bucket(2, 2),
+                           base::Bucket(3, 1), base::Bucket(4, 1)));
+
+  // Increasing by 28 days removes all past disables from the range, so now we
+  // log that there has only been 1 disable in the past 28 days (the one we're
+  // doing that is causing this log)
+  task_environment_.FastForwardBy(base::Days(28));
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
+  EXPECT_THAT(
+      histograms.GetAllSamples(
+          "SafeBrowsing.EsbDisabled.TimesDisabledLast28Days.ShortEnabled"),
+      testing::ElementsAre(base::Bucket(1, 2), base::Bucket(2, 2),
+                           base::Bucket(3, 1), base::Bucket(4, 1)));
+}
+
+TEST_F(SafeBrowsingMetricsCollectorTest,
        LogEnhancedProtectionDisabledMetrics_NotLoggedIfNoEvent) {
   base::HistogramTester histograms;
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
@@ -438,6 +570,8 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
 TEST_F(SafeBrowsingMetricsCollectorTest,
        LogEnhancedProtectionDisabledMetrics_NotLoggedIfHitQuotaLimit) {
   base::HistogramTester histograms;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnhancedProtection);
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
 
   FastForwardAndAddEvent(base::Hours(1),
@@ -491,6 +625,8 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
 TEST_F(SafeBrowsingMetricsCollectorTest, LogDailyEventMetrics_LoggedDaily) {
   base::HistogramTester histograms;
   SetSafeBrowsingMetricsLastLogTime(base::Time::Now());
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnhancedProtection);
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
   metrics_collector_->StartLogging();
   FastForwardAndAddEvent(base::Hours(1),
@@ -577,6 +713,8 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
        LogDailyEventMetrics_DoesNotCountOldEvent) {
   base::HistogramTester histograms;
   SetSafeBrowsingMetricsLastLogTime(base::Time::Now());
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnhancedProtection);
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
   metrics_collector_->StartLogging();
   FastForwardAndAddEvent(base::Hours(1),
@@ -619,6 +757,8 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
        LogDailyEventMetrics_SwitchBetweenDifferentUserState) {
   base::HistogramTester histograms;
   SetSafeBrowsingMetricsLastLogTime(base::Time::Now());
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnhancedProtection);
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
   metrics_collector_->StartLogging();
   FastForwardAndAddEvent(base::Hours(1),
@@ -654,18 +794,18 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   FastForwardAndAddEvent(base::Days(1), EventType::CSD_INTERSTITIAL_BYPASS);
 
   task_environment_.FastForwardBy(base::Days(30));
-  const base::Value* db_timestamps = GetTsFromUserStateAndEventType(
+  const base::Value::List& db_timestamps = GetTsFromUserStateAndEventType(
       UserState::kStandardProtection, EventType::DATABASE_INTERSTITIAL_BYPASS);
   // The event is removed from pref because it was logged more than 30 days.
-  EXPECT_EQ(0u, db_timestamps->GetList().size());
-  const base::Value* csd_timestamps = GetTsFromUserStateAndEventType(
+  EXPECT_EQ(0u, db_timestamps.size());
+  const base::Value::List& csd_timestamps = GetTsFromUserStateAndEventType(
       UserState::kStandardProtection, EventType::CSD_INTERSTITIAL_BYPASS);
   // The CSD event is still in pref because it was logged less than 30 days.
-  EXPECT_EQ(1u, csd_timestamps->GetList().size());
+  EXPECT_EQ(1u, csd_timestamps.size());
 
   task_environment_.FastForwardBy(base::Days(1));
   // The CSD event is also removed because it was logged more than 30 days now.
-  EXPECT_EQ(0u, csd_timestamps->GetList().size());
+  EXPECT_EQ(0u, csd_timestamps.size());
 
   histograms.ExpectUniqueSample("SafeBrowsing.MetricsCollector.IsPrefValid",
                                 /* sample */ 1,
@@ -673,6 +813,8 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
 }
 
 TEST_F(SafeBrowsingMetricsCollectorTest, GetUserState) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnhancedProtection);
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
   EXPECT_EQ(UserState::kEnhancedProtection, metrics_collector_->GetUserState());
 

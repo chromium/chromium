@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,26 +9,27 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/build_config.h"
 #include "chromecast/base/bitstream_audio_codecs.h"
 #include "chromecast/base/cast_features.h"
 #include "chromecast/base/chromecast_switches.h"
+#include "chromecast/common/cors_exempt_headers.h"
 #include "chromecast/crash/app_state_tracker.h"
 #include "chromecast/media/base/media_codec_support.h"
 #include "chromecast/media/base/supported_codec_profile_levels_memo.h"
 #include "chromecast/public/media/media_capabilities_shlib.h"
 #include "chromecast/renderer/cast_url_loader_throttle_provider.h"
 #include "chromecast/renderer/cast_websocket_handshake_throttle_provider.h"
-#include "chromecast/renderer/identification_settings_manager_renderer.h"
-#include "chromecast/renderer/js_channel_bindings.h"
 #include "chromecast/renderer/media/key_systems_cast.h"
 #include "chromecast/renderer/media/media_caps_observer_impl.h"
+#include "chromecast/renderer/url_rewrite_rules_provider.h"
 #include "components/media_control/renderer/media_playback_options.h"
 #include "components/network_hints/renderer/web_prescient_networking_impl.h"
 #include "components/on_load_script_injector/renderer/on_load_script_injector.h"
+#include "components/url_rewrite/common/url_request_rewrite_rules.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
-#include "content/public/renderer/render_view.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media.h"
 #include "media/remoting/receiver_controller.h"
@@ -45,23 +46,13 @@
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/bundle_utils.h"
 #include "chromecast/media/audio/cast_audio_device_factory.h"
 #include "media/base/android/media_codec_util.h"
 #else
 #include "chromecast/renderer/memory_pressure_observer_impl.h"
-#endif  // OS_ANDROID
-
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-#include "chromecast/common/cast_extensions_client.h"
-#include "chromecast/renderer/cast_extensions_renderer_client.h"
-#include "components/guest_view/renderer/guest_view_container_dispatcher.h"
-#include "content/public/common/content_constants.h"
-#include "extensions/common/common_manifest_handlers.h"  // nogncheck
-#include "extensions/common/extension_urls.h"            // nogncheck
-#include "extensions/renderer/dispatcher.h"              // nogncheck
-#include "extensions/renderer/extension_frame_helper.h"  // nogncheck
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace chromecast {
 namespace shell {
@@ -71,12 +62,16 @@ bool IsSupportedBitstreamAudioCodecHelper(::media::AudioCodec codec, int mask) {
           (kBitstreamAudioCodecAc3 & mask)) ||
          (codec == ::media::AudioCodec::kEAC3 &&
           (kBitstreamAudioCodecEac3 & mask)) ||
+         (codec == ::media::AudioCodec::kDTS &&
+          (kBitstreamAudioCodecDts & mask)) ||
+         (codec == ::media::AudioCodec::kDTSXP2 &&
+          (kBitstreamAudioCodecDtsXP2 & mask)) ||
          (codec == ::media::AudioCodec::kMpegHAudio &&
           (kBitstreamAudioCodecMpegHAudio & mask));
 }
 }  // namespace
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Audio renderer algorithm maximum capacity. 5s buffer is already large enough,
 // we don't need a larger capacity. Otherwise audio renderer will double the
 // buffer size when underrun happens, which will cause the playback paused to
@@ -87,26 +82,18 @@ constexpr base::TimeDelta kAudioRendererMaxCapacity = base::Seconds(5);
 constexpr base::TimeDelta kAudioRendererStartingCapacity = base::Seconds(5);
 constexpr base::TimeDelta kAudioRendererStartingCapacityEncrypted =
     base::Seconds(5);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 CastContentRendererClient::CastContentRendererClient()
     : supported_profiles_(
           std::make_unique<media::SupportedCodecProfileLevelsMemo>()),
       activity_url_filter_manager_(
           std::make_unique<CastActivityUrlFilterManager>()) {
-#if defined(OS_ANDROID)
-  DCHECK(::media::MediaCodecUtil::IsMediaCodecAvailable())
-      << "MediaCodec is not available!";
-  // Platform decoder support must be enabled before we set the
-  // IsCodecSupportedCB because the latter instantiates the lazy MimeUtil
-  // instance, which caches the platform decoder supported state when it is
-  // constructed.
-  ::media::EnablePlatformDecoderSupport();
-
+#if BUILDFLAG(IS_ANDROID)
   // Registers a custom content::AudioDeviceFactory
   cast_audio_device_factory_ =
       std::make_unique<media::CastAudioDeviceFactory>();
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 CastContentRendererClient::~CastContentRendererClient() = default;
@@ -121,7 +108,7 @@ void CastContentRendererClient::RenderThreadStarted() {
       new media::MediaCapsObserverImpl(&proxy, supported_profiles_.get()));
   media_caps->AddObserver(std::move(proxy));
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Register to observe memory pressure changes
   mojo::Remote<chromecast::mojom::MemoryPressureController>
       memory_pressure_controller;
@@ -145,27 +132,6 @@ void CastContentRendererClient::RenderThreadStarted() {
       command_line->GetSwitchValueNative(switches::kPreviousApp);
   if (!previous_app.empty())
     AppStateTracker::SetPreviousApp(previous_app);
-
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-  extensions_client_ = std::make_unique<extensions::CastExtensionsClient>();
-  extensions::ExtensionsClient::Set(extensions_client_.get());
-
-  extensions_renderer_client_ =
-      std::make_unique<extensions::CastExtensionsRendererClient>();
-  extensions::ExtensionsRendererClient::Set(extensions_renderer_client_.get());
-
-  thread->AddObserver(extensions_renderer_client_->GetDispatcher());
-
-  guest_view_container_dispatcher_ =
-      std::make_unique<guest_view::GuestViewContainerDispatcher>();
-  thread->AddObserver(guest_view_container_dispatcher_.get());
-#endif
-}
-
-void CastContentRendererClient::WebViewCreated(blink::WebView* webview) {
-  // Disable application cache as Chromecast doesn't support off-line
-  // application running.
-  webview->GetSettings()->SetOfflineWebApplicationCacheEnabled(false);
 }
 
 void CastContentRendererClient::RenderFrameCreated(
@@ -174,10 +140,6 @@ void CastContentRendererClient::RenderFrameCreated(
 
   // Lifetime is tied to |render_frame| via content::RenderFrameObserver.
   if (render_frame->IsMainFrame()) {
-    if (main_frame_feature_manager_on_associated_interface_) {
-      LOG(DFATAL) << "main_frame_feature_manager_on_associated_interface_ gets "
-                     "overwritten.";
-    }
     main_frame_feature_manager_on_associated_interface_ =
         new FeatureManagerOnAssociatedInterface(render_frame);
   } else {
@@ -197,61 +159,37 @@ void CastContentRendererClient::RenderFrameCreated(
         app_media_capabilities_observer_receiver_.BindNewPipeAndPassRemote());
   }
 
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-  extensions::Dispatcher* dispatcher =
-      extensions_renderer_client_->GetDispatcher();
-  // ExtensionFrameHelper destroys itself when the RenderFrame is destroyed.
-  new extensions::ExtensionFrameHelper(render_frame, dispatcher);
-
-  dispatcher->OnRenderFrameCreated(render_frame);
-#endif
-
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(USE_OZONE)
-  // JsChannelBindings destroys itself when the RenderFrame is destroyed.
-  JsChannelBindings::Create(render_frame);
-#endif
-
   activity_url_filter_manager_->OnRenderFrameCreated(render_frame);
 
   // |base::Unretained| is safe here since the callback is triggered before the
-  // destruction of IdentificationSettingsManager by which point
+  // destruction of UrlRewriteRulesProvider by which point
   // CastContentRendererClient should be alive.
-  settings_managers_.emplace(
+  url_rewrite_rules_providers_.emplace(
       render_frame->GetRoutingID(),
-      base::MakeRefCounted<IdentificationSettingsManagerRenderer>(
+      std::make_unique<UrlRewriteRulesProvider>(
           render_frame,
           base::BindOnce(&CastContentRendererClient::OnRenderFrameRemoved,
-                         base::Unretained(this),
-                         render_frame->GetRoutingID())));
+                         base::Unretained(this))));
 }
 
 void CastContentRendererClient::RunScriptsAtDocumentStart(
-    content::RenderFrame* render_frame) {
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-  extensions_renderer_client_->GetDispatcher()->RunScriptsAtDocumentStart(
-      render_frame);
-#endif
-}
+    content::RenderFrame* render_frame) {}
 
 void CastContentRendererClient::RunScriptsAtDocumentEnd(
-    content::RenderFrame* render_frame) {
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-  extensions_renderer_client_->GetDispatcher()->RunScriptsAtDocumentEnd(
-      render_frame);
-#endif
-}
+    content::RenderFrame* render_frame) {}
 
-void CastContentRendererClient::AddSupportedKeySystems(
-    std::vector<std::unique_ptr<::media::KeySystemProperties>>*
-        key_systems_properties) {
-  media::AddChromecastKeySystems(key_systems_properties,
+void CastContentRendererClient::GetSupportedKeySystems(
+    ::media::GetSupportedKeySystemsCB cb) {
+  ::media::KeySystemInfoVector key_systems;
+  media::AddChromecastKeySystems(&key_systems,
                                  false /* enable_persistent_license_support */,
                                  false /* enable_playready */);
+  std::move(cb).Run(std::move(key_systems));
 }
 
 bool CastContentRendererClient::IsSupportedAudioType(
     const ::media::AudioType& type) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (type.spatial_rendering)
     return false;
 
@@ -263,6 +201,14 @@ bool CastContentRendererClient::IsSupportedAudioType(
   }
   if (type.codec == ::media::AudioCodec::kAC3) {
     return kBitstreamAudioCodecAc3 &
+           supported_bitstream_audio_codecs_info_.codecs;
+  }
+  if (type.codec == ::media::AudioCodec::kDTS) {
+    return kBitstreamAudioCodecDts &
+           supported_bitstream_audio_codecs_info_.codecs;
+  }
+  if (type.codec == ::media::AudioCodec::kDTSXP2) {
+    return kBitstreamAudioCodecDtsXP2 &
            supported_bitstream_audio_codecs_info_.codecs;
   }
   if (type.codec == ::media::AudioCodec::kMpegHAudio) {
@@ -295,15 +241,15 @@ bool CastContentRendererClient::IsSupportedAudioType(
 
 bool CastContentRendererClient::IsSupportedVideoType(
     const ::media::VideoType& type) {
-// TODO(servolk): make use of eotf.
+  // TODO(servolk): make use of eotf.
 
   // TODO(1066567): Check attached screen for support of type.hdr_metadata_type.
-if (type.hdr_metadata_type != ::gfx::HdrMetadataType::kNone) {
-  NOTIMPLEMENTED() << "HdrMetadataType support signaling not implemented.";
-  return false;
-}
+  if (type.hdr_metadata_type != ::gfx::HdrMetadataType::kNone) {
+    NOTIMPLEMENTED() << "HdrMetadataType support signaling not implemented.";
+    return false;
+  }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return supported_profiles_->IsSupportedVideoConfig(
       media::ToCastVideoCodec(type.codec, type.profile),
       media::ToCastVideoProfile(type.profile), type.level);
@@ -398,14 +344,16 @@ std::unique_ptr<blink::URLLoaderThrottleProvider>
 CastContentRendererClient::CreateURLLoaderThrottleProvider(
     blink::URLLoaderThrottleProviderType type) {
   return std::make_unique<CastURLLoaderThrottleProvider>(
-      type, activity_url_filter_manager(), this);
+      type, activity_url_filter_manager(), this,
+      base::BindRepeating(&IsCorsExemptHeader));
 }
 
 absl::optional<::media::AudioRendererAlgorithmParameters>
 CastContentRendererClient::GetAudioRendererAlgorithmParameters(
     ::media::AudioParameters audio_parameters) {
-#if defined(OS_ANDROID)
-  if (base::FeatureList::IsEnabled(kEnableCastAudioOutputDevice)) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BundleUtils::IsBundle() ||
+      base::FeatureList::IsEnabled(kEnableCastAudioOutputDevice)) {
     return absl::nullopt;
   }
   ::media::AudioRendererAlgorithmParameters parameters;
@@ -419,21 +367,24 @@ CastContentRendererClient::GetAudioRendererAlgorithmParameters(
 #endif
 }
 
-scoped_refptr<IdentificationSettingsManager>
-CastContentRendererClient::GetSettingsManagerFromRenderFrameID(
-    int render_frame_id) {
-  const auto& it = settings_managers_.find(render_frame_id);
-  if (it == settings_managers_.end()) {
+scoped_refptr<url_rewrite::UrlRequestRewriteRules>
+CastContentRendererClient::GetUrlRequestRewriteRules(
+    int render_frame_id) const {
+  auto it = url_rewrite_rules_providers_.find(render_frame_id);
+  if (it == url_rewrite_rules_providers_.end()) {
+    LOG(WARNING)
+        << "Can't find the URL rewrite rules provider for render frame: "
+        << render_frame_id;
     return nullptr;
   }
-  return it->second;
+  return it->second->GetCachedRules();
 }
 
 void CastContentRendererClient::OnRenderFrameRemoved(int render_frame_id) {
-  size_t result = settings_managers_.erase(render_frame_id);
+  size_t result = url_rewrite_rules_providers_.erase(render_frame_id);
   if (result != 1U) {
     LOG(WARNING)
-        << "Can't find the identification settings manager for render frame: "
+        << "Can't find the URL rewrite rules provider for render frame: "
         << render_frame_id;
   }
 }

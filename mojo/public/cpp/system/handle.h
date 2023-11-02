@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,6 @@
 #include <limits>
 
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "mojo/public/c/system/functions.h"
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/system/handle_signals_state.h"
@@ -116,7 +114,7 @@ class ScopedHandleBase {
 
   void swap(ScopedHandleBase& other) { handle_.swap(other.handle_); }
 
-  HandleType release() WARN_UNUSED_RESULT {
+  [[nodiscard]] HandleType release() {
     HandleType rv;
     rv.swap(handle_);
     return rv;
@@ -176,8 +174,7 @@ class Handle {
 
   void Close() {
     DCHECK(is_valid());
-    MojoResult result = MojoClose(value_);
-    ALLOW_UNUSED_LOCAL(result);
+    [[maybe_unused]] MojoResult result = MojoClose(value_);
     DCHECK_EQ(MOJO_RESULT_OK, result);
   }
 

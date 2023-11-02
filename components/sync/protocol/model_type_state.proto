@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,4 +46,27 @@ message ModelTypeState {
 
   // Syncing account ID, representing the user.
   optional string authenticated_account_id = 6;
+
+  message Invalidation {
+    // Opaque field, which has to be provided as part of resulting GetUpdates
+    // back to the server.
+    optional bytes hint = 1;
+
+    // Version of invalidation, used to order incoming invalidations.
+    optional int64 version = 2;
+  }
+
+  // The latest unprocessed invalidations received from the server.
+  // All incoming invalidations are stored in this message and persist until
+  // they are used in GetUpdate() message.
+  repeated Invalidation invalidations = 7;
+
+  // This is relevant for the passwords datatype. This indicates that the
+  // initial sync flow (downling all passwords from the server) has been run at
+  // least once after the password notes features is enabled. It is used to
+  // enforce redownload of passwords upon upgrading the browser to a version
+  // that supports password notes if necessary. It is false by default and set
+  // to true upon downloading passwords to make sure this download is executed
+  // only once.
+  optional bool notes_enabled_before_initial_sync_for_passwords = 8;
 }

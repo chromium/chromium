@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/test/render_view_test.h"
 #include "content/renderer/render_frame_impl.h"
-#include "content/renderer/render_view_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/test/test_web_frame_content_dumper.h"
@@ -39,7 +38,7 @@ NSEvent* CmdDeadKeyEvent(NSEventType type, unsigned short code) {
 
   return [NSEvent keyEventWithType:type
                           location:NSZeroPoint
-                     modifierFlags:NSCommandKeyMask
+                     modifierFlags:NSEventModifierFlagCommand
                          timestamp:0.0
                       windowNumber:0
                            context:nil
@@ -77,24 +76,20 @@ TEST_F(RenderViewTest, MacTestCmdUp) {
   blink::web_pref::WebPreferences prefs;
   prefs.enable_scroll_animator = false;
 
-  RenderViewImpl* view = static_cast<RenderViewImpl*>(view_);
-  blink::WebFrameWidget* blink_widget = view->GetWebView()
-                                            ->MainFrame()
-                                            ->ToWebLocalFrame()
-                                            ->LocalRoot()
-                                            ->FrameWidget();
+  blink::WebFrameWidget* blink_widget =
+      web_view_->MainFrame()->ToWebLocalFrame()->LocalRoot()->FrameWidget();
 
-  view->GetWebView()->SetWebPreferences(prefs);
+  web_view_->SetWebPreferences(prefs);
 
   const int kMaxOutputCharacters = 1024;
   std::string output;
 
-  NSEvent* arrowDownKeyDown = CmdDeadKeyEvent(NSKeyDown, kVK_DownArrow);
-  NSEvent* arrowUpKeyDown = CmdDeadKeyEvent(NSKeyDown, kVK_UpArrow);
+  NSEvent* arrowDownKeyDown =
+      CmdDeadKeyEvent(NSEventTypeKeyDown, kVK_DownArrow);
+  NSEvent* arrowUpKeyDown = CmdDeadKeyEvent(NSEventTypeKeyDown, kVK_UpArrow);
 
   // First test when javascript does not eat keypresses -- should scroll.
-  RenderFrameImpl::FromWebFrame(
-      view->GetWebView()->MainFrame()->ToWebLocalFrame())
+  RenderFrameImpl::FromWebFrame(web_view_->MainFrame()->ToWebLocalFrame())
       ->set_send_content_state_immediately(true);
   LoadHTML(kRawHtml);
   render_thread_->sink().ClearMessages();
@@ -105,7 +100,7 @@ TEST_F(RenderViewTest, MacTestCmdUp) {
   SendNativeKeyEvent(NativeWebKeyboardEvent(arrowDownKeyDown));
   base::RunLoop().RunUntilIdle();
   ExecuteJavaScriptForTests("scroll.textContent = window.pageYOffset");
-  output = TestWebFrameContentDumper::DumpWebViewAsText(view->GetWebView(),
+  output = TestWebFrameContentDumper::DumpWebViewAsText(web_view_,
                                                         kMaxOutputCharacters)
                .Ascii();
   EXPECT_EQ(kArrowDownScrollDown, output);
@@ -117,7 +112,7 @@ TEST_F(RenderViewTest, MacTestCmdUp) {
   SendNativeKeyEvent(NativeWebKeyboardEvent(arrowUpKeyDown));
   base::RunLoop().RunUntilIdle();
   ExecuteJavaScriptForTests("scroll.textContent = window.pageYOffset");
-  output = TestWebFrameContentDumper::DumpWebViewAsText(view->GetWebView(),
+  output = TestWebFrameContentDumper::DumpWebViewAsText(web_view_,
                                                         kMaxOutputCharacters)
                .Ascii();
   EXPECT_EQ(kArrowUpScrollUp, output);
@@ -133,7 +128,7 @@ TEST_F(RenderViewTest, MacTestCmdUp) {
   SendNativeKeyEvent(NativeWebKeyboardEvent(arrowDownKeyDown));
   base::RunLoop().RunUntilIdle();
   ExecuteJavaScriptForTests("scroll.textContent = window.pageYOffset");
-  output = TestWebFrameContentDumper::DumpWebViewAsText(view->GetWebView(),
+  output = TestWebFrameContentDumper::DumpWebViewAsText(web_view_,
                                                         kMaxOutputCharacters)
                .Ascii();
   EXPECT_EQ(kArrowDownNoScroll, output);
@@ -145,7 +140,7 @@ TEST_F(RenderViewTest, MacTestCmdUp) {
   SendNativeKeyEvent(NativeWebKeyboardEvent(arrowUpKeyDown));
   base::RunLoop().RunUntilIdle();
   ExecuteJavaScriptForTests("scroll.textContent = window.pageYOffset");
-  output = TestWebFrameContentDumper::DumpWebViewAsText(view->GetWebView(),
+  output = TestWebFrameContentDumper::DumpWebViewAsText(web_view_,
                                                         kMaxOutputCharacters)
                .Ascii();
   EXPECT_EQ(kArrowUpNoScroll, output);

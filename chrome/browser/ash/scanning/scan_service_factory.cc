@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,8 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager_factory.h"
 #include "chrome/browser/ash/scanning/scan_service.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 
 namespace ash {
@@ -54,9 +52,9 @@ KeyedService* ScanServiceFactory::BuildInstanceFor(
 }
 
 ScanServiceFactory::ScanServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "ScanService",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(LorgnetteScannerManagerFactory::GetInstance());
   DependsOn(HoldingSpaceKeyedServiceFactory::GetInstance());
 }
@@ -66,11 +64,6 @@ ScanServiceFactory::~ScanServiceFactory() = default;
 KeyedService* ScanServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return BuildInstanceFor(context);
-}
-
-content::BrowserContext* ScanServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }
 
 bool ScanServiceFactory::ServiceIsCreatedWithBrowserContext() const {

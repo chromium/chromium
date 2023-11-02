@@ -1,15 +1,15 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/webui/eche_app_ui/eche_presence_manager.h"
 
+#include "ash/services/device_sync/public/cpp/device_sync_client.h"
+#include "ash/services/secure_channel/public/cpp/client/presence_monitor_client.h"
 #include "ash/webui/eche_app_ui/eche_connector.h"
 #include "ash/webui/eche_app_ui/proto/exo_messages.pb.h"
-#include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/components/multidevice/remote_device_ref.h"
-#include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
-#include "chromeos/services/secure_channel/public/cpp/client/presence_monitor_client.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/components/multidevice/remote_device_ref.h"
 
 namespace ash {
 namespace eche_app {
@@ -25,7 +25,7 @@ constexpr base::TimeDelta kMaximumLastSeenAge = base::Minutes(5);
 }  // namespace
 
 EchePresenceManager::EchePresenceManager(
-    EcheFeatureStatusProvider* eche_feature_status_provider,
+    FeatureStatusProvider* eche_feature_status_provider,
     device_sync::DeviceSyncClient* device_sync_client,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
     std::unique_ptr<secure_channel::PresenceMonitorClient>
@@ -109,11 +109,9 @@ void EchePresenceManager::StartMonitoring() {
     return;
   }
 
-  // Before we start monitoring we don't know when the device was last seen, so
-  // set it to something far out of the expected time window to start. This will
-  // be properly set once we see the first advertisement, and if one is not seen
-  // before the first check, will return that the devices are out of proximity.
-  device_last_seen_time_ = base::TimeTicks::UnixEpoch();
+  // Assume a successful proximity check at the beginning. It gives us a cushon
+  // in case the first one or two pings get lost.
+  device_last_seen_time_ = base::TimeTicks::Now();
   is_monitoring_ = true;
 
   if (timer_.IsRunning()) {
@@ -139,7 +137,8 @@ void EchePresenceManager::StopMonitoring() {
 }
 
 void EchePresenceManager::OnTimerExpired() {
-  if ((base::TimeTicks::Now() - device_last_seen_time_) > kMaximumLastSeenAge) {
+  if ((base::TimeTicks::Now() - device_last_seen_time_) >=
+      kMaximumLastSeenAge) {
     PA_LOG(INFO) << "Proximity has not been maintained; stopping monitoring";
     StopMonitoring();
   } else {
@@ -147,7 +146,7 @@ void EchePresenceManager::OnTimerExpired() {
     proto::ProximityPing ping;
     proto::ExoMessage message;
     *message.mutable_proximity_ping() = std::move(ping);
-    eche_connector_->SendMessage(message.SerializeAsString());
+    eche_connector_->SendMessage(message);
   }
 }
 

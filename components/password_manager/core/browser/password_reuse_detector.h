@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,6 +56,8 @@ class PasswordReuseDetector {
 
   void OnLoginsChanged(
       const password_manager::PasswordStoreChangeList& changes);
+
+  void OnLoginsRetained(const std::vector<PasswordForm>& retained_passwords);
 
   // Clears all the cached passwords which are stored on the account store.
   void ClearCachedAccountStorePasswords();
@@ -120,9 +122,9 @@ class PasswordReuseDetector {
       const std::string& domain);
 
   // If saved-password reuse is found, fill in the MatchingReusedCredentials
-  // that match any reused password, and return the length of the
-  // longest password matched.  If no reuse is found, return 0.
-  size_t CheckSavedPasswordReuse(
+  // that match any reused password, and return the longest password matched. If
+  // no reuse is found, return an empty string.
+  std::u16string CheckSavedPasswordReuse(
       const std::u16string& input,
       const std::string& domain,
       std::vector<MatchingReusedCredential>* matching_reused_credentials_out);

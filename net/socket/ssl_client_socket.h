@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "net/base/net_export.h"
 #include "net/cert/cert_database.h"
@@ -66,8 +66,8 @@ class NET_EXPORT SSLClientSocket : public SSLSocket {
     stapled_ocsp_response_received_ = stapled_ocsp_response_received;
   }
 
-  // Serialize |next_protos| in the wire format for ALPN and NPN: protocols are
-  // listed in order, each prefixed by a one-byte length.
+  // Serialize |next_protos| in the wire format for ALPN: protocols are listed
+  // in order, each prefixed by a one-byte length.
   static std::vector<uint8_t> SerializeNextProtos(
       const NextProtoVector& next_protos);
 
@@ -80,9 +80,9 @@ class NET_EXPORT SSLClientSocket : public SSLSocket {
                            ConnectSignedCertTimestampsEnablesOCSP);
 
   // True if SCTs were received via a TLS extension.
-  bool signed_cert_timestamps_received_;
+  bool signed_cert_timestamps_received_ = false;
   // True if a stapled OCSP response was received.
-  bool stapled_ocsp_response_received_;
+  bool stapled_ocsp_response_received_ = false;
 };
 
 // Shared state and configuration across multiple SSLClientSockets.
@@ -133,6 +133,10 @@ class NET_EXPORT SSLClientContext : public SSLConfigService::Observer,
   SCTAuditingDelegate* sct_auditing_delegate() {
     return sct_auditing_delegate_;
   }
+
+  // Returns whether ECH (Encrypted ClientHello) should be enabled. This
+  // function checks both config() and feature flags.
+  bool EncryptedClientHelloEnabled() const;
 
   // Creates a new SSLClientSocket which can then be used to establish an SSL
   // connection to |host_and_port| over the already-connected |stream_socket|.
@@ -190,12 +194,12 @@ class NET_EXPORT SSLClientContext : public SSLConfigService::Observer,
 
   SSLContextConfig config_;
 
-  SSLConfigService* ssl_config_service_;
-  CertVerifier* cert_verifier_;
-  TransportSecurityState* transport_security_state_;
-  CTPolicyEnforcer* ct_policy_enforcer_;
-  SSLClientSessionCache* ssl_client_session_cache_;
-  SCTAuditingDelegate* sct_auditing_delegate_;
+  raw_ptr<SSLConfigService> ssl_config_service_;
+  raw_ptr<CertVerifier> cert_verifier_;
+  raw_ptr<TransportSecurityState> transport_security_state_;
+  raw_ptr<CTPolicyEnforcer> ct_policy_enforcer_;
+  raw_ptr<SSLClientSessionCache> ssl_client_session_cache_;
+  raw_ptr<SCTAuditingDelegate> sct_auditing_delegate_;
 
   SSLClientAuthCache ssl_client_auth_cache_;
 

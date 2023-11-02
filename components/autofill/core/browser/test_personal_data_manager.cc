@@ -1,9 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 
@@ -80,20 +81,14 @@ void TestPersonalDataManager::UpdateProfile(const AutofillProfile& profile) {
 void TestPersonalDataManager::RemoveByGUID(const std::string& guid) {
   CreditCard* credit_card = GetCreditCardWithGUID(guid.c_str());
   if (credit_card) {
-    local_credit_cards_.erase(
-        std::find_if(local_credit_cards_.begin(), local_credit_cards_.end(),
-                     [credit_card](const std::unique_ptr<CreditCard>& ptr) {
-                       return ptr.get() == credit_card;
-                     }));
+    local_credit_cards_.erase(base::ranges::find(
+        local_credit_cards_, credit_card, &std::unique_ptr<CreditCard>::get));
   }
 
   AutofillProfile* profile = GetProfileWithGUID(guid.c_str());
   if (profile) {
-    web_profiles_.erase(
-        std::find_if(web_profiles_.begin(), web_profiles_.end(),
-                     [profile](const std::unique_ptr<AutofillProfile>& ptr) {
-                       return ptr.get() == profile;
-                     }));
+    web_profiles_.erase(base::ranges::find(
+        web_profiles_, profile, &std::unique_ptr<AutofillProfile>::get));
   }
 }
 
@@ -214,8 +209,20 @@ void TestPersonalDataManager::LoadCreditCardCloudTokenData() {
   }
 }
 
+void TestPersonalDataManager::LoadIBANs() {
+  pending_ibans_query_ = 128;
+  {
+    std::vector<std::unique_ptr<IBAN>> ibans;
+    local_ibans_.swap(ibans);
+    std::unique_ptr<WDTypedResult> result =
+        std::make_unique<WDResult<std::vector<std::unique_ptr<IBAN>>>>(
+            AUTOFILL_IBANS_RESULT, std::move(ibans));
+    OnWebDataServiceRequestDone(pending_ibans_query_, std::move(result));
+  }
+}
+
 void TestPersonalDataManager::LoadUpiIds() {
-  pending_upi_ids_query_ = 128;
+  pending_upi_ids_query_ = 129;
   {
     std::vector<std::string> upi_ids = {"vpa@indianbank"};
     std::unique_ptr<WDTypedResult> result =

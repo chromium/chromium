@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,6 +40,7 @@ class AshWebViewImpl : public ash::AshWebView,
   bool GoBack() override;
   void Navigate(const GURL& url) override;
   void AddedToWidget() override;
+  views::View* GetInitiallyFocusedView() override;
 
   // content::WebContentsDelegate:
   bool IsWebContentsCreationOverridden(
@@ -56,6 +57,13 @@ class AshWebViewImpl : public ash::AshWebView,
   bool TakeFocus(content::WebContents* web_contents, bool reverse) override;
   void NavigationStateChanged(content::WebContents* web_contents,
                               content::InvalidateTypes changed_flags) override;
+  void RequestMediaAccessPermission(
+      content::WebContents* web_contents,
+      const content::MediaStreamRequest& request,
+      content::MediaResponseCallback callback) override;
+  bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
+                                  const GURL& security_origin,
+                                  blink::mojom::MediaStreamType type) override;
 
   // content::WebContentsObserver:
   void DidStopLoading() override;

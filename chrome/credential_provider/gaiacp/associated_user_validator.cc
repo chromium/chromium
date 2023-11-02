@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -134,7 +134,7 @@ HRESULT ModifyUserAccess(const std::unique_ptr<ScopedLsaPolicy>& policy,
   wchar_t domain[kWindowsDomainBufferLength];
 
   HRESULT hr = manager->FindUserBySID(
-      sid.c_str(), username, base::size(username), domain, base::size(domain));
+      sid.c_str(), username, std::size(username), domain, std::size(domain));
 
   if (FAILED(hr)) {
     LOGFN(ERROR) << "FindUserBySID sid=" << sid << " hr=" << putHR(hr);
@@ -219,7 +219,7 @@ AssociatedUserValidator::~AssociatedUserValidator() = default;
 bool AssociatedUserValidator::IsOnlineLoginStale(
     const std::wstring& sid) const {
   wchar_t last_token_valid_millis[512];
-  ULONG last_token_valid_size = base::size(last_token_valid_millis);
+  ULONG last_token_valid_size = std::size(last_token_valid_millis);
   HRESULT hr = GetUserProperty(sid, base::UTF8ToWide(kKeyLastTokenValid),
                                last_token_valid_millis, &last_token_valid_size);
 
@@ -535,6 +535,8 @@ bool AssociatedUserValidator::IsAuthEnforcedForUser(const std::wstring& sid) {
 
 AssociatedUserValidator::EnforceAuthReason
 AssociatedUserValidator::GetAuthEnforceReason(const std::wstring& sid) {
+  LOGFN(VERBOSE);
+
   // Is user not associated, then we shouldn't have any auth enforcement.
   if (!IsUserAssociated(sid))
     return AssociatedUserValidator::EnforceAuthReason::NOT_ENFORCED;

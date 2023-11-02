@@ -1,12 +1,13 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.content.browser.accessibility;
 
-import android.annotation.TargetApi;
 import android.os.Build;
 import android.view.ViewStructure;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.content.browser.RenderCoordinatesImpl;
 
@@ -17,7 +18,7 @@ public class OViewStructureBuilder extends ViewStructureBuilder {
         super(renderCoordinates);
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     @Override
     protected void setViewStructureNodeHtmlInfo(
             ViewStructure node, String htmlTag, String cssDisplay, String[][] htmlAttributes) {

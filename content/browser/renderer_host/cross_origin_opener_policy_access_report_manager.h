@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,7 @@
 #include <string>
 
 #include "base/values.h"
-#include "content/browser/net/cross_origin_opener_policy_reporter.h"
-#include "content/common/content_export.h"
+#include "content/browser/network/cross_origin_opener_policy_reporter.h"
 
 namespace content {
 
@@ -18,7 +17,7 @@ class FrameTreeNode;
 // Used to monitor (potential) COOP breakages.
 // A CrossOriginOpenerPolicyAccessReportManager lives in the browser process and
 // has a 1:1 relationship with a RenderFrameHost.
-class CONTENT_EXPORT CrossOriginOpenerPolicyAccessReportManager {
+class CrossOriginOpenerPolicyAccessReportManager {
  public:
   CrossOriginOpenerPolicyAccessReportManager();
   ~CrossOriginOpenerPolicyAccessReportManager();

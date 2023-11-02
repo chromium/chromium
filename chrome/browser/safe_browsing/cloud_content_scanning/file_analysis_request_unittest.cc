@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/common.h"
+#include "chrome/browser/enterprise/connectors/service_provider_config.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/common/chrome_paths.h"
 #include "content/public/test/browser_task_environment.h"
@@ -85,11 +86,11 @@ class FileAnalysisRequestTest : public testing::Test {
     request->GetRequestData(base::BindLambdaForTesting(
         [&run_loop, &called, &out_result, &out_data](
             BinaryUploadService::Result result,
-            const BinaryUploadService::Request::Data& data) {
+            BinaryUploadService::Request::Data data) {
           called = true;
           run_loop.Quit();
           *out_result = result;
-          *out_data = data;
+          *out_data = std::move(data);
         }));
     run_loop.Run();
 
@@ -116,7 +117,7 @@ TEST_F(FileAnalysisRequestTest, InvalidFiles) {
     base::RunLoop run_loop;
     request->GetRequestData(base::BindLambdaForTesting(
         [&run_loop, &called](BinaryUploadService::Result result,
-                             const BinaryUploadService::Request::Data& data) {
+                             BinaryUploadService::Request::Data data) {
           called = true;
           run_loop.Quit();
 
@@ -142,7 +143,7 @@ TEST_F(FileAnalysisRequestTest, InvalidFiles) {
     base::RunLoop run_loop;
     request->GetRequestData(base::BindLambdaForTesting(
         [&run_loop, &called](BinaryUploadService::Result result,
-                             const BinaryUploadService::Request::Data& data) {
+                             BinaryUploadService::Request::Data data) {
           called = true;
           run_loop.Quit();
 
@@ -168,7 +169,7 @@ TEST_F(FileAnalysisRequestTest, InvalidFiles) {
     base::RunLoop run_loop;
     request->GetRequestData(base::BindLambdaForTesting(
         [&run_loop, &called](BinaryUploadService::Result result,
-                             const BinaryUploadService::Request::Data& data) {
+                             BinaryUploadService::Request::Data data) {
           called = true;
           run_loop.Quit();
 
@@ -215,7 +216,7 @@ TEST_F(FileAnalysisRequestTest, NormalFiles) {
 }
 
 // Disabled due to flakiness on Mac https://crbug.com/1229051
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_LargeFiles DISABLED_LargeFiles
 #else
 #define MAYBE_LargeFiles LargeFiles
@@ -272,7 +273,7 @@ TEST_F(FileAnalysisRequestTest, PopulatesDigest) {
   base::RunLoop run_loop;
   request->GetRequestData(base::BindLambdaForTesting(
       [&run_loop](BinaryUploadService::Result result,
-                  const BinaryUploadService::Request::Data& data) {
+                  BinaryUploadService::Request::Data data) {
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -300,7 +301,7 @@ TEST_F(FileAnalysisRequestTest, PopulatesFilename) {
   base::RunLoop run_loop;
   request->GetRequestData(base::BindLambdaForTesting(
       [&run_loop](BinaryUploadService::Result result,
-                  const BinaryUploadService::Request::Data& data) {
+                  BinaryUploadService::Request::Data data) {
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -329,11 +330,11 @@ TEST_F(FileAnalysisRequestTest, CachesResults) {
   request->GetRequestData(base::BindLambdaForTesting(
       [&run_loop, &called, &async_result, &async_data](
           BinaryUploadService::Result result,
-          const BinaryUploadService::Request::Data& data) {
+          BinaryUploadService::Request::Data data) {
         called = true;
         run_loop.Quit();
         async_result = result;
-        async_data = data;
+        async_data = std::move(data);
       }));
   run_loop.Run();
 
@@ -341,14 +342,14 @@ TEST_F(FileAnalysisRequestTest, CachesResults) {
 
   BinaryUploadService::Result sync_result;
   BinaryUploadService::Request::Data sync_data;
-  request->GetRequestData(base::BindLambdaForTesting(
-      [&run_loop, &called, &sync_result, &sync_data](
-          BinaryUploadService::Result result,
-          const BinaryUploadService::Request::Data& data) {
+  request->GetRequestData(
+      base::BindLambdaForTesting([&run_loop, &called, &sync_result, &sync_data](
+                                     BinaryUploadService::Result result,
+                                     BinaryUploadService::Request::Data data) {
         called = true;
         run_loop.Quit();
         sync_result = result;
-        sync_data = data;
+        sync_data = std::move(data);
       }));
 
   EXPECT_EQ(sync_result, async_result);
@@ -379,11 +380,11 @@ TEST_F(FileAnalysisRequestTest, CachesResultsWithKnownMimetype) {
   request->GetRequestData(base::BindLambdaForTesting(
       [&run_loop, &called, &result, &data](
           BinaryUploadService::Result tmp_result,
-          const BinaryUploadService::Request::Data& tmp_data) {
+          BinaryUploadService::Request::Data tmp_data) {
         called = true;
         run_loop.Quit();
         result = tmp_result;
-        data = tmp_data;
+        data = std::move(tmp_data);
       }));
   run_loop.Run();
 
@@ -417,9 +418,8 @@ TEST_F(FileAnalysisRequestTest, DelayedFileOpening) {
 
   base::RunLoop run_loop;
   request->GetRequestData(base::BindLambdaForTesting(
-      [&run_loop, &file_contents](
-          BinaryUploadService::Result result,
-          const BinaryUploadService::Request::Data& data) {
+      [&run_loop, &file_contents](BinaryUploadService::Result result,
+                                  BinaryUploadService::Request::Data data) {
         run_loop.Quit();
 
         EXPECT_EQ(result, BinaryUploadService::Result::SUCCESS);
@@ -479,11 +479,11 @@ TEST_P(FileAnalysisRequestZipTest, Encrypted) {
   request->GetRequestData(base::BindLambdaForTesting(
       [&run_loop, &called, &result, &data](
           BinaryUploadService::Result tmp_result,
-          const BinaryUploadService::Request::Data& tmp_data) {
+          BinaryUploadService::Request::Data tmp_data) {
         called = true;
         run_loop.Quit();
         result = tmp_result;
-        data = tmp_data;
+        data = std::move(tmp_data);
       }));
   run_loop.Run();
 
@@ -502,98 +502,6 @@ TEST_P(FileAnalysisRequestZipTest, Encrypted) {
   EXPECT_TRUE(data.contents.empty());
   EXPECT_EQ(test_zip, data.path);
   EXPECT_TRUE(IsZipMimeType(data.mime_type));
-}
-
-TEST_F(FileAnalysisRequestTest, UnsupportedFileTypeBlock) {
-  base::test::TaskEnvironment task_environment;
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-
-  std::string normal_contents = "\x89PNG\x0D\x0A\x1A\x0A";
-  base::FilePath file_path = temp_dir.GetPath().AppendASCII("normal.png");
-  base::WriteFile(file_path, normal_contents.data(), normal_contents.size());
-
-  auto request =
-      MakeRequest(/*block_unsupported_types=*/true, file_path,
-                  file_path.BaseName(), /*delay_opening_file*/ false);
-  request->add_tag("dlp");
-  request->add_tag("malware");
-
-  bool called = false;
-  base::RunLoop run_loop;
-  BinaryUploadService::Result result;
-  BinaryUploadService::Request::Data data;
-  request->GetRequestData(base::BindLambdaForTesting(
-      [&run_loop, &called, &result, &data](
-          BinaryUploadService::Result tmp_result,
-          const BinaryUploadService::Request::Data& tmp_data) {
-        called = true;
-        run_loop.Quit();
-        result = tmp_result;
-        data = tmp_data;
-      }));
-  run_loop.Run();
-
-  ASSERT_TRUE(called);
-
-  EXPECT_EQ(result,
-            BinaryUploadService::Result::DLP_SCAN_UNSUPPORTED_FILE_TYPE);
-  EXPECT_TRUE(data.contents.empty());
-  EXPECT_EQ(file_path, data.path);
-  EXPECT_EQ(data.size, normal_contents.size());
-  // printf "\x89PNG\x0D\x0A\x1A\x0A" | sha256sum |  tr '[:lower:]' '[:upper:]'
-  EXPECT_EQ(data.hash,
-            "4C4B6A3BE1314AB86138BEF4314DDE022E600960D8689A2C8F8631802D20DAB6");
-  EXPECT_EQ(request->digest(), data.hash);
-  EXPECT_EQ("image/png", data.mime_type)
-      << data.mime_type << " is not an expected mimetype";
-}
-
-TEST_F(FileAnalysisRequestTest, UnsupportedFileTypeNoBlock) {
-  base::test::TaskEnvironment task_environment;
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-
-  std::string normal_contents = "\x89PNG\x0D\x0A\x1A\x0A";
-  base::FilePath file_path = temp_dir.GetPath().AppendASCII("normal.png");
-  base::WriteFile(file_path, normal_contents.data(), normal_contents.size());
-
-  auto request =
-      MakeRequest(/*block_unsupported_types=*/false, file_path,
-                  file_path.BaseName(), /*delay_opening_file*/ false);
-  request->add_tag("dlp");
-  request->add_tag("malware");
-
-  bool called = false;
-  base::RunLoop run_loop;
-  BinaryUploadService::Result result;
-  BinaryUploadService::Request::Data data;
-  request->GetRequestData(base::BindLambdaForTesting(
-      [&run_loop, &called, &result, &data](
-          BinaryUploadService::Result tmp_result,
-          const BinaryUploadService::Request::Data& tmp_data) {
-        called = true;
-        run_loop.Quit();
-        result = tmp_result;
-        data = tmp_data;
-      }));
-  run_loop.Run();
-
-  ASSERT_TRUE(called);
-
-  // The dlp request should have been removed since the type is unsupported.
-  for (const std::string& tag : request->content_analysis_request().tags())
-    EXPECT_NE("dlp", tag);
-  EXPECT_EQ(result, BinaryUploadService::Result::SUCCESS);
-  EXPECT_TRUE(data.contents.empty());
-  EXPECT_EQ(file_path, data.path);
-  EXPECT_EQ(data.size, normal_contents.size());
-  // printf "\x89PNG\x0D\x0A\x1A\x0A" | sha256sum |  tr '[:lower:]' '[:upper:]'
-  EXPECT_EQ(data.hash,
-            "4C4B6A3BE1314AB86138BEF4314DDE022E600960D8689A2C8F8631802D20DAB6");
-  EXPECT_EQ(request->digest(), data.hash);
-  EXPECT_EQ("image/png", data.mime_type)
-      << data.mime_type << " is not an expected mimetype";
 }
 
 }  // namespace safe_browsing

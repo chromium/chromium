@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,10 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
-#include "chromeos/network/network_type_pattern.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_type_pattern.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/network_service_instance.h"
 
@@ -30,14 +30,12 @@ InstallEventLogCollectorBase::~InstallEventLogCollectorBase() {
 }
 
 bool InstallEventLogCollectorBase::GetOnlineState() {
-  chromeos::NetworkStateHandler::NetworkStateList network_state_list;
-  chromeos::NetworkHandler::Get()
-      ->network_state_handler()
-      ->GetNetworkListByType(
-          chromeos::NetworkTypePattern::Default(), true /* configured_only */,
-          false /* visible_only */, 0 /* limit */, &network_state_list);
+  ash::NetworkStateHandler::NetworkStateList network_state_list;
+  ash::NetworkHandler::Get()->network_state_handler()->GetNetworkListByType(
+      ash::NetworkTypePattern::Default(), true /* configured_only */,
+      false /* visible_only */, 0 /* limit */, &network_state_list);
 
-  for (const chromeos::NetworkState* network_state : network_state_list) {
+  for (const ash::NetworkState* network_state : network_state_list) {
     if (network_state->connection_state() == shill::kStateOnline) {
       return true;
     }
@@ -48,7 +46,7 @@ bool InstallEventLogCollectorBase::GetOnlineState() {
 void InstallEventLogCollectorBase::OnLogin() {
   // Don't log in case session is restared or recovered from crash.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kLoginUser) ||
+          ash::switches::kLoginUser) ||
       ExitTypeService::GetLastSessionExitType(profile_) == ExitType::kCrashed) {
     return;
   }

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -118,7 +118,7 @@ TEST_F(FontResourceTest,
   EXPECT_TRUE(resource2->IsLoaded());
   EXPECT_FALSE(resource2->ErrorOccurred());
 
-  GetMemoryCache()->Remove(resource1);
+  MemoryCache::Get()->Remove(resource1);
 }
 
 // Tests if cache-aware font loading works correctly.
@@ -131,7 +131,8 @@ TEST_F(CacheAwareFontResourceTest, CacheAwareFontLoading) {
   url_test_helpers::RegisterMockedURLLoadWithCustomResponse(
       url, "", WrappedResourceResponse(response));
 
-  auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  auto dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Document& document = dummy_page_holder->GetDocument();
   ResourceFetcher* fetcher = document.Fetcher();
   CSSFontFaceSrcValue* src_value = CSSFontFaceSrcValue::Create(
@@ -190,7 +191,7 @@ TEST_F(CacheAwareFontResourceTest, CacheAwareFontLoading) {
   EXPECT_TRUE(client3->FontLoadLongLimitExceededCalled());
 
   url_test_helpers::ServeAsynchronousRequests();
-  GetMemoryCache()->Remove(&resource);
+  MemoryCache::Get()->Remove(&resource);
 }
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,9 +14,10 @@
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/network/onc/onc_certificate_importer_impl.h"
-#include "chromeos/network/onc/onc_parsed_certificates.h"
-#include "chromeos/network/onc/onc_utils.h"
+#include "chromeos/ash/components/network/onc/network_onc_utils.h"
+#include "chromeos/ash/components/network/onc/onc_certificate_importer_impl.h"
+#include "chromeos/components/onc/onc_parsed_certificates.h"
+#include "chromeos/components/onc/onc_utils.h"
 #include "components/onc/onc_constants.h"
 #include "components/policy/core/browser/policy_conversions.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -45,7 +46,7 @@ OncImportMessageHandler::OncImportMessageHandler() = default;
 OncImportMessageHandler::~OncImportMessageHandler() = default;
 
 void OncImportMessageHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "importONC", base::BindRepeating(&OncImportMessageHandler::OnImportONC,
                                        base::Unretained(this)));
 }
@@ -53,16 +54,16 @@ void OncImportMessageHandler::RegisterMessages() {
 void OncImportMessageHandler::Respond(const std::string& callback_id,
                                       const std::string& result,
                                       bool is_error) {
-  base::Value response(base::Value::Type::LIST);
+  base::Value::List response;
   response.Append(result);
   response.Append(is_error);
   ResolveJavascriptCallback(base::Value(callback_id), response);
 }
 
-void OncImportMessageHandler::OnImportONC(const base::ListValue* list) {
-  CHECK_EQ(2u, list->GetList().size());
-  std::string callback_id = list->GetList()[0].GetString();
-  std::string onc_blob = list->GetList()[1].GetString();
+void OncImportMessageHandler::OnImportONC(const base::Value::List& list) {
+  CHECK_EQ(2u, list.size());
+  std::string callback_id = list[0].GetString();
+  std::string onc_blob = list[1].GetString();
   AllowJavascript();
 
   // TODO(https://crbug.com/1186373): Pass the `NssCertDatabaseGetter` to

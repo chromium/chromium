@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -69,13 +69,13 @@ class MetadataTable {
                            const std::string& component_name) const;
 
   // Returns the index of an installed item with the given |hashed_user_id| and
-  // |component_name|. Returns `installed_items_.GetList().size()` if no such
-  // item exists.
+  // |component_name|. Returns `installed_items_.GetListDeprecated().size()` if
+  // no such item exists.
   size_t GetInstalledItemIndex(const std::string& hashed_user_id,
                                const std::string& component_name) const;
 
   // Information about installed items.
-  base::Value installed_items_;
+  base::Value::List installed_items_;
 
   // Local state PrefService.
   PrefService* const pref_service_;

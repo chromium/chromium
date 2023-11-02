@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@ ScriptValue Eval(V8TestingScope* scope, const char* script_as_string) {
   v8::Local<v8::String> source;
   v8::Local<v8::Script> script;
   v8::MicrotasksScope microtasks(scope->GetIsolate(),
+                                 scope->GetContext()->GetMicrotaskQueue(),
                                  v8::MicrotasksScope::kDoNotRunMicrotasks);
   // TODO(ricea): Can this actually fail? Should it be a DCHECK?
   if (!v8::String::NewFromUtf8(scope->GetIsolate(), script_as_string,

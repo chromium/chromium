@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limits_allowlist_policy_test_utils.h"
@@ -17,37 +17,26 @@ AppTimeLimitsAllowlistPolicyBuilder::~AppTimeLimitsAllowlistPolicyBuilder() =
     default;
 
 void AppTimeLimitsAllowlistPolicyBuilder::SetUp() {
-  value_ = base::Value(base::Value::Type::DICTIONARY);
-  value_.SetKey(policy::kUrlList, base::Value(base::Value::Type::LIST));
-  value_.SetKey(policy::kAppList, base::Value(base::Value::Type::LIST));
-}
-
-void AppTimeLimitsAllowlistPolicyBuilder::Clear() {
-  base::DictionaryValue* dict_value;
-  value_.GetAsDictionary(&dict_value);
-  dict_value->Clear();
-}
-
-void AppTimeLimitsAllowlistPolicyBuilder::AppendToAllowlistUrlList(
-    const std::string& scheme) {
-  AppendToList(policy::kUrlList, base::Value(scheme));
+  dict_ = base::Value::Dict();
+  dict_.Set(policy::kUrlList, base::Value::List());
+  dict_.Set(policy::kAppList, base::Value::List());
 }
 
 void AppTimeLimitsAllowlistPolicyBuilder::AppendToAllowlistAppList(
     const AppId& app_id) {
-  base::Value value_to_append(base::Value::Type::DICTIONARY);
-  value_to_append.SetKey(policy::kAppId, base::Value(app_id.app_id()));
-  value_to_append.SetKey(
+  base::Value::Dict dict_to_append;
+  dict_to_append.Set(policy::kAppId, base::Value(app_id.app_id()));
+  dict_to_append.Set(
       policy::kAppType,
       base::Value(policy::AppTypeToPolicyString(app_id.app_type())));
-  AppendToList(policy::kAppList, std::move(value_to_append));
+  AppendToList(policy::kAppList, std::move(dict_to_append));
 }
 
 void AppTimeLimitsAllowlistPolicyBuilder::AppendToList(const std::string& key,
-                                                       base::Value value) {
-  base::Value* list = value_.FindListKey(key);
+                                                       base::Value::Dict dict) {
+  base::Value::List* list = dict_.FindList(key);
   DCHECK(list);
-  list->Append(std::move(value));
+  list->Append(std::move(dict));
 }
 
 }  // namespace app_time

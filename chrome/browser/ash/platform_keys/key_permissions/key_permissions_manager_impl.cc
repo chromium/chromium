@@ -1,15 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager_impl.h"
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -59,11 +59,6 @@ const char kMigrationStatusHistogramName[] =
 // update started as well as the number of times it succeeded and failed.
 const char kArcUsageUpdateStatusHistogramName[] =
     "ChromeOS.KeyPermissionsManager.ArcUsageUpdate";
-
-// The name of the histogram that records the time taken to successfully migrate
-// key permissions to chaps.
-const char kMigrationTimeHistogramName[] =
-    "ChromeOS.KeyPermissionsManager.MigrationTime";
 // The name of the histogram that records the time taken to successfully update
 // chaps with the new ARC usage flags.
 const char kArcUsageUpdateTimeHistogramName[] =
@@ -76,7 +71,10 @@ enum class MigrationStatus {
   kStarted = 0,
   kSucceeded = 1,
   kFailed = 2,
-  kMaxValue = kFailed,
+  // Necessary key permission migrations are the ones that migrates permissions
+  // from prefs to Chaps for at least one key.
+  kNecessary = 3,
+  kMaxValue = kNecessary,
 };
 
 // These values are logged to UMA. Entries should not be renumbered and
@@ -131,6 +129,12 @@ void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::UpdateWithAllKeys(
     Status keys_retrieval_status) {
   DCHECK(public_key_spki_der_queue_.empty());
 
+  if (!public_key_spki_der_list.empty() &&
+      mode_ == Mode::kMigratePermissionsFromPrefs) {
+    base::UmaHistogramEnumeration(kMigrationStatusHistogramName,
+                                  MigrationStatus::kNecessary);
+  }
+
   for (auto& public_key : public_key_spki_der_list) {
     public_key_spki_der_queue_.push(std::move(public_key));
   }
@@ -154,19 +158,6 @@ void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
     OnUpdateFinished() {
   switch (mode_) {
     case Mode::kMigratePermissionsFromPrefs: {
-      // For more information about choosing |min| and |max| for the histogram,
-      // please refer to:
-      // https://chromium.googlesource.com/chromium/src/tools/+/refs/heads/main/metrics/histograms/README.md#count-histograms_choosing-min-and-max
-      //
-      // For more information about choosing the number of |buckets| for the
-      // histogram, please refer to:
-      // https://chromium.googlesource.com/chromium/src/tools/+/refs/heads/main/metrics/histograms/README.md#count-histograms_choosing-number-of-buckets
-      base::UmaHistogramCustomTimes(
-          kMigrationTimeHistogramName,
-          /*sample=*/base::TimeTicks::Now() - update_start_time_,
-          /*min=*/base::Milliseconds(1),
-          /*max=*/base::Minutes(5),
-          /*buckets=*/50);
       break;
     }
     case Mode::kUpdateArcUsageFlag: {
@@ -346,8 +337,7 @@ void KeyPermissionsManagerImpl::OnGotTokens(
     return;
   }
 
-  if (std::find(token_ids->begin(), token_ids->end(), token_id_) ==
-      token_ids->end()) {
+  if (!base::Contains(*token_ids, token_id_)) {
     LOG(ERROR) << "KeyPermissionsManager doesn't have access to token: "
                << static_cast<int>(token_id_);
     return;

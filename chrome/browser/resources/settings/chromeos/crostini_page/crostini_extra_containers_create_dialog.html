@@ -9,10 +9,12 @@
     justify-content: space-between;
   }
 
-  .advanced-container {
+  .advanced-section {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    padding-bottom: 12px;
+    padding-inline-start: 20px;
   }
 
 
@@ -22,33 +24,23 @@
 
   #advancedToggle {
     --ink-color: var(--cros-text-color-primary);
-    align-items: center;
-    background: transparent;
+    background: none;
     border: none;
     box-shadow: none;
     color: var(--cros-text-color-primary);
-    display: flex;
     font-weight: 400;
-    margin-bottom: 3px;
-    margin-top: 12px;
+    margin-bottom: 12px;
     min-height: 32px;
-    padding: 0 12px;
+    padding-inline-start: 0;
   }
 
-  #toggleContainer {
-    align-items: center;
-    color: var(--cros-text-color-primary);
+  #containerFileField {
     display: flex;
-    float: left;
-    font: inherit;
-    justify-content: center;
-    margin-bottom: 0;
-    margin-top: 0;
-    padding: 0;
+    flex-direction: row;
   }
 
-  #toggleSpacer {
-    padding-top: 3px;
+  #containerFileInput {
+    width: 100%;
   }
 
   iron-icon {
@@ -61,27 +53,25 @@
     <div class="input-container">
       <cr-input id="containerNameInput"
           label="$i18n{crostiniExtraContainersContainerNameLabel}"
-          maxlength="50"
-          aria-disabled="false">
+          aria-disabled="false"
+          on-input="validateNames_"
+          invalid="[[!validContainerName_]]"
+          error-message="[[containerNameError_]]">
       </cr-input>
       <cr-input id="vmNameInput"
           label="$i18n{crostiniExtraContainersVmNameLabel}"
-          maxlength="50"
-          aria-disabled="false">
+          aria-disabled="false"
+          on-input="validateNames_">
       </cr-input>
     </div>
 
-    <div id="toggleSpacer"></div>
-
-    <div id="toggleContainer">
-      <cr-button id="advancedToggle" on-click="advancedToggleClicked_"
-          aria-expanded$="[[boolToString_(advancedToggleExpanded_)]]">
-        <span>$i18n{advancedPageTitle}</span>
-        <iron-icon icon="[[getArrowIcon_(advancedToggleExpanded_)]]">
-        </iron-icon>
-      </cr-button>
-    </div>
-    <div class="advanced-container" hidden="[[!advancedToggleExpanded_]]">
+    <cr-button id="advancedToggle" on-click="advancedToggleClicked_"
+        aria-expanded$="[[boolToString_(advancedToggleExpanded_)]]">
+      <span>$i18n{advancedPageTitle}</span>
+      <iron-icon icon="[[getArrowIcon_(advancedToggleExpanded_)]]">
+      </iron-icon>
+    </cr-button>
+    <div class="advanced-section" hidden="[[!advancedToggleExpanded_]]">
       <cr-input id="imageServerInput"
         label="$i18n{crostiniExtraContainersCreateDialogImageServer}"
         aria-disabled="false">
@@ -90,6 +80,19 @@
         label="$i18n{crostiniExtraContainersCreateDialogImageAlias}"
         aria-disabled="false">
       </cr-input>
+      <div id="containerFileField">
+        <cr-input id="containerFileInput"
+          label="$i18n{crostiniExtraContainersCreateDialogAddContainerFile}"
+          aria-disabled="true"
+          readonly>
+          <cr-button id="uploadButton"
+            slot="suffix"
+            on-click="onSelectContainerFileClick_"
+            aria-labelledby="containerFileInput">
+            $i18n{crostiniExtraContainersCreateDialogAddContainerButtonLabel}
+          </cr-button>
+        </cr-input>
+      </div>
     </div>
   </div>
 
@@ -98,7 +101,8 @@
       <cr-button id="cancel" class="cancel-button" on-click="onCancelTap_">
         $i18n{cancel}
       </cr-button>
-      <cr-button id="create" class="action-button" on-click="onCreateTap_">
+      <cr-button id="create" class="action-button" on-click="onCreateTap_"
+          disabled="[[disableCreateButton_]]">
         $i18n{crostiniExtraContainersCreate}
       </cr-button>
     </div>

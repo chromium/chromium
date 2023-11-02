@@ -1,11 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "mojo/public/cpp/system/simple_watcher.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/synchronization/lock.h"
 #include "base/task/common/task_annotator.h"
@@ -16,6 +15,8 @@
 #include "base/trace_event/typed_macros.h"
 #include "mojo/public/c/system/trap.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_mojo_event_info.pbzero.h"
+
+#include "base/record_replay.h"
 
 namespace mojo {
 
@@ -79,23 +80,34 @@ class SimpleWatcher::Context : public base::RefCountedThreadSafe<Context> {
       : weak_watcher_(weak_watcher),
         task_runner_(task_runner),
         watch_id_(watch_id),
-        handler_tag_(handler_tag) {}
+        handler_tag_(handler_tag) {
+    ctor_has_weak_watcher = !!weak_watcher_;
+    ctor_has_default_task_runner_weak_watcher = weak_watcher_ && weak_watcher_->is_default_task_runner_;
+  }
 
   ~Context() = default;
 
   void Notify(MojoResult result,
               MojoHandleSignalsState signals_state,
               MojoTrapEventFlags flags) {
+    recordreplay::Assert("[RUN-1126] SimpleWatcher::Context::Notify %d %d %d %d",
+                         (int)flags, task_runner_->RunsTasksInCurrentSequence(),
+                         ctor_has_weak_watcher, ctor_has_default_task_runner_weak_watcher);
+
     HandleSignalsState state(signals_state.satisfied_signals,
                              signals_state.satisfiable_signals);
     if (!(flags & MOJO_TRAP_EVENT_FLAG_WITHIN_API_CALL) &&
         task_runner_->RunsTasksInCurrentSequence() && weak_watcher_ &&
         weak_watcher_->is_default_task_runner_) {
+      recordreplay::Assert("[RUN-1126] SimpleWatcher::Context::Notify #1");
+
       // System notifications will trigger from the task runner passed to
       // mojo::core::ScopedIPCSupport. In Chrome this happens to always be
       // the default task runner for the IO thread.
       weak_watcher_->OnHandleReady(watch_id_, result, state);
     } else {
+      recordreplay::Assert("[RUN-1126] SimpleWatcher::Context::Notify #2");
+
       {
         // Annotate the posted task with |handler_tag_| as the IPC interface.
         base::TaskAnnotator::ScopedSetIpcHash scoped_set_ipc_hash(handler_tag_);
@@ -110,6 +122,10 @@ class SimpleWatcher::Context : public base::RefCountedThreadSafe<Context> {
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   const int watch_id_;
   const char* handler_tag_ = nullptr;
+
+  // https://linear.app/replay/issue/RUN-1126
+  bool ctor_has_weak_watcher;
+  bool ctor_has_default_task_runner_weak_watcher;
 };
 
 SimpleWatcher::SimpleWatcher(const base::Location& from_here,
@@ -184,6 +200,8 @@ void SimpleWatcher::Cancel() {
   MojoResult rv =
       MojoRemoveTrigger(trap_handle_.get().value(), context->value(), nullptr);
 
+  recordreplay::Assert("[RUN-1126] SimpleWatcher::Cancel %d", rv);
+
   // It's possible this cancellation could race with a handle closure
   // notification, in which case the watch may have already been implicitly
   // cancelled.
@@ -199,6 +217,9 @@ MojoResult SimpleWatcher::Arm(MojoResult* ready_result,
   MojoTrapEvent blocking_event = {sizeof(blocking_event)};
   MojoResult rv = MojoArmTrap(trap_handle_.get().value(), nullptr,
                               &num_blocking_events, &blocking_event);
+
+  recordreplay::Assert("[RUN-1126] SimpleWatcher::Arm %d", rv);
+
   if (rv == MOJO_RESULT_FAILED_PRECONDITION) {
     DCHECK(context_);
     DCHECK_EQ(1u, num_blocking_events);
@@ -219,8 +240,9 @@ void SimpleWatcher::ArmOrNotify() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Already cancelled, nothing to do.
-  if (!IsWatching())
+  if (!IsWatching()) {
     return;
+  }
 
   MojoResult ready_result;
   HandleSignalsState ready_state;
@@ -229,8 +251,9 @@ void SimpleWatcher::ArmOrNotify() {
   // NOTE: If the watched handle has been closed, the above call will result in
   // MOJO_RESULT_NOT_FOUND. A MOJO_RESULT_CANCELLED notification will already
   // have been posted to this object as a result, so there's nothing else to do.
-  if (rv == MOJO_RESULT_OK || rv == MOJO_RESULT_NOT_FOUND)
+  if (rv == MOJO_RESULT_OK || rv == MOJO_RESULT_NOT_FOUND) {
     return;
+  }
 
   DCHECK_EQ(MOJO_RESULT_FAILED_PRECONDITION, rv);
   {
@@ -250,8 +273,9 @@ void SimpleWatcher::OnHandleReady(int watch_id,
 
   // This notification may be for a previously watched context, in which case
   // we just ignore it.
-  if (watch_id != watch_id_)
+  if (watch_id != watch_id_) {
     return;
+  }
 
   ReadyCallbackWithState callback = callback_;
   if (result == MOJO_RESULT_CANCELLED) {
@@ -277,13 +301,15 @@ void SimpleWatcher::OnHandleReady(int watch_id,
 
     base::WeakPtr<SimpleWatcher> weak_self = weak_factory_.GetWeakPtr();
     callback.Run(result, state);
-    if (!weak_self)
+    if (!weak_self) {
       return;
+    }
 
     // Prevent |MOJO_RESULT_FAILED_PRECONDITION| task spam by only notifying
     // at most once in AUTOMATIC arming mode.
-    if (result == MOJO_RESULT_FAILED_PRECONDITION)
+    if (result == MOJO_RESULT_FAILED_PRECONDITION) {
       return;
+    }
 
     if (arming_policy_ == ArmingPolicy::AUTOMATIC && IsWatching())
       ArmOrNotify();

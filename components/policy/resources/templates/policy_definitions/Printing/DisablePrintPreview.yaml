@@ -1,0 +1,26 @@
+caption: Disable Print Preview
+desc: |-
+  Setting the policy to Enabled has <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> open the system print dialog instead of the built-in print preview when users request a printout.
+
+        Setting the policy to Disabled or leaving it unset has print commands trigger the print preview screen.
+example_value: false
+features:
+  dynamic_refresh: false
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Disable print preview
+  value: true
+- caption: Enable print preview
+  value: false
+owners:
+- file://printing/OWNERS
+- rbpotter@chomium.org
+- thestig@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:18-
+tags: []
+type: main

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@
 #include "chrome/browser/media/router/providers/cast/cast_session_client.h"
 #include "chrome/browser/media/router/providers/cast/test_util.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
-#include "components/cast_channel/cast_test_util.h"
+#include "components/media_router/common/providers/cast/channel/cast_test_util.h"
 #include "components/media_router/common/test/test_helper.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -31,7 +31,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::test::IsJson;
-using base::test::ParseJson;
+using base::test::ParseJsonDict;
 using blink::mojom::PresentationConnectionCloseReason;
 using blink::mojom::PresentationConnectionMessage;
 using blink::mojom::PresentationConnectionMessagePtr;
@@ -51,8 +51,9 @@ class AppActivityTest : public CastActivityTestBase {
     CastActivityTestBase::SetUp();
 
     activity_ = std::make_unique<AppActivity>(
-        MediaRoute(kRouteId, MediaSource(), kSinkId, "", false, false), kAppId,
-        &message_handler_, &session_tracker_);
+        MediaRoute(kRouteId, MediaSource("https://example.com/receiver.html"),
+                   kSinkId, "", false),
+        kAppId, &message_handler_, &session_tracker_);
   }
 
   void SetUpSession() { activity_->SetOrUpdateSession(*session_, sink_, ""); }
@@ -89,7 +90,7 @@ TEST_F(AppActivityTest, SendAppMessageToReceiver) {
       }));
 
   std::unique_ptr<CastInternalMessage> message =
-      CastInternalMessage::From(ParseJson(R"({
+      CastInternalMessage::From(ParseJsonDict(R"({
     "type": "app_message",
     "clientId": "theClientId",
     "sequenceNumber": 999,
@@ -123,7 +124,7 @@ TEST_F(AppActivityTest, SendMediaRequestToReceiver) {
       .WillOnce(Return(request_id));
 
   std::unique_ptr<CastInternalMessage> message =
-      CastInternalMessage::From(ParseJson(R"({
+      CastInternalMessage::From(ParseJsonDict(R"({
     "type": "v2_message",
     "clientId": "theClientId",
     "sequenceNumber": 999,
@@ -157,7 +158,7 @@ TEST_F(AppActivityTest, SendSetVolumeRequestToReceiver) {
 
   SetUpSession();
   std::unique_ptr<CastInternalMessage> message =
-      CastInternalMessage::From(ParseJson(R"({
+      CastInternalMessage::From(ParseJsonDict(R"({
     "type": "v2_message",
     "clientId": "theClientId",
     "sequenceNumber": 999,
@@ -279,7 +280,7 @@ TEST_F(AppActivityTest, SetOrUpdateSession) {
 
   route().set_description("");
   for (auto* client : MockCastSessionClient::instances()) {
-    // TODO(jrw): Check argument of SendMessageToClient.
+    // TODO(crbug.com/1291744): Check argument of SendMessageToClient.
     EXPECT_CALL(*client, SendMessageToClient).Times(1);
   }
   activity_->SetOrUpdateSession(*session_, sink_, "theHashToken");
@@ -313,8 +314,8 @@ TEST_F(AppActivityTest, OnAppMessage) {
 
   auto* client = AddMockClient("theClientId");
   auto message = cast_channel::CreateCastMessage(
-      "urn:x-cast:com.google.foo", base::Value(base::Value::Type::DICTIONARY),
-      "sourceId", "theClientId");
+      "urn:x-cast:com.google.foo", base::Value(base::Value::Dict()), "sourceId",
+      "theClientId");
   EXPECT_CALL(*client,
               SendMessageToClient(IsPresentationConnectionMessage(
                   CreateAppMessage("theSessionId", "theClientId", message)
@@ -328,8 +329,8 @@ TEST_F(AppActivityTest, OnAppMessageAllClients) {
   auto* client1 = AddMockClient("theClientId1");
   auto* client2 = AddMockClient("theClientId2");
   auto message = cast_channel::CreateCastMessage(
-      "urn:x-cast:com.google.foo", base::Value(base::Value::Type::DICTIONARY),
-      "sourceId", "*");
+      "urn:x-cast:com.google.foo", base::Value(base::Value::Dict()), "sourceId",
+      "*");
   EXPECT_CALL(*client1,
               SendMessageToClient(IsPresentationConnectionMessage(
                   CreateAppMessage("theSessionId", "theClientId1", message)
@@ -346,7 +347,7 @@ TEST_F(AppActivityTest, CloseConnectionOnReceiver) {
   AddMockClient("theClientId1");
 
   EXPECT_CALL(message_handler_, CloseConnection(kChannelId, "theClientId1",
-                                                session_->transport_id()));
+                                                session_->destination_id()));
   activity_->CloseConnectionOnReceiver("theClientId1");
 }
 

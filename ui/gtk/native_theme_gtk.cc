@@ -1,11 +1,15 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/gtk/native_theme_gtk.h"
 
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
+#include "cc/paint/paint_canvas.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -78,7 +82,7 @@ NativeThemeGtk* NativeThemeGtk::instance() {
 
 NativeThemeGtk::NativeThemeGtk()
     : NativeThemeBase(/*should_only_use_dark_colors=*/false,
-                      /*is_custom_system_theme=*/true) {
+                      ui::SystemTheme::kGtk) {
   // g_type_from_name() is only used in GTK3.
   if (!GtkCheckVersion(4)) {
     // These types are needed by g_type_from_name(), but may not be registered
@@ -114,7 +118,7 @@ NativeThemeGtk::NativeThemeGtk()
   }
 
   ui::ColorProviderManager::Get().AppendColorProviderInitializer(
-      base::BindRepeating(AddGtkNativeCoreColorMixer));
+      base::BindRepeating(AddGtkNativeColorMixer));
 
   OnThemeChanged(gtk_settings_get_default(), nullptr);
 }
@@ -157,7 +161,7 @@ void NativeThemeGtk::NotifyOnNativeThemeUpdated() {
   // Update the preferred contrast settings for the NativeThemeAura instance and
   // notify its observers about the change.
   ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-  native_theme->set_preferred_contrast(
+  native_theme->SetPreferredContrast(
       UserHasContrastPreference()
           ? ui::NativeThemeBase::PreferredContrast::kMore
           : ui::NativeThemeBase::PreferredContrast::kNoPreference);
@@ -167,8 +171,6 @@ void NativeThemeGtk::NotifyOnNativeThemeUpdated() {
 void NativeThemeGtk::OnThemeChanged(GtkSettings* settings,
                                     GtkParamSpec* param) {
   SetThemeCssOverride(ScopedCssProvider());
-  for (auto& color : color_cache_)
-    color = absl::nullopt;
 
   // Hack to workaround a bug on GNOME standard themes which would
   // cause black patches to be rendered on GtkFileChooser dialogs.
@@ -190,10 +192,9 @@ void NativeThemeGtk::OnThemeChanged(GtkSettings* settings,
   // have a light variant and aren't affected by the setting.  Because of this,
   // experimentally check if the theme is dark by checking if the window
   // background color is dark.
-  const auto window_bg_color = SkColorFromColorId(ui::kColorWindowBackground);
-  set_use_dark_colors(
-      IsForcedDarkMode() ||
-      (window_bg_color && color_utils::IsDark(window_bg_color.value())));
+  const SkColor window_bg_color = GetBgColor("");
+  set_use_dark_colors(IsForcedDarkMode() ||
+                      color_utils::IsDark(window_bg_color));
   set_preferred_color_scheme(CalculatePreferredColorScheme());
 
   // GTK doesn't have a native high contrast setting.  Rather, it's implied by
@@ -205,116 +206,16 @@ void NativeThemeGtk::OnThemeChanged(GtkSettings* settings,
                  ::tolower);
   bool high_contrast = theme_name.find("high") != std::string::npos &&
                        theme_name.find("contrast") != std::string::npos;
-  set_preferred_contrast(
+  SetPreferredContrast(
       high_contrast ? ui::NativeThemeBase::PreferredContrast::kMore
                     : ui::NativeThemeBase::PreferredContrast::kNoPreference);
 
   NotifyOnNativeThemeUpdated();
 }
 
-bool NativeThemeGtk::AllowColorPipelineRedirection(
-    ColorScheme color_scheme) const {
-  return true;
-}
-
-SkColor NativeThemeGtk::GetSystemColorDeprecated(ColorId color_id,
-                                                 ColorScheme color_scheme,
-                                                 bool apply_processing) const {
-  absl::optional<SkColor> color = color_cache_[color_id];
-  if (!color) {
-    if (auto provider_color_id = ui::NativeThemeColorIdToColorId(color_id))
-      color = SkColorFromColorId(provider_color_id.value());
-    if (!color) {
-      color = ui::NativeThemeBase::GetSystemColorDeprecated(
-          color_id, color_scheme, apply_processing);
-    }
-    color_cache_[color_id] = color;
-  }
-  DCHECK(color);
-  return color.value();
-}
-
-void NativeThemeGtk::PaintArrowButton(
-    cc::PaintCanvas* canvas,
-    const gfx::Rect& rect,
-    Part direction,
-    State state,
-    ColorScheme color_scheme,
-    const ScrollbarArrowExtraParams& arrow) const {
-  // Add the "flat" styleclass to avoid drawing a border.
-  auto context = GetStyleContextFromCss(
-      GtkCheckVersion(3, 20)
-          ? StrCat({GtkCssMenuScrollbar(), " #range GtkButton#button.flat"})
-          : "GtkRange.scrollbar.button.flat");
-  // Remove any rounded corners since arrow scrollbar buttons are tiny.
-  ApplyCssToContext(context, "* { border-radius: 0px; }");
-  GtkStateFlags state_flags = StateToStateFlags(state);
-  gtk_style_context_set_state(context, state_flags);
-
-  switch (direction) {
-    case kScrollbarUpArrow:
-      gtk_style_context_add_class(context, "top");
-      break;
-    case kScrollbarRightArrow:
-      gtk_style_context_add_class(context, "right");
-      break;
-    case kScrollbarDownArrow:
-      gtk_style_context_add_class(context, "bottom");
-      break;
-    case kScrollbarLeftArrow:
-      gtk_style_context_add_class(context, "left");
-      break;
-    default:
-      NOTREACHED();
-  }
-
-  PaintWidget(canvas, rect, context, BG_RENDER_NORMAL, false);
-  PaintArrow(canvas, rect, direction, GtkStyleContextGetColor(context));
-}
-
-void NativeThemeGtk::PaintScrollbarTrack(
-    cc::PaintCanvas* canvas,
-    Part part,
-    State state,
-    const ScrollbarTrackExtraParams& extra_params,
-    const gfx::Rect& rect,
-    ColorScheme color_scheme) const {
-  PaintWidget(
-      canvas, rect,
-      GetStyleContextFromCss(GtkCheckVersion(3, 20)
-                                 ? StrCat({GtkCssMenuScrollbar(), " #trough"})
-                                 : "GtkScrollbar.scrollbar.trough"),
-      BG_RENDER_NORMAL, true);
-}
-
-void NativeThemeGtk::PaintScrollbarThumb(
-    cc::PaintCanvas* canvas,
-    Part part,
-    State state,
-    const gfx::Rect& rect,
-    NativeTheme::ScrollbarOverlayColorTheme theme,
-    ColorScheme color_scheme) const {
-  auto context = GetStyleContextFromCss(
-      GtkCheckVersion(3, 20)
-          ? StrCat({GtkCssMenuScrollbar(), " #trough #slider"})
-          : "GtkScrollbar.scrollbar.slider");
-  gtk_style_context_set_state(context, StateToStateFlags(state));
-  PaintWidget(canvas, rect, context, BG_RENDER_NORMAL, true);
-}
-
-void NativeThemeGtk::PaintScrollbarCorner(cc::PaintCanvas* canvas,
-                                          State state,
-                                          const gfx::Rect& rect,
-                                          ColorScheme color_scheme) const {
-  auto context = GetStyleContextFromCss(
-      GtkCheckVersion(3, 19, 2)
-          ? "GtkScrolledWindow#scrolledwindow #junction"
-          : "GtkScrolledWindow.scrolledwindow.scrollbars-junction");
-  PaintWidget(canvas, rect, context, BG_RENDER_NORMAL, true);
-}
-
 void NativeThemeGtk::PaintMenuPopupBackground(
     cc::PaintCanvas* canvas,
+    const ui::ColorProvider* color_provider,
     const gfx::Size& size,
     const MenuBackgroundExtraParams& menu_background,
     ColorScheme color_scheme) const {
@@ -326,6 +227,7 @@ void NativeThemeGtk::PaintMenuPopupBackground(
 
 void NativeThemeGtk::PaintMenuItemBackground(
     cc::PaintCanvas* canvas,
+    const ui::ColorProvider* color_provider,
     State state,
     const gfx::Rect& rect,
     const MenuItemExtraParams& menu_item,
@@ -338,17 +240,17 @@ void NativeThemeGtk::PaintMenuItemBackground(
 
 void NativeThemeGtk::PaintMenuSeparator(
     cc::PaintCanvas* canvas,
+    const ui::ColorProvider* color_provider,
     State state,
     const gfx::Rect& rect,
-    const MenuSeparatorExtraParams& menu_separator,
-    ColorScheme color_scheme) const {
+    const MenuSeparatorExtraParams& menu_separator) const {
   // TODO(estade): use GTK to draw vertical separators too. See
   // crbug.com/710183
   if (menu_separator.type == ui::VERTICAL_SEPARATOR) {
     cc::PaintFlags paint;
     paint.setStyle(cc::PaintFlags::kFill_Style);
-    paint.setColor(GetSystemColor(ui::NativeTheme::kColorId_MenuSeparatorColor,
-                                  color_scheme));
+    DCHECK(color_provider);
+    paint.setColor(color_provider->GetColor(ui::kColorMenuSeparator));
     canvas->drawRect(gfx::RectToSkRect(rect), paint);
     return;
   }

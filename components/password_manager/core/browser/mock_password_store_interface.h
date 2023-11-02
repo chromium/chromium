@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,10 @@ class MockPasswordStoreInterface : public PasswordStoreInterface {
   MockPasswordStoreInterface();
 
   MOCK_METHOD(bool, IsAbleToSavePasswords, (), (const, override));
-  MOCK_METHOD(void, AddLogin, (const PasswordForm&), (override));
+  MOCK_METHOD(void,
+              AddLogin,
+              (const PasswordForm&, base::OnceClosure),
+              (override));
   MOCK_METHOD(void, UpdateLogin, (const PasswordForm&), (override));
   MOCK_METHOD(void,
               UpdateLoginWithPrimaryKey,
@@ -46,16 +49,19 @@ class MockPasswordStoreInterface : public PasswordStoreInterface {
               (override));
   MOCK_METHOD(void,
               GetLogins,
-              (const PasswordFormDigest&, PasswordStoreConsumer*),
+              (const PasswordFormDigest&, base::WeakPtr<PasswordStoreConsumer>),
               (override));
   MOCK_METHOD(void,
               GetAutofillableLogins,
-              (PasswordStoreConsumer*),
+              (base::WeakPtr<PasswordStoreConsumer>),
               (override));
-  MOCK_METHOD(void, GetAllLogins, (PasswordStoreConsumer*), (override));
+  MOCK_METHOD(void,
+              GetAllLogins,
+              (base::WeakPtr<PasswordStoreConsumer>),
+              (override));
   MOCK_METHOD(void,
               GetAllLoginsWithAffiliationAndBrandingInformation,
-              (PasswordStoreConsumer*),
+              (base::WeakPtr<PasswordStoreConsumer>),
               (override));
   MOCK_METHOD(void, AddObserver, (Observer*), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
@@ -66,6 +72,10 @@ class MockPasswordStoreInterface : public PasswordStoreInterface {
               (),
               (override));
   MOCK_METHOD(PasswordStoreBackend*, GetBackendForTesting, (), (override));
+  MOCK_METHOD(void,
+              OnSyncServiceInitialized,
+              (syncer::SyncService*),
+              (override));
 
   // RefcountedKeyedService:
   void ShutdownOnUIThread() override;

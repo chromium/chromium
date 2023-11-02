@@ -1,0 +1,18 @@
+Tests that requesting data works for IndexedDB with storageKey
+
+Open database, object store and add some values
+values added[
+    [0] : test-data0
+    [1] : test-data1
+    [2] : test-data2
+    [3] : test-data3
+    [4] : test-data4
+]
+
+Request data for storage key
+data key values equal[
+    [0] : test-data1
+    [1] : test-data2
+    [2] : test-data3
+]
+

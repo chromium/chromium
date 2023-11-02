@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/gurl.h"
-
-namespace content {
-class NavigationHandle;
-}
 
 // A tab helper that keeps track of blocked Framebusts that happened on each
 // page. Only used for the desktop version of the blocked Framebust UI.
@@ -55,8 +51,7 @@ class FramebustBlockTabHelper
   explicit FramebustBlockTabHelper(content::WebContents* web_contents);
 
   // content::WebContentsObserver:
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
 
   blocked_content::UrlListManager manager_;
 

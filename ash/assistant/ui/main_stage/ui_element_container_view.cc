@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/assistant_view_delegate.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
-#include "ash/assistant/ui/colors/assistant_colors_util.h"
 #include "ash/assistant/ui/main_stage/animated_container_view.h"
 #include "ash/assistant/ui/main_stage/assistant_ui_element_view.h"
 #include "ash/assistant/ui/main_stage/assistant_ui_element_view_factory.h"
@@ -23,12 +22,13 @@
 #include "base/callback.h"
 #include "base/time/time.h"
 #include "cc/base/math_util.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/layout/box_layout.h"
@@ -87,8 +87,7 @@ END_METADATA
 
 UiElementContainerView::UiElementContainerView(AssistantViewDelegate* delegate)
     : AnimatedContainerView(delegate),
-      view_factory_(std::make_unique<AssistantUiElementViewFactory>(delegate)),
-      use_dark_light_mode_colors_(assistant::UseDarkLightModeColors()) {
+      view_factory_(std::make_unique<AssistantUiElementViewFactory>(delegate)) {
   SetID(AssistantViewID::kUiElementContainer);
   InitLayout();
 }
@@ -139,7 +138,8 @@ void UiElementContainerView::InitLayout() {
   const int horizontal_margin = assistant::ui::GetHorizontalMargin();
   content_view()->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets(0, horizontal_margin, kPaddingBottomDip, horizontal_margin),
+      gfx::Insets::TLBR(0, horizontal_margin, kPaddingBottomDip,
+                        horizontal_margin),
       kSpacingDip));
 
   // Scroll indicator.
@@ -162,7 +162,8 @@ void UiElementContainerView::InitLayout() {
   // When |scroll_indicator_| is not visible, this just adds a negligible amount
   // of margin to the bottom of the content. Otherwise, |scroll_indicator_| will
   // occupy this space.
-  SetBorder(views::CreateEmptyBorder(0, 0, kScrollIndicatorHeightDip, 0));
+  SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(0, 0, kScrollIndicatorHeightDip, 0)));
 
   // We set invisible overflow indicators with thickness=0. But we observe
   // visibility change of the bottom indicator.
@@ -206,17 +207,29 @@ std::unique_ptr<ElementAnimator> UiElementContainerView::HandleUiElement(
     const AssistantUiElement* ui_element) {
   // Create a new view for the |ui_element|.
   auto view = view_factory_->Create(ui_element);
+  if (!view) {
+    return nullptr;
+  }
 
   // If the first UI element is a card, it has a unique margin requirement.
   const bool is_card = ui_element->type() == AssistantUiElementType::kCard;
   const bool is_first_ui_element = content_view()->children().empty();
   if (is_card && is_first_ui_element) {
     constexpr int kMarginTopDip = 24;
-    view->SetBorder(views::CreateEmptyBorder(kMarginTopDip, 0, 0, 0));
+    view->SetBorder(
+        views::CreateEmptyBorder(gfx::Insets::TLBR(kMarginTopDip, 0, 0, 0)));
   }
 
   // Add the view to the hierarchy and prepare its animation layer for entry.
   auto* view_ptr = content_view()->AddChildView(std::move(view));
+
+  // If this runs in test, AssistantCardElement can use TestAshWebView. It does
+  // not return a native view. We cannot obtain a layer for animation. We want
+  // to add it to the UI tree as a test is going to interact with it. But we
+  // skip an animation.
+  if (is_card && !view_ptr->GetLayerForAnimating())
+    return nullptr;
+
   view_ptr->GetLayerForAnimating()->SetOpacity(0.f);
 
   // Return the animator that will be used to animate the view.
@@ -245,12 +258,8 @@ void UiElementContainerView::OnOverflowIndicatorVisibilityChanged(
 }
 
 SkColor UiElementContainerView::GetOverflowIndicatorBackgroundColor() const {
-  if (use_dark_light_mode_colors_) {
-    return ColorProvider::Get()->GetContentLayerColor(
-        ColorProvider::ContentLayerType::kSeparatorColor);
-  }
-
-  return gfx::kGoogleGrey300;
+  return ColorProvider::Get()->GetContentLayerColor(
+      ColorProvider::ContentLayerType::kSeparatorColor);
 }
 
 }  // namespace ash

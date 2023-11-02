@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,7 @@ void PopulateFinalError(std::u16string* error,
 // |expected_type|. On failure, returns false and populates |error| and
 // |error_path_reversed|.
 const base::Value* FindKeyOfType(
-    const base::DictionaryValue& dict,
+    const base::Value::Dict& dict,
     base::StringPiece key,
     base::Value::Type expected_type,
     std::u16string* error,
@@ -46,22 +46,22 @@ const base::Value* FindKeyOfType(
 
 // Parses |out| from |dict| at the given |key|. On failure, returns false and
 // populates |error| and |error_path_reversed|.
-bool ParseFromDictionary(const base::DictionaryValue& dict,
+bool ParseFromDictionary(const base::Value::Dict& dict,
                          base::StringPiece key,
                          int* out,
                          std::u16string* error,
                          std::vector<base::StringPiece>* error_path_reversed);
-bool ParseFromDictionary(const base::DictionaryValue& dict,
+bool ParseFromDictionary(const base::Value::Dict& dict,
                          base::StringPiece key,
                          bool* out,
                          std::u16string* error,
                          std::vector<base::StringPiece>* error_path_reversed);
-bool ParseFromDictionary(const base::DictionaryValue& dict,
+bool ParseFromDictionary(const base::Value::Dict& dict,
                          base::StringPiece key,
                          double* out,
                          std::u16string* error,
                          std::vector<base::StringPiece>* error_path_reversed);
-bool ParseFromDictionary(const base::DictionaryValue& dict,
+bool ParseFromDictionary(const base::Value::Dict& dict,
                          base::StringPiece key,
                          std::string* out,
                          std::u16string* error,
@@ -69,23 +69,31 @@ bool ParseFromDictionary(const base::DictionaryValue& dict,
 
 // This overload is used for lists/arrays.
 template <typename T>
-bool ParseFromDictionary(const base::DictionaryValue& dict,
+bool ParseFromDictionary(const base::Value::Dict& dict,
                          base::StringPiece key,
                          std::vector<T>* out_ptr,
                          std::u16string* error,
                          std::vector<base::StringPiece>* error_path_reversed);
 
-// This overload is used for optional values.
+// This overload is used for optional types wrapped as unique_ptr<T>.
 template <typename T>
-bool ParseFromDictionary(const base::DictionaryValue& dict,
+bool ParseFromDictionary(const base::Value::Dict& dict,
                          base::StringPiece key,
                          std::unique_ptr<T>* out_ptr,
                          std::u16string* error,
                          std::vector<base::StringPiece>* error_path_reversed);
 
+// This overload is used for optional types wrapped as absl::optional<T>.
+template <typename T>
+bool ParseFromDictionary(const base::Value::Dict& dict,
+                         base::StringPiece key,
+                         absl::optional<T>* out_opt,
+                         std::u16string* error,
+                         std::vector<base::StringPiece>* error_path_reversed);
+
 // This overload is used for generated types.
 template <typename T>
-bool ParseFromDictionary(const base::DictionaryValue& dict,
+bool ParseFromDictionary(const base::Value::Dict& dict,
                          base::StringPiece key,
                          T* out_ptr,
                          std::u16string* error,
@@ -94,7 +102,7 @@ bool ParseFromDictionary(const base::DictionaryValue& dict,
 }
 
 template <typename T>
-bool ParseFromDictionary(const base::DictionaryValue& dict,
+bool ParseFromDictionary(const base::Value::Dict& dict,
                          base::StringPiece key,
                          std::vector<T>* out_ptr,
                          std::u16string* error,
@@ -116,7 +124,7 @@ bool ParseFromDictionary(const base::DictionaryValue& dict,
 }
 
 template <typename T>
-bool ParseFromDictionary(const base::DictionaryValue& dict,
+bool ParseFromDictionary(const base::Value::Dict& dict,
                          base::StringPiece key,
                          std::unique_ptr<T>* out_ptr,
                          std::u16string* error,
@@ -124,7 +132,7 @@ bool ParseFromDictionary(const base::DictionaryValue& dict,
   DCHECK(out_ptr);
 
   // Ignore optional keys if they are not present without raising an error.
-  if (!dict.FindKey(key))
+  if (!dict.Find(key))
     return true;
 
   // Parse errors for optional keys which are specified should still cause a
@@ -137,6 +145,28 @@ bool ParseFromDictionary(const base::DictionaryValue& dict,
   return true;
 }
 
+template <typename T>
+bool ParseFromDictionary(const base::Value::Dict& dict,
+                         base::StringPiece key,
+                         absl::optional<T>* out_opt,
+                         std::u16string* error,
+                         std::vector<base::StringPiece>* error_path_reversed) {
+  DCHECK(out_opt);
+
+  // Ignore optional keys if they are not present without raising an error.
+  if (!dict.Find(key))
+    return true;
+
+  // Parse errors for optional keys which are specified should still cause a
+  // failure.
+  T result{};
+  if (!ParseFromDictionary(dict, key, &result, error, error_path_reversed))
+    return false;
+
+  *out_opt = std::move(result);
+  return true;
+}
+
 // Alias for pointer to a function which converts a string to an enum of type T.
 template <typename T>
 using StringToEnumConverter = T (*)(const std::string&);
@@ -145,7 +175,7 @@ using StringToEnumConverter = T (*)(const std::string&);
 // and populates |error| and |error_path_reversed|.
 template <typename T>
 bool ParseEnumFromDictionary(
-    const base::DictionaryValue& dict,
+    const base::Value::Dict& dict,
     base::StringPiece key,
     StringToEnumConverter<T> converter,
     bool is_optional_property,
@@ -157,7 +187,7 @@ bool ParseEnumFromDictionary(
   DCHECK_EQ(none_value, *out);
 
   // Ignore optional keys if they are not present without raising an error.
-  if (is_optional_property && !dict.FindKey(key))
+  if (is_optional_property && !dict.Find(key))
     return true;
 
   // Parse errors for optional keys which are specified should still cause a
@@ -182,7 +212,7 @@ bool ParseEnumFromDictionary(
 // failure, returns false and populates `error` and `error_path_reversed`.
 template <typename T>
 bool ParseEnumArrayFromDictionary(
-    const base::DictionaryValue& dict,
+    const base::Value::Dict& dict,
     base::StringPiece key,
     StringToEnumConverter<T> converter,
     T none_value,
@@ -218,24 +248,24 @@ bool ParseEnumArrayFromDictionary(
 // Overload for optional enum arrays.
 template <typename T>
 bool ParseEnumArrayFromDictionary(
-    const base::DictionaryValue& dict,
+    const base::Value::Dict& dict,
     base::StringPiece key,
     StringToEnumConverter<T> converter,
     T none_value,
-    std::unique_ptr<std::vector<T>>* out,
+    absl::optional<std::vector<T>>* out,
     std::u16string* error,
     std::vector<base::StringPiece>* error_path_reversed) {
   DCHECK(out);
 
   // Ignore optional keys if they are not present without raising an error.
-  if (!dict.FindKey(key))
+  if (!dict.Find(key))
     return true;
 
   // Parse errors for optional keys which are specified should still cause a
   // failure.
-  auto result = std::make_unique<std::vector<T>>();
-  if (!ParseEnumArrayFromDictionary(dict, key, converter, none_value,
-                                    result.get(), error, error_path_reversed)) {
+  std::vector<T> result;
+  if (!ParseEnumArrayFromDictionary(dict, key, converter, none_value, &result,
+                                    error, error_path_reversed)) {
     return false;
   }
 

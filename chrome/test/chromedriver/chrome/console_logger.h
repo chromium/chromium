@@ -1,11 +1,11 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_TEST_CHROMEDRIVER_CHROME_CONSOLE_LOGGER_H_
 #define CHROME_TEST_CHROMEDRIVER_CHROME_CONSOLE_LOGGER_H_
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 
 class Log;
@@ -33,7 +33,7 @@ class ConsoleLogger : public DevToolsEventListener {
                  const base::DictionaryValue& params) override;
 
  private:
-  Log* log_;  // The log where to create entries.
+  raw_ptr<Log> log_;  // The log where to create entries.
 
   Status OnLogEntryAdded(const base::DictionaryValue& params);
   Status OnRuntimeConsoleApiCalled(const base::DictionaryValue& params);

@@ -34,19 +34,22 @@
 #include <unicode/uchar.h>
 
 #include "base/dcheck_is_on.h"
-#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/text_autosizer_page_info.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+
+namespace gfx {
+class Size;
+}
 
 namespace blink {
 
 class Document;
 class Frame;
-class IntSize;
 class LayoutBlock;
 class LayoutBox;
 class LayoutNGTableInterface;
@@ -91,9 +94,14 @@ class CORE_EXPORT TextAutosizer final : public GarbageCollected<TextAutosizer> {
   void UpdatePageInfo();
   void Record(LayoutBlock*);
   void Record(LayoutText*);
-  void Destroy(LayoutBlock*);
+  void Destroy(LayoutObject*);
 
   bool PageNeedsAutosizing() const;
+
+  // Register the specified |inline_size| for |ng_block| if the document has
+  // a TextAutosizer instance and it should handle layout.
+  static void MaybeRegisterInlineSize(const LayoutBlock& ng_block,
+                                      LayoutUnit inline_size);
 
   void Trace(Visitor*) const;
 
@@ -125,7 +133,7 @@ class CORE_EXPORT TextAutosizer final : public GarbageCollected<TextAutosizer> {
 
    protected:
     TextAutosizer* text_autosizer_;
-    LayoutBox* box_;
+    LayoutBlock* block_;
   };
 
   class CORE_EXPORT DeferUpdatePageInfo {
@@ -269,7 +277,7 @@ class CORE_EXPORT TextAutosizer final : public GarbageCollected<TextAutosizer> {
     Fingerprint Get(const LayoutObject*);
     BlockSet* GetTentativeClusterRoots(Fingerprint);
     Supercluster* CreateSuperclusterIfNeeded(LayoutBlock*, bool& is_new_entry);
-    bool HasFingerprints() const { return !fingerprints_.IsEmpty(); }
+    bool HasFingerprints() const { return !fingerprints_.empty(); }
     HeapHashSet<Member<Supercluster>>&
     GetPotentiallyInconsistentSuperclusters() {
       return potentially_inconsistent_superclusters_;
@@ -306,13 +314,15 @@ class CORE_EXPORT TextAutosizer final : public GarbageCollected<TextAutosizer> {
 
   void BeginLayout(LayoutBlock*, SubtreeLayoutScope*);
   void EndLayout(LayoutBlock*);
+  void RegisterInlineSize(const LayoutBlock& ng_block, LayoutUnit inline_size);
+  void UnregisterInlineSize(const LayoutBlock& ng_block);
   void InflateAutoTable(LayoutNGTableInterface*);
   float Inflate(LayoutObject*,
                 SubtreeLayoutScope*,
                 InflateBehavior = kThisBlockOnly,
                 float multiplier = 0);
   bool ShouldHandleLayout() const;
-  IntSize WindowSize() const;
+  gfx::Size WindowSize() const;
   void SetAllTextNeedsLayout(LayoutBlock* container = nullptr);
   void ResetMultipliers();
   BeginLayoutBehavior PrepareForLayout(LayoutBlock*);
@@ -368,8 +378,14 @@ class CORE_EXPORT TextAutosizer final : public GarbageCollected<TextAutosizer> {
 
   void ReportIfCrossSiteFrame();
 
+  float ContentInlineSize(const LayoutBlock* block) const;
+
   Member<const Document> document_;
   Member<const LayoutBlock> first_block_to_begin_layout_;
+  // WeakMember because we don't call UnregisterInlineSize() for
+  // LayoutMultiColumnFlowThread.
+  HeapHashMap<WeakMember<const LayoutBlock>, LayoutUnit> inline_size_map_;
+
 #if DCHECK_IS_ON()
   // Used to ensure we don't compute properties of a block before beginLayout()
   // is called on it.

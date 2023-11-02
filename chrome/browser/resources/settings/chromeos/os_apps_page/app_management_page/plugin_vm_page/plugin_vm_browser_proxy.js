@@ -1,8 +1,8 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 /**
  * @fileoverview A helper object used by the Plugin VM section
@@ -22,8 +22,21 @@ export class PluginVmBrowserProxy {
   relaunchPluginVm() {}
 }
 
+/** @type {?PluginVmBrowserProxy} */
+let instance = null;
+
 /** @implements {PluginVmBrowserProxy} */
 export class PluginVmBrowserProxyImpl {
+  /** @return {!PluginVmBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new PluginVmBrowserProxyImpl());
+  }
+
+  /** @param {!PluginVmBrowserProxy} obj */
+  static setInstanceForTesting(obj) {
+    instance = obj;
+  }
+
   /** @override */
   isRelaunchNeededForNewPermissions() {
     return sendWithPromise('isRelaunchNeededForNewPermissions');
@@ -34,7 +47,3 @@ export class PluginVmBrowserProxyImpl {
     chrome.send('relaunchPluginVm');
   }
 }
-
-  // The singleton instance_ can be replaced with a test version of this wrapper
-  // during testing.
-addSingletonGetter(PluginVmBrowserProxyImpl);

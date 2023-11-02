@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,8 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/posix/eintr_wrapper.h"
@@ -109,7 +109,7 @@ class EventInjector {
   };
 
   struct Source : public GSource {
-    EventInjector* injector;
+    raw_ptr<EventInjector> injector;
   };
 
   void AddEventHelper(int delay_ms, OnceClosure callback, OnceClosure task) {
@@ -140,7 +140,7 @@ class EventInjector {
     return TRUE;
   }
 
-  Source* source_;
+  raw_ptr<Source> source_;
   std::vector<Event> events_;
   int processed_events_;
   static GSourceFuncs SourceFuncs;
@@ -349,7 +349,7 @@ class ConcurrentHelper : public RefCounted<ConcurrentHelper>  {
   static const int kStartingEventCount = 20;
   static const int kStartingTaskCount = 20;
 
-  EventInjector* injector_;
+  raw_ptr<EventInjector> injector_;
   OnceClosure done_closure_;
   int event_count_;
   int task_count_;
@@ -555,6 +555,9 @@ class MessagePumpGLibFdWatchTest : public testing::Test {
   }
 
   void TearDown() override {
+    // Wait for the IO thread to exit before closing FDs which may have been
+    // passed to it.
+    io_thread_.Stop();
     if (IGNORE_EINTR(close(pipefds_[0])) < 0)
       PLOG(ERROR) << "close";
     if (IGNORE_EINTR(close(pipefds_[1])) < 0)
@@ -596,7 +599,7 @@ class BaseWatcher : public MessagePumpGlib::FdWatcher {
   void OnFileCanWriteWithoutBlocking(int /* fd */) override { NOTREACHED(); }
 
  protected:
-  MessagePumpGlib::FdWatchController* controller_;
+  raw_ptr<MessagePumpGlib::FdWatchController> controller_;
 };
 
 class DeleteWatcher : public BaseWatcher {

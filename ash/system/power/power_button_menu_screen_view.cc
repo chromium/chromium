@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -108,9 +108,9 @@ class PowerButtonMenuScreenView::PowerButtonMenuBackgroundView
   // views::View:
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
-    layer()->SetColor(DeprecatedGetShieldLayerColor(
-        AshColorProvider::ShieldLayerType::kShield40,
-        kPowerButtonMenuFullscreenShieldColor));
+    layer()->SetColor(
+        DeprecatedGetBaseLayerColor(AshColorProvider::BaseLayerType::kOpaque,
+                                    kPowerButtonMenuFullscreenShieldColor));
   }
 
   // A callback for when the animation that shows the power menu has finished.
@@ -118,6 +118,7 @@ class PowerButtonMenuScreenView::PowerButtonMenuBackgroundView
 };
 
 PowerButtonMenuScreenView::PowerButtonMenuScreenView(
+    ShutdownReason shutdown_reason,
     PowerButtonPosition power_button_position,
     double power_button_offset_percentage,
     base::RepeatingClosure show_animation_done)
@@ -126,7 +127,8 @@ PowerButtonMenuScreenView::PowerButtonMenuScreenView(
   power_button_screen_background_shield_ =
       new PowerButtonMenuBackgroundView(show_animation_done);
   AddChildView(power_button_screen_background_shield_);
-  power_button_menu_view_ = new PowerButtonMenuView(power_button_position_);
+  power_button_menu_view_ =
+      new PowerButtonMenuView(shutdown_reason, power_button_position_);
   AddChildView(power_button_menu_view_);
 
   AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));

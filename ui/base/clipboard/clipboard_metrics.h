@@ -1,11 +1,17 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_BASE_CLIPBOARD_CLIPBOARD_METRICS_H_
 #define UI_BASE_CLIPBOARD_CLIPBOARD_METRICS_H_
 
+#include "build/build_config.h"
+
 namespace ui {
+
+#if BUILDFLAG(IS_CHROMEOS)
+class ClipboardData;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Used to log formats read/written from/to the platform clipboard.
 //
@@ -27,6 +33,12 @@ enum class ClipboardFormatMetric {
 
 void RecordRead(ClipboardFormatMetric metric);
 void RecordWrite(ClipboardFormatMetric metric);
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Records the time interval between when the specified |data| was committed to
+// the clipboard and when it was read. Read time is assumed to be now.
+void RecordTimeIntervalBetweenCommitAndRead(const ui::ClipboardData* data);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace ui
 

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -114,7 +114,7 @@ MockFeedback = class {
     const MockTts = function() {};
     MockTts.prototype = {
       __proto__: TtsInterface.prototype,
-      speak: this.addUtterance_.bind(this)
+      speak: this.addUtterance_.bind(this),
     };
 
     ChromeVox.tts = new MockTts();
@@ -122,7 +122,7 @@ MockFeedback = class {
     const MockBraille = function() {};
     MockBraille.prototype = {
       __proto__: BrailleInterface.prototype,
-      write: this.addBraille_.bind(this)
+      write: this.addBraille_.bind(this),
     };
 
     ChromeVox.braille = new MockBraille();
@@ -130,7 +130,7 @@ MockFeedback = class {
     const MockEarcons = function() {};
     MockEarcons.prototype = {
       __proto__: AbstractEarcons.prototype,
-      playEarcon: this.addEarcon_.bind(this)
+      playEarcon: this.addEarcon_.bind(this),
     };
 
     // ChromeVox.earcons is a getter that switches between Classic and
@@ -162,17 +162,15 @@ MockFeedback = class {
   expectSpeech() {
     assertFalse(
         this.replaying_, 'expectSpeech: Should not already be replaying.');
-    Array.prototype.forEach.call(arguments, function(text) {
+    Array.prototype.forEach.call(arguments, text => {
       this.pendingActions_.push({
-        perform: function() {
-          return !!MockFeedback.matchAndConsume_(
-              text, {}, this.pendingUtterances_);
-        }.bind(this),
+        perform: () => Boolean(
+            MockFeedback.matchAndConsume_(text, {}, this.pendingUtterances_)),
         toString() {
           return 'Speak \'' + text + '\'';
-        }
+        },
       });
-    }.bind(this));
+    });
     return this;
   }
 
@@ -236,18 +234,16 @@ MockFeedback = class {
     assertFalse(
         this.replaying_,
         'expectSpeechWithProperties: Should not already be replaying.');
-    Array.prototype.forEach.call(rest, function(text) {
+    Array.prototype.forEach.call(rest, text => {
       this.pendingActions_.push({
-        perform: function() {
-          return !!MockFeedback.matchAndConsume_(
-              text, expectedProps, this.pendingUtterances_);
-        }.bind(this),
+        perform: () => Boolean(MockFeedback.matchAndConsume_(
+            text, expectedProps, this.pendingUtterances_)),
         toString() {
           return 'Speak \'' + text + '\' with props ' +
               JSON.stringify(expectedProps);
-        }
+        },
       });
-    }.bind(this));
+    });
     return this;
   }
 
@@ -267,9 +263,9 @@ MockFeedback = class {
     assertFalse(
         this.replaying_,
         'expectNextSpeechUtteranceIsNot: Should not already be replaying.');
-    Array.prototype.forEach.call(arguments, function(text) {
+    Array.prototype.forEach.call(arguments, text => {
       this.pendingActions_.push({
-        perform: function() {
+        perform: () => {
           if (this.pendingUtterances_.length === 0) {
             return false;
           }
@@ -278,12 +274,12 @@ MockFeedback = class {
             assertFalse(true, 'Got denied utterance "' + text + '".');
           }
           return true;
-        }.bind(this),
+        },
         toString() {
           return 'Do not speak \'' + text + '\'';
-        }
+        },
       });
-    }.bind(this));
+    });
     return this;
   }
 
@@ -305,11 +301,11 @@ MockFeedback = class {
         if (match) {
           this.lastMatchedBraille_ = match;
         }
-        return !!match;
+        return Boolean(match);
       }.bind(this),
       toString() {
         return 'Braille \'' + text + '\' ' + JSON.stringify(props);
-      }
+      },
     });
     return this;
   }
@@ -326,11 +322,11 @@ MockFeedback = class {
       perform: function() {
         const match =
             MockFeedback.matchAndConsume_(earconName, {}, this.pendingEarcons_);
-        return !!match;
+        return Boolean(match);
       }.bind(this),
       toString() {
         return 'Earcon \'' + earconName + '\'';
-      }
+      },
     });
     return this;
   }
@@ -351,7 +347,7 @@ MockFeedback = class {
       },
       toString() {
         return 'Callback';
-      }
+      },
     });
     return this;
   }
@@ -453,7 +449,7 @@ MockFeedback = class {
         if (action.perform()) {
           this.pendingActions_.shift();
           if (this.logTimeoutId_) {
-            window.clearTimeout(this.logTimeoutId_);
+            clearTimeout(this.logTimeoutId_);
             this.logTimeoutId_ = 0;
           }
         } else {
@@ -471,7 +467,7 @@ MockFeedback = class {
         // seconds, log the pending state to ease debugging.
         if (!this.logTimeoutId_) {
           this.logTimeoutId_ =
-              window.setTimeout(this.logPendingState_.bind(this), 2000);
+              setTimeout(this.logPendingState_.bind(this), 2000);
         }
       }
     } catch (e) {
@@ -491,16 +487,16 @@ MockFeedback = class {
       if (list.length > 0) {
         console.log(
             'Pending ' + desc + ':\n  ' +
-            list.map(function(i) {
-                  let ret = '\'' + i.text + '\'';
-                  if ('properties' in i) {
-                    ret += ' properties=' + JSON.stringify(i.properties);
+            list.map(pending => {
+                  let ret = '\'' + pending.text + '\'';
+                  if ('properties' in pending) {
+                    ret += ' properties=' + JSON.stringify(pending.properties);
                   }
-                  if ('startIndex' in i) {
-                    ret += ' startIndex=' + i.startIndex;
+                  if ('startIndex' in pending) {
+                    ret += ' startIndex=' + pending.startIndex;
                   }
-                  if ('endIndex' in i) {
-                    ret += ' endIndex=' + i.endIndex;
+                  if ('endIndex' in pending) {
+                    ret += ' endIndex=' + pending.endIndex;
                   }
                   return ret;
                 })
@@ -523,7 +519,8 @@ MockFeedback = class {
      * @private
      */
     static matchAndConsume_(text, props, pending) {
-      let i, candidate;
+      let i;
+      let candidate;
       for (i = 0; candidate = pending[i]; ++i) {
         let candidateText = candidate.text;
         if (typeof (candidateText) !== 'string') {
@@ -549,7 +546,7 @@ MockFeedback = class {
       }
       if (candidate) {
         const consumed = pending.splice(0, i + 1);
-        consumed.forEach(function(item) {
+        consumed.forEach(item => {
           if (item.callback) {
             item.callback();
           }

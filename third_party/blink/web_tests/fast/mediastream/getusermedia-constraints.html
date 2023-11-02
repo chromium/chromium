@@ -30,17 +30,10 @@ promise_test(function() {
       });
 }, 'getUserMedia() with audio=true should succeed');
 
-promise_test(function() {
-  return navigator.mediaDevices.getUserMedia(
-      {audio: {'mandatory': { 'valid_but_unsupported_1': 0}}})
-    .then(function(s) {
-        assert_unreached('getUserMedia should have failed');
-      })
-    .catch(function(e) {
-        assert_equals(e.name, 'OverconstrainedError');
-        assert_equals(e.constraint, 'valid_but_unsupported_1');
-      });
-}, 'getUserMedia() with unsupported mandatory constraint should fail');
+promise_test(async () => {
+  await navigator.mediaDevices.getUserMedia(
+      {audio: {'mandatory': { 'valid_but_unsupported_1': 0}}});
+}, 'getUserMedia() with unsupported mandatory constraint should succeed');
 
 // The next tests document existing behavior. They seem non-conformant
 // with the specs.

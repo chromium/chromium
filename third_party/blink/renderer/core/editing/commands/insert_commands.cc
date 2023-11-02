@@ -25,7 +25,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,11 +41,12 @@
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html/html_hr_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -97,7 +98,7 @@ bool InsertCommands::ExecuteInsertHorizontalRule(LocalFrame& frame,
                                                  const String& value) {
   DCHECK(frame.GetDocument());
   auto* const rule = MakeGarbageCollected<HTMLHRElement>(*frame.GetDocument());
-  if (!value.IsEmpty())
+  if (!value.empty())
     rule->SetIdAttribute(AtomicString(value));
   return ExecuteInsertElement(frame, rule);
 }
@@ -133,7 +134,7 @@ bool InsertCommands::ExecuteInsertHTML(LocalFrame& frame,
   } else {
     if (Node* anchor =
             frame.Selection().GetSelectionInDOMTree().Base().AnchorNode()) {
-      if (HasEditableStyle(*anchor) && !HasRichlyEditableStyle(*anchor)) {
+      if (IsEditable(*anchor) && !IsRichlyEditable(*anchor)) {
         UseCounter::Count(frame.GetDocument(),
                           WebFeature::kInsertHTMLCommandOnReadWritePlainText);
       }
@@ -149,7 +150,7 @@ bool InsertCommands::ExecuteInsertImage(LocalFrame& frame,
   DCHECK(frame.GetDocument());
   auto* const image =
       MakeGarbageCollected<HTMLImageElement>(*frame.GetDocument());
-  if (!value.IsEmpty())
+  if (!value.empty())
     image->setAttribute(html_names::kSrcAttr, AtomicString(value));
   return ExecuteInsertElement(frame, image);
 }

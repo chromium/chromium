@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,9 @@
 
 #include "ash/components/phonehub/browser_tabs_metadata_fetcher.h"
 #include "ash/components/phonehub/browser_tabs_model_provider.h"
+#include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 
 namespace sync_sessions {
 class SessionSyncService;

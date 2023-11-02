@@ -1,93 +1,77 @@
 <!DOCTYPE html>
-<html>
-<head>
-<script src="../../../resources/js-test.js"></script>
-<script src="../../forms/resources/picker-common.js"></script>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="../resources/picker-common.js"></script>
 <script src="resources/suggestion-picker-common.js"></script>
-</head>
+
 <body style="background-color: #bbbbbb;">
-<p id="description"></p>
-<div id="console"></div>
-<input type=date id=date value="2012-01-01" step="2" list=suggestions>
+<input type=date value="2012-01-01" step="2" list=suggestions>
 <datalist id=suggestions>
-    <option>2012-01-21</option>
-    <option>2012-01-22</option>
-    <option>2012-01-23</option>
-    <option>2012-01-24</option>
-    <option>2012-01-25</option>
-    <option>2012-01-26</option>
-    <option>2012-01-27</option>
-    <option>2012-01-28</option>
-    <option>2012-01-29</option>
-    <option>2012-01-30</option>
-    <option>2012-01-31</option>
-    <option>2012-02-01</option>
+  <option>2012-01-21</option>
+  <option>2012-01-22</option>
+  <option>2012-01-23</option>
+  <option>2012-01-24</option>
+  <option>2012-01-25</option>
+  <option>2012-01-26</option>
+  <option>2012-01-27</option>
+  <option>2012-01-28</option>
+  <option>2012-01-29</option>
+  <option>2012-01-30</option>
+  <option>2012-01-31</option>
+  <option>2012-02-01</option>
 </datalist>
 
-<p id="description" style="opacity: 0"></p>
-<div id="console" style="opacity: 0"></div>
-
 <script>
-description('Tests that step attribute filters out suggestions as expected.');
+window.onload = () => {
+  const element = document.querySelector('input');
+  promise_test(() => {
+    return openPicker(element)
+    .then(() => {
+      internals.pagePopupWindow.focus();
 
-debug('Check that page popup doesn\'t exist at first.');
-shouldBeNull('document.getElementById("mock-page-popup")');
+      assert_equals(entryValues().length, 7);
+      assert_equals(entryValues()[0], '2012-01-21');
+      assert_equals(entryValues()[1], '2012-01-23');
+      assert_equals(entryValues()[2], '2012-01-25');
+      assert_equals(entryValues()[3], '2012-01-27');
+      assert_equals(entryValues()[4], '2012-01-29');
+      assert_equals(entryValues()[5], '2012-01-31');
+      assert_equals(entryValues()[6], '@openCalendarPicker');
 
-var dateElement = document.getElementById('date');
+      return attemptToClosePicker(element);
+    });
+  },'Step attribute filters out suggestions');
 
-window.onload = function() {
-    openPicker(dateElement, test1);
-}
+  promise_test(() => {
+    element.step = 5;
+    return openPicker(element)
+    .then(() => {
+      internals.pagePopupWindow.focus();
 
-function test1() {
-    popupWindow.focus();
+      assert_equals(entryValues().length, 4);
+      assert_equals(entryValues()[0], '2012-01-21');
+      assert_equals(entryValues()[1], '2012-01-26');
+      assert_equals(entryValues()[2], '2012-01-31');
+      assert_equals(entryValues()[3], '@openCalendarPicker');
 
-    shouldBe('entryValues().length', '7');
-    shouldBeEqualToString('entryValues()[0]', '2012-01-21');
-    shouldBeEqualToString('entryValues()[1]', '2012-01-23');
-    shouldBeEqualToString('entryValues()[2]', '2012-01-25');
-    shouldBeEqualToString('entryValues()[3]', '2012-01-27');
-    shouldBeEqualToString('entryValues()[4]', '2012-01-29');
-    shouldBeEqualToString('entryValues()[5]', '2012-01-31');
-    shouldBeEqualToString('entryValues()[6]', '@openCalendarPicker');
+      return attemptToClosePicker(element);
+    });
+  },'Step attribute filters out suggestions - longer step');
 
-    eventSender.keyDown('Escape'); // Close picker.
-    waitUntilClosing(test1AfterClosing);
-}
+  promise_test(() => {
+    element.step = 30;
+    return openPicker(element)
+    .then(() => {
+      internals.pagePopupWindow.focus();
 
-function test1AfterClosing() {
-    dateElement.step = 5;
-    openPicker(dateElement, test2);
-}
+      assert_equals(entryValues().length, 2);
+      assert_equals(entryValues()[0], '2012-01-31');
+      assert_equals(entryValues()[1], '@openCalendarPicker');
 
-function test2() {
-    popupWindow.focus();
-
-    shouldBe('entryValues().length', '4');
-    shouldBeEqualToString('entryValues()[0]', '2012-01-21');
-    shouldBeEqualToString('entryValues()[1]', '2012-01-26');
-    shouldBeEqualToString('entryValues()[2]', '2012-01-31');
-    shouldBeEqualToString('entryValues()[3]', '@openCalendarPicker');
-
-    eventSender.keyDown('Escape'); // Close picker.
-    waitUntilClosing(test2AfterClosing);
-}
-
-function test2AfterClosing() {
-    dateElement.step = 30;
-    openPicker(dateElement, test3);
-}
-
-function test3() {
-    popupWindow.focus();
-
-    shouldBe('entryValues().length', '2');
-    shouldBeEqualToString('entryValues()[0]', '2012-01-31');
-    shouldBeEqualToString('entryValues()[1]', '@openCalendarPicker');
-
-    finishJSTest();
-}
-
+      return attemptToClosePicker(element);
+    });
+  },'Step attribute filters out suggestions - very long step');
+};
 </script>
-</body>
-</html>

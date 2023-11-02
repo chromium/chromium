@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -106,6 +106,8 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(SourceUrlRecorderWebContentsObserver);
 SourceUrlRecorderWebContentsObserver::SourceUrlRecorderWebContentsObserver(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<SourceUrlRecorderWebContentsObserver>(
+          *web_contents),
       last_committed_full_navigation_source_id_(ukm::kInvalidSourceId),
       last_committed_full_navigation_or_same_document_source_id_(
           ukm::kInvalidSourceId),
@@ -238,11 +240,12 @@ void SourceUrlRecorderWebContentsObserver::DidOpenRequestedURL(
     ui::PageTransition transition,
     bool started_from_context_menu,
     bool renderer_initiated) {
-  auto* new_recorder =
-      SourceUrlRecorderWebContentsObserver::FromWebContents(new_contents);
-  if (!new_recorder)
-    return;
-  new_recorder->opener_source_id_ = GetLastCommittedSourceId();
+  // Ensure that a source recorder exists at this point, since it is possible
+  // that this is called before tab helpers are added in //chrome, especially on
+  // Android. See crbug.com/1024952 for more details.
+  InitializeSourceUrlRecorderForWebContents(new_contents);
+  SourceUrlRecorderWebContentsObserver::FromWebContents(new_contents)
+      ->opener_source_id_ = GetLastCommittedSourceId();
 }
 
 void SourceUrlRecorderWebContentsObserver::WebContentsDestroyed() {
@@ -339,14 +342,6 @@ void InitializeSourceUrlRecorderForWebContents(
     content::WebContents* web_contents) {
   internal::SourceUrlRecorderWebContentsObserver::CreateForWebContents(
       web_contents);
-}
-
-SourceId GetSourceIdForWebContentsDocument(
-    const content::WebContents* web_contents) {
-  const internal::SourceUrlRecorderWebContentsObserver* obs =
-      internal::SourceUrlRecorderWebContentsObserver::FromWebContents(
-          web_contents);
-  return obs ? obs->GetLastCommittedSourceId() : kInvalidSourceId;
 }
 
 }  // namespace ukm

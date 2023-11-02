@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,8 +51,7 @@ class ASH_EXPORT AssistantPageView : public AppListPage,
                           AppListState to_state) override;
   gfx::Size GetPreferredSearchBoxSize() const override;
   void UpdatePageOpacityForState(AppListState state,
-                                 float search_box_opacity,
-                                 bool restore_opacity) override;
+                                 float search_box_opacity) override;
   gfx::Rect GetPageBoundsForState(
       AppListState state,
       const gfx::Rect& contents_bounds,

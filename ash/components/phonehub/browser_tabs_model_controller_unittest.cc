@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,10 @@
 #include "ash/components/phonehub/fake_browser_tabs_model_provider.h"
 #include "ash/components/phonehub/mutable_phone_model.h"
 #include "ash/components/phonehub/phone_model_test_util.h"
-#include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
+#include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 using multidevice_setup::mojom::Feature;
@@ -78,4 +78,4 @@ TEST_F(BrowserTabsModelControllerTest, MutablePhoneModelProperlySet) {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

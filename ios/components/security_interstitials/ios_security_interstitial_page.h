@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,9 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/values.h"
 #include "ios/components/security_interstitials/ios_blocking_page_controller_client.h"
 #include "url/gurl.h"
-
-namespace base {
-class Value;
-}
 
 namespace web {
 class WebFrame;
@@ -54,7 +50,7 @@ class IOSSecurityInterstitialPage {
 
   // Populates the strings used to generate the HTML from the template.
   virtual void PopulateInterstitialStrings(
-      base::Value* load_time_data) const = 0;
+      base::Value::Dict& load_time_data) const = 0;
 
   // Returns the formatted host name for the request url.
   std::u16string GetFormattedHostName() const;
@@ -69,7 +65,7 @@ class IOSSecurityInterstitialPage {
   web::WebState* web_state_;
   const GURL request_url_;
 
-  // Used to interact with the embedder. Unowned pointer; must outlive |this|
+  // Used to interact with the embedder. Unowned pointer; must outlive `this`
   // instance.
   IOSBlockingPageControllerClient* const client_ = nullptr;
 };

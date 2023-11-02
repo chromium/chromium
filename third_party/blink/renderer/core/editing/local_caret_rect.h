@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,22 +36,24 @@ struct LocalCaretRect {
 };
 
 // Rect is local to the returned layoutObject
-CORE_EXPORT LocalCaretRect
-LocalCaretRectOfPosition(const PositionWithAffinity&);
-CORE_EXPORT LocalCaretRect
-LocalCaretRectOfPosition(const PositionInFlatTreeWithAffinity&);
+CORE_EXPORT LocalCaretRect LocalCaretRectOfPosition(
+    const PositionWithAffinity&,
+    EditingBoundaryCrossingRule = kCanCrossEditingBoundary);
+CORE_EXPORT LocalCaretRect LocalCaretRectOfPosition(
+    const PositionInFlatTreeWithAffinity&,
+    EditingBoundaryCrossingRule = kCanCrossEditingBoundary);
 
 LocalCaretRect LocalSelectionRectOfPosition(const PositionWithAffinity&);
 
 // Bounds of (possibly transformed) caret in absolute coords
-CORE_EXPORT IntRect AbsoluteCaretBoundsOf(
+CORE_EXPORT gfx::Rect AbsoluteCaretBoundsOf(
     const PositionWithAffinity&,
     LayoutUnit* extra_width_to_end_of_line = nullptr,
     EditingBoundaryCrossingRule rule = kCanCrossEditingBoundary);
-CORE_EXPORT IntRect
-AbsoluteCaretBoundsOf(const PositionInFlatTreeWithAffinity&);
+CORE_EXPORT gfx::Rect AbsoluteCaretBoundsOf(
+    const PositionInFlatTreeWithAffinity&);
 
-CORE_EXPORT IntRect AbsoluteSelectionBoundsOf(const VisiblePosition&);
+CORE_EXPORT gfx::Rect AbsoluteSelectionBoundsOf(const VisiblePosition&);
 
 // Exposed to tests only. Implemented in local_caret_rect_test.cc.
 bool operator==(const LocalCaretRect&, const LocalCaretRect&);

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,9 +23,11 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.DropdownKeyValue;
+import org.chromium.components.autofill.prefeditor.EditorFieldModel;
+import org.chromium.components.autofill.prefeditor.EditorFieldModel.DropdownKeyValue;
+import org.chromium.components.autofill.prefeditor.EditorFieldView;
+import org.chromium.components.autofill.prefeditor.EditorObserverForTest;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 
 import java.util.ArrayList;
@@ -192,14 +194,12 @@ class EditorDropdownField implements EditorFieldView {
                 drawable.setBounds(
                         0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
                 ((TextView) view).setError(mFieldModel.getErrorMessage(), drawable);
-                mUnderline.setBackgroundColor(ApiCompatibilityUtils.getColor(
-                        mContext.getResources(), R.color.default_text_color_error));
+                mUnderline.setBackgroundColor(mContext.getColor(R.color.default_text_color_error));
                 mErrorLabel.setText(mFieldModel.getErrorMessage());
                 mErrorLabel.setVisibility(View.VISIBLE);
             } else {
                 ((TextView) view).setError(null);
-                mUnderline.setBackgroundColor(ApiCompatibilityUtils.getColor(
-                        mContext.getResources(), R.color.modern_grey_600));
+                mUnderline.setBackgroundColor(mContext.getColor(R.color.modern_grey_600));
                 mErrorLabel.setText(null);
                 mErrorLabel.setVisibility(View.GONE);
             }

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,10 +41,8 @@ using autofill::AutofillWebDataServiceObserverOnDBSequence;
 using autofill::CreditCard;
 using autofill::FormFieldData;
 using autofill::PersonalDataManager;
-using autofill::PersonalDataManagerObserver;
 using base::WaitableEvent;
 using sync_datatype_helper::test;
-using testing::_;
 
 namespace {
 
@@ -420,8 +418,10 @@ bool AutofillProfileChecker::Wait() {
   PersonalDataLoadedObserverMock personal_data_observer;
   base::RunLoop run_loop_a;
   base::RunLoop run_loop_b;
-  auto* pdm_a = autofill_helper::GetPersonalDataManager(profile_a_);
-  auto* pdm_b = autofill_helper::GetPersonalDataManager(profile_b_);
+  PersonalDataManager* pdm_a =
+      autofill_helper::GetPersonalDataManager(profile_a_);
+  PersonalDataManager* pdm_b =
+      autofill_helper::GetPersonalDataManager(profile_b_);
   pdm_a->AddObserver(&personal_data_observer);
   pdm_b->AddObserver(&personal_data_observer);
 
@@ -465,5 +465,5 @@ void AutofillProfileChecker::OnPersonalDataChanged() {
   CheckExitCondition();
 }
 
-PersonalDataLoadedObserverMock::PersonalDataLoadedObserverMock() {}
-PersonalDataLoadedObserverMock::~PersonalDataLoadedObserverMock() {}
+PersonalDataLoadedObserverMock::PersonalDataLoadedObserverMock() = default;
+PersonalDataLoadedObserverMock::~PersonalDataLoadedObserverMock() = default;

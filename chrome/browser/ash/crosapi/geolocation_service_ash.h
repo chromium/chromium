@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 namespace crosapi {
 
 // Implements the crosapi GeolocationService interface. Lives in ash-chrome on
-// the UI thread. Queries chromeos::GeolocationHandler for wifi access point
+// the UI thread. Queries ash::GeolocationHandler for wifi access point
 // data.
 class GeolocationServiceAsh : public mojom::GeolocationService {
  public:

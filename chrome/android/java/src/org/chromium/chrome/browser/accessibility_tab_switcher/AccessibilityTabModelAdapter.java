@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.accessibility_tab_switcher;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnAttachStateChangeListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
@@ -27,6 +28,23 @@ public class AccessibilityTabModelAdapter extends BaseAdapter {
     private TabModel mActualTabModel;
     private AccessibilityTabModelAdapterListener mListener;
     private final AccessibilityTabModelListView mCanScrollListener;
+    private int mTabIdToFocus = Tab.INVALID_TAB_ID;
+    private AccessibilityTabModelListItem mListItemToFocus;
+    private final OnAttachStateChangeListener mItemToFocusAttachedListener =
+            new OnAttachStateChangeListener() {
+                @Override
+                public void onViewAttachedToWindow(View v) {
+                    v.removeOnAttachStateChangeListener(this);
+                    if (v != mListItemToFocus) return;
+
+                    v.requestFocus();
+                    mTabIdToFocus = Tab.INVALID_TAB_ID;
+                    mListItemToFocus = null;
+                }
+
+                @Override
+                public void onViewDetachedFromWindow(View v) {}
+            };
 
     /**
      * An interface used to notify that the {@link Tab} specified by {@code tabId} should be
@@ -45,8 +63,8 @@ public class AccessibilityTabModelAdapter extends BaseAdapter {
                 @Override
                 public void tabSelected(int tab) {
                     if (mListener != null) mListener.showTab(tab);
-                    TabModelUtils.setIndex(
-                            mActualTabModel, TabModelUtils.getTabIndexById(mActualTabModel, tab));
+                    TabModelUtils.setIndex(mActualTabModel,
+                            TabModelUtils.getTabIndexById(mActualTabModel, tab), false);
                     notifyDataSetChanged();
                 }
 
@@ -62,7 +80,7 @@ public class AccessibilityTabModelAdapter extends BaseAdapter {
 
                 @Override
                 public boolean hasPendingClosure(int tab) {
-                    return mUndoneTabModel.isClosurePending(tab);
+                    return mActualTabModel.isClosurePending(tab);
                 }
 
                 @Override
@@ -146,6 +164,23 @@ public class AccessibilityTabModelAdapter extends BaseAdapter {
         listItem.setListeners(mInternalListener, mCanScrollListener);
         listItem.resetState();
 
+        if (tabId == mTabIdToFocus) {
+            if (listItem.isAttachedToWindow()) {
+                listItem.requestFocus();
+                mTabIdToFocus = Tab.INVALID_TAB_ID;
+            } else {
+                mListItemToFocus = listItem;
+                mListItemToFocus.addOnAttachStateChangeListener(mItemToFocusAttachedListener);
+            }
+        }
         return listItem;
+    }
+
+    void focusTabWithId(int tabId) {
+        if (mTabIdToFocus != Tab.INVALID_TAB_ID && mListItemToFocus != null) {
+            mListItemToFocus.removeOnAttachStateChangeListener(mItemToFocusAttachedListener);
+            mListItemToFocus = null;
+        }
+        mTabIdToFocus = tabId;
     }
 }

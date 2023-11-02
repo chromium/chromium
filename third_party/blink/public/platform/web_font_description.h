@@ -31,13 +31,14 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_FONT_DESCRIPTION_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_FONT_DESCRIPTION_H_
 
+#include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_string.h"
 
 namespace blink {
 
 class FontDescription;
 
-struct WebFontDescription {
+struct BLINK_PLATFORM_EXPORT WebFontDescription {
   enum GenericFamily {
     kGenericFamilyNone,
     kGenericFamilyStandard,
@@ -76,8 +77,8 @@ struct WebFontDescription {
   int16_t word_spacing = 0;
 
 #if INSIDE_BLINK
-  BLINK_PLATFORM_EXPORT WebFontDescription(const FontDescription&);
-  BLINK_PLATFORM_EXPORT operator FontDescription() const;
+  WebFontDescription(const FontDescription&);
+  operator FontDescription() const;
 #endif
 };
 

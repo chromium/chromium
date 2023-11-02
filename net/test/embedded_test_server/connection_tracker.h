@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/net_errors.h"
@@ -16,8 +17,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
 
-namespace net {
-namespace test_server {
+namespace net::test_server {
 
 // Keeps track of incoming connections being accepted or read from and exposes
 // that info to the tests.
@@ -83,7 +83,7 @@ class ConnectionTracker {
     scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
     // This pointer should be only accessed on the `task_runner_` thread.
-    ConnectionTracker* tracker_;
+    raw_ptr<ConnectionTracker> tracker_;
   };
 
   void AcceptedSocketWithPort(uint16_t port);
@@ -93,7 +93,7 @@ class ConnectionTracker {
 
   ConnectionListener connection_listener_;
 
-  base::RunLoop* read_loop_ = nullptr;
+  raw_ptr<base::RunLoop> read_loop_ = nullptr;
 
   // Port -> SocketStatus.
   using SocketContainer = std::map<uint16_t, SocketStatus>;
@@ -106,10 +106,9 @@ class ConnectionTracker {
   // waiting for |num_accepted_connections_needed_| sockets to be accepted
   // before quitting the |num_accepted_connections_loop_|.
   size_t num_accepted_connections_needed_ = 0;
-  base::RunLoop* num_accepted_connections_loop_ = nullptr;
+  raw_ptr<base::RunLoop> num_accepted_connections_loop_ = nullptr;
 };
 
-}  // namespace test_server
-}  // namespace net
+}  // namespace net::test_server
 
 #endif  // NET_TEST_EMBEDDED_TEST_SERVER_SIMPLE_CONNECTION_TRACKER_H_

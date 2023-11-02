@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -15,11 +15,11 @@ from util import java_cpp_utils
 
 
 class FeatureParserDelegate(java_cpp_utils.CppConstantParser.Delegate):
-  # Ex. 'const base::Feature kConstantName{"StringNameOfTheFeature", ...};'
+  # Ex. 'BASE_FEATURE(kConstantName, "StringNameOfTheFeature", ...);'
   # would parse as:
   #   ExtractConstantName() -> 'ConstantName'
   #   ExtractValue() -> '"StringNameOfTheFeature"'
-  FEATURE_RE = re.compile(r'\s*const (?:base::)?Feature\s+k(\w+)\s*(?:=\s*)?{')
+  FEATURE_RE = re.compile(r'BASE_FEATURE\(k([^,]+),')
   VALUE_RE = re.compile(r'\s*("(?:\"|[^"])*")\s*,')
 
   def ExtractConstantName(self, line):

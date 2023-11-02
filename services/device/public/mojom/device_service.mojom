@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,11 @@ module device.mojom;
 
 import "services/device/public/mojom/battery_monitor.mojom";
 import "services/device/public/mojom/fingerprint.mojom";
-import "services/device/public/mojom/battery_monitor.mojom";
 import "services/device/public/mojom/geolocation_config.mojom";
 import "services/device/public/mojom/geolocation_context.mojom";
 import "services/device/public/mojom/geolocation_control.mojom";
 import "services/device/public/mojom/power_monitor.mojom";
+import "services/device/public/mojom/pressure_manager.mojom";
 import "services/device/public/mojom/public_ip_address_geolocation_provider.mojom";
 import "services/device/public/mojom/screen_orientation.mojom";
 import "services/device/public/mojom/sensor_provider.mojom";
@@ -26,9 +26,6 @@ import "services/device/public/mojom/nfc_provider.mojom";
 
 [EnableIf=enable_device_posture]
 import "services/device/public/mojom/device_posture_provider.mojom";
-
-[EnableIf=is_chromeos_ash]
-import "services/device/public/mojom/bluetooth_system.mojom";
 
 [EnableIf=is_chromeos_ash]
 import "services/device/public/mojom/mtp_manager.mojom";
@@ -66,6 +63,9 @@ interface DeviceService {
   // Binds a BatteryMonitor endpoint.
   BindBatteryMonitor(pending_receiver<BatteryMonitor> receiver);
 
+  // Binds a PressureManager endpoint.
+  BindPressureManager(pending_receiver<PressureManager> receiver);
+
   // Binds a NFCProvider endpoint.
   [EnableIf=is_android]
   BindNFCProvider(pending_receiver<NFCProvider> receiver);
@@ -76,10 +76,6 @@ interface DeviceService {
   // Binds a HidManager endpoint.
   [EnableIf=enable_hid]
   BindHidManager(pending_receiver<HidManager> receiver);
-
-  // Binds a BluetoothSystemFactory endpoint.
-  [EnableIf=is_chromeos_ash]
-  BindBluetoothSystemFactory(pending_receiver<BluetoothSystemFactory> receiver);
 
   // Binds a MtpManager endpoint.
   [EnableIf=is_chromeos_ash]

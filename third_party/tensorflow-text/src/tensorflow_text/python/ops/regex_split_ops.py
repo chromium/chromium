@@ -33,39 +33,48 @@ def regex_split_with_offsets(input,
   r"""Split `input` by delimiters that match a regex pattern; returns offsets.
 
   `regex_split_with_offsets` will split `input` using delimiters that match a
-  regex pattern in `delim_regex_pattern`. Here is an example:
+  regex pattern in `delim_regex_pattern`. It will return three tensors:
+  one containing the split substrings ('result' in the examples below), one
+  containing the offsets of the starts of each substring ('begin' in the
+  examples below), and one containing the offsets of the ends of each substring
+  ('end' in the examples below).
 
-  ```
-  text_input=["hello there"]
-  # split by whitespace
-  result, begin, end = regex_split_with_offsets(text_input, "\s")
-  # result = [["hello", "there"]]
-  # begin = [[0, 7]]
-  # end = [[5, 11]]
-  ```
+  Here is an example:
+
+  >>> text_input=["hello there"]
+  >>> # split by whitespace
+  >>> result, begin, end = regex_split_with_offsets(input=text_input,
+  ...                                               delim_regex_pattern="\s")
+  >>> print("result: %s\nbegin: %s\nend: %s" % (result, begin, end))
+  result: <tf.RaggedTensor [[b'hello', b'there']]>
+  begin: <tf.RaggedTensor [[0, 6]]>
+  end: <tf.RaggedTensor [[5, 11]]>
 
   By default, delimiters are not included in the split string results.
   Delimiters may be included by specifying a regex pattern
   `keep_delim_regex_pattern`. For example:
 
-  ```
-  text_input=["hello there"]
-  # split by whitespace
-  result, begin, end = regex_split_with_offsets(text_input, "\s", "\s")
-  # result = [["hello", " ", "there"]]
-  # begin = [[0, 5, 7]]
-  # end = [[5, 6, 11]]
-  ```
+  >>> text_input=["hello there"]
+  >>> # split by whitespace
+  >>> result, begin, end = regex_split_with_offsets(input=text_input,
+  ...                                             delim_regex_pattern="\s",
+  ...                                             keep_delim_regex_pattern="\s")
+  >>> print("result: %s\nbegin: %s\nend: %s" % (result, begin, end))
+  result: <tf.RaggedTensor [[b'hello', b' ', b'there']]>
+  begin: <tf.RaggedTensor [[0, 5, 6]]>
+  end: <tf.RaggedTensor [[5, 6, 11]]>
 
   If there are multiple delimiters in a row, there are no empty splits emitted.
   For example:
 
-  ```
-  text_input=["hello  there"]  # two continuous whitespace characters
-  # split by whitespace
-  result, begin, end = regex_split_with_offsets(text_input, "\s")
-  # result = [["hello", "there"]]
-  ```
+  >>> text_input=["hello  there"]  #  Note the two spaces between the words.
+  >>> # split by whitespace
+  >>> result, begin, end = regex_split_with_offsets(input=text_input,
+  ...                                               delim_regex_pattern="\s")
+  >>> print("result: %s\nbegin: %s\nend: %s" % (result, begin, end))
+  result: <tf.RaggedTensor [[b'hello', b'there']]>
+  begin: <tf.RaggedTensor [[0, 7]]>
+  end: <tf.RaggedTensor [[5, 12]]>
 
   See https://github.com/google/re2/wiki/Syntax for the full list of supported
   expressions.
@@ -148,34 +157,32 @@ def regex_split(input,
   `regex_split` will split `input` using delimiters that match a
   regex pattern in `delim_regex_pattern`. Here is an example:
 
-  ```
-  text_input=["hello there"]
-  # split by whitespace
-  result, begin, end = regex_split_with_offsets(text_input, "\s")
-  # result = [["hello", "there"]]
-
-  ```
+  >>> text_input=["hello there"]
+  >>> # split by whitespace
+  >>> regex_split(input=text_input,
+  ...             delim_regex_pattern="\s")
+  <tf.RaggedTensor [[b'hello', b'there']]>
 
   By default, delimiters are not included in the split string results.
   Delimiters may be included by specifying a regex pattern
   `keep_delim_regex_pattern`. For example:
 
-  ```
-  text_input=["hello there"]
-  # split by whitespace
-  result, begin, end = regex_split_with_offsets(text_input, "\s", "\s")
-  # result = [["hello", " ", "there"]]
-  ```
+  >>> text_input=["hello there"]
+  >>> # split by whitespace
+  >>> regex_split(input=text_input,
+  ...             delim_regex_pattern="\s",
+  ...             keep_delim_regex_pattern="\s")
+  <tf.RaggedTensor [[b'hello', b' ', b'there']]>
 
   If there are multiple delimiters in a row, there are no empty splits emitted.
   For example:
 
-  ```
-  text_input=["hello  there"]  # two continuous whitespace characters
-  # split by whitespace
-  result, begin, end = regex_split_with_offsets(text_input, "\s")
-  # result = [["hello", "there"]]
-  ```
+  >>> text_input=["hello  there"]  #  Note the two spaces between the words.
+  >>> # split by whitespace
+  >>> regex_split(input=text_input,
+  ...             delim_regex_pattern="\s")
+  <tf.RaggedTensor [[b'hello', b'there']]>
+
 
   See https://github.com/google/re2/wiki/Syntax for the full list of supported
   expressions.
@@ -197,10 +204,32 @@ def regex_split(input,
 
 
 class RegexSplitter(splitter.SplitterWithOffsets):
-  """`RegexSplitter` splits text on the given regular expression.
+  r"""`RegexSplitter` splits text on the given regular expression.
 
-  The default is a newline character pattern. It can also returns the beginning
+  The default is a newline character pattern. It can also return the beginning
   and ending byte offsets as well.
+
+  By default, this splitter will break on newlines, ignoring any trailing ones.
+  >>> splitter = RegexSplitter()
+  >>> text_input=[
+  ...       b"Hi there.\nWhat time is it?\nIt is gametime.",
+  ...       b"Who let the dogs out?\nWho?\nWho?\nWho?\n\n",
+  ...   ]
+  >>> splitter.split(text_input)
+  <tf.RaggedTensor [[b'Hi there.', b'What time is it?', b'It is gametime.'],
+                    [b'Who let the dogs out?', b'Who?', b'Who?', b'Who?']]>
+
+  The splitter can be passed a custom split pattern, as well. The pattern
+  can be any string, but we're using a single character (tab) in this example.
+  >>> splitter = RegexSplitter(split_regex='\t')
+  >>> text_input=[
+  ...       b"Hi there.\tWhat time is it?\tIt is gametime.",
+  ...       b"Who let the dogs out?\tWho?\tWho?\tWho?\t\t",
+  ...   ]
+  >>> splitter.split(text_input)
+  <tf.RaggedTensor [[b'Hi there.', b'What time is it?', b'It is gametime.'],
+                    [b'Who let the dogs out?', b'Who?', b'Who?', b'Who?']]>
+
   """
 
   def __init__(self, split_regex=None):

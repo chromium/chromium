@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include "ash/components/phonehub/tether_controller.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class FakeTetherController : public TetherController {
@@ -37,6 +37,6 @@ class FakeTetherController : public TetherController {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_FAKE_TETHER_CONTROLLER_H_

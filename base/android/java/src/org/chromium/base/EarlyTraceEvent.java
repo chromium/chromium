@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.build.annotations.MainDex;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ public class EarlyTraceEvent {
             mIsToplevel = isToplevel;
             mName = name;
             mThreadId = Process.myTid();
-            mTimeNanos = SystemClock.elapsedRealtimeNanos();
+            mTimeNanos = System.nanoTime(); // Same timebase as TimeTicks::Now().
             mThreadTimeMillis = SystemClock.currentThreadTimeMillis();
         }
     }
@@ -65,13 +65,13 @@ public class EarlyTraceEvent {
         final boolean mIsStart;
         final String mName;
         final long mId;
-        final long mTimestampNanos;
+        final long mTimeNanos;
 
         AsyncEvent(String name, long id, boolean isStart) {
             mName = name;
             mId = id;
             mIsStart = isStart;
-            mTimestampNanos = SystemClock.elapsedRealtimeNanos();
+            mTimeNanos = System.nanoTime(); // Same timebase as TimeTicks::Now().
         }
     }
 
@@ -110,7 +110,8 @@ public class EarlyTraceEvent {
     public static final String TRACE_EARLY_JAVA_IN_CHILD_SWITCH = "trace-early-java-in-child";
 
     // Protects the fields below.
-    private static final Object sLock = new Object();
+    @VisibleForTesting
+    static final Object sLock = new Object();
 
     // Not final because in many configurations these objects are not used.
     @GuardedBy("sLock")
@@ -314,44 +315,35 @@ public class EarlyTraceEvent {
     }
 
     private static void dumpEvents(List<Event> events) {
-        long offsetNanos = getOffsetNanos();
         for (Event e : events) {
             if (e.mIsStart) {
                 if (e.mIsToplevel) {
                     EarlyTraceEventJni.get().recordEarlyToplevelBeginEvent(
-                            e.mName, e.mTimeNanos + offsetNanos, e.mThreadId, e.mThreadTimeMillis);
+                            e.mName, e.mTimeNanos, e.mThreadId, e.mThreadTimeMillis);
                 } else {
                     EarlyTraceEventJni.get().recordEarlyBeginEvent(
-                            e.mName, e.mTimeNanos + offsetNanos, e.mThreadId, e.mThreadTimeMillis);
+                            e.mName, e.mTimeNanos, e.mThreadId, e.mThreadTimeMillis);
                 }
             } else {
                 if (e.mIsToplevel) {
                     EarlyTraceEventJni.get().recordEarlyToplevelEndEvent(
-                            e.mName, e.mTimeNanos + offsetNanos, e.mThreadId, e.mThreadTimeMillis);
+                            e.mName, e.mTimeNanos, e.mThreadId, e.mThreadTimeMillis);
                 } else {
                     EarlyTraceEventJni.get().recordEarlyEndEvent(
-                            e.mName, e.mTimeNanos + offsetNanos, e.mThreadId, e.mThreadTimeMillis);
+                            e.mName, e.mTimeNanos, e.mThreadId, e.mThreadTimeMillis);
                 }
             }
         }
     }
+
     private static void dumpAsyncEvents(List<AsyncEvent> events) {
-        long offsetNanos = getOffsetNanos();
         for (AsyncEvent e : events) {
             if (e.mIsStart) {
-                EarlyTraceEventJni.get().recordEarlyAsyncBeginEvent(
-                        e.mName, e.mId, e.mTimestampNanos + offsetNanos);
+                EarlyTraceEventJni.get().recordEarlyAsyncBeginEvent(e.mName, e.mId, e.mTimeNanos);
             } else {
-                EarlyTraceEventJni.get().recordEarlyAsyncEndEvent(
-                        e.mName, e.mId, e.mTimestampNanos + offsetNanos);
+                EarlyTraceEventJni.get().recordEarlyAsyncEndEvent(e.mName, e.mId, e.mTimeNanos);
             }
         }
-    }
-
-    private static long getOffsetNanos() {
-        long nativeNowNanos = TimeUtilsJni.get().getTimeTicksNowUs() * 1000;
-        long javaNowNanos = SystemClock.elapsedRealtimeNanos();
-        return nativeNowNanos - javaNowNanos;
     }
 
     @NativeMethods
@@ -362,7 +354,7 @@ public class EarlyTraceEvent {
                 String name, long timeNanos, int threadId, long threadMillis);
         void recordEarlyToplevelEndEvent(
                 String name, long timeNanos, int threadId, long threadMillis);
-        void recordEarlyAsyncBeginEvent(String name, long id, long timestamp);
-        void recordEarlyAsyncEndEvent(String name, long id, long timestamp);
+        void recordEarlyAsyncBeginEvent(String name, long id, long timeNanos);
+        void recordEarlyAsyncEndEvent(String name, long id, long timeNanos);
     }
 }

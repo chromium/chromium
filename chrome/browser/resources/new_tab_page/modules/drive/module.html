@@ -17,7 +17,7 @@
 
   .file {
     box-sizing: border-box;
-    color: var(--cr-primary-text-color);
+    color: var(--color-new-tab-page-primary-foreground);
     display: flex;
     flex-shrink: 0;
     height: 56px;
@@ -27,12 +27,12 @@
   }
 
   .file:hover {
-    background-color: var(--ntp-hover-background-color);
+    background-color: var(--color-new-tab-page-control-background-hovered);
   }
 
   .file:active,
   :host-context(.focus-outline-visible) .file:focus {
-    background-color: var(--ntp-active-background-color);
+    background-color: var(--color-new-tab-page-active-background);
   }
 
   .file-icon {
@@ -63,20 +63,8 @@
   }
 
   .file-description {
-    color: var(--cr-secondary-text-color);
+    color: var(--color-new-tab-page-secondary-foreground);
     font-size: 12px;
-  }
-
-  ntp-info-dialog a {
-    color: var(--cr-link-color);
-    cursor: pointer;
-    text-decoration: none;
-  }
-
-  ntp-info-dialog a:focus {
-    border-radius: 2px;
-    box-shadow: var(--ntp-focus-shadow);
-    outline: none;
   }
 </style>
 <ntp-module-header
@@ -89,7 +77,7 @@
     show-info-button on-info-button-click="onInfoButtonClick_"
     show-dismiss-button on-dismiss-button-click="onDismissButtonClick_"
     on-disable-button-click="onDisableButtonClick_">
-  [[i18n('modulesDriveTitle')]]
+  $i18n{modulesDriveTitle}
 </ntp-module-header>
 <div id="files">
   <template id="fileRepeat" is="dom-repeat" items="[[files]]">

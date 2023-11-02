@@ -18,6 +18,6 @@ Alternatively, running chrome as follows `chrome --enable-blink-features=BlinkRu
 
 ## RCS_COUNT_EVERYTHING
 
-Adding `rcs_count_everything = true` to a gn args file creates a special build where counters are added in the bindings layer to most Blink callbacks that are called by V8. This gives a more thorough breakdown of where time is spent executing Blink C++ during JS Execution.
+Adding `runtime_call_stats_count_everything = true` to a gn args file creates a special build where counters are added in the bindings layer to most Blink callbacks that are called by V8. This gives a more thorough breakdown of where time is spent executing Blink C++ during JS Execution.
 
 It is disabled by default (and behind a compile time flag) as it adds a large number of counters (> 2000) which causes a significant increase in binary size. There is also a performance hit when RCS is enabled with this build due to the large number of counters and counters added to some very trivial getters and setters.

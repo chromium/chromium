@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,7 +52,7 @@ class DemoExtensionsExternalLoader : public extensions::ExternalLoader,
   void StartLoading() override;
 
   // ExternalCacheDelegate:
-  void OnExtensionListsUpdated(const base::DictionaryValue* prefs) override;
+  void OnExtensionListsUpdated(const base::Value::Dict& prefs) override;
 
  protected:
   ~DemoExtensionsExternalLoader() override;
@@ -65,7 +65,8 @@ class DemoExtensionsExternalLoader : public extensions::ExternalLoader,
 
   // Called when the external extensions prefs are read from the disk.
   // `prefs` - demo extensions prefs.
-  void DemoExternalExtensionsPrefsLoaded(absl::optional<base::Value> prefs);
+  void DemoExternalExtensionsPrefsLoaded(
+      absl::optional<base::Value::Dict> prefs);
 
   std::unique_ptr<ExternalCache> external_cache_;
 

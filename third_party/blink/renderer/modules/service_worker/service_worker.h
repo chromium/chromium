@@ -105,7 +105,9 @@ class MODULES_EXPORT ServiceWorker final
   void ContextLifecycleStateChanged(mojom::FrameLifecycleState state) override;
   void ContextDestroyed() override;
 
-  bool was_stopped_;
+  void PostMessageInternal(BlinkTransferableMessage message);
+
+  bool was_stopped_ = false;
   const KURL url_;
   mojom::blink::ServiceWorkerState state_;
   // Both |host_| and |receiver_| are associated with

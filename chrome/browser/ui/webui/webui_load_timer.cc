@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,14 +48,13 @@ void WebuiLoadTimer::DidStartNavigation(
 
 void WebuiLoadTimer::DOMContentLoaded(
     content::RenderFrameHost* render_frame_host) {
-  // See comment in DocumentOnLoadCompletedInMainFrame.
-  if (!timer_ || render_frame_host != web_contents()->GetMainFrame())
+  // See comment in DocumentOnLoadCompletedInPrimaryMainFrame.
+  if (!timer_ || render_frame_host != web_contents()->GetPrimaryMainFrame())
     return;
   CallUmaHistogramTimes(document_initial_load_uma_id_, timer_->Elapsed());
 }
 
-void WebuiLoadTimer::DocumentOnLoadCompletedInMainFrame(
-    content::RenderFrameHost* render_frame_host) {
+void WebuiLoadTimer::DocumentOnLoadCompletedInPrimaryMainFrame() {
   // The WebContents could have been created for a child RenderFrameHost so it
   // would never receive a DidStartNavigation with the main frame, however it
   // will receive this callback.

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,14 +30,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 
-namespace {
-
-bool IsMainFrame(content::RenderFrameHost* render_frame_host) {
-  return !render_frame_host->GetParent();
-}
-
-}  // namespace
-
 using content::NavigationEntry;
 
 SupervisedUserNavigationObserver::~SupervisedUserNavigationObserver() {
@@ -46,7 +38,9 @@ SupervisedUserNavigationObserver::~SupervisedUserNavigationObserver() {
 
 SupervisedUserNavigationObserver::SupervisedUserNavigationObserver(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
+    : content::WebContentsUserData<SupervisedUserNavigationObserver>(
+          *web_contents),
+      content::WebContentsObserver(web_contents),
       receivers_(web_contents, this) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -121,7 +115,7 @@ void SupervisedUserNavigationObserver::DidFinishNavigation(
   // have been filtered by the NavigationThrottle.
   if (navigation_handle->IsSameDocument() &&
       navigation_handle->IsInPrimaryMainFrame()) {
-    auto* render_frame_host = web_contents()->GetMainFrame();
+    auto* render_frame_host = web_contents()->GetPrimaryMainFrame();
     int process_id = render_frame_host->GetProcess()->GetID();
     int routing_id = render_frame_host->GetRoutingID();
     bool skip_manual_parent_filter =
@@ -143,7 +137,7 @@ void SupervisedUserNavigationObserver::FrameDeleted(int frame_tree_node_id) {
 void SupervisedUserNavigationObserver::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
-  if (IsMainFrame(render_frame_host)) {
+  if (render_frame_host->IsInPrimaryMainFrame()) {
     bool main_frame_blocked =
         base::Contains(supervised_user_interstitials_,
                        render_frame_host->GetFrameTreeNodeId());
@@ -162,7 +156,7 @@ void SupervisedUserNavigationObserver::DidFinishLoad(
 }
 
 void SupervisedUserNavigationObserver::OnURLFilterChanged() {
-  auto* main_frame = web_contents()->GetMainFrame();
+  auto* main_frame = web_contents()->GetPrimaryMainFrame();
   int main_frame_process_id = main_frame->GetProcess()->GetID();
   int routing_id = main_frame->GetRoutingID();
   bool skip_manual_parent_filter =
@@ -177,11 +171,11 @@ void SupervisedUserNavigationObserver::OnURLFilterChanged() {
 
   MaybeUpdateRequestedHosts();
 
-
   // Iframe filtering has been enabled.
-  web_contents()->ForEachFrame(
-      base::BindRepeating(&SupervisedUserNavigationObserver::FilterRenderFrame,
-                          weak_ptr_factory_.GetWeakPtr()));
+  main_frame->ForEachRenderFrameHost(
+      [this](content::RenderFrameHost* render_frame_host) {
+        FilterRenderFrame(render_frame_host);
+      });
 }
 
 void SupervisedUserNavigationObserver::OnInterstitialDone(int frame_id) {
@@ -206,8 +200,7 @@ void SupervisedUserNavigationObserver::OnRequestBlockedInternal(
       url, timestamp, history::ContextIDForWebContents(web_contents()),
       /*nav_entry_id=*/0, /*referrer=*/url, history::RedirectList(),
       ui::PAGE_TRANSITION_BLOCKED, /*hidden=*/false, history::SOURCE_BROWSED,
-      /*did_replace_entry=*/false, /*consider_for_ntp_most_visited=*/true,
-      /*floc_allowed=*/false);
+      /*did_replace_entry=*/false, /*consider_for_ntp_most_visited=*/true);
 
   // Add the entry to the history database.
   Profile* profile =
@@ -258,7 +251,7 @@ void SupervisedUserNavigationObserver::URLFilterCheckCallback(
   // if an interstitial error page is not being shown but it should be shown,
   // then reloading will trigger the navigation throttle to show the error page.
   if (is_showing_interstitial != should_show_interstitial) {
-    if (IsMainFrame(render_frame_host)) {
+    if (render_frame_host->IsInPrimaryMainFrame()) {
       web_contents()->GetController().Reload(content::ReloadType::NORMAL,
                                              /* check_for_repost */ false);
       return;
@@ -282,7 +275,7 @@ void SupervisedUserNavigationObserver::MaybeShowInterstitial(
 
   bool already_requested = base::Contains(requested_hosts_, url.host());
   bool is_main_frame =
-      frame_id == web_contents()->GetMainFrame()->GetFrameTreeNodeId();
+      frame_id == web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId();
 
   callback.Run(SupervisedUserNavigationThrottle::CallbackActions::
                    kCancelWithInterstitial,
@@ -295,7 +288,8 @@ void SupervisedUserNavigationObserver::FilterRenderFrame(
   // If the RenderFrameHost belongs to the main frame, return. This is because
   // the main frame is already filtered in
   // |SupervisedUserNavigationObserver::OnURLFilterChanged|.
-  if (!render_frame_host->IsRenderFrameLive() || IsMainFrame(render_frame_host))
+  if (!render_frame_host->IsRenderFrameLive() ||
+      render_frame_host->IsInPrimaryMainFrame())
     return;
 
   const GURL& last_committed_url = render_frame_host->GetLastCommittedURL();
@@ -312,7 +306,7 @@ void SupervisedUserNavigationObserver::GoBack() {
   auto id = render_frame_host->GetFrameTreeNodeId();
 
   // Request can come only from the main frame.
-  if (!IsMainFrame(render_frame_host))
+  if (!render_frame_host->IsInPrimaryMainFrame())
     return;
 
   if (base::Contains(supervised_user_interstitials_, id))

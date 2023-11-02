@@ -1,6 +1,5 @@
 <!doctype html>
-<html dir="$i18n{textdirection}" lang="$i18n{language}" class="loading"
-    $i18n{enableBrandingUpdateAttribute}>
+<html dir="$i18n{textdirection}" lang="$i18n{language}" class="loading">
 <head>
   <meta charset="utf8">
   <meta name="color-scheme" content="light dark">
@@ -15,10 +14,15 @@
 
     html,
     body {
-      background: var(--md-background-color);
       height: 100%;
       margin: 0;
       overflow: hidden;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      html {
+        background: var(--md-background-color);
+      }
     }
 
     html.loading::before {

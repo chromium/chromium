@@ -27,7 +27,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import mimetypes
-import six.moves.urllib
+import urllib
 
 from blinkpy.common.net.network_transaction import NetworkTransaction
 
@@ -58,8 +58,6 @@ def _encode_multipart_form_data(fields, files):
         lines.append('--' + BOUNDARY)
         lines.append('Content-Disposition: form-data; name="%s"' % key)
         lines.append('')
-        if isinstance(value, unicode):
-            value = value.encode('utf-8')
         lines.append(value)
 
     for key, filename, value in files:
@@ -68,8 +66,6 @@ def _encode_multipart_form_data(fields, files):
                      % (key, filename))
         lines.append('Content-Type: %s' % get_mime_type(filename))
         lines.append('')
-        if isinstance(value, unicode):
-            value = value.encode('utf-8')
         lines.append(value)
 
     lines.append('--' + BOUNDARY + '--')

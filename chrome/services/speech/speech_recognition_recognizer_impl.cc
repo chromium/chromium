@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,9 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/services/speech/soda/proto/soda_api.pb.h"
@@ -25,6 +28,7 @@
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/common/media_type_converters.h"
+#include "media/mojo/mojom/audio_data.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace speech {
@@ -34,12 +38,12 @@ constexpr char kInvalidAudioDataError[] = "Invalid audio data received.";
 // static
 const char
     SpeechRecognitionRecognizerImpl::kCaptionBubbleVisibleHistogramName[] =
-        "Accessibility.LiveCaption.Duration.CaptionBubbleVisible2";
+        "Accessibility.LiveCaption.Duration.CaptionBubbleVisible3";
 
 // static
 const char
     SpeechRecognitionRecognizerImpl::kCaptionBubbleHiddenHistogramName[] =
-        "Accessibility.LiveCaption.Duration.CaptionBubbleHidden2";
+        "Accessibility.LiveCaption.Duration.CaptionBubbleHidden3";
 
 namespace {
 
@@ -90,6 +94,12 @@ void OnSodaResponse(const char* serialized_proto,
              static_cast<media::mojom::ConfidenceLevel>(
                  event.confidence_level()));
   }
+
+  if (response.soda_type() == soda::chrome::SodaResponse::STOP) {
+    static_cast<SpeechRecognitionRecognizerImpl*>(callback_handle)
+        ->speech_recognition_stopped_callback()
+        .Run();
+  }
 }
 
 speech::soda::chrome::ExtendedSodaConfigMsg::RecognitionMode
@@ -115,14 +125,12 @@ SpeechRecognitionRecognizerImpl::~SpeechRecognitionRecognizerImpl() {
 void SpeechRecognitionRecognizerImpl::Create(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizer> receiver,
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> remote,
-    base::WeakPtr<SpeechRecognitionServiceImpl> speech_recognition_service_impl,
     media::mojom::SpeechRecognitionOptionsPtr options,
     const base::FilePath& binary_path,
     const base::FilePath& config_path) {
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<SpeechRecognitionRecognizerImpl>(
-          std::move(remote), std::move(speech_recognition_service_impl),
-          std::move(options), binary_path, config_path),
+          std::move(remote), std::move(options), binary_path, config_path),
       std::move(receiver));
 }
 
@@ -157,14 +165,18 @@ void SpeechRecognitionRecognizerImpl::OnLanguageIdentificationEvent(
   }
 }
 
+void SpeechRecognitionRecognizerImpl::OnRecognitionStoppedCallback() {
+  if (client_remote_.is_bound()) {
+    client_remote_->OnSpeechRecognitionStopped();
+  }
+}
+
 SpeechRecognitionRecognizerImpl::SpeechRecognitionRecognizerImpl(
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> remote,
-    base::WeakPtr<SpeechRecognitionServiceImpl> speech_recognition_service_impl,
     media::mojom::SpeechRecognitionOptionsPtr options,
     const base::FilePath& binary_path,
     const base::FilePath& config_path)
-    : enable_soda_(base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)),
-      options_(std::move(options)),
+    : options_(std::move(options)),
       client_remote_(std::move(remote)),
       config_path_(config_path) {
   recognition_event_callback_ = media::BindToCurrentLoop(
@@ -174,28 +186,25 @@ SpeechRecognitionRecognizerImpl::SpeechRecognitionRecognizerImpl(
       media::BindToCurrentLoop(base::BindRepeating(
           &SpeechRecognitionRecognizerImpl::OnLanguageIdentificationEvent,
           weak_factory_.GetWeakPtr()));
+  speech_recognition_stopped_callback_ =
+      media::BindToCurrentLoop(base::BindRepeating(
+          &SpeechRecognitionRecognizerImpl::OnRecognitionStoppedCallback,
+          weak_factory_.GetWeakPtr()));
 
-  // Unretained is safe because |this| owns the mojo::Remote.
   client_remote_.set_disconnect_handler(
       base::BindOnce(&SpeechRecognitionRecognizerImpl::OnClientHostDisconnected,
                      weak_factory_.GetWeakPtr()));
 
-  if (enable_soda_) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-    // On Chrome OS Ash, soda_client_ is not used, so don't try to create it
-    // here because it exists at a different location. Instead,
-    // CrosSpeechRecognitionRecognizerImpl has its own CrosSodaClient.
-    DCHECK(base::PathExists(binary_path));
-    soda_client_ = std::make_unique<::soda::SodaClient>(binary_path);
-    if (!soda_client_->BinaryLoadedSuccessfully()) {
-      OnSpeechRecognitionError();
-    }
-#endif
-  } else {
-    cloud_client_ = std::make_unique<CloudSpeechRecognitionClient>(
-        recognition_event_callback(),
-        std::move(speech_recognition_service_impl));
+  // On Chrome OS Ash, soda_client_ is not used, so don't try to create it
+  // here because it exists at a different location. Instead,
+  // CrosSpeechRecognitionRecognizerImpl has its own CrosSodaClient.
+  DCHECK(base::PathExists(binary_path));
+  soda_client_ = std::make_unique<::soda::SodaClient>(binary_path);
+  if (!soda_client_->BinaryLoadedSuccessfully()) {
+    OnSpeechRecognitionError();
   }
+#endif
 }
 
 void SpeechRecognitionRecognizerImpl::OnClientHostDisconnected() {
@@ -211,13 +220,16 @@ void SpeechRecognitionRecognizerImpl::SendAudioToSpeechRecognitionService(
   size_t buffer_size = 0;
 
   // Update watch time durations.
-  base::TimeDelta duration =
-      media::AudioTimestampHelper::FramesToTime(frame_count, sample_rate);
-  if (is_client_requesting_speech_recognition_) {
-    caption_bubble_visible_duration_ += duration;
-  } else {
-    caption_bubble_hidden_duration_ += duration;
-    return;
+  if (options_->recognizer_client_type ==
+      media::mojom::RecognizerClientType::kLiveCaption) {
+    base::TimeDelta duration =
+        media::AudioTimestampHelper::FramesToTime(frame_count, sample_rate);
+    if (is_client_requesting_speech_recognition_) {
+      caption_bubble_visible_duration_ += duration;
+    } else {
+      caption_bubble_hidden_duration_ += duration;
+      return;
+    }
   }
 
   // Verify the channel count.
@@ -251,6 +263,10 @@ void SpeechRecognitionRecognizerImpl::OnSpeechRecognitionError() {
   }
 }
 
+void SpeechRecognitionRecognizerImpl::MarkDone() {
+  soda_client_->MarkDone();
+}
+
 void SpeechRecognitionRecognizerImpl::
     SendAudioToSpeechRecognitionServiceInternal(
         media::mojom::AudioDataS16Ptr buffer) {
@@ -264,33 +280,15 @@ void SpeechRecognitionRecognizerImpl::
     return;
   }
 
-  if (enable_soda_) {
-    DCHECK(soda_client_);
-    DCHECK(base::PathExists(config_path_));
-    if (!soda_client_->IsInitialized() ||
-        soda_client_->DidAudioPropertyChange(sample_rate_, channel_count_)) {
-      ResetSoda();
-    }
-
-    soda_client_->AddAudio(reinterpret_cast<char*>(buffer->data.data()),
-                           buffer_size);
-  } else {
-    DCHECK(cloud_client_);
-    if (!cloud_client_->IsInitialized() ||
-        cloud_client_->DidAudioPropertyChange(sample_rate_, channel_count_)) {
-      // Initialize the stream.
-      CloudSpeechConfig config;
-      config.sample_rate = sample_rate_;
-      config.channel_count = channel_count_;
-      // TODO(crbug.com/1161569): This should be chosen dynamically, probably
-      // via options_->language.
-      config.language_code = speech::kUsEnglishLocale;
-      cloud_client_->Initialize(config);
-    }
-
-    cloud_client_->AddAudio(base::span<const char>(
-        reinterpret_cast<char*>(buffer->data.data()), buffer_size));
+  CHECK(soda_client_);
+  DCHECK(base::PathExists(config_path_));
+  if (!soda_client_->IsInitialized() ||
+      soda_client_->DidAudioPropertyChange(sample_rate_, channel_count_)) {
+    ResetSoda();
   }
+
+  soda_client_->AddAudio(reinterpret_cast<char*>(buffer->data.data()),
+                         buffer_size);
 }
 
 void SpeechRecognitionRecognizerImpl::OnLanguageChanged(
@@ -305,17 +303,51 @@ void SpeechRecognitionRecognizerImpl::OnLanguageChanged(
   if (language_code == language_ || language_code == LanguageCode::kNone)
     return;
 
-  language_ = language_component_config.value().language_code;
-  base::FilePath config_path = GetLatestSodaLanguagePackDirectory(language);
-  if (base::PathExists(config_path)) {
+  if (!task_runner_) {
+    task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+  }
+
+  // Changing the language requires a blocking call to check if the language
+  // pack exists on the device.
+  scoped_refptr<base::SequencedTaskRunner> current_task_runner =
+      base::SequencedTaskRunnerHandle::Get();
+
+  base::FilePath config_file_path =
+      GetLatestSodaLanguagePackDirectory(language);
+
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::FilePath config_path) {
+            return base::PathExists(config_path);
+          },
+          config_file_path),
+      base::BindOnce(&SpeechRecognitionRecognizerImpl::ResetSodaWithNewLanguage,
+                     weak_factory_.GetWeakPtr(), config_file_path,
+                     language_code));
+}
+
+void SpeechRecognitionRecognizerImpl::ResetSodaWithNewLanguage(
+    base::FilePath config_path,
+    speech::LanguageCode language_code,
+    bool config_exists) {
+  if (config_exists) {
     config_path_ = config_path;
+    language_ = language_code;
     ResetSoda();
-  } else {
-    NOTREACHED();
   }
 }
 
 void SpeechRecognitionRecognizerImpl::RecordDuration() {
+  if (options_->recognizer_client_type !=
+      media::mojom::RecognizerClientType::kLiveCaption) {
+    return;
+  }
+
+  // TODO(b:245620092) Create metrics for other features using speech
+  // recognition.
   if (caption_bubble_visible_duration_.is_positive()) {
     base::UmaHistogramLongTimes100(kCaptionBubbleVisibleHistogramName,
                                    caption_bubble_visible_duration_);
@@ -357,6 +389,7 @@ void SpeechRecognitionRecognizerImpl::ResetSoda() {
   config.soda_config_size = serialized.size();
   config.callback = &OnSodaResponse;
   config.callback_handle = this;
+  CHECK(soda_client_);
   soda_client_->Reset(config, sample_rate_, channel_count_);
 }
 

@@ -1,9 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/vr/elements/text.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "chrome/browser/vr/elements/render_text_wrapper.h"
@@ -252,7 +253,7 @@ class TextTexture : public UiTexture {
   gfx::Rect cursor_bounds_;
   bool shadows_enabled_ = false;
   std::vector<std::unique_ptr<gfx::RenderText>> lines_;
-  Text* element_ = nullptr;
+  raw_ptr<Text> element_ = nullptr;
 
   base::RepeatingCallback<void(gfx::RenderText*)> render_text_created_callback_;
   base::RepeatingCallback<void(const gfx::RenderText&, SkCanvas*)>
@@ -476,7 +477,7 @@ void TextTexture::PrepareDrawStringRect(
     PrepareDrawSingleLineText(text, font_list, bounds, parameters);
 
   if (parameters.shadows_enabled) {
-    bounds->Inset(-parameters.shadow_size, -parameters.shadow_size);
+    bounds->Inset(-parameters.shadow_size);
     bounds->Offset(parameters.shadow_size, parameters.shadow_size);
   }
 }

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -25,7 +26,10 @@ using UkmEntry = ukm::builders::PageForegroundSession;
 
 class ForegroundDurationUKMObserverBrowserTest : public InProcessBrowserTest {
  public:
-  ForegroundDurationUKMObserverBrowserTest() {}
+  ForegroundDurationUKMObserverBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &ForegroundDurationUKMObserverBrowserTest::web_contents,
+            base::Unretained(this))) {}
 
   ForegroundDurationUKMObserverBrowserTest(
       const ForegroundDurationUKMObserverBrowserTest&) = delete;
@@ -34,9 +38,22 @@ class ForegroundDurationUKMObserverBrowserTest : public InProcessBrowserTest {
 
   ~ForegroundDurationUKMObserverBrowserTest() override {}
 
+  content::test::PrerenderTestHelper& prerender_helper() {
+    return prerender_helper_;
+  }
+
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    InProcessBrowserTest::SetUp();
+  }
+
   void PreRunTestOnMainThread() override {
     InProcessBrowserTest::PreRunTestOnMainThread();
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
  protected:
@@ -75,6 +92,7 @@ class ForegroundDurationUKMObserverBrowserTest : public InProcessBrowserTest {
   }
 
  private:
+  content::test::PrerenderTestHelper prerender_helper_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   std::unique_ptr<net::EmbeddedTestServer> https_test_server_;
 };
@@ -90,6 +108,26 @@ IN_PROC_BROWSER_TEST_F(ForegroundDurationUKMObserverBrowserTest, RecordSimple) {
   ExpectMetricCountForUrl(url, "ForegroundTotalAdjustedInputDelay", 1);
 }
 
+IN_PROC_BROWSER_TEST_F(ForegroundDurationUKMObserverBrowserTest,
+                       PrerenderSimple) {
+  StartHttpsServer(net::EmbeddedTestServer::CERT_OK);
+  GURL empty = https_test_server()->GetURL("/empty.html");
+  GURL simple = https_test_server()->GetURL("/simple.html");
+  prerender_helper().NavigatePrimaryPage(empty);
+  int host_id = prerender_helper().AddPrerender(simple);
+  prerender_helper().WaitForPrerenderLoadCompletion(host_id);
+  ExpectMetricCountForUrl(simple, "ForegroundDuration", 0);
+  ExpectMetricCountForUrl(simple, "ForegroundNumInputEvents", 0);
+  ExpectMetricCountForUrl(simple, "ForegroundTotalInputDelay", 0);
+  ExpectMetricCountForUrl(simple, "ForegroundTotalAdjustedInputDelay", 0);
+  prerender_helper().NavigatePrimaryPage(simple);
+  CloseAllTabs();
+  ExpectMetricCountForUrl(simple, "ForegroundDuration", 1);
+  ExpectMetricCountForUrl(simple, "ForegroundNumInputEvents", 1);
+  ExpectMetricCountForUrl(simple, "ForegroundTotalInputDelay", 1);
+  ExpectMetricCountForUrl(simple, "ForegroundTotalAdjustedInputDelay", 1);
+}
+
 IN_PROC_BROWSER_TEST_F(ForegroundDurationUKMObserverBrowserTest, TabSwitching) {
   StartHttpsServer(net::EmbeddedTestServer::CERT_OK);
   GURL url1 = https_test_server()->GetURL("/simple.html");
@@ -101,13 +139,21 @@ IN_PROC_BROWSER_TEST_F(ForegroundDurationUKMObserverBrowserTest, TabSwitching) {
 
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   EXPECT_EQ(2, tab_strip_model->count());
-  EXPECT_EQ(url1, tab_strip_model->GetWebContentsAt(0)->GetURL());
-  EXPECT_EQ(url2, tab_strip_model->GetWebContentsAt(1)->GetURL());
+  EXPECT_EQ(url1, tab_strip_model->GetWebContentsAt(0)->GetLastCommittedURL());
+  EXPECT_EQ(url2, tab_strip_model->GetWebContentsAt(1)->GetLastCommittedURL());
 
-  tab_strip_model->ActivateTabAt(0, {TabStripModel::GestureType::kOther});
-  tab_strip_model->ActivateTabAt(1, {TabStripModel::GestureType::kOther});
-  tab_strip_model->ActivateTabAt(0, {TabStripModel::GestureType::kOther});
-  tab_strip_model->ActivateTabAt(1, {TabStripModel::GestureType::kOther});
+  tab_strip_model->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+  tab_strip_model->ActivateTabAt(
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+  tab_strip_model->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+  tab_strip_model->ActivateTabAt(
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   tab_strip_model->CloseAllTabs();
   ExpectMetricCountForUrl(url1, "ForegroundDuration", 3);
   ExpectMetricCountForUrl(url1, "ForegroundNumInputEvents", 3);

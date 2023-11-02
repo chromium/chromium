@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/files/file_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
@@ -24,7 +23,7 @@ namespace storage_monitor {
 
 namespace {
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 const char kRootPath[] = "/";
 #endif
 
@@ -142,7 +141,7 @@ bool MediaStorageUtil::GetDeviceInfoFromPath(const base::FilePath& path,
   // TODO(gbillock): Delete this stanza? Posix systems should have the root
   // volume information. If not, we should move the below into the
   // right GetStorageInfoForPath implementations.
-#if !defined(OS_POSIX)
+#if !BUILDFLAG(IS_POSIX)
   if (!found_device)
     return false;
 #endif
@@ -175,7 +174,7 @@ base::FilePath MediaStorageUtil::FindDevicePathById(
   // For ImageCapture, the synthetic filesystem will be rooted at a fake
   // top-level directory which is the device_id.
   if (type == StorageInfo::MAC_IMAGE_CAPTURE) {
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
     return base::FilePath(kRootPath + device_id);
 #endif
   }

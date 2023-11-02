@@ -1,18 +1,15 @@
 include_rules = [
+  "+chromeos/ash/components/dbus",
   "+chromeos/lacros",
   "+components/keyed_service/content",
   "+components/metrics",
+  "+components/network_hints/browser",
   "+components/network_session_configurator/common",
   "+components/prefs",
   "+components/variations",
   "+services/device/public/cpp",
   "+services/network/public",
   "+services/service_manager/public/cpp",
+  "+ui/linux",
   "+ui/ozone/public",
 ]
-
-specific_include_rules = {
-  "shell_browser_main_parts\.cc": [
-    "+ui/gtk",
-  ],
-}

@@ -1,6 +1,10 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
+import("//ppapi/buildflags/buildflags.gni")
+
+assert(enable_ppapi)
 
 source_set("headers") {
   visibility = [
@@ -11,7 +15,6 @@ source_set("headers") {
     "enter.h",
     "interfaces_postamble.h",
     "interfaces_ppb_private.h",
-    "interfaces_ppb_private_flash.h",
     "interfaces_ppb_private_no_permissions.h",
     "interfaces_ppb_public_dev.h",
     "interfaces_ppb_public_dev_channel.h",
@@ -71,9 +74,6 @@ source_set("thunk") {
     "ppb_file_ref_thunk.cc",
     "ppb_file_system_api.h",
     "ppb_file_system_thunk.cc",
-    "ppb_find_private_thunk.cc",
-    "ppb_flash_font_file_api.h",
-    "ppb_flash_fullscreen_api.h",
     "ppb_fullscreen_thunk.cc",
     "ppb_gamepad_api.h",
     "ppb_gamepad_thunk.cc",
@@ -108,7 +108,6 @@ source_set("thunk") {
     "ppb_network_monitor_thunk.cc",
     "ppb_network_proxy_api.h",
     "ppb_network_proxy_thunk.cc",
-    "ppb_pdf_api.h",
     "ppb_printing_api.h",
     "ppb_printing_dev_thunk.cc",
     "ppb_tcp_server_socket_private_api.h",
@@ -157,9 +156,7 @@ source_set("thunk") {
       "ppb_browser_font_trusted_thunk.cc",
       "ppb_buffer_thunk.cc",
       "ppb_char_set_thunk.cc",
-      "ppb_flash_font_file_thunk.cc",
       "ppb_gles_chromium_texture_mapping_thunk.cc",
-      "ppb_pdf_thunk.cc",
       "ppb_url_util_thunk.cc",
       "ppb_video_capture_thunk.cc",
       "ppb_video_decoder_dev_thunk.cc",

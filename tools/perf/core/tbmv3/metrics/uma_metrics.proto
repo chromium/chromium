@@ -14,16 +14,15 @@ message UMAMetrics {
   repeated double compositor_latency_total_latency = 2
       [(unit) = "ms_smallerIsBetter"];
   repeated double
-      event_latency_scroll_begin_touch_time_to_scroll_update_swap_begin4 = 3
+      event_latency_first_gesture_scroll_update_touchscreen_total_latency = 3
       [(unit) = "ms_smallerIsBetter"];
   repeated double
-      event_latency_scroll_update_touch_time_to_scroll_update_swap_begin4 = 4
+      event_latency_gesture_scroll_update_touchscreen_total_latency = 4
       [(unit) = "ms_smallerIsBetter"];
   repeated double
-      event_latency_scroll_begin_wheel_time_to_scroll_update_swap_begin4 = 5
+      event_latency_first_gesture_scroll_update_wheel_total_latency = 5
       [(unit) = "ms_smallerIsBetter"];
-  repeated double
-      event_latency_scroll_update_wheel_time_to_scroll_update_swap_begin4 = 6
+  repeated double event_latency_gesture_scroll_update_wheel_total_latency = 6
       [(unit) = "ms_smallerIsBetter"];
   repeated double graphics_smoothness_checkerboarding_compositor_animation = 7
       [(unit) = "n%_smallerIsBetter"];

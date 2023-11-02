@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,9 @@ enum LoadingMode {
   // script before navigation. The document should, if necessary, personalize
   // itself after loading when credentials become available, dynamically.
   kUncredentialedPrerender,
+
+  // A mode in which a response opts in to same site cross origin prerendering.
+  kCredentialedPrerender,
 
   // A mode to opt-in to being loaded in a fenced frame. The navigation in the
   // root fenced frame node should not be successful if the mode is not present.

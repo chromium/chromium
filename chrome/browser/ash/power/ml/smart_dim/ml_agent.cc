@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/containers/flat_map.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/power/ml/smart_dim/metrics.h"
 #include "chrome/browser/ash/power/ml/smart_dim/ml_agent_util.h"
 #include "chrome/browser/ash/power/ml/user_activity_ukm_logger_helpers.h"
@@ -297,10 +298,8 @@ void SmartDimMlAgent::RequestDimDecision(
   tensor->shape = Int64List::New();
   tensor->shape->value = std::vector<int64_t>(
       {1, static_cast<int64_t>(vectorized_features.size())});
-  tensor->data = ValueList::New();
-  tensor->data->set_float_list(FloatList::New());
-  tensor->data->get_float_list()->value = std::vector<double>(
-      std::begin(vectorized_features), std::end(vectorized_features));
+  tensor->data = ValueList::NewFloatList(FloatList::New(std::vector<double>(
+      std::begin(vectorized_features), std::end(vectorized_features))));
   inputs.emplace(std::string(kSmartDimInputNodeName), std::move(tensor));
 
   std::vector<std::string> outputs({std::string(kSmartDimOutputNodeName)});

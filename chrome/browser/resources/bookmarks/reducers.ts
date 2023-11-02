@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
  * calls.
  */
 
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {Action} from 'chrome://resources/js/cr/ui/store.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {Action} from 'chrome://resources/js/store_ts.js';
 
 import {ChangeFolderOpenAction, CreateBookmarkAction, EditBookmarkAction, FinishSearchAction, MoveBookmarkAction, RefreshNodesAction, RemoveBookmarkAction, ReorderChildrenAction, SelectFolderAction, SelectItemsAction, SetPrefAction, StartSearchAction, UpdateAnchorAction} from './actions.js';
 import {BookmarkNode, BookmarksPageState, FolderOpenState, NodeMap, PreferencesState, SearchState, SelectionState} from './types.js';
@@ -42,7 +42,7 @@ function selectItems(
   }) as SelectionState);
 }
 
-function deselectAll(selectionState: SelectionState): SelectionState {
+function deselectAll(_selectionState: SelectionState): SelectionState {
   return {
     items: new Set(),
     anchor: null,
@@ -288,7 +288,9 @@ export function updateSelectedFolder(
       // parent of the deleted node.
       const id = (action as RemoveBookmarkAction).id;
       if (selectedFolder && isAncestorOf(nodes, id, selectedFolder)) {
-        return assert(nodes[id]!.parentId!);
+        const parentId = nodes[id]!.parentId;
+        assert(parentId);
+        return parentId;
       }
       return selectedFolder;
     default:

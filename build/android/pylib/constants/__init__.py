@@ -1,4 +1,4 @@
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -72,19 +72,14 @@ PACKAGE_INFO.update({
     chrome.PackageInfo('com.google.android.webview',
                        'com.android.cts.webkit.WebViewStartupCtsActivity',
                        'webview-command-line', None),
-    'android_system_webview_shell':
-    chrome.PackageInfo('org.chromium.webview_shell',
-                       'org.chromium.webview_shell.WebViewBrowserActivity',
+    'android_google_webview_cts_debug':
+    chrome.PackageInfo('com.google.android.webview.debug',
+                       'com.android.cts.webkit.WebViewStartupCtsActivity',
                        'webview-command-line', None),
     'android_webview_ui_test':
     chrome.PackageInfo('org.chromium.webview_ui_test',
                        'org.chromium.webview_ui_test.WebViewUiTestActivity',
                        'webview-command-line', None),
-    'weblayer_browsertests':
-    chrome.PackageInfo(
-        'org.chromium.weblayer_browsertests_apk',
-        'org.chromium.weblayer_browsertests_apk.WebLayerBrowserTestsActivity',
-        'chrome-native-tests-command-line', None),
 })
 
 
@@ -115,7 +110,7 @@ DEVICE_PERF_OUTPUT_DIR = (
 
 SCREENSHOTS_DIR = os.path.join(DIR_SOURCE_ROOT, 'out_screenshots')
 
-ANDROID_SDK_BUILD_TOOLS_VERSION = '31.0.0'
+ANDROID_SDK_BUILD_TOOLS_VERSION = '33.0.0'
 ANDROID_SDK_ROOT = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'android_sdk',
                                 'public')
 ANDROID_SDK_TOOLS = os.path.join(ANDROID_SDK_ROOT,
@@ -151,7 +146,6 @@ PYTHON_UNIT_TEST_SUITES = {
             'devil.android.md5sum_test',
             'devil.utils.cmd_helper_test',
             'pylib.results.json_results_test',
-            'pylib.utils.proguard_test',
         ]
     },
     'gyp_py_unittests': {
@@ -203,7 +197,7 @@ def SetOutputDirectory(output_directory):
   CheckOutputDirectory(). Typically by providing an --output-dir or
   --chromium-output-dir option.
   """
-  os.environ['CHROMIUM_OUTPUT_DIR'] = output_directory
+  os.environ['CHROMIUM_OUTPUT_DIR'] = os.path.abspath(output_directory)
 
 
 # The message that is printed when the Chromium output directory cannot

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,17 @@
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_SESSION_H_
 
 #include <memory>
+#include <vector>
 
 #include "ash/accessibility/magnifier/magnifier_glass.h"
 #include "ash/ash_export.h"
+#include "ash/capture_mode/capture_mode_toast_controller.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/folder_selection_dialog_controller.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
+#include "ash/shell_observer.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -21,6 +25,7 @@
 #include "ui/display/display_observer.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
@@ -31,7 +36,6 @@ class Canvas;
 
 namespace ash {
 
-class CaptureModeAdvancedSettingsView;
 class CaptureModeBarView;
 class CaptureModeController;
 class CaptureModeSessionFocusCycler;
@@ -54,7 +58,8 @@ class ASH_EXPORT CaptureModeSession
       public TabletModeObserver,
       public aura::WindowObserver,
       public display::DisplayObserver,
-      public FolderSelectionDialogController::Delegate {
+      public FolderSelectionDialogController::Delegate,
+      public ShellObserver {
  public:
   // Creates the bar widget on a calculated root window. |projector_mode|
   // specifies whether this session was started for the projector workflow.
@@ -89,6 +94,9 @@ class ASH_EXPORT CaptureModeSession
   void set_is_stopping_to_start_video_recording(bool value) {
     is_stopping_to_start_video_recording_ = value;
   }
+  CaptureModeToastController* capture_toast_controller() {
+    return &capture_toast_controller_;
+  }
 
   // Initializes the capture mode session. This should be called right after the
   // object is created.
@@ -102,15 +110,34 @@ class ASH_EXPORT CaptureModeSession
   // nullptr if no window is available for selection.
   aura::Window* GetSelectedWindow() const;
 
+  // Called when a user toggles the capture source or capture type to announce
+  // an accessibility alert. If `trigger_now` is true, it will announce
+  // immediately; otherwise, it will trigger another alert asynchronously with
+  // the alert.
+  void A11yAlertCaptureSource(bool trigger_now);
+
+  // Called when switching a capture type from another capture type.
+  void A11yAlertCaptureType();
+
   // Called when either the capture source or type changes.
   void OnCaptureSourceChanged(CaptureModeSource new_source);
   void OnCaptureTypeChanged(CaptureModeType new_type);
 
+  // When performing capture, or at the end of the 3-second count down, the DLP
+  // manager is checked for any restricted content. The DLP manager may choose
+  // to show a system-modal dialog to warn the user about some content they're
+  // about to capture. This function is called to prepare for this case by
+  // hiding all the capture mode UIs and stopping the consumption of input
+  // events, so users can interact with the dialog.
+  void OnWaitingForDlpConfirmationStarted();
+
+  // This function is called when the DLP manager replies back. If `reshow_uis`
+  // is true, then we'll undo the hiding of all the capture mode UIs done in
+  // OnWaitingForDlpConfirmationStarted().
+  void OnWaitingForDlpConfirmationEnded(bool reshow_uis);
+
   // Called when the settings menu is toggled.
   void SetSettingsMenuShown(bool shown);
-
-  // Called when the record microphone setting is toggled.
-  void OnMicrophoneChanged(bool microphone_enabled);
 
   // Called when the user performs a capture. Records histograms related to this
   // session.
@@ -135,6 +162,22 @@ class ASH_EXPORT CaptureModeSession
   // as the save folder.
   void OnDefaultCaptureFolderSelectionChanged();
 
+  // Returns the current parent window for the on-capture-surface widgets such
+  // as `CaptureModeCameraController::camera_preview_widget_` and
+  // `CaptureModeDemoToolsController::demo_tools_widget_` when capture mode
+  // session is active.
+  aura::Window* GetOnCaptureSurfaceWidgetParentWindow() const;
+
+  // Returns the confine bounds for the on-capture-surface widgets (such as the
+  // camera preview and demo tools widgets) when capture session is active.
+  gfx::Rect GetCaptureSurfaceConfineBounds() const;
+
+  // Returns the in-session target value that should be used for the visibility
+  // of the camera preview (if any). During the session, things like dragging
+  // the user region may affect the camera preview's visibility, and hence this
+  // function should be consulted.
+  bool CalculateCameraPreviewTargetVisibility() const;
+
   // ui::LayerDelegate:
   void OnPaintLayer(const ui::PaintContext& context) override;
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
@@ -152,12 +195,16 @@ class ASH_EXPORT CaptureModeSession
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
 
+  // ShellObserver:
+  void OnRootWindowWillShutdown(aura::Window* root_window) override;
+
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t metrics) override;
 
   // FolderSelectionDialogController::Delegate:
   void OnFolderSelected(const base::FilePath& path) override;
+  void OnSelectionWindowAdded() override;
   void OnSelectionWindowClosed() override;
 
   // Updates the current cursor depending on current |location_in_screen| and
@@ -170,12 +217,39 @@ class ASH_EXPORT CaptureModeSession
   // events (tabbing through windows in capture window mode).
   void HighlightWindowForTab(aura::Window* window);
 
+  // Called when the settings view has been updated, its bounds may need to be
+  // updated correspondingly.
+  void MaybeUpdateSettingsBounds();
+
+  // Called when opacity of capture UIs (capture bar, capture label) may need to
+  // be updated. For example, when camera preview is created, destroyed,
+  // reparented, display metrics change or located events enter / exit / move
+  // on capture UI.
+  void MaybeUpdateCaptureUisOpacity(
+      absl::optional<gfx::Point> cursor_screen_location = absl::nullopt);
+
+  void OnCameraPreviewDragStarted();
+  void OnCameraPreviewDragEnded(const gfx::Point& screen_location,
+                                bool is_touch);
+
+  // Called every time when camera preview is updated.
+  // `capture_surface_became_too_small` indicates whether the camera preview
+  // becomes invisible is due to the capture surface becoming too small.
+  // `did_bounds_or_visibility_change` determines whether the capture UIs'
+  // opacity should be updated.
+  void OnCameraPreviewBoundsOrVisibilityChanged(
+      bool capture_surface_became_too_small,
+      bool did_bounds_or_visibility_change);
+
+  void OnCameraPreviewDestroyed();
+
  private:
-  friend class CaptureModeAdvancedSettingsTestApi;
+  friend class CaptureModeSettingsTestApi;
   friend class CaptureModeSessionFocusCycler;
   friend class CaptureModeSessionTestApi;
   friend class CaptureModeTestApi;
   class CursorSetter;
+  class ParentContainerObserver;
 
   enum class CaptureLabelAnimation {
     // No animation on the capture label.
@@ -187,6 +261,19 @@ class ASH_EXPORT CaptureModeSession
     // the capture label animates into a countdown label.
     kCountdownStart,
   };
+
+  // Returns a list of all the currently available widgets that are owned by
+  // this session.
+  std::vector<views::Widget*> GetAvailableWidgets();
+
+  // All UI elements, cursors, widgets and paintings on the session's layer can
+  // be either shown or hidden with the below functions.
+  void HideAllUis();
+  void ShowAllUis();
+
+  // Called by `ShowAllUis` for each widget. Returns true if the given `widget`
+  // could be shown, otherwise, returns false.
+  bool CanShowWidget(views::Widget* widget) const;
 
   // Sets the correct screen bounds on the `capture_mode_bar_widget_` based on
   // the `current_root_`, potentially moving the bar to a new display if
@@ -212,8 +299,8 @@ class ASH_EXPORT CaptureModeSession
 
   // Ensures that the bar widget is on top of everything, and the overlay (which
   // is the |layer()| of this class that paints the capture region) is stacked
-  // right below the bar.
-  void RefreshStackingOrder(aura::Window* parent_container);
+  // below the bar.
+  void RefreshStackingOrder();
 
   // Paints the current capture region depending on the current capture source.
   void PaintCaptureRegion(gfx::Canvas* canvas);
@@ -226,17 +313,14 @@ class ASH_EXPORT CaptureModeSession
   void OnLocatedEvent(ui::LocatedEvent* event, bool is_touch);
 
   // Returns the fine tune position that corresponds to the given
-  // |location_in_root|.
-  FineTunePosition GetFineTunePosition(const gfx::Point& location_in_root,
+  // `location_in_screen`.
+  FineTunePosition GetFineTunePosition(const gfx::Point& location_in_screen,
                                        bool is_touch) const;
 
   // Handles updating the select region UI.
-  void OnLocatedEventPressed(const gfx::Point& location_in_root,
-                             bool is_touch,
-                             bool is_event_on_capture_bar_or_menu);
+  void OnLocatedEventPressed(const gfx::Point& location_in_root, bool is_touch);
   void OnLocatedEventDragged(const gfx::Point& location_in_root);
-  void OnLocatedEventReleased(bool is_event_on_capture_bar_or_menu,
-                              bool region_intersects_capture_bar);
+  void OnLocatedEventReleased(const gfx::Point& location_in_root);
 
   // Updates the capture region and the capture region widgets depending on the
   // value of |is_resizing|. |by_user| is true if the capture region is changed
@@ -301,19 +385,19 @@ class ASH_EXPORT CaptureModeSession
   // kImage or using custom video capture icon when |type| is kVideo.
   bool IsUsingCustomCursor(CaptureModeType type) const;
 
-  // Updates the capture bar widget with a given opacity. There is a different
-  // animation duration and tween type for mouse/touch release.
-  void UpdateCaptureBarWidgetOpacity(float opacity, bool on_release);
-
   // Ensure the user region in |controller_| is within the bounds of the root
   // window. This is called when creating |this| or when the display bounds have
   // changed.
   void ClampCaptureRegionToRootWindowSize();
 
   // Ends a region selection. Cleans up internal state and updates the cursor,
-  // capture bar opacity and magnifier glass.
-  void EndSelection(bool is_event_on_capture_bar_or_menu,
-                    bool region_intersects_capture_bar);
+  // capture UIs' opacity and magnifier glass. The `cursor_screen_location`
+  // could not be provided in some use cases, for example the capture region is
+  // updated because of the display metrics are changed. When
+  // `cursor_screen_location` is not provived, we will try to get the screen
+  // location of the mouse.
+  void EndSelection(
+      absl::optional<gfx::Point> cursor_screen_location = absl::nullopt);
 
   // Schedules a paint on the region and enough inset around it so that the
   // shadow, affordance circles, etc. are all repainted.
@@ -329,9 +413,19 @@ class ASH_EXPORT CaptureModeSession
   void UpdateRegionHorizontally(bool left, int event_flags);
   void UpdateRegionVertically(bool up, int event_flags);
 
-  // Returns true if the event is on a visible settings menu. This includes the
-  // space between the capture bar and the menu.
-  bool IsEventInSettingsMenuBounds(const gfx::Point& location_in_screen);
+  // Called when the parent container of camera preview may need to be updated.
+  void MaybeReparentCameraPreviewWidget();
+
+  // Called at the beginning or end of the drag of capture region to update the
+  // camera preview's bounds and visibility.
+  void MaybeUpdateCameraPreviewBounds();
+
+  // Returns true if the given `event` is targeted on the capture bar.
+  bool IsEventTargetedOnCaptureBar(const ui::LocatedEvent& event) const;
+
+  // Returns true if the given `event` is targeted on the setting menu if it
+  // exists.
+  bool IsEventTargetedOnSettingsMenu(const ui::LocatedEvent& event) const;
 
   CaptureModeController* const controller_;
 
@@ -364,6 +458,10 @@ class ASH_EXPORT CaptureModeSession
   // Magnifier glass used during a region capture session.
   MagnifierGlass magnifier_glass_;
 
+  // True if all UIs (cursors, widgets, and paintings on the layer) of the
+  // capture mode session is visible.
+  bool is_all_uis_visible_ = true;
+
   // Whether this session was started from a projector workflow.
   const bool is_in_projector_mode_ = false;
 
@@ -381,6 +479,13 @@ class ASH_EXPORT CaptureModeSession
   // where the user can reposition and resize the region with a lot of accuracy.
   bool is_selecting_region_ = false;
 
+  // True when a located pressed event is received outside the bounds of a
+  // present settings menu widget. This event will be used to dismiss the
+  // settings menu and all future located events up to and including the
+  // released event will be ignored (i.e. will not be used to update the capture
+  // region, perform capture ... etc.).
+  bool ignore_located_events_ = false;
+
   // The location of the last press and drag events.
   gfx::Point initial_location_in_root_;
   gfx::Point previous_location_in_root_;
@@ -397,6 +502,9 @@ class ASH_EXPORT CaptureModeSession
 
   // Observer to observe the current selected to-be-captured window.
   std::unique_ptr<CaptureWindowObserver> capture_window_observer_;
+
+  // Observer to observe the parent container `kShellWindowId_MenuContainer`.
+  std::unique_ptr<ParentContainerObserver> parent_container_observer_;
 
   // Contains the window dimmers which dim all the root windows except
   // |current_root_|.
@@ -435,29 +543,29 @@ class ASH_EXPORT CaptureModeSession
   // any errors, DLP restrictions, or any user cancellation.
   bool is_stopping_to_start_video_recording_ = false;
 
+  // True when we ask the DLP manager to check the screen content before we
+  // perform the capture.
+  bool is_waiting_for_dlp_confirmation_ = false;
+
   // The object which handles tab focus while in a capture session.
   std::unique_ptr<CaptureModeSessionFocusCycler> focus_cycler_;
 
-  // This is guarded by the |ImprovedScreenCaptureSettings| feature flag.
-  // TODO(conniekxu): remove it when the work of capture mode new settings
-  // is done.
-  CaptureModeAdvancedSettingsView* capture_mode_advanced_settings_view_ =
-      nullptr;
-
-  // This helps indicating whether located events should be handled by the
-  // capture mode settings menu view or the capture mode Pre-EventHandler. When
-  // it's true, settings menu view should handle the event. Set it to true when
-  // the event is a press event and is located on the settings menu view. Set it
-  // to false when the event is a release event and "event_on_settings_menu_" is
-  // true.
-  bool located_press_event_on_settings_menu_ = false;
+  // True if a located event should be passed to camera preview to be handled.
+  bool should_pass_located_event_to_camera_preview_ = false;
 
   // Controls the folder selection dialog. Not null only while the dialog is
   // shown.
   std::unique_ptr<FolderSelectionDialogController>
       folder_selection_dialog_controller_;
 
+  // Controls the user nudge animations.
   std::unique_ptr<UserNudgeController> user_nudge_controller_;
+
+  // Controls creating, destroying or updating the visibility of the capture
+  // toast.
+  CaptureModeToastController capture_toast_controller_;
+
+  base::WeakPtrFactory<CaptureModeSession> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

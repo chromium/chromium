@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,10 @@
 
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
+#include "third_party/blink/public/mojom/frame/remote_frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom.h"
@@ -26,16 +26,16 @@ class Origin;
 
 namespace content {
 
-// This class implements a RemoteFrame that can be attached to the
-// AssociatedInterfaceProvider so that it will be called when the browser
-// normally sends a request to the renderer process. But for a unittest
-// setup it can be intercepted by this class.
+// This class implements a RemoteFrame that can be bound and passed to
+// the RenderFrameProxy. Calls typically routed to the renderer process
+// will then be intercepted to this class.
 class FakeRemoteFrame : public blink::mojom::RemoteFrame {
  public:
   FakeRemoteFrame();
   ~FakeRemoteFrame() override;
 
-  void Init(blink::AssociatedInterfaceProvider* provider);
+  void Init(
+      mojo::PendingAssociatedReceiver<blink::mojom::RemoteFrame> receiver);
 
   // blink::mojom::RemoteFrame overrides:
   void WillEnterFullscreen(blink::mojom::FullscreenOptionsPtr) override;
@@ -47,7 +47,7 @@ class FakeRemoteFrame : public blink::mojom::RemoteFrame {
   void SetReplicatedOrigin(
       const url::Origin& origin,
       bool is_potentially_trustworthy_unique_origin) override;
-  void SetReplicatedIsAdSubframe(bool is_ad_subframe) override;
+  void SetReplicatedIsAdFrame(bool is_ad_frame) override;
   void SetReplicatedName(const std::string& name,
                          const std::string& unique_name) override;
   void DispatchLoadEventForFrameOwner() override;
@@ -71,7 +71,7 @@ class FakeRemoteFrame : public blink::mojom::RemoteFrame {
       blink::mojom::ResourceTimingInfoPtr timing) override;
 
   void ScrollRectToVisible(
-      const gfx::Rect& rect,
+      const gfx::RectF& rect,
       blink::mojom::ScrollIntoViewParamsPtr params) override;
   void DidStartLoading() override;
   void DidStopLoading() override;
@@ -92,10 +92,16 @@ class FakeRemoteFrame : public blink::mojom::RemoteFrame {
       const cc::RenderFrameMetadata& metadata) override;
   void SetFrameSinkId(const viz::FrameSinkId& frame_sink_id) override;
   void ChildProcessGone() override;
+  void CreateRemoteChild(
+      const blink::RemoteFrameToken& token,
+      const absl::optional<blink::FrameToken>& opener_frame_token,
+      blink::mojom::TreeScopeType tree_scope_type,
+      blink::mojom::FrameReplicationStatePtr replication_state,
+      const base::UnguessableToken& devtools_frame_token,
+      blink::mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces)
+      override;
 
  private:
-  void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);
-
   mojo::AssociatedReceiver<blink::mojom::RemoteFrame> receiver_{this};
 };
 

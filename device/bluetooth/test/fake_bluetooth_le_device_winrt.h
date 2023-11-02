@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define DEVICE_BLUETOOTH_TEST_FAKE_BLUETOOTH_LE_DEVICE_WINRT_H_
 
 #include <windows.devices.bluetooth.h>
+#include <windows.devices.enumeration.h>
 #include <windows.foundation.h>
 #include <wrl/client.h>
 #include <wrl/implements.h>
@@ -16,7 +17,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/test/fake_device_information_winrt.h"
 
@@ -132,6 +133,8 @@ class FakeBluetoothLEDeviceWinrt
 
   void SimulateDevicePaired(bool is_paired);
   void SimulatePairingPinCode(std::string pin_code);
+  void SimulateConfirmOnly();
+  void SimulateDisplayPin(base::StringPiece display_pin);
   absl::optional<BluetoothUUID> GetTargetGattService() const;
   void SimulateGattConnection();
   void SimulateGattConnectionError(
@@ -153,7 +156,7 @@ class FakeBluetoothLEDeviceWinrt
   void SimulateGattServicesDiscoveryError();
 
  private:
-  BluetoothTestWinrt* bluetooth_test_winrt_ = nullptr;
+  raw_ptr<BluetoothTestWinrt> bluetooth_test_winrt_ = nullptr;
   uint32_t reference_count_ = 1u;
   absl::optional<std::string> name_;
 
@@ -221,7 +224,7 @@ class FakeBluetoothLEDeviceStaticsWinrt
   IFACEMETHODIMP GetDeviceSelector(HSTRING* device_selector) override;
 
  private:
-  BluetoothTestWinrt* bluetooth_test_winrt_ = nullptr;
+  raw_ptr<BluetoothTestWinrt> bluetooth_test_winrt_ = nullptr;
 };
 
 }  // namespace device

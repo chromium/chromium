@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,20 +10,20 @@
 #include <utility>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/menu_separator_types.h"
+#include "ui/base/themed_vector_icon.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/native_theme/themed_vector_icon.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/view.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -154,7 +154,7 @@ class VIEWS_EXPORT MenuItemView : public View {
 
   // Add an item to the menu at a specified index.  ChildrenChanged() should
   // called after adding menu items if the menu may be active.
-  MenuItemView* AddMenuItemAt(int index,
+  MenuItemView* AddMenuItemAt(size_t index,
                               int item_id,
                               const std::u16string& label,
                               const std::u16string& secondary_label,
@@ -194,7 +194,7 @@ class VIEWS_EXPORT MenuItemView : public View {
   void AppendSeparator();
 
   // Adds a separator to this menu at the specified position.
-  void AddSeparatorAt(int index);
+  void AddSeparatorAt(size_t index);
 
   // All the AppendXXX methods funnel into this.
   MenuItemView* AppendMenuItemImpl(int item_id,
@@ -246,8 +246,8 @@ class VIEWS_EXPORT MenuItemView : public View {
 
   // Adds a callback subscription associated with the above selected property.
   // The callback will be invoked whenever the selected property changes.
-  base::CallbackListSubscription AddSelectedChangedCallback(
-      PropertyChangedCallback callback) WARN_UNUSED_RESULT;
+  [[nodiscard]] base::CallbackListSubscription AddSelectedChangedCallback(
+      PropertyChangedCallback callback);
 
   // Sets whether the submenu area of an ACTIONABLE_SUBMENU is selected.
   void SetSelectionOfActionableSubmenu(
@@ -287,8 +287,9 @@ class VIEWS_EXPORT MenuItemView : public View {
   }
   const std::u16string& accessible_name() const { return accessible_name_; }
 
-  // Called when the drop status of this item changes.
-  void OnDropStatusChanged();
+  // Called when the drop or selection status (as determined by SubmenuView) may
+  // have changed.
+  void OnDropOrSelectionStatusMayHaveChanged();
 
   // Paints the menu item.
   void OnPaint(gfx::Canvas* canvas) override;
@@ -369,12 +370,15 @@ class VIEWS_EXPORT MenuItemView : public View {
   bool is_alerted() const { return is_alerted_; }
 
   // Returns whether or not a "new" badge should be shown on this menu item.
-  // Takes into account whether the badging feature is enabled.
   bool ShouldShowNewBadge() const;
 
   // Returns whether keyboard navigation through the menu should stop on this
   // item.
   bool IsTraversableByKeyboard() const;
+
+  bool last_paint_as_selected_for_testing() const {
+    return last_paint_as_selected_;
+  }
 
  protected:
   // Creates a MenuItemView. This is used by the various AddXXX methods.
@@ -538,10 +542,19 @@ class VIEWS_EXPORT MenuItemView : public View {
   // Returns true if the MenuItemView should be painted as selected.
   bool ShouldPaintAsSelected(PaintMode mode) const;
 
+  // Returns true if this item or any anscestor menu items have been removed and
+  // are currently scheduled for deletion. Items can exist in this state after
+  // they have been removed from the menu but before ChildrenChanged() has been
+  // called.
+  // Menu items scheduled for deletion may not accurately reflect the state of
+  // the menu model and this should be checked when performing actions that
+  // could interact with model state.
+  bool IsScheduledForDeletion() const;
+
   // The delegate. This is only valid for the root menu item. You shouldn't
   // use this directly, instead use GetDelegate() which walks the tree as
   // as necessary.
-  MenuDelegate* delegate_ = nullptr;
+  raw_ptr<MenuDelegate> delegate_ = nullptr;
 
   // The controller for the run operation, or NULL if the menu isn't showing.
   base::WeakPtr<MenuController> controller_;
@@ -550,7 +563,7 @@ class VIEWS_EXPORT MenuItemView : public View {
   bool canceled_ = false;
 
   // Our parent.
-  MenuItemView* parent_menu_item_ = nullptr;
+  raw_ptr<MenuItemView> parent_menu_item_ = nullptr;
 
   // Type of menu. NOTE: MenuItemView doesn't itself represent SEPARATOR,
   // that is handled by an entirely different view class.
@@ -567,15 +580,15 @@ class VIEWS_EXPORT MenuItemView : public View {
   // Command id.
   int command_ = 0;
 
-  // Whether the menu item should be badged as "New" (if badging is enabled) as
-  // a way to highlight a new feature for users.
+  // Whether the menu item should be badged as "New" as a way to highlight a new
+  // feature for users.
   bool is_new_ = false;
 
   // Whether the menu item contains user-created text.
   bool may_have_mnemonics_ = true;
 
   // Submenu, created via CreateSubmenu.
-  SubmenuView* submenu_ = nullptr;
+  raw_ptr<SubmenuView> submenu_ = nullptr;
 
   std::u16string title_;
   std::u16string secondary_title_;
@@ -594,7 +607,7 @@ class VIEWS_EXPORT MenuItemView : public View {
   bool has_icons_ = false;
 
   // Pointer to a view with a menu icon.
-  ImageView* icon_view_ = nullptr;
+  raw_ptr<ImageView> icon_view_ = nullptr;
 
   // The tooltip to show on hover for this menu item.
   std::u16string tooltip_;
@@ -636,20 +649,33 @@ class VIEWS_EXPORT MenuItemView : public View {
   bool use_right_margin_ = true;
 
   // Contains an image for the checkbox or radio icon.
-  ImageView* radio_check_image_view_ = nullptr;
+  raw_ptr<ImageView> radio_check_image_view_ = nullptr;
 
   // The submenu indicator arrow icon in case the menu item has a Submenu.
-  ImageView* submenu_arrow_image_view_ = nullptr;
+  raw_ptr<ImageView> submenu_arrow_image_view_ = nullptr;
 
   // The forced visual selection state of this item, if any.
   absl::optional<bool> forced_visual_selection_;
 
   // The vertical separator that separates the actionable and submenu regions of
   // an ACTIONABLE_SUBMENU.
-  Separator* vertical_separator_ = nullptr;
+  raw_ptr<Separator> vertical_separator_ = nullptr;
 
   // Whether this menu item is rendered differently to draw attention to it.
   bool is_alerted_ = false;
+
+  // If true, ViewHierarchyChanged() will call
+  // UpdateSelectionBasedStateIfChanged().
+  // UpdateSelectionBasedStateIfChanged() calls to NonIconChildViewsCount().
+  // NonIconChildViewsCount() accesses fields of type View as part of the
+  // implementation. A common pattern for assigning a field is:
+  // icon_view_ = AddChildView(icon_view);
+  // The problem is ViewHierarchyChanged() is called during AddChildView() and
+  // before `icon_view_` is set. This means NonIconChildViewsCount() may return
+  // the wrong thing. In this case
+  // `update_selection_based_state_in_view_herarchy_changed_` is set to false
+  // and SetIconView() explicitly calls UpdateSelectionBasedStateIfChanged().
+  bool update_selection_based_state_in_view_herarchy_changed_ = true;
 };
 
 }  // namespace views

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Handwriting Recognition API: Test WebIDL implementation.</title>
+  <script src="../resources/testharness.js"></script>
+  <script src="../resources/testharnessreport.js"></script>
+</head>
+<body>
+<script type="module">
+  promise_test(async () => {
+    assert_not_equals(navigator.queryHandwritingRecognizer, undefined);
+    assert_not_equals(navigator.queryHandwritingRecognizer, null);
+    assert_not_equals(navigator.createHandwritingRecognizer, undefined);
+    assert_not_equals(navigator.createHandwritingRecognizer, null);
+    assert_not_equals(HandwritingStroke, undefined);
+    assert_not_equals(HandwritingStroke, null);
+  }, 'Handwriting recognition exposed interfaces exist.');
+
+  promise_test(async () => {
+    const stroke = new HandwritingStroke();
+    assert_equals(stroke.getPoints().length, 0);
+    stroke.addPoint({x:123, y:456, t:20});
+    stroke.addPoint({x:31, y:654, t:100});
+    assert_equals(stroke.getPoints().length, 2);
+    assert_equals(stroke.getPoints()[0].x, 123);
+    assert_equals(stroke.getPoints()[0].y, 456);
+    assert_equals(stroke.getPoints()[0].t, 20);
+    assert_equals(stroke.getPoints()[1].x, 31);
+    assert_equals(stroke.getPoints()[1].y, 654);
+    assert_equals(stroke.getPoints()[1].t, 100);
+  }, 'HandwritingStroke works as expected.');
+
+  promise_test(async () => {
+    const stroke = new HandwritingStroke();
+    stroke.addPoint({x:1, y:2, t:3});
+    assert_equals(stroke.getPoints().length, 1);
+    assert_equals(stroke.getPoints()[0].x, 1);
+    assert_equals(stroke.getPoints()[0].y, 2);
+    assert_equals(stroke.getPoints()[0].t, 3);
+    stroke.getPoints()[0].x = 100;
+    stroke.getPoints()[0].y = 200;
+    stroke.getPoints()[0].t = 300;
+    assert_equals(stroke.getPoints()[0].x, 1);
+    assert_equals(stroke.getPoints()[0].y, 2);
+    assert_equals(stroke.getPoints()[0].t, 3);
+  }, 'HandwritingPoint can not be changed after added.');
+
+  promise_test(async () => {
+    const response = await navigator.queryHandwritingRecognizer({
+      languages: ['zxx-x-unsupported'],
+    });
+    assert_equals(response, null);
+  }, 'queryHandwritingRecognizer unsupported language.');
+
+  promise_test(async () => {
+    try {
+      await navigator.createHandwritingRecognizer({languages: ['en']});
+    } catch(e) {
+      assert_true(e instanceof DOMException);
+    }
+  }, 'createHandwritingRecognizer unsupported language.');
+</script>
+</body>
+</html>

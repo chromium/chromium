@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "cc/trees/layer_tree_impl.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_gles2_interface.h"
+#include "components/viz/test/test_raster_interface.h"
 
 namespace cc {
 namespace {
@@ -154,7 +155,7 @@ class LayerTreeHostPictureTestResizeViewportWithGpuRaster
       viz::TestContextProvider* context_provider,
       viz::TestContextProvider* worker_provider) override {
     context_provider->UnboundTestContextGL()->set_gpu_rasterization(true);
-    worker_provider->UnboundTestContextGL()->set_gpu_rasterization(true);
+    worker_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
   }
 
   void SetupTree() override {
@@ -486,9 +487,10 @@ class LayerTreeHostPictureTestRSLLMembershipWithScale
                     picture->HighResTiling()->raster_transform());
 
           // Pinch zoom in to change the scale on the active tree.
-          impl->GetInputHandler().PinchGestureBegin();
+          impl->GetInputHandler().PinchGestureBegin(
+              gfx::Point(1, 1), ui::ScrollInputType::kWheel);
           impl->GetInputHandler().PinchGestureUpdate(2.f, gfx::Point(1, 1));
-          impl->GetInputHandler().PinchGestureEnd(gfx::Point(1, 1), true);
+          impl->GetInputHandler().PinchGestureEnd(gfx::Point(1, 1));
         } else if (picture->tilings()->num_tilings() == 1) {
           // If the pinch gesture caused a commit we could get here with a
           // pending tree.

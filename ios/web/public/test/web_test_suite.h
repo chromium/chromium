@@ -1,11 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_WEB_PUBLIC_TEST_WEB_TEST_SUITE_H_
 #define IOS_WEB_PUBLIC_TEST_WEB_TEST_SUITE_H_
 
-#include "base/macros.h"
 #include "base/test/test_suite.h"
 #include "ios/web/public/test/scoped_testing_web_client.h"
 

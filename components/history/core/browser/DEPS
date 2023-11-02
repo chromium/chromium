@@ -6,6 +6,7 @@ include_rules = [
   "+components/favicon/core/favicon_types.h",
   "+components/google/core/common/google_util.h",
   "+components/optimization_guide",
+  "+components/sessions/core/session_id.h",
   "+components/signin/public/identity_manager",
   "+components/variations",
   "+components/enterprise/common/download_item_reroute_info.h"

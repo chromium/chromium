@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,6 +66,16 @@ PermissionRepromptState ShouldRepromptUserForPermissions(
   permissions::PermissionUmaUtil::RecordMissingPermissionInfobarShouldShow(
       false, content_settings_types);
   return PermissionRepromptState::kNoNeed;
+}
+
+bool DoesAppLevelSettingsAllowSiteNotifications() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_PermissionUtil_doesAppLevelSettingsAllowSiteNotifications(env);
+}
+
+bool AreAppLevelNotificationsEnabled() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_PermissionUtil_areAppLevelNotificationsEnabled(env);
 }
 
 }  // namespace permissions

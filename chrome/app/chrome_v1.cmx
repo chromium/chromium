@@ -14,12 +14,16 @@
       "vulkan"
     ],
     "services": [
+      "fuchsia.buildinfo.Provider",
       "fuchsia.device.NameProvider",
+      "fuchsia.element.GraphicalPresenter",
       "fuchsia.fonts.Provider",
+      "fuchsia.hwinfo.Product",
       "fuchsia.input.virtualkeyboard.ControllerCreator",
       "fuchsia.intl.PropertyProvider",
       "fuchsia.logger.LogSink",
       "fuchsia.media.Audio",
+      "fuchsia.media.AudioDeviceEnumerator",
       "fuchsia.media.ProfileProvider",
       "fuchsia.memorypressure.Provider",
       "fuchsia.net.interfaces.State",
@@ -27,6 +31,8 @@
       "fuchsia.posix.socket.Provider",
       "fuchsia.process.Launcher",
       "fuchsia.sysmem.Allocator",
+      "fuchsia.ui.composition.Allocator",
+      "fuchsia.ui.composition.Flatland",
       "fuchsia.ui.input3.Keyboard",
       "fuchsia.ui.scenic.Scenic",
       "fuchsia.vulkan.loader.Loader"

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,7 @@ class PrefService;
     : ObservingSceneAgent <IncognitoReauthCommands>
 
 // Designated initializer.
-// The |reauthModule| is used for authentication.
+// The `reauthModule` is used for authentication.
 - (instancetype)initWithReauthModule:(id<ReauthenticationProtocol>)reauthModule
     NS_DESIGNATED_INITIALIZER;
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_view.h"
 
 namespace content {
@@ -32,6 +33,7 @@ class CardNameFixFlowViewAndroid : public CardNameFixFlowView {
   void OnUserAccept(JNIEnv* env,
                     const base::android::JavaParamRef<jobject>& obj,
                     const base::android::JavaParamRef<jstring>& name);
+  void OnUserDismiss(JNIEnv* env);
   void PromptDismissed(JNIEnv* env,
                        const base::android::JavaParamRef<jobject>& obj);
 
@@ -52,8 +54,8 @@ class CardNameFixFlowViewAndroid : public CardNameFixFlowView {
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
   base::android::ScopedJavaGlobalRef<jobject> java_object_internal_;
 
-  CardNameFixFlowController* controller_;
-  content::WebContents* web_contents_;
+  raw_ptr<CardNameFixFlowController> controller_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 }  // namespace autofill

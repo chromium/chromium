@@ -5,6 +5,7 @@ include_rules = [
   "+components/navigation_interception/android/java",
   "+components/policy/android/java",
   "+components/safe_browsing/android/java",
+  "+components/stylus_handwriting/android/java",
   "+components/component_updater/android/java",
 
   "-content/public/android/java",

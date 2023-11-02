@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -129,10 +129,7 @@ void RecoveryComponentActionHandlerWin::Elevate(Callback callback) {
 }
 
 void RecoveryComponentActionHandlerWin::RunElevatedInSTA(Callback callback) {
-  bool succeeded = false;
-  int error_code = 0;
-  int extra_code = 0;
-  std::tie(succeeded, error_code, extra_code) = RunRecoveryCRXElevated(
+  auto [succeeded, error_code, extra_code] = RunRecoveryCRXElevated(
       crx_path(), GetBrowserAppId(), GetBrowserVersion(), session_id());
   main_task_runner()->PostTask(
       FROM_HERE,

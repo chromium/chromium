@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <windows.foundation.h>
 #include <wrl/client.h>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece_forward.h"
@@ -51,6 +51,9 @@ class BluetoothPairingWinrt {
   // Sends the PIN code |pin_code| to the remote device during pairing.
   void SetPinCode(base::StringPiece pin_code);
 
+  // User consented to continue pairing the remote device.
+  void ConfirmPairing();
+
   // Rejects a pairing or connection request from a remote device.
   void RejectPairing();
 
@@ -69,16 +72,17 @@ class BluetoothPairingWinrt {
                   pairing_result);
 
   void OnSetPinCodeDeferralCompletion(HRESULT hr);
+  void OnConfirmPairingDeferralCompletion(HRESULT hr);
   void OnRejectPairing(HRESULT hr);
   void OnCancelPairing(HRESULT hr);
 
   // Weak. This is the device object that owns this pairing instance.
-  BluetoothDeviceWinrt* device_;
+  raw_ptr<BluetoothDeviceWinrt> device_;
 
   // Weak. This is the pairing delegate provided to BluetoothDevice::Pair.
   // Clients need to ensure the delegate stays alive during the pairing
   // procedure.
-  BluetoothDevice::PairingDelegate* pairing_delegate_;
+  raw_ptr<BluetoothDevice::PairingDelegate> pairing_delegate_;
 
   // Boolean indicating whether the device is currently pairing and expecting a
   // PIN Code to be returned.

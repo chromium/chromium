@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -95,6 +95,10 @@ class DownloadDatabase {
   // Returns true if able to add the site_url column to the download
   // table.
   bool MigrateDownloadSiteInstanceUrl();
+
+  // Returns true if able to add the embedder_download_data column to the
+  // download table.
+  bool MigrateEmbedderDownloadData();
 
   // Returns true if able to add last_access_time column to the download table.
   bool MigrateDownloadLastAccessTime();

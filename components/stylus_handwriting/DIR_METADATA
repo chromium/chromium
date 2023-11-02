@@ -1,0 +1,4 @@
+os: ANDROID
+monorail {
+  component: "UI>Input>Text"
+}

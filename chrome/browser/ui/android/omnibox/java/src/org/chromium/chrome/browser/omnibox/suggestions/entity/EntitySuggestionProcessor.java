@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,7 +54,7 @@ public class EntitySuggestionProcessor extends BaseSuggestionViewProcessor {
      */
     public EntitySuggestionProcessor(Context context, SuggestionHost suggestionHost,
             Supplier<ImageFetcher> imageFetcherSupplier) {
-        super(context, suggestionHost);
+        super(context, suggestionHost, null);
         mSuggestionHost = suggestionHost;
         mPendingImageRequests = new HashMap<>();
         mImageFetcherSupplier = imageFetcherSupplier;

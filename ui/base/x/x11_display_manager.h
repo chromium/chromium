@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/x/x11_workspace_handler.h"
 #include "ui/display/display.h"
 #include "ui/display/display_change_notifier.h"
@@ -75,20 +76,16 @@ class COMPONENT_EXPORT(UI_BASE_X) XDisplayManager
   // X11WorkspaceHandler override:
   void OnCurrentWorkspaceChanged(const std::string& new_workspace) override;
 
-  Delegate* const delegate_;
+  const raw_ptr<Delegate> delegate_;
   std::vector<display::Display> displays_;
   display::DisplayChangeNotifier change_notifier_;
 
-  x11::Connection* const connection_;
+  const raw_ptr<x11::Connection> connection_;
   x11::Window x_root_window_;
   int64_t primary_display_index_ = 0;
 
   // XRandR version. MAJOR * 100 + MINOR. Zero if no xrandr is present.
   const int xrandr_version_;
-
-  // The base of the event numbers used to represent XRandr events used in
-  // decoding events regarding output add/remove.
-  int xrandr_event_base_ = 0;
 
   // The task which fetches/updates display list info asynchronously.
   base::CancelableOnceClosure update_task_;

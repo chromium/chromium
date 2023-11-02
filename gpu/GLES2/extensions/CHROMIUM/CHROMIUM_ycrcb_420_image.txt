@@ -8,21 +8,16 @@ Name Strings
 
 Version
 
-    Last Modifed Date: April 10, 2015
+    Last Modified Date: May 3, 2022
 
 Dependencies
 
     OpenGL ES 2.0 is required.
 
-    GL_CHROMIUM_image is required.
-
 Overview
 
-    This extension provides a new internal image format to use when creating an 
-    image from underlying YV12 buffers with YVU components. 
-
-    This extension is useful in conjunction with CreateImageCHROMIUM to define
-    the format of GpuMemoryBuffer backing the image.
+    This extension provides a new internal image format to use when creating an
+    image from underlying YV12 buffers with YVU components.
 
 New Procedures and Functions
 
@@ -33,8 +28,8 @@ Errors
     None.
 
 New Tokens
-    
-    Accepted by the <internalformat> parameter of CreateImageCHROMIUM.
+
+    GL_RGB_YCRCB_420_CHROMIUM    0x78FA
 
 New State
 
@@ -43,3 +38,4 @@ New State
 Revision History
 
     4/10/2015   Documented the extension
+    5/3/2022    Removed references to GL_CHROMIUM_image.

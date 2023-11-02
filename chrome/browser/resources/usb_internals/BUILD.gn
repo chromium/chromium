@@ -1,120 +1,38 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/grit/grit_rule.gni")
-import("//tools/polymer/html_to_js.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("//chrome/browser/resources/tools/build_webui.gni")
 
-generated_grdp_file = "$target_gen_dir/generated_resources.grdp"
-mojo_grdp_file = "$target_gen_dir/mojo_resources.grdp"
-resources_grd_file = "$target_gen_dir/resources.grd"
-
-generate_grd("build_grd") {
+build_webui("build") {
   grd_prefix = "usb_internals"
-  out_grd = resources_grd_file
-  deps = [
-    ":build_generated_grdp",
-    ":build_mojo_grdp",
-  ]
-  input_files = [
-    "descriptor_panel.js",
-    "devices_page.js",
+
+  static_files = [
     "usb_internals.css",
     "usb_internals.html",
   ]
-  input_files_base_dir = rebase_path(".", "//")
 
-  grdp_files = [
-    generated_grdp_file,
-    mojo_grdp_file,
+  web_component_files = [ "app.ts" ]
+  non_web_component_files = [
+    "descriptor_panel.ts",
+    "devices_page.ts",
   ]
-}
 
-generate_grd("build_generated_grdp") {
-  grd_prefix = "usb_internals"
-  out_grd = generated_grdp_file
-  input_files = [ "app.js" ]
-  input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
-}
-
-generate_grd("build_mojo_grdp") {
-  grd_prefix = "usb_internals"
-  out_grd = mojo_grdp_file
-  input_files = [ "usb_internals.mojom-webui.js" ]
-  input_files_base_dir =
-      rebase_path(
-          "${root_gen_dir}/mojom-webui/chrome/browser/ui/webui/usb_internals",
-          "$root_build_dir")
-}
-
-js_type_check("closure_compile") {
-  closure_flags = default_closure_args + mojom_js_args + [
-                    "js_module_root=" + rebase_path(".", root_build_dir),
-                    "js_module_root=" + rebase_path(
-                            "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/usb_internals",
-                            root_build_dir),
-                    "js_module_root=" + rebase_path(
-                            "$root_gen_dir/mojom-webui/services/device/public/mojom",
-                            root_build_dir),
-                  ]
-  deps = [
-    ":app",
-    ":descriptor_panel",
-    ":devices_page",
-  ]
-}
-
-js_library("app") {
-  deps = [
-    ":devices_page",
+  mojo_files_deps = [
     "//chrome/browser/ui/webui/usb_internals:mojo_bindings_webui_js",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr/ui:tabs",
+    "//services/device/public/mojom:usb_test_js",
+    "//services/device/public/mojom:usb_webui_js",
   ]
-}
+  mojo_files = [
+    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/usb_internals/usb_internals.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/services/device/public/mojom/usb_device.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/services/device/public/mojom/usb_manager.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/services/device/public/mojom/usb_manager_test.mojom-webui.js",
+  ]
 
-js_library("devices_page") {
-  deps = [
-    ":descriptor_panel",
-    "//chrome/browser/ui/webui/usb_internals:mojo_bindings_webui_js",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:util.m",
-    "//ui/webui/resources/js/cr/ui:tabs",
-    "//ui/webui/resources/js/cr/ui:tree",
+  ts_deps = [
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/mojo:library",
   ]
-}
-
-js_library("descriptor_panel") {
-  deps = [
-    "//chrome/browser/ui/webui/usb_internals:mojo_bindings_webui_js",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:util.m",
-    "//ui/webui/resources/js/cr:ui.m",
-    "//ui/webui/resources/js/cr/ui:tree",
-  ]
-}
-
-grit("resources") {
-  enable_input_discovery_for_gn_analyze = false
-  source = resources_grd_file
-  outputs = [
-    "grit/usb_internals_resources.h",
-    "grit/usb_internals_resources_map.cc",
-    "grit/usb_internals_resources_map.h",
-    "usb_internals_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chrome"
-  deps = [
-    ":build_grd",
-    ":web_components",
-    "//chrome/browser/ui/webui/usb_internals:mojo_bindings_webui_js",
-  ]
-}
-
-html_to_js("web_components") {
-  js_files = [ "app.js" ]
+  html_to_wrapper_template = "native"
 }

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
-#include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom-blink.h"
 #include "third_party/blink/public/platform/web_policy_container.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -43,16 +43,6 @@ class CORE_EXPORT PolicyContainer {
   // PolicyContainerHost.
   void UpdateReferrerPolicy(network::mojom::blink::ReferrerPolicy policy);
   network::mojom::blink::ReferrerPolicy GetReferrerPolicy() const;
-
-  network::mojom::blink::IPAddressSpace GetIPAddressSpace() const;
-
-  // This setter is used only by worklets and workers, which do not sync the
-  // PolicyContainer with the browser.
-  //
-  // TODO(https://crbug.com/1177199): Remove this when we implement policy
-  // inheritance for workers/worklets using the PolicyContainer.
-  void SetIPAddressSpace(
-      network::mojom::blink::IPAddressSpace ip_address_space);
 
   // Append |policies| to the list of Content Security Policy and sync them with
   // the PolicyContainerHost.

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,6 +62,23 @@ int ShellFileSystemDelegate::GetDescriptionIdForAcceptType(
   NOTIMPLEMENTED();
   return 0;
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void ShellFileSystemDelegate::RequestFileSystem(
+    content::BrowserContext* browser_context,
+    scoped_refptr<ExtensionFunction> requester,
+    ConsentProvider* consent_provider,
+    const Extension& extension,
+    std::string volume_id,
+    bool writable,
+    FileSystemCallback success_callback,
+    ErrorCallback error_callback) {}
+
+void ShellFileSystemDelegate::GetVolumeList(
+    content::BrowserContext* browser_context,
+    VolumeListCallback success_callback,
+    ErrorCallback error_callback) {}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 SavedFilesServiceInterface* ShellFileSystemDelegate::GetSavedFilesService(
     content::BrowserContext* browser_context) {

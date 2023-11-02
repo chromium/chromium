@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ class BluetoothLowEnergyAdvertisementManagerMacTest : public testing::Test {
  public:
   BluetoothLowEnergyAdvertisementManagerMacTest()
       : ui_task_runner_(new base::TestSimpleTaskRunner()),
-        peripheral_manager_state_(CBPeripheralManagerStatePoweredOn),
+        peripheral_manager_state_(CBManagerStatePoweredOn),
         unregister_success_(false) {}
 
   void SetUp() override {
@@ -68,10 +68,8 @@ class BluetoothLowEnergyAdvertisementManagerMacTest : public testing::Test {
         std::make_unique<BluetoothAdvertisement::Data>(
             BluetoothAdvertisement::ADVERTISEMENT_TYPE_BROADCAST);
 
-    std::unique_ptr<BluetoothAdvertisement::UUIDList> uuid_list =
-        std::make_unique<BluetoothAdvertisement::UUIDList>();
-    uuid_list->push_back(kTestUUID);
-
+    BluetoothAdvertisement::UUIDList uuid_list;
+    uuid_list.push_back(kTestUUID);
     advertisement_data->set_service_uuids(std::move(uuid_list));
 
     return advertisement_data;
@@ -104,7 +102,7 @@ class BluetoothLowEnergyAdvertisementManagerMacTest : public testing::Test {
   BluetoothLowEnergyAdvertisementManagerMac advertisement_manager_;
   CBPeripheralManager* peripheral_manager_;
   id peripheral_manager_mock_;
-  CBPeripheralManagerState peripheral_manager_state_;
+  CBManagerState peripheral_manager_state_;
 
   scoped_refptr<BluetoothAdvertisement> advertisement_;
   std::unique_ptr<BluetoothAdvertisement::ErrorCode> registration_error_;
@@ -116,7 +114,7 @@ class BluetoothLowEnergyAdvertisementManagerMacTest : public testing::Test {
 TEST_F(BluetoothLowEnergyAdvertisementManagerMacTest,
        Register_AdapterPoweredOff) {
   // Simulate adapter being powered off.
-  peripheral_manager_state_ = CBPeripheralManagerStatePoweredOff;
+  peripheral_manager_state_ = CBManagerStatePoweredOff;
 
   RegisterAdvertisement(CreateAdvertisementData());
   ui_task_runner_->RunPendingTasks();
@@ -130,7 +128,7 @@ TEST_F(BluetoothLowEnergyAdvertisementManagerMacTest,
 TEST_F(BluetoothLowEnergyAdvertisementManagerMacTest,
        Register_AdapterInitializing_ThenUnsupported) {
   // Simulate adapter state being unknown and is initializing.
-  peripheral_manager_state_ = CBPeripheralManagerStateUnknown;
+  peripheral_manager_state_ = CBManagerStateUnknown;
 
   // The advertisement will not start or fail until the adapter state is
   // initialized.
@@ -139,9 +137,9 @@ TEST_F(BluetoothLowEnergyAdvertisementManagerMacTest,
   EXPECT_FALSE(advertisement_);
   EXPECT_FALSE(registration_error_);
 
-  // Change the adapter state to CBPeripheralManagerStateUnsupported, which
-  // causes the registration to fail.
-  peripheral_manager_state_ = CBPeripheralManagerStateUnsupported;
+  // Change the adapter state to CBManagerStateUnsupported, which causes the
+  // registration to fail.
+  peripheral_manager_state_ = CBManagerStateUnsupported;
   advertisement_manager_.OnPeripheralManagerStateChanged();
   ui_task_runner_->RunPendingTasks();
   EXPECT_FALSE(advertisement_);
@@ -153,7 +151,7 @@ TEST_F(BluetoothLowEnergyAdvertisementManagerMacTest,
 TEST_F(BluetoothLowEnergyAdvertisementManagerMacTest,
        Register_AdapterInitializing_ThenPoweredOff) {
   // Simulate adapter state being unknown and is initializing.
-  peripheral_manager_state_ = CBPeripheralManagerStateUnknown;
+  peripheral_manager_state_ = CBManagerStateUnknown;
 
   // The advertisement will not start or fail until the adapter state is
   // initialized.
@@ -162,9 +160,9 @@ TEST_F(BluetoothLowEnergyAdvertisementManagerMacTest,
   EXPECT_FALSE(advertisement_);
   EXPECT_FALSE(registration_error_);
 
-  // Change the adapter state to CBPeripheralManagerStatePoweredOff, which
-  // causes the registration to fail.
-  peripheral_manager_state_ = CBPeripheralManagerStatePoweredOff;
+  // Change the adapter state to CBManagerStatePoweredOff, which causes the
+  // registration to fail.
+  peripheral_manager_state_ = CBManagerStatePoweredOff;
   advertisement_manager_.OnPeripheralManagerStateChanged();
   ui_task_runner_->RunPendingTasks();
   EXPECT_FALSE(advertisement_);
@@ -194,9 +192,8 @@ TEST_F(BluetoothLowEnergyAdvertisementManagerMacTest, Register_InvalidData) {
       CreateAdvertisementData();
 
   // Advertising service data is not supported.
-  std::unique_ptr<BluetoothAdvertisement::ServiceData> service_data =
-      std::make_unique<BluetoothAdvertisement::ServiceData>();
-  (*service_data)[kTestUUID] = std::vector<uint8_t>(10);
+  BluetoothAdvertisement::ServiceData service_data;
+  service_data[kTestUUID] = std::vector<uint8_t>(10);
   advertisement_data->set_service_data(std::move(service_data));
 
   RegisterAdvertisement(std::move(advertisement_data));
@@ -239,9 +236,8 @@ TEST_F(BluetoothLowEnergyAdvertisementManagerMacTest, Unregister_Success) {
 TEST_F(BluetoothLowEnergyAdvertisementManagerMacTest,
        Unregister_InvalidAdvertisement) {
   scoped_refptr<BluetoothAdvertisementMac> invalid_advertisement =
-      new BluetoothAdvertisementMac(
-          std::make_unique<BluetoothAdvertisement::UUIDList>(),
-          base::DoNothing(), base::DoNothing(), &advertisement_manager_);
+      new BluetoothAdvertisementMac(absl::nullopt, base::DoNothing(),
+                                    base::DoNothing(), &advertisement_manager_);
 
   // Register advertisement.
   RegisterAdvertisement(CreateAdvertisementData());
@@ -283,10 +279,10 @@ TEST_F(BluetoothLowEnergyAdvertisementManagerMacTest,
   EXPECT_TRUE(advertisement_);
 
   // Reset the adapter (i.e. on system crash).
-  peripheral_manager_state_ = CBPeripheralManagerStateResetting;
+  peripheral_manager_state_ = CBManagerStateResetting;
   advertisement_manager_.OnPeripheralManagerStateChanged();
   advertisement_ = nullptr;
-  peripheral_manager_state_ = CBPeripheralManagerStatePoweredOn;
+  peripheral_manager_state_ = CBManagerStatePoweredOn;
 
   // Registering another advertisement should succeed.
   OCMExpect([peripheral_manager_ startAdvertising:[OCMArg any]]);
@@ -307,14 +303,14 @@ TEST_F(BluetoothLowEnergyAdvertisementManagerMacTest,
 
   // Power off the adapter. Advertisement should be stopped.
   OCMExpect([peripheral_manager_ stopAdvertising]);
-  peripheral_manager_state_ = CBPeripheralManagerStatePoweredOff;
+  peripheral_manager_state_ = CBManagerStatePoweredOff;
   advertisement_manager_.OnPeripheralManagerStateChanged();
   [peripheral_manager_mock_ verifyAtLocation:nil];
 
   // Register a new advertisement after powering back on the adapter.
   // This should fail as the caller needs to manually unregister the
   // advertisement.
-  peripheral_manager_state_ = CBPeripheralManagerStatePoweredOn;
+  peripheral_manager_state_ = CBManagerStatePoweredOn;
   advertisement_ = nullptr;
   RegisterAdvertisement(CreateAdvertisementData());
   ui_task_runner_->RunPendingTasks();

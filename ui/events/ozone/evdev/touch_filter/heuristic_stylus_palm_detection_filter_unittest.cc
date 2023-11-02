@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <linux/input.h>
 
 #include "base/test/gtest_util.h"
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/ozone/evdev/touch_filter/palm_detection_filter.h"
 #include "ui/events/ozone/evdev/touch_filter/shared_palm_detection_filter_state.h"
@@ -58,8 +59,8 @@ TEST_F(HeuristicStylusPalmDetectionFilterDeathTest, TestDCheck) {
 
 TEST_F(HeuristicStylusPalmDetectionFilterTest, TestSetsToZero) {
   std::bitset<kNumTouchEvdevSlots> suppress, hold;
-  suppress.set(kNumTouchEvdevSlots - 1, 1);
-  hold.set(0, 1);
+  suppress.set(kNumTouchEvdevSlots - 1, true);
+  hold.set(0, true);
   palm_detection_filter_->Filter(touches_, test_start_time_, &hold, &suppress);
   EXPECT_TRUE(hold.none());
   EXPECT_TRUE(suppress.none());

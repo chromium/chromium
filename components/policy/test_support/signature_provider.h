@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -79,11 +79,20 @@ class SignatureProvider {
     current_key_version_ = current_key_version;
   }
 
+  bool rotate_keys() const { return rotate_keys_; }
+  void set_rotate_keys(bool rotate_keys) { rotate_keys_ = rotate_keys; }
+
  private:
   std::vector<SigningKey> signing_keys_;
 
   // The key version to be used if no key version is defined by the client.
   int current_key_version_ = 1;
+
+  // Whether to rotate signing keys or to fail when last key is reached. The
+  // policy keys will be rotated in a round-robin fashion for each policy
+  // request (by default, the |current_key_version_| will be used for all
+  // requests).
+  bool rotate_keys_ = false;
 };
 
 }  // namespace policy

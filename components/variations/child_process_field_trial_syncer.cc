@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,8 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "components/variations/variations_crash_keys.h"
+
+#include "base/record_replay.h"
 
 namespace variations {
 
@@ -78,9 +80,9 @@ void ChildProcessFieldTrialSyncer::SetFieldTrialGroupFromBrowser(
 
   base::FieldTrial* trial =
       base::FieldTrialList::CreateFieldTrial(trial_name, group_name);
-  // Ensure the trial is marked as "used" by calling group() on it if it is
+  // Ensure the trial is marked as "used" by calling Activate() on it if it is
   // marked as activated.
-  trial->group();
+  trial->Activate();
 
   in_set_field_trial_group_from_browser_.Set(false);
 }

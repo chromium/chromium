@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -76,7 +75,7 @@ scoped_refptr<const BaseClass> CreateFoo(const std::string& /*instance_type*/,
 
 std::unique_ptr<base::DictionaryValue> CreateDictWithParameter(int parameter) {
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
-  dict->SetInteger("parameter", parameter);
+  dict->SetIntKey("parameter", parameter);
   return dict;
 }
 
@@ -84,10 +83,12 @@ std::unique_ptr<base::DictionaryValue> CreateDictWithParameter(int parameter) {
 
 namespace extensions {
 
+using FactoryT = DedupingFactory<BaseClass, const base::Value*>;
+
 TEST(DedupingFactoryTest, InstantiationParameterized) {
-  DedupingFactory<BaseClass> factory(2);
-  factory.RegisterFactoryMethod(
-      kTypeName, DedupingFactory<BaseClass>::IS_PARAMETERIZED, &CreateFoo);
+  FactoryT factory(2);
+  factory.RegisterFactoryMethod(kTypeName, FactoryT::IS_PARAMETERIZED,
+                                &CreateFoo);
 
   std::unique_ptr<base::DictionaryValue> d1(CreateDictWithParameter(1));
   std::unique_ptr<base::DictionaryValue> d2(CreateDictWithParameter(2));
@@ -132,9 +133,9 @@ TEST(DedupingFactoryTest, InstantiationParameterized) {
 }
 
 TEST(DedupingFactoryTest, InstantiationNonParameterized) {
-  DedupingFactory<BaseClass> factory(2);
-  factory.RegisterFactoryMethod(
-      kTypeName, DedupingFactory<BaseClass>::IS_NOT_PARAMETERIZED, &CreateFoo);
+  FactoryT factory(2);
+  factory.RegisterFactoryMethod(kTypeName, FactoryT::IS_NOT_PARAMETERIZED,
+                                &CreateFoo);
 
   std::unique_ptr<base::DictionaryValue> d1(CreateDictWithParameter(1));
   std::unique_ptr<base::DictionaryValue> d2(CreateDictWithParameter(2));
@@ -156,11 +157,11 @@ TEST(DedupingFactoryTest, InstantiationNonParameterized) {
 }
 
 TEST(DedupingFactoryTest, TypeNames) {
-  DedupingFactory<BaseClass> factory(2);
-  factory.RegisterFactoryMethod(
-      kTypeName, DedupingFactory<BaseClass>::IS_PARAMETERIZED, &CreateFoo);
-  factory.RegisterFactoryMethod(
-      kTypeName2, DedupingFactory<BaseClass>::IS_PARAMETERIZED, &CreateFoo);
+  FactoryT factory(2);
+  factory.RegisterFactoryMethod(kTypeName, FactoryT::IS_PARAMETERIZED,
+                                &CreateFoo);
+  factory.RegisterFactoryMethod(kTypeName2, FactoryT::IS_PARAMETERIZED,
+                                &CreateFoo);
 
   std::unique_ptr<base::DictionaryValue> d1(CreateDictWithParameter(1));
 
@@ -178,9 +179,9 @@ TEST(DedupingFactoryTest, TypeNames) {
 }
 
 TEST(DedupingFactoryTest, Clear) {
-  DedupingFactory<BaseClass> factory(2);
-  factory.RegisterFactoryMethod(
-      kTypeName, DedupingFactory<BaseClass>::IS_PARAMETERIZED, &CreateFoo);
+  FactoryT factory(2);
+  factory.RegisterFactoryMethod(kTypeName, FactoryT::IS_PARAMETERIZED,
+                                &CreateFoo);
 
   std::unique_ptr<base::DictionaryValue> d1(CreateDictWithParameter(1));
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,10 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/test/fake_remote_gatt_service.h"
 
@@ -72,12 +73,10 @@ void FakePeripheral::SetNextGATTDiscoveryResponse(uint16_t code) {
 
 bool FakePeripheral::AllResponsesConsumed() {
   return !next_connection_response_ && !next_discovery_response_ &&
-         std::all_of(gatt_services_.begin(), gatt_services_.end(),
-                     [](const auto& e) {
-                       FakeRemoteGattService* fake_remote_gatt_service =
-                           static_cast<FakeRemoteGattService*>(e.second.get());
-                       return fake_remote_gatt_service->AllResponsesConsumed();
-                     });
+         base::ranges::all_of(gatt_services_, [](const auto& e) {
+           return static_cast<FakeRemoteGattService*>(e.second.get())
+               ->AllResponsesConsumed();
+         });
 }
 
 void FakePeripheral::SimulateGATTDisconnection() {
@@ -98,10 +97,7 @@ std::string FakePeripheral::AddFakeService(
   std::string new_service_id =
       base::StringPrintf("%s_%zu", GetAddress().c_str(), ++last_service_id_);
 
-  GattServiceMap::iterator it;
-  bool inserted;
-
-  std::tie(it, inserted) = gatt_services_.emplace(
+  auto [it, inserted] = gatt_services_.emplace(
       new_service_id,
       std::make_unique<FakeRemoteGattService>(new_service_id, service_uuid,
                                               true /* is_primary */, this));
@@ -125,7 +121,7 @@ uint32_t FakePeripheral::GetBluetoothClass() const {
   return 0;
 }
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 device::BluetoothTransport FakePeripheral::GetType() const {
   NOTREACHED();
   return device::BLUETOOTH_TRANSPORT_INVALID;
@@ -185,6 +181,13 @@ bool FakePeripheral::IsPaired() const {
   return false;
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+bool FakePeripheral::IsBonded() const {
+  NOTREACHED();
+  return false;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 bool FakePeripheral::IsConnected() const {
   NOTREACHED();
   return false;
@@ -206,13 +209,6 @@ bool FakePeripheral::IsConnecting() const {
   NOTREACHED();
   return false;
 }
-
-#if defined(OS_CHROMEOS)
-bool FakePeripheral::IsBlockedByPolicy() const {
-  NOTREACHED();
-  return false;
-}
-#endif
 
 bool FakePeripheral::ExpectingPinCode() const {
   NOTREACHED();
@@ -243,6 +239,13 @@ void FakePeripheral::Connect(PairingDelegate* pairing_delegate,
                              ConnectCallback callback) {
   NOTREACHED();
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void FakePeripheral::ConnectClassic(PairingDelegate* pairing_delegate,
+                                    ConnectCallback callback) {
+  NOTREACHED();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void FakePeripheral::SetPinCode(const std::string& pincode) {
   NOTREACHED();
@@ -368,7 +371,7 @@ void FakePeripheral::DispatchDiscoveryResponse() {
 void FakePeripheral::DisconnectGatt() {
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void FakePeripheral::ExecuteWrite(base::OnceClosure callback,
                                   ExecuteWriteErrorCallback error_callback) {
   NOTIMPLEMENTED();
@@ -378,6 +381,6 @@ void FakePeripheral::AbortWrite(base::OnceClosure callback,
                                 AbortWriteErrorCallback error_callback) {
   NOTIMPLEMENTED();
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace bluetooth

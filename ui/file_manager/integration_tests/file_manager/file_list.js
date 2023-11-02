@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -153,7 +153,7 @@ testcase.fileListSelectLastFocusedItem = async () => {
  * @param {?string=} expectedMessage
  * @return {!Promise<string>} Latest a11y message.
  */
-async function countAndCheckLatestA11yMessage(
+export async function countAndCheckLatestA11yMessage(
     appId, expectedCount, expectedMessage) {
   const a11yMessages =
       await remoteCall.callRemoteTestUtil('getA11yAnnounces', appId, []);

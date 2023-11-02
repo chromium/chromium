@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,13 +14,20 @@
 
 namespace gfx {
 
+// Maximum number of points that can be drawn. This is used to limit the total
+// number of ink trail tokens that we will store, and the total number of points
+// that we will store to provide to the Direct Composition APIs. It should match
+// the exact number of points that the OS Compositor will store to draw as part
+// of a trail.
+inline constexpr int kMaximumNumberOfDelegatedInkPoints = 128;
+
 // This class stores all the metadata that is gathered when the WebAPI
 // updateInkTrailStartPoint is called. This metadata flows from blink,
 // through cc, and into viz in order to produce a delegated ink trail on the
 // end of what was already rendered.
 //
 // Explainer for the feature:
-// https://github.com/WICG/ink-enhancement/blob/master/README.md
+// https://github.com/WICG/ink-enhancement/blob/main/README.md
 class GFX_EXPORT DelegatedInkMetadata {
  public:
   DelegatedInkMetadata() = default;
@@ -62,7 +69,13 @@ class GFX_EXPORT DelegatedInkMetadata {
   bool is_hovering() const { return is_hovering_; }
 
   void set_frame_time(base::TimeTicks frame_time) { frame_time_ = frame_time; }
-
+  uint64_t trace_id() const {
+    // Use mask to distinguish from DelegatedInkPoint::trace_id().
+    // Using microseconds provides uniqueness of trace_id per
+    // DelegatedInkMetadata.
+    return static_cast<uint64_t>(timestamp_.since_origin().InMicroseconds()) |
+           (uint64_t{1} << 63);
+  }
   std::string ToString() const;
 
  private:

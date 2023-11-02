@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 
 #include "base/component_export.h"
 #include "base/debug/alias.h"
+#include "base/debug/crash_logging.h"
 #include "base/strings/string_piece.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "url/third_party/mozilla/url_parse.h"
@@ -163,10 +164,10 @@ class COMPONENT_EXPORT(URL) GURL {
   // It is an error to replace components of an invalid URL. The result will
   // be the empty URL.
   //
-  // Note that we use the more general url::Replacements type to give
-  // callers extra flexibility rather than our override.
-  GURL ReplaceComponents(const url::Replacements<char>& replacements) const;
-  GURL ReplaceComponents(const url::Replacements<char16_t>& replacements) const;
+  // Note that this intentionally disallows direct use of url::Replacements,
+  // which is harder to use correctly.
+  GURL ReplaceComponents(const Replacements& replacements) const;
+  GURL ReplaceComponents(const ReplacementsW& replacements) const;
 
   // A helper function that is equivalent to replacing the path with a slash
   // and clearing out everything after that. We sometimes need to know just the
@@ -265,6 +266,10 @@ class COMPONENT_EXPORT(URL) GURL {
     return SchemeIs(url::kBlobScheme);
   }
 
+  // Returns true if the scheme is a local scheme, as defined in Fetch:
+  // https://fetch.spec.whatwg.org/#local-scheme
+  bool SchemeIsLocal() const;
+
   // For most URLs, the "content" is everything after the scheme (skipping the
   // scheme delimiting colon) and before the fragment (skipping the fragment
   // delimiting octothorpe). For javascript URLs the "content" also includes the
@@ -273,6 +278,7 @@ class COMPONENT_EXPORT(URL) GURL {
   // It is an error to get the content of an invalid URL: the result will be an
   // empty string.
   std::string GetContent() const;
+  base::StringPiece GetContentPiece() const;
 
   // Returns true if the hostname is an IP address. Note: this function isn't
   // as cheap as a simple getter because it re-parses the hostname to verify.
@@ -464,14 +470,16 @@ class COMPONENT_EXPORT(URL) GURL {
 
   // Returns the substring of the input identified by the given component.
   std::string ComponentString(const url::Component& comp) const {
-    if (comp.len <= 0)
+    if (!comp.is_nonempty())
       return std::string();
-    return std::string(spec_, comp.begin, comp.len);
+    return std::string(spec_, static_cast<size_t>(comp.begin),
+                       static_cast<size_t>(comp.len));
   }
   base::StringPiece ComponentStringPiece(const url::Component& comp) const {
-    if (comp.len <= 0)
+    if (!comp.is_nonempty())
       return base::StringPiece();
-    return base::StringPiece(&spec_[comp.begin], comp.len);
+    return base::StringPiece(&spec_[static_cast<size_t>(comp.begin)],
+                             static_cast<size_t>(comp.len));
   }
 
   void ProcessFileSystemURLAfterReplaceComponents();
@@ -515,5 +523,21 @@ bool operator!=(const base::StringPiece& spec, const GURL& x);
 // preserved in crash dumps.
 #define DEBUG_ALIAS_FOR_GURL(var_name, url) \
   DEBUG_ALIAS_FOR_CSTR(var_name, (url).possibly_invalid_spec().c_str(), 128)
+
+namespace url::debug {
+
+class COMPONENT_EXPORT(URL) ScopedUrlCrashKey {
+ public:
+  ScopedUrlCrashKey(base::debug::CrashKeyString* crash_key, const GURL& value);
+  ~ScopedUrlCrashKey();
+
+  ScopedUrlCrashKey(const ScopedUrlCrashKey&) = delete;
+  ScopedUrlCrashKey& operator=(const ScopedUrlCrashKey&) = delete;
+
+ private:
+  base::debug::ScopedCrashKeyString scoped_string_value_;
+};
+
+}  // namespace url::debug
 
 #endif  // URL_GURL_H_

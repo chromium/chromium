@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@ const int kMenuButtonWidth = 63;
 
 // Should match size of |kMenuCommands| array in
 // touch_selection_menu_runner_views.cc.
-const int kMenuCommandCount = 3;
+const int kMenuCommandCount = 4;
 
 }  // namespace
 
@@ -82,7 +82,7 @@ TEST_F(TouchSelectionMenuRunnerViewsTest, InstalledAndWorksProperly) {
 
   // Run menu. Since commands are available, this should bring up menus.
   ui::TouchSelectionMenuRunner::GetInstance()->OpenMenu(
-      this, menu_anchor, handle_size, GetContext());
+      GetWeakPtr(), menu_anchor, handle_size, GetContext());
   EXPECT_TRUE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
 
   // Close menu.
@@ -93,7 +93,7 @@ TEST_F(TouchSelectionMenuRunnerViewsTest, InstalledAndWorksProperly) {
   // Try running menu when no commands is available. Menu should not be shown.
   set_no_commmand_available(true);
   ui::TouchSelectionMenuRunner::GetInstance()->OpenMenu(
-      this, menu_anchor, handle_size, GetContext());
+      GetWeakPtr(), menu_anchor, handle_size, GetContext());
   EXPECT_FALSE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
 }
 
@@ -114,8 +114,8 @@ TEST_F(TouchSelectionMenuRunnerViewsTest, QuickMenuAdjustsAnchorRect) {
   // image width and check that anchor rect's height is adjusted.
   gfx::Rect anchor_rect(0, 0, quick_menu_width + handle_size.width() - 10, 20);
   ui::TouchSelectionMenuRunner::GetInstance()->OpenMenu(
-      this, anchor_rect, handle_size, GetContext());
-  anchor_rect.Inset(0, 0, 0, -handle_size.height());
+      GetWeakPtr(), anchor_rect, handle_size, GetContext());
+  anchor_rect.Inset(gfx::Insets::TLBR(0, 0, -handle_size.height(), 0));
   EXPECT_EQ(anchor_rect, test_api.GetAnchorRect());
 
   // Set anchor rect's width a bit greater than the quick menu width plus handle
@@ -123,7 +123,7 @@ TEST_F(TouchSelectionMenuRunnerViewsTest, QuickMenuAdjustsAnchorRect) {
   anchor_rect =
       gfx::Rect(0, 0, quick_menu_width + handle_size.width() + 10, 20);
   ui::TouchSelectionMenuRunner::GetInstance()->OpenMenu(
-      this, anchor_rect, handle_size, GetContext());
+      GetWeakPtr(), anchor_rect, handle_size, GetContext());
   EXPECT_EQ(anchor_rect, test_api.GetAnchorRect());
 
   ui::TouchSelectionMenuRunner::GetInstance()->CloseMenu();
@@ -143,7 +143,7 @@ TEST_F(TouchSelectionMenuRunnerViewsTest, RunningActionClosesProperly) {
 
   // Run menu. Since commands are available, this should bring up menus.
   ui::TouchSelectionMenuRunner::GetInstance()->OpenMenu(
-      this, menu_anchor, handle_size, GetContext());
+      GetWeakPtr(), menu_anchor, handle_size, GetContext());
   EXPECT_TRUE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
 
   // Tap the first action on the menu and check that the menu is closed
@@ -174,7 +174,7 @@ TEST_F(TouchSelectionMenuRunnerViewsTest, ClosingWidgetClosesProperly) {
 
   // Run menu. Since commands are available, this should bring up menus.
   ui::TouchSelectionMenuRunner::GetInstance()->OpenMenu(
-      this, menu_anchor, handle_size, GetContext());
+      GetWeakPtr(), menu_anchor, handle_size, GetContext());
   EXPECT_TRUE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
 
   // Close the menu widget and check that menu runner correctly knows that menu
@@ -195,11 +195,13 @@ TEST_F(TouchSelectionMenuRunnerViewsTest, ShowMenuTwiceOpensOneMenu) {
   TouchSelectionMenuRunnerViews::TestApi test_api(menu_runner);
 
   // Call ShowMenu() twice in a row. The menus manage their own lifetimes.
-  auto* menu1 = new TouchSelectionMenuViews(menu_runner, this, GetContext());
+  auto* menu1 =
+      new TouchSelectionMenuViews(menu_runner, GetWeakPtr(), GetContext());
   test_api.ShowMenu(menu1, menu_anchor, handle_size);
   auto* widget1 = test_api.GetWidget();
 
-  auto* menu2 = new TouchSelectionMenuViews(menu_runner, this, GetContext());
+  auto* menu2 =
+      new TouchSelectionMenuViews(menu_runner, GetWeakPtr(), GetContext());
   test_api.ShowMenu(menu2, menu_anchor, handle_size);
   auto* widget2 = test_api.GetWidget();
 

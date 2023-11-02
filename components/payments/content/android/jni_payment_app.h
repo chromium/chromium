@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,13 +40,9 @@ class JniPaymentApp : public PaymentApp::Delegate {
 
   bool HandlesPayerPhone(JNIEnv* env);
 
-  base::android::ScopedJavaLocalRef<jstring> GetCountryCode(JNIEnv* env);
-
-  bool CanMakePayment(JNIEnv* env);
+  bool HasEnrolledInstrument(JNIEnv* env);
 
   bool CanPreselect(JNIEnv* env);
-
-  bool IsUserGestureRequiredToSkipUi(JNIEnv* env);
 
   void InvokePaymentApp(JNIEnv* env,
                         const base::android::JavaParamRef<jobject>& jcallback);

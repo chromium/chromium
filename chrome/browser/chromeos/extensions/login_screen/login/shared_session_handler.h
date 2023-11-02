@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,16 +25,14 @@ class SharedSessionHandler {
   SharedSessionHandler& operator=(const SharedSessionHandler&) = delete;
 
   using CallbackWithOptionalError =
-      base::OnceCallback<void(absl::optional<std::string>)>;
+      base::OnceCallback<void(const absl::optional<std::string>&)>;
 
   // Starts a lockable Managed Guest Session with a randomly generated secret
   // as the Cryptohome key. The session secret is stored in memory to be used
-  // later for unlocking the session. Only the extension with id `extension_id`
-  // has permission to unlock the session.
+  // later for unlocking the session.
   // An initial shared session is started with `password` as the password.
   // Returns the error encountered, if any.
   absl::optional<std::string> LaunchSharedManagedGuestSession(
-      const std::string& extension_id,
       const std::string& password);
 
   // Enters a new shared session. Can only be called from the lock screen. The
@@ -77,7 +75,7 @@ class SharedSessionHandler {
                           bool auth_success);
 
   void OnCleanupDone(CallbackWithOptionalError callback,
-                     absl::optional<std::string> errors);
+                     const absl::optional<std::string>& errors);
 
   std::string GenerateRandomString(size_t size);
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,8 +39,11 @@ std::ostream& operator<<(std::ostream& out, const StyleDifference& diff) {
       if (diff_count++ > 0)
         out << "|";
       switch (bit_test) {
-        case StyleDifference::kTransformChanged:
-          out << "TransformChanged";
+        case StyleDifference::kTransformPropertyChanged:
+          out << "TransformPropertyChanged";
+          break;
+        case StyleDifference::kOtherTransformPropertyChanged:
+          out << "OtherTransformPropertyChanged";
           break;
         case StyleDifference::kOpacityChanged:
           out << "OpacityChanged";

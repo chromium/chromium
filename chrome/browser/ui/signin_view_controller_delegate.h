@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,8 @@
 #include "base/observer_list_types.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ui/webui/signin/signin_utils.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 class Browser;
@@ -30,13 +32,14 @@ enum class ReauthAccessPoint;
 // as well as managing the navigation inside them.
 // Subclasses are responsible for deleting themselves when the window they're
 // managing closes.
+// TODO(https://crbug.com/1282157): rename to SigninModalDialogDelegate.
 class SigninViewControllerDelegate {
  public:
   class Observer : public base::CheckedObserver {
    public:
     // Called when a dialog controlled by this SigninViewControllerDelegate is
     // closed.
-    virtual void OnModalSigninClosed() = 0;
+    virtual void OnModalDialogClosed() = 0;
   };
 
   SigninViewControllerDelegate(const SigninViewControllerDelegate&) = delete;
@@ -47,7 +50,8 @@ class SigninViewControllerDelegate {
   // displays the sync confirmation dialog. The returned object should delete
   // itself when the window it's managing is closed.
   static SigninViewControllerDelegate* CreateSyncConfirmationDelegate(
-      Browser* browser);
+      Browser* browser,
+      bool is_signin_intercept = false);
 
   // Returns a platform-specific SigninViewControllerDelegate instance that
   // displays the modal sign in error dialog. The returned object should delete
@@ -55,6 +59,7 @@ class SigninViewControllerDelegate {
   static SigninViewControllerDelegate* CreateSigninErrorDelegate(
       Browser* browser);
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Returns a platform-specific SigninViewContolllerDelegate instance that
   // displays the reauth confirmation modal dialog. The returned object should
   // delete itself when the window it's managing is closed.
@@ -62,8 +67,23 @@ class SigninViewControllerDelegate {
       Browser* browser,
       const CoreAccountId& account_id,
       signin_metrics::ReauthAccessPoint access_point);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Returns a platform-specific SigninViewControllerDelegate instance that
+  // displays the profile customization modal dialog. The returned object should
+  // delete itself when the window it's managing is closed.
+  // If |is_local_profile_creation| is true, the profile customization will
+  // display the local profile creation version of the page.
+  // If |show_profile_switch_iph| is true, shows a profile switch IPH after the
+  // user completes the profile customization.
+  static SigninViewControllerDelegate* CreateProfileCustomizationDelegate(
+      Browser* browser,
+      bool is_local_profile_creation,
+      bool show_profile_switch_iph = false);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
   // Returns a platform-specific SigninViewContolllerDelegate instance that
   // displays the enterprise confirmation modal dialog. The returned object
@@ -71,8 +91,10 @@ class SigninViewControllerDelegate {
   static SigninViewControllerDelegate* CreateEnterpriseConfirmationDelegate(
       Browser* browser,
       const AccountInfo& account_info,
+      bool force_new_profile,
+      bool show_link_data_option,
       SkColor profile_color,
-      base::OnceCallback<void(bool)> callback);
+      signin::SigninChoiceCallback callback);
 #endif
 
   void AddObserver(Observer* observer);
@@ -97,7 +119,7 @@ class SigninViewControllerDelegate {
   SigninViewControllerDelegate();
   virtual ~SigninViewControllerDelegate();
 
-  void NotifyModalSigninClosed();
+  void NotifyModalDialogClosed();
 
  private:
   base::ObserverList<Observer, true> observer_list_;

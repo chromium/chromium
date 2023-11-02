@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.history.BrowsingHistoryBridge;
@@ -83,8 +84,9 @@ public class PageInfoHistoryController
                 /* isSeparateActivity */ false,
                 /* isIncognito */ false, /* shouldShowPrivacyDisclaimers */ true,
                 /* shouldShowClearData */ false, mHost,
-                /* selectionDelegate */ null, mTabSupplier);
-        mContentManager.initialize();
+                /* selectionDelegate */ null, mTabSupplier, new ObservableSupplierImpl<>(),
+                vg -> null, new BrowsingHistoryBridge(Profile.getLastUsedRegularProfile()));
+        mContentManager.startLoadingItems();
         return mContentManager.getRecyclerView();
     }
 
@@ -159,7 +161,10 @@ public class PageInfoHistoryController
             updateLastVisit();
         }
         mDataIsStale = false;
-    };
+    }
+
+    @Override
+    public void onNativeInitialized() {}
 
     // HistoryContentManager.Observer
     @Override
@@ -200,6 +205,10 @@ public class PageInfoHistoryController
     // HistoryContentManager.Observer
     @Override
     public void onUserAccountStateChanged() {}
+
+    // HistoryContentManager.Observer
+    @Override
+    public void onHistoryDeletedExternally() {}
 
     /** @param provider The {@link HistoryProvider} that is used in place of a real one. */
     @VisibleForTesting

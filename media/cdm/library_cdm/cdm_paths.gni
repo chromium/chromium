@@ -1,10 +1,12 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//media/media_options.gni")
 
 # This file defines output paths for the CDM adapters and CDMs.
+assert(enable_library_cdms)
 
 # Naming and folder structure below are following the recommendation for Chrome
 # components. Component-updated CDMs must follow the same recommendation.
@@ -19,8 +21,10 @@ if (is_chromeos) {
   component_os = "win"
 } else if (is_mac) {
   component_os = "mac"
+} else if (is_fuchsia) {
+  component_os = "fuchsia"
 } else {
-  component_os = "unsupported_platform"
+  assert(false, "unsupported_platform")
 }
 
 component_arch = "$current_cpu"
@@ -29,21 +33,16 @@ component_arch = "$current_cpu"
 # components, but is optional for other platforms.
 # Note:
 # - |cdm_platform_specific_path| is exported as a BUILDFLAG to cdm_paths.cc.
-# - When updating the condition here, also update the condition on the define
-#   of CDM_USE_PLATFORM_SPECIFIC_PATH in cdm_paths_unittest.cc.
-if (is_win || is_mac || is_linux || is_chromeos_lacros) {
-  cdm_platform_specific_path =
-      "_platform_specific/$component_os" + "_" + "$component_arch"
+cdm_platform_specific_path =
+    "_platform_specific/$component_os" + "_" + "$component_arch"
 
-  # Path of Clear Key and Widevine CDMs relative to the output dir.
-  clearkey_cdm_path = "ClearKeyCdm/$cdm_platform_specific_path"
-  widevine_cdm_path = "WidevineCdm/$cdm_platform_specific_path"
-} else if (is_fuchsia) {
-  cdm_platform_specific_path = ""
-  clearkey_cdm_path = "lib"
-  widevine_cdm_path = "lib"
-} else {
-  cdm_platform_specific_path = ""
-  clearkey_cdm_path = "."
-  widevine_cdm_path = "."
+# Path of Clear Key and Widevine CDMs relative to the output dir.
+clearkey_cdm_path = "ClearKeyCdm/$cdm_platform_specific_path"
+widevine_cdm_path = "WidevineCdm/$cdm_platform_specific_path"
+
+# Shared libraries must be within lib/ on Fuchsia.
+# TODO(fxbug.dev/105910): Remove when the GN SDK drops this limitation.
+if (is_fuchsia) {
+  clearkey_cdm_path = "lib/" + clearkey_cdm_path
+  widevine_cdm_path = "lib/" + clearkey_cdm_path
 }

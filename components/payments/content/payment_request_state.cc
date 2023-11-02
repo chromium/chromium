@@ -1,10 +1,9 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/payments/content/payment_request_state.h"
 
-#include <algorithm>
 #include <set>
 #include <utility>
 
@@ -13,7 +12,10 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "components/autofill/core/browser/address_normalizer.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -21,8 +23,6 @@
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/validation.h"
-#include "components/payments/content/autofill_payment_app.h"
-#include "components/payments/content/autofill_payment_app_factory.h"
 #include "components/payments/content/content_payment_request_delegate.h"
 #include "components/payments/content/payment_app.h"
 #include "components/payments/content/payment_app_service.h"
@@ -30,12 +30,12 @@
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/payment_response_helper.h"
 #include "components/payments/content/service_worker_payment_app.h"
-#include "components/payments/core/autofill_card_validation.h"
 #include "components/payments/core/error_strings.h"
 #include "components/payments/core/features.h"
 #include "components/payments/core/method_strings.h"
 #include "components/payments/core/payment_request_data_util.h"
 #include "components/payments/core/payments_experimental_features.h"
+#include "components/webauthn/core/browser/internal_authenticator.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_features.h"
@@ -69,7 +69,8 @@ PaymentRequestState::PaymentRequestState(
     const std::string& app_locale,
     autofill::PersonalDataManager* personal_data_manager,
     base::WeakPtr<ContentPaymentRequestDelegate> payment_request_delegate,
-    base::WeakPtr<JourneyLogger> journey_logger)
+    base::WeakPtr<JourneyLogger> journey_logger,
+    base::WeakPtr<CSPChecker> csp_checker)
     : frame_routing_id_(initiator_render_frame_host->GetGlobalId()),
       top_origin_(top_level_origin),
       frame_origin_(frame_origin),
@@ -78,9 +79,8 @@ PaymentRequestState::PaymentRequestState(
       spec_(spec),
       delegate_(delegate),
       journey_logger_(journey_logger),
+      csp_checker_(csp_checker),
       personal_data_manager_(personal_data_manager),
-      are_requested_methods_supported_(
-          !spec_->supported_card_networks().empty()),
       payment_request_delegate_(payment_request_delegate),
       profile_comparator_(app_locale, *spec) {
   PopulateProfileCache();
@@ -165,21 +165,14 @@ bool PaymentRequestState::IsRequestedAutofillDataAvailable() {
   return is_requested_autofill_data_available_;
 }
 
-bool PaymentRequestState::MayCrawlForInstallablePaymentApps() {
-  return !spec_ || !spec_->supports_basic_card();
-}
-
 bool PaymentRequestState::IsOffTheRecord() const {
   return GetPaymentRequestDelegate()->IsOffTheRecord();
 }
 
 void PaymentRequestState::OnPaymentAppCreated(std::unique_ptr<PaymentApp> app) {
   if (journey_logger_) {
-    if (app->type() == PaymentApp::Type::AUTOFILL) {
-      journey_logger_->SetAvailableMethod(
-          JourneyLogger::PaymentMethodCategory::kBasicCard);
-    } else if (base::Contains(app->GetAppMethodNames(), methods::kGooglePay) ||
-               base::Contains(app->GetAppMethodNames(), methods::kAndroidPay)) {
+    if (base::Contains(app->GetAppMethodNames(), methods::kGooglePay) ||
+        base::Contains(app->GetAppMethodNames(), methods::kAndroidPay)) {
       journey_logger_->SetAvailableMethod(
           JourneyLogger::PaymentMethodCategory::kGoogle);
     } else {
@@ -209,9 +202,8 @@ void PaymentRequestState::OnDoneCreatingPaymentApps() {
   if (IsInTwa()) {
     // If a preferred payment app is present (e.g. Play Billing within a TWA),
     // all other payment apps are ignored.
-    bool has_preferred_app =
-        std::any_of(available_apps_.begin(), available_apps_.end(),
-                    [](const auto& app) { return app->IsPreferred(); });
+    bool has_preferred_app = base::ranges::any_of(
+        available_apps_, [](const auto& app) { return app->IsPreferred(); });
     if (has_preferred_app) {
       available_apps_.erase(
           std::remove_if(available_apps_.begin(), available_apps_.end(),
@@ -228,9 +220,9 @@ void PaymentRequestState::OnDoneCreatingPaymentApps() {
   SetDefaultProfileSelections();
 
   get_all_apps_finished_ = true;
-  has_enrolled_instrument_ =
-      std::any_of(available_apps_.begin(), available_apps_.end(),
-                  [](const auto& app) { return app->HasEnrolledInstrument(); });
+  has_enrolled_instrument_ = base::ranges::any_of(
+      available_apps_,
+      [](const auto& app) { return app->HasEnrolledInstrument(); });
   are_requested_methods_supported_ |= !available_apps_.empty();
   NotifyOnGetAllPaymentAppsFinished();
   NotifyInitialized();
@@ -252,6 +244,10 @@ void PaymentRequestState::OnDoneCreatingPaymentApps() {
 
 void PaymentRequestState::SetCanMakePaymentEvenWithoutApps() {
   can_make_payment_even_without_apps_ = true;
+}
+
+base::WeakPtr<CSPChecker> PaymentRequestState::GetCSPChecker() {
+  return csp_checker_;
 }
 
 void PaymentRequestState::OnPaymentResponseReady(
@@ -404,7 +400,7 @@ void PaymentRequestState::OnPaymentAppWindowClosed() {
 void PaymentRequestState::RecordUseStats() {
   if (ShouldShowShippingSection()) {
     DCHECK(selected_shipping_profile_);
-    personal_data_manager_->RecordUseOf(selected_shipping_profile_);
+    personal_data_manager_->RecordUseOf(selected_shipping_profile_.get());
   }
 
   if (ShouldShowContactSection()) {
@@ -414,7 +410,7 @@ void PaymentRequestState::RecordUseStats() {
     // should only be updated once.
     if (!ShouldShowShippingSection() || (selected_shipping_profile_->guid() !=
                                          selected_contact_profile_->guid())) {
-      personal_data_manager_->RecordUseOf(selected_contact_profile_);
+      personal_data_manager_->RecordUseOf(selected_contact_profile_.get());
     }
   }
 
@@ -436,24 +432,8 @@ void PaymentRequestState::SetAvailablePaymentAppForRetry() {
 void PaymentRequestState::AddAutofillPaymentApp(
     bool selected,
     const autofill::CreditCard& card) {
-  if (!base::FeatureList::IsEnabled(::features::kPaymentRequestBasicCard))
-    return;
-
-  auto app =
-      AutofillPaymentAppFactory::ConvertCardToPaymentAppIfSupportedNetwork(
-          card, weak_ptr_factory_.GetWeakPtr());
-  if (!app)
-    return;
-
-  available_apps_.push_back(std::move(app));
-  if (journey_logger_) {
-    journey_logger_->SetAvailableMethod(
-        JourneyLogger::PaymentMethodCategory::kBasicCard);
-  }
-
-  if (selected) {
-    SetSelectedApp(available_apps_.back()->AsWeakPtr());
-  }
+  // TODO(https://crbug.com/1209835): Remove this method.
+  return;
 }
 
 void PaymentRequestState::AddAutofillShippingProfile(
@@ -689,23 +669,6 @@ void PaymentRequestState::SetDefaultProfileSelections() {
   if (!available_apps_.empty() && available_apps_[0]->CanPreselect()) {
     selected_app_ = available_apps_[0]->AsWeakPtr();
     UpdateIsReadyToPayAndNotifyObservers();
-  }
-
-  // Record the missing required payment fields when no complete payment
-  // info exists.
-  if (available_apps_.empty()) {
-    if (spec_ && spec_->supports_basic_card()) {
-      // All fields are missing when basic-card is requested but no card exits.
-      base::UmaHistogramSparse("PaymentRequest.MissingPaymentFields",
-                               CREDIT_CARD_EXPIRED | CREDIT_CARD_NO_CARDHOLDER |
-                                   CREDIT_CARD_NO_NUMBER |
-                                   CREDIT_CARD_NO_BILLING_ADDRESS);
-    }
-  } else if (available_apps_[0]->type() == PaymentApp::Type::AUTOFILL) {
-    // Record the missing fields (if any) of the most complete app when
-    // it's autofill based. SW based apps are always complete.
-    static_cast<const AutofillPaymentApp*>(available_apps_[0].get())
-        ->RecordMissingFieldsForApp();
   }
 
   SelectDefaultShippingAddressAndNotifyObservers();

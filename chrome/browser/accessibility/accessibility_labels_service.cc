@@ -1,9 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/accessibility/accessibility_labels_service.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
@@ -27,7 +28,7 @@
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -118,13 +119,13 @@ class ImageAnnotatorClient : public image_annotation::Annotator::Client {
   }
 
  private:
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
   data_decoder::DataDecoder data_decoder_;
 };
 
 }  // namespace
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 AccessibilityLabelsService::AccessibilityLabelsService(Profile* profile)
     : profile_(profile) {}
 AccessibilityLabelsService::~AccessibilityLabelsService() = default;
@@ -159,7 +160,7 @@ void AccessibilityLabelsService::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       prefs::kAccessibilityImageLabelsOptInAccepted, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(
       prefs::kAccessibilityImageLabelsEnabledAndroid, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
@@ -182,7 +183,7 @@ void AccessibilityLabelsService::InitOffTheRecordPrefs(
 void AccessibilityLabelsService::Init() {
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
       prefs::kAccessibilityImageLabelsEnabled,
 #else
       prefs::kAccessibilityImageLabelsEnabledAndroid,
@@ -203,7 +204,7 @@ ui::AXMode AccessibilityLabelsService::GetAXMode() {
   ui::AXMode ax_mode =
       content::BrowserAccessibilityState::GetInstance()->GetAccessibilityMode();
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   ax_mode.set_mode(ui::AXMode::kLabelImages,
                    profile_->GetPrefs()->GetBoolean(
                        prefs::kAccessibilityImageLabelsEnabled));
@@ -221,7 +222,7 @@ void AccessibilityLabelsService::EnableLabelsServiceOnce() {
 
   // For Android, we call through the JNI (see below) and send the web contents
   // directly, since Android does not support BrowserList::GetInstance.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   Browser* browser = chrome::FindLastActiveWithProfile(profile_);
   if (!browser)
     return;
@@ -232,14 +233,12 @@ void AccessibilityLabelsService::EnableLabelsServiceOnce() {
   // We only need to fire this event for the active page.
   ui::AXActionData action_data;
   action_data.action = ax::mojom::Action::kAnnotatePageImages;
-  web_contents->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
-      [](const ui::AXActionData& action_data,
-         content::RenderFrameHost* render_frame_host) {
+  web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+      [&action_data](content::RenderFrameHost* render_frame_host) {
         if (render_frame_host->IsRenderFrameLive()) {
           render_frame_host->AccessibilityPerformAction(action_data);
         }
-      },
-      action_data));
+      });
 #endif
 }
 
@@ -267,7 +266,7 @@ void AccessibilityLabelsService::OverrideImageAnnotatorBinderForTesting(
 }
 
 void AccessibilityLabelsService::OnImageLabelsEnabledChanged() {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   bool enabled = profile_->GetPrefs()->GetBoolean(
                      prefs::kAccessibilityImageLabelsEnabled) &&
                  accessibility_state_utils::IsScreenReaderEnabled();
@@ -292,11 +291,11 @@ void AccessibilityLabelsService::UpdateAccessibilityLabelsHistograms() {
   if (!profile_ || !profile_->GetPrefs())
     return;
 
-  base::UmaHistogramBoolean("Accessibility.ImageLabels",
+  base::UmaHistogramBoolean("Accessibility.ImageLabels2",
                             profile_->GetPrefs()->GetBoolean(
                                 prefs::kAccessibilityImageLabelsEnabled));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // For Android we will track additional histograms.
   base::UmaHistogramBoolean(
       "Accessibility.ImageLabels.Android",
@@ -309,7 +308,7 @@ void AccessibilityLabelsService::UpdateAccessibilityLabelsHistograms() {
 #endif
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void AccessibilityLabelsService::OnNetworkChanged(
     net::NetworkChangeNotifier::ConnectionType type) {
   // When the network status changes, we want to (potentially) update the
@@ -355,13 +354,11 @@ void JNI_ImageDescriptionsController_GetImageDescriptionsOnce(
   // We only need to fire this event for the active page.
   ui::AXActionData action_data;
   action_data.action = ax::mojom::Action::kAnnotatePageImages;
-  web_contents->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
-      [](const ui::AXActionData& action_data,
-         content::RenderFrameHost* render_frame_host) {
+  web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+      [&action_data](content::RenderFrameHost* render_frame_host) {
         if (render_frame_host->IsRenderFrameLive()) {
           render_frame_host->AccessibilityPerformAction(action_data);
         }
-      },
-      action_data));
+      });
 }
 #endif

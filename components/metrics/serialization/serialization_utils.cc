@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,26 +26,6 @@
 
 namespace metrics {
 namespace {
-
-// Record number of reads on successful reads. Errors (file can't be opened,
-// file can't be flock'ed) do not generate a sample. (If the file is found to
-// be corrupt partway through, the number of successfully read entries is
-// recorded.)
-void RecordNumberOfReadsMetric(int num_reads) {
-  // 100,000 to match kMaxMessagesPerRead.
-  base::UmaHistogramCounts100000("UMA.ReadAndTruncateMetricsFromFile.ReadCount",
-                                 num_reads);
-}
-
-// Record number of elements discarded because the file is too large. Errors
-// (file can't be opened, file can't be flock'ed) do not generate a sample.
-// (If the file is found to be corrupt partway through, the number of
-// successfully read entries is recorded.)
-void RecordNumberOfDiscardsMetric(int num_discards) {
-  base::UmaHistogramCounts1M(
-      "UMA.ReadAndTruncateMetricsFromFile.DiscardedCount", num_discards);
-}
-
 // Reads the next message from |file_descriptor| into |message|.
 //
 // |message| will be set to the empty string if no message could be read (EOF)
@@ -129,15 +109,15 @@ std::unique_ptr<MetricSample> SerializationUtils::ParseSample(
   const std::string& name = parts[0];
   const std::string& value = parts[1];
 
-  if (base::LowerCaseEqualsASCII(name, "crash"))
+  if (base::EqualsCaseInsensitiveASCII(name, "crash"))
     return MetricSample::CrashSample(value);
-  if (base::LowerCaseEqualsASCII(name, "histogram"))
+  if (base::EqualsCaseInsensitiveASCII(name, "histogram"))
     return MetricSample::ParseHistogram(value);
-  if (base::LowerCaseEqualsASCII(name, "linearhistogram"))
+  if (base::EqualsCaseInsensitiveASCII(name, "linearhistogram"))
     return MetricSample::ParseLinearHistogram(value);
-  if (base::LowerCaseEqualsASCII(name, "sparsehistogram"))
+  if (base::EqualsCaseInsensitiveASCII(name, "sparsehistogram"))
     return MetricSample::ParseSparseHistogram(value);
-  if (base::LowerCaseEqualsASCII(name, "useraction"))
+  if (base::EqualsCaseInsensitiveASCII(name, "useraction"))
     return MetricSample::UserActionSample(value);
   DLOG(ERROR) << "invalid event type: " << name << ", value: " << value;
   return nullptr;
@@ -154,8 +134,6 @@ void SerializationUtils::ReadAndTruncateMetricsFromFile(
     if (errno == ENOENT) {
       // File doesn't exist, nothing to collect. This isn't an error, it just
       // means nothing on the ChromeOS side has written to the file yet.
-      RecordNumberOfReadsMetric(0);
-      RecordNumberOfDiscardsMetric(0);
     } else {
       DPLOG(ERROR) << "bad metrics file stat: " << filename;
     }
@@ -163,8 +141,6 @@ void SerializationUtils::ReadAndTruncateMetricsFromFile(
   }
   if (stat_buf.st_size == 0) {
     // Also nothing to collect.
-    RecordNumberOfReadsMetric(0);
-    RecordNumberOfDiscardsMetric(0);
     return;
   }
   base::ScopedFD fd(open(filename.c_str(), O_RDWR));
@@ -180,13 +156,13 @@ void SerializationUtils::ReadAndTruncateMetricsFromFile(
 
   // This processes all messages in the log. When all messages are
   // read and processed, or an error occurs, or we've read so many that the
-  // buffer is at risk of overflowing, truncate the file to zero size.
-  bool read_complete = false;
+  // buffer is at risk of overflowing, truncate the file to zero size. If we
+  // hit kMaxMessagesPerRead, don't add them to the vector to avoid memory
+  // overflow.
   while (metrics->size() < kMaxMessagesPerRead) {
     std::string message;
 
     if (!ReadMessage(fd.get(), &message)) {
-      read_complete = true;
       break;
     }
 
@@ -194,21 +170,6 @@ void SerializationUtils::ReadAndTruncateMetricsFromFile(
     if (sample)
       metrics->push_back(std::move(sample));
   }
-
-  // If we hit kMaxMessagesPerRead, count the number of discarded messages for
-  // the discard metric, but don't add them to the vector to avoid memory
-  // overflow.
-  int num_discards = 0;
-  while (!read_complete) {
-    std::string message;
-    if (!ReadMessage(fd.get(), &message)) {
-      read_complete = true;
-    } else {
-      ++num_discards;
-    }
-  }
-  RecordNumberOfDiscardsMetric(num_discards);
-  RecordNumberOfReadsMetric(metrics->size());
 
   result = ftruncate(fd.get(), 0);
   if (result < 0)

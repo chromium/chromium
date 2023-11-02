@@ -1,14 +1,16 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/accessibility/floating_menu_button.h"
 
 #include "ash/style/ash_color_provider.h"
-#include "ash/system/tray/tray_popup_utils.h"
+#include "ash/style/color_util.h"
+#include "ash/style/style_util.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -27,7 +29,7 @@ FloatingMenuButton::FloatingMenuButton() {
   SetImageHorizontalAlignment(ALIGN_CENTER);
   SetImageVerticalAlignment(ALIGN_MIDDLE);
   SetFlipCanvasOnPaintForRTLUI(false);
-  TrayPopupUtils::ConfigureTrayPopupButton(this);
+  StyleUtil::SetUpInkDropForButton(this);
   views::InstallCircleHighlightPathGenerator(this);
 }
 
@@ -59,9 +61,10 @@ FloatingMenuButton::FloatingMenuButton(views::Button::PressedCallback callback,
   SetImageVerticalAlignment(ALIGN_MIDDLE);
   SetFlipCanvasOnPaintForRTLUI(flip_for_rtl);
   SetPreferredSize(gfx::Size(size_, size_));
-  TrayPopupUtils::ConfigureTrayPopupButton(this);
+  StyleUtil::SetUpInkDropForButton(this);
   views::InstallCircleHighlightPathGenerator(this);
   SetTooltipText(l10n_util::GetStringUTF16(accessible_name_id));
+  views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
 }
 
 FloatingMenuButton::~FloatingMenuButton() = default;
@@ -141,9 +144,6 @@ void FloatingMenuButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
 void FloatingMenuButton::OnThemeChanged() {
   ImageButton::OnThemeChanged();
-  views::FocusRing::Get(this)->SetColor(
-      AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kFocusRingColor));
   UpdateImage();
   SchedulePaint();
 }
@@ -158,9 +158,9 @@ void FloatingMenuButton::UpdateImage() {
   const SkColor icon_color = toggled_ ? toggled_icon_color : normal_color;
   SetImage(views::Button::STATE_NORMAL,
            gfx::CreateVectorIcon(*icon_, icon_color));
-  SetImage(views::Button::STATE_DISABLED,
-           gfx::CreateVectorIcon(
-               *icon_, AshColorProvider::GetDisabledColor(normal_color)));
+  SetImage(
+      views::Button::STATE_DISABLED,
+      gfx::CreateVectorIcon(*icon_, ColorUtil::GetDisabledColor(normal_color)));
 }
 
 BEGIN_METADATA(FloatingMenuButton, views::ImageButton)

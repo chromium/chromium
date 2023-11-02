@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,7 +34,7 @@ using PK11HasAttributeSetFunction = CK_BBOOL (*)(PK11SlotInfo* slot,
 
 // IsKnownRoot returns true if the given certificate is one that we believe
 // is a standard (as opposed to user-installed) root.
-NO_SANITIZE("cfi-icall")
+DISABLE_CFI_DLSYM
 bool IsKnownRoot(CERTCertificate* root) {
   if (!root || !root->slot)
     return false;
@@ -64,8 +64,7 @@ bool IsKnownRoot(CERTCertificate* root) {
         if (PK11_IsPresent(slot) && PK11_HasRootCerts(slot)) {
           CK_OBJECT_HANDLE handle = PK11_FindCertInSlot(slot, root, nullptr);
           if (handle != CK_INVALID_HANDLE &&
-              pk11_has_attribute_set(root->slot, handle,
-                                     CKA_NSS_MOZILLA_CA_POLICY,
+              pk11_has_attribute_set(slot, handle, CKA_NSS_MOZILLA_CA_POLICY,
                                      PR_FALSE) == CK_TRUE) {
             return true;
           }

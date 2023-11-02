@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,22 +16,22 @@ class SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller
     : public InfobarModalOverlayRequestCallbackInstaller {
  public:
   // Constructor for an instance that installs callbacks that forward
-  // interaction events to |interaction_handler|.
+  // interaction events to `interaction_handler`.
   explicit SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller(
       SaveAddressProfileInfobarModalInteractionHandler* interaction_handler);
   ~SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller() override;
 
  private:
-  // Used as a callback for OverlayResponses dispatched through |request|'s
+  // Used as a callback for OverlayResponses dispatched through `request`'s
   // callback manager.  The OverlayDispatchCallback is created with an
-  // OverlayResponseSupport that guarantees that |response| is created with a
+  // OverlayResponseSupport that guarantees that `response` is created with a
   // save_address_profile_infobar_modal_responses::EditedProfileSaveAction.
   void SaveEditedProfileDetailsCallback(OverlayRequest* request,
                                         OverlayResponse* response);
 
-  // Used as a callback for OverlayResponses dispatched through |request|'s
+  // Used as a callback for OverlayResponses dispatched through `request`'s
   // callback manager.  The OverlayDispatchCallback is created with an
-  // OverlayResponseSupport that guarantees that |response| is created with a
+  // OverlayResponseSupport that guarantees that `response` is created with a
   // save_address_profile_infobar_modal_responses::CancelViewAction.
   void CancelModalCallback(OverlayRequest* request, OverlayResponse* response);
 

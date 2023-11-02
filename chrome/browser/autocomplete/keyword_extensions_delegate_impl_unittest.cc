@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,7 +51,7 @@ void KeywordExtensionsDelegateImplTest::SetUp() {
 
 void KeywordExtensionsDelegateImplTest::RunTest(bool incognito) {
   std::unique_ptr<TemplateURLService> empty_model(
-      new TemplateURLService(NULL, 0));
+      new TemplateURLService(nullptr, 0));
   MockAutocompleteProviderClient client;
   client.set_template_url_service(std::move(empty_model));
   scoped_refptr<KeywordProvider> keyword_provider =

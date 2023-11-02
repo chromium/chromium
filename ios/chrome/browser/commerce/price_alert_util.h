@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ class BrowserState;
 // MSBB and signed in users with a non-incognito Tab.
 BOOL IsPriceAlertsEligible(web::BrowserState* browser_state);
 
-// Returns true if the flag controlling price alerts is enabled.
-BOOL IsPriceAlertsEnabled();
+// Determine if price drop notifications are enabled.
+BOOL IsPriceNotificationsEnabled();
 
 #endif  // IOS_CHROME_BROWSER_COMMERCE_PRICE_ALERT_UTIL_H_

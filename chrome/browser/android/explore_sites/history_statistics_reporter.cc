@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -77,8 +77,9 @@ void HistoryStatisticsReporter::MaybeReportStatistics() {
   } else {
     // Register for HistoryServiceLoading in case HistoryService is not yet
     // ready.
-    DCHECK(!history_service_observation_.IsObservingSource(history_service_));
-    history_service_observation_.Observe(history_service_);
+    DCHECK(!history_service_observation_.IsObservingSource(
+        history_service_.get()));
+    history_service_observation_.Observe(history_service_.get());
   }
 }
 

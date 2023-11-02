@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -146,11 +146,7 @@ void MemoryPurgeManager::PerformMemoryPurge() {
 
   if (AreAllPagesFrozen())
     base::MemoryPressureListener::SetNotificationsSuppressed(true);
-
-  if (backgrounded_purge_pending_) {
-    Platform::Current()->RecordMetricsForBackgroundedRendererPurge();
-    backgrounded_purge_pending_ = false;
-  }
+  backgrounded_purge_pending_ = false;
 }
 
 bool MemoryPurgeManager::CanPurge() const {

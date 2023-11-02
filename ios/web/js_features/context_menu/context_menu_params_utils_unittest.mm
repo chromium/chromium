@@ -1,19 +1,19 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/web/js_features/context_menu/context_menu_params_utils.h"
 
-#include "base/strings/sys_string_conversions.h"
-#include "base/values.h"
-#include "components/url_formatter/url_formatter.h"
-#include "ios/web/common/referrer_util.h"
-#include "ios/web/js_features/context_menu/context_menu_constants.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/values.h"
+#import "components/url_formatter/url_formatter.h"
+#import "ios/web/common/referrer_util.h"
+#import "ios/web/js_features/context_menu/context_menu_constants.h"
 #import "ios/web/public/ui/context_menu_params.h"
 #import "net/base/mac/url_conversions.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -27,6 +27,18 @@ const char kTitle[] = "title";
 const char kReferrerPolicy[] = "always";
 const char kLinkText[] = "link text";
 const char kAlt[] = "alt text";
+
+// Returns true if the `params` contain enough information to present a context
+// menu. (A valid url for either link_url or src_url must exist in the params.)
+bool CanShowContextMenuForParams(const web::ContextMenuParams& params) {
+  if (params.link_url.is_valid()) {
+    return true;
+  }
+  if (params.src_url.is_valid()) {
+    return true;
+  }
+  return false;
+}
 }
 
 namespace web {
@@ -43,7 +55,7 @@ TEST_F(ContextMenuParamsUtilsTest, EmptyParams) {
   EXPECT_EQ(params.referrer_policy, ReferrerPolicyDefault);
   EXPECT_EQ(params.view, nil);
   EXPECT_TRUE(CGPointEqualToPoint(params.location, CGPointZero));
-  EXPECT_NSEQ(params.link_text, nil);
+  EXPECT_NSEQ(params.text, nil);
   EXPECT_NSEQ(params.title_attribute, nil);
   EXPECT_NSEQ(params.alt_text, nil);
 }
@@ -63,7 +75,7 @@ TEST_F(ContextMenuParamsUtilsTest, DictionaryConstructorTest) {
   EXPECT_TRUE(params.is_main_frame);
   EXPECT_EQ(params.link_url, GURL(kLinkUrl));
   EXPECT_EQ(params.src_url, GURL(kSrcUrl));
-  EXPECT_NSEQ(params.link_text, @(kLinkText));
+  EXPECT_NSEQ(params.text, @(kLinkText));
   EXPECT_EQ(params.referrer_policy, ReferrerPolicyFromString(kReferrerPolicy));
 
   EXPECT_EQ(params.view, nil);
@@ -83,7 +95,7 @@ TEST_F(ContextMenuParamsUtilsTest, CanShowContextMenuTestEmptyDictionary) {
 TEST_F(ContextMenuParamsUtilsTest, CanShowContextMenuTestHyperlink) {
   ContextMenuParams params;
   params.link_url = GURL("http://example.com");
-  params.link_text = @"Click me.";
+  params.text = @"Click me.";
   EXPECT_TRUE(CanShowContextMenuForParams(params));
 }
 

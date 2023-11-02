@@ -1,7 +1,8 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "courgette/adjustment_method.h"
 
 #include <stddef.h>
@@ -17,7 +18,6 @@
 
 #include "base/format_macros.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "courgette/assembly_program.h"
@@ -180,7 +180,7 @@ class LabelInfo {
 
   AssignmentCandidates* candidates();
 
-  Label* label_;             // The label that this info a surrogate for.
+  raw_ptr<Label> label_;  // The label that this info a surrogate for.
 
   uint32_t is_model_ : 1;      // Is the label in the model?
   uint32_t debug_index_ : 31;  // A small number for naming the label in debug
@@ -189,12 +189,13 @@ class LabelInfo {
 
   int refs_;                 // Number of times this Label is referenced.
 
-  LabelInfo* assignment_;    // Label from other program corresponding to this.
+  raw_ptr<LabelInfo>
+      assignment_;  // Label from other program corresponding to this.
 
   std::vector<uint32_t> positions_;  // Offsets into the trace of references.
 
  private:
-  AssignmentCandidates* candidates_;
+  raw_ptr<AssignmentCandidates> candidates_;
 
   void operator=(const LabelInfo*);  // Disallow assignment only.
   // Public compiler generated copy constructor is needed to constuct
@@ -313,14 +314,11 @@ class AssignmentCandidates {
   void ApplyPendingUpdates() {
     // TODO(sra): try to walk |pending_updates_| and |label_to_score_| in
     // lockstep.  Try to batch updates to |queue_|.
-    size_t zeroes = 0;
     for (LabelToScore::iterator p = pending_updates_.begin();
          p != pending_updates_.end();
          ++p) {
       if (p->second != 0)
         Update(p->first, p->second);
-      else
-        ++zeroes;
     }
     pending_updates_.clear();
   }
@@ -350,7 +348,7 @@ class AssignmentCandidates {
   };
   typedef std::set<ScoreAndLabel, OrderScoreAndLabelByScoreDecreasing> Queue;
 
-  LabelInfo* program_info_;
+  raw_ptr<LabelInfo> program_info_;
   LabelToScore label_to_score_;
   LabelToScore pending_updates_;
   Queue queue_;
@@ -428,7 +426,8 @@ class Shingle {
   size_t exemplar_position_;       // At this position (and other positions).
   std::vector<uint32_t> positions_;  // Includes exemplar_position_.
 
-  ShinglePattern* pattern_;       // Pattern changes as LabelInfos are assigned.
+  raw_ptr<ShinglePattern>
+      pattern_;  // Pattern changes as LabelInfos are assigned.
 
   friend std::string ToString(const Shingle* instance);
 };
@@ -519,7 +518,8 @@ class ShinglePattern {
   ShinglePattern()
       : index_(nullptr), model_coverage_(0), program_coverage_(0) {}
 
-  const Index* index_;  // Points to the key in the owning map value_type.
+  raw_ptr<const Index>
+      index_;  // Points to the key in the owning map value_type.
   Histogram model_histogram_;
   Histogram program_histogram_;
   int model_coverage_;
@@ -1288,8 +1288,9 @@ class Adjuster : public AdjustmentMethod {
         label, is_model, static_cast<uint32_t>(trace->size())));
   }
 
-  AssemblyProgram* prog_;         // Program to be adjusted, owned by caller.
-  const AssemblyProgram* model_;  // Program to be mimicked, owned by caller.
+  raw_ptr<AssemblyProgram> prog_;  // Program to be adjusted, owned by caller.
+  raw_ptr<const AssemblyProgram>
+      model_;  // Program to be mimicked, owned by caller.
 
   LabelInfoMaker label_info_maker_;
 };

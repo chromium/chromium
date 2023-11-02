@@ -1,11 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_WEB_TEST_BROWSER_WEB_TEST_DEVTOOLS_BINDINGS_H_
 #define CONTENT_WEB_TEST_BROWSER_WEB_TEST_DEVTOOLS_BINDINGS_H_
 
-#include "base/compiler_specific.h"
 #include "content/shell/browser/shell_devtools_frontend.h"
 
 namespace content {
@@ -31,8 +30,7 @@ class WebTestDevToolsBindings : public ShellDevToolsBindings {
   class SecondaryObserver;
 
   // WebContentsObserver implementation.
-  void DocumentAvailableInMainFrame(
-      RenderFrameHost* render_frame_host) override;
+  void PrimaryMainDocumentElementAvailable() override;
 
   void NavigateDevToolsFrontend();
 

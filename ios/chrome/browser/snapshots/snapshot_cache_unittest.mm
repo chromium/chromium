@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,23 +6,23 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
-#include "base/format_macros.h"
-#include "base/location.h"
-#include "base/mac/scoped_cftyperef.h"
-#include "base/run_loop.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/task/thread_pool/thread_pool_instance.h"
-#include "base/time/time.h"
+#import "base/files/file_path.h"
+#import "base/files/file_util.h"
+#import "base/files/scoped_temp_dir.h"
+#import "base/format_macros.h"
+#import "base/location.h"
+#import "base/mac/scoped_cftyperef.h"
+#import "base/run_loop.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/task/thread_pool/thread_pool_instance.h"
+#import "base/time/time.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache_internal.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache_observer.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "ios/web/public/thread/web_thread.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/thread/web_thread.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -84,7 +84,7 @@ class SnapshotCacheTest : public PlatformTest {
 
   SnapshotCache* GetSnapshotCache() { return snapshotCache_; }
 
-  // Adds a fake snapshot file into |directory| using |snapshot_id| in the
+  // Adds a fake snapshot file into `directory` using `snapshot_id` in the
   // filename.
   base::FilePath AddSnapshotFileToDirectory(const base::FilePath directory,
                                             NSString* snapshot_id) {
@@ -112,7 +112,7 @@ class SnapshotCacheTest : public PlatformTest {
     return UIGraphicsGetImageFromCurrentImageContext();
   }
 
-  // Generates an image of |size|, filled with a random color.
+  // Generates an image of `size`, filled with a random color.
   UIImage* GenerateRandomImage(CGSize size) {
     UIGraphicsBeginImageContextWithOptions(size, /*opaque=*/NO,
                                            UIScreen.mainScreen.scale);
@@ -165,13 +165,13 @@ class SnapshotCacheTest : public PlatformTest {
     EXPECT_FALSE(foundImage);
   }
 
-  // Loads kSnapshotCount color images into the cache.  If |waitForFilesOnDisk|
+  // Loads kSnapshotCount color images into the cache.  If `waitForFilesOnDisk`
   // is YES, will not return until the images have been written to disk.
   void LoadAllColorImagesIntoCache(bool waitForFilesOnDisk) {
     LoadColorImagesIntoCache(kSnapshotCount, waitForFilesOnDisk);
   }
 
-  // Loads |count| color images into the cache.  If |waitForFilesOnDisk|
+  // Loads `count` color images into the cache.  If `waitForFilesOnDisk`
   // is YES, will not return until the images have been written to disk.
   void LoadColorImagesIntoCache(NSUInteger count, bool waitForFilesOnDisk) {
     SnapshotCache* cache = GetSnapshotCache();
@@ -194,7 +194,7 @@ class SnapshotCacheTest : public PlatformTest {
     }
   }
 
-  // Waits for the first |count| grey images for |snapshotIDs_| to be placed in
+  // Waits for the first `count` grey images for `snapshotIDs_` to be placed in
   // the cache.
   void WaitForGreyImagesInCache(NSUInteger count) {
     SnapshotCache* cache = GetSnapshotCache();
@@ -573,7 +573,7 @@ TEST_F(SnapshotCacheTest, GreyImageAllInBackground) {
     [cache saveGreyInBackgroundForSnapshotID:[snapshotIDs_ objectAtIndex:i]];
   }
 
-  // Waits for the grey images for |snapshotIDs_| to be written to disk, which
+  // Waits for the grey images for `snapshotIDs_` to be written to disk, which
   // happens in a background thread.
   FlushRunLoops();
 
@@ -652,7 +652,7 @@ TEST_F(SnapshotCacheTest, DeleteRetinaImages) {
 }
 
 // Tests that image immediately deletes when calling
-// |-removeImageWithSnapshotID:|.
+// `-removeImageWithSnapshotID:`.
 TEST_F(SnapshotCacheTest, ImageDeleted) {
   SnapshotCache* cache = GetSnapshotCache();
   UIImage* image =
@@ -665,7 +665,7 @@ TEST_F(SnapshotCacheTest, ImageDeleted) {
   EXPECT_FALSE(base::PathExists(image_path));
 }
 
-// Tests that all images are deleted when calling |-removeAllImages|.
+// Tests that all images are deleted when calling `-removeAllImages`.
 TEST_F(SnapshotCacheTest, AllImagesDeleted) {
   SnapshotCache* cache = GetSnapshotCache();
   UIImage* image =

@@ -1,8 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "cc/paint/paint_image_builder.h"
+
+#include "base/record_replay.h"
 
 namespace cc {
 
@@ -27,6 +29,8 @@ PaintImageBuilder::PaintImageBuilder(PaintImage image, bool clear_contents)
 #if DCHECK_IS_ON()
   id_set_ = true;
 #endif
+  recordreplay::Assert("[RUN-1975-2225] PaintImageBuilder %d %d",
+                       clear_contents, paint_image_.stable_id());
   if (clear_contents) {
     paint_image_.sk_image_ = nullptr;
     paint_image_.paint_record_ = nullptr;
@@ -77,6 +81,9 @@ PaintImage PaintImageBuilder::TakePaintImage() {
       DCHECK_GT(frame.duration, base::TimeDelta());
   }
 #endif
+
+  recordreplay::Assert("[RUN-1975-2036] PaintImageBuilder::TakePaintImage %d",
+                       !!paint_image_.cached_sk_image_);
 
   // We may already have a cached_sk_image_ if this builder was created with a
   // copy.

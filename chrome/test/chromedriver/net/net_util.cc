@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,9 @@
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -79,9 +79,9 @@ class SyncUrlFetcher {
 
  private:
   GURL url_;
-  network::mojom::URLLoaderFactory* url_loader_factory_;
+  raw_ptr<network::mojom::URLLoaderFactory> url_loader_factory_;
   const scoped_refptr<base::SequencedTaskRunner> network_task_runner_;
-  std::string* response_;
+  raw_ptr<std::string> response_;
   base::WaitableEvent event_;
   std::unique_ptr<network::SimpleURLLoader> loader_;
   bool success_;

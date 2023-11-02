@@ -1,12 +1,12 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/webui/diagnostics_ui/backend/routine_properties.h"
 
-namespace ash {
-namespace diagnostics {
-namespace healthd = ::chromeos::cros_healthd::mojom;
+namespace ash::diagnostics {
+
+namespace healthd = cros_healthd::mojom;
 
 const RoutineProperties kRoutineProperties[] = {
     {mojom::RoutineType::kBatteryCharge, "BatteryChargeResult",
@@ -59,7 +59,7 @@ const RoutineProperties kRoutineProperties[] = {
      /*duration_seconds=*/1, healthd::DiagnosticRoutineEnum::kArcDnsResolution},
 };
 
-const size_t kRoutinePropertiesLength = base::size(kRoutineProperties);
+const size_t kRoutinePropertiesLength = std::size(kRoutineProperties);
 
 static_assert(kRoutinePropertiesLength ==
                   static_cast<size_t>(mojom::RoutineType::kMaxValue) + 1,
@@ -77,5 +77,4 @@ const RoutineProperties& GetRoutineProperties(mojom::RoutineType routine_type) {
   return kRoutineProperties[static_cast<size_t>(routine_type)];
 }
 
-}  // namespace diagnostics
-}  // namespace ash
+}  // namespace ash::diagnostics

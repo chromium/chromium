@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Script used to generate the tests definitions for Web App testing framework.
 See the README.md file in this directory for more information.
 
-Usage: python3 chrome/test/web_apps/generate_framework_tests_and_coverage.py
+Usage: python3 chrome/test/webapps/generate_framework_tests_and_coverage.py
 """
 
 import argparse
@@ -15,7 +15,6 @@ import os
 from typing import List, Optional, Dict
 import csv
 
-from models import ActionCoverage
 from models import ActionNode
 from models import CoverageTestsByPlatform
 from models import CoverageTestsByPlatformSet
@@ -27,8 +26,10 @@ from graph_analysis import generate_coverage_file_and_percents
 from graph_analysis import trim_graph_to_platform_actions
 from graph_analysis import generate_framework_tests
 from graph_analysis import generage_graphviz_dot_file
-from file_reading import find_existing_and_disabled_tests, read_platform_supported_actions
+from file_reading import find_existing_and_disabled_tests
 from file_reading import read_actions_file
+from file_reading import read_enums_file
+from file_reading import read_platform_supported_actions
 from file_reading import read_unprocessed_coverage_tests_file
 from test_analysis import compare_and_print_tests_to_remove_and_add
 from test_analysis import expand_parameterized_tests
@@ -47,26 +48,30 @@ def check_partition_prefixes(partition_a: TestPartitionDescription,
 
 def generate_framework_tests_and_coverage(
         supported_framework_action_file: TextIOWrapper,
-        actions_file: TextIOWrapper, coverage_required_file: TextIOWrapper,
+        enums_file: TextIOWrapper,
+        actions_file: TextIOWrapper,
+        coverage_required_file: TextIOWrapper,
         custom_partitions: List[TestPartitionDescription],
-        default_partition: TestPartitionDescription, coverage_output_dir: str,
-        graph_output_dir: Optional[str]):
-
+        default_partition: TestPartitionDescription,
+        coverage_output_dir: str,
+        graph_output_dir: Optional[str],
+        delete_in_place: bool = False):
     for partition_a in custom_partitions:
         check_partition_prefixes(partition_a, default_partition)
         for partition_b in custom_partitions:
             if partition_a == partition_b:
                 continue
             check_partition_prefixes(partition_a, partition_b)
-    actions_csv = csv.reader(actions_file, delimiter=',')
+    actions_csv = actions_file.readlines()
     platform_supported_actions = read_platform_supported_actions(
-        csv.reader(supported_framework_action_file))
+        csv.reader(supported_framework_action_file, delimiter=','))
+    enums = read_enums_file(enums_file.readlines())
     (actions, action_base_name_to_default_param) = read_actions_file(
-        actions_csv, platform_supported_actions)
+        actions_csv, enums, platform_supported_actions)
 
-    coverage_csv = csv.reader(coverage_required_file, delimiter=',')
     required_coverage_tests = read_unprocessed_coverage_tests_file(
-        coverage_csv, actions, action_base_name_to_default_param)
+        coverage_required_file.readlines(), actions, enums,
+        action_base_name_to_default_param)
 
     required_coverage_tests = expand_parameterized_tests(
         required_coverage_tests)
@@ -127,8 +132,10 @@ def generate_framework_tests_and_coverage(
     # Find all existing tests.
     all_partitions = [default_partition]
     all_partitions.extend(custom_partitions)
-    (existing_tests_ids_by_platform_set, disabled_test_ids_by_platform
-     ) = find_existing_and_disabled_tests(all_partitions)
+
+    (existing_tests_ids_by_platform_set,
+     disabled_test_ids_by_platform) = find_existing_and_disabled_tests(
+         all_partitions, required_coverage_by_platform_set, delete_in_place)
 
     # Print all diffs that are required.
     compare_and_print_tests_to_remove_and_add(
@@ -175,16 +182,24 @@ def main():
                         action='store_true',
                         help='Output dot graphs from all steps.',
                         required=False)
+
+    parser.add_argument('--delete-in-place',
+                        dest='delete_in_place',
+                        action='store_true',
+                        help='Delete test cases no longer needed in place',
+                        required=False)
+
     options = parser.parse_args()
     logging.basicConfig(level=logging.INFO if options.v else logging.WARN,
                         format='[%(asctime)s %(levelname)s] %(message)s',
                         datefmt='%H:%M:%S')
     script_dir = os.path.dirname(os.path.realpath(__file__))
-    actions_filename = os.path.join(script_dir, "data", "actions.csv")
+    actions_filename = os.path.join(script_dir, "data", "actions.md")
+    enums_filename = os.path.join(script_dir, "data", "enums.md")
     supported_actions_filename = os.path.join(
         script_dir, "data", "framework_supported_actions.csv")
     coverage_required_filename = os.path.join(script_dir, "data",
-                                              "coverage_required.csv")
+                                              "critical_user_journeys.md")
     coverage_output_dir = os.path.join(script_dir, "coverage")
 
     default_tests_location = os.path.join(script_dir, "..", "..", "browser",
@@ -199,13 +214,13 @@ def main():
             action_name_prefixes={"switch_profile_clients", "sync_"},
             browsertest_dir=sync_tests_location,
             test_file_prefix="two_client_web_apps_integration_test",
-            test_fixture="TwoClientWebAppsIntegrationTest")
+            test_fixture="WebAppIntegration")
     ]
     default_partition = TestPartitionDescription(
         action_name_prefixes=set(),
         browsertest_dir=default_tests_location,
         test_file_prefix="web_app_integration_browsertest",
-        test_fixture="WebAppIntegrationBrowserTest")
+        test_fixture="WebAppIntegration")
 
     graph_output_dir = None
     if options.graphs:
@@ -214,13 +229,14 @@ def main():
     with open(actions_filename, 'r', encoding="utf-8") as actions_file, \
             open(supported_actions_filename, 'r', encoding="utf-8") \
                 as supported_actions, \
+            open(enums_filename, 'r', encoding="utf-8") \
+                as enums_file, \
             open(coverage_required_filename, 'r', encoding="utf-8") \
                 as coverage_file:
-        generate_framework_tests_and_coverage(supported_actions, actions_file,
-                                              coverage_file, custom_partitions,
-                                              default_partition,
-                                              coverage_output_dir,
-                                              graph_output_dir)
+        generate_framework_tests_and_coverage(
+            supported_actions, enums_file, actions_file, coverage_file,
+            custom_partitions, default_partition, coverage_output_dir,
+            graph_output_dir, options.delete_in_place)
 
 
 if __name__ == '__main__':

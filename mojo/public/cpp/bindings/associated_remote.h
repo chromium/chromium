@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,11 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_ASSOCIATED_REMOTE_H_
 
 #include <cstdint>
+#include <tuple>
 #include <utility>
 
 #include "base/callback_forward.h"
 #include "base/check.h"
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/associated_interface_ptr_info.h"
@@ -181,10 +180,11 @@ class AssociatedRemote {
   // Any response callbacks or disconnection notifications will be scheduled to
   // run on |task_runner|. If |task_runner| is null, defaults to the current
   // SequencedTaskRunner.
-  PendingAssociatedReceiver<Interface> BindNewEndpointAndPassReceiver(
-      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr)
-      WARN_UNUSED_RESULT {
-    DCHECK(!is_bound()) << "AssociatedRemote is already bound";
+  [[nodiscard]] PendingAssociatedReceiver<Interface>
+  BindNewEndpointAndPassReceiver(
+      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr) {
+    DCHECK(!is_bound()) << "AssociatedRemote for " << Interface::Name_
+                        << " is already bound";
 
     ScopedInterfaceEndpointHandle remote_handle;
     ScopedInterfaceEndpointHandle receiver_handle;
@@ -202,7 +202,8 @@ class AssociatedRemote {
   // SequencedTaskRunner.
   void Bind(PendingAssociatedRemote<Interface> pending_remote,
             scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr) {
-    DCHECK(!is_bound()) << "AssociatedRemote is already bound";
+    DCHECK(!is_bound()) << "AssociatedRemote for " << Interface::Name_
+                        << " is already bound";
 
     if (!pending_remote) {
       reset();
@@ -218,7 +219,7 @@ class AssociatedRemote {
     // do not use AssociatedRemote in transit, so binding to a pipe handle can
     // also imply binding to a SequencedTaskRunner and observing pipe handle
     // state.
-    ignore_result(internal_state_.instance());
+    std::ignore = internal_state_.instance();
   }
 
   // Binds this AssociatedRemote with the returned PendingAssociatedReceiver
@@ -230,9 +231,10 @@ class AssociatedRemote {
   // be ordered with respect to any other mojom interfaces. This is generally
   // useful for ignoring calls on an associated remote or for binding associated
   // endpoints in tests.
-  PendingAssociatedReceiver<Interface> BindNewEndpointAndPassDedicatedReceiver()
-      WARN_UNUSED_RESULT {
-    DCHECK(!is_bound()) << "AssociatedReceiver is already bound";
+  [[nodiscard]] PendingAssociatedReceiver<Interface>
+  BindNewEndpointAndPassDedicatedReceiver() {
+    DCHECK(!is_bound()) << "AssociatedRemote for " << Interface::Name_
+                        << " is already bound";
 
     PendingAssociatedReceiver<Interface> receiver =
         BindNewEndpointAndPassReceiver();
@@ -251,7 +253,7 @@ class AssociatedRemote {
   // be considered in cases where satisfaction of that constraint can be proven.
   //
   // Must only be called on a bound AssociatedRemote.
-  PendingAssociatedRemote<Interface> Unbind() WARN_UNUSED_RESULT {
+  [[nodiscard]] PendingAssociatedRemote<Interface> Unbind() {
     DCHECK(is_bound());
     CHECK(!internal_state_.has_pending_callbacks());
     State state;

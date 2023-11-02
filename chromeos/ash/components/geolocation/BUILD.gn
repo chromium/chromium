@@ -1,0 +1,45 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//testing/test.gni")
+
+assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
+
+component("geolocation") {
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_GEOLOCATION_IMPL" ]
+  deps = [
+    "//base",
+    "//chromeos/ash/components/network",
+    "//google_apis",
+    "//net",
+    "//services/network/public/cpp",
+  ]
+  sources = [
+    "geoposition.cc",
+    "geoposition.h",
+    "simple_geolocation_provider.cc",
+    "simple_geolocation_provider.h",
+    "simple_geolocation_request.cc",
+    "simple_geolocation_request.h",
+    "simple_geolocation_request_test_monitor.cc",
+    "simple_geolocation_request_test_monitor.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":geolocation",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/network:test_support",
+    "//net",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//testing/gtest",
+  ]
+  sources = [ "simple_geolocation_unittest.cc" ]
+}

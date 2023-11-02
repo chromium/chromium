@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -15,11 +15,11 @@ static_library("connectivity_diagnostics") {
   ]
 
   deps = [
-    "//ash/services/network_health/public/mojom:mojom",
     "//ash/webui/network_ui:network_diagnostics_resource_provider",
     "//ash/webui/network_ui:network_health_resource_provider",
     "//ash/webui/resources:connectivity_diagnostics_resources",
     "//ash/webui/web_applications",
+    "//chromeos/services/network_health/public/mojom:mojom",
     "//chromeos/strings/",
     "//content/public/browser",
     "//ui/base",

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2012 The Chromium Authors. All rights reserved.
+ * Copyright 2012 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
@@ -38,7 +38,7 @@ function startDetection(videoElementId, width, height) {
 
   gFingerprints = [];
   gDetectorInterval = setInterval(function() {
-    var context = canvas.getContext('2d');
+    var context = canvas.getContext('2d', {willReadFrequently: true});
     if (video.videoWidth == 0)
       return;  // The video element isn't playing anything.
 

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -27,21 +28,12 @@ namespace {
 bool ShouldCloseTabOnExtensionUnload(const Extension* extension,
                                      Browser* browser,
                                      content::WebContents* web_contents) {
-  // Bookmark app extensions are handled by WebAppBrowserController, if enabled.
-  // TODO(crbug.com/1065748): Remove app_controller() part of the condition
-  // after unified browser controller launch.
-  if (extension->from_bookmark() &&
-      (!browser->app_controller() ||
-       browser->app_controller()->AsWebAppBrowserController())) {
-    return false;
-  }
-
   // Case 1: A "regular" extension page, e.g. chrome-extension://<id>/page.html.
   // Note: we check the tuple or precursor tuple in order to close any
   // windows with opaque origins that were opened by extensions, and may
   // still be running code.
   const url::SchemeHostPort& tuple_or_precursor_tuple =
-      web_contents->GetMainFrame()
+      web_contents->GetPrimaryMainFrame()
           ->GetLastCommittedOrigin()
           .GetTupleOrPrecursorTupleIfOpaque();
   if (tuple_or_precursor_tuple.scheme() == extensions::kExtensionScheme &&
@@ -117,7 +109,7 @@ void ExtensionBrowserWindowHelper::CleanUpTabsOnUnload(
   for (int i = tab_strip_model->count() - 1; i >= 0; --i) {
     content::WebContents* web_contents = tab_strip_model->GetWebContentsAt(i);
     if (ShouldCloseTabOnExtensionUnload(extension, browser_, web_contents))
-      tab_strip_model->CloseWebContentsAt(i, TabStripModel::CLOSE_NONE);
+      tab_strip_model->CloseWebContentsAt(i, TabCloseTypes::CLOSE_NONE);
     else
       UnmuteIfMutedByExtension(web_contents, extension->id());
   }

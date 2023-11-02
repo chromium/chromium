@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/observer_list.h"
 #include "components/global_media_controls/public/media_item_manager.h"
 #include "components/global_media_controls/public/media_item_ui.h"
 #include "components/global_media_controls/public/media_session_item_producer_observer.h"
@@ -67,6 +68,13 @@ MediaSessionItemProducer::Session::~Session() {
 
 void MediaSessionItemProducer::Session::MediaSessionInfoChanged(
     media_session::mojom::MediaSessionInfoPtr session_info) {
+  if (session_info && session_info->has_presentation) {
+    // The presentation gets its own item, so this item has become redundant.
+    // |this| gets deleted here.
+    owner_->RemoveItem(id_);
+    return;
+  }
+
   is_playing_ =
       session_info && session_info->playback_state ==
                           media_session::mojom::MediaPlaybackState::kPlaying;
@@ -240,7 +248,8 @@ MediaSessionItemProducer::GetMediaItem(const std::string& id) {
   return it == sessions_.end() ? nullptr : it->second.item()->GetWeakPtr();
 }
 
-std::set<std::string> MediaSessionItemProducer::GetActiveControllableItemIds() {
+std::set<std::string> MediaSessionItemProducer::GetActiveControllableItemIds()
+    const {
   return active_controllable_session_ids_;
 }
 
@@ -281,9 +290,6 @@ void MediaSessionItemProducer::OnFocusGained(
                 this, id, session->source_name.value_or(std::string()),
                 std::move(item_controller), std::move(session->session_info)),
             std::move(session_controller)));
-
-    for (auto& observer : observers_)
-      observer.OnMediaSessionItemCreated(id);
   }
 }
 
@@ -343,6 +349,7 @@ void MediaSessionItemProducer::OnMediaItemUIDismissed(const std::string& id) {
 
   session->set_dismiss_reason(
       GlobalMediaControlsDismissReason::kUserDismissedNotification);
+  session->item()->Stop();
   session->item()->Dismiss();
 }
 
@@ -378,10 +385,6 @@ void MediaSessionItemProducer::RemoveItem(const std::string& id) {
   active_controllable_session_ids_.erase(id);
   frozen_session_ids_.erase(id);
   inactive_session_ids_.erase(id);
-
-  for (auto& observer : observers_)
-    observer.OnMediaSessionItemDestroyed(id);
-
   item_manager_->HideItem(id);
   sessions_.erase(id);
 }
@@ -422,6 +425,14 @@ MediaSessionItemProducer::RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
 
   return it->second.RegisterIsAudioDeviceSwitchingSupportedCallback(
       std::move(callback));
+}
+
+void MediaSessionItemProducer::UpdateMediaItemSourceOrigin(
+    const std::string& id,
+    const url::Origin& origin) {
+  auto it = sessions_.find(id);
+  if (it != sessions_.end())
+    it->second.item()->UpdatePresentationRequestOrigin(origin);
 }
 
 MediaSessionItemProducer::Session* MediaSessionItemProducer::GetSession(

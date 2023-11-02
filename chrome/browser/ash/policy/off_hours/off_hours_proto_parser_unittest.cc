@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,18 +6,19 @@
 
 #include <utility>
 
+#include "base/test/simple_test_clock.h"
 #include "base/values.h"
-#include "chromeos/policy/weekly_time/weekly_time.h"
-#include "chromeos/policy/weekly_time/weekly_time_interval.h"
+#include "chromeos/ash/components/policy/weekly_time/weekly_time.h"
+#include "chromeos/ash/components/policy/weekly_time/weekly_time_interval.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace em = enterprise_management;
-
-namespace policy {
-namespace off_hours {
+namespace policy::off_hours {
 
 namespace {
+
+namespace em = ::enterprise_management;
 
 constexpr em::WeeklyTimeProto_DayOfWeek kWeekdays[] = {
     em::WeeklyTimeProto::DAY_OF_WEEK_UNSPECIFIED,
@@ -31,7 +32,8 @@ constexpr em::WeeklyTimeProto_DayOfWeek kWeekdays[] = {
 
 constexpr base::TimeDelta kHour = base::Hours(1);
 
-const char kUtcTimezone[] = "UTC";
+const char kGmtTimezone[] = "GMT";
+const char kLosAngelesTimezone[] = "America/Los_Angeles";
 
 const int kDeviceAllowNewUsersTag = 3;
 const int kDeviceGuestModeEnabledTag = 8;
@@ -40,11 +42,11 @@ const std::vector<int> kDefaultIgnoredPolicies = {kDeviceAllowNewUsersTag,
                                                   kDeviceGuestModeEnabledTag};
 
 struct OffHoursPolicy {
-  std::string timezone;
+  absl::optional<std::string> timezone;
   std::vector<WeeklyTimeInterval> intervals;
   std::vector<int> ignored_policy_proto_tags;
 
-  OffHoursPolicy(const std::string& timezone,
+  OffHoursPolicy(const absl::optional<std::string>& timezone,
                  const std::vector<WeeklyTimeInterval>& intervals,
                  const std::vector<int>& ignored_policy_proto_tags)
       : timezone(timezone),
@@ -77,7 +79,8 @@ void SetOffHoursPolicyToProto(em::ChromeDeviceSettingsProto* proto,
     auto* cur = off_hours->add_intervals();
     *cur = interval_proto;
   }
-  off_hours->set_timezone(off_hours_policy.timezone);
+  if (off_hours_policy.timezone)
+    off_hours->set_timezone(*off_hours_policy.timezone);
   for (auto p : off_hours_policy.ignored_policy_proto_tags) {
     off_hours->add_ignored_policy_proto_tags(p);
   }
@@ -85,35 +88,51 @@ void SetOffHoursPolicyToProto(em::ChromeDeviceSettingsProto* proto,
 
 }  // namespace
 
-class ConvertOffHoursProtoToValueTest : public testing::Test {
- public:
-  ConvertOffHoursProtoToValueTest(const ConvertOffHoursProtoToValueTest&) =
-      delete;
-  ConvertOffHoursProtoToValueTest& operator=(
-      const ConvertOffHoursProtoToValueTest&) = delete;
+class OffHoursParserTest : public testing::Test {};
 
- protected:
-  ConvertOffHoursProtoToValueTest() = default;
-};
+TEST_F(OffHoursParserTest, ExtractWeeklyTimeIntervalsLosAngeles) {
+  WeeklyTime start = WeeklyTime(1, kHour.InMilliseconds(), absl::nullopt);
+  WeeklyTime end = WeeklyTime(3, kHour.InMilliseconds() * 2, absl::nullopt);
+  std::vector<WeeklyTimeInterval> proto_intervals = {
+      WeeklyTimeInterval(start, end)};
 
-TEST_F(ConvertOffHoursProtoToValueTest, Test) {
+  em::ChromeDeviceSettingsProto proto;
+  SetOffHoursPolicyToProto(&proto,
+                           OffHoursPolicy(kLosAngelesTimezone, proto_intervals,
+                                          kDefaultIgnoredPolicies));
+
+  base::SimpleTestClock clock;
+  std::vector<WeeklyTimeInterval> intervals =
+      ExtractWeeklyTimeIntervalsFromProto(proto.device_off_hours(),
+                                          kLosAngelesTimezone, &clock);
+
+  // SimpleTestClock is at 1970-01-01 by default.
+  // Los Angeles is 8 hours behind UTC.
+  std::vector<WeeklyTimeInterval> expected_intervals = {WeeklyTimeInterval(
+      {start.day_of_week(), start.milliseconds(), -kHour.InMilliseconds() * 8},
+      {end.day_of_week(), end.milliseconds(), -kHour.InMilliseconds() * 8})};
+
+  EXPECT_EQ(intervals, expected_intervals);
+}
+
+TEST_F(OffHoursParserTest, ConvertOffHoursProtoToValue) {
   WeeklyTime start = WeeklyTime(1, kHour.InMilliseconds(), 0);
   WeeklyTime end = WeeklyTime(3, kHour.InMilliseconds() * 2, 0);
   std::vector<WeeklyTimeInterval> intervals = {WeeklyTimeInterval(start, end)};
 
   em::ChromeDeviceSettingsProto proto;
   SetOffHoursPolicyToProto(
-      &proto, OffHoursPolicy(kUtcTimezone, intervals, kDefaultIgnoredPolicies));
+      &proto, OffHoursPolicy(kGmtTimezone, intervals, kDefaultIgnoredPolicies));
 
   std::unique_ptr<base::DictionaryValue> off_hours_value =
-      policy::off_hours::ConvertOffHoursProtoToValue(proto.device_off_hours());
+      ConvertOffHoursProtoToValue(proto.device_off_hours());
 
   base::DictionaryValue off_hours_expected;
-  off_hours_expected.SetString("timezone", kUtcTimezone);
-  auto intervals_value = std::make_unique<base::ListValue>();
+  off_hours_expected.SetStringKey("timezone", kGmtTimezone);
+  base::Value* intervals_value = off_hours_expected.SetKey(
+      "intervals", base::Value(base::Value::Type::LIST));
   for (const auto& interval : intervals)
     intervals_value->Append(interval.ToValue());
-  off_hours_expected.SetList("intervals", std::move(intervals_value));
   auto ignored_policies_value = std::make_unique<base::ListValue>();
   for (const auto& policy : kDefaultIgnoredPolicies)
     ignored_policies_value->Append(policy);
@@ -123,5 +142,60 @@ TEST_F(ConvertOffHoursProtoToValueTest, Test) {
   EXPECT_EQ(*off_hours_value, off_hours_expected);
 }
 
-}  // namespace off_hours
-}  // namespace policy
+using OffHoursParserTimezoneFromProtoTest = testing::TestWithParam<
+    std::tuple<bool,                         // has off hours
+               absl::optional<std::string>,  // off hours time zone
+               absl::optional<std::string>   // expected timezone
+               >>;
+
+TEST_P(OffHoursParserTimezoneFromProtoTest, Extract) {
+  // Extract test parameters.
+  bool has_off_hours = std::get<0>(GetParam());
+  absl::optional<std::string> off_hourse_timezone = std::get<1>(GetParam());
+  absl::optional<std::string> expected_timezone = std::get<2>(GetParam());
+
+  em::ChromeDeviceSettingsProto proto;
+
+  // Apply parameters.
+  if (has_off_hours) {
+    SetOffHoursPolicyToProto(&proto, OffHoursPolicy(off_hourse_timezone, {},
+                                                    kDefaultIgnoredPolicies));
+  }
+
+  const absl::optional<std::string> timezone =
+      ExtractTimezoneFromProto(proto.device_off_hours());
+
+  EXPECT_EQ(timezone, expected_timezone);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ExtractNoTimezoneForNoOffHours,
+    OffHoursParserTimezoneFromProtoTest,
+    ::testing::Combine(testing::Values(false),  // has no off hours
+                       testing::Values<absl::optional<std::string>>(
+                           absl::nullopt),  // off hours time zone
+                       testing::Values<absl::optional<std::string>>(
+                           absl::nullopt)  // expected timezone
+                       ));
+
+INSTANTIATE_TEST_SUITE_P(
+    ExtractNoTimezoneForUnsetTimezone,
+    OffHoursParserTimezoneFromProtoTest,
+    ::testing::Combine(testing::Values(true),  // has off hours
+                       testing::Values<absl::optional<std::string>>(
+                           absl::nullopt),  // off hours time zone
+                       testing::Values<absl::optional<std::string>>(
+                           absl::nullopt)  // expected timezone
+                       ));
+
+INSTANTIATE_TEST_SUITE_P(
+    ExtractTimezone,
+    OffHoursParserTimezoneFromProtoTest,
+    ::testing::Combine(testing::Values(true),  // has off hours
+                       testing::Values<absl::optional<std::string>>(
+                           kLosAngelesTimezone),  // off hours time zone
+                       testing::Values<absl::optional<std::string>>(
+                           kLosAngelesTimezone)  // expected timezone
+                       ));
+
+}  // namespace policy::off_hours

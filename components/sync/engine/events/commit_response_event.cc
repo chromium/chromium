@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,7 +34,9 @@ std::string CommitResponseEvent::GetDetails() const {
 
 std::unique_ptr<base::DictionaryValue> CommitResponseEvent::GetProtoMessage(
     bool include_specifics) const {
-  return ClientToServerResponseToValue(response_, include_specifics);
+  return ClientToServerResponseToValue(
+      response_, {.include_specifics = include_specifics,
+                  .include_full_get_update_triggers = false});
 }
 
 }  // namespace syncer

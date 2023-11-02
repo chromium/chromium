@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_checker.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
@@ -32,8 +32,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chromeos/tpm/install_attributes.h"
-#include "chromeos/tpm/tpm_token_loader.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "chromeos/ash/components/tpm/tpm_token_loader.h"
 #include "components/ownership/owner_key_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
@@ -61,8 +61,8 @@ namespace ash {
 namespace {
 
 using ReloadKeyCallback =
-    base::OnceCallback<void(const scoped_refptr<PublicKey>& public_key,
-                            const scoped_refptr<PrivateKey>& private_key)>;
+    base::OnceCallback<void(scoped_refptr<PublicKey> public_key,
+                            scoped_refptr<PrivateKey> private_key)>;
 
 bool IsOwnerInTests(const std::string& user_id) {
   if (user_id.empty() ||
@@ -82,17 +82,14 @@ void LoadPrivateKeyByPublicKeyOnWorkerThread(
     crypto::ScopedPK11Slot public_slot,
     crypto::ScopedPK11Slot private_slot,
     ReloadKeyCallback callback) {
-  std::vector<uint8_t> public_key_data;
-  scoped_refptr<PublicKey> public_key;
-  if (!owner_key_util->ImportPublicKey(&public_key_data)) {
+  scoped_refptr<PublicKey> public_key = owner_key_util->ImportPublicKey();
+  if (!public_key) {
     scoped_refptr<PrivateKey> private_key;
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), public_key, private_key));
     return;
   }
-  public_key = new PublicKey();
-  public_key->data().swap(public_key_data);
 
   // If private slot is already available, this will check it. If not, we'll get
   // called again later when the TPM Token is ready, and the slot will be
@@ -156,11 +153,11 @@ void LoadPrivateKeyOnIOThread(const scoped_refptr<OwnerKeyUtil>& owner_key_util,
 
 bool DoesPrivateKeyExistAsyncHelper(
     const scoped_refptr<OwnerKeyUtil>& owner_key_util) {
-  std::vector<uint8_t> public_key;
-  if (!owner_key_util->ImportPublicKey(&public_key))
+  scoped_refptr<PublicKey> public_key = owner_key_util->ImportPublicKey();
+  if (!public_key)
     return false;
   crypto::ScopedSECKEYPrivateKey key =
-      crypto::FindNSSKeyFromPublicKeyInfo(public_key);
+      crypto::FindNSSKeyFromPublicKeyInfo(public_key->data());
   return key && SECKEY_GetPrivateKeyType(key.get()) == rsaKey;
 }
 
@@ -203,8 +200,8 @@ OwnerSettingsServiceAsh::OwnerSettingsServiceAsh(
     : ownership::OwnerSettingsService(owner_key_util),
       device_settings_service_(device_settings_service),
       profile_(profile) {
-  if (chromeos::SessionManagerClient::Get())
-    chromeos::SessionManagerClient::Get()->AddObserver(this);
+  if (SessionManagerClient::Get())
+    SessionManagerClient::Get()->AddObserver(this);
 
   if (device_settings_service_)
     device_settings_service_->AddObserver(this);
@@ -243,8 +240,8 @@ OwnerSettingsServiceAsh::~OwnerSettingsServiceAsh() {
   if (device_settings_service_)
     device_settings_service_->RemoveObserver(this);
 
-  if (chromeos::SessionManagerClient::Get())
-    chromeos::SessionManagerClient::Get()->RemoveObserver(this);
+  if (SessionManagerClient::Get())
+    SessionManagerClient::Get()->RemoveObserver(this);
 }
 
 OwnerSettingsServiceAsh* OwnerSettingsServiceAsh::FromWebUI(
@@ -279,14 +276,14 @@ bool OwnerSettingsServiceAsh::HasPendingChanges() const {
 }
 
 bool OwnerSettingsServiceAsh::IsOwner() {
-  if (chromeos::InstallAttributes::Get()->IsEnterpriseManaged()) {
+  if (InstallAttributes::Get()->IsEnterpriseManaged()) {
     return false;
   }
   return OwnerSettingsService::IsOwner();
 }
 
 void OwnerSettingsServiceAsh::IsOwnerAsync(IsOwnerCallback callback) {
-  if (chromeos::InstallAttributes::Get()->IsEnterpriseManaged()) {
+  if (InstallAttributes::Get()->IsEnterpriseManaged()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
@@ -344,11 +341,11 @@ bool OwnerSettingsServiceAsh::RemoveFromList(const std::string& setting,
   const base::Value* old_value = CrosSettings::Get()->GetPref(setting);
   if (old_value && !old_value->is_list())
     return false;
-  base::Value new_value(base::Value::Type::LIST);
+  base::Value::List new_value;
   if (old_value)
-    new_value = old_value->Clone();
-  new_value.EraseListValue(value);
-  return Set(setting, std::move(new_value));
+    new_value = old_value->GetList().Clone();
+  new_value.EraseValue(value);
+  return Set(setting, base::Value(std::move(new_value)));
 }
 
 bool OwnerSettingsServiceAsh::CommitTentativeDeviceSettings(
@@ -496,28 +493,28 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     device_local_accounts->clear_account();
     if (value.is_list()) {
       for (const auto& entry : value.GetList()) {
-        const base::DictionaryValue* entry_dict = nullptr;
-        if (entry.GetAsDictionary(&entry_dict)) {
+        if (entry.is_dict()) {
+          const base::Value::Dict& entry_dict = entry.GetDict();
           em::DeviceLocalAccountInfoProto* account =
               device_local_accounts->add_account();
           const std::string* account_id =
-              entry_dict->FindStringKey(kAccountsPrefDeviceLocalAccountsKeyId);
+              entry_dict.FindString(kAccountsPrefDeviceLocalAccountsKeyId);
           if (account_id)
             account->set_account_id(*account_id);
 
           absl::optional<int> type =
-              entry_dict->FindIntKey(kAccountsPrefDeviceLocalAccountsKeyType);
+              entry_dict.FindInt(kAccountsPrefDeviceLocalAccountsKeyType);
           if (type.has_value()) {
             account->set_type(
                 static_cast<em::DeviceLocalAccountInfoProto::AccountType>(
                     type.value()));
           }
-          const std::string* kiosk_app_id = entry_dict->FindStringKey(
+          const std::string* kiosk_app_id = entry_dict.FindString(
               kAccountsPrefDeviceLocalAccountsKeyKioskAppId);
           if (kiosk_app_id)
             account->mutable_kiosk_app()->set_app_id(*kiosk_app_id);
 
-          const std::string* kiosk_app_update_url = entry_dict->FindStringKey(
+          const std::string* kiosk_app_update_url = entry_dict.FindString(
               kAccountsPrefDeviceLocalAccountsKeyKioskAppUpdateURL);
           if (kiosk_app_update_url)
             account->mutable_kiosk_app()->set_update_url(*kiosk_app_update_url);
@@ -646,6 +643,13 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     } else {
       NOTREACHED();
     }
+  } else if (path == kRevenEnableDeviceHWDataUsage) {
+    em::RevenDeviceHWDataUsageEnabledProto* hw_data_usage =
+        settings.mutable_hardware_data_usage_enabled();
+    if (value.is_bool())
+      hw_data_usage->set_hardware_data_usage_enabled(value.GetBool());
+    else
+      NOTREACHED();
   } else {
     // The remaining settings don't support Set(), since they are not
     // intended to be customizable by the user:
@@ -653,6 +657,7 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     //   kAccountsPrefTransferSAMLCookies
     //   kDeviceAttestationEnabled
     //   kDeviceOwner
+    //   kDeviceReportXDREvents
     //   kHeartbeatEnabled
     //   kHeartbeatFrequency
     //   kReleaseChannelDelegated
@@ -670,6 +675,7 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     //   kReportDeviceNetworkInterfaces
     //   kReportDeviceNetworkConfiguration
     //   kReportDeviceNetworkStatus
+    //   kReportDevicePeripherals
     //   kReportDevicePowerStatus
     //   kReportDeviceStorageStatus
     //   kReportDeviceSecurityStatus
@@ -683,6 +689,7 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     //   kReportDeviceSystemInfo
     //   kReportDevicePrintJobs
     //   kReportDeviceLoginLogout
+    //   kReportCRDSessions
     //   kServiceAccountIdentity
     //   kSystemTimezonePolicy
     //   kVariationsRestrictParameter
@@ -690,6 +697,7 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     //   kDeviceDisabledMessage
     //   ReportDeviceNetworkTelemetryCollectionRateMs
     //   ReportDeviceNetworkTelemetryEventCheckingRateMs
+    //   ReportDeviceAudioStatusCheckingRateMs
 
     LOG(FATAL) << "Device setting " << path << " is read-only.";
   }
@@ -710,9 +718,8 @@ void OwnerSettingsServiceAsh::OnPostKeypairLoadedActions() {
 }
 
 void OwnerSettingsServiceAsh::ReloadKeypairImpl(
-    base::OnceCallback<void(const scoped_refptr<PublicKey>& public_key,
-                            const scoped_refptr<PrivateKey>& private_key)>
-        callback) {
+    base::OnceCallback<void(scoped_refptr<PublicKey> public_key,
+                            scoped_refptr<PrivateKey> private_key)> callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   // The profile may not be fully created yet: abort, and wait till it is. The

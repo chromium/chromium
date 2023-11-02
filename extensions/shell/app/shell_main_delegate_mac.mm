@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 
 namespace extensions {
 
-void ShellMainDelegate::PreBrowserMain() {
+absl::optional<int> ShellMainDelegate::PreBrowserMain() {
   // Force the NSApplication subclass to be used.
   [ShellCrApplication sharedApplication];
 
@@ -16,6 +16,8 @@ void ShellMainDelegate::PreBrowserMain() {
   // will not be a ShellCrApplication, but will instead be an NSApplication.
   // This is undesirable and we must enforce that this doesn't happen.
   CHECK([NSApp isKindOfClass:[ShellCrApplication class]]);
+
+  return absl::nullopt;
 }
 
 }  // namespace extensions

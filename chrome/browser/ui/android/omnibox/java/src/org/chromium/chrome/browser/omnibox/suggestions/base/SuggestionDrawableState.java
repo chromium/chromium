@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,6 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.util.ObjectsCompat;
-
-import org.chromium.base.ApiCompatibilityUtils;
 
 /** Represents graphical decoration for the suggestion components. */
 public class SuggestionDrawableState {
@@ -76,8 +74,7 @@ public class SuggestionDrawableState {
          * @param colorRes Color resource to use.
          */
         public static Builder forColorRes(Context ctx, @ColorRes int colorRes) {
-            return new Builder(new ColorDrawable(
-                    ApiCompatibilityUtils.getColor(ctx.getResources(), colorRes)));
+            return new Builder(new ColorDrawable(ctx.getColor(colorRes)));
         }
 
         /**

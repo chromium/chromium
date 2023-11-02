@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,7 @@ WKWebView* EnsureWebViewCreatedWithConfiguration(
       WKWebViewConfigurationProvider::FromBrowserState(browser_state);
   provider.ResetWithWebViewConfiguration(configuration);
 
-  // |web_controller| will get the |configuration| from the |provider| to create
+  // `web_controller` will get the `configuration` from the `provider` to create
   // the webView to return.
   return [web_controller ensureWebViewCreated];
 }

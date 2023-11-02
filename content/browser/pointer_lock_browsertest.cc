@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "content/browser/pointer_lock_browsertest.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -101,7 +102,7 @@ class MockPointerLockRenderWidgetHostView : public RenderWidgetHostViewAura {
 
   bool HasFocus() override { return has_focus_; }
 
-  RenderWidgetHostImpl* host_;
+  raw_ptr<RenderWidgetHostImpl> host_;
   bool has_focus_ = true;
 };
 
@@ -281,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest, PointerLockAndUserActivation) {
 }
 
 // crbug.com/1210940: flaky on Linux
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_PointerLockEventRouting DISABLED_PointerLockEventRouting
 #else
 #define MAYBE_PointerLockEventRouting PointerLockEventRouting
@@ -457,9 +458,9 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest,
 
   // Request a pointer lock to the inner WebContents's document.body.
   EXPECT_EQ(true, PointerLockHelper::RequestPointerLockOnBody(
-                      inner_contents->GetMainFrame()));
+                      inner_contents->GetPrimaryMainFrame()));
   EXPECT_EQ(true, PointerLockHelper::IsPointerLockOnBody(
-                      inner_contents->GetMainFrame()));
+                      inner_contents->GetPrimaryMainFrame()));
 
   // Root (platform) RenderWidgetHostView should have the pointer locked.
   EXPECT_TRUE(root->current_frame_host()->GetView()->IsMouseLocked());
@@ -467,7 +468,7 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest,
   // The widget doing the lock is the one from the inner WebContents. A link
   // to that RWH is saved into the outer webcontents.
   RenderWidgetHost* expected_lock_widget =
-      inner_contents->GetMainFrame()->GetView()->GetRenderWidgetHost();
+      inner_contents->GetPrimaryMainFrame()->GetView()->GetRenderWidgetHost();
   EXPECT_EQ(expected_lock_widget, web_contents()->GetMouseLockWidget());
   EXPECT_EQ(expected_lock_widget, web_contents()->mouse_lock_widget_);
   EXPECT_EQ(expected_lock_widget,
@@ -487,7 +488,7 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest,
 
   // This should cancel the pointer lock.
   EXPECT_EQ(nullptr, web_contents()->GetMouseLockWidget());
-  EXPECT_EQ(nullptr, web_contents()->mouse_lock_widget_);
+  EXPECT_EQ(nullptr, web_contents()->mouse_lock_widget_.get());
   EXPECT_FALSE(web_contents()->HasMouseLock(
       root->current_frame_host()->GetRenderWidgetHost()));
 }
@@ -526,7 +527,7 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest, PointerLockOopifCrashes) {
 
     // This should cancel the pointer lock.
     EXPECT_EQ(nullptr, web_contents()->GetMouseLockWidget());
-    EXPECT_EQ(nullptr, web_contents()->mouse_lock_widget_);
+    EXPECT_EQ(nullptr, web_contents()->mouse_lock_widget_.get());
     EXPECT_FALSE(web_contents()->HasMouseLock(
         root->current_frame_host()->GetRenderWidgetHost()));
     if (crash_depth != 0)
@@ -536,7 +537,7 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest, PointerLockOopifCrashes) {
   }
 }
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_PointerLockWheelEventRouting DISABLED_PointerLockWheelEventRouting
 #else
 #define MAYBE_PointerLockWheelEventRouting PointerLockWheelEventRouting
@@ -747,7 +748,7 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTestWithOptions,
   // Release pointer lock.
   EXPECT_EQ(true, PointerLockHelper::ExitPointerLock(root));
 
-#if defined(USE_AURA) || defined(OS_MAC)
+#if defined(USE_AURA) || BUILDFLAG(IS_MAC)
   // Request a pointer lock with unadjustedMovement.
   EXPECT_EQ(
       true,
@@ -854,7 +855,7 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTestWithOptions,
 
 #if defined(USE_AURA)
 // TODO(https://crbug.com/982379): Remove failure test when fully implemented
-#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_ChangeUnadjustedMovementFailure \
   DISABLED_ChangeUnadjustedMovementFailure
 #else
@@ -907,7 +908,7 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTestWithOptions,
 #endif
 
 #if defined(USE_AURA)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Tests that a subsequent request to RequestPointerLock with different
 // options inside a Child view gets piped to the proper places and updates
 // the option(this option is only supported on Windows).

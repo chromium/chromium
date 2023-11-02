@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,10 +18,11 @@ class ProtocolEvent;
 
 // A container for ProtocolEvents.
 //
-// Stores at most kBufferSize events, then starts dropping the oldest events.
+// Stores some maximum number of events (kDefaultBufferSize, unless overridden
+// by command-line param), then starts dropping the oldest events.
 class ProtocolEventBuffer {
  public:
-  static const size_t kBufferSize;
+  static const size_t kDefaultBufferSize;
 
   ProtocolEventBuffer();
 
@@ -37,6 +38,7 @@ class ProtocolEventBuffer {
   std::vector<std::unique_ptr<ProtocolEvent>> GetBufferedProtocolEvents() const;
 
  private:
+  const size_t buffer_size_;
   base::circular_deque<std::unique_ptr<ProtocolEvent>> buffer_;
 };
 

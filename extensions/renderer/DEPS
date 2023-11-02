@@ -11,13 +11,15 @@ include_rules = [
 
   "+third_party/blink/public/common/associated_interfaces/associated_interface_provider.h",
   "+third_party/blink/public/common/associated_interfaces/associated_interface_registry.h",
+  "+third_party/blink/public/common/logging/logging_utils.h",
   "+third_party/blink/public/common/tokens/tokens.h",
   "+third_party/blink/public/mojom/devtools/console_message.mojom.h",
   "+third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h",
   "+third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h",
+  "+third_party/blink/public/mojom/page/page.mojom.h",
   "+third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h",
   "+third_party/blink/public/platform",
-  "+third_party/blink/public/strings/grit/blink_strings.h",
+  "+third_party/blink/public/strings/grit/blink_accessibility_strings.h",
   "+third_party/blink/public/web",
   "+third_party/zlib/google/compression_utils.h",
 
@@ -36,12 +38,6 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  ".*(test|test_util)\.(cc|h)$": [
-    # Temporarily allowed testing includes.  See above.
-    # TODO(devlin): Ideally, we'd remove these (or move the tests into
-    # //chrome). See https://crbug.com/773004.
-    "+chrome/test/base/chrome_render_view_test.h",
-  ],
   "extension_throttle_manager.cc": [
     # For net::IsLocalhost.
     "+net/base/url_util.h",
@@ -49,6 +45,17 @@ specific_include_rules = {
   "extension_throttle_unittest.cc": [
     "+net/url_request/redirect_info.h",
   ],
+
+  # The following could be hoisted up (they don't violate any conceptual
+  # layering), but they're really only needed here, and localization_peer is
+  # a bit unique.
+  "localization_peer.cc": [
+    "+net/http/http_response_headers.h",
+  ],
+  "localization_peer_unittest.cc": [
+    "+net/url_request/redirect_info.h",
+  ],
+
   # Temporarily allow crash_key; see https://crbug.com/1034755
   "automation_ax_tree_wrapper.cc": [
     "+components/crash/core/common/crash_key.h",

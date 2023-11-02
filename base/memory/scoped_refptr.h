@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,8 @@ template <class, typename>
 class RefCounted;
 template <class, typename>
 class RefCountedThreadSafe;
+template <class>
+class RefCountedDeleteOnSequence;
 class SequencedTaskRunner;
 class WrappedPromise;
 
@@ -41,6 +43,10 @@ enum AdoptRefTag { kAdoptRefTag };
 enum StartRefCountFromZeroTag { kStartRefCountFromZeroTag };
 enum StartRefCountFromOneTag { kStartRefCountFromOneTag };
 
+// scoped_refptr<T> is typically used with one of several RefCounted<T> base
+// classes or with custom AddRef and Release methods. These overloads dispatch
+// on which was used.
+
 template <typename T, typename U, typename V>
 constexpr bool IsRefCountPreferenceOverridden(const T*,
                                               const RefCounted<U, V>*) {
@@ -56,9 +62,41 @@ constexpr bool IsRefCountPreferenceOverridden(
                        std::decay_t<decltype(U::kRefCountPreference)>>::value;
 }
 
+template <typename T, typename U>
+constexpr bool IsRefCountPreferenceOverridden(
+    const T*,
+    const RefCountedDeleteOnSequence<U>*) {
+  return !std::is_same<std::decay_t<decltype(T::kRefCountPreference)>,
+                       std::decay_t<decltype(U::kRefCountPreference)>>::value;
+}
+
 constexpr bool IsRefCountPreferenceOverridden(...) {
   return false;
 }
+
+template <typename T, typename U, typename V>
+constexpr void AssertRefCountBaseMatches(const T*, const RefCounted<U, V>*) {
+  static_assert(std::is_base_of_v<U, T>,
+                "T implements RefCounted<U>, but U is not a base of T.");
+}
+
+template <typename T, typename U, typename V>
+constexpr void AssertRefCountBaseMatches(const T*,
+                                         const RefCountedThreadSafe<U, V>*) {
+  static_assert(
+      std::is_base_of_v<U, T>,
+      "T implements RefCountedThreadSafe<U>, but U is not a base of T.");
+}
+
+template <typename T, typename U>
+constexpr void AssertRefCountBaseMatches(const T*,
+                                         const RefCountedDeleteOnSequence<U>*) {
+  static_assert(
+      std::is_base_of_v<U, T>,
+      "T implements RefCountedDeleteOnSequence<U>, but U is not a base of T.");
+}
+
+constexpr void AssertRefCountBaseMatches(...) {}
 
 }  // namespace subtle
 
@@ -254,7 +292,7 @@ class TRIVIAL_ABI scoped_refptr {
 
   // Returns the owned pointer (if any), releasing ownership to the caller. The
   // caller is responsible for managing the lifetime of the reference.
-  T* release() WARN_UNUSED_RESULT;
+  [[nodiscard]] T* release();
 
   void swap(scoped_refptr& r) noexcept { std::swap(ptr_, r.ptr_); }
 
@@ -312,12 +350,14 @@ T* scoped_refptr<T>::release() {
 // static
 template <typename T>
 void scoped_refptr<T>::AddRef(T* ptr) {
+  base::subtle::AssertRefCountBaseMatches(ptr, ptr);
   ptr->AddRef();
 }
 
 // static
 template <typename T>
 void scoped_refptr<T>::Release(T* ptr) {
+  base::subtle::AssertRefCountBaseMatches(ptr, ptr);
   ptr->Release();
 }
 

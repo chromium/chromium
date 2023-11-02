@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -75,7 +75,7 @@ void InitializeDWriteFontProxy() {
   sk_sp<SkFontMgr> skia_font_manager = SkFontMgr_New_DirectWrite(
       factory.Get(), g_font_collection, g_font_fallback);
   blink::WebFontRendering::SetSkiaFontManager(skia_font_manager);
-  blink::WebFontRendering::SetFontPrewarmer(g_font_collection);
+  blink::WebFontRendering::SetFontRenderingClient(g_font_collection);
 
   skia::OverrideDefaultSkFontMgr(std::move(skia_font_manager));
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/debug/alias.h"
-#include "content/common/render_accessibility.mojom-forward.h"
 #include "content/renderer/accessibility/render_accessibility_impl.h"
 #include "content/renderer/render_frame_impl.h"
 
@@ -21,8 +20,13 @@ RenderAccessibilityManager::RenderAccessibilityManager(
 RenderAccessibilityManager::~RenderAccessibilityManager() = default;
 
 void RenderAccessibilityManager::BindReceiver(
-    mojo::PendingAssociatedReceiver<mojom::RenderAccessibility> receiver) {
-  DCHECK(!receiver_.is_bound());
+    mojo::PendingAssociatedReceiver<blink::mojom::RenderAccessibility>
+        receiver) {
+  // TODO(https://crbug.com/1329532): re-add   DCHECK(!receiver_.is_bound()),
+  // once underlying issue is resolved.
+  if (receiver_.is_bound())
+    receiver_.reset();
+
   receiver_.Bind(std::move(receiver));
   receiver_.set_disconnect_handler(base::BindOnce(
       [](RenderAccessibilityManager* impl) {
@@ -75,7 +79,7 @@ void RenderAccessibilityManager::HitTest(
     const gfx::Point& point,
     ax::mojom::Event event_to_fire,
     int request_id,
-    mojom::RenderAccessibility::HitTestCallback callback) {
+    blink::mojom::RenderAccessibility::HitTestCallback callback) {
   DCHECK(render_accessibility_);
   render_accessibility_->HitTest(point, event_to_fire, request_id,
                                  std::move(callback));
@@ -92,20 +96,14 @@ void RenderAccessibilityManager::Reset(int32_t reset_token) {
 }
 
 void RenderAccessibilityManager::HandleAccessibilityEvents(
-    mojom::AXUpdatesAndEventsPtr updates_and_events,
+    blink::mojom::AXUpdatesAndEventsPtr updates_and_events,
     int32_t reset_token,
-    mojom::RenderAccessibilityHost::HandleAXEventsCallback callback) {
+    blink::mojom::RenderAccessibilityHost::HandleAXEventsCallback callback) {
   GetOrCreateRemoteRenderAccessibilityHost()->HandleAXEvents(
       std::move(updates_and_events), reset_token, std::move(callback));
 }
 
-void RenderAccessibilityManager::HandleLocationChanges(
-    std::vector<mojom::LocationChangesPtr> changes) {
-  GetOrCreateRemoteRenderAccessibilityHost()->HandleAXLocationChanges(
-      std::move(changes));
-}
-
-mojo::Remote<mojom::RenderAccessibilityHost>&
+mojo::Remote<blink::mojom::RenderAccessibilityHost>&
 RenderAccessibilityManager::GetOrCreateRemoteRenderAccessibilityHost() {
   if (!render_accessibility_host_) {
     render_frame_->GetBrowserInterfaceBroker()->GetInterface(

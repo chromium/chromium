@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -40,8 +40,6 @@ component("ash") {
     "ime_bridge.h",
     "ime_bridge_observer.h",
     "ime_candidate_window_handler_interface.h",
-    "ime_engine_handler_interface.h",
-    "ime_input_context_handler_interface.h",
     "ime_keyboard.cc",
     "ime_keyboard_impl.cc",
     "ime_keyboard_impl.h",
@@ -58,6 +56,8 @@ component("ash") {
     "input_method_ukm.h",
     "input_method_util.cc",
     "input_method_util.h",
+    "text_input_method.h",
+    "text_input_target.h",
   ]
 
   defines = [ "IS_UI_BASE_IME_ASH_IMPL" ]

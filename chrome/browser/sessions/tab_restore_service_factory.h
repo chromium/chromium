@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_SESSIONS_TAB_RESTORE_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -17,7 +17,7 @@ class TabRestoreService;
 // Singleton that owns all TabRestoreServices and associates them with
 // Profiles. Listens for the Profile's destruction notification and cleans up
 // the associated TabRestoreService.
-class TabRestoreServiceFactory : public BrowserContextKeyedServiceFactory {
+class TabRestoreServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static sessions::TabRestoreService* GetForProfile(Profile* profile);
 

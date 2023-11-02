@@ -132,7 +132,7 @@
   }
 
   paper-progress {
-    --paper-progress-active-color: var(--google-blue-refresh-300);
+    --paper-progress-active-color: var(--google-blue-300);
     --paper-progress-container-color: transparent;
     --paper-progress-height: 3px;
     bottom: 0;
@@ -246,7 +246,7 @@
   <div id="end">
   <if expr="enable_ink">
     <template is="dom-if" if="[[pdfAnnotationsEnabled]]">
-      <cr-icon-button id="annotate" iron-icon="pdf:create"
+      <cr-icon-button id="annotate" iron-icon="cr:create"
           on-click="onAnnotationClick_"
           aria-label="$i18n{tooltipAnnotate}"
           disabled="[[!annotationsAvailable]]"
@@ -270,7 +270,7 @@
 <paper-progress id="progress" value="[[loadProgress]]" hidden="[[!loading_]]">
 </paper-progress>
 
-<cr-action-menu on-open-changed="onMoreOpenChanged_">
+<cr-action-menu id="menu" on-open-changed="onMoreOpenChanged_">
   <button id="two-page-view-button"
       class="dropdown-item" on-click="toggleTwoPageViewClick_" role="checkbox"
 <if expr="enable_ink">

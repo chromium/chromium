@@ -1,10 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/components/phonehub/fake_message_sender.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 FakeMessageSender::FakeMessageSender() = default;
@@ -61,6 +61,11 @@ void FakeMessageSender::SendInitiateCameraRollItemTransferRequest(
   initiate_camera_roll_item_transfer_requests_.push_back(request);
 }
 
+void FakeMessageSender::SendFeatureSetupRequest(bool camera_roll,
+                                                bool notifications) {
+  feature_setup_requests_.push_back(std::make_pair(camera_roll, notifications));
+}
+
 size_t FakeMessageSender::GetCrosStateCallCount() const {
   return cros_states_.size();
 }
@@ -96,6 +101,10 @@ size_t FakeMessageSender::GetFetchCameraRollItemDataRequestCallCount() const {
 size_t FakeMessageSender::GetInitiateCameraRollItemTransferRequestCallCount()
     const {
   return initiate_camera_roll_item_transfer_requests_.size();
+}
+
+size_t FakeMessageSender::GetFeatureSetupRequestCallCount() const {
+  return feature_setup_requests_.size();
 }
 
 std::pair<bool, bool> FakeMessageSender::GetRecentCrosState() const {
@@ -138,5 +147,9 @@ FakeMessageSender::GetRecentInitiateCameraRollItemTransferRequest() const {
   return initiate_camera_roll_item_transfer_requests_.back();
 }
 
+std::pair<bool, bool> FakeMessageSender::GetRecentFeatureSetupRequest() const {
+  return feature_setup_requests_.back();
+}
+
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,14 +24,14 @@ constexpr flags_ui::FeatureEntry::FeatureParam
     kForceDark_SelectiveImageInversion[] = {
         {"inversion_method", "cielab_based"},
         {"image_behavior", "selective"},
-        {"text_lightness_threshold", "256"},
-        {"background_lightness_threshold", "0"}};
+        {"foreground_lightness_threshold", "150"},
+        {"background_lightness_threshold", "205"}};
 
 // Not like Chrome, WebView only provides a switch in dev ui and uses the
 // preferred variation if it is turned on.
 constexpr flags_ui::FeatureEntry::FeatureVariation kForceDarkVariations[] = {
     {"with selective image inversion", kForceDark_SelectiveImageInversion,
-     base::size(kForceDark_SelectiveImageInversion), nullptr}};
+     std::size(kForceDark_SelectiveImageInversion), nullptr}};
 
 // Not for display, set the descriptions to empty.
 constexpr flags_ui::FeatureEntry kForceDark = {

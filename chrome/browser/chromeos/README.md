@@ -1,20 +1,15 @@
 chrome/browser/chromeos
 =======================
 
-This directory should contain non UI Chrome OS specific code that has
-`src/chrome` dependencies.
+This directory should contain Chrome OS specific code that has `//chrome`
+dependencies.
 
-Code here should not contain any `ash/` dependencies or `chrome/browser/ui`
-dependencies. Any such UI code should be moved to
-[`chrome/browser/ui/ash`](/chrome/browser/ui/ash/README.md)
-(which may depend on code in this directory).
+This directory is for shared code between Ash and Lacros. Code that is only
+used by Lacros should be in chrome/browser/lacros/ and code that is only used
+by Ash should be in chrome/browser/ash/.
 
-Example:
-
-* The Chrome OS network portal detection model lives in
-  `chrome/browser/ash/net/network_portal_detector_impl.cc`.
-
-* The notification controller for network portal detection lives in:
-  `chrome/browser/ui/ash/network/network_portal_notification_controller.cc`
-  (which depends on *chrome/browser/ui*, and
-  *chrome/browser/ash/net/network_portal_detector_impl.h*.
+There are a few exceptions to the above rules while the code is being
+migrated, e.g. c/b/c/exceptions/ and c/b/c/fileapi/ which are being actively
+worked on to separate platform-specific code to the proper directories. See
+the "Lacros: ChromeOS source code directory migration" design doc at
+https://docs.google.com/document/d/1g-98HpzA8XcoGBWUv1gQNr4rbnD5yfvbtYZyPDDbkaE.

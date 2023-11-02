@@ -1,11 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 
 #import "base/time/time.h"
-#include "base/timer/timer.h"
+#import "base/timer/timer.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_observer_bridge.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/web_state_list/active_web_state_observation_forwarder.h"
-#include "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
@@ -37,7 +37,7 @@ const int64_t kShowPromoWebpageLoadWaitTime = 3;
 const int64_t kShowPromoPostShareWaitTime = 1;
 
 // Number of times to show the promo to a user.
-const int kPromoShownTimesLimit = 2;
+const int kPromoShownTimesLimit = 3;
 
 // Timeout before the promo is dismissed.
 const double kPromoTimeout = 45;
@@ -328,8 +328,8 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
 
 #pragma mark - Timer Management
 
-// Start the timer to show a promo. |self.currentPromoReason| must be set to
-// the reason for this promo flow and must not be |PromoReasonNone|.
+// Start the timer to show a promo. `self.currentPromoReason` must be set to
+// the reason for this promo flow and must not be `PromoReasonNone`.
 - (void)startShowPromoTimer {
   DCHECK(self.currentPromoReason != PromoReasonNone);
 
@@ -369,9 +369,13 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
 }
 
 - (void)cancelShowPromoTimer {
+  // Only reset the reason and web state to listen to if there is no promo
+  // showing.
+  if (!self.promoIsShowing) {
+    self.currentPromoReason = PromoReasonNone;
+    self.webStateToListenTo = nullptr;
+  }
   _showPromoTimer = nullptr;
-  self.currentPromoReason = PromoReasonNone;
-  self.webStateToListenTo = nullptr;
 }
 
 - (void)showPromoTimerFinished {

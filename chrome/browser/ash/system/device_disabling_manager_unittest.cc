@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -178,14 +178,14 @@ void DeviceDisablingManagerOOBETest::CheckWhetherDeviceDisabledDuringOOBE() {
 }
 
 void DeviceDisablingManagerOOBETest::SetDeviceDisabled(bool disabled) {
-  DictionaryPrefUpdate dict(&local_state_, prefs::kServerBackedDeviceState);
+  ScopedDictPrefUpdate dict(&local_state_, prefs::kServerBackedDeviceState);
   if (disabled) {
-    dict->SetString(policy::kDeviceStateMode, policy::kDeviceStateModeDisabled);
+    dict->Set(policy::kDeviceStateMode, policy::kDeviceStateModeDisabled);
   } else {
-    dict->RemoveKey(policy::kDeviceStateMode);
+    dict->Remove(policy::kDeviceStateMode);
   }
-  dict->SetString(policy::kDeviceStateManagementDomain, kEnrollmentDomain);
-  dict->SetString(policy::kDeviceStateDisabledMessage, kDisabledMessage1);
+  dict->Set(policy::kDeviceStateManagementDomain, kEnrollmentDomain);
+  dict->Set(policy::kDeviceStateDisabledMessage, kDisabledMessage1);
 }
 
 void DeviceDisablingManagerOOBETest::OnDeviceDisabledChecked(

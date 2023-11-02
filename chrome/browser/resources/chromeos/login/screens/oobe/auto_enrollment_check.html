@@ -1,21 +1,8 @@
-<!-- Copyright 2020 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
-
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-
-<link rel="import" href="../../components/behaviors/oobe_dialog_host_behavior.html">
-<link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
-<link rel="import" href="../../components/behaviors/login_screen_behavior.html">
-<link rel="import" href="../../components/dialogs/oobe_loading_dialog.html">
-
-<dom-module id="auto-enrollment-check-element">
-  <template>
-    <oobe-loading-dialog title-key="autoEnrollmentCheckMessage">
-      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
-    </oobe-loading-dialog>
-  </template>
-  <script src="auto_enrollment_check.js"></script>
-</dom-module>
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<oobe-loading-dialog title-key="autoEnrollmentCheckMessage">
+  <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+</oobe-loading-dialog>

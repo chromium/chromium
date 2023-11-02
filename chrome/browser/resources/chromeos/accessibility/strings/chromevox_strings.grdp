@@ -48,6 +48,9 @@
   <message desc="The description of the forceClickOnCurrentItem key. Displayed in the Options page." name="IDS_CHROMEVOX_FORCE_CLICK_ON_CURRENT_ITEM">
     Click on current item
   </message>
+  <message desc="The description of the forceLongClickOnCurrentItem key. Displayed in the Options page." name="IDS_CHROMEVOX_FORCE_LONG_CLICK_ON_CURRENT_ITEM">
+    Long click on current item
+  </message>
   <message desc="The description of the readLinkURL key. Displayed in the Options page." name="IDS_CHROMEVOX_READ_LINK_URL">
     Announce the URL behind a link
   </message>
@@ -1513,6 +1516,9 @@
   <message desc="Further describes a list-like element with a number of items. e.g. This will be combined with other messages to produce: List with 3 items." name="IDS_CHROMEVOX_LIST_WITH_ITEMS">
     {COUNT, plural, =1{with # item} other{with # items}}
   </message>
+  <message desc="Further describes the level of nesting of a list-like element on the last item. e.g. This will be combined with other messages to produce: List end nested level 2." name="IDS_CHROMEVOX_LIST_NESTED_LEVEL">
+    {COUNT, plural, =1{} other{nested level #}}
+  </message>
   <!-- TODO(crbug.com/999781): This should not need ICU msg format. Fix where the message is used. -->  <message desc="Further describes a list-like element with a number of items in braille." name="IDS_CHROMEVOX_LIST_WITH_ITEMS_BRL">
     {COUNT, plural, =1{+#} other{+#}}
   </message>
@@ -1768,6 +1774,9 @@
   <message desc="Spoken when earcons are off." name="IDS_CHROMEVOX_EARCONS_OFF">
     Earcons off
   </message>
+  <message desc="Description of the toggle dictation key combination. Shown in the ChromeVox menus." name="IDS_CHROMEVOX_TOGGLE_DICTATION">
+    Toggle dictation
+  </message>
   <message desc="Description of the toggle earcons key. Shown in options page." name="IDS_CHROMEVOX_TOGGLE_EARCONS">
     Turn sound feedback (earcons) on or off
   </message>
@@ -1887,6 +1896,12 @@
   </message>
   <message desc="BULLET (•) character description." name="IDS_CHROMEVOX_BULLET">
     {COUNT, plural, =1 {bullet}other {# bullets}}
+  </message>
+  <message desc="Second level bullet (◦) character description." name="IDS_CHROMEVOX_WHITE_BULLET">
+    {COUNT, plural, =1 {white bullet}other {# white bullets}}
+  </message>
+  <message desc="Third level bullet (■) character description." name="IDS_CHROMEVOX_SQUARE_BULLET">
+    {COUNT, plural, =1 {square bullet}other {# square bullets}}
   </message>
   <message desc="Describes the braille click command. Displayed in the options page." name="IDS_CHROMEVOX_BRAILLE_ROUTING">
     Click the item under routing key <ph name="ROUTING_KEY_NUMBER">$1</ph>
@@ -2016,6 +2031,9 @@
   <message desc="Text in parentheses to be appended next to a tab that's currently active." name="IDS_CHROMEVOX_ACTIVE_TAB">
     (active)
   </message>
+  <message desc="Title displayed in the panel for the touch gestures menu." name="IDS_CHROMEVOX_PANEL_MENU_TOUCHGESTURES">
+    Touch Gestures
+  </message>
   <message desc="Title displayed in the panel for the jump menu." name="IDS_CHROMEVOX_PANEL_MENU_JUMP">
     Jump
   </message>
@@ -2138,7 +2156,7 @@
     Learn More
   </message>
   <message desc="Part of the ChromeVox tutorial, explaining that this is the end of the tutorial and that there are links to more information." name="IDS_CHROMEVOX_TUTORIAL_LEARN_MORE">
-    Congratulations! You’ve learned the essentials to use ChromeVox successfully. Remember that you can open the ChromeVox command menu at any time by pressing Search+Period. To learn even more about ChromeVox and Chrome OS, visit the following articles.
+    Congratulations! You’ve learned the essentials to use ChromeVox successfully. Remember that you can open the ChromeVox command menu at any time by pressing Search+Period. To learn even more about ChromeVox and ChromeOS, visit the following articles.
     If you're done with the tutorial, use ChromeVox to navigate to the Close button and click it.
   </message>
   <message desc="Part of the ChromeVox update notes for m63, title." name="IDS_CHROMEVOX_UPDATE_63_TITLE">
@@ -2312,8 +2330,23 @@
   <message desc="A hint to the user that the current control is checkable." name="IDS_CHROMEVOX_HINT_CHECKABLE">
     Press Search+Space to toggle
   </message>
-  <message desc="A hint to the user that the current control is clickable." name="IDS_CHROMEVOX_HINT_CLICKABLE">
-    Press Search+Space to activate
+  <message desc="A hint to the user that the current control is actionable. When user do the 'action', 'label' will be performed." name="IDS_CHROMEVOX_HINT_ACTIONABLE" is_accessibility_with_no_ui="true">
+    <ph name="action">$1<ex>Press Search + Space</ex></ph> to <ph name="label">$2<ex>activate</ex></ph>
+  </message>
+  <message desc="The action to double tap the screen. This is used to announce a hint to the user controls that can be double tapped. e.g. Double tap to activate" name="IDS_CHROMEVOX_ACTION_DOUBLE_TAP" is_accessibility_with_no_ui="true">
+    Double tap
+  </message>
+  <message desc="The action to press search key and space key at the same time. This is used to announce a hint to the user that the current control is clickable. e.g. Press Search+Space to activate" name="IDS_CHROMEVOX_ACTION_SEARCH_PLUS_SPACE" is_accessibility_with_no_ui="true">
+    Press Search+Space
+  </message>
+  <message desc="The action to press search key, shift key and space key at the same time. This is used to announce a hint to the user that the current control is long clickable. e.g. Press Search+Shift+Space to long click" name="IDS_CHROMEVOX_ACTION_SEARCH_PLUS_SHIFT_PLUS_SPACE" is_accessibility_with_no_ui="true">
+    Press Search+Shift+Space
+  </message>
+  <message desc="The action to activate the current focus. This is used to announce a hint to the user that the current control is clickable e.g. Press Search+Space to activate" name="IDS_CHROMEVOX_LABEL_ACTIVATE" is_accessibility_with_no_ui="true">
+    activate
+  </message>
+  <message desc="The action to press and hold on the current focus. This is used to announce a hint to the user that the current control is long clickable e.g. Press Search+Shift+Space to long click" name="IDS_CHROMEVOX_LABEL_LONG_CLICK" is_accessibility_with_no_ui="true">
+    long click
   </message>
   <message desc="A hint to the user that the current control has a list of auto completions." name="IDS_CHROMEVOX_HINT_AUTOCOMPLETE_LIST">
     Press up or down arrow for auto completions
@@ -2356,9 +2389,6 @@
   </message>
   <message desc="A hint to the user about the special behavior of the Search key with arrows within a text field. This text will be spoken using text to speech along with a description of the text field's name and value. The text is intentionally in fragments to reduce the time needed to convey this information via text to speech. Keys are capitalized and do not contain plus separators because it adds to the spoken announcement's duration. As a general guide, try to read the string aloud." name="IDS_CHROMEVOX_HINT_SEARCH_WITHIN_TEXT_FIELD">
     Use Search Left or Right for Home or End, Search Control Left or Right for Control Home or End, Search Up or Down for Page Up or Down
-  </message>
-  <message desc="A hint to the user controls that can be double tapped." name="IDS_CHROMEVOX_HINT_DOUBLE_TAP">
-    Double tap to activate
   </message>
   <message desc="Shown to the user in braille and speech when the device goes into landscape orientation." name="IDS_CHROMEVOX_DEVICE_LANDSCAPE">
     landscape
@@ -3310,7 +3340,7 @@
     You can also swipe one finger from right to left to move to the previous item. Try it now.
   </message>
   <message desc="Text content for the next/previous item lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_NEXT_PREVIOUS_CONTINUE_TEXT">
-    Once you’ve had some practice, find the Next lesson button. Then double-tap to continue. 
+    Once you’ve had some practice, find the Next lesson button. Then double-tap to continue.
   </message>
   <message desc="Title for the touch explore lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_TOUCH_EXPLORE_TITLE">
     Explore by touch
@@ -3365,5 +3395,11 @@
   </message>
   <message desc="Spoken to describe a &lt;abbr&gt; tag. For example, &lt;abbr title='uniform resource locator'&gt;URL/&lt;abbr&gt; would be spoken as 'URL, uniform resource locator, Abbreviation'" name="IDS_CHROMEVOX_TAG_ABBR" is_accessibility_with_no_ui="true">
     Abbreviation
+  </message>
+  <message desc="Spoken message asking users to install the Accessibility Suite app from the Play Store when users tried to turn on Talkback without installing Accessibility Suite." name="IDS_CHROMEVOX_ANNOUNCE_INSTALL_TALKBACK" is_accessibility_with_no_ui="true">
+    TalkBack is currently not installed. Please install Android AccessibilitySuite through Play Store and try again.
+  </message>
+  <message desc="Spoken message notifying users that using TalkBack on Chromebook is no longer supported and keyboard shortcut are no longer customized for Chromebooks." name="IDS_CHROMEVOX_ANNOUNCE_TALKBACK_DEPRECATION" is_accessibility_with_no_ui="true">
+    TalkBack no longer provides customization for Chromebooks. You can still use it, but use TalkBack default keyboard shortcuts. Press Search+A, then K to see available shortcuts. If you still want to use TalkBack, press the command again.
   </message>
 </grit-part>

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/process/process.h"
@@ -23,6 +22,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
@@ -300,6 +300,9 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
     kSvg,
     kFilenames,
     kWebCustomFormatMap,
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    kEncodedDataTransferEndpoint,
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   };
 
   // TODO (https://crbug.com/994928): Rename ObjectMap-related types.
@@ -308,22 +311,24 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   // table summarizes what kind of data is stored for each key.
   // * indicates an optional argument.
   //
-  // Key        Arguments    Type
+  // Key        Arguments     Type
   // -------------------------------------
-  // kBitmap    bitmap        A pointer to a SkBitmap. The caller must ensure
-  //                          the SkBitmap remains live for the duration of
-  //                          the WritePortableRepresentations call.
-  // kHtml      html          char array
-  //            url*          char array
-  // kRtf       data          byte array
-  // kFilenames text/uri-list char array
-  // kBookmark  html          char array
-  //            url           char array
-  // kText      text          char array
-  // kWebkit    none          empty vector
-  // kData      format        char array
-  //            data          byte array
-  // kWebCustomFormatMap      char array
+  // kBitmap    bitmap             A pointer to a SkBitmap. The caller must
+  //                               ensure the SkBitmap remains live for the
+  //                               duration of the WritePortableRepresentations
+  //                               call.
+  // kHtml      html               char array
+  //            url*               char array
+  // kRtf       data               byte array
+  // kFilenames text/uri-list      char array
+  // kBookmark  html               char array
+  //            url                char array
+  // kText      text               char array
+  // kWebkit    none               empty vector
+  // kData      format             char array
+  //            data               byte array
+  // kWebCustomFormatMap           char array
+  // kEncodedDataTransferEndpoint  char array
   using ObjectMapParam = std::vector<char>;
   using ObjectMapParams = std::vector<ObjectMapParam>;
   using ObjectMap = base::flat_map<PortableFormat, ObjectMapParams>;

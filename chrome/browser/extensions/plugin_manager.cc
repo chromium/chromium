@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,9 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/plugins/chrome_plugin_service_filter.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_content_client.h"
 #include "chrome/common/chrome_paths.h"
 #include "content/public/browser/plugin_service.h"
-#include "content/public/common/pepper_plugin_info.h"
+#include "content/public/common/content_plugin_info.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/mime_types_handler.h"
 #include "net/base/mime_util.h"
@@ -140,33 +139,30 @@ void PluginManager::UpdatePluginListWithNaClModules() {
   // MIME type to plugins which handle NaCl modules in order to allow the
   // individual modules to handle these types.
   static const base::NoDestructor<base::FilePath> path(
-      ChromeContentClient::kNaClPluginFileName);
-  const content::PepperPluginInfo* pepper_info =
-      PluginService::GetInstance()->GetRegisteredPpapiPluginInfo(*path);
-  if (!pepper_info)
+      nacl::kInternalNaClPluginFileName);
+  const content::ContentPluginInfo* registered_info =
+      PluginService::GetInstance()->GetRegisteredPluginInfo(*path);
+  if (!registered_info)
     return;
 
-  std::vector<content::WebPluginMimeType>::const_iterator mime_iter;
   // Check each MIME type the plugins handle for the NaCl MIME type.
-  for (mime_iter = pepper_info->mime_types.begin();
-       mime_iter != pepper_info->mime_types.end(); ++mime_iter) {
-    if (mime_iter->mime_type == nacl::kNaClPluginMimeType) {
+  for (const auto& mime_type : registered_info->mime_types) {
+    if (mime_type.mime_type == nacl::kNaClPluginMimeType) {
       // This plugin handles "application/x-nacl".
 
-      PluginService::GetInstance()->UnregisterInternalPlugin(pepper_info->path);
+      PluginService::GetInstance()->UnregisterInternalPlugin(
+          registered_info->path);
 
-      content::WebPluginInfo info = pepper_info->ToWebPluginInfo();
+      content::WebPluginInfo info = registered_info->ToWebPluginInfo();
 
-      for (NaClModuleInfo::List::const_iterator iter =
-               nacl_module_list_.begin();
-           iter != nacl_module_list_.end(); ++iter) {
+      for (const auto& nacl_module : nacl_module_list_) {
         // Add the MIME type specified in the extension to this NaCl plugin,
         // With an extra "nacl" argument to specify the location of the NaCl
         // manifest file.
         content::WebPluginMimeType mime_type_info;
-        mime_type_info.mime_type = iter->mime_type;
+        mime_type_info.mime_type = nacl_module.mime_type;
         mime_type_info.additional_params.emplace_back(
-            u"nacl", base::UTF8ToUTF16(iter->url.spec()));
+            u"nacl", base::UTF8ToUTF16(nacl_module.url.spec()));
         info.mime_types.emplace_back(std::move(mime_type_info));
       }
 

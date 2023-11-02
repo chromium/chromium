@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "components/autofill/core/browser/ui/suggestion_selection.h"
@@ -120,7 +120,11 @@ TEST_F(SuggestionSelectionTest,
 
   ASSERT_EQ(1U, suggestions.size());
   ASSERT_EQ(1U, matched_profiles.size());
-  EXPECT_THAT(suggestions, ElementsAre(Field(&Suggestion::value, u"Marion")));
+  EXPECT_THAT(
+      suggestions,
+      ElementsAre(Field(
+          &Suggestion::main_text,
+          Suggestion::Text(u"Marion", Suggestion::Text::IsPrimary(true)))));
 }
 
 TEST_F(SuggestionSelectionTest, GetPrefixMatchedSuggestions_NoMatchingProfile) {
@@ -173,7 +177,10 @@ TEST_F(SuggestionSelectionTest, GetPrefixMatchedSuggestions_LimitProfiles) {
   ASSERT_EQ(kMaxSuggestedProfilesCount, suggestions.size());
   ASSERT_EQ(kMaxSuggestedProfilesCount, matched_profiles.size());
 
-  EXPECT_THAT(suggestions, Each(Field(&Suggestion::value, Not(u"Marie"))));
+  EXPECT_THAT(suggestions,
+              Each(Field(&Suggestion::main_text,
+                         Not(Suggestion::Text(
+                             u"Marie", Suggestion::Text::IsPrimary(true))))));
 
   EXPECT_THAT(matched_profiles,
               Each(ResultOf(
@@ -181,49 +188,6 @@ TEST_F(SuggestionSelectionTest, GetPrefixMatchedSuggestions_LimitProfiles) {
                     return profile_ptr->GetRawInfo(NAME_FIRST);
                   },
                   Not(u"Marie"))));
-}
-
-TEST_F(SuggestionSelectionTest, GetPrefixMatchedSuggestions_SkipInvalid) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillProfileServerValidation,
-                            features::kAutofillProfileClientValidation},
-      /*disabled_features=*/{});
-  const std::unique_ptr<AutofillProfile> profile_server_invalid =
-      CreateProfileUniquePtr("Marion");
-  const std::unique_ptr<AutofillProfile> profile_client_invalid =
-      CreateProfileUniquePtr("Bob");
-  const std::unique_ptr<AutofillProfile> profile_valid =
-      CreateProfileUniquePtr("Rose");
-  const std::unique_ptr<AutofillProfile> profile_client_invalid_country_empty =
-      CreateProfileUniquePtr("Lost");
-
-  profile_server_invalid->SetValidityState(
-      ADDRESS_HOME_STATE, AutofillProfile::INVALID, AutofillProfile::SERVER);
-  profile_client_invalid->SetValidityState(
-      ADDRESS_HOME_STATE, AutofillProfile::INVALID, AutofillProfile::CLIENT);
-  profile_client_invalid_country_empty->SetValidityState(
-      ADDRESS_HOME_STATE, AutofillProfile::INVALID, AutofillProfile::CLIENT);
-  profile_client_invalid_country_empty->SetRawInfo(ADDRESS_HOME_COUNTRY, u"");
-
-  const std::vector<AutofillProfile*> profiles_data = {
-      profile_server_invalid.get(), profile_client_invalid.get(),
-      profile_valid.get(), profile_client_invalid_country_empty.get()};
-
-  std::vector<AutofillProfile*> matched_profiles;
-  auto suggestions = GetPrefixMatchedSuggestions(
-      AutofillType(ADDRESS_HOME_STATE), u"C", GetCanonicalUtf16Content("C"),
-      comparator_, false, profiles_data, &matched_profiles);
-
-  ASSERT_EQ(2U, suggestions.size());
-  ASSERT_EQ(2U, matched_profiles.size());
-  EXPECT_THAT(suggestions, ElementsAre(Field(&Suggestion::value, u"CA"),
-                                       Field(&Suggestion::value, u"CA")));
-
-  std::vector<AutofillProfile*> expected_result;
-  expected_result.push_back(profile_valid.get());
-  expected_result.push_back(profile_client_invalid_country_empty.get());
-  ExpectSameElements(matched_profiles, expected_result);
 }
 
 TEST_F(SuggestionSelectionTest, GetUniqueSuggestions_SingleDedupe) {
@@ -244,8 +208,11 @@ TEST_F(SuggestionSelectionTest, GetUniqueSuggestions_SingleDedupe) {
 
   ASSERT_EQ(1U, unique_suggestions.size());
   ASSERT_EQ(1U, unique_matched_profiles.size());
-  EXPECT_THAT(unique_suggestions,
-              ElementsAre(Field(&Suggestion::value, u"Bob")));
+  EXPECT_THAT(
+      unique_suggestions,
+      ElementsAre(
+          Field(&Suggestion::main_text,
+                Suggestion::Text(u"Bob", Suggestion::Text::IsPrimary(true)))));
 }
 
 TEST_F(SuggestionSelectionTest, GetUniqueSuggestions_MultipleDedupe) {
@@ -270,10 +237,15 @@ TEST_F(SuggestionSelectionTest, GetUniqueSuggestions_MultipleDedupe) {
   ASSERT_EQ(3U, unique_suggestions.size());
   ASSERT_EQ(3U, unique_matched_profiles.size());
 
-  EXPECT_THAT(unique_suggestions,
-              ElementsAre(Field(&Suggestion::value, u"Bob"),
-                          Field(&Suggestion::value, u"Bob"),
-                          Field(&Suggestion::value, u"Mary")));
+  EXPECT_THAT(
+      unique_suggestions,
+      ElementsAre(
+          Field(&Suggestion::main_text,
+                Suggestion::Text(u"Bob", Suggestion::Text::IsPrimary(true))),
+          Field(&Suggestion::main_text,
+                Suggestion::Text(u"Bob", Suggestion::Text::IsPrimary(true))),
+          Field(&Suggestion::main_text,
+                Suggestion::Text(u"Mary", Suggestion::Text::IsPrimary(true)))));
 }
 
 TEST_F(SuggestionSelectionTest, GetUniqueSuggestions_DedupeLimit) {
@@ -304,7 +276,7 @@ TEST_F(SuggestionSelectionTest, GetUniqueSuggestions_DedupeLimit) {
   // All profiles are different.
   for (size_t i = 0; i < unique_suggestions.size(); i++) {
     ASSERT_EQ(ASCIIToUTF16(base::StringPrintf("Bob %zu", i)),
-              unique_suggestions[i].value);
+              unique_suggestions[i].main_text.value);
   }
 }
 
@@ -494,10 +466,19 @@ TEST_F(SuggestionSelectionTest,
   // duplicates with a lower rank are removed.
   EXPECT_THAT(
       suggestions,
-      ElementsAre(AllOf(Field(&Suggestion::value, u"Jon Snow"),
-                        Field(&Suggestion::label, u"2 Beyond-the-Wall Rd")),
-                  AllOf(Field(&Suggestion::value, u"Jon Snow"),
-                        Field(&Suggestion::label, u"1 Winterfell Ln"))));
+      ElementsAre(
+          AllOf(Field(&Suggestion::main_text,
+                      Suggestion::Text(u"Jon Snow",
+                                       Suggestion::Text::IsPrimary(true))),
+                Field(&Suggestion::labels,
+                      std::vector<std::vector<Suggestion::Text>>{
+                          {Suggestion::Text(u"2 Beyond-the-Wall Rd")}})),
+          AllOf(Field(&Suggestion::main_text,
+                      Suggestion::Text(u"Jon Snow",
+                                       Suggestion::Text::IsPrimary(true))),
+                Field(&Suggestion::labels,
+                      std::vector<std::vector<Suggestion::Text>>{
+                          {Suggestion::Text(u"1 Winterfell Ln")}}))));
 }
 
 TEST_F(SuggestionSelectionTest,
@@ -512,12 +493,24 @@ TEST_F(SuggestionSelectionTest,
 
   EXPECT_THAT(
       suggestions,
-      ElementsAre(AllOf(Field(&Suggestion::value, u"Sansa"),
-                        Field(&Suggestion::label, u"1 Winterfell Ln")),
-                  AllOf(Field(&Suggestion::value, u"Sansa"),
-                        Field(&Suggestion::label, u"")),
-                  AllOf(Field(&Suggestion::value, u"Brienne"),
-                        Field(&Suggestion::label, u"1 Winterfell Ln"))));
+      ElementsAre(
+          AllOf(Field(&Suggestion::main_text,
+                      Suggestion::Text(u"Sansa",
+                                       Suggestion::Text::IsPrimary(true))),
+                Field(&Suggestion::labels,
+                      std::vector<std::vector<Suggestion::Text>>{
+                          {Suggestion::Text(u"1 Winterfell Ln")}})),
+          AllOf(Field(&Suggestion::main_text,
+                      Suggestion::Text(u"Sansa",
+                                       Suggestion::Text::IsPrimary(true))),
+                Field(&Suggestion::labels,
+                      std::vector<std::vector<Suggestion::Text>>{})),
+          AllOf(Field(&Suggestion::main_text,
+                      Suggestion::Text(u"Brienne",
+                                       Suggestion::Text::IsPrimary(true))),
+                Field(&Suggestion::labels,
+                      std::vector<std::vector<Suggestion::Text>>{
+                          {Suggestion::Text(u"1 Winterfell Ln")}}))));
 }
 
 TEST_F(SuggestionSelectionTest, PrepareSuggestions_SameStringInValueAndLabel) {
@@ -527,8 +520,12 @@ TEST_F(SuggestionSelectionTest, PrepareSuggestions_SameStringInValueAndLabel) {
 
   PrepareSuggestions(labels, &suggestions, comparator_);
   EXPECT_THAT(suggestions,
-              ElementsAre(AllOf(Field(&Suggestion::value, u"4 Mañana Road"),
-                                Field(&Suggestion::label, std::u16string()))));
+              ElementsAre(AllOf(
+                  Field(&Suggestion::main_text,
+                        Suggestion::Text(u"4 Mañana Road",
+                                         Suggestion::Text::IsPrimary(true))),
+                  Field(&Suggestion::labels,
+                        std::vector<std::vector<Suggestion::Text>>{}))));
 }
 
 }  // namespace suggestion_selection

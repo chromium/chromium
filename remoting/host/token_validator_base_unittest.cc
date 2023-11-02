@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/atomic_sequence_num.h"
+#include "base/memory/raw_ptr.h"
 #include "crypto/rsa_private_key.h"
 #include "net/cert/x509_util.h"
 #include "net/ssl/client_cert_identity_test_util.h"
@@ -68,8 +69,8 @@ class TestTokenValidator : TokenValidatorBase {
  private:
   void StartValidateRequest(const std::string& token) override {}
 
-  net::X509Certificate* expected_client_cert_ = nullptr;
-  net::SSLPrivateKey* expected_private_key_ = nullptr;
+  raw_ptr<net::X509Certificate> expected_client_cert_ = nullptr;
+  raw_ptr<net::SSLPrivateKey> expected_private_key_ = nullptr;
 };
 
 TestTokenValidator::TestTokenValidator(const ThirdPartyAuthConfig& config) :

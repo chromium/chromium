@@ -1,10 +1,9 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 
-#include <algorithm>
 #include <map>
 #include <ostream>
 #include <sstream>
@@ -15,6 +14,7 @@
 #include "base/lazy_instance.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -43,11 +43,10 @@ class CommaSeparatedStrings {
   CommaSeparatedStrings& operator=(const CommaSeparatedStrings&) = delete;
 
   bool CaseInsensitiveContains(base::StringPiece lowercase_key) const {
-    const auto predicate = [lowercase_key](base::StringPiece element) {
-      return base::LowerCaseEqualsASCII(element, lowercase_key);
-    };
-    return std::find_if(pieces_.begin(), pieces_.end(), predicate) !=
-           pieces_.end();
+    return base::ranges::any_of(
+        pieces_, [lowercase_key](base::StringPiece element) {
+          return base::EqualsCaseInsensitiveASCII(element, lowercase_key);
+        });
   }
 
  private:
@@ -68,18 +67,21 @@ std::string TakeVariationParamOrReturnEmpty(
 
 mojom::ActivationLevel ParseActivationLevel(
     const base::StringPiece activation_level) {
-  if (base::LowerCaseEqualsASCII(activation_level, kActivationLevelEnabled))
+  if (base::EqualsCaseInsensitiveASCII(activation_level,
+                                       kActivationLevelEnabled))
     return mojom::ActivationLevel::kEnabled;
-  else if (base::LowerCaseEqualsASCII(activation_level, kActivationLevelDryRun))
+  else if (base::EqualsCaseInsensitiveASCII(activation_level,
+                                            kActivationLevelDryRun))
     return mojom::ActivationLevel::kDryRun;
   return mojom::ActivationLevel::kDisabled;
 }
 
 ActivationScope ParseActivationScope(const base::StringPiece activation_scope) {
-  if (base::LowerCaseEqualsASCII(activation_scope, kActivationScopeAllSites))
+  if (base::EqualsCaseInsensitiveASCII(activation_scope,
+                                       kActivationScopeAllSites))
     return ActivationScope::ALL_SITES;
-  else if (base::LowerCaseEqualsASCII(activation_scope,
-                                      kActivationScopeActivationList))
+  else if (base::EqualsCaseInsensitiveASCII(activation_scope,
+                                            kActivationScopeActivationList))
     return ActivationScope::ACTIVATION_LIST;
   return ActivationScope::NO_SITES;
 }
@@ -232,14 +234,17 @@ base::LazyInstance<scoped_refptr<ConfigurationList>>::Leaky
 
 // Constant definitions -------------------------------------------------------
 
-const base::Feature kSafeBrowsingSubresourceFilter{
-    "SubresourceFilter", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kSafeBrowsingSubresourceFilter,
+             "SubresourceFilter",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kFilterAdsOnAbusiveSites{"FilterAdsOnAbusiveSites",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kFilterAdsOnAbusiveSites,
+             "FilterAdsOnAbusiveSites",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kAdsInterventionsEnforced{
-    "AdsInterventionsEnforced", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kAdsInterventionsEnforced,
+             "AdsInterventionsEnforced",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta> kAdsInterventionDuration = {
     &kAdsInterventionsEnforced, "kAdsInterventionDuration", base::Days(3)};

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,16 +21,18 @@ namespace blink {
 //
 // See src/third_party/blink/renderer/bindings/IDLExtendedAttributes.md for more
 // information.
-class WebV8Features {
+class BLINK_EXPORT WebV8Features {
  public:
-  BLINK_EXPORT static void EnableMojoJS(v8::Local<v8::Context>, bool);
+  static void EnableMojoJS(v8::Local<v8::Context>, bool);
 
-  BLINK_EXPORT static void EnableMojoJSAndUseBroker(
+  static void EnableMojoJSAndUseBroker(
       v8::Local<v8::Context> context,
       mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker_remote);
 
+  static void EnableMojoJSFileSystemAccessHelper(v8::Local<v8::Context>, bool);
+
   // Enables SharedArrayBuffer for this process.
-  BLINK_EXPORT static void EnableSharedArrayBuffer();
+  static void EnableSharedArrayBuffer();
 
  private:
   WebV8Features() = delete;

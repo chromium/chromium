@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -42,7 +43,7 @@
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #include "ui/ozone/public/ozone_switches.h"
 #endif
 
@@ -138,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
   content::WebContentsDestroyedWatcher destroyed_watcher(
       browser()->tab_strip_model()->GetWebContentsAt(active_index));
   browser()->tab_strip_model()->CloseWebContentsAt(
-      active_index, TabStripModel::CLOSE_USER_GESTURE);
+      active_index, TabCloseTypes::CLOSE_USER_GESTURE);
   destroyed_watcher.Wait();
 
   tester.ExpectTotalCount(kPopupFirstDocumentEngagement, 1);
@@ -184,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
   int active_index = browser()->tab_strip_model()->active_index();
   content::WebContentsDestroyedWatcher destroyed_watcher(popup);
   browser()->tab_strip_model()->CloseWebContentsAt(
-      active_index, TabStripModel::CLOSE_USER_GESTURE);
+      active_index, TabCloseTypes::CLOSE_USER_GESTURE);
   destroyed_watcher.Wait();
 
   tester.ExpectTotalCount(kPopupFirstDocumentEngagement, 1);
@@ -212,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, DISABLED_ControlClick_HasTracker
 
   // Mac uses command instead of control for the new tab action.
   bool is_mac = false;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   is_mac = true;
 #endif
 
@@ -301,7 +302,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, AllowlistedPopup_HasTracker) {
   // Is blocked by the popup blocker.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(content_settings::PageSpecificContentSettings::GetForFrame(
-                  web_contents->GetMainFrame())
+                  web_contents->GetPrimaryMainFrame())
                   ->IsContentBlocked(ContentSettingsType::POPUPS));
 
   // Click through to open the popup.
@@ -427,7 +428,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPopupTrackerBrowserTest,
   int active_index = browser()->tab_strip_model()->active_index();
   content::WebContentsDestroyedWatcher destroyed_watcher(popup);
   browser()->tab_strip_model()->CloseWebContentsAt(
-      active_index, TabStripModel::CLOSE_USER_GESTURE);
+      active_index, TabCloseTypes::CLOSE_USER_GESTURE);
   destroyed_watcher.Wait();
 
   auto* entry = ExpectAndGetEntry(first_url);
@@ -460,7 +461,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPopupTrackerBrowserTest,
   int active_index = browser()->tab_strip_model()->active_index();
   content::WebContentsDestroyedWatcher destroyed_watcher(popup);
   browser()->tab_strip_model()->CloseWebContentsAt(
-      active_index, TabStripModel::CLOSE_USER_GESTURE);
+      active_index, TabCloseTypes::CLOSE_USER_GESTURE);
   destroyed_watcher.Wait();
 
   auto* entry = ExpectAndGetEntry(first_url);
@@ -506,7 +507,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPopupTrackerBrowserTest,
     int active_index = browser()->tab_strip_model()->active_index();
     content::WebContentsDestroyedWatcher destroyed_watcher(popup);
     browser()->tab_strip_model()->CloseWebContentsAt(
-        active_index, TabStripModel::CLOSE_USER_GESTURE);
+        active_index, TabCloseTypes::CLOSE_USER_GESTURE);
     destroyed_watcher.Wait();
   }
 
@@ -543,7 +544,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, PopupInTab_IsWindowFalse) {
   int active_index = browser()->tab_strip_model()->active_index();
   content::WebContentsDestroyedWatcher destroyed_watcher(popup);
   browser()->tab_strip_model()->CloseWebContentsAt(
-      active_index, TabStripModel::CLOSE_USER_GESTURE);
+      active_index, TabCloseTypes::CLOSE_USER_GESTURE);
   destroyed_watcher.Wait();
 
   auto* entry = ExpectAndGetEntry(first_url);
@@ -553,7 +554,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, PopupInTab_IsWindowFalse) {
 }
 
 // TODO(crbug.com/1178846): Test is flaky on Linux.
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_PopupInWindow_IsWindowTrue DISABLED_PopupInWindow_IsWindowTrue
 #else
 #define MAYBE_PopupInWindow_IsWindowTrue PopupInWindow_IsWindowTrue
@@ -583,7 +584,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
   int active_index = created_browser->tab_strip_model()->active_index();
   content::WebContentsDestroyedWatcher destroyed_watcher(popup);
   created_browser->tab_strip_model()->CloseWebContentsAt(
-      active_index, TabStripModel::CLOSE_USER_GESTURE);
+      active_index, TabCloseTypes::CLOSE_USER_GESTURE);
   destroyed_watcher.Wait();
 
   auto* entry = ExpectAndGetEntry(first_url);
@@ -593,7 +594,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
 }
 
 // TODO(crbug.com/1146598): Test is flaky on Lacros, Linux Ozone Wayland.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_PopupNoRedirect_RedirectCountZero DISABLED_PopupNoRedirect_RedirectCountZero
 #else
 #define MAYBE_PopupNoRedirect_RedirectCountZero PopupNoRedirect_RedirectCountZero
@@ -623,7 +624,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
   int active_index = created_browser->tab_strip_model()->active_index();
   content::WebContentsDestroyedWatcher destroyed_watcher(popup);
   created_browser->tab_strip_model()->CloseWebContentsAt(
-      active_index, TabStripModel::CLOSE_USER_GESTURE);
+      active_index, TabCloseTypes::CLOSE_USER_GESTURE);
   destroyed_watcher.Wait();
 
   auto* entry = ExpectAndGetEntry(first_url);
@@ -640,7 +641,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
                        MAYBE_PopupRedirectsTwice_RedirectCountTwo) {
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   {
     auto* command_line = base::CommandLine::ForCurrentProcess();
     if (command_line->HasSwitch(switches::kOzonePlatform) &&
@@ -678,7 +679,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
   int active_index = created_browser->tab_strip_model()->active_index();
   content::WebContentsDestroyedWatcher destroyed_watcher(popup);
   created_browser->tab_strip_model()->CloseWebContentsAt(
-      active_index, TabStripModel::CLOSE_USER_GESTURE);
+      active_index, TabCloseTypes::CLOSE_USER_GESTURE);
   destroyed_watcher.Wait();
 
   auto* entry = ExpectAndGetEntry(first_url);
@@ -686,7 +687,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
 }
 
 // TODO(crbug.com/1179859): Test is flaky on Windows, Linux and Lacros.
-#if defined(OS_LINUX) || defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_PopupJavascriptRenavigation_RedirectCountZero \
   DISABLED_PopupJavascriptRenavigation_RedirectCountZero
 #else
@@ -722,7 +723,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
   int active_index = created_browser->tab_strip_model()->active_index();
   content::WebContentsDestroyedWatcher destroyed_watcher(popup);
   created_browser->tab_strip_model()->CloseWebContentsAt(
-      active_index, TabStripModel::CLOSE_USER_GESTURE);
+      active_index, TabCloseTypes::CLOSE_USER_GESTURE);
   destroyed_watcher.Wait();
 
   auto* entry = ExpectAndGetEntry(first_url);

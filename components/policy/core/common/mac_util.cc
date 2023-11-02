@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,8 +39,10 @@ void DictionaryEntryToValue(const void* key, const void* value, void* context) {
 void ArrayEntryToValue(const void* value, void* context) {
   std::unique_ptr<base::Value> converted =
       PropertyToValue(static_cast<CFPropertyListRef>(value));
-  if (converted)
-    static_cast<base::ListValue*>(context)->Append(std::move(converted));
+  if (converted) {
+    static_cast<base::ListValue*>(context)->GetList().Append(
+        base::Value::FromUniquePtrValue(std::move(converted)));
+  }
 }
 
 }  // namespace

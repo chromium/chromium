@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
 #include "base/lazy_instance.h"
+#include "base/time/time.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/picture_layer.h"
 #include "content/public/browser/android/compositor.h"
@@ -45,13 +46,13 @@ ContentViewRenderView::ContentViewRenderView(JNIEnv* env,
 }
 
 ContentViewRenderView::~ContentViewRenderView() {
-  DCHECK(height_changed_listener_.is_null());
+  DCHECK(content_height_changed_listener_.is_null());
 }
 
-void ContentViewRenderView::SetHeightChangedListener(
+void ContentViewRenderView::SetContentHeightChangedListener(
     base::RepeatingClosure callback) {
-  DCHECK(height_changed_listener_.is_null() || callback.is_null());
-  height_changed_listener_ = std::move(callback);
+  DCHECK(content_height_changed_listener_.is_null() || callback.is_null());
+  content_height_changed_listener_ = std::move(callback);
 }
 
 // static
@@ -90,14 +91,21 @@ void ContentViewRenderView::SetCurrentWebContents(
     root_container_layer_->AddChild(web_contents_layer_);
 }
 
+void ContentViewRenderView::OnViewportSizeChanged(JNIEnv* env,
+                                                  jint width,
+                                                  jint height) {
+  bool content_height_changed = content_height_ != height;
+  content_height_ = height;
+  if (content_height_changed && !content_height_changed_listener_.is_null())
+    content_height_changed_listener_.Run();
+}
+
 void ContentViewRenderView::OnPhysicalBackingSizeChanged(
     JNIEnv* env,
     const JavaParamRef<jobject>& jweb_contents,
     jint width,
     jint height,
     jboolean for_config_change) {
-  bool height_changed = height_ != height;
-  height_ = height;
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   gfx::Size size(width, height);
@@ -114,9 +122,6 @@ void ContentViewRenderView::OnPhysicalBackingSizeChanged(
     override_deadline = base::TimeDelta();
   web_contents->GetNativeView()->OnPhysicalBackingSizeChanged(
       size, override_deadline);
-
-  if (height_changed && !height_changed_listener_.is_null())
-    height_changed_listener_.Run();
 }
 
 void ContentViewRenderView::SurfaceCreated(JNIEnv* env) {

@@ -1,0 +1,54 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//chromeos/ash/components/assistant/assistant.gni")
+
+assert(is_chromeos_ash, "Non Chrome OS builds cannot depend on //chromeos/ash")
+
+# C++ headers and sources that can be used outside assistant.
+component("cpp") {
+  output_name = "assistant_service_public"
+
+  defines = [ "IS_ASSISTANT_SERVICE_PUBLIC_IMPL" ]
+
+  sources = [
+    "assistant_browser_delegate.cc",
+    "assistant_browser_delegate.h",
+    "assistant_enums.h",
+    "assistant_prefs.cc",
+    "assistant_prefs.h",
+    "assistant_service.cc",
+    "assistant_service.h",
+    "assistant_settings.cc",
+    "assistant_settings.h",
+    "conversation_observer.cc",
+    "conversation_observer.h",
+    "device_actions.cc",
+    "device_actions.h",
+    "features.cc",
+    "features.h",
+    "switches.cc",
+    "switches.h",
+  ]
+
+  public_deps = [
+    "//ash/constants",
+    "//ash/public/mojom",
+    "//chromeos/ash/services/assistant/public/mojom",
+    "//chromeos/ash/services/libassistant/public/cpp:structs",
+    "//chromeos/ash/services/libassistant/public/mojom",
+    "//chromeos/services/assistant/public/shared",
+    "//chromeos/services/network_config/public/mojom",
+    "//services/audio/public/mojom",
+    "//services/device/public/mojom",
+    "//services/media_session/public/mojom",
+    "//ui/accessibility/mojom",
+  ]
+
+  deps = [
+    "//chromeos/ash/components/assistant:buildflags",
+    "//components/prefs",
+  ]
+}

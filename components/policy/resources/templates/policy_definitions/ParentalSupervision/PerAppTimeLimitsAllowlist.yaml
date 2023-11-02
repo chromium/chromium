@@ -1,0 +1,55 @@
+caption: Per-App Time Limits Allowlist
+desc: "This policy specifies which applications and URLs should be allowed for per-app\
+  \ usage restrictions.\n        The configured allowlist is applied to the apps installed\
+  \ on <ph name=\"PRODUCT_OS_NAME\">$2<ex>Google ChromeOS</ex></ph> for the given\
+  \ user with per-app time limits.\n        The configured allowlist can only be applied\
+  \ to child user accounts and take effect when <ph name=\"PER_APP_TIME_LIMITS_POLICY_NAME\"\
+  >PerAppTimeLimits</ph> policy is set.\n        The configured allowlist is applied\
+  \ to applications and URLs so that they will not be blocked by per-app time limits.\n\
+  \        Accessing allowed URLs will not count towards the chrome time limit.\n\
+  \        Add url regular expressions to |url_list| to allow urls that match any\
+  \ of the regular expressions in the list.\n        Add an application with its |app_id|\
+  \ and |app_type| to |app_list| to allow the application.\n       "
+example_value:
+  app_list:
+  - app_id: pjkljhegncpnkpknbcohdijeoejaedia
+    app_type: EXTENSION
+  - app_id: iniodglblcgmngkgdipeiclkdjjpnlbn
+    app_type: BUILT-IN
+  url_list:
+  - chrome://*
+  - file://*
+  - https://www.support.google.com
+  - https://www.policies.google.com
+features:
+  dynamic_refresh: true
+  per_profile: false
+owners:
+- yilkal@chromium.org
+- cros-families-eng@google.com
+schema:
+  properties:
+    app_list:
+      items:
+        properties:
+          app_id:
+            type: string
+          app_type:
+            enum:
+            - ARC
+            - BUILT-IN
+            - EXTENSION
+            - WEB
+            - CROSTINI
+            type: string
+        type: object
+      type: array
+    url_list:
+      items:
+        type: string
+      type: array
+  type: object
+supported_on:
+- 'chrome_os: 86-'
+tags: []
+type: dict

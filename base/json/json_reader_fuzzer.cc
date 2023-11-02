@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,19 +23,19 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   const int options = data[size - 1];
 
-  JSONReader::ValueWithError json_val =
+  auto json_val =
       JSONReader::ReadAndReturnValueWithError(input_string, options);
-  if (json_val.value) {
+  if (json_val.has_value()) {
     // Check that the value can be serialized and deserialized back to an
     // equivalent |Value|.
-    const Value& value = json_val.value.value();
+    const Value& value = *json_val;
     std::string serialized;
     CHECK(JSONWriter::Write(value, &serialized));
 
     absl::optional<Value> deserialized =
         JSONReader::Read(StringPiece(serialized));
     CHECK(deserialized);
-    CHECK(value.Equals(&deserialized.value()));
+    CHECK_EQ(value, deserialized.value());
   }
 
   return 0;

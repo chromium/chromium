@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,57 +34,50 @@ TEST(BluetoothAdvertisementTest, DataMembersAreAssignedCorrectly) {
       BluetoothAdvertisement::ADVERTISEMENT_TYPE_BROADCAST);
   ASSERT_EQ(data.type(), BluetoothAdvertisement::ADVERTISEMENT_TYPE_BROADCAST);
 
-  // Try without assiging Service UUID.
-  ASSERT_FALSE(data.service_uuids().get());
+  // Try without assigning Service UUID.
+  ASSERT_FALSE(data.service_uuids());
   // Assign Service UUID.
-  data.set_service_uuids(
-      std::make_unique<BluetoothAdvertisement::UUIDList>(uuids));
+  data.set_service_uuids(uuids);
   // Retrieve Service UUID.
   ASSERT_EQ(*data.service_uuids(), uuids);
   // Retrieve again.
-  ASSERT_FALSE(data.service_uuids().get());
+  ASSERT_FALSE(data.service_uuids());
 
   // Try without assigning Manufacturer Data.
-  ASSERT_FALSE(data.manufacturer_data().get());
+  ASSERT_FALSE(data.manufacturer_data());
   // Assign Manufacturer Data.
-  data.set_manufacturer_data(
-      std::make_unique<BluetoothAdvertisement::ManufacturerData>(
-          manufacturer_data));
+  data.set_manufacturer_data(manufacturer_data);
   // Retrieve Manufacturer Data.
   ASSERT_EQ(*data.manufacturer_data(), manufacturer_data);
   // Retrieve again.
-  ASSERT_FALSE(data.manufacturer_data().get());
+  ASSERT_FALSE(data.manufacturer_data());
 
   // Try without assigning Solicit UUIDs.
-  ASSERT_FALSE(data.solicit_uuids().get());
+  ASSERT_FALSE(data.solicit_uuids());
   // Assign Solicit UUIDs.
-  data.set_solicit_uuids(
-      std::make_unique<BluetoothAdvertisement::UUIDList>(uuids));
+  data.set_solicit_uuids(uuids);
   // Retrieve Solicit UUIDs.
   ASSERT_EQ(*data.solicit_uuids(), uuids);
-  // Retieve again.
-  ASSERT_FALSE(data.solicit_uuids().get());
+  // Retrieve again.
+  ASSERT_FALSE(data.solicit_uuids());
 
   // Try without assigning Service Data.
-  ASSERT_FALSE(data.service_data().get());
+  ASSERT_FALSE(data.service_data());
   // Assign Service Data.
-  data.set_service_data(
-      std::make_unique<BluetoothAdvertisement::ServiceData>(service_data));
+  data.set_service_data(service_data);
   // Retrieve Service Data.
   ASSERT_EQ(*data.service_data(), service_data);
   // Retrieve again.
-  ASSERT_FALSE(data.service_data().get());
+  ASSERT_FALSE(data.service_data());
 
   // Try without assigning Scan Response Data.
-  ASSERT_FALSE(data.scan_response_data().get());
+  ASSERT_FALSE(data.scan_response_data());
   // Assign Service Data.
-  data.set_scan_response_data(
-      std::make_unique<BluetoothAdvertisement::ScanResponseData>(
-          scan_response_data));
+  data.set_scan_response_data(scan_response_data);
   // Retrieve Service Data.
   ASSERT_EQ(*data.scan_response_data(), scan_response_data);
   // Retrieve again.
-  ASSERT_FALSE(data.scan_response_data().get());
+  ASSERT_FALSE(data.scan_response_data());
 }
 
 }  // namespace

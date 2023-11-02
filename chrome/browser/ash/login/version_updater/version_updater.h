@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,10 +13,8 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ash/login/version_updater/update_time_estimator.h"
-#include "chromeos/dbus/update_engine/update_engine_client.h"
-#include "chromeos/network/portal_detector/network_portal_detector.h"
-// TODO(https://crbug.com/1164001): move to forward declaration when migrated.
-#include "chromeos/network/network_state.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 
 namespace base {
 class DefaultTickClock;
@@ -24,16 +22,19 @@ class DefaultTickClock;
 
 namespace ash {
 
+class NetworkState;
+
 // Tries to update system, interacting with UpdateEnglineClient and
 // NetworkPortalDetector. Uses callbacks - methods of `delegate_`, which may
 // interact with user, change UI etc.
 class VersionUpdater : public UpdateEngineClient::Observer,
-                       public NetworkPortalDetector::Observer {
+                       public NetworkStateHandlerObserver {
  public:
   enum class Result {
     UPDATE_NOT_REQUIRED,
     UPDATE_ERROR,
     UPDATE_SKIPPED,
+    UPDATE_OPT_OUT_INFO_SHOWN,
   };
 
   enum class State {
@@ -97,10 +98,9 @@ class VersionUpdater : public UpdateEngineClient::Observer,
     virtual void OnWaitForRebootTimeElapsed() = 0;
     // Called before update check starts.
     virtual void PrepareForUpdateCheck() = 0;
-    virtual void UpdateErrorMessage(
-        const NetworkPortalDetector::CaptivePortalStatus status,
-        const NetworkError::ErrorState& error_state,
-        const std::string& network_name) = 0;
+    virtual void UpdateErrorMessage(NetworkState::PortalState state,
+                                    NetworkError::ErrorState error_state,
+                                    const std::string& network_name) = 0;
     virtual void ShowErrorMessage() = 0;
     virtual void DelayErrorMessage() = 0;
   };
@@ -156,16 +156,16 @@ class VersionUpdater : public UpdateEngineClient::Observer,
   // UpdateEngineClient::Observer implementation:
   void UpdateStatusChanged(const update_engine::StatusResult& status) override;
 
-  // NetworkPortalDetector::Observer implementation:
-  void OnPortalDetectionCompleted(
-      const NetworkState* network,
-      const NetworkPortalDetector::CaptivePortalStatus status) override;
+  // NetworkStateHandlerObserver implementation:
+  void PortalStateChanged(
+      const NetworkState* default_network,
+      const NetworkState::PortalState portal_state) override;
+  void OnShuttingDown() override;
 
   void OnWaitForRebootTimeElapsed();
 
-  void UpdateErrorMessage(
-      const NetworkState* network,
-      const NetworkPortalDetector::CaptivePortalStatus status);
+  void UpdateErrorMessage(const NetworkState* network,
+                          NetworkState::PortalState state);
 
   // Callback to UpdateEngineClient::SetUpdateOverCellularOneTimePermission
   // called in response to user confirming that the OS update can proceed
@@ -189,10 +189,6 @@ class VersionUpdater : public UpdateEngineClient::Observer,
   // automatically. If reboot didn't happen during this interval, ask user to
   // reboot device manually.
   base::TimeDelta wait_for_reboot_time_;
-
-  // True if there was no notification from NetworkPortalDetector
-  // about state for the default network.
-  bool is_first_detection_notification_ = true;
 
   // Ignore fist IDLE status that is sent before VersionUpdater initiated check.
   bool ignore_idle_status_ = true;

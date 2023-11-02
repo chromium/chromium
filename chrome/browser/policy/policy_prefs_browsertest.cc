@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,6 +31,7 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/prefs/pref_service.h"
+#include "components/variations/variations_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -42,7 +43,13 @@
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/toolbar_manager_test_helper_android.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace policy {
+
+const size_t kNumChunks = 8;
 
 namespace {
 
@@ -52,6 +59,15 @@ base::FilePath GetTestCasePath() {
   base::PathService::Get(chrome::DIR_TEST_DATA, &path);
   return path.Append(FILE_PATH_LITERAL("policy"))
       .Append(FILE_PATH_LITERAL("policy_test_cases.json"));
+}
+
+size_t GetNumChunks() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kPolicyToPrefMappingsFilterSwitch)) {
+    // Run as one chunk when test filter specified.
+    return 1;
+  }
+  return kNumChunks;
 }
 
 }  // namespace
@@ -72,6 +88,12 @@ class PolicyPrefsTest : public PlatformBrowserTest {
 
  protected:
   void SetUpInProcessBrowserTestFixture() override {
+    // Some policies default value might depend on features, enforce use of
+    // field trial testing config to avoid having unexpected results based on
+    // new feature flags coming from the server (e.g. on Chrome-branded CI
+    // bots).
+    variations::EnableTestingConfig();
+
     GetMockPolicyProvider()->SetDefaultReturns(
         true /* is_initialization_complete_return */,
         true /* is_first_policy_load_complete_return */);
@@ -87,7 +109,7 @@ class PolicyPrefsTest : public PlatformBrowserTest {
   }
 
   MockConfigurationPolicyProvider* GetMockPolicyProvider() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Trying to delete the mock provider on Android leads to a cascade of
     // crashes due to ChromeBrowserPolicyConnector and ProfileImpl not being
     // deleted. Those crashes are caused by checks that ensure that observer
@@ -104,30 +126,65 @@ class PolicyPrefsTest : public PlatformBrowserTest {
     // by ChromeBrowserPolicyConnector and ProfileImpl destructors. Thus it's
     // safe to define a provider object that is deleted on scope destruction.
     return &provider_;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   testing::NiceMock<MockConfigurationPolicyProvider> provider_;
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
+
+// Splits the test cases into `kNumChunks` and the testing parameter determines
+// the index of the current chunk. This prevents the test from timing out when
+// testing all test cases in a single browser test.
+class ChunkedPolicyPrefsTest : public PolicyPrefsTest,
+                               public ::testing::WithParamInterface<size_t> {
+ public:
+  ChunkedPolicyPrefsTest();
+  ChunkedPolicyPrefsTest(const ChunkedPolicyPrefsTest&) = delete;
+  ChunkedPolicyPrefsTest& operator=(const ChunkedPolicyPrefsTest&) = delete;
+  ~ChunkedPolicyPrefsTest() override = default;
+
+ protected:
+  PrefMappingChunkInfo chunk_info_{GetParam(), GetNumChunks()};
+};
+
+ChunkedPolicyPrefsTest::ChunkedPolicyPrefsTest() {
+#if BUILDFLAG(IS_ANDROID)
+  // Skips recreating the Android activity when homepage settings are changed.
+  // This happens when the feature chrome::android::kStartSurfaceAndroid is
+  // enabled.
+  toolbar_manager::setSkipRecreateForTesting(true);
+#endif  // BUILDFLAG(IS_ANDROID)
+}
 
 // Verifies that policies make their corresponding preferences become managed,
 // and that the user can't override that setting.
-IN_PROC_BROWSER_TEST_F(PolicyPrefsTest, PolicyToPrefsMapping) {
+// README SHERIFFs: This test encapsulates a whole suite of individual browser
+// tests for performance reasons and therefore has an increased chance of
+// failure/flakiness.
+// IMPORTANT: Please add hendrich@chromium.org on any related bugs when
+// disabling this test.
+IN_PROC_BROWSER_TEST_P(ChunkedPolicyPrefsTest, PolicyToPrefsMapping) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   policy::FakeBrowserDMTokenStorage storage;
   policy::BrowserDMTokenStorage::SetForTesting(&storage);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   PrefService* local_state = g_browser_process->local_state();
-  PrefService* user_prefs =
-      ProfileManager::GetActiveUserProfile()->GetOriginalProfile()->GetPrefs();
+  PrefService* user_prefs = ProfileManager::GetLastUsedProfileIfLoaded()
+                                ->GetOriginalProfile()
+                                ->GetPrefs();
 
   VerifyPolicyToPrefMappings(GetTestCasePath(), local_state, user_prefs,
                              /* signin_profile_prefs= */ nullptr,
-                             GetMockPolicyProvider());
+                             GetMockPolicyProvider(), &chunk_info_);
 }
+
+INSTANTIATE_TEST_SUITE_P(Chunked,
+                         ChunkedPolicyPrefsTest,
+                         ::testing::Range(/* start= */ static_cast<size_t>(0),
+                                          /* end= */ GetNumChunks()));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -144,14 +201,14 @@ class SigninPolicyPrefsTest : public PolicyPrefsTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PolicyPrefsTest::SetUpCommandLine(command_line);
 
-    command_line->AppendSwitch(chromeos::switches::kLoginManager);
-    command_line->AppendSwitch(chromeos::switches::kForceLoginManagerInTests);
+    command_line->AppendSwitch(ash::switches::kLoginManager);
+    command_line->AppendSwitch(ash::switches::kForceLoginManagerInTests);
   }
 };
 
 IN_PROC_BROWSER_TEST_F(SigninPolicyPrefsTest, PolicyToPrefsMapping) {
   PrefService* signin_profile_prefs =
-      chromeos::ProfileHelper::GetSigninProfile()->GetPrefs();
+      ash::ProfileHelper::GetSigninProfile()->GetPrefs();
 
   // Only checking signin_profile_prefs here since |local_state| is already
   // checked by PolicyPrefsTest.PolicyToPrefsMapping test.

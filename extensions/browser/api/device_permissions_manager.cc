@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -93,33 +93,28 @@ void SaveDevicePermissionEntry(BrowserContext* context,
                                scoped_refptr<DevicePermissionEntry> entry) {
   ExtensionPrefs* prefs = ExtensionPrefs::Get(context);
   ExtensionPrefs::ScopedListUpdate update(prefs, extension_id, kDevices);
-  base::ListValue* devices = update.Get();
-  if (!devices) {
-    devices = update.Create();
-  }
+  base::Value::List* devices = update.Ensure();
 
   base::Value device_entry(entry->ToValue());
-  // TODO(crbug.com/1187106): Use base::Contains once |devices| not a ListValue.
-  DCHECK(std::find(devices->GetList().begin(), devices->GetList().end(),
-                   device_entry) == devices->GetList().end());
+  DCHECK(!base::Contains(*devices, device_entry));
   devices->Append(std::move(device_entry));
 }
 
-bool MatchesDevicePermissionEntry(const base::DictionaryValue* value,
+bool MatchesDevicePermissionEntry(const base::Value::Dict& value,
                                   scoped_refptr<DevicePermissionEntry> entry) {
-  const std::string* type = value->FindStringKey(kDeviceType);
+  const std::string* type = value.FindString(kDeviceType);
   if (!type || *type != TypeToString(entry->type())) {
     return false;
   }
-  absl::optional<int> vendor_id = value->FindIntKey(kDeviceVendorId);
+  absl::optional<int> vendor_id = value.FindInt(kDeviceVendorId);
   if (!vendor_id || vendor_id.value() != entry->vendor_id()) {
     return false;
   }
-  absl::optional<int> product_id = value->FindIntKey(kDeviceProductId);
+  absl::optional<int> product_id = value.FindInt(kDeviceProductId);
   if (!product_id || product_id.value() != entry->product_id()) {
     return false;
   }
-  const std::string* serial_number = value->FindStringKey(kDeviceSerialNumber);
+  const std::string* serial_number = value.FindString(kDeviceSerialNumber);
   if (!serial_number ||
       base::UTF8ToUTF16(*serial_number) != entry->serial_number()) {
     return false;
@@ -134,22 +129,16 @@ void UpdateDevicePermissionEntry(BrowserContext* context,
                                  scoped_refptr<DevicePermissionEntry> entry) {
   ExtensionPrefs* prefs = ExtensionPrefs::Get(context);
   ExtensionPrefs::ScopedListUpdate update(prefs, extension_id, kDevices);
-  base::ListValue* devices = update.Get();
-  if (!devices) {
-    return;
-  }
+  base::Value::List* devices = update.Ensure();
 
-  for (auto it = devices->GetList().begin(); it != devices->GetList().end();
-       ++it) {
-    base::DictionaryValue* dict_value;
-    if (!it->GetAsDictionary(&dict_value)) {
+  for (auto& value : *devices) {
+    if (!value.is_dict())
       continue;
-    }
-    if (!MatchesDevicePermissionEntry(dict_value, entry)) {
+    if (!MatchesDevicePermissionEntry(value.GetDict(), entry)) {
       continue;
     }
 
-    *it = entry->ToValue();
+    value = entry->ToValue();
     break;
   }
 }
@@ -160,21 +149,18 @@ void RemoveDevicePermissionEntry(BrowserContext* context,
                                  scoped_refptr<DevicePermissionEntry> entry) {
   ExtensionPrefs* prefs = ExtensionPrefs::Get(context);
   ExtensionPrefs::ScopedListUpdate update(prefs, extension_id, kDevices);
-  base::ListValue* devices = update.Get();
+  base::Value::List* devices = update.Get();
   if (!devices) {
     return;
   }
 
-  for (auto it = devices->GetList().begin(); it != devices->GetList().end();
-       ++it) {
-    base::DictionaryValue* dict_value;
-    if (!it->GetAsDictionary(&dict_value)) {
+  for (auto it = devices->begin(); it != devices->end(); ++it) {
+    if (!it->is_dict())
+      continue;
+    if (!MatchesDevicePermissionEntry(it->GetDict(), entry)) {
       continue;
     }
-    if (!MatchesDevicePermissionEntry(dict_value, entry)) {
-      continue;
-    }
-    devices->EraseListIter(it);
+    devices->erase(it);
     break;
   }
 }
@@ -186,49 +172,48 @@ void ClearDevicePermissionEntries(ExtensionPrefs* prefs,
 }
 
 scoped_refptr<DevicePermissionEntry> ReadDevicePermissionEntry(
-    const base::DictionaryValue* entry) {
-  absl::optional<int> vendor_id = entry->FindIntKey(kDeviceVendorId);
+    const base::Value::Dict& entry) {
+  absl::optional<int> vendor_id = entry.FindInt(kDeviceVendorId);
   if (!vendor_id || vendor_id.value() < 0 ||
       vendor_id.value() > static_cast<int>(UINT16_MAX)) {
     return nullptr;
   }
 
-  absl::optional<int> product_id = entry->FindIntKey(kDeviceProductId);
+  absl::optional<int> product_id = entry.FindInt(kDeviceProductId);
   if (!product_id || product_id.value() < 0 ||
       product_id.value() > static_cast<int>(UINT16_MAX)) {
     return nullptr;
   }
 
-  const std::string* serial_number_ptr =
-      entry->FindStringKey(kDeviceSerialNumber);
+  const std::string* serial_number_ptr = entry.FindString(kDeviceSerialNumber);
   if (!serial_number_ptr)
     return nullptr;
   std::u16string serial_number = base::UTF8ToUTF16(*serial_number_ptr);
   std::u16string manufacturer_string;
   // Ignore failure as this string is optional.
   const std::string* manufacturer_ptr =
-      entry->FindStringKey(kDeviceManufacturerString);
+      entry.FindString(kDeviceManufacturerString);
   if (manufacturer_ptr) {
     manufacturer_string = base::UTF8ToUTF16(*manufacturer_ptr);
   }
 
   std::u16string product_string;
   // Ignore failure as this string is optional.
-  const std::string* product_ptr = entry->FindStringKey(kDeviceProductString);
+  const std::string* product_ptr = entry.FindString(kDeviceProductString);
   if (product_ptr) {
     product_string = base::UTF8ToUTF16(*product_ptr);
   }
 
   // If a last used time is not stored in ExtensionPrefs last_used.is_null()
   // will be true.
-  const std::string* last_used_ptr = entry->FindStringKey(kDeviceLastUsed);
+  const std::string* last_used_ptr = entry.FindString(kDeviceLastUsed);
   int64_t last_used_i64 = 0;
   base::Time last_used;
   if (last_used_ptr && base::StringToInt64(*last_used_ptr, &last_used_i64)) {
     last_used = base::Time::FromInternalValue(last_used_i64);
   }
 
-  const std::string* device_type_ptr = entry->FindStringKey(kDeviceType);
+  const std::string* device_type_ptr = entry.FindString(kDeviceType);
   if (!device_type_ptr)
     return nullptr;
 
@@ -249,19 +234,16 @@ std::set<scoped_refptr<DevicePermissionEntry>> GetDevicePermissionEntries(
     ExtensionPrefs* prefs,
     const std::string& extension_id) {
   std::set<scoped_refptr<DevicePermissionEntry>> result;
-  const base::ListValue* devices = NULL;
+  const base::ListValue* devices = nullptr;
   if (!prefs->ReadPrefAsList(extension_id, kDevices, &devices)) {
     return result;
   }
 
   for (const auto& entry : devices->GetList()) {
-    const base::DictionaryValue* entry_dict;
-    if (entry.GetAsDictionary(&entry_dict)) {
+    if (entry.is_dict()) {
       scoped_refptr<DevicePermissionEntry> device_entry =
-          ReadDevicePermissionEntry(entry_dict);
-      if (entry_dict) {
-        result.insert(device_entry);
-      }
+          ReadDevicePermissionEntry(entry.GetDict());
+      result.insert(device_entry);
     }
   }
   return result;
@@ -653,7 +635,7 @@ DevicePermissions* DevicePermissionsManager::GetInternal(
     return it->second;
   }
 
-  return NULL;
+  return nullptr;
 }
 
 void DevicePermissionsManager::RemoveEntryByDeviceGUID(

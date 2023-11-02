@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/time/time.h"
-#include "media/mojo/mojom/speech_recognition_service.mojom.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Requires cleanup. See crbug.com/800374.
@@ -23,6 +23,8 @@ enum SpeechRecognizerStatus {
   SPEECH_RECOGNIZER_IN_SPEECH,
   // There was an error.
   SPEECH_RECOGNIZER_ERROR,
+  // Stopping speech recognition.
+  SPEECH_RECOGNITION_STOPPING
 };
 
 // Delegate for speech recognizer. All methods are called from the thread on
@@ -45,6 +47,9 @@ class SpeechRecognizerDelegate {
   // Invoked when the state of speech recognition is changed.
   virtual void OnSpeechRecognitionStateChanged(
       SpeechRecognizerStatus new_state) = 0;
+
+  // Invoked when the speech recognition has stopped.
+  virtual void OnSpeechRecognitionStopped() = 0;
 
  protected:
   virtual ~SpeechRecognizerDelegate() {}

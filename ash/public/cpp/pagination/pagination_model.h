@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,6 +32,12 @@ class ASH_PUBLIC_EXPORT PaginationModel : public views::AnimationDelegateViews {
 
     bool Equals(const Transition& rhs) const {
       return target_page == rhs.target_page && progress == rhs.progress;
+    }
+
+    std::string ToString() const {
+      std::stringstream ss;
+      ss << "Target Page: " << target_page << ", Progess: " << progress;
+      return ss.str();
     }
 
     // Target page for the transition or -1 if there is no target page. For
@@ -138,6 +144,9 @@ class ASH_PUBLIC_EXPORT PaginationModel : public views::AnimationDelegateViews {
   int selected_page_;
 
   Transition transition_;
+
+  // Whether a transition has started, but not yet ended.
+  bool is_transition_started_ = false;
 
   // Pending selected page when SelectedPage is called during a transition. If
   // multiple SelectPage is called while a transition is in progress, only the

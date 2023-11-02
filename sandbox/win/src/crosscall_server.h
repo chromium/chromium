@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "sandbox/win/src/crosscall_params.h"
 #include "sandbox/win/src/ipc_tags.h"
 
@@ -115,7 +115,7 @@ struct ClientInfo {
 // All IPC-related information to be passed to the IPC handler.
 struct IPCInfo {
   IpcTag ipc_tag;
-  const ClientInfo* client_info;
+  raw_ptr<const ClientInfo> client_info;
   CrossCallReturn return_info;
 };
 
@@ -137,7 +137,7 @@ struct IPCParams {
 // 2) When the  IPC finally obtains a valid Dispatcher the IPC
 //    implementation creates a CrossCallParamsEx from the raw IPC buffer.
 // 3) It calls the returned callback, with the IPC info and arguments.
-class Dispatcher {
+class [[clang::lto_visibility_public]] Dispatcher {
  public:
   // Called from the  IPC implementation to handle a specific IPC message.
   typedef bool (Dispatcher::*CallbackGeneric)();

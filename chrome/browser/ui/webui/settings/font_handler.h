@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,10 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
 class Profile;
-
-namespace base {
-class ListValue;
-}  // namespace base
 
 namespace settings {
 
@@ -36,11 +33,10 @@ class FontHandler : public SettingsPageUIHandler {
 
  private:
   // Handler for script asking for font information.
-  void HandleFetchFontsData(const base::ListValue* args);
+  void HandleFetchFontsData(const base::Value::List& args);
 
   // Callback to handle fonts loading.
-  void FontListHasLoaded(std::string callback_id,
-                         std::unique_ptr<base::ListValue> list);
+  void FontListHasLoaded(std::string callback_id, base::Value::List list);
 
   base::WeakPtrFactory<FontHandler> weak_ptr_factory_{this};
 };

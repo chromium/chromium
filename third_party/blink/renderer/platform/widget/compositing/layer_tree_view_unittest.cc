@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/test/fake_layer_tree_frame_sink.h"
 #include "cc/test/test_task_graph_runner.h"
@@ -26,6 +27,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/scheduler/test/web_fake_thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/dummy_schedulers.h"
+#include "third_party/blink/renderer/platform/scheduler/public/page_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/widget_scheduler.h"
 #include "third_party/blink/renderer/platform/widget/compositing/test/stub_layer_tree_view_delegate.h"
 
 using testing::AllOf;
@@ -122,11 +126,9 @@ class FakeLayerTreeViewDelegate : public StubLayerTreeViewDelegate {
 // the compositor (couldn't bind the output surface) are handled identically.
 class LayerTreeViewWithFrameSinkTracking : public LayerTreeView {
  public:
-  LayerTreeViewWithFrameSinkTracking(
-      FakeLayerTreeViewDelegate* delegate,
-      blink::scheduler::WebThreadScheduler* scheduler)
-      : LayerTreeView(delegate,
-                      scheduler),
+  LayerTreeViewWithFrameSinkTracking(FakeLayerTreeViewDelegate* delegate,
+                                     PageScheduler& scheduler)
+      : LayerTreeView(delegate, scheduler.CreateWidgetScheduler()),
         delegate_(delegate) {}
   LayerTreeViewWithFrameSinkTracking(
       const LayerTreeViewWithFrameSinkTracking&) = delete;
@@ -206,16 +208,13 @@ class LayerTreeViewWithFrameSinkTracking : public LayerTreeView {
 class LayerTreeViewWithFrameSinkTrackingTest : public testing::Test {
  public:
   LayerTreeViewWithFrameSinkTrackingTest()
-      : layer_tree_view_(
-            &layer_tree_view_delegate_,
-            &fake_thread_scheduler_) {
+      : dummy_page_scheduler_(scheduler::CreateDummyPageScheduler()),
+        layer_tree_view_(&layer_tree_view_delegate_, *dummy_page_scheduler_) {
     cc::LayerTreeSettings settings;
     settings.single_thread_proxy_scheduler = false;
     layer_tree_view_.Initialize(
         settings, blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
-        /*compositor_thread=*/nullptr, &test_task_graph_runner_,
-        /*main_thread_pipeline=*/nullptr,
-        /*compositor_thread_pipeline=*/nullptr);
+        /*compositor_thread=*/nullptr, &test_task_graph_runner_);
   }
   LayerTreeViewWithFrameSinkTrackingTest(
       const LayerTreeViewWithFrameSinkTrackingTest&) = delete;
@@ -259,7 +258,7 @@ class LayerTreeViewWithFrameSinkTrackingTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   cc::TestTaskGraphRunner test_task_graph_runner_;
-  blink::scheduler::WebFakeThreadScheduler fake_thread_scheduler_;
+  std::unique_ptr<PageScheduler> dummy_page_scheduler_;
   FakeLayerTreeViewDelegate layer_tree_view_delegate_;
   LayerTreeViewWithFrameSinkTracking layer_tree_view_;
 };
@@ -298,11 +297,9 @@ TEST_F(LayerTreeViewWithFrameSinkTrackingTest, FailWithLostContext) {
 
 class VisibilityTestLayerTreeView : public LayerTreeView {
  public:
-  VisibilityTestLayerTreeView(
-      StubLayerTreeViewDelegate* delegate,
-      blink::scheduler::WebThreadScheduler* scheduler)
-      : LayerTreeView(delegate,
-                      scheduler) {}
+  VisibilityTestLayerTreeView(StubLayerTreeViewDelegate* delegate,
+                              PageScheduler& scheduler)
+      : LayerTreeView(delegate, scheduler.CreateWidgetScheduler()) {}
 
   void RequestNewLayerTreeFrameSink() override {
     LayerTreeView::RequestNewLayerTreeFrameSink();
@@ -326,19 +323,16 @@ TEST(LayerTreeViewTest, VisibilityTest) {
   base::test::TaskEnvironment task_environment;
 
   cc::TestTaskGraphRunner test_task_graph_runner;
-  blink::scheduler::WebFakeThreadScheduler fake_thread_scheduler;
+  auto page_scheduler = scheduler::CreateDummyPageScheduler();
   // Synchronously callback with null FrameSink.
   StubLayerTreeViewDelegate layer_tree_view_delegate;
-  VisibilityTestLayerTreeView layer_tree_view(
-      &layer_tree_view_delegate,
-      &fake_thread_scheduler);
+  VisibilityTestLayerTreeView layer_tree_view(&layer_tree_view_delegate,
+                                              *page_scheduler);
 
   layer_tree_view.Initialize(
       cc::LayerTreeSettings(),
       blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
-      /*compositor_thread=*/nullptr, &test_task_graph_runner,
-      /*main_thread_pipeline=*/nullptr,
-      /*compositor_thread_pipeline=*/nullptr);
+      /*compositor_thread=*/nullptr, &test_task_graph_runner);
 
   {
     // Make one request and stop immediately while invisible.
@@ -375,17 +369,16 @@ TEST(LayerTreeViewTest, RunPresentationCallbackOnSuccess) {
   base::test::TaskEnvironment task_environment;
 
   cc::TestTaskGraphRunner test_task_graph_runner;
-  blink::scheduler::WebFakeThreadScheduler fake_thread_scheduler;
+  std::unique_ptr<PageScheduler> dummy_page_scheduler =
+      scheduler::CreateDummyPageScheduler();
   StubLayerTreeViewDelegate layer_tree_view_delegate;
   LayerTreeView layer_tree_view(&layer_tree_view_delegate,
-                                &fake_thread_scheduler);
+                                dummy_page_scheduler->CreateWidgetScheduler());
 
   layer_tree_view.Initialize(
       cc::LayerTreeSettings(),
       blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
-      /*compositor_thread=*/nullptr, &test_task_graph_runner,
-      /*main_thread_pipeline=*/nullptr,
-      /*compositor_thread_pipeline=*/nullptr);
+      /*compositor_thread=*/nullptr, &test_task_graph_runner);
 
   // Register a callback for frame 1.
   base::TimeTicks callback_timestamp;

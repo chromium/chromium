@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,69 +32,69 @@ SyncEngineContext::SyncEngineContext(
       remote_change_processor_(nullptr),
       ui_task_runner_(ui_task_runner),
       worker_task_runner_(worker_task_runner) {
-  sequence_checker_.DetachFromSequence();
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 SyncEngineContext::~SyncEngineContext() {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 drive::DriveServiceInterface* SyncEngineContext::GetDriveService() {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return drive_service_.get();
 }
 
 drive::DriveUploaderInterface* SyncEngineContext::GetDriveUploader() {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return drive_uploader_.get();
 }
 
 base::WeakPtr<TaskLogger> SyncEngineContext::GetTaskLogger() {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return task_logger_;
 }
 
 MetadataDatabase* SyncEngineContext::GetMetadataDatabase() {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return metadata_database_.get();
 }
 
 std::unique_ptr<MetadataDatabase> SyncEngineContext::PassMetadataDatabase() {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::move(metadata_database_);
 }
 
 RemoteChangeProcessor* SyncEngineContext::GetRemoteChangeProcessor() {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return remote_change_processor_;
 }
 
 base::SingleThreadTaskRunner* SyncEngineContext::GetUITaskRunner() {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return ui_task_runner_.get();
 }
 
 base::SequencedTaskRunner* SyncEngineContext::GetWorkerTaskRunner() {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return worker_task_runner_.get();
 }
 
 void SyncEngineContext::SetMetadataDatabase(
     std::unique_ptr<MetadataDatabase> metadata_database) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (metadata_database)
     metadata_database_ = std::move(metadata_database);
 }
 
 void SyncEngineContext::SetRemoteChangeProcessor(
     RemoteChangeProcessor* remote_change_processor) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(remote_change_processor);
   remote_change_processor_ = remote_change_processor;
 }
 
 void SyncEngineContext::DetachFromSequence() {
-  sequence_checker_.DetachFromSequence();
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 }  // namespace drive_backend

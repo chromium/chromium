@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/unguessable_token.h"
 #include "components/prefs/testing_pref_service.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "media/mojo/services/mojo_media_drm_storage.h"
@@ -100,7 +101,7 @@ class MediaDrmStorageImplTest : public content::RenderViewHostTestHarness {
         std::move(pending_media_drm_storage));
 
     // The created object will be destroyed on connection error.
-    new MediaDrmStorageImpl(rfh, pref_service_.get(),
+    new MediaDrmStorageImpl(*rfh, pref_service_.get(),
                             std::move(get_origin_id_cb),
                             std::move(allow_empty_cb), std::move(receiver));
 
@@ -122,16 +123,16 @@ class MediaDrmStorageImplTest : public content::RenderViewHostTestHarness {
     base::RunLoop().RunUntilIdle();
 
     // Verify the origin dictionary is created.
-    const base::DictionaryValue* storage_dict =
-        pref_service_->GetDictionary(prefs::kMediaDrmStorage);
-    EXPECT_TRUE(storage_dict->FindKey(kTestOrigin));
+    const base::Value::Dict& storage_dict =
+        pref_service_->GetDict(prefs::kMediaDrmStorage);
+    EXPECT_TRUE(storage_dict.Find(kTestOrigin));
 
     DCHECK(*origin_id);
     return media_drm_storage;
   }
 
   content::RenderFrameHost* SimulateNavigation(const GURL& url) {
-    content::RenderFrameHost* rfh = web_contents()->GetMainFrame();
+    content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
     content::RenderFrameHostTester::For(rfh)->InitializeRenderFrameIfNeeded();
 
     auto navigation_simulator =
@@ -290,9 +291,9 @@ TEST_F(MediaDrmStorageImplTest, OnProvisioned) {
   base::RunLoop().RunUntilIdle();
 
   // Verify the origin dictionary is created.
-  const base::DictionaryValue* storage_dict =
-      pref_service_->GetDictionary(prefs::kMediaDrmStorage);
-  EXPECT_TRUE(storage_dict->FindKey(kTestOrigin));
+  const base::Value::Dict& storage_dict =
+      pref_service_->GetDict(prefs::kMediaDrmStorage);
+  EXPECT_TRUE(storage_dict.Find(kTestOrigin));
 }
 
 TEST_F(MediaDrmStorageImplTest, OnProvisioned_Twice) {

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -226,7 +226,7 @@ TEST_F(InMemoryDownloadTest, RedirectResponseHeaders) {
 
   // The size must match for download as stream from SimpleUrlLoader.
   network::URLLoaderCompletionStatus status;
-  status.decoded_body_length = base::size(kTestDownloadData) - 1;
+  status.decoded_body_length = std::size(kTestDownloadData) - 1;
 
   url_loader_factory()->AddResponse(request_params.url, response_head.Clone(),
                                     kTestDownloadData, status,

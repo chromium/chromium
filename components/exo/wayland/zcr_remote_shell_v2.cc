@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -57,7 +57,6 @@ const WaylandRemoteShellEventMapping wayland_remote_shell_event_mapping_v2 = {
     ZCR_REMOTE_SHELL_V2_DESKTOP_FOCUS_STATE_CHANGED_SINCE_VERSION,
     ZCR_REMOTE_SHELL_V2_LAYOUT_MODE_SINCE_VERSION,
     ZCR_REMOTE_SHELL_V2_DEFAULT_DEVICE_SCALE_FACTOR_SINCE_VERSION,
-    1,
     1,
     1,
     1,
@@ -163,6 +162,8 @@ void remote_shell_get_remote_surface_v2(wl_client* client,
   wl_resource* remote_surface_resource =
       wl_resource_create(client, &zcr_remote_surface_v2_interface,
                          wl_resource_get_version(resource), id);
+
+  shell_surface->SetSecurityDelegate(GetSecurityDelegate(client));
 
   shell_surface->set_delegate(
       shell->CreateShellSurfaceDelegate(remote_surface_resource));
@@ -272,8 +273,7 @@ void remote_shell_get_remote_output_v2(wl_client* client,
                          wl_resource_get_version(resource), id);
 
   auto remote_output = std::make_unique<WaylandRemoteOutput>(
-      remote_output_resource, remote_output_event_mapping_v2);
-  display_handler->AddObserver(remote_output.get());
+      remote_output_resource, remote_output_event_mapping_v2, display_handler);
 
   SetImplementation(remote_output_resource, &remote_output_implementation_v2,
                     std::move(remote_output));

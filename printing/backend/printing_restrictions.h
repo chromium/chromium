@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,15 @@
 #define PRINTING_BACKEND_PRINTING_RESTRICTIONS_H_
 
 #include "base/component_export.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "printing/mojom/print.mojom.h"
 #endif
 
 namespace printing {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 // Allowed printing modes as a bitmask.
 // This is used in pref file and crosapi. It should never change.
 using ColorModeRestriction = mojom::ColorModeRestriction;
@@ -29,14 +29,14 @@ using PinModeRestriction = mojom::PinModeRestriction;
 
 // Dictionary key for printing policies.
 // Must coincide with the name of field in `print_preview.Policies` in
-// chrome/browser/resources/print_preview/data/destination.js
+// chrome/browser/resources/print_preview/data/destination.ts
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kAllowedColorModes[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kAllowedDuplexModes[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kAllowedPinModes[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kDefaultColorMode[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kDefaultDuplexMode[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kDefaultPinMode[];
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Allowed background graphics modes.
 // This is used in pref file and should never change.

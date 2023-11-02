@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,8 @@
 namespace blink {
 
 class StyleRuleContainer;
+class ContainerQuery;
+class ContainerSelector;
 
 class CSSContainerRule final : public CSSConditionRule {
   DEFINE_WRAPPERTYPEINFO();
@@ -19,26 +21,15 @@ class CSSContainerRule final : public CSSConditionRule {
   CSSContainerRule(StyleRuleContainer*, CSSStyleSheet*);
   ~CSSContainerRule() override;
 
-  void Reattach(StyleRuleBase*) override;
   String cssText() const override;
 
-  void Trace(Visitor*) const override;
+  const AtomicString& Name() const;
+  const ContainerSelector& Selector() const;
+  void SetConditionText(const ExecutionContext*, String);
 
  private:
-  // TODO(crbug.com/1214810): Don't lean on MediaList.
-  friend class InspectorCSSAgent;
-  friend class InspectorDOMAgent;
-  friend class InspectorStyleSheet;
-
   CSSRule::Type GetType() const override { return kContainerRule; }
-
-  scoped_refptr<MediaQuerySet> ContainerQueries() const;
-
-  MediaList* container() const;
-
-  const AtomicString& Name() const;
-
-  mutable Member<MediaList> media_cssom_wrapper_;
+  const class ContainerQuery& ContainerQuery() const;
 };
 
 template <>

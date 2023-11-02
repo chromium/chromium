@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
@@ -238,12 +239,11 @@ void ObjectPermissionContextBase::NotifyPermissionRevoked(
 base::Value ObjectPermissionContextBase::GetWebsiteSetting(
     const url::Origin& origin,
     content_settings::SettingInfo* info) {
-  std::unique_ptr<base::Value> value =
-      host_content_settings_map_->GetWebsiteSetting(
-          origin.GetURL(), GURL(), data_content_settings_type_, info);
-  if (value)
-    return base::Value::FromUniquePtrValue(std::move(value));
-  return base::Value(base::Value::Type::DICTIONARY);
+  base::Value value = host_content_settings_map_->GetWebsiteSetting(
+      origin.GetURL(), GURL(), data_content_settings_type_, info);
+  if (value.is_none())
+    return base::Value(base::Value::Type::DICTIONARY);
+  return value;
 }
 
 void ObjectPermissionContextBase::SaveWebsiteSetting(
@@ -261,7 +261,7 @@ void ObjectPermissionContextBase::SaveWebsiteSetting(
 
   if (origin_objects_it == objects().end()) {
     host_content_settings_map_->SetWebsiteSettingDefaultScope(
-        origin.GetURL(), GURL(), data_content_settings_type_, nullptr);
+        origin.GetURL(), GURL(), data_content_settings_type_, base::Value());
     return;
   }
 
@@ -273,7 +273,7 @@ void ObjectPermissionContextBase::SaveWebsiteSetting(
   website_setting_value.SetKey(kObjectListKey, std::move(objects_list));
   host_content_settings_map_->SetWebsiteSettingDefaultScope(
       origin.GetURL(), GURL(), data_content_settings_type_,
-      base::Value::ToUniquePtrValue(std::move(website_setting_value)));
+      std::move(website_setting_value));
 }
 
 void ObjectPermissionContextBase::ScheduleSaveWebsiteSetting(

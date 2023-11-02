@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
 #include "base/strings/string_piece.h"
@@ -56,7 +55,7 @@ bool IsAlsaDeviceAvailable(CastAudioManagerAlsa::StreamType type,
   // it or not.
   if (type == CastAudioManagerAlsa::kStreamCapture) {
     // Check if the device is in the list of invalid devices.
-    for (size_t i = 0; i < base::size(kInvalidAudioInputDevices); ++i) {
+    for (size_t i = 0; i < std::size(kInvalidAudioInputDevices); ++i) {
       if (kInvalidAudioInputDevices[i] == device_name)
         return false;
     }
@@ -138,7 +137,7 @@ void CastAudioManagerAlsa::GetAudioInputDeviceNames(
   // Need to send a valid AudioParameters object even when it will be unused.
   return ::media::AudioParameters(
       ::media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      ::media::CHANNEL_LAYOUT_STEREO, kDefaultSampleRate,
+      ::media::ChannelLayoutConfig::Stereo(), kDefaultSampleRate,
       kDefaultInputBufferSize);
 }
 

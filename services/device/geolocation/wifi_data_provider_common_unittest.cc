@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,13 @@
 #include <memory>
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "services/device/geolocation/wifi_data_provider_manager.h"
+#include "services/device/geolocation/wifi_data_provider_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -80,7 +80,7 @@ class WifiDataProviderCommonWithMock : public WifiDataProviderCommon {
   }
 
   std::unique_ptr<MockWlanApi> wlan_api_;
-  MockPollingPolicy* polling_policy_ = nullptr;
+  raw_ptr<MockPollingPolicy> polling_policy_ = nullptr;
 
  private:
   ~WifiDataProviderCommonWithMock() override = default;
@@ -132,11 +132,11 @@ class GeolocationWifiDataProviderCommonTest : public testing::Test {
 
  protected:
   const base::test::SingleThreadTaskEnvironment task_environment_;
-  WifiDataProviderManager::WifiDataUpdateCallback wifi_data_callback_;
+  WifiDataProviderHandle::WifiDataUpdateCallback wifi_data_callback_;
   scoped_refptr<WifiDataProviderCommonWithMock> provider_;
 
-  MockWlanApi* wlan_api_ = nullptr;
-  MockPollingPolicy* polling_policy_ = nullptr;
+  raw_ptr<MockWlanApi> wlan_api_ = nullptr;
+  raw_ptr<MockPollingPolicy> polling_policy_ = nullptr;
 };
 
 TEST_F(GeolocationWifiDataProviderCommonTest, CreateDestroy) {

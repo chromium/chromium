@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,8 +21,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/dbus/concierge/concierge_client.h"
-#include "chromeos/dbus/concierge/concierge_service.pb.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -37,7 +37,7 @@ using DiagnosticsCallback =
 std::string CapitalizedBoardName() {
   const std::string uppercase = base::SysInfo::HardwareModelName();
 
-  CHECK_GE(uppercase.size(), 1);
+  CHECK_GE(uppercase.size(), 1u);
   base::StringPiece uppercase_first_char(uppercase.c_str(), 1);
   base::StringPiece uppercase_remaining(uppercase.c_str() + 1,
                                         uppercase.length() - 1);
@@ -123,12 +123,12 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
       switch (is_allowed_diagnostics.policy_configured) {
         case PolicyConfigured::kOk: {
           // Additional check for image policy. See b/185281662#comment2.
-          const base::DictionaryValue* image_policy =
-              active_profile_->GetPrefs()->GetDictionary(prefs::kPluginVmImage);
+          const base::Value::Dict& image_policy =
+              active_profile_->GetPrefs()->GetDict(prefs::kPluginVmImage);
           const base::Value* url =
-              image_policy->FindKey(prefs::kPluginVmImageUrlKeyName);
+              image_policy.Find(prefs::kPluginVmImageUrlKeyName);
           const base::Value* hash =
-              image_policy->FindKey(prefs::kPluginVmImageHashKeyName);
+              image_policy.Find(prefs::kPluginVmImageHashKeyName);
           if (!url || !GURL(url->GetString()).is_valid()) {
             entry.SetFail(IDS_VM_STATUS_PAGE_IMAGE_URL_POLICY_EXPLANATION);
           } else if (!hash || hash->GetString().empty()) {
@@ -184,11 +184,11 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
 
     vm_tools::concierge::ListVmDisksRequest request;
     request.set_cryptohome_id(
-        chromeos::ProfileHelper::GetUserIdHashFromProfile(active_profile_));
+        ash::ProfileHelper::GetUserIdHashFromProfile(active_profile_));
     request.set_storage_location(
         vm_tools::concierge::STORAGE_CRYPTOHOME_PLUGINVM);
 
-    chromeos::ConciergeClient::Get()->ListVmDisks(
+    ash::ConciergeClient::Get()->ListVmDisks(
         std::move(request),
         base::BindOnce(&PluginVmDiagnostics::OnListVmDisks, this,
                        /*plugin_vm_is_allowed=*/true));

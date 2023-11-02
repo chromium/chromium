@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,10 @@
 
 #include <utility>
 
+#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "ash/components/arc/mojom/tracing.mojom.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file.h"
@@ -17,10 +21,6 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_config.h"
 #include "base/trace_event/trace_event.h"
-#include "components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "components/arc/mojom/tracing.mojom.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/arc_service_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -100,6 +100,14 @@ class ArcTracingDataSource
 
  private:
   friend class base::NoDestructor<ArcTracingDataSource>;
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  using DataSourceProxy =
+      tracing::PerfettoTracedProcess::DataSourceProxy<CastDataSource>;
+  using SystemTraceWriter =
+      tracing::SystemTraceWriter<std::string, DataSourceProxy>;
+#else
+  using SystemTraceWriter = tracing::SystemTraceWriter<std::string>;
+#endif
 
   ArcTracingDataSource()
       : DataSourceBase(tracing::mojom::kArcTraceDataSourceName),
@@ -107,6 +115,11 @@ class ArcTracingDataSource
                                   ->GetTaskRunner()
                                   ->GetOrCreateTaskRunner()) {
     tracing::PerfettoTracedProcess::Get()->AddDataSource(this);
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+    perfetto::DataSourceDescriptor dsd;
+    dsd.set_name(mojom::kArcTraceDataSourceName);
+    DataSourceProxy::Register(dsd, this);
+#endif
   }
 
   // Note that ArcTracingDataSource is a singleton that's never destroyed.
@@ -261,7 +274,7 @@ class ArcTracingDataSource
   // we need to track it ourselves for access from the UI thread.
   tracing::PerfettoProducer* producer_on_ui_thread_ = nullptr;
   perfetto::DataSourceConfig data_source_config_;
-  std::unique_ptr<tracing::SystemTraceWriter<std::string>> trace_writer_;
+  std::unique_ptr<SystemTraceWriter> trace_writer_;
 };
 
 }  // namespace

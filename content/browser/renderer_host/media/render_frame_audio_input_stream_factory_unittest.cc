@@ -1,15 +1,15 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/renderer_host/media/render_frame_audio_input_stream_factory.h"
 
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -32,6 +32,7 @@
 #include "media/audio/test_audio_thread.h"
 #include "media/base/audio_parameters.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
+#include "media/mojo/mojom/audio_processing.mojom.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -48,7 +49,7 @@
 namespace content {
 
 // RenderViewHostTestHarness works poorly on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_RenderFrameAudioInputStreamFactoryTest \
   DISABLED_RenderFrameAudioInputStreamFactoryTest
 #else
@@ -65,8 +66,7 @@ class MAYBE_RenderFrameAudioInputStreamFactoryTest
                        &log_factory_),
         audio_system_(media::AudioSystemImpl::CreateInstance()),
         media_stream_manager_(
-            std::make_unique<MediaStreamManager>(audio_system_.get(),
-                                                 GetUIThreadTaskRunner({}))) {}
+            std::make_unique<MediaStreamManager>(audio_system_.get())) {}
 
   ~MAYBE_RenderFrameAudioInputStreamFactoryTest() override {}
 
@@ -110,6 +110,7 @@ class MAYBE_RenderFrameAudioInputStreamFactoryTest
         uint32_t shared_memory_count,
         bool enable_agc,
         base::ReadOnlySharedMemoryRegion key_press_count_buffer,
+        media::mojom::AudioProcessingConfigPtr processing_config,
         CreateInputStreamCallback created_callback) override {
       last_created_callback = std::move(created_callback);
     }
@@ -217,9 +218,9 @@ TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
 
   mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
       client;
-  ignore_result(client.InitWithNewPipeAndPassReceiver());
+  std::ignore = client.InitWithNewPipeAndPassReceiver();
   factory_remote->CreateStream(std::move(client), session_id, kParams, kAGC,
-                               kSharedMemoryCount);
+                               kSharedMemoryCount, nullptr);
 
   base::RunLoop().RunUntilIdle();
 
@@ -234,7 +235,7 @@ TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
       factory_remote.BindNewPipeAndPassReceiver(), media_stream_manager_.get(),
       main_rfh());
 
-  RenderFrameHost* main_frame = source_contents->GetMainFrame();
+  RenderFrameHost* main_frame = source_contents->GetPrimaryMainFrame();
   WebContentsMediaCaptureId capture_id(main_frame->GetProcess()->GetID(),
                                        main_frame->GetRoutingID());
   base::UnguessableToken session_id =
@@ -245,9 +246,9 @@ TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
 
   mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
       client;
-  ignore_result(client.InitWithNewPipeAndPassReceiver());
+  std::ignore = client.InitWithNewPipeAndPassReceiver();
   factory_remote->CreateStream(std::move(client), session_id, kParams, kAGC,
-                               kSharedMemoryCount);
+                               kSharedMemoryCount, nullptr);
 
   base::RunLoop().RunUntilIdle();
 
@@ -262,7 +263,7 @@ TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
       factory_remote.BindNewPipeAndPassReceiver(), media_stream_manager_.get(),
       main_rfh());
 
-  RenderFrameHost* main_frame = source_contents->GetMainFrame();
+  RenderFrameHost* main_frame = source_contents->GetPrimaryMainFrame();
   WebContentsMediaCaptureId capture_id(main_frame->GetProcess()->GetID(),
                                        main_frame->GetRoutingID());
   base::UnguessableToken session_id =
@@ -274,9 +275,9 @@ TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
   source_contents.reset();
   mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
       client;
-  ignore_result(client.InitWithNewPipeAndPassReceiver());
+  std::ignore = client.InitWithNewPipeAndPassReceiver();
   factory_remote->CreateStream(std::move(client), session_id, kParams, kAGC,
-                               kSharedMemoryCount);
+                               kSharedMemoryCount, nullptr);
 
   base::RunLoop().RunUntilIdle();
 
@@ -293,9 +294,9 @@ TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
   base::UnguessableToken session_id = base::UnguessableToken::Create();
   mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
       client;
-  ignore_result(client.InitWithNewPipeAndPassReceiver());
+  std::ignore = client.InitWithNewPipeAndPassReceiver();
   factory_remote->CreateStream(std::move(client), session_id, kParams, kAGC,
-                               kSharedMemoryCount);
+                               kSharedMemoryCount, nullptr);
 
   base::RunLoop().RunUntilIdle();
 

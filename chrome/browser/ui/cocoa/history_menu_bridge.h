@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,13 @@
 #include <vector>
 
 #include "base/mac/scoped_nsobject.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_manager_observer.h"
 #import "chrome/browser/ui/cocoa/main_menu_item.h"
 #import "components/favicon/core/favicon_service.h"
 #include "components/history/core/browser/history_service.h"
@@ -23,10 +27,12 @@
 #include "components/sessions/core/tab_restore_service_observer.h"
 
 class Profile;
+class ScopedProfileKeepAlive;
 @class HistoryMenuCocoaController;
 
 namespace {
 class HistoryMenuBridgeTest;
+class HistoryMenuBridgeLifetimeTest;
 }
 
 namespace favicon_base {
@@ -57,7 +63,8 @@ struct FaviconImageResult;
 // class does the bulk of the work.
 class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
                           public MainMenuItem,
-                          public history::HistoryServiceObserver {
+                          public history::HistoryServiceObserver,
+                          public ProfileManagerObserver {
  public:
   // This is a generalization of the data we store in the history menu because
   // we pull things from different sources with different data types.
@@ -138,6 +145,9 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
   void ResetMenu() override;
   void BuildMenu() override;
 
+  // ProfileManagerObserver:
+  void OnProfileMarkedForPermanentDeletion(Profile* profile) override;
+
   // Looks up an NSMenuItem in the |menu_item_map_| and returns the
   // corresponding HistoryItem.
   HistoryItem* HistoryItemForMenuItem(NSMenuItem* item);
@@ -150,6 +160,12 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
   // to access model information when responding to actions.
   history::HistoryService* service();
   Profile* profile();
+  const base::FilePath& profile_dir() const;
+
+  // Resets |profile_| to nullptr. Called before the Profile is destroyed, when
+  // this bridge is still needed. Also performs some internal cleanup, like
+  // resetting observers and pointers to the Profile and KeyedServices.
+  void OnProfileWillBeDestroyed();
 
  protected:
   // Return the History menu.
@@ -230,14 +246,13 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
 
  private:
   friend class ::HistoryMenuBridgeTest;
+  friend class ::HistoryMenuBridgeLifetimeTest;
   friend class HistoryMenuCocoaControllerTest;
 
   // history::HistoryServiceObserver:
   void OnURLVisited(history::HistoryService* history_service,
-                    ui::PageTransition transition,
-                    const history::URLRow& row,
-                    const history::RedirectList& redirects,
-                    base::Time visit_time) override;
+                    const history::URLRow& url_row,
+                    const history::VisitRow& new_visit) override;
   void OnURLsModified(history::HistoryService* history_service,
                       const history::URLRows& changed_urls) override;
   void OnURLsDeleted(history::HistoryService* history_service,
@@ -254,9 +269,15 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
 
   base::scoped_nsobject<HistoryMenuCocoaController> controller_;  // strong
 
-  Profile* const profile_;                                      // weak
-  history::HistoryService* history_service_ = nullptr;          // weak
-  sessions::TabRestoreService* tab_restore_service_ = nullptr;  // weak
+  raw_ptr<Profile> profile_;                                            // weak
+  raw_ptr<history::HistoryService> history_service_ = nullptr;          // weak
+  raw_ptr<sessions::TabRestoreService> tab_restore_service_ = nullptr;  // weak
+  base::FilePath profile_dir_;  // Remembered after OnProfileWillBeDestroyed().
+
+  // Inhibit Profile destruction until the HistoryService and TabRestoreService
+  // are finished loading.
+  std::unique_ptr<ScopedProfileKeepAlive> history_service_keep_alive_;
+  std::unique_ptr<ScopedProfileKeepAlive> tab_restore_service_keep_alive_;
 
   base::CancelableTaskTracker cancelable_task_tracker_;
 
@@ -272,7 +293,7 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
 
   // In order to not jarringly refresh the menu while the user has it open,
   // updates are blocked while the menu is tracking.
-  bool is_menu_open_;
+  bool is_menu_open_ = false;
 
   // The default favicon if a HistoryItem does not have one.
   base::scoped_nsobject<NSImage> default_favicon_;
@@ -283,6 +304,10 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
   base::ScopedObservation<sessions::TabRestoreService,
                           sessions::TabRestoreServiceObserver>
       tab_restore_service_observation_{this};
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
+      profile_manager_observation_{this};
+
+  base::WeakPtrFactory<HistoryMenuBridge> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_COCOA_HISTORY_MENU_BRIDGE_H_

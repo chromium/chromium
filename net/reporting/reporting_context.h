@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "net/base/backoff_entry.h"
 #include "net/base/net_export.h"
@@ -64,7 +65,8 @@ class NET_EXPORT ReportingContext {
   void NotifyReportAdded(const ReportingReport* report);
   void NotifyReportUpdated(const ReportingReport* report);
   void NotifyCachedClientsUpdated();
-  void NotifyEndpointsUpdated();
+  void NotifyEndpointsUpdatedForOrigin(
+      const std::vector<ReportingEndpoint>& endpoints);
 
   // Returns whether the data in the cache is persisted across restarts in the
   // PersistentReportingStore.
@@ -85,8 +87,8 @@ class NET_EXPORT ReportingContext {
  private:
   ReportingPolicy policy_;
 
-  base::Clock* clock_;
-  const base::TickClock* tick_clock_;
+  raw_ptr<base::Clock> clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
   std::unique_ptr<ReportingUploader> uploader_;
 
   base::ObserverList<ReportingCacheObserver, /* check_empty= */ true>::Unchecked
@@ -96,7 +98,7 @@ class NET_EXPORT ReportingContext {
 
   std::unique_ptr<ReportingCache> cache_;
 
-  ReportingCache::PersistentReportingStore* const store_;
+  const raw_ptr<ReportingCache::PersistentReportingStore> store_;
 
   // |delivery_agent_| must come after |tick_clock_|, |delegate_|, |uploader_|,
   // and |cache_|.

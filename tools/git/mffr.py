@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -83,7 +83,7 @@ def MultiFileFindReplace(original, replacement, file_globs):
     if contents == original_contents:
       raise Exception('No change in file %s although matched in grep' %
                       referee)
-    with open(referee, mode='w', encoding='utf-8') as f:
+    with open(referee, mode='w', encoding='utf-8', newline='\n') as f:
       f.write(contents)
 
   return referees

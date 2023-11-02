@@ -1,4 +1,4 @@
-// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -181,8 +181,7 @@ TEST(DnsQueueTest, FillThenEmptyCheck) {
   EXPECT_GE(write_success, 10U) << "Couldn't even write 10 one digit strings "
       "in " << buffer_size << " byte buffer";
 
-
-  while (1) {
+  while (true) {
     if (!tester.Pop())
       break;
     write_success--;

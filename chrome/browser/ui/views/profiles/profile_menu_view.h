@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,13 +19,14 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_view_base.h"
 #include "components/signin/core/browser/signin_header_helper.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "ui/views/controls/styled_label.h"
 
 namespace views {
 class Button;
 }
 
-struct AccountInfo;
+struct CoreAccountInfo;
 class Browser;
 
 // This bubble view is displayed when the user clicks on the avatar button.
@@ -49,6 +50,9 @@ class ProfileMenuView : public ProfileMenuViewBase {
   friend class ProfileMenuViewSignoutTest;
   friend class ProfileMenuViewSyncErrorButtonTest;
   friend class ProfileMenuInteractiveUiTest;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  friend class ProfileMenuViewSigninErrorButtonTest;
+#endif
 
   // views::BubbleDialogDelegateView:
   std::u16string GetAccessibleWindowTitle() const override;
@@ -62,10 +66,12 @@ class ProfileMenuView : public ProfileMenuViewBase {
   void OnExitProfileButtonClicked();
   void OnSyncSettingsButtonClicked();
   void OnSyncErrorButtonClicked(AvatarSyncErrorType error);
-  void OnSigninAccountButtonClicked(AccountInfo account);
+  void OnSigninAccountButtonClicked(CoreAccountInfo account);
   void OnCookiesClearedOnExitLinkClicked();
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
   void OnSignoutButtonClicked();
+#endif
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   void OnSigninButtonClicked();
   void OnOtherProfileSelected(const base::FilePath& profile_path);
   void OnAddNewProfileButtonClicked();
@@ -85,7 +91,7 @@ class ProfileMenuView : public ProfileMenuViewBase {
   void BuildSyncInfo();
   void BuildFeatureButtons();
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  void BuildSelectableProfiles();
+  void BuildAvailableProfiles();
   void BuildProfileManagementFeatureButtons();
 #endif
 

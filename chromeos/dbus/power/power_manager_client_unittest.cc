@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -114,7 +114,7 @@ class TestObserver : public PowerManagerClient::Observer {
   }
 
   // Runs |block_suspend_token_|.
-  bool UnblockSuspend() WARN_UNUSED_RESULT {
+  [[nodiscard]] bool UnblockSuspend() {
     if (block_suspend_token_.is_empty())
       return false;
 

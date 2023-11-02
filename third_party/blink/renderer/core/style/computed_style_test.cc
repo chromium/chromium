@@ -1,9 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
+#include "base/memory/values_equivalent.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
@@ -19,6 +20,7 @@
 #include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/css/resolver/style_adjuster.h"
 #include "third_party/blink/renderer/core/css/resolver/style_cascade.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -34,7 +36,7 @@
 #include "third_party/blink/renderer/core/style/style_initial_data.h"
 #include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/transforms/scale_transform_operation.h"
 #include "ui/base/ui_base_features.h"
@@ -117,24 +119,15 @@ TEST_F(ComputedStyleTest, LayoutContainmentStackingContext) {
   EXPECT_FALSE(style->IsStackingContextWithoutContainment());
 }
 
-TEST_F(ComputedStyleTest, FirstPublicPseudoStyle) {
-  static_assert(kFirstPublicPseudoId == kPseudoIdFirstLine,
-                "Make sure we are testing the first public pseudo id");
-
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  style->SetHasPseudoElementStyle(kPseudoIdFirstLine);
-  EXPECT_TRUE(style->HasPseudoElementStyle(kPseudoIdFirstLine));
-  EXPECT_TRUE(style->HasAnyPseudoElementStyles());
-}
-
-TEST_F(ComputedStyleTest, LastPublicPseudoElementStyle) {
-  static_assert(kFirstInternalPseudoId - 1 == kPseudoIdGrammarError,
-                "Make sure we are testing the last public pseudo id");
-
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  style->SetHasPseudoElementStyle(kPseudoIdGrammarError);
-  EXPECT_TRUE(style->HasPseudoElementStyle(kPseudoIdGrammarError));
-  EXPECT_TRUE(style->HasAnyPseudoElementStyles());
+TEST_F(ComputedStyleTest, TrackedPseudoStyle) {
+  for (uint8_t pseudo_id_int = kFirstPublicPseudoId;
+       pseudo_id_int <= kLastTrackedPublicPseudoId; pseudo_id_int++) {
+    PseudoId pseudo_id = static_cast<PseudoId>(pseudo_id_int);
+    scoped_refptr<ComputedStyle> style = CreateComputedStyle();
+    style->SetHasPseudoElementStyle(pseudo_id);
+    EXPECT_TRUE(style->HasPseudoElementStyle(pseudo_id));
+    EXPECT_TRUE(style->HasAnyPseudoElementStyles());
+  }
 }
 
 TEST_F(ComputedStyleTest,
@@ -148,7 +141,7 @@ TEST_F(ComputedStyleTest,
 }
 
 TEST_F(ComputedStyleTest,
-       UpdatePropertySpecificDifferencesCompositingReasonsTransforom) {
+       UpdatePropertySpecificDifferencesCompositingReasonsTransform) {
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
 
@@ -166,6 +159,36 @@ TEST_F(ComputedStyleTest,
   style->UpdatePropertySpecificDifferences(*other, diff);
   EXPECT_FALSE(diff.TransformChanged());
   EXPECT_TRUE(diff.CompositingReasonsChanged());
+}
+
+TEST_F(ComputedStyleTest,
+       UpdatePropertySpecificDifferencesRespectsScaleAnimation) {
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
+  scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
+  other->SetHasCurrentScaleAnimation(true);
+  StyleDifference diff;
+  style->UpdatePropertySpecificDifferences(*other, diff);
+  EXPECT_TRUE(diff.TransformChanged());
+}
+
+TEST_F(ComputedStyleTest,
+       UpdatePropertySpecificDifferencesRespectsRotateAnimation) {
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
+  scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
+  other->SetHasCurrentRotateAnimation(true);
+  StyleDifference diff;
+  style->UpdatePropertySpecificDifferences(*other, diff);
+  EXPECT_TRUE(diff.TransformChanged());
+}
+
+TEST_F(ComputedStyleTest,
+       UpdatePropertySpecificDifferencesRespectsTranslateAnimation) {
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
+  scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
+  other->SetHasCurrentTranslateAnimation(true);
+  StyleDifference diff;
+  style->UpdatePropertySpecificDifferences(*other, diff);
+  EXPECT_TRUE(diff.TransformChanged());
 }
 
 TEST_F(ComputedStyleTest,
@@ -259,39 +282,6 @@ TEST_F(ComputedStyleTest,
   EXPECT_TRUE(diff.CompositingReasonsChanged());
 }
 
-TEST_F(ComputedStyleTest, UpdateBackgroundColorDifferencesHasAlpha) {
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
-
-  StyleDifference diff;
-  style->AdjustDiffForBackgroundVisuallyEqual(*other, diff);
-  EXPECT_FALSE(diff.HasAlphaChanged());
-
-  style->SetBackgroundColor(StyleColor(Color(255, 255, 255, 255)));
-  other->SetBackgroundColor(StyleColor(Color(255, 255, 255, 128)));
-
-  EXPECT_FALSE(
-      style->VisitedDependentColor(GetCSSPropertyBackgroundColor()).HasAlpha());
-  EXPECT_TRUE(
-      other->VisitedDependentColor(GetCSSPropertyBackgroundColor()).HasAlpha());
-
-  style->AdjustDiffForBackgroundVisuallyEqual(*other, diff);
-  EXPECT_TRUE(diff.HasAlphaChanged());
-}
-
-TEST_F(ComputedStyleTest, UpdateBackgroundLayerDifferencesHasAlpha) {
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
-
-  StyleDifference diff;
-  style->AdjustDiffForBackgroundVisuallyEqual(*other, diff);
-  EXPECT_FALSE(diff.HasAlphaChanged());
-
-  other->AccessBackgroundLayers().EnsureNext();
-  style->AdjustDiffForBackgroundVisuallyEqual(*other, diff);
-  EXPECT_TRUE(diff.HasAlphaChanged());
-}
-
 TEST_F(ComputedStyleTest, HasOutlineWithCurrentColor) {
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   EXPECT_FALSE(style->HasOutline());
@@ -321,11 +311,12 @@ TEST_F(ComputedStyleTest, CursorList) {
   auto* gradient = MakeGarbageCollected<cssvalue::CSSLinearGradientValue>(
       nullptr, nullptr, nullptr, nullptr, nullptr, cssvalue::kRepeating);
 
-  auto* image_value = MakeGarbageCollected<StyleGeneratedImage>(*gradient);
-  auto* other_image_value =
-      MakeGarbageCollected<StyleGeneratedImage>(*gradient);
+  auto* image_value = MakeGarbageCollected<StyleGeneratedImage>(
+      *gradient, StyleGeneratedImage::ContainerSizes());
+  auto* other_image_value = MakeGarbageCollected<StyleGeneratedImage>(
+      *gradient, StyleGeneratedImage::ContainerSizes());
 
-  EXPECT_TRUE(DataEquivalent(image_value, other_image_value));
+  EXPECT_TRUE(base::ValuesEquivalent(image_value, other_image_value));
 
   style->AddCursor(image_value, false);
   other->AddCursor(other_image_value, false);
@@ -468,18 +459,24 @@ TEST_F(ComputedStyleTest, BorderStyle) {
 TEST_F(ComputedStyleTest, AnimationFlags) {
   Persistent<Document> document = Document::CreateForTest();
   TEST_ANIMATION_FLAG(HasCurrentTransformAnimation, kNonInherited);
+  TEST_ANIMATION_FLAG(HasCurrentScaleAnimation, kNonInherited);
+  TEST_ANIMATION_FLAG(HasCurrentRotateAnimation, kNonInherited);
+  TEST_ANIMATION_FLAG(HasCurrentTranslateAnimation, kNonInherited);
   TEST_ANIMATION_FLAG(HasCurrentOpacityAnimation, kNonInherited);
   TEST_ANIMATION_FLAG(HasCurrentFilterAnimation, kNonInherited);
   TEST_ANIMATION_FLAG(HasCurrentBackdropFilterAnimation, kNonInherited);
   TEST_ANIMATION_FLAG(SubtreeWillChangeContents, kInherited);
   TEST_ANIMATION_FLAG_NO_DIFF(IsRunningTransformAnimationOnCompositor);
+  TEST_ANIMATION_FLAG_NO_DIFF(IsRunningScaleAnimationOnCompositor);
+  TEST_ANIMATION_FLAG_NO_DIFF(IsRunningRotateAnimationOnCompositor);
+  TEST_ANIMATION_FLAG_NO_DIFF(IsRunningTranslateAnimationOnCompositor);
   TEST_ANIMATION_FLAG_NO_DIFF(IsRunningOpacityAnimationOnCompositor);
   TEST_ANIMATION_FLAG_NO_DIFF(IsRunningFilterAnimationOnCompositor);
   TEST_ANIMATION_FLAG_NO_DIFF(IsRunningBackdropFilterAnimationOnCompositor);
 }
 
 TEST_F(ComputedStyleTest, CustomPropertiesEqual_Values) {
-  auto dummy = std::make_unique<DummyPageHolder>(IntSize(0, 0));
+  auto dummy = std::make_unique<DummyPageHolder>(gfx::Size(0, 0));
   css_test_helpers::RegisterProperty(dummy->GetDocument(), "--x", "<length>",
                                      "0px", false);
 
@@ -509,7 +506,7 @@ TEST_F(ComputedStyleTest, CustomPropertiesEqual_Values) {
 }
 
 TEST_F(ComputedStyleTest, CustomPropertiesEqual_Data) {
-  auto dummy = std::make_unique<DummyPageHolder>(IntSize(0, 0));
+  auto dummy = std::make_unique<DummyPageHolder>(gfx::Size(0, 0));
   css_test_helpers::RegisterProperty(dummy->GetDocument(), "--x", "<length>",
                                      "0px", false);
 
@@ -537,7 +534,7 @@ TEST_F(ComputedStyleTest, CustomPropertiesEqual_Data) {
 }
 
 TEST_F(ComputedStyleTest, CustomPropertiesInheritance_FastPath) {
-  auto dummy = std::make_unique<DummyPageHolder>(IntSize(0, 0));
+  auto dummy = std::make_unique<DummyPageHolder>(gfx::Size(0, 0));
   css_test_helpers::RegisterProperty(dummy->GetDocument(), "--x", "<length>",
                                      "0px", true);
 
@@ -603,7 +600,7 @@ TEST_F(ComputedStyleTest, CustomPropertiesInheritance_FastPath) {
 }
 
 TEST_F(ComputedStyleTest, CustomPropertiesInheritance_StyleRecalc) {
-  auto dummy = std::make_unique<DummyPageHolder>(IntSize(0, 0));
+  auto dummy = std::make_unique<DummyPageHolder>(gfx::Size(0, 0));
   css_test_helpers::RegisterProperty(dummy->GetDocument(), "--x", "<length>",
                                      "0px", true);
 
@@ -666,7 +663,7 @@ TEST_F(ComputedStyleTest, CustomPropertiesInheritance_StyleRecalc) {
 
 TEST_F(ComputedStyleTest, ApplyColorSchemeLightOnDark) {
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
   Document& document = dummy_page_holder->GetDocument();
   scoped_refptr<const ComputedStyle> initial =
       document.GetStyleResolver().InitialStyleForElement();
@@ -675,7 +672,8 @@ TEST_F(ComputedStyleTest, ApplyColorSchemeLightOnDark) {
   color_scheme_helper.SetPreferredColorScheme(
       mojom::blink::PreferredColorScheme::kDark);
   StyleResolverState state(document, *document.documentElement(),
-                           StyleRecalcContext(), StyleRequest(initial.get()));
+                           nullptr /* StyleRecalcContext */,
+                           StyleRequest(initial.get()));
 
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   state.SetStyle(style);
@@ -699,7 +697,7 @@ TEST_F(ComputedStyleTest, ApplyInternalLightDarkColor) {
   using css_test_helpers::ParseDeclarationBlock;
 
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
   Document& document = dummy_page_holder->GetDocument();
   scoped_refptr<const ComputedStyle> initial =
       document.GetStyleResolver().InitialStyleForElement();
@@ -708,7 +706,8 @@ TEST_F(ComputedStyleTest, ApplyInternalLightDarkColor) {
   color_scheme_helper.SetPreferredColorScheme(
       mojom::blink::PreferredColorScheme::kDark);
   StyleResolverState state(document, *document.documentElement(),
-                           StyleRecalcContext(), StyleRequest(initial.get()));
+                           nullptr /* StyleRecalcContext */,
+                           StyleRequest(initial.get()));
 
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   state.SetStyle(style);
@@ -741,7 +740,7 @@ TEST_F(ComputedStyleTest, ApplyInternalLightDarkBackgroundImage) {
   using css_test_helpers::ParseDeclarationBlock;
 
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
   Document& document = dummy_page_holder->GetDocument();
   scoped_refptr<const ComputedStyle> initial =
       document.GetStyleResolver().InitialStyleForElement();
@@ -750,7 +749,8 @@ TEST_F(ComputedStyleTest, ApplyInternalLightDarkBackgroundImage) {
   color_scheme_helper.SetPreferredColorScheme(
       mojom::blink::PreferredColorScheme::kDark);
   StyleResolverState state(document, *document.documentElement(),
-                           StyleRecalcContext(), StyleRequest(initial.get()));
+                           nullptr /* StyleRecalcContext */,
+                           StyleRequest(initial.get()));
 
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   state.SetStyle(style);
@@ -779,13 +779,14 @@ TEST_F(ComputedStyleTest, ApplyInternalLightDarkBackgroundImage) {
 
 TEST_F(ComputedStyleTest, StrokeWidthZoomAndCalc) {
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
   Document& document = dummy_page_holder->GetDocument();
   scoped_refptr<const ComputedStyle> initial =
       document.GetStyleResolver().InitialStyleForElement();
 
   StyleResolverState state(document, *document.documentElement(),
-                           StyleRecalcContext(), StyleRequest(initial.get()));
+                           nullptr /* StyleRecalcContext */,
+                           StyleRequest(initial.get()));
 
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   style->SetEffectiveZoom(1.5);
@@ -809,7 +810,7 @@ TEST_F(ComputedStyleTest, StrokeWidthZoomAndCalc) {
 
 TEST_F(ComputedStyleTest, InitialVariableNamesEmpty) {
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  EXPECT_TRUE(style->GetVariableNames().IsEmpty());
+  EXPECT_TRUE(style->GetVariableNames().empty());
 }
 
 TEST_F(ComputedStyleTest, InitialVariableNames) {
@@ -820,7 +821,8 @@ TEST_F(ComputedStyleTest, InitialVariableNames) {
   PropertyRegistry* registry = MakeGarbageCollected<PropertyRegistry>();
   registry->RegisterProperty("--x", *CreateLengthRegistration("--x", 1));
   registry->RegisterProperty("--y", *CreateLengthRegistration("--y", 2));
-  style->SetInitialData(StyleInitialData::Create(*registry));
+  style->SetInitialData(
+      StyleInitialData::Create(*Document::CreateForTest(), *registry));
 
   EXPECT_EQ(2u, style->GetVariableNames().size());
   EXPECT_TRUE(style->GetVariableNames().Contains("--x"));
@@ -882,7 +884,8 @@ TEST_F(ComputedStyleTest, InitialAndInheritedAndNonInheritedVariableNames) {
   PropertyRegistry* registry = MakeGarbageCollected<PropertyRegistry>();
   registry->RegisterProperty("--b", *CreateLengthRegistration("--b", 1));
   registry->RegisterProperty("--e", *CreateLengthRegistration("--e", 2));
-  style->SetInitialData(StyleInitialData::Create(*registry));
+  style->SetInitialData(
+      StyleInitialData::Create(*Document::CreateForTest(), *registry));
 
   const bool inherited = true;
   style->SetVariableData("--a", CreateVariableData("foo"), inherited);
@@ -942,7 +945,8 @@ TEST_F(ComputedStyleTest, GetVariableNamesWithInitialData_Invalidation) {
   {
     PropertyRegistry* registry = MakeGarbageCollected<PropertyRegistry>();
     registry->RegisterProperty("--x", *CreateLengthRegistration("--x", 1));
-    style->SetInitialData(StyleInitialData::Create(*registry));
+    style->SetInitialData(
+        StyleInitialData::Create(*Document::CreateForTest(), *registry));
   }
   EXPECT_EQ(style->GetVariableNames().size(), 1u);
   EXPECT_TRUE(style->GetVariableNames().Contains("--x"));
@@ -952,7 +956,8 @@ TEST_F(ComputedStyleTest, GetVariableNamesWithInitialData_Invalidation) {
     PropertyRegistry* registry = MakeGarbageCollected<PropertyRegistry>();
     registry->RegisterProperty("--y", *CreateLengthRegistration("--y", 2));
     registry->RegisterProperty("--z", *CreateLengthRegistration("--z", 3));
-    style->SetInitialData(StyleInitialData::Create(*registry));
+    style->SetInitialData(
+        StyleInitialData::Create(*Document::CreateForTest(), *registry));
   }
   EXPECT_EQ(style->GetVariableNames().size(), 2u);
   EXPECT_TRUE(style->GetVariableNames().Contains("--y"));
@@ -961,13 +966,14 @@ TEST_F(ComputedStyleTest, GetVariableNamesWithInitialData_Invalidation) {
 
 TEST_F(ComputedStyleTest, BorderWidthZoom) {
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
   Document& document = dummy_page_holder->GetDocument();
   scoped_refptr<const ComputedStyle> initial =
       document.GetStyleResolver().InitialStyleForElement();
 
   StyleResolverState state(document, *document.documentElement(),
-                           StyleRecalcContext(), StyleRequest(initial.get()));
+                           nullptr /* StyleRecalcContext */,
+                           StyleRequest(initial.get()));
 
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   style->SetEffectiveZoom(2);
@@ -1009,27 +1015,28 @@ TEST_F(ComputedStyleTest,
   using css_test_helpers::ParseDeclarationBlock;
 
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
   Document& document = dummy_page_holder->GetDocument();
   scoped_refptr<const ComputedStyle> initial =
       document.GetStyleResolver().InitialStyleForElement();
 
   StyleResolverState state(document, *document.documentElement(),
-                           StyleRecalcContext(), StyleRequest(initial.get()));
+                           nullptr /* StyleRecalcContext */,
+                           StyleRequest(initial.get()));
 
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
 
   // Set up the initial text decoration properties
   style->SetTextDecorationStyle(ETextDecorationStyle::kSolid);
   style->SetTextDecorationColor(StyleColor(CSSValueID::kGreen));
-  style->SetTextDecoration(TextDecoration::kUnderline);
+  style->SetTextDecorationLine(TextDecorationLine::kUnderline);
   style->SetTextDecorationThickness(
       TextDecorationThickness(Length(5, Length::Type::kFixed)));
   style->SetTextUnderlineOffset(Length(2, Length::Type::kFixed));
   style->SetTextUnderlinePosition(kTextUnderlinePositionUnder);
   state.SetStyle(style);
   StyleAdjuster::AdjustComputedStyle(state, nullptr /* element */);
-  EXPECT_EQ(TextDecoration::kUnderline, style->TextDecorationsInEffect());
+  EXPECT_EQ(TextDecorationLine::kUnderline, style->TextDecorationsInEffect());
 
   scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
   StyleDifference diff1;
@@ -1049,20 +1056,21 @@ TEST_F(ComputedStyleTest, TextDecorationNotEqualRequiresRecomputeInkOverflow) {
   using css_test_helpers::ParseDeclarationBlock;
 
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
   Document& document = dummy_page_holder->GetDocument();
   scoped_refptr<const ComputedStyle> initial =
       document.GetStyleResolver().InitialStyleForElement();
 
   StyleResolverState state(document, *document.documentElement(),
-                           StyleRecalcContext(), StyleRequest(initial.get()));
+                           nullptr /* StyleRecalcContext */,
+                           StyleRequest(initial.get()));
 
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
 
   // Set up the initial text decoration properties
   style->SetTextDecorationStyle(ETextDecorationStyle::kSolid);
   style->SetTextDecorationColor(StyleColor(CSSValueID::kGreen));
-  style->SetTextDecoration(TextDecoration::kUnderline);
+  style->SetTextDecorationLine(TextDecorationLine::kUnderline);
   style->SetTextDecorationThickness(
       TextDecorationThickness(Length(5, Length::Type::kFixed)));
   style->SetTextUnderlineOffset(Length(2, Length::Type::kFixed));
@@ -1081,7 +1089,7 @@ TEST_F(ComputedStyleTest, TextDecorationNotEqualRequiresRecomputeInkOverflow) {
 
   // Change decoration line
   other = ComputedStyle::Clone(*style);
-  other->SetTextDecoration(TextDecoration::kOverline);
+  other->SetTextDecorationLine(TextDecorationLine::kOverline);
   state.SetStyle(other);
   StyleAdjuster::AdjustComputedStyle(state, nullptr /* element */);
   StyleDifference diff_decoration_line;
@@ -1157,13 +1165,14 @@ TEST_F(ComputedStyleTest, ClonedStyleTransitionsAreIndependent) {
 
 TEST_F(ComputedStyleTest, ApplyInitialAnimationNameAndTransitionProperty) {
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
   Document& document = dummy_page_holder->GetDocument();
   scoped_refptr<const ComputedStyle> initial =
       document.GetStyleResolver().InitialStyleForElement();
 
   StyleResolverState state(document, *document.documentElement(),
-                           StyleRecalcContext(), StyleRequest(initial.get()));
+                           nullptr /* StyleRecalcContext */,
+                           StyleRequest(initial.get()));
 
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   state.SetStyle(style);
@@ -1223,7 +1232,7 @@ TEST_F(ComputedStyleTest, SvgMiscStyleShouldCompareValue) {
 
 TEST_F(ComputedStyleTest, ShouldApplyAnyContainment) {
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
   Document& document = dummy_page_holder->GetDocument();
 
   auto* html = document.documentElement();
@@ -1231,30 +1240,31 @@ TEST_F(ComputedStyleTest, ShouldApplyAnyContainment) {
   ASSERT_TRUE(html);
   ASSERT_TRUE(body);
 
-  auto display_types = {CSSValueID::kInline,
-                        CSSValueID::kBlock,
-                        CSSValueID::kListItem,
-                        CSSValueID::kInlineBlock,
-                        CSSValueID::kTable,
-                        CSSValueID::kInlineTable,
-                        CSSValueID::kTableRowGroup,
-                        CSSValueID::kTableHeaderGroup,
-                        CSSValueID::kTableFooterGroup,
-                        CSSValueID::kTableRow,
-                        CSSValueID::kTableColumnGroup,
-                        CSSValueID::kTableColumn,
-                        CSSValueID::kTableCell,
-                        CSSValueID::kTableCaption,
-                        CSSValueID::kWebkitBox,
-                        CSSValueID::kWebkitInlineBox,
-                        CSSValueID::kFlex,
-                        CSSValueID::kInlineFlex,
-                        CSSValueID::kGrid,
-                        CSSValueID::kInlineGrid,
-                        CSSValueID::kContents,
-                        CSSValueID::kFlowRoot,
-                        CSSValueID::kNone,
-                        CSSValueID::kMath};
+  std::vector display_types = {CSSValueID::kInline,
+                               CSSValueID::kBlock,
+                               CSSValueID::kListItem,
+                               CSSValueID::kInlineBlock,
+                               CSSValueID::kTable,
+                               CSSValueID::kInlineTable,
+                               CSSValueID::kTableRowGroup,
+                               CSSValueID::kTableHeaderGroup,
+                               CSSValueID::kTableFooterGroup,
+                               CSSValueID::kTableRow,
+                               CSSValueID::kTableColumnGroup,
+                               CSSValueID::kTableColumn,
+                               CSSValueID::kTableCell,
+                               CSSValueID::kTableCaption,
+                               CSSValueID::kWebkitBox,
+                               CSSValueID::kWebkitInlineBox,
+                               CSSValueID::kFlex,
+                               CSSValueID::kInlineFlex,
+                               CSSValueID::kGrid,
+                               CSSValueID::kInlineGrid,
+                               CSSValueID::kContents,
+                               CSSValueID::kFlowRoot,
+                               CSSValueID::kNone};
+  if (RuntimeEnabledFeatures::MathMLCoreEnabled())
+    display_types.push_back(CSSValueID::kMath);
 
   for (auto contain :
        {CSSValueID::kNone, CSSValueID::kLayout, CSSValueID::kPaint,
@@ -1299,6 +1309,8 @@ TEST_F(ComputedStyleTest, ShouldApplyAnyContainment) {
 #if DCHECK_IS_ON()
 
 TEST_F(ComputedStyleTest, DebugDiffFields) {
+  using DebugField = ComputedStyleBase::DebugField;
+
   scoped_refptr<ComputedStyle> style1 = CreateComputedStyle();
   scoped_refptr<ComputedStyle> style2 = CreateComputedStyle();
 
@@ -1309,9 +1321,71 @@ TEST_F(ComputedStyleTest, DebugDiffFields) {
   EXPECT_EQ(0u, style2->DebugDiffFields(*style2).size());
 
   EXPECT_EQ(1u, style1->DebugDiffFields(*style2).size());
-  EXPECT_EQ("width_", style1->DebugDiffFields(*style2)[0]);
+  EXPECT_EQ(DebugField::width_, style1->DebugDiffFields(*style2)[0]);
+  EXPECT_EQ("width_",
+            ComputedStyleBase::DebugFieldToString(DebugField::width_));
 }
 
 #endif  // #if DCHECK_IS_ON()
+
+TEST_F(ComputedStyleTest, LogicalScrollPaddingUtils) {
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
+
+  Length left = Length::Fixed(1.0f);
+  Length right = Length::Fixed(2.0f);
+  Length top = Length::Fixed(3.0f);
+  Length bottom = Length::Fixed(4.0f);
+
+  style->SetScrollPaddingLeft(left);
+  style->SetScrollPaddingRight(right);
+  style->SetScrollPaddingTop(top);
+  style->SetScrollPaddingBottom(bottom);
+
+  // ltr
+
+  style->SetDirection(TextDirection::kLtr);
+  style->SetWritingMode(WritingMode::kHorizontalTb);
+  EXPECT_EQ(left, style->ScrollPaddingInlineStart());
+  EXPECT_EQ(right, style->ScrollPaddingInlineEnd());
+  EXPECT_EQ(top, style->ScrollPaddingBlockStart());
+  EXPECT_EQ(bottom, style->ScrollPaddingBlockEnd());
+
+  style->SetDirection(TextDirection::kLtr);
+  style->SetWritingMode(WritingMode::kVerticalLr);
+  EXPECT_EQ(top, style->ScrollPaddingInlineStart());
+  EXPECT_EQ(bottom, style->ScrollPaddingInlineEnd());
+  EXPECT_EQ(left, style->ScrollPaddingBlockStart());
+  EXPECT_EQ(right, style->ScrollPaddingBlockEnd());
+
+  style->SetDirection(TextDirection::kLtr);
+  style->SetWritingMode(WritingMode::kVerticalRl);
+  EXPECT_EQ(top, style->ScrollPaddingInlineStart());
+  EXPECT_EQ(bottom, style->ScrollPaddingInlineEnd());
+  EXPECT_EQ(right, style->ScrollPaddingBlockStart());
+  EXPECT_EQ(left, style->ScrollPaddingBlockEnd());
+
+  // rtl
+
+  style->SetDirection(TextDirection::kRtl);
+  style->SetWritingMode(WritingMode::kHorizontalTb);
+  EXPECT_EQ(right, style->ScrollPaddingInlineStart());
+  EXPECT_EQ(left, style->ScrollPaddingInlineEnd());
+  EXPECT_EQ(top, style->ScrollPaddingBlockStart());
+  EXPECT_EQ(bottom, style->ScrollPaddingBlockEnd());
+
+  style->SetDirection(TextDirection::kRtl);
+  style->SetWritingMode(WritingMode::kVerticalLr);
+  EXPECT_EQ(bottom, style->ScrollPaddingInlineStart());
+  EXPECT_EQ(top, style->ScrollPaddingInlineEnd());
+  EXPECT_EQ(left, style->ScrollPaddingBlockStart());
+  EXPECT_EQ(right, style->ScrollPaddingBlockEnd());
+
+  style->SetDirection(TextDirection::kRtl);
+  style->SetWritingMode(WritingMode::kVerticalRl);
+  EXPECT_EQ(bottom, style->ScrollPaddingInlineStart());
+  EXPECT_EQ(top, style->ScrollPaddingInlineEnd());
+  EXPECT_EQ(right, style->ScrollPaddingBlockStart());
+  EXPECT_EQ(left, style->ScrollPaddingBlockEnd());
+}
 
 }  // namespace blink

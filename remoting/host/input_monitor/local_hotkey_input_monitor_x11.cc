@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/host/input_monitor/local_input_monitor_x11_common.h"
@@ -81,7 +81,7 @@ class LocalHotkeyInputMonitorX11 : public LocalHotkeyInputMonitor {
     // True when Ctrl is pressed.
     bool ctrl_pressed_ = false;
 
-    x11::Connection* connection_ = nullptr;
+    raw_ptr<x11::Connection> connection_ = nullptr;
   };
 
   scoped_refptr<Core> core_;

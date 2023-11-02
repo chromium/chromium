@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,6 @@
 GuideName* const kContentAreaGuide = @"ContentAreaGuide";
 GuideName* const kPrimaryToolbarGuide = @"kPrimaryToolbarGuide";
 GuideName* const kSecondaryToolbarGuide = @"kSecondaryToolbarGuide";
-GuideName* const kSecondaryToolbarNoFullscreenGuide =
-    @"kSecondaryToolbarNoFullscreenGuide";
 GuideName* const kBadgeOverflowMenuGuide = @"kBadgeOverflowMenuGuide";
 GuideName* const kOmniboxGuide = @"kOmniboxGuide";
 GuideName* const kOmniboxLeadingImageGuide = @"kOmniboxLeadingImageGuide";
@@ -22,10 +20,10 @@ GuideName* const kForwardButtonGuide = @"kForwardButtonGuide";
 GuideName* const kNewTabButtonGuide = @"kNewTabButtonGuide";
 GuideName* const kTabSwitcherGuide = @"kTabSwitcherGuide";
 GuideName* const kToolsMenuGuide = @"kToolsMenuGuide";
-GuideName* const kTranslateInfobarOptionsGuide =
-    @"kTranslateInfobarOptionsGuide";
 GuideName* const kVoiceSearchButtonGuide = @"kVoiceSearchButtonGuide";
 GuideName* const kDiscoverFeedHeaderMenuGuide = @"kDiscoverFeedHeaderMenuGuide";
 GuideName* const kPrimaryToolbarLocationViewGuide =
     @"kPrimaryToolbarLocationViewGuide";
 GuideName* const kTabGridBottomToolbarGuide = @"kTabGridBottomToolbarGuide";
+GuideName* const kAutofillFirstSuggestionGuide =
+    @"kAutofillFirstSuggestionGuide";

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,13 @@
 
 #include "base/bind.h"
 #include "base/strings/strcat.h"
+#include "components/crash/core/common/crash_key.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "storage/browser/blob/blob_impl.h"
 #include "storage/browser/blob/blob_url_loader_factory.h"
 #include "storage/browser/blob/blob_url_registry.h"
 #include "storage/browser/blob/blob_url_utils.h"
+#include "url/url_util.h"
 
 namespace storage {
 
@@ -59,9 +61,9 @@ class BlobURLTokenImpl : public blink::mojom::BlobURLToken {
   const base::UnguessableToken token_;
 };
 
-BlobURLStoreImpl::BlobURLStoreImpl(const url::Origin& origin,
+BlobURLStoreImpl::BlobURLStoreImpl(const blink::StorageKey& storage_key,
                                    base::WeakPtr<BlobUrlRegistry> registry)
-    : origin_(origin), registry_(std::move(registry)) {}
+    : storage_key_(storage_key), registry_(std::move(registry)) {}
 
 BlobURLStoreImpl::~BlobURLStoreImpl() {
   if (registry_) {
@@ -73,8 +75,9 @@ BlobURLStoreImpl::~BlobURLStoreImpl() {
 void BlobURLStoreImpl::Register(
     mojo::PendingRemote<blink::mojom::Blob> blob,
     const GURL& url,
-    // TODO(https://crbug.com/1224926): Remove this once experiment is over.
+    // TODO(https://crbug.com/1224926): Remove these once experiment is over.
     const base::UnguessableToken& unsafe_agent_cluster_id,
+    const absl::optional<net::SchemefulSite>& unsafe_top_level_site,
     RegisterCallback callback) {
   // TODO(mek): Generate blob URLs here, rather than validating the URLs the
   // renderer process generated.
@@ -84,7 +87,8 @@ void BlobURLStoreImpl::Register(
   }
 
   if (registry_)
-    registry_->AddUrlMapping(url, std::move(blob), unsafe_agent_cluster_id);
+    registry_->AddUrlMapping(url, std::move(blob), unsafe_agent_cluster_id,
+                             unsafe_top_level_site);
   urls_.insert(url);
   std::move(callback).Run();
 }
@@ -112,10 +116,16 @@ void BlobURLStoreImpl::ResolveAsURLLoaderFactory(
     const GURL& url,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
     ResolveAsURLLoaderFactoryCallback callback) {
-  BlobURLLoaderFactory::Create(
-      registry_ ? registry_->GetBlobFromUrl(url) : mojo::NullRemote(), url,
-      std::move(receiver));
-  std::move(callback).Run(registry_->GetUnsafeAgentClusterID(url));
+  if (!registry_) {
+    BlobURLLoaderFactory::Create(mojo::NullRemote(), url, std::move(receiver));
+    std::move(callback).Run(absl::nullopt, absl::nullopt);
+    return;
+  }
+
+  BlobURLLoaderFactory::Create(registry_->GetBlobFromUrl(url), url,
+                               std::move(receiver));
+  std::move(callback).Run(registry_->GetUnsafeAgentClusterID(url),
+                          registry_->GetUnsafeTopLevelSite(url));
 }
 
 void BlobURLStoreImpl::ResolveForNavigation(
@@ -137,6 +147,15 @@ void BlobURLStoreImpl::ResolveForNavigation(
 
 bool BlobURLStoreImpl::BlobUrlIsValid(const GURL& url,
                                       const char* method) const {
+  // TODO(crbug.com/1278268): Remove crash keys.
+  url::Origin storage_key_origin = storage_key_.origin();
+  static crash_reporter::CrashKeyString<256> origin_key("origin");
+  static crash_reporter::CrashKeyString<256> url_key("url");
+  crash_reporter::ScopedCrashKeyString scoped_origin_key(
+      &origin_key, storage_key_origin.GetDebugString());
+  crash_reporter::ScopedCrashKeyString scoped_url_key(
+      &url_key, url.possibly_invalid_spec());
+
   if (!url.SchemeIsBlob()) {
     mojo::ReportBadMessage(
         base::StrCat({"Invalid scheme passed to BlobURLStore::", method}));
@@ -148,13 +167,18 @@ bool BlobURLStoreImpl::BlobUrlIsValid(const GURL& url,
   // `origin_` will always be a non-opaque file: origin for pages loaded from
   // file:// URLs. To deal with this, we treat file:// origins and
   // opaque origins separately from non-opaque origins.
+  // URLs created by blink::BlobURL::CreateBlobURL() will always get "blank" as
+  // origin if the scheme is local, which usually includes the file scheme and
+  // on Android also the content scheme.
   bool valid_origin = true;
   if (url_origin.scheme() == url::kFileScheme) {
-    valid_origin = origin_.scheme() == url::kFileScheme;
+    valid_origin = storage_key_origin.scheme() == url::kFileScheme;
   } else if (url_origin.opaque()) {
-    valid_origin = origin_.opaque() || origin_.scheme() == url::kFileScheme;
+    valid_origin =
+        storage_key_origin.opaque() ||
+        base::Contains(url::GetLocalSchemes(), storage_key_origin.scheme());
   } else {
-    valid_origin = origin_ == url_origin;
+    valid_origin = storage_key_origin == url_origin;
   }
   if (!valid_origin) {
     mojo::ReportBadMessage(base::StrCat(

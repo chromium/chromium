@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
@@ -24,14 +23,15 @@ class HttpRequestHeaders;
 class HttpAuthController;
 class NetLogWithSource;
 
+// A common base class for a stream socket tunneled through a proxy.
 class NET_EXPORT_PRIVATE ProxyClientSocket : public StreamSocket {
  public:
-  ProxyClientSocket() {}
+  ProxyClientSocket() = default;
 
   ProxyClientSocket(const ProxyClientSocket&) = delete;
   ProxyClientSocket& operator=(const ProxyClientSocket&) = delete;
 
-  ~ProxyClientSocket() override {}
+  ~ProxyClientSocket() override = default;
 
   // Returns the HttpResponseInfo (including HTTP Headers) from
   // the response to the CONNECT request.
@@ -51,12 +51,6 @@ class NET_EXPORT_PRIVATE ProxyClientSocket : public StreamSocket {
   // ProxyClientSocket implementations will be restartable.  Such
   // implementations should disconnect themselves and return OK.
   virtual int RestartWithAuth(CompletionOnceCallback callback) = 0;
-
-  // Returns true of the connection to the proxy is using SPDY.
-  virtual bool IsUsingSpdy() const = 0;
-
-  // Returns the protocol negotiated with the proxy.
-  virtual NextProto GetProxyNegotiatedProtocol() const = 0;
 
   // Set the priority of the underlying stream (for SPDY and QUIC)
   virtual void SetStreamPriority(RequestPriority priority);

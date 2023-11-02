@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,9 @@
 #include "base/win/wincrypt_shim.h"
 #include "crypto/scoped_capi_types.h"
 #include "net/cert/cert_net_fetcher.h"
-#include "net/cert/internal/cert_errors.h"
-#include "net/cert/internal/parsed_certificate.h"
-#include "net/cert/internal/test_helpers.h"
+#include "net/cert/pki/cert_errors.h"
+#include "net/cert/pki/parsed_certificate.h"
+#include "net/cert/pki/test_helpers.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/cert/x509_util_win.h"
@@ -65,7 +65,7 @@ bool AddToStore(HCERTSTORE store, const std::string file_name) {
       X509_ASN_ENCODING, CRYPTO_BUFFER_data(cert->cert_buffer()),
       CRYPTO_BUFFER_len(cert->cert_buffer())));
   return CertAddCertificateContextToStore(store, os_cert.get(),
-                                          CERT_STORE_ADD_ALWAYS, NULL);
+                                          CERT_STORE_ADD_ALWAYS, nullptr);
 }
 
 // Returns true if cert at file_name successfully added to store with
@@ -93,7 +93,7 @@ bool AddToStoreWithEKURestriction(HCERTSTORE store,
     }
   }
   return !!CertAddCertificateContextToStore(store, os_cert.get(),
-                                            CERT_STORE_ADD_ALWAYS, NULL);
+                                            CERT_STORE_ADD_ALWAYS, nullptr);
 }
 
 // TrustStoreWin isset up as follows:
@@ -127,7 +127,7 @@ TEST(TrustStoreWin, GetTrust) {
     CertificateTrustType expected_result;
   } kTestData[] = {
       // Explicitly trusted root should be trusted.
-      {kMultiRootDByD, CertificateTrustType::TRUSTED_ANCHOR},
+      {kMultiRootDByD, CertificateTrustType::TRUSTED_ANCHOR_WITH_EXPIRATION},
       // Intermediate for path building should not be trusted.
       {kMultiRootCByD, CertificateTrustType::UNSPECIFIED},
       // Unknown roots should not be trusted (e.g. just because they're
@@ -150,12 +150,8 @@ TEST(TrustStoreWin, GetTrust) {
 //
 // - kMultiRootDByD: only has szOID_PKIX_KP_SERVER_AUTH EKU set
 // - kMultiRootEByE: only has szOID_PKIX_KP_CLIENT_AUTH set
+// - kMultiRootCByE: only has szOID_ANY_ENHANCED_KEY_USAGE set
 // - kMultiRootCByD: no EKU usages set
-//
-// And the intermediate store as follows:
-//
-// - kMultiRootCByE: only has szOID_PKIX_KP_CLIENT_AUTH set
-// - kMultiRootCByD: only has szOID_PKIX_KP_SERVER_AUTH EKU set
 TEST(TrustStoreWin, GetTrustRestrictedEKU) {
   crypto::ScopedHCERTSTORE root_store(CertOpenStore(
       CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
@@ -168,12 +164,10 @@ TEST(TrustStoreWin, GetTrustRestrictedEKU) {
                                            szOID_PKIX_KP_SERVER_AUTH));
   ASSERT_TRUE(AddToStoreWithEKURestriction(root_store.get(), kMultiRootEByE,
                                            szOID_PKIX_KP_CLIENT_AUTH));
+  ASSERT_TRUE(AddToStoreWithEKURestriction(root_store.get(), kMultiRootCByE,
+                                           szOID_ANY_ENHANCED_KEY_USAGE));
   ASSERT_TRUE(
       AddToStoreWithEKURestriction(root_store.get(), kMultiRootCByD, nullptr));
-  ASSERT_TRUE(AddToStoreWithEKURestriction(
-      intermediate_store.get(), kMultiRootCByE, szOID_PKIX_KP_CLIENT_AUTH));
-  ASSERT_TRUE(AddToStoreWithEKURestriction(
-      intermediate_store.get(), kMultiRootCByD, szOID_PKIX_KP_SERVER_AUTH));
   std::unique_ptr<TrustStoreWin> trust_store_win =
       TrustStoreWin::CreateForTesting(std::move(root_store),
                                       std::move(intermediate_store),
@@ -185,16 +179,15 @@ TEST(TrustStoreWin, GetTrustRestrictedEKU) {
   } kTestData[] = {
       // Root cert with EKU szOID_PKIX_KP_SERVER_AUTH usage set should be
       // trusted.
-      {kMultiRootDByD, CertificateTrustType::TRUSTED_ANCHOR},
+      {kMultiRootDByD, CertificateTrustType::TRUSTED_ANCHOR_WITH_EXPIRATION},
+      // Root cert with EKU szOID_ANY_ENHANCED_KEY_USAGE usage set should be
+      // trusted.
+      {kMultiRootCByE, CertificateTrustType::TRUSTED_ANCHOR_WITH_EXPIRATION},
       // Root cert with EKU szOID_PKIX_KP_CLIENT_AUTH does not allow usage of
-      // cert for server auth.
-      {kMultiRootEByE, CertificateTrustType::DISTRUSTED},
-      // Root cert with no EKU usages but is also an intermediate cert that is
-      // allowed for server auth, so we let it be used for path building.
+      // cert for server auth, return UNSPECIFIED.
+      {kMultiRootEByE, CertificateTrustType::UNSPECIFIED},
+      // Root cert with no EKU usages, return UNSPECIFIED.
       {kMultiRootCByD, CertificateTrustType::UNSPECIFIED},
-      // Intermediate cert with EKU szOID_PKIX_KP_CLIENT_AUTH does not allow
-      // usage of cert for server auth.
-      {kMultiRootCByE, CertificateTrustType::DISTRUSTED},
       // Unknown cert has unspecified trust.
       {kMultiRootFByE, CertificateTrustType::UNSPECIFIED},
   };
@@ -209,7 +202,17 @@ TEST(TrustStoreWin, GetTrustRestrictedEKU) {
 }
 
 // Test if duplicate certs are added to the root and intermediate stores,
-// possibly with different EKU usages.
+// possibly with different EKU usages. Root store set up as follows:
+//
+// - kMultiRootDByD: only has szOID_PKIX_KP_CLIENT_AUTH EKU set
+// - kMultiRootDByD (dupe): only has szOID_PKIX_KP_SERVER_AUTH set
+// - kMultiRootDByD (dupe 2): no EKU usages set
+//
+// And the intermediate store as follows:
+//
+// - kMultiRootCByD: only has szOID_PKIX_KP_CLIENT_AUTH set
+// - kMultiRootCByD (dupe): only has szOID_PKIX_KP_SERVER_AUTH EKU set
+
 TEST(TrustStoreWin, GetTrustRestrictedEKUDuplicateCerts) {
   crypto::ScopedHCERTSTORE root_store(CertOpenStore(
       CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
@@ -224,10 +227,6 @@ TEST(TrustStoreWin, GetTrustRestrictedEKUDuplicateCerts) {
                                            szOID_PKIX_KP_SERVER_AUTH));
   ASSERT_TRUE(
       AddToStoreWithEKURestriction(root_store.get(), kMultiRootDByD, nullptr));
-  ASSERT_TRUE(AddToStoreWithEKURestriction(
-      intermediate_store.get(), kMultiRootCByD, szOID_PKIX_KP_SERVER_AUTH));
-  ASSERT_TRUE(AddToStoreWithEKURestriction(
-      intermediate_store.get(), kMultiRootCByD, szOID_PKIX_KP_SERVER_AUTH));
   std::unique_ptr<TrustStoreWin> trust_store_win =
       TrustStoreWin::CreateForTesting(std::move(root_store),
                                       std::move(intermediate_store),
@@ -237,10 +236,8 @@ TEST(TrustStoreWin, GetTrustRestrictedEKUDuplicateCerts) {
     base::StringPiece file_name;
     CertificateTrustType expected_result;
   } kTestData[] = {
-      {kMultiRootDByD, CertificateTrustType::DISTRUSTED},
-      // Root cert with no EKU usages but is also an intermediate cert that is
-      // allowed for server auth, so we let it be used for path building.
-      {kMultiRootCByD, CertificateTrustType::UNSPECIFIED},
+      // One copy of the Root cert is trusted for TLS Server Auth.
+      {kMultiRootDByD, CertificateTrustType::TRUSTED_ANCHOR_WITH_EXPIRATION},
   };
   for (const auto& test_data : kTestData) {
     SCOPED_TRACE(test_data.file_name);
@@ -252,8 +249,7 @@ TEST(TrustStoreWin, GetTrustRestrictedEKUDuplicateCerts) {
   }
 }
 
-// Test that disallowed certs with the right EKU settings will be
-// distrusted.
+// Test that disallowed certs will be distrusted regardless of EKU settings.
 TEST(TrustStoreWin, GetTrustDisallowedCerts) {
   crypto::ScopedHCERTSTORE root_store(CertOpenStore(
       CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
@@ -277,9 +273,8 @@ TEST(TrustStoreWin, GetTrustDisallowedCerts) {
     base::StringPiece file_name;
     CertificateTrustType expected_result;
   } kTestData[] = {
-      // dByD in root, also in distrusted but without szOID_PKIX_KP_SERVER_AUTH
-      // set.
-      {kMultiRootDByD, CertificateTrustType::TRUSTED_ANCHOR},
+      // dByD in root, distrusted but without szOID_PKIX_KP_SERVER_AUTH set.
+      {kMultiRootDByD, CertificateTrustType::DISTRUSTED},
       // dByD in root, also in distrusted with szOID_PKIX_KP_SERVER_AUTH set.
       {kMultiRootEByE, CertificateTrustType::DISTRUSTED},
   };

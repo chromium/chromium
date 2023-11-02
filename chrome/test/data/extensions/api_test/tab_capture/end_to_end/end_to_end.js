@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -240,7 +240,3 @@ chrome.test.runTests([
         });
   }
 ]);
-
-// TODO(miu): Once the WebAudio API is finalized, we should add a test to emit a
-// tone from the sender page, and have the receiver page check for the audio
-// tone.

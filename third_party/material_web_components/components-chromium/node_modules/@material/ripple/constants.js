@@ -43,6 +43,6 @@ export var numbers = {
     FG_DEACTIVATION_MS: 150,
     INITIAL_ORIGIN_SCALE: 0.6,
     PADDING: 10,
-    TAP_DELAY_MS: 300,
+    TAP_DELAY_MS: 300, // Delay between touch and simulated mouse events on touch devices
 };
 //# sourceMappingURL=constants.js.map

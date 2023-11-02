@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 66 tests; 0 PASS, 66 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 61 tests; 0 PASS, 61 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL round(23px, 10px) should be used-value-equivalent to 20px assert_not_equals: round(23px, 10px) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
 FAIL round(18px, 10px) should be used-value-equivalent to 20px assert_not_equals: round(18px, 10px) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
 FAIL round(15px, 10px) should be used-value-equivalent to 20px assert_not_equals: round(15px, 10px) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
@@ -36,16 +36,11 @@ FAIL round(15px, -10px) should be used-value-equivalent to 20px assert_not_equal
 FAIL round(13px, -10px) should be used-value-equivalent to 10px assert_not_equals: round(13px, -10px) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
 FAIL round(-13px, -10px) should be used-value-equivalent to -10px assert_not_equals: round(-13px, -10px) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
 FAIL round(-18px, -10px) should be used-value-equivalent to -20px assert_not_equals: round(-18px, -10px) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
-FAIL round(5, 0) should be used-value-equivalent to calc(NaN) assert_not_equals: round(5, 0) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
-FAIL calc(-1 * round(5, 0)) should be used-value-equivalent to calc(NaN) assert_not_equals: calc(-1 * round(5, 0)) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
-FAIL round(infinity, infinity) should be used-value-equivalent to calc(NaN) assert_not_equals: round(infinity, infinity) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
-FAIL calc(-1 * round(infinity, infinity)) should be used-value-equivalent to calc(NaN) assert_not_equals: calc(-1 * round(infinity, infinity)) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
-FAIL round(infinity, -infinity) should be used-value-equivalent to calc(NaN) assert_not_equals: round(infinity, -infinity) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
-FAIL calc(-1 * round(infinity, -infinity)) should be used-value-equivalent to calc(NaN) assert_not_equals: calc(-1 * round(infinity, -infinity)) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
-FAIL round(-infinity, infinity) should be used-value-equivalent to calc(NaN) assert_not_equals: round(-infinity, infinity) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
-FAIL calc(-1 * round(-infinity, infinity)) should be used-value-equivalent to calc(NaN) assert_not_equals: calc(-1 * round(-infinity, infinity)) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
-FAIL round(-infinity, -infinity) should be used-value-equivalent to calc(NaN) assert_not_equals: round(-infinity, -infinity) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
-FAIL calc(-1 * round(-infinity, -infinity)) should be used-value-equivalent to calc(NaN) assert_not_equals: calc(-1 * round(-infinity, -infinity)) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+FAIL round(5, 0) should be used-value-equivalent to calc(infinity) assert_not_equals: round(5, 0) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+FAIL round(infinity, infinity) should be used-value-equivalent to calc(infinity) assert_not_equals: round(infinity, infinity) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+FAIL round(infinity, -infinity) should be used-value-equivalent to calc(infinity) assert_not_equals: round(infinity, -infinity) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+FAIL round(-infinity, infinity) should be used-value-equivalent to calc(infinity) assert_not_equals: round(-infinity, infinity) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+FAIL round(-infinity, -infinity) should be used-value-equivalent to calc(infinity) assert_not_equals: round(-infinity, -infinity) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
 FAIL round(infinity, 5) should be used-value-equivalent to calc(infinity) assert_not_equals: round(infinity, 5) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
 FAIL round(infinity, -5) should be used-value-equivalent to calc(infinity) assert_not_equals: round(infinity, -5) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
 FAIL round(-infinity, 5) should be used-value-equivalent to calc(-infinity) assert_not_equals: round(-infinity, 5) isn't valid in 'transform'; got the default value instead. got disallowed value "none"

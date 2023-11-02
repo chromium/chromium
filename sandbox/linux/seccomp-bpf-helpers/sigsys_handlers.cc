@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include <unistd.h>
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/debug/crash_logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
@@ -41,9 +40,7 @@
 
 namespace {
 
-#if !defined(OS_NACL_NONSFI)
 base::debug::CrashKeyString* seccomp_crash_key = nullptr;
-#endif
 
 inline bool IsArchitectureX86_64() {
 #if defined(__x86_64__)
@@ -151,7 +148,6 @@ class NumberToHex {
 // Records the syscall number and first four arguments in a crash key, to help
 // debug the failure.
 void SetSeccompCrashKey(const struct arch_seccomp_data& args) {
-#if !defined(OS_NACL_NONSFI)
   NumberToHex<int> nr(args.nr);
   NumberToHex<uint64_t> arg1(args.args[0]);
   NumberToHex<uint64_t> arg2(args.args[1]);
@@ -186,7 +182,7 @@ void SetSeccompCrashKey(const struct arch_seccomp_data& args) {
   memset(crash_key, '\0', crash_key_length);
 
   size_t offset = 0;
-  for (size_t i = 0; i < base::size(values); ++i) {
+  for (size_t i = 0; i < std::size(values); ++i) {
     const char* strings[2] = { prefixes[i], values[i] };
     for (auto* string : strings) {
       size_t string_len = strlen(string);
@@ -196,7 +192,6 @@ void SetSeccompCrashKey(const struct arch_seccomp_data& args) {
   }
 
   base::debug::SetCrashKeyString(seccomp_crash_key, crash_key);
-#endif
 }
 
 }  // namespace
@@ -413,13 +408,11 @@ bpf_dsl::ResultExpr RewriteFstatatSIGSYS(int fs_denied_errno) {
 }
 
 void AllocateCrashKeys() {
-#if !defined(OS_NACL_NONSFI)
   if (seccomp_crash_key)
     return;
 
   seccomp_crash_key = base::debug::AllocateCrashKeyString(
       "seccomp-sigsys", base::debug::CrashKeySize::Size256);
-#endif
 }
 
 const char* GetErrorMessageContentForTests() {

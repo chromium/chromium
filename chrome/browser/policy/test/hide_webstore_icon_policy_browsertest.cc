@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,7 +64,7 @@ IN_PROC_BROWSER_TEST_F(PolicyWebStoreIconTest, AppsWebStoreIconHidden) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Look for web store's app ID in the apps page.
   EXPECT_TRUE(
       ContainsVisibleElement(contents, "ahfgeienlihckogmohjhadlkjgocpleb"));

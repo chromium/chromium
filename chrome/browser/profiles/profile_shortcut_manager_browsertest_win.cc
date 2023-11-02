@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_shortcut_manager_win.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
@@ -77,10 +78,8 @@ IN_PROC_BROWSER_TEST_F(ProfileShortcutManagerBrowserTest,
   // number of profiles is one.
   base::FilePath path_profile2 =
       g_browser_process->profile_manager()->GenerateNextProfileDirectoryPath();
-  g_browser_process->profile_manager()->CreateProfileAsync(
-      path_profile2, ProfileManager::CreateCallback());
-
-  content::RunAllTasksUntilIdle();
+  profiles::testing::CreateProfileSync(g_browser_process->profile_manager(),
+                                       path_profile2);
 
   // This is for triggering a profile icon update on the next run. 1 is just a
   // small enough number for kCurrentProfileIconVersion.

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -37,7 +38,7 @@ class PasswordReuseDetectionManager : public PasswordReuseDetectorConsumer {
   ~PasswordReuseDetectionManager() override;
   void DidNavigateMainFrame(const GURL& main_frame_url);
   void OnKeyPressedCommitted(const std::u16string& text);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void OnKeyPressedUncommitted(const std::u16string& text);
 #endif
   void OnPaste(const std::u16string text);
@@ -48,7 +49,9 @@ class PasswordReuseDetectionManager : public PasswordReuseDetectorConsumer {
       size_t password_length,
       absl::optional<PasswordHashData> reused_protected_password_hash,
       const std::vector<MatchingReusedCredential>& matching_reused_credentials,
-      int saved_passwords) override;
+      int saved_passwords,
+      const std::string& domain,
+      uint64_t reused_password_hash) override;
 
   void SetClockForTesting(base::Clock* clock);
 
@@ -61,12 +64,12 @@ class PasswordReuseDetectionManager : public PasswordReuseDetectorConsumer {
 
   void CheckStoresForReuse(const std::u16string& input);
 
-  PasswordManagerClient* client_;
+  raw_ptr<PasswordManagerClient> client_;
   std::u16string input_characters_;
   GURL main_frame_url_;
   base::Time last_keystroke_time_;
   // Used to retrieve the current time, in base::Time units.
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
   bool reuse_on_this_page_was_found_ = false;
 };
 

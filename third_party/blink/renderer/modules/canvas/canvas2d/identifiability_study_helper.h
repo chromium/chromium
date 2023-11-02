@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -126,15 +126,15 @@ class IdentifiabilityStudyHelper final {
   // Returns an IdentifiableToken representing the internal computed digest.
   IdentifiableToken GetToken() const { return builder_.GetToken(); }
 
-  bool encountered_skipped_ops() const WARN_UNUSED_RESULT {
+  [[nodiscard]] bool encountered_skipped_ops() const {
     return encountered_skipped_ops_;
   }
 
-  bool encountered_sensitive_ops() const WARN_UNUSED_RESULT {
+  [[nodiscard]] bool encountered_sensitive_ops() const {
     return encountered_sensitive_ops_;
   }
 
-  bool encountered_partially_digested_image() const WARN_UNUSED_RESULT {
+  [[nodiscard]] bool encountered_partially_digested_image() const {
     return encountered_partially_digested_image_;
   }
 
@@ -180,7 +180,7 @@ class IdentifiabilityStudyHelper final {
   void AddTokens() {}
 
   const bool is_canvas_type_allowed_ =
-      IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+      IdentifiabilityStudySettings::Get()->ShouldSampleType(
           blink::IdentifiableSurface::Type::kCanvasReadback);
 
   Member<ExecutionContext> execution_context_;

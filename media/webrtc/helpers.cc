@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,10 @@
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "media/webrtc/webrtc_features.h"
-#include "third_party/webrtc/api/audio/echo_canceller3_config.h"
-#include "third_party/webrtc/api/audio/echo_canceller3_factory.h"
 #include "third_party/webrtc/modules/audio_processing/aec_dump/aec_dump_factory.h"
 #include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
 
@@ -19,23 +18,26 @@ namespace media {
 namespace {
 
 // The analog gain controller is not supported on mobile - i.e., Android, iOS.
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 constexpr bool kAnalogAgcSupported = false;
 #else
 constexpr bool kAnalogAgcSupported = true;
-#endif  // defined(OS_ANDROID) || defined(OS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 // The analog gain controller can only be disabled on Chromecast.
-#if BUILDFLAG(IS_CHROMECAST)
+//
+// TODO(crbug.com/1336055): kAllowToDisableAnalogAgc should be removed once AGC2
+// is fully launched.
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
 constexpr bool kAllowToDisableAnalogAgc = true;
 #else
 constexpr bool kAllowToDisableAnalogAgc = false;
-#endif  // BUILDFLAG(IS_CHROMECAST)
+#endif
 
 // AGC1 mode.
 using Agc1Mode = webrtc::AudioProcessing::Config::GainController1::Mode;
 // TODO(bugs.webrtc.org/7909): Maybe set mode to kFixedDigital also for IOS.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 constexpr Agc1Mode kAgc1Mode = Agc1Mode::kFixedDigital;
 #else
 constexpr Agc1Mode kAgc1Mode = Agc1Mode::kAdaptiveAnalog;
@@ -203,22 +205,8 @@ webrtc::StreamConfig CreateStreamConfig(const AudioParameters& parameters) {
     channels = std::min(parameters.channels(), 2);
   }
   const int rate = parameters.sample_rate();
-  const bool has_keyboard =
-      parameters.channel_layout() == CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC;
 
-  // webrtc::StreamConfig requires that the keyboard mic channel is not included
-  // in the channel count. It may still be used.
-  if (has_keyboard)
-    channels -= 1;
-  return webrtc::StreamConfig(rate, channels, has_keyboard);
-}
-
-bool LeftAndRightChannelsAreSymmetric(const AudioBus& audio) {
-  if (audio.channels() <= 1) {
-    return true;
-  }
-  return std::equal(audio.channel(0), audio.channel(0) + audio.frames(),
-                    audio.channel(1));
+  return webrtc::StreamConfig(rate, channels);
 }
 
 void StartEchoCancellationDump(webrtc::AudioProcessing* audio_processing,
@@ -247,11 +235,10 @@ void StopEchoCancellationDump(webrtc::AudioProcessing* audio_processing) {
 
 rtc::scoped_refptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
     const AudioProcessingSettings& settings) {
+  if (!settings.NeedWebrtcAudioProcessing())
+    return nullptr;
+
   webrtc::AudioProcessingBuilder ap_builder;
-  if (settings.echo_cancellation) {
-    ap_builder.SetEchoControlFactory(
-        std::make_unique<webrtc::EchoCanceller3Factory>());
-  }
 
   webrtc::AudioProcessing::Config apm_config;
   apm_config.pipeline.multi_channel_render = true;
@@ -262,14 +249,12 @@ rtc::scoped_refptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
   apm_config.noise_suppression.level =
       webrtc::AudioProcessing::Config::NoiseSuppression::Level::kHigh;
   apm_config.echo_canceller.enabled = settings.echo_cancellation;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   apm_config.echo_canceller.mobile_mode = true;
 #else
   apm_config.echo_canceller.mobile_mode = false;
 #endif
-  apm_config.residual_echo_detector.enabled = false;
-
-#if !(defined(OS_ANDROID) || defined(OS_IOS))
+#if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
   apm_config.transient_suppression.enabled =
       settings.transient_noise_suppression;
 #endif

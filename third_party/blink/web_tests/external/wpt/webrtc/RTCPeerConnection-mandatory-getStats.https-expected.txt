@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 75 tests; 71 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 73 tests; 72 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS getStats succeeds
 PASS Validating stats
 PASS RTCRtpStreamStats's ssrc
@@ -9,9 +9,8 @@ PASS RTCRtpStreamStats's codecId
 PASS RTCReceivedRtpStreamStats's packetsReceived
 PASS RTCReceivedRtpStreamStats's packetsLost
 PASS RTCReceivedRtpStreamStats's jitter
-PASS RTCReceivedRtpStreamStats's packetsDiscarded
 PASS RTCReceivedRtpStreamStats's framesDropped
-FAIL RTCInboundRtpStreamStats's receiverId assert_true: Is receiverId present expected true got false
+PASS RTCInboundRtpStreamStats's trackIdentifier
 PASS RTCInboundRtpStreamStats's remoteId
 PASS RTCInboundRtpStreamStats's framesDecoded
 PASS RTCInboundRtpStreamStats's nackCount
@@ -19,11 +18,11 @@ PASS RTCInboundRtpStreamStats's framesReceived
 PASS RTCInboundRtpStreamStats's bytesReceived
 PASS RTCInboundRtpStreamStats's totalAudioEnergy
 PASS RTCInboundRtpStreamStats's totalSamplesDuration
+PASS RTCInboundRtpStreamStats's packetsDiscarded
 PASS RTCRemoteInboundRtpStreamStats's localId
 PASS RTCRemoteInboundRtpStreamStats's roundTripTime
 PASS RTCSentRtpStreamStats's packetsSent
 PASS RTCSentRtpStreamStats's bytesSent
-FAIL RTCOutboundRtpStreamStats's senderId assert_true: Is senderId present expected true got false
 PASS RTCOutboundRtpStreamStats's remoteId
 PASS RTCOutboundRtpStreamStats's framesEncoded
 PASS RTCOutboundRtpStreamStats's nackCount
@@ -47,7 +46,6 @@ PASS RTCAudioSourceStats's totalSamplesDuration
 PASS RTCVideoSourceStats's width
 PASS RTCVideoSourceStats's height
 PASS RTCVideoSourceStats's framesPerSecond
-FAIL RTCMediaHandlerStats's trackIdentifier assert_true: Is trackIdentifier present expected true got false
 PASS RTCCodecStats's payloadType
 PASS RTCCodecStats's mimeType
 PASS RTCCodecStats's clockRate

@@ -1,10 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PowerRoutineResult, RoutineResultInfo, RoutineType, StandardRoutineResult} from 'chrome://diagnostics/diagnostics_types.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
 import {ExecutionProgress, ResultStatusItem, RoutineListExecutor} from 'chrome://diagnostics/routine_list_executor.js';
+import {PowerRoutineResult, RoutineResultInfo, RoutineType, StandardRoutineResult} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
 
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
 
@@ -32,8 +32,8 @@ export function fakeRoutineListExecutorTestSuite() {
    * @param {!Array<!RoutineResultInfo>} routines
    */
   function runRoutinesAndAssertResults(routines) {
-    let expectedCallbacks = [];
-    let routineTypes = [];
+    const expectedCallbacks = [];
+    const routineTypes = [];
     routines.forEach((routine) => {
       // Set the result into the fake.
       assertNotEquals(undefined, routine);
@@ -62,11 +62,11 @@ export function fakeRoutineListExecutorTestSuite() {
 
       // Add the "running" callback to the list.
       let status =
-          new ResultStatusItem(routine.type, ExecutionProgress.kRunning);
+          new ResultStatusItem(routine.type, ExecutionProgress.RUNNING);
       expectedCallbacks.push(status);
 
       // Add the "completed" callback to the list.
-      status = new ResultStatusItem(routine.type, ExecutionProgress.kCompleted);
+      status = new ResultStatusItem(routine.type, ExecutionProgress.COMPLETED);
       status.result = routine.result;
       expectedCallbacks.push(status);
     });
@@ -75,11 +75,11 @@ export function fakeRoutineListExecutorTestSuite() {
     let upto = 0;
 
     /** @type {!function(!ResultStatusItem)} */
-    let statusCallback = (status) => {
+    const statusCallback = (status) => {
       assertTrue(upto < expectedCallbacks.length);
       assertEquals(expectedCallbacks[upto].routine, status.routine);
       assertEquals(expectedCallbacks[upto].progress, status.progress);
-      if (status.progress === ExecutionProgress.kRunning) {
+      if (status.progress === ExecutionProgress.RUNNING) {
         assertEquals(null, status.result);
       } else {
         if (expectedCallbacks[upto].result.hasOwnProperty('simpleResult')) {
@@ -106,7 +106,7 @@ export function fakeRoutineListExecutorTestSuite() {
     /** @type {!Array<!RoutineResultInfo>} */
     const routines = [{
       type: RoutineType.kCpuStress,
-      result: {simpleResult: StandardRoutineResult.kTestFailed}
+      result: {simpleResult: StandardRoutineResult.kTestFailed},
     }];
     return runRoutinesAndAssertResults(routines);
   });
@@ -116,19 +116,19 @@ export function fakeRoutineListExecutorTestSuite() {
     const routines = [
       {
         type: RoutineType.kCpuStress,
-        result: {simpleResult: StandardRoutineResult.kTestPassed}
+        result: {simpleResult: StandardRoutineResult.kTestPassed},
       },
       {
         type: RoutineType.kCpuCache,
-        result: {simpleResult: StandardRoutineResult.kTestFailed}
+        result: {simpleResult: StandardRoutineResult.kTestFailed},
       },
       {
         type: RoutineType.kCpuFloatingPoint,
-        result: {simpleResult: StandardRoutineResult.kTestPassed}
+        result: {simpleResult: StandardRoutineResult.kTestPassed},
       },
       {
         type: RoutineType.kCpuPrime,
-        result: {simpleResult: StandardRoutineResult.kTestFailed}
+        result: {simpleResult: StandardRoutineResult.kTestFailed},
       },
       {
         type: RoutineType.kBatteryCharge,
@@ -137,9 +137,9 @@ export function fakeRoutineListExecutorTestSuite() {
             simpleResult: StandardRoutineResult.kTestFailed,
             isCharging: true,
             percentDelta: 10,
-            timeDeltaSeconds: 10
-          }
-        }
+            timeDeltaSeconds: 10,
+          },
+        },
       },
     ];
 

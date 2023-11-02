@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,14 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/escape.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/identity/identity_api.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/account_consistency_mode_manager.h"
+#include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/base/multilogin_parameters.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/set_accounts_in_cookie_result.h"
@@ -17,7 +21,6 @@
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
-#include "net/base/escape.h"
 #include "net/cookies/cookie_util.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "url/gurl.h"
@@ -28,8 +31,8 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/account_manager/account_manager_util.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/signin/core/browser/consistency_cookie_manager.h"
+#endif
 
 namespace extensions {
 
@@ -56,8 +59,7 @@ GaiaRemoteConsentFlow::GaiaRemoteConsentFlow(
       web_flow_started_(false) {}
 
 GaiaRemoteConsentFlow::~GaiaRemoteConsentFlow() {
-  if (web_flow_)
-    web_flow_.release()->DetachDelegateAndDelete();
+  DetachWebAuthFlow();
 }
 
 void GaiaRemoteConsentFlow::Start() {
@@ -65,6 +67,14 @@ void GaiaRemoteConsentFlow::Start() {
     web_flow_ = std::make_unique<WebAuthFlow>(
         this, profile_, resolution_data_.url, WebAuthFlow::INTERACTIVE,
         WebAuthFlow::GET_AUTH_TOKEN);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // `profile_` may be nullptr in tests.
+    if (profile_) {
+      AccountReconcilorFactory::GetForProfile(profile_)
+          ->GetConsistencyCookieManager()
+          ->AddExtraCookieManager(GetCookieManagerForPartition());
+    }
+#endif
   }
 
   SetAccountsInCookie();
@@ -174,16 +184,23 @@ void GaiaRemoteConsentFlow::OnEndBatchOfRefreshTokenStateChanges() {
   DCHECK(ash::IsAccountManagerAvailable(profile_));
   SetAccountsInCookie();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (IsAccountManagerAvailable(profile_))
+  if (AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile_))
     SetAccountsInCookie();
 #endif
 }
 
 void GaiaRemoteConsentFlow::SetWebAuthFlowForTesting(
     std::unique_ptr<WebAuthFlow> web_auth_flow) {
-  if (web_flow_)
-    web_flow_.release()->DetachDelegateAndDelete();
+  DetachWebAuthFlow();
   web_flow_ = std::move(web_auth_flow);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // `profile_` may be nullptr in tests.
+  if (profile_) {
+    AccountReconcilorFactory::GetForProfile(profile_)
+        ->GetConsistencyCookieManager()
+        ->AddExtraCookieManager(GetCookieManagerForPartition());
+  }
+#endif
 }
 
 void GaiaRemoteConsentFlow::SetAccountsInCookie() {
@@ -231,6 +248,21 @@ void GaiaRemoteConsentFlow::SetAccountsInCookie() {
 void GaiaRemoteConsentFlow::GaiaRemoteConsentFlowFailed(Failure failure) {
   RecordResultHistogram(failure);
   delegate_->OnGaiaRemoteConsentFlowFailed(failure);
+}
+
+void GaiaRemoteConsentFlow::DetachWebAuthFlow() {
+  if (!web_flow_)
+    return;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // `profile_` may be nullptr in tests.
+  if (profile_) {
+    AccountReconcilorFactory::GetForProfile(profile_)
+        ->GetConsistencyCookieManager()
+        ->RemoveExtraCookieManager(GetCookieManagerForPartition());
+  }
+#endif
+  web_flow_.release()->DetachDelegateAndDelete();
 }
 
 }  // namespace extensions

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,8 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.createDefaultTriggerScriptUI;
@@ -31,7 +33,6 @@ import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUi
 import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCssSelector;
 
 import android.os.Build.VERSION_CODES;
-import android.util.Base64;
 
 import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
@@ -48,8 +49,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.FlakyTest;
-import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.Empty;
@@ -61,15 +60,19 @@ import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto
 import org.chromium.chrome.browser.autofill_assistant.proto.TriggerScriptConditionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.TriggerScriptConditionsProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.TriggerScriptProto;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.autofill_assistant.AssistantFeatures;
+import org.chromium.components.autofill_assistant.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.WebContents;
@@ -81,6 +84,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Integration tests for trigger scripts. */
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -127,21 +131,40 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         startAutofillAssistantWithParams(mTestRule.getActivity(), getURL(pageToLoad), parameters);
     }
 
+    /** Returns the value of a boolean pref in the {@link PrefService} attached to the profile. */
+    private boolean getBooleanPref(String preference) {
+        AtomicBoolean result = new AtomicBoolean();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+            result.set(prefService.getBoolean(preference));
+        });
+        return result.get();
+    }
+
+    /** Sets the value of @param preference to @param value. */
+    private void setBooleanPref(String preference, boolean value) {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+            prefService.setBoolean(preference, value);
+        });
+    }
+
     @Before
     public void setUp() {
+        // Prefs are already cleared properly by the {@link AutofillAssistantTestRule}.
         // Enable MSBB.
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
-                                AutofillAssistantUiController.getProfile(), true));
+                                Profile.getLastUsedRegularProfile(), true));
     }
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
+    @EnableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME)
     @DisableIf.
     Build(message = "See https://crbug.com/1199849", sdk_is_greater_than = VERSION_CODES.O_MR1)
-    @FlakyTest(message = "crbug.com/1199416")
+    @DisabledTest(message = "crbug.com/1199416")
     public void setReturningUserFlag() {
         TriggerScriptProto.Builder firstTimeTriggerScript =
                 TriggerScriptProto.newBuilder()
@@ -166,14 +189,13 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                         .addTriggerScripts(firstTimeTriggerScript)
                         .addTriggerScripts(returningUserTriggerScript)
                         .build();
+
+        assertTrue(getBooleanPref(Pref.AUTOFILL_ASSISTANT_TRIGGER_SCRIPTS_IS_FIRST_TIME_USER));
         setupTriggerScripts(triggerScripts);
         startAutofillAssistantOnTab(TEST_PAGE_A);
 
-        Assert.assertTrue(
-                AutofillAssistantPreferencesUtil.isAutofillAssistantFirstTimeTriggerScriptUser());
         waitUntilViewMatchesCondition(withText("First time user"), isCompletelyDisplayed());
-        Assert.assertFalse(
-                AutofillAssistantPreferencesUtil.isAutofillAssistantFirstTimeTriggerScriptUser());
+        assertFalse(getBooleanPref(Pref.AUTOFILL_ASSISTANT_TRIGGER_SCRIPTS_IS_FIRST_TIME_USER));
 
         onView(withText("Not now")).perform(click());
         waitUntilViewMatchesCondition(withText("Returning user"), isCompletelyDisplayed());
@@ -181,7 +203,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
+    @EnableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME)
     public void setCancelForeverFlag() {
         TriggerScriptProto.Builder triggerScript =
                 TriggerScriptProto
@@ -196,7 +218,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         setupTriggerScripts(triggerScripts);
         startAutofillAssistantOnTab(TEST_PAGE_A);
 
-        Assert.assertTrue(AutofillAssistantPreferencesUtil.isProactiveHelpOn());
+        assertTrue(getBooleanPref(Pref.AUTOFILL_ASSISTANT_TRIGGER_SCRIPTS_ENABLED));
         waitUntilViewMatchesCondition(
                 withContentDescription(R.string.autofill_assistant_overflow_options),
                 isCompletelyDisplayed());
@@ -208,14 +230,14 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                 .perform(click());
         waitUntilViewAssertionTrue(
                 withText("Hello world"), doesNotExist(), DEFAULT_MAX_TIME_TO_POLL);
-        Assert.assertFalse(AutofillAssistantPreferencesUtil.isProactiveHelpOn());
+        assertFalse(getBooleanPref(Pref.AUTOFILL_ASSISTANT_TRIGGER_SCRIPTS_ENABLED));
     }
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
+    @EnableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME)
     // Disable translate to prevent the popup from covering part of the website.
-    @Features.DisableFeatures("Translate")
+    @DisableFeatures("Translate")
     public void elementCondition() throws Exception {
         SelectorProto touch_area_four = toCssSelector("#touch_area_one");
         TriggerScriptProto.Builder buttonVisibleTriggerScript =
@@ -253,7 +275,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
+    @EnableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME)
     @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1154682",
             sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q)
     public void
@@ -272,9 +294,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                                                                 .addTriggerScripts(triggerScript)
                                                                 .build();
         setupTriggerScripts(triggerScripts);
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_ONBOARDING_ACCEPTED, false);
+        setBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT, false);
         startAutofillAssistantOnTab(TEST_PAGE_A);
 
         waitUntilViewMatchesCondition(withText("Trigger script"), isCompletelyDisplayed());
@@ -301,13 +321,13 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         waitUntilViewMatchesCondition(withText("Done"), isCompletelyDisplayed());
         onView(withText("Loading regular script")).check(matches(isDisplayed()));
         onView(withId(R.id.step_progress_bar)).check(matches(isDisplayed()));
-        Assert.assertFalse(AutofillAssistantPreferencesUtil.getShowOnboarding());
+        assertTrue(getBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT));
+        assertTrue(getBooleanPref(Pref.AUTOFILL_ASSISTANT_ENABLED));
     }
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
-    @Features.DisableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_DISABLE_ONBOARDING_FLOW)
+    @EnableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME)
     public void transitionToRegularScriptWithoutOnboarding() throws Exception {
         TriggerScriptProto.Builder triggerScript =
                 TriggerScriptProto
@@ -323,9 +343,6 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                                                                 .addTriggerScripts(triggerScript)
                                                                 .build();
         setupTriggerScripts(triggerScripts);
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_ONBOARDING_ACCEPTED, true);
         startAutofillAssistantOnTab(TEST_PAGE_A);
 
         waitUntilViewMatchesCondition(withText("Trigger script"), isCompletelyDisplayed());
@@ -351,37 +368,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
-    public void base64TriggerScriptsDontRequireMSBB() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
-                                AutofillAssistantUiController.getProfile(), false));
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
-
-        TriggerScriptProto.Builder triggerScript =
-                TriggerScriptProto
-                        .newBuilder()
-                        /* no trigger condition */
-                        .setUserInterface(createDefaultTriggerScriptUI("Trigger script",
-                                /* bubbleMessage = */ "",
-                                /* withProgressBar = */ false));
-        GetTriggerScriptsResponseProto triggerScripts = GetTriggerScriptsResponseProto.newBuilder()
-                                                                .addTriggerScripts(triggerScript)
-                                                                .build();
-        byte[] triggerScriptsResponse = triggerScripts.toByteArray();
-        String base64Response = Base64.encodeToString(triggerScriptsResponse, /* offset = */ 0,
-                triggerScriptsResponse.length, Base64.URL_SAFE | Base64.NO_WRAP);
-        Assert.assertEquals(0, base64Response.length() % 4);
-        startAutofillAssistantOnTabWithParams(
-                TEST_PAGE_A, Collections.singletonMap("TRIGGER_SCRIPTS_BASE64", base64Response));
-
-        waitUntilViewMatchesCondition(withText("Trigger script"), isCompletelyDisplayed());
-    }
-
-    @Test
-    @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
+    @EnableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME)
     public void dontShowOnboardingIfAcceptedInDifferentTab() {
         TriggerScriptProto.Builder triggerScript =
                 TriggerScriptProto
@@ -397,16 +384,13 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                                                                 .addTriggerScripts(triggerScript)
                                                                 .build();
         setupTriggerScripts(triggerScripts);
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_ONBOARDING_ACCEPTED, false);
+        setBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT, false);
         startAutofillAssistantOnTab(TEST_PAGE_A);
 
         waitUntilViewMatchesCondition(withText("Trigger script"), isCompletelyDisplayed());
 
         // Simulate the user accepting the onboarding in a different tab.
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_ONBOARDING_ACCEPTED, true);
+        setBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT, true);
 
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(ActionProto.newBuilder()
@@ -429,56 +413,12 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ASSISTANT_DISABLE_ONBOARDING_FLOW,
-            ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP})
-    public void
-    transitionToRegularScriptWithoutOnboardingWithDisableOnboardingFlowFeatureOn()
-            throws Exception {
-        TriggerScriptProto.Builder triggerScript =
-                TriggerScriptProto
-                        .newBuilder()
-                        /* no trigger condition */
-                        .setUserInterface(createDefaultTriggerScriptUI("Trigger script",
-                                /* bubbleMessage = */ "",
-                                /* withProgressBar = */ false)
-                                                  .setRegularScriptLoadingStatusMessage(
-                                                          "Loading regular script"));
-        GetTriggerScriptsResponseProto triggerScripts = GetTriggerScriptsResponseProto.newBuilder()
-                                                                .addTriggerScripts(triggerScript)
-                                                                .build();
-
-        setupTriggerScripts(triggerScripts);
-        AutofillAssistantPreferencesUtil.setInitialPreferences(false);
-        startAutofillAssistantOnTab(TEST_PAGE_A);
-
-        waitUntilViewMatchesCondition(withText("Trigger script"), isCompletelyDisplayed());
-
-        ArrayList<ActionProto> list = new ArrayList<>();
-        list.add(ActionProto.newBuilder()
-                         .setPrompt(PromptProto.newBuilder().addChoices(
-                                 PromptProto.Choice.newBuilder().setChip(
-                                         ChipProto.newBuilder().setText("Done"))))
-                         .build());
-        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                SupportedScriptProto.newBuilder()
-                        .setPath(TEST_PAGE_A)
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
-                        .build(),
-                list);
-        setupRegularScripts(script);
-
-        onView(withText("Continue")).perform(click());
-        waitUntilViewMatchesCondition(withText("Done"), isCompletelyDisplayed());
-        onView(withText("Loading regular script")).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
+    @EnableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME)
     @DisableIf.
     Build(message = "Fails on Lollipop and Marshmallow Tablet Tester, https://crbug.com/1158435",
             sdk_is_less_than = VERSION_CODES.N)
-    public void switchToNewTabAndThenBack() {
+    public void
+    switchToNewTabAndThenBack() {
         TriggerScriptProto.Builder triggerScript =
                 TriggerScriptProto
                         .newBuilder()
@@ -507,8 +447,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ASSISTANT_DISABLE_ONBOARDING_FLOW,
-            ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP})
+    @EnableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME)
     @DisabledTest(message = "https://crbug.com/1232703")
     public void
     testScrollToHide() throws Exception {
@@ -526,7 +465,6 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                         .build();
 
         setupTriggerScripts(triggerScripts);
-        AutofillAssistantPreferencesUtil.setInitialPreferences(false);
         startAutofillAssistantOnTab(TEST_PAGE_A);
 
         waitUntilViewMatchesCondition(withText("Trigger script"), isCompletelyDisplayed());
@@ -585,7 +523,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP,
+    @EnableFeatures({AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME,
             "AutofillAssistantDialogOnboarding"})
     @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1154682",
             sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q)
@@ -605,9 +543,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                                                                 .addTriggerScripts(triggerScript)
                                                                 .build();
         setupTriggerScripts(triggerScripts);
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_ONBOARDING_ACCEPTED, false);
+        setBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT, false);
         startAutofillAssistantOnTab(TEST_PAGE_A);
 
         waitUntilViewMatchesCondition(withText("Trigger script"), isCompletelyDisplayed());
@@ -642,13 +578,14 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         onView(withId(R.id.button_init_ok)).perform(click());
         waitUntilViewMatchesCondition(withText("Done"), isCompletelyDisplayed());
         onView(withText("Loading regular script")).check(matches(isDisplayed()));
-        Assert.assertFalse(AutofillAssistantPreferencesUtil.getShowOnboarding());
+        assertTrue(getBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT));
+        assertTrue(getBooleanPref(Pref.AUTOFILL_ASSISTANT_ENABLED));
     }
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
-    @Features.DisableFeatures("AutofillAssistantDialogOnboarding")
+    @EnableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME)
+    @DisableFeatures("AutofillAssistantDialogOnboarding")
     @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1154682",
             sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q)
     public void
@@ -667,9 +604,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                                                                 .addTriggerScripts(triggerScript)
                                                                 .build();
         setupTriggerScripts(triggerScripts);
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_ONBOARDING_ACCEPTED, false);
+        setBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT, false);
         startAutofillAssistantOnTab(TEST_PAGE_A);
 
         waitUntilViewMatchesCondition(withText("Trigger script"), isCompletelyDisplayed());
@@ -694,12 +629,12 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         // Cancel onboarding.
         onView(withId(R.id.button_init_not_ok)).perform(click());
         waitUntilViewAssertionTrue(withText("Continue"), doesNotExist(), DEFAULT_MAX_TIME_TO_POLL);
-        Assert.assertTrue(AutofillAssistantPreferencesUtil.getShowOnboarding());
+        assertFalse(getBooleanPref(Pref.AUTOFILL_ASSISTANT_CONSENT));
     }
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
+    @EnableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME)
     public void triggerScriptHidesAndShowsForKeyboard() throws Exception {
         TriggerScriptProto.Builder triggerScript =
                 TriggerScriptProto.newBuilder()

@@ -16,18 +16,33 @@ target_cpu = "x86"  # or "x64" if you have an x86_64 emulator
 
 Chromium has a set of prebuilt images stored as CIPD packages. These are used
 by various builders to run tests on the emulator. Their configurations are
-currently stored in `//tools/android/avd/proto`.
+currently stored in [`//tools/android/avd/proto`](../tools/android/avd/proto/).
+You can run this command to list them:
+```sh
+tools/android/avd/avd.py list
+```
 
-| File | Builder |
-|:----:|:-------:|
-| `tools/android/avd/proto/generic_android23.textpb` | [android-marshmallow-x86-rel][android-marshmallow-x86-rel] |
-| `tools/android/avd/proto/generic_android28.textpb` | [android-pie-x86-rel][android-pie-x86-rel] |
-| `tools/android/avd/proto/generic_playstore_android28.textpb` | [android-pie-x86-rel][android-pie-x86-rel] |
+| Configurations | Android Version | AVD Target | Builder |
+|:-------------- |:--------------- |:---------- |:------- |
+| `generic_android19.textpb` | K | google_apis | N/A |
+| `generic_android22.textpb` | L | google_apis | N/A |
+| `generic_android23.textpb` | M | google_apis | [android-marshmallow-x86-rel][android-marshmallow-x86-rel] |
+| `generic_android27.textpb` | O | google_apis | N/A |
+| `generic_playstore_android27.textpb` | O | google_apis_playstore | N/A |
+| `generic_android28.textpb` | P | google_apis | [android-pie-x86-rel][android-pie-x86-rel] |
+| `generic_playstore_android28.textpb` | P | google_apis_playstore | [android-pie-x86-rel][android-pie-x86-rel] |
+| `generic_android29.textpb` | 10 (Q) | google_apis | N/A |
+| `generic_android30.textpb` | 11 (R) | google_apis | [android-11-x86-rel][android-11-x86-rel] |
+| `generic_playstore_android30.textpb` | 11 (R) | google_apis_playstore | [android-11-x86-rel][android-11-x86-rel] |
+| `generic_android31.textpb` | 12 (S) | google_apis | [android-12-x64-rel][android-12-x64-rel] |
+| `generic_playstore_android31.textpb` | 12 (S) | google_apis_playstore | [android-12-x64-rel][android-12-x64-rel] |
 
 You can use these configuration files to run the same emulator images locally.
 
 [android-marshmallow-x86-rel]: https://ci.chromium.org/p/chromium/builders/ci/android-marshmallow-x86-rel
 [android-pie-x86-rel]: https://ci.chromium.org/p/chromium/builders/ci/android-pie-x86-rel
+[android-11-x86-rel]: https://ci.chromium.org/p/chromium/builders/ci/android-11-x86-rel
+[android-12-x64-rel]: https://ci.chromium.org/p/chromium/builders/ci/android-12-x64-rel
 
 #### Prerequisite
 
@@ -101,15 +116,6 @@ down. This is how builders run the emulator.
 The test runner will set up and tear down the emulator on each invocation.
 To manage emulator lifetime independently, use `tools/android/avd/avd.py`.
 
-> Note: Before calling `avd.py start`, use `avd.py install` to install the
-> emulator configuration you intend to use. Otherwise the emulator won't start
-> correctly.
->
-> ```
->   $ tools/android/avd/avd.py install \
->       --avd-config tools/android/avd/proto/generic_android28.textpb
-> ```
-
 ##### Options
 
  * `--avd-config`
@@ -135,6 +141,11 @@ To manage emulator lifetime independently, use `tools/android/avd/avd.py`.
           --emulator-window
     ```
 
+ * `--gpu-mode GPU_MODE`
+
+    Override the mode of hardware OpenGL ES emulation indicated by the AVD.
+    See "emulator -help-gpu" for a full list of modes.
+
  * `--no-read-only`
 
     `avd.py` runs the emulator in read-only mode by default. To run a modifiable
@@ -146,11 +157,35 @@ To manage emulator lifetime independently, use `tools/android/avd/avd.py`.
           --no-read-only
     ```
 
+ * `--wipe-data`
+
+    Since the prebuilt playstore images use adbkey from the GCE bots that created
+    them, they may appear to be "unauthorized" when used locally. Pass this flag
+    to reset the user data image locally to fix it after installing a prebuilt
+    image:
+
+    ```
+      $ tools/android/avd/avd.py start \
+          --avd-config tools/android/avd/proto/generic_playstore_android28.textpb \
+          --wipe-data
+    ```
+
+ * `--writable-system`
+
+    Makes system & vendor image writable. It's necessary to run
+    ```
+    adb root
+    adb remount
+    ```
+    after the emulator starts.
+
  * `--debug-tags`
 
     `avd.py` disables the emulator log by default. When this option is used,
     emulator log will be enabled. It is useful when the emulator cannot be
     launched correctly. See `emulator -help-debug-tags` for a full list of tags.
+    Use `--debug-tags="*"` if you want to output all logs (warning: it is quite
+    verbose).
 
     ```
       $ tools/android/avd/avd.py start \

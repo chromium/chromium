@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -115,9 +115,10 @@ def _DoSpawn(args):
     # These flags are recognized by our test runners, but do not work
     # when running custom scripts.
     runner_args += [
-        '--test-launcher-summary-output=${ISOLATED_OUTDIR}/output.json',
-        '--system-log-file=${ISOLATED_OUTDIR}/system_log'
+        '--test-launcher-summary-output=${ISOLATED_OUTDIR}/output.json'
     ]
+    if 'junit' not in args.target_name:
+      runner_args += ['--system-log-file=${ISOLATED_OUTDIR}/system_log']
   if args.gtest_filter:
     runner_args.append('--gtest_filter=' + args.gtest_filter)
   if args.gtest_repeat:
@@ -245,8 +246,11 @@ def main():
     if 'target_os' in gn_args:
       args.target_os = gn_args['target_os'].strip('"')
     else:
-      args.target_os = { 'darwin': 'mac', 'linux2': 'linux', 'win32': 'win' }[
-                           sys.platform]
+      args.target_os = {
+          'darwin': 'mac',
+          'linux': 'linux',
+          'win32': 'win'
+      }[sys.platform]
 
   if args.swarming_os is None:
     args.swarming_os = {
@@ -265,7 +269,7 @@ def main():
   if args.arch == 'detect':
     if args.target_os not in ('android', 'mac', 'win'):
       executable_info = subprocess.check_output(
-          ['file', os.path.join(args.out_dir, args.target_name)])
+          ['file', os.path.join(args.out_dir, args.target_name)], text=True)
       if 'ARM aarch64' in executable_info:
         args.arch = 'arm64',
       else:

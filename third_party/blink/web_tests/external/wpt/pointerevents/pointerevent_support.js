@@ -1,4 +1,4 @@
-var All_Pointer_Events = [
+const All_Pointer_Events = [
         "pointerdown",
         "pointerup",
         "pointercancel",
@@ -9,6 +9,37 @@ var All_Pointer_Events = [
         "pointerleave",
         "gotpointercapture",
         "lostpointercapture"];
+
+// https://w3c.github.io/pointerevents/#the-button-property
+// Values for the button property, which indicates the device button whose state
+// change fired the event.
+const ButtonChange = {
+  NONE: -1,
+  PEN_CONTACT: 0,
+  TOUCH_CONTACT: 0,
+  LEFT_MOUSE: 0,
+  MIDDLE_MOUSE: 1,
+  RIGHT_MOUSE: 2,
+  X1_MOUSE: 3,
+  X2_MOUSE: 4,
+  PEN_ERASER_BUTTON: 5
+};
+
+// https://w3c.github.io/pointerevents/#the-buttons-property
+// The buttons property gives the current state of the device buttons as a
+// bitmask.
+const ButtonsBitfield = {
+  NONE: 0,
+  PEN_CONTACT: 1,
+  TOUCH_CONTACT: 1,
+  LEFT_MOUSE: 1,
+  RIGHT_MOUSE: 2,
+  PEN_BARREL_BUTTON: 2,
+  MIDDLE_MOUSE: 4,
+  X1_MOUSE: 8,
+  X2_MOUSE: 16,
+  PEN_ERASER_BUTTON: 32
+};
 
 // Check for conformance to PointerEvent interface
 // TA: 1.1, 1.2, 1.6, 1.7, 1.8, 1.9, 1.10, 1.11, 1.12, 1.13
@@ -105,7 +136,7 @@ function check_PointerEvent(event, testNamePrefix) {
         }
     }, pointerTestName + ".pressure value is valid");
 
-    // Check mouse-specific properties
+    // Check mouse-specific properties.
     if (event.pointerType === "mouse") {
         // TA: 1.9, 1.10, 1.13
         test(function () {
@@ -115,7 +146,14 @@ function check_PointerEvent(event, testNamePrefix) {
             assert_equals(event.tiltY, 0, event.type + ".tiltY is 0 for mouse");
             assert_true(event.isPrimary, event.type + ".isPrimary is true for mouse");
         }, pointerTestName + " properties for pointerType = mouse");
-        // Check properties for pointers other than mouse
+    }
+
+    // Check "pointerup" specific properties.
+    if (event.type == "pointerup") {
+        test(function () {
+            assert_equals(event.width, 1, "width of pointerup should be 1");
+            assert_equals(event.height, 1, "height of pointerup should be 1");
+        }, pointerTestName + " properties for pointerup");
     }
 }
 
@@ -452,4 +490,27 @@ function arePointerEventsBeforeCompatMouseEvents(events){
   }
 
   return true;
+}
+
+// Returns a |Promise| that gets resolved with the event object when |target|
+// receives an event of type |event_type|.
+function getEvent(event_type, target) {
+  return new Promise(resolve => {
+    target.addEventListener(event_type, e => resolve(e), {once: true});
+  });
+}
+
+// Returns a |Promise| that gets resolved with |event.data| when |window|
+// receives from |source| a "message" event whose |event.data.type| matches the string
+// |message_data_type|.
+function getMessageData(message_data_type, source) {
+  return new Promise(resolve => {
+    function waitAndRemove(e) {
+      if (e.source != source || !e.data || e.data.type != message_data_type)
+        return;
+      window.removeEventListener("message", waitAndRemove);
+      resolve(e.data);
+    }
+    window.addEventListener("message", waitAndRemove);
+  });
 }

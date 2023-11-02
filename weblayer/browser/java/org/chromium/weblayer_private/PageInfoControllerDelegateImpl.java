@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.webkit.ValueCallback;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.Callback;
@@ -37,6 +36,7 @@ import org.chromium.weblayer_private.interfaces.SettingsIntentHelper;
 import org.chromium.weblayer_private.settings.WebLayerSiteSettingsDelegate;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * WebLayer's customization of PageInfoControllerDelegate.
@@ -84,6 +84,14 @@ public class PageInfoControllerDelegateImpl extends PageInfoControllerDelegate {
         launchIntent(intent);
     }
 
+    @Override
+    public void showAdPersonalizationSettings() {
+        // The Privacy Sandbox currently does not exist on Weblayer, so it will never show the
+        // ad personalization section in PageInfo. When we add support for the Privacy Sandbox,
+        // this method should open a settings page for it.
+        assert false;
+    }
+
     private void launchIntent(Intent intent) {
         // Disabling StrictMode to avoid violations (https://crbug.com/819410).
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
@@ -104,10 +112,10 @@ public class PageInfoControllerDelegateImpl extends PageInfoControllerDelegate {
      * {@inheritDoc}
      */
     @Override
-    @Nullable
+    @NonNull
     public Collection<PageInfoSubpageController> createAdditionalRowViews(
             PageInfoMainController mainController, ViewGroup rowWrapper) {
-        return null;
+        return Collections.emptyList();
     }
 
     /**

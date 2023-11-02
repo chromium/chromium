@@ -1,4 +1,4 @@
-/* Copyright 2015 The Chromium Authors. All rights reserved.
+/* Copyright 2015 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
@@ -12,8 +12,8 @@
  * is eventually consistent with the Chrome pref store.
  */
 
-import {assert} from '//resources/js/assert.m.js';
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from '//resources/js/assert_ts.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrSettingsPrefs} from './prefs_types.js';
 
@@ -46,7 +46,7 @@ function deepEqual(val1: any, val2: any): boolean {
 /**
  * @return Whether the arrays are recursively equal.
  */
-function arraysEqual(arr1: Array<any>, arr2: Array<any>): boolean {
+function arraysEqual(arr1: any[], arr2: any[]): boolean {
   if (arr1.length !== arr2.length) {
     return false;
   }
@@ -98,7 +98,7 @@ function deepCopy(val: any): any {
 /**
  * @return Deep copy of the array.
  */
-function deepCopyArray(arr: Array<any>): Array<any> {
+function deepCopyArray(arr: any[]): any[] {
   const copy = [];
   for (let i = 0; i < arr.length; i++) {
     copy.push(deepCopy(arr[i]));
@@ -159,7 +159,7 @@ export class SettingsPrefsElement extends PolymerElement {
   private settingsApi_: typeof chrome.settingsPrivate = chrome.settingsPrivate;
   private initialized_: boolean = false;
   private boundPrefsChanged_:
-      (prefs: Array<chrome.settingsPrivate.PrefObject>) => void;
+      (prefs: chrome.settingsPrivate.PrefObject[]) => void;
 
   constructor() {
     super();
@@ -169,25 +169,25 @@ export class SettingsPrefsElement extends PolymerElement {
     }
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     CrSettingsPrefs.resetForTesting();
   }
 
   /**
-   * @param opt_settingsApi SettingsPrivate implementation to use
+   * @param settingsApi SettingsPrivate implementation to use
    *     (chrome.settingsPrivate by default).
    */
-  initialize(opt_settingsApi?: typeof chrome.settingsPrivate) {
+  initialize(settingsApi?: typeof chrome.settingsPrivate) {
     // Only initialize once (or after resetForTesting() is called).
     if (this.initialized_) {
       return;
     }
     this.initialized_ = true;
 
-    if (opt_settingsApi) {
-      this.settingsApi_ = opt_settingsApi;
+    if (settingsApi) {
+      this.settingsApi_ = settingsApi;
     }
 
     this.boundPrefsChanged_ = this.onSettingsPrivatePrefsChanged_.bind(this);
@@ -211,11 +211,11 @@ export class SettingsPrefsElement extends PolymerElement {
     // a change event from settingsPrivate could make us call
     // settingsPrivate.setPref and potentially trigger an IPC loop.)
     if (!deepEqual(prefStoreValue, prefObj.value)) {
-      // <if expr="chromeos">
+      // <if expr="chromeos_ash">
       this.dispatchEvent(new CustomEvent('user-action-setting-change', {
         bubbles: true,
         composed: true,
-        detail: {prefKey: key, prefValue: prefObj.value}
+        detail: {prefKey: key, prefValue: prefObj.value},
       }));
       // </if>
 
@@ -230,7 +230,7 @@ export class SettingsPrefsElement extends PolymerElement {
    * Called when prefs in the underlying Chrome pref store are changed.
    */
   private onSettingsPrivatePrefsChanged_(
-      prefs: Array<chrome.settingsPrivate.PrefObject>) {
+      prefs: chrome.settingsPrivate.PrefObject[]) {
     if (CrSettingsPrefs.isInitialized) {
       this.updatePrefs_(prefs);
     }
@@ -240,7 +240,7 @@ export class SettingsPrefsElement extends PolymerElement {
    * Called when prefs are fetched from settingsPrivate.
    */
   private onSettingsPrivatePrefsFetched_(
-      prefs: Array<chrome.settingsPrivate.PrefObject>) {
+      prefs: chrome.settingsPrivate.PrefObject[]) {
     this.updatePrefs_(prefs);
     CrSettingsPrefs.setInitialized();
   }
@@ -294,7 +294,7 @@ export class SettingsPrefsElement extends PolymerElement {
   /**
    * Updates the prefs model with the given prefs.
    */
-  private updatePrefs_(newPrefs: Array<chrome.settingsPrivate.PrefObject>) {
+  private updatePrefs_(newPrefs: chrome.settingsPrivate.PrefObject[]) {
     // Use the existing prefs object or create it.
     const prefs = this.prefs || {};
     newPrefs.forEach((newPrefObj) => {
@@ -350,6 +350,12 @@ export class SettingsPrefsElement extends PolymerElement {
     // Remove the listener added in initialize().
     this.settingsApi_.onPrefsChanged.removeListener(this.boundPrefsChanged_);
     this.settingsApi_ = chrome.settingsPrivate;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-prefs': SettingsPrefsElement;
   }
 }
 

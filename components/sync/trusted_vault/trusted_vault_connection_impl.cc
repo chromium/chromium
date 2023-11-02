@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -119,7 +119,7 @@ sync_pb::JoinSecurityDomainsRequest CreateJoinSecurityDomainsRequest(
   request.mutable_security_domain()->set_name(kSyncSecurityDomainName);
   *request.mutable_security_domain_member() =
       CreateSecurityDomainMember(public_key, authentication_factor_type);
-  for (const auto& trusted_vault_key_and_version :
+  for (const TrustedVaultKeyAndVersion& trusted_vault_key_and_version :
        GetTrustedVaultKeysWithVersions(trusted_vault_keys,
                                        last_trusted_vault_key_version)) {
     *request.add_shared_member_key() =
@@ -241,6 +241,21 @@ void ProcessDownloadIsRecoverabilityDegradedResponse(
   std::move(callback).Run(status);
 }
 
+TrustedVaultURLFetchReasonForUMA
+GetURLFetchReasonForUMAForJoinSecurityDomainsRequest(
+    AuthenticationFactorType authentication_factor_type) {
+  switch (authentication_factor_type) {
+    case AuthenticationFactorType::kPhysicalDevice:
+      return TrustedVaultURLFetchReasonForUMA::kRegisterDevice;
+    case AuthenticationFactorType::kUnspecified:
+      return TrustedVaultURLFetchReasonForUMA::
+          kRegisterUnspecifiedAuthenticationFactor;
+  }
+
+  NOTREACHED();
+  return TrustedVaultURLFetchReasonForUMA::kUnspecified;
+}
+
 }  // namespace
 
 TrustedVaultConnectionImpl::TrustedVaultConnectionImpl(
@@ -298,8 +313,8 @@ TrustedVaultConnectionImpl::DownloadNewKeys(
       GURL(trusted_vault_service_url_.spec() +
            GetGetSecurityDomainMemberURLPathAndQuery(
                device_key_pair->public_key().ExportToBytes())),
-      /*serialized_request_proto=*/absl::nullopt,
-      GetOrCreateURLLoaderFactory());
+      /*serialized_request_proto=*/absl::nullopt, GetOrCreateURLLoaderFactory(),
+      TrustedVaultURLFetchReasonForUMA::kDownloadKeys);
 
   request->FetchAccessTokenAndSendRequest(
       account_info.account_id, access_token_fetcher_.get(),
@@ -321,8 +336,8 @@ TrustedVaultConnectionImpl::DownloadIsRecoverabilityDegraded(
       TrustedVaultRequest::HttpMethod::kGet,
       GURL(trusted_vault_service_url_.spec() +
            kGetSecurityDomainURLPathAndQuery),
-      /*serialized_request_proto=*/absl::nullopt,
-      GetOrCreateURLLoaderFactory());
+      /*serialized_request_proto=*/absl::nullopt, GetOrCreateURLLoaderFactory(),
+      TrustedVaultURLFetchReasonForUMA::kDownloadIsRecoverabilityDegraded);
 
   request->FetchAccessTokenAndSendRequest(
       account_info.account_id, access_token_fetcher_.get(),
@@ -350,7 +365,9 @@ TrustedVaultConnectionImpl::SendJoinSecurityDomainsRequest(
           authentication_factor_public_key, authentication_factor_type,
           authentication_factor_type_hint)
           .SerializeAsString(),
-      GetOrCreateURLLoaderFactory());
+      GetOrCreateURLLoaderFactory(),
+      GetURLFetchReasonForUMAForJoinSecurityDomainsRequest(
+          authentication_factor_type));
 
   request->FetchAccessTokenAndSendRequest(
       account_info.account_id, access_token_fetcher_.get(),

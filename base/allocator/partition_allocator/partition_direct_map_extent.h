@@ -1,16 +1,16 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_DIRECT_MAP_EXTENT_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_DIRECT_MAP_EXTENT_H_
 
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_bucket.h"
 #include "base/allocator/partition_allocator/partition_page.h"
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 template <bool thread_safe>
 struct PartitionDirectMapExtent {
@@ -25,7 +25,7 @@ struct PartitionDirectMapExtent {
   // the allocation.
   size_t padding_for_alignment;
 
-  ALWAYS_INLINE static PartitionDirectMapExtent<thread_safe>* FromSlotSpan(
+  PA_ALWAYS_INLINE static PartitionDirectMapExtent<thread_safe>* FromSlotSpan(
       SlotSpanMetadata<thread_safe>* slot_span);
 };
 
@@ -44,21 +44,32 @@ struct PartitionDirectMapMetadata {
   // super page.
   PartitionBucket<thread_safe> bucket;
   PartitionDirectMapExtent<thread_safe> direct_map_extent;
+
+  PA_ALWAYS_INLINE static PartitionDirectMapMetadata<thread_safe>* FromSlotSpan(
+      SlotSpanMetadata<thread_safe>* slot_span);
 };
 
 template <bool thread_safe>
-ALWAYS_INLINE PartitionDirectMapExtent<thread_safe>*
-PartitionDirectMapExtent<thread_safe>::FromSlotSpan(
+PA_ALWAYS_INLINE PartitionDirectMapMetadata<thread_safe>*
+PartitionDirectMapMetadata<thread_safe>::FromSlotSpan(
     SlotSpanMetadata<thread_safe>* slot_span) {
   PA_DCHECK(slot_span->bucket->is_direct_mapped());
   // |*slot_span| is the first field of |PartitionDirectMapMetadata|, just cast.
   auto* metadata =
       reinterpret_cast<PartitionDirectMapMetadata<thread_safe>*>(slot_span);
   PA_DCHECK(&metadata->page.slot_span_metadata == slot_span);
-  return &metadata->direct_map_extent;
+  return metadata;
 }
 
-}  // namespace internal
-}  // namespace base
+template <bool thread_safe>
+PA_ALWAYS_INLINE PartitionDirectMapExtent<thread_safe>*
+PartitionDirectMapExtent<thread_safe>::FromSlotSpan(
+    SlotSpanMetadata<thread_safe>* slot_span) {
+  PA_DCHECK(slot_span->bucket->is_direct_mapped());
+  return &PartitionDirectMapMetadata<thread_safe>::FromSlotSpan(slot_span)
+              ->direct_map_extent;
+}
+
+}  // namespace partition_alloc::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_DIRECT_MAP_EXTENT_H_

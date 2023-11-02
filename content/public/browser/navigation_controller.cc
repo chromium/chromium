@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,9 @@ namespace content {
 
 NavigationController::LoadURLParams::LoadURLParams(const GURL& url)
     : url(url), is_renderer_initiated(false) {}
+
+NavigationController::LoadURLParams::LoadURLParams(
+    NavigationController::LoadURLParams&&) = default;
 
 NavigationController::LoadURLParams::LoadURLParams(const OpenURLParams& input)
     : url(input.url),
@@ -75,5 +78,9 @@ NavigationController::LoadURLParams::LoadURLParams(const OpenURLParams& input)
 
 NavigationController::LoadURLParams::~LoadURLParams() {
 }
+
+NavigationController::LoadURLParams&
+NavigationController::LoadURLParams::operator=(
+    NavigationController::LoadURLParams&&) = default;
 
 }  // namespace content

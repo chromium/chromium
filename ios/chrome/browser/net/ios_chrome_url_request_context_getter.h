@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ios/chrome/browser/net/net_types.h"
 #include "net/url_request/url_request_context.h"
@@ -24,7 +23,7 @@ class IOSChromeURLRequestContextFactory;
 // the destructor and GetURLRequestContext().
 class IOSChromeURLRequestContextGetter : public net::URLRequestContextGetter {
  public:
-  // Constructs a ChromeURLRequestContextGetter that will use |factory| to
+  // Constructs a ChromeURLRequestContextGetter that will use `factory` to
   // create the URLRequestContext.
   explicit IOSChromeURLRequestContextGetter(
       std::unique_ptr<IOSChromeURLRequestContextFactory> factory);

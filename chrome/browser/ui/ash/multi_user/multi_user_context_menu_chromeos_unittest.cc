@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -104,13 +104,13 @@ TEST_F(MultiUserContextMenuChromeOSTest, OwnedWindow) {
     SetLoggedInUsers(2);
     std::unique_ptr<ui::MenuModel> menu = CreateMultiUserContextMenu(window());
     ASSERT_TRUE(menu.get());
-    EXPECT_EQ(1, menu.get()->GetItemCount());
+    EXPECT_EQ(1u, menu.get()->GetItemCount());
   }
   {
     SetLoggedInUsers(3);
     std::unique_ptr<ui::MenuModel> menu = CreateMultiUserContextMenu(window());
     ASSERT_TRUE(menu.get());
-    EXPECT_EQ(2, menu.get()->GetItemCount());
+    EXPECT_EQ(2u, menu.get()->GetItemCount());
   }
 }
 

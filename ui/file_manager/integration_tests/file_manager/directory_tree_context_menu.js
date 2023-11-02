@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ async function setupForDirectoryTreeContextMenuTest() {
                      lastModifiedTime: 'Jan 1, 1980, 11:59 PM',
                      nameText: 'destination',
                      sizeText: '--',
-                     typeText: 'Folder'
+                     typeText: 'Folder',
                    })]);
   return appId;
 }
@@ -46,7 +46,7 @@ const ITEMS_IN_DEST_DIR_AFTER_PASTE =
       lastModifiedTime: 'Jan 1, 1980, 11:59 PM',
       nameText: 'photos',
       sizeText: '--',
-      typeText: 'Folder'
+      typeText: 'Folder',
     })]);
 
 /**
@@ -82,8 +82,7 @@ async function clickDirectoryTreeContextMenuItem(appId, path, id) {
  */
 async function navigateToDestinationDirectoryAndTestPaste(appId) {
   // Navigates to destination directory.
-  await remoteCall.navigateWithDirectoryTree(
-      appId, '/Downloads/destination', 'My files/Downloads');
+  await navigateWithDirectoryTree(appId, '/My files/Downloads/destination');
 
   // Confirm files before paste.
   await remoteCall.waitForFiles(
@@ -124,8 +123,7 @@ async function renameDirectoryFromDirectoryTreeSuccessCase(
     useKeyboardShortcut) {
   const appId = await setupForDirectoryTreeContextMenuTest();
 
-  await remoteCall.navigateWithDirectoryTree(
-      appId, '/Downloads/photos', 'My files/Downloads');
+  await navigateWithDirectoryTree(appId, '/My files/Downloads/photos');
   await renamePhotosDirectoryTo(appId, 'New photos', useKeyboardShortcut);
 
   // Confirm that current directory has moved to new folder.
@@ -139,8 +137,7 @@ async function renameDirectoryFromDirectoryTreeSuccessCase(
 async function renameDirectoryFromDirectoryTreeAndConfirmAlertDialog(newName) {
   const appId = await setupForDirectoryTreeContextMenuTest();
 
-  await remoteCall.navigateWithDirectoryTree(
-      appId, '/Downloads/photos', 'My files/Downloads');
+  await navigateWithDirectoryTree(appId, '/My files/Downloads/photos');
   await renamePhotosDirectoryTo(appId, newName, false);
 
   // Confirm that a dialog is shown.
@@ -155,8 +152,7 @@ async function createDirectoryFromDirectoryTree(
   const appId = await setupForDirectoryTreeContextMenuTest();
 
   if (changeCurrentDirectory) {
-    await remoteCall.navigateWithDirectoryTree(
-        appId, '/Downloads/photos', 'My files/Downloads');
+    await navigateWithDirectoryTree(appId, '/My files/Downloads/photos');
   } else {
     const downloadsQuery =
         '#directory-tree [entry-label="My files"] [entry-label="Downloads"]';
@@ -185,8 +181,7 @@ async function createDirectoryFromDirectoryTree(
                                '/My files/Downloads');
 
   // Confirm that new directory is actually created by navigating to it.
-  await remoteCall.navigateWithDirectoryTree(
-      appId, '/Downloads/photos/test', 'My files/Downloads');
+  await navigateWithDirectoryTree(appId, '/My files/Downloads/photos/test');
 }
 
 /**
@@ -286,8 +281,7 @@ async function checkContextMenu(
  */
 testcase.dirCopyWithContextMenu = async () => {
   const appId = await setupForDirectoryTreeContextMenuTest();
-  await remoteCall.navigateWithDirectoryTree(
-      appId, '/Downloads/photos', 'My files/Downloads');
+  await navigateWithDirectoryTree(appId, '/My files/Downloads/photos');
   await clickDirectoryTreeContextMenuItem(appId, '/Downloads/photos', 'copy');
   await navigateToDestinationDirectoryAndTestPaste(appId);
 };
@@ -297,8 +291,7 @@ testcase.dirCopyWithContextMenu = async () => {
  */
 testcase.dirCopyWithKeyboard = async () => {
   const appId = await setupForDirectoryTreeContextMenuTest();
-  await remoteCall.navigateWithDirectoryTree(
-      appId, '/Downloads/photos', 'My files/Downloads');
+  await navigateWithDirectoryTree(appId, '/My files/Downloads/photos');
 
   // Press Ctrl+C.
   await remoteCall.callRemoteTestUtil(
@@ -324,8 +317,7 @@ testcase.dirCopyWithoutChangingCurrent = async () => {
  */
 testcase.dirCutWithContextMenu = async () => {
   const appId = await setupForDirectoryTreeContextMenuTest();
-  await remoteCall.navigateWithDirectoryTree(
-      appId, '/Downloads/photos', 'My files/Downloads');
+  await navigateWithDirectoryTree(appId, '/My files/Downloads/photos');
   await clickDirectoryTreeContextMenuItem(appId, '/Downloads/photos', 'cut');
   await navigateToDestinationDirectoryAndTestPaste(appId);
 
@@ -339,8 +331,7 @@ testcase.dirCutWithContextMenu = async () => {
  */
 testcase.dirCutWithKeyboard = async () => {
   const appId = await setupForDirectoryTreeContextMenuTest();
-  await remoteCall.navigateWithDirectoryTree(
-      appId, '/Downloads/photos', 'My files/Downloads');
+  await navigateWithDirectoryTree(appId, '/My files/Downloads/photos');
 
   // Press Ctrl+X.
   await remoteCall.callRemoteTestUtil(
@@ -375,12 +366,10 @@ testcase.dirPasteWithContextMenu = async () => {
   const destinationPath = '/Downloads/destination';
 
   // Copy photos directory as a test data.
-  await remoteCall.navigateWithDirectoryTree(
-      appId, '/Downloads/photos', 'My files/Downloads');
+  await navigateWithDirectoryTree(appId, '/My files/Downloads/photos');
   await remoteCall.callRemoteTestUtil(
       'fakeKeyDown', appId, ['body', 'c', true /* ctrl */, false, false]);
-  await remoteCall.navigateWithDirectoryTree(
-      appId, destinationPath, 'My files/Downloads');
+  await navigateWithDirectoryTree(appId, `/My files${destinationPath}`);
 
   // Confirm files before paste.
   await remoteCall.waitForFiles(
@@ -452,12 +441,12 @@ testcase.dirRenameUpdateChildrenBreadcrumbs = async () => {
                      lastModifiedTime: 'Jan 1, 1980, 11:59 PM',
                      nameText: 'child-folder',
                      sizeText: '--',
-                     typeText: 'Folder'
+                     typeText: 'Folder',
                    })]);
 
   // Navigate to child folder.
-  await remoteCall.navigateWithDirectoryTree(
-      appId, '/Downloads/photos/child-folder', 'My files/Downloads');
+  await navigateWithDirectoryTree(
+      appId, '/My files/Downloads/photos/child-folder');
 
   // Rename parent folder.
   await clickDirectoryTreeContextMenuItem(appId, '/Downloads/photos', 'rename');
@@ -476,8 +465,8 @@ testcase.dirRenameUpdateChildrenBreadcrumbs = async () => {
   // Navigate to child-folder using the new path.
   // |navigateWithDirectoryTree| already checks for breadcrumbs to
   // match the path.
-  await remoteCall.navigateWithDirectoryTree(
-      appId, '/Downloads/photos-new/child-folder', 'My files/Downloads');
+  await navigateWithDirectoryTree(
+      appId, '/My files/Downloads/photos-new/child-folder');
 };
 
 /**
@@ -512,8 +501,7 @@ testcase.dirRenameWithoutChangingCurrent = async () => {
 testcase.dirRenameToEmptyString = async () => {
   const appId = await setupForDirectoryTreeContextMenuTest();
 
-  await remoteCall.navigateWithDirectoryTree(
-      appId, '/Downloads/photos', 'My files/Downloads');
+  await navigateWithDirectoryTree(appId, '/My files/Downloads/photos');
   await renamePhotosDirectoryTo(appId, '', false);
 
   // Wait for the input to be removed.
@@ -826,7 +814,7 @@ testcase.dirContextMenuZip = async () => {
   await sendTestMessage({
     name: 'expectFileTask',
     fileNames: [ENTRIES.zipArchive.targetPath],
-    openType: 'launch'
+    openType: 'launch',
   });
 
   const zipMenus = [
@@ -839,10 +827,7 @@ testcase.dirContextMenuZip = async () => {
       RootPath.DOWNLOADS, [ENTRIES.zipArchive], []);
 
   // Select the ZIP file.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil(
-          'selectFile', appId, ['archive.zip']),
-      'selectFile failed');
+  await remoteCall.waitUntilSelected(appId, ENTRIES.zipArchive.nameText);
 
   // Press the Enter key to mount the ZIP file.
   const key = ['#file-list', 'Enter', false, false, false];
@@ -870,7 +855,7 @@ testcase.dirContextMenuZipEject = async () => {
   await sendTestMessage({
     name: 'expectFileTask',
     fileNames: [ENTRIES.zipArchive.targetPath],
-    openType: 'launch'
+    openType: 'launch',
   });
 
   // Open Files app on Downloads containing a zip file.
@@ -878,10 +863,7 @@ testcase.dirContextMenuZipEject = async () => {
       RootPath.DOWNLOADS, [ENTRIES.zipArchive], []);
 
   // Select the ZIP file.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil(
-          'selectFile', appId, ['archive.zip']),
-      'selectFile failed');
+  await remoteCall.waitUntilSelected(appId, ENTRIES.zipArchive.nameText);
 
   // Press the Enter key to mount the ZIP file.
   const key = ['#file-list', 'Enter', false, false, false];
@@ -978,7 +960,7 @@ testcase.dirContextMenuMyFilesWithPaste = async () => {
     lastModifiedTime: 'Jan 1, 1990, 11:59 PM',
     nameText: 'photosTwo',
     sizeText: '--',
-    typeText: 'Folder'
+    typeText: 'Folder',
   });
 
   const photosT = new TestEntryInfo({
@@ -989,7 +971,7 @@ testcase.dirContextMenuMyFilesWithPaste = async () => {
     lastModifiedTime: 'Jan 1, 1993, 11:59 PM',
     nameText: 'photosT',
     sizeText: '51 bytes',
-    typeText: 'Plain text'
+    typeText: 'Plain text',
   });
 
   // Open Files app on local Downloads.
@@ -1001,9 +983,7 @@ testcase.dirContextMenuMyFilesWithPaste = async () => {
   {
     // Select and copy photos directory into the clipboard to test
     // paste-into-folder command.
-    chrome.test.assertTrue(
-        !!await remoteCall.callRemoteTestUtil('selectFile', appId, ['photos']),
-        'selectFile failed');
+    await remoteCall.waitUntilSelected(appId, ENTRIES.photos.nameText);
     chrome.test.assertTrue(
         !!await remoteCall.callRemoteTestUtil('execCommand', appId, ['copy']),
         'execCommand failed');
@@ -1046,9 +1026,7 @@ testcase.dirContextMenuMyFilesWithPaste = async () => {
     await navigateWithDirectoryTree(appId, '/My files/Downloads');
     // Select and copy photosT file into the clipboard to test
     // paste-into-folder command.
-    chrome.test.assertTrue(
-        !!await remoteCall.callRemoteTestUtil('selectFile', appId, ['photosT']),
-        'selectFile failed');
+    await remoteCall.waitUntilSelected(appId, 'photosT');
     chrome.test.assertTrue(
         !!await remoteCall.callRemoteTestUtil('execCommand', appId, ['copy']),
         'execCommand failed');
@@ -1165,13 +1143,9 @@ testcase.dirContextMenuCrostini = async () => {
     ['#copy', true],
     ['#paste-into-folder', false],
     ['#rename', true],
-    ['#move-to-trash', true],
     ['#delete', true],
     ['#new-folder', true],
   ];
-  if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
-    folderMenus.splice(4, 1);
-  }
   const linuxQuery = '#directory-tree [entry-label="Linux files"]';
 
   // Add a crostini folder.
@@ -1558,61 +1532,6 @@ testcase.dirContextMenuDocumentsProvider = async () => {
 };
 
 /**
- * Tests context menu for Audio, Images and Videos roots, currently they don't
- * show context menu.
- */
-testcase.dirContextMenuMediaView = async () => {
-  const audioViewQuery = '#directory-tree [entry-label="Audio"]';
-  const imagesViewQuery = '#directory-tree [entry-label="Images"]';
-  const videosViewQuery = '#directory-tree [entry-label="Videos"]';
-
-  await sendTestMessage({name: 'mountMediaView'});
-
-  // Open Files app on local Downloads.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
-
-  // Right click Audio root.
-  await remoteCall.waitAndClickElement(appId, audioViewQuery);
-  await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Audio');
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil(
-          'fakeMouseRightClick', appId, [audioViewQuery]),
-      'fakeMouseRightClick failed');
-
-  // Check that both menus are still hidden.
-  await remoteCall.waitForElement(appId, '#roots-context-menu[hidden]');
-  await remoteCall.waitForElement(
-      appId, '#directory-tree-context-menu[hidden]');
-
-  // Right click Images root.
-  await remoteCall.waitAndClickElement(appId, imagesViewQuery);
-  await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Images');
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil(
-          'fakeMouseRightClick', appId, [imagesViewQuery]),
-      'fakeMouseRightClick failed');
-
-  // Check that both menus are still hidden.
-  await remoteCall.waitForElement(appId, '#roots-context-menu[hidden]');
-  await remoteCall.waitForElement(
-      appId, '#directory-tree-context-menu[hidden]');
-
-  // Right click Videos root.
-  await remoteCall.waitAndClickElement(appId, videosViewQuery);
-  await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Videos');
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil(
-          'fakeMouseRightClick', appId, [videosViewQuery]),
-      'fakeMouseRightClick failed');
-
-  // Check that both menus are still hidden.
-  await remoteCall.waitForElement(appId, '#roots-context-menu[hidden]');
-  await remoteCall.waitForElement(
-      appId, '#directory-tree-context-menu[hidden]');
-};
-
-/**
  * Tests context menu for My Drive, read-only and read-write folder inside it.
  */
 testcase.dirContextMenuMyDrive = async () => {
@@ -1647,9 +1566,7 @@ testcase.dirContextMenuMyDrive = async () => {
 
   // Select and copy hello.txt into the clipboard to test paste-into-folder
   // command.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('selectFile', appId, ['hello.txt']),
-      'selectFile failed');
+  await remoteCall.waitUntilSelected(appId, 'hello.txt');
   chrome.test.assertTrue(
       !!await remoteCall.callRemoteTestUtil('execCommand', appId, ['copy']),
       'execCommand failed');
@@ -1726,9 +1643,7 @@ testcase.dirContextMenuSharedDrive = async () => {
 
   // Select and copy hello.txt into the clipboard to test paste-into-folder
   // command.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('selectFile', appId, ['hello.txt']),
-      'selectFile failed');
+  await remoteCall.waitUntilSelected(appId, 'hello.txt');
   chrome.test.assertTrue(
       !!await remoteCall.callRemoteTestUtil('execCommand', appId, ['copy']),
       'execCommand failed');
@@ -1874,9 +1789,7 @@ testcase.dirContextMenuComputers = async () => {
 
   // Select and copy hello.txt into the clipboard to test paste-into-folder
   // command.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('selectFile', appId, ['hello.txt']),
-      'selectFile failed');
+  await remoteCall.waitUntilSelected(appId, 'hello.txt');
   chrome.test.assertTrue(
       !!await remoteCall.callRemoteTestUtil('execCommand', appId, ['copy']),
       'execCommand failed');

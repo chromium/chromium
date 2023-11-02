@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
+#include "base/numerics/checked_math.h"
 #include "base/trace_event/trace_event.h"
 #include "mojo/core/core.h"
 #include "mojo/core/data_pipe_control_message.h"
@@ -22,6 +23,8 @@
 #include "mojo/core/request_context.h"
 #include "mojo/core/user_message_impl.h"
 #include "mojo/public/c/system/data_pipe.h"
+
+#include "base/record_replay.h"
 
 namespace mojo {
 namespace core {
@@ -93,7 +96,7 @@ Dispatcher::Type DataPipeConsumerDispatcher::GetType() const {
 }
 
 MojoResult DataPipeConsumerDispatcher::Close() {
-  base::AutoLock lock(lock_);
+  recordreplay::AutoLockMaybeEventsDisallowed lock(lock_);
   DVLOG(1) << "Closing data pipe consumer " << pipe_id_;
   return CloseNoLock();
 }
@@ -169,10 +172,16 @@ MojoResult DataPipeConsumerDispatcher::ReadData(
     uint32_t tail_bytes_to_copy =
         std::min(options_.capacity_num_bytes - read_offset_, bytes_to_read);
     uint32_t head_bytes_to_copy = bytes_to_read - tail_bytes_to_copy;
-    if (tail_bytes_to_copy > 0)
+    if (tail_bytes_to_copy > 0) {
+      recordreplay::RecordReplayBytes("DataPipeConsumerDispatcher::ReadData",
+                                      (uint8_t*)data + read_offset_, tail_bytes_to_copy);
       memcpy(destination, data + read_offset_, tail_bytes_to_copy);
-    if (head_bytes_to_copy > 0)
+    }
+    if (head_bytes_to_copy > 0) {
+      recordreplay::RecordReplayBytes("DataPipeConsumerDispatcher::ReadData",
+                                      (uint8_t*)data, head_bytes_to_copy);
       memcpy(destination + tail_bytes_to_copy, data, head_bytes_to_copy);
+    }
   }
   *num_bytes = bytes_to_read;
 
@@ -224,6 +233,9 @@ MojoResult DataPipeConsumerDispatcher::BeginReadData(
   *buffer = data + read_offset_;
   *buffer_num_bytes = bytes_to_read;
   two_phase_max_bytes_read_ = bytes_to_read;
+
+  recordreplay::RecordReplayBytes("DataPipeConsumerDispatcher::BeginReadData",
+                                  (void*)*buffer, *buffer_num_bytes);
 
   if (had_new_data)
     watchers_.NotifyState(GetHandleSignalsStateNoLock());
@@ -440,6 +452,7 @@ DataPipeConsumerDispatcher::DataPipeConsumerDispatcher(
       node_controller_(node_controller),
       control_port_(control_port),
       pipe_id_(pipe_id),
+      lock_("DataPipeConsumerDispatcher.lock_"),
       watchers_(this),
       shared_ring_buffer_(std::move(shared_ring_buffer)) {}
 
@@ -458,6 +471,7 @@ bool DataPipeConsumerDispatcher::InitializeNoLock() {
   if (!ring_buffer_mapping_.IsValid()) {
     DLOG(ERROR) << "Failed to map shared buffer.";
     shared_ring_buffer_ = base::UnsafeSharedMemoryRegion();
+    is_closed_ = true;
     return false;
   }
 
@@ -583,8 +597,10 @@ void DataPipeConsumerDispatcher::UpdateSignalsStateNoLock() {
         TRACE_EVENT0("ipc",
                      "DataPipeConsumerDispatcher received DATA_WAS_WRITTEN");
 
-        if (static_cast<size_t>(bytes_available_) + m->num_bytes >
-            options_.capacity_num_bytes) {
+        uint32_t new_bytes_available;
+        if (!base::CheckAdd(bytes_available_, m->num_bytes)
+                 .AssignIfValid(&new_bytes_available) ||
+            new_bytes_available > options_.capacity_num_bytes) {
           DLOG(ERROR) << "Producer claims to have written too many bytes.";
           peer_closed_ = true;
           break;
@@ -594,7 +610,7 @@ void DataPipeConsumerDispatcher::UpdateSignalsStateNoLock() {
                  << m->num_bytes << " bytes were written. [control_port="
                  << control_port_.name() << "]";
 
-        bytes_available_ += m->num_bytes;
+        bytes_available_ = new_bytes_available;
       }
     } while (message_event);
   }

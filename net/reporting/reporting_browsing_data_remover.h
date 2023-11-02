@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,8 @@
 #define NET_REPORTING_REPORTING_BROWSING_DATA_REMOVER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "net/base/net_export.h"
-#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace net {
 
@@ -38,7 +37,7 @@ class NET_EXPORT ReportingBrowsingDataRemover {
   static void RemoveBrowsingData(
       ReportingCache* cache,
       uint64_t data_type_mask,
-      const base::RepeatingCallback<bool(const GURL&)>& origin_filter);
+      const base::RepeatingCallback<bool(const url::Origin&)>& origin_filter);
 
   // Like RemoveBrowsingData except removes data for all origins without a
   // filter. Allows slight optimization over passing an always-true filter to

@@ -1,4 +1,4 @@
-# Copyright (c) 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -20,6 +20,8 @@ TEST_FAILURE_LABEL = 'FAILURE'
 TEST_SKIPPED_LABEL = 'SKIPPED'
 TEST_TIMEOUT_LABEL = 'TIMEOUT'
 TEST_WARNING_LABEL = 'WARNING'
+
+DID_NOT_COMPLETE = 'Did not complete.'
 
 
 class GTestResult(object):
@@ -123,16 +125,16 @@ class GTestResult(object):
       self._crashed = True
 
     # At most one test can crash the entire app in a given parsing.
-    for test, log_lines in self._failed_tests.iteritems():
+    for test, log_lines in self._failed_tests.items():
       # A test with no output would have crashed. No output is replaced
       # by the GTestLogParser by a sentence indicating non-completion.
-      if 'Did not complete.' in log_lines:
+      if DID_NOT_COMPLETE in log_lines:
         self._crashed = True
         self._crashed_test = test
 
     # A test marked as flaky may also have crashed the app.
-    for test, log_lines in self._flaked_tests.iteritems():
-      if 'Did not complete.' in log_lines:
+    for test, log_lines in self._flaked_tests.items():
+      if DID_NOT_COMPLETE in log_lines:
         self._crashed = True
         self._crashed_test = test
 
@@ -337,13 +339,31 @@ class GTestLogParser(object):
     Called at the end to add unfinished tests and crash status for
         self._result_collection.
     """
+    # Remaining logs after crash before exit.
+    raw_remaining_logs = self._failure_description
     for test in self.RunningTests():
+      self._test_status[test][1].extend(
+          ['Potential test logs from crash until the end of test program:'])
+      self._test_status[test][1].extend(raw_remaining_logs)
       self._result_collection.add_test_result(
-          TestResult(test, TestStatus.CRASH, test_log='Did not complete.'))
+          TestResult(
+              test,
+              TestStatus.CRASH,
+              test_log='\n'.join(self._test_status[test][1])))
       self._result_collection.crashed = True
 
     if not self.completed:
       self._result_collection.crashed = True
+
+  def _ParseDuration(self, line):
+    """Returns test duration in milliseconds, None if not present."""
+    # Test duration appears as suffix of status line like:
+    # "[       OK ] SomeTest.SomeTestName (539 ms)"
+    test_duration_regex = re.compile(r'\s+\(([0-9]+)\s+ms\)')
+    results = test_duration_regex.search(line)
+    if results:
+      return int(results.group(1))
+    return None
 
   def ProcessLine(self, line):
     """This is called once with each line of the test log."""
@@ -458,7 +478,7 @@ class GTestLogParser(object):
                   TestStatus.ABORT,
                   test_log='\n'.join(self._failure_description)))
       test_name = results.group(1)
-      self._test_status[test_name] = ('started', ['Did not complete.'])
+      self._test_status[test_name] = ('started', [DID_NOT_COMPLETE])
       self._current_test = test_name
       if self.retrying_failed:
         self._failure_description = self._test_status[test_name][1]
@@ -472,6 +492,7 @@ class GTestLogParser(object):
     if results:
       test_name = results.group(1)
       status = self._StatusOfTest(test_name)
+      duration = self._ParseDuration(line)
       if status != 'started':
         self._RecordError(line, 'success while in status %s' % status)
       if self.retrying_failed:
@@ -482,11 +503,12 @@ class GTestLogParser(object):
             TestResult(
                 test_name,
                 TestStatus.PASS,
+                duration=duration,
                 test_log='\n'.join(self._failure_description)))
       else:
         self._test_status[test_name] = ('OK', [])
         self._result_collection.add_test_result(
-            TestResult(test_name, TestStatus.PASS))
+            TestResult(test_name, TestStatus.PASS, duration=duration))
       self._failure_description = []
       self._current_test = ''
       return
@@ -515,6 +537,7 @@ class GTestLogParser(object):
     if results:
       test_name = results.group(1)
       status = self._StatusOfTest(test_name)
+      duration = self._ParseDuration(line)
       if status not in ('started', 'failed', 'timeout'):
         self._RecordError(line, 'failure while in status %s' % status)
       if self._current_test != test_name:
@@ -533,6 +556,7 @@ class GTestLogParser(object):
           TestResult(
               test_name,
               TestStatus.FAIL,
+              duration=duration,
               test_log='\n'.join(self._failure_description)))
       self._failure_description = []
       self._current_test = ''
@@ -545,13 +569,10 @@ class GTestLogParser(object):
       status = self._StatusOfTest(test_name)
       if status not in ('started', 'failed'):
         self._RecordError(line, 'timeout while in status %s' % status)
-      self._test_status[test_name] = (
-          'timeout', self._failure_description + ['Killed (timed out).'])
+      logs = self._failure_description + ['Killed (timed out).']
+      self._test_status[test_name] = ('timeout', logs)
       self._result_collection.add_test_result(
-          TestResult(
-              test_name,
-              TestStatus.ABORT,
-              test_log='\n'.join(self._failure_description)))
+          TestResult(test_name, TestStatus.ABORT, test_log='\n'.join(logs)))
       self._failure_description = []
       self._current_test = ''
       return

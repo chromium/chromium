@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/media/media_controls.h"
+#include "third_party/blink/renderer/core/layout/deferred_shaping.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/page.h"
 
@@ -54,6 +55,7 @@ HTMLMediaElement* LayoutMedia::MediaElement() const {
 
 void LayoutMedia::UpdateLayout() {
   NOT_DESTROYED();
+  DeferredShapingDisallowScope disallow_deferred(*View());
   LayoutSize old_size(ContentWidth(), ContentHeight());
 
   LayoutImage::UpdateLayout();
@@ -187,13 +189,13 @@ LayoutUnit LayoutMedia::ComputePanelWidth(const LayoutRect& media_rect) const {
   // On desktop, this will include scrollbars when they stay visible.
   const LayoutUnit visible_width(page->GetVisualViewport().VisibleWidth());
   // The bottom left corner of the video.
-  const FloatPoint bottom_left_point(
-      LocalToAbsoluteFloatPoint(FloatPoint(media_rect.X(), media_rect.MaxY()),
-                                kTraverseDocumentBoundaries));
+  const gfx::PointF bottom_left_point(
+      LocalToAbsolutePoint(gfx::PointF(media_rect.X(), media_rect.MaxY()),
+                           kTraverseDocumentBoundaries));
   // The bottom right corner of the video.
-  const FloatPoint bottom_right_point(LocalToAbsoluteFloatPoint(
-      FloatPoint(media_rect.MaxX(), media_rect.MaxY()),
-      kTraverseDocumentBoundaries));
+  const gfx::PointF bottom_right_point(
+      LocalToAbsolutePoint(gfx::PointF(media_rect.MaxX(), media_rect.MaxY()),
+                           kTraverseDocumentBoundaries));
 
   const bool bottom_left_corner_visible = bottom_left_point.x() < visible_width;
   const bool bottom_right_corner_visible =
@@ -227,13 +229,10 @@ LayoutUnit LayoutMedia::ComputePanelWidth(const LayoutRect& media_rect) const {
   const float edge_intersection_y =
       bottom_left_point.y() + ((visible_width - bottom_left_point.x()) * slope);
 
-  const FloatPoint edge_intersection_point(visible_width, edge_intersection_y);
+  const gfx::PointF edge_intersection_point(visible_width, edge_intersection_y);
 
   // Calculate difference.
-  FloatPoint difference_vector = edge_intersection_point;
-  difference_vector.Offset(-bottom_left_point.x(), -bottom_left_point.y());
-
-  return LayoutUnit(difference_vector.length());
+  return LayoutUnit((edge_intersection_point - bottom_left_point).Length());
 }
 
 }  // namespace blink

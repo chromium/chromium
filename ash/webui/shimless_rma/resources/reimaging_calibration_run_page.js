@@ -1,25 +1,38 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './shimless_rma_shared_css.js';
 import './base_page.js';
 import './icons.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ComponentTypeToName} from './data.js';
+import {ComponentTypeToId} from './data.js';
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {CalibrationComponentStatus, CalibrationObserverInterface, CalibrationObserverReceiver, CalibrationOverallStatus, CalibrationStatus, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {CalibrationComponentStatus, CalibrationObserverInterface, CalibrationObserverReceiver, CalibrationOverallStatus, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {enableNextButton, executeThenTransitionState, focusPageTitle} from './shimless_rma_util.js';
 
 /**
  * @fileoverview
  * 'reimaging-calibration-page' is for recalibration of the
  * various components during the reimaging process.
  */
-export class ReimagingCalibrationRunPageElement extends PolymerElement {
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const ReimagingCalibrationRunPageBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
+
+/** @polymer */
+export class ReimagingCalibrationRunPage extends
+    ReimagingCalibrationRunPageBase {
   static get is() {
     return 'reimaging-calibration-run-page';
   }
@@ -37,15 +50,6 @@ export class ReimagingCalibrationRunPageElement extends PolymerElement {
         type: Boolean,
         value: false,
       },
-
-      /**
-       * @protected
-       */
-      calibrationStatusMessage_: {
-        type: String,
-        // TODO(gavindodd): update for i18n
-        value: 'Calibration starting...',
-      }
     };
   }
 
@@ -61,7 +65,14 @@ export class ReimagingCalibrationRunPageElement extends PolymerElement {
         this.calibrationObserverReceiver_.$.bindNewPipeAndPassRemote());
   }
 
-  /** @return {!Promise<!StateResult>} */
+  /** @override */
+  ready() {
+    super.ready();
+
+    focusPageTitle(this);
+  }
+
+  /** @return {!Promise<!{stateResult: !StateResult}>} */
   onNextButtonClick() {
     if (this.calibrationComplete_) {
       return this.shimlessRmaService_.calibrationComplete();
@@ -73,10 +84,7 @@ export class ReimagingCalibrationRunPageElement extends PolymerElement {
    * Implements CalibrationObserver.onCalibrationUpdated()
    * @param {!CalibrationComponentStatus} componentStatus
    */
-  onCalibrationUpdated(componentStatus) {
-    this.calibrationStatusMessage_ =
-        this.getCalibrationStatusString_(componentStatus);
-  }
+  onCalibrationUpdated(componentStatus) {}
 
   /**
    * Implements CalibrationObserver.onCalibrationUpdated()
@@ -86,51 +94,27 @@ export class ReimagingCalibrationRunPageElement extends PolymerElement {
     switch (status) {
       case CalibrationOverallStatus.kCalibrationOverallComplete:
         this.calibrationComplete_ = true;
-        this.dispatchEvent(new CustomEvent(
-            'disable-next-button',
-            {bubbles: true, composed: true, detail: false},
-            ));
+        enableNextButton(this);
         break;
       case CalibrationOverallStatus.kCalibrationOverallCurrentRoundComplete:
       case CalibrationOverallStatus.kCalibrationOverallCurrentRoundFailed:
       case CalibrationOverallStatus.kCalibrationOverallInitializationFailed:
-        this.dispatchEvent(new CustomEvent(
-            'transition-state',
-            {
-              bubbles: true,
-              composed: true,
-              detail: (() => {
-                return this.shimlessRmaService_.continueCalibration();
-              })
-            },
-            ));
+        executeThenTransitionState(
+            this, () => this.shimlessRmaService_.continueCalibration());
         break;
     }
   }
 
   /**
-   * @private
    * @return {string}
-   * @param {!CalibrationComponentStatus} status
+   * @protected
    */
-  getCalibrationStatusString_(status) {
-    const componentType = ComponentTypeToName[status.component];
-    const percent = Math.round(status.progress * 100.0);
-    // TODO(gavindodd): update for i18n
-    const statusMessage = {
-      [CalibrationStatus.kCalibrationWaiting]:
-          `Waiting to calibrate ${componentType}`,
-      [CalibrationStatus.kCalibrationInProgress]:
-          `Calibrating ${componentType} ${percent}% complete`,
-      [CalibrationStatus.kCalibrationComplete]: `Calibrated ${componentType}`,
-      [CalibrationStatus.kCalibrationFailed]:
-          `Failed to calibrated ${componentType}`,
-      [CalibrationStatus.kCalibrationFailed]:
-          `Skipped calibrating ${componentType}`,
-    };
-    return statusMessage[status.status];
+  getCalibrationTitleString_() {
+    return this.i18n(
+        this.calibrationComplete_ ? 'runCalibrationCompleteTitleText' :
+                                    'runCalibrationTitleText');
   }
 }
 
 customElements.define(
-    ReimagingCalibrationRunPageElement.is, ReimagingCalibrationRunPageElement);
+    ReimagingCalibrationRunPage.is, ReimagingCalibrationRunPage);

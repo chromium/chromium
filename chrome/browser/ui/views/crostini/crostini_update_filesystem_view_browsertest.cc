@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,18 +10,19 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/crostini/crostini_dialogue_browser_test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/dbus/cicerone/fake_cicerone_client.h"
-#include "chromeos/dbus/concierge/fake_concierge_client.h"
+#include "chromeos/ash/components/dbus/cicerone/fake_cicerone_client.h"
+#include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-chromeos::FakeCiceroneClient* GetFakeCiceroneClient() {
-  return chromeos::FakeCiceroneClient::Get();
+ash::FakeCiceroneClient* GetFakeCiceroneClient() {
+  return ash::FakeCiceroneClient::Get();
 }
 
 class CrostiniUpdateFilesystemViewBrowserTest
@@ -66,8 +67,10 @@ class CrostiniUpdateFilesystemViewBrowserTest
     EXPECT_EQ(nullptr, ActiveView());
   }
 
-  const crostini::ContainerId kContainerId =
-      crostini::ContainerId("vm_name", "container_name");
+  const guest_os::GuestId kGuestId =
+      guest_os::GuestId(crostini::kCrostiniDefaultVmType,
+                        "vm_name",
+                        "container_name");
 };
 
 // Test the dialog is actually launched.
@@ -109,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(CrostiniUpdateFilesystemViewBrowserTest,
   GetFakeCiceroneClient()->set_start_lxd_container_response(reply);
 
   crostini::CrostiniManager::GetForProfile(browser()->profile())
-      ->StartLxdContainer(kContainerId, base::DoNothing());
+      ->StartLxdContainer(kGuestId, base::DoNothing());
   ExpectNoView();
 }
 
@@ -123,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(CrostiniUpdateFilesystemViewBrowserTest,
   GetFakeCiceroneClient()->set_start_lxd_container_response(reply);
 
   crostini::CrostiniManager::GetForProfile(browser()->profile())
-      ->StartLxdContainer(kContainerId, base::DoNothing());
+      ->StartLxdContainer(kGuestId, base::DoNothing());
   ExpectView();
 
   ActiveView()->AcceptDialog();

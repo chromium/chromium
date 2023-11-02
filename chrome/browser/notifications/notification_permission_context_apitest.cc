@@ -1,7 +1,8 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 
 #include "base/check.h"
@@ -47,7 +48,7 @@ class ExtensionPermissionUpdater : public ExtensionRegistryObserver {
   }
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   bool enabled_;
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>

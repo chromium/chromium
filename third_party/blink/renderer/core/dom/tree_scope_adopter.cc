@@ -95,8 +95,7 @@ void TreeScopeAdopter::MoveShadowTreeToNewDocument(
       new_document.TemplateDocumentHost() != &old_document) {
     // If this is not a move from a document to a <template> within it or vice
     // versa, we need to clear |shadow_root|'s adoptedStyleSheets.
-    HeapVector<Member<CSSStyleSheet>> empty_vector;
-    shadow_root.SetAdoptedStyleSheets(empty_vector);
+    shadow_root.ClearAdoptedStyleSheets();
   }
 
   if (!shadow_root.IsUserAgent()) {
@@ -162,6 +161,10 @@ inline void TreeScopeAdopter::MoveNodeToNewDocument(
 
   node.WillMoveToNewDocument(old_document, new_document);
   old_document.MoveNodeIteratorsToNewDocument(node, new_document);
+  if (auto* element = DynamicTo<Element>(node)) {
+    old_document.MoveElementExplicitlySetAttrElementsMapToNewDocument(
+        element, new_document);
+  }
 
   if (node.GetCustomElementState() == CustomElementState::kCustom) {
     CustomElement::EnqueueAdoptedCallback(To<Element>(node), old_document,

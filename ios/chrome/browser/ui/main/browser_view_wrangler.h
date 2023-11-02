@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,11 +21,11 @@ class ChromeBrowserState;
 // BrowserViewControllers.
 @interface BrowserViewWrangler : NSObject <BrowserInterfaceProvider>
 
-// Initialize a new instance of this class using |browserState| as the primary
+// Initialize a new instance of this class using `browserState` as the primary
 // browser state for the tab models and BVCs.
-// |sceneState| is the scene state that will be associated with any Browsers
+// `sceneState` is the scene state that will be associated with any Browsers
 // created.
-// |applicationCommandEndpoint| and |browsingDataCommandEndpoint| are the
+// `applicationCommandEndpoint` and `browsingDataCommandEndpoint` are the
 // objects that methods in the ApplicationCommands and BrowsingDataCommands
 // protocol should be dispatched to.
 - (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState

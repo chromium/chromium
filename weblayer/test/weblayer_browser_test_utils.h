@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -62,14 +63,14 @@ void ExecuteScriptWithUserGesture(Tab* tab, const std::string& script);
 /// Gets the title of the current webpage in |shell|.
 const std::u16string& GetTitle(Shell* shell);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Sets up the autofill system to be one that simply forwards detected forms to
 // the passed-in callback.
 void InitializeAutofillWithEventForwarding(
     Shell* shell,
     const base::RepeatingCallback<void(const autofill::FormData&)>&
         on_received_form_data);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Configures the subresource filter to activate on |url| in |web_contents|.
 void ActivateSubresourceFilterInWebContentsForURL(
@@ -92,21 +93,24 @@ class OneShotNavigationObserver : public NavigationObserver {
   Navigation::LoadError load_error() { return load_error_; }
   int http_status_code() { return http_status_code_; }
   NavigationState navigation_state() { return navigation_state_; }
+  bool is_page_initiated() const { return is_page_initiated_; }
 
  private:
   // NavigationObserver implementation:
+  void NavigationStarted(Navigation* navigation) override;
   void NavigationCompleted(Navigation* navigation) override;
   void NavigationFailed(Navigation* navigation) override;
 
   void Finish(Navigation* navigation);
 
   base::RunLoop run_loop_;
-  Tab* tab_;
+  raw_ptr<Tab> tab_;
   bool completed_ = false;
   bool is_error_page_ = false;
   bool is_download_ = false;
   bool is_reload_ = false;
   bool was_stop_called_ = false;
+  bool is_page_initiated_ = false;
   Navigation::LoadError load_error_ = Navigation::kNoError;
   int http_status_code_ = 0;
   NavigationState navigation_state_ = NavigationState::kWaitingResponse;

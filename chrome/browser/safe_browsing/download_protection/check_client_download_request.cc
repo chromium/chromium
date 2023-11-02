@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,6 @@
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/common/safe_browsing/download_type_util.h"
 #include "components/download/public/common/download_danger_type.h"
-#include "components/policy/core/browser/url_util.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
@@ -215,10 +214,13 @@ void CheckClientDownloadRequest::NotifySendRequest(
       request->referrer_chain().size());
 }
 
-void CheckClientDownloadRequest::SetDownloadPingToken(
-    const std::string& token) {
+void CheckClientDownloadRequest::SetDownloadProtectionData(
+    const std::string& token,
+    const ClientDownloadResponse::Verdict& verdict,
+    const ClientDownloadResponse::TailoredVerdict& tailored_verdict) {
   DCHECK(!token.empty());
-  DownloadProtectionService::SetDownloadPingToken(item_, token);
+  DownloadProtectionService::SetDownloadProtectionData(item_, token, verdict,
+                                                       tailored_verdict);
 }
 
 void CheckClientDownloadRequest::MaybeStorePingsForDownload(
@@ -235,6 +237,11 @@ CheckClientDownloadRequest::ShouldUploadBinary(
     DownloadCheckResultReason reason) {
   // If the download was destroyed, we can't upload it.
   if (reason == REASON_DOWNLOAD_DESTROYED)
+    return absl::nullopt;
+
+  // If the download already has a scanning response attached, there is no need
+  // to try and upload it again.
+  if (item_->GetUserData(enterprise_connectors::ScanResult::kKey))
     return absl::nullopt;
 
   // If the download is considered dangerous, don't upload the binary to show

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "extensions/common/activation_sequence.h"
 #include "extensions/common/extension_id.h"
@@ -48,10 +47,12 @@ class RendererExtensionRegistry {
 
   // Forwards to the ExtensionSet methods by the same name.
   bool Contains(const std::string& id) const;
+  bool ContainsGUID(const std::string& guid) const;
   bool Insert(const scoped_refptr<const Extension>& extension);
   bool Remove(const std::string& id);
   std::string GetExtensionOrAppIDByURL(const GURL& url) const;
-  const Extension* GetExtensionOrAppByURL(const GURL& url) const;
+  const Extension* GetExtensionOrAppByURL(const GURL& url,
+                                          bool include_guid = false) const;
   const Extension* GetHostedAppByURL(const GURL& url) const;
   const Extension* GetByID(const std::string& id) const;
   ExtensionIdSet GetIDs() const;

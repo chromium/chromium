@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,6 +55,7 @@ ScrollbarAnimationController::ScrollbarAnimationController(
       opacity_(initial_opacity),
       show_scrollbars_on_scroll_gesture_(false),
       need_thinning_animation_(false),
+      need_fade_animation_(true),
       is_mouse_down_(false),
       tickmarks_showing_(false) {}
 
@@ -75,6 +76,7 @@ ScrollbarAnimationController::ScrollbarAnimationController(
       opacity_(initial_opacity),
       show_scrollbars_on_scroll_gesture_(true),
       need_thinning_animation_(true),
+      need_fade_animation_(!client->IsFluentScrollbar()),
       is_mouse_down_(false),
       tickmarks_showing_(false) {
   vertical_controller_ = SingleScrollbarAnimationControllerThinning::Create(
@@ -119,6 +121,14 @@ void ScrollbarAnimationController::StopAnimation() {
 
 void ScrollbarAnimationController::PostDelayedAnimation(
     AnimationChange animation_change) {
+  // In contrast to Aura overlay scrollbars, Fluent overlay scrollbars
+  // should not fade out completely. After the initial paint, they remain on the
+  // screen in the minimal (thin) mode by default and can expand/transition to
+  // the full (thick) mode. The minimal <-> full mode thinning animation is
+  // controlled by SingleScrollbarAnimationControllerThinning.
+  if (!need_fade_animation_)
+    return;
+
   animation_change_ = animation_change;
   delayed_scrollbar_animation_.Cancel();
   delayed_scrollbar_animation_.Reset(
@@ -370,16 +380,18 @@ void ScrollbarAnimationController::ApplyOpacityToScrollbars(float opacity) {
     scrollbar->SetOverlayScrollbarLayerOpacityAnimated(effective_opacity);
   }
 
-  bool previouslyVisible = opacity_ > 0.0f;
-  bool currentlyVisible = opacity > 0.0f;
+  bool previously_visible_ = opacity_ > 0.0f;
+  bool currently_visible = opacity > 0.0f;
 
   if (opacity_ != opacity)
     client_->SetNeedsRedrawForScrollbarAnimation();
 
   opacity_ = opacity;
 
-  if (previouslyVisible != currentlyVisible)
+  if (previously_visible_ != currently_visible) {
     client_->DidChangeScrollbarVisibility();
+    visibility_changed_ = true;
+  }
 }
 
 }  // namespace cc

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -42,17 +43,18 @@ class TestPasswordGenerationPopupController
                                       10),
                 /*max_length=*/10,
                 /*generation_element=*/std::u16string(),
+                /*user_typed_password=*/std::u16string(),
                 autofill::FieldRendererId(100),
                 /*is_generation_element_password_type=*/true,
                 /*text_direction=*/base::i18n::TextDirection(),
                 FormData()),
             password_manager::ContentPasswordManagerDriverFactory::
                 FromWebContents(web_contents)
-                    ->GetDriverForFrame(web_contents->GetMainFrame())
+                    ->GetDriverForFrame(web_contents->GetPrimaryMainFrame())
                     ->AsWeakPtr(),
             nullptr /* PasswordGenerationPopupObserver*/,
             web_contents,
-            web_contents->GetMainFrame()) {}
+            web_contents->GetPrimaryMainFrame()) {}
 
   ~TestPasswordGenerationPopupController() override {}
 
@@ -70,7 +72,7 @@ class PasswordGenerationPopupViewTest : public InProcessBrowserTest {
   }
 
  protected:
-  TestPasswordGenerationPopupController* controller_;
+  raw_ptr<TestPasswordGenerationPopupController> controller_;
 };
 
 // Regression test for crbug.com/400543. Verifying that moving the mouse in the
@@ -79,8 +81,8 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
                        MouseMovementInEditingPopup) {
   controller_ =
       new autofill::TestPasswordGenerationPopupController(GetWebContents());
-  EXPECT_TRUE(controller_->Show(
-      PasswordGenerationPopupController::kEditGeneratedPassword));
+  controller_->Show(PasswordGenerationPopupController::kEditGeneratedPassword);
+  EXPECT_TRUE(controller_->IsVisible());
 
   GetViewTester()->SimulateMouseMovementAt(
       gfx::Point(GetWebContents()->GetContainerBounds().x() + 1,
@@ -95,8 +97,8 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
                        CloseWebContentsWithVisiblePopup) {
   controller_ =
       new autofill::TestPasswordGenerationPopupController(GetWebContents());
-  EXPECT_TRUE(controller_->Show(
-      PasswordGenerationPopupController::kEditGeneratedPassword));
+  controller_->Show(PasswordGenerationPopupController::kEditGeneratedPassword);
+  EXPECT_TRUE(controller_->IsVisible());
 
   GetWebContents()->Close();
 }
@@ -105,10 +107,16 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
 // for showing popup.
 IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
                        DoNotCrashInCaseOfInsuffucientVertialSpace) {
+  // TODO(crbug.com/1365893): Remove TestPasswordGenerationPopupController class
+  // so that only GetOrCreate() would be used and then GetWeakPtr() won't be
+  // needed.
   controller_ = new autofill::TestPasswordGenerationPopupController(
       GetWebContents(), /*vertical_offset=*/-20);
-  EXPECT_FALSE(controller_->Show(
-      PasswordGenerationPopupController::kEditGeneratedPassword));
+  base::WeakPtr<PasswordGenerationPopupControllerImpl> weak_controller =
+      controller_->GetWeakPtr();
+  controller_->Show(PasswordGenerationPopupController::kEditGeneratedPassword);
+  // Check that the object |controller_| points to was invalidated.
+  EXPECT_FALSE(weak_controller);
 }
 
 }  // namespace autofill

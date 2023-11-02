@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,99 +7,138 @@
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_manager_map.h"
+#include "ui/accessibility/test_ax_tree_update.h"
 
 namespace ui {
 
 TestAXTreeManager::TestAXTreeManager() = default;
 
 TestAXTreeManager::TestAXTreeManager(std::unique_ptr<AXTree> tree)
-    : tree_(std::move(tree)) {
-  if (tree_)
-    AXTreeManagerMap::GetInstance().AddTreeManager(GetTreeID(), this);
-}
+    : AXTreeManager(std::move(tree)) {}
 
 TestAXTreeManager::TestAXTreeManager(TestAXTreeManager&& manager)
-    : tree_(std::move(manager.tree_)) {
-  if (tree_) {
-    AXTreeManagerMap::GetInstance().RemoveTreeManager(GetTreeID());
-    AXTreeManagerMap::GetInstance().AddTreeManager(GetTreeID(), this);
+    : AXTreeManager(std::move(manager.ax_tree_)) {
+  if (ax_tree_) {
+    GetMap().RemoveTreeManager(GetTreeID());
+    GetMap().AddTreeManager(GetTreeID(), this);
   }
 }
 
 TestAXTreeManager& TestAXTreeManager::operator=(TestAXTreeManager&& manager) {
   if (this == &manager)
     return *this;
-  if (manager.tree_)
-    AXTreeManagerMap::GetInstance().RemoveTreeManager(manager.GetTreeID());
+  if (manager.ax_tree_)
+    GetMap().RemoveTreeManager(manager.GetTreeID());
   // std::move(nullptr) == nullptr, so no need to check if `manager.tree_` is
   // assigned.
-  SetTree(std::move(manager.tree_));
+  SetTree(std::move(manager.ax_tree_));
   return *this;
 }
 
-TestAXTreeManager::~TestAXTreeManager() {
-  if (tree_)
-    AXTreeManagerMap::GetInstance().RemoveTreeManager(GetTreeID());
-}
+TestAXTreeManager::~TestAXTreeManager() = default;
 
 void TestAXTreeManager::DestroyTree() {
-  if (!tree_)
+  if (!ax_tree_)
     return;
 
-  AXTreeManagerMap::GetInstance().RemoveTreeManager(GetTreeID());
-  tree_.reset();
+  GetMap().RemoveTreeManager(GetTreeID());
+  ax_tree_.reset();
 }
 
 AXTree* TestAXTreeManager::GetTree() const {
-  DCHECK(tree_) << "Did you forget to call SetTree?";
-  return tree_.get();
+  DCHECK(ax_tree_) << "Did you forget to call SetTree?";
+  return ax_tree_.get();
 }
 
 void TestAXTreeManager::SetTree(std::unique_ptr<AXTree> tree) {
-  if (tree_)
-    AXTreeManagerMap::GetInstance().RemoveTreeManager(GetTreeID());
+  if (ax_tree_)
+    GetMap().RemoveTreeManager(GetTreeID());
 
-  tree_ = std::move(tree);
-  if (tree_)
-    AXTreeManagerMap::GetInstance().AddTreeManager(GetTreeID(), this);
+  ax_tree_ = std::move(tree);
+  ax_tree_id_ = GetTreeID();
+  if (ax_tree_)
+    GetMap().AddTreeManager(GetTreeID(), this);
 }
 
-AXNode* TestAXTreeManager::GetNodeFromTree(const AXTreeID tree_id,
+AXTree* TestAXTreeManager::Init(AXTreeUpdate tree_update) {
+  tree_update.has_tree_data = true;
+  if (tree_update.tree_data.tree_id == AXTreeIDUnknown())
+    tree_update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+  SetTree(std::make_unique<AXTree>(tree_update));
+  return ax_tree_.get();
+}
+
+AXTree* TestAXTreeManager::Init(const TestAXTreeUpdateNode& tree_update_root) {
+  return Init(TestAXTreeUpdate(tree_update_root));
+}
+
+AXTree* TestAXTreeManager::Init(
+    const ui::AXNodeData& node1,
+    const ui::AXNodeData& node2 /* = ui::AXNodeData() */,
+    const ui::AXNodeData& node3 /* = ui::AXNodeData() */,
+    const ui::AXNodeData& node4 /* = ui::AXNodeData() */,
+    const ui::AXNodeData& node5 /* = ui::AXNodeData() */,
+    const ui::AXNodeData& node6 /* = ui::AXNodeData() */,
+    const ui::AXNodeData& node7 /* = ui::AXNodeData() */,
+    const ui::AXNodeData& node8 /* = ui::AXNodeData() */,
+    const ui::AXNodeData& node9 /* = AXNodeData() */,
+    const ui::AXNodeData& node10 /* = AXNodeData() */,
+    const ui::AXNodeData& node11 /* = AXNodeData() */,
+    const ui::AXNodeData& node12 /* = AXNodeData() */) {
+  AXTreeUpdate update;
+  update.root_id = node1.id;
+  update.tree_data.title = "Dialog title";
+  update.nodes.push_back(node1);
+  if (node2.id != kInvalidAXNodeID)
+    update.nodes.push_back(node2);
+  if (node3.id != kInvalidAXNodeID)
+    update.nodes.push_back(node3);
+  if (node4.id != kInvalidAXNodeID)
+    update.nodes.push_back(node4);
+  if (node5.id != kInvalidAXNodeID)
+    update.nodes.push_back(node5);
+  if (node6.id != kInvalidAXNodeID)
+    update.nodes.push_back(node6);
+  if (node7.id != kInvalidAXNodeID)
+    update.nodes.push_back(node7);
+  if (node8.id != kInvalidAXNodeID)
+    update.nodes.push_back(node8);
+  if (node9.id != kInvalidAXNodeID)
+    update.nodes.push_back(node9);
+  if (node10.id != kInvalidAXNodeID)
+    update.nodes.push_back(node10);
+  if (node11.id != kInvalidAXNodeID)
+    update.nodes.push_back(node11);
+  if (node12.id != kInvalidAXNodeID)
+    update.nodes.push_back(node12);
+  return Init(update);
+}
+
+AXNodePosition::AXPositionInstance TestAXTreeManager::CreateTextPosition(
+    const AXNode& anchor,
+    int text_offset,
+    ax::mojom::TextAffinity affinity) const {
+  return AXNodePosition::CreateTextPosition(anchor, text_offset, affinity);
+}
+
+AXNodePosition::AXPositionInstance TestAXTreeManager::CreateTextPosition(
+    const AXNodeID& anchor_id,
+    int text_offset,
+    ax::mojom::TextAffinity affinity) const {
+  const AXNode& anchor = *ax_tree_->GetFromId(anchor_id);
+  return AXNodePosition::CreateTextPosition(anchor, text_offset, affinity);
+}
+
+AXNode* TestAXTreeManager::GetNodeFromTree(const AXTreeID& tree_id,
                                            const AXNodeID node_id) const {
-  return (tree_ && GetTreeID() == tree_id) ? tree_->GetFromId(node_id)
-                                           : nullptr;
-}
-
-AXNode* TestAXTreeManager::GetNodeFromTree(const AXNodeID node_id) const {
-  return tree_ ? tree_->GetFromId(node_id) : nullptr;
-}
-
-void TestAXTreeManager::AddObserver(AXTreeObserver* observer) {
-  if (tree_)
-    tree_->AddObserver(observer);
-}
-
-void TestAXTreeManager::RemoveObserver(AXTreeObserver* observer) {
-  if (tree_)
-    tree_->RemoveObserver(observer);
-}
-
-AXTreeID TestAXTreeManager::GetTreeID() const {
-  return tree_ ? tree_->data().tree_id : AXTreeIDUnknown();
-}
-
-AXTreeID TestAXTreeManager::GetParentTreeID() const {
-  return tree_ ? tree_->data().parent_tree_id : AXTreeIDUnknown();
-}
-
-AXNode* TestAXTreeManager::GetRootAsAXNode() const {
-  return tree_ ? tree_->root() : nullptr;
+  return (ax_tree_ && GetTreeID() == tree_id) ? ax_tree_->GetFromId(node_id)
+                                              : nullptr;
 }
 
 AXNode* TestAXTreeManager::GetParentNodeFromParentTreeAsAXNode() const {
   AXTreeID parent_tree_id = GetParentTreeID();
-  TestAXTreeManager* parent_manager = static_cast<TestAXTreeManager*>(
-      AXTreeManagerMap::GetInstance().GetManager(parent_tree_id));
+  TestAXTreeManager* parent_manager =
+      static_cast<TestAXTreeManager*>(AXTreeManager::FromID(parent_tree_id));
   if (!parent_manager)
     return nullptr;
 

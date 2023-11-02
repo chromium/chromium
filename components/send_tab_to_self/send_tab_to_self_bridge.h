@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -72,13 +73,11 @@ class SendTabToSelfBridge : public syncer::ModelTypeSyncBridge,
 
   // SendTabToSelfModel overrides.
   std::vector<std::string> GetAllGuids() const override;
-  void DeleteAllEntries() override;
   const SendTabToSelfEntry* GetEntryByGUID(
       const std::string& guid) const override;
   const SendTabToSelfEntry* AddEntry(
       const GURL& url,
       const std::string& title,
-      base::Time navigation_time,
       const std::string& target_device_cache_guid) override;
   void DeleteEntry(const std::string& guid) override;
   void DismissEntry(const std::string& guid) override;
@@ -151,17 +150,19 @@ class SendTabToSelfBridge : public syncer::ModelTypeSyncBridge,
   // Delete all of the entries that match the URLs provided.
   void DeleteEntries(const std::vector<GURL>& urls);
 
+  void DeleteAllEntries();
+
   // |entries_| is keyed by GUIDs.
   SendTabToSelfEntries entries_;
 
   // |clock_| isn't owned.
-  const base::Clock* const clock_;
+  const raw_ptr<const base::Clock> clock_;
 
   // |history_service_| isn't owned.
-  history::HistoryService* const history_service_;
+  const raw_ptr<history::HistoryService> history_service_;
 
   // |device_info_tracker_| isn't owned.
-  syncer::DeviceInfoTracker* const device_info_tracker_;
+  const raw_ptr<syncer::DeviceInfoTracker> device_info_tracker_;
 
   // The name of this local device.
   std::string local_device_name_;
@@ -170,7 +171,7 @@ class SendTabToSelfBridge : public syncer::ModelTypeSyncBridge,
   std::unique_ptr<syncer::ModelTypeStore> store_;
 
   // A pointer to the most recently used entry used for deduplication.
-  const SendTabToSelfEntry* mru_entry_;
+  raw_ptr<const SendTabToSelfEntry> mru_entry_;
 
   // The list of target devices, deduplicated and sorted by most recently used.
   std::vector<TargetDeviceInfo> target_device_info_sorted_list_;

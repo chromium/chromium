@@ -16,7 +16,7 @@ async_test(t => {
         requestAnimationFrame(() => {
           var canvas2 = document.createElement('canvas');
           canvas2.width = canvas2.height = 10;
-          var ctx2 = canvas2.getContext('2d');
+          var ctx2 = canvas2.getContext('2d', {willReadFrequently: true});
           ctx2.drawImage(canvas, 0, 0);
           var pixel = ctx2.getImageData(0, 0, 1, 1).data;
           t.step(function() {

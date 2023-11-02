@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,6 +34,8 @@ class FuchsiaCdmManager {
   // A map from key system name to its CreateKeySystemCallback.
   using CreateKeySystemCallbackMap =
       base::flat_map<std::string, CreateKeySystemCallback>;
+
+  static FuchsiaCdmManager* GetInstance();
 
   // |cdm_data_quota_bytes| is currently only applied once, when the manager is
   // created.

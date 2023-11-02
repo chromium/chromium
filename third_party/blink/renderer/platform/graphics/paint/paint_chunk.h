@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include <iosfwd>
 #include <memory>
 
+#include "base/check_op.h"
 #include "base/dcheck_is_on.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_client.h"
@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -88,14 +89,18 @@ struct PLATFORM_EXPORT PaintChunk {
     return old.is_cacheable && Matches(old.id);
   }
 
-  bool Matches(const Id& other_id) const {
-    if (!is_cacheable || id != other_id)
+  bool CanMatchOldChunk() const {
+    if (!is_cacheable)
       return false;
     // A chunk whose client is just created should not match any cached chunk,
     // even if it's id equals the old chunk's id (which may happen if this
     // chunk's client is just created at the same address of the old chunk's
     // deleted client).
     return !client_is_just_created;
+  }
+
+  bool Matches(const Id& other_id) const {
+    return CanMatchOldChunk() && id == other_id;
   }
 
   bool EqualsForUnderInvalidationChecking(const PaintChunk& other) const;
@@ -110,6 +115,10 @@ struct PLATFORM_EXPORT PaintChunk {
     if (!layer_selection_data)
       layer_selection_data = std::make_unique<LayerSelectionData>();
     return *layer_selection_data;
+  }
+
+  bool DrawsContent() const {
+    return !effectively_invisible && !drawable_bounds.IsEmpty();
   }
 
   size_t MemoryUsageInBytes() const;
@@ -139,7 +148,7 @@ struct PLATFORM_EXPORT PaintChunk {
   Id id;
 
   // The paint properties which apply to this chunk.
-  RefCountedPropertyTreeState properties;
+  RefCountedPropertyTreeStateOrAlias properties;
 
   std::unique_ptr<HitTestData> hit_test_data;
   std::unique_ptr<RegionCaptureData> region_capture_data;

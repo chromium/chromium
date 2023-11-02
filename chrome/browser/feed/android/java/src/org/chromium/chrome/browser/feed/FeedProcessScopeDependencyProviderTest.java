@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,10 +37,6 @@ public final class FeedProcessScopeDependencyProviderTest {
 
         // Boilerplate.
         @Override
-        public boolean shouldPrerender() {
-            return false;
-        }
-        @Override
         public void setUsageAndCrashReporting(boolean enabled) {}
         @Override
         public void syncUsageAndCrashReportingPrefs() {}
@@ -52,6 +48,10 @@ public final class FeedProcessScopeDependencyProviderTest {
         }
         @Override
         public boolean isNetworkAvailableForCrashUploads() {
+            return true;
+        }
+        @Override
+        public boolean isUsageAndCrashReportingPermittedByPolicy() {
             return true;
         }
         @Override
@@ -68,20 +68,6 @@ public final class FeedProcessScopeDependencyProviderTest {
         }
         @Override
         public void setMetricsReportingEnabled(boolean enabled) {}
-        @Override
-        public boolean isMetricsReportingManaged() {
-            return false;
-        }
-        @Override
-        public boolean getNetworkPredictionEnabled() {
-            return false;
-        }
-        @Override
-        public void setNetworkPredictionEnabled(boolean enabled) {}
-        @Override
-        public boolean isNetworkPredictionManaged() {
-            return false;
-        }
     };
 
     @Before

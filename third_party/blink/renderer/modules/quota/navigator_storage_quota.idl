@@ -24,6 +24,8 @@
 ] partial interface Navigator {
     // http://www.w3.org/TR/2012/WD-quota-api-20120703/#idl-def-StorageQuotaEnvironment
     [MeasureAs=PrefixedStorageQuota] readonly attribute DeprecatedStorageQuota webkitTemporaryStorage;
+
+    // As of crbug.com/1233525, webkitPersistentStorage is an alias to webkitTemporaryStorage.
     [MeasureAs=PrefixedStorageQuota] readonly attribute DeprecatedStorageQuota webkitPersistentStorage;
 
     // https://storage.spec.whatwg.org/#api

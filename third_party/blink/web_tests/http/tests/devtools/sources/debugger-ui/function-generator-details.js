@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,7 +61,7 @@
       TestRunner.assertTrue(
           properties && properties.internalProperties, 'FAIL: no properties');
       for (var prop of properties.internalProperties) {
-        if (prop.name === '[[Prototype]]')
+        if (prop.name === '[[Prototype]]' || prop.name === '[[Scopes]]')
           continue;
         if (prop.name !== '[[GeneratorLocation]]')
           TestRunner.addResult(prop.name + ' = ' + prop.value.description);

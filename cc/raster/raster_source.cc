@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,7 +47,7 @@ void RasterSource::ClearForOpaqueRaster(
   gfx::Rect outer_rect;
   gfx::Rect inner_rect;
   gfx::Vector2dF scale = raster_transform.scale();
-  scale.Scale(1.f / recording_scale_factor_);
+  scale.InvScale(recording_scale_factor_);
   if (!CalculateClearForOpaqueRasterRects(
           raster_transform.translation(), scale, content_size,
           canvas_bitmap_rect, canvas_playback_rect, outer_rect, inner_rect))
@@ -128,7 +128,7 @@ void RasterSource::PlaybackDisplayListToCanvas(
 }
 
 bool RasterSource::PerformSolidColorAnalysis(gfx::Rect layer_rect,
-                                             SkColor* color) const {
+                                             SkColor4f* color) const {
   TRACE_EVENT0("cc", "RasterSource::PerformSolidColorAnalysis");
 
   layer_rect.Intersect(gfx::Rect(size_));
@@ -181,7 +181,7 @@ bool RasterSource::IsSolidColor() const {
   return is_solid_color_;
 }
 
-SkColor RasterSource::GetSolidColor() const {
+SkColor4f RasterSource::GetSolidColor() const {
   DCHECK(IsSolidColor());
   return solid_color_;
 }

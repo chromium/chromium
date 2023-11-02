@@ -1,6 +1,6 @@
 <style>
   :host {
-    max-width: 400px;
+    max-width: 504px;
     outline: none;
   }
   #container {
@@ -43,24 +43,24 @@
     75% {
       max-height: calc(192px + 28px);
       opacity: 0;
-      width: 400px;
+      width: 504px;
     }
     100% {
       max-height: calc(192px + 28px);
       opacity: 1;
-      width: 400px;
+      width: 504px;
     }
   }
 
   @keyframes setexpand {
     0% {
       max-height: calc(192px + 28px);
-      max-width: 400px;
+      max-width: 504px;
       opacity: 1;
     }
     25% {
       max-height: calc(192px + 28px);
-      max-width: 400px;
+      max-width: 504px;
       opacity: 0;
     }
     100% {
@@ -71,7 +71,7 @@
   }
   .expanded {
     animation: setcollapse 200ms forwards;
-    width: 400px;
+    width: 504px;
   }
   .collapsed {
     animation: setexpand 200ms forwards;
@@ -83,7 +83,7 @@
     max-height: calc(192px + 28px);
     opacity: 1;
     overflow-y: auto;
-    width: 400px;
+    width: 504px;
   }
   xf-panel-item:not(:only-child) {
     --multi-progress-height: 92px;

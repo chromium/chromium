@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,8 @@
 #include "base/bind.h"
 #include "base/callback_list.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -35,6 +37,8 @@
 #include "components/ntp_tiles/section_type.h"
 #include "components/ntp_tiles/switches.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/webapps/common/constants.h"
+#include "extensions/buildflags/buildflags.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -352,7 +356,7 @@ class PopularSitesFactoryForTest {
   }
 
  private:
-  PrefService* prefs_;
+  raw_ptr<PrefService> prefs_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
 };
@@ -368,15 +372,23 @@ class MostVisitedSitesTest : public ::testing::TestWithParam<bool> {
   MostVisitedSitesTest() {
     MostVisitedSites::RegisterProfilePrefs(pref_service_.registry());
 
-    std::vector<base::Feature> enabled_features;
+    std::vector<base::test::FeatureRef> enabled_features;
     // Disable FaviconServer in most tests and override in specific tests.
-    std::vector<base::Feature> disabled_features = {
+    std::vector<base::test::FeatureRef> disabled_features = {
         kNtpMostLikelyFaviconsFromServerFeature};
     if (IsPopularSitesFeatureEnabled()) {
       enabled_features.push_back(kUsePopularSitesSuggestions);
     } else {
       disabled_features.push_back(kUsePopularSitesSuggestions);
     }
+
+    // Updating list value in pref with default gmail URL for unit testing.
+    // Also adding migration feature to be enabled for unit test.
+    base::Value::List defaults;
+    defaults.Append("pjkljhegncpnkpknbcohdijeoejaedia");
+    pref_service_.registry()->RegisterListPref(
+        webapps::kWebAppsMigratedPreinstalledApps,
+        base::Value(std::move(defaults)));
 
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
     if (IsPopularSitesFeatureEnabled())
@@ -431,7 +443,7 @@ class MostVisitedSitesTest : public ::testing::TestWithParam<bool> {
     most_visited_sites_ = std::make_unique<MostVisitedSites>(
         &pref_service_, mock_top_sites_, popular_sites_factory_.New(),
         std::move(mock_custom_links), std::move(icon_cacher),
-        /*supervisor=*/nullptr);
+        /*supervisor=*/nullptr, true);
   }
 
   bool IsPopularSitesFeatureEnabled() const { return GetParam(); }
@@ -477,8 +489,8 @@ class MostVisitedSitesTest : public ::testing::TestWithParam<bool> {
   StrictMock<MockMostVisitedSitesObserver> mock_other_observer_;
   std::unique_ptr<MostVisitedSites> most_visited_sites_;
   base::test::ScopedFeatureList feature_list_;
-  MockCustomLinksManager* mock_custom_links_;
-  MockIconCacher* icon_cacher_;
+  raw_ptr<MockCustomLinksManager> mock_custom_links_;
+  raw_ptr<MockIconCacher> icon_cacher_;
 };
 
 TEST_P(MostVisitedSitesTest, ShouldStartNoCallInConstructor) {
@@ -646,6 +658,37 @@ TEST_P(MostVisitedSitesTest, ShouldHaveHomepageFirstInListWhenFull) {
   // Assert that the home page is appended as the final tile.
   EXPECT_THAT(tiles[0], MatchesTile(u"", kHomepageUrl, TileSource::HOMEPAGE));
 }
+
+// The following test exercises behavior with a preinstalled chrome app; this
+// is only relevant if extensions and apps are enabled.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+TEST_P(MostVisitedSitesTest, ShouldNotContainDefaultPreinstalledApp) {
+  const char kTestUrl[] = "http://site1/";
+  const char16_t kTestTitle[] = u"Site 1";
+  const char kGmailUrl[] =
+      "chrome-extension://pjkljhegncpnkpknbcohdijeoejaedia/index.html";
+  const char16_t kGmailTitle[] = u"Gmail";
+
+  EXPECT_CALL(*mock_top_sites_, GetMostVisitedURLs(_))
+      .WillRepeatedly(base::test::RunOnceCallback<0>(
+          MostVisitedURLList{MakeMostVisitedURL(kGmailTitle, kGmailUrl),
+                             MakeMostVisitedURL(kTestTitle, kTestUrl)}));
+  EXPECT_CALL(*mock_top_sites_, SyncWithHistory());
+  std::map<SectionType, NTPTilesVector> sections;
+  EXPECT_CALL(mock_observer_, OnURLsAvailable(_))
+      .WillRepeatedly(SaveArg<0>(&sections));
+
+  most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                  /*max_num_sites=*/2);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_THAT(sections.at(SectionType::PERSONALIZED),
+              AllOf(Not(Contains(MatchesTile(kGmailTitle, kGmailUrl,
+                                             TileSource::TOP_SITES))),
+                    Contains(MatchesTile(kTestTitle, kTestUrl,
+                                         TileSource::TOP_SITES))));
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 TEST_P(MostVisitedSitesTest, ShouldHaveHomepageFirstInListWhenNotFull) {
   FakeHomepageClient* homepage_client = RegisterNewHomepageClient();
@@ -1039,7 +1082,7 @@ TEST(MostVisitedSitesTest, ShouldDeduplicateDomainByReplacingMobilePrefixes) {
                                                         "www.cnn.com"));
 }
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 class MostVisitedSitesWithCustomLinksTest : public MostVisitedSitesTest {
  public:
   MostVisitedSitesWithCustomLinksTest() {

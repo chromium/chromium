@@ -1,10 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_VIEWS_WINDOW_FRAME_BACKGROUND_H_
 #define UI_VIEWS_WINDOW_FRAME_BACKGROUND_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/views_export.h"
@@ -14,6 +15,7 @@ class Canvas;
 }
 
 namespace ui {
+class ColorProvider;
 class NativeTheme;
 }
 
@@ -89,6 +91,7 @@ class VIEWS_EXPORT FrameBackground {
 
   void PaintMaximized(gfx::Canvas* canvas,
                       const ui::NativeTheme* native_theme,
+                      const ui::ColorProvider* color_provider,
                       int x,
                       int y,
                       int width) const;
@@ -110,16 +113,16 @@ class VIEWS_EXPORT FrameBackground {
   int top_area_height_ = 0;
 
   // Images for the sides of the frame.
-  const gfx::ImageSkia* left_edge_ = nullptr;
-  const gfx::ImageSkia* top_edge_ = nullptr;
-  const gfx::ImageSkia* right_edge_ = nullptr;
-  const gfx::ImageSkia* bottom_edge_ = nullptr;
+  raw_ptr<const gfx::ImageSkia> left_edge_ = nullptr;
+  raw_ptr<const gfx::ImageSkia> top_edge_ = nullptr;
+  raw_ptr<const gfx::ImageSkia> right_edge_ = nullptr;
+  raw_ptr<const gfx::ImageSkia> bottom_edge_ = nullptr;
 
   // Images for the corners of the frame.
-  const gfx::ImageSkia* top_left_corner_ = nullptr;
-  const gfx::ImageSkia* top_right_corner_ = nullptr;
-  const gfx::ImageSkia* bottom_left_corner_ = nullptr;
-  const gfx::ImageSkia* bottom_right_corner_ = nullptr;
+  raw_ptr<const gfx::ImageSkia> top_left_corner_ = nullptr;
+  raw_ptr<const gfx::ImageSkia> top_right_corner_ = nullptr;
+  raw_ptr<const gfx::ImageSkia> bottom_left_corner_ = nullptr;
+  raw_ptr<const gfx::ImageSkia> bottom_right_corner_ = nullptr;
 
   // Vertical inset for theme image when drawing maximized.
   int maximized_top_inset_ = 0;

@@ -80,3 +80,26 @@ automatically populate the bug summary with information useful for debugging the
 test, so please use it if available. If not present, e.g. if the tool did the
 wrong thing but didn't crash, please file any bugs under the [Sheriff-o-Matic
 component](https://bugs.chromium.org/p/chromium/issues/entry?components=Infra%3ESheriffing%3ESheriffOMatic).
+
+# Development
+
+## Integration tests
+
+This tool has a suite of integration tests under the `tests` directory, run via
+`integration_test.py`. New tests can be recorded using the `record` subcommand,
+followed by the name of the test and the command line arguments to run it with.
+
+Recording a testcase captures and stores the following data:
+* The arguments used to run the test.
+* The ResultDB requests made and their corresponding responses.
+* The path and content of any data read from files.
+* The path and content of any data written to files.
+
+When testcases are replayed, this information is fed into the tool to make it
+completely hermetic and reproducible, and as such these tests should be 100%
+consistent and reproducible. The data written is considered the only output of
+the tool, and this data is compared against what is stored to determine whether
+the test passes or fails.
+
+Existing tests can be printed in a readable format by using the `show`
+subcommand with the name of the test you want to examine.

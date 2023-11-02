@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,9 +71,22 @@ public class TraceEventAdder extends ByteCodeRewriter {
     @Override
     protected boolean shouldRewriteClass(ClassReader classReader) {
         mMethodsToTrace = new ArrayList<>(Arrays.asList(
+                // Methods on View.java
+                new MethodDescription(
+                        "dispatchTouchEvent", "(Landroid/view/MotionEvent;)Z", Opcodes.ACC_PUBLIC),
                 new MethodDescription("draw", "(Landroid/graphics/Canvas;)V", Opcodes.ACC_PUBLIC),
                 new MethodDescription("onMeasure", "(II)V", Opcodes.ACC_PROTECTED),
-                new MethodDescription("onLayout", "(ZIIII)V", Opcodes.ACC_PROTECTED)));
+                new MethodDescription("onLayout", "(ZIIII)V", Opcodes.ACC_PROTECTED),
+                // Methods on RecyclerView.java in AndroidX
+                new MethodDescription("scrollStep", "(II[I)V", 0),
+                // Methods on Animator.AnimatorListener
+                new MethodDescription(
+                        "onAnimationStart", "(Landroid/animation/Animator;)V", Opcodes.ACC_PUBLIC),
+                new MethodDescription(
+                        "onAnimationEnd", "(Landroid/animation/Animator;)V", Opcodes.ACC_PUBLIC),
+                // Methods on ValueAnimator.AnimatorUpdateListener
+                new MethodDescription("onAnimationUpdate", "(Landroid/animation/ValueAnimator;)V",
+                        Opcodes.ACC_PUBLIC)));
 
         // This adapter will modify mMethodsToTrace to indicate which methods already exist in the
         // class and which ones need to be overridden. In case the class is not an Android view

@@ -1,8 +1,8 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 
 import {util} from '../../../common/js/util.js';
 
@@ -11,21 +11,26 @@ import {MetadataItem} from './metadata_item.js';
 import {MetadataRequest} from './metadata_request.js';
 
 /**
- * Set of MetadataCacheItem.
+ * A collection of MetadataCacheItem objects. This class acts as a map from file
+ * entry URLs to metadata items. You can store metadata for entries, you can
+ * retrieve metadata for entries, clear the entire cache, or just selected
+ * entries. In addition, you can generate MetadataRequests and start them (i.e.,
+ * put them in the LOADING state).
  */
 export class MetadataCacheSet extends EventTarget {
-  /**
-   * @param {!MetadataCacheSetStorage} items Storage object containing
-   *     MetadataCacheItem.
-   */
-  constructor(items) {
+  constructor() {
     super();
 
     /**
-     * @private {!MetadataCacheSetStorage}
+     * @private <!Map<string, !MetadataCacheItem>>
      * @const
      */
-    this.items_ = items;
+    this.items_ = new Map();
+
+    /**
+     * @private {number}
+     */
+    this.requestIdCounter_ = 0;
   }
 
   /**
@@ -38,7 +43,7 @@ export class MetadataCacheSet extends EventTarget {
     const urls = util.entriesToURLs(entries);
     const requests = [];
     for (let i = 0; i < entries.length; i++) {
-      const item = this.items_.peek(urls[i]);
+      const item = this.items_.get(urls[i]);
       const requestedNames = item ? item.createRequests(names) : names;
       if (requestedNames.length) {
         requests.push(new MetadataRequest(entries[i], requestedNames));
@@ -56,10 +61,10 @@ export class MetadataCacheSet extends EventTarget {
     for (let i = 0; i < requests.length; i++) {
       const request = requests[i];
       const url = requests[i].entry['cachedUrl'] || requests[i].entry.toURL();
-      let item = this.items_.peek(url);
+      let item = this.items_.get(url);
       if (!item) {
         item = new MetadataCacheItem();
-        this.items_.put(url, item);
+        this.items_.set(url, item);
       }
       item.startRequests(requestId, request.names);
     }
@@ -82,7 +87,7 @@ export class MetadataCacheSet extends EventTarget {
 
     for (let i = 0; i < entries.length; i++) {
       const url = urls[i];
-      const item = this.items_.peek(url);
+      const item = this.items_.get(url);
       if (item && item.storeProperties(requestId, results[i])) {
         changedEntries.push(entries[i]);
         entriesMap.set(url, entries[i]);
@@ -106,6 +111,7 @@ export class MetadataCacheSet extends EventTarget {
    * Note that it returns invalidated properties also.
    * @param {!Array<!Entry>} entries Entries.
    * @param {!Array<string>} names Property names.
+   * @return {!Array<!MetadataItem>} metadata for the given entries.
    */
   get(entries, names) {
     const results = [];
@@ -121,13 +127,13 @@ export class MetadataCacheSet extends EventTarget {
    * Marks the caches of entries as invalidates and forces to reload at the next
    * time of startRequests.
    * @param {number} requestId Request ID of the invalidation request. This must
-   *     be larger than other requets ID passed to the set before.
+   *     be larger than other request ID passed to the set before.
    * @param {!Array<!Entry>} entries
    */
   invalidate(requestId, entries) {
     const urls = util.entriesToURLs(entries);
     for (let i = 0; i < entries.length; i++) {
-      const item = this.items_.peek(urls[i]);
+      const item = this.items_.get(urls[i]);
       if (item) {
         item.invalidate(requestId);
       }
@@ -140,7 +146,7 @@ export class MetadataCacheSet extends EventTarget {
    */
   clear(urls) {
     for (let i = 0; i < urls.length; i++) {
-      this.items_.remove(urls[i]);
+      this.items_.delete(urls[i]);
     }
   }
 
@@ -148,24 +154,26 @@ export class MetadataCacheSet extends EventTarget {
    * Clears all cache.
    */
   clearAll() {
-    this.items_.removeAll();
+    this.items_.clear();
   }
 
   /**
    * Creates snapshot of the cache for entries.
    * @param {!Array<!Entry>} entries
+   * @return {!MetadataCacheSet} a cache with metadata for the given entries.
    */
   createSnapshot(entries) {
-    const items = {};
+    const snapshot = new MetadataCacheSet();
+    const items = snapshot.items_;
     const urls = util.entriesToURLs(entries);
     for (let i = 0; i < entries.length; i++) {
       const url = urls[i];
-      const item = this.items_.peek(url);
+      const item = this.items_.get(url);
       if (item) {
-        items[url] = item.clone();
+        items.set(url, item.clone());
       }
     }
-    return new MetadataCacheSet(new MetadataCacheSetStorageForObject(items));
+    return snapshot;
   }
 
   /**
@@ -180,98 +188,19 @@ export class MetadataCacheSet extends EventTarget {
     }
     const urls = util.entriesToURLs(entries);
     for (let i = 0; i < entries.length; i++) {
-      const item = this.items_.peek(urls[i]);
+      const item = this.items_.get(urls[i]);
       if (!(item && item.hasFreshCache(names))) {
         return false;
       }
     }
     return true;
   }
-}
-
-/**
- * Interface of raw strage for MetadataCacheItem.
- * @interface
- */
-export class MetadataCacheSetStorage {
-  /**
-   * Returns an item corresponding to the given URL.
-   * @param {string} url Entry URL.
-   * @return {MetadataCacheItem}
-   */
-  get(url) {}
 
   /**
-   * Returns an item corresponding to the given URL without changing orders in
-   * the cache list.
-   * @param {string} url Entry URL.
-   * @return {MetadataCacheItem}
+   * Generates a unique request ID every time when it is called.
+   * @return {number}
    */
-  peek(url) {}
-
-  /**
-   * Saves an item corresponding to the given URL.
-   * @param {string} url Entry URL.
-   * @param {!MetadataCacheItem} item Item to be saved.
-   */
-  put(url, item) {}
-
-  /**
-   * Removes an item from the cache.
-   * @param {string} url Entry URL.
-   */
-  remove(url) {}
-
-  /**
-   * Remove all items from the cache.
-   */
-  removeAll() {}
-}
-
-/**
- * Implementation of MetadataCacheSetStorage by using raw object.
- * @implements {MetadataCacheSetStorage}
- */
-export class MetadataCacheSetStorageForObject {
-  /** @param {Object} items Map of URL and MetadataCacheItem. */
-  constructor(items) {
-    this.items_ = items;
-  }
-
-  /**
-   * @override
-   */
-  get(url) {
-    return this.items_[url];
-  }
-
-  /**
-   * @override
-   */
-  peek(url) {
-    return this.items_[url];
-  }
-
-  /**
-   * @override
-   */
-  put(url, item) {
-    this.items_[url] = item;
-  }
-
-  /**
-   * @override
-   */
-  remove(url) {
-    delete this.items_[url];
-  }
-
-  /**
-   * @override
-   */
-  removeAll() {
-    for (const url in this.items_) {
-      delete this.items_[url];
-    }
+  generateRequestId() {
+    return this.requestIdCounter_++;
   }
 }

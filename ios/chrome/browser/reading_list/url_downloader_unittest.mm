@@ -1,28 +1,28 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/reading_list/url_downloader.h"
+#import "ios/chrome/browser/reading_list/url_downloader.h"
 
-#include <vector>
+#import <vector>
 
-#include "base/bind.h"
-#include "base/containers/contains.h"
-#include "base/files/file_util.h"
-#include "base/path_service.h"
+#import "base/bind.h"
+#import "base/containers/contains.h"
+#import "base/files/file_util.h"
+#import "base/path_service.h"
 #import "base/test/ios/wait_util.h"
-#include "base/test/task_environment.h"
-#include "components/reading_list/core/offline_url_utils.h"
-#include "ios/chrome/browser/chrome_paths.h"
-#include "ios/chrome/browser/dom_distiller/distiller_viewer.h"
-#include "ios/chrome/browser/reading_list/offline_url_utils.h"
-#include "ios/chrome/browser/reading_list/reading_list_distiller_page.h"
-#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-#include "services/network/public/mojom/url_response_head.mojom.h"
-#include "services/network/test/test_url_loader_factory.h"
-#include "services/network/test/test_utils.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
+#import "base/test/task_environment.h"
+#import "components/reading_list/core/offline_url_utils.h"
+#import "ios/chrome/browser/dom_distiller/distiller_viewer.h"
+#import "ios/chrome/browser/paths/paths.h"
+#import "ios/chrome/browser/reading_list/offline_url_utils.h"
+#import "ios/chrome/browser/reading_list/reading_list_distiller_page.h"
+#import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#import "services/network/public/mojom/url_response_head.mojom.h"
+#import "services/network/test/test_url_loader_factory.h"
+#import "services/network/test/test_utils.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

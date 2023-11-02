@@ -1,0 +1,4 @@
+HTTP/1.1 200 OK
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Headers: *
+Attribution-Reporting-Register-Trigger:{"event_trigger_data":[{"trigger_data": "7"}]}

@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,13 +15,11 @@ Rule::Rule() = default;
 Rule::Rule(const ContentSettingsPattern& primary_pattern,
            const ContentSettingsPattern& secondary_pattern,
            base::Value value,
-           base::Time expiration,
-           SessionModel session_model)
+           const RuleMetaData& metadata)
     : primary_pattern(primary_pattern),
       secondary_pattern(secondary_pattern),
       value(std::move(value)),
-      expiration(expiration),
-      session_model(session_model) {}
+      metadata(metadata) {}
 
 Rule::Rule(Rule&& other) = default;
 
@@ -56,8 +54,7 @@ Rule ConcatenationIterator::Next() {
   DCHECK((*current_iterator)->HasNext());
   const Rule& next_rule = (*current_iterator)->Next();
   Rule to_return(next_rule.primary_pattern, next_rule.secondary_pattern,
-                 next_rule.value.Clone(), next_rule.expiration,
-                 next_rule.session_model);
+                 next_rule.value.Clone(), next_rule.metadata);
   if (!(*current_iterator)->HasNext())
     iterators_.erase(current_iterator);
   return to_return;

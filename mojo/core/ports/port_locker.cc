@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/record_replay.h"
 #include "mojo/core/ports/port.h"
 
 #if DCHECK_IS_ON()
@@ -30,16 +31,31 @@ void UpdateTLS(PortLocker* old_locker, PortLocker* new_locker) {
 
 }  // namespace
 
+static uintptr_t GetPortId(Port* port) {
+  // When recording/replaying the sorted order of ports need to be consistent,
+  // so we use the ID associated with the port via RegisterPointer for sorting.
+  if (recordreplay::IsRecordingOrReplaying("pointer-ids")) {
+    uintptr_t id = recordreplay::PointerId(port);
+    CHECK(id);
+    return id;
+  } else {
+    return (uintptr_t)port;
+  }
+}
+
 PortLocker::PortLocker(const PortRef** port_refs, size_t num_ports)
     : port_refs_(port_refs), num_ports_(num_ports) {
 #if DCHECK_IS_ON()
   UpdateTLS(nullptr, this);
 #endif
+  // recordreplay::Assert("[RUN-1217]-1310 PortLocker::PortLocker %d", num_ports);
 
   // Sort the ports by address to lock them in a globally consistent order.
   std::sort(
       port_refs_, port_refs_ + num_ports_,
-      [](const PortRef* a, const PortRef* b) { return a->port() < b->port(); });
+      [](const PortRef* a, const PortRef* b) {
+        return GetPortId(a->port()) < GetPortId(b->port());
+      });
   for (size_t i = 0; i < num_ports_; ++i) {
     // TODO(crbug.com/725605): Remove this CHECK.
     CHECK(port_refs_[i]->port());

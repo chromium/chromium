@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -104,65 +104,44 @@ bool PopulateItem(const base::Value& from,
   return true;
 }
 
-bool PopulateItem(const base::Value& from, std::unique_ptr<base::Value>* out) {
-  *out = base::Value::ToUniquePtrValue(from.Clone());
+bool PopulateItem(const base::Value& from, base::Value* out) {
+  *out = from.Clone();
   return true;
 }
 
 bool PopulateItem(const base::Value& from,
-                  std::unique_ptr<base::Value>* out,
+                  base::Value* out,
                   std::u16string* error) {
-  *out = base::Value::ToUniquePtrValue(from.Clone());
+  *out = from.Clone();
   return true;
 }
 
-bool PopulateItem(const base::Value& from,
-                  std::unique_ptr<base::DictionaryValue>* out) {
-  const base::DictionaryValue* dict = nullptr;
-  if (!from.GetAsDictionary(&dict))
-    return false;
-  *out = dict->CreateDeepCopy();
-  return true;
-}
-
-bool PopulateItem(const base::Value& from,
-                  std::unique_ptr<base::DictionaryValue>* out,
-                  std::u16string* error) {
-  const base::DictionaryValue* dict = nullptr;
-  if (!from.GetAsDictionary(&dict))
-    return ReportError(from, base::Value::Type::DICTIONARY, error);
-  *out = dict->CreateDeepCopy();
-  return true;
-}
-
-void AddItemToList(const int from, base::ListValue* out) {
+void AddItemToList(const int from, base::Value::List* out) {
   out->Append(from);
 }
 
-void AddItemToList(const bool from, base::ListValue* out) {
+void AddItemToList(const bool from, base::Value::List* out) {
   out->Append(from);
 }
 
-void AddItemToList(const double from, base::ListValue* out) {
+void AddItemToList(const double from, base::Value::List* out) {
   out->Append(from);
 }
 
-void AddItemToList(const std::string& from, base::ListValue* out) {
+void AddItemToList(const std::string& from, base::Value::List* out) {
   out->Append(from);
 }
 
-void AddItemToList(const std::vector<uint8_t>& from, base::ListValue* out) {
+void AddItemToList(const std::vector<uint8_t>& from, base::Value::List* out) {
   out->Append(base::Value(from));
 }
 
-void AddItemToList(const std::unique_ptr<base::Value>& from,
-                   base::ListValue* out) {
-  out->Append(from->Clone());
+void AddItemToList(const base::Value& from, base::Value::List* out) {
+  out->Append(from.Clone());
 }
 
-void AddItemToList(const std::unique_ptr<base::DictionaryValue>& from,
-                   base::ListValue* out) {
-  out->Append(from->CreateDeepCopy());
+void AddItemToList(const base::Value& from, base::ListValue* out) {
+  out->Append(from.Clone());
 }
 
 }  // namespace util

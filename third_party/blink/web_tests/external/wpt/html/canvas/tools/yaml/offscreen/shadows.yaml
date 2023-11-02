@@ -952,7 +952,7 @@
     t.done();
 
 - name: 2d.shadow.alpha.1
-  desc: Shadow colour alpha components are used
+  desc: Shadow color alpha components are used
   testing:
   - 2d.shadow.render
   code: |
@@ -965,7 +965,7 @@
     t.done();
 
 - name: 2d.shadow.alpha.2
-  desc: Shadow colour alpha components are used
+  desc: Shadow color alpha components are used
   testing:
   - 2d.shadow.render
   code: |

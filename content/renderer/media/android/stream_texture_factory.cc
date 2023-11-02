@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace content {
@@ -121,6 +122,19 @@ void StreamTextureProxy::ForwardStreamTextureForSurfaceRequest(
 }
 
 void StreamTextureProxy::UpdateRotatedVisibleSize(const gfx::Size& size) {
+  base::AutoLock lock(lock_);
+  if (!task_runner_)
+    return;
+
+  if (!task_runner_->BelongsToCurrentThread()) {
+    // Note that Unretained is safe here because this object is deleted
+    // exclusively by posting a task to the same task runner, after its owner
+    // has dropped the only reference to it.
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&StreamTextureProxy::UpdateRotatedVisibleSize,
+                                  base::Unretained(this), size));
+    return;
+  }
   host_->UpdateRotatedVisibleSize(size);
 }
 

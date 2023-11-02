@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/modules/mediastream/media_constraints_impl.h"
 
+#include "build/build_config.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/array_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
@@ -46,12 +47,12 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_constraindoublerange_double.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_constrainlongrange_long.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/deprecation.h"
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/mediastream/media_error_state.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -79,6 +80,7 @@ struct NameValueStringConstraint {
 
 // Legal constraint names.
 
+// Legacy getUserMedia() constraints. Sadly still in use.
 const char kMinAspectRatio[] = "minAspectRatio";
 const char kMaxAspectRatio[] = "maxAspectRatio";
 const char kMaxWidth[] = "maxWidth";
@@ -94,7 +96,6 @@ const char kMediaStreamSourceInfoId[] = "sourceId";  // mapped to deviceId
 const char kMediaStreamRenderToAssociatedSink[] =
     "chromeRenderToAssociatedSink";
 // RenderToAssociatedSink will be going away some time.
-const char kMediaStreamAudioHotword[] = "googHotword";
 const char kEchoCancellation[] = "echoCancellation";
 const char kDisableLocalEcho[] = "disableLocalEcho";
 const char kGoogEchoCancellation[] = "googEchoCancellation";
@@ -103,54 +104,13 @@ const char kGoogAutoGainControl[] = "googAutoGainControl";
 const char kGoogExperimentalAutoGainControl[] = "googAutoGainControl2";
 const char kGoogNoiseSuppression[] = "googNoiseSuppression";
 const char kGoogExperimentalNoiseSuppression[] = "googNoiseSuppression2";
-const char kGoogBeamforming[] = "googBeamforming";
-const char kGoogArrayGeometry[] = "googArrayGeometry";
 const char kGoogHighpassFilter[] = "googHighpassFilter";
-const char kGoogTypingNoiseDetection[] = "googTypingNoiseDetection";
 const char kGoogAudioMirroring[] = "googAudioMirroring";
 // Audio constraints.
 const char kDAEchoCancellation[] = "googDAEchoCancellation";
 // Google-specific constraint keys for a local video source (getUserMedia).
 const char kNoiseReduction[] = "googNoiseReduction";
 
-// Constraint keys for CreateOffer / CreateAnswer defined in W3C specification.
-const char kOfferToReceiveAudio[] = "OfferToReceiveAudio";
-const char kOfferToReceiveVideo[] = "OfferToReceiveVideo";
-const char kVoiceActivityDetection[] = "VoiceActivityDetection";
-const char kIceRestart[] = "IceRestart";
-// Google specific constraint for BUNDLE enable/disable.
-const char kUseRtpMux[] = "googUseRtpMUX";
-// Below constraints should be used during PeerConnection construction.
-const char kEnableDtlsSrtp[] = "DtlsSrtpKeyAgreement";
-const char kEnableRtpDataChannels[] = "RtpDataChannels";
-// Google-specific constraint keys.
-// TODO(hta): These need to be made standard or deleted. crbug.com/605673
-const char kEnableDscp[] = "googDscp";
-const char kEnableIPv6[] = "googIPv6";
-const char kEnableVideoSuspendBelowMinBitrate[] = "googSuspendBelowMinBitrate";
-const char kNumUnsignalledRecvStreams[] = "googNumUnsignalledRecvStreams";
-const char kCombinedAudioVideoBwe[] = "googCombinedAudioVideoBwe";
-const char kScreencastMinBitrate[] = "googScreencastMinBitrate";
-const char kCpuOveruseDetection[] = "googCpuOveruseDetection";
-const char kCpuUnderuseThreshold[] = "googCpuUnderuseThreshold";
-const char kCpuOveruseThreshold[] = "googCpuOveruseThreshold";
-const char kCpuUnderuseEncodeRsdThreshold[] =
-    "googCpuUnderuseEncodeRsdThreshold";
-const char kCpuOveruseEncodeRsdThreshold[] = "googCpuOveruseEncodeRsdThreshold";
-const char kCpuOveruseEncodeUsage[] = "googCpuOveruseEncodeUsage";
-const char kHighStartBitrate[] = "googHighStartBitrate";
-const char kPayloadPadding[] = "googPayloadPadding";
-const char kAudioLatency[] = "latencyMs";
-
-// Names that have been used in the past, but should now be ignored.
-// Kept around for backwards compatibility.
-// https://crbug.com/579729
-const char kGoogLeakyBucket[] = "googLeakyBucket";
-const char kPowerLineFrequency[] = "googPowerLineFrequency";
-// mediacapture-depth: videoKind key and VideoKindEnum values.
-const char kVideoKind[] = "videoKind";
-const char kVideoKindColor[] = "color";
-const char kVideoKindDepth[] = "depth";
 // Names used for testing.
 const char kTestConstraint1[] = "valid_and_supported_1";
 const char kTestConstraint2[] = "valid_and_supported_2";
@@ -279,9 +239,11 @@ static bool ToBoolean(const WebString& as_web_string) {
 static void ParseOldStyleNames(
     ExecutionContext* context,
     const Vector<NameValueStringConstraint>& old_names,
-    bool report_unknown_names,
     MediaTrackConstraintSetPlatform& result,
     MediaErrorState& error_state) {
+  if (old_names.size() > 0) {
+    UseCounter::Count(context, WebFeature::kOldConstraintsParsed);
+  }
   for (const NameValueStringConstraint& constraint : old_names) {
     if (constraint.name_.Equals(kMinAspectRatio)) {
       result.aspect_ratio.SetMin(atof(constraint.value_.Utf8().c_str()));
@@ -341,105 +303,6 @@ static void ParseOldStyleNames(
       result.goog_da_echo_cancellation.SetExact(ToBoolean(constraint.value_));
     } else if (constraint.name_.Equals(kNoiseReduction)) {
       result.goog_noise_reduction.SetExact(ToBoolean(constraint.value_));
-    } else if (constraint.name_.Equals(kOfferToReceiveAudio)) {
-      // This constraint has formerly been defined both as a boolean
-      // and as an integer. Allow both forms.
-      if (constraint.value_.Equals("true"))
-        result.offer_to_receive_audio.SetExact(1);
-      else if (constraint.value_.Equals("false"))
-        result.offer_to_receive_audio.SetExact(0);
-      else
-        result.offer_to_receive_audio.SetExact(
-            atoi(constraint.value_.Utf8().c_str()));
-    } else if (constraint.name_.Equals(kOfferToReceiveVideo)) {
-      // This constraint has formerly been defined both as a boolean
-      // and as an integer. Allow both forms.
-      if (constraint.value_.Equals("true"))
-        result.offer_to_receive_video.SetExact(1);
-      else if (constraint.value_.Equals("false"))
-        result.offer_to_receive_video.SetExact(0);
-      else
-        result.offer_to_receive_video.SetExact(
-            atoi(constraint.value_.Utf8().c_str()));
-    } else if (constraint.name_.Equals(kVoiceActivityDetection)) {
-      result.voice_activity_detection.SetExact(ToBoolean(constraint.value_));
-    } else if (constraint.name_.Equals(kIceRestart)) {
-      result.ice_restart.SetExact(ToBoolean(constraint.value_));
-    } else if (constraint.name_.Equals(kUseRtpMux)) {
-      result.goog_use_rtp_mux.SetExact(ToBoolean(constraint.value_));
-    } else if (constraint.name_.Equals(kEnableDtlsSrtp)) {
-      // This constraint has no effect since Chrome M97.
-      // It only prints a deprecation notice.
-      bool value = ToBoolean(constraint.value_);
-      if (value) {
-        Deprecation::CountDeprecation(
-            context, WebFeature::kRTCConstraintEnableDtlsSrtpTrue);
-      } else {
-        Deprecation::CountDeprecation(
-            context, WebFeature::kRTCConstraintEnableDtlsSrtpFalse);
-      }
-    } else if (constraint.name_.Equals(kEnableRtpDataChannels)) {
-      // This constraint does not turn on RTP data channels, but we do not
-      // want it to cause an error, so we parse it and ignore it.
-      bool value = ToBoolean(constraint.value_);
-      if (value) {
-        Deprecation::CountDeprecation(
-            context, WebFeature::kRTCConstraintEnableRtpDataChannelsTrue);
-      } else {
-        Deprecation::CountDeprecation(
-            context, WebFeature::kRTCConstraintEnableRtpDataChannelsFalse);
-      }
-    } else if (constraint.name_.Equals(kEnableDscp)) {
-      result.enable_dscp.SetExact(ToBoolean(constraint.value_));
-    } else if (constraint.name_.Equals(kEnableIPv6)) {
-      result.enable_i_pv6.SetExact(ToBoolean(constraint.value_));
-    } else if (constraint.name_.Equals(kEnableVideoSuspendBelowMinBitrate)) {
-      result.goog_enable_video_suspend_below_min_bitrate.SetExact(
-          ToBoolean(constraint.value_));
-    } else if (constraint.name_.Equals(kNumUnsignalledRecvStreams)) {
-      result.goog_num_unsignalled_recv_streams.SetExact(
-          atoi(constraint.value_.Utf8().c_str()));
-    } else if (constraint.name_.Equals(kCombinedAudioVideoBwe)) {
-      result.goog_combined_audio_video_bwe.SetExact(
-          ToBoolean(constraint.value_));
-    } else if (constraint.name_.Equals(kScreencastMinBitrate)) {
-      result.goog_screencast_min_bitrate.SetExact(
-          atoi(constraint.value_.Utf8().c_str()));
-    } else if (constraint.name_.Equals(kCpuOveruseDetection)) {
-      result.goog_cpu_overuse_detection.SetExact(ToBoolean(constraint.value_));
-    } else if (constraint.name_.Equals(kHighStartBitrate)) {
-      result.goog_high_start_bitrate.SetExact(
-          atoi(constraint.value_.Utf8().c_str()));
-    } else if (constraint.name_.Equals(kPayloadPadding)) {
-      result.goog_payload_padding.SetExact(ToBoolean(constraint.value_));
-    } else if (constraint.name_.Equals(kAudioLatency)) {
-      result.goog_latency_ms.SetExact(atoi(constraint.value_.Utf8().c_str()));
-    } else if (constraint.name_.Equals(kCpuUnderuseThreshold) ||
-               constraint.name_.Equals(kCpuOveruseThreshold) ||
-               constraint.name_.Equals(kCpuUnderuseEncodeRsdThreshold) ||
-               constraint.name_.Equals(kCpuOveruseEncodeRsdThreshold) ||
-               constraint.name_.Equals(kCpuOveruseEncodeUsage) ||
-               constraint.name_.Equals(kGoogLeakyBucket) ||
-               constraint.name_.Equals(kGoogBeamforming) ||
-               constraint.name_.Equals(kGoogArrayGeometry) ||
-               constraint.name_.Equals(kPowerLineFrequency) ||
-               constraint.name_.Equals(kMediaStreamAudioHotword) ||
-               constraint.name_.Equals(kGoogTypingNoiseDetection)) {
-      // TODO(crbug.com/856176): Remove the kGoogBeamforming and
-      // kGoogArrayGeometry special cases.
-      context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::ConsoleMessageSource::kDeprecation,
-          mojom::ConsoleMessageLevel::kWarning,
-          "Obsolete constraint named " + String(constraint.name_) +
-              " is ignored. Please stop using it."));
-    } else if (constraint.name_.Equals(kVideoKind)) {
-      if (!constraint.value_.Equals(kVideoKindColor) &&
-          !constraint.value_.Equals(kVideoKindDepth)) {
-        error_state.ThrowConstraintError("Illegal value for constraint",
-                                         constraint.name_);
-      } else {
-        result.video_kind.SetExact(constraint.value_);
-      }
     } else if (constraint.name_.Equals(kTestConstraint1) ||
                constraint.name_.Equals(kTestConstraint2)) {
       // These constraints are only for testing parsing.
@@ -448,20 +311,8 @@ static void ParseOldStyleNames(
         error_state.ThrowConstraintError("Illegal value for constraint",
                                          constraint.name_);
       }
-    } else {
-      if (report_unknown_names) {
-        // TODO(hta): UMA stats for unknown constraints passed.
-        // https://crbug.com/576613
-        context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-            mojom::ConsoleMessageSource::kDeprecation,
-            mojom::ConsoleMessageLevel::kWarning,
-            "Unknown constraint named " + String(constraint.name_) +
-                " rejected"));
-        // TODO(crbug.com/856176): Don't throw an error.
-        error_state.ThrowConstraintError("Unknown name of constraint detected",
-                                         constraint.name_);
-      }
     }
+    // else: Nothing. Unrecognized constraints are simply ignored.
   }
 }
 
@@ -473,7 +324,7 @@ static MediaConstraints CreateFromNamedConstraints(
   MediaTrackConstraintSetPlatform basic;
   MediaTrackConstraintSetPlatform advanced;
   MediaConstraints constraints;
-  ParseOldStyleNames(context, mandatory, true, basic, error_state);
+  ParseOldStyleNames(context, mandatory, basic, error_state);
   if (error_state.HadException())
     return constraints;
   // We ignore unknow names and syntax errors in optional constraints.
@@ -482,7 +333,7 @@ static MediaConstraints CreateFromNamedConstraints(
   for (const auto& optional_constraint : optional) {
     MediaTrackConstraintSetPlatform advanced_element;
     Vector<NameValueStringConstraint> element_as_list(1, optional_constraint);
-    ParseOldStyleNames(context, element_as_list, false, advanced_element,
+    ParseOldStyleNames(context, element_as_list, advanced_element,
                        ignored_error_state);
     if (!advanced_element.IsUnconstrained())
       advanced_vector.push_back(advanced_element);
@@ -664,7 +515,7 @@ bool ValidateStringConstraint(const V8ConstrainDOMString* blink_union_form,
   return false;
 }
 
-WARN_UNUSED_RESULT bool ValidateAndCopyStringConstraint(
+[[nodiscard]] bool ValidateAndCopyStringConstraint(
     const V8ConstrainDOMString* blink_union_form,
     NakedValueDisposition naked_treatment,
     StringConstraint& web_form,
@@ -839,14 +690,6 @@ bool ValidateAndCopyConstraintSet(
       return false;
     }
   }
-  if (constraints_in->hasVideoKind()) {
-    if (!ValidateAndCopyStringConstraint(
-            constraints_in->videoKind(), naked_treatment,
-            constraint_buffer.video_kind, error_state)) {
-      DCHECK(error_state.HadException());
-      return false;
-    }
-  }
   if (constraints_in->hasPan()) {
     CopyBooleanOrDoubleConstraint(constraints_in->pan(), naked_treatment,
                                   constraint_buffer.pan);
@@ -858,6 +701,14 @@ bool ValidateAndCopyConstraintSet(
   if (constraints_in->hasZoom()) {
     CopyBooleanOrDoubleConstraint(constraints_in->zoom(), naked_treatment,
                                   constraint_buffer.zoom);
+  }
+  if (constraints_in->hasDisplaySurface()) {
+    if (!ValidateAndCopyStringConstraint(
+            constraints_in->displaySurface(), naked_treatment,
+            constraint_buffer.display_surface, error_state)) {
+      DCHECK(error_state.HadException());
+      return false;
+    }
   }
   return true;
 }
@@ -1126,8 +977,6 @@ void ConvertConstraintSet(const MediaTrackConstraintSetPlatform& input,
     output->setDeviceId(ConvertString(input.device_id, naked_treatment));
   if (!input.group_id.IsUnconstrained())
     output->setGroupId(ConvertString(input.group_id, naked_treatment));
-  if (!input.video_kind.IsUnconstrained())
-    output->setVideoKind(ConvertString(input.video_kind, naked_treatment));
   if (!input.pan.IsUnconstrained())
     output->setPan(ConvertBooleanOrDouble(input.pan, naked_treatment));
   if (!input.tilt.IsUnconstrained())
@@ -1154,7 +1003,7 @@ MediaTrackConstraints* ConvertConstraints(const MediaConstraints& input) {
     ConvertConstraintSet(it, NakedValueDisposition::kTreatAsExact, element);
     advanced_vector.push_back(element);
   }
-  if (!advanced_vector.IsEmpty())
+  if (!advanced_vector.empty())
     output->setAdvanced(advanced_vector);
 
   return output;

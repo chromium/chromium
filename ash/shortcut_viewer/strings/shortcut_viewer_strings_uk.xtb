@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">Відкрити нове вікно в режимі анонімного перегляду</translation>
 <translation id="152892567002884378">Збільшити гучність</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, а тоді <ph name="ESC" /></translation>
+<translation id="1586324912145647027">Перейти до 1 з 8 робочих столів</translation>
 <translation id="1652741121070700329">Перейти на початок попереднього слова</translation>
 <translation id="1679841710523778799">Збільшити яскравість</translation>
 <translation id="168356808214100546">Утримуйте <ph name="ALT" /> і торкайтеся <ph name="TAB" />, доки не перейдете в потрібне вікно, а тоді відпустіть.</translation>
@@ -70,6 +71,7 @@
 <translation id="3140353188828248647">Активувати адресний рядок</translation>
 <translation id="3256109297135787951">Скасувати виділення елемента на полиці</translation>
 <translation id="3288816184963444640">Закрити поточне вікно</translation>
+<translation id="3322797428033495633">Перейти у вікно в режимі "картинка в картинці"</translation>
 <translation id="3350805006883559974">Перемістити активне вікно вгору</translation>
 <translation id="3407560819924487926">Відкрити Диспетчер завдань</translation>
 <translation id="3417835166382867856">Шукати вкладки</translation>
@@ -91,6 +93,7 @@
 <translation id="3949671998904569433">кома</translation>
 <translation id="3976863468609830880">Натиснути останній значок на полиці</translation>
 <translation id="3994783594793697310">Скидає рівень масштабування екрана</translation>
+<translation id="4026837045671473537">Увімкнути режим інверсії кольорів</translation>
 <translation id="4026843240379844265">Перемістити активне вікно між дисплеями.</translation>
 <translation id="4035482366624727273">Виділити все на сторінці</translation>
 <translation id="4060703249685950734">Знову відкрити останню закриту вкладку або вікно</translation>
@@ -129,6 +132,7 @@
 <translation id="5563050856984839829">Натисніть <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> і посилання</translation>
 <translation id="561814908794220892">Відкрити веб-сторінку в новій вкладці</translation>
 <translation id="5620219513321115856">Перемістити активне вікно на робочий стіл праворуч</translation>
+<translation id="5699366815052349604">Призначити активне вікно всім робочим столам</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> або <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Відкрити посилання в поточній вкладці</translation>
 <translation id="5757474750054631686">Зменшити яскравість клавіатури (лише для клавіатур із підсвічуванням)</translation>
@@ -138,7 +142,6 @@
 <translation id="5921745308587794300">Обернути вікно</translation>
 <translation id="5926306472221400972">Зробити знімок усього екрана</translation>
 <translation id="6022924867608035986">Очистити вікно пошуку</translation>
-<translation id="6045998054441862242">Увімкнути режим високого контрасту</translation>
 <translation id="6052614013050385269">Відкрити контекстне меню посилання</translation>
 <translation id="6129953537138746214">Пробіл</translation>
 <translation id="6143669479988153888">Збільшити масштаб сторінки</translation>
@@ -155,6 +158,7 @@
 <translation id="6445033640292336367">Повернути вкладку на початкове місце</translation>
 <translation id="6474744297082284761">Віддаляє (коли ввімкнено закріплену лупу чи лупу для всього екрана)</translation>
 <translation id="649811797655257835">Виберіть файл і натисніть <ph name="SPACE" /></translation>
+<translation id="6515089016094047210">Відкрити або закрити віджет Календар.</translation>
 <translation id="6551886416582667425">Зробити знімок або запис частини екрана</translation>
 <translation id="6556040137485212400">Відкрити вікно, яке не використовувалося найдовше</translation>
 <translation id="666343722268997814">Відкрити контекстне меню виділеного елемента</translation>
@@ -198,12 +202,12 @@
 <translation id="8388247778047144397">Перетягніть посилання на порожнє місце на панелі вкладок</translation>
 <translation id="8389638407792712197">Відкрити нове вікно</translation>
 <translation id="8429696719963529183">Натиснути функціональну клавішу (від F1 до F12)</translation>
-<translation id="8537650670971624753">Вийти з режиму пошуку</translation>
 <translation id="85690795166292698">Відкрити посилання в новій вкладці</translation>
 <translation id="8609384513243082612">Відкрити нову вкладку</translation>
 <translation id="8644639153978066712">Показати сховані файли в додатку Файли</translation>
 <translation id="8717459106217102612">Виділити попереднє слово або літеру</translation>
 <translation id="8727232706774971183">Переглянути сповіщення</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> від 1 до 8</translation>
 <translation id="8855885154700222542">Клавіша повноекранного режиму</translation>
 <translation id="8881584919399569791">Перемістити активне вікно на робочий стіл ліворуч</translation>
 <translation id="88986195241502842">Сторінка вниз</translation>

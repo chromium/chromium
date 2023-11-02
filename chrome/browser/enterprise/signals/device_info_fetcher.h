@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,6 +32,7 @@ struct DeviceInfo {
   std::vector<std::string> mac_addresses;
   absl::optional<std::string> windows_machine_domain;
   absl::optional<std::string> windows_user_domain;
+  absl::optional<SettingValue> secure_boot_enabled;
 };
 
 // Interface used by the chrome.enterprise.reportingPrivate.getDeviceInfo()

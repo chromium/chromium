@@ -1,13 +1,13 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/lazy_load.js';
+import 'chrome://os-settings/chromeos/lazy_load.js';
 
-// #import {assertTrue, assertFalse} from '../../chai_assert.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// clang-format on
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assertFalse, assertTrue} from '../../chai_assert.js';
 
 suite('SwitchAccessSetupGuideDialogTest', function() {
   /** @type {SettingsSwitchAccessSetupGuideDialog} */
@@ -48,7 +48,7 @@ suite('SwitchAccessSetupGuideDialogTest', function() {
       },
     };
     document.body.appendChild(dialog);
-    Polymer.dom.flush();
+    flush();
   });
 
   test('Exit button closes dialog', function() {
@@ -287,22 +287,6 @@ suite('SwitchAccessSetupGuideDialogTest', function() {
         'settings.a11y.switch_access.auto_scan.enabled', setPrefData[1].key);
     assertEquals(false, setPrefData[1].value);
 
-    // Check that navigating backwards does not disable auto-scan if it was
-    // enabled before setup was started.
-    dialog.currentPageId_ = /*Auto-scan enabled=*/2;
-    dialog.autoScanPreviouslyEnabled_ = true;
-    setPrefData = [];
-
-    dialog.onPreviousClick_();
-    assertNotEquals(dialog.currentPageId_, /*Auto-scan enabled=*/2);
-
-    // At no point should auto_scan be set to false.
-    for (const data of setPrefData) {
-      if (data.key === 'settings.a11y.switch_access.auto_scan.enabled') {
-        assertTrue(data.value);
-      }
-    }
-
     // Confirm that auto-scan is disabled upon reaching the "Next" assignment
     // page.
     setPrefData = [];
@@ -401,7 +385,7 @@ suite('SwitchAccessSetupGuideDialogTest', function() {
     assertEquals('select', assignContents.firstChild.action);
 
     // Simulate the pane exiting without successfully assigning a switch.
-    cr.webUIListenerCallback('exit-pane');
+    webUIListenerCallback('exit-pane');
 
     // Confirm the page has not changed and the pane was loaded.
     assertEquals(/*Assign select=*/ 1, dialog.currentPageId_);

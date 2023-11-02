@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,16 @@
 #define DEVICE_FIDO_VIRTUAL_FIDO_DEVICE_FACTORY_H_
 
 #include <memory>
+#include <utility>
+#include <vector>
 
-#include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/virtual_ctap2_device.h"
 #include "device/fido/virtual_fido_device.h"
+#include "device/fido/virtual_fido_device_discovery.h"
 
 namespace device {
 namespace test {
@@ -40,6 +43,7 @@ class VirtualFidoDeviceFactory : public device::FidoDiscoveryFactory {
   // the supported protocol to CTAP2.
   void SetCtap2Config(const VirtualCtap2Device::Config& config);
   VirtualFidoDevice::State* mutable_state();
+  scoped_refptr<VirtualFidoDeviceDiscovery::Trace> trace();
 
  protected:
   // device::FidoDiscoveryFactory:
@@ -53,6 +57,8 @@ class VirtualFidoDeviceFactory : public device::FidoDiscoveryFactory {
       FidoTransportProtocol::kUsbHumanInterfaceDevice;
   VirtualCtap2Device::Config ctap2_config_;
   scoped_refptr<VirtualFidoDevice::State> state_ = new VirtualFidoDevice::State;
+  scoped_refptr<VirtualFidoDeviceDiscovery::Trace> trace_ =
+      new VirtualFidoDeviceDiscovery::Trace;
 };
 
 }  // namespace test

@@ -1,0 +1,21 @@
+Verifies that Expect-CT deprecation issue is created from page with Expect-CT header.
+
+Inspector issue: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 0
+                    lineNumber : -1
+                    url : http://127.0.0.1:8000/inspector-protocol/resources/expect-ct.php
+                }
+                type : ExpectCTHeader
+            }
+        }
+    }
+}
+

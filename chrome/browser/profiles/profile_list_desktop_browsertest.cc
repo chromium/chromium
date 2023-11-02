@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/browser.h"
@@ -25,18 +26,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
-
-namespace {
-
-// An observer that returns back to test code after a new profile is
-// initialized.
-void OnUnblockOnProfileCreation(Profile* profile,
-                                Profile::CreateStatus status) {
-  if (status == Profile::CREATE_STATUS_INITIALIZED)
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
-}
-
-}  // namespace
 
 class ProfileListDesktopBrowserTest : public InProcessBrowserTest {
  public:
@@ -72,15 +61,11 @@ IN_PROC_BROWSER_TEST_F(ProfileListDesktopBrowserTest, MAYBE_SwitchToProfile) {
       profile_manager->GetProfileAttributesStorage();
   base::FilePath path_profile1 = browser()->profile()->GetPath();
 
-  // Create an additional profile.
   base::FilePath path_profile2 = profile_manager->user_data_dir().Append(
       FILE_PATH_LITERAL("New Profile 2"));
-  profile_manager->CreateProfileAsync(
-      path_profile2, base::BindRepeating(&OnUnblockOnProfileCreation));
+  // Create an additional profile.
+  profiles::testing::CreateProfileSync(profile_manager, path_profile2);
 
-  // Spin to allow profile creation to take place, loop is terminated
-  // by OnUnblockOnProfileCreation when the profile is created.
-  content::RunMessageLoop();
   ASSERT_EQ(2u, storage.GetNumberOfProfiles());
 
   std::unique_ptr<AvatarMenu> menu = CreateAvatarMenu(&storage);

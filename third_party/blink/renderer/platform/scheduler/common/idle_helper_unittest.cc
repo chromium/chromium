@@ -1,24 +1,34 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/scheduler/common/idle_helper.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/run_loop.h"
+#include "base/task/common/lazy_now.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
 #include "base/task/sequence_manager/time_domain.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/scheduler/common/scheduler_helper.h"
+#include "third_party/blink/renderer/platform/scheduler/common/single_thread_idle_task_runner.h"
+#include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_scheduler_helper.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -68,7 +78,9 @@ void IdleTestTask(int* run_count,
                   base::TimeTicks* deadline_out,
                   base::TimeTicks deadline) {
   (*run_count)++;
-  *deadline_out = deadline;
+  if (deadline_out) {
+    *deadline_out = deadline;
+  }
 }
 
 int g_max_idle_task_reposts = 2;
@@ -180,12 +192,15 @@ class BaseIdleHelperTest : public testing::Test {
     scheduler_helper_ = std::make_unique<NonMainThreadSchedulerHelper>(
         sequence_manager_.get(), nullptr, TaskType::kInternalTest);
     scheduler_helper_->AttachToCurrentThread();
+    idle_helper_queue_ = scheduler_helper_->NewTaskQueue(
+        TaskQueue::Spec(base::sequence_manager::QueueName::IDLE_TQ));
     idle_helper_ = std::make_unique<IdleHelperForTest>(
         scheduler_helper_.get(),
         required_quiescence_duration_before_long_idle_period,
-        scheduler_helper_->NewTaskQueue(TaskQueue::Spec("idle_test")));
+        idle_helper_queue_->GetTaskQueue());
     default_task_queue_ = scheduler_helper_->DefaultNonMainThreadTaskQueue();
-    default_task_runner_ = default_task_queue_->CreateTaskRunner(0);
+    default_task_runner_ =
+        default_task_queue_->GetTaskRunnerWithDefaultTaskType();
     idle_task_runner_ = idle_helper_->IdleTaskRunner();
     test_task_runner_->AdvanceMockTickClock(base::Microseconds(5000));
   }
@@ -263,8 +278,9 @@ class BaseIdleHelperTest : public testing::Test {
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
   std::unique_ptr<SequenceManager> sequence_manager_;
   std::unique_ptr<NonMainThreadSchedulerHelper> scheduler_helper_;
+  scoped_refptr<NonMainThreadTaskQueue> idle_helper_queue_;
   std::unique_ptr<IdleHelperForTest> idle_helper_;
-  scoped_refptr<base::sequence_manager::TaskQueue> default_task_queue_;
+  scoped_refptr<NonMainThreadTaskQueue> default_task_queue_;
   scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
   scoped_refptr<SingleThreadIdleTaskRunner> idle_task_runner_;
 };
@@ -654,9 +670,8 @@ TEST_F(IdleHelperTest, TestLongIdlePeriodPaused) {
   idle_helper_->EnableLongIdlePeriod();
   CheckIdlePeriodStateIs("in_long_idle_period_paused");
   // There shouldn't be any delayed tasks posted by the idle helper when paused.
-  base::sequence_manager::LazyNow lazy_now_1(
-      test_task_runner_->GetMockTickClock());
-  EXPECT_FALSE(scheduler_helper_->GetNextDelayedWakeUp());
+  base::LazyNow lazy_now_1(test_task_runner_->GetMockTickClock());
+  EXPECT_FALSE(scheduler_helper_->GetNextWakeUp());
 
   // Posting a task should transition us to the an active state.
   g_max_idle_task_reposts = 2;
@@ -676,9 +691,8 @@ TEST_F(IdleHelperTest, TestLongIdlePeriodPaused) {
 
   // Once all task have been run we should go back to the paused state.
   CheckIdlePeriodStateIs("in_long_idle_period_paused");
-  base::sequence_manager::LazyNow lazy_now_2(
-      test_task_runner_->GetMockTickClock());
-  EXPECT_FALSE(scheduler_helper_->GetNextDelayedWakeUp());
+  base::LazyNow lazy_now_2(test_task_runner_->GetMockTickClock());
+  EXPECT_FALSE(scheduler_helper_->GetNextWakeUp());
 
   idle_helper_->EndIdlePeriod();
   CheckIdlePeriodStateIs("not_in_idle_period");
@@ -1081,6 +1095,117 @@ TEST_F(IdleHelperTest, OnPendingTasksChanged_TwoTasksAtTheSameTime) {
   test_task_runner_->RunUntilIdle();
   EXPECT_EQ(2, run_count);
   EXPECT_EQ(expected_deadline, deadline_in_task);
+}
+
+class MultiThreadedIdleHelperTest : public IdleHelperTest {
+ public:
+  void PostIdleTaskFromNewThread(int* run_count) {
+    PostDelayedIdleTaskFromNewThread(base::TimeDelta(), run_count);
+  }
+
+  void PostDelayedIdleTaskFromNewThread(base::TimeDelta delay, int* run_count) {
+    std::unique_ptr<NonMainThread> thread = NonMainThread::CreateThread(
+        ThreadCreationParams(ThreadType::kTestThread)
+            .SetThreadNameForTest("TestBackgroundThread"));
+    PostCrossThreadTask(
+        *thread->GetTaskRunner(), FROM_HERE,
+        CrossThreadBindOnce(&PostIdleTaskFromBackgroundThread,
+                            idle_task_runner_, delay,
+                            WTF::CrossThreadUnretained(run_count)));
+    thread.reset();
+  }
+
+ protected:
+  static void PostIdleTaskFromBackgroundThread(
+      scoped_refptr<SingleThreadIdleTaskRunner> idle_task_runner,
+      base::TimeDelta delay,
+      int* run_count) {
+    auto callback = ConvertToBaseOnceCallback(CrossThreadBindOnce(
+        &IdleTestTask, WTF::CrossThreadUnretained(run_count), nullptr));
+    if (delay.is_zero()) {
+      idle_task_runner->PostIdleTask(FROM_HERE, std::move(callback));
+    } else {
+      idle_task_runner->PostDelayedIdleTask(FROM_HERE, delay,
+                                            std::move(callback));
+    }
+  }
+};
+
+TEST_F(MultiThreadedIdleHelperTest, IdleTasksFromNonMainThreads) {
+  int run_count = 0;
+
+  test_task_runner_->AdvanceMockTickClock(base::Milliseconds(100));
+
+  PostIdleTaskFromNewThread(&run_count);
+  PostIdleTaskFromNewThread(&run_count);
+  PostIdleTaskFromNewThread(&run_count);
+
+  EXPECT_EQ(3u, idle_queue()->GetNumberOfPendingTasks());
+  test_task_runner_->RunUntilIdle();
+  EXPECT_EQ(0, run_count);
+
+  idle_helper_->StartIdlePeriod(
+      IdleHelper::IdlePeriodState::kInShortIdlePeriod,
+      test_task_runner_->NowTicks(),
+      test_task_runner_->NowTicks() + base::Milliseconds(10));
+  test_task_runner_->RunUntilIdle();
+  EXPECT_EQ(3, run_count);
+}
+
+TEST_F(MultiThreadedIdleHelperTest, DelayedIdleTasksFromNonMainThreads) {
+  int run_count = 0;
+
+  test_task_runner_->AdvanceMockTickClock(base::Milliseconds(100));
+
+  PostDelayedIdleTaskFromNewThread(base::Milliseconds(200), &run_count);
+  PostDelayedIdleTaskFromNewThread(base::Milliseconds(250), &run_count);
+  PostDelayedIdleTaskFromNewThread(base::Milliseconds(300), &run_count);
+
+  // Delayed idle tasks are not queued until a new idle period starts.
+  EXPECT_EQ(0u, idle_queue()->GetNumberOfPendingTasks());
+  test_task_runner_->RunUntilIdle();
+  EXPECT_EQ(0, run_count);
+
+  test_task_runner_->AdvanceMockTickClock(base::Milliseconds(300));
+  idle_helper_->StartIdlePeriod(
+      IdleHelper::IdlePeriodState::kInShortIdlePeriod,
+      test_task_runner_->NowTicks(),
+      test_task_runner_->NowTicks() + base::Milliseconds(10));
+  EXPECT_EQ(3u, idle_queue()->GetNumberOfPendingTasks());
+  test_task_runner_->RunUntilIdle();
+
+  EXPECT_EQ(3, run_count);
+}
+
+TEST_F(MultiThreadedIdleHelperTest,
+       DelayedAndNonDelayedIdleTasksFromMultipleThreads) {
+  int run_count = 0;
+
+  PostIdleTaskFromNewThread(&run_count);
+
+  idle_task_runner_->PostIdleTask(
+      FROM_HERE, base::BindOnce(&IdleTestTask, &run_count, nullptr));
+
+  PostDelayedIdleTaskFromNewThread(base::Milliseconds(200), &run_count);
+
+  idle_task_runner_->PostDelayedIdleTask(
+      FROM_HERE, base::Milliseconds(250),
+      base::BindOnce(&IdleTestTask, &run_count, nullptr));
+
+  test_task_runner_->AdvanceMockTickClock(base::Milliseconds(250));
+
+  EXPECT_EQ(2u, idle_queue()->GetNumberOfPendingTasks());
+  test_task_runner_->RunUntilIdle();
+  EXPECT_EQ(0, run_count);
+
+  idle_helper_->StartIdlePeriod(
+      IdleHelper::IdlePeriodState::kInShortIdlePeriod,
+      test_task_runner_->NowTicks(),
+      test_task_runner_->NowTicks() + base::Milliseconds(10));
+  EXPECT_EQ(4u, idle_queue()->GetNumberOfPendingTasks());
+  test_task_runner_->RunUntilIdle();
+
+  EXPECT_EQ(4, run_count);
 }
 
 }  // namespace idle_helper_unittest

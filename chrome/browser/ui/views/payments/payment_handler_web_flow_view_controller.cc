@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,13 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
 #include "chrome/grit/generated_resources.h"
@@ -48,9 +48,11 @@
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/view_class_properties.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 namespace payments {
 namespace {
@@ -62,8 +64,7 @@ std::u16string GetPaymentHandlerDialogTitle(
 
   const std::u16string title = web_contents->GetTitle();
   const std::u16string https_prefix =
-      base::ASCIIToUTF16(url::kHttpsScheme) +
-      base::ASCIIToUTF16(url::kStandardSchemeSeparator);
+      base::StrCat({url::kHttpsScheme16, url::kStandardSchemeSeparator16});
   return base::StartsWith(title, https_prefix, base::CompareCase::SENSITIVE)
              ? std::u16string()
              : title;
@@ -81,19 +82,13 @@ class ReadOnlyOriginView : public views::View {
                      SkColor background_color) {
     auto title_origin_container = std::make_unique<views::View>();
     SkColor foreground = color_utils::GetColorWithMaxContrast(background_color);
-    views::GridLayout* title_origin_layout =
-        title_origin_container->SetLayoutManager(
-            std::make_unique<views::GridLayout>());
-
-    views::ColumnSet* columns = title_origin_layout->AddColumnSet(0);
-    columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::FILL, 1.0,
-                       views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+    title_origin_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kVertical));
 
     bool title_is_valid = !page_title.empty();
     if (title_is_valid) {
-      title_origin_layout->StartRow(views::GridLayout::kFixedSize, 0);
       auto* title_label =
-          title_origin_layout->AddView(std::make_unique<views::Label>(
+          title_origin_container->AddChildView(std::make_unique<views::Label>(
               page_title, views::style::CONTEXT_DIALOG_TITLE));
       title_label->SetID(static_cast<int>(DialogViewID::SHEET_TITLE));
       title_label->SetFocusBehavior(
@@ -102,21 +97,13 @@ class ReadOnlyOriginView : public views::View {
       // contrast into account.
       title_label->SetAutoColorReadabilityEnabled(false);
       title_label->SetEnabledColor(foreground);
+      title_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
     }
 
-    auto origin_container = std::make_unique<views::View>();
-    views::GridLayout* origin_layout = origin_container->SetLayoutManager(
-        std::make_unique<views::GridLayout>());
-
-    columns = origin_layout->AddColumnSet(0);
-    columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER,
-                       1.0, views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-    columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::LEADING,
-                       1.0, views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-    origin_layout->StartRow(views::GridLayout::kFixedSize, 0);
-    auto* origin_label = origin_layout->AddView(std::make_unique<views::Label>(
-        url_formatter::FormatOriginForSecurityDisplay(
-            origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC)));
+    auto* origin_label =
+        title_origin_container->AddChildView(std::make_unique<views::Label>(
+            url_formatter::FormatOriginForSecurityDisplay(
+                origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC)));
     origin_label->SetElideBehavior(gfx::ELIDE_HEAD);
     if (!title_is_valid) {
       // Set the origin as title when the page title is invalid.
@@ -124,23 +111,19 @@ class ReadOnlyOriginView : public views::View {
 
       // Pad to keep header as the same height as when the page title is valid.
       constexpr int kVerticalPadding = 10;
-      origin_label->SetBorder(
-          views::CreateEmptyBorder(kVerticalPadding, 0, kVerticalPadding, 0));
+      origin_label->SetBorder(views::CreateEmptyBorder(
+          gfx::Insets::TLBR(kVerticalPadding, 0, kVerticalPadding, 0)));
     }
     // Turn off autoreadability because the computed |foreground| color takes
     // contrast into account.
     origin_label->SetAutoColorReadabilityEnabled(false);
     origin_label->SetEnabledColor(foreground);
     origin_label->SetBackgroundColor(background_color);
-    title_origin_layout->StartRow(views::GridLayout::kFixedSize, 0);
-    title_origin_layout->AddView(std::move(origin_container));
+    origin_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+    title_origin_container->AddChildView(std::move(origin_label));
 
-    views::GridLayout* top_level_layout =
-        SetLayoutManager(std::make_unique<views::GridLayout>());
-    views::ColumnSet* top_level_columns = top_level_layout->AddColumnSet(0);
-    top_level_columns->AddColumn(
-        views::GridLayout::LEADING, views::GridLayout::CENTER, 1.0,
-        views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+    views::BoxLayout* top_level_layout =
+        SetLayoutManager(std::make_unique<views::BoxLayout>());
     const bool has_icon = icon_bitmap && !icon_bitmap->drawsNothing();
     float adjusted_width = base::checked_cast<float>(has_icon ? icon_bitmap->width() : 0);
     if (has_icon) {
@@ -148,26 +131,22 @@ class ReadOnlyOriginView : public views::View {
           adjusted_width *
           IconSizeCalculator::kPaymentAppDeviceIndependentIdealIconHeight /
           icon_bitmap->height();
-      // A column for the app icon.
-      top_level_columns->AddColumn(
-          views::GridLayout::LEADING, views::GridLayout::FILL,
-          views::GridLayout::kFixedSize, views::GridLayout::ColumnSize::kFixed,
-          adjusted_width,
-          IconSizeCalculator::kPaymentAppDeviceIndependentIdealIconHeight);
-      top_level_columns->AddPaddingColumn(views::GridLayout::kFixedSize, 8);
     }
 
-    top_level_layout->StartRow(views::GridLayout::kFixedSize, 0);
-    top_level_layout->AddView(std::move(title_origin_container));
+    // Expand the title to take the remaining width.
+    top_level_layout->SetFlexForView(
+        AddChildView(std::move(title_origin_container)), 1);
     if (has_icon) {
-      views::ImageView* app_icon_view = top_level_layout->AddView(
-          CreateAppIconView(/*icon_id=*/0, icon_bitmap,
-                            /*label=*/page_title));
+      views::ImageView* app_icon_view =
+          AddChildView(CreateAppIconView(/*icon_resource_id=*/0, icon_bitmap,
+                                         /*tooltip_text=*/page_title));
       // We should set image size in density independent pixels here, since
       // views::ImageView objects are rastered at the device scale factor.
       app_icon_view->SetImageSize(gfx::Size(
           adjusted_width,
           IconSizeCalculator::kPaymentAppDeviceIndependentIdealIconHeight));
+      app_icon_view->SetProperty(views::kMarginsKey,
+                                 gfx::Insets::TLBR(0, 0, 0, 8));
     }
   }
   ReadOnlyOriginView(const ReadOnlyOriginView&) = delete;
@@ -220,7 +199,6 @@ void PaymentHandlerWebFlowViewController::FillContentView(
     // separator as the initially-visible one.
     progress_bar_ = header_content_separator_container()->AddChildView(
         std::make_unique<views::ProgressBar>(/*preferred_height=*/2));
-    progress_bar_->SetForegroundColor(gfx::kGoogleBlue500);
     progress_bar_->SetBackgroundColor(SK_ColorTRANSPARENT);
     progress_bar_->SetVisible(false);
     separator_ = header_content_separator_container()->AddChildView(
@@ -269,8 +247,9 @@ std::unique_ptr<views::View>
 PaymentHandlerWebFlowViewController::CreateHeaderContentView(
     views::View* header_view) {
   const url::Origin origin =
-      web_contents() ? web_contents()->GetMainFrame()->GetLastCommittedOrigin()
-                     : url::Origin::Create(target_);
+      web_contents()
+          ? web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin()
+          : url::Origin::Create(target_);
   std::unique_ptr<views::Background> background =
       GetHeaderBackground(header_view);
   return std::make_unique<ReadOnlyOriginView>(
@@ -286,6 +265,8 @@ PaymentHandlerWebFlowViewController::GetHeaderBackground(
   auto default_header_background =
       PaymentRequestSheetController::GetHeaderBackground(header_view);
   if (web_contents() && header_view->GetWidget()) {
+    // Make sure the color is actually set before using it.
+    default_header_background->OnViewThemeChanged(header_view);
     return views::CreateSolidBackground(color_utils::GetResultingPaintColor(
         web_contents()->GetThemeColor().value_or(SK_ColorTRANSPARENT),
         default_header_background->get_color()));
@@ -313,18 +294,12 @@ void PaymentHandlerWebFlowViewController::VisibleSecurityStateChanged(
   }
 }
 
-void PaymentHandlerWebFlowViewController::DidStartNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsSameDocument())
-    UpdateHeaderView();
-}
-
 void PaymentHandlerWebFlowViewController::AddNewContents(
     content::WebContents* source,
     std::unique_ptr<content::WebContents> new_contents,
     const GURL& target_url,
     WindowOpenDisposition disposition,
-    const gfx::Rect& initial_rect,
+    const blink::mojom::WindowFeatures& window_features,
     bool user_gesture,
     bool* was_blocked) {
   // Open new foreground tab or popup triggered by user activation in payment
@@ -334,7 +309,7 @@ void PaymentHandlerWebFlowViewController::AddNewContents(
       (disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
        disposition == WindowOpenDisposition::NEW_POPUP)) {
     chrome::AddWebContents(browser, source, std::move(new_contents), target_url,
-                           disposition, initial_rect);
+                           disposition, window_features);
   }
 }
 
@@ -351,19 +326,18 @@ void PaymentHandlerWebFlowViewController::DidFinishNavigation(
   if (!is_active())
     return;
 
-  if (navigation_handle->IsSameDocument())
+  // Ignore non-primary main frame or same page navigations which aren't
+  // relevant to below.
+  if (navigation_handle->IsSameDocument() ||
+      !navigation_handle->IsInPrimaryMainFrame())
     return;
 
   // Checking uncommitted navigations (e.g., Network errors) is unnecessary
   // because the new pages have no chance to be loaded, rendered nor execute js.
-  // TODO(crbug.com/1198274): Only main frame is checked because unsafe iframes
-  // are blocked by the MixContentNavigationThrottle. But this design is
+  // TODO(crbug.com/1198274): Only primary main frame is checked because unsafe
+  // iframes are blocked by the MixContentNavigationThrottle. But this design is
   // fragile.
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (navigation_handle->HasCommitted() &&
-      navigation_handle->IsInPrimaryMainFrame() &&
       !SslValidityChecker::IsValidPageInPaymentHandlerWindow(
           navigation_handle->GetWebContents())) {
     AbortPayment();
@@ -372,8 +346,8 @@ void PaymentHandlerWebFlowViewController::DidFinishNavigation(
 
   if (first_navigation_complete_callback_) {
     std::move(first_navigation_complete_callback_)
-        .Run(true, web_contents()->GetMainFrame()->GetProcess()->GetID(),
-             web_contents()->GetMainFrame()->GetRoutingID());
+        .Run(true, web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+             web_contents()->GetPrimaryMainFrame()->GetRoutingID());
   }
 
   UpdateHeaderView();

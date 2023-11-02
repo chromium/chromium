@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,12 @@
 #define SKIA_EXT_TEST_FONTS_FUCHSIA_H_
 
 #include <fuchsia/fonts/cpp/fidl.h>
-#include <fuchsia/sys/cpp/fidl.h>
 
 namespace skia {
 
-fuchsia::fonts::ProviderSyncPtr RunTestProviderWithTestFonts(
-    fidl::InterfaceHandle<fuchsia::sys::ComponentController>* controller_out);
+// Returns a handle to a fuchsia.fonts.Provider that serves the fonts in
+// the package's test_fonts directory.
+fuchsia::fonts::ProviderHandle GetTestFontsProvider();
 
 }  // namespace skia
 

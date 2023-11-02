@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ import org.json.JSONObject;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.DoNotClassMerge;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -28,7 +28,11 @@ import java.util.concurrent.TimeUnit;
 /**
  * {@link PersistedTabData} for Store websites with opening/closing hours.
  * TODO(crbug.com/1199134) Add tests for StorePersistedTabData
+ *
+ * This class should not be merged because it is being used as a key in a Map
+ * in PersistedTabDataConfiguration.java.
  */
+@DoNotClassMerge
 public class StorePersistedTabData extends PersistedTabData {
     private static final String MISSING_STRING = "missing";
     private static final String COLON_STRING = ":";
@@ -235,7 +239,7 @@ public class StorePersistedTabData extends PersistedTabData {
     }
 
     @Override
-    Supplier<ByteBuffer> getSerializeSupplier() {
+    Serializer<ByteBuffer> getSerializer() {
         StorePersistedTabDataProto.Builder builder =
                 StorePersistedTabDataProto.newBuilder()
                         .setOpeningTime(mStoreHours.mOpeningTime)

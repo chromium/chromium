@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,9 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
+
 namespace {
 
 using BatchDecodeResult = CameraRollThumbnailDecoder::BatchDecodeResult;
@@ -146,11 +147,16 @@ class CameraRollThumbnailDecoderImplTest : public testing::Test {
     int decoded_item_count = last_decoded_items_.size();
     EXPECT_EQ(response.items_size(), decoded_item_count);
     for (int i = 0; i < decoded_item_count; i++) {
-      const CameraRollItem& decoded_item = last_decoded_items_.at(i);
-      VerifyMetadataEqual(response.items(i).metadata(),
-                          decoded_item.metadata());
-      EXPECT_FALSE(decoded_item.thumbnail().IsEmpty());
+      VerifyDecodedItem(/*decoded_item_index=*/i, response.items(i));
     }
+  }
+
+  void VerifyDecodedItem(int decoded_item_index,
+                         const proto::CameraRollItem& input_item) const {
+    const CameraRollItem& decoded_item =
+        last_decoded_items_.at(decoded_item_index);
+    VerifyMetadataEqual(input_item.metadata(), decoded_item.metadata());
+    EXPECT_FALSE(decoded_item.thumbnail().IsEmpty());
   }
 
   void OnItemsDecoded(BatchDecodeResult result,
@@ -185,7 +191,7 @@ TEST_F(CameraRollThumbnailDecoderImplTest, BatchDecodeWithNoExistingItems) {
   // all items.
   CompleteDecodeRequest("key1");
   EXPECT_EQ(1, completed_batch_count());
-  EXPECT_EQ(BatchDecodeResult::kSuccess, last_decode_result());
+  EXPECT_EQ(BatchDecodeResult::kCompleted, last_decode_result());
   VerifyDecodedItemsMatchResponse(response);
 }
 
@@ -202,7 +208,7 @@ TEST_F(CameraRollThumbnailDecoderImplTest,
   CompleteDecodeRequest("key1");
   CompleteDecodeRequest("key3");
   EXPECT_EQ(1, completed_batch_count());
-  EXPECT_EQ(BatchDecodeResult::kSuccess, last_decode_result());
+  EXPECT_EQ(BatchDecodeResult::kCompleted, last_decode_result());
   // Verify that the order in which the thumbnails are decoded does not affect
   // the final display order of the items.
   VerifyDecodedItemsMatchResponse(response);
@@ -220,7 +226,9 @@ TEST_F(CameraRollThumbnailDecoderImplTest, BatchDecodeWithErrors) {
   CompleteDecodeRequest("key1");
   FailDecodeRequest("key2");
   EXPECT_EQ(1, completed_batch_count());
-  EXPECT_EQ(BatchDecodeResult::kError, last_decode_result());
+  EXPECT_EQ(BatchDecodeResult::kCompleted, last_decode_result());
+  VerifyDecodedItem(/*decoded_item_index=*/0, response.items(0));
+  VerifyDecodedItem(/*decoded_item_index=*/1, response.items(2));
 }
 
 TEST_F(CameraRollThumbnailDecoderImplTest,
@@ -238,7 +246,7 @@ TEST_F(CameraRollThumbnailDecoderImplTest,
   CompleteAllDecodeRequests();
 
   EXPECT_EQ(1, completed_batch_count());
-  EXPECT_EQ(BatchDecodeResult::kError, last_decode_result());
+  EXPECT_EQ(BatchDecodeResult::kCancelled, last_decode_result());
 }
 
 TEST_F(CameraRollThumbnailDecoderImplTest, BatchDecodeWithExistingItems) {
@@ -261,7 +269,7 @@ TEST_F(CameraRollThumbnailDecoderImplTest, BatchDecodeWithExistingItems) {
   // Only need to decode thumbnail of this new item.
   CompleteDecodeRequest("key4");
   EXPECT_EQ(1, completed_batch_count());
-  EXPECT_EQ(BatchDecodeResult::kSuccess, last_decode_result());
+  EXPECT_EQ(BatchDecodeResult::kCompleted, last_decode_result());
   VerifyDecodedItemsMatchResponse(response);
 }
 
@@ -284,7 +292,7 @@ TEST_F(CameraRollThumbnailDecoderImplTest,
   // No additional thumbnail decoding is needed because the items are already
   // available.
   EXPECT_EQ(1, completed_batch_count());
-  EXPECT_EQ(BatchDecodeResult::kSuccess, last_decode_result());
+  EXPECT_EQ(BatchDecodeResult::kCompleted, last_decode_result());
   VerifyDecodedItemsMatchResponse(response);
 }
 
@@ -306,9 +314,9 @@ TEST_F(CameraRollThumbnailDecoderImplTest, BatchDecodeWithInProgresRequests) {
 
   CompleteAllDecodeRequests();
   EXPECT_EQ(2, completed_batch_count());
-  EXPECT_EQ(BatchDecodeResult::kSuccess, last_decode_result());
+  EXPECT_EQ(BatchDecodeResult::kCompleted, last_decode_result());
   VerifyDecodedItemsMatchResponse(second_response);
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

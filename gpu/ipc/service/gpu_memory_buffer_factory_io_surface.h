@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <IOSurface/IOSurface.h>
 
 #include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "gpu/command_buffer/service/image_factory.h"
@@ -61,6 +60,7 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryIOSurface
       gfx::GpuMemoryBufferHandle handle,
       const gfx::Size& size,
       gfx::BufferFormat format,
+      const gfx::ColorSpace& color_space,
       gfx::BufferPlane plane,
       int client_id,
       SurfaceHandle surface_handle) override;
@@ -78,8 +78,7 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryIOSurface
   typedef std::unordered_map<IOSurfaceMapKey,
                              base::ScopedCFTypeRef<IOSurfaceRef>>
       IOSurfaceMap;
-  // TODO(reveman): Remove |io_surfaces_| and allow IOSurface backed GMBs to be
-  // used with any GPU process by passing a mach_port to CreateImageCHROMIUM.
+
   IOSurfaceMap io_surfaces_;
   base::Lock io_surfaces_lock_;
 };

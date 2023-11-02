@@ -35,7 +35,6 @@ namespace blink {
 
 class ContainerNode;
 class Element;
-class QualifiedName;
 
 // NOTE: The HTML5 spec uses a backwards (grows downward) stack.  We're using
 // more standard (grows upwards) stack terminology here.
@@ -98,7 +97,7 @@ class HTMLElementStack {
   ElementRecord* TopRecord() const;
   ElementRecord* Find(Element*) const;
   ElementRecord* FurthestBlockForFormattingElement(Element*) const;
-  ElementRecord* Topmost(const AtomicString& tag_name) const;
+  ElementRecord* Topmost(html_names::HTMLTag tag) const;
 
   void InsertAbove(HTMLStackItem*, ElementRecord*);
 
@@ -109,14 +108,11 @@ class HTMLElementStack {
   void PushHTMLBodyElement(HTMLStackItem*);
 
   void Pop();
-  void PopUntil(const AtomicString& tag_name);
+  void PopUntil(html_names::HTMLTag tag);
   void PopUntil(Element*);
-  void PopUntilPopped(const AtomicString& tag_name);
-  void PopUntilPopped(const QualifiedName& tag_name) {
-    PopUntilPopped(tag_name.LocalName());
-  }
-
   void PopUntilPopped(Element*);
+  void PopUntilPopped(html_names::HTMLTag tag);
+
   void PopUntilNumberedHeaderElementPopped();
 
   // "clear the stack back to a table context" in the spec.
@@ -140,19 +136,13 @@ class HTMLElementStack {
   void RemoveHTMLHeadElement(Element*);
 
   bool Contains(Element*) const;
-  bool Contains(const AtomicString& tag_name) const;
 
   bool InScope(Element*) const;
-  bool InScope(const AtomicString& tag_name) const;
-  bool InScope(const QualifiedName&) const;
-  bool InListItemScope(const AtomicString& tag_name) const;
-  bool InListItemScope(const QualifiedName&) const;
-  bool InTableScope(const AtomicString& tag_name) const;
-  bool InTableScope(const QualifiedName&) const;
-  bool InButtonScope(const AtomicString& tag_name) const;
-  bool InButtonScope(const QualifiedName&) const;
-  bool InSelectScope(const AtomicString& tag_name) const;
-  bool InSelectScope(const QualifiedName&) const;
+  bool InScope(html_names::HTMLTag tag) const;
+  bool InListItemScope(html_names::HTMLTag tag) const;
+  bool InTableScope(html_names::HTMLTag tag) const;
+  bool InButtonScope(html_names::HTMLTag tag) const;
+  bool InSelectScope(html_names::HTMLTag tag) const;
 
   bool HasNumberedHeaderElementInScope() const;
 

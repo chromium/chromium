@@ -1,20 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 /**
  * @fileoverview Provides phonetic disambiguation functionality across multiple
  * languages for ChromeVox.
- *
  */
 
-goog.provide('PhoneticData');
-
-goog.require('JaPhoneticData');
-
-PhoneticData = class {
-  constructor() {}
-
+export class PhoneticData {
   /**
    * Returns the phonetic disambiguation for |char| in |locale|.
    * Returns empty string if disambiguation can't be found.
@@ -31,9 +24,7 @@ PhoneticData = class {
       return JaPhoneticData.forCharacter(char);
     }
 
-    const phoneticDictionaries =
-        chrome.extension.getBackgroundPage().PhoneticDictionaries;
-    if (!phoneticDictionaries || !phoneticDictionaries.phoneticMap_) {
+    if (!PhoneticDictionaries || !PhoneticDictionaries.phoneticMap_) {
       throw Error('PhoneticDictionaries map must be defined.');
     }
 
@@ -42,8 +33,8 @@ PhoneticData = class {
     let map = null;
     // Try a lookup using |locale|, but use only the language component if the
     // lookup fails, e.g. "en-us" -> "en" or "zh-hant-hk" -> "zh".
-    map = phoneticDictionaries.phoneticMap_[locale] ||
-        phoneticDictionaries.phoneticMap_[locale.split('-')[0]];
+    map = PhoneticDictionaries.phoneticMap_[locale] ||
+        PhoneticDictionaries.phoneticMap_[locale.split('-')[0]];
 
     if (!map) {
       return '';
@@ -71,4 +62,4 @@ PhoneticData = class {
     }
     return result.join(', ');
   }
-};
+}

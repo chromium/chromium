@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.stubbing.Answer;
 
 import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -238,6 +239,7 @@ public class MultiInstanceManagerApi31UnitTest {
                 new TestMultiInstanceManagerApi31(mCurrentActivity, mTabModelOrchestratorSupplier,
                         mMultiWindowModeStateDispatcher, mActivityLifecycleDispatcher,
                         mModalDialogManagerSupplier, mMenuOrKeyboardActionController);
+        ApplicationStatus.onStateChangeForTesting(mCurrentActivity, ActivityState.CREATED);
         SharedPreferencesManager.getInstance().removeKeysWithPrefix(
                 ChromePreferenceKeys.MULTI_INSTANCE_TASK_MAP);
     }
@@ -247,6 +249,7 @@ public class MultiInstanceManagerApi31UnitTest {
         SharedPreferencesManager.getInstance().removeKeysWithPrefix(
                 ChromePreferenceKeys.MULTI_INSTANCE_TASK_MAP);
         TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
+        ApplicationStatus.destroyForJUnitTests();
     }
 
     @Test
@@ -521,7 +524,7 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals(incognitoTabMessage, 1,
                 MultiInstanceManagerApi31.readIncognitoTabCount(INSTANCE_ID_1));
 
-        triggerDidCloseTab(tabModelObserver, mTab1);
+        triggerOnFinishingTabClosure(tabModelObserver, mTab1);
         assertEquals(normalTabMessage, 1, MultiInstanceManagerApi31.readTabCount(INSTANCE_ID_1));
         assertEquals(incognitoTabMessage, 1,
                 MultiInstanceManagerApi31.readIncognitoTabCount(INSTANCE_ID_1));
@@ -581,7 +584,7 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals("URL should be from the active normal tab", URL2.getSpec(),
                 MultiInstanceManagerApi31.readUrl(INSTANCE_ID_1));
 
-        triggerDidCloseTab(tabModelObserver, mTab1);
+        triggerOnFinishingTabClosure(tabModelObserver, mTab1);
         triggerTabRemoved(tabModelObserver, mTab2);
         assertEquals("Tab count should be zero", 0,
                 MultiInstanceManagerApi31.readTabCount(INSTANCE_ID_1));
@@ -607,13 +610,13 @@ public class MultiInstanceManagerApi31UnitTest {
         tabModelObserver.didAddTab(tab, 0, 0);
     }
 
-    private void triggerDidCloseTab(TabModelObserver tabModelObserver, Tab tab) {
+    private void triggerOnFinishingTabClosure(TabModelObserver tabModelObserver, Tab tab) {
         if (tab.isIncognito()) {
             mIncognitoTabCount--;
         } else {
             mNormalTabCount--;
         }
-        tabModelObserver.didCloseTab(tab);
+        tabModelObserver.onFinishingTabClosure(tab);
     }
 
     private void triggerTabRemoved(TabModelObserver tabModelObserver, Tab tab) {

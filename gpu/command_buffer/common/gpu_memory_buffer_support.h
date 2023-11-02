@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,10 +70,10 @@ GPU_EXPORT gfx::Size GetPlaneSize(gfx::BufferPlane plane,
 // Returns the texture target to use with native GpuMemoryBuffers.
 GPU_EXPORT uint32_t GetPlatformSpecificTextureTarget();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Set the texture target to use with MacOS native GpuMemoryBuffers.
 GPU_EXPORT void SetMacOSSpecificTextureTarget(uint32_t texture_target);
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 // Returns the texture target to be used for the given |usage| and |format|
 // based on |capabilities|.

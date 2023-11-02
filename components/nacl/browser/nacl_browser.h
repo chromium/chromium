@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/lru_cache.h"
 #include "base/files/file.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -135,7 +134,7 @@ class NaClBrowser {
   bool QueryKnownToValidate(const std::string& signature, bool off_the_record);
   void SetKnownToValidate(const std::string& signature, bool off_the_record);
   void ClearValidationCache(base::OnceClosure callback);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Get path to NaCl loader on the filesystem if possible.
   // |exe_path| does not change if the method fails.
   bool GetNaCl64ExePath(base::FilePath* exe_path);

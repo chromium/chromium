@@ -1,47 +1,54 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/device/hid/hid_service.h"
 
-#include <sstream>
-
 #include "base/at_exit.h"
+#include "base/base64.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/observer_list.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/device_event_log/device_event_log.h"
 
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(USE_UDEV)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_UDEV)
 #include "services/device/hid/hid_service_linux.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "services/device/hid/hid_service_mac.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include "services/device/hid/hid_service_win.h"
+#elif BUILDFLAG(IS_FUCHSIA)
+#include "services/device/hid/hid_service_fuchsia.h"
 #endif
 
 namespace device {
 
 namespace {
 
-// Formats the platform device IDs in |platform_device_id_map| into a
+// Formats the platform device IDs in `platform_device_id_map` into a
 // comma-separated list for logging. The report IDs are not logged.
 std::string PlatformDeviceIdsToString(
     const HidDeviceInfo::PlatformDeviceIdMap& platform_device_id_map) {
-  std::ostringstream buf("'");
-  bool first = true;
+  std::vector<std::string> platform_device_ids;
   for (const auto& entry : platform_device_id_map) {
-    if (!first)
-      buf << "', '";
-    first = false;
-    buf << entry.platform_device_id;
+    std::string id_string;
+#if BUILDFLAG(IS_MAC)
+    id_string = base::StringPrintf("%llu", entry.platform_device_id);
+#elif BUILDFLAG(IS_WIN)
+    id_string = base::StringPrintf("'%ls'", entry.platform_device_id.c_str());
+#else
+    id_string = base::StringPrintf("'%s'", entry.platform_device_id.c_str());
+#endif
+    platform_device_ids.push_back(std::move(id_string));
   }
-  buf << "'";
-  return buf.str();
+  return base::JoinString(platform_device_ids, ", ");
 }
 
 }  // namespace
@@ -59,12 +66,14 @@ constexpr base::TaskTraits HidService::kBlockingTaskTraits;
 
 // static
 std::unique_ptr<HidService> HidService::Create() {
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(USE_UDEV)
-  return base::WrapUnique(new HidServiceLinux());
-#elif defined(OS_MAC)
-  return base::WrapUnique(new HidServiceMac());
-#elif defined(OS_WIN)
-  return base::WrapUnique(new HidServiceWin());
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_UDEV)
+  return std::make_unique<HidServiceLinux>();
+#elif BUILDFLAG(IS_MAC)
+  return std::make_unique<HidServiceMac>();
+#elif BUILDFLAG(IS_WIN)
+  return std::make_unique<HidServiceWin>();
+#elif BUILDFLAG(IS_FUCHSIA)
+  return std::make_unique<HidServiceFuchsia>();
 #else
   return nullptr;
 #endif
@@ -135,7 +144,8 @@ void HidService::AddDevice(scoped_refptr<HidDeviceInfo> device_info) {
                 << device_info->serial_number() << "', deviceIds=["
                 << PlatformDeviceIdsToString(
                        device_info->platform_device_id_map())
-                << "]";
+                << "], reportDescriptor='"
+                << base::Base64Encode(device_info->report_descriptor()) << "'";
 
   if (enumeration_ready_) {
     for (auto& observer : observer_list_)

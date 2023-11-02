@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ BytesConsumer::Result ReplayingBytesConsumer::BeginRead(const char** buffer,
                                                         size_t* available) {
   DCHECK(!is_in_two_phase_read_);
   ++notification_token_;
-  if (commands_.IsEmpty()) {
+  if (commands_.empty()) {
     switch (state_) {
       case BytesConsumer::InternalState::kReadable:
       case BytesConsumer::InternalState::kWaiting:
@@ -54,8 +54,8 @@ BytesConsumer::Result ReplayingBytesConsumer::BeginRead(const char** buffer,
       commands_.pop_front();
       state_ = InternalState::kWaiting;
       task_runner_->PostTask(
-          FROM_HERE, WTF::Bind(&ReplayingBytesConsumer::NotifyAsReadable,
-                               WrapPersistent(this), notification_token_));
+          FROM_HERE, WTF::BindOnce(&ReplayingBytesConsumer::NotifyAsReadable,
+                                   WrapPersistent(this), notification_token_));
       return Result::kShouldWait;
   }
   NOTREACHED();
@@ -64,7 +64,7 @@ BytesConsumer::Result ReplayingBytesConsumer::BeginRead(const char** buffer,
 
 BytesConsumer::Result ReplayingBytesConsumer::EndRead(size_t read) {
   DCHECK(is_in_two_phase_read_);
-  DCHECK(!commands_.IsEmpty());
+  DCHECK(!commands_.empty());
 
   is_in_two_phase_read_ = false;
   const Command& command = commands_[0];

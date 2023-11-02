@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,10 @@ class CORE_EXPORT LayoutNGGrid : public LayoutNGBlock,
 
   void UpdateBlockLayout(bool relayout_children) override;
 
-  const char* GetName() const override { return "LayoutNGGrid"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutNGGrid";
+  }
 
   const LayoutNGGridInterface* ToLayoutNGGridInterface() const final;
 
@@ -44,27 +47,29 @@ class CORE_EXPORT LayoutNGGrid : public LayoutNGBlock,
   Vector<LayoutUnit> RowPositions() const final;
   Vector<LayoutUnit> ColumnPositions() const final;
 
+  const NGGridLayoutData* GridLayoutData() const;
+
  protected:
   bool IsOfType(LayoutObjectType type) const override {
+    NOT_DESTROYED();
     return type == kLayoutObjectNGGrid ||
            LayoutNGMixin<LayoutBlock>::IsOfType(type);
   }
 
  private:
-  const NGGridLayoutData* GridLayoutData() const;
-
   Vector<LayoutUnit> ComputeTrackSizeRepeaterForRange(
-      const NGGridLayoutData::TrackCollectionGeometry& geometry,
-      const NGGridLayoutData::RangeData& range) const;
+      const NGGridLayoutTrackCollection& track_collection,
+      wtf_size_t range_index) const;
   Vector<LayoutUnit> ComputeExpandedPositions(
       const GridTrackSizingDirection track_direction) const;
 
   void AddChild(LayoutObject* new_child,
                 LayoutObject* before_child = nullptr) override;
-  void RemoveChild(LayoutObject*) override;
-  void StyleDidChange(StyleDifference, const ComputedStyle*) override;
+  void RemoveChild(LayoutObject* child) override;
+  void StyleDidChange(StyleDifference diff,
+                      const ComputedStyle* old_style) override;
 
-  absl::optional<NGGridPlacementData> cached_placement_data_;
+  std::unique_ptr<NGGridPlacementData> cached_placement_data_;
 };
 
 // wtf/casting.h helper.

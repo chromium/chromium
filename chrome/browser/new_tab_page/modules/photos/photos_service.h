@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,15 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "chrome/browser/new_tab_page/modules/photos/photos.mojom.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -38,10 +42,23 @@ class PhotosService : public KeyedService,
     kCached = 2,
     kMaxValue = kCached,
   };
+
+  // These values should be in sync with featureParam values in aboutFlags.cc.
+  enum class OptInCardTitle {
+    kOptInRHTitle = 0,
+    kOptInFavoritesTitle = 1,
+    kOptInpersonalizedTitle = 2,
+    kOptInTripsTitle = 3,
+  };
+
   static const char kLastDismissedTimePrefName[];
   static const char kOptInAcknowledgedPrefName[];
   static const char kLastMemoryOpenTimePrefName[];
+  static const char kSoftOptOutCountPrefName[];
+  static const char kLastSoftOptedOutTimePrefName[];
   static const base::TimeDelta kDismissDuration;
+  static const base::TimeDelta kSoftOptOutDuration;
+  static const int kMaxSoftOptOuts;
 
   PhotosService(const PhotosService&) = delete;
   PhotosService(
@@ -58,7 +75,7 @@ class PhotosService : public KeyedService,
 
   using GetMemoriesCallback = photos::mojom::PhotosHandler::GetMemoriesCallback;
   // Retrieves Google Photos memories from API.
-  void GetMemories(GetMemoriesCallback callback);
+  void GetMemories(GetMemoriesCallback get_memories_callback);
   // Makes the service not return data for a specified amount of time.
   void DismissModule();
   // Makes the service return data again even if dimiss time is not yet over.
@@ -66,9 +83,20 @@ class PhotosService : public KeyedService,
   // Returns whether to show opt-in surface in the module.
   bool ShouldShowOptInScreen();
   // Stores whether the user has opt-in to see the module content.
-  void OnUserOptIn(bool accept);
+  void OnUserOptIn(bool accept,
+                   content::WebContents* web_contents,
+                   Profile* profile);
   // Stores the last time the user opened a memory.
   void OnMemoryOpen();
+  // Returns whether to show the soft opt out button.
+  bool ShouldShowSoftOptOutButton();
+  // Dismisses the module for fixed amount of time before asking the user
+  // to opt in again.
+  void SoftOptOut();
+  // Returns if the user soft opted out.
+  bool IsModuleSoftOptedOut();
+  // Returns the string which should be shown as the opt-in card title.
+  std::string GetOptInTitleText(std::vector<photos::mojom::MemoryPtr> memories);
 
  private:
   void OnTokenReceived(GoogleServiceAuthError error,
@@ -77,6 +105,8 @@ class PhotosService : public KeyedService,
                       const std::unique_ptr<std::string> json_response);
   void OnJsonParsed(const std::string& token,
                     data_decoder::DataDecoder::ValueOrError result);
+  std::string ConstructPersonalizedString(
+      std::vector<photos::mojom::MemoryPtr> memories);
 
   // Used for fetching OAuth2 access tokens. Only non-null when a token
   // is made available, or a token is being fetched.
@@ -84,8 +114,8 @@ class PhotosService : public KeyedService,
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::vector<GetMemoriesCallback> callbacks_;
-  signin::IdentityManager* identity_manager_;
-  PrefService* pref_service_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
+  raw_ptr<PrefService> pref_service_;
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<PhotosService> weak_factory_{this};
 };

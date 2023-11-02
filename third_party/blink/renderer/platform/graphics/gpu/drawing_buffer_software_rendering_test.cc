@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,7 +31,7 @@ class TestSharedBitmapIdRegistar : public cc::SharedBitmapIdRegistrar {
 class DrawingBufferSoftwareCompositingTest : public testing::Test {
  protected:
   void SetUp() override {
-    IntSize initial_size(kInitialWidth, kInitialHeight);
+    gfx::Size initial_size(kInitialWidth, kInitialHeight);
     auto gl = std::make_unique<GLES2InterfaceForTests>();
     auto provider =
         std::make_unique<WebGraphicsContext3DProviderForTests>(std::move(gl));
@@ -54,8 +54,8 @@ TEST_F(DrawingBufferSoftwareCompositingTest, BitmapRecycling) {
   viz::ReleaseCallback release_callback1;
   viz::ReleaseCallback release_callback2;
   viz::ReleaseCallback release_callback3;
-  IntSize initial_size(kInitialWidth, kInitialHeight);
-  IntSize alternate_size(kInitialWidth, kAlternateHeight);
+  gfx::Size initial_size(kInitialWidth, kInitialHeight);
+  gfx::Size alternate_size(kInitialWidth, kAlternateHeight);
 
   drawing_buffer_->Resize(initial_size);
   drawing_buffer_->MarkContentsChanged();
@@ -93,7 +93,7 @@ TEST_F(DrawingBufferSoftwareCompositingTest, FramebufferBinding) {
   GLES2InterfaceForTests* gl_ = drawing_buffer_->ContextGLForTests();
   viz::TransferableResource resource;
   viz::ReleaseCallback release_callback;
-  IntSize initial_size(kInitialWidth, kInitialHeight);
+  gfx::Size initial_size(kInitialWidth, kInitialHeight);
   GLint drawBinding = 0, readBinding = 0;
 
   GLuint draw_framebuffer_binding = 0xbeef3;

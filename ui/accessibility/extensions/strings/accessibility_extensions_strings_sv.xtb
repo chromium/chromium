@@ -9,6 +9,7 @@
 <translation id="1591070050619849194">Inaktivera all bildanimering.</translation>
 <translation id="1703735871906654364">Textmarkörläge</translation>
 <translation id="1791496371305830581">Tillåt alla animerade bilder.</translation>
+<translation id="1974060860693918893">Avancerat</translation>
 <translation id="1996252509865389616">Vill du aktivera?</translation>
 <translation id="2079545284768500474">Ångra</translation>
 <translation id="2179565792157161713">Öppna lång beskrivning på ny flik</translation>
@@ -51,6 +52,7 @@
 <translation id="6170146920149900756">Färgförbättrare</translation>
 <translation id="633394792577263429">Tryck länge på &lt;span class='key'&gt;Ctrl&lt;/span&gt; för att flytta efter ord.</translation>
 <translation id="6550675742724504774">Alternativ</translation>
+<translation id="6699630355767768222">Steg 3: Åsidosätt färgaxeln för korrigeringen.</translation>
 <translation id="6838518108677880446">Konfiguration:</translation>
 <translation id="690628312087070417">När textmarkören flyttas långt bort:</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -65,5 +67,6 @@
 <translation id="8321034316479930120">Animeringspolicy</translation>
 <translation id="8480209185614411573">Hög kontrast</translation>
 <translation id="8609925175482059018">Tryck på &lt;span class='key'&gt;F7&lt;/span&gt; om du vill aktivera textmarkörläget. Tryck igen om du vill inaktivera det.</translation>
+<translation id="8798099450830957504">Standard</translation>
 <translation id="894241283505723656">Långa beskrivningar i snabbmenyn</translation>
 </translationbundle>

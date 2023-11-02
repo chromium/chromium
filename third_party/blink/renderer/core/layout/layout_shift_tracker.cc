@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,6 @@
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "ui/gfx/geometry/rect.h"
@@ -116,13 +115,13 @@ void RectToTracedValue(const gfx::Rect& rect,
 }
 
 void RegionToTracedValue(const LayoutShiftRegion& region, TracedValue& value) {
-  Region blink_region;
+  cc::Region blink_region;
   for (const gfx::Rect& rect : region.GetRects())
-    blink_region.Unite(Region(IntRect(rect)));
+    blink_region.Union(rect);
 
   value.BeginArray("region_rects");
-  for (const IntRect& rect : blink_region.Rects())
-    RectToTracedValue(ToGfxRect(rect), value);
+  for (gfx::Rect rect : blink_region)
+    RectToTracedValue(rect, value);
   value.EndArray();
 }
 
@@ -284,7 +283,7 @@ void LayoutShiftTracker::ObjectShifted(
   if (frame_view_->GetFrame().IsMainFrame()) {
     // Apply the visual viewport clip.
     clip_rect.Intersect(FloatClipRect(
-        ToGfxRectF(frame_view_->GetPage()->GetVisualViewport().VisibleRect())));
+        frame_view_->GetPage()->GetVisualViewport().VisibleRect()));
   }
 
   // If the clip region is empty, then the resulting layout shift isn't visible
@@ -351,7 +350,7 @@ void LayoutShiftTracker::ObjectShifted(
 
   LocalFrame& frame = frame_view_->GetFrame();
   if (ShouldLog(frame)) {
-    VLOG(1) << "in " << (frame.IsMainFrame() ? "" : "subframe ")
+    VLOG(1) << "in " << (frame.IsOutermostMainFrame() ? "" : "subframe ")
             << frame.GetDocument()->Url() << ", " << object << " moved from "
             << old_rect_in_root.ToString() << " to "
             << new_rect_in_root.ToString() << " (visible from "
@@ -478,12 +477,21 @@ void LayoutShiftTracker::NotifyTextPrePaint(
 
 double LayoutShiftTracker::SubframeWeightingFactor() const {
   LocalFrame& frame = frame_view_->GetFrame();
-  if (frame.IsMainFrame())
+  if (frame.IsOutermostMainFrame())
     return 1;
 
+  // TODO(crbug.com/1346602): Enabling frames from a fenced frame tree to map
+  // to the outermost main frame enables fenced content to learn about its
+  // position in the embedder which can be used to communicate from embedder to
+  // embeddee. For now, assume any frame in a fenced frame is fully visible to
+  // avoid introducing a side channel but this will require design work to fix
+  // in the long term.
+  if (frame.IsInFencedFrameTree()) {
+    return 1;
+  }
+
   // Map the subframe view rect into the coordinate space of the local root.
-  FloatClipRect subframe_cliprect(
-      gfx::RectF(gfx::SizeF(ToGfxSize(frame_view_->Size()))));
+  FloatClipRect subframe_cliprect(gfx::RectF(gfx::SizeF(frame_view_->Size())));
   const LocalFrame& local_root = frame.LocalFrameRoot();
   GeometryMapper::LocalToAncestorVisualRect(
       frame_view_->GetLayoutView()->FirstFragment().LocalBorderBoxProperties(),
@@ -495,13 +503,16 @@ double LayoutShiftTracker::SubframeWeightingFactor() const {
 
   // Intersect with the portion of the local root that overlaps the main frame.
   local_root.View()->MapToVisualRectInRemoteRootFrame(subframe_rect);
-  IntSize subframe_visible_size = subframe_rect.PixelSnappedSize();
-  IntSize main_frame_size = frame.GetPage()->GetVisualViewport().Size();
+  gfx::Size subframe_visible_size = subframe_rect.PixelSnappedSize();
+  gfx::Size main_frame_size = frame.GetPage()->GetVisualViewport().Size();
 
+  if (main_frame_size.Area64() == 0) {
+    return 0;
+  }
   // TODO(crbug.com/940711): This comparison ignores page scale and CSS
   // transforms above the local root.
-  return static_cast<double>(subframe_visible_size.Area()) /
-         main_frame_size.Area();
+  return static_cast<double>(subframe_visible_size.Area64()) /
+         main_frame_size.Area64();
 }
 
 void LayoutShiftTracker::NotifyPrePaintFinishedInternal() {
@@ -510,7 +521,7 @@ void LayoutShiftTracker::NotifyPrePaintFinishedInternal() {
   if (region_.IsEmpty())
     return;
 
-  IntRect viewport = frame_view_->GetScrollableArea()->VisibleContentRect();
+  gfx::Rect viewport = frame_view_->GetScrollableArea()->VisibleContentRect();
   if (viewport.IsEmpty())
     return;
 
@@ -531,7 +542,7 @@ void LayoutShiftTracker::NotifyPrePaintFinishedInternal() {
 
   LocalFrame& frame = frame_view_->GetFrame();
   if (ShouldLog(frame)) {
-    VLOG(1) << "in " << (frame.IsMainFrame() ? "" : "subframe ")
+    VLOG(1) << "in " << (frame.IsOutermostMainFrame() ? "" : "subframe ")
             << frame.GetDocument()->Url() << ", viewport was "
             << (impact_fraction * 100) << "% impacted with distance fraction "
             << move_distance_factor << " and subframe weighting factor "
@@ -581,9 +592,12 @@ void LayoutShiftTracker::SubmitPerformanceEntry(double score_delta,
   DCHECK(performance);
 
   double input_timestamp = LastInputTimestamp();
-  LayoutShift* entry =
-      LayoutShift::Create(performance->now(), score_delta, had_recent_input,
-                          input_timestamp, CreateAttributionList());
+  LayoutShift* entry = LayoutShift::Create(
+      performance->now(), score_delta, had_recent_input, input_timestamp,
+      CreateAttributionList(),
+      PerformanceEntry::GetNavigationId(window));  // Add WPT for
+                                                   //  LayoutShift. See
+                                                   //  crbug.com/1320878.
 
   performance->AddLayoutShiftEntry(entry);
 }
@@ -610,7 +624,7 @@ void LayoutShiftTracker::ReportShift(double score_delta,
       "frame", ToTraceValue(&frame));
 
   if (ShouldLog(frame)) {
-    VLOG(1) << "in " << (frame.IsMainFrame() ? "" : "subframe ")
+    VLOG(1) << "in " << (frame.IsOutermostMainFrame() ? "" : "subframe ")
             << frame.GetDocument()->Url().GetString() << ", layout shift of "
             << score_delta
             << (had_recent_input ? " excluded by recent input" : " reported")
@@ -741,7 +755,8 @@ std::unique_ptr<TracedValue> LayoutShiftTracker::PerFrameTraceData(
   value->SetDouble("overall_max_distance", overall_max_distance_);
   value->SetDouble("frame_max_distance", frame_max_distance_);
   RegionToTracedValue(region_, *value);
-  value->SetBoolean("is_main_frame", frame_view_->GetFrame().IsMainFrame());
+  value->SetBoolean("is_main_frame",
+                    frame_view_->GetFrame().IsOutermostMainFrame());
   value->SetBoolean("had_recent_input", input_detected);
   value->SetDouble("last_input_timestamp", LastInputTimestamp());
   AttributionsToTracedValue(*value);
@@ -782,11 +797,11 @@ void LayoutShiftTracker::SendLayoutShiftRectsToHud(
       return;
     if (cc_layer->layer_tree_host()->hud_layer()) {
       WebVector<gfx::Rect> rects;
-      Region blink_region;
+      cc::Region blink_region;
       for (const gfx::Rect& rect : int_rects)
-        blink_region.Unite(Region(IntRect(rect)));
-      for (const IntRect& rect : blink_region.Rects())
-        rects.emplace_back(ToGfxRect(rect));
+        blink_region.Union(rect);
+      for (gfx::Rect rect : blink_region)
+        rects.emplace_back(rect);
       cc_layer->layer_tree_host()->hud_layer()->SetLayoutShiftRects(
           rects.ReleaseVector());
       cc_layer->layer_tree_host()->hud_layer()->SetNeedsPushProperties();

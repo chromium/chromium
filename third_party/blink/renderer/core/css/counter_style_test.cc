@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -232,16 +232,16 @@ TEST_F(CounterStyleTest, CustomPad) {
   // Getting custom 'pad' directly from descriptor value.
   const CounterStyle& financial_decimal_pad =
       GetCounterStyle("financial-decimal-pad");
-  EXPECT_EQ("(0099)", financial_decimal_pad.GenerateRepresentation(-99));
-  EXPECT_EQ("(0001)", financial_decimal_pad.GenerateRepresentation(-1));
+  EXPECT_EQ("(99)", financial_decimal_pad.GenerateRepresentation(-99));
+  EXPECT_EQ("(01)", financial_decimal_pad.GenerateRepresentation(-1));
   EXPECT_EQ("0000", financial_decimal_pad.GenerateRepresentation(0));
   EXPECT_EQ("0001", financial_decimal_pad.GenerateRepresentation(1));
   EXPECT_EQ("0099", financial_decimal_pad.GenerateRepresentation(99));
 
   // Getting custom 'pad' indirectly by extending a counter style.
   const CounterStyle& extended = GetCounterStyle("extended");
-  EXPECT_EQ("(0099)", extended.GenerateRepresentation(-99));
-  EXPECT_EQ("(0001)", extended.GenerateRepresentation(-1));
+  EXPECT_EQ("(99)", extended.GenerateRepresentation(-99));
+  EXPECT_EQ("(01)", extended.GenerateRepresentation(-1));
   EXPECT_EQ("0000", extended.GenerateRepresentation(0));
   EXPECT_EQ("0001", extended.GenerateRepresentation(1));
   EXPECT_EQ("0099", extended.GenerateRepresentation(99));

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "chromeos/components/sharesheet/constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/widget/widget.h"
@@ -16,13 +17,6 @@ namespace sharesheet {
 
 // In DIP (Density Independent Pixel).
 constexpr int kIconSize = 40;
-
-enum class SharesheetResult {
-  kSuccess,            // Successfully passed data to selected target.
-  kCancel,             // Share was cancelled before completion.
-  kErrorAlreadyOpen,   // Share failed because the sharesheet is already open.
-  kErrorWindowClosed,  // Parent window closed before sharesheet could be shown.
-};
 
 // The type of a target.
 enum class TargetType {
@@ -45,9 +39,9 @@ struct TargetInfo {
   TargetInfo(TargetInfo&& other);
   TargetInfo& operator=(TargetInfo&& other);
 
-  // Disallow copy and assign.
-  TargetInfo(const TargetInfo&) = delete;
-  TargetInfo& operator=(const TargetInfo&) = delete;
+  // Allow copy.
+  TargetInfo(const TargetInfo&);
+  TargetInfo& operator=(const TargetInfo&);
 
   // The type of target that this object represents.
   TargetType type;

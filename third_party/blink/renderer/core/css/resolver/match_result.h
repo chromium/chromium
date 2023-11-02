@@ -25,14 +25,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_MATCH_RESULT_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "third_party/blink/renderer/core/css/cascade_layer_map.h"
-#include "third_party/blink/renderer/core/css/resolver/cascade_expansion.h"
-#include "third_party/blink/renderer/core/css/resolver/cascade_filter.h"
+#include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/resolver/cascade_origin.h"
-#include "third_party/blink/renderer/core/css/resolver/cascade_priority.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
-#include "third_party/blink/renderer/core/css/selector_checker.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/core/dom/tree_scope.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -68,6 +67,17 @@ struct CORE_EXPORT MatchedProperties {
   Data types_;
 };
 
+// This is a duplicate of the above, except that we do not have a pointer for 'properties'.
+// Instead, we store the id of the pointer, for deterministic replay.  We cannot alter
+// the above struct, because the Member<> is required for garbage collection tracing.
+struct CORE_EXPORT RecordReplayMatchedProperties {
+  DISALLOW_NEW();
+
+ public:
+  int record_replay_id_properties;
+  MatchedProperties::Data types_;
+};
+
 }  // namespace blink
 
 WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(blink::MatchedProperties)
@@ -75,58 +85,7 @@ WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(blink::MatchedProperties)
 namespace blink {
 
 using MatchedPropertiesVector = HeapVector<MatchedProperties, 64>;
-
-class MatchedExpansionsIterator {
-  STACK_ALLOCATED();
-  using Iterator = MatchedPropertiesVector::const_iterator;
-
- public:
-  MatchedExpansionsIterator(Iterator iterator,
-                            const Document& document,
-                            CascadeFilter filter,
-                            wtf_size_t index)
-      : iterator_(iterator),
-        document_(document),
-        filter_(filter),
-        index_(index) {}
-
-  void operator++() {
-    iterator_++;
-    index_++;
-  }
-  bool operator==(const MatchedExpansionsIterator& o) const {
-    return iterator_ == o.iterator_;
-  }
-  bool operator!=(const MatchedExpansionsIterator& o) const {
-    return iterator_ != o.iterator_;
-  }
-
-  CascadeExpansion operator*() const {
-    return CascadeExpansion(*iterator_, document_, filter_, index_);
-  }
-
- private:
-  Iterator iterator_;
-  const Document& document_;
-  CascadeFilter filter_;
-  wtf_size_t index_;
-};
-
-class MatchedExpansionsRange {
-  STACK_ALLOCATED();
-
- public:
-  MatchedExpansionsRange(MatchedExpansionsIterator begin,
-                         MatchedExpansionsIterator end)
-      : begin_(begin), end_(end) {}
-
-  MatchedExpansionsIterator begin() const { return begin_; }
-  MatchedExpansionsIterator end() const { return end_; }
-
- private:
-  MatchedExpansionsIterator begin_;
-  MatchedExpansionsIterator end_;
-};
+using RecordReplayMatchedPropertiesVector = Vector<RecordReplayMatchedProperties, 64>;
 
 class AddMatchedPropertiesOptions {
   STACK_ALLOCATED();
@@ -195,19 +154,34 @@ class CORE_EXPORT MatchResult {
 
   void FinishAddingUARules();
   void FinishAddingUserRules();
+  void FinishAddingPresentationalHints();
   void FinishAddingAuthorRulesForTreeScope(const TreeScope&);
 
   void SetIsCacheable(bool cacheable) { is_cacheable_ = cacheable; }
   bool IsCacheable() const { return is_cacheable_; }
-  void SetDependsOnContainerQueries() { depends_on_container_queries_ = true; }
-  bool DependsOnContainerQueries() const {
-    return depends_on_container_queries_;
+  void SetDependsOnSizeContainerQueries() {
+    depends_on_size_container_queries_ = true;
   }
-  void SetDependsOnViewportContainerQueries() {
-    depends_on_viewport_container_queries_ = true;
+  bool DependsOnSizeContainerQueries() const {
+    return depends_on_size_container_queries_;
   }
-  bool DependsOnViewportContainerQueries() const {
-    return depends_on_viewport_container_queries_;
+  void SetDependsOnStyleContainerQueries() {
+    depends_on_size_container_queries_ = true;
+  }
+  bool DependsOnStyleContainerQueries() const {
+    return depends_on_size_container_queries_;
+  }
+  void SetDependsOnStaticViewportUnits() {
+    depends_on_static_viewport_units_ = true;
+  }
+  void SetDependsOnDynamicViewportUnits() {
+    depends_on_dynamic_viewport_units_ = true;
+  }
+  bool DependsOnStaticViewportUnits() const {
+    return depends_on_static_viewport_units_;
+  }
+  bool DependsOnDynamicViewportUnits() const {
+    return depends_on_dynamic_viewport_units_;
   }
   void SetDependsOnRemContainerQueries() {
     depends_on_rem_container_queries_ = true;
@@ -222,10 +196,20 @@ class CORE_EXPORT MatchResult {
     return conditionally_affects_animations_;
   }
 
-  MatchedExpansionsRange Expansions(const Document&, CascadeFilter) const;
-
   const MatchedPropertiesVector& GetMatchedProperties() const {
     return matched_properties_;
+  }
+
+  RecordReplayMatchedPropertiesVector GetRecordReplayMatchedProperties() const {
+    RecordReplayMatchedPropertiesVector result;
+    result.resize(matched_properties_.size());
+
+    for (WTF::wtf_size_t i = 0; i < matched_properties_.size(); ++i) {
+      memcpy(&result[i].types_, &matched_properties_[i].types_, sizeof(MatchedProperties::Data));
+      result[i].record_replay_id_properties = recordreplay::PointerId(matched_properties_[i].properties.Get());
+    }
+
+    return result;
   }
 
   // Reset the MatchResult to its initial state, as if no MatchedProperties
@@ -241,8 +225,9 @@ class CORE_EXPORT MatchResult {
   MatchedPropertiesVector matched_properties_;
   HeapVector<Member<const TreeScope>, 4> tree_scopes_;
   bool is_cacheable_{true};
-  bool depends_on_container_queries_{false};
-  bool depends_on_viewport_container_queries_{false};
+  bool depends_on_size_container_queries_{false};
+  bool depends_on_static_viewport_units_{false};
+  bool depends_on_dynamic_viewport_units_{false};
   bool depends_on_rem_container_queries_{false};
   bool conditionally_affects_animations_{false};
   CascadeOrigin current_origin_{CascadeOrigin::kUserAgent};

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/time/time.h"
@@ -63,8 +64,7 @@ void FeedV2InternalsPageHandler::GetGeneralProperties(
       offline_pages::prefetch_prefs::IsEnabled(pref_service_);
   properties->is_web_feed_follow_intro_debug_enabled =
       IsWebFeedFollowIntroDebugEnabled();
-  properties->use_feed_query_requests_for_web_feeds =
-      ShouldUseFeedQueryRequestsForWebFeeds();
+  properties->use_feed_query_requests = ShouldUseFeedQueryRequests();
   if (debug_data.fetch_info)
     properties->feed_fetch_url = debug_data.fetch_info->base_request_url;
   if (debug_data.upload_info)
@@ -98,15 +98,17 @@ void FeedV2InternalsPageHandler::GetLastFetchProperties(
 }
 
 void FeedV2InternalsPageHandler::RefreshForYouFeed() {
-  feed_stream_->ForceRefreshForDebugging(feed::kForYouStream);
+  feed_stream_->ForceRefreshForDebugging(
+      feed::StreamType(feed::StreamKind::kForYou));
 }
 
 void FeedV2InternalsPageHandler::RefreshFollowingFeed() {
-  feed_stream_->ForceRefreshForDebugging(feed::kWebFeedStream);
+  feed_stream_->ForceRefreshForDebugging(
+      feed::StreamType(feed::StreamKind::kFollowing));
 }
 
 void FeedV2InternalsPageHandler::RefreshWebFeedSuggestions() {
-  feed_stream_->subscriptions().RefreshRecommendedFeeds();
+  feed_stream_->subscriptions().RefreshRecommendedFeeds(base::DoNothing());
 }
 
 void FeedV2InternalsPageHandler::GetFeedProcessScopeDump(
@@ -115,7 +117,7 @@ void FeedV2InternalsPageHandler::GetFeedProcessScopeDump(
 }
 
 bool FeedV2InternalsPageHandler::IsFeedAllowed() {
-  return pref_service_->GetBoolean(feed::prefs::kEnableSnippets);
+  return feed::FeedService::IsEnabled(*pref_service_);
 }
 
 void FeedV2InternalsPageHandler::GetFeedHistograms(
@@ -156,19 +158,19 @@ void FeedV2InternalsPageHandler::SetWebFeedFollowIntroDebugEnabled(
                             enabled);
 }
 
-bool FeedV2InternalsPageHandler::ShouldUseFeedQueryRequestsForWebFeeds() {
-  return feed::GetFeedConfig().use_feed_query_requests_for_web_feeds;
+bool FeedV2InternalsPageHandler::ShouldUseFeedQueryRequests() {
+  return feed::GetFeedConfig().use_feed_query_requests;
 }
 
-void FeedV2InternalsPageHandler::SetUseFeedQueryRequestsForWebFeeds(
+void FeedV2InternalsPageHandler::SetUseFeedQueryRequests(
     const bool use_legacy) {
-  feed::SetUseFeedQueryRequestsForWebFeeds(use_legacy);
+  feed::SetUseFeedQueryRequests(use_legacy);
 }
 
 feed_internals::mojom::FeedOrder
 FeedV2InternalsPageHandler::GetFollowingFeedOrder() {
-  feed::ContentOrder order =
-      feed_stream_->GetContentOrderFromPrefs(feed::kWebFeedStream);
+  feed::ContentOrder order = feed_stream_->GetContentOrderFromPrefs(
+      feed::StreamType(feed::StreamKind::kFollowing));
   switch (order) {
     case feed::ContentOrder::kUnspecified:
       return feed_internals::mojom::FeedOrder::kUnspecified;
@@ -193,5 +195,6 @@ void FeedV2InternalsPageHandler::SetFollowingFeedOrder(
       order_to_set = feed::ContentOrder::kReverseChron;
       break;
   }
-  feed_stream_->SetContentOrder(feed::kWebFeedStream, order_to_set);
+  feed_stream_->SetContentOrder(feed::StreamType(feed::StreamKind::kFollowing),
+                                order_to_set);
 }

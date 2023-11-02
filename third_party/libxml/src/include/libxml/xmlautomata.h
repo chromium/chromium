@@ -11,11 +11,11 @@
 #define __XML_AUTOMATA_H__
 
 #include <libxml/xmlversion.h>
-#include <libxml/tree.h>
 
 #ifdef LIBXML_REGEXP_ENABLED
 #ifdef LIBXML_AUTOMATA_ENABLED
-#include <libxml/xmlregexp.h>
+
+#include <libxml/xmlstring.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -131,7 +131,7 @@ XMLPUBFUN int XMLCALL
 						 int min,
 						 int max);
 
-XMLPUBFUN xmlRegexpPtr XMLCALL
+XMLPUBFUN struct _xmlRegexp * XMLCALL
 		    xmlAutomataCompile		(xmlAutomataPtr am);
 XMLPUBFUN int XMLCALL
 		    xmlAutomataIsDeterminist	(xmlAutomataPtr am);

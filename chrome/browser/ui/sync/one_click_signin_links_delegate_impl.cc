@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@ OneClickSigninLinksDelegateImpl::OneClickSigninLinksDelegateImpl(
     Browser* browser)
     : browser_(browser) {}
 
-OneClickSigninLinksDelegateImpl::~OneClickSigninLinksDelegateImpl() {}
+OneClickSigninLinksDelegateImpl::~OneClickSigninLinksDelegateImpl() = default;
 
 void OneClickSigninLinksDelegateImpl::OnLearnMoreLinkClicked(bool is_dialog) {
   NavigateParams params(browser_, GURL(chrome::kChromeSyncLearnMoreURL),

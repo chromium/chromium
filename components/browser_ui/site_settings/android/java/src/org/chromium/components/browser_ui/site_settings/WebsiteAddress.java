@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,9 +27,10 @@ public class WebsiteAddress implements Comparable<WebsiteAddress>, Serializable 
     private final String mScheme;
     private final String mHost;
     private final boolean mOmitProtocolAndPort;
+    private String mDomainAndRegistry;
 
     private static final String SCHEME_SUFFIX = "://";
-    private static final String ANY_SUBDOMAIN_PATTERN = "[*.]";
+    static final String ANY_SUBDOMAIN_PATTERN = "[*.]";
 
     /**
      * Creates a new WebsiteAddress from |originOrHostOrPattern|.
@@ -95,6 +96,10 @@ public class WebsiteAddress implements Comparable<WebsiteAddress>, Serializable 
         return mHost;
     }
 
+    public boolean getIsAnySubdomainPattern() {
+        return mOriginOrHostPattern.startsWith(ANY_SUBDOMAIN_PATTERN);
+    }
+
     public String getTitle() {
         if (mOrigin == null) return mHost;
         return UrlFormatter.formatUrlForSecurityDisplay(mOrigin,
@@ -109,10 +114,20 @@ public class WebsiteAddress implements Comparable<WebsiteAddress>, Serializable 
                 url, mOriginOrHostPattern);
     }
 
-    private String getDomainAndRegistry() {
-        if (mOrigin != null) return UrlUtilities.getDomainAndRegistry(mOrigin, false);
-        // getDomainAndRegistry works better having a protocol prefix.
-        return UrlUtilities.getDomainAndRegistry(UrlConstants.HTTP_URL_PREFIX + mHost, false);
+    /**
+     * @return Domain and registry if those are defined; origin/host otherwise (for things like IP
+     *.        addresses and "localhost") with the scheme omitted.
+     */
+    public String getDomainAndRegistry() {
+        if (mDomainAndRegistry == null) {
+            // getDomainAndRegistry works better having a protocol prefix.
+            mDomainAndRegistry = UrlUtilities.getDomainAndRegistry(
+                    (mOrigin != null) ? mOrigin : UrlConstants.HTTP_URL_PREFIX + mHost, false);
+            if (mDomainAndRegistry == null || mDomainAndRegistry.isEmpty()) {
+                mDomainAndRegistry = mHost;
+            }
+        }
+        return mDomainAndRegistry;
     }
 
     @Override

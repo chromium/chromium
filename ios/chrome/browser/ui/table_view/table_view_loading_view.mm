@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,8 @@
 
 #import <MaterialComponents/MaterialActivityIndicator.h>
 
-#import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
-#import "ios/chrome/browser/ui/material_components/activity_indicator.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -25,8 +24,8 @@ const float kStackViewVerticalSpacing = 30.0;
 
 @interface TableViewLoadingView ()<MDCActivityIndicatorDelegate>
 // MDCActivityIndicator that will be displayed.
-@property(nonatomic, retain) MDCActivityIndicator* activityIndicator;
-// Completion block ran after |self.activityIndicator| stops.
+@property(nonatomic, strong) MDCActivityIndicator* activityIndicator;
+// Completion block ran after `self.activityIndicator` stops.
 @property(nonatomic, copy) ProceduralBlock animateOutCompletionBlock;
 // Message being displayed along the activity indicator.
 @property(nonatomic, copy) NSString* loadingMessage;
@@ -56,8 +55,7 @@ const float kStackViewVerticalSpacing = 30.0;
       [[MDCActivityIndicator alloc] initWithFrame:CGRectZero];
   self.activityIndicator.radius = kLoadingIndicatorRadius;
   self.activityIndicator.translatesAutoresizingMaskIntoConstraints = NO;
-  self.activityIndicator.cycleColors =
-      @[ [[MDCPalette cr_bluePalette] tint500] ];
+  self.activityIndicator.cycleColors = @[ [UIColor colorNamed:kBlueColor] ];
   self.activityIndicator.delegate = self;
 
   UILabel* messageLabel = [[UILabel alloc] init];

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/power_monitor/power_monitor.h"
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/vsync_observer.h"
 
@@ -57,9 +58,12 @@ VSyncThreadWin::VSyncThreadWin()
       vsync_provider_(gfx::kNullAcceleratedWidget),
       d3d11_device_(QueryD3D11DeviceObjectFromANGLE()) {
   DCHECK(d3d11_device_);
-  base::Thread::Options options;
-  options.priority = base::ThreadPriority::DISPLAY;
-  vsync_thread_.StartWithOptions(std::move(options));
+
+  is_suspended_ =
+      base::PowerMonitor::AddPowerSuspendObserverAndReturnSuspendedState(this);
+
+  vsync_thread_.StartWithOptions(
+      base::Thread::Options(base::ThreadType::kDisplayCritical));
 }
 
 VSyncThreadWin::~VSyncThreadWin() {
@@ -68,22 +72,44 @@ VSyncThreadWin::~VSyncThreadWin() {
     observers_.clear();
   }
   vsync_thread_.Stop();
+
+  base::PowerMonitor::RemovePowerSuspendObserver(this);
+}
+
+void VSyncThreadWin::PostTaskIfNeeded() {
+  lock_.AssertAcquired();
+  // PostTaskIfNeeded is called from AddObserver and OnResume.
+  // Before queuing up a task, make sure that there are observers waiting for
+  // VSync and that we're not already firing events to consumers. Avoid firing
+  // events if we're suspended to conserve battery life.
+  if (!is_vsync_task_posted_ && !observers_.empty() && !is_suspended_) {
+    vsync_thread_.task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&VSyncThreadWin::WaitForVSync, base::Unretained(this)));
+    is_vsync_task_posted_ = true;
+  }
 }
 
 void VSyncThreadWin::AddObserver(VSyncObserver* obs) {
   base::AutoLock auto_lock(lock_);
   observers_.insert(obs);
-  if (is_idle_) {
-    is_idle_ = false;
-    vsync_thread_.task_runner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&VSyncThreadWin::WaitForVSync, base::Unretained(this)));
-  }
+  PostTaskIfNeeded();
 }
 
 void VSyncThreadWin::RemoveObserver(VSyncObserver* obs) {
   base::AutoLock auto_lock(lock_);
   observers_.erase(obs);
+}
+
+void VSyncThreadWin::OnSuspend() {
+  base::AutoLock auto_lock(lock_);
+  is_suspended_ = true;
+}
+
+void VSyncThreadWin::OnResume() {
+  base::AutoLock auto_lock(lock_);
+  is_suspended_ = false;
+  PostTaskIfNeeded();
 }
 
 void VSyncThreadWin::WaitForVSync() {
@@ -120,16 +146,13 @@ void VSyncThreadWin::WaitForVSync() {
   }
 
   base::AutoLock auto_lock(lock_);
-  if (!observers_.empty()) {
-    vsync_thread_.task_runner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&VSyncThreadWin::WaitForVSync, base::Unretained(this)));
-    const base::TimeTicks vsync_time = base::TimeTicks::Now();
-    for (auto* obs : observers_)
-      obs->OnVSync(vsync_time, vsync_interval);
-  } else {
-    is_idle_ = true;
-  }
+  DCHECK(is_vsync_task_posted_);
+  is_vsync_task_posted_ = false;
+  PostTaskIfNeeded();
+
+  const base::TimeTicks vsync_time = base::TimeTicks::Now();
+  for (auto* obs : observers_)
+    obs->OnVSync(vsync_time, vsync_interval);
 }
 
 }  // namespace gl

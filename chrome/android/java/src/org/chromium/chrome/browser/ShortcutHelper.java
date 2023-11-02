@@ -1,10 +1,9 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -16,7 +15,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.blink.mojom.DisplayMode;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BitmapHelper;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
@@ -145,18 +143,6 @@ public class ShortcutHelper {
     }
 
     /**
-     * Shows toast notifying user that a WebAPK install is already in progress when user tries to
-     * queue a new install for the same WebAPK.
-     */
-    @SuppressWarnings("unused")
-    @CalledByNative
-    private static void showWebApkInstallInProgressToast() {
-        Context applicationContext = ContextUtils.getApplicationContext();
-        String toastText = applicationContext.getString(R.string.webapk_install_in_progress);
-        WebappsUtils.showToast(toastText);
-    }
-
-    /**
      * Stores the specified bitmap as the splash screen for a web app.
      * @param id          ID of the web app which is storing data.
      * @param splashImage Image which should be displayed on the splash screen of
@@ -271,8 +257,7 @@ public class ShortcutHelper {
     @CalledByNative
     @VisibleForTesting
     public static boolean doesOriginContainAnyInstalledTwa(String origin) {
-        return WebappRegistry.getInstance().getTrustedWebActivityPermissionStore().isTwaInstalled(
-                origin.toLowerCase(Locale.getDefault()));
+        return WebappRegistry.getInstance().isTwaInstalled(origin.toLowerCase(Locale.getDefault()));
     }
 
     @CalledByNative

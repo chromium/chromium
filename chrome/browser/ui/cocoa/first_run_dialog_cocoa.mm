@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,7 +61,7 @@ void FirstRunShowBridge::ShowDialog(base::OnceClosure quit_closure) {
 
 FirstRunShowBridge::~FirstRunShowBridge() {}
 
-void ShowFirstRunModal(Profile* profile) {
+void ShowFirstRunModal() {
   base::scoped_nsobject<FirstRunDialogController> dialog(
       [[FirstRunDialogController alloc] init]);
 
@@ -94,8 +94,8 @@ bool StatsCheckboxDefault() {
 
 namespace first_run {
 
-void ShowFirstRunDialogCocoa(Profile* profile) {
-  ShowFirstRunModal(profile);
+void ShowFirstRunDialogCocoa() {
+  ShowFirstRunModal();
 }
 
 }  // namespace first_run
@@ -106,16 +106,14 @@ void ShowFirstRunDialogCocoa(Profile* profile) {
 
 - (instancetype)init {
   _viewController.reset([[FirstRunDialogViewController alloc]
-      initWithStatsCheckboxInitiallyChecked:StatsCheckboxDefault()
-              defaultBrowserCheckboxVisible:shell_integration::
-                                                CanSetAsDefaultBrowser()]);
+      initWithStatsCheckboxInitiallyChecked:StatsCheckboxDefault()]);
 
   // Create the content view controller (and the content view) *before* the
   // window, so that we can find out what the content view's frame is supposed
   // to be for use here.
   base::scoped_nsobject<NSWindow> window([[NSWindow alloc]
       initWithContentRect:[[_viewController view] frame]
-                styleMask:NSTitledWindowMask
+                styleMask:NSWindowStyleMaskTitled
                   backing:NSBackingStoreBuffered
                     defer:YES]);
   [window setContentView:[_viewController view]];

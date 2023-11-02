@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,16 +10,16 @@
 #include <memory>
 #include <random>
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/base_switches.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/debug/leak_annotations.h"
 #include "base/guid.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -28,6 +28,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/metrics/cloned_install_detector.h"
 #include "components/metrics/enabled_state_provider.h"
@@ -209,7 +210,7 @@ class MetricsStateMetricsProvider : public MetricsProvider {
   }
 
  private:
-  PrefService* const local_state_;
+  const raw_ptr<PrefService> local_state_;
   const bool metrics_ids_were_reset_;
   // |previous_client_id_| is set only (if known) when
   // |metrics_ids_were_reset_|
@@ -226,24 +227,25 @@ class MetricsStateMetricsProvider : public MetricsProvider {
 // static
 bool MetricsStateManager::instance_exists_ = false;
 
+// static
+bool MetricsStateManager::enable_provisional_client_id_for_testing_ = false;
+
 MetricsStateManager::MetricsStateManager(
     PrefService* local_state,
     EnabledStateProvider* enabled_state_provider,
     const std::wstring& backup_registry_key,
     const base::FilePath& user_data_dir,
+    EntropyProviderType default_entropy_provider_type,
     StartupVisibility startup_visibility,
-    version_info::Channel channel,
     StoreClientInfoCallback store_client_info,
     LoadClientInfoCallback retrieve_client_info,
     base::StringPiece external_client_id)
     : local_state_(local_state),
       enabled_state_provider_(enabled_state_provider),
+      default_entropy_provider_type_(default_entropy_provider_type),
       store_client_info_(std::move(store_client_info)),
       load_client_info_(std::move(retrieve_client_info)),
-      clean_exit_beacon_(backup_registry_key,
-                         user_data_dir,
-                         local_state,
-                         channel),
+      clean_exit_beacon_(backup_registry_key, user_data_dir, local_state),
       external_client_id_(external_client_id),
       entropy_state_(local_state),
       entropy_source_returned_(ENTROPY_SOURCE_NONE),
@@ -253,7 +255,7 @@ MetricsStateManager::MetricsStateManager(
   DCHECK(!load_client_info_.is_null());
   ResetMetricsIDsIfNecessary();
 
-  bool is_first_run = false;
+  [[maybe_unused]] bool is_first_run = false;
   int64_t install_date = local_state_->GetInt64(prefs::kInstallDate);
 
   // Set the install date if this is our first run.
@@ -269,37 +271,40 @@ MetricsStateManager::MetricsStateManager(
         metrics::structured::NeutrinoDevicesLocation::kMetricsStateManager);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     ForceClientIdCreation();
+  } else {
+#if BUILDFLAG(IS_ANDROID)
+    // If on start up we determine that the client has not given their consent
+    // to report their metrics, the new sampling trial should be used to
+    // determine whether the client is sampled in or out (if the user ever
+    // enables metrics reporting). This covers users that are going through
+    // the first run, as well as users that have metrics reporting disabled.
+    //
+    // See crbug/1306481 and the comment above |kUsePostFREFixSamplingTrial| in
+    // components/metrics/metrics_pref_names.cc for more details.
+    local_state_->SetBoolean(metrics::prefs::kUsePostFREFixSamplingTrial, true);
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
-#if defined(OS_WIN)
-  ALLOW_UNUSED_LOCAL(is_first_run);
-#else
-  if (is_first_run) {
-    // If this is a first run (no install date) and there's no client id, then
-    // generate a provisional client id now. This id will be used for field
-    // trial randomization on first run and will be promoted to become the
-    // client id if UMA is enabled during this session, via the logic in
-    // ForceClientIdCreation().
-    //
-    // Note: We don't do this on Windows because on Windows, there's no UMA
-    // checkbox on first run and instead it comes from the install page. So if
-    // UMA is not enabled at this point, it's unlikely it will be enabled in
-    // the same session since that requires the user to manually do that via
-    // settings page after they unchecked it on the download page.
-    //
-    // Note: Windows first run is covered by browser tests
-    // FirstRunMasterPrefsVariationsSeedTest.PRE_SecondRun and
-    // FirstRunMasterPrefsVariationsSeedTest.SecondRun. If the platform ifdef
-    // for this logic changes, the tests should be updated as well.
-    if (client_id_.empty())
-      provisional_client_id_ = base::GenerateGUID();
+  // Generate and store a provisional client ID if necessary. This ID will be
+  // used for field trial randomization on first run (and possibly in future
+  // runs if the user closes Chrome during the FRE) and will be promoted to
+  // become the client ID if UMA is enabled during this session, via the logic
+  // in ForceClientIdCreation(). If UMA is disabled (refused), we discard it.
+  //
+  // Note: This means that if a provisional client ID is used for this session,
+  // and the user disables (refuses) UMA, then starting from the next run, the
+  // field trial randomization (group assignment) will be different.
+  if (ShouldGenerateProvisionalClientId(is_first_run)) {
+    local_state_->SetString(prefs::kMetricsProvisionalClientID,
+                            base::GenerateGUID());
   }
-#endif  // !defined(OS_WIN)
 
   // The |initial_client_id_| should only be set if UMA is enabled or there's a
   // provisional client id.
   initial_client_id_ =
-      (client_id_.empty() ? provisional_client_id_ : client_id_);
+      (client_id_.empty()
+           ? local_state_->GetString(prefs::kMetricsProvisionalClientID)
+           : client_id_);
   DCHECK(!instance_exists_);
   instance_exists_ = true;
 }
@@ -328,28 +333,25 @@ bool MetricsStateManager::IsMetricsReportingEnabled() {
   return enabled_state_provider_->IsReportingEnabled();
 }
 
+bool MetricsStateManager::IsExtendedSafeModeSupported() const {
+  return clean_exit_beacon_.IsExtendedSafeModeSupported();
+}
+
 int MetricsStateManager::GetLowEntropySource() {
   return entropy_state_.GetLowEntropySource();
 }
 
 void MetricsStateManager::InstantiateFieldTrialList(
-    const char* enable_gpu_benchmarking_switch,
-    EntropyProviderType entropy_provider_type) {
+    const char* enable_gpu_benchmarking_switch) {
   // Instantiate the FieldTrialList to support field trials. If an instance
   // already exists, this is likely a test scenario with a ScopedFeatureList, so
   // use the existing instance so that any overrides are still applied.
   if (!base::FieldTrialList::GetInstance()) {
-    std::unique_ptr<const base::FieldTrial::EntropyProvider> entropy_provider =
-        entropy_provider_type == EntropyProviderType::kLow
-            ? CreateLowEntropyProvider()
-            : CreateDefaultEntropyProvider();
-
     // This is intentionally leaked since it needs to live for the duration of
     // the browser process and there's no benefit in cleaning it up at exit.
-    base::FieldTrialList* leaked_field_trial_list =
-        new base::FieldTrialList(std::move(entropy_provider));
+    base::FieldTrialList* leaked_field_trial_list = new base::FieldTrialList();
     ANNOTATE_LEAKING_OBJECT_PTR(leaked_field_trial_list);
-    ignore_result(leaked_field_trial_list);
+    std::ignore = leaked_field_trial_list;
   }
 
   // TODO(crbug/1257204): Some FieldTrial-setup-related code is here and some is
@@ -402,9 +404,9 @@ void MetricsStateManager::InstantiateFieldTrialList(
 
 void MetricsStateManager::LogHasSessionShutdownCleanly(
     bool has_session_shutdown_cleanly,
-    bool write_synchronously) {
+    bool is_extended_safe_mode) {
   clean_exit_beacon_.WriteBeaconValue(has_session_shutdown_cleanly,
-                                      write_synchronously);
+                                      is_extended_safe_mode);
 }
 
 void MetricsStateManager::ForceClientIdCreation() {
@@ -491,7 +493,9 @@ void MetricsStateManager::ForceClientIdCreation() {
   // so generate a new one. If there's a provisional client id (e.g. UMA
   // was enabled as part of first run), promote that to the client id,
   // otherwise (e.g. UMA enabled in a future session), generate a new one.
-  if (provisional_client_id_.empty()) {
+  std::string provisional_client_id =
+      local_state_->GetString(prefs::kMetricsProvisionalClientID);
+  if (provisional_client_id.empty()) {
     client_id_ = base::GenerateGUID();
     base::UmaHistogramEnumeration("UMA.ClientIdSource",
                                   ClientIdSource::kClientIdNew);
@@ -501,8 +505,8 @@ void MetricsStateManager::ForceClientIdCreation() {
         previous_client_id);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   } else {
-    client_id_ = provisional_client_id_;
-    provisional_client_id_.clear();
+    client_id_ = provisional_client_id;
+    local_state_->ClearPref(prefs::kMetricsProvisionalClientID);
     base::UmaHistogramEnumeration("UMA.ClientIdSource",
                                   ClientIdSource::kClientIdFromProvisionalId);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -520,6 +524,10 @@ void MetricsStateManager::ForceClientIdCreation() {
   BackUpCurrentClientInfo();
 }
 
+void MetricsStateManager::SetExternalClientId(const std::string& id) {
+  external_client_id_ = id;
+}
+
 void MetricsStateManager::CheckForClonedInstall() {
   cloned_install_detector_.CheckForClonedInstall(local_state_);
 }
@@ -528,26 +536,11 @@ bool MetricsStateManager::ShouldResetClientIdsOnClonedInstall() {
   return cloned_install_detector_.ShouldResetClientIds(local_state_);
 }
 
-std::unique_ptr<const base::FieldTrial::EntropyProvider>
-MetricsStateManager::CreateDefaultEntropyProvider() {
-  // |initial_client_id_| should be populated iff (a) we have the client's
-  // consent to enable UMA on startup or (b) it's the first run, in which case
-  // |initial_client_id_| corresponds to |provisional_client_id_|.
-  if (!initial_client_id_.empty()) {
-    UpdateEntropySourceReturnedValue(ENTROPY_SOURCE_HIGH);
-    return std::make_unique<variations::SHA1EntropyProvider>(
-        GetHighEntropySource());
-  }
-
-  UpdateEntropySourceReturnedValue(ENTROPY_SOURCE_LOW);
-  return CreateLowEntropyProvider();
-}
-
-std::unique_ptr<const base::FieldTrial::EntropyProvider>
-MetricsStateManager::CreateLowEntropyProvider() {
-  int source = GetLowEntropySource();
-  return std::make_unique<variations::NormalizedMurmurHashEntropyProvider>(
-      base::checked_cast<uint16_t>(source), kMaxLowEntropySize);
+std::unique_ptr<const variations::EntropyProviders>
+MetricsStateManager::CreateEntropyProviders() {
+  return std::make_unique<variations::EntropyProviders>(
+      GetHighEntropySource(),
+      base::checked_cast<uint16_t>(GetLowEntropySource()), kMaxLowEntropySize);
 }
 
 // static
@@ -557,7 +550,7 @@ std::unique_ptr<MetricsStateManager> MetricsStateManager::Create(
     const std::wstring& backup_registry_key,
     const base::FilePath& user_data_dir,
     StartupVisibility startup_visibility,
-    version_info::Channel channel,
+    EntropyProviderType default_entropy_provider_type,
     StoreClientInfoCallback store_client_info,
     LoadClientInfoCallback retrieve_client_info,
     base::StringPiece external_client_id) {
@@ -566,7 +559,7 @@ std::unique_ptr<MetricsStateManager> MetricsStateManager::Create(
   if (!instance_exists_) {
     result.reset(new MetricsStateManager(
         local_state, enabled_state_provider, backup_registry_key, user_data_dir,
-        startup_visibility, channel,
+        default_entropy_provider_type, startup_visibility,
         store_client_info.is_null() ? base::DoNothing()
                                     : std::move(store_client_info),
         retrieve_client_info.is_null()
@@ -579,9 +572,14 @@ std::unique_ptr<MetricsStateManager> MetricsStateManager::Create(
 
 // static
 void MetricsStateManager::RegisterPrefs(PrefRegistrySimple* registry) {
+  registry->RegisterStringPref(prefs::kMetricsProvisionalClientID,
+                               std::string());
   registry->RegisterStringPref(prefs::kMetricsClientID, std::string());
   registry->RegisterInt64Pref(prefs::kMetricsReportingEnabledTimestamp, 0);
   registry->RegisterInt64Pref(prefs::kInstallDate, 0);
+#if BUILDFLAG(IS_ANDROID)
+  registry->RegisterBooleanPref(prefs::kUsePostFREFixSamplingTrial, false);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   EntropyState::RegisterPrefs(registry);
   ClonedInstallDetector::RegisterPrefs(registry);
@@ -614,10 +612,15 @@ std::unique_ptr<ClientInfo> MetricsStateManager::LoadClientInfo() {
 }
 
 std::string MetricsStateManager::GetHighEntropySource() {
-  // This should only be called if the |initial_client_id_| is not empty. The
-  // user shouldn't be able to enable UMA between the constructor and calling
-  // this, because field trial setup happens at Chrome initialization.
-  DCHECK(!initial_client_id_.empty());
+  // If high entropy randomization is not supported in this context (e.g. in
+  // webview), or if UMA is not enabled (so there is no client id), then high
+  // entropy randomization is disabled.
+  if (default_entropy_provider_type_ == EntropyProviderType::kLow ||
+      initial_client_id_.empty()) {
+    UpdateEntropySourceReturnedValue(ENTROPY_SOURCE_LOW);
+    return "";
+  }
+  UpdateEntropySourceReturnedValue(ENTROPY_SOURCE_HIGH);
   return entropy_state_.GetHighEntropySource(initial_client_id_);
 }
 
@@ -653,6 +656,55 @@ void MetricsStateManager::ResetMetricsIDsIfNecessary() {
   // Also clear the backed up client info. This is asynchronus; any reads
   // shortly after may retrieve the old ClientInfo from the backup.
   store_client_info_.Run(ClientInfo());
+}
+
+bool MetricsStateManager::ShouldGenerateProvisionalClientId(bool is_first_run) {
+#if BUILDFLAG(IS_WIN)
+  // We do not want to generate a provisional client ID on Windows because
+  // there's no UMA checkbox on first run. Instead it comes from the install
+  // page. So if UMA is not enabled at this point, it's unlikely it will be
+  // enabled in the same session since that requires the user to manually do
+  // that via settings page after they unchecked it on the download page.
+  //
+  // Note: Windows first run is covered by browser tests
+  // FirstRunMasterPrefsVariationsSeedTest.PRE_SecondRun and
+  // FirstRunMasterPrefsVariationsSeedTest.SecondRun. If the platform ifdef
+  // for this logic changes, the tests should be updated as well.
+  return false;
+#else
+  // We should only generate a provisional client ID on the first run. If for
+  // some reason there is already a client ID, we do not generate one either.
+  // This can happen if metrics reporting is managed by a policy.
+  if (!is_first_run || !client_id_.empty())
+    return false;
+
+  // Return false if |kMetricsReportingEnabled| is managed by a policy. For
+  // example, if metrics reporting is disabled by a policy, then
+  // |kMetricsReportingEnabled| will always be set to false, so there is no
+  // reason to generate a provisional client ID. If metrics reporting is enabled
+  // by a policy, then the default value of |kMetricsReportingEnabled| will be
+  // true, and so a client ID will have already been generated (we would have
+  // returned false already because of the previous check).
+  if (local_state_->IsManagedPreference(prefs::kMetricsReportingEnabled))
+    return false;
+
+  // If this is a non-Google-Chrome-branded build, we do not want to generate a
+  // provisional client ID because metrics reporting is not enabled on those
+  // builds. This would be problematic because we store the provisional client
+  // ID in the Local State, and clear it when either 1) we enable UMA (the
+  // provisional client ID becomes the client ID), or 2) we disable UMA. Since
+  // in non-Google-Chrome-branded builds we never actually go through the code
+  // paths to either enable or disable UMA, the pref storing the provisional
+  // client ID would never be cleared. However, for test consistency between
+  // the different builds, we do not return false here if
+  // |enable_provisional_client_id_for_testing_| is set to true.
+  if (!BUILDFLAG(GOOGLE_CHROME_BRANDING) &&
+      !enable_provisional_client_id_for_testing_) {
+    return false;
+  }
+
+  return true;
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

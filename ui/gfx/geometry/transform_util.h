@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define UI_GFX_GEOMETRY_TRANSFORM_UTIL_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/geometry_skia_export.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/quaternion.h"
@@ -66,24 +67,27 @@ GEOMETRY_SKIA_EXPORT bool SnapTransform(Transform* out,
 // Calculates a transform with a transformed origin. The resulting transform is
 // created by composing P * T * P^-1 where P is a constant transform to the new
 // origin.
-GEOMETRY_SKIA_EXPORT Transform TransformAboutPivot(const Point& pivot,
+GEOMETRY_SKIA_EXPORT Transform TransformAboutPivot(const PointF& pivot,
                                                    const Transform& transform);
 
 // Calculates a transform which would transform |src| to |dst|.
 GEOMETRY_SKIA_EXPORT Transform TransformBetweenRects(const RectF& src,
                                                      const RectF& dst);
 
-// Generates projection matrix and returns it as a Transform.
-GEOMETRY_SKIA_EXPORT Transform OrthoProjectionMatrix(float left,
-                                                     float right,
-                                                     float bottom,
-                                                     float top);
+// Returns the 2d axis transform that maps the clipping frustum to the square
+// from [-1, -1] (the original bottom-left corner) to [1, 1] (the original
+// top-right corner).
+GEOMETRY_SKIA_EXPORT AxisTransform2d OrthoProjectionTransform(float left,
+                                                              float right,
+                                                              float bottom,
+                                                              float top);
 
-// Generates window matrix and returns it as a Transform.
-GEOMETRY_SKIA_EXPORT Transform WindowMatrix(int x,
-                                            int y,
-                                            int width,
-                                            int height);
+// Returns the 2d axis transform that maps from ([-1, -1] .. [1, 1]) to
+// ([x, y] .. [x + width, y + height]).
+GEOMETRY_SKIA_EXPORT AxisTransform2d WindowTransform(int x,
+                                                     int y,
+                                                     int width,
+                                                     int height);
 
 // Compute 2D scale if possible; return whether it was set.
 GEOMETRY_SKIA_EXPORT absl::optional<Vector2dF>

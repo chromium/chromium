@@ -43,6 +43,14 @@
 #pragma once
 #endif
 
+#ifndef DECLSPEC_XFGVIRT
+#if _CONTROL_FLOW_GUARD_XFG
+#define DECLSPEC_XFGVIRT(base, func) __declspec(xfg_virtual(base, func))
+#else
+#define DECLSPEC_XFGVIRT(base, func)
+#endif
+#endif
+
 /* Forward Declarations */ 
 
 #ifndef __IUpdaterInternalCallback_FWD_DEFINED__
@@ -133,18 +141,22 @@ EXTERN_C const IID IID_IUpdaterInternalCallback;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IUpdaterInternalCallback * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IUpdaterInternalCallback * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IUpdaterInternalCallback * This);
         
+        DECLSPEC_XFGVIRT(IUpdaterInternalCallback, Run)
         HRESULT ( STDMETHODCALLTYPE *Run )( 
             IUpdaterInternalCallback * This,
             /* [in] */ LONG result);
@@ -216,22 +228,27 @@ EXTERN_C const IID IID_IUpdaterInternal;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IUpdaterInternal * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IUpdaterInternal * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IUpdaterInternal * This);
         
+        DECLSPEC_XFGVIRT(IUpdaterInternal, Run)
         HRESULT ( STDMETHODCALLTYPE *Run )( 
             IUpdaterInternal * This,
             /* [in] */ IUpdaterInternalCallback *callback);
         
+        DECLSPEC_XFGVIRT(IUpdaterInternal, InitializeUpdateService)
         HRESULT ( STDMETHODCALLTYPE *InitializeUpdateService )( 
             IUpdaterInternal * This,
             /* [in] */ IUpdaterInternalCallback *callback);

@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/window_event_context.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -84,10 +85,74 @@ void EventPath::Initialize() {
   CalculateTreeOrderAndSetNearestAncestorClosedTree();
 }
 
+EventPath::NodePath EventPath::CalculateNodePath(Node& node) {
+  // Given a node, find all the nodes the event path might traverse.
+  NodePath node_path;
+  Node* current = &node;
+
+  node_path.push_back(current);
+  while (current) {
+    if (current->IsChildOfShadowHost() && !current->IsPseudoElement()) {
+      if (HTMLSlotElement* slot = current->AssignedSlot()) {
+        current = slot;
+        node_path.push_back(current);
+        continue;
+      }
+    }
+    if (auto* shadow_root = DynamicTo<ShadowRoot>(current)) {
+      current = current->OwnerShadowHost();
+      node_path.push_back(current);
+    } else {
+      current = current->parentNode();
+      if (current)
+        node_path.push_back(current);
+    }
+  }
+  return node_path;
+}
+
+static bool EventNodePathCachingEnabled() {
+  // Cache the feature value since checking for each event path regresses
+  // performance.
+  static const bool kEnabled =
+      base::FeatureList::IsEnabled(features::kDocumentEventNodePathCaching);
+  return kEnabled;
+}
+
 void EventPath::CalculatePath() {
   DCHECK(node_);
-  DCHECK(node_event_contexts_.IsEmpty());
+  DCHECK(node_event_contexts_.empty());
 
+  if (EventNodePathCachingEnabled())
+    CalculatePathCachingEnabled();
+  else
+    CalculatePathCachingDisabled();
+}
+
+void EventPath::CalculatePathCachingEnabled() {
+  // Find the cached CalculateNodePath result
+  const NodePath& node_path =
+      node_->GetDocument().GetOrCalculateEventNodePath(*node_);
+  // We need to do the KeepEventInNode and ShouldStopAtShadowRoot checks
+  // outside of CalculateNodePath as they depend on the dispatched event.
+  for (Node* node_in_path : node_path) {
+    DCHECK(node_in_path);
+    node_event_contexts_.push_back(NodeEventContext(
+        *node_in_path, EventTargetRespectingTargetRules(*node_in_path)));
+    if (!event_)
+      continue;
+    if (node_in_path->KeepEventInNode(*event_))
+      break;
+    if (auto* shadow_root = DynamicTo<ShadowRoot>(node_in_path)) {
+      if (ShouldStopAtShadowRoot(*event_, *shadow_root, *node_))
+        break;
+    }
+  }
+}
+
+// TODO(crbug.com/329788): This function should be removed once the
+// kDocumentEventNodePathCaching experiment is fully enabled.
+void EventPath::CalculatePathCachingDisabled() {
   // For performance and memory usage reasons we want to store the
   // path using as few bytes as possible and with as few allocations
   // as possible which is why we gather the data on the stack before
@@ -118,7 +183,7 @@ void EventPath::CalculatePath() {
     }
   }
 
-  node_event_contexts_.ReserveCapacity(nodes_in_path.size());
+  node_event_contexts_.reserve(nodes_in_path.size());
   for (Node* node_in_path : nodes_in_path) {
     DCHECK(node_in_path);
     node_event_contexts_.push_back(NodeEventContext(

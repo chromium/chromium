@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,6 +48,9 @@ struct JobDetails {
   // Returns the number of downloaded bytes, including for the in progress
   // requests.
   uint64_t GetDownloadedBytes() const;
+
+  // Whether the job has finished successfully (not aborted).
+  bool IsComplete() const;
 
   void UpdateInProgressBytes(const std::string& download_guid,
                              uint64_t bytes_uploaded,

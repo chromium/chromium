@@ -1,9 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "remoting/codec/webrtc_video_encoder_gpu.h"
 
+#include <limits>
 #include <memory>
 #include <utility>
 
@@ -14,14 +15,19 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/numerics/checked_math.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
+#include "media/base/bitstream_buffer.h"
+#include "media/base/media_log.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/gpu_video_encode_accelerator_factory.h"
 #include "media/video/video_encode_accelerator.h"
@@ -31,8 +37,9 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
+#include "media/gpu/windows/media_foundation_video_encode_accelerator_win.h"
 #endif
 
 namespace {
@@ -51,7 +58,7 @@ constexpr int kH264MinimumTargetBitrateKbpsPerMegapixel = 1800;
 
 gpu::GpuPreferences CreateGpuPreferences() {
   gpu::GpuPreferences gpu_preferences;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   gpu_preferences.enable_media_foundation_vea_on_windows7 = true;
 #endif
   return gpu_preferences;
@@ -60,6 +67,11 @@ gpu::GpuPreferences CreateGpuPreferences() {
 gpu::GpuDriverBugWorkarounds CreateGpuWorkarounds() {
   gpu::GpuDriverBugWorkarounds gpu_workarounds;
   return gpu_workarounds;
+}
+
+gpu::GPUInfo::GPUDevice CreateGpuDevice() {
+  gpu::GPUInfo::GPUDevice device;
+  return device;
 }
 
 struct OutputBuffer {
@@ -93,7 +105,7 @@ namespace remoting {
 // 3. In BeginInitialization(), the Core instance constructs the
 //      VideoEncodeAccelerator using the saved dimensions from the DesktopFrame.
 //      If the VideoEncodeAccelerator is constructed successfully, the state is
-//      set to INITIALIZING. If not, the state isset to INIITALIZATION_ERROR.
+//      set to INITIALIZING. If not, the state isset to INITIALIZATION_ERROR.
 // 4. Some time later, the VideoEncodeAccelerator sets itself up and is ready
 //      to encode. At this point, it calls the Core instance's
 //      RequireBitstreamBuffers() method. Once bitstream buffers are allocated,
@@ -130,7 +142,7 @@ class WebrtcVideoEncoderGpu::Core
 
   void RunAnyPendingEncode();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // This object is required by Chromium to ensure proper init/uninit of COM on
   // this thread.  The guidance is to match the lifetime of this object to the
   // lifetime of the thread if possible.
@@ -207,6 +219,7 @@ void WebrtcVideoEncoderGpu::Core::Encode(
     std::unique_ptr<webrtc::DesktopFrame> frame,
     const FrameParams& params,
     WebrtcVideoEncoder::EncodeCallback done) {
+  TRACE_EVENT0("media", "WebrtcVideoEncoderGpu::Core::Encode");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   bitrate_filter_.SetFrameSize(frame->size().width(), frame->size().height());
 
@@ -253,9 +266,9 @@ void WebrtcVideoEncoderGpu::Core::Encode(
 
   // H264 encoder on Windows uses NV12 so convert here.
   libyuv::ARGBToNV12(frame->data(), frame->stride(),
-                     video_frame->data(VideoFrame::kYPlane),
+                     video_frame->writable_data(VideoFrame::kYPlane),
                      video_frame->stride(VideoFrame::kYPlane),
-                     video_frame->data(VideoFrame::kUVPlane),
+                     video_frame->writable_data(VideoFrame::kUVPlane),
                      video_frame->stride(VideoFrame::kUVPlane),
                      video_frame->visible_rect().width(),
                      video_frame->visible_rect().height());
@@ -265,10 +278,12 @@ void WebrtcVideoEncoderGpu::Core::Encode(
   if (params.bitrate_kbps > 0 && params.fps > 0) {
     // TODO(zijiehe): Forward frame_rate from FrameParams.
     bitrate_filter_.SetBandwidthEstimateKbps(params.bitrate_kbps);
+    base::CheckedNumeric<uint32_t> checked_bitrate = base::CheckMul<uint32_t>(
+        std::max(bitrate_filter_.GetTargetBitrateKbps(), 0), 1000);
+    uint32_t bitrate_bps =
+        checked_bitrate.ValueOrDefault(std::numeric_limits<uint32_t>::max());
     video_encode_accelerator_->RequestEncodingParametersChange(
-        media::Bitrate::ConstantBitrate(bitrate_filter_.GetTargetBitrateKbps() *
-                                        1000),
-        params.fps);
+        media::Bitrate::ConstantBitrate(bitrate_bps), params.fps);
   }
   video_encode_accelerator_->Encode(video_frame, params.key_frame);
 }
@@ -308,16 +323,17 @@ void WebrtcVideoEncoderGpu::Core::BitstreamBufferReady(
     const media::BitstreamBufferMetadata& metadata) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  std::unique_ptr<EncodedFrame> encoded_frame =
-      std::make_unique<EncodedFrame>();
+  auto encoded_frame = std::make_unique<EncodedFrame>();
   OutputBuffer* output_buffer = output_buffers_[bitstream_buffer_id].get();
   DCHECK(output_buffer->IsValid());
-  base::span<char> data_span =
-      output_buffer->mapping.GetMemoryAsSpan<char>(metadata.payload_size_bytes);
-  encoded_frame->data.assign(data_span.begin(), data_span.end());
+  base::span<uint8_t> data_span =
+      output_buffer->mapping.GetMemoryAsSpan<uint8_t>(
+          metadata.payload_size_bytes);
+  encoded_frame->data =
+      webrtc::EncodedImageBuffer::Create(data_span.data(), data_span.size());
   encoded_frame->key_frame = metadata.key_frame;
-  encoded_frame->size = webrtc::DesktopSize(input_coded_size_.width(),
-                                            input_coded_size_.height());
+  encoded_frame->dimensions = {input_coded_size_.width(),
+                               input_coded_size_.height()};
   encoded_frame->quantizer = 0;
   encoded_frame->codec = webrtc::kVideoCodecH264;
 
@@ -340,7 +356,7 @@ void WebrtcVideoEncoderGpu::Core::NotifyError(
 void WebrtcVideoEncoderGpu::Core::BeginInitialization() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!scoped_com_initializer_) {
     scoped_com_initializer_ =
         std::make_unique<base::win::ScopedCOMInitializer>();
@@ -348,17 +364,20 @@ void WebrtcVideoEncoderGpu::Core::BeginInitialization() {
 #endif
 
   VideoPixelFormat input_format = VideoPixelFormat::PIXEL_FORMAT_NV12;
-  // TODO(zijiehe): implement some logical way to set an initial bitrate.
+  // TODO(zijiehe): Implement some logical way to set an initial bitrate.
   // Currently we set the bitrate to 8M bits / 1M bytes per frame, and 30 frames
   // per second.
-  media::Bitrate initial_bitrate =
-      media::Bitrate::ConstantBitrate(kTargetFrameRate * 1024 * 1024 * 8);
+  // TODO(joedow): Use the bitrate from the SDP format params instead of the
+  // constant framerate value if we decide to make H.264 generally available.
+  media::Bitrate initial_bitrate = media::Bitrate::ConstantBitrate(
+      static_cast<uint32_t>(kTargetFrameRate * 1024 * 1024 * 8));
 
   const media::VideoEncodeAccelerator::Config config(
       input_format, input_visible_size_, codec_profile_, initial_bitrate);
   video_encode_accelerator_ =
       media::GpuVideoEncodeAcceleratorFactory::CreateVEA(
-          config, this, CreateGpuPreferences(), CreateGpuWorkarounds());
+          config, this, CreateGpuPreferences(), CreateGpuWorkarounds(),
+          CreateGpuDevice());
 
   if (!video_encode_accelerator_) {
     LOG(ERROR) << "Could not create VideoEncodeAccelerator";
@@ -395,20 +414,22 @@ std::unique_ptr<WebrtcVideoEncoder> WebrtcVideoEncoderGpu::CreateForH264() {
 }
 
 // static
-bool WebrtcVideoEncoderGpu::IsSupportedByH264(
-    const WebrtcVideoEncoderSelector::Profile& profile) {
-#if defined(OS_WIN)
+bool WebrtcVideoEncoderGpu::IsSupportedByH264(const Profile& profile) {
+#if BUILDFLAG(IS_WIN)
   // This object is required by Chromium to ensure proper init/uninit of COM on
   // this thread.  The guidance is to match the lifetime of this object to the
   // lifetime of the thread if possible.  Since we are still experimenting with
   // H.264 and run the encoder on a different thread, we use a locally scoped
   // object for now.
   base::win::ScopedCOMInitializer scoped_com_initializer;
+
+  // Ensure the required MF DLLs are loaded before we call into the VEA below.
+  media::MediaFoundationVideoEncodeAccelerator::PreSandboxInitialization();
 #endif
 
   media::VideoEncodeAccelerator::SupportedProfiles profiles =
       media::GpuVideoEncodeAcceleratorFactory::GetSupportedProfiles(
-          CreateGpuPreferences(), CreateGpuWorkarounds());
+          CreateGpuPreferences(), CreateGpuWorkarounds(), CreateGpuDevice());
   for (const auto& supported_profile : profiles) {
     if (supported_profile.profile != kH264Profile) {
       continue;

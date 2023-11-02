@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,11 @@
 #include "base/debug/profiler.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "content/public/common/content_switches.h"
 
 namespace content {
@@ -97,7 +98,7 @@ class ProfilingThreadControl {
   }
 
  private:
-  base::Thread* thread_;
+  raw_ptr<base::Thread> thread_;
   base::Lock lock_;
 };
 

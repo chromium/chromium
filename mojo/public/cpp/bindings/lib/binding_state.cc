@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,8 @@
 #if BUILDFLAG(MOJO_RANDOM_DELAYS_ENABLED)
 #include "mojo/public/cpp/bindings/lib/test_random_mojo_delays.h"
 #endif
+
+#include "base/record_replay.h"
 
 namespace mojo {
 namespace internal {
@@ -59,13 +61,23 @@ void BindingStateBase::Close() {
 
   weak_ptr_factory_.InvalidateWeakPtrs();
 
+  // Mojo resources must be destroyed at deterministic points,
+  // so leak them if this state is destroyed during a GC.
+  if (recordreplay::AreEventsDisallowed("BindingStateBase::Close")) {
+    if (endpoint_client_)
+      endpoint_client_->record_replay_leak();
+    endpoint_client_.release();
+    (void)router_.release();
+    return;
+  }
+
   endpoint_client_.reset();
   router_->CloseMessagePipe();
   router_ = nullptr;
 }
 
 void BindingStateBase::CloseWithReason(uint32_t custom_reason,
-                                       const std::string& description) {
+                                       base::StringPiece description) {
   if (endpoint_client_)
     endpoint_client_->CloseWithReason(custom_reason, description);
 
@@ -75,7 +87,7 @@ void BindingStateBase::CloseWithReason(uint32_t custom_reason,
 ReportBadMessageCallback BindingStateBase::GetBadMessageCallback() {
   return base::BindOnce(
       [](ReportBadMessageCallback inner_callback,
-         base::WeakPtr<BindingStateBase> binding, const std::string& error) {
+         base::WeakPtr<BindingStateBase> binding, base::StringPiece error) {
         std::move(inner_callback).Run(error);
         if (binding)
           binding->Close();
@@ -109,7 +121,9 @@ void BindingStateBase::BindInternal(
     bool passes_associated_kinds,
     bool has_sync_methods,
     MessageReceiverWithResponderStatus* stub,
-    uint32_t interface_version) {
+    uint32_t interface_version,
+    MessageToMethodInfoCallback method_info_callback,
+    MessageToMethodNameCallback method_name_callback) {
   DCHECK(!is_bound()) << "Attempting to bind interface that is already bound: "
                       << interface_name;
 
@@ -130,7 +144,8 @@ void BindingStateBase::BindInternal(
   endpoint_client_ = std::make_unique<InterfaceEndpointClient>(
       router_->CreateLocalEndpointHandle(kPrimaryInterfaceId), stub,
       std::move(request_validator), has_sync_methods,
-      std::move(sequenced_runner), interface_version, interface_name);
+      std::move(sequenced_runner), interface_version, interface_name,
+      method_info_callback, method_name_callback);
   endpoint_client_->SetIdleTrackingEnabledCallback(
       base::BindOnce(&MultiplexRouter::SetConnectionGroup, router_));
 

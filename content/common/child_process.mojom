@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,14 @@ import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";
 import "services/tracing/public/mojom/background_tracing_agent.mojom";
 import "services/tracing/public/mojom/system_tracing_service.mojom";
+
+// Information about how logging should be configured.
+// Corresponds to logging::LoggingSettings.
+[EnableIf=is_chromeos_ash]
+struct LoggingSettings {
+  uint32 logging_dest;
+  handle<platform> log_file_descriptor;
+};
 
 // The primordial interface child processes use to push requests to their
 // browser-side host object.
@@ -103,4 +111,10 @@ interface ChildProcess {
   // or sent to a server.  Whoever has access to the salt can de-anonymize
   // results of the content::PseudonymizationUtil::PseudonymizeString method.
   SetPseudonymizationSalt(uint32 salt);
+
+  // Reinitializes the child process's logging with the given settings. This
+  // is needed on Chrome OS, which switches to a log file in the user's home
+  // directory once they log in.
+  [EnableIf=is_chromeos_ash]
+  ReinitializeLogging(LoggingSettings settings);
 };

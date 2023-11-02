@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,9 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
@@ -71,7 +73,7 @@ class AffiliatedMatchHelper : public PasswordStoreInterface::Observer,
   // browser start-up into web sites using Android credentials.
   // TODO(engedy): See if we can tie this instead to some meaningful event.
   static constexpr base::TimeDelta kInitializationDelayOnStartup =
-      base::Seconds(8);
+      base::Seconds(30);
 
   AffiliationService* get_affiliation_service() { return affiliation_service_; }
 
@@ -100,9 +102,9 @@ class AffiliatedMatchHelper : public PasswordStoreInterface::Observer,
   void OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<PasswordForm>> results) override;
 
-  PasswordStoreInterface* password_store_ = nullptr;
+  raw_ptr<PasswordStoreInterface> password_store_ = nullptr;
 
-  AffiliationService* affiliation_service_;
+  raw_ptr<AffiliationService> affiliation_service_;
 
   base::WeakPtrFactory<AffiliatedMatchHelper> weak_ptr_factory_{this};
 };

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -99,7 +99,8 @@ void SQLTableBuilderTest::SetupChildTable() {
 
   child_builder_.AddColumn("name", "TEXT");
   child_builder_.AddColumnToUniqueKey("parent_id", "INTEGER",
-                                      /*parent_table=*/kMyLoginTable);
+                                      /*parent_table=*/kMyLoginTable,
+                                      "foreign_key_index");
   EXPECT_EQ(0u, child_builder_.SealVersion());
   EXPECT_TRUE(child_builder_.CreateTable(db()));
 }

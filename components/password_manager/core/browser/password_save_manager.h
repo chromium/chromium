@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -109,7 +109,11 @@ class PasswordSaveManager {
 
   virtual bool IsNewLogin() const = 0;
   virtual bool IsPasswordUpdate() const = 0;
+  virtual bool IsSamePassword() const = 0;
   virtual bool HasGeneratedPassword() const = 0;
+
+  // Signals that the user updated the username value in the bubble prompt.
+  virtual void UsernameUpdatedInBubble() = 0;
 
   virtual std::unique_ptr<PasswordSaveManager> Clone() = 0;
 };

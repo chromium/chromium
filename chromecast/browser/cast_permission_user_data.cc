@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
-#include "content/public/browser/permission_type.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 
 namespace {
 const char kCastPermissionUserDataKey[] =
@@ -31,8 +31,8 @@ CastPermissionUserData::CastPermissionUserData(
       feature_permissions_(std::move(feature_permissions)),
       additional_feature_permission_origins_(
           std::move(additional_feature_permission_origins)) {
-  feature_permissions_.insert(static_cast<int32_t>(
-      content::PermissionType::PROTECTED_MEDIA_IDENTIFIER));
+  feature_permissions_.insert(
+      static_cast<int32_t>(blink::PermissionType::PROTECTED_MEDIA_IDENTIFIER));
   web_contents->SetUserData(&kCastPermissionUserDataKey,
                             base::WrapUnique(this));
 }

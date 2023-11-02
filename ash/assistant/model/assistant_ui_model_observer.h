@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,16 +10,13 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace chromeos {
+namespace ash {
+
 namespace assistant {
 enum class AssistantEntryPoint;
 enum class AssistantExitPoint;
 }  // namespace assistant
-}  // namespace chromeos
 
-namespace ash {
-
-enum class AssistantUiMode;
 enum class AssistantVisibility;
 
 // A checked observer which receives notification of changes to the Assistant UI
@@ -27,16 +24,14 @@ enum class AssistantVisibility;
 class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantUiModelObserver
     : public base::CheckedObserver {
  public:
-  using AssistantEntryPoint = chromeos::assistant::AssistantEntryPoint;
-  using AssistantExitPoint = chromeos::assistant::AssistantExitPoint;
+  using AssistantEntryPoint = assistant::AssistantEntryPoint;
+  using AssistantExitPoint = assistant::AssistantExitPoint;
 
   AssistantUiModelObserver(const AssistantUiModelObserver&) = delete;
   AssistantUiModelObserver& operator=(const AssistantUiModelObserver&) = delete;
 
-  // Invoked when the UI mode is changed. If |due_to_interaction| is true, the
-  // UI mode was changed as a result of an Assistant interaction.
-  virtual void OnUiModeChanged(AssistantUiMode ui_mode,
-                               bool due_to_interaction) {}
+  // Invoked when keyboard traversal mode is changed (enabled/disabled).
+  virtual void OnKeyboardTraversalModeChanged(bool keyboard_traversal_mode) {}
 
   // Invoked when the UI visibility is changed from |old_visibility| to
   // |new_visibility|. The |source| of the visibility change event is provided

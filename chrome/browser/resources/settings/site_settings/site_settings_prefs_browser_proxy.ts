@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,24 +34,25 @@ export enum ContentSettingProvider {
 /**
  * Stores information about if a content setting is valid, and why.
  */
-type IsValid = {
-  isValid: boolean,
-  reason: string|null,
-};
+interface IsValid {
+  isValid: boolean;
+  reason: string|null;
+}
 
 /**
  * Stores origin information. The |hasPermissionSettings| will be set to true
  * when this origin has permissions or when there is a pattern permission
  * affecting this origin.
  */
-export type OriginInfo = {
-  origin: string,
-  engagement: number,
-  usage: number,
-  numCookies: number,
-  hasPermissionSettings: boolean,
-  isInstalled: boolean,
-};
+export interface OriginInfo {
+  origin: string;
+  engagement: number;
+  usage: number;
+  numCookies: number;
+  hasPermissionSettings: boolean;
+  isInstalled: boolean;
+  isPartitioned: boolean;
+}
 
 /**
  * Represents a list of sites, grouped under the same eTLD+1. For example, an
@@ -59,86 +60,87 @@ export type OriginInfo = {
  * "https://login.example.com" and "http://example.com" under a common eTLD+1 of
  * "example.com".
  */
-export type SiteGroup = {
-  etldPlus1: string,
-  numCookies: number,
-  origins: Array<OriginInfo>,
-  hasInstalledPWA: boolean,
-};
+export interface SiteGroup {
+  etldPlus1: string;
+  numCookies: number;
+  origins: OriginInfo[];
+  fpsOwner?: string;
+  fpsNumMembers?: number;
+  fpsEnterpriseManaged?: boolean;
+  hasInstalledPWA: boolean;
+}
 
 /**
  * The site exception information passed from the C++ handler.
  * See also: SiteException.
  */
-export type RawSiteException = {
-  embeddingOrigin: string,
-  incognito: boolean,
-  isEmbargoed: boolean,
-  origin: string,
-  displayName: string,
-  settingDetail: string|null,
-  type: string,
-  setting: ContentSetting,
-  source: SiteSettingSource,
-};
+export interface RawSiteException {
+  embeddingOrigin: string;
+  incognito: boolean;
+  isEmbargoed: boolean;
+  origin: string;
+  displayName: string;
+  type: string;
+  setting: ContentSetting;
+  source: SiteSettingSource;
+}
 
 /**
  * The site exception after it has been converted/filtered for UI use.
  * See also: RawSiteException.
  */
-export type SiteException = {
-  category: ContentSettingsTypes,
-  embeddingOrigin: string,
-  incognito: boolean,
-  isEmbargoed: boolean,
-  origin: string,
-  displayName: string,
-  settingDetail: string|null,
-  setting: ContentSetting,
-  enforcement: chrome.settingsPrivate.Enforcement|null,
-  controlledBy: chrome.settingsPrivate.ControlledBy,
-  // <if expr="chromeos">
-  showAndroidSmsNote?: boolean,
+export interface SiteException {
+  category: ContentSettingsTypes;
+  embeddingOrigin: string;
+  incognito: boolean;
+  isEmbargoed: boolean;
+  origin: string;
+  displayName: string;
+  setting: ContentSetting;
+  enforcement: chrome.settingsPrivate.Enforcement|null;
+  controlledBy: chrome.settingsPrivate.ControlledBy;
+  // <if expr="chromeos_ash">
+  showAndroidSmsNote?: boolean;
   // </if>
-};
+}
 
 /**
  * Represents a list of exceptions recently configured for a site, where recent
  * is defined by the maximum number of sources parameter passed to
  * GetRecentSitePermissions.
  */
-export type RecentSitePermissions = {
-  origin: string,
-  incognito: boolean,
-  recentPermissions: Array<RawSiteException>,
-};
+export interface RecentSitePermissions {
+  origin: string;
+  incognito: boolean;
+  recentPermissions: RawSiteException[];
+}
 
 /**
  * The chooser exception information passed from the C++ handler.
  * See also: ChooserException.
  */
-export type RawChooserException = {
-  chooserType: ChooserType,
-  displayName: string,
-  object: Object,
-  sites: Array<RawSiteException>,
-};
+export interface RawChooserException {
+  chooserType: ChooserType;
+  displayName: string;
+  object: Object;
+  sites: RawSiteException[];
+}
 
 /**
  * The chooser exception after it has been converted/filtered for UI use.
  * See also: RawChooserException.
  */
-export type ChooserException = {
-  chooserType: ChooserType,
-  displayName: string,
-  object: Object,
-  sites: Array<SiteException>,
-};
+export interface ChooserException {
+  chooserType: ChooserType;
+  displayName: string;
+  object: Object;
+  sites: SiteException[];
+}
 
-export type DefaultContentSetting = {
-  setting: ContentSetting,
-  source: ContentSettingProvider,
-};
+export interface DefaultContentSetting {
+  setting: ContentSetting;
+  source: ContentSettingProvider;
+}
 
 /**
  * The primary cookie setting states that are possible. Must be kept in sync
@@ -152,22 +154,28 @@ export enum CookiePrimarySetting {
   BLOCK_ALL = 3,
 }
 
-export type MediaPickerEntry = {
-  name: string,
-  id: string,
-};
+export interface MediaPickerEntry {
+  name: string;
+  id: string;
+}
 
-type ProtocolHandlerEntry = {
-  protocol: string,
-  spec: string,
-};
+export interface ZoomLevelEntry {
+  displayName: string;
+  origin: string;
+  originForFavicon: string;
+  setting: string;
+  source: string;
+  zoom: string;
+}
 
-export type ZoomLevelEntry = {
-  origin: string,
-  setting: string,
-  source: string,
-  zoom: string,
-};
+/**
+ * The notification permission information passed from
+ * site_settings_handler.cc.
+ */
+export interface NotificationPermission {
+  origin: string;
+  notificationInfoString: string;
+}
 
 export interface SiteSettingsPrefsBrowserProxy {
   /**
@@ -188,7 +196,7 @@ export interface SiteSettingsPrefsBrowserProxy {
    * Gets a list of sites, grouped by eTLD+1, affected by any content settings
    * that should be visible to the user.
    */
-  getAllSites(): Promise<Array<SiteGroup>>;
+  getAllSites(): Promise<SiteGroup[]>;
 
   /**
    * Returns a list of content settings types that are controlled via a standard
@@ -196,7 +204,7 @@ export interface SiteSettingsPrefsBrowserProxy {
    * @param origin The associated origin for which categories should be shown or
    *     hidden.
    */
-  getCategoryList(origin: string): Promise<Array<ContentSettingsTypes>>;
+  getCategoryList(origin: string): Promise<ContentSettingsTypes[]>;
 
   /**
    * Get the string which describes the current effective cookie setting.
@@ -211,14 +219,14 @@ export interface SiteSettingsPrefsBrowserProxy {
    * @param numSources Maximum number of different sources to return
    */
   getRecentSitePermissions(numSources: number):
-      Promise<Array<RecentSitePermissions>>;
+      Promise<RecentSitePermissions[]>;
 
   /**
    * Gets the chooser exceptions for a particular chooser type.
    * @param chooserType The chooser type to grab exceptions from.
    */
   getChooserExceptionList(chooserType: ChooserType):
-      Promise<Array<RawChooserException>>;
+      Promise<RawChooserException[]>;
 
   /**
    * Converts a given number of bytes into a human-readable format, with data
@@ -231,7 +239,7 @@ export interface SiteSettingsPrefsBrowserProxy {
    * @param contentType The name of the category to query.
    */
   getExceptionList(contentType: ContentSettingsTypes):
-      Promise<Array<RawSiteException>>;
+      Promise<RawSiteException[]>;
 
   /**
    * Gets a list of category permissions for a given origin. Note that this
@@ -241,9 +249,8 @@ export interface SiteSettingsPrefsBrowserProxy {
    * @param contentTypes A list of categories to retrieve the ContentSetting
    *     for.
    */
-  getOriginPermissions(
-      origin: string, contentTypes: Array<ContentSettingsTypes>):
-      Promise<Array<RawSiteException>>;
+  getOriginPermissions(origin: string, contentTypes: ContentSettingsTypes[]):
+      Promise<RawSiteException[]>;
 
   /**
    * Resets the permissions for a list of categories for a given origin. This
@@ -388,9 +395,9 @@ export interface SiteSettingsPrefsBrowserProxy {
    * Deletes a protocol handler by url from the app approved list.
    * @param protocol The protocol to delete the url from.
    * @param url The url to delete.
-   * @param app_id The web app's ID to delete.
+   * @param appId The web app's ID to delete.
    */
-  removeAppDisallowedHandler(protocol: string, url: string, app_id: string):
+  removeAppDisallowedHandler(protocol: string, url: string, appId: string):
       void;
 
   /**
@@ -424,16 +431,59 @@ export interface SiteSettingsPrefsBrowserProxy {
   clearEtldPlus1DataAndCookies(etldPlus1: string): void;
 
   /**
-   * Clears all the web storage data and cookies for a given origin.
+   * Clears all the unpartitioned web storage data and cookies for a given
+   * origin.
    * @param origin The origin to clear data from.
    */
-  clearOriginDataAndCookies(origin: string): void;
+  clearUnpartitionedOriginDataAndCookies(origin: string): void;
+
+  /**
+   * Clears all the storage for |origin| which is partitioned on |etldPlus1|.
+   * @param origin The origin to clear data from.
+   * @param etldPlus1 The etld+1 which the data is partitioned for.
+   */
+  clearPartitionedOriginDataAndCookies(origin: string, etldPlus1: string): void;
 
   /**
    * Record All Sites Page action for metrics.
    * @param action number.
    */
   recordAction(action: number): void;
+
+  /** Gets the site list that send a lot of notifications. */
+  getNotificationPermissionReview(): Promise<NotificationPermission[]>;
+
+  /** Blocks the notification permission for the origin. */
+  blockNotificationPermissionForOrigin(origin: string): void;
+
+  /** Allows the notification permission for the origin. */
+  allowNotificationPermissionForOrigin(origin: string): void;
+
+  /** Adds the origin to blocklist for the notification permissions feature. */
+  ignoreNotificationPermissionForOrigin(origin: string): void;
+
+  /**
+   * Removes the origin from the blocklist for the notification permissions
+   * feature.
+   */
+  undoIgnoreNotificationPermissionForOrigin(origin: string): void;
+
+  /** Resets the notification permission for the origin. */
+  resetNotificationPermissionForOrigin(origin: string): void;
+
+  /**
+   * Gets display string for FPS information of owner and member count.
+   * @param fpsNumMembers The number of members in the first party set.
+   * @param fpsOwner The eTLD+1 for the first party set owner.
+   */
+  getFpsMembershipLabel(fpsNumMembers: number, fpsOwner: string):
+      Promise<string>;
+
+  /**
+   * Gets the plural string for a given number of cookies.
+   * @param numCookies The number of cookies.
+   */
+  getNumCookiesString(numCookies: number): Promise<string>;
 }
 
 export class SiteSettingsPrefsBrowserProxyImpl implements
@@ -474,8 +524,7 @@ export class SiteSettingsPrefsBrowserProxyImpl implements
     return sendWithPromise('getExceptionList', contentType);
   }
 
-  getOriginPermissions(
-      origin: string, contentTypes: Array<ContentSettingsTypes>) {
+  getOriginPermissions(origin: string, contentTypes: ContentSettingsTypes[]) {
     return sendWithPromise('getOriginPermissions', origin, contentTypes);
   }
 
@@ -553,8 +602,8 @@ export class SiteSettingsPrefsBrowserProxyImpl implements
     chrome.send('removeAppAllowedHandler', [protocol, url, appId]);
   }
 
-  removeAppDisallowedHandler(protocol: string, url: string, app_id: string) {
-    chrome.send('removeAppDisallowedHandler', [protocol, url, app_id]);
+  removeAppDisallowedHandler(protocol: string, url: string, appId: string) {
+    chrome.send('removeAppDisallowedHandler', [protocol, url, appId]);
   }
 
   updateIncognitoStatus() {
@@ -577,12 +626,58 @@ export class SiteSettingsPrefsBrowserProxyImpl implements
     chrome.send('clearEtldPlus1DataAndCookies', [etldPlus1]);
   }
 
-  clearOriginDataAndCookies(origin: string) {
-    chrome.send('clearUsage', [origin]);
+  clearUnpartitionedOriginDataAndCookies(origin: string) {
+    chrome.send('clearUnpartitionedUsage', [origin]);
+  }
+
+  clearPartitionedOriginDataAndCookies(origin: string, etldPlus1: string) {
+    chrome.send('clearPartitionedUsage', [origin, etldPlus1]);
   }
 
   recordAction(action: number) {
     chrome.send('recordAction', [action]);
+  }
+
+  getNotificationPermissionReview() {
+    return sendWithPromise('getNotificationPermissionReview');
+  }
+
+  blockNotificationPermissionForOrigin(origin: string) {
+    chrome.send('blockNotificationPermissionForOrigin', [
+      origin,
+    ]);
+  }
+
+  allowNotificationPermissionForOrigin(origin: string) {
+    chrome.send('allowNotificationPermissionForOrigin', [
+      origin,
+    ]);
+  }
+
+  ignoreNotificationPermissionForOrigin(origin: string) {
+    chrome.send('ignoreNotificationPermissionReviewForOrigin', [
+      origin,
+    ]);
+  }
+
+  undoIgnoreNotificationPermissionForOrigin(origin: string) {
+    chrome.send('undoIgnoreNotificationPermissionReviewForOrigin', [
+      origin,
+    ]);
+  }
+
+  resetNotificationPermissionForOrigin(origin: string) {
+    chrome.send('resetNotificationPermissionForOrigin', [
+      origin,
+    ]);
+  }
+
+  getFpsMembershipLabel(fpsNumMembers: number, fpsOwner: string) {
+    return sendWithPromise('getFpsMembershipLabel', fpsNumMembers, fpsOwner);
+  }
+
+  getNumCookiesString(numCookies: number) {
+    return sendWithPromise('getNumCookiesString', numCookies);
   }
 
   static getInstance(): SiteSettingsPrefsBrowserProxy {

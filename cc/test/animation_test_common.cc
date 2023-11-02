@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,8 @@ int AddOpacityTransition(Animation* target,
                          double duration,
                          float start_opacity,
                          float end_opacity,
-                         bool use_timing_function) {
+                         bool use_timing_function,
+                         int id) {
   std::unique_ptr<gfx::KeyframedFloatAnimationCurve> curve(
       gfx::KeyframedFloatAnimationCurve::Create());
 
@@ -42,8 +43,6 @@ int AddOpacityTransition(Animation* target,
         base::TimeDelta(), start_opacity, std::move(func)));
   curve->AddKeyframe(gfx::FloatKeyframe::Create(base::Seconds(duration),
                                                 end_opacity, nullptr));
-
-  int id = AnimationIdProvider::NextKeyframeModelId();
 
   std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
       std::move(curve), id, AnimationIdProvider::NextGroupId(),
@@ -246,8 +245,8 @@ std::unique_ptr<gfx::AnimationCurve> FakeFloatTransition::Clone() const {
 }
 
 int AddScrollOffsetAnimationToAnimation(Animation* animation,
-                                        gfx::Vector2dF initial_value,
-                                        gfx::Vector2dF target_value) {
+                                        gfx::PointF initial_value,
+                                        gfx::PointF target_value) {
   std::unique_ptr<ScrollOffsetAnimationCurve> curve(
       ScrollOffsetAnimationCurveFactory::CreateEaseInOutAnimationForTesting(
           target_value));
@@ -291,9 +290,11 @@ int AddOpacityTransitionToAnimation(Animation* animation,
                                     double duration,
                                     float start_opacity,
                                     float end_opacity,
-                                    bool use_timing_function) {
-  return AddOpacityTransition(animation, duration, start_opacity, end_opacity,
-                              use_timing_function);
+                                    bool use_timing_function,
+                                    absl::optional<int> id) {
+  return AddOpacityTransition(
+      animation, duration, start_opacity, end_opacity, use_timing_function,
+      id ? *id : AnimationIdProvider::NextKeyframeModelId());
 }
 
 int AddAnimatedFilterToAnimation(Animation* animation,
@@ -355,8 +356,9 @@ void AddKeyframeModelToElementWithExistingKeyframeEffect(
     ElementId element_id,
     scoped_refptr<AnimationTimeline> timeline,
     std::unique_ptr<KeyframeModel> keyframe_model) {
-  scoped_refptr<ElementAnimations> element_animations =
-      timeline->animation_host()->GetElementAnimationsForElementId(element_id);
+  scoped_refptr<const ElementAnimations> element_animations =
+      timeline->animation_host()->GetElementAnimationsForElementIdForTesting(
+          element_id);
   DCHECK(element_animations);
   KeyframeEffect* keyframe_effect =
       element_animations->FirstKeyframeEffectForTesting();
@@ -368,8 +370,9 @@ void RemoveKeyframeModelFromElementWithExistingKeyframeEffect(
     ElementId element_id,
     scoped_refptr<AnimationTimeline> timeline,
     int keyframe_model_id) {
-  scoped_refptr<ElementAnimations> element_animations =
-      timeline->animation_host()->GetElementAnimationsForElementId(element_id);
+  scoped_refptr<const ElementAnimations> element_animations =
+      timeline->animation_host()->GetElementAnimationsForElementIdForTesting(
+          element_id);
   DCHECK(element_animations);
   KeyframeEffect* keyframe_effect =
       element_animations->FirstKeyframeEffectForTesting();
@@ -381,8 +384,9 @@ KeyframeModel* GetKeyframeModelFromElementWithExistingKeyframeEffect(
     ElementId element_id,
     scoped_refptr<AnimationTimeline> timeline,
     int keyframe_model_id) {
-  scoped_refptr<ElementAnimations> element_animations =
-      timeline->animation_host()->GetElementAnimationsForElementId(element_id);
+  scoped_refptr<const ElementAnimations> element_animations =
+      timeline->animation_host()->GetElementAnimationsForElementIdForTesting(
+          element_id);
   DCHECK(element_animations);
   KeyframeEffect* keyframe_effect =
       element_animations->FirstKeyframeEffectForTesting();

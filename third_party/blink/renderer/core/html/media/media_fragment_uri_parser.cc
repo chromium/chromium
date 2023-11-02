@@ -86,7 +86,7 @@ void MediaFragmentURIParser::ParseFragments() {
   if (!url_.HasFragmentIdentifier())
     return;
   String fragment_string = url_.FragmentIdentifier();
-  if (fragment_string.IsEmpty())
+  if (fragment_string.empty())
     return;
 
   wtf_size_t offset = 0;
@@ -129,12 +129,12 @@ void MediaFragmentURIParser::ParseFragments() {
     //     remove the name-value pair from the list.
     bool valid_utf8 = true;
     std::string utf8_name;
-    if (!name.IsEmpty()) {
+    if (!name.empty()) {
       utf8_name = name.Utf8(kStrictUTF8Conversion);
       valid_utf8 = !utf8_name.empty();
     }
     std::string utf8_value;
-    if (valid_utf8 && !value.IsEmpty()) {
+    if (valid_utf8 && !value.empty()) {
       utf8_value = value.Utf8(kStrictUTF8Conversion);
       valid_utf8 = !utf8_value.empty();
     }
@@ -149,7 +149,7 @@ void MediaFragmentURIParser::ParseFragments() {
 void MediaFragmentURIParser::ParseTimeFragment() {
   DCHECK_EQ(time_format_, kNone);
 
-  if (fragments_.IsEmpty())
+  if (fragments_.empty())
     ParseFragments();
 
   time_format_ = kInvalid;

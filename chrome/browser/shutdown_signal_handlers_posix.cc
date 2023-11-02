@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,7 +37,7 @@ void GracefulShutdownHandler(int signal) {
   struct sigaction action;
   memset(&action, 0, sizeof(action));
   action.sa_handler = SIG_DFL;
-  RAW_CHECK(sigaction(signal, &action, NULL) == 0);
+  RAW_CHECK(sigaction(signal, &action, nullptr) == 0);
 
   RAW_CHECK(g_pipe_pid != -1);
   RAW_CHECK(g_shutdown_pipe_write_fd != -1);

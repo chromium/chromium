@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include "base/component_export.h"
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -127,7 +127,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
     WebSocket* get() const { return pointer_; }
 
    private:
-    WebSocket* const pointer_;
+    const raw_ptr<WebSocket> pointer_;
   };
 
   struct DataFrame final {
@@ -170,15 +170,25 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
 
   void Reset();
 
+  enum class InterruptionReason {
+    // Not interrupted or not resuming after interruptions (but processing a
+    // brand new frame)
+    kNone,
+    // Interrupted by empty Mojo pipe or resuming afterwards
+    kMojoPipe,
+    // Interrupted by the interceptor or resuming afterwards
+    kInterceptor,
+  };
+
   // Datapipe functions to receive.
   void OnWritable(MojoResult result, const mojo::HandleSignalsState& state);
-  void SendPendingDataFrames();
+  void SendPendingDataFrames(InterruptionReason resume_reason);
   void SendDataFrame(base::span<const char>* data_span);
 
   // Datapipe functions to send.
   void OnReadable(MojoResult result, const mojo::HandleSignalsState& state);
 
-  void ReadAndSendFromDataPipe();
+  void ReadAndSendFromDataPipe(InterruptionReason resume_reason);
   // This helper method only called from ReadAndSendFromDataPipe.
   // Note that it may indirectly delete |this|.
   // Returns true if the frame has been sent completely.
@@ -186,7 +196,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
   void ResumeDataPipeReading();
 
   // |factory_| owns |this|.
-  WebSocketFactory* const factory_;
+  const raw_ptr<WebSocketFactory> factory_;
   mojo::Receiver<mojom::WebSocket> receiver_{this};
 
   mojo::Remote<mojom::URLLoaderNetworkServiceObserver>
@@ -218,17 +228,18 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
   bool handshake_succeeded_ = false;
   const HasRawHeadersAccess has_raw_headers_access_;
 
+  InterruptionReason incoming_frames_interrupted_ = InterruptionReason::kNone;
+  InterruptionReason outgoing_frames_interrupted_ = InterruptionReason::kNone;
+
   // Datapipe fields to receive.
   mojo::ScopedDataPipeProducerHandle writable_;
   mojo::SimpleWatcher writable_watcher_;
   base::queue<base::span<const char>> pending_data_frames_;
-  bool wait_for_writable_ = false;
 
   // Datapipe fields to send.
   mojo::ScopedDataPipeConsumerHandle readable_;
   mojo::SimpleWatcher readable_watcher_;
   base::queue<DataFrame> pending_send_data_frames_;
-  bool wait_for_readable_ = false;
   bool blocked_on_websocket_channel_ = false;
 
   // True if we should preserve the old behaviour where <=64KB messages were
@@ -254,8 +265,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
 
   const absl::optional<base::UnguessableToken> throttling_profile_id_;
   uint32_t net_log_source_id_ = net::NetLogSource::kInvalidId;
-  std::unique_ptr<WebSocketInterceptor> incoming_frame_interceptor_;
-  std::unique_ptr<WebSocketInterceptor> outgoing_frame_interceptor_;
+  std::unique_ptr<WebSocketInterceptor> frame_interceptor_;
 
   base::WeakPtrFactory<WebSocket> weak_ptr_factory_{this};
 };

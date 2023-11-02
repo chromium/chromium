@@ -1,4 +1,2 @@
 android.webkit.WebView focusable focused scrollable
-++android.widget.EditText clickable editable_text focusable multiline hint='Done'
-++++android.widget.TextView
-++++android.widget.TextView
+++android.widget.EditText clickable editable_text focusable has_non_empty_value multiline name='<newline>' hint='Done' text_change_added_count=1

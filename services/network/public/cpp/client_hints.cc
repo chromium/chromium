@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,16 +8,23 @@
 #include <vector>
 
 #include "base/cxx17_backports.h"
-#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "net/http/structured_headers.h"
-#include "services/network/public/cpp/features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace network {
+
+const char kPrefersColorSchemeDark[] = "dark";
+const char kPrefersColorSchemeLight[] = "light";
+
+const char kPrefersReducedMotionNoPreference[] = "no-preference";
+const char kPrefersReducedMotionReduce[] = "reduce";
 
 ClientHintToNameMap MakeClientHintToNameMap() {
   return {
@@ -53,6 +60,11 @@ ClientHintToNameMap MakeClientHintToNameMap() {
        "sec-ch-viewport-width"},
       {network::mojom::WebClientHintsType::kUAFullVersionList,
        "sec-ch-ua-full-version-list"},
+      {network::mojom::WebClientHintsType::kFullUserAgent, "sec-ch-ua-full"},
+      {network::mojom::WebClientHintsType::kUAWoW64, "sec-ch-ua-wow64"},
+      {network::mojom::WebClientHintsType::kSaveData, "save-data"},
+      {network::mojom::WebClientHintsType::kPrefersReducedMotion,
+       "sec-ch-prefers-reduced-motion"},
   };
 }
 
@@ -64,7 +76,7 @@ const ClientHintToNameMap& GetClientHintToNameMap() {
 
 namespace {
 
-struct ClientHintNameCompator {
+struct ClientHintNameComparator {
   bool operator()(const std::string& lhs, const std::string& rhs) const {
     return base::CompareCaseInsensitiveASCII(lhs, rhs) < 0;
   }
@@ -72,7 +84,7 @@ struct ClientHintNameCompator {
 
 using DecodeMap = base::flat_map<std::string,
                                  network::mojom::WebClientHintsType,
-                                 ClientHintNameCompator>;
+                                 ClientHintNameComparator>;
 
 DecodeMap MakeDecodeMap() {
   DecodeMap result;
@@ -94,7 +106,7 @@ const DecodeMap& GetDecodeMap() {
 absl::optional<std::vector<network::mojom::WebClientHintsType>>
 ParseClientHintsHeader(const std::string& header) {
   // Accept-CH is an sh-list of tokens; see:
-  // https://httpwg.org/http-extensions/client-hints.html#rfc.section.3.1
+  // https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-header-structure-19#section-3.1
   absl::optional<net::structured_headers::List> maybe_list =
       net::structured_headers::ParseList(header);
   if (!maybe_list.has_value())
@@ -120,35 +132,65 @@ ParseClientHintsHeader(const std::string& header) {
     if (iter != decode_map.end())
       result.push_back(iter->second);
   }  // for list_item
-  return absl::make_optional(std::move(result));
+  return result;
 }
 
-base::TimeDelta ParseAcceptCHLifetime(const std::string& header) {
-  int64_t persist_duration_seconds = 0;
-  if (!base::StringToInt64(header, &persist_duration_seconds) ||
-      persist_duration_seconds <= 0)
-    return base::TimeDelta();
+ClientHintToDelegatedThirdPartiesHeader::
+    ClientHintToDelegatedThirdPartiesHeader() = default;
 
-  return base::Seconds(persist_duration_seconds);
-}
+ClientHintToDelegatedThirdPartiesHeader::
+    ~ClientHintToDelegatedThirdPartiesHeader() = default;
 
-absl::optional<network::mojom::WebClientHintsType> COMPONENT_EXPORT(NETWORK_CPP)
-    SuggestAlternateClientHintIfDeprecated(
-        const network::mojom::WebClientHintsType type) {
-  if (!base::FeatureList::IsEnabled(features::kClientHintDeprecationIssue)) {
-    return absl::nullopt;
-  }
+ClientHintToDelegatedThirdPartiesHeader::
+    ClientHintToDelegatedThirdPartiesHeader(
+        const ClientHintToDelegatedThirdPartiesHeader&) = default;
+
+const ClientHintToDelegatedThirdPartiesHeader
+ParseClientHintToDelegatedThirdPartiesHeader(const std::string& header,
+                                             MetaCHType type) {
+  const DecodeMap& decode_map = GetDecodeMap();
+
   switch (type) {
-    case network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED:
-      return network::mojom::WebClientHintsType::kDeviceMemory;
-    case network::mojom::WebClientHintsType::kDpr_DEPRECATED:
-      return network::mojom::WebClientHintsType::kDpr;
-    case network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED:
-      return network::mojom::WebClientHintsType::kResourceWidth;
-    case network::mojom::WebClientHintsType::kViewportWidth_DEPRECATED:
-      return network::mojom::WebClientHintsType::kViewportWidth;
-    default:
-      return absl::nullopt;
+    case MetaCHType::HttpEquivAcceptCH: {
+      // ParseClientHintsHeader should have been called instead.
+      NOTREACHED();
+      return ClientHintToDelegatedThirdPartiesHeader();
+    }
+    case MetaCHType::HttpEquivDelegateCH: {
+      // We're building a scoped down version of
+      // ParsingContext::ParseFeaturePolicyToIR that supports only client hint
+      // features.
+      ClientHintToDelegatedThirdPartiesHeader result;
+      const auto& entries =
+          base::SplitString(base::ToLowerASCII(header), ";",
+                            base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+      for (const auto& entry : entries) {
+        const auto& components = base::SplitString(
+            entry, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+        // Shouldn't be possible given this only processes non-empty parts.
+        DCHECK(components.size());
+        auto found_token = decode_map.find(components[0]);
+        // Bail early if the token is invalid
+        if (found_token == decode_map.end())
+          continue;
+        std::vector<url::Origin> delegates;
+        for (size_t i = 1; i < components.size(); ++i) {
+          const GURL gurl = GURL(components[i]);
+          if (!gurl.is_valid()) {
+            result.had_invalid_origins = true;
+            continue;
+          }
+          url::Origin origin = url::Origin::Create(gurl);
+          if (origin.opaque()) {
+            result.had_invalid_origins = true;
+            continue;
+          }
+          delegates.push_back(origin);
+        }
+        result.map.insert(std::make_pair(found_token->second, delegates));
+      }
+      return result;
+    }
   }
 }
 

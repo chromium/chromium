@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -69,7 +70,7 @@ class ExtensionWebUITest : public testing::Test {
   }
 
   std::unique_ptr<TestingProfile> profile_;
-  ExtensionService* extension_service_;
+  raw_ptr<ExtensionService> extension_service_;
   content::BrowserTaskEnvironment task_environment_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -183,8 +184,8 @@ TEST_F(ExtensionWebUITest, TestRemovingDuplicateEntriesForHosts) {
   PrefService* prefs = profile_->GetPrefs();
   {
     // Add multiple entries for the same extension.
-    DictionaryPrefUpdate update(prefs, ExtensionWebUI::kExtensionURLOverrides);
-    base::DictionaryValue* all_overrides = update.Get();
+    ScopedDictPrefUpdate update(prefs, ExtensionWebUI::kExtensionURLOverrides);
+    base::Value::Dict& all_overrides = update.Get();
     base::Value newtab_list(base::Value::Type::LIST);
     {
       base::Value newtab(base::Value::Type::DICTIONARY);
@@ -201,7 +202,7 @@ TEST_F(ExtensionWebUITest, TestRemovingDuplicateEntriesForHosts) {
       newtab_list.Append(std::move(newtab));
     }
 
-    all_overrides->SetKey("newtab", std::move(newtab_list));
+    all_overrides.Set("newtab", std::move(newtab_list));
   }
 
   extension_service_->AddExtension(extension.get());
@@ -211,14 +212,12 @@ TEST_F(ExtensionWebUITest, TestRemovingDuplicateEntriesForHosts) {
 
   // Duplicates should be removed (in response to ExtensionSystem::ready()).
   // Only a single entry should remain.
-  const base::DictionaryValue* overrides =
-      prefs->GetDictionary(ExtensionWebUI::kExtensionURLOverrides);
-  ASSERT_TRUE(overrides);
-  const base::Value* newtab_overrides =
-      overrides->FindKeyOfType("newtab", base::Value::Type::LIST);
+  const base::Value::Dict& overrides =
+      prefs->GetDict(ExtensionWebUI::kExtensionURLOverrides);
+  const base::Value::List* newtab_overrides = overrides.FindList("newtab");
   ASSERT_TRUE(newtab_overrides);
-  ASSERT_EQ(1u, newtab_overrides->GetList().size());
-  const base::Value& override_dict = newtab_overrides->GetList()[0];
+  ASSERT_EQ(1u, newtab_overrides->size());
+  const base::Value& override_dict = (*newtab_overrides)[0];
   EXPECT_EQ(newtab_url.spec(), override_dict.FindKey("entry")->GetString());
   EXPECT_TRUE(override_dict.FindKey("active")->GetBool());
 }

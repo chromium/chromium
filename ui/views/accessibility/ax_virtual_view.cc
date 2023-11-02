@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/containers/adapters.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_tree_data.h"
@@ -63,8 +64,9 @@ AXVirtualView::~AXVirtualView() {
          "not both.";
 
   if (ax_platform_node_) {
-    ax_platform_node_->Destroy();
-    ax_platform_node_ = nullptr;
+    // Clear ax_platform_node_ and return another raw_ptr instance that is
+    // allowed to dangle.
+    ax_platform_node_.ExtractAsDangling()->Destroy();
   }
 
 #if defined(USE_AURA)
@@ -77,11 +79,11 @@ void AXVirtualView::AddChildView(std::unique_ptr<AXVirtualView> view) {
   DCHECK(view);
   if (view->virtual_parent_view_ == this)
     return;  // Already a child of this virtual view.
-  AddChildViewAt(std::move(view), static_cast<int>(children_.size()));
+  AddChildViewAt(std::move(view), children_.size());
 }
 
 void AXVirtualView::AddChildViewAt(std::unique_ptr<AXVirtualView> view,
-                                   int index) {
+                                   size_t index) {
   DCHECK(view);
   CHECK_NE(view.get(), this)
       << "You cannot add an AXVirtualView as its own child.";
@@ -90,35 +92,35 @@ void AXVirtualView::AddChildViewAt(std::unique_ptr<AXVirtualView> view,
   DCHECK(!view->virtual_parent_view_) << "This |view| already has an "
                                          "AXVirtualView parent. Call "
                                          "RemoveChildView first.";
-  DCHECK_GE(index, 0);
-  DCHECK_LE(index, static_cast<int>(children_.size()));
+  DCHECK_LE(index, children_.size());
 
   view->virtual_parent_view_ = this;
-  children_.insert(children_.begin() + index, std::move(view));
+  children_.insert(children_.begin() + static_cast<ptrdiff_t>(index),
+                   std::move(view));
   if (GetOwnerView()) {
     GetOwnerView()->NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
                                              true);
   }
 }
 
-void AXVirtualView::ReorderChildView(AXVirtualView* view, int index) {
+void AXVirtualView::ReorderChildView(AXVirtualView* view, size_t index) {
   DCHECK(view);
-  if (index >= static_cast<int>(children_.size()))
-    return;
-  if (index < 0)
-    index = static_cast<int>(children_.size()) - 1;
+  index = std::min(index, children_.size() - 1);
 
   DCHECK_EQ(view->virtual_parent_view_, this);
   if (children_[index].get() == view)
     return;
 
-  int cur_index = GetIndexOf(view);
-  if (cur_index < 0)
+  auto cur_index = GetIndexOf(view);
+  if (!cur_index.has_value())
     return;
 
-  std::unique_ptr<AXVirtualView> child = std::move(children_[cur_index]);
-  children_.erase(children_.begin() + cur_index);
-  children_.insert(children_.begin() + index, std::move(child));
+  std::unique_ptr<AXVirtualView> child =
+      std::move(children_[cur_index.value()]);
+  children_.erase(children_.begin() +
+                  static_cast<ptrdiff_t>(cur_index.value()));
+  children_.insert(children_.begin() + static_cast<ptrdiff_t>(index),
+                   std::move(child));
 
   GetOwnerView()->NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
                                            true);
@@ -139,8 +141,8 @@ std::unique_ptr<AXVirtualView> AXVirtualView::RemoveFromParentView() {
 std::unique_ptr<AXVirtualView> AXVirtualView::RemoveChildView(
     AXVirtualView* view) {
   DCHECK(view);
-  int cur_index = GetIndexOf(view);
-  if (cur_index < 0)
+  auto cur_index = GetIndexOf(view);
+  if (!cur_index.has_value())
     return {};
 
   bool focus_changed = false;
@@ -153,8 +155,10 @@ std::unique_ptr<AXVirtualView> AXVirtualView::RemoveChildView(
     }
   }
 
-  std::unique_ptr<AXVirtualView> child = std::move(children_[cur_index]);
-  children_.erase(children_.begin() + cur_index);
+  std::unique_ptr<AXVirtualView> child =
+      std::move(children_[cur_index.value()]);
+  children_.erase(children_.begin() +
+                  static_cast<ptrdiff_t>(cur_index.value()));
   child->virtual_parent_view_ = nullptr;
   child->populate_data_callback_.Reset();
 
@@ -182,13 +186,14 @@ bool AXVirtualView::Contains(const AXVirtualView* view) const {
   return false;
 }
 
-int AXVirtualView::GetIndexOf(const AXVirtualView* view) const {
+absl::optional<size_t> AXVirtualView::GetIndexOf(
+    const AXVirtualView* view) const {
   DCHECK(view);
   const auto iter =
-      std::find_if(children_.begin(), children_.end(),
-                   [view](const auto& child) { return child.get() == view; });
-  return iter != children_.end() ? static_cast<int>(iter - children_.begin())
-                                 : -1;
+      base::ranges::find(children_, view, &std::unique_ptr<AXVirtualView>::get);
+  return iter != children_.end() ? absl::make_optional(static_cast<size_t>(
+                                       iter - children_.begin()))
+                                 : absl::nullopt;
 }
 
 const char* AXVirtualView::GetViewClassName() const {
@@ -262,8 +267,8 @@ const ui::AXNodeData& AXVirtualView::GetData() const {
   return node_data;
 }
 
-int AXVirtualView::GetChildCount() const {
-  int count = 0;
+size_t AXVirtualView::GetChildCount() const {
+  size_t count = 0;
   for (const std::unique_ptr<AXVirtualView>& child : children_) {
     if (child->IsIgnored()) {
       count += child->GetChildCount();
@@ -274,14 +279,13 @@ int AXVirtualView::GetChildCount() const {
   return count;
 }
 
-gfx::NativeViewAccessible AXVirtualView::ChildAtIndex(int index) {
-  DCHECK_GE(index, 0) << "|index| should be greater or equal to 0.";
+gfx::NativeViewAccessible AXVirtualView::ChildAtIndex(size_t index) {
   DCHECK_LT(index, GetChildCount())
       << "|index| should be less than the child count.";
 
   for (const std::unique_ptr<AXVirtualView>& child : children_) {
     if (child->IsIgnored()) {
-      int child_count = child->GetChildCount();
+      size_t child_count = child->GetChildCount();
       if (index < child_count)
         return child->ChildAtIndex(index);
       index -= child_count;
@@ -290,15 +294,13 @@ gfx::NativeViewAccessible AXVirtualView::ChildAtIndex(int index) {
         return child->GetNativeObject();
       --index;
     }
-
-    DCHECK_GE(index, 0) << "|index| should be less than the child count.";
   }
 
   NOTREACHED() << "|index| should be less than the child count.";
   return nullptr;
 }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 gfx::NativeViewAccessible AXVirtualView::GetNSWindow() {
   NOTREACHED();
   return nullptr;
@@ -435,7 +437,7 @@ const ui::AXUniqueId& AXVirtualView::GetUniqueId() const {
 // Virtual views need to implement this function in order for accessibility
 // events to be routed correctly.
 gfx::AcceleratedWidget AXVirtualView::GetTargetForNativeAccessibilityEvent() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (GetOwnerView())
     return HWNDForView(GetOwnerView());
 #endif
@@ -492,6 +494,15 @@ bool AXVirtualView::HandleAccessibleActionInOwnerView(
   ui::AXActionData forwarded_action_data = action_data;
   forwarded_action_data.target_node_id = GetData().id;
   return GetOwnerView()->HandleAccessibleAction(forwarded_action_data);
+}
+
+void AXVirtualView::set_cache(AXAuraObjCache* cache) {
+#if defined(USE_AURA)
+  if (ax_aura_obj_cache_ && cache)
+    ax_aura_obj_cache_->Remove(this);
+#endif
+
+  ax_aura_obj_cache_ = cache;
 }
 
 View* AXVirtualView::GetOwnerView() const {

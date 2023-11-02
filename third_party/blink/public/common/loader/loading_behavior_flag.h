@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,12 +25,14 @@ enum LoadingBehaviorFlag {
   kLoadingBehaviorDocumentWriteBlock = 1 << 2,
   // Indicates that the page is a reload and has a synchronous, cross-origin
   // document.written script.
+  // DEPRECATED, metrics using this have been removed.
   kLoadingBehaviorDocumentWriteBlockReload = 1 << 3,
   // The page loaded external CSS that generated a PreloadRequest via the
   // CSSPreloaderResourceClient.
   kLoadingBehaviorCSSPreloadFound = 1 << 4,
   // Indicates that the page has a synchronous, same-origin document.written
   // script with different protocol.
+  // DEPRECATED, metrics using this have been removed.
   kLoadingBehaviorDocumentWriteBlockDifferentScheme = 1 << 5,
   // Indicates that a subresource on the page matched the subresource filtering
   // rules.
@@ -64,6 +66,9 @@ enum LoadingBehaviorFlag {
   kLoadingBehaviorPreactFrameworkUsed = 1 << 18,
   // Indicates that the page uses the React JavaScript framework.
   kLoadingBehaviorReactFrameworkUsed = 1 << 19,
+  // Indicates that the page is controlled by a Service Worker, but
+  // the fetch handler is considered skippable.
+  kLoadingBehaviorServiceWorkerFetchHandlerSkippable = 1 << 20,
 };
 
 }  // namespace blink

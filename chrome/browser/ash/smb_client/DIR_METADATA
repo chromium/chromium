@@ -1,3 +1,1 @@
-monorail: {
-  component: "Platform>Apps>FileManager"
-}
+mixins: "//ui/file_manager/COMMON_METADATA"

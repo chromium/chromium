@@ -26,7 +26,6 @@
 <translation id="225614027745146050">환영합니다.</translation>
 <translation id="2320166752086256636">키보드 숨기기</translation>
 <translation id="2329392777730037872">클라이언트 기기에서 <ph name="URL" /> 페이지를 열지 못했습니다.</translation>
-<translation id="2333212046079545895">Copyright 2021 Google LLC. All Rights Reserved.</translation>
 <translation id="2359808026110333948">계속</translation>
 <translation id="2366718077645204424">호스트에 연결할 수 없습니다. 사용 중인 네트워크의 구성 때문일 수 있습니다.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  <ph name="RELATIVE_TIMESTAMP" /> 온라인에 마지막으로 연결했습니다.</translation>
@@ -37,6 +36,7 @@
 <translation id="2599300881200251572">이 서비스를 이용하면 Chrome 원격 데스크톱 클라이언트로부터의 연결을 수신할 수 있습니다.</translation>
 <translation id="2647232381348739934">Chromoting 서비스</translation>
 <translation id="2676780859508944670">처리 중…</translation>
+<translation id="2692522824157224199">Copyright 2022 Google LLC. All Rights Reserved.</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">인증하는 중에 문제가 발생했습니다. 다시 로그인하세요.</translation>
 <translation id="2803375539583399270">PIN 입력</translation>
@@ -73,10 +73,10 @@
 <translation id="4257751272692708833"><ph name="PRODUCT_NAME" /> URL Forwarder</translation>
 <translation id="4277736576214464567">액세스 코드가 잘못되었습니다. 다시 시도해 주세요.</translation>
 <translation id="4281844954008187215">서비스 약관</translation>
+<translation id="4372650392690220936">Copyright 2022 The Chromium Authors. All Rights Reserved.</translation>
 <translation id="4405930547258349619">핵심 라이브러리</translation>
 <translation id="443560535555262820">접근성 환경설정 열기</translation>
 <translation id="4450893287417543264">다시 표시하지 않음</translation>
-<translation id="4512952200932940229">Copyright 2021 The Chromium Authors. All Rights Reserved.</translation>
 <translation id="4513946894732546136">문제 신고</translation>
 <translation id="4563926062592110512">연결 해제된 클라이언트: <ph name="CLIENT_USERNAME" /></translation>
 <translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" />가 정확하게 구성되어 있지 않습니다. 다른 기본 웹브라우저를 선택한 다음 URL 전달을 다시 사용 설정하세요.</translation>

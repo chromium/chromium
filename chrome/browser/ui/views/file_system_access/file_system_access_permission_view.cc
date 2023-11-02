@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_ui_helpers.h"
@@ -15,6 +16,7 @@
 #include "components/permissions/permission_util.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/file_system_access_permission_context.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -77,6 +79,7 @@ int GetButtonLabel(const FileSystemAccessPermissionView::Request& request) {
 }  // namespace
 
 FileSystemAccessPermissionView::FileSystemAccessPermissionView(
+    Browser* browser,
     const Request& request,
     base::OnceCallback<void(permissions::PermissionAction result)> callback)
     : request_(request), callback_(std::move(callback)) {
@@ -107,23 +110,25 @@ FileSystemAccessPermissionView::FileSystemAccessPermissionView(
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
   AddChildView(file_system_access_ui_helper::CreateOriginPathLabel(
-      GetMessageText(request_), request_.origin, request_.path,
+      browser, GetMessageText(request_), request_.origin, request_.path,
       CONTEXT_DIALOG_BODY_TEXT_SMALL,
       /*show_emphasis=*/true));
 }
 
 FileSystemAccessPermissionView::~FileSystemAccessPermissionView() {
   // Make sure the dialog ends up calling the callback no matter what.
-  if (!callback_.is_null())
+  if (callback_)
     Close();
+  DCHECK(!callback_);
 }
 
 views::Widget* FileSystemAccessPermissionView::ShowDialog(
     const Request& request,
     base::OnceCallback<void(permissions::PermissionAction result)> callback,
     content::WebContents* web_contents) {
-  auto delegate = base::WrapUnique(
-      new FileSystemAccessPermissionView(request, std::move(callback)));
+  auto* browser = chrome::FindBrowserWithWebContents(web_contents);
+  auto delegate = base::WrapUnique(new FileSystemAccessPermissionView(
+      browser, request, std::move(callback)));
   return constrained_window::ShowWebModalDialogViews(delegate.release(),
                                                      web_contents);
 }

@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module content.mojom;
 
 import "content/common/frame_messages.mojom";
+import "content/public/common/alternative_error_page_override_info.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/network_param.mojom";
@@ -12,6 +13,7 @@ import "services/network/public/mojom/restricted_cookie_manager.mojom";
 import "services/network/public/mojom/url_loader.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
+import "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom";
 import "third_party/blink/public/mojom/commit_result/commit_result.mojom";
 import "third_party/blink/public/mojom/dom_storage/storage_area.mojom";
 import "third_party/blink/public/mojom/frame/policy_container.mojom";
@@ -28,6 +30,7 @@ import "third_party/blink/public/mojom/permissions_policy/policy_value.mojom";
 import "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom";
 import "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_container.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
@@ -57,10 +60,10 @@ struct DidCommitProvisionalLoadParams {
   // sequence number but the same document sequence number.
   int64 document_sequence_number = -1;
 
-  // Identifies a specific "slot" in the session history for the appHistory API.
-  // appHistory.goTo() is given a key, which matches against this to find the
-  // correct entry to navigate to.
-  string app_history_key;
+  // Identifies a specific "slot" in the session history for the
+  // window.navigation API. navigation.traverseTo() is given a key, which
+  // matches against this to find the correct entry to traverse to.
+  string navigation_api_key;
 
   // URL of the page being loaded.
   url.mojom.Url url;
@@ -109,9 +112,14 @@ struct DidCommitProvisionalLoadParams {
   // successfully cleared.
   bool history_list_was_cleared;
 
-  // Origin of the frame.  This will be replicated to any associated
+  // Origin of the document.  This will be replicated to any associated
   // RenderFrameProxies.
   url.mojom.Origin origin;
+
+  // Information about how `origin` was calculated, to help debug if it differs
+  // from the origin calculated on the browser side.
+  // TODO(https://crbug.com/1220238): Remove this.
+  string origin_calculation_debug_info;
 
   // The 'Permissions-Policy' headers applied to the document.
   // https://w3c.github.io/webappsec-permissions-policy/#permissions-policy-http-header-field
@@ -237,6 +245,9 @@ interface NavigationClient {
   // browser. These may be null if the NavigationThreadingOptimizations feature
   // is disabled. |cookie_manager_info| may also be null for non HTTP/HTTPS
   // navigations, or if the origin is opaque.
+  // |not_restored_reasons| contain the reasons why this navigation is not
+  // served from back/forward cache if applicable. This is only sent for
+  // cross-document main frame history navigations.
   CommitNavigation(
       blink.mojom.CommonNavigationParams common_params,
       blink.mojom.CommitNavigationParams request_params,
@@ -248,11 +259,14 @@ interface NavigationClient {
       blink.mojom.ControllerServiceWorkerInfo? controller_service_worker_info,
       blink.mojom.ServiceWorkerContainerInfoForClient? container_info,
       pending_remote<network.mojom.URLLoaderFactory>? prefetch_loader_factory,
+      blink.mojom.DocumentToken document_token,
       mojo_base.mojom.UnguessableToken devtools_navigation_token,
+      array<blink.mojom.ParsedPermissionsPolicyDeclaration>? permissions_policy,
       blink.mojom.PolicyContainer policy_container,
       pending_remote<blink.mojom.CodeCacheHost>? code_cache_host,
       CookieManagerInfo? cookie_manager_info,
-      StorageInfo? storage_info)
+      StorageInfo? storage_info,
+      blink.mojom.BackForwardCacheNotRestoredReasons? not_restored_reasons)
       => (DidCommitProvisionalLoadParams params,
           DidCommitProvisionalLoadInterfaceParams? interface_params);
 
@@ -265,6 +279,9 @@ interface NavigationClient {
   // When the Network Service is enabled, |subresource_loader_factories| may
   // also be provided by the browser as a means for the renderer to load
   // subresources where applicable.
+  //
+  // |info| contains values used to customise the error page. It may be null if
+  // the page which displays an error should not be customized.
   CommitFailedNavigation(
       blink.mojom.CommonNavigationParams common_params,
       blink.mojom.CommitNavigationParams request_params,
@@ -274,7 +291,9 @@ interface NavigationClient {
       network.mojom.ResolveErrorInfo resolve_error_info,
       string? error_page_content,
       blink.mojom.URLLoaderFactoryBundle? subresource_loader_factories,
-      blink.mojom.PolicyContainer policy_container)
+      blink.mojom.DocumentToken document_token,
+      blink.mojom.PolicyContainer policy_container,
+      AlternativeErrorPageOverrideInfo? alternative_error_page_info)
       => (DidCommitProvisionalLoadParams params,
           DidCommitProvisionalLoadInterfaceParams? interface_params);
 };

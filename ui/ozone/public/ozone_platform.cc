@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,8 @@ namespace ui {
 
 namespace {
 OzonePlatform* g_instance = nullptr;
+
+bool g_fail_initialize_ui_for_test = false;
 
 void EnsureInstance() {
   if (g_instance)
@@ -64,16 +66,18 @@ void OzonePlatform::PreEarlyInitialization() {
 }
 
 // static
-void OzonePlatform::InitializeForUI(const InitParams& args) {
+bool OzonePlatform::InitializeForUI(const InitParams& args) {
   EnsureInstance();
   if (g_instance->initialized_ui_)
-    return;
-  g_instance->initialized_ui_ = true;
+    return true;
   g_instance->single_process_ = args.single_process;
-  g_instance->InitializeUI(args);
+  if (!g_instance->InitializeUI(args))
+    return false;
+  g_instance->initialized_ui_ = true;
   // This is deliberately created after initializing so that the platform can
   // create its own version of DDM.
   DeviceDataManager::CreateInstance();
+  return true;
 }
 
 // static
@@ -90,6 +94,11 @@ void OzonePlatform::InitializeForGPU(const InitParams& args) {
 OzonePlatform* OzonePlatform::GetInstance() {
   DCHECK(g_instance) << "OzonePlatform is not initialized";
   return g_instance;
+}
+
+// static
+bool OzonePlatform::IsInitialized() {
+  return !!g_instance;
 }
 
 // static
@@ -176,6 +185,16 @@ void OzonePlatform::PostCreateMainMessageLoop(
     base::OnceCallback<void()> shutdown_cb) {}
 
 void OzonePlatform::PostMainMessageLoopRun() {}
+
+// static
+bool OzonePlatform::ShouldFailInitializeUIForTest() {
+  return g_fail_initialize_ui_for_test;
+}
+
+// static
+void OzonePlatform::SetFailInitializeUIForTest(bool fail) {
+  g_fail_initialize_ui_for_test = fail;
+}
 
 void OzonePlatform::PreEarlyInitialize() {}
 

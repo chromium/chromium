@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/path_service.h"
 #include "base/task/sequenced_task_runner.h"
@@ -14,6 +15,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/model_validator.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -76,7 +78,7 @@ class ModelValidatorModelObserverTracker
  private:
   // The observer that is registered to receive model validation optimzation
   // target events.
-  OptimizationTargetModelObserver* model_validation_observer_;
+  raw_ptr<OptimizationTargetModelObserver> model_validation_observer_;
 };
 
 class ModelValidatorExecutorTest : public testing::Test {
@@ -116,13 +118,22 @@ TEST_F(ModelValidatorExecutorTest, ValidModel) {
                         .AppendASCII("simple_test.tflite");
   ValidateModel(model_file_path);
 
+  // |ModelValidatorExecutor::Preprocess| returns an unimplemented error,
+  // resulting in an unknown error in the final execution step.
   histogram_tester().ExpectUniqueSample(
-      "OptimizationGuide.ModelExecutor.ModelLoadingResult." +
+      "OptimizationGuide.ModelExecutor.ExecutionStatus." +
           GetStringNameForOptimizationTarget(
               proto::OptimizationTarget::OPTIMIZATION_TARGET_MODEL_VALIDATION),
-      ModelExecutorLoadingState::kModelFileValidAndMemoryMapped, 1);
+      ExecutionStatus::kErrorUnknown, 1);
+
+  histogram_tester().ExpectUniqueSample(
+      "OptimizationGuide.ModelExecutor.ModelLoadedSuccessfully." +
+          GetStringNameForOptimizationTarget(
+              proto::OptimizationTarget::OPTIMIZATION_TARGET_MODEL_VALIDATION),
+      true, 1);
+
   histogram_tester().ExpectTotalCount(
-      "OptimizationGuide.ModelExecutor.ModelLoadingDuration." +
+      "OptimizationGuide.ModelExecutor.ModelLoadingDuration2." +
           GetStringNameForOptimizationTarget(
               proto::OptimizationTarget::OPTIMIZATION_TARGET_MODEL_VALIDATION),
       1);
@@ -139,12 +150,19 @@ TEST_F(ModelValidatorExecutorTest, DISABLED_InvalidModel) {
   ValidateModel(invalid_model_file_path);
 
   histogram_tester().ExpectUniqueSample(
-      "OptimizationGuide.ModelExecutor.ModelLoadingResult." +
+      "OptimizationGuide.ModelExecutor.ExecutionStatus." +
           GetStringNameForOptimizationTarget(
               proto::OptimizationTarget::OPTIMIZATION_TARGET_MODEL_VALIDATION),
-      ModelExecutorLoadingState::kModelFileInvalid, 1);
+      ExecutionStatus::kErrorModelFileNotValid, 1);
+
+  histogram_tester().ExpectUniqueSample(
+      "OptimizationGuide.ModelExecutor.ModelLoadedSuccessfully." +
+          GetStringNameForOptimizationTarget(
+              proto::OptimizationTarget::OPTIMIZATION_TARGET_MODEL_VALIDATION),
+      false, 1);
+
   histogram_tester().ExpectTotalCount(
-      "OptimizationGuide.ModelExecutor.ModelLoadingDuration." +
+      "OptimizationGuide.ModelExecutor.ModelLoadingDuration2." +
           GetStringNameForOptimizationTarget(
               proto::OptimizationTarget::OPTIMIZATION_TARGET_MODEL_VALIDATION),
       1);

@@ -1,9 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -11,10 +12,13 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
+#include "chrome/browser/ui/views/extensions/extensions_tabbed_menu_coordinator.h"
+#include "chrome/browser/ui/views/extensions/extensions_tabbed_menu_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/common/extension_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
@@ -45,11 +49,13 @@ const std::u16string GetIconTooltip(
 ExtensionsToolbarButton::ExtensionsToolbarButton(
     Browser* browser,
     ExtensionsToolbarContainer* extensions_container,
-    ButtonType button_type)
+    ButtonType button_type,
+    ExtensionsTabbedMenuCoordinator* extensions_tabbed_menu_coordinator)
     : ToolbarButton(PressedCallback()),
       browser_(browser),
       button_type_(button_type),
-      extensions_container_(extensions_container) {
+      extensions_container_(extensions_container),
+      extensions_tabbed_menu_coordinator_(extensions_tabbed_menu_coordinator) {
   std::unique_ptr<views::MenuButtonController> menu_button_controller =
       std::make_unique<views::MenuButtonController>(
           this,
@@ -135,19 +141,30 @@ void ExtensionsToolbarButton::OnWidgetDestroying(views::Widget* widget) {
 }
 
 void ExtensionsToolbarButton::ToggleExtensionsMenu() {
-  // TODO(crbug.com/1239772): Once the extension menu tabs are implemented, need
-  // to check for the button type to a) hide the menu, b) change tabs or c) open
-  // menu in the correct tab.
-  if (ExtensionsMenuView::IsShowing()) {
+  if (extensions_tabbed_menu_coordinator_ &&
+      extensions_tabbed_menu_coordinator_->IsShowing()) {
+    extensions_tabbed_menu_coordinator_->Hide();
+    return;
+  } else if (ExtensionsMenuView::IsShowing()) {
     ExtensionsMenuView::Hide();
     return;
   }
+
   pressed_lock_ = menu_button_controller_->TakeLock();
   extensions_container_->OnMenuOpening();
   base::RecordAction(base::UserMetricsAction("Extensions.Toolbar.MenuOpened"));
-  ExtensionsMenuView::ShowBubble(this, browser_, extensions_container_,
-                                 extensions_container_->CanShowIconInToolbar())
-      ->AddObserver(this);
+  views::Widget* menu;
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
+    extensions_tabbed_menu_coordinator_->Show(this, button_type_);
+    menu = extensions_tabbed_menu_coordinator_->GetExtensionsTabbedMenuView()
+               ->GetWidget();
+  } else {
+    menu = ExtensionsMenuView::ShowBubble(
+        this, browser_, extensions_container_,
+        extensions_container_->CanShowIconInToolbar());
+  }
+  menu->AddObserver(this);
 }
 
 bool ExtensionsToolbarButton::GetExtensionsMenuShowing() const {

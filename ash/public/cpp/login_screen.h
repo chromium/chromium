@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/login_types.h"
 #include "base/callback_forward.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -76,29 +77,9 @@ class ASH_PUBLIC_EXPORT LoginScreen {
   // Called to close the UI previously opened with RequestSecurityTokenPin().
   virtual void ClearSecurityTokenPinRequest() = 0;
 
-  // Sets a handler for login shelf gestures. This will enable gesture detection
-  // on the login shelf for upward fling from the shelf.
-  // |message| - The text to be shown above login shelf drag handle.
-  // |fling_callback| - The callback to be called when a fling is detected.
-  // |exit_callback| - The callback to be called when the login shelf gesture
-  // detection stops, for example when the session is unblocked, or the handler
-  // is cleared.
-  //
-  // Returns whether the handler was successfully set. If not, |exit_callback|
-  // will not be run. The handler will not be set if the current shelf state
-  // does not support login shelf gestures, e.g. if the session is active, or
-  // when not in tablet mode.
-  //
-  // Note that this does not support more than one handler - if another handler
-  // is already set, this method will replace it (and the previous handler's
-  // exit_callback will be run).
-  virtual bool SetLoginShelfGestureHandler(
-      const std::u16string& message,
-      const base::RepeatingClosure& fling_callback,
-      base::OnceClosure exit_callback) = 0;
-
-  // Stops login shelf gesture detection.
-  virtual void ClearLoginShelfGestureHandler() = 0;
+  // Get login screen widget. Currently used to set proper accessibility
+  // navigation.
+  virtual views::Widget* GetLoginWindowWidget() = 0;
 
  protected:
   LoginScreen();

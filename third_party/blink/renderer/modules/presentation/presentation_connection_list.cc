@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,11 +56,11 @@ bool PresentationConnectionList::RemoveConnection(
 void PresentationConnectionList::DispatchConnectionAvailableEvent(
     PresentationConnection* connection) {
   DispatchEvent(*PresentationConnectionAvailableEvent::Create(
-      event_type_names::kConnectionavailable, connection));
+      event_type_names::kConnectionavailable, connection), "PresentationConnectionList::DispatchConnectionAvailableEvent");
 }
 
 bool PresentationConnectionList::IsEmpty() {
-  return connections_.IsEmpty();
+  return connections_.empty();
 }
 
 void PresentationConnectionList::Trace(Visitor* visitor) const {

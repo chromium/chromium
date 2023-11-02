@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -14,6 +14,7 @@ import os
 import shutil
 import sys
 
+_INIT = '<script src="chrome://file-manager/init_globals.js"></script>'
 _SWA = '<script type="module" src="chrome://file-manager/main.js"></script>'
 
 def GenerateSwaMainHtml(source, target):
@@ -26,7 +27,8 @@ def GenerateSwaMainHtml(source, target):
   for line in fileinput.input(target, inplace=True):
     # Add _SWA <script> tag after the <head> tag.
     if line.find('<head>') >= 0:
-      print(line + '    ' + _SWA)
+      print(line + '    ' + _INIT)
+      print('    ' + _SWA)
     # Add <meta> charset="utf-8" attribute.
     elif line.find('<meta ') >= 0:
       sys.stdout.write(line.replace('<meta ', '<meta charset="utf-8" '))

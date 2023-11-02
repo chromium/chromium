@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -23,7 +23,7 @@ class CustomHelpAction(argparse.Action):
                           help='What this helps with')
   '''
   # Derived from argparse._HelpAction from
-  # https://github.com/python/cpython/blob/master/Lib/argparse.py
+  # https://github.com/python/cpython/blob/main/Lib/argparse.py
 
   # pylint: disable=redefined-builtin
   # (complains about 'help' being redefined)
@@ -33,11 +33,11 @@ class CustomHelpAction(argparse.Action):
                default=argparse.SUPPRESS,
                custom_help_text=None,
                help=None):
-    super(CustomHelpAction, self).__init__(option_strings=option_strings,
-                                           dest=dest,
-                                           default=default,
-                                           nargs=0,
-                                           help=help)
+    super().__init__(option_strings=option_strings,
+                     dest=dest,
+                     default=default,
+                     nargs=0,
+                     help=help)
 
     if not custom_help_text:
       raise ValueError('custom_help_text is required')

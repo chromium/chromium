@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_OFFLINE_ITEMS_COLLECTION_CORE_TEST_SUPPORT_MOCK_FILTERED_OFFLINE_ITEM_OBSERVER_H_
 #define COMPONENTS_OFFLINE_ITEMS_COLLECTION_CORE_TEST_SUPPORT_MOCK_FILTERED_OFFLINE_ITEM_OBSERVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/offline_items_collection/core/filtered_offline_item_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,7 +37,7 @@ class MockFilteredOfflineItemObserver {
 
    private:
     ContentId id_;
-    FilteredOfflineItemObserver* observer_;
+    raw_ptr<FilteredOfflineItemObserver> observer_;
   };
 
   MockFilteredOfflineItemObserver(const MockFilteredOfflineItemObserver&) =

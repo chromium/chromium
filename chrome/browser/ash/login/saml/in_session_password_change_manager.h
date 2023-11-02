@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,11 +13,7 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
-#include "chromeos/login/auth/auth_status_consumer.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/login/auth/cryptohome_authenticator.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/login/auth/user_context.h"
+#include "chromeos/ash/components/login/auth/auth_status_consumer.h"
 
 class Profile;
 
@@ -26,6 +22,9 @@ class User;
 }
 
 namespace ash {
+
+class CryptohomeAuthenticator;
+class UserContext;
 
 // There is at most one instance of this task, which is part of the
 // InSessionPasswordChangeManager singleton. Having a separate class means that

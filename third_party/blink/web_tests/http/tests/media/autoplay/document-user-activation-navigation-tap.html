@@ -10,14 +10,8 @@
   var bounds = document.querySelector('#target').getBoundingClientRect();
   var x = bounds.left + bounds.width / 2;
   var y = bounds.top + bounds.height / 2;
-
   // TODO(beccahughes): for some reasons, using pointerActanionSequence fails.
-  eventSender.clearTouchPoints();
-  eventSender.addTouchPoint(x, y);
-  eventSender.touchStart();
-
-  eventSender.releaseTouchPoint(0);
-  eventSender.touchEnd();
+  eventSender.gestureTap(x, y);
 
   document.location.href = 'resources/test-autoplay.html';
 </script>

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,7 @@
 #include "chrome/common/privacy_budget/scoped_privacy_budget_config.h"
 #include "chrome/common/privacy_budget/types.h"
 #include "components/prefs/testing_pref_service.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
@@ -124,9 +125,8 @@ class IdentifiabilityStudyStateTest : public ::testing::Test {
 };
 
 TEST(IdentifiabilityStudyStateStandaloneTest, InstantiateAndInitialize) {
-  test::ScopedPrivacyBudgetConfig::Parameters parameters;
-  parameters.enabled = true;
-  test::ScopedPrivacyBudgetConfig config(parameters);
+  test::ScopedPrivacyBudgetConfig config(
+      test::ScopedPrivacyBudgetConfig::Presets::kEnableRandomSampling);
 
   TestingPrefServiceSimple pref_service;
   prefs::RegisterPrivacyBudgetPrefs(pref_service.registry());
@@ -136,7 +136,7 @@ TEST(IdentifiabilityStudyStateStandaloneTest, InstantiateAndInitialize) {
   auto settings = std::make_unique<IdentifiabilityStudyState>(&pref_service);
 
   // Successful initialization should result in setting the generation number.
-  EXPECT_EQ(parameters.generation,
+  EXPECT_EQ(test::ScopedPrivacyBudgetConfig::kDefaultGeneration,
             pref_service.GetInteger(prefs::kPrivacyBudgetGeneration));
   // There should be at least one offset selected.
   EXPECT_FALSE(
@@ -454,9 +454,8 @@ TEST(IdentifiabilityStudyStateStandaloneTest, LowClamps) {
 }
 
 TEST(IdentifiabilityStudyStateStandaloneTest, Disabled) {
-  auto params = test::ScopedPrivacyBudgetConfig::Parameters{};
-  params.enabled = false;
-  test::ScopedPrivacyBudgetConfig config(params);
+  test::ScopedPrivacyBudgetConfig config(
+      test::ScopedPrivacyBudgetConfig::Presets::kDisable);
 
   TestingPrefServiceSimple pref_service;
   prefs::RegisterPrivacyBudgetPrefs(pref_service.registry());
@@ -466,14 +465,53 @@ TEST(IdentifiabilityStudyStateStandaloneTest, Disabled) {
   EXPECT_FALSE(settings.ShouldRecordSurface(kRegularSurface1));
 }
 
+TEST(IdentifiabilityStudyStateStandaloneTest, ShouldReportEncounteredSurface) {
+  test::ScopedPrivacyBudgetConfig config(
+      test::ScopedPrivacyBudgetConfig::Presets::kEnableRandomSampling);
+
+  TestingPrefServiceSimple pref_service;
+  prefs::RegisterPrivacyBudgetPrefs(pref_service.registry());
+  test_utils::InspectableIdentifiabilityStudyState state(&pref_service);
+
+  EXPECT_TRUE(state.group_settings().enabled());
+  EXPECT_TRUE(state.group_settings().IsUsingRandomSampling());
+
+  // The specific surface doesn't matter.
+  EXPECT_TRUE(state.ShouldReportEncounteredSurface(ukm::AssignNewSourceId(),
+                                                   kRegularSurface1));
+  EXPECT_FALSE(state.ShouldReportEncounteredSurface(ukm::NoURLSourceId(),
+                                                    kRegularSurface1));
+}
+
+// Test the mode in which only the meta experiment (i.e. reporting encountered
+// surfaces) is enabled.
+TEST(IdentifiabilityStudyStateStandaloneTest, OnlyReportEncounteredSurface) {
+  test::ScopedPrivacyBudgetConfig::Parameters params(
+      test::ScopedPrivacyBudgetConfig::Presets::kEnableRandomSampling);
+  params.allowed_random_types = {
+      blink::IdentifiableSurface::Type::kReservedInternal};
+  test::ScopedPrivacyBudgetConfig config(params);
+
+  TestingPrefServiceSimple pref_service;
+  prefs::RegisterPrivacyBudgetPrefs(pref_service.registry());
+  test_utils::InspectableIdentifiabilityStudyState state(&pref_service);
+
+  EXPECT_TRUE(state.group_settings().enabled());
+  EXPECT_TRUE(state.group_settings().IsUsingRandomSampling());
+
+  // The specific surface doesn't matter.
+  EXPECT_TRUE(state.ShouldReportEncounteredSurface(ukm::AssignNewSourceId(),
+                                                   kRegularSurface1));
+  EXPECT_FALSE(state.ShouldRecordSurface(kRegularSurface1));
+}
+
 TEST(IdentifiabilityStudyStateStandaloneTest, ClearsPrefsIfStudyIsDisabled) {
-  test::ScopedPrivacyBudgetConfig::Parameters parameters;
-  parameters.enabled = false;
-  test::ScopedPrivacyBudgetConfig config(parameters);
+  test::ScopedPrivacyBudgetConfig config(
+      test::ScopedPrivacyBudgetConfig::Presets::kDisable);
   TestingPrefServiceSimple pref_service;
   prefs::RegisterPrivacyBudgetPrefs(pref_service.registry());
   pref_service.SetInteger(prefs::kPrivacyBudgetGeneration,
-                          parameters.generation);
+                          test::ScopedPrivacyBudgetConfig::kDefaultGeneration);
   pref_service.SetString(prefs::kPrivacyBudgetSeenSurfaces, "1,2,3");
   pref_service.SetString(prefs::kPrivacyBudgetSelectedOffsets, "100,200,300");
 
@@ -597,6 +635,7 @@ TEST(IdentifiabilityStudyStateStandaloneTest,
 
 TEST(IdentifiabilityStudyStateStandaloneTest, OffsetUsesUpAllTheBudget) {
   test::ScopedPrivacyBudgetConfig::Parameters parameters;
+  parameters.expected_surface_count = kTestingExpectedSurfaceCount;
   parameters.active_surface_budget = kTestingActiveSurfaceBudget;
   // kRegularSurface2 costs the entire budget.
   parameters.per_surface_cost = {
@@ -626,6 +665,7 @@ TEST(IdentifiabilityStudyStateStandaloneTest, OffsetUsesUpAllTheBudget) {
 
 TEST(IdentifiabilityStudyStateStandaloneTest, NextOffsetIsTooExpensive) {
   test::ScopedPrivacyBudgetConfig::Parameters parameters;
+  parameters.expected_surface_count = kTestingExpectedSurfaceCount;
   parameters.active_surface_budget = kTestingActiveSurfaceBudget;
   // kRegularSurface1 costs the entire budget.
   parameters.per_surface_cost = {
@@ -723,6 +763,138 @@ TEST(IdentifiabilityStudyStateStandaloneTest, CheapSurfaces) {
   EXPECT_LE(selected_surfaces, kMaxSelectedSurfaces);
 }
 
+TEST(IdentifiabilityStudyStateStandaloneTest,
+     AlwaysSampleReservedInternalRandom) {
+  test::ScopedPrivacyBudgetConfig::Parameters parameters;
+  parameters.active_surface_budget = kTestingActiveSurfaceBudget;
+  parameters.expected_surface_count = 20;
+  parameters.allowed_random_types = {
+      blink::IdentifiableSurface::Type::kWebFeature};
+  test::ScopedPrivacyBudgetConfig config(parameters);
+
+  TestingPrefServiceSimple pref_service;
+  prefs::RegisterPrivacyBudgetPrefs(pref_service.registry());
+  test_utils::InspectableIdentifiabilityStudyState state(&pref_service);
+
+  EXPECT_TRUE(
+      state.ShouldRecordSurface(blink::IdentifiableSurface::FromTypeAndToken(
+          blink::IdentifiableSurface::Type::kReservedInternal,
+          blink::IdentifiableToken(
+              blink::IdentifiableSurface::ReservedSurfaceMetrics::
+                  kDocumentCreated_IsCrossOriginFrame))));
+  EXPECT_TRUE(
+      state.ShouldRecordSurface(blink::IdentifiableSurface::FromTypeAndToken(
+          blink::IdentifiableSurface::Type::kReservedInternal,
+          blink::IdentifiableToken(
+              blink::IdentifiableSurface::ReservedSurfaceMetrics::
+                  kDocumentCreated_IsCrossSiteFrame))));
+  EXPECT_TRUE(
+      state.ShouldRecordSurface(blink::IdentifiableSurface::FromTypeAndToken(
+          blink::IdentifiableSurface::Type::kReservedInternal,
+          blink::IdentifiableToken(
+              blink::IdentifiableSurface::ReservedSurfaceMetrics::
+                  kDocumentCreated_IsMainFrame))));
+  EXPECT_TRUE(
+      state.ShouldRecordSurface(blink::IdentifiableSurface::FromTypeAndToken(
+          blink::IdentifiableSurface::Type::kReservedInternal,
+          blink::IdentifiableToken(
+              blink::IdentifiableSurface::ReservedSurfaceMetrics::
+                  kDocumentCreated_NavigationSourceId))));
+}
+
+TEST(IdentifiabilityStudyStateStandaloneTest,
+     AlwaysSampleReservedInternalBlock) {
+  const int kTestGroupCount = 80;
+  const int kSurfacesInGroup = 40;
+
+  test::ScopedPrivacyBudgetConfig::Parameters parameters;
+  for (int group_index = 0; group_index < kTestGroupCount; ++group_index) {
+    parameters.blocks.emplace_back(
+        CreateSurfaceList(kSurfacesInGroup, kSurfacesInGroup * group_index));
+  }
+
+  parameters.block_weights.assign(kTestGroupCount, 1.0);
+  parameters.active_surface_budget = kSurfacesInGroup;
+  test::ScopedPrivacyBudgetConfig config(parameters);
+
+  TestingPrefServiceSimple pref_service;
+  prefs::RegisterPrivacyBudgetPrefs(pref_service.registry());
+  test_utils::InspectableIdentifiabilityStudyState state(&pref_service);
+
+  EXPECT_TRUE(
+      state.ShouldRecordSurface(blink::IdentifiableSurface::FromTypeAndToken(
+          blink::IdentifiableSurface::Type::kReservedInternal,
+          blink::IdentifiableToken(
+              blink::IdentifiableSurface::ReservedSurfaceMetrics::
+                  kDocumentCreated_IsCrossOriginFrame))));
+  EXPECT_TRUE(
+      state.ShouldRecordSurface(blink::IdentifiableSurface::FromTypeAndToken(
+          blink::IdentifiableSurface::Type::kReservedInternal,
+          blink::IdentifiableToken(
+              blink::IdentifiableSurface::ReservedSurfaceMetrics::
+                  kDocumentCreated_IsCrossSiteFrame))));
+  EXPECT_TRUE(
+      state.ShouldRecordSurface(blink::IdentifiableSurface::FromTypeAndToken(
+          blink::IdentifiableSurface::Type::kReservedInternal,
+          blink::IdentifiableToken(
+              blink::IdentifiableSurface::ReservedSurfaceMetrics::
+                  kDocumentCreated_IsMainFrame))));
+  EXPECT_TRUE(
+      state.ShouldRecordSurface(blink::IdentifiableSurface::FromTypeAndToken(
+          blink::IdentifiableSurface::Type::kReservedInternal,
+          blink::IdentifiableToken(
+              blink::IdentifiableSurface::ReservedSurfaceMetrics::
+                  kDocumentCreated_NavigationSourceId))));
+}
+
+TEST(IdentifiabilityStudyStateStandaloneTest, NoAllowedTypes) {
+  constexpr auto kExpectedSurfaceCount = 20;
+
+  test::ScopedPrivacyBudgetConfig::Parameters parameters;
+  parameters.active_surface_budget = kTestingActiveSurfaceBudget;
+  parameters.expected_surface_count = kExpectedSurfaceCount;
+  parameters.allowed_random_types = {
+      blink::IdentifiableSurface::Type::kWebFeature};
+  test::ScopedPrivacyBudgetConfig config(parameters);
+
+  TestingPrefServiceSimple pref_service;
+  prefs::RegisterPrivacyBudgetPrefs(pref_service.registry());
+  test_utils::InspectableIdentifiabilityStudyState state(&pref_service);
+  // Invoking ShouldRecordSurface() for kExpectedSurfaceCount surfaces should
+  // result in at least
+  unsigned selected_surfaces =
+      SimulateSurfaceSelectionRound(state, kExpectedSurfaceCount);
+  // We only allow kWebFeature, but SimulateSurfaceSelectionRound is trying to
+  // add kGenericFontLookup surfaces
+  const unsigned int expected_surfaces = 0;
+  EXPECT_EQ(selected_surfaces, expected_surfaces);
+}
+
+TEST(IdentifiabilityStudyStateStandaloneTest, OnlyAllowedTypes) {
+  constexpr auto kExpectedSurfaceCount = 20;
+
+  test::ScopedPrivacyBudgetConfig::Parameters parameters;
+  parameters.active_surface_budget = kTestingActiveSurfaceBudget;
+  parameters.expected_surface_count = kExpectedSurfaceCount;
+  parameters.allowed_random_types = {
+      blink::IdentifiableSurface::Type::kGenericFontLookup,
+      blink::IdentifiableSurface::Type::kWebFeature};
+  test::ScopedPrivacyBudgetConfig config(parameters);
+
+  TestingPrefServiceSimple pref_service;
+  prefs::RegisterPrivacyBudgetPrefs(pref_service.registry());
+  test_utils::InspectableIdentifiabilityStudyState state(&pref_service);
+  // Invoking ShouldRecordSurface() for kExpectedSurfaceCount surfaces should
+  // result in at least
+  unsigned selected_surfaces =
+      SimulateSurfaceSelectionRound(state, kExpectedSurfaceCount);
+  // We allow kWebFeature and kGenericFontLookup types, and
+  // SimulateSurfaceSelectionRound is trying to add kGenericFontLookup surfaces
+  // so we should sample at least one surface
+  const unsigned int min_expected_surfaces = 1;
+  EXPECT_GT(selected_surfaces, min_expected_surfaces);
+}
+
 TEST(IdentifiabilityStudyStateStandaloneTest, SomeSetOfGroups) {
   // Number of test groups. Arbitrary.
   constexpr unsigned kTestGroupCount = 80;
@@ -773,7 +945,7 @@ TEST(IdentifiabilityStudyStateStandaloneTest,
   prefs::RegisterPrivacyBudgetPrefs(pref_service.registry());
   test_utils::InspectableIdentifiabilityStudyState state(&pref_service);
 
-  EXPECT_TRUE(state.is_using_assigned_block_sampling());
+  EXPECT_TRUE(state.group_settings().IsUsingAssignedBlockSampling());
 
   // Any single selected group contributes kSurfacesInGroup surfaces.
   EXPECT_EQ(kSurfacesInGroup, state.active_surfaces().Size());

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,7 +37,7 @@ TEST_F(BluetoothSocketApiUnittest, Permission) {
 // Regression test for https://crbug.com/831651.
 // TODO(https://crbug.com/1251347): Port //device/bluetooth to Fuchsia to enable
 // bluetooth extensions.
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_CreateThenClose DISABLED_CreateThenClose
 #else
 #define MAYBE_CreateThenClose CreateThenClose

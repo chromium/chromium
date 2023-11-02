@@ -56,7 +56,7 @@
     [PerWorldBindings] readonly attribute Node? nextSibling;
     [MeasureAs=NodeGetRootNode] Node getRootNode(optional GetRootNodeOptions options = {});
 
-    [CEReactions] attribute DOMString? nodeValue;
+    [CEReactions, RaisesException=Setter] attribute DOMString? nodeValue;
 
     [CEReactions, ImplementedAs=textContentForBinding, RaisesException=Setter] attribute (DOMString or TrustedScript)? textContent;
     [CEReactions] void normalize();

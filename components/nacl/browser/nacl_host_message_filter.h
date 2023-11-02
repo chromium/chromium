@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -57,19 +57,16 @@ class NaClHostMessageFilter : public content::BrowserMessageFilter {
       const nacl::NaClLaunchParams& launch_params,
       IPC::Message* reply_msg,
       ppapi::PpapiPermissions permissions,
-      bool nonsfi_mode_allowed,
       NaClBrowserDelegate::MapUrlToLocalFilePathCallback map_url_callback);
   void LaunchNaClContinuation(
       const nacl::NaClLaunchParams& launch_params,
       IPC::Message* reply_msg,
-      bool nonsfi_mode_allowed,
       NaClBrowserDelegate::MapUrlToLocalFilePathCallback map_url_callback);
   void LaunchNaClContinuationOnUIThread(
       const nacl::NaClLaunchParams& launch_params,
       IPC::Message* reply_msg,
       const std::vector<NaClResourcePrefetchResult>& prefetched_resource_files,
       ppapi::PpapiPermissions permissions,
-      bool nonsfi_mode_allowed,
       NaClBrowserDelegate::MapUrlToLocalFilePathCallback map_url_callback);
   void OnGetReadonlyPnaclFd(const std::string& filename,
                             bool is_executable,
@@ -81,7 +78,6 @@ class NaClHostMessageFilter : public content::BrowserMessageFilter {
   void OnMissingArchError(int render_view_id);
   void OnOpenNaClExecutable(int render_frame_id,
                             const GURL& file_url,
-                            bool enable_validation_caching,
                             IPC::Message* reply_msg);
   void SyncReturnTemporaryFile(IPC::Message* reply_msg,
                                base::File file);

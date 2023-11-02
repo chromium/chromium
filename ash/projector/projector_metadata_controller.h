@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,9 @@
 
 #include "ash/ash_export.h"
 #include "ash/projector/projector_metadata_model.h"
+#include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
-#include "media/mojo/mojom/speech_recognition_service.mojom.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
 
 namespace base {
 class FilePath;
@@ -42,6 +43,12 @@ class ASH_EXPORT ProjectorMetadataController {
 
   void SetProjectorMetadataModelForTest(
       std::unique_ptr<ProjectorMetadata> metadata);
+
+ protected:
+  // Triggered after finish saving the metadata file.
+  virtual void OnSaveFileResult(const base::FilePath& path,
+                                size_t transcripts_count,
+                                bool success);
 
  private:
   std::unique_ptr<ProjectorMetadata> metadata_;

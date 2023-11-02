@@ -1,6 +1,0 @@
-{
-  "Mode": "managed",
-  "ProxyConfig": "{\"bypass_list\":\"\\u003Clocal>;google.com;\",\"mode\":\"fixed_servers\",\"server\":\"ftp=ftp.example.com:5678;http=http.example.com:1234;socks=socks5://socks.example.com:7890;https=https.example.com:3456\"}",
-  "SecurityClass": "none",
-  "Type": "wifi",
-}

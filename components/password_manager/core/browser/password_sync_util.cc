@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,20 +45,21 @@ std::string GetSyncUsernameIfSyncingPasswords(
       .email;
 }
 
-bool IsSyncAccountCredential(const PasswordForm& form,
+bool IsSyncAccountCredential(const GURL& url,
+                             const std::u16string& username,
                              const syncer::SyncService* sync_service,
                              const signin::IdentityManager* identity_manager) {
-  if (!GURL(form.signon_realm).DomainIs("google.com"))
+  if (!url.DomainIs("google.com"))
     return false;
 
   // The empty username can mean that Chrome did not detect it correctly. For
   // reasons described in http://crbug.com/636292#c1, the username is suspected
   // to be the sync username unless proven otherwise.
-  if (form.username_value.empty())
+  if (username.empty())
     return true;
 
   return gaia::AreEmailsSame(
-      base::UTF16ToUTF8(form.username_value),
+      base::UTF16ToUTF8(username),
       GetSyncUsernameIfSyncingPasswords(sync_service, identity_manager));
 }
 
@@ -82,8 +83,11 @@ bool IsSyncAccountEmail(const std::string& username,
 }
 
 bool IsGaiaCredentialPage(const std::string& signon_realm) {
-  return gaia::IsGaiaSignonRealm(GURL(signon_realm)) ||
-         signon_realm == kGoogleChangePasswordSignonRealm;
+  const GURL signon_realm_url = GURL(signon_realm);
+  const GURL gaia_signon_realm_url =
+      GaiaUrls::GetInstance()->gaia_origin().GetURL();
+  return signon_realm_url == gaia_signon_realm_url ||
+         signon_realm_url == GURL(kGoogleChangePasswordSignonRealm);
 }
 
 bool ShouldSaveEnterprisePasswordHash(const PasswordForm& form,
@@ -94,6 +98,24 @@ bool ShouldSaveEnterprisePasswordHash(const PasswordForm& form,
                                                                      prefs);
   }
   return false;
+}
+
+bool IsPasswordSyncEnabled(const syncer::SyncService* sync_service) {
+  return sync_service && sync_service->IsSyncFeatureEnabled() &&
+         sync_service->GetUserSettings()->GetSelectedTypes().Has(
+             syncer::UserSelectableType::kPasswords);
+}
+
+bool IsPasswordSyncActive(const syncer::SyncService* sync_service) {
+  return IsPasswordSyncEnabled(sync_service) &&
+         sync_service->GetActiveDataTypes().Has(syncer::PASSWORDS);
+}
+
+absl::optional<std::string> GetSyncingAccount(
+    const syncer::SyncService* sync_service) {
+  if (!sync_service || !IsPasswordSyncEnabled(sync_service))
+    return absl::nullopt;
+  return sync_service->GetAccountInfo().email;
 }
 
 }  // namespace sync_util

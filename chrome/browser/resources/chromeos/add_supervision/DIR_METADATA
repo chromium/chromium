@@ -1,3 +1,1 @@
-monorail {
-  component: "FamilyExperiences"
-}
+mixins: "//chrome/browser/ash/child_accounts/COMMON_METADATA"

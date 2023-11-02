@@ -1,11 +1,12 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_SERVICES_SHARED_STORAGE_WORKLET_CONSOLE_H_
 #define CONTENT_SERVICES_SHARED_STORAGE_WORKLET_CONSOLE_H_
 
-#include "content/services/shared_storage_worklet/public/mojom/shared_storage_worklet_service.mojom.h"
+#include "base/memory/raw_ptr.h"
+#include "content/common/shared_storage_worklet_service.mojom.h"
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"
 
@@ -30,7 +31,7 @@ class Console final : public gin::Wrappable<Console> {
  private:
   void Log(gin::Arguments* args);
 
-  mojom::SharedStorageWorkletServiceClient* client_;
+  raw_ptr<mojom::SharedStorageWorkletServiceClient> client_;
 
   base::WeakPtrFactory<Console> weak_ptr_factory_{this};
 };

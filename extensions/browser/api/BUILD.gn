@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -23,9 +23,6 @@ source_set("api") {
     "storage/local_value_store_cache.h",
     "storage/session_storage_manager.cc",
     "storage/session_storage_manager.h",
-    "storage/settings_namespace.cc",
-    "storage/settings_namespace.h",
-    "storage/settings_observer.h",
     "storage/settings_storage_quota_enforcer.cc",
     "storage/settings_storage_quota_enforcer.h",
     "storage/storage_api.cc",
@@ -71,10 +68,6 @@ source_set("api") {
   ]
 
   if (is_chromeos) {
-    sources += [
-      "clipboard/clipboard_api.cc",
-      "clipboard/clipboard_api.h",
-    ]
     deps += [
       "//chromeos/dbus/permission_broker",
       "//components/prefs:prefs",
@@ -105,17 +98,15 @@ source_set("api") {
 
     deps += [
       "//chromeos",
-      "//chromeos/dbus",
-      "//chromeos/dbus/media_analytics",
-      "//chromeos/dbus/media_analytics:media_perception_proto",
-      "//chromeos/dbus/upstart",
+      "//chromeos/ash/components/dbus",
+      "//chromeos/ash/components/dbus/media_analytics",
+      "//chromeos/ash/components/dbus/media_analytics:media_perception_proto",
+      "//chromeos/ash/components/dbus/upstart",
       "//chromeos/login/login_state",
       "//chromeos/services/media_perception/public/mojom",
       "//chromeos/services/media_perception/public/mojom:mojom_js_data_deps",
     ]
   }
-
-  allow_circular_includes_from = [ "//extensions/browser:browser_sources" ]
 }
 
 group("api_implementations") {
@@ -135,6 +126,7 @@ group("api_implementations") {
     "//extensions/browser/api/feedback_private",
     "//extensions/browser/api/file_handlers",
     "//extensions/browser/api/file_system",
+    "//extensions/browser/api/i18n",
     "//extensions/browser/api/idle",
     "//extensions/browser/api/management",
     "//extensions/browser/api/messaging",
@@ -142,6 +134,7 @@ group("api_implementations") {
     "//extensions/browser/api/metrics_private",
     "//extensions/browser/api/mime_handler_private",
     "//extensions/browser/api/networking_private",
+    "//extensions/browser/api/offscreen",
     "//extensions/browser/api/power",
     "//extensions/browser/api/printer_provider",
     "//extensions/browser/api/runtime",
@@ -159,12 +152,14 @@ group("api_implementations") {
     "//extensions/browser/api/virtual_keyboard_private",
   ]
 
+  if (is_chromeos) {
+    public_deps += [ "//extensions/browser/api/virtual_keyboard" ]
+  }
+
   if (is_chromeos_ash) {
     public_deps += [
       "//extensions/browser/api/cec_private",
       "//extensions/browser/api/diagnostics",
-      "//extensions/browser/api/virtual_keyboard",
-      "//extensions/browser/api/vpn_provider",
       "//extensions/browser/api/webcam_private",
     ]
   }

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -80,8 +80,7 @@ void UserTypeByDeviceTypeMetricsProvider::OnUserSessionStarted(
       user_manager::UserManager::Get()->GetPrimaryUser();
   DCHECK(primary_user);
   DCHECK(primary_user->is_profile_created());
-  Profile* profile =
-      chromeos::ProfileHelper::Get()->GetProfileByUser(primary_user);
+  Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(primary_user);
   DCHECK(profile);
 
   user_segment_ = GetUserSegment(profile);
@@ -94,7 +93,7 @@ UserTypeByDeviceTypeMetricsProvider::GetUserSegment(Profile* profile) {
     return UserSegment::kManagedGuestSession;
   }
 
-  if (profiles::IsKioskApp()) {
+  if (profiles::IsKioskSession()) {
     return UserSegment::kKioskApp;
   }
 

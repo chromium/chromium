@@ -1,10 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
-import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 
 import {metrics} from '../../common/js/metrics.js';
 import {str, strf, util} from '../../common/js/util.js';
@@ -105,13 +105,13 @@ class DriveShareAction {
             return;
           }
           if (results.length != 1) {
-            console.error(
+            console.warn(
                 'getEntryProperties for shareUrl should return 1 entry ' +
                 '(returned ' + results.length + ')');
             return;
           }
           if (results[0].shareUrl === undefined) {
-            console.error('getEntryProperties shareUrl is undefined');
+            console.warn('getEntryProperties shareUrl is undefined');
             return;
           }
           util.visitURL(assert(results[0].shareUrl));
@@ -199,13 +199,6 @@ class DriveToggleOfflineAction {
      * @const
      */
     this.onExecute_ = onExecute;
-
-    /**
-     * @private {boolean}
-     * @const
-     */
-    this.containsOnlyHosted_ = metadataModel.getCache(entries, ['hosted'])
-                                   .every(metadata => metadata.hosted);
   }
 
   /**
@@ -254,10 +247,9 @@ class DriveToggleOfflineAction {
           return;
         }
         currentEntry = entries.shift();
-        // Skip hosted files if we cannot pin them.
-        if (this.volumeManager_.getDriveConnectionState().canPinHostedFiles ||
-            !this.metadataModel_.getCache([currentEntry], ['hosted'])[0]
-                 .hosted) {
+        // Skip files we cannot pin.
+        if (this.metadataModel_.getCache([currentEntry], ['canPin'])[0]
+                .canPin) {
           chrome.fileManagerPrivate.pinDriveFile(
               currentEntry, this.value_, steps.entryPinned);
         } else {
@@ -304,7 +296,7 @@ class DriveToggleOfflineAction {
         this.ui_.alertDialog.show(
             strf('OFFLINE_FAILURE_MESSAGE', unescape(currentEntry.name)), null,
             null, null);
-      }
+      },
     };
     steps.start();
 
@@ -317,8 +309,8 @@ class DriveToggleOfflineAction {
    * @override
    */
   canExecute() {
-    return this.volumeManager_.getDriveConnectionState().canPinHostedFiles ||
-        !this.containsOnlyHosted_;
+    return this.metadataModel_.getCache(this.entries_, ['canPin'])
+        .some(metadata => metadata.canPin);
   }
 
   /**
@@ -543,13 +535,13 @@ class DriveManageAction {
             return;
           }
           if (results.length != 1) {
-            console.error(
+            console.warn(
                 'getEntryProperties for alternateUrl should return 1 entry ' +
                 '(returned ' + results.length + ')');
             return;
           }
           if (results[0].alternateUrl === undefined) {
-            console.error('getEntryProperties alternateUrl is undefined');
+            console.warn('getEntryProperties alternateUrl is undefined');
             return;
           }
           util.visitURL(assert(results[0].alternateUrl));
@@ -902,7 +894,7 @@ export class ActionsModel extends EventTarget {
 ActionsModel.CommonActionId = {
   SHARE: 'SHARE',
   SAVE_FOR_OFFLINE: 'SAVE_FOR_OFFLINE',
-  OFFLINE_NOT_NECESSARY: 'OFFLINE_NOT_NECESSARY'
+  OFFLINE_NOT_NECESSARY: 'OFFLINE_NOT_NECESSARY',
 };
 
 /**
@@ -911,5 +903,5 @@ ActionsModel.CommonActionId = {
 ActionsModel.InternalActionId = {
   CREATE_FOLDER_SHORTCUT: 'pin-folder',
   REMOVE_FOLDER_SHORTCUT: 'unpin-folder',
-  MANAGE_IN_DRIVE: 'manage-in-drive'
+  MANAGE_IN_DRIVE: 'manage-in-drive',
 };

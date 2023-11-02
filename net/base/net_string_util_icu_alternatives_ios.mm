@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -78,7 +78,7 @@ bool ToUpper(base::StringPiece16 str, std::u16string* output) {
   base::ScopedCFTypeRef<CFStringRef> cfstring(base::SysUTF16ToCFStringRef(str));
   base::ScopedCFTypeRef<CFMutableStringRef> mutable_cfstring(
       CFStringCreateMutableCopy(kCFAllocatorDefault, 0, cfstring.get()));
-  CFStringUppercase(mutable_cfstring.get(), NULL);
+  CFStringUppercase(mutable_cfstring.get(), nullptr);
   *output = base::SysCFStringRefToUTF16(mutable_cfstring.get());
   return true;
 }

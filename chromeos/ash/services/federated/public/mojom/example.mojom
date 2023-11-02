@@ -1,0 +1,49 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Datatypes used in the Federated Service API.
+// This module is derived from the Feature and Example proto definition of
+// TensorFlow. See /tensorflow/core/example/feature.proto and
+// /tensorflow/core/example/example.proto in the TensorFlow code.
+
+// NOTE: This mojom should exist in two places and must be kept in sync:
+//       Chromium:  src/chromeos/ash/services/federated/public/mojom/
+//       Chrome OS: src/platform2/federated/mojom/
+//       Note: Other repos downstream of Chromium might also use this mojom.
+// Example: A backwards-compatible mojom change (and corresponding
+// implementation change) can be made in Chrome OS first, then replicated to the
+// clients (Chromium, other downstream repos) later.
+// TODO(alanlxl): config a sync tool for federated mojo files.
+
+module chromeos.federated.mojom;
+
+struct StringList {
+  array<string> value;
+};
+
+struct FloatList {
+  array<double> value;
+};
+
+struct Int64List {
+  array<int64> value;
+};
+
+// The union of all supported value types.
+union ValueList {
+  StringList string_list;
+  FloatList float_list;
+  Int64List int64_list;
+};
+
+// The mirror of tensorflow::Features.
+struct Features {
+  // Map from feature name to feature.
+  map<string, ValueList> feature;
+};
+
+// The mirror of tensorflow::Example.
+struct Example {
+  Features features;
+};

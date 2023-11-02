@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,6 @@
 #include "ui/views/controls/image_view.h"
 
 namespace ash {
-namespace tray {
 
 namespace {
 
@@ -53,8 +52,11 @@ const char* NetworkTrayView::GetClassName() const {
 }
 
 void NetworkTrayView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->SetName(accessible_name_);
-  node_data->SetDescription(accessible_description_);
+  // A valid role must be set prior to setting the name.
+  node_data->role = ax::mojom::Role::kImage;
+  node_data->SetNameChecked(accessible_name_);
+  if (!accessible_description_.empty())
+    node_data->SetDescription(accessible_description_);
 }
 
 std::u16string NetworkTrayView::GetAccessibleNameString() const {
@@ -131,5 +133,4 @@ void NetworkTrayView::UpdateConnectionStatus(bool notify_a11y) {
   }
 }
 
-}  // namespace tray
 }  // namespace ash

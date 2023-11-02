@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_MEDIA_ROUTER_COMMON_TEST_TEST_HELPER_H_
 #define COMPONENTS_MEDIA_ROUTER_COMMON_TEST_TEST_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/mock_timer.h"
 #include "build/build_config.h"
 #include "components/media_router/common/discovery/media_sink_service_base.h"
@@ -18,7 +19,7 @@ MediaSink CreateDialSink(const std::string& id, const std::string& name);
 MediaSink CreateWiredDisplaySink(const std::string& id,
                                  const std::string& name);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 class TestMediaSinkService : public MediaSinkServiceBase {
  public:
   TestMediaSinkService();
@@ -33,9 +34,9 @@ class TestMediaSinkService : public MediaSinkServiceBase {
 
  private:
   // Owned by MediaSinkService.
-  base::MockOneShotTimer* timer_;
+  raw_ptr<base::MockOneShotTimer> timer_;
 };
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace media_router
 

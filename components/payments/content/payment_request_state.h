@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/payments/content/initialization_task.h"
@@ -40,6 +41,7 @@ class RenderFrameHost;
 namespace payments {
 
 class ContentPaymentRequestDelegate;
+class CSPChecker;
 class PaymentApp;
 
 // Keeps track of the information currently selected by the user and whether the
@@ -108,7 +110,8 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
       const std::string& app_locale,
       autofill::PersonalDataManager* personal_data_manager,
       base::WeakPtr<ContentPaymentRequestDelegate> payment_request_delegate,
-      base::WeakPtr<JourneyLogger> journey_logger);
+      base::WeakPtr<JourneyLogger> journey_logger,
+      base::WeakPtr<CSPChecker> csp_checker);
 
   PaymentRequestState(const PaymentRequestState&) = delete;
   PaymentRequestState& operator=(const PaymentRequestState&) = delete;
@@ -136,7 +139,6 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   GetPaymentManifestWebDataService() const override;
   const std::vector<autofill::AutofillProfile*>& GetBillingProfiles() override;
   bool IsRequestedAutofillDataAvailable() override;
-  bool MayCrawlForInstallablePaymentApps() override;
   bool IsOffTheRecord() const override;
   void OnPaymentAppCreated(std::unique_ptr<PaymentApp> app) override;
   void OnPaymentAppCreationError(
@@ -146,6 +148,7 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   bool SkipCreatingNativePaymentApps() const override;
   void OnDoneCreatingPaymentApps() override;
   void SetCanMakePaymentEvenWithoutApps() override;
+  base::WeakPtr<CSPChecker> GetCSPChecker() override;
 
   // PaymentResponseHelper::Delegate
   void OnPaymentResponseReady(
@@ -298,10 +301,6 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
 
   base::WeakPtr<PaymentRequestState> AsWeakPtr();
 
-  void set_is_show_user_gesture(bool is_show_user_gesture) {
-    is_show_user_gesture_ = is_show_user_gesture;
-  }
-
  private:
   // Fetches the Autofill Profiles for this user from the PersonalDataManager,
   // and stores copies of them, owned by this PaymentRequestState, in
@@ -377,9 +376,10 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   base::WeakPtr<PaymentRequestSpec> spec_;
   base::WeakPtr<Delegate> delegate_;
   base::WeakPtr<JourneyLogger> journey_logger_;
+  base::WeakPtr<CSPChecker> csp_checker_;
 
   // Not owned. Never null. Will outlive this object.
-  autofill::PersonalDataManager* personal_data_manager_;
+  raw_ptr<autofill::PersonalDataManager> personal_data_manager_;
 
   StatusCallback can_make_payment_callback_;
   StatusCallback has_enrolled_instrument_callback_;
@@ -389,11 +389,12 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   AppCreationFailureReason get_all_payment_apps_error_reason_ =
       AppCreationFailureReason::UNKNOWN;
 
-  autofill::AutofillProfile* selected_shipping_profile_ = nullptr;
-  autofill::AutofillProfile* selected_shipping_option_error_profile_ = nullptr;
-  autofill::AutofillProfile* selected_contact_profile_ = nullptr;
-  autofill::AutofillProfile* invalid_shipping_profile_ = nullptr;
-  autofill::AutofillProfile* invalid_contact_profile_ = nullptr;
+  raw_ptr<autofill::AutofillProfile> selected_shipping_profile_ = nullptr;
+  raw_ptr<autofill::AutofillProfile> selected_shipping_option_error_profile_ =
+      nullptr;
+  raw_ptr<autofill::AutofillProfile> selected_contact_profile_ = nullptr;
+  raw_ptr<autofill::AutofillProfile> invalid_shipping_profile_ = nullptr;
+  raw_ptr<autofill::AutofillProfile> invalid_contact_profile_ = nullptr;
   base::WeakPtr<PaymentApp> selected_app_;
 
   // Profiles may change due to (e.g.) sync events, so profiles are cached after
@@ -413,9 +414,6 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   PaymentsProfileComparator profile_comparator_;
 
   base::ObserverList<Observer>::Unchecked observers_;
-
-  // Whether PaymentRequest.show() was invoked with a user gesture.
-  bool is_show_user_gesture_ = false;
 
   // If set to true, then both GetCanMakePaymentValue() and
   // GetHasEnrolledInstrumentValue() will return true, regardless of presence of

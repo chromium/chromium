@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/message.h"
 
 namespace mojo {
@@ -50,7 +50,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) PipeControlMessageHandler
   bool RunOrClosePipe(Message* message);
 
   std::string description_;
-  PipeControlMessageHandlerDelegate* const delegate_;
+  const raw_ptr<PipeControlMessageHandlerDelegate> delegate_;
 };
 
 }  // namespace mojo

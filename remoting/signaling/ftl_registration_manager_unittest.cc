@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "remoting/signaling/ftl_registration_manager.h"
 
 #include "base/guid.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -79,7 +80,7 @@ class FtlRegistrationManagerTest : public testing::Test {
   FtlRegistrationManager registration_manager_{
       std::make_unique<MockRegistrationClient>(),
       std::make_unique<FtlClientUuidDeviceIdProvider>()};
-  MockRegistrationClient* registration_client_ =
+  raw_ptr<MockRegistrationClient> registration_client_ =
       static_cast<MockRegistrationClient*>(
           registration_manager_.registration_client_.get());
   base::MockCallback<base::RepeatingCallback<void(const ProtobufHttpStatus&)>>

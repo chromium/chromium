@@ -1,20 +1,33 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-GEN_INCLUDE(
-    ['assert_additions.js', 'callback_helper.js', 'common.js', 'doc_utils.js']);
+GEN_INCLUDE([
+  'accessibility_test_base.js',
+  'assert_additions.js',
+  'callback_helper.js',
+  'common.js',
+  'doc_utils.js',
+]);
 
 /**
  * Base test fixture for end to end tests (tests that need a full extension
  * renderer) for accessibility component extensions. These tests run inside of
  * the extension's background page context.
  */
-E2ETestBase = class extends testing.Test {
+E2ETestBase = class extends AccessibilityTestBase {
   constructor() {
     super();
     this.callbackHelper_ = new CallbackHelper(this);
     this.desktop_;
+  }
+
+  /** @override */
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule('EventGenerator', '/common/event_generator.js');
+    await importModule('KeyCode', '/common/key_code.js');
+    await importModule('constants', '/common/constants.js');
   }
 
   /** @override */
@@ -23,6 +36,8 @@ E2ETestBase = class extends testing.Test {
   #include "chrome/browser/ash/crosapi/browser_manager.h"
   #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
   #include "chrome/browser/ui/browser.h"
+  #include "chrome/common/extensions/extension_constants.h"
+  #include "content/public/test/browser_test.h"
   #include "content/public/test/browser_test_utils.h"
   #include "extensions/browser/extension_host.h"
   #include "extensions/browser/process_manager.h"
@@ -34,7 +49,7 @@ E2ETestBase = class extends testing.Test {
     GEN(`
     TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
     if (ash_starter()->HasLacrosArgument()) {
-      crosapi::BrowserManager::Get()->NewTab();
+      crosapi::BrowserManager::Get()->NewTab(false);
       ASSERT_TRUE(crosapi::BrowserManager::Get()->IsRunning());
     }
       `);
@@ -117,6 +132,63 @@ E2ETestBase = class extends testing.Test {
   }
 
   /**
+   * Waits for the given |eventType| to be fired on |node|.
+   * @param {!chrome.automation.AutomationNode} node
+   * @param {!chrome.automation.EventType} eventType
+   * @param {boolean=} capture
+   */
+  async waitForEvent(node, eventType, capture) {
+    return new Promise(this.newCallback(resolve => {
+      const callback = this.newCallback(() => {
+        node.removeEventListener(eventType, callback, capture);
+        resolve();
+      });
+      node.addEventListener(eventType, callback, capture);
+    }));
+  }
+
+  /**
+   * @param {!chrome.automation.AutomationNode} app
+   * @return {boolean}
+   */
+  isInLacrosWindow(app) {
+    // We validate we're actually within a Lacros window by scanning upward
+    // until we see the presence of an app id, which indicates an app subtree.
+    // See go/lacros-accessibility for details.
+    while (app && !app.appId) {
+      app = app.parent;
+    }
+    return Boolean(app);
+  }
+
+  /**
+   * @param {string} url
+   * @param {!chrome.automation.AutomationNode} addressBar
+   */
+  async navigateToUrlForLacros(url, addressBar) {
+    // This populates the address bar as if we typed the url.
+    addressBar.setValue(url);
+
+    // We have two choices to confirm navigation.
+    if (!this.navigateLacrosWithAutoComplete) {
+      // 1. (default), hit enter.
+      await this.waitForEvent(addressBar, 'valueChanged');
+      console.log('Sending key press');
+      EventGenerator.sendKeyPress(KeyCode.RETURN);
+    } else {
+      // 2. use the auto completion.
+      await this.waitForEvent(addressBar, 'controlsChanged');
+      // The text field relates to the auto complete list box via controlledBy.
+      // The |controls| node structure here nests several levels until the
+      // listBoxOption we want.
+      const autoCompleteListBoxOption =
+          addressBar.controls[0].firstChild.firstChild;
+      assertEquals('listBoxOption', autoCompleteListBoxOption.role);
+      autoCompleteListBoxOption.doDefault();
+    }
+  }
+
+  /**
    * Creates a callback that optionally calls {@code opt_callback} when
    * called.  If this method is called one or more times, then
    * {@code testDone()} will be called when all callbacks have been called.
@@ -132,7 +204,7 @@ E2ETestBase = class extends testing.Test {
   /**
    * Gets the desktop from the automation API and runs |callback|.
    * Arranges to call |testDone()| after |callback| returns.
-   * NOTE: Callbacks created inside |opt_callback| must be wrapped with
+   * NOTE: Callbacks created inside |callback| must be wrapped with
    * |this.newCallback| if passed to asynchronous calls.  Otherwise, the test
    * will be finished prematurely.
    * @param {function(chrome.automation.AutomationNode)} callback
@@ -144,113 +216,86 @@ E2ETestBase = class extends testing.Test {
 
   /**
    * Gets the desktop from the automation API and Launches a new tab with
-   * the given document, and runs |callback| when a load complete fires.
-   * Arranges to call |testDone()| after |callback| returns.
-   * NOTE: Callbacks created inside |callback| must be wrapped with
-   * |this.newCallback| if passed to asynchronous calls.  Otherwise, the test
-   * will be finished prematurely.
+   * the given document, and returns the root web area when a load complete
+   * fires.
    * @param {string|function(): string} doc An HTML snippet, optionally wrapped
    *     inside of a function.
-   * @param {function(chrome.automation.AutomationNode)} callback
-   *     Called with the root web area node once the document is ready.
-   * @param {{url: (string=), returnDesktop: (boolean=)}}
+   * @param {{url: (string=)}}
    *     opt_params
    *           url Optional url to wait for. Defaults to undefined.
+   * @return {chrome.automation.AutomationNode} the root web area node, only
+   *     returned once the document is ready.
    */
-  runWithLoadedTree(doc, callback, opt_params = {}) {
-    callback = this.newCallback(callback);
-    chrome.automation.getDesktop((desktop) => {
+  async runWithLoadedTree(doc, opt_params = {}) {
+    return new Promise(this.newCallback(async resolve => {
+      // Make sure the test doesn't finish until this function has resolved.
+      let callback = this.newCallback(resolve);
+      this.desktop_ = await new Promise(r => chrome.automation.getDesktop(r));
       const url = opt_params.url || DocUtils.createUrlForDoc(doc);
 
-      chrome.commandLinePrivate.hasSwitch(
-          'lacros-chrome-path', hasLacrosChromePath => {
-            // The below block handles opening a url either in a Lacros tab or
-            // Ash tab. For Lacros, we re-use an already open Lacros tab. For
-            // Ash, we use the chrome.tabs api.
+      const hasLacrosChromePath = await new Promise(
+          r => chrome.commandLinePrivate.hasSwitch('lacros-chrome-path', r));
+      // The below block handles opening a url either in a Lacros tab or Ash
+      // tab. For Lacros, we re-use an already open Lacros tab. For Ash, we use
+      // the chrome.tabs api.
 
-            // This flag controls whether we've requested navigation to |url|
-            // within the open Lacros tab.
-            let didNavigateForLacros = false;
+      // This flag controls whether we've requested navigation to |url| within
+      // the open Lacros tab.
+      let didNavigateForLacros = false;
 
-            // Listens to both load completes and focus events to eventually
-            // trigger the test callback.
-            const listener = (event) => {
-              if (hasLacrosChromePath && !didNavigateForLacros) {
-                // We have yet to request navigation in the Lacros tab. Do so
-                // now by getting the default focus (the address bar), setting
-                // the value to the url and then performing do default on the
-                // auto completion node. This is somewhat involved, so each step
-                // is commented.
-                chrome.automation.getFocus(focus => {
-                  // It's possible focus is elsewhere; wait until it lands on
-                  // the address bar text field.
-                  if (focus.role !== chrome.automation.RoleType.TEXT_FIELD) {
-                    return;
-                  }
+      // Listener for both load complete and focus events that eventually
+      // triggers the test.
+      const listener = async event => {
+        if (hasLacrosChromePath && !didNavigateForLacros) {
+          // We have yet to request navigation in the Lacros tab. Do so now by
+          // getting the default focus (the address bar), setting the value to
+          // the url and then performing do default on the auto completion node.
+          const focus = await new Promise(r => chrome.automation.getFocus(r));
+          // It's possible focus is elsewhere; wait until it lands on the
+          // address bar text field.
+          if (focus.role !== chrome.automation.RoleType.TEXT_FIELD) {
+            return;
+          }
 
-                  // Next, we want to validate we're actually within a Lacros
-                  // window. Do so by scanning upward until we see the presence
-                  // of an app id which indicates an app subtree. See
-                  // go/lacros-accessibility for details.
-                  let app = focus;
-                  while (app && !app.appId) {
-                    app = app.parent;
-                  }
+          if (this.isInLacrosWindow(focus)) {
+            didNavigateForLacros = true;
+            await this.navigateToUrlForLacros(url, focus);
+          }
+          return;  // exit listener.
+        }
 
-                  if (app) {
-                    didNavigateForLacros = true;
+        // Navigation has occurred, but we need to ensure the url we want has
+        // loaded.
+        if (event.target.root.url !== url || !event.target.root.docLoaded) {
+          return;  // exit listener.
+        }
 
-                    // This populates the address bar as if we typed the url.
-                    focus.setValue(url);
+        // Finally, when we get here, we've successfully navigated to
+        // the |url| in either Lacros or Ash.
+        this.desktop_.removeEventListener('focus', listener, true);
+        this.desktop_.removeEventListener('loadComplete', listener, true);
 
-                    // Next, wait until the auto completion shows up.
-                    const clickAutocomplete = () => {
-                      focus.removeEventListener(
-                          'controlsChanged', clickAutocomplete);
+        if (callback) {
+          callback(event.target.root);
+        }
+        // Avoid calling |callback| twice (which would cause the test to fail).
+        callback = null;
+      };  // end listener.
 
-                      // The text field relates to the auto complete list box
-                      // via controlledBy. The |controls| node structure here
-                      // nests several levels until the listBoxOption we want.
-                      const autoCompleteListBoxOption =
-                          focus.controls[0].firstChild.firstChild;
-                      assertEquals(
-                          'listBoxOption', autoCompleteListBoxOption.role);
-                      autoCompleteListBoxOption.doDefault();
-                    };
-                    focus.addEventListener(
-                        'controlsChanged', clickAutocomplete);
-                  }
-                });
-                return;
-              }
+      // Setup the listener above for focus and load complete listening.
+      this.desktop_.addEventListener('focus', listener, true);
+      this.desktop_.addEventListener('loadComplete', listener, true);
 
-              // Navigation has occurred, but we need to ensure the url we want
-              // has loaded.
-              if (event.target.root.url !== url ||
-                  !event.target.root.docLoaded) {
-                return;
-              }
-
-              // Finally, when we get here, we've successfully navigated to the
-              // |url| in either Lacros or Ash.
-              desktop.removeEventListener('focus', listener, true);
-              desktop.removeEventListener('loadComplete', listener, true);
-              callback && callback(event.target.root);
-              callback = null;
-            };
-
-            // Setup the listener above for focus and load complete listening.
-            this.desktop_ = desktop;
-            desktop.addEventListener('focus', listener, true);
-            desktop.addEventListener('loadComplete', listener, true);
-
-            // The easy case -- just open the Ash tab.
-            if (!hasLacrosChromePath) {
-              const createParams = {active: true, url};
-              chrome.tabs.create(createParams);
-            }
-          });
-    });
+      // The easy case -- just open the Ash tab.
+      if (!hasLacrosChromePath) {
+        const createParams = {active: true, url};
+        chrome.tabs.create(createParams);
+      } else {
+        chrome.automation.getFocus(f => {
+          listener({target: f});
+        });
+      }
+    }));
   }
 
   /**
@@ -262,8 +307,8 @@ E2ETestBase = class extends testing.Test {
    */
   runWithLoadedOptionsPage(callback, matchUrlRegExp = /options.html/) {
     callback = this.newCallback(callback);
-    chrome.automation.getDesktop((desktop) => {
-      const listener = (event) => {
+    chrome.automation.getDesktop(desktop => {
+      const listener = event => {
         if (!matchUrlRegExp.test(event.target.docUrl) ||
             !event.target.docLoaded) {
           return;
@@ -307,8 +352,3 @@ E2ETestBase = class extends testing.Test {
 
 /** @override */
 E2ETestBase.prototype.isAsync = true;
-/**
- * @override
- * No UI in the background context.
- */
-E2ETestBase.prototype.runAccessibilityChecks = false;

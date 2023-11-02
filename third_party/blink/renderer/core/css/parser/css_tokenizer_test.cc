@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,16 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 
 namespace blink {
+
+constexpr char kCSSText[] = R"(
+  .foo {
+    background: url(https://example.com);
+  }
+  /* A comment. */
+  @hello {
+   some: stuff;
+  }
+)";
 
 // This let's us see the line numbers of failing tests
 #define TEST_TOKENS(string, ...)     \
@@ -38,7 +48,7 @@ void CompareTokens(const CSSParserToken& expected,
       break;
     case kNumberToken:
       ASSERT_EQ(expected.GetNumericSign(), actual.GetNumericSign());
-      FALLTHROUGH;
+      [[fallthrough]];
     case kPercentageToken:
       ASSERT_EQ(expected.GetNumericValueType(), actual.GetNumericValueType());
       ASSERT_DOUBLE_EQ(expected.NumericValue(), actual.NumericValue());
@@ -459,5 +469,57 @@ TEST(CSSTokenizerTest, CommentToken) {
   TEST_TOKENS("/**/*", Delim('*'));
   TEST_TOKENS(";/******", Semicolon());
 }
+
+StringView GetLastTokenRange(const CSSTokenizerWrapper& tokenizer) {
+  wtf_size_t start = tokenizer.PreviousOffset();
+  return tokenizer.StringRangeAt(start, tokenizer.Offset() - start);
+}
+
+class CachedCSSTokenizerTest
+    : public testing::Test,
+      public testing::WithParamInterface<bool /* include_comments */> {};
+
+TEST_P(CachedCSSTokenizerTest, CachedTokenizer) {
+  // Make sure the cached tokenizer gives the exact same results as
+  // CSSTokenizer.
+  CSSTokenizer uncached_tokenizer(kCSSText);
+  CSSTokenizerWrapper tokenizer1(uncached_tokenizer);
+
+  auto cached_tokenizer = CSSTokenizer::CreateCachedTokenizer(kCSSText);
+  CSSTokenizerWrapper tokenizer2(*cached_tokenizer);
+
+  EXPECT_EQ(tokenizer1.Offset(), tokenizer2.Offset());
+  EXPECT_EQ(tokenizer1.PreviousOffset(), tokenizer2.PreviousOffset());
+
+  // Tokenize the full CSS text with comments and verify the tokens and state.
+  bool last_token_eof = false;
+  while (true) {
+    CSSParserToken token1(kEOFToken);
+    CSSParserToken token2(kEOFToken);
+    if (GetParam()) {
+      token1 = tokenizer1.TokenizeSingleWithComments();
+      token2 = tokenizer2.TokenizeSingleWithComments();
+    } else {
+      token1 = tokenizer1.TokenizeSingle();
+      token2 = tokenizer2.TokenizeSingle();
+    }
+    CompareTokens(token1, token2);
+    EXPECT_EQ(tokenizer1.Offset(), tokenizer2.Offset());
+    EXPECT_EQ(tokenizer1.PreviousOffset(), tokenizer2.PreviousOffset());
+    EXPECT_EQ(GetLastTokenRange(tokenizer1), GetLastTokenRange(tokenizer2));
+    if (last_token_eof)
+      break;
+
+    // Perform one more iteration of the loop to make sure behavior is the same
+    // if TokenizeSingle() is called beyond EOF.
+    last_token_eof = token1.GetType() == kEOFToken;
+
+    // CSSTokenizer keeps adding to token count after EOF and CachedCSSTokenizer
+    // doesn't match this behavior.
+    EXPECT_EQ(tokenizer1.TokenCount(), tokenizer2.TokenCount());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All, CachedCSSTokenizerTest, ::testing::Bool());
 
 }  // namespace blink

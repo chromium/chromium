@@ -1,18 +1,22 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/web_contents/file_chooser_impl.h"
 
 #include "base/bind.h"
+#include "base/files/file_util.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/common/content_paths.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "content/test/content_browser_test_utils_internal.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -23,7 +27,7 @@ using FileChooserImplBrowserTest = ContentBrowserTest;
 IN_PROC_BROWSER_TEST_F(FileChooserImplBrowserTest, FileChooserAfterRfhDeath) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
   auto* rfh = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetMainFrame());
+      shell()->web_contents()->GetPrimaryMainFrame());
   mojo::Remote<blink::mojom::FileChooser> chooser =
       FileChooserImpl::CreateBoundForTesting(rfh);
 
@@ -81,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(FileChooserImplBrowserTest,
   shell()->web_contents()->SetDelegate(delegate.get());
 
   auto* rfh = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetMainFrame());
+      shell()->web_contents()->GetPrimaryMainFrame());
   auto chooser_and_remote = FileChooserImpl::CreateForTesting(rfh);
   auto* chooser = chooser_and_remote.first;
 
@@ -120,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(FileChooserImplBrowserTest,
   shell()->web_contents()->SetDelegate(delegate.get());
 
   auto* rfh = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetMainFrame());
+      shell()->web_contents()->GetPrimaryMainFrame());
   auto chooser_and_remote = FileChooserImpl::CreateForTesting(rfh);
   auto* chooser = chooser_and_remote.first;
 
@@ -143,11 +147,52 @@ IN_PROC_BROWSER_TEST_F(FileChooserImplBrowserTest,
       ->SetListenerFunctionCalledTrueForTesting();
   std::vector<blink::mojom::FileChooserFileInfoPtr> files;
   files.emplace_back(blink::mojom::FileChooserFileInfoPtr(nullptr));
-  chooser->FileSelected(std::move(files), base::FilePath(),
-                        blink::mojom::FileChooserParams::Mode::kOpen);
+  chooser->FileSelected(base::FilePath(),
+                        blink::mojom::FileChooserParams::Mode::kOpen,
+                        std::move(files));
 
   // Test passes if this run_loop.Run() returns instead of timing out.
   run_loop.Run();
+}
+
+// https://crbug.com/1345275
+IN_PROC_BROWSER_TEST_F(FileChooserImplBrowserTest, UploadFolderWithSymlink) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), GetTestUrl(".", "file_input_webkitdirectory.html")));
+
+  // The folder contains a regular file and a symbolic link.
+  // When uploading the folder, the symbolic link should be excluded.
+  base::FilePath dir_test_data;
+  ASSERT_TRUE(base::PathService::Get(DIR_TEST_DATA, &dir_test_data));
+  base::FilePath folder_to_upload =
+      dir_test_data.AppendASCII("file_chooser").AppendASCII("dir_with_symlink");
+
+  base::FilePath text_file = folder_to_upload.AppendASCII("text_file.txt");
+  base::FilePath symlink_file = folder_to_upload.AppendASCII("symlink");
+
+  // Skip the test if symbolic links are not supported.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    if (!base::IsLink(symlink_file))
+      return;
+  }
+
+  std::unique_ptr<FileChooserDelegate> delegate(
+      new FileChooserDelegate({text_file, symlink_file}, base::OnceClosure()));
+  shell()->web_contents()->SetDelegate(delegate.get());
+  EXPECT_TRUE(ExecJs(shell(),
+                     "(async () => {"
+                     "  let listener = new Promise("
+                     "      resolve => fileinput.onchange = resolve);"
+                     "  fileinput.click();"
+                     "  await listener;"
+                     "})()"));
+
+  EXPECT_EQ(
+      1, EvalJs(shell(), "document.getElementById('fileinput').files.length;"));
+  EXPECT_EQ(
+      "text_file.txt",
+      EvalJs(shell(), "document.getElementById('fileinput').files[0].name;"));
 }
 
 }  // namespace content

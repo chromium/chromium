@@ -1,9 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/quic/web_transport_client.h"
 
+#include "base/memory/raw_ptr.h"
 #include "net/quic/dedicated_web_transport_http3_client.h"
 
 namespace net {
@@ -28,7 +29,7 @@ class FailedWebTransportClient : public WebTransportClient {
 
  private:
   WebTransportError error_;
-  WebTransportClientVisitor* visitor_;
+  raw_ptr<WebTransportClientVisitor> visitor_;
 };
 }  // namespace
 
@@ -77,7 +78,7 @@ std::unique_ptr<WebTransportClient> CreateWebTransportClient(
     const GURL& url,
     const url::Origin& origin,
     WebTransportClientVisitor* visitor,
-    const NetworkIsolationKey& isolation_key,
+    const NetworkAnonymizationKey& anonymization_key,
     URLRequestContext* context,
     const WebTransportParameters& parameters) {
   if (url.scheme() == url::kHttpsScheme) {
@@ -86,7 +87,7 @@ std::unique_ptr<WebTransportClient> CreateWebTransportClient(
           ERR_DISALLOWED_URL_SCHEME, visitor);
     }
     return std::make_unique<DedicatedWebTransportHttp3Client>(
-        url, origin, visitor, isolation_key, context, parameters);
+        url, origin, visitor, anonymization_key, context, parameters);
   }
 
   return std::make_unique<FailedWebTransportClient>(ERR_UNKNOWN_URL_SCHEME,

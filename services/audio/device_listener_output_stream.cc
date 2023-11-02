@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,7 +61,9 @@ void DeviceListenerOutputStream::GetVolume(double* volume) {
 void DeviceListenerOutputStream::Close() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(!source_callback_);
-  stream_->Close();
+  // ExtractAsDangling clears the underlying pointer and returns another raw_ptr
+  // instance that is allowed to dangle.
+  stream_.ExtractAsDangling()->Close();
   // To match a typical AudioOutputStream usage pattern.
   delete this;
 }
@@ -82,6 +84,15 @@ int DeviceListenerOutputStream::OnMoreData(base::TimeDelta delay,
                                            media::AudioBus* dest) {
   return source_callback_->OnMoreData(delay, delay_timestamp,
                                       prior_frames_skipped, dest);
+}
+
+int DeviceListenerOutputStream::OnMoreData(base::TimeDelta delay,
+                                           base::TimeTicks delay_timestamp,
+                                           int prior_frames_skipped,
+                                           media::AudioBus* dest,
+                                           bool is_mixing) {
+  return source_callback_->OnMoreData(delay, delay_timestamp,
+                                      prior_frames_skipped, dest, is_mixing);
 }
 
 void DeviceListenerOutputStream::OnError(ErrorType type) {

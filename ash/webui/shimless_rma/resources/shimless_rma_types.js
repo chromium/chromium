@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,29 +7,23 @@
  * Type aliases for the mojo API.
  */
 
-import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
+import './file_path.mojom-lite.js';
 import './mojom/shimless_rma.mojom-lite.js';
 
-/**
- * Return type from state progression methods.
- * Convenience type as mojo-lite does not define types for method results and
- * this is used frequently.
- * @typedef {{
- *   state: !RmaState,
- *   canCancel: boolean,
- *   canGoBack: boolean,
- *   error: !RmadErrorCode
- * }}
- */
-export let StateResult;
+import {CrosNetworkConfigInterface, CrosNetworkConfigRemote, NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 
 /**
- * @typedef {ash.shimlessRma.mojom.RmaState}
+ * @typedef {ash.shimlessRma.mojom.StateResult}
  */
-export const RmaState = ash.shimlessRma.mojom.RmaState;
+export const StateResult = ash.shimlessRma.mojom.StateResult;
+
+/**
+ * @typedef {ash.shimlessRma.mojom.State}
+ */
+export const State = ash.shimlessRma.mojom.State;
 
 /**
  * @typedef {ash.shimlessRma.mojom.RmadErrorCode}
@@ -52,9 +46,13 @@ export const ComponentType = ash.shimlessRma.mojom.ComponentType;
 export const ComponentRepairStatus =
     ash.shimlessRma.mojom.ComponentRepairStatus;
 
-/** @typedef {ash.shimlessRma.mojom.WriteProtectDisableCompleteState} */
-export const WriteProtectDisableCompleteState =
-    ash.shimlessRma.mojom.WriteProtectDisableCompleteState;
+/** @typedef {ash.shimlessRma.mojom.WriteProtectDisableCompleteAction} */
+export const WriteProtectDisableCompleteAction =
+    ash.shimlessRma.mojom.WriteProtectDisableCompleteAction;
+
+/** @typedef {ash.shimlessRma.mojom.UpdateRoFirmwareStatus} */
+export const UpdateRoFirmwareStatus =
+    ash.shimlessRma.mojom.UpdateRoFirmwareStatus;
 
 /**
  * @typedef {ash.shimlessRma.mojom.CalibrationSetupInstruction}
@@ -85,15 +83,31 @@ export const CalibrationComponentStatus =
 export const ProvisioningStatus = ash.shimlessRma.mojom.ProvisioningStatus;
 
 /**
+ * @typedef {ash.shimlessRma.mojom.ProvisioningError}
+ */
+export const ProvisioningError = ash.shimlessRma.mojom.ProvisioningError;
+
+/**
  * @typedef {ash.shimlessRma.mojom.FinalizationStatus}
  */
 export const FinalizationStatus = ash.shimlessRma.mojom.FinalizationStatus;
+
+/**
+ * @typedef {ash.shimlessRma.mojom.FinalizationError}
+ */
+export const FinalizationError = ash.shimlessRma.mojom.FinalizationError;
 
 /**
  * Type alias for OsUpdateOperation.
  * @typedef {ash.shimlessRma.mojom.OsUpdateOperation}
  */
 export const OsUpdateOperation = ash.shimlessRma.mojom.OsUpdateOperation;
+
+/**
+ * Type alias for UpdateErrorCode.
+ * @typedef {ash.shimlessRma.mojom.UpdateErrorCode}
+ */
+export const UpdateErrorCode = ash.shimlessRma.mojom.UpdateErrorCode;
 
 /**
  * @typedef {ash.shimlessRma.mojom.Component}
@@ -105,6 +119,20 @@ export const Component = ash.shimlessRma.mojom.Component;
  * @typedef {ash.shimlessRma.mojom.ErrorObserverRemote}
  */
 export const ErrorObserverRemote = ash.shimlessRma.mojom.ErrorObserverRemote;
+
+/**
+ * Type alias for ErrorObserverReceiver.
+ * @typedef {ash.shimlessRma.mojom.ErrorObserverReceiver}
+ */
+export const ErrorObserverReceiver =
+    ash.shimlessRma.mojom.ErrorObserverReceiver;
+
+/**
+ * Type alias for ErrorObserverInterface.
+ * @typedef {ash.shimlessRma.mojom.ErrorObserverInterface}
+ */
+export const ErrorObserverInterface =
+    ash.shimlessRma.mojom.ErrorObserverInterface;
 
 /**
  * Type alias for OsUpdateObserverRemote.
@@ -126,6 +154,27 @@ export const OsUpdateObserverReceiver =
  */
 export const OsUpdateObserverInterface =
     ash.shimlessRma.mojom.OsUpdateObserverInterface;
+
+/**
+ * Type alias for UpdateRoFirmwareObserverRemote.
+ * @typedef {ash.shimlessRma.mojom.UpdateRoFirmwareObserverRemote}
+ */
+export const UpdateRoFirmwareObserverRemote =
+    ash.shimlessRma.mojom.UpdateRoFirmwareObserverRemote;
+
+/**
+ * Type alias for UpdateRoFirmwareObserverReceiver.
+ * @typedef {ash.shimlessRma.mojom.UpdateRoFirmwareObserverReceiver}
+ */
+export const UpdateRoFirmwareObserverReceiver =
+    ash.shimlessRma.mojom.UpdateRoFirmwareObserverReceiver;
+
+/**
+ * Type alias for UpdateRoFirmwareObserverInterface.
+ * @typedef {ash.shimlessRma.mojom.UpdateRoFirmwareObserverInterface}
+ */
+export const UpdateRoFirmwareObserverInterface =
+    ash.shimlessRma.mojom.UpdateRoFirmwareObserverInterface;
 
 /**
  * Type alias for CalibrationObserverRemote.
@@ -200,6 +249,41 @@ export const PowerCableStateObserverRemote =
     ash.shimlessRma.mojom.PowerCableStateObserverRemote;
 
 /**
+ * Type alias for PowerCableStateObserverReceiver.
+ * @typedef {ash.shimlessRma.mojom.PowerCableStateObserverReceiver}
+ */
+export const PowerCableStateObserverReceiver =
+    ash.shimlessRma.mojom.PowerCableStateObserverReceiver;
+
+/**
+ * Type alias for PowerCableStateObserverInterface.
+ * @typedef {ash.shimlessRma.mojom.PowerCableStateObserverInterface}
+ */
+export const PowerCableStateObserverInterface =
+    ash.shimlessRma.mojom.PowerCableStateObserverInterface;
+
+/**
+ * Type alias for ExternalDiskStateObserverRemote.
+ * @typedef {ash.shimlessRma.mojom.ExternalDiskStateObserverRemote}
+ */
+export const ExternalDiskStateObserverRemote =
+    ash.shimlessRma.mojom.ExternalDiskStateObserverRemote;
+
+/**
+ * Type alias for ExternalDiskStateObserverReceiver.
+ * @typedef {ash.shimlessRma.mojom.ExternalDiskStateObserverReceiver}
+ */
+export const ExternalDiskStateObserverReceiver =
+    ash.shimlessRma.mojom.ExternalDiskStateObserverReceiver;
+
+/**
+ * Type alias for ExternalDiskStateObserverInterface.
+ * @typedef {ash.shimlessRma.mojom.ExternalDiskStateObserverInterface}
+ */
+export const ExternalDiskStateObserverInterface =
+    ash.shimlessRma.mojom.ExternalDiskStateObserverInterface;
+
+/**
  * Type alias for HardwareVerificationStatusObserverRemote.
  * @typedef {ash.shimlessRma.mojom.HardwareVerificationStatusObserverRemote}
  */
@@ -260,20 +344,29 @@ export const ShimlessRmaServiceInterface =
 
 /**
  * Type alias for NetworkConfigServiceInterface.
- * @typedef {chromeos.networkConfig.mojom.CrosNetworkConfigInterface}
+ * @typedef {CrosNetworkConfigInterface}
  */
-export const NetworkConfigServiceInterface =
-    chromeos.networkConfig.mojom.CrosNetworkConfigInterface;
+export const NetworkConfigServiceInterface = CrosNetworkConfigInterface;
 
 /**
  * Type alias for NetworkConfigServiceRemote.
- * @typedef {chromeos.networkConfig.mojom.CrosNetworkConfigRemote}
+ * @typedef {CrosNetworkConfigRemote}
  */
-export const NetworkConfigServiceRemote =
-    chromeos.networkConfig.mojom.CrosNetworkConfigRemote;
+export const NetworkConfigServiceRemote = CrosNetworkConfigRemote;
 
 /**
  * Type alias for Network
- * @typedef {chromeos.networkConfig.mojom.NetworkStateProperties}
+ * @typedef {NetworkStateProperties}
  */
-export const Network = chromeos.networkConfig.mojom.NetworkStateProperties;
+export const Network = NetworkStateProperties;
+
+/**
+ * Type alias for the ShutdownMethod.
+ * @typedef {ash.shimlessRma.mojom.ShutdownMethod}
+ */
+export const ShutdownMethod = ash.shimlessRma.mojom.ShutdownMethod;
+
+/**
+ * @typedef {{savePath: mojoBase.mojom.FilePath, error: RmadErrorCode}}
+ */
+export let SaveLogResponse;

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -92,4 +92,14 @@ if (typeof add_completion_callback !== "undefined") {
     console.debug("Test result string: " + resultString);
     finishJavaScriptStep();
   });
+}
+
+if (typeof setup !== "undefined") {
+  // The timeout multiplier helps with erroneous timeouts on slower Android
+  // devices. 3 was chosen because it's a midpoint between the standard 10 and
+  // long 60 second timeouts that are used for web tests using testharness.js
+  // and it's a bit more of a multiplier than the 2x increase in step timeouts
+  // we have for slow devices, which is reasonable since this is the timeout for
+  // the entire test rather than a single step.
+  setup({single_test: true, timeout_multiplier: 3});
 }

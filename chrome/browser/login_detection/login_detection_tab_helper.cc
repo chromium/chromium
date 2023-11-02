@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/site_isolation/site_isolation_policy.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -58,7 +57,10 @@ void LoginDetectionTabHelper::MaybeCreateForWebContents(
 LoginDetectionTabHelper::LoginDetectionTabHelper(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      oauth_login_detector_(std::make_unique<OAuthLoginDetector>()) {
+      content::WebContentsUserData<LoginDetectionTabHelper>(*web_contents),
+      oauth_login_detector_(std::make_unique<OAuthLoginDetector>()),
+      ukm_source_id_(
+          web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()) {
   DCHECK(IsLoginDetectionFeatureEnabled());
 }
 
@@ -128,12 +130,15 @@ void LoginDetectionTabHelper::DidOpenAsPopUp(
   oauth_login_detector_->DidOpenAsPopUp(opener_navigation_url);
 }
 
+void LoginDetectionTabHelper::PrimaryPageChanged(content::Page& page) {
+  ukm_source_id_ = page.GetMainDocument().GetPageUkmSourceId();
+}
+
 void LoginDetectionTabHelper::WebContentsDestroyed() {
   if (auto signedin_site = oauth_login_detector_->GetPopUpLoginFlowSite()) {
     ProcessNewSignedInSite(*signedin_site);
     RecordLoginDetectionMetrics(
-        LoginDetectionType::kOauthPopUpFirstTimeLoginFlow,
-        ukm::GetSourceIdForWebContentsDocument(web_contents()));
+        LoginDetectionType::kOauthPopUpFirstTimeLoginFlow, ukm_source_id_);
   }
   oauth_login_detector_.reset();
 }

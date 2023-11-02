@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,10 +28,8 @@ interface ContextualSearchSelectionHandler {
 
     /**
      * Handle a valid tap gesture on the base page.
-     * @param x The x-coordinate of the tap in pixels.
-     * @param y The y-coordinate of the tap in pixels.
      */
-    public void handleValidTap(int x, int y);
+    public void handleValidTap();
 
     /**
      * Handle an invalid tap gesture on the base page.
@@ -76,14 +74,6 @@ interface ContextualSearchSelectionHandler {
      * @param tapHeuristics The set of heuristics that would suppress the Tap.
      */
     public void handleMetricsForWouldSuppressTap(ContextualSearchHeuristics tapHeuristics);
-
-    /**
-     * Logs all the features that we can obtain without accessing heuristics, i.e. from global
-     * state.
-     * @param interactionRecorder The {@link ContextualSearchInteractionRecorder} to log the
-     * features to.
-     */
-    public void logNonHeuristicFeatures(ContextualSearchInteractionRecorder interactionRecorder);
 
     /**
      * Handles a long-press gesture that may make a server Resolve request to determine the search.

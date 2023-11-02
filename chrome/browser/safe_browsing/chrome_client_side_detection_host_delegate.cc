@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,13 +11,16 @@
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"
+#include "chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/client_side_detection_host.h"
+#include "components/safe_browsing/content/browser/client_side_detection_service.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
+#include "content/public/browser/global_routing_id.h"
 
 namespace safe_browsing {
 
@@ -80,15 +83,24 @@ ChromeClientSideDetectionHostDelegate::GetSafeBrowsingUIManager() {
   return sb_service ? sb_service->ui_manager() : nullptr;
 }
 
-ClientSideDetectionService*
+base::WeakPtr<ClientSideDetectionService>
 ChromeClientSideDetectionHostDelegate::GetClientSideDetectionService() {
-  return ClientSideDetectionServiceFactory::GetForProfile(
+  ClientSideDetectionService* service =
+      ClientSideDetectionServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
+  return service ? service->GetWeakPtr() : nullptr;
+}
+
+raw_ptr<VerdictCacheManager>
+ChromeClientSideDetectionHostDelegate::GetCacheManager() {
+  return VerdictCacheManagerFactory::GetForProfile(
       Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
 }
 
 void ChromeClientSideDetectionHostDelegate::AddReferrerChain(
     ClientPhishingRequest* verdict,
-    GURL current_url) {
+    GURL current_url,
+    const content::GlobalRenderFrameHostId& current_outermost_main_frame_id) {
   SafeBrowsingNavigationObserverManager* navigation_observer_manager =
       GetSafeBrowsingNavigationObserverManager();
   if (!navigation_observer_manager) {
@@ -97,6 +109,7 @@ void ChromeClientSideDetectionHostDelegate::AddReferrerChain(
   SafeBrowsingNavigationObserverManager::AttributionResult result =
       navigation_observer_manager->IdentifyReferrerChainByEventURL(
           current_url, SessionID::InvalidValue(),
+          current_outermost_main_frame_id,
           kCSDAttributionUserGestureLimitForExtendedReporting,
           verdict->mutable_referrer_chain());
 

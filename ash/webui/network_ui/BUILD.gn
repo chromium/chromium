@@ -1,8 +1,10 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_chromeos, "Network Health is Chrome OS only")
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Network Health is ash-chrome only")
 
 source_set("network_diagnostics_resource_provider") {
   sources = [
@@ -40,6 +42,7 @@ source_set("traffic_counters_resource_provider") {
   ]
 
   deps = [
+    "//ash/constants",
     "//chromeos/strings/",
     "//content/public/browser",
     "//ui/base",

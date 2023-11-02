@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -104,7 +104,7 @@ TEST_F(EnterAnimationObserverTest, Basic) {
     auto observer = std::make_unique<EnterAnimationObserver>();
     animation_settings.AddObserver(observer.get());
     delegate.AddEnterAnimationObserver(std::move(observer));
-    window->SetTransform(gfx::Transform(1.f, 0.f, 0.f, 1.f, 100.f, 0.f));
+    window->SetTransform(gfx::Transform::MakeTranslation(100.f, 0.f));
     EXPECT_EQ(0u, delegate.num_exit_observers());
     EXPECT_EQ(1u, delegate.num_enter_observers());
   }
@@ -131,7 +131,7 @@ TEST_F(ExitAnimationObserverTest, Basic) {
     auto observer = std::make_unique<ExitAnimationObserver>();
     animation_settings.AddObserver(observer.get());
     delegate.AddExitAnimationObserver(std::move(observer));
-    window->SetTransform(gfx::Transform(1.f, 0.f, 0.f, 1.f, 100.f, 0.f));
+    window->SetTransform(gfx::Transform::MakeTranslation(100.f, 0.f));
     EXPECT_EQ(1u, delegate.num_exit_observers());
     EXPECT_EQ(0u, delegate.num_enter_observers());
   }

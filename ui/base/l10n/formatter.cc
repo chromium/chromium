@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/component_export.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/msgfmt.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -283,7 +284,9 @@ std::unique_ptr<icu::MessageFormat> Formatter::InitFormat(
     std::u16string pattern = l10n_util::GetStringUTF16(pluralities.id);
     UErrorCode error = U_ZERO_ERROR;
     std::unique_ptr<icu::MessageFormat> format(new icu::MessageFormat(
-        icu::UnicodeString(false, pattern.data(), pattern.length()), error));
+        icu::UnicodeString(false, pattern.data(),
+                           base::checked_cast<int32_t>(pattern.length())),
+        error));
     DCHECK(U_SUCCESS(error));
     if (format.get())
       return format;

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include "base/lazy_instance.h"
 #include "chrome/browser/ash/printing/synced_printers_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace content {
 class BrowserContext;
@@ -17,7 +17,7 @@ namespace ash {
 
 class SyncedPrintersManager;
 
-class SyncedPrintersManagerFactory : public BrowserContextKeyedServiceFactory {
+class SyncedPrintersManagerFactory : public ProfileKeyedServiceFactory {
  public:
   static SyncedPrintersManager* GetForBrowserContext(
       content::BrowserContext* context);
@@ -27,10 +27,6 @@ class SyncedPrintersManagerFactory : public BrowserContextKeyedServiceFactory {
   SyncedPrintersManagerFactory(const SyncedPrintersManagerFactory&) = delete;
   SyncedPrintersManagerFactory& operator=(const SyncedPrintersManagerFactory&) =
       delete;
-
- protected:
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
 
  private:
   friend struct base::LazyInstanceTraitsBase<SyncedPrintersManagerFactory>;

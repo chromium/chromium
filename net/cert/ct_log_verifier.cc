@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,18 +59,14 @@ const EVP_MD* GetEvpAlg(ct::DigitallySigned::HashAlgorithm alg) {
 scoped_refptr<const CTLogVerifier> CTLogVerifier::Create(
     const base::StringPiece& public_key,
     std::string description) {
-  scoped_refptr<CTLogVerifier> result(
-      new CTLogVerifier(std::move(description)));
+  auto result = base::WrapRefCounted(new CTLogVerifier(std::move(description)));
   if (!result->Init(public_key))
     return nullptr;
   return result;
 }
 
 CTLogVerifier::CTLogVerifier(std::string description)
-    : description_(std::move(description)),
-      hash_algorithm_(ct::DigitallySigned::HASH_ALGO_NONE),
-      signature_algorithm_(ct::DigitallySigned::SIG_ALGO_ANONYMOUS),
-      public_key_(nullptr) {}
+    : description_(std::move(description)) {}
 
 bool CTLogVerifier::Verify(const ct::SignedEntryData& entry,
                            const ct::SignedCertificateTimestamp& sct) const {
@@ -287,7 +283,7 @@ bool CTLogVerifier::Init(const base::StringPiece& public_key) {
 
   // Right now, only RSASSA-PKCS1v15 with SHA-256 and ECDSA with SHA-256 are
   // supported.
-  switch (EVP_PKEY_type(public_key_->type)) {
+  switch (EVP_PKEY_id(public_key_)) {
     case EVP_PKEY_RSA:
       hash_algorithm_ = ct::DigitallySigned::HASH_ALGO_SHA256;
       signature_algorithm_ = ct::DigitallySigned::SIG_ALGO_RSA;

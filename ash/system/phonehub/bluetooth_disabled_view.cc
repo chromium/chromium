@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/button_style.h"
+#include "ash/style/pill_button.h"
 #include "ash/system/phonehub/phone_hub_interstitial_view.h"
 #include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/system/phonehub/phone_hub_tray.h"
@@ -32,16 +32,12 @@ using phone_hub_metrics::Screen;
 
 BluetoothDisabledView::BluetoothDisabledView() {
   SetID(PhoneHubViewID::kBluetoothDisabledView);
-
   SetLayoutManager(std::make_unique<views::FillLayout>());
   auto* content_view = AddChildView(
       std::make_unique<PhoneHubInterstitialView>(/*show_progress=*/false));
-
-  // TODO(crbug.com/1127996): Replace PNG file with vector icon.
-  gfx::ImageSkia* image =
-      ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-          IDR_PHONE_HUB_ERROR_STATE_IMAGE);
-  content_view->SetImage(*image);
+  content_view->SetImage(
+      ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
+          IDR_PHONE_HUB_ERROR_STATE_IMAGE));
   content_view->SetTitle(l10n_util::GetStringUTF16(
       IDS_ASH_PHONE_HUB_BLUETOOTH_DISABLED_DIALOG_TITLE));
   content_view->SetDescription(l10n_util::GetStringFUTF16(
@@ -54,7 +50,7 @@ BluetoothDisabledView::BluetoothDisabledView() {
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(
           IDS_ASH_PHONE_HUB_BLUETOOTH_DISABLED_DIALOG_LEARN_MORE_BUTTON),
-      PillButton::Type::kIconlessFloating, /*icon=*/nullptr);
+      PillButton::Type::kFloatingWithoutIcon, /*icon=*/nullptr);
   learn_more->SetID(PhoneHubViewID::kBluetoothDisabledLearnMoreButton);
   content_view->AddButton(std::move(learn_more));
 
@@ -69,9 +65,10 @@ phone_hub_metrics::Screen BluetoothDisabledView::GetScreenForMetrics() const {
 
 void BluetoothDisabledView::LearnMoreButtonPressed() {
   LogInterstitialScreenEvent(InterstitialScreenEvent::kLearnMore);
-  NewWindowDelegate::GetInstance()->OpenUrl(
-      GURL(chromeos::phonehub::kPhoneHubLearnMoreLink),
-      /*from_user_interaction=*/true);
+  NewWindowDelegate::GetPrimary()->OpenUrl(
+      GURL(phonehub::kPhoneHubLearnMoreLink),
+      NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 BEGIN_METADATA(BluetoothDisabledView, views::View)

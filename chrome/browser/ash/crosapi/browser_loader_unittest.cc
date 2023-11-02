@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/crosapi/browser_loader.h"
 
+#include "base/auto_reset.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
@@ -14,14 +15,13 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/fake_cros_component_manager.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
-#include "chromeos/dbus/upstart/fake_upstart_client.h"
+#include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
 #include "components/component_updater/mock_component_updater_service.h"
 #include "components/update_client/update_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::Return;
-using update_client::UpdateClient;
 
 namespace crosapi {
 namespace {
@@ -30,14 +30,13 @@ namespace {
 constexpr char kLacrosComponentName[] = "lacros-dogfood-dev";
 constexpr char kLacrosComponentId[] = "ldobopbhiamakmncndpkeelenhdmgfhk";
 constexpr char kLacrosMounterUpstartJob[] = "lacros_2dmounter";
+constexpr char kLacrosUnmounterUpstartJob[] = "lacros_2dunmounter";
 
 }  // namespace
 
 class BrowserLoaderTest : public testing::Test {
  public:
   BrowserLoaderTest() {
-    browser_util::SetLacrosEnabledForTest(true);
-
     // Create dependencies for object under test.
     component_manager_ =
         base::MakeRefCounted<component_updater::FakeCrOSComponentManager>();
@@ -58,7 +57,6 @@ class BrowserLoaderTest : public testing::Test {
 
   ~BrowserLoaderTest() override {
     browser_part_->ShutdownCrosComponentManager();
-    browser_util::SetLacrosEnabledForTest(false);
   }
 
   // Public because this is test code.
@@ -67,9 +65,13 @@ class BrowserLoaderTest : public testing::Test {
  protected:
   component_updater::MockComponentUpdateService mock_component_update_service_;
   scoped_refptr<component_updater::FakeCrOSComponentManager> component_manager_;
-  chromeos::FakeUpstartClient fake_upstart_client_;
+  ash::FakeUpstartClient fake_upstart_client_;
   std::unique_ptr<BrowserProcessPlatformPartTestApi> browser_part_;
   std::unique_ptr<BrowserLoader> browser_loader_;
+
+ private:
+  base::AutoReset<bool> set_lacros_enabled_ =
+      browser_util::SetLacrosEnabledForTest(true);
 };
 
 TEST_F(BrowserLoaderTest, OnLoadSelectionQuicklyChooseRootfs) {
@@ -93,22 +95,82 @@ TEST_F(BrowserLoaderTest, OnLoadSelectionQuicklyChooseRootfs) {
   EXPECT_TRUE(callback_called);
 }
 
-TEST_F(BrowserLoaderTest, OnLoadVersionSelectionStateful) {
+TEST_F(BrowserLoaderTest, OnLoadVersionSelectionNeitherIsAvailable) {
   // Use stateful when a rootfs lacros-chrome version is invalid.
   bool callback_called = false;
   fake_upstart_client_.set_start_job_cb(base::BindRepeating(
       [](bool* b, const std::string& job,
          const std::vector<std::string>& upstart_env) {
+        EXPECT_EQ(job, kLacrosUnmounterUpstartJob);
         *b = true;
         return true;
       },
       &callback_called));
   // Pass in an invalid `base::Version`.
-  browser_loader_->OnLoadVersionSelection({}, base::Version());
+  browser_loader_->OnLoadVersionSelection(
+      /*is_stateful_lacros_available=*/false,
+      base::BindOnce([](const base::FilePath& path, LacrosSelection selection) {
+        EXPECT_TRUE(path.empty());
+      }),
+      /*rootfs_lacros_version=*/base::Version());
+  task_environment_.RunUntilIdle();
   EXPECT_FALSE(callback_called);
 }
 
-TEST_F(BrowserLoaderTest, OnLoadVersionSelectionRootfs) {
+TEST_F(BrowserLoaderTest, OnLoadVersionSelectionStatefulIsUnavailable) {
+  // Use rootfs when a stateful lacros-chrome version is invalid.
+  bool callback_called = false;
+  fake_upstart_client_.set_start_job_cb(base::BindRepeating(
+      [](bool* b, const std::string& job,
+         const std::vector<std::string>& upstart_env) {
+        EXPECT_EQ(job, kLacrosMounterUpstartJob);
+        *b = true;
+        return true;
+      },
+      &callback_called));
+  // Pass in an invalid `base::Version`.
+  browser_loader_->OnLoadVersionSelection(
+      /*is_stateful_lacros_available=*/false,
+      base::BindOnce([](const base::FilePath& path, LacrosSelection selection) {
+        EXPECT_FALSE(path.empty());
+        EXPECT_EQ(LacrosSelection::kRootfs, selection);
+      }),
+      /*rootfs_lacros_version=*/base::Version("2.0.0"));
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(callback_called);
+}
+
+TEST_F(BrowserLoaderTest, OnLoadVersionSelectionRootfsIsUnavailable) {
+  std::u16string lacros_component_name =
+      base::UTF8ToUTF16(base::StringPiece(kLacrosComponentName));
+  EXPECT_CALL(mock_component_update_service_, GetComponents())
+      .WillOnce(Return(std::vector<component_updater::ComponentInfo>{
+          {kLacrosComponentId, "", lacros_component_name,
+           base::Version("1.0.0")}}));
+
+  // Use stateful when a rootfs lacros-chrome version is invalid.
+  bool callback_called = false;
+  fake_upstart_client_.set_start_job_cb(base::BindRepeating(
+      [](bool* b, const std::string& job,
+         const std::vector<std::string>& upstart_env) {
+        EXPECT_EQ(job, kLacrosUnmounterUpstartJob);
+        *b = true;
+        return true;
+      },
+      &callback_called));
+  // Pass in an invalid `base::Version`.
+  browser_loader_->OnLoadVersionSelection(
+      /*is_stateful_lacros_available=*/true,
+      base::BindOnce([](const base::FilePath& path, LacrosSelection selection) {
+        EXPECT_FALSE(path.empty());
+        EXPECT_EQ(LacrosSelection::kStateful, selection);
+      }),
+      /*rootfs_lacros_version=*/base::Version());
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(callback_called);
+}
+
+TEST_F(BrowserLoaderTest, OnLoadVersionSelectionRootfsIsNewer) {
   std::u16string lacros_component_name =
       base::UTF8ToUTF16(base::StringPiece(kLacrosComponentName));
   EXPECT_CALL(mock_component_update_service_, GetComponents())
@@ -127,10 +189,12 @@ TEST_F(BrowserLoaderTest, OnLoadVersionSelectionRootfs) {
       &callback_called));
   // Pass in a rootfs lacros-chrome version that is newer.
   browser_loader_->OnLoadVersionSelection(
-      base::BindOnce([](const base::FilePath&, LacrosSelection selection) {
+      /*is_stateful_lacros_available=*/true,
+      base::BindOnce([](const base::FilePath& path, LacrosSelection selection) {
+        EXPECT_FALSE(path.empty());
         EXPECT_EQ(LacrosSelection::kRootfs, selection);
       }),
-      base::Version("2.0.0"));
+      /*rootfs_lacros_version=*/base::Version("2.0.0"));
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(callback_called);
 }
@@ -148,13 +212,21 @@ TEST_F(BrowserLoaderTest, OnLoadVersionSelectionRootfsIsOlder) {
   fake_upstart_client_.set_start_job_cb(base::BindRepeating(
       [](bool* b, const std::string& job,
          const std::vector<std::string>& upstart_env) {
+        EXPECT_EQ(job, kLacrosUnmounterUpstartJob);
         *b = true;
         return true;
       },
       &callback_called));
   // Pass in a rootfs lacros-chrome version that is older.
-  browser_loader_->OnLoadVersionSelection({}, base::Version("2.0.0"));
-  EXPECT_FALSE(callback_called);
+  browser_loader_->OnLoadVersionSelection(
+      /*is_stateful_lacros_available=*/true,
+      base::BindOnce([](const base::FilePath& path, LacrosSelection selection) {
+        EXPECT_FALSE(path.empty());
+        EXPECT_EQ(LacrosSelection::kStateful, selection);
+      }),
+      /*rootfs_lacros_version=*/base::Version("2.0.0"));
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(callback_called);
 }
 
 }  // namespace crosapi

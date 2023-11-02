@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -132,7 +132,7 @@ TEST(BindObjcBlockTestARC, TestBlockDeallocation) {
   EXPECT_TRUE(invoked_block);
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 
 TEST(BindObjcBlockTestARC, TestBlockReleased) {
   __weak NSObject* weak_nsobject;

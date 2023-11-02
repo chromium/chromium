@@ -1,8 +1,8 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 // TODO(gavindodd): Currently the addObserver and setObservableData do not
 // enforce using the same type for a given method. Revisit when TypeScript is
@@ -145,7 +145,7 @@ export class FakeObservables {
   /**
    * Supply the callback for observing methodName.
    * @param {string} methodName
-   * @param {!function(!T)} callback
+   * @param {!Function} callback
    */
   observe(methodName, callback) {
     this.getObservable_(methodName).addObserver(callback);

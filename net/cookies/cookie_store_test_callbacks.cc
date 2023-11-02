@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,12 +14,11 @@
 namespace net {
 
 CookieCallback::CookieCallback(base::Thread* run_in_thread)
-    : run_in_thread_(run_in_thread), was_run_(false) {}
+    : run_in_thread_(run_in_thread) {}
 
 CookieCallback::CookieCallback()
     : run_in_thread_(nullptr),
-      run_in_task_runner_(base::ThreadTaskRunnerHandle::Get()),
-      was_run_(false) {}
+      run_in_task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
 
 CookieCallback::~CookieCallback() = default;
 

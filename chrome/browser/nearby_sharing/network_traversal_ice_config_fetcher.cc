@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -102,13 +102,13 @@ std::vector<sharing::mojom::IceServerPtr> ParseIceConfigJson(std::string json) {
   if (!ice_servers_json)
     return ice_servers;
 
-  for (base::Value& server : ice_servers_json->GetList()) {
+  for (base::Value& server : ice_servers_json->GetListDeprecated()) {
     const base::Value* urls_json = server.FindListKey("urls");
     if (!urls_json)
       continue;
 
     std::vector<GURL> urls;
-    for (const base::Value& url_json : urls_json->GetList()) {
+    for (const base::Value& url_json : urls_json->GetListDeprecated()) {
       const std::string* url = url_json.GetIfString();
       if (!url)
         continue;

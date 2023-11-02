@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,6 +54,7 @@ SwapPromiseManager::TakeSwapPromises() {
 void SwapPromiseManager::BreakSwapPromises(
     SwapPromise::DidNotSwapReason reason) {
   std::vector<std::unique_ptr<SwapPromise>> keep_active_swap_promises;
+  keep_active_swap_promises.reserve(swap_promise_list_.size());
   for (auto& swap_promise : swap_promise_list_) {
     if (swap_promise->DidNotSwap(reason) ==
         SwapPromise::DidNotSwapAction::KEEP_ACTIVE) {

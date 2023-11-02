@@ -1,9 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
 
+#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -30,7 +31,7 @@ void ChromeAccountManagerServiceObserverBridge::OnIdentityListChanged(
 }
 
 void ChromeAccountManagerServiceObserverBridge::OnIdentityChanged(
-    ChromeIdentity* identity) {
+    id<SystemIdentity> identity) {
   if ([observer_ respondsToSelector:@selector(identityChanged:)])
     [observer_ identityChanged:identity];
 }

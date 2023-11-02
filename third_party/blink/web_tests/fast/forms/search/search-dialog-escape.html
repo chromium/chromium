@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://bugs.chromium.org/p/chromium/issues/detail?id=1303181">
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-actions.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+
+<!-- This test is not in WPT because <input type=search> is not well specified. -->
+
+<dialog id=dialog>
+  <input id=search type=search>
+</dialog>
+
+<script>
+const escapeKey = '\uE00C';
+
+promise_test(async () => {
+  dialog.showModal();
+  search.value = 'hello world';
+  await test_driver.send_keys(search, escapeKey);
+  assert_true(dialog.open, 'Dialog should not be closed when the escape key clears the input.');
+  assert_equals(search.value, '', 'Search input should be cleared after pressing the escape key.');
+  await test_driver.send_keys(search, escapeKey);
+  assert_false(dialog.open, 'Dialog should be closed after pressing escape on the empty search input.');
+}, 'Verifies that pressing escape in an empty <input type=search> closes its parent dialog.');
+</script>

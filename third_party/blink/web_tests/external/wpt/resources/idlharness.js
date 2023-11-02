@@ -637,10 +637,16 @@ function exposure_set(object, default_set) {
     if (exposed && exposed.length) {
         const { rhs } = exposed[0];
         // Could be a list or a string.
-        const set = rhs.type === "identifier-list" ?
+        const set =
+            rhs.type === "*" ?
+            [ "*" ] :
+            rhs.type === "identifier-list" ?
             rhs.value.map(id => id.value) :
             [ rhs.value ];
         result = new Set(set);
+    }
+    if (result && result.has("*")) {
+        return "*";
     }
     if (result && result.has("Worker")) {
         result.delete("Worker");
@@ -652,6 +658,9 @@ function exposure_set(object, default_set) {
 }
 
 function exposed_in(globals) {
+    if (globals === "*") {
+        return true;
+    }
     if ('Window' in self) {
         return globals.has("Window");
     }
@@ -666,6 +675,10 @@ function exposed_in(globals) {
     if ('ServiceWorkerGlobalScope' in self &&
         self instanceof ServiceWorkerGlobalScope) {
         return globals.has("ServiceWorker");
+    }
+    if (Object.getPrototypeOf(self) === Object.prototype) {
+        // ShadowRealm - only exposed with `"*"`.
+        return false;
     }
     throw new IdlHarnessError("Unexpected global object");
 }
@@ -804,6 +817,13 @@ IdlArray.prototype.merge_partials = function()
                     test(function () {
                         const partialExposure = exposure_set(parsed_idl);
                         const memberExposure = exposure_set(this.members[parsed_idl.name]);
+                        if (memberExposure === "*") {
+                            return;
+                        }
+                        if (partialExposure === "*") {
+                            throw new IdlHarnessError(
+                                `Partial ${parsed_idl.name} ${parsed_idl.type} is exposed everywhere, the original ${parsed_idl.type} is not.`);
+                        }
                         partialExposure.forEach(name => {
                             if (!memberExposure || !memberExposure.has(name)) {
                                 throw new IdlHarnessError(
@@ -942,7 +962,7 @@ IdlArray.prototype.assert_type_is = function(value, type)
         return;
     }
 
-    if (type.generic === "sequence")
+    if (type.generic === "sequence" || type.generic == "ObservableArray")
     {
         assert_true(Array.isArray(value), "should be an Array");
         if (!value.length)
@@ -1509,12 +1529,12 @@ IdlInterface.prototype.test_self = function()
         // https://github.com/heycam/webidl/issues/698
         assert_true(isConstructor(this.get_interface_object()), "interface object must pass IsConstructor check");
 
+        var interface_object = this.get_interface_object();
+        assert_throws_js(globalOf(interface_object).TypeError, function() {
+            interface_object();
+        }, "interface object didn't throw TypeError when called as a function");
+
         if (!this.constructors().length) {
-            // "If I was not declared with a constructor operation, then throw a TypeError."
-            var interface_object = this.get_interface_object();
-            assert_throws_js(globalOf(interface_object).TypeError, function() {
-                interface_object();
-            }, "interface object didn't throw TypeError when called as a function");
             assert_throws_js(globalOf(interface_object).TypeError, function() {
                 new interface_object();
             }, "interface object didn't throw TypeError when called as a constructor");
@@ -1580,7 +1600,7 @@ IdlInterface.prototype.test_self = function()
             if (this.is_callback()) {
                 throw new IdlHarnessError("Invalid IDL: LegacyWindowAlias extended attribute on non-interface " + this.name);
             }
-            if (!this.exposureSet.has("Window")) {
+            if (!(this.exposureSet === "*" || this.exposureSet.has("Window"))) {
                 throw new IdlHarnessError("Invalid IDL: LegacyWindowAlias extended attribute on " + this.name + " which is not exposed in Window");
             }
             // TODO: when testing of [LegacyNoInterfaceObject] interfaces is supported,
@@ -2413,73 +2433,176 @@ IdlInterface.prototype.test_to_json_operation = function(desc, memberHolderObjec
     }
 };
 
-IdlInterface.prototype.test_member_iterable = function(member)
-{
-    subsetTestByKey(this.name, test, function()
-    {
-        var isPairIterator = member.idlType.length === 2;
-        var proto = this.get_interface_object().prototype;
-        var iteratorDesc = Object.getOwnPropertyDescriptor(proto, Symbol.iterator);
+IdlInterface.prototype.test_member_maplike = function(member) {
+    subsetTestByKey(this.name, test, () => {
+        const proto = this.get_interface_object().prototype;
 
-        assert_true(iteratorDesc.writable, "@@iterator property should be writable");
-        assert_true(iteratorDesc.configurable, "@@iterator property should be configurable");
-        assert_false(iteratorDesc.enumerable, "@@iterator property should not be enumerable");
-        assert_equals(typeof iteratorDesc.value, "function", "@@iterator property should be a function");
-        assert_equals(iteratorDesc.value.length, 0, "@@iterator function object length should be 0");
-        assert_equals(iteratorDesc.value.name, isPairIterator ? "entries" : "values", "@@iterator function object should have the right name");
-
-        if (isPairIterator) {
-            assert_equals(proto["entries"], proto[Symbol.iterator], "entries method should be the same as @@iterator method");
-            [
-                ["entries", 0],
-                ["keys", 0],
-                ["values", 0],
-                ["forEach", 1]
-            ].forEach(([property, length]) => {
-                var desc = Object.getOwnPropertyDescriptor(proto, property);
-                assert_equals(typeof desc.value, "function", property + " property should be a function");
-                assert_equals(desc.value.length, length, property + " function object length should be " + length);
-                assert_equals(desc.value.name, property, property + " function object should have the right name");
-            });
-        } else {
-            assert_equals(proto[Symbol.iterator], Array.prototype[Symbol.iterator], "@@iterator method should be the same as Array prototype's");
-            ["entries", "keys", "values", "forEach", Symbol.iterator].forEach(property => {
-                var propertyName = property === Symbol.iterator ? "@@iterator" : property;
-                assert_equals(proto[property], Array.prototype[property], propertyName + " method should be the same as Array prototype's");
-            });
+        const methods = [
+            ["entries", 0],
+            ["keys", 0],
+            ["values", 0],
+            ["forEach", 1],
+            ["get", 1],
+            ["has", 1]
+        ];
+        if (!member.readonly) {
+            methods.push(
+                ["set", 2],
+                ["delete", 1],
+                ["clear", 1]
+            );
         }
-    }.bind(this), this.name + " interface: iterable<" + member.idlType.map(function(t) { return t.idlType; }).join(", ") + ">");
+
+        for (const [name, length] of methods) {
+            const desc = Object.getOwnPropertyDescriptor(proto, name);
+            assert_equals(typeof desc.value, "function", `${name} should be a function`);
+            assert_equals(desc.enumerable, true, `${name} enumerable`);
+            assert_equals(desc.configurable, true, `${name} configurable`);
+            assert_equals(desc.writable, true, `${name} writable`);
+            assert_equals(desc.value.length, length, `${name} function object length should be ${length}`);
+            assert_equals(desc.value.name, name, `${name} function object should have the right name`);
+        }
+
+        const iteratorDesc = Object.getOwnPropertyDescriptor(proto, Symbol.iterator);
+        assert_equals(iteratorDesc.value, proto.entries, `@@iterator should equal entries`);
+        assert_equals(iteratorDesc.enumerable, false, `@@iterator enumerable`);
+        assert_equals(iteratorDesc.configurable, true, `@@iterator configurable`);
+        assert_equals(iteratorDesc.writable, true, `@@iterator writable`);
+
+        const sizeDesc = Object.getOwnPropertyDescriptor(proto, "size");
+        assert_equals(typeof sizeDesc.get, "function", `size getter should be a function`);
+        assert_equals(sizeDesc.set, undefined, `size should not have a setter`);
+        assert_equals(sizeDesc.enumerable, true, `size enumerable`);
+        assert_equals(sizeDesc.configurable, true, `size configurable`);
+        assert_equals(sizeDesc.get.length, 0, `size getter length should have the right length`);
+        assert_equals(sizeDesc.get.name, "get size", `size getter have the right name`);
+    }, `${this.name} interface: maplike<${member.idlType.map(t => t.idlType).join(", ")}>`);
 };
 
-IdlInterface.prototype.test_member_async_iterable = function(member)
-{
-    subsetTestByKey(this.name, test, function()
-    {
-        var isPairIterator = member.idlType.length === 2;
-        var proto = this.get_interface_object().prototype;
-        var iteratorDesc = Object.getOwnPropertyDescriptor(proto, Symbol.asyncIterator);
+IdlInterface.prototype.test_member_setlike = function(member) {
+    subsetTestByKey(this.name, test, () => {
+        const proto = this.get_interface_object().prototype;
 
-        assert_true(iteratorDesc.writable, "@@asyncIterator property should be writable");
-        assert_true(iteratorDesc.configurable, "@@asyncIterator property should be configurable");
-        assert_false(iteratorDesc.enumerable, "@@asyncIterator property should not be enumerable");
-        assert_equals(typeof iteratorDesc.value, "function", "@@asyncIterator property should be a function");
-        assert_equals(iteratorDesc.value.length, 0, "@@asyncIterator function object length should be 0");
-        assert_equals(iteratorDesc.value.name, isPairIterator ? "entries" : "values", "@@asyncIterator function object should have the right name");
+        const methods = [
+            ["entries", 0],
+            ["keys", 0],
+            ["values", 0],
+            ["forEach", 1],
+            ["has", 1]
+        ];
+        if (!member.readonly) {
+            methods.push(
+                ["add", 1],
+                ["delete", 1],
+                ["clear", 1]
+            );
+        }
+
+        for (const [name, length] of methods) {
+            const desc = Object.getOwnPropertyDescriptor(proto, name);
+            assert_equals(typeof desc.value, "function", `${name} should be a function`);
+            assert_equals(desc.enumerable, true, `${name} enumerable`);
+            assert_equals(desc.configurable, true, `${name} configurable`);
+            assert_equals(desc.writable, true, `${name} writable`);
+            assert_equals(desc.value.length, length, `${name} function object length should be ${length}`);
+            assert_equals(desc.value.name, name, `${name} function object should have the right name`);
+        }
+
+        const iteratorDesc = Object.getOwnPropertyDescriptor(proto, Symbol.iterator);
+        assert_equals(iteratorDesc.value, proto.values, `@@iterator should equal values`);
+        assert_equals(iteratorDesc.enumerable, false, `@@iterator enumerable`);
+        assert_equals(iteratorDesc.configurable, true, `@@iterator configurable`);
+        assert_equals(iteratorDesc.writable, true, `@@iterator writable`);
+
+        const sizeDesc = Object.getOwnPropertyDescriptor(proto, "size");
+        assert_equals(typeof sizeDesc.get, "function", `size getter should be a function`);
+        assert_equals(sizeDesc.set, undefined, `size should not have a setter`);
+        assert_equals(sizeDesc.enumerable, true, `size enumerable`);
+        assert_equals(sizeDesc.configurable, true, `size configurable`);
+        assert_equals(sizeDesc.get.length, 0, `size getter length should have the right length`);
+        assert_equals(sizeDesc.get.name, "size", `size getter have the right name`);
+    }, `${this.name} interface: setlike<${member.idlType.map(t => t.idlType).join(", ")}>`);
+};
+
+IdlInterface.prototype.test_member_iterable = function(member) {
+    subsetTestByKey(this.name, test, () => {
+        const isPairIterator = member.idlType.length === 2;
+        const proto = this.get_interface_object().prototype;
+
+        const methods = [
+            ["entries", 0],
+            ["keys", 0],
+            ["values", 0],
+            ["forEach", 1]
+        ];
+
+        for (const [name, length] of methods) {
+            const desc = Object.getOwnPropertyDescriptor(proto, name);
+            assert_equals(typeof desc.value, "function", `${name} should be a function`);
+            assert_equals(desc.enumerable, true, `${name} enumerable`);
+            assert_equals(desc.configurable, true, `${name} configurable`);
+            assert_equals(desc.writable, true, `${name} writable`);
+            assert_equals(desc.value.length, length, `${name} function object length should be ${length}`);
+            assert_equals(desc.value.name, name, `${name} function object should have the right name`);
+
+            if (!isPairIterator) {
+                assert_equals(desc.value, Array.prototype[name], `${name} equality with Array.prototype version`);
+            }
+        }
+
+        const iteratorDesc = Object.getOwnPropertyDescriptor(proto, Symbol.iterator);
+        assert_equals(iteratorDesc.enumerable, false, `@@iterator enumerable`);
+        assert_equals(iteratorDesc.configurable, true, `@@iterator configurable`);
+        assert_equals(iteratorDesc.writable, true, `@@iterator writable`);
 
         if (isPairIterator) {
-            assert_equals(proto["entries"], proto[Symbol.asyncIterator], "entries method should be the same as @@asyncIterator method");
-            ["entries", "keys", "values"].forEach(property => {
-                var desc = Object.getOwnPropertyDescriptor(proto, property);
-                assert_equals(typeof desc.value, "function", property + " property should be a function");
-                assert_equals(desc.value.length, 0, property + " function object length should be 0");
-                assert_equals(desc.value.name, property, property + " function object should have the right name");
-            });
+            assert_equals(iteratorDesc.value, proto.entries, `@@iterator equality with entries`);
         } else {
-            assert_equals(proto["values"], proto[Symbol.asyncIterator], "values method should be the same as @@asyncIterator method");
-            assert_false("entries" in proto, "should not have an entries method");
-            assert_false("keys" in proto, "should not have a keys method");
+            assert_equals(iteratorDesc.value, Array.prototype[Symbol.iterator], `@@iterator equality with Array.prototype version`);
         }
-    }.bind(this), this.name + " interface: async iterable<" + member.idlType.map(function(t) { return t.idlType; }).join(", ") + ">");
+    }, `${this.name} interface: iterable<${member.idlType.map(t => t.idlType).join(", ")}>`);
+};
+
+IdlInterface.prototype.test_member_async_iterable = function(member) {
+    subsetTestByKey(this.name, test, () => {
+        const isPairIterator = member.idlType.length === 2;
+        const proto = this.get_interface_object().prototype;
+
+        // Note that although the spec allows arguments, which will be passed to the @@asyncIterator
+        // method (which is either values or entries), those arguments must always be optional. So
+        // length of 0 is still correct for values and entries.
+        const methods = [
+            ["values", 0],
+        ];
+
+        if (isPairIterator) {
+            methods.push(
+                ["entries", 0],
+                ["keys", 0]
+            );
+        }
+
+        for (const [name, length] of methods) {
+            const desc = Object.getOwnPropertyDescriptor(proto, name);
+            assert_equals(typeof desc.value, "function", `${name} should be a function`);
+            assert_equals(desc.enumerable, true, `${name} enumerable`);
+            assert_equals(desc.configurable, true, `${name} configurable`);
+            assert_equals(desc.writable, true, `${name} writable`);
+            assert_equals(desc.value.length, length, `${name} function object length should be ${length}`);
+            assert_equals(desc.value.name, name, `${name} function object should have the right name`);
+        }
+
+        const iteratorDesc = Object.getOwnPropertyDescriptor(proto, Symbol.asyncIterator);
+        assert_equals(iteratorDesc.enumerable, false, `@@iterator enumerable`);
+        assert_equals(iteratorDesc.configurable, true, `@@iterator configurable`);
+        assert_equals(iteratorDesc.writable, true, `@@iterator writable`);
+
+        if (isPairIterator) {
+            assert_equals(iteratorDesc.value, proto.entries, `@@iterator equality with entries`);
+        } else {
+            assert_equals(iteratorDesc.value, proto.values, `@@iterator equality with values`);
+        }
+    }, `${this.name} interface: async iterable<${member.idlType.map(t => t.idlType).join(", ")}>`);
 };
 
 IdlInterface.prototype.test_member_stringifier = function(member)
@@ -2603,6 +2726,12 @@ IdlInterface.prototype.test_members = function()
             } else {
                 this.test_member_iterable(member);
             }
+            break;
+        case "maplike":
+            this.test_member_maplike(member);
+            break;
+        case "setlike":
+            this.test_member_setlike(member);
             break;
         default:
             // TODO: check more member types.
@@ -3332,9 +3461,9 @@ IdlNamespace.prototype.test = function ()
  * idl_test is a promise_test wrapper that handles the fetching of the IDL,
  * avoiding repetitive boilerplate.
  *
- * @param {String|String[]} srcs Spec name(s) for source idl files (fetched from
+ * @param {String[]} srcs Spec name(s) for source idl files (fetched from
  *      /interfaces/{name}.idl).
- * @param {String|String[]} deps Spec name(s) for dependency idl files (fetched
+ * @param {String[]} deps Spec name(s) for dependency idl files (fetched
  *      from /interfaces/{name}.idl). Order is important - dependencies from
  *      each source will only be included if they're already know to be a
  *      dependency (i.e. have already been seen).

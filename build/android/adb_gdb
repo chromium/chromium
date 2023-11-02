@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 #
@@ -355,8 +355,8 @@ elif [[ -z "$(ls "$SYMBOL_DIR"/lib*.so 2>/dev/null)" ]]; then
 fi
 
 if [ -z "$NDK_DIR" ]; then
-  ANDROID_NDK_ROOT=$(PYTHONPATH=$CHROMIUM_SRC/build/android python -c \
-'from pylib.constants import ANDROID_NDK_ROOT; print ANDROID_NDK_ROOT,')
+  ANDROID_NDK_ROOT=$(PYTHONPATH=$CHROMIUM_SRC/build/android python3 -c \
+    'from pylib.constants import ANDROID_NDK_ROOT; print(ANDROID_NDK_ROOT,)')
 else
   if [ ! -d "$NDK_DIR" ]; then
     panic "Invalid directory: $NDK_DIR"

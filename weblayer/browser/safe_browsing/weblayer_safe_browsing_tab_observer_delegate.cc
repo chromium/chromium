@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,8 +32,11 @@ CreateClientSideDetectionHost(content::WebContents* web_contents,
           &ProfileImpl::access_token_fetch_delegate,
           base::Unretained(ProfileImpl::FromBrowserContext(browser_context)))),
       static_cast<BrowserContextImpl*>(browser_context)->IsOffTheRecord(),
+      // TODO(crbug.com/1171215): Change this to production mechanism for
+      // enabling Gaia-keyed CSD once that mechanism is determined. See also
+      // crbug.com/1190615.
       /* account_signed_in_callback= */ base::BindRepeating([]() {
-        return true;
+        return false;
       }));
 }
 

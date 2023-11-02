@@ -1,14 +1,19 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/apps/intent_helper/common_apps_navigation_throttle.h"
 
+#include <sstream>
 #include <string>
 #include <utility>
 
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/containers/contains.h"
+#include "base/memory/values_equivalent.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "base/time/default_tick_clock.h"
+#include "base/time/tick_clock.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -20,7 +25,6 @@
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -29,6 +33,9 @@
 #include "chrome/grit/browser_resources.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_handle.h"
@@ -47,35 +54,23 @@ using ThrottleCheckResult = content::NavigationThrottle::ThrottleCheckResult;
 
 // TODO(crbug.com/1251490 ) Update to make disabled page works in Lacros.
 std::string GetAppDisabledErrorPage() {
-  base::DictionaryValue strings;
+  base::Value::Dict strings;
 
-  strings.SetString(
-      "disabledPageHeader",
-      l10n_util::GetStringUTF16(IDS_CHROME_URLS_DISABLED_PAGE_HEADER));
-  strings.SetString(
-      "disabledPageTitle",
-      l10n_util::GetStringUTF16(IDS_CHROME_URLS_DISABLED_PAGE_TITLE));
-  strings.SetString(
-      "disabledPageMessage",
-      l10n_util::GetStringUTF16(IDS_CHROME_URLS_DISABLED_PAGE_MESSAGE));
+  strings.Set("disabledPageHeader",
+              l10n_util::GetStringUTF16(IDS_CHROME_URLS_DISABLED_PAGE_HEADER));
+  strings.Set("disabledPageTitle",
+              l10n_util::GetStringUTF16(IDS_CHROME_URLS_DISABLED_PAGE_TITLE));
+  strings.Set("disabledPageMessage",
+              l10n_util::GetStringUTF16(IDS_CHROME_URLS_DISABLED_PAGE_MESSAGE));
   std::string html =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_CHROME_URLS_DISABLED_PAGE_HTML);
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, &strings);
-  return webui::GetI18nTemplateHtml(html, &strings);
+  return webui::GetI18nTemplateHtml(html, strings);
 }
 
 bool IsAppDisabled(const std::string& app_id) {
-  PrefService* const local_state = g_browser_process->local_state();
-  if (!local_state)
-    return false;
-
-  const base::ListValue* disabled_system_features_pref =
-      local_state->GetList(policy::policy_prefs::kSystemFeaturesDisableList);
-  if (!disabled_system_features_pref)
-    return false;
-
   policy::SystemFeature system_feature =
       policy::SystemFeaturesDisableListPolicyHandler::GetSystemFeatureFromAppId(
           app_id);
@@ -83,15 +78,14 @@ bool IsAppDisabled(const std::string& app_id) {
   if (system_feature == policy::SystemFeature::kUnknownSystemFeature)
     return false;
 
-  const auto disabled_system_features =
-      disabled_system_features_pref->GetList();
-  return base::Contains(disabled_system_features, base::Value(system_feature));
+  return policy::SystemFeaturesDisableListPolicyHandler::
+      IsSystemFeatureDisabled(system_feature, g_browser_process->local_state());
 }
 
 // Usually we want to only capture navigations from clicking a link. For a
 // subset of apps, we want to capture typing into the omnibox as well.
 bool ShouldOnlyCaptureLinks(const std::vector<std::string>& app_ids) {
-  for (auto app_id : app_ids) {
+  for (const auto& app_id : app_ids) {
     if (app_id == ash::kChromeUITrustedProjectorSwaAppId)
       return false;
   }
@@ -103,7 +97,7 @@ bool IsSystemWebApp(Profile* profile, const std::string& app_id) {
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->AppRegistryCache()
       .ForOneApp(app_id, [&is_system_web_app](const apps::AppUpdate& update) {
-        if (update.InstallReason() == apps::mojom::InstallReason::kSystem) {
+        if (update.InstallReason() == apps::InstallReason::kSystem) {
           is_system_web_app = true;
         }
       });
@@ -114,19 +108,29 @@ bool IsSystemWebApp(Profile* profile, const std::string& app_id) {
 // one for SWAs, if applicable.
 GURL RedirectUrlIfSwa(Profile* profile,
                       const std::string& app_id,
-                      const GURL& url) {
+                      const GURL& url,
+                      const base::TickClock* clock) {
   if (!IsSystemWebApp(profile, app_id))
     return url;
 
   // Projector:
   if (app_id == ash::kChromeUITrustedProjectorSwaAppId &&
-      url.DeprecatedGetOriginAsURL() ==
-          GURL(ash::kChromeUIUntrustedProjectorPwaUrl)
-              .DeprecatedGetOriginAsURL()) {
-    std::string override_url = ash::kChromeUITrustedProjectorAppUrl;
+      url.GetWithEmptyPath() == GURL(ash::kChromeUIUntrustedProjectorPwaUrl)) {
+    std::string override_url = ash::kChromeUITrustedProjectorUrl;
     if (url.path().length() > 1)
       override_url += url.path().substr(1);
-    GURL result(override_url);
+    std::stringstream ss;
+    // Since ChromeOS doesn't reload an app if the URL doesn't change, the line
+    // below appends a unique timestamp to the URL to force a reload.
+    // TODO(b/211787536): Remove the timestamp after we update the trusted URL
+    // to match the user's navigations through the post message api.
+    ss << override_url << "?timestamp=" << clock->NowTicks();
+
+    if (url.has_query()) {
+      ss << '&' << url.query();
+    }
+
+    GURL result(ss.str());
     DCHECK(result.is_valid());
     return result;
   }
@@ -134,6 +138,18 @@ GURL RedirectUrlIfSwa(Profile* profile,
 
   // No matching SWAs found, returning original url.
   return url;
+}
+
+IntentHandlingMetrics::Platform GetMetricsPlatform(AppType app_type) {
+  switch (app_type) {
+    case AppType::kArc:
+      return IntentHandlingMetrics::Platform::ARC;
+    case AppType::kWeb:
+      return IntentHandlingMetrics::Platform::PWA;
+    default:
+      NOTREACHED();
+      return IntentHandlingMetrics::Platform::ARC;
+  }
 }
 
 }  // namespace
@@ -165,6 +181,16 @@ CommonAppsNavigationThrottle::MaybeCreate(content::NavigationHandle* handle) {
   return std::make_unique<CommonAppsNavigationThrottle>(handle);
 }
 
+// static
+const base::TickClock* CommonAppsNavigationThrottle::clock_ =
+    base::DefaultTickClock::GetInstance();
+
+// static
+void CommonAppsNavigationThrottle::SetClockForTesting(
+    const base::TickClock* tick_clock) {
+  clock_ = tick_clock;
+}
+
 CommonAppsNavigationThrottle::CommonAppsNavigationThrottle(
     content::NavigationHandle* navigation_handle)
     : apps::AppsNavigationThrottle(navigation_handle) {}
@@ -183,7 +209,7 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
 
   std::vector<std::string> app_ids =
-      proxy->GetAppIdsForUrl(url, /*exclude_browser=*/true);
+      proxy->GetAppIdsForUrl(url, /*exclude_browsers=*/true);
 
   if (app_ids.empty())
     return false;
@@ -192,27 +218,25 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
     return false;
 
   absl::optional<std::string> preferred_app_id =
-      proxy->PreferredApps().FindPreferredAppForUrl(url);
+      proxy->PreferredAppsList().FindPreferredAppForUrl(url);
   if (!preferred_app_id.has_value() ||
       !base::Contains(app_ids, preferred_app_id.value())) {
     return false;
   }
 
-  // Only automatically launch PWA if the flag is on.
-  apps::mojom::AppType app_type =
+  // Only automatically launch supported app types.
+  auto app_type =
       proxy->AppRegistryCache().GetAppType(preferred_app_id.value());
-  if (app_type != apps::mojom::AppType::kArc &&
-      (app_type != apps::mojom::AppType::kWeb ||
-       !base::FeatureList::IsEnabled(features::kIntentPickerPWAPersistence)) &&
+  if (app_type != AppType::kArc && app_type != AppType::kWeb &&
       !IsSystemWebApp(profile, preferred_app_id.value())) {
     return false;
   }
 
   // Don't capture if already inside the target app scope.
-  if (app_type == apps::mojom::AppType::kWeb) {
-    auto* tab_helper = web_app::WebAppTabHelper::FromWebContents(web_contents);
-    if (tab_helper && tab_helper->GetAppId() == preferred_app_id.value())
-      return false;
+  if (app_type == AppType::kWeb &&
+      base::ValuesEquivalent(web_app::WebAppTabHelper::GetAppId(web_contents),
+                             &preferred_app_id.value())) {
+    return false;
   }
 
   // If this is a prerender navigation that would otherwise launch an app, we
@@ -224,29 +248,44 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
   if (handle->IsInPrerenderedMainFrame())
     return true;
 
-  auto launch_source = navigate_from_link()
-                           ? apps::mojom::LaunchSource::kFromLink
-                           : apps::mojom::LaunchSource::kFromOmnibox;
-  GURL redirected_url =
-      RedirectUrlIfSwa(profile, preferred_app_id.value(), url);
-  proxy->LaunchAppWithUrl(
-      preferred_app_id.value(),
-      GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerWindow,
-                    WindowOpenDisposition::NEW_WINDOW,
-                    /*prefer_container=*/true),
-      redirected_url, launch_source,
-      apps::MakeWindowInfo(display::kDefaultDisplayId));
-
   const GURL& last_committed_url = web_contents->GetLastCommittedURL();
-  if (!last_committed_url.is_valid() || last_committed_url.IsAboutBlank())
+  if (!last_committed_url.is_valid() || last_committed_url.IsAboutBlank() ||
+      // After clicking a link in various apps (eg gchat), a blank redirect page
+      // is left behind. Remove it to clean up. WasInitiatedByLinkClick()
+      // returns false for links clicked from apps.
+      !handle->WasInitiatedByLinkClick()) {
     web_contents->ClosePage();
+  }
 
-  IntentHandlingMetrics::RecordIntentPickerUserInteractionMetrics(
-      profile,
-      /*selected_app_package=*/preferred_app_id.value(),
-      GetPickerEntryType(app_type),
-      apps::IntentPickerCloseReason::PREFERRED_APP_FOUND,
-      apps::Source::kHttpOrHttps, /*should_persist=*/false);
+  auto launch_source = navigate_from_link() ? LaunchSource::kFromLink
+                                            : LaunchSource::kFromOmnibox;
+  GURL redirected_url =
+      RedirectUrlIfSwa(profile, preferred_app_id.value(), url, clock_);
+  if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
+    // The tab may have been closed, which runs async and causes the browser
+    // window to be refocused. Post a task to launch the app to ensure launching
+    // happens after the tab closed, otherwise the opened app window might be
+    // inactivated.
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &AppServiceProxy::LaunchAppWithUrlForBind, proxy->GetWeakPtr(),
+            preferred_app_id.value(),
+            GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
+                          /*prefer_container=*/true),
+            redirected_url, launch_source,
+            std::make_unique<WindowInfo>(display::kDefaultDisplayId)));
+  } else {
+    proxy->LaunchAppWithUrl(
+        preferred_app_id.value(),
+        GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
+                      /*prefer_container=*/true),
+        redirected_url, ConvertLaunchSourceToMojomLaunchSource(launch_source),
+        apps::MakeWindowInfo(display::kDefaultDisplayId));
+  }
+
+  IntentHandlingMetrics::RecordPreferredAppLinkClickMetrics(
+      GetMetricsPlatform(app_type));
   return true;
 }
 
@@ -259,9 +298,9 @@ bool CommonAppsNavigationThrottle::ShouldShowDisablePage(
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   std::vector<std::string> app_ids =
       apps::AppServiceProxyFactory::GetForProfile(profile)->GetAppIdsForUrl(
-          url, /*exclude_browser=*/true, /*exclude_browser_tab_apps=*/false);
+          url, /*exclude_browsers=*/true, /*exclude_browser_tab_apps=*/false);
 
-  for (auto app_id : app_ids) {
+  for (const auto& app_id : app_ids) {
     if (IsAppDisabled(app_id)) {
       return true;
     }

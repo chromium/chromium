@@ -1,0 +1,19 @@
+DefaultSearchProvider:
+  caption: Default search provider
+  policies:
+  - DefaultSearchProviderEnabled
+  - DefaultSearchProviderName
+  - DefaultSearchProviderKeyword
+  - DefaultSearchProviderSearchURL
+  - DefaultSearchProviderSuggestURL
+  - DefaultSearchProviderInstantURL
+  - DefaultSearchProviderIconURL
+  - DefaultSearchProviderEncodings
+  - DefaultSearchProviderAlternateURLs
+  - DefaultSearchProviderSearchTermsReplacementKey
+  - DefaultSearchProviderImageURL
+  - DefaultSearchProviderNewTabURL
+  - DefaultSearchProviderSearchURLPostParams
+  - DefaultSearchProviderSuggestURLPostParams
+  - DefaultSearchProviderInstantURLPostParams
+  - DefaultSearchProviderImageURLPostParams

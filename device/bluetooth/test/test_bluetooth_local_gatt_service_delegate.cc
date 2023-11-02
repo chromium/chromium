@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@ void TestBluetoothLocalGattServiceDelegate::OnCharacteristicReadRequest(
   EXPECT_EQ(expected_characteristic_->GetIdentifier(),
             characteristic->GetIdentifier());
   if (should_fail_) {
-    std::move(callback).Run(BluetoothGattService::GATT_ERROR_FAILED,
+    std::move(callback).Run(BluetoothGattService::GattErrorCode::kFailed,
                             /*value=*/std::vector<uint8_t>());
     return;
   }
@@ -85,7 +85,7 @@ void TestBluetoothLocalGattServiceDelegate::OnDescriptorReadRequest(
     ValueCallback callback) {
   EXPECT_EQ(expected_descriptor_->GetIdentifier(), descriptor->GetIdentifier());
   if (should_fail_) {
-    std::move(callback).Run(BluetoothGattService::GATT_ERROR_FAILED,
+    std::move(callback).Run(BluetoothGattService::GattErrorCode::kFailed,
                             /*value=*/std::vector<uint8_t>());
     return;
   }

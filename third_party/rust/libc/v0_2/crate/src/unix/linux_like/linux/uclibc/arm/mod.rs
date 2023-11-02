@@ -10,7 +10,6 @@ pub type fsfilcnt_t = ::c_ulong;
 pub type ino_t = ::c_ulong;
 pub type off_t = ::c_long;
 pub type pthread_t = ::c_ulong;
-pub type rlim_t = ::c_ulong;
 pub type suseconds_t = ::c_long;
 
 pub type nlink_t = ::c_uint;
@@ -44,14 +43,14 @@ s! {
 
     pub struct stat {
         pub st_dev: ::c_ulonglong,
-        pub __pad1: ::c_ushort,
+        __pad1: ::c_ushort,
         pub st_ino: ::ino_t,
         pub st_mode: ::mode_t,
         pub st_nlink: ::nlink_t,
         pub st_uid: ::uid_t,
         pub st_gid: ::gid_t,
         pub st_rdev: ::c_ulonglong,
-        pub __pad2: ::c_ushort,
+        __pad2: ::c_ushort,
         pub st_size: ::off_t,
         pub st_blksize: ::blksize_t,
         pub st_blocks: ::blkcnt_t,
@@ -61,8 +60,8 @@ s! {
         pub st_mtime_nsec: ::c_long,
         pub st_ctime: ::time_t,
         pub st_ctime_nsec: ::c_long,
-        pub __unused4: ::c_ulong,
-        pub __unused5: ::c_ulong,
+        __unused4: ::c_ulong,
+        __unused5: ::c_ulong,
     }
 
     pub struct stat64
@@ -202,49 +201,48 @@ s! {
         pub cuid: ::uid_t,
         pub cgid: ::gid_t,
         pub mode: ::c_ushort,
-        pub __pad1: ::c_ushort,
+        __pad1: ::c_ushort,
         pub __seq: ::c_ushort,
-        pub __pad2: ::c_ushort,
-        pub __unused1: ::c_ulong,
-        pub __unused2: ::c_ulong,
+        __pad2: ::c_ushort,
+        __unused1: ::c_ulong,
+        __unused2: ::c_ulong,
     }
 
     pub struct msqid_ds {
         pub msg_perm: ::ipc_perm,
         pub msg_stime: ::time_t,
-        pub __unused1: ::c_ulong,
+        __unused1: ::c_ulong,
         pub msg_rtime: ::time_t,
-        pub __unused2: ::c_ulong,
+        __unused2: ::c_ulong,
         pub msg_ctime: ::time_t,
-        pub __unused3: ::c_ulong,
-        pub __msg_cbytes: ::c_ulong,
+        __unused3: ::c_ulong,
+        __msg_cbytes: ::c_ulong,
         pub msg_qnum: ::msgqnum_t,
         pub msg_qbytes: ::msglen_t,
         pub msg_lspid: ::pid_t,
         pub msg_lrpid: ::pid_t,
-        pub __unused4: ::c_ulong,
-        pub __unused5: ::c_ulong,
+        __unused4: ::c_ulong,
+        __unused5: ::c_ulong,
     }
 
     pub struct shmid_ds {
         pub shm_perm: ::ipc_perm,
         pub shm_segsz: ::size_t,
         pub shm_atime: ::time_t,
-        pub __unused1: ::c_ulong,
+        __unused1: ::c_ulong,
         pub shm_dtime: ::time_t,
-        pub __unused2: ::c_ulong,
+        __unused2: ::c_ulong,
         pub shm_ctime: ::time_t,
-        pub __unused3: ::c_ulong,
+        __unused3: ::c_ulong,
         pub shm_cpid: ::pid_t,
         pub shm_lpid: ::pid_t,
         pub shm_nattch: ::shmatt_t,
-        pub __unused4: ::c_ulong,
-        pub __unused5: ::c_ulong,
+        __unused4: ::c_ulong,
+        __unused5: ::c_ulong,
     }
 }
 
 pub const O_CLOEXEC: ::c_int = 0o2000000;
-pub const RLIM_INFINITY: rlim_t = !0;
 pub const __SIZEOF_PTHREAD_ATTR_T: usize = 36;
 pub const __SIZEOF_PTHREAD_MUTEX_T: usize = 24;
 pub const __SIZEOF_PTHREAD_MUTEXATTR_T: usize = 4;
@@ -417,9 +415,6 @@ pub const EUSERS: ::c_int = 0x57;
 pub const EXFULL: ::c_int = 0x36;
 pub const FF1: ::c_int = 0x8000;
 pub const FFDLY: ::c_int = 0x8000;
-pub const FIONBIO: ::c_ulong = 0x5421;
-pub const FIOCLEX: ::c_ulong = 0x5451;
-pub const FIONCLEX: ::c_ulong = 0x5450;
 pub const FLUSHO: ::tcflag_t = 0x1000;
 pub const F_GETLK: ::c_int = 0x5;
 pub const F_SETLK: ::c_int = 0x6;
@@ -517,8 +512,6 @@ pub const TABDLY: ::c_int = 0x1800;
 pub const TCSADRAIN: ::c_int = 0x1;
 pub const TCSAFLUSH: ::c_int = 0x2;
 pub const TCSANOW: ::c_int = 0;
-pub const TIOCGWINSZ: ::c_int = 0x5413;
-pub const TIOCSWINSZ: ::c_int = 0x5414;
 pub const TOSTOP: ::tcflag_t = 0x100;
 pub const VDISCARD: usize = 0xd;
 pub const VEOF: usize = 0x4;
@@ -892,10 +885,6 @@ pub const SYS_pkey_free: ::c_long = 396;
 pub const SYS_statx: ::c_int = 397;
 pub const SYS_pidfd_open: ::c_long = 434;
 pub const SYS_clone3: ::c_long = 435;
-
-extern "C" {
-    pub fn ioctl(fd: ::c_int, request: ::c_ulong, ...) -> ::c_int;
-}
 
 cfg_if! {
     if #[cfg(libc_align)] {

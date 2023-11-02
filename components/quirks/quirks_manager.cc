@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/post_task.h"
 #include "base/task/task_runner.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
@@ -168,10 +167,9 @@ void QuirksManager::OnIccFilePathRequestCompleted(
     return;
   }
 
-  double last_check =
-      local_state_->GetDictionary(prefs::kQuirksClientLastServerCheck)
-          ->FindDoubleKey(IdToHexString(product_id))
-          .value_or(0.0);
+  double last_check = local_state_->GetDict(prefs::kQuirksClientLastServerCheck)
+                          .FindDouble(IdToHexString(product_id))
+                          .value_or(0.0);
 
   const base::TimeDelta time_since =
       base::Time::Now() - base::Time::FromDoubleT(last_check);
@@ -207,7 +205,7 @@ void QuirksManager::SetLastServerCheck(int64_t product_id,
                                        const base::Time& last_check) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DictionaryPrefUpdate dict(local_state_, prefs::kQuirksClientLastServerCheck);
-  dict->SetDouble(IdToHexString(product_id), last_check.ToDoubleT());
+  dict->SetDoubleKey(IdToHexString(product_id), last_check.ToDoubleT());
 }
 
 }  // namespace quirks

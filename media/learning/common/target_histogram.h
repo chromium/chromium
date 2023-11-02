@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,11 @@ class TargetHistogramDataView;
 struct COMPONENT_EXPORT(LEARNING_COMMON) TargetHistogramPair {
   TargetValue target_value;
   double count;
+
+  TargetHistogramPair() = default;
+
+  TargetHistogramPair(const TargetValue& value, double count)
+      : target_value(value), count(count) {}
 };
 
 // Histogram of target values that allows fractional counts.

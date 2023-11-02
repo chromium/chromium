@@ -9,6 +9,7 @@
 <translation id="1591070050619849194">Slå av alle bildeanimasjoner.</translation>
 <translation id="1703735871906654364">Markørsurfing</translation>
 <translation id="1791496371305830581">Tillat alle animerte bilder.</translation>
+<translation id="1974060860693918893">Avanserte</translation>
 <translation id="1996252509865389616">Aktivér utvidelsen</translation>
 <translation id="2079545284768500474">Angre</translation>
 <translation id="2179565792157161713">Åpne lang beskrivelse i ny fane</translation>
@@ -51,6 +52,7 @@
 <translation id="6170146920149900756">Color Enhancer</translation>
 <translation id="633394792577263429">Hold &lt;span class='key'&gt;Ctrl-tasten&lt;/span&gt; nede for å flytte markøren ord for ord.</translation>
 <translation id="6550675742724504774">Alternativer</translation>
+<translation id="6699630355767768222">Trinn 3: Overstyr fargeaksen for korrigeringen.</translation>
 <translation id="6838518108677880446">Konfigurasjon:</translation>
 <translation id="690628312087070417">Når markøren flyttes et langt stykke:</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -65,5 +67,6 @@
 <translation id="8321034316479930120">Animasjonsretningslinjer</translation>
 <translation id="8480209185614411573">Høy kontrast</translation>
 <translation id="8609925175482059018">Trykk på &lt;span class='key'&gt;F7&lt;/span&gt; for å slå på markørsurfing. Trykk på nytt for å slå det av igjen.</translation>
+<translation id="8798099450830957504">Standard</translation>
 <translation id="894241283505723656">Lange beskrivelser på hurtigmenyen</translation>
 </translationbundle>

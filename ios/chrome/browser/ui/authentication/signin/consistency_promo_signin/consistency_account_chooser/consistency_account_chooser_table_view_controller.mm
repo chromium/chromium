@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 
 #import "base/check.h"
 #import "base/mac/foundation_util.h"
-#include "base/notreached.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
+#import "base/notreached.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_identity_item.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_table_view_controller_action_delegate.h"
@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/identity_item_configurator.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_image_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -101,7 +102,7 @@ CGFloat kSectionFooterHeight = 8.;
 
 - (CGFloat)tableView:(UITableView*)tableView
     heightForFooterInSection:(NSInteger)section {
-  if ([self.tableViewModel footerForSection:section])
+  if ([self.tableViewModel footerForSectionIndex:section])
     return UITableViewAutomaticDimension;
   return kSectionFooterHeight;
 }
@@ -113,7 +114,7 @@ CGFloat kSectionFooterHeight = 8.;
       initWithType:ItemTypeRestrictedAccountsFooter];
   footer.text =
       l10n_util::GetNSString(IDS_IOS_OPTIONS_ACCOUNTS_RESTRICTED_IDENTITIES);
-  footer.urls = std::vector<GURL>{GURL(kChromeUIManagementURL)};
+  footer.urls = @[ [[CrURL alloc] initWithGURL:GURL(kChromeUIManagementURL)] ];
   return footer;
 }
 
@@ -161,7 +162,7 @@ CGFloat kSectionFooterHeight = 8.;
     viewForFooterInSection:(NSInteger)section {
   UIView* view = [super tableView:tableView viewForFooterInSection:section];
   NSInteger sectionIdentifier =
-      [self.tableViewModel sectionIdentifierForSection:section];
+      [self.tableViewModel sectionIdentifierForSectionIndex:section];
   switch (sectionIdentifier) {
     case IdentitySectionIdentifier: {
       TableViewLinkHeaderFooterView* linkView =
@@ -176,8 +177,8 @@ CGFloat kSectionFooterHeight = 8.;
 
 #pragma mark - TableViewLinkHeaderFooterItemDelegate
 
-- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(GURL)URL {
-  DCHECK(URL == GURL(kChromeUIManagementURL));
+- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
+  DCHECK(URL.gurl == GURL(kChromeUIManagementURL));
   DCHECK(self.actionDelegate);
   [self.actionDelegate showManagementHelpPage];
 }

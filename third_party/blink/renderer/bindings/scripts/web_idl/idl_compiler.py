@@ -1,7 +1,8 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import collections
 import functools
 import itertools
 import posixpath
@@ -226,9 +227,9 @@ class IdlCompiler(object):
             propagate(('ContextEnabled', 'add_context_enabled_feature'))
             propagate(('CrossOriginIsolated', 'set_only_in_coi_contexts'),
                       default_value=True)
-            propagate(
-                ('DirectSocketEnabled', 'set_only_in_direct_socket_contexts'),
-                default_value=True)
+            propagate(('IsolatedApplication',
+                       'set_only_in_isolated_application_contexts'),
+                      default_value=True)
             propagate(('SecureContext', 'set_only_in_secure_contexts'),
                       default_value=True)
 
@@ -493,12 +494,12 @@ class IdlCompiler(object):
         self._ir_map.move_to_new_phase()
 
         def make_groups(group_ir_class, operations):
-            sort_key = lambda x: x.identifier
+            sort_key = lambda x: (x.is_static, x.identifier)
             return [
                 group_ir_class(list(operations_in_group))
-                for identifier, operations_in_group in itertools.groupby(
+                for key, operations_in_group in itertools.groupby(
                     sorted(operations, key=sort_key), key=sort_key)
-                if identifier
+                if key[1]  # This is the operation identifier.
             ]
 
         for old_ir in old_irs:
@@ -526,7 +527,7 @@ class IdlCompiler(object):
 
     def _propagate_extattrs_to_overload_group(self):
         ANY_OF = ('CrossOrigin', 'CrossOriginIsolated', 'Custom',
-                  'DirectSocketEnabled', 'LegacyLenientThis',
+                  'IsolatedApplication', 'LegacyLenientThis',
                   'LegacyUnforgeable', 'NoAllocDirectCall', 'NotEnumerable',
                   'PerWorldBindings', 'SecureContext', 'Unscopable')
 
@@ -609,12 +610,13 @@ class IdlCompiler(object):
                 else:
                     group.exposure.set_only_in_coi_contexts(True)
 
-                # [DirectSocketEnabled]
-                if any(not exposure.only_in_direct_socket_contexts
+                # [IsolatedApplication]
+                if any(not exposure.only_in_isolated_application_contexts
                        for exposure in exposures):
                     pass  # Exposed by default.
                 else:
-                    group.exposure.set_only_in_direct_socket_contexts(True)
+                    group.exposure.set_only_in_isolated_application_contexts(
+                        True)
 
                 # [SecureContext]
                 if any(exposure.only_in_secure_contexts is False
@@ -680,7 +682,11 @@ class IdlCompiler(object):
             self._ir_map.add(new_ir)
 
             assert not new_ir.exposed_constructs
-            global_names = new_ir.extended_attributes.values_of('Global')
+            # Not only [Global] but also [TargetOfExposed] will expose IDL
+            # constructs with [Exposed].
+            global_names = (
+                new_ir.extended_attributes.values_of('Global') +
+                new_ir.extended_attributes.values_of('TargetOfExposed'))
             if not global_names:
                 continue
             constructs = set()
@@ -798,18 +804,59 @@ class IdlCompiler(object):
                     ir_i.sub_union_irs.append(ir_j)
 
         for ir in sorted(irs.values()):
-            self._db.register(DatabaseBody.Kind.UNION, Union(ir))
+            union = Union(ir)
+            # Make all UnionType instances point to the same Union.
+            for union_idl_type in union.idl_types:
+                union_idl_type.set_union_definition_object(union)
+            self._db.register(DatabaseBody.Kind.UNION, union)
 
     def _create_public_observable_arrays(self):
-        grouped_attrs = {}  # {observable array type: list of attributes}
+        # ObservableArrayType instances with the same element type are
+        # indistinguishable (in an __eq__() and __hash__() sense).
+        #
+        # We go through all attributes that are ObservableArrayTypes, group the
+        # indistinguishable ones together and later assign one ObservableArray
+        # to all items in the group.
+
+        # This can become a dataclasses.dataclass once we can start using
+        # Python 3 language features in this file.
+        class ObservableArrayTypeInfo(object):
+            def __init__(self):
+                self.attributes = []
+                self.for_testing = True
+                self.idl_types = []
+
+        grouped_type_info = collections.defaultdict(ObservableArrayTypeInfo)
+
         for interface in (self._db.find_by_kind(
                 DatabaseBody.Kind.INTERFACE).values()):
             for attribute in interface.attributes:
                 idl_type = attribute.idl_type.unwrap()
                 if not idl_type.is_observable_array:
                     continue
-                grouped_attrs.setdefault(idl_type, []).append(attribute)
+                if not interface.code_generator_info.for_testing:
+                    grouped_type_info[idl_type].for_testing = False
+                grouped_type_info[idl_type].attributes.append(attribute)
+                grouped_type_info[idl_type].idl_types.append(idl_type)
 
-        for idl_type, attributes in grouped_attrs.items():
+        for idl_type_info in grouped_type_info.values():
+            # All the types in idl_types are indistinguishable; pick one for
+            # ObservableArray.
+            observable_array = ObservableArray(idl_type_info.idl_types[0],
+                                               idl_type_info.attributes,
+                                               idl_type_info.for_testing)
+            for idl_type in idl_type_info.idl_types:
+                if idl_type.observable_array_definition_object:
+                    # When an IDL attribute is declared in an IDL interface
+                    # mixin, it's possible that the exactly same
+                    # web_idl.Attribute is held in two (or more)
+                    # web_idl.Interfaces. Then, it's possible that
+                    # set_observable_array_definition_object has already been
+                    # called.
+                    assert (idl_type.observable_array_definition_object is
+                            observable_array)
+                    continue
+                idl_type.set_observable_array_definition_object(
+                    observable_array)
             self._db.register(DatabaseBody.Kind.OBSERVABLE_ARRAY,
-                              ObservableArray(idl_type, attributes))
+                              observable_array)

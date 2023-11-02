@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "base/callback_forward.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
 
 class Browser;
 class Profile;
@@ -18,11 +19,12 @@ class WebContents;
 
 namespace webapps {
 enum class WebappInstallSource;
+enum class InstallResultCode;
 }
 
 namespace web_app {
 
-enum class InstallResultCode;
+enum class WebAppInstallFlow;
 
 // TODO(loyso): Rework these functions (API). Move all of them into
 // WebAppDialogManager.
@@ -35,14 +37,12 @@ bool CanCreateWebApp(const Browser* browser);
 bool CanPopOutWebApp(Profile* profile);
 
 using WebAppInstalledCallback =
-    base::OnceCallback<void(const AppId& app_id, InstallResultCode code)>;
+    base::OnceCallback<void(const AppId& app_id,
+                            webapps::InstallResultCode code)>;
 
 // Initiates user install of a WebApp for the current page.
-// If |force_shortcut_app| is true, the current page will be installed even if
-// the site does not meet installability requirements (see
-// |AppBannerManager::PerformInstallableCheck|).
 void CreateWebAppFromCurrentWebContents(Browser* browser,
-                                        bool force_shortcut_app);
+                                        WebAppInstallFlow flow);
 
 // Starts install of a WebApp for a given |web_contents|, initiated from
 // a promotional banner or omnibox install icon.

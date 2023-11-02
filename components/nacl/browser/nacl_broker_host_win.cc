@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,6 +39,12 @@ class NaClBrokerSandboxedProcessLauncherDelegate
 
   sandbox::mojom::Sandbox GetSandboxType() override {
     return sandbox::mojom::Sandbox::kNoSandbox;
+  }
+
+  std::string GetSandboxTag() override {
+    // kNoSandbox does not use a TargetPolicy, if the sandbox type is changed
+    // then provide a unique tag here.
+    return "";
   }
 };
 }  // namespace

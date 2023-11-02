@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">新しいウィンドウをシークレット モードで開く</translation>
 <translation id="152892567002884378">音量を上げる</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> キーを押した状態で <ph name="ESC" /> キーを押す</translation>
+<translation id="1586324912145647027">デスク 1～8 に移動する</translation>
 <translation id="1652741121070700329">前の単語の先頭に移動する</translation>
 <translation id="1679841710523778799">明るさを上げる</translation>
 <translation id="168356808214100546"><ph name="ALT" /> キーを押したまま、目的のウィンドウが表示されるまで <ph name="TAB" /> キーを押し、表示されたらキーを放す</translation>
@@ -70,6 +71,7 @@
 <translation id="3140353188828248647">アドレスバーにフォーカスを移す</translation>
 <translation id="3256109297135787951">シェルフのアイテムのハイライト表示を解除する</translation>
 <translation id="3288816184963444640">現在のウィンドウを閉じる</translation>
+<translation id="3322797428033495633">ピクチャー イン ピクチャー ウィンドウにフォーカスする</translation>
 <translation id="3350805006883559974">アクティブなウィンドウを上部にフロート表示する</translation>
 <translation id="3407560819924487926">タスク マネージャを表示する</translation>
 <translation id="3417835166382867856">タブを検索</translation>
@@ -91,6 +93,7 @@
 <translation id="3949671998904569433">カンマ</translation>
 <translation id="3976863468609830880">シェルフの最後のアイコンをクリックする</translation>
 <translation id="3994783594793697310">ディスプレイのズームレベルをリセット</translation>
+<translation id="4026837045671473537">色反転モードをオンにする</translation>
 <translation id="4026843240379844265">アクティブなウィンドウをディスプレイ間で移動する</translation>
 <translation id="4035482366624727273">ページ上のすべてを選択する</translation>
 <translation id="4060703249685950734">最後に閉じたタブまたはウィンドウを開く</translation>
@@ -114,7 +117,7 @@
 <translation id="4866066940972151697">右のデスクを有効にする</translation>
 <translation id="4916163929714267752">新しいウィンドウでリンクを開く</translation>
 <translation id="492453977506755176">キャプチャ モード キー</translation>
-<translation id="5030659775136592441">ブックマーク マネージャを表示する</translation>
+<translation id="5030659775136592441">ブックマーク マネージャーを表示する</translation>
 <translation id="5034421018520995080">ページの一番上に移動する</translation>
 <translation id="5042305953558921026">概要モード キー</translation>
 <translation id="5104462712192763270">現在のページを保存する</translation>
@@ -130,6 +133,7 @@
 <translation id="5563050856984839829"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> キーを押しながらリンクをクリックする</translation>
 <translation id="561814908794220892">新しいタブでウェブページを開く</translation>
 <translation id="5620219513321115856">アクティブなウィンドウを右のデスクに移動する</translation>
+<translation id="5699366815052349604">すべてのデスクにアクティブなウィンドウを割り当てる</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> キーまたは <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /> キーを押す</translation>
 <translation id="5757111373163288447">ドラッグ先のタブでリンクを開く</translation>
 <translation id="5757474750054631686">キーボードの明るさを下げる（バックライト付きキーボードのみ）</translation>
@@ -139,7 +143,6 @@
 <translation id="5921745308587794300">ウィンドウを回転</translation>
 <translation id="5926306472221400972">全画面のスクリーンショットを撮影する</translation>
 <translation id="6022924867608035986">検索ボックスのテキストを消去</translation>
-<translation id="6045998054441862242">ハイ コントラスト モードを有効にする</translation>
 <translation id="6052614013050385269">リンクを右クリックする</translation>
 <translation id="6129953537138746214">Space</translation>
 <translation id="6143669479988153888">ページを拡大表示する</translation>
@@ -156,6 +159,7 @@
 <translation id="6445033640292336367">タブを元の位置に戻す</translation>
 <translation id="6474744297082284761">ズームアウト（ドッキングまたは全画面の拡大鏡が有効な場合）</translation>
 <translation id="649811797655257835">ファイルを選択して <ph name="SPACE" /> キーを押す</translation>
+<translation id="6515089016094047210">カレンダー ウィジェットを開く、または閉じる。</translation>
 <translation id="6551886416582667425">画面の一部のスクリーンショットを撮影する / 録画する</translation>
 <translation id="6556040137485212400">最も長く使われていないウィンドウを開く</translation>
 <translation id="666343722268997814">ハイライト表示されたアイテムで右クリックメニューを開く</translation>
@@ -199,12 +203,12 @@
 <translation id="8388247778047144397">リンクをドラッグしてタブストリップの空白領域に移動する</translation>
 <translation id="8389638407792712197">新しいウィンドウを開く</translation>
 <translation id="8429696719963529183">F キー（F1～F12）を使用する</translation>
-<translation id="8537650670971624753">検索モードを終了</translation>
 <translation id="85690795166292698">新しいタブでリンクを開く</translation>
 <translation id="8609384513243082612">新しいタブを開く</translation>
 <translation id="8644639153978066712">ファイルアプリで隠しファイルを表示する</translation>
 <translation id="8717459106217102612">前の単語または文字を選択する</translation>
 <translation id="8727232706774971183">通知を表示する</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" />1〜8 キーを押す</translation>
 <translation id="8855885154700222542">全画面表示キー</translation>
 <translation id="8881584919399569791">アクティブなウィンドウを左のデスクに移動する</translation>
 <translation id="88986195241502842">ページ内を下に移動</translation>

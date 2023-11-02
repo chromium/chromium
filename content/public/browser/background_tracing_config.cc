@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ BackgroundTracingConfig::BackgroundTracingConfig(TracingMode tracing_mode)
 BackgroundTracingConfig::~BackgroundTracingConfig() {}
 
 std::unique_ptr<BackgroundTracingConfig> BackgroundTracingConfig::FromDict(
-    base::Value&& dict) {
+    base::Value::Dict&& dict) {
   return BackgroundTracingConfigImpl::FromDict(std::move(dict));
 }
 

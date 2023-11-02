@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 
 #include "base/atomicops.h"
 #include "base/callback.h"
+#include "base/location.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -38,7 +39,7 @@
 #include "ui/gfx/gpu_extra_info.h"
 #include "url/gurl.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "services/viz/privileged/mojom/gl/info_collection_gpu_service.mojom.h"
 #endif
 
@@ -49,7 +50,7 @@ class Thread;
 namespace content {
 class BrowserChildProcessHostImpl;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 class CATransactionGPUCoordinator;
 #endif
 
@@ -79,6 +80,7 @@ class GpuProcessHost : public BrowserChildProcessHostDelegate,
   // called with a null host (e.g. when |force_create| is false, and no
   // GpuProcessHost instance exists).
   CONTENT_EXPORT static void CallOnIO(
+      const base::Location& location,
       GpuProcessKind kind,
       bool force_create,
       base::OnceCallback<void(GpuProcessHost*)> callback);
@@ -117,7 +119,7 @@ class GpuProcessHost : public BrowserChildProcessHostDelegate,
 
   CONTENT_EXPORT viz::mojom::GpuService* gpu_service();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   CONTENT_EXPORT viz::mojom::InfoCollectionGpuService*
   info_collection_gpu_service();
 #endif
@@ -165,14 +167,18 @@ class GpuProcessHost : public BrowserChildProcessHostDelegate,
   void DidCreateContextSuccessfully() override;
   void MaybeShutdownGpuProcess() override;
   void DidUpdateGPUInfo(const gpu::GPUInfo& gpu_info) override;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void DidUpdateOverlayInfo(const gpu::OverlayInfo& overlay_info) override;
-  void DidUpdateHDRStatus(bool hdr_enabled) override;
+  void DidUpdateDXGIInfo(gfx::mojom::DXGIInfoPtr dxgi_info) override;
 #endif
-  void BlockDomainFrom3DAPIs(const GURL& url, gpu::DomainGuilt guilt) override;
+  std::string GetIsolationKey(
+      int32_t process_id,
+      const blink::WebGPUExecutionContextToken& token) override;
+  void BlockDomainsFrom3DAPIs(const std::set<GURL>& urls,
+                              gpu::DomainGuilt guilt) override;
   void DisableGpuCompositing() override;
   bool GpuAccessAllowed() const override;
-  gpu::ShaderCacheFactory* GetShaderCacheFactory() override;
+  gpu::GpuDiskCacheFactory* GetGpuDiskCacheFactory() override;
   void RecordLogMessage(int32_t severity,
                         const std::string& header,
                         const std::string& message) override;
@@ -198,7 +204,7 @@ class GpuProcessHost : public BrowserChildProcessHostDelegate,
 
   void RunServiceImpl(mojo::GenericPendingReceiver receiver);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Memory pressure handler, called by |memory_pressure_listener_|.
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel level);
@@ -246,7 +252,7 @@ class GpuProcessHost : public BrowserChildProcessHostDelegate,
   std::unique_ptr<BrowserChildProcessHostImpl> process_;
   std::unique_ptr<base::Thread> in_process_gpu_thread_;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   scoped_refptr<CATransactionGPUCoordinator> ca_transaction_gpu_coordinator_;
 #endif
 
@@ -257,7 +263,7 @@ class GpuProcessHost : public BrowserChildProcessHostDelegate,
   // automatic execution of 3D content from those domains.
   std::multiset<GURL> urls_with_live_offscreen_contexts_;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Responsible for forwarding the memory pressure notifications from the
   // browser process to the GPU process.
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;

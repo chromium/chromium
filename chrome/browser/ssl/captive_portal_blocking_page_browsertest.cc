@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,6 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/interstitials/security_interstitial_idn_test.h"
@@ -184,18 +183,16 @@ class CaptivePortalBlockingPageTest : public InProcessBrowserTest {
  public:
   CaptivePortalBlockingPageTest() {
     CertReportHelper::SetFakeOfficialBuildForTesting();
+
+    // Setting the sending threshold to 1.0 ensures reporting is enabled.
+    variations::testing::VariationParamsManager::SetVariationParams(
+        "ReportCertificateErrors", "ShowAndPossiblySend",
+        {{"sendingThreshold", "1.0"}});
   }
 
   CaptivePortalBlockingPageTest(const CaptivePortalBlockingPageTest&) = delete;
   CaptivePortalBlockingPageTest& operator=(
       const CaptivePortalBlockingPageTest&) = delete;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Setting the sending threshold to 1.0 ensures reporting is enabled.
-    variations::testing::VariationParamsManager::AppendVariationParams(
-        "ReportCertificateErrors", "ShowAndPossiblySend",
-        {{"sendingThreshold", "1.0"}}, command_line);
-  }
 
   void TestInterstitial(bool is_wifi_connection,
                         const std::string& wifi_ssid,
@@ -254,7 +251,7 @@ void CaptivePortalBlockingPageTest::TestInterstitial(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL("https://mock.failed.request/start=-20")));
   content::RenderFrameHost* frame;
-  frame = contents->GetMainFrame();
+  frame = contents->GetPrimaryMainFrame();
   ASSERT_TRUE(WaitForRenderFrameReady(frame));
 
   EXPECT_EQ(expect_wifi == EXPECT_WIFI_YES,
@@ -371,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBlockingPageTest, WiFi_SSID_LoginURL) {
 }
 
 // Flaky on mac: https://crbug.com/690170
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WiFi_NoSSID_LoginURL DISABLED_WiFi_NoSSID_LoginURL
 #else
 #define MAYBE_WiFi_NoSSID_LoginURL WiFi_NoSSID_LoginURL
@@ -386,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBlockingPageTest,
 }
 
 // Flaky on mac: https://crbug.com/690125
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WiFi_SSID_NoLoginURL DISABLED_WiFi_SSID_NoLoginURL
 #else
 #define MAYBE_WiFi_SSID_NoLoginURL WiFi_SSID_NoLoginURL

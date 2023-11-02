@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,12 +24,11 @@ import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.navigation_interception.InterceptNavigationDelegate;
-import org.chromium.components.navigation_interception.NavigationParams;
+import org.chromium.components.version_info.VersionInfo;
 import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -151,7 +150,7 @@ public class OverlayPanelContent {
     // Used to intercept intent navigations.
     // TODO(jeremycho): Consider creating a Tab with the Panel's WebContents.
     // which would also handle functionality like long-press-to-paste.
-    private class InterceptNavigationDelegateImpl implements InterceptNavigationDelegate {
+    private class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate {
         final ExternalNavigationHandler mExternalNavHandler;
 
         public InterceptNavigationDelegateImpl() {
@@ -162,14 +161,14 @@ public class OverlayPanelContent {
         }
 
         @Override
-        public boolean shouldIgnoreNavigation(NavigationParams navigationParams) {
+        public boolean shouldIgnoreNavigation(NavigationHandle navigationHandle, GURL escapedUrl) {
             // If either of the required params for the delegate are null, do not call the
             // delegate and ignore the navigation.
-            if (mExternalNavHandler == null || navigationParams == null) return true;
+            if (mExternalNavHandler == null || navigationHandle == null) return true;
             // TODO(mdjones): Rather than passing the two navigation params, instead consider
             // passing a boolean to make this API simpler.
-            return !mContentDelegate.shouldInterceptNavigation(mExternalNavHandler,
-                    navigationParams);
+            return !mContentDelegate.shouldInterceptNavigation(
+                    mExternalNavHandler, navigationHandle, escapedUrl);
         }
     }
 
@@ -206,7 +205,7 @@ public class OverlayPanelContent {
             private boolean mIsFullscreen;
 
             @Override
-            public void loadingStateChanged(boolean toDifferentDocument) {
+            public void loadingStateChanged(boolean shouldShowLoadingUI) {
                 boolean isLoading = mWebContents != null && mWebContents.isLoading();
                 if (isLoading) {
                     mProgressObserver.onProgressBarStarted();
@@ -221,7 +220,8 @@ public class OverlayPanelContent {
             }
 
             @Override
-            public void enterFullscreenModeForTab(boolean prefersNavigationBar) {
+            public void enterFullscreenModeForTab(
+                    boolean prefersNavigationBar, boolean prefersStatusBar) {
                 mIsFullscreen = true;
             }
 
@@ -348,7 +348,7 @@ public class OverlayPanelContent {
         }
 
         OverlayViewDelegate delegate = new OverlayViewDelegate(cv);
-        mWebContents.initialize(ChromeVersionInfo.getProductVersion(), delegate, cv, mWindowAndroid,
+        mWebContents.initialize(VersionInfo.getProductVersion(), delegate, cv, mWindowAndroid,
                 WebContents.createDefaultInternalsHolder());
         ContentUtils.setUserAgentOverride(mWebContents, /* overrideInNewTabs= */ false);
 
@@ -374,12 +374,17 @@ public class OverlayPanelContent {
                     }
 
                     @Override
-                    public void didStartNavigation(NavigationHandle navigation) {
-                        if (navigation.isInPrimaryMainFrame() && !navigation.isSameDocument()) {
+                    public void didStartNavigationInPrimaryMainFrame(NavigationHandle navigation) {
+                        if (!navigation.isSameDocument()) {
                             String url = navigation.getUrl().getSpec();
                             mContentDelegate.onMainFrameLoadStarted(
                                     url, !TextUtils.equals(url, mLoadedUrl));
                         }
+                    }
+
+                    @Override
+                    public void didStartNavigationNoop(NavigationHandle navigation) {
+                        if (!navigation.isInPrimaryMainFrame()) return;
                     }
 
                     @Override
@@ -388,14 +393,24 @@ public class OverlayPanelContent {
                     }
 
                     @Override
-                    public void didFinishNavigation(NavigationHandle navigation) {
-                        if (navigation.hasCommitted() && navigation.isInPrimaryMainFrame()) {
+                    public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigation) {
+                        if (navigation.hasCommitted()) {
                             mIsProcessingPendingNavigation = false;
                             mContentDelegate.onMainFrameNavigation(navigation.getUrl().getSpec(),
                                     !TextUtils.equals(navigation.getUrl().getSpec(), mLoadedUrl),
                                     isHttpFailureCode(navigation.httpStatusCode()),
                                     navigation.isErrorPage());
                         }
+                    }
+
+                    @Override
+                    public void didFinishNavigationNoop(NavigationHandle navigation) {
+                        if (!navigation.isInPrimaryMainFrame()) return;
+                    }
+
+                    @Override
+                    public void didFirstVisuallyNonEmptyPaint() {
+                        mContentDelegate.onFirstNonEmptyPaint();
                     }
                 };
 

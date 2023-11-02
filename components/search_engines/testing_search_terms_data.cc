@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,8 @@ std::string TestingSearchTermsData::GetSearchClient() const {
   return search_client_;
 }
 
-std::string TestingSearchTermsData::GetSuggestClient() const {
+std::string TestingSearchTermsData::GetSuggestClient(
+    bool non_searchbox_ntp) const {
   return suggest_client_;
 }
 

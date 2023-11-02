@@ -1,9 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/download/notification/multi_profile_download_notifier.h"
 
+#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/download/public/common/simple_download_manager.h"
 #include "content/public/browser/download_manager.h"
@@ -28,12 +29,10 @@ void MultiProfileDownloadNotifier::AddProfile(Profile* profile) {
     return;
 
   content::DownloadManager* manager = profile->GetDownloadManager();
-  auto it = std::find_if(download_notifiers_.begin(), download_notifiers_.end(),
-                         [manager](const auto& notifier) {
-                           return notifier->GetManager() == manager;
-                         });
-  if (it != download_notifiers_.end())
+  if (base::Contains(download_notifiers_, manager,
+                     &download::AllDownloadItemNotifier::GetManager)) {
     return;
+  }
 
   profile_observer_.AddObservation(profile);
   download_notifiers_.emplace(
@@ -92,10 +91,8 @@ void MultiProfileDownloadNotifier::OnManagerGoingDown(
     content::DownloadManager* manager) {
   client_->OnManagerGoingDown(manager);
 
-  auto it = std::find_if(download_notifiers_.begin(), download_notifiers_.end(),
-                         [manager](const auto& notifier) {
-                           return notifier->GetManager() == manager;
-                         });
+  auto it = base::ranges::find(download_notifiers_, manager,
+                               &download::AllDownloadItemNotifier::GetManager);
   DCHECK(it != download_notifiers_.end());
   download_notifiers_.erase(it);
 }

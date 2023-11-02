@@ -11,5 +11,5 @@ Currently this component exposes an interface for a facade for Account Manager -
 `AccountManagerFacade` - and data structures for Chrome OS accounts.
 
 Also, see:
-- `//ash/components/account_manager/`
 - `//chrome/browser/lacros/account_manager/`
+- `//chromeos/ash/components/account_manager/`

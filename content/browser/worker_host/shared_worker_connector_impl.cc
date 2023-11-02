@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,9 +58,8 @@ void SharedWorkerConnectorImpl::Connect(
         ChromeBlobStorageContext::URLLoaderFactoryForToken(
             host->GetStoragePartition(), std::move(blob_url_token));
   }
-  SharedWorkerServiceImpl* service =
-      static_cast<StoragePartitionImpl*>(host->GetStoragePartition())
-          ->GetSharedWorkerService();
+  SharedWorkerServiceImpl* service = static_cast<SharedWorkerServiceImpl*>(
+      host->GetStoragePartition()->GetSharedWorkerService());
   service->ConnectToWorker(
       client_render_frame_host_id_, std::move(info), std::move(client),
       creation_context_type, blink::MessagePortChannel(std::move(message_port)),

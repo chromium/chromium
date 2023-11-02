@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -67,13 +67,16 @@ ProfileReportGenerator::MaybeGenerate(const base::FilePath& path,
   if (policies_enabled_) {
     // TODO(crbug.com/983151): Upload policy error as their IDs.
     auto client = delegate_->MakePolicyConversionsClient();
-    policies_ = policy::DictionaryPolicyConversions(std::move(client))
-                    .EnableConvertTypes(false)
-                    .EnablePrettyPrint(false)
-                    .ToValue();
-    GetChromePolicyInfo();
-    GetExtensionPolicyInfo();
-    GetPolicyFetchTimestampInfo();
+    // `client` may not be provided in unit test.
+    if (client) {
+      policies_ = policy::DictionaryPolicyConversions(std::move(client))
+                      .EnableConvertTypes(false)
+                      .EnablePrettyPrint(false)
+                      .ToValueDict();
+      GetChromePolicyInfo();
+      GetExtensionPolicyInfo();
+      GetPolicyFetchTimestampInfo();
+    }
   }
 
   return std::move(report_);

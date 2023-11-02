@@ -1,11 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PostMessageAPIClient} from 'chrome://resources/js/post_message_api_client.m.js';
-import {RequestHandler} from 'chrome://resources/js/post_message_api_request_handler.m.js';
+import {PostMessageAPIClient} from 'chrome://resources/ash/common/post_message_api/post_message_api_client.js';
+import {RequestHandler} from 'chrome://resources/ash/common/post_message_api/post_message_api_request_handler.js';
 
-import {ProjectorBrowserProxy, ProjectorBrowserProxyImpl} from '../../communication/projector_browser_proxy.js';
+import {ProjectorBrowserProxy, ProjectorBrowserProxyImpl} from './projector_browser_proxy.js';
 
 const TARGET_URL = 'chrome-untrusted://projector/';
 
@@ -21,11 +21,11 @@ export class UntrustedAppClient extends PostMessageAPIClient {
 
   /**
    * Notfies the app whether it can start a new session or not.
-   * @param {!boolean} canStart
+   * @param {!projectorApp.NewScreencastPreconditionState} newState
    * @return {Promise<boolean>}
    */
-  onNewScreencastPreconditionChanged(canStart) {
-    return this.callApiFn('onNewScreencastPreconditionChanged', [canStart]);
+  onNewScreencastPreconditionChanged(newState) {
+    return this.callApiFn('onNewScreencastPreconditionChanged', [newState]);
   }
 
   /**
@@ -36,6 +36,13 @@ export class UntrustedAppClient extends PostMessageAPIClient {
    */
   onSodaInstallProgressUpdated(progress) {
     return this.callApiFn('onSodaInstallProgressUpdated', [progress]);
+  }
+
+  /**
+   * Notifies the Projector App when SODA download and installation is complete.
+   */
+  onSodaInstalled() {
+    return this.callApiFn('onSodaInstalled', []);
   }
 
   /**
@@ -51,6 +58,16 @@ export class UntrustedAppClient extends PostMessageAPIClient {
    */
   onScreencastsStateChange(pendingScreencasts) {
     return this.callApiFn('onScreencastsStateChange', pendingScreencasts);
+  }
+
+  /**
+   * Notifies the untrusted context when a new video file is available.
+   * @param {string} videoFileId the Drive item id of the video file.
+   * @param {?File} videoFile to provide to the untrusted context.
+   * @param {?DOMException} error if retrieving the video file failed.
+   */
+  onFileLoaded(videoFileId, videoFile, error) {
+    return this.callApiFn('onFileLoaded', [videoFileId, videoFile, error]);
   }
 }
 
@@ -72,8 +89,8 @@ export class TrustedAppRequestHandler extends RequestHandler {
     this.registerMethod('getAccounts', (args) => {
       return this.browserProxy_.getAccounts();
     });
-    this.registerMethod('canStartProjectorSession', (args) => {
-      return this.browserProxy_.canStartProjectorSession();
+    this.registerMethod('getNewScreencastPreconditionState', (args) => {
+      return this.browserProxy_.getNewScreencastPreconditionState();
     });
     this.registerMethod('startProjectorSession', (storageDir) => {
       if (!storageDir || storageDir.length != 1) {
@@ -81,27 +98,25 @@ export class TrustedAppRequestHandler extends RequestHandler {
       }
       return this.browserProxy_.startProjectorSession(storageDir[0]);
     });
-    this.registerMethod('getOAuthTokenForAccount', (account) => {
-      if (!account || account.length != 1) {
-        return {};
+    this.registerMethod('getOAuthTokenForAccount', (args) => {
+      if (!args || args.length != 1) {
+        return Promise.reject('Incorrect args for getOAuthTokenForAccount');
       }
-      return this.browserProxy_.getOAuthTokenForAccount(account[0]);
+      return this.browserProxy_.getOAuthTokenForAccount(args[0]);
     });
     this.registerMethod('onError', (msg) => {
       this.browserProxy_.onError(msg);
     });
-    this.registerMethod('sendXhr',(values) => {
-      if (!values || values.length != 4) {
+    this.registerMethod('sendXhr', (values) => {
+      if (!values || values.length != 7) {
         return {
           success: false,
-          error: 'INVALID_ARGUMENTS'
+          error: 'INVALID_ARGUMENTS',
         };
       }
       return this.browserProxy_.sendXhr(
-          values[0], values[1], values[2], values[3]);
-    });
-    this.registerMethod('shouldShowNewScreencastButton', (args) => {
-      return this.browserProxy_.shouldShowNewScreencastButton();
+          values[0], values[1], values[2], values[3], values[4], values[5],
+          values[6]);
     });
     this.registerMethod('shouldDownloadSoda', (args) => {
       return this.browserProxy_.shouldDownloadSoda();
@@ -123,6 +138,15 @@ export class TrustedAppRequestHandler extends RequestHandler {
         return;
       }
       return this.browserProxy_.setUserPref(args[0], args[1]);
+    });
+    this.registerMethod('openFeedbackDialog', (args) => {
+      return this.browserProxy_.openFeedbackDialog();
+    });
+    this.registerMethod('getVideo', (args) => {
+      if (!args || args.length != 2) {
+        return Promise.reject('Incorrect args for getVideo');
+      }
+      return this.browserProxy_.getVideo(args[0], args[1]);
     });
   }
 }

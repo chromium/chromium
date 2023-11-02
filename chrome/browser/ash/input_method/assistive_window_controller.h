@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,10 @@
 #define CHROME_BROWSER_ASH_INPUT_METHOD_ASSISTIVE_WINDOW_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 
+#include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
 #include "chrome/browser/ash/input_method/ui/assistive_accessibility_view.h"
 #include "chrome/browser/ash/input_method/ui/assistive_delegate.h"
@@ -46,7 +49,6 @@ class AssistiveWindowController : public views::WidgetObserver,
   ui::ime::SuggestionWindowView* GetSuggestionWindowViewForTesting();
   ui::ime::UndoWindow* GetUndoWindowForTesting() const;
 
- private:
   // IMEAssistiveWindowHandlerInterface implementation.
   void SetBounds(const Bounds& bounds) override;
   void SetAssistiveWindowProperties(
@@ -59,17 +61,23 @@ class AssistiveWindowController : public views::WidgetObserver,
   std::u16string GetSuggestionText() const override;
   size_t GetConfirmedLength() const override;
   void FocusStateChanged() override;
-  void OnWidgetClosing(views::Widget* widget) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
   void Announce(const std::u16string& message) override;
 
   // ui::ime::AssistiveDelegate implementation.
   void AssistiveWindowButtonClicked(
       const ui::ime::AssistiveWindowButton& button) const override;
 
-  void InitSuggestionWindow();
+ private:
+  ui::ime::SuggestionWindowView::Orientation WindowOrientationFor(
+      ui::ime::AssistiveWindowType window_type);
+  void InitSuggestionWindow(
+      ui::ime::SuggestionWindowView::Orientation orientation);
   void InitUndoWindow();
   void InitGrammarSuggestionWindow();
   void InitAccessibilityView();
+  void DisplayCompletionSuggestion(const ui::ime::SuggestionDetails& details);
+  void ClearPendingSuggestionTimer();
 
   const AssistiveWindowControllerDelegate* delegate_;
   AssistiveWindowProperties window_;
@@ -80,7 +88,9 @@ class AssistiveWindowController : public views::WidgetObserver,
   std::u16string suggestion_text_;
   size_t confirmed_length_ = 0;
   Bounds bounds_;
-  bool tracking_last_suggestion_ = false;
+  std::unique_ptr<base::OneShotTimer> pending_suggestion_timer_;
+
+  base::WeakPtrFactory<AssistiveWindowController> weak_ptr_factory_{this};
 };
 
 }  // namespace input_method

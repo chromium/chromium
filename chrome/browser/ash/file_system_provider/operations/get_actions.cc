@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@ Actions ConvertRequestValueToActions(std::unique_ptr<RequestValue> value) {
   for (const auto& idl_action : params->actions) {
     Action action;
     action.id = idl_action.id;
-    action.title = idl_action.title.get() ? *idl_action.title : std::string();
+    action.title = idl_action.title.value_or(std::string());
     result.push_back(action);
   }
 

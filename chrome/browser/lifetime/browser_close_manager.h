@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_LIFETIME_BROWSER_CLOSE_MANAGER_H_
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 
 class Browser;
@@ -58,7 +59,7 @@ class BrowserCloseManager : public base::RefCounted<BrowserCloseManager> {
 
   // The browser for which we are waiting for a callback to
   // OnBrowserReportCloseable.
-  Browser* current_browser_;
+  raw_ptr<Browser> current_browser_;
 };
 
 #endif  // CHROME_BROWSER_LIFETIME_BROWSER_CLOSE_MANAGER_H_

@@ -1,10 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "weblayer/test/weblayer_browser_test.h"
 
-#include "base/macros.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -18,7 +18,7 @@
 #include "weblayer/shell/browser/shell.h"
 #include "weblayer/test/weblayer_browser_test_utils.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #endif
@@ -34,7 +34,7 @@ IN_PROC_BROWSER_TEST_F(ErrorPageBrowserTest, NameNotResolved) {
   NavigateAndWaitForFailure(error_page_url, shell());
 
   // Currently, interstitials for error pages are displayed only on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::u16string expected_title =
       l10n_util::GetStringUTF16(IDS_ANDROID_ERROR_PAGE_WEBPAGE_NOT_AVAILABLE);
   EXPECT_EQ(expected_title, GetTitle(shell()));
@@ -69,8 +69,8 @@ class ErrorPageReloadBrowserTest : public ErrorPageBrowserTest {
   // effects, such as the scheduling of an auto-reload timer.
   //
   // Return true if the navigation was successful, or false if it failed.
-  bool Navigate(const GURL& url, bool disable_network_error_auto_reload = false)
-      WARN_UNUSED_RESULT {
+  [[nodiscard]] bool Navigate(const GURL& url,
+                              bool disable_network_error_auto_reload = false) {
     content::TestNavigationManager navigation(web_contents(), url);
     NavigationController::NavigateParams params;
     auto* navigation_controller = shell()->tab()->GetNavigationController();
@@ -116,7 +116,7 @@ class ErrorPageReloadBrowserTest : public ErrorPageBrowserTest {
     }
 
    private:
-    NavigationController* controller_;
+    raw_ptr<NavigationController> controller_;
   };
 };
 

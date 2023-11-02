@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<body>
+<script>
+test(() => {
+  assert_false(internals.isUseCounted(document, 4113),
+    `hidden shouldn't be counted before the test.`);
+  assert_false(internals.isUseCounted(document, 4114),
+    `hidden=until-found shouldn't be counted before the test.`);
+
+  const div = document.createElement('div');
+  document.body.appendChild(div);
+  div.hidden = true;
+  div.getBoundingClientRect();
+
+  assert_true(internals.isUseCounted(document, 4113),
+    `hidden should be counted after the test.`);
+  assert_false(internals.isUseCounted(document, 4114),
+    `hidden=until-found shouldn't be counted after the test.`);
+}, 'Verifies that setting the hidden attribute triggers the corresponding use counter.');
+</script>

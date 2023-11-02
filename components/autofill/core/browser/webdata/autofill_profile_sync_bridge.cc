@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,23 +11,20 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
-#include "base/guid.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_profile_sync_util.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/proto/autofill_sync.pb.h"
 #include "components/autofill/core/browser/webdata/autofill_profile_sync_difference_tracker.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
-#include "components/sync/engine/entity_data.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
+#include "components/sync/protocol/entity_data.h"
 
 using absl::optional;
 using base::UTF16ToUTF8;
@@ -82,7 +79,7 @@ AutofillProfileSyncBridge::AutofillProfileSyncBridge(
       web_data_backend_(backend) {
   DCHECK(web_data_backend_);
 
-  scoped_observation_.Observe(web_data_backend_);
+  scoped_observation_.Observe(web_data_backend_.get());
 
   LoadMetadata();
 }
@@ -95,7 +92,9 @@ std::unique_ptr<MetadataChangeList>
 AutofillProfileSyncBridge::CreateMetadataChangeList() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return std::make_unique<syncer::SyncMetadataStoreChangeList>(
-      GetAutofillTable(), syncer::AUTOFILL_PROFILE);
+      GetAutofillTable(), syncer::AUTOFILL_PROFILE,
+      base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
+                          change_processor()->GetWeakPtr()));
 }
 
 optional<syncer::ModelError> AutofillProfileSyncBridge::MergeSyncData(
@@ -211,9 +210,8 @@ void AutofillProfileSyncBridge::ActOnLocalChange(
     return;
   }
 
-  auto metadata_change_list =
-      std::make_unique<syncer::SyncMetadataStoreChangeList>(
-          GetAutofillTable(), syncer::AUTOFILL_PROFILE);
+  std::unique_ptr<MetadataChangeList> metadata_change_list =
+      CreateMetadataChangeList();
 
   switch (change.type()) {
     case AutofillProfileChange::ADD:
@@ -236,10 +234,6 @@ void AutofillProfileSyncBridge::ActOnLocalChange(
   // the metadata change list) because the open WebDatabase transaction is
   // committed by the AutofillWebDataService when the original local write
   // operation (that triggered this notification to the bridge) finishes.
-
-  if (optional<ModelError> error = metadata_change_list->TakeError()) {
-    change_processor()->ReportError(*error);
-  }
 }
 
 absl::optional<syncer::ModelError> AutofillProfileSyncBridge::FlushSyncTracker(

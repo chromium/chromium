@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
@@ -27,7 +28,7 @@ class SingleThreadTaskRunner;
 // settings (pushed from PrefProxyConfigTrackerImpl) as overrides to the proxy
 // configuration determined by a baseline delegate ProxyConfigService on
 // non-ChromeOS platforms. ChromeOS has its own implementation of overrides in
-// chromeos::ProxyConfigServiceImpl.
+// ash::ProxyConfigServiceImpl.
 class ProxyConfigServiceImpl : public net::ProxyConfigService,
                                public net::ProxyConfigService::Observer {
  public:
@@ -169,8 +170,8 @@ class PROXY_CONFIG_EXPORT PrefProxyConfigTrackerImpl
   // Configuration as defined by prefs.
   net::ProxyConfigWithAnnotation pref_config_;
 
-  PrefService* pref_service_;
-  ProxyConfigServiceImpl* proxy_config_service_impl_;  // Weak ptr.
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<ProxyConfigServiceImpl> proxy_config_service_impl_;  // Weak ptr.
   PrefChangeRegistrar proxy_prefs_;
 
   // State of |active_config_|.  |active_config_| is only valid if

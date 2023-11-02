@@ -34,7 +34,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/core_export.h"
 
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -50,9 +50,6 @@ class CORE_EXPORT LinkLoaderClient : public GarbageCollectedMixin {
   // There is no notification for cancellation.
 
   virtual bool IsLinkCreatedByParser() = 0;
-
-  virtual scoped_refptr<base::SingleThreadTaskRunner>
-  GetLoadingTaskRunner() = 0;
 };
 
 }  // namespace blink

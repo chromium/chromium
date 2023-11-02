@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -142,12 +142,10 @@ TEST(UiScene, ParentTransformAppliesToChild) {
   UiElement* child = element.get();
   parent->AddChild(std::move(element));
 
-  gfx::Point3F origin(0, 0, 0);
-  gfx::Point3F point(1, 0, 0);
-
   scene.OnBeginFrame(gfx::MsToTicks(0), kStartHeadPose);
-  child->world_space_transform().TransformPoint(&origin);
-  child->world_space_transform().TransformPoint(&point);
+  gfx::Point3F origin = child->world_space_transform().MapPoint(gfx::Point3F());
+  gfx::Point3F point =
+      child->world_space_transform().MapPoint(gfx::Point3F(1, 0, 0));
   EXPECT_VEC3F_NEAR(gfx::Point3F(6, 10, 0), origin);
   EXPECT_VEC3F_NEAR(gfx::Point3F(0, 10, 0), point);
 }

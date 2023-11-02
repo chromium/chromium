@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,37 +17,33 @@
 #include "chrome/browser/media/webrtc/media_stream_device_permission_context.h"
 #include "chrome/browser/nfc/chrome_nfc_permission_context_delegate.h"
 #include "chrome/browser/notifications/notification_permission_context.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/browser/storage/durable_storage_permission_context.h"
 #include "chrome/browser/storage_access_api/storage_access_grant_permission_context.h"
 #include "chrome/browser/tab_contents/tab_util.h"
-#include "chrome/browser/window_placement/window_placement_permission_context.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/background_sync/background_sync_permission_context.h"
 #include "components/embedder_support/permission_context_utils.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/permissions/contexts/font_access_permission_context.h"
+#include "components/permissions/contexts/local_fonts_permission_context.h"
+#include "components/permissions/contexts/window_management_permission_context.h"
 #include "components/permissions/permission_manager.h"
 #include "ppapi/buildflags/buildflags.h"
 
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/media/protected_media_identifier_permission_context.h"
-#endif  // defined(OS_ANDROID) || defined(OS_CHROMEOS) || defined(OS_WIN)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/geolocation/geolocation_permission_context_delegate_android.h"
-#else
-#include "chrome/browser/web_applications/file_handling_permission_context.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace {
 
@@ -55,17 +51,17 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
     Profile* profile) {
   embedder_support::PermissionContextDelegates delegates;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   delegates.geolocation_permission_context_delegate =
       std::make_unique<GeolocationPermissionContextDelegateAndroid>(profile);
 #else
   delegates.geolocation_permission_context_delegate =
       std::make_unique<GeolocationPermissionContextDelegate>(profile);
-#endif  // defined(OS_ANDROID)
-#if defined(OS_MAC)
+#endif  // BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_MAC)
   delegates.geolocation_manager =
       g_browser_process->platform_part()->geolocation_manager();
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
   delegates.media_stream_device_enumerator =
       MediaCaptureDevicesDispatcher::GetInstance();
   delegates.camera_pan_tilt_zoom_permission_context_delegate =
@@ -98,22 +94,15 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
   permission_contexts[ContentSettingsType::DURABLE_STORAGE] =
       std::make_unique<DurableStoragePermissionContext>(profile);
 
-#if !defined(OS_ANDROID)
-  // TODO(crbug.com/1101999): File Handling is not available on Android and is
-  // only relevant for installed PWAs.
-  permission_contexts[ContentSettingsType::FILE_HANDLING] =
-      std::make_unique<FileHandlingPermissionContext>(profile);
-#endif  // !defined(OS_ANDROID)
-
-  // TODO(crbug.com/1043295): Still in development for Android so we don't
-  // support it on WebLayer yet.
-  permission_contexts[ContentSettingsType::FONT_ACCESS] =
-      std::make_unique<FontAccessPermissionContext>(profile);
-
   // TODO(crbug.com/878979): Still in development so we don't support it on
   // WebLayer yet.
   permission_contexts[ContentSettingsType::IDLE_DETECTION] =
       std::make_unique<IdleDetectionPermissionContext>(profile);
+
+  // TODO(crbug.com/1043295): Still in development for Android so we don't
+  // support it on WebLayer yet.
+  permission_contexts[ContentSettingsType::LOCAL_FONTS] =
+      std::make_unique<LocalFontsPermissionContext>(profile);
 
   // Depends on Chrome specific policies not available on WebLayer.
   permission_contexts[ContentSettingsType::MEDIASTREAM_CAMERA] =
@@ -131,12 +120,12 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
   permission_contexts[ContentSettingsType::PERIODIC_BACKGROUND_SYNC] =
       std::make_unique<PeriodicBackgroundSyncPermissionContext>(profile);
 
-#if defined(OS_CHROMEOS) || defined(OS_ANDROID) || defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
   // We don't support Chrome OS and Windows for WebLayer yet so only the Android
   // specific logic is used on WebLayer.
   permission_contexts[ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER] =
       std::make_unique<ProtectedMediaIdentifierPermissionContext>(profile);
-#endif  // defined(OS_CHROMEOS) || defined(OS_ANDROID) || defined(OS_WIN)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 
   // TODO(crbug.com/989663): Still in development so we don't support it on
   // WebLayer yet.
@@ -145,8 +134,8 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
 
   // TODO(crbug.com/897300): Still in development for Android so we don't
   // support it on WebLayer yet.
-  permission_contexts[ContentSettingsType::WINDOW_PLACEMENT] =
-      std::make_unique<WindowPlacementPermissionContext>(profile);
+  permission_contexts[ContentSettingsType::WINDOW_MANAGEMENT] =
+      std::make_unique<permissions::WindowManagementPermissionContext>(profile);
 
   return permission_contexts;
 }
@@ -166,9 +155,9 @@ PermissionManagerFactory* PermissionManagerFactory::GetInstance() {
 }
 
 PermissionManagerFactory::PermissionManagerFactory()
-    : BrowserContextKeyedServiceFactory(
-        "PermissionManagerFactory",
-        BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory(
+          "PermissionManagerFactory",
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(HostContentSettingsMapFactory::GetInstance());
 }
 
@@ -180,10 +169,4 @@ KeyedService* PermissionManagerFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(context);
   return new permissions::PermissionManager(profile,
                                             CreatePermissionContexts(profile));
-}
-
-content::BrowserContext*
-PermissionManagerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }

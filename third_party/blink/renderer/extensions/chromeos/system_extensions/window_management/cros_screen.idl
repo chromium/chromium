@@ -1,0 +1,32 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// The CrosScreen interface represents a screen and is returned in array using
+// chromeos.windowManagement.getScreens().
+interface CrosScreen {
+  // Returns the amount of horizontal space in pixels available to the window.
+  readonly attribute long availWidth;
+
+  // Specifies the height of the screen, in pixels, minus permanent or
+  // semipermanent user interface features displayed by the operating system.
+  readonly attribute long availHeight;
+
+  // Returns the width of the screen.
+  readonly attribute long width;
+
+  // Returns the height of the screen in pixels.
+  readonly attribute long height;
+
+  // Distance from a multi-screen origin (e.g. primary screen top left) to the
+  // left edge of the screen area.
+  readonly attribute long left;
+
+  // Distance from a multi-screen origin (e.g. primary screen top left) to the
+  // top edge of the screen area.
+  readonly attribute long top;
+
+  // If this screen is designated as the 'primary' screen by the OS (otherwise
+  // it is 'secondary'). Useful for placing prominent vs peripheral windows.
+  readonly attribute boolean isPrimary;
+};

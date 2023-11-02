@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_DOUBLY_LINKED_LIST_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_DOUBLY_LINKED_LIST_H_
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
@@ -81,7 +82,7 @@ class DoublyLinkedList {
   DoublyLinkedList(const DoublyLinkedList&) = delete;
   DoublyLinkedList& operator=(const DoublyLinkedList&) = delete;
 
-  bool IsEmpty() const;
+  bool empty() const;
   wtf_size_t size() const;  // This is O(n).
   void Clear();
 
@@ -136,7 +137,7 @@ inline DoublyLinkedList<T, PointerType>::DoublyLinkedList()
 }
 
 template <typename T, typename PointerType>
-inline bool DoublyLinkedList<T, PointerType>::IsEmpty() const {
+inline bool DoublyLinkedList<T, PointerType>::empty() const {
   return !head_;
 }
 

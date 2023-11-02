@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -138,7 +138,7 @@ bool HandleGraphicsEvent(GraphicsEventsContext* context,
       }
       const std::string name = line.substr(name_pos + 1);
       std::unique_ptr<ArcTracingEvent> event =
-          std::make_unique<ArcTracingEvent>(base::DictionaryValue());
+          std::make_unique<ArcTracingEvent>(base::Value::Dict());
       event->SetPid(pid);
       event->SetTid(tid);
       event->SetTimestamp(timestamp);
@@ -180,7 +180,7 @@ bool HandleGraphicsEvent(GraphicsEventsContext* context,
       const std::string name = line.substr(name_pos + 1, id_pos - name_pos - 1);
       const std::string id = line.substr(id_pos + 1);
       std::unique_ptr<ArcTracingEvent> event =
-          std::make_unique<ArcTracingEvent>(base::DictionaryValue());
+          std::make_unique<ArcTracingEvent>(base::Value::Dict());
       event->SetPhase(phase);
       event->SetPid(pid);
       event->SetTid(tid);
@@ -345,28 +345,28 @@ void ArcTracingModel::SetMinMaxTime(uint64_t min_timestamp,
 }
 
 bool ArcTracingModel::Build(const std::string& data) {
-  std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(data);
+  absl::optional<base::Value> value = base::JSONReader::Read(data);
   if (!value) {
     LOG(ERROR) << "Cannot parse trace data";
     return false;
   }
 
-  base::DictionaryValue* dictionary;
-  if (!value->GetAsDictionary(&dictionary)) {
+  base::Value::Dict* dictionary = value->GetIfDict();
+  if (!dictionary) {
     LOG(ERROR) << "Trace data is not dictionary";
     return false;
   }
 
-  std::string sys_traces;
-  if (dictionary->GetString("systemTraceEvents", &sys_traces)) {
-    if (!ConvertSysTraces(sys_traces)) {
+  const std::string* sys_traces = dictionary->FindString("systemTraceEvents");
+  if (sys_traces) {
+    if (!ConvertSysTraces(*sys_traces)) {
       LOG(ERROR) << "Failed to convert systrace data";
       return false;
     }
   }
 
-  base::ListValue* events;
-  if (!dictionary->GetList("traceEvents", &events)) {
+  base::Value::List* events = dictionary->FindList("traceEvents");
+  if (!events) {
     LOG(ERROR) << "No trace events";
     return false;
   }
@@ -429,9 +429,9 @@ ArcTracingModel::TracingEventPtrs ArcTracingModel::GetGroupEvents(
   return result;
 }
 
-bool ArcTracingModel::ProcessEvent(base::ListValue* events) {
+bool ArcTracingModel::ProcessEvent(base::Value::List* events) {
   std::vector<std::unique_ptr<ArcTracingEvent>> parsed_events;
-  for (auto& it : events->GetList()) {
+  for (auto& it : *events) {
     base::Value event_data = std::move(it);
     if (!event_data.is_dict()) {
       LOG(ERROR) << "Event is not a dictionary";
@@ -439,7 +439,7 @@ bool ArcTracingModel::ProcessEvent(base::ListValue* events) {
     }
 
     std::unique_ptr<ArcTracingEvent> event =
-        std::make_unique<ArcTracingEvent>(std::move(event_data));
+        std::make_unique<ArcTracingEvent>(std::move(event_data).TakeDict());
     const uint64_t timestamp = event->GetTimestamp();
     if (timestamp < min_timestamp_ || timestamp >= max_timestamp_)
       continue;

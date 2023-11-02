@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,11 +43,13 @@ EyeDropperView::PreEventDispatchHandler::PreEventDispatchHandler(
     : view_(view) {
   // Ensure that this handler is called before color popup handler.
   clickEventTap_ = [NSEvent
-      addLocalMonitorForEventsMatchingMask:NSAnyEventMask
+      addLocalMonitorForEventsMatchingMask:NSEventMaskAny
                                    handler:^NSEvent*(NSEvent* event) {
                                      NSEventType eventType = [event type];
-                                     if (eventType == NSLeftMouseDown ||
-                                         eventType == NSRightMouseDown) {
+                                     if (eventType ==
+                                             NSEventTypeLeftMouseDown ||
+                                         eventType ==
+                                             NSEventTypeRightMouseDown) {
                                        view_->OnColorSelected();
                                        return nil;
                                      } else if (eventType ==

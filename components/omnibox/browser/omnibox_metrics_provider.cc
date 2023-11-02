@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,9 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/flat_map.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -23,12 +26,102 @@ using metrics::OmniboxEventProto;
 
 namespace {
 
+// Keep up to date with ClientSummarizedResultType in
+// //tools/metrics/histograms/enums.xml.
+enum class ClientSummarizedResultType : int {
+  kUrl = 0,
+  kSearch = 1,
+  kApp = 2,
+  kContact = 3,
+  kOnDevice = 4,
+  kUnknown = 5,
+  kMaxValue = kUnknown
+};
+
+ClientSummarizedResultType GetClientSummarizedResultType(
+    const OmniboxEventProto::Suggestion::ResultType type) {
+  static const base::NoDestructor<base::flat_map<
+      OmniboxEventProto::Suggestion::ResultType, ClientSummarizedResultType>>
+      kResultTypesToClientSummarizedResultTypes({
+          {OmniboxEventProto::Suggestion::URL_WHAT_YOU_TYPED,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::HISTORY_URL,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::HISTORY_TITLE,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::HISTORY_BODY,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::HISTORY_KEYWORD,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::NAVSUGGEST,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::BOOKMARK_TITLE,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::NAVSUGGEST_PERSONALIZED,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::CLIPBOARD_URL,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::PHYSICAL_WEB,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::PHYSICAL_WEB_OVERFLOW,
+           ClientSummarizedResultType::kUrl},  // More like a URL than a search.
+          {OmniboxEventProto::Suggestion::DOCUMENT,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::SEARCH_WHAT_YOU_TYPED,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::SEARCH_HISTORY,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::SEARCH_SUGGEST,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::SEARCH_OTHER_ENGINE,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::SEARCH_SUGGEST_ENTITY,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::SEARCH_SUGGEST_TAIL,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::SEARCH_SUGGEST_PERSONALIZED,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::SEARCH_SUGGEST_PROFILE,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::SEARCH_SUGGEST_ANSWER,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::CALCULATOR,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::CLIPBOARD_TEXT,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::CLIPBOARD_IMAGE,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::EXTENSION_APP,
+           ClientSummarizedResultType::kApp},
+          {OmniboxEventProto::Suggestion::APP,
+           ClientSummarizedResultType::kApp},
+          {OmniboxEventProto::Suggestion::CONTACT,
+           ClientSummarizedResultType::kContact},
+          {OmniboxEventProto::Suggestion::APP_RESULT,
+           ClientSummarizedResultType::kOnDevice},
+          {OmniboxEventProto::Suggestion::LEGACY_ON_DEVICE,
+           ClientSummarizedResultType::kOnDevice},
+          {OmniboxEventProto::Suggestion::TILE_SUGGESTION,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::HISTORY_CLUSTER,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::OPEN_TAB,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::STARTER_PACK,
+           ClientSummarizedResultType::kUrl},
+      });
+
+  const auto it = kResultTypesToClientSummarizedResultTypes->find(type);
+  return it == kResultTypesToClientSummarizedResultTypes->cend()
+             ? ClientSummarizedResultType::kUnknown
+             : it->second;
+}
+
 }  // namespace
 
 OmniboxMetricsProvider::OmniboxMetricsProvider() {}
 
-OmniboxMetricsProvider::~OmniboxMetricsProvider() {
-}
+OmniboxMetricsProvider::~OmniboxMetricsProvider() {}
 
 void OmniboxMetricsProvider::OnRecordingEnabled() {
   subscription_ = OmniboxEventGlobalTracker::GetInstance()->RegisterCallback(
@@ -48,12 +141,13 @@ void OmniboxMetricsProvider::ProvideCurrentSessionData(
 
 void OmniboxMetricsProvider::OnURLOpenedFromOmnibox(OmniboxLog* log) {
   RecordOmniboxOpenedURL(*log);
+  RecordOmniboxOpenedURLClientSummarizedResultType(*log);
 }
 
 void OmniboxMetricsProvider::RecordOmniboxOpenedURL(const OmniboxLog& log) {
-  std::vector<base::StringPiece16> terms = base::SplitStringPiece(
-      log.text, base::kWhitespaceUTF16,
-      base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  std::vector<base::StringPiece16> terms =
+      base::SplitStringPiece(log.text, base::kWhitespaceUTF16,
+                             base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   OmniboxEventProto* omnibox_event = omnibox_events_cache.add_omnibox_event();
   omnibox_event->set_time_sec(metrics::MetricsLog::GetCurrentTime());
@@ -122,4 +216,19 @@ void OmniboxMetricsProvider::RecordOmniboxOpenedURL(const OmniboxLog& log) {
     omnibox_event->add_feature_triggered_in_session(
         static_cast<size_t>(feature));
   }
+}
+
+void OmniboxMetricsProvider::RecordOmniboxOpenedURLClientSummarizedResultType(
+    const OmniboxLog& log) {
+  if (log.selected_index < 0 || log.selected_index >= log.result.size())
+    return;
+
+  auto autocomplete_match = log.result.match_at(log.selected_index);
+  auto omnibox_event_result_type =
+      autocomplete_match.AsOmniboxEventResultType();
+  auto client_summarized_result_type =
+      GetClientSummarizedResultType(omnibox_event_result_type);
+  base::UmaHistogramEnumeration(
+      "Omnibox.SuggestionUsed.ClientSummarizedResultType",
+      client_summarized_result_type);
 }

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,6 +29,10 @@ struct COMPONENT_EXPORT(DISPLAY_SHARED_MOJOM_TRAITS)
   static int64_t current_display_id(const display::ScreenInfos& r) {
     // One `r.screen_infos` item must have a matching `display_id`; see above.
     return r.current_display_id;
+  }
+
+  static const gfx::Size& system_cursor_size(const display::ScreenInfos& r) {
+    return r.system_cursor_size;
   }
 
   static bool Read(display::mojom::ScreenInfosDataView r,

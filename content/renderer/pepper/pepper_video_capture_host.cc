@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,12 @@
 #include <memory>
 
 #include "base/cxx17_backports.h"
+#include "content/public/renderer/render_frame.h"
 #include "content/renderer/pepper/host_globals.h"
 #include "content/renderer/pepper/pepper_media_device_manager.h"
 #include "content/renderer/pepper/pepper_platform_video_capture.h"
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
 #include "content/renderer/pepper/renderer_ppapi_host_impl.h"
-#include "content/renderer/render_frame_impl.h"
 #include "media/base/limits.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
@@ -165,7 +165,7 @@ void PepperVideoCaptureHost::OnFrameReady(
                 buffers_[i].buffer->size(), frame->timestamp());
         int uv_size = mapped_frame->coded_size().GetArea() / 2;
         std::vector<uint8_t> temp_uv_buffer(uv_size);
-        media::Status status = media::ConvertAndScaleFrame(
+        media::EncoderStatus status = media::ConvertAndScaleFrame(
             *mapped_frame, *dst_frame, temp_uv_buffer);
         if (!status.is_ok())
           return;

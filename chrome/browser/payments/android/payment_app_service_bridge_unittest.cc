@@ -1,16 +1,18 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/payments/content/android/payment_app_service_bridge.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/payment_request_spec.h"
+#include "components/payments/core/const_csp_checker.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
@@ -43,7 +45,6 @@ class MockApp : public PaymentApp {
   // PaymentApp implementation:
   MOCK_METHOD1(InvokePaymentApp, void(base::WeakPtr<Delegate> delegate));
   MOCK_CONST_METHOD0(IsCompleteForPayment, bool());
-  MOCK_CONST_METHOD0(GetCompletenessScore, uint32_t());
   MOCK_CONST_METHOD0(CanPreselect, bool());
   MOCK_CONST_METHOD0(GetMissingInfoLabel, std::u16string());
   MOCK_CONST_METHOD0(HasEnrolledInstrument, bool());
@@ -52,10 +53,7 @@ class MockApp : public PaymentApp {
   MOCK_CONST_METHOD0(GetId, std::string());
   MOCK_CONST_METHOD0(GetLabel, std::u16string());
   MOCK_CONST_METHOD0(GetSublabel, std::u16string());
-  MOCK_CONST_METHOD3(IsValidForModifier,
-                     bool(const std::string& method,
-                          bool supported_networks_specified,
-                          const std::set<std::string>& supported_networks));
+  MOCK_CONST_METHOD1(IsValidForModifier, bool(const std::string& method));
   MOCK_METHOD0(AsWeakPtr, base::WeakPtr<PaymentApp>());
   MOCK_CONST_METHOD0(HandlesShippingAddress, bool());
   MOCK_CONST_METHOD0(HandlesPayerName, bool());
@@ -86,7 +84,7 @@ class PaymentAppServiceBridgeUnitTest
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile browser_context_;
   content::TestWebContentsFactory test_web_contents_factory_;
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   GURL top_origin_;
   GURL frame_origin_;
   scoped_refptr<PaymentManifestWebDataService> web_data_service_;
@@ -100,12 +98,14 @@ TEST_P(PaymentAppServiceBridgeUnitTest, Smoke) {
                           mojom::PaymentDetails::New(), std::move(method_data),
                           /*observer=*/nullptr, /*app_locale=*/"en-US");
 
+  ConstCSPChecker const_csp_checker(/*allow=*/true);
   MockCallback mock_callback;
   base::WeakPtr<PaymentAppServiceBridge> bridge =
       PaymentAppServiceBridge::Create(
-          /*number_of_factories=*/3, web_contents_->GetMainFrame(), top_origin_,
-          spec.AsWeakPtr(), /*twa_package_name=*/GetParam(), web_data_service_,
-          /*may_crawl_for_installable_payment_apps=*/true,
+          /*number_of_factories=*/3, web_contents_->GetPrimaryMainFrame(),
+          top_origin_, spec.AsWeakPtr(), /*twa_package_name=*/GetParam(),
+          web_data_service_, /*is_off_the_record=*/false,
+          const_csp_checker.GetWeakPtr(),
           base::BindRepeating(&MockCallback::NotifyCanMakePaymentCalculated,
                               base::Unretained(&mock_callback)),
           base::BindRepeating(&MockCallback::NotifyPaymentAppCreated,
@@ -124,12 +124,11 @@ TEST_P(PaymentAppServiceBridgeUnitTest, Smoke) {
   EXPECT_EQ(frame_origin_, bridge->GetFrameOrigin());
   EXPECT_EQ("https://merchant.example",
             bridge->GetFrameSecurityOrigin().Serialize());
-  EXPECT_EQ(web_contents_->GetMainFrame(),
+  EXPECT_EQ(web_contents_->GetPrimaryMainFrame(),
             bridge->GetInitiatorRenderFrameHost());
   EXPECT_EQ(2U, bridge->GetMethodData().size());
   EXPECT_EQ("basic-card", bridge->GetMethodData()[0]->supported_method);
   EXPECT_EQ("https://ph.example", bridge->GetMethodData()[1]->supported_method);
-  EXPECT_TRUE(bridge->MayCrawlForInstallablePaymentApps());
 
   auto app = std::make_unique<MockApp>();
   EXPECT_CALL(mock_callback, NotifyPaymentAppCreated(::testing::_));

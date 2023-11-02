@@ -1,11 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef REMOTING_CLIENT_DISPLAY_DRAWABLE_H_
 #define REMOTING_CLIENT_DISPLAY_DRAWABLE_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
 namespace remoting {
@@ -40,7 +39,7 @@ class Drawable {
     CURSOR = 300,
   };
 
-  // A higher Z Index shiould be draw ontop of a lower z index. Elements with
+  // A higher Z Index should be draw ontop of a lower z index. Elements with
   // the same Z Index should draw in order inserted into the renderer.
   virtual int GetZIndex() = 0;
 };

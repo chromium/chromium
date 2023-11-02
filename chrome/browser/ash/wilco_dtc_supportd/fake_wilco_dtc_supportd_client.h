@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include "base/component_export.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_client.h"
-#include "chromeos/dbus/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -24,14 +24,15 @@ class FakeWilcoDtcSupportdClient final : public WilcoDtcSupportdClient {
 
   ~FakeWilcoDtcSupportdClient() override;
 
-  // DBusClient overrides:
+  // chromeos::DBusClient overrides:
   void Init(dbus::Bus* bus) override;
 
   // WilcoDtcSupportdClient overrides:
   void WaitForServiceToBeAvailable(
-      WaitForServiceToBeAvailableCallback callback) override;
-  void BootstrapMojoConnection(base::ScopedFD fd,
-                               VoidDBusMethodCallback callback) override;
+      chromeos::WaitForServiceToBeAvailableCallback callback) override;
+  void BootstrapMojoConnection(
+      base::ScopedFD fd,
+      chromeos::VoidDBusMethodCallback callback) override;
 
   // Whether there's a pending WaitForServiceToBeAvailable call.
   int wait_for_service_to_be_available_in_flight_call_count() const;
@@ -51,11 +52,11 @@ class FakeWilcoDtcSupportdClient final : public WilcoDtcSupportdClient {
 
  private:
   absl::optional<bool> wait_for_service_to_be_available_result_;
-  std::vector<WaitForServiceToBeAvailableCallback>
+  std::vector<chromeos::WaitForServiceToBeAvailableCallback>
       pending_wait_for_service_to_be_available_callbacks_;
 
   absl::optional<bool> bootstrap_mojo_connection_result_;
-  std::vector<VoidDBusMethodCallback>
+  std::vector<chromeos::VoidDBusMethodCallback>
       pending_bootstrap_mojo_connection_callbacks_;
 };
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace base {
@@ -47,7 +48,7 @@ class COMPONENT_EXPORT(X11) X11AtomCache {
   // On failure, None is returned.
   Atom GetAtom(const std::string&) const;
 
-  Connection* connection_;
+  raw_ptr<Connection> connection_;
 
   // Using std::map, as it is possible for thousands of atoms to be registered.
   mutable std::map<std::string, Atom> cached_atoms_;

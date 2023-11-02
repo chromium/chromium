@@ -75,11 +75,13 @@
 #include <math.h>
 #include <stdlib.h>
 #include <time.h>
+#include <unicode/basictz.h>
+#include <unicode/timezone.h>
+
 #include <algorithm>
 #include <limits>
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -87,10 +89,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-#include <unicode/basictz.h>
-#include <unicode/timezone.h>
-
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #else
 #include <sys/time.h>
@@ -286,7 +285,7 @@ static inline double YmdhmsToSeconds(int year,
 // We follow the recommendation of RFC 2822 to consider all
 // obsolete time zones not listed here equivalent to "-0000".
 static const struct KnownZone {
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   const
 #endif
       char tz_name[4];
@@ -618,7 +617,7 @@ static double ParseDateFromNullTerminatedCharacters(const char* date_string,
       have_tz = true;
     } else {
       date_wtf_string = String(date_string);
-      for (size_t i = 0; i < base::size(known_zones); ++i) {
+      for (size_t i = 0; i < std::size(known_zones); ++i) {
         if (date_wtf_string.StartsWithIgnoringASCIICase(
                 known_zones[i].tz_name)) {
           offset = known_zones[i].tz_offset;

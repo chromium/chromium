@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,7 +42,7 @@ class MockGattClientManager : public GattClientManager {
   MOCK_METHOD(std::vector<scoped_refptr<RemoteDevice>>,
               GetConnectedDevices,
               ());
-  void GetConnectedDevices(GetConnectDevicesCallback cb) {
+  void GetConnectedDevices(GetConnectDevicesCallback cb) override {
     std::move(cb).Run(GetConnectedDevices());
   }
 

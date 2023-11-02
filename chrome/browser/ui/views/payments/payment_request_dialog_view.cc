@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/payments/contact_info_editor_view_controller.h"
-#include "chrome/browser/ui/views/payments/credit_card_editor_view_controller.h"
-#include "chrome/browser/ui/views/payments/cvc_unmask_view_controller.h"
 #include "chrome/browser/ui/views/payments/error_message_view_controller.h"
 #include "chrome/browser/ui/views/payments/order_summary_view_controller.h"
 #include "chrome/browser/ui/views/payments/payment_handler_web_flow_view_controller.h"
@@ -26,7 +24,6 @@
 #include "chrome/browser/ui/views/payments/shipping_address_editor_view_controller.h"
 #include "chrome/browser/ui/views/payments/shipping_option_view_controller.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/payments/content/payment_request.h"
 #include "components/payments/core/features.h"
@@ -92,9 +89,12 @@ void PaymentRequestDialogView::OnDialogClosed() {
   for (const auto& controller : controller_map_) {
     controller.second->Stop();
   }
-  RemoveChildViewT(view_stack_);
+  RemoveChildViewT(view_stack_.get());
   controller_map_.clear();
   request_->OnUserCancelled();
+
+  if (observer_for_testing_)
+    observer_for_testing_->OnDialogClosed();
 }
 
 bool PaymentRequestDialogView::ShouldShowCloseButton() const {
@@ -216,6 +216,11 @@ void PaymentRequestDialogView::RetryDialog() {
 
 void PaymentRequestDialogView::ConfirmPaymentForTesting() {
   Pay();
+}
+
+bool PaymentRequestDialogView::ClickOptOutForTesting() {
+  NOTIMPLEMENTED();
+  return false;
 }
 
 void PaymentRequestDialogView::OnStartUpdating(
@@ -363,46 +368,6 @@ void PaymentRequestDialogView::ShowShippingOptionSheet() {
     observer_for_testing_->OnShippingOptionSectionOpened();
 }
 
-void PaymentRequestDialogView::ShowCvcUnmaskPrompt(
-    const autofill::CreditCard& credit_card,
-    base::WeakPtr<autofill::payments::FullCardRequest::ResultDelegate>
-        result_delegate,
-    content::WebContents* web_contents) {
-  if (!request_->spec())
-    return;
-
-  view_stack_->Push(CreateViewAndInstallController(
-                        std::make_unique<CvcUnmaskViewController>(
-                            request_->spec(), request_->state(),
-                            weak_ptr_factory_.GetWeakPtr(), credit_card,
-                            result_delegate, web_contents),
-                        &controller_map_),
-                    /* animate = */ true);
-  if (observer_for_testing_)
-    observer_for_testing_->OnCvcPromptShown();
-}
-
-void PaymentRequestDialogView::ShowCreditCardEditor(
-    BackNavigationType back_navigation_type,
-    base::OnceClosure on_edited,
-    base::OnceCallback<void(const autofill::CreditCard&)> on_added,
-    autofill::CreditCard* credit_card) {
-  if (!request_->spec())
-    return;
-
-  view_stack_->Push(
-      CreateViewAndInstallController(
-          std::make_unique<CreditCardEditorViewController>(
-              request_->spec(), request_->state(),
-              weak_ptr_factory_.GetWeakPtr(), back_navigation_type,
-              std::move(on_edited), std::move(on_added), credit_card,
-              request_->IsOffTheRecord()),
-          &controller_map_),
-      /* animate = */ true);
-  if (observer_for_testing_)
-    observer_for_testing_->OnCreditCardEditorOpened();
-}
-
 void PaymentRequestDialogView::ShowShippingAddressEditor(
     BackNavigationType back_navigation_type,
     base::OnceClosure on_edited,
@@ -508,8 +473,6 @@ PaymentRequestDialogView::PaymentRequestDialogView(
   }
 
   ShowInitialPaymentSheet();
-
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::PAYMENT_REQUEST);
 }
 
 PaymentRequestDialogView::~PaymentRequestDialogView() = default;
@@ -547,8 +510,8 @@ void PaymentRequestDialogView::SetupSpinnerOverlay() {
   throbber_overlay_->SetVisible(false);
   // The throbber overlay has to have a solid white background to hide whatever
   // would be under it.
-  throbber_overlay_->SetBackground(views::CreateThemedSolidBackground(
-      throbber_overlay_, ui::kColorDialogBackground));
+  throbber_overlay_->SetBackground(
+      views::CreateThemedSolidBackground(ui::kColorDialogBackground));
 
   views::BoxLayout* layout =
       throbber_overlay_->SetLayoutManager(std::make_unique<views::BoxLayout>(

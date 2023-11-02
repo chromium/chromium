@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,7 +48,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -117,10 +117,9 @@ class WebrtcAudioPrivateTest : public AudioWaitingExtensionTest {
 
  protected:
   void AppendTabIdToRequestInfo(base::ListValue* params, int tab_id) {
-    std::unique_ptr<base::DictionaryValue> request_info(
-        new base::DictionaryValue());
-    request_info->SetInteger("tabId", tab_id);
-    params->Append(std::move(request_info));
+    base::Value::Dict request_info;
+    request_info.Set("tabId", tab_id);
+    params->Append(base::Value(std::move(request_info)));
   }
 
   std::unique_ptr<base::Value> InvokeGetSinks() {
@@ -136,7 +135,7 @@ class WebrtcAudioPrivateTest : public AudioWaitingExtensionTest {
   GURL source_url_;
 };
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 // http://crbug.com/334579
 IN_PROC_BROWSER_TEST_F(WebrtcAudioPrivateTest, GetSinks) {
   AudioDeviceDescriptions devices;
@@ -158,9 +157,9 @@ IN_PROC_BROWSER_TEST_F(WebrtcAudioPrivateTest, GetSinks) {
   for (; ix < sink_list.GetList().size() && it != devices.end(); ++ix, ++it) {
     const base::Value& value = sink_list.GetList()[ix];
     EXPECT_TRUE(value.is_dict());
-    const base::DictionaryValue& dict = base::Value::AsDictionaryValue(value);
-    std::string sink_id;
-    dict.GetString("sinkId", &sink_id);
+    const base::Value::Dict& dict = value.GetDict();
+    const std::string* sink_id = dict.FindString("sinkId");
+    EXPECT_TRUE(sink_id);
 
     std::string expected_id =
         media::AudioDeviceDescription::IsDefaultDevice(it->unique_id)
@@ -170,19 +169,19 @@ IN_PROC_BROWSER_TEST_F(WebrtcAudioPrivateTest, GetSinks) {
                   url::Origin::Create(source_url_.DeprecatedGetOriginAsURL()),
                   it->unique_id);
 
-    EXPECT_EQ(expected_id, sink_id);
-    std::string sink_label;
-    dict.GetString("sinkLabel", &sink_label);
-    EXPECT_EQ(it->device_name, sink_label);
+    EXPECT_EQ(expected_id, *sink_id);
+    const std::string* sink_label = dict.FindString("sinkLabel");
+    EXPECT_TRUE(sink_label);
+    EXPECT_EQ(it->device_name, *sink_label);
 
     // TODO(joi): Verify the contents of these once we start actually
     // filling them in.
-    EXPECT_TRUE(dict.HasKey("isDefault"));
-    EXPECT_TRUE(dict.HasKey("isReady"));
-    EXPECT_TRUE(dict.HasKey("sampleRate"));
+    EXPECT_TRUE(dict.Find("isDefault"));
+    EXPECT_TRUE(dict.Find("isReady"));
+    EXPECT_TRUE(dict.Find("sampleRate"));
   }
 }
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_F(WebrtcAudioPrivateTest, GetAssociatedSink) {
   // Get the list of input devices. We can cheat in the unit test and

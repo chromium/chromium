@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,6 +70,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) VideoRtpStream
   void InsertVideoFrame(scoped_refptr<media::VideoFrame> video_frame);
 
   void SetTargetPlayoutDelay(base::TimeDelta playout_delay);
+  base::TimeDelta GetTargetPlayoutDelay() const;
 
  private:
   void OnRefreshTimerFired();
@@ -80,9 +81,6 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) VideoRtpStream
   // Requests refresh frames at a constant rate while the source is paused, up
   // to a consecutive maximum.
   base::RepeatingTimer refresh_timer_;
-
-  // Counter for the number of consecutive "refresh frames" requested.
-  int consecutive_refresh_count_;
 
   // Set to true when a request for a refresh frame has been made.  This is
   // cleared once the next frame is received.
@@ -103,9 +101,14 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) AudioRtpStream
 
   // Called by AudioCaptureClient when new audio data is available.
   void InsertAudio(std::unique_ptr<media::AudioBus> audio_bus,
-                   const base::TimeTicks& estimated_capture_time);
+                   base::TimeTicks estimated_capture_time);
 
   void SetTargetPlayoutDelay(base::TimeDelta playout_delay);
+  base::TimeDelta GetTargetPlayoutDelay() const;
+
+  // Get the real time encoder bitrate usage. Note that not all encoders support
+  // changing the bitrate in realtime.
+  int GetEncoderBitrate() const;
 
  private:
   const std::unique_ptr<media::cast::AudioSender> audio_sender_;

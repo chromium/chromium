@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,11 +53,10 @@ class VisitSegmentDatabase {
   bool IncreaseSegmentVisitCount(SegmentID segment_id, base::Time ts,
                                  int amount);
 
-  // Computes the segment usage since `from_time`. If `url_filter` is non-null,
-  // then only URLs for which it returns true will be included.
-  // Returns the highest-scored segments up to `max_result_count`.
+  // Returns the highest-scored segments up to `max_result_count`. If
+  // `url_filter` is non-null, then only URLs for which it returns true will be
+  // included.
   std::vector<std::unique_ptr<PageUsageData>> QuerySegmentUsage(
-      base::Time from_time,
       int max_result_count,
       const base::RepeatingCallback<bool(const GURL&)>& url_filter);
 

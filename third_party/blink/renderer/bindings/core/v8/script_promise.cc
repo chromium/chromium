@@ -30,9 +30,9 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
@@ -46,7 +46,7 @@ class PromiseAllHandler final : public GarbageCollected<PromiseAllHandler> {
  public:
   static ScriptPromise All(ScriptState* script_state,
                            const HeapVector<ScriptPromise>& promises) {
-    if (promises.IsEmpty())
+    if (promises.empty())
       return ScriptPromise::Cast(script_state,
                                  v8::Array::New(script_state->GetIsolate()));
     return (MakeGarbageCollected<PromiseAllHandler>(script_state, promises))
@@ -56,7 +56,7 @@ class PromiseAllHandler final : public GarbageCollected<PromiseAllHandler> {
   PromiseAllHandler(ScriptState* script_state,
                     HeapVector<ScriptPromise> promises)
       : number_of_pending_promises_(promises.size()), resolver_(script_state) {
-    DCHECK(!promises.IsEmpty());
+    DCHECK(!promises.empty());
     values_.resize(promises.size());
     for (wtf_size_t i = 0; i < promises.size(); ++i) {
       promises[i].Then(CreateFulfillFunction(script_state, i),
@@ -73,38 +73,24 @@ class PromiseAllHandler final : public GarbageCollected<PromiseAllHandler> {
   }
 
  private:
-  class AdapterFunction : public ScriptFunction {
+  class AdapterFunction : public ScriptFunction::Callable {
    public:
     enum ResolveType {
       kFulfilled,
       kRejected,
     };
 
-    static v8::Local<v8::Function> Create(ScriptState* script_state,
-                                          ResolveType resolve_type,
-                                          wtf_size_t index,
-                                          PromiseAllHandler* handler) {
-      AdapterFunction* self = MakeGarbageCollected<AdapterFunction>(
-          script_state, resolve_type, index, handler);
-      return self->BindToV8Function();
-    }
-
-    AdapterFunction(ScriptState* script_state,
-                    ResolveType resolve_type,
+    AdapterFunction(ResolveType resolve_type,
                     wtf_size_t index,
                     PromiseAllHandler* handler)
-        : ScriptFunction(script_state),
-          resolve_type_(resolve_type),
-          index_(index),
-          handler_(handler) {}
+        : resolve_type_(resolve_type), index_(index), handler_(handler) {}
 
     void Trace(Visitor* visitor) const override {
       visitor->Trace(handler_);
-      ScriptFunction::Trace(visitor);
+      ScriptFunction::Callable::Trace(visitor);
     }
 
-   private:
-    ScriptValue Call(ScriptValue value) override {
+    ScriptValue Call(ScriptState*, ScriptValue value) override {
       if (resolve_type_ == kFulfilled)
         handler_->OnFulfilled(index_, value);
       else
@@ -113,6 +99,7 @@ class PromiseAllHandler final : public GarbageCollected<PromiseAllHandler> {
       return ScriptValue();
     }
 
+   private:
     const ResolveType resolve_type_;
     const wtf_size_t index_;
     Member<PromiseAllHandler> handler_;
@@ -120,13 +107,17 @@ class PromiseAllHandler final : public GarbageCollected<PromiseAllHandler> {
 
   v8::Local<v8::Function> CreateFulfillFunction(ScriptState* script_state,
                                                 wtf_size_t index) {
-    return AdapterFunction::Create(script_state, AdapterFunction::kFulfilled,
-                                   index, this);
+    return MakeGarbageCollected<ScriptFunction>(
+               script_state, MakeGarbageCollected<AdapterFunction>(
+                                 AdapterFunction::kFulfilled, index, this))
+        ->V8Function();
   }
 
   v8::Local<v8::Function> CreateRejectFunction(ScriptState* script_state) {
-    return AdapterFunction::Create(script_state, AdapterFunction::kRejected, 0,
-                                   this);
+    return MakeGarbageCollected<ScriptFunction>(
+               script_state, MakeGarbageCollected<AdapterFunction>(
+                                 AdapterFunction::kRejected, 0, this))
+        ->V8Function();
   }
 
   void OnFulfilled(wtf_size_t index, const ScriptValue& value) {
@@ -191,13 +182,13 @@ void ScriptPromise::InternalResolver::Resolve(v8::Local<v8::Value> value) {
   if (resolver_.IsEmpty())
     return;
   v8::MicrotasksScope microtasks_scope(
-      script_state_->GetIsolate(), v8::MicrotasksScope::kDoNotRunMicrotasks);
-  v8::Maybe<bool> result =
+      script_state_->GetIsolate(), ToMicrotaskQueue(script_state_),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
+  // |result| can be empty when the thread is being terminated. We ignore such
+  // errors, thus [[maybe_unused]].
+  [[maybe_unused]] v8::Maybe<bool> result =
       resolver_.V8Value().As<v8::Promise::Resolver>()->Resolve(
           script_state_->GetContext(), value);
-  // |result| can be empty when the thread is being terminated. We ignore such
-  // errors.
-  ALLOW_UNUSED_LOCAL(result);
 
   Clear();
 }
@@ -206,13 +197,13 @@ void ScriptPromise::InternalResolver::Reject(v8::Local<v8::Value> value) {
   if (resolver_.IsEmpty())
     return;
   v8::MicrotasksScope microtasks_scope(
-      script_state_->GetIsolate(), v8::MicrotasksScope::kDoNotRunMicrotasks);
-  v8::Maybe<bool> result =
+      script_state_->GetIsolate(), ToMicrotaskQueue(script_state_),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
+  // |result| can be empty when the thread is being terminated. We ignore such
+  // errors, thus [[maybe_unused]].
+  [[maybe_unused]] v8::Maybe<bool> result =
       resolver_.V8Value().As<v8::Promise::Resolver>()->Reject(
           script_state_->GetContext(), value);
-  // |result| can be empty when the thread is being terminated. We ignore such
-  // errors.
-  ALLOW_UNUSED_LOCAL(result);
 
   Clear();
 }
@@ -271,8 +262,8 @@ ScriptPromise ScriptPromise::Then(v8::Local<v8::Function> on_fulfilled,
   return ScriptPromise(script_state_, result_promise);
 }
 
-ScriptPromise ScriptPromise::Then(NewScriptFunction* on_fulfilled,
-                                  NewScriptFunction* on_rejected) {
+ScriptPromise ScriptPromise::Then(ScriptFunction* on_fulfilled,
+                                  ScriptFunction* on_rejected) {
   const v8::Local<v8::Function> empty;
   return Then(on_fulfilled ? on_fulfilled->V8Function() : empty,
               on_rejected ? on_rejected->V8Function() : empty);

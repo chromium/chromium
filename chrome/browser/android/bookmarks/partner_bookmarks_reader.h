@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/android/jni_weak_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/favicon_base/favicon_types.h"
 
@@ -118,10 +119,10 @@ class PartnerBookmarksReader {
   void OnFaviconFetched(const base::android::JavaRef<jobject>& j_callback,
                         FaviconFetchResult result);
 
-  PartnerBookmarksShim* partner_bookmarks_shim_;
-  Profile* profile_;
+  raw_ptr<PartnerBookmarksShim> partner_bookmarks_shim_;
+  raw_ptr<Profile> profile_;
 
-  favicon::LargeIconService* large_icon_service_;
+  raw_ptr<favicon::LargeIconService> large_icon_service_;
   base::CancelableTaskTracker favicon_task_tracker_;
 
   // JNI

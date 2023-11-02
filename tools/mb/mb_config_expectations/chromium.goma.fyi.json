@@ -156,6 +156,7 @@
   },
   "android-archive-dbg-goma-rbe-ats-canary": {
     "gn_args": {
+      "debuggable_apks": false,
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,
@@ -165,6 +166,7 @@
   },
   "android-archive-dbg-goma-rbe-ats-latest": {
     "gn_args": {
+      "debuggable_apks": false,
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,
@@ -174,6 +176,7 @@
   },
   "android-archive-dbg-goma-rbe-canary": {
     "gn_args": {
+      "debuggable_apks": false,
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,
@@ -183,6 +186,7 @@
   },
   "android-archive-dbg-goma-rbe-latest": {
     "gn_args": {
+      "debuggable_apks": false,
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,
@@ -218,7 +222,6 @@
       "ios_set_attributes_for_xcode_project_generation": false,
       "is_component_build": false,
       "is_debug": false,
-      "is_p2p_enabled": false,
       "symbol_level": 0,
       "target_cpu": "arm64",
       "target_environment": "device",
@@ -234,7 +237,6 @@
       "ios_set_attributes_for_xcode_project_generation": false,
       "is_component_build": false,
       "is_debug": false,
-      "is_p2p_enabled": false,
       "symbol_level": 0,
       "target_cpu": "arm64",
       "target_environment": "device",

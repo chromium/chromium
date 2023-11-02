@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-PASS prerendering page should be able to access local storage
-Harness: the test ran to completion.
-

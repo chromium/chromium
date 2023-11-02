@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -123,7 +123,7 @@ class StatisticsRecorderTest : public testing::TestWithParam<bool> {
     Histogram::InitializeBucketRanges(min, max, ranges);
     const BucketRanges* registered_ranges =
         StatisticsRecorder::RegisterOrDeleteDuplicateRanges(ranges);
-    return new Histogram(name, min, max, registered_ranges);
+    return new Histogram(name, registered_ranges);
   }
 
   void InitLogOnShutdown() { StatisticsRecorder::InitLogOnShutdown(); }
@@ -169,43 +169,6 @@ TEST_P(StatisticsRecorderTest, NotInitialized) {
   EXPECT_TRUE(HasGlobalRecorder());
   EXPECT_THAT(StatisticsRecorder::GetBucketRanges(),
               UnorderedElementsAre(ranges));
-}
-
-TEST_P(StatisticsRecorderTest, RegisterBucketRanges) {
-  std::vector<const BucketRanges*> registered_ranges;
-
-  BucketRanges* ranges1 = new BucketRanges(3);
-  ranges1->ResetChecksum();
-  BucketRanges* ranges2 = new BucketRanges(4);
-  ranges2->ResetChecksum();
-
-  // Register new ranges.
-  EXPECT_EQ(ranges1,
-            StatisticsRecorder::RegisterOrDeleteDuplicateRanges(ranges1));
-  EXPECT_EQ(ranges2,
-            StatisticsRecorder::RegisterOrDeleteDuplicateRanges(ranges2));
-  EXPECT_THAT(StatisticsRecorder::GetBucketRanges(),
-              UnorderedElementsAre(ranges1, ranges2));
-
-  // Register some ranges again.
-  EXPECT_EQ(ranges1,
-            StatisticsRecorder::RegisterOrDeleteDuplicateRanges(ranges1));
-  EXPECT_THAT(StatisticsRecorder::GetBucketRanges(),
-              UnorderedElementsAre(ranges1, ranges2));
-
-  // Make sure the ranges is still the one we know.
-  ASSERT_EQ(3u, ranges1->size());
-  EXPECT_EQ(0, ranges1->range(0));
-  EXPECT_EQ(0, ranges1->range(1));
-  EXPECT_EQ(0, ranges1->range(2));
-
-  // Register ranges with same values.
-  BucketRanges* ranges3 = new BucketRanges(3);
-  ranges3->ResetChecksum();
-  EXPECT_EQ(ranges1,  // returning ranges1
-            StatisticsRecorder::RegisterOrDeleteDuplicateRanges(ranges3));
-  EXPECT_THAT(StatisticsRecorder::GetBucketRanges(),
-              UnorderedElementsAre(ranges1, ranges2));
 }
 
 TEST_P(StatisticsRecorderTest, RegisterHistogram) {
@@ -380,42 +343,44 @@ TEST_P(StatisticsRecorderTest, ToJSON) {
   // Check for valid JSON.
   absl::optional<Value> root = JSONReader::Read(json);
   ASSERT_TRUE(root);
-  ASSERT_TRUE(root->is_dict());
+  Value::Dict* root_dict = root->GetIfDict();
+  ASSERT_TRUE(root_dict);
 
   // No query should be set.
-  ASSERT_FALSE(root->FindKey("query"));
+  ASSERT_FALSE(root_dict->Find("query"));
 
-  const Value* histogram_list = root->FindListKey("histograms");
+  const Value::List* histogram_list = root_dict->FindList("histograms");
 
   ASSERT_TRUE(histogram_list);
-  ASSERT_EQ(2u, histogram_list->GetList().size());
+  ASSERT_EQ(2u, histogram_list->size());
 
   // Examine the first histogram.
-  const Value& histogram_dict = histogram_list->GetList()[0];
-  ASSERT_TRUE(histogram_dict.is_dict());
+  const Value::Dict* histogram_dict = (*histogram_list)[0].GetIfDict();
+  ASSERT_TRUE(histogram_dict);
 
-  auto sample_count = histogram_dict.FindIntKey("count");
+  auto sample_count = histogram_dict->FindInt("count");
   ASSERT_TRUE(sample_count);
   EXPECT_EQ(2, *sample_count);
 
-  const Value* buckets_list = histogram_dict.FindListKey("buckets");
+  const Value::List* buckets_list = histogram_dict->FindList("buckets");
   ASSERT_TRUE(buckets_list);
-  EXPECT_EQ(2u, buckets_list->GetList().size());
+  EXPECT_EQ(2u, buckets_list->size());
 
   // Check the serialized JSON with a different verbosity level.
   json = StatisticsRecorder::ToJSON(JSON_VERBOSITY_LEVEL_OMIT_BUCKETS);
   root = JSONReader::Read(json);
   ASSERT_TRUE(root);
-  ASSERT_TRUE(root->is_dict());
-  histogram_list = root->FindListKey("histograms");
+  root_dict = root->GetIfDict();
+  ASSERT_TRUE(root_dict);
+  histogram_list = root_dict->FindList("histograms");
   ASSERT_TRUE(histogram_list);
-  ASSERT_EQ(2u, histogram_list->GetList().size());
-  const Value& histogram_dict2 = histogram_list->GetList()[0];
-  ASSERT_TRUE(histogram_dict2.is_dict());
-  sample_count = histogram_dict2.FindIntKey("count");
+  ASSERT_EQ(2u, histogram_list->size());
+  const Value::Dict* histogram_dict2 = (*histogram_list)[0].GetIfDict();
+  ASSERT_TRUE(histogram_dict2);
+  sample_count = histogram_dict2->FindInt("count");
   ASSERT_TRUE(sample_count);
   EXPECT_EQ(2, *sample_count);
-  buckets_list = histogram_dict2.FindListKey("buckets");
+  buckets_list = histogram_dict2->FindList("buckets");
   // Bucket information should be omitted.
   ASSERT_FALSE(buckets_list);
 }
@@ -755,6 +720,14 @@ TEST_P(StatisticsRecorderTest, GlobalCallbackCalled) {
   EXPECT_EQ(callback_callcount, 1u);
 }
 
+#if BUILDFLAG(USE_RUNTIME_VLOG)
+// The following check that StatisticsRecorder::InitLogOnShutdownWhileLocked
+// dumps the histogram graph to vlog if VLOG_IS_ON(1) at runtime. When
+// USE_RUNTIME_VLOG is not set, all vlog levels are determined at build time
+// and default to off. Since we do not want StatisticsRecorder to dump all the
+// time, VLOG in its code stays off. As a result, the following tests would
+// fail.
+
 TEST_P(StatisticsRecorderTest, LogOnShutdownNotInitialized) {
   ResetVLogInitialized();
   logging::SetMinLogLevel(logging::LOG_WARNING);
@@ -784,6 +757,7 @@ TEST_P(StatisticsRecorderTest, LogOnShutdownInitialized) {
   EXPECT_TRUE(VLOG_IS_ON(1));
   EXPECT_TRUE(IsVLogInitialized());
 }
+#endif  // BUILDFLAG(USE_RUNTIME_VLOG)
 
 class TestHistogramProvider : public StatisticsRecorder::HistogramProvider {
  public:

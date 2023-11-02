@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include "ash/components/phonehub/phone_model.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 // Phone model which provides public API functions allowing the model to be
@@ -25,6 +25,6 @@ class MutablePhoneModel : public PhoneModel {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_MUTABLE_PHONE_MODEL_H_

@@ -1,0 +1,6 @@
+include_rules = [
+  "+components/keyed_service",
+  "+content/public/browser",
+  "+content/public/test",
+  "+net",
+]

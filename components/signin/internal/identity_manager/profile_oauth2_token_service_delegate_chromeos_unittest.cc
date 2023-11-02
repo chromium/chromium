@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,9 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "components/account_manager_core/account.h"
@@ -29,14 +31,13 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "google_apis/gaia/oauth2_access_token_manager_test_util.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-namespace signin {
 
 namespace {
 
@@ -153,7 +154,7 @@ class TestOAuth2TokenServiceObserver
   std::vector<std::vector<CoreAccountId>> batch_change_records_;
 
   // Non-owning pointer.
-  ProfileOAuth2TokenServiceDelegate* const delegate_;
+  const raw_ptr<ProfileOAuth2TokenServiceDelegate> delegate_;
 };
 
 class MockProfileOAuth2TokenServiceObserver
@@ -182,10 +183,20 @@ class MockProfileOAuth2TokenServiceObserver
   MOCK_METHOD(void, OnRefreshTokenRevoked, (const CoreAccountId&), (override));
 
  private:
-  ProfileOAuth2TokenServiceDelegate* const delegate_;
+  const raw_ptr<ProfileOAuth2TokenServiceDelegate> delegate_;
 };
 
 }  // namespace
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+class MockTestSigninClient : public testing::StrictMock<TestSigninClient> {
+ public:
+  explicit MockTestSigninClient(PrefService* pref_service)
+      : testing::StrictMock<TestSigninClient>(pref_service) {}
+
+  MOCK_METHOD(void, RemoveAllAccounts, (), (override));
+};
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
  public:
@@ -204,7 +215,12 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
     AccountTrackerService::RegisterPrefs(pref_service_.registry());
     AccountManager::RegisterPrefs(pref_service_.registry());
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    client_ = std::make_unique<MockTestSigninClient>(&pref_service_);
+#else
     client_ = std::make_unique<TestSigninClient>(&pref_service_);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
     account_manager_.Initialize(tmp_dir_.GetPath(),
                                 client_->GetURLLoaderFactory(),
                                 immediate_callback_runner_);
@@ -220,13 +236,26 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
 
     account_info_ = CreateAccountInfoTestFixture(kGaiaId, kUserEmail);
     account_tracker_service_.SeedAccountInfo(account_info_);
-    delegate_ = std::make_unique<ProfileOAuth2TokenServiceDelegateChromeOS>(
-        &account_tracker_service_,
-        network::TestNetworkConnectionTracker::GetInstance(),
-        account_manager_facade_.get(), true /* is_regular_profile */);
+    ResetProfileOAuth2TokenServiceDelegateChromeOS(
+        /*delete_signin_cookies_on_exit=*/false, /*is_syncing=*/false);
+  }
+
+  void ResetProfileOAuth2TokenServiceDelegateChromeOS(
+      bool delete_signin_cookies_on_exit,
+      bool is_syncing) {
+    delegate_.reset();
+    delegate_ =
+        std::make_unique<signin::ProfileOAuth2TokenServiceDelegateChromeOS>(
+            client_.get(), &account_tracker_service_,
+            network::TestNetworkConnectionTracker::GetInstance(),
+            account_manager_facade_.get(),
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+            delete_signin_cookies_on_exit,
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+            /*is_regular_profile=*/true);
 
     LoadCredentialsAndWaitForCompletion(
-        account_info_.account_id /* primary_account_id */);
+        /*primary_account_id=*/account_info_.account_id, is_syncing);
   }
 
   account_manager::AccountKey gaia_account_key() const {
@@ -265,12 +294,13 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
   }
 
   void LoadCredentialsAndWaitForCompletion(
-      const CoreAccountId& primary_account_id) {
+      const CoreAccountId& primary_account_id,
+      bool is_syncing) {
     MockProfileOAuth2TokenServiceObserver observer(delegate_.get());
     base::RunLoop run_loop;
     EXPECT_CALL(observer, OnRefreshTokensLoaded())
         .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-    delegate_->LoadCredentials(primary_account_id);
+    delegate_->LoadCredentials(primary_account_id, is_syncing);
     run_loop.Run();
   }
 
@@ -358,13 +388,65 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
       account_manager_mojo_service_;
   std::unique_ptr<account_manager::AccountManagerFacade>
       account_manager_facade_;
-  std::unique_ptr<ProfileOAuth2TokenServiceDelegateChromeOS> delegate_;
+  std::unique_ptr<signin::ProfileOAuth2TokenServiceDelegateChromeOS> delegate_;
   AccountManager::DelayNetworkCallRunner immediate_callback_runner_ =
       base::BindRepeating(
           [](base::OnceClosure closure) -> void { std::move(closure).Run(); });
   sync_preferences::TestingPrefServiceSyncable pref_service_;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::unique_ptr<MockTestSigninClient> client_;
+#else
   std::unique_ptr<TestSigninClient> client_;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Tests |RemoveAllAccounts| is not called on startup if
+// |delete_signin_cookies_on_exit| is false.
+TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
+       CookieNotClearedOnStartup) {
+  EXPECT_FALSE(client_->GetInitialPrimaryAccount().has_value());
+  EXPECT_CALL(*(client_.get()), RemoveAllAccounts()).Times(0);
+  ResetProfileOAuth2TokenServiceDelegateChromeOS(
+      /*delete_signin_cookies_on_exit=*/false, /*is_syncing=*/false);
+}
+
+TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
+       CookieClearedOnStartupSecondaryNonSyncingProfile) {
+  EXPECT_FALSE(client_->GetInitialPrimaryAccount().has_value());
+  EXPECT_CALL(*(client_.get()), RemoveAllAccounts()).Times(1);
+  ResetProfileOAuth2TokenServiceDelegateChromeOS(
+      /*delete_signin_cookies_on_exit=*/true, /*is_syncing=*/false);
+}
+
+// Test that |delete_signin_cookies_on_exit| does nothing if the profile
+// is syncing.
+TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
+       CookieNotClearedOnStartupSyncingProfile) {
+  EXPECT_FALSE(client_->GetInitialPrimaryAccount().has_value());
+  EXPECT_CALL(*(client_.get()), RemoveAllAccounts()).Times(0);
+  ResetProfileOAuth2TokenServiceDelegateChromeOS(
+      /*delete_signin_cookies_on_exit=*/true, /*is_syncing=*/true);
+}
+
+// Test that |delete_signin_cookies_on_exit| does nothing for the main profile.
+TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
+       CookieNotClearedOnStartupMainProfile) {
+  // The delegate figures out that the profile is the main profile by checking
+  // if the |SigninClient| has an initial primary account set.
+  client_->SetInitialPrimaryAccountForTests(
+      account_manager::Account{
+          account_manager::AccountKey{kGaiaId,
+                                      account_manager::AccountType::kGaia},
+          kUserEmail},
+      /*is_child=*/false);
+  EXPECT_TRUE(client_->GetInitialPrimaryAccount().has_value());
+
+  EXPECT_CALL(*(client_.get()), RemoveAllAccounts()).Times(0);
+  ResetProfileOAuth2TokenServiceDelegateChromeOS(
+      /*delete_signin_cookies_on_exit=*/true, /*is_syncing=*/false);
+}
+#endif
 
 // Refresh tokens should load successfully for non-regular (Signin and Lock
 // Screen) Profiles.
@@ -375,24 +457,32 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
   // behaviour.
   AccountManager account_manager;
 
-  auto delegate = std::make_unique<ProfileOAuth2TokenServiceDelegateChromeOS>(
-      &account_tracker_service_,
-      network::TestNetworkConnectionTracker::GetInstance(),
-      account_manager_facade_.get(), false /* is_regular_profile */);
+  auto delegate =
+      std::make_unique<signin::ProfileOAuth2TokenServiceDelegateChromeOS>(
+          client_.get(), &account_tracker_service_,
+          network::TestNetworkConnectionTracker::GetInstance(),
+          account_manager_facade_.get(),
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+          /*delete_signin_cookies_on_exit=*/false,
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+          /*is_regular_profile=*/false);
   TestOAuth2TokenServiceObserver observer(delegate.get());
 
   // Test that LoadCredentials works as expected.
   EXPECT_FALSE(observer.refresh_tokens_loaded_);
-  delegate->LoadCredentials(CoreAccountId() /* primary_account_id */);
+  delegate->LoadCredentials(CoreAccountId() /* primary_account_id */,
+                            /*is_syncing=*/false);
   EXPECT_TRUE(observer.refresh_tokens_loaded_);
-  EXPECT_EQ(LoadCredentialsState::LOAD_CREDENTIALS_FINISHED_WITH_SUCCESS,
-            delegate->load_credentials_state());
+  EXPECT_EQ(
+      signin::LoadCredentialsState::LOAD_CREDENTIALS_FINISHED_WITH_SUCCESS,
+      delegate->load_credentials_state());
 }
 
 TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
        RefreshTokenIsAvailableReturnsTrueForValidGaiaTokens) {
-  EXPECT_EQ(LoadCredentialsState::LOAD_CREDENTIALS_FINISHED_WITH_SUCCESS,
-            delegate_->load_credentials_state());
+  EXPECT_EQ(
+      signin::LoadCredentialsState::LOAD_CREDENTIALS_FINISHED_WITH_SUCCESS,
+      delegate_->load_credentials_state());
 
   EXPECT_FALSE(delegate_->RefreshTokenIsAvailable(account_info_.account_id));
   EXPECT_FALSE(
@@ -407,8 +497,9 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
 
 TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
        RefreshTokenIsAvailableReturnsTrueForInvalidGaiaTokens) {
-  EXPECT_EQ(LoadCredentialsState::LOAD_CREDENTIALS_FINISHED_WITH_SUCCESS,
-            delegate_->load_credentials_state());
+  EXPECT_EQ(
+      signin::LoadCredentialsState::LOAD_CREDENTIALS_FINISHED_WITH_SUCCESS,
+      delegate_->load_credentials_state());
 
   EXPECT_FALSE(delegate_->RefreshTokenIsAvailable(account_info_.account_id));
   EXPECT_FALSE(
@@ -424,6 +515,7 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
 
 TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
        ObserversAreNotifiedOnAuthErrorChange) {
+  UpsertAccountAndWaitForCompletion(gaia_account_key(), kUserEmail, kGaiaToken);
   TestOAuth2TokenServiceObserver observer(delegate_.get());
   auto error =
       GoogleServiceAuthError(GoogleServiceAuthError::State::SERVICE_ERROR);
@@ -436,18 +528,21 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
 
 TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
        ObserversAreNotNotifiedIfErrorDidntChange) {
+  UpsertAccountAndWaitForCompletion(gaia_account_key(), kUserEmail, kGaiaToken);
   TestOAuth2TokenServiceObserver observer(delegate_.get());
   auto error =
       GoogleServiceAuthError(GoogleServiceAuthError::State::SERVICE_ERROR);
 
   delegate_->UpdateAuthError(account_info_.account_id, error);
   EXPECT_EQ(1, observer.on_auth_error_changed_calls);
+  EXPECT_EQ(error, delegate_->GetAuthError(account_info_.account_id));
   delegate_->UpdateAuthError(account_info_.account_id, error);
   EXPECT_EQ(1, observer.on_auth_error_changed_calls);
 }
 
 TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
        ObserversAreNotifiedIfErrorDidChange) {
+  UpsertAccountAndWaitForCompletion(gaia_account_key(), kUserEmail, kGaiaToken);
   TestOAuth2TokenServiceObserver observer(delegate_.get());
   delegate_->UpdateAuthError(
       account_info_.account_id,
@@ -496,6 +591,7 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
                                     kGaiaToken);
   // Deliberately add an error.
   delegate_->UpdateAuthError(account_info_.account_id, error);
+  EXPECT_EQ(error, delegate_->GetAuthError(account_info_.account_id));
   RemoveAccountAndWaitForCompletion(gaia_account_key());
   EXPECT_EQ(GoogleServiceAuthError::AuthErrorNone(),
             delegate_->GetAuthError(account_info_.account_id));
@@ -598,11 +694,17 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
       CreateAccountManagerFacade(account_manager_mojo_service.get());
 
   // Register callbacks before AccountManager has been fully initialized.
-  auto delegate = std::make_unique<ProfileOAuth2TokenServiceDelegateChromeOS>(
-      &account_tracker_service_,
-      network::TestNetworkConnectionTracker::GetInstance(),
-      account_manager_facade.get(), true /* is_regular_profile */);
-  delegate->LoadCredentials(account1.account_id /* primary_account_id */);
+  auto delegate =
+      std::make_unique<signin::ProfileOAuth2TokenServiceDelegateChromeOS>(
+          client_.get(), &account_tracker_service_,
+          network::TestNetworkConnectionTracker::GetInstance(),
+          account_manager_facade.get(),
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+          /*delete_signin_cookies_on_exit=*/false,
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS
+          /*is_regular_profile=*/true);
+  delegate->LoadCredentials(account1.account_id /* primary_account_id */,
+                            /*is_syncing=*/false);
   TestOAuth2TokenServiceObserver observer(delegate.get());
   // Wait until AccountManager is fully initialized.
   task_environment_.RunUntilIdle();
@@ -659,8 +761,9 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
 
 TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
        RefreshTokenMustBeAvailableForAllAccountsReturnedByGetAccounts) {
-  EXPECT_EQ(LoadCredentialsState::LOAD_CREDENTIALS_FINISHED_WITH_SUCCESS,
-            delegate_->load_credentials_state());
+  EXPECT_EQ(
+      signin::LoadCredentialsState::LOAD_CREDENTIALS_FINISHED_WITH_SUCCESS,
+      delegate_->load_credentials_state());
   EXPECT_TRUE(delegate_->GetAccounts().empty());
   const std::string kUserEmail2 = "random-email2@example.com";
   const std::string kUserEmail3 = "random-email3@example.com";
@@ -760,6 +863,7 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
 
 TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
        SigninErrorObserversAreNotifiedOnAuthErrorChange) {
+  UpsertAccountAndWaitForCompletion(gaia_account_key(), kUserEmail, kGaiaToken);
   auto error =
       GoogleServiceAuthError(GoogleServiceAuthError::State::SERVICE_ERROR);
 
@@ -770,6 +874,7 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
 
 TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
        TransientErrorsAreNotShown) {
+  UpsertAccountAndWaitForCompletion(gaia_account_key(), kUserEmail, kGaiaToken);
   auto transient_error = GoogleServiceAuthError(
       GoogleServiceAuthError::State::SERVICE_UNAVAILABLE);
   EXPECT_EQ(GoogleServiceAuthError::AuthErrorNone(),
@@ -807,10 +912,11 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
   EXPECT_EQ(0, access_token_consumer.num_access_token_fetch_success_);
   EXPECT_EQ(1, access_token_consumer.num_access_token_fetch_failure_);
   // Expect a positive backoff time.
-  EXPECT_GT(delegate_->backoff_entry_.GetTimeUntilRelease(), base::TimeDelta());
+  EXPECT_GT(delegate_->BackoffEntry()->GetTimeUntilRelease(),
+            base::TimeDelta());
 
   // Pretend that backoff has expired and try again.
-  delegate_->backoff_entry_.SetCustomReleaseTime(base::TimeTicks());
+  delegate_->backoff_entry_->SetCustomReleaseTime(base::TimeTicks());
   fetcher = delegate_->CreateAccessTokenFetcher(
       account_info_.account_id, delegate_->GetURLLoaderFactory(),
       &access_token_consumer);
@@ -846,7 +952,8 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
   EXPECT_EQ(0, access_token_consumer.num_access_token_fetch_success_);
   EXPECT_EQ(1, access_token_consumer.num_access_token_fetch_failure_);
   // Expect a positive backoff time.
-  EXPECT_GT(delegate_->backoff_entry_.GetTimeUntilRelease(), base::TimeDelta());
+  EXPECT_GT(delegate_->BackoffEntry()->GetTimeUntilRelease(),
+            base::TimeDelta());
 
   // Notify of network change and ensure that request now runs.
   delegate_->OnConnectionChanged(
@@ -860,4 +967,40 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
   EXPECT_EQ(1, access_token_consumer.num_access_token_fetch_failure_);
 }
 
-}  // namespace signin
+TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
+       AccountErrorsAreReportedToAccountManagerFacade) {
+  UpsertAccountAndWaitForCompletion(gaia_account_key(), account_info_.email,
+                                    kGaiaToken);
+  account_manager::MockAccountManagerFacadeObserver observer;
+  account_manager_facade_->AddObserver(&observer);
+  // Flush all the pending Mojo messages before setting expectations.
+  base::RunLoop().RunUntilIdle();
+
+  GoogleServiceAuthError error =
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER);
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer, OnAuthErrorChanged(gaia_account_key(), error))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  delegate_->UpdateAuthError(account_info_.account_id, error);
+  run_loop.Run();
+
+  account_manager_facade_->RemoveObserver(&observer);
+}
+
+TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
+       AccountErrorNotificationsFromAccountManagerFacadeArePropagated) {
+  UpsertAccountAndWaitForCompletion(gaia_account_key(), kUserEmail, kGaiaToken);
+  TestOAuth2TokenServiceObserver observer(delegate_.get());
+  GoogleServiceAuthError error =
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER);
+
+  // Simulate an observer notification from AccountManagerFacade.
+  delegate_->OnAuthErrorChanged(gaia_account_key(), error);
+  EXPECT_EQ(error, delegate_->GetAuthError(account_info_.account_id));
+  EXPECT_EQ(account_info_.account_id, observer.last_err_account_id_);
+  EXPECT_EQ(error, observer.last_err_);
+}

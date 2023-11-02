@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+
+<p>go to chrome://settings/addresses to set up autofill</p>
+<p>autofill is not supported in file:// urls</p>
+
+<form>
+  <div id=host1>
+    <template shadowroot=open>
+      <label for=input1>name</label>
+      <input id=input1>
+    </template>
+  </div>
+
+  <div id=host2>
+    <template shadowroot=open>
+      <div id=innerhost2>
+        <template shadowroot=open>
+          <label for=input2>address</label>
+          <input id=input2>
+        </template>
+      </div>
+    </template>
+  </div>
+
+  <div id=host3>
+    <template shadowroot=open>
+      <label for=input3>state</label>
+      <select id=input3>
+        <option value=WA>WA</option>
+        <option value=CA>CA</option>
+        <option value=TX>TX</option>
+      </select>
+    </template>
+  </div>
+</form>
+
+<script>
+function getNameElement() {
+  return host1.shadowRoot.getElementById('input1');
+}
+
+function getName() {
+  return getNameElement().value;
+}
+
+function getAddress() {
+  return host2.shadowRoot.getElementById('innerhost2').shadowRoot.getElementById('input2').value;
+}
+
+function getState() {
+  return host3.shadowRoot.querySelector('select').value;
+}
+</script>

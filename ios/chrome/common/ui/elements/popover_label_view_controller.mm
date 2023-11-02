@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/text_view_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -59,7 +60,8 @@ constexpr CGFloat kIconSize = 16;
 - (instancetype)initWithMessage:(NSString*)message {
   NSDictionary* generalAttributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kTextPrimaryColor],
-    NSFontAttributeName : [UIFont preferredFontForTextStyle:UIFontTextStyleBody]
+    NSFontAttributeName :
+        [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]
   };
 
   NSAttributedString* attributedString =
@@ -121,7 +123,7 @@ constexpr CGFloat kIconSize = 16;
   [_scrollView addSubview:textContainerView];
   AddSameConstraints(textContainerView, _scrollView);
 
-  UITextView* textView = [[UITextView alloc] init];
+  UITextView* textView = CreateUITextViewWithTextKit1();
   textView.scrollEnabled = NO;
   textView.editable = NO;
   textView.delegate = self;
@@ -140,10 +142,10 @@ constexpr CGFloat kIconSize = 16;
 
   [_scrollView addSubview:textView];
 
-  // Only create secondary TextView when |secondaryAttributedString| is not nil
+  // Only create secondary TextView when `secondaryAttributedString` is not nil
   // or empty. Set the constraint accordingly.
   if (self.secondaryAttributedString.length) {
-    UITextView* secondaryTextView = [[UITextView alloc] init];
+    UITextView* secondaryTextView = CreateUITextViewWithTextKit1();
     secondaryTextView.scrollEnabled = NO;
     secondaryTextView.editable = NO;
     secondaryTextView.delegate = self;
@@ -321,14 +323,14 @@ constexpr CGFloat kIconSize = 16;
 // Updates the preferred content size according to the presenting view size and
 // the layout size of the view.
 - (void)updatePreferredContentSize {
-  // Expected width of the |self.scrollView|.
+  // Expected width of the `self.scrollView`.
   CGFloat width =
       self.presentingViewController.view.bounds.size.width * kWidthProportion;
   // Cap max width at 300pt.
   if (width > kMaxWidth) {
     width = kMaxWidth;
   }
-  // |scrollView| is used here instead of |self.view|, because |self.view|
+  // `scrollView` is used here instead of `self.view`, because `self.view`
   // includes arrow size during calculation although it's being added to the
   // result size anyway.
   CGSize size =

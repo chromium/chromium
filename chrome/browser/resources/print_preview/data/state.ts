@@ -1,8 +1,8 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 export enum State {
@@ -20,11 +20,9 @@ export enum Error {
   NONE = 0,
   INVALID_TICKET = 1,
   INVALID_PRINTER = 2,
-  UNSUPPORTED_PRINTER = 3,
-  NO_DESTINATIONS = 4,
-  PREVIEW_FAILED = 5,
-  PRINT_FAILED = 6,
-  CLOUD_PRINT_ERROR = 7,
+  NO_DESTINATIONS = 3,
+  PREVIEW_FAILED = 4,
+  PRINT_FAILED = 5,
 }
 
 

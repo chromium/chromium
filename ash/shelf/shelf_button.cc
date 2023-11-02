@@ -1,17 +1,17 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/shelf/shelf_button.h"
 
 #include "ash/constants/ash_constants.h"
-#include "ash/public/cpp/shelf_config.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_button_delegate.h"
 #include "ash/style/style_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/views/animation/ink_drop.h"
+#include "ui/views/controls/highlight_path_generator.h"
 
 namespace ash {
 
@@ -25,9 +25,11 @@ ShelfButton::ShelfButton(Shelf* shelf,
   SetFocusBehavior(FocusBehavior::ALWAYS);
   views::InkDrop::Get(this)->SetMode(
       views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
-  SetFocusPainter(views::Painter::CreateSolidFocusPainter(
-      ShelfConfig::Get()->shelf_focus_border_color(), kFocusBorderThickness,
-      gfx::InsetsF()));
+  // Inset focus ring path to avoid clipping the edges of the ring.
+  views::FocusRing::Get(this)->SetPathGenerator(
+      std::make_unique<views::CircleHighlightPathGenerator>(
+          gfx::Insets(-views::FocusRing::kDefaultHaloInset)));
+  SetFocusPainter(nullptr);
   views::InkDrop::UseInkDropForSquareRipple(views::InkDrop::Get(this),
                                             /*highlight_on_hover=*/false);
 }

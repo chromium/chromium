@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,32 +18,32 @@ BrowserAccessibilityAuraLinux* ToBrowserAccessibilityAuraLinux(
 std::unique_ptr<BrowserAccessibility> BrowserAccessibility::Create(
     BrowserAccessibilityManager* manager,
     ui::AXNode* node) {
-  return std::unique_ptr<BrowserAccessibilityAuraLinux>(
-      new BrowserAccessibilityAuraLinux(manager, node));
+  return std::make_unique<BrowserAccessibilityAuraLinux>(manager, node);
 }
 
 BrowserAccessibilityAuraLinux::BrowserAccessibilityAuraLinux(
     BrowserAccessibilityManager* manager,
     ui::AXNode* node)
     : BrowserAccessibility(manager, node) {
-  node_ = static_cast<ui::AXPlatformNodeAuraLinux*>(
+  platform_node_ = static_cast<ui::AXPlatformNodeAuraLinux*>(
       ui::AXPlatformNode::Create(this));
 }
 
 BrowserAccessibilityAuraLinux::~BrowserAccessibilityAuraLinux() {
-  DCHECK(node_);
-  node_->Destroy();
-  node_ = nullptr;
+  DCHECK(platform_node_);
+  // Clear platform_node_ and return another raw_ptr instance
+  // that is allowed to dangle.
+  platform_node_.ExtractAsDangling()->Destroy();
 }
 
 ui::AXPlatformNodeAuraLinux* BrowserAccessibilityAuraLinux::GetNode() const {
-  return node_;
+  return platform_node_;
 }
 
 gfx::NativeViewAccessible
 BrowserAccessibilityAuraLinux::GetNativeViewAccessible() {
-  DCHECK(node_);
-  return node_->GetNativeViewAccessible();
+  DCHECK(platform_node_);
+  return platform_node_->GetNativeViewAccessible();
 }
 
 void BrowserAccessibilityAuraLinux::UpdatePlatformAttributes() {
@@ -52,8 +52,8 @@ void BrowserAccessibilityAuraLinux::UpdatePlatformAttributes() {
 
 void BrowserAccessibilityAuraLinux::OnDataChanged() {
   BrowserAccessibility::OnDataChanged();
-  DCHECK(node_);
-  node_->EnsureAtkObjectIsValid();
+  DCHECK(platform_node_);
+  platform_node_->EnsureAtkObjectIsValid();
 }
 
 ui::AXPlatformNode* BrowserAccessibilityAuraLinux::GetAXPlatformNode() const {

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,9 @@ class VIZ_SERVICE_EXPORT SurfaceObserver {
   // Called when a CompositorFrame with a new SurfaceId activates for the first
   // time.
   virtual void OnFirstSurfaceActivation(const SurfaceInfo& surface_info) {}
+
+  // Called when there is new frame in uncommitted queue of the surface.
+  virtual void OnSurfaceHasNewUncommittedFrame(const SurfaceId& surface_id) {}
 
   // Called when a CompositorFrame within a surface corresponding to
   // |surface_id| activates.

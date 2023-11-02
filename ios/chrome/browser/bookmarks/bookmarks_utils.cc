@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
@@ -69,7 +69,7 @@ bool IsPrimaryPermanentNode(const BookmarkNode* node, BookmarkModel* model) {
 const BookmarkNode* RootLevelFolderForNode(const BookmarkNode* node,
                                            BookmarkModel* model) {
   // This helper function doesn't work for managed bookmarks. This checks that
-  // |node| is editable by the user, which currently covers all the other
+  // `node` is editable by the user, which currently covers all the other
   // bookmarks except the managed bookmarks.
   DCHECK(model->client()->CanBeEditedByUser(node));
 

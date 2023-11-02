@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,12 @@
 #include <memory>
 #include <string>
 
+#include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
-#include "chrome/browser/ash/login/screen_manager.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 class SignInFatalErrorView;
@@ -35,18 +35,15 @@ class SignInFatalErrorScreen : public BaseScreen {
     CUSTOM = 4,
   };
 
-  explicit SignInFatalErrorScreen(chromeos::SignInFatalErrorView* view,
-                                  const base::RepeatingClosure& exit_callback);
+  explicit SignInFatalErrorScreen(
+      base::WeakPtr<chromeos::SignInFatalErrorView> view,
+      const base::RepeatingClosure& exit_callback);
   SignInFatalErrorScreen(const SignInFatalErrorScreen&) = delete;
   SignInFatalErrorScreen& operator=(const SignInFatalErrorScreen&) = delete;
   ~SignInFatalErrorScreen() override;
 
-  // Called when the screen is being destroyed. This should call Unbind() on the
-  // associated View if this class is destroyed before that.
-  void OnViewDestroyed(chromeos::SignInFatalErrorView* view);
-
   // Setting the error methods.
-  void SetErrorState(Error error, const base::Value* params);
+  void SetErrorState(Error error, base::Value::Dict params);
   void SetCustomError(const std::string& error_text,
                       const std::string& keyboard_hint,
                       const std::string& details,
@@ -56,12 +53,12 @@ class SignInFatalErrorScreen : public BaseScreen {
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
 
   Error error_state_ = Error::UNKNOWN;
-  absl::optional<base::Value> extra_error_info_;
+  base::Value::Dict extra_error_info_;
 
-  chromeos::SignInFatalErrorView* view_ = nullptr;
+  base::WeakPtr<chromeos::SignInFatalErrorView> view_;
   base::RepeatingClosure exit_callback_;
 
   // Help application used for help dialogs.

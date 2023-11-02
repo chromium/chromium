@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -73,6 +73,12 @@ class MEDIA_EXPORT AudioOutputStream {
                            base::TimeTicks delay_timestamp,
                            int prior_frames_skipped,
                            AudioBus* dest) = 0;
+
+    virtual int OnMoreData(base::TimeDelta delay,
+                           base::TimeTicks delay_timestamp,
+                           int prior_frames_skipped,
+                           AudioBus* dest,
+                           bool is_mixing);
 
     // There was an error while playing a buffer. Audio source cannot be
     // destroyed yet. No direct action needed by the AudioStream, but it is

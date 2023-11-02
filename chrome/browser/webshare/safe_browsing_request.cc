@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,8 +49,7 @@ class SafeBrowsingRequest::SafeBrowsingClient
     timeout_.Start(FROM_HERE, kSafeBrowsingCheckTimeout, this,
                    &SafeBrowsingClient::OnTimeout);
 
-    if (!database_manager_->IsSupported() ||
-        database_manager_->CheckDownloadUrl({url}, this)) {
+    if (database_manager_->CheckDownloadUrl({url}, this)) {
       timeout_.AbandonAndStop();
       SendResultToHandler(/*is_url_safe=*/true);
     }

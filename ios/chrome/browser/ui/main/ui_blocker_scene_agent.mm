@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,11 +39,9 @@
   // when it exits it, the cached app switcher snapshot will have the overlay on
   // it, and therefore needs updating.
   if (sceneState.activationLevel < SceneActivationLevelForegroundInactive) {
-    if (base::ios::IsMultiwindowSupported()) {
-      DCHECK(sceneState.scene.session);
-      [[UIApplication sharedApplication]
-          requestSceneSessionRefresh:sceneState.scene.session];
-    }
+    DCHECK(sceneState.scene.session);
+    [[UIApplication sharedApplication]
+        requestSceneSessionRefresh:sceneState.scene.session];
   }
 }
 

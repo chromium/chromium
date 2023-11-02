@@ -21,14 +21,15 @@
 
 #include "third_party/blink/renderer/core/svg/svg_preserve_aspect_ratio.h"
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -161,7 +162,7 @@ SVGParsingError SVGPreserveAspectRatio::ParseInternal(const CharType*& ptr,
 SVGParsingError SVGPreserveAspectRatio::SetValueAsString(const String& string) {
   SetDefault();
 
-  if (string.IsEmpty())
+  if (string.empty())
     return SVGParseStatus::kNoError;
 
   return WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {
@@ -181,12 +182,12 @@ bool SVGPreserveAspectRatio::Parse(const UChar*& ptr,
   return ParseInternal(ptr, end, validate) == SVGParseStatus::kNoError;
 }
 
-void SVGPreserveAspectRatio::TransformRect(FloatRect& dest_rect,
-                                           FloatRect& src_rect) const {
+void SVGPreserveAspectRatio::TransformRect(gfx::RectF& dest_rect,
+                                           gfx::RectF& src_rect) const {
   if (align_ == kSvgPreserveaspectratioNone)
     return;
 
-  FloatSize image_size = src_rect.size();
+  gfx::SizeF image_size = src_rect.size();
   float orig_dest_width = dest_rect.width();
   float orig_dest_height = dest_rect.height();
   switch (meet_or_slice_) {

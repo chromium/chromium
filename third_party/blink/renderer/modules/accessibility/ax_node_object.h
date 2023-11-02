@@ -30,8 +30,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_NODE_OBJECT_H_
 
 #include "base/dcheck_is_on.h"
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
@@ -111,6 +111,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   bool IsSpinButton() const override;
   bool IsNativeSlider() const override;
   bool IsNativeSpinButton() const override;
+  bool IsChildTreeOwner() const override;
 
   // Check object state.
   bool IsClickable() const final;
@@ -142,6 +143,8 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   AXObject* InPageLinkTarget() const override;
   AccessibilityOrientation Orientation() const override;
 
+  AXObject* GetChildFigcaption() const override;
+
   // Used to compute kRadioGroupIds, which is only used on Mac.
   // TODO(accessibility) Consider computing on browser side and removing here.
   AXObjectVector RadioButtonsInGroup() const override;
@@ -156,7 +159,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
       ax::mojom::blink::TextDecorationStyle* text_strikethrough_style,
       ax::mojom::blink::TextDecorationStyle* text_underline_style) const final;
 
-  String ImageDataUrl(const IntSize& max_size) const final;
+  String ImageDataUrl(const gfx::Size& max_size) const final;
   int TextOffsetInFormattingContext(int offset) const override;
 
   // Object attributes.
@@ -166,6 +169,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   // Properties of interactive elements.
   ax::mojom::blink::AriaCurrentState GetAriaCurrentState() const final;
   ax::mojom::blink::InvalidState GetInvalidState() const final;
+  bool IsValidFormControl(ListedElement* form_control) const;
   bool ValueForRange(float* out_value) const override;
   bool MaxValueForRange(float* out_value) const override;
   bool MinValueForRange(float* out_value) const override;
@@ -175,6 +179,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   String GetValueForControl() const override;
   String SlowGetValueForControlIncludingContentEditable() const override;
   String TextFromDescendants(AXObjectSet& visited,
+                             const AXObject* aria_label_or_description_root,
                              bool recursive) const override;
 
   // ARIA attributes.
@@ -217,8 +222,8 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
 
   // Location
   void GetRelativeBounds(AXObject** out_container,
-                         FloatRect& out_bounds_in_container,
-                         skia::Matrix44& out_container_transform,
+                         gfx::RectF& out_bounds_in_container,
+                         gfx::Transform& out_container_transform,
                          bool* clips_children = nullptr) const override;
 
   void AddChildren() override;
@@ -257,7 +262,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
 
   // Notifications that this object may have changed.
   void ChildrenChangedWithCleanLayout() override;
-  void SelectionChanged() final;
   void HandleAriaExpandedChanged() override;
   void HandleActiveDescendantChanged() override;
 
@@ -298,7 +302,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
                                bool* found_text_alternative) const;
   bool IsDescendantOfElementType(HashSet<QualifiedName>& tag_names) const;
   String PlaceholderFromNativeAttribute() const;
-  String GetValueContributionToName() const;
+  String GetValueContributionToName(AXObjectSet& visited) const;
   bool UseNameFromSelectedOption() const;
   virtual bool IsTabItemSelected() const;
 

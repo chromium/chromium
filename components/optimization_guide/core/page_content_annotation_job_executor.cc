@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,7 +64,7 @@ void PageContentAnnotationJobExecutor::ExecuteJob(
         job->type(), input,
         base::BindOnce(
             &PageContentAnnotationJobExecutor::OnSingleInputExecutionComplete,
-            weak_ptr_factory_.GetWeakPtr(), job, on_each_done_callback));
+            weak_ptr_factory_.GetWeakPtr(), job, i, on_each_done_callback));
   }
 }
 
@@ -73,6 +73,8 @@ void PageContentAnnotationJobExecutor::OnJobExecutionComplete(
     std::unique_ptr<PageContentAnnotationJob> job) {
   job->OnComplete();
   // Intentionally reset |job| here to make lifetime clearer and less bug-prone.
+  // Note that the job dtor also records some timing metrics which is better to
+  // do now rather than after the following callback.
   job.reset();
 
   std::move(on_job_complete_callback_from_caller).Run();
@@ -80,9 +82,10 @@ void PageContentAnnotationJobExecutor::OnJobExecutionComplete(
 
 void PageContentAnnotationJobExecutor::OnSingleInputExecutionComplete(
     PageContentAnnotationJob* job,
+    size_t index,
     base::OnceClosure on_single_input_done_barrier_closure,
     const BatchAnnotationResult& output) {
-  job->PostNewResult(output);
+  job->PostNewResult(output, index);
 
   // Running |on_single_input_done_barrier_closure| may destroy |job|.
   std::move(on_single_input_done_barrier_closure).Run();

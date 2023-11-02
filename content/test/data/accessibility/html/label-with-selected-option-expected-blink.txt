@@ -6,7 +6,7 @@ rootWebArea
 ++++++++labelText
 ++++++++++staticText name='Test 1: Flash the screen '
 ++++++++++++inlineTextBox name='Test 1: Flash the screen '
-++++++++++popUpButton collapsed value='2'
+++++++++++comboBoxSelect collapsed value='2'
 ++++++++++++menuListPopup invisible
 ++++++++++++++menuListOption invisible name='1' selected=false
 ++++++++++++++menuListOption name='2' selected=true
@@ -30,7 +30,7 @@ rootWebArea
 ++++++++labelText
 ++++++++++staticText name='Test 3: Flash the screen '
 ++++++++++++inlineTextBox name='Test 3: Flash the screen '
-++++++++++popUpButton collapsed value='two'
+++++++++++comboBoxSelect collapsed value='two'
 ++++++++++++menuListPopup invisible
 ++++++++++++++menuListOption invisible name='1' selected=false
 ++++++++++++++menuListOption name='two' selected=true

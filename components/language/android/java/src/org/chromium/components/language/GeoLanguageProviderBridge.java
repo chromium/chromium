@@ -1,12 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.components.language;
 
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 
 /**
@@ -19,18 +19,12 @@ public class GeoLanguageProviderBridge {
      *         they are in the region.
      */
     public static LinkedHashSet<String> getCurrentGeoLanguages() {
-        LinkedHashSet<String> set = new LinkedHashSet<String>();
-        GeoLanguageProviderBridgeJni.get().getCurrentGeoLanguages(set);
-        return set;
-    }
-
-    @CalledByNative
-    private static void addGeoLanguageToSet(LinkedHashSet<String> languages, String languageCode) {
-        languages.add(languageCode);
+        return new LinkedHashSet<>(
+                Arrays.asList(GeoLanguageProviderBridgeJni.get().getCurrentGeoLanguages()));
     }
 
     @NativeMethods
     interface Natives {
-        void getCurrentGeoLanguages(LinkedHashSet<String> set);
+        String[] getCurrentGeoLanguages();
     }
 }

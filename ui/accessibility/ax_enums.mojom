@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,8 @@ module ax.mojom;
 // If unspecified, the attribute is used across web and native on multiple
 // platforms.
 
+// Keep these values in sync with AXEventType in
+// tools/metrics/histograms/enums.xml.
 // Next version: 1
 // Next value: 59
 [Extensible, Stable, Uuid="686e661e-f8c7-4214-8713-1f66d95d3ffa"]
@@ -106,12 +108,11 @@ enum Event {
 // Web: this attribute is only used in web content.
 //
 // Native: this attribute is only used in native UI.
-// Next version: 4
-// Next value: 209
+// Next version: 5
+// Next value: 210
 [Extensible, Stable, Uuid="d258eb73-e0cc-490c-b881-80ee11d3fec2"]
 enum Role {
-  // Used for role="none"/"presentation" -- ignored in platform tree.
-  [Default]kNone = 0,
+  [Default]kUnknown = 181, // The role has not been set.
   kAbbr = 1,
   kAlert = 2,
   kAlertDialog = 3,
@@ -131,8 +132,16 @@ enum Role {
   kColorWell = 17,
   kColumn = 18,
   kColumnHeader = 19,
+  // kComboBoxGrouping represents a combobox container that groups
+  // subcomponents. It always contains a button and a listbox. It may also
+  // contain a listbox as in case of an editable combobox (e.g. Views'
+  // EditableCombobox).
   kComboBoxGrouping = 20,
+  // kComboBoxMenuButton represents the arrow button part of a combobox, or a
+  // <button> with and explicit combobox role set.
   kComboBoxMenuButton = 21,
+  // kComboBoxSelect represents an HTML single-value <select> element.
+  [MinVersion=4] kComboBoxSelect = 209,
   kComplementary = 22,
   kComment = 23,
   kContentDeletion = 24,
@@ -279,12 +288,15 @@ enum Role {
   kMenuListPopup = 128,
   kMeter = 129,
   kNavigation = 130,
+  kNone = 0, // Used for role="none"/"presentation"; ignored in platform tree.
   kNote = 131,
   kPane = 132,
   kParagraph = 133,
   kPdfActionableHighlight = 134,
   kPdfRoot = 135,
   kPluginObject = 136,
+  // kPopUpButton is used for a button role that has a popup. It is not a
+  // combobox which can contain a value and associated list of values.
   kPopUpButton = 137,
   kPortal = 138,
   kPre = 139,
@@ -321,6 +333,8 @@ enum Role {
   kTableHeaderContainer = 168,
   kTerm = 169,
   kTextField = 170,
+  // kTextFieldWithComboBox represents an HTML <input> element with a datalist.
+  // <input type=text role=combobox> is one such example.
   kTextFieldWithComboBox = 171,
   kTime = 172,
   kTimer = 173,
@@ -331,7 +345,6 @@ enum Role {
   kTree = 178,
   kTreeGrid = 179,
   kTreeItem = 180,
-  kUnknown = 181,
   kVideo = 182,
   kWebView = 183,
   kWindow = 184,
@@ -367,8 +380,8 @@ enum State {
 // An action to be taken on an accessibility node.
 // In contrast to |AXDefaultActionVerb|, these describe what happens to the
 // object, e.g. "FOCUS".
-// Next version: 2
-// Next value: 38
+// Next version: 3
+// Next value: 39
 [Extensible, Stable, Uuid="ed8e4466-0522-4f98-ac28-59a523b70232"]
 enum Action {
   [Default]kNone = 0,
@@ -422,6 +435,8 @@ enum Action {
   // about word boundaries, line layout, and individual character
   // bounding boxes.
   kLoadInlineTextBoxes = 16,
+
+  [MinVersion=2] kLongClick = 38,
 
   // Delete any selected text in the control's text value and
   // insert |AXActionData::value| in its place, like when typing or pasting.
@@ -539,9 +554,12 @@ enum Mutation {
   kSubtreeCreated,
   kNodeChanged,
   kNodeRemoved,
+  kTextChanged,
+  kSubtreeUpdateEnd,
 };
 
-// Next value: 31
+// Next version: 3
+// Next value: 35
 [Extensible, Stable, Uuid="e5a4cd0c-3152-4427-93d5-35ff7d0f1ae8"]
 enum StringAttribute {
   [Default]kNone = 0,
@@ -551,6 +569,8 @@ enum StringAttribute {
   // using markers and invalid state in general is stored using invalidState.
   kAriaInvalidValue = 3,
   kAutoComplete = 4,
+  [MinVersion=2] kAriaBrailleLabel = 33,
+  [MinVersion=2] kAriaBrailleRoleDescription = 34,
   kCheckedStateDescription = 5,
   kChildTreeId = 6,
   kChildTreeNodeAppId = 7,
@@ -559,6 +579,7 @@ enum StringAttribute {
   kContainerLiveStatus = 10,
   kDescription = 11,  // Any description = 11, from any description source.
   kDisplay = 12,
+  [MinVersion=1] kDoDefaultLabel = 31, // Only for ARC
   // Only present when different from parent.
   kFontFamily = 13,
   kHtmlTag = 14,
@@ -571,6 +592,7 @@ enum StringAttribute {
   kKeyShortcuts = 19,
   // Only present when different from parent.
   kLanguage = 20,
+  [MinVersion=1] kLongClickLabel = 32, // Only for ARC
   kName = 21,
   kLiveRelevant = 22,
   kLiveStatus = 23,
@@ -762,7 +784,8 @@ enum FloatAttribute {
 //
 // Finally, note that different tree sources can use all three states for a
 // given attribute, while another tree source only uses two.
-// Next value: 21
+// Next value: 22
+// Next Version: 2
 [Extensible, Stable, Uuid="ed1f1b8c-c89c-483f-9840-ca3b10042e81"]
 enum BoolAttribute {
   [Default]kNone = 0,
@@ -836,6 +859,9 @@ enum BoolAttribute {
   // is in touch exploration mode, e.g. a virtual keyboard normally
   // behaves this way.
   kTouchPassthrough = 20,
+
+  // A hint to clients that the node is long clickable.
+  [MinVersion=1] kLongClickable = 21,
 };
 
 // Next version: 4
@@ -1168,29 +1194,99 @@ enum SortDirection {
   kOther,
 };
 
+// The source of the accessible name. The source can influence which platform
+// accessibility API is used to expose the name (e.g. label versus title).
+// It can also impact whether or not whitespace is inserted between objects
+// (e.g. when the name of some other object should be constructed from a
+// container's children).
 enum NameFrom {
+  // No name has been provided. (See also kAttributeExplicitlyEmpty)
   kNone,
-  kUninitialized,
-  kAttribute,  // E.g. aria-label.
+
+  // The name comes from a flat string which is typically not displayed,
+  // such as aria-label (in the case of web content) or provided by the
+  // View.
+  kAttribute,
+
+  // The name has been removed to improve accessibility. Example: The name of
+  // this View is the same as the name of the View's parent, causing screen
+  // readers to speak the name twice. In order to prevent that, the name can
+  // be removed from one View. Note that as a general rule, the name should
+  // not be removed from the interactive/focusable View.
   kAttributeExplicitlyEmpty,
-  kCaption,  // E.g. in the case of a table, from a caption element.
+
+  // The name of this table comes from the table's caption.
+  kCaption,
+
+  // The name comes from the displayed text contents. This is appropriate for
+  // labels, links, static text nodes, etc. It is typically not appropriate for
+  // text fields.
   kContents,
-  kPlaceholder,  // E.g. from an HTML placeholder attribute on a text field.
-  kRelatedElement, // E.g. from a figcaption Element in a figure.
-  kTitle,  // E.g. <input type="text" title="title">.
-  kValue,  // E.g. <input type="button" value="Button's name">.
+
+  // The name of this text field comes from its placeholder.
+  kPlaceholder,
+
+  // The name comes from some other object in the content or UI, such as
+  // the figcaption element in a figure, or another View present in the UI.
+  kRelatedElement,
+
+  // The name comes from the title attribute (HTML), the title element (SVG),
+  // or a View's tooltip.
+  kTitle,
+
+  // The name comes from the value attribute, such as in a button element.
+  kValue,
 };
 
+// The source of the accessible description. Used by some screen readers
+// to determine if and how the description should be presented to the user.
 enum DescriptionFrom {
+  // No description has been provided. (See also kAttributeExplicitlyEmpty)
   kNone,
+
+  // The description comes from a flat string, such as aria-description (in the
+  // case of web content) or provided by the View.
   kAriaDescription,
-  kButtonLabel,  // HTML-AAM 5.2.2
+
+  // The description has been removed to improve accessibility. Example: The
+  // description normally provided by this View's tooltip contains text which
+  // is also present in this View's name. This could cause screen readers to
+  // speak the information twice, which is not desired. Therefore the
+  // description has been deliberately set to the empty string to prevent
+  // double presentation.
+  kAttributeExplicitlyEmpty,
+
+  // The description comes from the label/text of a button.
+  // See HTML-AAM's Accessible Name and Description Computation.
+  kButtonLabel,
+
+  // The description comes from some other object such as an element referenced
+  // by aria-describedby (in the case of web content), or another View present
+  // in the UI.
   kRelatedElement,
+
+  // The description comes from a Ruby annotation.
   kRubyAnnotation,
-  kSummary,  // HTML-AAM 5.8.2
+
+  // The description comes from the contents of a summary element.
+  // See HTML-AAM's Accessible Name and Description Computation.
+  kSummary,
+
+  // The description comes from the text of an SVG desc element.
+  // See SVG-AAM's Accessible Name and Description Computation.
   kSvgDescElement,
-  kTableCaption,  // HTML-AAM 5.9.2
-  kTitle
+
+  // The description comes from a table's caption element.
+  // See HTML-AAM's Accessible Name and Description Computation.
+  kTableCaption,
+
+  // The description comes from the title attribute (HTML), the title element
+  // (SVG), or a View's tooltip.
+  kTitle,
+
+  // The description comes from a non-tooltip popup, e.g. the |triggerpopup|
+  // attribute pointing to `popup=hint`.
+  kPopupElement,
 };
 
 // Next value: 4

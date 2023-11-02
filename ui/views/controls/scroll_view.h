@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 #include <utility>
 
 #include "base/callback_list.h"
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer_type.h"
@@ -23,7 +23,7 @@ struct ElementId;
 }
 
 namespace gfx {
-class Vector2dF;
+class PointF;
 }
 
 namespace views {
@@ -117,6 +117,10 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   int GetMaxHeight() const { return max_height_; }
 
   int GetMinHeight() const { return min_height_; }
+
+  // Sets the preferred margins within the scroll viewport - when scrolling
+  // rects to visible, these margins will be added to the visible rect.
+  void SetPreferredViewportMargins(const gfx::Insets& margins);
 
   // The background color can be configured in two distinct ways:
   // . By way of SetBackgroundThemeColorId(). This is the default and when
@@ -284,17 +288,17 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
 
   // Helpers to get and set the current scroll offset (either from the ui::Layer
   // or from the |contents_| origin offset).
-  gfx::Vector2dF CurrentOffset() const;
-  void ScrollToOffset(const gfx::Vector2dF& offset);
+  gfx::PointF CurrentOffset() const;
+  void ScrollToOffset(const gfx::PointF& offset);
 
   // Whether the ScrollView scrolls using ui::Layer APIs.
   bool ScrollsWithLayers() const;
 
   // Callback entrypoint when hosted Layers are scrolled by the Compositor.
-  void OnLayerScrolled(const gfx::Vector2dF&, const cc::ElementId&);
+  void OnLayerScrolled(const gfx::PointF&, const cc::ElementId&);
 
   // Updates accessory elements when |contents_| is scrolled.
-  void OnScrolled(const gfx::Vector2dF& offset);
+  void OnScrolled(const gfx::PointF& offset);
 
   // Horizontally scrolls the header (if any) to match the contents.
   void ScrollHeader();
@@ -309,23 +313,25 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
 
   // Shows/hides the overflow indicators depending on the position of the
   // scrolling content within the viewport.
-  void UpdateOverflowIndicatorVisibility(const gfx::Vector2dF& offset);
+  void UpdateOverflowIndicatorVisibility(const gfx::PointF& offset);
+
+  View* GetContentsViewportForTest() const;
 
   // The current contents and its viewport. |contents_| is contained in
   // |contents_viewport_|.
   View* contents_ = nullptr;
-  View* contents_viewport_ = nullptr;
+  raw_ptr<Viewport> contents_viewport_ = nullptr;
 
   // The current header and its viewport. |header_| is contained in
   // |header_viewport_|.
   View* header_ = nullptr;
-  View* header_viewport_ = nullptr;
+  raw_ptr<Viewport> header_viewport_ = nullptr;
 
   // Horizontal scrollbar.
-  ScrollBar* horiz_sb_;
+  raw_ptr<ScrollBar> horiz_sb_;
 
   // Vertical scrollbar.
-  ScrollBar* vert_sb_;
+  raw_ptr<ScrollBar> vert_sb_;
 
   // Corner view.
   std::unique_ptr<View> corner_view_;
@@ -380,10 +386,16 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   // The layer type used for content view when scroll by layers is enabled.
   ui::LayerType layer_type_ = ui::LAYER_TEXTURED;
 
+  gfx::Insets preferred_viewport_margins_;
+
   // Scrolling callbacks.
   ScrollViewCallbackList on_contents_scrolled_;
   ScrollViewCallbackList on_contents_scroll_ended_;
 };
+
+// When building with GCC this ensures that an instantiation of the
+// ScrollView::SetContents<View> template is available with which to link.
+template View* ScrollView::SetContents<View>(std::unique_ptr<View> a_view);
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, ScrollView, View)
 VIEW_BUILDER_VIEW_TYPE_PROPERTY(View, Contents)
@@ -453,7 +465,7 @@ class VariableRowHeightScrollHelper {
   virtual RowInfo GetRowInfo(int y);
 
  private:
-  Controller* controller_;
+  raw_ptr<Controller> controller_;
 };
 
 // FixedRowHeightScrollHelper is intended for views that contain fixed height

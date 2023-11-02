@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@ namespace wl {
 
 namespace {
 
-constexpr uint32_t kTextInputExtensionVersion = 1;
+constexpr uint32_t kTextInputExtensionVersion = 6;
 
 void GetExtendedTextInput(struct wl_client* client,
                           struct wl_resource* resource,

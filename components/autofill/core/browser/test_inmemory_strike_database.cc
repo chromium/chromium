@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,9 +56,9 @@ TestInMemoryStrikeDatabase::GetStrikeCache() {
 std::vector<std::string> TestInMemoryStrikeDatabase::GetAllStrikeKeysForProject(
     const std::string& project_prefix) {
   std::vector<std::string> project_keys;
-  for (std::pair<std::string, StrikeData> entry : strike_map_cache_) {
-    if (entry.first.find(project_prefix) == 0) {
-      project_keys.push_back(entry.first);
+  for (const auto& [key, data] : strike_map_cache_) {
+    if (key.find(project_prefix) == 0) {
+      project_keys.push_back(key);
     }
   }
   return project_keys;
@@ -96,6 +96,14 @@ void TestInMemoryStrikeDatabase::SetStrikeData(const std::string& key,
   data.set_last_update_timestamp(
       AutofillClock::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
   strike_map_cache_[key] = data;
+}
+
+int64_t TestInMemoryStrikeDatabase::GetLastUpdatedTimestamp(
+    const std::string& key) {
+  auto iter = strike_map_cache_.find(key);
+  return (iter != strike_map_cache_.end())
+             ? iter->second.last_update_timestamp()
+             : 0;
 }
 
 }  // namespace autofill

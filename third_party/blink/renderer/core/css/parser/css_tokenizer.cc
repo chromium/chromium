@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,48 @@ namespace blink {
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 
 namespace blink {
+namespace {
+
+// To avoid resizing we err on the side of reserving too much space.
+// Most strings we tokenize have about 3.5 to 5 characters per token.
+constexpr wtf_size_t kEstimatedCharactersPerToken = 3;
+
+}  // namespace
+
+// static
+std::unique_ptr<CachedCSSTokenizer> CSSTokenizer::CreateCachedTokenizer(
+    const String& input) {
+  CSSTokenizer tokenizer(input);
+
+  Vector<CSSParserToken> tokens;
+
+  // This holds offsets into the source text for each token.
+  Vector<wtf_size_t> offsets;
+
+  wtf_size_t reserved_size = (tokenizer.input_.length() - tokenizer.Offset()) /
+                             kEstimatedCharactersPerToken;
+  tokens.ReserveInitialCapacity(reserved_size);
+  offsets.ReserveInitialCapacity(reserved_size);
+
+  offsets.push_back(0);
+  while (true) {
+    const CSSParserToken token = tokenizer.NextToken();
+    tokens.push_back(token);
+    offsets.push_back(tokenizer.Offset());
+    if (token.GetType() == kEOFToken)
+      break;
+  }
+  return std::make_unique<CachedCSSTokenizer>(
+      input, std::move(tokens), std::move(offsets),
+      std::move(tokenizer.string_pool_));
+}
+
+std::unique_ptr<CachedCSSTokenizer> CachedCSSTokenizer::DuplicateForTesting()
+    const {
+  return std::make_unique<CachedCSSTokenizer>(
+      input_.RangeAt(0, input_.length()).ToString(), tokens_, offsets_,
+      string_pool_);
+}
 
 CSSTokenizer::CSSTokenizer(const String& string, wtf_size_t offset)
     : input_(string) {
@@ -29,10 +71,9 @@ CSSTokenizer::CSSTokenizer(const String& string, wtf_size_t offset)
 }
 
 Vector<CSSParserToken, 32> CSSTokenizer::TokenizeToEOF() {
-  // To avoid resizing we err on the side of reserving too much space.
-  // Most strings we tokenize have about 3.5 to 5 characters per token.
   Vector<CSSParserToken, 32> tokens;
-  tokens.ReserveInitialCapacity((input_.length() - Offset()) / 3);
+  tokens.ReserveInitialCapacity((input_.length() - Offset()) /
+                                kEstimatedCharactersPerToken);
 
   while (true) {
     const CSSParserToken token = NextToken();
@@ -101,7 +142,7 @@ CSSParserToken CSSTokenizer::BlockStart(CSSParserTokenType block_type,
 
 CSSParserToken CSSTokenizer::BlockEnd(CSSParserTokenType type,
                                       CSSParserTokenType start_type) {
-  if (!block_stack_.IsEmpty() && block_stack_.back() == start_type) {
+  if (!block_stack_.empty() && block_stack_.back() == start_type) {
     block_stack_.pop_back();
     return CSSParserToken(type, CSSParserToken::kBlockEnd);
   }

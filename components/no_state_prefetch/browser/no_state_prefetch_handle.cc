@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,6 +63,10 @@ NoStatePrefetchContents* NoStatePrefetchHandle::contents() const {
   return prefetch_data_ ? prefetch_data_->contents() : nullptr;
 }
 
+const GURL& NoStatePrefetchHandle::prerender_url() const {
+  return prerender_url_;
+}
+
 NoStatePrefetchHandle::NoStatePrefetchHandle(
     NoStatePrefetchManager::NoStatePrefetchData* prefetch_data)
     : observer_(nullptr) {
@@ -70,6 +74,9 @@ NoStatePrefetchHandle::NoStatePrefetchHandle(
   if (prefetch_data) {
     prefetch_data_ = prefetch_data->AsWeakPtr();
     prefetch_data->OnHandleCreated(this);
+    if (prefetch_data->contents()) {
+      prerender_url_ = prefetch_data->contents()->prerender_url();
+    }
   }
 }
 

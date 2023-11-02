@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -124,11 +124,6 @@ void GetCertificateAllowlistStrings(
     std::vector<std::string>* allowlist_strings);
 
 GURL GetFileSystemAccessDownloadUrl(const GURL& frame_url);
-
-// Converts download danger type back to download response verdict. Returns
-// SAFE if there is no corresponding verdict type for the danger type.
-ClientDownloadResponse::Verdict DownloadDangerTypeToDownloadResponseVerdict(
-    download::DownloadDangerType download_danger_type);
 
 }  // namespace safe_browsing
 

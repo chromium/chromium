@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_metrics_helper.h"
 
 #include "base/bind.h"
+#include "base/cpu_reduction_experiment.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/platform/scheduler/web_renderer_process_type.h"
@@ -138,13 +139,6 @@ void MainThreadMetricsHelper::RecordTaskMetrics(
   if (ShouldDiscardTask(task, task_timing))
     return;
 
-  MetricsHelper::RecordCommonTaskMetrics(task, task_timing);
-
-  total_task_time_reporter_.RecordAdditionalDuration(
-      task_timing.wall_duration());
-
-  base::TimeDelta duration = task_timing.wall_duration();
-
   // Discard anomalously long idle periods.
   if (last_reported_task_ &&
       task_timing.start_time() - last_reported_task_.value() >
@@ -165,12 +159,25 @@ void MainThreadMetricsHelper::RecordTaskMetrics(
                                                       task_timing.end_time());
   background_main_thread_load_tracker_.RecordTaskTime(task_timing.start_time(),
                                                       task_timing.end_time());
+
+  // Don't log the metrics to evaluate impact of CPU reduction.
+  // This code is deemed not useful anymore (crbug.com/1181870).
+  // TODO(crbug.com/1295441: Fully remove the code once the experiment is over.
+  if (base::IsRunningCpuReductionExperiment()) {
+    return;
+  }
+
+  MetricsHelper::RecordCommonTaskMetrics(task, task_timing);
+
+  total_task_time_reporter_.RecordAdditionalDuration(
+      task_timing.wall_duration());
+
   // WARNING: All code below must be compatible with down-sampling.
   constexpr double kSamplingProbabily = .01;
-  bool should_sample = random_generator_.RandDouble() < kSamplingProbabily;
-  if (!should_sample)
+  if (!metrics_subsampler_.ShouldSample(kSamplingProbabily))
     return;
 
+  base::TimeDelta duration = task_timing.wall_duration();
   UMA_HISTOGRAM_CUSTOM_COUNTS("RendererScheduler.TaskTime2",
                               base::saturated_cast<base::HistogramBase::Sample>(
                                   duration.InMicroseconds()),
@@ -187,20 +194,6 @@ void MainThreadMetricsHelper::RecordTaskMetrics(
   } else {
     input_handling_per_task_type_duration_reporter_.RecordTask(task_type,
                                                                duration);
-  }
-
-  if (task_type == TaskType::kNetworkingWithURLLoaderAnnotation && queue) {
-    if (queue->net_request_priority()) {
-      UMA_HISTOGRAM_ENUMERATION(
-          "RendererScheduler.ResourceLoadingTaskCountPerNetPriority",
-          queue->net_request_priority().value(),
-          net::RequestPriority::MAXIMUM_PRIORITY + 1);
-    }
-
-    UMA_HISTOGRAM_ENUMERATION(
-        "RendererScheduler.ResourceLoadingTaskCountPerPriority",
-        queue->GetQueuePriority(),
-        base::sequence_manager::TaskQueue::QueuePriority::kQueuePriorityCount);
   }
 }
 

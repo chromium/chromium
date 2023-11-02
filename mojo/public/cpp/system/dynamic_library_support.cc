@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "build/build_config.h"
 #include "mojo/public/c/system/functions.h"
@@ -26,7 +27,7 @@ struct InitializationState {
       options.mojo_core_path_length = static_cast<uint32_t>(utf8_path.size());
     }
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     // Build a temporary reconstructed argv to pass into the library so it can
     // inspect the application command line if needed.
     for (const std::string& s : base::CommandLine::ForCurrentProcess()->argv())

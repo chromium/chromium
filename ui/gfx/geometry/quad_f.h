@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -57,7 +57,12 @@ class GEOMETRY_EXPORT QuadF {
 
   // Returns true if the |point| is contained within the quad, or lies on on
   // edge of the quad. This assumes that the quad is convex.
-  bool Contains(const gfx::PointF& point) const;
+  bool Contains(const PointF& point) const;
+
+  // Returns true if the |quad| parameter is contained within |this| quad.
+  // This method assumes |this| quad is convex. The |quad| parameter has no
+  // restrictions.
+  bool ContainsQuad(const QuadF& quad) const;
 
   // Returns a rectangle that bounds the four points of the quad. The points of
   // the quad may lie on the right/bottom edge of the resulting rectangle,
@@ -93,6 +98,26 @@ class GEOMETRY_EXPORT QuadF {
 
   // Scale each point in the quad by the scale factors along each axis.
   void Scale(float x_scale, float y_scale);
+
+  // Tests whether any part of the rectangle intersects with this quad.
+  // This only works for convex quads.
+  // This intersection is edge-inclusive and will return true even if the
+  // intersecting area is empty (i.e., the intersection is a line or a point).
+  bool IntersectsRect(const RectF&) const;
+
+  // Test whether any part of the circle/ellipse intersects with this quad.
+  // Note that these two functions only work for convex quads.
+  // These intersections are edge-inclusive and will return true even if the
+  // intersecting area is empty (i.e., the intersection is a line or a point).
+  bool IntersectsCircle(const PointF& center, float radius) const;
+  bool IntersectsEllipse(const PointF& center, const SizeF& radii) const;
+
+  // The center of the quad. If the quad is the result of a affine-transformed
+  // rectangle this is the same as the original center transformed.
+  PointF CenterPoint() const {
+    return PointF((p1_.x() + p2_.x() + p3_.x() + p4_.x()) / 4.0,
+                  (p1_.y() + p2_.y() + p3_.y() + p4_.y()) / 4.0);
+  }
 
   // Returns a string representation of quad.
   std::string ToString() const;

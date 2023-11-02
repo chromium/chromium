@@ -9,6 +9,12 @@
     "emitDeclarationOnly": true,
     "pretty": true,
     "removeComments": true,
-    "listEmittedFiles": true
+    "listEmittedFiles": true,
+    "typeRoots": [
+      "../../third_party/node/node_modules/@types"
+    ],
+    "types": [
+      "trusted-types"
+    ]
   }
 }

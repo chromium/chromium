@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,16 +10,18 @@
  * other versions of Windows.
  */
 
-import '//resources/cr_elements/shared_style_css.m.js';
+import '//resources/cr_elements/cr_shared_style.css.js';
 import '../controls/settings_toggle_button.js';
-import '../settings_shared_css.js';
+import '../settings_shared.css.js';
 
-import {WebUIListenerMixin} from '//resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
+
+import {getTemplate} from './live_caption_section.html.js';
 
 
 /**
@@ -28,13 +30,13 @@ import {PrefsMixin} from '../prefs/prefs_mixin.js';
  * |downloadProgress| is the display-friendly download progress as the language
  *     model is being downloaded.
  */
-type LiveCaptionLanguage = {
-  display_name: string,
-  code: string,
-  downloadProgress: string,
-};
+interface LiveCaptionLanguage {
+  displayName: string;
+  code: string;
+  downloadProgress: string;
+}
 
-type LiveCaptionLanguageList = Array<LiveCaptionLanguage>;
+type LiveCaptionLanguageList = LiveCaptionLanguage[];
 
 const SettingsLiveCaptionElementBase =
     WebUIListenerMixin(PrefsMixin(PolymerElement));
@@ -45,7 +47,7 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -59,7 +61,7 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
         type: Boolean,
         value: function() {
           return loadTimeData.getBoolean('enableLiveCaptionMultiLanguage');
-        }
+        },
       },
 
       /**
@@ -80,37 +82,37 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
         value() {
           return [
             {
-              display_name:
+              displayName:
                   loadTimeData.getString('sodaLanguageDisplayNameEnglish'),
               code: loadTimeData.getString('sodaLanguageCodeEnglish'),
               downloadProgress: '',
             },
             {
-              display_name:
+              displayName:
                   loadTimeData.getString('sodaLanguageDisplayNameFrench'),
               code: loadTimeData.getString('sodaLanguageCodeFrench'),
               downloadProgress: '',
             },
             {
-              display_name:
+              displayName:
                   loadTimeData.getString('sodaLanguageDisplayNameGerman'),
               code: loadTimeData.getString('sodaLanguageCodeGerman'),
               downloadProgress: '',
             },
             {
-              display_name:
+              displayName:
                   loadTimeData.getString('sodaLanguageDisplayNameItalian'),
               code: loadTimeData.getString('sodaLanguageCodeItalian'),
               downloadProgress: '',
             },
             {
-              display_name:
+              displayName:
                   loadTimeData.getString('sodaLanguageDisplayNameJapanese'),
               code: loadTimeData.getString('sodaLanguageCodeJapanese'),
               downloadProgress: '',
             },
             {
-              display_name:
+              displayName:
                   loadTimeData.getString('sodaLanguageDisplayNameSpanish'),
               code: loadTimeData.getString('sodaLanguageCodeSpanish'),
               downloadProgress: '',
@@ -125,7 +127,7 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
   private enableLiveCaptionSubtitle_: string;
   private liveCaptionLanguages_: LiveCaptionLanguageList;
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addWebUIListener(

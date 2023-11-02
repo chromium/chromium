@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/check.h"
 #include "base/location.h"
-#include "base/memory/ref_counted.h"
 #include "base/task/task_runner.h"
 
 namespace base {
@@ -49,8 +49,9 @@ class BindPostTaskTrampoline {
       // passed to BindPostTaskTrampoline then the BindState can outlive
       // `callback_`, so the user must ensure any other copies of the callback
       // are also destroyed on the correct task runner.
-      task_runner_->PostTask(location_, BindOnce(&DestroyCallbackOnTaskRunner,
-                                                 std::move(callback_)));
+      task_runner_->PostTask(
+          location_,
+          base::BindOnce(&DestroyCallbackOnTaskRunner, std::move(callback_)));
     }
   }
 
@@ -70,7 +71,7 @@ class BindPostTaskTrampoline {
   template <typename... Args>
   static OnceClosure GetClosure(OnceCallback<void(Args...)>* callback,
                                 Args&&... args) {
-    return BindOnce(std::move(*callback), std::forward<Args>(args)...);
+    return base::BindOnce(std::move(*callback), std::forward<Args>(args)...);
   }
 
   static OnceClosure GetClosure(RepeatingClosure* callback) {
@@ -81,7 +82,7 @@ class BindPostTaskTrampoline {
   template <typename... Args>
   static OnceClosure GetClosure(RepeatingCallback<void(Args...)>* callback,
                                 Args&&... args) {
-    return BindOnce(*callback, std::forward<Args>(args)...);
+    return base::BindOnce(*callback, std::forward<Args>(args)...);
   }
 
   static void DestroyCallbackOnTaskRunner(CallbackType callback) {}

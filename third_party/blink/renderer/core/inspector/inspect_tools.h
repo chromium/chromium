@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,7 +64,7 @@ class QuadHighlightTool : public InspectTool {
  public:
   QuadHighlightTool(InspectorOverlayAgent* overlay,
                     OverlayFrontend* frontend,
-                    std::unique_ptr<FloatQuad> quad,
+                    std::unique_ptr<gfx::QuadF> quad,
                     Color color,
                     Color outline_color);
   QuadHighlightTool(const QuadHighlightTool&) = delete;
@@ -75,7 +75,7 @@ class QuadHighlightTool : public InspectTool {
   bool HideOnHideHighlight() override;
   void Draw(float scale) override;
   String GetOverlayName() override;
-  std::unique_ptr<FloatQuad> quad_;
+  std::unique_ptr<gfx::QuadF> quad_;
   Color color_;
   Color outline_color_;
 };
@@ -145,23 +145,20 @@ class SourceOrderTool : public InspectTool {
 };
 
 // -----------------------------------------------------------------------------
-
-using GridConfigs = Vector<
-    std::pair<Member<Node>, std::unique_ptr<InspectorGridHighlightConfig>>>;
+using GridConfigs = HeapHashMap<WeakMember<Node>,
+                                std::unique_ptr<InspectorGridHighlightConfig>>;
 using FlexContainerConfigs =
-    Vector<std::pair<Member<Node>,
-                     std::unique_ptr<InspectorFlexContainerHighlightConfig>>>;
-using ScrollSnapConfigs = Vector<
-    std::pair<Member<Node>,
-              std::unique_ptr<InspectorScrollSnapContainerHighlightConfig>>>;
-
-using ContainerQueryConfigs = Vector<std::pair<
-    Member<Node>,
-    std::unique_ptr<InspectorContainerQueryContainerHighlightConfig>>>;
-
+    HeapHashMap<WeakMember<Node>,
+                std::unique_ptr<InspectorFlexContainerHighlightConfig>>;
+using ScrollSnapConfigs =
+    HeapHashMap<WeakMember<Node>,
+                std::unique_ptr<InspectorScrollSnapContainerHighlightConfig>>;
+using ContainerQueryConfigs = HeapHashMap<
+    WeakMember<Node>,
+    std::unique_ptr<InspectorContainerQueryContainerHighlightConfig>>;
 using IsolatedElementConfigs =
-    Vector<std::pair<Member<Element>,
-                     std::unique_ptr<InspectorIsolationModeHighlightConfig>>>;
+    HeapHashMap<WeakMember<Element>,
+                std::unique_ptr<InspectorIsolationModeHighlightConfig>>;
 
 class PersistentTool : public InspectTool {
   using InspectTool::InspectTool;
@@ -180,6 +177,8 @@ class PersistentTool : public InspectTool {
 
   std::unique_ptr<protocol::DictionaryValue> GetGridInspectorHighlightsAsJson()
       const;
+
+  void Trace(Visitor* visitor) const override;
 
  private:
   bool ForwardEventsToOverlay() override;

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,12 +14,17 @@ class StubWebFeedSubscriptions : public WebFeedSubscriptions {
  public:
   void FollowWebFeed(
       const WebFeedPageInformation& page_info,
+      feedwire::webfeed::WebFeedChangeReason change_reason,
       base::OnceCallback<void(FollowWebFeedResult)> callback) override {}
   void FollowWebFeed(
       const std::string& web_feed_id,
+      bool is_durable_request,
+      feedwire::webfeed::WebFeedChangeReason change_reason,
       base::OnceCallback<void(FollowWebFeedResult)> callback) override {}
   void UnfollowWebFeed(
       const std::string& web_feed_id,
+      bool is_durable_request,
+      feedwire::webfeed::WebFeedChangeReason change_reason,
       base::OnceCallback<void(UnfollowWebFeedResult)> callback) override {}
   void FindWebFeedInfoForPage(
       const WebFeedPageInformation& page_info,
@@ -32,7 +37,8 @@ class StubWebFeedSubscriptions : public WebFeedSubscriptions {
       override {}
   void RefreshSubscriptions(
       base::OnceCallback<void(RefreshResult)> callback) override {}
-  void RefreshRecommendedFeeds() override {}
+  void RefreshRecommendedFeeds(
+      base::OnceCallback<void(RefreshResult)> callback) override {}
   void IsWebFeedSubscriber(base::OnceCallback<void(bool)> callback) override {}
   void SubscribedWebFeedCount(base::OnceCallback<void(int)> callback) override {
   }

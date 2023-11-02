@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,10 +56,18 @@ class NativeBrowserFrame {
   // from browser restore, or use a widget state from a custom restore.
   virtual bool ShouldRestorePreviousBrowserWidgetState() const = 0;
 
+  // Returns true if the browser window should inherit the
+  // `initial_visible_on_all_workspaces_state` of its previous browser window.
+  // E.g. on ChromeOS it returns false when dragging a tab into a new
+  // browser window so that the new window does not apply the initial
+  // value so that new window inherits the current desk membership.
+  // On the other OSes, it returns true to apply the initial value.
+  virtual bool ShouldUseInitialVisibleOnAllWorkspaces() const = 0;
+
   // Called when the tab drag kind for this frame changes.
   virtual void TabDraggingKindChanged(TabDragKind tab_drag_kind) {}
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Causes the screen reader to announce |text| against the remote window. If
   // the current user is not using a screen reader or if there is no remote
   // window, has no effect. This enables screen reader announcements for

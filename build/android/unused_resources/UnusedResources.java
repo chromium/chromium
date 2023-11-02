@@ -15,7 +15,7 @@
  */
 
 // Modifications are owned by the Chromium Authors.
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,7 +70,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 /**
   Copied with modifications from gradle core source
-  https://android.googlesource.com/platform/tools/base/+/master/build-system/gradle-core/src/main/groovy/com/android/build/gradle/tasks/ResourceUsageAnalyzer.java
+  https://cs.android.com/search?q=f:build-system.*ResourceUsageAnalyzer.java
 
   Modifications are mostly to:
     - Remove unused code paths to reduce complexity.
@@ -382,7 +382,10 @@ public class UnusedResources {
         ReferenceChecker callback = new ReferenceChecker() {
             @Override
             public boolean shouldProcess(String internalName) {
-                return !isResourceClass(internalName + DOT_CLASS);
+                // We do not need to ignore R subclasses since R8 now removes
+                // unused resource id fields in R subclasses thus their
+                // remaining presence means real usage.
+                return true;
             }
 
             @Override
@@ -400,6 +403,12 @@ public class UnusedResources {
                 Resource resource = getResourceFromCode(internalName, fieldName);
                 if (resource != null) {
                     ResourceUsageModel.markReachable(resource);
+                    if (mDebugPrinter != null) {
+                        mDebugPrinter.println("Marking " + resource
+                                + " reachable: referenced from dex"
+                                + " in " + file + ":" + name + " (static field access "
+                                + internalName + "." + fieldName + ")");
+                    }
                 }
             }
 

@@ -1,17 +1,16 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/arc/instance_throttle/arc_kiosk_mode_throttle_observer.h"
 
-#include "components/arc/arc_util.h"
+#include "ash/components/arc/arc_util.h"
 #include "components/user_manager/user_manager.h"
 
 namespace arc {
 
 ArcKioskModeThrottleObserver::ArcKioskModeThrottleObserver()
-    : ThrottleObserver(ThrottleObserver::PriorityLevel::CRITICAL,
-                       "ArcKioskMode") {}
+    : ThrottleObserver("ArcKioskMode") {}
 
 void ArcKioskModeThrottleObserver::StartObserving(
     content::BrowserContext* context,

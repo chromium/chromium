@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -36,10 +36,7 @@ config("wtf_config") {
 }
 
 component("wtf") {
-  configs += [ "//build/config/compiler:noshadowing" ]
-
   sources = [
-    "allocator/allocator.cc",
     "allocator/allocator.h",
     "allocator/partition_allocator.cc",
     "allocator/partition_allocator.h",
@@ -47,6 +44,8 @@ component("wtf") {
     "allocator/partitions.h",
     "assertions.cc",
     "assertions.h",
+    "atomic_operations.cc",
+    "atomic_operations.h",
     "bit_field.h",
     "bloom_filter.h",
     "casting.h",
@@ -54,6 +53,14 @@ component("wtf") {
     "container_annotations.h",
     "cross_thread_copier.cc",
     "cross_thread_copier.h",
+    "cross_thread_copier_base.h",
+    "cross_thread_copier_gfx.h",
+    "cross_thread_copier_gpu.h",
+    "cross_thread_copier_media.h",
+    "cross_thread_copier_mojo.h",
+    "cross_thread_copier_public.h",
+    "cross_thread_copier_skia.h",
+    "cross_thread_copier_std.h",
     "cross_thread_functional.h",
     "date_math.cc",
     "date_math.h",
@@ -80,7 +87,6 @@ component("wtf") {
     "hash_traits.h",
     "leak_annotations.h",
     "linked_hash_set.h",
-    "lru_cache.h",
     "math_extras.h",
     "pod_arena.h",
     "pod_free_list_arena.h",
@@ -106,6 +112,7 @@ component("wtf") {
     "text/atomic_string.cc",
     "text/atomic_string.h",
     "text/atomic_string_cf.cc",
+    "text/atomic_string_encoding.h",
     "text/atomic_string_hash.h",
     "text/atomic_string_table.cc",
     "text/atomic_string_table.h",
@@ -173,11 +180,11 @@ component("wtf") {
     "text/wtf_string.cc",
     "text/wtf_string.h",
     "text/wtf_uchar.h",
-    "thread_restriction_verifier.h",
     "thread_safe_ref_counted.h",
     "thread_specific.h",
     "threading.cc",
     "threading.h",
+    "threading_primitives.cc",
     "threading_primitives.h",
     "type_traits.h",
     "uuid.cc",
@@ -231,9 +238,11 @@ component("wtf") {
     ]
   }
 
-  if (is_win) {
-    sources += [ "threading_win.cc" ]
+  if (!is_mac && (current_cpu == "x86" || current_cpu == "x64")) {
+    sources += [ "text/ascii_fast_path.cc" ]
+  }
 
+  if (is_win) {
     cflags = [ "/wd4068" ]  # Unknown pragma.
 
     # Inject Visual Studio debug visualizers for our types into all targets
@@ -245,8 +254,6 @@ component("wtf") {
       # in generated build files.
       "//tools/win/DebugVisualizers/blink.natvis",
     ]
-  } else {
-    sources += [ "threading_pthreads.cc" ]
   }
 
   if (is_android) {
@@ -280,11 +287,13 @@ source_set("wtf_unittests_sources") {
   testonly = true
 
   sources = [
-    "allocator/atomic_operations_test.cc",
+    "allocator/allocator_test.cc",
     "allocator/partitions_test.cc",
     "ascii_ctype_test.cc",
     "assertions_test.cc",
+    "atomic_operations_test.cc",
     "bit_field_test.cc",
+    "bloom_filter_test.cc",
     "cross_thread_functional_test.cc",
     "decimal_test.cc",
     "deque_test.cc",
@@ -294,7 +303,6 @@ source_set("wtf_unittests_sources") {
     "hash_map_test.cc",
     "hash_set_test.cc",
     "linked_hash_set_test.cc",
-    "lru_cache_test.cc",
     "math_extras_test.cc",
     "pod_arena_test.cc",
     "pod_arena_test_helpers.h",

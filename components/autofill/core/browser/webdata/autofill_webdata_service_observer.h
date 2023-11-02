@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,10 @@ class AutofillWebDataServiceObserverOnDBSequence {
   // Called on DB sequence when a CreditCard has been added/removed/updated in
   // the WebDatabase.
   virtual void CreditCardChanged(const CreditCardChange& change) {}
+
+  // Called on DB sequence when an IBAN has been added/removed/updated in
+  // the WebDatabase.
+  virtual void IBANChanged(const IBANChange& change) {}
 
  protected:
   virtual ~AutofillWebDataServiceObserverOnDBSequence() {}

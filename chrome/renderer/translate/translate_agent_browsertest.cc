@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/stl_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
@@ -21,8 +22,6 @@
 #include "components/translate/core/common/translate_util.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/renderer/render_frame.h"
-#include "content/public/renderer/render_view.h"
-#include "extensions/common/constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -39,7 +38,7 @@ namespace {
 
 std::string UpdateGURLScheme(GURL url, const char scheme[]) {
   GURL::Replacements replacements;
-  replacements.SetScheme(scheme, url::Component(0, strlen(scheme)));
+  replacements.SetSchemeStr(scheme);
   return url.ReplaceComponents(replacements).spec();
 }
 
@@ -105,9 +104,7 @@ base::FilePath model_file_path() {
 class TestTranslateAgent : public translate::TranslateAgent {
  public:
   explicit TestTranslateAgent(content::RenderFrame* render_frame)
-      : translate::TranslateAgent(render_frame,
-                                  ISOLATED_WORLD_ID_TRANSLATE,
-                                  extensions::kExtensionScheme) {}
+      : translate::TranslateAgent(render_frame, ISOLATED_WORLD_ID_TRANSLATE) {}
 
   TestTranslateAgent(const TestTranslateAgent&) = delete;
   TestTranslateAgent& operator=(const TestTranslateAgent&) = delete;
@@ -136,7 +133,7 @@ class TestTranslateAgent : public translate::TranslateAgent {
 
   bool GetPageTranslatedResult(std::string* source_lang,
                                std::string* target_lang,
-                               translate::TranslateErrors::Type* error) {
+                               translate::TranslateErrors* error) {
     if (!page_translated_)
       return false;
     if (source_lang)
@@ -166,7 +163,7 @@ class TestTranslateAgent : public translate::TranslateAgent {
   void OnPageTranslated(bool cancelled,
                         const std::string& source_lang,
                         const std::string& translated_lang,
-                        translate::TranslateErrors::Type error_type) {
+                        translate::TranslateErrors error_type) {
     page_translated_ = true;
     trans_result_cancelled_ = cancelled;
     trans_result_source_lang_ = source_lang;
@@ -178,7 +175,7 @@ class TestTranslateAgent : public translate::TranslateAgent {
   bool trans_result_cancelled_;
   absl::optional<std::string> trans_result_source_lang_;
   absl::optional<std::string> trans_result_translated_lang_;
-  translate::TranslateErrors::Type trans_result_error_type_;
+  translate::TranslateErrors trans_result_error_type_;
 };
 
 class TranslateAgentBrowserTest : public ChromeRenderViewTest {
@@ -234,12 +231,13 @@ TEST_F(TranslateAgentBrowserTest, TranslateLibNeverReady) {
 
   EXPECT_CALL(*translate_agent_, GetErrorCode())
       .Times(AtLeast(5))
-      .WillRepeatedly(Return(translate::TranslateErrors::NONE));
+      .WillRepeatedly(
+          Return(base::to_underlying(translate::TranslateErrors::NONE)));
 
   translate_agent_->TranslatePage("en", "fr", std::string());
   base::RunLoop().RunUntilIdle();
 
-  translate::TranslateErrors::Type error;
+  translate::TranslateErrors error;
   ASSERT_TRUE(
       translate_agent_->GetPageTranslatedResult(nullptr, nullptr, &error));
   EXPECT_EQ(translate::TranslateErrors::TRANSLATION_TIMEOUT, error);
@@ -259,7 +257,7 @@ TEST_F(TranslateAgentBrowserTest, TranslateSuccess) {
       .WillOnce(Return(true));
 
   EXPECT_CALL(*translate_agent_, GetErrorCode())
-      .WillOnce(Return(translate::TranslateErrors::NONE));
+      .WillOnce(Return(base::to_underlying(translate::TranslateErrors::NONE)));
 
   EXPECT_CALL(*translate_agent_, StartTranslation()).WillOnce(Return(true));
 
@@ -281,7 +279,7 @@ TEST_F(TranslateAgentBrowserTest, TranslateSuccess) {
 
   std::string received_source_lang;
   std::string received_target_lang;
-  translate::TranslateErrors::Type error;
+  translate::TranslateErrors error;
   ASSERT_TRUE(translate_agent_->GetPageTranslatedResult(
       &received_source_lang, &received_target_lang, &error));
   EXPECT_EQ(source_lang, received_source_lang);
@@ -314,7 +312,8 @@ TEST_F(TranslateAgentBrowserTest, TranslateFailure) {
       .WillRepeatedly(Return(false));
 
   EXPECT_CALL(*translate_agent_, GetErrorCode())
-      .WillOnce(Return(translate::TranslateErrors::TRANSLATION_ERROR));
+      .WillOnce(Return(
+          base::to_underlying(translate::TranslateErrors::TRANSLATION_ERROR)));
 
   // V8 call for performance monitoring should be ignored.
   EXPECT_CALL(*translate_agent_, ExecuteScriptAndGetDoubleResult(_)).Times(2);
@@ -322,7 +321,7 @@ TEST_F(TranslateAgentBrowserTest, TranslateFailure) {
   translate_agent_->TranslatePage("en", "fr", std::string());
   base::RunLoop().RunUntilIdle();
 
-  translate::TranslateErrors::Type error;
+  translate::TranslateErrors error;
   ASSERT_TRUE(
       translate_agent_->GetPageTranslatedResult(nullptr, nullptr, &error));
   EXPECT_EQ(translate::TranslateErrors::TRANSLATION_ERROR, error);
@@ -356,7 +355,7 @@ TEST_F(TranslateAgentBrowserTest, UndefinedSourceLang) {
                                   std::string());
   base::RunLoop().RunUntilIdle();
 
-  translate::TranslateErrors::Type error;
+  translate::TranslateErrors error;
   std::string source_lang;
   std::string target_lang;
   ASSERT_TRUE(translate_agent_->GetPageTranslatedResult(&source_lang,
@@ -397,7 +396,7 @@ TEST_F(TranslateAgentBrowserTest, MultipleSimilarTranslations) {
 
   std::string received_source_lang;
   std::string received_target_lang;
-  translate::TranslateErrors::Type error;
+  translate::TranslateErrors error;
   ASSERT_TRUE(translate_agent_->GetPageTranslatedResult(
       &received_source_lang, &received_target_lang, &error));
   EXPECT_EQ(source_lang, received_source_lang);
@@ -432,7 +431,7 @@ TEST_F(TranslateAgentBrowserTest, MultipleDifferentTranslations) {
 
   std::string received_source_lang;
   std::string received_target_lang;
-  translate::TranslateErrors::Type error;
+  translate::TranslateErrors error;
   ASSERT_TRUE(translate_agent_->GetPageTranslatedResult(
       &received_source_lang, &received_target_lang, &error));
   EXPECT_EQ(source_lang, received_source_lang);

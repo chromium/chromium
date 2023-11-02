@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,15 +8,19 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/sync_metadata_store.h"
 
 namespace sql {
 class Database;
 class MetaTable;
 }  // namespace sql
+
+namespace syncer {
+class MetadataBatch;
+}  // namespace syncer
 
 namespace history {
 
@@ -26,15 +30,18 @@ namespace history {
 // datatype.
 class TypedURLSyncMetadataDatabase : public syncer::SyncMetadataStore {
  public:
-  // Must call InitVisitTable() before using to make sure the database is
-  // initialized.
-  TypedURLSyncMetadataDatabase();
+  // Must call Init() before using to make sure the database is initialized.
+  TypedURLSyncMetadataDatabase(sql::Database* db, sql::MetaTable* meta_table);
 
   TypedURLSyncMetadataDatabase(const TypedURLSyncMetadataDatabase&) = delete;
   TypedURLSyncMetadataDatabase& operator=(const TypedURLSyncMetadataDatabase&) =
       delete;
 
   ~TypedURLSyncMetadataDatabase() override;
+
+  // Makes sure the tables and indices are properly set up. Must be called
+  // before anything else.
+  bool Init();
 
   // Read all the stored metadata for typed URL and fill `metadata_batch`
   // with it.
@@ -53,24 +60,11 @@ class TypedURLSyncMetadataDatabase : public syncer::SyncMetadataStore {
 
   static URLID StorageKeyToURLID(const std::string& storage_key);
 
- protected:
-  // Returns the database for the functions in this interface.
-  virtual sql::Database& GetDB() = 0;
-
-  // Returns MetaTable, so this sync can store ModelTypeState in MetaTable.
-  // Check if GetMetaTable().GetVersionNumber() is greater than 0 to make sure
-  // MetaTable is initialed.
-  virtual sql::MetaTable& GetMetaTable() = 0;
-
-  // Called by the derived classes on initialization to make sure the tables
-  // and indices are properly set up. Must be called before anything else.
-  bool InitSyncTable();
-
   // Cleans up orphaned metadata for typed URLs, i.e. deletes all metadata
   // entries for rowids not present in `sorted_valid_rowids` (which must be
   // sorted in ascending order). Returns true if the clean up finishes without
   // any DB error.
-  bool CleanTypedURLOrphanedMetadataForMigrationToVersion40(
+  bool CleanOrphanedMetadataForMigrationToVersion40(
       const std::vector<URLID>& sorted_valid_rowids);
 
  private:
@@ -80,6 +74,9 @@ class TypedURLSyncMetadataDatabase : public syncer::SyncMetadataStore {
 
   // Read sync_pb::ModelTypeState for typed URL and fill `state` with it.
   bool GetModelTypeState(sync_pb::ModelTypeState* state);
+
+  const raw_ptr<sql::Database> db_;
+  const raw_ptr<sql::MetaTable> meta_table_;
 };
 
 }  // namespace history

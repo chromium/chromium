@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,7 +59,8 @@ void ChoosePlatformCustomAlphaAndBufferSize(EGLint* alpha_size,
                                             EGLint* buffer_size) {
   // If we're using ANGLE_NULL, we may not have a display, in which case we
   // can't use XVisualManager.
-  if (gl::GLSurfaceEGL::GetNativeDisplay() != EGL_DEFAULT_DISPLAY) {
+  if (gl::GLSurfaceEGL::GetGLDisplayEGL()->GetNativeDisplay().GetDisplay() !=
+      EGL_DEFAULT_DISPLAY) {
     uint8_t depth;
     XVisualManager::GetInstance()->ChooseVisualForWindow(true, nullptr, &depth,
                                                          nullptr, nullptr);

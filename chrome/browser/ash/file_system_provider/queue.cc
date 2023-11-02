@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -82,8 +82,7 @@ void Queue::MaybeRun() {
 
 void Queue::Abort(size_t token) {
   // Check if it's running. If so, then abort and expect a Complete() call soon.
-  const auto it = executed_.find(token);
-  if (it != executed_.end()) {
+  if (const auto it = executed_.find(token); it != executed_.end()) {
     Task& task = it->second;
     AbortCallback abort_callback = std::move(task.abort_callback);
     DCHECK(!abort_callback.is_null());

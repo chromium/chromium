@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -189,7 +189,7 @@ void KeyboardLayoutMonitorMac::QueryLayoutOnMainLoop(
                          CFDataGetBytePtr(layout_data)),
                      keycode, kUCKeyActionDown, modifier_state >> 8,
                      keyboard_type, kUCKeyTranslateNoDeadKeysMask,
-                     &deadkey_state, base::size(result_array), &result_length,
+                     &deadkey_state, std::size(result_array), &result_length,
                      result_array);
 
       if (result_length == 0) {

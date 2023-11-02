@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,9 @@
 namespace ash {
 namespace quick_pair {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. This enum should be kept in sync with
+// the FastPairPairFailure enum in src/tools/metrics/histograms/enums.xml.
 enum class PairFailure {
   // Failed to create a GATT connection to the device.
   kCreateGattConnection = 0,
@@ -61,6 +64,9 @@ enum class PairFailure {
   kPairingConnect = 21,
   // Failed to bond to device via public address.
   kAddressConnect = 22,
+  // BLE device instance lost mid pair with classic instance
+  kBleDeviceLostMidPair = 23,
+  kMaxValue = kBleDeviceLostMidPair,
 };
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)

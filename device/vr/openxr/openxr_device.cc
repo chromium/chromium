@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,37 +19,6 @@
 namespace device {
 
 namespace {
-
-constexpr float kFov = 45.0f;
-
-constexpr unsigned int kRenderWidth = 1024;
-constexpr unsigned int kRenderHeight = 1024;
-
-// OpenXR doesn't give out display info until you start a session.
-// However our mojo interface expects display info right away to support WebVR.
-// We create a fake display info to use, then notify the client that the display
-// info changed when we get real data.
-mojom::VRDisplayInfoPtr CreateFakeVRDisplayInfo() {
-  mojom::VRDisplayInfoPtr display_info = mojom::VRDisplayInfo::New();
-
-  mojom::XRViewPtr left_eye = mojom::XRView::New();
-  mojom::XRViewPtr right_eye = mojom::XRView::New();
-
-  left_eye->eye = mojom::XREye::kLeft;
-  right_eye->eye = mojom::XREye::kRight;
-
-  left_eye->field_of_view = mojom::VRFieldOfView::New(kFov, kFov, kFov, kFov);
-  right_eye->field_of_view = left_eye->field_of_view.Clone();
-
-  left_eye->viewport = gfx::Size(kRenderWidth, kRenderHeight);
-  right_eye->viewport = gfx::Size(kRenderWidth, kRenderHeight);
-
-  display_info->views.resize(2);
-  display_info->views[0] = std::move(left_eye);
-  display_info->views[1] = std::move(right_eye);
-
-  return display_info;
-}
 
 const std::vector<mojom::XRSessionFeature>& GetSupportedFeatures() {
   static base::NoDestructor<std::vector<mojom::XRSessionFeature>>
@@ -79,10 +48,8 @@ OpenXrDevice::OpenXrDevice(
       context_provider_factory_async_(
           std::move(context_provider_factory_async)),
       weak_ptr_factory_(this) {
-  mojom::VRDisplayInfoPtr display_info = CreateFakeVRDisplayInfo();
-  SetVRDisplayInfo(std::move(display_info));
   SetArBlendModeSupported(IsArBlendModeSupported());
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   SetLuid(OpenXrStatics::GetInstance()->GetLuid(extension_helper_));
 #endif
 
@@ -98,6 +65,11 @@ OpenXrDevice::OpenXrDevice(
       base::FeatureList::IsEnabled(
                   features::kOpenXrExtendedFeatureSupport))
     device_features.emplace_back(mojom::XRSessionFeature::HIT_TEST);
+
+  if (extension_helper_.ExtensionEnumeration()->ExtensionSupported(
+          XR_MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME)) {
+    device_features.emplace_back(mojom::XRSessionFeature::SECONDARY_VIEWS);
+  }
 
   SetSupportedFeatures(device_features);
 }
@@ -125,11 +97,8 @@ OpenXrDevice::BindCompositorHost() {
 
 void OpenXrDevice::EnsureRenderLoop() {
   if (!render_loop_) {
-    auto on_info_changed = base::BindRepeating(&OpenXrDevice::SetVRDisplayInfo,
-                                               weak_ptr_factory_.GetWeakPtr());
     render_loop_ = std::make_unique<OpenXrRenderLoop>(
-        std::move(on_info_changed), context_provider_factory_async_, instance_,
-        extension_helper_);
+        context_provider_factory_async_, instance_, extension_helper_);
   }
 }
 
@@ -214,8 +183,6 @@ void OpenXrDevice::OnRequestSessionResult(
   }
 
   OnStartPresenting();
-
-  session->display_info = display_info_.Clone();
 
   auto session_result = mojom::XRRuntimeSessionResult::New();
   session_result->session = std::move(session);

@@ -1,10 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_GFX_MOJOM_SELECTION_BOUND_MOJOM_TRAITS_H_
 #define UI_GFX_MOJOM_SELECTION_BOUND_MOJOM_TRAITS_H_
 
+#include "base/notreached.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "ui/gfx/mojom/selection_bound.mojom-shared.h"
 #include "ui/gfx/selection_bound.h"

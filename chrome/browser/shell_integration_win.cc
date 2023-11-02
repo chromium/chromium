@@ -1,12 +1,13 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/shell_integration_win.h"
 
-#include <windows.h>
-#include <objbase.h>
 #include <shobjidl.h>
+#include <windows.h>
+
+#include <objbase.h>
 #include <propkey.h>  // Needs to come after shobjidl.h.
 #include <stddef.h>
 #include <stdint.h>
@@ -19,7 +20,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
+#include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/memory/weak_ptr.h"
@@ -31,7 +32,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -44,8 +44,8 @@
 #include "base/win/windows_version.h"
 #include "chrome/browser/policy/policy_path_parser.h"
 #include "chrome/browser/shell_integration.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut_win.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_shortcut_win.h"
 #include "chrome/browser/win/settings_app_monitor.h"
 #include "chrome/browser/win/util_win_service.h"
 #include "chrome/common/chrome_constants.h"
@@ -62,6 +62,15 @@
 namespace shell_integration {
 
 namespace {
+
+BASE_FEATURE(kWin10UnattendedDefault,
+             "Win10UnattendedDefault",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool CanSetAsDefaultDirectly() {
+  return base::win::GetVersion() >= base::win::Version::WIN10 &&
+         base::FeatureList::IsEnabled(kWin10UnattendedDefault);
+}
 
 // Helper function for GetAppId to generates profile id
 // from profile path. "profile_id" is composed of sanitized basenames of
@@ -176,7 +185,7 @@ std::u16string GetAppForProtocolUsingAssocQuery(const GURL& url) {
   // populate the external protocol dialog box the user sees when invoking
   // an unknown external protocol.
   wchar_t out_buffer[1024];
-  DWORD buffer_size = base::size(out_buffer);
+  DWORD buffer_size = std::size(out_buffer);
   HRESULT hr =
       AssocQueryString(ASSOCF_IS_PROTOCOL, ASSOCSTR_FRIENDLYAPPNAME,
                        url_scheme.c_str(), NULL, out_buffer, &buffer_size);
@@ -463,9 +472,7 @@ class IsPinnedToTaskbarHelper {
                           ResultCallback result_callback);
 
   void OnConnectionError();
-  void OnIsPinnedToTaskbarResult(bool succeeded,
-                                 bool is_pinned_to_taskbar,
-                                 bool is_pinned_to_taskbar_verb_check);
+  void OnIsPinnedToTaskbarResult(bool succeeded, bool is_pinned_to_taskbar);
 
   mojo::Remote<chrome::mojom::UtilWin> remote_util_win_;
 
@@ -508,12 +515,10 @@ void IsPinnedToTaskbarHelper::OnConnectionError() {
 
 void IsPinnedToTaskbarHelper::OnIsPinnedToTaskbarResult(
     bool succeeded,
-    bool is_pinned_to_taskbar,
-    bool is_pinned_to_taskbar_verb_check) {
+    bool is_pinned_to_taskbar) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::move(result_callback_)
-      .Run(succeeded, is_pinned_to_taskbar, is_pinned_to_taskbar_verb_check);
+  std::move(result_callback_).Run(succeeded, is_pinned_to_taskbar);
   delete this;
 }
 
@@ -586,6 +591,109 @@ void UnpinShortcutsHelper::OnUnpinShortcutResult() {
   delete this;
 }
 
+// Helper class to create or update desktop shortcuts Hides the complexity of
+// managing the lifetime of the connection to the Windows utility service.
+class CreateOrUpdateShortcutsHelper {
+ public:
+  CreateOrUpdateShortcutsHelper(const CreateOrUpdateShortcutsHelper&) = delete;
+  CreateOrUpdateShortcutsHelper& operator=(
+      const CreateOrUpdateShortcutsHelper&) = delete;
+
+  static void DoCreateOrUpdateShortcuts(
+      const std::vector<base::FilePath>& shortcuts,
+      const std::vector<base::win::ShortcutProperties>& properties,
+      base::win::ShortcutOperation operation,
+      win::CreateOrUpdateShortcutsResultCallback);
+
+ private:
+  // Possible results of DoCreateOrUpdateShortcuts().
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused. These correspond to
+  // CreateOrUpdateShortcutsResult in enums.xml.
+  enum class CreateOrUpdateShortcutsResult {
+    kSuccess = 0,
+    kErrorProcessDisconnected = 1,
+    kErrorShortcutOperationFailed = 2,
+    kMaxValue = kErrorShortcutOperationFailed
+  };
+
+  static void RecordCreateOrUpdateShortcutsResult(
+      CreateOrUpdateShortcutsResult result);
+
+  CreateOrUpdateShortcutsHelper(
+      const std::vector<base::FilePath>& shortcuts,
+      const std::vector<base::win::ShortcutProperties>& properties,
+      base::win::ShortcutOperation operation,
+      win::CreateOrUpdateShortcutsResultCallback completion_callback);
+
+  void OnConnectionError();
+  void OnCreateOrUpdateShortcutResult(bool succeeded);
+
+  mojo::Remote<chrome::mojom::UtilWin> remote_util_win_;
+
+  win::CreateOrUpdateShortcutsResultCallback completion_callback_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+};
+
+// static
+void CreateOrUpdateShortcutsHelper::RecordCreateOrUpdateShortcutsResult(
+    CreateOrUpdateShortcutsResult result) {
+  base::UmaHistogramEnumeration("Windows.CreateOrUpdateShortcuts.Result",
+                                result);
+}
+
+// static
+void CreateOrUpdateShortcutsHelper::DoCreateOrUpdateShortcuts(
+    const std::vector<base::FilePath>& shortcuts,
+    const std::vector<base::win::ShortcutProperties>& properties,
+    base::win::ShortcutOperation operation,
+    win::CreateOrUpdateShortcutsResultCallback completion_callback) {
+  // Self-deleting when the ShellHandler completes.
+  new CreateOrUpdateShortcutsHelper(shortcuts, properties, operation,
+                                    std::move(completion_callback));
+}
+
+CreateOrUpdateShortcutsHelper::CreateOrUpdateShortcutsHelper(
+    const std::vector<base::FilePath>& shortcuts,
+    const std::vector<base::win::ShortcutProperties>& properties,
+    base::win::ShortcutOperation operation,
+    win::CreateOrUpdateShortcutsResultCallback completion_callback)
+    : remote_util_win_(LaunchUtilWinServiceInstance()),
+      completion_callback_(std::move(completion_callback)) {
+  DCHECK(completion_callback_);
+
+  // |remote_util_win_| owns the callbacks and is guaranteed to be destroyed
+  // before |this|, therefore making base::Unretained() safe to use.
+  remote_util_win_.set_disconnect_handler(
+      base::BindOnce(&CreateOrUpdateShortcutsHelper::OnConnectionError,
+                     base::Unretained(this)));
+  remote_util_win_->CreateOrUpdateShortcuts(
+      shortcuts, properties, operation,
+      base::BindOnce(
+          &CreateOrUpdateShortcutsHelper::OnCreateOrUpdateShortcutResult,
+          base::Unretained(this)));
+}
+
+void CreateOrUpdateShortcutsHelper::OnConnectionError() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  RecordCreateOrUpdateShortcutsResult(
+      CreateOrUpdateShortcutsResult::kErrorProcessDisconnected);
+  std::move(completion_callback_).Run(false);
+  delete this;
+}
+
+void CreateOrUpdateShortcutsHelper::OnCreateOrUpdateShortcutResult(
+    bool succeeded) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  RecordCreateOrUpdateShortcutsResult(
+      succeeded ? CreateOrUpdateShortcutsResult::kSuccess
+                : CreateOrUpdateShortcutsResult::kErrorShortcutOperationFailed);
+  std::move(completion_callback_).Run(succeeded);
+  delete this;
+}
+
 void MigrateChromeAndChromeProxyShortcuts(
     const base::FilePath& chrome_exe,
     const base::FilePath& chrome_proxy_path,
@@ -618,8 +726,12 @@ bool SetAsDefaultBrowser() {
   }
 
   // From UI currently we only allow setting default browser for current user.
-  if (!ShellUtil::MakeChromeDefault(ShellUtil::CURRENT_USER, chrome_exe,
-                                    true /* elevate_if_not_admin */)) {
+  if (!(CanSetAsDefaultDirectly()
+            ? ShellUtil::MakeChromeDefaultDirectly(
+                  ShellUtil::CURRENT_USER, chrome_exe,
+                  true /* elevate_if_not_admin */)
+            : ShellUtil::MakeChromeDefault(ShellUtil::CURRENT_USER, chrome_exe,
+                                           true /* elevate_if_not_admin */))) {
     LOG(ERROR) << "Chrome could not be set as default browser.";
     return false;
   }
@@ -657,8 +769,10 @@ DefaultWebClientSetPermission GetDefaultWebClientSetPermission() {
     return SET_DEFAULT_NOT_ALLOWED;
   if (ShellUtil::CanMakeChromeDefaultUnattended())
     return SET_DEFAULT_UNATTENDED;
-  // Windows 8 and 10 both introduced a new way to set the default web client
-  // which require user interaction.
+  if (CanSetAsDefaultDirectly())
+    return SET_DEFAULT_UNATTENDED;
+  // Setting the default web client generally requires user interaction in
+  // Windows 8+ with permitted exceptions above.
   return SET_DEFAULT_INTERACTIVE;
 }
 
@@ -815,6 +929,15 @@ void UnpinShortcuts(const std::vector<base::FilePath>& shortcuts,
   UnpinShortcutsHelper::DoUnpin(shortcuts, std::move(completion_callback));
 }
 
+void CreateOrUpdateShortcuts(
+    const std::vector<base::FilePath>& shortcuts,
+    const std::vector<base::win::ShortcutProperties>& properties,
+    base::win::ShortcutOperation operation,
+    win::CreateOrUpdateShortcutsResultCallback callback) {
+  CreateOrUpdateShortcutsHelper::DoCreateOrUpdateShortcuts(
+      shortcuts, properties, operation, std::move(callback));
+}
+
 void MigrateTaskbarPins(base::OnceClosure completion_callback) {
   // This needs to happen (e.g. so that the appid is fixed and the
   // run-time Chrome icon is merged with the taskbar shortcut), but it is not an
@@ -877,8 +1000,8 @@ int MigrateShortcutsInPathInternal(const base::FilePath& chrome_exe,
                                    const base::FilePath& path) {
   // This function may load DLL's so ensure it is running in a foreground
   // thread.
-  DCHECK_GT(base::PlatformThread::GetCurrentThreadPriority(),
-            base::ThreadPriority::BACKGROUND);
+  DCHECK_GT(base::PlatformThread::GetCurrentThreadType(),
+            base::ThreadType::kBackground);
 
   // Enumerate all pinned shortcuts in the given path directly.
   base::FileEnumerator shortcuts_enum(
@@ -977,7 +1100,7 @@ int MigrateShortcutsInPathInternal(const base::FilePath& chrome_exe,
     if (updated_properties.options &&
         base::win::CreateOrUpdateShortcutLink(
             shortcut, updated_properties,
-            base::win::SHORTCUT_UPDATE_EXISTING)) {
+            base::win::ShortcutOperation::kUpdateExisting)) {
       ++shortcuts_migrated;
     }
   }

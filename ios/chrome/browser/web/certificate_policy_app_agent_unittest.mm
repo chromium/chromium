@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #import "base/bind.h"
 #import "base/memory/scoped_refptr.h"
 #import "base/run_loop.h"
-#import "base/task/post_task.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -91,7 +90,7 @@ class CertificatePolicyAppStateAgentTest : public BlockCleanupTest {
     [app_state_ addAgent:app_agent_];
   }
 
-  // Adds a web state with |host| as the active URL to |browser|.
+  // Adds a web state with `host` as the active URL to `browser`.
   void AddWebStateToBrowser(std::string host, Browser* browser) {
     auto test_web_state = std::make_unique<web::FakeWebStateWithPolicyCache>(
         browser->GetBrowserState());
@@ -103,8 +102,8 @@ class CertificatePolicyAppStateAgentTest : public BlockCleanupTest {
         WebStateList::INSERT_NO_FLAGS, WebStateOpener());
   }
 
-  // Adds a web state with |host| as the active URL, and with |host| registered
-  // as having a valid certificate to |browser|.
+  // Adds a web state with `host` as the active URL, and with `host` registered
+  // as having a valid certificate to `browser`.
   void AddCertifiedWebStateToBrowser(std::string host, Browser* browser) {
     auto test_web_state = std::make_unique<web::FakeWebStateWithPolicyCache>(
         browser->GetBrowserState());
@@ -159,9 +158,9 @@ class CertificatePolicyAppStateAgentTest : public BlockCleanupTest {
     }));
   }
 
-  // Checks |cache| to see if the policy for |host| is "allowed". For the
-  // purposes of this test, that's effectively testing if |host| is "in"
-  // |cache|. Checking the cache is async, so this method handles synchronous
+  // Checks `cache` to see if the policy for `host` is "allowed". For the
+  // purposes of this test, that's effectively testing if `host` is "in"
+  // `cache`. Checking the cache is async, so this method handles synchronous
   // waiting for the result.
   bool IsHostCertAllowed(
       const scoped_refptr<web::CertificatePolicyCache>& cache,
@@ -169,25 +168,27 @@ class CertificatePolicyAppStateAgentTest : public BlockCleanupTest {
     __block web::CertPolicy::Judgment judgement =
         web::CertPolicy::Judgment::UNKNOWN;
     __block bool completed = false;
-    base::PostTask(FROM_HERE, {web::WebThread::IO}, base::BindOnce(^{
-                     completed = true;
-                     judgement = cache->QueryPolicy(cert_.get(), host, status_);
-                   }));
+    web::GetIOThreadTaskRunner({})->PostTask(FROM_HERE, base::BindOnce(^{
+                                               completed = true;
+                                               judgement = cache->QueryPolicy(
+                                                   cert_.get(), host, status_);
+                                             }));
     EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
       return completed;
     }));
     return judgement == web::CertPolicy::Judgment::ALLOWED;
   }
 
-  // Clears all entries from |cache|. This is posted to the IO thread and this
+  // Clears all entries from `cache`. This is posted to the IO thread and this
   // method sync-waits for this to complete.
   void ClearPolicyCache(
       const scoped_refptr<web::CertificatePolicyCache>& cache) {
     __block bool policies_cleared = false;
-    base::PostTask(FROM_HERE, {web::WebThread::IO}, base::BindOnce(^{
-                     cache->ClearCertificatePolicies();
-                     policies_cleared = true;
-                   }));
+    web::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(^{
+          cache->ClearCertificatePolicies();
+          policies_cleared = true;
+        }));
     EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
       return policies_cleared;
     }));
@@ -213,7 +214,7 @@ class CertificatePolicyAppStateAgentTest : public BlockCleanupTest {
     return IsHostCertAllowed(IncognitoPolicyCache(), host);
   }
 
-  // Populates |cache| with allowed certs for the hosts in |hosts|. This is done
+  // Populates `cache` with allowed certs for the hosts in `hosts`. This is done
   // in a single async call, and this method sync-waits on it completing.
   void PopulatePolicyCache(std::vector<std::string> hosts,
                            scoped_refptr<web::CertificatePolicyCache> cache) {
@@ -224,8 +225,8 @@ class CertificatePolicyAppStateAgentTest : public BlockCleanupTest {
       }
       hosts_added = true;
     };
-    base::PostTask(FROM_HERE, {web::WebThread::IO},
-                   base::BindOnce(populate_cache));
+    web::GetIOThreadTaskRunner({})->PostTask(FROM_HERE,
+                                             base::BindOnce(populate_cache));
     EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
       return hosts_added;
     }));

@@ -1,35 +1,35 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/ui/webui/inspect/inspect_ui.h"
+#import "ios/chrome/browser/ui/webui/inspect/inspect_ui.h"
 
-#include "base/bind.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
+#import "base/bind.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/chrome/browser/main/browser.h"
-#include "ios/chrome/browser/main/browser_list.h"
-#include "ios/chrome/browser/main/browser_list_factory.h"
-#include "ios/chrome/browser/main/browser_list_observer.h"
-#include "ios/chrome/browser/web/java_script_console/java_script_console_feature.h"
-#include "ios/chrome/browser/web/java_script_console/java_script_console_feature_delegate.h"
-#include "ios/chrome/browser/web/java_script_console/java_script_console_feature_factory.h"
-#include "ios/chrome/browser/web/java_script_console/java_script_console_message.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/main/browser_list.h"
+#import "ios/chrome/browser/main/browser_list_factory.h"
+#import "ios/chrome/browser/main/browser_list_observer.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/chrome/browser/web/java_script_console/java_script_console_feature.h"
+#import "ios/chrome/browser/web/java_script_console/java_script_console_feature_delegate.h"
+#import "ios/chrome/browser/web/java_script_console/java_script_console_feature_factory.h"
+#import "ios/chrome/browser/web/java_script_console/java_script_console_message.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
-#include "ios/chrome/grit/ios_resources.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ios/web/public/js_messaging/web_frame.h"
-#include "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/chrome/grit/ios_resources.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
-#include "ios/web/public/webui/web_ui_ios.h"
-#include "ios/web/public/webui/web_ui_ios_data_source.h"
-#include "ios/web/public/webui/web_ui_ios_message_handler.h"
+#import "ios/web/public/webui/web_ui_ios.h"
+#import "ios/web/public/webui/web_ui_ios_data_source.h"
+#import "ios/web/public/webui/web_ui_ios_message_handler.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -78,7 +78,7 @@ class InspectDOMHandler : public web::WebUIIOSMessageHandler,
 
  private:
   // Handles the message from JavaScript to enable or disable console logging.
-  void HandleSetLoggingEnabled(const base::ListValue* args);
+  void HandleSetLoggingEnabled(const base::Value::List& args);
 
   // Enables or disables console logging.
   void SetLoggingEnabled(bool enabled);
@@ -94,16 +94,15 @@ InspectDOMHandler::~InspectDOMHandler() {
   SetLoggingEnabled(false);
 }
 
-void InspectDOMHandler::HandleSetLoggingEnabled(const base::ListValue* args) {
-  auto args_list = args->GetList();
-  if (args_list.size() != 1) {
+void InspectDOMHandler::HandleSetLoggingEnabled(const base::Value::List& args) {
+  if (args.size() != 1) {
     NOTREACHED();
     return;
   }
 
   bool enabled = false;
-  if (args_list[0].is_bool()) {
-    enabled = args_list[0].GetBool();
+  if (args[0].is_bool()) {
+    enabled = args[0].GetBool();
   } else {
     NOTREACHED();
   }
@@ -128,7 +127,7 @@ void InspectDOMHandler::SetLoggingEnabled(bool enabled) {
 }
 
 void InspectDOMHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "setLoggingEnabled",
       base::BindRepeating(&InspectDOMHandler::HandleSetLoggingEnabled,
                           base::Unretained(this)));

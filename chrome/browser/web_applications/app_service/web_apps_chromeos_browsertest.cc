@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,14 +11,12 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
@@ -35,7 +33,7 @@
 namespace {
 
 void CheckShortcut(const ui::SimpleMenuModel& model,
-                   int index,
+                   size_t index,
                    int shortcut_index,
                    const std::u16string& label,
                    absl::optional<SkColor> color) {
@@ -53,24 +51,14 @@ void CheckShortcut(const ui::SimpleMenuModel& model,
   }
 }
 
-void CheckSeparator(const ui::SimpleMenuModel& model, int index) {
+void CheckSeparator(const ui::SimpleMenuModel& model, size_t index) {
   EXPECT_EQ(model.GetTypeAt(index), ui::MenuModel::TYPE_SEPARATOR);
   EXPECT_EQ(model.GetCommandIdAt(index), -1);
 }
 
 }  // namespace
 
-class WebAppsChromeOsBrowserTest : public web_app::WebAppControllerBrowserTest {
- public:
-  WebAppsChromeOsBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {features::kDesktopPWAsAppIconShortcutsMenuUI}, {});
-  }
-  ~WebAppsChromeOsBrowserTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
+using WebAppsChromeOsBrowserTest = web_app::WebAppControllerBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(WebAppsChromeOsBrowserTest, ShortcutIcons) {
   const GURL app_url =
@@ -78,10 +66,6 @@ IN_PROC_BROWSER_TEST_F(WebAppsChromeOsBrowserTest, ShortcutIcons) {
   const web_app::AppId app_id =
       web_app::InstallWebAppFromPage(browser(), app_url);
   LaunchWebAppBrowser(app_id);
-
-  // Wait for app service to see the newly installed app.
-  apps::AppServiceProxyFactory::GetForProfile(profile())
-      ->FlushMojoCallsForTesting();
 
   std::unique_ptr<ui::SimpleMenuModel> menu_model;
   {
@@ -103,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsChromeOsBrowserTest, ShortcutIcons) {
 
   // Shortcuts appear last in the context menu.
   // See /web_app_shortcuts/shortcuts.json for shortcut icon definitions.
-  int index = menu_model->GetItemCount() - 11;
+  size_t index = menu_model->GetItemCount() - 11;
 
   // Purpose |any| by default.
   CheckShortcut(*menu_model, index++, 0, u"One", SK_ColorGREEN);
@@ -128,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsChromeOsBrowserTest, ShortcutIcons) {
   ui_test_utils::UrlLoadObserver url_observer(
       https_server()->GetURL("/web_app_shortcuts/shortcuts.html#four"),
       content::NotificationService::AllSources());
-  menu_model->ActivatedAt(menu_model->GetIndexOfCommandId(command_id),
+  menu_model->ActivatedAt(menu_model->GetIndexOfCommandId(command_id).value(),
                           ui::EF_LEFT_MOUSE_BUTTON);
   url_observer.Wait();
 }

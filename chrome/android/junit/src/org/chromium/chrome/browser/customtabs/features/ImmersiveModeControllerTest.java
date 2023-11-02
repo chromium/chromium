@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -69,6 +69,8 @@ public class ImmersiveModeControllerTest {
         when(mActivity.getWindow()).thenReturn(mWindow);
         when(mWindow.getDecorView()).thenReturn(mDecorView);
         when(mWindow.getAttributes()).thenReturn(mLayoutParams);
+        when(mDecorView.getRootView()).thenReturn(mDecorView);
+        when(mDecorView.getLayoutParams()).thenReturn(mLayoutParams);
 
         // Reflect mSystemUiVisibility in the DecorView.
         when(mDecorView.getSystemUiVisibility()).thenAnswer(invocation -> mSystemUiVisibility);

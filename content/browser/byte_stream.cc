@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,10 @@
 #include "base/bind.h"
 #include "base/containers/circular_deque.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 
 namespace content {
 namespace {
@@ -101,7 +103,7 @@ class ByteStreamWriterImpl : public ByteStreamWriter {
 
   // Only valid to access on peer_task_runner_ if
   // |*peer_lifetime_flag_ == true|
-  ByteStreamReaderImpl* peer_;
+  raw_ptr<ByteStreamReaderImpl> peer_;
 };
 
 class ByteStreamReaderImpl : public ByteStreamReader {
@@ -174,7 +176,7 @@ class ByteStreamReaderImpl : public ByteStreamReader {
 
   // Only valid to access on peer_task_runner_ if
   // |*peer_lifetime_flag_ == true|
-  ByteStreamWriterImpl* peer_;
+  raw_ptr<ByteStreamWriterImpl> peer_;
 };
 
 ByteStreamWriterImpl::ByteStreamWriterImpl(

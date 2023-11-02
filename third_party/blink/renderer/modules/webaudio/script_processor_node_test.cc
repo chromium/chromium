@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/synchronization/lock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -22,14 +23,20 @@ TEST(ScriptProcessorNodeTest, BufferLifetime) {
       context->createScriptProcessor(ASSERT_NO_EXCEPTION);
   ScriptProcessorHandler& handler =
       static_cast<ScriptProcessorHandler&>(node->Handler());
-  EXPECT_EQ(2u, handler.shared_input_buffers_.size());
-  EXPECT_EQ(2u, handler.shared_input_buffers_.size());
-  BaseAudioContext::GraphAutoLocker locker(context);
+  {
+    base::AutoLock locker(handler.GetBufferLock());
+    EXPECT_EQ(2u, handler.shared_input_buffers_.size());
+    EXPECT_EQ(2u, handler.shared_input_buffers_.size());
+  }
+  BaseAudioContext::GraphAutoLocker graph_locker(context);
   handler.Dispose();
   // Buffers should live after dispose() because an audio thread is using
   // them.
-  EXPECT_EQ(2u, handler.shared_input_buffers_.size());
-  EXPECT_EQ(2u, handler.shared_input_buffers_.size());
+  {
+    base::AutoLock locker(handler.GetBufferLock());
+    EXPECT_EQ(2u, handler.shared_input_buffers_.size());
+    EXPECT_EQ(2u, handler.shared_input_buffers_.size());
+  }
 }
 
 }  // namespace blink

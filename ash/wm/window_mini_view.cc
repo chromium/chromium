@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -98,7 +98,7 @@ void WindowMiniView::UpdatePreviewRoundedCorners(bool show) {
 
   ui::Layer* layer = preview_view()->layer();
   DCHECK(layer);
-  const float scale = layer->transform().Scale2d().x();
+  const float scale = layer->transform().To2dScale().x();
   const float rounding = views::LayoutProvider::Get()->GetCornerRadiusMetric(
       views::Emphasis::kLow);
   const gfx::RoundedCornersF radii(show ? rounding / scale : 0.0f);
@@ -153,6 +153,7 @@ WindowMiniView::WindowMiniView(aura::Window* source_window)
 }
 
 void WindowMiniView::UpdateIconView() {
+  DCHECK(source_window_);
   aura::Window* transient_root = wm::GetTransientRoot(source_window_);
   // Prefer kAppIconKey over kWindowIconKey as the app icon is typically larger.
   gfx::ImageSkia* icon = transient_root->GetProperty(aura::client::kAppIconKey);
@@ -172,7 +173,7 @@ void WindowMiniView::UpdateIconView() {
 
 gfx::Rect WindowMiniView::GetContentAreaBounds() const {
   gfx::Rect bounds(GetContentsBounds());
-  bounds.Inset(0, kHeaderHeightDp, 0, 0);
+  bounds.Inset(gfx::Insets::TLBR(kHeaderHeightDp, 0, 0, 0));
   return bounds;
 }
 
@@ -191,6 +192,13 @@ void WindowMiniView::Layout() {
 }
 
 void WindowMiniView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  // This may be called after `OnWindowDestroying`. `this` should be destroyed
+  // shortly by the owner (OverviewItem/WindowCycleView) but there may be a
+  // small window where `source_window_` is null. Speculative fix for
+  // https://crbug.com/1274775.
+  if (!source_window_)
+    return;
+
   node_data->role = ax::mojom::Role::kWindow;
   node_data->SetName(wm::GetTransientRoot(source_window_)->GetTitle());
 }

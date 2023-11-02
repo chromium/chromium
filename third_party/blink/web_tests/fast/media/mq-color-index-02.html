@@ -6,34 +6,21 @@
   <link rel="help" href="http://www.w3.org/TR/css3-mediaqueries/#color-index"/>
   <script src="../../resources/testharness.js"></script>
   <script src="../../resources/testharnessreport.js"></script>
-  <style>
-    @media (color-index: 0.0) {}
-    @media (color-index: -1) {}
-    @media (color-index: 2.1) {}
-  </style>
 <head>
 <body>
   <div id="log"></div>
   <script>
-    test(function(){
-      assert_true(!!document.styleSheets[0]);
-      assert_true(!!document.styleSheets[0].cssRules);
-      assert_equals(document.styleSheets[0].cssRules.length, 3);
-    }, "CSSOM Sanity check");
 
-    var rules = document.styleSheets[0].cssRules;
+    function test_unknown(query) {
+      test(() => {
+        assert_false(matchMedia(`${query} or (not ${query})`).matches);
+      }, `${query} is unknown`);
+      return ;
+    }
 
-    test(function(){
-      assert_equals(rules[0].media.mediaText, "not all");
-    }, "(color-index: 0.0) is invalid");
-
-    test(function(){
-      assert_equals(rules[1].media.mediaText, "not all");
-    }, "(color-index: -1) is invalid");
-
-    test(function(){
-      assert_equals(rules[2].media.mediaText, "not all");
-    }, "(color-index: 2.1) is invalid");
+    test_unknown("(color-index: 0.0)");
+    test_unknown("(color-index: -1)");
+    test_unknown("(color-index: 2.1)");
   </script>
 </body>
 </html>

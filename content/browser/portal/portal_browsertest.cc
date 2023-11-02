@@ -1,17 +1,17 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
-#include <tuple>
 
 #include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -49,6 +49,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/render_frame_host_test_support.h"
@@ -62,7 +63,6 @@
 #include "content/test/portal/portal_created_observer.h"
 #include "content/test/portal/portal_interceptor_for_testing.h"
 #include "content/test/test_render_frame_host_factory.h"
-#include "net/base/escape.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
@@ -86,14 +86,11 @@ namespace content {
 
 class PortalBrowserTest : public ContentBrowserTest {
  protected:
-  PortalBrowserTest() {}
-
-  void SetUp() override {
+  PortalBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{blink::features::kPortals,
                               blink::features::kPortalsCrossOrigin},
         /*disabled_features=*/{});
-    ContentBrowserTest::SetUp();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -113,7 +110,7 @@ class PortalBrowserTest : public ContentBrowserTest {
                             int number_of_navigations = 1,
                             bool expected_to_succeed = true) {
     EXPECT_GE(number_of_navigations, 1);
-    RenderFrameHostImpl* main_frame = host_contents->GetMainFrame();
+    RenderFrameHostImpl* main_frame = host_contents->GetPrimaryMainFrame();
 
     // Create portal and wait for navigation.
     PortalCreatedObserver portal_created_observer(main_frame);
@@ -208,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, CreatePortal) {
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* primary_rfh = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* primary_rfh = web_contents_impl->GetPrimaryMainFrame();
 
   PortalCreatedObserver portal_created_observer(primary_rfh);
   EXPECT_TRUE(
@@ -217,7 +214,8 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, CreatePortal) {
   Portal* portal = portal_created_observer.WaitUntilPortalCreated();
   EXPECT_NE(nullptr, portal);
 
-  RenderFrameHostImpl* portal_rfh = portal->GetPortalContents()->GetMainFrame();
+  RenderFrameHostImpl* portal_rfh =
+      portal->GetPortalContents()->GetPrimaryMainFrame();
   EXPECT_NE(&primary_rfh->GetPage(), &portal_rfh->GetPage());
   EXPECT_TRUE(primary_rfh->GetPage().IsPrimary());
   EXPECT_TRUE(portal_rfh->GetPage().IsPrimary());
@@ -229,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, NavigatePortal) {
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
 
   // Tests that a portal can navigate by setting its src before appending it to
   // the DOM.
@@ -266,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, NavigatePortal) {
   }
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 // Bulk disabled as part of arm64 bot stabilization: https://crbug.com/1154345
 #define MAYBE_ActivatePortal DISABLED_ActivatePortal
 #else
@@ -280,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, MAYBE_ActivatePortal) {
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
 
   GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   Portal* portal = CreatePortalToUrl(web_contents_impl, a_url);
@@ -307,6 +305,27 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, MAYBE_ActivatePortal) {
   VerifyActivationTraceEvents(StopTracing());
 }
 
+// Test that portal uses own UKM source id during navigation.
+IN_PROC_BROWSER_TEST_F(PortalBrowserTest, GetPageUkmSourceId) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
+  WebContentsImpl* web_contents_impl =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  RenderFrameHostImpl* primary_rfh = web_contents_impl->GetPrimaryMainFrame();
+
+  GURL portal_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  Portal* portal = CreatePortalToUrl(web_contents_impl, portal_url);
+  RenderFrameHostImpl* portal_rfh =
+      portal->GetPortalContents()->GetPrimaryMainFrame();
+  EXPECT_TRUE(portal_rfh);
+
+  // Ensure that portal uses own UKM source id, not from the primary main frame.
+  // TODO(crbug.com/1254770): Modify this test to check the source UKM ID during
+  // navigation as once portals are migrated to MPArch.
+  EXPECT_NE(primary_rfh->GetPageUkmSourceId(),
+            portal_rfh->GetPageUkmSourceId());
+}
+
 // This fixture enables PortalsDefaultActivation
 class PortalDefaultActivationBrowserTest : public PortalBrowserTest {
  protected:
@@ -317,7 +336,7 @@ class PortalDefaultActivationBrowserTest : public PortalBrowserTest {
   }
 };
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 // Bulk disabled as part of arm64 bot stabilization: https://crbug.com/1154345
 #define MAYBE_DefaultActivatePortal DISABLED_DefaultActivatePortal
 #else
@@ -333,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(PortalDefaultActivationBrowserTest,
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
 
   GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   Portal* portal = CreatePortalToUrl(web_contents_impl, a_url);
@@ -359,7 +378,7 @@ IN_PROC_BROWSER_TEST_F(PortalDefaultActivationBrowserTest,
   VerifyActivationTraceEvents(StopTracing());
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 // https://crbug.com/1222682
 #define MAYBE_AdoptPredecessor DISABLED_AdoptPredecessor
 #else
@@ -372,7 +391,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, MAYBE_AdoptPredecessor) {
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
 
   GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   Portal* portal = CreatePortalToUrl(web_contents_impl, a_url);
@@ -383,7 +402,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, MAYBE_AdoptPredecessor) {
   EXPECT_NE(nullptr, portal_contents);
   EXPECT_NE(portal_contents, shell()->web_contents());
 
-  RenderFrameHostImpl* portal_frame = portal_contents->GetMainFrame();
+  RenderFrameHostImpl* portal_frame = portal_contents->GetPrimaryMainFrame();
   EXPECT_TRUE(ExecJs(portal_frame,
                      "window.addEventListener('portalactivate', e => { "
                      "  var portal = e.adoptPredecessor(); "
@@ -439,7 +458,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, DetachPortal) {
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents->GetPrimaryMainFrame();
 
   GURL a_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(a)"));
@@ -461,6 +480,38 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, DetachPortal) {
              "document.body.removeChild(document.querySelector('portal'));"));
   fdo1.Wait();
   fdo2.Wait();
+}
+
+// Test that FrameTree::CollectNodesForIsLoading doesn't include inner
+// WebContents nodes like portals.
+//
+// TODO(crbug.com/1254770): Modify this test accordingly once portals are
+// migrated to MPArch.
+IN_PROC_BROWSER_TEST_F(PortalBrowserTest, NodesForIsLoading) {
+  // 1. Navigate to an initial primary page.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
+  WebContentsImpl* web_contents_impl =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  RenderFrameHostImpl* primary_rfh = web_contents_impl->GetPrimaryMainFrame();
+
+  // 2. Create a portal.
+  GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  Portal* portal = CreatePortalToUrl(web_contents_impl, a_url);
+  RenderFrameHostImpl* portal_rfh =
+      portal->GetPortalContents()->GetPrimaryMainFrame();
+  EXPECT_TRUE(portal_rfh);
+
+  // 3. FrameTree::CollectNodesForIsLoading should only include primary_rfh but
+  // not portal_rfh.
+  std::vector<RenderFrameHostImpl*> outer_web_contents_frames;
+  for (auto* ftn :
+       web_contents_impl->GetPrimaryFrameTree().CollectNodesForIsLoading()) {
+    outer_web_contents_frames.push_back(ftn->current_frame_host());
+  }
+  EXPECT_EQ(outer_web_contents_frames.size(), 1u);
+  EXPECT_THAT(outer_web_contents_frames,
+              testing::UnorderedElementsAre(primary_rfh));
 }
 
 // This is for testing how portals interact with input hit testing. It is
@@ -505,12 +556,12 @@ IN_PROC_BROWSER_TEST_F(PortalHitTestBrowserTest, DispatchInputEvent) {
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
 
   GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   Portal* portal = CreatePortalToUrl(web_contents_impl, a_url);
   WebContentsImpl* portal_contents = portal->GetPortalContents();
-  RenderFrameHostImpl* portal_frame = portal_contents->GetMainFrame();
+  RenderFrameHostImpl* portal_frame = portal_contents->GetPrimaryMainFrame();
   EXPECT_TRUE(static_cast<RenderWidgetHostViewBase*>(portal_frame->GetView())
                   ->IsRenderWidgetHostViewChildFrame());
   RenderWidgetHostViewChildFrame* portal_view =
@@ -550,7 +601,7 @@ IN_PROC_BROWSER_TEST_F(PortalHitTestBrowserTest, NoInputToOOPIFInPortal) {
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
 
   // Create portal and wait for navigation.
   // In the case of crbug.com/1002228 , this does not appear to reproduce if the
@@ -573,7 +624,7 @@ IN_PROC_BROWSER_TEST_F(PortalHitTestBrowserTest, NoInputToOOPIFInPortal) {
     navigation_observer.Wait();
   }
   WebContentsImpl* portal_contents = portal->GetPortalContents();
-  RenderFrameHostImpl* portal_frame = portal_contents->GetMainFrame();
+  RenderFrameHostImpl* portal_frame = portal_contents->GetPrimaryMainFrame();
   WaitForHitTestData(portal_frame);
 
   // Add an out-of-process iframe to the portal.
@@ -626,7 +677,7 @@ IN_PROC_BROWSER_TEST_F(PortalHitTestBrowserTest, NoInputToOOPIFInPortal) {
 // Tests that an OOPIF inside a portal receives input events after the portal is
 // activated.
 // Flaky on macOS: https://crbug.com/1042703
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_InputToOOPIFAfterActivation DISABLED_InputToOOPIFAfterActivation
 #else
 #define MAYBE_InputToOOPIFAfterActivation InputToOOPIFAfterActivation
@@ -637,7 +688,7 @@ IN_PROC_BROWSER_TEST_F(PortalHitTestBrowserTest,
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
 
   // Create portal.
   // TODO(crbug.com/1029330): We currently need to give portal a large enough
@@ -650,7 +701,7 @@ IN_PROC_BROWSER_TEST_F(PortalHitTestBrowserTest,
     TestNavigationObserver navigation_observer(a_url);
     navigation_observer.StartWatchingNewWebContents();
     EXPECT_TRUE(ExecJs(
-        main_frame, JsReplace("var portal = document.createElement('portal');"
+        main_frame, JsReplace("let portal = document.createElement('portal');"
                               "portal.src = $1;"
                               "portal.style.width = '500px';"
                               "portal.style.height = '500px';"
@@ -660,7 +711,7 @@ IN_PROC_BROWSER_TEST_F(PortalHitTestBrowserTest,
     navigation_observer.Wait();
   }
   WebContentsImpl* portal_contents = portal->GetPortalContents();
-  RenderFrameHostImpl* portal_frame = portal_contents->GetMainFrame();
+  RenderFrameHostImpl* portal_frame = portal_contents->GetPrimaryMainFrame();
   WaitForHitTestData(portal_frame);
 
   // Add an out-of-process iframe to the portal.
@@ -742,12 +793,12 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, AsyncEventTargetingIgnoresPortals) {
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
 
   GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   Portal* portal = CreatePortalToUrl(web_contents_impl, a_url);
   WebContentsImpl* portal_contents = portal->GetPortalContents();
-  RenderFrameHostImpl* portal_frame = portal_contents->GetMainFrame();
+  RenderFrameHostImpl* portal_frame = portal_contents->GetPrimaryMainFrame();
   ASSERT_TRUE(static_cast<RenderWidgetHostViewBase*>(portal_frame->GetView())
                   ->IsRenderWidgetHostViewChildFrame());
   RenderWidgetHostViewChildFrame* portal_view =
@@ -788,7 +839,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, NavigateToChrome) {
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
 
   // Create portal.
   PortalCreatedObserver portal_created_observer(main_frame);
@@ -809,7 +860,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, NavigateToChrome) {
       portal));
   RenderProcessHostBadIpcMessageWaiter kill_waiter(main_frame->GetProcess());
   GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  ignore_result(ExecJs(main_frame, JsReplace("portal.src = $1;", a_url)));
+  std::ignore = ExecJs(main_frame, JsReplace("portal.src = $1;", a_url));
 
   EXPECT_EQ(bad_message::RPH_MOJO_PROCESS_ERROR, kill_waiter.Wait());
 }
@@ -821,7 +872,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TouchAckAfterActivate) {
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
 
   GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   Portal* portal = CreatePortalToUrl(web_contents_impl, a_url);
@@ -833,7 +884,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TouchAckAfterActivate) {
   WebContentsImpl* portal_contents = portal->GetPortalContents();
 
   RenderWidgetHostImpl* render_widget_host = main_frame->GetRenderWidgetHost();
-  RenderFrameHostImpl* portal_frame = portal_contents->GetMainFrame();
+  RenderFrameHostImpl* portal_frame = portal_contents->GetPrimaryMainFrame();
   RenderWidgetHostViewChildFrame* portal_view =
       static_cast<RenderWidgetHostViewChildFrame*>(portal_frame->GetView());
   InputEventAckWaiter input_event_ack_waiter(
@@ -864,7 +915,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TouchAckAfterActivateAndAdopt) {
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
 
   GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   Portal* portal = CreatePortalToUrl(web_contents_impl, a_url);
@@ -879,7 +930,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TouchAckAfterActivateAndAdopt) {
                        TOUCH_ACK_DELAY_IN_MILLISECONDS)));
   WebContentsImpl* portal_contents = portal->GetPortalContents();
 
-  RenderFrameHostImpl* portal_frame = portal_contents->GetMainFrame();
+  RenderFrameHostImpl* portal_frame = portal_contents->GetPrimaryMainFrame();
   EXPECT_TRUE(ExecJs(portal_frame,
                      "window.addEventListener('portalactivate', e => {"
                      "  var portal = e.adoptPredecessor();"
@@ -922,7 +973,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TouchAckAfterActivateAndReactivate) {
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
 
   GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   Portal* portal = CreatePortalToUrl(web_contents_impl, a_url);
@@ -937,7 +988,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TouchAckAfterActivateAndReactivate) {
                        TOUCH_ACK_DELAY_IN_MILLISECONDS)));
   WebContentsImpl* portal_contents = portal->GetPortalContents();
 
-  RenderFrameHostImpl* portal_frame = portal_contents->GetMainFrame();
+  RenderFrameHostImpl* portal_frame = portal_contents->GetPrimaryMainFrame();
   EXPECT_TRUE(ExecJs(portal_frame,
                      "window.addEventListener('portalactivate', e => {"
                      "  var portal = e.adoptPredecessor();"
@@ -982,14 +1033,14 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TouchAckAfterActivateAndReactivate) {
 
 // TODO(crbug.com/985078): Fix on Mac.
 // TODO(crbug.com/1191782): Test is flaky.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
                        DISABLED_TouchStateClearedBeforeActivation) {
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
 
   GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   Portal* portal = CreatePortalToUrl(web_contents_impl, a_url);
@@ -1000,7 +1051,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
                        "}, {passive: false});")));
   WebContentsImpl* portal_contents = portal->GetPortalContents();
 
-  RenderFrameHostImpl* portal_frame = portal_contents->GetMainFrame();
+  RenderFrameHostImpl* portal_frame = portal_contents->GetPrimaryMainFrame();
   EXPECT_TRUE(ExecJs(portal_frame,
                      "window.addEventListener('portalactivate', e => {"
                      "  var portal = e.adoptPredecessor();"
@@ -1053,13 +1104,13 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
 #endif
 
 // TODO(crbug.com/985078): Fix on Mac.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(PortalBrowserTest, GestureCleanedUpBeforeActivation) {
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
 
   GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   Portal* portal = CreatePortalToUrl(web_contents_impl, a_url);
@@ -1069,7 +1120,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, GestureCleanedUpBeforeActivation) {
                        "  document.querySelector('portal').activate();"
                        "}, {once: true});")));
   WebContentsImpl* portal_contents = portal->GetPortalContents();
-  RenderFrameHostImpl* portal_frame = portal_contents->GetMainFrame();
+  RenderFrameHostImpl* portal_frame = portal_contents->GetPrimaryMainFrame();
   EXPECT_TRUE(ExecJs(portal_frame,
                      "window.addEventListener('portalactivate', e => {"
                      "  var portal = e.adoptPredecessor();"
@@ -1129,14 +1180,14 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
       embedded_test_server()->GetURL("portal.test", "/portals/scroll.html")));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
   RenderWidgetHostImpl* render_widget_host = main_frame->GetRenderWidgetHost();
 
   GURL portal_url(embedded_test_server()->GetURL(
       "portal.test", "/portals/scroll-portal.html"));
   Portal* portal = CreatePortalToUrl(web_contents_impl, portal_url);
   WebContentsImpl* portal_contents = portal->GetPortalContents();
-  RenderFrameHostImpl* portal_frame = portal_contents->GetMainFrame();
+  RenderFrameHostImpl* portal_frame = portal_contents->GetPrimaryMainFrame();
   WaitForHitTestData(portal_frame);
 
   // Create and dispatch a synthetic scroll to trigger activation.
@@ -1173,7 +1224,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
                    "/portals/touch-input-transfer-across-reactivation.html")));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
   RenderWidgetHostImpl* render_widget_host = main_frame->GetRenderWidgetHost();
 
   GURL portal_url(embedded_test_server()->GetURL(
@@ -1223,7 +1274,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, FrameDeletedAfterActivation) {
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
 
   GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   Portal* portal = CreatePortalToUrl(web_contents_impl, a_url);
@@ -1233,14 +1284,14 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, FrameDeletedAfterActivation) {
       portal_contents->GetOuterDelegateFrameTreeNodeId());
   EXPECT_TRUE(outer_frame_tree_node);
 
-  EXPECT_TRUE(ExecJs(portal_contents->GetMainFrame(),
+  EXPECT_TRUE(ExecJs(portal_contents->GetPrimaryMainFrame(),
                      "window.onportalactivate = e => "
                      "document.body.appendChild(e.adoptPredecessor());"));
 
   {
     FrameDeletedObserver observer(outer_frame_tree_node->current_frame_host());
     PortalCreatedObserver portal_created_observer(
-        portal_contents->GetMainFrame());
+        portal_contents->GetPrimaryMainFrame());
     ExecuteScriptAsync(main_frame,
                        "document.querySelector('portal').activate();");
     observer.Wait();
@@ -1262,7 +1313,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, RemovePortalWhenUnloading) {
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
 
   // Create a container for the portal.
   EXPECT_TRUE(ExecJs(main_frame,
@@ -1301,9 +1352,7 @@ class PortalOrphanedNavigationBrowserTest
   // Provides meaningful param names instead of /0, /1, ...
   static std::string DescribeParams(
       const ::testing::TestParamInfo<ParamType>& info) {
-    bool cross_site;
-    bool commit_after_adoption;
-    std::tie(cross_site, commit_after_adoption) = info.param;
+    auto [cross_site, commit_after_adoption] = info.param;
     return base::StringPrintf("%sSite_Commit%sAdoption",
                               cross_site ? "Cross" : "Same",
                               commit_after_adoption ? "After" : "Before");
@@ -1347,7 +1396,7 @@ IN_PROC_BROWSER_TEST_P(PortalOrphanedNavigationBrowserTest,
     // control when to proceed with adoption.
     const int adoption_delay = TestTimeouts::tiny_timeout().InMilliseconds();
     EXPECT_TRUE(
-        ExecJs(portal->GetPortalContents()->GetMainFrame(),
+        ExecJs(portal->GetPortalContents()->GetPrimaryMainFrame(),
                JsReplace("window.onportalactivate = e => {"
                          "  let end = performance.now() + $1;"
                          "  while (performance.now() < end);"
@@ -1357,7 +1406,7 @@ IN_PROC_BROWSER_TEST_P(PortalOrphanedNavigationBrowserTest,
   } else {
     // Block the activate callback so that the predecessor portal stays
     // orphaned.
-    EXPECT_TRUE(ExecJs(portal->GetPortalContents()->GetMainFrame(),
+    EXPECT_TRUE(ExecJs(portal->GetPortalContents()->GetPrimaryMainFrame(),
                        "window.onportalactivate = e => { while(true) {} };"));
   }
 
@@ -1365,7 +1414,7 @@ IN_PROC_BROWSER_TEST_P(PortalOrphanedNavigationBrowserTest,
   PortalActivatedObserver activated_observer(portal);
   TestNavigationManager navigation_manager(web_contents_impl,
                                            predecessor_nav_url);
-  ExecuteScriptAsync(web_contents_impl->GetMainFrame(),
+  ExecuteScriptAsync(web_contents_impl->GetPrimaryMainFrame(),
                      JsReplace("document.querySelector('portal').activate();"
                                "window.location.href = $1;",
                                predecessor_nav_url));
@@ -1391,11 +1440,11 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
   GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   Portal* portal = CreatePortalToUrl(web_contents_impl, a_url);
   WebContentsImpl* portal_contents = portal->GetPortalContents();
-  RenderFrameHostImpl* portal_frame = portal_contents->GetMainFrame();
+  RenderFrameHostImpl* portal_frame = portal_contents->GetPrimaryMainFrame();
 
   // Simulate the portal being dropped, but not the destruction of the
   // WebContents.
-  web_contents_impl->GetMainFrame()->DestroyPortal(portal);
+  web_contents_impl->GetPrimaryMainFrame()->DestroyPortal(portal);
 
   // Get the portal renderer to access the WebContents.
   RenderProcessHostBadIpcMessageWaiter kill_waiter(portal_frame->GetProcess());
@@ -1411,10 +1460,14 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, ActivateEarlyInNavigation) {
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
 
   GURL url = embedded_test_server()->GetURL("a.com", "/title2.html");
   CreatePortalToUrl(web_contents_impl, url);
+
+  // Install a beforeunload handler.
+  main_frame->SuddenTerminationDisablerChanged(
+      true, blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler);
 
   // Have the outer page try to navigate away but stop it early in the request,
   // where it is still possible to stop.
@@ -1453,10 +1506,14 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, ActivateLateInNavigation) {
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
 
   GURL url = embedded_test_server()->GetURL("a.com", "/title2.html");
   CreatePortalToUrl(web_contents_impl, url);
+
+  // Install a beforeunload handler.
+  main_frame->SuddenTerminationDisablerChanged(
+      true, blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler);
 
   // Have the outer page try to navigate away and reach the point where it's
   // about to process the response (after which it will commit). It is too late
@@ -1527,7 +1584,7 @@ class LocalMainFrameInterceptorBadPortalActivateResult
   }
 
  private:
-  RenderFrameHostImpl* frame_host_;
+  raw_ptr<RenderFrameHostImpl> frame_host_;
   mojo::AssociatedRemote<blink::mojom::LocalMainFrame> local_main_frame_;
 };
 
@@ -1557,12 +1614,17 @@ class RenderFrameHostFactoryForLocalMainFrameInterceptor
       int32_t routing_id,
       mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
       const blink::LocalFrameToken& frame_token,
+      const blink::DocumentToken& document_token,
       bool renderer_initiated_creation,
-      RenderFrameHostImpl::LifecycleStateImpl lifecycle_state) override {
+      RenderFrameHostImpl::LifecycleStateImpl lifecycle_state,
+      scoped_refptr<BrowsingContextState> browsing_context_state) override {
     return base::WrapUnique(new RenderFrameHostImplForLocalMainFrameInterceptor(
         site_instance, std::move(render_view_host), delegate, frame_tree,
         frame_tree_node, routing_id, std::move(frame_remote), frame_token,
-        renderer_initiated_creation, lifecycle_state));
+        document_token, renderer_initiated_creation, lifecycle_state,
+        std::move(browsing_context_state),
+        frame_tree_node->frame_owner_element_type(), frame_tree_node->parent(),
+        frame_tree_node->fenced_frame_status()));
   }
 };
 
@@ -1575,7 +1637,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, MisbehavingRendererActivated) {
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
 
   // Arrange for a special kind of RenderFrameHost to be created which permits
   // its NavigationControl messages to be intercepted.
@@ -1589,7 +1651,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, MisbehavingRendererActivated) {
   // killed.
   PortalActivatedObserver activated_observer(portal);
   RenderProcessHostBadIpcMessageWaiter kill_waiter(
-      portal->GetPortalContents()->GetMainFrame()->GetProcess());
+      portal->GetPortalContents()->GetPrimaryMainFrame()->GetProcess());
   ExecuteScriptAsync(main_frame,
                      "document.querySelector('portal').activate();");
   EXPECT_EQ(blink::mojom::PortalActivateResult::kAbortedDueToBug,
@@ -1617,7 +1679,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, PortalHistoryWithActivation) {
 
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
 
   GURL portal_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   Portal* portal = CreatePortalToUrl(web_contents_impl, portal_url);
@@ -1658,7 +1720,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
 
   GURL portal_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   Portal* portal = CreatePortalToUrl(web_contents_impl, portal_url);
@@ -1703,7 +1765,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
 
   GURL portal_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   Portal* portal = CreatePortalToUrl(web_contents_impl, portal_url);
@@ -1723,7 +1785,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
   // Navigating via frame proxy does not create a pending NavigationEntry. We'll
   // check for an ongoing NavigationRequest instead.
   FrameTreeNode* portal_node =
-      portal_contents->GetMainFrame()->frame_tree_node();
+      portal_contents->GetPrimaryMainFrame()->frame_tree_node();
   NavigationRequest* navigation_request = portal_node->navigation_request();
   ASSERT_TRUE(navigation_request);
 
@@ -1741,17 +1803,32 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
   EXPECT_EQ(pending_url, activated_controller.GetEntryAtIndex(1)->GetURL());
 }
 
+namespace {
+
+// Returns which RenderFrameHost is focused within a given portal's frame tree.
+RenderFrameHostImpl* GetFocusedFrameWithinPortalFrameTree(
+    WebContentsImpl* portal_contents) {
+  FrameTreeNode* focused_node =
+      portal_contents->GetPrimaryFrameTree().GetFocusedFrame();
+  if (!focused_node)
+    return nullptr;
+  return focused_node->current_frame_host();
+}
+
+}  // namespace
+
 IN_PROC_BROWSER_TEST_F(PortalBrowserTest, DidFocusIPCFromFrameInsidePortal) {
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
 
   GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
   Portal* portal = CreatePortalToUrl(web_contents_impl, url);
   WebContentsImpl* portal_contents = portal->GetPortalContents();
-  RenderFrameHostImpl* portal_main_frame = portal_contents->GetMainFrame();
+  RenderFrameHostImpl* portal_main_frame =
+      portal_contents->GetPrimaryMainFrame();
 
   TestNavigationObserver iframe_navigation_observer(portal_contents);
   EXPECT_TRUE(ExecJs(portal_main_frame,
@@ -1765,6 +1842,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, DidFocusIPCFromFrameInsidePortal) {
   EXPECT_EQ(web_contents_impl->GetFocusedWebContents(), web_contents_impl);
   EXPECT_EQ(web_contents_impl->GetFocusedFrame(), main_frame);
   EXPECT_EQ(portal_contents->GetFocusedFrame(), nullptr);
+  EXPECT_EQ(GetFocusedFrameWithinPortalFrameTree(portal_contents), nullptr);
 
   // Simulate renderer sending LocalFrameHost::DidFocusFrame IPC.
   RenderFrameHostImpl* iframe =
@@ -1775,7 +1853,8 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, DidFocusIPCFromFrameInsidePortal) {
   // focused frame should have updated.
   EXPECT_EQ(web_contents_impl->GetFocusedWebContents(), web_contents_impl);
   EXPECT_EQ(web_contents_impl->GetFocusedFrame(), main_frame);
-  EXPECT_EQ(portal_contents->GetFocusedFrame(), iframe);
+  EXPECT_EQ(portal_contents->GetFocusedFrame(), nullptr);
+  EXPECT_EQ(GetFocusedFrameWithinPortalFrameTree(portal_contents), iframe);
 }
 
 IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
@@ -1784,7 +1863,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
 
   GURL a_url = embedded_test_server()->GetURL("a.com", "/title1.html");
   Portal* portal = CreatePortalToUrl(web_contents_impl, a_url);
@@ -1792,7 +1871,8 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
 
   // Ensures b.com is isolated from a.com (even on Android).
   IsolateOriginsForTesting(embedded_test_server(), portal_contents, {"b.com"});
-  RenderFrameHostImpl* portal_main_frame = portal_contents->GetMainFrame();
+  RenderFrameHostImpl* portal_main_frame =
+      portal_contents->GetPrimaryMainFrame();
 
   TestNavigationObserver iframe_navigation_observer(portal_contents);
   GURL b_url = embedded_test_server()->GetURL("b.com", "/title1.html");
@@ -1807,11 +1887,12 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
   EXPECT_EQ(web_contents_impl->GetFocusedWebContents(), web_contents_impl);
   EXPECT_EQ(web_contents_impl->GetFocusedFrame(), main_frame);
   EXPECT_EQ(portal_contents->GetFocusedFrame(), nullptr);
+  EXPECT_EQ(GetFocusedFrameWithinPortalFrameTree(portal_contents), nullptr);
 
   FrameTreeNode* iframe_ftn = portal_main_frame->child_at(0);
   RenderFrameHostImpl* rfhi = iframe_ftn->current_frame_host();
   RenderFrameProxyHost* rfph =
-      iframe_ftn->render_manager()->GetRenderFrameProxyHost(
+      rfhi->browsing_context_state()->GetRenderFrameProxyHost(
           portal_main_frame->GetSiteInstance()->group());
 
   // Simulate renderer sending RemoteFrameHost::DidFocusFrame IPC.
@@ -1821,7 +1902,8 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
   // focused frame should have updated.
   EXPECT_EQ(web_contents_impl->GetFocusedWebContents(), web_contents_impl);
   EXPECT_EQ(web_contents_impl->GetFocusedFrame(), main_frame);
-  EXPECT_EQ(portal_contents->GetFocusedFrame(), rfhi);
+  EXPECT_EQ(portal_contents->GetFocusedFrame(), nullptr);
+  EXPECT_EQ(GetFocusedFrameWithinPortalFrameTree(portal_contents), rfhi);
 }
 
 IN_PROC_BROWSER_TEST_F(PortalBrowserTest, DidFocusIPCFromOrphanedPortal) {
@@ -1829,16 +1911,18 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, DidFocusIPCFromOrphanedPortal) {
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
 
   GURL a_url = embedded_test_server()->GetURL("a.com", "/title1.html");
   Portal* portal = CreatePortalToUrl(web_contents_impl, a_url);
   WebContentsImpl* portal_contents = portal->GetPortalContents();
-  RenderFrameHostImpl* portal_main_frame = portal_contents->GetMainFrame();
+  RenderFrameHostImpl* portal_main_frame =
+      portal_contents->GetPrimaryMainFrame();
 
   EXPECT_EQ(web_contents_impl->GetFocusedWebContents(), web_contents_impl);
   EXPECT_EQ(web_contents_impl->GetFocusedFrame(), main_frame);
   EXPECT_EQ(portal_contents->GetFocusedFrame(), nullptr);
+  EXPECT_EQ(GetFocusedFrameWithinPortalFrameTree(portal_contents), nullptr);
   EXPECT_TRUE(main_frame->GetRenderWidgetHost()->is_focused());
 
   // Activate portal, keep in orphaned state for a while, and then adopt and
@@ -1887,7 +1971,9 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, DidFocusIPCFromOrphanedPortal) {
   // Adoption is complete, so |web_contents_impl_| is no longer orphaned and is
   // an inner WebContents.
   EXPECT_EQ(web_contents_impl->GetFocusedWebContents(), portal_contents);
-  EXPECT_EQ(web_contents_impl->GetFocusedFrame(), main_frame);
+  EXPECT_EQ(web_contents_impl->GetFocusedFrame(), nullptr);
+  EXPECT_EQ(GetFocusedFrameWithinPortalFrameTree(web_contents_impl),
+            main_frame);
   EXPECT_FALSE(main_frame->GetRenderWidgetHost()->is_focused());
 }
 
@@ -1898,12 +1984,13 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, AdvanceFocusIntoPortal) {
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
 
   GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
   Portal* portal = CreatePortalToUrl(web_contents_impl, url);
   WebContentsImpl* portal_contents = portal->GetPortalContents();
-  RenderFrameHostImpl* portal_main_frame = portal_contents->GetMainFrame();
+  RenderFrameHostImpl* portal_main_frame =
+      portal_contents->GetPrimaryMainFrame();
 
   RenderFrameProxyHost* outer_delegate_proxy =
       portal_main_frame->frame_tree_node()
@@ -1922,7 +2009,7 @@ namespace {
 void WaitForAccessibilityTree(WebContents* web_contents) {
   AccessibilityNotificationWaiter waiter(web_contents, ui::kAXModeComplete,
                                          ax::mojom::Event::kNone);
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 }
 }  // namespace
 
@@ -1932,22 +2019,23 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
   WaitForAccessibilityTree(web_contents_impl);
 
   // Create portal.
   GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
   Portal* portal = CreatePortalToUrl(web_contents_impl, url);
   WebContentsImpl* portal_contents = portal->GetPortalContents();
-  RenderFrameHostImpl* portal_frame = portal_contents->GetMainFrame();
+  RenderFrameHostImpl* portal_frame = portal_contents->GetPrimaryMainFrame();
   WaitForAccessibilityTree(portal_contents);
   if (!main_frame->browser_accessibility_manager() ||
-      !portal_frame->browser_accessibility_manager()->GetRootManager())
+      !portal_frame->browser_accessibility_manager()->GetManagerForRootFrame())
     WaitForAccessibilityTree(web_contents_impl);
 
   EXPECT_NE(nullptr, portal_frame->browser_accessibility_manager());
-  EXPECT_EQ(main_frame->browser_accessibility_manager(),
-            portal_frame->browser_accessibility_manager()->GetRootManager());
+  EXPECT_EQ(
+      main_frame->browser_accessibility_manager(),
+      portal_frame->browser_accessibility_manager()->GetManagerForRootFrame());
   // Activate portal and adopt predecessor.
   EXPECT_TRUE(ExecJs(portal_frame,
                      "window.addEventListener('portalactivate', e => { "
@@ -1967,8 +2055,9 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
     adoption_observer.WaitUntilPortalCreated();
   }
 
-  EXPECT_EQ(portal_frame->browser_accessibility_manager()->GetRootManager(),
-            portal_frame->browser_accessibility_manager());
+  EXPECT_EQ(
+      portal_frame->browser_accessibility_manager()->GetManagerForRootFrame(),
+      portal_frame->browser_accessibility_manager());
 }
 
 IN_PROC_BROWSER_TEST_F(PortalBrowserTest, OrphanedPortalAccessibilityReset) {
@@ -1976,13 +2065,13 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, OrphanedPortalAccessibilityReset) {
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
 
   // Create portal.
   GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
   Portal* portal = CreatePortalToUrl(web_contents_impl, url);
   WebContentsImpl* portal_contents = portal->GetPortalContents();
-  RenderFrameHostImpl* portal_frame = portal_contents->GetMainFrame();
+  RenderFrameHostImpl* portal_frame = portal_contents->GetPrimaryMainFrame();
 
   // Activate portal, keep in orphaned state for a while, and then adopt and
   // insert predecessor.
@@ -2009,10 +2098,10 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, OrphanedPortalAccessibilityReset) {
     AccessibilityNotificationWaiter waiter(web_contents_impl,
                                            ui::kAXModeComplete,
                                            ax::mojom::Event::kLayoutComplete);
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
     EXPECT_EQ(blink::mojom::PortalActivateResult::kPredecessorWasAdopted,
               activated_observer.WaitForActivateResult());
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
   }
   EXPECT_EQ(0, main_frame->accessibility_fatal_error_count_for_testing());
 }
@@ -2023,13 +2112,13 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
 
   // Create portal.
   GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
   Portal* portal = CreatePortalToUrl(web_contents_impl, url);
   WebContentsImpl* portal_contents = portal->GetPortalContents();
-  RenderFrameHostImpl* portal_frame = portal_contents->GetMainFrame();
+  RenderFrameHostImpl* portal_frame = portal_contents->GetPrimaryMainFrame();
 
   // Activate portal, keep in predecessor in orphaned state for a while,
   // then adopt and activate predecessor.
@@ -2062,11 +2151,10 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
     AccessibilityNotificationWaiter waiter(web_contents_impl,
                                            ui::kAXModeComplete,
                                            ax::mojom::Event::kLayoutComplete);
-    waiter.WaitForNotification();
     EXPECT_EQ(blink::mojom::PortalActivateResult::kPredecessorWasAdopted,
               activated_observer.WaitForActivateResult());
     adoption_observer.WaitUntilPortalCreated();
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
   }
   EXPECT_EQ(0, main_frame->accessibility_fatal_error_count_for_testing());
 }
@@ -2077,7 +2165,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
 
   GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   Portal* portal = CreatePortalToUrl(web_contents_impl, a_url);
@@ -2105,12 +2193,12 @@ IN_PROC_BROWSER_TEST_F(
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
 
   GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   Portal* portal = CreatePortalToUrl(web_contents_impl, a_url);
   WebContentsImpl* portal_contents = portal->GetPortalContents();
-  RenderFrameHostImpl* portal_frame = portal_contents->GetMainFrame();
+  RenderFrameHostImpl* portal_frame = portal_contents->GetPrimaryMainFrame();
 
   GURL b_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
   EXPECT_TRUE(
@@ -2139,7 +2227,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, NavigationPrecedence) {
   ASSERT_TRUE(NavigateToURL(shell(), main_url2));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
 
   GURL portal_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   CreatePortalToUrl(web_contents_impl, portal_url);
@@ -2167,7 +2255,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, RejectActivationOfErrorPages) {
   ASSERT_TRUE(NavigateToURL(shell(), main_url));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
 
   GURL bad_portal_url(bad_https_server.GetURL("a.com", "/title1.html"));
   Portal* portal = CreatePortalToUrl(web_contents_impl, bad_portal_url,
@@ -2188,7 +2276,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), main_url));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
 
   GURL portal_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   Portal* portal = CreatePortalToUrl(web_contents_impl, portal_url);
@@ -2197,7 +2285,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
   std::string error_html = "Error page";
   TestNavigationObserver error_observer(portal_contents);
   portal_contents->GetController().LoadPostCommitErrorPage(
-      portal_contents->GetMainFrame(), portal_url, error_html,
+      portal_contents->GetPrimaryMainFrame(), portal_url, error_html,
       net::ERR_BLOCKED_BY_CLIENT);
   error_observer.Wait();
   EXPECT_FALSE(error_observer.last_navigation_succeeded());
@@ -2216,7 +2304,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, RejectActivationOfCrashedPages) {
   ASSERT_TRUE(NavigateToURL(shell(), main_url));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
 
   GURL portal_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   Portal* portal = CreatePortalToUrl(web_contents_impl, portal_url);
@@ -2235,7 +2323,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, ActivatePreviouslyCrashedPortal) {
   ASSERT_TRUE(NavigateToURL(shell(), main_url));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
 
   GURL portal_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   Portal* portal = CreatePortalToUrl(web_contents_impl, portal_url);
@@ -2260,7 +2348,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, CallCreateProxyAndAttachPortalTwice) {
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
 
   GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
   Portal* portal = CreatePortalToUrl(web_contents_impl, url);
@@ -2270,7 +2358,17 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, CallCreateProxyAndAttachPortalTwice) {
   portal_interceptor->SetNavigateCallback(base::BindRepeating(
       [](Portal* portal, const GURL& url, blink::mojom::ReferrerPtr referrer,
          blink::mojom::Portal::NavigateCallback callback) {
-        portal->CreateProxyAndAttachPortal();
+        // Create stub RemoteFrameInterfaces.
+        auto remote_frame_interfaces =
+            blink::mojom::RemoteFrameInterfacesFromRenderer::New();
+        remote_frame_interfaces->frame_host_receiver =
+            mojo::AssociatedRemote<blink::mojom::RemoteFrameHost>()
+                .BindNewEndpointAndPassDedicatedReceiver();
+        mojo::AssociatedRemote<blink::mojom::RemoteFrame> frame;
+        std::ignore = frame.BindNewEndpointAndPassDedicatedReceiver();
+        remote_frame_interfaces->frame = frame.Unbind();
+
+        portal->CreateProxyAndAttachPortal(std::move(remote_frame_interfaces));
         std::move(callback).Run();
       },
       portal));
@@ -2295,24 +2393,24 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, CrossSiteActivationReusingRVH) {
 
   Portal* portal = CreatePortalToUrl(web_contents_impl, a_url);
   WebContentsImpl* portal_contents = portal->GetPortalContents();
-  LeaveInPendingDeletionState(portal_contents->GetMainFrame());
+  LeaveInPendingDeletionState(portal_contents->GetPrimaryMainFrame());
 
   // Navigate portal to b.com.
   TestNavigationObserver b_nav_observer(portal_contents);
-  EXPECT_TRUE(ExecJs(portal_contents->GetMainFrame(),
+  EXPECT_TRUE(ExecJs(portal_contents->GetPrimaryMainFrame(),
                      JsReplace("location.href = $1;", b_url)));
   b_nav_observer.Wait();
 
   // Navigate portal to a.com once activated.
   EXPECT_TRUE(
-      ExecJs(portal_contents->GetMainFrame(),
+      ExecJs(portal_contents->GetPrimaryMainFrame(),
              JsReplace("window.addEventListener('portalactivate', (e) => {"
                        "  location.href = $1;"
                        "});",
                        a_url)));
 
   TestNavigationObserver nav_observer(portal_contents);
-  ExecuteScriptAsync(web_contents_impl->GetMainFrame(),
+  ExecuteScriptAsync(web_contents_impl->GetPrimaryMainFrame(),
                      "document.querySelector('portal').activate();");
   nav_observer.Wait();
   EXPECT_TRUE(nav_observer.last_navigation_succeeded());
@@ -2338,7 +2436,8 @@ IN_PROC_BROWSER_TEST_F(PortalOOPIFBrowserTest, OOPIFInsidePortal) {
   GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   Portal* portal = CreatePortalToUrl(web_contents_impl, a_url);
   WebContentsImpl* portal_contents = portal->GetPortalContents();
-  RenderFrameHostImpl* portal_main_frame = portal_contents->GetMainFrame();
+  RenderFrameHostImpl* portal_main_frame =
+      portal_contents->GetPrimaryMainFrame();
 
   // Add an out-of-process iframe to the portal.
   GURL b_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
@@ -2421,7 +2520,7 @@ class DownloadObserver : public DownloadManager::Observer {
   }
 
  private:
-  DownloadManager* manager_;
+  raw_ptr<DownloadManager> manager_;
   bool dropped_download_ = false;
   GURL download_url_;
   base::OnceClosure quit_closure_;
@@ -2460,7 +2559,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, DownloadsBlockedInSubframe) {
   GURL download_url = embedded_test_server()->GetURL(
       "portal.test", "/set-header?Content-Disposition: attachment");
   GURL iframe_url = embedded_test_server()->GetURL(
-      "portal.test", "/iframe?" + net::EscapeQueryParamValue(
+      "portal.test", "/iframe?" + base::EscapeQueryParamValue(
                                       download_url.spec(), /*use_plus=*/false));
 
   DownloadObserver download_observer;
@@ -2491,13 +2590,13 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, DownloadsBlockedViaDownloadLink) {
 
 // The following tests check code paths that won't be hit on Android as we
 // do not create DevTools windows on Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(PortalBrowserTest, CallActivateOnTwoPortals) {
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
   shell()->ShowDevTools();
 
   GURL url_a = embedded_test_server()->GetURL("a.com", "/title1.html");
@@ -2512,10 +2611,14 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, CallActivateOnTwoPortals) {
       [](Portal* portal_a, Portal* portal_b, const GURL&,
          blink::mojom::ReferrerPtr,
          blink::mojom::Portal::NavigateCallback callback) {
-        portal_a->Activate(blink::TransferableMessage(), base::TimeTicks::Now(),
-                           0, base::DoNothing());
-        portal_b->Activate(blink::TransferableMessage(), base::TimeTicks::Now(),
-                           0, base::DoNothing());
+        blink::TransferableMessage message1;
+        message1.sender_agent_cluster_id = base::UnguessableToken::Create();
+        blink::TransferableMessage message2;
+        message2.sender_agent_cluster_id = base::UnguessableToken::Create();
+        portal_a->Activate(std::move(message1), base::TimeTicks::Now(), 0,
+                           base::DoNothing());
+        portal_b->Activate(std::move(message2), base::TimeTicks::Now(), 0,
+                           base::DoNothing());
         std::move(callback).Run();
       },
       portal_a, portal_b));
@@ -2534,7 +2637,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, CallActivateTwice) {
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetPrimaryMainFrame();
   shell()->ShowDevTools();
 
   GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
@@ -2545,10 +2648,14 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, CallActivateTwice) {
   portal_interceptor->SetNavigateCallback(base::BindRepeating(
       [](Portal* portal, const GURL&, blink::mojom::ReferrerPtr,
          blink::mojom::Portal::NavigateCallback callback) {
-        portal->Activate(blink::TransferableMessage(), base::TimeTicks::Now(),
-                         0, base::DoNothing());
-        portal->Activate(blink::TransferableMessage(), base::TimeTicks::Now(),
-                         0, base::DoNothing());
+        blink::TransferableMessage message1;
+        message1.sender_agent_cluster_id = base::UnguessableToken::Create();
+        blink::TransferableMessage message2;
+        message2.sender_agent_cluster_id = base::UnguessableToken::Create();
+        portal->Activate(std::move(message1), base::TimeTicks::Now(), 0,
+                         base::DoNothing());
+        portal->Activate(std::move(message2), base::TimeTicks::Now(), 0,
+                         base::DoNothing());
         std::move(callback).Run();
       },
       portal));
@@ -2575,9 +2682,7 @@ class PortalsValidConfigurationBrowserTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ContentBrowserTest::SetUpCommandLine(command_line);
 
-    std::string switch_name;
-    std::string switch_value;
-    std::tie(switch_name, switch_value) = GetParam();
+    auto [switch_name, switch_value] = GetParam();
     if (switch_name == switches::kEnableFeatures) {
       scoped_feature_list_.InitFromCommandLine(switch_value, "");
     } else {
@@ -2613,7 +2718,8 @@ IN_PROC_BROWSER_TEST_P(PortalsValidConfigurationBrowserTest,
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* possible_portal_host = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* possible_portal_host =
+      web_contents_impl->GetPrimaryMainFrame();
 
   bool html_portal_element_exposed =
       EvalJs(possible_portal_host, "'HTMLPortalElement' in self").ExtractBool();
@@ -2743,7 +2849,7 @@ class PortalPixelBrowserTest : public PortalBrowserTest {
 // as be re-rastered for the embedder's zoom so it should appear crisp.
 //
 // Flaky on Android: https://crbug.com/1120213
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_PageScaleRaster DISABLED_PageScaleRaster
 #else
 #define MAYBE_PageScaleRaster PageScaleRaster
@@ -2834,11 +2940,49 @@ IN_PROC_BROWSER_TEST_F(PortalPixelBrowserTest, MAYBE_PageScaleRaster) {
   // WebContents, the external page scale factor coming from the embedder
   // should be cleared.
   {
-    RenderFrameHostImpl* main_frame = main_contents->GetMainFrame();
+    RenderFrameHostImpl* main_frame = main_contents->GetPrimaryMainFrame();
     ExecuteScriptAsync(main_frame,
                        "document.querySelector('portal').activate();");
     portal_frame_observer.WaitForExternalPageScaleFactor(1.f, kScaleTolerance);
   }
+}
+
+class PortalFencedFrameBrowserTest : public PortalBrowserTest {
+ public:
+  PortalFencedFrameBrowserTest() = default;
+  ~PortalFencedFrameBrowserTest() override = default;
+
+  RenderFrameHost* primary_main_frame_host() {
+    return shell()->web_contents()->GetPrimaryMainFrame();
+  }
+
+ protected:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+// Create a fenced frame in the primary main page that creates a portal which
+// should fail. Ideally this would be a WPT test but that requires a special
+// virtual test suite which would just be for enabling fenced frames and
+// portals together.
+IN_PROC_BROWSER_TEST_F(PortalFencedFrameBrowserTest, CreatePortalBlocked) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  const GURL fenced_frame_url =
+      embedded_test_server()->GetURL("/fenced_frames/title1.html");
+  RenderFrameHost* fenced_frame_rfh = fenced_frame_helper_.CreateFencedFrame(
+      primary_main_frame_host(), fenced_frame_url);
+  ASSERT_NE(nullptr, fenced_frame_rfh);
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "*Cannot use <portal> in a nested browsing context.*");
+
+  EXPECT_TRUE(ExecJs(fenced_frame_rfh,
+                     R"(let portal = document.createElement('portal');
+                        portal.src = new URL('about:blank', location.href);
+                        document.body.appendChild(portal);
+             )"));
+  console_observer.Wait();
 }
 
 }  // namespace content

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ class SelectToSpeakOptionsPage {
     const AccessibilityFeature =
         chrome.accessibilityPrivate.AccessibilityFeature;
     chrome.accessibilityPrivate.isFeatureEnabled(
-        AccessibilityFeature.ENHANCED_NETWORK_VOICES, (result) => {
+        AccessibilityFeature.ENHANCED_NETWORK_VOICES, result => {
           const newElem = document.getElementById('naturalVoicesOptions');
           const legacyElem = document.getElementById('noNaturalVoicesOptions');
           if (!result) {
@@ -43,7 +43,7 @@ class SelectToSpeakOptionsPage {
             });
 
             const select = document.getElementById('language');
-            select.onchange = (_) => {
+            select.onchange = _ => {
               this.populateVoicesAndLanguages_();
             };
 
@@ -52,7 +52,7 @@ class SelectToSpeakOptionsPage {
                 'naturalVoice', 'enhancedVoiceName', 'voiceName');
             chrome.settingsPrivate.getPref(
                 PrefsManager.ENHANCED_VOICES_POLICY_KEY,
-                (network_voices_allowed) => {
+                network_voices_allowed => {
                   if (network_voices_allowed !== undefined &&
                       !network_voices_allowed.value) {
                     // If the feature is disallowed, sets the checkbox to false.
@@ -64,7 +64,7 @@ class SelectToSpeakOptionsPage {
                   } else {
                     // If the feature is allowed, syncs the checkbox with pref.
                     this.syncCheckboxControlToPref_(
-                        'naturalVoices', 'enhancedNetworkVoices', (checked) => {
+                        'naturalVoices', 'enhancedNetworkVoices', checked => {
                           this.setVoiceSelectionAndPreviewVisibility_(
                               /* isVisible = */ checked);
                         });
@@ -74,14 +74,14 @@ class SelectToSpeakOptionsPage {
         });
 
     this.syncCheckboxControlToPref_(
-        'wordHighlight', 'wordHighlight', (checked) => {
+        'wordHighlight', 'wordHighlight', checked => {
           const elem = document.getElementById('highlightSubOption');
           const select = document.getElementById('highlightColor');
           this.setElementVisible(elem, checked);
           select.disabled = !checked;
         });
     this.syncCheckboxControlToPref_(
-        'backgroundShading', 'backgroundShading', (checked) => {
+        'backgroundShading', 'backgroundShading', checked => {
           const elem = document.getElementById('backgroundPreviewContainer');
           this.setElementVisible(elem, checked);
         });
@@ -171,7 +171,7 @@ class SelectToSpeakOptionsPage {
    * @private
    */
   populateVoiceList_(selectId) {
-    chrome.tts.getVoices((voices) => {
+    chrome.tts.getVoices(voices => {
       const select = document.getElementById(selectId);
       // Add the system voice.
       this.initializeSelectWithDefault_(
@@ -185,7 +185,7 @@ class SelectToSpeakOptionsPage {
       voices.sort(function(a, b) {
         return a.voiceName.localeCompare(b.voiceName || '');
       });
-      voices.forEach((voice) => {
+      voices.forEach(voice => {
         if (!this.isVoiceUsable_(voice) ||
             (voice.extensionId === PrefsManager.ENHANCED_TTS_EXTENSION_ID)) {
           // Don't show network voices for legacy interface.
@@ -209,7 +209,7 @@ class SelectToSpeakOptionsPage {
    * @private
    */
   populateVoicesAndLanguages_() {
-    chrome.tts.getVoices((voices) => {
+    chrome.tts.getVoices(voices => {
       // Initialize language select.
       const languageSelect = document.getElementById('language');
       const originalLanguageValue =
@@ -280,7 +280,7 @@ class SelectToSpeakOptionsPage {
     const networkVoices = new Map();
     const currentLocale = chrome.i18n.getUILanguage().toLowerCase() || '';
 
-    voices.forEach((voice) => {
+    voices.forEach(voice => {
       if (!this.isVoiceUsable_(voice)) {
         return;
       }
@@ -314,7 +314,7 @@ class SelectToSpeakOptionsPage {
     });
 
     // Populate local and network selects.
-    voiceLanguagesList.forEach((voiceLang) => {
+    voiceLanguagesList.forEach(voiceLang => {
       this.appendVoicesToSelect_(
           localSelect, localVoices.get(voiceLang), /*numberVoices=*/ false);
       this.appendVoicesToSelect_(

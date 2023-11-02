@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include <Security/Security.h>
 
 #include "base/strings/sys_string_conversions.h"
@@ -35,7 +35,6 @@ const char kCertificateHeader[] = "CERTIFICATE";
 void ExtractCertificatesFromData(const std::string& data_string,
                                  const base::FilePath& file_path,
                                  std::vector<CertInput>* certs) {
-  // TODO(mattm): support PKCS #7 (.p7b) files.
   net::PEMTokenizer pem_tokenizer(data_string, {kCertificateHeader});
   int block = 0;
   while (pem_tokenizer.GetNext()) {
@@ -52,6 +51,22 @@ void ExtractCertificatesFromData(const std::string& data_string,
   if (block)
     return;
 
+  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> pkcs7_cert_buffers;
+  if (net::x509_util::CreateCertBuffersFromPKCS7Bytes(
+          base::as_bytes(base::make_span(data_string)), &pkcs7_cert_buffers)) {
+    int n = 0;
+    for (const auto& cert_buffer : pkcs7_cert_buffers) {
+      CertInput cert;
+      cert.der_cert = std::string(
+          net::x509_util::CryptoBufferAsStringPiece(cert_buffer.get()));
+      cert.source_file_path = file_path;
+      cert.source_details = base::StringPrintf("PKCS #7 cert %i", n);
+      certs->push_back(cert);
+      ++n;
+    }
+    return;
+  }
+
   // Otherwise, assume it is a single DER cert.
   CertInput cert;
   cert.der_cert = data_string;
@@ -59,7 +74,7 @@ void ExtractCertificatesFromData(const std::string& data_string,
   certs->push_back(cert);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 std::string SecErrorStr(OSStatus err) {
   base::ScopedCFTypeRef<CFStringRef> cfstr(
       SecCopyErrorMessageString(err, nullptr));
@@ -145,7 +160,7 @@ void PrintCertError(const std::string& error, const CertInput& cert) {
 }
 
 void PrintDebugData(const base::SupportsUserData* debug_data) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   auto* mac_platform_debug_info =
       net::CertVerifyProcMac::ResultDebugData::Get(debug_data);
   if (mac_platform_debug_info) {
@@ -183,7 +198,7 @@ void PrintDebugData(const base::SupportsUserData* debug_data) {
 std::string FingerPrintCryptoBuffer(const CRYPTO_BUFFER* cert_handle) {
   net::SHA256HashValue hash =
       net::X509Certificate::CalculateFingerprint256(cert_handle);
-  return base::HexEncode(hash.data, base::size(hash.data));
+  return base::HexEncode(hash.data, std::size(hash.data));
 }
 
 std::string SubjectFromX509Certificate(const net::X509Certificate* cert) {

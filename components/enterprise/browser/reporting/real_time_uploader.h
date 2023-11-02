@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define COMPONENTS_ENTERPRISE_BROWSER_REPORTING_REAL_TIME_UPLOADER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "components/reporting/client/report_queue_provider.h"
 
@@ -26,13 +27,6 @@ class RealTimeUploader {
   RealTimeUploader& operator=(const RealTimeUploader&) = delete;
   virtual ~RealTimeUploader();
 
-  // Returns true if report queue is ready.
-  bool IsEnabled() const;
-
-  // Creates the reporting::ReportQueue.
-  void CreateReportQueue(const std::string& dm_token,
-                         reporting::Destination destination);
-
   // Uploads the |report|. This API must be called after CreateReportQueue().
   // However, the caller doesn't have to wait for async queue creation. The
   // reports that are added before queue is ready will be cached and sent out
@@ -42,30 +36,21 @@ class RealTimeUploader {
   virtual void Upload(std::unique_ptr<google::protobuf::MessageLite> report,
                       EnqueueCallback callback);
 
+  reporting::ReportQueue* GetReportQueue() const;
+
  protected:
   explicit RealTimeUploader(reporting::Priority priority);
-  // virtual function for unit test to fake
-  // reporting::ReportQueueProvider::CreateQueue() call before API providing a
-  // fake implementation.
-  virtual void CreateReportQueueRequest(
-      reporting::StatusOr<std::unique_ptr<reporting::ReportQueueConfiguration>>
-          config,
-      reporting::ReportQueueProvider::CreateReportQueueCallback callback);
+  // Creates the reporting::ReportQueue.
+  void CreateReportQueue(const std::string& dm_token,
+                         reporting::Destination destination);
 
  private:
-  void OnReportQueueCreated(
-      reporting::ReportQueueProvider::CreateReportQueueResponse
-          create_report_queue_response);
-
-  void UploadClosure(std::unique_ptr<google::protobuf::MessageLite> report,
-                     EnqueueCallback callback);
   void OnReportEnqueued(EnqueueCallback callback, reporting::Status status);
 
-  std::unique_ptr<reporting::ReportQueue> report_queue_;
+  std::unique_ptr<reporting::ReportQueue, base::OnTaskRunnerDeleter>
+      report_queue_;
 
   const reporting::Priority report_priority_;
-
-  std::queue<base::OnceClosure> pending_reports_;
 
   THREAD_CHECKER(thread_checker_);
 

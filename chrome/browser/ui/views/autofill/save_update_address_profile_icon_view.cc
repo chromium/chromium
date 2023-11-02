@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,8 @@ SaveUpdateAddressProfileIconView::SaveUpdateAddressProfileIconView(
     : PageActionIconView(command_updater,
                          IDC_SAVE_AUTOFILL_ADDRESS,
                          icon_label_bubble_delegate,
-                         page_action_icon_delegate) {}
+                         page_action_icon_delegate,
+                         "SaveAutofillAddress") {}
 
 SaveUpdateAddressProfileIconView::~SaveUpdateAddressProfileIconView() = default;
 

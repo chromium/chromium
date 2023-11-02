@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -70,7 +69,7 @@ TEST(CacheUtilTest, GetReasonsForUncacheability) {
       {WebURLResponse::kHTTPVersion_1_1, 200,
        "cache-control: no-cache\ncache-control: no-store", kNoCache | kNoStore},
   };
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     SCOPED_TRACE(base::StringPrintf("case: %" PRIuS
                                     ", version: %d, code: %d, headers: %s",
                                     i, tests[i].version, tests[i].status_code,

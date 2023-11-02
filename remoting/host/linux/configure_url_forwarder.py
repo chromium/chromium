@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -135,6 +135,8 @@ def get_supported_desktop_envs_and_settings_key() -> dict[str, str]:
     elif desktop_name.startswith('cinnamon'):
       desktop_envs_and_settings_keys['X-Cinnamon'] = \
           'previous_default_browser_cinnamon'
+    elif desktop_name.startswith('gnome'):
+      desktop_envs_and_settings_keys['GNOME'] = 'previous_default_browser_gnome'
 
   if not desktop_envs_and_settings_keys:
     # Add X-Generic for generic fallback.

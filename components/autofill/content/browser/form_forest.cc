@@ -1,9 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/autofill/content/browser/form_forest.h"
 
+#include "base/containers/contains.h"
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/containers/stack.h"
 #include "base/debug/dump_without_crashing.h"
@@ -14,6 +15,7 @@
 #include "base/stl_util.h"
 #include "components/autofill/content/browser/form_forest_util_inl.h"
 #include "components/autofill/core/common/autofill_constants.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/render_process_host.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
@@ -35,8 +37,7 @@
 #define AFCRASHDUMP() base::debug::DumpWithoutCrashing()
 #endif
 
-namespace autofill {
-namespace internal {
+namespace autofill::internal {
 
 namespace {
 
@@ -100,6 +101,9 @@ absl::optional<LocalFrameToken> FormForest::Resolve(const FrameData& reference,
                                                      blink_remote_token);
   if (!remote_rfh)
     return absl::nullopt;
+  // TODO(https://crbug.com/1310047): The RFH is a child and we will not
+  // flatten fenced frames, so the RFH cannot be a fenced frame.
+  CHECK(!remote_rfh->IsFencedFrameRoot());
   return LocalFrameToken(remote_rfh->GetFrameToken().value());
 }
 
@@ -552,19 +556,28 @@ const FormData& FormForest::GetBrowserFormOfRendererForm(
 
   // For calling non-const-qualified getters.
   FormForest& mutable_this = *const_cast<FormForest*>(this);
-  const FormData* form = mutable_this.GetRoot(renderer_form.global_id()).form;
+  FormData* form = mutable_this.GetRoot(renderer_form.global_id()).form;
   AFCHECK(form, return renderer_form);
+  DCHECK_LE(form->version, renderer_form.version);
+  form->version = renderer_form.version;
   return *form;
 }
 
-std::vector<FormData> FormForest::GetRendererFormsOfBrowserForm(
+FormForest::RendererForms::RendererForms() = default;
+FormForest::RendererForms::RendererForms(RendererForms&&) = default;
+FormForest::RendererForms& FormForest::RendererForms::operator=(
+    RendererForms&&) = default;
+FormForest::RendererForms::~RendererForms() = default;
+
+FormForest::RendererForms FormForest::GetRendererFormsOfBrowserForm(
     const FormData& browser_form,
     const url::Origin& triggered_origin,
     const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map)
     const {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "Autofill.FormForest.GetRendererFormsOfBrowserForm.Duration");
-  AFCHECK(browser_form.host_frame, return {browser_form});
+  AFCHECK(browser_form.host_frame, RendererForms result;
+          result.renderer_forms = {browser_form}; return result);
 
   // For calling non-const-qualified getters.
   FormForest& mutable_this = *const_cast<FormForest*>(this);
@@ -572,25 +585,25 @@ std::vector<FormData> FormForest::GetRendererFormsOfBrowserForm(
   // Reinstates the fields of |browser_form| in copies of their renderer forms.
   // See the function's documentation in the header for details on the security
   // policy |IsSafeToFill|.
-  std::vector<FormData> renderer_forms;
+  RendererForms result;
   for (const FormFieldData& browser_field : browser_form.fields) {
     FormGlobalId form_id = browser_field.renderer_form_id();
 
     // Finds or creates the renderer form from which |browser_field| originated.
     // The form with |form_id| may have been removed from the tree, for example,
-    // in between of a refill.
-    auto renderer_form =
-        base::ranges::find(renderer_forms.rbegin(), renderer_forms.rend(),
-                           form_id, &FormData::global_id);
-    if (renderer_form == renderer_forms.rend()) {
+    // between a fill and a refill.
+    auto renderer_form = base::ranges::find(result.renderer_forms.rbegin(),
+                                            result.renderer_forms.rend(),
+                                            form_id, &FormData::global_id);
+    if (renderer_form == result.renderer_forms.rend()) {
       const FormData* original_form = mutable_this.GetFormData(form_id);
       if (!original_form)  // The form with |form_id| may have been removed.
         continue;
-      renderer_forms.push_back(*original_form);
-      renderer_form = renderer_forms.rbegin();
+      result.renderer_forms.push_back(*original_form);
+      renderer_form = result.renderer_forms.rbegin();
       renderer_form->fields.clear();  // In case |original_form| is a root form.
     }
-    DCHECK(renderer_form != renderer_forms.rend());
+    DCHECK(renderer_form != result.renderer_forms.rend());
 
     auto IsSafeToFill = [&mutable_this, &browser_form, &renderer_form,
                          &triggered_origin,
@@ -609,10 +622,10 @@ std::vector<FormData> FormForest::GetRendererFormsOfBrowserForm(
             return true;
         }
       };
-      // Fields in frames whose permissions policy allows shared-autofill may
-      // be filled if the |triggered_origin| is the main origin.
-      auto has_shared_autofill_permission = [&mutable_this](
-                                                LocalFrameToken frame_token) {
+      // Fields whose document enables the policy-controlled feature
+      // shared-autofill may be safe to fill.
+      auto HasSharedAutofillPermission = [&mutable_this](
+                                             LocalFrameToken frame_token) {
         FrameData* frame = mutable_this.GetFrameData(frame_token);
         return frame && frame->driver && frame->driver->render_frame_host() &&
                frame->driver->render_frame_host()->IsFeatureEnabled(
@@ -623,20 +636,30 @@ std::vector<FormData> FormForest::GetRendererFormsOfBrowserForm(
       auto it = field_type_map.find(field.global_id());
       ServerFieldType field_type =
           it != field_type_map.end() ? it->second : UNKNOWN_TYPE;
-      return field.origin == triggered_origin ||
-             (field.origin == main_origin &&
-              !IsSensitiveFieldType(field_type)) ||
-             (triggered_origin == main_origin &&
-              has_shared_autofill_permission(renderer_form->host_frame));
+      if (features::kAutofillSharedAutofillRelaxedParam.Get()) {
+        return field.origin == triggered_origin ||
+               (HasSharedAutofillPermission(renderer_form->host_frame) &&
+                (field.origin != main_origin ||
+                 field_type != CREDIT_CARD_NUMBER));
+      } else {
+        return field.origin == triggered_origin ||
+               (field.origin == main_origin &&
+                HasSharedAutofillPermission(renderer_form->host_frame) &&
+                !IsSensitiveFieldType(field_type)) ||
+               (triggered_origin == main_origin &&
+                HasSharedAutofillPermission(renderer_form->host_frame));
+      }
     };
 
     renderer_form->fields.push_back(browser_field);
-    if (!IsSafeToFill(renderer_form->fields.back()))
+    if (!IsSafeToFill(renderer_form->fields.back())) {
       renderer_form->fields.back().value.clear();
+    } else {
+      result.safe_fields.push_back(browser_field.global_id());
+    }
   }
 
-  return renderer_forms;
+  return result;
 }
 
-}  // namespace internal
-}  // namespace autofill
+}  // namespace autofill::internal

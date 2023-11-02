@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,14 +25,14 @@ namespace web {
 class PolicyDecisionStateTracker
     : public base::SupportsWeakPtr<PolicyDecisionStateTracker> {
  public:
-  // Constructor that takes a |callback| to be called once all decisions have
+  // Constructor that takes a `callback` to be called once all decisions have
   // been received.
   PolicyDecisionStateTracker(
       WebStatePolicyDecider::PolicyDecisionCallback callback);
 
   ~PolicyDecisionStateTracker();
 
-  // Called by each WebStatePolicyDecider with its |decision|.
+  // Called by each WebStatePolicyDecider with its `decision`.
   void OnSinglePolicyDecisionReceived(
       WebStatePolicyDecider::PolicyDecision decision);
 
@@ -43,7 +43,7 @@ class PolicyDecisionStateTracker
   bool DeterminedFinalResult();
 
   // Called once all WebStatePolicyDeciders have been asked for a decision,
-  // where |num_decisions_requested| is the number of WebStatePolicyDeciders
+  // where `num_decisions_requested` is the number of WebStatePolicyDeciders
   // that have been asked for a decision.
   void FinishedRequestingDecisions(int num_decisions_requested);
 
@@ -65,7 +65,7 @@ class PolicyDecisionStateTracker
 
   // Called after each decision is received. Initially, this is a no-op. Once
   // all decisions have been requested, this is changed to a BarrierClosure
-  // that handles invoking |callback_| after receiving the remaining
+  // that handles invoking `callback_` after receiving the remaining
   // outstanding decisions.
   base::RepeatingClosure decision_closure_ = base::DoNothing();
 };

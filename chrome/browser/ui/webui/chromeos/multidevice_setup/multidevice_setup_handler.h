@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,8 +25,8 @@ class MultideviceSetupHandler : public content::WebUIMessageHandler {
   // content::WebUIMessageHandler:
   void RegisterMessages() override;
 
-  void HandleGetProfileInfo(const base::ListValue* args);
-  void HandleOpenMultiDeviceSettings(const base::ListValue* args);
+  void HandleGetProfileInfo(const base::Value::List& args);
+  void HandleOpenMultiDeviceSettings(const base::Value::List& args);
 };
 
 }  // namespace multidevice_setup

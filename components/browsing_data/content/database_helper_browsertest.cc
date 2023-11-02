@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -77,7 +77,8 @@ class DatabaseHelperTest : public content::ContentBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(DatabaseHelperTest, FetchData) {
+// Flaky, see https://crbug.com/1293136
+IN_PROC_BROWSER_TEST_F(DatabaseHelperTest, DISABLED_FetchData) {
   CreateDatabases();
   auto database_helper = base::MakeRefCounted<DatabaseHelper>(
       shell()->web_contents()->GetBrowserContext());
@@ -93,9 +94,9 @@ IN_PROC_BROWSER_TEST_F(DatabaseHelperTest, FetchData) {
 
   auto db_info_it = database_info_list.begin();
   EXPECT_EQ(url::Origin::Create(GURL("http://www.example.com")),
-            db_info_it->origin);
+            db_info_it->storage_key.origin());
   EXPECT_EQ(url::Origin::Create(GURL("http://www.mysite.com")),
-            std::next(db_info_it)->origin);
+            std::next(db_info_it)->storage_key.origin());
 }
 
 IN_PROC_BROWSER_TEST_F(DatabaseHelperTest, CannedAddDatabase) {
@@ -116,9 +117,9 @@ IN_PROC_BROWSER_TEST_F(DatabaseHelperTest, CannedAddDatabase) {
 
   ASSERT_EQ(2u, result.size());
   auto info = result.begin();
-  EXPECT_EQ(origin1, info->origin);
+  EXPECT_EQ(origin1, info->storage_key.origin());
   ++info;
-  EXPECT_EQ(origin2, info->origin);
+  EXPECT_EQ(origin2, info->storage_key.origin());
 }
 
 IN_PROC_BROWSER_TEST_F(DatabaseHelperTest, CannedUnique) {
@@ -136,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(DatabaseHelperTest, CannedUnique) {
   std::list<content::StorageUsageInfo> result = callback.result();
 
   ASSERT_EQ(1u, result.size());
-  EXPECT_EQ(origin, result.begin()->origin);
+  EXPECT_EQ(origin, result.begin()->storage_key.origin());
 }
 }  // namespace
 }  // namespace browsing_data

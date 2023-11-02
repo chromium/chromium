@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -28,6 +28,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace content {
@@ -36,6 +37,7 @@ class RenderFrame;
 
 namespace safe_browsing {
 class ClientPhishingRequest;
+class VisualFeatures;
 class FeatureMap;
 class PhishingDOMFeatureExtractor;
 class PhishingTermFeatureExtractor;
@@ -64,12 +66,6 @@ class PhishingClassifier {
   PhishingClassifier& operator=(const PhishingClassifier&) = delete;
 
   virtual ~PhishingClassifier();
-
-  // Sets a scorer for the classifier to use in computing the phishiness score.
-  // This must live at least as long as the PhishingClassifier.  The caller is
-  // expected to cancel any pending classification before setting a phishing
-  // scorer.
-  void set_phishing_scorer(const Scorer* scorer);
 
   // Returns true if the classifier is ready to classify pages, i.e. it
   // has had a scorer set via set_phishing_scorer().
@@ -124,15 +120,15 @@ class PhishingClassifier {
   // complete.
   void OnPlaybackDone(std::unique_ptr<SkBitmap> bitmap);
 
+  // Callback when visual features have been extracted from the screenshot.
+  void OnVisualFeaturesExtracted(
+      std::unique_ptr<VisualFeatures> visual_features);
+
   // Callback when visual feature extraction is complete.
   // If it was successful, computes a score and runs the DoneCallback.
   // If extraction was unsuccessful, runs the DoneCallback with a
   // non-phishy verdict.
   void VisualExtractionFinished(bool success);
-
-  // Callback when visual features have been scored and compared against the
-  // model.
-  void OnVisualTargetsMatched(std::unique_ptr<ClientPhishingRequest> verdict);
 
   // Callback when the visual TFLite model has been applied, and returned a list
   // of scores.
@@ -151,7 +147,6 @@ class PhishingClassifier {
   void Clear();
 
   content::RenderFrame* render_frame_;  // owns us
-  const Scorer* scorer_;                // owned by the caller
   std::unique_ptr<PhishingUrlFeatureExtractor> url_extractor_;
   std::unique_ptr<PhishingDOMFeatureExtractor> dom_extractor_;
   std::unique_ptr<PhishingTermFeatureExtractor> term_extractor_;
@@ -161,6 +156,7 @@ class PhishingClassifier {
   std::unique_ptr<std::set<uint32_t>> shingle_hashes_;
   const std::u16string* page_text_;  // owned by the caller
   std::unique_ptr<SkBitmap> bitmap_;
+  std::unique_ptr<VisualFeatures> visual_features_;
   DoneCallback done_callback_;
 
   // Used to record the duration of visual feature scoring.

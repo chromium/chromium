@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@
 #include <iomanip>
 #include <memory>
 
+#include "base/base_export.h"
 #include "base/files/dir_reader_posix.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -97,7 +98,7 @@ constexpr int kDistroSize = 128 + 1;
 char g_linux_distro[kDistroSize] =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     "CrOS";
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
     "Android";
 #else
     "Unknown";
@@ -145,11 +146,9 @@ bool GetThreadsForProcess(pid_t pid, std::vector<pid_t>* tids) {
   }
 
   while (dir_reader.Next()) {
-    char* endptr;
-    const unsigned long int tid_ul = strtoul(dir_reader.name(), &endptr, 10);
-    if (tid_ul == ULONG_MAX || *endptr)
-      continue;
-    tids->push_back(tid_ul);
+    pid_t tid;
+    if (StringToInt(dir_reader.name(), &tid))
+      tids->push_back(tid);
   }
 
   return true;

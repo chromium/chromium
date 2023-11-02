@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -235,7 +235,6 @@ public class TabAttributeCacheUnitTest {
         LastSearchTermProvider lastSearchTermProvider = mock(LastSearchTermProvider.class);
         TabAttributeCache.setLastSearchTermMockForTesting(lastSearchTermProvider);
         NavigationHandle navigationHandle = mock(NavigationHandle.class);
-        doReturn(true).when(navigationHandle).isInPrimaryMainFrame();
 
         Assert.assertNull(TabAttributeCache.getLastSearchTerm(TAB1_ID));
 
@@ -243,24 +242,20 @@ public class TabAttributeCacheUnitTest {
         WebContents webContents = mock(WebContents.class);
         doReturn(webContents).when(mTab1).getWebContents();
 
-        mTabObserverCaptor.getValue().onDidFinishNavigation(mTab1, navigationHandle);
+        mTabObserverCaptor.getValue().onDidFinishNavigationInPrimaryMainFrame(
+                mTab1, navigationHandle);
         Assert.assertEquals(searchTerm, TabAttributeCache.getLastSearchTerm(TAB1_ID));
-
-        // Non-main frame should not propagate.
-        doReturn("another").when(lastSearchTermProvider).getLastSearchTerm(mTab1);
-        doReturn(false).when(navigationHandle).isInPrimaryMainFrame();
-        mTabObserverCaptor.getValue().onDidFinishNavigation(mTab1, navigationHandle);
-        Assert.assertEquals(searchTerm, TabAttributeCache.getLastSearchTerm(TAB1_ID));
-        doReturn(true).when(navigationHandle).isInPrimaryMainFrame();
 
         // Empty strings should propagate.
         doReturn("").when(lastSearchTermProvider).getLastSearchTerm(mTab1);
-        mTabObserverCaptor.getValue().onDidFinishNavigation(mTab1, navigationHandle);
+        mTabObserverCaptor.getValue().onDidFinishNavigationInPrimaryMainFrame(
+                mTab1, navigationHandle);
         Assert.assertEquals("", TabAttributeCache.getLastSearchTerm(TAB1_ID));
 
         // Null should also propagate.
         doReturn(null).when(lastSearchTermProvider).getLastSearchTerm(mTab1);
-        mTabObserverCaptor.getValue().onDidFinishNavigation(mTab1, navigationHandle);
+        mTabObserverCaptor.getValue().onDidFinishNavigationInPrimaryMainFrame(
+                mTab1, navigationHandle);
         Assert.assertNull(TabAttributeCache.getLastSearchTerm(TAB1_ID));
 
         mTabModelSelectorObserverCaptor.getValue().onTabStateInitialized();
@@ -277,7 +272,7 @@ public class TabAttributeCacheUnitTest {
         TabAttributeCache.setLastSearchTermMockForTesting(lastSearchTermProvider);
         doReturn(searchTerm).when(lastSearchTermProvider).getLastSearchTerm(mTab1);
 
-        mTabObserverCaptor.getValue().onDidFinishNavigation(mTab1, null);
+        mTabObserverCaptor.getValue().onDidFinishNavigationInPrimaryMainFrame(mTab1, null);
         Assert.assertNull(TabAttributeCache.getLastSearchTerm(TAB1_ID));
     }
 

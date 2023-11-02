@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -82,15 +82,15 @@ TEST(JsonSchemaCompilerErrorTest, TypeIsRequired) {
 
 TEST(JsonSchemaCompilerErrorTest, TooManyParameters) {
   {
-    std::vector<Value> params_value;
-    params_value.emplace_back(5);
+    base::Value::List params_value;
+    params_value.Append(5);
     std::u16string error;
     EXPECT_TRUE(errors::TestFunction::Params::Create(params_value, &error));
   }
   {
-    std::vector<Value> params_value;
-    params_value.emplace_back(5);
-    params_value.emplace_back(5);
+    base::Value::List params_value;
+    params_value.Append(5);
+    params_value.Append(5);
     std::u16string error;
     EXPECT_FALSE(errors::TestFunction::Params::Create(params_value, &error));
     EXPECT_TRUE(EqualsUtf16("expected 1 arguments, got 2", error));
@@ -101,14 +101,14 @@ TEST(JsonSchemaCompilerErrorTest, TooManyParameters) {
 
 TEST(JsonSchemaCompilerErrorTest, ParamIsRequired) {
   {
-    std::vector<Value> params_value;
-    params_value.emplace_back(5);
+    base::Value::List params_value;
+    params_value.Append(5);
     std::u16string error;
     EXPECT_TRUE(errors::TestFunction::Params::Create(params_value, &error));
   }
   {
-    std::vector<Value> params_value;
-    params_value.emplace_back();
+    base::Value::List params_value;
+    params_value.Append(base::Value());
     std::u16string error;
     EXPECT_FALSE(errors::TestFunction::Params::Create(params_value, &error));
     EXPECT_TRUE(EqualsUtf16("'num' is required", error));
@@ -134,13 +134,13 @@ TEST(JsonSchemaCompilerErrorTest, WrongPropertyValueType) {
 TEST(JsonSchemaCompilerErrorTest, WrongParameterCreationType) {
   {
     std::u16string error;
-    std::vector<Value> params_value;
-    params_value.emplace_back("Yeah!");
+    base::Value::List params_value;
+    params_value.Append("Yeah!");
     EXPECT_TRUE(errors::TestString::Params::Create(params_value, &error));
   }
   {
-    std::vector<Value> params_value;
-    params_value.emplace_back(5);
+    base::Value::List params_value;
+    params_value.Append(5);
     std::u16string error;
     EXPECT_FALSE(
         errors::TestTypeInObject::Params::Create(params_value, &error));
@@ -162,7 +162,7 @@ TEST(JsonSchemaCompilerErrorTest, WrongTypeValueType) {
     EXPECT_FALSE(errors::ObjectType::Populate(*value, &out, &error));
     EXPECT_TRUE(EqualsUtf16("'otherType': expected dictionary, got double",
         error));
-    EXPECT_EQ(NULL, out.other_type.get());
+    EXPECT_FALSE(out.other_type.has_value());
   }
 }
 
@@ -246,7 +246,7 @@ TEST(JsonSchemaCompilerErrorTest, ErrorOnOptionalFailure) {
     EXPECT_FALSE(errors::OptionalTestType::Populate(*value, &out, &error));
     EXPECT_TRUE(EqualsUtf16("'string': expected string, got integer",
         error));
-    EXPECT_EQ(NULL, out.string.get());
+    EXPECT_FALSE(out.string);
   }
 }
 
@@ -267,7 +267,7 @@ TEST(JsonSchemaCompilerErrorTest, OptionalBinaryTypeFailure) {
     EXPECT_FALSE(errors::OptionalBinaryData::Populate(*value, &out, &error));
     EXPECT_TRUE(EqualsUtf16("'data': expected binary, got integer",
         error));
-    EXPECT_EQ(NULL, out.data.get());
+    EXPECT_FALSE(out.data.has_value());
   }
 }
 
@@ -285,7 +285,7 @@ TEST(JsonSchemaCompilerErrorTest, OptionalArrayTypeFailure) {
     EXPECT_FALSE(errors::ArrayObject::Populate(*value, &out, &error));
     EXPECT_TRUE(EqualsUtf16("'TheArray': expected list, got integer",
         error));
-    EXPECT_EQ(NULL, out.the_array.get());
+    EXPECT_FALSE(out.the_array.has_value());
   }
 }
 
@@ -308,7 +308,7 @@ TEST(JsonSchemaCompilerErrorTest, OptionalUnableToPopulateArray) {
         EqualsUtf16("Error at key 'integers': Parsing array failed at index 1: "
                     "expected integer, got boolean",
                     error));
-    EXPECT_EQ(NULL, out.as_integer.get());
+    EXPECT_FALSE(out.as_integer.has_value());
   }
 }
 

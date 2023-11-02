@@ -27,6 +27,8 @@
 
 #include <stdio.h>
 #include <ostream>  // NOLINT
+
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -575,8 +577,9 @@ PositionTemplate<Strategy>::FirstPositionInOrBeforeNode(const Node& node) {
 template <typename Strategy>
 PositionTemplate<Strategy>
 PositionTemplate<Strategy>::LastPositionInOrAfterNode(const Node& node) {
-  return EditingIgnoresContent(node) ? AfterNode(node)
-                                     : LastPositionInNode(node);
+  return EditingIgnoresContent(node) && Strategy::Parent(node)
+             ? AfterNode(node)
+             : LastPositionInNode(node);
 }
 
 PositionInFlatTree ToPositionInFlatTree(const Position& pos) {

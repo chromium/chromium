@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,6 +31,7 @@ import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.components.offline_items_collection.UpdateDelta;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServerRule;
+import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -55,8 +56,8 @@ public final class ServicificationDownloadTest {
         @Override
         public int notifyDownloadSuccessful(ContentId id, String filePath, String fileName,
                 long systemDownloadId, OTRProfileID otrProfileID, boolean isSupportedMimeType,
-                boolean isOpenable, Bitmap icon, String originalUrl, boolean shouldPromoteOrigin,
-                String referrer, long totalBytes) {
+                boolean isOpenable, Bitmap icon, GURL originalUrl, boolean shouldPromoteOrigin,
+                GURL referrer, long totalBytes) {
             mDownloadCompleted = true;
             return 0;
         }

@@ -1,32 +1,31 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/web/image_fetch/image_fetch_tab_helper.h"
 
-#include "base/base64.h"
-#include "base/bind.h"
-#include "base/json/string_escape.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
-#include "base/values.h"
-#include "components/image_fetcher/core/image_data_fetcher.h"
-#include "ios/chrome/browser/web/image_fetch/image_fetch_java_script_feature.h"
-#include "ios/web/common/referrer_util.h"
-#include "ios/web/public/browser_state.h"
+#import "base/base64.h"
+#import "base/bind.h"
+#import "base/json/string_escape.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/strings/stringprintf.h"
+#import "base/strings/utf_string_conversions.h"
+#import "base/values.h"
+#import "components/image_fetcher/core/image_data_fetcher.h"
+#import "ios/chrome/browser/web/image_fetch/image_fetch_java_script_feature.h"
+#import "ios/web/common/referrer_util.h"
+#import "ios/web/public/browser_state.h"
 #import "ios/web/public/navigation/navigation_context.h"
-#include "ios/web/public/thread/web_task_traits.h"
-#include "ios/web/public/thread/web_thread.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 const char kUmaGetImageDataByJsResult[] =
-    "ContextMenu.iOS.GetImageDataByJsResult";
+    "Mobile.ContextMenu.GetImageDataByJsResult";
 
 namespace {
 // Key for image_fetcher
@@ -91,8 +90,8 @@ void ImageFetchTabHelper::WebStateDestroyed(web::WebState* web_state) {
 void ImageFetchTabHelper::GetImageData(const GURL& url,
                                        const web::Referrer& referrer,
                                        ImageDataCallback callback) {
-  // |this| is captured into the callback of GetImageDataByJs, which will always
-  // be invoked before the |this| is destroyed, so it's safe.
+  // `this` is captured into the callback of GetImageDataByJs, which will always
+  // be invoked before the `this` is destroyed, so it's safe.
   GetImageDataByJs(
       url, base::Milliseconds(kGetImageDataByJsTimeout),
       base::BindOnce(&ImageFetchTabHelper::JsCallbackOfGetImageData,
@@ -113,9 +112,9 @@ void ImageFetchTabHelper::JsCallbackOfGetImageData(
           url,
           base::BindOnce(^(const std::string& image_data,
                            const image_fetcher::RequestMetadata& metadata) {
-            NSData* data = [NSData dataWithBytes:image_data.data()
-                                          length:image_data.size()];
-            callback(data);
+            NSData* nsdata = [NSData dataWithBytes:image_data.data()
+                                            length:image_data.size()];
+            callback(nsdata);
           }),
           web::ReferrerHeaderValueForNavigation(url, referrer),
           web::PolicyForNavigation(url, referrer), NO_TRAFFIC_ANNOTATION_YET,
@@ -129,8 +128,8 @@ void ImageFetchTabHelper::GetImageDataByJs(const GURL& url,
   DCHECK_EQ(js_callbacks_.count(call_id_), 0UL);
   js_callbacks_.insert({call_id_, std::move(callback)});
 
-  base::PostDelayedTask(
-      FROM_HERE, {web::WebThread::UI},
+  web::GetUIThreadTaskRunner({})->PostDelayedTask(
+      FROM_HERE,
       base::BindRepeating(&ImageFetchTabHelper::OnJsTimeout,
                           weak_ptr_factory_.GetWeakPtr(), call_id_),
       timeout);

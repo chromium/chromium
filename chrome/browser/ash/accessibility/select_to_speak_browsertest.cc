@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include "ash/accessibility/ui/accessibility_focus_ring_controller_impl.h"
 #include "ash/accessibility/ui/accessibility_focus_ring_layer.h"
+#include "ash/accessibility/ui/accessibility_highlight_layer.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/system_tray_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -18,6 +19,7 @@
 #include "base/command_line.h"
 #include "base/memory/weak_ptr.h"
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
@@ -31,11 +33,13 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/notification_types.h"
 #include "extensions/browser/process_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/compositor/layer.h"
@@ -53,13 +57,19 @@ class SelectToSpeakTest : public InProcessBrowserTest {
   SelectToSpeakTest& operator=(const SelectToSpeakTest&) = delete;
 
   void OnFocusRingChanged() {
-    if (loop_runner_) {
+    if (loop_runner_ && loop_runner_->running()) {
       loop_runner_->Quit();
     }
   }
 
+  void OnHighlightsAdded() {
+    if (highlights_runner_ && highlights_runner_->running()) {
+      highlights_runner_->Quit();
+    }
+  }
+
   void SetSelectToSpeakState() {
-    if (tray_loop_runner_) {
+    if (tray_loop_runner_ && tray_loop_runner_->running()) {
       tray_loop_runner_->Quit();
     }
   }
@@ -102,7 +112,7 @@ class SelectToSpeakTest : public InProcessBrowserTest {
   gfx::Rect GetWebContentsBounds() const {
     // TODO(katie): Find a way to get the exact bounds programmatically.
     gfx::Rect bounds = browser()->window()->GetBounds();
-    bounds.Inset(8, 8, 75, 8);
+    bounds.Inset(gfx::Insets::TLBR(8, 8, 8, 75));
     return bounds;
   }
 
@@ -120,8 +130,21 @@ class SelectToSpeakTest : public InProcessBrowserTest {
     generator_->ReleaseKey(ui::VKEY_LWIN, 0 /* flags */);
   }
 
+  void PrepareToWaitForHighlightAdded() {
+    highlights_runner_ = std::make_unique<base::RunLoop>();
+    base::RepeatingCallback<void()> callback = base::BindRepeating(
+        &SelectToSpeakTest::OnHighlightsAdded, GetWeakPtr());
+    AccessibilityManager::Get()->SetHighlightsObserverForTest(callback);
+  }
+
+  void WaitForHighlightAdded() {
+    DCHECK(highlights_runner_);
+    highlights_runner_->Run();
+    highlights_runner_ = nullptr;
+  }
+
   void PrepareToWaitForSelectToSpeakStatusChanged() {
-    tray_loop_runner_ = new content::MessageLoopRunner();
+    tray_loop_runner_ = std::make_unique<base::RunLoop>();
   }
 
   // Blocks until the select-to-speak tray status is changed.
@@ -137,7 +160,7 @@ class SelectToSpeakTest : public InProcessBrowserTest {
   }
 
   void PrepareToWaitForFocusRingChanged() {
-    loop_runner_ = new content::MessageLoopRunner();
+    loop_runner_ = std::make_unique<base::RunLoop>();
   }
 
   // Blocks until the focus ring is changed.
@@ -168,8 +191,9 @@ class SelectToSpeakTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_refptr<content::MessageLoopRunner> loop_runner_;
-  scoped_refptr<content::MessageLoopRunner> tray_loop_runner_;
+  std::unique_ptr<base::RunLoop> loop_runner_;
+  std::unique_ptr<base::RunLoop> highlights_runner_;
+  std::unique_ptr<base::RunLoop> tray_loop_runner_;
   base::WeakPtrFactory<SelectToSpeakTest> weak_ptr_factory_{this};
 };
 
@@ -183,9 +207,7 @@ class SelectToSpeakTestWithLanguageDetection : public SelectToSpeakTest {
   }
 };
 
-// The status tray is not active on official builds.
-// Disable the test on Chromium due to flaky: crbug.com/1165749
-IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, DISABLED_SpeakStatusTray) {
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, SpeakStatusTray) {
   gfx::Rect tray_bounds = Shell::Get()
                               ->GetPrimaryRootWindowController()
                               ->GetStatusAreaWidget()
@@ -204,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, DISABLED_SpeakStatusTray) {
 }
 
 // Flaky on ChromeOS MSAN bots: https://crbug.com/1227368
-#if defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#if defined(MEMORY_SANITIZER)
 #define MAYBE_ActivatesWithTapOnSelectToSpeakTray DISABLED_ActivatesWithTapOnSelectToSpeakTray
 #else
 #define MAYBE_ActivatesWithTapOnSelectToSpeakTray ActivatesWithTapOnSelectToSpeakTray
@@ -233,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, MAYBE_ActivatesWithTapOnSelectToSpeakT
 }
 
 // Flaky on ChromeOS MSAN bots: https://crbug.com/1227368
-#if defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#if defined(MEMORY_SANITIZER)
 #define MAYBE_WorksWithTouchSelection DISABLED_WorksWithTouchSelection
 #else
 #define MAYBE_WorksWithTouchSelection WorksWithTouchSelection
@@ -326,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, SelectToSpeakTrayNotSpoken) {
 }
 
 // Flaky on ChromeOS MSAN bots: https://crbug.com/1227368
-#if defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#if defined(MEMORY_SANITIZER)
 #define MAYBE_SmoothlyReadsAcrossInlineUrl DISABLED_SmoothlyReadsAcrossInlineUrl
 #else
 #define MAYBE_SmoothlyReadsAcrossInlineUrl SmoothlyReadsAcrossInlineUrl
@@ -343,8 +365,30 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, MAYBE_SmoothlyReadsAcrossInlineUrl) {
   sm_.Replay();
 }
 
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, SetsWordHighlights) {
+  AccessibilityFocusRingControllerImpl* controller =
+      Shell::Get()->accessibility_focus_ring_controller();
+  EXPECT_FALSE(controller->highlight_layer_for_testing());
+  PrepareToWaitForHighlightAdded();
+  ActivateSelectToSpeakInWindowBounds(
+      "data:text/html;charset=utf-8,<p>Highlight me");
+  sm_.ExpectSpeechPattern("*Highlight me*");
+  sm_.Replay();
+
+  // Some highlighting should have occurred. OK to do this after speech as
+  // Select to Speak refreshes the UI intermittently.
+  WaitForHighlightAdded();
+
+  // Check the highlight exists and the color is as expected.
+  AccessibilityHighlightLayer* highlight_layer =
+      controller->highlight_layer_for_testing();
+  EXPECT_TRUE(highlight_layer);
+  EXPECT_EQ(1u, highlight_layer->rects_for_test().size());
+  EXPECT_EQ(SkColorSetRGB(94, 155, 255), highlight_layer->color_for_test());
+}
+
 // Flaky on ChromeOS MSAN bots: https://crbug.com/1227368
-#if defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#if defined(MEMORY_SANITIZER)
 #define MAYBE_SmoothlyReadsAcrossMultipleLines DISABLED_SmoothlyReadsAcrossMultipleLines
 #else
 #define MAYBE_SmoothlyReadsAcrossMultipleLines SmoothlyReadsAcrossMultipleLines
@@ -364,7 +408,7 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, MAYBE_SmoothlyReadsAcrossMultipleLines
 }
 
 // TODO(crbug.com/1225388): Flaky on ChromeOS MSAN bots
-#if defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#if defined(MEMORY_SANITIZER)
 #define MAYBE_SmoothlyReadsAcrossFormattedText \
   DISABLED_SmoothlyReadsAcrossFormattedText
 #else
@@ -385,7 +429,7 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
 }
 
 // Flaky on ChromeOS MSAN bots: https://crbug.com/1227368
-#if defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#if defined(MEMORY_SANITIZER)
 #define MAYBE_ReadsStaticTextWithoutInlineTextChildren \
   DISABLED_ReadsStaticTextWithoutInlineTextChildren
 #else
@@ -403,7 +447,7 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
 }
 
 // Flaky on ChromeOS MSAN bots: https://crbug.com/1227368
-#if defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#if defined(MEMORY_SANITIZER)
 #define MAYBE_BreaksAtParagraphBounds DISABLED_BreaksAtParagraphBounds
 #else
 #define MAYBE_BreaksAtParagraphBounds BreaksAtParagraphBounds
@@ -454,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTestWithLanguageDetection,
 }
 
 // Flaky on ChromeOS MSAN bots: https://crbug.com/1227368
-#if defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#if defined(MEMORY_SANITIZER)
 #define MAYBE_DoesNotCrashWithMousewheelEvent DISABLED_DoesNotCrashWithMousewheelEvent
 #else
 #define MAYBE_DoesNotCrashWithMousewheelEvent DoesNotCrashWithMousewheelEvent
@@ -582,7 +626,7 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, MAYBE_ContinuesReadingDuringResize) {
 }
 
 // Flaky on ChromeOS MSAN bots: https://crbug.com/1227368
-#if defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#if defined(MEMORY_SANITIZER)
 #define MAYBE_WorksWithStickyKeys DISABLED_WorksWithStickyKeys
 #else
 #define MAYBE_WorksWithStickyKeys WorksWithStickyKeys
@@ -622,7 +666,7 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
 
   // Search key + click the avatar button.
   generator_->PressKey(ui::VKEY_LWIN, 0 /* flags */);
-  tray_test_api_->ClickBubbleView(ViewID::VIEW_ID_USER_AVATAR_BUTTON);
+  tray_test_api_->ClickBubbleView(ViewID::VIEW_ID_QS_USER_AVATAR_BUTTON);
   generator_->ReleaseKey(ui::VKEY_LWIN, 0 /* flags */);
 
   // Should read out text.

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,18 +9,19 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/version.h"
 #include "chrome/browser/ash/power/ml/smart_dim/metrics.h"
 #include "chrome/browser/ash/power/ml/smart_dim/ml_agent.h"
 #include "components/component_updater/component_updater_service.h"
+#include "components/crx_file/id_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -93,6 +94,11 @@ SmartDimComponentInstallerPolicy::SmartDimComponentInstallerPolicy(
     : expected_version_(expected_version) {}
 
 SmartDimComponentInstallerPolicy::~SmartDimComponentInstallerPolicy() = default;
+
+const std::string SmartDimComponentInstallerPolicy::GetExtensionId() {
+  return crx_file::id_util::GenerateIdFromHash(
+      kSmartDimPublicKeySHA256, sizeof(kSmartDimPublicKeySHA256));
+}
 
 bool SmartDimComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
@@ -169,7 +175,7 @@ void SmartDimComponentInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
   DCHECK(hash);
   hash->assign(kSmartDimPublicKeySHA256,
-               kSmartDimPublicKeySHA256 + base::size(kSmartDimPublicKeySHA256));
+               kSmartDimPublicKeySHA256 + std::size(kSmartDimPublicKeySHA256));
 }
 
 std::string SmartDimComponentInstallerPolicy::GetName() const {

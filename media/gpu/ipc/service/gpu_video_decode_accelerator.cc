@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
@@ -198,7 +199,7 @@ class GpuVideoDecodeAccelerator::MessageFilter
                                   base::Unretained(owner_)));
   }
 
-  GpuVideoDecodeAccelerator* owner_;
+  raw_ptr<GpuVideoDecodeAccelerator> owner_;
   const scoped_refptr<base::SequencedTaskRunner> owner_task_runner_;
   const bool decode_on_io_;
   mojo::AssociatedReceiver<mojom::GpuAcceleratedVideoDecoder> receiver_{this};
@@ -311,7 +312,8 @@ GpuVideoDecodeAccelerator::GetCapabilities(
       gpu_preferences, workarounds);
 }
 
-void GpuVideoDecodeAccelerator::NotifyInitializationComplete(Status status) {
+void GpuVideoDecodeAccelerator::NotifyInitializationComplete(
+    DecoderStatus status) {
   decoder_client_->OnInitializationComplete(status.is_ok());
 }
 
@@ -419,7 +421,7 @@ bool GpuVideoDecodeAccelerator::Initialize(
         client) {
   DCHECK(!video_decode_accelerator_);
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   // Ensure we will be able to get a GL context at all before initializing
   // non-Windows VDAs.
   if (!gl_client_.make_context_current.Run())

@@ -1,10 +1,12 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_downloads_delegate.h"
 
 #include <gtest/gtest.h>
+
+#include "components/download/public/common/mock_download_item.h"
 
 namespace enterprise_connectors {
 
@@ -16,22 +18,24 @@ class ContentAnalysisDownloadsDelegateTest : public testing::Test {
 
   int times_open_called_ = 0;
   int times_discard_called_ = 0;
+  download::MockDownloadItem mock_download_item;
 };
 
 TEST_F(ContentAnalysisDownloadsDelegateTest, TestOpenFile) {
   ContentAnalysisDownloadsDelegate delegate(
-      u"", u"", GURL(),
+      u"", u"", GURL(), true,
       base::BindOnce(&ContentAnalysisDownloadsDelegateTest::OpenCallback,
                      base::Unretained(this)),
       base::BindOnce(&ContentAnalysisDownloadsDelegateTest::DiscardCallback,
-                     base::Unretained(this)));
+                     base::Unretained(this)),
+      &mock_download_item);
 
-  delegate.BypassWarnings();
+  delegate.BypassWarnings(u"User's justification");
   EXPECT_EQ(1, times_open_called_);
   EXPECT_EQ(0, times_discard_called_);
 
   // Attempting any action after one has been performed is a no-op.
-  delegate.BypassWarnings();
+  delegate.BypassWarnings(u"User's justification");
   EXPECT_EQ(1, times_open_called_);
   EXPECT_EQ(0, times_discard_called_);
 
@@ -46,11 +50,12 @@ TEST_F(ContentAnalysisDownloadsDelegateTest, TestOpenFile) {
 
 TEST_F(ContentAnalysisDownloadsDelegateTest, TestDiscardFileWarning) {
   ContentAnalysisDownloadsDelegate delegate(
-      u"", u"", GURL(),
+      u"", u"", GURL(), true,
       base::BindOnce(&ContentAnalysisDownloadsDelegateTest::OpenCallback,
                      base::Unretained(this)),
       base::BindOnce(&ContentAnalysisDownloadsDelegateTest::DiscardCallback,
-                     base::Unretained(this)));
+                     base::Unretained(this)),
+      &mock_download_item);
 
   delegate.Cancel(true);
   EXPECT_EQ(0, times_open_called_);
@@ -65,18 +70,19 @@ TEST_F(ContentAnalysisDownloadsDelegateTest, TestDiscardFileWarning) {
   EXPECT_EQ(0, times_open_called_);
   EXPECT_EQ(1, times_discard_called_);
 
-  delegate.BypassWarnings();
+  delegate.BypassWarnings(absl::nullopt);
   EXPECT_EQ(0, times_open_called_);
   EXPECT_EQ(1, times_discard_called_);
 }
 
 TEST_F(ContentAnalysisDownloadsDelegateTest, TestDiscardFileBlock) {
   ContentAnalysisDownloadsDelegate delegate(
-      u"", u"", GURL(),
+      u"", u"", GURL(), true,
       base::BindOnce(&ContentAnalysisDownloadsDelegateTest::OpenCallback,
                      base::Unretained(this)),
       base::BindOnce(&ContentAnalysisDownloadsDelegateTest::DiscardCallback,
-                     base::Unretained(this)));
+                     base::Unretained(this)),
+      &mock_download_item);
 
   delegate.Cancel(false);
   EXPECT_EQ(0, times_open_called_);
@@ -91,18 +97,19 @@ TEST_F(ContentAnalysisDownloadsDelegateTest, TestDiscardFileBlock) {
   EXPECT_EQ(0, times_open_called_);
   EXPECT_EQ(1, times_discard_called_);
 
-  delegate.BypassWarnings();
+  delegate.BypassWarnings(absl::nullopt);
   EXPECT_EQ(0, times_open_called_);
   EXPECT_EQ(1, times_discard_called_);
 }
 
 TEST_F(ContentAnalysisDownloadsDelegateTest, TestNoMessageOrUrlReturnsNullOpt) {
   ContentAnalysisDownloadsDelegate delegate(
-      u"", u"", GURL(),
+      u"", u"", GURL(), true,
       base::BindOnce(&ContentAnalysisDownloadsDelegateTest::OpenCallback,
                      base::Unretained(this)),
       base::BindOnce(&ContentAnalysisDownloadsDelegateTest::DiscardCallback,
-                     base::Unretained(this)));
+                     base::Unretained(this)),
+      &mock_download_item);
 
   EXPECT_FALSE(delegate.GetCustomMessage());
   EXPECT_FALSE(delegate.GetCustomLearnMoreUrl());
@@ -110,11 +117,12 @@ TEST_F(ContentAnalysisDownloadsDelegateTest, TestNoMessageOrUrlReturnsNullOpt) {
 
 TEST_F(ContentAnalysisDownloadsDelegateTest, TestGetMessageAndUrl) {
   ContentAnalysisDownloadsDelegate delegate(
-      u"foo.txt", u"Message", GURL("http://www.example.com"),
+      u"foo.txt", u"Message", GURL("http://www.example.com"), true,
       base::BindOnce(&ContentAnalysisDownloadsDelegateTest::OpenCallback,
                      base::Unretained(this)),
       base::BindOnce(&ContentAnalysisDownloadsDelegateTest::DiscardCallback,
-                     base::Unretained(this)));
+                     base::Unretained(this)),
+      nullptr);
 
   EXPECT_TRUE(delegate.GetCustomMessage());
   EXPECT_TRUE(delegate.GetCustomLearnMoreUrl());

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,6 +36,12 @@ std::vector<float> ParseRadiusPolynomial(const std::string& radius_string);
 COMPONENT_EXPORT(EVDEV)
 std::string FetchNeuralPalmRadiusPolynomial(const EventDeviceInfo& devinfo,
                                             const std::string param_string);
+
+// Returns the model version to use on the current device. If empty will use
+// alpha model.
+COMPONENT_EXPORT(EVDEV)
+std::string FetchNeuralPalmModelVersion(const EventDeviceInfo& devinfo,
+                                        const std::string param_string);
 }  // namespace internal
 
 }  // namespace ui

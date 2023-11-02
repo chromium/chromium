@@ -1,0 +1,554 @@
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Power histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram base="true" name="MachineLearningService.CpuTimeMicrosec"
+    units="microseconds" expires_after="2023-01-15">
+  <owner>amoylan@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <summary>
+    CPU time (for one CPU core) of one Chrome OS ML Service request. Reported
+    for all users; users without high-resolution clocks will report 0 for short
+    requests.
+  </summary>
+</histogram>
+
+<histogram name="MachineLearningService.CpuUsageMilliPercent"
+    units="1/1000ths of %" expires_after="2023-04-02">
+  <owner>alanlxl@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <summary>
+    Fraction of total CPU resources used by Chrome OS ML Service, sampled every
+    5 minutes.
+  </summary>
+</histogram>
+
+<histogram base="true"
+    name="MachineLearningService.CreateGraphExecutorResult.Event"
+    enum="MachineLearningServiceCreateGraphExecutorResultEvent"
+    expires_after="2023-01-15">
+  <owner>amoylan@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <summary>
+    The result of CreateGraphExecutor, which can be OK or some specific error.
+  </summary>
+</histogram>
+
+<histogram name="MachineLearningService.DocumentScanner.{RequestName}.Event"
+    enum="MachineLearningServiceDocumentScannerResultEvent"
+    expires_after="2022-12-31">
+  <owner>wtlee@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    The result of DocumentScanner.{RequestName} request, which can be OK or
+    ERROR.
+  </summary>
+  <token key="RequestName">
+    <variant name="DetectCornersFromJPEG"/>
+    <variant name="DetectCornersFromNV12"/>
+    <variant name="DoPostProcessing"/>
+  </token>
+</histogram>
+
+<histogram base="true" name="MachineLearningService.ExecuteResult.Event"
+    enum="MachineLearningServiceExecuteResultEvent" expires_after="2023-01-15">
+  <owner>amoylan@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <summary>
+    The result of Execute, which can be OK or some specific error.
+  </summary>
+</histogram>
+
+<histogram name="MachineLearningService.GrammarChecker.Check.Event"
+    enum="Boolean" expires_after="2023-03-05">
+  <owner>jiwan@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <summary>The result of grammar check, which can be OK or ERROR.</summary>
+</histogram>
+
+<histogram name="MachineLearningService.GrammarChecker.LoadModelResult.Event"
+    enum="MachineLearningServiceLoadModelResultEvent"
+    expires_after="2022-12-30">
+  <owner>jiwan@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <summary>
+    The result of load grammar model, which can be OK or some specific error.
+    The error code could be logged in machine learning service in chrome or in
+    chromeos when grammar model is not loaded successfully.
+  </summary>
+</histogram>
+
+<histogram name="MachineLearningService.HandwritingModel.LoadModelResult.Event"
+    enum="MachineLearningServiceLoadHandwritingModelResultEvent"
+    expires_after="2023-02-19">
+  <owner>amoylan@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <owner>charleszhao@chromium.org</owner>
+  <summary>
+    The result of load handwriting model, which can be OK or some specific
+    error. The error code could be logged in machine learning service in chrome
+    or in chromeos when handwriting model is not loaded successfully.
+  </summary>
+</histogram>
+
+<histogram name="MachineLearningService.HandwritingModel.Recognize.Event"
+    enum="Boolean" expires_after="2023-02-19">
+  <owner>amoylan@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <owner>charleszhao@chromium.org</owner>
+  <summary>
+    The result of handwriting recognition, which can be OK or some specific
+    error.
+  </summary>
+</histogram>
+
+<histogram name="MachineLearningService.LoadModelResult"
+    enum="MachineLearningServiceLoadModelResultEvent"
+    expires_after="2023-01-15">
+  <owner>amoylan@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <summary>
+    The error result of LoadModel in cases when the model name could not be
+    determined. See MachineLearningService.*.LoadModelResult.Event for the
+    result broken down by model name when the name is known.
+  </summary>
+</histogram>
+
+<histogram base="true" name="MachineLearningService.LoadModelResult.Event"
+    enum="MachineLearningServiceLoadModelResultEvent"
+    expires_after="2023-01-15">
+  <owner>amoylan@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <summary>
+    The result of LoadModel, which can be OK or some specific error.
+  </summary>
+</histogram>
+
+<histogram name="MachineLearningService.MojoConnectionEvent"
+    enum="MachineLearningServiceMojoConnectionEvent" expires_after="2023-03-12">
+  <owner>alanlxl@chromium.org</owner>
+  <owner>honglinyu@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <summary>
+    Events related to the connection and disconnection of the Mojo IPC channel
+    between Chrome and the Chrome OS ML Service.
+  </summary>
+</histogram>
+
+<histogram name="MachineLearningService.NumWorkerProcess" units="count"
+    expires_after="2023-03-12">
+  <owner>alanlxl@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>honglinyu@chromium.org</owner>
+  <summary>
+    Number of worker processes registered in ml-service. Only used in Chrome OS.
+    Sampled every 5 minutes.
+  </summary>
+</histogram>
+
+<histogram name="MachineLearningService.PeakTotalMemoryKb" units="KB"
+    expires_after="2023-03-26">
+  <owner>alanlxl@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>honglinyu@chromium.org</owner>
+  <summary>
+    Peak total (shared and non-shared) memory used by Chrome OS ML Service over
+    the last 24 hours. Sampled every 5 minutes, so may miss short-lived spikes.
+  </summary>
+</histogram>
+
+<histogram name="MachineLearningService.ProcessError"
+    enum="MachineLearningServiceProcessError" expires_after="2023-02-12">
+  <owner>amoylan@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <owner>honglinyu@chromium.org</owner>
+  <summary>
+    Process handling errors of ml-service. Emitted when there is error in
+    process handling. For example, &quot;failed to spawning worker process&quot;
+    etc. Only used in Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="MachineLearningService.ReapWorkerProcessErrno"
+    enum="MachineLearningServiceReapWorkerProcessErrno"
+    expires_after="2023-01-15">
+  <owner>amoylan@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <owner>honglinyu@chromium.org</owner>
+  <summary>
+    The &quot;errno&quot; of waitpid calls used by ml-service's control process
+    to reap the worker processes. This is only recorded when waitpid meets error
+    and should be rare. This is a Chrome OS only metric. And we only record the
+    corresponding enum values of &quot;ECHILD&quot;, &quot;EINTR&quot; and
+    &quot;EINVAL&quot; because according to the man page of waitpid, they are
+    the only possible errno. All the other &quot;errno&quot; are treated as
+    &quot;unknown&quot; error.
+  </summary>
+</histogram>
+
+<histogram name="MachineLearningService.TextSuggester.Suggest.Event"
+    enum="BooleanError" expires_after="2023-04-09">
+  <owner>curtismcmullan@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <summary>
+    The result of a text suggester request, which can be OK or ERROR.
+  </summary>
+</histogram>
+
+<histogram base="true" name="MachineLearningService.TotalMemoryDeltaKb"
+    units="KB" expires_after="2023-01-15">
+  <owner>amoylan@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <owner>honglinyu@chromium.org</owner>
+  <summary>
+    Memory usage increase caused by one Chrome OS ML Service request.
+  </summary>
+</histogram>
+
+<histogram name="MachineLearningService.TotalMemoryKb" units="KB"
+    expires_after="2023-03-26">
+  <owner>alanlxl@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>honglinyu@chromium.org</owner>
+  <summary>
+    Total (shared and non-shared) memory used by Chrome OS ML Service, sampled
+    every 5 minutes.
+  </summary>
+</histogram>
+
+<histogram
+    name="MachineLearningService.WebPlatformHandwritingModel.GetPrediction.Event"
+    enum="Boolean" expires_after="2023-02-19">
+  <owner>amoylan@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <owner>charleszhao@chromium.org</owner>
+  <summary>
+    The result of Web platform handwriting recognition, which can be either OK
+    or Error.
+  </summary>
+</histogram>
+
+<histogram
+    name="MachineLearningService.WebPlatformHandwritingModel.LoadModelResult.Event"
+    enum="MachineLearningServiceLoadHandwritingModelResultEvent"
+    expires_after="2023-03-19">
+  <owner>amoylan@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <owner>charleszhao@chromium.org</owner>
+  <summary>
+    The result of load web platform handwriting model, which can be OK or some
+    specific error. The error code could be logged in machine learning service
+    in chrome or in chromeos when handwriting model is not loaded successfully.
+  </summary>
+</histogram>
+
+<histogram
+    name="MachineLearningService.WebPlatformTfLiteFlatBufferModel.Compute.Event"
+    enum="MachineLearningServiceWebPlatformTfLiteFlatBufferModelComputeEvent"
+    expires_after="2023-05-01">
+  <owner>amoylan@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <owner>honglinyu@chromium.org</owner>
+  <summary>
+    The result of compute/inference based on a web platform model loaded, which
+    can be OK or some specific error. The error code could be logged in machine
+    learning service in chromeos when the computation fails.
+  </summary>
+</histogram>
+
+<histogram
+    name="MachineLearningService.WebPlatformTfLiteFlatBufferModel.CreateModelLoaderResult.Event"
+    enum="MachineLearningServiceWebPlatformTfLiteFlatBufferModelCreateModelLoaderResultEvent"
+    expires_after="2023-05-01">
+  <owner>amoylan@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <owner>honglinyu@chromium.org</owner>
+  <summary>
+    The result of creating web platform model loader, which can be success or
+    some specific error. The error code could be logged in machine learning
+    service in chromeos when the model loader can not be created successfully.
+  </summary>
+</histogram>
+
+<histogram
+    name="MachineLearningService.WebPlatformTfLiteFlatBufferModel.Load.Event"
+    enum="MachineLearningServiceWebPlatformTfLiteFlatBufferModelLoadEvent"
+    expires_after="2023-05-01">
+  <owner>amoylan@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <owner>honglinyu@chromium.org</owner>
+  <summary>
+    The result of loading a web platform model, which can be OK or some specific
+    error. The error code could be logged in machine learning service in
+    chromeos when model can not successfully loaded.
+  </summary>
+</histogram>
+
+<histogram name="MachineLearningService.WorkerProcessAcceptMojoConnectionTime"
+    units="microseconds" expires_after="2023-02-19">
+  <owner>alanlxl@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>honglinyu@chromium.org</owner>
+  <summary>
+    The wall time used for the worker process to accept the mojo connection to
+    control process in ml-service. Only used in Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="MachineLearningService.WorkerProcessCleanUpTime"
+    units="microseconds" expires_after="2023-02-12">
+  <owner>alanlxl@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>honglinyu@chromium.org</owner>
+  <summary>
+    The wall time used by the control process to reap and cleanup the worker
+    processes in ml-service. Only used in Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="MachineLearningService.WorkerProcessExitStatus"
+    units="exit status" expires_after="2023-02-26">
+  <owner>alanlxl@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>honglinyu@chromium.org</owner>
+  <summary>
+    The exit status of the worker processes of ml-service. Only used in Chrome
+    OS. This is only emitted when the worker process exits with non-zero status.
+    And theoretically, there can be 255 different types of status (from 1 to
+    255).
+  </summary>
+</histogram>
+
+<histogram
+    name="MachineLearningService.{ObsoleteRequestName}.CreateGraphExecutorResult.Event"
+    enum="MachineLearningServiceCreateGraphExecutorResultEvent"
+    expires_after="M95">
+  <owner>amoylan@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <summary>
+    The result of obsolete {ObsoleteRequestName} CreateGraphExecutor request.
+  </summary>
+  <token key="ObsoleteRequestName">
+    <variant name="smart_dim_model_20190521_v3"/>
+    <variant name="TopCatModel"/>
+  </token>
+</histogram>
+
+<histogram
+    name="MachineLearningService.{ObsoleteRequestName}.ExecuteResult.Event"
+    enum="MachineLearningServiceExecuteResultEvent" expires_after="M95">
+  <owner>amoylan@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <summary>
+    The result of obsolete {ObsoleteRequestName} Execute request.
+  </summary>
+  <token key="ObsoleteRequestName">
+    <variant name="smart_dim_model_20190521_v3"/>
+    <variant name="TopCatModel"/>
+  </token>
+</histogram>
+
+<histogram
+    name="MachineLearningService.{ObsoleteRequestName}.LoadModelResult.Event"
+    enum="MachineLearningServiceLoadModelResultEvent" expires_after="M95">
+  <owner>amoylan@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <summary>
+    The result of obsolete {ObsoleteRequestName} LoadModel request.
+  </summary>
+  <token key="ObsoleteRequestName">
+    <variant name="smart_dim_model_20190521_v3"/>
+    <variant name="TopCatModel"/>
+  </token>
+</histogram>
+
+<histogram
+    name="MachineLearningService.{ObsoleteRequestName}.PrivateMemoryDeltaKb"
+    units="KB" expires_after="2019-07-01">
+  <owner>amoylan@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <owner>honglinyu@chromium.org</owner>
+  <summary>
+    Deprecated 07/2019, because we change to record total (shared+unshared)
+    memory rather than only private memory. Replaced by
+    MachineLearningService.{ObsoleteRequestName}.TotalMemoryDeltaKb.
+  </summary>
+  <token key="ObsoleteRequestName">
+    <variant name="CreateGraphExecutorResult"/>
+    <variant name="ExecuteResult"/>
+    <variant name="HandwritingModel.LoadModelResult"/>
+    <variant name="HandwritingModel.Recognize"/>
+    <variant name="LoadModelResult"/>
+    <variant name="TextClassifier.Annotate"/>
+    <variant name="TextClassifier.FindLanguages"/>
+    <variant name="TextClassifier.LoadModelResult"/>
+    <variant name="TextClassifier.SuggestSelection"/>
+    <variant name="TextSuggester.LoadModelResult"/>
+    <variant name="TextSuggester.Suggest"/>
+    <variant name="WebPlatformHandwritingModel.GetPrediction"/>
+    <variant name="WebPlatformHandwritingModel.LoadModelResult"/>
+  </token>
+</histogram>
+
+<histogram
+    name="MachineLearningService.{ObsoleteRequestName}.TotalMemoryDeltaKb"
+    units="KB" expires_after="M95">
+  <owner>amoylan@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <owner>honglinyu@chromium.org</owner>
+  <summary>
+    Memory usage increase caused by obsolete {ObsoleteRequestName} request.
+  </summary>
+  <token key="ObsoleteRequestName">
+    <variant name="CreateGraphExecutorResult"/>
+    <variant name="ExecuteResult"/>
+    <variant name="LoadModelResult"/>
+    <variant name="smart_dim_model_20190521_v3.CreateGraphExecutorResult"/>
+    <variant name="smart_dim_model_20190521_v3.ExecuteResult"/>
+    <variant name="smart_dim_model_20190521_v3.LoadModelResult"/>
+    <variant name="TopCatModel.CreateGraphExecutorResult"/>
+    <variant name="TopCatModel.ExecuteResult"/>
+    <variant name="TopCatModel.LoadModelResult"/>
+  </token>
+</histogram>
+
+<histogram name="MachineLearningService.{RequestName}.CpuTimeMicrosec"
+    units="microseconds" expires_after="2023-01-15">
+  <owner>amoylan@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <summary>
+    CPU time (for one CPU core) of {RequestName} request. Reported for all
+    users; users without high-resolution clocks will report 0 for short
+    requests.
+  </summary>
+  <token key="RequestName">
+    <variant name="DocumentScanner.DetectCornersFromJPEG"/>
+    <variant name="DocumentScanner.DetectCornersFromNV12"/>
+    <variant name="DocumentScanner.DoPostProcessing"/>
+    <variant name="DocumentScanner.LoadModelResult"/>
+    <variant name="HandwritingModel.LoadModelResult"/>
+    <variant name="HandwritingModel.Recognize"/>
+    <variant name="SmartDimModel.CreateGraphExecutorResult"/>
+    <variant name="SmartDimModel.ExecuteResult"/>
+    <variant name="SmartDimModel.LoadModelResult"/>
+    <variant name="TestModel.CreateGraphExecutorResult"/>
+    <variant name="TestModel.ExecuteResult"/>
+    <variant name="TestModel.LoadModelResult"/>
+    <variant name="TextClassifier.Annotate"/>
+    <variant name="TextClassifier.FindLanguages"/>
+    <variant name="TextClassifier.LoadModelResult"/>
+    <variant name="TextClassifier.SuggestSelection"/>
+    <variant name="TextSuggester.LoadModelResult"/>
+    <variant name="TextSuggester.Suggest"/>
+    <variant name="WebPlatformHandwritingModel.GetPrediction"/>
+    <variant name="WebPlatformHandwritingModel.LoadModelResult"/>
+    <variant name="WebPlatformTfLiteFlatBufferModel.Compute"/>
+    <variant name="WebPlatformTfLiteFlatBufferModel.CreateModelLoaderResult"/>
+    <variant name="WebPlatformTfLiteFlatBufferModel.Load"/>
+  </token>
+</histogram>
+
+<histogram
+    name="MachineLearningService.{RequestName}.CreateGraphExecutorResult.Event"
+    enum="MachineLearningServiceCreateGraphExecutorResultEvent"
+    expires_after="2023-01-15">
+  <owner>amoylan@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <summary>
+    The result of {RequestName} CreateGraphExecutor request, which can be OK or
+    some specific error.
+  </summary>
+  <token key="RequestName">
+    <variant name="SmartDimModel"/>
+    <variant name="TestModel"/>
+  </token>
+</histogram>
+
+<histogram name="MachineLearningService.{RequestName}.ExecuteResult.Event"
+    enum="MachineLearningServiceExecuteResultEvent" expires_after="2023-01-15">
+  <owner>amoylan@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <summary>
+    The result of {RequestName} Execute request, which can be OK or some
+    specific error.
+  </summary>
+  <token key="RequestName">
+    <variant name="SmartDimModel"/>
+    <variant name="TestModel"/>
+  </token>
+</histogram>
+
+<histogram name="MachineLearningService.{RequestName}.LoadModelResult.Event"
+    enum="MachineLearningServiceLoadModelResultEvent"
+    expires_after="2023-01-15">
+  <owner>amoylan@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <summary>
+    The result of {RequestName} LoadModel request, which can be OK or some
+    specific error.
+  </summary>
+  <token key="RequestName">
+    <variant name="DocumentScanner"/>
+    <variant name="SmartDimModel"/>
+    <variant name="TestModel"/>
+    <variant name="TextClassifier"/>
+    <variant name="TextSuggester"/>
+  </token>
+</histogram>
+
+<histogram name="MachineLearningService.{RequestName}.TotalMemoryDeltaKb"
+    units="KB" expires_after="2022-12-31">
+  <owner>amoylan@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <owner>honglinyu@chromium.org</owner>
+  <summary>Memory usage increase caused by {RequestName} request.</summary>
+  <token key="RequestName">
+    <variant name="DocumentScanner.DetectCornersFromJPEG"/>
+    <variant name="DocumentScanner.DetectCornersFromNV12"/>
+    <variant name="DocumentScanner.DoPostProcessing"/>
+    <variant name="DocumentScanner.LoadModelResult"/>
+    <variant name="HandwritingModel.LoadModelResult"/>
+    <variant name="HandwritingModel.Recognize"/>
+    <variant name="SmartDimModel.CreateGraphExecutorResult"/>
+    <variant name="SmartDimModel.ExecuteResult"/>
+    <variant name="SmartDimModel.LoadModelResult"/>
+    <variant name="TestModel.CreateGraphExecutorResult"/>
+    <variant name="TestModel.ExecuteResult"/>
+    <variant name="TestModel.LoadModelResult"/>
+    <variant name="TextClassifier.Annotate"/>
+    <variant name="TextClassifier.FindLanguages"/>
+    <variant name="TextClassifier.LoadModelResult"/>
+    <variant name="TextClassifier.SuggestSelection"/>
+    <variant name="TextSuggester.LoadModelResult"/>
+    <variant name="TextSuggester.Suggest"/>
+    <variant name="WebPlatformHandwritingModel.GetPrediction"/>
+    <variant name="WebPlatformHandwritingModel.LoadModelResult"/>
+    <variant name="WebPlatformTfLiteFlatBufferModel.Compute"/>
+    <variant name="WebPlatformTfLiteFlatBufferModel.CreateModelLoaderResult"/>
+    <variant name="WebPlatformTfLiteFlatBufferModel.Load"/>
+  </token>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

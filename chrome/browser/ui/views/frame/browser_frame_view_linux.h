@@ -1,18 +1,19 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_LINUX_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_LINUX_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_layout_linux.h"
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view.h"
-#include "ui/views/linux_ui/window_button_order_observer.h"
+#include "ui/linux/window_button_order_observer.h"
 
 // A specialization of OpaqueBrowserFrameView that is also able to
 // render client side decorations (shadow, border, and rounded corners).
 class BrowserFrameViewLinux : public OpaqueBrowserFrameView,
-                              public views::WindowButtonOrderObserver {
+                              public ui::WindowButtonOrderObserver {
  public:
   BrowserFrameViewLinux(BrowserFrame* frame,
                         BrowserView* browser_view,
@@ -32,13 +33,11 @@ class BrowserFrameViewLinux : public OpaqueBrowserFrameView,
 
   // Gets the shadow metrics (radius, offset, and number of shadows).  This will
   // always return shadow values, even if shadows are not actually drawn.
-  gfx::ShadowValues GetShadowValues() const;
+  static gfx::ShadowValues GetShadowValues();
 
  protected:
-  // views::WindowButtonOrderObserver:
-  void OnWindowButtonOrderingChange(
-      const std::vector<views::FrameButton>& leading_buttons,
-      const std::vector<views::FrameButton>& trailing_buttons) override;
+  // ui::WindowButtonOrderObserver:
+  void OnWindowButtonOrderingChange() override;
 
   // views::View:
   void PaintRestoredFrameBorder(gfx::Canvas* canvas) const override;
@@ -55,7 +54,13 @@ class BrowserFrameViewLinux : public OpaqueBrowserFrameView,
   virtual float GetRestoredCornerRadiusDip() const;
 
  private:
-  BrowserFrameViewLayoutLinux* const layout_;
+  const raw_ptr<BrowserFrameViewLayoutLinux> layout_;
+
+  base::ScopedObservation<ui::LinuxUiTheme,
+                          ui::WindowButtonOrderObserver,
+                          &ui::LinuxUiTheme::AddWindowButtonOrderObserver,
+                          &ui::LinuxUiTheme::RemoveWindowButtonOrderObserver>
+      window_button_order_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_LINUX_H_

@@ -15,7 +15,7 @@ limitations under the License.
 
 package org.tensorflow.lite.support.image;
 
-import static org.tensorflow.lite.support.common.SupportPreconditions.checkArgument;
+import static org.tensorflow.lite.support.common.internal.SupportPreconditions.checkArgument;
 
 import android.graphics.RectF;
 
@@ -31,8 +31,8 @@ import java.util.List;
 /**
  * Helper class for converting values that represents bounding boxes into rectangles.
  *
- * <p>The class provides a static function to create bounding boxes as {@link RectF} from different
- * types of configurations.
+ * <p>The class provides a static function to create bounding boxes as {@link
+ * android.graphics.RectF} from different types of configurations.
  *
  * <p>Generally, a bounding box could be represented by 4 float values, but the values could be
  * interpreted in many ways. We now support 3 {@link Type} of configurations, and the order of

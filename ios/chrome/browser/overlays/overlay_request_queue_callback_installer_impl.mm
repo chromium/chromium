@@ -1,11 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/overlays/overlay_request_queue_callback_installer_impl.h"
 
-#include "base/check.h"
-#include "ios/chrome/browser/overlays/public/overlay_request_callback_installer.h"
+#import "base/check.h"
+#import "ios/chrome/browser/overlays/public/overlay_request_callback_installer.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

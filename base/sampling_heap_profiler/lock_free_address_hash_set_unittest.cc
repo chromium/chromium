@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,9 @@
 #include <cinttypes>
 #include <memory>
 
-#include "base/allocator/allocator_shim.h"
+#include "base/allocator/partition_allocator/shim/allocator_shim.h"
 #include "base/debug/alias.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/simple_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -134,8 +135,8 @@ class WriterThread : public SimpleThread {
   }
 
  private:
-  LockFreeAddressHashSet* set_;
-  std::atomic_bool* cancel_;
+  raw_ptr<LockFreeAddressHashSet> set_;
+  raw_ptr<std::atomic_bool> cancel_;
 };
 
 TEST_F(LockFreeAddressHashSetTest, ConcurrentAccess) {

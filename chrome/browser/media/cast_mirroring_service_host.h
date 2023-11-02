@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,13 +51,6 @@ class CastMirroringServiceHost final : public mojom::MirroringServiceHost,
  public:
   static void GetForTab(
       content::WebContents* target_contents,
-      mojo::PendingReceiver<mojom::MirroringServiceHost> receiver);
-
-  // TODO(crbug.com/809249): Remove when the extension-based implementation of
-  // the Cast MRP is removed.
-  static void GetForDesktop(
-      content::WebContents* initiator_contents,
-      const std::string& desktop_stream_id,
       mojo::PendingReceiver<mojom::MirroringServiceHost> receiver);
 
   static void GetForDesktop(
@@ -141,7 +134,7 @@ class CastMirroringServiceHost final : public mojom::MirroringServiceHost,
   content::DesktopMediaID source_media_id_;
 
   // The receiver to this mojom::ResourceProvider implementation.
-  mojo::Receiver<mojom::ResourceProvider> resource_provider_receiver{this};
+  mojo::Receiver<mojom::ResourceProvider> resource_provider_receiver_{this};
 
   // Connection to the remote mojom::MirroringService implementation.
   mojo::Remote<mojom::MirroringService> mirroring_service_;

@@ -1,8 +1,12 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/test/test_page_broadcast.h"
+
+#include "third_party/blink/public/mojom/frame/frame.mojom.h"
+#include "third_party/blink/public/mojom/frame/frame_replication_state.mojom.h"
+#include "third_party/blink/public/mojom/frame/remote_frame.mojom.h"
 
 namespace content {
 
@@ -24,7 +28,8 @@ void TestPageBroadcast::SetPageLifecycleState(
 void TestPageBroadcast::AudioStateChanged(bool is_audio_playing) {}
 
 void TestPageBroadcast::ActivatePrerenderedPage(
-    base::TimeTicks activation_start,
+    blink::mojom::PrerenderPageActivationParamsPtr
+        prerender_page_activation_params,
     ActivatePrerenderedPageCallback callback) {
   std::move(callback).Run();
 }
@@ -42,5 +47,13 @@ void TestPageBroadcast::SetHistoryOffsetAndLength(int32_t history_offset,
 
 void TestPageBroadcast::SetPageBaseBackgroundColor(
     absl::optional<SkColor> color) {}
+
+void TestPageBroadcast::CreateRemoteMainFrame(
+    const blink::RemoteFrameToken& token,
+    const absl::optional<blink::FrameToken>& opener_frame_token,
+    blink::mojom::FrameReplicationStatePtr replication_state,
+    const base::UnguessableToken& devtools_frame_token,
+    blink::mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
+    blink::mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces) {}
 
 }  // namespace content

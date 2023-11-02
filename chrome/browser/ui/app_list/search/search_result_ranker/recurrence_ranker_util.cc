@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -254,7 +254,7 @@ void JsonConfigConverter::OnJsonParsed(
     const std::string& model_identifier,
     data_decoder::DataDecoder::ValueOrError result) {
   RecurrenceRankerConfigProto proto;
-  if (result.value && ConvertRecurrenceRanker(&result.value.value(), &proto)) {
+  if (result.has_value() && ConvertRecurrenceRanker(&*result, &proto)) {
     std::move(callback).Run(std::move(proto));
   } else {
     std::move(callback).Run(absl::nullopt);

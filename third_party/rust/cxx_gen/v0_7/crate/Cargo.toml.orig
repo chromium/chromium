@@ -1,0 +1,21 @@
+[package]
+name = "cxx-gen"
+version = "0.7.68"
+authors = ["Adrian Taylor <adetaylor@chromium.org>"]
+edition = "2018"
+rust-version = "1.48"
+license = "MIT OR Apache-2.0"
+description = "C++ code generator for integrating `cxx` crate into higher level tools."
+repository = "https://github.com/dtolnay/cxx"
+exclude = ["build.rs"]
+keywords = ["ffi"]
+categories = ["development-tools::ffi"]
+
+[dependencies]
+codespan-reporting = "0.11"
+proc-macro2 = { version = "1.0.26", default-features = false, features = ["span-locations"] }
+quote = { version = "1.0", default-features = false }
+syn = { version = "1.0.70", default-features = false, features = ["parsing", "printing", "clone-impls", "full"] }
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]

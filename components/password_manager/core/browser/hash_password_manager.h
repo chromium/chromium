@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/password_hash_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -70,7 +71,7 @@ class HashPasswordManager {
   // Encrypts and saves |password_hash_data| to prefs. Returns true on success.
   bool EncryptAndSave(const PasswordHashData& password_hash_data);
 
-  PrefService* prefs_ = nullptr;
+  raw_ptr<PrefService> prefs_ = nullptr;
 
   // Callbacks when |kPasswordHashDataList| might have changed.
   // Should only be accessed on the UI thread. The callback is only called when

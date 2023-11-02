@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,12 +64,8 @@ gfx::Size FocusableBorder::GetMinimumSize() const {
   return gfx::Size();
 }
 
-void FocusableBorder::SetInsets(int top, int left, int bottom, int right) {
-  insets_.Set(top, left, bottom, right);
-}
-
-void FocusableBorder::SetInsets(int vertical, int horizontal) {
-  SetInsets(vertical, horizontal, vertical, horizontal);
+void FocusableBorder::SetInsets(const gfx::Insets& insets) {
+  insets_ = insets;
 }
 
 SkColor FocusableBorder::GetCurrentColor(const View& view) const {

@@ -362,6 +362,8 @@ processXPathDir(const char *testDir) {
             ret = -1;
         if (processXPath(testDir, docFile, docFile, data, "xptr", 1) != 0)
             ret = -1;
+        if (processXPath(testDir, docFile, docFile, data, "xptr-xp1", 1) != 0)
+            ret = -1;
 
         xmlFree(data);
     }

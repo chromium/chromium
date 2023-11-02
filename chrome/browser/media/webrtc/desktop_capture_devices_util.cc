@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 #include <string>
 #include <utility>
 
+#include "base/check_op.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/unguessable_token.h"
@@ -24,6 +26,7 @@
 #include "media/mojo/mojom/capture_handle.mojom.h"
 #include "media/mojo/mojom/display_media_information.mojom.h"
 #include "third_party/blink/public/mojom/media/capture_handle_config.mojom.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -54,17 +57,17 @@ media::mojom::CaptureHandlePtr CreateCaptureHandle(
 
   const auto& captured_config = captured->GetCaptureHandleConfig();
   if (!captured_config.all_origins_permitted &&
-      std::none_of(captured_config.permitted_origins.begin(),
-                   captured_config.permitted_origins.end(),
-                   [capturer_origin](const url::Origin& permitted_origin) {
-                     return capturer_origin.IsSameOriginWith(permitted_origin);
-                   })) {
+      base::ranges::none_of(
+          captured_config.permitted_origins,
+          [capturer_origin](const url::Origin& permitted_origin) {
+            return capturer_origin.IsSameOriginWith(permitted_origin);
+          })) {
     return nullptr;
   }
 
   // Observing CaptureHandle when either the capturing or the captured party
   // is incognito is disallowed, except for self-capture.
-  if (capturer->GetMainFrame() != captured->GetMainFrame()) {
+  if (capturer->GetPrimaryMainFrame() != captured->GetPrimaryMainFrame()) {
     if (capturer->GetBrowserContext()->IsOffTheRecord() ||
         captured->GetBrowserContext()->IsOffTheRecord()) {
       return nullptr;
@@ -78,7 +81,7 @@ media::mojom::CaptureHandlePtr CreateCaptureHandle(
 
   auto result = media::mojom::CaptureHandle::New();
   if (captured_config.expose_origin) {
-    result->origin = captured->GetMainFrame()->GetLastCommittedOrigin();
+    result->origin = captured->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   }
   result->capture_handle = captured_config.capture_handle;
 
@@ -127,73 +130,36 @@ DesktopMediaIDToDisplayMediaInformation(
       display_surface, logical_surface, cursor, std::move(capture_handle));
 }
 
-std::u16string GetStopSharingUIString(
-    const std::u16string& application_title,
-    const std::u16string& registered_extension_name,
-    bool capture_audio,
-    content::DesktopMediaID::Type capture_type) {
-  if (!capture_audio) {
-    if (application_title == registered_extension_name) {
-      switch (capture_type) {
-        case content::DesktopMediaID::TYPE_SCREEN:
-          return l10n_util::GetStringFUTF16(
-              IDS_MEDIA_SCREEN_CAPTURE_NOTIFICATION_TEXT, application_title);
-        case content::DesktopMediaID::TYPE_WINDOW:
-          return l10n_util::GetStringFUTF16(
-              IDS_MEDIA_WINDOW_CAPTURE_NOTIFICATION_TEXT, application_title);
-        case content::DesktopMediaID::TYPE_WEB_CONTENTS:
-          return l10n_util::GetStringFUTF16(
-              IDS_MEDIA_TAB_CAPTURE_NOTIFICATION_TEXT, application_title);
-        case content::DesktopMediaID::TYPE_NONE:
-          NOTREACHED();
-      }
-    } else {
-      switch (capture_type) {
-        case content::DesktopMediaID::TYPE_SCREEN:
-          return l10n_util::GetStringFUTF16(
-              IDS_MEDIA_SCREEN_CAPTURE_NOTIFICATION_TEXT_DELEGATED,
-              registered_extension_name, application_title);
-        case content::DesktopMediaID::TYPE_WINDOW:
-          return l10n_util::GetStringFUTF16(
-              IDS_MEDIA_WINDOW_CAPTURE_NOTIFICATION_TEXT_DELEGATED,
-              registered_extension_name, application_title);
-        case content::DesktopMediaID::TYPE_WEB_CONTENTS:
-          return l10n_util::GetStringFUTF16(
-              IDS_MEDIA_TAB_CAPTURE_NOTIFICATION_TEXT_DELEGATED,
-              registered_extension_name, application_title);
-        case content::DesktopMediaID::TYPE_NONE:
-          NOTREACHED();
-      }
+std::u16string GetNotificationText(const std::u16string& application_title,
+                                   bool capture_audio,
+                                   content::DesktopMediaID::Type capture_type) {
+  if (capture_audio) {
+    switch (capture_type) {
+      case content::DesktopMediaID::TYPE_SCREEN:
+        return l10n_util::GetStringFUTF16(
+            IDS_MEDIA_SCREEN_CAPTURE_WITH_AUDIO_NOTIFICATION_TEXT,
+            application_title);
+      case content::DesktopMediaID::TYPE_WEB_CONTENTS:
+        return l10n_util::GetStringFUTF16(
+            IDS_MEDIA_TAB_CAPTURE_WITH_AUDIO_NOTIFICATION_TEXT,
+            application_title);
+      case content::DesktopMediaID::TYPE_NONE:
+      case content::DesktopMediaID::TYPE_WINDOW:
+        NOTREACHED();
     }
-  } else {  // The case with audio
-    if (application_title == registered_extension_name) {
-      switch (capture_type) {
-        case content::DesktopMediaID::TYPE_SCREEN:
-          return l10n_util::GetStringFUTF16(
-              IDS_MEDIA_SCREEN_CAPTURE_WITH_AUDIO_NOTIFICATION_TEXT,
-              application_title);
-        case content::DesktopMediaID::TYPE_WEB_CONTENTS:
-          return l10n_util::GetStringFUTF16(
-              IDS_MEDIA_TAB_CAPTURE_WITH_AUDIO_NOTIFICATION_TEXT,
-              application_title);
-        case content::DesktopMediaID::TYPE_NONE:
-        case content::DesktopMediaID::TYPE_WINDOW:
-          NOTREACHED();
-      }
-    } else {
-      switch (capture_type) {
-        case content::DesktopMediaID::TYPE_SCREEN:
-          return l10n_util::GetStringFUTF16(
-              IDS_MEDIA_SCREEN_CAPTURE_WITH_AUDIO_NOTIFICATION_TEXT_DELEGATED,
-              registered_extension_name, application_title);
-        case content::DesktopMediaID::TYPE_WEB_CONTENTS:
-          return l10n_util::GetStringFUTF16(
-              IDS_MEDIA_TAB_CAPTURE_WITH_AUDIO_NOTIFICATION_TEXT_DELEGATED,
-              registered_extension_name, application_title);
-        case content::DesktopMediaID::TYPE_NONE:
-        case content::DesktopMediaID::TYPE_WINDOW:
-          NOTREACHED();
-      }
+  } else {
+    switch (capture_type) {
+      case content::DesktopMediaID::TYPE_SCREEN:
+        return l10n_util::GetStringFUTF16(
+            IDS_MEDIA_SCREEN_CAPTURE_NOTIFICATION_TEXT, application_title);
+      case content::DesktopMediaID::TYPE_WINDOW:
+        return l10n_util::GetStringFUTF16(
+            IDS_MEDIA_WINDOW_CAPTURE_NOTIFICATION_TEXT, application_title);
+      case content::DesktopMediaID::TYPE_WEB_CONTENTS:
+        return l10n_util::GetStringFUTF16(
+            IDS_MEDIA_TAB_CAPTURE_NOTIFICATION_TEXT, application_title);
+      case content::DesktopMediaID::TYPE_NONE:
+        NOTREACHED();
     }
   }
   return std::u16string();
@@ -213,9 +179,9 @@ std::string DeviceNamePrefix(
   // dialog for DISPLAY_VIDEO_CAPTURE_THIS_TAB could still return something
   // other than the current tab - be it a screen, window, or another tab.
   if (media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS &&
-      web_contents->GetMainFrame()->GetProcess()->GetID() ==
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID() ==
           media_id.web_contents_id.render_process_id &&
-      web_contents->GetMainFrame()->GetRoutingID() ==
+      web_contents->GetPrimaryMainFrame()->GetRoutingID() ==
           media_id.web_contents_id.main_render_frame_id) {
     return "current-";
   }
@@ -241,52 +207,51 @@ std::string DeviceName(content::WebContents* web_contents,
 }  // namespace
 
 std::unique_ptr<content::MediaStreamUI> GetDevicesForDesktopCapture(
+    const content::MediaStreamRequest& request,
     content::WebContents* web_contents,
-    const url::Origin& capturer_origin,
-    blink::MediaStreamDevices* devices,
     const content::DesktopMediaID& media_id,
-    blink::mojom::MediaStreamType devices_video_type,
-    blink::mojom::MediaStreamType devices_audio_type,
     bool capture_audio,
     bool disable_local_echo,
     bool display_notification,
     const std::u16string& application_title,
-    const std::u16string& registered_extension_name) {
+    blink::mojom::StreamDevices& out_devices) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   DVLOG(2) << __func__ << ": media_id " << media_id.ToString()
            << ", capture_audio " << capture_audio << ", disable_local_echo "
            << disable_local_echo << ", display_notification "
            << display_notification << ", application_title "
-           << application_title << ", extension_name "
-           << registered_extension_name;
+           << application_title;
 
   // Add selected desktop source to the list.
-  auto device = blink::MediaStreamDevice(
-      devices_video_type, media_id.ToString(),
-      DeviceName(web_contents, devices_video_type, media_id));
+  blink::MediaStreamDevice device(
+      request.video_type, media_id.ToString(),
+      DeviceName(web_contents, request.video_type, media_id));
   device.display_media_info = DesktopMediaIDToDisplayMediaInformation(
-      web_contents, capturer_origin, media_id);
-  devices->push_back(device);
+      web_contents, url::Origin::Create(request.security_origin), media_id);
+  out_devices.video_device = device;
+
   if (capture_audio) {
+    DCHECK_NE(request.audio_type, blink::mojom::MediaStreamType::NO_SERVICE);
+
     if (media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS) {
       content::WebContentsMediaCaptureId web_id = media_id.web_contents_id;
       web_id.disable_local_echo = disable_local_echo;
-      devices->push_back(blink::MediaStreamDevice(
-          devices_audio_type, web_id.ToString(), "Tab audio"));
-    } else if (disable_local_echo) {
-      // Use the special loopback device ID for system audio capture.
-      devices->push_back(blink::MediaStreamDevice(
-          devices_audio_type,
-          media::AudioDeviceDescription::kLoopbackWithMuteDeviceId,
-          "System Audio"));
+      out_devices.audio_device = blink::MediaStreamDevice(
+          request.audio_type, web_id.ToString(), "Tab audio");
     } else {
       // Use the special loopback device ID for system audio capture.
-      devices->push_back(blink::MediaStreamDevice(
-          devices_audio_type,
-          media::AudioDeviceDescription::kLoopbackInputDeviceId,
-          "System Audio"));
+      out_devices.audio_device = blink::MediaStreamDevice(
+          request.audio_type,
+          (disable_local_echo
+               ? media::AudioDeviceDescription::kLoopbackWithMuteDeviceId
+               : media::AudioDeviceDescription::kLoopbackInputDeviceId),
+          "System Audio");
     }
+    out_devices.audio_device->display_media_info =
+        DesktopMediaIDToDisplayMediaInformation(
+            web_contents, url::Origin::Create(request.security_origin),
+            media_id);
   }
 
   // If required, register to display the notification for stream capture.
@@ -294,20 +259,20 @@ std::unique_ptr<content::MediaStreamUI> GetDevicesForDesktopCapture(
   if (display_notification) {
     if (media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS) {
       content::GlobalRenderFrameHostId capturer_id;
-      if (web_contents && web_contents->GetMainFrame()) {
-        capturer_id = web_contents->GetMainFrame()->GetGlobalId();
+      if (web_contents && web_contents->GetPrimaryMainFrame()) {
+        capturer_id = web_contents->GetPrimaryMainFrame()->GetGlobalId();
       }
-      notification_ui =
-          TabSharingUI::Create(capturer_id, media_id, application_title);
+      notification_ui = TabSharingUI::Create(
+          capturer_id, media_id, application_title,
+          /*favicons_used_for_switch_to_tab_button=*/false);
     } else {
       notification_ui = ScreenCaptureNotificationUI::Create(
-          GetStopSharingUIString(application_title, registered_extension_name,
-                                 capture_audio, media_id.type));
+          GetNotificationText(application_title, capture_audio, media_id.type));
     }
   }
 
   return MediaCaptureDevicesDispatcher::GetInstance()
       ->GetMediaStreamCaptureIndicator()
-      ->RegisterMediaStream(web_contents, *devices, std::move(notification_ui),
-                            application_title);
+      ->RegisterMediaStream(web_contents, out_devices,
+                            std::move(notification_ui), application_title);
 }

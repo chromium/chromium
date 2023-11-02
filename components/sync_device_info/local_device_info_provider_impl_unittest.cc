@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "components/sync/base/sync_util.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
+#include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_sync_client.h"
 #include "components/version_info/version_string.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -34,11 +35,9 @@ const sync_pb::SharingSpecificFields::EnabledFeatures
     kSharingEnabledFeatures[] = {
         sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2};
 
-using testing::_;
 using testing::NiceMock;
 using testing::NotNull;
 using testing::Return;
-using testing::ReturnRef;
 
 class MockDeviceInfoSyncClient : public DeviceInfoSyncClient {
  public:
@@ -271,8 +270,9 @@ TEST_F(LocalDeviceInfoProviderImplTest, ShouldKeepStoredInvalidationFields) {
       SamplePhoneAsASecurityKeyInfo();
   auto device_info_restored_from_store = std::make_unique<DeviceInfo>(
       kLocalDeviceGuid, "name", "chrome_version", "user_agent",
-      sync_pb::SyncEnums_DeviceType_TYPE_LINUX, "device_id", "manufacturer",
-      "model", "full_hardware_class", base::Time(), base::Days(1),
+      sync_pb::SyncEnums_DeviceType_TYPE_LINUX, DeviceInfo::OsType::kLinux,
+      DeviceInfo::FormFactor::kDesktop, "device_id", "manufacturer", "model",
+      "full_hardware_class", base::Time(), base::Days(1),
       /*send_tab_to_self_receiving_enabled=*/true,
       /*sharing_info=*/absl::nullopt, paask_info, kFCMRegistrationToken,
       kInterestedDataTypes);

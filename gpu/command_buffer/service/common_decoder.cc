@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include <algorithm>
 
-#include "base/cxx17_backports.h"
 #include "base/numerics/safe_math.h"
 #include "gpu/command_buffer/service/command_buffer_service.h"
 #include "gpu/command_buffer/service/decoder_client.h"
@@ -129,6 +128,13 @@ bool CommonDecoder::Bucket::GetAsStrings(
   return true;
 }
 
+bool CommonDecoder::Bucket::OffsetSizeValid(size_t offset, size_t size) const {
+  size_t end = 0;
+  if (!base::CheckAdd<size_t>(offset, size).AssignIfValid(&end))
+    return false;
+  return end <= size_;
+}
+
 CommonDecoder::CommonDecoder(DecoderClient* client,
                              CommandBufferServiceBase* command_buffer_service)
     : command_buffer_service_(command_buffer_service),
@@ -217,7 +223,7 @@ RETURN_TYPE GetImmediateDataAs(const volatile COMMAND_TYPE& pod) {
 error::Error CommonDecoder::DoCommonCommand(unsigned int command,
                                             unsigned int arg_count,
                                             const volatile void* cmd_data) {
-  if (command < base::size(command_info)) {
+  if (command < std::size(command_info)) {
     const CommandInfo& info = command_info[command];
     unsigned int info_arg_count = static_cast<unsigned int>(info.arg_count);
     if ((info.arg_flags == cmd::kFixed && arg_count == info_arg_count) ||

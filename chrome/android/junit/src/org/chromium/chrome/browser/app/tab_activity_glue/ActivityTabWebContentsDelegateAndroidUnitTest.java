@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 import android.app.Activity;
-import android.content.Context;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -26,7 +25,6 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.app.tab_activity_glue.ActivityTabWebContentsDelegateAndroidUnitTest.ShadowColorUtils;
 import org.chromium.chrome.browser.app.tab_activity_glue.ActivityTabWebContentsDelegateAndroidUnitTest.ShadowProfile;
 import org.chromium.chrome.browser.app.tab_activity_glue.ActivityTabWebContentsDelegateAndroidUnitTest.ShadowWebContentsDarkModeController;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -36,8 +34,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.util.ColorUtils;
+import org.chromium.ui.shadows.ShadowColorUtils;
 import org.chromium.url.GURL;
 import org.chromium.url.ShadowGURL;
 
@@ -48,23 +47,15 @@ import org.chromium.url.ShadowGURL;
                 ShadowProfile.class, ShadowGURL.class})
 @EnableFeatures(ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)
 @DisableFeatures(ChromeFeatureList.FORCE_WEB_CONTENTS_DARK_MODE)
+@SuppressWarnings("DoNotMock") // Mocking GURL
 public class ActivityTabWebContentsDelegateAndroidUnitTest {
-    @Implements(ColorUtils.class)
-    static class ShadowColorUtils {
-        static boolean sInNightMode;
-        @Implementation
-        public static boolean inNightMode(Context context) {
-            return sInNightMode;
-        }
-    }
-
     @Implements(WebContentsDarkModeController.class)
     static class ShadowWebContentsDarkModeController {
         static boolean sGlobalSettingsEnabled;
         static GURL sBlockedUrl;
 
         @Implementation
-        public static boolean isEnabledForUrl(Profile profile, GURL url) {
+        public static boolean isEnabledForUrl(BrowserContextHandle browserContextHandle, GURL url) {
             return sGlobalSettingsEnabled && (!url.equals(sBlockedUrl));
         }
     }

@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_TEXT_UTILS_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_TEXT_UTILS_H_
 
+#include <limits>
 #include <string>
 
 #include "ui/gfx/range/range.h"
@@ -13,7 +14,7 @@
 namespace ash {
 namespace input_method {
 
-const int kUndefined = -1;
+constexpr uint32_t kUndefined = std::numeric_limits<uint32_t>::max();
 
 struct Sentence {
   Sentence();
@@ -31,17 +32,17 @@ struct Sentence {
 
 // Find the index of the last sentence end before |pos|, returns |kUndefined| if
 // not found.
-int FindLastSentenceEnd(const std::u16string& text, int pos);
+uint32_t FindLastSentenceEnd(const std::u16string& text, uint32_t pos);
 
 // Find the index of the first sentence end equal or after |pos|, returns
 // |kUndefined| if not found.
-int FindNextSentenceEnd(const std::u16string& text, int pos);
+uint32_t FindNextSentenceEnd(const std::u16string& text, uint32_t pos);
 
 // Find the last sentence before cursor position |pos|.
-Sentence FindLastSentence(const std::u16string& text, int pos);
+Sentence FindLastSentence(const std::u16string& text, uint32_t pos);
 
 // Find the sentence containing the cursor position |pos|.
-Sentence FindCurrentSentence(const std::u16string& text, int pos);
+Sentence FindCurrentSentence(const std::u16string& text, uint32_t pos);
 
 }  // namespace input_method
 }  // namespace ash

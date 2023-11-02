@@ -1,8 +1,21 @@
 /*
- * Copyright 2020 The Chromium Authors. All rights reserved.
+ * Copyright 2020 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
+
+// Most test callers immediately wait on the response from
+// |getStatusForMethodData|. However some tests trigger the UI and then interact
+// with it, and to support those we save the promise for later retrieval.
+var statusPromise = null;
+
+/**
+ * Return the outstanding status promise, if any.
+ * @return {string} - The status field or error message.
+ */
+async function getOutstandingStatusPromise() { // eslint-disable-line no-unused-vars, max-len
+  return statusPromise;
+}
 
 /**
  * Creates and returns the first parameter to the PaymentRequest constructor for
@@ -11,10 +24,34 @@
  * identifier. If not specified, then 'cred' is used instead.
  * @param {string} iconUrl - An optional icon URL. If not specified, then
  * 'window.location.origin/icon.png' is used.
+ * @param {boolean} showOptOut - Whether to show the SPC opt-out experience.
+ * If not specified, the parameter is not set in the input data blob.
  * @return {Array<PaymentMethodData>} - Secure payment confirmation method data.
  */
-function getTestMethodData(credentialIdentifier, iconUrl) {
-  return [{
+function getTestMethodData(credentialIdentifier, iconUrl, showOptOut) {
+  return getTestMethodDataWithInstrument(
+    {
+      displayName: 'display_name_for_instrument',
+      icon: iconUrl ? iconUrl : window.location.origin + '/icon.png',
+    },
+    credentialIdentifier,
+    showOptOut);
+}
+
+/**
+ * Creates and returns the first parameter to the PaymentRequest constructor for
+ * secure payment confirmation.
+ * @param {PaymentInstrument} paymentInstrument - Payment instrument details to
+ * be included in the request.
+ * @param {string} credentialIdentifier - An optional base64 encoded credential
+ * identifier. If not specified, then 'cred' is used instead.
+ * @param {boolean} showOptOut - Whether to show the SPC opt-out experience.
+ * If not specified, the parameter is not set in the input data blob.
+ * @return {Array<PaymentMethodData>} - Secure payment confirmation method data.
+ */
+function getTestMethodDataWithInstrument(
+  paymentInstrument, credentialIdentifier, showOptOut) {
+  const methodData = {
     supportedMethods: 'secure-payment-confirmation',
     data: {
       action: 'authenticate',
@@ -22,13 +59,18 @@ function getTestMethodData(credentialIdentifier, iconUrl) {
           (credentialIdentifier ? atob(credentialIdentifier) : 'cred'),
           (c) => c.charCodeAt(0))],
       challenge: Uint8Array.from('challenge', (c) => c.charCodeAt(0)),
-      instrument: {
-        displayName: 'display_name_for_instrument',
-        icon: iconUrl ? iconUrl : window.location.origin + '/icon.png',
-      },
+      instrument: paymentInstrument,
       timeout: 60000,
       payeeOrigin: 'https://example-payee-origin.test',
-  }}];
+      rpId: 'a.com',
+    },
+  };
+
+  if (typeof showOptOut !== 'undefined') {
+    methodData.data.showOptOut = showOptOut;
+  }
+
+  return [methodData];
 }
 
 /**
@@ -38,11 +80,14 @@ function getTestMethodData(credentialIdentifier, iconUrl) {
  * identifier. If not specified, then 'cred' is used instead.
  * @param {string} iconUrl - An optional icon URL. If not specified, then
  * 'window.location.origin/icon.png' is used.
+ * @param {boolean} showOptOut - Whether to show the SPC opt-out experience.
+ * If not specified, the parameter is not set in the input data blob.
  * @return {string} - The status field or error message.
  */
-async function getSecurePaymentConfirmationStatus(credentialIdentifier, iconUrl) { // eslint-disable-line no-unused-vars, max-len
-  return getStatusForMethodData(
-      getTestMethodData(credentialIdentifier, iconUrl));
+async function getSecurePaymentConfirmationStatus(credentialIdentifier, iconUrl, showOptOut) { // eslint-disable-line no-unused-vars, max-len
+  statusPromise = getStatusForMethodData(
+      getTestMethodData(credentialIdentifier, iconUrl, showOptOut));
+  return statusPromise;
 }
 
 /**
@@ -52,8 +97,31 @@ async function getSecurePaymentConfirmationStatus(credentialIdentifier, iconUrl)
  * @return {string} - The status field or error message.
  */
 async function getSecurePaymentConfirmationStatusAfterCanMakePayment() { // eslint-disable-line no-unused-vars, max-len
-  return getStatusForMethodDataAfterCanMakePayment(
+  statusPromise = getStatusForMethodDataAfterCanMakePayment(
       getTestMethodData(), /* checkCanMakePaymentFirst = */true);
+  return statusPromise;
+}
+
+/**
+ * Returns the clientDataJSON's payment.instrument.icon value of the response to
+ * a secure payment confirmation request.
+ * @param {PaymentInstrument} paymentInstrument - Payment instrument details to
+ * be included in the request.
+ * @param {string} credentialIdentifier - base64 encoded credential identifier.
+ * @return {string} - Output instrument icon string.
+ */
+async function getSecurePaymentConfirmationResponseIconWithInstrument(paymentInstrument, credentialIdentifier) { // eslint-disable-line no-unused-vars, max-len
+  const methodData = getTestMethodDataWithInstrument(
+    paymentInstrument, credentialIdentifier);
+  const request = new PaymentRequest(
+    methodData,
+    {total: {label: 'TEST', amount: {currency: 'USD', value: '0.01'}}});
+
+  const response = await request.show();
+  await response.complete();
+  const clientData = JSON.parse(String.fromCharCode(...new Uint8Array(
+    response.details.response.clientDataJSON)));
+  return clientData.payment.instrument.icon;
 }
 
 /**
@@ -168,9 +236,10 @@ async function createAndReturnPaymentCredential(icon) {
 /**
  * Creates a public key credential with 'payment' extension and returns its
  * identifier in base64 encoding.
+ * @param {string} userId - the user ID for the credential.
  * @return {DOMString} - The new credential's identifier in base64 encoding.
  */
-async function createPublicKeyCredentialWithPaymentExtensionAndReturnItsId() { // eslint-disable-line no-unused-vars, max-len
+async function createPublicKeyCredentialWithPaymentExtensionAndReturnItsId(userId) { // eslint-disable-line no-unused-vars, max-len
   try {
     const textEncoder = new TextEncoder();
     const credential = await navigator.credentials.create({
@@ -182,7 +251,7 @@ async function createPublicKeyCredentialWithPaymentExtensionAndReturnItsId() { /
         },
         user: {
           displayName: 'User',
-          id: textEncoder.encode('user_123'),
+          id: textEncoder.encode(userId),
           name: 'user@acme.com',
         },
         pubKeyCredParams: [{

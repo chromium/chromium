@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,7 +70,8 @@ class MediaClientImpl : public ash::MediaClient,
   void OnVmCameraMicActiveChanged(ash::VmCameraMicManager* manager) override;
 
   // media::CameraPrivacySwitchObserver:
-  void OnCameraPrivacySwitchStatusChanged(
+  void OnCameraHWPrivacySwitchStatusChanged(
+      int32_t camera_id,
       cros::mojom::CameraPrivacySwitchState state) override;
 
   // media::CameraActiveClientObserver:

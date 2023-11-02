@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,19 +12,17 @@
 #include "ash/components/phonehub/camera_roll_thumbnail_decoder.h"
 #include "ash/components/phonehub/message_receiver.h"
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
+#include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
+#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
+#include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
+#include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
-#include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
-#include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
-#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
+#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-class PrefRegistrySimple;
-class PrefService;
-
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class CameraRollDownloadManager;
@@ -35,19 +33,16 @@ class MessageSender;
 class CameraRollManagerImpl
     : public CameraRollManager,
       public MessageReceiver::Observer,
-      public multidevice_setup::MultiDeviceSetupClient::Observer {
+      public multidevice_setup::MultiDeviceSetupClient::Observer,
+      public secure_channel::ConnectionManager::Observer {
  public:
-  static void RegisterPrefs(PrefRegistrySimple* registry);
-
   CameraRollManagerImpl(
-      PrefService* pref_service,
       MessageReceiver* message_receiver,
       MessageSender* message_sender,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
       secure_channel::ConnectionManager* connection_manager,
       std::unique_ptr<CameraRollDownloadManager> camera_roll_download_manager);
   ~CameraRollManagerImpl() override;
-  void EnableCameraRollFeatureInSystemSetting() override;
 
  private:
   friend class CameraRollManagerImplTest;
@@ -71,6 +66,9 @@ class CameraRollManagerImpl
       const multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
           feature_states_map) override;
 
+  // ConnectionManager::Observer:
+  void OnConnectionStatusChanged() override;
+
   void SendFetchCameraRollItemsRequest();
   void OnItemThumbnailsDecoded(
       CameraRollThumbnailDecoder::BatchDecodeResult result,
@@ -85,16 +83,18 @@ class CameraRollManagerImpl
                                int64_t payload_id,
                                bool success);
   void OnFileTransferUpdate(
-      chromeos::secure_channel::mojom::FileTransferUpdatePtr update);
+      const proto::CameraRollItemMetadata& metadata,
+      secure_channel::mojom::FileTransferUpdatePtr update);
 
   bool IsCameraRollSettingEnabled();
   void UpdateCameraRollAccessStateAndNotifyIfNeeded(
       const proto::CameraRollAccessState& access_state);
-  void OnCameraRollOnboardingUiDismissed() override;
   void ComputeAndUpdateUiState() override;
 
-  bool is_camera_roll_accessible_ = false;
-  PrefService* pref_service_;
+  bool is_android_feature_enabled_ = false;
+  bool is_android_storage_granted_ = false;
+  absl::optional<base::TimeTicks> fetch_items_request_start_timestamp_;
+
   MessageReceiver* message_receiver_;
   MessageSender* message_sender_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
@@ -104,9 +104,13 @@ class CameraRollManagerImpl
   std::unique_ptr<CameraRollThumbnailDecoder> thumbnail_decoder_;
 
   base::WeakPtrFactory<CameraRollManagerImpl> weak_ptr_factory_{this};
+  // WeakPtrFactory dedicated to thumbanil decoder callbacks that need to be
+  // invalidated when the current item set updates.
+  base::WeakPtrFactory<CameraRollManagerImpl>
+      thumbnail_decoder_weak_ptr_factory_{this};
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_CAMERA_ROLL_MANAGER_IMPL_H_

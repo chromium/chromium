@@ -1,13 +1,15 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/extension_management_constants.h"
 
-#include "base/cxx17_backports.h"
-
 namespace extensions {
 namespace schema_constants {
+
+// Some values below are used by the policy component to filter out policy
+// values. They must be synced with
+// components/policy/core/common/policy_loader_common.cc
 
 const char kWildcard[] = "*";
 
@@ -52,7 +54,7 @@ const AllowedTypesMapEntry kAllowedTypesMap[] = {
     // ExtensionAllowedTypes policy.
 };
 
-const size_t kAllowedTypesMapSize = base::size(kAllowedTypesMap);
+const size_t kAllowedTypesMapSize = std::size(kAllowedTypesMap);
 
 Manifest::Type GetManifestType(const std::string& name) {
   for (size_t index = 0; index < kAllowedTypesMapSize; ++index) {

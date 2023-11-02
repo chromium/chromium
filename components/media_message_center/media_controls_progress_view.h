@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_CONTROLS_PROGRESS_VIEW_H_
 #define COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_CONTROLS_PROGRESS_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -53,9 +54,9 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaControlsProgressView
 
   void HandleSeeking(const gfx::Point& location);
 
-  views::ProgressBar* progress_bar_;
-  views::Label* progress_time_;
-  views::Label* duration_;
+  raw_ptr<views::ProgressBar> progress_bar_;
+  raw_ptr<views::Label> progress_time_;
+  raw_ptr<views::Label> duration_;
 
   const bool is_modern_notification_;
 

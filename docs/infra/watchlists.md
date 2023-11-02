@@ -62,7 +62,7 @@ It's advisable to run `watchlists.py` to verify that your new rules work.
 Example (from src):
 
 ```
-python ../depot_tools/watchlists.py PATH/TO/FILE1 PATH/TO/FILE2 ....
+python third_party/depot_tools/watchlists.py PATH/TO/FILE1 PATH/TO/FILE2 ....
 ```
 
 

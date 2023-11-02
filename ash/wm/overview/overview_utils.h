@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/wm/overview/overview_highlightable_view.h"
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/splitview/split_view_drag_indicators.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -89,6 +90,11 @@ bool ShouldUseTabletModeGridLayout();
 // Returns a Rect by rounding the values of the given RectF in a way that
 // returns the same size for SizeF regardless of its origin.
 ASH_EXPORT gfx::Rect ToStableSizeRoundedRect(const gfx::RectF& rect);
+
+void UpdateOverviewHighlightForFocus(OverviewHighlightableView* target_view);
+
+void UpdateOverviewHighlightForFocusAndSpokenFeedback(
+    OverviewHighlightableView* target_view);
 
 }  // namespace ash
 

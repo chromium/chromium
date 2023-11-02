@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/lru_cache.h"
 #include "base/hash/hash.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
@@ -24,7 +25,6 @@
 #include "build/build_config.h"
 #include "media/base/data_buffer.h"
 #include "third_party/blink/public/platform/media/interval_map.h"
-#include "third_party/blink/public/platform/media/lru.h"
 #include "third_party/blink/public/platform/web_common.h"
 
 namespace blink {
@@ -90,10 +90,10 @@ class BLINK_PLATFORM_EXPORT MultiBuffer {
   // but we keep and compare pointers to Readers internally.
   class Reader {
    public:
-    Reader() = default;
+    Reader();
     Reader(const Reader&) = delete;
     Reader& operator=(const Reader&) = delete;
-    virtual ~Reader() = default;
+    virtual ~Reader();
     // Notifies the reader that the range of available blocks has changed.
     // The reader must call MultiBuffer::Observe() to activate this callback.
     virtual void NotifyAvailableRange(
@@ -104,7 +104,7 @@ class BLINK_PLATFORM_EXPORT MultiBuffer {
   // uses to get data into the cache.
   class DataProvider {
    public:
-    virtual ~DataProvider() {}
+    virtual ~DataProvider() = default;
 
     // Returns the block number that is to be returned
     // by the next Read() call.
@@ -194,14 +194,13 @@ class BLINK_PLATFORM_EXPORT MultiBuffer {
 
     // The LRU should contain all blocks which are not pinned from
     // all multibuffers.
-    LRU<GlobalBlockId> lru_;
+    base::HashingLRUCacheSet<MultiBufferGlobalBlockId> lru_;
 
     // Where we run our tasks.
     scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   };
 
-  MultiBuffer(int32_t block_size_shift,
-              const scoped_refptr<GlobalLRU>& global_lru);
+  MultiBuffer(int32_t block_size_shift, scoped_refptr<GlobalLRU> global_lru);
   MultiBuffer(const MultiBuffer&) = delete;
   MultiBuffer& operator=(const MultiBuffer&) = delete;
   virtual ~MultiBuffer();
@@ -267,7 +266,7 @@ class BLINK_PLATFORM_EXPORT MultiBuffer {
       std::vector<scoped_refptr<media::DataBuffer>>* output);
 
   // Increment max cache size by |size| (counted in blocks).
-  void IncrementMaxSize(int32_t size);
+  void IncrementMaxSize(int64_t size);
 
   // Returns how many bytes have been received by the data providers at position
   // |block|, which have not yet been submitted to the multibuffer cache.

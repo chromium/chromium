@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,11 +70,6 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
             public void requestToShowTab(Tab tab, int type) {}
 
             @Override
-            public boolean closeAllTabsRequest(boolean incognito) {
-                return false;
-            }
-
-            @Override
             public boolean isSessionRestoreInProgress() {
                 return false;
             }
@@ -115,11 +110,6 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
             @Override
             public TabModel getCurrentModel() {
                 return mSelector.getCurrentModel();
-            }
-
-            @Override
-            public boolean closeAllTabsRequest(boolean incognito) {
-                return false;
             }
 
             @Override

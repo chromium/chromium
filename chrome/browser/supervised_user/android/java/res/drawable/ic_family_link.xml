@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- The official Family Link 'kite' icon, from go/icons: https://fonts.gstatic.com/s/i/productlogos/family_link/v5/192px.svg -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="32dp"
+    android:height="32dp"
+    android:viewportWidth="192"
+    android:viewportHeight="192">
+  <path
+      android:pathData="M95.5,8c-2.9,0 -5.8,1.1 -8.1,3.2L22.9,70.6c-2.4,2.2 -3.7,5.1 -3.8,8.1l40.7,6.4L95.5,72l10,-28.6L95.5,8z"
+      android:fillColor="#4285F4"/>
+  <path
+      android:pathData="M109.6,128.7L67.4,184h22c3.7,0 7.2,-1.7 9.5,-4.7l38.6,-50.6L109.6,128.7L109.6,128.7z"
+      android:fillColor="#BDC1C6"/>
+  <path
+      android:pathData="M19.2,144.1c-3.7,0 -7.2,1.7 -9.5,4.7L8,151.1l11.9,2.7l7,9.1l14.4,-18.8H19.2z"
+      android:fillColor="#BDC1C6"/>
+  <path
+      android:pathData="M95.5,72l-76.4,6.7c-0.2,2.8 0.6,5.6 2.4,8L43.9,116l6.1,8l25.7,7.7L95.5,120l10,-24L95.5,72z"
+      android:fillColor="#34A853"/>
+  <path
+      android:pathData="M50,124l36.1,47.3c2.4,3.1 5.9,4.7 9.5,4.7l10,-28.8l-10,-27.2L50,124z"
+      android:fillColor="#FBBC04"/>
+  <path
+      android:pathData="M89.4,184c-3.7,0 -7.2,-1.7 -9.5,-4.7l-23.4,-30.6c-2.3,-3 -5.8,-4.7 -9.5,-4.7H19.2c3.7,0 7.2,1.7 9.5,4.7l23.4,30.6c2.3,3 5.8,4.7 9.5,4.7H89.4z"
+      android:fillColor="#DADCE0"/>
+  <path
+      android:pathData="M172,78.7c-0.1,-1.4 -0.4,-2.7 -0.9,-4c-0.6,-1.5 -1.6,-2.9 -2.9,-4.1l-64.5,-59.5C101.3,9 98.4,8 95.5,8l0,64l38.2,13.4L172,78.7z"
+      android:fillColor="#669DF6"/>
+  <path
+      android:pathData="M172,78.7L172,78.7L95.5,72v48l22.1,11.7l23.5,-7.7l6.1,-8l22.3,-29.2C171.4,84.4 172.1,81.5 172,78.7z"
+      android:fillColor="#5BB974"/>
+  <path
+      android:pathData="M95.5,176c3.5,0 7.1,-1.6 9.5,-4.7l36.1,-47.3l-45.6,-4V176z"
+      android:fillColor="#FCC934"/>
+</vector>

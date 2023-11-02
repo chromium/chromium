@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "extensions/browser/api/messaging/message_port.h"
@@ -82,8 +82,8 @@ class ExtensionMessagePort : public MessagePort {
   bool IsValidPort() override;
   void RevalidatePort() override;
   void DispatchOnConnect(const std::string& channel_name,
-                         std::unique_ptr<base::DictionaryValue> source_tab,
-                         int source_frame_id,
+                         absl::optional<base::Value::Dict> source_tab,
+                         const ExtensionApiFrameIdMap::FrameData& source_frame,
                          int guest_process_id,
                          int guest_render_frame_routing_id,
                          const MessagingEndpoint& source_endpoint,
@@ -92,10 +92,11 @@ class ExtensionMessagePort : public MessagePort {
                          absl::optional<url::Origin> source_origin) override;
   void DispatchOnDisconnect(const std::string& error_message) override;
   void DispatchOnMessage(const Message& message) override;
-  void IncrementLazyKeepaliveCount() override;
+  void IncrementLazyKeepaliveCount(bool is_for_native_message_connect) override;
   void DecrementLazyKeepaliveCount() override;
   void OpenPort(int process_id, const PortContext& port_context) override;
   void ClosePort(int process_id, int routing_id, int worker_thread_id) override;
+  void NotifyResponsePending() override;
 
  private:
   class FrameTracker;
@@ -132,8 +133,8 @@ class ExtensionMessagePort : public MessagePort {
   // Builds specific IPCs for a port, with correct frame or worker identifiers.
   std::unique_ptr<IPC::Message> BuildDispatchOnConnectIPC(
       const std::string& channel_name,
-      const base::DictionaryValue* source_tab,
-      int source_frame_id,
+      const base::Value::Dict* source_tab,
+      const ExtensionApiFrameIdMap::FrameData& source_frame,
       int guest_process_id,
       int guest_render_frame_routing_id,
       const MessagingEndpoint& source_endpoint,
@@ -151,7 +152,7 @@ class ExtensionMessagePort : public MessagePort {
 
   const PortId port_id_;
   std::string extension_id_;
-  content::BrowserContext* browser_context_ = nullptr;
+  raw_ptr<content::BrowserContext> browser_context_ = nullptr;
 
   // Whether this port corresponds to *all* extension contexts. Should only be
   // true for a receiver port.
@@ -173,10 +174,20 @@ class ExtensionMessagePort : public MessagePort {
   // Whether the renderer acknowledged creation of the port. This is used to
   // distinguish abnormal port closure (e.g. no receivers) from explicit port
   // closure (e.g. by the port.disconnect() JavaScript method in the renderer).
-  bool did_create_port_ = false;
+  bool port_was_created_ = false;
+
+  // Whether one of the receivers has indicated that it will respond later and
+  // the opener should be expecting that response. Used to determine if we
+  // should notify the opener of a message port being closed before an expected
+  // response was received. By default this is assumed to be false until one of
+  // the receivers notifies us otherwise.
+  // Note: this is currently only relevant for messaging using
+  // OneTimeMessageHandlers, where the receivers are able to indicate they are
+  // going to respond asynchronously.
+  bool asynchronous_reply_pending_ = false;
 
   // Used in IncrementLazyKeepaliveCount
-  ExtensionHost* background_host_ptr_ = nullptr;
+  raw_ptr<ExtensionHost> background_host_ptr_ = nullptr;
   std::unique_ptr<FrameTracker> frame_tracker_;
 };
 

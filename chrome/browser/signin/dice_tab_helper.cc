@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,11 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
-#include "google_apis/gaia/gaia_urls.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 
 DiceTabHelper::DiceTabHelper(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsUserData<DiceTabHelper>(*web_contents),
+      content::WebContentsObserver(web_contents) {}
 
 DiceTabHelper::~DiceTabHelper() = default;
 
@@ -40,8 +41,7 @@ void DiceTabHelper::InitializeSigninFlow(
   if (reason == signin_metrics::Reason::kSigninPrimaryAccount) {
     sync_signin_flow_status_ = SyncSigninFlowStatus::kStarted;
     signin_metrics::LogSigninAccessPointStarted(access_point, promo_action);
-    signin_metrics::RecordSigninUserActionForAccessPoint(access_point,
-                                                         promo_action);
+    signin_metrics::RecordSigninUserActionForAccessPoint(access_point);
     base::RecordAction(base::UserMetricsAction("Signin_SigninPage_Loading"));
   }
 }
@@ -109,8 +109,7 @@ bool DiceTabHelper::IsSigninPageNavigation(
     content::NavigationHandle* navigation_handle) const {
   return !navigation_handle->IsErrorPage() &&
          navigation_handle->GetRedirectChain()[0] == signin_url_ &&
-         navigation_handle->GetURL().DeprecatedGetOriginAsURL() ==
-             GaiaUrls::GetInstance()->gaia_url();
+         gaia::HasGaiaSchemeHostPort(navigation_handle->GetURL());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(DiceTabHelper);

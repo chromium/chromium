@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -85,7 +85,8 @@ if (enable_rlz_support) {
         "chromeos/lib/rlz_value_store_chromeos.h",
       ]
       deps += [
-        "//chromeos/dbus",
+        "//chromeos/ash/components/dbus",
+        "//chromeos/ash/components/dbus/debug_daemon",
         "//chromeos/system",
       ]
     }
@@ -141,7 +142,7 @@ if (enable_rlz_support) {
 
     if (is_chromeos_ash) {
       deps += [
-        "//chromeos/dbus",
+        "//chromeos/ash/components/dbus",
         "//chromeos/system",
       ]
     }
@@ -200,7 +201,8 @@ if (enable_rlz_support) {
     ]
     if (is_chromeos_ash) {
       deps += [
-        "//chromeos/dbus:test_support",
+        "//chromeos/ash/components/dbus:test_support",
+        "//chromeos/ash/components/dbus/debug_daemon",
         "//chromeos/system",
       ]
     }

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -18,6 +19,7 @@
 #include "ui/events/ozone/evdev/device_event_dispatcher_evdev.h"
 #include "ui/events/ozone/evdev/input_device_factory_evdev.h"
 #include "ui/events/ozone/evdev/input_device_factory_evdev_proxy.h"
+#include "ui/events/ozone/evdev/input_device_opener_evdev.h"
 
 namespace ui {
 
@@ -39,7 +41,8 @@ class EvdevThread : public base::Thread {
   void Init() override {
     TRACE_EVENT0("evdev", "EvdevThread::Init");
     input_device_factory_ =
-        new InputDeviceFactoryEvdev(std::move(dispatcher_), cursor_);
+        new InputDeviceFactoryEvdev(std::move(dispatcher_), cursor_,
+                                    std::make_unique<InputDeviceOpenerEvdev>());
 
     std::unique_ptr<InputDeviceFactoryEvdevProxy> proxy(
         new InputDeviceFactoryEvdevProxy(base::ThreadTaskRunnerHandle::Get(),
@@ -60,12 +63,12 @@ class EvdevThread : public base::Thread {
  private:
   // Initialization bits passed from main thread.
   std::unique_ptr<DeviceEventDispatcherEvdev> dispatcher_;
-  CursorDelegateEvdev* cursor_;
+  raw_ptr<CursorDelegateEvdev> cursor_;
   EventThreadStartCallback init_callback_;
   scoped_refptr<base::SingleThreadTaskRunner> init_runner_;
 
   // Thread-internal state.
-  InputDeviceFactoryEvdev* input_device_factory_ = nullptr;
+  raw_ptr<InputDeviceFactoryEvdev> input_device_factory_ = nullptr;
 };
 
 }  // namespace
@@ -85,7 +88,7 @@ void EventThreadEvdev::Start(
                                           std::move(callback));
   base::Thread::Options thread_options;
   thread_options.message_pump_type = base::MessagePumpType::UI;
-  thread_options.priority = base::ThreadPriority::DISPLAY;
+  thread_options.thread_type = base::ThreadType::kDisplayCritical;
   if (!thread_->StartWithOptions(std::move(thread_options)))
     LOG(FATAL) << "Failed to create input thread";
 }

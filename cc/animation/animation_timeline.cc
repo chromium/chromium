@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -154,8 +154,8 @@ void AnimationTimeline::RemoveDetachedAnimationsFromImplThread(
 void AnimationTimeline::EraseAnimation(scoped_refptr<Animation> animation) {
   if (animation->element_animations())
     animation->DetachElement();
-  animation->SetAnimationTimeline(nullptr);
   animation->SetAnimationHost(nullptr);
+  animation->SetAnimationTimeline(nullptr);
 }
 
 void AnimationTimeline::PushPropertiesToImplThread(

@@ -32,15 +32,14 @@
 namespace blink {
 
 class MediaStreamComponent;
-class WebAudioSourceProvider;
 class WebMediaStreamSource;
 
-class WebMediaStreamTrack {
+class BLINK_PLATFORM_EXPORT WebMediaStreamTrack {
  public:
   enum class FacingMode { kNone, kUser, kEnvironment, kLeft, kRight };
 
-  BLINK_PLATFORM_EXPORT static const char kResizeModeNone[];
-  BLINK_PLATFORM_EXPORT static const char kResizeModeRescale[];
+  static const char kResizeModeNone[];
+  static const char kResizeModeRescale[];
 
   enum class ContentHintType {
     kNone,
@@ -59,23 +58,18 @@ class WebMediaStreamTrack {
     Assign(other);
     return *this;
   }
-  BLINK_PLATFORM_EXPORT void Assign(const WebMediaStreamTrack&);
+  void Assign(const WebMediaStreamTrack&);
 
-  BLINK_PLATFORM_EXPORT void Reset();
+  void Reset();
   bool IsNull() const { return private_.IsNull(); }
 
-  BLINK_PLATFORM_EXPORT WebMediaStreamSource Source() const;
-
-  // The lifetime of the WebAudioSourceProvider should outlive the
-  // WebMediaStreamTrack, and clients are responsible for calling
-  // SetSourceProvider(0) before the WebMediaStreamTrack is going away.
-  BLINK_PLATFORM_EXPORT void SetSourceProvider(WebAudioSourceProvider*);
+  WebMediaStreamSource Source() const;
 
 #if INSIDE_BLINK
-  BLINK_PLATFORM_EXPORT explicit WebMediaStreamTrack(MediaStreamComponent*);
-  BLINK_PLATFORM_EXPORT WebMediaStreamTrack& operator=(MediaStreamComponent*);
-  BLINK_PLATFORM_EXPORT operator scoped_refptr<MediaStreamComponent>() const;
-  BLINK_PLATFORM_EXPORT operator MediaStreamComponent*() const;
+  explicit WebMediaStreamTrack(MediaStreamComponent*);
+  WebMediaStreamTrack& operator=(MediaStreamComponent*);
+  operator scoped_refptr<MediaStreamComponent>() const;
+  operator MediaStreamComponent*() const;
 #endif
 
  private:

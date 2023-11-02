@@ -31,6 +31,7 @@
 
 #include <v8-inspector.h>
 #include <memory>
+
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
@@ -44,12 +45,13 @@
 #include "third_party/blink/renderer/core/inspector/inspector_highlight.h"
 #include "third_party/blink/renderer/core/inspector/inspector_overlay_host.h"
 #include "third_party/blink/renderer/core/inspector/protocol/overlay.h"
-#include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/quad_f.h"
 
 namespace cc {
 class Layer;
@@ -124,7 +126,7 @@ class CORE_EXPORT InspectTool : public GarbageCollected<InspectTool> {
 
 class CORE_EXPORT Hinge final : public GarbageCollected<Hinge> {
  public:
-  Hinge(FloatQuad quad,
+  Hinge(gfx::QuadF quad,
         Color color,
         Color outline_color,
         InspectorOverlayAgent* overlay);
@@ -136,7 +138,7 @@ class CORE_EXPORT Hinge final : public GarbageCollected<Hinge> {
   void Trace(Visitor* visitor) const;
 
  private:
-  FloatQuad quad_;
+  gfx::QuadF quad_;
   Color content_color_;
   Color outline_color_;
   Member<InspectorOverlayAgent> overlay_;
@@ -161,7 +163,8 @@ class CORE_EXPORT InspectorOverlayAgent final
   ToFlexItemHighlightConfig(protocol::Overlay::FlexItemHighlightConfig*);
   static std::unique_ptr<InspectorIsolationModeHighlightConfig>
   ToIsolationModeHighlightConfig(
-      protocol::Overlay::IsolationModeHighlightConfig*);
+      protocol::Overlay::IsolationModeHighlightConfig*,
+      int highlight_index);
   static absl::optional<LineStyle> ToLineStyle(protocol::Overlay::LineStyle*);
   static absl::optional<BoxStyle> ToBoxStyle(protocol::Overlay::BoxStyle*);
   static std::unique_ptr<InspectorHighlightConfig> ToHighlightConfig(
@@ -272,7 +275,6 @@ class CORE_EXPORT InspectorOverlayAgent final
   String EvaluateInOverlayForTest(const String&);
 
   void UpdatePrePaint();
-  // For CompositeAfterPaint.
   void PaintOverlay(GraphicsContext&);
 
   bool IsInspectorLayer(const cc::Layer*) const;
@@ -280,6 +282,8 @@ class CORE_EXPORT InspectorOverlayAgent final
   LocalFrame* GetFrame() const;
   float WindowToViewportScale() const;
   void ScheduleUpdate();
+
+  float EmulationScaleFactor() const;
 
  private:
   class InspectorOverlayChromeClient;
@@ -292,8 +296,8 @@ class CORE_EXPORT InspectorOverlayAgent final
   bool IsEmpty();
 
   LocalFrame* OverlayMainFrame();
-  void Reset(const IntSize& viewport_size,
-             const DoubleSize& visual_viewport_size);
+  void Reset(const gfx::Size& viewport_size,
+             const gfx::SizeF& visual_viewport_size);
   void OnResizeTimer(TimerBase*);
   void PaintOverlayPage();
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_URGENT_PAGE_DISCARDING_POLICY_H_
 
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -17,9 +18,7 @@ namespace performance_manager {
 
 namespace policies {
 
-// Urgently discard a tab when receiving a memory pressure signal. The discard
-// strategy used by this policy is based on a feature flag, see
-// UrgentDiscardingParams for more details.
+// Urgently discard a tab when receiving a memory pressure signal.
 class UrgentPageDiscardingPolicy : public GraphOwned,
                                    public SystemNode::ObserverDefaultImpl {
  public:
@@ -51,7 +50,7 @@ class UrgentPageDiscardingPolicy : public GraphOwned,
   // to this notification.
   bool handling_memory_pressure_notification_ = false;
 
-  Graph* graph_ = nullptr;
+  raw_ptr<Graph> graph_ = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

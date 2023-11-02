@@ -1,4 +1,4 @@
-# Copyright (c) 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -43,6 +43,7 @@ static_library("test_support") {
     "../task/sequence_manager/test/test_task_time_observer.h",
     "../timer/mock_timer.cc",
     "../timer/mock_timer.h",
+    "allow_check_is_test_to_be_called.h",
     "bind.cc",
     "bind.h",
     "copy_only_int.cc",
@@ -88,12 +89,13 @@ static_library("test_support") {
     "perf_time_logger.h",
     "power_monitor_test.cc",
     "power_monitor_test.h",
+    "power_monitor_test_utils.cc",
+    "power_monitor_test_utils.h",
+    "repeating_test_future.h",
     "scoped_command_line.cc",
     "scoped_command_line.h",
     "scoped_feature_list.cc",
     "scoped_feature_list.h",
-    "scoped_field_trial_list_resetter.cc",
-    "scoped_field_trial_list_resetter.h",
     "scoped_mock_clock_override.cc",
     "scoped_mock_clock_override.h",
     "scoped_mock_time_message_loop_task_runner.cc",
@@ -117,6 +119,7 @@ static_library("test_support") {
     "test_file_util.cc",
     "test_file_util.h",
     "test_future.h",
+    "test_future_internal.h",
     "test_io_thread.cc",
     "test_io_thread.h",
     "test_message_loop.cc",
@@ -143,12 +146,6 @@ static_library("test_support") {
 
   configs += [ "//build/config:precompiled_headers" ]
 
-  data_deps = [
-    # The isolate needs this script for setting up the test. It's not actually
-    # needed to run this target locally.
-    "//testing:test_scripts_shared",
-  ]
-
   public_deps = [
     ":test_config",
     "//base",
@@ -161,7 +158,6 @@ static_library("test_support") {
   deps = [
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
-    "//build:os_buildflags",
     "//third_party/icu:icuuc",
     "//third_party/libxml:libxml_utils",
     "//third_party/libxml:xml_reader",
@@ -185,7 +181,7 @@ static_library("test_support") {
     ]
   }
 
-  if (is_chromeos_ash || is_chromeos_lacros) {
+  if (is_chromeos) {
     sources += [
       "scoped_chromeos_version_info.cc",
       "scoped_chromeos_version_info.h",
@@ -261,42 +257,12 @@ static_library("test_support") {
       "../fuchsia/test_component_context_for_process.h",
       "../fuchsia/test_component_controller.cc",
       "../fuchsia/test_component_controller.h",
+      "scoped_dev_zero_fuchsia.cc",
+      "scoped_dev_zero_fuchsia.h",
     ]
   }
 
-  if (is_nacl_nonsfi) {
-    sources += [
-      "launcher/test_launcher.h",
-      "launcher/test_result.h",
-      "launcher/unit_test_launcher.h",
-      "launcher/unit_test_launcher_nacl_nonsfi.cc",
-    ]
-    sources -= [
-      "gtest_xml_util.cc",
-      "gtest_xml_util.h",
-      "icu_test_util.cc",
-      "icu_test_util.h",
-      "metrics/histogram_enum_reader.cc",
-      "metrics/histogram_enum_reader.h",
-      "perf_test_suite.cc",
-      "perf_test_suite.h",
-      "scoped_path_override.cc",
-      "scoped_path_override.h",
-      "test_discardable_memory_allocator.cc",
-      "test_discardable_memory_allocator.h",
-      "test_file_util.cc",
-      "test_file_util.h",
-      "test_file_util_posix.cc",
-      "test_suite.cc",
-      "test_suite.h",
-    ]
-    public_deps -= [ "//base:i18n" ]
-    deps -= [
-      "//third_party/icu:icuuc",
-      "//third_party/libxml:libxml_utils",
-      "//third_party/libxml:xml_reader",
-    ]
-  } else if (!is_ios) {
+  if (!is_ios) {
     sources += [
       "launcher/test_launcher.cc",
       "launcher/test_launcher.h",
@@ -317,13 +283,9 @@ static_library("test_support") {
       "trace_event_analyzer.h",
       "trace_test_utils.cc",
       "trace_test_utils.h",
+      "trace_to_file.cc",
+      "trace_to_file.h",
     ]
-    if (!is_nacl_nonsfi) {
-      sources += [
-        "trace_to_file.cc",
-        "trace_to_file.h",
-      ]
-    }
   }
 }
 
@@ -348,15 +310,6 @@ source_set("test_support_perf") {
   ]
 
   public_configs = [ ":perf_test_config" ]
-}
-
-static_library("test_launcher_nacl_nonsfi") {
-  testonly = true
-  sources = [
-    "launcher/test_launcher_nacl_nonsfi.cc",
-    "launcher/test_launcher_nacl_nonsfi.h",
-  ]
-  deps = [ ":test_support" ]
 }
 
 static_library("run_all_unittests") {
@@ -439,6 +392,7 @@ if (is_android) {
 
     deps = [
       "//base:base_java",
+      "//base:jni_java",
       "//testing/android/native_test:native_main_runner_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     ]

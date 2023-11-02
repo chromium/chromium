@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@ namespace translate_infobar_overlays {
 class PlaceholderRequestCancelHandler
     : public InfobarOverlayRequestCancelHandler {
  public:
-  // Constructor for a handler that cancels |request| of |translate_infobar|.
+  // Constructor for a handler that cancels `request` of `translate_infobar`.
   PlaceholderRequestCancelHandler(OverlayRequest* request,
                                   OverlayRequestQueue* queue,
                                   TranslateOverlayTabHelper* tab_helper,

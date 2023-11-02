@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,13 +13,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/dbus_method_call_status.h"
-#include "chromeos/dbus/pipe_reader.h"
+#include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "chromeos/dbus/common/pipe_reader.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 class DebugDaemonClient;
-}  // namespace chromeos
+}
 
 namespace metrics {
 
@@ -35,9 +35,9 @@ class PerfOutputCall {
   // The output is transferred to |perf_stdout|.
   using DoneCallback = base::OnceCallback<void(std::string perf_stdout)>;
 
-  PerfOutputCall(chromeos::DebugDaemonClient* debug_daemon_client,
-                 base::TimeDelta duration,
-                 const std::vector<std::string>& perf_args,
+  PerfOutputCall(ash::DebugDaemonClient* debug_daemon_client,
+                 const std::vector<std::string>& quipper_args,
+                 bool disable_cpu_idle,
                  DoneCallback callback);
 
   PerfOutputCall(const PerfOutputCall&) = delete;
@@ -60,14 +60,14 @@ class PerfOutputCall {
   void StopImpl();
 
   // A non-retaining pointer to the DebugDaemonClient instance.
-  chromeos::DebugDaemonClient* debug_daemon_client_;
+  ash::DebugDaemonClient* debug_daemon_client_;
 
   // Used to capture perf data written to a pipe.
   std::unique_ptr<chromeos::PipeReader> perf_data_pipe_reader_;
 
   // Saved arguments.
-  base::TimeDelta duration_;
-  std::vector<std::string> perf_args_;
+  std::vector<std::string> quipper_args_;
+  bool disable_cpu_idle_;
   DoneCallback done_callback_;
 
   // Whether Stop() is called before OnGetPerfOutput() has returned the session

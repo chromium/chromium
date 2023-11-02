@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,6 @@
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
-#include "components/services/quarantine/public/cpp/quarantine_features_win.h"
 #include "components/services/quarantine/quarantine.h"
 #include "components/services/quarantine/test_support.h"
 #include "net/base/filename_util.h"
@@ -48,8 +47,8 @@ const char* const kUntrustedURLs[] = {
 bool CreateFile(const base::FilePath& file_path) {
   constexpr char kTestData[] = "Hello world!";
 
-  return base::WriteFile(file_path, kTestData, base::size(kTestData)) ==
-         static_cast<int>(base::size(kTestData));
+  return base::WriteFile(file_path, kTestData, std::size(kTestData)) ==
+         static_cast<int>(std::size(kTestData));
 }
 
 base::FilePath GetZoneIdentifierStreamPath(const base::FilePath& file_path) {
@@ -123,8 +122,8 @@ bool AddInternetZoneIdentifierDirectly(const base::FilePath& file_path) {
   static const char kMotwForInternetZone[] = "[ZoneTransfer]\r\nZoneId=3\r\n";
   return base::WriteFile(GetZoneIdentifierStreamPath(file_path),
                          kMotwForInternetZone,
-                         base::size(kMotwForInternetZone)) ==
-         static_cast<int>(base::size(kMotwForInternetZone));
+                         std::size(kMotwForInternetZone)) ==
+         static_cast<int>(std::size(kMotwForInternetZone));
 }
 
 void CheckQuarantineResult(QuarantineFileResult result,

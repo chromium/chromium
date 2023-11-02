@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,11 @@ class Window;
 
 namespace ash {
 
-// Returns true if |window| is an ARC app window.
+// Returns true if `window` is an ARC app window.
 ASH_PUBLIC_EXPORT bool IsArcWindow(const aura::Window* window);
+
+// Returns true if `window` is a lacros window.
+ASH_PUBLIC_EXPORT bool IsLacrosWindow(const aura::Window* window);
 
 }  // namespace ash
 

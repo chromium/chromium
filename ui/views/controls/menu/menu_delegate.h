@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -158,16 +158,6 @@ class VIEWS_EXPORT MenuDelegate {
       MenuItemView* item,
       const ui::DropTargetEvent& event,
       DropPosition* position);
-
-  // Invoked to perform the drop operation. This is ONLY invoked if CanDrop()
-  // returned true for the parent menu item, and GetDropOperation() returned an
-  // operation other than DragOperation::kNone.
-  //
-  // |menu| is the menu the drop occurred on.
-  virtual ui::mojom::DragOperation OnPerformDrop(
-      MenuItemView* menu,
-      DropPosition position,
-      const ui::DropTargetEvent& event);
 
   // Invoked to get a callback to perform the drop operation later. This is ONLY
   // invoked if CanDrop() returned true for the parent menu item, and

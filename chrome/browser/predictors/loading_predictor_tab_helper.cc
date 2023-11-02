@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@
 #include "chrome/browser/predictors/predictors_enums.h"
 #include "chrome/browser/predictors/predictors_features.h"
 #include "chrome/browser/predictors/predictors_switches.h"
-#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/google/core/common/google_util.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
@@ -70,6 +70,7 @@ net::RequestPriority GetRequestPriority(
     case network::mojom::RequestDestination::kWorker:
     case network::mojom::RequestDestination::kXslt:
     case network::mojom::RequestDestination::kFencedframe:
+    case network::mojom::RequestDestination::kWebIdentity:
       return net::LOWEST;
   }
 }
@@ -81,7 +82,7 @@ bool IsHandledNavigation(content::NavigationHandle* navigation_handle) {
       prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
           web_contents->GetBrowserContext());
   if (no_state_prefetch_manager &&
-      no_state_prefetch_manager->IsWebContentsPrerendering(web_contents)) {
+      no_state_prefetch_manager->IsWebContentsPrefetching(web_contents)) {
     return false;
   }
 
@@ -212,13 +213,14 @@ LoadingPredictorTabHelper::DocumentPageDataHolder::~DocumentPageDataHolder() =
 LoadingPredictorTabHelper::NavigationPageDataHolder::NavigationPageDataHolder(
     content::NavigationHandle& navigation_handle)
     : page_data_(base::MakeRefCounted<PageData>()),
-      navigation_handle_(navigation_handle) {}
+      navigation_handle_(navigation_handle.GetSafeRef()) {}
 LoadingPredictorTabHelper::NavigationPageDataHolder::
     ~NavigationPageDataHolder() = default;
 
 LoadingPredictorTabHelper::LoadingPredictorTabHelper(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<LoadingPredictorTabHelper>(*web_contents) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   auto* predictor = LoadingPredictorFactory::GetForProfile(profile);
@@ -396,13 +398,13 @@ void LoadingPredictorTabHelper::DidLoadResourceFromMemoryCache(
       page_data->navigation_id_, resource_load_info);
 }
 
-void LoadingPredictorTabHelper::DocumentOnLoadCompletedInMainFrame(
-    content::RenderFrameHost* render_frame_host) {
+void LoadingPredictorTabHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!predictor_)
     return;
 
-  auto* page_data = PageData::GetForDocument(*render_frame_host);
+  auto* page_data =
+      PageData::GetForDocument(*web_contents()->GetPrimaryMainFrame());
   if (!page_data)
     return;
 
@@ -444,7 +446,7 @@ void LoadingPredictorTabHelper::OnOptimizationGuideDecision(
 
   if (!page_data->has_committed_) {
     if (!page_data->navigation_page_data_holder_ ||
-        page_data->navigation_page_data_holder_->navigation_handle_.GetURL() !=
+        page_data->navigation_page_data_holder_->navigation_handle_->GetURL() !=
             main_frame_url) {
       // The current navigation has either redirected or a new one has started,
       // so return.
@@ -492,8 +494,9 @@ void LoadingPredictorTabHelper::OnOptimizationGuideDecision(
 
   PreconnectPrediction prediction;
   url::Origin main_frame_origin = url::Origin::Create(main_frame_url);
-  net::NetworkIsolationKey network_isolation_key(main_frame_origin,
-                                                 main_frame_origin);
+  net::SchemefulSite main_frame_site = net::SchemefulSite(main_frame_url);
+  net::NetworkAnonymizationKey network_anonymization_key(main_frame_site,
+                                                         main_frame_site);
   std::set<url::Origin> predicted_origins;
   std::vector<GURL> predicted_subresources;
   const auto lp_metadata = metadata.loading_predictor_metadata();
@@ -509,7 +512,7 @@ void LoadingPredictorTabHelper::OnOptimizationGuideDecision(
       if (ShouldPrefetchDestination(destination)) {
         // TODO(falken): Detect duplicates.
         prediction.prefetch_requests.emplace_back(
-            subresource_url, network_isolation_key, destination);
+            subresource_url, network_anonymization_key, destination);
       }
     } else if (should_add_preconnects_to_prediction) {
       url::Origin subresource_origin = url::Origin::Create(subresource_url);
@@ -522,7 +525,7 @@ void LoadingPredictorTabHelper::OnOptimizationGuideDecision(
         continue;
       predicted_origins.insert(subresource_origin);
       prediction.requests.emplace_back(subresource_origin, 1,
-                                       network_isolation_key);
+                                       network_anonymization_key);
     }
   }
 

@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+FAIL Response.body is null for responses with status=204 (method=GET) assert_equals: the body should be null expected null but got object "[object ReadableStream]"
+FAIL Response.body is null for responses with status=204 (method=POST) assert_equals: the body should be null expected null but got object "[object ReadableStream]"
+FAIL Response.body is null for responses with status=204 (method=OPTIONS) assert_equals: the body should be null expected null but got object "[object ReadableStream]"
+FAIL Response.body is null for responses with status=205 (method=GET) assert_equals: the body should be null expected null but got object "[object ReadableStream]"
+FAIL Response.body is null for responses with status=205 (method=POST) assert_equals: the body should be null expected null but got object "[object ReadableStream]"
+FAIL Response.body is null for responses with status=205 (method=OPTIONS) assert_equals: the body should be null expected null but got object "[object ReadableStream]"
+FAIL Response.body is null for responses with status=304 (method=GET) assert_equals: the body should be null expected null but got object "[object ReadableStream]"
+FAIL Response.body is null for responses with status=304 (method=POST) assert_equals: the body should be null expected null but got object "[object ReadableStream]"
+FAIL Response.body is null for responses with status=304 (method=OPTIONS) assert_equals: the body should be null expected null but got object "[object ReadableStream]"
+FAIL Response.body is null for responses with method=HEAD assert_equals: the body should be null expected null but got object "[object ReadableStream]"
+Harness: the test ran to completion.
+

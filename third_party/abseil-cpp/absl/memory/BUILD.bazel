@@ -29,6 +29,9 @@ cc_library(
     name = "memory",
     hdrs = ["memory.h"],
     copts = ABSL_DEFAULT_COPTS,
+    defines = select({
+        "//conditions:default": [],
+    }),
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         "//absl/base:core_headers",

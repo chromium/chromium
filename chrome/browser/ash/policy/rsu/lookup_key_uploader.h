@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,15 +12,15 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/enrollment_certificate_uploader.h"
-#include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 class CryptohomeMiscClient;
-}  // namespace chromeos
+}
 
 namespace policy {
 
@@ -66,7 +66,7 @@ class LookupKeyUploader : public CloudPolicyStore::Observer {
   DeviceCloudPolicyStoreAsh* policy_store_;
   PrefService* prefs_;
   ash::attestation::EnrollmentCertificateUploader* certificate_uploader_;
-  chromeos::CryptohomeMiscClient* cryptohome_misc_client_;
+  ash::CryptohomeMiscClient* cryptohome_misc_client_;
 
   // Whether we need to upload the lookup key right now. By default, it is set
   // to true. Later, it is set to false after first successful upload or finding

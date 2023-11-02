@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 // Coordinator for the badge overflow popup menu.
 @interface BadgePopupMenuCoordinator : ChromeCoordinator
 
-// Updates the popup menu with |badgesItems|.
+// Updates the popup menu with `badgesItems`.
 - (void)setBadgeItemsToShow:(NSArray<id<BadgeItem>>*)badgeItems;
 
 @end

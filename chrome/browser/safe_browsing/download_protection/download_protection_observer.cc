@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -118,21 +118,23 @@ void ReportAnalysisConnectorWarningBypassed(download::DownloadItem* download) {
   if (stored_result) {
     for (const auto& metadata : stored_result->file_metadata) {
       ReportAnalysisConnectorWarningBypass(
-          profile, download->GetURL(), metadata.filename, metadata.sha256,
-          metadata.mime_type,
+          profile, download->GetURL(), "", "", metadata.filename,
+          metadata.sha256, metadata.mime_type,
           extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
-          DeepScanAccessPoint::DOWNLOAD, metadata.size, metadata.scan_response);
+          DeepScanAccessPoint::DOWNLOAD, metadata.size, metadata.scan_response,
+          stored_result->user_justification);
     }
   } else {
     std::string raw_digest_sha256 = download->GetHash();
     ReportAnalysisConnectorWarningBypass(
-        profile, download->GetURL(),
+        profile, download->GetURL(), "", "",
         download->GetTargetFilePath().AsUTF8Unsafe(),
         base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size()),
         download->GetMimeType(),
         extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
         DeepScanAccessPoint::DOWNLOAD, download->GetTotalBytes(),
-        enterprise_connectors::ContentAnalysisResponse());
+        enterprise_connectors::ContentAnalysisResponse(),
+        /*user_justification=*/absl::nullopt);
   }
 }
 

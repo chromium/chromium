@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/updater/policy/mac/managed_preference_policy_manager.h"
 
 #include <string>
+#include <vector>
 
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
@@ -29,7 +30,7 @@ class ManagedPreferencePolicyManager : public PolicyManagerInterface {
   // Overrides for PolicyManagerInterface.
   std::string source() const override;
 
-  bool IsManaged() const override;
+  bool HasActiveDevicePolicies() const override;
 
   bool GetLastCheckPeriodMinutes(int* minutes) const override;
   bool GetUpdatesSuppressedTimes(
@@ -53,6 +54,8 @@ class ManagedPreferencePolicyManager : public PolicyManagerInterface {
   bool GetProxyServer(std::string* proxy_server) const override;
   bool GetTargetChannel(const std::string& app_id,
                         std::string* channel) const override;
+  bool GetForceInstallApps(
+      std::vector<std::string>* force_install_apps) const override;
 
  private:
   base::scoped_nsobject<CRUManagedPreferencePolicyManager> impl_;
@@ -65,7 +68,7 @@ ManagedPreferencePolicyManager::ManagedPreferencePolicyManager(
 
 ManagedPreferencePolicyManager::~ManagedPreferencePolicyManager() = default;
 
-bool ManagedPreferencePolicyManager::IsManaged() const {
+bool ManagedPreferencePolicyManager::HasActiveDevicePolicies() const {
   return [impl_ managed];
 }
 
@@ -192,6 +195,11 @@ bool ManagedPreferencePolicyManager::GetTargetChannel(
     return true;
   }
 
+  return false;
+}
+
+bool ManagedPreferencePolicyManager::GetForceInstallApps(
+    std::vector<std::string>* /* force_install_apps */) const {
   return false;
 }
 

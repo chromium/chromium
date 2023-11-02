@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,13 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/leveldb_proto/testing/fake_db.h"
 #include "media/base/media_switches.h"
 #include "media/base/test_data_util.h"
@@ -75,13 +77,19 @@ class VideoDecodeStatsDBImplTest : public ::testing::Test {
   }
 
   void VerifyOnePendingOp(std::string op_name) {
-    EXPECT_EQ(stats_db_->pending_ops_.size(), 1u);
-    VideoDecodeStatsDBImpl::PendingOperation* pending_op =
-        stats_db_->pending_ops_.begin()->second.get();
+    EXPECT_EQ(stats_db_->pending_operations_.get_pending_ops_for_test().size(),
+              1u);
+    PendingOperations::PendingOperation* pending_op =
+        stats_db_->pending_operations_.get_pending_ops_for_test()
+            .begin()
+            ->second.get();
     EXPECT_EQ(pending_op->uma_str_, op_name);
   }
 
-  void VerifyNoPendingOps() { EXPECT_TRUE(stats_db_->pending_ops_.empty()); }
+  void VerifyNoPendingOps() {
+    EXPECT_TRUE(
+        stats_db_->pending_operations_.get_pending_ops_for_test().empty());
+  }
 
   int GetMaxFramesPerBuffer() {
     return VideoDecodeStatsDBImpl::GetMaxFramesPerBuffer();
@@ -195,7 +203,7 @@ class VideoDecodeStatsDBImplTest : public ::testing::Test {
 
   // See documentation in SetUp()
   std::unique_ptr<FakeDB<DecodeStatsProto>::EntryMap> fake_db_map_;
-  FakeDB<DecodeStatsProto>* fake_db_;
+  raw_ptr<FakeDB<DecodeStatsProto>> fake_db_;
   std::unique_ptr<VideoDecodeStatsDBImpl> stats_db_;
 };
 

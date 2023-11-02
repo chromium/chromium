@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,14 @@
 #include <memory>
 #include <utility>
 
+#include "chrome/browser/ash/printing/cups_print_job_manager_factory.h"
 #include "chrome/browser/ash/printing/history/print_job_database_impl.h"
 #include "chrome/browser/ash/printing/history/print_job_history_service.h"
 #include "chrome/browser/ash/printing/history/print_job_history_service_impl.h"
 #include "chrome/browser/ash/printing/history/print_job_reporting_service.h"
 #include "chrome/browser/ash/printing/history/print_job_reporting_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/printing/cups_print_job_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -34,10 +33,8 @@ PrintJobHistoryServiceFactory* PrintJobHistoryServiceFactory::GetInstance() {
 }
 
 PrintJobHistoryServiceFactory::PrintJobHistoryServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "PrintJobHistoryService",
-          BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(chromeos::CupsPrintJobManagerFactory::GetInstance());
+    : ProfileKeyedServiceFactory("PrintJobHistoryService") {
+  DependsOn(CupsPrintJobManagerFactory::GetInstance());
   DependsOn(PrintJobReportingServiceFactory::GetInstance());
 }
 
@@ -58,8 +55,8 @@ KeyedService* PrintJobHistoryServiceFactory::BuildServiceInstanceFor(
 
   auto print_job_database = std::make_unique<PrintJobDatabaseImpl>(
       database_provider, profile->GetPath());
-  chromeos::CupsPrintJobManager* print_job_manager =
-      chromeos::CupsPrintJobManagerFactory::GetForBrowserContext(profile);
+  CupsPrintJobManager* print_job_manager =
+      CupsPrintJobManagerFactory::GetForBrowserContext(profile);
   PrintJobReportingService* print_job_reporting_service =
       PrintJobReportingServiceFactory::GetForBrowserContext(profile);
 

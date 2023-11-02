@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "absl/types/variant.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "components/policy/policy_export.h"
@@ -22,6 +24,18 @@ struct POLICY_EXPORT PropertyNode;
 struct POLICY_EXPORT PropertiesNode;
 
 }  // namespace internal
+
+// The error path, which leads to an error occurred. Members of the
+// error path can either be ints in case of list items or strings in case of
+// dictionary keys.
+typedef std::vector<absl::variant<int, std::string>> PolicyErrorPath;
+
+// Returns a formatted string for a given error path |error_path|, consisting
+// of list indices and dict keys.
+// For example, ErrorPathToString("TestPolicy", {4, "testField"}) will be
+// encoded as "TestPolicy[4].testField"
+POLICY_EXPORT std::string ErrorPathToString(const std::string& policy_name,
+                                            PolicyErrorPath error_path);
 
 // Option flags passed to Schema::Validate() and Schema::Normalize(), describing
 // the strategy to handle unknown properties or invalid values for dict type.
@@ -48,6 +62,11 @@ enum SchemaOnErrorStrategy {
   // is safe. For example, can't be used if an empty list has a special meaning,
   // like allowing everything.
   SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY,
+  // Same as |SCHEMA_ALLOW_UNKNOWN|, but unknown properties won't cause errors
+  // messages to be added. Used to allow adding extra fields to the policy
+  // internally, without adding those fields to the schema. This option should
+  // be avoided, since it suppresses the errors.
+  SCHEMA_ALLOW_UNKNOWN_WITHOUT_WARNING,
 };
 
 // Schema validation options for Schema::ParseToDictAndValidate().
@@ -131,7 +150,7 @@ class POLICY_EXPORT Schema {
   // will be returned.
   bool Validate(const base::Value& value,
                 SchemaOnErrorStrategy strategy,
-                std::string* out_error_path,
+                PolicyErrorPath* out_error_path,
                 std::string* out_error) const;
 
   // Similar to Validate() but drop values with errors instead of ignoring them.
@@ -143,7 +162,7 @@ class POLICY_EXPORT Schema {
   // dropped base::Value and destroy them.
   bool Normalize(base::Value* value,
                  SchemaOnErrorStrategy strategy,
-                 std::string* out_error_path,
+                 PolicyErrorPath* out_error_path,
                  std::string* out_error,
                  bool* out_changed) const;
 
@@ -178,8 +197,8 @@ class POLICY_EXPORT Schema {
 
    private:
     scoped_refptr<const InternalStorage> storage_;
-    const internal::PropertyNode* it_;
-    const internal::PropertyNode* end_;
+    raw_ptr<const internal::PropertyNode> it_;
+    raw_ptr<const internal::PropertyNode> end_;
   };
 
   // These methods should be called only if type() == Type::DICTIONARY,

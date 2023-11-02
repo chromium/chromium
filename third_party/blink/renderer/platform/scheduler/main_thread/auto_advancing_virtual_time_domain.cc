@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,8 @@
 #include "base/time/time_override.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/scheduler/common/scheduler_helper.h"
+
+#include "base/record_replay.h"
 
 namespace blink {
 namespace scheduler {
@@ -56,21 +58,8 @@ base::TimeTicks AutoAdvancingVirtualTimeDomain::NowTicks() const {
   return now_ticks_;
 }
 
-base::TimeTicks AutoAdvancingVirtualTimeDomain::GetNextDelayedTaskTime(
-    base::sequence_manager::DelayedWakeUp next_wake_up,
-    base::sequence_manager::LazyNow* lazy_now) const {
-  // We may have advanced virtual time past the next task when a
-  // WebScopedVirtualTimePauser unpauses.
-  if (next_wake_up.time <= NowTicks())
-    return base::TimeTicks();
-
-  // Rely on MaybeFastForwardToWakeUp to be called to advance
-  // virtual time.
-  return base::TimeTicks::Max();
-}
-
 bool AutoAdvancingVirtualTimeDomain::MaybeFastForwardToWakeUp(
-    absl::optional<base::sequence_manager::DelayedWakeUp> wakeup,
+    absl::optional<base::sequence_manager::WakeUp> wakeup,
     bool quit_when_idle_requested) {
   if (!can_advance_virtual_time_)
     return false;
@@ -146,7 +135,7 @@ void AutoAdvancingVirtualTimeDomain::DidProcessTask(
 
   // Delayed tasks are being excessively starved, so allow virtual time to
   // advance.
-  auto wake_up = helper_->GetNextDelayedWakeUp();
+  auto wake_up = helper_->GetNextWakeUp();
   if (wake_up && MaybeAdvanceVirtualTime(wake_up->time))
     task_starvation_count_ = 0;
 }

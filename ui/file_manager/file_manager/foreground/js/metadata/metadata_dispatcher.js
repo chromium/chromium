@@ -1,4 +1,4 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,6 @@ import {Id3Parser} from './id3_parser.js';
 import {BmpParser, GifParser, IcoParser, PngParser, WebpParser} from './image_parsers.js';
 import {MetadataParser} from './metadata_parser.js';
 import {MpegParser} from './mpeg_parser.js';
-
-// All of these scripts could be imported with a single call to importScripts,
-// but then load and compile time errors would all be reported from the same
-// line. Note: update component_extension_resources.grd when adding new parsers.
-
 
 /**
  * Dispatches metadata requests to the correct parser.
@@ -61,7 +56,7 @@ class MetadataDispatcher {
 
     this.messageHandlers_ = {
       init: this.init_.bind(this),
-      request: this.request_.bind(this)
+      request: this.request_.bind(this),
     };
   }
 
@@ -212,7 +207,7 @@ class MetadataDispatcher {
         } catch (e) {
           onError(e.stack);
         }
-      }
+      },
     ];
 
     nextStep();

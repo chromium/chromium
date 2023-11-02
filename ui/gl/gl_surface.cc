@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,6 @@
 #include "ui/gfx/swap_result.h"
 #include "ui/gl/dc_renderer_layer_params.h"
 #include "ui/gl/gl_context.h"
-#include "ui/gl/gl_image.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface_format.h"
 #include "ui/gl/gl_switches.h"
@@ -81,13 +80,15 @@ unsigned int GLSurface::GetBackingFramebufferObject() {
 }
 
 void GLSurface::SwapBuffersAsync(SwapCompletionCallback completion_callback,
-                                 PresentationCallback presentation_callback) {
+                                 PresentationCallback presentation_callback,
+                                 FrameData data) {
   NOTREACHED();
 }
 
 gfx::SwapResult GLSurface::SwapBuffersWithBounds(
     const std::vector<gfx::Rect>& rects,
-    PresentationCallback callback) {
+    PresentationCallback callback,
+    FrameData data) {
   return gfx::SwapResult::SWAP_FAILED;
 }
 
@@ -95,7 +96,8 @@ gfx::SwapResult GLSurface::PostSubBuffer(int x,
                                          int y,
                                          int width,
                                          int height,
-                                         PresentationCallback callback) {
+                                         PresentationCallback callback,
+                                         FrameData data) {
   return gfx::SwapResult::SWAP_FAILED;
 }
 
@@ -104,18 +106,21 @@ void GLSurface::PostSubBufferAsync(int x,
                                    int width,
                                    int height,
                                    SwapCompletionCallback completion_callback,
-                                   PresentationCallback presentation_callback) {
+                                   PresentationCallback presentation_callback,
+                                   FrameData data) {
   NOTREACHED();
 }
 
-gfx::SwapResult GLSurface::CommitOverlayPlanes(PresentationCallback callback) {
+gfx::SwapResult GLSurface::CommitOverlayPlanes(PresentationCallback callback,
+                                               FrameData data) {
   NOTREACHED();
   return gfx::SwapResult::SWAP_FAILED;
 }
 
 void GLSurface::CommitOverlayPlanesAsync(
     SwapCompletionCallback completion_callback,
-    PresentationCallback presentation_callback) {
+    PresentationCallback presentation_callback,
+    FrameData data) {
   NOTREACHED();
 }
 
@@ -135,7 +140,7 @@ void* GLSurface::GetShareHandle() {
   return NULL;
 }
 
-void* GLSurface::GetDisplay() {
+GLDisplay* GLSurface::GetGLDisplay() {
   NOTIMPLEMENTED();
   return NULL;
 }
@@ -162,11 +167,6 @@ bool GLSurface::ScheduleOverlayPlane(
 bool GLSurface::ScheduleCALayer(const ui::CARendererLayerParams& params) {
   NOTIMPLEMENTED();
   return false;
-}
-
-void GLSurface::ScheduleCALayerInUseQuery(
-    std::vector<CALayerInUseQuery> queries) {
-  NOTIMPLEMENTED();
 }
 
 bool GLSurface::ScheduleDCLayer(
@@ -351,29 +351,35 @@ bool GLSurfaceAdapter::IsOffscreen() {
   return surface_->IsOffscreen();
 }
 
-gfx::SwapResult GLSurfaceAdapter::SwapBuffers(PresentationCallback callback) {
-  return surface_->SwapBuffers(std::move(callback));
+gfx::SwapResult GLSurfaceAdapter::SwapBuffers(PresentationCallback callback,
+                                              FrameData data) {
+  return surface_->SwapBuffers(std::move(callback), std::move(data));
 }
 
 void GLSurfaceAdapter::SwapBuffersAsync(
     SwapCompletionCallback completion_callback,
-    PresentationCallback presentation_callback) {
+    PresentationCallback presentation_callback,
+    FrameData data) {
   surface_->SwapBuffersAsync(std::move(completion_callback),
-                             std::move(presentation_callback));
+                             std::move(presentation_callback), std::move(data));
 }
 
 gfx::SwapResult GLSurfaceAdapter::SwapBuffersWithBounds(
     const std::vector<gfx::Rect>& rects,
-    PresentationCallback callback) {
-  return surface_->SwapBuffersWithBounds(rects, std::move(callback));
+    PresentationCallback callback,
+    FrameData data) {
+  return surface_->SwapBuffersWithBounds(rects, std::move(callback),
+                                         std::move(data));
 }
 
 gfx::SwapResult GLSurfaceAdapter::PostSubBuffer(int x,
                                                 int y,
                                                 int width,
                                                 int height,
-                                                PresentationCallback callback) {
-  return surface_->PostSubBuffer(x, y, width, height, std::move(callback));
+                                                PresentationCallback callback,
+                                                FrameData data) {
+  return surface_->PostSubBuffer(x, y, width, height, std::move(callback),
+                                 std::move(data));
 }
 
 void GLSurfaceAdapter::PostSubBufferAsync(
@@ -382,22 +388,26 @@ void GLSurfaceAdapter::PostSubBufferAsync(
     int width,
     int height,
     SwapCompletionCallback completion_callback,
-    PresentationCallback presentation_callback) {
-  surface_->PostSubBufferAsync(x, y, width, height,
-                               std::move(completion_callback),
-                               std::move(presentation_callback));
+    PresentationCallback presentation_callback,
+    FrameData data) {
+  surface_->PostSubBufferAsync(
+      x, y, width, height, std::move(completion_callback),
+      std::move(presentation_callback), std::move(data));
 }
 
 gfx::SwapResult GLSurfaceAdapter::CommitOverlayPlanes(
-    PresentationCallback callback) {
-  return surface_->CommitOverlayPlanes(std::move(callback));
+    PresentationCallback callback,
+    FrameData data) {
+  return surface_->CommitOverlayPlanes(std::move(callback), std::move(data));
 }
 
 void GLSurfaceAdapter::CommitOverlayPlanesAsync(
     SwapCompletionCallback completion_callback,
-    PresentationCallback presentation_callback) {
+    PresentationCallback presentation_callback,
+    FrameData data) {
   surface_->CommitOverlayPlanesAsync(std::move(completion_callback),
-                                     std::move(presentation_callback));
+                                     std::move(presentation_callback),
+                                     std::move(data));
 }
 
 bool GLSurfaceAdapter::SupportsSwapBuffersWithBounds() {
@@ -448,8 +458,8 @@ void* GLSurfaceAdapter::GetShareHandle() {
   return surface_->GetShareHandle();
 }
 
-void* GLSurfaceAdapter::GetDisplay() {
-  return surface_->GetDisplay();
+GLDisplay* GLSurfaceAdapter::GetGLDisplay() {
+  return surface_->GetGLDisplay();
 }
 
 void* GLSurfaceAdapter::GetConfig() {
@@ -561,6 +571,11 @@ void GLSurfaceAdapter::SetFrameRate(float frame_rate) {
   surface_->SetFrameRate(frame_rate);
 }
 
+void GLSurfaceAdapter::SetChoreographerVsyncIdForNextFrame(
+    absl::optional<int64_t> choreographer_vsync_id) {
+  surface_->SetChoreographerVsyncIdForNextFrame(choreographer_vsync_id);
+}
+
 void GLSurfaceAdapter::SetCurrent() {
   surface_->SetCurrent();
 }
@@ -596,10 +611,5 @@ scoped_refptr<GLSurface> InitializeGLSurfaceWithFormat(
 scoped_refptr<GLSurface> InitializeGLSurface(scoped_refptr<GLSurface> surface) {
   return InitializeGLSurfaceWithFormat(surface, GLSurfaceFormat());
 }
-
-GLSurface::CALayerInUseQuery::CALayerInUseQuery() = default;
-GLSurface::CALayerInUseQuery::CALayerInUseQuery(const CALayerInUseQuery&) =
-    default;
-GLSurface::CALayerInUseQuery::~CALayerInUseQuery() = default;
 
 }  // namespace gl

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -93,11 +93,9 @@ public class MerchantTrustBottomSheetCoordinator implements View.OnLayoutChangeL
         createToolbarView();
         createThinWebView();
         mMediator.setupSheetWebContents(mThinWebView, mToolbarModel);
-        mSheetContent = new MerchantTrustBottomSheetContent(mToolbarView.getView(),
-                mThinWebView.getView(), () -> mMediator.getVerticalScrollOffset(), () -> {
-                    closeSheet();
-                    return true;
-                });
+        mSheetContent =
+                new MerchantTrustBottomSheetContent(mToolbarView.getView(), mThinWebView.getView(),
+                        () -> mMediator.getVerticalScrollOffset(), this::closeSheet);
 
         mBottomSheetObserver = new EmptyBottomSheetObserver() {
             private int mCloseReason;

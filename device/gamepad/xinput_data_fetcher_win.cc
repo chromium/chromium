@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -325,6 +325,121 @@ bool XInputDataFetcherWin::GetXInputDllFunctions() {
     xinput_enable(true);
   }
   return true;
+}
+
+// static
+void XInputDataFetcherWin::OverrideXInputGetCapabilitiesFuncForTesting(
+    XInputDataFetcherWin::XInputGetCapabilitiesFunctionCallback callback) {
+  GetXInputGetCapabilitiesFunctionCallback() = callback;
+}
+
+// static
+XInputDataFetcherWin::XInputGetCapabilitiesFunctionCallback&
+XInputDataFetcherWin::GetXInputGetCapabilitiesFunctionCallback() {
+  static base::NoDestructor<
+      XInputDataFetcherWin::XInputGetCapabilitiesFunctionCallback>
+      instance;
+  return *instance;
+}
+
+// static
+void XInputDataFetcherWin::OverrideXInputGetStateExFuncForTesting(
+    XInputDataFetcherWin::XInputGetStateExFunctionCallback callback) {
+  GetXInputGetStateExFunctionCallback() = callback;
+}
+
+// static
+XInputDataFetcherWin::XInputGetStateExFunctionCallback&
+XInputDataFetcherWin::GetXInputGetStateExFunctionCallback() {
+  static base::NoDestructor<
+      XInputDataFetcherWin::XInputGetStateExFunctionCallback>
+      instance;
+  return *instance;
+}
+
+// static
+void XInputDataFetcherWin::OverrideXInputEnableFuncForTesting(
+    XInputDataFetcherWin::XInputEnableFunctionCallback callback) {
+  GetXInputEnableCallback() = callback;
+}
+
+// static
+XInputDataFetcherWin::XInputEnableFunctionCallback&
+XInputDataFetcherWin::GetXInputEnableCallback() {
+  static base::NoDestructor<XInputDataFetcherWin::XInputEnableFunctionCallback>
+      instance;
+  return *instance;
+}
+
+bool XInputDataFetcherWin::GetXInputDllFunctionsForWgiDataFetcher() {
+  xinput_get_capabilities_ = nullptr;
+  if (GetXInputGetCapabilitiesFunctionCallback()) {
+    xinput_get_capabilities_ = GetXInputGetCapabilitiesFunctionCallback().Run();
+  } else {
+    xinput_get_capabilities_ = reinterpret_cast<XInputGetCapabilitiesFunc>(
+        xinput_dll_.GetFunctionPointer("XInputGetCapabilities"));
+  }
+  if (!xinput_get_capabilities_)
+    return false;
+
+  // Get the undocumented XInputGetStateEx, which will allow access to the Guide
+  // button's state.
+  xinput_get_state_ex_ = nullptr;
+  if (GetXInputGetStateExFunctionCallback()) {
+    xinput_get_state_ex_ = GetXInputGetStateExFunctionCallback().Run();
+  } else {
+    xinput_get_state_ex_ = reinterpret_cast<XInputGetStateExFunc>(
+        ::GetProcAddress(xinput_dll_.get(), kXInputGetStateExOrdinal));
+  }
+  if (!xinput_get_state_ex_)
+    return false;
+
+  XInputEnableFunc xinput_enable = nullptr;
+  if (GetXInputEnableCallback()) {
+    xinput_enable = GetXInputEnableCallback().Run();
+  } else {
+    xinput_enable = reinterpret_cast<XInputEnableFunc>(
+        xinput_dll_.GetFunctionPointer("XInputEnable"));
+  }
+  if (xinput_enable) {
+    // XInputEnable is unavailable before Win8 and deprecated in Win10.
+    xinput_enable(true);
+  }
+  return true;
+}
+
+void XInputDataFetcherWin::InitializeForWgiDataFetcher() {
+  xinput_dll_ = base::ScopedNativeLibrary(base::FilePath(XInputDllFileName()));
+  xinput_available_ = GetXInputDllFunctionsForWgiDataFetcher();
+}
+
+bool XInputDataFetcherWin::IsAnyMetaButtonPressed() {
+  if (!xinput_available_)
+    return false;
+
+  for (size_t i = 0; i < XUSER_MAX_COUNT; ++i) {
+    // Check to see if the xinput device is connected.
+    XINPUT_CAPABILITIES caps;
+    DWORD res = xinput_get_capabilities_(i, XINPUT_FLAG_GAMEPAD, &caps);
+    // No device connected at i-index.
+    if (res != ERROR_SUCCESS)
+      continue;
+
+    XInputStateEx xinput_state;
+    memset(&xinput_state, 0, sizeof(XInputStateEx));
+    DWORD dwResult;
+    dwResult = xinput_get_state_ex_(i, &xinput_state);
+
+    if (dwResult != ERROR_SUCCESS)
+      continue;
+
+    // Check the nexus button state and report only the first press detected.
+    WORD xinput_buttons_state = xinput_state.Gamepad.wButtons;
+    if (xinput_buttons_state & kXInputGamepadGuide) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace device

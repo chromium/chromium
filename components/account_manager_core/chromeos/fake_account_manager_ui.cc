@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,6 +29,7 @@ void FakeAccountManagerUI::CloseDialog() {
 }
 
 void FakeAccountManagerUI::ShowAddAccountDialog(
+    const account_manager::AccountAdditionOptions& options,
     base::OnceClosure close_dialog_closure) {
   close_dialog_closure_ = std::move(close_dialog_closure);
   show_account_addition_dialog_calls_++;

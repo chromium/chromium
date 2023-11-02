@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,8 +26,11 @@ class ASH_EXPORT SnapControllerImpl : public chromeos::SnapController {
 
   bool CanSnap(aura::Window* window) override;
   void ShowSnapPreview(aura::Window* window,
-                       chromeos::SnapDirection snap) override;
-  void CommitSnap(aura::Window* window, chromeos::SnapDirection snap) override;
+                       chromeos::SnapDirection snap,
+                       bool allow_haptic_feedback) override;
+  void CommitSnap(aura::Window* window,
+                  chromeos::SnapDirection snap,
+                  chromeos::SnapRatio snap_ratio) override;
 
  private:
   std::unique_ptr<PhantomWindowController> phantom_window_controller_;

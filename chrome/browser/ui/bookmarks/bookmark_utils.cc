@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,6 @@
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/prefs/pref_service.h"
-#include "components/reading_list/features/reading_list_switches.h"
 #include "components/search/search.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
@@ -40,14 +39,15 @@
 #if defined(TOOLKIT_VIEWS)
 #include "chrome/grit/theme_resources.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/themed_vector_icon.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_skia_source.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
-#include "ui/native_theme/themed_vector_icon.h"
 #include "ui/resources/grit/ui_resources.h"
 #endif
 
@@ -87,11 +87,12 @@ GURL GetURLToBookmark(content::WebContents* web_contents) {
     return GURL(kChromeUINewTabURL);
   // Users cannot bookmark Reader Mode pages directly, so the bookmark
   // interaction is as if it were with the original page.
-  if (dom_distiller::url_utils::IsDistilledPage(web_contents->GetURL())) {
+  if (dom_distiller::url_utils::IsDistilledPage(
+          web_contents->GetVisibleURL())) {
     return dom_distiller::url_utils::GetOriginalUrlFromDistillerUrl(
-        web_contents->GetURL());
+        web_contents->GetVisibleURL());
   }
-  return web_contents->GetURL();
+  return web_contents->GetVisibleURL();
 }
 
 bool GetURLAndTitleToBookmark(content::WebContents* web_contents,
@@ -101,12 +102,13 @@ bool GetURLAndTitleToBookmark(content::WebContents* web_contents,
   if (!u.is_valid())
     return false;
   *url = u;
-  if (dom_distiller::url_utils::IsDistilledPage(web_contents->GetURL())) {
+  if (dom_distiller::url_utils::IsDistilledPage(
+          web_contents->GetVisibleURL())) {
     // Users cannot bookmark Reader Mode pages directly. Instead, a bookmark
     // is added for the original page and original title.
     *title =
         base::UTF8ToUTF16(dom_distiller::url_utils::GetTitleFromDistillerUrl(
-            web_contents->GetURL()));
+            web_contents->GetVisibleURL()));
   } else {
     *title = web_contents->GetTitle();
   }
@@ -141,12 +143,12 @@ std::u16string FormatBookmarkURLForDisplay(const GURL& url) {
   if (url.has_username())
     format_types &= ~url_formatter::kFormatUrlOmitHTTP;
 
-  return url_formatter::FormatUrl(url, format_types, net::UnescapeRule::SPACES,
+  return url_formatter::FormatUrl(url, format_types, base::UnescapeRule::SPACES,
                                   nullptr, nullptr, nullptr);
 }
 
 bool IsAppsShortcutEnabled(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Chrome OS uses the app list / app launcher.
   return false;
 #else
@@ -158,12 +160,6 @@ bool ShouldShowAppsShortcutInBookmarkBar(Profile* profile) {
   return IsAppsShortcutEnabled(profile) &&
          profile->GetPrefs()->GetBoolean(
              bookmarks::prefs::kShowAppsShortcutInBookmarkBar);
-}
-
-bool ShouldShowReadingListInBookmarkBar(Profile* profile) {
-  return base::FeatureList::IsEnabled(reading_list::switches::kReadLater) &&
-         profile->GetPrefs()->GetBoolean(
-             bookmarks::prefs::kShowReadingListInBookmarkBar);
 }
 
 int GetBookmarkDragOperation(content::BrowserContext* browser_context,
@@ -254,11 +250,13 @@ bool IsValidBookmarkDropLocation(Profile* profile,
       // Don't allow the drop if the user is attempting to drop on one of the
       // nodes being dragged.
       const BookmarkNode* node = nodes[i];
-      int node_index = (drop_parent == node->parent()) ?
-          drop_parent->GetIndexOf(nodes[i]) : -1;
-      if (node_index != -1 && (index == static_cast<size_t>(node_index) ||
-                               index == static_cast<size_t>(node_index) + 1))
+      absl::optional<size_t> node_index =
+          (drop_parent == node->parent()) ? drop_parent->GetIndexOf(nodes[i])
+                                          : absl::nullopt;
+      if (node_index.has_value() &&
+          (index == node_index.value() || index == node_index.value() + 1)) {
         return false;
+      }
 
       // drop_parent can't accept a child that is an ancestor.
       if (drop_parent->HasAncestor(node))
@@ -275,7 +273,7 @@ ui::ImageModel GetBookmarkFolderIcon(
     BookmarkFolderIconType icon_type,
     absl::variant<ui::ColorId, SkColor> color) {
   int default_id = IDR_FOLDER_CLOSED;
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // This block must be #ifdefed because only these platforms actually have this
   // resource ID.
   if (icon_type == BookmarkFolderIconType::kManaged)
@@ -285,11 +283,11 @@ ui::ImageModel GetBookmarkFolderIcon(
                             absl::variant<ui::ColorId, SkColor> color,
                             const ui::ColorProvider* color_provider) {
     gfx::ImageSkia folder;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // TODO(bsep): vectorize the Windows versions: crbug.com/564112
     folder =
         *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(default_id);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
     SkColor sk_color;
     if (absl::holds_alternative<SkColor>(color)) {
       sk_color = absl::get<SkColor>(color);

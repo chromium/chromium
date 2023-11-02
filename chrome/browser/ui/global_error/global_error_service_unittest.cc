@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,7 @@ class BaseError : public GlobalError {
   bool HasBubbleView() override { return false; }
   bool HasShownBubbleView() override { return false; }
   void ShowBubbleView(Browser* browser) override { ADD_FAILURE(); }
-  GlobalErrorBubbleViewBase* GetBubbleView() override { return NULL; }
+  GlobalErrorBubbleViewBase* GetBubbleView() override { return nullptr; }
 
  private:
   // This tracks the number BaseError objects that are currently instantiated.
@@ -132,7 +132,7 @@ TEST(GlobalErrorServiceTest, GetMenuItem) {
 
   EXPECT_EQ(error2, service.GetGlobalErrorByMenuItemCommandID(2));
   EXPECT_EQ(error3, service.GetGlobalErrorByMenuItemCommandID(3));
-  EXPECT_EQ(NULL, service.GetGlobalErrorByMenuItemCommandID(4));
+  EXPECT_EQ(nullptr, service.GetGlobalErrorByMenuItemCommandID(4));
 }
 
 // Test getting the error with the highest severity.
@@ -142,7 +142,7 @@ TEST(GlobalErrorServiceTest, HighestSeverity) {
   MenuError* error3 = new MenuError(3, GlobalError::SEVERITY_HIGH);
 
   GlobalErrorService service;
-  EXPECT_EQ(NULL, service.GetHighestSeverityGlobalErrorWithAppMenuItem());
+  EXPECT_EQ(nullptr, service.GetHighestSeverityGlobalErrorWithAppMenuItem());
 
   service.AddGlobalError(base::WrapUnique(error1));
   EXPECT_EQ(error1, service.GetHighestSeverityGlobalErrorWithAppMenuItem());

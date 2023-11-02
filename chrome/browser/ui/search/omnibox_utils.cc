@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,9 @@
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/clipboard_utils.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
-#include "components/omnibox/browser/omnibox_view.h"
 #include "content/public/browser/web_contents.h"
 
-namespace {
+namespace search {
 
 OmniboxView* GetOmniboxView(content::WebContents* web_contents) {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
@@ -20,10 +19,6 @@ OmniboxView* GetOmniboxView(content::WebContents* web_contents) {
     return nullptr;
   return browser->window()->GetLocationBar()->GetOmniboxView();
 }
-
-}  // namespace
-
-namespace search {
 
 void FocusOmnibox(bool focus, content::WebContents* web_contents) {
   OmniboxView* omnibox_view = GetOmniboxView(web_contents);

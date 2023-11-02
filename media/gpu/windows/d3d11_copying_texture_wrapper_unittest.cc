@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -148,9 +148,10 @@ class D3D11CopyingTexture2DWrapperTest
   scoped_refptr<MockVideoProcessorProxy> ExpectProcessorProxy() {
     auto result = base::MakeRefCounted<MockVideoProcessorProxy>();
     ON_CALL(*result.get(), MockInit(_, _))
-        .WillByDefault(Return(GetProcessorProxyInit()
-                                  ? D3D11Status::Codes::kOk
-                                  : D3D11Status::Codes::kCodeOnlyForTesting));
+        .WillByDefault(
+            Return(GetProcessorProxyInit()
+                       ? D3D11Status::Codes::kOk
+                       : D3D11Status::Codes::kCreateVideoProcessorFailed));
 
     ON_CALL(*result.get(), MockCreateVideoProcessorOutputView())
         .WillByDefault(Return(GetCreateVideoProcessorOutputView()));
@@ -168,19 +169,22 @@ class D3D11CopyingTexture2DWrapperTest
     auto result = std::make_unique<MockTexture2DWrapper>();
 
     ON_CALL(*result.get(), MockInit())
-        .WillByDefault(Return(GetTextureWrapperInit()
-                                  ? D3D11Status::Codes::kOk
-                                  : D3D11Status::Codes::kCodeOnlyForTesting));
+        .WillByDefault(
+            Return(GetTextureWrapperInit()
+                       ? D3D11Status::Codes::kOk
+                       : D3D11Status::Codes::kCreateVideoProcessorFailed));
 
     ON_CALL(*result.get(), MockAcquireKeyedMutexIfNeeded())
-        .WillByDefault(Return(GetAcquireKeyedMutexIfNeeded()
-                                  ? D3D11Status::Codes::kOk
-                                  : D3D11Status::Codes::kCodeOnlyForTesting));
+        .WillByDefault(
+            Return(GetAcquireKeyedMutexIfNeeded()
+                       ? D3D11Status::Codes::kOk
+                       : D3D11Status::Codes::kCreateVideoProcessorFailed));
 
     ON_CALL(*result.get(), MockProcessTexture())
-        .WillByDefault(Return(GetProcessTexture()
-                                  ? D3D11Status::Codes::kOk
-                                  : D3D11Status::Codes::kCodeOnlyForTesting));
+        .WillByDefault(Return(
+            GetProcessTexture()
+                ? D3D11Status::Codes::kOk
+                : D3D11Status::Codes::kCreateVideoProcessorOutputViewFailed));
 
     return result;
   }
@@ -204,16 +208,16 @@ class D3D11CopyingTexture2DWrapperTest
   scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
 };
 
-INSTANTIATE_TEST_CASE_P(CopyingTexture2DWrapperTest,
-                        D3D11CopyingTexture2DWrapperTest,
-                        Combine(Values(S_OK, E_FAIL),
-                                Values(S_OK, E_FAIL),
-                                Values(S_OK, E_FAIL),
-                                Bool(),
-                                Bool(),
-                                Bool(),
-                                Bool(),
-                                Bool()));
+INSTANTIATE_TEST_SUITE_P(CopyingTexture2DWrapperTest,
+                         D3D11CopyingTexture2DWrapperTest,
+                         Combine(Values(S_OK, E_FAIL),
+                                 Values(S_OK, E_FAIL),
+                                 Values(S_OK, E_FAIL),
+                                 Bool(),
+                                 Bool(),
+                                 Bool(),
+                                 Bool(),
+                                 Bool()));
 
 // For ever potential return value combination for the D3D11VideoProcessor,
 // make sure that any failures result in a total failure.
@@ -235,7 +239,7 @@ TEST_P(D3D11CopyingTexture2DWrapperTest,
   // TODO: check |gpu_task_runner_|.
 
   MailboxHolderArray mailboxes;
-  gfx::ColorSpace input_color_space = gfx::ColorSpace::CreateSCRGBLinear();
+  gfx::ColorSpace input_color_space = gfx::ColorSpace::CreateSRGBLinear();
   gfx::ColorSpace output_color_space;
   EXPECT_EQ(wrapper
                 ->Init(gpu_task_runner_, CreateMockHelperCB(),
@@ -288,7 +292,7 @@ TEST_P(D3D11CopyingTexture2DWrapperTest, HDRMetadataIsSentToVideoProcessor) {
   MockVideoProcessorProxy* processor_raw = processor.get();
   auto wrapper = std::make_unique<CopyingTexture2DWrapper>(
       gfx::Size(100, 200), ExpectTextureWrapper(), std::move(processor),
-      nullptr, gfx::ColorSpace::CreateSCRGBLinear());
+      nullptr, gfx::ColorSpace::CreateSRGBLinear());
 
   const DXGI_HDR_METADATA_HDR10 dxgi_metadata =
       gl::HDRMetadataHelperWin::HDRMetadataToDXGI(metadata);

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -84,14 +84,14 @@ class StyleEnvironmentVariablesTest : public PageTestBase {
     ASSERT_EQ(url.GetString(), GetDocument().Url().GetString());
   }
 
-  const String& GetRootVariableValue(UADefinedVariable name) {
+  String GetRootVariableValue(UADefinedVariable name) {
     CSSVariableData* data =
         StyleEnvironmentVariables::GetRootInstance().ResolveVariable(
             StyleEnvironmentVariables::GetVariableName(
                 name, /*feature_context=*/nullptr),
             {});
     EXPECT_NE(nullptr, data);
-    return data->BackingStrings()[0];
+    return data->Serialize();
   }
 
   void SetVariableOnRoot(const AtomicString& name, const String& value) {
@@ -252,11 +252,11 @@ TEST_F(StyleEnvironmentVariablesTest, MultiDocumentInvalidation_FromRoot) {
   InitializeTestPageWithVariableNamed(GetFrame(), kVariableName);
 
   // Create a second page that uses the variable.
-  auto new_page = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  auto new_page = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   InitializeTestPageWithVariableNamed(new_page->GetFrame(), kVariableName);
 
   // Create an empty page that does not use the variable.
-  auto empty_page = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  auto empty_page = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   empty_page->GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
   SetVariableOnRoot(kVariableName, kVariableTestColor);
@@ -271,7 +271,7 @@ TEST_F(StyleEnvironmentVariablesTest, MultiDocumentInvalidation_FromDocument) {
   InitializeTestPageWithVariableNamed(GetFrame(), kVariableName);
 
   // Create a second page that uses the variable.
-  auto new_page = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  auto new_page = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   InitializeTestPageWithVariableNamed(new_page->GetFrame(), kVariableName);
 
   SetVariableOnDocument(kVariableName, kVariableTestColor);
@@ -447,9 +447,8 @@ TEST_F(StyleEnvironmentVariablesTest, RecordUseCounter_SafeAreaInsetTop) {
 }
 
 TEST_F(StyleEnvironmentVariablesTest, KeyboardInset_AfterLoad) {
-  // This test asserts that the keyboard inset environment variables should be
-  // loaded by default when the VirtualKeyboard runtime flag is set.
-  ScopedVirtualKeyboardForTest scoped_feature(true);
+  // This test asserts that the keyboard inset environment variables are loaded
+  // by default.
   CSSVariableData* data =
       StyleEnvironmentVariables::GetRootInstance().ResolveVariable(
           StyleEnvironmentVariables::GetVariableName(
@@ -681,5 +680,94 @@ TEST_F(StyleEnvironmentVariablesTest, TwoDimensionalVariables_Removal) {
   EXPECT_EQ(kAltTestColor, target->ComputedStyleRef().VisitedDependentColor(
                                GetCSSPropertyBackgroundColor()));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(StyleEnvironmentVariablesTest, TitlebarArea_AfterLoad) {
+  // This test asserts that the titlebar area environment variables should be
+  // loaded when UpdateWindowControlsOverlay is invoked in LocalFrame when the
+  // WindowControlsOverlay runtime flag is set for PWAs with display_override
+  // "window-controls-overlay".
+  ScopedWebAppWindowControlsOverlayForTest scoped_feature(true);
+
+  // Simulate browser sending the titlebar area bounds.
+  GetFrame().UpdateWindowControlsOverlay(gfx::Rect(0, 0, 100, 10));
+  String env_contents("titlebar-area-x");
+  InitializeTestPageWithVariableNamed(GetFrame(), env_contents);
+
+  // Validate the data is set.
+  DocumentStyleEnvironmentVariables& vars =
+      GetDocument().GetStyleEngine().EnsureEnvironmentVariables();
+
+  CSSVariableData* data =
+      vars.ResolveVariable(StyleEnvironmentVariables::GetVariableName(
+                               UADefinedVariable::kTitlebarAreaX,
+                               /*feature_context=*/nullptr),
+                           {});
+  EXPECT_TRUE(data);
+  EXPECT_EQ(data->Serialize(), "0px");
+  data = vars.ResolveVariable(
+      StyleEnvironmentVariables::GetVariableName(
+          UADefinedVariable::kTitlebarAreaY, /*feature_context=*/nullptr),
+      {});
+  EXPECT_TRUE(data);
+  EXPECT_EQ(data->Serialize(), "0px");
+  data = vars.ResolveVariable(StyleEnvironmentVariables::GetVariableName(
+                                  UADefinedVariable::kTitlebarAreaWidth,
+                                  /*feature_context=*/nullptr),
+                              {});
+  EXPECT_TRUE(data);
+  EXPECT_EQ(data->Serialize(), "100px");
+  data = vars.ResolveVariable(
+      StyleEnvironmentVariables::GetVariableName(
+          UADefinedVariable::kTitlebarAreaHeight, /*feature_context=*/nullptr),
+      {});
+  EXPECT_TRUE(data);
+  EXPECT_EQ(data->Serialize(), "10px");
+}
+
+TEST_F(StyleEnvironmentVariablesTest, TitlebarArea_AfterNavigation) {
+  // This test asserts that the titlebar area environment variables should be
+  // set after a navigation when the WindowControlsOverlay runtime flag is set
+  // for PWAs with display_override "window-controls-overlay".
+  ScopedWebAppWindowControlsOverlayForTest scoped_feature(true);
+
+  // Simulate browser sending the titlebar area bounds.
+  GetFrame().UpdateWindowControlsOverlay(gfx::Rect(0, 0, 100, 10));
+  String env_contents("titlebar-area-x");
+  InitializeTestPageWithVariableNamed(GetFrame(), env_contents);
+
+  SimulateNavigation();
+
+  // Validate the data is set after navigation.
+  DocumentStyleEnvironmentVariables& vars =
+      GetDocument().GetStyleEngine().EnsureEnvironmentVariables();
+
+  CSSVariableData* data =
+      vars.ResolveVariable(StyleEnvironmentVariables::GetVariableName(
+                               UADefinedVariable::kTitlebarAreaX,
+                               /*feature_context=*/nullptr),
+                           {});
+  EXPECT_TRUE(data);
+  EXPECT_EQ(data->Serialize(), "0px");
+  data = vars.ResolveVariable(
+      StyleEnvironmentVariables::GetVariableName(
+          UADefinedVariable::kTitlebarAreaY, /*feature_context=*/nullptr),
+      {});
+  EXPECT_TRUE(data);
+  EXPECT_EQ(data->Serialize(), "0px");
+  data = vars.ResolveVariable(StyleEnvironmentVariables::GetVariableName(
+                                  UADefinedVariable::kTitlebarAreaWidth,
+                                  /*feature_context=*/nullptr),
+                              {});
+  EXPECT_TRUE(data);
+  EXPECT_EQ(data->Serialize(), "100px");
+  data = vars.ResolveVariable(
+      StyleEnvironmentVariables::GetVariableName(
+          UADefinedVariable::kTitlebarAreaHeight, /*feature_context=*/nullptr),
+      {});
+  EXPECT_TRUE(data);
+  EXPECT_EQ(data->Serialize(), "10px");
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace blink

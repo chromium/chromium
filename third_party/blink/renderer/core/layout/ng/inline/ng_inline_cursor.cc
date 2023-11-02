@@ -1,9 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 
+#include "base/containers/adapters.h"
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/html/html_br_element.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
@@ -15,6 +17,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
 
 namespace blink {
 class HTMLBRElement;
@@ -413,8 +416,8 @@ UBiDiLevel NGInlineCursorPosition::BidiLevel() const {
       return 0;
     }
     const NGTextOffset offset = TextOffset();
-    auto* const item = std::find_if(
-        items->begin(), items->end(), [offset](const NGInlineItem& item) {
+    auto* const item =
+        base::ranges::find_if(*items, [offset](const NGInlineItem& item) {
           return item.StartOffset() <= offset.start &&
                  item.EndOffset() >= offset.end;
         });
@@ -423,16 +426,13 @@ UBiDiLevel NGInlineCursorPosition::BidiLevel() const {
   }
 
   if (IsAtomicInline()) {
-    DCHECK(GetLayoutObject()->ContainingNGBlockFlow());
+    DCHECK(GetLayoutObject()->FragmentItemsContainer());
     const LayoutBlockFlow& block_flow =
-        *GetLayoutObject()->ContainingNGBlockFlow();
+        *GetLayoutObject()->FragmentItemsContainer();
     const auto& items =
         block_flow.GetNGInlineNodeData()->ItemsData(UsesFirstLineStyle()).items;
-    const LayoutObject* const layout_object = GetLayoutObject();
-    const auto* const item = std::find_if(
-        items.begin(), items.end(), [layout_object](const NGInlineItem& item) {
-          return item.GetLayoutObject() == layout_object;
-        });
+    const auto* const item = base::ranges::find(items, GetLayoutObject(),
+                                                &NGInlineItem::GetLayoutObject);
     DCHECK(item != items.end()) << this;
     return item->BidiLevel();
   }
@@ -460,11 +460,12 @@ gfx::RectF NGInlineCursorPosition::ObjectBoundingBox(
 }
 
 void NGInlineCursorPosition::RecalcInkOverflow(
-    const NGInlineCursor& cursor) const {
+    const NGInlineCursor& cursor,
+    NGInlinePaintContext* inline_context) const {
   DCHECK(item_);
   DCHECK_EQ(item_, cursor.Current().Item());
   PhysicalRect self_and_contents_rect;
-  item_->GetMutableForPainting().RecalcInkOverflow(cursor,
+  item_->GetMutableForPainting().RecalcInkOverflow(cursor, inline_context,
                                                    &self_and_contents_rect);
 }
 
@@ -501,7 +502,6 @@ PhysicalRect NGInlineCursor::CurrentLocalSelectionRectForText(
       Current().IsLineBreak() &&
       // This is for old compatible that old doesn't paint last br in a page.
       !IsLastBRInPage(*Current().GetLayoutObject())) {
-    DCHECK(!logical_rect.size.inline_size);
     logical_rect.size.inline_size =
         LayoutUnit(Current().Style().GetFont().SpaceWidth());
   }
@@ -966,6 +966,20 @@ void NGInlineCursor::MoveTo(const NGInlineCursor& cursor) {
   *this = cursor;
 }
 
+void NGInlineCursor::MoveToParent() {
+  wtf_size_t count = 0;
+  if (UNLIKELY(!Current()))
+    return;
+  for (;;) {
+    MoveToPrevious();
+    if (!Current())
+      return;
+    ++count;
+    if (Current()->DescendantsCount() > count)
+      return;
+  }
+}
+
 void NGInlineCursor::MoveToContainingLine() {
   DCHECK(!Current().IsLineBox());
   if (current_.item_) {
@@ -998,9 +1012,8 @@ void NGInlineCursor::MoveToFirstChild() {
 
 void NGInlineCursor::MoveToFirstLine() {
   if (HasRoot()) {
-    auto iter = std::find_if(
-        items_.begin(), items_.end(),
-        [](const auto& item) { return item.Type() == NGFragmentItem::kLine; });
+    auto iter = base::ranges::find(items_, NGFragmentItem::kLine,
+                                   &NGFragmentItem::Type);
     if (iter != items_.end()) {
       MoveToItem(iter);
       return;
@@ -1028,6 +1041,8 @@ void NGInlineCursor::MoveToFirstLogicalLeaf() {
 
 void NGInlineCursor::MoveToFirstNonPseudoLeaf() {
   for (NGInlineCursor cursor = *this; cursor; cursor.MoveToNext()) {
+    if (cursor.Current().IsLineBox())
+      continue;
     if (cursor.Current()->IsBlockInInline()) {
       if (cursor.Current()->BlockInInline().NonPseudoNode()) {
         *this = cursor;
@@ -1047,7 +1062,10 @@ void NGInlineCursor::MoveToFirstNonPseudoLeaf() {
         // We ignore line break character, e.g. newline with white-space:pre,
         // like |MoveToLastNonPseudoLeaf()| as consistency.
         // See |ParameterizedVisibleUnitsLineTest.EndOfLineWithWhiteSpacePre|
-        continue;
+        auto next = cursor;
+        next.MoveToNext();
+        if (next)
+          continue;
       }
       *this = cursor;
       return;
@@ -1068,9 +1086,8 @@ void NGInlineCursor::MoveToLastChild() {
 
 void NGInlineCursor::MoveToLastLine() {
   DCHECK(HasRoot());
-  auto iter = std::find_if(
-      items_.rbegin(), items_.rend(),
-      [](const auto& item) { return item.Type() == NGFragmentItem::kLine; });
+  auto iter = base::ranges::find(base::Reversed(items_), NGFragmentItem::kLine,
+                                 &NGFragmentItem::Type);
   if (iter != items_.rend())
     MoveToItem(std::next(iter).base());
   else
@@ -1105,9 +1122,11 @@ void NGInlineCursor::MoveToLastNonPseudoLeaf() {
   NGInlineCursor last_leaf;
   bool in_hidden_for_paint = false;
   for (NGInlineCursor cursor = *this; cursor; cursor.MoveToNext()) {
+    if (cursor.Current().IsLineBox())
+      continue;
     if (cursor.Current()->IsBlockInInline()) {
       if (cursor.Current()->BlockInInline().NonPseudoNode())
-        *this = cursor;
+        last_leaf = cursor;
       continue;
     }
     if (!cursor.Current().GetLayoutObject()->NonPseudoNode())
@@ -1190,6 +1209,15 @@ void NGInlineCursor::MoveToNextLine() {
     return;
   }
   NOTREACHED();
+}
+
+void NGInlineCursor::MoveToNextLineIncludingFragmentainer() {
+  MoveToNextLine();
+  if (!Current() && max_fragment_index_ && CanMoveAcrossFragmentainer()) {
+    MoveToNextFragmentainer();
+    if (Current() && !Current().IsLineBox())
+      MoveToFirstLine();
+  }
 }
 
 void NGInlineCursor::MoveToPreviousInlineLeaf() {
@@ -1631,8 +1659,7 @@ void NGInlineCursor::DecrementFragmentIndex() {
   // Note: |LayoutBox::GetPhysicalFragment(wtf_size_t)| is O(1).
   const auto& root_box_fragment =
       *root_block_flow_->GetPhysicalFragment(fragment_index_ - 1);
-  if (const auto* break_token =
-          To<NGBlockBreakToken>(root_box_fragment.BreakToken()))
+  if (const NGBlockBreakToken* break_token = root_box_fragment.BreakToken())
     previously_consumed_block_size_ = break_token->ConsumedBlockSize();
 }
 
@@ -1641,8 +1668,7 @@ void NGInlineCursor::IncrementFragmentIndex() {
   fragment_index_++;
   if (!root_box_fragment_)
     return;
-  if (const auto* break_token =
-          To<NGBlockBreakToken>(root_box_fragment_->BreakToken()))
+  if (const NGBlockBreakToken* break_token = root_box_fragment_->BreakToken())
     previously_consumed_block_size_ = break_token->ConsumedBlockSize();
 }
 
@@ -1669,6 +1695,43 @@ void NGInlineCursor::MoveToNextForSameLayoutObject() {
     return;
   }
   MoveToNextForSameLayoutObjectExceptCulledInline();
+}
+
+void NGInlineCursor::MoveToVisualLastForSameLayoutObject() {
+  if (culled_inline_)
+    MoveToVisualFirstOrLastForCulledInline(true);
+  else
+    MoveToLastForSameLayoutObject();
+}
+
+void NGInlineCursor::MoveToVisualFirstForSameLayoutObject() {
+  if (culled_inline_)
+    MoveToVisualFirstOrLastForCulledInline(false);
+}
+
+void NGInlineCursor::MoveToVisualFirstOrLastForCulledInline(bool last) {
+  NGInlineCursorPosition found_position;
+  absl::optional<size_t> found_index;
+
+  // Iterate through the remaining fragments to find the lowest/greatest index.
+  for (; Current(); MoveToNextForSameLayoutObject()) {
+    // Index of the current fragment into |fragment_items_|.
+    size_t index = Current().Item() - fragment_items_->Items().data();
+    DCHECK_LT(index, fragment_items_->Size());
+    if (!found_index || (last && index > *found_index) ||
+        (!last && index < *found_index)) {
+      found_position = Current();
+      found_index = index;
+
+      // Break if there cannot be any fragment lower/greater than this one.
+      if ((last && index == fragment_items_->Size() - 1) ||
+          (!last && index == 0))
+        break;
+    }
+  }
+
+  DCHECK(found_position);
+  MoveTo(found_position);
 }
 
 //

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/logging.h"
 #include "base/system/sys_info.h"
-#include "chromeos/memory/pressure/system_memory_pressure_evaluator.h"
+#include "chromeos/ash/components/memory/pressure/system_memory_pressure_evaluator.h"
 #endif
 
 ChromeBrowserMainExtraPartsMemory::ChromeBrowserMainExtraPartsMemory() = default;
@@ -34,13 +34,15 @@ void ChromeBrowserMainExtraPartsMemory::PostBrowserStart() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (base::SysInfo::IsRunningOnChromeOS()) {
       cros_evaluator_ =
-          std::make_unique<chromeos::memory::SystemMemoryPressureEvaluator>(
+          std::make_unique<ash::memory::SystemMemoryPressureEvaluator>(
               static_cast<memory_pressure::MultiSourceMemoryPressureMonitor*>(
                   base::MemoryPressureMonitor::Get())
                   ->CreateVoter());
     }
 #endif
   }
+
+  memory_ablation_study_ = std::make_unique<memory::MemoryAblationStudy>();
 }
 
 void ChromeBrowserMainExtraPartsMemory::PostMainMessageLoopRun() {
@@ -52,6 +54,4 @@ void ChromeBrowserMainExtraPartsMemory::PostMainMessageLoopRun() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   cros_evaluator_.reset();
 #endif
-
-  memory_ablation_study_ = std::make_unique<memory::MemoryAblationStudy>();
 }

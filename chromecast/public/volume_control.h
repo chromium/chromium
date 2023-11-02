@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,6 +48,8 @@ enum class VolumeChangeSource {
   kAutomatic,         // Automatic volume change, no user involvement.
   kAutoWithFeedback,  // Automatic volume change, but we still want to have
                       // volume feedback UX.
+  kUserWithNoAudioFeedback,  // User-initiated change, but audible feedback is
+                             // disabled.
 };
 
 inline std::ostream& operator<<(std::ostream& os,
@@ -59,6 +61,8 @@ inline std::ostream& operator<<(std::ostream& os,
       return os << "AUTOMATIC";
     case VolumeChangeSource::kAutoWithFeedback:
       return os << "AUTO_WITH_FEEDBACK";
+    case VolumeChangeSource::kUserWithNoAudioFeedback:
+      return os << "USER_NO_AUDIO_FEEDBACK";
   }
 }
 

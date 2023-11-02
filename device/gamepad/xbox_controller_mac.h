@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioplugininterface.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "device/gamepad/abstract_haptic_gamepad.h"
@@ -103,7 +104,7 @@ class XboxControllerMac final : public AbstractHapticGamepad {
   // AbstractHapticGamepad implementation.
   void DoShutdown() override;
   double GetMaxEffectDurationMillis() override;
-  void SetVibration(double strong_magnitude, double weak_magnitude) override;
+  void SetVibration(mojom::GamepadEffectParametersPtr params) override;
   base::WeakPtr<AbstractHapticGamepad> GetWeakPtr() override;
 
   uint32_t location_id() const { return location_id_; }
@@ -191,7 +192,7 @@ class XboxControllerMac final : public AbstractHapticGamepad {
 
   uint32_t location_id_ = 0;
 
-  Delegate* delegate_ = nullptr;
+  raw_ptr<Delegate> delegate_ = nullptr;
 
   XInputType xinput_type_ = kXInputTypeNone;
   GamepadId gamepad_id_ = GamepadId::kUnknownGamepad;

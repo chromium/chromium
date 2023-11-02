@@ -60,17 +60,16 @@ div {
 let classes = ["left", "right"]
 let i = 0;
 async function runAnimation() {
-  await document.documentTransition.prepare({
-    rootTransition: "none",
-    sharedElements: [e1, e2, e3, e4, e5]
-  });
-
-  container.classList.remove(classes[i]);
-  i = (i + 1) % classes.length;
-  container.classList.add(classes[i]);
-
-  await document.documentTransition.start({
-    sharedElements: [e1, e2, e3, e4, e5]
+  let t = document.createDocumentTransition();
+  e1.style.pageTransitionTag = "e1";
+  e2.style.pageTransitionTag = "e2";
+  e3.style.pageTransitionTag = "e3";
+  e4.style.pageTransitionTag = "e4";
+  e5.style.pageTransitionTag = "e5";
+  await t.start(() => {
+    container.classList.remove(classes[i]);
+    i = (i + 1) % classes.length;
+    container.classList.add(classes[i]);
   });
 }
 

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<!--
+Take frames coming from various sources and render them to a canvas with
+WebGLRenderingContext.texImage2D().
+-->
+<html>
+
+<head>
+  <title>GPUExternalTexture.expired test</title>
+  <script src="webcodecs_common.js"></script>
+  <script id="myWorker" type="text/worker">
+    self.onmessage = function(e) {
+      self.postMessage("");
+    }
+  </script>
+  <script type="text/javascript">
+    'use strict';
+    function makeWorker(script) {
+      var blob = new Blob([script]);
+      return new Worker(URL.createObjectURL(blob));
+    }
+
+    async function main(arg) {
+      const use_worker = arg.use_worker;
+      let source_type = arg.source_type;
+      let canvas = document.getElementById('display');
+      let source =
+        await createFrameSource(source_type, canvas.width, canvas.height);
+      if (!source) {
+        TEST.skip('Unsupported source: ' + source_type);
+        return;
+      }
+
+      const adapter = navigator.gpu && await navigator.gpu.requestAdapter();
+      if (!adapter) {
+        TEST.skip('navigator.gpu && navigator.gpu.requestAdapter failed');
+        return;
+      }
+
+      const device = await adapter.requestDevice();
+      if (!device) {
+        TEST.skip('adapter.requestDevice() failed');
+        return;
+      }
+
+      let frame = await source.getNextFrame();
+      const gpu_external_texture = device.importExternalTexture({ source: frame });
+      TEST.assert(gpu_external_texture.expired == false, "GPUExternalTexture should be active");
+
+      if (use_worker) {
+        let worker = makeWorker(document.getElementById("myWorker").textContent);
+        worker.onmessage = function (e) {
+          TEST.assert(gpu_external_texture.expired == true, "GPUExternalTexture should be expired");
+        }
+        // GPUExternalTexture should be expired when the frame in the same thread has been transferred.
+        worker.postMessage({ videoFrame: frame }, [frame]);
+      } else {
+        frame.close();
+        TEST.assert(gpu_external_texture.expired == true, "GPUExternalTexture should be expired");
+      }
+      source.close();
+    }
+  </script>
+</head>
+
+<body>
+  <div>
+    <canvas id='display' width="640" height="480"></canvas>
+  </div>
+</body>
+
+</html>

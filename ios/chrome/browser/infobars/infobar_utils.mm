@@ -1,14 +1,14 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/infobars/infobar_utils.h"
+#import "ios/chrome/browser/infobars/infobar_utils.h"
 
-#include <memory>
-#include <utility>
+#import <memory>
+#import <utility>
 
-#include "components/infobars/core/confirm_infobar_delegate.h"
-#include "ios/chrome/browser/infobars/infobar_ios.h"
+#import "components/infobars/core/confirm_infobar_delegate.h"
+#import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/infobar_type.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

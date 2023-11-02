@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "build/chromeos_buildflags.h"
 #include "media/gpu/av1_picture.h"
 #include "media/gpu/decode_surface_handler.h"
 #include "media/gpu/vaapi/vaapi_common.h"
@@ -736,8 +737,8 @@ AV1VaapiVideoDecoderDelegate::AV1VaapiVideoDecoderDelegate(
 AV1VaapiVideoDecoderDelegate::~AV1VaapiVideoDecoderDelegate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!picture_params_);
-  DCHECK(slice_params_.empty());
   DCHECK(!crypto_params_);
+  DCHECK(!protected_params_);
 }
 
 scoped_refptr<AV1Picture> AV1VaapiVideoDecoderDelegate::CreateAV1Picture(
@@ -833,48 +834,78 @@ DecodeStatus AV1VaapiVideoDecoderDelegate::SubmitDecode(
     if (!picture_params_)
       return DecodeStatus::kFail;
   }
-  if (slice_params_.size() != slice_params.size()) {
-    while (slice_params_.size() < slice_params.size()) {
-      slice_params_.push_back(vaapi_wrapper_->CreateVABuffer(
-          VASliceParameterBufferType, sizeof(VASliceParameterBufferAV1)));
-      if (!slice_params_.back()) {
-        slice_params_.clear();
-        return DecodeStatus::kFail;
-      }
-    }
-    slice_params_.resize(slice_params.size());
-    slice_params_.shrink_to_fit();
+
+  // TODO(b/235138734): Once the driver is fixed, re-use the
+  // VASliceParameterBufferAV1 buffers across frames instead of creating new
+  // ones every time. Alternatively, consider recreating these buffers only if
+  // |slice_params| changes from frame to frame.
+  std::vector<std::unique_ptr<ScopedVABuffer>> slice_params_va_buffers;
+  for (size_t i = 0; i < slice_params.size(); i++) {
+    slice_params_va_buffers.push_back(vaapi_wrapper_->CreateVABuffer(
+        VASliceParameterBufferType, sizeof(VASliceParameterBufferAV1)));
+    if (!slice_params_va_buffers.back())
+      return DecodeStatus::kFail;
   }
 
   // TODO(hiroh): Don't submit the entire coded data to the buffer. Instead,
   // only pass the data starting from the tile list OBU to reduce the size of
   // the VA buffer. When this is changed, the encrypted subsample ranges must
   // also be adjusted.
-  // Always re-create |encoded_data| because reusing the buffer causes horrific
-  // artifacts in decoded buffers. TODO(b/177028692): This seems to be a driver
-  // bug, fix it and reuse the buffer.
-  auto encoded_data =
-      vaapi_wrapper_->CreateVABuffer(VASliceDataBufferType, data.size_bytes());
-  if (!encoded_data)
-    return DecodeStatus::kFail;
+  // Create VASliceData buffer |encoded_data| every frame so that decoding can
+  // be more asynchronous than reusing the buffer.
+  std::unique_ptr<ScopedVABuffer> encoded_data;
 
   std::vector<std::pair<VABufferID, VaapiWrapper::VABufferDescriptor>> buffers =
       {{picture_params_->id(),
-        {picture_params_->type(), picture_params_->size(), &pic_param}},
-       {encoded_data->id(),
-        {encoded_data->type(), encoded_data->size(), data.data()}}};
-  for (size_t i = 0; i < slice_params.size(); ++i) {
-    buffers.push_back({slice_params_[i]->id(),
-                       {slice_params_[i]->type(), slice_params_[i]->size(),
-                        &slice_params[i]}});
-  }
+        {picture_params_->type(), picture_params_->size(), &pic_param}}};
+  buffers.reserve(3 + slice_params.size());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (IsTranscrypted()) {
+    CHECK(decrypt_config);
+    CHECK_EQ(decrypt_config->subsamples().size(), 2u);
+    if (!protected_params_) {
+      protected_params_ = vaapi_wrapper_->CreateVABuffer(
+          VAProtectedSliceDataBufferType, decrypt_config->key_id().length());
+      if (!protected_params_)
+        return DecodeStatus::kFail;
+    }
+    DCHECK_EQ(decrypt_config->key_id().length(), protected_params_->size());
+    buffers.push_back({protected_params_->id(),
+                       {protected_params_->type(), protected_params_->size(),
+                        decrypt_config->key_id().data()}});
+    encoded_data = vaapi_wrapper_->CreateVABuffer(
+        VASliceDataBufferType,
+        base::strict_cast<size_t>(
+            decrypt_config->subsamples()[0].cypher_bytes));
+    if (!encoded_data)
+      return DecodeStatus::kFail;
+    buffers.push_back(
+        {encoded_data->id(),
+         {encoded_data->type(), encoded_data->size(),
+          data.data() + decrypt_config->subsamples()[0].clear_bytes}});
+  } else {
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    encoded_data = vaapi_wrapper_->CreateVABuffer(VASliceDataBufferType,
+                                                  data.size_bytes());
+    if (!encoded_data)
+      return DecodeStatus::kFail;
+    buffers.push_back(
+        {encoded_data->id(),
+         {encoded_data->type(), encoded_data->size(), data.data()}});
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  }
   if (uses_crypto) {
     buffers.push_back(
         {crypto_params_->id(),
          {crypto_params_->type(), crypto_params_->size(), &crypto_param}});
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  for (size_t i = 0; i < slice_params.size(); ++i) {
+    buffers.push_back({slice_params_va_buffers[i]->id(),
+                       {slice_params_va_buffers[i]->type(),
+                        slice_params_va_buffers[i]->size(), &slice_params[i]}});
+  }
 
   const auto* vaapi_pic = static_cast<const VaapiAV1Picture*>(&pic);
   const bool success = vaapi_wrapper_->MapAndCopyAndExecute(
@@ -892,7 +923,7 @@ void AV1VaapiVideoDecoderDelegate::OnVAContextDestructionSoon() {
   // Destroy the member ScopedVABuffers below since they refer to a VAContextID
   // that will be destroyed soon.
   picture_params_.reset();
-  slice_params_.clear();
   crypto_params_.reset();
+  protected_params_.reset();
 }
 }  // namespace media

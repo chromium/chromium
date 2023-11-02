@@ -1,12 +1,12 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_DISPLAY_ITEM_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_DISPLAY_ITEM_H_
 
+#include "base/check_op.h"
 #include "base/dcheck_is_on.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
+#include "ui/gfx/geometry/rect.h"
 
 #if DCHECK_IS_ON()
 #include "third_party/blink/renderer/platform/json/json_values.h"
@@ -105,7 +106,6 @@ class PLATFORM_EXPORT DisplayItem {
     kForeignLayerPlugin,
     kForeignLayerVideo,
     kForeignLayerRemoteFrame,
-    kForeignLayerContentsWrapper,
     kForeignLayerLinkHighlight,
     kForeignLayerViewportScroll,
     kForeignLayerViewportScrollbar,
@@ -144,8 +144,9 @@ class PLATFORM_EXPORT DisplayItem {
     kResizerScrollHitTest,
     // Used to prevent composited scrolling on plugins with wheel handlers.
     kPluginScrollHitTest,
-    // Used to prevent composited scrolling on custom scrollbars.
-    kCustomScrollbarHitTest,
+    // Used to prevent composited scrolling and set touch action region, on
+    // custom scrollbars and non-composited native scrollbars.
+    kScrollbarHitTest,
 
     // These are for paint chunks that are forced for layers.
     kLayerChunk,
@@ -187,6 +188,9 @@ class PLATFORM_EXPORT DisplayItem {
     const wtf_size_t fragment;
 
     struct HashKey {
+      DISALLOW_NEW();
+
+     public:
       HashKey() = default;
       explicit HashKey(const DisplayItem::Id& id)
           : client_id(id.client_id), type(id.type), fragment(id.fragment) {}
@@ -297,7 +301,7 @@ class PLATFORM_EXPORT DisplayItem {
               const gfx::Rect& visual_rect,
               RasterEffectOutset raster_effect_outset,
               PaintInvalidationReason paint_invalidation_reason,
-              bool draws_content = false)
+              bool draws_content)
       : client_id_(client_id),
         visual_rect_(visual_rect),
         fragment_(0),

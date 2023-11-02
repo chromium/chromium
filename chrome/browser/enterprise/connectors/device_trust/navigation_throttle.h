@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,20 +6,15 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_NAVIGATION_THROTTLE_H_
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "content/public/browser/navigation_throttle.h"
-
-class GURL;
-
-namespace url_matcher {
-
-class URLMatcher;
-
-}
 
 namespace enterprise_connectors {
 
 class DeviceTrustService;
+struct DeviceTrustResponse;
 
 // DeviceTrustNavigationThrottle provides a simple way to start a handshake
 // between Chrome and an origin based on a list of trusted URLs set in the
@@ -38,10 +33,6 @@ class DeviceTrustNavigationThrottle : public content::NavigationThrottle {
   static std::unique_ptr<DeviceTrustNavigationThrottle> MaybeCreateThrottleFor(
       content::NavigationHandle* navigation_handle);
 
-  using AttestationCallback = base::OnceCallback<void(const std::string&)>;
-
-  explicit DeviceTrustNavigationThrottle(
-      content::NavigationHandle* navigation_handle);
   DeviceTrustNavigationThrottle(DeviceTrustService* device_trust_service,
                                 content::NavigationHandle* navigation_handle);
 
@@ -56,27 +47,18 @@ class DeviceTrustNavigationThrottle : public content::NavigationThrottle {
   const char* GetNameForLogging() override;
 
  private:
-  void OnTrustedUrlPatternsChanged(const base::ListValue& origins);
-
   content::NavigationThrottle::ThrottleCheckResult AddHeadersIfNeeded();
 
-  // Whether this throttle is deferring the navigation. Only set to true in
-  // AddHeadersIfNeeded if there is a handshake ongoing.
-  bool deferring_ = false;
-
   // Not owned.
-  DeviceTrustService* const device_trust_service_;
+  const raw_ptr<DeviceTrustService> device_trust_service_;
 
-  // Set `challege_response` into the header
+  // Resumes the navigation by setting a value into the header
   // `X-Verified-Access-Challenge-Response` of the redirection request to the
-  // IdP and resume the navigation.
-  void ReplyChallengeResponseAndResume(const std::string& challenge_response);
-
-  // The URL matcher created from the ContextAwareAccessSignalsAllowlist policy.
-  std::unique_ptr<url_matcher::URLMatcher> matcher_;
-
-  // Subscription for trusted URL pattern changes.
-  base::CallbackListSubscription subscription_;
+  // IdP and resume the navigation. That value is determined by the properties
+  // of `dt_response` which, when in success cases, contains a valid response
+  // string. `start_time` is used to measure the latency of the end-to-end flow.
+  void ReplyChallengeResponseAndResume(base::TimeTicks start_time,
+                                       const DeviceTrustResponse& dt_response);
 
   base::WeakPtrFactory<DeviceTrustNavigationThrottle> weak_ptr_factory_{this};
 };

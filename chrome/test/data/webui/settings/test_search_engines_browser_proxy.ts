@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -98,6 +98,7 @@ export function createSampleSearchEngine(override?: Partial<SearchEngine>):
         keyword: 'google.com',
         modelIndex: 0,
         name: 'Google',
+        shouldConfirmDeletion: false,
         url: 'https://search.foo.com/search?p=%s',
         urlLocked: false,
       },

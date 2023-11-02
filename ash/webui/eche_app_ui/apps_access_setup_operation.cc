@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,11 +16,13 @@ namespace {
 // Status values which are considered "final" - i.e., once the status of an
 // operation changes to one of these values, the operation has completed. These
 // status values indicate either a success or a fatal error.
-constexpr std::array<AppsAccessSetupOperation::Status, 3>
+constexpr std::array<AppsAccessSetupOperation::Status, 5>
     kOperationFinishedStatus{
         AppsAccessSetupOperation::Status::kTimedOutConnecting,
         AppsAccessSetupOperation::Status::kConnectionDisconnected,
         AppsAccessSetupOperation::Status::kCompletedSuccessfully,
+        AppsAccessSetupOperation::Status::kCompletedUserRejected,
+        AppsAccessSetupOperation::Status::kOperationFailedOrCancelled,
     };
 }  // namespace */
 
@@ -46,30 +48,6 @@ void AppsAccessSetupOperation::NotifyAppsStatusChanged(Status new_status) {
   current_status_ = new_status;
 
   delegate_->OnAppsStatusChange(new_status);
-}
-
-std::ostream& operator<<(std::ostream& stream,
-                         AppsAccessSetupOperation::Status status) {
-  switch (status) {
-    case AppsAccessSetupOperation::Status::kConnecting:
-      stream << "[Connecting]";
-      break;
-    case AppsAccessSetupOperation::Status::kTimedOutConnecting:
-      stream << "[Timed out connecting]";
-      break;
-    case AppsAccessSetupOperation::Status::kConnectionDisconnected:
-      stream << "[Connection disconnected]";
-      break;
-    case AppsAccessSetupOperation::Status::
-        kSentMessageToPhoneAndWaitingForResponse:
-      stream << "[Sent message to phone; waiting for response]";
-      break;
-    case AppsAccessSetupOperation::Status::kCompletedSuccessfully:
-      stream << "[Completed successfully]";
-      break;
-  }
-
-  return stream;
 }
 
 }  // namespace eche_app

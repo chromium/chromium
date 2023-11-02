@@ -310,7 +310,7 @@ struct StringLikeTest : public ::testing::Test {
   hash_default_hash<typename T::first_type> hash;
 };
 
-TYPED_TEST_CASE_P(StringLikeTest);
+TYPED_TEST_SUITE_P(StringLikeTest);
 
 TYPED_TEST_P(StringLikeTest, Eq) {
   EXPECT_TRUE(this->eq(this->a1, this->b1));

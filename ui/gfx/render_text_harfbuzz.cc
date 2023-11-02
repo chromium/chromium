@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,10 +19,12 @@
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
@@ -48,15 +50,15 @@
 #include "ui/gfx/text_utils.h"
 #include "ui/gfx/utf16_indexing.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "third_party/skia/include/ports/SkTypeface_mac.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/locale_utils.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #include <hb.h>
 
@@ -199,7 +201,7 @@ GraphemeProperties RetrieveGraphemeProperties(const base::StringPiece16& text,
         properties.block = ublock_getCode(codepoint);
     }
 
-    if (codepoint == '\n' || codepoint == ' ')
+    if (codepoint == '\n' || codepoint == '\r' || codepoint == ' ')
       properties.has_control = true;
     if (IsBracket(codepoint))
       properties.has_bracket = true;
@@ -411,7 +413,6 @@ class HarfBuzzLineBreaker {
                       float glyph_height_for_test,
                       WordWrapBehavior word_wrap_behavior,
                       const std::u16string& text,
-                      const BreakList<size_t>* words,
                       const internal::TextRunList& run_list)
       : max_width_((max_width == 0) ? SK_ScalarMax : SkIntToScalar(max_width)),
         min_baseline_(min_baseline),
@@ -419,7 +420,6 @@ class HarfBuzzLineBreaker {
         glyph_height_for_test_(glyph_height_for_test),
         word_wrap_behavior_(word_wrap_behavior),
         text_(text),
-        words_(words),
         run_list_(run_list),
         max_descent_(0),
         max_ascent_(0),
@@ -446,10 +446,17 @@ class HarfBuzzLineBreaker {
 
   // Constructs multiple lines for |text_| based on words iteration approach.
   void ConstructMultiLines() {
-    DCHECK(words_);
-    for (auto iter = words_->breaks().begin(); iter != words_->breaks().end();
-         iter++) {
-      const Range word_range = words_->GetRange(iter);
+    // Get an iterator that pass through valid line breaking positions.
+    // See https://www.unicode.org/reports/tr14/tr14-11.html for lines breaking.
+    base::i18n::BreakIterator words(text_,
+                                    base::i18n::BreakIterator::BREAK_LINE);
+    const bool success = words.Init();
+    DCHECK(success);
+    if (!success)
+      return;
+
+    while (words.Advance()) {
+      const Range word_range = Range(words.prev(), words.pos());
       std::vector<internal::LineSegment> word_segments;
       SkScalar word_width = GetWordWidth(word_range, &word_segments);
 
@@ -672,8 +679,7 @@ class HarfBuzzLineBreaker {
     }
 
     const size_t valid_end_pos = std::max(
-        segment.char_range.start(),
-        static_cast<uint32_t>(FindValidBoundaryBefore(text_, end_pos)));
+        segment.char_range.start(), FindValidBoundaryBefore(text_, end_pos));
     if (end_pos != valid_end_pos) {
       end_pos = valid_end_pos;
       width = run.GetGlyphWidthForCharRange(
@@ -685,9 +691,8 @@ class HarfBuzzLineBreaker {
     // not separate surrogate pair or combining characters.
     // See RenderTextHarfBuzzTest.Multiline_MinWidth for an example.
     if (width == 0 && available_width_ == max_width_) {
-      end_pos = std::min(
-          segment.char_range.end(),
-          static_cast<uint32_t>(FindValidBoundaryAfter(text_, end_pos + 1)));
+      end_pos = std::min(segment.char_range.end(),
+                         FindValidBoundaryAfter(text_, end_pos + 1));
     }
 
     return end_pos;
@@ -697,7 +702,6 @@ class HarfBuzzLineBreaker {
   // segments based on its runs.
   SkScalar GetWordWidth(const Range& word_range,
                         std::vector<internal::LineSegment>* segments) const {
-    DCHECK(words_);
     if (word_range.is_empty() || segments == nullptr)
       return 0;
     size_t run_start_index = run_list_.GetRunIndexAt(word_range.start());
@@ -743,7 +747,6 @@ class HarfBuzzLineBreaker {
   const float glyph_height_for_test_;
   const WordWrapBehavior word_wrap_behavior_;
   const std::u16string& text_;
-  const BreakList<size_t>* const words_;
   const internal::TextRunList& run_list_;
 
   // Stores the resulting lines.
@@ -811,7 +814,7 @@ namespace internal {
 sk_sp<SkTypeface> CreateSkiaTypeface(const Font& font,
                                      bool italic,
                                      Font::Weight weight) {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   const Font::FontStyle style = italic ? Font::ITALIC : Font::NORMAL;
   Font font_with_style = font.Derive(0, style, weight);
   if (!font_with_style.GetNativeFont())
@@ -1019,10 +1022,18 @@ RangeF TextRunHarfBuzz::GetGraphemeBounds(RenderTextHarfBuzz* render_text,
   Range chars;
   Range glyphs;
   GetClusterAt(text_index, &chars, &glyphs);
-  const float cluster_begin_x = shape.positions[glyphs.start()].x();
-  const float cluster_end_x = glyphs.end() < shape.glyph_count
-                                  ? shape.positions[glyphs.end()].x()
-                                  : SkFloatToScalar(shape.width);
+  // Obscured glyphs are centered in their allotted space by adjusting their
+  // positions during shaping. Include the space preceding the glyph when
+  // calculating grapheme bounds.
+  const float half_obscured_spacing =
+      render_text->obscured() ? render_text->obscured_glyph_spacing() / 2.0f
+                              : 0.0f;
+  const float cluster_begin_x =
+      shape.positions[glyphs.start()].x() - half_obscured_spacing;
+  const float cluster_end_x =
+      glyphs.end() < shape.glyph_count
+          ? shape.positions[glyphs.end()].x() - half_obscured_spacing
+          : SkFloatToScalar(shape.width);
   DCHECK_LE(cluster_begin_x, cluster_end_x);
 
   // A cluster consists of a number of code points and corresponds to a number
@@ -1327,9 +1338,14 @@ void ShapeRunWithFont(const ShapeRunWithFontInput& in,
       out->missing_glyph_count += 1;
     DCHECK_GE(infos[i].cluster, in.range.start());
     out->glyph_to_char[i] = infos[i].cluster - in.range.start();
-    const SkScalar x_offset =
-        force_zero_offset ? 0
-                          : HarfBuzzUnitsToSkiaScalar(hb_positions[i].x_offset);
+
+    SkScalar x_offset = HarfBuzzUnitsToSkiaScalar(hb_positions[i].x_offset);
+
+    if (in.obscured)
+      // Place obscured glyphs in the middle of the allotted spacing.
+      x_offset += in.obscured_glyph_spacing / 2.0f;
+    if (force_zero_offset)
+      x_offset = 0;
     const SkScalar y_offset =
         HarfBuzzUnitsToSkiaScalar(hb_positions[i].y_offset);
     out->positions[i].set(out->width + x_offset, -y_offset);
@@ -1358,7 +1374,7 @@ void ShapeRunWithFont(const ShapeRunWithFontInput& in,
 }
 
 std::string GetApplicationLocale() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // TODO(etienneb): Android locale should work the same way than base locale.
   return base::android::GetDefaultLocaleString();
 #else
@@ -1602,7 +1618,7 @@ SelectionModel RenderTextHarfBuzz::AdjacentWordSelectionModel(
     if (run == run_list->size())
       break;
     size_t cursor = current.caret_pos();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Windows generally advances to the start of a word in either direction.
     // TODO: Break on the end of a word when the neighboring text is
     // punctuation.
@@ -1613,7 +1629,7 @@ SelectionModel RenderTextHarfBuzz::AdjacentWordSelectionModel(
         run_list->runs()[run]->font_params.is_rtl == (direction == CURSOR_LEFT);
     if (is_forward ? iter.IsEndOfWord(cursor) : iter.IsStartOfWord(cursor))
       break;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   }
   return current;
 }
@@ -1690,7 +1706,7 @@ void RenderTextHarfBuzz::EnsureLayout() {
         display_rect().width(),
         DetermineBaselineCenteringText(height, font_list()), height,
         glyph_height_for_test_, word_wrap_behavior(), GetDisplayText(),
-        multiline() ? &GetLineBreaks() : nullptr, *run_list);
+        *run_list);
 
     if (multiline())
       line_breaker.ConstructMultiLines();
@@ -1698,7 +1714,9 @@ void RenderTextHarfBuzz::EnsureLayout() {
       line_breaker.ConstructSingleLine();
     std::vector<internal::Line> lines;
     line_breaker.FinalizeLines(&lines, &total_size_);
-    if (multiline() && max_lines()) {
+    // In multiline, only ELIDE_TAIL is supported. max_lines_ is not used
+    // otherwise.
+    if (multiline() && max_lines() && elide_behavior() == ELIDE_TAIL) {
       // TODO(crbug.com/866720): no more than max_lines() should be rendered.
       // Remove the IsHomogeneous() condition for the following DCHECK when the
       // bug is fixed.
@@ -2059,7 +2077,7 @@ void RenderTextHarfBuzz::ShapeRuns(
                  TRACE_STR_COPY(uscript_getShortName(font_params.script)));
     fallback_font_list = GetFallbackFonts(primary_font);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Append fonts in the fallback list of the fallback fonts.
     // TODO(tapted): Investigate whether there's a case that benefits from this
     // on Mac.

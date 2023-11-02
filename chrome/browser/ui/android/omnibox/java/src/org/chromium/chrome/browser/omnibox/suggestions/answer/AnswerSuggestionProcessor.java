@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,12 @@ import android.content.Context;
 import android.graphics.Bitmap;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.LocaleUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
@@ -37,6 +40,8 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
     private final SuggestionHost mSuggestionHost;
     private final UrlBarEditingTextStateProvider mUrlBarEditingTextProvider;
     private final Supplier<ImageFetcher> mImageFetcherSupplier;
+    private boolean mOmniBoxAnswerColorReversal;
+    private boolean mOmniBoxAnswerColorReversalFinanceOnly;
 
     /**
      * @param context An Android context.
@@ -45,11 +50,32 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
     public AnswerSuggestionProcessor(Context context, SuggestionHost suggestionHost,
             UrlBarEditingTextStateProvider editingTextProvider,
             Supplier<ImageFetcher> imageFetcherSupplier) {
-        super(context, suggestionHost);
+        super(context, suggestionHost, null);
         mSuggestionHost = suggestionHost;
         mPendingAnswerRequestUrls = new HashMap<>();
         mUrlBarEditingTextProvider = editingTextProvider;
         mImageFetcherSupplier = imageFetcherSupplier;
+    }
+
+    /**
+     * Evaluates whether the current locale uses "green" or "red" color to indicate
+     * growth, allowing locale-adjusted representation of stock market changes.
+     */
+    @Override
+    public void onNativeInitialized() {
+        super.onNativeInitialized();
+        mOmniBoxAnswerColorReversal =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.SUGGESTION_ANSWERS_COLOR_REVERSE);
+        boolean financeReversalEnabled = ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.SUGGESTION_ANSWERS_COLOR_REVERSE,
+                "omnibox_answer_color_reversal_finance_only",
+                /* default= */ true);
+        String stockColorReversalCountryList = ChromeFeatureList.getFieldTrialParamByFeature(
+                ChromeFeatureList.SUGGESTION_ANSWERS_COLOR_REVERSE,
+                "omnibox_answer_color_reversal_countries");
+        mOmniBoxAnswerColorReversalFinanceOnly = financeReversalEnabled
+                && stockColorReversalCountryList != null
+                && stockColorReversalCountryList.contains(LocaleUtils.getDefaultLocaleString());
     }
 
     @Override
@@ -122,8 +148,14 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
      */
     private void setStateForSuggestion(
             PropertyModel model, AutocompleteMatch suggestion, int position) {
-        AnswerText[] details = AnswerTextNewLayout.from(
-                getContext(), suggestion, mUrlBarEditingTextProvider.getTextWithoutAutocomplete());
+        @AnswerType
+        int answerType = suggestion.getAnswer() == null ? AnswerType.INVALID
+                                                        : suggestion.getAnswer().getType();
+        boolean suggestionTextColorReversal = checkColorReversalRequired(
+                answerType, mOmniBoxAnswerColorReversal, mOmniBoxAnswerColorReversalFinanceOnly);
+        AnswerText[] details = AnswerTextNewLayout.from(getContext(), suggestion,
+                mUrlBarEditingTextProvider.getTextWithoutAutocomplete(),
+                suggestionTextColorReversal);
 
         model.set(AnswerSuggestionViewProperties.TEXT_LINE_1_TEXT, details[0].mText);
         model.set(AnswerSuggestionViewProperties.TEXT_LINE_2_TEXT, details[1].mText);
@@ -144,6 +176,35 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
 
         setTabSwitchOrRefineAction(model, suggestion, position);
         maybeFetchAnswerIcon(model, suggestion);
+    }
+
+    /**
+     * Checks if we need to apply red-green color reversion on the answer suggestion.
+     *
+     * @param suggestion the AutocompleteMatch type for the answer
+     * @param omniBoxAnswerColorReversal flag to indicate whether we need color reversal for all
+     *         types of suggestion answer
+     * @param omniBoxAnswerColorReversalFinanceOnly flag to indicate whether we need color reversal
+     *         for finance answer
+     *
+     */
+    @VisibleForTesting
+    public static boolean checkColorReversalRequired(@AnswerType int answerType,
+            boolean omniBoxAnswerColorReversal, boolean omniBoxAnswerColorReversalFinanceOnly) {
+        boolean isFinanceAnswer = answerType == AnswerType.FINANCE;
+        return (omniBoxAnswerColorReversal && !omniBoxAnswerColorReversalFinanceOnly)
+                || (omniBoxAnswerColorReversal && omniBoxAnswerColorReversalFinanceOnly
+                        && isFinanceAnswer);
+    }
+
+    /* Returns whether Omnibox answer color reversal is enabled. */
+    public boolean isOmniboxAnswerColorReversalEnabled() {
+        return mOmniBoxAnswerColorReversal;
+    }
+
+    /* Returns whether Omnibox answer color reversal is enabled to finance answer only. */
+    public boolean isOmniboxAnswerColorReversalFinanceOnlyEnabled() {
+        return mOmniBoxAnswerColorReversalFinanceOnly;
     }
 
     /**
@@ -173,11 +234,9 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
                 case AnswerType.SPORTS:
                     return R.drawable.ic_google_round;
                 default:
-                    assert false : "Unsupported answer type";
                     break;
             }
-        } else {
-            assert suggestion.getType() == OmniboxSuggestionType.CALCULATOR;
+        } else if (suggestion.getType() == OmniboxSuggestionType.CALCULATOR) {
             return R.drawable.ic_equals_sign_round;
         }
         return R.drawable.ic_google_round;

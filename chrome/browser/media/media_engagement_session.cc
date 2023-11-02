@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,8 +23,8 @@ MediaEngagementSession::MediaEngagementSession(MediaEngagementService* service,
     pending_data_to_commit_.visit = false;
 }
 
-bool MediaEngagementSession::IsSameOriginWith(const url::Origin& origin) const {
-  return origin_.IsSameOriginWith(origin);
+bool MediaEngagementSession::IsSameOriginWith(const GURL& url) const {
+  return origin_.IsSameOriginWith(url);
 }
 
 void MediaEngagementSession::RecordSignificantMediaElementPlayback() {

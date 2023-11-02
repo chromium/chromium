@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/i18n/rtl.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/view.h"
@@ -37,6 +38,10 @@ gfx::Size ScaleToFitSize(const gfx::Size& image_size) {
 }
 
 }  // namespace
+
+MediaNotificationBackgroundAshImpl::MediaNotificationBackgroundAshImpl(
+    bool paint_artwork)
+    : paint_artwork_(paint_artwork) {}
 
 gfx::Rect MediaNotificationBackgroundAshImpl::GetArtworkBounds(
     const gfx::Rect& view_bounds) const {
@@ -72,6 +77,9 @@ SkPath MediaNotificationBackgroundAshImpl::GetArtworkClipPath(
 
 void MediaNotificationBackgroundAshImpl::Paint(gfx::Canvas* canvas,
                                                views::View* view) const {
+  if (!paint_artwork_)
+    return;
+
   gfx::Rect source_bounds(0, 0, artwork_.width(), artwork_.height());
   gfx::Rect target_bounds = GetArtworkBounds(view->GetContentsBounds());
 

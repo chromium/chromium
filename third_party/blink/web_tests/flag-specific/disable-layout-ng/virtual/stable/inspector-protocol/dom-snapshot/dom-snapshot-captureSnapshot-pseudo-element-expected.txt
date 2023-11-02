@@ -715,6 +715,12 @@ Tests DOMSnapshot.captureSnapshot exports layout tree nodes associated with pseu
                     [36] : 34
                     [37] : 8
                 ]
+                pseudoIdentifier : {
+                    index : [
+                    ]
+                    value : [
+                    ]
+                }
                 pseudoType : {
                     index : [
                         [0] : 11

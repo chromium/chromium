@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,12 +16,11 @@
 #include "ui/gfx/text_elider.h"
 #include "ui/wm/public/tooltip_client.h"
 
-namespace views {
-namespace corewm {
+namespace views::corewm {
 namespace {
 
 constexpr auto kDelayForTooltipUpdate = base::Milliseconds(500);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Drawing a long word in tooltip is very slow on Windows. crbug.com/513693
 constexpr size_t kMaxTooltipLength = 1024;
 #else
@@ -82,14 +81,6 @@ void TooltipStateManager::Show(aura::Window* window,
   StartWillShowTooltipTimer(trimmed_text, hide_delay);
 }
 
-void TooltipStateManager::StopWillHideTooltipTimer() {
-  will_hide_tooltip_timer_.Stop();
-}
-
-void TooltipStateManager::StopWillShowTooltipTimer() {
-  will_show_tooltip_timer_.Stop();
-}
-
 void TooltipStateManager::UpdatePositionIfNeeded(const gfx::Point& position,
                                                  TooltipTrigger trigger) {
   // The position should only be updated when the tooltip has been triggered but
@@ -113,16 +104,8 @@ void TooltipStateManager::ShowNow(const std::u16string& trimmed_text,
   if (!tooltip_parent_window_)
     return;
 
-  gfx::Point anchor_point =
-      position_ +
-      tooltip_parent_window_->GetBoundsInScreen().OffsetFromOrigin();
-
-  TooltipPositionBehavior behavior =
-      tooltip_trigger_ == TooltipTrigger::kCursor
-          ? TooltipPositionBehavior::kRelativeToCursor
-          : TooltipPositionBehavior::kCentered;
-  tooltip_->Update(tooltip_parent_window_, trimmed_text,
-                   {anchor_point, behavior});
+  tooltip_->Update(tooltip_parent_window_, trimmed_text, position_,
+                   tooltip_trigger_);
   tooltip_->Show();
   if (!hide_delay.is_zero()) {
     will_hide_tooltip_timer_.Start(FROM_HERE, hide_delay, this,
@@ -147,5 +130,4 @@ void TooltipStateManager::StartWillShowTooltipTimer(
   }
 }
 
-}  // namespace corewm
-}  // namespace views
+}  // namespace views::corewm

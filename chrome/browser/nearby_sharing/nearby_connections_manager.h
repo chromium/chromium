@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_enums.h"
 #include "chrome/browser/nearby_sharing/nearby_connection.h"
-#include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // A wrapper around the Nearby Connections mojo API.
@@ -64,7 +64,7 @@ class NearbyConnectionsManager {
     PayloadStatusListener();
     virtual ~PayloadStatusListener();
 
-    base::WeakPtr<PayloadStatusListener> GetWeakPtr() const;
+    base::WeakPtr<PayloadStatusListener> GetWeakPtr();
 
     // Note: |upgraded_medium| is passed in for use in metrics, and it is
     // absl::nullopt if the bandwidth has not upgraded yet or if the upgrade

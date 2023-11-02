@@ -26,7 +26,6 @@
 <translation id="225614027745146050">მოგესალმებით!</translation>
 <translation id="2320166752086256636">კლავიატურის დამალვა</translation>
 <translation id="2329392777730037872"><ph name="URL" /> ვერ გაიხსნა ამ კლიენტზე.</translation>
-<translation id="2333212046079545895">© 2021 Google LLC. ყველა უფლება დაცულია.</translation>
 <translation id="2359808026110333948">გაგრძელება</translation>
 <translation id="2366718077645204424">ვერ დაუკავშირდა ჰოსტს. ამის მიზეზი შეიძლება იყოს იმ ქსელის კონფიგურაცია, რომელსაც იყენებთ.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> ბოლოს დაფიქსირდა ონლაინ: <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -37,6 +36,7 @@
 <translation id="2599300881200251572">ეს სერვისი რთავს შემოსულ კავშირებს Chrome-ის დისტანციური სამუშაო დაფის კლიენტებისგან.</translation>
 <translation id="2647232381348739934">Chromoting სერვისი</translation>
 <translation id="2676780859508944670">მუშაობს…</translation>
+<translation id="2692522824157224199">© 2022, Google LLC. ყველა უფლება დაცულია.</translation>
 <translation id="2699970397166997657">Chromoting კომუნიკაციის პროცესი</translation>
 <translation id="2758123043070977469">ავტორიზაციისას პრობლემა წარმოიქმნა. გთხოვთ, ხელახლა ცადოთ შესვლა.</translation>
 <translation id="2803375539583399270">შეიყვანეთ PIN-კოდი</translation>
@@ -73,10 +73,10 @@
 <translation id="4257751272692708833"><ph name="PRODUCT_NAME" /> URL-ების გადამამისამართებელი</translation>
 <translation id="4277736576214464567">წვდომის კოდი არასწორია. გთხოვთ სცადეთ ისევ.</translation>
 <translation id="4281844954008187215">მომსახურების პირობები</translation>
+<translation id="4372650392690220936">© 2022, The Chromium Authors. ყველა უფლება დაცულია.</translation>
 <translation id="4405930547258349619">ძირითადი ბიბლიოთეკა</translation>
 <translation id="443560535555262820">მარტივი წვდომის პარამეტრების გახსნა</translation>
 <translation id="4450893287417543264">აღარ გამოჩნდეს</translation>
-<translation id="4512952200932940229">© 2021, The Chromium Authors. ყველა უფლება დაცულია.</translation>
 <translation id="4513946894732546136">უკუკავშირი</translation>
 <translation id="4563926062592110512">კლიენტი გაითიშა: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> არასწორად არის კონფიგურირებული. აირჩიეთ განსხვავებული ვებ-ბრაუზერი, შემდეგ კი ხელახლა ჩართეთ URL-ების გადამისამართება.</translation>

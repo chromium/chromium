@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,11 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "content/browser/bluetooth/web_bluetooth_pairing_manager_delegate.h"
 #include "content/browser/bluetooth/web_bluetooth_service_impl.h"
+#include "content/public/browser/bluetooth_delegate.h"
 
 namespace content {
 
@@ -259,22 +262,35 @@ void WebBluetoothPairingManagerImpl::OnPairDevice(
 void WebBluetoothPairingManagerImpl::RequestPinCode(BluetoothDevice* device) {
   blink::WebBluetoothDeviceId device_id =
       pairing_manager_delegate_->GetWebBluetoothDeviceId(device->GetAddress());
-  pairing_manager_delegate_->PromptForBluetoothCredentials(
+  pairing_manager_delegate_->PromptForBluetoothPairing(
       device->GetNameForDisplay(),
       base::BindOnce(&WebBluetoothPairingManagerImpl::OnPinCodeResult,
-                     weak_ptr_factory_.GetWeakPtr(), device_id));
+                     weak_ptr_factory_.GetWeakPtr(), device_id),
+      BluetoothDelegate::PairingKind::kProvidePin, absl::nullopt);
 }
 
 void WebBluetoothPairingManagerImpl::OnPinCodeResult(
     blink::WebBluetoothDeviceId device_id,
-    WebBluetoothPairingManagerDelegate::CredentialPromptResult status,
-    const std::string& result) {
-  switch (status) {
-    case WebBluetoothPairingManagerDelegate::CredentialPromptResult::kCancelled:
+    const BluetoothDelegate::PairPromptResult& result) {
+  switch (result.result_code) {
+    case BluetoothDelegate::PairPromptStatus::kCancelled:
       pairing_manager_delegate_->CancelPairing(device_id);
       break;
-    case WebBluetoothPairingManagerDelegate::CredentialPromptResult::kSuccess:
-      pairing_manager_delegate_->SetPinCode(device_id, result);
+    case BluetoothDelegate::PairPromptStatus::kSuccess:
+      pairing_manager_delegate_->SetPinCode(device_id, result.pin);
+      break;
+  }
+}
+
+void WebBluetoothPairingManagerImpl::OnPairConfirmResult(
+    blink::WebBluetoothDeviceId device_id,
+    const BluetoothDelegate::PairPromptResult& result) {
+  switch (result.result_code) {
+    case BluetoothDelegate::PairPromptStatus::kCancelled:
+      pairing_manager_delegate_->CancelPairing(device_id);
+      break;
+    case BluetoothDelegate::PairPromptStatus::kSuccess:
+      pairing_manager_delegate_->PairConfirmed(device_id);
       break;
   }
 }
@@ -305,13 +321,29 @@ void WebBluetoothPairingManagerImpl::KeysEntered(BluetoothDevice* device,
 
 void WebBluetoothPairingManagerImpl::ConfirmPasskey(BluetoothDevice* device,
                                                     uint32_t passkey) {
-  device->CancelPairing();
-  NOTIMPLEMENTED();
+  blink::WebBluetoothDeviceId device_id =
+      pairing_manager_delegate_->GetWebBluetoothDeviceId(device->GetAddress());
+
+  // In HstringToUint32() we have validated original uint32_t passkey range from
+  // 0 to 999999 before conversion. So here we can safely always assume
+  // pin.size() == 6 after conversion
+  std::u16string pin = base::ASCIIToUTF16(base::StringPrintf("%06u", passkey));
+
+  pairing_manager_delegate_->PromptForBluetoothPairing(
+      device->GetNameForDisplay(),
+      base::BindOnce(&WebBluetoothPairingManagerImpl::OnPairConfirmResult,
+                     weak_ptr_factory_.GetWeakPtr(), device_id),
+      BluetoothDelegate::PairingKind::kConfirmPinMatch, pin);
 }
 
 void WebBluetoothPairingManagerImpl::AuthorizePairing(BluetoothDevice* device) {
-  device->CancelPairing();
-  NOTIMPLEMENTED();
+  blink::WebBluetoothDeviceId device_id =
+      pairing_manager_delegate_->GetWebBluetoothDeviceId(device->GetAddress());
+  pairing_manager_delegate_->PromptForBluetoothPairing(
+      device->GetNameForDisplay(),
+      base::BindOnce(&WebBluetoothPairingManagerImpl::OnPairConfirmResult,
+                     weak_ptr_factory_.GetWeakPtr(), device_id),
+      BluetoothDelegate::PairingKind::kConfirmOnly, absl::nullopt);
 }
 
 }  // namespace content

@@ -15,6 +15,7 @@ message ExoMessage {
     GetAppsAccessStateRequest apps_access_state_request = 7;
     GetAppsAccessStateResponse apps_access_state_response = 8;
     StatusChange status_change = 9;
+    PolicyStateChange policy_state_change = 10;
   }
 }
 
@@ -47,8 +48,11 @@ enum AppsAccessState {
 enum Result {
   RESULT_UNKNOWN = 0;
   RESULT_NO_ERROR = 1;
-  RESULT_ERROR_ACTION_FAILED = 2;
-  RESULT_ERROR_NOT_SUPPORTED = 3;
+  RESULT_ERROR_USER_REJECTED = 2;
+  RESULT_ERROR_ACTION_TIMEOUT = 3;
+  RESULT_ERROR_ACTION_CANCELED = 4;
+  RESULT_ERROR_SYSTEM = 5;
+  RESULT_ACK_BY_EXO = 6;
 }
 
 message SendAppsSetupRequest {}
@@ -71,4 +75,14 @@ enum StatusChangeType {
   TYPE_UNKNOWN = 0;
   TYPE_STREAM_START = 1;
   TYPE_STREAM_STOP = 2;
+}
+
+message PolicyStateChange {
+  AppStreamingPolicy app_policy_state = 1;
+}
+
+enum AppStreamingPolicy {
+  APP_POLICY_UNKNOWN = 0;
+  APP_POLICY_DISABLED = 1;
+  APP_POLICY_ENABLED = 2;
 }

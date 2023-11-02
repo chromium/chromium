@@ -1,5 +1,5 @@
 AXWebArea
-++AXList
+++AXList AXSubrole=AXContentList
 ++++AXGroup
 ++++++AXListMarker AXValue='%E2%80%A2 '
 ++++++AXStaticText AXValue='One'

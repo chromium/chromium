@@ -1,13 +1,18 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_VIEWS_CONTROLS_BUTTON_TOGGLE_BUTTON_H_
 #define UI_VIEWS_CONTROLS_BUTTON_TOGGLE_BUTTON_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/controls/button/button.h"
+
+namespace ui {
+class Event;
+}  // namespace ui
 
 namespace views {
 
@@ -51,6 +56,9 @@ class VIEWS_EXPORT ToggleButton : public Button {
   // views::View:
   void OnThemeChanged() override;
 
+  // views::Button:
+  void NotifyClick(const ui::Event& event) override;
+
   // Returns the path to draw the focus ring around for this ToggleButton.
   SkPath GetFocusRingPath() const;
 
@@ -78,14 +86,13 @@ class VIEWS_EXPORT ToggleButton : public Button {
   void OnBlur() override;
 
   // Button:
-  void NotifyClick(const ui::Event& event) override;
   void PaintButtonContents(gfx::Canvas* canvas) override;
 
   // gfx::AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;
 
   gfx::SlideAnimation slide_animation_{this};
-  ThumbView* thumb_view_;
+  raw_ptr<ThumbView> thumb_view_;
   absl::optional<SkColor> track_on_color_;
   absl::optional<SkColor> track_off_color_;
 

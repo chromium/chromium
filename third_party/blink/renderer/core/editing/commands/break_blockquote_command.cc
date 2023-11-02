@@ -40,7 +40,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -267,7 +267,7 @@ void BreakBlockquoteCommand::DoApply(EditingState* editing_state) {
   if (editing_state->IsAborted())
     return;
 
-  if (!ancestors.IsEmpty()) {
+  if (!ancestors.empty()) {
     // Split the tree up the ancestor chain until the topBlockquote
     // Throughout this loop, clonedParent is the clone of ancestor's parent.
     // This is so we can clone ancestor's siblings and place the clones

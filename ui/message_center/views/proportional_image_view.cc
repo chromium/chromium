@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,9 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/message_center/message_center_style.h"
+#include "ui/message_center/public/cpp/message_center_constants.h"
 
 namespace message_center {
-namespace {
-constexpr int kRoundedCornerRadius = 8;
-}
 
 ProportionalImageView::ProportionalImageView(const gfx::Size& view_size) {
   SetPreferredSize(view_size);
@@ -22,7 +20,7 @@ ProportionalImageView::ProportionalImageView(const gfx::Size& view_size) {
 
 ProportionalImageView::~ProportionalImageView() {}
 
-void ProportionalImageView::SetImage(const gfx::ImageSkia& image,
+void ProportionalImageView::SetImage(const ui::ImageModel& image,
                                      const gfx::Size& max_image_size,
                                      bool apply_rounded_corners) {
   apply_rounded_corners_ = apply_rounded_corners;
@@ -41,15 +39,17 @@ void ProportionalImageView::OnPaint(gfx::Canvas* canvas) {
   gfx::Rect draw_bounds = GetContentsBounds();
   draw_bounds.ClampToCenteredSize(draw_size);
 
+  gfx::ImageSkia rasterized = image_.Rasterize(GetColorProvider());
   gfx::ImageSkia image =
-      (image_.size() == draw_size)
-          ? image_
+      (rasterized.size() == draw_size)
+          ? rasterized
           : gfx::ImageSkiaOperations::CreateResizedImage(
-                image_, skia::ImageOperations::RESIZE_BEST, draw_size);
+                rasterized, skia::ImageOperations::RESIZE_BEST, draw_size);
 
   if (apply_rounded_corners_) {
     SkPath path;
-    const SkScalar corner_radius = SkIntToScalar(kRoundedCornerRadius);
+    const SkScalar corner_radius =
+        SkIntToScalar(message_center::kImageCornerRadius);
     const SkScalar kRadius[8] = {corner_radius, corner_radius, corner_radius,
                                  corner_radius, corner_radius, corner_radius,
                                  corner_radius, corner_radius};
@@ -72,7 +72,7 @@ gfx::Size ProportionalImageView::GetImageDrawingSize() {
 
   gfx::Size max_size = max_image_size_;
   max_size.SetToMin(GetContentsBounds().size());
-  return GetImageSizeForContainerSize(max_size, image_.size());
+  return GetImageSizeForContainerSize(max_size, image_.Size());
 }
 
 BEGIN_METADATA(ProportionalImageView, views::View)

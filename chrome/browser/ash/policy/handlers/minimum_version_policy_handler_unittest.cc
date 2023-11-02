@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_features.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -20,26 +19,25 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/shill/shill_service_client.h"
-#include "chromeos/dbus/update_engine/fake_update_engine_client.h"
-#include "chromeos/network/network_handler_test_helper.h"
-#include "chromeos/tpm/stub_install_attributes.h"
+#include "chromeos/ash/components/dbus/shill/shill_service_client.h"
+#include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-using testing::_;
-using testing::Mock;
-
-using MinimumVersionRequirement =
-    policy::MinimumVersionPolicyHandler::MinimumVersionRequirement;
-
 namespace policy {
 
 namespace {
+
+using MinimumVersionRequirement =
+    MinimumVersionPolicyHandler::MinimumVersionRequirement;
+
 const char kFakeCurrentVersion[] = "13305.20.0";
 const char kNewVersion[] = "13305.25.0";
 const char kNewerVersion[] = "13310.0.0";
@@ -62,12 +60,12 @@ class MinimumVersionPolicyHandlerTest
   void TearDown() override;
 
   // MinimumVersionPolicyHandler::Delegate:
-  bool IsKioskMode() const;
-  bool IsDeviceEnterpriseManaged() const;
-  base::Version GetCurrentVersion() const;
-  bool IsUserEnterpriseManaged() const;
-  bool IsUserLoggedIn() const;
-  bool IsLoginInProgress() const;
+  bool IsKioskMode() const override;
+  bool IsDeviceEnterpriseManaged() const override;
+  base::Version GetCurrentVersion() const override;
+  bool IsUserEnterpriseManaged() const override;
+  bool IsUserLoggedIn() const override;
+  bool IsLoginInProgress() const override;
   MOCK_METHOD0(ShowUpdateRequiredScreen, void());
   MOCK_METHOD0(RestartToLoginScreen, void());
   MOCK_METHOD0(HideUpdateRequiredScreenIfShown, void());
@@ -80,7 +78,7 @@ class MinimumVersionPolicyHandlerTest
       const;
 
   // Set new value for policy pref.
-  void SetPolicyPref(base::Value value);
+  void SetPolicyPref(base::Value::Dict value);
 
   MinimumVersionPolicyHandler* GetMinimumVersionPolicyHandler() {
     return minimum_version_policy_handler_.get();
@@ -96,10 +94,9 @@ class MinimumVersionPolicyHandlerTest
   ScopedTestingLocalState local_state_;
   base::test::ScopedFeatureList feature_list_;
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
-  chromeos::ScopedStubInstallAttributes scoped_stub_install_attributes_;
-  chromeos::FakeUpdateEngineClient* fake_update_engine_client_;
-  std::unique_ptr<chromeos::NetworkHandlerTestHelper>
-      network_handler_test_helper_;
+  ash::ScopedStubInstallAttributes scoped_stub_install_attributes_;
+  ash::FakeUpdateEngineClient* fake_update_engine_client_;
+  std::unique_ptr<ash::NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<base::Version> current_version_;
   std::unique_ptr<MinimumVersionPolicyHandler> minimum_version_policy_handler_;
 };
@@ -110,16 +107,11 @@ MinimumVersionPolicyHandlerTest::MinimumVersionPolicyHandlerTest()
 }
 
 void MinimumVersionPolicyHandlerTest::SetUp() {
-  auto fake_update_engine_client =
-      std::make_unique<chromeos::FakeUpdateEngineClient>();
-  fake_update_engine_client_ = fake_update_engine_client.get();
-  chromeos::DBusThreadManager::Initialize();
-  chromeos::DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
-      std::move(fake_update_engine_client));
+  fake_update_engine_client_ = ash::UpdateEngineClient::InitializeFakeForTest();
   network_handler_test_helper_ =
-      std::make_unique<chromeos::NetworkHandlerTestHelper>();
+      std::make_unique<ash::NetworkHandlerTestHelper>();
 
-  chromeos::ShillServiceClient::TestInterface* service_test =
+  ash::ShillServiceClient::TestInterface* service_test =
       network_handler_test_helper_->service_test();
   service_test->ClearServices();
   service_test->AddService("/service/eth", "eth" /* guid */, "eth",
@@ -136,7 +128,7 @@ void MinimumVersionPolicyHandlerTest::SetUp() {
 void MinimumVersionPolicyHandlerTest::TearDown() {
   minimum_version_policy_handler_.reset();
   network_handler_test_helper_.reset();
-  chromeos::DBusThreadManager::Shutdown();
+  ash::UpdateEngineClient::Shutdown();
 }
 
 void MinimumVersionPolicyHandlerTest::CreateMinimumVersionHandler() {
@@ -180,9 +172,9 @@ base::Version MinimumVersionPolicyHandlerTest::GetCurrentVersion() const {
   return *current_version_;
 }
 
-void MinimumVersionPolicyHandlerTest::SetPolicyPref(base::Value value) {
+void MinimumVersionPolicyHandlerTest::SetPolicyPref(base::Value::Dict value) {
   scoped_testing_cros_settings_.device_settings()->Set(
-      ash::kDeviceMinimumVersion, value);
+      ash::kDeviceMinimumVersion, base::Value(std::move(value)));
 }
 
 TEST_F(MinimumVersionPolicyHandlerTest, RequirementsNotMetState) {
@@ -197,11 +189,12 @@ TEST_F(MinimumVersionPolicyHandlerTest, RequirementsNotMetState) {
       run_loop.QuitClosure());
 
   // Create policy value as a list of requirements.
-  base::Value requirement_list(base::Value::Type::LIST);
-  base::Value new_version_short_warning = CreateMinimumVersionPolicyRequirement(
-      kNewVersion, kShortWarning, kNoWarning);
+  base::Value::List requirement_list;
+  base::Value::Dict new_version_short_warning =
+      CreateMinimumVersionPolicyRequirement(kNewVersion, kShortWarning,
+                                            kNoWarning);
   auto strongest_requirement = MinimumVersionRequirement::CreateInstanceIfValid(
-      &base::Value::AsDictionaryValue(new_version_short_warning));
+      new_version_short_warning);
 
   requirement_list.Append(std::move(new_version_short_warning));
   requirement_list.Append(CreateMinimumVersionPolicyRequirement(
@@ -225,8 +218,7 @@ TEST_F(MinimumVersionPolicyHandlerTest, RequirementsNotMetState) {
             kShortWarning);
 
   // Reset the pref to empty list and verify state is reset.
-  base::Value requirement_list2(base::Value::Type::LIST);
-  SetPolicyPref(std::move(requirement_list2));
+  SetPolicyPref(base::Value::Dict());
   EXPECT_TRUE(GetMinimumVersionPolicyHandler()->RequirementsAreSatisfied());
   EXPECT_FALSE(GetState());
   EXPECT_FALSE(GetMinimumVersionPolicyHandler()->GetTimeRemainingInDays());
@@ -303,11 +295,10 @@ TEST_F(MinimumVersionPolicyHandlerTest, RequirementsMetState) {
   EXPECT_FALSE(GetState());
 
   // Create policy value as a list of requirements.
-  base::Value requirement_list(base::Value::Type::LIST);
-  base::Value current_version_no_warning =
-      CreateMinimumVersionPolicyRequirement(kFakeCurrentVersion, kNoWarning,
-                                            kNoWarning);
-  base::Value old_version_long_warning = CreateMinimumVersionPolicyRequirement(
+  base::Value::List requirement_list;
+  auto current_version_no_warning = CreateMinimumVersionPolicyRequirement(
+      kFakeCurrentVersion, kNoWarning, kNoWarning);
+  auto old_version_long_warning = CreateMinimumVersionPolicyRequirement(
       kOldVersion, kLongWarning, kNoWarning);
   requirement_list.Append(std::move(current_version_no_warning));
   requirement_list.Append(std::move(old_version_long_warning));

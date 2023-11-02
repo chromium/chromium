@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -11,6 +11,8 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "google_apis/gaia/gaia_access_token_fetcher.h"
@@ -122,12 +124,15 @@ class OAuth2AccessTokenFetcherImplTest : public testing::Test {
                 Intercept(resourceRequestUrlEquals(url)));
   }
 
+  base::HistogramTester* histogram_tester() { return &histogram_tester_; }
+
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   MockOAuth2AccessTokenConsumer consumer_;
   URLLoaderFactoryInterceptor url_loader_factory_interceptor_;
   network::TestURLLoaderFactory url_loader_factory_;
   std::unique_ptr<GaiaAccessTokenFetcher> fetcher_;
+  base::HistogramTester histogram_tester_;
 };
 
 // These four tests time out, see http://crbug.com/113446.
@@ -136,6 +141,11 @@ TEST_F(OAuth2AccessTokenFetcherImplTest, GetAccessTokenRequestFailure) {
   EXPECT_CALL(consumer_, OnGetTokenFailure(_)).Times(1);
   fetcher_->Start("client_id", "client_secret", ScopeList());
   base::RunLoop().RunUntilIdle();
+  histogram_tester()->ExpectUniqueSample(
+      GaiaAccessTokenFetcher::kOAuth2NetResponseCodeHistogramName,
+      net::ERR_FAILED, 1);
+  histogram_tester()->ExpectTotalCount(
+      GaiaAccessTokenFetcher::kOAuth2ResponseHistogramName, 0);
 }
 
 TEST_F(OAuth2AccessTokenFetcherImplTest, GetAccessTokenResponseCodeFailure) {
@@ -143,6 +153,10 @@ TEST_F(OAuth2AccessTokenFetcherImplTest, GetAccessTokenResponseCodeFailure) {
   EXPECT_CALL(consumer_, OnGetTokenFailure(_)).Times(1);
   fetcher_->Start("client_id", "client_secret", ScopeList());
   base::RunLoop().RunUntilIdle();
+  // Error tag does not exist in the response body.
+  histogram_tester()->ExpectUniqueSample(
+      GaiaAccessTokenFetcher::kOAuth2ResponseHistogramName,
+      OAuth2AccessTokenFetcherImpl::kErrorUnexpectedFormat, 1);
 }
 
 // Regression test for https://crbug.com/914672
@@ -162,6 +176,27 @@ TEST_F(OAuth2AccessTokenFetcherImplTest, Success) {
   EXPECT_CALL(consumer_, OnGetTokenSuccess(_)).Times(1);
   fetcher_->Start("client_id", "client_secret", ScopeList());
   base::RunLoop().RunUntilIdle();
+  histogram_tester()->ExpectUniqueSample(
+      GaiaAccessTokenFetcher::kOAuth2NetResponseCodeHistogramName, net::HTTP_OK,
+      1);
+  histogram_tester()->ExpectUniqueSample(
+      GaiaAccessTokenFetcher::kOAuth2ResponseHistogramName,
+      OAuth2AccessTokenFetcherImpl::kOk, 1);
+}
+
+TEST_F(OAuth2AccessTokenFetcherImplTest, SuccessUnexpectedFormat) {
+  SetupGetAccessToken(net::OK, net::HTTP_OK, std::string());
+  EXPECT_CALL(consumer_, OnGetTokenFailure(GoogleServiceAuthError(
+                             GoogleServiceAuthError::SERVICE_UNAVAILABLE)))
+      .Times(1);
+  fetcher_->Start("client_id", "client_secret", ScopeList());
+  base::RunLoop().RunUntilIdle();
+  histogram_tester()->ExpectUniqueSample(
+      GaiaAccessTokenFetcher::kOAuth2NetResponseCodeHistogramName, net::HTTP_OK,
+      1);
+  histogram_tester()->ExpectUniqueSample(
+      GaiaAccessTokenFetcher::kOAuth2ResponseHistogramName,
+      OAuth2AccessTokenFetcherImpl::kOkUnexpectedFormat, 1);
 }
 
 TEST_F(OAuth2AccessTokenFetcherImplTest, CancelOngoingRequest) {
@@ -213,16 +248,15 @@ TEST_F(OAuth2AccessTokenFetcherImplTest, MakeGetAccessTokenBodyMultipleScopes) {
 
 TEST_F(OAuth2AccessTokenFetcherImplTest, ParseGetAccessTokenResponseNoBody) {
   OAuth2AccessTokenConsumer::TokenResponse token_response;
-  auto empty_body = std::make_unique<std::string>("");
   EXPECT_FALSE(OAuth2AccessTokenFetcherImpl::ParseGetAccessTokenSuccessResponse(
-      std::move(empty_body), &token_response));
+      "", &token_response));
   EXPECT_TRUE(token_response.access_token.empty());
 }
 
 TEST_F(OAuth2AccessTokenFetcherImplTest, ParseGetAccessTokenResponseBadJson) {
   OAuth2AccessTokenConsumer::TokenResponse token_response;
   EXPECT_FALSE(OAuth2AccessTokenFetcherImpl::ParseGetAccessTokenSuccessResponse(
-      std::make_unique<std::string>("foo"), &token_response));
+      "foo", &token_response));
   EXPECT_TRUE(token_response.access_token.empty());
 }
 
@@ -230,15 +264,14 @@ TEST_F(OAuth2AccessTokenFetcherImplTest,
        ParseGetAccessTokenResponseNoAccessToken) {
   OAuth2AccessTokenConsumer::TokenResponse token_response;
   EXPECT_FALSE(OAuth2AccessTokenFetcherImpl::ParseGetAccessTokenSuccessResponse(
-      std::make_unique<std::string>(kTokenResponseNoAccessToken),
-      &token_response));
+      kTokenResponseNoAccessToken, &token_response));
   EXPECT_TRUE(token_response.access_token.empty());
 }
 
 TEST_F(OAuth2AccessTokenFetcherImplTest, ParseGetAccessTokenResponseSuccess) {
   OAuth2AccessTokenConsumer::TokenResponse token_response;
   EXPECT_TRUE(OAuth2AccessTokenFetcherImpl::ParseGetAccessTokenSuccessResponse(
-      std::make_unique<std::string>(kValidTokenResponse), &token_response));
+      kValidTokenResponse, &token_response));
   EXPECT_EQ("at1", token_response.access_token);
   base::TimeDelta expires_in =
       token_response.expiration_time - base::Time::Now();
@@ -251,13 +284,120 @@ TEST_F(OAuth2AccessTokenFetcherImplTest,
        ParseGetAccessTokenFailureInvalidError) {
   std::string error;
   EXPECT_FALSE(OAuth2AccessTokenFetcherImpl::ParseGetAccessTokenFailureResponse(
-      std::make_unique<std::string>(kTokenResponseNoAccessToken), &error));
+      kTokenResponseNoAccessToken, &error));
   EXPECT_TRUE(error.empty());
 }
 
 TEST_F(OAuth2AccessTokenFetcherImplTest, ParseGetAccessTokenFailure) {
   std::string error;
   EXPECT_TRUE(OAuth2AccessTokenFetcherImpl::ParseGetAccessTokenFailureResponse(
-      std::make_unique<std::string>(kValidFailureTokenResponse), &error));
+      kValidFailureTokenResponse, &error));
   EXPECT_EQ("invalid_grant", error);
 }
+
+struct OAuth2ErrorCodesTestParam {
+  const char* error_code;
+  net::HttpStatusCode httpStatusCode;
+  OAuth2AccessTokenFetcherImpl::OAuth2Response expected_sample;
+  GoogleServiceAuthError::State expected_error_state;
+};
+
+class OAuth2ErrorCodesTest
+    : public OAuth2AccessTokenFetcherImplTest,
+      public ::testing::WithParamInterface<OAuth2ErrorCodesTestParam> {
+ public:
+  OAuth2ErrorCodesTest() = default;
+
+  OAuth2ErrorCodesTest(const OAuth2ErrorCodesTest&) = delete;
+  OAuth2ErrorCodesTest& operator=(const OAuth2ErrorCodesTest&) = delete;
+
+  GoogleServiceAuthError GetGoogleServiceAuthError(
+      const std::string& error_message) {
+    switch (GetParam().expected_error_state) {
+      case GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS:
+        return GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+            GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                CREDENTIALS_REJECTED_BY_SERVER);
+      case GoogleServiceAuthError::SERVICE_UNAVAILABLE:
+        return GoogleServiceAuthError::FromServiceUnavailable(error_message);
+      case GoogleServiceAuthError::SERVICE_ERROR:
+        return GoogleServiceAuthError::FromServiceError(error_message);
+      case GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR:
+        return GoogleServiceAuthError::FromScopeLimitedUnrecoverableError(
+            error_message);
+
+      case GoogleServiceAuthError::NONE:
+      case GoogleServiceAuthError::USER_NOT_SIGNED_UP:
+      case GoogleServiceAuthError::CONNECTION_FAILED:
+      case GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE:
+      case GoogleServiceAuthError::REQUEST_CANCELED:
+      case GoogleServiceAuthError::NUM_STATES:
+        NOTREACHED();
+        return GoogleServiceAuthError::AuthErrorNone();
+    }
+  }
+};
+
+const OAuth2ErrorCodesTestParam kOAuth2ErrorCodesTable[] = {
+    {"invalid_request", net::HTTP_BAD_REQUEST,
+     OAuth2AccessTokenFetcherImpl::kInvalidRequest,
+     GoogleServiceAuthError::SERVICE_ERROR},
+    {"invalid_client", net::HTTP_UNAUTHORIZED,
+     OAuth2AccessTokenFetcherImpl::kInvalidClient,
+     GoogleServiceAuthError::SERVICE_ERROR},
+    {"invalid_grant", net::HTTP_BAD_REQUEST,
+     OAuth2AccessTokenFetcherImpl::kInvalidGrant,
+     GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS},
+    {"unauthorized_client", net::HTTP_UNAUTHORIZED,
+     OAuth2AccessTokenFetcherImpl::kUnauthorizedClient,
+     GoogleServiceAuthError::SERVICE_ERROR},
+    {"unsupported_grant_type", net::HTTP_BAD_REQUEST,
+     OAuth2AccessTokenFetcherImpl::kUnsuportedGrantType,
+     GoogleServiceAuthError::SERVICE_ERROR},
+    {"invalid_scope", net::HTTP_BAD_REQUEST,
+     OAuth2AccessTokenFetcherImpl::kInvalidScope,
+     GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR},
+    {"restricted_client", net::HTTP_FORBIDDEN,
+     OAuth2AccessTokenFetcherImpl::kRestrictedClient,
+     GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR},
+    {"rate_limit_exceeded", net::HTTP_FORBIDDEN,
+     OAuth2AccessTokenFetcherImpl::kRateLimitExceeded,
+     GoogleServiceAuthError::SERVICE_UNAVAILABLE},
+    {"internal_failure", net::HTTP_INTERNAL_SERVER_ERROR,
+     OAuth2AccessTokenFetcherImpl::kInternalFailure,
+     GoogleServiceAuthError::SERVICE_UNAVAILABLE},
+    {"", net::HTTP_BAD_REQUEST,
+     OAuth2AccessTokenFetcherImpl::kErrorUnexpectedFormat,
+     GoogleServiceAuthError::SERVICE_ERROR},
+    {"", net::HTTP_OK, OAuth2AccessTokenFetcherImpl::kOkUnexpectedFormat,
+     GoogleServiceAuthError::SERVICE_UNAVAILABLE},
+    {"unknown_error", net::HTTP_BAD_REQUEST,
+     OAuth2AccessTokenFetcherImpl::kUnknownError,
+     GoogleServiceAuthError::SERVICE_ERROR},
+    {"unknown_error", net::HTTP_INTERNAL_SERVER_ERROR,
+     OAuth2AccessTokenFetcherImpl::kUnknownError,
+     GoogleServiceAuthError::SERVICE_UNAVAILABLE}};
+
+TEST_P(OAuth2ErrorCodesTest, TableRowTest) {
+  std::string response_body = base::StringPrintf(R"(
+    {
+      "error": "%s"
+    })",
+                                                 GetParam().error_code);
+  GoogleServiceAuthError expected_error =
+      GetGoogleServiceAuthError(response_body);
+  SetupGetAccessToken(net::OK, GetParam().httpStatusCode, response_body);
+  EXPECT_CALL(consumer_, OnGetTokenFailure(expected_error)).Times(1);
+  fetcher_->Start("client_id", "client_secret", ScopeList());
+  base::RunLoop().RunUntilIdle();
+  histogram_tester()->ExpectUniqueSample(
+      GaiaAccessTokenFetcher::kOAuth2ResponseHistogramName,
+      GetParam().expected_sample, 1);
+  histogram_tester()->ExpectUniqueSample(
+      GaiaAccessTokenFetcher::kOAuth2NetResponseCodeHistogramName,
+      GetParam().httpStatusCode, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(OAuth2ErrorCodesTableTest,
+                         OAuth2ErrorCodesTest,
+                         ::testing::ValuesIn(kOAuth2ErrorCodesTable));

@@ -1,13 +1,14 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/md_select_css.m.js';
-import './print_preview_shared_css.js';
+import 'chrome://resources/cr_elements/md_select.css.js';
+import './print_preview_shared.css.js';
 import './settings_section.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './color_settings.html.js';
 import {SelectMixin} from './select_mixin.js';
 import {SettingsMixin} from './settings_mixin.js';
 
@@ -21,7 +22,7 @@ export class PrintPreviewColorSettingsElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -56,8 +57,14 @@ export class PrintPreviewColorSettingsElement extends
   }
 
   /** @param value The new select value. */
-  onProcessSelectChange(value: string) {
+  override onProcessSelectChange(value: string) {
     this.setSetting('color', value === 'color');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-color-settings': PrintPreviewColorSettingsElement;
   }
 }
 

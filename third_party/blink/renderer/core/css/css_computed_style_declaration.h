@@ -26,7 +26,7 @@
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -117,6 +117,10 @@ class CORE_EXPORT CSSComputedStyleDeclaration final
   const CSSValue* GetPropertyCSSValueInternal(
       const AtomicString& custom_property_name) override;
   String GetPropertyValueInternal(CSSPropertyID) override;
+  String GetPropertyValueWithHint(const String& property_name,
+                                  unsigned index) override;
+  String GetPropertyPriorityWithHint(const String& property_name,
+                                     unsigned index) override;
   void SetPropertyInternal(CSSPropertyID,
                            const String& custom_property_name,
                            const String& value,
@@ -126,9 +130,9 @@ class CORE_EXPORT CSSComputedStyleDeclaration final
 
   bool CssPropertyMatches(CSSPropertyID, const CSSValue&) const override;
 
+  AtomicString pseudo_argument_;
   Member<Node> node_;
   PseudoId pseudo_element_specifier_;
-  AtomicString pseudo_argument_;
   bool allow_visited_style_;
 };
 

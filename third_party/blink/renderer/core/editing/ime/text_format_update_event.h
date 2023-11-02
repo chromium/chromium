@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,9 +26,13 @@ class CORE_EXPORT TextFormatUpdateEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit TextFormatUpdateEvent(const TextFormatUpdateEventInit* dict);
-  explicit TextFormatUpdateEvent(HeapVector<Member<TextFormat>>& textFormats);
-  static TextFormatUpdateEvent* Create(const TextFormatUpdateEventInit* dict);
+  TextFormatUpdateEvent(const AtomicString& type,
+                        const TextFormatUpdateEventInit* initializer);
+  TextFormatUpdateEvent(const AtomicString& type,
+                        HeapVector<Member<TextFormat>>& textFormats);
+  static TextFormatUpdateEvent* Create(
+      const AtomicString& type,
+      const TextFormatUpdateEventInit* initializer);
   ~TextFormatUpdateEvent() override;
 
   HeapVector<Member<TextFormat>> getTextFormats() const;

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,11 +12,11 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
+#include "components/cast_streaming/public/remoting_proto_utils.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/demuxer_stream.h"
 #include "media/remoting/fake_media_resource.h"
 #include "media/remoting/fake_remoter.h"
-#include "media/remoting/proto_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -157,7 +157,6 @@ class DemuxerStreamAdapterTest : public ::testing::Test {
  protected:
   void SetUp() override { SetUpDataPipe(); }
 
-  // TODO(miu): Add separate media thread, to test threading also.
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<FakeDemuxerStream> demuxer_stream_;
   std::unique_ptr<FakeRemotingDataStreamSender> data_stream_sender_;
@@ -300,19 +299,37 @@ TEST_F(DemuxerStreamAdapterTest, DuplicateInitializeCausesFatalError) {
   EXPECT_EQ(PEERS_OUT_OF_SYNC, errors[0]);
 }
 
-TEST_F(DemuxerStreamAdapterTest, ClosingPipeCausesFatalError) {
+TEST_F(DemuxerStreamAdapterTest, ClosingMessagePipeCausesMojoDisconnected) {
   std::vector<StopTrigger> errors;
   demuxer_stream_adapter_->TakeErrors(&errors);
   ASSERT_TRUE(errors.empty());
 
-  // Closes one end of mojo message and data pipes.
+  // Closes one end of mojo message pipes.
   data_stream_sender_.reset();
   RunPendingTasks();  // Allow notification from mojo to propagate.
 
   demuxer_stream_adapter_->TakeErrors(&errors);
   ASSERT_EQ(1u, errors.size());
-  EXPECT_EQ(MOJO_PIPE_ERROR, errors[0]);
+  EXPECT_EQ(MOJO_DISCONNECTED, errors[0]);
 }
 
-}  // namesapce remoting
+TEST_F(DemuxerStreamAdapterTest, ClosingDataPipeCausesWriteError) {
+  EXPECT_CALL(*demuxer_stream_, Read(_)).Times(1);
+
+  std::vector<StopTrigger> errors;
+  demuxer_stream_adapter_->TakeErrors(&errors);
+  ASSERT_TRUE(errors.empty());
+
+  // Closes the consumer end of the data pipe.
+  data_stream_sender_->CloseDataPipe();
+  demuxer_stream_->CreateFakeFrame(100, true /* key frame */, 1 /* pts */);
+  demuxer_stream_adapter_->FakeReadUntil(1, 999);
+  RunPendingTasks();  // Allow notification from mojo to propagate.
+
+  demuxer_stream_adapter_->TakeErrors(&errors);
+  ASSERT_EQ(1u, errors.size());
+  EXPECT_EQ(DATA_PIPE_WRITE_ERROR, errors[0]);
+}
+
+}  // namespace remoting
 }  // namespace media

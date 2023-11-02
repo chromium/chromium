@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/bind.h"
+#include "base/stl_util.h"
 #include "chrome/android/chrome_jni_headers/TranslateCompactInfoBar_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -237,7 +238,7 @@ translate::TranslateInfoBarDelegate* TranslateCompactInfoBar::GetDelegate() {
 
 void TranslateCompactInfoBar::OnTranslateStepChanged(
     translate::TranslateStep step,
-    translate::TranslateErrors::Type error_type) {
+    translate::TranslateErrors error_type) {
   // TODO(crbug/1093320): intended to mitigate a crash where
   // the java infobar is gone. If this works, look into root cause.
   if (!HasSetJavaInfoBar())
@@ -250,7 +251,7 @@ void TranslateCompactInfoBar::OnTranslateStepChanged(
       (step == translate::TRANSLATE_STEP_TRANSLATE_ERROR)) {
     JNIEnv* env = base::android::AttachCurrentThread();
     bool error_ui_shown = Java_TranslateCompactInfoBar_onPageTranslated(
-        env, GetJavaInfoBar(), error_type);
+        env, GetJavaInfoBar(), base::to_underlying(error_type));
 
     if (error_ui_shown) {
       GetDelegate()->OnErrorShown(error_type);

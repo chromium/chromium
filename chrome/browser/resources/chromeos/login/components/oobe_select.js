@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,14 +62,17 @@
   var firstTitle = '';
   for (var i = 0; i < list.length; ++i) {
     var item = list[i];
-    if (item.optionGroupName)
+    if (item.optionGroupName) {
       continue;
+    }
 
-    if (!firstTitle)
+    if (!firstTitle) {
       firstTitle = item.title;
+    }
 
-    if (item.selected)
+    if (item.selected) {
       return item.title;
+    }
   }
   return firstTitle;
 };
@@ -82,10 +85,12 @@
 /* #export */ var getSelectedValue = function(list) {
   for (var i = 0; i < list.length; ++i) {
     var item = list[i];
-    if (item.optionGroupName)
+    if (item.optionGroupName) {
       continue;
-    if (item.selected)
+    }
+    if (item.selected) {
       return item.value;
+    }
   }
   return null;
 };

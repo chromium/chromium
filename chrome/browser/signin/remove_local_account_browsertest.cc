@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -80,7 +80,7 @@ class RemoveLocalAccountTest : public MixinBasedInProcessBrowserTest {
     embedded_test_server_.StartAcceptingConnections();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    // ChromeSigninClient uses `ash::DelayNetworkCall()` which requires
+    // `ChromeSigninClient` uses `ash::DelayNetworkCall()` which requires
     // simulating being online.
     network_portal_detector_.SimulateDefaultNetworkState(
         ash::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
@@ -120,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(RemoveLocalAccountTest, ShouldNotifyObservers) {
   // Open a FakeGaia page that issues the desired HTTP response header with
   // Google-Accounts-RemoveLocalAccount.
   chrome::AddTabAt(browser(),
-                   fake_gaia_.GetDummyRemoveLocalAccountURL(kTestGaiaId),
+                   fake_gaia_.GetFakeRemoveLocalAccountURL(kTestGaiaId),
                    /*index=*/0,
                    /*foreground=*/true);
 

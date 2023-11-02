@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,19 +27,19 @@ QuotaReservationBuffer::QuotaReservationBuffer(
       type_(type),
       reserved_quota_(0) {
   DCHECK(!origin.opaque());
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   reservation_manager_->IncrementDirtyCount(origin, type);
 }
 
 scoped_refptr<QuotaReservation> QuotaReservationBuffer::CreateReservation() {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return base::WrapRefCounted(new QuotaReservation(this));
 }
 
 std::unique_ptr<OpenFileHandle> QuotaReservationBuffer::GetOpenFileHandle(
     QuotaReservation* reservation,
     const base::FilePath& platform_path) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   OpenFileHandleContext** open_file = &open_files_[platform_path];
   if (!*open_file)
     *open_file = new OpenFileHandleContext(platform_path, this);
@@ -49,7 +49,7 @@ std::unique_ptr<OpenFileHandle> QuotaReservationBuffer::GetOpenFileHandle(
 void QuotaReservationBuffer::CommitFileGrowth(
     int64_t reserved_quota_consumption,
     int64_t usage_delta) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!reservation_manager_)
     return;
   reservation_manager_->CommitQuotaUsage(origin_, type_, usage_delta);
@@ -69,19 +69,19 @@ void QuotaReservationBuffer::CommitFileGrowth(
 
 void QuotaReservationBuffer::DetachOpenFileHandleContext(
     OpenFileHandleContext* open_file) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(open_file, open_files_[open_file->platform_path()]);
   open_files_.erase(open_file->platform_path());
 }
 
 void QuotaReservationBuffer::PutReservationToBuffer(int64_t reservation) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_LE(0, reservation);
   reserved_quota_ += reservation;
 }
 
 QuotaReservationBuffer::~QuotaReservationBuffer() {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!reservation_manager_)
     return;
 

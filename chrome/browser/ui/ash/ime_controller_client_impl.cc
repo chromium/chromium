@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -105,14 +105,14 @@ void ImeControllerClientImpl::SetCapsLockEnabled(bool caps_enabled) {
 }
 
 void ImeControllerClientImpl::UpdateMirroringState(bool mirroring_enabled) {
-  ui::IMEEngineHandlerInterface* ime_engine =
+  ui::TextInputMethod* ime_engine =
       ui::IMEBridge::Get()->GetCurrentEngineHandler();
   if (ime_engine)
     ime_engine->SetMirroringEnabled(mirroring_enabled);
 }
 
 void ImeControllerClientImpl::UpdateCastingState(bool casting_enabled) {
-  ui::IMEEngineHandlerInterface* ime_engine =
+  ui::TextInputMethod* ime_engine =
       ui::IMEBridge::Get()->GetCurrentEngineHandler();
   if (ime_engine)
     ime_engine->SetCastingEnabled(casting_enabled);

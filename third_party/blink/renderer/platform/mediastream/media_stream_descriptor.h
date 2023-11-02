@@ -55,7 +55,6 @@ class PLATFORM_EXPORT MediaStreamDescriptorClient
 
   virtual ~MediaStreamDescriptorClient() = default;
 
-  virtual void StreamEnded() = 0;
   virtual void AddTrackByComponentAndFireEvents(MediaStreamComponent*,
                                                 DispatchEventTiming) = 0;
   virtual void RemoveTrackByComponentAndFireEvents(MediaStreamComponent*,
@@ -69,12 +68,6 @@ class PLATFORM_EXPORT MediaStreamDescriptor final
   static int GenerateUniqueId();
 
  public:
-  // Only used for AudioDestinationNode.
-  MediaStreamDescriptor(const MediaStreamSourceVector& audio_sources,
-                        const MediaStreamSourceVector& video_sources);
-  MediaStreamDescriptor(const String& id,
-                        const MediaStreamSourceVector& audio_sources,
-                        const MediaStreamSourceVector& video_sources);
   MediaStreamDescriptor(const MediaStreamComponentVector& audio_components,
                         const MediaStreamComponentVector& video_components);
   MediaStreamDescriptor(const String& id,

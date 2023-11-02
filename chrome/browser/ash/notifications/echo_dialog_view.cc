@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 
 #include <stddef.h>
 
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/notifications/echo_dialog_listener.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
@@ -23,6 +23,15 @@
 
 namespace ash {
 
+namespace {
+
+EchoDialogView::ShowCallback& GetShowCallbackForTesting() {
+  static base::NoDestructor<EchoDialogView::ShowCallback> show_callback;
+  return *show_callback;
+}
+
+}  // namespace
+
 EchoDialogView::EchoDialogView(EchoDialogListener* listener,
                                const EchoDialogView::Params& params) {
   auto* learn_more_button = DialogDelegate::SetExtraView(
@@ -32,7 +41,6 @@ EchoDialogView::EchoDialogView(EchoDialogListener* listener,
           vector_icons::kHelpOutlineIcon));
   learn_more_button->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_CHROMEOS_ACC_LEARN_MORE));
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::ECHO);
 
   if (params.echo_enabled) {
     DialogDelegate::SetButtons(ui::DIALOG_BUTTON_OK |
@@ -72,6 +80,14 @@ void EchoDialogView::Show(gfx::NativeWindow parent) {
   views::DialogDelegate::CreateDialogWidget(this, parent, parent);
   GetWidget()->SetSize(GetWidget()->GetRootView()->GetPreferredSize());
   GetWidget()->Show();
+
+  if (GetShowCallbackForTesting()) {
+    std::move(GetShowCallbackForTesting()).Run(this);
+  }
+}
+
+void EchoDialogView::AddShowCallbackForTesting(ShowCallback callback) {
+  GetShowCallbackForTesting() = std::move(callback);
 }
 
 void EchoDialogView::InitForEnabledEcho(const std::u16string& service_name,
@@ -118,7 +134,7 @@ void EchoDialogView::SetBorderAndLabel(std::unique_ptr<views::View> label,
   gfx::Insets insets =
       views::LayoutProvider::Get()->GetDialogInsetsForContentType(
           views::DialogContentType::kText, views::DialogContentType::kText);
-  insets += gfx::Insets(top_inset_padding, 0, 0, 0);
+  insets += gfx::Insets::TLBR(top_inset_padding, 0, 0, 0);
   SetBorder(views::CreateEmptyBorder(insets));
 
   AddChildView(std::move(label));

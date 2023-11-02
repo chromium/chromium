@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,16 +12,25 @@ import org.chromium.base.annotations.NativeMethods;
  * Java accessor for base/feature_list.h state.
  *
  * This class provides methods to access values of feature flags registered in
- * |kFeaturesExposedToJava| in components/external_intents/android/external_intents_feature_list.cc.
+ * |kFeaturesExposedToJava| in components/external_intents/android/external_intents_features.cc.
  *
  */
 @JNINamespace("external_intents")
 public class ExternalIntentsFeatures extends Features {
-    public static final String INTENT_BLOCK_EXTERNAL_FORM_REDIRECT_NO_GESTURE_NAME =
-            "IntentBlockExternalFormRedirectsNoGesture";
+    public static final String AUTOFILL_ASSISTANT_GOOGLE_INITIATOR_ORIGIN_CHECK_NAME =
+            "AutofillAssistantGoogleInitiatorOriginCheck";
+    public static final String BLOCK_EXTERNAL_FORM_SUBMIT_WITHOUT_GESTURE_NAME =
+            "BlockExternalFormSubmitWithoutGesture";
+    public static final String EXTERNAL_NAVIGATION_DEBUG_LOGS_NAME = "ExternalNavigationDebugLogs";
 
-    public static final ExternalIntentsFeatures INTENT_BLOCK_EXTERNAL_FORM_REDIRECT_NO_GESTURE =
-            new ExternalIntentsFeatures(0, INTENT_BLOCK_EXTERNAL_FORM_REDIRECT_NO_GESTURE_NAME);
+    public static final ExternalIntentsFeatures AUTOFILL_ASSISTANT_GOOGLE_INITIATOR_ORIGIN_CHECK =
+            new ExternalIntentsFeatures(0, AUTOFILL_ASSISTANT_GOOGLE_INITIATOR_ORIGIN_CHECK_NAME);
+
+    public static final ExternalIntentsFeatures BLOCK_EXTERNAL_FORM_SUBMIT_WITHOUT_GESTURE =
+            new ExternalIntentsFeatures(1, BLOCK_EXTERNAL_FORM_SUBMIT_WITHOUT_GESTURE_NAME);
+
+    public static final ExternalIntentsFeatures EXTERNAL_NAVIGATION_DEBUG_LOGS =
+            new ExternalIntentsFeatures(2, EXTERNAL_NAVIGATION_DEBUG_LOGS_NAME);
 
     private final int mOrdinal;
 

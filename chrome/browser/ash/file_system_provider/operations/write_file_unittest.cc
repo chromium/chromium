@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,8 +61,8 @@ TEST_F(FileSystemProviderOperationsWriteFileTest, Execute) {
   util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
   util::StatusCallbackLog callback_log;
 
-  WriteFile write_file(NULL, file_system_info_, kFileHandle, io_buffer_.get(),
-                       kOffset, io_buffer_->size(),
+  WriteFile write_file(nullptr, file_system_info_, kFileHandle,
+                       io_buffer_.get(), kOffset, io_buffer_->size(),
                        base::BindOnce(&util::LogStatusCallback, &callback_log));
   write_file.SetDispatchEventImplForTesting(
       base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
@@ -75,10 +75,10 @@ TEST_F(FileSystemProviderOperationsWriteFileTest, Execute) {
   EXPECT_EQ(
       extensions::api::file_system_provider::OnWriteFileRequested::kEventName,
       event->event_name);
-  base::ListValue* event_args = event->event_args.get();
-  ASSERT_EQ(1u, event_args->GetList().size());
+  const base::Value::List& event_args = event->event_args;
+  ASSERT_EQ(1u, event_args.size());
 
-  const base::Value* options_as_value = &event_args->GetList()[0];
+  const base::Value* options_as_value = &event_args[0];
   ASSERT_TRUE(options_as_value->is_dict());
 
   WriteFileRequestedOptions options;
@@ -96,8 +96,8 @@ TEST_F(FileSystemProviderOperationsWriteFileTest, Execute_NoListener) {
   util::LoggingDispatchEventImpl dispatcher(false /* dispatch_reply */);
   util::StatusCallbackLog callback_log;
 
-  WriteFile write_file(NULL, file_system_info_, kFileHandle, io_buffer_.get(),
-                       kOffset, io_buffer_->size(),
+  WriteFile write_file(nullptr, file_system_info_, kFileHandle,
+                       io_buffer_.get(), kOffset, io_buffer_->size(),
                        base::BindOnce(&util::LogStatusCallback, &callback_log));
   write_file.SetDispatchEventImplForTesting(
       base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
@@ -115,7 +115,7 @@ TEST_F(FileSystemProviderOperationsWriteFileTest, Execute_ReadOnly) {
       base::FilePath() /* mount_path */, false /* configurable */,
       true /* watchable */, extensions::SOURCE_FILE, IconSet());
 
-  WriteFile write_file(NULL, read_only_file_system_info, kFileHandle,
+  WriteFile write_file(nullptr, read_only_file_system_info, kFileHandle,
                        io_buffer_.get(), kOffset, io_buffer_->size(),
                        base::BindOnce(&util::LogStatusCallback, &callback_log));
   write_file.SetDispatchEventImplForTesting(
@@ -129,8 +129,8 @@ TEST_F(FileSystemProviderOperationsWriteFileTest, OnSuccess) {
   util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
   util::StatusCallbackLog callback_log;
 
-  WriteFile write_file(NULL, file_system_info_, kFileHandle, io_buffer_.get(),
-                       kOffset, io_buffer_->size(),
+  WriteFile write_file(nullptr, file_system_info_, kFileHandle,
+                       io_buffer_.get(), kOffset, io_buffer_->size(),
                        base::BindOnce(&util::LogStatusCallback, &callback_log));
   write_file.SetDispatchEventImplForTesting(
       base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
@@ -148,8 +148,8 @@ TEST_F(FileSystemProviderOperationsWriteFileTest, OnError) {
   util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
   util::StatusCallbackLog callback_log;
 
-  WriteFile write_file(NULL, file_system_info_, kFileHandle, io_buffer_.get(),
-                       kOffset, io_buffer_->size(),
+  WriteFile write_file(nullptr, file_system_info_, kFileHandle,
+                       io_buffer_.get(), kOffset, io_buffer_->size(),
                        base::BindOnce(&util::LogStatusCallback, &callback_log));
   write_file.SetDispatchEventImplForTesting(
       base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,

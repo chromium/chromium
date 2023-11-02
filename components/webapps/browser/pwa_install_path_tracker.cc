@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,6 +52,7 @@ PwaInstallPathTracker::GetInstallPathMetric() {
                    : InstallPathMetric::kApiInitiatedBottomSheet;
       case WebappInstallSource::AMBIENT_BADGE_BROWSER_TAB:
       case WebappInstallSource::AMBIENT_BADGE_CUSTOM_TAB:
+      case WebappInstallSource::RICH_INSTALL_UI_WEBLAYER:
         return iph_was_shown_ ? InstallPathMetric::kAmbientBottomSheetWithIph
                               : InstallPathMetric::kAmbientBottomSheet;
       default:
@@ -70,6 +71,7 @@ PwaInstallPathTracker::GetInstallPathMetric() {
                               : InstallPathMetric::kApiInitiatedInstall;
       case WebappInstallSource::AMBIENT_BADGE_BROWSER_TAB:
       case WebappInstallSource::AMBIENT_BADGE_CUSTOM_TAB:
+      case WebappInstallSource::RICH_INSTALL_UI_WEBLAYER:
         return iph_was_shown_ ? InstallPathMetric::kAmbientInfobarWithIph
                               : InstallPathMetric::kAmbientInfobar;
       default:

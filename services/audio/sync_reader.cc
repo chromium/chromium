@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,9 @@
 #include "base/command_line.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -22,32 +23,89 @@
 #include "media/base/audio_parameters.h"
 #include "media/base/media_switches.h"
 
+using media::AudioLatency;
+
 namespace {
 
 // Used to log if any audio glitches have been detected during an audio session.
 // Elements in this enum should not be added, deleted or rearranged.
-enum AudioGlitchResult {
-  AUDIO_RENDERER_NO_AUDIO_GLITCHES = 0,
-  AUDIO_RENDERER_AUDIO_GLITCHES = 1,
-  AUDIO_RENDERER_AUDIO_GLITCHES_MAX = AUDIO_RENDERER_AUDIO_GLITCHES
+enum class AudioGlitchResult {
+  kNoGlitches = 0,
+  kGlitches = 1,
+  kMaxValue = kGlitches
 };
 
-void LogAudioGlitchResult(AudioGlitchResult result) {
-  UMA_HISTOGRAM_ENUMERATION("Media.AudioRendererAudioGlitches", result,
-                            AUDIO_RENDERER_AUDIO_GLITCHES_MAX + 1);
+void LogPerLatencyGlitchUma(AudioLatency::LatencyType latency,
+                            int renderer_missed_callback_count,
+                            int renderer_callback_count,
+                            bool mixing) {
+  DCHECK_LE(renderer_missed_callback_count, renderer_callback_count);
+
+  auto LatencyToString = [](AudioLatency::LatencyType latency) {
+    switch (latency) {
+      case AudioLatency::LATENCY_EXACT_MS:
+        return "LatencyExactMs";
+      case AudioLatency::LATENCY_INTERACTIVE:
+        return "LatencyInteractive";
+      case AudioLatency::LATENCY_RTC:
+        return "LatencyRtc";
+      case AudioLatency::LATENCY_PLAYBACK:
+        return "LatencyPlayback";
+      default:
+        return "LatencyUnknown";
+    }
+  };
+
+  const std::string suffix = LatencyToString(latency);
+
+  if (!mixing) {
+    base::UmaHistogramEnumeration("Media.AudioRendererAudioGlitches2." + suffix,
+                                  (renderer_missed_callback_count > 0)
+                                      ? AudioGlitchResult::kGlitches
+                                      : AudioGlitchResult::kNoGlitches);
+  }
+  const int kPermilleScaling = 1000;
+  // 10%: if we have more that 10% of callbacks having issues, the details are
+  // not very interesting any more, so we just log all those cases together to
+  // have a better resolution for lower values.
+  const int kHistogramRange = kPermilleScaling / 10;
+
+  // 30 s for 10 ms buffers (RTC streams)/ 1 minute for 20 ms buffers (media
+  // playback).
+  const int kShortStreamMaxCallbackCount = 3000;
+
+  if (renderer_callback_count <= 0)
+    return;
+
+  int missed_permille = std::ceil(
+      kPermilleScaling * static_cast<double>(renderer_missed_callback_count) /
+      renderer_callback_count);
+
+  std::string histogram_name = base::StrCat(
+      {"Media.AudioRendererMissedDeadline2.", mixing ? "Mixing." : "",
+       (renderer_callback_count < kShortStreamMaxCallbackCount) ? "Short"
+                                                                : "Long"});
+  base::UmaHistogramCustomCounts(histogram_name,
+                                 std::min(missed_permille, kHistogramRange), 0,
+                                 kHistogramRange + 1, 100);
+
+  base::UmaHistogramCustomCounts(histogram_name + "." + suffix,
+                                 std::min(missed_permille, kHistogramRange), 0,
+                                 kHistogramRange + 1, 100);
 }
 
 }  // namespace
 
 namespace audio {
 
-#if !defined(OS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
     !BUILDFLAG(IS_CHROMEOS_LACROS)
-const base::Feature kDynamicAudioTimeout{"DynamicAudioTimeout",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kDynamicAudioTimeout,
+             "DynamicAudioTimeout",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<double> kBufferDurationPercent{
-    &kDynamicAudioTimeout, "buffer_duration_percent", 0.5};
+    &kDynamicAudioTimeout, "buffer_duration_percent", 0.95};
 #endif
 
 SyncReader::SyncReader(
@@ -55,19 +113,16 @@ SyncReader::SyncReader(
     const media::AudioParameters& params,
     base::CancelableSyncSocket* foreign_socket)
     : log_callback_(std::move(log_callback)),
+      latency_tag_(params.latency_tag()),
       mute_audio_for_testing_(base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kMuteAudio)),
-      had_socket_error_(false),
       output_bus_buffer_size_(
           media::AudioBus::CalculateMemorySize(params.channels(),
-                                               params.frames_per_buffer())),
-      renderer_callback_count_(0),
-      renderer_missed_callback_count_(0),
-      trailing_renderer_missed_callback_count_(0),
-      buffer_index_(0) {
-#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH) || \
+                                               params.frames_per_buffer())) {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
   maximum_wait_time_ = params.GetBufferDuration() / 2;
+  maximum_wait_time_for_mixing_ = maximum_wait_time_;
 #else
   if (base::FeatureList::IsEnabled(kDynamicAudioTimeout)) {
     maximum_wait_time_ =
@@ -75,6 +130,21 @@ SyncReader::SyncReader(
   } else {
     maximum_wait_time_ = base::Milliseconds(20);
   }
+  maximum_wait_time_for_mixing_ = maximum_wait_time_;
+
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  if (base::FeatureList::IsEnabled(media::kChromeWideEchoCancellation)) {
+    double mixing_timeout_percent =
+        media::kChromeWideEchoCancellationDynamicMixingTimeout.Get();
+
+    // The default negative value means we should ignore this parameter.
+    if (mixing_timeout_percent > 0) {
+      maximum_wait_time_for_mixing_ =
+          params.GetBufferDuration() * mixing_timeout_percent;
+    }
+  }
+#endif
+
 #endif
 
   base::CheckedNumeric<size_t> memory_size =
@@ -96,6 +166,8 @@ SyncReader::SyncReader(
 }
 
 SyncReader::~SyncReader() {
+  DCHECK_GE(renderer_callback_count_, mixing_renderer_callback_count_);
+
   if (!renderer_callback_count_)
     return;
 
@@ -111,25 +183,40 @@ SyncReader::~SyncReader() {
   renderer_missed_callback_count_ -= trailing_renderer_missed_callback_count_;
   renderer_callback_count_ -= trailing_renderer_missed_callback_count_;
 
+  DCHECK_LE(mixing_trailing_renderer_missed_callback_count_,
+            mixing_renderer_missed_callback_count_);
+  DCHECK_LE(mixing_trailing_renderer_missed_callback_count_,
+            mixing_renderer_callback_count_);
+
+  mixing_renderer_missed_callback_count_ -=
+      mixing_trailing_renderer_missed_callback_count_;
+  mixing_renderer_callback_count_ -=
+      mixing_trailing_renderer_missed_callback_count_;
+
+  DCHECK_GE(renderer_callback_count_, mixing_renderer_callback_count_);
+
   if (!renderer_callback_count_)
     return;
 
-  // Recording the percentage of deadline misses gives us a rough overview of
-  // how many users might be running into audio glitches.
+  base::UmaHistogramEnumeration("Media.AudioRendererAudioGlitches",
+                                (renderer_missed_callback_count_ > 0)
+                                    ? AudioGlitchResult::kGlitches
+                                    : AudioGlitchResult::kNoGlitches);
   int percentage_missed =
       100.0 * renderer_missed_callback_count_ / renderer_callback_count_;
-  UMA_HISTOGRAM_PERCENTAGE("Media.AudioRendererMissedDeadline",
-                           percentage_missed);
+
+  base::UmaHistogramPercentage("Media.AudioRendererMissedDeadline",
+                               percentage_missed);
+
+  LogPerLatencyGlitchUma(latency_tag_, renderer_missed_callback_count_,
+                         renderer_callback_count_, /*mixing=*/false);
+
+  LogPerLatencyGlitchUma(latency_tag_, mixing_renderer_missed_callback_count_,
+                         mixing_renderer_callback_count_, /*mixing=*/true);
 
   TRACE_EVENT_INSTANT1("audio", "~SyncReader", TRACE_EVENT_SCOPE_THREAD,
                        "Missed callback percentage", percentage_missed);
 
-  // Add more detailed information regarding detected audio glitches where
-  // a non-zero value of |renderer_missed_callback_count_| is added to the
-  // AUDIO_RENDERER_AUDIO_GLITCHES bin.
-  renderer_missed_callback_count_ > 0
-      ? LogAudioGlitchResult(AUDIO_RENDERER_AUDIO_GLITCHES)
-      : LogAudioGlitchResult(AUDIO_RENDERER_NO_AUDIO_GLITCHES);
   log_callback_.Run(base::StringPrintf(
       "ASR: number of detected audio glitches: %" PRIuS " out of %" PRIuS,
       renderer_missed_callback_count_, renderer_callback_count_));
@@ -195,11 +282,18 @@ void SyncReader::RequestMoreData(base::TimeDelta delay,
   ++buffer_index_;
 }
 
-void SyncReader::Read(media::AudioBus* dest) {
+void SyncReader::Read(media::AudioBus* dest, bool is_mixing) {
   ++renderer_callback_count_;
-  if (!WaitUntilDataIsReady()) {
+  if (is_mixing)
+    ++mixing_renderer_callback_count_;
+
+  if (!WaitUntilDataIsReady(is_mixing)) {
     ++trailing_renderer_missed_callback_count_;
     ++renderer_missed_callback_count_;
+    if (is_mixing) {
+      ++mixing_trailing_renderer_missed_callback_count_;
+      ++mixing_renderer_missed_callback_count_;
+    }
     if (renderer_missed_callback_count_ <= 100 &&
         renderer_missed_callback_count_ % 10 == 0) {
       LOG(WARNING) << "SyncReader::Read timed out, audio glitch count="
@@ -212,6 +306,7 @@ void SyncReader::Read(media::AudioBus* dest) {
   }
 
   trailing_renderer_missed_callback_count_ = 0;
+  mixing_trailing_renderer_missed_callback_count_ = 0;
 
   // Zeroed buffers may be discarded immediately when outputing compressed
   // bitstream.
@@ -248,9 +343,10 @@ void SyncReader::Close() {
   output_bus_.reset();
 }
 
-bool SyncReader::WaitUntilDataIsReady() {
+bool SyncReader::WaitUntilDataIsReady(bool is_mixing) {
   TRACE_EVENT0("audio", "SyncReader::WaitUntilDataIsReady");
-  base::TimeDelta timeout = maximum_wait_time_;
+  base::TimeDelta timeout =
+      is_mixing ? maximum_wait_time_for_mixing_ : maximum_wait_time_;
   const base::TimeTicks start_time = base::TimeTicks::Now();
   const base::TimeTicks finish_time = start_time + timeout;
 
@@ -291,9 +387,9 @@ bool SyncReader::WaitUntilDataIsReady() {
                          TRACE_EVENT_SCOPE_THREAD);
 
     base::TimeDelta time_since_start = base::TimeTicks::Now() - start_time;
-    UMA_HISTOGRAM_CUSTOM_TIMES("Media.AudioOutputControllerDataNotReady",
-                               time_since_start, base::Milliseconds(1),
-                               base::Milliseconds(1000), 50);
+    base::UmaHistogramCustomTimes("Media.AudioOutputControllerDataNotReady",
+                                  time_since_start, base::Milliseconds(1),
+                                  base::Milliseconds(1000), 50);
     return false;
   }
 

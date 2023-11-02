@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,8 @@ void OnFileSystemAccessedInGuestViewContinuation(
     const GURL& url,
     base::OnceCallback<void(bool)> callback,
     bool allowed) {
-  content_settings::PageSpecificContentSettings::FileSystemAccessed(
+  content_settings::PageSpecificContentSettings::StorageAccessed(
+      content_settings::mojom::ContentSettingsManager::StorageType::FILE_SYSTEM,
       render_process_id, render_frame_id, url, !allowed);
   std::move(callback).Run(allowed);
 }
@@ -40,8 +41,8 @@ void OnFileSystemAccessedInGuestView(int render_process_id,
                                      bool allowed,
                                      base::OnceCallback<void(bool)> callback) {
   extensions::WebViewPermissionHelper* web_view_permission_helper =
-      extensions::WebViewPermissionHelper::FromFrameID(render_process_id,
-                                                       render_frame_id);
+      extensions::WebViewPermissionHelper::FromRenderFrameHostId(
+          content::GlobalRenderFrameHostId(render_process_id, render_frame_id));
   auto continuation = base::BindOnce(
       &OnFileSystemAccessedInGuestViewContinuation, render_process_id,
       render_frame_id, url, std::move(callback));

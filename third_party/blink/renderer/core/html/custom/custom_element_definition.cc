@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html_element_factory.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -92,7 +92,7 @@ void CustomElementDefinition::CheckConstructorResult(
   // 6.1.4. through 6.1.9.
   const String message =
       ErrorMessageForConstructorResult(*element, document, tag_name);
-  if (!message.IsEmpty()) {
+  if (!message.empty()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       message);
   }
@@ -210,7 +210,7 @@ void CustomElementDefinition::Upgrade(Element& element) {
   // a custom element callback reaction with element, callback name
   // "attributeChangedCallback", and an argument list containing attribute's
   // local name, null, attribute's value, and attribute's namespace.
-  if (!observed_attributes_.IsEmpty())
+  if (!observed_attributes_.empty())
     EnqueueAttributeChangedCallbackForAllAttributes(element);
 
   // 4.13.5.5: If element is connected, then enqueue a custom element callback

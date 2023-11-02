@@ -28,8 +28,8 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
 namespace blink {
 
@@ -57,6 +57,9 @@ class PLATFORM_EXPORT FontFamily {
   const AtomicString& FamilyName() const { return family_name_; }
   bool FamilyIsGeneric() const { return family_type_ == Type::kGenericFamily; }
 
+  // Returns number of linked `FontFamily` including `this`, so return value is
+  // greater than or equal to 1. When `Next()` is `nullptr`, return value is 1.
+  wtf_size_t CountNames() const;
   const FontFamily* Next() const;
 
   void AppendFamily(scoped_refptr<SharedFontFamily>);

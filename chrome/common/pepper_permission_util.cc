@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,8 +46,8 @@ bool IsExtensionOrSharedModuleAllowed(
 
   // Check the modules that are imported by this extension to see if any of them
   // is allowed.
-  const Extension* extension = extension_set ? extension_set->GetByID(host)
-                                             : NULL;
+  const Extension* extension =
+      extension_set ? extension_set->GetByID(host) : nullptr;
   if (!extension)
     return false;
 

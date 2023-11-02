@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 namespace {
 
 void ExpectNoParse(const std::string& path) {
-  EXPECT_FALSE(pref_names_util::ParseFontNamePrefPath(path, NULL, NULL));
+  EXPECT_FALSE(pref_names_util::ParseFontNamePrefPath(path, nullptr, nullptr));
 }
 
 void ExpectParse(const std::string& path,
@@ -48,5 +48,5 @@ TEST(PrefNamesUtilTest, Basic) {
 
   // Check that passing NULL output params is okay.
   EXPECT_TRUE(pref_names_util::ParseFontNamePrefPath(
-      "webkit.webprefs.fonts.standard.Hrkt", NULL, NULL));
+      "webkit.webprefs.fonts.standard.Hrkt", nullptr, nullptr));
 }

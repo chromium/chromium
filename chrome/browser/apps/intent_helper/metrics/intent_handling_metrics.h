@@ -1,17 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_APPS_INTENT_HELPER_METRICS_INTENT_HANDLING_METRICS_H_
 #define CHROME_BROWSER_APPS_INTENT_HELPER_METRICS_INTENT_HANDLING_METRICS_H_
 
-#include <string>
-#include <utility>
-
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/arc/intent_helper/arc_external_protocol_dialog.h"
+#include "chrome/browser/chromeos/arc/arc_external_protocol_dialog.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace content {
@@ -19,6 +17,8 @@ class BrowserContext;
 }  // namespace content
 
 namespace apps {
+
+enum class PickerShowState;
 
 class IntentHandlingMetrics {
  public:
@@ -29,6 +29,22 @@ class IntentHandlingMetrics {
     kArc = 0,  // From an Android app
     kWeb,      // From a web app
     kMaxValue = kWeb,
+  };
+
+  // An action taken by the user in the HTTP/HTTPS Intent Picker dialog.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class IntentPickerAction {
+    kInvalid = 0,
+    kError = 1,
+    kDialogDeactivated = 2,
+    kChromeSelected = 3,
+    kChromeSelectedAndPreferred = 4,
+    kArcAppSelected = 5,
+    kArcAppSelectedAndPreferred = 6,
+    kPwaSelected = 7,
+    kPwaSelectedAndPreferred = 8,
+    kMaxValue = kPwaSelectedAndPreferred
   };
 
   // These enums are used to define the buckets for an enumerated UMA histogram
@@ -80,41 +96,74 @@ class IntentHandlingMetrics {
     kMaxValue = MAC_OS,
   };
 
-  // TODO(ajlinker): move these two functions below to IntentHandlingMetrics.
-  // Determines the destination of the current navigation. We know that if the
-  // |picker_action| is either ERROR or DIALOG_DEACTIVATED the navigation MUST
-  // stay in Chrome, and when |picker_action| is PWA_APP_PRESSED the navigation
-  // goes to a PWA. Otherwise we can assume the navigation goes to ARC with the
-  // exception of the |selected_launch_name| being Chrome.
-  static Platform GetDestinationPlatform(
-      const std::string& selected_launch_name,
-      PickerAction picker_action);
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class IntentPickerIconEvent {
+    // The intent picker icon was shown in the Omnibox.
+    kIconShown = 0,
+    // The intent picker icon in the Omnibox was clicked.
+    kIconClicked = 1,
+    // The intent picker dialog automatically popped out. This has the same
+    // effect as kIconClicked, but without the user interaction.
+    kAutoPopOut = 2,
+    kMaxValue = kAutoPopOut,
+  };
 
-  // Converts the provided |entry_type|, |close_reason| and |should_persist|
-  // boolean to a PickerAction value for recording in UMA.
-  static PickerAction GetPickerAction(PickerEntryType entry_type,
-                                      IntentPickerCloseReason close_reason,
-                                      bool should_persist);
+  // These are the events that occur in the link capturing flow.
+  enum class LinkCapturingEvent {
+    // An entry point for the link capturing flow was shown, in the form of the
+    // Intent Chip or Intent Picker.
+    kEntryPointShown = 0,
+    // The link was captured (opened) in an available app.
+    kAppOpened = 1,
+    // The user accepted the option to automatically open similar links in the
+    // future with this same app selection.
+    kSettingsChanged = 2,
+    kMaxValue = kSettingsChanged,
+  };
 
   IntentHandlingMetrics();
-  static void RecordIntentPickerMetrics(Source source,
-                                        bool should_persist,
-                                        PickerAction action,
-                                        Platform platform);
 
-  static void RecordIntentPickerUserInteractionMetrics(
-      content::BrowserContext* context,
-      const std::string& selected_app_package,
-      PickerEntryType entry_type,
-      IntentPickerCloseReason close_reason,
-      Source source,
-      bool should_persist);
+  // Records metrics for the outcome of a user selection in the http/https
+  // Intent Picker UI. |entry_type| is the type of the selected app,
+  // |close_reason| is the reason why the bubble closed, and |should_persist| is
+  // whether the persistence checkbox was checked.
+  static void RecordIntentPickerMetrics(PickerEntryType entry_type,
+                                        IntentPickerCloseReason close_reason,
+                                        bool should_persist,
+                                        PickerShowState show_state);
+
+  // Records metrics for when a link is clicked which can handle a preferred
+  // app, as the result of a user previously setting a preference for that app.
+  static void RecordPreferredAppLinkClickMetrics(Platform platform);
+
+  // Records metrics for usage of the intent picker icon which appears in the
+  // Omnibox.
+  static void RecordIntentPickerIconEvent(IntentPickerIconEvent event);
+
+  // Records metrics for when an entry point is shown for the link capturing
+  // flow. An entry point can be the Intent Chip or Intent Picker.
+  static void RecordLinkCapturingEntryPointShown(
+      const std::vector<IntentPickerAppInfo>& app_infos);
+
+  // Records metrics for link capturing flow events, including when an app is
+  // opened and when settings are saved.
+  static void RecordLinkCapturingEvent(PickerEntryType app_type,
+                                       LinkCapturingEvent event);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(crbug.com/1275075): Support metrices in Lacros.
   static void RecordExternalProtocolMetrics(arc::Scheme scheme,
                                             apps::PickerEntryType entry_type,
                                             bool accepted,
                                             bool persisted);
+
+  static void RecordExternalProtocolUserInteractionMetrics(
+      content::BrowserContext* context,
+      PickerEntryType entry_type,
+      IntentPickerCloseReason close_reason,
+      bool should_persist);
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   static void RecordOpenBrowserMetrics(AppType type);

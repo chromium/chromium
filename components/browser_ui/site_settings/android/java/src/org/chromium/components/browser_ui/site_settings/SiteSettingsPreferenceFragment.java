@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,5 +28,20 @@ public abstract class SiteSettingsPreferenceFragment extends PreferenceFragmentC
     public SiteSettingsDelegate getSiteSettingsDelegate() {
         assert mSiteSettingsDelegate != null : "SiteSettingsDelegate not set";
         return mSiteSettingsDelegate;
+    }
+
+    /**
+     * @return Whether a SiteSettingsDelegate instance has been assigned to this Fragment.
+     */
+    public boolean hasSiteSettingsDelegate() {
+        return mSiteSettingsDelegate != null;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (mSiteSettingsDelegate != null) {
+            mSiteSettingsDelegate.onDestroyView();
+        }
     }
 }

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -118,6 +118,7 @@ class CORE_EXPORT CascadePriority {
     return (low_bits_ & kPositionMask) >> kPositionOffset;
   }
   uint8_t GetGeneration() const { return low_bits_ & kGenerationMask; }
+  bool IsInlineStyle() const { return (low_bits_ >> kIsInlineStyleOffset) & 1; }
 
   // Returns a CascadePriority that ignores the importance and all sorting
   // criteria below layer order, which allows us to compare if two

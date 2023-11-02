@@ -6,16 +6,14 @@
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "invalidations": [
-        [809, 71, 37, 18],
-        [543, 71, 37, 18],
-        [276, 71, 37, 18],
-        [10, 71, 36, 18]
+        [10, 71, 836, 18]
       ]
     },
     {
       "name": "HorizontalScrollbar",
       "position": [0, 585],
-      "bounds": [800, 15]
+      "bounds": [800, 15],
+      "contentsOpaque": true
     }
   ]
 }

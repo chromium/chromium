@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -35,7 +34,7 @@ const CGFloat kLabelSize = 14;
   _tabCount = tabCount;
   // Update the text shown in the title of this button. Note that
   // the button's title may be empty or contain an easter egg, but the
-  // accessibility value will always be equal to |tabCount|.
+  // accessibility value will always be equal to `tabCount`.
   NSString* tabStripButtonValue = [NSString stringWithFormat:@"%d", tabCount];
   self.tabCountLabel.text = TextForTabCount(tabCount);
   [self setAccessibilityValue:tabStripButtonValue];

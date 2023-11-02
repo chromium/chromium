@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "content/public/browser/context_menu_params.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
 using base::android::AttachCurrentThread;
@@ -203,15 +204,19 @@ bool SelectionPopupController::ShowSelectionMenu(
   return true;
 }
 
-void SelectionPopupController::OnSelectWordAroundCaretAck(bool did_select,
-                                                          int start_adjust,
-                                                          int end_adjust) {
+void SelectionPopupController::OnSelectAroundCaretAck(
+    blink::mojom::SelectAroundCaretResultPtr result) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_obj_.get(env);
   if (obj.is_null())
     return;
-  Java_SelectionPopupControllerImpl_onSelectWordAroundCaretAck(
-      env, obj, did_select, start_adjust, end_adjust);
+  if (result.is_null()) {
+    Java_SelectionPopupControllerImpl_onSelectAroundCaretFailure(env, obj);
+  } else {
+    Java_SelectionPopupControllerImpl_onSelectAroundCaretSuccess(
+        env, obj, result->extended_start_adjust, result->extended_end_adjust,
+        result->word_start_adjust, result->word_end_adjust);
+  }
 }
 
 void SelectionPopupController::HidePopupsAndPreserveSelection() {

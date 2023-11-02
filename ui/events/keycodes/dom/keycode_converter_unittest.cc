@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <map>
 #include <set>
 
-#include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -24,13 +23,13 @@ namespace {
 // These are in the same order as the columns in dom_code_data.inc
 // as reflected in the DOM_CODE() macro below.
 const size_t expected_mapped_key_count[] = {
-    217,  // evdev
-    217,  // xkb
+    221,  // evdev
+    221,  // xkb
     157,  // windows
     119,  // mac
 };
 
-const size_t kNativeColumns = base::size(expected_mapped_key_count);
+const size_t kNativeColumns = std::size(expected_mapped_key_count);
 
 struct KeycodeConverterData {
   uint32_t usb_keycode;
@@ -170,7 +169,7 @@ TEST(KeycodeConverter, DomCode) {
     if (entry->code) {
       ui::DomCode code = ui::KeycodeConverter::CodeStringToDomCode(entry->code);
       EXPECT_STREQ(entry->code,
-                   ui::KeycodeConverter::DomCodeToCodeString(code));
+                   ui::KeycodeConverter::DomCodeToCodeString(code).c_str());
     }
     ui::DomCode code =
         ui::KeycodeConverter::NativeKeycodeToDomCode(entry->native_keycode);

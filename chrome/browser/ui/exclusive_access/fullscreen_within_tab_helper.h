@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,7 +41,7 @@ class FullscreenWithinTabHelper
   friend class content::WebContentsUserData<FullscreenWithinTabHelper>;
   explicit FullscreenWithinTabHelper(content::WebContents* ignored);
 
-  bool is_fullscreen_within_tab_;
+  bool is_fullscreen_within_tab_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

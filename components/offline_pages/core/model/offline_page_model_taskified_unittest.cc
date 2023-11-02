@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -181,10 +182,10 @@ class OfflinePageModelTaskifiedTest : public testing::Test,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<OfflinePageModelTaskified> model_;
   OfflinePageMetadataStoreTestUtil store_test_util_;
-  ArchiveManager* archive_manager_;
+  raw_ptr<ArchiveManager> archive_manager_;
   OfflinePageItemGenerator generator_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-  OfflinePageTestArchivePublisher* publisher_;
+  raw_ptr<OfflinePageTestArchivePublisher> publisher_;
   base::ScopedTempDir temporary_dir_;
   base::ScopedTempDir private_archive_dir_;
   base::ScopedTempDir public_archive_dir_;
@@ -1045,7 +1046,7 @@ TEST_F(OfflinePageModelTaskifiedTest, GetOfflineIdsForClientId) {
 
 // This test is affected by https://crbug.com/725685, which only affects windows
 // platform.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_CheckTempPagesSavedInCorrectDir \
   DISABLED_CheckTempPagesSavedInCorrectDir
 #else
@@ -1083,7 +1084,7 @@ TEST_F(OfflinePageModelTaskifiedTest, MAYBE_CheckTempPagesSavedInCorrectDir) {
 
 // This test is affected by https://crbug.com/725685, which only affects windows
 // platform.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_CheckPersistenPagesSavedInCorrectDir \
   DISABLED_CheckPersistenPagesSavedInCorrectDir
 #else
@@ -1123,7 +1124,7 @@ TEST_F(OfflinePageModelTaskifiedTest,
 
 // This test is affected by https://crbug.com/725685, which only affects windows
 // platform.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_PublishPageFailure DISABLED_PublishPageFailure
 #else
 #define MAYBE_PublishPageFailure PublishPageFailure
@@ -1154,7 +1155,7 @@ TEST_F(OfflinePageModelTaskifiedTest, MAYBE_PublishPageFailure) {
 
 // This test is affected by https://crbug.com/725685, which only affects windows
 // platform.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_CheckPublishInternalArchive DISABLED_CheckPublishInternalArchive
 #else
 #define MAYBE_CheckPublishInternalArchive CheckPublishInternalArchive
@@ -1238,7 +1239,7 @@ TEST_F(OfflinePageModelTaskifiedTest, GetAllPages) {
 
 // This test is affected by https://crbug.com/725685, which only affects windows
 // platform.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_StartupMaintenanceTaskExecuted \
   DISABLED_StartupMaintenanceTaskExecuted
 #else
@@ -1360,7 +1361,7 @@ TEST_F(OfflinePageModelTaskifiedTest, ClearStorage) {
 
 // This test is affected by https://crbug.com/725685, which only affects windows
 // platform.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_PersistentPageConsistencyCheckExecuted \
   DISABLED_PersistentPageConsistencyCheckExecuted
 #else

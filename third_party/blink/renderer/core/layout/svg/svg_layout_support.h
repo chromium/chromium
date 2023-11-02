@@ -24,6 +24,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_SVG_LAYOUT_SUPPORT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_SVG_LAYOUT_SUPPORT_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/platform/graphics/dash_array.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
@@ -127,8 +128,6 @@ class CORE_EXPORT SVGLayoutSupport {
   // This returns a LayoutSVGText, a LayoutNGSVGText, or nullptr.
   static LayoutObject* FindClosestLayoutSVGText(const LayoutObject*,
                                                 const gfx::PointF&);
-
-  static void NotifySVGRootOfChangedCompositingReasons(const LayoutObject*);
 };
 
 class SubtreeContentTransformScope {
@@ -138,12 +137,12 @@ class SubtreeContentTransformScope {
   SubtreeContentTransformScope(const AffineTransform&);
   ~SubtreeContentTransformScope();
 
-  static AffineTransform CurrentContentTransformation() {
-    return AffineTransform(current_content_transformation_);
+  static const AffineTransform& CurrentContentTransformation() {
+    return current_content_transformation_;
   }
 
  private:
-  static AffineTransform::Transform current_content_transformation_;
+  static AffineTransform current_content_transformation_;
   AffineTransform saved_content_transformation_;
 };
 

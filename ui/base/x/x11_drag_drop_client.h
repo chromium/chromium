@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,13 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/x/selection_utils.h"
 #include "ui/base/x/x11_drag_context.h"
-#include "ui/base/x/x11_topmost_window_finder.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace ui {
@@ -39,8 +40,9 @@ class COMPONENT_EXPORT(UI_BASE_X) XDragDropClient {
   // Handlers and callbacks that should be implemented at the consumer side.
   class Delegate {
    public:
-    // Creates the window finder.
-    virtual std::unique_ptr<XTopmostWindowFinder> CreateWindowFinder() = 0;
+    // Get the window being dragged. This window should be ignored when finding
+    // the topmost window.
+    virtual absl::optional<gfx::AcceleratedWidget> GetDragWidget() = 0;
 
     // Updates the drag status by the new position. Returns the drag operations
     // possible at that position.
@@ -202,7 +204,7 @@ class COMPONENT_EXPORT(UI_BASE_X) XDragDropClient {
 
   void EndMoveLoop();
 
-  Delegate* const delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   const x11::Window xwindow_;
 
@@ -212,7 +214,7 @@ class COMPONENT_EXPORT(UI_BASE_X) XDragDropClient {
 
   // Source side information.
   SourceState source_state_ = SourceState::kOther;
-  const XOSExchangeDataProvider* source_provider_ = nullptr;
+  raw_ptr<const XOSExchangeDataProvider> source_provider_ = nullptr;
 
   // The operation bitfield as requested by StartDragAndDrop.
   int allowed_operations_ = 0;

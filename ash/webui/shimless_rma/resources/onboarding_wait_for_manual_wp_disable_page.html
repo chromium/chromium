@@ -1,15 +1,11 @@
 <style include="cr-shared-style shimless-rma-shared">
 </style>
 
-<base-page orientation="column">
-  <div slot="header">
-    <h1>[[i18n('manuallyDisableWpTitleText')]]</h1>
-    <div id="manuallyDisableHwwpInstructions">
-      [[i18n('manuallyDisableWpInstructionsText', helpUrl_)]]
+<base-page equal-panes>
+  <div slot="left-pane">
+    <h1 tabindex="-1">[[getPageTitle_(hwwpEnabled_)]]</h1>
+    <div id="manuallyDisableHwwpInstructions" class="instructions">
+      [[getInstructions_(hwwpEnabled_)]]
     </div>
-  </div>
-  <div slot="body">
-    <canvas id="qrCodeCanvas" width="[[canvasSize_]]" height="[[canvasSize_]]">
-    </canvas>
   </div>
 </base-page>

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/animation_worklet_mutator.h"
@@ -20,7 +21,10 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
@@ -113,16 +117,16 @@ AnimationWorkletMutatorDispatcherImpl::CreateMainThreadClient(
 void AnimationWorkletMutatorDispatcherImpl::MutateSynchronously(
     std::unique_ptr<AnimationWorkletDispatcherInput> mutator_input) {
   TRACE_EVENT0("cc", "AnimationWorkletMutatorDispatcherImpl::mutate");
-  if (mutator_map_.IsEmpty() || !mutator_input)
+  if (mutator_map_.empty() || !mutator_input)
     return;
   base::ElapsedTimer timer;
   DCHECK(client_);
   DCHECK(host_queue_->BelongsToCurrentThread());
-  DCHECK(mutator_input_map_.IsEmpty());
-  DCHECK(outputs_->get().IsEmpty());
+  DCHECK(mutator_input_map_.empty());
+  DCHECK(outputs_->get().empty());
 
   mutator_input_map_ = CreateInputMap(*mutator_input);
-  if (mutator_input_map_.IsEmpty())
+  if (mutator_input_map_.empty())
     return;
 
   base::WaitableEvent event;
@@ -149,11 +153,11 @@ bool AnimationWorkletMutatorDispatcherImpl::MutateAsynchronously(
     AsyncMutationCompleteCallback done_callback) {
   DCHECK(client_);
   DCHECK(host_queue_->BelongsToCurrentThread());
-  if (mutator_map_.IsEmpty() || !mutator_input)
+  if (mutator_map_.empty() || !mutator_input)
     return false;
 
   base::TimeTicks request_time = NowTicks();
-  if (!mutator_input_map_.IsEmpty()) {
+  if (!mutator_input_map_.empty()) {
     // Still running mutations from a previous frame.
     switch (queuing_strategy) {
       case MutateQueuingStrategy::kDrop:
@@ -181,7 +185,7 @@ bool AnimationWorkletMutatorDispatcherImpl::MutateAsynchronously(
   }
 
   mutator_input_map_ = CreateInputMap(*mutator_input);
-  if (mutator_input_map_.IsEmpty())
+  if (mutator_input_map_.empty())
     return false;
 
   MutateAsynchronouslyInternal(request_time, std::move(done_callback));
@@ -279,7 +283,7 @@ void AnimationWorkletMutatorDispatcherImpl::SynchronizeAnimatorName(
 }
 
 bool AnimationWorkletMutatorDispatcherImpl::HasMutators() {
-  return !mutator_map_.IsEmpty();
+  return !mutator_map_.empty();
 }
 
 AnimationWorkletMutatorDispatcherImpl::InputMap
@@ -301,7 +305,7 @@ AnimationWorkletMutatorDispatcherImpl::CreateInputMap(
 void AnimationWorkletMutatorDispatcherImpl::RequestMutations(
     CrossThreadOnceClosure done_callback) {
   DCHECK(client_);
-  DCHECK(outputs_->get().IsEmpty());
+  DCHECK(outputs_->get().empty());
 
   int num_requests = mutator_map_.size();
   if (num_requests == 0) {

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,10 @@
 #include "components/metrics/clean_exit_beacon.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/variations/client_filterable_state.h"
+#include "components/variations/field_trial_config/fieldtrial_testing_config.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/proto/client_variations.pb.h"
-#include "components/variations/service/variations_safe_mode_constants.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_switches.h"
 #include "third_party/zlib/google/compression_utils.h"
@@ -20,25 +21,80 @@
 namespace variations {
 namespace {
 
-const char* kTestSeed_StudyNames[] = {"UMA-Uniformity-Trial-10-Percent"};
+// kTestSeed is a simple VariationsSeed containing:
+// serial_number: "test"
+// study: {
+//   name: "UMA-Uniformity-Trial-50-Percent"
+//   consistency: PERMANENT
+//   experiment: {
+//     name: "default"
+//     probability_weight: 1
+//   }
+//   experiment: {
+//     name: "group_01"
+//     probability_weight: 1
+//   }
+// }
+
+const char* kTestSeed_StudyNames[] = {"UMA-Uniformity-Trial-50-Percent"};
 
 const char kTestSeed_Base64UncompressedData[] =
-    "CigxZDI5NDY0ZmIzZDc4ZmYxNTU2ZTViNTUxYzY0NDdjYmM3NGU1ZmQwEr0BCh9VTUEtVW5pZm"
-    "9ybWl0eS1UcmlhbC0xMC1QZXJjZW50GICckqUFOAFCB2RlZmF1bHRKCwoHZGVmYXVsdBABSgwK"
-    "CGdyb3VwXzAxEAFKDAoIZ3JvdXBfMDIQAUoMCghncm91cF8wMxABSgwKCGdyb3VwXzA0EAFKDA"
-    "oIZ3JvdXBfMDUQAUoMCghncm91cF8wNhABSgwKCGdyb3VwXzA3EAFKDAoIZ3JvdXBfMDgQAUoM"
-    "Cghncm91cF8wORAB";
+    "CgR0ZXN0Ej4KH1VNQS1Vbmlmb3JtaXR5LVRyaWFsLTUwLVBlcmNlbnQ4AUoLCgdkZWZhdWx0EA"
+    "FKDAoIZ3JvdXBfMDEQAQ==";
 
 const char kTestSeed_Base64CompressedData[] =
-    "H4sIAAAAAAAAAOPSMEwxsjQxM0lLMk4xt0hLMzQ1NUs1TTI1NUw2MzExT05KNjdJNU1LMRDay8"
-    "glH+rrqBual5mWX5SbWVKpG1KUmZija2igG5BalJyaVyLRMGfSUlYLRif2lNS0xNKcEi9uLhhT"
-    "gNGLh4sjvSi/tCDewBCFZ4TCM0bhmaDwTFF4Zig8cxSeBQrPUoARAEVeJPrqAAAA";
+    "H4sIAAAAAAAA/+JiKUktLhGy45IP9XXUDc3LTMsvys0sqdQNKcpMzNE1NdANSC1KTs0rsWD04u"
+    "ZiT0lNSyzNKRFg9OLh4kgvyi8tiDcwFGAEBAAA//90/JgERgAAAA==";
 
 const char kTestSeed_Base64Signature[] =
-    "MEQCIDD1IVxjzWYncun+9IGzqYjZvqxxujQEayJULTlbTGA/AiAr0oVmEgVUQZBYq5VLOSvy96"
-    "JkMYgzTkHPwbv7K/CmgA==";
+    "MEUCIQD5AEAzk5qEuE3xOZl+xSZR15Ac1RJpsXMiou7i5W0sMAIgRn++ngh03HaMGC+Pjl9NOu"
+    "Doxf83qsSwycF2PSS1nYQ=";
 
 const char* kCrashingSeed_StudyNames[] = {"CrashingStudy"};
+
+// kCrashingSeed is a VariationsSeed that triggers a crash for testing:
+// serial_number:  "35ed2d9e354b414befdf930a734094019c0162f1"
+// study:  {
+//   name:  "CrashingStudy"
+//   consistency:  PERMANENT
+//   experiment:  {
+//     name:  "EnabledLaunch"
+//     probability_weight:  100
+//     feature_association:  {
+//       enable_feature:  "ForceFieldTrialSetupCrashForTesting"
+//     }
+//   }
+//   experiment:  {
+//     name:  "ForcedOn_ForceFieldTrialSetupCrashForTesting"
+//     probability_weight:  0
+//     feature_association:  {
+//       forcing_feature_on:  "ForceFieldTrialSetupCrashForTesting"
+//     }
+//   }
+//   experiment:  {
+//     name:  "ForcedOff_ForceFieldTrialSetupCrashForTesting"
+//     probability_weight:  0
+//     feature_association:  {
+//       forcing_feature_off:  "ForceFieldTrialSetupCrashForTesting"
+//     }
+//   }
+//   filter:  {
+//     min_version:  "91.*"
+//     channel:  CANARY
+//     channel:  DEV
+//     channel:  BETA
+//     channel:  STABLE
+//     platform:  PLATFORM_ANDROID
+//     platform:  PLATFORM_IOS
+//     platform:  PLATFORM_ANDROID_WEBVIEW
+//     platform:  PLATFORM_WINDOWS
+//     platform:  PLATFORM_MAC
+//     platform:  PLATFORM_LINUX
+//     platform:  PLATFORM_CHROMEOS
+//     platform:  PLATFORM_CHROMEOS_LACROS
+//   }
+// }
+// version:  "hash/4aa56a1dc30dfc767615248d6fee29830198b276"
 
 const char kCrashingSeed_Base64UncompressedData[] =
     "CigzNWVkMmQ5ZTM1NGI0MTRiZWZkZjkzMGE3MzQwOTQwMTljMDE2MmYxEp4CCg1DcmFzaGluZ1"
@@ -59,6 +115,83 @@ const char kCrashingSeed_Base64CompressedData[] =
 const char kCrashingSeed_Base64Signature[] =
     "MEQCIEn1+VsBfNA93dxzpk+BLhdO91kMQnofxfTK5Uo8vDi8AiAnTCFCIPgEGWNOKzuKfNWn6"
     "emB6pnGWjSTbI/pvfxHnw==";
+
+// Create mock testing config equivalent to:
+// {
+//   "UnitTest": [
+//       {
+//           "platforms": [
+//               "android",
+//               "android_weblayer",
+//               "android_webview",
+//               "chromeos",
+//               "chromeos_lacros",
+//               "fuchsia",
+//               "ios",
+//               "linux",
+//               "mac",
+//               "windows"
+//           ],
+//           "experiments": [
+//               {
+//                   "name": "Enabled",
+//                   "params": {
+//                       "x": "1"
+//                   },
+//                   "enable_features": [
+//                       "UnitTestEnabled"
+//                   ]
+//               }
+//           ]
+//       }
+//   ]
+// }
+
+const Study::Platform array_kFieldTrialConfig_platforms_0[] = {
+    Study::PLATFORM_ANDROID,
+    Study::PLATFORM_ANDROID_WEBLAYER,
+    Study::PLATFORM_ANDROID_WEBVIEW,
+    Study::PLATFORM_CHROMEOS,
+    Study::PLATFORM_CHROMEOS_LACROS,
+    Study::PLATFORM_FUCHSIA,
+    Study::PLATFORM_IOS,
+    Study::PLATFORM_LINUX,
+    Study::PLATFORM_MAC,
+    Study::PLATFORM_WINDOWS,
+};
+
+const char* enable_features_0[] = {"UnitTestEnabled"};
+const FieldTrialTestingExperimentParams array_kFieldTrialConfig_params_0[] = {
+    {
+        "x",
+        "1",
+    },
+};
+
+const FieldTrialTestingExperiment array_kFieldTrialConfig_experiments_0[] = {
+    {/*name=*/"Enabled",
+     /*platforms=*/array_kFieldTrialConfig_platforms_0,
+     /*platforms_size=*/10,
+     /*form_factors=*/{},
+     /*form_factors_size=*/0,
+     /*is_low_end_device=*/absl::nullopt,
+     /*min_os_version=*/nullptr,
+     /*params=*/array_kFieldTrialConfig_params_0,
+     /*params_size=*/1,
+     /*enable_features=*/enable_features_0,
+     /*enable_features_size=*/1,
+     /*disable_features=*/nullptr,
+     /*disable_features_size=*/0,
+     /*forcing_flag=*/nullptr,
+     /*override_ui_string=*/nullptr,
+     /*override_ui_string_size=*/0},
+};
+
+const FieldTrialTestingStudy array_kFieldTrialConfig_studies[] = {
+    {/*name=*/"UnitTest",
+     /*experiments=*/array_kFieldTrialConfig_experiments_0,
+     /*experiments_size=*/1},
+};
 
 }  // namespace
 
@@ -97,6 +230,11 @@ void DisableTestingConfig() {
       switches::kDisableFieldTrialTestingConfig);
 }
 
+void EnableTestingConfig() {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableFieldTrialTestingConfig);
+}
+
 bool ExtractVariationIds(const std::string& variations,
                          std::set<VariationID>* variation_ids,
                          std::set<VariationID>* trigger_ids) {
@@ -126,24 +264,10 @@ scoped_refptr<base::FieldTrial> CreateTrialAndAssociateId(
   if (trial) {
     // Ensure the trial is registered under the correct key so we can look it
     // up.
-    trial->group();
+    trial->Activate();
   }
 
   return trial;
-}
-
-int SetUpExtendedSafeModeExperiment(const std::string& group_name) {
-  int default_group;
-  scoped_refptr<base::FieldTrial> trial(
-      base::FieldTrialList::FactoryGetFieldTrial(
-          kExtendedSafeModeTrial, 100, kDefaultGroup,
-          base::FieldTrial::ONE_TIME_RANDOMIZED, &default_group));
-
-  int active_group = default_group;
-  if (group_name != kDefaultGroup)
-    active_group = trial->AppendGroup(group_name, 100);
-  trial->SetForced();
-  return active_group;
 }
 
 void SimulateCrash(PrefService* local_state) {
@@ -165,6 +289,52 @@ bool FieldTrialListHasAllStudiesFrom(const SignedSeedData& seed_data) {
   return base::ranges::all_of(seed_data.study_names, [](const char* study) {
     return base::FieldTrialList::TrialExists(study);
   });
+}
+
+void ResetVariations() {
+  testing::ClearAllVariationIDs();
+  testing::ClearAllVariationParams();
+}
+
+const FieldTrialTestingConfig kTestingConfig = {
+    array_kFieldTrialConfig_studies,
+    1,
+};
+
+std::unique_ptr<ClientFilterableState> CreateDummyClientFilterableState() {
+  auto client_state = std::make_unique<ClientFilterableState>(
+      base::BindOnce([] { return false; }));
+  client_state->locale = "en-CA";
+  client_state->reference_date = base::Time::Now();
+  client_state->version = base::Version("20.0.0.0");
+  client_state->channel = Study::STABLE;
+  client_state->form_factor = Study::PHONE;
+  client_state->platform = Study::PLATFORM_ANDROID;
+  return client_state;
+}
+
+MockEntropyProviders::MockEntropyProviders(
+    MockEntropyProviders::Results results,
+    size_t low_entropy_domain)
+    : EntropyProviders(results.high_entropy.has_value() ? "client_id" : "",
+                       0,
+                       low_entropy_domain),
+      low_provider_(results.low_entropy),
+      high_provider_(results.high_entropy.value_or(0)) {}
+
+MockEntropyProviders::~MockEntropyProviders() = default;
+
+const base::FieldTrial::EntropyProvider& MockEntropyProviders::low_entropy()
+    const {
+  return low_provider_;
+}
+
+const base::FieldTrial::EntropyProvider& MockEntropyProviders::default_entropy()
+    const {
+  if (default_entropy_is_high_entropy()) {
+    return high_provider_;
+  }
+  return low_provider_;
 }
 
 }  // namespace variations

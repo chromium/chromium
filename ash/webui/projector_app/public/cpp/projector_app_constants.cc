@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,20 +7,34 @@
 namespace ash {
 
 const char kChromeUIProjectorAppHost[] = "projector";
+const char kChromeUIProjectorAnnotatorHost[] = "projector-annotator";
 
 // content::WebUIDataSource::Create() requires trailing slash.
-const char kChromeUIUntrustedProjectorAppUrl[] =
-    "chrome-untrusted://projector/";
+const char kChromeUIUntrustedProjectorUrl[] = "chrome-untrusted://projector/";
 const char kChromeUIUntrustedProjectorPwaUrl[] =
-    "https://projector.apps.chrome";
+    "https://screencast.apps.chrome";
 
 const char kChromeUITrustedProjectorUrl[] = "chrome://projector/";
-const char kChromeUITrustedProjectorAppUrl[] = "chrome://projector/app/";
-const char kChromeUITrustedProjectorSelfieCamUrl[] =
-    "chrome://projector/selfie_cam/selfie_cam.html";
-const char kChromeUITrustedAnnotatorUrl[] =
-    "chrome://projector/annotator/annotator_embedder.html";
+const char kChromeUITrustedAnnotatorUrl[] = "chrome://projector-annotator/";
+const char kChromeUIUntrustedAnnotatorUrl[] =
+    "chrome-untrusted://projector-annotator/";
+
+// LINT.IfChange
 const char kChromeUITrustedProjectorSwaAppId[] =
-    "fgnpbdobngpkonkajbmelfhjkemaddhp";
+    "nblbgfbmjfjaeonhjnbbkabkdploocij";
+// Also update the Projector app id in the file below.
+// LINT.ThenChange(
+// src/platform/tast-tests/src/chromiumos/tast/local/apps/apps.go)
+
+const base::FilePath::CharType kProjectorMetadataFileExtension[] =
+    FILE_PATH_LITERAL(".projector");
+
+const base::FilePath::CharType kProjectorMediaFileExtension[] =
+    FILE_PATH_LITERAL(".webm");
+
+const char kProjectorMediaMimeType[] = "video/webm";
+
+const base::FilePath::CharType kScreencastDefaultThumbnailFileName[] =
+    FILE_PATH_LITERAL("thumbnail.png");
 
 }  // namespace ash

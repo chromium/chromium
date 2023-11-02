@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -18,6 +19,8 @@
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/devtools_throttle_handle.h"
 #include "content/browser/devtools/service_worker_devtools_manager.h"
+#include "content/browser/renderer_host/private_network_access_util.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/embedded_worker_instance.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_consts.h"
@@ -32,8 +35,9 @@
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/common/content_features.h"
+#include "content/public/common/content_client.h"
 #include "net/base/net_errors.h"
+#include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/common/service_worker/service_worker_type_converters.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
@@ -50,7 +54,9 @@ ServiceWorkerRegisterJob::ServiceWorkerRegisterJob(
     const blink::StorageKey& key,
     blink::mojom::FetchClientSettingsObjectPtr
         outside_fetch_client_settings_object,
-    const GlobalRenderFrameHostId& requesting_frame_id)
+    const GlobalRenderFrameHostId& requesting_frame_id,
+    blink::mojom::AncestorFrameType ancestor_frame_type,
+    PolicyContainerPolicies policy_container_policies)
     : context_(context),
       job_type_(REGISTRATION_JOB),
       scope_(options.scope),
@@ -66,7 +72,9 @@ ServiceWorkerRegisterJob::ServiceWorkerRegisterJob(
       force_bypass_cache_(false),
       skip_script_comparison_(false),
       promise_resolved_status_(blink::ServiceWorkerStatusCode::kOk),
-      requesting_frame_id_(requesting_frame_id) {
+      requesting_frame_id_(requesting_frame_id),
+      ancestor_frame_type_(ancestor_frame_type),
+      creator_policy_container_policies_(std::move(policy_container_policies)) {
   DCHECK(context_);
   DCHECK(outside_fetch_client_settings_object_);
 }
@@ -90,10 +98,21 @@ ServiceWorkerRegisterJob::ServiceWorkerRegisterJob(
       should_uninstall_on_failure_(false),
       force_bypass_cache_(force_bypass_cache),
       skip_script_comparison_(skip_script_comparison),
-      promise_resolved_status_(blink::ServiceWorkerStatusCode::kOk) {
+      promise_resolved_status_(blink::ServiceWorkerStatusCode::kOk),
+      ancestor_frame_type_(registration->ancestor_frame_type()) {
   DCHECK(context_);
   DCHECK(outside_fetch_client_settings_object_);
   internal_.registration = registration;
+
+  ServiceWorkerVersion* version = registration->GetNewestVersion();
+  if (version) {
+    scoped_refptr<PolicyContainerHost> policy_container_host =
+        version->policy_container_host();
+    if (policy_container_host) {
+      creator_policy_container_policies_ =
+          mojo::Clone(policy_container_host->policies());
+    }
+  }
 }
 
 ServiceWorkerRegisterJob::~ServiceWorkerRegisterJob() {
@@ -380,7 +399,7 @@ void ServiceWorkerRegisterJob::RegisterAndContinue() {
   blink::mojom::ServiceWorkerRegistrationOptions options(
       scope_, worker_script_type_, update_via_cache_);
   context_->registry()->CreateNewRegistration(
-      options, key_,
+      options, key_, ancestor_frame_type_,
       base::BindOnce(&ServiceWorkerRegisterJob::ContinueWithNewRegistration,
                      weak_factory_.GetWeakPtr()));
 }
@@ -439,8 +458,6 @@ void ServiceWorkerRegisterJob::
 void ServiceWorkerRegisterJob::
     MaybeThrottleForDevToolsBeforeStartingScriptFetch(
         scoped_refptr<ServiceWorkerVersion> version) {
-  DCHECK(base::FeatureList::IsEnabled(features::kPlzServiceWorker));
-
   int64_t version_id = version->version_id();
   const GURL& script_url = version->script_url();
   const GURL& scope = version->scope();
@@ -458,12 +475,17 @@ void ServiceWorkerRegisterJob::
 
 void ServiceWorkerRegisterJob::StartScriptFetchForNewWorker(
     scoped_refptr<ServiceWorkerVersion> version) {
-  DCHECK(base::FeatureList::IsEnabled(features::kPlzServiceWorker));
   DCHECK(!new_script_fetcher_);
 
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory =
       context_->wrapper()->GetLoaderFactoryForMainScriptFetch(
-          version->scope(), version->version_id());
+          version->scope(), version->version_id(),
+          network::mojom::ClientSecurityState::New(
+              creator_policy_container_policies_.cross_origin_embedder_policy,
+              creator_policy_container_policies_.is_web_secure_context,
+              creator_policy_container_policies_.ip_address_space,
+              DerivePrivateNetworkRequestPolicy(
+                  creator_policy_container_policies_)));
 
   new_script_fetcher_ = std::make_unique<ServiceWorkerNewScriptFetcher>(
       *context_, version, std::move(loader_factory),
@@ -476,7 +498,6 @@ void ServiceWorkerRegisterJob::StartScriptFetchForNewWorker(
 void ServiceWorkerRegisterJob::OnScriptFetchCompleted(
     scoped_refptr<ServiceWorkerVersion> version,
     blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params) {
-  DCHECK(base::FeatureList::IsEnabled(features::kPlzServiceWorker));
   if (!main_script_load_params) {
     // Null `main_script_load_params` means the main script failed to be loaded.
     ServiceWorkerDevToolsManager::GetInstance()->WorkerMainScriptFetchingFailed(
@@ -493,7 +514,7 @@ void ServiceWorkerRegisterJob::OnScriptFetchCompleted(
              message);
     return;
   }
-  DCHECK(version->cross_origin_embedder_policy().has_value());
+  DCHECK(version->client_security_state());
 
   version->set_main_script_load_params(std::move(main_script_load_params));
   StartWorkerForUpdate(std::move(version));
@@ -512,20 +533,21 @@ void ServiceWorkerRegisterJob::StartWorkerForUpdate(
   set_new_version(std::move(version));
   new_version()->set_force_bypass_cache_for_scripts(force_bypass_cache_);
 
+  if (GetContentClient()
+          ->browser()
+          ->ShouldServiceWorkerInheritPolicyContainerFromCreator(script_url_)) {
+    new_version()->set_policy_container_host(
+        base::MakeRefCounted<PolicyContainerHost>(
+            std::move(creator_policy_container_policies_)));
+  }
+
   if (update_checker_) {
     new_version()->PrepareForUpdate(
         update_checker_->TakeComparedResults(),
         update_checker_->updated_script_url(),
+        update_checker_->policy_container_host(),
         update_checker_->cross_origin_embedder_policy());
     update_checker_.reset();
-  } else if (!base::FeatureList::IsEnabled(features::kPlzServiceWorker)) {
-    // When the update checker is not used, subresource loader factories needs
-    // to be updated after the main script is loaded because COEP header is
-    // not available until then. This flag lets the script evaluation wait
-    // until the browser sends a message with a new subresoruce loader
-    // factories. This happens when this is (1) a new registration, or (2) an
-    // old registration where the script URL is changed.
-    new_version()->set_initialize_global_scope_after_main_script_loaded();
   }
 
   new_version()->set_outside_fetch_client_settings_object(
@@ -542,7 +564,14 @@ void ServiceWorkerRegisterJob::UpdateAndContinue() {
   SetPhase(UPDATE);
 
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory =
-      context_->wrapper()->GetLoaderFactoryForUpdateCheck(scope_);
+      context_->wrapper()->GetLoaderFactoryForUpdateCheck(
+          scope_,
+          network::mojom::ClientSecurityState::New(
+              creator_policy_container_policies_.cross_origin_embedder_policy,
+              creator_policy_container_policies_.is_web_secure_context,
+              creator_policy_container_policies_.ip_address_space,
+              DerivePrivateNetworkRequestPolicy(
+                  creator_policy_container_policies_)));
   if (!loader_factory) {
     // We can't continue with update checking appropriately without
     // |loader_factory|. Null |loader_factory| means that the storage partition
@@ -555,17 +584,10 @@ void ServiceWorkerRegisterJob::UpdateAndContinue() {
 
   if (!IsUpdateCheckNeeded()) {
     context_->registry()->NotifyInstallingRegistration(registration());
-    base::OnceCallback<void(scoped_refptr<ServiceWorkerVersion>)> next_task;
-    if (base::FeatureList::IsEnabled(features::kPlzServiceWorker)) {
-      next_task =
-          base::BindOnce(&ServiceWorkerRegisterJob::
-                             MaybeThrottleForDevToolsBeforeStartingScriptFetch,
-                         weak_factory_.GetWeakPtr());
-    } else {
-      next_task =
-          base::BindOnce(&ServiceWorkerRegisterJob::StartWorkerForUpdate,
-                         weak_factory_.GetWeakPtr());
-    }
+    base::OnceCallback<void(scoped_refptr<ServiceWorkerVersion>)> next_task =
+        base::BindOnce(&ServiceWorkerRegisterJob::
+                           MaybeThrottleForDevToolsBeforeStartingScriptFetch,
+                       weak_factory_.GetWeakPtr());
     context_->registry()->CreateNewVersion(
         registration(), script_url_, worker_script_type_,
         std::move(next_task));

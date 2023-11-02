@@ -183,7 +183,7 @@ void SerializeV8Value(v8::Local<v8::Value> value,
       SerializedScriptValue::Serialize(isolate, value, options,
                                        non_throwable_exception_state);
   base::span<const uint8_t> ssv_wire_data = serialized_value->GetWireData();
-  DCHECK(wire_bytes->IsEmpty());
+  DCHECK(wire_bytes->empty());
   wire_bytes->Append(ssv_wire_data.data(),
                      static_cast<wtf_size_t>(ssv_wire_data.size()));
 

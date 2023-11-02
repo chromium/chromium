@@ -97,12 +97,18 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin,
       double double_height,
       const HeapVector<Member<V8UnionDOMPointInitOrUnrestrictedDouble>>& radii,
       ExceptionState& exception_state);
+  void roundRect(double double_x,
+                 double double_y,
+                 double double_width,
+                 double double_height,
+                 const Member<V8UnionDOMPointInitOrUnrestrictedDouble>& radius,
+                 ExceptionState& exception_state);
 
   bool IsTransformInvertible() const;
 
-  virtual TransformationMatrix GetTransform() const {
+  virtual AffineTransform GetTransform() const {
     // This will be the identity matrix
-    return TransformationMatrix();
+    return AffineTransform();
   }
 
   IdentifiableToken GetIdentifiableToken() const {

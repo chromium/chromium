@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,12 +12,16 @@
 
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
-#include "base/stl_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/media_switches.h"
+#include "media/media_buildflags.h"
+#include "media/webrtc/constants.h"
 #include "media/webrtc/webrtc_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_platform_media_stream_source.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -77,7 +81,7 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
   void MakeSystemEchoCancellerDeviceExperimental() {
     media::AudioParameters experimental_system_echo_canceller_parameters(
         media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-        media::CHANNEL_LAYOUT_STEREO,
+        media::ChannelLayoutConfig::Stereo(),
         media::AudioParameters::kAudioCDSampleRate, 1000);
     experimental_system_echo_canceller_parameters.set_effects(
         media::AudioParameters::EXPERIMENTAL_ECHO_CANCELLER);
@@ -178,10 +182,12 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
           absl::nullopt) {
     MediaConstraints constraints = constraint_factory_.CreateMediaConstraints();
     if (capabilities) {
-      return SelectSettingsAudioCapture(*capabilities, constraints, false,
+      return SelectSettingsAudioCapture(*capabilities, constraints,
+                                        GetMediaStreamType(), false,
                                         is_reconfigurable);
     } else {
-      return SelectSettingsAudioCapture(capabilities_, constraints, false,
+      return SelectSettingsAudioCapture(capabilities_, constraints,
+                                        GetMediaStreamType(), false,
                                         is_reconfigurable);
     }
   }
@@ -192,7 +198,7 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
   void CheckGoogExperimentalEchoCancellationDefault(
       const AudioProcessingProperties& properties,
       bool value) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     EXPECT_FALSE(properties.goog_experimental_echo_cancellation);
 #else
     EXPECT_EQ(value, properties.goog_experimental_echo_cancellation);
@@ -470,7 +476,7 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
             false /* disable_local_echo */,
             false /* render_to_associated_sink */,
             false /* enable_experimental_echo_canceller */,
-            base::OptionalOrNullptr(result.requested_buffer_size()));
+            base::OptionalToPtr(result.requested_buffer_size()));
     EXPECT_EQ(local_source->GetAudioParameters().frames_per_buffer(),
               expected_buffer_size);
   }
@@ -506,13 +512,13 @@ class MediaStreamConstraintsUtilAudioTest
       capabilities_.emplace_back(
           "default_device", "fake_group1",
           media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                 media::CHANNEL_LAYOUT_STEREO,
+                                 media::ChannelLayoutConfig::Stereo(),
                                  media::AudioParameters::kAudioCDSampleRate,
                                  1000));
 
       media::AudioParameters system_echo_canceller_parameters(
           media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-          media::CHANNEL_LAYOUT_STEREO,
+          media::ChannelLayoutConfig::Stereo(),
           media::AudioParameters::kAudioCDSampleRate, 1000);
       system_echo_canceller_parameters.set_effects(
           media::AudioParameters::ECHO_CANCELLER);
@@ -522,30 +528,23 @@ class MediaStreamConstraintsUtilAudioTest
       capabilities_.emplace_back(
           "4_channels_device", "fake_group3",
           media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                 media::CHANNEL_LAYOUT_4_0,
+                                 media::ChannelLayoutConfig::FromLayout<
+                                     media::CHANNEL_LAYOUT_4_0>(),
                                  media::AudioParameters::kAudioCDSampleRate,
                                  1000));
 
       capabilities_.emplace_back(
           "8khz_sample_rate_device", "fake_group4",
           media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                 media::CHANNEL_LAYOUT_STEREO,
-                                 blink::AudioProcessing::kSampleRate8kHz,
+                                 media::ChannelLayoutConfig::Stereo(),
+                                 webrtc::AudioProcessing::kSampleRate8kHz,
                                  1000));
 
       capabilities_.emplace_back(
           "variable_latency_device", "fake_group5",
           media::AudioParameters(
               media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-              media::CHANNEL_LAYOUT_STEREO,
-              media::AudioParameters::kAudioCDSampleRate, 512,
-              media::AudioParameters::HardwareCapabilities(128, 4096)));
-
-      capabilities_.emplace_back(
-          "keyboard_mic_device", "fake_group6",
-          media::AudioParameters(
-              media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-              media::CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC,
+              media::ChannelLayoutConfig::Stereo(),
               media::AudioParameters::kAudioCDSampleRate, 512,
               media::AudioParameters::HardwareCapabilities(128, 4096)));
 
@@ -561,6 +560,108 @@ class MediaStreamConstraintsUtilAudioTest
   }
 
   std::string GetMediaStreamSource() override { return GetParam(); }
+};
+
+enum class ChromeWideAecExperiment {
+  kDisabled,
+  kEnabledWithoutResamplingMitigation,
+  kEnabledWithResamplingMitigation
+};
+
+class MediaStreamConstraintsRemoteAPMTest
+    : public MediaStreamConstraintsUtilAudioTestBase,
+      public testing::WithParamInterface<
+          std::tuple<std::string, ChromeWideAecExperiment>> {
+ protected:
+  std::string GetMediaStreamSource() override {
+    return std::get<0>(GetParam());
+  }
+
+  ChromeWideAecExperiment GetChromeWideAecExperiment() {
+    return std::get<1>(GetParam());
+  }
+
+  testing::Message GetMessageForScopedTrace() {
+    std::string experiment_string;
+    switch (GetChromeWideAecExperiment()) {
+      case ChromeWideAecExperiment::kDisabled:
+        experiment_string = "disabled";
+        break;
+      case ChromeWideAecExperiment::kEnabledWithoutResamplingMitigation:
+        experiment_string = "\"enabled without resampling mitigation\"";
+        break;
+      case ChromeWideAecExperiment::kEnabledWithResamplingMitigation:
+        experiment_string = "\"enabled with resampling mitigation\"";
+        break;
+    }
+    return testing::Message()
+           << "GetMediaStreamSource()=\"" << GetMediaStreamSource()
+           << "\", GetChromeWideAecExperiment()=" << experiment_string;
+  }
+
+  // Indicates where and how audio processing is applied.
+  enum class ApmLocation {
+    kProcessedLocalAudioSource,
+    kAudioService,
+    kAudioServiceAvoidResampling
+  };
+
+  ApmLocation GetApmLocation() {
+    if (GetMediaStreamType() !=
+        mojom::blink::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
+      // Non-mic input sources cannot run APM in the audio service:
+      // https://crbug.com/1328012
+      return ApmLocation::kProcessedLocalAudioSource;
+    }
+
+    switch (GetChromeWideAecExperiment()) {
+      case ChromeWideAecExperiment::kDisabled:
+        return ApmLocation::kProcessedLocalAudioSource;
+      case ChromeWideAecExperiment::kEnabledWithoutResamplingMitigation:
+        return ApmLocation::kAudioService;
+      case ChromeWideAecExperiment::kEnabledWithResamplingMitigation:
+        return ApmLocation::kAudioServiceAvoidResampling;
+    }
+    NOTREACHED();
+  }
+
+ private:
+  void SetUp() override {
+    MediaStreamConstraintsUtilAudioTestBase::SetUp();
+
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+    switch (GetChromeWideAecExperiment()) {
+      case ChromeWideAecExperiment::kDisabled:
+        scoped_feature_list_.InitAndDisableFeature(
+            media::kChromeWideEchoCancellation);
+        break;
+      case ChromeWideAecExperiment::kEnabledWithoutResamplingMitigation:
+        scoped_feature_list_.InitAndEnableFeatureWithParameters(
+            media::kChromeWideEchoCancellation,
+            {{ "minimize_resampling",
+               "false" }});
+        break;
+      case ChromeWideAecExperiment::kEnabledWithResamplingMitigation:
+        scoped_feature_list_.InitAndEnableFeatureWithParameters(
+            media::kChromeWideEchoCancellation,
+            {{ "minimize_resampling",
+               "true" }});
+        break;
+    }
+#endif
+
+    // Setup the capabilities.
+    ResetFactory();
+    capabilities_.emplace_back(
+        "default_device", "fake_group1",
+        media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                               media::ChannelLayoutConfig::Stereo(),
+                               media::AudioParameters::kAudioCDSampleRate,
+                               1000));
+    default_device_ = &capabilities_[0];
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // The Unconstrained test checks the default selection criteria.
@@ -735,15 +836,13 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, Channels) {
       continue;
     }
 
-    if (channel_count > 4) {
+    if (channel_count == 3 || channel_count > 4) {
       EXPECT_FALSE(result.HasValue());
       continue;
     }
 
     EXPECT_TRUE(result.HasValue());
-    if (channel_count == 3)
-      EXPECT_EQ(result.device_id(), "keyboard_mic_device");
-    else if (channel_count == 4)
+    if (channel_count == 4)
       EXPECT_EQ(result.device_id(), "4_channels_device");
     else
       EXPECT_EQ(result.device_id(), "default_device");
@@ -806,9 +905,6 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, Channels) {
 }
 
 TEST_P(MediaStreamConstraintsUtilAudioTest, MultiChannelEchoCancellation) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatureState(::features::kWebRtcEnableCaptureMultiChannelApm,
-                                true);
   if (!IsDeviceCapture())
     return;
 
@@ -861,92 +957,6 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, MultiChannelEchoCancellation) {
   EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
             EchoCancellationType::kEchoCancellationAec3);
   EXPECT_EQ(result.num_channels(), 4);
-
-  ResetFactory();
-  constraint_factory_.basic().device_id.SetExact("keyboard_mic_device");
-  constraint_factory_.basic().echo_cancellation.SetIdeal(true);
-  constraint_factory_.basic().channel_count.SetIdeal(4);
-  result = SelectSettings();
-  EXPECT_TRUE(result.HasValue());
-  EXPECT_EQ(result.device_id(), "keyboard_mic_device");
-  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
-            EchoCancellationType::kEchoCancellationAec3);
-  // Keyboard Mic devices can provide 2 channels with echo cancellation,
-  // which is the closest to the requested 4 channels.
-  EXPECT_EQ(result.num_channels(), 2);
-}
-
-TEST_P(MediaStreamConstraintsUtilAudioTest,
-       MultiChannelEchoCancellationDisabled) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatureState(::features::kWebRtcEnableCaptureMultiChannelApm,
-                                false);
-  if (!IsDeviceCapture())
-    return;
-
-  AudioCaptureSettings result;
-
-  ResetFactory();
-  result = SelectSettings();
-  EXPECT_TRUE(result.HasValue());
-  EXPECT_EQ(result.device_id(), "default_device");
-  // By default the number of channels must be 1 with echo cancellation enabled.
-  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
-            EchoCancellationType::kEchoCancellationAec3);
-  EXPECT_EQ(result.num_channels(), 1);
-
-  ResetFactory();
-  constraint_factory_.basic().device_id.SetExact("default_device");
-  constraint_factory_.basic().echo_cancellation.SetExact(true);
-  result = SelectSettings();
-  EXPECT_TRUE(result.HasValue());
-  // By default, use 1 channel,
-  EXPECT_EQ(result.device_id(), "default_device");
-  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
-            EchoCancellationType::kEchoCancellationAec3);
-  EXPECT_EQ(result.num_channels(), 1);
-
-  ResetFactory();
-  constraint_factory_.basic().channel_count.SetExact(2);
-  result = SelectSettings();
-  EXPECT_TRUE(result.HasValue());
-  EXPECT_EQ(result.device_id(), "default_device");
-  // Forcing two channels requires APM disabled.
-  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
-            EchoCancellationType::kEchoCancellationDisabled);
-  EXPECT_EQ(result.num_channels(), 2);
-
-  ResetFactory();
-  constraint_factory_.basic().channel_count.SetIdeal(2);
-  result = SelectSettings();
-  EXPECT_TRUE(result.HasValue());
-  EXPECT_EQ(result.device_id(), "default_device");
-  // Satisfying the requested 2 channels requires APM disabled.
-  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
-            EchoCancellationType::kEchoCancellationDisabled);
-  EXPECT_EQ(result.num_channels(), 2);
-
-  ResetFactory();
-  constraint_factory_.basic().channel_count.SetIdeal(4);
-  result = SelectSettings();
-  EXPECT_TRUE(result.HasValue());
-  EXPECT_EQ(result.device_id(), "4_channels_device");
-  // Satisfying the requested 4 channels requires APM disabled.
-  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
-            EchoCancellationType::kEchoCancellationDisabled);
-  EXPECT_EQ(result.num_channels(), 4);
-
-  ResetFactory();
-  constraint_factory_.basic().device_id.SetExact("keyboard_mic_device");
-  constraint_factory_.basic().echo_cancellation.SetIdeal(true);
-  constraint_factory_.basic().channel_count.SetIdeal(4);
-  result = SelectSettings();
-  EXPECT_TRUE(result.HasValue());
-  EXPECT_EQ(result.device_id(), "keyboard_mic_device");
-  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
-            EchoCancellationType::kEchoCancellationAec3);
-  // Only 1 channel supported with echo cancellation enabled.
-  EXPECT_EQ(result.num_channels(), 1);
 }
 
 TEST_P(MediaStreamConstraintsUtilAudioTest, ChannelsWithSource) {
@@ -972,19 +982,19 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, ChannelsWithSource) {
 
 TEST_P(MediaStreamConstraintsUtilAudioTest, SampleRate) {
   AudioCaptureSettings result;
-  int exact_sample_rate = blink::AudioProcessing::kSampleRate8kHz;
-  int min_sample_rate = blink::AudioProcessing::kSampleRate8kHz;
+  int exact_sample_rate = webrtc::AudioProcessing::kSampleRate8kHz;
+  int min_sample_rate = webrtc::AudioProcessing::kSampleRate8kHz;
   // |max_sample_rate| is different based on architecture, namely due to a
   // difference on Android.
   int max_sample_rate =
       std::max(static_cast<int>(media::AudioParameters::kAudioCDSampleRate),
-               blink::kAudioProcessingSampleRate);
-  int ideal_sample_rate = blink::AudioProcessing::kSampleRate8kHz;
+               media::kAudioProcessingSampleRateHz);
+  int ideal_sample_rate = webrtc::AudioProcessing::kSampleRate8kHz;
   if (!IsDeviceCapture()) {
     exact_sample_rate = media::AudioParameters::kAudioCDSampleRate;
     min_sample_rate =
         std::min(static_cast<int>(media::AudioParameters::kAudioCDSampleRate),
-                 blink::kAudioProcessingSampleRate);
+                 media::kAudioProcessingSampleRateHz);
     ideal_sample_rate = media::AudioParameters::kAudioCDSampleRate;
   }
 
@@ -1059,7 +1069,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, SampleRate) {
 
   if (IsDeviceCapture()) {
     constraint_factory_.basic().sample_rate.SetIdeal(
-        blink::AudioProcessing::kSampleRate48kHz + 1000);
+        webrtc::AudioProcessing::kSampleRate48kHz + 1000);
     result = SelectSettings();
     EXPECT_TRUE(result.HasValue());
     EXPECT_EQ(result.device_id(), "default_device");
@@ -1777,7 +1787,8 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, NoDevicesNoConstraints) {
 
   AudioDeviceCaptureCapabilities capabilities;
   auto result = SelectSettingsAudioCapture(
-      capabilities, constraint_factory_.CreateMediaConstraints(), false);
+      capabilities, constraint_factory_.CreateMediaConstraints(),
+      GetMediaStreamType(), false);
   EXPECT_FALSE(result.HasValue());
   EXPECT_TRUE(std::string(result.failed_constraint_name()).empty());
 }
@@ -1790,7 +1801,8 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, NoDevicesWithConstraints) {
   AudioDeviceCaptureCapabilities capabilities;
   constraint_factory_.basic().sample_size.SetExact(16);
   auto result = SelectSettingsAudioCapture(
-      capabilities, constraint_factory_.CreateMediaConstraints(), false);
+      capabilities, constraint_factory_.CreateMediaConstraints(),
+      GetMediaStreamType(), false);
   EXPECT_FALSE(result.HasValue());
   EXPECT_TRUE(std::string(result.failed_constraint_name()).empty());
 }
@@ -2037,6 +2049,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, UsedAndUnusedSources) {
 
     auto result = SelectSettingsAudioCapture(
         capabilities, constraint_factory_.CreateMediaConstraints(),
+        GetMediaStreamType(),
         false /* should_disable_hardware_noise_suppression */);
     EXPECT_TRUE(result.HasValue());
     EXPECT_EQ(result.device_id(), kUnusedDeviceID.Utf8());
@@ -2049,6 +2062,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, UsedAndUnusedSources) {
     constraint_factory_.basic().echo_cancellation.SetExact(true);
     auto result = SelectSettingsAudioCapture(
         capabilities, constraint_factory_.CreateMediaConstraints(),
+        GetMediaStreamType(),
         false /* should_disable_hardware_noise_suppression */);
     EXPECT_TRUE(result.HasValue());
     EXPECT_EQ(result.device_id(), processed_source->device().id);
@@ -2057,7 +2071,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, UsedAndUnusedSources) {
   }
 }
 
-TEST_P(MediaStreamConstraintsUtilAudioTest, ExperimetanlEcWithSource) {
+TEST_P(MediaStreamConstraintsUtilAudioTest, ExperimentalEcWithSource) {
   std::unique_ptr<blink::LocalMediaStreamAudioSource> source =
       GetLocalMediaStreamAudioSource(
           false /* enable_system_echo_canceller */,
@@ -2071,6 +2085,90 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, ExperimetanlEcWithSource) {
       source.get(), constraint_factory_.CreateMediaConstraints());
   EXPECT_TRUE(result.HasValue());
 }
+
+TEST_P(MediaStreamConstraintsRemoteAPMTest, DeviceSampleRate) {
+  SCOPED_TRACE(GetMessageForScopedTrace());
+
+  AudioCaptureSettings result;
+  ResetFactory();
+  constraint_factory_.basic().sample_rate.SetExact(
+      media::AudioParameters::kAudioCDSampleRate);
+  constraint_factory_.basic().echo_cancellation.SetExact(true);
+  result = SelectSettings();
+
+  // Native sample rate is only supported by APM in the audio service, without
+  // resampling mitigations.
+  if (GetApmLocation() == ApmLocation::kAudioService)
+    EXPECT_TRUE(result.HasValue());
+  else
+    EXPECT_FALSE(result.HasValue());
+}
+
+TEST_P(MediaStreamConstraintsRemoteAPMTest,
+       WebRtcSampleRateButNotDeviceSampleRate) {
+  SCOPED_TRACE(GetMessageForScopedTrace());
+
+  AudioCaptureSettings result;
+  ResetFactory();
+  constraint_factory_.basic().sample_rate.SetExact(
+      media::kAudioProcessingSampleRateHz);
+  constraint_factory_.basic().echo_cancellation.SetExact(true);
+  result = SelectSettings();
+
+  // Native sample rate is only supported by APM in the audio service, without
+  // resampling mitigations.
+  if (GetApmLocation() == ApmLocation::kAudioService)
+    EXPECT_FALSE(result.HasValue());
+  else
+    EXPECT_TRUE(result.HasValue());
+}
+
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+class MediaStreamConstraintsRemoteAPMSampleRateRestrictionTest
+    : public MediaStreamConstraintsUtilAudioTestBase,
+      public testing::WithParamInterface<bool> {
+ protected:
+  bool AllowAllSampleRates() { return GetParam(); }
+
+ private:
+  void SetUp() override {
+    MediaStreamConstraintsUtilAudioTestBase::SetUp();
+
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        media::kChromeWideEchoCancellation,
+        {{"allow_all_sample_rates", AllowAllSampleRates() ? "true" : "false"}});
+
+    // Setup the capabilities with a prohibited sample rate.
+    ResetFactory();
+    constexpr int kNondivisibleSampleRateHz = 22050;
+    const std::string k22050HzDeviceId = "22050hz_device";
+    capabilities_.emplace_back(
+        k22050HzDeviceId.c_str(), "22050hz_fake_group",
+        media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                               media::ChannelLayoutConfig::Stereo(),
+                               kNondivisibleSampleRateHz, 1000));
+    default_device_ = &capabilities_[0];
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(MediaStreamConstraintsRemoteAPMSampleRateRestrictionTest,
+       ToggleNondivisibleSampleRatesParameter) {
+  SCOPED_TRACE(testing::Message()
+               << "allow_all_sample_rates=" << AllowAllSampleRates());
+
+  constraint_factory_.basic().echo_cancellation.SetExact(true);
+  AudioCaptureSettings result = SelectSettings();
+
+  EXPECT_EQ(result.HasValue(), AllowAllSampleRates());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    MediaStreamConstraintsRemoteAPMSampleRateRestrictionTest,
+    testing::Bool());
+#endif
 
 TEST_P(MediaStreamConstraintsUtilAudioTest, LatencyConstraint) {
   if (!IsDeviceCapture())
@@ -2110,7 +2208,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, LatencyConstraint) {
   // media::AudioLatency::GetExactBufferSize().
   CheckLocalMediaStreamAudioSourceLatency(variable_latency_device_, 0.001, 128);
   CheckLocalMediaStreamAudioSourceLatency(variable_latency_device_, 0.011, 512);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Windows only uses exactly the minimum or else multiples of the
   // hardware_buffer_size (512 for the variable_latency_device_).
   CheckLocalMediaStreamAudioSourceLatency(variable_latency_device_, 0.020,
@@ -2127,4 +2225,27 @@ INSTANTIATE_TEST_SUITE_P(All,
                                          blink::kMediaStreamSourceTab,
                                          blink::kMediaStreamSourceSystem,
                                          blink::kMediaStreamSourceDesktop));
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    MediaStreamConstraintsRemoteAPMTest,
+    testing::Combine(
+        testing::Values("",
+                        blink::kMediaStreamSourceTab,
+                        blink::kMediaStreamSourceSystem,
+                        blink::kMediaStreamSourceDesktop),
+        testing::Values(
+            ChromeWideAecExperiment::kDisabled,
+            ChromeWideAecExperiment::kEnabledWithoutResamplingMitigation,
+            ChromeWideAecExperiment::kEnabledWithResamplingMitigation)));
+#else
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    MediaStreamConstraintsRemoteAPMTest,
+    testing::Combine(testing::Values("",
+                                     blink::kMediaStreamSourceTab,
+                                     blink::kMediaStreamSourceSystem,
+                                     blink::kMediaStreamSourceDesktop),
+                     testing::Values(ChromeWideAecExperiment::kDisabled)));
+#endif
 }  // namespace blink

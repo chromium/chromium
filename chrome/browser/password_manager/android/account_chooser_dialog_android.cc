@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/passwords/account_avatar_fetcher.h"
-#include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/device_reauth/biometric_authenticator.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
@@ -25,7 +25,6 @@
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "components/password_manager/core/common/password_manager_features.h"
-#include "content/public/browser/storage_partition.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/android/java_bitmap.h"
@@ -92,13 +91,14 @@ void AvatarFetcherAndroid::OnFetchComplete(const GURL& url,
 void FetchAvatar(const base::android::ScopedJavaGlobalRef<jobject>& java_dialog,
                  const password_manager::PasswordForm* password_form,
                  int index,
-                 network::mojom::URLLoaderFactory* loader_factory) {
+                 network::mojom::URLLoaderFactory* loader_factory,
+                 const url::Origin& initiator) {
   if (!password_form->icon_url.is_valid())
     return;
   // Fetcher deletes itself once fetching is finished.
   auto* fetcher =
       new AvatarFetcherAndroid(password_form->icon_url, index, java_dialog);
-  fetcher->Start(loader_factory);
+  fetcher->Start(loader_factory, initiator);
 }
 
 }  // namespace
@@ -161,14 +161,14 @@ bool AccountChooserDialogAndroid::ShowDialog() {
       base::android::ConvertUTF16ToJavaString(env, title), 0, 0,
       base::android::ConvertUTF8ToJavaString(env, origin),
       base::android::ConvertUTF16ToJavaString(env, signin_button)));
-  network::mojom::URLLoaderFactory* loader_factory =
-      web_contents_->GetBrowserContext()
-          ->GetDefaultStoragePartition()
-          ->GetURLLoaderFactoryForBrowserProcess()
-          .get();
+  mojo::Remote<network::mojom::URLLoaderFactory> loader_factory =
+      GetURLLoaderForMainFrame(web_contents_);
   int avatar_index = 0;
-  for (const auto& form : local_credentials_forms())
-    FetchAvatar(dialog_jobject_, form.get(), avatar_index++, loader_factory);
+  for (const auto& form : local_credentials_forms()) {
+    FetchAvatar(dialog_jobject_, form.get(), avatar_index++,
+                loader_factory.get(),
+                web_contents_->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+  }
   return true;
 }
 
@@ -246,12 +246,14 @@ bool AccountChooserDialogAndroid::HandleCredentialChosen(
       client_->GetBiometricAuthenticator();
   if (password_manager_util::CanUseBiometricAuth(
           authenticator.get(),
-          device_reauth::BiometricAuthRequester::kAccountChooserDialog)) {
+          device_reauth::BiometricAuthRequester::kAccountChooserDialog,
+          client_)) {
     authenticator_ = std::move(authenticator);
     authenticator_->Authenticate(
         device_reauth::BiometricAuthRequester::kAccountChooserDialog,
         base::BindOnce(&AccountChooserDialogAndroid::OnReauthCompleted,
-                       base::Unretained(this), index));
+                       base::Unretained(this), index),
+        /*use_last_valid_auth=*/true);
     // The credential handling will only happen after the authentication
     // finishes.
     return false;

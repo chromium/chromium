@@ -1,0 +1,99 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+
+// Maps to the C++ enum CertProvisioningWorkerState from
+// cert_provisioning_common.h .
+[Stable, Extensible]
+enum CertProvisioningProcessState {
+  [Default] kInitState = 0,
+  kKeypairGenerated = 1,
+  kStartCsrResponseReceived = 2,
+  kVaChallengeFinished = 3,
+  kKeyRegistered = 4,
+  kKeypairMarked = 5,
+  kSignCsrFinished = 6,
+  kFinishCsrResponseReceived = 7,
+  kSucceeded = 8,
+  // The states below should never be sent, but it's good for diagnostic
+  // purposes to be able to recognize them if it still happens.
+  kInconsistentDataError = 9,
+  kFailed = 10,
+  kCanceled = 11,
+};
+
+[Stable]
+struct CertProvisioningBackendServerError {
+  // The time of the error.
+ mojo_base.mojom.Time time;
+ // The code of the error. For the meaning of the codes see the
+ // DeviceManagementStatus enum in cloud_policy_constants.h. The codes are
+ // guaranteed to be stable.
+ int32 status_code = 0;
+};
+
+[Stable]
+struct CertProvisioningProcessStatus {
+  // ID of the certificate provisioning process from the policy.
+  string cert_profile_id@0;
+  // Human-readable certificate profile name (UTF-8).
+  string cert_profile_name@1;
+  // The DER-encoded X.509 SubjectPublicKeyInfo (SPKI).
+  array<uint8> public_key@2;
+  // The last time when the process changed its state. Time of failure for
+  // failed processes.
+  mojo_base.mojom.Time last_update_time@3;
+  // In case the device had problems connecting to the DMServer, this field will
+  // contain the time of the last attempt and the reason of failure.
+  CertProvisioningBackendServerError? last_backend_server_error@4;
+  // Contains the current state for currently active processes or the last
+  // non-failure state for failed ones.
+  CertProvisioningProcessState state@5 =
+    CertProvisioningProcessState.kInitState;
+  // Contains "false" if the process is still running, contains "true" if the
+  // process failed. Successfully finished processes are not returned.
+  bool did_fail@6 = false;
+  // Contains “true” if the process was initiated by
+  // RequiredClientCertificateForDevice policy, contains “false” if by
+  // RequiredClientCertificateForUser.
+  bool is_device_wide@7 = false;
+  // Describes the reason for failure in case a worker enters the failed state.
+  [MinVersion=1]
+  string? failure_message@8;
+};
+
+// This interface is implemented by classes that want to register themself as
+// certificate provisioning observers and receive notifications when
+// CertProvisioningProcessStatus of at least one process significantly changes.
+[Stable, Uuid="33dcc3c5-f9f6-4d28-be35-119b8f499d88"]
+interface CertProvisioningObserver {
+  // Ash calls this to notify the observer about a new change.
+  OnStateChanged@0();
+};
+
+// This interface provides methods to get information about the status of the
+// certificate provisioning feature and control it.
+// It is implemented by Ash-Chrome.
+[Stable, Uuid="ff60efaf-bb5c-4aff-903f-72abcb613df6"]
+interface CertProvisioning {
+  // Adds an observer that will be notified about updates from the certificate
+  // provisioning feature.
+  AddObserver@0(
+    pending_remote<CertProvisioningObserver> observer);
+
+  // Returns the information about all currently active and recently failed cert
+  // provisioning processes.
+  GetStatus@1() =>
+    (array<CertProvisioningProcessStatus> result);
+
+  // Instructs Ash to immediately attempt the next planned step in provisioning
+  // of the certificate with `cert_profile_id`. Specifically, if the process is
+  // waiting for a notification from the server-side, this will make Ash reach
+  // out to the server-side and check for the current status. Otherwise it might
+  // do nothing.
+  UpdateOneProcess@2(string cert_profile_id);
+};

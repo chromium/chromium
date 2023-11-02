@@ -1,19 +1,19 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 
-assert(is_chromeos_ash || is_chromecast)
+assert(is_chromeos_ash || is_castos || is_cast_android)
 
 component("manager") {
   sources = [
     "display_manager_export.h",
+    "display_manager_util.cc",
+    "display_manager_util.h",
     "display_manager_utilities.cc",
     "display_manager_utilities.h",
-    "display_util.cc",
-    "display_util.h",
     "managed_display_info.cc",
     "managed_display_info.h",
   ]
@@ -41,6 +41,8 @@ component("manager") {
       "apply_content_protection_task.h",
       "configure_displays_task.cc",
       "configure_displays_task.h",
+      "content_protection_key_manager.cc",
+      "content_protection_key_manager.h",
       "content_protection_manager.cc",
       "content_protection_manager.h",
       "default_touch_transform_setter.cc",
@@ -66,6 +68,9 @@ component("manager") {
       "update_display_configuration_task.cc",
       "update_display_configuration_task.h",
     ]
-    deps += [ "//chromeos/system" ]
+    deps += [
+      "//chromeos/system",
+      "//chromeos/ui/base",
+    ]
   }
 }

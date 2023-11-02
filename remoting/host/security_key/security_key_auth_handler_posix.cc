@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "net/base/net_errors.h"
 #include "net/socket/stream_socket.h"
 #include "net/socket/unix_domain_server_socket_posix.h"
@@ -70,7 +71,7 @@ class SecurityKeyAuthHandlerPosix : public SecurityKeyAuthHandler {
   ~SecurityKeyAuthHandlerPosix() override;
 
  private:
-  typedef std::map<int, std::unique_ptr<SecurityKeySocket>> ActiveSockets;
+  using ActiveSockets = std::map<int, std::unique_ptr<SecurityKeySocket>>;
 
   // SecurityKeyAuthHandler interface.
   void CreateSecurityKeyConnection() override;
@@ -83,7 +84,7 @@ class SecurityKeyAuthHandlerPosix : public SecurityKeyAuthHandler {
   void SetRequestTimeoutForTest(base::TimeDelta timeout) override;
 
   // Sets up the socket used for accepting new connections.
-  void CreateSocket();
+  void CreateSocket(bool success);
 
   // Starts listening for connection.
   void DoAccept();
@@ -156,8 +157,8 @@ SecurityKeyAuthHandlerPosix::~SecurityKeyAuthHandlerPosix() {
   if (file_task_runner_) {
     // Attempt to clean up the socket before being destroyed.
     file_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(base::GetDeleteFileCallback(),
-                                  g_security_key_socket_name.Get()));
+        FROM_HERE,
+        base::GetDeleteFileCallback(g_security_key_socket_name.Get()));
   }
 }
 
@@ -169,18 +170,22 @@ void SecurityKeyAuthHandlerPosix::CreateSecurityKeyConnection() {
   // blocking function call which cannot be run on the main thread.  Once
   // that task has completed, the main thread will be called back and we will
   // resume setting up our security key auth socket there.
-  file_task_runner_->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(base::GetDeleteFileCallback(),
-                     g_security_key_socket_name.Get()),
-      base::BindOnce(&SecurityKeyAuthHandlerPosix::CreateSocket,
-                     weak_factory_.GetWeakPtr()));
+  file_task_runner_->PostTask(
+      FROM_HERE, base::GetDeleteFileCallback(
+                     g_security_key_socket_name.Get(),
+                     base::BindOnce(&SecurityKeyAuthHandlerPosix::CreateSocket,
+                                    weak_factory_.GetWeakPtr())));
 }
 
-void SecurityKeyAuthHandlerPosix::CreateSocket() {
+void SecurityKeyAuthHandlerPosix::CreateSocket(bool success) {
   DCHECK(thread_checker_.CalledOnValidThread());
   HOST_LOG << "Listening for security key requests on "
            << g_security_key_socket_name.Get().value();
+
+  if (!success) {
+    LOG(ERROR) << "Delete g_security_key_socket_name failed";
+    return;
+  }
 
   auth_socket_ = std::make_unique<net::UnixDomainServerSocket>(
       base::BindRepeating(MatchUid), false);

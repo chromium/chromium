@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,11 +13,15 @@
 #include "base/clang_profiling_buildflags.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
+#include "gpu/ipc/common/surface_handle.h"
 #include "gpu/ipc/host/gpu_memory_buffer_support.h"
+#include "media/media_buildflags.h"
 #include "services/viz/privileged/mojom/gl/gpu_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/client_native_pixmap_factory.h"
@@ -26,7 +30,7 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_hardware_buffer_compat.h"
 #endif
 
@@ -106,16 +110,24 @@ class TestGpuService : public mojom::GpuService {
   void EstablishGpuChannel(int32_t client_id,
                            uint64_t client_tracing_id,
                            bool is_gpu_host,
-                           bool cache_shaders_on_disk,
                            EstablishGpuChannelCallback callback) override {}
   void SetChannelClientPid(int32_t client_id,
                            base::ProcessId client_pid) override {}
+  void SetChannelDiskCacheHandle(
+      int32_t client_id,
+      const gpu::GpuDiskCacheHandle& handle) override {}
+  void OnDiskCacheHandleDestoyed(
+      const gpu::GpuDiskCacheHandle& handle) override {}
 
   void CloseChannel(int32_t client_id) override {}
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   void CreateArcVideoDecodeAccelerator(
       mojo::PendingReceiver<arc::mojom::VideoDecodeAccelerator> vda_receiver)
       override {}
+
+  void CreateArcVideoDecoder(
+      mojo::PendingReceiver<arc::mojom::VideoDecoder> vd_receiver) override {}
 
   void CreateArcVideoEncodeAccelerator(
       mojo::PendingReceiver<arc::mojom::VideoEncodeAccelerator> vea_receiver)
@@ -128,6 +140,7 @@ class TestGpuService : public mojom::GpuService {
   void CreateArcProtectedBufferManager(
       mojo::PendingReceiver<arc::mojom::ProtectedBufferManager> pbm_receiver)
       override {}
+#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
   void CreateJpegDecodeAccelerator(
       mojo::PendingReceiver<chromeos_camera::mojom::MjpegDecodeAccelerator>
@@ -138,7 +151,7 @@ class TestGpuService : public mojom::GpuService {
           jea_receiver) override {}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void RegisterDCOMPSurfaceHandle(
       mojo::PlatformHandle surface_handle,
       RegisterDCOMPSurfaceHandleCallback callback) override {}
@@ -180,11 +193,13 @@ class TestGpuService : public mojom::GpuService {
   void GetPeakMemoryUsage(uint32_t sequence_num,
                           GetPeakMemoryUsageCallback callback) override {}
 
-  void RequestHDRStatus(RequestHDRStatusCallback callback) override {}
+#if BUILDFLAG(IS_WIN)
+  void RequestDXGIInfo(RequestDXGIInfoCallback callback) override {}
+#endif
 
-  void LoadedShader(int32_t client_id,
-                    const std::string& key,
-                    const std::string& data) override {}
+  void LoadedBlob(const gpu::GpuDiskCacheHandle& handle,
+                  const std::string& key,
+                  const std::string& data) override {}
 
   void WakeUpGpu() override {}
 
@@ -204,12 +219,12 @@ class TestGpuService : public mojom::GpuService {
 
   void OnForegrounded() override {}
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel level) override {}
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   void BeginCATransaction() override {}
 
   void CommitCATransaction(CommitCATransactionCallback callback) override {}
@@ -256,7 +271,10 @@ class HostGpuMemoryBufferManagerTest : public ::testing::Test {
   HostGpuMemoryBufferManagerTest& operator=(
       const HostGpuMemoryBufferManagerTest&) = delete;
 
-  ~HostGpuMemoryBufferManagerTest() override = default;
+  ~HostGpuMemoryBufferManagerTest() override {
+    if (gpu_memory_buffer_manager_)
+      gpu_memory_buffer_manager_->Shutdown();
+  }
 
   void SetUp() override {
     gpu_service_ = std::make_unique<TestGpuService>();
@@ -280,10 +298,10 @@ class HostGpuMemoryBufferManagerTest : public ::testing::Test {
       native_pixmap_supported =
           ui::OzonePlatform::GetInstance()->IsNativePixmapConfigSupported(
               gfx::BufferFormat::RGBA_8888, gfx::BufferUsage::GPU_READ);
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
     native_pixmap_supported =
         base::AndroidHardwareBufferCompat::IsSupportAvailable();
-#elif defined(OS_APPLE) || defined(OS_WIN)
+#elif BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
     native_pixmap_supported = true;
 #endif
 
@@ -322,7 +340,7 @@ class HostGpuMemoryBufferManagerTest : public ::testing::Test {
     return gpu_memory_buffer_manager_.get();
   }
 
- private:
+ protected:
   std::unique_ptr<TestGpuService> gpu_service_;
   std::unique_ptr<HostGpuMemoryBufferManager> gpu_memory_buffer_manager_;
 };
@@ -464,6 +482,49 @@ TEST_F(HostGpuMemoryBufferManagerTest, AllocationRequestFromDeadGpuService) {
   gpu_service()->SatisfyAllocationRequestAt(1);
   EXPECT_EQ(2, gpu_service()->GetAllocationRequestsCount());
   EXPECT_FALSE(allocated_handle.is_null());
+}
+
+// Test that any pending CreateGpuMemoryBuffer() requests are cancelled, so
+// blocked threads stop waiting, on shutdown.
+TEST_F(HostGpuMemoryBufferManagerTest, CancelRequestsForShutdown) {
+  base::Thread threads[2] = {base::Thread("Thread1"), base::Thread("Thread2")};
+
+  for (auto& thread : threads) {
+    ASSERT_TRUE(thread.Start());
+    base::WaitableEvent create_wait;
+
+    // Call CreateGpuMemoryBuffer() from each thread. This thread will be
+    // waiting inside CreateGpuMemoryBuffer() when `gpu_memory_buffer_manager_`
+    // is destroyed.
+    thread.task_runner()->PostTask(
+        FROM_HERE, base::BindLambdaForTesting([this, &create_wait]() {
+          create_wait.Signal();
+          // This should block.
+          gpu_memory_buffer_manager_->CreateGpuMemoryBuffer(
+              gfx::Size(100, 100), gfx::BufferFormat::RGBA_8888,
+              gfx::BufferUsage::SCANOUT, gpu::kNullSurfaceHandle, nullptr);
+        }));
+    create_wait.Wait();
+  }
+
+  // This should shutdown HostGpuMemoryBufferManager and unblock the other
+  // threads.
+  gpu_memory_buffer_manager_->Shutdown();
+
+  // Stop the other threads to verify they aren't waiting.
+  for (auto& thread : threads)
+    thread.Stop();
+
+  // HostGpuMemoryBufferManager should be able to be safely destroyed after
+  //
+  gpu_memory_buffer_manager_.reset();
+
+  // Flush tasks posted back to main thread from CreateGpuMemoryBuffer() to make
+  // sure they are harmless.
+  base::RunLoop loop;
+  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                   loop.QuitClosure());
+  loop.Run();
 }
 
 }  // namespace viz

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -89,7 +89,7 @@ class OmniboxPageHandler : public AutocompleteController::Observer,
   mojo::Remote<mojom::OmniboxPage> page_;
 
   // The Profile* handed to us in our constructor.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   mojo::Receiver<mojom::OmniboxPageHandler> receiver_;
 

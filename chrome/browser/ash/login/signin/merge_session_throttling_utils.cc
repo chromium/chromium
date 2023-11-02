@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -184,8 +184,8 @@ bool ShouldDelayUrl(const GURL& url) {
   // we will show delayed loading page instead.
   return !content::GetNetworkConnectionTracker()->IsOffline() &&
          !AreAllSessionMergedAlready() &&
-         google_util::IsGoogleHostname(url.host_piece(),
-                                       google_util::ALLOW_SUBDOMAIN);
+         google_util::IsGoogleDomainUrl(url, google_util::ALLOW_SUBDOMAIN,
+                                        google_util::ALLOW_NON_STANDARD_PORTS);
 }
 
 bool IsSessionRestorePending(Profile* profile) {

@@ -1,11 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/dbus/gesture_properties_service_provider.h"
 
 #include "base/test/task_environment.h"
-#include "chromeos/dbus/services/service_provider_test_helper.h"
+#include "chromeos/ash/components/dbus/services/service_provider_test_helper.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "gmock/gmock.h"
@@ -173,7 +173,7 @@ class GesturePropertiesServiceProviderTest : public testing::Test {
   std::unique_ptr<MockGesturePropertiesService> mock_service_;
 
   std::unique_ptr<GesturePropertiesServiceProvider> service_provider_;
-  chromeos::ServiceProviderTestHelper test_helper_;
+  ServiceProviderTestHelper test_helper_;
 };
 
 TEST_F(GesturePropertiesServiceProviderTest, ListDevicesEmpty) {

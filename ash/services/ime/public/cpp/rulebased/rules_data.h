@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ namespace re2 {
 class RE2;
 }  // namespace re2
 
-namespace chromeos {
+namespace ash {
 namespace ime {
 namespace rulebased {
 
@@ -91,6 +91,6 @@ class RulesData {
 
 }  // namespace rulebased
 }  // namespace ime
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_IME_PUBLIC_CPP_RULEBASED_RULES_DATA_H_

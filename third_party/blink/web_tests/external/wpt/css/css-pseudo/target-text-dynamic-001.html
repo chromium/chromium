@@ -19,7 +19,8 @@
 <script>
   location.href = "#:~:text=Example";
   requestAnimationFrame(() => requestAnimationFrame(() => {
-    document.styleSheets[0].cssRules[0].style.backgroundColor = "magenta";
+    if (document.styleSheets[0].cssRules[0])
+      document.styleSheets[0].cssRules[0].style.backgroundColor = "magenta";
     takeScreenshot();
   }));
 </script>

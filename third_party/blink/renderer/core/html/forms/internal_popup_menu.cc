@@ -1,9 +1,10 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/html/forms/internal_popup_menu.h"
 
+#include "base/record_replay.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -20,6 +21,7 @@
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/html/forms/chooser_resource_loader.h"
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
@@ -35,9 +37,9 @@
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector_client.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -66,6 +68,26 @@ const String SerializeComputedStyleForProperty(const ComputedStyle& style,
       property.CSSValueFromComputedStyle(style, nullptr, false);
   return String::Format("%s : %s;\n", property.GetPropertyName(),
                         value->CssText().Utf8().c_str());
+}
+
+const String SerializeColorScheme(const ComputedStyle& style) {
+  // Only serialize known color-scheme values to make sure we do not allow
+  // injections via <custom-ident> into the popup.
+  StringBuilder buffer;
+  bool first_added = false;
+  for (const AtomicString& ident : style.ColorScheme()) {
+    if (ident == AtomicString("only") || ident == AtomicString("light") ||
+        ident == AtomicString("dark")) {
+      if (first_added)
+        buffer.Append(" ");
+      else
+        first_added = true;
+      buffer.Append(ident);
+    }
+  }
+  if (!first_added)
+    return String("normal");
+  return buffer.ToString();
 }
 
 ScrollbarPart ScrollbarPartFromPseudoId(PseudoId id) {
@@ -159,28 +181,20 @@ class InternalPopupMenu::ItemIterationContext {
         is_in_group_(false),
         buffer_(buffer) {
     DCHECK(buffer_);
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-    // On other platforms, the <option> background color is the same as the
-    // <select> background color. On Linux, that makes the <option>
-    // background color very dark, so by default, try to use a lighter
-    // background color for <option>s.
-    if (LayoutTheme::GetTheme().SystemColor(CSSValueID::kButtonface,
-                                            style.UsedColorScheme()) ==
-        background_color_) {
-      background_color_ = LayoutTheme::GetTheme().SystemColor(
-          CSSValueID::kMenu, style.UsedColorScheme());
-    }
-#endif
   }
 
   void SerializeBaseStyle() {
     DCHECK(!is_in_group_);
     PagePopupClient::AddString("baseStyle: {", buffer_);
-    AddProperty("backgroundColor", background_color_.Serialized(), buffer_);
-    AddProperty(
-        "color",
-        BaseStyle().VisitedDependentColor(GetCSSPropertyColor()).Serialized(),
-        buffer_);
+    if (!BaseStyle().ColorSchemeForced()) {
+      AddProperty("backgroundColor", background_color_.SerializeAsCSSColor(),
+                  buffer_);
+      AddProperty("color",
+                  BaseStyle()
+                      .VisitedDependentColor(GetCSSPropertyColor())
+                      .SerializeAsCSSColor(),
+                  buffer_);
+    }
     AddProperty("textTransform",
                 String(TextTransformToString(BaseStyle().TextTransform())),
                 buffer_);
@@ -266,16 +280,23 @@ void InternalPopupMenu::WriteDocument(SharedBuffer* data) {
   // element's items (see AddElementStyle). This requires a style-clean tree.
   // See Element::EnsureComputedStyle for further explanation.
   DCHECK(!owner_element.GetDocument().NeedsLayoutTreeUpdate());
-  IntRect anchor_rect_in_screen = chrome_client_->ViewportToScreen(
-      owner_element.VisibleBoundsInVisualViewport(),
+  gfx::Rect anchor_rect_in_screen = chrome_client_->LocalRootToScreenDIPs(
+      owner_element.VisibleBoundsInLocalRoot(),
       owner_element.GetDocument().View());
 
   float scale_factor = chrome_client_->WindowToViewportScalar(
       owner_element.GetDocument().GetFrame(), 1.f);
-  PagePopupClient::AddString(
-      "<!DOCTYPE html><head><meta charset='UTF-8'><meta name='color-scheme' "
-      "content='light dark'><style>\n",
-      data);
+  PagePopupClient::AddString("<!DOCTYPE html><head><meta charset='UTF-8'>",
+                             data);
+
+  const ComputedStyle& owner_style = owner_element.ComputedStyleRef();
+
+  // Add the color-scheme of the <select> element to the popup as a color-scheme
+  // meta.
+  PagePopupClient::AddString("<meta name='color-scheme' content='only ", data);
+  PagePopupClient::AddString(owner_style.DarkColorScheme() ? "dark" : "light",
+                             data);
+  PagePopupClient::AddString("'><style>\n", data);
 
   LayoutObject* owner_layout = owner_element.GetLayoutObject();
 
@@ -337,8 +358,7 @@ void InternalPopupMenu::WriteDocument(SharedBuffer* data) {
       "window.dialogArguments = {\n",
       data);
   AddProperty("selectedIndex", owner_element.SelectedListIndex(), data);
-  const ComputedStyle* owner_style = owner_element.GetComputedStyle();
-  ItemIterationContext context(*owner_style, data);
+  ItemIterationContext context(owner_style, data);
   context.SerializeBaseStyle();
   PagePopupClient::AddString("children: [\n", data);
   const HeapVector<Member<HTMLElement>>& items = owner_element.GetListItems();
@@ -359,7 +379,7 @@ void InternalPopupMenu::WriteDocument(SharedBuffer* data) {
   AddProperty("anchorRectInScreen", anchor_rect_in_screen, data);
   AddProperty("zoomFactor", 1, data);
   AddProperty("scaleFactor", scale_factor, data);
-  bool is_rtl = !owner_style->IsLeftToRightDirection();
+  bool is_rtl = !owner_style.IsLeftToRightDirection();
   AddProperty("isRTL", is_rtl, data);
   AddProperty("paddingStart",
               is_rtl ? owner_element.ClientPaddingRight().ToDouble()
@@ -393,15 +413,28 @@ void InternalPopupMenu::AddElementStyle(ItemIterationContext& context,
   }
   if (IsOverride(style->GetUnicodeBidi()))
     AddProperty("unicodeBidi", String("bidi-override"), data);
-  Color foreground_color = style->VisitedDependentColor(GetCSSPropertyColor());
-  if (base_style.VisitedDependentColor(GetCSSPropertyColor()) !=
-      foreground_color)
-    AddProperty("color", foreground_color.Serialized(), data);
-  Color background_color =
-      style->VisitedDependentColor(GetCSSPropertyBackgroundColor());
-  if (context.BackgroundColor() != background_color &&
-      background_color != Color::kTransparent)
-    AddProperty("backgroundColor", background_color.Serialized(), data);
+
+  if (!base_style.ColorSchemeForced()) {
+    bool color_applied = false;
+    Color foreground_color =
+        style->VisitedDependentColor(GetCSSPropertyColor());
+    if (base_style.VisitedDependentColor(GetCSSPropertyColor()) !=
+        foreground_color) {
+      AddProperty("color", foreground_color.SerializeAsCSSColor(), data);
+      color_applied = true;
+    }
+    Color background_color =
+        style->VisitedDependentColor(GetCSSPropertyBackgroundColor());
+    if (background_color != Color::kTransparent &&
+        (context.BackgroundColor() != background_color)) {
+      AddProperty("backgroundColor", background_color.SerializeAsCSSColor(),
+                  data);
+      color_applied = true;
+    }
+    if (color_applied)
+      AddProperty("colorScheme", SerializeColorScheme(*style), data);
+  }
+
   const FontDescription& base_font = context.BaseFont();
   const FontDescription& font_description =
       style->GetFont().GetFontDescription();
@@ -448,11 +481,11 @@ void InternalPopupMenu::AddOption(ItemIterationContext& context,
   PagePopupClient::AddString("{", data);
   AddProperty("label", element.DisplayLabel(), data);
   AddProperty("value", context.list_index_, data);
-  if (!element.title().IsEmpty())
+  if (!element.title().empty())
     AddProperty("title", element.title(), data);
   const AtomicString& aria_label =
       element.FastGetAttribute(html_names::kAriaLabelAttr);
-  if (!aria_label.IsEmpty())
+  if (!aria_label.empty())
     AddProperty("ariaLabel", aria_label, data);
   if (element.IsDisabledFormControl())
     AddProperty("disabled", true, data);
@@ -520,7 +553,7 @@ void InternalPopupMenu::SetValueAndClosePopup(int num_value,
                                               const String& string_value) {
   DCHECK(popup_);
   DCHECK(owner_element_);
-  if (!string_value.IsEmpty()) {
+  if (!string_value.empty()) {
     bool success;
     int list_index = string_value.ToInt(&success);
     DCHECK(success);
@@ -539,9 +572,11 @@ void InternalPopupMenu::SetValueAndClosePopup(int num_value,
   // We dispatch events on the owner element to match the legacy behavior.
   // Other browsers dispatch click events before and after showing the popup.
   if (owner_element_) {
-    // TODO(dtapuska): Why is this event positionless?
     WebMouseEvent event;
     event.SetFrameScale(1);
+    PhysicalRect bounding_box = owner_element_->BoundingBox();
+    event.SetPositionInWidget(bounding_box.X(), bounding_box.Y());
+    event.SetTimeStamp(base::TimeTicks::Now());
     Element* owner = &OwnerElement();
     if (LocalFrame* frame = owner->GetDocument().GetFrame()) {
       frame->GetEventHandler().HandleTargetedMouseEvent(
@@ -620,7 +655,7 @@ void InternalPopupMenu::Update(bool force_update) {
     return;
   needs_update_ = false;
 
-  if (!IntRect(gfx::Point(), OwnerElement().GetDocument().View()->Size())
+  if (!gfx::Rect(gfx::Point(), OwnerElement().GetDocument().View()->Size())
            .Intersects(OwnerElement().PixelSnappedBoundingBox())) {
     Hide();
     return;
@@ -646,8 +681,8 @@ void InternalPopupMenu::Update(bool force_update) {
   }
   context.FinishGroupIfNecessary();
   PagePopupClient::AddString("],\n", data.get());
-  IntRect anchor_rect_in_screen = chrome_client_->ViewportToScreen(
-      owner_element_->VisibleBoundsInVisualViewport(),
+  gfx::Rect anchor_rect_in_screen = chrome_client_->LocalRootToScreenDIPs(
+      owner_element_->VisibleBoundsInLocalRoot(),
       OwnerElement().GetDocument().View());
   AddProperty("anchorRectInScreen", anchor_rect_in_screen, data.get());
   PagePopupClient::AddString("}\n", data.get());

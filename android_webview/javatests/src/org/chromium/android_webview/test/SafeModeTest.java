@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -117,6 +117,28 @@ public class SafeModeTest {
                 PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
 
         Assert.assertTrue("SafeMode should be enabled",
+                SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testSafeModeState_enableWithMethod() throws Throwable {
+        SafeModeService.setSafeMode(Arrays.asList(SAFEMODE_ACTION_NAME));
+        Assert.assertTrue("SafeMode should be enabled",
+                SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testSafeModeState_disableWithMethod() throws Throwable {
+        SafeModeService.setSafeMode(Arrays.asList(SAFEMODE_ACTION_NAME));
+        Assert.assertTrue("SafeMode should be enabled",
+                SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
+
+        SafeModeService.setSafeMode(Arrays.asList());
+        Assert.assertFalse("SafeMode should be re-disabled",
                 SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
     }
 

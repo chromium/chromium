@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/callback_list.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "content/public/browser/navigation_type.h"
 #include "content/public/common/child_process_host.h"
@@ -130,6 +131,10 @@ class TestNavigationObserver {
   // Returns the navigation entry ID of the last finished navigation (that
   // matched URL if set).
   int last_nav_entry_id() const { return last_nav_entry_id_; }
+
+  SiteInstance* last_source_site_instance() const {
+    return last_source_site_instance_.get();
+  }
 
  protected:
   // Register this TestNavigationObserver as an observer of the |web_contents|.
@@ -267,11 +272,12 @@ class TestNavigationObserver {
   // The navigation entry ID of the last navigation.
   int last_nav_entry_id_ = 0;
 
+  scoped_refptr<SiteInstance> last_source_site_instance_;
+
   // The MessageLoopRunner used to spin the message loop.
   scoped_refptr<MessageLoopRunner> message_loop_runner_;
 
-  // Callback invoked on WebContents creation.
-  base::RepeatingCallback<void(WebContents*)> web_contents_created_callback_;
+  base::CallbackListSubscription creation_subscription_;
 };
 
 }  // namespace content

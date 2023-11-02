@@ -42,7 +42,7 @@ namespace {
 
 TEST(VectorTest, Basic) {
   Vector<int> int_vector;
-  EXPECT_TRUE(int_vector.IsEmpty());
+  EXPECT_TRUE(int_vector.empty());
   EXPECT_EQ(0ul, int_vector.size());
   EXPECT_EQ(0ul, int_vector.capacity());
 }
@@ -349,7 +349,7 @@ TEST(VectorTest, SwapWithInlineCapacity) {
 TEST(VectorTest, ContainerAnnotations) {
   Vector<int> vector_a;
   vector_a.push_back(10);
-  vector_a.ReserveCapacity(32);
+  vector_a.reserve(32);
 
   volatile int* int_pointer_a = vector_a.data();
   EXPECT_DEATH(int_pointer_a[1] = 11, "container-overflow");
@@ -357,13 +357,13 @@ TEST(VectorTest, ContainerAnnotations) {
   int_pointer_a[1] = 11;
   EXPECT_DEATH(int_pointer_a[2] = 12, "container-overflow");
   EXPECT_DEATH((void)int_pointer_a[2], "container-overflow");
-  vector_a.ShrinkToFit();
-  vector_a.ReserveCapacity(16);
+  vector_a.shrink_to_fit();
+  vector_a.reserve(16);
   int_pointer_a = vector_a.data();
   EXPECT_DEATH((void)int_pointer_a[2], "container-overflow");
 
   Vector<int> vector_b(vector_a);
-  vector_b.ReserveCapacity(16);
+  vector_b.reserve(16);
   volatile int* int_pointer_b = vector_b.data();
   EXPECT_DEATH((void)int_pointer_b[2], "container-overflow");
 
@@ -544,7 +544,7 @@ TEST(VectorTest, UniquePtr) {
   using Pointer = std::unique_ptr<int>;
   Vector<Pointer> vector;
   vector.push_back(std::make_unique<int>(1));
-  vector.ReserveCapacity(2);
+  vector.reserve(2);
   vector.UncheckedAppend(std::make_unique<int>(2));
   vector.insert(2, std::make_unique<int>(3));
   vector.push_front(std::make_unique<int>(0));
@@ -577,7 +577,7 @@ Vector<int> ReturnOneTwoThree() {
 
 TEST(VectorTest, InitializerList) {
   Vector<int> empty({});
-  EXPECT_TRUE(empty.IsEmpty());
+  EXPECT_TRUE(empty.empty());
 
   Vector<int> one({1});
   ASSERT_EQ(1u, one.size());
@@ -595,7 +595,7 @@ TEST(VectorTest, InitializerList) {
   one_two_three.push_back(9999);
 
   empty = {};
-  EXPECT_TRUE(empty.IsEmpty());
+  EXPECT_TRUE(empty.empty());
 
   one = {1};
   ASSERT_EQ(1u, one.size());

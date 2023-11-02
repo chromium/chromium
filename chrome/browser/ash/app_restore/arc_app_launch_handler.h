@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/scheduler_configuration_manager.h"
-#include "chromeos/dbus/resourced/resourced_client.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
+#include "chromeos/ash/components/dbus/resourced/resourced_client.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -34,7 +35,7 @@ class AppLaunchHandler;
 
 namespace full_restore {
 class ArcAppLaunchHandlerArcAppBrowserTest;
-class ArcWindowHandler;
+class ArcGhostWindowHandler;
 class FullRestoreAppLaunchHandlerArcAppBrowserTest;
 }  // namespace full_restore
 
@@ -104,7 +105,7 @@ constexpr base::TimeDelta kStopRestoreDelay = base::Minutes(1);
 // phase.
 class ArcAppLaunchHandler
     : public apps::AppRegistryCache::Observer,
-      public chromeos::ResourcedClient::Observer,
+      public ResourcedClient::Observer,
       public wm::ActivationChangeObserver,
       public aura::EnvObserver,
       public aura::WindowObserver,
@@ -121,7 +122,8 @@ class ArcAppLaunchHandler
   ~ArcAppLaunchHandler() override;
 
   // Invoked when the restoration process can start. Reads the restore data, and
-  // add the ARC apps windows to `windows_` and `no_stack_windows_`.
+  // add the ARC apps windows to `windows_` and `no_stack_windows_`. For each
+  // AppLaunchHandler, it is only expected be called once.
   void RestoreArcApps(AppLaunchHandler* app_launch_handler);
 
   void OnAppConnectionReady();
@@ -131,7 +133,10 @@ class ArcAppLaunchHandler
 
   void OnArcPlayStoreEnabledChanged(bool enabled);
 
+  // Launch all windows for the given `app_id`.
   void LaunchApp(const std::string& app_id);
+
+  bool IsAppPendingRestore(const std::string& app_id) const;
 
   // apps::AppRegistryCache::Observer:
   void OnAppUpdate(const apps::AppUpdate& update) override;
@@ -151,6 +156,10 @@ class ArcAppLaunchHandler
 
   // chromeos::SchedulerConfigurationManagerBase::Observer:
   void OnConfigurationSet(bool success, size_t num_cores_disabled) override;
+
+  void set_desk_template_launch_id(int32_t desk_template_launch_id) {
+    desk_template_launch_id_ = desk_template_launch_id;
+  }
 
  private:
   friend class full_restore::ArcAppLaunchHandlerArcAppBrowserTest;
@@ -172,8 +181,8 @@ class ArcAppLaunchHandler
   // ARC not being ready, or the system perforamcne concern) on Chrome OS.
   void PrepareAppLaunching(const std::string& app_id);
 
-  // Override chromeos::ResourcedClient::Observer
-  void OnMemoryPressure(chromeos::ResourcedClient::PressureLevel level,
+  // Override ResourcedClient::Observer
+  void OnMemoryPressure(ResourcedClient::PressureLevel level,
                         uint64_t reclaim_target_kb) override;
 
   // Returns true if there are windows to be restored. Otherwise, returns false.
@@ -194,7 +203,7 @@ class ArcAppLaunchHandler
   // following the window stack priority.
   void MaybeLaunchApp();
 
-  void LaunchApp(const std::string& app_id, int32_t window_id);
+  void LaunchAppWindow(const std::string& app_id, int32_t window_id);
 
   // Removes all windows records related with `app_id` from `windows_`,
   // `no_stack_windows_`, and `pending_windows_`.
@@ -214,8 +223,7 @@ class ArcAppLaunchHandler
   void StartCpuUsageCount();
   void StopCpuUsageCount();
   void UpdateCpuUsage();
-  void OnCpuUsageUpdated(
-      chromeos::cros_healthd::mojom::TelemetryInfoPtr info_ptr);
+  void OnCpuUsageUpdated(cros_healthd::mojom::TelemetryInfoPtr info_ptr);
   void OnProbeServiceDisconnect();
 
   void RecordArcGhostWindowLaunch(bool is_arc_ghost_window);
@@ -247,7 +255,7 @@ class ArcAppLaunchHandler
   std::map<int32_t, int32_t> window_id_to_session_id_;
   std::map<int32_t, int32_t> session_id_to_window_id_;
 
-  full_restore::ArcWindowHandler* window_handler_ = nullptr;
+  full_restore::ArcGhostWindowHandler* window_handler_ = nullptr;
 
   // If the system is under memory pressuure or high CPU usage rate, only launch
   // 1 window following the window stack priority. `first_run_` is used to check
@@ -266,6 +274,10 @@ class ArcAppLaunchHandler
 
   bool is_app_connection_ready_ = false;
 
+  // If nonzero, identifies the desk template launch that this handler is used
+  // for.
+  int32_t desk_template_launch_id_ = 0;
+
   // A repeating timer to check whether we can restore the ARC apps.
   std::unique_ptr<base::RepeatingTimer> app_launch_timer_;
 
@@ -280,8 +292,8 @@ class ArcAppLaunchHandler
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       observed_windows_{this};
 
-  chromeos::ResourcedClient::PressureLevel pressure_level_ =
-      chromeos::ResourcedClient::PressureLevel::MODERATE;
+  ResourcedClient::PressureLevel pressure_level_ =
+      ResourcedClient::PressureLevel::MODERATE;
 
   absl::optional<bool> should_apply_cpu_restirction_;
 
@@ -289,8 +301,7 @@ class ArcAppLaunchHandler
   bool was_memory_pressured_ = false;
   bool was_cpu_usage_limited_ = false;
 
-  mojo::Remote<chromeos::cros_healthd::mojom::CrosHealthdProbeService>
-      probe_service_;
+  mojo::Remote<cros_healthd::mojom::CrosHealthdProbeService> probe_service_;
 
   // Cpu usage rate count window. It save the cpu usage in a time interval.
   std::list<CpuTick> cpu_tick_window_;
@@ -301,8 +312,7 @@ class ArcAppLaunchHandler
                           apps::AppRegistryCache::Observer>
       app_registry_cache_observer_{this};
 
-  base::ScopedObservation<chromeos::ResourcedClient,
-                          chromeos::ResourcedClient::Observer>
+  base::ScopedObservation<ResourcedClient, ResourcedClient::Observer>
       resourced_client_observer_{this};
 
   base::WeakPtrFactory<ArcAppLaunchHandler> weak_ptr_factory_{this};

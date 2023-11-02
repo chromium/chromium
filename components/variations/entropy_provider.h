@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <functional>
-#include <random>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/metrics/field_trial.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace variations {
 
@@ -49,16 +47,15 @@ class COMPONENT_EXPORT(VARIATIONS) SHA1EntropyProvider
 // the actual low entropy source's hash would fall in the sorted list of all
 // those hashes, and uses that as the final value. For more info, see:
 // https://docs.google.com/document/d/1cPF5PruriWNP2Z5gSkq4MBTm0wSZqLyIJkUO9ekibeo
-class COMPONENT_EXPORT(VARIATIONS) NormalizedMurmurHashEntropyProvider
+class COMPONENT_EXPORT(VARIATIONS) NormalizedMurmurHashEntropyProvider final
     : public base::FieldTrial::EntropyProvider {
  public:
-  NormalizedMurmurHashEntropyProvider(uint16_t low_entropy_source,
-                                      size_t low_entropy_source_max);
+  // Creates a provider with |entropy_value| in the domain [0, entropy_domain).
+  NormalizedMurmurHashEntropyProvider(uint16_t entropy_value,
+                                      size_t entropy_domain);
 
   NormalizedMurmurHashEntropyProvider(
-      const NormalizedMurmurHashEntropyProvider&) = delete;
-  NormalizedMurmurHashEntropyProvider& operator=(
-      const NormalizedMurmurHashEntropyProvider&) = delete;
+      const NormalizedMurmurHashEntropyProvider&) = default;
 
   ~NormalizedMurmurHashEntropyProvider() override;
 
@@ -66,9 +63,40 @@ class COMPONENT_EXPORT(VARIATIONS) NormalizedMurmurHashEntropyProvider
   double GetEntropyForTrial(base::StringPiece trial_name,
                             uint32_t randomization_seed) const override;
 
+  size_t entropy_domain() const { return entropy_domain_; }
+
  private:
-  const uint16_t low_entropy_source_;
-  const size_t low_entropy_source_max_;
+  const uint16_t entropy_value_;
+  const size_t entropy_domain_;
+};
+
+class COMPONENT_EXPORT(VARIATIONS) EntropyProviders {
+ public:
+  // Construct providers from the given entropy sources.
+  // If |high_entropy_source| is empty, no high entropy provider is created.
+  EntropyProviders(const std::string& high_entropy_value,
+                   uint16_t low_entropy_value,
+                   size_t low_entropy_domain);
+  EntropyProviders(const EntropyProviders&) = delete;
+  EntropyProviders& operator=(const EntropyProviders&) = delete;
+  virtual ~EntropyProviders();
+
+  // Accessors are virtual for testing purposes.
+
+  // Gets the high entropy source, if available, otherwise returns low entropy.
+  virtual const base::FieldTrial::EntropyProvider& default_entropy() const;
+  // Gets the low entropy source.
+  virtual const base::FieldTrial::EntropyProvider& low_entropy() const;
+
+  bool default_entropy_is_high_entropy() const {
+    return high_entropy_.has_value();
+  }
+
+  size_t low_entropy_domain() const { return low_entropy_.entropy_domain(); }
+
+ private:
+  absl::optional<SHA1EntropyProvider> high_entropy_;
+  NormalizedMurmurHashEntropyProvider low_entropy_;
 };
 
 }  // namespace variations

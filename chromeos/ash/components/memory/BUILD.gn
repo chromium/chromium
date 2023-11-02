@@ -1,0 +1,63 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//testing/test.gni")
+
+assert(is_chromeos_ash, "Non ChromeOS builds must not depend on //chromeos/ash")
+
+component("memory") {
+  defines = [ "IS_ASH_MEMORY_IMPL" ]
+  deps = [
+    "//base",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/debug_daemon",
+    "//chromeos/ash/components/dbus/resourced:resourced",
+    "//chromeos/dbus/constants",
+    "//components/memory_pressure",
+    "//crypto",
+    "//services/resource_coordinator/public/cpp/memory_instrumentation",
+    "//third_party/re2",
+  ]
+  sources = [
+    "aligned_memory.h",
+    "kstaled.cc",
+    "kstaled.h",
+    "memory.cc",
+    "memory.h",
+    "pagemap.cc",
+    "pagemap.h",
+    "pressure/system_memory_pressure_evaluator.cc",
+    "pressure/system_memory_pressure_evaluator.h",
+    "swap_configuration.cc",
+    "swap_configuration.h",
+    "zram_writeback_backend.cc",
+    "zram_writeback_backend.h",
+    "zram_writeback_controller.cc",
+    "zram_writeback_controller.h",
+    "zram_writeback_policy.cc",
+    "zram_writeback_policy.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":memory",
+    "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//components/memory_pressure",
+    "//mojo/core/embedder",
+    "//services/resource_coordinator/public/cpp/memory_instrumentation",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+  sources = [
+    "memory_unittest.cc",
+    "pagemap_unittest.cc",
+    "pressure/system_memory_pressure_evaluator_unittest.cc",
+    "zram_writeback_controller_unittest.cc",
+  ]
+}

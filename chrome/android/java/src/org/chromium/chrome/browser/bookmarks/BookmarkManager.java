@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,13 +21,17 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
-import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkModelObserver;
+import org.chromium.chrome.browser.app.bookmarks.BookmarkActivity;
+import org.chromium.chrome.browser.commerce.ShoppingFeatures;
+import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksReader;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceFactory;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.browser_ui.widget.dragreorder.DragStateDelegate;
@@ -37,6 +41,7 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelega
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.url.GURL;
 
+import java.util.List;
 import java.util.Stack;
 
 /**
@@ -201,14 +206,24 @@ public class BookmarkManager
         mBookmarkModel = new BookmarkModel();
         mMainView = (ViewGroup) LayoutInflater.from(mContext).inflate(R.layout.bookmark_main, null);
 
+        // TODO(1293885): Remove this validator once we have an API on the backend that sends
+        //                success/failure information back.
+        if (ShoppingFeatures.isShoppingListEnabled()) {
+            PowerBookmarkUtils.validateBookmarkedCommerceSubscriptions(mBookmarkModel,
+                    new CommerceSubscriptionsServiceFactory()
+                            .getForLastUsedProfile()
+                            .getSubscriptionsManager());
+            ShoppingServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
+                    .scheduleSavedProductUpdate();
+        }
+
         @SuppressWarnings("unchecked")
         SelectableListLayout<BookmarkId> selectableList =
                 mMainView.findViewById(R.id.selectable_list);
         mSelectableListLayout = selectableList;
-        mSelectableListLayout.initializeEmptyView(
-                R.string.bookmarks_folder_empty, R.string.bookmark_no_result);
+        mSelectableListLayout.initializeEmptyView(R.string.bookmarks_folder_empty);
 
-        mAdapter = new BookmarkItemsAdapter(mContext);
+        mAdapter = new BookmarkItemsAdapter(mContext, snackbarManager);
 
         mAdapterDataObserver = new AdapterDataObserver() {
             @Override
@@ -509,14 +524,30 @@ public class BookmarkManager
     }
 
     @Override
-    public void openBookmark(BookmarkId bookmark) {
-        if (!BookmarkUtils.openBookmark(
-                    mContext, mOpenBookmarkComponentName, mBookmarkModel, bookmark, mIsIncognito)) {
-            return;
+    public void openBookmarks(List<BookmarkId> bookmarks, boolean openInNewTab, Boolean incognito) {
+        if (bookmarks == null || bookmarks.size() == 0) return;
+
+        boolean anyOpened = false;
+        for (int i = 0; i < bookmarks.size(); i++) {
+            BookmarkId bookmark = bookmarks.get(i);
+
+            @TabLaunchType
+            Integer tabLaunchType = null;
+            if (bookmark.getType() == BookmarkType.READING_LIST) {
+                tabLaunchType = TabLaunchType.FROM_READING_LIST;
+            } else if (openInNewTab) {
+                // Only new tab opens should have a TabLaunchType.
+                tabLaunchType = TabLaunchType.FROM_LONGPRESS_BACKGROUND;
+            }
+
+            boolean success = BookmarkUtils.openBookmark(mContext, mOpenBookmarkComponentName,
+                    mBookmarkModel, bookmark, incognito == null ? mIsIncognito : incognito,
+                    tabLaunchType, openInNewTab);
+            anyOpened = success || anyOpened;
         }
 
-        // Close bookmark UI. Keep the reading list page open.
-        if (bookmark != null && bookmark.getType() != BookmarkType.READING_LIST) {
+        if (anyOpened && bookmarks.get(0) != null
+                && bookmarks.get(0).getType() != BookmarkType.READING_LIST) {
             BookmarkUtils.finishActivityOnPhone(mContext);
         }
     }
@@ -524,8 +555,8 @@ public class BookmarkManager
     @Override
     public void openSearchUI() {
         setState(BookmarkUIState.createSearchState());
-        mSelectableListLayout.onStartSearch();
-        mToolbar.showSearchView();
+        mSelectableListLayout.onStartSearch(R.string.bookmark_no_result);
+        mToolbar.showSearchView(true);
     }
 
     @Override

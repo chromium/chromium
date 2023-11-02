@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ namespace crash_reporter {
 // Returns whether the user has consented to collecting stats.
 bool GetClientCollectStatsConsent();
 
-#if defined(OS_POSIX) && !defined(OS_APPLE)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
 // Returns a textual description of the product type, version and channel
 // to include in crash reports.
 // TODO(https://crbug.com/986178): Implement this for other platforms.

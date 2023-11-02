@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,61 @@
 
 #include <memory>
 
+#include "base/strings/string_number_conversions.h"
+#include "net/cert/pki/extended_key_usage.h"
+#include "net/cert/pki/parse_certificate.h"
+#include "net/cert/x509_util_apple.h"
+#include "net/ssl/client_cert_identity_mac.h"
 #include "net/ssl/client_cert_identity_test_util.h"
 #include "net/ssl/client_cert_store_unittest-inl.h"
 #include "net/ssl/ssl_private_key.h"
+#include "net/test/cert_builder.h"
 
 namespace net {
+
+namespace {
+
+std::vector<std::unique_ptr<ClientCertIdentityMac>>
+ClientCertIdentityMacListFromCertificateList(const CertificateList& certs) {
+  // This doesn't quite construct a real `ClientCertIdentityMac` the
+  // `SecIdentityRef` is null. This means `SelectClientCertsForTesting` must
+  // turn off the KeyChain query. If this becomes an issue, change
+  // client_cert_store_unittest-inl.h to pass in the key data and use
+  // `ScopedTestKeychain` with `ImportCertAndKeyToKeychain`.
+  std::vector<std::unique_ptr<ClientCertIdentityMac>> identities;
+  identities.reserve(certs.size());
+  for (const auto& cert : certs) {
+    identities.push_back(std::make_unique<ClientCertIdentityMac>(
+        cert, base::ScopedCFTypeRef<SecIdentityRef>()));
+  }
+  return identities;
+}
+
+std::string InputVectorToString(std::vector<der::Input> vec) {
+  std::string r = "{";
+  std::string sep;
+  for (const auto& element : vec) {
+    r += sep;
+    r += base::HexEncode(element.AsSpan());
+    sep = ',';
+  }
+  r += '}';
+  return r;
+}
+
+std::string KeyUsageVectorToString(std::vector<KeyUsageBit> vec) {
+  std::string r = "{";
+  std::string sep;
+  for (const auto& element : vec) {
+    r += sep;
+    r += base::NumberToString(static_cast<int>(element));
+    sep = ',';
+  }
+  r += '}';
+  return r;
+}
+
+}  // namespace
 
 class ClientCertStoreMacTestDelegate {
  public:
@@ -18,7 +68,7 @@ class ClientCertStoreMacTestDelegate {
                          const SSLCertRequestInfo& cert_request_info,
                          ClientCertIdentityList* selected_certs) {
     return store_.SelectClientCertsForTesting(
-        FakeClientCertIdentityListFromCertificateList(input_certs),
+        ClientCertIdentityMacListFromCertificateList(input_certs),
         cert_request_info, selected_certs);
   }
 
@@ -32,17 +82,25 @@ INSTANTIATE_TYPED_TEST_SUITE_P(Mac,
 
 class ClientCertStoreMacTest : public ::testing::Test {
  protected:
+  bool SelectClientCerts(const CertificateList& input_certs,
+                         const SSLCertRequestInfo& cert_request_info,
+                         ClientCertIdentityList* selected_certs) {
+    return store_.SelectClientCertsForTesting(
+        ClientCertIdentityMacListFromCertificateList(input_certs),
+        cert_request_info, selected_certs);
+  }
+
   bool SelectClientCertsGivenPreferred(
       const scoped_refptr<X509Certificate>& preferred_cert,
       const CertificateList& regular_certs,
       const SSLCertRequestInfo& request,
       ClientCertIdentityList* selected_certs) {
-    std::unique_ptr<ClientCertIdentity> preferred_identity(
-        std::make_unique<FakeClientCertIdentity>(preferred_cert, nullptr));
+    auto preferred_identity = std::make_unique<ClientCertIdentityMac>(
+        preferred_cert, base::ScopedCFTypeRef<SecIdentityRef>());
 
     return store_.SelectClientCertsGivenPreferredForTesting(
         std::move(preferred_identity),
-        FakeClientCertIdentityListFromCertificateList(regular_certs), request,
+        ClientCertIdentityMacListFromCertificateList(regular_certs), request,
         selected_certs);
   }
 
@@ -96,6 +154,70 @@ TEST_F(ClientCertStoreMacTest, PreferredCertGoesFirst) {
       selected_certs[0]->certificate()->EqualsExcludingChain(cert_1.get()));
   EXPECT_TRUE(
       selected_certs[1]->certificate()->EqualsExcludingChain(cert_2.get()));
+}
+
+TEST_F(ClientCertStoreMacTest, CertSupportsClientAuth) {
+  base::FilePath certs_dir = GetTestCertsDirectory();
+  std::unique_ptr<CertBuilder> builder =
+      CertBuilder::FromFile(certs_dir.AppendASCII("ok_cert.pem"), nullptr);
+  ASSERT_TRUE(builder);
+
+  struct {
+    bool expected_result;
+    std::vector<KeyUsageBit> key_usages;
+    std::vector<der::Input> ekus;
+  } cases[] = {
+      {true, {}, {}},
+      {true, {KEY_USAGE_BIT_DIGITAL_SIGNATURE}, {}},
+      {true,
+       {KEY_USAGE_BIT_DIGITAL_SIGNATURE, KEY_USAGE_BIT_KEY_CERT_SIGN},
+       {}},
+      {false, {KEY_USAGE_BIT_NON_REPUDIATION}, {}},
+      {false, {KEY_USAGE_BIT_KEY_ENCIPHERMENT}, {}},
+      {false, {KEY_USAGE_BIT_DATA_ENCIPHERMENT}, {}},
+      {false, {KEY_USAGE_BIT_KEY_AGREEMENT}, {}},
+      {false, {KEY_USAGE_BIT_KEY_CERT_SIGN}, {}},
+      {false, {KEY_USAGE_BIT_CRL_SIGN}, {}},
+      {false, {KEY_USAGE_BIT_ENCIPHER_ONLY}, {}},
+      {false, {KEY_USAGE_BIT_DECIPHER_ONLY}, {}},
+      {true, {}, {der::Input(kAnyEKU)}},
+      {true, {}, {der::Input(kClientAuth)}},
+      {true, {}, {der::Input(kServerAuth), der::Input(kClientAuth)}},
+      {true, {}, {der::Input(kClientAuth), der::Input(kServerAuth)}},
+      {false, {}, {der::Input(kServerAuth)}},
+      {true, {KEY_USAGE_BIT_DIGITAL_SIGNATURE}, {der::Input(kClientAuth)}},
+      {false, {KEY_USAGE_BIT_KEY_CERT_SIGN}, {der::Input(kClientAuth)}},
+      {false, {KEY_USAGE_BIT_DIGITAL_SIGNATURE}, {der::Input(kServerAuth)}},
+  };
+
+  for (const auto& testcase : cases) {
+    SCOPED_TRACE(testcase.expected_result);
+    SCOPED_TRACE(KeyUsageVectorToString(testcase.key_usages));
+    SCOPED_TRACE(InputVectorToString(testcase.ekus));
+
+    if (testcase.key_usages.empty())
+      builder->EraseExtension(der::Input(kKeyUsageOid));
+    else
+      builder->SetKeyUsages(testcase.key_usages);
+
+    if (testcase.ekus.empty())
+      builder->EraseExtension(der::Input(kExtKeyUsageOid));
+    else
+      builder->SetExtendedKeyUsages(testcase.ekus);
+
+    auto request = base::MakeRefCounted<SSLCertRequestInfo>();
+    ClientCertIdentityList selected_certs;
+    bool rv = SelectClientCerts({builder->GetX509Certificate()}, *request.get(),
+                                &selected_certs);
+    EXPECT_TRUE(rv);
+    if (testcase.expected_result) {
+      ASSERT_EQ(1U, selected_certs.size());
+      EXPECT_TRUE(selected_certs[0]->certificate()->EqualsExcludingChain(
+          builder->GetX509Certificate().get()));
+    } else {
+      EXPECT_TRUE(selected_certs.empty());
+    }
+  }
 }
 
 }  // namespace net

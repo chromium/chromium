@@ -1,9 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/svg/animation/smil_time_container.h"
 
+#include "base/time/time.h"
+#include "third_party/blink/renderer/core/animation/animation_clock.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -221,7 +223,7 @@ TEST_F(SMILTimeContainerAnimationPolicyOnceTest, SetElapsedBeforeStart) {
       </rect>
     </svg>
   )HTML");
-  OnContentLoaded(WTF::Bind([](Document& document) {
+  OnContentLoaded(WTF::BindOnce([](Document& document) {
     auto* svg_root = To<SVGSVGElement>(document.getElementById("container"));
     ASSERT_TRUE(svg_root);
     auto* rect = Traversal<SVGRectElement>::FirstChild(*svg_root);
@@ -306,7 +308,7 @@ TEST_F(SMILTimeContainerAnimationPolicyOnceTest, PauseBeforeStart) {
       </rect>
     </svg>
   )HTML");
-  OnContentLoaded(WTF::Bind([](Document& document) {
+  OnContentLoaded(WTF::BindOnce([](Document& document) {
     auto* svg_root = To<SVGSVGElement>(document.getElementById("container"));
     ASSERT_TRUE(svg_root);
     auto* rect = Traversal<SVGRectElement>::FirstChild(*svg_root);
@@ -400,7 +402,7 @@ TEST_F(SMILTimeContainerAnimationPolicyOnceTest,
       </rect>
     </svg>
   )HTML");
-  OnContentLoaded(WTF::Bind([](Document& document) {
+  OnContentLoaded(WTF::BindOnce([](Document& document) {
     auto* svg_root = To<SVGSVGElement>(document.getElementById("container"));
     ASSERT_TRUE(svg_root);
     auto* rect = Traversal<SVGRectElement>::FirstChild(*svg_root);
@@ -455,7 +457,7 @@ TEST_F(SMILTimeContainerAnimationPolicyOnceTest, PauseAndResumeBeforeStart) {
       </rect>
     </svg>
   )HTML");
-  OnContentLoaded(WTF::Bind([](Document& document) {
+  OnContentLoaded(WTF::BindOnce([](Document& document) {
     auto* svg_root = To<SVGSVGElement>(document.getElementById("container"));
     ASSERT_TRUE(svg_root);
     auto* rect = Traversal<SVGRectElement>::FirstChild(*svg_root);

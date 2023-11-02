@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,10 @@
 #include "ash/public/cpp/assistant/assistant_setup.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "base/containers/circular_deque.h"
+#include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
-#include "chromeos/services/assistant/public/cpp/assistant_settings.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_settings.h"
 #include "components/sync/protocol/user_consent_types.pb.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -65,8 +67,7 @@ class AssistantOptInFlowScreenHandler
 
   using TView = AssistantOptInFlowScreenView;
 
-  explicit AssistantOptInFlowScreenHandler(
-      JSCallsContainer* js_calls_container);
+  AssistantOptInFlowScreenHandler();
 
   AssistantOptInFlowScreenHandler(const AssistantOptInFlowScreenHandler&) =
       delete;
@@ -75,18 +76,11 @@ class AssistantOptInFlowScreenHandler
 
   ~AssistantOptInFlowScreenHandler() override;
 
-  // Set an optional callback that will run when the screen has been
-  // initialized.
-  void set_on_initialized(base::OnceClosure on_initialized) {
-    DCHECK(on_initialized_.is_null());
-    on_initialized_ = std::move(on_initialized);
-  }
-
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
   void RegisterMessages() override;
-  void GetAdditionalParameters(base::DictionaryValue* dict) override;
+  void GetAdditionalParameters(base::Value::Dict* dict) override;
 
   // AssistantOptInFlowScreenView:
   void Bind(ash::AssistantOptInFlowScreen* screen) override;
@@ -115,7 +109,7 @@ class AssistantOptInFlowScreenHandler
 
  private:
   // BaseScreenHandler:
-  void Initialize() override;
+  void InitializeDeprecated() override;
 
   // ash::AssistantStateObserver:
   void OnAssistantSettingsEnabled(bool enabled) override;
@@ -129,8 +123,8 @@ class AssistantOptInFlowScreenHandler
   void StopSpeakerIdEnrollment();
 
   // Send message and consent data to the page.
-  void ReloadContent(const base::Value& dict);
-  void AddSettingZippy(const std::string& type, const base::Value& data);
+  void ReloadContent(base::Value::Dict dict);
+  void AddSettingZippy(const std::string& type, base::Value::List data);
 
   // Update value prop screen to show the next settings.
   void UpdateValuePropScreen();
@@ -154,8 +148,6 @@ class AssistantOptInFlowScreenHandler
   bool DeviceHasBattery();
 
   ash::AssistantOptInFlowScreen* screen_ = nullptr;
-
-  base::OnceClosure on_initialized_;
 
   // Whether the screen should be shown right after initialization.
   bool show_on_init_ = false;

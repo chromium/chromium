@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <include name="IDR_BLUETOOTH_CONFIG_MOJOM_WEBUI_JS"
+      file="${root_gen_dir}/mojom-webui/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js"
+      resource_path="mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js"
+      use_base_dir="false"
+      type="BINDATA" />
+</grit-part>

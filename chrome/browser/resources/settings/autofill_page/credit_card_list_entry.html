@@ -4,36 +4,83 @@
         display: flex;
         flex: 1;
       }
+      .list-item {
+        margin-bottom: 8px;
+        margin-top: 8px;
+      }
 
       #creditCardExpiration {
         flex: 1;
+      }
+
+      #summarySublabel {
+        color: var(--cr-secondary-text-color);
       }
 
       .payments-label {
         color: var(--cr-secondary-text-color);
         margin-inline-start: 16px;
       }
+
+      #paymentsIcon {
+        vertical-align: middle;
+      }
+
+      #virtualCardLabel {
+        margin-inline-start: 8px;
+      }
+
+      #cardImage {
+        margin-inline-end: 16px;
+      }
     </style>
     <div class="list-item">
       <div class="type-column">
-        <span id="creditCardLabel">[[creditCard.metadata.summaryLabel]]</span>
-        <span class="payments-label"
-            hidden$="[[creditCard.metadata.isLocal]]">
-          <span hidden$="[[creditCard.metadata.isCached]]">
-            $i18n{googlePayments}
-          </span>
-          <span hidden$="[[!creditCard.metadata.isCached]]">
-            $i18n{googlePaymentsCached}
-          </span>
+        <template is="dom-if" if="[[virtualCardMetadataEnabled_]]">
+          <img id="cardImage" src="[[creditCard.imageSrc]]" alt="">
+        </template>
+        <div class="summary-column">
+          <div id="summaryLabel" class="ellipses">
+            [[creditCard.metadata.summaryLabel]]
+          </div>
+          <div id="summarySublabel"
+            hidden$="[[!shouldShowSecondarySublabel_()]]" class="ellipses">
+            [[getSecondarySublabel_(creditCard.metadata)]]
+          </div>
+        </div>
+        <span id="virtualCardLabel"
+            hidden$="[[!shouldShowVirtualCardLabel_(creditCard.metadata)]]">
+          $i18n{virtualCardEnabled}
+        </span>
+        <span id="paymentsLabel" class="payments-label"
+            hidden$="[[!shouldShowPaymentsLabel_(creditCard.metadata)]]">
+            [[getPaymentsLabel_(creditCard.metadata)]]
         </span>
       </div>
       <div class="expiration-column">
         <div id="creditCardExpiration">
             [[creditCard.expirationMonth]]/[[creditCard.expirationYear]]
         </div>
+        <div id="paymentsIndicator"
+          hidden$="[[!shouldShowPaymentsIndicator_(creditCard.metadata)]]">
+          <if expr="_google_chrome">
+            <picture id="paymentsIcon">
+              <source
+                  srcset="chrome://theme/IDR_AUTOFILL_GOOGLE_PAY_DARK"
+                  media="(prefers-color-scheme: dark)">
+              <img alt="" src="chrome://theme/IDR_AUTOFILL_GOOGLE_PAY">
+            </picture>
+          </if>
+          <if expr="not _google_chrome">
+            <span class="payments-label">
+              [[getPaymentsLabel_(creditCard.metadata)]]
+            </span>
+          </if>
+        </div>
         <template is="dom-if" if="[[showDots_(creditCard.metadata)]]">
           <cr-icon-button class="icon-more-vert" id="creditCardMenu"
-              title="$i18n{moreActions}" on-click="onDotsMenuClick_">
+              title="[[moreActionsTitle_(creditCard)]]"
+              on-click="onDotsMenuClick_">
           </cr-icon-button>
         </template>
         <template is="dom-if" if="[[!showDots_(creditCard.metadata)]]">

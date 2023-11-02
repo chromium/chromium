@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
@@ -38,10 +39,11 @@ class UpdateClientImpl : public UpdateClient {
   // Overrides for UpdateClient.
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  void Install(const std::string& id,
-               CrxDataCallback crx_data_callback,
-               CrxStateChangeCallback crx_state_change_callback,
-               Callback callback) override;
+  base::RepeatingClosure Install(
+      const std::string& id,
+      CrxDataCallback crx_data_callback,
+      CrxStateChangeCallback crx_state_change_callback,
+      Callback callback) override;
   void Update(const std::vector<std::string>& ids,
               CrxDataCallback crx_data_callback,
               CrxStateChangeCallback crx_state_change_callback,
@@ -54,8 +56,6 @@ class UpdateClientImpl : public UpdateClient {
   void SendUninstallPing(const CrxComponent& crx_component,
                          int reason,
                          Callback callback) override;
-  void SendRegistrationPing(const CrxComponent& crx_component,
-                            Callback callback) override;
 
  private:
   ~UpdateClientImpl() override;

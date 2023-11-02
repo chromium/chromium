@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,7 +50,7 @@ TEST_F(CountryComboboxModelTest, DefaultCountryCode) {
 TEST_F(CountryComboboxModelTest, AllCountriesHaveComponents) {
   ::i18n::addressinput::Localization localization;
   std::string unused;
-  for (int i = 0; i < model()->GetItemCount(); ++i) {
+  for (size_t i = 0; i < model()->GetItemCount(); ++i) {
     if (model()->IsItemSeparatorAt(i))
       continue;
 

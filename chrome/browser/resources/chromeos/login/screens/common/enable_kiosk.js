@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 /**
@@ -6,7 +6,17 @@
  * screen.
  */
 
-/* #js_imports_placeholder */
+import '//resources/cr_elements/icons.html.js';
+import '../../components/buttons/oobe_text_button.m.js';
+import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+import '../../components/dialogs/oobe_adaptive_dialog.m.js';
+
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
+import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+
 
 /**
  * UI mode for the dialog.
@@ -24,18 +34,21 @@ const EnableKioskMode = {
  * @implements {LoginScreenBehaviorInterface}
  * @implements {OobeI18nBehaviorInterface}
  */
- const EnableKioskBase = Polymer.mixinBehaviors(
-  [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
-  Polymer.Element);
+const EnableKioskBase = mixinBehaviors(
+    [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
+    PolymerElement);
 
 /**
  * @polymer
  */
 class EnableKiosk extends EnableKioskBase {
+  static get is() {
+    return 'enable-kiosk-element';
+  }
 
-  static get is() { return 'enable-kiosk-element'; }
-
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {
     return {
@@ -61,9 +74,7 @@ class EnableKiosk extends EnableKioskBase {
   /** @override */
   ready() {
     super.ready();
-    this.initializeLoginScreen('KioskEnableScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('KioskEnableScreen');
   }
 
   /** Called after resources are updated. */
@@ -109,8 +120,9 @@ class EnableKiosk extends EnableKioskBase {
    * @private
    */
   primaryButtonTextKey_(state) {
-    if (state === EnableKioskMode.CONFIRM)
+    if (state === EnableKioskMode.CONFIRM) {
       return 'kioskOKButton';
+    }
     return 'kioskCancelButton';
   }
 }

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,15 +46,12 @@ BrowserControlsNavigationStateHandler::
 bool BrowserControlsNavigationStateHandler::IsRendererControllingOffsets() {
   if (IsRendererHungOrCrashed())
     return false;
-  return !web_contents()->GetMainFrame()->GetProcess()->IsBlocked();
+  return !web_contents()->GetPrimaryMainFrame()->GetProcess()->IsBlocked();
 }
 
 void BrowserControlsNavigationStateHandler::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   is_crashed_ = false;
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (navigation_handle->IsInPrimaryMainFrame() &&
       !navigation_handle->IsSameDocument()) {
     forced_show_during_load_timer_.Stop();
@@ -64,9 +61,6 @@ void BrowserControlsNavigationStateHandler::DidStartNavigation(
 
 void BrowserControlsNavigationStateHandler::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (navigation_handle->IsInPrimaryMainFrame()) {
     if (!navigation_handle->HasCommitted()) {
       // There will be no DidFinishLoad or DidFailLoad, so hide the topview
@@ -80,9 +74,7 @@ void BrowserControlsNavigationStateHandler::DidFinishNavigation(
 void BrowserControlsNavigationStateHandler::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
-  const bool is_main_frame =
-      render_frame_host->GetMainFrame() == render_frame_host;
-  if (is_main_frame)
+  if (render_frame_host->IsInPrimaryMainFrame())
     ScheduleStopDelayedForceShow();
 }
 
@@ -90,12 +82,8 @@ void BrowserControlsNavigationStateHandler::DidFailLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url,
     int error_code) {
-  const bool is_main_frame =
-      render_frame_host->GetMainFrame() == render_frame_host;
-  if (is_main_frame)
+  if (render_frame_host->IsInPrimaryMainFrame()) {
     ScheduleStopDelayedForceShow();
-  if (render_frame_host->IsActive() &&
-      (render_frame_host == web_contents()->GetMainFrame())) {
     UpdateState();
   }
 }

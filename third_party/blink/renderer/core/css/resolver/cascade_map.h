@@ -1,10 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_CASCADE_MAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_CASCADE_MAP_H_
 
+#include "base/check_op.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/properties/css_bitset.h"
@@ -22,6 +24,8 @@ class CORE_EXPORT CascadeMap {
   STACK_ALLOCATED();
 
  public:
+  class CascadePriorityList;
+
   // Get the CascadePriority for the given CSSPropertyName. If there is no
   // entry for the given name, CascadePriority() is returned.
   CascadePriority At(const CSSPropertyName&) const;
@@ -35,10 +39,22 @@ class CORE_EXPORT CascadeMap {
   CascadePriority* Find(const CSSPropertyName&);
   const CascadePriority* Find(const CSSPropertyName&) const;
   const CascadePriority* Find(const CSSPropertyName&, CascadeOrigin) const;
+  CascadePriority* FindKnownToExist(const CSSPropertyID id) {
+    DCHECK(native_properties_.Bits().Has(id));
+    return &native_properties_.Buffer()[static_cast<size_t>(id)].Top(
+        backing_vector_);
+  }
+  const CascadePriority* FindKnownToExist(const CSSPropertyID id) const {
+    DCHECK(native_properties_.Bits().Has(id));
+    return &native_properties_.Buffer()[static_cast<size_t>(id)].Top(
+        backing_vector_);
+  }
   // Similar to Find(name, origin), but returns the CascadePriority from cascade
   // layers below the given priority.
   const CascadePriority* FindRevertLayer(const CSSPropertyName&,
                                          CascadePriority) const;
+  // Similar to Find(), if you already have the right CascadePriorityList.
+  CascadePriority& Top(CascadePriorityList&);
   // Adds an entry to the map if the incoming priority is greater than or equal
   // to the current priority for the same name. Entries must be added in non-
   // decreasing lexicographical order of (origin, tree scope, layer).
@@ -49,6 +65,12 @@ class CORE_EXPORT CascadeMap {
   uint64_t HighPriorityBits() const { return high_priority_; }
   // True if any important declaration has been added.
   bool HasImportant() const { return has_important_; }
+  // True if any inline style declaration lost the cascade to something
+  // else. This is rare, but if it happens, we need to turn off incremental
+  // style calculation (see CanApplyInlineStyleIncrementally() and related
+  // functions). This information is propagated up to ComputedStyle after
+  // the cascade and stored there.
+  bool InlineStyleLost() const { return inline_style_lost_; }
   const CSSBitset& NativeBitset() const { return native_properties_.Bits(); }
   // Remove all properties (both native and custom) from the CascadeMap.
   void Reset();
@@ -65,6 +87,17 @@ class CORE_EXPORT CascadeMap {
       DISALLOW_NEW();
       Node(CascadePriority priority, wtf_size_t next_index)
           : priority(priority), next_index(next_index) {}
+
+      // This terrible sequence convinces the compiler to use 32-bit loads and
+      // stores for copying a Node into the BackingStore, instead of coalescing
+      // them into 64-bit, which would cause a store-to-load forwarding stall.
+      // See crbug.com/1313148 (remove when it has been fixed).
+      Node(Node&& other) {
+        priority = other.priority;
+        next_index = other.next_index + 1;
+        other.next_index = next_index;
+        --next_index;
+      }
 
       CascadePriority priority;
       // 0 for null; Otherwise, next_index - 1 is index in the backing vector.
@@ -140,10 +173,12 @@ class CORE_EXPORT CascadeMap {
   using CustomMap = HashMap<CSSPropertyName, CascadePriorityList>;
 
   const CustomMap& GetCustomMap() const { return custom_properties_; }
+  CustomMap& GetCustomMap() { return custom_properties_; }
 
  private:
   uint64_t high_priority_ = 0;
   bool has_important_ = false;
+  bool inline_style_lost_ = false;
   NativeMap native_properties_;
   CustomMap custom_properties_;
   CascadePriorityList::BackingVector backing_vector_;

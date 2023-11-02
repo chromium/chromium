@@ -1,15 +1,15 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_mediator.h"
 
-#include "base/metrics/user_metrics.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
-#include "ios/chrome/browser/application_context.h"
+#import "base/metrics/user_metrics.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/common/autofill_payments_features.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type_util.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_mediator_delegate.h"
@@ -90,7 +90,7 @@
           base::SysNSStringToUTF8(cardNumber));
 
   // If the credit card number already exist in saved credit card
-  // |savedCreditCard| then update saved credit card |savedCreditCardCopy|
+  // `savedCreditCard` then update saved credit card `savedCreditCardCopy`
   // with the new data.
   if (savedCreditCard != nil) {
     autofill::CreditCard savedCreditCardCopy(*savedCreditCard);

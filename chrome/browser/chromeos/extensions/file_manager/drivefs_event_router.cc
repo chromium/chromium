@@ -1,9 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/extensions/file_manager/drivefs_event_router.h"
 
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/strings/strcat.h"
 #include "base/values.h"
@@ -68,9 +69,11 @@ void DriveFsEventRouter::OnUnmounted() {
   // Ensure any existing sync progress indicator is cleared.
   file_manager_private::FileTransferStatus sync_status;
   sync_status.transfer_state = file_manager_private::TRANSFER_STATE_FAILED;
+  sync_status.show_notification = true;
   sync_status.hide_when_zero_jobs = true;
   file_manager_private::FileTransferStatus pin_status;
   pin_status.transfer_state = file_manager_private::TRANSFER_STATE_FAILED;
+  pin_status.show_notification = true;
   pin_status.hide_when_zero_jobs = true;
 
   BroadcastOnFileTransfersUpdatedEvent(sync_status);
@@ -87,7 +90,19 @@ DriveFsEventRouter::CreateFileTransferStatus(
   int64_t total_bytes_to_transfer = 0;
   int num_files_syncing = 0;
   bool any_in_progress = false;
+  // If `item_events` is not empty, keeps track of whether all these events are
+  // associated to ignored Drive paths. Used to check whether the notification
+  // should be hidden.
+  bool all_items_ignored = item_events.empty() ? false : true;
   for (const auto* item : item_events) {
+    base::FilePath path(item->path);
+    // Ignore transfer status for ignored file paths.
+    // TODO (b/242652120): Handle ignored file paths differently once transfer
+    // updates are needed beyond notifications.
+    if (base::Contains(ignored_file_paths_, path)) {
+      continue;
+    }
+    all_items_ignored = false;
     if (IsItemEventCompleted(item->state)) {
       auto it = state->group_id_to_bytes_to_transfer.find(item->group_id);
       if (it != state->group_id_to_bytes_to_transfer.end()) {
@@ -114,6 +129,7 @@ DriveFsEventRouter::CreateFileTransferStatus(
   }
 
   file_manager_private::FileTransferStatus status;
+  status.show_notification = !all_items_ignored;
   status.hide_when_zero_jobs = true;
 
   if ((completed_bytes == 0 && !any_in_progress) || item_events.empty()) {
@@ -152,6 +168,18 @@ void DriveFsEventRouter::OnSyncingStatusUpdate(
     for (const auto* item : sync_events) {
       sync_status.transfer_state = ConvertItemEventState(item->state);
       base::FilePath path(item->path);
+      if (base::Contains(ignored_file_paths_, path)) {
+        // If all the transfer events are ignored (see `ignored_file_paths_`),
+        // `sync_status.total == 0` and a sync status has to be broadcasted to
+        // indicate that existing notifications should be hidden. If
+        // `sync_status.total` > 0, it guarantees that there are other sync
+        // statuses for other non-ignored files. In the event where only one
+        // non-ignored file is being synced, its `file_url` is used in the sync
+        // notification. Broadcasting a sync status for one of the ignored file
+        // paths would create confusion around what should be displayed in this
+        // notification.
+        continue;
+      }
       for (const auto& listener_url : urls) {
         sync_status.file_url =
             ConvertDrivePathToFileSystemUrl(path, listener_url).spec();
@@ -166,6 +194,10 @@ void DriveFsEventRouter::OnSyncingStatusUpdate(
     for (const auto* item : pin_events) {
       pin_status.transfer_state = ConvertItemEventState(item->state);
       base::FilePath path(item->path);
+      if (base::Contains(ignored_file_paths_, path)) {
+        // See comment above for `sync_status`.
+        continue;
+      }
       for (const auto& listener_url : urls) {
         pin_status.file_url =
             ConvertDrivePathToFileSystemUrl(path, listener_url).spec();
@@ -188,18 +220,17 @@ void DriveFsEventRouter::OnFilesChanged(
       if (!event.changed_files) {
         event.event_type = extensions::api::file_manager_private::
             FILE_WATCH_EVENT_TYPE_CHANGED;
-        event.changed_files = std::make_unique<
-            std::vector<extensions::api::file_manager_private::FileChange>>();
-        event.entry.additional_properties.SetString(
+        event.changed_files.emplace();
+        event.entry.additional_properties.Set(
             "fileSystemRoot", base::StrCat({ConvertDrivePathToFileSystemUrl(
                                                 base::FilePath(), listener_url)
                                                 .spec(),
                                             "/"}));
-        event.entry.additional_properties.SetString("fileSystemName",
-                                                    GetDriveFileSystemName());
-        event.entry.additional_properties.SetString(
-            "fileFullPath", change.path.DirName().value());
-        event.entry.additional_properties.SetBoolean("fileIsDirectory", true);
+        event.entry.additional_properties.Set("fileSystemName",
+                                              GetDriveFileSystemName());
+        event.entry.additional_properties.Set("fileFullPath",
+                                              change.path.DirName().value());
+        event.entry.additional_properties.Set("fileIsDirectory", true);
       }
       event.changed_files->emplace_back();
       auto& file_manager_change = event.changed_files->back();
@@ -222,6 +253,10 @@ void DriveFsEventRouter::OnError(const drivefs::mojom::DriveError& error) {
   switch (error.type) {
     case drivefs::mojom::DriveError::Type::kCantUploadStorageFull:
       event.type = file_manager_private::DRIVE_SYNC_ERROR_TYPE_NO_SERVER_SPACE;
+      break;
+    case drivefs::mojom::DriveError::Type::kCantUploadStorageFullOrganization:
+      event.type = file_manager_private::
+          DRIVE_SYNC_ERROR_TYPE_NO_SERVER_SPACE_ORGANIZATION;
       break;
     case drivefs::mojom::DriveError::Type::kPinningFailedDiskFull:
       event.type = file_manager_private::DRIVE_SYNC_ERROR_TYPE_NO_LOCAL_SPACE;
@@ -267,6 +302,18 @@ void DriveFsEventRouter::DisplayConfirmDialog(
 void DriveFsEventRouter::OnDialogResult(drivefs::mojom::DialogResult result) {
   if (dialog_callback_) {
     std::move(dialog_callback_).Run(result);
+  }
+}
+
+void DriveFsEventRouter::SuppressNotificationsForFilePath(
+    const base::FilePath& path) {
+  ignored_file_paths_.insert(path);
+}
+
+void DriveFsEventRouter::RestoreNotificationsForFilePath(
+    const base::FilePath& path) {
+  if (ignored_file_paths_.erase(path) == 0) {
+    LOG(ERROR) << "Provided file path was not in the set of ignored paths";
   }
 }
 

@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SKIA_PUBLIC_MOJOM_SURFACE_ORIGIN_MOJOM_TRAITS_H_
 #define SKIA_PUBLIC_MOJOM_SURFACE_ORIGIN_MOJOM_TRAITS_H_
 
+#include "base/notreached.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "skia/public/mojom/surface_origin.mojom-shared.h"
 #include "third_party/skia/include/gpu/GrTypes.h"

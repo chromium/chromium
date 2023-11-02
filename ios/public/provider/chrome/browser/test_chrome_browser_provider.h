@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#include "ios/public/provider/chrome/browser/user_feedback/test_user_feedback_provider.h"
 
 namespace ios {
 
@@ -21,24 +20,12 @@ class TestChromeBrowserProvider : public ChromeBrowserProvider {
   TestChromeBrowserProvider& operator=(const TestChromeBrowserProvider&) =
       delete;
 
-  // Returns the current provider as a |TestChromeBrowserProvider|.
+  // Returns the current provider as a `TestChromeBrowserProvider`.
   static TestChromeBrowserProvider& GetTestProvider();
-
-  // ChromeBrowserProvider:
-  ChromeTrustedVaultService* GetChromeTrustedVaultService() override;
-  UITextField* CreateStyledTextField() const override NS_RETURNS_RETAINED;
-  TestUserFeedbackProvider* GetUserFeedbackProvider() const override;
-  MailtoHandlerProvider* GetMailtoHandlerProvider() const override;
-  DiscoverFeedProvider* GetDiscoverFeedProvider() const override;
 
  private:
   // ChromeBrowserProvider:
   std::unique_ptr<ChromeIdentityService> CreateChromeIdentityService() override;
-
-  std::unique_ptr<ChromeTrustedVaultService> chrome_trusted_vault_service_;
-  std::unique_ptr<TestUserFeedbackProvider> user_feedback_provider_;
-  std::unique_ptr<MailtoHandlerProvider> mailto_handler_provider_;
-  std::unique_ptr<DiscoverFeedProvider> discover_feed_provider_;
 };
 
 }  // namespace ios

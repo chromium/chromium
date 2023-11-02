@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,12 @@
 #include <atomic>
 #include <vector>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/rand_util.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/starscan/metadata_allocator.h"
-#include "base/compiler_specific.h"
-#include "base/rand_util.h"
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 template <typename T>
 class RacefulWorklist {
@@ -39,8 +38,8 @@ class RacefulWorklist {
     explicit RandomizedView(RacefulWorklist& worklist)
         : worklist_(worklist), offset_(0) {
       if (worklist.data_.size() > 0)
-        offset_ =
-            static_cast<size_t>(base::RandGenerator(worklist.data_.size()));
+        offset_ = static_cast<size_t>(
+            internal::base::RandGenerator(worklist.data_.size()));
     }
 
     RandomizedView(const RandomizedView&) = delete;
@@ -125,7 +124,7 @@ void RacefulWorklist<T>::RandomizedView::Visit(Function f) {
 
   // Finally, racefully visit items that were scanned by some other thread.
   for (auto it : to_revisit) {
-    if (LIKELY(it->is_visited.load(std::memory_order_relaxed)))
+    if (PA_LIKELY(it->is_visited.load(std::memory_order_relaxed)))
       continue;
     // Don't bail out here if the item is being visited by another thread.
     // This is helpful to guarantee forward progress if the other thread
@@ -138,6 +137,6 @@ void RacefulWorklist<T>::RandomizedView::Visit(Function f) {
   worklist_.fully_visited_.store(true, std::memory_order_release);
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal
+
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_RACEFUL_WORKLIST_H_

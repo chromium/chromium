@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,9 +36,11 @@ void AssertValueEqualsJSON(const std::unique_ptr<protocol::Value>& actual_value,
 }  // namespace
 
 class InspectorHighlightTest : public testing::Test,
-                               private ScopedCSSContainerQueriesForTest {
+                               private ScopedCSSContainerQueriesForTest,
+                               private ScopedLayoutNGForTest {
  public:
-  InspectorHighlightTest() : ScopedCSSContainerQueriesForTest(true) {}
+  InspectorHighlightTest()
+      : ScopedCSSContainerQueriesForTest(true), ScopedLayoutNGForTest(true) {}
 
  protected:
   void SetUp() override;
@@ -50,7 +52,7 @@ class InspectorHighlightTest : public testing::Test,
 };
 
 void InspectorHighlightTest::SetUp() {
-  dummy_page_holder_ = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  dummy_page_holder_ = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
 }
 
 TEST_F(InspectorHighlightTest, BuildSnapContainerInfoNoSnapAreas) {
@@ -222,7 +224,7 @@ TEST_F(InspectorHighlightTest,
       "containerBorder":["M",8,8,"L",408,8,"L",408,508,"L",8,508,"Z"],
       "containerQueryContainerHighlightConfig": {
         "descendantBorder": {
-          "color": "#010101",
+          "color": "rgb(1, 1, 1)",
           "pattern": ""
         }
       },

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "media/base/key_systems.h"
+#include "media/base/video_codecs.h"
 #include "media/learning/mojo/mojo_learning_task_controller_service.h"
 #include "media/mojo/services/video_decode_stats_recorder.h"
 #include "media/mojo/services/watch_time_recorder.h"
@@ -20,11 +21,11 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "media/filters/decrypting_video_decoder.h"
-#endif  // !defined(OS_ANDROID)
+#endif
 
-#if defined(OS_FUCHSIA) || (BUILDFLAG(IS_CHROMECAST) && defined(OS_ANDROID))
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CAST_ANDROID)
 #include "media/mojo/services/playback_events_recorder.h"
 #endif
 
@@ -46,7 +47,8 @@ MediaMetricsProvider::MediaMetricsProvider(
     learning::FeatureValue origin,
     VideoDecodePerfHistory::SaveCallback save_cb,
     GetLearningSessionCallback learning_session_cb,
-    RecordAggregateWatchTimeCallback record_playback_cb)
+    RecordAggregateWatchTimeCallback record_playback_cb,
+    IsShuttingDownCallback is_shutting_down_cb)
     : player_id_(g_player_id++),
       is_top_frame_(is_top_frame == FrameStatus::kTopFrame),
       source_id_(source_id),
@@ -54,6 +56,7 @@ MediaMetricsProvider::MediaMetricsProvider(
       save_cb_(std::move(save_cb)),
       learning_session_cb_(std::move(learning_session_cb)),
       record_playback_cb_(std::move(record_playback_cb)),
+      is_shutting_down_cb_(std::move(is_shutting_down_cb)),
       uma_info_(is_incognito == BrowsingMode::kIncognito) {}
 
 MediaMetricsProvider::~MediaMetricsProvider() {
@@ -101,22 +104,8 @@ MediaMetricsProvider::~MediaMetricsProvider() {
 std::string MediaMetricsProvider::GetUMANameForAVStream(
     const PipelineInfo& player_info) {
   constexpr char kPipelineUmaPrefix[] = "Media.PipelineStatus.AudioVideo.";
-  std::string uma_name = kPipelineUmaPrefix;
-  // TODO(xhwang): Use a helper function to simply the codec name mapping.
-  if (player_info.video_codec == VideoCodec::kVP8)
-    uma_name += "VP8.";
-  else if (player_info.video_codec == VideoCodec::kVP9)
-    uma_name += "VP9.";
-  else if (player_info.video_codec == VideoCodec::kH264)
-    uma_name += "H264.";
-  else if (player_info.video_codec == VideoCodec::kAV1)
-    uma_name += "AV1.";
-  else if (player_info.video_codec == VideoCodec::kHEVC)
-    uma_name += "HEVC.";
-  else if (player_info.video_codec == VideoCodec::kDolbyVision)
-    uma_name += "DolbyVision.";
-  else
-    return uma_name + "Other";
+  std::string uma_name =
+      kPipelineUmaPrefix + GetCodecNameForUMA(player_info.video_codec) + ".";
 
   // Add Renderer name when not using the default RendererImpl.
   if (renderer_type_ == RendererType::kMediaFoundation) {
@@ -126,7 +115,7 @@ std::string MediaMetricsProvider::GetUMANameForAVStream(
   }
 
   // Using default RendererImpl. Put more detailed info into the UMA name.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   if (player_info.video_pipeline_info.decoder_type ==
       VideoDecoderType::kDecrypting) {
     return uma_name + "DVD";
@@ -194,12 +183,14 @@ void MediaMetricsProvider::Create(
     VideoDecodePerfHistory::SaveCallback save_cb,
     GetLearningSessionCallback learning_session_cb,
     GetRecordAggregateWatchTimeCallback get_record_playback_cb,
+    IsShuttingDownCallback is_shutting_down_cb,
     mojo::PendingReceiver<mojom::MediaMetricsProvider> receiver) {
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<MediaMetricsProvider>(
           is_incognito, is_top_frame, source_id, origin, std::move(save_cb),
           std::move(learning_session_cb),
-          std::move(get_record_playback_cb).Run()),
+          std::move(get_record_playback_cb).Run(),
+          std::move(is_shutting_down_cb)),
       std::move(receiver));
 }
 
@@ -248,9 +239,25 @@ void MediaMetricsProvider::Initialize(
   media_stream_type_ = media_stream_type;
 }
 
-void MediaMetricsProvider::OnError(PipelineStatus status) {
+void MediaMetricsProvider::OnError(const PipelineStatus& status) {
   DCHECK(initialized_);
-  uma_info_.last_pipeline_status = status;
+  if (is_shutting_down_cb_.Run()) {
+    DVLOG(1) << __func__ << ": Error " << PipelineStatusToString(status)
+             << " ignored since it is reported during shutdown.";
+    return;
+  }
+
+  uma_info_.last_pipeline_status = status.code();
+}
+
+void MediaMetricsProvider::OnFallback(const PipelineStatus& status) {
+  DCHECK(initialized_);
+  if (is_shutting_down_cb_.Run()) {
+    DVLOG(1) << __func__ << ": Error " << PipelineStatusToString(status)
+             << " ignored since it is reported during shutdown.";
+    return;
+  }
+  // Do nothing for now.
 }
 
 void MediaMetricsProvider::SetIsEME() {
@@ -330,7 +337,7 @@ void MediaMetricsProvider::AcquireVideoDecodeStatsRecorder(
 
 void MediaMetricsProvider::AcquirePlaybackEventsRecorder(
     mojo::PendingReceiver<mojom::PlaybackEventsRecorder> receiver) {
-#if defined(OS_FUCHSIA) || (BUILDFLAG(IS_CHROMECAST) && defined(OS_ANDROID))
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CAST_ANDROID)
   PlaybackEventsRecorder::Create(std::move(receiver));
 #endif
 }

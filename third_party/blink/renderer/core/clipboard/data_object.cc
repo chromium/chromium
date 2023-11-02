@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/clipboard/dragged_isolated_file_system.h"
 #include "third_party/blink/renderer/core/clipboard/paste_mode.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
+#include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
@@ -71,7 +72,7 @@ DataObject* DataObject::CreateFromClipboard(SystemClipboard* system_clipboard,
                 std::move(file->file_system_access_token)));
       }
     }
-    if (files && !files->files.IsEmpty()) {
+    if (files && !files->files.empty()) {
       DraggedIsolatedFileSystem::PrepareForDataObject(data_object);
     } else {
       data_object->item_list_.push_back(DataObjectItem::CreateFromClipboard(
@@ -116,7 +117,7 @@ void DataObject::DeleteItem(uint32_t index) {
 }
 
 void DataObject::ClearAll() {
-  if (item_list_.IsEmpty())
+  if (item_list_.empty())
     return;
   item_list_.clear();
   NotifyItemListChanged();
@@ -258,13 +259,13 @@ void DataObject::AddFilename(
 }
 
 void DataObject::AddFileSharedBuffer(scoped_refptr<SharedBuffer> buffer,
-                                     bool is_accessible_from_start_frame,
+                                     bool is_image_accessible,
                                      const KURL& source_url,
                                      const String& filename_extension,
                                      const AtomicString& content_disposition) {
   InternalAddFileItem(DataObjectItem::CreateFromFileSharedBuffer(
-      std::move(buffer), is_accessible_from_start_frame, source_url,
-      filename_extension, content_disposition));
+      std::move(buffer), is_image_accessible, source_url, filename_extension,
+      content_disposition));
 }
 
 DataObject::DataObject() : modifiers_(0) {}
@@ -313,7 +314,7 @@ void DataObject::Trace(Visitor* visitor) const {
 }
 
 // static
-DataObject* DataObject::Create(WebDragData data) {
+DataObject* DataObject::Create(const WebDragData& data) {
   DataObject* data_object = Create();
   bool has_file_system = false;
 
@@ -335,20 +336,37 @@ DataObject* DataObject::Create(WebDragData data) {
         break;
       case WebDragData::Item::kStorageTypeBinaryData:
         data_object->AddFileSharedBuffer(
-            item.binary_data, item.binary_data_accessible_from_start_frame,
+            item.binary_data, item.binary_data_image_accessible,
             item.binary_data_source_url, item.binary_data_filename_extension,
             item.binary_data_content_disposition);
         break;
       case WebDragData::Item::kStorageTypeFileSystemFile: {
         // TODO(http://crbug.com/429077): The file system URL may refer a user
         // visible file.
+        scoped_refptr<BlobDataHandle> blob_data_handle =
+            item.file_system_blob_info.GetBlobHandle();
+
+        // If the browser process has provided a BlobDataHandle to use for
+        // building the File object (as a result of a drop operation being
+        // performed) then use it to create the file here (instead of creating
+        // a File object without one and requiring a call to
+        // BlobRegistry::Register in the browser process to hook up the Blob
+        // remote/receiver pair). If no BlobDataHandle was provided, create a
+        // BlobDataHandle to an empty blob since the File object contents
+        // won't be needed (for example, because this DataObject will be used
+        // for the DragEnter case where the spec only indicates that basic file
+        // metadata should be retrievable via the corresponding
+        // DataTransferItem).
+        if (!blob_data_handle) {
+          blob_data_handle = BlobDataHandle::Create();
+        }
         has_file_system = true;
         FileMetadata file_metadata;
         file_metadata.length = item.file_system_file_size;
-
         data_object->Add(
             File::CreateForFileSystemFile(item.file_system_url, file_metadata,
-                                          File::kIsNotUserVisible),
+                                          File::kIsNotUserVisible,
+                                          std::move(blob_data_handle)),
             item.file_system_id);
       } break;
     }
@@ -379,8 +397,7 @@ WebDragData DataObject::ToWebDragData() {
       if (original_item->GetSharedBuffer()) {
         item.storage_type = WebDragData::Item::kStorageTypeBinaryData;
         item.binary_data = original_item->GetSharedBuffer();
-        item.binary_data_accessible_from_start_frame =
-            original_item->IsAccessibleFromStartFrame();
+        item.binary_data_image_accessible = original_item->IsImageAccessible();
         item.binary_data_source_url = original_item->BaseURL();
         item.binary_data_filename_extension =
             original_item->FilenameExtension();

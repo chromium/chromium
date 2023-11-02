@@ -1,10 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_PARSER_TOKEN_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_PARSER_TOKEN_H_
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/parser/at_rule_descriptors.h"
@@ -80,7 +81,7 @@ class CORE_EXPORT CSSParserToken {
   };
 
   CSSParserToken(CSSParserTokenType type, BlockType block_type = kNotBlock)
-      : type_(type), block_type_(block_type) {}
+      : type_(type), block_type_(block_type), value_is_inline_(false) {}
   CSSParserToken(CSSParserTokenType type,
                  StringView value,
                  BlockType block_type = kNotBlock)
@@ -115,6 +116,11 @@ class CORE_EXPORT CSSParserToken {
     return static_cast<CSSParserTokenType>(type_);
   }
   StringView Value() const {
+    if (value_is_inline_) {
+      DCHECK(value_is_8bit_);
+      return StringView(reinterpret_cast<const LChar*>(value_data_char_inline_),
+                        value_length_);
+    }
     if (value_is_8bit_)
       return StringView(reinterpret_cast<const LChar*>(value_data_char_raw_),
                         value_length_);
@@ -158,24 +164,66 @@ class CORE_EXPORT CSSParserToken {
 
   CSSParserToken CopyWithUpdatedString(const StringView&) const;
 
+  static CSSParserTokenType ClosingTokenType(CSSParserTokenType opening_type) {
+    switch (opening_type) {
+      case kFunctionToken:
+      case kLeftParenthesisToken:
+        return kRightParenthesisToken;
+      case kLeftBracketToken:
+        return kRightBracketToken;
+      case kLeftBraceToken:
+        return kRightBraceToken;
+      default:
+        NOTREACHED();
+        return kEOFToken;
+    }
+  }
+
  private:
   void InitValueFromStringView(StringView string) {
     value_length_ = string.length();
     value_is_8bit_ = string.Is8Bit();
-    value_data_char_raw_ = string.Bytes();
+    if (value_is_8bit_ && value_length_ <= sizeof(value_data_char_inline_)) {
+      memcpy(value_data_char_inline_, string.Bytes(), value_length_);
+      value_is_inline_ = true;
+    } else {
+      value_data_char_raw_ = string.Bytes();
+      value_is_inline_ = false;
+    }
   }
   bool ValueDataCharRawEqual(const CSSParserToken& other) const;
+  const void* ValueDataCharRaw() const {
+    if (value_is_inline_) {
+      return value_data_char_inline_;
+    } else {
+      return value_data_char_raw_;
+    }
+  }
 
   unsigned type_ : 6;                // CSSParserTokenType
   unsigned block_type_ : 2;          // BlockType
   unsigned numeric_value_type_ : 1;  // NumericValueType
   unsigned numeric_sign_ : 2;        // NumericSign
   unsigned unit_ : 7;                // CSSPrimitiveValue::UnitType
+
+  // The variables below are only used if the token type is string-backed
+  // (which depends on type_; see HasStringBacking() for the list).
+
+  // Short strings (eight bytes or fewer) may be stored directly into the
+  // CSSParserToken, freeing us from allocating a backing string for the
+  // contents (saving RAM and a little time). If so, value_is_inline_
+  // is set to mark that the buffer contains the string itself instead of
+  // a pointer to the string. It also guarantees value_is_8bit_ == true.
+  bool value_is_inline_ : 1;
+
   // value_... is an unpacked StringView so that we can pack it
   // tightly with the rest of this object for a smaller object size.
   bool value_is_8bit_ : 1;
   unsigned value_length_;
-  const void* value_data_char_raw_;  // Either LChar* or UChar*.
+  union {
+    char value_data_char_inline_[8];   // If value_is_inline_ is true.
+    const void* value_data_char_raw_;  // Either LChar* or UChar*.
+  };
 
   union {
     UChar delimiter_;

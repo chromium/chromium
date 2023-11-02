@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/webrtc/modules/audio_device/include/audio_device.h"
@@ -79,10 +78,10 @@ class MODULES_EXPORT WebRtcAudioDeviceNotImpl
   int32_t EnableBuiltInAEC(bool enable) override;
   int32_t EnableBuiltInAGC(bool enable) override;
   int32_t EnableBuiltInNS(bool enable) override;
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   int GetPlayoutAudioParameters(AudioParameters* params) const override;
   int GetRecordAudioParameters(AudioParameters* params) const override;
-#endif  // OS_IOS
+#endif  // BUILDFLAG(IS_IOS)
 
  protected:
   ~WebRtcAudioDeviceNotImpl() override {}

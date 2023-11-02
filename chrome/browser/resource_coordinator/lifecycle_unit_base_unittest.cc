@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,7 +47,7 @@ class LifecycleUnitBaseTest : public testing::Test {
     usage_clock_ = std::make_unique<UsageClock>();
   }
 
-  ~LifecycleUnitBaseTest() {
+  ~LifecycleUnitBaseTest() override {
     usage_clock_.reset();
     metrics::DesktopSessionDurationTracker::CleanupForTesting();
   }
@@ -199,7 +199,7 @@ namespace {
 class MockLifecycleUnitSource : public LifecycleUnitSourceBase {
  public:
   MockLifecycleUnitSource() = default;
-  virtual ~MockLifecycleUnitSource() = default;
+  ~MockLifecycleUnitSource() override = default;
 
   MOCK_METHOD0(OnFirstLifecycleUnitCreated, void());
   MOCK_METHOD0(OnAllLifecycleUnitsDestroyed, void());

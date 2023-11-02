@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -104,7 +104,7 @@ class TabHelperDelegateInstaller {
       SetTabHelperDelegate(web_state, nullptr);
     }
 
-    // Sets the delegate for |web_state|'s Helper to |delegate|.
+    // Sets the delegate for `web_state`'s Helper to `delegate`.
     void SetTabHelperDelegate(web::WebState* web_state, Delegate* delegate) {
       (Helper::FromWebState(web_state)->*SetDelFn)(delegate);
     }
@@ -113,7 +113,7 @@ class TabHelperDelegateInstaller {
     Delegate* delegate_ = nullptr;
     // The WebStateList whose Helpers's delegates are being installed.
     WebStateList* web_state_list_ = nullptr;
-    // Scoped observer for |web_state_list_|.
+    // Scoped observer for `web_state_list_`.
     base::ScopedObservation<WebStateList, WebStateListObserver>
         scoped_observation_{this};
   };

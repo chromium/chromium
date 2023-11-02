@@ -1,6 +1,8 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "base/memory/raw_ptr.h"
 
 #import "chrome/browser/ui/views/apps/chrome_native_app_window_views_mac.h"
 
@@ -18,7 +20,7 @@
 @interface ResizeNotificationObserver : NSObject {
  @private
   // Weak. Owns us.
-  ChromeNativeAppWindowViewsMac* _nativeAppWindow;
+  raw_ptr<ChromeNativeAppWindowViewsMac> _nativeAppWindow;
 }
 - (instancetype)initForNativeAppWindow:
     (ChromeNativeAppWindowViewsMac*)nativeAppWindow;

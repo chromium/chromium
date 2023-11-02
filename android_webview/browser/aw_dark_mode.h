@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,23 +21,29 @@ class AwDarkMode : public content::WebContentsObserver,
 
   void PopulateWebPreferences(blink::web_pref::WebPreferences* web_prefs,
                               int force_dark_mode,
-                              int force_dark_behavior);
+                              int force_dark_behavior,
+                              bool algorithmic_darkening_allowed);
 
   void DetachFromJavaObject(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jcaller);
 
-  // TODO(crbug.com/1253990): Rename to is_force_dark_applied().
-  bool is_dark_mode() const { return is_dark_mode_; }
+  bool is_force_dark_applied() const { return is_force_dark_applied_; }
 
  private:
   // content::WebContentsObserver
   void NavigationEntryCommitted(
       const content::LoadCommittedDetails& load_details) override;
+  void InferredColorSchemeUpdated(
+      absl::optional<blink::mojom::PreferredColorScheme> color_scheme) override;
+
+  void PopulateWebPreferencesForPreT(blink::web_pref::WebPreferences* web_prefs,
+                                     int force_dark_mode,
+                                     int force_dark_behavior);
 
   bool IsAppUsingDarkTheme();
 
-  bool is_dark_mode_ = false;
+  bool is_force_dark_applied_ = false;
   bool prefers_dark_from_theme_ = false;
 
   JavaObjectWeakGlobalRef jobj_;

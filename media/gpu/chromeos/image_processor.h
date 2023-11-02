@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,9 +17,11 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/video_frame.h"
+#include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/image_processor_backend.h"
 #include "media/gpu/media_gpu_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/native_pixmap_handle.h"
 
 namespace media {
 
@@ -29,6 +31,18 @@ namespace media {
 // in a format different from what the rest of the pipeline expects.
 class MEDIA_GPU_EXPORT ImageProcessor {
  public:
+  struct PixelLayoutCandidate {
+    Fourcc fourcc;
+    gfx::Size size;
+    uint64_t modifier = gfx::NativePixmapHandle::kNoModifier;
+
+    // For testing.
+    bool operator==(const PixelLayoutCandidate& candidate) const {
+      return this->fourcc == candidate.fourcc && this->size == candidate.size &&
+             this->modifier == candidate.modifier;
+    }
+  };
+
   using PortConfig = ImageProcessorBackend::PortConfig;
   using OutputMode = ImageProcessorBackend::OutputMode;
   using ErrorCB = ImageProcessorBackend::ErrorCB;
@@ -41,7 +55,7 @@ class MEDIA_GPU_EXPORT ImageProcessor {
       base::RepeatingCallback<std::unique_ptr<ImageProcessorBackend>(
           const PortConfig& input_config,
           const PortConfig& output_config,
-          const std::vector<OutputMode>& preferred_output_modes,
+          OutputMode output_mode,
           VideoRotation relative_rotation,
           ErrorCB error_cb,
           scoped_refptr<base::SequencedTaskRunner> backend_task_runner)>;
@@ -50,7 +64,7 @@ class MEDIA_GPU_EXPORT ImageProcessor {
       CreateBackendCB create_backend_cb,
       const PortConfig& input_config,
       const PortConfig& output_config,
-      const std::vector<OutputMode>& preferred_output_modes,
+      OutputMode output_mode,
       VideoRotation relative_rotation,
       ErrorCB error_cb,
       scoped_refptr<base::SequencedTaskRunner> client_task_runner);
@@ -61,8 +75,9 @@ class MEDIA_GPU_EXPORT ImageProcessor {
 
   virtual ~ImageProcessor();
 
-  const PortConfig& input_config() const { return backend_->input_config(); }
-  const PortConfig& output_config() const { return backend_->output_config(); }
+  virtual const PortConfig& input_config() const;
+  virtual const PortConfig& output_config() const;
+
   OutputMode output_mode() const { return backend_->output_mode(); }
 
   // Called by client to process |frame|. The resulting processed frame will be
@@ -89,6 +104,21 @@ class MEDIA_GPU_EXPORT ImageProcessor {
   // will be invoked. ImageProcessor is ready to process more frames.
   // Reset() must be called on |client_task_runner_|.
   bool Reset();
+
+  // Returns true if and only if, in IMPORT mode, the image processor requires
+  // the output video frames to be CPU-readable with a linear view of the data.
+  bool needs_linear_output_buffers() const {
+    return needs_linear_output_buffers_;
+  }
+
+  // Returns true if the image processor supports buffers allocated
+  // incoherently. The MTK MDP3 image processor has coherency issues, but the
+  // Libyuv image processor benefits greatly from incoherent allocations.
+  // Defaults to false, since only Libyuv has been shown to support this feature
+  // so far.
+  bool SupportsIncoherentBufs() const {
+    return backend_ && backend_->supports_incoherent_buffers();
+  }
 
  protected:
   // Container for both FrameReadyCB and LegacyFrameReadyCB. With this class,
@@ -146,6 +176,8 @@ class MEDIA_GPU_EXPORT ImageProcessor {
 
   // The sequence for interacting with |backend_|.
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
+
+  const bool needs_linear_output_buffers_;
 
   // The weak pointer of this, bound to |client_task_runner_|.
   base::WeakPtr<ImageProcessor> weak_this_;

@@ -1,15 +1,16 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_COMPONENTS_PHONEHUB_CROS_STATE_SENDER_H_
 #define ASH_COMPONENTS_PHONEHUB_CROS_STATE_SENDER_H_
 
+#include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
+#include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
-#include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class MessageSender;
@@ -62,6 +63,6 @@ class CrosStateSender
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_CROS_STATE_SENDER_H_

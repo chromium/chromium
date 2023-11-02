@@ -83,6 +83,15 @@
     Set up Nearby Share
   </message>
 
+  <!-- One-page onboarding page -->
+  <message name="IDS_NEARBY_ONBOARDING_PAGE_DEVICE_VISIBILITY" desc="Label of device visibility selection button which will redirect user to visibility selection page">
+    Device visibility
+  </message>
+  <message name="IDS_NEARBY_ONBOARDING_PAGE_DEVICE_VISIBILITY_HELP_ALL_CONTACTS" desc="Text that accompanies the device visibility selection button to give some context about what the current visibility selection means">
+    Contacts nearby can share with you. Approval will be required.
+  </message>
+
+
   <!-- Visibility page -->
   <message name="IDS_NEARBY_VISIBILITY_PAGE_MANAGE_CONTACTS" desc="Action button text to manage the contacts of a user while setting up Nearby Share.">
     Manage contacts
@@ -294,6 +303,9 @@
   <message name="IDS_NEARBY_NOTIFICATION_ACTION_OPEN_FOLDER" desc="Notification action button text that opens the folder to the received files.">
     Open folder
   </message>
+  <message name="IDS_NEARBY_NOTIFICATION_ACTION_OPEN_NETWORK_LIST" desc="Notification action button text that opens the known Wi-Fi networks list in Settings.">
+    Open in Wi-Fi networks
+  </message>
   <message name="IDS_NEARBY_NOTIFICATION_ACTION_OPEN_URL" desc="Notification action button text that opens the received URL.">
     Open
   </message>
@@ -304,6 +316,9 @@
     {COUNT, plural,
       =1 {<ph name="DEVICE_NAME">$1<ex>Ted's Pixel 2</ex></ph> is sharing <ph name="ATTACHMENTS">$2<ex>1 item</ex></ph> with you.}
       other {<ph name="DEVICE_NAME">$1<ex>Ted's Pixel 2</ex></ph> is sharing <ph name="ATTACHMENTS">$2<ex>3 items</ex></ph> with you.}}
+  </message>
+  <message name="IDS_NEARBY_NOTIFICATION_CONNECTION_REQUEST_MESSAGE_WIFI_CREDENTIALS" desc="Text shown as the message of a notfication when a nearby device requests a connection via Nearby Share to send Wi-Fi network credentials.">
+    <ph name="DEVICE_NAME">$1<ex>Ted's Pixel 2</ex></ph> is sharing a Wi-Fi network with you
   </message>
   <message name="IDS_NEARBY_NOTIFICATION_CONNECTION_REQUEST_TITLE" desc="Text shown as the title of a notfication when a nearby device requests a connection via Nearby Share.">
     Receive with Nearby Share?
@@ -326,6 +341,15 @@
   <message name="IDS_NEARBY_NOTIFICATION_GO_VISIBLE_ACTION" desc="Text shown on the notification to enter High Visibility Mode. High visibility mode allows the user to be discovered by nearby devices that are trying to share.">
     Enable
   </message>
+  <message name="IDS_NEARBY_NOTIFICATION_VISIBILITY_REMINDER_TITLE" desc="Text shown as the title of a notification that reminds users of their visibility settings">
+    Review your settings
+  </message>
+  <message name="IDS_NEARBY_NOTIFICATION_VISIBILITY_REMINDER_MESSAGE" desc="Text shown as the message of a notification that reminds users of their visibility settings">
+    Nearby contacts can share with you. Click to change.
+  </message>
+  <message name="IDS_NEARBY_NOTIFICATION_GO_TO_SETTINGS_ACTION" desc="Text shown on the notification to go to visibility setting page">
+    Settings
+  </message>
   <message name="IDS_NEARBY_NOTIFICATION_DISMISS_ACTION" desc="Text shown on the notification to close the notification.">
     Dismiss
   </message>
@@ -334,15 +358,24 @@
       =1 {Failed to receive <ph name="ATTACHMENTS">$1<ex>1 item</ex></ph> from <ph name="DEVICE_NAME">$2<ex>Ted's Pixel 2</ex></ph>}
       other {Failed to receive <ph name="ATTACHMENTS">$1<ex>3 items</ex></ph> from <ph name="DEVICE_NAME">$2<ex>Ted's Pixel 2</ex></ph>}}
   </message>
+  <message name="IDS_NEARBY_NOTIFICATION_RECEIVE_FAILURE_TITLE_WIFI_CREDENTIALS" desc="Text shown as the title of a notfication when receiving Wi-Fi credentials via Nearby Share failed.">
+    Couldn't save '<ph name="NETWORK_NAME">$1<ex>My Home Wi-Fi</ex></ph>' from <ph name="DEVICE_NAME">$2<ex>Ted's Pixel 2</ex></ph>
+  </message>
   <message name="IDS_NEARBY_NOTIFICATION_RECEIVE_PROGRESS_TITLE" desc="Text shown as the title of a notfication when receiving data via Nearby Share.">
     {COUNT, plural,
       =1 {Receiving <ph name="ATTACHMENTS">$1<ex>1 item</ex></ph> from <ph name="DEVICE_NAME">$2<ex>Ted's Pixel 2</ex></ph>}
       other {Receiving <ph name="ATTACHMENTS">$1<ex>3 items</ex></ph> from <ph name="DEVICE_NAME">$2<ex>Ted's Pixel 2</ex></ph>}}
   </message>
+  <message name="IDS_NEARBY_NOTIFICATION_RECEIVE_PROGRESS_TITLE_WIFI_CREDENTIALS" desc="Text shown as the title of a notfication when receiving Wi-Fi credentials via Nearby Share.">
+    Receiving Wi-Fi network
+  </message>
   <message name="IDS_NEARBY_NOTIFICATION_RECEIVE_SUCCESS_TITLE" desc="Text shown as the title of a notfication when data was sucessfully received via Nearby Share.">
     {COUNT, plural,
       =1 {<ph name="ATTACHMENTS">$1<ex>1 item</ex></ph> received from <ph name="DEVICE_NAME">$2<ex>Ted's Pixel 2</ex></ph>}
       other {<ph name="ATTACHMENTS">$1<ex>3 items</ex></ph> received from <ph name="DEVICE_NAME">$2<ex>Ted's Pixel 2</ex></ph>}}
+  </message>
+  <message name="IDS_NEARBY_NOTIFICATION_RECEIVE_SUCCESS_TITLE_WIFI_CREDENTIALS" desc="Text shown as the title of a notfication when Wi-Fi credentials were sucessfully received via Nearby Share.">
+    '<ph name="NETWORK_NAME">$1<ex>My Home Wi-Fi</ex></ph>' saved from <ph name="DEVICE_NAME">$2<ex>Ted's Pixel 2</ex></ph>
   </message>
   <message name="IDS_NEARBY_NOTIFICATION_SEND_FAILURE_TITLE" desc="Text shown as the title of a notfication when sending data via Nearby Share failed.">
     {COUNT, plural,

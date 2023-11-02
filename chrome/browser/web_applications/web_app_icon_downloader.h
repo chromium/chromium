@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,7 @@ class WebAppIconDownloader : public content::WebContentsObserver {
   // |extra_favicon_urls| allows callers to provide icon urls that aren't
   // provided by the renderer (e.g touch icons on non-android environments).
   WebAppIconDownloader(content::WebContents* web_contents,
-                       const std::vector<GURL>& extra_favicon_urls,
+                       base::flat_set<GURL> extra_favicon_urls,
                        WebAppIconDownloaderCallback callback);
   WebAppIconDownloader(const WebAppIconDownloader&) = delete;
   WebAppIconDownloader& operator=(const WebAppIconDownloader&) = delete;
@@ -53,22 +53,20 @@ class WebAppIconDownloader : public content::WebContentsObserver {
 
   void Start();
 
- private:
-  friend class TestWebAppIconDownloader;
+  size_t pending_requests() const { return in_progress_requests_.size(); }
 
+ private:
   // Initiates a download of the image at |url| and returns the download id.
-  // This is overridden in testing.
-  virtual int DownloadImage(const GURL& url);
+  int DownloadImage(const GURL& url);
 
   // Queries WebContents for the page's current favicon URLs.
-  // This is overridden in testing.
-  virtual const std::vector<blink::mojom::FaviconURLPtr>&
+  const std::vector<blink::mojom::FaviconURLPtr>&
   GetFaviconURLsFromWebContents();
 
   // Fetches icons for the given urls.
   // |callback_| is run when all downloads complete.
   void FetchIcons(const std::vector<blink::mojom::FaviconURLPtr>& favicon_urls);
-  void FetchIcons(const std::vector<GURL>& urls);
+  void FetchIcons(const base::flat_set<GURL>& urls);
 
   // Icon download callback.
   void DidDownloadFavicon(int id,
@@ -82,22 +80,23 @@ class WebAppIconDownloader : public content::WebContentsObserver {
   void DidUpdateFaviconURL(
       content::RenderFrameHost* rfh,
       const std::vector<blink::mojom::FaviconURLPtr>& candidates) override;
+  void WebContentsDestroyed() override;
 
   void CompleteCallback();
   void CancelDownloads(IconsDownloadedResult result,
                        DownloadedIconsHttpResults icons_http_results);
 
   // Whether we need to fetch favicons from the renderer.
-  bool need_favicon_urls_;
+  bool need_favicon_urls_ = true;
 
   // Whether we consider all requests to have failed if any individual URL fails
   // to load.
-  bool fail_all_if_any_fail_;
+  bool fail_all_if_any_fail_ = false;
 
   // URLs that aren't given by WebContentsObserver::DidUpdateFaviconURL() that
   // should be used for this favicon. This is necessary in order to get touch
   // icons on non-android environments.
-  std::vector<GURL> extra_favicon_urls_;
+  base::flat_set<GURL> extra_favicon_urls_;
 
   // The icons which were downloaded. Populated by FetchIcons().
   IconsMap icons_map_;

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,24 +9,24 @@
 
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
-type KioskSettings = {
-  kioskEnabled: boolean,
-  autoLaunchEnabled: boolean,
-};
+export interface KioskSettings {
+  kioskEnabled: boolean;
+  autoLaunchEnabled: boolean;
+}
 
-export type KioskApp = {
-  id: string,
-  name: string,
-  iconURL: string,
-  autoLaunch: boolean,
-  isLoading: boolean,
-};
+export interface KioskApp {
+  id: string;
+  name: string;
+  iconURL: string;
+  autoLaunch: boolean;
+  isLoading: boolean;
+}
 
-export type KioskAppSettings = {
-  apps: Array<KioskApp>,
-  disableBailout: boolean,
-  hasAutoLaunchApp: boolean,
-};
+export interface KioskAppSettings {
+  apps: KioskApp[];
+  disableBailout: boolean;
+  hasAutoLaunchApp: boolean;
+}
 
 /** @interface */
 export interface KioskBrowserProxy {

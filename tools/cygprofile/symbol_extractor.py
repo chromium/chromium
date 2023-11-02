@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -150,7 +150,7 @@ def _SymbolInfosFromStream(objdump_lines):
   name_to_offsets = collections.defaultdict(list)
   symbol_infos = []
   for line in objdump_lines:
-    symbol_info = _FromObjdumpLine(line.decode('utf-8').rstrip('\n'))
+    symbol_info = _FromObjdumpLine(line.rstrip('\n'))
     if symbol_info is not None:
       # On ARM the LLD linker inserts pseudo-functions (thunks) that allow
       # jumping distances farther than 16 MiB. Such thunks are known to often
@@ -188,7 +188,9 @@ def SymbolInfosFromBinary(binary_filename):
   """
   command = [_TOOL_PREFIX + 'objdump', '-t', '-w', binary_filename]
   try:
-    p = subprocess.Popen(command, stdout=subprocess.PIPE)
+    p = subprocess.Popen(command,
+                         stdout=subprocess.PIPE,
+                         universal_newlines=True)
   except OSError as error:
     logging.error("Failed to execute the command: path=%s, binary_filename=%s",
                   command[0], binary_filename)
@@ -218,7 +220,6 @@ def _SymbolInfosFromLlvmNm(lines):
   """
   symbol_names = []
   for line in lines:
-    line = line.decode('utf-8')
     m = _LLVM_NM_LINE_RE.match(line)
     assert m is not None, line
     if m.group('symbol_type') not in ['t', 'T', 'w', 'W']:

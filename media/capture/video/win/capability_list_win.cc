@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -87,6 +87,12 @@ bool CompareCapability(const VideoCaptureFormat& requested,
          requested.pixel_format == PIXEL_FORMAT_NV12)) {
       return false;
     }
+  }
+
+  // Deprioritize fake formats to avoid extra conversions.
+  if (lhs.source_pixel_format == rhs.source_pixel_format &&
+      (lhs.maybe_fake ^ rhs.maybe_fake)) {
+    return rhs.maybe_fake;
   }
 
   return VideoCaptureFormat::ComparePixelFormatPreference(

@@ -1,9 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/updater/policy/manager.h"
 
+#include <string>
+#include <vector>
+
+#include "base/time/time.h"
 #include "chrome/updater/constants.h"
 
 namespace updater {
@@ -44,22 +48,19 @@ bool UpdatesSuppressedTimes::contains(int hour, int minute) const {
   return false;
 }
 
-// TODO: crbug 1070833.
-// The DefaultPolicyManager is just a stub manager at the moment that returns
-// |false| or failure for all methods. This policy manager would be in effect
-// when policies are not effective for any other policy manager in the system.
-// It is expected that this policy manager will return default values instead of
-// failure in the future.
-class DefaultPolicyManager : public PolicyManagerInterface {
+// DefaultValuesPolicyManager returns the default values for policies when no
+// other policy manager is present in the system.
+class DefaultValuesPolicyManager : public PolicyManagerInterface {
  public:
-  DefaultPolicyManager();
-  DefaultPolicyManager(const DefaultPolicyManager&) = delete;
-  DefaultPolicyManager& operator=(const DefaultPolicyManager&) = delete;
-  ~DefaultPolicyManager() override;
+  DefaultValuesPolicyManager();
+  DefaultValuesPolicyManager(const DefaultValuesPolicyManager&) = delete;
+  DefaultValuesPolicyManager& operator=(const DefaultValuesPolicyManager&) =
+      delete;
+  ~DefaultValuesPolicyManager() override;
 
   std::string source() const override;
 
-  bool IsManaged() const override;
+  bool HasActiveDevicePolicies() const override;
 
   bool GetLastCheckPeriodMinutes(int* minutes) const override;
   bool GetUpdatesSuppressedTimes(
@@ -83,87 +84,100 @@ class DefaultPolicyManager : public PolicyManagerInterface {
   bool GetProxyServer(std::string* proxy_server) const override;
   bool GetTargetChannel(const std::string& app_id,
                         std::string* channel) const override;
+  bool GetForceInstallApps(
+      std::vector<std::string>* force_install_apps) const override;
 };
 
-DefaultPolicyManager::DefaultPolicyManager() = default;
+DefaultValuesPolicyManager::DefaultValuesPolicyManager() = default;
 
-DefaultPolicyManager::~DefaultPolicyManager() = default;
+DefaultValuesPolicyManager::~DefaultValuesPolicyManager() = default;
 
-bool DefaultPolicyManager::IsManaged() const {
+bool DefaultValuesPolicyManager::HasActiveDevicePolicies() const {
   return true;
 }
 
-std::string DefaultPolicyManager::source() const {
+std::string DefaultValuesPolicyManager::source() const {
   return std::string("default");
 }
 
-bool DefaultPolicyManager::GetLastCheckPeriodMinutes(int* minutes) const {
-  return false;
+bool DefaultValuesPolicyManager::GetLastCheckPeriodMinutes(int* minutes) const {
+  *minutes = kDefaultLastCheckPeriod.InMinutes();
+  return true;
 }
 
-bool DefaultPolicyManager::GetUpdatesSuppressedTimes(
+bool DefaultValuesPolicyManager::GetUpdatesSuppressedTimes(
     UpdatesSuppressedTimes* suppressed_times) const {
   return false;
 }
 
-bool DefaultPolicyManager::GetDownloadPreferenceGroupPolicy(
+bool DefaultValuesPolicyManager::GetDownloadPreferenceGroupPolicy(
     std::string* download_preference) const {
   return false;
 }
 
-bool DefaultPolicyManager::GetPackageCacheSizeLimitMBytes(
+bool DefaultValuesPolicyManager::GetPackageCacheSizeLimitMBytes(
     int* cache_size_limit) const {
   return false;
 }
 
-bool DefaultPolicyManager::GetPackageCacheExpirationTimeDays(
+bool DefaultValuesPolicyManager::GetPackageCacheExpirationTimeDays(
     int* cache_life_limit) const {
   return false;
 }
 
-bool DefaultPolicyManager::GetEffectivePolicyForAppInstalls(
+bool DefaultValuesPolicyManager::GetEffectivePolicyForAppInstalls(
     const std::string& app_id,
     int* install_policy) const {
-  return false;
+  *install_policy = kInstallPolicyDefault;
+  return true;
 }
 
-bool DefaultPolicyManager::GetEffectivePolicyForAppUpdates(
+bool DefaultValuesPolicyManager::GetEffectivePolicyForAppUpdates(
     const std::string& app_id,
     int* update_policy) const {
-  return false;
+  *update_policy = kUpdatePolicyDefault;
+  return true;
 }
 
-bool DefaultPolicyManager::GetTargetVersionPrefix(
+bool DefaultValuesPolicyManager::GetTargetVersionPrefix(
     const std::string& app_id,
     std::string* target_version_prefix) const {
   return false;
 }
 
-bool DefaultPolicyManager::IsRollbackToTargetVersionAllowed(
+bool DefaultValuesPolicyManager::IsRollbackToTargetVersionAllowed(
     const std::string& app_id,
     bool* rollback_allowed) const {
+  *rollback_allowed = false;
+  return true;
+}
+
+bool DefaultValuesPolicyManager::GetProxyMode(std::string* proxy_mode) const {
   return false;
 }
 
-bool DefaultPolicyManager::GetProxyMode(std::string* proxy_mode) const {
+bool DefaultValuesPolicyManager::GetProxyPacUrl(
+    std::string* proxy_pac_url) const {
   return false;
 }
 
-bool DefaultPolicyManager::GetProxyPacUrl(std::string* proxy_pac_url) const {
+bool DefaultValuesPolicyManager::GetProxyServer(
+    std::string* proxy_server) const {
   return false;
 }
 
-bool DefaultPolicyManager::GetProxyServer(std::string* proxy_server) const {
+bool DefaultValuesPolicyManager::GetTargetChannel(const std::string& app_id,
+                                                  std::string* channel) const {
   return false;
 }
 
-bool DefaultPolicyManager::GetTargetChannel(const std::string& app_id,
-                                            std::string* channel) const {
+bool DefaultValuesPolicyManager::GetForceInstallApps(
+    std::vector<std::string>* /* force_install_apps */) const {
   return false;
 }
 
-std::unique_ptr<PolicyManagerInterface> GetPolicyManager() {
-  return std::make_unique<DefaultPolicyManager>();
+std::unique_ptr<PolicyManagerInterface> GetDefaultValuesPolicyManager() {
+  return std::make_unique<DefaultValuesPolicyManager>();
 }
 
 }  // namespace updater

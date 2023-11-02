@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -668,7 +668,7 @@ TEST_F(MouseWheelEventQueueTest, WheelScrollLatching) {
   EXPECT_EQ(1U, GetAndResetSentEventCount());
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 TEST_F(MouseWheelEventQueueTest, DoNotSwapXYForShiftScroll) {
   // Send an event with shift modifier, zero value for delta X, and no direction
   // for |rails_mode|. Do not swap the scroll direction.

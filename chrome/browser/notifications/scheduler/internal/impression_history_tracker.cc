@@ -1,15 +1,15 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/notifications/scheduler/internal/impression_history_tracker.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "chrome/browser/notifications/scheduler/internal/scheduler_utils.h"
@@ -56,6 +56,8 @@ std::string ToDatabaseKey(SchedulerClientType type) {
       return "Prefetch";
     case SchedulerClientType::kReadingList:
       return "ReadingList";
+    case SchedulerClientType::kFeatureGuide:
+      return "FeatureGuide";
   }
 }
 
@@ -209,10 +211,7 @@ void ImpressionHistoryTrackerImpl::SyncRegisteredClients() {
   // Remove deprecated clients.
   for (auto it = client_states_.begin(); it != client_states_.end();) {
     auto client_type = it->first;
-    bool deprecated =
-        std::find(registered_clients_.begin(), registered_clients_.end(),
-                  client_type) == registered_clients_.end();
-    if (deprecated) {
+    if (!base::Contains(registered_clients_, client_type)) {
       store_->Delete(ToDatabaseKey(client_type),
                      base::BindOnce(&stats::LogDbOperation,
                                     stats::DatabaseType::kImpressionDb));
@@ -281,7 +280,7 @@ void ImpressionHistoryTrackerImpl::AnalyzeImpressionHistory(
                               false /*update_db*/);
         break;
       case UserFeedback::kNoFeedback:
-        FALLTHROUGH;
+        [[fallthrough]];
       default:
         // The user didn't interact with the notification yet.
         continue;
@@ -414,7 +413,7 @@ void ImpressionHistoryTrackerImpl::ApplyPositiveImpression(
 
   // Increase |current_max_daily_show| by 1.
   client_state->current_max_daily_show =
-      base::clamp(++client_state->current_max_daily_show, 0,
+      base::clamp(client_state->current_max_daily_show + 1, 0,
                   config_.max_daily_shown_per_type);
 }
 

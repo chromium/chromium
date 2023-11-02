@@ -1,13 +1,20 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_PAGE_ANCHORS_METRICS_OBSERVER_H_
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_PAGE_ANCHORS_METRICS_OBSERVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
+// Tracks anchor information in content::NavigationPredictor to report gathered
+// data on navigating out the page. Ideally this should be managed by
+// per outermost page manner. However we ensure that this structure is not
+// created and accessed during prerendering as we have a DCHECK in
+// content::NavigationPredictor::ReportNewAnchorElements. So, we can manage it
+// as per WebContents without polluting gathered data.
 class PageAnchorsMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
@@ -44,16 +51,25 @@ class PageAnchorsMetricsObserver
       delete;
 
   // page_load_metrics::PageLoadMetricsObserver:
+  ObservePolicy OnPrerenderStart(content::NavigationHandle* navigation_handle,
+                                 const GURL& currently_committed_url) override;
+  page_load_metrics::PageLoadMetricsObserver::ObservePolicy OnFencedFramesStart(
+      content::NavigationHandle* navigation_handle,
+      const GURL& currently_committed_url) override;
   void OnComplete(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   page_load_metrics::PageLoadMetricsObserver::ObservePolicy
   FlushMetricsOnAppEnterBackground(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  void DidActivatePrerenderedPage(
+      content::NavigationHandle* navigation_handle) override;
 
  private:
   void RecordUkm();
 
-  content::WebContents* web_contents_;
+  bool is_in_prerendered_page_ = false;
+
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_PAGE_ANCHORS_METRICS_OBSERVER_H_

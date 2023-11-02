@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,7 +35,7 @@ NDEFMessage* NDEFMessage::Create(const ScriptState* script_state,
 
   // NDEFMessageInit#records is a required field.
   DCHECK(init->hasRecords());
-  if (init->records().IsEmpty()) {
+  if (init->records().empty()) {
     exception_state.ThrowTypeError(
         "NDEFMessageInit#records being empty makes no sense.");
     return nullptr;

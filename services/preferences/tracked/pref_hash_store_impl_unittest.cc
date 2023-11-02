@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "services/preferences/tracked/dictionary_hash_store_contents.h"
 #include "services/preferences/tracked/hash_store_contents.h"
@@ -178,10 +177,11 @@ TEST_F(PrefHashStoreImplTest, ImportExportOperations) {
   }
 
   // Make a copy of the stored hash for future use.
-  const base::Value* hash = NULL;
-  ASSERT_TRUE(GetHashStoreContents()->GetContents()->Get("path1", &hash));
-  std::unique_ptr<base::Value> path_1_string_1_hash_copy(hash->DeepCopy());
-  hash = NULL;
+  const base::Value* hash =
+      GetHashStoreContents()->GetContents()->FindKey("path1");
+  ASSERT_TRUE(hash);
+  base::Value path_1_string_1_hash_copy(hash->Clone());
+  hash = nullptr;
 
   // Verify that the super MAC was stamped.
   {
@@ -222,7 +222,7 @@ TEST_F(PrefHashStoreImplTest, ImportExportOperations) {
     ASSERT_FALSE(transaction->HasHash("path1"));
 
     // An import should preserve invalidity.
-    transaction->ImportHash("path1", path_1_string_1_hash_copy.get());
+    transaction->ImportHash("path1", &path_1_string_1_hash_copy);
 
     ASSERT_TRUE(transaction->HasHash("path1"));
 
@@ -281,7 +281,7 @@ TEST_F(PrefHashStoreImplTest, ImportExportOperations) {
     ASSERT_TRUE(transaction->IsSuperMACValid());
 
     // "Over-import". An import should preserve validity.
-    transaction->ImportHash("path1", path_1_string_1_hash_copy.get());
+    transaction->ImportHash("path1", &path_1_string_1_hash_copy);
     EXPECT_EQ(ValueState::UNCHANGED,
               transaction->CheckValue("path1", &string_1));
     EXPECT_EQ(ValueState::CHANGED, transaction->CheckValue("path1", &string_2));

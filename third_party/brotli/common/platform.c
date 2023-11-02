@@ -6,7 +6,7 @@
 
 #include <stdlib.h>
 
-#include "./platform.h"
+#include "platform.h"
 #include <brotli/types.h>
 
 /* Default brotli_alloc_func */

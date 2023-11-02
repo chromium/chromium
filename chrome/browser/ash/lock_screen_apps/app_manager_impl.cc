@@ -1,39 +1,56 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/lock_screen_apps/app_manager_impl.h"
 
+#include <atomic>
 #include <memory>
+#include <ostream>
 #include <string>
+#include <type_traits>
 #include <utility>
 
 #include "apps/launcher.h"
 #include "base/bind.h"
+#include "base/callback.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/ref_counted.h"
+#include "base/location.h"
+#include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/tick_clock.h"
+#include "base/time/time.h"
+#include "base/values.h"
+#include "chrome/browser/ash/lock_screen_apps/lock_screen_apps.h"
 #include "chrome/browser/ash/lock_screen_apps/lock_screen_profile_creator.h"
 #include "chrome/browser/ash/note_taking_helper.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/extension_assets_manager.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "components/sync/model/string_ordinal.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/install_flag.h"
 #include "extensions/common/api/app_runtime.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
+#include "extensions/common/extension_set.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
+#include "url/gurl.h"
 
 namespace lock_screen_apps {
 
@@ -72,19 +89,16 @@ enum class AppUnloadStatus {
   kCount = 3
 };
 
-ActionAvailability GetLockScreenNoteTakingAvailability(
-    ash::NoteTakingAppInfo* app_info) {
-  if (!app_info || !app_info->preferred)
-    return ActionAvailability::kNoActionHandlerApp;
-
-  switch (app_info->lock_screen_support) {
-    case ash::NoteTakingLockScreenSupport::kNotSupported:
+ActionAvailability ToActionAvailability(
+    ash::LockScreenAppSupport lock_screen_support) {
+  switch (lock_screen_support) {
+    case ash::LockScreenAppSupport::kNotSupported:
       return ActionAvailability::kAppNotSupportingLockScreen;
-    case ash::NoteTakingLockScreenSupport::kSupported:
+    case ash::LockScreenAppSupport::kSupported:
       return ActionAvailability::kActionNotEnabledOnLockScreen;
-    case ash::NoteTakingLockScreenSupport::kNotAllowedByPolicy:
+    case ash::LockScreenAppSupport::kNotAllowedByPolicy:
       return ActionAvailability::kDisallowedByPolicy;
-    case ash::NoteTakingLockScreenSupport::kEnabled:
+    case ash::LockScreenAppSupport::kEnabled:
       return ActionAvailability::kAvailable;
   }
 
@@ -206,7 +220,7 @@ void AppManagerImpl::OnLockScreenProfileLoaded() {
   lock_screen_profile_ =
       lock_screen_profile_creator_->lock_screen_profile()->GetOriginalProfile();
 
-  CHECK(!chromeos::ProfileHelper::Get()->GetUserByProfile(lock_screen_profile_))
+  CHECK(!ash::ProfileHelper::Get()->GetUserByProfile(lock_screen_profile_))
       << "Lock screen profile should not be associated with any users.";
 
   UpdateLockScreenAppState();
@@ -276,16 +290,15 @@ bool AppManagerImpl::LaunchLockScreenApp() {
     return false;
   }
 
-  auto action_data =
-      std::make_unique<extensions::api::app_runtime::ActionData>();
-  action_data->action_type =
+  extensions::api::app_runtime::ActionData action_data;
+  action_data.action_type =
       extensions::api::app_runtime::ActionType::ACTION_TYPE_NEW_NOTE;
-  action_data->is_lock_screen_action = std::make_unique<bool>(true);
-  action_data->restore_last_action_state =
-      std::make_unique<bool>(primary_profile_->GetPrefs()->GetBoolean(
-          prefs::kRestoreLastLockScreenNote));
+  action_data.is_lock_screen_action = true;
+  action_data.restore_last_action_state =
+      primary_profile_->GetPrefs()->GetBoolean(
+          prefs::kRestoreLastLockScreenNote);
   apps::LaunchPlatformAppWithAction(lock_screen_profile_, app,
-                                    std::move(action_data), base::FilePath());
+                                    std::move(action_data));
   return true;
 }
 
@@ -353,13 +366,17 @@ void AppManagerImpl::UpdateLockScreenAppState() {
 }
 
 std::string AppManagerImpl::FindLockScreenAppId() const {
-  // Note that lock screen does not currently support Android apps, so
-  // it's enough to only check the state of the preferred Chrome app.
-  std::unique_ptr<ash::NoteTakingAppInfo> note_taking_app =
-      ash::NoteTakingHelper::Get()->GetPreferredLockScreenAppInfo(
-          primary_profile_);
+  ash::NoteTakingHelper* helper = ash::NoteTakingHelper::Get();
+  std::string app_id = helper->GetPreferredAppId(primary_profile_);
+  // Lock screen apps service should always exist on the primary profile.
+  DCHECK(primary_profile_);
+  DCHECK(ash::LockScreenAppsFactory::IsSupportedProfile(primary_profile_));
+  ash::LockScreenAppSupport lock_screen_support =
+      ash::LockScreenApps::GetSupport(primary_profile_, app_id);
+
   ActionAvailability availability =
-      GetLockScreenNoteTakingAvailability(note_taking_app.get());
+      app_id.empty() ? ActionAvailability::kNoActionHandlerApp
+                     : ToActionAvailability(lock_screen_support);
 
   // |lock_screen_profile_| is created only if a note taking app is available
   // on the lock screen. If an app is not available, the profile is expected to
@@ -379,7 +396,7 @@ std::string AppManagerImpl::FindLockScreenAppId() const {
   if (availability != ActionAvailability::kAvailable)
     return std::string();
 
-  return note_taking_app->app_id;
+  return app_id;
 }
 
 AppManagerImpl::State AppManagerImpl::AddAppToLockScreenProfile(
@@ -406,9 +423,10 @@ AppManagerImpl::State AppManagerImpl::AddAppToLockScreenProfile(
 
   std::string error;
   scoped_refptr<extensions::Extension> lock_profile_app =
-      extensions::Extension::Create(lock_profile_app_path, app->location(),
-                                    *app->manifest()->value()->CreateDeepCopy(),
-                                    app->creation_flags(), app->id(), &error);
+      extensions::Extension::Create(
+          lock_profile_app_path, app->location(),
+          base::Value::AsDictionaryValue(app->manifest()->value()->Clone()),
+          app->creation_flags(), app->id(), &error);
 
   // While extension creation can fail in general, in this case the lock screen
   // profile extension creation arguments come from an app already installed in
@@ -549,9 +567,10 @@ AppManagerImpl::GetChromeAppForLockScreenAppLaunch() {
 
   std::string error;
   scoped_refptr<extensions::Extension> lock_profile_app =
-      extensions::Extension::Create(app->path(), app->location(),
-                                    *app->manifest()->value()->CreateDeepCopy(),
-                                    app->creation_flags(), app->id(), &error);
+      extensions::Extension::Create(
+          app->path(), app->location(),
+          base::Value::AsDictionaryValue(app->manifest()->value()->Clone()),
+          app->creation_flags(), app->id(), &error);
 
   extensions::ExtensionService* extension_service =
       extensions::ExtensionSystem::Get(lock_screen_profile_)

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,7 @@ import org.chromium.components.browser_ui.media.MediaNotificationManager;
 import org.chromium.components.browser_ui.media.MediaSessionHelper;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 /**
  * A tab helper that wraps {@link MediaSessionHelper} and is responsible for Chrome-specific
@@ -40,7 +41,7 @@ public class MediaSessionTabHelper implements MediaSessionHelper.Delegate {
         }
 
         @Override
-        public void onFaviconUpdated(Tab tab, Bitmap icon) {
+        public void onFaviconUpdated(Tab tab, Bitmap icon, GURL iconUrl) {
             assert tab == mTab;
             mMediaSessionHelper.updateFavicon(icon);
         }

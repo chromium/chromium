@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,14 +11,12 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/history_test_utils.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
-#include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/task_manager/providers/task.h"
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
@@ -27,6 +25,7 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/login/login_handler_test_utils.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -43,12 +42,17 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "pdf/buildflags.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "chrome/browser/pdf/pdf_extension_test_util.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 using content::WebContents;
 
@@ -93,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, PortalActivation) {
 }
 
 // Flaky on Linux ASAN. crbug.com/1182702
-#if defined(ADDRESS_SANITIZER) && defined(OS_LINUX)
+#if defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_LINUX)
 #define MAYBE_DevToolsWindowStaysOpenAfterActivation \
   DISABLED_DevToolsWindowStaysOpenAfterActivation
 #else
@@ -254,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TaskManagerOrderingOfDependentRows) {
 
   // There's an initial tab that's implicitly created.
   browser()->tab_strip_model()->CloseWebContentsAt(0,
-                                                   TabStripModel::CLOSE_NONE);
+                                                   TabCloseTypes::CLOSE_NONE);
   EXPECT_EQ(static_cast<int>(kNumTabs), browser()->tab_strip_model()->count());
 
   // Create portals in each tab.
@@ -283,6 +287,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TaskManagerOrderingOfDependentRows) {
   EXPECT_THAT(tester->GetWebContentsTaskTitles(), expected_titles);
 }
 
+#if BUILDFLAG(ENABLE_PDF)
 IN_PROC_BROWSER_TEST_F(PortalBrowserTest, PdfViewerLoadsInPortal) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/title1.html"));
@@ -305,6 +310,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, PdfViewerLoadsInPortal) {
 
   ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(portal_contents));
 }
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 // Test that we do not show main frame interstitials in portal contents. We
 // should treat portals like subframes in terms of how to display the error to
@@ -358,7 +364,10 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, ShowSubFrameErrorPage) {
                       "document.documentElement.hasAttribute('subframe');"));
 }
 
-IN_PROC_BROWSER_TEST_F(PortalBrowserTest, BrowserHistoryUpdatesOnActivation) {
+// TODO(crbug.com/1372129): This test is flaking on all platforms. The renderer
+// seems to be terinated occasionally preventing the ASSERT_EQ from succeeding.
+IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
+                       DISABLED_BrowserHistoryUpdatesOnActivation) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   Profile* profile = browser()->profile();
@@ -443,7 +452,7 @@ class PortalSafeBrowsingBrowserTest : public PortalBrowserTest {
 // by Safe Browsing, the embedder is also treated as dangerous in terms of how
 // we display the Safe Browsing interstitial.
 // Flaky on ChromeOS & under Ozone (crbug.com/1220319)
-#if defined(OS_CHROMEOS) || defined(USE_OZONE)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || defined(USE_OZONE)
 #define MAYBE_EmbedderOfDangerousPortalConsideredDangerous \
   DISABLED_EmbedderOfDangerousPortalConsideredDangerous
 #else

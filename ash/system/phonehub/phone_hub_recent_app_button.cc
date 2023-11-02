@@ -1,11 +1,13 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/phonehub/phone_hub_recent_app_button.h"
 
 #include "ash/style/ash_color_provider.h"
-#include "ash/system/tray/tray_popup_utils.h"
+#include "ash/style/style_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -31,9 +33,11 @@ PhoneHubRecentAppButton::PhoneHubRecentAppButton(
                gfx::Size(kRecentAppButtonSize, kRecentAppButtonSize)));
   SetImageHorizontalAlignment(ALIGN_CENTER);
   SetImageVerticalAlignment(ALIGN_MIDDLE);
-  TrayPopupUtils::ConfigureTrayPopupButton(this);
+  StyleUtil::SetUpInkDropForButton(this);
   views::InstallCircleHighlightPathGenerator(this);
   SetAccessibleName(visible_app_name);
+  SetTooltipText(visible_app_name);
+  views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
 }
 
 PhoneHubRecentAppButton::~PhoneHubRecentAppButton() = default;
@@ -52,16 +56,7 @@ void PhoneHubRecentAppButton::PaintButtonContents(gfx::Canvas* canvas) {
   views::ImageButton::PaintButtonContents(canvas);
 }
 
-void PhoneHubRecentAppButton::OnThemeChanged() {
-  views::ImageButton::OnThemeChanged();
-  views::FocusRing::Get(this)->SetColor(
-      AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kFocusRingColor));
-  SchedulePaint();
-}
-
-const char* PhoneHubRecentAppButton::GetClassName() const {
-  return "PhoneHubRecentAppButton";
-}
+BEGIN_METADATA(PhoneHubRecentAppButton, views::ImageButton)
+END_METADATA
 
 }  // namespace ash

@@ -1,12 +1,12 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/print/print_controller.h"
 
-#include "base/logging.h"
-#include "base/metrics/user_metrics.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/logging.h"
+#import "base/metrics/user_metrics.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/web/public/web_state.h"
 
@@ -20,7 +20,7 @@
 @property(nonatomic, weak) UIViewController* defaultBaseViewController;
 
 // The view controller the system print dialog should be presented from.
-// This can be passed in the print* method or |defaultBaseViewController| will
+// This can be passed in the print* method or `defaultBaseViewController` will
 // be used.
 @property(nonatomic, weak) UIViewController* baseViewController;
 
@@ -90,7 +90,7 @@
 
 // Utility method to print either a renderer or a printable item (as documented
 // in UIPrintInteractionController printingItem).
-// Exactly one of |renderer| and |item| must be not nil.
+// Exactly one of `renderer` and `item` must be not nil.
 - (void)printRenderer:(UIPrintPageRenderer*)renderer
                 orItem:(id)item
              withTitle:(NSString*)title
@@ -114,9 +114,8 @@
 
   [printInteractionController
         presentAnimated:YES
-      completionHandler:^(
-          UIPrintInteractionController* printInteractionController,
-          BOOL completed, NSError* error) {
+      completionHandler:^(UIPrintInteractionController* controller,
+                          BOOL completed, NSError* error) {
         if (error)
           DLOG(ERROR) << "Air printing error: "
                       << base::SysNSStringToUTF8(error.description);

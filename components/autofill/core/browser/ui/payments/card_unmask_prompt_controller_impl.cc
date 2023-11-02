@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -147,7 +147,7 @@ void CardUnmaskPromptControllerImpl::OnUnmaskPromptAccepted(
 
   // On Android, FIDO authentication is fully launched and its checkbox should
   // always be shown. Remember the last choice the user made on this device.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   pending_details_.enable_fido_auth = enable_fido_auth;
   pref_service_->SetBoolean(
       prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, enable_fido_auth);
@@ -164,7 +164,7 @@ void CardUnmaskPromptControllerImpl::NewCardLinkClicked() {
 }
 
 std::u16string CardUnmaskPromptControllerImpl::GetWindowTitle() const {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // The iOS UI has less room for the title so it shows a shorter string.
   return l10n_util::GetStringUTF16(IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE);
 #else
@@ -190,15 +190,15 @@ std::u16string CardUnmaskPromptControllerImpl::GetWindowTitle() const {
 std::u16string CardUnmaskPromptControllerImpl::GetInstructionsMessage() const {
 // The prompt for server cards should reference Google Payments, whereas the
 // prompt for local cards should not.
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   int ids;
   if (reason_ == AutofillClient::UnmaskCardReason::kAutofill &&
       ShouldRequestExpirationDate()) {
-    ids = card_.record_type() == autofill::CreditCard::LOCAL_CARD
+    ids = card_.record_type() == CreditCard::LOCAL_CARD
               ? IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_EXPIRED_LOCAL_CARD
               : IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_EXPIRED;
   } else {
-    ids = card_.record_type() == autofill::CreditCard::LOCAL_CARD
+    ids = card_.record_type() == CreditCard::LOCAL_CARD
               ? IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_LOCAL_CARD
               : IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS;
   }
@@ -207,14 +207,8 @@ std::u16string CardUnmaskPromptControllerImpl::GetInstructionsMessage() const {
   return l10n_util::GetStringFUTF16(
       ids, card_.CardIdentifierStringForAutofillDisplay());
 #else
-  // For Google Pay Plex cards, show a specific message that include
-  // instructions to find the CVC for their Plex card.
-  if (card_.IsGoogleIssuedCard()) {
-    return l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_GOOGLE_ISSUED_CARD);
-  }
   return l10n_util::GetStringUTF16(
-      card_.record_type() == autofill::CreditCard::LOCAL_CARD
+      card_.record_type() == CreditCard::LOCAL_CARD
           ? IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_LOCAL_CARD
           : IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS);
 #endif
@@ -239,7 +233,7 @@ bool CardUnmaskPromptControllerImpl::GetStoreLocallyStartState() const {
       prefs::kAutofillWalletImportStorageCheckboxState);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 int CardUnmaskPromptControllerImpl::GetGooglePayImageRid() const {
   return IDR_AUTOFILL_GOOGLE_PAY_WITH_DIVIDER;
 }
@@ -324,7 +318,7 @@ bool CardUnmaskPromptControllerImpl::AllowsRetry(
 
 bool CardUnmaskPromptControllerImpl::ShouldDismissUnmaskPromptUponResult(
     AutofillClient::PaymentsRpcResult result) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // For virtual card errors on Android, we'd dismiss the unmask prompt and
   // instead show a different error dialog.
   return result ==
@@ -333,7 +327,7 @@ bool CardUnmaskPromptControllerImpl::ShouldDismissUnmaskPromptUponResult(
              AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure;
 #else
   return false;
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void CardUnmaskPromptControllerImpl::LogOnCloseEvents() {

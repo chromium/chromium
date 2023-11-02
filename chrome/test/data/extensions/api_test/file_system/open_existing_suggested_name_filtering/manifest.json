@@ -1,0 +1,16 @@
+{
+  "name": "chrome.fileSystem open existing file with suggested name filtering",
+  "manifest_version": 2,
+  "version": "0.1",
+  "description": "Test for chrome.fileSystem.chooseFile filtering unsupported characters from suggested names.",
+  "app": {
+    "background": {
+      "scripts": ["background.js"]
+    }
+  },
+  "permissions": [
+    {
+      "fileSystem": []
+    }
+  ]
+}

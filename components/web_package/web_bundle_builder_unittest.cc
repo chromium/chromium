@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,12 +42,12 @@ class WebBundleBuilderTest : public testing::Test {
 };
 
 TEST_F(WebBundleBuilderTest, CorrectWebBundleSizeIsWritten) {
-  WebBundleBuilder builder(kFallbackUrl, "");
+  WebBundleBuilder builder;
   builder.AddExchange("https://test.example.com/",
                       {{":status", "200"}, {"content-type", "text/plain"}},
                       "payload");
   std::vector<uint8_t> bundle = builder.CreateBundle();
-  char written_size[8];
+  uint8_t written_size[8];
   memcpy(written_size, bundle.data() + bundle.size() - 8, 8);
   uint64_t written_size_int;
   base::ReadBigEndian(written_size, &written_size_int);
@@ -55,7 +55,7 @@ TEST_F(WebBundleBuilderTest, CorrectWebBundleSizeIsWritten) {
 }
 
 TEST_F(WebBundleBuilderTest, ByteByByteComparison) {
-  WebBundleBuilder builder("", "");
+  WebBundleBuilder builder;
   builder.AddExchange(
       "https://test.example.org/",
       {{":status", "200"}, {"content-type", "text/html; charset=UTF-8"}},
@@ -71,7 +71,7 @@ TEST_F(WebBundleBuilderTest, ByteByByteComparison) {
 }
 
 TEST_F(WebBundleBuilderTest, MoreThan23ResponsesInABundle) {
-  WebBundleBuilder builder("", "");
+  WebBundleBuilder builder;
   for (int i = 0; i < 24; ++i) {
     builder.AddExchange("https://test.example.org/" + base::NumberToString(i),
                         {{":status", "200"}, {"content-type", "text/html;"}},

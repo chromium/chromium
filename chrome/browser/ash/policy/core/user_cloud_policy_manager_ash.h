@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -49,7 +49,6 @@ namespace policy {
 class ArcAppInstallEventLogUploader;
 class CloudExternalDataManager;
 class DeviceManagementService;
-class ExtensionInstallEventLogUploader;
 class PolicyOAuth2TokenFetcher;
 class RemoteCommandsInvalidator;
 
@@ -106,6 +105,7 @@ class UserCloudPolicyManagerAsh
       std::unique_ptr<CloudExternalDataManager> external_data_manager,
       const base::FilePath& component_policy_cache_path,
       PolicyEnforcement enforcement_type,
+      PrefService* local_state,
       base::TimeDelta policy_refresh_timeout,
       base::OnceClosure fatal_error_callback,
       const AccountId& account_id,
@@ -120,7 +120,6 @@ class UserCloudPolicyManagerAsh
   // Initializes the cloud connection. |local_state| and
   // |device_management_service| must stay valid until this object is deleted.
   void Connect(
-      PrefService* local_state,
       DeviceManagementService* device_management_service,
       scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory);
 
@@ -152,10 +151,6 @@ class UserCloudPolicyManagerAsh
   // Return the ArcAppInstallEventLogUploader used to send app push-install
   // event logs to the policy server.
   ArcAppInstallEventLogUploader* GetAppInstallEventLogUploader();
-
-  // Return the ExtensionInstallEventLogUploader used to send extension install
-  // event logs to the policy server.
-  ExtensionInstallEventLogUploader* GetExtensionInstallEventLogUploader();
 
   // ConfigurationPolicyProvider:
   void Shutdown() override;
@@ -256,7 +251,7 @@ class UserCloudPolicyManagerAsh
   void OnProfileAdded(Profile* profile) override;
 
   // Called on profile shutdown.
-  void ProfileShutdown();
+  void ShutdownRemoteCommands();
 
   // Profile associated with the current user.
   Profile* const profile_;
@@ -270,10 +265,6 @@ class UserCloudPolicyManagerAsh
   // Helper used to send app push-install event logs to the policy server.
   std::unique_ptr<ArcAppInstallEventLogUploader>
       app_install_event_log_uploader_;
-
-  // Helper used to send extension install event logs to the policy server.
-  std::unique_ptr<ExtensionInstallEventLogUploader>
-      extension_install_event_log_uploader_;
 
   // Scheduler used to report usage data to DM server periodically.
   std::unique_ptr<enterprise_reporting::ReportScheduler> report_scheduler_;
@@ -296,7 +287,7 @@ class UserCloudPolicyManagerAsh
   base::OneShotTimer policy_refresh_timeout_;
 
   // The pref service to pass to the refresh scheduler on initialization.
-  PrefService* local_state_;
+  base::raw_ptr<PrefService> local_state_ = nullptr;
 
   // Used to fetch the policy OAuth token, when necessary. This object holds
   // a callback with an unretained reference to the manager, when it exists.

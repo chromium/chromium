@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,7 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/android/gurl_android.h"
 #include "url/origin.h"
 
@@ -49,6 +50,7 @@ void OnGetCanonicalUrlForSharing(
   base::android::RunObjectCallbackAndroid(
       jcallback, url::GURLAndroid::FromNativeGURL(env, url.value()));
 }
+
 }  // namespace
 
 // static
@@ -127,11 +129,8 @@ ScopedJavaLocalRef<jobjectArray> RenderFrameHostAndroid::GetAllRenderFrameHosts(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) const {
   std::vector<RenderFrameHostImpl*> frames;
-  render_frame_host_->ForEachRenderFrameHost(base::BindRepeating(
-      [](std::vector<RenderFrameHostImpl*>* frames, RenderFrameHostImpl* rfh) {
-        frames->push_back(rfh);
-      },
-      &frames));
+  render_frame_host_->ForEachRenderFrameHost(
+      [&frames](RenderFrameHostImpl* rfh) { frames.push_back(rfh); });
   jclass clazz =
       org_chromium_content_browser_framehost_RenderFrameHostImpl_clazz(env);
   jobjectArray jframes = env->NewObjectArray(frames.size(), clazz, nullptr);
@@ -173,18 +172,18 @@ jboolean RenderFrameHostAndroid::SignalCloseWatcherIfActive(
   return close_listener_host->SignalIfActive();
 }
 
-jboolean RenderFrameHostAndroid::IsRenderFrameCreated(
+jboolean RenderFrameHostAndroid::IsRenderFrameLive(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>&) const {
-  return render_frame_host_->IsRenderFrameCreated();
+  return render_frame_host_->IsRenderFrameLive();
 }
 
 void RenderFrameHostAndroid::GetInterfaceToRendererFrame(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>&,
     const base::android::JavaParamRef<jstring>& interface_name,
-    jint message_pipe_raw_handle) const {
-  DCHECK(render_frame_host_->IsRenderFrameCreated());
+    jlong message_pipe_raw_handle) const {
+  DCHECK(render_frame_host_->IsRenderFrameLive());
   render_frame_host_->GetRemoteInterfaces()->GetInterfaceByName(
       ConvertJavaStringToUTF8(env, interface_name),
       mojo::ScopedMessagePipeHandle(
@@ -217,7 +216,7 @@ RenderFrameHostAndroid::PerformGetAssertionWebAuthSecurityChecks(
   std::pair<blink::mojom::AuthenticatorStatus, bool> results =
       render_frame_host_->PerformGetAssertionWebAuthSecurityChecks(
           ConvertJavaStringToUTF8(env, relying_party_id), origin,
-          is_payment_credential_get_assertion);
+          is_payment_credential_get_assertion, nullptr);
   return Java_RenderFrameHostImpl_createWebAuthSecurityChecksResults(
       env, static_cast<jint>(results.first), results.second);
 }
@@ -232,7 +231,7 @@ jint RenderFrameHostAndroid::PerformMakeCredentialWebAuthSecurityChecks(
   return static_cast<int32_t>(
       render_frame_host_->PerformMakeCredentialWebAuthSecurityChecks(
           ConvertJavaStringToUTF8(env, relying_party_id), origin,
-          is_payment_credential_creation));
+          is_payment_credential_creation, nullptr));
 }
 
 jint RenderFrameHostAndroid::GetLifecycleState(

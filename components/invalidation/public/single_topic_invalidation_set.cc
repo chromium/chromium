@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,20 +49,9 @@ bool SingleTopicInvalidationSet::IsEmpty() const {
   return invalidations_.empty();
 }
 
-namespace {
-
-struct InvalidationComparator {
-  bool operator()(const Invalidation& inv1, const Invalidation& inv2) {
-    return inv1.Equals(inv2);
-  }
-};
-
-}  // namespace
-
 bool SingleTopicInvalidationSet::operator==(
     const SingleTopicInvalidationSet& other) const {
-  return std::equal(invalidations_.begin(), invalidations_.end(),
-                    other.invalidations_.begin(), InvalidationComparator());
+  return invalidations_ == other.invalidations_;
 }
 
 SingleTopicInvalidationSet::const_iterator SingleTopicInvalidationSet::begin()
@@ -92,7 +81,7 @@ const Invalidation& SingleTopicInvalidationSet::back() const {
 std::unique_ptr<base::ListValue> SingleTopicInvalidationSet::ToValue() const {
   std::unique_ptr<base::ListValue> value(new base::ListValue);
   for (const Invalidation& invalidation : invalidations_) {
-    value->Append(invalidation.ToValue());
+    value->GetList().Append(invalidation.ToValue());
   }
   return value;
 }

@@ -16,6 +16,7 @@
     th { position: sticky; top: 0; background-color: #ffffff }
     table#files th:nth-child(n+2) { cursor: pointer; }
     th.highlighted { background-color: #dddddd }
+    th.reversed::after { content: " \2303"; }
     #filterResults, #edgeFilterResults { font-weight: bold }
     </style>
   </head>
@@ -33,6 +34,8 @@
 
 <button onClick="changeState({view: 'files'})">Per-File Analysis</button>
 <button onClick="changeState({view: 'edges'})">Per-Edge Analysis</button>
+<label for="limit">Display limit: </label>
+<input type="number" id="limit" name="limit" onchange="changeState({limit: event.target.value})">
 
 <hr>
 
@@ -52,7 +55,7 @@
   <thead>
     <tr>
       <th>#</th>
-      <th id="filename" onclick="changeState({sort:, 'filename'})">Filename</th>
+      <th id="filename" onclick="changeState({sort: 'filename'})">Filename</th>
       <th id="isize" colspan="2" onclick="changeState({sort: 'isize'})" title="The size of the individual file. Also shown as percentage of the total file size.">Individual Size (B) &#9432;</th>
       <th id="tsize" colspan="2" onclick="changeState({sort: 'tsize'})" title="The size of the file and all the files it includes, directly and indirectly. Also shown as percentage of the total build size.">Expanded Size (B) &#9432;</th>
       <th id="asize" colspan="2" onclick="changeState({sort: 'asize'})" title="The size added by this file being part of the build. In other words, if this file were empty and had no includes, how much smaller would the build be. Also shown as percentage of the total build size.">Added Size (B) &#9432;</th>
@@ -167,6 +170,8 @@ function updateView() {
     document.getElementById('edgesview').style = 'display: block';
     buildEdgesTable();
   }
+
+  document.getElementById('limit').value = s.get('limit')
 }
 
 function intersect(arr1, arr2) {
@@ -201,12 +206,15 @@ function buildFilesTable() {
     asize: (i, j) => data.asizes[j] - data.asizes[i],
   };
 
-  document.querySelectorAll('th').forEach(th => th.classList.remove('highlighted'));
-  document.getElementById(state.get('sort')).classList.add('highlighted');
+  document.querySelectorAll('th').forEach(th => th.classList.remove('highlighted', 'reversed'));
 
+  document.getElementById(state.get('sort')).classList.add('highlighted', ...(state.get('reverse') ? ['reversed'] : []));
   fileNums.sort(sortFuncs[state.get('sort')]);
+  if (state.get('reverse')) {
+    fileNums.reverse();
+  }
 
-  const limit = Math.min(1000, fileNums.length);
+  const limit = Math.min(parseInt(state.get('limit')), fileNums.length);
   fileNums = fileNums.slice(0, limit);
 
   function buildRow(i, rank) {
@@ -290,7 +298,7 @@ function buildEdgesTable() {
 
   edgeSizes.sort((x, y) => y[2] - x[2]);
 
-  const limit = Math.min(1000, edgeSizes.length);
+  const limit = Math.min(parseInt(state.get('limit')), edgeSizes.length);
   const edgeNums = [...Array(limit).keys()];
 
   const tbody = document.querySelector('table#edges tbody');
@@ -307,10 +315,14 @@ function getState() {
     params.set('filter', '');
   if (!params.has('sort'))
     params.set('sort', 'asize');
+  if (!params.has('reverse'))
+    params.set('reverse', '');
   if (!params.has('includer'))
     params.set('includer', '');
   if (!params.has('included'))
     params.set('included', '');
+  if (!params.has('limit'))
+    params.set('limit', '1000');
 
   return params;
 }
@@ -318,6 +330,15 @@ function getState() {
 function changedStateHash(changes) {
   let s = getState();
   for (const [key, value] of Object.entries(changes)) {
+    if (key === 'sort') {
+      if (value === s.get('sort')) {
+        s.set('reverse', s.get('reverse') ? '' : '1');
+        continue;
+      } else {
+        s.set('reverse', '');
+      }
+    }
+
     s.set(key, value);
   }
   return s.toString();

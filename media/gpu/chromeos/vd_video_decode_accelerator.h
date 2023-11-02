@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,24 +9,28 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
+#include "build/chromeos_buildflags.h"
 #include "media/base/status.h"
 #include "media/base/video_decoder.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/vda_video_frame_pool.h"
+#include "media/gpu/chromeos/video_decoder_pipeline.h"
 #include "media/gpu/chromeos/video_frame_converter.h"
 #include "media/gpu/media_gpu_export.h"
+#include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
 #include "media/video/video_decode_accelerator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace media {
 
-class MediaLog;
 class VideoFrame;
 
 // Implements the VideoDecodeAccelerator backed by a VideoDecoder.
@@ -45,11 +49,7 @@ class MEDIA_GPU_EXPORT VdVideoDecodeAccelerator
  public:
   // Callback for creating VideoDecoder instance.
   using CreateVideoDecoderCb =
-      base::RepeatingCallback<std::unique_ptr<VideoDecoder>(
-          scoped_refptr<base::SequencedTaskRunner>,
-          std::unique_ptr<DmabufVideoFramePool>,
-          std::unique_ptr<VideoFrameConverter>,
-          std::unique_ptr<MediaLog>)>;
+      base::RepeatingCallback<decltype(VideoDecoderPipeline::Create)>;
 
   // Create VdVideoDecodeAccelerator instance, and call Initialize().
   // Return nullptr if Initialize() failed.
@@ -86,17 +86,15 @@ class MEDIA_GPU_EXPORT VdVideoDecodeAccelerator
                      ImportFrameCb import_frame_cb) override;
 
  private:
-  using DmabufId = DmabufVideoFramePool::DmabufId;
-
   VdVideoDecodeAccelerator(
       CreateVideoDecoderCb create_vd_cb,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   // Callback methods of |vd_|.
-  void OnInitializeDone(Status status);
-  void OnDecodeDone(int32_t bitstream_buffer_id, Status status);
+  void OnInitializeDone(DecoderStatus status);
+  void OnDecodeDone(int32_t bitstream_buffer_id, DecoderStatus status);
   void OnFrameReady(scoped_refptr<VideoFrame> frame);
-  void OnFlushDone(Status status);
+  void OnFlushDone(DecoderStatus status);
   void OnResetDone();
 
   // Get Picture instance that represents the same buffer as |frame|. Return
@@ -120,7 +118,7 @@ class MEDIA_GPU_EXPORT VdVideoDecodeAccelerator
   // Callback to generate VideoDecoder.
   CreateVideoDecoderCb create_vd_cb_;
   // The client of this VDA.
-  VideoDecodeAccelerator::Client* client_ = nullptr;
+  raw_ptr<VideoDecodeAccelerator::Client> client_ = nullptr;
   // The delegated VideoDecoder instance.
   std::unique_ptr<VideoDecoder> vd_;
   // Callback for returning the result after this instance is asked to request
@@ -139,13 +137,20 @@ class MEDIA_GPU_EXPORT VdVideoDecodeAccelerator
   gfx::Size coded_size_;
   absl::optional<VideoFrameLayout> layout_;
 
-  // Mapping from VideoFrame's DmabufId to picture buffer id.
-  std::map<DmabufId, int32_t /* picture_buffer_id */> frame_id_to_picture_id_;
+  // Mapping from VideoFrame's GpuMemoryBufferId to picture buffer id.
+  std::map<gfx::GpuMemoryBufferId, int32_t /* picture_buffer_id */>
+      frame_id_to_picture_id_;
   // Record how many times the picture is sent to the client, and keep a refptr
   // of corresponding VideoFrame when the client owns the buffers.
   std::map<int32_t /* picture_buffer_id */,
            std::pair<scoped_refptr<VideoFrame>, size_t /* num_sent */>>
       picture_at_client_;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Indicates we are handling encrypted content which requires an extra check
+  // to see if it is a secure buffer format.
+  bool is_encrypted_ = false;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Main task runner and its sequence checker. All methods should be called
   // on it.

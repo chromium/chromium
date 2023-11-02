@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,8 @@
 
 #include <memory>
 
-#include "base/base_export.h"
+#include "base/check_op.h"
+#include "base/dcheck_is_on.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/task/common/checked_lock_impl.h"
@@ -63,7 +64,7 @@ namespace internal {
 // std::unique_ptr<ConditionVariable> CreateConditionVariable()
 //     Creates a condition variable using this as a lock.
 
-#if DCHECK_IS_ON()
+#if 0 // DCHECK_IS_ON()
 class LOCKABLE CheckedLock : public CheckedLockImpl {
  public:
   CheckedLock() = default;
@@ -78,6 +79,7 @@ class LOCKABLE CheckedLock : public CheckedLockImpl {
 class LOCKABLE CheckedLock : public Lock {
  public:
   CheckedLock() = default;
+  CheckedLock(const char* ordered_name) : Lock(ordered_name) {}
   explicit CheckedLock(const CheckedLock*) {}
   explicit CheckedLock(UniversalPredecessor) {}
   explicit CheckedLock(UniversalSuccessor) {}

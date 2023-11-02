@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,7 +53,7 @@ class GpuChildThread : public ChildThreadImpl,
 
   ~GpuChildThread() override;
 
-  void Init(const base::Time& process_start_time);
+  void Init(const base::TimeTicks& process_start_time);
 
  private:
   GpuChildThread(base::RepeatingClosure quit_closure,
@@ -81,7 +81,7 @@ class GpuChildThread : public ChildThreadImpl,
   static void QuitSafelyHelper(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   static std::unique_ptr<media::AndroidOverlay> CreateAndroidOverlay(
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
       const base::UnguessableToken& routing_token,

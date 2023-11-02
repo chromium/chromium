@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,8 +20,8 @@
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_network_context.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_notification_controller.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
@@ -384,20 +384,23 @@ void WilcoDtcSupportdBridge::HandleEvent(WilcoDtcSupportdEvent event) {
     case WilcoDtcSupportdEvent::kLowPowerCharger:
       notification_controller_->ShowLowPowerChargerNotification();
       return;
+    case WilcoDtcSupportdEvent::kUnmappedEnumField:
+      LOG(ERROR) << "Get unrecognized event: " << event;
+      return;
   }
-  LOG(ERROR) << "Unrecognized event " << event << " event";
 }
 
 void WilcoDtcSupportdBridge::GetCrosHealthdDiagnosticsService(
-    chromeos::cros_healthd::mojom::CrosHealthdDiagnosticsServiceRequest
+    mojo::PendingReceiver<cros_healthd::mojom::CrosHealthdDiagnosticsService>
         service) {
-  chromeos::cros_healthd::ServiceConnection::GetInstance()
-      ->GetDiagnosticsService(std::move(service));
+  cros_healthd::ServiceConnection::GetInstance()->GetDiagnosticsService(
+      std::move(service));
 }
 
 void WilcoDtcSupportdBridge::GetCrosHealthdProbeService(
-    chromeos::cros_healthd::mojom::CrosHealthdProbeServiceRequest service) {
-  chromeos::cros_healthd::ServiceConnection::GetInstance()->GetProbeService(
+    mojo::PendingReceiver<cros_healthd::mojom::CrosHealthdProbeService>
+        service) {
+  cros_healthd::ServiceConnection::GetInstance()->GetProbeService(
       std::move(service));
 }
 

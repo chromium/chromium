@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,11 +19,11 @@ class CONTENT_EXPORT AccessibilityTreeFormatterWin
   AccessibilityTreeFormatterWin();
   ~AccessibilityTreeFormatterWin() override;
 
-  base::Value BuildTree(ui::AXPlatformNodeDelegate* start) const override;
-  base::Value BuildTreeForSelector(
+  base::Value::Dict BuildTree(ui::AXPlatformNodeDelegate* start) const override;
+  base::Value::Dict BuildTreeForSelector(
       const AXTreeSelector& selector) const override;
 
-  base::Value BuildNode(ui::AXPlatformNodeDelegate* node) const override;
+  base::Value::Dict BuildNode(ui::AXPlatformNodeDelegate* node) const override;
 
  protected:
   void AddDefaultFilters(
@@ -31,36 +31,36 @@ class CONTENT_EXPORT AccessibilityTreeFormatterWin
 
  private:
   void RecursiveBuildTree(const Microsoft::WRL::ComPtr<IAccessible> node,
-                          base::Value* dict,
+                          base::Value::Dict* dict,
                           LONG root_x,
                           LONG root_y) const;
 
   void AddProperties(const Microsoft::WRL::ComPtr<IAccessible>,
-                     base::Value* dict,
+                     base::Value::Dict* dict,
                      LONG root_x,
                      LONG root_y) const;
   void AddMSAAProperties(const Microsoft::WRL::ComPtr<IAccessible>,
-                         base::Value* dict,
+                         base::Value::Dict* dict,
                          LONG root_x,
                          LONG root_y) const;
   void AddSimpleDOMNodeProperties(const Microsoft::WRL::ComPtr<IAccessible>,
-                                  base::Value* dict) const;
+                                  base::Value::Dict* dict) const;
   bool AddIA2Properties(const Microsoft::WRL::ComPtr<IAccessible>,
-                        base::Value* dict) const;
+                        base::Value::Dict* dict) const;
   void AddIA2ActionProperties(const Microsoft::WRL::ComPtr<IAccessible>,
-                              base::Value* dict) const;
+                              base::Value::Dict* dict) const;
   void AddIA2HypertextProperties(const Microsoft::WRL::ComPtr<IAccessible>,
-                                 base::Value* dict) const;
+                                 base::Value::Dict* dict) const;
   void AddIA2TextProperties(const Microsoft::WRL::ComPtr<IAccessible>,
-                            base::Value* dict) const;
+                            base::Value::Dict* dict) const;
   void AddIA2TableProperties(const Microsoft::WRL::ComPtr<IAccessible>,
-                             base::Value* dict) const;
+                             base::Value::Dict* dict) const;
   void AddIA2TableCellProperties(const Microsoft::WRL::ComPtr<IAccessible>,
-                                 base::Value* dict) const;
+                                 base::Value::Dict* dict) const;
   void AddIA2ValueProperties(const Microsoft::WRL::ComPtr<IAccessible>,
-                             base::Value* dict) const;
+                             base::Value::Dict* dict) const;
   std::string ProcessTreeForOutput(
-      const base::DictionaryValue& node) const override;
+      const base::Value::Dict& node) const override;
 
   // Returns a document accessible object for an active tab in a browser.
   Microsoft::WRL::ComPtr<IAccessible> FindActiveDocument(

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,9 @@
 
 namespace ash {
 
-const base::Feature kFamilyLinkOobeHandoff{"FamilyLinkOobeHandoff",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kFamilyLinkOobeHandoff,
+             "FamilyLinkOobeHandoff",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsFamilyLinkOobeHandoffEnabled() {
   return base::FeatureList::IsEnabled(kFamilyLinkOobeHandoff);

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,21 +10,24 @@
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
-#include "chrome/browser/policy/enrollment_status.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 
 class PrefRegistrySimple;
+
+namespace policy {
+class EnrollmentStatus;
+}
 
 namespace ash {
 class DemoResources;
 
 // Controls enrollment flow for setting up Demo Mode.
 class DemoSetupController
-    : public EnterpriseEnrollmentHelper::EnrollmentStatusConsumer,
-      public policy::CloudPolicyStore::Observer {
+    : public EnterpriseEnrollmentHelper::EnrollmentStatusConsumer {
  public:
   // All steps required for setup.
   enum class DemoSetupStep {
@@ -41,10 +44,6 @@ class DemoSetupController
    public:
     // Type of setup error.
     enum class ErrorCode {
-      // Cannot load or parse offline policy.
-      kOfflinePolicyError,
-      // Local account policy store error.
-      kOfflinePolicyStoreError,
       // Cannot perform offline setup without online FRE check.
       kOnlineFRECheckRequired,
       // Cannot load online component.
@@ -162,7 +161,6 @@ class DemoSetupController
   using OnSetupError = base::OnceCallback<void(const DemoSetupError&)>;
   using OnSetCurrentSetupStep =
       base::RepeatingCallback<void(const DemoSetupStep)>;
-  using HasPreinstalledDemoResourcesCallback = base::OnceCallback<void(bool)>;
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
@@ -200,8 +198,15 @@ class DemoSetupController
     demo_config_ = demo_config;
   }
 
-  // Whether offline enrollment is used for setup.
-  bool IsOfflineEnrollment() const;
+  std::string& get_retailer_store_id_input() {
+    return retailer_store_id_input_;
+  }
+
+  // Sets demo mode retailer id input by the user. It will be saved as local
+  // prefs when enrollment completes.
+  void set_retailer_store_id_input(const std::string& retailer_store_id_input) {
+    retailer_store_id_input_ = retailer_store_id_input;
+  }
 
   // Initiates enrollment that sets up the device in the demo mode domain. The
   // `enrollment_type_` determines whether online or offline setup will be
@@ -213,11 +218,6 @@ class DemoSetupController
   void Enroll(OnSetupSuccess on_setup_success,
               OnSetupError on_setup_error,
               const OnSetCurrentSetupStep& set_current_setup_step);
-
-  // Tries to mount the preinstalled offline resources necessary for offline
-  // Demo Mode.
-  void TryMountPreinstalledDemoResources(
-      HasPreinstalledDemoResourcesCallback callback);
 
   // Converts a relative path to an absolute path under the preinstalled demo
   // resources mount. Returns an empty string if the preinstalled demo resources
@@ -235,10 +235,6 @@ class DemoSetupController
 
   void SetCrOSComponentLoadErrorForTest(
       component_updater::CrOSComponentManager::Error error);
-  void SetPreinstalledOfflineResourcesPathForTesting(
-      const base::FilePath& path);
-  void SetDeviceLocalAccountPolicyStoreForTest(policy::CloudPolicyStore* store);
-  void SetOfflineDataDirForTest(const base::FilePath& offline_dir);
 
  private:
   // Attempts to load the CrOS component with demo resources for online
@@ -251,21 +247,6 @@ class DemoSetupController
   // will fail.
   void OnDemoResourcesCrOSComponentLoaded();
 
-  // Callback after attempting to load preinstalled demo resources. If the
-  // resources were loaded, offline Demo Mode should be available.
-  void OnPreinstalledDemoResourcesLoaded(
-      HasPreinstalledDemoResourcesCallback callback);
-
-  // Initiates offline enrollment that locks the device and sets up offline
-  // policies required by demo mode. It requires no network connectivity since
-  // all setup will be done locally. The policy files will be loaded from the
-  // preinstalled demo resources.
-  void EnrollOffline();
-
-  // Called when the device local account policy for the offline demo mode is
-  // loaded.
-  void OnDeviceLocalAccountPolicyLoaded(absl::optional<std::string> blob);
-
   // Called when device is marked as registered and the second part of OOBE flow
   // is completed. This is the last step of demo mode setup flow.
   void OnDeviceRegistered();
@@ -273,15 +254,14 @@ class DemoSetupController
   // Sets current setup step.
   void SetCurrentSetupStep(DemoSetupStep current_step);
 
+  // Sets retailer and store id in local pref.
+  void SetRetailerAndStoreIdInPref();
+
   // Finish the flow with an error.
   void SetupFailed(const DemoSetupError& error);
 
   // Clears the internal state.
   void Reset();
-
-  // policy::CloudPolicyStore::Observer:
-  void OnStoreLoaded(policy::CloudPolicyStore* store) override;
-  void OnStoreError(policy::CloudPolicyStore* store) override;
 
   // Keeps track of when downloading demo mode resources begins.
   base::TimeTicks download_start_time_;
@@ -293,6 +273,8 @@ class DemoSetupController
   // setup.
   int num_setup_retries_ = 0;
 
+  std::string retailer_store_id_input_;
+
   // Demo mode configuration type that will be setup when Enroll() is called.
   // Should be set explicitly.
   DemoSession::DemoModeConfig demo_config_ = DemoSession::DemoModeConfig::kNone;
@@ -301,9 +283,6 @@ class DemoSetupController
   // component.
   component_updater::CrOSComponentManager::Error component_error_for_tests_ =
       component_updater::CrOSComponentManager::Error::NONE;
-
-  // Path at which to mount preinstalled offline demo resources for tests.
-  base::FilePath preinstalled_offline_resources_path_for_tests_;
 
   // Callback to call when setup step is updated.
   OnSetCurrentSetupStep set_current_setup_step_;
@@ -314,13 +293,7 @@ class DemoSetupController
   // Callback to call when enrollment finishes successfully.
   OnSetupSuccess on_setup_success_;
 
-  // The CloudPolicyStore for the device local account for the offline policy.
-  policy::CloudPolicyStore* device_local_account_policy_store_ = nullptr;
-
   std::unique_ptr<EnterpriseEnrollmentHelper> enrollment_helper_;
-
-  // The preinstalled Demo Mode Resources for offline Demo Mode.
-  std::unique_ptr<DemoResources> preinstalled_demo_resources_;
 
   // The Demo Mode Resources CrOS Component downloaded for online Demo Mode.
   std::unique_ptr<DemoResources> demo_resources_;

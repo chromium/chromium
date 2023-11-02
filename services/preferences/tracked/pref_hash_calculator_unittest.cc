@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,12 +16,12 @@ TEST(PrefHashCalculatorTest, TestCurrentAlgorithm) {
   base::Value string_value_1("string value 1");
   base::Value string_value_2("string value 2");
   base::DictionaryValue dictionary_value_1;
-  dictionary_value_1.SetInteger("int value", 1);
+  dictionary_value_1.GetDict().Set("int value", 1);
   dictionary_value_1.SetKey("nested empty map", base::DictionaryValue());
   base::DictionaryValue dictionary_value_1_equivalent;
-  dictionary_value_1_equivalent.SetInteger("int value", 1);
+  dictionary_value_1_equivalent.GetDict().Set("int value", 1);
   base::DictionaryValue dictionary_value_2;
-  dictionary_value_2.SetInteger("int value", 2);
+  dictionary_value_2.GetDict().Set("int value", 2);
 
   PrefHashCalculator calc1("seed1", "deviceid", "legacydeviceid");
   PrefHashCalculator calc1_dup("seed1", "deviceid", "legacydeviceid");
@@ -88,10 +87,9 @@ TEST(PrefHashCalculatorTest, CatchHashChanges) {
   nested_empty_dict.SetKey("a", base::DictionaryValue());
   nested_empty_dict.SetKey("b", base::ListValue());
   base::ListValue nested_empty_list;
-  nested_empty_list.Append(std::make_unique<base::DictionaryValue>());
-  nested_empty_list.Append(std::make_unique<base::ListValue>());
-  nested_empty_list.Append(
-      std::make_unique<base::Value>(nested_empty_dict.Clone()));
+  nested_empty_list.Append(base::Value(base::Value::Type::DICTIONARY));
+  nested_empty_list.Append(base::Value(base::Value::Type::LIST));
+  nested_empty_list.Append(nested_empty_dict.Clone());
 
   // A dictionary with an empty dictionary, an empty list, and nested empty
   // dictionaries/lists in it.

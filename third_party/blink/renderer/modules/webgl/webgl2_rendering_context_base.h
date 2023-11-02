@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,11 +42,11 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
   // base class.  This is because the above buffer{Sub}Data() hides the name
   // from base class.
   void bufferData(GLenum target, int64_t size, GLenum usage);
-  void bufferData(GLenum target, DOMArrayBuffer* data, GLenum usage);
+  void bufferData(GLenum target, DOMArrayBufferBase* data, GLenum usage);
   void bufferData(GLenum target,
                   MaybeShared<DOMArrayBufferView> data,
                   GLenum usage);
-  void bufferSubData(GLenum target, int64_t offset, DOMArrayBuffer* data);
+  void bufferSubData(GLenum target, int64_t offset, DOMArrayBufferBase* data);
   void bufferSubData(GLenum target,
                      int64_t offset,
                      const FlexibleArrayBufferView& data);
@@ -1096,17 +1096,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                                     GLenum,
                                     Vector<GLenum>&);
 
-  IntRect GetTextureSourceSubRectangle(GLsizei width, GLsizei height);
-
-  enum ClearBufferCaller {
-    kClearBufferiv,
-    kClearBufferuiv,
-    kClearBufferfv,
-    kClearBufferfi
-  };
-  void UpdateBuffersToAutoClear(ClearBufferCaller caller,
-                                GLenum buffer,
-                                GLint drawbuffer);
+  gfx::Rect GetTextureSourceSubRectangle(GLsizei width, GLsizei height);
 
   /* WebGLRenderingContextBase overrides */
   unsigned GetMaxWebGLLocationLength() const override { return 1024; }
@@ -1130,14 +1120,18 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                                GLsizei height,
                                const char* function_name) override;
 
-  WebGLTexture* ValidateTexImageBinding(const char*,
-                                        TexImageFunctionID,
-                                        GLenum) override;
+  void GetCurrentUnpackState(TexImageParams& params) override;
+  WebGLTexture* ValidateTexImageBinding(const TexImageParams& params) override;
   // Helper function to check texture 3D target and texture bound to the target.
-  // Generate GL errors and return 0 if target is invalid or texture bound is
-  // null.  Otherwise, return the texture bound to the target.
+  // Generates GL errors and returns 0 if target is invalid or texture bound is
+  // null.  Otherwise, returns the texture bound to the target.
+  // If |validate_opaque_textures| is true, the helper will also generate a GL
+  // error when the texture bound to the target is opaque.
+  // See https://www.w3.org/TR/webxrlayers-1/#opaque-texture for details about
+  // opaque textures.
   WebGLTexture* ValidateTexture3DBinding(const char* function_name,
-                                         GLenum target);
+                                         GLenum target,
+                                         bool validate_opaque_textures = false);
 
   WebGLBuffer* ValidateBufferDataTarget(const char* function_name,
                                         GLenum target) override;
@@ -1187,7 +1181,6 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
 
   HeapVector<Member<WebGLBuffer>> bound_indexed_uniform_buffers_;
   GLint max_transform_feedback_separate_attribs_;
-  wtf_size_t max_bound_uniform_buffer_index_;
 
   Member<WebGLQuery> current_boolean_occlusion_query_;
   Member<WebGLQuery> current_transform_feedback_primitives_written_query_;

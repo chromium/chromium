@@ -1,12 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import 'chrome://resources/cr_elements/icons.m.js';
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
@@ -28,9 +28,9 @@ import './scanning_fonts_css.js';
 import './scanning_shared_css.js';
 import './source_select.js';
 
-import {CrContainerShadowBehavior} from 'chrome://resources/cr_elements/cr_container_shadow_behavior.m.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {CrContainerShadowBehavior} from 'chrome://resources/ash/common/cr_container_shadow_behavior.js';
+import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -164,11 +164,25 @@ Polymer({
       value: 0,
     },
 
+    /** @private {!Array<ash.scanning.mojom.ColorMode>} */
+    selectedSourceColorModes_: {
+      type: Array,
+      value: () => [],
+      computed: 'computeColorModes_(selectedSource, capabilities_.sources)',
+    },
+
     /** @private {!Array<ash.scanning.mojom.PageSize>} */
     selectedSourcePageSizes_: {
       type: Array,
       value: () => [],
       computed: 'computePageSizes_(selectedSource, capabilities_.sources)',
+    },
+
+    /** @private {!Array<number>} */
+    selectedSourceResolutions_: {
+      type: Array,
+      value: () => [],
+      computed: 'computeResolutions_(selectedSource, capabilities_.sources)',
     },
 
     /**
@@ -301,14 +315,6 @@ Polymer({
       value: 0,
     },
 
-    /** @private {boolean} */
-    scanAppMultiPageScanEnabled_: {
-      type: Boolean,
-      value: function() {
-        return loadTimeData.getBoolean('scanAppMultiPageScanEnabled');
-      }
-    },
-
     /** {boolean} */
     multiPageScanChecked: Boolean,
 
@@ -329,7 +335,7 @@ Polymer({
     showMultiPageCheckbox_: {
       type: Boolean,
       computed: 'computeShowMultiPageCheckbox_(showScanSettings_, ' +
-          'selectedSource, selectedFileType, scanAppMultiPageScanEnabled_)',
+          'selectedSource, selectedFileType)',
       reflectToAttribute: true,
     },
 
@@ -510,6 +516,20 @@ Polymer({
   },
 
   /**
+   * @return {!Array<ash.scanning.mojom.ColorMode>}
+   * @private
+   */
+  computeColorModes_() {
+    for (const source of this.capabilities_.sources) {
+      if (source.name === this.selectedSource) {
+        return source.colorModes;
+      }
+    }
+
+    return [];
+  },
+
+  /**
    * @return {!Array<ash.scanning.mojom.PageSize>}
    * @private
    */
@@ -517,6 +537,20 @@ Polymer({
     for (const source of this.capabilities_.sources) {
       if (source.name === this.selectedSource) {
         return source.pageSizes;
+      }
+    }
+
+    return [];
+  },
+
+  /**
+   * @return {!Array<number>}
+   * @private
+   */
+  computeResolutions_() {
+    for (const source of this.capabilities_.sources) {
+      if (source.name === this.selectedSource) {
+        return source.resolutions;
       }
     }
 
@@ -1212,8 +1246,8 @@ Polymer({
    * @private
    */
   computeShowMultiPageCheckbox_() {
-    return this.scanAppMultiPageScanEnabled_ && this.showScanSettings_ &&
-        this.isPDFSelected_() && this.isFlatbedSelected_();
+    return this.showScanSettings_ && this.isPDFSelected_() &&
+        this.isFlatbedSelected_();
   },
 
   /**
@@ -1244,8 +1278,6 @@ Polymer({
 
   /** @private */
   onIsMultiPageScanChange_() {
-    assert(!this.isMultiPageScan_ || this.scanAppMultiPageScanEnabled_);
-
     const nextPageNum = this.isMultiPageScan_ ? 1 : 0;
     this.browserProxy_.getPluralString('scanButtonText', nextPageNum)
         .then(
@@ -1298,7 +1330,7 @@ Polymer({
    * @private
    */
   setSelectedColorModeIfAvailable_(colorMode) {
-    if (this.capabilities_.colorModes.includes(colorMode)) {
+    if (this.selectedSourceColorModes_.includes(colorMode)) {
       this.selectedColorMode = colorMode.toString();
     }
   },
@@ -1318,7 +1350,7 @@ Polymer({
    * @private
    */
   setSelectedResolutionIfAvailable_(resolution) {
-    if (this.capabilities_.resolutions.includes(resolution)) {
+    if (this.selectedSourceResolutions_.includes(resolution)) {
       this.selectedResolution = resolution.toString();
     }
   },

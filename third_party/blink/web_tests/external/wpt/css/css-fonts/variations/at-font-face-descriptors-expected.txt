@@ -1,10 +1,10 @@
 This is a testharness.js-based test.
-Found 87 tests; 67 PASS, 20 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 87 tests; 69 PASS, 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS font-weight(valid): 'normal' keyword: normal
 PASS font-weight(valid): 'bold' keyword: bold
 PASS font-weight(valid): 'auto' keyword inside @font-face: auto
-FAIL font-weight(invalid): 'lighter' keyword inside @font-face: lighter assert_equals: No properties should be set. expected "" but got "lighter"
-FAIL font-weight(invalid): 'bolder' keyword inside @font-face: bolder assert_equals: No properties should be set. expected "" but got "bolder"
+PASS font-weight(invalid): 'lighter' keyword inside @font-face: lighter
+PASS font-weight(invalid): 'bolder' keyword inside @font-face: bolder
 PASS font-weight(invalid): Extra content after keyword: bold a
 PASS font-weight(valid): Values that are not multiple of 100 should be parsed successfully: 401
 PASS font-weight(valid): Non-integer values should be parsed successfully: 400.1

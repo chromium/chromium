@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,16 +12,14 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/cxx17_backports.h"
 #include "net/spdy/spdy_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-namespace test {
+namespace net::test {
 namespace {
 
 const char kData[] = "SPDY read queue test data.\0Some more data.";
-const size_t kDataSize = base::size(kData);
+const size_t kDataSize = std::size(kData);
 
 // Enqueues |data| onto |queue| in chunks of at most |max_buffer_size|
 // bytes.
@@ -135,5 +133,4 @@ TEST_F(SpdyReadQueueTest, Clear) {
   EXPECT_TRUE(read_queue.IsEmpty());
 }
 
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

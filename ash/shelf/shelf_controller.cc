@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/message_center/arc_notification_constants.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
@@ -14,11 +15,11 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/launcher_nudge_controller.h"
 #include "ash/shelf/shelf.h"
-#include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -135,6 +136,13 @@ void ShelfController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterStringPref(prefs::kShelfAutoHideBehaviorLocal,
                                std::string());
+  if (base::FeatureList::IsEnabled(features::kShelfAutoHideSeparation)) {
+    registry->RegisterStringPref(
+        prefs::kShelfAutoHideTabletModeBehavior, kShelfAutoHideBehaviorNever,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+    registry->RegisterStringPref(prefs::kShelfAutoHideTabletModeBehaviorLocal,
+                                 std::string());
+  }
   registry->RegisterStringPref(
       prefs::kShelfAlignment, kShelfAlignmentBottom,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
@@ -142,6 +150,17 @@ void ShelfController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kShelfPreferences);
 
   LauncherNudgeController::RegisterProfilePrefs(registry);
+}
+
+void ShelfController::OnActiveUserSessionChanged(const AccountId& account_id) {
+  if (model_.in_shelf_party())
+    model_.ToggleShelfParty();
+}
+
+void ShelfController::OnSessionStateChanged(
+    session_manager::SessionState state) {
+  if (model_.in_shelf_party())
+    model_.ToggleShelfParty();
 }
 
 void ShelfController::OnActiveUserPrefServiceChanged(
@@ -153,6 +172,11 @@ void ShelfController::OnActiveUserPrefServiceChanged(
                               base::BindRepeating(&SetShelfAlignmentFromPrefs));
   pref_change_registrar_->Add(prefs::kShelfAutoHideBehaviorLocal,
                               base::BindRepeating(&SetShelfAutoHideFromPrefs));
+  if (base::FeatureList::IsEnabled(features::kShelfAutoHideSeparation)) {
+    pref_change_registrar_->Add(
+        prefs::kShelfAutoHideTabletModeBehaviorLocal,
+        base::BindRepeating(&SetShelfAutoHideFromPrefs));
+  }
   pref_change_registrar_->Add(prefs::kShelfPreferences,
                               base::BindRepeating(&SetShelfBehaviorsFromPrefs));
 
@@ -184,15 +208,18 @@ void ShelfController::OnTabletModeStarted() {
   if (Shell::Get()->session_controller()->IsRunningInAppMode())
     return;
 
-  // Force the shelf to be visible and to be bottom aligned in tablet mode; the
-  // prefs are restored on exit.
+  if (base::FeatureList::IsEnabled(features::kShelfAutoHideSeparation)) {
+    SetShelfAutoHideFromPrefs();
+  }
+
+  // Force the shelf to be bottom aligned in tablet mode; the prefs are restored
+  // on exit.
   for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
     if (Shelf* shelf = GetShelfForDisplay(display.id())) {
       // Only animate into tablet mode if the shelf alignment will not change.
       if (shelf->IsHorizontalAlignment())
         shelf->set_is_tablet_mode_animation_running(true);
       shelf->SetAlignment(ShelfAlignment::kBottom);
-      shelf->shelf_widget()->OnTabletModeChanged();
     }
   }
 }
@@ -208,7 +235,6 @@ void ShelfController::OnTabletModeEnded() {
     if (Shelf* shelf = GetShelfForDisplay(display.id())) {
       if (shelf->IsHorizontalAlignment())
         shelf->set_is_tablet_mode_animation_running(true);
-      shelf->shelf_widget()->OnTabletModeChanged();
     }
   }
 }
@@ -227,7 +253,7 @@ void ShelfController::OnDisplayConfigurationChanged() {
 void ShelfController::OnAppUpdate(const apps::AppUpdate& update) {
   if (update.HasBadgeChanged() &&
       notification_badging_pref_enabled_.value_or(false)) {
-    bool has_badge = update.HasBadge() == apps::mojom::OptionalBool::kTrue;
+    bool has_badge = update.HasBadge().value_or(false);
     model_.UpdateItemNotification(update.AppId(), has_badge);
   }
 }
@@ -245,7 +271,7 @@ void ShelfController::ShelfItemAdded(int index) {
 
   // Update the notification badge indicator for the newly added shelf item.
   cache_->ForOneApp(app_id, [this](const apps::AppUpdate& update) {
-    bool has_badge = update.HasBadge() == apps::mojom::OptionalBool::kTrue;
+    bool has_badge = update.HasBadge().value_or(false);
     model_.UpdateItemNotification(update.AppId(), has_badge);
   });
 }
@@ -265,10 +291,9 @@ void ShelfController::UpdateAppNotificationBadging() {
   if (cache_) {
     cache_->ForEachApp([this](const apps::AppUpdate& update) {
       // Set the app notification badge hidden when the pref is disabled.
-      bool has_badge =
-          notification_badging_pref_enabled_.value()
-              ? (update.HasBadge() == apps::mojom::OptionalBool::kTrue)
-              : false;
+      bool has_badge = notification_badging_pref_enabled_.value()
+                           ? update.HasBadge().value_or(false)
+                           : false;
 
       model_.UpdateItemNotification(update.AppId(), has_badge);
     });

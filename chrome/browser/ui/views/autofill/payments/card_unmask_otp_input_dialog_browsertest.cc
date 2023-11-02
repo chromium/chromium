@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,7 +37,7 @@ class CardUnmaskOtpInputDialogBrowserTest : public DialogBrowserTest {
     controller()->ShowDialog(kDefaultOtpLength, /*delegate=*/nullptr);
   }
 
-  CardUnmaskOtpInputDialogViews* GetDialogViews() {
+  CardUnmaskOtpInputDialogViews* GetDialog() {
     if (!controller())
       return nullptr;
 
@@ -60,16 +60,8 @@ class CardUnmaskOtpInputDialogBrowserTest : public DialogBrowserTest {
 };
 
 // Ensures the UI can be shown.
-#if defined(OS_WIN)
-// Triggering logic required for Windows OS runs: https://crbug.com/1254686
-#define MAYBE_InvokeUi_CardUnmaskOtpInputDialogDisplays \
-  DISABLED_InvokeUi_CardUnmaskOtpInputDialogDisplays
-#else
-#define MAYBE_InvokeUi_CardUnmaskOtpInputDialogDisplays \
-  InvokeUi_CardUnmaskOtpInputDialogDisplays
-#endif
 IN_PROC_BROWSER_TEST_F(CardUnmaskOtpInputDialogBrowserTest,
-                       MAYBE_InvokeUi_CardUnmaskOtpInputDialogDisplays) {
+                       InvokeUi_CardUnmaskOtpInputDialogDisplays) {
   base::HistogramTester histogram_tester;
 
   ShowAndVerifyUi();
@@ -82,15 +74,8 @@ IN_PROC_BROWSER_TEST_F(CardUnmaskOtpInputDialogBrowserTest,
 }
 
 // Ensures closing tab while dialog being visible is correctly handled.
-#if defined(OS_WIN)
-// Triggering logic required for Windows OS runs: https://crbug.com/1254686
-#define MAYBE_CanCloseTabWhileDialogShowing \
-  DISABLED_CanCloseTabWhileDialogShowing
-#else
-#define MAYBE_CanCloseTabWhileDialogShowing CanCloseTabWhileDialogShowing
-#endif
 IN_PROC_BROWSER_TEST_F(CardUnmaskOtpInputDialogBrowserTest,
-                       MAYBE_CanCloseTabWhileDialogShowing) {
+                       CanCloseTabWhileDialogShowing) {
   ShowUi("");
   VerifyUi();
   browser()->tab_strip_model()->GetActiveWebContents()->Close();
@@ -98,20 +83,38 @@ IN_PROC_BROWSER_TEST_F(CardUnmaskOtpInputDialogBrowserTest,
 }
 
 // Ensures closing browser while dialog being visible is correctly handled.
-#if defined(OS_WIN)
-// Triggering logic required for Windows OS runs: https://crbug.com/1254686
-#define MAYBE_CanCloseBrowserWhileDialogShowing \
-  DISABLED_CanCloseBrowserWhileDialogShowing
-#else
-#define MAYBE_CanCloseBrowserWhileDialogShowing \
-  CanCloseBrowserWhileDialogShowing
-#endif
 IN_PROC_BROWSER_TEST_F(CardUnmaskOtpInputDialogBrowserTest,
-                       MAYBE_CanCloseBrowserWhileDialogShowing) {
+                       CanCloseBrowserWhileDialogShowing) {
   ShowUi("");
   VerifyUi();
   browser()->window()->Close();
   base::RunLoop().RunUntilIdle();
+}
+
+// Ensures activating the new code link sets it to invalid for a set period of
+// time.
+#if BUILDFLAG(IS_WIN)
+// Triggering logic required for Windows OS runs: https://crbug.com/1254686
+#define MAYBE_LinkInvalidatesOnActivation DISABLED_LinkInvalidatesOnActivation
+#else
+#define MAYBE_LinkInvalidatesOnActivation LinkInvalidatesOnActivation
+#endif
+IN_PROC_BROWSER_TEST_F(CardUnmaskOtpInputDialogBrowserTest,
+                       MAYBE_LinkInvalidatesOnActivation) {
+  ShowUi("");
+  VerifyUi();
+  // Link should be disabled on click.
+  GetDialog()->OnNewCodeLinkClicked();
+  EXPECT_FALSE(GetDialog()->NewCodeLinkIsEnabledForTesting());
+  base::RunLoop run_loop;
+  // Link should be re-enabled after timeout completes.
+  base::RepeatingClosure
+      closure_to_run_after_new_code_link_is_enabled_for_testing =
+          run_loop.QuitClosure();
+  GetDialog()->SetClosureToRunAfterNewCodeLinkIsEnabledForTesting(
+      closure_to_run_after_new_code_link_is_enabled_for_testing);
+  run_loop.Run();
+  EXPECT_TRUE(GetDialog()->NewCodeLinkIsEnabledForTesting());
 }
 
 }  // namespace autofill

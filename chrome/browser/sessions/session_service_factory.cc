@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,9 @@
 #include "chrome/browser/sessions/session_data_service.h"
 #include "chrome/browser/sessions/session_data_service_factory.h"
 #include "chrome/browser/sessions/session_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 // static
 SessionService* SessionServiceFactory::GetForProfile(Profile* profile) {
-  if (profile->IsOffTheRecord() || profile->IsGuestSession())
-    return nullptr;
-
   return static_cast<SessionService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
@@ -41,14 +37,16 @@ SessionService* SessionServiceFactory::GetForProfileForSessionRestore(
 
 // static
 void SessionServiceFactory::ShutdownForProfile(Profile* profile) {
-  if (SessionDataServiceFactory::GetForProfile(profile))
-    SessionDataServiceFactory::GetForProfile(profile)->StartCleanup();
-
   // We're about to exit, force creation of the session service if it hasn't
   // been created yet. We do this to ensure session state matches the point in
   // time the user exited.
   SessionServiceFactory* factory = GetInstance();
-  factory->GetServiceForBrowserContext(profile, true);
+  SessionService* service = factory->GetForProfile(profile);
+  if (!service)
+    return;
+
+  if (SessionDataServiceFactory::GetForProfile(profile))
+    SessionDataServiceFactory::GetForProfile(profile)->StartCleanup();
 
   // Shut down and remove the reference to the session service, and replace it
   // with an explicit nullptr to prevent it being recreated on the next access.
@@ -62,9 +60,8 @@ SessionServiceFactory* SessionServiceFactory::GetInstance() {
 }
 
 SessionServiceFactory::SessionServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-        "SessionService",
-        BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("SessionService",
+                                 ProfileSelections::BuildForRegularProfile()) {
   // Ensure that session data is cleared before session restore can happen.
   DependsOn(SessionDataServiceFactory::GetInstance());
 }

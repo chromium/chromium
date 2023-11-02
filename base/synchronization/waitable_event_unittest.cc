@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <algorithm>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -162,7 +163,7 @@ class WaitableEventSignaler : public PlatformThread::Delegate {
 
  private:
   const TimeDelta delay_;
-  WaitableEvent* event_;
+  raw_ptr<WaitableEvent> event_;
 };
 
 // Tests that a WaitableEvent can be safely deleted when |Wait| is done without

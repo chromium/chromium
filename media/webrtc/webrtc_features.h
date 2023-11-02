@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,22 +13,18 @@
 namespace features {
 
 COMPONENT_EXPORT(MEDIA_WEBRTC)
-extern const base::Feature kWebRtcAllowWgcDesktopCapturer;
+BASE_DECLARE_FEATURE(kWebRtcAllowWgcDesktopCapturer);
 
 COMPONENT_EXPORT(MEDIA_WEBRTC)
-extern const base::Feature kWebRtcEnableCaptureMultiChannelApm;
+BASE_DECLARE_FEATURE(kWebRtcAllow48kHzProcessingOnArm);
+
+COMPONENT_EXPORT(MEDIA_WEBRTC) BASE_DECLARE_FEATURE(kWebRtcHybridAgc);
 
 COMPONENT_EXPORT(MEDIA_WEBRTC)
-extern const base::Feature kWebRtcAllow48kHzProcessingOnArm;
+BASE_DECLARE_FEATURE(kWebRtcAnalogAgcClippingControl);
 
 COMPONENT_EXPORT(MEDIA_WEBRTC)
-extern const base::Feature kWebRtcHybridAgc;
-
-COMPONENT_EXPORT(MEDIA_WEBRTC)
-extern const base::Feature kWebRtcAnalogAgcClippingControl;
-
-COMPONENT_EXPORT(MEDIA_WEBRTC)
-extern const base::Feature kWebRtcAnalogAgcStartupMinVolume;
+BASE_DECLARE_FEATURE(kWebRtcAnalogAgcStartupMinVolume);
 
 }  // namespace features
 

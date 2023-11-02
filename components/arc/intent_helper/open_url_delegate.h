@@ -1,11 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_ARC_INTENT_HELPER_OPEN_URL_DELEGATE_H_
 #define COMPONENTS_ARC_INTENT_HELPER_OPEN_URL_DELEGATE_H_
 
-#include "components/arc/mojom/intent_helper.mojom.h"
+#include "ash/components/arc/mojom/intent_helper.mojom.h"
 
 class GURL;
 

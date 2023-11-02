@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <limits>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -1078,6 +1077,19 @@ TEST_F(ChunkedDataPipeUploadDataStreamTest, CacheReadAppendDataDuringRead) {
   EXPECT_READ(chunked_upload_stream_, io_buffer, "abc");
 
   EXPECT_EOF(chunked_upload_stream_, 13);
+}
+
+TEST_F(ChunkedDataPipeUploadDataStreamTest, ErrorAndDetach) {
+  chunked_data_pipe_getter_ = std::make_unique<TestChunkedDataPipeGetter>();
+  chunked_upload_stream_ = std::make_unique<ChunkedDataPipeUploadDataStream>(
+      base::MakeRefCounted<network::ResourceRequestBody>(),
+      chunked_data_pipe_getter_->GetDataPipeGetterRemote());
+  get_size_callback_ = chunked_data_pipe_getter_->WaitForGetSize();
+  std::move(get_size_callback_).Run(net::ERR_FAILED, 0);
+
+  base::RunLoop().RunUntilIdle();
+  chunked_data_pipe_getter_->ClosePipe();
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace

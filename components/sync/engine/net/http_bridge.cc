@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/task/post_task.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/variations/net/variations_http_headers.h"
@@ -27,6 +27,7 @@
 #include "net/url_request/static_http_user_agent_settings.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/cpp/simple_url_loader_throttle.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/zlib/google/compression_utils.h"
 
@@ -63,10 +64,10 @@ HttpBridgeFactory::HttpBridgeFactory(
 
 HttpBridgeFactory::~HttpBridgeFactory() = default;
 
-scoped_refptr<HttpPostProviderInterface> HttpBridgeFactory::Create() {
+scoped_refptr<HttpPostProvider> HttpBridgeFactory::Create() {
   DCHECK(url_loader_factory_);
 
-  scoped_refptr<HttpPostProviderInterface> http =
+  scoped_refptr<HttpPostProvider> http =
       new HttpBridge(user_agent_, url_loader_factory_->Clone());
   return http;
 }
@@ -97,6 +98,11 @@ void HttpBridge::SetExtraRequestHeaders(const char* headers) {
   DCHECK(extra_headers_.empty())
       << "HttpBridge::SetExtraRequestHeaders called twice.";
   extra_headers_.assign(headers);
+}
+
+void HttpBridge::SetAllowBatching(bool allow_batching) {
+  DCHECK(!fetch_state_.url_loader);
+  allow_batching_ = allow_batching;
 }
 
 void HttpBridge::SetURL(const GURL& url) {
@@ -243,6 +249,11 @@ void HttpBridge::MakeAsynchronousPost() {
   fetch_state_.url_loader = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);
   network::SimpleURLLoader* url_loader = fetch_state_.url_loader.get();
+
+  if (allow_batching_ &&
+      network::SimpleURLLoaderThrottle::IsBatchingEnabled(traffic_annotation)) {
+    url_loader->SetAllowBatching();
+  }
 
   std::string request_to_send;
   compression::GzipCompress(request_content_, &request_to_send);

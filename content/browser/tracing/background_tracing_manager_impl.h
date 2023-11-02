@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 
 #include "base/no_destructor.h"
 #include "content/browser/tracing/background_tracing_config_impl.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/background_tracing_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/tracing/public/cpp/perfetto/trace_event_data_source.h"
@@ -92,7 +93,7 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager {
   };
   static void RecordMetric(Metrics metric);
 
-  CONTENT_EXPORT static BackgroundTracingManagerImpl* GetInstance();
+  CONTENT_EXPORT static BackgroundTracingManagerImpl& GetInstance();
 
   BackgroundTracingManagerImpl(const BackgroundTracingManagerImpl&) = delete;
   BackgroundTracingManagerImpl& operator=(const BackgroundTracingManagerImpl&) =
@@ -165,7 +166,7 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager {
   ~BackgroundTracingManagerImpl() override;
 
   bool IsSupportedConfig(BackgroundTracingConfigImpl* config);
-  absl::optional<base::Value> GenerateMetadataDict();
+  absl::optional<base::Value::Dict> GenerateMetadataDict();
   void GenerateMetadataProto(
       perfetto::protos::pbzero::ChromeMetadataPacket* metadata,
       bool privacy_filtering_enabled);

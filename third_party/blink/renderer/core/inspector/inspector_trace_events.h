@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/trace_event/trace_event.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"
@@ -14,8 +15,7 @@
 #include "third_party/blink/renderer/core/core_probe_sink.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
@@ -25,6 +25,11 @@
 
 namespace base {
 class UnguessableToken;
+}
+
+namespace gfx {
+class RectF;
+class QuadF;
 }
 
 namespace v8 {
@@ -47,8 +52,6 @@ class Element;
 class EncodedFormData;
 class Event;
 class ExecutionContext;
-class FloatQuad;
-class FloatRect;
 class Frame;
 class HitTestLocation;
 class HitTestRequest;
@@ -294,7 +297,7 @@ extern const char kTextControlChanged[];
 extern const char kSvgChanged[];
 extern const char kScrollbarChanged[];
 extern const char kDisplayLock[];
-extern CORE_EXPORT const char kCanvasFormattedTextRunChange[];
+extern const char kDevtools[];
 }  // namespace layout_invalidation_reason
 
 // LayoutInvalidationReasonForTracing is strictly for tracing. Blink logic must
@@ -432,23 +435,23 @@ namespace inspector_paint_event {
 void Data(perfetto::TracedValue context,
           Frame*,
           const LayoutObject*,
-          const FloatQuad& quad,
+          const gfx::QuadF& quad,
           int layer_id);
 }
 
 namespace inspector_paint_image_event {
 void Data(perfetto::TracedValue context,
           const LayoutImage&,
-          const FloatRect& src_rect,
-          const FloatRect& dest_rect);
+          const gfx::RectF& src_rect,
+          const gfx::RectF& dest_rect);
 void Data(perfetto::TracedValue context,
           const LayoutObject&,
           const StyleImage&);
 void Data(perfetto::TracedValue context,
           Node*,
           const StyleImage&,
-          const FloatRect& src_rect,
-          const FloatRect& dest_rect);
+          const gfx::RectF& src_rect,
+          const gfx::RectF& dest_rect);
 void Data(perfetto::TracedValue context,
           const LayoutObject*,
           const ImageResourceContent&);
@@ -466,7 +469,7 @@ namespace inspector_scroll_layer_event {
 void Data(perfetto::TracedValue context, LayoutObject*);
 }
 
-namespace inspector_update_layer_tree_event {
+namespace inspector_pre_paint_event {
 void Data(perfetto::TracedValue context, LocalFrame*);
 }
 
@@ -524,7 +527,7 @@ void Data(perfetto::TracedValue context);
 }
 
 namespace inspector_invalidate_layout_event {
-void Data(perfetto::TracedValue context, LocalFrame*);
+void Data(perfetto::TracedValue context, LocalFrame*, DOMNodeId);
 }
 
 namespace inspector_recalculate_styles_event {

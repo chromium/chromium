@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/location.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "media/base/media_switches.h"
@@ -115,6 +116,15 @@ void UrlData::set_is_cors_cross_origin(bool is_cors_cross_origin) {
 
 void UrlData::set_has_access_control() {
   has_access_control_ = true;
+}
+
+void UrlData::set_mime_type(std::string mime_type) {
+  mime_type_ = std::move(mime_type);
+}
+
+void UrlData::set_passed_timing_allow_origin_check(
+    bool passed_timing_allow_origin_check) {
+  passed_timing_allow_origin_check_ = passed_timing_allow_origin_check;
 }
 
 void UrlData::RedirectTo(const scoped_refptr<UrlData>& url_data) {
@@ -235,7 +245,7 @@ UrlIndex::~UrlIndex() {
   auto dcheck_has_one_ref = [](const UrlDataMap::value_type& entry) {
     DCHECK(entry.second->HasOneRef());
   };
-  std::for_each(indexed_data_.begin(), indexed_data_.end(), dcheck_has_one_ref);
+  base::ranges::for_each(indexed_data_, dcheck_has_one_ref);
 #endif
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
+#include "build/build_config.h"
+#include "components/download/public/common/download_content.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/safe_browsing/content/browser/download/download_stats.h"
 
@@ -38,10 +40,32 @@ void RecordOpenedDangerousConfirmDialog(
       download::DOWNLOAD_DANGER_TYPE_MAX);
 }
 
-void RecordDownloadOpenMethod(ChromeDownloadOpenMethod open_method) {
+void RecordDownloadOpen(ChromeDownloadOpenMethod open_method,
+                        const std::string& mime_type_string) {
   base::RecordAction(base::UserMetricsAction("Download.Open"));
   base::UmaHistogramEnumeration("Download.OpenMethod", open_method,
                                 DOWNLOAD_OPEN_METHOD_LAST_ENTRY);
+  download::DownloadContent download_content =
+      download::DownloadContentFromMimeType(
+          mime_type_string, /*record_content_subcategory=*/false);
+  if (download_content == download::DownloadContent::DOCUMENT ||
+      download_content == download::DownloadContent::PDF ||
+      download_content == download::DownloadContent::SPREADSHEET ||
+      download_content == download::DownloadContent::TEXT ||
+      download_content == download::DownloadContent::UNRECOGNIZED) {
+    // TODO(crbug.com/1372476): Remove this histogram after debugging.
+    base::UmaHistogramEnumeration(
+        "Download.OpenMethod." +
+            download::GetDownloadContentString(download_content),
+        open_method, DOWNLOAD_OPEN_METHOD_LAST_ENTRY);
+  }
+  base::UmaHistogramEnumeration("Download.Open.ContentType", download_content,
+                                download::DownloadContent::MAX);
+}
+
+void RecordDownloadOpenButtonPressed(bool is_download_completed) {
+  base::UmaHistogramBoolean("Download.OpenButtonPressed.IsDownloadCompleted",
+                            is_download_completed);
 }
 
 void RecordDatabaseAvailability(bool is_available) {
@@ -76,9 +100,14 @@ void RecordDownloadCancelReason(DownloadCancelReason reason) {
   base::UmaHistogramEnumeration("Download.CancelReason", reason);
 }
 
-void RecordDownloadShelfDragEvent(DownloadShelfDragEvent drag_event) {
-  base::UmaHistogramEnumeration("Download.Shelf.DragEvent", drag_event,
-                                DownloadShelfDragEvent::COUNT);
+void RecordDownloadShelfDragInfo(DownloadDragInfo drag_info) {
+  base::UmaHistogramEnumeration("Download.Shelf.DragInfo", drag_info,
+                                DownloadDragInfo::COUNT);
+}
+
+void RecordDownloadBubbleDragInfo(DownloadDragInfo drag_info) {
+  base::UmaHistogramEnumeration("Download.Bubble.DragInfo", drag_info,
+                                DownloadDragInfo::COUNT);
 }
 
 void RecordDownloadStartPerProfileType(Profile* profile) {
@@ -87,25 +116,19 @@ void RecordDownloadStartPerProfileType(Profile* profile) {
       profile_metrics::GetBrowserProfileType(profile));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Records whether the download dialog is shown to the user.
 void RecordDownloadPromptStatus(DownloadPromptStatus status) {
   base::UmaHistogramEnumeration("MobileDownload.DownloadPromptStatus", status,
                                 DownloadPromptStatus::MAX_VALUE);
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
-void RecordDownloadLaterPromptStatus(DownloadLaterPromptStatus status) {
-  base::UmaHistogramEnumeration("MobileDownload.DownloadLaterPromptStatus",
-                                status);
-}
-
-#endif  // defined(OS_ANDROID)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void RecordDownloadNotificationSuppressed() {
   base::UmaHistogramBoolean("Download.Notification.Suppressed", true);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 DownloadShelfContextMenuAction DownloadCommandToShelfAction(
     DownloadCommands::Command download_command,
@@ -157,9 +180,6 @@ DownloadShelfContextMenuAction DownloadCommandToShelfAction(
     case DownloadCommands::Command::COPY_TO_CLIPBOARD:
       return clicked ? DownloadShelfContextMenuAction::kCopyToClipboardClicked
                      : DownloadShelfContextMenuAction::kCopyToClipboardEnabled;
-    case DownloadCommands::Command::ANNOTATE:
-      return clicked ? DownloadShelfContextMenuAction::kAnnotateClicked
-                     : DownloadShelfContextMenuAction::kAnnotateEnabled;
     case DownloadCommands::Command::DEEP_SCAN:
       return clicked ? DownloadShelfContextMenuAction::kDeepScanClicked
                      : DownloadShelfContextMenuAction::kDeepScanEnabled;
@@ -167,5 +187,12 @@ DownloadShelfContextMenuAction DownloadCommandToShelfAction(
       return clicked
                  ? DownloadShelfContextMenuAction::kBypassDeepScanningClicked
                  : DownloadShelfContextMenuAction::kBypassDeepScanningEnabled;
+
+    // The following are not actually visible in the context menu so should
+    // never be logged.
+    case DownloadCommands::Command::REVIEW:
+    case DownloadCommands::Command::RETRY:
+      NOTREACHED();
+      return DownloadShelfContextMenuAction::kNotReached;
   }
 }

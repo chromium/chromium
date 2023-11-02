@@ -1,0 +1,22 @@
+# Policies from an atomic group need to have their values coming from the same
+# source. If policies from an atomic gorup come from multiple sources, only the
+# policies coming from the same source will be applied. The source with the
+# higher priority will be the one from which policies are applied.
+# i.e. Policy1 and Policy2 come from GPO and policy 3 comes from the cloud.
+#  If GPO has priority over the cloud, only Policy1 and Policy2 will be applied.
+# For this to take effect, PolicyAtomicGroupsEnabled must he set to true.
+AtomicGroup1:
+  caption: A caption
+  # List of policies in the group
+  policies:
+  - Policy1
+  - Policy2
+  - Policy3
+
+AtomicGroup2:
+  caption: A caption
+  # List of policies in the group
+  policies:
+  - Policy4
+  - Policy5
+  - Policy6

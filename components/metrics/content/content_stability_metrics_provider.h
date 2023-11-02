@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,9 +16,9 @@
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/crash/content/browser/crash_metrics_reporter_android.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 class PrefService;
 
@@ -31,7 +31,7 @@ class ExtensionsHelper;
 class ContentStabilityMetricsProvider
     : public MetricsProvider,
       public content::BrowserChildProcessObserver,
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       public crash_reporter::CrashMetricsReporter::Observer,
 #endif
       public content::NotificationObserver {
@@ -48,12 +48,17 @@ class ContentStabilityMetricsProvider
       const ContentStabilityMetricsProvider&) = delete;
   ~ContentStabilityMetricsProvider() override;
 
-  // MetricsDataProvider:
+  // MetricsProvider:
   void OnRecordingEnabled() override;
   void OnRecordingDisabled() override;
+#if BUILDFLAG(IS_ANDROID)
+  // A couple Local-State-pref-based stability counts are retained for Android
+  // WebView. Other platforms, including Android Chrome and WebLayer, should use
+  // Stability.Counts2 as the source of truth for these counts.
   void ProvideStabilityMetrics(
       SystemProfileProto* system_profile_proto) override;
   void ClearSavedStabilityMetrics() override;
+#endif  // BUILDFLAG(IS_ANDROID)
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ContentStabilityMetricsProviderTest,
@@ -76,8 +81,11 @@ class ContentStabilityMetricsProvider
       const content::ChildProcessTerminationInfo& info) override;
   void BrowserChildProcessLaunchedAndConnected(
       const content::ChildProcessData& data) override;
+  void BrowserChildProcessLaunchFailed(
+      const content::ChildProcessData& data,
+      const content::ChildProcessTerminationInfo& info) override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // crash_reporter::CrashMetricsReporter::Observer:
   void OnCrashDumpProcessed(
       int rph_id,
@@ -87,7 +95,7 @@ class ContentStabilityMetricsProvider
   base::ScopedObservation<crash_reporter::CrashMetricsReporter,
                           crash_reporter::CrashMetricsReporter::Observer>
       scoped_observation_{this};
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   StabilityMetricsHelper helper_;
 

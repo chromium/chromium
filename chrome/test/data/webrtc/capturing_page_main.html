@@ -30,8 +30,11 @@
         }
 
         let captureHandle = capturedVideoTrack.getCaptureHandle();
-        if (!captureHandle) {
-          window.domAutomationController.send("no-capture-handle");
+        if (captureHandle === null || captureHandle === undefined) {
+          window.domAutomationController.send(String(captureHandle));
+          return;
+        } else if (!captureHandle) {
+          window.domAutomationController.send("error-unknown-capture-handle");
           return;
         }
 
@@ -78,11 +81,10 @@
       }
 
       function onCaptureHandleChange(event) {
-        if (event == undefined || event.captureHandle == undefined) {
-          throw "Unexpected event type.";
-        }
+        // Note that JSON.stringify(null) yields 'null'. On the other hand,
+        // JSON.stringify(undefined) yields undefined (not the string).
         window.domAutomationController.send(
-          JSON.stringify(event.captureHandle())
+          JSON.stringify(event.target.getCaptureHandle())
         );
       }
 

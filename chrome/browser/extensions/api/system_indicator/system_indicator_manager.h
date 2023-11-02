@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/threading/thread_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -85,8 +86,8 @@ class SystemIndicatorManager : public ExtensionRegistryObserver,
 
   using SystemIndicatorMap = std::map<ExtensionId, SystemIndicator>;
 
-  Profile* profile_;
-  StatusTray* status_tray_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<StatusTray> status_tray_;
   SystemIndicatorMap system_indicators_;
   base::ThreadChecker thread_checker_;
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -23,13 +24,8 @@
 #include "chrome/grit/browser_resources.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "crypto/random.h"
@@ -50,7 +46,23 @@ using guest_view::GuestViewBase;
 namespace extensions {
 
 namespace {
-std::string GetPartitionName(WebAuthFlow::Partition partition) {
+
+// Returns whether `partition` should be persisted on disk.
+bool ShouldPersistStorage(WebAuthFlow::Partition partition) {
+  switch (partition) {
+    case WebAuthFlow::LAUNCH_WEB_AUTH_FLOW:
+      return base::FeatureList::IsEnabled(kPersistentStorageForWebAuthFlow);
+    case WebAuthFlow::GET_AUTH_TOKEN:
+      return false;
+  }
+
+  NOTREACHED() << "Unexpected partition value " << partition;
+  return false;
+}
+
+// Returns a unique identifier of the storage partition corresponding to
+// `partition`.
+std::string GetStoragePartitionId(WebAuthFlow::Partition partition) {
   switch (partition) {
     case WebAuthFlow::LAUNCH_WEB_AUTH_FLOW:
       return "launchWebAuthFlow";
@@ -61,9 +73,21 @@ std::string GetPartitionName(WebAuthFlow::Partition partition) {
   NOTREACHED() << "Unexpected partition value " << partition;
   return std::string();
 }
+
+// Returns a partition name suitable to use in the `webview.partition`
+// parameter.
+std::string GetPartitionNameForWebView(WebAuthFlow::Partition partition) {
+  std::string persist_prefix =
+      ShouldPersistStorage(partition) ? "persist:" : "";
+  return persist_prefix + GetStoragePartitionId(partition);
+}
 }  // namespace
 
 namespace identity_private = api::identity_private;
+
+BASE_FEATURE(kPersistentStorageForWebAuthFlow,
+             "PersistentStorageForWebAuthFlow",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 WebAuthFlow::WebAuthFlow(Delegate* delegate,
                          Profile* profile,
@@ -96,6 +120,9 @@ WebAuthFlow::~WebAuthFlow() {
 }
 
 void WebAuthFlow::Start() {
+  DCHECK(profile_);
+  DCHECK(!profile_->IsOffTheRecord());
+
   AppWindowRegistry::Get(profile_)->AddObserver(this);
 
   // Attach a random ID string to the window so we can recognize it
@@ -105,19 +132,19 @@ void WebAuthFlow::Start() {
   base::Base64Encode(random_bytes, &app_window_key_);
 
   // identityPrivate.onWebFlowRequest(app_window_key, provider_url_, mode_)
-  std::unique_ptr<base::ListValue> args(new base::ListValue());
-  args->Append(app_window_key_);
-  args->Append(provider_url_.spec());
+  base::Value::List args;
+  args.Append(app_window_key_);
+  args.Append(provider_url_.spec());
   if (mode_ == WebAuthFlow::INTERACTIVE)
-    args->Append("interactive");
+    args.Append("interactive");
   else
-    args->Append("silent");
-  args->Append(GetPartitionName(partition_));
+    args.Append("silent");
+  args.Append(GetPartitionNameForWebView(partition_));
 
   auto event =
       std::make_unique<Event>(events::IDENTITY_PRIVATE_ON_WEB_FLOW_REQUEST,
                               identity_private::OnWebFlowRequest::kEventName,
-                              std::move(*args).TakeList(), profile_);
+                              std::move(args), profile_);
   ExtensionSystem* system = ExtensionSystem::Get(profile_);
 
   extensions::ComponentLoader* component_loader =
@@ -154,8 +181,8 @@ content::StoragePartitionConfig WebAuthFlow::GetWebViewPartitionConfig(
   // creating the correct StoragePartitionConfig.
   auto result = content::StoragePartitionConfig::Create(
       browser_context, extension_misc::kIdentityApiUiAppId,
-      GetPartitionName(partition),
-      /*in_memory=*/true);
+      GetStoragePartitionId(partition),
+      /*in_memory=*/!ShouldPersistStorage(partition));
   result.set_fallback_to_partition_domain_for_blob_urls(
       browser_context->IsOffTheRecord()
           ? content::StoragePartitionConfig::FallbackMode::
@@ -223,16 +250,14 @@ void WebAuthFlow::DidStopLoading() {
 
 void WebAuthFlow::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (navigation_handle->IsInPrimaryMainFrame())
     BeforeUrlLoaded(navigation_handle->GetURL());
 }
 
 void WebAuthFlow::DidRedirectNavigation(
     content::NavigationHandle* navigation_handle) {
-  BeforeUrlLoaded(navigation_handle->GetURL());
+  if (navigation_handle->IsInPrimaryMainFrame())
+    BeforeUrlLoaded(navigation_handle->GetURL());
 }
 
 void WebAuthFlow::DidFinishNavigation(
@@ -240,9 +265,6 @@ void WebAuthFlow::DidFinishNavigation(
   // Websites may create and remove <iframe> during the auth flow. In
   // particular, to integrate CAPTCHA tests. Chrome shouldn't abort the auth
   // flow if a navigation failed in a sub-frame. https://crbug.com/1049565.
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (!navigation_handle->IsInPrimaryMainFrame())
     return;
 

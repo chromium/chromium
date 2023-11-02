@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,9 +32,10 @@ class InputMethodWinTSF::TSFEventObserver : public TSFEventRouterObserver {
   bool is_candidate_popup_open_ = false;
 };
 
-InputMethodWinTSF::InputMethodWinTSF(internal::InputMethodDelegate* delegate,
-                                     HWND toplevel_window_handle)
-    : InputMethodWinBase(delegate, toplevel_window_handle),
+InputMethodWinTSF::InputMethodWinTSF(
+    ImeKeyEventDispatcher* ime_key_event_dispatcher,
+    HWND attached_window_handle)
+    : InputMethodWinBase(ime_key_event_dispatcher, attached_window_handle),
       tsf_event_observer_(new TSFEventObserver()),
       tsf_event_router_(new TSFEventRouter(tsf_event_observer_.get())) {}
 
@@ -48,8 +49,8 @@ void InputMethodWinTSF::OnFocus() {
   }
   tsf_event_router_->SetManager(
       ui::TSFBridge::GetInstance()->GetThreadManager().Get());
-  ui::TSFBridge::GetInstance()->SetInputMethodDelegate(
-      InputMethodBase::delegate());
+  ui::TSFBridge::GetInstance()->SetImeKeyEventDispatcher(
+      InputMethodBase::ime_key_event_dispatcher());
 }
 
 void InputMethodWinTSF::OnBlur() {
@@ -59,7 +60,7 @@ void InputMethodWinTSF::OnBlur() {
     return;
   }
   tsf_event_router_->SetManager(nullptr);
-  ui::TSFBridge::GetInstance()->RemoveInputMethodDelegate();
+  ui::TSFBridge::GetInstance()->RemoveImeKeyEventDispatcher();
 }
 
 bool InputMethodWinTSF::OnUntranslatedIMEMessage(
@@ -93,7 +94,7 @@ bool InputMethodWinTSF::OnUntranslatedIMEMessage(
   return !!handled;
 }
 
-void InputMethodWinTSF::OnTextInputTypeChanged(const TextInputClient* client) {
+void InputMethodWinTSF::OnTextInputTypeChanged(TextInputClient* client) {
   InputMethodBase::OnTextInputTypeChanged(client);
   if (!ui::TSFBridge::GetInstance() || !IsTextInputClientFocused(client) ||
       !IsWindowFocused(client)) {
@@ -128,6 +129,8 @@ void InputMethodWinTSF::DetachTextInputClient(TextInputClient* client) {
   ui::TSFBridge::GetInstance()->RemoveFocusedClient(client);
 }
 
+void InputMethodWinTSF::OnInputLocaleChanged() {}
+
 bool InputMethodWinTSF::IsInputLocaleCJK() const {
   if (!ui::TSFBridge::GetInstance()) {
     return false;
@@ -154,7 +157,7 @@ void InputMethodWinTSF::OnDidChangeFocusedClient(
     TextInputClient* focused) {
   if (ui::TSFBridge::GetInstance() && IsWindowFocused(focused) &&
       IsTextInputClientFocused(focused)) {
-    ui::TSFBridge::GetInstance()->SetFocusedClient(toplevel_window_handle_,
+    ui::TSFBridge::GetInstance()->SetFocusedClient(attached_window_handle_,
                                                    focused);
     // Force to update the input type since client's TextInputStateChanged()
     // function might not be called if text input types before the client loses
@@ -174,11 +177,6 @@ void InputMethodWinTSF::ConfirmCompositionText() {
 
   if (ui::TSFBridge::GetInstance())
     ui::TSFBridge::GetInstance()->ConfirmComposition();
-}
-
-void InputMethodWinTSF::ShowVirtualKeyboardIfEnabled() {
-  if (auto* controller = GetVirtualKeyboardController())
-    controller->DisplayVirtualKeyboard();
 }
 
 }  // namespace ui

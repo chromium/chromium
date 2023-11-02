@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
@@ -116,7 +117,7 @@ class CONTENT_EXPORT DownloadManagerImpl
       const base::FilePath& target_path,
       const std::vector<GURL>& url_chain,
       const GURL& referrer_url,
-      const GURL& site_url,
+      const StoragePartitionConfig& storage_partition_config,
       const GURL& tab_url,
       const GURL& tab_refererr_url,
       const absl::optional<url::Origin>& request_initiator,
@@ -148,6 +149,12 @@ class CONTENT_EXPORT DownloadManagerImpl
   download::DownloadItem* GetDownload(uint32_t id) override;
   download::DownloadItem* GetDownloadByGuid(const std::string& guid) override;
   void GetNextId(GetNextIdCallback callback) override;
+  std::string StoragePartitionConfigToSerializedEmbedderDownloadData(
+      const StoragePartitionConfig& storage_partition_config) override;
+  StoragePartitionConfig SerializedEmbedderDownloadDataToStoragePartitionConfig(
+      const std::string& serialized_embedder_download_data) override;
+  StoragePartitionConfig GetStoragePartitionConfigForSiteUrl(
+      const GURL& site_url) override;
 
   void StartDownload(
       std::unique_ptr<download::DownloadCreateInfo> info,
@@ -247,7 +254,7 @@ class CONTENT_EXPORT DownloadManagerImpl
   void CheckForFileRemoval(download::DownloadItemImpl* download_item) override;
   void ResumeInterruptedDownload(
       std::unique_ptr<download::DownloadUrlParameters> params,
-      const GURL& site_url) override;
+      const std::string& serialized_embedder_download_data) override;
   void OpenDownload(download::DownloadItemImpl* download) override;
   void ShowDownloadInShell(download::DownloadItemImpl* download) override;
   void DownloadRemoved(download::DownloadItemImpl* download) override;
@@ -268,7 +275,7 @@ class CONTENT_EXPORT DownloadManagerImpl
       std::unique_ptr<download::DownloadUrlParameters> params,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
       bool is_new_download,
-      const GURL& site_url);
+      const std::string& serialized_embedder_download_data);
 
   void InterceptNavigationOnChecksComplete(
       int frame_tree_node_id,
@@ -283,7 +290,7 @@ class CONTENT_EXPORT DownloadManagerImpl
       std::unique_ptr<download::DownloadUrlParameters> params,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
       bool is_new_download,
-      const GURL& site_url,
+      const StoragePartitionConfig& storage_partition_config,
       bool is_download_allowed);
 
   // Whether |next_download_id_| is initialized.
@@ -343,10 +350,10 @@ class CONTENT_EXPORT DownloadManagerImpl
       in_progress_download_observer_;
 
   // The current active browser context.
-  BrowserContext* browser_context_;
+  raw_ptr<BrowserContext> browser_context_;
 
   // Allows an embedder to control behavior. Guaranteed to outlive this object.
-  DownloadManagerDelegate* delegate_;
+  raw_ptr<DownloadManagerDelegate> delegate_;
 
   std::unique_ptr<download::InProgressDownloadManager> in_progress_manager_;
 

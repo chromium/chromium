@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/ranges/algorithm.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "extensions/browser/content_script_tracker.h"
@@ -56,12 +57,11 @@ bool DoExtensionPermissionsCoverHttpOrHttpsOrigins(
     const PermissionSet& permissions) {
   // Looking at explicit (rather than effective) hosts results in stricter
   // checks that better match CORB/CORS behavior.
-  const URLPatternSet& explicit_hosts = permissions.explicit_hosts();
-  return std::any_of(explicit_hosts.begin(), explicit_hosts.end(),
-                     [](const URLPattern& permission) {
-                       return permission.MatchesScheme(url::kHttpScheme) ||
-                              permission.MatchesScheme(url::kHttpsScheme);
-                     });
+  return base::ranges::any_of(
+      permissions.explicit_hosts(), [](const URLPattern& permission) {
+        return permission.MatchesScheme(url::kHttpScheme) ||
+               permission.MatchesScheme(url::kHttpsScheme);
+      });
 }
 
 bool DoExtensionPermissionsCoverHttpOrHttpsOrigins(const Extension& extension) {

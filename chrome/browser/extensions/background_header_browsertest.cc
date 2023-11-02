@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,7 +63,15 @@ class BackgroundHeaderTest : public ExtensionBrowserTest {
   }
 
   std::string ExecuteFetch(const Extension* extension, const GURL& url) {
-    content::DOMMessageQueue message_queue;
+    ExtensionHost* host =
+        ProcessManager::Get(profile())->GetBackgroundHostForExtension(
+            extension->id());
+    if (!host) {
+      ADD_FAILURE() << "No background page found.";
+      return "";
+    }
+    content::DOMMessageQueue message_queue(host->host_contents());
+
     browsertest_util::ExecuteScriptInBackgroundPageNoWait(
         profile(), extension->id(),
         content::JsReplace("executeFetch($1);", url));
@@ -83,7 +91,7 @@ class BackgroundHeaderTest : public ExtensionBrowserTest {
   }
 
   const Extension* LoadFetchExtension(const std::string& host) {
-    ExtensionTestMessageListener listener("ready", false);
+    ExtensionTestMessageListener listener("ready");
     TestExtensionDir test_dir;
     constexpr char kManifestTemplate[] = R"(
     {

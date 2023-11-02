@@ -48,7 +48,7 @@
 #include "third_party/blink/renderer/core/html/html_table_section_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_view_source_parser.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 
 namespace blink {
@@ -61,7 +61,7 @@ class ViewSourceEventListener : public NativeEventListener {
   void Invoke(ExecutionContext*, Event* event) override {
     DCHECK_EQ(event->type(), event_type_names::kChange);
     table_->setAttribute(html_names::kClassAttr,
-                         checkbox_->checked() ? "line-wrap" : "");
+                         checkbox_->Checked() ? "line-wrap" : "");
   }
 
   void Trace(Visitor* visitor) const override {
@@ -90,7 +90,8 @@ void HTMLViewSourceDocument::CreateContainingTable() {
   auto* html = MakeGarbageCollected<HTMLHtmlElement>(*this);
   ParserAppendChild(html);
   auto* head = MakeGarbageCollected<HTMLHeadElement>(*this);
-  auto* meta = MakeGarbageCollected<HTMLMetaElement>(*this);
+  auto* meta =
+      MakeGarbageCollected<HTMLMetaElement>(*this, CreateElementFlags());
   meta->setAttribute(html_names::kNameAttr, "color-scheme");
   meta->setAttribute(html_names::kContentAttr, "light dark");
   head->ParserAppendChild(meta);
@@ -271,7 +272,7 @@ void HTMLViewSourceDocument::AddLine(const AtomicString& class_name) {
   current_ = td_ = td;
 
   // Open up the needed spans.
-  if (!class_name.IsEmpty()) {
+  if (!class_name.empty()) {
     if (class_name == "html-attribute-name" ||
         class_name == "html-attribute-value")
       current_ = AddSpanWithClassName("html-tag");
@@ -289,7 +290,7 @@ void HTMLViewSourceDocument::FinishLine() {
 
 void HTMLViewSourceDocument::AddText(const String& text,
                                      const AtomicString& class_name) {
-  if (text.IsEmpty())
+  if (text.empty())
     return;
 
   // Add in the content, splitting on newlines.
@@ -300,7 +301,7 @@ void HTMLViewSourceDocument::AddText(const String& text,
     String substring = lines[i];
     if (current_ == tbody_)
       AddLine(class_name);
-    if (substring.IsEmpty()) {
+    if (substring.empty()) {
       if (i == size - 1)
         break;
       FinishLine();
@@ -326,14 +327,14 @@ int HTMLViewSourceDocument::AddRange(const String& source,
     return start;
 
   String text = source.Substring(start, end - start);
-  if (!class_name.IsEmpty()) {
+  if (!class_name.empty()) {
     if (is_link)
       current_ = AddLink(link, is_anchor);
     else
       current_ = AddSpanWithClassName(class_name);
   }
   AddText(text, class_name);
-  if (!class_name.IsEmpty() && current_ != tbody_)
+  if (!class_name.empty() && current_ != tbody_)
     current_ = To<Element>(current_->parentNode());
   return end;
 }

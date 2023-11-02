@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,10 @@
 #include "base/sequence_checker.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
-#include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_tab_helper.h"
+#include "chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_tab_helper.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
+#include "content/public/browser/prefetch_metrics.h"
 #include "net/cookies/canonical_cookie.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -59,10 +60,14 @@ class PrefetchProxyPageLoadMetricsObserver
   ObservePolicy OnStart(content::NavigationHandle* navigation_handle,
                         const GURL& currently_committed_url,
                         bool started_in_foreground) override;
+  ObservePolicy OnFencedFramesStart(
+      content::NavigationHandle* navigation_handle,
+      const GURL& currently_committed_url) override;
+  ObservePolicy OnPrerenderStart(content::NavigationHandle* navigation_handle,
+                                 const GURL& currently_committed_url) override;
   ObservePolicy OnRedirect(
       content::NavigationHandle* navigation_handle) override;
-  ObservePolicy OnCommit(content::NavigationHandle* navigation_handle,
-                         ukm::SourceId source_id) override;
+  ObservePolicy OnCommit(content::NavigationHandle* navigation_handle) override;
   void OnDidInternalNavigationAbort(
       content::NavigationHandle* navigation_handle) override;
   ObservePolicy FlushMetricsOnAppEnterBackground(
@@ -81,9 +86,6 @@ class PrefetchProxyPageLoadMetricsObserver
   // query on commit.
   base::Time navigation_start_;
 
-  size_t loaded_css_js_from_cache_before_fcp_ = 0;
-  size_t loaded_css_js_from_network_before_fcp_ = 0;
-
   // The minimum number of days since the last visit, as reported by
   // HistoryService, to any origin in the redirect chain. Set to -1 if there is
   // a response from the history service but was no previous visit.
@@ -93,9 +95,17 @@ class PrefetchProxyPageLoadMetricsObserver
   // into UKM.
   scoped_refptr<PrefetchProxyTabHelper::PrefetchMetrics> srp_metrics_;
 
+  // Metrics related to prefetches requested by a page via the Speculation Rules
+  // API.
+  absl::optional<content::PrefetchReferringPageMetrics> referring_page_metrics_;
+
   // Metrics for the page load after a Google SRP where NavigationPredictor
   // passed parsed SRP links to the TabHelper. Not set if that isn't true.
   absl::optional<PrefetchProxyTabHelper::AfterSRPMetrics> after_srp_metrics_;
+
+  // Metrics for page loads where prefetches were requested via the Speculation
+  // Rules API by the previous page load.
+  absl::optional<content::PrefetchServingPageMetrics> serving_page_metrics_;
 
   // Task tracker for calls for the history service.
   base::CancelableTaskTracker task_tracker_;

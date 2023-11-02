@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,8 +24,8 @@
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/document_resource_coordinator.h"
@@ -108,8 +108,8 @@ void StartMemoryMeasurement(LocalDOMWindow* window,
                             WebMemoryMeasurement::Mode mode) {
   Document* document = window->document();
   document->GetResourceCoordinator()->OnWebMemoryMeasurementRequested(
-      mode, WTF::Bind(&MeasureMemoryController::MeasurementComplete,
-                      WrapPersistent(controller)));
+      mode, WTF::BindOnce(&MeasureMemoryController::MeasurementComplete,
+                          WrapPersistent(controller)));
 }
 
 void StartMemoryMeasurement(WorkerGlobalScope* worker,
@@ -393,7 +393,8 @@ void MeasureMemoryController::MeasurementComplete(
   ScriptState* script_state = ScriptState::From(context);
   v8::Context::Scope context_scope(context);
   v8::MicrotasksScope microtasks_scope(
-      isolate_, v8::MicrotasksScope::kDoNotRunMicrotasks);
+      isolate_, context->GetMicrotaskQueue(),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
   MemoryMeasurement* result = ConvertResult(measurement);
   v8::Local<v8::Promise::Resolver> promise_resolver =
       promise_resolver_.Get(isolate_);

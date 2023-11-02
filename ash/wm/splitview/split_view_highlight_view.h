@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,9 @@ class ASH_EXPORT SplitViewHighlightView : public views::View {
 
   SplitViewHighlightView(const SplitViewHighlightView&) = delete;
   SplitViewHighlightView& operator=(const SplitViewHighlightView&) = delete;
+
+  // views::View:
+  void OnThemeChanged() override;
 
   // Updates bounds, animating if |animation_type| has a value.
   void SetBounds(const gfx::Rect& bounds,

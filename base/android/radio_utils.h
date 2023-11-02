@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,6 +39,20 @@ enum class RadioConnectionType {
 
 class BASE_EXPORT RadioUtils {
  public:
+  class OverrideForTesting {
+   public:
+    OverrideForTesting();
+    ~OverrideForTesting();
+
+    void SetConnectionTypeForTesting(RadioConnectionType connection_type) {
+      connection_type_ = connection_type;
+    }
+
+    RadioConnectionType GetConnectionType() { return connection_type_; }
+
+   private:
+    RadioConnectionType connection_type_;
+  };
   static bool IsSupported();
   static RadioConnectionType GetConnectionType();
   static absl::optional<RadioSignalLevel> GetCellSignalLevel();

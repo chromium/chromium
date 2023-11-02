@@ -1,9 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/gpu/test/video_frame_helpers.h"
 
+#include <sys/mman.h>
 #include <utility>
 #include <vector>
 
@@ -12,7 +13,6 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
-#include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/format_utils.h"
 #include "media/base/video_frame.h"
@@ -93,9 +93,9 @@ bool ConvertVideoFrameToI420(const VideoFrame* src_frame,
   const auto& visible_rect = src_frame->visible_rect();
   const int width = visible_rect.width();
   const int height = visible_rect.height();
-  uint8_t* const dst_y = dst_frame->visible_data(VideoFrame::kYPlane);
-  uint8_t* const dst_u = dst_frame->visible_data(VideoFrame::kUPlane);
-  uint8_t* const dst_v = dst_frame->visible_data(VideoFrame::kVPlane);
+  uint8_t* const dst_y = dst_frame->GetWritableVisibleData(VideoFrame::kYPlane);
+  uint8_t* const dst_u = dst_frame->GetWritableVisibleData(VideoFrame::kUPlane);
+  uint8_t* const dst_v = dst_frame->GetWritableVisibleData(VideoFrame::kVPlane);
   const int dst_stride_y = dst_frame->stride(VideoFrame::kYPlane);
   const int dst_stride_u = dst_frame->stride(VideoFrame::kUPlane);
   const int dst_stride_v = dst_frame->stride(VideoFrame::kVPlane);
@@ -145,9 +145,9 @@ bool ConvertVideoFrameToYUV420P10(const VideoFrame* src_frame,
   const auto& visible_rect = src_frame->visible_rect();
   const int width = visible_rect.width();
   const int height = visible_rect.height();
-  uint8_t* const dst_y = dst_frame->visible_data(VideoFrame::kYPlane);
-  uint8_t* const dst_u = dst_frame->visible_data(VideoFrame::kUPlane);
-  uint8_t* const dst_v = dst_frame->visible_data(VideoFrame::kVPlane);
+  uint8_t* const dst_y = dst_frame->GetWritableVisibleData(VideoFrame::kYPlane);
+  uint8_t* const dst_u = dst_frame->GetWritableVisibleData(VideoFrame::kUPlane);
+  uint8_t* const dst_v = dst_frame->GetWritableVisibleData(VideoFrame::kVPlane);
   const int dst_stride_y = dst_frame->stride(VideoFrame::kYPlane);
   const int dst_stride_u = dst_frame->stride(VideoFrame::kUPlane);
   const int dst_stride_v = dst_frame->stride(VideoFrame::kVPlane);
@@ -169,7 +169,8 @@ bool ConvertVideoFrameToARGB(const VideoFrame* src_frame,
   const auto& visible_rect = src_frame->visible_rect();
   const int width = visible_rect.width();
   const int height = visible_rect.height();
-  uint8_t* const dst_argb = dst_frame->visible_data(VideoFrame::kARGBPlane);
+  uint8_t* const dst_argb =
+      dst_frame->GetWritableVisibleData(VideoFrame::kARGBPlane);
   const int dst_stride = dst_frame->stride(VideoFrame::kARGBPlane);
 
   switch (src_frame->format()) {
@@ -216,7 +217,8 @@ bool CopyVideoFrame(const VideoFrame* src_frame,
     auto video_frame_mapper = VideoFrameMapperFactory::CreateMapper(
         dst_frame->format(), VideoFrame::STORAGE_DMABUFS, true);
     ASSERT_TRUE_OR_RETURN(video_frame_mapper, false);
-    dst_frame = video_frame_mapper->Map(std::move(dst_frame));
+    dst_frame =
+        video_frame_mapper->Map(std::move(dst_frame), PROT_READ | PROT_WRITE);
     if (!dst_frame) {
       LOG(ERROR) << "Failed to map DMABuf video frame.";
       return false;
@@ -238,7 +240,7 @@ bool CopyVideoFrame(const VideoFrame* src_frame,
         VideoFrame::PlaneSize(dst_frame->format(), i, dst_frame->coded_size());
     libyuv::CopyPlane(
         src_frame->data(i), src_frame->layout().planes()[i].stride,
-        dst_frame->data(i), dst_frame->layout().planes()[i].stride,
+        dst_frame->writable_data(i), dst_frame->layout().planes()[i].stride,
         plane_size.width(), plane_size.height());
   }
   return true;
@@ -302,9 +304,9 @@ scoped_refptr<VideoFrame> ScaleVideoFrame(const VideoFrame* src_frame,
       src_frame->visible_data(VideoFrame::kUVPlane),
       src_frame->stride(VideoFrame::kUVPlane),
       src_frame->visible_rect().width(), src_frame->visible_rect().height(),
-      scaled_frame->visible_data(VideoFrame::kYPlane),
+      scaled_frame->GetWritableVisibleData(VideoFrame::kYPlane),
       scaled_frame->stride(VideoFrame::kYPlane),
-      scaled_frame->visible_data(VideoFrame::kUVPlane),
+      scaled_frame->GetWritableVisibleData(VideoFrame::kUVPlane),
       scaled_frame->stride(VideoFrame::kUVPlane), dst_resolution.width(),
       dst_resolution.height(), libyuv::FilterMode::kFilterBilinear);
   if (fail_scaling) {
@@ -315,7 +317,6 @@ scoped_refptr<VideoFrame> ScaleVideoFrame(const VideoFrame* src_frame,
 }
 
 scoped_refptr<VideoFrame> CloneVideoFrame(
-    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
     const VideoFrame* const src_frame,
     const VideoFrameLayout& dst_layout,
     VideoFrame::StorageType dst_storage_type,
@@ -337,9 +338,9 @@ scoped_refptr<VideoFrame> CloneVideoFrame(
         return nullptr;
       }
       dst_frame = CreatePlatformVideoFrame(
-          gpu_memory_buffer_factory, dst_layout.format(),
-          dst_layout.coded_size(), src_frame->visible_rect(),
-          src_frame->natural_size(), src_frame->timestamp(), *dst_buffer_usage);
+          dst_layout.format(), dst_layout.coded_size(),
+          src_frame->visible_rect(), src_frame->natural_size(),
+          src_frame->timestamp(), *dst_buffer_usage);
       break;
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
     case VideoFrame::STORAGE_OWNED_MEMORY:
@@ -367,8 +368,8 @@ scoped_refptr<VideoFrame> CloneVideoFrame(
     // Here, the content in |src_frame| is already copied to |dst_frame|, which
     // is a DMABUF based VideoFrame.
     // Create GpuMemoryBuffer based VideoFrame from |dst_frame|.
-    dst_frame = CreateGpuMemoryBufferVideoFrame(
-        gpu_memory_buffer_factory, dst_frame.get(), *dst_buffer_usage);
+    dst_frame =
+        CreateGpuMemoryBufferVideoFrame(dst_frame.get(), *dst_buffer_usage);
   }
 
   return dst_frame;
@@ -397,7 +398,6 @@ scoped_refptr<VideoFrame> CreateDmabufVideoFrame(
 }
 
 scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
-    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
     const VideoFrame* const frame,
     gfx::BufferUsage buffer_usage) {
   gfx::GpuMemoryBufferHandle gmb_handle;
@@ -478,7 +478,8 @@ absl::optional<VideoFrameLayout> CreateVideoFrameLayout(
         VideoFrame::RowBytes(i, pixel_format, dimension.width());
     const size_t rows = VideoFrame::Rows(i, pixel_format, dimension.height());
     const size_t plane_size = stride * rows;
-    const size_t aligned_size = base::bits::AlignUp(plane_size, alignment);
+    const size_t aligned_size =
+        base::bits::AlignUp(plane_size, size_t{alignment});
     planes[i].stride = stride;
     planes[i].offset = offset;
     planes[i].size = aligned_size;

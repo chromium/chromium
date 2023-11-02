@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -716,7 +716,7 @@ class BluetoothTestBase : public testing::Test {
   std::vector<uint8_t> last_read_value_;
   std::vector<uint8_t> last_write_value_;
   BluetoothGattService::GattErrorCode last_gatt_error_code_ =
-      BluetoothGattService::GATT_ERROR_UNKNOWN;
+      BluetoothGattService::GattErrorCode::kUnknown;
 
   int callback_count_ = 0;
   int error_callback_count_ = 0;

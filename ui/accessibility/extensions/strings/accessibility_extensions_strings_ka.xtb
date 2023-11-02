@@ -9,6 +9,7 @@
 <translation id="1591070050619849194">ყველა ანიმირებული გამოსახულების გათიშვა.</translation>
 <translation id="1703735871906654364">კურსორით დათვალიერება</translation>
 <translation id="1791496371305830581">ყველა ანიმირებული გამოსახულების დაშვება.</translation>
+<translation id="1974060860693918893">გაფართოებული</translation>
 <translation id="1996252509865389616">გსურთ ჩართვა?</translation>
 <translation id="2079545284768500474">მოქმედების გაუქმება</translation>
 <translation id="2179565792157161713">გრძელი აღწერის გახსნა ახალ ჩანართზე</translation>
@@ -51,6 +52,7 @@
 <translation id="6170146920149900756">ფერთა გამაუმჯობესებელი</translation>
 <translation id="633394792577263429">ხანგრძლივად დააჭირეთ ღილაკს &lt;span class='key'&gt;მართვა&lt;/span&gt;, სიტყვებს შორის გადასაადგილებლად.</translation>
 <translation id="6550675742724504774">პარამეტრები</translation>
+<translation id="6699630355767768222">ნაბიჯი 3: შესწორებისთვის ფერთა ღერძის უგულებელყოფა.</translation>
 <translation id="6838518108677880446">დაყენება:</translation>
 <translation id="690628312087070417">როდესაც კურსორი გადადის გრძელ მანძილზე:</translation>
 <translation id="6965382102122355670">კარგი</translation>
@@ -65,5 +67,6 @@
 <translation id="8321034316479930120">ანიმაციასთან დაკავშირებული წესები</translation>
 <translation id="8480209185614411573">მაღალი კონტრასტი</translation>
 <translation id="8609925175482059018">დააჭირეთ კლავიშს &lt;span class='key'&gt;F7&lt;/span&gt; კურსორით დათვალიერების ჩასართავად. ხელახლა დააჭირეთ გამოსართავად.</translation>
+<translation id="8798099450830957504">ნაგულისხმევი</translation>
 <translation id="894241283505723656">გრძელი აღწერები კონტექსტურ მენიუში</translation>
 </translationbundle>

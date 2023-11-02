@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -106,9 +106,9 @@ void InterceptOMADownloadNavigationThrottle::InterceptDownload() {
 
   DownloadControllerBase::Get()->CreateAndroidDownload(
       base::BindRepeating(&GetWebContents, process_id, routing_id),
-      DownloadInfo(
-          navigation_handle()->GetURL(), original_url, content_disposition,
-          mime_type, embedder_support::GetUserAgent(),
-          // TODO(qinmin): Get the cookie from cookie store.
-          std::string(), navigation_handle()->GetReferrer().url.spec()));
+      DownloadInfo(navigation_handle()->GetURL(), original_url,
+                   content_disposition, mime_type,
+                   embedder_support::GetUserAgent(),
+                   // TODO(qinmin): Get the cookie from cookie store.
+                   std::string(), navigation_handle()->GetReferrer().url));
 }

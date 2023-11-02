@@ -1,0 +1,78 @@
+<link rel="stylesheet" href="../demo.css">
+
+<style>
+  cr-input:first-of-type {
+    margin-block-start: 16px;
+  }
+
+  [slot='header'] {
+    padding: 0 20px 16px;
+  }
+
+  cr-dialog::part(body-container) {
+    max-height: 300px;
+  }
+
+  #tallBlock {
+    background: var(--google-grey-200);
+    height: 800px;
+    margin: 16px 0;
+  }
+</style>
+
+<h1>cr-dialog</h1>
+<div class="demos">
+  <cr-checkbox checked="{{showHeader_}}">Show header</cr-checkbox>
+  <cr-checkbox checked="{{showFooter_}}">Show footer</cr-checkbox>
+  <cr-checkbox checked="{{showScrollingBody_}}">
+    Show tall scrolling body
+  </cr-checkbox>
+  <cr-checkbox checked="{{showInputs_}}">Show inputs</cr-checkbox>
+  <cr-checkbox checked="{{autofocusInput_}}" disabled$="[[!showInputs_]]">
+    Autofocus input when dialog opens
+  </cr-checkbox>
+
+  <cr-button on-click="openDialog_">Open dialog</cr-button>
+  <div>
+    <template is="dom-repeat" items="[[statusTexts_]]">
+      <div>[[item]]</div>
+    </template>
+  </div>
+</div>
+
+<template is="dom-if" if="[[isDialogOpen_]]" restamp>
+  <cr-dialog
+      id="dialog"
+      on-cr-dialog-open="onOpenDialog_"
+      on-cancel="onCancelDialog_"
+      on-close="onCloseDialog_"
+      show-on-attach>
+    <div slot="title">Dialog title</div>
+    <div slot="header" hidden$="[[!showHeader_]]">
+      Dialogs can also include a header between the title and the body. It is
+      commonly used to display status updates or tabs.
+    </div>
+    <div slot="body">
+      <div>Here is where some description text would go.</div>
+      <div hidden$="[[!showInputs_]]">
+        <cr-input label="Example input" autofocus$="[[autofocusInput_]]">
+        </cr-input>
+        <cr-input label="Example input"></cr-input>
+      </div>
+      <div hidden$="[[!showScrollingBody_]]">
+        <div id="tallBlock"></div>
+      </div>
+    </div>
+    <div slot="button-container">
+      <cr-button class="cancel-button" on-click="onClickCancel_">
+        Cancel
+      </cr-button>
+      <cr-button class="action-button" on-click="onClickConfirm_">
+        Confirm
+      </cr-button>
+    </div>
+    <div slot="footer" hidden$="[[!showFooter_]]">
+      Dialogs also have a slot for text or other elements in the footer.
+    </div>
+  </cr-dialog>
+</template>

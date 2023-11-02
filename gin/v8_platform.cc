@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,15 +8,15 @@
 
 #include "base/bind.h"
 #include "base/bit_cast.h"
-#include "base/bits.h"
 #include "base/check_op.h"
 #include "base/debug/stack_trace.h"
 #include "base/location.h"
 #include "base/memory/nonscannable_memory.h"
+#include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
+#include "base/record_replay.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_job.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -126,7 +126,7 @@ class TimeClamper {
  public:
 // As site isolation is enabled on desktop platforms, we can safely provide
 // more timing resolution. Jittering is still enabled everywhere.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   static constexpr double kResolutionSeconds = 100e-6;
 #else
   static constexpr double kResolutionSeconds = 5e-6;
@@ -158,7 +158,8 @@ class TimeClamper {
 
  private:
   inline double ThresholdFor(double clamped_time) const {
-    uint64_t time_hash = MurmurHash3(bit_cast<int64_t>(clamped_time) ^ secret_);
+    uint64_t time_hash =
+        MurmurHash3(base::bit_cast<int64_t>(clamped_time) ^ secret_);
     return clamped_time + kResolutionSeconds * ToDouble(time_hash);
   }
 
@@ -167,7 +168,7 @@ class TimeClamper {
     static const uint64_t kExponentBits = uint64_t{0x3FF0000000000000};
     static const uint64_t kMantissaMask = uint64_t{0x000FFFFFFFFFFFFF};
     uint64_t random = (value & kMantissaMask) | kExponentBits;
-    return bit_cast<double>(random) - 1;
+    return base::bit_cast<double>(random) - 1;
   }
 
   static inline uint64_t MurmurHash3(uint64_t value) {
@@ -209,7 +210,7 @@ class JobDelegateImpl : public v8::JobDelegate {
   bool IsJoiningThread() const override { return delegate_->IsJoiningThread(); }
 
  private:
-  base::JobDelegate* delegate_;
+  raw_ptr<base::JobDelegate> delegate_;
 };
 
 class JobHandleImpl : public v8::JobHandle {
@@ -358,7 +359,11 @@ class V8Platform::TracingControllerImpl : public v8::TracingController {
 // static
 V8Platform* V8Platform::Get() { return g_v8_platform.Pointer(); }
 
-V8Platform::V8Platform() : tracing_controller_(new TracingControllerImpl) {}
+V8Platform::V8Platform() : tracing_controller_(new TracingControllerImpl) {
+  if (recordreplay::IsRecordingOrReplaying("eager-initialization", "V8Platform"))
+    // [RUN-1348] Eagerly allocate g_time_clamper.
+    g_time_clamper.Get();
+}
 
 V8Platform::~V8Platform() = default;
 
@@ -370,8 +375,8 @@ PageAllocator* V8Platform::GetPageAllocator() {
 void V8Platform::OnCriticalMemoryPressure() {
 // We only have a reservation on 32-bit Windows systems.
 // TODO(bbudge) Make the #if's in BlinkInitializer match.
-#if defined(OS_WIN) && defined(ARCH_CPU_32_BITS)
-  base::ReleaseReservation();
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_32_BITS)
+  partition_alloc::ReleaseReservation();
 #endif
 }
 
@@ -395,7 +400,7 @@ std::shared_ptr<v8::TaskRunner> V8Platform::GetForegroundTaskRunner(
 int V8Platform::NumberOfWorkerThreads() {
   // V8Platform assumes the scheduler uses the same set of workers for default
   // and user blocking tasks.
-  const int num_foreground_workers =
+  const size_t num_foreground_workers =
       base::ThreadPoolInstance::Get()
           ->GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
               kDefaultTaskTraits);
@@ -403,7 +408,7 @@ int V8Platform::NumberOfWorkerThreads() {
             base::ThreadPoolInstance::Get()
                 ->GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
                     kBlockingTaskTraits));
-  return std::max(1, num_foreground_workers);
+  return std::max(1, static_cast<int>(num_foreground_workers));
 }
 
 void V8Platform::CallOnWorkerThread(std::unique_ptr<v8::Task> task) {
@@ -431,7 +436,7 @@ void V8Platform::CallDelayedOnWorkerThread(std::unique_ptr<v8::Task> task,
       base::Seconds(delay_in_seconds));
 }
 
-std::unique_ptr<v8::JobHandle> V8Platform::PostJob(
+std::unique_ptr<v8::JobHandle> V8Platform::CreateJob(
     v8::TaskPriority priority,
     std::unique_ptr<v8::JobTask> job_task) {
   base::TaskTraits task_traits;
@@ -450,19 +455,19 @@ std::unique_ptr<v8::JobHandle> V8Platform::PostJob(
   // |max_concurrency_callback| uses an unretained pointer.
   auto* job_task_ptr = job_task.get();
   auto handle =
-      base::PostJob(FROM_HERE, task_traits,
-                    base::BindRepeating(
-                        [](const std::unique_ptr<v8::JobTask>& job_task,
-                           base::JobDelegate* delegate) {
-                          JobDelegateImpl delegate_impl(delegate);
-                          job_task->Run(&delegate_impl);
-                        },
-                        std::move(job_task)),
-                    base::BindRepeating(
-                        [](v8::JobTask* job_task, size_t worker_count) {
-                          return job_task->GetMaxConcurrency(worker_count);
-                        },
-                        base::Unretained(job_task_ptr)));
+      base::CreateJob(FROM_HERE, task_traits,
+                      base::BindRepeating(
+                          [](const std::unique_ptr<v8::JobTask>& job_task,
+                             base::JobDelegate* delegate) {
+                            JobDelegateImpl delegate_impl(delegate);
+                            job_task->Run(&delegate_impl);
+                          },
+                          std::move(job_task)),
+                      base::BindRepeating(
+                          [](v8::JobTask* job_task, size_t worker_count) {
+                            return job_task->GetMaxConcurrency(worker_count);
+                          },
+                          base::Unretained(job_task_ptr)));
 
   return std::make_unique<JobHandleImpl>(std::move(handle));
 }
@@ -476,8 +481,11 @@ double V8Platform::MonotonicallyIncreasingTime() {
       static_cast<double>(base::Time::kMicrosecondsPerSecond);
 }
 
+extern "C" void V8RecordReplayAssert(const char* format, ...);
+
 double V8Platform::CurrentClockTimeMillis() {
   double now_seconds = base::Time::Now().ToJsTime() / 1000;
+  V8RecordReplayAssert("[RUN-1348-2017] V8Platform::CurrentClockTimeMillis %d", g_time_clamper.IsCreated());
   return g_time_clamper.Get().ClampTimeResolution(now_seconds) * 1000;
 }
 

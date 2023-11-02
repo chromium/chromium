@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,9 +14,8 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/feed/android/feed_service_factory.h"
 #include "chrome/browser/feed/android/jni_headers/FeedServiceBridge_jni.h"
-#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
+#include "chrome/browser/feed/feed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
@@ -73,16 +72,6 @@ static void JNI_FeedServiceBridge_ReportOpenVisitComplete(JNIEnv* env,
   api->ReportOpenVisitComplete(base::Milliseconds(visitTimeMs));
 }
 
-static base::android::ScopedJavaLocalRef<jstring>
-JNI_FeedServiceBridge_GetClientInstanceId(JNIEnv* env) {
-  std::string instance_id;
-  FeedApi* api = GetFeedApi();
-  if (api) {
-    instance_id = api->GetClientInstanceId();
-  }
-  return base::android::ConvertUTF8ToJavaString(env, instance_id);
-}
-
 static int JNI_FeedServiceBridge_GetVideoPreviewsTypePreference(JNIEnv* env) {
   PrefService* pref_service = ProfileManager::GetLastUsedProfile()->GetPrefs();
   return pref_service->GetInteger(feed::prefs::kVideoPreviewsType);
@@ -111,17 +100,19 @@ static jlong JNI_FeedServiceBridge_AddUnreadContentObserver(
     return static_cast<jint>(ContentOrder::kUnspecified);
   JavaUnreadContentObserver* observer = new JavaUnreadContentObserver(
       base::android::ScopedJavaGlobalRef<jobject>(j_observer));
-  api->AddUnreadContentObserver(is_web_feed ? kWebFeedStream : kForYouStream,
+  api->AddUnreadContentObserver(is_web_feed ? StreamType(StreamKind::kFollowing)
+                                            : StreamType(StreamKind::kForYou),
                                 observer);
   return reinterpret_cast<jlong>(observer);
 }
 
 static void JNI_FeedServiceBridge_ReportOtherUserAction(JNIEnv* env,
+                                                        jint stream_kind,
                                                         jint action) {
   FeedApi* api = GetFeedApi();
   if (!api)
     return;
-  api->ReportOtherUserAction(StreamType(),
+  api->ReportOtherUserAction(StreamType(static_cast<StreamKind>(stream_kind)),
                              static_cast<FeedUserActionType>(action));
 }
 
@@ -129,7 +120,8 @@ static jint JNI_FeedServiceBridge_GetContentOrderForWebFeed(JNIEnv* env) {
   FeedApi* api = GetFeedApi();
   if (!api)
     return 0;
-  return static_cast<int>(api->GetContentOrder(kWebFeedStream));
+  return static_cast<int>(
+      api->GetContentOrder(StreamType(StreamKind::kFollowing)));
 }
 
 static void JNI_FeedServiceBridge_SetContentOrderForWebFeed(
@@ -140,15 +132,21 @@ static void JNI_FeedServiceBridge_SetContentOrderForWebFeed(
     return;
   switch (content_order) {
     case static_cast<jint>(ContentOrder::kGrouped):
-      api->SetContentOrder(kWebFeedStream, ContentOrder::kGrouped);
+      api->SetContentOrder(StreamType(StreamKind::kFollowing),
+                           ContentOrder::kGrouped);
       return;
     case static_cast<jint>(ContentOrder::kReverseChron):
-      api->SetContentOrder(kWebFeedStream, ContentOrder::kReverseChron);
+      api->SetContentOrder(StreamType(StreamKind::kFollowing),
+                           ContentOrder::kReverseChron);
       return;
     case static_cast<jint>(ContentOrder::kUnspecified):
       break;
   }
   NOTREACHED() << "Invalid content order: " << content_order;
+}
+
+static jboolean JNI_FeedServiceBridge_IsSignedIn(JNIEnv* env) {
+  return FeedServiceBridge::IsSignedIn();
 }
 
 std::string FeedServiceBridge::GetLanguageTag() {
@@ -171,10 +169,13 @@ DisplayMetrics FeedServiceBridge::GetDisplayMetrics() {
 }
 
 bool FeedServiceBridge::IsAutoplayEnabled() {
-  // For now, disable autoplay if metrics are disabled until we can ensure that
-  // the autoplay feature does not report metrics.
-  return base::FeatureList::IsEnabled(kInterestFeedV2Autoplay) &&
-         ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled();
+  return base::FeatureList::IsEnabled(kInterestFeedV2Autoplay);
+}
+
+TabGroupEnabledState FeedServiceBridge::GetTabGroupEnabledState() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return static_cast<TabGroupEnabledState>(
+      Java_FeedServiceBridge_getTabGroupEnabledState(env));
 }
 
 void FeedServiceBridge::ClearAll() {
@@ -203,6 +204,11 @@ uint64_t FeedServiceBridge::GetReliabilityLoggingId() {
   }
   return FeedService::GetReliabilityLoggingId(
       g_browser_process->metrics_service()->GetClientId(), profile_prefs);
+}
+
+// static
+bool FeedServiceBridge::IsSignedIn() {
+  return GetFeedService()->IsSignedIn();
 }
 
 JavaUnreadContentObserver::JavaUnreadContentObserver(

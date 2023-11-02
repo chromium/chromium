@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/image_fetcher/core/fake_image_decoder.h"
 #include "components/signin/internal/identity_manager/account_fetcher_service.h"
 #include "components/signin/public/base/test_signin_client.h"
@@ -19,15 +18,15 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/account_manager_core/mock_account_manager_facade.h"
 #endif
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include "components/signin/public/identity_manager/ios/fake_device_accounts_provider.h"
 #endif
 
@@ -67,7 +66,7 @@ TEST_F(IdentityManagerBuilderTest, BuildIdentityManagerInitParameters) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath dest_path = temp_dir.GetPath();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   SetUpMockAccountManagerFacade();
 #endif
 
@@ -81,12 +80,12 @@ TEST_F(IdentityManagerBuilderTest, BuildIdentityManagerInitParameters) {
   params.profile_path = dest_path;
   params.signin_client = GetSigninClient();
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   params.device_accounts_provider =
       std::make_unique<FakeDeviceAccountsProvider>();
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   auto account_manager_facade =
       std::make_unique<account_manager::MockAccountManagerFacade>();
   params.account_manager_facade = account_manager_facade.get();
@@ -104,16 +103,15 @@ TEST_F(IdentityManagerBuilderTest, BuildIdentityManagerInitParameters) {
   EXPECT_NE(init_params.primary_account_mutator, nullptr);
   EXPECT_NE(init_params.accounts_cookie_mutator, nullptr);
   EXPECT_NE(init_params.diagnostics_provider, nullptr);
-#if defined(OS_IOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   EXPECT_NE(init_params.device_accounts_synchronizer, nullptr);
   EXPECT_EQ(init_params.accounts_mutator, nullptr);
 #else
   EXPECT_EQ(init_params.device_accounts_synchronizer, nullptr);
   EXPECT_NE(init_params.accounts_mutator, nullptr);
 #endif
-#if defined(IS_CHROMEOS)
-  EXPECT_NE(init_params.ash_account_manager_facade, nullptr);
-  EXPECT_TRUE(init_params.is_regular_profile);
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_NE(init_params.account_manager_facade, nullptr);
 #endif
 }
 

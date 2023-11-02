@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,8 @@ extern const char kDriveFsEnableVerboseLogging[];
 extern const char kDriveFsProfileSalt[];
 extern const char kDriveFsPinnedMigrated[];
 extern const char kDriveFsWasLaunchedAtLeastOnce[];
+extern const char kDriveFsEnableMirrorSync[];
+extern const char kDriveFsMirrorSyncMachineRootId[];
 
 }  // namespace prefs
 }  // namespace drive

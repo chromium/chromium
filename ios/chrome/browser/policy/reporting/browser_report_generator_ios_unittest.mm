@@ -1,8 +1,8 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/policy/reporting/browser_report_generator_ios.h"
+#import "ios/chrome/browser/policy/reporting/browser_report_generator_ios.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -10,16 +10,16 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/files/file_path.h"
-#include "base/run_loop.h"
-#include "base/test/bind.h"
-#include "base/test/task_environment.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state_manager.h"
-#include "ios/chrome/browser/policy/reporting/reporting_delegate_factory_ios.h"
-#include "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
-#include "ios/chrome/test/testing_application_context.h"
-#include "testing/platform_test.h"
+#import "base/files/file_path.h"
+#import "base/run_loop.h"
+#import "base/test/bind.h"
+#import "base/test/task_environment.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state_manager.h"
+#import "ios/chrome/browser/policy/reporting/reporting_delegate_factory_ios.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
+#import "ios/chrome/test/testing_application_context.h"
+#import "testing/platform_test.h"
 
 namespace em = enterprise_management;
 

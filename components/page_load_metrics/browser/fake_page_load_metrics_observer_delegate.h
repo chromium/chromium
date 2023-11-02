@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_PAGE_LOAD_METRICS_BROWSER_FAKE_PAGE_LOAD_METRICS_OBSERVER_DELEGATE_H_
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_FAKE_PAGE_LOAD_METRICS_OBSERVER_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
@@ -35,11 +36,14 @@ class FakePageLoadMetricsObserverDelegate
   base::TimeTicks GetNavigationStart() const override;
   absl::optional<base::TimeDelta> GetTimeToFirstBackground() const override;
   absl::optional<base::TimeDelta> GetTimeToFirstForeground() const override;
+  PrerenderingState GetPrerenderingState() const override;
+  absl::optional<base::TimeDelta> GetActivationStart() const override;
   // By default no BackForwardCacheRestores are present, tests can add them by
   // calling |AddBackForwardCacheRestore|.
   const BackForwardCacheRestore& GetBackForwardCacheRestore(
       size_t index) const override;
   bool StartedInForeground() const override;
+  PageVisibility GetVisibilityAtActivation() const override;
   bool WasPrerenderedThenActivatedInForeground() const override;
   const UserInitiatedInfo& GetUserInitiatedInfo() const override;
   const GURL& GetUrl() const override;
@@ -69,6 +73,7 @@ class FakePageLoadMetricsObserverDelegate
   const LargestContentfulPaintHandler&
   GetExperimentalLargestContentfulPaintHandler() const override;
   ukm::SourceId GetPageUkmSourceId() const override;
+  uint32_t GetSoftNavigationCount() const override;
   bool IsFirstNavigationInWebContents() const override;
 
   // Helpers to add a BackForwardCacheRestore to this fake.
@@ -78,7 +83,7 @@ class FakePageLoadMetricsObserverDelegate
 
   // These instance variables will be returned by calls to the method with the
   // corresponding name. Tests should set these variables appropriately.
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   UserInitiatedInfo user_initiated_info_;
   GURL url_;
   GURL start_url_;
@@ -97,6 +102,12 @@ class FakePageLoadMetricsObserverDelegate
   ResourceTracker resource_tracker_;
   LargestContentfulPaintHandler largest_contentful_paint_handler_;
   LargestContentfulPaintHandler experimental_largest_contentful_paint_handler_;
+  base::TimeTicks navigation_start_;
+  absl::optional<base::TimeTicks> first_background_time_ = absl::nullopt;
+  bool started_in_foreground_ = true;
+  PrerenderingState prerendering_state_ = PrerenderingState::kNoPrerendering;
+  PageVisibility visibility_at_activation_ = PageVisibility::kNotInitialized;
+  absl::optional<base::TimeDelta> activation_start_ = absl::nullopt;
 
   // This vector backs the |GetBackForwardCacheRestore| and
   // |GetMostRecentBackForwardCacheRestore| methods.

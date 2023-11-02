@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,37 +9,38 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/views/chrome_test_views_delegate.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
-#include "components/services/app_service/public/mojom/app_service.mojom.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/test/scoped_views_test_helper.h"
 #include "ui/views/test/views_test_base.h"
 
-namespace ash {
-namespace full_restore {
+namespace ash::full_restore {
 
 namespace {
 
 constexpr char kTestProfileName[] = "user@gmail.com";
 constexpr char16_t kTestProfileName16[] = u"user@gmail.com";
 
-apps::mojom::AppPtr MakeApp(const char* app_id,
-                            apps::mojom::AppType app_type,
-                            apps::mojom::InstallReason install_reason) {
-  apps::mojom::AppPtr app = apps::mojom::App::New();
-  app->app_id = app_id;
-  app->app_type = app_type;
+apps::AppPtr MakeApp(const char* app_id,
+                     apps::AppType app_type,
+                     apps::InstallReason install_reason) {
+  auto app = std::make_unique<apps::App>(app_type, app_id);
   app->install_reason = install_reason;
   return app;
 }
@@ -70,26 +71,26 @@ class ArcGhostWindowViewTest : public testing::Test {
     // Note that user profiles are created after user login in reality.
     profile_ = profile_manager_->CreateTestingProfile(
         kTestProfileName, /*prefs=*/{}, kTestProfileName16,
-        /*avatar_id=*/0, /*supervised_user_id=*/{},
+        /*avatar_id=*/0,
         IdentityTestEnvironmentProfileAdaptor::
             GetIdentityTestEnvironmentFactories());
-    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
-                                                                 profile_);
   }
 
   void InstallApp(const std::string& app_id) {
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-    std::vector<apps::mojom::AppPtr> deltas;
+    std::vector<apps::AppPtr> deltas;
     apps::AppRegistryCache& cache = proxy->AppRegistryCache();
-    deltas.push_back(MakeApp(app_id.c_str(), apps::mojom::AppType::kArc,
-                             apps::mojom::InstallReason::kUser));
-    cache.OnApps(std::move(deltas), apps::mojom::AppType::kUnknown,
+    deltas.push_back(MakeApp(app_id.c_str(), apps::AppType::kArc,
+                             apps::InstallReason::kUser));
+    cache.OnApps(std::move(deltas), apps::AppType::kUnknown,
                  false /* should_notify_initialized */);
   }
 
-  void CreateView(int throbber_diameter, uint32_t theme_color) {
-    view_ =
-        std::make_unique<ArcGhostWindowView>(throbber_diameter, theme_color);
+  void CreateView(arc::GhostWindowType type,
+                  int throbber_diameter,
+                  uint32_t theme_color) {
+    view_ = std::make_unique<ArcGhostWindowView>(type, throbber_diameter,
+                                                 theme_color);
   }
 
   ArcGhostWindowView* view() { return view_.get(); }
@@ -110,7 +111,6 @@ class ArcGhostWindowViewTest : public testing::Test {
   std::unique_ptr<TestingProfileManager> profile_manager_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ArcGhostWindowViewTest, IconLoadTest) {
   const int kDiameter = 24;
   const uint32_t kThemeColor = SK_ColorWHITE;
@@ -118,15 +118,26 @@ TEST_F(ArcGhostWindowViewTest, IconLoadTest) {
   InstallApp(kAppId);
 
   int count = 0;
-  CreateView(kDiameter, kThemeColor);
+  CreateView(arc::GhostWindowType::kFullRestore, kDiameter, kThemeColor);
   EXPECT_EQ(count, 0);
 
   view()->icon_loaded_cb_for_testing_ = base::BindLambdaForTesting(
-      [&count](apps::mojom::IconValuePtr icon_value) { count++; });
+      [&count](apps::IconValuePtr icon_value) { count++; });
   view()->LoadIcon(kAppId);
   EXPECT_EQ(count, 1);
 }
-#endif
 
-}  // namespace full_restore
-}  // namespace ash
+TEST_F(ArcGhostWindowViewTest, FixupMessageTest) {
+  const int kDiameter = 24;
+  const uint32_t kThemeColor = SK_ColorWHITE;
+  const std::string kAppId = "test_app";
+  InstallApp(kAppId);
+
+  CreateView(arc::GhostWindowType::kFixup, kDiameter, kThemeColor);
+
+  EXPECT_NE(view()->message_label_, nullptr);
+  EXPECT_EQ(view()->message_label_->GetText(),
+            l10n_util::GetStringUTF16(IDS_ARC_GHOST_WINDOW_APP_FIXUP_MESSAGE));
+}
+
+}  // namespace ash::full_restore

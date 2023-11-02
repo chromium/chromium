@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,6 +9,7 @@ import json
 import logging
 import os
 import requests
+import sys
 
 LOGGER = logging.getLogger(__name__)
 # VALID_STATUSES is a list of valid status values for test_result['status'].
@@ -20,6 +21,7 @@ VALID_STATUSES = {"PASS", "FAIL", "CRASH", "ABORT", "SKIP"}
 def _compose_test_result(test_id,
                          status,
                          expected,
+                         duration=None,
                          test_log=None,
                          tags=None,
                          file_artifacts=None):
@@ -28,6 +30,7 @@ def _compose_test_result(test_id,
   Args:
     test_id: (str) A unique identifier of the test in LUCI context.
     status: (str) Status of the test. Must be one in |VALID_STATUSES|.
+    duration: (int) Test duration in milliseconds or None if unknown.
     expected: (bool) Whether the status is expected.
     test_log: (str) Log of the test. Optional.
     tags: (list) List of tags. Each item in list should be a length 2 tuple of
@@ -71,14 +74,24 @@ def _compose_test_result(test_id,
       } for name in file_artifacts
   }
   if test_log:
+    message = ''
+    if sys.version_info.major < 3:
+      message = base64.b64encode(test_log)
+    else:
+      # Python3 b64encode takes and returns bytes. The result must be
+      # serializable in order for the eventual json.dumps to succeed
+      message = base64.b64encode(test_log.encode('utf-8')).decode('utf-8')
     test_result['summaryHtml'] = '<text-artifact artifact-id="Test Log" />'
     test_result['artifacts'].update({
         'Test Log': {
-            'contents': base64.b64encode(test_log)
+            'contents': message
         },
     })
   if not test_result['artifacts']:
     test_result.pop('artifacts')
+
+  if duration:
+    test_result['duration'] = '%.9fs' % (duration / 1000.0)
 
   return test_result
 
@@ -133,6 +146,7 @@ class ResultSinkClient(object):
       status: (str) Status of the test. Must be one in |VALID_STATUSES|.
       expected: (bool) Whether the status is expected.
       **kwargs: Optional keyword args. Namely:
+        duration: (int) Test duration in milliseconds or None if unknown.
         test_log: (str) Log of the test. Optional.
         tags: (list) List of tags. Each item in list should be a length 2 tuple
           of string as ("key", "value"). Optional.

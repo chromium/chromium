@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ class NativeCertificatesHandler : public SettingsPageUIHandler {
 
   // Callback for the "showManageSSLCertificates" message. This will invoke
   // an appropriate certificate management action based on the platform.
-  void HandleShowManageSSLCertificates(const base::ListValue* args);
+  void HandleShowManageSSLCertificates(const base::Value::List& args);
 };
 
 }  // namespace settings

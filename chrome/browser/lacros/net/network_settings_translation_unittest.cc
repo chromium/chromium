@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,7 +58,10 @@ TEST(NetworkSettingsTranslationTest, NetProxyToCrosapiProxyPacMandatory) {
 TEST(NetworkSettingsTranslationTest, NetProxyToCrosapiProxyManual) {
   net::ProxyConfig config;
   config.proxy_rules().ParseFromString(
-      "http=proxy:80;https=secure_proxy:81;socks=socks_proxy:82;");
+      "http=http://proxy:80;https=https://secure_proxy:81;socks=socks4://"
+      "socks_proxy:82;"
+      "http=invalid://proxy2:83;http=direct://proxy3:84;"
+      "http=socks5://proxy4:85;http=quic://proxy5:86;");
   config.proxy_rules().bypass_rules.ParseFromString("localhost;google.com;");
 
   crosapi::mojom::ProxyConfigPtr actual = NetProxyToCrosapiProxy(
@@ -66,20 +69,32 @@ TEST(NetworkSettingsTranslationTest, NetProxyToCrosapiProxyManual) {
   ASSERT_TRUE(actual->proxy_settings->is_manual());
   std::vector<crosapi::mojom::ProxyLocationPtr> proxy_ptr =
       std::move(actual->proxy_settings->get_manual()->http_proxies);
-  ASSERT_EQ(proxy_ptr.size(), 1u);
+  ASSERT_EQ(proxy_ptr.size(), 3u);
   EXPECT_EQ(proxy_ptr[0]->host, "proxy");
   EXPECT_EQ(proxy_ptr[0]->port, 80);
+  EXPECT_EQ(proxy_ptr[0]->scheme, crosapi::mojom::ProxyLocation::Scheme::kHttp);
+  EXPECT_EQ(proxy_ptr[1]->host, "proxy4");
+  EXPECT_EQ(proxy_ptr[1]->port, 85);
+  EXPECT_EQ(proxy_ptr[1]->scheme,
+            crosapi::mojom::ProxyLocation::Scheme::kSocks5);
+  EXPECT_EQ(proxy_ptr[2]->host, "proxy5");
+  EXPECT_EQ(proxy_ptr[2]->port, 86);
+  EXPECT_EQ(proxy_ptr[2]->scheme, crosapi::mojom::ProxyLocation::Scheme::kQuic);
 
   proxy_ptr =
       std::move(actual->proxy_settings->get_manual()->secure_http_proxies);
   ASSERT_EQ(proxy_ptr.size(), 1u);
   EXPECT_EQ(proxy_ptr[0]->host, "secure_proxy");
   EXPECT_EQ(proxy_ptr[0]->port, 81);
+  EXPECT_EQ(proxy_ptr[0]->scheme,
+            crosapi::mojom::ProxyLocation::Scheme::kHttps);
 
   proxy_ptr = std::move(actual->proxy_settings->get_manual()->socks_proxies);
   ASSERT_EQ(proxy_ptr.size(), 1u);
   EXPECT_EQ(proxy_ptr[0]->host, "socks_proxy");
   EXPECT_EQ(proxy_ptr[0]->port, 82);
+  EXPECT_EQ(proxy_ptr[0]->scheme,
+            crosapi::mojom::ProxyLocation::Scheme::kSocks4);
 
   const std::vector<std::string> exclude_domains =
       actual->proxy_settings->get_manual()->exclude_domains;
@@ -124,11 +139,10 @@ TEST(NetworkSettingsTranslationTest, NetProxyToCrosapiProxyManualEmptyList) {
 
 TEST(NetworkSettingsTranslationTest, CrosapiProxyToNetProxyDirect) {
   crosapi::mojom::ProxyConfigPtr ptr = crosapi::mojom::ProxyConfig::New();
-  crosapi::mojom::ProxySettingsPtr proxy = crosapi::mojom::ProxySettings::New();
   crosapi::mojom::ProxySettingsDirectPtr direct =
       crosapi::mojom::ProxySettingsDirect::New();
-  proxy->set_direct(std::move(direct));
-  ptr->proxy_settings = std::move(proxy);
+  ptr->proxy_settings =
+      crosapi::mojom::ProxySettings::NewDirect(std::move(direct));
 
   EXPECT_EQ(CrosapiProxyToNetProxy(std::move(ptr)).value().ToValue(),
             net::ProxyConfig::CreateDirect().ToValue());
@@ -136,11 +150,9 @@ TEST(NetworkSettingsTranslationTest, CrosapiProxyToNetProxyDirect) {
 
 TEST(NetworkSettingsTranslationTest, CrosapiProxyToNetProxyWpad) {
   crosapi::mojom::ProxyConfigPtr ptr = crosapi::mojom::ProxyConfig::New();
-  crosapi::mojom::ProxySettingsPtr proxy = crosapi::mojom::ProxySettings::New();
   crosapi::mojom::ProxySettingsWpadPtr wpad =
       crosapi::mojom::ProxySettingsWpad::New();
-  proxy->set_wpad(std::move(wpad));
-  ptr->proxy_settings = std::move(proxy);
+  ptr->proxy_settings = crosapi::mojom::ProxySettings::NewWpad(std::move(wpad));
 
   auto actual = CrosapiProxyToNetProxy(std::move(ptr));
   EXPECT_TRUE(actual.value().auto_detect());
@@ -148,12 +160,12 @@ TEST(NetworkSettingsTranslationTest, CrosapiProxyToNetProxyWpad) {
 
 TEST(NetworkSettingsTranslationTest, CrosapiProxyToNetProxyPac) {
   crosapi::mojom::ProxyConfigPtr ptr = crosapi::mojom::ProxyConfig::New();
-  crosapi::mojom::ProxySettingsPtr proxy = crosapi::mojom::ProxySettings::New();
   crosapi::mojom::ProxySettingsPacPtr pac =
       crosapi::mojom::ProxySettingsPac::New();
   pac->pac_url = GURL(kPacUrl);
   pac->pac_mandatory = true;
-  proxy->set_pac(pac.Clone());
+  crosapi::mojom::ProxySettingsPtr proxy =
+      crosapi::mojom::ProxySettings::NewPac(pac.Clone());
   ptr->proxy_settings = proxy.Clone();
   auto actual = CrosapiProxyToNetProxy(ptr.Clone());
   EXPECT_FALSE(actual.value().auto_detect());
@@ -169,30 +181,40 @@ TEST(NetworkSettingsTranslationTest, CrosapiProxyToNetProxyPac) {
 
 TEST(NetworkSettingsTranslationTest, CrosapiProxyToNetProxyManual) {
   crosapi::mojom::ProxyConfigPtr ptr = crosapi::mojom::ProxyConfig::New();
-  crosapi::mojom::ProxySettingsPtr proxy = crosapi::mojom::ProxySettings::New();
   crosapi::mojom::ProxySettingsManualPtr manual =
       crosapi::mojom::ProxySettingsManual::New();
   crosapi::mojom::ProxyLocationPtr location =
       crosapi::mojom::ProxyLocation::New();
   location->host = "proxy";
   location->port = 80;
+  // Note: Setting the scheme will be reflected in the pac string below. So
+  // no need to test those separately after setting. kHttp will map to
+  // PROXY in the pac string!
+  location->scheme = crosapi::mojom::ProxyLocation::Scheme::kHttp;
   manual->http_proxies.push_back(location.Clone());
   location->host = "secure_proxy";
   location->port = 81;
+  location->scheme = crosapi::mojom::ProxyLocation::Scheme::kHttps;
+  manual->secure_http_proxies.push_back(location.Clone());
+  // Note that the secure_http_proxies may speak HTTP, so test this as well.
+  location->host = "secure_proxy2";
+  location->port = 82;
+  location->scheme = crosapi::mojom::ProxyLocation::Scheme::kHttp;
   manual->secure_http_proxies.push_back(location.Clone());
   location->host = "socks_proxy";
   location->port = 82;
+  location->scheme = crosapi::mojom::ProxyLocation::Scheme::kSocks4;
   manual->socks_proxies.push_back(std::move(location));
   manual->exclude_domains = {"localhost", "google.com"};
-  proxy->set_manual(std::move(manual));
-  ptr->proxy_settings = std::move(proxy);
+  ptr->proxy_settings =
+      crosapi::mojom::ProxySettings::NewManual(std::move(manual));
 
   auto actual = CrosapiProxyToNetProxy(std::move(ptr));
 
   EXPECT_EQ(actual.value().proxy_rules().proxies_for_http.ToPacString(),
             "PROXY proxy:80");
   EXPECT_EQ(actual.value().proxy_rules().proxies_for_https.ToPacString(),
-            "HTTPS secure_proxy:81");
+            "HTTPS secure_proxy:81;PROXY secure_proxy2:82");
   EXPECT_EQ(actual.value().proxy_rules().fallback_proxies.ToPacString(),
             "SOCKS socks_proxy:82");
   EXPECT_EQ(actual.value().proxy_rules().bypass_rules.ToString(),

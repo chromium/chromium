@@ -1,0 +1,20 @@
+{
+  "max_sources_per_origin": "1024",
+  "source_event_id_cardinality": "0",
+  "max_destinations_per_source_site_reporting_origin": "100",
+  "rate_limit_time_window": "30",
+  "rate_limit_max_source_registration_reporting_origins": "100",
+  "rate_limit_max_attribution_reporting_origins": "10",
+  "rate_limit_max_attributions": "100",
+  "navigation_source_trigger_data_cardinality": "8",
+  "event_source_trigger_data_cardinality": "2",
+  "navigation_source_randomized_response_rate": 0.0024,
+  "event_source_randomized_response_rate": 0.0000025,
+  "max_event_level_reports_per_destination": "1024",
+  "max_attributions_per_navigation_source": "3",
+  "max_attributions_per_event_source": "1",
+  "max_aggregatable_reports_per_destination": "1024",
+  "aggregatable_budget_per_source": "65536",
+  "aggregatable_report_min_delay": "10",
+  "aggregatable_report_delay_span": "50"
+}

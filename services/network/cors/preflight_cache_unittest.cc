@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,9 +19,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-namespace network {
-
-namespace cors {
+namespace network::cors {
 
 namespace {
 
@@ -47,16 +45,21 @@ class PreflightCacheTest : public testing::Test {
 
   void AppendEntry(const url::Origin& origin,
                    const GURL& url,
-                   const net::NetworkIsolationKey& network_isolation_key) {
-    cache_.AppendEntry(origin, url, network_isolation_key, CreateEntry());
+                   const net::NetworkIsolationKey& network_isolation_key,
+                   mojom::IPAddressSpace target_ip_address_space =
+                       mojom::IPAddressSpace::kUnknown) {
+    cache_.AppendEntry(origin, url, network_isolation_key,
+                       target_ip_address_space, CreateEntry());
   }
 
   bool CheckEntryAndRefreshCache(
       const url::Origin& origin,
       const GURL& url,
-      const net::NetworkIsolationKey& network_isolation_key) {
+      const net::NetworkIsolationKey& network_isolation_key,
+      mojom::IPAddressSpace target_ip_address_space =
+          mojom::IPAddressSpace::kUnknown) {
     return cache_.CheckIfRequestCanSkipPreflight(
-        origin, url, network_isolation_key,
+        origin, url, network_isolation_key, target_ip_address_space,
         network::mojom::CredentialsMode::kInclude, /*method=*/"POST",
         net::HttpRequestHeaders(), /*is_revalidating=*/false, net_log_);
   }
@@ -66,7 +69,7 @@ class PreflightCacheTest : public testing::Test {
       const GURL& url,
       const net::NetworkIsolationKey& network_isolation_key) {
     return cache_.CheckIfRequestCanSkipPreflight(
-        origin, url, network_isolation_key,
+        origin, url, network_isolation_key, mojom::IPAddressSpace::kUnknown,
         network::mojom::CredentialsMode::kInclude, /*method=*/"OPTION",
         net::HttpRequestHeaders(), /*is_revalidating=*/false, net_log_);
   }
@@ -214,6 +217,32 @@ TEST_F(PreflightCacheTest, HandlesOpaqueOrigins) {
       kOrigin1, kUrl, net::NetworkIsolationKey(url::Origin(), url::Origin())));
 }
 
+TEST_F(PreflightCacheTest, PrivateNetworkAccess) {
+  const url::Origin origin;
+  const GURL url("http://www.test.com/A");
+  const net::NetworkIsolationKey nik(origin, origin);
+
+  // The cache starts empty.
+  EXPECT_EQ(0u, CountEntries());
+
+  AppendEntry(origin, url, nik, mojom::IPAddressSpace::kUnknown);
+  EXPECT_EQ(1u, CountEntries());
+  EXPECT_TRUE(CheckEntryAndRefreshCache(origin, url, nik,
+                                        mojom::IPAddressSpace::kUnknown));
+
+  AppendEntry(origin, url, nik, mojom::IPAddressSpace::kPrivate);
+  AppendEntry(origin, url, nik, mojom::IPAddressSpace::kLocal);
+  EXPECT_EQ(3u, CountEntries());
+  EXPECT_TRUE(CheckEntryAndRefreshCache(origin, url, nik,
+                                        mojom::IPAddressSpace::kPrivate));
+  EXPECT_TRUE(CheckEntryAndRefreshCache(origin, url, nik,
+                                        mojom::IPAddressSpace::kLocal));
+
+  // Check that an entry we never inserted is not found in the cache.
+  EXPECT_FALSE(CheckEntryAndRefreshCache(origin, url, nik,
+                                         mojom::IPAddressSpace::kPublic));
+}
+
 TEST_F(PreflightCacheTest, NetLogCheckCacheExist) {
   const url::Origin kOrigin;
   const GURL kUrl("http://www.test.com/A");
@@ -266,6 +295,4 @@ TEST_F(PreflightCacheTest, NetLogCheckCacheExist) {
 
 }  // namespace
 
-}  // namespace cors
-
-}  // namespace network
+}  // namespace network::cors

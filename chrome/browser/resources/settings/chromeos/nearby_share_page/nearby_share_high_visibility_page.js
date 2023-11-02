@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,15 @@
  * user is broadcast in high-visibility mode. The user may cancel to stop high
  * visibility mode at any time.
  */
+
+import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_components/localized_link/localized_link.js';
+import '../../shared/nearby_page_template.js';
+import '../../shared/nearby_shared_icons.html.js';
+
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * Represents the current error state, if one exists.
@@ -31,103 +40,128 @@ const PULSE_ANIMATION_URL_LIGHT = 'nearby_share_pulse_animation_light.json';
  */
 const PULSE_ANIMATION_URL_DARK = 'nearby_share_pulse_animation_dark.json';
 
-Polymer({
-  is: 'nearby-share-high-visibility-page',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const NearbyShareHighVisibilityPageElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+class NearbyShareHighVisibilityPageElement extends
+    NearbyShareHighVisibilityPageElementBase {
+  static get is() {
+    return 'nearby-share-high-visibility-page';
+  }
 
-  properties: {
-    /**
-     * @type {string}
-     */
-    deviceName: {
-      notify: true,
-      type: String,
-      value: 'DEVICE_NAME_NOT_SET',
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * DOMHighResTimeStamp in milliseconds of when high visibility will be
-     * turned off.
-     * @type {number}
-     */
-    shutoffTimestamp: {
-      type: Number,
-      value: 0,
-    },
+  static get properties() {
+    return {
+      /**
+       * @type {string}
+       */
+      deviceName: {
+        notify: true,
+        type: String,
+        value: 'DEVICE_NAME_NOT_SET',
+      },
 
-    /**
-     * Calculated value of remaining seconds of high visibility mode.
-     * Initialized to -1 to differentiate it from timed out state.
-     * @private {number}
-     */
-    remainingTimeInSeconds_: {
-      type: Number,
-      value: -1,
-    },
+      /**
+       * DOMHighResTimeStamp in milliseconds of when high visibility will be
+       * turned off.
+       * @type {number}
+       */
+      shutoffTimestamp: {
+        type: Number,
+        value: 0,
+      },
 
-    /** @private {?nearbyShare.mojom.RegisterReceiveSurfaceResult} */
-    registerResult: {
-      type: nearbyShare.mojom.RegisterReceiveSurfaceResult,
-      value: null,
-    },
+      /**
+       * Calculated value of remaining seconds of high visibility mode.
+       * Initialized to -1 to differentiate it from timed out state.
+       * @private {number}
+       */
+      remainingTimeInSeconds_: {
+        type: Number,
+        value: -1,
+      },
 
-    /**
-     * @type {boolean}
-     */
-    nearbyProcessStopped: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private {?nearbyShare.mojom.RegisterReceiveSurfaceResult} */
+      registerResult: {
+        type: nearbyShare.mojom.RegisterReceiveSurfaceResult,
+        value: null,
+      },
 
-    /**
-     * @type {boolean}
-     */
-    startAdvertisingFailed: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * @type {boolean}
+       */
+      nearbyProcessStopped: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * A null |setupState_| indicates that the operation has not yet started.
-     * @private {?NearbyVisibilityErrorState}
-     */
-    errorState_: {
-      type: Number,
-      value: null,
-      computed:
-          'computeErrorState_(shutoffTimestamp, remainingTimeInSeconds_,' +
-          'registerResult, nearbyProcessStopped, startAdvertisingFailed)'
-    },
+      /**
+       * @type {boolean}
+       */
+      startAdvertisingFailed: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * Whether the high visibility page is being rendered in dark mode.
-     * @private {boolean}
-     */
-    isDarkModeActive_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      /**
+       * A null |setupState_| indicates that the operation has not yet started.
+       * @private {?NearbyVisibilityErrorState}
+       */
+      errorState_: {
+        type: Number,
+        value: null,
+        computed:
+            'computeErrorState_(shutoffTimestamp, remainingTimeInSeconds_,' +
+            'registerResult, nearbyProcessStopped, startAdvertisingFailed)',
+      },
 
-  /** @private {number} */
-  remainingTimeIntervalId_: -1,
+      /**
+       * Whether the high visibility page is being rendered in dark mode.
+       * @private {boolean}
+       */
+      isDarkModeActive_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
+
+  constructor() {
+    super();
+
+    /** @private {number} */
+    this.remainingTimeIntervalId_ = -1;
+  }
+
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.calculateRemainingTime_();
     this.remainingTimeIntervalId_ = setInterval(() => {
       this.calculateRemainingTime_();
     }, 1000);
-  },
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     if (this.remainingTimeIntervalId_ !== -1) {
       clearInterval(this.remainingTimeIntervalId_);
       this.remainingTimeIntervalId_ = -1;
     }
-  },
+  }
 
   /**
    * @return {boolean}
@@ -138,7 +172,7 @@ Polymer({
     // timestamp is also set.
     return (this.remainingTimeInSeconds_ === 0) &&
         (this.shutoffTimestamp !== 0);
-  },
+  }
 
   /**
    * @return {?NearbyVisibilityErrorState}
@@ -162,7 +196,7 @@ Polymer({
       return NearbyVisibilityErrorState.SOMETHING_WRONG;
     }
     return null;
-  },
+  }
 
 
   /**
@@ -182,7 +216,7 @@ Polymer({
       default:
         return '';
     }
-  },
+  }
 
   /**
    * @return {string} localized string
@@ -201,7 +235,7 @@ Polymer({
       default:
         return '';
     }
-  },
+  }
 
   /**
    * @return {string} localized string
@@ -225,7 +259,7 @@ Polymer({
 
     return this.i18n(
         'nearbyShareHighVisibilitySubTitle', this.deviceName, timeValue);
-  },
+  }
 
   /** @private */
   calculateRemainingTime_() {
@@ -237,7 +271,7 @@ Polymer({
     const remainingTimeInMs =
         this.shutoffTimestamp > now ? this.shutoffTimestamp - now : 0;
     this.remainingTimeInSeconds_ = Math.ceil(remainingTimeInMs / 1000);
-  },
+  }
 
   /**
    * Announce the remaining time for screen readers. Only announce once per
@@ -262,7 +296,7 @@ Polymer({
 
     return this.i18n(
         'nearbyShareHighVisibilitySubTitle', this.deviceName, timeValue);
-  },
+  }
 
   /**
    * Returns the URL for the asset that defines the high visibility page's
@@ -273,5 +307,9 @@ Polymer({
   getAnimationUrl_() {
     return this.isDarkModeActive_ ? PULSE_ANIMATION_URL_DARK :
                                     PULSE_ANIMATION_URL_LIGHT;
-  },
-});
+  }
+}
+
+customElements.define(
+    NearbyShareHighVisibilityPageElement.is,
+    NearbyShareHighVisibilityPageElement);

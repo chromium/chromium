@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -17,6 +17,7 @@
 #include "mojo/core/ports/port_ref.h"
 #include "mojo/core/system_impl_export.h"
 #include "mojo/core/watcher_set.h"
+#include "mojo/public/c/system/data_pipe.h"
 
 namespace mojo {
 namespace core {
@@ -91,7 +92,7 @@ class MOJO_SYSTEM_IMPL_EXPORT DataPipeConsumerDispatcher final
   void UpdateSignalsStateNoLock();
 
   const MojoCreateDataPipeOptions options_;
-  NodeController* const node_controller_;
+  const raw_ptr<NodeController> node_controller_;
   const ports::PortRef control_port_;
   const uint64_t pipe_id_;
 

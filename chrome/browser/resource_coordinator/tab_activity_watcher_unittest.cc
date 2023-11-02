@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit.h"
-#include "chrome/browser/resource_coordinator/tab_activity_watcher.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/tab_activity_simulator.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_ukm_test_helper.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -383,8 +383,7 @@ TEST_F(TabMetricsTest, Basic) {
   }
 
   // Closing the tabs destroys the WebContentses but should not trigger logging.
-  // The TestWebContentsObserver simulates hiding these tabs as they are closed;
-  // we verify in TearDown() that no logging occurred.
+  // We verify in TearDown() that no logging occurred.
   tab_strip_model->CloseAllTabs();
 }
 
@@ -544,7 +543,7 @@ TEST_F(TabMetricsTest, InputEvents) {
 
   // Fake some input events.
   content::RenderWidgetHost* widget_1 =
-      test_contents_1->GetMainFrame()->GetRenderViewHost()->GetWidget();
+      test_contents_1->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget();
   widget_1->ForwardMouseEvent(
       CreateMouseEvent(WebInputEvent::Type::kMouseDown));
   widget_1->ForwardMouseEvent(CreateMouseEvent(WebInputEvent::Type::kMouseUp));
@@ -561,7 +560,7 @@ TEST_F(TabMetricsTest, InputEvents) {
 
   // The second tab's counts are independent of the other's.
   content::RenderWidgetHost* widget_2 =
-      test_contents_2->GetMainFrame()->GetRenderViewHost()->GetWidget();
+      test_contents_2->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget();
   widget_2->ForwardMouseEvent(
       CreateMouseEvent(WebInputEvent::Type::kMouseMove));
   expected_metrics_2[TabManager_TabMetrics::kMouseEventCountName] = 1;
@@ -593,7 +592,8 @@ TEST_F(TabMetricsTest, InputEvents) {
   // After a navigation, test that the counts are reset.
   WebContentsTester::For(test_contents_1)->NavigateAndCommit(TestUrls()[2]);
   // The widget may have been invalidated by the navigation.
-  widget_1 = test_contents_1->GetMainFrame()->GetRenderViewHost()->GetWidget();
+  widget_1 =
+      test_contents_1->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget();
   widget_1->ForwardMouseEvent(
       CreateMouseEvent(WebInputEvent::Type::kMouseMove));
   expected_metrics_1[TabManager_TabMetrics::kMouseEventCountName] = 1;
@@ -849,7 +849,7 @@ TEST_F(ForegroundedOrClosedTest, MAYBE_SingleTab) {
                                                     TestUrls()[0]);
 
   // The tab is in the foreground, so it isn't logged as a background tab.
-  tab_strip_model->CloseWebContentsAt(0, TabStripModel::CLOSE_USER_GESTURE);
+  tab_strip_model->CloseWebContentsAt(0, TabCloseTypes::CLOSE_USER_GESTURE);
   EXPECT_EQ(0, ukm_entry_checker_.NumNewEntriesRecorded(kEntryName));
 }
 

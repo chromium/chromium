@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,17 @@
 TabGroupHighlight::TabGroupHighlight(TabGroupViews* tab_group_views,
                                      const tab_groups::TabGroupId& group)
     : tab_group_views_(tab_group_views), group_(group) {}
+
+void TabGroupHighlight::UpdateBounds(views::View* leading_view,
+                                     views::View* trailing_view) {
+  // If there are no views to highlight, do nothing. Our visibility is
+  // controlled by our parent TabDragContext.
+  if (!leading_view)
+    return;
+  gfx::Rect bounds = leading_view->bounds();
+  bounds.UnionEvenIfEmpty(trailing_view->bounds());
+  SetBoundsRect(bounds);
+}
 
 void TabGroupHighlight::OnPaint(gfx::Canvas* canvas) {
   SkPath path = GetPath();

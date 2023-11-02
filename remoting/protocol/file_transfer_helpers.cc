@@ -1,11 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "remoting/protocol/file_transfer_helpers.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 FileTransfer_Error MakeFileTransferError(
     base::Location location,
@@ -33,5 +32,4 @@ std::ostream& operator<<(std::ostream& stream,
   return stream;
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

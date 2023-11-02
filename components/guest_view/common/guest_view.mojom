@@ -1,0 +1,32 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module guest_view.mojom;
+
+import "mojo/public/mojom/base/values.mojom";
+
+// The renderer uses this interface to create GuestViews, make requests to the
+// browser to attach a GuestView to a container frame, and notify the browser
+// of state relating to a guest's container.
+interface GuestViewHost {
+  // We have a RenderFrame with routing id of |embedder_local_frame_routing_id|.
+  // We want this local frame to be replaced with a remote frame that points
+  // to a GuestView. This message will attach the local frame to the guest.
+  // The GuestView is identified by its ID: |guest_instance_id|.
+  AttachToEmbedderFrame(
+      int32 embedder_local_frame_routing_id,
+      int32 element_instance_id,
+      int32 guest_instance_id,
+      mojo_base.mojom.DictionaryValue params) => ();
+
+  // Sent by the renderer when a GuestView (identified by |view_instance_id|)
+  // has been created in JavaScript.
+  ViewCreated(int32 view_instance_id, string view_type);
+
+  // Sent by the renderer when a GuestView (identified by |view_instance_id|)
+  // has been garbage collected in JavaScript.
+  // TODO(mcnee): Instead of a separate message for cleanup, consider having
+  // `ViewCreated` incorporate a "keep alive" interface.
+  ViewGarbageCollected(int32 view_instance_id);
+};

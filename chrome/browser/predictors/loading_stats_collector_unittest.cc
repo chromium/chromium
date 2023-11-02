@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,8 +53,8 @@ class LoadingStatsCollectorTest : public testing::Test {
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 
-  const net::NetworkIsolationKey network_isolation_key_ =
-      net::NetworkIsolationKey::CreateTransient();
+  const net::NetworkAnonymizationKey network_isolation_key_ =
+      net::NetworkAnonymizationKey::CreateTransient();
 };
 
 LoadingStatsCollectorTest::LoadingStatsCollectorTest() = default;

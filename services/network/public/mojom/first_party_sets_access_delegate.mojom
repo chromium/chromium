@@ -1,0 +1,43 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "services/network/public/mojom/first_party_sets.mojom";
+import "services/network/public/mojom/schemeful_site.mojom";
+
+// Lives in the network service and controlled by the browser process to
+// access First-Party Sets for each network context.
+interface FirstPartySetsAccessDelegate {
+  // Signals to the receiver that the given network context has completed
+  // its initialization related to First-Party Sets, and the delegate
+  // should begin answering queries.
+  //
+  // This method is expected to be called at least once upon the completion of
+  // First-Party Sets initialization, and is expected to be called after each
+  // time `SetEnabled` is used to enable the delegate.
+  NotifyReady(FirstPartySetsReadyEvent ready_event);
+
+  // Signals to the receiver that the browser_context that this network context
+  // is associated with has changed the state of the First-Party Sets enabled
+  // setting (either by user action or enterprise update).
+  //
+  // There is no limit on when or how often this method is called.
+  SetEnabled(bool enabled);
+};
+
+struct FirstPartySetsAccessDelegateParams {
+  // Whether First-Party Sets is enabled for this network context.
+  bool enabled;
+};
+
+struct FirstPartySetsReadyEvent {
+  // The config to override the public First-Party Sets owned
+  // by the network service for the network context.
+  //
+  FirstPartySetsContextConfig config;
+
+  // The config to filter cache access for the purpose of "clearing cache".
+  FirstPartySetsCacheFilter cache_filter;
+};

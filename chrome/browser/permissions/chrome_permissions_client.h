@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/permissions/permission_request_enums.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permissions_client.h"
 
@@ -29,8 +30,6 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
       content::BrowserContext* browser_context) override;
   permissions::PermissionDecisionAutoBlocker* GetPermissionDecisionAutoBlocker(
       content::BrowserContext* browser_context) override;
-  permissions::PermissionManager* GetPermissionManager(
-      content::BrowserContext* browser_context) override;
   permissions::ObjectPermissionContextBase* GetChooserContext(
       content::BrowserContext* browser_context,
       ContentSettingsType type) override;
@@ -39,12 +38,12 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
   void AreSitesImportant(
       content::BrowserContext* browser_context,
       std::vector<std::pair<url::Origin, bool>>* urls) override;
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   bool IsCookieDeletionDisabled(content::BrowserContext* browser_context,
                                 const GURL& origin) override;
 #endif
   void GetUkmSourceId(content::BrowserContext* browser_context,
-                      const content::WebContents* web_contents,
+                      content::WebContents* web_contents,
                       const GURL& requesting_origin,
                       GetUkmSourceIdCallback callback) override;
   permissions::IconId GetOverrideIconId(
@@ -58,6 +57,8 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
       permissions::PermissionAction action,
       const GURL& origin,
       permissions::PermissionPromptDisposition prompt_disposition,
+      permissions::PermissionPromptDispositionReason prompt_disposition_reason,
+      permissions::PermissionRequestGestureType gesture_type,
       absl::optional<QuietUiReason> quiet_ui_reason) override;
   absl::optional<bool> HadThreeConsecutiveNotificationPermissionDenies(
       content::BrowserContext* browser_context) override;
@@ -71,21 +72,20 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
   absl::optional<GURL> OverrideCanonicalOrigin(
       const GURL& requesting_origin,
       const GURL& embedding_origin) override;
-  bool DoOriginsMatchNewTabPage(const GURL& requesting_origin,
-                                const GURL& embedding_origin) override;
-#if defined(OS_ANDROID)
-  bool IsPermissionControlledByDse(content::BrowserContext* browser_context,
-                                   ContentSettingsType type,
-                                   const url::Origin& origin) override;
+  // Checks if `requesting_origin` and `embedding_origin` are the new tab page
+  // origins.
+  bool DoURLsMatchNewTabPage(const GURL& requesting_origin,
+                             const GURL& embedding_origin) override;
+#if BUILDFLAG(IS_ANDROID)
   bool IsDseOrigin(content::BrowserContext* browser_context,
                    const url::Origin& origin) override;
-  bool ResetPermissionIfControlledByDse(
-      content::BrowserContext* browser_context,
-      ContentSettingsType type,
-      const url::Origin& origin) override;
   infobars::InfoBarManager* GetInfoBarManager(
       content::WebContents* web_contents) override;
   infobars::InfoBar* MaybeCreateInfoBar(
+      content::WebContents* web_contents,
+      ContentSettingsType type,
+      base::WeakPtr<permissions::PermissionPromptAndroid> prompt) override;
+  std::unique_ptr<PermissionMessageDelegate> MaybeCreateMessageUI(
       content::WebContents* web_contents,
       ContentSettingsType type,
       base::WeakPtr<permissions::PermissionPromptAndroid> prompt) override;

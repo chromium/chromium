@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_STREAM_VIDEO_RENDERER_SINK_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "third_party/blink/public/common/media/video_capture.h"
@@ -61,9 +60,9 @@ class MODULES_EXPORT MediaStreamVideoRendererSink
  private:
   friend class MediaStreamVideoRendererSinkTest;
   enum State {
-    STARTED,
-    PAUSED,
-    STOPPED,
+    kStarted,
+    kPaused,
+    kStopped,
   };
 
   // MediaStreamVideoSink implementation. Called on the main thread.

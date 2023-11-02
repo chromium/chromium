@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,11 +34,6 @@ int main(int argc, char** argv) {
 
   // Initialize logging so we can enable VLOG messages.
   logging::LoggingSettings settings;
-
-// Logs to system debug by default on POSIX.
-#if defined(OS_WIN)
-  settings.log_file_path = FILE_PATH_LITERAL("ozone_demo.log");
-#endif
 
   logging::InitLogging(settings);
 

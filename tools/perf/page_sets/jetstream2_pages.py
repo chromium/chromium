@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -10,8 +10,8 @@ class Jetstream2Story(press_story.PressStory):
   URL = 'http://browserbench.org/JetStream/'
   NAME = 'JetStream2'
 
-  def __init__(self, ps):
-    super(Jetstream2Story, self).__init__(ps)
+  def __init__(self, page_set):
+    super(Jetstream2Story, self).__init__(page_set)
 
   def ExecuteTest(self, action_runner):
     action_runner.tab.WaitForDocumentReadyStateToBeComplete()

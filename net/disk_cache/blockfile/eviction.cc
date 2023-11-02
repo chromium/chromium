@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -79,7 +79,7 @@ namespace disk_cache {
 
 // The real initialization happens during Init(), init_ is the only member that
 // has to be initialized here.
-Eviction::Eviction() : backend_(nullptr), init_(false) {}
+Eviction::Eviction() = default;
 
 Eviction::~Eviction() = default;
 

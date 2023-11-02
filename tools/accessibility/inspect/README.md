@@ -96,6 +96,19 @@ For example, `@ALLOW:AXARIALive` will add AXARIALive attributes to the
 result tree. Also see example-tree-filters.txt in tools/accessibility/inspect
 for more examples.
 
+### API option for Windows
+
+On windows, we support two accessibility APIS, IAccessible2 and UI-AUTOMATION.
+By default, IA2 is selected.
+
+To dump a tree with IAccessible2:
+
+`--api=ia2`
+
+To dump a tree with UI-AUTOMATION:
+
+`--api=uia`
+
 ### Other options
 
 `--help` for help

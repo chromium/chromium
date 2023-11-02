@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,14 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <tuple>
 
 #include "base/bind.h"
 #include "base/containers/queue.h"
 #include "base/debug/activity_tracker.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/process/process_handle.h"
@@ -74,7 +75,7 @@ class ChannelWinMessageQueue {
 
  private:
   base::circular_deque<Channel::MessagePtr> queue_;
-  std::atomic<uint64_t>* queue_size_sum_ = nullptr;
+  raw_ptr<std::atomic<uint64_t>> queue_size_sum_ = nullptr;
 };
 
 class ChannelWin : public Channel,
@@ -87,8 +88,10 @@ class ChannelWin : public Channel,
              scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
       : Channel(delegate, handle_policy),
         base::MessagePumpForIO::IOHandler(FROM_HERE),
+        is_untrusted_process_(connection_params.is_untrusted_process()),
         self_(this),
-        io_task_runner_(io_task_runner) {
+        io_task_runner_(io_task_runner),
+        write_lock_("ChannelWin.write_lock_") {
     if (connection_params.server_endpoint().is_valid()) {
       handle_ = connection_params.TakeServerEndpoint()
                     .TakePlatformHandle()
@@ -122,8 +125,12 @@ class ChannelWin : public Channel,
       // to the process now rewriting them in the message.
       std::vector<PlatformHandleInTransit> handles = message->TakeHandles();
       for (auto& handle : handles) {
-        if (handle.handle().is_valid())
-          handle.TransferToProcess(remote_process().Duplicate());
+        if (handle.handle().is_valid()) {
+          handle.TransferToProcess(
+              remote_process().Duplicate(),
+              is_untrusted_process_ ? PlatformHandleInTransit::kUntrustedTarget
+                                    : PlatformHandleInTransit::kTrustedTarget);
+        }
       }
       message->SetHandles(std::move(handles));
     }
@@ -188,6 +195,14 @@ class ChannelWin : public Channel,
     return true;
   }
 
+  bool GetReadPlatformHandlesForIpcz(
+      size_t num_handles,
+      std::vector<PlatformHandle>& handles) override {
+    // Always a validation failure if we're asked for handles on Windows,
+    // because ChannelWin for ipcz never sends handles out-of-band from data.
+    return false;
+  }
+
  private:
   // May run on any thread.
   ~ChannelWin() override = default;
@@ -242,7 +257,7 @@ class ChannelWin : public Channel,
     CHECK(handle_.IsValid());
     CancelIo(handle_.Get());
     if (leak_handle_)
-      ignore_result(handle_.Take());
+      std::ignore = handle_.Take();
     else
       handle_.Close();
 
@@ -397,6 +412,8 @@ class ChannelWin : public Channel,
 
     OnError(error);
   }
+
+  const bool is_untrusted_process_;
 
   // Keeps the Channel alive at least until explicit shutdown on the IO thread.
   scoped_refptr<Channel> self_;

@@ -1,9 +1,9 @@
 include_rules = [
+  "+components/app_constants/constants.h",
   "+components/crash/content/browser/error_reporting",
   "+components/live_caption",
   "+extensions/strings/grit/extensions_strings.h",
   "+services/network/public",
-  "+ui/base",
 
   # For access to testing command line switches.
   "+ppapi/shared_impl",
@@ -93,5 +93,10 @@ specific_include_rules = {
   # https://crbug.com/1084826
   "external_pref_loader\.cc": [
     "+chrome/browser/apps/user_type_filter.h",
+  ],
+
+  "extension_service_unittest.cc" : [
+    "+components/services/storage/privileged/mojom/indexed_db_control.mojom.h",
+    "+components/services/storage/privileged/mojom/indexed_db_control_test.mojom.h",
   ],
 }

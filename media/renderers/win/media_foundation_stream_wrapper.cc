@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -307,9 +307,9 @@ void MediaFoundationStreamWrapper::ProcessRequestsIfPossible() {
     return;
   }
 
-  if (!demuxer_stream_ || pending_stream_read_) {
+  if (!demuxer_stream_ || pending_stream_read_)
     return;
-  }
+
   demuxer_stream_->Read(
       base::BindOnce(&MediaFoundationStreamWrapper::OnDemuxerStreamRead,
                      weak_factory_.GetWeakPtr()));
@@ -326,6 +326,8 @@ HRESULT MediaFoundationStreamWrapper::ServiceSampleRequest(
   if (buffer->end_of_stream()) {
     if (!enabled_) {
       DVLOG_FUNC(2) << "Ignoring EOS for disabled stream";
+      // token not dropped to reflect an outstanding request that stream wrapper
+      // should service when the stream is enabled
       return S_OK;
     }
     DVLOG_FUNC(2) << "End of stream";
@@ -348,6 +350,9 @@ HRESULT MediaFoundationStreamWrapper::ServiceSampleRequest(
     RETURN_IF_FAILED(mf_media_event_queue_->QueueEventParamUnk(
         MEMediaSample, GUID_NULL, S_OK, mf_sample.Get()));
   }
+
+  pending_sample_request_tokens_.pop();
+
   return S_OK;
 }
 
@@ -369,7 +374,6 @@ bool MediaFoundationStreamWrapper::ServicePostFlushSampleRequest() {
     return false;
   }
 
-  pending_sample_request_tokens_.pop();
   post_flush_buffers_.pop();
   return true;
 }
@@ -417,7 +421,6 @@ void MediaFoundationStreamWrapper::OnDemuxerStreamRead(
                       << ": ServiceSampleRequest failed: " << PrintHr(hr);
           return;
         }
-        pending_sample_request_tokens_.pop();
       }
     } else if (status == DemuxerStream::Status::kConfigChanged) {
       DVLOG_FUNC(2) << "Stream config changed, AreFormatChangesEnabled="

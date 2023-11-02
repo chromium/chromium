@@ -245,7 +245,7 @@
 "muted"
 "onlanguagechange"
 "label"
-"importance"
+"fetchpriority"
 "formnovalidate"
 "progress"
 "onoffline"

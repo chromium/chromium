@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,12 +38,12 @@ class DragDropTrackerTest : public AshTestBase {
     return target;
   }
 
-  static ui::LocatedEvent* ConvertEvent(aura::Window* target,
-                                        const ui::MouseEvent& event) {
+  static std::unique_ptr<ui::LocatedEvent> ConvertEvent(
+      aura::Window* target,
+      const ui::MouseEvent& event) {
     std::unique_ptr<DragDropTracker> tracker(new DragDropTracker(
         Shell::GetPrimaryRootWindow(), base::BindLambdaForTesting([&]() {})));
-    ui::LocatedEvent* converted = tracker->ConvertEvent(target, event);
-    return converted;
+    return tracker->ConvertEvent(target, event);
   }
 };
 

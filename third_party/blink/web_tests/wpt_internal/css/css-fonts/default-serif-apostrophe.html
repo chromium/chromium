@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Apostrophe doesn't add excessive spacing with default serif font</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  .serif {
+      font-size: 40px;
+      font-family: serif;
+      background: gray;
+  }
+</style>
+<span id="div_apostrophe" class="serif">A’B</span><br/>
+<span id="div_underscore" class="serif">A_B</span>
+<script>
+  function WidthOf(id) {
+      return document.getElementById(id).getBoundingClientRect().width;
+  };
+  test(() => {
+      assert_less_than(WidthOf("div_apostrophe"), WidthOf("div_underscore"));
+  });
+</script>

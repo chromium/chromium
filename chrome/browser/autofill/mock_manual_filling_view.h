@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@ class MockManualFillingView : public ManualFillingViewInterface {
 
   ~MockManualFillingView() override;
 
-  MOCK_METHOD1(OnItemsAvailable, void(const autofill::AccessorySheetData&));
+  MOCK_METHOD1(OnItemsAvailable, void(autofill::AccessorySheetData));
   MOCK_METHOD1(OnAutomaticGenerationStatusChanged, void(bool));
   MOCK_METHOD0(CloseAccessorySheet, void());
   MOCK_METHOD0(SwapSheetWithKeyboard, void());

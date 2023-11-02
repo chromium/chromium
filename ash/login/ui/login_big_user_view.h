@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,6 +44,9 @@ class ASH_EXPORT LoginBigUserView : public NonAccessibleView,
   LoginBigUserView& operator=(const LoginBigUserView&) = delete;
 
   ~LoginBigUserView() override;
+
+  // NonAccessibleView:
+  void OnThemeChanged() override;
 
   // Base on the user type, call CreateAuthUser or CreatePublicAccount.
   void CreateChildView(const LoginUserInfo& user);

@@ -1,0 +1,57 @@
+{
+  "name": "content_script_prerendering",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Tests content script in pre-rendered frames",
+  "background": {
+    "scripts": [
+      "test.js"
+    ]
+  },
+  "permissions": [
+    "tabs",
+    "<all_urls>"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "http://default.test/*"
+      ],
+      "js": [
+        "top_frame_only.js"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "http://default.test/*"
+      ],
+      "js": [
+        "all_frames.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "http://match_about_blank.test/*"
+      ],
+      "js": [
+        "top_frame_only.js"
+      ],
+      "match_about_blank": true,
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "http://match_about_blank.test/*"
+      ],
+      "js": [
+        "all_frames.js"
+      ],
+      "match_about_blank": true,
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ]
+}

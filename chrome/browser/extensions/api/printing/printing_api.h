@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,7 @@ class PrintingSubmitJobFunction : public ExtensionFunction {
  private:
   void OnPrintJobSubmitted(
       absl::optional<api::printing::SubmitJobStatus> status,
-      std::unique_ptr<std::string> job_id,
+      absl::optional<std::string> job_id,
       absl::optional<std::string> error);
   DECLARE_EXTENSION_FUNCTION("printing.submitJob", PRINTING_SUBMITJOB)
 };

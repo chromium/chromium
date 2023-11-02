@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,9 @@
 
 #include <map>
 #include <set>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/json/json_reader.h"
@@ -313,7 +315,7 @@ TEST_F(DiscardsGraphDumpImplTest, ChangeStream) {
                 absl::optional<base::Value> v =
                     base::JSONReader::Read(kv.second);
                 EXPECT_TRUE(v->is_dict());
-                std::string* str = v->FindStringKey("test");
+                std::string* str = v->GetDict().FindString("test");
                 EXPECT_TRUE(str);
                 if (str) {
                   EXPECT_TRUE(*str == "frame" || *str == "page" ||

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,7 @@ class SpellcheckLanguageBlocklistPolicyHandler
 
  private:
   void SortBlocklistedLanguages(const policy::PolicyMap& policies,
-                                std::vector<base::Value>* const blocklisted,
+                                base::Value::List* const blocklisted,
                                 std::vector<std::string>* const unknown,
                                 std::vector<std::string>* const duplicates);
 };

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,10 +18,10 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ui/app_list/search/ranking/ranking_item_util.h"
 #include "chrome/browser/ui/app_list/search/search_controller_impl.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/chip_ranker.h"
-#include "chrome/browser/ui/app_list/search/search_result_ranker/ranking_item_util.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/search_result_ranker.h"
 
 namespace app_list {
@@ -100,7 +100,7 @@ class Mixer::Group {
 
     if (ranker)
       ranker->Rank(&results_);
-    std::sort(results_.begin(), results_.end());
+    std::stable_sort(results_.begin(), results_.end());
   }
 
   const SortedResults& results() const { return results_; }
@@ -122,12 +122,7 @@ Mixer::~Mixer() = default;
 
 void Mixer::InitializeRankers(Profile* profile) {
   search_result_ranker_ = std::make_unique<SearchResultRanker>(profile);
-  search_result_ranker_->InitializeRankers(search_controller_);
-
-  if (app_list_features::IsSuggestedFilesEnabled() ||
-      app_list_features::IsSuggestedLocalFilesEnabled()) {
-    chip_ranker_ = std::make_unique<ChipRanker>(profile);
-  }
+  search_result_ranker_->InitializeRankers();
 }
 
 size_t Mixer::AddGroup(size_t max_results) {
@@ -165,7 +160,7 @@ void Mixer::MixAndPublish(size_t num_max_results, const std::u16string& query) {
     chip_ranker_->Rank(&results);
   }
 
-  std::sort(results.begin(), results.end());
+  std::stable_sort(results.begin(), results.end());
 
   const size_t original_size = results.size();
   if (original_size < num_max_results) {
@@ -180,7 +175,7 @@ void Mixer::MixAndPublish(size_t num_max_results, const std::u16string& query) {
     // 0.4) that the People result will be 5th, not 7th, because the Omnibox
     // group has a soft maximum of 4 results. (Otherwise, the People result
     // would not be seen at all once the result list is truncated.)
-    std::sort(results.begin() + original_size, results.end());
+    std::stable_sort(results.begin() + original_size, results.end());
   }
   RemoveDuplicates(&results);
 

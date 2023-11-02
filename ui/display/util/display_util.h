@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,10 @@
 
 #include <stdint.h>
 
+#include "base/containers/flat_set.h"
 #include "ui/display/util/display_util_export.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace display {
@@ -49,6 +51,44 @@ DISPLAY_UTIL_EXPORT int64_t GenerateDisplayID(uint16_t manufacturer_id,
 // both gamma and the color primaries were correctly found.
 DISPLAY_UTIL_EXPORT gfx::ColorSpace GetColorSpaceFromEdid(
     const display::EdidParser& edid_parser);
+
+// Returns true if one of following conditions is met.
+// 1) id1 is internal.
+// 2) output index of id1 < output index of id2 and id2 isn't internal.
+DISPLAY_UTIL_EXPORT bool CompareDisplayIds(int64_t id1, int64_t id2);
+
+// Returns true if the `display_id` is internal.
+DISPLAY_UTIL_EXPORT bool IsInternalDisplayId(int64_t display_id);
+
+// Returns true if the system has at least one internal display.
+DISPLAY_UTIL_EXPORT bool HasInternalDisplay();
+
+// Gets/Sets an id of display corresponding to internal panel.
+DISPLAY_UTIL_EXPORT const base::flat_set<int64_t>& GetInternalDisplayIds();
+DISPLAY_UTIL_EXPORT void SetInternalDisplayIds(
+    base::flat_set<int64_t> display_ids);
+
+// Converts the color string name into a gfx::ColorSpace profile.
+DISPLAY_UTIL_EXPORT gfx::ColorSpace ForcedColorProfileStringToColorSpace(
+    const std::string& value);
+
+// Returns the forced display color profile, which is given by
+// "--force-color-profile".
+DISPLAY_UTIL_EXPORT gfx::ColorSpace GetForcedDisplayColorProfile();
+
+// Indicates if a display color profile is being explicitly enforced from the
+// command line via "--force-color-profile".
+DISPLAY_UTIL_EXPORT bool HasForceDisplayColorProfile();
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Taken from DisplayChangeObserver::CreateDisplayColorSpaces()
+// Constructs the raster DisplayColorSpaces out of |snapshot_color_space|,
+// including the HDR ones if present and |allow_high_bit_depth| is set.
+DISPLAY_UTIL_EXPORT gfx::DisplayColorSpaces CreateDisplayColorSpaces(
+    const gfx::ColorSpace& snapshot_color_space,
+    bool allow_high_bit_depth,
+    const absl::optional<gfx::HDRStaticMetadata>& hdr_static_metadata);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace display
 

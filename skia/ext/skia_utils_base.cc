@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "base/pickle.h"
+#include "base/strings/stringprintf.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkEncodedImageFormat.h"
@@ -17,7 +18,7 @@
 namespace skia {
 
 bool ReadSkString(base::PickleIterator* iter, SkString* str) {
-  int reply_length;
+  size_t reply_length;
   const char* reply_text;
 
   if (!iter->ReadData(&reply_text, &reply_length))
@@ -32,7 +33,7 @@ bool ReadSkFontIdentity(base::PickleIterator* iter,
                         SkFontConfigInterface::FontIdentity* identity) {
   uint32_t reply_id;
   uint32_t reply_ttcIndex;
-  int reply_length;
+  size_t reply_length;
   const char* reply_text;
 
   if (!iter->ReadUInt32(&reply_id) ||
@@ -115,4 +116,8 @@ bool SkBitmapToN32OpaqueOrPremul(const SkBitmap& in, SkBitmap* out) {
   return true;
 }
 
+std::string SkColorToHexString(SkColor color) {
+  return base::StringPrintf("#%02X%02X%02X", SkColorGetR(color),
+                            SkColorGetG(color), SkColorGetB(color));
+}
 }  // namespace skia

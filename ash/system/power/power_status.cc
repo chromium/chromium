@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/power_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -247,17 +248,29 @@ void PowerStatus::CalculateBatteryImageInfo(BatteryImageInfo* info) const {
 
   if (!IsUsbChargerConnected() && !IsBatteryPresent()) {
     info->icon_badge = &kUnifiedMenuBatteryXIcon;
-    info->badge_outline = &kUnifiedMenuBatteryXOutlineIcon;
+    if (features::IsDarkLightModeEnabled()) {
+      info->badge_outline = &kUnifiedMenuBatteryXOutlineMaskIcon;
+    } else {
+      info->badge_outline = &kUnifiedMenuBatteryXOutlineIcon;
+    }
     info->charge_percent = 0;
     return;
   }
 
   if (IsUsbChargerConnected()) {
     info->icon_badge = &kUnifiedMenuBatteryUnreliableIcon;
-    info->badge_outline = &kUnifiedMenuBatteryUnreliableOutlineIcon;
+    if (features::IsDarkLightModeEnabled()) {
+      info->badge_outline = &kUnifiedMenuBatteryUnreliableOutlineMaskIcon;
+    } else {
+      info->badge_outline = &kUnifiedMenuBatteryUnreliableOutlineIcon;
+    }
   } else if (IsLinePowerConnected()) {
     info->icon_badge = &kUnifiedMenuBatteryBoltIcon;
-    info->badge_outline = &kUnifiedMenuBatteryBoltOutlineIcon;
+    if (features::IsDarkLightModeEnabled()) {
+      info->badge_outline = &kUnifiedMenuBatteryBoltOutlineMaskIcon;
+    } else {
+      info->badge_outline = &kUnifiedMenuBatteryBoltOutlineIcon;
+    }
   } else {
     info->icon_badge = nullptr;
     info->badge_outline = nullptr;
@@ -270,16 +283,23 @@ void PowerStatus::CalculateBatteryImageInfo(BatteryImageInfo* info) const {
   if (GetBatteryPercent() < kCriticalBatteryChargePercentage &&
       !info->icon_badge) {
     info->icon_badge = &kUnifiedMenuBatteryAlertIcon;
-    info->badge_outline = &kUnifiedMenuBatteryAlertOutlineIcon;
+    if (features::IsDarkLightModeEnabled()) {
+      info->badge_outline = &kUnifiedMenuBatteryAlertOutlineMaskIcon;
+    } else {
+      info->badge_outline = &kUnifiedMenuBatteryAlertOutlineIcon;
+    }
   }
 }
 
 // static
-gfx::ImageSkia PowerStatus::GetBatteryImage(const BatteryImageInfo& info,
-                                            int height,
-                                            SkColor bg_color,
-                                            SkColor fg_color) {
-  auto* source = new BatteryImageSource(info, height, bg_color, fg_color);
+gfx::ImageSkia PowerStatus::GetBatteryImage(
+    const BatteryImageInfo& info,
+    int height,
+    SkColor bg_color,
+    SkColor fg_color,
+    absl::optional<SkColor> badge_color) {
+  auto* source = new BatteryImageSource(info, height, bg_color, fg_color,
+                                        std::move(badge_color));
   return gfx::ImageSkia(base::WrapUnique(source), source->size());
 }
 
@@ -362,9 +382,7 @@ std::pair<std::u16string, std::u16string> PowerStatus::GetStatusStrings()
 }
 
 std::u16string PowerStatus::GetInlinedStatusString() const {
-  std::u16string percentage_text;
-  std::u16string status_text;
-  std::tie(percentage_text, status_text) = GetStatusStrings();
+  auto [percentage_text, status_text] = GetStatusStrings();
 
   if (!percentage_text.empty() && !status_text.empty()) {
     return percentage_text +

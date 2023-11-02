@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <list>
 #include <map>
 
-#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
@@ -101,7 +100,8 @@ class UserScriptListener : public content::NotificationObserver,
 
   // Helper to collect the extension's user script URL patterns in a list and
   // return it.
-  void CollectURLPatterns(const Extension* extension,
+  void CollectURLPatterns(content::BrowserContext* context,
+                          const Extension* extension,
                           URLPatterns* patterns);
 
   // content::NotificationObserver

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "ui/aura/null_window_targeter.h"
 #include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
 namespace chromecast {
@@ -29,10 +30,10 @@ void CastWindowTreeHostAura::DispatchEvent(ui::Event* event) {
   WindowTreeHostPlatform::DispatchEvent(event);
 }
 
-gfx::Rect CastWindowTreeHostAura::GetTransformedRootWindowBoundsInPixels(
+gfx::Rect CastWindowTreeHostAura::GetTransformedRootWindowBoundsFromPixelSize(
     const gfx::Size& size_in_pixels) const {
-  gfx::RectF new_bounds = gfx::RectF(gfx::Rect(size_in_pixels));
-  GetInverseRootTransform().TransformRect(&new_bounds);
+  gfx::RectF new_bounds =
+      GetInverseRootTransform().MapRect(gfx::RectF(gfx::Rect(size_in_pixels)));
 
   // Root window origin will be (0,0) except during bounds changes.
   // Set to exactly zero to avoid rounding issues.

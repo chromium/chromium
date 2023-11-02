@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,6 +28,7 @@ class ASH_PUBLIC_EXPORT TestAmbientClient : public AmbientClient {
 
   // AmbientClient:
   bool IsAmbientModeAllowed() override;
+  void SetAmbientModeAllowedForTesting(bool allowed) override {}
   void RequestAccessToken(GetAccessTokenCallback callback) override;
   void DownloadImage(const std::string& url,
                      ash::ImageDownloader::DownloadCallback callback) override;

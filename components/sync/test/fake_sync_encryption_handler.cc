@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/logging.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
 
 namespace syncer {
@@ -57,12 +58,13 @@ void FakeSyncEncryptionHandler::RemoveObserver(Observer* observer) {
 }
 
 void FakeSyncEncryptionHandler::SetEncryptionPassphrase(
-    const std::string& passphrase) {
+    const std::string& passphrase,
+    const KeyDerivationParams& key_derivation_params) {
   // Do nothing.
 }
 
-void FakeSyncEncryptionHandler::SetDecryptionPassphrase(
-    const std::string& passphrase) {
+void FakeSyncEncryptionHandler::SetExplicitPassphraseDecryptionKey(
+    std::unique_ptr<Nigori> key) {
   // Do nothing.
 }
 

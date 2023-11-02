@@ -18,6 +18,9 @@ use std::cell::RefCell;
 /// [`ParseStream::peek`]: crate::parse::ParseBuffer::peek
 /// [`ParseStream::lookahead1`]: crate::parse::ParseBuffer::lookahead1
 ///
+/// Consuming tokens from the source stream after constructing a lookahead
+/// object does not also advance the lookahead object.
+///
 /// # Example
 ///
 /// ```

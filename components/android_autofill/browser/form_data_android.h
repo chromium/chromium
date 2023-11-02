@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,13 +18,7 @@ class FormStructure;
 // available in Java.
 class FormDataAndroid {
  public:
-  // The callback func to transform FormFieldData's bounds to viewport's
-  // coordinates, it is only used in FormDataAndroid constructor and transforms
-  // bounds in place to avoids an extra copy of FormData.
-  using TransformCallback =
-      base::RepeatingCallback<gfx::RectF(const gfx::RectF&)>;
-
-  FormDataAndroid(const FormData& form, const TransformCallback& callback);
+  explicit FormDataAndroid(const FormData& form);
   FormDataAndroid(const FormDataAndroid&) = delete;
   FormDataAndroid& operator=(const FormDataAndroid&) = delete;
 
@@ -67,7 +61,7 @@ class FormDataAndroid {
   std::vector<std::unique_ptr<FormFieldDataAndroid>> fields_;
   JavaObjectWeakGlobalRef java_ref_;
   // keep track of index when popping up fields to Java.
-  size_t index_;
+  size_t index_ = 0;
 };
 
 }  // namespace autofill

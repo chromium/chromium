@@ -1,11 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ASH_SECURE_CHANNEL_UTIL_HISTOGRAM_UTIL_H_
 #define CHROME_BROWSER_ASH_SECURE_CHANNEL_UTIL_HISTOGRAM_UTIL_H_
 
-#include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 
 namespace ash {
 namespace secure_channel {
@@ -26,6 +26,35 @@ void RecordSendPayloadResult(
     location::nearby::connections::mojom::Status status);
 void RecordDisconnectFromEndpointResult(
     location::nearby::connections::mojom::Status status);
+void RecordRegisterPayloadFilesResult(
+    location::nearby::connections::mojom::Status status);
+
+// Enumeration of possible file payload transfer actions via Nearby Connection
+// library. Keep in sync with corresponding enum in
+// tools/metrics/histograms/enums.xml. These values are persisted to logs.
+// Entries should not be renumbered and numeric values should never be reused.
+enum class FileAction {
+  kRegisteredFileReceived = 0,
+  kUnexpectedFileReceived = 1,
+  kMaxValue = kUnexpectedFileReceived,
+};
+
+// Logs an action related to a file transfer.
+void LogFileAction(FileAction file_action);
+
+// Enumeration of possible results of a file transfer via Nearby Connections
+// library. Keep in sync with corresponding enum in
+// tools/metrics/histograms/enums.xml. These values are persisted to logs.
+// Entries should not be renumbered and numeric values should never be reused.
+enum class FileTransferResult {
+  kFileTransferSuccess = 0,
+  kFileTransferFailure = 1,
+  kFileTransferCanceled = 2,
+  kMaxValue = kFileTransferCanceled,
+};
+
+// Logs the result of a file transfer.
+void LogFileTransferResult(FileTransferResult file_transfer_result);
 
 // Enumeration of possible message transfer action via Nearby Connection
 // library. Keep in sync with corresponding enum in

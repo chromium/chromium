@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,14 +11,14 @@
 #include <string>
 #include <tuple>
 
+#include "ash/components/arc/mojom/accessibility_helper.mojom-forward.h"
+#include "ash/components/arc/session/connection_observer.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface_manager.h"
 #include "base/callback_list.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_helper_instance_remote_proxy.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_tree_tracker.h"
 #include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
-#include "components/arc/mojom/accessibility_helper.mojom-forward.h"
-#include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class PrefService;
@@ -72,7 +72,8 @@ class ArcAccessibilityHelperBridge
   ~ArcAccessibilityHelperBridge() override;
 
   // Sets ChromeVox or TalkBack active for the current task.
-  void SetNativeChromeVoxArcSupport(bool enabled);
+  void SetNativeChromeVoxArcSupport(bool enabled,
+                                    SetNativeChromeVoxCallback callback);
 
   // Request Android to send the entire tree with the tree id. Returns true if
   // the specified tree is an ARC tree and a request was sent.

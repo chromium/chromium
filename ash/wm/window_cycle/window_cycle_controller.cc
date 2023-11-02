@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -92,7 +92,7 @@ void ReportPossibleDesksSwitchStats(int active_desk_container_id_before_cycle) {
                active_desk_container_id_before_cycle);
   base::UmaHistogramExactLinear(kAltTabDesksSwitchDistanceHistogramName,
                                 desks_switch_distance,
-                                desks_util::kMaxNumberOfDesks);
+                                desks_util::kDesksUpperLimit);
 }
 
 }  // namespace
@@ -136,8 +136,11 @@ void WindowCycleController::HandleCycleWindow(
 
 void WindowCycleController::HandleKeyboardNavigation(
     KeyboardNavDirection direction) {
-  if (!CanCycle() || !IsCycling() || !IsValidKeyboardNavigation(direction))
+  // If the UI is not shown yet, discard the event.
+  if (!CanCycle() || !IsCycling() || !window_cycle_list_->cycle_view() ||
+      !IsValidKeyboardNavigation(direction)) {
     return;
+  }
 
   switch (direction) {
     // Pressing the Up arrow key moves the focus from the window cycle list

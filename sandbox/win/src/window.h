@@ -1,14 +1,13 @@
-// Copyright (c) 2009 The Chromium Authors. All rights reserved.
+// Copyright 2009 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SANDBOX_WIN_SRC_WINDOW_H_
 #define SANDBOX_WIN_SRC_WINDOW_H_
 
-#include <windows.h>
-
 #include <string>
 
+#include "base/win/windows_types.h"
 #include "sandbox/win/src/sandbox_types.h"
 
 namespace sandbox {

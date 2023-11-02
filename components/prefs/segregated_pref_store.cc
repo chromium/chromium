@@ -1,16 +1,20 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/prefs/segregated_pref_store.h"
 
+#include <string>
 #include <utility>
 
 #include "base/barrier_closure.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/notreached.h"
+#include "base/observer_list.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
+#include "components/prefs/pref_name_set.h"
 
 SegregatedPrefStore::UnderlyingPrefStoreObserver::UnderlyingPrefStoreObserver(
     SegregatedPrefStore* outer)
@@ -51,7 +55,7 @@ void SegregatedPrefStore::UnderlyingPrefStoreObserver::
 SegregatedPrefStore::SegregatedPrefStore(
     scoped_refptr<PersistentPrefStore> default_pref_store,
     scoped_refptr<PersistentPrefStore> selected_pref_store,
-    std::set<std::string> selected_pref_names)
+    PrefNameSet selected_pref_names)
     : default_pref_store_(std::move(default_pref_store)),
       selected_pref_store_(std::move(selected_pref_store)),
       selected_preference_names_(std::move(selected_pref_names)),
@@ -83,27 +87,27 @@ bool SegregatedPrefStore::IsInitializationSuccessful() const {
          selected_observer_.initialization_succeeded();
 }
 
-bool SegregatedPrefStore::GetValue(const std::string& key,
+bool SegregatedPrefStore::GetValue(base::StringPiece key,
                                    const base::Value** result) const {
   return StoreForKey(key)->GetValue(key, result);
 }
 
-std::unique_ptr<base::DictionaryValue> SegregatedPrefStore::GetValues() const {
-  auto values = default_pref_store_->GetValues();
-  auto selected_pref_store_values = selected_pref_store_->GetValues();
+base::Value::Dict SegregatedPrefStore::GetValues() const {
+  base::Value::Dict values = default_pref_store_->GetValues();
+  base::Value::Dict selected_pref_store_values =
+      selected_pref_store_->GetValues();
   for (const auto& key : selected_preference_names_) {
-    const base::Value* value = nullptr;
-    if (selected_pref_store_values->Get(key, &value)) {
-      values->SetPath(key, value->Clone());
+    if (base::Value* value = selected_pref_store_values.FindByDottedPath(key)) {
+      values.SetByDottedPath(key, std::move(*value));
     } else {
-      values->RemoveKey(key);
+      values.Remove(key);
     }
   }
   return values;
 }
 
 void SegregatedPrefStore::SetValue(const std::string& key,
-                                   std::unique_ptr<base::Value> value,
+                                   base::Value value,
                                    uint32_t flags) {
   StoreForKey(key)->SetValue(key, std::move(value), flags);
 }
@@ -131,7 +135,7 @@ void SegregatedPrefStore::ReportValueChanged(const std::string& key,
 }
 
 void SegregatedPrefStore::SetValueSilently(const std::string& key,
-                                           std::unique_ptr<base::Value> value,
+                                           base::Value value,
                                            uint32_t flags) {
   StoreForKey(key)->SetValueSilently(key, std::move(value), flags);
 }
@@ -214,14 +218,14 @@ SegregatedPrefStore::~SegregatedPrefStore() {
   selected_pref_store_->RemoveObserver(&selected_observer_);
 }
 
-PersistentPrefStore* SegregatedPrefStore::StoreForKey(const std::string& key) {
+PersistentPrefStore* SegregatedPrefStore::StoreForKey(base::StringPiece key) {
   return (base::Contains(selected_preference_names_, key) ? selected_pref_store_
                                                           : default_pref_store_)
       .get();
 }
 
 const PersistentPrefStore* SegregatedPrefStore::StoreForKey(
-    const std::string& key) const {
+    base::StringPiece key) const {
   return (base::Contains(selected_preference_names_, key) ? selected_pref_store_
                                                           : default_pref_store_)
       .get();

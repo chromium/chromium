@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,8 @@
 #include <vector>
 
 #include "base/cxx17_backports.h"
+#include "base/notreached.h"
+#include "base/observer_list.h"
 #include "cc/animation/animation_delegate.h"
 #include "cc/animation/animation_events.h"
 #include "cc/animation/animation_host.h"
@@ -57,11 +59,11 @@ scoped_refptr<ElementAnimations> ElementAnimations::Create(
 ElementAnimations::ElementAnimations(AnimationHost* host, ElementId element_id)
     : animation_host_(host),
       element_id_(element_id),
-      has_element_in_active_list_(false),
-      has_element_in_pending_list_(false),
       needs_push_properties_(false),
-      active_maximum_scale_(kInvalidScale),
-      pending_maximum_scale_(kInvalidScale) {
+      transform_property_active_maximum_scale_(kInvalidScale),
+      transform_property_pending_maximum_scale_(kInvalidScale),
+      scale_property_active_maximum_scale_(kInvalidScale),
+      scale_property_pending_maximum_scale_(kInvalidScale) {
   InitAffectedElementTypes();
 }
 
@@ -72,19 +74,14 @@ void ElementAnimations::InitAffectedElementTypes() {
   DCHECK(animation_host_);
 
   DCHECK(animation_host_->mutator_host_client());
-  if (animation_host_->mutator_host_client()->IsElementInPropertyTrees(
-          element_id_, ElementListType::ACTIVE)) {
-    set_has_element_in_active_list(true);
-  }
-  if (animation_host_->mutator_host_client()->IsElementInPropertyTrees(
-          element_id_, ElementListType::PENDING)) {
-    set_has_element_in_pending_list(true);
-  }
 }
 
 gfx::TargetProperties ElementAnimations::GetPropertiesMaskForAnimationState() {
   gfx::TargetProperties properties;
   properties[TargetProperty::TRANSFORM] = true;
+  properties[TargetProperty::SCALE] = true;
+  properties[TargetProperty::ROTATE] = true;
+  properties[TargetProperty::TRANSLATE] = true;
   properties[TargetProperty::OPACITY] = true;
   properties[TargetProperty::FILTER] = true;
   properties[TargetProperty::BACKDROP_FILTER] = true;
@@ -103,51 +100,20 @@ void ElementAnimations::ClearAffectedElementTypes(
 
   // This method may get called from AnimationHost dtor so it is possible for
   // mutator_host_client() to be null.
-  if (has_element_in_active_list() && animation_host_->mutator_host_client()) {
+  if (animation_host_->mutator_host_client()) {
     animation_host_->mutator_host_client()->ElementIsAnimatingChanged(
         element_id_map, ElementListType::ACTIVE, disabled_state_mask,
         disabled_state);
-  }
-  set_has_element_in_active_list(false);
-
-  if (has_element_in_pending_list() && animation_host_->mutator_host_client()) {
     animation_host_->mutator_host_client()->ElementIsAnimatingChanged(
         element_id_map, ElementListType::PENDING, disabled_state_mask,
         disabled_state);
   }
-  set_has_element_in_pending_list(false);
 
   RemoveKeyframeEffectsFromTicking();
 }
 
-// TODO(crbug.com/1240712): the ReservedElementId should always be 'registered'.
-// Instead of calling this from AnimationHost::UpdateRegisteredElementIds, we
-// can ensure that the |has_element_in_active_list_| and the
-// |has_element_in_pending_list_| are true for ReservedElementId, and this
-// should result in animations ticking right away. With that, we do not need to
-// add anything to the |keyframe_effects_list_| for ReservedElementId.
-void ElementAnimations::ElementIdRegistered(ElementId element_id,
-                                            ElementListType list_type) {
-  DCHECK_EQ(element_id_, element_id);
-
-  bool had_element_in_any_list = has_element_in_any_list();
-
-  if (list_type == ElementListType::ACTIVE)
-    set_has_element_in_active_list(true);
-  else
-    set_has_element_in_pending_list(true);
-
-  if (!had_element_in_any_list)
-    UpdateKeyframeEffectsTickingState();
-}
-
-void ElementAnimations::ElementIdUnregistered(ElementId element_id,
-                                              ElementListType list_type) {
-  DCHECK_EQ(this->element_id(), element_id);
-  if (list_type == ElementListType::ACTIVE)
-    set_has_element_in_active_list(false);
-  else
-    set_has_element_in_pending_list(false);
+void ElementAnimations::RemoveKeyframeEffects() {
+  RemoveKeyframeEffectsFromTicking();
 }
 
 void ElementAnimations::AddKeyframeEffect(KeyframeEffect* keyframe_effect) {
@@ -197,11 +163,12 @@ bool ElementAnimations::AnimationsPreserveAxisAlignment() const {
   return true;
 }
 
-float ElementAnimations::MaximumScale(ElementListType list_type) const {
+float ElementAnimations::MaximumScale(ElementId element_id,
+                                      ElementListType list_type) const {
   float maximum_scale = kInvalidScale;
   for (auto& keyframe_effect : keyframe_effects_list_) {
-    maximum_scale =
-        std::max(maximum_scale, keyframe_effect.MaximumScale(list_type));
+    maximum_scale = std::max(
+        maximum_scale, keyframe_effect.MaximumScale(element_id, list_type));
   }
   return maximum_scale;
 }
@@ -271,9 +238,10 @@ void ElementAnimations::OnColorAnimated(const SkColor& value,
                                         gfx::KeyframeModel* keyframe_model) {
   DCHECK_EQ(keyframe_model->TargetProperty(),
             TargetProperty::CSS_CUSTOM_PROPERTY);
-  OnCustomPropertyAnimated(PaintWorkletInput::PropertyValue(value),
-                           KeyframeModel::ToCcKeyframeModel(keyframe_model),
-                           target_property_id);
+  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+  OnCustomPropertyAnimated(
+      PaintWorkletInput::PropertyValue(SkColor4f::FromColor(value)),
+      KeyframeModel::ToCcKeyframeModel(keyframe_model), target_property_id);
 }
 
 void ElementAnimations::OnTransformAnimated(
@@ -288,7 +256,7 @@ void ElementAnimations::OnTransformAnimated(
 }
 
 void ElementAnimations::OnScrollOffsetAnimated(
-    const gfx::Vector2dF& scroll_offset,
+    const gfx::PointF& scroll_offset,
     int target_property_id,
     gfx::KeyframeModel* keyframe_model) {
   if (KeyframeModelAffectsActiveElements(keyframe_model))
@@ -304,10 +272,33 @@ void ElementAnimations::InitClientAnimationState() {
   // (instead of only changed) recalculated current states to the client.
   pending_state_.Clear();
   active_state_.Clear();
-  active_maximum_scale_ = kInvalidScale;
-  pending_maximum_scale_ = kInvalidScale;
+  transform_property_active_maximum_scale_ = kInvalidScale;
+  transform_property_pending_maximum_scale_ = kInvalidScale;
+  scale_property_active_maximum_scale_ = kInvalidScale;
+  scale_property_pending_maximum_scale_ = kInvalidScale;
   UpdateClientAnimationState();
 }
+
+void ElementAnimations::UpdateMaximumScale(ElementId element_id,
+                                           ElementListType list_type,
+                                           float* cached_scale) {
+  if (element_id) {
+    float maximum_scale = MaximumScale(element_id, list_type);
+    if (*cached_scale != maximum_scale) {
+      animation_host_->mutator_host_client()->MaximumScaleChanged(
+          element_id, list_type, maximum_scale);
+      *cached_scale = maximum_scale;
+    }
+  } else {
+    *cached_scale = kInvalidScale;
+  }
+}
+
+#if DCHECK_IS_ON()
+static inline bool IsInvalidOrOne(float scale) {
+  return scale == kInvalidScale || scale == 1.f;
+}
+#endif
 
 void ElementAnimations::UpdateClientAnimationState() {
   if (!element_id())
@@ -350,41 +341,45 @@ void ElementAnimations::UpdateClientAnimationState() {
 
   PropertyToElementIdMap element_id_map = GetPropertyToElementIdMap();
   ElementId transform_element_id = element_id_map[TargetProperty::TRANSFORM];
+  ElementId scale_element_id = element_id_map[TargetProperty::SCALE];
+#if DCHECK_IS_ON()
+  ElementId rotate_element_id = element_id_map[TargetProperty::ROTATE];
+  ElementId translate_element_id = element_id_map[TargetProperty::TRANSLATE];
+#endif
 
-  if (has_element_in_active_list()) {
-    if (prev_active != active_state_) {
-      PropertyAnimationState diff_active = prev_active ^ active_state_;
-      animation_host_->mutator_host_client()->ElementIsAnimatingChanged(
-          element_id_map, ElementListType::ACTIVE, diff_active, active_state_);
-    }
-
-    float maximum_scale = transform_element_id
-                              ? MaximumScale(ElementListType::ACTIVE)
-                              : kInvalidScale;
-    if (maximum_scale != active_maximum_scale_) {
-      animation_host_->mutator_host_client()->MaximumScaleChanged(
-          transform_element_id, ElementListType::ACTIVE, maximum_scale);
-      active_maximum_scale_ = maximum_scale;
-    }
+  if (prev_active != active_state_) {
+    PropertyAnimationState diff_active = prev_active ^ active_state_;
+    animation_host_->mutator_host_client()->ElementIsAnimatingChanged(
+        element_id_map, ElementListType::ACTIVE, diff_active, active_state_);
   }
 
-  if (has_element_in_pending_list()) {
-    if (prev_pending != pending_state_) {
-      PropertyAnimationState diff_pending = prev_pending ^ pending_state_;
-      animation_host_->mutator_host_client()->ElementIsAnimatingChanged(
-          element_id_map, ElementListType::PENDING, diff_pending,
-          pending_state_);
-    }
+  UpdateMaximumScale(transform_element_id, ElementListType::ACTIVE,
+                     &transform_property_active_maximum_scale_);
+  UpdateMaximumScale(scale_element_id, ElementListType::ACTIVE,
+                     &scale_property_active_maximum_scale_);
+#if DCHECK_IS_ON()
+  DCHECK(
+      IsInvalidOrOne(MaximumScale(rotate_element_id, ElementListType::ACTIVE)));
+  DCHECK(IsInvalidOrOne(
+      MaximumScale(translate_element_id, ElementListType::ACTIVE)));
+#endif
 
-    float maximum_scale = transform_element_id
-                              ? MaximumScale(ElementListType::PENDING)
-                              : kInvalidScale;
-    if (maximum_scale != pending_maximum_scale_) {
-      animation_host_->mutator_host_client()->MaximumScaleChanged(
-          transform_element_id, ElementListType::PENDING, maximum_scale);
-      pending_maximum_scale_ = maximum_scale;
-    }
+  if (prev_pending != pending_state_) {
+    PropertyAnimationState diff_pending = prev_pending ^ pending_state_;
+    animation_host_->mutator_host_client()->ElementIsAnimatingChanged(
+        element_id_map, ElementListType::PENDING, diff_pending, pending_state_);
   }
+
+  UpdateMaximumScale(transform_element_id, ElementListType::PENDING,
+                     &transform_property_pending_maximum_scale_);
+  UpdateMaximumScale(scale_element_id, ElementListType::PENDING,
+                     &scale_property_pending_maximum_scale_);
+#if DCHECK_IS_ON()
+  DCHECK(IsInvalidOrOne(
+      MaximumScale(rotate_element_id, ElementListType::PENDING)));
+  DCHECK(IsInvalidOrOne(
+      MaximumScale(translate_element_id, ElementListType::PENDING)));
+#endif
 }
 
 void ElementAnimations::AttachToCurve(gfx::AnimationCurve* c) {
@@ -431,10 +426,12 @@ bool ElementAnimations::HasAnyKeyframeModel() const {
 }
 
 bool ElementAnimations::HasAnyAnimationTargetingProperty(
-    TargetProperty::Type property) const {
+    TargetProperty::Type property,
+    ElementId element_id) const {
   for (auto& keyframe_effect : keyframe_effects_list_) {
-    if (keyframe_effect.GetKeyframeModel(property))
-      return true;
+    if (gfx::KeyframeModel* model = keyframe_effect.GetKeyframeModel(property))
+      if (CalculateTargetElementId(this, model) == element_id)
+        return true;
   }
   return false;
 }
@@ -533,7 +530,7 @@ void ElementAnimations::OnTransformAnimated(
 
 void ElementAnimations::OnScrollOffsetAnimated(
     ElementListType list_type,
-    const gfx::Vector2dF& scroll_offset,
+    const gfx::PointF& scroll_offset,
     gfx::KeyframeModel* keyframe_model) {
   ElementId target_element_id = CalculateTargetElementId(this, keyframe_model);
   DCHECK(target_element_id);
@@ -543,14 +540,11 @@ void ElementAnimations::OnScrollOffsetAnimated(
       target_element_id, list_type, scroll_offset);
 }
 
-gfx::Vector2dF ElementAnimations::ScrollOffsetForAnimation() const {
-  if (animation_host_) {
-    DCHECK(animation_host_->mutator_host_client());
-    return animation_host_->mutator_host_client()->GetScrollOffsetForAnimation(
-        element_id());
-  }
-
-  return gfx::Vector2dF();
+absl::optional<gfx::PointF> ElementAnimations::ScrollOffsetForAnimation()
+    const {
+  if (animation_host_)
+    return animation_host_->GetScrollOffsetForAnimation(element_id());
+  return absl::nullopt;
 }
 
 PropertyToElementIdMap ElementAnimations::GetPropertyToElementIdMap() const {
@@ -646,8 +640,7 @@ bool ElementAnimations::KeyframeModelAffectsActiveElements(
   if (!keyframe_model)
     return true;
   return KeyframeModel::ToCcKeyframeModel(keyframe_model)
-             ->affects_active_elements() &&
-         has_element_in_active_list();
+      ->affects_active_elements();
 }
 
 bool ElementAnimations::KeyframeModelAffectsPendingElements(
@@ -658,8 +651,7 @@ bool ElementAnimations::KeyframeModelAffectsPendingElements(
   if (!keyframe_model)
     return true;
   return KeyframeModel::ToCcKeyframeModel(keyframe_model)
-             ->affects_pending_elements() &&
-         has_element_in_pending_list();
+      ->affects_pending_elements();
 }
 
 }  // namespace cc

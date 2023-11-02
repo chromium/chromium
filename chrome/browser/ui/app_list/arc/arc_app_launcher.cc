@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,14 +11,16 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "ui/events/event_constants.h"
 
 ArcAppLauncher::ArcAppLauncher(content::BrowserContext* context,
                                const std::string& app_id,
-                               apps::mojom::IntentPtr launch_intent,
+                               apps::IntentPtr launch_intent,
                                bool deferred_launch_allowed,
                                int64_t display_id,
-                               apps::mojom::LaunchSource launch_source)
+                               apps::LaunchSource launch_source)
     : context_(context),
       app_id_(app_id),
       launch_intent_(std::move(launch_intent)),
@@ -30,7 +32,7 @@ ArcAppLauncher::ArcAppLauncher(content::BrowserContext* context,
 
   std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id_);
   if (!app_info ||
-      !MaybeLaunchApp(app_id, *app_info, apps::mojom::Readiness::kUnknown))
+      !MaybeLaunchApp(app_id, *app_info, apps::Readiness::kUnknown))
     prefs->AddObserver(this);
 
   auto* profile = Profile::FromBrowserContext(context_);
@@ -52,18 +54,18 @@ ArcAppLauncher::~ArcAppLauncher() {
 void ArcAppLauncher::OnAppRegistered(
     const std::string& app_id,
     const ArcAppListPrefs::AppInfo& app_info) {
-  MaybeLaunchApp(app_id, app_info, apps::mojom::Readiness::kUnknown);
+  MaybeLaunchApp(app_id, app_info, apps::Readiness::kUnknown);
 }
 
 void ArcAppLauncher::OnAppStatesChanged(
     const std::string& app_id,
     const ArcAppListPrefs::AppInfo& app_info) {
-  MaybeLaunchApp(app_id, app_info, apps::mojom::Readiness::kUnknown);
+  MaybeLaunchApp(app_id, app_info, apps::Readiness::kUnknown);
 }
 
 void ArcAppLauncher::OnAppUpdate(const apps::AppUpdate& update) {
   if (update.AppId() != app_id_ ||
-      update.Readiness() != apps::mojom::Readiness::kReady) {
+      update.Readiness() != apps::Readiness::kReady) {
     return;
   }
 
@@ -75,7 +77,7 @@ void ArcAppLauncher::OnAppUpdate(const apps::AppUpdate& update) {
   if (!app_info)
     return;
 
-  MaybeLaunchApp(app_id_, *app_info, apps::mojom::Readiness::kReady);
+  MaybeLaunchApp(app_id_, *app_info, apps::Readiness::kReady);
 }
 
 void ArcAppLauncher::OnAppRegistryCacheWillBeDestroyed(
@@ -85,7 +87,7 @@ void ArcAppLauncher::OnAppRegistryCacheWillBeDestroyed(
 
 bool ArcAppLauncher::MaybeLaunchApp(const std::string& app_id,
                                     const ArcAppListPrefs::AppInfo& app_info,
-                                    apps::mojom::Readiness readiness) {
+                                    apps::Readiness readiness) {
   if (app_launched_)
     return true;
 
@@ -98,21 +100,18 @@ bool ArcAppLauncher::MaybeLaunchApp(const std::string& app_id,
   DCHECK(
       apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile));
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
-  if (readiness == apps::mojom::Readiness::kUnknown) {
+  if (readiness == apps::Readiness::kUnknown) {
     if (proxy->AppRegistryCache().GetAppType(app_id) ==
-        apps::mojom::AppType::kUnknown) {
+        apps::AppType::kUnknown) {
       return false;
     }
 
-    apps::mojom::Readiness readiness = apps::mojom::Readiness::kUnknown;
     proxy->AppRegistryCache().ForOneApp(
         app_id, [&readiness](const apps::AppUpdate& update) {
           readiness = update.Readiness();
         });
-
-    if (readiness != apps::mojom::Readiness::kReady)
-      return false;
-  } else if (readiness != apps::mojom::Readiness::kReady) {
+  }
+  if (readiness != apps::Readiness::kReady) {
     return false;
   }
 
@@ -122,12 +121,27 @@ bool ArcAppLauncher::MaybeLaunchApp(const std::string& app_id,
   Observe(nullptr);
 
   if (launch_intent_) {
-    proxy->LaunchAppWithIntent(app_id_, ui::EF_NONE, std::move(launch_intent_),
-                               launch_source_,
-                               apps::MakeWindowInfo(display_id_));
+    if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
+      proxy->LaunchAppWithIntent(
+          app_id_, ui::EF_NONE, std::move(launch_intent_), launch_source_,
+          std::make_unique<apps::WindowInfo>(display_id_), base::DoNothing());
+    } else {
+      proxy->LaunchAppWithIntent(
+          app_id_, ui::EF_NONE,
+          apps::ConvertIntentToMojomIntent(launch_intent_),
+          apps::ConvertLaunchSourceToMojomLaunchSource(launch_source_),
+          apps::MakeWindowInfo(display_id_), {});
+    }
   } else {
-    proxy->Launch(app_id_, ui::EF_NONE, launch_source_,
-                  apps::MakeWindowInfo(display_id_));
+    if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
+      proxy->Launch(app_id_, ui::EF_NONE, launch_source_,
+                    std::make_unique<apps::WindowInfo>(display_id_));
+    } else {
+      proxy->Launch(
+          app_id_, ui::EF_NONE,
+          apps::ConvertLaunchSourceToMojomLaunchSource(launch_source_),
+          apps::MakeWindowInfo(display_id_));
+    }
   }
 
   app_launched_ = true;

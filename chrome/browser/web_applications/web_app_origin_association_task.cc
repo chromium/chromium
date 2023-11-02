@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ constexpr size_t kMaxPathLength = 2000;
 // count towards kMaxPathsSize.
 std::vector<std::string> GetValidPaths(std::vector<std::string> paths) {
   base::flat_set<std::string> result;
-  for (const std::string& path : paths) {
+  for (std::string& path : paths) {
     if (result.size() == kMaxPathsSize)
       break;
 
@@ -93,7 +93,7 @@ void WebAppOriginAssociationManager::Task::OnAssociationFileFetched(
   }
 
   owner_.GetParser()->ParseWebAppOriginAssociation(
-      std::move(*file_content),
+      *file_content,
       base::BindOnce(&WebAppOriginAssociationManager::Task::OnAssociationParsed,
                      weak_ptr_factory_.GetWeakPtr()));
 }

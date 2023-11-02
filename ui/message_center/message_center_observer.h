@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,6 +52,9 @@ class MESSAGE_CENTER_EXPORT MessageCenterObserver
   virtual void OnNotificationDisplayed(
       const std::string& notification_id,
       const DisplaySource source) {}
+
+  // Called when the message view associated with `notification_id` is hovered.
+  virtual void OnMessageViewHovered(const std::string& notification_id) {}
 
   // Called when the notification center is shown or hidden.
   virtual void OnCenterVisibilityChanged(Visibility visibility) {}

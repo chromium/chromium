@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,11 @@
 
 #include <utility>
 
+#include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_launcher.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
-#include "components/arc/metrics/arc_metrics_constants.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -37,7 +37,7 @@ void ArcPlaystoreShortcutShelfItemController::ItemSelected(
         std::make_unique<ArcAppLauncher>(
             ChromeShelfController::instance()->profile(), arc::kPlayStoreAppId,
             nullptr /* launch_intent */, true /* deferred_launch_allowed */,
-            display_id, apps::mojom::LaunchSource::kFromShelf);
+            display_id, apps::LaunchSource::kFromShelf);
     // ArcAppLauncher may launch Play Store in case it exists already. In this
     // case this instance of ArcPlaystoreShortcutShelfItemController may be
     // deleted. If Play Store does not exist at this moment, then let

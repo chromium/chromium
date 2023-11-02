@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,16 +6,15 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/files/file_util.h"
-#include "base/path_service.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/task/thread_pool/thread_pool_instance.h"
+#import "base/files/file_util.h"
+#import "base/path_service.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/task/thread_pool/thread_pool_instance.h"
 #import "base/test/ios/wait_util.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/web/tab_id_tab_helper.h"
-#include "ios/web/public/test/web_task_environment.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -38,15 +37,13 @@ class WebSessionStateCacheTest : public PlatformTest {
 
     web::WebState::CreateParams createParams(chrome_browser_state_.get());
     web_state_ = web::WebState::Create(createParams);
-    TabIdTabHelper::CreateForWebState(web_state_.get());
 
     session_cache_directory_ = chrome_browser_state_->GetStatePath().Append(
         kWebSessionCacheDirectoryName);
   }
 
   bool StorageExists() {
-    NSString* sessionID =
-        TabIdTabHelper::FromWebState(web_state_.get())->tab_id();
+    NSString* sessionID = web_state_.get()->GetStableIdentifier();
     base::FilePath filePath =
         session_cache_directory_.Append(base::SysNSStringToUTF8(sessionID));
     return base::PathExists(filePath);

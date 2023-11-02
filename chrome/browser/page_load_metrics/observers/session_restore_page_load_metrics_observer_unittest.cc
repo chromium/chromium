@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -171,7 +171,7 @@ TEST_F(SessionRestorePageLoadMetricsObserverTest, NoMetrics) {
 TEST_F(SessionRestorePageLoadMetricsObserverTest,
        FirstPaintsOutOfSessionRestore) {
   content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GetTestURL(), web_contents()->GetMainFrame());
+      GetTestURL(), web_contents()->GetPrimaryMainFrame());
   ASSERT_NO_FATAL_FAILURE(SimulateTimingUpdateForTab(web_contents()));
   ExpectFirstPaintMetricsTotalCount(0);
   auto entries =

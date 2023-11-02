@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,6 +45,31 @@ void GPUComputePassEncoder::setBindGroup(
   GetProcs().computePassEncoderSetBindGroup(GetHandle(), index,
                                             bind_group->GetHandle(),
                                             dynamic_offsets_data_length, data);
+}
+
+void GPUComputePassEncoder::endPass() {
+  device_->AddConsoleWarning(
+      "endPass() has been deprecated and will soon be "
+      "removed. Use end() instead.");
+  end();
+}
+
+void GPUComputePassEncoder::dispatch(uint32_t workgroup_count_x,
+                                     uint32_t workgroup_count_y,
+                                     uint32_t workgroup_count_z) {
+  device_->AddConsoleWarning(
+      "dispatch() has been deprecated and will soon be "
+      "removed. Use dispatchWorkgroups() instead.");
+  dispatchWorkgroups(workgroup_count_x, workgroup_count_y, workgroup_count_z);
+}
+
+void GPUComputePassEncoder::dispatchIndirect(
+    const DawnObject<WGPUBuffer>* indirectBuffer,
+    uint64_t indirectOffset) {
+  device_->AddConsoleWarning(
+      "dispatchIndirect() has been deprecated and will soon be "
+      "removed. Use dispatchWorkgroupsIndirect() instead.");
+  dispatchWorkgroupsIndirect(indirectBuffer, indirectOffset);
 }
 
 }  // namespace blink

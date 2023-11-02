@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,19 +24,17 @@ DiskCacheDirPolicyHandler::~DiskCacheDirPolicyHandler() {}
 
 void DiskCacheDirPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                     PrefValueMap* prefs) {
-  const base::Value* value = policies.GetValue(policy_name());
+  const base::Value* value =
+      policies.GetValue(policy_name(), base::Value::Type::STRING);
   if (!value)
     return;
 
-  const std::string* string_value = value->GetIfString();
-  if (!string_value)
-    return;
-
   base::FilePath::StringType expanded_value =
-#if defined(OS_WIN)
-      policy::path_parser::ExpandPathVariables(base::UTF8ToWide(*string_value));
+#if BUILDFLAG(IS_WIN)
+      policy::path_parser::ExpandPathVariables(
+          base::UTF8ToWide(value->GetString()));
 #else
-      policy::path_parser::ExpandPathVariables(*string_value);
+      policy::path_parser::ExpandPathVariables(value->GetString());
 #endif
   base::FilePath expanded_path(expanded_value);
   prefs->SetValue(prefs::kDiskCacheDir,

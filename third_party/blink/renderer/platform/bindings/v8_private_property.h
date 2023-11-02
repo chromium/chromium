@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_PRIVATE_PROPERTY_H_
 
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/renderer/platform/bindings/scoped_persistent.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding_macros.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -55,7 +56,7 @@ class PLATFORM_EXPORT V8PrivateProperty {
     }
 
     // Returns the value of the private property if set, or undefined.
-    WARN_UNUSED_RESULT v8::MaybeLocal<v8::Value> GetOrUndefined(
+    [[nodiscard]] v8::MaybeLocal<v8::Value> GetOrUndefined(
         v8::Local<v8::Object> object) const {
       return object->GetPrivate(GetContext(), private_symbol_);
     }
@@ -94,7 +95,6 @@ class PLATFORM_EXPORT V8PrivateProperty {
    public:
     SymbolKey() = default;
 
-   private:
     SymbolKey(const SymbolKey&) = delete;
     SymbolKey& operator=(const SymbolKey&) = delete;
   };

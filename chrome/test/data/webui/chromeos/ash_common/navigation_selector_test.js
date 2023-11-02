@@ -1,11 +1,12 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import {NavigationSelectorElement, SelectorItem} from 'chrome://resources/ash/common/navigation_selector.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {waitAfterNextRender} from '../../test_util.js';
+import {isVisible} from '../../test_util.js';
 
 export function navigationSelectorTestSuite() {
   /** @type {?NavigationSelectorElement} */
@@ -30,7 +31,7 @@ export function navigationSelectorTestSuite() {
    * @return {!SelectorItem}
    */
   function createSelectorItem(name, pageIs, icon) {
-    let item = /** @type{SelectorItem} */ (
+    const item = /** @type{SelectorItem} */ (
         {'name': name, 'pageIs': pageIs, 'icon': icon});
     return item;
   }
@@ -50,5 +51,33 @@ export function navigationSelectorTestSuite() {
     assertEquals(2, navigationElements.length);
     assertEquals('test1', navigationElements[0].textContent.trim());
     assertEquals('test2', navigationElements[1].textContent.trim());
+  });
+
+  test('navigationSelectorIconVisible', async () => {
+    const item1 = createSelectorItem('test1', 'test-page1', 'search');
+
+    navigationElement.selectorItems = [item1];
+    await waitAfterNextRender(navigationElement);
+
+    const selectorElement =
+        navigationElement.shadowRoot.querySelector('.navigation-item');
+    assertTrue(!!selectorElement);
+
+    const iconElement = selectorElement.querySelector('iron-icon');
+    assertTrue(isVisible(iconElement));
+  });
+
+  test('navigationSelectorIconHidden', async () => {
+    const item1 = createSelectorItem('test1', 'test-page1', '');
+
+    navigationElement.selectorItems = [item1];
+    await waitAfterNextRender(navigationElement);
+
+    const selectorElement =
+        navigationElement.shadowRoot.querySelector('.navigation-item');
+    assertTrue(!!selectorElement);
+
+    const iconElement = selectorElement.querySelector('iron-icon');
+    assertFalse(isVisible(iconElement));
   });
 }

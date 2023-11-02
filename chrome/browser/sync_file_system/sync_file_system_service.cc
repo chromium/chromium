@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,9 @@
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/apps/platform_apps/api/sync_file_system/extension_sync_event_observer.h"
@@ -122,8 +124,8 @@ void DidGetFileSyncStatusForDump(
     file->SetString("status", SyncFileStatusToString(sync_file_status));
 
   // Once all results have been received, run the callback to signal end.
-  DCHECK_LE(*num_results, files->GetList().size());
-  if (++*num_results < files->GetList().size())
+  DCHECK_LE(*num_results, files->GetListDeprecated().size());
+  if (++*num_results < files->GetListDeprecated().size())
     return;
 
   // `callback` is a DumpFilesCallback, which should only be called
@@ -251,7 +253,7 @@ class RemoteSyncRunner : public SyncProcessRunner,
     std::move(callback).Run(status);
   }
 
-  RemoteFileSyncService* remote_service_;
+  raw_ptr<RemoteFileSyncService> remote_service_;
   RemoteServiceState last_state_;
   base::WeakPtrFactory<RemoteSyncRunner> factory_{this};
 };
@@ -309,12 +311,12 @@ void SyncFileSystemService::GetExtensionStatusMap(
                      AsWeakPtr(), std::move(callback)));
 }
 
-void SyncFileSystemService::DumpFiles(const GURL& origin,
-                                      DumpFilesCallback callback) {
+void SyncFileSystemService::DumpFiles(
+    content::StoragePartition* storage_partition,
+    const GURL& origin,
+    DumpFilesCallback callback) {
   DCHECK(!origin.is_empty());
 
-  content::StoragePartition* storage_partition =
-      profile_->GetStoragePartitionForUrl(origin);
   storage::FileSystemContext* file_system_context =
       storage_partition->GetFileSystemContext();
   local_service_->MaybeInitializeFileSystemContext(
@@ -556,8 +558,8 @@ void SyncFileSystemService::DidDumpFiles(
     const GURL& origin,
     DumpFilesCallback callback,
     std::unique_ptr<base::ListValue> dump_files) {
-  if (!dump_files || !dump_files->GetList().size() || !local_service_ ||
-      !remote_service_) {
+  if (!dump_files || !dump_files->GetListDeprecated().size() ||
+      !local_service_ || !remote_service_) {
     std::move(callback).Run(base::ListValue());
     return;
   }
@@ -574,7 +576,7 @@ void SyncFileSystemService::DidDumpFiles(
       base::OwnedRef(std::move(callback)));
 
   // After all metadata loaded, sync status can be added to each entry.
-  for (base::Value& file : files->GetList()) {
+  for (base::Value& file : files->GetListDeprecated()) {
     const std::string* path_string =
       file.is_dict() ? file.FindStringKey("path") : nullptr;
     if (!path_string) {
@@ -685,7 +687,7 @@ void SyncFileSystemService::OnExtensionUninstalled(
   // the uninstall will not be sync'ed and the user might be using the
   // same app key in other installs, so avoid purging the remote folder.
   if (extensions::Manifest::IsUnpackedLocation(extension->location()) &&
-      extension->manifest()->HasKey(extensions::manifest_keys::kKey)) {
+      extension->manifest()->FindKey(extensions::manifest_keys::kKey)) {
     flag = RemoteFileSyncService::UNINSTALL_AND_KEEP_REMOTE;
   }
 

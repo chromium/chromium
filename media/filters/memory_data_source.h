@@ -1,13 +1,16 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MEDIA_FILTERS_MEMORY_DATA_SOURCE_H_
 #define MEDIA_FILTERS_MEMORY_DATA_SOURCE_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
-#include "base/compiler_specific.h"
+#include <atomic>
+#include <string>
+
 #include "media/base/data_source.h"
 
 namespace media {
@@ -35,7 +38,7 @@ class MEDIA_EXPORT MemoryDataSource final : public DataSource {
             DataSource::ReadCB read_cb) final;
   void Stop() final;
   void Abort() final;
-  bool GetSize(int64_t* size_out) final WARN_UNUSED_RESULT;
+  [[nodiscard]] bool GetSize(int64_t* size_out) final;
   bool IsStreaming() final;
   void SetBitrate(int bitrate) final;
 

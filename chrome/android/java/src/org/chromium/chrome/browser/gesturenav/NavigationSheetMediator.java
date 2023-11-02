@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -88,14 +88,14 @@ class NavigationSheetMediator {
         mClickListener = listener;
         mProfile = profile;
         mFaviconHelper = new FaviconHelper();
-        mIconGenerator = FaviconUtils.createCircularIconGenerator(context.getResources());
+        mIconGenerator = FaviconUtils.createCircularIconGenerator(context);
         mFaviconSize = context.getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
         mHistoryIcon = TintedDrawable.constructTintedDrawable(
-                context, R.drawable.ic_history_googblue_24dp, R.color.default_icon_color);
+                context, R.drawable.ic_history_googblue_24dp, R.color.default_icon_color_tint_list);
         mDefaultIcon = TintedDrawable.constructTintedDrawable(
-                context, R.drawable.ic_chrome, R.color.default_icon_color);
+                context, R.drawable.ic_chrome, R.color.default_icon_color_tint_list);
         mIncognitoIcon = TintedDrawable.constructTintedDrawable(
-                context, R.drawable.incognito_small, R.color.default_icon_color);
+                context, R.drawable.incognito_small, R.color.default_icon_color_tint_list);
         mNewTabText = context.getResources().getString(R.string.menu_new_tab);
         mNewIncognitoTabText = context.getResources().getString(R.string.menu_new_incognito_tab);
     }

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/strings/string_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
@@ -178,6 +179,26 @@ TEST(TimingAllowOriginParserTest, WildcardWithInvalidOrigins) {
 
   EXPECT_EQ(mojom::TimingAllowOrigin::Tag::kAll,
             ParseTimingAllowOrigin("_,*")->which());
+}
+
+static bool TAOCheck(const std::string& tao, const std::string& url) {
+  return TimingAllowOriginCheck(ParseTimingAllowOrigin(tao),
+                                url::Origin::Create(GURL(url)));
+}
+
+TEST(TimingAllowOriginParserTest, TAOCheck) {
+  EXPECT_TRUE(TAOCheck("http://example1.com", "http://example1.com"));
+  EXPECT_TRUE(
+      TAOCheck("http://example1.com,example2.com", "http://example1.com"));
+  EXPECT_TRUE(TAOCheck("http://example1.com,  http://example2.com",
+                       "http://example2.com"));
+  EXPECT_TRUE(TAOCheck("http://example1.com,  http://example2.com",
+                       "http://example1.com"));
+  EXPECT_TRUE(TAOCheck("*", "https://example1.com"));
+  EXPECT_FALSE(TAOCheck("example1.com,  example2.com", "example1.com"));
+  EXPECT_FALSE(TAOCheck(std::string(), "http://example1.com"));
+  EXPECT_FALSE(TAOCheck(std::string("2342invalid-"), "http://example1.com"));
+  EXPECT_FALSE(TAOCheck(std::string("example2.com"), "http://example1.com"));
 }
 
 }  // namespace network

@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -24,6 +24,7 @@ class _ColorFormatter(logging.Formatter):
   # pylint: disable=no-member
   color_map = {
     logging.DEBUG: (FORE.CYAN),
+    logging.INFO: (),  # Use default style.
     logging.WARNING: (FORE.YELLOW),
     logging.ERROR: (FORE.RED),
     logging.CRITICAL: (BACK.RED),
@@ -31,7 +32,7 @@ class _ColorFormatter(logging.Formatter):
 
   def __init__(self, wrapped_formatter=None):
     """Wraps a |logging.Formatter| and adds color."""
-    super(_ColorFormatter, self).__init__()
+    super().__init__()
     self._wrapped_formatter = wrapped_formatter or logging.Formatter()
 
   #override
@@ -63,20 +64,23 @@ class ColorStreamHandler(logging.StreamHandler):
 
   """
   def __init__(self, force_color=False):
-    super(ColorStreamHandler, self).__init__()
+    super().__init__()
     self.force_color = force_color
     self.setFormatter(logging.Formatter())
 
   @property
   def is_tty(self):
-    isatty = getattr(self.stream, 'isatty', None)
-    return isatty and isatty()
+    try:
+      isatty = getattr(self.stream, 'isatty')
+    except AttributeError:
+      return False
+    return isatty()
 
   #override
-  def setFormatter(self, formatter):
+  def setFormatter(self, fmt):
     if self.force_color or self.is_tty:
-      formatter = _ColorFormatter(formatter)
-    super(ColorStreamHandler, self).setFormatter(formatter)
+      fmt = _ColorFormatter(fmt)
+    super().setFormatter(fmt)
 
   @staticmethod
   def MakeDefault(force_color=False):

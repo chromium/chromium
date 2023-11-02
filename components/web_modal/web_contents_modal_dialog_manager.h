@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/web_modal/single_web_contents_dialog_manager.h"
 #include "components/web_modal/web_modal_export.h"
@@ -66,7 +67,7 @@ class WEB_MODAL_EXPORT WebContentsModalDialogManager
     }
 
    private:
-    WebContentsModalDialogManager* manager_;
+    raw_ptr<WebContentsModalDialogManager> manager_;
   };
 
   // Closes all WebContentsModalDialogs.
@@ -99,7 +100,7 @@ class WEB_MODAL_EXPORT WebContentsModalDialogManager
   void WebContentsDestroyed() override;
 
   // Delegate for notifying our owner about stuff. Not owned by us.
-  WebContentsModalDialogManagerDelegate* delegate_;
+  raw_ptr<WebContentsModalDialogManagerDelegate> delegate_ = nullptr;
 
   // All active dialogs.
   base::circular_deque<DialogState> child_dialogs_;
@@ -108,7 +109,7 @@ class WEB_MODAL_EXPORT WebContentsModalDialogManager
   bool web_contents_is_hidden_;
 
   // True while closing the dialogs on WebContents close.
-  bool closing_all_dialogs_;
+  bool closing_all_dialogs_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

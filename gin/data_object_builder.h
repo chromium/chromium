@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "gin/converter.h"
 #include "gin/gin_export.h"
@@ -41,6 +42,8 @@ class GIN_EXPORT DataObjectBuilder {
   DataObjectBuilder(const DataObjectBuilder&) = delete;
   DataObjectBuilder& operator=(const DataObjectBuilder&) = delete;
 
+  ~DataObjectBuilder();
+
   template <typename T>
   DataObjectBuilder& Set(base::StringPiece key, T&& value) {
     DCHECK(!object_.IsEmpty());
@@ -68,7 +71,7 @@ class GIN_EXPORT DataObjectBuilder {
   }
 
  private:
-  v8::Isolate* isolate_;
+  raw_ptr<v8::Isolate> isolate_;
   v8::Local<v8::Context> context_;
   v8::Local<v8::Object> object_;
 };

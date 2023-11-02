@@ -1,9 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/unified/feature_pods_container_view.h"
 
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/pagination/pagination_controller.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/system/tray/tray_constants.h"
@@ -12,8 +13,10 @@
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/scoped_refptr.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_observer.h"
 
 namespace ash {
@@ -33,7 +36,7 @@ class FeaturePodsContainerViewTest : public NoSessionAshTestBase,
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
-    model_ = std::make_unique<UnifiedSystemTrayModel>(nullptr);
+    model_ = base::MakeRefCounted<UnifiedSystemTrayModel>(nullptr);
     controller_ = std::make_unique<UnifiedSystemTrayController>(model_.get());
     container_ = std::make_unique<FeaturePodsContainerView>(
         controller_.get(), true /* initially_expanded */);
@@ -50,9 +53,11 @@ class FeaturePodsContainerViewTest : public NoSessionAshTestBase,
 
   // FeaturePodControllerBase:
   FeaturePodButton* CreateButton() override { return nullptr; }
+
   void OnIconPressed() override {}
-  SystemTrayItemUmaType GetUmaType() const override {
-    return SystemTrayItemUmaType::UMA_TEST;
+
+  QsFeatureCatalogName GetCatalogName() override {
+    return QsFeatureCatalogName::kUnknown;
   }
 
   // views::ViewObserver:
@@ -70,7 +75,7 @@ class FeaturePodsContainerViewTest : public NoSessionAshTestBase,
     for (int i = 0; i < count; ++i)
       AddButton(new FeaturePodButton(this));
     container()->SetBoundsRect(gfx::Rect(container_->GetPreferredSize()));
-    container()->Layout();
+    views::test::RunScheduledLayout(container());
   }
 
   FeaturePodsContainerView* container() { return container_.get(); }
@@ -87,7 +92,7 @@ class FeaturePodsContainerViewTest : public NoSessionAshTestBase,
 
  private:
   std::unique_ptr<FeaturePodsContainerView> container_;
-  std::unique_ptr<UnifiedSystemTrayModel> model_;
+  scoped_refptr<UnifiedSystemTrayModel> model_;
   std::unique_ptr<UnifiedSystemTrayController> controller_;
   int preferred_size_changed_count_ = 0;
 };
@@ -240,7 +245,7 @@ TEST_F(FeaturePodsContainerViewTest, PaginationTransition) {
       gfx::Rect(initial_bounds.x() - page_offset, initial_bounds.y(),
                 initial_bounds.width(), initial_bounds.height());
   pagination_model()->SelectPage(1, false);
-  container()->Layout();
+  views::test::RunScheduledLayout(container());
   EXPECT_EQ(final_bounds, buttons_[0]->bounds());
 }
 

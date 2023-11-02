@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Test the frames are correctly built based on trace events\n`);
-  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
   var sessionId = '4.20';
@@ -1892,8 +1892,9 @@
 
   for (var testName in testData) {
     var data = testData[testName];
-    var performanceModel = PerformanceTestRunner.createPerformanceModelWithEvents(commonMetadata.concat(data));
+    var performanceModel = await PerformanceTestRunner.createPerformanceModelWithEvents(commonMetadata.concat(data));
     TestRunner.addResult('Test: ' + testName);
+
     for (var frame of performanceModel.frameModel().getFrames()) {
       TestRunner.addResult(Timeline.TimelineUIUtils.frameDuration(frame).textContent);
       PerformanceTestRunner.dumpFrame(frame);

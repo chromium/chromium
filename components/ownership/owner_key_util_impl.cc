@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,14 +16,14 @@
 
 namespace ownership {
 
+static const uint16_t kKeySizeInBits = 2048;
+
 OwnerKeyUtilImpl::OwnerKeyUtilImpl(const base::FilePath& public_key_file)
-    : public_key_file_(public_key_file) {
-}
+    : public_key_file_(public_key_file) {}
 
-OwnerKeyUtilImpl::~OwnerKeyUtilImpl() {
-}
+OwnerKeyUtilImpl::~OwnerKeyUtilImpl() = default;
 
-bool OwnerKeyUtilImpl::ImportPublicKey(std::vector<uint8_t>* output) {
+scoped_refptr<PublicKey> OwnerKeyUtilImpl::ImportPublicKey() {
   // Get the file size (must fit in a 32 bit int for NSS).
   int64_t file_size;
   if (!base::GetFileSize(public_key_file_, &file_size)) {
@@ -31,27 +31,49 @@ bool OwnerKeyUtilImpl::ImportPublicKey(std::vector<uint8_t>* output) {
     LOG_IF(ERROR, base::SysInfo::IsRunningOnChromeOS())
         << "Could not get size of " << public_key_file_.value();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-    return false;
+    return nullptr;
   }
   if (file_size > static_cast<int64_t>(std::numeric_limits<int>::max())) {
     LOG(ERROR) << public_key_file_.value() << "is " << file_size
                << "bytes!!!  Too big!";
-    return false;
+    return nullptr;
   }
   int32_t safe_file_size = static_cast<int32_t>(file_size);
 
-  output->resize(safe_file_size);
+  std::vector<uint8_t> key_data;
+  key_data.resize(safe_file_size);
 
   if (safe_file_size == 0) {
     LOG(WARNING) << "Public key file is empty. This seems wrong.";
-    return false;
+    return nullptr;
   }
 
   // Get the key data off of disk
   int data_read =
-      base::ReadFile(public_key_file_, reinterpret_cast<char*>(output->data()),
+      base::ReadFile(public_key_file_, reinterpret_cast<char*>(key_data.data()),
                      safe_file_size);
-  return data_read == safe_file_size;
+  if (data_read != safe_file_size) {
+    return nullptr;
+  }
+
+  return base::MakeRefCounted<ownership::PublicKey>(
+      /*is_persisted=*/true, std::move(key_data));
+}
+
+crypto::ScopedSECKEYPrivateKey OwnerKeyUtilImpl::GenerateKeyPair(
+    PK11SlotInfo* slot) {
+  DCHECK(slot);
+
+  PK11RSAGenParams param;
+  param.keySizeInBits = kKeySizeInBits;
+  param.pe = 65537L;
+  SECKEYPublicKey* public_key_ptr = nullptr;
+
+  crypto::ScopedSECKEYPrivateKey key(PK11_GenerateKeyPair(
+      slot, CKM_RSA_PKCS_KEY_PAIR_GEN, &param, &public_key_ptr,
+      PR_TRUE /* permanent */, PR_TRUE /* sensitive */, nullptr));
+  crypto::ScopedSECKEYPublicKey public_key(public_key_ptr);
+  return key;
 }
 
 crypto::ScopedSECKEYPrivateKey OwnerKeyUtilImpl::FindPrivateKeyInSlot(

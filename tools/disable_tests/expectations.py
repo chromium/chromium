@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Code specific to disabling tests using test expectations files"""
@@ -21,6 +21,14 @@ sys.path.pop()
 
 
 def search_for_expectations(filename: str, test_name: str) -> str:
+  # Web test have "virtual test suites", where the same set of tests is run with
+  # different parameters. These are specified by "VirtualTestSuites" files, but
+  # generally the way it works is that a test a/b/c.html will have a virtual
+  # test in virtual/foo/a/b/c.html. So we handle this by stripping parts of the
+  # path off until the filename and test name match.
+  while not filename.endswith(test_name) and '/' in test_name:
+    test_name = test_name[test_name.index('/') + 1:]
+
   # TODO: Is this ever not the case? If so we might need to just keep searching
   # upwards, directory by directory until we find a test expectations file
   # referencing this test.
@@ -38,7 +46,12 @@ def search_for_expectations(filename: str, test_name: str) -> str:
                              f"(expected to find it at {expectations_path})")
 
 
-def disabler(full_test_name: str, source_file: str, new_cond: Condition) -> str:
+def disabler(full_test_name: str, source_file: str, new_cond: Condition,
+             message: Optional[str]) -> str:
+  comment = None
+  if message:
+    comment = f"# {message}"
+
   existing_expectation: Optional[Expectation] = None
   condition = conditions.NEVER
   for expectation in TaggedTestListParser(source_file).expectations:
@@ -60,6 +73,10 @@ def disabler(full_test_name: str, source_file: str, new_cond: Condition) -> str:
 
     while not source_file.endswith('\n\n'):
       source_file += '\n'
+
+    if comment:
+      source_file += f"{comment}\n"
+
     source_file += ex.to_string()
     return source_file
 
@@ -74,6 +91,10 @@ def disabler(full_test_name: str, source_file: str, new_cond: Condition) -> str:
   lines = source_file.split('\n')
   # Minus 1 as 'lineno' is 1-based.
   lines[existing_expectation.lineno - 1] = new_expectation.to_string()
+
+  if comment:
+    lines.insert(existing_expectation.lineno - 1, comment)
+
   return '\n'.join(lines)
 
 

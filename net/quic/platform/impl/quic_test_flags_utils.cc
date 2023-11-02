@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,33 +8,34 @@
 #include "net/quic/platform/impl/quic_test_flags_utils.h"
 
 #include "base/check_op.h"
-#include "net/quic/platform/impl/quic_flags_impl.h"
+#include "net/third_party/quiche/src/quiche/common/platform/api/quiche_flags.h"
+#include "net/third_party/quiche/src/quiche/quic/platform/api/quic_flags.h"
 
 QuicFlagSaverImpl::QuicFlagSaverImpl() {
-#define QUIC_FLAG(flag, value) saved_##flag##_ = flag;
-#include "net/third_party/quiche/src/quic/core/quic_flags_list.h"
+#define QUIC_FLAG(flag, value) saved_##flag##_ = FLAGS_##flag;
+#include "net/third_party/quiche/src/quiche/quic/core/quic_flags_list.h"
 #undef QUIC_FLAG
 #define QUIC_PROTOCOL_FLAG(type, flag, ...) saved_##flag##_ = FLAGS_##flag;
-#include "net/third_party/quiche/src/quic/core/quic_protocol_flags_list.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_protocol_flags_list.h"
 #undef QUIC_PROTOCOL_FLAG
 }
 
 QuicFlagSaverImpl::~QuicFlagSaverImpl() {
-#define QUIC_FLAG(flag, value) flag = saved_##flag##_;
-#include "net/third_party/quiche/src/quic/core/quic_flags_list.h"
+#define QUIC_FLAG(flag, value) FLAGS_##flag = saved_##flag##_;
+#include "net/third_party/quiche/src/quiche/quic/core/quic_flags_list.h"
 #undef QUIC_FLAG
 #define QUIC_PROTOCOL_FLAG(type, flag, ...) FLAGS_##flag = saved_##flag##_;
-#include "net/third_party/quiche/src/quic/core/quic_protocol_flags_list.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_protocol_flags_list.h"
 #undef QUIC_PROTOCOL_FLAG
 }
 
 QuicFlagChecker::QuicFlagChecker() {
 #define QUIC_FLAG(flag, value)                                            \
-  CHECK_EQ(value, flag)                                                   \
+  CHECK_EQ(value, FLAGS_##flag)                                           \
       << "Flag set to an unexpected value.  A prior test is likely "      \
       << "setting a flag without using a QuicFlagSaver. Use QuicTest to " \
          "avoid this issue.";
-#include "net/third_party/quiche/src/quic/core/quic_flags_list.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_flags_list.h"
 #undef QUIC_FLAG
 
 #define QUIC_PROTOCOL_FLAG_CHECK(type, flag, value)                       \
@@ -54,7 +55,7 @@ QuicFlagChecker::QuicFlagChecker() {
               DEFINE_QUIC_PROTOCOL_FLAG_SINGLE_VALUE)
 #define QUIC_PROTOCOL_FLAG(...) \
   QUIC_PROTOCOL_FLAG_MACRO_CHOOSER(__VA_ARGS__)(__VA_ARGS__)
-#include "net/third_party/quiche/src/quic/core/quic_protocol_flags_list.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_protocol_flags_list.h"
 #undef QUIC_PROTOCOL_FLAG
 #undef QUIC_PROTOCOL_FLAG_MACRO_CHOOSER
 #undef GET_6TH_ARG

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,15 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "gpu/command_buffer/service/mock_abstract_texture.h"
 #include "gpu/command_buffer/service/mock_texture_owner.h"
+#include "gpu/command_buffer/service/ref_counted_lock_for_test.h"
 #include "gpu/command_buffer/service/texture_manager.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "media/base/android/media_codec_bridge.h"
 #include "media/base/android/mock_media_codec_bridge.h"
 #include "media/gpu/android/codec_image.h"
@@ -44,15 +47,21 @@ class CodecImageTest : public testing::Test {
     codec_ = codec.get();
     wrapper_ = std::make_unique<CodecWrapper>(
         CodecSurfacePair(std::move(codec), new CodecSurfaceBundle()),
-        base::DoNothing(), base::SequencedTaskRunnerHandle::Get());
+        base::DoNothing(), base::SequencedTaskRunnerHandle::Get(),
+        gfx::Size(640, 480));
     ON_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
         .WillByDefault(Return(MEDIA_CODEC_OK));
 
     gl::init::InitializeStaticGLBindingsImplementation(
         gl::GLImplementationParts(gl::kGLImplementationEGLGLES2), false);
-    gl::init::InitializeGLOneOffPlatformImplementation(false, false, false);
+    display_ = gl::init::InitializeGLOneOffPlatformImplementation(
+        /*fallback_to_software_gl=*/false,
+        /*disable_gl_drawing=*/false,
+        /*init_extensions=*/false,
+        /*system_device_id=*/0);
 
-    surface_ = new gl::PbufferGLSurfaceEGL(gfx::Size(320, 240));
+    surface_ = new gl::PbufferGLSurfaceEGL(gl::GLSurfaceEGL::GetGLDisplayEGL(),
+                                           gfx::Size(320, 240));
     surface_->Initialize();
     share_group_ = new gl::GLShareGroup();
     context_ = new gl::GLContextEGL(share_group_.get());
@@ -76,7 +85,7 @@ class CodecImageTest : public testing::Test {
     context_ = nullptr;
     share_group_ = nullptr;
     surface_ = nullptr;
-    gl::init::ShutdownGL(false);
+    gl::init::ShutdownGL(display_, false);
     wrapper_->TakeCodecSurfacePair();
   }
 
@@ -90,10 +99,16 @@ class CodecImageTest : public testing::Test {
     auto codec_buffer_wait_coordinator =
         kind == kTextureOwner ? codec_buffer_wait_coordinator_ : nullptr;
     auto buffer_renderer = std::make_unique<CodecOutputBufferRenderer>(
-        std::move(buffer), codec_buffer_wait_coordinator, /*lock=*/nullptr);
+        std::move(buffer), codec_buffer_wait_coordinator,
+        features::NeedThreadSafeAndroidMedia()
+            ? base::MakeRefCounted<gpu::RefCountedLockForTest>()
+            : nullptr);
 
     scoped_refptr<CodecImage> image =
-        new CodecImage(buffer_renderer->size(), /*lock=*/nullptr);
+        new CodecImage(buffer_renderer->size(),
+                       features::NeedThreadSafeAndroidMedia()
+                           ? base::MakeRefCounted<gpu::RefCountedLockForTest>()
+                           : nullptr);
     image->Initialize(
         std::move(buffer_renderer), kind == kTextureOwner,
         base::BindRepeating(&PromotionHintReceiver::OnPromotionHint,
@@ -106,7 +121,7 @@ class CodecImageTest : public testing::Test {
   virtual bool BindsTextureOnUpdate() { return true; }
 
   base::test::TaskEnvironment task_environment_;
-  NiceMock<MockMediaCodecBridge>* codec_;
+  raw_ptr<NiceMock<MockMediaCodecBridge>> codec_;
   std::unique_ptr<CodecWrapper> wrapper_;
   scoped_refptr<NiceMock<MockCodecBufferWaitCoordinator>>
       codec_buffer_wait_coordinator_;
@@ -114,6 +129,7 @@ class CodecImageTest : public testing::Test {
   scoped_refptr<gl::GLShareGroup> share_group_;
   scoped_refptr<gl::GLSurface> surface_;
   GLuint texture_id_ = 0;
+  raw_ptr<gl::GLDisplay> display_ = nullptr;
 
   class PromotionHintReceiver {
    public:
@@ -276,8 +292,8 @@ TEST_F(CodecImageTestExplicitBind, RenderToFrontBufferDoesNotBindTexture) {
 
 TEST_F(CodecImageTest, RenderToFrontBufferRestoresGLContext) {
   // Make a new context current.
-  scoped_refptr<gl::GLSurface> surface(
-      new gl::PbufferGLSurfaceEGL(gfx::Size(320, 240)));
+  scoped_refptr<gl::GLSurface> surface(new gl::PbufferGLSurfaceEGL(
+      gl::GLSurfaceEGL::GetGLDisplayEGL(), gfx::Size(320, 240)));
   surface->Initialize();
   scoped_refptr<gl::GLShareGroup> share_group(new gl::GLShareGroup());
   scoped_refptr<gl::GLContext> context(new gl::GLContextEGL(share_group.get()));
@@ -335,10 +351,15 @@ TEST_F(CodecImageTest, CodedSizeVsVisibleSize) {
   auto buffer = CodecOutputBuffer::CreateForTesting(
       0, visible_size, gfx::ColorSpace::CreateSRGB());
   auto buffer_renderer = std::make_unique<CodecOutputBufferRenderer>(
-      std::move(buffer), nullptr, /*lock=*/nullptr);
+      std::move(buffer), nullptr,
+      features::NeedThreadSafeAndroidMedia()
+          ? base::MakeRefCounted<gpu::RefCountedLockForTest>()
+          : nullptr);
 
-  scoped_refptr<CodecImage> image =
-      new CodecImage(coded_size, /*lock=*/nullptr);
+  scoped_refptr<CodecImage> image = new CodecImage(
+      coded_size, features::NeedThreadSafeAndroidMedia()
+                      ? base::MakeRefCounted<gpu::RefCountedLockForTest>()
+                      : nullptr);
   image->Initialize(std::move(buffer_renderer), false,
                     PromotionHintAggregator::NotifyPromotionHintCB());
 

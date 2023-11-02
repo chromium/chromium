@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -89,8 +89,14 @@ class ExternalConnectorImpl::BrokerConnection
   }
 
   void AttemptBrokerConnection() {
+    mojo::NamedPlatformChannel::Options channel_options;
+    channel_options.server_name = broker_path_;
+#if BUILDFLAG(IS_ANDROID)
+    // On Android, use the abstract namespace to avoid filesystem access.
+    channel_options.use_abstract_namespace = true;
+#endif
     mojo::PlatformChannelEndpoint endpoint =
-        mojo::NamedPlatformChannel::ConnectToServer(broker_path_);
+        mojo::NamedPlatformChannel::ConnectToServer(channel_options);
     if (!endpoint.is_valid()) {
       task_runner_->PostDelayedTask(
           FROM_HERE,
@@ -267,9 +273,16 @@ std::unique_ptr<ExternalConnector> ExternalConnectorImpl::Clone() {
   }
   // Bind to the current sequence since this is a public method.
   BindConnectorIfNecessary();
+  return std::make_unique<ExternalConnectorImpl>(RequestConnector());
+}
+
+mojo::PendingRemote<external_mojo::mojom::ExternalConnector>
+ExternalConnectorImpl::RequestConnector() {
+  // Bind to the current sequence since this is a public method.
+  BindConnectorIfNecessary();
   mojo::PendingRemote<external_mojo::mojom::ExternalConnector> remote;
   connector_->Clone(remote.InitWithNewPipeAndPassReceiver());
-  return std::make_unique<ExternalConnectorImpl>(std::move(remote));
+  return remote;
 }
 
 void ExternalConnectorImpl::SendChromiumConnectorRequest(

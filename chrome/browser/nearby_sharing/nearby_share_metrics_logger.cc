@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "chrome/browser/nearby_sharing/nearby_share_feature_status.h"
-#include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
-#include "chromeos/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
 
@@ -16,6 +16,16 @@ namespace {
 
 const size_t kBytesPerKilobyte = 1024;
 const uint64_t k5MbInBytes = 5242880;
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. The numbers here correspond to the
+// ordering of the flow. This enum should be kept in sync with the
+// NearbyShareBackgroundScanningSetupNotificationFlowEvent enum in
+// src/tools/metrics/histograms/enums.xml.
+enum class BackgroundScanningDevicesDetectedEvent {
+  kNearbyDevicesDetected = 1,
+  kMaxValue = kNearbyDevicesDetected
+};
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. If entries are added, kMaxValue should
@@ -85,7 +95,8 @@ enum class AttachmentType {
   kUrl = 7,
   kAddress = 8,
   kPhoneNumber = 9,
-  kMaxValue = kPhoneNumber
+  kWifiCredentials = 10,
+  kMaxValue = kWifiCredentials
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -104,7 +115,8 @@ enum class UpgradedMedium {
   kWebRtc = 9,
   kNoUpgrade = 10,
   kBleL2Cap = 11,
-  kMaxValue = kBleL2Cap
+  kUsb = 12,
+  kMaxValue = kUsb
 };
 
 AttachmentType FileMetadataTypeToAttachmentType(
@@ -217,7 +229,7 @@ NearbyConnectionsStatusToStartAdvertisingFailureReason(
       return StartAdvertisingFailureReason::kWifiLanError;
     case location::nearby::connections::mojom::Status::kSuccess:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case location::nearby::connections::mojom::Status::kAlreadyDiscovering:
     case location::nearby::connections::mojom::Status::kEndpointIOError:
     case location::nearby::connections::mojom::Status::kEndpointUnknown:
@@ -292,16 +304,18 @@ std::string GetUpgradedMediumSubcategoryName(
   switch (*last_upgraded_medium) {
     case location::nearby::connections::mojom::Medium::kWebRtc:
       return ".WebRtcUpgrade";
+    case location::nearby::connections::mojom::Medium::kWifiLan:
+      return ".WifiLanUpgrade";
     case location::nearby::connections::mojom::Medium::kUnknown:
     case location::nearby::connections::mojom::Medium::kMdns:
     case location::nearby::connections::mojom::Medium::kBluetooth:
     case location::nearby::connections::mojom::Medium::kWifiHotspot:
     case location::nearby::connections::mojom::Medium::kBle:
-    case location::nearby::connections::mojom::Medium::kWifiLan:
     case location::nearby::connections::mojom::Medium::kWifiAware:
     case location::nearby::connections::mojom::Medium::kNfc:
     case location::nearby::connections::mojom::Medium::kWifiDirect:
     case location::nearby::connections::mojom::Medium::kBleL2Cap:
+    case location::nearby::connections::mojom::Medium::kUsb:
       return ".UnknownMediumUpgrade";
   }
 }
@@ -336,6 +350,8 @@ UpgradedMedium GetUpgradedMediumForMetrics(
       return UpgradedMedium::kWebRtc;
     case location::nearby::connections::mojom::Medium::kBleL2Cap:
       return UpgradedMedium::kBleL2Cap;
+    case location::nearby::connections::mojom::Medium::kUsb:
+      return UpgradedMedium::kUsb;
   }
 }
 
@@ -408,6 +424,13 @@ void RecordNearbySharePayloadTextAttachmentTypeMetric(
       TextMetadataTypeToAttachmentType(type), is_incoming, status);
 }
 
+void RecordNearbySharePayloadWifiCredentialsAttachmentTypeMetric(
+    bool is_incoming,
+    location::nearby::connections::mojom::PayloadStatus status) {
+  RecordNearbySharePayloadAttachmentTypeMetric(AttachmentType::kWifiCredentials,
+                                               is_incoming, status);
+}
+
 void RecordNearbySharePayloadFinalStatusMetric(
     location::nearby::connections::mojom::PayloadStatus status,
     absl::optional<location::nearby::connections::mojom::Medium> medium) {
@@ -437,14 +460,20 @@ void RecordNearbySharePayloadMediumMetric(
   }
 }
 
-void RecordNearbySharePayloadNumAttachmentsMetric(size_t num_text_attachments,
-                                                  size_t num_file_attachments) {
+void RecordNearbySharePayloadNumAttachmentsMetric(
+    size_t num_text_attachments,
+    size_t num_file_attachments,
+    size_t num_wifi_credentials_attachments) {
   base::UmaHistogramCounts100("Nearby.Share.Payload.NumAttachments",
-                              num_text_attachments + num_file_attachments);
+                              num_text_attachments + num_file_attachments +
+                                  num_wifi_credentials_attachments);
   base::UmaHistogramCounts100("Nearby.Share.Payload.NumAttachments.Text",
                               num_text_attachments);
   base::UmaHistogramCounts100("Nearby.Share.Payload.NumAttachments.File",
                               num_file_attachments);
+  base::UmaHistogramCounts100(
+      "Nearby.Share.Payload.NumAttachments.WiFiCredentials",
+      num_wifi_credentials_attachments);
 }
 
 void RecordNearbySharePayloadSizeMetric(
@@ -588,4 +617,54 @@ void RecordNearbyShareTransferFinalStatusMetric(
           *success);
     }
   }
+}
+
+void RecordNearbyShareDeviceNearbySharingNotificationFlowEvent(
+    NearbyShareBackgroundScanningDeviceNearbySharingNotificationFlowEvent
+        event) {
+  base::UmaHistogramSparse(
+      "Nearby.Share.BackgroundScanning.DeviceNearbySharing.Notification.Flow",
+      static_cast<int>(event));
+}
+
+void RecordNearbyShareDeviceNearbySharingNotificationTimeToAction(
+    base::TimeDelta time) {
+  base::UmaHistogramMediumTimes(
+      "Nearby.Share.BackgroundScanning.DeviceNearbySharing.Notification."
+      "TimeToAction",
+      time);
+}
+
+void RecordNearbyShareBackgroundScanningDevicesDetected() {
+  base::UmaHistogramEnumeration(
+      "Nearby.Share.BackgroundScanning.DevicesDetected",
+      BackgroundScanningDevicesDetectedEvent::kNearbyDevicesDetected);
+}
+
+void RecordNearbyShareBackgroundScanningDevicesDetectedDuration(
+    base::TimeDelta duration) {
+  base::UmaHistogramLongTimes(
+      "Nearby.Share.BackgroundScanning.DevicesDetected.Duration", duration);
+}
+
+void RecordNearbyShareBackgroundScanningSessionStarted(bool success) {
+  base::UmaHistogramBoolean("Nearby.Share.BackgroundScanning.SessionStarted",
+                            success);
+}
+
+void RecordNearbyShareSetupNotificationFlowEvent(
+    NearbyShareBackgroundScanningSetupNotificationFlowEvent event) {
+  base::UmaHistogramSparse(
+      "Nearby.Share.BackgroundScanning.Setup.Notification.Flow",
+      static_cast<int>(event));
+}
+
+void RecordNearbyShareSetupNotificationTimeToAction(base::TimeDelta time) {
+  base::UmaHistogramMediumTimes(
+      "Nearby.Share.BackgroundScanning.Setup.Notification.TimeToAction", time);
+}
+
+void RecordNearbyShareWifiConfigurationResultMetric(bool success) {
+  base::UmaHistogramBoolean("Nearby.Share.WifiNetworkConfiguration.Result",
+                            success);
 }

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,7 +51,8 @@ const base::RepeatingClosure GetApplyPerSampleMetadataCallback(
     CallStackProfileParams::Process process) {
   if (process != CallStackProfileParams::Process::kRenderer)
     return base::RepeatingClosure();
-  static const base::SampleMetadata process_backgrounded("ProcessBackgrounded");
+  static const base::SampleMetadata process_backgrounded(
+      "ProcessBackgrounded", base::SampleMetadataScope::kProcess);
   return base::BindRepeating(
       [](base::SampleMetadata process_backgrounded) {
         process_backgrounded.Set(IsCurrentProcessBackgrounded());
@@ -63,8 +64,8 @@ const base::RepeatingClosure GetApplyPerSampleMetadataCallback(
 
 // The scheduler works by splitting execution time into repeated periods such
 // that the time to take one collection represents
-// |fraction_of_execution_time_to_sample| of the period, and the time not spent
-// sampling represents 1 - |fraction_of_execution_time_to_sample| of the period.
+// `fraction_of_execution_time_to_sample` of the period, and the time not spent
+// sampling represents 1 - `fraction_of_execution_time_to_sample` of the period.
 // The collection start time is chosen randomly within each period such that the
 // entire collection is contained within the period.
 //

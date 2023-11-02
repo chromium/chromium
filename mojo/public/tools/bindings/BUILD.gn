@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -106,4 +106,17 @@ action("precompile_templates") {
     "--use_bundled_pylibs",
     "precompile",
   ]
+}
+
+group("tests") {
+  data = [
+    mojom_generator_script,
+    "checks/mojom_attributes_check_unittest.py",
+    "checks/mojom_restrictions_checks_unittest.py",
+    "mojom_bindings_generator_unittest.py",
+    "//tools/diagnosis/crbug_1001171.py",
+    "//third_party/markupsafe/",
+  ]
+  data += mojom_generator_sources
+  data += jinja2_sources
 }

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -98,6 +98,16 @@ bool CSPDirectiveListAllowWasmCodeGeneration(
 CORE_EXPORT
 bool CSPDirectiveListShouldDisableEval(
     const network::mojom::blink::ContentSecurityPolicy& csp,
+    String& error_message);
+
+// We need to pass both `csp` and `policy` in because for now, we need to
+// ensure the policy supports `wasm-unsafe-eval`.
+// TODO(crbug.com/1342523): when we don't need this check, remove the `policy`
+// argument here.
+CORE_EXPORT
+bool CSPDirectiveListShouldDisableWasmEval(
+    const network::mojom::blink::ContentSecurityPolicy& csp,
+    const ContentSecurityPolicy* policy,
     String& error_message);
 
 CORE_EXPORT

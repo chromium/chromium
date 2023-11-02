@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@ dictionary ImageDecoderInit {
   required USVString type;
 
   // Options used for setting up the decoder. See ImageBitmapOptions.
-  PremultiplyAlpha premultiplyAlpha = "default";
   ColorSpaceConversion colorSpaceConversion = "default";
 
   // Some image decoders support reduced resolution decoding. The desired size

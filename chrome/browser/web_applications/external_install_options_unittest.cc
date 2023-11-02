@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -33,7 +34,6 @@ ExternalInstallOptions ConvertParamsToExternalInstallOptions(
   install_options.add_to_desktop = install_params.add_to_desktop;
   install_options.add_to_quick_launch_bar =
       install_params.add_to_quick_launch_bar;
-  install_options.run_on_os_login = install_params.run_on_os_login;
   install_options.add_to_search = install_params.add_to_search;
   install_options.add_to_management = install_params.add_to_management;
   install_options.is_disabled = install_params.is_disabled;
@@ -60,7 +60,7 @@ TEST(WebAppExternalInstallOptions,
      ConvertExternalInstallOptionsToParams_DefaultConstructor) {
   ExternalInstallOptions install_options(
       /*install_url=*/GURL{"https://example.org"},
-      /*user_display_mode=*/DisplayMode::kMinimalUi,
+      /*user_display_mode=*/UserDisplayMode::kStandalone,
       /*install_source=*/ExternalInstallSource::kExternalDefault);
 
   WebAppInstallParams install_params =
@@ -76,20 +76,19 @@ TEST(WebAppExternalInstallOptions,
      ConvertExternalInstallOptionsToParams_NotDefaultConstructor) {
   ExternalInstallOptions install_options(
       /*install_url=*/GURL{"https://example.com"},
-      /*user_display_mode=*/DisplayMode::kStandalone,
+      /*user_display_mode=*/UserDisplayMode::kStandalone,
       /*install_source=*/ExternalInstallSource::kExternalDefault);
 
   // The values below are deliberately different from default
   // ExternalInstallOptions constructor values.
 
   install_options.force_reinstall = true;
-  install_options.user_display_mode = DisplayMode::kStandalone;
+  install_options.user_display_mode = UserDisplayMode::kStandalone;
   install_options.fallback_app_name = "Fallback App Name";
 
   install_options.add_to_applications_menu = false;
   install_options.add_to_desktop = false;
   install_options.add_to_quick_launch_bar = false;
-  install_options.run_on_os_login = true;
   install_options.add_to_search = false;
   install_options.add_to_management = false;
   install_options.is_disabled = true;
@@ -101,7 +100,7 @@ TEST(WebAppExternalInstallOptions,
 
   install_options.launch_query_params = "param";
 
-  install_options.system_app_type = SystemAppType::SAMPLE;
+  install_options.system_app_type = ash::SystemWebAppType::SAMPLE;
 
   install_options.oem_installed = true;
 

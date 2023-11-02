@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 ## version id is larger than the version id in download_file_types.asciipb. If
 ## there isn't an ongoing experiment, this version id is equal to the version id
 ## in download_file_types.asciipb.
-version_id: 46
+version_id: 54
 sampled_ping_probability: 0.01
 max_archived_binaries_to_report: 10
 default_file_type {
@@ -30,6 +30,9 @@ default_file_type {
 
 # Files that are not dangerous, and are popular enough that we'd like to
 # exclude them from download pings.
+#  - Files are generally considered not dangerous if they don't have executable
+#    parts and have not been known to be abused by campaigns.
+#  - Files are considered popular if they make up >= 0.03% of download pings
 file_types {
   extension: "jpg"
   uma_value: 322
@@ -105,6 +108,11 @@ file_types {
   uma_value: 341
   ping_setting: SAMPLED_PING
 }
+file_types {
+  extension: "avif"
+  uma_value: 397
+  ping_setting: SAMPLED_PING
+}
 
 # Flash files downloaded locally can sometimes access the local filesystem
 file_types {
@@ -112,7 +120,7 @@ file_types {
   uma_value: 68
   ping_setting: FULL_PING
   platform_settings {
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -121,7 +129,7 @@ file_types {
   uma_value: 69
   ping_setting: FULL_PING
   platform_settings {
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -152,6 +160,7 @@ file_types {
   uma_value: 52
   is_archive: true
   ping_setting: FULL_PING
+  inspection_type: SEVEN_ZIP
 }
 file_types {
   extension: "ace"
@@ -734,7 +743,7 @@ file_types {
   uma_value: 13
   ping_setting: FULL_PING
   platform_settings {
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
   platform_settings {
@@ -841,17 +850,17 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_LINUX
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
   platform_settings {
     platform: PLATFORM_MAC
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
   platform_settings {
     platform: PLATFORM_WINDOWS
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -1284,7 +1293,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_WINDOWS
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -1529,9 +1538,15 @@ file_types {
   ping_setting: FULL_PING
 }
 file_types {
+  # DLL files built for excel.
   extension: "xll"
   uma_value: 350
   ping_setting: FULL_PING
+  platform_settings {
+    platform: PLATFORM_WINDOWS
+    danger_level: ALLOW_ON_USER_GESTURE
+    auto_open_hint: DISALLOW_AUTO_OPEN
+  }
 }
 file_types {
   extension: "xlm"
@@ -1722,7 +1737,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_WINDOWS
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -1732,7 +1747,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_WINDOWS
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -1745,7 +1760,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_MAC
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -1755,7 +1770,17 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_MAC
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
+    auto_open_hint: DISALLOW_AUTO_OPEN
+  }
+}
+file_types {
+  extension: "inetloc"
+  uma_value: 398
+  ping_setting: FULL_PING
+  platform_settings {
+    platform: PLATFORM_MAC
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -2163,7 +2188,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_WINDOWS
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -2221,7 +2246,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_WINDOWS
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -2232,7 +2257,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_WINDOWS
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: ALLOW_AUTO_OPEN
   }
 }
@@ -2254,7 +2279,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_WINDOWS
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -2447,7 +2472,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_WINDOWS
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: ALLOW_AUTO_OPEN
   }
 }
@@ -2628,7 +2653,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_WINDOWS
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -2810,7 +2835,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_WINDOWS
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -2841,6 +2866,39 @@ file_types {
     platform: PLATFORM_WINDOWS
     danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: ALLOW_AUTO_OPEN
+  }
+}
+file_types {
+  # Windows troubleshooting component
+  extension: "diagcab"
+  uma_value: 399
+  ping_setting: FULL_PING
+  platform_settings {
+    platform: PLATFORM_WINDOWS
+    danger_level: ALLOW_ON_USER_GESTURE
+    auto_open_hint: DISALLOW_AUTO_OPEN
+  }
+}
+file_types {
+  # Windows troubleshooting
+  extension: "diagcfg"
+  uma_value: 400
+  ping_setting: FULL_PING
+  platform_settings {
+    platform: PLATFORM_WINDOWS
+    danger_level: ALLOW_ON_USER_GESTURE
+    auto_open_hint: DISALLOW_AUTO_OPEN
+  }
+}
+file_types {
+  # Windows troubleshooting component
+  extension: "diagpkg"
+  uma_value: 401
+  ping_setting: FULL_PING
+  platform_settings {
+    platform: PLATFORM_WINDOWS
+    danger_level: ALLOW_ON_USER_GESTURE
+    auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
 
@@ -3127,7 +3185,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_MAC
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -3137,7 +3195,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_MAC
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -3147,7 +3205,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_MAC
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -3157,7 +3215,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_MAC
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -3167,7 +3225,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_MAC
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -3177,7 +3235,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_MAC
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }

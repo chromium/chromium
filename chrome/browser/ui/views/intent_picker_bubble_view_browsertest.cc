@@ -1,33 +1,30 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include <string>
 
 #include "base/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/apps/intent_helper/intent_picker_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
-#include "chrome/browser/ui/views/location_bar/intent_picker_view.h"
-#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
-#include "chrome/browser/web_applications/web_application_info.h"
-#include "chrome/common/chrome_features.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features.h"
-#include "ui/events/base_event_utils.h"
-#include "ui/gfx/favicon_size.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "url/gurl.h"
 
@@ -36,8 +33,12 @@ class IntentPickerBubbleViewBrowserTest
       public ::testing::WithParamInterface<std::string> {
  public:
   IntentPickerBubbleViewBrowserTest() {
-    // TODO(schenney): Stop disabling Paint Holding. crbug.com/1001189
-    scoped_feature_list_.InitAndDisableFeature(blink::features::kPaintHolding);
+    std::vector<base::test::FeatureRef> disabled_features = {
+        // TODO(schenney): Stop disabling Paint Holding. crbug.com/1001189
+        blink::features::kPaintHolding,
+        // TODO(crbug.com/1357905): Run relevant tests against the updated UI.
+        apps::features::kLinkCapturingUiUpdate};
+    scoped_feature_list_.InitWithFeatures({}, disabled_features);
   }
 
   void OpenNewTab(const GURL& url) {
@@ -69,8 +70,14 @@ class IntentPickerBubbleViewBrowserTest
     return IntentPickerBubbleView::intent_picker_bubble();
   }
 
+  size_t GetItemContainerSize(IntentPickerBubbleView* bubble) {
+    return bubble->GetViewByID(IntentPickerBubbleView::ViewId::kItemContainer)
+        ->children()
+        .size();
+  }
+
   void VerifyBubbleWithTestWebApp() {
-    EXPECT_EQ(1U, intent_picker_bubble()->GetScrollViewSize());
+    EXPECT_EQ(1U, GetItemContainerSize(intent_picker_bubble()));
     auto& app_info = intent_picker_bubble()->app_info_for_testing();
     ASSERT_EQ(1U, app_info.size());
     EXPECT_EQ(test_web_app_id(), app_info[0].launch_name);
@@ -80,46 +87,6 @@ class IntentPickerBubbleViewBrowserTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-// Tests that clicking a link from a tabbed browser to within the scope of an
-// installed app shows the intent picker icon in Omnibox. The intent picker
-// bubble will only show up for android apps which is too hard to test.
-IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewBrowserTest,
-                       NavigationToInScopeLinkShowsIntentPicker) {
-  InstallTestWebApp();
-
-  const GURL in_scope_url =
-      https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  NavigateToLaunchingPage(browser());
-
-  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       "IntentPickerBubbleView");
-  TestTabActionDoesNotOpenAppWindow(
-      in_scope_url, base::BindOnce(&ClickLinkAndWait, web_contents,
-                                   in_scope_url, LinkTarget::SELF, GetParam()));
-
-  PageActionIconView* intent_picker_view = GetIntentPickerIcon();
-  EXPECT_TRUE(intent_picker_view->GetVisible());
-
-  if (!base::FeatureList::IsEnabled(features::kIntentPickerPWAPersistence)) {
-    EXPECT_FALSE(intent_picker_bubble());
-    GetIntentPickerIcon()->ExecuteForTesting();
-  }
-
-  waiter.WaitIfNeededAndGet();
-  ASSERT_TRUE(intent_picker_bubble());
-  EXPECT_TRUE(intent_picker_bubble()->GetVisible());
-
-  VerifyBubbleWithTestWebApp();
-
-  intent_picker_bubble()->AcceptDialog();
-
-  Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
-  EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser,
-                                                         test_web_app_id()));
-}
 
 // Tests that clicking a link from a tabbed browser to outside the scope of an
 // installed app does not show the intent picker.
@@ -139,20 +106,55 @@ IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewBrowserTest,
   EXPECT_EQ(nullptr, intent_picker_bubble());
 }
 
+// TODO(crbug.com/1252812): Enable the following two tests on Lacros.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+// Tests that clicking a link from a tabbed browser to within the scope of an
+// installed app shows the intent picker icon in Omnibox.
+IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewBrowserTest,
+                       NavigationToInScopeLinkShowsIntentPicker) {
+  InstallTestWebApp();
+
+  const GURL in_scope_url =
+      https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  NavigateToLaunchingPage(browser());
+
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "IntentPickerBubbleView");
+  TestTabActionDoesNotOpenAppWindow(
+      in_scope_url, base::BindOnce(&ClickLinkAndWait, web_contents,
+                                   in_scope_url, LinkTarget::SELF, GetParam()));
+
+  PageActionIconView* intent_picker_view = GetIntentPickerIcon();
+  EXPECT_TRUE(intent_picker_view->GetVisible());
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  // On Chrome OS, the picker bubble will appear automatically.
+  EXPECT_FALSE(intent_picker_bubble());
+  GetIntentPickerIcon()->ExecuteForTesting();
+#endif
+
+  waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(intent_picker_bubble());
+  EXPECT_TRUE(intent_picker_bubble()->GetVisible());
+
+  VerifyBubbleWithTestWebApp();
+
+  intent_picker_bubble()->AcceptDialog();
+
+  Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
+  EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser,
+                                                         test_web_app_id()));
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
 // Tests that clicking a link from an app browser to either within or outside
 // the scope of an installed app does not show the intent picker, even when an
 // outside of scope link is opened within the context of the PWA.
-// Flaky on Linux: https://crbug.com/1186613
-#if defined(OS_LINUX)
-#define MAYBE_NavigationInAppWindowToInScopeLinkDoesNotShowIntentPicker \
-  DISABLED_NavigationInAppWindowToInScopeLinkDoesNotShowIntentPicker
-#else
-#define MAYBE_NavigationInAppWindowToInScopeLinkDoesNotShowIntentPicker \
-  NavigationInAppWindowToInScopeLinkDoesNotShowIntentPicker
-#endif
 IN_PROC_BROWSER_TEST_P(
     IntentPickerBubbleViewBrowserTest,
-    MAYBE_NavigationInAppWindowToInScopeLinkDoesNotShowIntentPicker) {
+    NavigationInAppWindowToInScopeLinkDoesNotShowIntentPicker) {
   InstallTestWebApp();
 
   // No intent picker should be seen when first opening the web app.
@@ -183,6 +185,8 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_EQ(nullptr, intent_picker_bubble());
   }
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Tests that the intent icon updates its visibiliy when switching between
 // tabs.
@@ -264,33 +268,6 @@ IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewBrowserTest,
   EXPECT_FALSE(intent_picker_view->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTest, DoubleClickOpensApp) {
-  auto app_id = InstallTestWebApp(GetAppUrlHost(), GetAppScopePath());
-
-  const GURL in_scope_url =
-      https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), in_scope_url));
-
-  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       "IntentPickerBubbleView");
-  GetIntentPickerIcon()->ExecuteForTesting();
-  waiter.WaitIfNeededAndGet();
-  ASSERT_TRUE(intent_picker_bubble());
-  EXPECT_TRUE(intent_picker_bubble()->GetVisible());
-
-  intent_picker_bubble()->PressButtonForTesting(
-      /* index= */ 0,
-      ui::MouseEvent(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
-                     ui::EventTimeForNow(), 0, 0));
-  intent_picker_bubble()->PressButtonForTesting(
-      /* index= */ 0,
-      ui::MouseEvent(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
-                     ui::EventTimeForNow(), ui::EF_IS_DOUBLE_CLICK, 0));
-
-  Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
-  EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
-}
-
 INSTANTIATE_TEST_SUITE_P(
     All,
     IntentPickerBubbleViewBrowserTest,
@@ -368,40 +345,50 @@ INSTANTIATE_TEST_SUITE_P(
     IntentPickerBubbleViewPrerenderingBrowserTest,
     testing::Values("", "noopener", "noreferrer", "nofollow"));
 
-class IntentPickerDialogTest : public DialogBrowserTest {
+class IntentPickerBubbleViewFencedFrameBrowserTest
+    : public IntentPickerBubbleViewBrowserTest {
  public:
-  IntentPickerDialogTest() = default;
-  IntentPickerDialogTest(const IntentPickerDialogTest&) = delete;
-  IntentPickerDialogTest& operator=(const IntentPickerDialogTest&) = delete;
+  IntentPickerBubbleViewFencedFrameBrowserTest() = default;
+  ~IntentPickerBubbleViewFencedFrameBrowserTest() override = default;
+  IntentPickerBubbleViewFencedFrameBrowserTest(
+      const IntentPickerBubbleViewFencedFrameBrowserTest&) = delete;
 
-  // DialogBrowserTest:
-  void ShowUi(const std::string& name) override {
-    PageActionIconView* anchor =
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->toolbar_button_provider()
-            ->GetPageActionIconView(PageActionIconType::kIntentPicker);
-    std::vector<apps::IntentPickerAppInfo> app_info;
-    const auto add_entry = [&app_info](const std::string& str) {
-      app_info.emplace_back(
-          apps::PickerEntryType::kUnknown,
-          ui::ImageModel::FromImage(
-              gfx::Image::CreateFrom1xBitmap(favicon::GenerateMonogramFavicon(
-                  GURL("https://" + str + ".com"), gfx::kFaviconSize,
-                  gfx::kFaviconSize))),
-          "Launch name " + str, "Display name " + str);
-    };
-    add_entry("a");
-    add_entry("b");
-    add_entry("c");
-    add_entry("d");
-    IntentPickerBubbleView::ShowBubble(
-        anchor, anchor, PageActionIconType::kIntentPicker,
-        browser()->tab_strip_model()->GetActiveWebContents(),
-        std::move(app_info), true, true,
-        url::Origin::Create(GURL("https://c.com")), base::DoNothing());
+  IntentPickerBubbleViewFencedFrameBrowserTest& operator=(
+      const IntentPickerBubbleViewFencedFrameBrowserTest&) = delete;
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
   }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
 };
 
-IN_PROC_BROWSER_TEST_F(IntentPickerDialogTest, InvokeUi_default) {
-  ShowAndVerifyUi();
+IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewFencedFrameBrowserTest,
+                       ShouldShowIntentPickerInFencedFrame) {
+  InstallTestWebApp();
+
+  PageActionIconView* intent_picker_view = GetIntentPickerIcon();
+
+  const GURL initial_url =
+      https_server().GetURL(GetAppUrlHost(), "/empty.html");
+  OpenNewTab(initial_url);
+  EXPECT_FALSE(intent_picker_view->GetVisible());
+
+  const GURL fenced_frame_url = https_server().GetURL(
+      GetAppUrlHost(), std::string(GetAppScopePath()) + "index1.html");
+  // Create a fenced frame.
+  ASSERT_TRUE(
+      fenced_frame_test_helper().CreateFencedFrame(browser()
+                                                       ->tab_strip_model()
+                                                       ->GetActiveWebContents()
+                                                       ->GetPrimaryMainFrame(),
+                                                   fenced_frame_url));
+
+  EXPECT_FALSE(intent_picker_view->GetVisible());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    IntentPickerBubbleViewFencedFrameBrowserTest,
+    testing::Values("", "noopener", "noreferrer", "nofollow"));

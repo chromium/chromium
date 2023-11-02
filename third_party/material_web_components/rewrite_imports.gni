@@ -1,0 +1,43 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/node/node.gni")
+
+# Rewrites the imports specified in `import_mappings`. Only exact import matches
+# will be replaced.
+# TODO(crbug.com/1320176): Consider integrating this functionality into
+# ts_library.gni.
+template("rewrite_imports") {
+  node(target_name) {
+    script = "//third_party/material_web_components/rewrite_imports.py"
+
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "import_mappings",
+                           ])
+
+    inputs = []
+    outputs = []
+
+    foreach(_dep, deps) {
+      foreach(_output, filter_include(get_target_outputs(_dep), [ "*.js" ])) {
+        inputs += [ _output ]
+        outputs += [ "$target_gen_dir/" + get_path_info(_output, "file") ]
+      }
+    }
+
+    import_mappings = [ "tslib|//resources/mwc/tslib/tslib.js" ]
+    if (defined(invoker.import_mappings)) {
+      import_mappings += invoker.import_mappings
+    }
+
+    args = [ "--in_files" ] + rebase_path(inputs, root_build_dir)
+    args += [
+      "--out_dir",
+      rebase_path(target_gen_dir, root_build_dir),
+    ]
+    args += [ "--import_mappings" ] + import_mappings
+  }
+}

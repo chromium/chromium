@@ -1,10 +1,13 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_FILE_SYSTEM_SYNC_ACCESS_HANDLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_FILE_SYSTEM_SYNC_ACCESS_HANDLE_H_
 
+#include "base/feature_list.h"
+#include "base/sequence_checker.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_access_handle_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -16,6 +19,7 @@
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_file_delegate.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -38,13 +42,13 @@ class FileSystemSyncAccessHandle final : public ScriptWrappable {
   // GarbageCollected
   void Trace(Visitor* visitor) const override;
 
-  ScriptPromise close(ScriptState*);
+  ScriptValue close(ScriptState*);
 
-  ScriptPromise flush(ScriptState*, ExceptionState&);
+  ScriptValue flush(ScriptState*, ExceptionState&);
 
-  ScriptPromise getSize(ScriptState*, ExceptionState&);
+  ScriptValue getSize(ScriptState*, ExceptionState&);
 
-  ScriptPromise truncate(ScriptState*, uint64_t size, ExceptionState&);
+  ScriptValue truncate(ScriptState*, uint64_t size, ExceptionState&);
 
   uint64_t read(MaybeShared<DOMArrayBufferView> buffer,
                 FileSystemReadWriteOptions* options,
@@ -55,9 +59,28 @@ class FileSystemSyncAccessHandle final : public ScriptWrappable {
                  ExceptionState&);
 
  private:
+  void CloseSync(ScriptState*);
+  ScriptPromise CloseAsync(ScriptState*);
+  void FlushSync(ScriptState*, ExceptionState&);
+  ScriptPromise FlushAsync(ScriptState*);
+  uint64_t GetSizeSync(ScriptState*, ExceptionState&);
+  ScriptPromise GetSizeAsync(ScriptState*);
+  void TruncateSync(ScriptState*, uint64_t size, ExceptionState&);
+  ScriptPromise TruncateAsync(ScriptState*, uint64_t size);
+  uint64_t DoRead(MaybeShared<DOMArrayBufferView> buffer,
+                  FileSystemReadWriteOptions* options,
+                  ExceptionState&);
+  uint64_t DoWrite(MaybeShared<DOMArrayBufferView> buffer,
+                   FileSystemReadWriteOptions* options,
+                   ExceptionState&);
   void DispatchQueuedClose();
 
+  // Must be called right before calling async methods on file_delegate.
   bool EnterOperation() {
+    if (is_all_sync_interface_enabled_) {
+      NOTREACHED();
+      return false;
+    }
     if (io_pending_)
       return false;
     io_pending_ = true;
@@ -65,15 +88,25 @@ class FileSystemSyncAccessHandle final : public ScriptWrappable {
   }
 
   void ExitOperation() {
+    if (is_all_sync_interface_enabled_) {
+      NOTREACHED();
+      return;
+    }
     DCHECK(io_pending_);
     io_pending_ = false;
     DispatchQueuedClose();
   }
+
   FileSystemAccessFileDelegate* file_delegate() {
-    DCHECK(io_pending_);
+    DCHECK(io_pending_ || is_all_sync_interface_enabled_);
     return file_delegate_.Get();
   }
 
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  // TODO(crbug.com/1338340): This method is only used for async methods.
+  // Remove once we migrate all methods to be sync.
+  //
   // The {OperationScope} is used to call {EnterOperation()} and
   // {ExitOperation()} in the synchronous functions {read} and {write}.
   // {OperationScope} calls {ExitOperation()} automatically in its destructor.
@@ -108,6 +141,9 @@ class FileSystemSyncAccessHandle final : public ScriptWrappable {
   HeapMojoRemote<mojom::blink::FileSystemAccessAccessHandleHost>
       access_handle_remote_;
 
+  // TODO(crbug.com/1338340): This method is only used for async methods.
+  // Remove once we migrate all methods to be sync.
+  //
   // True when an I/O operation other than close is underway.
   //
   // Set to {true} whenever an async operation is started, and back to {false}
@@ -123,6 +159,17 @@ class FileSystemSyncAccessHandle final : public ScriptWrappable {
 
   bool is_closed_ = false;
 
+  // Whether all-sync interface feature is enabled and the async interface is
+  // not force-enabled by enterprise policy, as indicated by the switch.
+  const bool is_all_sync_interface_enabled_ =
+      base::FeatureList::IsEnabled(
+          blink::features::kSyncAccessHandleAllSyncSurface) &&
+      !RuntimeEnabledFeatures::
+          FileSystemSyncAccessHandleAsyncInterfaceOverrideEnabled();
+
+  // crbug.com/1338340: Note that this is only used (and valid) when async
+  // methods are in-use before the migration to the all-sync interface.
+  //
   // Non-null when a close() I/O is queued behind another I/O operation.
   //
   // Set when close() is called while another I/O operation is underway. Cleared

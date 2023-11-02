@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,9 +26,15 @@ const char kChannel[] = "channel";
 // this option is not compatible with any other installer options.
 const char kConfigureUserSettings[] = "configure-user-settings";
 
+// Create shortcuts with the installer operation arg.
+const char kCreateShortcuts[] = "create-shortcuts";
+
 // The version number of an update containing critical fixes, for which an
 // in-use Chrome should be restarted ASAP.
 const char kCriticalUpdateVersion[] = "critical-update-version";
+
+// Deletes any existing DMToken from the registry.
+const char kDeleteDMToken[] = "delete-dmtoken";
 
 // Delete files that belong to old versions of Chrome from the install
 // directory.
@@ -82,6 +88,9 @@ const char kInstallArchive[] = "install-archive";
 // Specify the file path of Chrome initial preference file.
 const char kInstallerData[] = "installerdata";
 
+// What install level to create shortcuts for, if "create-shortcuts" is present.
+const char kInstallLevel[] = "install-level";
+
 // If present, specify file path to write logging info.
 const char kLogFile[] = "log-file";
 
@@ -94,8 +103,10 @@ const char kMakeChromeDefault[] = "make-chrome-default";
 // Tells installer to expect to be run as a subsidiary to an MSI.
 const char kMsi[] = "msi";
 
-// Useful only when used with --update-setup-exe, otherwise ignored. It
-// specifies the full path where updated setup.exe will be stored.
+// Useful only when used with --update-setup-exe; otherwise ignored. Specifies
+// the full path where the updated setup.exe will be written. Any other files
+// created in the indicated directory may be deleted by the caller after process
+// termination.
 const char kNewSetupExe[] = "new-setup-exe";
 
 // Specifies a nonce to use with the rotate device key command.
@@ -215,6 +226,7 @@ const wchar_t kChromeProxyOldExe[] = L"old_chrome_proxy.exe";
 const wchar_t kCmdOnOsUpgrade[] = L"on-os-upgrade";
 const wchar_t kCmdRotateDeviceTrustKey[] = L"rotate-dtkey";
 const wchar_t kCmdStoreDMToken[] = L"store-dmtoken";
+const wchar_t kCmdDeleteDMToken[] = L"delete-dmtoken";
 const wchar_t kEulaSentinelFile[] = L"EULA Accepted";
 const wchar_t kInstallBinaryDir[] = L"Application";
 const wchar_t kInstallerDir[] = L"Installer";
@@ -222,6 +234,7 @@ const wchar_t kInstallTempDir[] = L"Temp";
 const wchar_t kLnkExt[] = L".lnk";
 const wchar_t kNaClExe[] = L"nacl64.exe";
 const wchar_t kNotificationHelperExe[] = L"notification_helper.exe";
+const wchar_t kWerDll[] = L"chrome_wer.dll";
 
 // DowngradeVersion holds the version from which Chrome was downgraded. In case
 // of multiple downgrades (e.g., 75->74->73), it retains the highest version

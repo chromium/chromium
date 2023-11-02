@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,9 @@
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -93,7 +93,8 @@ class WindowsAccessibilityEnabler
 
   void OnProbableUIAutomationScreenReaderDetected() override {
     // Same as kAXModeComplete but without kHTML as it is not needed for UIA.
-    AddAXModeForUIA(ui::kAXModeCompleteNoHTML);
+    AddAXModeForUIA(ui::AXMode::kNativeAPIs | ui::AXMode::kWebContents |
+                    ui::AXMode::kScreenReader);
   }
 
   void OnTextPatternRequested() override {
@@ -171,18 +172,6 @@ void BrowserAccessibilityStateImplWin::UpdateHistogramsOnOtherThread() {
   // needs to run in the UI thread can be run in
   // UpdateHistogramsOnUIThread instead.
 
-  AUDIODESCRIPTION audio_description = {0};
-  audio_description.cbSize = sizeof(AUDIODESCRIPTION);
-  SystemParametersInfo(SPI_GETAUDIODESCRIPTION, 0, &audio_description, 0);
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinAudioDescription",
-                        !!audio_description.Enabled);
-
-  // This screen reader flag is nearly meaningless, it is set very often
-  // when there is no screen reader, and is not set for Narrator.
-  BOOL win_screen_reader = FALSE;
-  SystemParametersInfo(SPI_GETSCREENREADER, 0, &win_screen_reader, 0);
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinScreenReader", !!win_screen_reader);
-
   // Better all-encompassing screen reader metric.
   // See also specific screen reader metrics below, e.g. WinJAWS, WinNVDA.
   ui::AXMode mode =
@@ -195,14 +184,6 @@ void BrowserAccessibilityStateImplWin::UpdateHistogramsOnOtherThread() {
   SystemParametersInfo(SPI_GETSTICKYKEYS, 0, &sticky_keys, 0);
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinStickyKeys",
                         0 != (sticky_keys.dwFlags & SKF_STICKYKEYSON));
-
-  // We only measure systems where SPI_GETCLIENTAREAANIMATION exists.
-  BOOL win_anim_enabled = TRUE;
-  if (SystemParametersInfo(SPI_GETCLIENTAREAANIMATION, 0, &win_anim_enabled,
-                           0)) {
-    UMA_HISTOGRAM_BOOLEAN("Accessibility.Win.AnimationsEnabled",
-                          win_anim_enabled);
-  }
 
   // Get the file paths of all DLLs loaded.
   HANDLE process = GetCurrentProcess();
@@ -222,19 +203,20 @@ void BrowserAccessibilityStateImplWin::UpdateHistogramsOnOtherThread() {
   bool satogo = false;  // Very few users -- do not need uniques
   for (size_t i = 0; i < module_count; i++) {
     TCHAR filename[MAX_PATH];
-    GetModuleFileName(modules[i], filename, base::size(filename));
+    GetModuleFileName(modules[i], filename, std::size(filename));
     std::string module_name(base::FilePath(filename).BaseName().AsUTF8Unsafe());
-    if (base::LowerCaseEqualsASCII(module_name, "fsdomsrv.dll"))
+    if (base::EqualsCaseInsensitiveASCII(module_name, "fsdomsrv.dll"))
       g_jaws = true;
-    if (base::LowerCaseEqualsASCII(module_name, "vbufbackend_gecko_ia2.dll") ||
-        base::LowerCaseEqualsASCII(module_name, "nvdahelperremote.dll"))
+    if (base::EqualsCaseInsensitiveASCII(module_name,
+                                         "vbufbackend_gecko_ia2.dll") ||
+        base::EqualsCaseInsensitiveASCII(module_name, "nvdahelperremote.dll"))
       g_nvda = true;
-    if (base::LowerCaseEqualsASCII(module_name, "stsaw32.dll"))
+    if (base::EqualsCaseInsensitiveASCII(module_name, "stsaw32.dll"))
       satogo = true;
-    if (base::LowerCaseEqualsASCII(module_name, "dolwinhk.dll"))
+    if (base::EqualsCaseInsensitiveASCII(module_name, "dolwinhk.dll"))
       g_supernova = true;
-    if (base::LowerCaseEqualsASCII(module_name, "zslhook.dll") ||
-        base::LowerCaseEqualsASCII(module_name, "zslhook64.dll"))
+    if (base::EqualsCaseInsensitiveASCII(module_name, "zslhook.dll") ||
+        base::EqualsCaseInsensitiveASCII(module_name, "zslhook64.dll"))
       g_zoomtext = true;
   }
 

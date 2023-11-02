@@ -29,7 +29,8 @@
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_lighting.h"
 #include "third_party/blink/renderer/platform/graphics/filters/light_source.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "ui/gfx/geometry/point3_f.h"
 
 namespace blink {
 
@@ -103,14 +104,14 @@ SVGFELightElement* SVGFELightElement::FindLightElement(
   return Traversal<SVGFELightElement>::FirstChild(svg_element);
 }
 
-FloatPoint3D SVGFELightElement::GetPosition() const {
-  return FloatPoint3D(x()->CurrentValue()->Value(),
+gfx::Point3F SVGFELightElement::GetPosition() const {
+  return gfx::Point3F(x()->CurrentValue()->Value(),
                       y()->CurrentValue()->Value(),
                       z()->CurrentValue()->Value());
 }
 
-FloatPoint3D SVGFELightElement::PointsAt() const {
-  return FloatPoint3D(pointsAtX()->CurrentValue()->Value(),
+gfx::Point3F SVGFELightElement::PointsAt() const {
+  return gfx::Point3F(pointsAtX()->CurrentValue()->Value(),
                       pointsAtY()->CurrentValue()->Value(),
                       pointsAtZ()->CurrentValue()->Value());
 }

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -85,7 +85,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) ComponentExtensionIMEManager {
  private:
   // Finds ComponentExtensionIME and EngineDescription associated with
   // |input_method_id|. This function retruns true if it is found, otherwise
-  // returns false. |out_extension| and |out_engine| can be NULL.
+  // returns false. |out_extension| and |out_engine| can be nullptr.
   bool FindEngineEntry(const std::string& input_method_id,
                        ComponentExtensionIME* out_extension);
 

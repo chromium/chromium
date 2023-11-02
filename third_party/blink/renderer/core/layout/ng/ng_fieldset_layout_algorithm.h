@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_FIELDSET_LAYOUT_ALGORITHM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_FIELDSET_LAYOUT_ALGORITHM_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_algorithm.h"
 
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
@@ -23,7 +24,7 @@ class CORE_EXPORT NGFieldsetLayoutAlgorithm
  public:
   explicit NGFieldsetLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
 
-  scoped_refptr<const NGLayoutResult> Layout() override;
+  const NGLayoutResult* Layout() override;
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
 
@@ -64,9 +65,6 @@ class CORE_EXPORT NGFieldsetLayoutAlgorithm
   void ConsumeRemainingFragmentainerSpace();
 
   const WritingDirectionMode writing_direction_;
-
-  NGBoxStrut borders_;
-  NGBoxStrut padding_;
 
   LayoutUnit intrinsic_block_size_;
   const LayoutUnit consumed_block_size_;

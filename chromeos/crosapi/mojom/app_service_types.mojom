@@ -1,8 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 12
+// NOTE: Future MinVersion values should take into account that MinVersion is
+// scoped per struct. In the past, some of the MinVersion values in this file
+// were set based on the understanding that the entire file should share a
+// MinVersion counter.
 
 module crosapi.mojom;
 
@@ -68,10 +71,9 @@ struct App {
   [MinVersion=2]
   WindowMode window_mode@22;
 
-  // An optional ID used for policy to identify the app.
-  // For web apps, it contains the install URL.
-  [MinVersion=7]
-  string? policy_id@23;
+  [MinVersion=7, RenamedFrom="policy_id"]
+  // DEPRECATED, replaced with |policy_ids| below.
+  string? deprecated_policy_id@23;
 
   // This vector must be treated atomically, if there is a permission
   // change, the publisher must send through the entire list of permissions.
@@ -84,6 +86,28 @@ struct App {
   [MinVersion=11]
   // Whether the app publisher allows the app to be uninstalled.
   OptionalBool allow_uninstall@25;
+
+  [MinVersion=12]
+  // kTrue if the app is able to handle intents and should be shown in intent
+  // surfaces.
+  OptionalBool handles_intents@26;
+
+  [MinVersion=18]
+  // Shortcuts help users perform specific actions easily.
+  // This vector must be treated atomically, if there is a shortcut
+  // change, the publisher must send through the entire list of shortcuts.
+  // Should contain no duplicate IDs.
+  // If empty during updates, Subscriber can assume no changes.
+  // There is no guarantee that this is sorted by any criteria.
+  array<Shortcut>? shortcuts@27;
+
+  [MinVersion=19]
+  OptionalBool is_platform_app@28;
+
+  [MinVersion=20]
+  // IDs used for policy to identify the app.
+  // For web apps, it contains the install URL(s).
+  array<string>? policy_ids@29;
 };
 
 // The types of apps available in the registry.
@@ -94,7 +118,9 @@ enum AppType {
   kWeb,           // Web app.
   kSystemWeb,     // System web app.
   [MinVersion=1]
-  kStandaloneBrowserExtension,     // Extension based app.
+  kStandaloneBrowserChromeApp,     // Chrome app.
+  [MinVersion=17]
+  kStandaloneBrowserExtension,     // Chrome extension.
 };
 
 // Whether an app is ready to launch, i.e. installed.
@@ -126,6 +152,8 @@ enum InstallReason {
   kSync,       // Installed by sync.
   kUser,       // Installed by user action.
   [MinVersion=7] kSubApp,     // Installed by the SubApp API call.
+  [MinVersion=8] kKiosk,      // Installed by Kiosk on Chrome OS.
+  [MinVersion=9] kCommandLine,  // Installed by a command line argument.
 };
 
 // Augments a bool to include an 'unknown' value.
@@ -171,7 +199,7 @@ struct IconKey {
 enum ConditionType {
   [Default] kScheme,  // Matches the URL scheme (e.g. https, tel).
   kHost,              // Matches the URL host (e.g. www.google.com).
-  kPattern,           // Matches the URL pattern (e.g. /abc/*).
+  kPath  ,            // Matches the URL path (e.g. /abc/*).
   kAction,            // Matches the action type (e.g. view, send).
   kMimeType,          // Matches the top-level mime type (e.g. text/plain).
   [MinVersion=1] kFileExtension,  // Deprecated.
@@ -188,6 +216,7 @@ enum PatternMatchType {
   kMimeType,
   [MinVersion=1] kFileExtension,
   [MinVersion=6] kIsDirectory,
+  [MinVersion=16] kSuffix
 };
 
 // For pattern type of condition, the value match will be based on the pattern
@@ -304,7 +333,10 @@ enum WindowMode {
 [Stable]
 struct IntentFile {
   // The file path of the file to share.
-  mojo_base.mojom.FilePath file_path;
+  mojo_base.mojom.FilePath file_path@0;
+
+  // File MIME type.
+  [MinVersion=15] string? mime_type@1;
 };
 
 // Action and resource handling request. This should
@@ -318,14 +350,20 @@ struct Intent {
   string? share_text@3;  // Text to share. e.g. Share link to other app.
   string? share_title@4; // Title for the share.
   // The files to view or share.
-  [MinVersion=5]array<IntentFile>? files@5;
+  [MinVersion=5] array<IntentFile>? files@5;
+  // The activity for the app to launch.
+  [MinVersion=13] string? activity_name@6;
+  [MinVersion=14] string? data@7;
 };
 
 // The result from launching an app.
 [Stable]
 struct LaunchResult {
-  // The id to represent which instance the app is launched in.
+  // The id to represent which instance the app is launched in. Deprecated: use
+  // `instance_ids`.
   mojo_base.mojom.UnguessableToken instance_id@0;
+  // The IDs that represent the instances the app is launched in.
+  [MinVersion=1] array<mojo_base.mojom.UnguessableToken>? instance_ids@1;
 };
 
 // Enumeration of app launch sources.
@@ -366,12 +404,36 @@ enum LaunchSource {
   [MinVersion=10] kFromUrlHandler,               // Url handler.
 };
 
+[Stable, Extensible]
+// The container type to launch the application in.
+enum LaunchContainer {
+  [Default] kLaunchContainerNone, // No specified container
+  kLaunchContainerWindow,         // Window container
+  kLaunchContainerTab,            // Tab container
+};
+
+[Stable, Extensible]
+// Controls how a tab is opened in a window.
+enum WindowOpenDisposition {
+  [Default] kUnknown,
+  kCurrentTab,
+  kNewForegroundTab,
+  kNewBackgroundTab,
+  kNewWindow,
+};
+
 [Stable]
 // The parameters to launch an app.
 struct LaunchParams {
   string app_id@0;               // The app id of the app.
   LaunchSource launch_source@1;  // The app launch source.
   Intent? intent@2;              // The intent the app will launch with.
+  // The container the app will launch in.
+  [MinVersion=14]LaunchContainer container@3;
+  // How the tab opened in a window if app is opened in tab.
+  [MinVersion=14]WindowOpenDisposition disposition@4;
+  // An id that indicates which display the app should be launched in.
+  [MinVersion=15]int64 display_id@5;
 };
 
 [Stable]
@@ -392,6 +454,7 @@ enum PermissionType {
   kNotifications                  = 4,
   [MinVersion=9] kContacts        = 5,
   [MinVersion=9] kStorage         = 6,
+  [MinVersion=10] kFileHandling   = 7,
 };
 
 [Stable]
@@ -422,4 +485,19 @@ struct PreferredAppChanges {
 struct PreferredApp {
   IntentFilter intent_filter;
   string app_id;
+};
+
+// Represents an app shortcut.
+[Stable]
+struct Shortcut {
+  // Represents a particular shortcut in an app. Needs to be unique within an
+  // app as calls will be made using both app_id and shortcut_id.
+  string shortcut_id@0;
+
+  // Name of the shortcut.
+  string name@1;
+
+  // "Position" of a shortcut, which is a non-negative, sequential
+  // value. If position is 0, no position was specified.
+  uint8 position@2;
 };

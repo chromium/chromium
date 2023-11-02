@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,55 +18,64 @@
 #include "third_party/blink/renderer/core/streams/readable_stream_generic_reader.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/core/streams/stream_promise_resolver.h"
-#include "third_party/blink/renderer/core/streams/underlying_source_base.h"
+#include "third_party/blink/renderer/core/streams/underlying_byte_source_base.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
+#include "third_party/blink/renderer/modules/webtransport/web_transport_error.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "v8/include/v8.h"
 
 namespace blink {
 
-// An implementation of UnderlyingSourceBase that forwards all operations to the
-// IncomingStream object that created it.
-class IncomingStream::UnderlyingSource final : public UnderlyingSourceBase {
+// An implementation of UnderlyingByteSourceBase that forwards all operations to
+// the IncomingStream object that created it.
+class IncomingStream::UnderlyingByteSource final
+    : public UnderlyingByteSourceBase {
  public:
-  explicit UnderlyingSource(ScriptState* script_state, IncomingStream* stream)
-      : UnderlyingSourceBase(script_state), incoming_stream_(stream) {}
+  explicit UnderlyingByteSource(ScriptState* script_state,
+                                IncomingStream* stream)
+      : script_state_(script_state), incoming_stream_(stream) {}
 
-  ScriptPromise Start(ScriptState* script_state) override {
-    incoming_stream_->controller_ = Controller();
-    return ScriptPromise::CastUndefined(script_state);
+  ScriptPromise Pull(ReadableByteStreamController* controller,
+                     ExceptionState& exception_state) override {
+    DCHECK_EQ(controller, incoming_stream_->controller_);
+    incoming_stream_->ReadFromPipeAndEnqueue(exception_state);
+    return ScriptPromise::CastUndefined(script_state_);
   }
 
-  ScriptPromise pull(ScriptState* script_state) override {
-    incoming_stream_->ReadFromPipeAndEnqueue();
-    return ScriptPromise::CastUndefined(script_state);
+  ScriptPromise Cancel(ExceptionState& exception_state) override {
+    return Cancel(v8::Undefined(script_state_->GetIsolate()), exception_state);
   }
 
-  ScriptPromise Cancel(ScriptState* script_state, ScriptValue reason) override {
+  ScriptPromise Cancel(v8::Local<v8::Value> reason,
+                       ExceptionState& exception_state) override {
     uint8_t code = 0;
     WebTransportError* exception = V8WebTransportError::ToImplWithTypeCheck(
-        script_state->GetIsolate(), reason.V8Value());
+        script_state_->GetIsolate(), reason);
     if (exception) {
       code = exception->streamErrorCode().value_or(0);
     }
     incoming_stream_->AbortAndReset(code);
-    return ScriptPromise::CastUndefined(script_state);
+    return ScriptPromise::CastUndefined(script_state_);
   }
 
+  ScriptState* GetScriptState() override { return script_state_; }
+
   void Trace(Visitor* visitor) const override {
+    visitor->Trace(script_state_);
     visitor->Trace(incoming_stream_);
-    UnderlyingSourceBase::Trace(visitor);
+    UnderlyingByteSourceBase::Trace(visitor);
   }
 
  private:
+  const Member<ScriptState> script_state_;
   const Member<IncomingStream> incoming_stream_;
 };
 
@@ -77,8 +86,7 @@ IncomingStream::IncomingStream(
     : script_state_(script_state),
       on_abort_(std::move(on_abort)),
       data_pipe_(std::move(handle)),
-      read_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL),
-      close_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC) {}
+      read_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL) {}
 
 IncomingStream::~IncomingStream() = default;
 
@@ -91,21 +99,22 @@ void IncomingStream::Init(ExceptionState& exception_state) {
 void IncomingStream::InitWithExistingReadableStream(
     ReadableStream* stream,
     ExceptionState& exception_state) {
-  read_watcher_.Watch(data_pipe_.get(), MOJO_HANDLE_SIGNAL_READABLE,
-                      MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
-                      WTF::BindRepeating(&IncomingStream::OnHandleReady,
-                                         WrapWeakPersistent(this)));
-  close_watcher_.Watch(data_pipe_.get(), MOJO_HANDLE_SIGNAL_PEER_CLOSED,
-                       MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
-                       WTF::BindRepeating(&IncomingStream::OnPeerClosed,
-                                          WrapWeakPersistent(this)));
+  read_watcher_.Watch(
+      data_pipe_.get(),
+      MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+      MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
+      WTF::BindRepeating(&IncomingStream::OnHandleReady,
+                         WrapWeakPersistent(this)));
+  ReadableStream::InitByteStream(
+      script_state_, stream,
+      MakeGarbageCollected<UnderlyingByteSource>(script_state_, this),
+      exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
 
-  stream->InitWithCountQueueingStrategy(
-      script_state_,
-      MakeGarbageCollected<UnderlyingSource>(script_state_, this), 1,
-      AllowPerChunkTransferring(false),
-      /*optimizer=*/nullptr, exception_state);
   readable_ = stream;
+  controller_ = To<ReadableByteStreamController>(stream->GetController());
 }
 
 void IncomingStream::OnIncomingStreamClosed(bool fin_received) {
@@ -123,6 +132,9 @@ void IncomingStream::OnIncomingStreamClosed(bool fin_received) {
   // close.
   if (is_pipe_closed_) {
     ProcessClose();
+  } else {
+    // Wait for MOJO_HANDLE_SIGNAL_PEER_CLOSED.
+    read_watcher_.ArmOrNotify();
   }
 }
 
@@ -151,34 +163,13 @@ void IncomingStream::OnHandleReady(MojoResult result,
                                    const mojo::HandleSignalsState&) {
   DVLOG(1) << "IncomingStream::OnHandleReady() this=" << this
            << " result=" << result;
-
-  switch (result) {
-    case MOJO_RESULT_OK:
-      ReadFromPipeAndEnqueue();
-      break;
-
-    case MOJO_RESULT_FAILED_PRECONDITION:
-      // Will be handled by |close_watcher_|.
-      break;
-
-    default:
-      NOTREACHED();
-  }
-}
-
-void IncomingStream::OnPeerClosed(MojoResult result,
-                                  const mojo::HandleSignalsState&) {
-  DVLOG(1) << "IncomingStream::OnPeerClosed() this=" << this
-           << " result=" << result;
-
-  switch (result) {
-    case MOJO_RESULT_OK:
-      HandlePipeClosed();
-      break;
-
-    default:
-      NOTREACHED();
-  }
+  // |ReadFromPipeAndEnqueue| throws if close has been requested, stream state
+  // is not readable, or buffer is invalid. Because both
+  // |ErrorStreamAbortAndReset| and |ProcessClose| reset pipe, stream should be
+  // readable here. Buffer returned by |BeginReadData| is expected to be valid
+  // with size > 0.
+  NonThrowableExceptionState exception_state;
+  ReadFromPipeAndEnqueue(exception_state);
 }
 
 void IncomingStream::HandlePipeClosed() {
@@ -194,9 +185,6 @@ void IncomingStream::HandlePipeClosed() {
   // Wait until OnIncomingStreamClosed() has also been called before processing
   // the close.
   if (fin_received_.has_value()) {
-    // We need a JavaScript scope to be entered in order to resolve the
-    // |reading_aborted_| promise.
-    ScriptState::Scope scope(script_state_);
     ProcessClose();
   }
 }
@@ -207,7 +195,17 @@ void IncomingStream::ProcessClose() {
   DCHECK(fin_received_.has_value());
 
   if (fin_received_.value()) {
-    CloseAbortAndReset();
+    ScriptState::Scope scope(script_state_);
+    ExceptionState exception_state(script_state_->GetIsolate(),
+                                   ExceptionState::kUnknownContext, "", "");
+    CloseAbortAndReset(exception_state);
+    // Ignore exception because stream will be errored soon.
+    if (exception_state.HadException()) {
+      DLOG(WARNING) << "CloseAbortAndReset throws exception "
+                    << exception_state.Code() << ", "
+                    << exception_state.Message();
+      exception_state.ClearException();
+    }
   }
 
   ScriptValue error;
@@ -224,10 +222,13 @@ void IncomingStream::ProcessClose() {
   ErrorStreamAbortAndReset(error);
 }
 
-void IncomingStream::ReadFromPipeAndEnqueue() {
+void IncomingStream::ReadFromPipeAndEnqueue(ExceptionState& exception_state) {
   DVLOG(1) << "IncomingStream::ReadFromPipeAndEnqueue() this=" << this
            << " in_two_phase_read_=" << in_two_phase_read_
            << " read_pending_=" << read_pending_;
+  if (is_pipe_closed_) {
+    return;
+  }
 
   // Protect against re-entrancy.
   if (in_two_phase_read_) {
@@ -244,14 +245,20 @@ void IncomingStream::ReadFromPipeAndEnqueue() {
     case MOJO_RESULT_OK: {
       in_two_phase_read_ = true;
       // EnqueueBytes() may re-enter this method via pull().
-      EnqueueBytes(buffer, buffer_num_bytes);
+      EnqueueBytes(buffer, buffer_num_bytes, exception_state);
+      if (exception_state.HadException()) {
+        return;
+      }
       data_pipe_->EndReadData(buffer_num_bytes);
       in_two_phase_read_ = false;
       if (read_pending_) {
         read_pending_ = false;
         // pull() will not be called when another pull() is in progress, so the
         // maximum recursion depth is 1.
-        ReadFromPipeAndEnqueue();
+        ReadFromPipeAndEnqueue(exception_state);
+        if (exception_state.HadException()) {
+          return;
+        }
       }
       break;
     }
@@ -261,7 +268,7 @@ void IncomingStream::ReadFromPipeAndEnqueue() {
       return;
 
     case MOJO_RESULT_FAILED_PRECONDITION:
-      // This will be handled by close_watcher_.
+      HandlePipeClosed();
       return;
 
     default:
@@ -270,20 +277,27 @@ void IncomingStream::ReadFromPipeAndEnqueue() {
   }
 }
 
-void IncomingStream::EnqueueBytes(const void* source, uint32_t byte_length) {
+void IncomingStream::EnqueueBytes(const void* source,
+                                  uint32_t byte_length,
+                                  ExceptionState& exception_state) {
   DVLOG(1) << "IncomingStream::EnqueueBytes() this=" << this;
+
+  ScriptState::Scope scope(script_state_);
 
   auto* buffer =
       DOMUint8Array::Create(static_cast<const uint8_t*>(source), byte_length);
-  controller_->Enqueue(buffer);
+  controller_->enqueue(script_state_, NotShared(buffer), exception_state);
 }
 
-void IncomingStream::CloseAbortAndReset() {
+void IncomingStream::CloseAbortAndReset(ExceptionState& exception_state) {
   DVLOG(1) << "IncomingStream::CloseAbortAndReset() this=" << this;
 
   if (controller_) {
-    controller_->Close();
-    controller_ = nullptr;
+    ScriptState::Scope scope(script_state_);
+    readable_->CloseStream(script_state_, exception_state);
+    if (!exception_state.HadException()) {
+      controller_ = nullptr;
+    }
   }
 
   AbortAndReset(absl::nullopt);
@@ -293,7 +307,7 @@ void IncomingStream::ErrorStreamAbortAndReset(ScriptValue exception) {
   DVLOG(1) << "IncomingStream::ErrorStreamAbortAndReset() this=" << this;
 
   if (controller_) {
-    controller_->Error(exception);
+    controller_->error(script_state_, exception);
     controller_ = nullptr;
   }
 
@@ -317,7 +331,6 @@ void IncomingStream::ResetPipe() {
   DVLOG(1) << "IncomingStream::ResetPipe() this=" << this;
 
   read_watcher_.Cancel();
-  close_watcher_.Cancel();
   data_pipe_.reset();
 }
 

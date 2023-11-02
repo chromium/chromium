@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@ package org.chromium.device.geolocation;
 /**
  * Set the MockLocationProvider to LocationProviderFactory. Used for test only.
  */
-final public class LocationProviderOverrider {
+public final class LocationProviderOverrider {
     public static void setLocationProviderImpl(LocationProvider provider) {
         LocationProviderFactory.setLocationProviderImpl(provider);
     }

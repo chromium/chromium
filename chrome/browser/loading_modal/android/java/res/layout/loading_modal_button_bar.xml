@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+  <org.chromium.ui.widget.ButtonCompat
+      android:id="@+id/cancel_loading_modal"
+      android:layout_gravity="center"
+      android:layout_marginBottom="16dp"
+      android:layout_height="wrap_content"
+      android:layout_width="wrap_content"
+      android:text="@string/password_generation_dialog_cancel_button"
+      android:layout_centerHorizontal="true"
+      style="@style/TextButton"/>
+
+</RelativeLayout>

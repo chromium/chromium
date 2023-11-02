@@ -53,6 +53,8 @@ pub type host_info64_t = *mut integer_t;
 pub type processor_flavor_t = ::c_int;
 pub type thread_flavor_t = natural_t;
 pub type thread_inspect_t = ::mach_port_t;
+pub type thread_act_t = ::mach_port_t;
+pub type thread_act_array_t = *mut ::thread_act_t;
 pub type policy_t = ::c_int;
 pub type mach_vm_address_t = u64;
 pub type mach_vm_offset_t = u64;
@@ -63,6 +65,9 @@ pub type memory_object_t = ::mach_port_t;
 pub type memory_object_offset_t = ::c_ulonglong;
 pub type vm_inherit_t = ::c_uint;
 pub type vm_prot_t = ::c_int;
+
+pub type ledger_t = ::mach_port_t;
+pub type ledger_array_t = *mut ::ledger_t;
 
 pub type iconv_t = *mut ::c_void;
 
@@ -121,12 +126,16 @@ pub type vm_statistics64_t = *mut vm_statistics64;
 pub type vm_statistics64_data_t = vm_statistics64;
 
 pub type task_t = ::mach_port_t;
+pub type task_inspect_t = ::mach_port_t;
 
 pub type sysdir_search_path_enumeration_state = ::c_uint;
 
 pub type CCStatus = i32;
 pub type CCCryptorStatus = i32;
 pub type CCRNGStatus = ::CCCryptorStatus;
+
+pub type copyfile_state_t = *mut ::c_void;
+pub type copyfile_flags_t = u32;
 
 deprecated_mach! {
     pub type mach_timebase_info_data_t = mach_timebase_info;
@@ -215,6 +224,18 @@ s! {
         pub imr_interface: in_addr,
     }
 
+    pub struct ip_mreqn {
+        pub imr_multiaddr: in_addr,
+        pub imr_address: in_addr,
+        pub imr_ifindex: ::c_int,
+    }
+
+    pub struct ip_mreq_source {
+        pub imr_multiaddr: in_addr,
+        pub imr_sourceaddr: in_addr,
+        pub imr_interface: in_addr,
+    }
+
     pub struct aiocb {
         pub aio_fildes: ::c_int,
         pub aio_offset: ::off_t,
@@ -254,7 +275,7 @@ s! {
 
     #[deprecated(
         since = "0.2.55",
-        note = "Use the `mach` crate instead",
+        note = "Use the `mach2` crate instead",
     )]
     pub struct mach_timebase_info {
         pub numer: u32,
@@ -522,7 +543,7 @@ s! {
 
     #[deprecated(
         since = "0.2.55",
-        note = "Use the `mach` crate instead",
+        note = "Use the `mach2` crate instead",
     )]
     pub struct mach_header {
         pub magic: u32,
@@ -536,7 +557,7 @@ s! {
 
     #[deprecated(
         since = "0.2.55",
-        note = "Use the `mach` crate instead",
+        note = "Use the `mach2` crate instead",
     )]
     pub struct mach_header_64 {
         pub magic: u32,
@@ -655,6 +676,13 @@ s! {
 
     pub struct in_addr {
         pub s_addr: ::in_addr_t,
+    }
+
+    // net/ndrv.h
+    pub struct sockaddr_ndrv {
+        pub snd_len: ::c_uchar,
+        pub snd_family: ::c_uchar,
+        pub snd_name: [::c_uchar; 16]      // IFNAMSIZ from if.h
     }
 
     // sys/socket.h
@@ -948,6 +976,11 @@ s! {
         pub ri_interval_max_phys_footprint: u64,
         pub ri_runnable_time: u64,
     }
+
+    pub struct image_offset {
+        pub uuid: ::uuid_t,
+        pub offset: u32,
+    }
 }
 
 s_no_extra_traits! {
@@ -1018,7 +1051,8 @@ s_no_extra_traits! {
         pub f_fstypename: [::c_char; 16],
         pub f_mntonname: [::c_char; 1024],
         pub f_mntfromname: [::c_char; 1024],
-        pub f_reserved: [u32; 8],
+        pub f_flags_ext: u32,
+        pub f_reserved: [u32; 7],
     }
 
     pub struct dirent {
@@ -1158,9 +1192,9 @@ s_no_extra_traits! {
         pub ifi_noproto: u64,
         pub ifi_recvtiming: u32,
         pub ifi_xmittiming: u32,
-        #[cfg(any(target_arch = "arm", target_arch = "x86"))]
+        #[cfg(target_pointer_width = "32")]
         pub ifi_lastchange: ::timeval,
-        #[cfg(not(any(target_arch = "arm", target_arch = "x86")))]
+        #[cfg(not(target_pointer_width = "32"))]
         pub ifi_lastchange: timeval32,
     }
 
@@ -1216,6 +1250,13 @@ s_no_extra_traits! {
         pub system_time: time_value_t,
         pub policy: ::policy_t,
         pub suspend_count: integer_t,
+    }
+
+    #[cfg_attr(libc_packedN, repr(packed(4)))]
+    pub struct log2phys {
+        pub l2p_flags: ::c_uint,
+        pub l2p_contigbytes: ::off_t,
+        pub l2p_devoffset: ::off_t,
     }
 }
 
@@ -2467,6 +2508,37 @@ cfg_if! {
                 suspend_count.hash(state);
             }
         }
+
+        impl PartialEq for log2phys {
+            fn eq(&self, other: &log2phys) -> bool {
+                self.l2p_flags == other.l2p_flags
+                    && self.l2p_contigbytes == other.l2p_contigbytes
+                    && self.l2p_devoffset == other.l2p_devoffset
+            }
+        }
+        impl Eq for log2phys {}
+        impl ::fmt::Debug for log2phys {
+            fn fmt(&self, f: &mut ::fmt::Formatter) -> ::fmt::Result {
+                let l2p_flags = self.l2p_flags;
+                let l2p_contigbytes = self.l2p_contigbytes;
+                let l2p_devoffset = self.l2p_devoffset;
+                f.debug_struct("log2phys")
+                    .field("l2p_flags", &l2p_flags)
+                    .field("l2p_contigbytes", &l2p_contigbytes)
+                    .field("l2p_devoffset", &l2p_devoffset)
+                    .finish()
+            }
+        }
+        impl ::hash::Hash for log2phys {
+            fn hash<H: ::hash::Hasher>(&self, state: &mut H) {
+                let l2p_flags = self.l2p_flags;
+                let l2p_contigbytes = self.l2p_contigbytes;
+                let l2p_devoffset = self.l2p_devoffset;
+                l2p_flags.hash(state);
+                l2p_contigbytes.hash(state);
+                l2p_devoffset.hash(state);
+            }
+        }
     }
 }
 
@@ -2943,12 +3015,16 @@ pub const F_PREALLOCATE: ::c_int = 42;
 pub const F_RDADVISE: ::c_int = 44;
 pub const F_RDAHEAD: ::c_int = 45;
 pub const F_NOCACHE: ::c_int = 48;
+pub const F_LOG2PHYS: ::c_int = 49;
 pub const F_GETPATH: ::c_int = 50;
 pub const F_FULLFSYNC: ::c_int = 51;
 pub const F_FREEZE_FS: ::c_int = 53;
 pub const F_THAW_FS: ::c_int = 54;
 pub const F_GLOBAL_NOCACHE: ::c_int = 55;
 pub const F_NODIRECT: ::c_int = 62;
+pub const F_LOG2PHYS_EXT: ::c_int = 65;
+pub const F_BARRIERFSYNC: ::c_int = 85;
+pub const F_GETPATH_NOFIRMLINK: ::c_int = 102;
 
 pub const F_ALLOCATECONTIG: ::c_uint = 0x02;
 pub const F_ALLOCATEALL: ::c_uint = 0x04;
@@ -3404,6 +3480,7 @@ pub const pseudo_AF_RTIP: ::c_int = 22;
 pub const AF_IPX: ::c_int = 23;
 pub const AF_SIP: ::c_int = 24;
 pub const pseudo_AF_PIP: ::c_int = 25;
+pub const AF_NDRV: ::c_int = 27;
 pub const AF_ISDN: ::c_int = 28;
 pub const AF_E164: ::c_int = AF_ISDN;
 pub const pseudo_AF_KEY: ::c_int = 29;
@@ -3446,6 +3523,7 @@ pub const PF_SIP: ::c_int = AF_SIP;
 pub const PF_IPX: ::c_int = AF_IPX;
 pub const PF_RTIP: ::c_int = pseudo_AF_RTIP;
 pub const PF_PIP: ::c_int = pseudo_AF_PIP;
+pub const PF_NDRV: ::c_int = AF_NDRV;
 pub const PF_ISDN: ::c_int = AF_ISDN;
 pub const PF_KEY: ::c_int = pseudo_AF_KEY;
 pub const PF_INET6: ::c_int = AF_INET6;
@@ -3476,6 +3554,7 @@ pub const IP_RECVIF: ::c_int = 20;
 pub const IP_BOUND_IF: ::c_int = 25;
 pub const IP_PKTINFO: ::c_int = 26;
 pub const IP_RECVTOS: ::c_int = 27;
+pub const IP_DONTFRAG: ::c_int = 28;
 pub const IPV6_JOIN_GROUP: ::c_int = 12;
 pub const IPV6_LEAVE_GROUP: ::c_int = 13;
 pub const IPV6_CHECKSUM: ::c_int = 26;
@@ -3484,6 +3563,12 @@ pub const IPV6_TCLASS: ::c_int = 36;
 pub const IPV6_PKTINFO: ::c_int = 46;
 pub const IPV6_HOPLIMIT: ::c_int = 47;
 pub const IPV6_RECVPKTINFO: ::c_int = 61;
+pub const IPV6_DONTFRAG: ::c_int = 62;
+pub const IP_ADD_SOURCE_MEMBERSHIP: ::c_int = 70;
+pub const IP_DROP_SOURCE_MEMBERSHIP: ::c_int = 71;
+pub const IP_BLOCK_SOURCE: ::c_int = 72;
+pub const IP_UNBLOCK_SOURCE: ::c_int = 73;
+pub const IPV6_BOUND_IF: ::c_int = 125;
 
 pub const TCP_NOPUSH: ::c_int = 4;
 pub const TCP_NOOPT: ::c_int = 8;
@@ -4556,6 +4641,43 @@ pub const RUSAGE_INFO_V2: ::c_int = 2;
 pub const RUSAGE_INFO_V3: ::c_int = 3;
 pub const RUSAGE_INFO_V4: ::c_int = 4;
 
+// copyfile.h
+pub const COPYFILE_ACL: ::copyfile_flags_t = 1 << 0;
+pub const COPYFILE_STAT: ::copyfile_flags_t = 1 << 1;
+pub const COPYFILE_XATTR: ::copyfile_flags_t = 1 << 2;
+pub const COPYFILE_DATA: ::copyfile_flags_t = 1 << 3;
+pub const COPYFILE_SECURITY: ::copyfile_flags_t = COPYFILE_STAT | COPYFILE_ACL;
+pub const COPYFILE_METADATA: ::copyfile_flags_t = COPYFILE_SECURITY | COPYFILE_XATTR;
+pub const COPYFILE_RECURSIVE: ::copyfile_flags_t = 1 << 15;
+pub const COPYFILE_CHECK: ::copyfile_flags_t = 1 << 16;
+pub const COPYFILE_EXCL: ::copyfile_flags_t = 1 << 17;
+pub const COPYFILE_NOFOLLOW_SRC: ::copyfile_flags_t = 1 << 18;
+pub const COPYFILE_NOFOLLOW_DST: ::copyfile_flags_t = 1 << 19;
+pub const COPYFILE_MOVE: ::copyfile_flags_t = 1 << 20;
+pub const COPYFILE_UNLINK: ::copyfile_flags_t = 1 << 21;
+pub const COPYFILE_NOFOLLOW: ::copyfile_flags_t = COPYFILE_NOFOLLOW_SRC | COPYFILE_NOFOLLOW_DST;
+pub const COPYFILE_PACK: ::copyfile_flags_t = 1 << 22;
+pub const COPYFILE_UNPACK: ::copyfile_flags_t = 1 << 23;
+pub const COPYFILE_CLONE: ::copyfile_flags_t = 1 << 24;
+pub const COPYFILE_CLONE_FORCE: ::copyfile_flags_t = 1 << 25;
+pub const COPYFILE_RUN_IN_PLACE: ::copyfile_flags_t = 1 << 26;
+pub const COPYFILE_DATA_SPARSE: ::copyfile_flags_t = 1 << 27;
+pub const COPYFILE_PRESERVE_DST_TRACKED: ::copyfile_flags_t = 1 << 28;
+pub const COPYFILE_VERBOSE: ::copyfile_flags_t = 1 << 30;
+pub const COPYFILE_RECURSE_ERROR: ::c_int = 0;
+pub const COPYFILE_RECURSE_FILE: ::c_int = 1;
+pub const COPYFILE_RECURSE_DIR: ::c_int = 2;
+pub const COPYFILE_RECURSE_DIR_CLEANUP: ::c_int = 3;
+pub const COPYFILE_COPY_DATA: ::c_int = 4;
+pub const COPYFILE_COPY_XATTR: ::c_int = 5;
+pub const COPYFILE_START: ::c_int = 1;
+pub const COPYFILE_FINISH: ::c_int = 2;
+pub const COPYFILE_ERR: ::c_int = 3;
+pub const COPYFILE_PROGRESS: ::c_int = 4;
+pub const COPYFILE_CONTINUE: ::c_int = 0;
+pub const COPYFILE_SKIP: ::c_int = 1;
+pub const COPYFILE_QUIT: ::c_int = 2;
+
 cfg_if! {
     if #[cfg(libc_const_extern_fn)] {
         const fn __DARWIN_ALIGN32(p: usize) -> usize {
@@ -4567,6 +4689,16 @@ cfg_if! {
             const __DARWIN_ALIGNBYTES32: usize = ::mem::size_of::<u32>() - 1;
             p + __DARWIN_ALIGNBYTES32 & !__DARWIN_ALIGNBYTES32
         }
+    } else {
+        fn __DARWIN_ALIGN32(p: usize) -> usize {
+            let __DARWIN_ALIGNBYTES32: usize = ::mem::size_of::<u32>() - 1;
+            p + __DARWIN_ALIGNBYTES32 & !__DARWIN_ALIGNBYTES32
+        }
+    }
+}
+
+cfg_if! {
+    if #[cfg(libc_const_size_of)] {
         pub const THREAD_EXTENDED_POLICY_COUNT: mach_msg_type_number_t =
             (::mem::size_of::<thread_extended_policy_data_t>() / ::mem::size_of::<integer_t>())
             as mach_msg_type_number_t;
@@ -4607,10 +4739,6 @@ cfg_if! {
             (::mem::size_of::<vm_statistics64_data_t>() / ::mem::size_of::<integer_t>())
             as mach_msg_type_number_t;
     } else {
-        fn __DARWIN_ALIGN32(p: usize) -> usize {
-            let __DARWIN_ALIGNBYTES32: usize = ::mem::size_of::<u32>() - 1;
-            p + __DARWIN_ALIGNBYTES32 & !__DARWIN_ALIGNBYTES32
-        }
         pub const THREAD_EXTENDED_POLICY_COUNT: mach_msg_type_number_t = 1;
         pub const THREAD_TIME_CONSTRAINT_POLICY_COUNT: mach_msg_type_number_t = 4;
         pub const THREAD_PRECEDENCE_POLICY_COUNT: mach_msg_type_number_t = 1;
@@ -4790,9 +4918,9 @@ extern "C" {
         newp: *mut ::c_void,
         newlen: ::size_t,
     ) -> ::c_int;
-    #[deprecated(since = "0.2.55", note = "Use the mach crate")]
+    #[deprecated(since = "0.2.55", note = "Use the `mach2` crate instead")]
     pub fn mach_absolute_time() -> u64;
-    #[deprecated(since = "0.2.55", note = "Use the mach crate")]
+    #[deprecated(since = "0.2.55", note = "Use the `mach2` crate instead")]
     #[allow(deprecated)]
     pub fn mach_timebase_info(info: *mut ::mach_timebase_info) -> ::c_int;
     pub fn mach_host_self() -> mach_port_t;
@@ -4899,8 +5027,27 @@ extern "C" {
         thread_info_out: thread_info_t,
         thread_info_outCnt: *mut mach_msg_type_number_t,
     ) -> kern_return_t;
+    #[cfg_attr(doc, doc(alias = "__errno_location"))]
+    #[cfg_attr(doc, doc(alias = "errno"))]
     pub fn __error() -> *mut ::c_int;
     pub fn backtrace(buf: *mut *mut ::c_void, sz: ::c_int) -> ::c_int;
+    pub fn backtrace_symbols(addrs: *const *mut ::c_void, sz: ::c_int) -> *mut *mut ::c_char;
+    pub fn backtrace_symbols_fd(addrs: *const *mut ::c_void, sz: ::c_int, fd: ::c_int);
+    pub fn backtrace_from_fp(
+        startfp: *mut ::c_void,
+        array: *mut *mut ::c_void,
+        size: ::c_int,
+    ) -> ::c_int;
+    pub fn backtrace_image_offsets(
+        array: *const *mut ::c_void,
+        image_offsets: *mut image_offset,
+        size: ::c_int,
+    );
+    pub fn backtrace_async(
+        array: *mut *mut ::c_void,
+        length: ::size_t,
+        task_id: *mut u32,
+    ) -> ::size_t;
     #[cfg_attr(
         all(target_os = "macos", not(target_arch = "aarch64")),
         link_name = "statfs$INODE64"
@@ -4931,6 +5078,12 @@ extern "C" {
     pub fn mount(
         src: *const ::c_char,
         target: *const ::c_char,
+        flags: ::c_int,
+        data: *mut ::c_void,
+    ) -> ::c_int;
+    pub fn fmount(
+        src: *const ::c_char,
+        fd: ::c_int,
         flags: ::c_int,
         data: *mut ::c_void,
     ) -> ::c_int;
@@ -5056,14 +5209,14 @@ extern "C" {
     pub fn brk(addr: *const ::c_void) -> *mut ::c_void;
     pub fn sbrk(increment: ::c_int) -> *mut ::c_void;
     pub fn settimeofday(tv: *const ::timeval, tz: *const ::timezone) -> ::c_int;
-    #[deprecated(since = "0.2.55", note = "Use the mach crate")]
+    #[deprecated(since = "0.2.55", note = "Use the `mach2` crate instead")]
     pub fn _dyld_image_count() -> u32;
-    #[deprecated(since = "0.2.55", note = "Use the mach crate")]
+    #[deprecated(since = "0.2.55", note = "Use the `mach2` crate instead")]
     #[allow(deprecated)]
     pub fn _dyld_get_image_header(image_index: u32) -> *const mach_header;
-    #[deprecated(since = "0.2.55", note = "Use the mach crate")]
+    #[deprecated(since = "0.2.55", note = "Use the `mach2` crate instead")]
     pub fn _dyld_get_image_vmaddr_slide(image_index: u32) -> ::intptr_t;
-    #[deprecated(since = "0.2.55", note = "Use the mach crate")]
+    #[deprecated(since = "0.2.55", note = "Use the `mach2` crate instead")]
     pub fn _dyld_get_image_name(image_index: u32) -> *const ::c_char;
 
     pub fn posix_spawn(
@@ -5110,6 +5263,20 @@ extern "C" {
         flags: *mut ::pid_t,
     ) -> ::c_int;
     pub fn posix_spawnattr_setpgroup(attr: *mut posix_spawnattr_t, flags: ::pid_t) -> ::c_int;
+    pub fn posix_spawnattr_setarchpref_np(
+        attr: *mut posix_spawnattr_t,
+        count: ::size_t,
+        pref: *mut ::cpu_type_t,
+        subpref: *mut ::cpu_subtype_t,
+        ocount: *mut ::size_t,
+    ) -> ::c_int;
+    pub fn posix_spawnattr_getarchpref_np(
+        attr: *const posix_spawnattr_t,
+        count: ::size_t,
+        pref: *mut ::cpu_type_t,
+        subpref: *mut ::cpu_subtype_t,
+        ocount: *mut ::size_t,
+    ) -> ::c_int;
 
     pub fn posix_spawn_file_actions_init(actions: *mut posix_spawn_file_actions_t) -> ::c_int;
     pub fn posix_spawn_file_actions_destroy(actions: *mut posix_spawn_file_actions_t) -> ::c_int;
@@ -5175,6 +5342,19 @@ extern "C" {
         flags: u32,
     ) -> ::c_int;
 
+    pub fn copyfile(
+        from: *const ::c_char,
+        to: *const ::c_char,
+        state: copyfile_state_t,
+        flags: copyfile_flags_t,
+    ) -> ::c_int;
+    pub fn fcopyfile(
+        from: ::c_int,
+        to: ::c_int,
+        state: copyfile_state_t,
+        flags: copyfile_flags_t,
+    ) -> ::c_int;
+
     // Added in macOS 10.13
     // ISO/IEC 9899:2011 ("ISO C11") K.3.7.4.1
     pub fn memset_s(s: *mut ::c_void, smax: ::size_t, c: ::c_int, n: ::size_t) -> ::c_int;
@@ -5182,6 +5362,14 @@ extern "C" {
     pub fn memset_pattern4(b: *mut ::c_void, pattern4: *const ::c_void, len: ::size_t);
     pub fn memset_pattern8(b: *mut ::c_void, pattern8: *const ::c_void, len: ::size_t);
     pub fn memset_pattern16(b: *mut ::c_void, pattern16: *const ::c_void, len: ::size_t);
+
+    // Inherited from BSD but available from Big Sur only
+    pub fn strtonum(
+        __numstr: *const ::c_char,
+        __minval: ::c_longlong,
+        __maxval: ::c_longlong,
+        errstrp: *mut *const ::c_char,
+    ) -> ::c_longlong;
 
     pub fn mstats() -> mstats;
     pub fn malloc_printf(format: *const ::c_char, ...);
@@ -5317,6 +5505,19 @@ extern "C" {
         task_info_out: task_info_t,
         task_info_count: *mut mach_msg_type_number_t,
     ) -> ::kern_return_t;
+    pub fn task_create(
+        target_task: ::task_t,
+        ledgers: ::ledger_array_t,
+        ledgersCnt: ::mach_msg_type_number_t,
+        inherit_memory: ::boolean_t,
+        child_task: *mut ::task_t,
+    ) -> ::kern_return_t;
+    pub fn task_terminate(target_task: ::task_t) -> ::kern_return_t;
+    pub fn task_threads(
+        target_task: ::task_inspect_t,
+        act_list: *mut ::thread_act_array_t,
+        act_listCnt: *mut ::mach_msg_type_number_t,
+    ) -> ::kern_return_t;
     pub fn host_statistics(
         host_priv: host_t,
         flavor: host_flavor_t,
@@ -5344,12 +5545,24 @@ pub unsafe fn mach_task_self() -> ::mach_port_t {
 cfg_if! {
     if #[cfg(target_os = "macos")] {
         extern "C" {
+            pub fn clock_settime(clock_id: ::clockid_t, tp: *const ::timespec) -> ::c_int;
+        }
+    }
+}
+cfg_if! {
+    if #[cfg(any(target_os = "macos", target_os = "ios"))] {
+        extern "C" {
             pub fn memmem(
                 haystack: *const ::c_void,
                 haystacklen: ::size_t,
                 needle: *const ::c_void,
                 needlelen: ::size_t,
             ) -> *mut ::c_void;
+            pub fn task_set_info(target_task: ::task_t,
+                                 flavor: ::task_flavor_t,
+                                 task_info_in: ::task_info_t,
+                                 task_info_inCnt: ::mach_msg_type_number_t
+            ) -> ::kern_return_t;
         }
     }
 }
@@ -5368,10 +5581,10 @@ extern "C" {
 }
 
 cfg_if! {
-    if #[cfg(any(target_arch = "arm", target_arch = "x86"))] {
+    if #[cfg(target_pointer_width = "32")] {
         mod b32;
         pub use self::b32::*;
-    } else if #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))] {
+    } else if #[cfg(target_pointer_width = "64")] {
         mod b64;
         pub use self::b64::*;
     } else {

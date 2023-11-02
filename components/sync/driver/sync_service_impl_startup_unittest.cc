@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,12 +12,11 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/driver/data_type_manager_impl.h"
-#include "components/sync/driver/fake_data_type_controller.h"
-#include "components/sync/driver/fake_sync_api_component_factory.h"
-#include "components/sync/driver/sync_client_mock.h"
-#include "components/sync/driver/sync_driver_switches.h"
-#include "components/sync/driver/sync_service_impl_bundle.h"
-#include "components/sync/test/engine/fake_sync_engine.h"
+#include "components/sync/test/fake_data_type_controller.h"
+#include "components/sync/test/fake_sync_api_component_factory.h"
+#include "components/sync/test/fake_sync_engine.h"
+#include "components/sync/test/sync_client_mock.h"
+#include "components/sync/test/sync_service_impl_bundle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -172,7 +171,8 @@ TEST_F(SyncServiceImplStartupTest, StartFirstTime) {
   // causes it to try starting up the engine. We're not signed in yet though, so
   // that won't work.
   sync_service()->GetUserSettings()->SetSyncRequested(true);
-  auto sync_blocker = sync_service()->GetSetupInProgressHandle();
+  std::unique_ptr<SyncSetupInProgressHandle> sync_blocker =
+      sync_service()->GetSetupInProgressHandle();
   EXPECT_FALSE(sync_service()->IsEngineInitialized());
   EXPECT_EQ(
       SyncService::DisableReasonSet(SyncService::DISABLE_REASON_NOT_SIGNED_IN),
@@ -508,7 +508,7 @@ TEST_F(SyncServiceImplStartupTest, StartDontRecoverDatatypePrefs) {
 TEST_F(SyncServiceImplStartupTest, ManagedStartup) {
   // Sync was previously enabled, but a policy was set while Chrome wasn't
   // running.
-  sync_prefs()->SetManagedForTest(true);
+  pref_service()->SetBoolean(prefs::kSyncManaged, true);
   sync_prefs()->SetSyncRequested(true);
   sync_prefs()->SetFirstSetupComplete();
 
@@ -548,7 +548,7 @@ TEST_F(SyncServiceImplStartupTest, SwitchManaged) {
   ASSERT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_call_count());
 
   // The service should stop when switching to managed mode.
-  sync_prefs()->SetManagedForTest(true);
+  pref_service()->SetBoolean(prefs::kSyncManaged, true);
   // Give re-startup a chance to happen (it shouldn't!).
   base::RunLoop().RunUntilIdle();
   // Sync was disabled due to the policy, setting SyncRequested to false and
@@ -567,7 +567,7 @@ TEST_F(SyncServiceImplStartupTest, SwitchManaged) {
   // When switching back to unmanaged, Sync-the-transport should start up
   // automatically, which causes (re)creation of SyncEngine and
   // DataTypeManager.
-  sync_prefs()->SetManagedForTest(false);
+  pref_service()->SetBoolean(prefs::kSyncManaged, false);
   base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(
@@ -598,7 +598,8 @@ TEST_F(SyncServiceImplStartupTest, StartDownloadFailed) {
   // Simulate a failure while downloading control types.
   engine()->TriggerInitializationCompletion(/*success=*/false);
 
-  auto sync_blocker = sync_service()->GetSetupInProgressHandle();
+  std::unique_ptr<SyncSetupInProgressHandle> sync_blocker =
+      sync_service()->GetSetupInProgressHandle();
   sync_blocker.reset();
   EXPECT_EQ(SyncService::DisableReasonSet(
                 SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR),
@@ -646,7 +647,8 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceFirstTime) {
   // Initiate Sync (the feature) setup before the engine initializes itself in
   // transport mode.
   sync_service()->GetUserSettings()->SetSyncRequested(true);
-  auto setup_in_progress_handle = sync_service()->GetSetupInProgressHandle();
+  std::unique_ptr<SyncSetupInProgressHandle> setup_in_progress_handle =
+      sync_service()->GetSetupInProgressHandle();
 
   // Once the engine calls back and says it's initialized, we're just waiting
   // for the user to finish the initial configuration (choosing data types etc.)

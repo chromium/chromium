@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/app_window/app_window_registry.h"
@@ -21,6 +23,10 @@ class StoragePartition;
 }
 
 namespace extensions {
+
+// When enabled, cookies in the `launchWebAuthFlow()` partition are persisted
+// across browser restarts.
+BASE_DECLARE_FEATURE(kPersistentStorageForWebAuthFlow);
 
 // Controller class for web based auth flows. The WebAuthFlow creates
 // a dialog window in the scope approval component app by firing an
@@ -129,13 +135,13 @@ class WebAuthFlow : public content::WebContentsObserver,
   void BeforeUrlLoaded(const GURL& url);
   void AfterUrlLoaded();
 
-  Delegate* delegate_;
-  Profile* profile_;
+  raw_ptr<Delegate> delegate_;
+  raw_ptr<Profile> profile_;
   GURL provider_url_;
   Mode mode_;
   Partition partition_;
 
-  AppWindow* app_window_;
+  raw_ptr<AppWindow> app_window_;
   std::string app_window_key_;
   bool embedded_window_created_;
 };

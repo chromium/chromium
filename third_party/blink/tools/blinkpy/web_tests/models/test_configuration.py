@@ -255,7 +255,7 @@ class TestConfigurationConverter(object):
             return False
 
         # 2) Collapse specifier sets with common specifiers:
-        #   (win7, release), (win7, debug) --> (win7, x86)
+        #   (win11, release), (win11, debug) --> (win11, x86)
         for size, collapsing_sets in self._collapsing_sets_by_size.items():
             while try_collapsing(size, collapsing_sets):
                 pass
@@ -275,19 +275,19 @@ class TestConfigurationConverter(object):
             return False
 
         # 3) Abbreviate specifier sets by combining specifiers across categories.
-        #   (win7, release), (win10, release) --> (win7, win10, release)
+        #   (win10, release), (win11, release) --> (win10, win11, release)
         while try_abbreviating(list(self._collapsing_sets_by_size.values())):
             pass
 
         # 4) Substitute specifier subsets that match macros within each set:
-        #   (win7, win10, release) -> (win, release)
+        #   (win10, win11, release) -> (win, release)
         self.collapse_macros(self.configuration_macros, specifiers_list)
 
         macro_keys = set(self.configuration_macros.keys())
 
         # 5) Collapsing macros may have created combinations the can now be abbreviated.
-        #   (win7, release), (linux, x86, release), (linux, x86_64, release)
-        #   --> (win7, release), (linux, release) --> (win7, linux, release)
+        #   (win11, release), (linux, x86, release), (linux, x86_64, release)
+        #   --> (win11, release), (linux, release) --> (win11, linux, release)
         while try_abbreviating(
             [self._collapsing_sets_by_category['version'] | macro_keys]):
             pass

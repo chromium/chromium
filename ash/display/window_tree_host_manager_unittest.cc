@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,12 +14,14 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
+#include "ash/test/test_widget_builder.h"
 #include "ash/test_shell_delegate.h"
 #include "ash/wm/cursor_manager_test_api.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/env.h"
@@ -27,7 +29,9 @@
 #include "ui/aura/window_tracker.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/cursor.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/display.h"
+#include "ui/display/display_features.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/display_layout_builder.h"
 #include "ui/display/display_observer.h"
@@ -40,6 +44,9 @@
 #include "ui/events/event_handler.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/event_monitor.h"
 #include "ui/views/mouse_watcher.h"
 #include "ui/views/mouse_watcher_view_host.h"
 #include "ui/views/view.h"
@@ -245,7 +252,7 @@ class WindowTreeHostManagerShutdownTest : public AshTestBase,
     // Make sure that primary display is accessible after shutdown.
     display::Display primary =
         display::Screen::GetScreen()->GetPrimaryDisplay();
-    EXPECT_EQ("0,0 444x333", primary.bounds().ToString());
+    EXPECT_EQ(gfx::Rect(0, 0, 444, 333), primary.bounds());
     EXPECT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
   }
 };
@@ -317,8 +324,8 @@ class TestEventHandler : public ui::EventHandler {
     event->StopPropagation();
   }
 
-  std::string GetLocationAndReset() {
-    std::string result = mouse_location_.ToString();
+  gfx::Point GetLocationAndReset() {
+    gfx::Point result = mouse_location_;
     mouse_location_.SetPoint(0, 0);
     target_root_ = nullptr;
     return result;
@@ -391,7 +398,7 @@ TEST_F(WindowTreeHostManagerTest, SecondaryDisplayLayout) {
   EXPECT_EQ(2, observer.GetWorkareaChangedCountAndReset());
   EXPECT_EQ(0, observer.GetFocusChangedCountAndReset());
   EXPECT_EQ(0, observer.GetActivationChangedCountAndReset());
-  gfx::Insets insets(5, 5, 5, 5);
+  gfx::Insets insets(5);
   int64_t secondary_display_id =
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay()
@@ -399,9 +406,9 @@ TEST_F(WindowTreeHostManagerTest, SecondaryDisplayLayout) {
   display_manager()->UpdateWorkAreaOfDisplay(secondary_display_id, insets);
 
   // Default layout is RIGHT.
-  EXPECT_EQ("0,0 600x500", GetPrimaryDisplay().bounds().ToString());
-  EXPECT_EQ("600,0 500x400", GetSecondaryDisplay().bounds().ToString());
-  EXPECT_EQ("605,5 490x390", GetSecondaryDisplay().work_area().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 600, 500), GetPrimaryDisplay().bounds());
+  EXPECT_EQ(gfx::Rect(600, 0, 500, 400), GetSecondaryDisplay().bounds());
+  EXPECT_EQ(gfx::Rect(605, 5, 490, 390), GetSecondaryDisplay().work_area());
   EXPECT_EQ(0, observer.GetFocusChangedCountAndReset());
   EXPECT_EQ(0, observer.GetActivationChangedCountAndReset());
 
@@ -415,9 +422,9 @@ TEST_F(WindowTreeHostManagerTest, SecondaryDisplayLayout) {
   EXPECT_EQ(0, observer.GetFocusChangedCountAndReset());
   EXPECT_EQ(0, observer.GetActivationChangedCountAndReset());
   EXPECT_EQ(secondary_display_id, observer.GetChangedDisplayIdAndReset());
-  EXPECT_EQ("0,0 600x500", GetPrimaryDisplay().bounds().ToString());
-  EXPECT_EQ("0,500 500x400", GetSecondaryDisplay().bounds().ToString());
-  EXPECT_EQ("5,505 490x390", GetSecondaryDisplay().work_area().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 600, 500), GetPrimaryDisplay().bounds());
+  EXPECT_EQ(gfx::Rect(0, 500, 500, 400), GetSecondaryDisplay().bounds());
+  EXPECT_EQ(gfx::Rect(5, 505, 490, 390), GetSecondaryDisplay().work_area());
 
   // Layout the secondary display to the left of the primary.
   SetSecondaryDisplayLayout(display::DisplayPlacement::LEFT);
@@ -427,9 +434,9 @@ TEST_F(WindowTreeHostManagerTest, SecondaryDisplayLayout) {
   EXPECT_EQ(0, observer.GetFocusChangedCountAndReset());
   EXPECT_EQ(0, observer.GetActivationChangedCountAndReset());
   EXPECT_EQ(secondary_display_id, observer.GetChangedDisplayIdAndReset());
-  EXPECT_EQ("0,0 600x500", GetPrimaryDisplay().bounds().ToString());
-  EXPECT_EQ("-500,0 500x400", GetSecondaryDisplay().bounds().ToString());
-  EXPECT_EQ("-495,5 490x390", GetSecondaryDisplay().work_area().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 600, 500), GetPrimaryDisplay().bounds());
+  EXPECT_EQ(gfx::Rect(-500, 0, 500, 400), GetSecondaryDisplay().bounds());
+  EXPECT_EQ(gfx::Rect(-495, 5, 490, 390), GetSecondaryDisplay().work_area());
 
   // Layout the secondary display to the top of the primary.
   SetSecondaryDisplayLayout(display::DisplayPlacement::TOP);
@@ -439,9 +446,9 @@ TEST_F(WindowTreeHostManagerTest, SecondaryDisplayLayout) {
   EXPECT_EQ(0, observer.GetFocusChangedCountAndReset());
   EXPECT_EQ(0, observer.GetActivationChangedCountAndReset());
   EXPECT_EQ(secondary_display_id, observer.GetChangedDisplayIdAndReset());
-  EXPECT_EQ("0,0 600x500", GetPrimaryDisplay().bounds().ToString());
-  EXPECT_EQ("0,-400 500x400", GetSecondaryDisplay().bounds().ToString());
-  EXPECT_EQ("5,-395 490x390", GetSecondaryDisplay().work_area().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 600, 500), GetPrimaryDisplay().bounds());
+  EXPECT_EQ(gfx::Rect(0, -400, 500, 400), GetSecondaryDisplay().bounds());
+  EXPECT_EQ(gfx::Rect(5, -395, 490, 390), GetSecondaryDisplay().work_area());
 
   // Layout to the right with an offset.
   SetSecondaryDisplayLayoutAndOffset(display::DisplayPlacement::RIGHT, 300);
@@ -451,8 +458,8 @@ TEST_F(WindowTreeHostManagerTest, SecondaryDisplayLayout) {
   EXPECT_EQ(0, observer.GetFocusChangedCountAndReset());
   EXPECT_EQ(0, observer.GetActivationChangedCountAndReset());
   EXPECT_EQ(secondary_display_id, observer.GetChangedDisplayIdAndReset());
-  EXPECT_EQ("0,0 600x500", GetPrimaryDisplay().bounds().ToString());
-  EXPECT_EQ("600,300 500x400", GetSecondaryDisplay().bounds().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 600, 500), GetPrimaryDisplay().bounds());
+  EXPECT_EQ(gfx::Rect(600, 300, 500, 400), GetSecondaryDisplay().bounds());
 
   // Keep the minimum 100.
   SetSecondaryDisplayLayoutAndOffset(display::DisplayPlacement::RIGHT, 490);
@@ -462,8 +469,8 @@ TEST_F(WindowTreeHostManagerTest, SecondaryDisplayLayout) {
   EXPECT_EQ(0, observer.GetFocusChangedCountAndReset());
   EXPECT_EQ(0, observer.GetActivationChangedCountAndReset());
   EXPECT_EQ(secondary_display_id, observer.GetChangedDisplayIdAndReset());
-  EXPECT_EQ("0,0 600x500", GetPrimaryDisplay().bounds().ToString());
-  EXPECT_EQ("600,400 500x400", GetSecondaryDisplay().bounds().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 600, 500), GetPrimaryDisplay().bounds());
+  EXPECT_EQ(gfx::Rect(600, 400, 500, 400), GetSecondaryDisplay().bounds());
 
   SetSecondaryDisplayLayoutAndOffset(display::DisplayPlacement::RIGHT, -400);
   EXPECT_EQ(secondary_display_id, observer.GetChangedDisplayIdAndReset());
@@ -472,8 +479,8 @@ TEST_F(WindowTreeHostManagerTest, SecondaryDisplayLayout) {
   EXPECT_EQ(1, observer.CountAndReset());  // resize and add
   EXPECT_EQ(0, observer.GetFocusChangedCountAndReset());
   EXPECT_EQ(0, observer.GetActivationChangedCountAndReset());
-  EXPECT_EQ("0,0 600x500", GetPrimaryDisplay().bounds().ToString());
-  EXPECT_EQ("600,-300 500x400", GetSecondaryDisplay().bounds().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 600, 500), GetPrimaryDisplay().bounds());
+  EXPECT_EQ(gfx::Rect(600, -300, 500, 400), GetSecondaryDisplay().bounds());
 
   //  Layout to the bottom with an offset.
   SetSecondaryDisplayLayoutAndOffset(display::DisplayPlacement::BOTTOM, -200);
@@ -483,8 +490,8 @@ TEST_F(WindowTreeHostManagerTest, SecondaryDisplayLayout) {
   EXPECT_EQ(1, observer.CountAndReset());  // resize and add
   EXPECT_EQ(0, observer.GetFocusChangedCountAndReset());
   EXPECT_EQ(0, observer.GetActivationChangedCountAndReset());
-  EXPECT_EQ("0,0 600x500", GetPrimaryDisplay().bounds().ToString());
-  EXPECT_EQ("-200,500 500x400", GetSecondaryDisplay().bounds().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 600, 500), GetPrimaryDisplay().bounds());
+  EXPECT_EQ(gfx::Rect(-200, 500, 500, 400), GetSecondaryDisplay().bounds());
 
   // Keep the minimum 100.
   SetSecondaryDisplayLayoutAndOffset(display::DisplayPlacement::BOTTOM, 590);
@@ -494,8 +501,8 @@ TEST_F(WindowTreeHostManagerTest, SecondaryDisplayLayout) {
   EXPECT_EQ(1, observer.CountAndReset());  // resize and add
   EXPECT_EQ(0, observer.GetFocusChangedCountAndReset());
   EXPECT_EQ(0, observer.GetActivationChangedCountAndReset());
-  EXPECT_EQ("0,0 600x500", GetPrimaryDisplay().bounds().ToString());
-  EXPECT_EQ("500,500 500x400", GetSecondaryDisplay().bounds().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 600, 500), GetPrimaryDisplay().bounds());
+  EXPECT_EQ(gfx::Rect(500, 500, 500, 400), GetSecondaryDisplay().bounds());
 
   SetSecondaryDisplayLayoutAndOffset(display::DisplayPlacement::BOTTOM, -500);
   EXPECT_EQ(secondary_display_id, observer.GetChangedDisplayIdAndReset());
@@ -504,8 +511,8 @@ TEST_F(WindowTreeHostManagerTest, SecondaryDisplayLayout) {
   EXPECT_EQ(1, observer.CountAndReset());  // resize and add
   EXPECT_EQ(0, observer.GetFocusChangedCountAndReset());
   EXPECT_EQ(0, observer.GetActivationChangedCountAndReset());
-  EXPECT_EQ("0,0 600x500", GetPrimaryDisplay().bounds().ToString());
-  EXPECT_EQ("-400,500 500x400", GetSecondaryDisplay().bounds().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 600, 500), GetPrimaryDisplay().bounds());
+  EXPECT_EQ(gfx::Rect(-400, 500, 500, 400), GetSecondaryDisplay().bounds());
 
   // Setting the same layout shouldn't invoke observers.
   SetSecondaryDisplayLayoutAndOffset(display::DisplayPlacement::BOTTOM, -500);
@@ -515,8 +522,8 @@ TEST_F(WindowTreeHostManagerTest, SecondaryDisplayLayout) {
   EXPECT_EQ(0, observer.CountAndReset());  // resize and add
   EXPECT_EQ(0, observer.GetFocusChangedCountAndReset());
   EXPECT_EQ(0, observer.GetActivationChangedCountAndReset());
-  EXPECT_EQ("0,0 600x500", GetPrimaryDisplay().bounds().ToString());
-  EXPECT_EQ("-400,500 500x400", GetSecondaryDisplay().bounds().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 600, 500), GetPrimaryDisplay().bounds());
+  EXPECT_EQ(gfx::Rect(-400, 500, 500, 400), GetSecondaryDisplay().bounds());
 
   UpdateDisplay("600x500");
   EXPECT_LE(1, observer.GetFocusChangedCountAndReset());
@@ -572,7 +579,7 @@ TEST_F(WindowTreeHostManagerTest, MirrorToDockedWithFullscreen) {
   const WMEvent toggle_fullscreen_event(WM_EVENT_TOGGLE_FULLSCREEN);
   window_state->OnWMEvent(&toggle_fullscreen_event);
   EXPECT_TRUE(window_state->IsFullscreen());
-  EXPECT_EQ("0,0 300x250", w1->bounds().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 300, 250), w1->bounds());
   // Dock mode.
   TestObserver observer;
   display_info_list.clear();
@@ -590,7 +597,7 @@ TEST_F(WindowTreeHostManagerTest, MirrorToDockedWithFullscreen) {
   EXPECT_EQ(0, observer.GetActivationChangedCountAndReset());
 
   EXPECT_TRUE(window_state->IsFullscreen());
-  EXPECT_EQ("0,0 600x500", w1->bounds().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 600, 500), w1->bounds());
 }
 
 TEST_F(WindowTreeHostManagerTest, BoundsUpdated) {
@@ -605,33 +612,33 @@ TEST_F(WindowTreeHostManagerTest, BoundsUpdated) {
   EXPECT_EQ(0, observer.GetFocusChangedCountAndReset());
   EXPECT_EQ(0, observer.GetActivationChangedCountAndReset());
 
-  gfx::Insets insets(5, 5, 5, 5);
+  gfx::Insets insets(5);
   display_manager()->UpdateWorkAreaOfDisplay(GetSecondaryDisplay().id(),
                                              insets);
 
-  EXPECT_EQ("0,0 300x200", GetPrimaryDisplay().bounds().ToString());
-  EXPECT_EQ("0,200 400x300", GetSecondaryDisplay().bounds().ToString());
-  EXPECT_EQ("5,205 390x290", GetSecondaryDisplay().work_area().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 300, 200), GetPrimaryDisplay().bounds());
+  EXPECT_EQ(gfx::Rect(0, 200, 400, 300), GetSecondaryDisplay().bounds());
+  EXPECT_EQ(gfx::Rect(5, 205, 390, 290), GetSecondaryDisplay().work_area());
 
   UpdateDisplay("500x400,300x200");
   EXPECT_EQ(1, observer.CountAndReset());  // two resizes
   EXPECT_EQ(0, observer.GetFocusChangedCountAndReset());
   EXPECT_EQ(0, observer.GetActivationChangedCountAndReset());
-  EXPECT_EQ("0,0 500x400", GetPrimaryDisplay().bounds().ToString());
-  EXPECT_EQ("0,400 300x200", GetSecondaryDisplay().bounds().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 500, 400), GetPrimaryDisplay().bounds());
+  EXPECT_EQ(gfx::Rect(0, 400, 300, 200), GetSecondaryDisplay().bounds());
 
   UpdateDisplay("500x400,400x300");
   EXPECT_EQ(1, observer.CountAndReset());
   EXPECT_EQ(0, observer.GetFocusChangedCountAndReset());
   EXPECT_EQ(0, observer.GetActivationChangedCountAndReset());
-  EXPECT_EQ("0,0 500x400", GetPrimaryDisplay().bounds().ToString());
-  EXPECT_EQ("0,400 400x300", GetSecondaryDisplay().bounds().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 500, 400), GetPrimaryDisplay().bounds());
+  EXPECT_EQ(gfx::Rect(0, 400, 400, 300), GetSecondaryDisplay().bounds());
 
   UpdateDisplay("500x400");
   EXPECT_EQ(1, observer.CountAndReset());
   EXPECT_LE(1, observer.GetFocusChangedCountAndReset());
   EXPECT_LE(1, observer.GetActivationChangedCountAndReset());
-  EXPECT_EQ("0,0 500x400", GetPrimaryDisplay().bounds().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 500, 400), GetPrimaryDisplay().bounds());
   EXPECT_EQ(1, display::Screen::GetScreen()->GetNumDisplays());
 
   UpdateDisplay("400x500*2,400x300");
@@ -639,8 +646,8 @@ TEST_F(WindowTreeHostManagerTest, BoundsUpdated) {
   EXPECT_EQ(0, observer.GetFocusChangedCountAndReset());
   EXPECT_EQ(0, observer.GetActivationChangedCountAndReset());
   ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
-  EXPECT_EQ("0,0 200x250", GetPrimaryDisplay().bounds().ToString());
-  EXPECT_EQ("0,250 400x300", GetSecondaryDisplay().bounds().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 200, 250), GetPrimaryDisplay().bounds());
+  EXPECT_EQ(gfx::Rect(0, 250, 400, 300), GetSecondaryDisplay().bounds());
 
   // No change
   UpdateDisplay("400x500*2,400x300");
@@ -729,11 +736,112 @@ TEST_F(WindowTreeHostManagerTest, FindNearestDisplay) {
                 .id());
 }
 
+TEST_F(WindowTreeHostManagerTest,
+       SettingAndUpdatingRoundedCornerPropertyOnDisplay) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(display::features::kRoundedDisplay);
+
+  WindowTreeHostManager* window_tree_host_manager =
+      Shell::Get()->window_tree_host_manager();
+
+  // Adding rounded corners on the primary display.
+  UpdateDisplay("300x200~15");
+
+  display::test::DisplayManagerTestApi display_manager_test(display_manager());
+
+  aura::Window* primary_root = Shell::GetPrimaryRootWindow();
+
+  EXPECT_EQ(gfx::RoundedCornersF(15.0),
+            primary_root->layer()->rounded_corner_radii());
+
+  // Adding a secondary display should not propagate the rounded corner
+  // property.
+  UpdateDisplay("300x200~15,300x200");
+
+  display::Display secondary_display =
+      display_manager_test.GetSecondaryDisplay();
+  aura::Window* secondary_root =
+      window_tree_host_manager->GetRootWindowForDisplayId(
+          secondary_display.id());
+
+  EXPECT_EQ(gfx::RoundedCornersF(15.0),
+            primary_root->layer()->rounded_corner_radii());
+  EXPECT_EQ(primary_root->layer()->is_fast_rounded_corner(), true);
+
+  EXPECT_EQ(gfx::RoundedCornersF(0.0),
+            secondary_root->layer()->rounded_corner_radii());
+
+  // Removing the secondary display should not effect the rounded corner
+  // property.
+  UpdateDisplay("300x200~15");
+  EXPECT_EQ(gfx::RoundedCornersF(15.0),
+            primary_root->layer()->rounded_corner_radii());
+  EXPECT_EQ(primary_root->layer()->is_fast_rounded_corner(), true);
+
+  // Changing the the metrics should not effect rounded corner property.
+  UpdateDisplay("10+20-300x200/ol~15");
+  EXPECT_EQ(gfx::RoundedCornersF(15.0),
+            primary_root->layer()->rounded_corner_radii());
+  EXPECT_EQ(primary_root->layer()->is_fast_rounded_corner(), true);
+
+  // Updating rounded corners property on the display.
+  UpdateDisplay("300x200~15|15|12|12");
+  EXPECT_EQ(gfx::RoundedCornersF(15.0, 15.0, 12.0, 12.0),
+            primary_root->layer()->rounded_corner_radii());
+  EXPECT_EQ(primary_root->layer()->is_fast_rounded_corner(), true);
+}
+
+TEST_F(WindowTreeHostManagerTest,
+       SwappingPrimaryDisplayShouldNotSwapRoundedCornersOnDisplays) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(display::features::kRoundedDisplay);
+
+  WindowTreeHostManager* window_tree_host_manager =
+      Shell::Get()->window_tree_host_manager();
+
+  // primary display has rounded corners.
+  UpdateDisplay("300x200~15,400x300");
+
+  display::test::DisplayManagerTestApi display_manager_test(display_manager());
+
+  display::Display secondary_display =
+      display_manager_test.GetSecondaryDisplay();
+
+  aura::Window* primary_root = Shell::GetPrimaryRootWindow();
+  aura::Window* secondary_root =
+      window_tree_host_manager->GetRootWindowForDisplayId(
+          secondary_display.id());
+
+  EXPECT_EQ(gfx::RoundedCornersF(15.0),
+            primary_root->layer()->rounded_corner_radii());
+  EXPECT_EQ(primary_root->layer()->is_fast_rounded_corner(), true);
+  EXPECT_EQ(gfx::RoundedCornersF(0.0),
+            secondary_root->layer()->rounded_corner_radii());
+
+  // Switch primary and secondary by display ID.
+  window_tree_host_manager->SetPrimaryDisplayId(secondary_display.id());
+
+  // Getting the new primary and secondary root windows after the swap.
+  secondary_display = display_manager_test.GetSecondaryDisplay();
+
+  primary_root = Shell::GetPrimaryRootWindow();
+  secondary_root = window_tree_host_manager->GetRootWindowForDisplayId(
+      secondary_display.id());
+
+  // After swapping primary display, the root windows are swapped. Secondary
+  // root now belongs to the display with rounded corners.
+  EXPECT_EQ(gfx::RoundedCornersF(15.0),
+            secondary_root->layer()->rounded_corner_radii());
+  EXPECT_EQ(secondary_root->layer()->is_fast_rounded_corner(), true);
+  EXPECT_EQ(gfx::RoundedCornersF(0.0),
+            primary_root->layer()->rounded_corner_radii());
+}
+
 TEST_F(WindowTreeHostManagerTest, SwapPrimaryById) {
   WindowTreeHostManager* window_tree_host_manager =
       Shell::Get()->window_tree_host_manager();
 
-  UpdateDisplay("300x200,400x300");
+  UpdateDisplay("300x200,400x300/h");
   const int shelf_inset_first = 200 - ShelfConfig::Get()->shelf_size();
   const int shelf_inset_second = 300 - ShelfConfig::Get()->shelf_size();
   display::test::DisplayManagerTestApi display_manager_test(display_manager());
@@ -765,12 +873,12 @@ TEST_F(WindowTreeHostManagerTest, SwapPrimaryById) {
       primary_display.id(),
       display::Screen::GetScreen()->GetDisplayNearestWindow(nullptr).id());
 
-  EXPECT_EQ("0,0 300x200", primary_display.bounds().ToString());
-  EXPECT_EQ(gfx::Rect(0, 0, 300, shelf_inset_first).ToString(),
-            primary_display.work_area().ToString());
-  EXPECT_EQ("300,0 400x300", secondary_display.bounds().ToString());
-  EXPECT_EQ(gfx::Rect(300, 0, 400, shelf_inset_second).ToString(),
-            secondary_display.work_area().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 300, 200), primary_display.bounds());
+  EXPECT_EQ(gfx::Rect(0, 0, 300, shelf_inset_first),
+            primary_display.work_area());
+  EXPECT_EQ(gfx::Rect(300, 0, 400, 300), secondary_display.bounds());
+  EXPECT_EQ(gfx::Rect(300, 0, 400, shelf_inset_second),
+            secondary_display.work_area());
   EXPECT_EQ("id=2200000257, parent=2200000000, right, 50",
             display_manager()
                 ->GetCurrentDisplayLayout()
@@ -803,12 +911,28 @@ TEST_F(WindowTreeHostManagerTest, SwapPrimaryById) {
       display::Screen::GetScreen()->GetPrimaryDisplay();
   display::Display swapped_secondary =
       display_manager_test.GetSecondaryDisplay();
-  EXPECT_EQ("0,0 400x300", swapped_primary.bounds().ToString());
-  EXPECT_EQ(gfx::Rect(0, 0, 400, shelf_inset_second).ToString(),
-            swapped_primary.work_area().ToString());
-  EXPECT_EQ("-300,-50 300x200", swapped_secondary.bounds().ToString());
-  EXPECT_EQ(gfx::Rect(-300, -50, 300, shelf_inset_first).ToString(),
-            swapped_secondary.work_area().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 400, 300), swapped_primary.bounds());
+  EXPECT_EQ(gfx::Rect(0, 0, 400, shelf_inset_second),
+            swapped_primary.work_area());
+  EXPECT_EQ(gfx::Rect(-300, -50, 300, 200), swapped_secondary.bounds());
+  EXPECT_EQ(gfx::Rect(-300, -50, 300, shelf_inset_first),
+            swapped_secondary.work_area());
+
+  // Test that the color spaces are correctly swapped.
+  auto* swapped_primary_compositor =
+      window_tree_host_manager->GetRootWindowForDisplayId(swapped_primary.id())
+          ->GetHost()
+          ->compositor();
+  auto* swapped_secondary_compositor =
+      window_tree_host_manager
+          ->GetRootWindowForDisplayId(swapped_secondary.id())
+          ->GetHost()
+          ->compositor();
+
+  EXPECT_EQ(swapped_primary.color_spaces(),
+            swapped_primary_compositor->display_color_spaces());
+  EXPECT_EQ(swapped_secondary.color_spaces(),
+            swapped_secondary_compositor->display_color_spaces());
 
   // Calling the same ID don't do anything.
   window_tree_host_manager->SetPrimaryDisplayId(secondary_display.id());
@@ -886,7 +1010,7 @@ TEST_F(WindowTreeHostManagerTest, SetPrimaryWithThreeDisplays) {
   UpdateDisplay("500x400,400x300,300x200");
   int64_t primary_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
   display::DisplayIdList non_primary_ids =
-      display_manager()->GetCurrentDisplayIdList();
+      display_manager()->GetConnectedDisplayIdList();
   auto itr =
       std::remove(non_primary_ids.begin(), non_primary_ids.end(), primary_id);
   ASSERT_TRUE(itr != non_primary_ids.end());
@@ -1006,7 +1130,7 @@ TEST_F(WindowTreeHostManagerTest, SetPrimaryWithFourDisplays) {
   UpdateDisplay("600x500,500x400,400x300,300x200");
   int64_t primary_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
   display::DisplayIdList non_primary_ids =
-      display_manager()->GetCurrentDisplayIdList();
+      display_manager()->GetConnectedDisplayIdList();
   auto itr =
       std::remove(non_primary_ids.begin(), non_primary_ids.end(), primary_id);
   ASSERT_TRUE(itr != non_primary_ids.end());
@@ -1121,40 +1245,39 @@ TEST_F(WindowTreeHostManagerTest, OverscanInsets) {
   display::Display display1 = display::Screen::GetScreen()->GetPrimaryDisplay();
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
 
-  window_tree_host_manager->SetOverscanInsets(display1.id(),
-                                              gfx::Insets(10, 15, 20, 25));
+  window_tree_host_manager->SetOverscanInsets(
+      display1.id(), gfx::Insets::TLBR(10, 15, 20, 25));
   display::test::DisplayManagerTestApi display_manager_test(display_manager());
-  EXPECT_EQ("0,0 80x170", root_windows[0]->bounds().ToString());
-  EXPECT_EQ("150x200", root_windows[1]->bounds().size().ToString());
-  EXPECT_EQ("80,0 150x200",
-            display_manager_test.GetSecondaryDisplay().bounds().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 80, 170), root_windows[0]->bounds());
+  EXPECT_EQ(gfx::Size(150, 200), root_windows[1]->bounds().size());
+  EXPECT_EQ(gfx::Rect(80, 0, 150, 200),
+            display_manager_test.GetSecondaryDisplay().bounds());
 
   ui::test::EventGenerator generator(root_windows[0]);
   generator.MoveMouseToInHost(20, 25);
-  EXPECT_EQ("5,15", event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(5, 15), event_handler.GetLocationAndReset());
 
   window_tree_host_manager->SetOverscanInsets(display1.id(), gfx::Insets());
-  EXPECT_EQ("0,0 120x200", root_windows[0]->bounds().ToString());
-  EXPECT_EQ("120,0 150x200",
-            display_manager_test.GetSecondaryDisplay().bounds().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 120, 200), root_windows[0]->bounds());
+  EXPECT_EQ(gfx::Rect(120, 0, 150, 200),
+            display_manager_test.GetSecondaryDisplay().bounds());
 
   generator.MoveMouseToInHost(30, 20);
-  EXPECT_EQ("30,20", event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(30, 20), event_handler.GetLocationAndReset());
 
   // Make sure the root window transformer uses correct scale
   // factor when swapping display. Test crbug.com/253690.
   UpdateDisplay("400x300*2,600x400/o");
   root_windows = Shell::GetAllRootWindows();
-  gfx::Point point;
-  Shell::GetAllRootWindows()[1]->GetHost()->GetRootTransform().TransformPoint(
-      &point);
-  EXPECT_EQ("15,10", point.ToString());
+  gfx::Point point =
+      Shell::GetAllRootWindows()[1]->GetHost()->GetRootTransform().MapPoint(
+          gfx::Point());
+  EXPECT_EQ(gfx::Point(15, 10), point);
 
   SwapPrimaryDisplay();
-  point.SetPoint(0, 0);
-  Shell::GetAllRootWindows()[1]->GetHost()->GetRootTransform().TransformPoint(
-      &point);
-  EXPECT_EQ("15,10", point.ToString());
+  point = Shell::GetAllRootWindows()[1]->GetHost()->GetRootTransform().MapPoint(
+      gfx::Point());
+  EXPECT_EQ(gfx::Point(15, 10), point);
 
   Shell::Get()->RemovePreTargetHandler(&event_handler);
 }
@@ -1171,12 +1294,12 @@ TEST_F(WindowTreeHostManagerTest, Rotate) {
   ui::test::EventGenerator generator1(root_windows[0]);
 
   TestObserver observer;
-  EXPECT_EQ("120x200", root_windows[0]->bounds().size().ToString());
-  EXPECT_EQ("150x200", root_windows[1]->bounds().size().ToString());
-  EXPECT_EQ("120,0 150x200",
-            display_manager_test.GetSecondaryDisplay().bounds().ToString());
+  EXPECT_EQ(gfx::Size(120, 200), root_windows[0]->bounds().size());
+  EXPECT_EQ(gfx::Size(150, 200), root_windows[1]->bounds().size());
+  EXPECT_EQ(gfx::Rect(120, 0, 150, 200),
+            display_manager_test.GetSecondaryDisplay().bounds());
   generator1.MoveMouseToInHost(50, 40);
-  EXPECT_EQ("50,40", event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(50, 40), event_handler.GetLocationAndReset());
   EXPECT_EQ(display::Display::ROTATE_0,
             GetActiveDisplayRotation(display1.id()));
   EXPECT_EQ(display::Display::ROTATE_0, GetActiveDisplayRotation(display2_id));
@@ -1185,12 +1308,12 @@ TEST_F(WindowTreeHostManagerTest, Rotate) {
   display_manager()->SetDisplayRotation(
       display1.id(), display::Display::ROTATE_90,
       display::Display::RotationSource::ACTIVE);
-  EXPECT_EQ("200x120", root_windows[0]->bounds().size().ToString());
-  EXPECT_EQ("150x200", root_windows[1]->bounds().size().ToString());
-  EXPECT_EQ("200,0 150x200",
-            display_manager_test.GetSecondaryDisplay().bounds().ToString());
+  EXPECT_EQ(gfx::Size(200, 120), root_windows[0]->bounds().size());
+  EXPECT_EQ(gfx::Size(150, 200), root_windows[1]->bounds().size());
+  EXPECT_EQ(gfx::Rect(200, 0, 150, 200),
+            display_manager_test.GetSecondaryDisplay().bounds());
   generator1.MoveMouseToInHost(50, 40);
-  EXPECT_EQ("40,70", event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(40, 70), event_handler.GetLocationAndReset());
   EXPECT_EQ(display::Display::ROTATE_90,
             GetActiveDisplayRotation(display1.id()));
   EXPECT_EQ(display::Display::ROTATE_0, GetActiveDisplayRotation(display2_id));
@@ -1199,16 +1322,16 @@ TEST_F(WindowTreeHostManagerTest, Rotate) {
   display_manager()->SetLayoutForCurrentDisplays(
       display::test::CreateDisplayLayout(
           display_manager(), display::DisplayPlacement::BOTTOM, 50));
-  EXPECT_EQ("50,120 150x200",
-            display_manager_test.GetSecondaryDisplay().bounds().ToString());
+  EXPECT_EQ(gfx::Rect(50, 120, 150, 200),
+            display_manager_test.GetSecondaryDisplay().bounds());
 
   display_manager()->SetDisplayRotation(
       display2_id, display::Display::ROTATE_270,
       display::Display::RotationSource::ACTIVE);
-  EXPECT_EQ("200x120", root_windows[0]->bounds().size().ToString());
-  EXPECT_EQ("200x150", root_windows[1]->bounds().size().ToString());
-  EXPECT_EQ("50,120 200x150",
-            display_manager_test.GetSecondaryDisplay().bounds().ToString());
+  EXPECT_EQ(gfx::Size(200, 120), root_windows[0]->bounds().size());
+  EXPECT_EQ(gfx::Size(200, 150), root_windows[1]->bounds().size());
+  EXPECT_EQ(gfx::Rect(50, 120, 200, 150),
+            display_manager_test.GetSecondaryDisplay().bounds());
   EXPECT_EQ(display::Display::ROTATE_90,
             GetActiveDisplayRotation(display1.id()));
   EXPECT_EQ(display::Display::ROTATE_270,
@@ -1217,16 +1340,16 @@ TEST_F(WindowTreeHostManagerTest, Rotate) {
 
   ui::test::EventGenerator generator2(root_windows[1]);
   generator2.MoveMouseToInHost(50, 40);
-  EXPECT_EQ("180,25", event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(180, 25), event_handler.GetLocationAndReset());
   display_manager()->SetDisplayRotation(
       display1.id(), display::Display::ROTATE_180,
       display::Display::RotationSource::ACTIVE);
 
-  EXPECT_EQ("120x200", root_windows[0]->bounds().size().ToString());
-  EXPECT_EQ("200x150", root_windows[1]->bounds().size().ToString());
+  EXPECT_EQ(gfx::Size(120, 200), root_windows[0]->bounds().size());
+  EXPECT_EQ(gfx::Size(200, 150), root_windows[1]->bounds().size());
   // Display must share at least 100, so the x's offset becomes 20.
-  EXPECT_EQ("20,200 200x150",
-            display_manager_test.GetSecondaryDisplay().bounds().ToString());
+  EXPECT_EQ(gfx::Rect(20, 200, 200, 150),
+            display_manager_test.GetSecondaryDisplay().bounds());
   EXPECT_EQ(display::Display::ROTATE_180,
             GetActiveDisplayRotation(display1.id()));
   EXPECT_EQ(display::Display::ROTATE_270,
@@ -1234,7 +1357,7 @@ TEST_F(WindowTreeHostManagerTest, Rotate) {
   EXPECT_EQ(1, observer.GetRotationChangedCountAndReset());
 
   generator1.MoveMouseToInHost(50, 40);
-  EXPECT_EQ("70,160", event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(70, 160), event_handler.GetLocationAndReset());
 
   Shell::Get()->RemovePreTargetHandler(&event_handler);
 }
@@ -1252,22 +1375,22 @@ TEST_F(WindowTreeHostManagerTest, ScaleRootWindow) {
   display::test::DisplayManagerTestApi display_manager_test(display_manager());
   display::Display display2 = display_manager_test.GetSecondaryDisplay();
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
-  EXPECT_EQ("0,0 375x250", display1.bounds().ToString());
-  EXPECT_EQ("0,0 375x250", root_windows[0]->bounds().ToString());
-  EXPECT_EQ("375,0 500x300", display2.bounds().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 375, 250), display1.bounds());
+  EXPECT_EQ(gfx::Rect(0, 0, 375, 250), root_windows[0]->bounds());
+  EXPECT_EQ(gfx::Rect(375, 0, 500, 300), display2.bounds());
   EXPECT_FLOAT_EQ(1.0f, GetStoredZoomScale(display1.id()));
   EXPECT_FLOAT_EQ(1.0f, GetStoredZoomScale(display2.id()));
 
   ui::test::EventGenerator generator(root_windows[0]);
   generator.MoveMouseToInHost(599, 200);
-  EXPECT_EQ("374,125", event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(374, 125), event_handler.GetLocationAndReset());
 
   display_manager()->UpdateZoomFactor(display1.id(), 1.f / 1.2f);
   display1 = display::Screen::GetScreen()->GetPrimaryDisplay();
   display2 = display_manager_test.GetSecondaryDisplay();
-  EXPECT_EQ("0,0 450x300", display1.bounds().ToString());
-  EXPECT_EQ("0,0 450x300", root_windows[0]->bounds().ToString());
-  EXPECT_EQ("450,0 500x300", display2.bounds().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 450, 300), display1.bounds());
+  EXPECT_EQ(gfx::Rect(0, 0, 450, 300), root_windows[0]->bounds());
+  EXPECT_EQ(gfx::Rect(450, 0, 500, 300), display2.bounds());
   EXPECT_FLOAT_EQ(1.f / 1.2f, GetStoredZoomScale(display1.id()));
   EXPECT_FLOAT_EQ(1.0f, GetStoredZoomScale(display2.id()));
 
@@ -1310,52 +1433,52 @@ TEST_F(WindowTreeHostManagerTest, ConvertHostToRootCoords) {
 
   display::Display display1 = display::Screen::GetScreen()->GetPrimaryDisplay();
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
-  EXPECT_EQ("0,0 250x375", display1.bounds().ToString());
-  EXPECT_EQ("0,0 250x375", root_windows[0]->bounds().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 250, 375), display1.bounds());
+  EXPECT_EQ(gfx::Rect(0, 0, 250, 375), root_windows[0]->bounds());
   EXPECT_EQ(0.8f, GetStoredZoomScale(display1.id()));
 
   ui::test::EventGenerator generator(root_windows[0]);
   generator.MoveMouseToInHost(0, 0);
   // The mouse location must be inside the root bounds in dp.
-  EXPECT_EQ("0,374", event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(0, 374), event_handler.GetLocationAndReset());
   generator.MoveMouseToInHost(599, 0);
-  EXPECT_EQ("0,0", event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(0, 0), event_handler.GetLocationAndReset());
   generator.MoveMouseToInHost(599, 399);
-  EXPECT_EQ("249,0", event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(249, 0), event_handler.GetLocationAndReset());
   generator.MoveMouseToInHost(0, 399);
-  EXPECT_EQ("249,374", event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(249, 374), event_handler.GetLocationAndReset());
 
   UpdateDisplay("600x400*2/u@0.8");
   display1 = display::Screen::GetScreen()->GetPrimaryDisplay();
   root_windows = Shell::GetAllRootWindows();
-  EXPECT_EQ("0,0 375x250", display1.bounds().ToString());
-  EXPECT_EQ("0,0 375x250", root_windows[0]->bounds().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 375, 250), display1.bounds());
+  EXPECT_EQ(gfx::Rect(0, 0, 375, 250), root_windows[0]->bounds());
   EXPECT_EQ(0.8f, GetStoredZoomScale(display1.id()));
 
   generator.MoveMouseToInHost(0, 0);
-  EXPECT_EQ("374,249", event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(374, 249), event_handler.GetLocationAndReset());
   generator.MoveMouseToInHost(599, 0);
-  EXPECT_EQ("0,249", event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(0, 249), event_handler.GetLocationAndReset());
   generator.MoveMouseToInHost(599, 399);
-  EXPECT_EQ("0,0", event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(0, 0), event_handler.GetLocationAndReset());
   generator.MoveMouseToInHost(0, 399);
-  EXPECT_EQ("374,0", event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(374, 0), event_handler.GetLocationAndReset());
 
   UpdateDisplay("600x400*2/l@0.8");
   display1 = display::Screen::GetScreen()->GetPrimaryDisplay();
   root_windows = Shell::GetAllRootWindows();
-  EXPECT_EQ("0,0 250x375", display1.bounds().ToString());
-  EXPECT_EQ("0,0 250x375", root_windows[0]->bounds().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 250, 375), display1.bounds());
+  EXPECT_EQ(gfx::Rect(0, 0, 250, 375), root_windows[0]->bounds());
   EXPECT_EQ(0.8f, GetStoredZoomScale(display1.id()));
 
   generator.MoveMouseToInHost(0, 0);
-  EXPECT_EQ("249,0", event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(249, 0), event_handler.GetLocationAndReset());
   generator.MoveMouseToInHost(599, 0);
-  EXPECT_EQ("249,374", event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(249, 374), event_handler.GetLocationAndReset());
   generator.MoveMouseToInHost(599, 399);
-  EXPECT_EQ("0,374", event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(0, 374), event_handler.GetLocationAndReset());
   generator.MoveMouseToInHost(0, 399);
-  EXPECT_EQ("0,0", event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(0, 0), event_handler.GetLocationAndReset());
 
   Shell::Get()->RemovePreTargetHandler(&event_handler);
 }
@@ -1492,7 +1615,7 @@ TEST_F(WindowTreeHostManagerTest, ReplacePrimary) {
   display_info_list.push_back(new_first_display_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
   // The shelf is now on the second display.
-  EXPECT_EQ("400,0 600x500", test_observer.shelf_display_bounds().ToString());
+  EXPECT_EQ(gfx::Rect(400, 0, 600, 500), test_observer.shelf_display_bounds());
   primary_root->RemoveObserver(&test_observer);
 }
 
@@ -1506,35 +1629,35 @@ TEST_F(WindowTreeHostManagerTest, UpdateMouseLocationAfterDisplayChange) {
 
   // Set the initial position.
   generator_on_2nd.MoveMouseToInHost(150, 150);
-  EXPECT_EQ("450,150", env->last_mouse_location().ToString());
+  EXPECT_EQ(gfx::Point(450, 150), env->last_mouse_location());
 
   // A mouse pointer will stay in the 2nd display.
   UpdateDisplay("400x300,300x200");
-  EXPECT_EQ("550,50", env->last_mouse_location().ToString());
+  EXPECT_EQ(gfx::Point(550, 50), env->last_mouse_location());
 
   // A mouse pointer will be outside of displays and move to the
   // center of 2nd display.
   UpdateDisplay("400x300,110x100");
-  EXPECT_EQ("455,50", env->last_mouse_location().ToString());
+  EXPECT_EQ(gfx::Point(455, 50), env->last_mouse_location());
 
   // 2nd display was disconnected, and the cursor is
   // now in the 1st display.
   UpdateDisplay("500x400");
-  EXPECT_EQ("55,350", env->last_mouse_location().ToString());
+  EXPECT_EQ(gfx::Point(55, 350), env->last_mouse_location());
 
   // 1st display's resolution has changed, and the mouse pointer is
   // now outside. Move the mouse pointer to the center of 1st display.
   UpdateDisplay("400x300");
-  EXPECT_EQ("200,150", env->last_mouse_location().ToString());
+  EXPECT_EQ(gfx::Point(200, 150), env->last_mouse_location());
 
   // Move the mouse pointer to the bottom of 1st display.
   ui::test::EventGenerator generator_on_1st(root_windows[0]);
   generator_on_1st.MoveMouseToInHost(150, 290);
-  EXPECT_EQ("150,290", env->last_mouse_location().ToString());
+  EXPECT_EQ(gfx::Point(150, 290), env->last_mouse_location());
 
   // The mouse pointer is now on 2nd display.
   UpdateDisplay("300x280,300x200");
-  EXPECT_EQ("450,10", env->last_mouse_location().ToString());
+  EXPECT_EQ(gfx::Point(450, 10), env->last_mouse_location());
 }
 
 TEST_F(WindowTreeHostManagerTest,
@@ -1548,20 +1671,20 @@ TEST_F(WindowTreeHostManagerTest,
 
   // Logical cursor location is updated to keep the same physical location.
   generator.MoveMouseToInHost(350, 150);
-  EXPECT_EQ("350,150", env->last_mouse_location().ToString());
+  EXPECT_EQ(gfx::Point(350, 150), env->last_mouse_location());
 
   UpdateDisplay("300x500/r");
-  EXPECT_EQ("250,150", env->last_mouse_location().ToString());
+  EXPECT_EQ(gfx::Point(250, 150), env->last_mouse_location());
 
   // Logical cursor location change shouldn't change when the cursor isn't
   // visible.
   UpdateDisplay("500x300");
   generator.MoveMouseToInHost(350, 150);
-  EXPECT_EQ("350,150", env->last_mouse_location().ToString());
+  EXPECT_EQ(gfx::Point(350, 150), env->last_mouse_location());
 
   Shell::Get()->cursor_manager()->HideCursor();
   UpdateDisplay("300x500/r");
-  EXPECT_EQ("350,150", env->last_mouse_location().ToString());
+  EXPECT_EQ(gfx::Point(350, 150), env->last_mouse_location());
 }
 
 TEST_F(WindowTreeHostManagerTest,
@@ -1574,31 +1697,30 @@ TEST_F(WindowTreeHostManagerTest,
   UpdateDisplay("300x200,400x300");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
 
-  EXPECT_EQ("-400,0 400x300",
+  EXPECT_EQ(gfx::Rect(-400, 0, 400, 300),
             display::test::DisplayManagerTestApi(display_manager())
                 .GetSecondaryDisplay()
-                .bounds()
-                .ToString());
+                .bounds());
 
   aura::Env* env = aura::Env::GetInstance();
 
   // Set the initial position.
   root_windows[0]->MoveCursorTo(gfx::Point(-150, 250));
-  EXPECT_EQ("-150,250", env->last_mouse_location().ToString());
+  EXPECT_EQ(gfx::Point(-150, 250), env->last_mouse_location());
 
   // A mouse pointer will stay in 2nd display.
   UpdateDisplay("400x300,200x300");
-  EXPECT_EQ("-100,150", env->last_mouse_location().ToString());
+  EXPECT_EQ(gfx::Point(-100, 150), env->last_mouse_location());
 
   // A mouse pointer will be outside of displays and move to the
   // center of 2nd display.
   UpdateDisplay("400x300,200x100");
-  EXPECT_EQ("-100,50", env->last_mouse_location().ToString());
+  EXPECT_EQ(gfx::Point(-100, 50), env->last_mouse_location());
 
   // 2nd display was disconnected. Mouse pointer should move to
   // 1st display.
   UpdateDisplay("400x300");
-  EXPECT_EQ("200,150", env->last_mouse_location().ToString());
+  EXPECT_EQ(gfx::Point(200, 150), env->last_mouse_location());
 }
 
 // Test that the cursor swaps displays and that its scale factor and rotation
@@ -1617,13 +1739,13 @@ TEST_F(WindowTreeHostManagerTest,
   window_tree_host_manager->GetPrimaryRootWindow()->MoveCursorTo(
       gfx::Point(20, 50));
 
-  EXPECT_EQ("20,50", env->last_mouse_location().ToString());
+  EXPECT_EQ(gfx::Point(20, 50), env->last_mouse_location());
   EXPECT_EQ(1.0f, cursor_manager->GetCursor().image_scale_factor());
   EXPECT_EQ(display::Display::ROTATE_0, test_api.GetCurrentCursorRotation());
 
   SwapPrimaryDisplay();
 
-  EXPECT_EQ("20,50", env->last_mouse_location().ToString());
+  EXPECT_EQ(gfx::Point(20, 50), env->last_mouse_location());
   EXPECT_EQ(2.0f, cursor_manager->GetCursor().image_scale_factor());
   EXPECT_EQ(display::Display::ROTATE_90, test_api.GetCurrentCursorRotation());
 }
@@ -1648,7 +1770,7 @@ TEST_F(WindowTreeHostManagerTest,
   window_tree_host_manager->GetPrimaryRootWindow()->MoveCursorTo(
       gfx::Point(20, 50));
 
-  EXPECT_EQ("20,50", env->last_mouse_location().ToString());
+  EXPECT_EQ(gfx::Point(20, 50), env->last_mouse_location());
   EXPECT_EQ(1.0f, cursor_manager->GetCursor().image_scale_factor());
   EXPECT_EQ(display::Display::ROTATE_0, test_api.GetCurrentCursorRotation());
 
@@ -1657,7 +1779,7 @@ TEST_F(WindowTreeHostManagerTest,
             window_tree_host_manager->GetPrimaryDisplayId());
 
   // Cursor should be centered on the remaining display.
-  EXPECT_EQ("75,100", env->last_mouse_location().ToString());
+  EXPECT_EQ(gfx::Point(75, 100), env->last_mouse_location());
 
   EXPECT_EQ(2.0f, cursor_manager->GetCursor().image_scale_factor());
   EXPECT_EQ(display::Display::ROTATE_90, test_api.GetCurrentCursorRotation());
@@ -1737,6 +1859,65 @@ TEST_F(WindowTreeHostManagerTest,
   watcher.Stop();
 
   widget->CloseNow();
+}
+
+// Replicates the behavior of MouseWatcher MouseEvent handling that led to crash
+// in https://crbug.com/1278429.
+class RootWindowTestEventHandler : public ui::EventHandler {
+ public:
+  explicit RootWindowTestEventHandler() = default;
+
+  RootWindowTestEventHandler(const RootWindowTestEventHandler&) = delete;
+  RootWindowTestEventHandler& operator=(const RootWindowTestEventHandler&) =
+      delete;
+
+  ~RootWindowTestEventHandler() override = default;
+
+ private:
+  // ui::EventHandler overrides:
+  void OnMouseEvent(ui::MouseEvent* event) override {
+    // Crash happened when finding the display in
+    // |screen::GetDisplayNearestPoint()|, we got the display that was being
+    // removed and in turn got null root window from
+    // |window_util::GetRootWindowAt| since the root window was moved to the new
+    // primary display.
+    display::Screen::GetScreen()->GetWindowAtScreenPoint(
+        display::Screen::GetScreen()->GetCursorScreenPoint());
+  }
+};
+
+// Tests for the crash during the replacement of the primary display.
+// See https://crbug.com/1278429.
+TEST_F(WindowTreeHostManagerTest, GetActiveDisplayWhenReplacingPrimaryDisplay) {
+  // We observed a crash during handling of a MouseEvent.
+  UpdateDisplay("800x600");
+  aura::Window* root_window =
+      Shell::Get()->window_tree_host_manager()->GetRootWindowForDisplayId(
+          GetPrimaryDisplay().id());
+
+  RootWindowTestEventHandler handler;
+  root_window->AddPreTargetHandler(&handler);
+
+  ui::test::EventGenerator generator(root_window);
+
+  // Move the cursor to a coordinate that is in the logical bounds of the older
+  // display[0,0 800x600] but not in the logical bounds[0,0 350x250] of the new
+  // display. The cursor coordinates also needs to be in the root window's
+  // bounds[0,0 700x500] attached to the new primary display.
+  generator.MoveMouseTo(400, 300);
+
+  // Replace the primary display with a newer display with a different device
+  // scale factor compared to original display.
+  display::ManagedDisplayInfo first_display_info =
+      CreateDisplayInfo(100, 0, display::Display::ROTATE_0);
+  first_display_info.SetBounds(gfx::Rect(0, 0, 700, 500));
+  first_display_info.set_device_scale_factor(2.0);
+
+  std::vector<display::ManagedDisplayInfo> display_info_list;
+  display_info_list.push_back(first_display_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+
+  root_window->RemovePreTargetHandler(&handler);
 }
 
 TEST_F(WindowTreeHostManagerTest, KeyEventFromSecondaryDisplay) {

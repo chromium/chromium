@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,8 +19,8 @@
 }
 
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent*)event {
-  // Point is in |bounds| coordinates, but |center| is in the |superview|
-  // coordinates. Compute center in |bounds| coords.
+  // Point is in `bounds` coordinates, but `center` is in the `superview`
+  // coordinates. Compute center in `bounds` coords.
   CGPoint center =
       CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds));
   CGFloat distance = sqrt((center.x - point.x) * (center.x - point.x) +

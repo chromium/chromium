@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,6 +39,7 @@ class FakeAdapter : public mojom::Adapter {
   void ConnectToServiceInsecurely(
       const std::string& address,
       const device::BluetoothUUID& service_uuid,
+      bool should_unbond_on_error,
       ConnectToServiceInsecurelyCallback callback) override;
   void CreateRfcommServiceInsecurely(
       const std::string& service_name,

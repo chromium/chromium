@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,16 +23,23 @@ namespace performance_manager {
 namespace mechanism {
 namespace {
 
+bool disabled_for_testing = false;
+
 // Discards pages on the UI thread. Returns true if at least 1 page is
 // discarded.
 // TODO(crbug/1241049): Returns the remaining reclaim target so
 // UrgentlyDiscardMultiplePages can keep reclaiming until the reclaim target is
 // met or there is no discardable page.
-bool DiscardPagesOnUIThread(const std::vector<WebContentsProxy>& proxies) {
+bool DiscardPagesOnUIThread(
+    const std::vector<std::pair<WebContentsProxy, uint64_t>>& proxies_and_rss) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (disabled_for_testing)
+    return false;
+
   bool result = false;
-  for (auto proxy : proxies) {
-    content::WebContents* const contents = proxy.Get();
+  for (auto proxy : proxies_and_rss) {
+    content::WebContents* const contents = proxy.first.Get();
     if (!contents)
       continue;
 
@@ -42,7 +49,8 @@ bool DiscardPagesOnUIThread(const std::vector<WebContentsProxy>& proxies) {
       continue;
 
     if (lifecycle_unit->DiscardTab(
-            resource_coordinator::LifecycleUnitDiscardReason::URGENT)) {
+            resource_coordinator::LifecycleUnitDiscardReason::URGENT,
+            /*resident_set_size_estimate=*/proxy.second)) {
       result = true;
     }
   }
@@ -51,16 +59,24 @@ bool DiscardPagesOnUIThread(const std::vector<WebContentsProxy>& proxies) {
 
 }  // namespace
 
+// static
+void PageDiscarder::DisableForTesting() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  disabled_for_testing = true;
+}
+
 void PageDiscarder::DiscardPageNodes(
     const std::vector<const PageNode*>& page_nodes,
     base::OnceCallback<void(bool)> post_discard_cb) {
-  std::vector<WebContentsProxy> proxies;
-  proxies.reserve(page_nodes.size());
+  std::vector<std::pair<WebContentsProxy, uint64_t>> proxies_and_rss;
+  proxies_and_rss.reserve(page_nodes.size());
   for (auto* page_node : page_nodes) {
-    proxies.push_back(page_node->GetContentsProxy());
+    proxies_and_rss.emplace_back(page_node->GetContentsProxy(),
+                                 page_node->EstimateResidentSetSize());
   }
   content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&DiscardPagesOnUIThread, std::move(proxies)),
+      FROM_HERE,
+      base::BindOnce(&DiscardPagesOnUIThread, std::move(proxies_and_rss)),
       std::move(post_discard_cb));
 }
 

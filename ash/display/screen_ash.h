@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,6 +51,7 @@ class ASH_EXPORT ScreenAsh : public display::Screen {
   display::Display GetPrimaryDisplay() const override;
   void AddObserver(display::DisplayObserver* observer) override;
   void RemoveObserver(display::DisplayObserver* observer) override;
+  display::TabletState GetTabletState() const override;
 
   // CreateDisplayManager with a ScreenAsh instance.
   static std::unique_ptr<display::DisplayManager> CreateDisplayManager();

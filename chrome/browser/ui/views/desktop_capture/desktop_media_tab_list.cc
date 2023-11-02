@@ -1,11 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_tab_list.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_layout_config.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -14,6 +16,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -23,7 +26,6 @@
 #include "ui/views/controls/table/table_view_observer.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/layout/grid_layout.h"
 #include "ui/views/view.h"
 
 using content::BrowserThread;
@@ -53,9 +55,9 @@ class TabListModel : public ui::TableModel,
       base::RepeatingCallback<void(size_t)> preview_updated_callback);
 
   // ui::TableModel:
-  int RowCount() override;
-  std::u16string GetText(int row, int column) override;
-  ui::ImageModel GetIcon(int row) override;
+  size_t RowCount() override;
+  std::u16string GetText(size_t row, int column) override;
+  ui::ImageModel GetIcon(size_t row) override;
   void SetObserver(ui::TableModelObserver* observer) override;
 
   // DesktopMediaListController::SourceListListener:
@@ -65,13 +67,14 @@ class TabListModel : public ui::TableModel,
   void OnSourceNameChanged(size_t index) override;
   void OnSourceThumbnailChanged(size_t index) override;
   void OnSourcePreviewChanged(size_t index) override;
+  void OnDelegatedSourceListSelection() override;
 
  private:
   TabListModel(const TabListModel&) = delete;
   TabListModel operator=(const TabListModel&) = delete;
 
-  DesktopMediaListController* controller_;
-  ui::TableModelObserver* observer_ = nullptr;
+  raw_ptr<DesktopMediaListController> controller_;
+  raw_ptr<ui::TableModelObserver> observer_ = nullptr;
   base::RepeatingCallback<void(size_t)> preview_updated_callback_;
 };
 
@@ -83,17 +86,17 @@ TabListModel::TabListModel(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
-int TabListModel::RowCount() {
+size_t TabListModel::RowCount() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return base::checked_cast<int>(controller_->GetSourceCount());
+  return controller_->GetSourceCount();
 }
 
-std::u16string TabListModel::GetText(int row, int column) {
+std::u16string TabListModel::GetText(size_t row, int column) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return controller_->GetSource(row).name;
 }
 
-ui::ImageModel TabListModel::GetIcon(int row) {
+ui::ImageModel TabListModel::GetIcon(size_t row) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return ui::ImageModel::FromImageSkia(controller_->GetSource(row).thumbnail);
 }
@@ -136,6 +139,12 @@ void TabListModel::OnSourcePreviewChanged(size_t index) {
   preview_updated_callback_.Run(index);
 }
 
+void TabListModel::OnDelegatedSourceListSelection() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  NOTREACHED()
+      << "Tab Lists are not delegated, so should not get a selection event.";
+}
+
 // TableViewObserver implementation that bridges between the actual TableView
 // listing tabs and the DesktopMediaTabList.
 class TabListViewObserver : public views::TableViewObserver {
@@ -150,7 +159,7 @@ class TabListViewObserver : public views::TableViewObserver {
   TabListViewObserver(const TabListViewObserver&) = delete;
   TabListViewObserver operator=(const TabListViewObserver&) = delete;
 
-  DesktopMediaListController* const controller_;
+  const raw_ptr<DesktopMediaListController> controller_;
   base::RepeatingClosure selection_changed_callback_;
 };
 
@@ -205,7 +214,6 @@ DesktopMediaTabList::DesktopMediaTabList(DesktopMediaListController* controller,
       true);
   list->set_observer(view_observer_.get());
   list->GetViewAccessibility().OverrideName(accessible_name);
-  list->SetBorder(views::CreateSolidBorder(1, SK_ColorBLACK));
   list_ = list.get();
 
   AddChildView(BuildUI(std::move(list)));
@@ -216,8 +224,6 @@ std::unique_ptr<views::View> DesktopMediaTabList::BuildUI(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto preview_wrapper = std::make_unique<views::View>();
   preview_wrapper->SetPreferredSize(desktopcapture::kPreviewSize);
-  preview_wrapper->SetBackground(
-      views::CreateSolidBackground(gfx::kGoogleGrey300));
 
   auto preview = std::make_unique<views::ImageView>();
   preview->SetVisible(false);
@@ -230,14 +236,9 @@ std::unique_ptr<views::View> DesktopMediaTabList::BuildUI(
   empty_preview_label->SetText(
       l10n_util::GetStringUTF16(IDS_DESKTOP_MEDIA_PICKER_EMPTY_PREVIEW));
   empty_preview_label->SetMultiLine(true);
-  empty_preview_label->SetBackground(
-      views::CreateSolidBackground(gfx::kGoogleGrey300));
   empty_preview_label->SetPreferredSize(desktopcapture::kPreviewSize);
   empty_preview_label->SetSize(desktopcapture::kPreviewSize);
-  // Tell the label the background colour it's over. This just forces the text
-  // colour to one that's readable, notably in dark mode.
-  empty_preview_label->SetBackgroundColor(gfx::kGoogleGrey300);
-  empty_preview_ =
+  empty_preview_label_ =
       preview_wrapper->AddChildView(std::move(empty_preview_label));
 
   auto preview_label = std::make_unique<views::Label>();
@@ -247,7 +248,7 @@ std::unique_ptr<views::View> DesktopMediaTabList::BuildUI(
   preview_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 
   auto preview_sidebar = std::make_unique<views::View>();
-  preview_sidebar->AddChildView(std::move(preview_wrapper));
+  preview_wrapper_ = preview_sidebar->AddChildView(std::move(preview_wrapper));
   preview_label_ = preview_sidebar->AddChildView(std::move(preview_label));
 
   preview_sidebar->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -262,7 +263,8 @@ std::unique_ptr<views::View> DesktopMediaTabList::BuildUI(
   full_panel->AddChildView(std::move(preview_sidebar));
 
   full_panel->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(15, 0, 0, 0),
+      views::BoxLayout::Orientation::kHorizontal,
+      gfx::Insets::TLBR(15, 0, 0, 0),
       /*between_child_spacing=*/12, true));
 
   auto container = std::make_unique<View>();
@@ -292,12 +294,28 @@ int DesktopMediaTabList::GetHeightForWidth(int width) const {
   return CalculatePreferredSize().height();
 }
 
+void DesktopMediaTabList::OnThemeChanged() {
+  DesktopMediaListController::ListView::OnThemeChanged();
+
+  const ui::ColorProvider* const color_provider = GetColorProvider();
+  list_->SetBorder(views::CreateSolidBorder(
+      /*thickness=*/1,
+      color_provider->GetColor(kColorDesktopMediaTabListBorder)));
+  const SkColor background_color =
+      color_provider->GetColor(kColorDesktopMediaTabListPreviewBackground);
+  preview_wrapper_->SetBackground(
+      views::CreateSolidBackground(background_color));
+  empty_preview_label_->SetBackground(
+      views::CreateSolidBackground(background_color));
+  empty_preview_label_->SetBackgroundColor(background_color);
+}
+
 absl::optional<content::DesktopMediaID> DesktopMediaTabList::GetSelection() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  int row = list_->GetFirstSelectedRow();
-  if (row == -1)
+  absl::optional<size_t> row = list_->GetFirstSelectedRow();
+  if (!row.has_value())
     return absl::nullopt;
-  return controller_->GetSource(row).id;
+  return controller_->GetSource(row.value()).id;
 }
 
 DesktopMediaListController::SourceListListener*
@@ -306,24 +324,30 @@ DesktopMediaTabList::GetSourceListListener() {
   return model_.get();
 }
 
+void DesktopMediaTabList::ClearSelection() {
+  // Changing the selection in the list will ensure that all appropriate change
+  // events are fired.
+  list_->Select(absl::nullopt);
+}
+
 void DesktopMediaTabList::ClearPreview() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   preview_label_->SetText(u"");
   preview_->SetImage(nullptr);
   preview_->SetVisible(false);
-  empty_preview_->SetVisible(true);
+  empty_preview_label_->SetVisible(true);
 }
 
 void DesktopMediaTabList::OnSelectionChanged() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  const int row = list_->GetFirstSelectedRow();
-  if (row == -1) {
+  absl::optional<size_t> row = list_->GetFirstSelectedRow();
+  if (!row.has_value()) {
     ClearPreview();
     controller_->SetPreviewedSource(absl::nullopt);
     return;
   }
-  const DesktopMediaList::Source& source = controller_->GetSource(row);
+  const DesktopMediaList::Source& source = controller_->GetSource(row.value());
 
   const std::u16string truncated_title =
       source.name.substr(0, kMaxPreviewTitleLength);
@@ -331,13 +355,13 @@ void DesktopMediaTabList::OnSelectionChanged() {
 
   // Trigger a preview update to either show a previous snapshot for this source
   // if we have one, or clear it if we don't.
-  OnPreviewUpdated(base::checked_cast<size_t>(row));
+  OnPreviewUpdated(row.value());
 
   // Update the source for which previews are generated.
   controller_->SetPreviewedSource(source.id);
 
   preview_->SetVisible(true);
-  empty_preview_->SetVisible(false);
+  empty_preview_label_->SetVisible(false);
 }
 
 void DesktopMediaTabList::ClearPreviewImageIfUnchanged(
@@ -353,7 +377,7 @@ void DesktopMediaTabList::ClearPreviewImageIfUnchanged(
 
 void DesktopMediaTabList::OnPreviewUpdated(size_t index) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (base::checked_cast<int>(index) != list_->GetFirstSelectedRow()) {
+  if (index != list_->GetFirstSelectedRow()) {
     return;
   }
 

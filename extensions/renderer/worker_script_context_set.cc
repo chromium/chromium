@@ -1,12 +1,12 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "extensions/renderer/worker_script_context_set.h"
 
-#include <algorithm>
 #include <utility>
 
+#include "base/ranges/algorithm.h"
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/worker_thread_util.h"
@@ -28,7 +28,7 @@ ContextVector::iterator FindContext(ContextVector* contexts,
         v8::Context::Scope context_scope(context->v8_context());
         return context->v8_context() == v8_context;
       };
-  return std::find_if(contexts->begin(), contexts->end(), context_matches);
+  return base::ranges::find_if(*contexts, context_matches);
 }
 
 }  // namespace

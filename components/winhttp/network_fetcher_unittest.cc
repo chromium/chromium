@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,9 +31,9 @@ TEST(WinHttpNetworkFetcher, InvalidUrlPost) {
       /*fetch_started_callback*/
       base::BindOnce([](int response_code, int64_t content_length) {}),
       /*fetch_progress_callback*/ base::BindRepeating([](int64_t current) {}),
-      /*fetch_complete_callback*/ base::BindLambdaForTesting([&run_loop]() {
-        run_loop.Quit();
-      }));
+      /*fetch_complete_callback*/
+      base::BindLambdaForTesting(
+          [&run_loop](int response_code) { run_loop.Quit(); }));
   run_loop.Run();
   EXPECT_EQ(network_fetcher->GetNetError(), E_INVALIDARG);
 }
@@ -51,9 +51,9 @@ TEST(WinHttpNetworkFetcher, InvalidUrlDownload) {
       /*fetch_started_callback*/
       base::BindOnce([](int response_code, int64_t content_length) {}),
       /*fetch_progress_callback*/ base::BindRepeating([](int64_t current) {}),
-      /*fetch_complete_callback*/ base::BindLambdaForTesting([&run_loop]() {
-        run_loop.Quit();
-      }));
+      /*fetch_complete_callback*/
+      base::BindLambdaForTesting(
+          [&run_loop](int response_code) { run_loop.Quit(); }));
   run_loop.Run();
   EXPECT_EQ(network_fetcher->GetNetError(), E_INVALIDARG);
 }

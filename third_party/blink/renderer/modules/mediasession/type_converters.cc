@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@ TypeConverter<const blink::MediaSessionActionDetails*,
     ConvertWithActionName(
         const blink::mojom::blink::MediaSessionActionDetailsPtr& details,
         const WTF::AtomicString& action_name) {
-  DCHECK(!action_name.IsEmpty());
+  DCHECK(!action_name.empty());
   blink::MediaSessionActionDetails* blink_details;
 
   if (details && details->is_seek_to()) {

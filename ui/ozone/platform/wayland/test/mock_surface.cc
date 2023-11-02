@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/notreached.h"
 #include "ui/ozone/platform/wayland/test/test_region.h"
+#include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 #include "ui/ozone/platform/wayland/test/test_zwp_linux_explicit_synchronization.h"
 
 namespace wl {
@@ -66,6 +67,13 @@ void SetBufferScale(wl_client* client, wl_resource* resource, int32_t scale) {
   mock_surface->set_buffer_scale(scale);
 }
 
+void SetBufferTransform(struct wl_client* client,
+                        struct wl_resource* resource,
+                        int32_t transform) {
+  auto* mock_surface = GetUserDataAs<MockSurface>(resource);
+  mock_surface->SetBufferTransform(transform);
+}
+
 void DamageBuffer(struct wl_client* client,
                   struct wl_resource* resource,
                   int32_t x,
@@ -94,16 +102,16 @@ void GetRelease(wl_client* client, wl_resource* resource, uint32_t id) {
 }  // namespace
 
 const struct wl_surface_interface kMockSurfaceImpl = {
-    DestroyResource,  // destroy
-    Attach,           // attach
-    Damage,           // damage
-    Frame,            // frame
-    SetOpaqueRegion,  // set_opaque_region
-    SetInputRegion,   // set_input_region
-    Commit,           // commit
-    nullptr,          // set_buffer_transform
-    SetBufferScale,   // set_buffer_scale
-    DamageBuffer,     // damage_buffer
+    DestroyResource,     // destroy
+    Attach,              // attach
+    Damage,              // damage
+    Frame,               // frame
+    SetOpaqueRegion,     // set_opaque_region
+    SetInputRegion,      // set_input_region
+    Commit,              // commit
+    SetBufferTransform,  // set_buffer_transform
+    SetBufferScale,      // set_buffer_scale
+    DamageBuffer,        // damage_buffer
 };
 
 const struct zwp_linux_surface_synchronization_v1_interface
@@ -135,6 +143,10 @@ MockSurface* MockSurface::FromResource(wl_resource* resource) {
                                  &kMockSurfaceImpl))
     return nullptr;
   return GetUserDataAs<MockSurface>(resource);
+}
+
+void MockSurface::ClearBufferReleases() {
+  linux_buffer_releases_.clear();
 }
 
 void MockSurface::SetOpaqueRegionImpl(wl_resource* region) {
@@ -182,17 +194,20 @@ void MockSurface::DestroyPrevAttachedBuffer() {
 }
 
 void MockSurface::ReleaseBuffer(wl_resource* buffer) {
-  DCHECK(buffer);
-  wl_buffer_send_release(buffer);
-  wl_client_flush(wl_resource_get_client(buffer));
-
   // Strictly speaking, Wayland protocol requires that we send both an explicit
   // release and a buffer release if an explicit release has been asked for.
   // But, this makes testing harder, and ozone/wayland should work with
   // just one of these signals (and handle both gracefully).
-  auto iter = linux_buffer_releases_.find(buffer);
-  if (iter != linux_buffer_releases_.end())
-    linux_buffer_releases_.erase(iter);
+  // TODO(fangzhoug): Make buffer release mechanism a testing config variation.
+  if (linux_buffer_releases_.find(buffer) != linux_buffer_releases_.end()) {
+    ReleaseBufferFenced(buffer, {});
+    wl_buffer_send_release(buffer);
+    TestWaylandServerThread::FlushClientForResource(buffer);
+  }
+
+  DCHECK(buffer);
+  wl_buffer_send_release(buffer);
+  TestWaylandServerThread::FlushClientForResource(buffer);
 
   if (buffer == prev_attached_buffer_)
     prev_attached_buffer_ = nullptr;
@@ -212,7 +227,7 @@ void MockSurface::ReleaseBufferFenced(wl_resource* buffer,
   } else {
     zwp_linux_buffer_release_v1_send_immediate_release(linux_buffer_release);
   }
-  wl_client_flush(wl_resource_get_client(linux_buffer_release));
+  TestWaylandServerThread::FlushClientForResource(linux_buffer_release);
   linux_buffer_releases_.erase(iter);
   if (buffer == prev_attached_buffer_)
     prev_attached_buffer_ = nullptr;
@@ -227,7 +242,7 @@ void MockSurface::SendFrameCallback() {
   wl_callback_send_done(
       frame_callback_,
       0 /* trequest-specific data for the callback. not used */);
-  wl_client_flush(wl_resource_get_client(frame_callback_));
+  TestWaylandServerThread::FlushClientForResource(frame_callback_);
   wl_resource_destroy(frame_callback_);
   frame_callback_ = nullptr;
 }

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -83,7 +83,7 @@ class ProfileReportGenerator {
 
  private:
   std::unique_ptr<Delegate> delegate_;
-  base::Value policies_;
+  base::Value::Dict policies_;
 
   bool extensions_enabled_ = true;
   bool policies_enabled_ = true;

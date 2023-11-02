@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@ import 'chrome://resources/js/ios/web_ui.js';
 
 import './strings.m.js';
 import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
 /**
  * Promise resolution handler for variations list and command line equivalent.
@@ -41,7 +41,7 @@ function handlePathInfo({execPath, profilePath}) {
   $('profile_path').textContent = profilePath;
 }
 
-// <if expr="chromeos or is_win">
+// <if expr="chromeos_ash or is_win">
 /**
  * Callback from the backend with the OS version to display.
  * @param {string} osVersion The OS version to display.
@@ -51,7 +51,7 @@ function returnOsVersion(osVersion) {
 }
 // </if>
 
-// <if expr="chromeos">
+// <if expr="chromeos_ash">
 /**
  * Callback from the backend with the firmware version to display.
  * @param {string} firmwareVersion
@@ -61,12 +61,13 @@ function returnOsFirmwareVersion(firmwareVersion) {
 }
 
 /**
- * Callback from the backend with the ARC version to display.
- * @param {string} arcVersion The ARC version to display.
+ * Callback from the backend with the ARC Android SDK version to display.
+ * @param {string} arcAndroidSdkVersion The ARC Android SDK version to display,
+ *     already localized.
  */
-function returnARCVersion(arcVersion) {
-  $('arc_version').textContent = arcVersion;
-  $('arc_holder').hidden = !arcVersion;
+function returnArcAndArcAndroidSdkVersions(arcAndroidSdkVersion) {
+  $('arc_holder').hidden = false;
+  $('arc_and_arc_android_sdk_versions').textContent = arcAndroidSdkVersion;
 }
 
 /**
@@ -82,23 +83,61 @@ function returnCustomizationId(response) {
 }
 // </if>
 
+// <if expr="is_chromeos">
+/**
+ * Callback from the backend to inform if Lacros is primary or not.
+ * @param {string} isPrimary True if it is primary.
+ */
+function returnLacrosPrimary(isPrimary) {
+  $('os-link-container').hidden = !isPrimary;
+
+  const crosUrlRedirectButton = $('os-link-href');
+  if (crosUrlRedirectButton) {
+    crosUrlRedirectButton.onclick = crosUrlVersionRedirect;
+  }
+}
+
+/**
+ * Called when the user clicks on the os-link-href button.
+ */
+function crosUrlVersionRedirect() {
+  chrome.send('crosUrlVersionRedirect');
+}
+
+// </if>
+
+function copyToClipboard() {
+  navigator.clipboard.writeText($('copy-content').innerText);
+}
+
+// <if expr="chromeos_lacros">
+function copyOSContentToClipboard() {
+  navigator.clipboard.writeText($('copy-os-content').innerText);
+}
+// </if>
+
 /* All the work we do onload. */
 function onLoadWork() {
-  // <if expr="chromeos or is_win">
+  // <if expr="chromeos_ash or is_win">
   addWebUIListener('return-os-version', returnOsVersion);
   // </if>
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   addWebUIListener('return-os-firmware-version', returnOsFirmwareVersion);
-  addWebUIListener('return-arc-version', returnARCVersion);
+  addWebUIListener(
+      'return-arc-and-arc-android-sdk-versions',
+      returnArcAndArcAndroidSdkVersions);
+  // </if>
+  // <if expr="is_chromeos">
+  addWebUIListener('return-lacros-primary', returnLacrosPrimary);
   // </if>
 
   chrome.send('requestVersionInfo');
-  const includeVariationsCmd = location.search.includes("show-variations-cmd");
+  const includeVariationsCmd = location.search.includes('show-variations-cmd');
   sendWithPromise('requestVariationInfo', includeVariationsCmd)
       .then(handleVariationInfo);
   sendWithPromise('requestPathInfo').then(handlePathInfo);
 
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   $('arc_holder').hidden = true;
   chrome.chromeosInfoPrivate.get(['customizationId'], returnCustomizationId);
   // </if>
@@ -106,6 +145,13 @@ function onLoadWork() {
   if ($('sanitizer').textContent !== '') {
     $('sanitizer-section').hidden = false;
   }
+
+  $('copy-to-clipboard').addEventListener('click', copyToClipboard);
+
+  // <if expr="chromeos_lacros">
+  $('copy-os-content-to-clipboard')
+      .addEventListener('click', copyOSContentToClipboard);
+  // </if>
 }
 
 document.addEventListener('DOMContentLoaded', onLoadWork);

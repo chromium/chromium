@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,9 @@
 #define CONTENT_BROWSER_RENDERER_HOST_PAGE_LIFECYCLE_STATE_MANAGER_H_
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
 #include "content/public/common/page_visibility_state.h"
@@ -17,8 +19,9 @@ namespace content {
 
 class RenderViewHostImpl;
 
-// A class responsible for managing the main lifecycle state of the blink::Page
-// and communicating in to the RenderView. 1:1 with RenderViewHostImpl.
+// A class responsible for managing the main lifecycle state of the
+// `blink::Page` and communicating in to the `blink::WebView`. 1:1 with
+// `RenderViewHostImpl`.
 class CONTENT_EXPORT PageLifecycleStateManager {
  public:
   class CONTENT_EXPORT TestDelegate {
@@ -41,12 +44,9 @@ class CONTENT_EXPORT PageLifecycleStateManager {
   void SetIsFrozen(bool frozen);
   void SetFrameTreeVisibility(
       blink::mojom::PageVisibilityState visibility_state);
-  // TODO(https://crbug.com/1234634): Remove
-  // restoring_main_frame_from_back_forward_cache.
   void SetIsInBackForwardCache(
       bool is_in_back_forward_cache,
-      blink::mojom::PageRestoreParamsPtr page_restore_params,
-      bool restoring_main_frame_from_back_forward_cache);
+      blink::mojom::PageRestoreParamsPtr page_restore_params);
   bool IsInBackForwardCache() const { return is_in_back_forward_cache_; }
 
   // Called when we're committing main-frame same-site navigations where we did
@@ -88,12 +88,9 @@ class CONTENT_EXPORT PageLifecycleStateManager {
  private:
   // Send mojo message to renderer if the effective (page) lifecycle state has
   // changed.
-  // TODO(https://crbug.com/1234634): Remove
-  // restoring_main_frame_from_back_forward_cache.
   void SendUpdatesToRendererIfNeeded(
       blink::mojom::PageRestoreParamsPtr page_restore_params,
-      base::OnceClosure done_cb,
-      bool restoring_main_frame_from_back_forward_cache);
+      base::OnceClosure done_cb);
 
   void OnPageLifecycleChangedAck(
       blink::mojom::PageLifecycleStatePtr acknowledged_state,
@@ -121,7 +118,7 @@ class CONTENT_EXPORT PageLifecycleStateManager {
   blink::mojom::PagehideDispatch pagehide_dispatch_ =
       blink::mojom::PagehideDispatch::kNotDispatched;
 
-  RenderViewHostImpl* render_view_host_impl_;
+  raw_ptr<RenderViewHostImpl> render_view_host_impl_;
 
   // This is the per-page state computed based on web contents / tab lifecycle
   // states, i.e. |is_set_frozen_called_|, |is_in_back_forward_cache_| and
@@ -133,7 +130,8 @@ class CONTENT_EXPORT PageLifecycleStateManager {
 
   base::OneShotTimer back_forward_cache_timeout_monitor_;
 
-  TestDelegate* test_delegate_{nullptr};
+  raw_ptr<TestDelegate> test_delegate_{nullptr};
+
   // NOTE: This must be the last member.
   base::WeakPtrFactory<PageLifecycleStateManager> weak_ptr_factory_{this};
 };

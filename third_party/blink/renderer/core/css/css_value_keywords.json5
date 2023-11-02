@@ -1,7 +1,8 @@
 {
   // The mode argument is used to limit the keyword to be used only for certain
   // CSSParserModes. Values that have the prefix -internal- are only allowed by
-  // CSSParserModes listed in allowInternalPropertyAndValue()
+  // CSSParserModes listed in CSSValueKeywordsWriter, which feeds the generated
+  // code for isValueAllowedInMode.
 
   parameters: {
     mode: {},
@@ -102,7 +103,7 @@
     "slashed-zero",
 
     //
-    // font-weigth
+    // font-weight
     //
     "normal",
     "bold",
@@ -167,6 +168,10 @@
     "fallback",
     "optional",
 
+    // https://drafts.csswg.org/css-conditional-5/#typedef-supports-font-tech-fn
+    "font-tech",
+    "font-format",
+
     //
     // *-color
     //
@@ -195,6 +200,7 @@
     "activetext",
     "appworkspace",
     "background",
+    "buttonborder",
     "buttonface",
     "buttonhighlight",
     "buttonshadow",
@@ -213,7 +219,11 @@
     "infobackground",
     "infotext",
     "linktext",
+    "mark",
+    "marktext",
     "menutext",
+    "selecteditem",
+    "selecteditemtext",
     "scrollbar",
     "threeddarkshadow",
     "threedface",
@@ -238,6 +248,11 @@
     // Value used to implement the behavior in:
     // https://quirks.spec.whatwg.org/#the-tables-inherit-color-from-body-quirk
     "-internal-quirk-inherit",
+    //
+    // css-text-decor
+    // <https://github.com/w3c/csswg-drafts/issues/7522>
+    "-internal-spelling-error-color",
+    "-internal-grammar-error-color",
 
     //
     // "Extended" named colors
@@ -413,13 +428,12 @@
     "-webkit-baseline-middle",
     //
     // text-align
-    // The order of this enum must match the order found in CSSParserFastPaths::IsValidKeywordPropertyAndValue().
+    // The order and contents this block MUST match the kTextAlign[Last] cases
+    // of CSSParserFastPaths::IsValidKeywordPropertyAndValue().
     //
     "-webkit-auto",
     "left",
     "right",
-    "inline-start",
-    "inline-end",
     "center",
     "justify",
     "-webkit-left",
@@ -428,12 +442,10 @@
     "-webkit-match-parent",
     "-internal-center",
     //
-    // text-justify
+    // float, clear, etc.
     //
-    //auto
-    //none
-    "inter-word",
-    "distribute",
+    "inline-start",
+    "inline-end",
     //
     // list-style-position
     //
@@ -966,7 +978,7 @@
     "after",
     "before",
 
-    // -webkit-text-emphasis-position
+    // text-emphasis-position
     "over",
     "under",
     //right
@@ -1027,10 +1039,12 @@
     "alphabetic",
 
     // (display-mode:) media feature
+    "borderless",
     "fullscreen",
     "standalone",
     "minimal-ui",
     "browser",
+    "window-controls-overlay",
 
     // position
     "sticky",
@@ -1078,10 +1092,7 @@
 
     // grid-template-{columns|rows}
     "minmax",
-
-    // text-indent
-    "each-line",
-    "hanging",
+    "subgrid",
 
     // (scan:) media feature
     "progressive",
@@ -1124,7 +1135,7 @@
     "text-before-edge",
     "text-after-edge",
     "ideographic",
-    // hanging
+    "hanging",
     "mathematical",
 
     // dominant-baseline
@@ -1233,6 +1244,25 @@
 
     // @font-face src
     "format",
+    "collection",
+    "embedded-opentype",
+    "opentype",
+    "svg",
+    "truetype",
+    "woff",
+    "woff2",
+    "tech",
+    "features-opentype",
+    "features-aat",
+    "features-graphite",
+    "color-COLRv0",
+    "color-COLRv1",
+    "color-SVG",
+    "color-sbix",
+    "color-CBDT",
+    "variations",
+    "palettes",
+    "incremental",
 
     // (-webkit-)filter
     "invert",
@@ -1252,7 +1282,33 @@
     "rgba",
     "hsl",
     "hsla",
+    "hwb",
+    "lab",
+    "oklab",
+    "lch",
+    "oklch",
+    // "color",
     "-internal-light-dark",
+
+    // color spaces
+    // "srgb", included in color-interpolation
+    // "rec2020", included in color-gamut
+    "srgb-linear",
+    "display-p3",
+    "a98-rgb",
+    "prophoto-rgb",
+    "xyz",
+    "xyz-d50",
+    "xyz-d65",
+    // hue interpolation methods
+    "shorter",
+    "longer",
+    "decreasing",
+    "increasing",
+    "specified",
+
+    // For gradient interpolations in certain color spaces
+    "in",
 
     // transform
     "matrix",
@@ -1295,6 +1351,15 @@
     "max",
     "clamp",
 
+    // Trigonometic functions
+    "sin",
+    "cos",
+    // "tan" - already declared for color value
+    "asin",
+    "atan",
+    // "atan2",
+    "acos",
+
     //<calc-constant>
     //https://drafts.csswg.org/css-values/#calc-syntax
     "infinity",
@@ -1329,6 +1394,10 @@
     "size",
     "block-size",
     "inline-size",
+
+    // @container
+    "name",
+    "type",
 
     // grid auto-repeat
     "auto-fill",
@@ -1400,9 +1469,6 @@
     // none
     "back-button",
 
-    // content-visibility
-    "hidden-matchable",
-
     // -internal-empty-line-height
     // none
     "fabricated",
@@ -1414,8 +1480,7 @@
     // (device-posture) media feature
     "continuous",
     "folded",
-    "folded-over",
-
+    
     // scrollbar-gutter
     // auto
     "stable",
@@ -1463,5 +1528,63 @@
 
     // Layered @import rule
     "layer",
+
+    // toggle-root
+    "group",
+    "self",
+    "cycle",
+    "cycle-on",
+
+    // toggle-trigger
+    "prev",
+    "next",
+    "set",
+
+    // toggle-visibility
+    "toggle",
+
+    // color-contrast()
+    "color-contrast",
+    "vs",
+    "AA",
+    "AA-large",
+    "AAA",
+    "AAA-large",
+
+    // initial-letter
+    "drop",
+    "raise",
+
+    // basic-shape functions.
+    "xywh",
+
+    // anchor positioning
+    "anchor",
+    // top,
+    // left,
+    // right,
+    // bottom,
+    // start,
+    // end,
+    // self-start,
+    // self-end,
+    // center,
+    "anchor-size",
+    "width",
+    "height",
+    // block,
+    // inline,
+    "self-block",
+    "self-inline",
+
+    // animation-[end-]delay
+    // contain
+    // cover
+    "enter",
+    "exit",
+
+    // scroll()
+    "root",
+    "nearest",
   ],
 }

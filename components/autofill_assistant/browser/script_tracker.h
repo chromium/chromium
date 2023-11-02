@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/autofill_assistant/browser/script.h"
@@ -53,6 +54,7 @@ class ScriptTracker : public ScriptExecutor::Listener {
   // |delegate| and |listener| should outlive this object and should not be
   // nullptr.
   ScriptTracker(ScriptExecutorDelegate* delegate,
+                ScriptExecutorUiDelegate* ui_delegate,
                 ScriptTracker::Listener* listener);
 
   ScriptTracker(const ScriptTracker&) = delete;
@@ -129,8 +131,9 @@ class ScriptTracker : public ScriptExecutor::Listener {
   void OnScriptListChanged(
       std::vector<std::unique_ptr<Script>> scripts) override;
 
-  ScriptExecutorDelegate* const delegate_;
-  ScriptTracker::Listener* const listener_;
+  const raw_ptr<ScriptExecutorDelegate> delegate_;
+  const raw_ptr<ScriptExecutorUiDelegate> ui_delegate_;
+  const raw_ptr<ScriptTracker::Listener> listener_;
 
   // If true, a set of script has already been reported to
   // Listener::OnRunnableScriptsChanged.

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,7 @@ PageBreakAppItem::PageBreakAppItem(
     }
   }
 
-  SetPosition(CalculateDefaultPositionIfApplicable(model_updater));
+  SetPosition(CalculateDefaultPositionIfApplicable());
 
   // Set model updater last to avoid being called during construction.
   set_model_updater(model_updater);

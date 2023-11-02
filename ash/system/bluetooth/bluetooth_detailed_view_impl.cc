@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,12 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/icon_button.h"
 #include "ash/system/bluetooth/bluetooth_device_list_item_view.h"
 #include "ash/system/bluetooth/bluetooth_disabled_detailed_view.h"
 #include "ash/system/model/system_tray_model.h"
@@ -20,9 +20,9 @@
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_toggle_button.h"
 #include "ash/system/tray/tri_view.h"
-#include "ash/system/unified/top_shortcut_button.h"
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
+#include "device/bluetooth/chromeos/bluetooth_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -34,20 +34,20 @@
 #include "ui/views/view.h"
 
 namespace ash {
-namespace tray {
 
 BluetoothDetailedViewImpl::BluetoothDetailedViewImpl(
     DetailedViewDelegate* detailed_view_delegate,
     BluetoothDetailedView::Delegate* delegate)
     : BluetoothDetailedView(delegate),
       TrayDetailedView(detailed_view_delegate) {
-  DCHECK(ash::features::IsBluetoothRevampEnabled());
   CreateTitleRow(IDS_ASH_STATUS_TRAY_BLUETOOTH);
   CreateTitleRowButtons();
   CreateScrollableList();
   CreateDisabledView();
   CreatePairNewDeviceView();
   UpdateBluetoothEnabledState(/*enabled=*/false);
+  device::RecordUiSurfaceDisplayed(
+      device::BluetoothUiSurface::kBluetoothQuickSettings);
 }
 
 BluetoothDetailedViewImpl::~BluetoothDetailedViewImpl() = default;
@@ -102,7 +102,7 @@ void BluetoothDetailedViewImpl::HandleViewClicked(views::View* view) {
   // device views. When |view| is a child of |pair_new_device_view_| we know the
   // "pair new device" button was clicked, otherwise it must have been an
   // individual device view.
-  if (pair_new_device_view_->GetIndexOf(view) != -1) {
+  if (pair_new_device_view_->GetIndexOf(view).has_value()) {
     delegate()->OnPairNewDeviceRequested();
     return;
   }
@@ -122,8 +122,8 @@ void BluetoothDetailedViewImpl::CreateDisabledView() {
   // spacing of views::ScrollView when it is not the last child.
   DCHECK(scroller());
 
-  disabled_view_ =
-      AddChildViewAt(new BluetoothDisabledDetailedView, GetIndexOf(scroller()));
+  disabled_view_ = AddChildViewAt(new BluetoothDisabledDetailedView,
+                                  GetIndexOf(scroller()).value());
   disabled_view_->SetID(
       static_cast<int>(BluetoothDetailedViewChildId::kDisabledView));
 
@@ -140,7 +140,7 @@ void BluetoothDetailedViewImpl::CreatePairNewDeviceView() {
   DCHECK(scroller());
 
   pair_new_device_view_ =
-      AddChildViewAt(new views::View(), GetIndexOf(scroller()));
+      AddChildViewAt(new views::View(), GetIndexOf(scroller()).value());
   pair_new_device_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   pair_new_device_view_->SetID(
@@ -151,10 +151,10 @@ void BluetoothDetailedViewImpl::CreatePairNewDeviceView() {
   hover_highlight_view->SetID(static_cast<int>(
       BluetoothDetailedViewChildId::kPairNewDeviceClickableView));
 
-  std::unique_ptr<ash::TopShortcutButton> button =
-      std::make_unique<ash::TopShortcutButton>(
-          views::Button::PressedCallback(), kSystemMenuBluetoothPlusIcon,
-          IDS_ASH_STATUS_TRAY_BLUETOOTH_PAIR_NEW_DEVICE);
+  std::unique_ptr<ash::IconButton> button = std::make_unique<ash::IconButton>(
+      views::Button::PressedCallback(), IconButton::Type::kSmall,
+      &kSystemMenuBluetoothPlusIcon,
+      IDS_ASH_STATUS_TRAY_BLUETOOTH_PAIR_NEW_DEVICE);
   button->SetCanProcessEventsWithinSubtree(/*can_process=*/false);
   button->SetFocusBehavior(
       /*focus_behavior=*/views::View::FocusBehavior::NEVER);
@@ -176,8 +176,7 @@ void BluetoothDetailedViewImpl::CreatePairNewDeviceView() {
   // and add it to both the top and bottom of the hover highlight view.
   separator->SetBorder(/*b=*/nullptr);
   hover_highlight_view->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(/*top=*/padding.top(), /*left=*/0, /*bottom=*/padding.top(),
-                  /*right=*/0)));
+      gfx::Insets::TLBR(padding.top(), 0, padding.top(), 0)));
 
   pair_new_device_view_->AddChildViewAt(hover_highlight_view.release(), 0);
 }
@@ -224,5 +223,4 @@ void BluetoothDetailedViewImpl::OnToggleClicked() {
   UpdateBluetoothEnabledState(toggle_state);
 }
 
-}  // namespace tray
 }  // namespace ash

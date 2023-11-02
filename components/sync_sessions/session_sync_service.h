@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define COMPONENTS_SYNC_SESSIONS_SESSION_SYNC_SERVICE_H_
 
 #include "base/callback_list.h"
-#include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/driver/data_type_controller.h"
@@ -40,8 +39,8 @@ class SessionSyncService : public KeyedService {
   virtual OpenTabsUIDelegate* GetOpenTabsUIDelegate() = 0;
 
   // Allows client code to be notified when foreign sessions change.
-  virtual base::CallbackListSubscription SubscribeToForeignSessionsChanged(
-      const base::RepeatingClosure& cb) WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual base::CallbackListSubscription
+  SubscribeToForeignSessionsChanged(const base::RepeatingClosure& cb) = 0;
 
   virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetControllerDelegate() = 0;

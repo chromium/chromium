@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,9 @@
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/time/time.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/audio_timestamp_helper.h"
 
@@ -48,7 +49,7 @@ bool DoEncode(OpusEncoder* opus_encoder,
   data_out->resize(kOpusMaxDataBytes);
   const opus_int32 result = opus_encode_float(
       opus_encoder, data_in, num_samples,
-      reinterpret_cast<uint8_t*>(base::data(*data_out)), kOpusMaxDataBytes);
+      reinterpret_cast<uint8_t*>(std::data(*data_out)), kOpusMaxDataBytes);
 
   if (result > 1) {
     // TODO(ajose): Investigate improving this. http://crbug.com/547918
@@ -68,7 +69,7 @@ namespace blink {
 
 AudioTrackOpusEncoder::AudioTrackOpusEncoder(
     OnEncodedAudioCB on_encoded_audio_cb,
-    int32_t bits_per_second,
+    uint32_t bits_per_second,
     bool vbr_enabled)
     : AudioTrackEncoder(std::move(on_encoded_audio_cb)),
       bits_per_second_(bits_per_second),
@@ -109,7 +110,7 @@ void AudioTrackOpusEncoder::OnSetFormat(
   // opus_encoder_create()): force |converted_params_| to at most those.
   converted_params_ = media::AudioParameters(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::GuessChannelLayout(std::min(input_params_.channels(), 2)),
+      media::ChannelLayoutConfig::Guess(std::min(input_params_.channels(), 2)),
       kOpusPreferredSamplingRate, kOpusPreferredFramesPerBuffer);
   DVLOG(1) << "|input_params_|:" << input_params_.AsHumanReadableString()
            << " -->|converted_params_|:"
@@ -144,7 +145,9 @@ void AudioTrackOpusEncoder::OnSetFormat(
   // buffer duration. The Opus library authors may, of course, adjust this in
   // later versions.
   const opus_int32 bitrate =
-      (bits_per_second_ > 0) ? bits_per_second_ : OPUS_AUTO;
+      (bits_per_second_ > 0)
+          ? base::saturated_cast<opus_int32>(bits_per_second_)
+          : OPUS_AUTO;
   if (opus_encoder_ctl(opus_encoder_, OPUS_SET_BITRATE(bitrate)) != OPUS_OK) {
     DLOG(ERROR) << "Failed to set Opus bitrate: " << bitrate;
     return;

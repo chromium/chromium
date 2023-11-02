@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,11 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/user_education/common/help_bubble.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -30,10 +32,6 @@ class FontList;
 
 namespace views {
 class BubbleDialogDelegateView;
-}
-
-namespace base {
-class Token;
 }
 
 // The ContentSettingImageView displays an icon and optional text label for
@@ -91,12 +89,13 @@ class ContentSettingImageView : public IconLabelBubbleView,
   void AnimationEnded(const gfx::Animation* animation) override;
 
   ContentSettingImageModel::ImageType GetTypeForTesting() const;
+  views::Widget* GetBubbleWidgetForTesting() const;
 
   void reset_animation_for_testing() {
     IconLabelBubbleView::ResetSlideAnimation(true);
   }
-  absl::optional<base::Token> get_critical_promo_id_for_testing() {
-    return current_iph_id_for_testing_;
+  user_education::HelpBubble* critical_promo_bubble_for_testing() {
+    return critical_promo_bubble_.get();
   }
 
  private:
@@ -106,9 +105,9 @@ class ContentSettingImageView : public IconLabelBubbleView,
   // Updates the image and tooltip to match the current model state.
   void UpdateImage();
 
-  Delegate* delegate_;  // Weak.
+  raw_ptr<Delegate> delegate_ = nullptr;  // Weak.
   std::unique_ptr<ContentSettingImageModel> content_setting_image_model_;
-  views::BubbleDialogDelegateView* bubble_view_;
+  raw_ptr<views::BubbleDialogDelegateView> bubble_view_ = nullptr;
   absl::optional<SkColor> icon_color_;
 
   // Observes destruction of bubble's Widgets spawned by this ImageView.
@@ -119,7 +118,7 @@ class ContentSettingImageView : public IconLabelBubbleView,
   // Has a value that is not is_zero() if a promo is showing, or has an
   // is_zero() value if the promo was considered but it was decided not to show
   // it.
-  absl::optional<base::Token> current_iph_id_for_testing_;
+  std::unique_ptr<user_education::HelpBubble> critical_promo_bubble_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_CONTENT_SETTING_IMAGE_VIEW_H_

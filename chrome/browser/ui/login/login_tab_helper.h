@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "net/base/auth.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -91,7 +91,7 @@ class LoginTabHelper : public content::WebContentsObserver,
   GURL url_for_login_handler_;
 
   net::AuthChallengeInfo challenge_;
-  net::NetworkIsolationKey network_isolation_key_;
+  net::NetworkAnonymizationKey network_anonymization_key_;
 
   // Stores the navigation entry ID for a pending refresh due to a user
   // cancelling a login prompt. This is set to the visible navigation entry ID

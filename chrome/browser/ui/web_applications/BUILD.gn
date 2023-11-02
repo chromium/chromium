@@ -1,0 +1,135 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/buildflags.gni")
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "app_browser_controller_unittest.cc",
+    "share_target_utils_unittest.cc",
+    "web_app_launch_manager_unittest.cc",
+    "web_app_launch_utils_unittest.cc",
+  ]
+
+  deps = [
+    "//chrome/browser",
+    "//chrome/browser/ui",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_unit_tests",
+    "//components/services/app_service/public/cpp:intents",
+    "//content/test:test_support",
+    "//storage/browser:test_support",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  sources = [
+    "create_shortcut_browsertest.cc",
+    "pwa_mixed_content_browsertest.cc",
+    "sub_apps_service_impl_browsertest.cc",
+    "web_app_browsertest.cc",
+    "web_app_dark_mode_browsertest.cc",
+    "web_app_engagement_browsertest.cc",
+    "web_app_file_handling_browsertest.cc",
+    "web_app_launch_handler_browsertest.cc",
+    "web_app_metrics_browsertest.cc",
+    "web_app_navigate_browsertest.cc",
+    "web_app_ui_manager_impl_browsertest.cc",
+    "web_app_uninstall_browsertest.cc",
+  ]
+
+  if (!is_chromeos_lacros) {
+    sources += [
+      # Test not valid on Lacros as WebApps is only enabled in the main
+      # profile which can never be deleted.
+      "web_app_profile_deletion_browsertest.cc",
+    ]
+  }
+
+  if (is_chromeos_ash) {
+    sources += [
+      "app_browser_controller_browsertest.cc",
+      "web_app_guest_session_browsertest_chromeos.cc",
+    ]
+  }
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    "//chrome/app:command_ids",
+    "//chrome/browser:browser_themes",
+    "//chrome/browser:theme_properties",
+    "//chrome/browser/browsing_data:constants",
+    "//chrome/browser/devtools",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//components/embedder_support",
+    "//components/page_load_metrics/browser:test_support",
+    "//components/services/app_service/public/cpp:protocol_handling",
+    "//components/site_engagement/content",
+    "//components/webapps/browser",
+  ]
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//chrome/browser/ash/system_web_apps/test_support",
+      "//chrome/browser/ui/ash/system_web_apps",
+    ]
+  }
+}
+
+# On Lacros, these browser tests require Ash to be running, as they rely on
+# web apps being registered with the App Service.
+source_set("app_service_browser_tests") {
+  testonly = true
+
+  sources = [
+    "launch_web_app_browsertest.cc",
+    "web_app_badging_browsertest.cc",
+    "web_app_link_capturing_browsertest.cc",
+    "web_app_protocol_handling_browsertest.cc",
+    "web_app_url_handling_browsertest.cc",
+    "web_app_window_controls_overlay_browsertest.cc",
+  ]
+
+  if (is_chromeos) {
+    sources += [
+      "share_to_target_browsertest.cc",
+      "web_share_target_browsertest.cc",
+    ]
+  }
+
+  if (is_chromeos_lacros) {
+    sources += [ "lacros_web_app_browsertest.cc" ]
+  }
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    "//chrome/app:command_ids",
+    "//chrome/browser/browsing_data:constants",
+    "//chrome/browser/ui/web_applications/diagnostics:app_service_browser_tests",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//components/embedder_support",
+    "//components/page_load_metrics/browser:test_support",
+    "//components/services/app_service/public/cpp:intents",
+    "//components/services/app_service/public/cpp:protocol_handling",
+  ]
+
+  if (is_chromeos_lacros) {
+    deps += [
+      "//chrome/test:lacros_test_support_ui",
+      "//chromeos/lacros",
+      "//chromeos/lacros:test_support",
+    ]
+  }
+}

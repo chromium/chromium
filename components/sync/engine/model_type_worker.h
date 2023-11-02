@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -26,6 +27,7 @@
 #include "components/sync/engine/nudge_handler.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/engine/update_handler.h"
+#include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 
 namespace sync_pb {
@@ -36,6 +38,27 @@ namespace syncer {
 
 class CancelationSignal;
 class ModelTypeProcessor;
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PasswordNotesStateForUMA {
+  // No password note is set in the proto or the backup.
+  kUnset = 0,
+  // Password note is set in the password specifics data. Indicates an entity
+  // created on a client supporting password notes. This doesn't guarantee the
+  // backup is set too, but in practice it will be set in both (in the
+  // foreseeable future).
+  kSetInSpecificsData = 1,
+  // Password notes is set in the backup, indicates that after the note was
+  // created on the client, and update from a legacy client was committed and
+  // the server carried the backup blob over.
+  kSetOnlyInBackup = 2,
+  // Similar to kSetOnlyInBackup, but the backup is corrupted. This should be
+  // rare
+  // to happen.
+  kSetOnlyInBackupButCorrupted = 3,
+  kMaxValue = kSetOnlyInBackupButCorrupted,
+};
 
 // A smart cache for sync types to communicate with the sync thread.
 //
@@ -241,16 +264,23 @@ class ModelTypeWorker : public UpdateHandler,
   // the definition of an unknown key, and returns their info.
   std::vector<UnknownEncryptionKeyInfo> RemoveKeysNoLongerUnknown();
 
+  // Returns whether |pending_updates_| contain any non-deletion update.
+  bool HasNonDeletionUpdates() const;
+
+  // Extraxts GC directive from the progress marker to handle it independently
+  // of |model_type_state_|.
+  void ExtractGcDirective();
+
   const ModelType type_;
 
-  Cryptographer* const cryptographer_;
+  const raw_ptr<Cryptographer> cryptographer_;
 
   // Interface used to access and send nudges to the sync scheduler. Not owned.
-  NudgeHandler* const nudge_handler_;
+  const raw_ptr<NudgeHandler> nudge_handler_;
 
   // Cancellation signal is used to cancel blocking operation on engine
   // shutdown.
-  CancelationSignal* const cancelation_signal_;
+  const raw_ptr<CancelationSignal> cancelation_signal_;
 
   // Pointer to the ModelTypeProcessor associated with this worker. Initialized
   // with ConnectSync().
@@ -281,8 +311,15 @@ class ModelTypeWorker : public UpdateHandler,
       unknown_encryption_keys_by_name_;
 
   // Accumulates all the updates from a single GetUpdates cycle in memory so
-  // they can all be sent to the processor at once.
+  // they can all be sent to the processor at once. Some updates may be
+  // deduplicated, e.g. in DeduplicatePendingUpdatesBasedOnServerId(). The
+  // ordering here is NOT guaranteed to stick to the download ordering or any
+  // other.
   UpdateResponseDataList pending_updates_;
+
+  // Pending GC directive if received during the current sync cycle. If there
+  // are several pending GC directives, the latest one will be stored.
+  absl::optional<sync_pb::GarbageCollectionDirective> pending_gc_directive_;
 
   // Indicates if processor has local changes. Processor only nudges worker once
   // and worker might not be ready to commit entities at the time.
@@ -345,7 +382,7 @@ class GetLocalChangesRequest
   friend class base::RefCountedThreadSafe<GetLocalChangesRequest>;
   ~GetLocalChangesRequest() override;
 
-  CancelationSignal* cancelation_signal_;
+  raw_ptr<CancelationSignal> cancelation_signal_;
   base::WaitableEvent response_accepted_;
   CommitRequestDataList response_;
 };

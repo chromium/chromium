@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,7 +34,7 @@ Response TargetHandler::CreateTarget(const std::string& url,
                                      Maybe<bool> new_window,
                                      Maybe<bool> background,
                                      std::string* out_target_id) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (enable_begin_frame_control.fromMaybe(false)) {
     return Response::ServerError(
         "BeginFrameControl is not supported on MacOS yet");

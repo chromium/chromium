@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image.h"
@@ -29,6 +30,10 @@
 namespace gfx {
 struct VectorIcon;
 }  // namespace gfx
+
+namespace ui {
+class ColorProvider;
+}
 
 namespace message_center {
 
@@ -130,6 +135,12 @@ class MESSAGE_CENTER_PUBLIC_EXPORT RichNotificationData {
   // retain VectorIcon reference.  https://crbug.com/760866
   const gfx::VectorIcon* vector_small_image = &gfx::kNoneIcon;
 
+  // Vector image to display on the parent notification of this notification,
+  // illustrating the source of the group notification that this notification
+  // belongs to. Optional. Note that all notification belongs to the same group
+  // should have the same `parent_vector_small_image`.
+  const gfx::VectorIcon* parent_vector_small_image = &gfx::kNoneIcon;
+
   // Items to display on the notification. Only applicable for notifications
   // that have type NOTIFICATION_TYPE_MULTIPLE.
   std::vector<NotificationItem> items;
@@ -180,6 +191,12 @@ class MESSAGE_CENTER_PUBLIC_EXPORT RichNotificationData {
   // SystemNotificationWarningLevel should be used.
   absl::optional<SkColor> accent_color;
 
+  // Similar to `accent_color`, but store a ColorId instead of SkColor so that
+  // the notification view can use this id to correctly handle theme change. In
+  // CrOS notification, if `accent_color_id` is provided, `accent_color` will
+  // not be used.
+  absl::optional<ui::ColorId> accent_color_id;
+
   // Controls whether a settings button should appear on the notification. See
   // enum definition. TODO(estade): turn this into a boolean. See
   // crbug.com/780342
@@ -187,6 +204,10 @@ class MESSAGE_CENTER_PUBLIC_EXPORT RichNotificationData {
 
   // Controls whether a snooze button should appear on the notification.
   bool should_show_snooze_button = false;
+
+  // If true, instead of using an app-themed accent color for views containing
+  // text, use the style's default. This affects the action buttons and title.
+  bool ignore_accent_color_for_text = false;
 
   FullscreenVisibility fullscreen_visibility = FullscreenVisibility::NONE;
 };
@@ -215,7 +236,7 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
                const std::string& id,
                const std::u16string& title,
                const std::u16string& message,
-               const gfx::Image& icon,
+               const ui::ImageModel& icon,
                const std::u16string& display_source,
                const GURL& origin_url,
                const NotifierId& notifier_id,
@@ -245,6 +266,7 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   // platforms.
   static std::unique_ptr<Notification> DeepCopy(
       const Notification& notification,
+      const ui::ColorProvider* color_provider,
       bool include_body_image,
       bool include_small_image,
       bool include_icon_images);
@@ -346,8 +368,8 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   // End unpacked values.
 
   // Images fetched asynchronously.
-  const gfx::Image& icon() const { return icon_; }
-  void set_icon(const gfx::Image& icon) { icon_ = icon; }
+  ui::ImageModel icon() const { return icon_; }
+  void set_icon(const ui::ImageModel& icon) { icon_ = icon; }
 
   const gfx::Image& image() const { return optional_fields_.image; }
   void set_image(const gfx::Image& image) { optional_fields_.image = image; }
@@ -373,6 +395,13 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   // See detailed comment in RichNotificationData::vector_small_image.
   void set_vector_small_image(const gfx::VectorIcon& image) {
     optional_fields_.vector_small_image = &image;
+  }
+
+  const gfx::VectorIcon& parent_vector_small_image() const {
+    return *optional_fields_.parent_vector_small_image;
+  }
+  void set_parent_vector_small_image(const gfx::VectorIcon& image) {
+    optional_fields_.parent_vector_small_image = &image;
   }
 
   // Mask the color of |small_image| to the given |color|.
@@ -429,6 +458,13 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   }
   void set_accent_color(SkColor accent_color) {
     optional_fields_.accent_color = accent_color;
+  }
+
+  absl::optional<ui::ColorId> accent_color_id() const {
+    return optional_fields_.accent_color_id;
+  }
+  void set_accent_color_id(ui::ColorId accent_color_id) {
+    optional_fields_.accent_color_id = accent_color_id;
   }
 
   bool should_show_settings_button() const {
@@ -509,7 +545,7 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   std::u16string message_;
 
   // Image data for the associated icon, used by Ash when available.
-  gfx::Image icon_;
+  ui::ImageModel icon_;
 
   // The display string for the source of the notification.  Could be
   // the same as |origin_url_|, or the name of an extension.

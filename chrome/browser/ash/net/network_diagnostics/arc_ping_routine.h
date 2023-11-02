@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,11 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/mojom/net.mojom.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_routine.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
-#include "components/arc/mojom/net.mojom.h"
-#include "components/arc/session/arc_bridge_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
@@ -20,7 +20,7 @@ namespace network_diagnostics {
 
 namespace {
 
-using ::chromeos::network_config::mojom::ManagedPropertiesPtr;
+using chromeos::network_config::mojom::ManagedPropertiesPtr;
 
 }  // namespace
 
@@ -28,8 +28,8 @@ using ::chromeos::network_config::mojom::ManagedPropertiesPtr;
 // and returns the result.
 class ArcPingRoutine : public NetworkDiagnosticsRoutine {
  public:
-  using RunArcHttpCallback =
-      mojom::NetworkDiagnosticsRoutines::RunArcPingCallback;
+  using RunArcHttpCallback = chromeos::network_diagnostics::mojom::
+      NetworkDiagnosticsRoutines::RunArcPingCallback;
 
   ArcPingRoutine();
   ArcPingRoutine(const ArcPingRoutine&) = delete;
@@ -37,7 +37,7 @@ class ArcPingRoutine : public NetworkDiagnosticsRoutine {
   ~ArcPingRoutine() override;
 
   // NetworkDiagnosticsRoutine:
-  mojom::RoutineType Type() override;
+  chromeos::network_diagnostics::mojom::RoutineType Type() override;
   void Run() override;
   void AnalyzeResultsAndExecuteCallback() override;
 
@@ -85,7 +85,7 @@ class ArcPingRoutine : public NetworkDiagnosticsRoutine {
 
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       remote_cros_network_config_;
-  std::vector<mojom::ArcPingProblem> problems_;
+  std::vector<chromeos::network_diagnostics::mojom::ArcPingProblem> problems_;
   std::vector<std::string> gateways_;
   std::vector<std::string> gateways_transport_names_;
   bool get_managed_properties_timeout_failure_ = false;

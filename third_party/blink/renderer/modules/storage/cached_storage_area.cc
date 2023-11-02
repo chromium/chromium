@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,11 +13,9 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
-#include "base/task/post_task.h"
 #include "base/trace_event/memory_dump_manager.h"
-#include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
@@ -58,8 +56,8 @@ base::OnceCallback<void(bool)> MakeSuccessCallback(
           "CachedStorageArea",
           WebScopedVirtualTimePauser::VirtualTaskDuration::kNonInstant);
   virtual_time_pauser.PauseVirtualTime();
-  return WTF::Bind([](WebScopedVirtualTimePauser, bool) {},
-                   std::move(virtual_time_pauser));
+  return WTF::BindOnce([](WebScopedVirtualTimePauser, bool) {},
+                       std::move(virtual_time_pauser));
 }
 
 }  // namespace
@@ -158,8 +156,8 @@ void CachedStorageArea::Clear(Source* source) {
     // backend from the exact point at which the impending |DeleteAll()|
     // operation takes place. The first event observed after this will always
     // be a corresponding |AllDeleted()| from |source|.
-    DCHECK(pending_mutations_by_source_.IsEmpty());
-    DCHECK(pending_mutations_by_key_.IsEmpty());
+    DCHECK(pending_mutations_by_source_.empty());
+    DCHECK(pending_mutations_by_key_.empty());
     receiver_.reset();
     new_observer = receiver_.BindNewPipeAndPassRemote();
   }
@@ -189,8 +187,7 @@ String CachedStorageArea::RegisterSource(Source* source) {
 CachedStorageArea::CachedStorageArea(
     AreaType type,
     const BlinkStorageKey& storage_key,
-    const LocalDOMWindow* local_dom_window,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    LocalDOMWindow* local_dom_window,
     StorageNamespace* storage_namespace,
     bool is_session_storage_for_prerendering,
     mojo::PendingRemote<mojom::blink::StorageArea> storage_area)
@@ -198,12 +195,11 @@ CachedStorageArea::CachedStorageArea(
       storage_key_(storage_key),
       storage_namespace_(storage_namespace),
       is_session_storage_for_prerendering_(is_session_storage_for_prerendering),
-      task_runner_(std::move(task_runner)),
       areas_(MakeGarbageCollected<HeapHashMap<WeakMember<Source>, String>>()) {
   BindStorageArea(std::move(storage_area), local_dom_window);
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "DOMStorage",
-      ThreadScheduler::Current()->DeprecatedDefaultTaskRunner());
+      Thread::MainThread()->GetTaskRunner(MainThreadTaskRunnerRestricted()));
 }
 
 CachedStorageArea::~CachedStorageArea() {
@@ -211,7 +207,7 @@ CachedStorageArea::~CachedStorageArea() {
       this);
 }
 
-const LocalDOMWindow* CachedStorageArea::GetBestCurrentDOMWindow() {
+LocalDOMWindow* CachedStorageArea::GetBestCurrentDOMWindow() {
   for (auto key : areas_->Keys()) {
     if (!key->GetDOMWindow()) {
       continue;
@@ -223,7 +219,7 @@ const LocalDOMWindow* CachedStorageArea::GetBestCurrentDOMWindow() {
 
 void CachedStorageArea::BindStorageArea(
     mojo::PendingRemote<mojom::blink::StorageArea> new_area,
-    const LocalDOMWindow* local_dom_window) {
+    LocalDOMWindow* local_dom_window) {
   // Some tests may not provide a StorageNamespace.
   DCHECK(!remote_area_);
   if (!local_dom_window)
@@ -235,18 +231,22 @@ void CachedStorageArea::BindStorageArea(
     pending_mutations_by_key_.clear();
     pending_mutations_by_source_.clear();
     return;
-  } else if (new_area) {
-    remote_area_.Bind(std::move(new_area), task_runner_);
+  }
+
+  auto task_runner =
+      local_dom_window->GetTaskRunner(TaskType::kInternalNavigationAssociated);
+  if (new_area) {
+    remote_area_.Bind(std::move(new_area), task_runner);
   } else if (storage_namespace_) {
     storage_namespace_->BindStorageArea(
         *local_dom_window,
-        remote_area_.BindNewPipeAndPassReceiver(task_runner_));
+        remote_area_.BindNewPipeAndPassReceiver(task_runner));
   } else {
     return;
   }
 
   receiver_.reset();
-  remote_area_->AddObserver(receiver_.BindNewPipeAndPassRemote(task_runner_));
+  remote_area_->AddObserver(receiver_.BindNewPipeAndPassRemote(task_runner));
 }
 
 void CachedStorageArea::ResetConnection(
@@ -537,7 +537,7 @@ CachedStorageArea::PopPendingMutation(const String& source) {
     return nullptr;
 
   OwnedPendingMutationQueue& mutations_for_source = source_queue_iter->value;
-  DCHECK(!mutations_for_source.IsEmpty());
+  DCHECK(!mutations_for_source.empty());
   std::unique_ptr<PendingMutation> mutation =
       std::move(mutations_for_source.front());
   mutations_for_source.pop_front();
@@ -666,12 +666,20 @@ void CachedStorageArea::EnqueueStorageEvent(const String& key,
   if (!key.IsNull() && new_value == old_value)
     return;
 
-  HeapVector<Member<Source>, 1> areas_to_remove_;
+  HeapVector<Member<Source>, 1> areas_vector;
   for (const auto& area : *areas_) {
-    if (area.value != storage_area_id) {
-      bool keep = area.key->EnqueueStorageEvent(key, old_value, new_value, url);
+    areas_vector.push_back(area.key);
+  }
+  std::sort(areas_vector.begin(), areas_vector.end(),
+            recordreplay::CompareMemberByPointerId<Member<Source>>());
+  HeapVector<Member<Source>, 1> areas_to_remove_;
+  for (const Member<Source>& source : areas_vector) {
+    auto iter = areas_->find(source);
+    CHECK(iter != areas_->end());
+    if (iter->value != storage_area_id) {
+      bool keep = source->EnqueueStorageEvent(key, old_value, new_value, url);
       if (!keep)
-        areas_to_remove_.push_back(area.key);
+        areas_to_remove_.push_back(source);
     }
   }
   areas_->RemoveAll(areas_to_remove_);
@@ -684,7 +692,7 @@ void CachedStorageArea::EnqueueStorageEvent(const String& key,
 // static
 String CachedStorageArea::Uint8VectorToString(const Vector<uint8_t>& input,
                                               FormatOption format_option) {
-  if (input.IsEmpty())
+  if (input.empty())
     return g_empty_string;
   const wtf_size_t input_size = input.size();
   String result;

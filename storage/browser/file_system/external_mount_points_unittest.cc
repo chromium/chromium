@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,7 @@
 
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_mount_option.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -122,7 +120,7 @@ TEST(ExternalMountPointsTest, AddMountPoint) {
   }
 
   // Test that final mount point presence state is as expected.
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     base::FilePath found_path;
     EXPECT_EQ(kTestCases[i].registered_path != nullptr,
               mount_points->GetRegisteredPath(kTestCases[i].name, &found_path))
@@ -330,7 +328,7 @@ TEST(ExternalMountPointsTest, CreateCrackedFileSystemURL) {
 #endif
   };
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     FileSystemURL cracked = mount_points->CreateCrackedFileSystemURL(
         kTestStorageKey, kFileSystemTypeExternal,
         base::FilePath(kTestCases[i].path));
@@ -413,7 +411,7 @@ TEST(ExternalMountPointsTest, CrackVirtualPath) {
 #endif
   };
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     std::string cracked_name;
     FileSystemType cracked_type;
     std::string cracked_id;

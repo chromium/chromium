@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,12 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace data_decoder {
@@ -74,14 +75,14 @@ class ImageDecoder {
     const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
     // If null, will use a new decoder via DecodeImageIsolated() instead.
-    data_decoder::DataDecoder* const data_decoder_ = nullptr;
+    const raw_ptr<data_decoder::DataDecoder> data_decoder_ = nullptr;
 
     SEQUENCE_CHECKER(sequence_checker_);
   };
 
   enum ImageCodec {
     DEFAULT_CODEC = 0,  // Uses WebKit image decoding (via WebImage).
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
     PNG_CODEC,  // Restrict decoding to libpng.
 #endif
   };
@@ -116,6 +117,7 @@ class ImageDecoder {
   static void Cancel(ImageRequest* image_request);
 
  private:
+  friend base::NoDestructor<ImageDecoder>;
   using RequestMap = std::map<int, ImageRequest*>;
 
   ImageDecoder();

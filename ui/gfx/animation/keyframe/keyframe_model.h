@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
 #include "ui/gfx/animation/keyframe/keyframe_animation_export.h"
@@ -102,8 +103,9 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeModel {
   }
 
   // This is the number of times that the keyframe model will play. If this
-  // value is zero the keyframe model will not play. If it is negative, then
-  // the keyframe model will loop indefinitely.
+  // value is zero or negative, the keyframe model will not play. If it is
+  // std::numeric_limits<double>::infinity(), then the keyframe model will loop
+  // indefinitely.
   double iterations() const { return iterations_; }
   void set_iterations(double n) { iterations_ = n; }
 

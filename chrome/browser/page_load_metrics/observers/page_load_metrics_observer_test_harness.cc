@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,10 @@
 #include "base/callback_helpers.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 namespace page_load_metrics {
-
-PageLoadMetricsObserverTestHarness::PageLoadMetricsObserverTestHarness()
-    : ChromeRenderViewHostTestHarness() {}
 
 PageLoadMetricsObserverTestHarness::~PageLoadMetricsObserverTestHarness() {}
 
@@ -32,6 +30,20 @@ void PageLoadMetricsObserverTestHarness::SetUp() {
           &PageLoadMetricsObserverTestHarness::RegisterObservers,
           base::Unretained(this)));
   web_contents()->WasShown();
+}
+
+void PageLoadMetricsObserverTestHarness::InitializeFeatureList() {
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {
+          {blink::features::kPrerender2, {}},
+          {blink::features::kFencedFrames, {{"implementation_type", "mparch"}}},
+          {blink::features::kInitialNavigationEntry, {}},
+      },
+      {
+          // Disable the memory requirement of Prerender2
+          // so the test can run on any bot.
+          {blink::features::kPrerender2MemoryControls},
+      });
 }
 
 const char PageLoadMetricsObserverTestHarness::kResourceUrl[] =

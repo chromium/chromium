@@ -25,7 +25,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
+#include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/events/clipboard_event.h"
 #include "third_party/blink/renderer/core/events/text_event.h"
@@ -120,7 +121,7 @@ bool ClipboardCommands::DispatchClipboardEvent(LocalFrame& frame,
           : DataObject::CreateFromClipboard(system_clipboard, paste_mode));
 
   Event* const evt = ClipboardEvent::Create(event_type, data_transfer);
-  target->DispatchEvent(*evt);
+  target->DispatchEvent(*evt, "ClipboardCommands::DispatchClipboardEvent");
   const bool no_default_processing = evt->defaultPrevented();
   if (no_default_processing && policy == DataTransferAccessPolicy::kWritable) {
     frame.GetSystemClipboard()->WriteDataObject(data_transfer->GetDataObject());
@@ -281,7 +282,7 @@ bool ClipboardCommands::CanDeleteRange(const EphemeralRange& range) {
   const Node& start_container = *range.StartPosition().ComputeContainerNode();
   const Node& end_container = *range.EndPosition().ComputeContainerNode();
 
-  return HasEditableStyle(start_container) && HasEditableStyle(end_container);
+  return IsEditable(start_container) && IsEditable(end_container);
 }
 
 static DeleteMode ConvertSmartReplaceOptionToDeleteMode(
@@ -354,7 +355,7 @@ void ClipboardCommands::PasteAsFragment(LocalFrame& frame,
   if (!target)
     return;
   target->DispatchEvent(*TextEvent::CreateForFragmentPaste(
-      frame.DomWindow(), pasting_fragment, smart_replace, match_style));
+      frame.DomWindow(), pasting_fragment, smart_replace, match_style), "ClipboardCommands::PasteAsFragment");
 }
 
 void ClipboardCommands::PasteAsPlainTextFromClipboard(
@@ -365,7 +366,7 @@ void ClipboardCommands::PasteAsPlainTextFromClipboard(
     return;
   target->DispatchEvent(*TextEvent::CreateForPlainTextPaste(
       frame.DomWindow(), frame.GetSystemClipboard()->ReadPlainText(),
-      CanSmartReplaceInClipboard(frame)));
+      CanSmartReplaceInClipboard(frame)), "ClipboardCommands::PasteAsPlainTextFromClipboard");
 }
 
 ClipboardCommands::FragmentAndPlainText
@@ -394,7 +395,7 @@ ClipboardCommands::GetFragmentFromClipboard(LocalFrame& frame) {
   }
 
   const String text = frame.GetSystemClipboard()->ReadPlainText();
-  if (text.IsEmpty())
+  if (text.empty())
     return std::make_pair(fragment, false);
 
   // TODO(editing-dev): Use of UpdateStyleAndLayout

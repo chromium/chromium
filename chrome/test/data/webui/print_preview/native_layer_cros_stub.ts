@@ -1,10 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import {NativeLayerCros, NativeLayerCrosImpl, PrinterSetupResponse, PrinterStatus, PrinterStatusReason, PrinterStatusSeverity, PrintServersConfig} from 'chrome://print/print_preview.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export function setNativeLayerCrosInstance(): NativeLayerCrosStub {
@@ -63,10 +63,6 @@ export class NativeLayerCrosStub extends TestBrowserProxy implements
         Promise.resolve(assert(this.setupPrinterResponse_!));
   }
 
-  getAccessToken() {
-    return Promise.resolve('123');
-  }
-
   grantExtensionPrinterAccess(provisionalId: string) {
     return Promise.resolve({
       extensionId: 'abc123',
@@ -78,12 +74,11 @@ export class NativeLayerCrosStub extends TestBrowserProxy implements
 
   /**
    * @param response The response to send when |setupPrinter| is called.
-   * @param opt_reject Whether printSetup requests should be
+   * @param reject Whether printSetup requests should be
    *     rejected. Defaults to false (will resolve callback) if not provided.
    */
-  setSetupPrinterResponse(
-      response: PrinterSetupResponse, opt_reject?: boolean) {
-    this.shouldRejectPrinterSetup_ = opt_reject || false;
+  setSetupPrinterResponse(response: PrinterSetupResponse, reject?: boolean) {
+    this.shouldRejectPrinterSetup_ = reject || false;
     this.setupPrinterResponse_ = response;
   }
 
@@ -111,7 +106,7 @@ export class NativeLayerCrosStub extends TestBrowserProxy implements
         printerId: printerId,
         statusReasons: [{
           reason: PrinterStatusReason.NO_ERROR,
-          severity: PrinterStatusSeverity.REPORT
+          severity: PrinterStatusSeverity.REPORT,
         }],
         timestamp: Date.now(),
       });
@@ -133,9 +128,6 @@ export class NativeLayerCrosStub extends TestBrowserProxy implements
     this.multiplePrinterStatusRequestsPromise_ = new PromiseResolver();
     return this.multiplePrinterStatusRequestsPromise_.promise;
   }
-
-  recordPrinterStatusHistogram(
-      _statusReason: PrinterStatusReason, _didUserAttemptPrint: boolean) {}
 
   choosePrintServers(printServerIds: string[]) {
     this.methodCalled('choosePrintServers', printServerIds);

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,10 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -63,13 +63,13 @@ class AddInObserve : public Foo {
 
   void Observe(int x) override {
     if (to_add_) {
-      observer_list->AddObserver(to_add_);
+      observer_list->AddObserver(to_add_.get());
       to_add_ = nullptr;
     }
   }
 
-  ObserverListThreadSafe<Foo>* observer_list;
-  Foo* to_add_;
+  raw_ptr<ObserverListThreadSafe<Foo>> observer_list;
+  raw_ptr<Foo> to_add_;
 };
 
 // A task for use in the ThreadSafeObserver test which will add and remove
@@ -126,7 +126,7 @@ class AddRemoveThread : public Foo {
   }
 
  private:
-  ObserverListThreadSafe<Foo>* list_;
+  raw_ptr<ObserverListThreadSafe<Foo>> list_;
   scoped_refptr<SingleThreadTaskRunner> task_runner_;
   bool in_list_;  // Are we currently registered for notifications.
                   // in_list_ is only used on |this| thread.

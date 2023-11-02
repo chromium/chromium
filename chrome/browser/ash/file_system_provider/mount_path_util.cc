@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,9 @@
 
 #include <vector>
 
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
@@ -56,7 +58,7 @@ base::FilePath GetMountPath(Profile* profile,
       user_manager::UserManager::IsInitialized()
           ? ProfileHelper::Get()->GetUserByProfile(
                 profile->GetOriginalProfile())
-          : NULL;
+          : nullptr;
   const std::string safe_file_system_id = EscapeFileSystemId(file_system_id);
   const std::string username_suffix = user ? user->username_hash() : "";
   return base::FilePath(kProvidedMountPointRoot)
@@ -65,8 +67,8 @@ base::FilePath GetMountPath(Profile* profile,
 }
 
 bool IsFileSystemProviderLocalPath(const base::FilePath& local_path) {
-  std::vector<base::FilePath::StringType> components;
-  local_path.GetComponents(&components);
+  std::vector<base::FilePath::StringType> components =
+      local_path.GetComponents();
 
   if (components.size() < 3)
     return false;
@@ -81,8 +83,7 @@ bool IsFileSystemProviderLocalPath(const base::FilePath& local_path) {
 }
 
 FileSystemURLParser::FileSystemURLParser(const storage::FileSystemURL& url)
-    : url_(url), file_system_(NULL) {
-}
+    : url_(url), file_system_(nullptr) {}
 
 FileSystemURLParser::~FileSystemURLParser() {
 }
@@ -90,17 +91,38 @@ FileSystemURLParser::~FileSystemURLParser() {
 bool FileSystemURLParser::Parse() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (url_.type() != storage::kFileSystemTypeProvided)
-    return false;
+  switch (url_.type()) {
+    case storage::kFileSystemTypeFuseBox:
+    case storage::kFileSystemTypeProvided:
+      break;
+    default:
+      return false;
+  }
 
-  // First, find the service handling the mount point of the URL.
-  const std::vector<Profile*>& profiles =
-      g_browser_process->profile_manager()->GetLoadedProfiles();
+  std::string filesystem_id = url_.filesystem_id();
+  base::FilePath path = url_.path();
 
-  for (size_t i = 0; i < profiles.size(); ++i) {
-    Profile* original_profile = profiles[i]->GetOriginalProfile();
+  // Convert fusebox URL to its backing (FSP) file system provider URL.
+  if (url_.type() == storage::kFileSystemTypeFuseBox) {
+    const size_t prefix_len =
+        strlen(file_manager::util::kFuseBoxMountNamePrefix) +
+        strlen(file_manager::util::kFuseBoxSubdirPrefixFSP);
+    const std::string& virtual_path = url_.virtual_path().value();
+    if ((filesystem_id.size() < prefix_len) ||
+        (virtual_path.size() < prefix_len)) {
+      return false;
+    }
+    filesystem_id = filesystem_id.substr(prefix_len);
+    path = base::FilePath::FromUTF8Unsafe(base::JoinString(
+        {kProvidedMountPointRoot, virtual_path.substr(prefix_len)}, "/"));
+  }
 
-    if (original_profile != profiles[i] ||
+  // Find the service that handles the provider URL mount point.
+  for (Profile* profile :
+       g_browser_process->profile_manager()->GetLoadedProfiles()) {
+    Profile* original_profile = profile->GetOriginalProfile();
+
+    if (original_profile != profile ||
         !ProfileHelper::IsRegularProfile(original_profile)) {
       continue;
     }
@@ -110,21 +132,19 @@ bool FileSystemURLParser::Parse() {
       continue;
 
     ProvidedFileSystemInterface* const file_system =
-        service->GetProvidedFileSystem(url_.filesystem_id());
+        service->GetProvidedFileSystem(filesystem_id);
     if (!file_system)
       continue;
 
     // Strip the mount path name from the local path, to extract the file path
     // within the provided file system.
     file_system_ = file_system;
-    std::vector<base::FilePath::StringType> components;
-    url_.path().GetComponents(&components);
+    std::vector<base::FilePath::StringType> components = path.GetComponents();
     if (components.size() < 3)
       return false;
 
     file_path_ = base::FilePath(FILE_PATH_LITERAL("/"));
     for (size_t i = 3; i < components.size(); ++i) {
-      // TODO(mtomasz): This could be optimized, to avoid unnecessary copies.
       file_path_ = file_path_.Append(components[i]);
     }
 
@@ -137,8 +157,7 @@ bool FileSystemURLParser::Parse() {
 
 LocalPathParser::LocalPathParser(Profile* profile,
                                  const base::FilePath& local_path)
-    : profile_(profile), local_path_(local_path), file_system_(NULL) {
-}
+    : profile_(profile), local_path_(local_path), file_system_(nullptr) {}
 
 LocalPathParser::~LocalPathParser() {
 }
@@ -149,8 +168,8 @@ bool LocalPathParser::Parse() {
   if (!IsFileSystemProviderLocalPath(local_path_))
     return false;
 
-  std::vector<base::FilePath::StringType> components;
-  local_path_.GetComponents(&components);
+  std::vector<base::FilePath::StringType> components =
+      local_path_.GetComponents();
 
   if (components.size() < 3)
     return false;

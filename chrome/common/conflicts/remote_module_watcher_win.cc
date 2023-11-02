@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,14 +70,25 @@ void RemoteModuleWatcher::HandleModuleEvent(
 
   // Accumulate events. They will be sent when the |delay_timer_| fires.
   module_load_addresses_.push_back(
-      reinterpret_cast<uintptr_t>(event.module_load_address));
+      reinterpret_cast<uintptr_t>(event.module_load_address.get()));
 
-  // Ensure the timer is running.
-  delay_timer_.Reset();
+  // Ensure the timer is running. Skip this when recording events are disallowed
+  // as timers must be reset deterministically. Because of the five second delay
+  // it doesn't seem like the browser process needs these events other than for
+  // observability.
+  if (!recordreplay::AreEventsDisallowed("RemoteModuleWatcher::HandleModuleEvent"))
+    delay_timer_.Reset();
 }
 
 void RemoteModuleWatcher::OnTimerFired() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
+
+  // Because module events can happen non-deterministically the number of events
+  // can vary when replaying. Ensure we report the same module events over IPC.
+  size_t num_module_events =
+    recordreplay::RecordReplayValue("RemoteModuleWatcher::OnTimerFired num_module_events",
+                                    module_load_addresses_.size());
+  module_load_addresses_.resize(num_module_events, 0);
 
   module_event_sink_->OnModuleEvents(module_load_addresses_);
   module_load_addresses_.clear();

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,11 +18,13 @@ public class ChromeModalDialogTestUtils {
     /**
      * Checks whether the browser controls and tab obscured state is appropriately set.
      * @param activity The activity to use to query for appropriate state
-     * @param restricted If true, the menu should be enabled and the tabs should be obscred.
+     * @param restricted If true, the menu should be enabled and the tabs should be obscured.
      */
     public static void checkBrowserControls(ChromeActivity activity, boolean restricted) {
-        boolean isViewObscuringAllTabs = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> activity.getTabObscuringHandler().areAllTabsObscured());
+        boolean isViewObscuringTabContent = TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> activity.getTabObscuringHandler().isTabContentObscured());
+        boolean isViewObscuringToolbar = TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> activity.getTabObscuringHandler().isToolbarObscured());
         boolean isMenuEnabled = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             View menu = activity.getToolbarManager().getMenuButtonView();
             Assert.assertNotNull("Toolbar menu is incorrectly null.", menu);
@@ -30,11 +32,13 @@ public class ChromeModalDialogTestUtils {
         });
 
         if (restricted) {
-            Assert.assertTrue("All tabs should be obscured", isViewObscuringAllTabs);
+            Assert.assertTrue("All tabs should be obscured", isViewObscuringTabContent);
             Assert.assertFalse("Menu is incorrectly enabled.", isMenuEnabled);
         } else {
-            Assert.assertFalse("Tabs shouldn't be obscured", isViewObscuringAllTabs);
+            Assert.assertFalse("Tabs shouldn't be obscured", isViewObscuringTabContent);
             Assert.assertTrue("Menu is incorrectly disabled.", isMenuEnabled);
         }
+        Assert.assertFalse(
+                "Tab modal dialogs should never obscure the toolbar.", isViewObscuringToolbar);
     }
 }

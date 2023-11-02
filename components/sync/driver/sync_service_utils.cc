@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/passphrase_enums.h"
-#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -39,7 +39,13 @@ UploadState GetUploadToGoogleState(const SyncService* sync_service,
 
   // Persistent auth errors always map to NOT_ACTIVE. For transient errors, we
   // give the benefit of the doubt and may still say we're INITIALIZING.
+  // TODO(crbug.com/1156584): Remove this entire block once the feature toggle
+  // is cleaned up.
   if (sync_service->GetAuthError().IsPersistentError()) {
+    if (base::FeatureList::IsEnabled(kSyncPauseUponAnyPersistentAuthError)) {
+      DCHECK_EQ(sync_service->GetTransportState(),
+                SyncService::TransportState::PAUSED);
+    }
     return UploadState::NOT_ACTIVE;
   }
 
@@ -118,9 +124,8 @@ bool ShouldOfferTrustedVaultOptIn(const SyncService* service) {
         return false;
       }
       return base::FeatureList::IsEnabled(
-                 switches::kSyncTrustedVaultPassphraseRecovery) &&
-             base::FeatureList::IsEnabled(
-                 switches::kSyncTrustedVaultPassphrasePromo);
+                 kSyncTrustedVaultPassphraseRecovery) &&
+             base::FeatureList::IsEnabled(kSyncTrustedVaultPassphrasePromo);
   }
 }
 

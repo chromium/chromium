@@ -1,8 +1,9 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/password_edit_dialog/android/password_edit_dialog_bridge.h"
+#include <jni.h>
 
 #include "base/android/jni_string.h"
 #include "base/memory/ptr_util.h"
@@ -42,11 +43,27 @@ PasswordEditDialogBridge::~PasswordEditDialogBridge() {
   DCHECK(java_password_dialog_.is_null());
 }
 
-void PasswordEditDialogBridge::Show(
+void PasswordEditDialogBridge::ShowSavePasswordDialog(
+    const std::u16string& username,
+    const std::u16string& password,
+    const std::string& account_email) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+
+  base::android::ScopedJavaLocalRef<jstring> j_username =
+      base::android::ConvertUTF16ToJavaString(env, username);
+  base::android::ScopedJavaLocalRef<jstring> j_password =
+      base::android::ConvertUTF16ToJavaString(env, password);
+  base::android::ScopedJavaLocalRef<jstring> j_account_email =
+      base::android::ConvertUTF8ToJavaString(env, account_email);
+
+  Java_PasswordEditDialogBridge_showSavePasswordDialog(
+      env, java_password_dialog_, j_username, j_password, j_account_email);
+}
+
+void PasswordEditDialogBridge::ShowUpdatePasswordDialog(
     const std::vector<std::u16string>& usernames,
     int selected_username_index,
     const std::u16string& password,
-    const std::u16string& origin,
     const std::string& account_email) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
@@ -55,14 +72,12 @@ void PasswordEditDialogBridge::Show(
 
   base::android::ScopedJavaLocalRef<jstring> j_password =
       base::android::ConvertUTF16ToJavaString(env, password);
-  base::android::ScopedJavaLocalRef<jstring> j_origin =
-      base::android::ConvertUTF16ToJavaString(env, origin);
   base::android::ScopedJavaLocalRef<jstring> j_account_email =
       base::android::ConvertUTF8ToJavaString(env, account_email);
 
-  Java_PasswordEditDialogBridge_show(env, java_password_dialog_, j_usernames,
-                                     selected_username_index, j_password,
-                                     j_origin, j_account_email);
+  Java_PasswordEditDialogBridge_showUpdatePasswordDialog(
+      env, java_password_dialog_, j_usernames, selected_username_index,
+      j_password, j_account_email);
 }
 
 void PasswordEditDialogBridge::Dismiss() {
@@ -70,9 +85,13 @@ void PasswordEditDialogBridge::Dismiss() {
   Java_PasswordEditDialogBridge_dismiss(env, java_password_dialog_);
 }
 
-void PasswordEditDialogBridge::OnDialogAccepted(JNIEnv* env,
-                                                jint selected_username_index) {
-  std::move(dialog_accepted_callback_).Run(selected_username_index);
+void PasswordEditDialogBridge::OnDialogAccepted(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& username,
+    const base::android::JavaParamRef<jstring>& password) {
+  std::move(dialog_accepted_callback_)
+      .Run(base::android::ConvertJavaStringToUTF16(username),
+           base::android::ConvertJavaStringToUTF16(password));
 }
 
 void PasswordEditDialogBridge::OnDialogDismissed(JNIEnv* env,

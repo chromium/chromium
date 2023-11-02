@@ -1,25 +1,33 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/desks_storage/core/local_desk_data_manager.h"
 
+#include <utility>
+
 #include "ash/public/cpp/desk_template.h"
+#include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/files/dir_reader_posix.h"
 #include "base/files/file_util.h"
+#include "base/guid.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/values.h"
+#include "components/account_id/account_id.h"
 #include "components/app_restore/restore_data.h"
 #include "components/desks_storage/core/desk_model.h"
+#include "components/desks_storage/core/desk_template_conversion.h"
+#include "components/desks_storage/core/desk_template_util.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/sync/protocol/workspace_desk_specifics.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/re2/src/re2/re2.h"
 #include "third_party/re2/src/re2/stringpiece.h"
 #include "url/gurl.h"
 
@@ -27,85 +35,37 @@ namespace desks_storage {
 
 namespace {
 
-// File extension for templates.
-constexpr char kFileExtension[] = ".template";
-// Key used in base::Value generation for the template name field.
-constexpr char kDeskTemplateNameKey[] = "template_name";
-// Key used in base::Value generation for the uuid field.
-constexpr char kDeskTemplateUuidKey[] = "uuid";
-// Key used in base::Value generation for the time created field.
-constexpr char kDeskTemplateTimeCreatedKey[] = "time_created";
-// Key used in base::Value generation for the restore data field.
-constexpr char kDeskTemplateRestoreDataKey[] = "restore_data";
-// Duplicate value format
-constexpr char kDuplicateNumberFormat[] = "(%d)";
-// Initial duplicate number value
-constexpr char kInitialDuplicateNumberValue[] = " (1)";
-// The maximum number of templates the local storage can hold.
-constexpr std::size_t kMaxTemplateCount = 6u;
-// Regex used in determining if duplicate name should be incremented.
-constexpr char kDuplicateNumberRegex[] = "\\(([0-9])+\\)$";
+// Setting this to true allows us to add more than the maximum number of
+// desk templates. Used only for testing.
+bool g_disable_max_template_limit = false;
 
-// Converts ash::DeskTemplates to base::Value for serialization.
-base::Value ConvertDeskTemplateToValue(ash::DeskTemplate* desk_template) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey(kDeskTemplateUuidKey,
-              base::Value(desk_template->uuid().AsLowercaseString()));
-  dict.SetKey(kDeskTemplateNameKey,
-              base::Value(desk_template->template_name()));
-  dict.SetKey(kDeskTemplateTimeCreatedKey,
-              base::TimeToValue(desk_template->created_time()));
-  DCHECK(desk_template->desk_restore_data() != nullptr);
-  dict.SetKey(kDeskTemplateRestoreDataKey,
-              desk_template->desk_restore_data()->ConvertToValue());
-  return dict;
-}
+// Setting this to true allows us to exclude the max count of save and recall
+// desk entries as part of `GetMaxEntryCount` since there are some tests
+// treating save and recall desks behavior as regular desk templates (such as
+// button enablement). Also, since save and recall desks and desk templates are
+// currently being treated as desk templates, exclude save and recall desks
+// limit until save and recall desks are enabled.
+bool g_exclude_save_and_recall_desk_in_max_entry_count = true;
 
-// Converts base::Values deserialized from template files to
-// |ash::DeskTemplate|.
-std::unique_ptr<ash::DeskTemplate> ConvertValueToDeskTemplate(
-    base::Value& desk_template_value) {
-  absl::optional<base::Time> created_time(base::ValueToTime(
-      desk_template_value.FindKey(kDeskTemplateTimeCreatedKey)));
-  if (!created_time)
-    return nullptr;
+// File extension for saving template entries.
+constexpr char kFileExtension[] = ".saveddesk";
+constexpr char kSavedDeskDirectoryName[] = "saveddesk";
+constexpr size_t kMaxDeskTemplateCount = 6u;
+// Currently, the save for later button is dependent on the the max number of
+// entries total.
+constexpr size_t kMaxSaveAndRecallDeskCount = 6u;
 
-  std::string* uuid = desk_template_value.FindStringKey(kDeskTemplateUuidKey);
-  if (!uuid)
-    return nullptr;
+// Set of valid desk types.
+constexpr auto kDeskTypes = base::MakeFixedFlatSet<ash::DeskTemplateType>(
+    {ash::DeskTemplateType::kTemplate, ash::DeskTemplateType::kSaveAndRecall});
 
-  std::string* name = desk_template_value.FindStringKey(kDeskTemplateNameKey);
-  if (!name)
-    return nullptr;
-
-  std::unique_ptr<ash::DeskTemplate> desk_template =
-      std::make_unique<ash::DeskTemplate>(*uuid, ash::DeskTemplateSource::kUser,
-                                          *name, created_time.value());
-
-  // Full Restore will only take in std::unique_ptr as it's constructor
-  // parameter from base::Value.  We're not allowed to use the explicit
-  // std::unique_ptr constructor so this is how we wrap the base::Value in a
-  // std::unique_ptr
-  std::unique_ptr<base::Value> restore_data_value_ptr =
-      base::Value::ToUniquePtrValue(
-          std::move(*desk_template_value.FindKey(kDeskTemplateRestoreDataKey)));
-  DCHECK(restore_data_value_ptr);
-
-  desk_template->set_desk_restore_data(
-      std::make_unique<app_restore::RestoreData>(
-          std::move(restore_data_value_ptr)));
-  return desk_template;
-}
-
-// Reads a template file at fully_qualified_path| into a
-// std::unique_ptr<ash::DeskTemplate> This function returns a |nullptr| if the
+// Reads a file at `fully_qualified_path` into a
+// std::unique_ptr<ash::DeskTemplate> This function returns a `nullptr` if the
 // file does not exist or deserialization fails.
 std::unique_ptr<ash::DeskTemplate> ReadFileToTemplate(
     const base::FilePath& fully_qualified_path) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  if (!base::PathExists(fully_qualified_path))
-    return nullptr;
 
   std::string value_string;
   if (!base::ReadFileToString(fully_qualified_path, &value_string))
@@ -123,7 +83,8 @@ std::unique_ptr<ash::DeskTemplate> ReadFileToTemplate(
     return nullptr;
   }
 
-  return ConvertValueToDeskTemplate(*desk_template_value);
+  return desk_template_conversion::ParseDeskTemplateFromSource(
+      *desk_template_value, ash::DeskTemplateSource::kUser);
 }
 
 bool EndsWith(const char* input, const char* suffix) {
@@ -135,21 +96,24 @@ bool EndsWith(const char* input, const char* suffix) {
   return false;
 }
 
+// TODO(crbug.com/1320836): Make template creation for
+// local_desk_data_manager_unittests cleaner.
 bool IsValidTemplateFileName(const char* name) {
   if (name == nullptr)
     return false;
   return EndsWith(name, kFileExtension);
 }
 
-// Writes a DeskTemplate |entry| to a file at |path_to_template|.
-// This function utilizes blocking calls and assumes that it is being called
-// from a thread which can accept such calls, please don't call this function
-// from the UI thread.
+// Writes a DeskTemplate or SaveAndRecallDesk base::Value `json_value` to a file
+// at `path_to_template`. This function utilizes blocking calls and assumes that
+// it is being called from a thread which can accept such calls, please don't
+// call this function from the UI thread.
 bool WriteTemplateFile(const base::FilePath& path_to_template,
-                       ash::DeskTemplate* entry) {
+                       base::Value json_value) {
   std::string json_string;
   JSONStringValueSerializer serializer(&json_string);
-  serializer.Serialize(ConvertDeskTemplateToValue(entry));
+
+  serializer.Serialize(json_value);
 
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
@@ -157,138 +121,269 @@ bool WriteTemplateFile(const base::FilePath& path_to_template,
   return base::WriteFile(path_to_template, json_string);
 }
 
-// Generates the fully qualified path to a template file given the |file_path|
-// to the desk template directory and the template's |uuid|.
+// Generates the fully qualified path to a desk template or save and recall desk
+// file given the `file_path` to the desk template or save and recall desk
+// directory and the entry's `uuid`.
 base::FilePath GetFullyQualifiedPath(base::FilePath file_path,
-                                     const std::string& uuid) {
-  std::string filename(uuid);
+                                     const base::GUID& uuid) {
+  std::string filename = uuid.AsLowercaseString();
   filename.append(kFileExtension);
+
   return base::FilePath(file_path.Append(base::FilePath(filename)));
-}
-
-// Returns a copy of a duplicated name to be stored.  This function works by
-// taking the name to be duplicated and adding a "(1)" to it.  If the name
-// already has "(1)" then the number inside of the parenthesis will be
-// incremented.
-std::u16string AppendDuplicateNumberToDuplicateName(
-    const std::u16string& duplicate_name_u16) {
-  std::string duplicate_name = base::UTF16ToUTF8(duplicate_name_u16);
-  int found_duplicate_number;
-
-  if (RE2::PartialMatch(duplicate_name, kDuplicateNumberRegex,
-                        &found_duplicate_number)) {
-    RE2::Replace(
-        &duplicate_name, kDuplicateNumberRegex,
-        base::StringPrintf(kDuplicateNumberFormat, found_duplicate_number + 1));
-  } else {
-    duplicate_name.append(kInitialDuplicateNumberValue);
-  }
-
-  return base::UTF8ToUTF16(duplicate_name);
 }
 
 }  // namespace
 
-LocalDeskDataManager::LocalDeskDataManager(const base::FilePath& path)
+LocalDeskDataManager::LocalDeskDataManager(
+    const base::FilePath& user_data_dir_path,
+    const AccountId& account_id)
     : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
-      local_path_(path),
-      cache_status_(CacheStatus::kNotInitialized) {}
+      user_data_dir_path_(user_data_dir_path),
+      local_saved_desk_path_(
+          user_data_dir_path.AppendASCII(kSavedDeskDirectoryName)),
+      account_id_(account_id),
+      cache_status_(CacheStatus::kNotInitialized) {
+  // Populate `saved_desks_list_` with all the desk types.
+  for (const auto& desk_type : kDeskTypes) {
+    saved_desks_list_[desk_type];
+  }
+  // Load the cache.
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&LocalDeskDataManager::LoadCacheOnBackgroundSequence,
+                     user_data_dir_path),
+      base::BindOnce(&LocalDeskDataManager::MoveEntriesIntoCache,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
 
 LocalDeskDataManager::~LocalDeskDataManager() = default;
 
-void LocalDeskDataManager::GetAllEntries(
-    DeskModel::GetAllEntriesCallback callback) {
-  auto status = std::make_unique<DeskModel::GetAllEntriesStatus>();
-  auto entries = std::make_unique<std::vector<ash::DeskTemplate*>>();
+LocalDeskDataManager::LoadCacheResult::LoadCacheResult(
+    CacheStatus status,
+    std::vector<std::unique_ptr<ash::DeskTemplate>> out_entries)
+    : status(status), entries(std::move(out_entries)) {}
 
-  // It's safe to pass base::Unretained(this) since the LocalDeskDataManager is
-  // a long-lived object that should persist during user session.
-  task_runner_->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(&LocalDeskDataManager::GetAllEntriesTask,
-                     base::Unretained(this), status.get(), entries.get()),
-      base::BindOnce(&LocalDeskDataManager::OnGetAllEntries,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(status),
-                     std::move(entries), std::move(callback)));
+LocalDeskDataManager::LoadCacheResult::LoadCacheResult(
+    LoadCacheResult&& other) = default;
+
+LocalDeskDataManager::LoadCacheResult::~LoadCacheResult() = default;
+
+LocalDeskDataManager::DeleteTaskResult::DeleteTaskResult(
+    DeleteEntryStatus status,
+    std::vector<std::unique_ptr<ash::DeskTemplate>> out_entries)
+    : status(status), entries(std::move(out_entries)) {}
+
+LocalDeskDataManager::DeleteTaskResult::DeleteTaskResult(
+    DeleteTaskResult&& other) = default;
+
+LocalDeskDataManager::DeleteTaskResult::~DeleteTaskResult() = default;
+
+DeskModel::GetAllEntriesResult LocalDeskDataManager::GetAllEntries() {
+  std::vector<const ash::DeskTemplate*> entries;
+  if (cache_status_ != CacheStatus::kOk) {
+    return GetAllEntriesResult(GetAllEntriesStatus::kFailure,
+                               std::move(entries));
+  }
+
+  for (const auto& it : policy_entries_)
+    entries.push_back(it.get());
+
+  for (auto& saved_desk : saved_desks_list_) {
+    for (auto& [uuid, template_entry] : saved_desk.second) {
+      DCHECK_EQ(uuid, template_entry->uuid());
+      entries.push_back(template_entry.get());
+    }
+  }
+  return GetAllEntriesResult(GetAllEntriesStatus::kOk, std::move(entries));
 }
 
-void LocalDeskDataManager::GetEntryByUUID(
-    const std::string& uuid,
-    DeskModel::GetEntryByUuidCallback callback) {
-  auto status = std::make_unique<DeskModel::GetEntryByUuidStatus>();
-  auto entry_ptr = std::make_unique<ash::DeskTemplate*>();
+DeskModel::GetEntryByUuidResult LocalDeskDataManager::GetEntryByUUID(
+    const base::GUID& uuid) {
+  if (cache_status_ != LocalDeskDataManager::CacheStatus::kOk) {
+    return DeskModel::GetEntryByUuidResult(
+        DeskModel::GetEntryByUuidStatus::kFailure, nullptr);
+  }
 
-  task_runner_->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(&LocalDeskDataManager::GetEntryByUuidTask,
-                     base::Unretained(this), uuid, status.get(),
-                     entry_ptr.get()),
-      base::BindOnce(&LocalDeskDataManager::OnGetEntryByUuid,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(status),
-                     std::move(entry_ptr), std::move(callback)));
+  if (!uuid.is_valid()) {
+    return DeskModel::GetEntryByUuidResult(
+        DeskModel::GetEntryByUuidStatus::kInvalidUuid, nullptr);
+  }
+
+  const ash::DeskTemplateType desk_type = GetDeskTypeOfUuid(uuid);
+
+  const auto cache_entry = saved_desks_list_[desk_type].find(uuid);
+
+  if (cache_entry == saved_desks_list_[desk_type].end()) {
+    std::unique_ptr<ash::DeskTemplate> policy_entry =
+        GetAdminDeskTemplateByUUID(uuid);
+
+    if (policy_entry) {
+      return DeskModel::GetEntryByUuidResult(
+          DeskModel::GetEntryByUuidStatus::kOk, std::move(policy_entry));
+    } else {
+      return DeskModel::GetEntryByUuidResult(
+          DeskModel::GetEntryByUuidStatus::kNotFound, nullptr);
+    }
+  } else {
+    return DeskModel::GetEntryByUuidResult(DeskModel::GetEntryByUuidStatus::kOk,
+                                           cache_entry->second.get()->Clone());
+  }
 }
 
 void LocalDeskDataManager::AddOrUpdateEntry(
     std::unique_ptr<ash::DeskTemplate> new_entry,
-    DeskModel::AddOrUpdateEntryCallback callback) {
-  // When a user creates a desk template locally, the desk template has |kUser|
-  // as its source. Only user desk templates should be saved.
-  DCHECK_EQ(ash::DeskTemplateSource::kUser, new_entry->source());
+    AddOrUpdateEntryCallback callback) {
+  if (cache_status_ != CacheStatus::kOk) {
+    std::move(callback).Run(AddOrUpdateEntryStatus::kFailure);
+    return;
+  }
 
-  auto status = std::make_unique<DeskModel::AddOrUpdateEntryStatus>();
+  const ash::DeskTemplateType desk_type = new_entry->type();
+  size_t template_type_max_size = desk_type == ash::DeskTemplateType::kTemplate
+                                      ? kMaxDeskTemplateCount
+                                      : kMaxSaveAndRecallDeskCount;
+  if (!g_disable_max_template_limit &&
+      saved_desks_list_[desk_type].size() >= template_type_max_size) {
+    std::move(callback).Run(AddOrUpdateEntryStatus::kHitMaximumLimit);
+    return;
+  }
 
-  task_runner_->PostTaskAndReply(
+  const base::GUID uuid = new_entry->uuid();
+  if (!uuid.is_valid()) {
+    std::move(callback).Run(AddOrUpdateEntryStatus::kInvalidArgument);
+    return;
+  }
+
+  apps::AppRegistryCache* cache =
+      apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id_);
+  DCHECK(cache);
+  base::Value template_base_value =
+      desk_template_conversion::SerializeDeskTemplateAsPolicy(new_entry.get(),
+                                                              cache);
+  // Deserialize the `template_base_value` to a desk template to make sure that
+  // we can properly get the correct information now instead of during a future
+  // user operation.
+  std::unique_ptr<ash::DeskTemplate> deserialize_entry =
+      desk_template_conversion::ParseDeskTemplateFromSource(
+          template_base_value, new_entry->source());
+  auto& saved_desks = saved_desks_list_[desk_type];
+  auto existing_it = saved_desks.find(uuid);
+  std::unique_ptr<ash::DeskTemplate> old_entry = nullptr;
+  bool is_update = existing_it != saved_desks.end();
+  if (is_update) {
+    old_entry = std::move(existing_it->second);
+    existing_it->second = std::move(deserialize_entry);
+  } else {
+    saved_desks[uuid] = std::move(deserialize_entry);
+  }
+
+  task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&LocalDeskDataManager::AddOrUpdateEntryTask,
-                     base::Unretained(this), std::move(new_entry),
-                     status.get()),
+                     local_saved_desk_path_, uuid,
+                     std::move(template_base_value)),
       base::BindOnce(&LocalDeskDataManager::OnAddOrUpdateEntry,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(status),
-                     std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     is_update, desk_type, uuid, std::move(old_entry)));
 }
 
-void LocalDeskDataManager::DeleteEntry(
-    const std::string& uuid_str,
-    DeskModel::DeleteEntryCallback callback) {
-  auto status = std::make_unique<DeskModel::DeleteEntryStatus>();
+void LocalDeskDataManager::DeleteEntry(const base::GUID& uuid,
+                                       DeleteEntryCallback callback) {
+  if (cache_status_ != CacheStatus::kOk) {
+    std::move(callback).Run(DeleteEntryStatus::kFailure);
+    return;
+  }
 
-  task_runner_->PostTaskAndReply(
+  if (!uuid.is_valid()) {
+    // There does not exist an entry with invalid UUID.
+    // Therefore the deletion request is vicariously successful.
+    std::move(callback).Run(DeleteEntryStatus::kOk);
+    return;
+  }
+  const ash::DeskTemplateType desk_type = GetDeskTypeOfUuid(uuid);
+  // `entry` is used to keep track of the deleted entry in case we need to
+  // rollback the deletion if the file operation fails to delete it.
+  std::vector<std::unique_ptr<ash::DeskTemplate>> entry;
+  auto& saved_desks = saved_desks_list_[desk_type];
+  auto existing_it = saved_desks.find(uuid);
+  entry.push_back(std::move(existing_it->second));
+  saved_desks_list_[desk_type].erase(existing_it);
+
+  task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&LocalDeskDataManager::DeleteEntryTask,
-                     base::Unretained(this), uuid_str, status.get()),
+                     local_saved_desk_path_, uuid, std::move(entry)),
       base::BindOnce(&LocalDeskDataManager::OnDeleteEntry,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(status),
-                     std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void LocalDeskDataManager::DeleteAllEntries(
-    DeskModel::DeleteEntryCallback callback) {
-  auto status = std::make_unique<DeskModel::DeleteEntryStatus>();
+void LocalDeskDataManager::DeleteAllEntries(DeleteEntryCallback callback) {
+  if (cache_status_ != CacheStatus::kOk) {
+    std::move(callback).Run(DeleteEntryStatus::kFailure);
+    return;
+  }
 
-  task_runner_->PostTaskAndReply(
+  // `entries` is used to keep track of any desk template entry that failed to
+  // be deleted by the file system. This is used to rollback the deletion of
+  // those fail to delete files.
+  std::vector<std::unique_ptr<ash::DeskTemplate>> entries;
+
+  // Deletes all desk templates and save and recall desks.
+  for (auto& type_and_saved_desk : saved_desks_list_) {
+    for (auto& [uuid, template_entry] : type_and_saved_desk.second) {
+      entries.push_back(std::move(template_entry));
+    }
+    type_and_saved_desk.second.clear();
+  }
+
+  task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&LocalDeskDataManager::DeleteAllEntriesTask,
-                     base::Unretained(this), status.get()),
+                     local_saved_desk_path_, std::move(entries)),
       base::BindOnce(&LocalDeskDataManager::OnDeleteEntry,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(status),
-                     std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-std::size_t LocalDeskDataManager::GetEntryCount() const {
-  return templates_.size();
+// TODO(crbug.com/1320805): Remove this function once both desk models support
+// desk type counts.
+size_t LocalDeskDataManager::GetEntryCount() const {
+  return GetSaveAndRecallDeskEntryCount() + GetDeskTemplateEntryCount();
 }
 
-std::size_t LocalDeskDataManager::GetMaxEntryCount() const {
-  return kMaxTemplateCount;
+size_t LocalDeskDataManager::GetSaveAndRecallDeskEntryCount() const {
+  return saved_desks_list_.at(ash::DeskTemplateType::kSaveAndRecall).size();
+}
+
+size_t LocalDeskDataManager::GetDeskTemplateEntryCount() const {
+  return saved_desks_list_.at(ash::DeskTemplateType::kTemplate).size() +
+         policy_entries_.size();
+}
+
+size_t LocalDeskDataManager::GetMaxEntryCount() const {
+  return kMaxDeskTemplateCount +
+         (!g_exclude_save_and_recall_desk_in_max_entry_count
+              ? kMaxSaveAndRecallDeskCount
+              : 0u) +
+         policy_entries_.size();
+}
+
+size_t LocalDeskDataManager::GetMaxSaveAndRecallDeskEntryCount() const {
+  return kMaxSaveAndRecallDeskCount;
+}
+
+size_t LocalDeskDataManager::GetMaxDeskTemplateEntryCount() const {
+  return kMaxDeskTemplateCount + policy_entries_.size();
 }
 
 std::vector<base::GUID> LocalDeskDataManager::GetAllEntryUuids() const {
   std::vector<base::GUID> keys;
-  for (const auto& it : templates_) {
-    DCHECK_EQ(it.first, it.second->uuid());
-    keys.emplace_back(it.first);
+  for (const auto& type_and_saved_desks : saved_desks_list_) {
+    for (const auto& [uuid, template_entry] : type_and_saved_desks.second) {
+      DCHECK_EQ(uuid, template_entry->uuid());
+      keys.emplace_back(uuid);
+    }
   }
   return keys;
 }
@@ -302,20 +397,52 @@ bool LocalDeskDataManager::IsSyncing() const {
   return false;
 }
 
-void LocalDeskDataManager::EnsureCacheIsLoaded() {
-  if (cache_status_ == CacheStatus::kOk) {
-    // Cache is already loaded.
-    return;
-  }
+ash::DeskTemplate* LocalDeskDataManager::FindOtherEntryWithName(
+    const std::u16string& name,
+    ash::DeskTemplateType type,
+    const base::GUID& uuid) const {
+  return desk_template_util::FindOtherEntryWithName(name, uuid,
+                                                    saved_desks_list_.at(type));
+}
 
+// static
+void LocalDeskDataManager::SetDisableMaxTemplateLimitForTesting(bool disabled) {
+  g_disable_max_template_limit = disabled;
+}
+
+// static
+void LocalDeskDataManager::SetExcludeSaveAndRecallDeskInMaxEntryCountForTesting(
+    bool exclude) {
+  g_exclude_save_and_recall_desk_in_max_entry_count = exclude;
+}
+
+// static
+LocalDeskDataManager::LoadCacheResult
+LocalDeskDataManager::LoadCacheOnBackgroundSequence(
+    const base::FilePath& user_data_dir_path) {
+  std::vector<std::unique_ptr<ash::DeskTemplate>> entries;
+  base::DirReaderPosix user_data_dir_reader(
+      user_data_dir_path.AsUTF8Unsafe().c_str());
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  base::DirReaderPosix dir_reader(local_path_.AsUTF8Unsafe().c_str());
-  if (!dir_reader.IsValid()) {
-    // Template directory path is invalid. This local storage cannot load any
+  if (!base::DirectoryExists(user_data_dir_path)) {
+    // User data directory path is invalid. This local storage cannot load any
     // templates from disk.
-    cache_status_ = CacheStatus::kInvalidPath;
-    return;
+    return {CacheStatus::kInvalidPath, std::move(entries)};
+  }
+
+  // Set dir_reader to read from the `local_saved_desk_path_` directory.
+  // check to make sure there is a `local_saved_desk_path_` directory. If not
+  // create it.
+  base::FilePath local_saved_desk_path =
+      user_data_dir_path.AppendASCII(kSavedDeskDirectoryName);
+  base::CreateDirectory(local_saved_desk_path);
+  base::DirReaderPosix dir_reader(local_saved_desk_path.AsUTF8Unsafe().c_str());
+
+  if (!dir_reader.IsValid()) {
+    // Failed to find or create the `local_saved_desk_path_` directory path.
+    // This local storage cannot load any entry of `type` from disk.
+    return {CacheStatus::kInvalidPath, std::move(entries)};
   }
 
   while (dir_reader.Next()) {
@@ -323,212 +450,134 @@ void LocalDeskDataManager::EnsureCacheIsLoaded() {
       continue;
     }
 
-    std::unique_ptr<ash::DeskTemplate> desk_template =
-        ReadFileToTemplate(local_path_.Append(dir_reader.name()));
-    if (desk_template) {
-      const base::GUID uuid = desk_template->uuid();
-      templates_[uuid] = std::move(desk_template);
+    base::FilePath fully_qualified_path =
+        base::FilePath(local_saved_desk_path.Append(dir_reader.name()));
+    std::unique_ptr<ash::DeskTemplate> entry =
+        ReadFileToTemplate(fully_qualified_path);
+
+    // Rename file for saved desk if uuid in file and file name are different.
+    std::string entry_uuid_string = entry->uuid().AsLowercaseString();
+    entry_uuid_string.append(kFileExtension);
+
+    if (dir_reader.name() != entry_uuid_string) {
+      const base::FilePath renamed_fully_qualified_path =
+          GetFullyQualifiedPath(local_saved_desk_path, entry->uuid());
+      if (!base::Move(fully_qualified_path, renamed_fully_qualified_path)) {
+        DVLOG(1) << "Fail to rename saved desk template to proper UUID";
+      }
+    }
+
+    // TODO(crbug/1359398): Record metrics about files that failed to parse.
+    if (entry) {
+      entries.push_back(std::move(entry));
     }
   }
-
-  cache_status_ = CacheStatus::kOk;
+  return {CacheStatus::kOk, std::move(entries)};
 }
 
-void LocalDeskDataManager::GetAllEntriesTask(
-    DeskModel::GetAllEntriesStatus* status_ptr,
-    std::vector<ash::DeskTemplate*>* entries_ptr) {
-  EnsureCacheIsLoaded();
-  if (cache_status_ == CacheStatus::kInvalidPath) {
-    *status_ptr = DeskModel::GetAllEntriesStatus::kFailure;
-    return;
-  }
-
-  for (const auto& it : policy_entries_)
-    entries_ptr->push_back(it.get());
-
-  for (auto& it : templates_) {
-    DCHECK_EQ(it.first, it.second->uuid());
-    entries_ptr->push_back(it.second.get());
-  }
-
-  if (cache_status_ == CacheStatus::kOk) {
-    *status_ptr = DeskModel::GetAllEntriesStatus::kOk;
-  } else {
-    *status_ptr = DeskModel::GetAllEntriesStatus::kPartialFailure;
-  }
-}
-
-void LocalDeskDataManager::OnGetAllEntries(
-    std::unique_ptr<DeskModel::GetAllEntriesStatus> status_ptr,
-    std::unique_ptr<std::vector<ash::DeskTemplate*>> entries_ptr,
-    DeskModel::GetAllEntriesCallback callback) {
-  std::move(callback).Run(*status_ptr, *entries_ptr);
-}
-
-void LocalDeskDataManager::GetEntryByUuidTask(
-    const std::string& uuid_str,
-    DeskModel::GetEntryByUuidStatus* status_ptr,
-    ash::DeskTemplate** entry_ptr_ptr) {
-  EnsureCacheIsLoaded();
-
-  if (cache_status_ == CacheStatus::kInvalidPath) {
-    *status_ptr = DeskModel::GetEntryByUuidStatus::kFailure;
-    return;
-  }
-
-  const base::GUID uuid = base::GUID::ParseCaseInsensitive(uuid_str);
-  if (!uuid.is_valid()) {
-    *status_ptr = DeskModel::GetEntryByUuidStatus::kInvalidUuid;
-    return;
-  }
-
-  const auto cache_entry = templates_.find(uuid);
-
-  if (cache_entry != templates_.end()) {
-    *status_ptr = DeskModel::GetEntryByUuidStatus::kOk;
-    *entry_ptr_ptr = cache_entry->second.get();
-  } else {
-    *status_ptr = DeskModel::GetEntryByUuidStatus::kNotFound;
-  }
-}
-
-void LocalDeskDataManager::OnGetEntryByUuid(
-    std::unique_ptr<DeskModel::GetEntryByUuidStatus> status_ptr,
-    std::unique_ptr<ash::DeskTemplate*> entry_ptr_ptr,
-    DeskModel::GetEntryByUuidCallback callback) {
-  if (*entry_ptr_ptr == nullptr) {
-    std::move(callback).Run(*status_ptr, std::unique_ptr<ash::DeskTemplate>());
-  } else {
-    std::move(callback).Run(*status_ptr, (*entry_ptr_ptr)->Clone());
-  }
-}
-
-void LocalDeskDataManager::AddOrUpdateEntryTask(
-    std::unique_ptr<ash::DeskTemplate> new_entry,
-    DeskModel::AddOrUpdateEntryStatus* status_ptr) {
-  EnsureCacheIsLoaded();
-  if (cache_status_ == CacheStatus::kInvalidPath) {
-    *status_ptr = DeskModel::AddOrUpdateEntryStatus::kFailure;
-    return;
-  }
-
-  if (templates_.size() >= kMaxTemplateCount) {
-    *status_ptr = DeskModel::AddOrUpdateEntryStatus::kHitMaximumLimit;
-    return;
-  }
-
-  if (!new_entry->uuid().is_valid()) {
-    *status_ptr = DeskModel::AddOrUpdateEntryStatus::kInvalidArgument;
-    return;
-  }
-
-  base::GUID uuid = new_entry->uuid();
-
-  // While we still find duplicate names iterate the duplicate number.  i.e.
-  // if there are 4 duplicates of some template name then this iterates until
-  // the current template will be named 5.
-  while (HasTemplateWithName(new_entry->template_name())) {
-    new_entry->set_template_name(
-        AppendDuplicateNumberToDuplicateName(new_entry->template_name()));
-  }
-
-  templates_[uuid] = std::move(new_entry);
-
+DeskModel::AddOrUpdateEntryStatus LocalDeskDataManager::AddOrUpdateEntryTask(
+    const base::FilePath& local_saved_desk_path,
+    const base::GUID uuid,
+    base::Value entry_base_value) {
   const base::FilePath fully_qualified_path =
-      GetFullyQualifiedPath(local_path_, uuid.AsLowercaseString());
-
-  if (WriteTemplateFile(fully_qualified_path, templates_[uuid].get())) {
-    *status_ptr = DeskModel::AddOrUpdateEntryStatus::kOk;
-  } else {
-    *status_ptr = DeskModel::AddOrUpdateEntryStatus::kFailure;
-  }
+      GetFullyQualifiedPath(local_saved_desk_path, uuid);
+  return WriteTemplateFile(fully_qualified_path, std::move(entry_base_value))
+             ? AddOrUpdateEntryStatus::kOk
+             : AddOrUpdateEntryStatus::kFailure;
 }
 
 void LocalDeskDataManager::OnAddOrUpdateEntry(
-    std::unique_ptr<DeskModel::AddOrUpdateEntryStatus> status_ptr,
-    DeskModel::AddOrUpdateEntryCallback callback) {
-  std::move(callback).Run(*status_ptr);
+    AddOrUpdateEntryCallback callback,
+    bool is_update,
+    ash::DeskTemplateType desk_type,
+    const base::GUID uuid,
+    std::unique_ptr<ash::DeskTemplate> entry,
+    AddOrUpdateEntryStatus status) {
+  // Rollback the template addition to the cache if there's a failure.
+  if (status == AddOrUpdateEntryStatus::kFailure) {
+    if (is_update) {
+      saved_desks_list_[desk_type][uuid] = std::move(entry);
+    } else {
+      saved_desks_list_[desk_type].erase(uuid);
+    }
+  }
+  std::move(callback).Run(status);
 }
 
-void LocalDeskDataManager::DeleteEntryTask(
-    const std::string& uuid_str,
-    DeskModel::DeleteEntryStatus* status_ptr) {
-  EnsureCacheIsLoaded();
-  if (cache_status_ == LocalDeskDataManager::CacheStatus::kInvalidPath) {
-    *status_ptr = DeskModel::DeleteEntryStatus::kFailure;
-    return;
-  }
-
-  const base::GUID uuid = base::GUID::ParseCaseInsensitive(uuid_str);
-  if (!uuid.is_valid()) {
-    // There does not exist a desk template with invalid UUID.
-    // Therefore the deletion request is vicariously successful.
-    *status_ptr = DeskModel::DeleteEntryStatus::kOk;
-    return;
-  }
-
-  templates_.erase(uuid);
-
+// static
+LocalDeskDataManager::DeleteTaskResult LocalDeskDataManager::DeleteEntryTask(
+    const base::FilePath& local_saved_desk_path,
+    const base::GUID& uuid,
+    std::vector<std::unique_ptr<ash::DeskTemplate>> roll_back_entry) {
   const base::FilePath fully_qualified_path =
-      GetFullyQualifiedPath(local_path_, uuid_str);
+      GetFullyQualifiedPath(local_saved_desk_path, uuid);
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  if (base::DeleteFile(fully_qualified_path)) {
-    *status_ptr = DeskModel::DeleteEntryStatus::kOk;
-  } else {
-    *status_ptr = DeskModel::DeleteEntryStatus::kFailure;
-  }
+  if (base::DeleteFile(fully_qualified_path))
+    return {DeleteEntryStatus::kOk, std::move(roll_back_entry)};
+  return {DeleteEntryStatus::kFailure, std::move(roll_back_entry)};
 }
 
-void LocalDeskDataManager::DeleteAllEntriesTask(
-    DeskModel::DeleteEntryStatus* status_ptr) {
-  EnsureCacheIsLoaded();
-  if (cache_status_ == CacheStatus::kInvalidPath) {
-    *status_ptr = DeskModel::DeleteEntryStatus::kFailure;
-    return;
-  }
-
-  templates_.clear();
-
-  base::DirReaderPosix dir_reader(local_path_.AsUTF8Unsafe().c_str());
-
+// static
+LocalDeskDataManager::DeleteTaskResult
+LocalDeskDataManager::DeleteAllEntriesTask(
+    const base::FilePath& local_saved_desk_path,
+    std::vector<std::unique_ptr<ash::DeskTemplate>> entries) {
+  base::DirReaderPosix dir_reader(local_saved_desk_path.AsUTF8Unsafe().c_str());
   if (!dir_reader.IsValid()) {
-    *status_ptr = DeskModel::DeleteEntryStatus::kFailure;
-    return;
+    return {DeleteEntryStatus::kFailure, std::move(entries)};
   }
-
-  DeskModel::DeleteEntryStatus overall_delete_successes =
-      DeskModel::DeleteEntryStatus::kOk;
-  while (dir_reader.Next()) {
-    if (!IsValidTemplateFileName(dir_reader.name())) {
-      continue;
-    }
-
-    base::FilePath fully_qualified_path(local_path_.Append(dir_reader.name()));
+  DeleteEntryStatus overall_delete_successes = DeleteEntryStatus::kOk;
+  for (auto it = entries.begin(); it != entries.end();) {
+    const base::FilePath fully_qualified_path =
+        GetFullyQualifiedPath(local_saved_desk_path, (*it)->uuid());
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::MAY_BLOCK);
     bool delete_success = base::DeleteFile(fully_qualified_path);
-    if ((overall_delete_successes == DeskModel::DeleteEntryStatus::kOk) &&
-        !delete_success)
-      overall_delete_successes = DeskModel::DeleteEntryStatus::kFailure;
+    // On a successful file delete, we perform a move and delete on the vector
+    // by moving the last entry in the vector to the beginning and delete the
+    // last entry. On a failed file delete, we increment the iterator up by one
+    // to keep the entry for a rollback.
+    if (delete_success) {
+      *it = std::move(entries.back());
+      entries.pop_back();
+    } else {
+      overall_delete_successes = DeleteEntryStatus::kFailure;
+      ++it;
+    }
   }
-
-  *status_ptr = overall_delete_successes;
+  return {overall_delete_successes, std::move(entries)};
 }
 
 void LocalDeskDataManager::OnDeleteEntry(
-    std::unique_ptr<DeskModel::DeleteEntryStatus> status_ptr,
-    DeskModel::DeleteEntryCallback callback) {
-  std::move(callback).Run(*status_ptr);
+    DeskModel::DeleteEntryCallback callback,
+    DeleteTaskResult delete_return) {
+  // Rollback deletes from the cache for the failed file deletes.
+  if (delete_return.status == DeskModel::DeleteEntryStatus::kFailure) {
+    MoveEntriesIntoCache({CacheStatus::kOk, std::move(delete_return.entries)});
+  }
+  std::move(callback).Run(delete_return.status);
 }
 
-bool LocalDeskDataManager::HasTemplateWithName(const std::u16string& name) {
-  return std::find_if(
-             templates_.begin(), templates_.end(),
-             [&name](std::pair<const base::GUID,
-                               std::unique_ptr<ash::DeskTemplate>>& entry) {
-               return entry.second->template_name() == name;
-             }) != templates_.end();
+ash::DeskTemplateType LocalDeskDataManager::GetDeskTypeOfUuid(
+    const base::GUID uuid) const {
+  for (const auto& [desk_type, saved_desk] : saved_desks_list_) {
+    if (base::Contains(saved_desk, uuid))
+      return desk_type;
+  }
+  return ash::DeskTemplateType::kTemplate;
+}
+
+void LocalDeskDataManager::MoveEntriesIntoCache(LoadCacheResult cache_result) {
+  cache_status_ = cache_result.status;
+  // Do nothing if the cache isn't ready.
+  if (cache_status_ != CacheStatus::kOk)
+    return;
+  for (auto& template_entry : cache_result.entries) {
+    DCHECK(template_entry);
+    saved_desks_list_[template_entry->type()][template_entry->uuid()] =
+        std::move(template_entry);
+  }
 }
 
 }  // namespace desks_storage

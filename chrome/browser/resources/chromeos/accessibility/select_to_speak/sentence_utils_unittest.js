@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,16 +9,13 @@ GEN_INCLUDE(['select_to_speak_e2e_test_base.js']);
  */
 SelectToSpeakSentenceUtilsUnitTest = class extends SelectToSpeakE2ETest {
   /** @override */
-  setUp() {
-    var runTest = this.deferRunTest(WhenTestDone.EXPECT);
-    (async function() {
-      await importModule('SentenceUtils', '/select_to_speak/sentence_utils.js');
-      runTest();
-    })();
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule('SentenceUtils', '/select_to_speak/sentence_utils.js');
   }
 };
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakSentenceUtilsUnitTest', 'getNextSentenceStart', function() {
       // The text of the test node group is "Hello. New. World."
       const nodeGroup = getTestNodeGroupWithOneNode();
@@ -49,7 +46,7 @@ SYNC_TEST_F(
               constants.Dir.FORWARD /* direction */));
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakSentenceUtilsUnitTest', 'getPrevSentenceStart', function() {
       // The text of the test node group is "Hello. New. World."
       const nodeGroup = getTestNodeGroupWithOneNode();
@@ -81,7 +78,7 @@ SYNC_TEST_F(
               constants.Dir.BACKWARD /* direction */));
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakSentenceUtilsUnitTest', 'getNextSentenceStartMultiNodes',
     function() {
       // The text of the test node group is "Hello. New. Beautiful. World." The
@@ -115,7 +112,7 @@ SYNC_TEST_F(
               constants.Dir.FORWARD /* direction */));
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakSentenceUtilsUnitTest', 'getPrevSentenceStartMultiNodes',
     function() {
       // The text of the test node group is "Hello. New. Beautiful. World." The
@@ -149,7 +146,7 @@ SYNC_TEST_F(
               constants.Dir.BACKWARD /* direction */));
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakSentenceUtilsUnitTest',
     'getNextSentenceStartSentenceSpanningAcrossMultiNodes', function() {
       // The text of the test node group is "Hello world. New world." The
@@ -178,7 +175,7 @@ SYNC_TEST_F(
               constants.Dir.FORWARD /* direction */));
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakSentenceUtilsUnitTest',
     'getPrevSentenceStartSentenceSpanningAcrossMultiNodes', function() {
       // The text of the test node group is "Hello world. New world." The
@@ -212,7 +209,7 @@ SYNC_TEST_F(
               constants.Dir.BACKWARD /* direction */));
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakSentenceUtilsUnitTest', 'isSentenceStart', function() {
       // The text of the test node group is "Hello. New. World."
       const nodeGroup = getTestNodeGroupWithOneNode();
@@ -239,7 +236,7 @@ SYNC_TEST_F(
               nodeGroup /* nodeGroup */, 12 /* startCharIndex */));
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakSentenceUtilsUnitTest', 'isSentenceStartMultiNodes',
     function() {
       // The text of the test node group is "Hello. New. Beautiful. World." The
@@ -279,7 +276,7 @@ function getTestNodeGroupWithOneNode() {
   const staticText = {
     sentenceStarts: [0, 7, 12],
     name: 'Hello. New. World.',
-    role: 'staticText'
+    role: 'staticText',
   };
   const node = {node: staticText, startChar: 0};
   return {nodes: [node], text: 'Hello. New. World.'};
@@ -289,14 +286,14 @@ function getTestNodeGroupWithMultiNodes() {
   const staticText1 = {
     name: 'Hello. New. ',
     role: 'staticText',
-    sentenceStarts: [0, 7]
+    sentenceStarts: [0, 7],
   };
   const node1 = {node: staticText1, startChar: 0};
 
   const staticText2 = {
     name: 'Beautiful. World.',
     role: 'staticText',
-    sentenceStarts: [0, 11]
+    sentenceStarts: [0, 11],
   };
   const node2 = {node: staticText2, startChar: 12};
 
@@ -310,7 +307,7 @@ function getTestNodeGroupWithSentenceSpanningAcrossMultiNodes() {
   const staticText2 = {
     name: ' world. New',
     role: 'staticText',
-    sentenceStarts: [8]
+    sentenceStarts: [8],
   };
   const node2 = {node: staticText2, startChar: 5};
 

@@ -1,16 +1,16 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/allocator/partition_allocator/starscan/state_bitmap.h"
 
+#include <cstdint>
+
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
-
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 namespace {
 
@@ -19,24 +19,23 @@ using TestBitmap = StateBitmap<kSuperPageSize, kSuperPageSize, kAlignment>;
 class PageWithBitmap final {
  public:
   PageWithBitmap()
-      : base_(base::AllocPages(nullptr,
-                               kSuperPageSize,
-                               kSuperPageAlignment,
-                               PageReadWrite,
-                               PageTag::kPartitionAlloc)),
-        bitmap_(new (base_) TestBitmap) {}
+      : base_(AllocPages(kSuperPageSize,
+                         kSuperPageAlignment,
+                         PageAccessibilityConfiguration::kReadWrite,
+                         PageTag::kPartitionAlloc)),
+        bitmap_(new (reinterpret_cast<void*>(base_)) TestBitmap) {}
 
   PageWithBitmap(const PageWithBitmap&) = delete;
   PageWithBitmap& operator=(const PageWithBitmap&) = delete;
 
-  ~PageWithBitmap() { base::FreePages(base_, kSuperPageSize); }
+  ~PageWithBitmap() { FreePages(base_, kSuperPageSize); }
 
   TestBitmap& bitmap() const { return *bitmap_; }
 
-  void* base() const { return base_; }
+  void* base() const { return reinterpret_cast<void*>(base_); }
   size_t size() const { return kSuperPageSize; }
 
-  void* base_;
+  uintptr_t base_;
   TestBitmap* bitmap_;
 };
 
@@ -154,8 +153,7 @@ TEST_F(PartitionAllocStateBitmapTest, CountAllocated) {
 }
 
 TEST_F(PartitionAllocStateBitmapTest, StateTransititions) {
-  for (auto i : {static_cast<uintptr_t>(0), static_cast<uintptr_t>(1),
-                 LastIndex() - 1, LastIndex()}) {
+  for (auto i : {uintptr_t{0}, uintptr_t{1}, LastIndex() - 1, LastIndex()}) {
     AssertFreed(i);
 
     AllocateObject(i);
@@ -341,5 +339,4 @@ TEST_F(PartitionAllocStateBitmapTest, AdjacentQuarantinedObjectsAtEnd) {
   }
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal

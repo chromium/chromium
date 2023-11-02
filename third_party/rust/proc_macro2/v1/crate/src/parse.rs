@@ -1,9 +1,10 @@
 use crate::fallback::{
     is_ident_continue, is_ident_start, Group, LexError, Literal, Span, TokenStream,
+    TokenStreamBuilder,
 };
 use crate::{Delimiter, Punct, Spacing, TokenTree};
-use std::char;
-use std::str::{Bytes, CharIndices, Chars};
+use core::char;
+use core::str::{Bytes, CharIndices, Chars};
 
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub(crate) struct Cursor<'a> {
@@ -150,14 +151,13 @@ fn word_break(input: Cursor) -> Result<Cursor, Reject> {
 }
 
 pub(crate) fn token_stream(mut input: Cursor) -> Result<TokenStream, LexError> {
-    let mut trees = Vec::new();
+    let mut trees = TokenStreamBuilder::new();
     let mut stack = Vec::new();
 
     loop {
         input = skip_whitespace(input);
 
-        if let Ok((rest, tt)) = doc_comment(input) {
-            trees.extend(tt);
+        if let Ok((rest, ())) = doc_comment(input, &mut trees) {
             input = rest;
             continue;
         }
@@ -168,7 +168,7 @@ pub(crate) fn token_stream(mut input: Cursor) -> Result<TokenStream, LexError> {
         let first = match input.bytes().next() {
             Some(first) => first,
             None => match stack.last() {
-                None => return Ok(TokenStream { inner: trees }),
+                None => return Ok(trees.build()),
                 #[cfg(span_locations)]
                 Some((lo, _frame)) => {
                     return Err(LexError {
@@ -191,7 +191,7 @@ pub(crate) fn token_stream(mut input: Cursor) -> Result<TokenStream, LexError> {
             #[cfg(span_locations)]
             let frame = (lo, frame);
             stack.push(frame);
-            trees = Vec::new();
+            trees = TokenStreamBuilder::new();
         } else if let Some(close_delimiter) = match first {
             b')' => Some(Delimiter::Parenthesis),
             b']' => Some(Delimiter::Bracket),
@@ -209,7 +209,7 @@ pub(crate) fn token_stream(mut input: Cursor) -> Result<TokenStream, LexError> {
                 return Err(lex_error(input));
             }
             input = input.advance(1);
-            let mut g = Group::new(open_delimiter, TokenStream { inner: trees });
+            let mut g = Group::new(open_delimiter, trees.build());
             g.set_span(Span {
                 #[cfg(span_locations)]
                 lo,
@@ -217,7 +217,7 @@ pub(crate) fn token_stream(mut input: Cursor) -> Result<TokenStream, LexError> {
                 hi: input.off,
             });
             trees = outer;
-            trees.push(TokenTree::Group(crate::Group::_new_stable(g)));
+            trees.push_token_from_parser(TokenTree::Group(crate::Group::_new_stable(g)));
         } else {
             let (rest, mut tt) = match leaf_token(input) {
                 Ok((rest, tt)) => (rest, tt),
@@ -229,7 +229,7 @@ pub(crate) fn token_stream(mut input: Cursor) -> Result<TokenStream, LexError> {
                 #[cfg(span_locations)]
                 hi: rest.off,
             }));
-            trees.push(tt);
+            trees.push_token_from_parser(tt);
             input = rest;
         }
     }
@@ -786,7 +786,7 @@ fn punct_char(input: Cursor) -> PResult<char> {
     }
 }
 
-fn doc_comment(input: Cursor) -> PResult<Vec<TokenTree>> {
+fn doc_comment<'a>(input: Cursor<'a>, trees: &mut TokenStreamBuilder) -> PResult<'a, ()> {
     #[cfg(span_locations)]
     let lo = input.off;
     let (rest, (comment, inner)) = doc_comment_contents(input)?;
@@ -806,25 +806,31 @@ fn doc_comment(input: Cursor) -> PResult<Vec<TokenTree>> {
         scan_for_bare_cr = rest;
     }
 
-    let mut trees = Vec::new();
-    trees.push(TokenTree::Punct(Punct::new('#', Spacing::Alone)));
+    let mut pound = Punct::new('#', Spacing::Alone);
+    pound.set_span(span);
+    trees.push_token_from_parser(TokenTree::Punct(pound));
+
     if inner {
-        trees.push(Punct::new('!', Spacing::Alone).into());
+        let mut bang = Punct::new('!', Spacing::Alone);
+        bang.set_span(span);
+        trees.push_token_from_parser(TokenTree::Punct(bang));
     }
-    let mut stream = vec![
-        TokenTree::Ident(crate::Ident::new("doc", span)),
-        TokenTree::Punct(Punct::new('=', Spacing::Alone)),
-        TokenTree::Literal(crate::Literal::string(comment)),
-    ];
-    for tt in &mut stream {
-        tt.set_span(span);
-    }
-    let group = Group::new(Delimiter::Bracket, stream.into_iter().collect());
-    trees.push(crate::Group::_new_stable(group).into());
-    for tt in &mut trees {
-        tt.set_span(span);
-    }
-    Ok((rest, trees))
+
+    let doc_ident = crate::Ident::new("doc", span);
+    let mut equal = Punct::new('=', Spacing::Alone);
+    equal.set_span(span);
+    let mut literal = crate::Literal::string(comment);
+    literal.set_span(span);
+    let mut bracketed = TokenStreamBuilder::with_capacity(3);
+    bracketed.push_token_from_parser(TokenTree::Ident(doc_ident));
+    bracketed.push_token_from_parser(TokenTree::Punct(equal));
+    bracketed.push_token_from_parser(TokenTree::Literal(literal));
+    let group = Group::new(Delimiter::Bracket, bracketed.build());
+    let mut group = crate::Group::_new_stable(group);
+    group.set_span(span);
+    trees.push_token_from_parser(TokenTree::Group(group));
+
+    Ok((rest, ()))
 }
 
 fn doc_comment_contents(input: Cursor) -> PResult<(&str, bool)> {

@@ -1,9 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <utility>
 
+#include "base/containers/flat_set.h"
 #include "chrome/browser/web_applications/test/fake_install_finalizer.h"
 
 #include "base/callback.h"
@@ -13,11 +14,12 @@
 #include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/crx_file/id_util.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 
 namespace web_app {
 
@@ -27,38 +29,40 @@ AppId FakeInstallFinalizer::GetAppIdForUrl(const GURL& url) {
 }
 
 FakeInstallFinalizer::FakeInstallFinalizer()
-    : WebAppInstallFinalizer(nullptr, nullptr, nullptr) {}
+    : WebAppInstallFinalizer(nullptr) {}
 
 FakeInstallFinalizer::~FakeInstallFinalizer() = default;
 
 void FakeInstallFinalizer::FinalizeInstall(
-    const WebApplicationInfo& web_app_info,
+    const WebAppInstallInfo& web_app_info,
     const FinalizeOptions& options,
     InstallFinalizedCallback callback) {
   finalize_options_list_.push_back(options);
-  Finalize(web_app_info, InstallResultCode::kSuccessNewInstall,
+  Finalize(web_app_info, webapps::InstallResultCode::kSuccessNewInstall,
            std::move(callback));
 }
 
-void FakeInstallFinalizer::FinalizeUpdate(
-    const WebApplicationInfo& web_app_info,
-    InstallFinalizedCallback callback) {
-  Finalize(web_app_info, InstallResultCode::kSuccessAlreadyInstalled,
+void FakeInstallFinalizer::FinalizeUpdate(const WebAppInstallInfo& web_app_info,
+                                          InstallFinalizedCallback callback) {
+  Finalize(web_app_info, webapps::InstallResultCode::kSuccessAlreadyInstalled,
            std::move(callback));
 }
 
 void FakeInstallFinalizer::UninstallExternalWebApp(
     const AppId& app_id,
-    webapps::WebappUninstallSource webapp_uninstall_source,
+    WebAppManagement::Type source,
+    webapps::WebappUninstallSource uninstall_surface,
     UninstallWebAppCallback callback) {
   user_uninstalled_external_apps_.erase(app_id);
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), /*uninstalled=*/true));
+      FROM_HERE, base::BindOnce(std::move(callback),
+                                webapps::UninstallResultCode::kSuccess));
 }
 
 void FakeInstallFinalizer::UninstallExternalWebAppByUrl(
     const GURL& app_url,
-    webapps::WebappUninstallSource webapp_uninstall_source,
+    WebAppManagement::Type source,
+    webapps::WebappUninstallSource uninstall_surface,
     UninstallWebAppCallback callback) {
   DCHECK(base::Contains(next_uninstall_external_web_app_results_, app_url));
   uninstall_external_web_app_urls_.push_back(app_url);
@@ -66,17 +70,11 @@ void FakeInstallFinalizer::UninstallExternalWebAppByUrl(
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindLambdaForTesting(
                      [this, app_url, callback = std::move(callback)]() mutable {
-                       bool result =
+                       webapps::UninstallResultCode result =
                            next_uninstall_external_web_app_results_[app_url];
                        next_uninstall_external_web_app_results_.erase(app_url);
                        std::move(callback).Run(result);
                      }));
-}
-
-void FakeInstallFinalizer::UninstallWithoutRegistryUpdateFromSync(
-    const std::vector<AppId>& web_apps,
-    RepeatingUninstallCallback callback) {
-  NOTREACHED();
 }
 
 bool FakeInstallFinalizer::CanUserUninstallWebApp(const AppId& app_id) const {
@@ -92,13 +90,8 @@ void FakeInstallFinalizer::UninstallWebApp(
 }
 
 void FakeInstallFinalizer::RetryIncompleteUninstalls(
-    const std::vector<AppId>& apps_to_uninstall) {
+    const base::flat_set<AppId>& apps_to_uninstall) {
   NOTREACHED();
-}
-
-bool FakeInstallFinalizer::WasPreinstalledWebAppUninstalled(
-    const AppId& app_id) const {
-  return base::Contains(user_uninstalled_external_apps_, app_id);
 }
 
 bool FakeInstallFinalizer::CanReparentTab(const AppId& app_id,
@@ -111,23 +104,23 @@ void FakeInstallFinalizer::ReparentTab(const AppId& app_id,
                                        content::WebContents* web_contents) {
   ++num_reparent_tab_calls_;
 }
-void FakeInstallFinalizer::SetRemoveSourceCallbackForTesting(
+void FakeInstallFinalizer::SetRemoveManagementTypeCallbackForTesting(
     base::RepeatingCallback<void(const AppId&)>) {
   NOTIMPLEMENTED();
 }
 
 void FakeInstallFinalizer::SetNextFinalizeInstallResult(
     const AppId& app_id,
-    InstallResultCode code) {
+    webapps::InstallResultCode code) {
   next_app_id_ = app_id;
   next_result_code_ = code;
 }
 
 void FakeInstallFinalizer::SetNextUninstallExternalWebAppResult(
     const GURL& app_url,
-    bool uninstalled) {
+    webapps::UninstallResultCode code) {
   DCHECK(!base::Contains(next_uninstall_external_web_app_results_, app_url));
-  next_uninstall_external_web_app_results_[app_url] = uninstalled;
+  next_uninstall_external_web_app_results_[app_url] = code;
 }
 
 void FakeInstallFinalizer::SimulateExternalAppUninstalledByUser(
@@ -136,8 +129,13 @@ void FakeInstallFinalizer::SimulateExternalAppUninstalledByUser(
   user_uninstalled_external_apps_.insert(app_id);
 }
 
-void FakeInstallFinalizer::Finalize(const WebApplicationInfo& web_app_info,
-                                    InstallResultCode code,
+bool FakeInstallFinalizer::WasPreinstalledWebAppUninstalled(
+    const AppId& app_id) {
+  return base::Contains(user_uninstalled_external_apps_, app_id);
+}
+
+void FakeInstallFinalizer::Finalize(const WebAppInstallInfo& web_app_info,
+                                    webapps::InstallResultCode code,
                                     InstallFinalizedCallback callback) {
   AppId app_id = GetAppIdForUrl(web_app_info.start_url);
   if (next_app_id_.has_value()) {
@@ -150,11 +148,14 @@ void FakeInstallFinalizer::Finalize(const WebApplicationInfo& web_app_info,
     next_result_code_.reset();
   }
 
+  OsHooksErrors os_hooks_errors;
+
   // Store input data copies for inspecting in tests.
-  web_app_info_copy_ = std::make_unique<WebApplicationInfo>(web_app_info);
+  web_app_info_copy_ = std::make_unique<WebAppInstallInfo>(web_app_info);
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), app_id, code));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), app_id, code, os_hooks_errors));
 }
 
 }  // namespace web_app

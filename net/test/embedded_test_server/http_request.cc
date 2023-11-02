@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,7 @@
 #include "net/http/http_chunked_decoder.h"
 #include "url/gurl.h"
 
-namespace net {
-namespace test_server {
+namespace net::test_server {
 
 namespace {
 
@@ -30,9 +29,7 @@ std::string Trim(const std::string& value) {
 
 }  // namespace
 
-HttpRequest::HttpRequest() : method(METHOD_UNKNOWN),
-                             has_content(false) {
-}
+HttpRequest::HttpRequest() = default;
 
 HttpRequest::HttpRequest(const HttpRequest& other) = default;
 
@@ -45,10 +42,7 @@ GURL HttpRequest::GetURL() const {
 }
 
 HttpRequestParser::HttpRequestParser()
-    : http_request_(std::make_unique<HttpRequest>()),
-      buffer_position_(0),
-      state_(STATE_HEADERS),
-      declared_content_length_(0) {}
+    : http_request_(std::make_unique<HttpRequest>()) {}
 
 HttpRequestParser::~HttpRequestParser() = default;
 
@@ -252,5 +246,4 @@ HttpMethod HttpRequestParser::GetMethodType(const std::string& token) {
   return METHOD_GET;
 }
 
-}  // namespace test_server
-}  // namespace net
+}  // namespace net::test_server

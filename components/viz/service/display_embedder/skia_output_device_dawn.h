@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,9 @@
 
 #include "build/build_config.h"
 #include "components/viz/service/display_embedder/skia_output_device.h"
-#include "third_party/dawn/src/include/dawn/dawn_wsi.h"
-#include "third_party/dawn/src/include/dawn/webgpu.h"
-#include "third_party/dawn/src/include/dawn_native/DawnNative.h"
+#include "third_party/dawn/include/dawn/dawn_wsi.h"
+#include "third_party/dawn/include/dawn/native/DawnNative.h"
+#include "third_party/dawn/include/dawn/webgpu.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
@@ -40,15 +40,13 @@ class SkiaOutputDeviceDawn : public SkiaOutputDevice {
   gpu::SurfaceHandle GetChildSurfaceHandle() const;
 
   // SkiaOutputDevice implementation:
-  bool Reshape(const gfx::Size& size,
-               float device_scale_factor,
+  bool Reshape(const SkSurfaceCharacterization& characterization,
                const gfx::ColorSpace& color_space,
-               gfx::BufferFormat format,
+               float device_scale_factor,
                gfx::OverlayTransform transform) override;
   void SwapBuffers(BufferPresentedCallback feedback,
                    OutputSurfaceFrame frame) override;
   SkSurface* BeginPaint(
-      bool allocate_frame_buffer,
       std::vector<GrBackendSemaphore>* end_semaphores) override;
   void EndPaint() override;
 
@@ -65,7 +63,7 @@ class SkiaOutputDeviceDawn : public SkiaOutputDevice {
 
   gfx::Size size_;
   sk_sp<SkColorSpace> sk_color_space_;
-  GrBackendTexture backend_texture_;
+  int sample_count_ = 1;
 
   // D3D12 requires that we use flip model swap chains. Flip swap chains
   // require that the swap chain be connected with DWM. DWM requires that

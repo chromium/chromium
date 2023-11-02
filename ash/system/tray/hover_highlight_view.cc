@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -125,9 +125,9 @@ void HoverHighlightView::AddViewAndLabel(std::unique_ptr<views::View> view,
   tri_view_->AddView(TriView::Container::CENTER, text_label_);
   // By default, END container is invisible, so labels in the CENTER should have
   // an extra padding at the end.
-  tri_view_->SetContainerBorder(
-      TriView::Container::CENTER,
-      views::CreateEmptyBorder(0, 0, 0, kTrayPopupLabelRightPadding));
+  tri_view_->SetContainerBorder(TriView::Container::CENTER,
+                                views::CreateEmptyBorder(gfx::Insets::TLBR(
+                                    0, 0, 0, kTrayPopupLabelRightPadding)));
   tri_view_->SetContainerVisible(TriView::Container::END, false);
 
   AddSubRowContainer();

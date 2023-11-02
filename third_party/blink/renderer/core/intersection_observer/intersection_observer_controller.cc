@@ -1,9 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_controller.h"
 
+#include "base/record_replay.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -29,9 +30,9 @@ void IntersectionObserverController::PostTaskToDeliverNotifications() {
       ->GetTaskRunner(TaskType::kInternalIntersectionObserver)
       ->PostTask(
           FROM_HERE,
-          WTF::Bind(&IntersectionObserverController::DeliverNotifications,
-                    WrapWeakPersistent(this),
-                    IntersectionObserver::kPostTaskToDeliver));
+          WTF::BindOnce(&IntersectionObserverController::DeliverNotifications,
+                        WrapWeakPersistent(this),
+                        IntersectionObserver::kPostTaskToDeliver));
 }
 
 void IntersectionObserverController::ScheduleIntersectionObserverForDelivery(
@@ -54,6 +55,8 @@ void IntersectionObserverController::DeliverNotifications(
     if (observer->GetDeliveryBehavior() == behavior)
       intersection_observers_being_invoked.push_back(observer);
   }
+  std::sort(intersection_observers_being_invoked.begin(), intersection_observers_being_invoked.end(),
+            recordreplay::CompareMemberByPointerId<Member<IntersectionObserver>>());
   for (auto& observer : intersection_observers_being_invoked) {
     pending_intersection_observers_.erase(observer);
     observer->Deliver();
@@ -70,10 +73,14 @@ bool IntersectionObserverController::ComputeIntersections(
   TRACE_EVENT0("blink,devtools.timeline",
                "IntersectionObserverController::"
                "computeIntersections");
-  HeapVector<Member<IntersectionObserver>> observers_to_process;
-  CopyToVector(tracked_explicit_root_observers_, observers_to_process);
-  HeapVector<Member<IntersectionObservation>> observations_to_process;
-  CopyToVector(tracked_implicit_root_observations_, observations_to_process);
+  HeapVector<Member<IntersectionObserver>> observers_to_process(
+      tracked_explicit_root_observers_);
+  std::sort(observers_to_process.begin(), observers_to_process.end(),
+            recordreplay::CompareMemberByPointerId<Member<IntersectionObserver>>());
+  HeapVector<Member<IntersectionObservation>> observations_to_process(
+      tracked_implicit_root_observations_);
+  std::sort(observations_to_process.begin(), observations_to_process.end(),
+            recordreplay::CompareMemberByPointerId<Member<IntersectionObservation>>());
   int64_t internal_observation_count = 0;
   int64_t javascript_observation_count = 0;
   {

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/shelf/arc_app_shelf_id.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
@@ -51,7 +52,7 @@ bool AppServiceAppIconLoader::CanLoadImage(Profile* profile,
   // with the prefix "crostini:".
   if (apps::AppServiceProxyFactory::GetForProfile(profile)
               ->AppRegistryCache()
-              .GetAppType(app_id) != apps::mojom::AppType::kUnknown ||
+              .GetAppType(app_id) != apps::AppType::kUnknown ||
       crostini::IsUnmatchedCrostiniShelfAppId(app_id)) {
     return true;
   }
@@ -135,22 +136,21 @@ void AppServiceAppIconLoader::CallLoadIcon(const std::string& app_id,
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile());
 
-  auto icon_type = apps::mojom::IconType::kStandard;
+  auto icon_type = apps::IconType::kStandard;
 
   // When Crostini generates shelf id as the app_id, which couldn't match to an
   // app, the default penguin icon should be loaded.
   if (crostini::IsUnmatchedCrostiniShelfAppId(app_id)) {
-    apps::mojom::IconKeyPtr icon_key = apps::mojom::IconKey::New();
     proxy->LoadIconFromIconKey(
-        apps::mojom::AppType::kCrostini, app_id, std::move(icon_key), icon_type,
+        apps::AppType::kCrostini, app_id, apps::IconKey(), icon_type,
         icon_size_in_dip(), allow_placeholder_icon,
         base::BindOnce(&AppServiceAppIconLoader::OnLoadIcon,
                        weak_ptr_factory_.GetWeakPtr(), app_id));
     return;
   }
 
-  apps::mojom::AppType app_type = proxy->AppRegistryCache().GetAppType(app_id);
-  if (app_type == apps::mojom::AppType::kUnknown) {
+  auto app_type = proxy->AppRegistryCache().GetAppType(app_id);
+  if (app_type == apps::AppType::kUnknown) {
     return;
   }
 
@@ -161,9 +161,8 @@ void AppServiceAppIconLoader::CallLoadIcon(const std::string& app_id,
 }
 
 void AppServiceAppIconLoader::OnLoadIcon(const std::string& app_id,
-                                         apps::mojom::IconValuePtr icon_value) {
-  auto icon_type = apps::mojom::IconType::kStandard;
-  if (icon_value->icon_type != icon_type) {
+                                         apps::IconValuePtr icon_value) {
+  if (icon_value->icon_type != apps::IconType::kStandard) {
     return;
   }
 

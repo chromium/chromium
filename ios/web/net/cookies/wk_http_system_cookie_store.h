@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,7 +50,7 @@ class WKHTTPSystemCookieStore : public net::SystemCookieStore,
 
  private:
   // Gets cookies on UI Thread then processes the result and runs callback on IO
-  // thread. If |include_url| is not empty, only include cookies that match it.
+  // thread. If `include_url` is not empty, only include cookies that match it.
   void GetCookiesAsyncInternal(
       const GURL& include_url,
       net::SystemCookieStore::SystemCookieCallbackForCookies callback);
@@ -61,9 +61,9 @@ class WKHTTPSystemCookieStore : public net::SystemCookieStore,
       WKWebViewConfigurationProvider* config_provider,
       WKWebViewConfiguration* new_config) override;
 
-  // Filters |cookies| to match |include_url|, sorts based on RFC6265 using
-  // |weak_time_manager| and then runs |callback|.
-  // If |include_url| is empty then cookies are processed without filtering.
+  // Filters `cookies` to match `include_url`, sorts based on RFC6265 using
+  // `weak_time_manager` and then runs `callback`.
+  // If `include_url` is empty then cookies are processed without filtering.
   static void ProcessGetCookiesResultInIOThread(
       net::SystemCookieStore::SystemCookieCallbackForCookies callback,
       base::WeakPtr<net::CookieCreationTimeManager> weak_time_manager,

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,9 +54,10 @@ bool ContentCapabilitiesHandler::Parse(Extension* extension,
                                        std::u16string* error) {
   std::unique_ptr<ContentCapabilitiesInfo> info(new ContentCapabilitiesInfo);
 
-  const base::Value* value = NULL;
-  if (!extension->manifest()->Get(keys::kContentCapabilities, &value)) {
-    *error = base::ASCIIToUTF16(errors::kInvalidContentCapabilities);
+  const base::Value* value =
+      extension->manifest()->FindPath(keys::kContentCapabilities);
+  if (value == nullptr) {
+    *error = errors::kInvalidContentCapabilities;
     return false;
   }
 

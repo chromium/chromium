@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,8 @@ namespace favicon {
 class LargeIconService;
 }
 
-@protocol ContentSuggestionsDataSink;
+@protocol ContentSuggestionsCollectionConsumer;
+@protocol ContentSuggestionsConsumer;
 @class ContentSuggestionsMostVisitedItem;
 @class FaviconAttributesProvider;
 class LargeIconCache;
@@ -22,7 +23,7 @@ class LargeIconCache;
 // items.
 @interface ContentSuggestionsFaviconMediator : NSObject
 
-// Initializes the mediator with |largeIconService| to fetch the favicon
+// Initializes the mediator with `largeIconService` to fetch the favicon
 // locally.
 - (instancetype)initWithLargeIconService:
                     (favicon::LargeIconService*)largeIconService
@@ -31,18 +32,17 @@ class LargeIconCache;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// The data sink which should be notified of the changes in the items.
-@property(nonatomic, weak) id<ContentSuggestionsDataSink> dataSink;
+@property(nonatomic, weak) id<ContentSuggestionsConsumer> consumer;
 
 // FaviconAttributesProvider to fetch the favicon for the most visited tiles.
 @property(nonatomic, strong, readonly)
     FaviconAttributesProvider* mostVisitedAttributesProvider;
 
-// Sets the |mostVisitedData| used to log the impression of the tiles.
+// Sets the `mostVisitedData` used to log the impression of the tiles.
 - (void)setMostVisitedDataForLogging:
     (const ntp_tiles::NTPTilesVector&)mostVisitedData;
 
-// Fetches the favicon for this |item|.
+// Fetches the favicon for this `item`.
 - (void)fetchFaviconForMostVisited:(ContentSuggestionsMostVisitedItem*)item;
 
 @end

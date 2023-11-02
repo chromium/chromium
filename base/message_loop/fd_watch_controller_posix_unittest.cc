@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/posix/eintr_wrapper.h"
@@ -23,7 +22,7 @@
 
 namespace base {
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 
 namespace {
 
@@ -562,6 +561,6 @@ TEST_F(FdWatchControllerPosixTest, TimerThenIoEvent) {
 
 }  // namespace
 
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 }  // namespace base

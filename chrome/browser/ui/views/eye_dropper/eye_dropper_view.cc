@@ -1,11 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/eye_dropper/eye_dropper_view.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/eye_dropper/eye_dropper.h"
 #include "content/public/browser/desktop_capture.h"
 #include "content/public/browser/render_view_host.h"
@@ -15,6 +17,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
@@ -32,15 +35,14 @@ class EyeDropperView::ViewPositionHandler {
   // Timer used for updating the window location.
   base::RepeatingTimer timer_;
 
-  EyeDropperView* owner_;
+  raw_ptr<EyeDropperView> owner_;
 };
 
 EyeDropperView::ViewPositionHandler::ViewPositionHandler(EyeDropperView* owner)
     : owner_(owner) {
-  // Use a value close to the refresh rate @60hz.
   // TODO(iopopesc): Use SetCapture instead of a timer when support for
   // activating the eye dropper without closing the color popup is added.
-  timer_.Start(FROM_HERE, base::Milliseconds(16), this,
+  timer_.Start(FROM_HERE, base::Hertz(60), this,
                &EyeDropperView::ViewPositionHandler::UpdateViewPosition);
 }
 
@@ -101,7 +103,7 @@ void EyeDropperView::ScreenCapturer::OnCaptureResult(
   original_offset_x_ = 0;
   original_offset_y_ = 0;
   for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // The window parameter is intentionally passed as nullptr on Windows
     // because a non-null window parameter causes errors when restoring windows
     // to saved positions in variable-DPI situations. See
@@ -127,10 +129,11 @@ SkBitmap EyeDropperView::ScreenCapturer::GetBitmap() const {
 }
 
 SkColor EyeDropperView::ScreenCapturer::GetColor(int x, int y) const {
-  DCHECK(x < frame_.width());
-  DCHECK(y < frame_.height());
-  return x < frame_.width() && y < frame_.height() ? frame_.getColor(x, y)
-                                                   : SK_ColorBLACK;
+  // It's not clear how control can reach here with out-of-bounds coordinates,
+  // but avoid a crash if it does.
+  return (x < 0 || x >= frame_.width() || y < 0 || y >= frame_.height())
+             ? gfx::kPlaceholderColor
+             : frame_.getColor(x, y);
 }
 
 int EyeDropperView::ScreenCapturer::original_offset_x() const {
@@ -154,7 +157,7 @@ EyeDropperView::EyeDropperView(content::RenderFrameHost* frame,
   // EyeDropper/WidgetDelegate.
   set_owned_by_client();
   SetPreferredSize(GetSize());
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   // Use TYPE_MENU for Linux to ensure that the eye dropper view is displayed
   // above the color picker.
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_MENU);
@@ -235,11 +238,11 @@ void EyeDropperView::OnPaint(gfx::Canvas* view_canvas) {
       screen_capturer_->GetColor(center_position.x(), center_position.y());
 
   // Paint grid.
+  const auto* color_provider = GetColorProvider();
   cc::PaintFlags flags;
   flags.setStrokeWidth(1);
   flags.setStyle(cc::PaintFlags::kStroke_Style);
-  // TODO(iopopesc): Get all colors from theming object.
-  flags.setColor(SK_ColorGRAY);
+  flags.setColor(color_provider->GetColor(kColorEyedropperGrid));
   for (int i = 0; i < pixel_count; ++i) {
     view_canvas->DrawLine(
         gfx::PointF(padding.width() + i * kPixelSize, padding.height()),
@@ -257,18 +260,20 @@ void EyeDropperView::OnPaint(gfx::Canvas* view_canvas) {
   gfx::RectF pixel((size().width() - kPixelSize) / 2,
                    (size().height() - kPixelSize) / 2, kPixelSize, kPixelSize);
   flags.setAntiAlias(true);
-  flags.setColor(SK_ColorWHITE);
+  flags.setColor(
+      color_provider->GetColor(kColorEyedropperCentralPixelOuterRing));
   flags.setStrokeWidth(2);
-  pixel.Inset(-0.5f, -0.5f);
+  pixel.Inset(-0.5f);
   view_canvas->DrawRect(pixel, flags);
-  flags.setColor(SK_ColorBLACK);
+  flags.setColor(
+      color_provider->GetColor(kColorEyedropperCentralPixelInnerRing));
   flags.setStrokeWidth(1);
-  pixel.Inset(0.5f, 0.5f);
+  pixel.Inset(0.5f);
   view_canvas->DrawRect(pixel, flags);
 
   // Paint outline.
   flags.setStrokeWidth(2);
-  flags.setColor(SK_ColorDKGRAY);
+  flags.setColor(color_provider->GetColor(kColorEyedropperBoundary));
   flags.setAntiAlias(true);
   if (GetWidget()->IsTranslucentWindowOpacitySupported()) {
     view_canvas->DrawCircle(

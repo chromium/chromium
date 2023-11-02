@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,6 +51,7 @@ enum class RenderSurfaceReason : uint8_t {
   kMirrored,
   kSubtreeIsBeingCaptured,
   kDocumentTransitionParticipant,
+  kGradientMask,
   // This must be the last value because it's used in tracing code to know the
   // number of reasons.
   kTest,
@@ -165,6 +166,7 @@ struct CC_EXPORT EffectNode {
   int closest_ancestor_with_cached_render_surface_id;
   int closest_ancestor_with_copy_request_id;
   int closest_ancestor_being_captured_id;
+  int closest_ancestor_with_shared_element_id;
 
   // Represents a shared element id for the document transition API.
   DocumentTransitionSharedElementId document_transition_shared_element_id;

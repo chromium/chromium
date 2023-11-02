@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,8 @@
 #include "chrome/browser/ui/webui/conflicts/conflicts_handler.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
-#include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
-#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -26,12 +24,10 @@ content::WebUIDataSource* CreateConflictsUIHTMLSource() {
       content::WebUIDataSource::Create(chrome::kChromeUIConflictsHost);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources 'self' 'unsafe-eval';");
-  source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types jstemplate;");
+      "script-src chrome://resources 'self';");
 
   source->AddResourcePath("conflicts.js", IDR_ABOUT_CONFLICTS_JS);
+  source->AddResourcePath("warning.svg", IDR_ABOUT_CONFLICTS_WARNING_SVG);
   source->SetDefaultResource(IDR_ABOUT_CONFLICTS_HTML);
   return source;
 }

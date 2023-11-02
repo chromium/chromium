@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/storage/setting_sync_data.h"
@@ -32,7 +31,7 @@ class SettingsSyncProcessor;
 // Decorates a ValueStore with sync behaviour.
 class SyncableSettingsStorage : public value_store::ValueStore {
  public:
-  SyncableSettingsStorage(scoped_refptr<SettingsObserverList> observers,
+  SyncableSettingsStorage(SequenceBoundSettingsChangedCallback observer,
                           const std::string& extension_id,
                           // Ownership taken.
                           value_store::ValueStore* delegate,
@@ -55,7 +54,7 @@ class SyncableSettingsStorage : public value_store::ValueStore {
                   const std::string& key,
                   const base::Value& value) override;
   WriteResult Set(WriteOptions options,
-                  const base::DictionaryValue& values) override;
+                  const base::Value::Dict& values) override;
   WriteResult Remove(const std::string& key) override;
   WriteResult Remove(const std::vector<std::string>& keys) override;
   WriteResult Clear() override;
@@ -95,13 +94,13 @@ class SyncableSettingsStorage : public value_store::ValueStore {
   // in sync yet.
   // Returns any error when trying to sync, or absl::nullopt on success.
   absl::optional<syncer::ModelError> SendLocalSettingsToSync(
-      std::unique_ptr<base::DictionaryValue> local_state);
+      base::Value::Dict local_state);
 
   // Overwrites local state with sync state.
   // Returns any error when trying to sync, or absl::nullopt on success.
   absl::optional<syncer::ModelError> OverwriteLocalSettingsWithSync(
       std::unique_ptr<base::DictionaryValue> sync_state,
-      std::unique_ptr<base::DictionaryValue> local_state);
+      base::Value::Dict local_state);
 
   // Called when an Add/Update/Remove comes from sync.
   syncer::SyncError OnSyncAdd(const std::string& key,
@@ -115,8 +114,8 @@ class SyncableSettingsStorage : public value_store::ValueStore {
                                  std::unique_ptr<base::Value> old_value,
                                  value_store::ValueStoreChangeList* changes);
 
-  // List of observers to settings changes.
-  const scoped_refptr<SettingsObserverList> observers_;
+  // Observer to settings changes.
+  SequenceBoundSettingsChangedCallback observer_;
 
   // Id of the extension these settings are for.
   std::string const extension_id_;

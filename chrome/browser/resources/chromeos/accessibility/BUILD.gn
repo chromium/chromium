@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,10 +6,9 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//chrome/common/features.gni")
 import("//chrome/test/base/js2gtest.gni")
-import("//chromecast/chromecast.gni")
 import("strings/accessibility_strings.gni")
 
-assert(is_chromeos_ash || is_chromecast)
+assert(is_chromeos_ash)
 
 accessibility_out_dir = "$root_out_dir/resources/chromeos/accessibility/"
 
@@ -162,22 +161,7 @@ group("unit_tests_js") {
 
 js2gtest("misc_unit_tests_js") {
   test_type = "unit"
-  sources = [
-    "braille_ime/braille_ime_unittest.js",
-    "common/rect_util_unittest.js",
-  ]
-  gen_include_files = [ "common/closure_shim.js" ]
-  extra_js_files = [
-    "braille_ime/braille_ime.js",
-    "common/constants.js",
-    "common/automation_predicate.js",
-    "common/automation_util.js",
-    "common/rect_util.js",
-    "common/tree_walker.js",
-    "select_to_speak/paragraph_utils.js",
-    "select_to_speak/select_to_speak.js",
-    "select_to_speak/word_utils.js",
-    "select_to_speak/node_utils.js",
-    "select_to_speak/sentence_utils.js",
-  ]
+  sources = [ "braille_ime/braille_ime_unittest.js" ]
+  gen_include_files = [ "common/testing/accessibility_test_base.js" ]
+  extra_js_files = [ "braille_ime/braille_ime.js" ]
 }

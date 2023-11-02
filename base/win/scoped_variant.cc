@@ -1,4 +1,4 @@
-// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,7 +40,7 @@ ScopedVariant::ScopedVariant(const wchar_t* str, UINT length) {
   var_.bstrVal = ::SysAllocStringLen(str, length);
 }
 
-ScopedVariant::ScopedVariant(long value, VARTYPE vt) {
+ScopedVariant::ScopedVariant(long value, VARTYPE vt) {  // NOLINT(runtime/int)
   var_.vt = vt;
   var_.lVal = value;
 }

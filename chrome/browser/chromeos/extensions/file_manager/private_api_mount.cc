@@ -1,11 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_mount.h"
 
 #include <memory>
-#include <string>
 #include <utility>
 
 #include "base/bind.h"
@@ -13,32 +12,47 @@
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
+#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/file_tasks_notifier.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/smb_client/smb_service.h"
 #include "chrome/browser/ash/smb_client/smb_service_factory.h"
+#include "chrome/browser/chromeos/extensions/file_manager/event_router.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
-#include "chromeos/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
+#include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "components/drive/event_logger.h"
+#include "components/services/unzip/content/unzip_service.h"
+#include "components/services/unzip/public/cpp/unzip.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/common/task_util.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
 namespace extensions {
+namespace {
 
-using chromeos::disks::DiskMountManager;
+std::string Redact(const base::StringPiece path) {
+  return LOG_IS_ON(INFO) ? base::StrCat({"'", path, "'"}) : "(redacted)";
+}
+
+}  // namespace
+
+using ::ash::disks::DiskMountManager;
 using content::BrowserThread;
 namespace file_manager_private = extensions::api::file_manager_private;
 
 FileManagerPrivateAddMountFunction::FileManagerPrivateAddMountFunction() =
+    default;
+
+FileManagerPrivateAddMountFunction::~FileManagerPrivateAddMountFunction() =
     default;
 
 ExtensionFunction::ResponseAction FileManagerPrivateAddMountFunction::Run() {
@@ -47,19 +61,15 @@ ExtensionFunction::ResponseAction FileManagerPrivateAddMountFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
-  drive::EventLogger* logger = file_manager::util::GetLogger(profile);
-  if (logger) {
+  if (drive::EventLogger* logger = file_manager::util::GetLogger(profile)) {
     logger->Log(logging::LOG_INFO, "%s[%d] called. (source: '%s')", name(),
                 request_id(),
-                params->source.empty() ? "(none)" : params->source.c_str());
+                params->file_url.empty() ? "(none)" : params->file_url.c_str());
   }
   set_log_on_completion(true);
 
-  const base::FilePath path = file_manager::util::GetLocalPathFromURL(
-      render_frame_host(), profile, GURL(params->source));
-
-  if (path.empty())
-    return RespondNow(Error("Invalid path"));
+  path_ = file_manager::util::GetLocalPathFromURL(render_frame_host(), profile,
+                                                  GURL(params->file_url));
 
   if (auto* notifier =
           file_manager::file_tasks::FileTasksNotifier::GetForProfile(profile)) {
@@ -69,7 +79,8 @@ ExtensionFunction::ResponseAction FileManagerPrivateAddMountFunction::Run() {
 
     std::vector<storage::FileSystemURL> urls;
     const storage::FileSystemURL url =
-        file_system_context->CrackURLInFirstPartyContext(GURL(params->source));
+        file_system_context->CrackURLInFirstPartyContext(
+            GURL(params->file_url));
     urls.push_back(url);
 
     notifier->NotifyFileTasks(urls);
@@ -77,19 +88,93 @@ ExtensionFunction::ResponseAction FileManagerPrivateAddMountFunction::Run() {
 
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  std::vector<std::string> options;
   if (params->password)
-    options.push_back("password=" + *params->password);
+    options_.push_back("password=" + *params->password);
 
-  // MountPath() takes a std::string.
-  DiskMountManager* disk_mount_manager = DiskMountManager::GetInstance();
-  disk_mount_manager->MountPath(
-      path.AsUTF8Unsafe(), base::ToLowerASCII(path.Extension()),
-      path.BaseName().AsUTF8Unsafe(), options, chromeos::MOUNT_TYPE_ARCHIVE,
-      chromeos::MOUNT_ACCESS_MODE_READ_WRITE);
+  extension_ = base::ToLowerASCII(path_.Extension());
+
+  // Detect the file path encoding of ZIP archives.
+  if (extension_ == ".zip") {
+    unzip::DetectEncoding(
+        unzip::LaunchUnzipper(), path_,
+        base::BindOnce(&FileManagerPrivateAddMountFunction::OnEncodingDetected,
+                       this));
+  } else {
+    FinishMounting();
+  }
 
   // Pass back the actual source path of the mount point.
-  return RespondNow(OneArgument(base::Value(path.AsUTF8Unsafe())));
+  return RespondNow(WithArguments(path_.AsUTF8Unsafe()));
+}
+
+void FileManagerPrivateAddMountFunction::OnEncodingDetected(
+    const Encoding encoding) {
+  // Pass the detected ZIP encoding as a mount option.
+  std::string& option = options_.emplace_back("encoding=");
+
+  if (IsShiftJisOrVariant(encoding) || encoding == RUSSIAN_CP866) {
+    option += MimeEncodingName(encoding);
+  } else {
+    option += "libzip";
+  }
+
+  FinishMounting();
+}
+
+void FileManagerPrivateAddMountFunction::FinishMounting() {
+  DiskMountManager* const disk_mount_manager = DiskMountManager::GetInstance();
+  DCHECK(disk_mount_manager);
+  disk_mount_manager->MountPath(path_.AsUTF8Unsafe(), std::move(extension_),
+                                path_.BaseName().AsUTF8Unsafe(),
+                                std::move(options_), ash::MountType::kArchive,
+                                ash::MountAccessMode::kReadWrite,
+                                base::DoNothing());
+}
+
+FileManagerPrivateCancelMountingFunction::
+    FileManagerPrivateCancelMountingFunction() = default;
+
+FileManagerPrivateCancelMountingFunction::
+    ~FileManagerPrivateCancelMountingFunction() = default;
+
+ExtensionFunction::ResponseAction
+FileManagerPrivateCancelMountingFunction::Run() {
+  using file_manager_private::CancelMounting::Params;
+  const std::unique_ptr<Params> params = Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  Profile* const profile = Profile::FromBrowserContext(browser_context());
+
+  if (drive::EventLogger* logger = file_manager::util::GetLogger(profile)) {
+    logger->Log(logging::LOG_INFO, "%s[%d] called. (source: '%s')", name(),
+                request_id(),
+                params->file_url.empty() ? "(none)" : params->file_url.c_str());
+  }
+  set_log_on_completion(true);
+
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  base::FilePath path = file_manager::util::GetLocalPathFromURL(
+      render_frame_host(), profile, GURL(params->file_url));
+
+  DiskMountManager* const disk_mount_manager = DiskMountManager::GetInstance();
+  DCHECK(disk_mount_manager);
+  disk_mount_manager->UnmountPath(
+      path.AsUTF8Unsafe(),
+      base::BindOnce(&FileManagerPrivateCancelMountingFunction::OnCancelled,
+                     this));
+
+  return RespondLater();
+}
+
+void FileManagerPrivateCancelMountingFunction::OnCancelled(
+    ash::MountError error) {
+  if (error == ash::MountError::kNone) {
+    Respond(WithArguments());
+  } else {
+    Respond(Error(file_manager_private::ToString(
+        file_manager::MountErrorToMountCompletedStatus(error))));
+  }
 }
 
 ExtensionFunction::ResponseAction FileManagerPrivateRemoveMountFunction::Run() {
@@ -98,8 +183,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateRemoveMountFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
-  drive::EventLogger* logger = file_manager::util::GetLogger(profile);
-  if (logger) {
+  if (drive::EventLogger* logger = file_manager::util::GetLogger(profile)) {
     logger->Log(logging::LOG_INFO, "%s[%d] called. (volume_id: '%s')", name(),
                 request_id(), params->volume_id.c_str());
   }
@@ -110,47 +194,88 @@ ExtensionFunction::ResponseAction FileManagerPrivateRemoveMountFunction::Run() {
   VolumeManager* const volume_manager = VolumeManager::Get(profile);
   DCHECK(volume_manager);
 
-  base::WeakPtr<Volume> volume =
-      volume_manager->FindVolumeById(params->volume_id);
-  if (!volume.get())
-    return RespondNow(Error("Volume not available"));
+  std::string volume_id = params->volume_id;
+  volume_manager->ConvertFuseBoxFSPVolumeIdToFSPIfNeeded(&volume_id);
 
-  // TODO(tbarzic): Send response when callback is received, it would make more
-  // sense than remembering issued unmount requests in file manager and showing
-  // errors for them when MountCompleted event is received.
+  const base::WeakPtr<Volume> volume =
+      volume_manager->FindVolumeById(volume_id);
+  if (!volume) {
+    LOG(ERROR) << "Cannot find volume " << Redact(volume_id);
+    return RespondNow(Error(file_manager_private::ToString(
+        api::file_manager_private::
+            MOUNT_COMPLETED_STATUS_ERROR_PATH_NOT_MOUNTED)));
+  }
+
   switch (volume->type()) {
     case file_manager::VOLUME_TYPE_REMOVABLE_DISK_PARTITION:
-    case file_manager::VOLUME_TYPE_MOUNTED_ARCHIVE_FILE: {
+    case file_manager::VOLUME_TYPE_MOUNTED_ARCHIVE_FILE:
       DiskMountManager::GetInstance()->UnmountPath(
           volume->mount_path().value(),
-          DiskMountManager::UnmountPathCallback());
-      break;
-    }
+          base::BindOnce(
+              &FileManagerPrivateRemoveMountFunction::OnDiskUnmounted, this));
+      return RespondLater();
+
     case file_manager::VOLUME_TYPE_PROVIDED: {
       auto* service =
           ash::file_system_provider::Service::Get(browser_context());
       DCHECK(service);
-      // TODO(mtomasz): Pass a more detailed error than just a bool.
       if (!service->RequestUnmount(volume->provider_id(),
                                    volume->file_system_id())) {
         return RespondNow(Error("Unmount failed"));
       }
-      break;
+      return RespondNow(WithArguments());
     }
+
     case file_manager::VOLUME_TYPE_CROSTINI:
       file_manager::VolumeManager::Get(profile)->RemoveSshfsCrostiniVolume(
-          volume->mount_path(), base::DoNothing());
-      break;
+          volume->mount_path(),
+          base::BindOnce(
+              &FileManagerPrivateRemoveMountFunction::OnSshFsUnmounted, this));
+      return RespondLater();
+
     case file_manager::VOLUME_TYPE_SMB:
       ash::smb_client::SmbServiceFactory::Get(profile)->UnmountSmbFs(
           volume->mount_path());
-      break;
+      return RespondNow(WithArguments());
+
+    case file_manager::VOLUME_TYPE_TESTING:
+      file_manager::VolumeManager::Get(profile)
+          ->RemoveVolumeForTesting(  // IN-TEST
+              volume->mount_path(), volume->type(), volume->device_type(),
+              volume->is_read_only(), volume->storage_device_path(),
+              volume->drive_label(), volume->file_system_type());
+
+      return RespondNow(WithArguments());
+
+    case file_manager::VOLUME_TYPE_GUEST_OS:
+      // TODO(crbug/1293229): Figure out if we need to support unmounting. I'm
+      // not actually sure if it's possible to reach here.
+      NOTREACHED();
+      [[fallthrough]];
+
     default:
       // Requested unmounting a device which is not unmountable.
       return RespondNow(Error("Invalid volume type"));
   }
+}
 
-  return RespondNow(NoArguments());
+void FileManagerPrivateRemoveMountFunction::OnSshFsUnmounted(bool ok) {
+  if (ok) {
+    Respond(WithArguments());
+  } else {
+    Respond(Error(file_manager_private::ToString(
+        api::file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_UNKNOWN)));
+  }
+}
+
+void FileManagerPrivateRemoveMountFunction::OnDiskUnmounted(
+    ash::MountError error) {
+  if (error == ash::MountError::kNone) {
+    Respond(WithArguments());
+  } else {
+    Respond(Error(file_manager_private::ToString(
+        file_manager::MountErrorToMountCompletedStatus(error))));
+  }
 }
 
 ExtensionFunction::ResponseAction
@@ -174,8 +299,7 @@ FileManagerPrivateGetVolumeMetadataListFunction::Run() {
     log_string += volume->mount_path().AsUTF8Unsafe();
   }
 
-  drive::EventLogger* logger = file_manager::util::GetLogger(profile);
-  if (logger) {
+  if (drive::EventLogger* logger = file_manager::util::GetLogger(profile)) {
     logger->Log(logging::LOG_INFO,
                 "%s[%d] succeeded. (results: '[%s]', %" PRIuS " mount points)",
                 name(), request_id(), log_string.c_str(), result.size());

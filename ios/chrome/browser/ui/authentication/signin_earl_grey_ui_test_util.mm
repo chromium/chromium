@@ -1,10 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 
-#include "base/mac/foundation_util.h"
+#import "base/mac/foundation_util.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
@@ -16,7 +16,7 @@
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -25,7 +25,7 @@
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service_constants.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -41,9 +41,20 @@ using chrome_test_util::IdentityCellMatcherForEmail;
 
 namespace {
 
-// Closes the managed account dialog, if |fakeIdentity| is a managed account.
+// Returns YES if the email is considered as managed.
+BOOL IsEmailManaged(NSString* email) {
+  return [ios::GetManagedEmailSuffixes()
+             indexOfObjectPassingTest:^BOOL(NSString* suffix, NSUInteger idx,
+                                            BOOL* stop) {
+               return [email hasSuffix:suffix];
+             }] != NSNotFound;
+}
+
+// Closes the managed account dialog, if `fakeIdentity` is a managed account.
 void CloseSigninManagedAccountDialogIfAny(FakeChromeIdentity* fakeIdentity) {
-  if (![fakeIdentity.userEmail hasSuffix:ios::kManagedIdentityEmailSuffix]) {
+  if (!IsEmailManaged(fakeIdentity.userEmail)) {
+    // Don't expect a managed account dialog when the account isn't considered
+    // managed.
     return;
   }
   // Synchronization off due to an infinite spinner, in the user consent view,
@@ -258,7 +269,7 @@ void CloseSigninManagedAccountDialogIfAny(FakeChromeIdentity* fakeIdentity) {
 + (void)tapPrimarySignInButtonInRecentTabs {
   [ChromeEarlGreyUI openToolsMenu];
   [ChromeEarlGreyUI
-      tapToolsMenuButton:chrome_test_util::RecentTabsMenuButton()];
+      tapToolsMenuButton:chrome_test_util::RecentTabsDestinationButton()];
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
                                           grey_sufficientlyVisible(), nil)]
@@ -271,8 +282,7 @@ void CloseSigninManagedAccountDialogIfAny(FakeChromeIdentity* fakeIdentity) {
 }
 
 + (void)tapPrimarySignInButtonInTabSwitcher {
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           TabGridOtherDevicesPanelButton()]
       performAction:grey_tap()];
@@ -335,7 +345,8 @@ void CloseSigninManagedAccountDialogIfAny(FakeChromeIdentity* fakeIdentity) {
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:SettingsDoneButton()
                                   timeout:base::test::ios::
-                                              kWaitForClearBrowsingDataTimeout];
+                                              kWaitForClearBrowsingDataTimeout
+                                                  .InSecondsF()];
 
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];

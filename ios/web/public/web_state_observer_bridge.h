@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,11 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "ios/web/public/web_state_observer.h"
 
 namespace web {
 class NavigationContext;
+enum Permission : NSUInteger;
 }
 
 // Observes page lifecycle events from Objective-C. To use as a
@@ -66,6 +66,11 @@ class NavigationContext;
     didUpdateFaviconURLCandidates:
         (const std::vector<web::FaviconURL>&)candidates;
 
+// Invoked by WebStateObserverBridge::PermissionStateChanged.
+- (void)webState:(web::WebState*)webState
+    didChangeStateForPermission:(web::Permission)permission
+    API_AVAILABLE(ios(15.0));
+
 // Invoked by WebStateObserverBridge::WebFrameDidBecomeAvailable.
 - (void)webState:(web::WebState*)webState
     frameDidBecomeAvailable:(web::WebFrame*)webFrame;
@@ -80,7 +85,7 @@ class NavigationContext;
 // Invoked by WebStateObserverBridge::WebStateRealized.
 - (void)webStateRealized:(web::WebState*)webState;
 
-// Note: after |webStateDestroyed:| is invoked, the WebState being observed
+// Note: after `webStateDestroyed:` is invoked, the WebState being observed
 // is no longer valid.
 - (void)webStateDestroyed:(web::WebState*)webState;
 
@@ -121,6 +126,9 @@ class WebStateObserverBridge : public web::WebStateObserver {
   void DidChangeVisibleSecurityState(web::WebState* web_state) override;
   void FaviconUrlUpdated(web::WebState* web_state,
                          const std::vector<FaviconURL>& candidates) override;
+  void PermissionStateChanged(web::WebState* web_state,
+                              web::Permission permission) override
+      API_AVAILABLE(ios(15.0));
   void WebFrameDidBecomeAvailable(WebState* web_state,
                                   WebFrame* web_frame) override;
   void WebFrameWillBecomeUnavailable(WebState* web_state,

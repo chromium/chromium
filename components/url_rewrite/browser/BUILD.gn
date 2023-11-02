@@ -1,0 +1,42 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+
+source_set("browser") {
+  public = [
+    "url_request_rewrite_rules_manager.h",
+    "url_request_rewrite_rules_validation.h",
+  ]
+  sources = [
+    "url_request_rewrite_rules_manager.cc",
+    "url_request_rewrite_rules_validation.cc",
+  ]
+  deps = [
+    "//base",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//services/network/public/cpp:cpp_base",
+    "//third_party/blink/public/common",
+    "//url",
+  ]
+  public_deps = [ "//components/url_rewrite/common" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "url_request_rewrite_rules_manager_unittest.cc",
+    "url_request_rewrite_rules_validation_unittest.cc",
+  ]
+  deps = [
+    ":browser",
+    "//base/test:test_support",
+    "//components/url_rewrite/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public/common",
+  ]
+}

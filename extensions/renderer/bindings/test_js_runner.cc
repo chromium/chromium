@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <ostream>
 
 #include "base/bind.h"
+#include "content/public/renderer/v8_value_converter.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
 
 namespace extensions {
@@ -17,6 +18,19 @@ namespace {
 // we'll need to expand these.
 bool g_allow_errors = false;
 bool g_suspended = false;
+
+absl::optional<base::Value> Convert(v8::MaybeLocal<v8::Value> maybe_value,
+                                    v8::Local<v8::Context> context) {
+  v8::Local<v8::Value> v8_value;
+  if (!maybe_value.ToLocal(&v8_value))
+    return absl::nullopt;
+
+  if (std::unique_ptr<base::Value> value =
+          content::V8ValueConverter::Create()->FromV8Value(v8_value, context)) {
+    return base::Value::FromUniquePtrValue(std::move(value));
+  }
+  return absl::nullopt;
+}
 
 }  // namespace
 
@@ -99,7 +113,7 @@ void TestJSRunner::RunJSFunction(v8::Local<v8::Function> function,
   }
 
   if (callback)
-    std::move(callback).Run(context, result);
+    std::move(callback).Run(context, Convert(result, context));
 }
 
 v8::MaybeLocal<v8::Value> TestJSRunner::RunJSFunctionSync(
@@ -137,7 +151,7 @@ void TestJSRunner::Flush() {
         RunJSFunctionSync(call.function.Get(isolate), context,
                           local_arguments.size(), local_arguments.data());
     if (call.callback)
-      std::move(call.callback).Run(context, result);
+      std::move(call.callback).Run(context, Convert(result, context));
   }
 }
 

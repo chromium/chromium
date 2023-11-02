@@ -1,9 +1,8 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
-
+import {ArrayDataModel} from '../../common/js/array_data_model.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeInfoList} from '../../externs/volume_info_list.js';
 
@@ -26,17 +25,14 @@ export class VolumeInfoListImpl {
     return this.model_.length;
   }
 
-  /** @override */
   addEventListener(type, handler) {
     this.model_.addEventListener(type, handler);
   }
 
-  /** @override */
   removeEventListener(type, handler) {
     this.model_.removeEventListener(type, handler);
   }
 
-  /** @override */
   add(volumeInfo) {
     const index = this.findIndex(volumeInfo.volumeId);
     if (index !== -1) {
@@ -46,7 +42,6 @@ export class VolumeInfoListImpl {
     }
   }
 
-  /** @override */
   remove(volumeId) {
     const index = this.findIndex(volumeId);
     if (index !== -1) {
@@ -54,7 +49,6 @@ export class VolumeInfoListImpl {
     }
   }
 
-  /** @override */
   item(index) {
     return /** @type {!VolumeInfo} */ (this.model_.item(index));
   }

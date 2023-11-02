@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -189,24 +189,6 @@ std::string ValueToString(const ValueType& value,
                           std::string fallback_value = "<value>") {
   return internal::ValueToStringHelper(base::internal::priority_tag<5>(), value,
                                        std::move(fallback_value));
-}
-
-// ToTracedValue helpers simplify using |AsValueInto| method to capture by
-// eliminating the need to create TracedValue manually. Also supports passing
-// pointers, including null ones.
-template <typename T>
-std::unique_ptr<TracedValue> ToTracedValue(T& value) {
-  std::unique_ptr<TracedValue> result = std::make_unique<TracedValue>();
-  // AsValueInto might not be const-only, so do not use const references.
-  value.AsValueInto(result.get());
-  return result;
-}
-
-template <typename T>
-std::unique_ptr<TracedValue> ToTracedValue(T* value) {
-  if (!value)
-    return TracedValue::Build({{"this", "nullptr"}});
-  return ToTracedValue(*value);
 }
 
 // Method to trace |value| into the given |traced_value|. Support types where

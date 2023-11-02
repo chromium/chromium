@@ -49,11 +49,12 @@
   session.protocol.Network.onLoadingFailed(event => { throw 'This test should never fail to load a resource.' });
 
   var responseWasReceivedCallback = () => { throw 'Must be overriden first.' };
-  session.protocol.Network.onResponseReceived(async event => {
+  session.protocol.Network.onLoadingFinished(async event => {
     var url = inflightRequests.get(event.params.requestId);
     testRunner.log('Response Received for: ' + url);
 
     var message = await session.protocol.Network.getResponseBody({requestId: event.params.requestId});
+    if (message.error) testRunner.log(message.error);
     var body = message.result.base64Encoded ? atob(message.result.body) : message.result.body;
     testRunner.log('Response Content: ' + body.replace(/[\r\n]+/g, '\\n'));
     testRunner.log('');

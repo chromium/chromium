@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -104,12 +104,12 @@ def ArgumentParser(standalone=False):
       action='store_true',
       help='Android-specific argument to enable fetching data from a device.')
   group.add_argument(
-      '--device-data-path',
+      '--fetch-data-path-device',
       dest='device_data_path',
       help=('Android-specific argument for --fetch-data-device. Use this to '
             'specify the path on device to pull data from using adb.'))
   group.add_argument(
-      '--local-data-path',
+      '--fetch-data-path-local',
       dest='local_data_path',
       default=os.environ.get('ISOLATED_OUTDIR'),
       help=('Android-specific argument for --fetch-data-device. Use this to '
@@ -182,10 +182,9 @@ def _CreateTopLevelParser(standalone):
         description='Standalone command line interface to results_processor.')
     # In standalone mode, both the parser and group are the same thing.
     return parser, parser
-  else:
-    parser = argparse.ArgumentParser(add_help=False)
-    group = parser.add_argument_group(title='Result processor options')
-    return parser, group
+  parser = argparse.ArgumentParser(add_help=False)
+  group = parser.add_argument_group(title='Result processor options')
+  return parser, group
 
 
 def _DefaultOutputDir():
@@ -197,8 +196,7 @@ def _DefaultOutputDir():
   main_module = sys.modules['__main__']
   if hasattr(main_module, '__file__'):
     return os.path.realpath(os.path.dirname(main_module.__file__))
-  else:
-    return os.getcwd()
+  return os.getcwd()
 
 
 def Sentences(*args):

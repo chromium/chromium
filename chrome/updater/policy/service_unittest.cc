@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,12 +18,15 @@ namespace updater {
 // Policy and Device Management.
 class FakePolicyManager : public PolicyManagerInterface {
  public:
-  FakePolicyManager(bool is_managed, const std::string& source)
-      : is_managed_(is_managed), source_(source) {}
+  FakePolicyManager(bool has_active_device_policies, const std::string& source)
+      : has_active_device_policies_(has_active_device_policies),
+        source_(source) {}
   ~FakePolicyManager() override = default;
 
   std::string source() const override { return source_; }
-  bool IsManaged() const override { return is_managed_; }
+  bool HasActiveDevicePolicies() const override {
+    return has_active_device_policies_;
+  }
   bool GetLastCheckPeriodMinutes(int* minutes) const override { return false; }
   bool GetUpdatesSuppressedTimes(
       UpdatesSuppressedTimes* suppressed_times) const override {
@@ -96,9 +99,13 @@ class FakePolicyManager : public PolicyManagerInterface {
   void SetChannel(const std::string& app_id, std::string channel) {
     channels_[app_id] = std::move(channel);
   }
+  bool GetForceInstallApps(
+      std::vector<std::string>* /* force_install_apps */) const override {
+    return false;
+  }
 
  private:
-  bool is_managed_;
+  bool has_active_device_policies_;
   std::string source_;
   UpdatesSuppressedTimes suppressed_times_;
   std::string download_preference_;
@@ -108,7 +115,7 @@ class FakePolicyManager : public PolicyManagerInterface {
 
 TEST(PolicyService, DefaultPolicyValue) {
   PolicyService::PolicyManagerVector managers;
-  managers.push_back(GetPolicyManager());
+  managers.push_back(GetDefaultValuesPolicyManager());
   auto policy_service =
       base::MakeRefCounted<PolicyService>(std::move(managers));
   EXPECT_EQ(policy_service->source(), "default");
@@ -116,8 +123,25 @@ TEST(PolicyService, DefaultPolicyValue) {
   std::string version_prefix;
   EXPECT_FALSE(
       policy_service->GetTargetVersionPrefix("", nullptr, &version_prefix));
+
   int last_check = 0;
-  EXPECT_FALSE(policy_service->GetLastCheckPeriodMinutes(nullptr, &last_check));
+  EXPECT_TRUE(policy_service->GetLastCheckPeriodMinutes(nullptr, &last_check));
+  EXPECT_EQ(last_check, 270);
+
+  int install_policy = 0;
+  EXPECT_TRUE(policy_service->GetEffectivePolicyForAppInstalls(
+      "test1", nullptr, &install_policy));
+  EXPECT_EQ(install_policy, 1);
+
+  int update_policy = 0;
+  EXPECT_TRUE(policy_service->GetEffectivePolicyForAppUpdates("test1", nullptr,
+                                                              &update_policy));
+  EXPECT_EQ(update_policy, 1);
+
+  bool rollback_allowed = true;
+  EXPECT_TRUE(policy_service->IsRollbackToTargetVersionAllowed(
+      "test1", nullptr, &rollback_allowed));
+  EXPECT_EQ(rollback_allowed, false);
 }
 
 TEST(PolicyService, SinglePolicyManager) {
@@ -192,7 +216,7 @@ TEST(PolicyService, MultiplePolicyManagers) {
   managers.push_back(std::move(manager));
 
   // The default policy manager.
-  managers.push_back(GetPolicyManager());
+  managers.push_back(GetDefaultValuesPolicyManager());
 
   auto policy_service =
       base::MakeRefCounted<PolicyService>(std::move(managers));
@@ -292,8 +316,7 @@ TEST(PolicyService, MultiplePolicyManagers_WithUnmanagedOnes) {
   manager->SetDownloadPreferenceGroupPolicy("cacheable");
   managers.push_back(std::move(manager));
 
-  // The default policy manager.
-  managers.push_back(GetPolicyManager());
+  managers.push_back(GetDefaultValuesPolicyManager());
 
   manager = std::make_unique<FakePolicyManager>(false, "group_policy");
   updates_suppressed_times.start_hour_ = 5;
@@ -350,10 +373,14 @@ TEST(PolicyService, MultiplePolicyManagers_WithUnmanagedOnes) {
   EXPECT_EQ(update_policy, 3);
 
   PolicyStatus<int> app2_update_status;
-  EXPECT_FALSE(policy_service->GetEffectivePolicyForAppUpdates(
+  EXPECT_TRUE(policy_service->GetEffectivePolicyForAppUpdates(
       "app2", &app2_update_status, &update_policy));
-  EXPECT_FALSE(app2_update_status.effective_policy());
+  EXPECT_TRUE(app2_update_status.effective_policy());
   EXPECT_FALSE(app2_update_status.conflict_policy());
+  const PolicyStatus<int>::Entry& app2_update_status_policy =
+      app2_update_status.effective_policy().value();
+  EXPECT_EQ(app2_update_status_policy.source, "default");
+  EXPECT_EQ(app2_update_status_policy.policy, 1);
 
   PolicyStatus<std::string> download_preference_status;
   std::string download_preference;

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bits.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/debug/stack_trace.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -24,6 +23,7 @@
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 
 namespace viz {
@@ -358,6 +358,7 @@ void ClientResourceProvider::ShutdownAndReleaseAllResources() {
 
 ClientResourceProvider::ScopedSkSurface::ScopedSkSurface(
     GrDirectContext* gr_context,
+    const gpu::Capabilities& capabilities,
     sk_sp<SkColorSpace> color_space,
     GLuint texture_id,
     GLenum texture_target,
@@ -368,7 +369,8 @@ ClientResourceProvider::ScopedSkSurface::ScopedSkSurface(
   GrGLTextureInfo texture_info;
   texture_info.fID = texture_id;
   texture_info.fTarget = texture_target;
-  texture_info.fFormat = TextureStorageFormat(format);
+  texture_info.fFormat =
+      TextureStorageFormat(format, capabilities.angle_rgbx_internal_format);
   GrBackendTexture backend_texture(size.width(), size.height(),
                                    GrMipMapped::kNo, texture_info);
   // This type is used only for gpu raster, which implies gpu compositing.

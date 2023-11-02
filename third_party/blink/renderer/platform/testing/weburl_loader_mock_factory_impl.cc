@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -113,13 +113,13 @@ void WebURLLoaderMockFactoryImpl::UnregisterAllURLsAndClearMemoryCache() {
   url_to_error_info_.clear();
   protocol_to_response_info_.clear();
   if (IsMainThread())
-    GetMemoryCache()->EvictResources();
+    MemoryCache::Get()->EvictResources();
 }
 
 void WebURLLoaderMockFactoryImpl::ServeAsynchronousRequests() {
   // Serving a request might trigger more requests, so we cannot iterate on
   // pending_loaders_ as it might get modified.
-  while (!pending_loaders_.IsEmpty()) {
+  while (!pending_loaders_.empty()) {
     LoaderToRequestMap::iterator iter = pending_loaders_.begin();
     base::WeakPtr<WebURLLoaderMock> loader(iter->key->GetWeakPtr());
     std::unique_ptr<network::ResourceRequest> request = std::move(iter->value);
@@ -163,6 +163,7 @@ void WebURLLoaderMockFactoryImpl::FillNavigationParamsResponse(
     auto body_loader = std::make_unique<StaticDataNavigationBodyLoader>();
     body_loader->Write(*buffer);
     body_loader->Finish();
+    params->is_static_data = true;
     params->body_loader = std::move(body_loader);
     return;
   }
@@ -195,6 +196,7 @@ void WebURLLoaderMockFactoryImpl::FillNavigationParamsResponse(
     body_loader->Write(*buffer);
     body_loader->Finish();
   }
+  params->is_static_data = true;
   params->body_loader = std::move(body_loader);
 }
 

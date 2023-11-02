@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,8 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
@@ -77,7 +79,8 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
   AppId app_id = InstallShortcutAppForCurrentUrl();
   EXPECT_EQ(registrar().GetAppShortName(app_id), GetInstallableAppName());
   // Shortcut apps to PWAs should launch in a tab.
-  EXPECT_EQ(registrar().GetAppUserDisplayMode(app_id), DisplayMode::kBrowser);
+  EXPECT_EQ(registrar().GetAppUserDisplayMode(app_id),
+            UserDisplayMode::kBrowser);
 
   EXPECT_EQ(0, user_action_tester.GetActionCount("InstallWebAppFromMenu"));
   EXPECT_EQ(1, user_action_tester.GetActionCount("CreateShortcut"));
@@ -87,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, InstallSourceRecorded) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // LatestWebAppInstallSource should be correctly set and reported to UMA for
-  // both installable and non-installable sites.
+  // both installable and non-installable (shortcut) sites.
   for (const GURL& url :
        {GetInstallableAppURL(),
         embedded_test_server()->GetURL(
@@ -96,11 +99,8 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, InstallSourceRecorded) {
     NavigateToURLAndWait(browser(), url);
     AppId app_id = InstallShortcutAppForCurrentUrl();
 
-    absl::optional<int> install_source =
-        GetWebAppInstallSource(profile()->GetPrefs(), app_id);
-    EXPECT_TRUE(install_source.has_value());
-    EXPECT_EQ(static_cast<webapps::WebappInstallSource>(*install_source),
-              webapps::WebappInstallSource::MENU_CREATE_SHORTCUT);
+    EXPECT_EQ(webapps::WebappInstallSource::MENU_CREATE_SHORTCUT,
+              *registrar().GetAppInstallSourceForMetrics(app_id));
     histogram_tester.ExpectUniqueSample(
         "Webapp.Install.InstallEvent",
         static_cast<int>(webapps::WebappInstallSource::MENU_CREATE_SHORTCUT),
@@ -127,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
   NavigateToURLAndWait(browser(), GetInstallableAppURL());
   AppId app_id = InstallShortcutAppForCurrentUrl();
   // Change launch container to open in window.
-  sync_bridge().SetAppUserDisplayMode(app_id, DisplayMode::kStandalone,
+  sync_bridge().SetAppUserDisplayMode(app_id, UserDisplayMode::kStandalone,
                                       /*is_user_action=*/false);
 
   Browser* new_browser =
@@ -233,12 +233,33 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
   AppId app_id = InstallShortcutAppForCurrentUrl();
   EXPECT_EQ(registrar().GetAppShortName(app_id), GetInstallableAppName());
   // Shortcut apps to PWAs should launch in a tab.
-  EXPECT_EQ(registrar().GetAppUserDisplayMode(app_id), DisplayMode::kBrowser);
+  EXPECT_EQ(registrar().GetAppUserDisplayMode(app_id),
+            UserDisplayMode::kBrowser);
+  // TODO(crbug.com/1275945): We need to wait a bit longer for the
+  // WebAppInstallTask to complete before starting another install.
+  // Move the install/update/uninstall events out of
+  // AppRegistrarObserver and into a WebAppInstallManagerObserver
+  // interface so they can be guaranteed to fire after the
+  // WebAppInstallTask's lifetime has ended.
+  base::RunLoop().RunUntilIdle();
 
   InstallShortcutAppForCurrentUrl(/*open_as_window=*/true);
   // Re-install with enabling open_as_window should update user display mode.
   EXPECT_EQ(registrar().GetAppUserDisplayMode(app_id),
-            DisplayMode::kStandalone);
+            UserDisplayMode::kStandalone);
+}
+
+IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, OpenShortcutWindowOnlyOnce) {
+  base::UserActionTester user_action_tester;
+  NavigateToURLAndWait(browser(), GetInstallableAppURL());
+
+  WebAppTestInstallObserver observer(profile());
+  // The "Create shortcut" call is executed twice, but the dialog
+  // must be shown only once.
+  ASSERT_TRUE(chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT));
+  ASSERT_TRUE(chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT));
+
+  EXPECT_EQ(1u, provider().command_manager().GetCommandCountForTesting());
 }
 
 }  // namespace web_app

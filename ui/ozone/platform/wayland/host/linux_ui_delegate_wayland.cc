@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "ui/base/linux/linux_ui_delegate.h"
+#include "ui/linux/linux_ui_delegate.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
@@ -42,6 +42,21 @@ bool LinuxUiDelegateWayland::ExportWindowHandle(
 
   foreign->ExportSurfaceToForeign(parent_window, std::move(callback));
   return true;
+}
+
+bool LinuxUiDelegateWayland::ExportWindowHandle(
+    gfx::AcceleratedWidget window_id,
+    base::OnceCallback<void(std::string)> callback) {
+  return ui::LinuxUiDelegate::GetInstance()->ExportWindowHandle(
+      window_id,
+      base::BindOnce(&LinuxUiDelegateWayland::OnHandleForward,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void LinuxUiDelegateWayland::OnHandleForward(
+    base::OnceCallback<void(std::string)> callback,
+    const std::string& handle) {
+  std::move(callback).Run("wayland:" + handle);
 }
 
 }  // namespace ui

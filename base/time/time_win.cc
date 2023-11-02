@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,7 +40,6 @@
 
 #include <atomic>
 
-#include "base/atomicops.h"
 #include "base/bit_cast.h"
 #include "base/check_op.h"
 #include "base/cpu.h"
@@ -49,6 +48,8 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time_override.h"
 #include "build/build_config.h"
+
+#include "base/record_replay.h"
 
 namespace base {
 
@@ -113,7 +114,7 @@ TimeDelta g_high_res_timer_usage;
 TimeTicks g_high_res_timer_last_activation;
 // The lock to control access to the above set of variables.
 Lock* GetHighResLock() {
-  static auto* lock = new Lock();
+  static auto* lock = new Lock("Time::GetHighResLock");
   return lock;
 }
 
@@ -146,6 +147,10 @@ UINT GetIntervalMs() {
 // new request). If there is no change then do nothing.
 void UpdateTimerIntervalLocked() {
   UINT new_interval = GetIntervalMs();
+
+  recordreplay::Assert("[RUN-1916-2636] UpdateTimerIntervalLocked A %u %u",
+                       new_interval, g_last_interval_requested_ms);
+
   if (new_interval == g_last_interval_requested_ms)
     return;
   if (g_last_interval_requested_ms) {
@@ -164,7 +169,11 @@ void UpdateTimerIntervalLocked() {
 }
 
 // Returns the current value of the performance counter.
-uint64_t QPCNowRaw() {
+int64_t QPCNowRaw() {
+  if (!recordreplay::AreEventsDisallowed() && !recordreplay::AreEventsPassedThrough()) {
+    recordreplay::Assert("[RUN-1916] QPCNowRaw");
+  }
+
   LARGE_INTEGER perf_counter_now = {};
   // According to the MSDN documentation for QueryPerformanceCounter(), this
   // will never fail on systems that run XP or later.
@@ -270,6 +279,7 @@ bool Time::ActivateHighResolutionTimer(bool activating) {
   const uint32_t max = std::numeric_limits<uint32_t>::max();
 
   AutoLock lock(*GetHighResLock());
+  recordreplay::Assert("[RUN-1916-2726] Time::ActivateHighResolutionTimer %d %u", activating, g_high_res_timer_count);
   if (activating) {
     DCHECK_NE(g_high_res_timer_count, max);
     ++g_high_res_timer_count;
@@ -407,7 +417,7 @@ DWORD (*g_tick_function)(void) = &timeGetTimeWrapper;
 // "rollover" counter.
 union LastTimeAndRolloversState {
   // The state as a single 32-bit opaque value.
-  subtle::Atomic32 as_opaque_32;
+  std::atomic<int32_t> as_opaque_32{0};
 
   // The state as usable values.
   struct {
@@ -423,7 +433,7 @@ union LastTimeAndRolloversState {
     uint16_t rollovers;
   } as_values;
 };
-subtle::Atomic32 g_last_time_and_rollovers = 0;
+std::atomic<int32_t> g_last_time_and_rollovers = 0;
 static_assert(
     sizeof(LastTimeAndRolloversState) <= sizeof(g_last_time_and_rollovers),
     "LastTimeAndRolloversState does not fit in a single atomic word");
@@ -442,7 +452,8 @@ TimeTicks RolloverProtectedNow() {
     // incrementing the "rollovers" counter if the tick-value has wrapped back
     // around. Atomic operations ensure that both "last" and "rollovers" are
     // always updated together.
-    int32_t original = subtle::Acquire_Load(&g_last_time_and_rollovers);
+    int32_t original =
+        g_last_time_and_rollovers.load(std::memory_order_acquire);
     state.as_opaque_32 = original;
     now = g_tick_function();
     uint8_t now_8 = static_cast<uint8_t>(now >> 24);
@@ -456,8 +467,8 @@ TimeTicks RolloverProtectedNow() {
 
     // Save the changed state. If the existing value is unchanged from the
     // original, exit the loop.
-    int32_t check = subtle::Release_CompareAndSwap(
-        &g_last_time_and_rollovers, original, state.as_opaque_32);
+    int32_t check = g_last_time_and_rollovers.compare_exchange_strong(
+        original, state.as_opaque_32, std::memory_order_release);
     if (check == original)
       break;
 
@@ -596,12 +607,15 @@ TimeTicks::TickFunctionType TimeTicks::SetMockTickFunction(
     TickFunctionType ticker) {
   TickFunctionType old = g_tick_function;
   g_tick_function = ticker;
-  subtle::NoBarrier_Store(&g_last_time_and_rollovers, 0);
+  g_last_time_and_rollovers.store(0, std::memory_order_relaxed);
   return old;
 }
 
 namespace subtle {
 TimeTicks TimeTicksNowIgnoringOverride() {
+  recordreplay::AssertMaybeEventsDisallowed("[RUN-1916] TimeTicksNowIgnoringOverride %d",
+                                            g_time_ticks_now_ignoring_override_function == &QPCNow);
+
   return g_time_ticks_now_ignoring_override_function.load(
       std::memory_order_relaxed)();
 }
@@ -671,7 +685,7 @@ ThreadTicks ThreadTicks::GetForThread(
   ::QueryThreadCycleTime(thread_handle.platform_handle(), &thread_cycle_time);
 
   // Get the frequency of the TSC.
-  const double tsc_ticks_per_second = TSCTicksPerSecond();
+  const double tsc_ticks_per_second = time_internal::TSCTicksPerSecond();
   if (tsc_ticks_per_second == 0)
     return ThreadTicks();
 
@@ -686,77 +700,22 @@ ThreadTicks ThreadTicks::GetForThread(
 
 // static
 bool ThreadTicks::IsSupportedWin() {
-  static bool is_supported = CPU().has_non_stop_time_stamp_counter();
-  return is_supported;
+#if defined(ARCH_CPU_ARM64)
+  // The Arm implementation does not use QueryThreadCycleTime and therefore does
+  // not care about the time stamp counter.
+  return true;
+#else
+  return time_internal::HasConstantRateTSC();
+#endif
 }
 
 // static
 void ThreadTicks::WaitUntilInitializedWin() {
 #if !defined(ARCH_CPU_ARM64)
-  while (TSCTicksPerSecond() == 0)
+  while (time_internal::TSCTicksPerSecond() == 0)
     ::Sleep(10);
 #endif
 }
-
-#if !defined(ARCH_CPU_ARM64)
-double ThreadTicks::TSCTicksPerSecond() {
-  DCHECK(IsSupported());
-  // The value returned by QueryPerformanceFrequency() cannot be used as the TSC
-  // frequency, because there is no guarantee that the TSC frequency is equal to
-  // the performance counter frequency.
-  // The TSC frequency is cached in a static variable because it takes some time
-  // to compute it.
-  static double tsc_ticks_per_second = 0;
-  if (tsc_ticks_per_second != 0)
-    return tsc_ticks_per_second;
-
-  // Increase the thread priority to reduces the chances of having a context
-  // switch during a reading of the TSC and the performance counter.
-  const int previous_priority = ::GetThreadPriority(::GetCurrentThread());
-  ::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
-
-  // The first time that this function is called, make an initial reading of the
-  // TSC and the performance counter.
-
-  static const uint64_t tsc_initial = __rdtsc();
-  static const uint64_t perf_counter_initial = QPCNowRaw();
-
-  // Make a another reading of the TSC and the performance counter every time
-  // that this function is called.
-  const uint64_t tsc_now = __rdtsc();
-  const uint64_t perf_counter_now = QPCNowRaw();
-
-  // Reset the thread priority.
-  ::SetThreadPriority(::GetCurrentThread(), previous_priority);
-
-  // Make sure that at least 50 ms elapsed between the 2 readings. The first
-  // time that this function is called, we don't expect this to be the case.
-  // Note: The longer the elapsed time between the 2 readings is, the more
-  //   accurate the computed TSC frequency will be. The 50 ms value was
-  //   chosen because local benchmarks show that it allows us to get a
-  //   stddev of less than 1 tick/us between multiple runs.
-  // Note: According to the MSDN documentation for QueryPerformanceFrequency(),
-  //   this will never fail on systems that run XP or later.
-  //   https://msdn.microsoft.com/library/windows/desktop/ms644905.aspx
-  LARGE_INTEGER perf_counter_frequency = {};
-  ::QueryPerformanceFrequency(&perf_counter_frequency);
-  DCHECK_GE(perf_counter_now, perf_counter_initial);
-  const uint64_t perf_counter_ticks = perf_counter_now - perf_counter_initial;
-  const double elapsed_time_seconds =
-      perf_counter_ticks / static_cast<double>(perf_counter_frequency.QuadPart);
-
-  constexpr double kMinimumEvaluationPeriodSeconds = 0.05;
-  if (elapsed_time_seconds < kMinimumEvaluationPeriodSeconds)
-    return 0;
-
-  // Compute the frequency of the TSC.
-  DCHECK_GE(tsc_now, tsc_initial);
-  const uint64_t tsc_ticks = tsc_now - tsc_initial;
-  tsc_ticks_per_second = tsc_ticks / elapsed_time_seconds;
-
-  return tsc_ticks_per_second;
-}
-#endif  // defined(ARCH_CPU_ARM64)
 
 // static
 TimeTicks TimeTicks::FromQPCValue(LONGLONG qpc_value) {
@@ -786,5 +745,74 @@ ABI::Windows::Foundation::DateTime TimeDelta::ToWinrtDateTime() const {
   date_time.UniversalTime = InMicroseconds() * 10;
   return date_time;
 }
+
+#if !defined(ARCH_CPU_ARM64)
+namespace time_internal {
+
+bool HasConstantRateTSC() {
+  static bool is_supported = CPU().has_non_stop_time_stamp_counter();
+  return is_supported;
+}
+
+double TSCTicksPerSecond() {
+  DCHECK(HasConstantRateTSC());
+  // The value returned by QueryPerformanceFrequency() cannot be used as the TSC
+  // frequency, because there is no guarantee that the TSC frequency is equal to
+  // the performance counter frequency.
+  // The TSC frequency is cached in a static variable because it takes some time
+  // to compute it.
+  static double tsc_ticks_per_second = 0;
+  if (tsc_ticks_per_second != 0)
+    return tsc_ticks_per_second;
+
+  // Increase the thread priority to reduces the chances of having a context
+  // switch during a reading of the TSC and the performance counter.
+  const int previous_priority = ::GetThreadPriority(::GetCurrentThread());
+  ::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
+
+  // The first time that this function is called, make an initial reading of the
+  // TSC and the performance counter.
+
+  static const uint64_t tsc_initial = __rdtsc();
+  static const int64_t perf_counter_initial = QPCNowRaw();
+
+  // Make a another reading of the TSC and the performance counter every time
+  // that this function is called.
+  const uint64_t tsc_now = __rdtsc();
+  const int64_t perf_counter_now = QPCNowRaw();
+
+  // Reset the thread priority.
+  ::SetThreadPriority(::GetCurrentThread(), previous_priority);
+
+  // Make sure that at least 50 ms elapsed between the 2 readings. The first
+  // time that this function is called, we don't expect this to be the case.
+  // Note: The longer the elapsed time between the 2 readings is, the more
+  //   accurate the computed TSC frequency will be. The 50 ms value was
+  //   chosen because local benchmarks show that it allows us to get a
+  //   stddev of less than 1 tick/us between multiple runs.
+  // Note: According to the MSDN documentation for QueryPerformanceFrequency(),
+  //   this will never fail on systems that run XP or later.
+  //   https://msdn.microsoft.com/library/windows/desktop/ms644905.aspx
+  LARGE_INTEGER perf_counter_frequency = {};
+  ::QueryPerformanceFrequency(&perf_counter_frequency);
+  DCHECK_GE(perf_counter_now, perf_counter_initial);
+  const int64_t perf_counter_ticks = perf_counter_now - perf_counter_initial;
+  const double elapsed_time_seconds =
+      perf_counter_ticks / static_cast<double>(perf_counter_frequency.QuadPart);
+
+  constexpr double kMinimumEvaluationPeriodSeconds = 0.05;
+  if (elapsed_time_seconds < kMinimumEvaluationPeriodSeconds)
+    return 0;
+
+  // Compute the frequency of the TSC.
+  DCHECK_GE(tsc_now, tsc_initial);
+  const uint64_t tsc_ticks = tsc_now - tsc_initial;
+  tsc_ticks_per_second = tsc_ticks / elapsed_time_seconds;
+
+  return tsc_ticks_per_second;
+}
+
+}  // namespace time_internal
+#endif  // defined(ARCH_CPU_ARM64)
 
 }  // namespace base

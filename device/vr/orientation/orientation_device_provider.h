@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "device/vr/orientation/orientation_device.h"
 #include "device/vr/public/cpp/vr_device_provider.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -30,15 +30,7 @@ class COMPONENT_EXPORT(VR_ORIENTATION) VROrientationDeviceProvider
 
   ~VROrientationDeviceProvider() override;
 
-  void Initialize(
-      base::RepeatingCallback<void(mojom::XRDeviceId,
-                                   mojom::VRDisplayInfoPtr,
-                                   mojom::XRDeviceDataPtr,
-                                   mojo::PendingRemote<mojom::XRRuntime>)>
-          add_device_callback,
-      base::RepeatingCallback<void(mojom::XRDeviceId)> remove_device_callback,
-      base::OnceClosure initialization_complete,
-      XrFrameSinkClientFactory xr_frame_sink_client_factory) override;
+  void Initialize(VRDeviceProviderClient* client) override;
 
   bool Initialized() override;
 
@@ -50,13 +42,7 @@ class COMPONENT_EXPORT(VR_ORIENTATION) VROrientationDeviceProvider
   mojo::Remote<device::mojom::SensorProvider> sensor_provider_;
 
   std::unique_ptr<VROrientationDevice> device_;
-
-  base::RepeatingCallback<void(mojom::XRDeviceId,
-                               mojom::VRDisplayInfoPtr,
-                               mojom::XRDeviceDataPtr,
-                               mojo::PendingRemote<mojom::XRRuntime>)>
-      add_device_callback_;
-  base::OnceClosure initialized_callback_;
+  raw_ptr<VRDeviceProviderClient> client_ = nullptr;
 };
 
 }  // namespace device

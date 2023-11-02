@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,7 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace ash {
 namespace {
@@ -62,8 +63,9 @@ void DrawTriangle(int x_offset,
   rotate_transform.Rotate(rotation_degree);
   gfx::Transform move_transform;
   move_transform.Translate(x_offset, y_offset);
-  rotate_transform.ConcatTransform(move_transform);
-  base_path.transform(SkMatrix(rotate_transform.matrix()), &path);
+  rotate_transform.PostConcat(move_transform);
+  base_path.transform(gfx::TransformToFlattenedSkMatrix(rotate_transform),
+                      &path);
 
   canvas->DrawPath(path, content_flags);
   canvas->DrawPath(path, border_flags);
@@ -75,14 +77,14 @@ gfx::Insets RotateInsets(display::Display::Rotation rotation,
     case display::Display::ROTATE_0:
       return insets;
     case display::Display::ROTATE_90:
-      return gfx::Insets(insets.right(), insets.top(), insets.left(),
-                         insets.bottom());
+      return gfx::Insets::TLBR(insets.right(), insets.top(), insets.left(),
+                               insets.bottom());
     case display::Display::ROTATE_180:
-      return gfx::Insets(insets.bottom(), insets.right(), insets.top(),
-                         insets.left());
+      return gfx::Insets::TLBR(insets.bottom(), insets.right(), insets.top(),
+                               insets.left());
     case display::Display::ROTATE_270:
-      return gfx::Insets(insets.left(), insets.bottom(), insets.right(),
-                         insets.top());
+      return gfx::Insets::TLBR(insets.left(), insets.bottom(), insets.right(),
+                               insets.top());
   }
   NOTREACHED();
   return std::move(insets);
@@ -147,8 +149,9 @@ void OverscanCalibrator::Reset() {
 }
 
 void OverscanCalibrator::UpdateInsets(const gfx::Insets& insets) {
-  insets_.Set(std::max(insets.top(), 0), std::max(insets.left(), 0),
-              std::max(insets.bottom(), 0), std::max(insets.right(), 0));
+  insets_ = gfx::Insets::TLBR(
+      std::max(insets.top(), 0), std::max(insets.left(), 0),
+      std::max(insets.bottom(), 0), std::max(insets.right(), 0));
   calibration_layer_->SchedulePaint(calibration_layer_->bounds());
 }
 

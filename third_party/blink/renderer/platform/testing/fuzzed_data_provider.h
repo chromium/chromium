@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,6 +29,14 @@ class FuzzedDataProvider {
 
   // Returns a bool, or false when no data remains.
   bool ConsumeBool() { return provider_.ConsumeBool(); }
+
+  // Returns an enum value. The enum must start at 0 and be contiguous. It must
+  // also contain |kMaxValue| aliased to its largest (inclusive) value. Such as:
+  // enum class Foo { SomeValue, OtherValue, kMaxValue = OtherValue };
+  template <typename T>
+  T ConsumeEnum() {
+    return provider_.ConsumeEnum<T>();
+  }
 
   // Returns a number in the range [min, max] by consuming bytes from the input
   // data. The value might not be uniformly distributed in the given range. If

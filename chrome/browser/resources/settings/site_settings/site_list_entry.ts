@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,46 +6,46 @@
  * @fileoverview
  * 'site-list-entry' shows an Allowed and Blocked site for a given category.
  */
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import 'chrome://resources/cr_elements/icons.m.js';
-import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
-import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.m.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.js';
+import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '../icons.js';
-import '../settings_shared_css.js';
+import '../icons.html.js';
+import '../settings_shared.css.js';
 import '../site_favicon.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {FocusRowMixin} from 'chrome://resources/js/focus_row_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BaseMixin, BaseMixinInterface} from '../base_mixin.js';
+import {BaseMixin} from '../base_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 
 import {ChooserType, ContentSettingsTypes, SITE_EXCEPTION_WILDCARD} from './constants.js';
-import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
+import {getTemplate} from './site_list_entry.html.js';
+import {SiteSettingsMixin} from './site_settings_mixin.js';
 import {SiteException} from './site_settings_prefs_browser_proxy.js';
 
-interface SiteListEntryElement {
+export interface SiteListEntryElement {
   $: {
     actionMenuButton: HTMLElement,
-  }
+    resetSite: HTMLElement,
+  };
 }
 
 const SiteListEntryElementBase =
-    mixinBehaviors(
-        [FocusRowBehavior], BaseMixin(SiteSettingsMixin(PolymerElement))) as
-    {new (): PolymerElement & BaseMixinInterface & SiteSettingsMixinInterface};
+    FocusRowMixin(BaseMixin(SiteSettingsMixin(PolymerElement)));
 
-class SiteListEntryElement extends SiteListEntryElementBase {
+export class SiteListEntryElement extends SiteListEntryElementBase {
   static get is() {
     return 'site-list-entry';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -106,7 +106,8 @@ class SiteListEntryElement extends SiteListEntryElementBase {
 
   private onShowTooltip_() {
     const indicator =
-        assert(this.shadowRoot!.querySelector('cr-policy-pref-indicator')!);
+        this.shadowRoot!.querySelector('cr-policy-pref-indicator');
+    assert(!!indicator);
     // The tooltip text is used by an paper-tooltip contained inside the
     // cr-policy-pref-indicator. This text is needed here to send up to the
     // common tooltip component.
@@ -115,7 +116,7 @@ class SiteListEntryElement extends SiteListEntryElementBase {
   }
 
   private onShowIncognitoTooltip_() {
-    const tooltip = assert(this.shadowRoot!.querySelector('#incognitoTooltip'));
+    const tooltip = this.shadowRoot!.querySelector('#incognitoTooltip');
     // The tooltip text is used by an paper-tooltip contained inside the
     // cr-policy-pref-indicator. The text is currently held in a private
     // property. This text is needed here to send up to the common tooltip
@@ -171,16 +172,24 @@ class SiteListEntryElement extends SiteListEntryElementBase {
   }
 
   /**
+   * Returns the appropriate origin that a favicon will be fetched for.
+   */
+  private computeFaviconOrigin_(): string {
+    if (this.model.origin.trim() !== SITE_EXCEPTION_WILDCARD) {
+      return this.model.origin.trim();
+    }
+    if (this.model.embeddingOrigin.trim() !== SITE_EXCEPTION_WILDCARD) {
+      return this.model.embeddingOrigin.trim();
+    }
+    assertNotReached();
+  }
+
+  /**
    * Returns the appropriate site description to display. This can, for example,
    * be blank, an 'embedded on <site>' string, or a third-party exception
    * description string.
    */
   private computeSiteDescription_(): string {
-    // If the SiteException specifies its own label, use that.
-    if (this.model.settingDetail) {
-      return this.model.settingDetail;
-    }
-
     let description = '';
 
     if (this.model.isEmbargoed) {
@@ -201,7 +210,7 @@ class SiteListEntryElement extends SiteListEntryElementBase {
       description = loadTimeData.getString('embeddedOnAnyHost');
     }
 
-    // <if expr="chromeos">
+    // <if expr="chromeos_ash">
     if (this.model.category === ContentSettingsTypes.NOTIFICATIONS &&
         this.model.showAndroidSmsNote) {
       description = loadTimeData.getString('androidSmsNote');
@@ -250,6 +259,12 @@ class SiteListEntryElement extends SiteListEntryElementBase {
     this.browserProxy.isOriginValid(this.model.origin).then((valid) => {
       this.allowNavigateToSiteDetail_ = valid;
     });
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'site-list-entry': SiteListEntryElement;
   }
 }
 

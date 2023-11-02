@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,7 +47,7 @@ class VibrationTest : public ContentBrowserTest,
   void TriggerVibrate(int duration, base::OnceClosure vibrate_done) {
     vibrate_done_ = std::move(vibrate_done);
 
-    RenderFrameHost* frame = shell()->web_contents()->GetMainFrame();
+    RenderFrameHost* frame = shell()->web_contents()->GetPrimaryMainFrame();
     std::string script =
         "navigator.vibrate(" + base::NumberToString(duration) + ")";
     EXPECT_TRUE(ExecJs(frame, script));

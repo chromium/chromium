@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,10 @@
 
 #include <cstring>
 
+#include "base/check_op.h"
+#include "base/i18n/string_compare.h"
+#include "base/ranges/algorithm.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/cbor/values.h"
 #include "crypto/random.h"
@@ -17,6 +21,8 @@
 #include "third_party/boringssl/src/include/openssl/hkdf.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 #include "third_party/boringssl/src/include/openssl/obj.h"
+#include "third_party/icu/source/common/unicode/locid.h"
+#include "third_party/icu/source/i18n/unicode/coll.h"
 
 namespace device {
 
@@ -68,7 +74,37 @@ bool CableDiscoveryData::MatchV1(const CableEidArray& eid) const {
   return eid == v1->authenticator_eid;
 }
 
+CableDiscoveryData::V2Data::V2Data(std::vector<uint8_t> server_link_data_in,
+                                   std::vector<uint8_t> experiments_in)
+    : server_link_data(std::move(server_link_data_in)),
+      experiments(std::move(experiments_in)) {}
+
+CableDiscoveryData::V2Data::V2Data(const V2Data&) = default;
+
+CableDiscoveryData::V2Data::~V2Data() = default;
+
+bool CableDiscoveryData::V2Data::operator==(const V2Data& other) const {
+  return server_link_data == other.server_link_data &&
+         experiments == other.experiments;
+}
+
 namespace cablev2 {
+
+Pairing::NameComparator::NameComparator(const icu::Locale* locale) {
+  UErrorCode error = U_ZERO_ERROR;
+  collator_.reset(icu::Collator::createInstance(*locale, error));
+}
+
+Pairing::NameComparator::NameComparator(NameComparator&&) = default;
+
+Pairing::NameComparator::~NameComparator() = default;
+
+bool Pairing::NameComparator::operator()(const std::unique_ptr<Pairing>& a,
+                                         const std::unique_ptr<Pairing>& b) {
+  return base::i18n::CompareString16WithCollator(
+             *collator_, base::UTF8ToUTF16(a->name),
+             base::UTF8ToUTF16(b->name)) == UCOL_LESS;
+}
 
 Pairing::Pairing() = default;
 Pairing::~Pairing() = default;
@@ -93,13 +129,14 @@ absl::optional<std::unique_ptr<Pairing>> Pairing::Parse(
   const cbor::Value::MapValue::const_iterator name_it =
       map.find(cbor::Value(5));
   if (name_it == map.end() || !name_it->second.is_string() ||
-      std::any_of(
-          its.begin(), its.end(),
-          [&map](const cbor::Value::MapValue::const_iterator& it) -> bool {
+      base::ranges::any_of(
+          its,
+          [&map](const cbor::Value::MapValue::const_iterator& it) {
             return it == map.end() || !it->second.is_bytestring();
           }) ||
       its[3]->second.GetBytestring().size() !=
           std::tuple_size<decltype(pairing->peer_public_key_x962)>::value) {
+    return absl::nullopt;
   }
 
   pairing->tunnel_server_domain = tunnelserver::DecodeDomain(domain);
@@ -138,6 +175,11 @@ bool Pairing::CompareByPublicKey(const std::unique_ptr<Pairing>& a,
                                  const std::unique_ptr<Pairing>& b) {
   return memcmp(a->peer_public_key_x962.data(), b->peer_public_key_x962.data(),
                 sizeof(a->peer_public_key_x962)) < 0;
+}
+
+// static
+Pairing::NameComparator Pairing::CompareByName(const icu::Locale* locale) {
+  return NameComparator(locale);
 }
 
 // static

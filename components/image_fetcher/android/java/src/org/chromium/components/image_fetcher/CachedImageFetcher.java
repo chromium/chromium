@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -137,7 +137,9 @@ public class CachedImageFetcher extends ImageFetcher {
             Bitmap cachedBitmap, long startTimeMillis) {
         if (cachedBitmap != null) {
             // In case the image's dimensions on disk don't match the desired dimensions.
-            cachedBitmap = ImageFetcher.resizeImage(cachedBitmap, params.width, params.height);
+            if (params.shouldResize) {
+                cachedBitmap = ImageFetcher.resizeImage(cachedBitmap, params.width, params.height);
+            }
             callback.onResult(cachedBitmap);
             reportEvent(params.clientName, ImageFetcherEvent.JAVA_DISK_CACHE_HIT);
             getImageFetcherBridge().reportCacheHitTime(params.clientName, startTimeMillis);

@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_CAST_MEDIA_NOTIFICATION_ITEM_H_
 #define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_CAST_MEDIA_NOTIFICATION_ITEM_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_session_controller.h"
@@ -12,6 +13,7 @@
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_router/common/media_route.h"
 #include "components/media_router/common/mojom/media_status.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/media_session/public/cpp/media_metadata.h"
 
 namespace global_media_controls {
@@ -77,7 +79,7 @@ class CastMediaNotificationItem
   }
   Profile* profile() { return profile_; }
   bool is_active() const { return is_active_; }
-  bool is_local_presentation() const { return is_local_presentation_; }
+  bool route_is_local() const { return route_is_local_; }
 
   base::WeakPtr<CastMediaNotificationItem> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -132,13 +134,14 @@ class CastMediaNotificationItem
   // The notification is shown when active.
   bool is_active_ = true;
 
-  global_media_controls::MediaItemManager* const item_manager_;
-  media_message_center::MediaNotificationView* view_ = nullptr;
-  Profile* const profile_;
+  const raw_ptr<global_media_controls::MediaItemManager> item_manager_;
+  raw_ptr<media_message_center::MediaNotificationView> view_ = nullptr;
+  const raw_ptr<Profile> profile_;
 
   std::unique_ptr<CastMediaSessionController> session_controller_;
   const media_router::MediaRoute::Id media_route_id_;
-  const bool is_local_presentation_;
+  // True if the route is started from the |profile_| on the current device.
+  const bool route_is_local_;
   ImageDownloader image_downloader_;
   media_session::MediaMetadata metadata_;
   std::vector<media_session::mojom::MediaSessionAction> actions_;

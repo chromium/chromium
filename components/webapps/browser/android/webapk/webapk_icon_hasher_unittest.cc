@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -119,7 +120,8 @@ class WebApkIconHasherTest : public ::testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   content::TestBrowserContext browser_context_;
   content::TestWebContentsFactory web_contents_factory_;
-  content::WebContents* web_contents_;  // Owned by `web_contents_factory_`.
+  raw_ptr<content::WebContents>
+      web_contents_;  // Owned by `web_contents_factory_`.
 };
 
 TEST_F(WebApkIconHasherTest, Success) {
@@ -235,7 +237,7 @@ TEST_F(WebApkIconHasherTest, SVGImage) {
                       std::vector<gfx::Size>{gfx::Size(10, 10)}));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ("16586085245996049349", runner.icon().hash);
+  EXPECT_EQ("12895188166704127516", runner.icon().hash);
   EXPECT_FALSE(runner.icon().unsafe_data.empty());
 }
 

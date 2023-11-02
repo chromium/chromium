@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include "media/base/audio_decoder_config.h"
 #include "media/base/decoder_factory.h"
 #include "media/base/media_log.h"
-#include "media/base/status_codes.h"
 #include "media/mojo/buildflags.h"
 #include "media/mojo/clients/mojo_decoder_factory.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
@@ -28,6 +27,8 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_mojo.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -42,8 +43,8 @@ struct CrossThreadCopier<media::AudioDecoderConfig>
 };
 
 template <>
-struct CrossThreadCopier<media::Status>
-    : public CrossThreadCopierPassThrough<media::Status> {
+struct CrossThreadCopier<media::DecoderStatus>
+    : public CrossThreadCopierPassThrough<media::DecoderStatus> {
   STATIC_ONLY(CrossThreadCopier);
 };
 
@@ -64,10 +65,10 @@ namespace blink {
 class MediaAudioTaskWrapper {
  public:
   using CrossThreadOnceInitCB =
-      WTF::CrossThreadOnceFunction<void(media::Status status,
+      WTF::CrossThreadOnceFunction<void(media::DecoderStatus status,
                                         absl::optional<DecoderDetails>)>;
   using CrossThreadOnceDecodeCB =
-      WTF::CrossThreadOnceFunction<void(media::Status)>;
+      WTF::CrossThreadOnceFunction<void(media::DecoderStatus)>;
   using CrossThreadOnceResetCB = WTF::CrossThreadOnceClosure;
 
   MediaAudioTaskWrapper(
@@ -125,8 +126,8 @@ class MediaAudioTaskWrapper {
 
     selector_->SelectDecoder(
         config, /*low_delay=*/false,
-        WTF::Bind(&MediaAudioTaskWrapper::OnDecoderSelected,
-                  weak_factory_.GetWeakPtr()));
+        WTF::BindOnce(&MediaAudioTaskWrapper::OnDecoderSelected,
+                      weak_factory_.GetWeakPtr()));
   }
 
   void Decode(scoped_refptr<media::DecoderBuffer> buffer, int cb_id) {
@@ -134,13 +135,13 @@ class MediaAudioTaskWrapper {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     if (!decoder_) {
-      OnDecodeDone(cb_id, media::DecodeStatus::DECODE_ERROR);
+      OnDecodeDone(cb_id, media::DecoderStatus::Codes::kNotInitialized);
       return;
     }
 
     decoder_->Decode(std::move(buffer),
-                     WTF::Bind(&MediaAudioTaskWrapper::OnDecodeDone,
-                               weak_factory_.GetWeakPtr(), cb_id));
+                     WTF::BindOnce(&MediaAudioTaskWrapper::OnDecodeDone,
+                                   weak_factory_.GetWeakPtr(), cb_id));
   }
 
   void Reset(int cb_id) {
@@ -152,8 +153,8 @@ class MediaAudioTaskWrapper {
       return;
     }
 
-    decoder_->Reset(WTF::Bind(&MediaAudioTaskWrapper::OnReset,
-                              weak_factory_.GetWeakPtr(), cb_id));
+    decoder_->Reset(WTF::BindOnce(&MediaAudioTaskWrapper::OnReset,
+                                  weak_factory_.GetWeakPtr(), cb_id));
   }
 
  private:
@@ -195,13 +196,14 @@ class MediaAudioTaskWrapper {
 
     decoder_ = std::move(decoder);
 
-    media::Status status(media::StatusCode::kDecoderUnsupportedConfig);
-    absl::optional<DecoderDetails> decoder_details;
+    media::DecoderStatus status = media::DecoderStatus::Codes::kOk;
+    absl::optional<DecoderDetails> decoder_details = absl::nullopt;
     if (decoder_) {
-      status = media::OkStatus();
       decoder_details = DecoderDetails({decoder_->GetDecoderType(),
                                         decoder_->IsPlatformDecoder(),
                                         decoder_->NeedsBitstreamConversion()});
+    } else {
+      status = media::DecoderStatus::Codes::kUnsupportedConfig;
     }
 
     // Fire |init_cb|.
@@ -221,7 +223,7 @@ class MediaAudioTaskWrapper {
                                  weak_client_, std::move(buffer)));
   }
 
-  void OnDecodeDone(int cb_id, media::Status status) {
+  void OnDecodeDone(int cb_id, media::DecoderStatus status) {
     DVLOG(2) << __func__;
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     PostCrossThreadTask(
@@ -326,7 +328,7 @@ int AudioDecoderBroker::CreateCallbackId() {
   return last_callback_id_;
 }
 
-void AudioDecoderBroker::OnInitialize(media::Status status,
+void AudioDecoderBroker::OnInitialize(media::DecoderStatus status,
                                       absl::optional<DecoderDetails> details) {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -349,7 +351,7 @@ void AudioDecoderBroker::Decode(scoped_refptr<media::DecoderBuffer> buffer,
                                buffer, callback_id));
 }
 
-void AudioDecoderBroker::OnDecodeDone(int cb_id, media::Status status) {
+void AudioDecoderBroker::OnDecodeDone(int cb_id, media::DecoderStatus status) {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(pending_decode_cb_map_.Contains(cb_id));

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -98,11 +98,6 @@ enum FileSystemType {
   // file which must go away when the blob's last reference is dropped.
   kFileSystemTypeForTransientFile,
 
-  // Sandboxed private filesystem. This filesystem cannot be opened
-  // via regular OpenFileSystem, and provides private filesystem space for
-  // given identifier in each origin.
-  kFileSystemTypePluginPrivate,
-
   // A filesystem that is mounted via the FileSystemProvider API.
   kFileSystemTypeProvided,
 
@@ -122,7 +117,10 @@ enum FileSystemType {
   // Indicates an SmbFs filesystem which provides access to SMB file shares.
   kFileSystemTypeSmbFs,
 
-  kFileSystemTypeLast = kFileSystemTypeSmbFs,
+  // Indicates a FUSE filesystem which provides access to virtual files.
+  kFileSystemTypeFuseBox,
+
+  kFileSystemTypeLast = kFileSystemTypeFuseBox,
 
   // --------------------------------------------------------------------
   // Marks the end of internal type enum. (This is not the actual fs type)

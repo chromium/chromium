@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,7 +41,7 @@ class SyncService;
 @property(nonatomic, assign) BOOL forcedSigninEnabled;
 
 // Designated initializer.
-// |syncService|: Sync service. Should not be null.
+// `syncService`: Sync service. Should not be null.
 - (instancetype)initWithSyncService:(syncer::SyncService*)syncService
                     userPrefService:(PrefService*)userPrefService
     NS_DESIGNATED_INITIALIZER;

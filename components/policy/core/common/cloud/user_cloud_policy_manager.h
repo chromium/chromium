@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,8 @@ namespace network {
 class SharedURLLoaderFactory;
 }
 
+class SchemaRegistry;
+
 namespace policy {
 
 class CloudExternalDataManager;
@@ -46,6 +48,14 @@ class POLICY_EXPORT UserCloudPolicyManager : public CloudPolicyManager {
   UserCloudPolicyManager& operator=(const UserCloudPolicyManager&) = delete;
   ~UserCloudPolicyManager() override;
 
+  static std::unique_ptr<UserCloudPolicyManager> Create(
+      const base::FilePath& profile_path,
+      SchemaRegistry* schema_registry,
+      bool force_immediate_load,
+      const scoped_refptr<base::SequencedTaskRunner>& background_task_runner,
+      network::NetworkConnectionTrackerGetter
+          network_connection_tracker_getter);
+
   // ConfigurationPolicyProvider overrides:
   void Shutdown() override;
 
@@ -55,6 +65,7 @@ class POLICY_EXPORT UserCloudPolicyManager : public CloudPolicyManager {
   // This might be set to false if the user profile is an unmanaged consumer
   // profile.
   void SetPoliciesRequired(bool required);
+  bool ArePoliciesRequired() const;
 
   // Initializes the cloud connection. |local_state| must stay valid until this
   // object is deleted or DisconnectAndRemovePolicy() gets called. Virtual for

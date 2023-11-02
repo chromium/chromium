@@ -1,0 +1,18 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package cast.utils;
+
+import "chromecast/cast_core/grpc/test_service.proto";
+import "chromecast/cast_core/grpc/test_service_messages.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+// An unary test service.
+service SimpleServiceExtra {
+  // Makes an unary test call.
+  rpc SimpleCall(TestExtraRequest) returns (TestResponse);
+}

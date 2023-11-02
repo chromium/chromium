@@ -28,11 +28,15 @@
 #include <memory>
 #include <utility>
 
+#include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/platform/graphics/image_decoder_wrapper.h"
 #include "third_party/blink/renderer/platform/graphics/image_decoding_store.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/skia/include/core/SkData.h"
+
+#include "base/record_replay.h"
 
 namespace blink {
 
@@ -81,7 +85,8 @@ ImageFrameGenerator::ImageFrameGenerator(const SkISize& full_size,
     : full_size_(full_size),
       decoder_color_behavior_(color_behavior),
       is_multi_frame_(is_multi_frame),
-      supported_sizes_(std::move(supported_sizes)) {
+      supported_sizes_(std::move(supported_sizes)),
+      generator_lock_("ImageFrameGenerator.generator_lock_") {
 #if DCHECK_IS_ON()
   // Verify that sizes are in an increasing order, since
   // GetSupportedDecodeSize() depends on it.
@@ -94,6 +99,12 @@ ImageFrameGenerator::ImageFrameGenerator(const SkISize& full_size,
 }
 
 ImageFrameGenerator::~ImageFrameGenerator() {
+  // Creating the store interacts with the recording so avoid instantiating
+  // it at non-deterministic points. If the store doesn't exist then it won't
+  // have any references to this generator.
+  if (recordreplay::AreEventsDisallowed() && !ImageDecodingStore::HasInstance())
+    return;
+
   // We expect all image decoders to be unlocked and catch with DCHECKs if not.
   ImageDecodingStore::Instance().RemoveCacheIndexedByGenerator(this);
 }
@@ -108,9 +119,10 @@ bool ImageFrameGenerator::DecodeAndScale(
     ImageDecoder::AlphaOption alpha_option,
     cc::PaintImage::GeneratorClientId client_id) {
   {
-    MutexLocker lock(generator_mutex_);
+    base::AutoLock lock(generator_lock_);
     if (decode_failed_)
       return false;
+    RecordWhetherMultiDecoded(client_id);
   }
 
   TRACE_EVENT1("blink", "ImageFrameGenerator::decodeAndScale", "generator",
@@ -138,7 +150,7 @@ bool ImageFrameGenerator::DecodeAndScale(
   bool current_decode_succeeded = false;
   {
     // Lock the mutex, so only one thread can use the decoder at once.
-    ClientMutexLocker lock(this, client_id);
+    ClientAutoLock lock(this, client_id);
     ImageDecoderWrapper decoder_wrapper(
         this, data, scaled_size, alpha_option, decoder_color_behavior_,
         high_bit_depth_decoding_option, index, info, pixels, row_bytes,
@@ -148,15 +160,16 @@ bool ImageFrameGenerator::DecodeAndScale(
     decode_failed = decoder_wrapper.decode_failed();
   }
 
-  MutexLocker lock(generator_mutex_);
+  base::AutoLock lock(generator_lock_);
   decode_failed_ = decode_failed;
   if (decode_failed_) {
     DCHECK(!current_decode_succeeded);
     return false;
   }
 
-  if (!current_decode_succeeded)
+  if (!current_decode_succeeded) {
     return false;
+  }
 
   SetHasAlpha(index, has_alpha);
   if (frame_count != 0u)
@@ -171,12 +184,15 @@ bool ImageFrameGenerator::DecodeToYUV(
     SkColorType color_type,
     const SkISize component_sizes[cc::kNumYUVPlanes],
     void* planes[cc::kNumYUVPlanes],
-    const wtf_size_t row_bytes[cc::kNumYUVPlanes]) {
-  MutexLocker lock(generator_mutex_);
+    const wtf_size_t row_bytes[cc::kNumYUVPlanes],
+    cc::PaintImage::GeneratorClientId client_id) {
+  base::AutoLock lock(generator_lock_);
   DCHECK_EQ(index, 0u);
 
+  RecordWhetherMultiDecoded(client_id);
+
   // TODO (scroggo): The only interesting thing this uses from the
-  // ImageFrameGenerator is m_decodeFailed. Move this into
+  // ImageFrameGenerator is |decode_failed_|. Move this into
   // DecodingImageGenerator, which is the only class that calls it.
   if (decode_failed_ || yuv_decoding_failed_)
     return false;
@@ -225,7 +241,7 @@ bool ImageFrameGenerator::DecodeToYUV(
 }
 
 void ImageFrameGenerator::SetHasAlpha(wtf_size_t index, bool has_alpha) {
-  generator_mutex_.AssertAcquired();
+  generator_lock_.AssertAcquired();
 
   if (index >= has_alpha_.size()) {
     const wtf_size_t old_size = has_alpha_.size();
@@ -236,8 +252,29 @@ void ImageFrameGenerator::SetHasAlpha(wtf_size_t index, bool has_alpha) {
   has_alpha_[index] = has_alpha;
 }
 
+void ImageFrameGenerator::RecordWhetherMultiDecoded(
+    cc::PaintImage::GeneratorClientId client_id) {
+  generator_lock_.AssertAcquired();
+
+  if (client_id == cc::PaintImage::kDefaultGeneratorClientId)
+    return;
+
+  if (last_client_id_ == cc::PaintImage::kDefaultGeneratorClientId) {
+    DCHECK(!has_logged_multi_clients_);
+    last_client_id_ = client_id;
+    UMA_HISTOGRAM_ENUMERATION(
+        "Blink.ImageDecoders.ImageHasMultipleGeneratorClientIds",
+        DecodeTimesType::kRequestByAtLeastOneClient);
+  } else if (last_client_id_ != client_id && !has_logged_multi_clients_) {
+    has_logged_multi_clients_ = true;
+    UMA_HISTOGRAM_ENUMERATION(
+        "Blink.ImageDecoders.ImageHasMultipleGeneratorClientIds",
+        DecodeTimesType::kRequestByMoreThanOneClient);
+  }
+}
+
 bool ImageFrameGenerator::HasAlpha(wtf_size_t index) {
-  MutexLocker lock(generator_mutex_);
+  base::AutoLock lock(generator_lock_);
 
   if (index < has_alpha_.size())
     return has_alpha_[index];
@@ -251,7 +288,7 @@ bool ImageFrameGenerator::GetYUVAInfo(
   TRACE_EVENT2("blink", "ImageFrameGenerator::GetYUVAInfo", "width",
                full_size_.width(), "height", full_size_.height());
 
-  MutexLocker lock(generator_mutex_);
+  base::AutoLock lock(generator_lock_);
 
   if (yuv_decoding_failed_)
     return false;
@@ -305,38 +342,38 @@ SkISize ImageFrameGenerator::GetSupportedDecodeSize(
   return full_size_;
 }
 
-ImageFrameGenerator::ClientMutexLocker::ClientMutexLocker(
+ImageFrameGenerator::ClientAutoLock::ClientAutoLock(
     ImageFrameGenerator* generator,
     cc::PaintImage::GeneratorClientId client_id)
     : generator_(generator), client_id_(client_id) {
   {
-    MutexLocker lock(generator_->generator_mutex_);
-    auto it = generator_->mutex_map_.find(client_id_);
-    ClientMutex* client_mutex;
-    if (it == generator_->mutex_map_.end()) {
-      auto result = generator_->mutex_map_.insert(
-          client_id_, std::make_unique<ClientMutex>());
-      client_mutex = result.stored_value->value.get();
+    base::AutoLock lock(generator_->generator_lock_);
+    auto it = generator_->lock_map_.find(client_id_);
+    ClientLock* client_lock;
+    if (it == generator_->lock_map_.end()) {
+      auto result = generator_->lock_map_.insert(
+          client_id_, std::make_unique<ClientLock>());
+      client_lock = result.stored_value->value.get();
     } else {
-      client_mutex = it->value.get();
+      client_lock = it->value.get();
     }
-    client_mutex->ref_count++;
-    mutex_ = &client_mutex->mutex;
+    client_lock->ref_count++;
+    lock_ = &client_lock->lock;
   }
 
-  mutex_->lock();
+  lock_->Acquire();
 }
 
-ImageFrameGenerator::ClientMutexLocker::~ClientMutexLocker() {
-  mutex_->unlock();
+ImageFrameGenerator::ClientAutoLock::~ClientAutoLock() {
+  lock_->Release();
 
-  MutexLocker lock(generator_->generator_mutex_);
-  auto it = generator_->mutex_map_.find(client_id_);
-  DCHECK(it != generator_->mutex_map_.end());
+  base::AutoLock lock(generator_->generator_lock_);
+  auto it = generator_->lock_map_.find(client_id_);
+  DCHECK(it != generator_->lock_map_.end());
   it->value->ref_count--;
 
   if (it->value->ref_count == 0)
-    generator_->mutex_map_.erase(it);
+    generator_->lock_map_.erase(it);
 }
 
 }  // namespace blink

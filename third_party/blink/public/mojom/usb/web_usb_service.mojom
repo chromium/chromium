@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,6 +28,10 @@ interface WebUsbService {
   // |result| is the device that user grants permission to use.
   GetPermission(array<device.mojom.UsbDeviceFilter> device_filters)
       => (device.mojom.UsbDeviceInfo? result);
+
+  // Attempts to revoke the permission to the device by guid.
+  // It will fail silently if the permission cannot be revoked.
+  ForgetDevice(string guid) => ();
 
   // Sets the client for this WebUsbService.
   SetClient(

@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!-- Copyright 2021 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -79,7 +81,7 @@
         android:layout_alignParentEnd="true"
         android:paddingVertical="12dp"
         android:paddingHorizontal="12dp"
-        android:tint="@color/checked_item"
+        android:tint="@macro/checked_item"
         android:visibility="gone"
         android:importantForAccessibility="no"
         style="@style/ListItemEndIcon" />

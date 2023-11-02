@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,10 +14,11 @@
 // Delegate of sync screen view controller.
 @protocol SyncScreenViewControllerDelegate <PromoStyleViewControllerDelegate>
 
-// Called when the user taps to see sync settings.
-- (void)showSyncSettings;
-
+// Adds consent string ID.
 - (void)addConsentStringID:(const int)stringID;
+
+// Logs scrollability metric on view appears.
+- (void)logScrollButtonVisible:(BOOL)scrollButtonVisible;
 
 @end
 
@@ -29,9 +30,6 @@
 
 // True if any data type is managed by policies.
 @property(nonatomic, assign) BOOL syncTypesRestricted;
-
-// The ID of the string used to open the settings screen.
-@property(nonatomic, assign) int openSettingsStringID;
 
 // The ID of the main button activating sync.
 @property(nonatomic, assign) int activateSyncButtonID;

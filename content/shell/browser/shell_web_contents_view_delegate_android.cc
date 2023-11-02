@@ -1,8 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/shell/browser/shell_web_contents_view_delegate.h"
+
+#include <memory>
 
 #include "base/command_line.h"
 #include "content/public/browser/context_menu_params.h"
@@ -11,11 +13,10 @@
 
 namespace content {
 
-WebContentsViewDelegate* CreateShellWebContentsViewDelegate(
+std::unique_ptr<WebContentsViewDelegate> CreateShellWebContentsViewDelegate(
     WebContents* web_contents) {
-  return new ShellWebContentsViewDelegate(web_contents);
+  return std::make_unique<ShellWebContentsViewDelegate>(web_contents);
 }
-
 
 ShellWebContentsViewDelegate::ShellWebContentsViewDelegate(
     WebContents* web_contents)

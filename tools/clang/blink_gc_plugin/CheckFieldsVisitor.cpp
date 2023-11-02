@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,10 +18,8 @@ CheckFieldsVisitor::Errors& CheckFieldsVisitor::invalid_fields() {
 
 bool CheckFieldsVisitor::ContainsInvalidFields(RecordInfo* info) {
   stack_allocated_host_ = info->IsStackAllocated();
-  managed_host_ = stack_allocated_host_ ||
-                  info->IsGCAllocated() ||
-                  info->IsNonNewable() ||
-                  info->IsOnlyPlacementNewable();
+  managed_host_ =
+      stack_allocated_host_ || info->IsGCAllocated() || info->IsNewDisallowed();
   for (RecordInfo::Fields::iterator it = info->GetFields().begin();
        it != info->GetFields().end();
        ++it) {

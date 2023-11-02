@@ -38,20 +38,18 @@ InertEffect::InertEffect(KeyframeEffectModelBase* model,
                          const Timing& timing,
                          bool paused,
                          absl::optional<AnimationTimeDelta> inherited_time,
-                         absl::optional<TimelinePhase> inherited_phase,
                          absl::optional<AnimationTimeDelta> timeline_duration,
                          double playback_rate)
     : AnimationEffect(timing),
       model_(model),
       paused_(paused),
       inherited_time_(inherited_time),
-      inherited_phase_(inherited_phase),
       timeline_duration_(timeline_duration),
       playback_rate_(playback_rate) {}
 
 void InertEffect::Sample(HeapVector<Member<Interpolation>>& result) const {
-  UpdateInheritedTime(inherited_time_, inherited_phase_, false, playback_rate_,
-                      kTimingUpdateOnDemand);
+  UpdateInheritedTime(inherited_time_, /* at_scroll_timeline_boundary */ false,
+                      playback_rate_, kTimingUpdateOnDemand);
   if (!IsInEffect()) {
     result.clear();
     return;

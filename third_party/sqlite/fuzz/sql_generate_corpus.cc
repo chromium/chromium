@@ -255,7 +255,7 @@ void GenerateValuesStatement(ValuesStatement* v,
                          table->col_types[*it]);
     it++;
     el->mutable_extra_exprs()->Reserve(cols.size() - 1);
-    for (size_t i = 0; i < cols.size() - 1; i++) {
+    for (size_t c = 0; c < cols.size() - 1; c++) {
       GenerateLiteralValue(el->mutable_extra_exprs()->Add()->mutable_lit_val(),
                            table->col_types[*it]);
       it++;

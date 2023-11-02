@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,8 @@ class BrowserContext;
 
 namespace webapps {
 
+enum class WebApkInstallResult;
+
 class WebappsUtils {
  public:
   WebappsUtils() = delete;
@@ -29,6 +31,10 @@ class WebappsUtils {
   // compatible.
   static bool AreWebManifestUrlsWebApkCompatible(
       const blink::mojom::Manifest& manifest);
+
+  // Shows toast notifying user of the result of a WebAPK install if the
+  // installation was not successful.
+  static void ShowWebApkInstallResultToast(webapps::WebApkInstallResult result);
 };
 
 }  // namespace webapps

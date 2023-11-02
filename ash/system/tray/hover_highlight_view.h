@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,7 @@ class ViewClickListener;
 // A view that changes background color on hover, and triggers a callback in the
 // associated ViewClickListener on click. The view can also be forced to
 // maintain a fixed height.
-class HoverHighlightView : public ActionableView {
+class ASH_EXPORT HoverHighlightView : public ActionableView {
  public:
   enum class AccessibilityState {
     // The default accessibility view.

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "build/build_config.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom-blink.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-blink.h"
@@ -185,6 +186,14 @@ void VideoFrameSinkBundle::DidDeleteSharedBitmap(uint32_t sink_id,
           id)));
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void VideoFrameSinkBundle::SetThreadIds(
+    uint32_t sink_id,
+    const WTF::Vector<int32_t>& thread_ids) {
+  bundle_->SetThreadIds(sink_id, thread_ids);
+}
+#endif
+
 void VideoFrameSinkBundle::FlushNotifications(
     WTF::Vector<viz::mojom::blink::BundledReturnedResourcesPtr> acks,
     WTF::Vector<viz::mojom::blink::BeginFrameInfoPtr> begin_frames,
@@ -252,7 +261,7 @@ void VideoFrameSinkBundle::OnDisconnected() {
 }
 
 void VideoFrameSinkBundle::FlushMessages() {
-  if (submission_queue_.IsEmpty()) {
+  if (submission_queue_.empty()) {
     return;
   }
 

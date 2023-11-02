@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,26 +7,27 @@
  * setting and changing security key PINs.
  */
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import 'chrome://resources/cr_elements/cr_icons_css.m.js';
-import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_icons.css.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
-import '../settings_shared_css.js';
+import '../settings_shared.css.js';
+import '../i18n_setup.js';
 
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
-import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {loadTimeData} from '../i18n_setup.js';
+import {SecurityKeysPinBrowserProxy, SecurityKeysPinBrowserProxyImpl} from './security_keys_browser_proxy.js';
+import {getTemplate} from './security_keys_set_pin_dialog.html.js';
 
-import {SecurityKeysPINBrowserProxy, SecurityKeysPINBrowserProxyImpl} from './security_keys_browser_proxy.js';
-
-export enum SetPINDialogPage {
+export enum SetPinDialogPage {
   INITIAL = 'initial',
   NO_PIN_SUPPORT = 'noPINSupport',
   REINSERT = 'reinsert',
@@ -36,25 +37,29 @@ export enum SetPINDialogPage {
   SUCCESS = 'success',
 }
 
-interface SettingsSecurityKeysSetPinDialogElement {
+export interface SettingsSecurityKeysSetPinDialogElement {
   $: {
+    closeButton: CrButtonElement,
     confirmPIN: CrInputElement,
     currentPIN: CrInputElement,
+    currentPINEntry: HTMLElement,
     dialog: CrDialogElement,
+    error: HTMLElement,
     newPIN: CrInputElement,
+    pinSubmit: CrButtonElement,
   };
 }
 
 const SettingsSecurityKeysSetPinDialogElementBase = I18nMixin(PolymerElement);
 
-class SettingsSecurityKeysSetPinDialogElement extends
+export class SettingsSecurityKeysSetPinDialogElement extends
     SettingsSecurityKeysSetPinDialogElementBase {
   static get is() {
     return 'settings-security-keys-set-pin-dialog';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -164,7 +169,7 @@ class SettingsSecurityKeysSetPinDialogElement extends
        */
       shown_: {
         type: String,
-        value: SetPINDialogPage.INITIAL,
+        value: SetPinDialogPage.INITIAL,
       },
 
       /**
@@ -197,14 +202,14 @@ class SettingsSecurityKeysSetPinDialogElement extends
   private newPINError_: string;
   private confirmPINError_: string;
   private complete_: boolean;
-  private shown_: SetPINDialogPage;
+  private shown_: SetPinDialogPage;
   private pinsVisible_: boolean;
   private title_: string;
   private newPINDialogDescription_: string;
-  private browserProxy_: SecurityKeysPINBrowserProxy =
-      SecurityKeysPINBrowserProxyImpl.getInstance();
+  private browserProxy_: SecurityKeysPinBrowserProxy =
+      SecurityKeysPinBrowserProxyImpl.getInstance();
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.title_ = this.i18n('securityKeysSetPINInitialTitle');
@@ -216,23 +221,23 @@ class SettingsSecurityKeysSetPinDialogElement extends
             // Operation is complete. error is a CTAP error code. See
             // https://fidoalliance.org/specs/fido-v2.0-rd-20180702/fido-client-to-authenticator-protocol-v2.0-rd-20180702.html#error-responses
             if (error === 1 /* INVALID_COMMAND */) {
-              this.shown_ = SetPINDialogPage.NO_PIN_SUPPORT;
+              this.shown_ = SetPinDialogPage.NO_PIN_SUPPORT;
               this.finish_();
             } else if (error === 52 /* temporarily locked */) {
-              this.shown_ = SetPINDialogPage.REINSERT;
+              this.shown_ = SetPinDialogPage.REINSERT;
               this.finish_();
             } else if (error === 50 /* locked */) {
-              this.shown_ = SetPINDialogPage.LOCKED;
+              this.shown_ = SetPinDialogPage.LOCKED;
               this.finish_();
             } else {
               this.errorCode_ = error;
-              this.shown_ = SetPINDialogPage.ERROR;
+              this.shown_ = SetPinDialogPage.ERROR;
               this.finish_();
             }
           } else if (retries === 0) {
             // A device can also signal that it is locked by returning zero
             // retries.
-            this.shown_ = SetPINDialogPage.LOCKED;
+            this.shown_ = SetPinDialogPage.LOCKED;
             this.finish_();
           } else {
             // Need to prompt for a pin. Initially set the text boxes to valid
@@ -259,7 +264,7 @@ class SettingsSecurityKeysSetPinDialogElement extends
               this.title_ = this.i18n('securityKeysSetPINChangeTitle');
             }
 
-            this.shown_ = SetPINDialogPage.PIN_PROMPT;
+            this.shown_ = SetPinDialogPage.PIN_PROMPT;
             // Focus cannot be set directly from within a backend callback.
             window.setTimeout(function() {
               focusTarget.focus();
@@ -342,7 +347,7 @@ class SettingsSecurityKeysSetPinDialogElement extends
     // Therefore, iterate over the string (which does yield codepoints) and
     // check that |minLength| or more were seen.
     let length = 0;
-    for (const codepoint of pin) {
+    for (const _codepoint of pin) {
       length++;
     }
 
@@ -428,13 +433,13 @@ class SettingsSecurityKeysSetPinDialogElement extends
       // true. error is a CTAP2 error code. See
       // https://fidoalliance.org/specs/fido-v2.0-rd-20180702/fido-client-to-authenticator-protocol-v2.0-rd-20180702.html#error-responses
       if (error === 0 /* SUCCESS */) {
-        this.shown_ = SetPINDialogPage.SUCCESS;
+        this.shown_ = SetPinDialogPage.SUCCESS;
         this.finish_();
       } else if (error === 52 /* temporarily locked */) {
-        this.shown_ = SetPINDialogPage.REINSERT;
+        this.shown_ = SetPinDialogPage.REINSERT;
         this.finish_();
       } else if (error === 50 /* locked */) {
-        this.shown_ = SetPINDialogPage.LOCKED;
+        this.shown_ = SetPinDialogPage.LOCKED;
         this.finish_();
       } else if (error === 49 /* PIN_INVALID */) {
         this.currentPINValid_ = false;
@@ -446,7 +451,7 @@ class SettingsSecurityKeysSetPinDialogElement extends
       } else {
         // Unknown error.
         this.errorCode_ = error;
-        this.shown_ = SetPINDialogPage.ERROR;
+        this.shown_ = SetPinDialogPage.ERROR;
         this.finish_();
       }
     });
@@ -516,6 +521,13 @@ class SettingsSecurityKeysSetPinDialogElement extends
    */
   private inputType_(): string {
     return this.pinsVisible_ ? 'text' : 'password';
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-security-keys-set-pin-dialog':
+        SettingsSecurityKeysSetPinDialogElement;
   }
 }
 

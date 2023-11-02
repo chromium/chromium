@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "base/containers/small_map.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/service/gl_utils.h"
@@ -276,7 +276,7 @@ class GPU_GLES2_EXPORT Framebuffer : public base::RefCounted<Framebuffer> {
   void AdjustDrawBuffersImpl(uint32_t desired_mask);
 
   // The managers that owns this.
-  FramebufferManager* manager_;
+  raw_ptr<FramebufferManager> manager_;
 
   bool deleted_;
 
@@ -405,7 +405,7 @@ class GPU_GLES2_EXPORT FramebufferManager {
   uint32_t max_draw_buffers_;
   uint32_t max_color_attachments_;
 
-  FramebufferCompletenessCache* framebuffer_combo_complete_cache_;
+  raw_ptr<FramebufferCompletenessCache> framebuffer_combo_complete_cache_;
 };
 
 }  // namespace gles2

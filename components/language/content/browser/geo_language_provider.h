@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -33,6 +34,7 @@ namespace language {
 class GeoLanguageProvider {
  public:
   static const char kCachedGeoLanguagesPref[];
+  static const char kTimeOfLastGeoLanguagesUpdatePref[];
 
   static GeoLanguageProvider* GetInstance();
 
@@ -121,7 +123,7 @@ class GeoLanguageProvider {
 
   // The pref service used to cached the latest latitude/longitude pair
   // obtained.
-  PrefService* prefs_;
+  raw_ptr<PrefService> prefs_;
 };
 
 }  // namespace language

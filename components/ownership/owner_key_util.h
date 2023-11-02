@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,14 +23,27 @@ namespace ownership {
 class OWNERSHIP_EXPORT PublicKey
     : public base::RefCountedThreadSafe<PublicKey> {
  public:
-  PublicKey();
+  // `is_persisted` should be true for keys that are loaded from disk and false
+  // for newly generated ones. `data` is the binary representation of the key
+  // itself.
+  PublicKey(bool is_persisted, std::vector<uint8_t> data);
 
   PublicKey(const PublicKey&) = delete;
   PublicKey& operator=(const PublicKey&) = delete;
 
+  scoped_refptr<PublicKey> clone();
+
   std::vector<uint8_t>& data() { return data_; }
 
-  bool is_loaded() const { return !data_.empty(); }
+  bool is_empty() const { return data_.empty(); }
+
+  // Returns true if the key was read from the filesystem or it was already
+  // saved on disk. Returns false for recently generated keys that still need
+  // to be sent to session_manager for saving on disk.
+  bool is_persisted() { return is_persisted_; }
+
+  // Marks that the key was saved on disk.
+  void mark_persisted() { is_persisted_ = true; }
 
   std::string as_string() {
     return std::string(reinterpret_cast<const char*>(data_.data()),
@@ -42,6 +55,7 @@ class OWNERSHIP_EXPORT PublicKey
 
   virtual ~PublicKey();
 
+  bool is_persisted_ = false;
   std::vector<uint8_t> data_;
 };
 
@@ -70,9 +84,13 @@ class OWNERSHIP_EXPORT PrivateKey
 class OWNERSHIP_EXPORT OwnerKeyUtil
     : public base::RefCountedThreadSafe<OwnerKeyUtil> {
  public:
-  // Attempts to read the public key from the file system.  Upon success,
-  // returns true and populates |output|.  False on failure.
-  virtual bool ImportPublicKey(std::vector<uint8_t>* output) = 0;
+  // Attempts to read the public key from the file system. Returns nullptr on
+  // failure and a populated key on success.
+  virtual scoped_refptr<PublicKey> ImportPublicKey() = 0;
+
+  // Generates a new key pair in the `slot`.
+  virtual crypto::ScopedSECKEYPrivateKey GenerateKeyPair(
+      PK11SlotInfo* slot) = 0;
 
   // Looks for the private key associated with |key| in the |slot|
   // and returns it if it can be found.  Returns NULL otherwise.

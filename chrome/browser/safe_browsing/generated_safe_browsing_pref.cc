@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/safe_browsing/generated_safe_browsing_pref.h"
 
+#include "base/stl_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/settings_private.h"
 #include "components/prefs/pref_service.h"
@@ -73,6 +74,12 @@ extensions::settings_private::SetPrefResult GeneratedSafeBrowsingPref::SetPref(
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced,
                                    selection == SafeBrowsingSetting::ENHANCED);
 
+  // Set ESB not set in sync with Account ESB through TailoredSecurity.
+  if (selection == SafeBrowsingSetting::ENHANCED) {
+    profile_->GetPrefs()->SetBoolean(
+        prefs::kEnhancedProtectionEnabledViaTailoredSecurity, false);
+  }
+
   return extensions::settings_private::SetPrefResult::SUCCESS;
 }
 
@@ -89,14 +96,14 @@ GeneratedSafeBrowsingPref::GetPrefObject() const {
       profile_->GetPrefs()->GetBoolean(prefs::kSafeBrowsingEnhanced);
 
   if (safe_browsing_enhanced_enabled && safe_browsing_enabled) {
-    pref_object->value = std::make_unique<base::Value>(
-        static_cast<int>(SafeBrowsingSetting::ENHANCED));
+    pref_object->value =
+        base::Value(static_cast<int>(SafeBrowsingSetting::ENHANCED));
   } else if (safe_browsing_enabled) {
-    pref_object->value = std::make_unique<base::Value>(
-        static_cast<int>(SafeBrowsingSetting::STANDARD));
+    pref_object->value =
+        base::Value(static_cast<int>(SafeBrowsingSetting::STANDARD));
   } else {
-    pref_object->value = std::make_unique<base::Value>(
-        static_cast<int>(SafeBrowsingSetting::DISABLED));
+    pref_object->value =
+        base::Value(static_cast<int>(SafeBrowsingSetting::DISABLED));
   }
 
   ApplySafeBrowsingManagementState(profile_, pref_object.get());
@@ -159,14 +166,14 @@ void GeneratedSafeBrowsingPref::ApplySafeBrowsingManagementState(
     pref_object->enforcement =
         settings_api::Enforcement::ENFORCEMENT_RECOMMENDED;
     if (enhanced_recommended_on) {
-      pref_object->recommended_value = std::make_unique<base::Value>(
-          static_cast<int>(SafeBrowsingSetting::ENHANCED));
+      pref_object->recommended_value =
+          base::Value(static_cast<int>(SafeBrowsingSetting::ENHANCED));
     } else if (enabled_recommended_on) {
-      pref_object->recommended_value = std::make_unique<base::Value>(
-          static_cast<int>(SafeBrowsingSetting::STANDARD));
+      pref_object->recommended_value =
+          base::Value(static_cast<int>(SafeBrowsingSetting::STANDARD));
     } else {
-      pref_object->recommended_value = std::make_unique<base::Value>(
-          static_cast<int>(SafeBrowsingSetting::DISABLED));
+      pref_object->recommended_value =
+          base::Value(static_cast<int>(SafeBrowsingSetting::DISABLED));
     }
   }
 
@@ -177,14 +184,11 @@ void GeneratedSafeBrowsingPref::ApplySafeBrowsingManagementState(
     extensions::settings_private::GeneratedPref::ApplyControlledByFromPref(
         pref_object, reporting_pref);
 
-    pref_object->user_selectable_values =
-        std::make_unique<std::vector<std::unique_ptr<base::Value>>>();
-    pref_object->user_selectable_values->push_back(
-        std::make_unique<base::Value>(
-            static_cast<int>(SafeBrowsingSetting::STANDARD)));
-    pref_object->user_selectable_values->push_back(
-        std::make_unique<base::Value>(
-            static_cast<int>(SafeBrowsingSetting::DISABLED)));
+    pref_object->user_selectable_values.emplace();
+    pref_object->user_selectable_values->emplace_back(
+        base::to_underlying(SafeBrowsingSetting::STANDARD));
+    pref_object->user_selectable_values->emplace_back(
+        base::to_underlying(SafeBrowsingSetting::DISABLED));
   }
 }
 

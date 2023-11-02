@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/task_manager/task_manager_table_model.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -66,7 +67,7 @@ class TaskManagerView : public TableViewDelegate,
   void WindowClosing() override;
 
   // views::TableGrouper:
-  void GetGroupRange(int model_index, views::GroupRange* range) override;
+  void GetGroupRange(size_t model_index, views::GroupRange* range) override;
 
   // views::TableViewObserver:
   void OnSelectionChanged() override;
@@ -114,8 +115,8 @@ class TaskManagerView : public TableViewDelegate,
   // We need to own the text of the menu, the Windows API does not copy it.
   std::u16string always_on_top_menu_text_;
 
-  views::TableView* tab_table_;
-  views::View* tab_table_parent_;
+  raw_ptr<views::TableView> tab_table_;
+  raw_ptr<views::View> tab_table_parent_;
 
   // all possible columns, not necessarily visible
   std::vector<ui::TableColumn> columns_;

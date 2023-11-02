@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,7 +52,7 @@ AppInstaller::~AppInstaller() {}
 
 bool AppInstaller::CheckRequestorAlive() const {
   // The tab may have gone away - cancel installation in that case.
-  return web_contents_ != NULL;
+  return web_contents_ != nullptr;
 }
 
 std::unique_ptr<ExtensionInstallPrompt::Prompt>

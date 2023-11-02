@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/page/page_animator.h"
 
 namespace blink {
 
@@ -23,10 +24,16 @@ AnimationTimeline::AnimationTimeline(Document* document)
 void AnimationTimeline::AnimationAttached(Animation* animation) {
   DCHECK(!animations_.Contains(animation));
   animations_.insert(animation);
+
+  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers", "AnimationTimeline"))
+    record_replay_animations_strong_.insert(animation);
 }
 
 void AnimationTimeline::AnimationDetached(Animation* animation) {
   animations_.erase(animation);
+  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers", "AnimationTimeline"))
+    record_replay_animations_strong_.erase(animation);
+
   animations_needing_update_.erase(animation);
   if (animation->Outdated())
     outdated_animation_count_--;
@@ -69,19 +76,6 @@ V8CSSNumberish* AnimationTimeline::duration() {
   return nullptr;
 }
 
-String AnimationTimeline::phase() {
-  switch (CurrentPhaseAndTime().phase) {
-    case TimelinePhase::kInactive:
-      return "inactive";
-    case TimelinePhase::kBefore:
-      return "before";
-    case TimelinePhase::kActive:
-      return "active";
-    case TimelinePhase::kAfter:
-      return "after";
-  }
-}
-
 void AnimationTimeline::ClearOutdatedAnimation(Animation* animation) {
   DCHECK(!animation->Outdated());
   outdated_animation_count_--;
@@ -90,10 +84,13 @@ void AnimationTimeline::ClearOutdatedAnimation(Animation* animation) {
 wtf_size_t AnimationTimeline::AnimationsNeedingUpdateCount() const {
   wtf_size_t count = 0;
   for (const auto& animation : animations_needing_update_) {
-    // This function is for frame sequence tracking for animations. Exclude
-    // no-effect animations which don't generate frames.
-    if (!animation->AnimationHasNoEffect())
-      count++;
+    // Exclude animations which are not actively generating frames.
+    if ((!animation->CompositorPending() && !animation->Playing() &&
+         !IsScrollTimeline()) ||
+        animation->AnimationHasNoEffect()) {
+      continue;
+    }
+    count++;
   }
   return count;
 }
@@ -106,10 +103,10 @@ bool AnimationTimeline::NeedsAnimationTimingUpdate() {
   // We allow |last_current_phase_and_time_| to advance here when there
   // are no animations to allow animations spawned during style
   // recalc to not invalidate this flag.
-  if (animations_needing_update_.IsEmpty())
+  if (animations_needing_update_.empty())
     last_current_phase_and_time_ = current_phase_and_time;
 
-  return !animations_needing_update_.IsEmpty();
+  return !animations_needing_update_.empty();
 }
 
 void AnimationTimeline::ServiceAnimations(TimingUpdateReason reason) {
@@ -177,8 +174,10 @@ void AnimationTimeline::SetOutdatedAnimation(Animation* animation) {
   DCHECK(animation->Outdated());
   outdated_animation_count_++;
   animations_needing_update_.insert(animation);
-  if (IsActive() && !document_->GetPage()->Animator().IsServicingAnimations())
+  if (IsActive() && document_->GetPage() &&
+      !document_->GetPage()->Animator().IsServicingAnimations()) {
     ScheduleServiceOnNextFrame();
+  }
 }
 
 void AnimationTimeline::ScheduleServiceOnNextFrame() {
@@ -199,9 +198,13 @@ Animation* AnimationTimeline::Play(AnimationEffect* child,
 }
 
 void AnimationTimeline::MarkAnimationsCompositorPending(bool source_changed) {
+  recordreplay::Assert("[RUN-1641] AnimationTimeline::MarkAnimationsCompositorPending %d", RecordReplayId());
+
   for (const auto& animation : animations_) {
     animation->SetCompositorPending(source_changed);
   }
+
+  recordreplay::Assert("[RUN-1641] AnimationTimeline::MarkAnimationsCompositorPending Done");
 }
 
 void AnimationTimeline::MarkPendingIfCompositorPropertyAnimationChanges(
@@ -216,6 +219,7 @@ void AnimationTimeline::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(animations_needing_update_);
   visitor->Trace(animations_);
+  visitor->Trace(record_replay_animations_strong_);
   ScriptWrappable::Trace(visitor);
 }
 

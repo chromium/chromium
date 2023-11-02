@@ -1,11 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'chrome://resources/js/jstemplate_compiled.js';
 
 import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
 function initialize() {
   function submitURL(event) {
@@ -40,7 +40,7 @@ function highlightIfChanged(node, oldVal, newVal) {
 
   const oldStr = oldVal.toString();
   const newStr = newVal.toString();
-  if (oldStr != '' && oldStr != newStr) {
+  if (oldStr !== '' && oldStr !== newStr) {
     // Note the addListener function does not end up creating duplicate
     // listeners.  There can be only one listener per event at a time.
     // See https://developer.mozilla.org/en/DOM/element.addEventListener
@@ -83,7 +83,7 @@ function receiveUserSettings(settings) {
  * @return {boolean} true if the element is scrolled to the bottom
  */
 function isScrolledToBottom(elem) {
-  return elem.scrollHeight - elem.scrollTop == elem.clientHeight;
+  return elem.scrollHeight - elem.scrollTop === elem.clientHeight;
 }
 
 /**

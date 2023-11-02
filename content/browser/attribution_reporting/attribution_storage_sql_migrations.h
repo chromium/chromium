@@ -1,11 +1,9 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_STORAGE_SQL_MIGRATIONS_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_STORAGE_SQL_MIGRATIONS_H_
-
-#include "base/compiler_specific.h"
 
 namespace sql {
 class Database;
@@ -43,10 +41,11 @@ namespace content {
 // generated above.
 
 // Upgrades |db| to the latest schema, and updates the version stored in
-// |meta_table| accordingly. Must be called with an open |db|.
-bool UpgradeAttributionStorageSqlSchema(sql::Database* db,
-                                        sql::MetaTable* meta_table)
-    WARN_UNUSED_RESULT;
+// |meta_table| accordingly. Must be called with an open |db|. Returns false on
+// failure.
+[[nodiscard]] bool UpgradeAttributionStorageSqlSchema(
+    sql::Database* db,
+    sql::MetaTable* meta_table);
 
 }  // namespace content
 

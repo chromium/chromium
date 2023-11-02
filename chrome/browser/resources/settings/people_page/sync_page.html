@@ -60,7 +60,7 @@
       }
 
       cr-link-row {
-        padding-inline-end: 8px;
+        padding-inline-end: 0;
         padding-inline-start: 0;
       }
     </style>
@@ -83,7 +83,7 @@
       </div>
     </div>
 
-<if expr="chromeos or lacros">
+<if expr="is_chromeos">
     <!-- TODO(crbug.com/1231500): Remove this warning after Lacros side-by-side
       rollout stage. -->
     <template is="dom-if" if="[[shouldShowLacrosSideBySideWarning_()]]">
@@ -93,8 +93,7 @@
     </template>
 </if>
 
-    <template is="dom-if" if="[[shouldShowExistingPassphraseBelowAccount_(
-        syncPrefs.passphraseRequired)]]"
+    <template is="dom-if" if="[[showExistingPassphraseBelowAccount_]]"
         on-dom-change="focusPassphraseInput_">
       <div id="existingPassphrase" class="list-frame">
         <div id="existingPassphraseTitle" class="list-item">
@@ -145,6 +144,7 @@
 
           <cr-link-row class="hr"
               label="$i18n{personalizeGoogleServicesTitle}"
+              hidden="[[!showActivityControls_()]]"
               on-click="onActivityControlsClick_" external></cr-link-row>
 
           <cr-link-row id="syncDashboardLink" class="hr"
@@ -191,7 +191,7 @@
         page-visibility="[[pageVisibility]]" sync-status="[[syncStatus]]">
     </settings-personalization-options>
 
-<if expr="not chromeos">
+<if expr="not chromeos_ash">
     <template is="dom-if" if="[[showSetupCancelDialog_]]" restamp>
       <cr-dialog id="setupCancelDialog" on-close="onSetupCancelDialogClose_"
           ignore-popstate>

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -307,18 +307,18 @@ TEST_F(PageTimingMetricsSenderTest, SendPageRenderData) {
 
   metrics_sender_->DidObserveLayoutShift(0.5, false);
   metrics_sender_->DidObserveLayoutShift(0.5, false);
-  metrics_sender_->DidObserveLayoutNg(3, 2, 10, 4, 9, 11);
-  metrics_sender_->DidObserveLayoutNg(2, 0, 7, 5, 13, 15);
+  metrics_sender_->DidObserveLayoutNg(3, 2, 10, 4);
+  metrics_sender_->DidObserveLayoutNg(2, 0, 7, 5);
   metrics_sender_->DidObserveLayoutShift(0.5, true);
 
-  mojom::FrameRenderDataUpdate render_data(1.5, 1.0, 5, 2, 17, 9, 21, 26, {});
+  mojom::FrameRenderDataUpdate render_data(1.5, 1.0, 5, 2, 17, 9, {});
   validator_.UpdateExpectFrameRenderDataUpdate(render_data);
 
   metrics_sender_->mock_timer()->Fire();
   validator_.VerifyExpectedRenderData();
 }
 
-TEST_F(PageTimingMetricsSenderTest, SendFrameIntersectionUpdate) {
+TEST_F(PageTimingMetricsSenderTest, SendMainFrameIntersectionRect) {
   mojom::PageLoadTiming timing;
   InitPageLoadTimingForTest(&timing);
   metrics_sender_->Update(timing.Clone(),
@@ -326,12 +326,24 @@ TEST_F(PageTimingMetricsSenderTest, SendFrameIntersectionUpdate) {
   validator_.ExpectPageLoadTiming(timing);
 
   metrics_sender_->OnMainFrameIntersectionChanged(gfx::Rect(0, 0, 1, 1));
-  mojom::FrameIntersectionUpdate frame_intersection_update(
-      gfx::Rect(0, 0, 1, 1));
-  validator_.UpdateExpectFrameIntersectionUpdate(frame_intersection_update);
+  validator_.UpdateExpectedMainFrameIntersectionRect(gfx::Rect(0, 0, 1, 1));
 
   metrics_sender_->mock_timer()->Fire();
-  validator_.VerifyExpectedFrameIntersectionUpdate();
+  validator_.VerifyExpectedMainFrameIntersectionRect();
+}
+
+TEST_F(PageTimingMetricsSenderTest, SendMainFrameViewportRect) {
+  mojom::PageLoadTiming timing;
+  InitPageLoadTimingForTest(&timing);
+  metrics_sender_->Update(timing.Clone(),
+                          PageTimingMetadataRecorder::MonotonicTiming());
+  validator_.ExpectPageLoadTiming(timing);
+
+  metrics_sender_->OnMainFrameViewportRectangleChanged(gfx::Rect(2, 2, 1, 1));
+  validator_.UpdateExpectedMainFrameViewportRect(gfx::Rect(2, 2, 1, 1));
+
+  metrics_sender_->mock_timer()->Fire();
+  validator_.VerifyExpectedMainFrameViewportRect();
 }
 
 TEST_F(PageTimingMetricsSenderTest, FirstContentfulPaintForcesSend) {

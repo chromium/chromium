@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -20,7 +21,6 @@
 #include "cc/test/pixel_test_utils.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/extensions/chrome_app_icon.h"
-#include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -46,13 +46,13 @@
 #include "ui/gfx/image/image_unittest_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/apps/icon_standardizer.h"
-#include "chrome/browser/ash/arc/icon_decode_request.h"
+#include "chrome/browser/chromeos/arc/icon_decode_request.h"
 #include "chrome/browser/ui/app_list/md_icon_normalizer.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
-#include "components/arc/mojom/intent_helper.mojom.h"
 #endif
 
 namespace {
@@ -153,10 +153,12 @@ class AppIconFactoryTest : public testing::Test {
     base::FilePath base_path;
     std::string png_data_as_string;
     CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &base_path));
-    base::FilePath icon_file_path = base_path.AppendASCII("components")
+    base::FilePath icon_file_path = base_path.AppendASCII("ash")
+                                        .AppendASCII("components")
+                                        .AppendASCII("arc")
                                         .AppendASCII("test")
                                         .AppendASCII("data")
-                                        .AppendASCII("arc")
+                                        .AppendASCII("icons")
                                         .AppendASCII(file_name);
     CHECK(base::PathExists(icon_file_path));
     CHECK(base::ReadFileToString(icon_file_path, &png_data_as_string));
@@ -504,10 +506,6 @@ class WebAppIconFactoryTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    profile()->SetIsMainProfile(true);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
     web_app_provider_ = web_app::WebAppProvider::GetForWebApps(profile());
     ASSERT_TRUE(web_app_provider_);
 
@@ -675,9 +673,9 @@ class WebAppIconFactoryTest : public ChromeRenderViewHostTestHarness {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  web_app::WebAppProvider* web_app_provider_;
-  web_app::WebAppIconManager* icon_manager_;
-  web_app::WebAppSyncBridge* sync_bridge_;
+  raw_ptr<web_app::WebAppProvider> web_app_provider_;
+  raw_ptr<web_app::WebAppIconManager> icon_manager_;
+  raw_ptr<web_app::WebAppSyncBridge> sync_bridge_;
 };
 
 TEST_F(WebAppIconFactoryTest, LoadNonMaskableIcon) {
@@ -1033,7 +1031,7 @@ TEST_F(WebAppIconFactoryTest, ConvertSquareBitmapsToImageSkia_MatchBigger) {
   // scale).
   const std::vector<SkColor> expected_colors{SK_ColorRED, SK_ColorGREEN};
 
-  for (int i = 0; i < scale_factors.size(); ++i) {
+  for (size_t i = 0; i < scale_factors.size(); ++i) {
     const float scale = ui::GetScaleForResourceScaleFactor(scale_factors[i]);
     ASSERT_TRUE(converted_image.HasRepresentation(scale));
     EXPECT_EQ(
@@ -1064,7 +1062,7 @@ TEST_F(WebAppIconFactoryTest, ConvertSquareBitmapsToImageSkia_StandardEffect) {
       ui::GetSupportedResourceScaleFactors();
   ASSERT_EQ(2U, scale_factors.size());
 
-  for (int i = 0; i < scale_factors.size(); ++i) {
+  for (size_t i = 0; i < scale_factors.size(); ++i) {
     const float scale = ui::GetScaleForResourceScaleFactor(scale_factors[i]);
     ASSERT_TRUE(converted_image.HasRepresentation(scale));
 
@@ -1077,6 +1075,12 @@ TEST_F(WebAppIconFactoryTest, ConvertSquareBitmapsToImageSkia_StandardEffect) {
     EXPECT_TRUE(converted_image.GetRepresentation(scale).GetBitmap().getColor(
         center_px, center_px));
   }
+}
+
+// Regression test for crash. https://crbug.com/1335266
+TEST_F(WebAppIconFactoryTest, ApplyBackgroundAndMask_NullImage) {
+  gfx::ImageSkia image = apps::ApplyBackgroundAndMask(gfx::ImageSkia());
+  DCHECK(image.isNull());
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

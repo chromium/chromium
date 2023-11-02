@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -1088,20 +1088,20 @@ class PowerButtonControllerWithPositionTest
     base::DictionaryValue position_info;
     switch (power_button_position_) {
       case PowerButtonPosition::LEFT:
-        position_info.SetString(PowerButtonController::kEdgeField,
-                                PowerButtonController::kLeftEdge);
+        position_info.SetStringKey(PowerButtonController::kEdgeField,
+                                   PowerButtonController::kLeftEdge);
         break;
       case PowerButtonPosition::RIGHT:
-        position_info.SetString(PowerButtonController::kEdgeField,
-                                PowerButtonController::kRightEdge);
+        position_info.SetStringKey(PowerButtonController::kEdgeField,
+                                   PowerButtonController::kRightEdge);
         break;
       case PowerButtonPosition::TOP:
-        position_info.SetString(PowerButtonController::kEdgeField,
-                                PowerButtonController::kTopEdge);
+        position_info.SetStringKey(PowerButtonController::kEdgeField,
+                                   PowerButtonController::kTopEdge);
         break;
       case PowerButtonPosition::BOTTOM:
-        position_info.SetString(PowerButtonController::kEdgeField,
-                                PowerButtonController::kBottomEdge);
+        position_info.SetStringKey(PowerButtonController::kEdgeField,
+                                   PowerButtonController::kBottomEdge);
         break;
       default:
         return;
@@ -1363,9 +1363,10 @@ TEST_P(PowerButtonControllerWithPositionTest, AdjustMenuShownForDisplaySize) {
       power_button_test_api_->GetMenuBoundsInScreen()));
 }
 
+// Disabled due to consistent failures. http://crbug.com/1286199
 // Tests that a power button press before the menu is fully shown will not
 // create a new menu.
-TEST_F(PowerButtonControllerTest, LegacyPowerButtonIgnoreExtraPress) {
+TEST_F(PowerButtonControllerTest, DISABLED_LegacyPowerButtonIgnoreExtraPress) {
   Initialize(ButtonType::LEGACY, LoginStatus::USER);
 
   // Enable animations so that we can make sure that they occur.
@@ -1389,6 +1390,15 @@ TEST_F(PowerButtonControllerTest, LegacyPowerButtonIgnoreExtraPress) {
   // Make sure that power menu is still in partially shown state.
   ASSERT_TRUE(power_button_test_api_->IsMenuOpened());
   ASSERT_FALSE(power_button_test_api_->ShowMenuAnimationDone());
+}
+
+TEST_F(PowerButtonControllerTest,
+       ArcPowerButtonEventShowMenuWithoutPreShutdown) {
+  LaunchArcPowerButtonEvent();
+  ASSERT_TRUE(power_button_test_api_->IsMenuOpened());
+  EXPECT_FALSE(power_button_test_api_->TriggerPreShutdownTimeout());
+  EXPECT_FALSE(lock_state_test_api_->shutdown_timer_is_running());
+  EXPECT_TRUE(power_button_test_api_->IsMenuOpened());
 }
 
 INSTANTIATE_TEST_SUITE_P(AshPowerButtonPosition,

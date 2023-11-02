@@ -1,14 +1,14 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/cert/internal/crl.h"
+#include "net/cert/pki/crl.h"
 
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
-#include "net/cert/internal/cert_errors.h"
-#include "net/cert/internal/parsed_certificate.h"
-#include "net/cert/internal/test_helpers.h"
+#include "net/cert/pki/cert_errors.h"
+#include "net/cert/pki/parsed_certificate.h"
+#include "net/cert/pki/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 
@@ -162,7 +162,8 @@ TEST_P(CheckCRLTest, FromFile) {
   ParsedDistributionPoint* cert_dp = &fake_cert_dp;
   std::vector<ParsedDistributionPoint> distribution_points;
   ParsedExtension crl_dp_extension;
-  if (cert->GetExtension(CrlDistributionPointsOid(), &crl_dp_extension)) {
+  if (cert->GetExtension(der::Input(kCrlDistributionPointsOid),
+                         &crl_dp_extension)) {
     ASSERT_TRUE(ParseCrlDistributionPoints(crl_dp_extension.value,
                                            &distribution_points));
     ASSERT_LE(distribution_points.size(), 1U);

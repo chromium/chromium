@@ -1,0 +1,14 @@
+Name: Google Android Annotations Library
+Short Name: annotations
+URL: http://source.android.com/
+Version: 4.1.1.4
+License: Android Software Development Kit License
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+
+Description:
+A library jar that provides annotations for the Google Android Platform.
+
+Local Modifications:
+No modifications.

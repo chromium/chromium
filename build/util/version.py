@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright 2014 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -26,9 +26,10 @@ def FetchValuesFromFile(values_dict, file_name):
 
   The file must exist, otherwise you get the Python exception from open().
   """
-  for line in open(file_name, 'r').readlines():
-    key, val = line.rstrip('\r\n').split('=', 1)
-    values_dict[key] = val
+  with open(file_name, 'r') as f:
+    for line in f.readlines():
+      key, val = line.rstrip('\r\n').split('=', 1)
+      values_dict[key] = val
 
 
 def FetchValues(file_list, is_official_build=None):

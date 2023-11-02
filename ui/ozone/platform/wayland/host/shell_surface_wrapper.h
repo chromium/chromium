@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,10 @@ class ShellSurfaceWrapper {
  public:
   virtual ~ShellSurfaceWrapper() {}
 
-  // Initializes the ShellSurface.
+  // Initializes the ShellSurface. The implementation should not commit surface
+  // state changes and defer that to the window that owns the surface, such that
+  // the window properties are set before the initial commit
+  // (https://crbug.com/1268308).
   virtual bool Initialize() = 0;
 
   // Sends acknowledge configure event back to wayland.

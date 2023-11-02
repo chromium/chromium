@@ -183,7 +183,8 @@ which aren't allowed to run on the regular Chromium waterfalls:
 *   `audio_unittests`
 
 The remaining GPU tests are run via Telemetry.  In order to run them, just
-build the `chrome` target and then
+build the `telemetry_gpu_integration_test` target (or
+`telemetry_gpu_integration_test_android_chrome` for Android) and then
 invoke `src/content/test/gpu/run_gpu_integration_test.py` with the appropriate
 argument. The tests this script can invoke are
 in `src/content/test/gpu/gpu_tests/`. For example:
@@ -198,15 +199,22 @@ The pixel tests are a bit special. See
 [the section on running them locally](#Running-the-pixel-tests-locally) for
 details.
 
-If you're testing on Android and have built and deployed
-`ChromePublic.apk` to the device, use `--browser=android-chromium` to
-invoke it.
+The `--browser=release` argument can be changed to `--browser=debug` if you
+built in a directory such as `out/Debug`. If you built in some non-standard
+directory such as `out/my_special_gn_config`, you can instead specify
+`--browser=exact --browser-executable=out/my_special_gn_config/chrome`.
+
+If you're testing on Android, use `--browser=android-chromium` instead of
+`--browser=release/debug` to invoke it. Additionally, Telemetry will likely
+complain about being unable to find the browser binary on Android if you build
+in a non-standard output directory. Thus, `out/Release` or `out/Debug` are
+suggested when testing on Android.
 
 **Note:** The tests require some third-party Python packages. Obtaining these
-packages is handled automatically by `vpython`, and the script's shebang should
-use vpython if running the script directly. If you're used to invoking `python`
-to run a script, simply use `vpython` instead, e.g.
-`vpython run_gpu_integration_test.py ...`.
+packages is handled automatically by `vpython3`, and the script's shebang should
+use vpython if running the script directly. If you're used to invoking `python3`
+to run a script, simply use `vpython3` instead, e.g.
+`vpython3 run_gpu_integration_test.py ...`.
 
 You can run a subset of tests with this harness:
 
@@ -238,6 +246,43 @@ for documentation on setting this up.
 
 [Cloud Storage Credentials]: gpu_testing_bot_details.md#Cloud-storage-credentials
 
+### Bisecting ChromeOS Failures Locally
+
+Failures that occur on the ChromeOS amd64-generic configuration are easy to
+reproduce due to the VM being readily available for use, but doing so requires
+some additional steps to the bisect process. The following are steps that can be
+followed using two terminals and the [Simple Chrome SDK] to bisect a ChromeOS
+failure.
+
+1. Terminal 1: Start the bisect as normal `git bisect start`
+   `git bisect good <good_revision>` `git bisect bad <bad_revision>`
+1. Terminal 1: Sync to the revision that git spits out
+   `gclient sync -r src@<revision>`
+1. Terminal 2: Enter the Simple Chrome SDK
+   `cros chrome-sdk --board amd64-generic-vm --log-level info --download-vm --clear-sdk-cache`
+1. Terminal 2: Compile the relevant target (probably the GPU integration tests)
+   `autoninja -C out_amd64-generic-vm/Release/ telemetry_gpu_integration_test`
+1. Terminal 2: Start the VM `cros_vm --start`
+1. Terminal 2: Deploy the Chrome binary to the VM
+   `deploy_chrome --build-dir out_amd64-generic-vm/Release/ --device 127.0.0.1:9222`
+   This will require you to accept a prompt twice, once because of a board
+   mismatch and once because the VM still has rootfs verification enabled.
+1. Terminal 1: Run your test on the VM. For GPU integration tests, this involves
+   specifying `--browser cros-chrome --remote 127.0.0.1 --remote-ssh-port 9222`
+1. Terminal 2: After determining whether the revision is good or bad, shut down
+   the VM `cros_vm --stop`
+1. Terminal 2: Exit the SKD `exit`
+1. Terminal 1: Let git know whether the revision was good or bad
+   `git bisect good`/`git bisect bad`
+1. Repeat from step 2 with the new revision git spits out.
+
+The repeated entry/exit from the SDK between revisions is to ensure that the
+VM image is in sync with the Chromium revision, as it is possible for
+regressions to be caused by an update to the image itself rather than a Chromium
+change.
+
+[Simple Chrome SDK]: https://chromium.googlesource.com/chromiumos/docs/+/HEAD/simple_chrome_workflow.md
+
 ### Telemetry Test Suites
 The Telemetry-based tests are all technically the same target,
 `telemetry_gpu_integration_test`, just run with different runtime arguments. The
@@ -249,38 +294,27 @@ of all suites and resulting step names as of April 15th 2021:
   * `context_lost_passthrough_tests`
   * `context_lost_tests`
   * `context_lost_validating_tests`
-  * `gl_renderer_context_lost_tests`
-* `depth_capture`
-  * `depth_capture_tests`
-  * `gl_renderer_depth_capture_tests`
 * `hardware_accelerated_feature`
-  * `gl_renderer_hardware_accelerated_feature_tests`
   * `hardware_accelerated_feature_tests`
 * `gpu_process`
-  * `gl_renderer_gpu_process_launch_tests`
   * `gpu_process_launch_tests`
 * `info_collection`
   * `info_collection_tests`
 * `maps`
-  * `gl_renderer_maps_pixel_tests`
   * `maps_pixel_passthrough_test`
   * `maps_pixel_test`
   * `maps_pixel_validating_test`
   * `maps_tests`
 * `pixel`
   * `android_webview_pixel_skia_gold_test`
-  * `dawn_pixel_skia_gold_test`
   * `egl_pixel_skia_gold_test`
-  * `gl_renderer_pixel_skia_gold_tests`
   * `pixel_skia_gold_passthrough_test`
   * `pixel_skia_gold_validating_test`
   * `pixel_tests`
-  * `skia_renderer_pixel_skia_gold_test`
   * `vulkan_pixel_skia_gold_test`
 * `power`
   * `power_measurement_test`
 * `screenshot_sync`
-  * `gl_renderer_screenshot_sync_tests`
   * `screenshot_sync_passthrough_tests`
   * `screenshot_sync_tests`
   * `screenshot_sync_validating_tests`
@@ -299,7 +333,6 @@ of all suites and resulting step names as of April 15th 2021:
   * `webgl_conformance_gles_passthrough_tests`
   * `webgl_conformance_metal_passthrough_tests`
   * `webgl_conformance_swangle_passthrough_tests`
-  * `webgl_conformance_swiftshader_validating_tests`
   * `webgl_conformance_tests`
   * `webgl_conformance_validating_tests`
   * `webgl_conformance_vulkan_passthrough_tests`
@@ -413,6 +446,37 @@ Email kbr@ if you try this and find it doesn't work.
 
 [isolate-server-credentials]: gpu_testing_bot_details.md#Isolate-server-credentials
 
+## Debugging a Specific Subset of Tests on a Specific GPU Bot
+
+When a test exhibits flake on the bots, it can be convenient to run it
+repeatedly with local code modifications on the bot where it is exhibiting
+flake. One way of doing this is via swarming (see the below section). However, a
+lower-overhead alternative that also works in the case where you are looking to
+run on a bot for which you cannot locally build is to locally alter the
+configuration of the bot in question to specify that it should run only the
+tests desired, repeating as many times as desired. Instructions for doing this
+are as follows (see the [example CL] for a concrete instantiation of these
+instructions):
+
+1. In testsuite_exceptions.pyl, find the section for the test suite in question
+   (creating it if it doesn't exist).
+2. Add modifications for the bot in question and specify arguments such that
+   your desired tests are run for the desired number of iterations.
+3. Run testing/buildbot/generate_buildbot_json.py and verify that the JSON file
+   for the bot in question was modified as you would expect.
+4. Upload and run tryjobs on that specific bot via "Choose Tryjobs."
+5. Examine the test results. (You can verify that the tests run were as you
+   expected by examining the test results for individual shards of the run
+   of the test suite in question.)
+6. Add logging/code modifications/etc as desired and go back to step 4,
+   repeating the process until you've uncovered the underlying issue.
+7. Remove the the changes to testsuite_exceptions.pyl and the JSON file if
+   turning the CL into one intended for submission!
+
+Here is an [example CL] that does this.
+
+[example CL]: https://chromium-review.googlesource.com/c/chromium/src/+/3898592/4
+
 ## Running Locally Built Binaries on the GPU Bots
 
 See the [Swarming documentation] for instructions on how to upload your binaries to the isolate server and trigger execution on Swarming.
@@ -430,7 +494,7 @@ the Telemetry-based GPU tests' dependencies, which you can then move
 to another machine for testing:
 
 1. Build Chrome (into `out/Release` in this example).
-1. `vpython tools/mb/mb.py zip out/Release/ telemetry_gpu_integration_test out/telemetry_gpu_integration_test.zip`
+1. `vpython3 tools/mb/mb.py zip out/Release/ telemetry_gpu_integration_test out/telemetry_gpu_integration_test.zip`
 
 Then copy telemetry_gpu_integration_test.zip to another machine. Unzip
 it, and cd into the resulting directory. Invoke

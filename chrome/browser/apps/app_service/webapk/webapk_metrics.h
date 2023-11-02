@@ -1,11 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_WEBAPK_WEBAPK_METRICS_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_WEBAPK_WEBAPK_METRICS_H_
 
-#include "components/arc/mojom/webapk.mojom-forward.h"
+#include "ash/components/arc/mojom/webapk.mojom-forward.h"
 
 namespace apps {
 
@@ -33,17 +33,23 @@ enum class WebApkInstallStatus {
   kMaxValue = kGooglePlayError,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class WebApkUninstallSource {
+  // The WebAPK was uninstalled on the Ash side (e.g. uninstalling the web app
+  // through App Management).
+  kAsh = 0,
+  // The WebAPK was uninstalled on the ARC side (e.g. uninstalling the app
+  // through Android settings).
+  kArc = 1,
+  kMaxValue = kArc,
+};
+
 extern const char kWebApkInstallResultHistogram[];
 extern const char kWebApkUpdateResultHistogram[];
-extern const char kWebApkArcInstallResultHistogram[];
-extern const char kWebApkArcUpdateResultHistogram[];
-extern const char kWebApkMinterErrorCodeHistogram[];
 
 // Records the overall result of installing/updating a WebAPK to UMA.
 void RecordWebApkInstallResult(bool is_update, WebApkInstallStatus result);
-// Records the detailed result of installing/updating a WebAPK in ARC to UMA.
-void RecordWebApkArcResult(bool is_update,
-                           arc::mojom::WebApkInstallResult result);
 
 }  // namespace apps
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -131,11 +131,11 @@ interface ClipboardHost {
   ReadAvailableCustomAndStandardFormats() =>
       (array<mojo_base.mojom.String16> format_types);
 
-  // Reads an unsanitized custom format from the clipboard.
+  // Reads an unsanitized custom format from the clipboard. This is currently
+  // only used in async clipboard API.
   // `format` contains the custom format name.
   // Returns the data from the clipboard corresponding to the `format`.
   // Returns empty `data` if the `format` is not available in the clipboard.
-  [Sync]
   ReadUnsanitizedCustomFormat(mojo_base.mojom.String16 format) =>
       (mojo_base.mojom.BigBuffer data);
 

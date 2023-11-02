@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/unguessable_token.h"
 #include "net/base/net_export.h"
 #include "net/reporting/reporting_cache.h"
@@ -30,7 +29,7 @@ class Origin;
 namespace net {
 
 class IsolationInfo;
-class NetworkIsolationKey;
+class NetworkAnonymizationKey;
 class ReportingContext;
 struct ReportingPolicy;
 class URLRequestContext;
@@ -63,7 +62,7 @@ class NET_EXPORT ReportingService {
   // |reporting_source| is the reporting source token for the document or
   // worker which triggered this report, if it can be associated with one, or
   // nullopt otherwise. If present, it may not be empty.
-  // Along with |network_isolation_key|, it is used to restrict what reports
+  // Along with |network_anonymization_key|, it is used to restrict what reports
   // can be merged, and for sending the report.
   // |user_agent| is the User-Agent header that was used for the request.
   // |group| is the endpoint group to which the report should be delivered.
@@ -74,11 +73,11 @@ class NET_EXPORT ReportingService {
   virtual void QueueReport(
       const GURL& url,
       const absl::optional<base::UnguessableToken>& reporting_source,
-      const NetworkIsolationKey& network_isolation_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       const std::string& user_agent,
       const std::string& group,
       const std::string& type,
-      std::unique_ptr<const base::Value> body,
+      base::Value::Dict body,
       int depth) = 0;
 
   // Processes a Report-To header. |origin| is the Origin of the URL that the
@@ -86,7 +85,7 @@ class NET_EXPORT ReportingService {
   // header.
   virtual void ProcessReportToHeader(
       const url::Origin& origin,
-      const NetworkIsolationKey& network_isolation_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       const std::string& header_value) = 0;
 
   // Configures reporting endpoints set by the Reporting-Endpoints header, once
@@ -113,7 +112,8 @@ class NET_EXPORT ReportingService {
   // ReportingBrowsingDataRemover for more details.
   virtual void RemoveBrowsingData(
       uint64_t data_type_mask,
-      const base::RepeatingCallback<bool(const GURL&)>& origin_filter) = 0;
+      const base::RepeatingCallback<bool(const url::Origin&)>&
+          origin_filter) = 0;
 
   // Like RemoveBrowsingData except removes data for all origins without a
   // filter.
@@ -128,6 +128,10 @@ class NET_EXPORT ReportingService {
   virtual base::Value StatusAsValue() const;
 
   virtual std::vector<const ReportingReport*> GetReports() const = 0;
+
+  virtual base::flat_map<url::Origin, std::vector<ReportingEndpoint>>
+  GetV1ReportingEndpointsByOrigin() const = 0;
+
   virtual void AddReportingCacheObserver(ReportingCacheObserver* observer) = 0;
   virtual void RemoveReportingCacheObserver(
       ReportingCacheObserver* observer) = 0;
@@ -135,7 +139,7 @@ class NET_EXPORT ReportingService {
   virtual ReportingContext* GetContextForTesting() const = 0;
 
  protected:
-  ReportingService() {}
+  ReportingService() = default;
 };
 
 }  // namespace net

@@ -1,11 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <string>
 #include <utility>
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
@@ -18,8 +17,10 @@
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/ownership/mock_owner_key_util.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -70,20 +71,22 @@ class ExistingUserControllerAutoLoginTest : public ::testing::Test {
         FakeSessionManagerClient::Get(), new ownership::MockOwnerKeyUtil());
     DeviceSettingsService::Get()->Load();
 
-    std::unique_ptr<base::DictionaryValue> account(new base::DictionaryValue);
-    account->SetKey(kAccountsPrefDeviceLocalAccountsKeyId,
-                    base::Value(auto_login_user_id_));
-    account->SetKey(
-        kAccountsPrefDeviceLocalAccountsKeyType,
-        base::Value(policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION));
-    base::ListValue accounts;
+    base::Value::Dict account;
+    account.Set(kAccountsPrefDeviceLocalAccountsKeyId, auto_login_user_id_);
+    account.Set(kAccountsPrefDeviceLocalAccountsKeyType,
+                policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION);
+    base::Value::List accounts;
     accounts.Append(std::move(account));
-    settings_helper_.Set(kAccountsPrefDeviceLocalAccounts, accounts);
+    settings_helper_.Set(kAccountsPrefDeviceLocalAccounts,
+                         base::Value(std::move(accounts)));
 
     // Prevent settings changes from auto-starting the timer.
     existing_user_controller_->local_account_auto_login_id_subscription_ = {};
     existing_user_controller_
         ->local_account_auto_login_delay_subscription_ = {};
+
+    session_manager_.SetSessionState(
+        session_manager::SessionState::LOGIN_PRIMARY);
   }
 
   ExistingUserController* existing_user_controller() const {
@@ -148,6 +151,8 @@ class ExistingUserControllerAutoLoginTest : public ::testing::Test {
   MockUserManager* mock_user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
   std::unique_ptr<ArcKioskAppManager> arc_kiosk_app_manager_;
+
+  session_manager::SessionManager session_manager_;
 
   // `existing_user_controller_` must be destroyed before
   // `device_settings_test_helper_`.

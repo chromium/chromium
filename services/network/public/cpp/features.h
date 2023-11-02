@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,50 +8,35 @@
 #include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 
 namespace network {
 namespace features {
 
+COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kExpectCTReporting);
+COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kNetworkErrorLogging);
+COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kReporting);
+COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kThrottleDelayable);
 COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kExpectCTReporting;
+BASE_DECLARE_FEATURE(kDelayRequestsOnMultiplexedConnections);
 COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kNetworkErrorLogging;
+BASE_DECLARE_FEATURE(kPauseBrowserInitiatedHeavyTrafficForP2P);
+COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kCORBProtectionSniffing);
 COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kNetworkService;
+BASE_DECLARE_FEATURE(kProactivelyThrottleLowPriorityRequests);
+COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kCrossOriginOpenerPolicy);
 COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kReporting;
+BASE_DECLARE_FEATURE(kCrossOriginOpenerPolicyByDefault);
+COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kCoopRestrictProperties);
 COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kThrottleDelayable;
+BASE_DECLARE_FEATURE(kSplitAuthCacheByNetworkIsolationKey);
+COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kDnsOverHttpsUpgrade);
 COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kDelayRequestsOnMultiplexedConnections;
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kPauseBrowserInitiatedHeavyTrafficForP2P;
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kPauseLowPriorityBrowserRequestsOnWeakSignal;
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kCORBProtectionSniffing;
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kProactivelyThrottleLowPriorityRequests;
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kCrossOriginEmbedderPolicyCredentialless;
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kCrossOriginOpenerPolicy;
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kCrossOriginOpenerPolicyByDefault;
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kSplitAuthCacheByNetworkIsolationKey;
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kDnsOverHttpsUpgrade;
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kMdnsResponderGeneratedNameListing;
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::FeatureParam<std::string>
-    kDnsOverHttpsUpgradeDisabledProvidersParam;
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kDisableKeepaliveFetch;
+BASE_DECLARE_FEATURE(kMdnsResponderGeneratedNameListing);
+COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kOpaqueResponseBlockingV01);
+COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kOpaqueResponseBlockingV02);
 
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kTrustTokens;
+COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kTrustTokens);
 
 enum class TrustTokenOriginTrialSpec {
   // See the .cc file for definitions.
@@ -66,16 +51,13 @@ COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::FeatureParam<bool> kPlatformProvidedTrustTokenIssuance;
 
 COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kWebSocketReassembleShortMessages;
+BASE_DECLARE_FEATURE(kWebSocketReassembleShortMessages);
 
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kAcceptCHFrame;
+COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kAcceptCHFrame);
 
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kSCTAuditingRetryAndPersistReports;
+COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kSCTAuditingRetryReports);
 
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kLoaderDataPipeTuningFeature;
+COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kSCTAuditingPersistReports);
 
 enum class DataPipeAllocationSize {
   kDefaultSizeOnly,
@@ -90,27 +72,36 @@ COMPONENT_EXPORT(NETWORK_CPP)
 extern uint32_t GetLoaderChunkSize();
 
 COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kRecordRadioWakeupTrigger;
+BASE_DECLARE_FEATURE(kCorsNonWildcardRequestHeadersSupport);
+
+COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kURLLoaderSyncClient);
+
+COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kFasterSetCookie);
+
+COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kBatchSimpleURLLoader);
+
+COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kNetworkServiceMemoryCache);
+
+COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kOmitCorsClientCert);
+
+COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kCacheTransparency);
+
+COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kPervasivePayloadsList);
 
 COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kCheckCacheForQueuedRequests;
+extern const base::FeatureParam<std::string>
+    kCacheTransparencyPervasivePayloads;
+
+COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kReduceAcceptLanguage);
+
+COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kDisableResourceScheduler);
 
 COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::FeatureParam<base::TimeDelta>
-    kQueuedRequestsCacheCheckInterval;
+BASE_DECLARE_FEATURE(kPrivateNetworkAccessPreflightShortTimeout);
 
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::FeatureParam<base::TimeDelta>
-    kQueuedRequestsCacheCheckTimeThreshold;
+COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kPreconnectInNetworkService);
 
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kCorsNonWildcardRequestHeadersSupport;
-
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kURLLoaderSyncClient;
-
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kClientHintDeprecationIssue;
+COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kPreconnectOnRedirect);
 
 }  // namespace features
 }  // namespace network

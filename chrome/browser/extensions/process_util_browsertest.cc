@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -172,8 +172,7 @@ IN_PROC_BROWSER_TEST_F(ProcessUtilBrowserTest,
   // Load the extension and wait for the background context to spin up. Even
   // though the background has loaded, since it's not a persistent background
   // page, GetPersistentBackgroundPageState() should return kInvalid.
-  ExtensionTestMessageListener event_page_listener("Event Page Ready",
-                                                   /*will_reply=*/false);
+  ExtensionTestMessageListener event_page_listener("Event Page Ready");
   const Extension* event_page =
       LoadExtension(test_event_page_dir.UnpackedPath());
   ASSERT_TRUE(event_page);
@@ -197,8 +196,7 @@ IN_PROC_BROWSER_TEST_F(ProcessUtilBrowserTest,
       FILE_PATH_LITERAL("background.js"),
       "chrome.test.sendMessage('Service Worker Ready');");
 
-  ExtensionTestMessageListener service_worker_listener("Service Worker Ready",
-                                                       /*will_reply=*/false);
+  ExtensionTestMessageListener service_worker_listener("Service Worker Ready");
   const Extension* service_worker =
       LoadExtension(test_service_worker_dir.UnpackedPath());
   ASSERT_TRUE(service_worker);

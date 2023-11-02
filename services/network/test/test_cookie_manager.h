@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
@@ -32,7 +31,7 @@ class TestCookieManager : public network::mojom::CookieManager {
   void GetCookieList(
       const GURL& url,
       const net::CookieOptions& cookie_options,
-      const net::CookiePartitionKeychain& cookie_partition_keychain,
+      const net::CookiePartitionKeyCollection& cookie_partition_key_collection,
       GetCookieListCallback callback) override {}
   void DeleteCanonicalCookie(const net::CanonicalCookie& cookie,
                              DeleteCanonicalCookieCallback callback) override {}
@@ -65,6 +64,10 @@ class TestCookieManager : public network::mojom::CookieManager {
       SetStorageAccessGrantSettingsCallback callback) override {}
 
   void DispatchCookieChange(const net::CookieChangeInfo& change);
+
+  // TODO(crbug.com/1296161): Delete this when the partitioned cookies origin
+  // trial is over.
+  void ConvertPartitionedCookiesToUnpartitioned(const GURL& url) override {}
 
  private:
   // List of observers receiving cookie change notifications.

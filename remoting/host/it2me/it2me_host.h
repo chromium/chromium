@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,10 @@
 #include <string>
 #include <vector>
 
-#include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "remoting/host/host_status_observer.h"
 #include "remoting/host/it2me/it2me_confirmation_dialog.h"
 #include "remoting/host/it2me/it2me_confirmation_dialog_proxy.h"
@@ -24,10 +24,6 @@
 #include "remoting/signaling/signal_strategy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace base {
-class DictionaryValue;
-}  // namespace base
-
 namespace remoting {
 
 class ChromotingHost;
@@ -35,6 +31,7 @@ class ChromotingHostContext;
 class DesktopEnvironmentFactory;
 class FtlSignalingConnector;
 class HostEventLogger;
+class HostEventReporter;
 class HostStatusLogger;
 class LogToServer;
 class OAuthTokenGetter;
@@ -100,15 +97,22 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   // Enable or disable whether or not the session should be terminated if local
   // input is detected.
   void set_terminate_upon_input(bool terminate_upon_input);
+  bool terminate_upon_input() const { return terminate_upon_input_; }
+
+  // Enable, disable, or query whether or not the local user session is
+  // curtained when a remote user has connected.
+  void set_enable_curtaining(bool enable);
+  bool enable_curtaining() const { return enable_curtaining_; }
 
   // Indicates whether the session was initiated through the remote command
   // infrastructure for a managed device.
   void set_is_enterprise_session(bool is_enterprise_session);
+  bool is_enterprise_session() const { return is_enterprise_session_; }
 
   // Creates It2Me host structures and starts the host.
   virtual void Connect(
       std::unique_ptr<ChromotingHostContext> context,
-      std::unique_ptr<base::DictionaryValue> policies,
+      base::Value::Dict policies,
       std::unique_ptr<It2MeConfirmationDialogFactory> dialog_factory,
       base::WeakPtr<It2MeHost::Observer> observer,
       CreateDeferredConnectContext create_context,
@@ -118,10 +122,10 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   // Disconnects and shuts down the host.
   virtual void Disconnect();
 
-  // remoting::HostStatusObserver implementation.
-  void OnAccessDenied(const std::string& jid) override;
-  void OnClientConnected(const std::string& jid) override;
-  void OnClientDisconnected(const std::string& jid) override;
+  // HostStatusObserver implementation.
+  void OnClientAccessDenied(const std::string& signaling_id) override;
+  void OnClientConnected(const std::string& signaling_id) override;
+  void OnClientDisconnected(const std::string& signaling_id) override;
 
   void SetStateForTesting(It2MeHostState state,
                           protocol::ErrorCode error_code) {
@@ -134,7 +138,7 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   GetValidationCallbackForTesting();
 
   // Called when initial policies are read and when they change.
-  void OnPolicyUpdate(std::unique_ptr<base::DictionaryValue> policies);
+  void OnPolicyUpdate(base::Value::Dict policies);
 
  protected:
   friend class base::RefCountedThreadSafe<It2MeHost>;
@@ -200,6 +204,9 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   std::unique_ptr<HostStatusLogger> host_status_logger_;
   std::unique_ptr<DesktopEnvironmentFactory> desktop_environment_factory_;
   std::unique_ptr<HostEventLogger> host_event_logger_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<HostEventReporter> host_event_reporter_;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   std::unique_ptr<ChromotingHost> host_;
   int failed_login_attempts_ = 0;
@@ -236,6 +243,7 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   bool enable_dialogs_ = true;
   bool enable_notifications_ = true;
   bool terminate_upon_input_ = false;
+  bool enable_curtaining_ = false;
 };
 
 // Having a factory interface makes it possible for the test to provide a mock

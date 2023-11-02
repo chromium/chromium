@@ -1,4 +1,3 @@
-#<skip -- https://crbug.com/1230894 -- locks up with popup open, only on Mac>
 AXExpandedChanged on AXPopUpButton AXDescription="Fruit" AXValue="Apple"
 AXFocusedUIElementChanged on AXWebArea
 AXSelectedChildrenChanged on AXMenu

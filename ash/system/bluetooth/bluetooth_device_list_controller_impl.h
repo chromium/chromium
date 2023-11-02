@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,16 +11,15 @@
 #include "ash/ash_export.h"
 #include "ash/system/bluetooth/bluetooth_device_list_controller.h"
 #include "base/containers/flat_map.h"
-#include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
+#include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 
 namespace views {
 class Separator;
 }  // namespace views
 
 namespace ash {
-namespace tray {
+
 class BluetoothDetailedView;
-}  // namespace tray
 
 class BluetoothDeviceListItemView;
 class TriView;
@@ -30,7 +29,7 @@ class ASH_EXPORT BluetoothDeviceListControllerImpl
     : public BluetoothDeviceListController {
  public:
   explicit BluetoothDeviceListControllerImpl(
-      tray::BluetoothDetailedView* bluetooth_detailed_view);
+      BluetoothDetailedView* bluetooth_detailed_view);
   BluetoothDeviceListControllerImpl(const BluetoothDeviceListControllerImpl&) =
       delete;
   BluetoothDeviceListControllerImpl& operator=(
@@ -52,19 +51,19 @@ class ASH_EXPORT BluetoothDeviceListControllerImpl
   // returned.
   TriView* CreateSubHeaderIfMissingAndReorder(TriView* sub_header,
                                               int text_id,
-                                              int index);
+                                              size_t index);
 
   // Creates and initializes a view for each of the device properties within
   // |device_property_list| if a view does not already exist, otherwise re-using
   // the existing view to avoid disrupting a11y. Each view will be reordered to
   // start at |index| and will be removed from |previous_views|. The index of
   // the position after the final view that was added is returned.
-  int CreateViewsIfMissingAndReorder(
+  size_t CreateViewsIfMissingAndReorder(
       const PairedBluetoothDevicePropertiesPtrs& device_property_list,
       base::flat_map<std::string, BluetoothDeviceListItemView*>* previous_views,
-      int index);
+      size_t index);
 
-  tray::BluetoothDetailedView* bluetooth_detailed_view_;
+  BluetoothDetailedView* const bluetooth_detailed_view_;
 
   bool is_bluetooth_enabled_ = false;
   base::flat_map<std::string, BluetoothDeviceListItemView*>

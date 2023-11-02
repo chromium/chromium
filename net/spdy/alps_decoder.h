@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,12 @@
 
 #include <cstddef>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
 #include "net/base/net_export.h"
-#include "net/third_party/quiche/src/spdy/core/http2_frame_decoder_adapter.h"
-#include "net/third_party/quiche/src/spdy/core/spdy_no_op_visitor.h"
-#include "net/third_party/quiche/src/spdy/core/spdy_protocol.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/http2_frame_decoder_adapter.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/spdy_no_op_visitor.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 
 namespace net {
 
@@ -54,7 +53,7 @@ class NET_EXPORT_PRIVATE AlpsDecoder {
   // Returns an error code, or Error::kNoError if no error has occurred.
   // The requirement that the first frame MUST be SETTINGS is not enforced,
   // because that only applies to HTTP/2 connections, not ALPS data.
-  Error Decode(base::span<const char> data) WARN_UNUSED_RESULT;
+  [[nodiscard]] Error Decode(base::span<const char> data);
 
   // The number of SETTINGS frames received.
   int settings_frame_count() const;

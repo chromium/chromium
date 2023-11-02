@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
  * Receives messages from a JavaScript object that was created by calling {@link
  * Tab#registerWebMessageCallback().
  */
-public abstract class WebMessageCallback {
+abstract class WebMessageCallback {
     /**
      * Called when a message is received from the page.
      *

@@ -1,9 +1,0 @@
-Tests that rules from imported stylesheets are correctly shown and are editable in inspector.
-
-TEST ENDED IN ERROR: TypeError: Cannot read property 'nodeType' of null
-    at Elements.ElementsTreeOutline.findTreeElement (file:///b/s/w/ir/out/Release/resources/inspector/elements/elements_module.js:514:91)
-    at Elements.ElementsTreeOutline._innerUpdateChildren (file:///b/s/w/ir/out/Release/resources/inspector/elements/elements_module.js:680:177)
-    at Elements.ElementsTreeOutline._updateChildren (file:///b/s/w/ir/out/Release/resources/inspector/elements/elements_module.js:670:50)
-    at Elements.ElementsTreeOutline._updateModifiedParentNode (file:///b/s/w/ir/out/Release/resources/inspector/elements/elements_module.js:639:6)
-    at Elements.ElementsTreeOutline._updateModifiedNodes (file:///b/s/w/ir/out/Release/resources/inspector/elements/elements_module.js:631:6)
-

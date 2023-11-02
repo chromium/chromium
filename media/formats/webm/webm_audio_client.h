@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/media_log.h"
 #include "media/formats/webm/webm_parser.h"
@@ -48,7 +49,7 @@ class WebMAudioClient : public WebMParserClient {
   bool OnUInt(int id, int64_t val) override;
   bool OnFloat(int id, double val) override;
 
-  MediaLog* media_log_;
+  raw_ptr<MediaLog> media_log_;
   int channels_;
   double samples_per_second_;
   double output_samples_per_second_;

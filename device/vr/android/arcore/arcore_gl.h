@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,10 @@
 #include <vector>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "device/vr/android/arcore/ar_compositor_frame_sink.h"
 #include "device/vr/public/cpp/xr_frame_sink_client.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
@@ -54,13 +54,13 @@ class WebXrPresentationState;
 
 struct ArCoreGlCreateSessionResult {
   mojo::PendingRemote<mojom::XRFrameDataProvider> frame_data_provider;
-  mojom::VRDisplayInfoPtr display_info;
+  mojom::XRViewPtr view;
   mojo::PendingRemote<mojom::XRSessionController> session_controller;
   mojom::XRPresentationConnectionPtr presentation_connection;
 
   ArCoreGlCreateSessionResult(
       mojo::PendingRemote<mojom::XRFrameDataProvider> frame_data_provider,
-      mojom::VRDisplayInfoPtr display_info,
+      mojom::XRViewPtr view,
       mojo::PendingRemote<mojom::XRSessionController> session_controller,
       mojom::XRPresentationConnectionPtr presentation_connection);
   ArCoreGlCreateSessionResult(ArCoreGlCreateSessionResult&& other);
@@ -117,8 +117,7 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
       device::mojom::XRDepthOptionsPtr depth_options,
       ArCoreGlInitializeCallback callback);
 
-  void CreateSession(mojom::VRDisplayInfoPtr display_info,
-                     ArCoreGlCreateSessionCallback create_callback,
+  void CreateSession(ArCoreGlCreateSessionCallback create_callback,
                      base::OnceClosure shutdown_callback);
 
   const scoped_refptr<base::SingleThreadTaskRunner>& GetGlThreadTaskRunner() {
@@ -146,9 +145,6 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
   void SubmitFrame(int16_t frame_index,
                    const gpu::MailboxHolder& mailbox,
                    base::TimeDelta time_waited) override;
-  void SubmitFrameWithTextureHandle(
-      int16_t frame_index,
-      mojo::PlatformHandle texture_handle) override;
   void SubmitFrameDrawnIntoTexture(int16_t frame_index,
                                    const gpu::SyncToken&,
                                    base::TimeDelta time_waited) override;
@@ -313,6 +309,9 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
   // same aspect ratio as the screen size, but may have a different resolution.
   gfx::Size camera_image_size_ = gfx::Size(0, 0);
 
+  // The single view that ArCore supports.
+  mojom::XRView view_;
+
   display::Display::Rotation display_rotation_ = display::Display::ROTATE_0;
 
   // UV transform for drawing the camera texture, this is supplied by ARCore
@@ -370,9 +369,6 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
   // by the task runner would lead to inconsistent state on session shutdown.
   // See https://crbug.com/1065572.
   base::OnceClosure pending_getframedata_;
-
-  mojom::VRDisplayInfoPtr display_info_;
-  bool display_info_changed_ = false;
 
   mojom::VRStageParametersPtr stage_parameters_;
   uint32_t stage_parameters_id_;

@@ -15,6 +15,7 @@ Local Modifications:
 - Added license text as a comment to the top of superfasthash.c.
 - #include <stdint.h> instead of "pstdint.h".
 - #include <stdlib.h>.
+- Added casts.
 
 The license is a standard 3-clause BSD license with the following minor changes:
 

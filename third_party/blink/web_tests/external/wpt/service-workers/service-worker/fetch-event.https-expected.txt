@@ -19,14 +19,11 @@ PASS Service Worker responds to fetch event with the correct cache types
 PASS Service Worker should intercept EventSource
 FAIL Service Worker responds to fetch event with the correct integrity_metadata assert_equals: integrity expected "gs0nqru8KbsrIt5YToQqS9fYao4GQJXtcId610g7cCU=" but got ""
 PASS FetchEvent#body is a string
-FAIL FetchEvent#body is a ReadableStream promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
+PASS FetchEvent#body is a ReadableStream
 PASS FetchEvent#body is a string and is passed to network fallback
-FAIL FetchEvent#body is a ReadableStream and is passed to network fallback promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
 PASS FetchEvent#body is a none Uint8Array ReadableStream and is passed to a service worker
 PASS FetchEvent#body is a string, used and passed to network fallback
-PASS FetchEvent#body is a ReadableStream, used and passed to network fallback
 PASS FetchEvent#body is a string, cloned and passed to network fallback
-PASS FetchEvent#body is a ReadableStream, cloned and passed to network fallback
 PASS FetchEvent#body is a blob
 PASS FetchEvent#body is a blob and is passed to network fallback
 PASS Service Worker responds to fetch event with the correct keepalive value

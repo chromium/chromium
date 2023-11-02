@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,9 +19,25 @@
 
 namespace autofill_assistant {
 
+namespace {
+
+autofill::CreditCardCVCAuthenticator* GetCVCAuthenticator(
+    content::WebContents* web_contents) {
+  auto* factory =
+      autofill::ContentAutofillDriverFactory::FromWebContents(web_contents);
+  if (!factory)
+    return nullptr;
+  autofill::AutofillClient* client = factory->client();
+  if (!client)
+    return nullptr;
+  return client->GetCVCAuthenticator();
+}
+
+}  // namespace
+
 using autofill::payments::FullCardRequest;
 
-FullCardRequester::FullCardRequester() {}
+FullCardRequester::FullCardRequester() = default;
 
 void FullCardRequester::GetFullCard(
     content::WebContents* web_contents,
@@ -30,24 +46,16 @@ void FullCardRequester::GetFullCard(
   DCHECK(card);
   callback_ = std::move(callback);
 
-  autofill::ContentAutofillDriverFactory* factory =
-      autofill::ContentAutofillDriverFactory::FromWebContents(web_contents);
-  if (!factory) {
+  autofill::CreditCardCVCAuthenticator* cvc_authenticator =
+      GetCVCAuthenticator(web_contents);
+  if (!cvc_authenticator) {
     OnFullCardRequestFailed(FullCardRequest::FailureType::GENERIC_FAILURE);
     return;
   }
-
-  autofill::ContentAutofillDriver* driver =
-      factory->DriverForFrame(web_contents->GetMainFrame());
-  if (!driver) {
-    OnFullCardRequestFailed(FullCardRequest::FailureType::GENERIC_FAILURE);
-    return;
-  }
-
-  driver->browser_autofill_manager()->GetOrCreateFullCardRequest()->GetFullCard(
+  cvc_authenticator->GetFullCardRequest()->GetFullCard(
       *card, autofill::AutofillClient::UnmaskCardReason::kAutofill,
       weak_ptr_factory_.GetWeakPtr(),
-      driver->browser_autofill_manager()->GetAsFullCardRequestUIDelegate());
+      cvc_authenticator->GetAsFullCardRequestUIDelegate());
 }
 
 FullCardRequester::~FullCardRequester() = default;

@@ -1,10 +1,11 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
 
 #include <stddef.h>
+
 #include <algorithm>
 #include <memory>
 #include <utility>
@@ -13,7 +14,6 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -76,7 +76,7 @@ PrefService* GetPrefs() {
 
 void MaybeSetRawInfoWithVerificationStatus(
     AutofillProfile* profile,
-    autofill::ServerFieldType type,
+    ServerFieldType type,
     const base::android::JavaRef<jstring>& value,
     jint status) {
   if (value)
@@ -87,7 +87,7 @@ void MaybeSetRawInfoWithVerificationStatus(
 
 void MaybeSetInfoWithVerificationStatus(
     AutofillProfile* profile,
-    autofill::ServerFieldType type,
+    ServerFieldType type,
     const base::android::JavaRef<jstring>& value,
     jint status) {
   if (value)
@@ -135,18 +135,17 @@ class FullCardRequester : public FullCardRequest::ResultDelegate,
     }
 
     ContentAutofillDriver* driver =
-        factory->DriverForFrame(contents->GetMainFrame());
+        factory->DriverForFrame(contents->GetPrimaryMainFrame());
     if (!driver) {
       OnFullCardRequestFailed(FullCardRequest::FailureType::GENERIC_FAILURE);
       return;
     }
 
-    driver->browser_autofill_manager()
-        ->GetOrCreateFullCardRequest()
-        ->GetFullCard(*card_, AutofillClient::UnmaskCardReason::kPaymentRequest,
-                      AsWeakPtr(),
-                      driver->browser_autofill_manager()
-                          ->GetAsFullCardRequestUIDelegate());
+    CreditCardCVCAuthenticator* cvc_authenticator =
+        driver->autofill_manager()->client()->GetCVCAuthenticator();
+    cvc_authenticator->GetFullCardRequest()->GetFullCard(
+        *card_, AutofillClient::UnmaskCardReason::kPaymentRequest, AsWeakPtr(),
+        cvc_authenticator->GetAsFullCardRequestUIDelegate());
   }
 
  private:
@@ -239,14 +238,16 @@ PersonalDataManagerAndroid::CreateJavaCreditCardFromNative(
                                card.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR)),
       ConvertUTF8ToJavaString(env,
                               payment_request_data.basic_card_issuer_network),
-      ResourceMapper::MapToJavaDrawableId(autofill::GetIconResourceID(
-          card.CardIconStringForAutofillSuggestion())),
+      ResourceMapper::MapToJavaDrawableId(
+          GetIconResourceID(card.CardIconStringForAutofillSuggestion())),
       ConvertUTF8ToJavaString(env, card.billing_address_id()),
-      ConvertUTF8ToJavaString(env, card.server_id()),
+      ConvertUTF8ToJavaString(env, card.server_id()), card.instrument_id(),
       ConvertUTF16ToJavaString(env,
                                card.CardIdentifierStringForAutofillDisplay()),
       ConvertUTF16ToJavaString(env, card.nickname()),
-      url::GURLAndroid::FromNativeGURL(env, card.card_art_url()));
+      url::GURLAndroid::FromNativeGURL(env, card.card_art_url()),
+      static_cast<jint>(card.virtual_card_enrollment_state()),
+      ConvertUTF16ToJavaString(env, card.product_description()));
 }
 
 // static
@@ -272,6 +273,7 @@ void PersonalDataManagerAndroid::PopulateNativeCreditCardFromJava(
       ConvertJavaStringToUTF8(Java_CreditCard_getBillingAddressId(env, jcard)));
   card->set_server_id(
       ConvertJavaStringToUTF8(Java_CreditCard_getServerId(env, jcard)));
+  card->set_instrument_id(Java_CreditCard_getInstrumentId(env, jcard));
   card->SetNickname(
       ConvertJavaStringToUTF16(Java_CreditCard_getNickname(env, jcard)));
   base::android::ScopedJavaLocalRef<jobject> java_card_art_url =
@@ -300,6 +302,11 @@ void PersonalDataManagerAndroid::PopulateNativeCreditCardFromJava(
                   env, Java_CreditCard_getBasicCardIssuerNetwork(env, jcard))));
     }
   }
+  card->set_virtual_card_enrollment_state(
+      static_cast<CreditCard::VirtualCardEnrollmentState>(
+          Java_CreditCard_getVirtualCardEnrollmentState(env, jcard)));
+  card->set_product_description(ConvertJavaStringToUTF16(
+      Java_CreditCard_getProductDescription(env, jcard)));
 }
 
 // static
@@ -402,11 +409,11 @@ void PersonalDataManagerAndroid::PopulateNativeProfileFromJava(
       Java_AutofillProfile_getCountryCode(env, jprofile),
       Java_AutofillProfile_getCountryCodeStatus(env, jprofile));
   MaybeSetRawInfoWithVerificationStatus(
-      profile, autofill::PHONE_HOME_WHOLE_NUMBER,
+      profile, PHONE_HOME_WHOLE_NUMBER,
       Java_AutofillProfile_getPhoneNumber(env, jprofile),
       Java_AutofillProfile_getPhoneNumberStatus(env, jprofile));
   MaybeSetRawInfoWithVerificationStatus(
-      profile, autofill::EMAIL_ADDRESS,
+      profile, EMAIL_ADDRESS,
       Java_AutofillProfile_getEmailAddress(env, jprofile),
       Java_AutofillProfile_getEmailAddressStatus(env, jprofile));
   profile->set_language_code(ConvertJavaStringToUTF8(
@@ -548,7 +555,7 @@ PersonalDataManagerAndroid::GetBillingAddressLabelForPaymentRequest(
 
   return ConvertUTF16ToJavaString(
       env, profile.ConstructInferredLabel(
-               kLabelFields, base::size(kLabelFields), base::size(kLabelFields),
+               kLabelFields, std::size(kLabelFields), std::size(kLabelFields),
                g_browser_process->GetApplicationLocale()));
 }
 
@@ -848,14 +855,13 @@ jboolean PersonalDataManagerAndroid::IsFidoAuthenticationAvailable(
     JNIEnv* env) {
   // Don't show toggle switch if user is unable to downstream cards.
   if (personal_data_manager_->GetSyncSigninState() !=
-          autofill::AutofillSyncSigninState::
-              kSignedInAndWalletSyncTransportEnabled &&
+          AutofillSyncSigninState::kSignedInAndWalletSyncTransportEnabled &&
       personal_data_manager_->GetSyncSigninState() !=
-          autofill::AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled) {
+          AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled) {
     return false;
   }
   // Show the toggle switch only if FIDO authentication is available.
-  return ::autofill::IsCreditCardFidoAuthenticationEnabled();
+  return IsCreditCardFidoAuthenticationEnabled();
 }
 
 void PersonalDataManagerAndroid::StartRegionSubKeysRequest(
@@ -958,7 +964,7 @@ PersonalDataManagerAndroid::GetShippingAddressLabelForPaymentRequest(
       ADDRESS_HOME_ZIP,     ADDRESS_HOME_SORTING_CODE,
       ADDRESS_HOME_COUNTRY,
   };
-  size_t kLabelFields_size = base::size(kLabelFields);
+  size_t kLabelFields_size = std::size(kLabelFields);
   if (!include_country_in_label)
     --kLabelFields_size;
 

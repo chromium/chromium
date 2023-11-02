@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -87,7 +87,7 @@ void XRLightProbe::ProcessLightEstimationData(
       (cube_map_ &&
        timestamp > last_reflection_change_ + kReflectionChangeDelta)) {
     last_reflection_change_ = timestamp;
-    DispatchEvent(*blink::Event::Create(event_type_names::kReflectionchange));
+    DispatchEvent(*blink::Event::Create(event_type_names::kReflectionchange), "XRLightProbe::ProcessLightEstimationData");
   }
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -78,6 +78,8 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
     bytes_allocated_limit_for_testing_ = limit;
   }
 
+  // Anything younger than |kMinAgeForScheduledPurge| is not discarded when we
+  // do our periodic purge.
   static constexpr base::TimeDelta kMinAgeForScheduledPurge = base::Minutes(5);
 
   // The expected cost of purging should be very small (< 1ms), so it can be

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
@@ -20,6 +19,8 @@
 #include "components/translate/core/common/translate_metrics.h"
 #include "components/translate/core/language_detection/chinese_script_classifier.h"
 #include "third_party/cld_3/src/src/nnet_language_identifier.h"
+
+#include "base/record_replay.h"
 
 namespace {
 
@@ -39,7 +40,7 @@ const SimilarLanguageCode kSimilarLanguageCodes[] = {
 
 // Checks |kSimilarLanguageCodes| and returns group code.
 int GetSimilarLanguageGroupCode(const std::string& language) {
-  for (size_t i = 0; i < base::size(kSimilarLanguageCodes); ++i) {
+  for (size_t i = 0; i < std::size(kSimilarLanguageCodes); ++i) {
     if (language.find(kSimilarLanguageCodes[i].code) != 0)
       continue;
     return kSimilarLanguageCodes[i].group;
@@ -125,6 +126,12 @@ std::string FilterDetectedLanguage(const std::string& utf8_text,
 std::string DetermineTextLanguage(const std::string& utf8_text,
                                   bool* is_model_reliable,
                                   float& model_reliability_score) {
+  // Don't bother with language detection when recording/replaying, as this has
+  // caused some crashes and isn't likely to be needed by anyone.
+  if (recordreplay::IsRecordingOrReplaying("no-language-detection")) {
+    return translate::kUnknownLanguageCode;
+  }
+
   // Make a prediction.
   base::TimeTicks lang_id_start = base::TimeTicks::Now();
   chrome_lang_id::NNetLanguageIdentifier lang_id;
@@ -335,7 +342,7 @@ bool IsSameOrSimilarLanguages(const std::string& page_language,
 }
 
 bool IsServerWrongConfigurationLanguage(const std::string& language_code) {
-  for (size_t i = 0; i < base::size(kWellKnownCodesOnWrongConfiguration); ++i) {
+  for (size_t i = 0; i < std::size(kWellKnownCodesOnWrongConfiguration); ++i) {
     if (language_code == kWellKnownCodesOnWrongConfiguration[i])
       return true;
   }

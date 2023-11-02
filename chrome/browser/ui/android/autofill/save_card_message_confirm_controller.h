@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/android/autofill/save_card_message_confirm_delegate.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 
@@ -30,13 +31,17 @@ class SaveCardMessageConfirmController {
   SaveCardMessageConfirmController& operator=(
       const SaveCardMessageConfirmController&) = delete;
 
-  void ConfirmSaveCard(const std::u16string& card_label);
+  void ConfirmSaveCard(const std::u16string& card_label,
+                       const std::u16string& cardholder_account);
   void FixName(const std::u16string& inferred_cardholder_name,
-               const std::u16string& card_label);
-  void FixDate(const std::u16string& card_label);
+               const std::u16string& card_label,
+               const std::u16string& cardholder_account);
+  void FixDate(const std::u16string& card_label,
+               const std::u16string& cardholder_account);
 
-  // Legal Message should be set before confirm* is called.
-  void SetLegalMessageLine(const LegalMessageLine& line);
+  // Legal Message should be added before `ConfirmSaveCard`, `FixName`
+  // and `FixDate` is called.
+  void AddLegalMessageLine(const LegalMessageLine& line);
 
   void DismissDialog();
 
@@ -50,8 +55,8 @@ class SaveCardMessageConfirmController {
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
 
-  SaveCardMessageConfirmDelegate* delegate_;
-  content::WebContents* web_contents_;
+  raw_ptr<SaveCardMessageConfirmDelegate> delegate_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 }  // namespace autofill

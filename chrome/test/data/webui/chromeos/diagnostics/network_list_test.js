@@ -1,18 +1,21 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/network_list.js';
 
+import {ConnectivityCardElement} from 'chrome://diagnostics/connectivity_card.js';
 import {DiagnosticsBrowserProxyImpl} from 'chrome://diagnostics/diagnostics_browser_proxy.js';
-import {NavigationView, NetworkGuidInfo} from 'chrome://diagnostics/diagnostics_types.js';
-import {fakeCellularNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakePowerRoutineResults, fakeRoutineResults, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
+import {NavigationView} from 'chrome://diagnostics/diagnostics_types.js';
+import {fakeCellularNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
 import {setNetworkHealthProviderForTesting, setSystemRoutineControllerForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
+import {NetworkListElement} from 'chrome://diagnostics/network_list.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks, isVisible} from '../../test_util.js';
+import {isVisible} from '../../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 import {TestDiagnosticsBrowserProxy} from './test_diagnostics_browser_proxy.js';
@@ -40,12 +43,12 @@ export function networkListTestSuite() {
 
     // Enable all routines by default.
     routineController.setFakeSupportedRoutines(
-        [...fakeRoutineResults.keys(), ...fakePowerRoutineResults.keys()]);
+        routineController.getAllRoutines());
 
     setSystemRoutineControllerForTesting(routineController);
 
     DiagnosticsBrowserProxy = new TestDiagnosticsBrowserProxy();
-    DiagnosticsBrowserProxyImpl.instance_ = DiagnosticsBrowserProxy;
+    DiagnosticsBrowserProxyImpl.setInstance(DiagnosticsBrowserProxy);
   });
 
   teardown(() => {
@@ -54,9 +57,6 @@ export function networkListTestSuite() {
     provider.reset();
   });
 
-  /**
-   * @param {!Array<!NetworkGuidInfo>} fakeNetworkGuidInfoList
-   */
   function initializeNetworkList(fakeNetworkGuidInfoList) {
     assertFalse(!!networkListElement);
     provider.setFakeNetworkGuidInfo(fakeNetworkGuidInfoList);
@@ -80,7 +80,7 @@ export function networkListTestSuite() {
   function getConnectivityCard() {
     const connectivityCard =
         /** @type {!ConnectivityCardElement} */ (
-            networkListElement.$$('connectivity-card'));
+            networkListElement.shadowRoot.querySelector('connectivity-card'));
     assertTrue(!!connectivityCard);
     return connectivityCard;
   }
@@ -115,7 +115,8 @@ export function networkListTestSuite() {
   function getSettingsLink() {
     assertTrue(!!networkListElement);
 
-    return /** @type {!HTMLElement} */ (networkListElement.$$('#settingsLink'));
+    return /** @type {!HTMLElement} */ (
+        networkListElement.shadowRoot.querySelector('#settingsLink'));
   }
 
   /**
@@ -170,7 +171,8 @@ export function networkListTestSuite() {
         .then(() => {
           networkGuids = getOtherNetworkGuids();
           numDomRepeatInstances =
-              networkListElement.$$('#networkCardList').items.length;
+              networkListElement.shadowRoot.querySelector('#networkCardList')
+                  .items.length;
           networkCardElements = getNetworkCardElements();
           assertEquals(numDomRepeatInstances, networkGuids.length);
           for (let i = 0; i < networkCardElements.length; i++) {
@@ -181,7 +183,8 @@ export function networkListTestSuite() {
         .then(() => {
           networkGuids = getOtherNetworkGuids();
           numDomRepeatInstances =
-              networkListElement.$$('#networkCardList').items.length;
+              networkListElement.shadowRoot.querySelector('#networkCardList')
+                  .items.length;
           networkCardElements = getNetworkCardElements();
           assertEquals(numDomRepeatInstances, networkGuids.length);
           for (let i = 0; i < networkCardElements.length; i++) {
@@ -201,9 +204,9 @@ export function networkListTestSuite() {
           // and WiFi. The connectivity-card is responsbile for the Ethernet
           // guid as it's the currently active guid.
           const wifiInfoElement = dx_utils.getWifiInfoElement(
-              networkCardElements[0].$$('network-info'));
+              networkCardElements[0].shadowRoot.querySelector('network-info'));
           dx_utils.assertTextContains(
-              wifiInfoElement.$$('#ssid').value,
+              wifiInfoElement.shadowRoot.querySelector('#ssid').value,
               fakeWifiNetwork.typeProperties.wifi.ssid);
 
           assertEquals(
@@ -216,9 +219,9 @@ export function networkListTestSuite() {
         .then(() => {
           networkCardElements = getNetworkCardElements();
           const cellularInfoElement = dx_utils.getCellularInfoElement(
-              networkCardElements[0].$$('network-info'));
+              networkCardElements[0].shadowRoot.querySelector('network-info'));
           dx_utils.assertTextContains(
-              cellularInfoElement.$$('#iccid').value,
+              cellularInfoElement.shadowRoot.querySelector('#iccid').value,
               fakeCellularNetwork.typeProperties.cellular.iccid);
           assertEquals(
               getConnectivityCard().activeGuid,
@@ -229,7 +232,9 @@ export function networkListTestSuite() {
   test('ConnectivityCardHiddenWithNoActiveGuid', () => {
     return initializeNetworkList(fakeNetworkGuidInfoList)
         .then(() => changeActiveGuid(''))
-        .then(() => assertFalse(!!networkListElement.$$('connectivity-card')));
+        .then(
+            () => assertFalse(!!networkListElement.shadowRoot.querySelector(
+                'connectivity-card')));
   });
 
   test('SettingsLinkHiddenWhenNotLoggedIn', () => {
@@ -255,7 +260,7 @@ export function networkListTestSuite() {
           assertEquals(
               0, DiagnosticsBrowserProxy.getCallCount('recordNavigation'));
 
-          DiagnosticsBrowserProxy.setPreviousView(NavigationView.kSystem);
+          DiagnosticsBrowserProxy.setPreviousView(NavigationView.SYSTEM);
           networkListElement.onNavigationPageChanged({isActive: true});
 
           return flushTasks();
@@ -264,7 +269,7 @@ export function networkListTestSuite() {
           assertEquals(
               1, DiagnosticsBrowserProxy.getCallCount('recordNavigation'));
           assertArrayEquals(
-              [NavigationView.kSystem, NavigationView.kConnectivity],
+              [NavigationView.SYSTEM, NavigationView.CONNECTIVITY],
               /** @type {!Array<!NavigationView>} */
               (DiagnosticsBrowserProxy.getArgs('recordNavigation')[0]));
         });
@@ -274,7 +279,8 @@ export function networkListTestSuite() {
     return initializeNetworkList(fakeNetworkGuidInfoList)
         .then(
             () => assertTrue(isVisible(
-                /** @type {!HTMLElement} */ (networkListElement.$$(
-                    '.diagnostics-network-list-container')))));
+                /** @type {!HTMLElement} */ (
+                    networkListElement.shadowRoot.querySelector(
+                        '.diagnostics-network-list-container')))));
   });
 }

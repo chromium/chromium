@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,7 +37,7 @@ import java.util.Set;
  * Profile holds state (typically on disk) needed for browsing. Create a
  * Profile via WebLayer.
  */
-public class Profile {
+class Profile {
     private static final Map<String, Profile> sProfiles = new HashMap<>();
     private static final Map<String, Profile> sIncognitoProfiles = new HashMap<>();
 
@@ -78,6 +78,13 @@ public class Profile {
         profiles.addAll(sProfiles.values());
         profiles.addAll(sIncognitoProfiles.values());
         return profiles;
+    }
+
+    static String sanitizeProfileName(String profileName) {
+        if ("".equals(profileName)) {
+            throw new IllegalArgumentException("Profile path cannot be empty");
+        }
+        return profileName == null ? "" : profileName;
     }
 
     private final String mName;

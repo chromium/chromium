@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -102,7 +102,7 @@ public final class RemoteObjectInjector extends WebContentsObserver {
         for (RenderFrameHost frame : frames) {
             // If there's no renderer frame yet, we will add the interface when
             // it is created.
-            if (frame.isRenderFrameCreated()) {
+            if (frame.isRenderFrameLive()) {
                 addInterfaceForFrame(frame, name, object, requiredAnnotation);
             }
         }

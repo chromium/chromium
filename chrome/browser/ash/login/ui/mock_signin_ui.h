@@ -1,11 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ASH_LOGIN_UI_MOCK_SIGNIN_UI_H_
 #define CHROME_BROWSER_ASH_LOGIN_UI_MOCK_SIGNIN_UI_H_
 
+#include <memory>
 #include "chrome/browser/ash/login/ui/signin_ui.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "components/login/base_screen_handler_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {
@@ -13,7 +16,7 @@ namespace ash {
 class MockSigninUI : public SigninUI {
  public:
   MockSigninUI();
-  virtual ~MockSigninUI();
+  ~MockSigninUI() override;
   MockSigninUI(const MockSigninUI&) = delete;
   MockSigninUI& operator=(const SigninUI&) = delete;
 
@@ -21,6 +24,7 @@ class MockSigninUI : public SigninUI {
   MOCK_METHOD(void, ResumeUserOnboarding, (OobeScreenId), (override));
   MOCK_METHOD(void, StartManagementTransition, (), (override));
   MOCK_METHOD(void, ShowTosForExistingUser, (), (override));
+  MOCK_METHOD(void, ShowNewTermsForFlexUsers, (), (override));
   MOCK_METHOD(void,
               StartEncryptionMigration,
               (const UserContext&,
@@ -36,11 +40,16 @@ class MockSigninUI : public SigninUI {
               ShowPasswordChangedDialog,
               (const AccountId&, bool),
               (override));
+  MOCK_METHOD(void, StartCryptohomeRecovery, (const AccountId&), (override));
   MOCK_METHOD(void,
               ShowSigninError,
               (SigninError, const std::string&),
               (override));
   MOCK_METHOD(void, StartBrowserDataMigration, (), (override));
+  MOCK_METHOD(void,
+              SAMLConfirmPassword,
+              (::login::StringList, std::unique_ptr<UserContext>),
+              (override));
 };
 
 }  // namespace ash

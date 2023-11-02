@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -135,10 +135,10 @@ scoped_refptr<FontDataForRangeSet> FontFallbackIterator::Next(
     // TODO: crbug.com/42217 Improve this by doing the last run with a last
     // resort font that has glyphs for everything, for example the Unicode
     // LastResort font, not just Times or Arial.
-    FontCache* font_cache = FontCache::GetFontCache();
+    FontCache& font_cache = FontCache::Get();
     fallback_stage_ = kFirstCandidateForNotdefGlyph;
     scoped_refptr<SimpleFontData> last_resort =
-        font_cache->GetLastResortFallbackFont(font_description_).get();
+        font_cache.GetLastResortFallbackFont(font_description_).get();
 
     if (FontSelector* font_selector = font_fallback_list_->GetFontSelector()) {
       font_selector->ReportLastResortFallbackFontLookup(
@@ -153,8 +153,15 @@ scoped_refptr<FontDataForRangeSet> FontFallbackIterator::Next(
 
   if (fallback_stage_ == kFirstCandidateForNotdefGlyph) {
     fallback_stage_ = kOutOfLuck;
-    if (!first_candidate_)
-      FontCache::CrashWithFontInfo(&font_description_);
+    if (!first_candidate_) {
+      // [replay] hackfix: try not to crash if a font symbol cannot be found
+      scoped_refptr<SimpleFontData> system_font = UniqueSystemFontForHintList(hint_list);
+      if (system_font) {
+        // Fallback fonts are not retained in the FontDataCache.
+        return UniqueOrNext(base::AdoptRef(new FontDataForRangeSet(system_font)),
+                            hint_list);
+      }
+    }
     return first_candidate_;
   }
 
@@ -227,7 +234,7 @@ scoped_refptr<FontDataForRangeSet> FontFallbackIterator::Next(
 scoped_refptr<SimpleFontData> FontFallbackIterator::FallbackPriorityFont(
     UChar32 hint) {
   scoped_refptr<SimpleFontData> font_data =
-      FontCache::GetFontCache()->FallbackFontForCharacter(
+      FontCache::Get().FallbackFontForCharacter(
           font_description_, hint,
           font_fallback_list_->PrimarySimpleFontData(font_description_),
           font_fallback_priority_);
@@ -267,17 +274,16 @@ scoped_refptr<SimpleFontData> FontFallbackIterator::UniqueSystemFontForHintList(
   if (!hint_list.size())
     return nullptr;
 
-  FontCache* font_cache = FontCache::GetFontCache();
+  FontCache& font_cache = FontCache::Get();
   UChar32 hint = hint_list[ChooseHintIndex(hint_list)];
 
   if (!hint || previously_asked_for_hint_.Contains(hint))
     return nullptr;
   previously_asked_for_hint_.insert(hint);
 
-  scoped_refptr<SimpleFontData> font_data =
-      font_cache->FallbackFontForCharacter(
-          font_description_, hint,
-          font_fallback_list_->PrimarySimpleFontData(font_description_));
+  scoped_refptr<SimpleFontData> font_data = font_cache.FallbackFontForCharacter(
+      font_description_, hint,
+      font_fallback_list_->PrimarySimpleFontData(font_description_));
 
   if (FontSelector* font_selector = font_fallback_list_->GetFontSelector()) {
     font_selector->ReportFontLookupByFallbackCharacter(

@@ -1,0 +1,144 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 9
+
+module arc.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+import "ash/components/arc/mojom/gfx.mojom";
+import "ash/components/arc/mojom/ime.mojom";
+
+// Represents the information of an Android IME.
+struct ImeInfo {
+  // The unique ID for the Android IME. Corresponds to InputMethodInfo.getId().
+  string ime_id;
+  // The user-displayed label for the IME. Corresponds to
+  // InputMethodInfo.loadLabel().
+  string display_name;
+  // Whether the IME is enabled or not. It's equivalent to whether the IME is
+  // in ENABLED_INPUT_METHODS settings.
+  bool enabled;
+  // intent: URL to open the settings activity of the IME.
+  string settings_url;
+  // Whether the IME is allowed to be enabled in clamshell mode.
+  [MinVersion=8] bool is_allowed_in_clamshell_mode;
+};
+
+// Represents the information of the text field.
+struct TextInputState {
+  // The current cursor position in 16-bit code units in the overall text
+  // of the text field.
+  int32 cursor_pos;
+  // A part of the text in the text field. The text is in UTF-8,
+  // but should be converted to UTF-16 in both ends of mojo call.
+  mojo_base.mojom.String16 text;
+  // The range of |text| in 16-bit code units index in the overall text
+  // of the text field.
+  Range text_range;
+  // The range of the selected text in 16-bit code units index
+  // in the overall text of the text field.
+  Range selection_range;
+  // The type of the text field.
+  TextInputType type;
+  // Indicates that IMEs should do personalized learning based on the contents.
+  bool should_do_learning;
+  // The other text input flags. For example auto-capitalization flag
+  // and auto-correction flag are included in this flag.
+  // These values are from ui::TextInputFlags in ui/base/ime/text_input_flags.h
+  uint32 flags;
+  // Whether this state update is sent as a first update after an operation
+  // by Android IMEs.
+  // Android IMEs need this flag to know the latest state after their operation
+  // becomes effective.
+  bool first_update_after_operation;
+  // The range of the composition text in 16-bit code units index
+  // in the overall text of the text field.
+  [MinVersion=6] Range? composition_text_range;
+};
+
+// This interface provides methods to control a text field.
+// It is generated for each focused text field and passed to Android.
+// This interface will be closed when the focus moves to another text field.
+//
+// Next method ID: 8
+interface InputConnection {
+  // Commits text to the focused text field and set the new cursor position.
+  CommitText@0(mojo_base.mojom.String16 text, int32 new_cursor_pos);
+
+  // Deletes |before| characters of text before the cursor position,
+  // and deletes |after| characters of text after the cursor position.
+  DeleteSurroundingText@1(int32 before, int32 after);
+
+  // Has the text field finish the ongoing composition.
+  FinishComposingText@2();
+
+  // Requests to send the latest TextInputState of the active text field.
+  // For example, this is called when the IME calls getTextBeforeCursor()
+  // and getTextAfterCursor().
+  RequestTextInputState@3() => (TextInputState state);
+
+  // Replaces the currently composing text with the given text,
+  // and sets the cursor position and the selection range.
+  SetComposingText@4(mojo_base.mojom.String16 text,
+                     int32 new_cursor_pos,
+                     [MinVersion=3] Range? new_selection_range);
+
+  // Selects the given UTF-16 based character range.
+  [MinVersion=5] SetSelection@5(Range new_selection_range);
+
+  // Sends a key event.
+  [MinVersion=7] SendKeyEvent@6(KeyEventData key_event_data);
+
+  // Starts composition over a given range.
+  [MinVersion=8] SetCompositionRange@7(Range new_range);
+};
+
+// This interface is called by container when Android's InputMethodManager state
+// is changed.
+// In Android container, ArcInputMethodService IME is pre-installed to bridge
+// Chrome OS's IME to Android apps. The bridge is defined in ime.mojom.
+//
+// Next method ID: 3
+interface InputMethodManagerHost {
+  // Notifies Chrome that active IME in Android is changed.
+  OnActiveImeChanged@0(string ime_id);
+
+  // Notifies Chrome of the ID of the IME Android has disabled.
+  [MinVersion=1] OnImeDisabled@2(string ime_id);
+
+  // Notifies Chrome of information of installed IMEs in Android.
+  // The passed list doesn't contain information of our bridge IME,
+  // ArcInputMethodService.
+  OnImeInfoChanged@1(array<ImeInfo> ime_infos);
+};
+
+// This interface provides methods to control Android's InputMethodManager.
+//
+// Next method ID: 7
+interface InputMethodManagerInstance {
+  // Establishes full-duplex communication with the host.
+  Init@0(pending_remote<InputMethodManagerHost> host_remote) => ();
+
+  // Enables/Disables an IME in Android. Calling this method will add/remove
+  // the specified IME to/from ENABLED_INPUT_METHODS settings.
+  EnableIme@1(string ime_id, bool enable) => (bool success);
+
+  // Switches active IME in Android.
+  SwitchImeTo@2(string ime_id) => (bool success);
+
+  // Notifies Android's ArcInputMethodManagerService that
+  // a text field is focused.
+  [MinVersion=2] Focus@3(pending_remote<InputConnection> connection,
+                         TextInputState initial_state);
+
+  // Sends the latest TextInputState of the active text field.
+  [MinVersion=2] UpdateTextInputState@4(TextInputState state);
+
+  // Requests the active IME to show virtual keyboard.
+  [MinVersion=4] ShowVirtualKeyboard@5();
+
+  // Requests the active IME to hide virtual keyboard.
+  [MinVersion=4] HideVirtualKeyboard@6();
+};

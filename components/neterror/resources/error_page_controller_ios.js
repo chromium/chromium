@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,14 +32,14 @@ window.errorPageController = {
   updateEasterEggHighScore: function(highScore) {
     __gCrWeb.message.invokeOnHost({
       'command': 'errorPageController.updateEasterEggHighScore',
-      'highScore': highScore.toString()
+      'highScore': highScore.toString(),
     });
   },
 
   resetEasterEggHighScore: function() {
     __gCrWeb.message.invokeOnHost(
         {'command': 'errorPageController.resetEasterEggHighScore'});
-  }
+  },
 };
 
 // Create a __gCrWeb binding of initializeEasterEggHighScore so it can be

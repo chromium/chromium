@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include "ash/components/phonehub/camera_roll_manager.h"
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class FakeCameraRollManager : public CameraRollManager {
@@ -16,10 +16,14 @@ class FakeCameraRollManager : public CameraRollManager {
   FakeCameraRollManager();
   ~FakeCameraRollManager() override;
 
-  void OnCameraRollOnboardingUiDismissed() override;
   void SetIsCameraRollAvailableToBeEnabled(bool can_enable);
   void SetIsCameraRollAccessible(bool accessiable);
-  void EnableCameraRollFeatureInSystemSetting() override;
+  void SetIsAndroidStorageGranted(bool granted);
+  void SetSimulatedDownloadError(bool has_error);
+  void SetSimulatedErrorType(Observer::DownloadErrorType error_type);
+  int GetDownloadRequestCount();
+
+  bool is_camera_roll_enabled() const { return !is_avaiable_to_be_enabled_; }
 
   using CameraRollManager::SetCurrentItems;
 
@@ -30,12 +34,16 @@ class FakeCameraRollManager : public CameraRollManager {
   // CameraRollManager:
   void DownloadItem(
       const proto::CameraRollItemMetadata& item_metadata) override;
-  bool has_dismissed_onboarding_dialog_ = false;
+  int download_request_count_ = 0;
   bool is_avaiable_to_be_enabled_ = true;
   bool is_camera_roll_accessible_ = true;
+  bool is_android_storage_granted_ = true;
+  bool is_simulating_error_ = false;
+  Observer::DownloadErrorType simulated_error_type_ =
+      Observer::DownloadErrorType::kGenericError;
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_FAKE_CAMERA_ROLL_MANAGER_H_

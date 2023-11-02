@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,9 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/net_export.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
+#include "net/cert/cert_status_flags.h"
 #include "net/cert/x509_certificate.h"
 #include "net/socket/next_proto.h"
 #include "net/ssl/ssl_private_key.h"
@@ -35,9 +36,6 @@ enum {
 
 // Default minimum protocol version.
 NET_EXPORT extern const uint16_t kDefaultSSLVersionMin;
-
-// Default minimum protocol version to warn about.
-NET_EXPORT extern const uint16_t kDefaultSSLVersionMinWarn;
 
 // Default maximum protocol version.
 NET_EXPORT extern const uint16_t kDefaultSSLVersionMax;
@@ -123,7 +121,7 @@ struct NET_EXPORT SSLConfig {
   NextProtoVector alpn_protos;
 
   // True if renegotiation should be allowed for the default application-level
-  // protocol when the peer negotiates neither ALPN nor NPN.
+  // protocol when the peer does not negotiate ALPN.
   bool renego_allowed_default = false;
 
   // The list of application-level protocols to enable renegotiation for.
@@ -135,7 +133,7 @@ struct NET_EXPORT SSLConfig {
 
   // If the PartitionSSLSessionsByNetworkIsolationKey feature is enabled, the
   // session cache is partitioned by this value.
-  NetworkIsolationKey network_isolation_key;
+  NetworkAnonymizationKey network_anonymization_key;
 
   // If non-empty, a serialized ECHConfigList to use to encrypt the ClientHello.
   // If this field is non-empty, callers should handle |ERR_ECH_NOT_NEGOTIATED|

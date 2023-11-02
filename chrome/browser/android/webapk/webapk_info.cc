@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@ WebApkInfo::WebApkInfo(std::string name,
                        std::string scope,
                        std::string manifest_url,
                        std::string manifest_start_url,
+                       std::string manifest_id,
                        blink::mojom::DisplayMode display,
                        device::mojom::ScreenOrientationLockType orientation,
                        absl::optional<SkColor> theme_color,
@@ -36,6 +37,7 @@ WebApkInfo::WebApkInfo(std::string name,
       scope(std::move(scope)),
       manifest_url(std::move(manifest_url)),
       manifest_start_url(std::move(manifest_start_url)),
+      manifest_id(std::move(manifest_id)),
       display(display),
       orientation(orientation),
       theme_color(theme_color),

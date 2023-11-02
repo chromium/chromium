@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/history/core/browser/web_history_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/sync/driver/sync_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -53,9 +52,7 @@ KeyedService* WebHistoryServiceFactory::BuildServiceInstanceFor(
 }
 
 WebHistoryServiceFactory::WebHistoryServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-        "WebHistoryServiceFactory",
-        BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("WebHistoryServiceFactory") {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 

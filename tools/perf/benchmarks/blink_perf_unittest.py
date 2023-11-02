@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 from __future__ import division
@@ -47,6 +47,7 @@ class BlinkPerfTest(legacy_page_test_case.LegacyPageTestCase):
     story_set.AddStory(blink_page)
     return story_set
 
+  @decorators.Disabled('chromeos')  # Flaky: https://crbug.com/1271916
   def testBlinkPerfTracingMetricsForMeasureTime(self):
     measurements = self.RunPageTest(
         self.blink_page_test, 'file://append-child-measure-time.html')
@@ -54,14 +55,17 @@ class BlinkPerfTest(legacy_page_test_case.LegacyPageTestCase):
 
     frame_view_layouts = measurements['LocalFrameView::layout']['samples']
     # append-child-measure-time.html specifies 5 iterationCount.
-    self.assertEquals(len(frame_view_layouts), 5)
+    self.assertEqual(len(frame_view_layouts), 5)
     self.assertGreater(_Mean(frame_view_layouts), 0.001)
 
     update_layout_trees = measurements['UpdateLayoutTree']['samples']
     # append-child-measure-time.html specifies 5 iterationCount.
-    self.assertEquals(len(update_layout_trees), 5)
+    self.assertEqual(len(update_layout_trees), 5)
     self.assertGreater(_Mean(update_layout_trees), 0.001)
 
+  @decorators.Disabled(
+      'chromeos',  # Flaky: https://crbug.com/1284873
+      'android-nougat')  # Flaky: https://crbug.com/1342706
   def testBlinkPerfTracingMetricsForMeasureFrameTime(self):
     measurements = self.RunPageTest(
         self.blink_page_test, 'file://color-changes-measure-frame-time.html')
@@ -71,13 +75,13 @@ class BlinkPerfTest(legacy_page_test_case.LegacyPageTestCase):
         'LocalFrameView::RunPrePaintLifecyclePhase']['samples']
 
     # color-changes-measure-frame-time.html specifies 10 iterationCount.
-    self.assertEquals(len(frame_view_prepaints), 10)
+    self.assertEqual(len(frame_view_prepaints), 10)
     self.assertGreater(_Mean(frame_view_prepaints), 0.001)
 
     frame_view_painttrees = measurements[
         'LocalFrameView::RunPaintLifecyclePhase']['samples']
     # color-changes-measure-frame-time.html specifies 10 iterationCount.
-    self.assertEquals(len(frame_view_painttrees), 10)
+    self.assertEqual(len(frame_view_painttrees), 10)
     self.assertGreater(_Mean(frame_view_painttrees), 0.001)
 
   @decorators.Disabled('linux',
@@ -90,16 +94,17 @@ class BlinkPerfTest(legacy_page_test_case.LegacyPageTestCase):
     create_child_frame = measurements[
         'WebLocalFrameImpl::createChildframe']['samples']
     # color-changes-measure-frame-time.html specifies 7 iterationCount.
-    self.assertEquals(len(create_child_frame), 7)
+    self.assertEqual(len(create_child_frame), 7)
     self.assertGreater(_Mean(create_child_frame), 0.001)
 
     post_layout_task = measurements[
         'LocalFrameView::performPostLayoutTasks']['samples']
     # color-changes-measure-frame-time.html specifies 7 iterationCount.
-    self.assertEquals(len(post_layout_task), 7)
+    self.assertEqual(len(post_layout_task), 7)
     self.assertGreater(_Mean(post_layout_task), 0.001)
 
-  @decorators.Disabled('mac')  # Flaky on mac: crbug.com/960554
+  @decorators.Disabled('mac', # Flaky on mac: crbug.com/960554
+                       'chromeos') # Flaky on CrOS: crbug.com/1275110
   def testBlinkPerfTracingMetricsForMeasureAsync(self):
     measurements = self.RunPageTest(
         self.blink_page_test, 'file://simple-blob-measure-async.html')
@@ -108,24 +113,24 @@ class BlinkPerfTest(legacy_page_test_case.LegacyPageTestCase):
     blob_requests = measurements['BlobRequest']['samples']
     blob_readers = measurements['BlobReader']['samples']
     # simple-blob-measure-async.html specifies 6 iterationCount.
-    self.assertEquals(len(blob_requests), 6)
-    self.assertEquals(len(blob_readers), 6)
+    self.assertEqual(len(blob_requests), 6)
+    self.assertEqual(len(blob_readers), 6)
 
     # TODO(mek): Delete non-mojo code paths when blobs are always using mojo.
     using_mojo = _Mean(blob_readers) > 0.001
     if using_mojo:
-      self.assertEquals(_Mean(blob_requests), 0)
+      self.assertEqual(_Mean(blob_requests), 0)
       self.assertGreater(_Mean(blob_readers), 0.001)
     else:
       self.assertGreater(_Mean(blob_requests), 0.001)
-      self.assertEquals(_Mean(blob_readers), 0)
+      self.assertEqual(_Mean(blob_readers), 0)
 
     if using_mojo:
       read_data = measurements['BlobReader::ReadMore']['samples']
     else:
       read_data = measurements['BlobRequest::ReadRawData']['samples']
     # simple-blob-measure-async.html specifies 6 iterationCount.
-    self.assertEquals(len(read_data), 6)
+    self.assertEqual(len(read_data), 6)
     self.assertGreater(_Mean(read_data), 0.001)
 
   def testBlinkPerfLifecycleMethods(self):
@@ -183,10 +188,13 @@ class ComputeTraceEventsMetricsForBlinkPerfTest(unittest.TestCase):
     renderer_main.BeginSlice('blink', 'baz', 500, 520)
     renderer_main.EndSlice(600, 590)
 
-    self.assertEquals(
+    self.assertEqual(
         blink_perf._ComputeTraceEventsThreadTimeForBlinkPerf(
-            model, renderer_main, ['foo', 'bar', 'baz']),
-        {'foo': [15], 'bar': [18], 'baz': [35]})
+            model, renderer_main, ['foo', 'bar', 'baz']), {
+                'foo': [15],
+                'bar': [18],
+                'baz': [35]
+            })
 
   def testTraceEventMetricsMultiBlinkTest(self):
     model = model_module.TimelineModel()
@@ -217,10 +225,13 @@ class ComputeTraceEventsMetricsForBlinkPerfTest(unittest.TestCase):
     renderer_main.BeginSlice('blink', 'foo', 500, 520)
     renderer_main.EndSlice(600, 560)
 
-    self.assertEquals(
+    self.assertEqual(
         blink_perf._ComputeTraceEventsThreadTimeForBlinkPerf(
-            model, renderer_main, ['foo', 'bar', 'baz']),
-        {'foo': [15, 32], 'bar': [18, 0], 'baz': [0, 0]})
+            model, renderer_main, ['foo', 'bar', 'baz']), {
+                'foo': [15, 32],
+                'bar': [18, 0],
+                'baz': [0, 0]
+            })
 
   def testTraceEventMetricsNoThreadTimeAvailable(self):
     model = model_module.TimelineModel()
@@ -243,10 +254,12 @@ class ComputeTraceEventsMetricsForBlinkPerfTest(unittest.TestCase):
     renderer_main.BeginSlice('blink', 'bar', 400)
     renderer_main.EndSlice(420)
 
-    self.assertEquals(
+    self.assertEqual(
         blink_perf._ComputeTraceEventsThreadTimeForBlinkPerf(
-            model, renderer_main, ['foo', 'bar']),
-        {'foo': [20], 'bar': [20]})
+            model, renderer_main, ['foo', 'bar']), {
+                'foo': [20],
+                'bar': [20]
+            })
 
   def testTraceEventMetricsMultiBlinkTestCrossProcesses(self):
     model = model_module.TimelineModel()
@@ -282,10 +295,13 @@ class ComputeTraceEventsMetricsForBlinkPerfTest(unittest.TestCase):
     foo_thread.BeginSlice('blink', 'foo', 500, 520)
     foo_thread.EndSlice(600, 560)
 
-    self.assertEquals(
+    self.assertEqual(
         blink_perf._ComputeTraceEventsThreadTimeForBlinkPerf(
-            model, renderer_main, ['foo', 'bar', 'baz']),
-        {'foo': [15, 32], 'bar': [20, 0], 'baz': [0, 0]})
+            model, renderer_main, ['foo', 'bar', 'baz']), {
+                'foo': [15, 32],
+                'bar': [20, 0],
+                'baz': [0, 0]
+            })
 
   def testTraceEventMetricsNoDoubleCountingBasic(self):
     model = model_module.TimelineModel()
@@ -315,7 +331,7 @@ class ComputeTraceEventsMetricsForBlinkPerfTest(unittest.TestCase):
     renderer_main.BeginSlice('blink', 'foo', 440, 455)
     renderer_main.EndSlice(510, 505)
 
-    self.assertEquals(
+    self.assertEqual(
         blink_perf._ComputeTraceEventsThreadTimeForBlinkPerf(
             model, renderer_main, ['foo']), {'foo': [330]})
 
@@ -350,10 +366,12 @@ class ComputeTraceEventsMetricsForBlinkPerfTest(unittest.TestCase):
     renderer_main.EndSlice(510, 510)
     renderer_main.EndSlice(510, 505)
 
-    self.assertEquals(
+    self.assertEqual(
         blink_perf._ComputeTraceEventsThreadTimeForBlinkPerf(
-            model, renderer_main, ['foo', 'bar']),
-            {'foo': [300], 'bar': [320]})
+            model, renderer_main, ['foo', 'bar']), {
+                'foo': [300],
+                'bar': [320]
+            })
 
   def testAsyncTraceEventMetricsOverlapping(self):
     model = model_module.TimelineModel()
@@ -374,10 +392,12 @@ class ComputeTraceEventsMetricsForBlinkPerfTest(unittest.TestCase):
     self._AddAsyncSlice(renderer_main, 'blink', 'foo', 120, 140)
     self._AddAsyncSlice(renderer_main, 'blink', 'bar', 400, 420)
 
-    self.assertEquals(
+    self.assertEqual(
         blink_perf._ComputeTraceEventsThreadTimeForBlinkPerf(
-            model, renderer_main, ['foo', 'bar']),
-        {'foo': [30], 'bar': [20]})
+            model, renderer_main, ['foo', 'bar']), {
+                'foo': [30],
+                'bar': [20]
+            })
 
   def testAsyncTraceEventMetricsMultipleTests(self):
     model = model_module.TimelineModel()
@@ -400,7 +420,9 @@ class ComputeTraceEventsMetricsForBlinkPerfTest(unittest.TestCase):
     self._AddAsyncSlice(renderer_main, 'blink', 'foo', 80, 500)
     self._AddAsyncSlice(renderer_main, 'blink', 'bar', 90, 510)
 
-    self.assertEquals(
+    self.assertEqual(
         blink_perf._ComputeTraceEventsThreadTimeForBlinkPerf(
-            model, renderer_main, ['foo', 'bar']),
-        {'foo': [100, 100], 'bar': [100, 100]})
+            model, renderer_main, ['foo', 'bar']), {
+                'foo': [100, 100],
+                'bar': [100, 100]
+            })

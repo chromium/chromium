@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,13 +12,17 @@
 #include "base/rand_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/sync/test/integration/encryption_helper.h"
 #include "chrome/browser/sync/test/integration/passwords_helper.h"
-#include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/common/password_manager_features.h"
+#include "components/sync/base/features.h"
+#include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "content/public/test/browser_test.h"
 
@@ -236,8 +240,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
 
   // When client 1 hits a passphrase required state, we can infer that
   // client 0's passphrase has been committed. to the server.
-  ASSERT_TRUE(GetClient(1)->SetupSyncNoWaitForCompletion(
-      GetRegisteredSelectableTypes(1)));
+  ASSERT_TRUE(GetClient(1)->SetupSyncNoWaitForCompletion());
   ASSERT_TRUE(PassphraseRequiredChecker(GetSyncService(1)).Wait());
 
   // Get client 1 out of the passphrase required state.
@@ -371,9 +374,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTestWithVerifier,
   // There should be only one deletion. This is to test the bug
   // (crbug.com/1046309) where the USS client was local deletions when receiving
   // remote deletions.
-  EXPECT_EQ(
-      1, histogram_tester.GetBucketCount("Sync.ModelTypeEntityChange3.PASSWORD",
-                                         /*LOCAL_DELETION=*/0));
+  EXPECT_EQ(1, histogram_tester.GetBucketCount(
+                   "Sync.ModelTypeEntityChange3.PASSWORD",
+                   syncer::ModelTypeEntityChange::kLocalDeletion));
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
@@ -495,5 +498,108 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
   // Wait until Client 1 picks up changes.
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
   EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(1)),
+              ElementsAre(Pointee(form)));
+}
+
+// Regression test for crbug.com/1346576.
+IN_PROC_BROWSER_TEST_F(
+    TwoClientPasswordsSyncTest,
+    MatchingDeletionsConflictDoesNotInvokeTrimmingEntitySpecifics) {
+  // Add a password and wait until it is synced on both clients.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  PasswordForm form = CreateTestPasswordForm(0);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form);
+  ASSERT_TRUE(SamePasswordFormsChecker().Wait());
+  ASSERT_EQ(GetPasswordCount(0), 1);
+
+  // Simulate Client 1 going offline.
+  GetClient(1)->StopSyncServiceWithoutClearingData();
+
+  // Remove the password from both clients to simulate a conflict with matching
+  // remote and local deletion after Client 1 comes back online.
+  GetProfilePasswordStoreInterface(0)->RemoveLogin(form);
+  GetProfilePasswordStoreInterface(1)->RemoveLogin(form);
+  ASSERT_TRUE(SamePasswordFormsChecker().Wait());
+  ASSERT_EQ(GetPasswordCount(0), 0);
+
+  // Simulate Client 1 coming back online. Checks that the client does not crash
+  // due to trimming entity specifics for caching for a deleted entity (without
+  // a password field).
+  ASSERT_TRUE(GetClient(1)->StartSyncService());
+  ASSERT_TRUE(SamePasswordFormsChecker().Wait());
+}
+
+class TwoClientPasswordsSyncTestWithNotes : public SyncTest {
+ public:
+  TwoClientPasswordsSyncTestWithNotes() : SyncTest(TWO_CLIENT) {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{syncer::kPasswordNotesWithBackup},
+        /*disabled_features=*/{});
+  }
+  ~TwoClientPasswordsSyncTestWithNotes() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTestWithNotes,
+                       SyncPasswordNotesBetweenDevices) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(AllProfilesContainSamePasswordForms());
+
+  // Add a password with note to Client 0.
+  PasswordForm form = CreateTestPasswordForm(0);
+  form.notes.emplace_back(
+      /*unique_display_name=*/u"My Phone Pin", /*value=*/u"123456",
+      /*date_created=*/base::Time::Now(), /*hide_by_default=*/true);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form);
+
+  // Wait until Client 1 picks up changes.
+  ASSERT_TRUE(SamePasswordFormsChecker().Wait());
+  EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(1)),
+              ElementsAre(Pointee(form)));
+
+  // Update the note in Client 1.
+  form.notes[0].value = u"78910";
+  GetProfilePasswordStoreInterface(1)->UpdateLogin(form);
+
+  // Wait until Client 0 picks up changes.
+  ASSERT_TRUE(SamePasswordFormsChecker().Wait());
+  EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(0)),
+              ElementsAre(Pointee(form)));
+
+  // Remove all notes on Client 0.
+  form.notes.clear();
+  GetProfilePasswordStoreInterface(0)->UpdateLogin(form);
+
+  // Wait until Client 1 picks up changes.
+  ASSERT_TRUE(SamePasswordFormsChecker().Wait());
+  EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(1)),
+              ElementsAre(Pointee(form)));
+}
+
+// This tests the  logic for reading and writing the notes backup blob when
+// notes are empty.
+IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTestWithNotes,
+                       SyncPasswordWithEmptyNotesBetweenDevices) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(AllProfilesContainSamePasswordForms());
+
+  // Add a password with note to Client 0.
+  PasswordForm form = CreateTestPasswordForm(0);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form);
+
+  // Wait until Client 1 picks up changes.
+  ASSERT_TRUE(SamePasswordFormsChecker().Wait());
+  EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(1)),
+              ElementsAre(Pointee(form)));
+
+  // Update the password in Client 1.
+  form.password_value = u"new_password";
+  GetProfilePasswordStoreInterface(1)->UpdateLogin(form);
+
+  // Wait until Client 0 picks up changes.
+  ASSERT_TRUE(SamePasswordFormsChecker().Wait());
+  EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(0)),
               ElementsAre(Pointee(form)));
 }

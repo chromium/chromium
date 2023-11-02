@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -139,7 +139,8 @@ std::unique_ptr<api::BluetoothSocket> BluetoothClassicMedium::ConnectToService(
   auto start_time = base::TimeTicks::Now();
   bluetooth::mojom::ConnectToServiceResultPtr result;
   bool success = adapter_->ConnectToServiceInsecurely(
-      address, device::BluetoothUUID(service_uuid), &result);
+      address, device::BluetoothUUID(service_uuid),
+      /*should_unbond_on_error=*/true, &result);
 
   if (success && result) {
     LogConnectToServiceDuration(base::TimeTicks::Now() - start_time);

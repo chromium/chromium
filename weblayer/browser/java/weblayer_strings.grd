@@ -84,6 +84,9 @@
     <output filename="values-zh-rHK/weblayer_strings.xml" lang="zh-HK" type="android" />
     <output filename="values-zh-rTW/weblayer_strings.xml" lang="zh-TW" type="android" />
     <output filename="values-zu/weblayer_strings.xml" lang="zu" type="android" />
+    <!-- Pseudolocales -->
+    <output filename="values-ar-rXB/weblayer_strings.xml" lang="ar-XB" type="android" />
+    <output filename="values-en-rXA/weblayer_strings.xml" lang="en-XA" type="android" />
   </outputs>
   <translations>
     <file path="translations/weblayer_strings_af.xtb" lang="af" />
@@ -97,6 +100,7 @@
     <file path="translations/weblayer_strings_bs.xtb" lang="bs" />
     <file path="translations/weblayer_strings_ca.xtb" lang="ca" />
     <file path="translations/weblayer_strings_cs.xtb" lang="cs" />
+    <file path="translations/weblayer_strings_cy.xtb" lang="cy" />
     <file path="translations/weblayer_strings_da.xtb" lang="da" />
     <file path="translations/weblayer_strings_de.xtb" lang="de" />
     <file path="translations/weblayer_strings_el.xtb" lang="el" />

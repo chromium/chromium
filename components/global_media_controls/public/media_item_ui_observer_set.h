@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <map>
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "components/global_media_controls/public/media_item_ui.h"
 #include "components/global_media_controls/public/media_item_ui_observer.h"
 
@@ -34,7 +35,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIObserverSet
   void OnMediaItemUIDestroyed(const std::string& id) override;
 
  private:
-  MediaItemUIObserver* const owner_;
+  const raw_ptr<MediaItemUIObserver> owner_;
   std::map<std::string, MediaItemUI*> observed_item_uis_;
 };
 

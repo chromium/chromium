@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -115,8 +115,10 @@ void IconHelper::DidUpdateFaviconURL(
 }
 
 void IconHelper::DidStartNavigation(content::NavigationHandle* navigation) {
-  if (navigation->GetReloadType() == content::ReloadType::BYPASSING_CACHE)
+  if (navigation->IsInPrimaryMainFrame() &&
+      navigation->GetReloadType() == content::ReloadType::BYPASSING_CACHE) {
     ClearUnableToDownloadFavicons();
+  }
 }
 
 void IconHelper::MarkUnableToDownloadFavicon(const GURL& icon_url) {

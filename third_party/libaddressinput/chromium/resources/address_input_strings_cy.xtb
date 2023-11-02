@@ -1,0 +1,47 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="cy">
+<translation id="1340068511406764697">Rhaid i chi ddarparu cod post, er enghraifft <ph name="EXAMPLE" />. Ddim yn gwybod eich cod post? Gallwch ddod o hyd iddo <ph name="BEGIN_LINK" />yma<ph name="END_LINK" />.</translation>
+<translation id="2053553514270667976">Cod ZIP</translation>
+<translation id="2096368010154057602">Adran</translation>
+<translation id="2577522251608256362">Cymdogaeth</translation>
+<translation id="3050787670591910834">Rhaid i chi ddarparu cod post, er enghraifft <ph name="EXAMPLE" />.</translation>
+<translation id="3174168572213147020">Ynys</translation>
+<translation id="3713769522066937702">Nid yw fformat y cod ZIP yn cael ei adnabod. Enghraifft o god ZIP dilys: <ph name="EXAMPLE" />. Ddim yn gwybod eich cod ZIP? Gallwch ddod o hyd iddo <ph name="BEGIN_LINK" />yma<ph name="END_LINK" />.</translation>
+<translation id="3882422586004212847">Nid yw fformat y cod post yn cael ei adnabod. Enghraifft o god post dilys: <ph name="EXAMPLE" />.</translation>
+<translation id="3885155851504623709">Plwyf</translation>
+<translation id="43113324827158664">Ni allwch adael hyn yn wag.</translation>
+<translation id="4376888869070172068">Nid yw fformat y cod post yn cael ei gydnabod.</translation>
+<translation id="4518701284698680367">Rhaid i chi ddarparu cod ZIP, er enghraifft <ph name="EXAMPLE" />. Ddim yn gwybod eich cod ZIP? Dewch o hyd iddo <ph name="BEGIN_LINK" />yma<ph name="END_LINK" />.</translation>
+<translation id="5089810972385038852">Talaith</translation>
+<translation id="5095208057601539847">Talaith</translation>
+<translation id="5327248766486351172">Enw</translation>
+<translation id="5937097533660449554">Oblast</translation>
+<translation id="6132429659673988671">Maestref</translation>
+<translation id="6207937957461833379">Gwlad / Rhanbarth</translation>
+<translation id="6247152910634872706">Sefydliad</translation>
+<translation id="6271429879296260742">Cod PIN</translation>
+<translation id="6282194474023008486">Côd Post</translation>
+<translation id="6327653052522436195">Dinas</translation>
+<translation id="6403469950615936250">Nid yw fformat y cod post yn cael ei adnabod. Enghraifft o god post dilys: <ph name="EXAMPLE" />. Ddim yn gwybod eich cod post? Gallwch ddod o hyd iddo <ph name="BEGIN_LINK" />yma<ph name="END_LINK" />.</translation>
+<translation id="6735419622867539268">Nid yw <ph name="FIELD_VALUE" /> yn cael ei gydnabod fel gwerth dilys ar gyfer y maes hwn.</translation>
+<translation id="6768780634682399515">Eircode</translation>
+<translation id="6777217372746654521">Mae'n ymddangos bod y cyfeiriad hwn yn cynnwys blwch swyddfa'r post. Defnyddiwch gyfeiriad stryd neu adeilad.</translation>
+<translation id="6839929833149231406">Ardal</translation>
+<translation id="684852933191805996">Ardal</translation>
+<translation id="6970216967273061347">Ardal</translation>
+<translation id="7087282848513945231">Sir</translation>
+<translation id="7139724024395191329">Emiriaeth</translation>
+<translation id="7393381084163773901">Cyfeiriad stryd</translation>
+<translation id="7602447984296396718">Nid yw'n debyg bod y cod ZIP yn cyd-fynd â gweddill y cyfeiriad hwn.</translation>
+<translation id="7738983109397305830">Nid yw'n debyg bod y cod ZIP yn cyd-fynd â gweddill y cyfeiriad hwn. Ddim yn gwybod eich cod ZIP? Gallwch ddod o hyd iddo <ph name="BEGIN_LINK" />yma<ph name="END_LINK" />.</translation>
+<translation id="777702478322588152">Rhaglawiaeth</translation>
+<translation id="7805765407568469194">Pentref / Treflan</translation>
+<translation id="8184169487503545976">Nid yw fformat y cod ZIP yn cael ei gydnabod.</translation>
+<translation id="820600307078153032">Nid yw fformat y cod ZIP yn cael ei gydnabod. Enghraifft o god ZIP dilys: <ph name="EXAMPLE" />.</translation>
+<translation id="8446364922515257065">Do/Si</translation>
+<translation id="8449204988444194299">Tref Bost</translation>
+<translation id="8471101563037901452">Nid yw'n debyg bod y cod post yn cyd-fynd â gweddill y cyfeiriad hwn. Ddim yn gwybod eich cod post? Gallwch ddod o hyd iddo <ph name="BEGIN_LINK" />yma<ph name="END_LINK" />.</translation>
+<translation id="9104066683700680171">Nid yw'n debyg bod y cod post yn cyd-fynd â gweddill y cyfeiriad hwn.</translation>
+<translation id="9207002871037636573">Rhaid i chi ddarparu cod ZIP, er enghraifft <ph name="EXAMPLE" />.</translation>
+</translationbundle>

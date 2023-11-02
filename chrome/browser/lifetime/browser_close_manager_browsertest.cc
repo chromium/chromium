@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -24,18 +25,19 @@
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_prefs.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_switches.h"
@@ -151,7 +153,7 @@ class TabRestoreServiceChangesObserver
     service_ = nullptr;
   }
 
-  sessions::TabRestoreService* service_ = nullptr;
+  raw_ptr<sessions::TabRestoreService> service_ = nullptr;
   size_t changes_count_ = 0;
 };
 
@@ -222,18 +224,18 @@ class TestDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
     return true;
   }
 
-  static void SetDangerous(
-      content::DownloadTargetCallback callback,
-      const base::FilePath& target_path,
-      download::DownloadItem::TargetDisposition disp,
-      download::DownloadDangerType danger_type,
-      download::DownloadItem::MixedContentStatus mcs,
-      const base::FilePath& intermediate_path,
-      absl::optional<download::DownloadSchedule> download_schedule,
-      download::DownloadInterruptReason reason) {
+  static void SetDangerous(content::DownloadTargetCallback callback,
+                           const base::FilePath& target_path,
+                           download::DownloadItem::TargetDisposition disp,
+                           download::DownloadDangerType danger_type,
+                           download::DownloadItem::MixedContentStatus mcs,
+                           const base::FilePath& intermediate_path,
+                           const base::FilePath& display_name,
+                           const std::string& mime_type,
+                           download::DownloadInterruptReason reason) {
     std::move(callback).Run(target_path, disp,
                             download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL, mcs,
-                            intermediate_path, download_schedule, reason);
+                            intermediate_path, display_name, mime_type, reason);
   }
 };
 
@@ -285,7 +287,7 @@ class BrowserCloseManagerBrowserTest : public InProcessBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     command_line->AppendSwitch(
-        chromeos::switches::kIgnoreUserProfileMappingForTests);
+        ash::switches::kIgnoreUserProfileMappingForTests);
 #endif
   }
 
@@ -315,7 +317,7 @@ class BrowserCloseManagerBrowserTest : public InProcessBrowserTest {
   }
 
   void WaitForAllBrowsersToClose() {
-    for (size_t i = 0U; i < browsers_.size(); ++i)
+    while (!BrowserList::GetInstance()->empty())
       ui_test_utils::WaitForBrowserToClose();
   }
 
@@ -377,8 +379,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest, PRE_TestSessionRestore) {
   cancel_observer.Wait();
   EXPECT_FALSE(browser_shutdown::IsTryingToQuit());
 
-  browser()->tab_strip_model()
-      ->CloseWebContentsAt(1, TabStripModel::CLOSE_USER_GESTURE);
+  browser()->tab_strip_model()->CloseWebContentsAt(
+      1, TabCloseTypes::CLOSE_USER_GESTURE);
   content::TestNavigationObserver navigation_observer(
       browser()->tab_strip_model()->GetActiveWebContents(), 1);
   ASSERT_NO_FATAL_FAILURE(NavigateToURLWithDisposition(
@@ -398,7 +400,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest, PRE_TestSessionRestore) {
 // Flaky on chromium.chromeos, chromium.linux, and chromium.mac bots. See
 // https://crbug.com/1145235. It was flaky on Windows, but  crrev.com/c/2559156,
 // which added retries to ReplaceFile, should fix the Windows flakiness.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_TestSessionRestore TestSessionRestore
 #else
 #define MAYBE_TestSessionRestore DISABLED_TestSessionRestore
@@ -407,10 +409,12 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
                        MAYBE_TestSessionRestore) {
   // The testing framework launches Chrome with about:blank as args.
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
-  EXPECT_EQ(GURL(chrome::kChromeUIVersionURL),
-            browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL());
-  EXPECT_EQ(GURL("about:blank"),
-            browser()->tab_strip_model()->GetWebContentsAt(1)->GetURL());
+  EXPECT_EQ(
+      GURL(chrome::kChromeUIVersionURL),
+      browser()->tab_strip_model()->GetWebContentsAt(0)->GetLastCommittedURL());
+  EXPECT_EQ(
+      GURL("about:blank"),
+      browser()->tab_strip_model()->GetWebContentsAt(1)->GetLastCommittedURL());
 }
 
 // Test that browser windows are only closed if all browsers are ready to close
@@ -616,7 +620,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
 }
 
 // Flaky on Windows 7 (dbg) trybot, see https://crbug.com/751081.
-#if defined(OS_WIN) && !defined(NDEBUG)
+#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
 #define MAYBE_TestAddWindowDuringShutdown DISABLED_TestAddWindowDuringShutdown
 #else
 #define MAYBE_TestAddWindowDuringShutdown TestAddWindowDuringShutdown
@@ -732,7 +736,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
 
 // TODO(crbug/713201):
 // BrowserCloseManagerBrowserTest.AddBeforeUnloadDuringClosing flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_AddBeforeUnloadDuringClosing DISABLED_AddBeforeUnloadDuringClosing
 #else
 #define MAYBE_AddBeforeUnloadDuringClosing AddBeforeUnloadDuringClosing
@@ -818,10 +822,12 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
 
   // Check the restored browser contents.
   EXPECT_EQ(2, browser2->tab_strip_model()->count());
-  EXPECT_EQ(embedded_test_server()->GetURL("/beforeunload.html"),
-            browser2->tab_strip_model()->GetWebContentsAt(0)->GetURL());
-  EXPECT_EQ(embedded_test_server()->GetURL("/title2.html"),
-            browser2->tab_strip_model()->GetWebContentsAt(1)->GetURL());
+  EXPECT_EQ(
+      embedded_test_server()->GetURL("/beforeunload.html"),
+      browser2->tab_strip_model()->GetWebContentsAt(0)->GetLastCommittedURL());
+  EXPECT_EQ(
+      embedded_test_server()->GetURL("/title2.html"),
+      browser2->tab_strip_model()->GetWebContentsAt(1)->GetLastCommittedURL());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
@@ -919,7 +925,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
 // Mac has its own in-progress download prompt in app_controller_mac.mm, so
 // BrowserCloseManager should simply close all browsers. If there are no
 // browsers, it should not crash.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest, TestWithDownloads) {
   ASSERT_NO_FATAL_FAILURE(CreateStalledDownload(browser()));
 
@@ -934,7 +940,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest, TestWithDownloads) {
   TestBrowserCloseManager::AttemptClose(
       TestBrowserCloseManager::NO_USER_CHOICE);
 }
-#else  // defined(OS_MAC)
+#else  // BUILDFLAG(IS_MAC)
 
 // Test shutdown with a DANGEROUS_URL download undecided.
 IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
@@ -982,8 +988,10 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest, TestWithDownloads) {
       TestBrowserCloseManager::USER_CHOICE_USER_CANCELS_CLOSE);
   EXPECT_FALSE(browser_shutdown::IsTryingToQuit());
   navigation_observer.Wait();
-  EXPECT_EQ(GURL(chrome::kChromeUIDownloadsURL),
-            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+  EXPECT_EQ(GURL(chrome::kChromeUIDownloadsURL), browser()
+                                                     ->tab_strip_model()
+                                                     ->GetActiveWebContents()
+                                                     ->GetLastCommittedURL());
 
   TestBrowserCloseManager::AttemptClose(
       TestBrowserCloseManager::USER_CHOICE_USER_ALLOWS_CLOSE);
@@ -1013,8 +1021,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
       TestBrowserCloseManager::USER_CHOICE_USER_CANCELS_CLOSE);
   EXPECT_FALSE(browser_shutdown::IsTryingToQuit());
   navigation_observer.Wait();
-  EXPECT_EQ(GURL(chrome::kChromeUIDownloadsURL),
-            otr_browser->tab_strip_model()->GetActiveWebContents()->GetURL());
+  EXPECT_EQ(GURL(chrome::kChromeUIDownloadsURL), otr_browser->tab_strip_model()
+                                                     ->GetActiveWebContents()
+                                                     ->GetLastCommittedURL());
 
   TestBrowserCloseManager::AttemptClose(
       TestBrowserCloseManager::USER_CHOICE_USER_ALLOWS_CLOSE);
@@ -1085,7 +1094,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
     if (!base::PathExists(path))
       ASSERT_TRUE(base::CreateDirectory(path));
     other_profile =
-        Profile::CreateProfile(path, NULL, Profile::CREATE_MODE_SYNCHRONOUS);
+        Profile::CreateProfile(path, nullptr, Profile::CREATE_MODE_SYNCHRONOUS);
   }
   Profile* other_profile_ptr = other_profile.get();
   profile_manager->RegisterTestingProfile(std::move(other_profile), true);
@@ -1106,12 +1115,13 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   Browser* opened_browser = BrowserList::GetInstance()->GetLastActive();
   ASSERT_TRUE(opened_browser);
   EXPECT_NE(other_profile_ptr, opened_browser->profile());
-  EXPECT_EQ(
-      GURL(chrome::kChromeUIDownloadsURL),
-      opened_browser->tab_strip_model()->GetActiveWebContents()->GetURL());
-  EXPECT_EQ(GURL("about:blank"),
-            other_profile_browser->tab_strip_model()->GetActiveWebContents()
-                ->GetURL());
+  EXPECT_EQ(GURL(chrome::kChromeUIDownloadsURL),
+            opened_browser->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetVisibleURL());
+  EXPECT_EQ(GURL("about:blank"), other_profile_browser->tab_strip_model()
+                                     ->GetActiveWebContents()
+                                     ->GetVisibleURL());
 
   TestBrowserCloseManager::AttemptClose(
       TestBrowserCloseManager::USER_CHOICE_USER_ALLOWS_CLOSE);
@@ -1149,7 +1159,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
 }
 
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,11 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/arc/arc_features.h"
+#include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/metrics/arc_metrics_constants.h"
+#include "ash/components/arc/session/arc_management_transition.h"
+#include "ash/components/arc/test/fake_app_instance.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -16,11 +21,6 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
-#include "components/arc/arc_features.h"
-#include "components/arc/arc_prefs.h"
-#include "components/arc/metrics/arc_metrics_constants.h"
-#include "components/arc/session/arc_management_transition.h"
-#include "components/arc/test/fake_app_instance.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -108,7 +108,7 @@ TEST_P(ArcManagementTransitionNotificationTest, BaseFlow) {
   arc_app_test()->app_instance()->SendRefreshAppList(
       arc_app_test()->fake_apps());
   const std::string app_id =
-      ArcAppTest::GetAppId(arc_app_test()->fake_apps()[0]);
+      ArcAppTest::GetAppId(*arc_app_test()->fake_apps()[0]);
 
   profile()->GetPrefs()->SetInteger(prefs::kArcManagementTransition,
                                     static_cast<int>(arc_transition()));

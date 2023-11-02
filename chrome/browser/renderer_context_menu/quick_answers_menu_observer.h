@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
@@ -40,7 +41,7 @@ class QuickAnswersMenuObserver : public RenderViewContextMenuObserver {
       uint32_t end_offset);
 
   // The interface to add a context-menu item and update it.
-  RenderViewContextMenuProxy* proxy_;
+  raw_ptr<RenderViewContextMenuProxy> proxy_;
 
   gfx::Rect bounds_in_screen_;
 

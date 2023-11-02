@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,8 @@
 namespace back_forward_cache {
 // Constructs a chrome-specific DisabledReason
 content::BackForwardCache::DisabledReason DisabledReason(
-    DisabledReasonId reason_id);
+    DisabledReasonId reason_id,
+    const std::string& context = "");
 }  // namespace back_forward_cache
 
 #endif  // COMPONENTS_BACK_FORWARD_CACHE_BACK_FORWARD_CACHE_DISABLE_H_

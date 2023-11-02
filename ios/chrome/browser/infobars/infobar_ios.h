@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -33,10 +32,10 @@ class InfoBarIOS : public infobars::InfoBar, public InfoBarControllerDelegate {
   // Observer interface for objects interested in changes to InfoBarIOS.
   class Observer : public base::CheckedObserver {
    public:
-    // Called when |infobar|'s accepted() is set to a new value.
+    // Called when `infobar`'s accepted() is set to a new value.
     virtual void DidUpdateAcceptedState(InfoBarIOS* infobar) {}
 
-    // Called when |infobar| is destroyed.
+    // Called when `infobar` is destroyed.
     virtual void InfobarDestroyed(InfoBarIOS* infobar) {}
   };
 

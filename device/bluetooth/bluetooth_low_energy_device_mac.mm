@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "device/bluetooth/bluetooth_adapter_mac.h"
@@ -21,18 +22,6 @@
 #include "device/bluetooth/bluetooth_remote_gatt_descriptor_mac.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service_mac.h"
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
-
-// Remove when Chrome no longer supports 10.12.
-#if defined(MAC_OS_X_VERSION_10_13)
-
-// In the 10.13 SDK, CBPeripheral became a subclass of CBPeer, which defines
-// -[CBPeer identifier] as partially available. Pretend it still exists on
-// CBPeripheral. At runtime the implementation on CBPeer will be invoked.
-@interface CBPeripheral (HighSierraSDK)
-@property(readonly, nonatomic) NSUUID* identifier;
-@end
-
-#endif  // MAC_OS_X_VERSION_10_13
 
 namespace device {
 
@@ -205,6 +194,10 @@ void BluetoothLowEnergyDeviceMac::ConnectToServiceInsecurely(
     ConnectToServiceCallback callback,
     ConnectToServiceErrorCallback error_callback) {
   NOTIMPLEMENTED();
+}
+
+bool BluetoothLowEnergyDeviceMac::IsLowEnergyDevice() {
+  return true;
 }
 
 void BluetoothLowEnergyDeviceMac::CreateGattConnectionImpl(
@@ -450,13 +443,12 @@ void BluetoothLowEnergyDeviceMac::SendNotificationIfDiscoveryComplete() {
   // Notify when all services have been discovered.
   bool discovery_complete =
       discovery_pending_count_ == 0 &&
-      std::find_if_not(
-          gatt_services_.begin(),
-          gatt_services_.end(), [](GattServiceMap::value_type & pair) {
+      base::ranges::all_of(
+          gatt_services_, [](GattServiceMap::value_type& pair) {
             BluetoothRemoteGattService* gatt_service = pair.second.get();
             return static_cast<BluetoothRemoteGattServiceMac*>(gatt_service)
                 ->IsDiscoveryComplete();
-          }) == gatt_services_.end();
+          });
   if (discovery_complete) {
     DVLOG(1) << *this << ": Discovery complete.";
     device_uuids_.ReplaceServiceUUIDs(gatt_services_);

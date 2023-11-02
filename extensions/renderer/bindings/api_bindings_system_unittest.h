@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "extensions/renderer/bindings/api_binding_test.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/api_request_handler.h"
@@ -63,7 +62,7 @@ class APIBindingsSystemTest : public APIBindingTest {
 
   // Returns the DictionaryValue representing the schema with the given API
   // name.
-  const base::DictionaryValue& GetAPISchema(const std::string& api_name);
+  const base::Value::Dict& GetAPISchema(const std::string& api_name);
 
   // Callback for event listeners changing.
   void OnEventListenersChanged(const std::string& event_name,
@@ -100,7 +99,7 @@ class APIBindingsSystemTest : public APIBindingTest {
 
  private:
   // The API schemas for the fake APIs.
-  std::map<std::string, std::unique_ptr<base::DictionaryValue>> api_schemas_;
+  std::map<std::string, base::Value::Dict> api_schemas_;
 
   // The APIBindingsSystem associated with the test. Safe to use across multiple
   // contexts.

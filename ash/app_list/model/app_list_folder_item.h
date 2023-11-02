@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,11 +31,15 @@ class AppListConfig;
 class AppListItemList;
 class AppListModelDelegate;
 
-// AppListFolderItem implements the model/controller for folders.
+// AppListFolderItem implements the model/controller for folders. It observes
+// all the items in its list to watch for property changes (e.g. whether a child
+// item is a new install).
 class APP_LIST_MODEL_EXPORT AppListFolderItem
     : public AppListItem,
       public FolderImageObserver,
-      public AppListConfigProvider::Observer {
+      public AppListConfigProvider::Observer,
+      public AppListItemListObserver,
+      public AppListItemObserver {
  public:
   // The folder type affects folder behavior.
   enum FolderType {
@@ -74,14 +78,25 @@ class APP_LIST_MODEL_EXPORT AppListFolderItem
   // AppListItem overrides:
   const char* GetItemType() const override;
   AppListItem* FindChildItem(const std::string& id) override;
+  AppListItem* GetChildItemAt(size_t index) override;
   size_t ChildItemCount() const override;
+  void RequestFolderIconUpdate() override;
 
   // AppListConfigProvider::Observer override:
   void OnAppListConfigCreated(AppListConfigType config_type) override;
 
-  // Persistent folders will be retained even if there is 1 app in them.
-  bool IsPersistent() const;
-  void SetIsPersistent(bool is_persistent);
+  // AppListItemListObserver:
+  void OnListItemAdded(size_t index, AppListItem* item) override;
+  void OnListItemRemoved(size_t index, AppListItem* item) override;
+
+  // AppListItemObserver:
+  void ItemBadgeVisibilityChanged() override;
+  void ItemIsNewInstallChanged() override;
+
+  // Whether this is a system created folder like the Linux apps folder or the
+  // OEM folder.
+  bool IsSystemFolder() const;
+  void SetIsSystemFolder(bool is_system_folder);
 
   // Returns true if this folder is a candidate for auto-removal (based on its
   // type and the number of children it has).
@@ -108,6 +123,14 @@ class APP_LIST_MODEL_EXPORT AppListFolderItem
   void EnsureIconsForAvailableConfigTypes(
       const std::vector<AppListConfigType>& config_types,
       bool request_icon_update);
+
+  // Sets the "new install" property on this folder item if any of the items
+  // inside the folder are new installs.
+  void UpdateIsNewInstall();
+
+  // Adds a notification badge on this folder item if any of the items inside
+  // the folder are new installs.
+  void UpdateNotificationBadge();
 
   // The type of folder; may affect behavior of folder views.
   const FolderType folder_type_;

@@ -27,10 +27,6 @@
 </body>
 
 <script>
-
-var notify_on_first_name_input_change = false;
-var first_name_input_changed = false;
-
 function CountryChanged() {
   RemoveForm('syntheticform1');
 
@@ -40,15 +36,6 @@ function CountryChanged() {
   AddFields(new_synth_form, 'syntheticform1');
 
   document.getElementsByTagName('body')[0].appendChild(new_synth_form);
-}
-
-function hasRefilled() {
-  var first_name_input = document.getElementById('firstname_syntheticform1');
-  if (first_name_input && first_name_input_changed) {
-    window.domAutomationController.send(first_name_input.value != '');
-  } else {
-    notify_on_first_name_input_change = true;
-  }
 }
 
 function RemoveForm(form_id) {
@@ -110,12 +97,7 @@ function AddFields(new_form, form_id) {
   i.setAttribute('autocomplete', 'tel');
   new_form.appendChild(i);
 
-  first_name_input.onchange = function() {
-    if (notify_on_first_name_input_change)
-      window.domAutomationController.send(first_name_input.value != '');
-    else
-      first_name_input_changed = true;
-  }
+  window['refill'] = true;
+  console.log('An event happened that should trigger a refill.');
 }
-
 </script>

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/browser/ui/android/layouts/scene_layer.h"
 
@@ -59,10 +60,10 @@ class ContextualSearchSceneLayer : public SceneLayer,
       jint open_tab_icon_resource_id,
       jint close_icon_resource_id,
       jint progress_bar_background_resource_id,
+      jint progress_bar_background_tint,
       jint progress_bar_resource_id,
+      jint progress_bar_tint,
       jint search_promo_resource_id,
-      jint bar_banner_ripple_resource_id,
-      jint bar_banner_text_resource_id,
       jfloat dp_to_px,
       jfloat layout_width,
       jfloat layout_height,
@@ -73,12 +74,6 @@ class ContextualSearchSceneLayer : public SceneLayer,
       jfloat search_promo_height,
       jfloat search_promo_opacity,
       jint search_promo_background_color,
-      // Panel Help
-      jint panel_help_resource_id,
-      jboolean panel_help_visible,
-      jfloat panel_help_height,
-      jfloat panel_help_opacity,
-      jint panel_help_container_background_color,
       // Related Searches
       jint related_searches_in_content_resource_id,
       jboolean related_searches_in_content_visible,
@@ -87,13 +82,7 @@ class ContextualSearchSceneLayer : public SceneLayer,
       jboolean related_searches_in_bar_visible,
       jfloat related_searches_in_bar_height,
       jfloat related_searches_in_bar_redundant_padding,
-      // Banner etc
-      jboolean search_bar_banner_visible,
-      jfloat search_bar_banner_height,
-      jfloat search_bar_banner_padding,
-      jfloat search_bar_banner_ripple_width,
-      jfloat search_bar_banner_ripple_opacity,
-      jfloat search_bar_banner_text_opacity,
+      // Panel position etc
       jfloat search_panel_x,
       jfloat search_panel_y,
       jfloat search_panel_width,
@@ -145,7 +134,7 @@ class ContextualSearchSceneLayer : public SceneLayer,
  private:
   void FetchThumbnail(const base::android::JavaRef<jobject>& j_profile);
 
-  JNIEnv* env_;
+  raw_ptr<JNIEnv> env_;
   base::android::ScopedJavaGlobalRef<jobject> object_;
   std::string thumbnail_url_;
   std::unique_ptr<BitmapFetcher> fetcher_;

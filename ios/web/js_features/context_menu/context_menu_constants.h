@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,9 @@ namespace web {
 // findElementAtPoint.
 extern const char kContextMenuElementRequestId[];
 
+// Optional key. Represents element's tagName attribute.
+extern const char kContextMenuElementTagName[];
+
 // Optional key. Represents element's href attribute if present or parent's href
 // if element is an image.
 extern const char kContextMenuElementHyperlink[];
@@ -29,16 +32,28 @@ extern const char kContextMenuElementSource[];
 extern const char kContextMenuElementTitle[];
 
 // Optional key. Represents referrer policy to use for navigations away from the
-// current page. Key is present if |kContextMenuElementError| is |NO_ERROR|.
+// current page. Key is present if `kContextMenuElementError` is `NO_ERROR`.
 extern const char kContextMenuElementReferrerPolicy[];
 
 // Optional key. Represents element's innerText attribute if present (<a>
-// elements with href only).
+// elements with href only or any other text element).
 extern const char kContextMenuElementInnerText[];
+
+// Optional key. Represents element's offset into innerText where tap occurred
+// (text elements only).
+extern const char kContextMenuElementTextOffset[];
 
 // Optional key. Represents element's alt attribute if present (<img> element
 // only).
 extern const char kContextMenuElementAlt[];
+
+// Optional key. Reprensents the extended text surrounding the selected
+// character.
+extern const char kContextMenuElementSurroundingText[];
+
+// Optional key. Reprensents the extended offset of the a selected character
+// within its surrounding text.
+extern const char kContextMenuElementSurroundingTextOffset[];
 
 }  // namespace web
 

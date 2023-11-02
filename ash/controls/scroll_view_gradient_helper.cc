@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,42 +6,41 @@
 
 #include <memory>
 
-#include "ash/shelf/gradient_layer_delegate.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/logging.h"
-#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/animation/animation_builder.h"
 
 namespace ash {
-namespace {
 
-// Height of the gradient in DIPs.
-constexpr int kGradientHeight = 16;
-
-}  // namespace
+const base::TimeDelta kAnimationDuration = base::Milliseconds(50);
 
 ScrollViewGradientHelper::ScrollViewGradientHelper(
-    views::ScrollView* scroll_view)
-    : scroll_view_(scroll_view) {
+    views::ScrollView* scroll_view,
+    int gradient_height)
+    : scroll_view_(scroll_view), gradient_height_(gradient_height) {
   DCHECK(scroll_view_);
   DCHECK(scroll_view_->layer());
   on_contents_scrolled_subscription_ =
       scroll_view_->AddContentsScrolledCallback(
-          base::BindRepeating(&ScrollViewGradientHelper::UpdateGradientZone,
+          base::BindRepeating(&ScrollViewGradientHelper::UpdateGradientMask,
                               base::Unretained(this)));
   on_contents_scroll_ended_subscription_ =
       scroll_view_->AddContentsScrollEndedCallback(
-          base::BindRepeating(&ScrollViewGradientHelper::UpdateGradientZone,
+          base::BindRepeating(&ScrollViewGradientHelper::UpdateGradientMask,
                               base::Unretained(this)));
+  scroll_view_->SetPreferredViewportMargins(
+      gfx::Insets::VH(gradient_height_, 0));
 }
 
 ScrollViewGradientHelper::~ScrollViewGradientHelper() {
   RemoveMaskLayer();
+  scroll_view_->SetPreferredViewportMargins(gfx::Insets());
 }
 
-void ScrollViewGradientHelper::UpdateGradientZone() {
+void ScrollViewGradientHelper::UpdateGradientMask() {
   DCHECK(scroll_view_->contents());
 
   const gfx::Rect visible_rect = scroll_view_->GetVisibleRect();
@@ -51,53 +50,72 @@ void ScrollViewGradientHelper::UpdateGradientZone() {
   const bool show_bottom_gradient =
       visible_rect.bottom() < scroll_view_->contents()->bounds().bottom();
 
-  const gfx::Rect scroll_view_bounds = scroll_view_->bounds();
-  gfx::Rect top_gradient_bounds;
-  if (show_top_gradient) {
-    top_gradient_bounds =
-        gfx::Rect(0, 0, scroll_view_bounds.width(), kGradientHeight);
+  // If no gradient is needed, remove the gradient mask.
+  if (scroll_view_->contents()->bounds().IsEmpty()) {
+    RemoveMaskLayer();
+    return;
   }
-  gfx::Rect bottom_gradient_bounds;
-  if (show_bottom_gradient) {
-    bottom_gradient_bounds =
-        gfx::Rect(0, scroll_view_bounds.height() - kGradientHeight,
-                  scroll_view_bounds.width(), kGradientHeight);
-  }
-
-  // If no gradient is needed, remove the mask layer.
-  if (top_gradient_bounds.IsEmpty() && bottom_gradient_bounds.IsEmpty()) {
+  if (!show_top_gradient && !show_bottom_gradient) {
     RemoveMaskLayer();
     return;
   }
 
-  // If a gradient is needed, lazily create the GradientLayerDelegate.
-  if (!gradient_layer_) {
-    DVLOG(1) << "Adding gradient mask layer";
-    gradient_layer_ = std::make_unique<GradientLayerDelegate>();
-    scroll_view_->layer()->SetMaskLayer(gradient_layer_->layer());
+  // Vertical linear gradient, from top to bottom.
+  gfx::LinearGradient gradient_mask(/*angle=*/-90);
+  float fade_position =
+      static_cast<float>(gradient_height_) / scroll_view_->bounds().height();
+
+  // Top fade in section.
+  if (show_top_gradient) {
+    gradient_mask.AddStep(/*fraction=*/0, /*alpha=*/0);
+    gradient_mask.AddStep(fade_position, 255);
   }
 
-  // If bounds didn't change, there's nothing to update.
-  if (top_gradient_bounds == gradient_layer_->start_fade_zone_bounds() &&
-      bottom_gradient_bounds == gradient_layer_->end_fade_zone_bounds()) {
-    return;
+  // Bottom fade out section.
+  if (show_bottom_gradient) {
+    gradient_mask.AddStep(/*fraction=*/(1 - fade_position), /*alpha=*/255);
+    gradient_mask.AddStep(1, 0);
   }
 
-  // Update the fade in / fade out zones.
-  gradient_layer_->set_start_fade_zone(
-      {top_gradient_bounds, /*fade_in=*/true, /*is_horizontal=*/false});
-  gradient_layer_->set_end_fade_zone(
-      {bottom_gradient_bounds, /*fade_in=*/false, /*is_horizontal=*/false});
-  gradient_layer_->layer()->SetBounds(scroll_view_->layer()->bounds());
-  scroll_view_->SchedulePaint();
+  // If a gradient update is needed, add the gradient mask to the scroll view
+  // layer.
+  if (scroll_view_->layer()->gradient_mask() != gradient_mask) {
+    DVLOG(1) << "Adding gradient mask";
+
+    if (first_time_update_) {
+      scroll_view_->layer()->SetGradientMask(gradient_mask);
+    } else {
+      // On first call to UpdateGradientMask, animate in the gradient.
+      AnimateMaskLayer(gradient_mask);
+      first_time_update_ = true;
+    }
+  }
+}
+
+void ScrollViewGradientHelper::AnimateMaskLayer(
+    const gfx::LinearGradient& target_gradient) {
+  // Instead of starting the animation with fully transparent frame,
+  // use an initial value so the first frame is opaque.
+  gfx::LinearGradient start_gradient(target_gradient);
+  for (auto& step : start_gradient.steps()) {
+    if (step.alpha < 255)
+      step.alpha = 255;
+  }
+  scroll_view_->layer()->SetGradientMask(start_gradient);
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .SetDuration(kAnimationDuration)
+      .SetGradientMask(scroll_view_, target_gradient);
 }
 
 void ScrollViewGradientHelper::RemoveMaskLayer() {
-  if (!gradient_layer_)
+  if (scroll_view_->layer()->gradient_mask().IsEmpty())
     return;
-  DVLOG(1) << "Removing gradient mask layer";
-  scroll_view_->layer()->SetMaskLayer(nullptr);
-  gradient_layer_.reset();
+
+  DVLOG(1) << "Removing gradient mask";
+  scroll_view_->layer()->SetGradientMask(gfx::LinearGradient::GetEmpty());
 }
 
 }  // namespace ash

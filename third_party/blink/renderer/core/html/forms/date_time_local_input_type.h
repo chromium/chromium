@@ -40,7 +40,7 @@ class ExceptionState;
 class DateTimeLocalInputType final : public BaseTemporalInputType {
  public:
   explicit DateTimeLocalInputType(HTMLInputElement& element)
-      : BaseTemporalInputType(element) {}
+      : BaseTemporalInputType(Type::kDateTimeLocal, element) {}
 
  private:
   void CountUsage() override;
@@ -55,6 +55,8 @@ class DateTimeLocalInputType final : public BaseTemporalInputType {
   String LocalizeValue(const String&) const override;
   void WarnIfValueIsInvalid(const String&) const override;
 
+  String SanitizeValue(const String&) const override;
+
   // BaseTemporalInputType functions
   String FormatDateTimeFieldsState(const DateTimeFieldsState&) const final;
   void SetupLayoutParameters(DateTimeEditElement::LayoutParameters&,
@@ -68,6 +70,13 @@ class DateTimeLocalInputType final : public BaseTemporalInputType {
                      bool has_minute,
                      bool has_second) const override;
   String AriaLabelForPickerIndicator() const override;
+};
+
+template <>
+struct DowncastTraits<DateTimeLocalInputType> {
+  static bool AllowFrom(const InputType& type) {
+    return type.IsDateTimeLocalInputType();
+  }
 };
 
 }  // namespace blink

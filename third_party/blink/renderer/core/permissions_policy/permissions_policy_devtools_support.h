@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,12 @@ enum class PermissionsPolicyBlockReason {
   // or in iframe attribute.
   kHeader,
   kIframeAttribute,
+  // All permissions are disabled by default for fenced frames, irrespective of
+  // headers.
+  kInFencedFrameTree,
+  // Feature is not specified in an Isolated App's Web App Manifest and will be
+  // disabled.
+  kInIsolatedApp,
 };
 
 struct PermissionsPolicyBlockLocator {

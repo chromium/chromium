@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,9 +7,94 @@
 import contextlib
 import logging
 import os
+import pathlib
+import re
+import shutil
 import struct
 import tempfile
 import zipfile
+
+
+class _ApkFileManager:
+  def __init__(self, temp_dir):
+    self._temp_dir = pathlib.Path(temp_dir)
+    self._subdir_by_apks_path = {}
+    self._infolist_by_path = {}
+
+  def _MapPath(self, path):
+    # Use numbered subdirectories for uniqueness.
+    # Suffix with basename(path) for readability.
+    default = '-'.join(
+        [str(len(self._subdir_by_apks_path)),
+         os.path.basename(path)])
+    return self._temp_dir / self._subdir_by_apks_path.setdefault(path, default)
+
+  def InfoList(self, path):
+    """Returns zipfile.ZipFile(path).infolist()."""
+    ret = self._infolist_by_path.get(path)
+    if ret is None:
+      with zipfile.ZipFile(path) as z:
+        ret = z.infolist()
+      self._infolist_by_path[path] = ret
+    return ret
+
+  def SplitPath(self, minimal_apks_path, split_name):
+    """Returns the path to the apk split extracted by ExtractSplits.
+
+    Args:
+      minimal_apks_path: The .apks file that was passed to ExtractSplits().
+      split_name: Then name of the split.
+
+    Returns:
+      Path to the extracted .apk file.
+    """
+    subdir = self._subdir_by_apks_path[minimal_apks_path]
+    if '-' in split_name:
+      name = f'{split_name}.apk'
+    else:
+      name = f'{split_name}-master.apk'
+    return self._temp_dir / subdir / 'splits' / name
+
+  def ExtractSplits(self, minimal_apks_path):
+    """Extracts the master splits in the given .apks file.
+
+    Returns:
+      List of split names, with "base" always appearing first.
+    """
+    dest = self._MapPath(minimal_apks_path)
+    split_names = []
+    logging.debug('Extracting %s', minimal_apks_path)
+    with zipfile.ZipFile(minimal_apks_path) as z:
+      for filename in z.namelist():
+        # E.g.:
+        # splits/base-master.apk
+        # splits/base-hi.apk
+        # splits/vr-master.apk
+        # splits/vr-en.apk
+        m = re.match(r'splits/(.*)-master\.apk', filename)
+        if m:
+          split_names.append(m.group(1))
+          z.extract(filename, dest)
+        # Also analyze -hi locale splits, since resource_sizes.py does this.
+        m = re.match(r'splits/(.*-hi)\.apk', filename)
+        if m:
+          split_names.append(m.group(1))
+          z.extract(filename, dest)
+    logging.debug('Extracting %s (done)', minimal_apks_path)
+    # Make "base" comes first since that's the main chunk of work.
+    # Also so that --abi-filter detection looks at it first.
+    return sorted(split_names, key=lambda x: (not x.startswith('base'), x))
+
+
+@contextlib.contextmanager
+def ApkFileManager():
+  """Context manager that extracts apk splits to a temp dir."""
+  # Cannot use tempfile.TemporaryDirectory() here because our use of
+  # multiprocessing results in __del__ methods being called in forked processes.
+  temp_dir = tempfile.mkdtemp(suffix='-supersize')
+  zip_files = _ApkFileManager(temp_dir)
+  yield zip_files
+  shutil.rmtree(temp_dir)
 
 
 @contextlib.contextmanager
@@ -24,14 +109,15 @@ def UnzipToTemp(zip_path, inner_path):
     The path of the temp created (and auto-deleted when context exits).
   """
   try:
+    logging.debug('Extracting %s', inner_path)
     _, suffix = os.path.splitext(inner_path)
     # Can't use NamedTemporaryFile() because it deletes via __del__, which will
     # trigger in both this and the fork()'ed processes.
     fd, temp_file = tempfile.mkstemp(suffix=suffix)
-    logging.debug('Extracting %s', inner_path)
     with zipfile.ZipFile(zip_path) as z:
       os.write(fd, z.read(inner_path))
     os.close(fd)
+    logging.debug('Extracting %s (done)', inner_path)
     yield temp_file
   finally:
     os.unlink(temp_file)

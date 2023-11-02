@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -126,6 +126,7 @@ class LongScreenshotsTabService
 
   const re2::RE2 google_amp_cache_path_regex_;
   const re2::RE2 google_amp_viewer_path_regex_;
+  const re2::RE2 google_news_path_regex_;
 
   base::ScopedClosureRunner capture_handle_;
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;

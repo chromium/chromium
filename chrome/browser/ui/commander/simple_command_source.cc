@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,7 +63,7 @@ CommandSource::CommandResults SimpleCommandSource::GetCommands(
       {IDC_OPTIONS, u"Show settings"},
       {IDC_SHOW_AVATAR_MENU, u"Switch profile"},
       {IDC_DEV_TOOLS_TOGGLE, u"Toggle developer tools"},
-      {IDC_MANAGE_EXTENSIONS, l10n_util::GetStringUTF16(IDS_MANAGE_EXTENSION)},
+      {IDC_MANAGE_EXTENSIONS, l10n_util::GetStringUTF16(IDS_MANAGE_EXTENSIONS)},
       {IDC_TAB_SEARCH, u"Search tabs..."},
       {IDC_SELECT_NEXT_TAB, u"Next tab"},
       {IDC_SELECT_PREVIOUS_TAB, u"Previous tab"},

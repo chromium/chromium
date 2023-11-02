@@ -42,7 +42,8 @@
 #include "third_party/blink/renderer/modules/geolocation/geoposition.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/timer.h"
@@ -149,7 +150,7 @@ class MODULES_EXPORT Geolocation final
     }
 
     auto Contains(GeoNotifier* value) const { return set_.Contains(value); }
-    auto IsEmpty() const { return set_.IsEmpty(); }
+    auto IsEmpty() const { return set_.empty(); }
 
     auto InsertWithoutTimerCheck(GeoNotifier* value) {
       return set_.insert(value);

@@ -1,23 +1,51 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
+import("//tools/typescript/ts_library.gni")
 
-js_type_check("closure_compile") {
-  closure_flags = default_closure_args + mojom_js_args + [
-                    "js_module_root=" + rebase_path(".", root_build_dir),
-                    "js_module_root=" + rebase_path(
-                            "$root_gen_dir/mojom-webui/content/browser/attribution_reporting",
-                            root_build_dir),
-                  ]
-  deps = [ ":attribution_internals" ]
+html_to_wrapper("html_wrapper_files") {
+  in_files = [ "attribution_internals_table.html" ]
+  template = "native"
 }
 
-js_library("attribution_internals") {
+# Copy (via creating sym links) all the other files into the same folder for
+# ts_library.
+copy("copy_files") {
   deps = [
+    "//content/browser/attribution_reporting:internals_mojo_bindings_webui_js",
     "//content/browser/attribution_reporting:mojo_bindings_webui_js",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:util.m",
+  ]
+  sources = [
+    "$root_gen_dir/mojom-webui/content/browser/attribution_reporting/attribution_internals.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/content/browser/attribution_reporting/attribution_reporting.mojom-webui.js",
+    "attribution_internals.ts",
+    "attribution_internals_table.ts",
+    "table_model.ts",
+  ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+}
+
+ts_library("build_ts") {
+  root_dir = target_gen_dir
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  in_files = [
+    "attribution_internals.ts",
+    "attribution_internals_table.ts",
+    "attribution_internals_table.html.ts",
+    "table_model.ts",
+    "attribution_internals.mojom-webui.js",
+    "attribution_reporting.mojom-webui.js",
+  ]
+  deps = [
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/mojo:library",
+  ]
+  definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+  extra_deps = [
+    ":copy_files",
+    ":html_wrapper_files",
   ]
 }

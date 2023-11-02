@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_HTML_OUTPUT_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_HTML_OUTPUT_ELEMENT_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 
@@ -54,6 +55,8 @@ class CORE_EXPORT HTMLOutputElement final : public HTMLFormControlElement {
   bool CanContainRangeEndPoint() const override {
     return is_default_value_mode_;
   }
+
+  bool IsOutputElement() const override { return true; }
 
   void Trace(Visitor*) const override;
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -88,9 +88,9 @@ static scoped_refptr<Extension> CreateExtension(
     const std::string& name,
     bool background_permission) {
   base::DictionaryValue manifest;
-  manifest.SetString(extensions::manifest_keys::kVersion, "1.0.0.0");
-  manifest.SetInteger(extensions::manifest_keys::kManifestVersion, 2);
-  manifest.SetString(extensions::manifest_keys::kName, name);
+  manifest.SetStringPath(extensions::manifest_keys::kVersion, "1.0.0.0");
+  manifest.SetIntPath(extensions::manifest_keys::kManifestVersion, 2);
+  manifest.SetStringPath(extensions::manifest_keys::kName, name);
   base::ListValue permissions;
   if (background_permission) {
     permissions.Append("background");
@@ -146,7 +146,7 @@ void RemoveBackgroundPermission(extensions::ExtensionService* service,
 }
 }  // namespace
 
-// Crashes on Mac tryslaves.
+// Crashes on Mac trybots.
 // http://crbug.com/165458
 // Also crashes on Windows under Dr. Memory (https://crbug.com/606779),
 // presumably broken on all platforms.

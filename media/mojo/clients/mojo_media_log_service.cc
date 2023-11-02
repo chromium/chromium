@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,11 +26,6 @@ void MojoMediaLogService::AddLogRecord(const MediaLogRecord& event) {
   // Make a copy so that we can transfer ownership to |media_log_|.
   std::unique_ptr<media::MediaLogRecord> modified_event =
       std::make_unique<media::MediaLogRecord>(event);
-
-  // |id| is player-unique per-process, but the remote side does not know the
-  // correct value (nor would we necessarily trust it). Overwrite with the
-  // correct value.
-  modified_event->id = media_log_->id();
 
   media_log_->AddLogRecord(std::move(modified_event));
 }

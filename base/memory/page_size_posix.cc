@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@ size_t GetPageSize() {
   // For more information see getpagesize(2). Portable applications should use
   // sysconf(_SC_PAGESIZE) rather than getpagesize() if it's available.
 #if defined(_SC_PAGESIZE)
-    return sysconf(_SC_PAGESIZE);
+    return static_cast<size_t>(sysconf(_SC_PAGESIZE));
 #else
     return getpagesize();
 #endif

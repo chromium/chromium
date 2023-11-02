@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,6 @@
 #include <utility>
 
 #include "base/memory/weak_ptr.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/system/scheduler_configuration_manager_base.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -18,6 +16,8 @@ class PrefRegistrySimple;
 class PrefService;
 
 namespace ash {
+
+class DebugDaemonClient;
 
 // Tracks scheduler configuration as provided by the respective local state pref
 // and sends D-Bus IPC to reconfigure the system on config changes.

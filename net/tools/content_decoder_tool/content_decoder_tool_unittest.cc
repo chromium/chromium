@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -88,7 +88,7 @@ TEST_F(ContentDecoderToolTest, TestGzip) {
 TEST_F(ContentDecoderToolTest, TestBrotli) {
   // In Cronet build, brotli sources are excluded due to binary size concern.
   // In such cases, skip the test.
-  std::unique_ptr<MockSourceStream> mock_source_stream(new MockSourceStream());
+  auto mock_source_stream = std::make_unique<MockSourceStream>();
   bool brotli_disabled =
       CreateBrotliSourceStream(std::move(mock_source_stream)) == nullptr;
   if (brotli_disabled)

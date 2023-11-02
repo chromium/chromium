@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 
 #import <QuartzCore/QuartzCore.h>
 
-#include "base/check.h"
-#include "base/i18n/rtl.h"
+#import "base/check.h"
+#import "base/i18n/rtl.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view_text_data.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -64,7 +64,7 @@ NSString* const kFormInputAccessoryViewAccessibilityID =
 
 #pragma mark - Public
 
-// Override |intrinsicContentSize| so Auto Layout hugs the content of this view.
+// Override `intrinsicContentSize` so Auto Layout hugs the content of this view.
 - (CGSize)intrinsicContentSize {
   return CGSizeZero;
 }
@@ -108,10 +108,10 @@ NSString* const kFormInputAccessoryViewAccessibilityID =
   [self.delegate formInputAccessoryViewDidTapPreviousButton:self];
 }
 
-// Sets up the view with the given |leadingView|. If |delegate| is not nil,
-// navigation controls are shown on the right and use |delegate| for actions.
-// Else navigation controls are replaced with |customTrailingView|. If none of
-// |delegate| and |customTrailingView| is set, leadingView will take all the
+// Sets up the view with the given `leadingView`. If `delegate` is not nil,
+// navigation controls are shown on the right and use `delegate` for actions.
+// Else navigation controls are replaced with `customTrailingView`. If none of
+// `delegate` and `customTrailingView` is set, leadingView will take all the
 // space.
 - (void)setUpWithLeadingView:(UIView*)leadingView
           customTrailingView:(UIView*)customTrailingView

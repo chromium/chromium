@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckChangePasswordHelper;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckIconHelper;
+import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper.ReauthReason;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -253,18 +254,7 @@ class PasswordCheckMediator
     public void onEdit(CompromisedCredential credential, Context context) {
         PasswordCheckMetricsRecorder.recordUiUserAction(
                 PasswordCheckUserAction.EDIT_PASSWORD_CLICK);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.EDIT_PASSWORDS_IN_SETTINGS)) {
-            mDelegate.onEditCredential(credential, context);
-            return;
-        }
-        if (!mReauthenticationHelper.canReauthenticate()) {
-            mReauthenticationHelper.showScreenLockToast(ReauthReason.VIEW_PASSWORD);
-            return;
-        }
-
-        mReauthenticationHelper.reauthenticate(ReauthReason.EDIT_PASSWORD, reauthSucceeded -> {
-            if (reauthSucceeded) mChangePasswordDelegate.launchEditPage(credential);
-        });
+        mDelegate.onEditCredential(credential, context);
     }
 
     @Override
@@ -331,6 +321,7 @@ class PasswordCheckMediator
         PasswordCheckMetricsRecorder.recordCheckResolutionAction(
                 PasswordCheckResolutionAction.OPENED_SITE, credential);
         mCctIsOpened = true;
+        mDelegate.onManualPasswordChangeStarted(credential);
         mChangePasswordDelegate.launchAppOrCctWithChangePasswordUrl(credential);
     }
 
@@ -346,7 +337,7 @@ class PasswordCheckMediator
             if (reauthSucceeded) {
                 startAutomatedPasswordChange(credential);
             }
-        });
+        }, true);
     }
 
     private void startAutomatedPasswordChange(CompromisedCredential credential) {
@@ -356,6 +347,7 @@ class PasswordCheckMediator
         PasswordCheckMetricsRecorder.recordCheckResolutionAction(
                 PasswordCheckResolutionAction.STARTED_SCRIPT, credential);
         mCctIsOpened = true;
+        mDelegate.onAutomatedPasswordChangeStarted(credential);
         mChangePasswordDelegate.launchCctWithScript(credential);
     }
 
@@ -434,8 +426,8 @@ class PasswordCheckMediator
 
         Collections.sort(credentials, (CompromisedCredential lhs, CompromisedCredential rhs) -> {
             // Phished credentials should always appear first.
-            if (lhs.isPhished() != rhs.isPhished()) {
-                return lhs.isPhished() ? -1 : 1;
+            if (lhs.isOnlyPhished() != rhs.isOnlyPhished()) {
+                return lhs.isOnlyPhished() ? -1 : 1;
             }
 
             boolean lhsInitial = mPreCheckSet.contains(lhs);

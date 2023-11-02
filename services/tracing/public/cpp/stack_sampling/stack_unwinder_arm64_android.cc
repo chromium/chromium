@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ bool UnwinderArm64::CanUnwindFrom(const base::Frame& current_frame) const {
 base::UnwindResult UnwinderArm64::TryUnwind(
     base::RegisterContext* thread_context,
     uintptr_t stack_top,
-    std::vector<base::Frame>* stack) const {
+    std::vector<base::Frame>* stack) {
   uintptr_t fp = thread_context->regs[29];
   constexpr size_t kMaxDepth = 40;
   const void* out_trace[kMaxDepth] = {};

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -98,6 +98,11 @@ class ServiceWorkerStorageControlImpl
       const blink::StorageKey& key,
       const std::string& value,
       UpdateNavigationPreloadHeaderCallback callback) override;
+  void UpdateFetchHandlerType(
+      int64_t registration_id,
+      const blink::StorageKey& key,
+      blink::mojom::ServiceWorkerFetchHandlerType fetch_handler_type,
+      UpdateFetchHandlerTypeCallback callback) override;
   void GetNewRegistrationId(GetNewRegistrationIdCallback callback) override;
   void GetNewVersionId(GetNewVersionIdCallback callback) override;
   void GetNewResourceId(GetNewResourceIdCallback callback) override;
@@ -155,6 +160,9 @@ class ServiceWorkerStorageControlImpl
       ApplyPolicyUpdatesCallback callback) override;
   void GetPurgingResourceIdsForTest(
       GetPurgingResourceIdsForTestCallback callback) override;
+  void GetPurgingResourceIdsForLiveVersionForTest(
+      int64_t version_id,
+      GetPurgingResourceIdsForTestCallback callback) override;
   void GetPurgeableResourceIdsForTest(
       GetPurgeableResourceIdsForTestCallback callback) override;
   void GetUncommittedResourceIdsForTest(
@@ -180,6 +188,7 @@ class ServiceWorkerStorageControlImpl
       std::unique_ptr<std::vector<ResourceList>> resources_list);
   void DidStoreRegistration(
       StoreRegistrationCallback callback,
+      int64_t stored_version_id,
       mojom::ServiceWorkerDatabaseStatus status,
       int64_t deleted_version_id,
       uint64_t deleted_resources_size,
@@ -198,6 +207,14 @@ class ServiceWorkerStorageControlImpl
 
   void MaybePurgeResources(int64_t version_id,
                            const std::vector<int64_t>& purgeable_resources);
+
+  // Cancels resource purging on successfull registration.
+  // This is necessary when resurrecting an uninstalling registration
+  // in the unregistration + registration case because unregistration could've
+  // scheduled resources purging yet registration will try to reuse them which
+  // leads to potential use of doomed resources once the current version is
+  // marked as no longer alive.
+  void MaybeCancelPurgeResources(int64_t version_id);
 
   const std::unique_ptr<ServiceWorkerStorage> storage_;
 

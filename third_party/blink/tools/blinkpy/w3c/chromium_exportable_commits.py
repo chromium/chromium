@@ -1,12 +1,12 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import logging
 
+from blinkpy.common.path_finder import RELATIVE_WPT_TESTS
 from blinkpy.w3c.chromium_commit import ChromiumCommit
 from blinkpy.w3c.chromium_finder import absolute_chromium_dir
-from blinkpy.w3c.common import CHROMIUM_WPT_DIR
 
 _log = logging.getLogger(__name__)
 
@@ -77,7 +77,7 @@ def _exportable_commits_since(chromium_commit_hash,
         ['git', 'rev-parse', '--show-toplevel'],
         cwd=absolute_chromium_dir(host)).strip()
 
-    wpt_path = chromium_repo_root + '/' + CHROMIUM_WPT_DIR
+    wpt_path = chromium_repo_root + '/' + RELATIVE_WPT_TESTS
     commit_range = '{}..HEAD'.format(chromium_commit_hash)
     skipped_revs = ['^' + rev for rev in SKIPPED_REVISIONS]
     command = (['git', 'rev-list', commit_range] + skipped_revs +

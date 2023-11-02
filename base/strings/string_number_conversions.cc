@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -155,19 +155,21 @@ bool HexStringToUInt64(StringPiece input, uint64_t* output) {
 
 bool HexStringToBytes(StringPiece input, std::vector<uint8_t>* output) {
   DCHECK(output->empty());
-  return internal::HexStringToByteContainer(input, std::back_inserter(*output));
+  return internal::HexStringToByteContainer<uint8_t>(
+      input, std::back_inserter(*output));
 }
 
 bool HexStringToString(StringPiece input, std::string* output) {
   DCHECK(output->empty());
-  return internal::HexStringToByteContainer(input, std::back_inserter(*output));
+  return internal::HexStringToByteContainer<char>(input,
+                                                  std::back_inserter(*output));
 }
 
 bool HexStringToSpan(StringPiece input, base::span<uint8_t> output) {
   if (input.size() / 2 != output.size())
     return false;
 
-  return internal::HexStringToByteContainer(input, output.begin());
+  return internal::HexStringToByteContainer<uint8_t>(input, output.begin());
 }
 
 }  // namespace base

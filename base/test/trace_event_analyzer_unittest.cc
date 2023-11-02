@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,11 @@
 
 #include "base/bind.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/stl_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"
 #include "base/trace_event/trace_buffer.h"
 #include "base/trace_event/traced_value.h"
+#include "base/types/optional_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -96,13 +96,16 @@ TEST_F(TraceEventAnalyzerTest, TraceEvent) {
   double double_num = 3.5;
   const char str[] = "the string";
 
+  base::Value::Dict dict;
+  dict.Set("the key", "the value");
+
   TraceEvent event;
   event.arg_numbers["false"] = 0.0;
   event.arg_numbers["true"] = 1.0;
   event.arg_numbers["int"] = static_cast<double>(int_num);
   event.arg_numbers["double"] = double_num;
   event.arg_strings["string"] = str;
-  event.arg_values["dict"] = base::Value(base::Value::Type::DICTIONARY);
+  event.arg_dicts["dict"] = dict.Clone();
 
   ASSERT_TRUE(event.HasNumberArg("false"));
   ASSERT_TRUE(event.HasNumberArg("true"));
@@ -111,18 +114,14 @@ TEST_F(TraceEventAnalyzerTest, TraceEvent) {
   ASSERT_TRUE(event.HasStringArg("string"));
   ASSERT_FALSE(event.HasNumberArg("notfound"));
   ASSERT_FALSE(event.HasStringArg("notfound"));
-  ASSERT_TRUE(event.HasArg("dict"));
-  ASSERT_FALSE(event.HasArg("notfound"));
+  ASSERT_TRUE(event.HasDictArg("dict"));
 
   EXPECT_FALSE(event.GetKnownArgAsBool("false"));
   EXPECT_TRUE(event.GetKnownArgAsBool("true"));
   EXPECT_EQ(int_num, event.GetKnownArgAsInt("int"));
   EXPECT_EQ(double_num, event.GetKnownArgAsDouble("double"));
   EXPECT_STREQ(str, event.GetKnownArgAsString("string").c_str());
-
-  base::Value arg;
-  EXPECT_TRUE(event.GetArgAsValue("dict", &arg));
-  EXPECT_EQ(base::Value::Type::DICTIONARY, arg.type());
+  EXPECT_EQ(dict, event.GetKnownArgAsDict("dict"));
 }
 
 TEST_F(TraceEventAnalyzerTest, QueryEventMember) {
@@ -953,13 +952,11 @@ TEST_F(TraceEventAnalyzerTest, ComplexArgument) {
   EXPECT_EQ(1u, events.size());
   EXPECT_EQ("cat", events[0]->category);
   EXPECT_EQ("name", events[0]->name);
-  EXPECT_TRUE(events[0]->HasArg("arg"));
 
-  base::Value arg;
-  events[0]->GetArgAsValue("arg", &arg);
-  ASSERT_TRUE(arg.is_dict());
+  ASSERT_TRUE(events[0]->HasDictArg("arg"));
+  base::Value::Dict arg = events[0]->GetKnownArgAsDict("arg");
   EXPECT_EQ(absl::optional<std::string>("value"),
-            base::OptionalFromPtr(arg.FindStringKey("property")));
+            base::OptionalFromPtr(arg.FindString("property")));
 }
 
 }  // namespace trace_analyzer

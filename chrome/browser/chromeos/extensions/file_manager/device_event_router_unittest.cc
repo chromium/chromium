@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,14 +11,14 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
-#include "chromeos/disks/disk.h"
+#include "chromeos/ash/components/disks/disk.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace file_manager {
 namespace {
 
 namespace file_manager_private = extensions::api::file_manager_private;
-using chromeos::disks::Disk;
+using ::ash::disks::Disk;
 
 const char kTestDevicePath[] = "/device/test";
 
@@ -102,10 +102,8 @@ TEST_F(DeviceEventRouterTest, AddAndRemoveDevice) {
       base::FilePath(FILE_PATH_LITERAL("/mount/path1"))));
   device_event_router->OnDeviceAdded("/device/test");
   device_event_router->OnDiskAdded(disk1, true);
-  device_event_router->OnVolumeMounted(chromeos::MOUNT_ERROR_NONE,
-                                       *volume.get());
-  device_event_router->OnVolumeUnmounted(chromeos::MOUNT_ERROR_NONE,
-                                         *volume.get());
+  device_event_router->OnVolumeMounted(ash::MountError::kNone, *volume.get());
+  device_event_router->OnVolumeUnmounted(ash::MountError::kNone, *volume.get());
   device_event_router->OnDiskRemoved(disk1_unmounted);
   device_event_router->OnDeviceRemoved("/device/test");
   ASSERT_EQ(1u, device_event_router->events.size());

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,10 +35,6 @@ class TestBackForwardCacheLoaderHelper : public BackForwardCacheLoaderHelper {
   void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) override {}
 
   void Detach() override {}
-
-  bool CanContinueBufferingWhileInBackForwardCache() const override {
-    return true;
-  }
 };
 
 class ResponseBodyLoaderTest : public testing::Test {
@@ -46,15 +42,6 @@ class ResponseBodyLoaderTest : public testing::Test {
   using Command = ReplayingBytesConsumer::Command;
   using PublicState = BytesConsumer::PublicState;
   using Result = BytesConsumer::Result;
-
-  static constexpr uint32_t kMaxNumConsumedBytesInTaskForTesting = 512 * 1024;
-  ResponseBodyLoaderTest() {
-    base::FieldTrialParams params;
-    params["loader_chunk_size"] =
-        base::NumberToString(kMaxNumConsumedBytesInTaskForTesting);
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        network::features::kLoaderDataPipeTuningFeature, params);
-  }
 
   class TestClient final : public GarbageCollected<TestClient>,
                            public ResponseBodyLoaderClient {
@@ -89,6 +76,9 @@ class ResponseBodyLoaderTest : public testing::Test {
           break;
       }
     }
+    void DidReceiveDecodedData(
+        const String& data,
+        std::unique_ptr<Resource::DecodedDataInfo> info) override {}
     void DidFinishLoadingBody() override {
       DCHECK(!finished_);
       DCHECK(!failed_);
@@ -196,7 +186,7 @@ TEST_F(ResponseBodyLoaderTest, Load) {
 
   EXPECT_FALSE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());
-  EXPECT_TRUE(client->GetData().IsEmpty());
+  EXPECT_TRUE(client->GetData().empty());
 
   body_loader->Start();
 
@@ -224,7 +214,7 @@ TEST_F(ResponseBodyLoaderTest, LoadFailure) {
 
   EXPECT_FALSE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());
-  EXPECT_TRUE(client->GetData().IsEmpty());
+  EXPECT_TRUE(client->GetData().empty());
 
   body_loader->Start();
 
@@ -251,7 +241,7 @@ TEST_F(ResponseBodyLoaderTest, LoadWithDataAndDone) {
 
   EXPECT_FALSE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());
-  EXPECT_TRUE(client->GetData().IsEmpty());
+  EXPECT_TRUE(client->GetData().empty());
 
   body_loader->Start();
 
@@ -281,7 +271,7 @@ TEST_F(ResponseBodyLoaderTest, Abort) {
 
   EXPECT_FALSE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());
-  EXPECT_TRUE(client->GetData().IsEmpty());
+  EXPECT_TRUE(client->GetData().empty());
   EXPECT_FALSE(body_loader->IsAborted());
 
   body_loader->Start();
@@ -312,7 +302,7 @@ TEST_F(ResponseBodyLoaderTest, Suspend) {
 
   EXPECT_FALSE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());
-  EXPECT_TRUE(client->GetData().IsEmpty());
+  EXPECT_TRUE(client->GetData().empty());
   EXPECT_FALSE(body_loader->IsSuspended());
 
   body_loader->Start();
@@ -361,7 +351,7 @@ TEST_F(ResponseBodyLoaderTest, Suspend) {
 TEST_F(ResponseBodyLoaderTest, ReadTooBigBuffer) {
   auto task_runner = base::MakeRefCounted<scheduler::FakeTaskRunner>();
   auto* consumer = MakeGarbageCollected<ReplayingBytesConsumer>(task_runner);
-  constexpr auto kMax = kMaxNumConsumedBytesInTaskForTesting;
+  const uint32_t kMax = network::features::GetLoaderChunkSize();
 
   consumer->Add(Command(Command::kData, std::string(kMax - 1, 'a').data()));
   consumer->Add(Command(Command::kData, std::string(2, 'b').data()));
@@ -375,7 +365,7 @@ TEST_F(ResponseBodyLoaderTest, ReadTooBigBuffer) {
 
   EXPECT_FALSE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());
-  EXPECT_TRUE(client->GetData().IsEmpty());
+  EXPECT_TRUE(client->GetData().empty());
 
   body_loader->Start();
 
@@ -415,7 +405,7 @@ TEST_F(ResponseBodyLoaderTest, NotDrainable) {
 
   EXPECT_FALSE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());
-  EXPECT_TRUE(client->GetData().IsEmpty());
+  EXPECT_TRUE(client->GetData().empty());
 
   body_loader->Start();
 

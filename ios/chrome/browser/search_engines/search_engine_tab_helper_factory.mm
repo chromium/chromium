@@ -1,9 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/search_engines/search_engine_tab_helper_factory.h"
 
+#import "base/no_destructor.h"
 #import "ios/chrome/browser/search_engines/search_engine_tab_helper.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,7 @@ namespace messages {
 class MessageWrapper {
  public:
   using DismissCallback = base::OnceCallback<void(DismissReason)>;
+  using SecondaryMenuItemSelectedCallback = base::RepeatingCallback<void(int)>;
 
   // ActionCallback and DismissCallback default to base::NullCallback.
   // Normally constructor with callbacks should be used, but this one is useful
@@ -56,29 +57,48 @@ class MessageWrapper {
   void SetSecondaryButtonMenuText(
       const std::u16string& secondary_button_menu_text);
 
+  // Methods to manage secondary menu items.
+  void SetSecondaryMenuMaxSize(SecondaryMenuMaxSize max_size);
+  void AddSecondaryMenuItem(int item_id,
+                            int resource_id,
+                            const std::u16string& item_text);
+  void ClearSecondaryMenuItems();
+  void AddSecondaryMenuItemDivider();
+
   // When setting a message icon use ResourceMapper::MapToJavaDrawableId to
   // translate from chromium resource_id to Android drawable resource_id.
   int GetIconResourceId();
   void SetIconResourceId(int resource_id);
   bool IsValidIcon();
   void SetIcon(const SkBitmap& icon);
+  void EnableLargeIcon(bool enabled);
+  void SetIconRoundedCornerRadius(int radius);
   // The icon is tinted to default_icon_color_accent1 by default.
   // Call this method to display icons of original colors.
   void DisableIconTint();
   int GetSecondaryIconResourceId();
   void SetSecondaryIconResourceId(int resource_id);
 
-  void SetSecondaryActionCallback(base::OnceClosure callback);
+  void SetSecondaryActionCallback(base::RepeatingClosure callback);
+  void SetSecondaryMenuItemSelectedCallback(
+      base::RepeatingCallback<void(int)> callback);
 
   void SetDuration(long customDuration);
 
+  // Note that the message will immediately be dismissed after the primary
+  // action callback is run. Making the message remain visible after the primary
+  // action button is clicked is supported in the messages API in Java, but not
+  // currently in here in the messages API in C++.
   void SetActionClick(base::OnceClosure callback);
   void SetDismissCallback(DismissCallback callback);
 
   // Following methods forward calls from java to provided callbacks.
   void HandleActionClick(JNIEnv* env);
   void HandleSecondaryActionClick(JNIEnv* env);
+  void HandleSecondaryMenuItemSelected(JNIEnv* env, int item_id);
   void HandleDismissCallback(JNIEnv* env, int dismiss_reason);
+
+  // TODO (crbug.com/1264117): Add ON_STARTED_SHOWING support.
 
   const base::android::JavaRef<jobject>& GetJavaMessageWrapper() const;
 
@@ -92,14 +112,19 @@ class MessageWrapper {
     return java_window_android_;
   }
 
+  const SkBitmap GetIconBitmap();
+
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_message_wrapper_;
   base::OnceClosure action_callback_;
-  base::OnceClosure secondary_action_callback_;
+  base::RepeatingClosure secondary_action_callback_;
+  SecondaryMenuItemSelectedCallback secondary_menu_item_selected_callback_;
   DismissCallback dismiss_callback_;
   // True if message is in queue.
   bool message_enqueued_;
   base::android::ScopedJavaGlobalRef<jobject> java_window_android_;
+
+  SecondaryMenuMaxSize secondary_menu_max_size_ = SecondaryMenuMaxSize::SMALL;
 };
 
 }  // namespace messages

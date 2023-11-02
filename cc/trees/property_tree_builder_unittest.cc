@@ -1,4 +1,4 @@
-// Copyright 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,6 +42,9 @@ class PropertyTreeBuilderTest : public LayerTreeImplTestBase,
   RenderSurfaceImpl* GetRenderSurfaceImpl(const scoped_refptr<Layer>& layer) {
     return GetRenderSurface(ImplOf(layer));
   }
+  LayerImpl* GetLayerImpl(const scoped_refptr<Layer>& layer) {
+    return host()->host_impl()->active_tree()->LayerById(layer->id());
+  }
 
   // Updates main thread draw properties, commits main thread tree to
   // impl-side pending tree, and updates pending tree draw properties.
@@ -53,8 +56,8 @@ class PropertyTreeBuilderTest : public LayerTreeImplTestBase,
     // TODO(https://crbug.com/939968) This call should be handled by
     // FakeLayerTreeHost instead of manually pushing the properties from the
     // layer tree host to the pending tree.
-    LayerTreeHost::PushLayerTreePropertiesTo(host()->pending_commit_state(),
-                                             host_impl()->pending_tree());
+    host_impl()->pending_tree()->PullLayerTreePropertiesFrom(
+        *host()->GetPendingCommitState());
     UpdateDrawProperties(host_impl()->pending_tree());
   }
 
@@ -89,7 +92,7 @@ TEST_F(PropertyTreeBuilderTest, EffectTreeTransformIdTest) {
   UpdateMainDrawProperties();
   EffectNode* node = GetEffectNode(child.get());
   const int transform_tree_size =
-      GetPropertyTrees(parent.get())->transform_tree.next_available_id();
+      GetPropertyTrees(parent.get())->transform_tree().next_available_id();
   EXPECT_LT(node->transform_id, transform_tree_size);
 }
 
@@ -357,9 +360,9 @@ TEST_F(PropertyTreeBuilderTest, VisibleRectWithClippingAndFilters) {
 
   gfx::Transform vertical_flip;
   vertical_flip.Scale(1, -1);
-  sk_sp<PaintFilter> flip_filter =
-      sk_make_sp<MatrixPaintFilter>(SkMatrix(vertical_flip.matrix()),
-                                    PaintFlags::FilterQuality::kLow, nullptr);
+  sk_sp<PaintFilter> flip_filter = sk_make_sp<MatrixPaintFilter>(
+      gfx::TransformToFlattenedSkMatrix(vertical_flip),
+      PaintFlags::FilterQuality::kLow, nullptr);
   FilterOperations reflection_filter;
   reflection_filter.Append(
       FilterOperation::CreateReferenceFilter(sk_make_sp<XfermodePaintFilter>(
@@ -418,9 +421,9 @@ TEST_F(PropertyTreeBuilderTest, VisibleRectWithScalingClippingAndFilters) {
 
   gfx::Transform vertical_flip;
   vertical_flip.Scale(1, -1);
-  sk_sp<PaintFilter> flip_filter =
-      sk_make_sp<MatrixPaintFilter>(SkMatrix(vertical_flip.matrix()),
-                                    PaintFlags::FilterQuality::kLow, nullptr);
+  sk_sp<PaintFilter> flip_filter = sk_make_sp<MatrixPaintFilter>(
+      gfx::TransformToFlattenedSkMatrix(vertical_flip),
+      PaintFlags::FilterQuality::kLow, nullptr);
   FilterOperations reflection_filter;
   reflection_filter.Append(
       FilterOperation::CreateReferenceFilter(sk_make_sp<XfermodePaintFilter>(
@@ -488,8 +491,9 @@ TEST_F(PropertyTreeBuilderTest, AnimatedOpacityCreatesRenderSurface) {
 
 static bool FilterIsAnimating(LayerImpl* layer) {
   MutatorHost* host = layer->layer_tree_impl()->mutator_host();
-  return host->IsAnimatingFilterProperty(layer->element_id(),
-                                         layer->GetElementTypeForAnimation());
+  return host->IsAnimatingProperty(layer->element_id(),
+                                   layer->GetElementTypeForAnimation(),
+                                   TargetProperty::FILTER);
 }
 
 // Verify that having an animated filter (but no current filter, as these
@@ -525,8 +529,9 @@ TEST_F(PropertyTreeBuilderTest, AnimatedFilterCreatesRenderSurface) {
 
 bool HasPotentiallyRunningFilterAnimation(const LayerImpl& layer) {
   MutatorHost* host = layer.layer_tree_impl()->mutator_host();
-  return host->HasPotentiallyRunningFilterAnimation(
-      layer.element_id(), layer.GetElementTypeForAnimation());
+  return host->HasPotentiallyRunningAnimationForProperty(
+      layer.element_id(), layer.GetElementTypeForAnimation(),
+      TargetProperty::FILTER);
 }
 
 // Verify that having a filter animation with a delayed start time creates a
@@ -593,13 +598,13 @@ TEST_F(PropertyTreeBuilderTest, ChangingAxisAlignmentTriggersRebuild) {
   host()->SetRootLayer(root);
 
   UpdateMainDrawProperties();
-  EXPECT_FALSE(host()->property_trees()->needs_rebuild);
+  EXPECT_FALSE(host()->property_trees()->needs_rebuild());
 
   root->SetTransform(translate);
-  EXPECT_FALSE(host()->property_trees()->needs_rebuild);
+  EXPECT_FALSE(host()->property_trees()->needs_rebuild());
 
   root->SetTransform(rotate);
-  EXPECT_TRUE(host()->property_trees()->needs_rebuild);
+  EXPECT_TRUE(host()->property_trees()->needs_rebuild());
 }
 
 TEST_F(PropertyTreeBuilderTest, ResetPropertyTreeIndices) {
@@ -689,7 +694,7 @@ TEST_F(PropertyTreeBuilderTest, PropertyTreesRebuildWithOpacityChanges) {
   // property trees as a new effect node will be created.
   child->SetOpacity(0.5f);
   PropertyTrees* property_trees = host()->property_trees();
-  EXPECT_TRUE(property_trees->needs_rebuild);
+  EXPECT_TRUE(property_trees->needs_rebuild());
 
   UpdateMainDrawProperties();
   EXPECT_NE(child->effect_tree_index(), root->effect_tree_index());
@@ -698,7 +703,7 @@ TEST_F(PropertyTreeBuilderTest, PropertyTreesRebuildWithOpacityChanges) {
   // a property trees rebuild.
   child->SetOpacity(0.8f);
   property_trees = host()->property_trees();
-  EXPECT_FALSE(property_trees->needs_rebuild);
+  EXPECT_FALSE(property_trees->needs_rebuild());
 
   UpdateMainDrawProperties();
   EXPECT_NE(child->effect_tree_index(), root->effect_tree_index());
@@ -707,7 +712,7 @@ TEST_F(PropertyTreeBuilderTest, PropertyTreesRebuildWithOpacityChanges) {
   // property trees as the effect node may no longer be needed.
   child->SetOpacity(1.f);
   property_trees = host()->property_trees();
-  EXPECT_TRUE(property_trees->needs_rebuild);
+  EXPECT_TRUE(property_trees->needs_rebuild());
 
   UpdateMainDrawProperties();
   EXPECT_EQ(child->effect_tree_index(), root->effect_tree_index());
@@ -747,6 +752,254 @@ TEST_F(PropertyTreeBuilderTest, RenderSurfaceListForTrilinearFiltering) {
   // scale matrix to (0,0 25x25).
   EXPECT_EQ(gfx::RectF(0, 0, 25, 25),
             GetRenderSurfaceImpl(parent)->DrawableContentRect());
+}
+
+TEST_F(PropertyTreeBuilderTest, GradientMask) {
+  auto root = Layer::Create();
+  host()->SetRootLayer(root);
+  root->SetBounds(gfx::Size(200, 200));
+  root->SetIsDrawable(true);
+
+  auto child1 = Layer::Create();
+  root->AddChild(child1);
+  child1->SetBounds(gfx::Size(100, 100));
+  child1->SetIsDrawable(true);
+
+  gfx::LinearGradient gradient_mask(45);
+  gradient_mask.AddStep(.5, 0x50);
+  child1->SetGradientMask(gradient_mask);
+
+  // Without render surface.
+  CommitAndActivate();
+  {
+    auto* effect_node1 = GetEffectNode(child1.get());
+    EXPECT_FALSE(effect_node1->mask_filter_info.HasRoundedCorners());
+    EXPECT_EQ(gfx::RectF(100, 100), effect_node1->mask_filter_info.bounds());
+    EXPECT_TRUE(effect_node1->mask_filter_info.HasGradientMask());
+    EXPECT_EQ(gradient_mask, effect_node1->mask_filter_info.gradient_mask());
+    EXPECT_FALSE(effect_node1->HasRenderSurface());
+    auto* layer_impl1 = GetLayerImpl(child1);
+    EXPECT_TRUE(
+        layer_impl1->draw_properties().mask_filter_info.HasGradientMask());
+  }
+
+  // Scale and translate should work.
+  gfx::Transform scale_and_translate_transform;
+  scale_and_translate_transform.Translate({10.f, 10.f});
+  scale_and_translate_transform.Scale(3.f, 2.f);
+  child1->SetTransform(scale_and_translate_transform);
+  CommitAndActivate();
+  {
+    // |mask_info| is in the coordinate space of the transform node associated
+    // with this effect node.
+    auto* effect_node1 = GetEffectNode(child1.get());
+    EXPECT_FALSE(effect_node1->mask_filter_info.HasRoundedCorners());
+    EXPECT_TRUE(effect_node1->mask_filter_info.HasGradientMask());
+    EXPECT_EQ(gfx::RectF(100, 100), effect_node1->mask_filter_info.bounds());
+    EXPECT_EQ(gradient_mask, effect_node1->mask_filter_info.gradient_mask());
+    EXPECT_FALSE(effect_node1->HasRenderSurface());
+
+    // |mask_info| coordinates are in the target space of the layer.
+    auto* layer_impl1 = GetLayerImpl(child1);
+    EXPECT_FALSE(layer_impl1->draw_properties().mask_filter_info.IsEmpty());
+    EXPECT_FALSE(
+        layer_impl1->draw_properties().mask_filter_info.HasRoundedCorners());
+    EXPECT_TRUE(
+        layer_impl1->draw_properties().mask_filter_info.HasGradientMask());
+    EXPECT_EQ(gfx::RectF(10, 10, 300, 200),
+              layer_impl1->draw_properties().mask_filter_info.bounds());
+    // |angle| is updated by the scale transform.
+    EXPECT_EQ(34, layer_impl1->draw_properties()
+                      .mask_filter_info.gradient_mask()
+                      ->angle());
+    EXPECT_EQ(gradient_mask.steps(), layer_impl1->draw_properties()
+                                         .mask_filter_info.gradient_mask()
+                                         ->steps());
+  }
+
+  // Rotate transform eliminates gradient mask.
+  gfx::Transform rotate_transform;
+  rotate_transform.Rotate(45);
+  child1->SetTransform(rotate_transform);
+  CommitAndActivate();
+  {
+    auto* layer_impl1 = GetLayerImpl(child1);
+    EXPECT_EQ(gfx::RRectF::Type::kEmpty,
+              layer_impl1->draw_properties()
+                  .mask_filter_info.rounded_corner_bounds()
+                  .GetType());
+    EXPECT_FALSE(
+        layer_impl1->draw_properties().mask_filter_info.HasGradientMask());
+  }
+
+  // Reset transform
+  child1->SetTransform(gfx::Transform());
+
+  // A child layer will create a render surface.
+  auto grand_child1 = Layer::Create();
+  child1->AddChild(grand_child1);
+  grand_child1->SetBounds(gfx::Size(100, 100));
+  grand_child1->SetIsDrawable(true);
+  CommitAndActivate();
+  EXPECT_TRUE(GetEffectNode(child1.get())->HasRenderSurface());
+  {
+    auto* effect_node1 = GetEffectNode(child1.get());
+    EXPECT_TRUE(effect_node1->mask_filter_info.HasGradientMask());
+    EXPECT_FALSE(effect_node1->mask_filter_info.HasRoundedCorners());
+    EXPECT_EQ(gfx::RectF(100, 100), effect_node1->mask_filter_info.bounds());
+    EXPECT_EQ(gradient_mask, effect_node1->mask_filter_info.gradient_mask());
+    EXPECT_TRUE(effect_node1->HasRenderSurface());
+    auto* render_surface_impl1 = GetRenderSurfaceImpl(child1);
+    EXPECT_FALSE(render_surface_impl1->mask_filter_info().IsEmpty());
+    EXPECT_FALSE(render_surface_impl1->mask_filter_info().HasRoundedCorners());
+    EXPECT_TRUE(render_surface_impl1->mask_filter_info().HasGradientMask());
+    EXPECT_EQ(gfx::RectF(100, 100),
+              render_surface_impl1->mask_filter_info().bounds());
+    EXPECT_EQ(gradient_mask,
+              render_surface_impl1->mask_filter_info().gradient_mask());
+  }
+
+  child1->SetTransform(scale_and_translate_transform);
+  CommitAndActivate();
+  {
+    // |mask_info| is in the coordinate space of the transform node associated
+    // with this effect node.
+    auto* effect_node1 = GetEffectNode(child1.get());
+    EXPECT_TRUE(effect_node1->mask_filter_info.HasGradientMask());
+    EXPECT_FALSE(effect_node1->mask_filter_info.HasRoundedCorners());
+    EXPECT_EQ(gfx::RectF(100, 100), effect_node1->mask_filter_info.bounds());
+    EXPECT_EQ(gradient_mask, effect_node1->mask_filter_info.gradient_mask());
+    EXPECT_TRUE(effect_node1->HasRenderSurface());
+
+    // |mask_info| coordinates are in the target space of the render surface's
+    // layer.
+    auto* render_surface_impl1 = GetRenderSurfaceImpl(child1);
+    EXPECT_FALSE(render_surface_impl1->mask_filter_info().IsEmpty());
+    EXPECT_FALSE(render_surface_impl1->mask_filter_info().HasRoundedCorners());
+    EXPECT_TRUE(render_surface_impl1->mask_filter_info().HasGradientMask());
+    EXPECT_EQ(gfx::RectF(10, 10, 300, 200),
+              render_surface_impl1->mask_filter_info().bounds());
+    // |angle| is updated by the scale transform.
+    EXPECT_EQ(
+        34, render_surface_impl1->mask_filter_info().gradient_mask()->angle());
+    EXPECT_EQ(
+        gradient_mask.steps(),
+        render_surface_impl1->mask_filter_info().gradient_mask()->steps());
+  }
+
+  // Rotate transform eliminates gradient mask.
+  child1->SetTransform(rotate_transform);
+  CommitAndActivate();
+  {
+    auto* render_surface_impl1 = GetRenderSurfaceImpl(child1);
+    EXPECT_EQ(gfx::RRectF::Type::kEmpty,
+              render_surface_impl1->mask_filter_info()
+                  .rounded_corner_bounds()
+                  .GetType());
+    EXPECT_FALSE(render_surface_impl1->mask_filter_info().HasGradientMask());
+  }
+}
+
+TEST_F(PropertyTreeBuilderTest, NestedGradientMask) {
+  auto root = Layer::Create();
+  host()->SetRootLayer(root);
+  root->SetBounds(gfx::Size(200, 200));
+  root->SetIsDrawable(true);
+
+  auto child1 = Layer::Create();
+  root->AddChild(child1);
+  child1->SetBounds(gfx::Size(100, 100));
+  child1->SetIsDrawable(true);
+
+  auto grand_child1 = Layer::Create();
+  child1->AddChild(grand_child1);
+  grand_child1->SetBounds(gfx::Size(50, 50));
+  grand_child1->SetIsDrawable(true);
+
+  gfx::LinearGradient gradient_mask1(30);
+  gradient_mask1.AddStep(.5, 0x50);
+  child1->SetGradientMask(gradient_mask1);
+
+  gfx::LinearGradient gradient_mask2(45);
+  gradient_mask2.AddStep(0, 0xFF);
+  gradient_mask2.AddStep(1, 0x0);
+  grand_child1->SetGradientMask(gradient_mask2);
+
+  CommitAndActivate();
+  EXPECT_TRUE(GetEffectNode(child1.get())->HasRenderSurface());
+  {
+    auto* render_surface_impl1 = GetRenderSurfaceImpl(child1);
+    EXPECT_EQ(gradient_mask1,
+              render_surface_impl1->mask_filter_info().gradient_mask());
+
+    auto* effect_node2 = GetEffectNode(grand_child1.get());
+    EXPECT_FALSE(effect_node2->mask_filter_info.IsEmpty());
+    EXPECT_FALSE(effect_node2->mask_filter_info.HasRoundedCorners());
+    EXPECT_TRUE(effect_node2->mask_filter_info.HasGradientMask());
+    EXPECT_EQ(gfx::RectF(50, 50), effect_node2->mask_filter_info.bounds());
+    EXPECT_EQ(gradient_mask2, effect_node2->mask_filter_info.gradient_mask());
+    EXPECT_FALSE(effect_node2->HasRenderSurface());
+    auto& draw_properties2 = GetLayerImpl(grand_child1)->draw_properties();
+    EXPECT_FALSE(draw_properties2.mask_filter_info.IsEmpty());
+    EXPECT_FALSE(draw_properties2.mask_filter_info.HasRoundedCorners());
+    EXPECT_TRUE(draw_properties2.mask_filter_info.HasGradientMask());
+    EXPECT_EQ(gfx::RectF(50, 50), draw_properties2.mask_filter_info.bounds());
+    EXPECT_EQ(gradient_mask2,
+              draw_properties2.mask_filter_info.gradient_mask());
+  }
+
+  gfx::Transform scale_and_translate_transform1;
+  scale_and_translate_transform1.Translate({10.f, 10.f});
+  scale_and_translate_transform1.Scale(3.f, 2.f);
+  child1->SetTransform(scale_and_translate_transform1);
+  gfx::Transform scale_and_translate_transform2;
+  scale_and_translate_transform2.Translate({10.f, 5.f});
+  scale_and_translate_transform2.Scale(2.f, 1.5f);
+  grand_child1->SetTransform(scale_and_translate_transform2);
+
+  CommitAndActivate();
+  EXPECT_TRUE(GetEffectNode(child1.get())->HasRenderSurface());
+  {
+    // |mask_info| coordinates are in the target space of the render surface's
+    // layer.
+    auto* render_surface_impl1 = GetRenderSurfaceImpl(child1);
+    EXPECT_EQ(
+        gradient_mask1.steps(),
+        render_surface_impl1->mask_filter_info().gradient_mask()->steps());
+    // |angle| is updated by the scale transform.
+    EXPECT_EQ(
+        21, render_surface_impl1->mask_filter_info().gradient_mask()->angle());
+
+    // |mask_info| is in the coordinate space of the transform node associated
+    // with this effect node.
+    auto* effect_node2 = GetEffectNode(grand_child1.get());
+    EXPECT_FALSE(effect_node2->HasRenderSurface());
+
+    // |mask_info| coordinates are in the target space of the layer.
+    auto& draw_properties2 = GetLayerImpl(grand_child1)->draw_properties();
+    EXPECT_FALSE(draw_properties2.mask_filter_info.IsEmpty());
+    EXPECT_FALSE(draw_properties2.mask_filter_info.HasRoundedCorners());
+    EXPECT_TRUE(draw_properties2.mask_filter_info.HasGradientMask());
+    EXPECT_EQ(gfx::RectF(30, 10, 300, 150),
+              draw_properties2.mask_filter_info.bounds());
+    // |angle| is updated by the scale transform.
+    EXPECT_EQ(27, draw_properties2.mask_filter_info.gradient_mask()->angle());
+    EXPECT_EQ(gradient_mask2.steps(),
+              draw_properties2.mask_filter_info.gradient_mask()->steps());
+  }
+
+  gfx::Transform rotate_transform;
+  rotate_transform.Rotate(45);
+  child1->SetTransform(rotate_transform);
+  CommitAndActivate();
+  {
+    auto* render_surface_impl1 = GetRenderSurfaceImpl(child1);
+    EXPECT_EQ(gfx::RRectF::Type::kEmpty,
+              render_surface_impl1->mask_filter_info()
+                  .rounded_corner_bounds()
+                  .GetType());
+    EXPECT_FALSE(render_surface_impl1->mask_filter_info().HasGradientMask());
+  }
 }
 
 TEST_F(PropertyTreeBuilderTest, RoundedCornerBounds) {

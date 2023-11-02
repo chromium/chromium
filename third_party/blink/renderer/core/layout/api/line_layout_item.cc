@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@ const ComputedStyle& LineLayoutItem::StyleRef(bool first_line) const {
 }
 
 bool LineLayoutItem::IsEmptyText() const {
-  return IsText() && To<LayoutText>(layout_object_.Get())->GetText().IsEmpty();
+  return IsText() && To<LayoutText>(layout_object_.Get())->GetText().empty();
 }
 
 int LineLayoutItem::CaretMaxOffset() const {

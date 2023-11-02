@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,6 @@
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/environment.h"
-#include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -44,15 +43,16 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/shell_integration.h"
-#include "chrome/browser/web_applications/web_app_shortcut.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "components/version_info/version_info.h"
 #include "third_party/libxml/chromium/xml_writer.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_family.h"
 #include "ui/ozone/public/ozone_platform.h"
@@ -279,9 +279,12 @@ void SetActionsForDesktopApplication(
     g_key_file_set_string(key_file, section_title.c_str(), "Name",
                           info.name.c_str());
 
+    std::string launch_url_str = info.exec_launch_url.spec();
+    // Escape % as %%.
+    RE2::GlobalReplace(&launch_url_str, "%", "%%");
     base::CommandLine current_cmd(command_line);
     current_cmd.AppendSwitchASCII(switches::kAppLaunchUrlForShortcutsMenuItem,
-                                  info.exec_launch_url.spec());
+                                  launch_url_str);
 
     g_key_file_set_string(
         key_file, section_title.c_str(), "Exec",
@@ -289,6 +292,66 @@ void SetActionsForDesktopApplication(
   }
 }
 #endif
+
+base::FilePath GetDesktopFileForDefaultSchemeHandler(base::Environment* env,
+                                                     const GURL& url) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
+  std::vector<std::string> argv;
+  argv.push_back(shell_integration_linux::kXdgSettings);
+  argv.push_back("get");
+  argv.push_back(shell_integration_linux::kXdgSettingsDefaultSchemeHandler);
+  argv.push_back(url.scheme());
+  argv.push_back(chrome::GetDesktopName(env));
+
+  std::string desktop_file_name;
+  if (base::GetAppOutput(base::CommandLine(argv), &desktop_file_name) &&
+      desktop_file_name.find(".desktop") != std::string::npos) {
+    // Remove trailing newline
+    desktop_file_name.erase(desktop_file_name.length() - 1, 1);
+    return base::FilePath(desktop_file_name);
+  }
+
+  return base::FilePath();
+}
+
+std::string GetDesktopEntryStringValueFromFromDesktopFile(
+    const std::string& key,
+    const std::string& shortcut_contents) {
+  std::string key_value;
+#if defined(USE_GLIB)
+  // An empty file causes a crash with glib <= 2.32, so special case here.
+  if (shortcut_contents.empty())
+    return key_value;
+
+  GKeyFile* key_file = g_key_file_new();
+  GError* err = nullptr;
+  if (!g_key_file_load_from_data(key_file, shortcut_contents.c_str(),
+                                 shortcut_contents.size(), G_KEY_FILE_NONE,
+                                 &err)) {
+    LOG(WARNING) << "Unable to read desktop file template: " << err->message;
+    g_error_free(err);
+    g_key_file_free(key_file);
+    return key_value;
+  }
+
+  char* key_c_string =
+      g_key_file_get_string(key_file, kDesktopEntry, key.c_str(), &err);
+  if (key_c_string) {
+    key_value = key_c_string;
+    g_free(key_c_string);
+  } else {
+    g_error_free(err);
+  }
+
+  g_key_file_free(key_file);
+#else
+  NOTIMPLEMENTED();
+#endif
+
+  return key_value;
+}
 
 }  // namespace
 
@@ -325,6 +388,14 @@ std::string GetWMClassFromAppName(std::string app_name) {
   return app_name;
 }
 
+std::string GetXdgAppIdForWebApp(std::string app_name,
+                                 const base::FilePath& profile_path) {
+  if (base::StartsWith(app_name, web_app::kCrxAppPrefix))
+    app_name = app_name.substr(strlen(web_app::kCrxAppPrefix));
+  return GetDesktopBaseName(
+      web_app::GetAppShortcutFilename(profile_path, app_name).AsUTF8Unsafe());
+}
+
 base::FilePath GetDataWriteLocation(base::Environment* env) {
   return base::nix::GetXDGDirectory(env, "XDG_DATA_HOME", ".local/share");
 }
@@ -353,42 +424,20 @@ std::vector<base::FilePath> GetDataSearchLocations(base::Environment* env) {
 
 namespace internal {
 
+std::string GetDesktopEntryStringValueFromFromDesktopFileForTest(
+    const std::string& key,
+    const std::string& shortcut_contents) {
+  return shell_integration_linux::GetDesktopEntryStringValueFromFromDesktopFile(
+      key, shortcut_contents);
+}
+
 // Get the value of NoDisplay from the [Desktop Entry] section of a .desktop
 // file, given in |shortcut_contents|. If the key is not found, returns false.
 bool GetNoDisplayFromDesktopFile(const std::string& shortcut_contents) {
-#if defined(USE_GLIB)
-  // An empty file causes a crash with glib <= 2.32, so special case here.
-  if (shortcut_contents.empty())
-    return false;
-
-  GKeyFile* key_file = g_key_file_new();
-  GError* err = NULL;
-  if (!g_key_file_load_from_data(key_file, shortcut_contents.c_str(),
-                                 shortcut_contents.size(), G_KEY_FILE_NONE,
-                                 &err)) {
-    LOG(WARNING) << "Unable to read desktop file template: " << err->message;
-    g_error_free(err);
-    g_key_file_free(key_file);
-    return false;
-  }
-
-  bool nodisplay = false;
-  char* nodisplay_c_string = g_key_file_get_string(key_file, kDesktopEntry,
-                                                   "NoDisplay", &err);
-  if (nodisplay_c_string) {
-    if (!g_strcmp0(nodisplay_c_string, "true"))
-      nodisplay = true;
-    g_free(nodisplay_c_string);
-  } else {
-    g_error_free(err);
-  }
-
-  g_key_file_free(key_file);
-  return nodisplay;
-#else
-  NOTIMPLEMENTED();
-  return false;
-#endif
+  std::string nodisplay_value =
+      shell_integration_linux::GetDesktopEntryStringValueFromFromDesktopFile(
+          "NoDisplay", shortcut_contents);
+  return nodisplay_value == "true";
 }
 
 // Gets the path to the Chrome executable or wrapper script.
@@ -631,11 +680,8 @@ std::string GetDesktopFileContentsForCommand(
   g_key_file_set_string(key_file, kDesktopEntry, "StartupWMClass",
                         wmclass.c_str());
 
-  if (base::FeatureList::IsEnabled(
-          features::kDesktopPWAsAppIconShortcutsMenuUI)) {
-    SetActionsForDesktopApplication(command_line, key_file,
-                                    std::move(action_info));
-  }
+  SetActionsForDesktopApplication(command_line, key_file,
+                                  std::move(action_info));
 
   gsize length = 0;
   gchar* data_dump = g_key_file_to_data(key_file, &length, NULL);
@@ -765,7 +811,22 @@ DefaultWebClientSetPermission GetDefaultWebClientSetPermission() {
 }
 
 std::u16string GetApplicationNameForProtocol(const GURL& url) {
-  return u"xdg-open";
+  std::unique_ptr<base::Environment> env(base::Environment::Create());
+
+  std::string desktop_file_contents;
+  std::string application_name;
+  base::FilePath desktop_filepath =
+      shell_integration_linux::GetDesktopFileForDefaultSchemeHandler(env.get(),
+                                                                     url);
+  if (shell_integration_linux::GetExistingShortcutContents(
+          env.get(), desktop_filepath, &desktop_file_contents)) {
+    application_name =
+        shell_integration_linux::GetDesktopEntryStringValueFromFromDesktopFile(
+            "Name", desktop_file_contents);
+  }
+
+  return application_name.empty() ? u"xdg-open"
+                                  : base::ASCIIToUTF16(application_name);
 }
 
 DefaultWebClientState GetDefaultBrowser() {

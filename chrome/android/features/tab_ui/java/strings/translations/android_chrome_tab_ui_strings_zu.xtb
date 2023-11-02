@@ -6,6 +6,9 @@
 <translation id="125153950246128346">Thepha ukuze ubone enye ithebhu</translation>
 <translation id="1302104331113804646">Amasethingi wokulandelela intengo</translation>
 <translation id="1378979118429748177">Yaziswa lapho izintengo zehla</translation>
+<translation id="1403228085774130835">Ungathola amathebhu akho avaliwe kumathebhu Akamuva ngaphansi kwemenyu eyinhloko ye-Chrome</translation>
+<translation id="1455506303394048917">Umsebenzi wakho kulamathebhu we-Incognito uzosulwa kusuka kule divayisi</translation>
+<translation id="1499635324672558517">Vala wonke amathebhu we-incognito?</translation>
 <translation id="1657719826150349398">Yisa ithebhu phansi</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ithebhu}one{<ph name="TABS_COUNT_MANY" /> amathebhu}other{<ph name="TABS_COUNT_MANY" /> amathebhu}}</translation>
 <translation id="2118649612461486615">Ulwazi lwesitolo</translation>
@@ -24,9 +27,9 @@
 <translation id="2801787514987684416">Buka ulwazi lwesitoreji?</translation>
 <translation id="2928243913527329289">I-Google | Mayelana nalesi sitoreji</translation>
 <translation id="2977480621796371840">Susa kusukela kuqembu</translation>
+<translation id="3008554597174452548">Yeka ukulandelela umkhiqizo</translation>
 <translation id="3052964831964880138">Ukwehla kwentengo engu-<ph name="PRICE_DROP" /> ku-<ph name="PRODUCT_NAME" /></translation>
 <translation id="3194464645767632461">isilinganisela</translation>
-<translation id="3267416433995960648">Vala isexwayiso</translation>
 <translation id="3291470810748040983">Uzothola isexwayiso lapho kukhona intengo ephansi kuthebhu evuliwe</translation>
 <translation id="3328308545011660196">Isiphakamiso: amathebhu a-<ph name="NUMBER_OF_TABS" /> abonakala ahlobene. Wenze iqembu?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -40,11 +43,14 @@
 <translation id="4648718555153979859">Amathebhu akho afakwa kuqembu ndawonye lapha</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(isibuyekezo esingu-<ph name="REVIEWS_COUNT_ONE" />)}one{(izibuyekezo ezingu-<ph name="REVIEWS_COUNT_MANY" />)}other{(izibuyekezo ezingu-<ph name="REVIEWS_COUNT_MANY" />)}}</translation>
 <translation id="4850886885716139402">Buka</translation>
+<translation id="4870911314065352661">Vala wonke amathebhu?</translation>
 <translation id="492284538114688557">Kubonwe ukwehliswa kwentengo</translation>
 <translation id="5007392906805964215">Buyekeza</translation>
 <translation id="5073204694187207510">Fihla igridi yesikrini esigcwele</translation>
+<translation id="5076161749301278626">Bona izibuyekezo zesitoreji?</translation>
 <translation id="5082793167783849073">Qhathanisa ngokushesha amakhasi ngokwenza iqembu. Ukuze uqale, thinta uphinde ubambe isixhumanisi.</translation>
 <translation id="5490235265819901748">Iqembu lethebhu linwetshiwe</translation>
+<translation id="5494920125229734069">Khetha konke</translation>
 <translation id="5533021382642990449">Bonisa kamuva</translation>
 <translation id="5556417849629758491">Buka ulwazi lwesitoreji, inketho itholakala eduze naphezulu kwesikrini</translation>
 <translation id="5558362125926932819">Vala iqembu lethebhu ngamathebhu angu-<ph name="NUMBER_OF_TABS" /></translation>
@@ -52,11 +58,14 @@
 <translation id="575494663145460764">Thola izexwayiso zokwehla kwentengo?</translation>
 <translation id="58326064309361797">Hudula amathebhu ukuze uwafake eqenjini</translation>
 <translation id="5846292395804797011">Vala iqembu elingu-<ph name="TITLE_OF_GROUP" /> lamathebhu angu-<ph name="NUMBER_OF_TABS" /></translation>
+<translation id="5972844218283131174">Susa ukukhetha konke</translation>
 <translation id="6040143037577758943">Vala</translation>
 <translation id="6054741997831917303">Intengo yale nto isanda kwehla kusuka ku-<ph name="PREVIOUS_PRICE" /> ukuya ku-<ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Khetha amathebhu</translation>
 <translation id="6228793724645064692">(isilinganiso sesitolo)</translation>
 <translation id="6333260925957816943">Ulwazi olumayelana nalesi sitolo</translation>
+<translation id="639823877092900621">{TABS_COUNT,plural, =1{Hlukanisa ithebhu e-<ph name="TABS_COUNT_ONE" /> ekhethiwe}one{Hlukanisa amathebhu angu-<ph name="TABS_COUNT_MANY" /> akhethiwe}other{Hlukanisa amathebhu angu-<ph name="TABS_COUNT_MANY" /> akhethiwe}}</translation>
+<translation id="6422650314852876533">{TABS_COUNT,plural, =1{Ithebhu e-<ph name="TABS_COUNT_ONE" />}one{Amathebhu angu-<ph name="TABS_COUNT_MANY" />}other{Amathebhu angu-<ph name="TABS_COUNT_MANY" />}}</translation>
 <translation id="6510648526783655549">Vala umugqa wamathebhu</translation>
 <translation id="6549021453810473782">Buka ulwazi lwesitolo</translation>
 <translation id="6562820390860419811">Hambisa ithebhu ngakwesokunxele</translation>
@@ -69,6 +78,7 @@
 <translation id="7326879924029668159">Bona inqubomgomo yokubuyisela nokuningi</translation>
 <translation id="7352298686197644113">Bona ukuthi iyiphi into kumathebhu akho avuliwe enentengo ephansi</translation>
 <translation id="753732157349120914">Isishintshi Sethebhu</translation>
+<translation id="7545727119051420814">{REVIEWS,plural, =1{Isibuyekezo esingu-<ph name="REVIEWS_COUNT_ONE" /> esivela ku-Google}one{Izibuyekezo ezingu-<ph name="REVIEWS_COUNT_MANY" /> ezivela ku-Google}other{Izibuyekezo ezingu-<ph name="REVIEWS_COUNT_MANY" /> ezivela ku-Google}}</translation>
 <translation id="7559245342362162951">Bonisa amathebhu eqembu kugridi yesikrini esigcwele</translation>
 <translation id="7792771145871471484">Buyekeza iziphakamiso.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Faka kuqembu ithebhu ekhethiwe e-<ph name="TABS_COUNT_ONE" />}one{Faka kuqembu amathebhu akhethiwe a-<ph name="TABS_COUNT_MANY" />}other{Faka kuqembu amathebhu akhethiwe a-<ph name="TABS_COUNT_MANY" />}}</translation>

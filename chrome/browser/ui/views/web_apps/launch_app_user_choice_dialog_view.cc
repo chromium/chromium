@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,19 +12,17 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/web_apps/web_app_info_image_source.h"
+#include "chrome/browser/ui/views/web_apps/web_app_views_utils.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/strings/grit/components_strings.h"
-#include "components/url_formatter/elide_url.h"
-#include "content/public/common/custom_handlers/protocol_handler.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -34,34 +32,6 @@
 namespace {
 
 bool g_default_remember_selection = false;
-
-// TODO(https://crbug.com/1248757): Reconcile the code here, and the
-// code in the PWA install dialog, and URL Handler picker.
-// Returns a label containing the app name.
-std::unique_ptr<views::Label> CreateNameLabel(const std::u16string& name) {
-  auto name_label = std::make_unique<views::Label>(
-      name, views::style::CONTEXT_DIALOG_BODY_TEXT,
-      views::style::TextStyle::STYLE_PRIMARY);
-  name_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  name_label->SetElideBehavior(gfx::ELIDE_TAIL);
-  return name_label;
-}
-
-std::unique_ptr<views::Label> CreateOriginLabel(const url::Origin& origin) {
-  auto origin_label = std::make_unique<views::Label>(
-      FormatOriginForSecurityDisplay(
-          origin, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS),
-      CONTEXT_DIALOG_BODY_TEXT_SMALL, views::style::STYLE_PRIMARY);
-  origin_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-
-  // Elide from head to prevent origin spoofing.
-  origin_label->SetElideBehavior(gfx::ELIDE_HEAD);
-
-  // Multiline breaks elision, so explicitly disable multiline.
-  origin_label->SetMultiLine(false);
-
-  return origin_label;
-}
 
 }  // namespace
 
@@ -77,25 +47,19 @@ LaunchAppUserChoiceDialogView::LaunchAppUserChoiceDialogView(
     const web_app::AppId& app_id,
     chrome::WebAppLaunchAcceptanceCallback close_callback)
     : profile_(profile),
-      app_id_(std::move(app_id)),
+      app_id_(app_id),
       close_callback_(std::move(close_callback)) {}
 
 LaunchAppUserChoiceDialogView::~LaunchAppUserChoiceDialogView() = default;
 
 void LaunchAppUserChoiceDialogView::Init() {
-  SetDefaultButton(ui::DIALOG_BUTTON_CANCEL);
   SetModalType(ui::MODAL_TYPE_NONE);
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
   SetTitle(l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
 #endif
   SetShowCloseButton(true);
   SetCanResize(false);
   set_draggable(true);
-
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
-                 l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW));
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
-                 l10n_util::GetStringUTF16(IDS_WEB_APP_PERMISSION_DONT_ALLOW));
 
   SetAcceptCallback(base::BindOnce(&LaunchAppUserChoiceDialogView::OnAccepted,
                                    base::Unretained(this)));
@@ -183,7 +147,7 @@ void LaunchAppUserChoiceDialogView::InitChildViews() {
             .release());
     app_name_publisher_view->AddChildView(
         CreateOriginLabel(
-            url::Origin::Create(registrar.GetAppStartUrl(app_id_)))
+            url::Origin::Create(registrar.GetAppStartUrl(app_id_)), true)
             .release());
     app_info_view->AddChildView(std::move(app_name_publisher_view));
 
@@ -218,9 +182,10 @@ void LaunchAppUserChoiceDialogView::OnIconsRead(
     return;
 
   gfx::Size image_size{web_app::kWebAppIconSmall, web_app::kWebAppIconSmall};
-  auto imageSkia = gfx::ImageSkia(std::make_unique<WebAppInfoImageSource>(
-                                      web_app::kWebAppIconSmall, icon_bitmaps),
-                                  image_size);
+  auto imageSkia =
+      gfx::ImageSkia(std::make_unique<WebAppInfoImageSource>(
+                         web_app::kWebAppIconSmall, std::move(icon_bitmaps)),
+                     image_size);
   icon_image_view_->SetImage(imageSkia);
 }
 

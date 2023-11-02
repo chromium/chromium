@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,16 +17,14 @@
 #include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
-#include "base/metrics/histogram_functions.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
-#include "base/task/post_task.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
@@ -78,7 +76,7 @@ const int kCommitErrorThreshold = 8;
 
 // Limits on the cache size and number of areas in memory, over which the areas
 // are purged.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const unsigned kMaxLocalStorageAreaCount = 10;
 const size_t kMaxLocalStorageCacheSize = 2 * 1024 * 1024;
 #else
@@ -92,8 +90,8 @@ DomStorageDatabase::Key CreateMetaDataKey(
   std::vector<uint8_t> serialized_storage_key(storage_key_str.begin(),
                                               storage_key_str.end());
   DomStorageDatabase::Key key;
-  key.reserve(base::size(kMetaPrefix) + serialized_storage_key.size());
-  key.insert(key.end(), kMetaPrefix, kMetaPrefix + base::size(kMetaPrefix));
+  key.reserve(std::size(kMetaPrefix) + serialized_storage_key.size());
+  key.insert(key.end(), kMetaPrefix, kMetaPrefix + std::size(kMetaPrefix));
   key.insert(key.end(), serialized_storage_key.begin(),
              serialized_storage_key.end());
   return key;
@@ -101,11 +99,11 @@ DomStorageDatabase::Key CreateMetaDataKey(
 
 absl::optional<blink::StorageKey> ExtractStorageKeyFromMetaDataKey(
     const DomStorageDatabase::Key& key) {
-  DCHECK_GT(key.size(), base::size(kMetaPrefix));
+  DCHECK_GT(key.size(), std::size(kMetaPrefix));
   const base::StringPiece key_string(reinterpret_cast<const char*>(key.data()),
                                      key.size());
   return blink::StorageKey::Deserialize(
-      key_string.substr(base::size(kMetaPrefix)));
+      key_string.substr(std::size(kMetaPrefix)));
 }
 
 void SuccessResponse(base::OnceClosure callback, bool success) {
@@ -150,69 +148,22 @@ void DeleteStorageKeys(AsyncDomStorageDatabase* database,
           storage_keys),
       std::move(callback));
 }
+StorageAreaImpl::Options createOptions() {
+  // Delay for a moment after a value is set in anticipation
+  // of other values being set, so changes are batched.
+  static constexpr base::TimeDelta kCommitDefaultDelaySecs = base::Seconds(5);
 
-enum class CachePurgeReason {
-  NotNeeded,
-  SizeLimitExceeded,
-  AreaCountLimitExceeded,
-  InactiveOnLowEndDevice,
-  AggressivePurgeTriggered
-};
+  // To avoid excessive IO we apply limits to the amount of data being written
+  // and the frequency of writes.
+  static const size_t kMaxBytesPerHour = kPerStorageAreaQuota;
+  static constexpr int kMaxCommitsPerHour = 60;
 
-void RecordCachePurgedHistogram(CachePurgeReason reason,
-                                size_t purged_size_kib) {
-  UMA_HISTOGRAM_COUNTS_100000("LocalStorageContext.CachePurgedInKB",
-                              purged_size_kib);
-  switch (reason) {
-    case CachePurgeReason::SizeLimitExceeded:
-      UMA_HISTOGRAM_COUNTS_100000(
-          "LocalStorageContext.CachePurgedInKB.SizeLimitExceeded",
-          purged_size_kib);
-      break;
-    case CachePurgeReason::AreaCountLimitExceeded:
-      UMA_HISTOGRAM_COUNTS_100000(
-          "LocalStorageContext.CachePurgedInKB.AreaCountLimitExceeded",
-          purged_size_kib);
-      break;
-    case CachePurgeReason::InactiveOnLowEndDevice:
-      UMA_HISTOGRAM_COUNTS_100000(
-          "LocalStorageContext.CachePurgedInKB.InactiveOnLowEndDevice",
-          purged_size_kib);
-      break;
-    case CachePurgeReason::AggressivePurgeTriggered:
-      UMA_HISTOGRAM_COUNTS_100000(
-          "LocalStorageContext.CachePurgedInKB.AggressivePurgeTriggered",
-          purged_size_kib);
-      break;
-    case CachePurgeReason::NotNeeded:
-      NOTREACHED();
-      break;
-  }
-}
-
-}  // namespace
-
-class LocalStorageImpl::StorageAreaHolder final
-    : public StorageAreaImpl::Delegate {
- public:
-  StorageAreaHolder(LocalStorageImpl* context,
-                    const blink::StorageKey& storage_key)
-      : context_(context), storage_key_(storage_key) {
-    // Delay for a moment after a value is set in anticipation
-    // of other values being set, so changes are batched.
-    static constexpr base::TimeDelta kCommitDefaultDelaySecs = base::Seconds(5);
-
-    // To avoid excessive IO we apply limits to the amount of data being written
-    // and the frequency of writes.
-    static const size_t kMaxBytesPerHour = kPerStorageAreaQuota;
-    static constexpr int kMaxCommitsPerHour = 60;
-
-    StorageAreaImpl::Options options;
-    options.max_size = kPerStorageAreaQuota + kPerStorageAreaOverQuotaAllowance;
-    options.default_commit_delay = kCommitDefaultDelaySecs;
-    options.max_bytes_per_hour = kMaxBytesPerHour;
-    options.max_commits_per_hour = kMaxCommitsPerHour;
-#if defined(OS_ANDROID)
+  StorageAreaImpl::Options options;
+  options.max_size = kPerStorageAreaQuota + kPerStorageAreaOverQuotaAllowance;
+  options.default_commit_delay = kCommitDefaultDelaySecs;
+  options.max_bytes_per_hour = kMaxBytesPerHour;
+  options.max_commits_per_hour = kMaxCommitsPerHour;
+#if BUILDFLAG(IS_ANDROID)
     options.cache_mode = StorageAreaImpl::CacheMode::KEYS_ONLY_WHEN_POSSIBLE;
 #else
     options.cache_mode = StorageAreaImpl::CacheMode::KEYS_AND_VALUES;
@@ -220,13 +171,23 @@ class LocalStorageImpl::StorageAreaHolder final
       options.cache_mode = StorageAreaImpl::CacheMode::KEYS_ONLY_WHEN_POSSIBLE;
     }
 #endif
-    area_ = std::make_unique<StorageAreaImpl>(
-        context_->database_.get(), MakeStorageKeyPrefix(storage_key_), this,
-        options);
-    area_ptr_ = area_.get();
-  }
+    return options;
+}
+}  // namespace
 
-  StorageAreaImpl* storage_area() { return area_ptr_; }
+class LocalStorageImpl::StorageAreaHolder final
+    : public StorageAreaImpl::Delegate {
+ public:
+  StorageAreaHolder(LocalStorageImpl* context,
+                    const blink::StorageKey& storage_key)
+      : context_(context),
+        storage_key_(storage_key),
+        area_(context_->database_.get(),
+              MakeStorageKeyPrefix(storage_key_),
+              this,
+              createOptions()) {}
+
+  StorageAreaImpl* storage_area() { return &area_; }
 
   void OnNoBindings() override {
     has_bindings_ = false;
@@ -265,21 +226,8 @@ class LocalStorageImpl::StorageAreaHolder final
   }
 
   void DidCommit(leveldb::Status status) override {
-    UMA_HISTOGRAM_ENUMERATION("LocalStorageContext.CommitResult",
-                              leveldb_env::GetLevelDBStatusUMAValue(status),
-                              leveldb_env::LEVELDB_STATUS_MAX);
-
     context_->OnCommitResult(status);
   }
-
-  void OnMapLoaded(leveldb::Status status) override {
-    if (!status.ok()) {
-      UMA_HISTOGRAM_ENUMERATION("LocalStorageContext.MapLoadError",
-                                leveldb_env::GetLevelDBStatusUMAValue(status),
-                                leveldb_env::LEVELDB_STATUS_MAX);
-    }
-  }
-
   void Bind(mojo::PendingReceiver<blink::mojom::StorageArea> receiver) {
     has_bindings_ = true;
     storage_area()->Bind(std::move(receiver));
@@ -288,14 +236,9 @@ class LocalStorageImpl::StorageAreaHolder final
   bool has_bindings() const { return has_bindings_; }
 
  private:
-  LocalStorageImpl* context_;
+  raw_ptr<LocalStorageImpl> context_;
   blink::StorageKey storage_key_;
-  // Holds the same value as |area_|. The reason for this is that
-  // during destruction of the StorageAreaImpl instance we might still get
-  // called and need access  to the StorageAreaImpl instance. The unique_ptr
-  // could already be null, but this field should still be valid.
-  StorageAreaImpl* area_ptr_;
-  std::unique_ptr<StorageAreaImpl> area_;
+  StorageAreaImpl area_;
   bool has_bindings_ = false;
 };
 
@@ -455,9 +398,6 @@ void LocalStorageImpl::ShutDown(base::OnceClosure callback) {
 }
 
 void LocalStorageImpl::PurgeMemory() {
-  size_t total_cache_size, unused_area_count;
-  GetStatistics(&total_cache_size, &unused_area_count);
-
   for (auto it = areas_.begin(); it != areas_.end();) {
     if (it->second->has_bindings()) {
       it->second->storage_area()->PurgeMemory();
@@ -466,13 +406,6 @@ void LocalStorageImpl::PurgeMemory() {
       it = areas_.erase(it);
     }
   }
-
-  // Track the size of cache purged.
-  size_t final_total_cache_size;
-  GetStatistics(&final_total_cache_size, &unused_area_count);
-  size_t purged_size_kib = (total_cache_size - final_total_cache_size) / 1024;
-  RecordCachePurgedHistogram(CachePurgeReason::AggressivePurgeTriggered,
-                             purged_size_kib);
 }
 
 void LocalStorageImpl::ApplyPolicyUpdates(
@@ -496,17 +429,11 @@ void LocalStorageImpl::PurgeUnusedAreasIfNeeded() {
   if (!unused_area_count)
     return;
 
-  CachePurgeReason purge_reason = CachePurgeReason::NotNeeded;
-
-  if (total_cache_size > kMaxLocalStorageCacheSize)
-    purge_reason = CachePurgeReason::SizeLimitExceeded;
-  else if (areas_.size() > kMaxLocalStorageAreaCount)
-    purge_reason = CachePurgeReason::AreaCountLimitExceeded;
-  else if (is_low_end_device_)
-    purge_reason = CachePurgeReason::InactiveOnLowEndDevice;
-
-  if (purge_reason == CachePurgeReason::NotNeeded)
+  // No purge is needed.
+  if (total_cache_size > kMaxLocalStorageCacheSize &&
+      areas_.size() > kMaxLocalStorageAreaCount && !is_low_end_device_) {
     return;
+  }
 
   for (auto it = areas_.begin(); it != areas_.end();) {
     if (it->second->has_bindings())
@@ -514,12 +441,6 @@ void LocalStorageImpl::PurgeUnusedAreasIfNeeded() {
     else
       it = areas_.erase(it);
   }
-
-  // Track the size of cache purged.
-  size_t final_total_cache_size;
-  GetStatistics(&final_total_cache_size, &unused_area_count);
-  size_t purged_size_kib = (total_cache_size - final_total_cache_size) / 1024;
-  RecordCachePurgedHistogram(purge_reason, purged_size_kib);
 }
 
 void LocalStorageImpl::ForceKeepSessionState() {
@@ -638,22 +559,9 @@ void LocalStorageImpl::InitiateConnection(bool in_memory_only) {
 
 void LocalStorageImpl::OnDatabaseOpened(leveldb::Status status) {
   if (!status.ok()) {
-    UMA_HISTOGRAM_ENUMERATION("LocalStorageContext.DatabaseOpenError",
-                              leveldb_env::GetLevelDBStatusUMAValue(status),
-                              leveldb_env::LEVELDB_STATUS_MAX);
-    if (in_memory_) {
-      UMA_HISTOGRAM_ENUMERATION("LocalStorageContext.DatabaseOpenError.Memory",
-                                leveldb_env::GetLevelDBStatusUMAValue(status),
-                                leveldb_env::LEVELDB_STATUS_MAX);
-    } else {
-      UMA_HISTOGRAM_ENUMERATION("LocalStorageContext.DatabaseOpenError.Disk",
-                                leveldb_env::GetLevelDBStatusUMAValue(status),
-                                leveldb_env::LEVELDB_STATUS_MAX);
-    }
-    LogDatabaseOpenResult(OpenResult::DATABASE_OPEN_FAILED);
     // If we failed to open the database, try to delete and recreate the
     // database, or ultimately fallback to an in-memory database.
-    DeleteAndRecreateDatabase("LocalStorageContext.OpenResultAfterOpenFailed");
+    DeleteAndRecreateDatabase();
     return;
   }
 
@@ -681,21 +589,14 @@ void LocalStorageImpl::OnGotDatabaseVersion(leveldb::Status status,
                              &db_version) ||
         db_version < kMinSchemaVersion ||
         db_version > kCurrentLocalStorageSchemaVersion) {
-      LogDatabaseOpenResult(OpenResult::INVALID_VERSION);
-      DeleteAndRecreateDatabase(
-          "LocalStorageContext.OpenResultAfterInvalidVersion");
+      DeleteAndRecreateDatabase();
       return;
     }
 
     database_initialized_ = true;
   } else {
     // Other read error. Possibly database corruption.
-    UMA_HISTOGRAM_ENUMERATION("LocalStorageContext.ReadVersionError",
-                              leveldb_env::GetLevelDBStatusUMAValue(status),
-                              leveldb_env::LEVELDB_STATUS_MAX);
-    LogDatabaseOpenResult(OpenResult::VERSION_READ_ERROR);
-    DeleteAndRecreateDatabase(
-        "LocalStorageContext.OpenResultAfterReadVersionError");
+    DeleteAndRecreateDatabase();
     return;
   }
 
@@ -712,9 +613,6 @@ void LocalStorageImpl::OnConnectionFinished() {
   if (database_)
     tried_to_recreate_during_open_ = false;
 
-  LogDatabaseOpenResult(OpenResult::SUCCESS);
-  open_result_histogram_ = nullptr;
-
   // |database_| should be known to either be valid or invalid by now. Run our
   // delayed bindings.
   connection_state_ = CONNECTION_FINISHED;
@@ -723,7 +621,7 @@ void LocalStorageImpl::OnConnectionFinished() {
   on_database_opened_callbacks_.clear();
 }
 
-void LocalStorageImpl::DeleteAndRecreateDatabase(const char* histogram_name) {
+void LocalStorageImpl::DeleteAndRecreateDatabase() {
   if (connection_state_ == CONNECTION_SHUTDOWN)
     return;
 
@@ -736,7 +634,6 @@ void LocalStorageImpl::DeleteAndRecreateDatabase(const char* histogram_name) {
   connection_state_ = CONNECTION_IN_PROGRESS;
   commit_error_count_ = 0;
   database_.reset();
-  open_result_histogram_ = histogram_name;
 
   bool recreate_in_memory = false;
 
@@ -767,9 +664,6 @@ void LocalStorageImpl::DeleteAndRecreateDatabase(const char* histogram_name) {
 
 void LocalStorageImpl::OnDBDestroyed(bool recreate_in_memory,
                                      leveldb::Status status) {
-  UMA_HISTOGRAM_ENUMERATION("LocalStorageContext.DestroyDBResult",
-                            leveldb_env::GetLevelDBStatusUMAValue(status),
-                            leveldb_env::LEVELDB_STATUS_MAX);
   // We're essentially ignoring the status here. Even if destroying failed we
   // still want to go ahead and try to recreate.
   InitiateConnection(recreate_in_memory);
@@ -782,13 +676,6 @@ LocalStorageImpl::StorageAreaHolder* LocalStorageImpl::GetOrCreateStorageArea(
   if (found != areas_.end()) {
     return found->second.get();
   }
-
-  size_t total_cache_size, unused_area_count;
-  GetStatistics(&total_cache_size, &unused_area_count);
-
-  // Track the total localStorage cache size.
-  UMA_HISTOGRAM_COUNTS_100000("LocalStorageContext.CacheSizeInKB",
-                              total_cache_size / 1024);
 
   PurgeUnusedAreasIfNeeded();
 
@@ -805,10 +692,7 @@ void LocalStorageImpl::RetrieveStorageUsage(GetUsageCallback callback) {
     std::vector<mojom::StorageUsageInfoPtr> result;
     base::Time now = base::Time::Now();
     for (const auto& it : areas_) {
-      result.emplace_back(mojom::StorageUsageInfo::New(
-          // TODO(https://crbug.com/1199077): Pass the real StorageKey when
-          // StorageUsageInfo is converted.
-          it.first.origin(), 0, now));
+      result.emplace_back(mojom::StorageUsageInfo::New(it.first, 0, now));
     }
     std::move(callback).Run(std::move(result));
   } else {
@@ -844,9 +728,7 @@ void LocalStorageImpl::OnGotMetaData(
     }
 
     result.emplace_back(mojom::StorageUsageInfo::New(
-        // TODO(https://crbug.com/1199077): Pass the real StorageKey when
-        // StorageUsageInfo is converted.
-        storage_key->origin(), row_data.size_bytes(),
+        storage_key.value(), row_data.size_bytes(),
         base::Time::FromInternalValue(row_data.last_modified())));
   }
   // Add any storage keys for which StorageAreas exist, but which haven't
@@ -860,10 +742,7 @@ void LocalStorageImpl::OnGotMetaData(
         it.second->storage_area()->empty()) {
       continue;
     }
-    result.emplace_back(mojom::StorageUsageInfo::New(
-        // TODO(https://crbug.com/1199077): Pass the real StorageKey when
-        // StorageUsageInfo is converted.
-        it.first.origin(), 0, now));
+    result.emplace_back(mojom::StorageUsageInfo::New(it.first, 0, now));
   }
   std::move(callback).Run(std::move(result));
 }
@@ -872,11 +751,8 @@ void LocalStorageImpl::OnGotStorageUsageForShutdown(
     std::vector<mojom::StorageUsageInfoPtr> usage) {
   std::vector<blink::StorageKey> storage_keys_to_delete;
   for (const auto& info : usage) {
-    // TODO(https://crbug.com/1199077): Pass the real StorageKey when
-    // StorageUsageInfo is converted.
-    blink::StorageKey storage_key(info->origin);
-    if (base::Contains(storage_keys_to_purge_on_shutdown_, storage_key))
-      storage_keys_to_delete.push_back(storage_key);
+    if (base::Contains(storage_keys_to_purge_on_shutdown_, info->storage_key))
+      storage_keys_to_delete.push_back(info->storage_key);
   }
 
   if (!storage_keys_to_delete.empty()) {
@@ -935,19 +811,7 @@ void LocalStorageImpl::OnCommitResult(leveldb::Status status) {
     // Deleting StorageAreas in here could cause more commits (and commit
     // errors), but those commits won't reach OnCommitResult because the area
     // will have been deleted before the commit finishes.
-    DeleteAndRecreateDatabase(
-        "LocalStorageContext.OpenResultAfterCommitErrors");
-  }
-}
-
-void LocalStorageImpl::LogDatabaseOpenResult(OpenResult result) {
-  if (result != OpenResult::SUCCESS) {
-    UMA_HISTOGRAM_ENUMERATION("LocalStorageContext.OpenError", result,
-                              OpenResult::MAX);
-  }
-  if (open_result_histogram_) {
-    base::UmaHistogramEnumeration(open_result_histogram_, result,
-                                  OpenResult::MAX);
+    DeleteAndRecreateDatabase();
   }
 }
 

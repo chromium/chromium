@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -98,8 +98,8 @@ class MODULES_EXPORT MediaRecorder
 
   Member<MediaStream> stream_;
   String mime_type_;
-  int audio_bits_per_second_;
-  int video_bits_per_second_;
+  uint32_t audio_bits_per_second_{0};
+  uint32_t video_bits_per_second_{0};
 
   State state_;
   bool first_write_received_ = false;

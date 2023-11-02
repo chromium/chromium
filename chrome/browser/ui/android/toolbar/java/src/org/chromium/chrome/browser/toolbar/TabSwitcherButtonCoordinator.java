@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@ import android.view.View.OnClickListener;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
 import org.chromium.chrome.browser.toolbar.TabCountProvider.TabCountObserver;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -53,7 +54,8 @@ public class TabSwitcherButtonCoordinator {
         mThemeColorProvider = themeColorProvider;
         mTintObserver = new TintObserver() {
             @Override
-            public void onTintChanged(ColorStateList tint, boolean useLight) {
+            public void onTintChanged(
+                    ColorStateList tint, @BrandedColorScheme int brandedColorScheme) {
                 mTabSwitcherButtonModel.set(TabSwitcherButtonProperties.TINT, tint);
             }
         };

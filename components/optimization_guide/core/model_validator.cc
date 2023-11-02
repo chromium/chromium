@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,7 @@ ModelValidatorHandler::ModelValidatorHandler(
           model_provider,
           background_task_runner,
           std::make_unique<ModelValidatorExecutor>(),
+          /*model_inference_timeout=*/absl::nullopt,
           proto::OPTIMIZATION_TARGET_MODEL_VALIDATION,
           /*model_metadata=*/absl::nullopt) {}
 
@@ -53,18 +54,22 @@ ModelValidatorExecutor::ModelValidatorExecutor() = default;
 
 ModelValidatorExecutor::~ModelValidatorExecutor() = default;
 
-absl::Status ModelValidatorExecutor::Preprocess(
+bool ModelValidatorExecutor::Preprocess(
     const std::vector<TfLiteTensor*>& input_tensors,
     const std::vector<float>& input) {
   // Return error so that actual model execution does not happen.
-  return absl::Status(absl::StatusCode::kUnimplemented,
-                      "Model execution not supported");
+  return false;
 }
 
-float ModelValidatorExecutor::Postprocess(
+absl::optional<float> ModelValidatorExecutor::Postprocess(
     const std::vector<const TfLiteTensor*>& output_tensors) {
   std::vector<float> data;
-  tflite::task::core::PopulateVector<float>(output_tensors[0], &data);
+  absl::Status status =
+      tflite::task::core::PopulateVector<float>(output_tensors[0], &data);
+  if (!status.ok()) {
+    NOTREACHED();
+    return absl::nullopt;
+  }
   return data[0];
 }
 

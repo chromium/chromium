@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,24 +37,28 @@ void TemplateURLTableModel::Reload() {
       extension_entries;
   // Keywords that can be made the default first.
   for (auto* template_url : urls) {
+    // Don't include starter pack keywords if the starter pack feature flag is
+    // not enabled.
+    if (!OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() &&
+        template_url->starter_pack_id() != 0) {
+      continue;
+    }
+
     if (template_url_service_->ShowInDefaultList(template_url)) {
       default_entries.push_back(template_url);
     } else if (template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION) {
       extension_entries.push_back(template_url);
-    } else if (OmniboxFieldTrial::IsActiveSearchEnginesEnabled() &&
-               (template_url->is_active() ==
-                TemplateURLData::ActiveStatus::kTrue)) {
+    } else if (template_url->is_active() ==
+               TemplateURLData::ActiveStatus::kTrue) {
       active_entries.push_back(template_url);
     } else {
       other_entries.push_back(template_url);
     }
   }
 
-  last_search_engine_index_ = static_cast<int>(default_entries.size());
-  last_active_engine_index_ =
-      last_search_engine_index_ + static_cast<int>(active_entries.size());
-  last_other_engine_index_ =
-      last_active_engine_index_ + static_cast<int>(other_entries.size());
+  last_search_engine_index_ = default_entries.size();
+  last_active_engine_index_ = last_search_engine_index_ + active_entries.size();
+  last_other_engine_index_ = last_active_engine_index_ + other_entries.size();
 
   entries_.clear();
   std::move(default_entries.begin(), default_entries.end(),
@@ -73,12 +77,12 @@ void TemplateURLTableModel::Reload() {
     observer_->OnModelChanged();
 }
 
-int TemplateURLTableModel::RowCount() {
-  return static_cast<int>(entries_.size());
+size_t TemplateURLTableModel::RowCount() {
+  return entries_.size();
 }
 
-std::u16string TemplateURLTableModel::GetText(int row, int col_id) {
-  DCHECK(row >= 0 && row < RowCount());
+std::u16string TemplateURLTableModel::GetText(size_t row, int col_id) {
+  DCHECK(row < RowCount());
   const TemplateURL* url = entries_[row];
   if (col_id == IDS_SEARCH_ENGINES_EDITOR_DESCRIPTION_COLUMN) {
     std::u16string url_short_name = url->short_name();
@@ -100,16 +104,16 @@ void TemplateURLTableModel::SetObserver(ui::TableModelObserver* observer) {
   observer_ = observer;
 }
 
-void TemplateURLTableModel::Remove(int index) {
+void TemplateURLTableModel::Remove(size_t index) {
   TemplateURL* template_url = GetTemplateURL(index);
   template_url_service_->Remove(template_url);
 }
 
-void TemplateURLTableModel::Add(int index,
+void TemplateURLTableModel::Add(size_t index,
                                 const std::u16string& short_name,
                                 const std::u16string& keyword,
                                 const std::string& url) {
-  DCHECK(index >= 0 && index <= RowCount());
+  DCHECK(index <= RowCount());
   DCHECK(!url.empty());
   TemplateURLData data;
   data.SetShortName(short_name);
@@ -119,11 +123,11 @@ void TemplateURLTableModel::Add(int index,
   template_url_service_->Add(std::make_unique<TemplateURL>(data));
 }
 
-void TemplateURLTableModel::ModifyTemplateURL(int index,
+void TemplateURLTableModel::ModifyTemplateURL(size_t index,
                                               const std::u16string& title,
                                               const std::u16string& keyword,
                                               const std::string& url) {
-  DCHECK(index >= 0 && index <= RowCount());
+  DCHECK(index <= RowCount());
   DCHECK(!url.empty());
   TemplateURL* template_url = GetTemplateURL(index);
 
@@ -134,10 +138,9 @@ void TemplateURLTableModel::ModifyTemplateURL(int index,
   template_url_service_->ResetTemplateURL(template_url, title, keyword, url);
 }
 
-TemplateURL* TemplateURLTableModel::GetTemplateURL(int index) {
+TemplateURL* TemplateURLTableModel::GetTemplateURL(size_t index) {
   // Sanity checks for https://crbug.com/781703.
-  CHECK_GE(index, 0);
-  CHECK_LT(static_cast<size_t>(index), entries_.size());
+  CHECK_LT(index, entries_.size());
   CHECK(
       base::Contains(template_url_service_->GetTemplateURLs(), entries_[index]))
       << "TemplateURLTableModel is returning a pointer to a TemplateURL "
@@ -146,17 +149,16 @@ TemplateURL* TemplateURLTableModel::GetTemplateURL(int index) {
   return entries_[index];
 }
 
-int TemplateURLTableModel::IndexOfTemplateURL(
+absl::optional<size_t> TemplateURLTableModel::IndexOfTemplateURL(
     const TemplateURL* template_url) {
   for (auto i = entries_.begin(); i != entries_.end(); ++i) {
     if (*i == template_url)
-      return static_cast<int>(i - entries_.begin());
+      return static_cast<size_t>(i - entries_.begin());
   }
-  return -1;
+  return absl::nullopt;
 }
 
-void TemplateURLTableModel::MakeDefaultTemplateURL(int index) {
-  DCHECK_GE(index, 0);
+void TemplateURLTableModel::MakeDefaultTemplateURL(size_t index) {
   DCHECK_LT(index, RowCount());
 
   TemplateURL* keyword = GetTemplateURL(index);
@@ -168,8 +170,9 @@ void TemplateURLTableModel::MakeDefaultTemplateURL(int index) {
   template_url_service_->SetUserSelectedDefaultSearchProvider(keyword);
 }
 
-void TemplateURLTableModel::SetIsActiveTemplateURL(int index, bool is_active) {
-  DCHECK(index >= 0 && index <= RowCount());
+void TemplateURLTableModel::SetIsActiveTemplateURL(size_t index,
+                                                   bool is_active) {
+  DCHECK(index <= RowCount());
   TemplateURL* keyword = GetTemplateURL(index);
 
   template_url_service_->SetIsActiveTemplateURL(keyword, is_active);

@@ -18,9 +18,13 @@ package org.tensorflow.lite.task.text.qa;
 import android.content.Context;
 import android.os.ParcelFileDescriptor;
 
+import com.google.auto.value.AutoValue;
+
+import org.tensorflow.lite.task.core.BaseOptions;
 import org.tensorflow.lite.task.core.BaseTaskApi;
 import org.tensorflow.lite.task.core.TaskJniUtils;
 import org.tensorflow.lite.task.core.TaskJniUtils.EmptyHandleProvider;
+import org.tensorflow.lite.task.core.TaskJniUtils.FdAndOptionsHandleProvider;
 import org.tensorflow.lite.task.core.TaskJniUtils.MultipleBuffersHandleProvider;
 
 import java.io.File;
@@ -28,128 +32,196 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-/** Task API for BertQA models. */
+/**
+ * Returns the most possible answers on a given question for QA models (BERT, Albert, etc.).
+ *
+ * <p>The API expects a Bert based TFLite model with metadata containing the following information:
+ *
+ * <ul>
+ *   <li>input_process_units for Wordpiece/Sentencepiece Tokenizer - Wordpiece Tokenizer can be used
+ *       for a <a
+ *       href="https://tfhub.dev/tensorflow/lite-model/mobilebert/1/default/1">MobileBert</a> model,
+ *       Sentencepiece Tokenizer Tokenizer can be used for an <a
+ *       href="https://tfhub.dev/tensorflow/lite-model/albert_lite_base/squadv1/1">Albert</a> model.
+ *   <li>3 input tensors with names "ids", "mask" and "segment_ids".
+ *   <li>2 output tensors with names "end_logits" and "start_logits".
+ * </ul>
+ */
 public class BertQuestionAnswerer extends BaseTaskApi implements QuestionAnswerer {
     private static final String BERT_QUESTION_ANSWERER_NATIVE_LIBNAME = "task_text_jni";
-
-    private BertQuestionAnswerer(long nativeHandle) {
-        super(nativeHandle);
-    }
+    private static final int OPTIONAL_FD_LENGTH = -1;
+    private static final int OPTIONAL_FD_OFFSET = -1;
 
     /**
-     * Generic API to create the QuestionAnswerer for bert models with metadata populated. The API
-     * expects a Bert based TFLite model with metadata containing the following information:
-     *
-     * <ul>
-     *   <li>input_process_units for Wordpiece/Sentencepiece Tokenizer - Wordpiece Tokenizer can be
-     *       used for a <a
-     *       href="https://tfhub.dev/tensorflow/lite-model/mobilebert/1/default/1">MobileBert</a>
-     *       model, Sentencepiece Tokenizer Tokenizer can be used for an <a
-     *       href="https://tfhub.dev/tensorflow/lite-model/albert_lite_base/squadv1/1">Albert</a>
-     *       model.
-     *   <li>3 input tensors with names "ids", "mask" and "segment_ids".
-     *   <li>2 output tensors with names "end_logits" and "start_logits".
-     * </ul>
+     * Creates a {@link BertQuestionAnswerer} instance from the default {@link
+     * BertQuestionAnswererOptions}.
      *
      * @param context android context
-     * @param pathToModel file path to the model with metadata. Note: The model should not be
-     *     compressed
-     * @return {@link BertQuestionAnswerer} instance
-     * @throws IOException If model file fails to load.
+     * @param modelPath file path to the model with metadata. Note: The model should not be
+     *         compressed
+     * @return a {@link BertQuestionAnswerer} instance
+     * @throws IOException if model file fails to load
+     * @throws IllegalArgumentException if an argument is invalid
+     * @throws IllegalStateException if there is an internal error
+     * @throws RuntimeException if there is an otherwise unspecified error
      */
-    public static BertQuestionAnswerer createFromFile(Context context, String pathToModel)
+    public static BertQuestionAnswerer createFromFile(Context context, String modelPath)
             throws IOException {
-        return new BertQuestionAnswerer(TaskJniUtils.createHandleWithMultipleAssetFilesFromLibrary(
-                context, new MultipleBuffersHandleProvider() {
-                    @Override
-                    public long createHandle(ByteBuffer... buffers) {
-                        return BertQuestionAnswerer.initJniWithModelWithMetadataByteBuffers(
-                                buffers);
-                    }
-                }, BERT_QUESTION_ANSWERER_NATIVE_LIBNAME, pathToModel));
+        return createFromFileAndOptions(
+                context, modelPath, BertQuestionAnswererOptions.builder().build());
     }
 
     /**
-     * Generic API to create the QuestionAnswerer for bert models with metadata populated. The API
-     * expects a Bert based TFLite model with metadata containing the following information:
+     * Creates a {@link BertQuestionAnswerer} instance from the default {@link
+     * BertQuestionAnswererOptions}.
      *
-     * <ul>
-     *   <li>input_process_units for Wordpiece/Sentencepiece Tokenizer - Wordpiece Tokenizer can be
-     *       used for a <a
-     *       href="https://tfhub.dev/tensorflow/lite-model/mobilebert/1/default/1">MobileBert</a>
-     *       model, Sentencepiece Tokenizer Tokenizer can be used for an <a
-     *       href="https://tfhub.dev/tensorflow/lite-model/albert_lite_base/squadv1/1">Albert</a>
-     *       model.
-     *   <li>3 input tensors with names "ids", "mask" and "segment_ids".
-     *   <li>2 output tensors with names "end_logits" and "start_logits".
-     * </ul>
-     *
-     * @param modelFile {@link File} object of the model
-     * @return {@link BertQuestionAnswerer} instance
-     * @throws IOException If model file fails to load.
+     * @param modelFile a {@link File} object of the model
+     * @return a {@link BertQuestionAnswerer} instance
+     * @throws IOException if model file fails to load
+     * @throws IllegalArgumentException if an argument is invalid
+     * @throws IllegalStateException if there is an internal error
+     * @throws RuntimeException if there is an otherwise unspecified error
      */
     public static BertQuestionAnswerer createFromFile(File modelFile) throws IOException {
+        return createFromFileAndOptions(modelFile, BertQuestionAnswererOptions.builder().build());
+    }
+
+    /**
+     * Creates a {@link BertQuestionAnswerer} instance from {@link BertQuestionAnswererOptions}.
+     *
+     * @param context android context
+     * @param modelPath file path to the model with metadata. Note: The model should not be
+     *         compressed
+     * @return a {@link BertQuestionAnswerer} instance
+     * @throws IOException if model file fails to load
+     * @throws IllegalArgumentException if an argument is invalid
+     * @throws IllegalStateException if there is an internal error
+     * @throws RuntimeException if there is an otherwise unspecified error
+     */
+    public static BertQuestionAnswerer createFromFileAndOptions(Context context, String modelPath,
+            BertQuestionAnswererOptions options) throws IOException {
+        return new BertQuestionAnswerer(TaskJniUtils.createHandleFromFdAndOptions(
+                context, new FdAndOptionsHandleProvider<BertQuestionAnswererOptions>() {
+                    @Override
+                    public long createHandle(int fileDescriptor, long fileDescriptorLength,
+                            long fileDescriptorOffset, BertQuestionAnswererOptions options) {
+                        return initJniWithFileDescriptor(fileDescriptor, fileDescriptorLength,
+                                fileDescriptorOffset,
+                                TaskJniUtils.createProtoBaseOptionsHandle(
+                                        options.getBaseOptions()));
+                    }
+                }, BERT_QUESTION_ANSWERER_NATIVE_LIBNAME, modelPath, options));
+    }
+
+    /**
+     * Creates a {@link BertQuestionAnswerer} instance from {@link BertQuestionAnswererOptions}.
+     *
+     * @param modelFile a {@link File} object of the model
+     * @return a {@link BertQuestionAnswerer} instance
+     * @throws IOException if model file fails to load
+     * @throws IllegalArgumentException if an argument is invalid
+     * @throws IllegalStateException if there is an internal error
+     * @throws RuntimeException if there is an otherwise unspecified error
+     */
+    public static BertQuestionAnswerer createFromFileAndOptions(
+            File modelFile, final BertQuestionAnswererOptions options) throws IOException {
         try (ParcelFileDescriptor descriptor =
                         ParcelFileDescriptor.open(modelFile, ParcelFileDescriptor.MODE_READ_ONLY)) {
             return new BertQuestionAnswerer(
                     TaskJniUtils.createHandleFromLibrary(new EmptyHandleProvider() {
                         @Override
                         public long createHandle() {
-                            return initJniWithFileDescriptor(descriptor.getFd());
+                            return initJniWithFileDescriptor(
+                                    /*fileDescriptor=*/descriptor.getFd(),
+                                    /*fileDescriptorLength=*/OPTIONAL_FD_LENGTH,
+                                    /*fileDescriptorOffset=*/OPTIONAL_FD_OFFSET,
+                                    TaskJniUtils.createProtoBaseOptionsHandle(
+                                            options.getBaseOptions()));
                         }
                     }, BERT_QUESTION_ANSWERER_NATIVE_LIBNAME));
         }
     }
 
     /**
-     * Creates the API instance with a bert model and vocabulary file.
+     * Creates a {@link BertQuestionAnswerer} instance with a Bert model and a vocabulary file.
      *
      * <p>One suitable model is: https://tfhub.dev/tensorflow/lite-model/mobilebert/1/default/1
      *
      * @param context android context
-     * @param pathToModel file path to the bert model. Note: The model should not be compressed
-     * @param pathToVocab file path to the vocabulary file. Note: The file should not be compressed
-     * @return {@link BertQuestionAnswerer} instance
-     * @throws IOException If model file fails to load.
+     * @param modelPath file path to the Bert model. Note: The model should not be compressed
+     * @param vocabPath file path to the vocabulary file. Note: The file should not be compressed
+     * @return a {@link BertQuestionAnswerer} instance
+     * @throws IOException If model file fails to load
+     * @throws IllegalArgumentException if an argument is invalid
+     * @throws IllegalStateException if there is an internal error
+     * @throws RuntimeException if there is an otherwise unspecified error
      */
     public static BertQuestionAnswerer createBertQuestionAnswererFromFile(
-            Context context, String pathToModel, String pathToVocab) throws IOException {
+            Context context, String modelPath, String vocabPath) throws IOException {
         return new BertQuestionAnswerer(TaskJniUtils.createHandleWithMultipleAssetFilesFromLibrary(
                 context, new MultipleBuffersHandleProvider() {
                     @Override
                     public long createHandle(ByteBuffer... buffers) {
-                        return BertQuestionAnswerer.initJniWithBertByteBuffers(buffers);
+                        return initJniWithBertByteBuffers(buffers);
                     }
-                }, BERT_QUESTION_ANSWERER_NATIVE_LIBNAME, pathToModel, pathToVocab));
+                }, BERT_QUESTION_ANSWERER_NATIVE_LIBNAME, modelPath, vocabPath));
     }
 
     /**
-     * Creates the API instance with an albert model and sentence piece model file.
+     * Creates a {@link BertQuestionAnswerer} instance with an Albert model and a sentence piece
+     * model file.
      *
      * <p>One suitable model is: https://tfhub.dev/tensorflow/lite-model/albert_lite_base/squadv1/1
      *
      * @param context android context
-     * @param pathToModel file path to the albert model. Note: The model should not be compressed
-     * @param pathToSentencePieceModel file path to the sentence piece model file. Note: The model
+     * @param modelPath file path to the Albert model. Note: The model should not be compressed
+     * @param sentencePieceModelPath file path to the sentence piece model file. Note: The model
      *     should not be compressed
-     * @return {@link BertQuestionAnswerer} instance
-     * @throws IOException If model file fails to load.
+     * @return a {@link BertQuestionAnswerer} instance
+     * @throws IOException If model file fails to load
+     * @throws IllegalArgumentException if an argument is invalid
+     * @throws IllegalStateException if there is an internal error
+     * @throws RuntimeException if there is an otherwise unspecified error
      */
-    public static BertQuestionAnswerer createAlbertQuestionAnswererFromFile(Context context,
-            String pathToModel, String pathToSentencePieceModel) throws IOException {
+    public static BertQuestionAnswerer createAlbertQuestionAnswererFromFile(
+            Context context, String modelPath, String sentencePieceModelPath) throws IOException {
         return new BertQuestionAnswerer(TaskJniUtils.createHandleWithMultipleAssetFilesFromLibrary(
                 context, new MultipleBuffersHandleProvider() {
                     @Override
                     public long createHandle(ByteBuffer... buffers) {
-                        return BertQuestionAnswerer.initJniWithAlbertByteBuffers(buffers);
+                        return initJniWithAlbertByteBuffers(buffers);
                     }
-                }, BERT_QUESTION_ANSWERER_NATIVE_LIBNAME, pathToModel, pathToSentencePieceModel));
+                }, BERT_QUESTION_ANSWERER_NATIVE_LIBNAME, modelPath, sentencePieceModelPath));
+    }
+
+    /** Options for setting up a {@link BertQuestionAnswerer}. */
+    @AutoValue
+    public abstract static class BertQuestionAnswererOptions {
+        abstract BaseOptions getBaseOptions();
+
+        public static Builder builder() {
+            return new AutoValue_BertQuestionAnswerer_BertQuestionAnswererOptions.Builder()
+                    .setBaseOptions(BaseOptions.builder().build());
+        }
+
+        /** Builder for {@link BertQuestionAnswererOptions}. */
+        @AutoValue.Builder
+        public abstract static class Builder {
+            /** Sets the general options to configure Task APIs, such as accelerators. */
+            public abstract Builder setBaseOptions(BaseOptions baseOptions);
+
+            public abstract BertQuestionAnswererOptions build();
+        }
     }
 
     @Override
     public List<QaAnswer> answer(String context, String question) {
         checkNotClosed();
         return answerNative(getNativeHandle(), context, question);
+    }
+
+    private BertQuestionAnswerer(long nativeHandle) {
+        super(nativeHandle);
     }
 
     // modelBuffers[0] is tflite model file buffer, and modelBuffers[1] is vocab file buffer.
@@ -159,10 +231,8 @@ public class BertQuestionAnswerer extends BaseTaskApi implements QuestionAnswere
     // buffer.
     private static native long initJniWithAlbertByteBuffers(ByteBuffer... modelBuffers);
 
-    // modelBuffers[0] is tflite model file buffer with metadata to specify which tokenizer to use.
-    private static native long initJniWithModelWithMetadataByteBuffers(ByteBuffer... modelBuffers);
-
-    private static native long initJniWithFileDescriptor(int fd);
+    private static native long initJniWithFileDescriptor(int fileDescriptor,
+            long fileDescriptorLength, long fileDescriptorOffset, long baseOptionsHandle);
 
     private static native List<QaAnswer> answerNative(
             long nativeHandle, String context, String question);

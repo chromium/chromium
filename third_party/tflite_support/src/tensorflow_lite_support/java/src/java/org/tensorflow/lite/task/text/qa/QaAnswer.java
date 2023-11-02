@@ -15,7 +15,7 @@ limitations under the License.
 
 package org.tensorflow.lite.task.text.qa;
 
-import org.tensorflow.lite.annotations.UsedByReflection;
+import org.tensorflow.lite.task.core.annotations.UsedByReflection;
 
 /**
  * Answers to {@link QuestionAnswerer}. Contains information about the answer and its relative

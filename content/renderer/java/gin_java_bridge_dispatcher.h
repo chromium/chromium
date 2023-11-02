@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,7 +52,7 @@ class GinJavaBridgeDispatcher
   std::unique_ptr<base::Value> InvokeJavaMethod(
       ObjectID object_id,
       const std::string& method_name,
-      const base::ListValue& arguments,
+      const base::Value::List& arguments,
       GinJavaBridgeError* error);
   GinJavaBridgeObject* GetObject(ObjectID object_id);
   void OnGinJavaBridgeObjectDeleted(GinJavaBridgeObject* object);

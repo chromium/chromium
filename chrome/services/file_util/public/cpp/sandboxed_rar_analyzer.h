@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace safe_browsing {
+enum class ArchiveAnalysisResult;
 struct ArchiveAnalyzerResults;
 }
 
@@ -50,7 +51,7 @@ class SandboxedRarAnalyzer
   void PrepareFileToAnalyze();
 
   // If file preparation failed, analysis has failed: report failure.
-  void ReportFileFailure();
+  void ReportFileFailure(safe_browsing::ArchiveAnalysisResult reason);
 
   // Starts the utility process and sends it a request to analyze the file
   // |file|, given a handle for |temp_file|, where it can extract files.

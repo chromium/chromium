@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,7 @@ class WebContents;
 namespace guest_view {
 
 class GuestViewBase;
+class GuestViewManager;
 
 // A GuestViewManagerDelegate interface allows GuestViewManager to delegate
 // responsibilities to other modules in Chromium. Different builds of Chromium
@@ -52,7 +53,7 @@ class GuestViewManagerDelegate {
 
   // Registers additional GuestView types the delegator (GuestViewManger) can
   // create.
-  virtual void RegisterAdditionalGuestViewTypes() {}
+  virtual void RegisterAdditionalGuestViewTypes(GuestViewManager* manager) {}
 };
 
 }  // namespace guest_view

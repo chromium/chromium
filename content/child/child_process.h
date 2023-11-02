@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,10 @@ class ChildThreadImpl;
 // Base class for child processes of the browser process (i.e. renderer and
 // plugin host). This is a singleton object for each child process.
 //
+// The constructor will call ThreadPoolInstance::Start() unless a ThreadPool is
+// already running, which can happen when the ChildProcess object is
+// instantiated in the browser process or in tests.
+//
 // During process shutdown the following sequence of actions happens in
 // order.
 //
@@ -27,21 +31,22 @@ class ChildThreadImpl;
 //   2. Shutdown event is fired. Background threads should stop.
 //   3. ChildThreadImpl::Shutdown() is called. ChildThread is also deleted.
 //   4. IO thread is stopped.
-// 5. Main message loop exits.
-// 6. Child process is now fully stopped.
+//   5. ThreadPoolInstance::Shutdown() is called if the constructor called
+//      ThreadPoolInstance::Start().
+// 6. Main message loop exits.
+// 7. Child process is now fully stopped.
 //
 // Note: IO thread outlives the ChildThreadImpl object.
 class CONTENT_EXPORT ChildProcess {
  public:
   // Child processes should have an object that derives from this class.
   // Normally you would immediately call set_main_thread after construction.
-  // |io_thread_priority| is the priority of the IO thread.
-  // |thread_pool_name| and |thread_pool_init_params| are used to
-  // initialize ThreadPool. Default params are used if
-  // |thread_pool_init_params| is nullptr.
-  ChildProcess(
-      base::ThreadPriority io_thread_priority = base::ThreadPriority::NORMAL,
-      const std::string& thread_pool_name = "ContentChild",
+  // |io_thread_type| is the type of the IO thread.
+  // |thread_pool_init_params| is used to start the ThreadPool. Default params
+  // are used if |thread_pool_init_params| is nullptr. It is ignored if a
+  // ThreadPool is already running.
+  explicit ChildProcess(
+      base::ThreadType io_thread_type = base::ThreadType::kDefault,
       std::unique_ptr<base::ThreadPoolInstance::InitParams>
           thread_pool_init_params = nullptr);
 
@@ -59,12 +64,12 @@ class CONTENT_EXPORT ChildProcess {
 
   // We need to stop the IO thread here instead of just flushing it, so that it
   // can no longer post tasks back to the main thread.
-  void StopIOThreadForTesting() { io_thread_.Stop(); }
+  void StopIOThreadForTesting() { io_thread_->Stop(); }
 
   base::SingleThreadTaskRunner* io_task_runner() {
-    return io_thread_.task_runner().get();
+    return io_thread_->task_runner().get();
   }
-  base::PlatformThreadId io_thread_id() { return io_thread_.GetThreadId(); }
+  base::PlatformThreadId io_thread_id() { return io_thread_->GetThreadId(); }
 
   // A global event object that is signalled when the main thread's message
   // loop exits.  This gives background threads a way to observe the main
@@ -97,7 +102,7 @@ class CONTENT_EXPORT ChildProcess {
   base::WaitableEvent shutdown_event_;
 
   // The thread that handles IO events.
-  base::Thread io_thread_;
+  std::unique_ptr<base::Thread> io_thread_;
 
   // NOTE: make sure that main_thread_ is listed after shutdown_event_, since
   // it depends on it (indirectly through IPC::SyncChannel).  Same for

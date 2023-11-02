@@ -1,7 +1,8 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//gpu/vulkan/features.gni")
@@ -36,8 +37,6 @@ target(link_target_type, "gpu_sources") {
     "gpu_child_thread.h",
     "gpu_child_thread_receiver_bindings.cc",
     "gpu_main.cc",
-    "gpu_process.cc",
-    "gpu_process.h",
     "gpu_service_factory.cc",
     "gpu_service_factory.h",
     "in_process_gpu_thread.cc",
@@ -97,6 +96,17 @@ target(link_target_type, "gpu_sources") {
       "gpu_sandbox_hook_linux.cc",
       "gpu_sandbox_hook_linux.h",
     ]
+
+    if (use_v4l2_codec) {
+      deps += [ "//media/gpu/v4l2" ]
+    }
+  }
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//components/services/font/public/cpp",
+      "//components/services/font/public/mojom",
+    ]
   }
 
   if (is_android) {
@@ -128,7 +138,7 @@ target(link_target_type, "gpu_sources") {
 
   # Use DRI on desktop Linux builds.
   if (current_cpu != "s390x" && current_cpu != "ppc64" && is_linux &&
-      (!is_chromecast || is_cast_desktop_build)) {
+      !is_castos) {
     configs += [ "//build/config/linux/dri" ]
   }
 }

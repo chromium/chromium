@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "cc/animation/keyframe_model.h"
 #include "chrome/browser/vr/databinding/binding.h"
 #include "chrome/browser/vr/test/animation_utils.h"
@@ -90,7 +89,7 @@ TEST(UiElement, BoundsContainChildren) {
       gfx::RectF(grand_parent->local_origin(), grand_parent->size()), kEpsilon);
 
   gfx::Point3F p;
-  anchored_ptr->LocalTransform().TransformPoint(&p);
+  p = anchored_ptr->LocalTransform().MapPoint(p);
   EXPECT_FLOAT_EQ(-3.9, p.y());
 }
 
@@ -143,7 +142,7 @@ TEST(UiElement, IgnoringAsymmetricPadding) {
   a->UpdateWorldSpaceTransform(false);
 
   gfx::Point3F p;
-  a->world_space_transform().TransformPoint(&p);
+  p = a->world_space_transform().MapPoint(p);
 
   EXPECT_POINT3F_EQ(gfx::Point3F(), p);
 }
@@ -181,7 +180,7 @@ TEST(UiElement, BoundsContainPaddingWithAnchoring) {
     child_ptr->set_y_anchoring(test_case.y_anchoring);
     parent->SizeAndLayOut();
     gfx::Point3F p;
-    child_ptr->LocalTransform().TransformPoint(&p);
+    p = child_ptr->LocalTransform().MapPoint(p);
     EXPECT_POINT3F_EQ(test_case.expected_position, p);
   }
 }
@@ -222,9 +221,8 @@ TEST(UiElement, BoundsContainPaddingWithCentering) {
     child_ptr->set_x_centering(test_case.x_centering);
     child_ptr->set_y_centering(test_case.y_centering);
     parent->SizeAndLayOut();
-    gfx::Point3F p;
-    child_ptr->LocalTransform().TransformPoint(&p);
-    EXPECT_POINT3F_EQ(test_case.expected_position, p);
+    EXPECT_POINT3F_EQ(test_case.expected_position,
+                      child_ptr->LocalTransform().MapPoint(gfx::Point3F()));
   }
 }
 
@@ -283,14 +281,12 @@ TEST(UiElement, AnimationAffectsInheritableTransform) {
 
   base::TimeTicks start_time = gfx::MicrosecondsToTicks(1);
   EXPECT_TRUE(scene.OnBeginFrame(start_time, kStartHeadPose));
-  gfx::Point3F p;
-  rect_ptr->LocalTransform().TransformPoint(&p);
-  EXPECT_POINT3F_EQ(gfx::Point3F(10, 100, 1000), p);
-  p = gfx::Point3F();
+  EXPECT_POINT3F_EQ(gfx::Point3F(10, 100, 1000),
+                    rect_ptr->LocalTransform().MapPoint(gfx::Point3F()));
   EXPECT_TRUE(scene.OnBeginFrame(start_time + gfx::MicrosecondsToDelta(10000),
                                  kStartHeadPose));
-  rect_ptr->LocalTransform().TransformPoint(&p);
-  EXPECT_POINT3F_EQ(gfx::Point3F(20, 200, 2000), p);
+  EXPECT_POINT3F_EQ(gfx::Point3F(20, 200, 2000),
+                    rect_ptr->LocalTransform().MapPoint(gfx::Point3F()));
 }
 
 TEST(UiElement, HitTest) {
@@ -343,7 +339,7 @@ TEST(UiElement, HitTest) {
       {gfx::PointF(-0.1f, -0.1f), false, false, false},
   };
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     SCOPED_TRACE(i);
     EXPECT_EQ(test_cases[i].expected_rect,
               rect.LocalHitTest(test_cases[i].location));
@@ -379,7 +375,7 @@ TEST(UiElement, HitTestWithClip) {
       {{kAlmostOne, 0.5f}, true},
   };
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     SCOPED_TRACE(i);
     EXPECT_EQ(test_cases[i].expected,
               rect.LocalHitTest(test_cases[i].location));

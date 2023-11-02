@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "android_webview/browser/gfx/parent_compositor_draw_constraints.h"
 #include "android_webview/browser/gfx/root_frame_sink.h"
 #include "components/viz/common/frame_timing_details_map.h"
-#include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace viz {
 class FrameSinkId;
@@ -32,7 +32,7 @@ class CompositorFrameConsumer {
   virtual void SetCompositorFrameProducer(
       CompositorFrameProducer* compositor_frame_producer,
       RootFrameSinkGetter root_frame_sink_getter) = 0;
-  virtual void SetScrollOffsetOnUI(gfx::Vector2d scroll_offset) = 0;
+  virtual void SetScrollOffsetOnUI(gfx::Point scroll_offset) = 0;
   // Returns uncommitted frame to be returned, if any.
   virtual std::unique_ptr<ChildFrame> SetFrameOnUI(
       std::unique_ptr<ChildFrame> frame) = 0;

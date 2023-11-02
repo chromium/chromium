@@ -1,13 +1,15 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_FINISH_OBSERVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_FINISH_OBSERVER_H_
 
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+
+#include "base/record_replay.h"
 
 namespace blink {
 
@@ -22,7 +24,13 @@ namespace blink {
 class PLATFORM_EXPORT ResourceFinishObserver
     : public GarbageCollected<ResourceFinishObserver> {
  public:
-  virtual ~ResourceFinishObserver() = default;
+  ResourceFinishObserver() {
+    // RUN-1724
+    recordreplay::RegisterPointer("ResourceFinishObserver", this);
+  }
+  virtual ~ResourceFinishObserver() {
+    recordreplay::UnregisterPointer(this);
+  }
 
   // Called asynchronously when loading finishes.
   // Note that this can be dispatched after removing |this| client from a
@@ -32,6 +40,8 @@ class PLATFORM_EXPORT ResourceFinishObserver
   virtual String DebugName() const = 0;
 
   virtual void Trace(Visitor* visitor) const {}
+
+  int RecordReplayId() const { return recordreplay::PointerId(this); }
 };
 
 }  // namespace blink

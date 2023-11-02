@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #endif
@@ -33,7 +33,7 @@ class CONTENT_EXPORT BackgroundSyncLauncher {
   static base::TimeDelta GetSoonestWakeupDelta(
       blink::mojom::BackgroundSyncType sync_type,
       BrowserContext* browser_context);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   static void FireBackgroundSyncEvents(
       BrowserContext* browser_context,
       blink::mojom::BackgroundSyncType sync_type,
@@ -53,7 +53,7 @@ class CONTENT_EXPORT BackgroundSyncLauncher {
   base::TimeDelta GetSoonestWakeupDeltaImpl(
       blink::mojom::BackgroundSyncType sync_type,
       BrowserContext* browser_context);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void FireBackgroundSyncEventsImpl(
       BrowserContext* browser_context,
       blink::mojom::BackgroundSyncType sync_type,

@@ -1,24 +1,26 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_GENERATION_POPUP_VIEW_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_GENERATION_POPUP_VIEW_VIEWS_H_
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_view.h"
 #include "chrome/browser/ui/views/autofill/autofill_popup_base_view.h"
 
 class PasswordGenerationPopupController;
 
 namespace views {
-class Label;
+class StyledLabel;
 }
 
 class PasswordGenerationPopupViewViews : public autofill::AutofillPopupBaseView,
                                          public PasswordGenerationPopupView {
  public:
   PasswordGenerationPopupViewViews(
-      PasswordGenerationPopupController* controller,
+      base::WeakPtr<PasswordGenerationPopupController> controller,
       views::Widget* parent_widget);
 
   PasswordGenerationPopupViewViews(const PasswordGenerationPopupViewViews&) =
@@ -27,11 +29,11 @@ class PasswordGenerationPopupViewViews : public autofill::AutofillPopupBaseView,
       const PasswordGenerationPopupViewViews&) = delete;
 
   // PasswordGenerationPopupView implementation
-  bool Show() override WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Show() override;
   void Hide() override;
   void UpdateState() override;
-  void UpdatePasswordValue() override;
-  bool UpdateBoundsAndRedrawPopup() override WARN_UNUSED_RESULT;
+  void UpdateGeneratedPasswordValue() override;
+  [[nodiscard]] bool UpdateBoundsAndRedrawPopup() override;
   void PasswordSelectionUpdated() override;
 
  private:
@@ -48,13 +50,13 @@ class PasswordGenerationPopupViewViews : public autofill::AutofillPopupBaseView,
   gfx::Size CalculatePreferredSize() const override;
 
   // Sub view that displays the actual generated password.
-  GeneratedPasswordBox* password_view_ = nullptr;
+  raw_ptr<GeneratedPasswordBox> password_view_ = nullptr;
 
   // The footer label.
-  views::Label* help_label_ = nullptr;
+  raw_ptr<views::StyledLabel> help_styled_label_ = nullptr;
 
   // Controller for this view. Weak reference.
-  PasswordGenerationPopupController* controller_;
+  base::WeakPtr<PasswordGenerationPopupController> controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_GENERATION_POPUP_VIEW_VIEWS_H_

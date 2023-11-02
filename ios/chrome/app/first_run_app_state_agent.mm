@@ -1,15 +1,15 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/app/first_run_app_state_agent.h"
 
 #import "base/logging.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/histogram_macros.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
-#include "ios/chrome/app/application_delegate/startup_information.h"
+#import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent.h"
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent_observer_bridge.h"
@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/ui/first_run/first_run_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_provider.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
+#import "ios/chrome/browser/ui/first_run/fre_field_trial.h"
 #import "ios/chrome/browser/ui/first_run/orientation_limiting_navigation_controller.h"
 #import "ios/chrome/browser/ui/first_run/welcome_to_chrome_view_controller.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
@@ -26,7 +27,7 @@
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_observer.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -113,7 +114,7 @@
     [self handleFirstRunStage];
   }
   // Important: do not add code after this block because its purpose is to
-  // clear |self| when not needed anymore.
+  // clear `self` when not needed anymore.
   if (previousInitStage == InitStageFirstRun) {
     // Nothing left to do; clean up.
     [self.appState removeAgent:self];
@@ -210,7 +211,9 @@
 
   [self setUpPolicyWatcher];
 
-  if (base::FeatureList::IsEnabled(kEnableFREUIModuleIOS)) {
+  if (base::FeatureList::IsEnabled(kEnableFREUIModuleIOS) ||
+      fre_field_trial::GetNewMobileIdentityConsistencyFRE() !=
+          NewMobileIdentityConsistencyFRE::kOld) {
     [self showNewFirstRunUI];
   } else {
     [self showLegacyFirstRunUI];
@@ -245,7 +248,7 @@
       [[WelcomeToChromeViewController alloc]
           initWithBrowser:self.presentingInterface.browser
               mainBrowser:self.mainBrowser
-                presenter:self.presentingInterface.bvc
+                presenter:self.presentingInterface.syncPresenter
                dispatcher:welcomeHandler];
   self.welcomeToChromeController = welcomeToChrome;
   UINavigationController* navController =

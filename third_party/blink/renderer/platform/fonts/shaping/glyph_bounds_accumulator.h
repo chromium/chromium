@@ -33,7 +33,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_GLYPH_BOUNDS_ACCUMULATOR_H_
 
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_inline_headers.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -49,13 +49,13 @@ struct GlyphBoundsAccumulator {
 
   // The accumulated glyph bounding box in physical coordinate, until
   // ConvertVerticalRunToLogical().
-  FloatRect bounds;
+  gfx::RectF bounds;
   // The current origin, in logical coordinate.
   float origin;
 
   // Unite a glyph bounding box to |bounds|.
   template <bool is_horizontal_run>
-  void Unite(FloatRect bounds_for_glyph,
+  void Unite(gfx::RectF bounds_for_glyph,
              ShapeResult::GlyphOffset glyph_offset) {
     if (UNLIKELY(bounds_for_glyph.IsEmpty()))
       return;
@@ -74,7 +74,7 @@ struct GlyphBoundsAccumulator {
 
   // Non-template version of |Unite()|, see above.
   void Unite(bool is_horizontal_run,
-             FloatRect bounds_for_glyph,
+             gfx::RectF bounds_for_glyph,
              ShapeResult::GlyphOffset glyph_offset) {
     is_horizontal_run ? Unite<true>(bounds_for_glyph, glyph_offset)
                       : Unite<false>(bounds_for_glyph, glyph_offset);
@@ -84,7 +84,7 @@ struct GlyphBoundsAccumulator {
   // need conversions because physical and logical are the same.
   void ConvertVerticalRunToLogical(const FontMetrics& font_metrics) {
     // Convert physical glyph_bounding_box to logical.
-    bounds = bounds.TransposedRect();
+    bounds.Transpose();
 
     // The glyph bounding box of a vertical run uses ideographic central
     // baseline. Adjust the box Y position because the bounding box of a

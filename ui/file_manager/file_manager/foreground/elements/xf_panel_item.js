@@ -1,11 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import './xf_button.js';
 import './xf_circular_progress.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {str, util} from '../../common/js/util.js';
@@ -111,6 +111,7 @@ export class PanelItem extends HTMLElement {
     const textHost = assert(this.shadowRoot.querySelector('.xf-panel-text'));
     textHost.setAttribute('role', 'alert');
 
+    const hasExtraButton = !!this.dataset['extraButtonText'];
     // Setup the panel configuration for the panel type.
     // TOOD(crbug.com/947388) Simplify this switch breaking out common cases.
     /** @type {?Element} */
@@ -141,11 +142,20 @@ export class PanelItem extends HTMLElement {
       case this.panelTypeDone:
         this.setAttribute('indicator', 'status');
         this.setAttribute('status', 'success');
-        primaryButton = document.createElement('xf-button');
-        primaryButton.id = 'primary-action';
-        primaryButton.onclick = assert(this.onclick);
-        primaryButton.dataset.category = 'dismiss';
-        buttonSpacer.insertAdjacentElement('afterend', primaryButton);
+        secondaryButton = document.createElement('xf-button');
+        secondaryButton.id =
+            (hasExtraButton) ? 'secondary-action' : 'primary-action';
+        secondaryButton.onclick = assert(this.onclick);
+        secondaryButton.dataset.category = 'dismiss';
+        buttonSpacer.insertAdjacentElement('afterend', secondaryButton);
+        if (hasExtraButton) {
+          primaryButton = document.createElement('xf-button');
+          primaryButton.id = 'primary-action';
+          primaryButton.dataset['category'] = 'extra-button';
+          primaryButton.onclick = assert(this.onclick);
+          primaryButton.setExtraButtonText(this.dataset['extraButtonText']);
+          buttonSpacer.insertAdjacentElement('afterend', primaryButton);
+        }
         break;
       case this.panelTypeError:
         this.setAttribute('indicator', 'status');
@@ -153,10 +163,19 @@ export class PanelItem extends HTMLElement {
         this.primaryText = str('FILE_ERROR_GENERIC');
         this.secondaryText = '';
         secondaryButton = document.createElement('xf-button');
-        secondaryButton.id = 'secondary-action';
+        secondaryButton.id =
+            (hasExtraButton) ? 'secondary-action' : 'primary-action';
         secondaryButton.onclick = assert(this.onclick);
         secondaryButton.dataset.category = 'dismiss';
         buttonSpacer.insertAdjacentElement('afterend', secondaryButton);
+        if (hasExtraButton) {
+          primaryButton = document.createElement('xf-button');
+          primaryButton.id = 'primary-action';
+          primaryButton.dataset.category = 'extra-button';
+          primaryButton.onclick = assert(this.onclick);
+          primaryButton.setExtraButtonText(this.dataset['extraButtonText']);
+          buttonSpacer.insertAdjacentElement('afterend', primaryButton);
+        }
         break;
       case this.panelTypeInfo:
         break;

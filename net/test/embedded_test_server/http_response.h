@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,18 +7,19 @@
 
 #include <string>
 
-#include "absl/types/optional.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
 #include "net/http/http_status_code.h"
-namespace net {
-namespace test_server {
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace net::test_server {
 
 class HttpResponse;
 
@@ -95,21 +96,25 @@ class BasicHttpResponse : public HttpResponse {
   std::string reason() const {
     return reason_.value_or(GetHttpReasonPhrase(code_));
   }
-  void set_reason(absl::optional<std::string> reason) { reason_ = reason; }
+  void set_reason(absl::optional<std::string> reason) {
+    reason_ = std::move(reason);
+  }
 
   // The content of the response.
   const std::string& content() const { return content_; }
-  void set_content(const std::string& content) { content_ = content; }
+  void set_content(base::StringPiece content) {
+    content_ = std::string{content};
+  }
 
   // The content type.
   const std::string& content_type() const { return content_type_; }
-  void set_content_type(const std::string& content_type) {
-    content_type_ = content_type;
+  void set_content_type(base::StringPiece content_type) {
+    content_type_ = std::string{content_type};
   }
 
   // Adds a custom header.
-  void AddCustomHeader(const std::string& key, const std::string& value) {
-    custom_headers_.push_back(std::make_pair(key, value));
+  void AddCustomHeader(base::StringPiece key, base::StringPiece value) {
+    custom_headers_.emplace_back(key, value);
   }
 
   // Generates and returns a http response string.
@@ -120,7 +125,7 @@ class BasicHttpResponse : public HttpResponse {
   void SendResponse(base::WeakPtr<HttpResponseDelegate> delegate) override;
 
  private:
-  HttpStatusCode code_;
+  HttpStatusCode code_ = HTTP_OK;
   absl::optional<std::string> reason_;
   std::string content_;
   std::string content_type_;
@@ -130,7 +135,7 @@ class BasicHttpResponse : public HttpResponse {
 
 class DelayedHttpResponse : public BasicHttpResponse {
  public:
-  DelayedHttpResponse(const base::TimeDelta delay);
+  explicit DelayedHttpResponse(const base::TimeDelta delay);
 
   DelayedHttpResponse(const DelayedHttpResponse&) = delete;
   DelayedHttpResponse& operator=(const DelayedHttpResponse&) = delete;
@@ -167,12 +172,12 @@ class RawHttpResponse : public HttpResponse {
 // destroyed.
 class HungResponse : public HttpResponse {
  public:
-  HungResponse() {}
+  HungResponse() = default;
 
   HungResponse(const HungResponse&) = delete;
   HungResponse& operator=(const HungResponse&) = delete;
 
-  ~HungResponse() override {}
+  ~HungResponse() override = default;
 
   void SendResponse(base::WeakPtr<HttpResponseDelegate> delegate) override;
 };
@@ -189,7 +194,6 @@ class HungAfterHeadersHttpResponse : public HttpResponse {
   base::StringPairs headers_;
 };
 
-}  // namespace test_server
-}  // namespace net
+}  // namespace net::test_server
 
 #endif  // NET_TEST_EMBEDDED_TEST_SERVER_HTTP_RESPONSE_H_

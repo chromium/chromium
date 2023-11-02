@@ -1,8 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/app_shim/app_shim_controller.h"
+
+#include "base/memory/raw_ptr.h"
 
 #import <Cocoa/Cocoa.h>
 #include <mach/message.h>
@@ -24,6 +26,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app_shim/app_shim_delegate.h"
+#include "chrome/app_shim/app_shim_render_widget_host_view_mac_delegate.h"
 #include "chrome/browser/ui/cocoa/browser_window_command_handler.h"
 #include "chrome/browser/ui/cocoa/chrome_command_dispatcher_delegate.h"
 #include "chrome/browser/ui/cocoa/main_menu_builder.h"
@@ -41,13 +44,14 @@
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/image/image.h"
 
 // The ProfileMenuTarget bridges between Objective C (as the target for the
 // profile menu NSMenuItems) and C++ (the mojo methods called by
 // AppShimController).
 @interface ProfileMenuTarget : NSObject {
-  AppShimController* _controller;
+  raw_ptr<AppShimController> _controller;
 }
 - (instancetype)initWithController:(AppShimController*)controller;
 - (void)clearController;
@@ -78,7 +82,7 @@
 // the profile menu NSMenuItems) and C++ (the mojo methods called by
 // AppShimController).
 @interface ApplicationDockMenuTarget : NSObject {
-  AppShimController* _controller;
+  raw_ptr<AppShimController> _controller;
 }
 - (instancetype)initWithController:(AppShimController*)controller;
 - (void)clearController;
@@ -128,6 +132,7 @@ AppShimController::AppShimController(const Params& params)
       profile_menu_target_([[ProfileMenuTarget alloc] initWithController:this]),
       application_dock_menu_target_(
           [[ApplicationDockMenuTarget alloc] initWithController:this]) {
+  screen_ = std::make_unique<display::ScopedNativeScreen>();
   // Since AppShimController is created before the main message loop starts,
   // NSApp will not be set, so use sharedApplication.
   NSApplication* sharedApplication = [NSApplication sharedApplication];
@@ -458,8 +463,26 @@ void AppShimController::CreateRemoteCocoaApplication(
         receiver) {
   remote_cocoa::ApplicationBridge::Get()->BindReceiver(std::move(receiver));
   remote_cocoa::ApplicationBridge::Get()->SetContentNSViewCreateCallbacks(
-      base::BindRepeating(remote_cocoa::CreateRenderWidgetHostNSView),
+      base::BindRepeating(&AppShimController::CreateRenderWidgetHostNSView),
       base::BindRepeating(remote_cocoa::CreateWebContentsNSView));
+}
+
+void AppShimController::CreateRenderWidgetHostNSView(
+    uint64_t view_id,
+    mojo::ScopedInterfaceEndpointHandle host_handle,
+    mojo::ScopedInterfaceEndpointHandle view_request_handle) {
+  remote_cocoa::RenderWidgetHostViewMacDelegateCallback
+      responder_delegate_creation_callback = base::BindOnce(
+          &AppShimController::CreateRenderWidgetHostViewDelegate, view_id);
+  remote_cocoa::CreateRenderWidgetHostNSView(
+      view_id, std::move(host_handle), std::move(view_request_handle),
+      std::move(responder_delegate_creation_callback));
+}
+
+NSObject<RenderWidgetHostViewMacDelegate>*
+AppShimController::CreateRenderWidgetHostViewDelegate(uint64_t view_id) {
+  return [[AppShimRenderWidgetHostViewMacDelegate alloc]
+      initWithRenderWidgetHostNSViewID:view_id];
 }
 
 void AppShimController::CreateCommandDispatcherForWidget(uint64_t widget_id) {
@@ -507,7 +530,7 @@ void AppShimController::UpdateProfileMenu(
     [item setState:mojo_item->active ? NSOnState : NSOffState];
     [item setTarget:profile_menu_target_.get()];
     gfx::Image icon(mojo_item->icon);
-    [item setImage:icon.ToNSImage()];
+    [item setImage:icon.AsNSImage()];
     [menu insertItem:item atIndex:i];
   }
 }

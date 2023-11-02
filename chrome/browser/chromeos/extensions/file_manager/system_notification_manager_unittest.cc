@@ -1,19 +1,21 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/extensions/file_manager/system_notification_manager.h"
 
-#include "ash/constants/ash_features.h"
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/webui/file_manager/url_constants.h"
 #include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
+#include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/chromeos/extensions/file_manager/device_event_router.h"
 #include "chrome/browser/chromeos/extensions/file_manager/event_router.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
@@ -22,9 +24,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/dbus/cros_disks/cros_disks_client.h"
-#include "chromeos/disks/disk.h"
-#include "components/arc/arc_prefs.h"
+#include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
+#include "chromeos/ash/components/disks/disk.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
@@ -154,26 +155,39 @@ class SystemNotificationManagerTest
     notification_platform_bridge = bridge.get();
     notification_display_service_
         ->SetNotificationPlatformBridgeDelegatorForTesting(std::move(bridge));
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(chromeos::features::kFilesSWA);
     notification_manager_ =
         std::make_unique<SystemNotificationManager>(profile_);
     device_event_router_ = std::make_unique<DeviceEventRouterImpl>(
         notification_manager_.get(), profile_);
 
+    VolumeManagerFactory::GetInstance()->SetTestingFactory(
+        profile_,
+        base::BindLambdaForTesting([this](content::BrowserContext* context) {
+          return std::unique_ptr<KeyedService>(std::make_unique<VolumeManager>(
+              Profile::FromBrowserContext(context), nullptr, nullptr,
+              &disk_mount_manager_, nullptr,
+              VolumeManager::GetMtpStorageInfoCallback()));
+        }));
+    auto* volume_manager = VolumeManager::Get(profile_);
+
     // SystemNotificationManager needs the IOTaskController to be able to cancel
     // the task.
-    notification_manager_->SetIOTaskController(&io_task_controller);
-    io_task_controller.AddObserver(this);
+    io_task_controller = volume_manager->io_task_controller();
+    notification_manager_->SetIOTaskController(io_task_controller);
+    io_task_controller->AddObserver(this);
 
     ASSERT_TRUE(dir_.CreateUniqueTempDir());
     ASSERT_TRUE(dir_.GetPath().IsAbsolute());
     file_system_context = storage::CreateFileSystemContextForTesting(
         /*quota_manager_proxy=*/nullptr, dir_.GetPath());
+
+    volume_manager->AddVolumeForTesting(
+        CreateTestFile("volume/").path(), VOLUME_TYPE_DOWNLOADS_DIRECTORY,
+        ash::DeviceType::kUnknown, false /* read only */);
   }
 
   void TearDown() override {
-    io_task_controller.RemoveObserver(this);
+    io_task_controller->RemoveObserver(this);
 
     profile_manager_->DeleteAllTestingProfiles();
     profile_ = nullptr;
@@ -217,12 +231,12 @@ class SystemNotificationManagerTest
   }
 
   // Creates a disk instance with |device_path| and |mount_path| for testing.
-  std::unique_ptr<chromeos::disks::Disk> CreateTestDisk(
+  std::unique_ptr<ash::disks::Disk> CreateTestDisk(
       const std::string& device_path,
       const std::string& mount_path,
       bool is_read_only_hardware,
       bool is_mounted) {
-    return chromeos::disks::Disk::Builder()
+    return ash::disks::Disk::Builder()
         .SetDevicePath(device_path)
         .SetMountPath(mount_path)
         .SetStorageDevicePath(device_path)
@@ -256,6 +270,7 @@ class SystemNotificationManagerTest
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  file_manager::FakeDiskMountManager disk_mount_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   // Externally owned raw pointers:
   // profile_ is owned by TestingProfileManager.
@@ -274,7 +289,7 @@ class SystemNotificationManagerTest
   TestNotificationPlatformBridgeDelegator* notification_platform_bridge;
 
   // Used for tests with IOTask:
-  io_task::IOTaskController io_task_controller;
+  io_task::IOTaskController* io_task_controller;
   scoped_refptr<storage::FileSystemContext> file_system_context;
 
   // Keep track of the task state transitions.
@@ -297,7 +312,7 @@ TEST_F(SystemNotificationManagerTest, ExternalStorageDisabled) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings;
   notification_strings =
@@ -327,7 +342,7 @@ TEST_F(SystemNotificationManagerTest, FormatStart) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings;
   notification_strings =
@@ -351,7 +366,7 @@ TEST_F(SystemNotificationManagerTest, FormatSuccess) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings;
   notification_strings =
@@ -376,7 +391,7 @@ TEST_F(SystemNotificationManagerTest, FormatFail) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings;
   notification_strings =
@@ -403,7 +418,7 @@ TEST_F(SystemNotificationManagerTest, PartitionFail) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings;
   notification_strings =
@@ -428,7 +443,7 @@ TEST_F(SystemNotificationManagerTest, RenameFail) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings;
   notification_strings =
@@ -445,7 +460,7 @@ TEST_F(SystemNotificationManagerTest, RenameFail) {
 
 TEST_F(SystemNotificationManagerTest, DeviceHardUnplugged) {
   base::HistogramTester histogram_tester;
-  std::unique_ptr<chromeos::disks::Disk> disk =
+  std::unique_ptr<ash::disks::Disk> disk =
       CreateTestDisk(kDevicePath, kMountPath, /*is_read_only_hardware=*/false,
                      /*is_mounted=*/true);
   GetDeviceEventRouter()->OnDiskRemoved(*disk);
@@ -455,7 +470,7 @@ TEST_F(SystemNotificationManagerTest, DeviceHardUnplugged) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings;
   notification_strings =
@@ -478,7 +493,7 @@ TEST_F(SystemNotificationManagerTest, DeviceNavigation) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<Volume> volume(Volume::CreateForTesting(
       base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
-      VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
+      VolumeType::VOLUME_TYPE_TESTING, ash::DeviceType::kUSB,
       /*read_only=*/false, base::FilePath(FILE_PATH_LITERAL("/device/test")),
       kDeviceLabel, "FAT32"));
   file_manager_private::MountCompletedEvent event;
@@ -493,7 +508,7 @@ TEST_F(SystemNotificationManagerTest, DeviceNavigation) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings;
   notification_strings =
@@ -522,7 +537,7 @@ TEST_F(SystemNotificationManagerTest, DeviceNavigationReadOnlyPolicy) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<Volume> volume(Volume::CreateForTesting(
       base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
-      VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
+      VolumeType::VOLUME_TYPE_TESTING, ash::DeviceType::kUSB,
       /*read_only=*/true, base::FilePath(FILE_PATH_LITERAL("/device/test")),
       kDeviceLabel, "FAT32"));
   file_manager_private::MountCompletedEvent event;
@@ -537,7 +552,7 @@ TEST_F(SystemNotificationManagerTest, DeviceNavigationReadOnlyPolicy) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings;
   notification_strings =
@@ -570,7 +585,7 @@ TEST_F(SystemNotificationManagerTest, DeviceNavigationAllowAppAccess) {
   service->SetBoolean(arc::prefs::kArcEnabled, true);
   std::unique_ptr<Volume> volume(Volume::CreateForTesting(
       base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
-      VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
+      VolumeType::VOLUME_TYPE_TESTING, ash::DeviceType::kUSB,
       /*read_only=*/false, base::FilePath(FILE_PATH_LITERAL("/device/test")),
       kDeviceLabel, "FAT32"));
   file_manager_private::MountCompletedEvent event;
@@ -585,7 +600,7 @@ TEST_F(SystemNotificationManagerTest, DeviceNavigationAllowAppAccess) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings;
   notification_strings =
@@ -616,7 +631,7 @@ TEST_F(SystemNotificationManagerTest,
   service->SetBoolean(arc::prefs::kArcEnabled, true);
   std::unique_ptr<Volume> volume(Volume::CreateForTesting(
       base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
-      VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
+      VolumeType::VOLUME_TYPE_TESTING, ash::DeviceType::kUSB,
       /*read_only=*/false, base::FilePath(FILE_PATH_LITERAL("/device/test")),
       kDeviceLabel, "FAT32"));
   file_manager_private::MountCompletedEvent event;
@@ -631,7 +646,7 @@ TEST_F(SystemNotificationManagerTest,
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   notification_platform_bridge->ClickButtonIndexById(
       kRemovableDeviceNotificationId,
       /*button_index=*/1);
@@ -652,7 +667,7 @@ TEST_F(SystemNotificationManagerTest, DeviceNavigationAppsHaveAccess) {
   service->SetBoolean(arc::prefs::kArcHasAccessToRemovableMedia, true);
   std::unique_ptr<Volume> volume(Volume::CreateForTesting(
       base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
-      VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
+      VolumeType::VOLUME_TYPE_TESTING, ash::DeviceType::kUSB,
       /*read_only=*/false, base::FilePath(FILE_PATH_LITERAL("/device/test")),
       kDeviceLabel, "FAT32"));
   file_manager_private::MountCompletedEvent event;
@@ -667,7 +682,7 @@ TEST_F(SystemNotificationManagerTest, DeviceNavigationAppsHaveAccess) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings;
   notification_strings =
@@ -697,7 +712,7 @@ TEST_F(SystemNotificationManagerTest, DeviceUnsupportedDefault) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<Volume> volume(Volume::CreateForTesting(
       base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
-      VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
+      VolumeType::VOLUME_TYPE_TESTING, ash::DeviceType::kUSB,
       /*read_only=*/false, base::FilePath(FILE_PATH_LITERAL("/device/test")),
       "", "FAT32"));
   file_manager_private::MountCompletedEvent event;
@@ -713,7 +728,7 @@ TEST_F(SystemNotificationManagerTest, DeviceUnsupportedDefault) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings;
   notification_strings =
@@ -736,7 +751,7 @@ TEST_F(SystemNotificationManagerTest, DeviceUnsupportedNamed) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<Volume> volume(Volume::CreateForTesting(
       base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
-      VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
+      VolumeType::VOLUME_TYPE_TESTING, ash::DeviceType::kUSB,
       /*read_only=*/false, base::FilePath(FILE_PATH_LITERAL("/device/test")),
       kDeviceLabel, "FAT32"));
   file_manager_private::MountCompletedEvent event;
@@ -752,7 +767,7 @@ TEST_F(SystemNotificationManagerTest, DeviceUnsupportedNamed) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings;
   notification_strings =
@@ -779,7 +794,7 @@ TEST_F(SystemNotificationManagerTest, MultipartDeviceUnsupportedDefault) {
   // Build a supported file system volume and mount it.
   std::unique_ptr<Volume> volume1(Volume::CreateForTesting(
       base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
-      VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
+      VolumeType::VOLUME_TYPE_TESTING, ash::DeviceType::kUSB,
       /*read_only=*/false, base::FilePath(FILE_PATH_LITERAL("/device/test")),
       "", "FAT32"));
   file_manager_private::MountCompletedEvent event;
@@ -794,7 +809,7 @@ TEST_F(SystemNotificationManagerTest, MultipartDeviceUnsupportedDefault) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings =
       notification_platform_bridge->GetNotificationStringsById(
@@ -806,7 +821,7 @@ TEST_F(SystemNotificationManagerTest, MultipartDeviceUnsupportedDefault) {
   // Build an unsupported file system volume and mount it on the same device.
   std::unique_ptr<Volume> volume2(Volume::CreateForTesting(
       base::FilePath(FILE_PATH_LITERAL("/mount/path2")),
-      VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
+      VolumeType::VOLUME_TYPE_TESTING, ash::DeviceType::kUSB,
       /*read_only=*/false, base::FilePath(FILE_PATH_LITERAL("/device/test")),
       "", "unsupported"));
   event.status =
@@ -819,7 +834,7 @@ TEST_F(SystemNotificationManagerTest, MultipartDeviceUnsupportedDefault) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have two notifications.
-  ASSERT_EQ(2, notification_count);
+  ASSERT_EQ(2u, notification_count);
   // Get the strings for the displayed notification.
   notification_strings =
       notification_platform_bridge->GetNotificationStringsById(
@@ -843,7 +858,7 @@ TEST_F(SystemNotificationManagerTest, MultipartDeviceUnsupportedNamed) {
   // Build a supported file system volume and mount it.
   std::unique_ptr<Volume> volume1(Volume::CreateForTesting(
       base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
-      VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
+      VolumeType::VOLUME_TYPE_TESTING, ash::DeviceType::kUSB,
       /*read_only=*/false, base::FilePath(FILE_PATH_LITERAL("/device/test")),
       kDeviceLabel, "FAT32"));
   file_manager_private::MountCompletedEvent event;
@@ -856,7 +871,7 @@ TEST_F(SystemNotificationManagerTest, MultipartDeviceUnsupportedNamed) {
   // Build an unsupported file system volume and mount it on the same device.
   std::unique_ptr<Volume> volume2(Volume::CreateForTesting(
       base::FilePath(FILE_PATH_LITERAL("/mount/path2")),
-      VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
+      VolumeType::VOLUME_TYPE_TESTING, ash::DeviceType::kUSB,
       /*read_only=*/false, base::FilePath(FILE_PATH_LITERAL("/device/test")),
       kDeviceLabel, "unsupported"));
   event.status =
@@ -869,7 +884,7 @@ TEST_F(SystemNotificationManagerTest, MultipartDeviceUnsupportedNamed) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have two notifications.
-  ASSERT_EQ(2, notification_count);
+  ASSERT_EQ(2u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings =
       notification_platform_bridge->GetNotificationStringsById(
@@ -895,7 +910,7 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownDefault) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<Volume> volume(Volume::CreateForTesting(
       base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
-      VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
+      VolumeType::VOLUME_TYPE_TESTING, ash::DeviceType::kUSB,
       /*read_only=*/false, base::FilePath(FILE_PATH_LITERAL("/device/test")),
       "", "unknown"));
   file_manager_private::MountCompletedEvent event;
@@ -911,7 +926,7 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownDefault) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings;
   notification_strings =
@@ -923,7 +938,7 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownDefault) {
   EXPECT_EQ(notification_strings.title, kRemovableDeviceTitle);
   EXPECT_EQ(notification_strings.message,
             u"Sorry, your external storage device could not be recognized.");
-  EXPECT_EQ(notification_strings.buttons.size(), 1);
+  EXPECT_EQ(notification_strings.buttons.size(), 1u);
   EXPECT_EQ(notification_strings.buttons[0], u"Format this device");
   histogram_tester.ExpectUniqueSample(
       kNotificationShowHistogramName,
@@ -939,7 +954,7 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownNamed) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<Volume> volume(Volume::CreateForTesting(
       base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
-      VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
+      VolumeType::VOLUME_TYPE_TESTING, ash::DeviceType::kUSB,
       /*read_only=*/false, base::FilePath(FILE_PATH_LITERAL("/device/test")),
       kDeviceLabel, "unknown"));
   file_manager_private::MountCompletedEvent event;
@@ -955,7 +970,7 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownNamed) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings;
   notification_strings =
@@ -967,7 +982,7 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownNamed) {
   EXPECT_EQ(notification_strings.title, kRemovableDeviceTitle);
   EXPECT_EQ(notification_strings.message,
             u"Sorry, the device MyUSB could not be recognized.");
-  EXPECT_EQ(notification_strings.buttons.size(), 1);
+  EXPECT_EQ(notification_strings.buttons.size(), 1u);
   EXPECT_EQ(notification_strings.buttons[0], u"Format this device");
   histogram_tester.ExpectUniqueSample(
       kNotificationShowHistogramName,
@@ -985,7 +1000,7 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownReadOnlyDefault) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<Volume> volume(Volume::CreateForTesting(
       base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
-      VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
+      VolumeType::VOLUME_TYPE_TESTING, ash::DeviceType::kUSB,
       /*read_only=*/true, base::FilePath(FILE_PATH_LITERAL("/device/test")), "",
       "unknown"));
   file_manager_private::MountCompletedEvent event;
@@ -1001,7 +1016,7 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownReadOnlyDefault) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings;
   notification_strings =
@@ -1012,7 +1027,7 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownReadOnlyDefault) {
   EXPECT_EQ(notification_strings.message,
             u"Sorry, your external storage device could not be recognized.");
   // Device is read-only, expect no buttons present.
-  EXPECT_EQ(notification_strings.buttons.size(), 0);
+  EXPECT_EQ(notification_strings.buttons.size(), 0u);
   histogram_tester.ExpectUniqueSample(
       kNotificationShowHistogramName,
       DeviceNotificationUmaType::DEVICE_FAIL_UNKNOWN_READONLY, 1);
@@ -1024,7 +1039,7 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownReadOnlyNamed) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<Volume> volume(Volume::CreateForTesting(
       base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
-      VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
+      VolumeType::VOLUME_TYPE_TESTING, ash::DeviceType::kUSB,
       /*read_only=*/true, base::FilePath(FILE_PATH_LITERAL("/device/test")),
       kDeviceLabel, "unknown"));
   file_manager_private::MountCompletedEvent event;
@@ -1040,7 +1055,7 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownReadOnlyNamed) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings;
   notification_strings =
@@ -1056,8 +1071,6 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownReadOnlyNamed) {
 }
 
 TEST_F(SystemNotificationManagerTest, TestCopyEvents) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kFilesSWA);
   SystemNotificationManager notification_manager(nullptr);
   file_manager_private::CopyOrMoveProgressStatus status;
 
@@ -1073,11 +1086,11 @@ TEST_F(SystemNotificationManagerTest, CopyProgress) {
   std::string copy_file_dest_url =
       "filesystem:chrome://file-manager/external/Downloads-test-user/NewFolder/"
       "file.txt";
-  status.destination_url = std::make_unique<std::string>(copy_file_dest_url);
-  status.size = std::make_unique<double>(copy_size);
+  status.destination_url = copy_file_dest_url;
+  status.size = copy_size;
   std::string copy_file_src_url =
       "filesystem:chrome://file-manager/external/Downloads-test-user/file.txt";
-  status.source_url = std::make_unique<std::string>(copy_file_src_url);
+  status.source_url = copy_file_src_url;
   status.type = file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_BEGIN;
 
   // Send the copy begin event.
@@ -1091,7 +1104,7 @@ TEST_F(SystemNotificationManagerTest, CopyProgress) {
       base::BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
                      weak_ptr_factory_.GetWeakPtr()));
   // Check: We have zero notifications.
-  ASSERT_EQ(0, notification_count);
+  ASSERT_EQ(0u, notification_count);
 
   // Send progress event.
   status.type =
@@ -1102,7 +1115,7 @@ TEST_F(SystemNotificationManagerTest, CopyProgress) {
       base::BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
                      weak_ptr_factory_.GetWeakPtr()));
   // Check: We have 1 notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings;
   notification_strings =
@@ -1119,7 +1132,7 @@ TEST_F(SystemNotificationManagerTest, CopyProgress) {
       base::BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
                      weak_ptr_factory_.GetWeakPtr()));
   // Check: We have zero notifications (copy progress has been closed).
-  ASSERT_EQ(0, notification_count);
+  ASSERT_EQ(0u, notification_count);
   // Start another copy that ends in error.
   copy_id = 2;
   copy_size = 100.0;
@@ -1137,7 +1150,7 @@ TEST_F(SystemNotificationManagerTest, CopyProgress) {
       base::BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
                      weak_ptr_factory_.GetWeakPtr()));
   // Check: We have 1 notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
 
   // Send copy error event.
   status.type = file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_ERROR;
@@ -1146,7 +1159,7 @@ TEST_F(SystemNotificationManagerTest, CopyProgress) {
       base::BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
                      weak_ptr_factory_.GetWeakPtr()));
   // Check: We have zero notifications (copy progress has been closed).
-  ASSERT_EQ(0, notification_count);
+  ASSERT_EQ(0u, notification_count);
 }
 
 storage::FileSystemURL CreateFileSystemURL(std::string url) {
@@ -1161,15 +1174,16 @@ TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressCopy) {
   status.type = file_manager::io_task::OperationType::kCopy;
   status.total_bytes = 100;
   status.bytes_transferred = 0;
-  status.sources.emplace_back(CreateTestFile("src_file.txt"), absl::nullopt);
-  status.destination_folder = CreateTestFile("dest_dir/");
+  status.sources.emplace_back(CreateTestFile("volume/src_file.txt"),
+                              absl::nullopt);
+  status.destination_folder = CreateTestFile("volume/dest_dir/");
 
   // Send the copy begin/queued progress.
   auto* notification_manager = GetSystemNotificationManager();
   notification_manager->HandleIOTaskProgress(status);
 
   // Check: We have the 1 notification.
-  ASSERT_EQ(1, GetNotificationCount());
+  ASSERT_EQ(1u, GetNotificationCount());
 
   TestNotificationStrings notification_strings =
       notification_platform_bridge->GetNotificationStringsById(
@@ -1185,7 +1199,7 @@ TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressCopy) {
   notification_manager->HandleIOTaskProgress(status);
 
   // Check: We have the same notification.
-  ASSERT_EQ(1, GetNotificationCount());
+  ASSERT_EQ(1u, GetNotificationCount());
   notification_strings =
       notification_platform_bridge->GetNotificationStringsById(
           "swa-file-operation-1");
@@ -1198,7 +1212,56 @@ TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressCopy) {
   notification_manager->HandleIOTaskProgress(status);
 
   // Notification should disappear.
-  ASSERT_EQ(0, GetNotificationCount());
+  ASSERT_EQ(0u, GetNotificationCount());
+}
+
+TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressExtract) {
+  // The system notification only sees the IOTask ProgressStatus.
+  file_manager::io_task::ProgressStatus status;
+  status.task_id = 1;
+  status.state = file_manager::io_task::State::kQueued;
+  status.type = file_manager::io_task::OperationType::kExtract;
+  status.total_bytes = 100;
+  status.bytes_transferred = 0;
+  status.sources.emplace_back(CreateTestFile("volume/src_file.zip"),
+                              absl::nullopt);
+  status.destination_folder = CreateTestFile("volume/src_file/");
+
+  // Send the copy begin/queued progress.
+  auto* notification_manager = GetSystemNotificationManager();
+  notification_manager->HandleIOTaskProgress(status);
+
+  // Check: We have the 1 notification.
+  ASSERT_EQ(1u, GetNotificationCount());
+
+  TestNotificationStrings notification_strings =
+      notification_platform_bridge->GetNotificationStringsById(
+          "swa-file-operation-1");
+
+  // Check: the expected strings match.
+  EXPECT_EQ(notification_strings.title, u"Files");
+  EXPECT_EQ(notification_strings.message, u"Extracting src_file.zip\x2026");
+
+  // Send the copy progress.
+  status.bytes_transferred = 30;
+  status.state = file_manager::io_task::State::kInProgress;
+  notification_manager->HandleIOTaskProgress(status);
+
+  // Check: We have the same notification.
+  ASSERT_EQ(1u, GetNotificationCount());
+  notification_strings =
+      notification_platform_bridge->GetNotificationStringsById(
+          "swa-file-operation-1");
+  EXPECT_EQ(notification_strings.title, u"Files");
+  EXPECT_EQ(notification_strings.message, u"Extracting src_file.zip\x2026");
+
+  // Send the success progress status.
+  status.bytes_transferred = 100;
+  status.state = file_manager::io_task::State::kSuccess;
+  notification_manager->HandleIOTaskProgress(status);
+
+  // Notification should disappear.
+  ASSERT_EQ(0u, GetNotificationCount());
 }
 
 TEST_F(SystemNotificationManagerTest, CancelButtonIOTask) {
@@ -1209,9 +1272,9 @@ TEST_F(SystemNotificationManagerTest, CancelButtonIOTask) {
   status.type = file_manager::io_task::OperationType::kCopy;
   status.total_bytes = 100;
   status.bytes_transferred = 0;
-  auto src = CreateTestFile("src_file.txt");
+  auto src = CreateTestFile("volume/src_file.txt");
   status.sources.emplace_back(src, absl::nullopt);
-  auto dst = CreateTestFile("dest_dir/");
+  auto dst = CreateTestFile("volume/dest_dir/");
   status.destination_folder = dst;
 
   auto task = std::make_unique<file_manager::io_task::CopyOrMoveIOTask>(
@@ -1220,17 +1283,17 @@ TEST_F(SystemNotificationManagerTest, CancelButtonIOTask) {
       file_system_context);
 
   // Send the copy begin/queued progress.
-  const io_task::IOTaskId task_id = io_task_controller.Add(std::move(task));
+  const io_task::IOTaskId task_id = io_task_controller->Add(std::move(task));
 
   // Check: We have the 1 notification.
-  ASSERT_EQ(1, GetNotificationCount());
+  ASSERT_EQ(1u, GetNotificationCount());
 
   // Click on the cancel button.
   notification_platform_bridge->ClickButtonIndexById("swa-file-operation-1",
                                                      /*button_index=*/0);
 
   // Notification should disappear.
-  ASSERT_EQ(0, GetNotificationCount());
+  ASSERT_EQ(0u, GetNotificationCount());
 
   // The last status observed should be Cancelled.
   ASSERT_EQ(io_task::State::kCancelled, task_statuses[task_id].back());
@@ -1262,7 +1325,7 @@ TEST_F(SystemNotificationManagerTest, Errors) {
       base::BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
                      weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   const char* id = file_manager_private::ToString(sync_error.type);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings =
@@ -1288,7 +1351,7 @@ TEST_F(SystemNotificationManagerTest, Errors) {
       base::BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
                      weak_ptr_factory_.GetWeakPtr()));
   // Check: We have two notifications.
-  ASSERT_EQ(2, notification_count);
+  ASSERT_EQ(2u, notification_count);
   id = file_manager_private::ToString(sync_error.type);
   // Get the strings for the displayed notification.
   notification_strings =
@@ -1313,7 +1376,7 @@ TEST_F(SystemNotificationManagerTest, Errors) {
       base::BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
                      weak_ptr_factory_.GetWeakPtr()));
   // Check: We have three notifications.
-  ASSERT_EQ(3, notification_count);
+  ASSERT_EQ(3u, notification_count);
   id = file_manager_private::ToString(sync_error.type);
   // Get the strings for the displayed notification.
   notification_strings =
@@ -1321,8 +1384,8 @@ TEST_F(SystemNotificationManagerTest, Errors) {
   // Check: the expected strings match.
   EXPECT_EQ(notification_strings.title, kGoogleDrive);
   EXPECT_EQ(notification_strings.message,
-            u"\"fake.txt\" was not uploaded. There is not enough free space in "
-            u"your Google Drive.");
+            u"There is not enough free space in your Google Drive to complete "
+            u"the upload.");
 
   // Setup for the no local space error.
   sync_error.type = file_manager_private::DRIVE_SYNC_ERROR_TYPE_NO_LOCAL_SPACE;
@@ -1338,7 +1401,7 @@ TEST_F(SystemNotificationManagerTest, Errors) {
       base::BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
                      weak_ptr_factory_.GetWeakPtr()));
   // Check: We have four notifications.
-  ASSERT_EQ(4, notification_count);
+  ASSERT_EQ(4u, notification_count);
   id = file_manager_private::ToString(sync_error.type);
   // Get the strings for the displayed notification.
   notification_strings =
@@ -1361,7 +1424,7 @@ TEST_F(SystemNotificationManagerTest, Errors) {
       base::BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
                      weak_ptr_factory_.GetWeakPtr()));
   // Check: We have five notifications.
-  ASSERT_EQ(5, notification_count);
+  ASSERT_EQ(5u, notification_count);
   id = file_manager_private::ToString(sync_error.type);
   // Get the strings for the displayed notification.
   notification_strings =
@@ -1393,7 +1456,7 @@ TEST_F(SystemNotificationManagerTest, EnableDocsOffline) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings =
       notification_platform_bridge->GetNotificationStringsById(
@@ -1415,6 +1478,7 @@ TEST_F(SystemNotificationManagerTest, SyncProgressSingle) {
       "filesystem:chrome://file-manager/drive/MyDrive-test-user/file.txt";
   transfer_status.processed = 0;
   transfer_status.total = 100;
+  transfer_status.show_notification = true;
   std::unique_ptr<extensions::Event> event =
       std::make_unique<extensions::Event>(
           extensions::events::FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED,
@@ -1430,7 +1494,7 @@ TEST_F(SystemNotificationManagerTest, SyncProgressSingle) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings =
       notification_platform_bridge->GetNotificationStringsById(
@@ -1455,7 +1519,7 @@ TEST_F(SystemNotificationManagerTest, SyncProgressSingle) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have 0 notifications (notification closed on end).
-  ASSERT_EQ(0, notification_count);
+  ASSERT_EQ(0u, notification_count);
   // Start another transfer that ends in error.
   transfer_status.transfer_state =
       file_manager_private::TRANSFER_STATE_IN_PROGRESS;
@@ -1472,7 +1536,7 @@ TEST_F(SystemNotificationManagerTest, SyncProgressSingle) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Setup an completed transfer event.
   transfer_status.transfer_state = file_manager_private::TRANSFER_STATE_FAILED;
   transfer_status.num_total_jobs = 0;
@@ -1489,19 +1553,20 @@ TEST_F(SystemNotificationManagerTest, SyncProgressSingle) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have 0 notifications (notification closed on end).
-  ASSERT_EQ(0, notification_count);
+  ASSERT_EQ(0u, notification_count);
 }
 
-TEST_F(SystemNotificationManagerTest, SyncProgressMultiple) {
-  // Setup a sync progress status object.
+TEST_F(SystemNotificationManagerTest, SyncProgressIgnoreNotification) {
+  // Setup a sync progress status.
   file_manager_private::FileTransferStatus transfer_status;
   transfer_status.transfer_state =
       file_manager_private::TRANSFER_STATE_IN_PROGRESS;
-  transfer_status.num_total_jobs = 10;
+  transfer_status.num_total_jobs = 1;
   transfer_status.file_url =
       "filesystem:chrome://file-manager/drive/MyDrive-test-user/file.txt";
-  transfer_status.processed = 0;
+  transfer_status.processed = 25;
   transfer_status.total = 100;
+  transfer_status.show_notification = true;
   std::unique_ptr<extensions::Event> event =
       std::make_unique<extensions::Event>(
           extensions::events::FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED,
@@ -1517,7 +1582,58 @@ TEST_F(SystemNotificationManagerTest, SyncProgressMultiple) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
+
+  // Update the transfer event to hide the notification.
+  transfer_status.transfer_state =
+      file_manager_private::TRANSFER_STATE_COMPLETED;
+  transfer_status.num_total_jobs = 0;
+  transfer_status.processed = 0;
+  transfer_status.total = 0;
+  transfer_status.show_notification = false;
+  event = std::make_unique<extensions::Event>(
+      extensions::events::FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED,
+      file_manager_private::OnFileTransfersUpdated::kEventName,
+      file_manager_private::OnFileTransfersUpdated::Create(transfer_status));
+
+  // Send the transfers updated event.
+  GetSystemNotificationManager()->HandleEvent(*event.get());
+  // Get the number of notifications from the NotificationDisplayService.
+  NotificationDisplayServiceFactory::GetForProfile(GetProfile())
+      ->GetDisplayed(base::BindOnce(
+          &SystemNotificationManagerTest::GetNotificationsCallback,
+          weak_ptr_factory_.GetWeakPtr()));
+  // Check: We have no notification.
+  ASSERT_EQ(0u, notification_count);
+}
+
+TEST_F(SystemNotificationManagerTest, SyncProgressMultiple) {
+  // Setup a sync progress status object.
+  file_manager_private::FileTransferStatus transfer_status;
+  transfer_status.transfer_state =
+      file_manager_private::TRANSFER_STATE_IN_PROGRESS;
+  transfer_status.num_total_jobs = 10;
+  transfer_status.file_url =
+      "filesystem:chrome://file-manager/drive/MyDrive-test-user/file.txt";
+  transfer_status.processed = 0;
+  transfer_status.total = 100;
+  transfer_status.show_notification = true;
+  std::unique_ptr<extensions::Event> event =
+      std::make_unique<extensions::Event>(
+          extensions::events::FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED,
+          file_manager_private::OnFileTransfersUpdated::kEventName,
+          file_manager_private::OnFileTransfersUpdated::Create(
+              transfer_status));
+
+  // Send the transfers updated event.
+  GetSystemNotificationManager()->HandleEvent(*event.get());
+  // Get the number of notifications from the NotificationDisplayService.
+  NotificationDisplayServiceFactory::GetForProfile(GetProfile())
+      ->GetDisplayed(base::BindOnce(
+          &SystemNotificationManagerTest::GetNotificationsCallback,
+          weak_ptr_factory_.GetWeakPtr()));
+  // Check: We have one notification.
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings =
       notification_platform_bridge->GetNotificationStringsById(
@@ -1536,6 +1652,7 @@ TEST_F(SystemNotificationManagerTest, PinProgressSingle) {
       "filesystem:chrome://file-manager/drive/MyDrive-test-user/file.txt";
   pin_status.processed = 0;
   pin_status.total = 100;
+  pin_status.show_notification = true;
   std::unique_ptr<extensions::Event> event =
       std::make_unique<extensions::Event>(
           extensions::events::FILE_MANAGER_PRIVATE_ON_PIN_TRANSFERS_UPDATED,
@@ -1550,7 +1667,7 @@ TEST_F(SystemNotificationManagerTest, PinProgressSingle) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings =
       notification_platform_bridge->GetNotificationStringsById("swa-drive-pin");
@@ -1573,7 +1690,7 @@ TEST_F(SystemNotificationManagerTest, PinProgressSingle) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have 0 notifications (notification closed on end).
-  ASSERT_EQ(0, notification_count);
+  ASSERT_EQ(0u, notification_count);
 
   // Start another transfer that ends in error.
   pin_status.transfer_state = file_manager_private::TRANSFER_STATE_IN_PROGRESS;
@@ -1590,7 +1707,7 @@ TEST_F(SystemNotificationManagerTest, PinProgressSingle) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Setup an completed transfer event.
   pin_status.transfer_state = file_manager_private::TRANSFER_STATE_FAILED;
   pin_status.num_total_jobs = 0;
@@ -1607,7 +1724,7 @@ TEST_F(SystemNotificationManagerTest, PinProgressSingle) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have 0 notifications (notification closed on end).
-  ASSERT_EQ(0, notification_count);
+  ASSERT_EQ(0u, notification_count);
 }
 
 TEST_F(SystemNotificationManagerTest, PinProgressMultiple) {
@@ -1619,6 +1736,7 @@ TEST_F(SystemNotificationManagerTest, PinProgressMultiple) {
       "filesystem:chrome://file-manager/drive/MyDrive-test-user/file.txt";
   pin_status.processed = 0;
   pin_status.total = 100;
+  pin_status.show_notification = true;
   std::unique_ptr<extensions::Event> event =
       std::make_unique<extensions::Event>(
           extensions::events::FILE_MANAGER_PRIVATE_ON_PIN_TRANSFERS_UPDATED,
@@ -1633,7 +1751,7 @@ TEST_F(SystemNotificationManagerTest, PinProgressMultiple) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings =
       notification_platform_bridge->GetNotificationStringsById("swa-drive-pin");

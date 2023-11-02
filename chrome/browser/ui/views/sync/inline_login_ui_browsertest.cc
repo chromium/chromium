@@ -1,11 +1,13 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -21,6 +23,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/sync/one_click_signin_dialog_view.h"
 #include "chrome/browser/ui/webui/signin/inline_login_handler_impl.h"
 #include "chrome/browser/ui/webui/signin/inline_login_ui.h"
@@ -70,9 +73,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/credential_provider/common/gcp_strings.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 using ::testing::_;
 using ::testing::AtLeast;
@@ -95,9 +98,9 @@ struct ContentInfo {
     this->storage_partition = storage_partition;
   }
 
-  content::WebContents* contents;
+  raw_ptr<content::WebContents> contents;
   int pid;
-  content::StoragePartition* storage_partition;
+  raw_ptr<content::StoragePartition> storage_partition;
 };
 
 ContentInfo NavigateAndGetInfo(Browser* browser,
@@ -108,7 +111,8 @@ ContentInfo NavigateAndGetInfo(Browser* browser,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   content::WebContents* contents =
       browser->tab_strip_model()->GetActiveWebContents();
-  content::RenderProcessHost* process = contents->GetMainFrame()->GetProcess();
+  content::RenderProcessHost* process =
+      contents->GetPrimaryMainFrame()->GetProcess();
   return ContentInfo(contents, process->GetID(),
                      process->GetStoragePartition());
 }
@@ -190,7 +194,6 @@ MockInlineSigninHelper::MockInlineSigninHelper(
     : InlineSigninHelper(handler,
                          url_loader_factory,
                          profile,
-                         Profile::CreateStatus::CREATE_STATUS_INITIALIZED,
                          current_url,
                          email,
                          gaia_id,
@@ -240,7 +243,6 @@ MockSyncStarterInlineSigninHelper::MockSyncStarterInlineSigninHelper(
     : InlineSigninHelper(handler,
                          url_loader_factory,
                          profile,
-                         Profile::CreateStatus::CREATE_STATUS_INITIALIZED,
                          current_url,
                          email,
                          gaia_id,
@@ -272,10 +274,11 @@ void InlineLoginUIBrowserTest::EnableSigninAllowed(bool enable) {
 void InlineLoginUIBrowserTest::AddEmailToOneClickRejectedList(
     const std::string& email) {
   PrefService* pref_service = browser()->profile()->GetPrefs();
-  ListPrefUpdate updater(pref_service,
-                         prefs::kReverseAutologinRejectedEmailList);
-  if (!base::Contains(updater->GetList(), base::Value(email)))
+  ScopedListPrefUpdate updater(pref_service,
+                               prefs::kReverseAutologinRejectedEmailList);
+  if (!base::Contains(*updater, base::Value(email))) {
     updater->Append(email);
+  }
 }
 
 void InlineLoginUIBrowserTest::AllowSigninCookies(bool enable) {
@@ -291,7 +294,7 @@ void InlineLoginUIBrowserTest::SetAllowedUsernamePattern(
   local_state->SetString(prefs::kGoogleServicesUsernamePattern, pattern);
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 // crbug.com/422868
 #define MAYBE_DifferentStorageId DISABLED_DifferentStorageId
 #else
@@ -311,7 +314,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, MAYBE_DifferentStorageId) {
   ASSERT_EQ(1u, set.size());
   content::WebContents* webview_contents = *set.begin();
   content::RenderProcessHost* process =
-      webview_contents->GetMainFrame()->GetProcess();
+      webview_contents->GetPrimaryMainFrame()->GetProcess();
   ASSERT_NE(info.pid, process->GetID());
   ASSERT_NE(info.storage_partition, process->GetStoragePartition());
 }
@@ -400,7 +403,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, CanOfferNoSigninCookies) {
   EXPECT_EQ(error, SigninUIError::Other("user@gmail.com"));
 }
 
-class InlineLoginHelperBrowserTest : public InProcessBrowserTest {
+class InlineLoginHelperBrowserTest : public DialogBrowserTest {
  public:
   InlineLoginHelperBrowserTest() : forced_signin_setter_(true) {}
 
@@ -489,6 +492,25 @@ class InlineLoginHelperBrowserTest : public InProcessBrowserTest {
         ->GetURLLoaderFactoryForBrowserProcess();
   }
 
+  void ShowUi(const std::string& name) override {
+    InlineLoginHandlerImpl handler;
+    // See Source enum in components/signin/public/base/signin_metrics.h for
+    // possible values of access_point=, reason=.
+    GURL url("chrome://chrome-signin/?access_point=0&reason=5");
+    // MockSyncStarterInlineSigninHelper will delete itself when done using
+    // base::ThreadTaskRunnerHandle::DeleteSoon(), so need to delete here.  But
+    // do need the RunUntilIdle() at the end.
+    MockSyncStarterInlineSigninHelper* helper =
+        new MockSyncStarterInlineSigninHelper(
+            handler.GetWeakPtr(), test_shared_loader_factory(), profile(), url,
+            "foo@gmail.com", "gaiaid-12345", "password", "auth_code",
+            /*signin_scoped_device_id=*/std::string(),
+            /*confirm_untrusted_signin=*/true,
+            /*is_force_sign_in_with_usermanager=*/true);
+    SimulateOnClientOAuthSuccess(helper, "refresh_token");
+    EXPECT_TRUE(OneClickSigninDialogView::IsShowing());
+  }
+
  protected:
   signin::IdentityManager* identity_manager() {
     return identity_test_env_profile_adaptor_->identity_test_env()
@@ -502,7 +524,7 @@ class InlineLoginHelperBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
   base::CallbackListSubscription create_services_subscription_;
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
   signin_util::ScopedForceSigninSetterForTesting forced_signin_setter_;
 };
 
@@ -699,6 +721,17 @@ IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
   ASSERT_FALSE(entry->IsSigninRequired());
 }
 
+// https://crbug.com/1271819: Added Mac and Win due to excessive flakiness
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
+#define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
+#else
+#define MAYBE_InvokeUi_default InvokeUi_default
+#endif
+IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest, MAYBE_InvokeUi_default) {
+  ShowAndVerifyUi();
+}
+
 class InlineLoginUISafeIframeBrowserTest : public InProcessBrowserTest {
  public:
   FooWebUIProvider& foo_provider() { return foo_provider_; }
@@ -761,7 +794,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUISafeIframeBrowserTest, Basic) {
 }
 
 // Flaky on MacOS - crbug.com/1021209
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_NoWebUIInIframe DISABLED_NoWebUIInIframe
 #else
 #define MAYBE_NoWebUIInIframe NoWebUIInIframe
@@ -797,71 +830,49 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUISafeIframeBrowserTest,
   base::RunLoop().RunUntilIdle();
 }
 
+#if BUILDFLAG(IS_WIN)
 // Tracks the URLs requested while running a browser test and returns a default
 // empty html page as a result. Each URL + path tracks all the query params
 // requested to this endpoint for validation later on.
 class HtmlRequestTracker {
  public:
+  using QueryParamSet = std::set<std::pair<std::string, std::string>>;
+
   HtmlRequestTracker() = default;
   ~HtmlRequestTracker() = default;
+
   std::unique_ptr<net::test_server::HttpResponse> HtmlResponseHandler(
       const net::test_server::HttpRequest& request) {
-    // Track the query keyed on the host + path portion of the URL.
-    std::vector<std::pair<std::string, std::string>> query_params;
-    GURL request_url = request.GetURL();
-    net::QueryIterator it(request_url);
-    for (; !it.IsAtEnd(); it.Advance()) {
-      query_params.push_back(
-          std::make_pair(it.GetKey(), it.GetUnescapedValue()));
+    QueryParamSet query_params;
+    const GURL url = request.GetURL();
+    for (net::QueryIterator it(url); !it.IsAtEnd(); it.Advance()) {
+      query_params.emplace(it.GetKey(), it.GetUnescapedValue());
     }
-    requested_urls_[GURL(request.GetURL().GetWithEmptyPath().Resolve(
-                        request.GetURL().path()))]
-        .push_back(query_params);
+    requests_per_url_[StripParams(url)].push_back(query_params);
 
+    // Dummy response.
     return EmptyHtmlResponseHandler(request);
   }
 
-  bool PageRequested(const GURL& url) { return PageRequested(url, {}); }
-
-  bool PageRequested(const GURL& url,
-                     const std::vector<std::pair<std::string, std::string>>&
-                         required_query_params) {
-    auto it = requested_urls_.find(url.GetWithEmptyPath().Resolve(url.path()));
-
-    if (it == requested_urls_.end())
+  bool PageRequested(const GURL& url, const QueryParamSet& required_params) {
+    auto it = requests_per_url_.find(StripParams(url));
+    if (it == requests_per_url_.end()) {
       return false;
-
-    if (required_query_params.empty())
-      return true;
-
-    // Go to every query made on this endpoint and see if one of them matches
-    // the required query params.
-    for (auto& query_param : required_query_params) {
-      bool query_params_match = true;
-      for (auto& requested_query_params : it->second) {
-        if (std::find_if(requested_query_params.begin(),
-                         requested_query_params.end(),
-                         [&query_param](auto& lhs) {
-                           return base::EqualsCaseInsensitiveASCII(
-                                      query_param.first, lhs.first) &&
-                                  base::EqualsCaseInsensitiveASCII(
-                                      query_param.second, lhs.second);
-                         }) == requested_query_params.end()) {
-          query_params_match = false;
-          break;
-        }
-      }
-
-      if (!query_params_match)
-        return false;
     }
 
-    return true;
+    return base::ranges::all_of(
+        it->second, [&required_params](const QueryParamSet& request_params) {
+          return base::ranges::includes(request_params, required_params);
+        });
   }
 
  private:
-  std::map<GURL, std::vector<std::vector<std::pair<std::string, std::string>>>>
-      requested_urls_;
+  static GURL StripParams(const GURL& url) {
+    return url.GetWithEmptyPath().Resolve(url.path());
+  }
+
+  // Given a URL, gives the parameters of each request made to it.
+  std::map<GURL, std::vector<QueryParamSet>> requests_per_url_;
 };
 
 // Tests whether the correct gaia url and query parameters are requested based
@@ -901,7 +912,6 @@ class InlineLoginCorrectGaiaUrlBrowserTest : public InProcessBrowserTest {
   HtmlRequestTracker tracker_;
 };
 
-#if defined(OS_WIN)
 IN_PROC_BROWSER_TEST_F(InlineLoginCorrectGaiaUrlBrowserTest,
                        FetchLstOnlyEndpointForSignin) {
   signin_metrics::AccessPoint access_point =
@@ -952,6 +962,6 @@ IN_PROC_BROWSER_TEST_F(InlineLoginCorrectGaiaUrlBrowserTest,
   GURL gaia_url = GaiaUrls::GetInstance()->embedded_setup_windows_url();
 
   EXPECT_TRUE(tracker_.PageRequested(
-      gaia_url, {{"flow", "reauth"}, {"email", email}, {"show_tos", "1"}}));
+      gaia_url, {{"flow", "reauth"}, {"Email", email}, {"show_tos", "1"}}));
 }
 #endif

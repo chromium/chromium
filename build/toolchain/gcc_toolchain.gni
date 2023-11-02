@@ -1,4 +1,4 @@
-# Copyright (c) 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -28,6 +28,10 @@ declare_args() {
       is_official_build &&
       # Don't enable for Android-on-Chrome OS.
       (target_os == "android" || target_os == "win")
+
+  # Use -MD instead of -MMD for compiler commands. This is useful for tracking
+  # the comprehensive set of dependencies.
+  system_headers_in_deps = false
 }
 
 # When the arg is set via args.gn, it applies to all toolchains. In order to not
@@ -148,7 +152,7 @@ template("gcc_toolchain") {
       # Whether rustc can successfully link binaries. (If not, rust code
       # can still be linked by our C++ toolchain). See
       # //build/config/rust.gni
-      rustc_can_link = !use_thin_lto && current_os != "android"
+      rustc_can_link = current_os != "android"
     }
 
     # When the invoker has explicitly overridden use_remoteexec, use_goma or
@@ -216,13 +220,13 @@ template("gcc_toolchain") {
     }
 
     if (use_goma_thin_lto && toolchain_uses_goma && use_thin_lto) {
-      # goma_ld.py uses autoninja in an attempt to set a reasonable
+      # remote_ld.py uses autoninja in an attempt to set a reasonable
       # number of jobs, but this results in too low a value on
       # Chrome OS builders. So we pass in an explicit value.
       link_prefix =
           "$python_path " +
-          rebase_path("//tools/clang/scripts/goma_ld.py", root_build_dir) +
-          " --gomacc ${goma_path} --jobs 200 -- "
+          rebase_path("//tools/clang/scripts/remote_ld.py", root_build_dir) +
+          " --wrapper ${goma_path} --jobs 200 -- "
     } else {
       link_prefix = ""
       not_needed([ "goma_path" ])
@@ -344,6 +348,12 @@ template("gcc_toolchain") {
       extra_ldflags = ""
     }
 
+    if (system_headers_in_deps) {
+      md = "-MD"
+    } else {
+      md = "-MMD"
+    }
+
     enable_linker_map = defined(invoker.enable_linker_map) &&
                         invoker.enable_linker_map && generate_linker_map
 
@@ -357,7 +367,7 @@ template("gcc_toolchain") {
     tool("cc") {
       depfile = "{{output}}.d"
       precompiled_header_type = "gcc"
-      command = "$cc -MMD -MF $depfile ${rebuild_string}{{defines}} {{include_dirs}} {{cflags}} {{cflags_c}}${extra_cppflags}${extra_cflags} -c {{source}} -o {{output}}"
+      command = "$cc $md -MF $depfile ${rebuild_string}{{defines}} {{include_dirs}} {{cflags}} {{cflags_c}}${extra_cppflags}${extra_cflags} -c {{source}} -o {{output}}"
       depsformat = "gcc"
       description = "CC {{output}}"
       outputs = [ "$object_subdir/{{source_name_part}}.o" ]
@@ -366,7 +376,7 @@ template("gcc_toolchain") {
     tool("cxx") {
       depfile = "{{output}}.d"
       precompiled_header_type = "gcc"
-      command = "$cxx -MMD -MF $depfile ${rebuild_string}{{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}}${extra_cppflags}${extra_cxxflags} -c {{source}} -o {{output}}"
+      command = "$cxx $md -MF $depfile ${rebuild_string}{{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}}${extra_cppflags}${extra_cxxflags} -c {{source}} -o {{output}}"
       depsformat = "gcc"
       description = "CXX {{output}}"
       outputs = [ "$object_subdir/{{source_name_part}}.o" ]
@@ -375,7 +385,7 @@ template("gcc_toolchain") {
     tool("asm") {
       # For GCC we can just use the C compiler to compile assembly.
       depfile = "{{output}}.d"
-      command = "$asm -MMD -MF $depfile ${rebuild_string}{{defines}} {{include_dirs}} {{asmflags}}${extra_asmflags} -c {{source}} -o {{output}}"
+      command = "$asm $md -MF $depfile ${rebuild_string}{{defines}} {{include_dirs}} {{asmflags}}${extra_asmflags} -c {{source}} -o {{output}}"
       depsformat = "gcc"
       description = "ASM {{output}}"
       outputs = [ "$object_subdir/{{source_name_part}}.o" ]
@@ -462,15 +472,22 @@ template("gcc_toolchain") {
       solink_wrapper =
           rebase_path("//build/toolchain/gcc_solink_wrapper.py", root_build_dir)
       solink_extra_flags = ""
+      if (current_os == "aix") {
+        # to be intercepted by solink_wrapper, so that we exit immediately
+        # after linking the shared object, without generating the TOC file
+        # (skipped on Aix)
+        solink_extra_flags = "--partitioned-library"
+      }
       command = "$python_path \"$solink_wrapper\" --readelf=\"$readelf\" --nm=\"$nm\" $strip_switch$dwp_switch --sofile=\"$unstripped_sofile\" --tocfile=\"$tocfile\"$map_switch --output=\"$sofile\" -- $link_command $solink_extra_flags"
 
       if (target_cpu == "mipsel" && is_component_build && is_android) {
-        rspfile_content = "-Wl,--start-group -Wl,--whole-archive {{inputs}} {{solibs}} -Wl,--no-whole-archive {{libs}} -Wl,--end-group {{rlibs}}"
+        rspfile_content = "-Wl,--start-group -Wl,--whole-archive {{inputs}} {{solibs}} -Wl,--no-whole-archive {{libs}} -Wl,--end-group -Wl,--whole-archive {{rlibs}} -Wl,--no-whole-archive"
       } else if (current_os == "aix") {
-        # --whole-archive, --no-whole-archive flags are not available on the aix ld.
+        # --whole-archive, --no-whole-archive flags are not available on the aix
+        # ld.
         rspfile_content = "{{inputs}} {{solibs}} {{libs}} {{rlibs}}"
       } else {
-        rspfile_content = "-Wl,--whole-archive {{inputs}} {{solibs}} -Wl,--no-whole-archive {{libs}} {{rlibs}}"
+        rspfile_content = "-Wl,--whole-archive {{inputs}} {{solibs}} -Wl,--no-whole-archive {{libs}} -Wl,--whole-archive {{rlibs}} -Wl,--no-whole-archive"
       }
 
       description = "SOLINK $sofile"
@@ -548,7 +565,7 @@ template("gcc_toolchain") {
         strip_command = "${invoker.strip} -o \"$sofile\" \"$unstripped_sofile\""
         command += " && " + strip_command
       }
-      rspfile_content = "$whole_archive_flag {{inputs}} {{solibs}} $no_whole_archive_flag {{libs}} {{rlibs}}"
+      rspfile_content = "$whole_archive_flag {{inputs}} {{solibs}} $no_whole_archive_flag {{libs}} $whole_archive_flag {{rlibs}} $no_whole_archive_flag"
 
       description = "SOLINK_MODULE $sofile"
 
@@ -622,7 +639,27 @@ template("gcc_toolchain") {
       command = "$python_path \"$link_wrapper\" --output=\"$outfile\"$strip_switch$map_switch$dwp_switch -- $link_command"
 
       description = "LINK $outfile"
-      rspfile_content = "{{inputs}} {{rlibs}}"
+
+      whole_archive_flag = ""
+      no_whole_archive_flag = ""
+      if (current_os != "aix") {
+        # --whole-archive, --no-whole-archive flags are not available on aix ld
+        whole_archive_flag = "-Wl,--whole-archive"
+        no_whole_archive_flag = "-Wl,--no-whole-archive"
+      }
+
+      # TODO(crbug.com/1296284): The {{rlibs}} contains the object files from
+      # the build target's source files. They should be treated as peers of the
+      # C++ object files in {{inputs}}, however an rlib is linked like a static
+      # library, which means object files can be dropped if the linker see them
+      # as being unused. This then drops test files, for example.
+      #
+      # However the rust stdlib is also present in the {{rlibs}} and should not
+      # be equally treated as the target's .o files. The linked bug should
+      # address this by moving the std library to be linked as a library and not
+      # as a set of rlibs.
+      rspfile_content =
+          "{{inputs}} $whole_archive_flag {{rlibs}} $no_whole_archive_flag "
       outputs = [ outfile ]
       if (outfile != unstripped_outfile) {
         outputs += [ unstripped_outfile ]
@@ -667,52 +704,70 @@ template("gcc_toolchain") {
     }
 
     if (toolchain_has_rust) {
-      rustc = ""
-      if (defined(rust_compiler_prefix)) {
-        rustc += rust_compiler_prefix
+      if (!defined(rust_compiler_prefix)) {
+        rust_compiler_prefix = ""
       }
-      rustc += rust_prefix
-      rustc += "rustc"
+      rustc_bin = rebase_path("${rust_sysroot}/bin/rustc", root_build_dir)
+      rustc = "$rust_compiler_prefix${rustc_bin}"
+      rust_sysroot_relative_to_out = rebase_path(rust_sysroot, root_out_dir)
+      rustc_wrapper = rebase_path("//build/rust/rustc_wrapper.py")
 
-      # RSP files not used due to https://bugs.chromium.org/p/gn/issues/detail?id=249
+      # RSP manipulation due to https://bugs.chromium.org/p/gn/issues/detail?id=249
       tool("rust_staticlib") {
-        rust_outfile = "{{target_out_dir}}/{{crate_name}}.a"
+        rust_outfile = "{{output_dir}}/{{target_output_name}}.a"
         depfile = "{{output}}.d"
-        command = "$rustc $rustc_common_args --emit=dep-info=$depfile,link -Clinker=$ld -o $rust_outfile"
+        rspfile = "$rust_outfile.rsp"
+        rspfile_content = "{{rustdeps}} {{externs}}"
+        command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- -Clinker=\"${invoker.cxx}\" $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS RUSTENV {{rustenv}}"
         description = "RUST $rust_outfile"
+        rust_sysroot = rust_sysroot_relative_to_out
         outputs = [ rust_outfile ]
       }
 
       tool("rust_rlib") {
-        rust_outfile = "{{target_out_dir}}/lib{{crate_name}}.rlib"
+        rust_outfile = "{{output_dir}}/lib{{target_output_name}}.rlib"
         depfile = "{{output}}.d"
-        command = "$rustc $rustc_common_args --emit=dep-info=$depfile,link -Clinker=$ld -o $rust_outfile"
+
+        # Do not use rsp files in this (common) case because they occupy the
+        # ninja main thread, and {{rlibs}} have shorter command lines than
+        # fully linked targets.
+        command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile -- -Clinker=\"${invoker.cxx}\" $rustc_common_args {{rustdeps}} {{externs}} --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS RUSTENV {{rustenv}}"
         description = "RUST $rust_outfile"
+        rust_sysroot = rust_sysroot_relative_to_out
         outputs = [ rust_outfile ]
       }
 
       if (toolchain_args.rustc_can_link) {
         tool("rust_bin") {
-          rust_outfile = "{{root_out_dir}}/{{crate_name}}"
+          rust_outfile = "{{root_out_dir}}/{{target_output_name}}"
           depfile = "{{output}}.d"
-          command = "$rustc $rustc_common_args --emit=dep-info=$depfile,link -Clinker=$ld -o $rust_outfile"
+          rspfile = "$rust_outfile.rsp"
+          rspfile_content = "{{rustdeps}} {{externs}}"
+          command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- -Clinker=\"${invoker.cxx}\" $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} ${extra_ldflags} RUSTENV {{rustenv}}"
           description = "RUST $rust_outfile"
+          rust_sysroot = rust_sysroot_relative_to_out
           outputs = [ rust_outfile ]
         }
 
         tool("rust_cdylib") {
-          rust_outfile = "{{target_out_dir}}/lib{{crate_name}}.so"
+          rust_outfile = "{{output_dir}}/lib{{target_output_name}}.so"
           depfile = "{{output}}.d"
-          command = "$rustc $rustc_common_args --emit=dep-info=$depfile,link -Clinker=$ld -o $rust_outfile"
+          rspfile = "$rust_outfile.rsp"
+          rspfile_content = "{{rustdeps}} {{externs}}"
+          command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- -Clinker=\"${invoker.cxx}\" $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} ${extra_ldflags} RUSTENV {{rustenv}}"
           description = "RUST $rust_outfile"
+          rust_sysroot = rust_sysroot_relative_to_out
           outputs = [ rust_outfile ]
         }
 
         tool("rust_macro") {
-          rust_outfile = "{{target_out_dir}}/lib{{crate_name}}.so"
+          rust_outfile = "{{output_dir}}/lib{{target_output_name}}.so"
           depfile = "{{output}}.d"
-          command = "$rustc $rustc_common_args --emit=dep-info=$depfile,link -Clinker=$ld -o $rust_outfile"
+          rspfile = "$rust_outfile.rsp"
+          rspfile_content = "{{rustdeps}} {{externs}}"
+          command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- -Clinker=\"${invoker.cxx}\" $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} ${extra_ldflags} RUSTENV {{rustenv}}"
           description = "RUST $rust_outfile"
+          rust_sysroot = rust_sysroot_relative_to_out
           outputs = [ rust_outfile ]
         }
       }
@@ -731,7 +786,16 @@ template("gcc_toolchain") {
 # use_gold too.
 template("clang_toolchain") {
   gcc_toolchain(target_name) {
-    prefix = rebase_path("$clang_base_path/bin", root_build_dir)
+    _path = "$clang_base_path/bin"
+    _is_path_absolute = get_path_info(_path, "abspath") == _path
+
+    # Preserve absolute paths for tools like distcc.
+    if (_is_path_absolute && filter_include([ _path ], [ "//*" ]) == []) {
+      prefix = _path
+    } else {
+      prefix = rebase_path(_path, root_build_dir)
+    }
+
     cc = "${prefix}/clang"
     cxx = "${prefix}/clang++"
     ld = cxx

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,25 +17,25 @@ import android.widget.TextView;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.UiThreadTest;
+import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.DummyUiActivity;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 /**
  * Tests for ContextMenu item view, {@link ContextMenuItemViewBinder}, and {@link
  * ContextMenuItemWithIconButtonViewBinder}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class ContextMenuItemViewTest extends DummyUiActivityTestCase {
+@Batch(Batch.UNIT_TESTS)
+public class ContextMenuItemViewTest extends BlankUiTestActivityTestCase {
     private static final String TEXT = "Useful menu item";
     private static final String APP = "Some app";
 
@@ -47,16 +47,12 @@ public class ContextMenuItemViewTest extends DummyUiActivityTestCase {
 
     private boolean mIsClicked;
 
-    @BeforeClass
-    public static void setUpBeforeActivityLaunched() {
-        DummyUiActivity.setTestLayout(org.chromium.chrome.R.layout.context_menu_share_row);
-    }
-
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            getActivity().setContentView(R.layout.context_menu_share_row);
             mShareItemView = getActivity().findViewById(android.R.id.content);
             mText = mShareItemView.findViewById(R.id.menu_row_text);
             mIcon = mShareItemView.findViewById(R.id.menu_row_share_icon);

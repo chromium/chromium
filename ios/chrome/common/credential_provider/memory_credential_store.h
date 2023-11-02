@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 
 // Base Credential store, memory only and meant to be subclassed.
 //
-// Only supports |Credentials| of class |ArchivableCredential|.
+// Only supports `Credentials` of class `ArchivableCredential`.
 @interface MemoryCredentialStore : NSObject <MutableCredentialStore>
 
 // The in-memory storage.
@@ -25,7 +25,7 @@
 @property(nonatomic, readonly) dispatch_queue_t workingQueue;
 
 // The first time the storage is used, this method will be called to populate
-// |memoryStorage|. Meant for subclassing.
+// `memoryStorage`. Meant for subclassing.
 - (NSMutableDictionary<NSString*, ArchivableCredential*>*)loadStorage;
 
 @end

@@ -1,19 +1,13 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
 import 'chrome://bluetooth-pairing/strings.m.js';
 
-import {SettingsBluetoothPairingEnterCodeElement} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_pairing_enter_code_page.js';
+import {SettingsBluetoothPairingEnterCodeElement} from 'chrome://resources/ash/common/bluetooth/bluetooth_pairing_enter_code_page.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertEquals, assertTrue} from '../../../chai_assert.js';
-import {createDefaultBluetoothDevice} from './fake_bluetooth_config.js';
-
-// clang-format on
-
-const mojom = chromeos.bluetoothConfig.mojom;
 
 suite('CrComponentsBluetoothPairingEnterCodePageTest', function() {
   /** @type {?SettingsBluetoothPairingEnterCodeElement} */
@@ -40,16 +34,7 @@ suite('CrComponentsBluetoothPairingEnterCodePageTest', function() {
         bluetoothPairingEnterCodePage.shadowRoot.querySelector('#enter');
 
     const deviceName = 'BeatsX';
-    const device = createDefaultBluetoothDevice(
-        /*id=*/ '123456', deviceName,
-        /*connectionState=*/
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
-        /*opt_nickname=*/ 'device1',
-        /*opt_audioCapability=*/
-        mojom.AudioOutputCapability.kCapableOfAudioOutput,
-        /*opt_deviceType=*/ mojom.DeviceType.kMouse);
-
-    bluetoothPairingEnterCodePage.device = device.deviceProperties;
+    bluetoothPairingEnterCodePage.deviceName = deviceName;
     await flushAsync();
 
     const message =
@@ -72,7 +57,7 @@ suite('CrComponentsBluetoothPairingEnterCodePageTest', function() {
 
     let keys = getKeys();
     assertEquals(keys.length, 6);
-    assertEquals(keys[0].className, nextKeyClass);
+    assertEquals(keys[0].className, defaultKeyClass);
     assertEquals(keys[1].className, defaultKeyClass);
     assertEquals(keys[5].className, defaultKeyClass);
     assertEquals(getEnter().className, defaultEnterClass);
@@ -93,5 +78,29 @@ suite('CrComponentsBluetoothPairingEnterCodePageTest', function() {
     assertEquals(keys[1].className, typedKeyClass);
     assertEquals(keys[5].className, typedKeyClass);
     assertEquals(getEnter().className, nextEnterClass);
+  });
+
+  test('Changing PinCode', async function() {
+    const getKeys = () =>
+        bluetoothPairingEnterCodePage.shadowRoot.querySelectorAll('.key');
+
+    const deviceName = 'BeatsX';
+    bluetoothPairingEnterCodePage.deviceName = deviceName;
+    bluetoothPairingEnterCodePage.code = '123456';
+    bluetoothPairingEnterCodePage.numKeysEntered = 0;
+    await flushAsync();
+
+    let keys = getKeys();
+    assertEquals(keys[0].textContent.trim(), '1');
+    assertEquals(keys[1].textContent.trim(), '2');
+    assertEquals(keys[5].textContent.trim(), '6');
+
+    bluetoothPairingEnterCodePage.code = '987654';
+    await flushAsync();
+
+    keys = getKeys();
+    assertEquals(keys[0].textContent.trim(), '9');
+    assertEquals(keys[1].textContent.trim(), '8');
+    assertEquals(keys[5].textContent.trim(), '4');
   });
 });

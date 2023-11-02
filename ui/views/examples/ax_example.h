@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_VIEWS_EXAMPLES_AX_EXAMPLE_H_
 #define UI_VIEWS_EXAMPLES_AX_EXAMPLE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/views/examples/example_base.h"
 
 namespace views {
@@ -27,7 +28,7 @@ class VIEWS_EXAMPLES_EXPORT AxExample : public ExampleBase {
   void CreateExampleView(View* container) override;
 
  private:
-  Button* announce_button_ = nullptr;
+  raw_ptr<Button> announce_button_ = nullptr;
 };
 
 }  // namespace examples

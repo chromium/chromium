@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -85,7 +85,7 @@ class TestNetworkQualityEstimatorManagerClient
   int32_t downlink_bandwidth_kbps() const { return downlink_bandwidth_kbps_; }
 
  private:
-  NetworkQualityEstimatorManager* network_quality_estimator_manager_;
+  raw_ptr<NetworkQualityEstimatorManager> network_quality_estimator_manager_;
   size_t num_network_quality_changed_;
   std::unique_ptr<base::RunLoop> run_loop_;
   net::EffectiveConnectionType run_loop_wait_effective_connection_type_;

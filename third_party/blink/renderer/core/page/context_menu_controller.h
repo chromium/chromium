@@ -31,7 +31,7 @@
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
 
 namespace blink {
@@ -128,8 +128,6 @@ class CORE_EXPORT ContextMenuController final
   bool ShouldShowContextMenuFromTouch(const ContextMenuData&);
 
   Node* GetContextMenuNodeWithImageContents();
-
-  void UpdateTextFragmentHandler(LocalFrame*);
 
   HeapMojoAssociatedReceiver<mojom::blink::ContextMenuClient,
                              ContextMenuController>

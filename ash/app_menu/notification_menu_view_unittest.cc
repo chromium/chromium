@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_utils.h"
@@ -134,10 +135,10 @@ class NotificationMenuViewTest : public views::ViewsTestBase {
         message_center::NotifierType::APPLICATION, kTestAppId);
     message_center::Notification notification(
         message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title,
-        message, gfx::Image(), u"www.test.org", GURL(), notifier_id,
+        message, ui::ImageModel(), u"www.test.org", GURL(), notifier_id,
         message_center::RichNotificationData(), nullptr /* delegate */);
     notification_menu_view_->AddNotificationItemView(notification);
-    notification_menu_view_->Layout();
+    views::test::RunScheduledLayout(notification_menu_view_);
     return notification;
   }
 
@@ -149,7 +150,7 @@ class NotificationMenuViewTest : public views::ViewsTestBase {
         message_center::NotifierType::APPLICATION, kTestAppId);
     message_center::Notification notification(
         message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title,
-        message, gfx::Image(), u"www.test.org", GURL(), notifier_id,
+        message, ui::ImageModel(), u"www.test.org", GURL(), notifier_id,
         message_center::RichNotificationData(), nullptr /* delegate */);
     notification_menu_view_->UpdateNotificationItemView(notification);
     return notification;

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/auth.h"
 #include "net/base/isolation_info.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/http/http_auth.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
@@ -92,45 +92,13 @@ void ReturnResultOnUIThreadAndClosePipe(
       FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 
-void OnSyncGetPlatformPathDone(
-    scoped_refptr<storage::FileSystemContext> file_system_context,
-    media::MediaResourceGetter::GetPlatformPathCB callback,
-    const base::FilePath& platform_path) {
-  DCHECK(file_system_context->default_file_task_runner()
-             ->RunsTasksInCurrentSequence());
-
-  base::FilePath data_storage_path;
-  base::PathService::Get(base::DIR_ANDROID_APP_DATA, &data_storage_path);
-  if (data_storage_path.IsParent(platform_path))
-    ReturnResultOnUIThread(std::move(callback), platform_path.value());
-  else
-    ReturnResultOnUIThread(std::move(callback), std::string());
-}
-
-void RequestPlatformPathFromFileSystemURL(
-    const GURL& url,
-    int render_process_id,
-    scoped_refptr<storage::FileSystemContext> file_system_context,
-    media::MediaResourceGetter::GetPlatformPathCB callback) {
-  DCHECK(file_system_context->default_file_task_runner()
-             ->RunsTasksInCurrentSequence());
-  // TODO (https://crbug.com/1258029): determine how to pipe in the correct
-  // third-party StorageKey and replace the in-line conversion below.
-  SyncGetPlatformPath(file_system_context.get(), render_process_id, url,
-                      blink::StorageKey(url::Origin::Create(url)),
-                      base::BindOnce(&OnSyncGetPlatformPathDone,
-                                     file_system_context, std::move(callback)));
-}
-
 }  // namespace
 
 MediaResourceGetterImpl::MediaResourceGetterImpl(
     BrowserContext* browser_context,
-    storage::FileSystemContext* file_system_context,
     int render_process_id,
     int render_frame_id)
     : browser_context_(browser_context),
-      file_system_context_(file_system_context),
       render_process_id_(render_process_id),
       render_frame_id_(render_frame_id) {}
 
@@ -149,8 +117,8 @@ void MediaResourceGetterImpl::GetAuthCredentials(
 
   RenderFrameHostImpl* render_frame_host =
       RenderFrameHostImpl::FromID(render_process_id_, render_frame_id_);
-  // Can't get a NetworkIsolationKey to get credentials if the RenderFrameHost
-  // has already been destroyed.
+  // Can't get a NetworkAnonymizationKey to get credentials if the
+  // RenderFrameHost has already been destroyed.
   if (!render_frame_host) {
     GetAuthCredentialsCallback(std::move(callback), absl::nullopt);
     return;
@@ -159,7 +127,7 @@ void MediaResourceGetterImpl::GetAuthCredentials(
   browser_context_->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->LookupServerBasicAuthCredentials(
-          url, render_frame_host->GetNetworkIsolationKey(),
+          url, render_frame_host->GetIsolationInfoForSubresources().network_anonymization_key(),
           base::BindOnce(&MediaResourceGetterImpl::GetAuthCredentialsCallback,
                          weak_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -189,6 +157,7 @@ void MediaResourceGetterImpl::GetCookies(
       cookie_manager.get();
   cookie_manager_ptr->GetCookiesString(
       url, site_for_cookies, top_frame_origin,
+      /*partitioned_cookies_runtime_feature_enabled=*/false,
       base::BindOnce(&ReturnResultOnUIThreadAndClosePipe,
                      std::move(cookie_manager), std::move(callback)));
 }
@@ -201,29 +170,6 @@ void MediaResourceGetterImpl::GetAuthCredentialsCallback(
     std::move(callback).Run(credentials->username(), credentials->password());
   else
     std::move(callback).Run(std::u16string(), std::u16string());
-}
-
-void MediaResourceGetterImpl::GetPlatformPathFromURL(
-    const GURL& url,
-    GetPlatformPathCB callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(url.SchemeIsFileSystem());
-
-  GetPlatformPathCB cb =
-      base::BindOnce(&MediaResourceGetterImpl::GetPlatformPathCallback,
-                     weak_factory_.GetWeakPtr(), std::move(callback));
-
-  scoped_refptr<storage::FileSystemContext> context(file_system_context_);
-  context->default_file_task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&RequestPlatformPathFromFileSystemURL, url,
-                                render_process_id_, context, std::move(cb)));
-}
-
-void MediaResourceGetterImpl::GetPlatformPathCallback(
-    GetPlatformPathCB callback,
-    const std::string& platform_path) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::move(callback).Run(platform_path);
 }
 
 }  // namespace content

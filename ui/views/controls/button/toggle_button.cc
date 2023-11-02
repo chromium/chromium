@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -71,8 +72,8 @@ class ToggleButton::ThumbView : public View {
   // Returns the extra space needed to draw the shadows around the thumb. Since
   // the extra space is around the thumb, the insets will be negative.
   static gfx::Insets GetShadowOutsets() {
-    return gfx::Insets(-kShadowBlur)
-        .Offset(gfx::Vector2d(kShadowOffsetX, kShadowOffsetY));
+    return gfx::Insets(-kShadowBlur) +
+           gfx::Vector2d(kShadowOffsetX, kShadowOffsetY);
   }
 
   void SetThumbColor(bool is_on, const absl::optional<SkColor>& thumb_color) {
@@ -110,8 +111,8 @@ class ToggleButton::ThumbView : public View {
     // We want the circle to have an integer pixel diameter and to be aligned
     // with pixel boundaries, so we scale dip bounds to pixel bounds and round.
     gfx::RectF thumb_bounds(GetLocalBounds());
-    thumb_bounds.Inset(-GetShadowOutsets());
-    thumb_bounds.Inset(gfx::InsetsF(0.5f));
+    thumb_bounds.Inset(-gfx::InsetsF(GetShadowOutsets()));
+    thumb_bounds.Inset(0.5f);
     thumb_bounds.Scale(dsf);
     thumb_bounds = gfx::RectF(gfx::ToEnclosingRect(thumb_bounds));
     canvas->DrawCircle(thumb_bounds.CenterPoint(), thumb_bounds.height() / 2.f,
@@ -247,7 +248,7 @@ void ToggleButton::RemoveLayerBeneathView(ui::Layer* layer) {
 
 gfx::Size ToggleButton::CalculatePreferredSize() const {
   gfx::Rect rect(kTrackSize);
-  rect.Inset(gfx::Insets(-kTrackVerticalMargin, -kTrackHorizontalMargin));
+  rect.Inset(gfx::Insets::VH(-kTrackVerticalMargin, -kTrackHorizontalMargin));
   rect.Inset(-GetInsets());
   return rect.size();
 }
@@ -300,6 +301,23 @@ void ToggleButton::OnThemeChanged() {
   SchedulePaint();
 }
 
+void ToggleButton::NotifyClick(const ui::Event& event) {
+  AnimateIsOn(!GetIsOn());
+
+  // Only trigger the action when we don't have focus. This lets the InkDrop
+  // remain and match the focus ring.
+  // TODO(pbos): Investigate triggering the ripple but returning back to the
+  // focused state correctly. This is set up to highlight on focus, but the
+  // highlight does not come back after the ripple is triggered. Then remove
+  // this and add back SetHasInkDropActionOnClick(true) in the constructor.
+  if (!HasFocus()) {
+    InkDrop::Get(this)->AnimateToState(InkDropState::ACTION_TRIGGERED,
+                                       ui::LocatedEvent::FromIfValid(&event));
+  }
+
+  Button::NotifyClick(event);
+}
+
 SkPath ToggleButton::GetFocusRingPath() const {
   SkPath path;
   const gfx::Point center = GetThumbBounds().CenterPoint();
@@ -333,23 +351,6 @@ void ToggleButton::OnBlur() {
                                        nullptr);
   }
   SchedulePaint();
-}
-
-void ToggleButton::NotifyClick(const ui::Event& event) {
-  AnimateIsOn(!GetIsOn());
-
-  // Only trigger the action when we don't have focus. This lets the InkDrop
-  // remain and match the focus ring.
-  // TODO(pbos): Investigate triggering the ripple but returning back to the
-  // focused state correctly. This is set up to highlight on focus, but the
-  // highlight does not come back after the ripple is triggered. Then remove
-  // this and add back SetHasInkDropActionOnClick(true) in the constructor.
-  if (!HasFocus()) {
-    InkDrop::Get(this)->AnimateToState(InkDropState::ACTION_TRIGGERED,
-                                       ui::LocatedEvent::FromIfValid(&event));
-  }
-
-  Button::NotifyClick(event);
 }
 
 void ToggleButton::PaintButtonContents(gfx::Canvas* canvas) {

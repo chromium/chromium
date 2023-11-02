@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,9 @@
 #define COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_NAVIGATION_MONITOR_IMPL_H_
 
 #include "base/cancelable_callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/download/public/background_service/navigation_monitor.h"
 
 namespace download {
@@ -32,7 +34,7 @@ class NavigationMonitorImpl : public NavigationMonitor {
   void ScheduleBackupTask();
   void OnNavigationFinished();
 
-  NavigationMonitor::Observer* observer_;
+  raw_ptr<NavigationMonitor::Observer> observer_;
 
   int current_navigation_count_;
 

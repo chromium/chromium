@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -106,7 +106,7 @@ void FPSGraphPageView::OnPaint(gfx::Canvas* canvas) {
   // Layout graphs.
   gfx::Rect rect = GetContentsBounds();
   // Adjust bounds to not overlap with bordering reference lines.
-  rect.Inset(kHUDGraphReferenceLineWidth, kHUDGraphReferenceLineWidth);
+  rect.Inset(kHUDGraphReferenceLineWidth);
 
   frame_rate_500ms_.Layout(rect, /*base=*/nullptr);
   frame_rate_1s_.Layout(rect, /*base=*/nullptr);

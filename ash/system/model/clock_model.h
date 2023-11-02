@@ -1,21 +1,21 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_SYSTEM_MODEL_CLOCK_MODEL_H_
 #define ASH_SYSTEM_MODEL_CLOCK_MODEL_H_
 
-#include "ash/components/settings/timezone_settings.h"
 #include "base/i18n/time_formatting.h"
 #include "base/observer_list.h"
-#include "chromeos/dbus/system_clock/system_clock_client.h"
+#include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
+#include "chromeos/ash/components/settings/timezone_settings.h"
 
 namespace ash {
 
 class ClockObserver;
 
 // Model to notify system clock and related configuration change.
-class ClockModel : public chromeos::SystemClockClient::Observer,
+class ClockModel : public SystemClockClient::Observer,
                    public system::TimezoneSettings::Observer {
  public:
   ClockModel();
@@ -37,13 +37,14 @@ class ClockModel : public chromeos::SystemClockClient::Observer,
   bool IsSettingsAvailable() const;
 
   void ShowDateSettings();
+  void ShowPowerSettings();
   void ShowSetTimeDialog();
 
   // Force observers to refresh clock views e.g. system is resumed or timezone
   // is changed.
   void NotifyRefreshClock();
 
-  // chromeos::SystemClockClient::Observer:
+  // SystemClockClient::Observer:
   void SystemClockUpdated() override;
   void SystemClockCanSetTimeChanged(bool can_set_time) override;
 

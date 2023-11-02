@@ -1,0 +1,83 @@
+<style include="iron-flex iron-positioning">
+  [slot='page-body'] {
+    height: 282px;
+    margin-top: -20px;
+  }
+
+  #outerDiv {
+    height: 236px;
+  }
+
+  .container {
+    width: 472px;
+  }
+
+  #details {
+    align-items: center;
+    color: var(--cros-text-color-primary);
+    display: flex;
+    margin-bottom: 40px;
+  }
+
+  #profileImage {
+    margin-inline-end: 16px;
+  }
+
+  #confirmationCodeContainer {
+    margin-inline-end: 16px;
+  }
+
+  paper-spinner-lite {
+    height: 20px;
+    position: absolute;
+    right: 16px;
+    top: 24px;
+    width: 20px;
+  }
+
+  #loadingMessage {
+    bottom: 0;
+    color: var(--cros-text-color-disabled);
+    font-size: var(--cr-form-field-label-font-size);
+    letter-spacing: .4px;
+    line-height: var(--cr-form-field-label-line-height);
+    position: absolute;
+  }
+</style>
+<base-page>
+  <div slot="page-body">
+    <div aria-live="polite">
+      [[i18n('confirmationCodeMessage')]]
+    </div>
+    <div id="outerDiv" class="layout horizontal center">
+      <div class="container">
+        <div id="details" hidden$="[[!shouldShowProfileDetails_(profile)]]">
+          <iron-media-query query="(prefers-color-scheme: dark)"
+              query-matches="{{isDarkModeActive_}}">
+          </iron-media-query>
+          <img id="profileImage"
+              src="[[getProfileImage_(isDarkModeActive_)]]">
+          <div>
+            [[getProfileName_(profileProperties_)]]
+          </div>
+        </div>
+        <div id="confirmationCodeContainer" class="relative">
+          <cr-input id="confirmationCode"
+              label="[[i18n('confirmationCodeInput')]]"
+              value="{{confirmationCode}}"
+              error-message="[[i18n('confirmationCodeError')]]"
+              invalid="[[showError]]"
+              disabled="[[showBusy]]"
+              on-keydown="onKeyDown_">
+          </cr-input>
+          <paper-spinner-lite active
+              hidden$="[[!showBusy]]">
+          </paper-spinner-lite>
+          <div id="loadingMessage" hidden$="[[!showBusy]]">
+            [[i18n('confirmationCodeLoading')]]
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</base-page>

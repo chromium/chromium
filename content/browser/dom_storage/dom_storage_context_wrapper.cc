@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,9 +63,7 @@ void AdaptStorageUsageInfo(
   std::vector<StorageUsageInfo> result;
   result.reserve(usage.size());
   for (const auto& info : usage) {
-    // TODO(https://crbug.com/1199077): Pass the real StorageKey when
-    // StorageUsageInfo is converted.
-    result.emplace_back(info->origin, info->total_size_bytes,
+    result.emplace_back(info->storage_key, info->total_size_bytes,
                         info->last_modified);
   }
   std::move(callback).Run(result);
@@ -403,9 +401,7 @@ void DOMStorageContextWrapper::OnStartupUsageRetrieved(
 
   std::vector<url::Origin> origins;
   for (const auto& info : usage) {
-    // TODO(https://crbug.com/1199077): Pass the real StorageKey when
-    // StorageUsageInfo is converted.
-    origins.emplace_back(std::move(info->origin));
+    origins.emplace_back(std::move(info->storage_key.origin()));
   }
   // TODO(https://crbug.com/1199077): Pass the real StorageKey when
   // StoragePolicyObserver is converted.

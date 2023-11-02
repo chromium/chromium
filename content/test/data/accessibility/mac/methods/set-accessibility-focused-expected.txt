@@ -1,0 +1,2 @@
+input.setAccessibilityFocused(TRUE)=NULL
+AXFocusedUIElementChanged on AXTextField

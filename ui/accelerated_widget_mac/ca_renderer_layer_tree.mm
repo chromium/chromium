@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,22 +12,64 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/metal_util/hdr_copier_layer.h"
-#include "media/base/mac/color_space_util_mac.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cocoa/animation_utils.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/gfx/geometry/dip_util.h"
-#include "ui/gfx/mac/io_surface_hdr_metadata.h"
+#include "ui/gfx/hdr_metadata.h"
+#include "ui/gfx/hdr_metadata_mac.h"
 #include "ui/gl/ca_renderer_layer_params.h"
 #include "ui/gl/gl_image_io_surface.h"
 
 namespace ui {
 
 namespace {
+
+// TODO(https://crbug.com/1313999): Remove debug prints after the code is
+// stable.
+constexpr bool g_print_ca_layers = false;
+// Output level for VLOG.
+constexpr int kOutputLevel = 4;
+
+BASE_FEATURE(kCALayerTreeOptimization,
+             "CALayerTreeOptimization",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+void RecordIOSurfaceHistograms(
+    int changed_io_surfaces_during_commit,
+    int unchanged_io_surfaces_during_commit,
+    int total_updated_io_surface_size_during_commit) {
+  // UMA for updated IOSurfaces.
+  int total_io_surfaces =
+      changed_io_surfaces_during_commit + unchanged_io_surfaces_during_commit;
+  if (total_io_surfaces > 0) {
+    // Total changed IOSurface size perframe. Use 100M as a max for this
+    // histogram. IOSurface size = w x h x bpp x planes. A 32 bpp HD surface
+    // takes ~8M bytes.
+    base::UmaHistogramCustomCounts(
+        "Compositing.Renderer.CALayer.ChangedIOSurfacesSizePerFrame",
+        total_updated_io_surface_size_during_commit, 1 /*=min*/,
+        100000000 /*=exclusive_max*/, 50 /*=buckets*/);
+
+    // The number of changed IOSurfaces per frame.
+    base::UmaHistogramCustomCounts(
+        "Compositing.Renderer.CALayer.ChangedIOSurfacesPerFrame",
+        changed_io_surfaces_during_commit, 1 /*=min*/, 300 /*=exclusive_max*/,
+        50 /*=buckets*/);
+
+    int changed_io_surface_percentage =
+        changed_io_surfaces_during_commit * 100 / total_io_surfaces;
+    base::UmaHistogramPercentage(
+        "Compositing.Renderer.CALayer.ChangedIOSurfacesPercentagePerFrame",
+        changed_io_surface_percentage);
+  }
+}
 
 // This will enqueue |io_surface| to be drawn by |av_layer|. This will
 // retain |cv_pixel_buffer| until it is no longer being displayed.
@@ -106,7 +148,8 @@ bool AVSampleBufferDisplayLayerEnqueueCVPixelBuffer(
 bool AVSampleBufferDisplayLayerEnqueueIOSurface(
     AVSampleBufferDisplayLayer* av_layer,
     IOSurfaceRef io_surface,
-    const gfx::ColorSpace& io_surface_color_space) {
+    const gfx::ColorSpace& io_surface_color_space,
+    absl::optional<gfx::HDRMetadata> hdr_metadata) {
   CVReturn cv_return = kCVReturnSuccess;
 
   base::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer;
@@ -120,12 +163,12 @@ bool AVSampleBufferDisplayLayerEnqueueIOSurface(
   if (__builtin_available(macos 11.0, *)) {
     if (io_surface_color_space ==
             gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
-                            gfx::ColorSpace::TransferID::SMPTEST2084,
+                            gfx::ColorSpace::TransferID::PQ,
                             gfx::ColorSpace::MatrixID::BT2020_NCL,
                             gfx::ColorSpace::RangeID::LIMITED) ||
         io_surface_color_space ==
             gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
-                            gfx::ColorSpace::TransferID::ARIB_STD_B67,
+                            gfx::ColorSpace::TransferID::HLG,
                             gfx::ColorSpace::MatrixID::BT2020_NCL,
                             gfx::ColorSpace::RangeID::LIMITED)) {
       CVBufferSetAttachment(cv_pixel_buffer, kCVImageBufferColorPrimariesKey,
@@ -137,30 +180,24 @@ bool AVSampleBufferDisplayLayerEnqueueIOSurface(
       CVBufferSetAttachment(
           cv_pixel_buffer, kCVImageBufferTransferFunctionKey,
           io_surface_color_space.GetTransferID() ==
-                  gfx::ColorSpace::TransferID::ARIB_STD_B67
+                  gfx::ColorSpace::TransferID::HLG
               ? kCVImageBufferTransferFunction_ITU_R_2100_HLG
               : kCVImageBufferTransferFunction_SMPTE_ST_2084_PQ,
           kCVAttachmentMode_ShouldPropagate);
 
-      // Transfer stashed HDR metadata from the IOSurface to the CVPixelBuffer.
-      //
-      // Note: It'd be nice to find a way to set this on the IOSurface itself
-      // in some way that propagates to the CVPixelBuffer, but thus far we
-      // haven't been able to find a way.
-      gfx::HDRMetadata hdr_metadata;
-      if (IOSurfaceGetHDRMetadata(io_surface, hdr_metadata)) {
-        if (!(hdr_metadata.color_volume_metadata ==
+      if (hdr_metadata) {
+        if (!(hdr_metadata->color_volume_metadata ==
               gfx::ColorVolumeMetadata())) {
           CVBufferSetAttachment(
               cv_pixel_buffer, kCVImageBufferMasteringDisplayColorVolumeKey,
-              media::GenerateMasteringDisplayColorVolume(hdr_metadata),
+              gfx::GenerateMasteringDisplayColorVolume(*hdr_metadata),
               kCVAttachmentMode_ShouldPropagate);
         }
-        if (hdr_metadata.max_content_light_level ||
-            hdr_metadata.max_frame_average_light_level) {
+        if (hdr_metadata->max_content_light_level ||
+            hdr_metadata->max_frame_average_light_level) {
           CVBufferSetAttachment(
               cv_pixel_buffer, kCVImageBufferContentLightLevelInfoKey,
-              media::GenerateContentLightLevelInfo(hdr_metadata),
+              gfx::GenerateContentLightLevelInfo(*hdr_metadata),
               kCVAttachmentMode_ShouldPropagate);
         }
       }
@@ -171,6 +208,16 @@ bool AVSampleBufferDisplayLayerEnqueueIOSurface(
                                                         cv_pixel_buffer);
 }
 
+CATransform3D ToCATransform3D(const gfx::Transform& t) {
+  CATransform3D result;
+  auto* dst = &result.m11;
+  for (int col = 0; col < 4; col++) {
+    for (int row = 0; row < 4; row++)
+      *dst++ = t.rc(row, col);
+  }
+  return result;
+}
+
 }  // namespace
 
 class CARendererLayerTree::SolidColorContents
@@ -178,6 +225,7 @@ class CARendererLayerTree::SolidColorContents
  public:
   static scoped_refptr<SolidColorContents> Get(SkColor color);
   id GetContents() const;
+  IOSurfaceRef GetIOSurfaceRef() const;
 
  private:
   friend class base::RefCounted<SolidColorContents>;
@@ -226,6 +274,10 @@ id CARendererLayerTree::SolidColorContents::GetContents() const {
   return static_cast<id>(io_surface_.get());
 }
 
+IOSurfaceRef CARendererLayerTree::SolidColorContents::GetIOSurfaceRef() const {
+  return io_surface_.get();
+}
+
 CARendererLayerTree::SolidColorContents::SolidColorContents(
     SkColor color,
     IOSurfaceRef io_surface)
@@ -255,7 +307,9 @@ CARendererLayerTree::CARendererLayerTree(
     bool allow_solid_color_layers)
     : allow_av_sample_buffer_display_layer_(
           allow_av_sample_buffer_display_layer),
-      allow_solid_color_layers_(allow_solid_color_layers) {}
+      allow_solid_color_layers_(allow_solid_color_layers),
+      ca_layer_tree_optimization_(
+          base::FeatureList::IsEnabled(kCALayerTreeOptimization)) {}
 CARendererLayerTree::~CARendererLayerTree() {}
 
 bool CARendererLayerTree::ScheduleCALayer(const CARendererLayerParams& params) {
@@ -263,7 +317,7 @@ bool CARendererLayerTree::ScheduleCALayer(const CARendererLayerParams& params) {
     DLOG(ERROR) << "ScheduleCALayer called after CommitScheduledCALayers.";
     return false;
   }
-  return root_layer_.AddContentLayer(this, params);
+  return root_layer_.AddContentLayer(params);
 }
 
 void CARendererLayerTree::CommitScheduledCALayers(
@@ -272,22 +326,293 @@ void CARendererLayerTree::CommitScheduledCALayers(
     const gfx::Size& pixel_size,
     float scale_factor) {
   TRACE_EVENT0("gpu", "CARendererLayerTree::CommitScheduledCALayers");
-  RootLayer* old_root_layer = nullptr;
-  if (old_tree) {
-    DCHECK(old_tree->has_committed_);
-    if (old_tree->scale_factor_ == scale_factor)
-      old_root_layer = &old_tree->root_layer_;
-  }
+  scale_factor_ = scale_factor;
 
-  root_layer_.CommitToCA(superlayer, old_root_layer, pixel_size, scale_factor);
+  if (ca_layer_tree_optimization_)
+    MatchLayersToOldTree(old_tree.get());
+  else
+    MatchLayersToOldTreeDefault(old_tree.get());
+
+  root_layer_.CommitToCA(superlayer, pixel_size);
   // If there are any extra CALayers in |old_tree| that were not stolen by this
   // tree, they will be removed from the CALayer tree in this deallocation.
   old_tree.reset();
   has_committed_ = true;
-  scale_factor_ = scale_factor;
+
+  // UMA
+  RecordIOSurfaceHistograms(changed_io_surfaces_during_commit_,
+                            unchanged_io_surfaces_during_commit_,
+                            total_updated_io_surface_size_during_commit_);
+
+// TODO(https://crbug.com/1313999): Remove verfication after the code is stable.
+#ifndef NDEBUG
+  if (ca_layer_tree_optimization_)
+    VerifyCommittedCALayers();
+#endif
 }
 
-bool CARendererLayerTree::RootLayer::WantsFullcreenLowPowerBackdrop() const {
+void CARendererLayerTree::MatchLayersToOldTreeDefault(
+    CARendererLayerTree* old_tree) {
+  if (!old_tree)
+    return;
+  DCHECK(old_tree->has_committed_);
+
+  // Match the root layer.
+  if (old_tree->scale_factor_ != scale_factor_)
+    return;
+
+  root_layer_.old_layer_ =
+      old_tree->root_layer_.weak_factory_for_new_layer_.GetWeakPtr();
+
+  root_layer_.CALayerFallBack();
+}
+
+void CARendererLayerTree::MatchLayersToOldTree(CARendererLayerTree* old_tree) {
+  if (!old_tree)
+    return;
+  DCHECK(old_tree->has_committed_);
+
+  // Match the root layer.
+  if (old_tree->scale_factor_ != scale_factor_)
+    return;
+
+  VLOG(kOutputLevel) << "--Mapping....";
+  DCHECK(ca_layer_map_.empty()) << "ca_layer_map_ is not empty.";
+
+  root_layer_.old_layer_ =
+      old_tree->root_layer_.weak_factory_for_new_layer_.GetWeakPtr();
+
+  int layer_order = 0;
+  int last_old_layer_order;
+  for (auto& clip_and_sorting_layer : root_layer_.clip_and_sorting_layers_) {
+    for (auto& transform_layer : clip_and_sorting_layer.transform_layers_) {
+      for (auto& content_layer : transform_layer.content_layers_) {
+        content_layer.UpdateMapAndMatchOldLayers(
+            old_tree->ca_layer_map_, layer_order, last_old_layer_order);
+      }
+    }
+  }
+
+  // Try to match unused old layers to saving reallocation of CALayer even
+  // though the IOSurface will be different.
+  root_layer_.CALayerFallBack();
+
+  VLOG(kOutputLevel) << "--";
+}
+
+void CARendererLayerTree::ContentLayer::UpdateMapAndMatchOldLayers(
+    CALayerMap& old_ca_layer_map,
+    int& layer_order,
+    int& last_old_layer_order) {
+  IOSurfaceRef io_surface_ref = io_surface_.get();
+
+  if (!io_surface_ref)
+    return;
+
+  // Add this ContentLayer to the map for this tree.
+  tree()->ca_layer_map_.insert(
+      std::make_pair(io_surface_ref, weak_factory_for_new_layer_.GetWeakPtr()));
+
+  layer_order_ = ++layer_order;
+
+  // Find a matched io surface from the old tree.
+  auto it = old_ca_layer_map.find(io_surface_ref);
+  if (it == old_ca_layer_map.end())
+    return;
+
+  auto matched_content_layer = it->second;
+
+  if (matched_content_layer->ca_layer_used_) {
+    VLOG(kOutputLevel) << "     Skip. The matched content layer has been used. "
+                       << matched_content_layer->ca_layer_;
+  } else if (matched_content_layer->layer_order_ < last_old_layer_order) {
+    VLOG(kOutputLevel) << "     Skip. Wrong order. "
+                       << matched_content_layer->ca_layer_;
+  }
+
+  // Should we try multimap for the same IOSurface used twice in the old tree?
+  if (matched_content_layer->ca_layer_used_)
+    return;
+
+  auto matched_transform_layer = matched_content_layer->parent_layer_;
+  auto matched_clip_layer = matched_transform_layer->parent_layer_;
+
+  // If the parenet is different, the supper layer must have changed. It
+  // should be removed from its superlayer and inserted back to the new
+  // superlayer in CommitToCa().
+
+  // clip_and_sorting_layer
+  if (!parent_layer_->parent_layer_->old_layer_) {
+    if (!matched_clip_layer->ca_layer_used_) {
+      // Use this clip_and_sorting_layer as an old layer.
+      parent_layer_->parent_layer_->old_layer_ =
+          matched_clip_layer->weak_factory_for_new_layer_.GetWeakPtr();
+      matched_clip_layer->ca_layer_used_ = true;
+      VLOG(kOutputLevel) << "ClipAndSort: "
+                         << matched_clip_layer->clipping_ca_layer_;
+    } else {
+      [matched_transform_layer->ca_layer_ removeFromSuperlayer];
+    }
+  }
+
+  // transform_layer
+  if (!parent_layer_->old_layer_) {
+    if (!matched_transform_layer->ca_layer_used_) {
+      // Use this clip_and_sorting_layer as an old layer.
+      parent_layer_->old_layer_ =
+          matched_transform_layer->weak_factory_for_new_layer_.GetWeakPtr();
+      matched_transform_layer->ca_layer_used_ = true;
+      VLOG(kOutputLevel) << " Transform: "
+                         << matched_transform_layer->ca_layer_;
+    } else {
+      [matched_content_layer->ca_layer_ removeFromSuperlayer];
+    }
+  }
+
+  if (matched_clip_layer.get() !=
+      parent_layer_->parent_layer_->old_layer_.get()) {
+    [matched_transform_layer->ca_layer_ removeFromSuperlayer];
+  }
+
+  if (matched_transform_layer.get() != parent_layer_->old_layer_.get()) {
+    [matched_content_layer->ca_layer_ removeFromSuperlayer];
+  } else if (matched_content_layer->layer_order_ < last_old_layer_order) {
+    // For the content layers with the same superlayer, if the order changes.
+    // this matched old layer should be removed from its superlayer first.
+    [matched_content_layer->ca_layer_ removeFromSuperlayer];
+    [matched_transform_layer->ca_layer_ removeFromSuperlayer];
+    [matched_clip_layer->clipping_ca_layer_ removeFromSuperlayer];
+  }
+
+  // This is the one to be used as an old layer.
+  old_layer_ = matched_content_layer;
+  old_layer_->ca_layer_used_ = true;
+  last_old_layer_order = matched_content_layer->layer_order_;
+
+  // Debug print
+  std::string str;
+  if ([matched_transform_layer->ca_layer_ superlayer] == nil)
+    str = ", transform layer's superlayer has changed";
+  if ([matched_content_layer->ca_layer_ superlayer] == nil)
+    str = ",  clip layer's superlayer has changed ";
+  VLOG(kOutputLevel) << "   Content: " << matched_content_layer->ca_layer_
+                     << " io_surface_ref: " << io_surface_ref << str;
+}
+
+void CARendererLayerTree::RootLayer::CALayerFallBack() {
+  if (old_layer_) {
+    auto old_layer_child_it = old_layer_->clip_and_sorting_layers_.begin();
+    for (auto& child : clip_and_sorting_layers_) {
+      if (child.old_layer_) {
+        // Remove any children of `old_layer_` that appear before
+        // `child.old_layer_`. They may be re-parented (in the case of
+        // transposed content), or removed entirely.
+        while (old_layer_child_it !=
+               old_layer_->clip_and_sorting_layers_.end()) {
+          auto* old_layer_child = &(*old_layer_child_it);
+          if (child.old_layer_.get() == old_layer_child) {
+            ++old_layer_child_it;
+            break;
+          }
+          [old_layer_child->clipping_ca_layer_ removeFromSuperlayer];
+          ++old_layer_child_it;
+        }
+      } else {
+        // If `child.old_layer_` is unset, then set it to the next child of
+        // `old_layer_` (if it exists and has not been taken).
+        if (old_layer_child_it != old_layer_->clip_and_sorting_layers_.end()) {
+          if (!old_layer_child_it->ca_layer_used_) {
+            child.old_layer_ =
+                old_layer_child_it->weak_factory_for_new_layer_.GetWeakPtr();
+            ++old_layer_child_it;
+          } else {
+            // keep the current |old_layer_child_it|.
+          }
+        }
+      }
+
+      child.CALayerFallBack();
+    }
+  } else {
+    for (auto& child : clip_and_sorting_layers_)
+      child.CALayerFallBack();
+  }
+}
+
+void CARendererLayerTree::ClipAndSortingLayer::CALayerFallBack() {
+  if (old_layer_) {
+    auto old_layer_child_it = old_layer_->transform_layers_.begin();
+    for (auto& child : transform_layers_) {
+      if (child.old_layer_) {
+        // Remove any children of `old_layer_` that appear before
+        // `child.old_layer_`. They may be re-parented (in the case of
+        // transposed content), or removed entirely.
+        while (old_layer_child_it != old_layer_->transform_layers_.end()) {
+          auto* old_layer_child = &(*old_layer_child_it);
+          if (child.old_layer_.get() == old_layer_child) {
+            ++old_layer_child_it;
+            break;
+          }
+          [old_layer_child->ca_layer_ removeFromSuperlayer];
+          ++old_layer_child_it;
+        }
+      } else {
+        // If `child.old_layer_` is unset, then set it to the next child of
+        // `old_layer_` (if it exists and has not been taken).
+        if (old_layer_child_it != old_layer_->transform_layers_.end()) {
+          if (!old_layer_child_it->ca_layer_used_) {
+            child.old_layer_ =
+                old_layer_child_it->weak_factory_for_new_layer_.GetWeakPtr();
+            ++old_layer_child_it;
+          } else {
+            // keep the current |old_layer_child_it|.
+          }
+        }
+      }
+
+      child.CALayerFallBack();
+    }
+  } else {
+    for (auto& child : transform_layers_)
+      child.CALayerFallBack();
+  }
+}
+
+void CARendererLayerTree::TransformLayer::CALayerFallBack() {
+  if (old_layer_) {
+    auto old_layer_child_it = old_layer_->content_layers_.begin();
+    for (auto& child : content_layers_) {
+      if (child.old_layer_) {
+        // Remove any children of `old_layer_` that appear before
+        // `child.old_layer_`. They may be re-parented (in the case of
+        // transposed content), or removed entirely.
+        while (old_layer_child_it != old_layer_->content_layers_.end()) {
+          auto* old_layer_child = &(*old_layer_child_it);
+          if (child.old_layer_.get() == old_layer_child) {
+            ++old_layer_child_it;
+            break;
+          }
+          [old_layer_child->ca_layer_ removeFromSuperlayer];
+          ++old_layer_child_it;
+        }
+      } else {
+        // If `child.old_layer_` is unset, then set it to the next child of
+        // `old_layer_` (if it exists and has not been taken).
+        if (old_layer_child_it != old_layer_->content_layers_.end()) {
+          if (!old_layer_child_it->ca_layer_used_) {
+            child.old_layer_ =
+                old_layer_child_it->weak_factory_for_new_layer_.GetWeakPtr();
+            ++old_layer_child_it;
+          } else {
+            // keep the current |old_layer_child_it|.
+          }
+        }
+      }
+    }
+  }
+}
+
+bool CARendererLayerTree::RootLayer::WantsFullscreenLowPowerBackdrop() const {
   bool found_video_layer = false;
   for (auto& clip_layer : clip_and_sorting_layers_) {
     for (auto& transform_layer : clip_layer.transform_layers_) {
@@ -345,25 +670,26 @@ IOSurfaceRef CARendererLayerTree::GetContentIOSurface() const {
     return nullptr;
   }
   const ClipAndSortingLayer& clip_and_sorting =
-      root_layer_.clip_and_sorting_layers_[0];
+      root_layer_.clip_and_sorting_layers_.front();
   size_t transform_count = clip_and_sorting.transform_layers_.size();
   if (transform_count != 1) {
     DLOG(ERROR) << "Can only return contents IOSurface when there is 1 "
                 << "TransformLayer, there are " << transform_count << ".";
     return nullptr;
   }
-  const TransformLayer& transform = clip_and_sorting.transform_layers_[0];
+  const TransformLayer& transform = clip_and_sorting.transform_layers_.front();
   size_t content_count = transform.content_layers_.size();
   if (content_count != 1) {
     DLOG(ERROR) << "Can only return contents IOSurface when there is 1 "
                 << "ContentLayer, there are " << transform_count << ".";
     return nullptr;
   }
-  const ContentLayer& content = transform.content_layers_[0];
+  const ContentLayer& content = transform.content_layers_.front();
   return content.io_surface_.get();
 }
 
-CARendererLayerTree::RootLayer::RootLayer() {}
+CARendererLayerTree::RootLayer::RootLayer(CARendererLayerTree* tree)
+    : tree_(tree) {}
 
 // Note that for all destructors, the the CALayer will have been reset to nil if
 // another layer has taken it.
@@ -372,34 +698,18 @@ CARendererLayerTree::RootLayer::~RootLayer() {
 }
 
 CARendererLayerTree::ClipAndSortingLayer::ClipAndSortingLayer(
+    RootLayer* parent_layer,
     bool is_clipped,
     gfx::Rect clip_rect,
     gfx::RRectF rounded_corner_bounds_arg,
     unsigned sorting_context_id,
     bool is_singleton_sorting_context)
-    : is_clipped_(is_clipped),
+    : parent_layer_(parent_layer),
+      is_clipped_(is_clipped),
       clip_rect_(clip_rect),
       rounded_corner_bounds_(rounded_corner_bounds_arg),
       sorting_context_id_(sorting_context_id),
       is_singleton_sorting_context_(is_singleton_sorting_context) {}
-
-CARendererLayerTree::ClipAndSortingLayer::ClipAndSortingLayer(
-    ClipAndSortingLayer&& layer)
-    : transform_layers_(std::move(layer.transform_layers_)),
-      is_clipped_(layer.is_clipped_),
-      clip_rect_(layer.clip_rect_),
-      rounded_corner_bounds_(layer.rounded_corner_bounds_),
-      sorting_context_id_(layer.sorting_context_id_),
-      is_singleton_sorting_context_(layer.is_singleton_sorting_context_),
-      clipping_ca_layer_(layer.clipping_ca_layer_),
-      rounded_corner_ca_layer_(layer.rounded_corner_ca_layer_) {
-  // Ensure that the ca_layer be reset, so that when the destructor is called,
-  // the layer hierarchy is unaffected.
-  // TODO(ccameron): Add a move constructor for scoped_nsobject to do this
-  // automatically.
-  layer.clipping_ca_layer_.reset();
-  layer.rounded_corner_ca_layer_.reset();
-}
 
 CARendererLayerTree::ClipAndSortingLayer::~ClipAndSortingLayer() {
   [clipping_ca_layer_ removeFromSuperlayer];
@@ -407,22 +717,16 @@ CARendererLayerTree::ClipAndSortingLayer::~ClipAndSortingLayer() {
 }
 
 CARendererLayerTree::TransformLayer::TransformLayer(
+    ClipAndSortingLayer* parent_layer,
     const gfx::Transform& transform)
-    : transform_(transform) {}
-
-CARendererLayerTree::TransformLayer::TransformLayer(TransformLayer&& layer)
-    : transform_(layer.transform_),
-      content_layers_(std::move(layer.content_layers_)),
-      ca_layer_(layer.ca_layer_) {
-  layer.ca_layer_.reset();
-}
+    : parent_layer_(parent_layer), transform_(transform) {}
 
 CARendererLayerTree::TransformLayer::~TransformLayer() {
   [ca_layer_ removeFromSuperlayer];
 }
 
 CARendererLayerTree::ContentLayer::ContentLayer(
-    CARendererLayerTree* tree,
+    TransformLayer* parent_layer,
     base::ScopedCFTypeRef<IOSurfaceRef> io_surface,
     base::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer,
     const gfx::RectF& contents_rect,
@@ -432,8 +736,10 @@ CARendererLayerTree::ContentLayer::ContentLayer(
     unsigned edge_aa_mask,
     float opacity,
     unsigned filter,
+    absl::optional<gfx::HDRMetadata> hdr_metadata,
     gfx::ProtectedVideoType protected_video_type)
-    : io_surface_(io_surface),
+    : parent_layer_(parent_layer),
+      io_surface_(io_surface),
       cv_pixel_buffer_(cv_pixel_buffer),
       contents_rect_(contents_rect),
       rect_(rect),
@@ -442,6 +748,7 @@ CARendererLayerTree::ContentLayer::ContentLayer(
       ca_edge_aa_mask_(0),
       opacity_(opacity),
       ca_filter_(filter == GL_LINEAR ? kCAFilterLinear : kCAFilterNearest),
+      hdr_metadata_(hdr_metadata),
       protected_video_type_(protected_video_type) {
   DCHECK(filter == GL_LINEAR || filter == GL_NEAREST);
 
@@ -453,7 +760,7 @@ CARendererLayerTree::ContentLayer::ContentLayer(
   // transparent layers must use real colors to be eligible for low power
   // detachment in fullscreen.
   // https://crbug.com/633805
-  if (!io_surface && !tree->allow_solid_color_layers_ &&
+  if (!io_surface && !tree()->allow_solid_color_layers_ &&
       background_color_ != SK_ColorBLACK &&
       background_color_ != SK_ColorTRANSPARENT) {
     solid_color_contents_ = SolidColorContents::Get(background_color);
@@ -468,19 +775,19 @@ CARendererLayerTree::ContentLayer::ContentLayer(
   // without content (solid color layers), the top edge in the AA mask is the
   // top edge on-screen.
   // https://crbug.com/567946
-  if (edge_aa_mask & GL_CA_LAYER_EDGE_LEFT_CHROMIUM)
+  if (edge_aa_mask & CALayerEdge::kLayerEdgeLeft)
     ca_edge_aa_mask_ |= kCALayerLeftEdge;
-  if (edge_aa_mask & GL_CA_LAYER_EDGE_RIGHT_CHROMIUM)
+  if (edge_aa_mask & CALayerEdge::kLayerEdgeRight)
     ca_edge_aa_mask_ |= kCALayerRightEdge;
   if (io_surface || solid_color_contents_) {
-    if (edge_aa_mask & GL_CA_LAYER_EDGE_TOP_CHROMIUM)
+    if (edge_aa_mask & CALayerEdge::kLayerEdgeTop)
       ca_edge_aa_mask_ |= kCALayerBottomEdge;
-    if (edge_aa_mask & GL_CA_LAYER_EDGE_BOTTOM_CHROMIUM)
+    if (edge_aa_mask & CALayerEdge::kLayerEdgeBottom)
       ca_edge_aa_mask_ |= kCALayerTopEdge;
   } else {
-    if (edge_aa_mask & GL_CA_LAYER_EDGE_TOP_CHROMIUM)
+    if (edge_aa_mask & CALayerEdge::kLayerEdgeTop)
       ca_edge_aa_mask_ |= kCALayerTopEdge;
-    if (edge_aa_mask & GL_CA_LAYER_EDGE_BOTTOM_CHROMIUM)
+    if (edge_aa_mask & CALayerEdge::kLayerEdgeBottom)
       ca_edge_aa_mask_ |= kCALayerBottomEdge;
   }
 
@@ -490,7 +797,7 @@ CARendererLayerTree::ContentLayer::ContentLayer(
   } else if (io_surface) {
     // Only allow 4:2:0 frames which fill the layer's contents or protected
     // video to be promoted to AV layers.
-    if (tree->allow_av_sample_buffer_display_layer_) {
+    if (tree()->allow_av_sample_buffer_display_layer_) {
       if (contents_rect == gfx::RectF(0, 0, 1, 1)) {
         switch (IOSurfaceGetPixelFormat(io_surface)) {
           case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
@@ -506,8 +813,7 @@ CARendererLayerTree::ContentLayer::ContentLayer(
         }
       }
 
-      if (protected_video_type_ ==
-          gfx::ProtectedVideoType::kHardwareProtected) {
+      if (protected_video_type_ != gfx::ProtectedVideoType::kClear) {
         if (@available(macOS 10.15, *)) {
           type_ = CALayerType::kVideo;
           video_type_can_downgrade_ = false;
@@ -535,36 +841,14 @@ CARendererLayerTree::ContentLayer::ContentLayer(
       const float width_correction =
           rect_.width() * ratio_error - rect_.width();
       if (width_correction < 1)
-        rect_.Inset(-width_correction / 2, 0);
+        rect_.Inset(gfx::InsetsF::VH(0, -width_correction / 2));
     } else if (ratio_error < 1) {
       const float height_correction =
           rect_.height() / ratio_error - rect_.height();
       if (height_correction < 1)
-        rect_.Inset(0, -height_correction / 2);
+        rect_.Inset(gfx::InsetsF::VH(-height_correction / 2, 0));
     }
   }
-}
-
-CARendererLayerTree::ContentLayer::ContentLayer(ContentLayer&& layer)
-    : io_surface_(layer.io_surface_),
-      cv_pixel_buffer_(layer.cv_pixel_buffer_),
-      solid_color_contents_(layer.solid_color_contents_),
-      contents_rect_(layer.contents_rect_),
-      rect_(layer.rect_),
-      background_color_(layer.background_color_),
-      io_surface_color_space_(layer.io_surface_color_space_),
-      ca_edge_aa_mask_(layer.ca_edge_aa_mask_),
-      opacity_(layer.opacity_),
-      ca_filter_(layer.ca_filter_),
-      type_(layer.type_),
-      video_type_can_downgrade_(layer.video_type_can_downgrade_),
-      protected_video_type_(layer.protected_video_type_),
-      ca_layer_(std::move(layer.ca_layer_)),
-      av_layer_(std::move(layer.av_layer_)),
-      update_indicator_layer_(std::move(layer.update_indicator_layer_)) {
-  DCHECK(!layer.ca_layer_);
-  DCHECK(!layer.av_layer_);
-  DCHECK(!update_indicator_layer_);
 }
 
 CARendererLayerTree::ContentLayer::~ContentLayer() {
@@ -573,7 +857,6 @@ CARendererLayerTree::ContentLayer::~ContentLayer() {
 }
 
 bool CARendererLayerTree::RootLayer::AddContentLayer(
-    CARendererLayerTree* tree,
     const CARendererLayerParams& params) {
   bool needs_new_clip_and_sorting_layer = true;
 
@@ -607,16 +890,15 @@ bool CARendererLayerTree::RootLayer::AddContentLayer(
     }
   }
   if (needs_new_clip_and_sorting_layer) {
-    clip_and_sorting_layers_.push_back(ClipAndSortingLayer(
-        params.is_clipped, params.clip_rect, params.rounded_corner_bounds,
-        params.sorting_context_id, is_singleton_sorting_context));
+    clip_and_sorting_layers_.emplace_back(
+        this, params.is_clipped, params.clip_rect, params.rounded_corner_bounds,
+        params.sorting_context_id, is_singleton_sorting_context);
   }
-  clip_and_sorting_layers_.back().AddContentLayer(tree, params);
+  clip_and_sorting_layers_.back().AddContentLayer(params);
   return true;
 }
 
 void CARendererLayerTree::ClipAndSortingLayer::AddContentLayer(
-    CARendererLayerTree* tree,
     const CARendererLayerParams& params) {
   bool needs_new_transform_layer = true;
   if (!transform_layers_.empty()) {
@@ -625,44 +907,25 @@ void CARendererLayerTree::ClipAndSortingLayer::AddContentLayer(
       needs_new_transform_layer = false;
   }
   if (needs_new_transform_layer)
-    transform_layers_.push_back(TransformLayer(params.transform));
-  transform_layers_.back().AddContentLayer(tree, params);
+    transform_layers_.emplace_back(this, params.transform);
+
+  transform_layers_.back().AddContentLayer(params);
 }
 
 void CARendererLayerTree::TransformLayer::AddContentLayer(
-    CARendererLayerTree* tree,
     const CARendererLayerParams& params) {
-  base::ScopedCFTypeRef<IOSurfaceRef> io_surface;
-  base::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer;
-  gfx::ColorSpace io_surface_color_space;
-  if (params.image) {
-    gl::GLImageIOSurface* io_surface_image =
-        gl::GLImageIOSurface::FromGLImage(params.image);
-    DCHECK(io_surface_image);
-    io_surface = io_surface_image->io_surface();
-    // Temporary investagtive fix for https://crbug.com/702369. It appears upon
-    // investigation that not using the original CVPixelBufferRef which came
-    // from the VTDecompressionSession prevents or minimizes flashing of
-    // incorrect content. Disable the CVPixelBufferRef path for the moment to
-    // determine if this fixes the bug for users.
-    // TODO(ccameron): If this indeed causes the bug to disappear, then
-    // extirpate the CVPixelBufferRef path.
-    // cv_pixel_buffer = io_surface_image->cv_pixel_buffer();
-    io_surface_color_space = params.image->color_space();
-  }
-  content_layers_.push_back(ContentLayer(
-      tree, io_surface, cv_pixel_buffer, params.contents_rect, params.rect,
-      params.background_color, io_surface_color_space, params.edge_aa_mask,
-      params.opacity, params.filter, params.protected_video_type));
+  content_layers_.emplace_back(
+      this, params.io_surface, base::ScopedCFTypeRef<CVPixelBufferRef>(),
+      params.contents_rect, params.rect, params.background_color,
+      params.io_surface_color_space, params.edge_aa_mask, params.opacity,
+      params.filter, params.hdr_metadata, params.protected_video_type);
 }
 
 void CARendererLayerTree::RootLayer::CommitToCA(CALayer* superlayer,
-                                                RootLayer* old_layer,
-                                                const gfx::Size& pixel_size,
-                                                float scale_factor) {
-  if (old_layer) {
-    DCHECK(old_layer->ca_layer_);
-    std::swap(ca_layer_, old_layer->ca_layer_);
+                                                const gfx::Size& pixel_size) {
+  if (old_layer_) {
+    DCHECK(old_layer_->ca_layer_);
+    std::swap(ca_layer_, old_layer_->ca_layer_);
   } else {
     ca_layer_.reset([[CALayer alloc] init]);
     [ca_layer_ setAnchorPoint:CGPointZero];
@@ -670,15 +933,15 @@ void CARendererLayerTree::RootLayer::CommitToCA(CALayer* superlayer,
     [superlayer addSublayer:ca_layer_];
     [superlayer setBorderWidth:0];
   }
-  if ([ca_layer_ superlayer] != superlayer) {
-    DLOG(ERROR) << "CARendererLayerTree root layer not attached to tree.";
-  }
 
-  if (WantsFullcreenLowPowerBackdrop()) {
+  DCHECK_EQ([ca_layer_ superlayer], superlayer)
+      << "CARendererLayerTree root layer not attached to tree.";
+
+  if (WantsFullscreenLowPowerBackdrop()) {
     // In fullscreen low power mode there exists a single video layer on a
     // solid black background.
     const gfx::RectF bg_rect(
-        ScaleSize(gfx::SizeF(pixel_size), 1 / scale_factor));
+        ScaleSize(gfx::SizeF(pixel_size), 1 / tree_->scale_factor_));
     if (gfx::RectF([ca_layer_ frame]) != bg_rect)
       [ca_layer_ setFrame:bg_rect.ToCGRect()];
     if (![ca_layer_ backgroundColor])
@@ -700,44 +963,52 @@ void CARendererLayerTree::RootLayer::CommitToCA(CALayer* superlayer,
     DowngradeAVLayersToCALayers();
   }
 
-  for (size_t i = 0; i < clip_and_sorting_layers_.size(); ++i) {
-    ClipAndSortingLayer* old_clip_and_sorting_layer = nullptr;
-    if (old_layer && i < old_layer->clip_and_sorting_layers_.size()) {
-      old_clip_and_sorting_layer = &old_layer->clip_and_sorting_layers_[i];
-    }
-    clip_and_sorting_layers_[i].CommitToCA(
-        ca_layer_.get(), old_clip_and_sorting_layer, scale_factor);
+  CALayer* last_committed_clip_ca_layer = nullptr;
+  for (auto& child_layer : clip_and_sorting_layers_) {
+    child_layer.CommitToCA(last_committed_clip_ca_layer);
+    last_committed_clip_ca_layer = child_layer.clipping_ca_layer_.get();
   }
 }
 
 void CARendererLayerTree::ClipAndSortingLayer::CommitToCA(
-    CALayer* superlayer,
-    ClipAndSortingLayer* old_layer,
-    float scale_factor) {
+    CALayer* last_committed_clip_ca_layer) {
+  CALayer* superlayer = parent_layer_->ca_layer_.get();
   bool update_is_clipped = true;
   bool update_clip_rect = true;
-  if (old_layer) {
-    DCHECK(old_layer->clipping_ca_layer_);
-    DCHECK(old_layer->rounded_corner_ca_layer_);
-    std::swap(clipping_ca_layer_, old_layer->clipping_ca_layer_);
-    std::swap(rounded_corner_ca_layer_, old_layer->rounded_corner_ca_layer_);
-    update_is_clipped = old_layer->is_clipped_ != is_clipped_;
-    update_clip_rect = update_is_clipped || old_layer->clip_rect_ != clip_rect_;
+  if (old_layer_) {
+    DCHECK(old_layer_->clipping_ca_layer_);
+    DCHECK(old_layer_->rounded_corner_ca_layer_);
+    std::swap(clipping_ca_layer_, old_layer_->clipping_ca_layer_);
+    std::swap(rounded_corner_ca_layer_, old_layer_->rounded_corner_ca_layer_);
+    update_is_clipped = old_layer_->is_clipped_ != is_clipped_;
+    update_clip_rect =
+        update_is_clipped || old_layer_->clip_rect_ != clip_rect_;
+
   } else {
     clipping_ca_layer_.reset([[CALayer alloc] init]);
     [clipping_ca_layer_ setAnchorPoint:CGPointZero];
-    [superlayer addSublayer:clipping_ca_layer_];
+
     rounded_corner_ca_layer_.reset([[CALayer alloc] init]);
     [rounded_corner_ca_layer_ setAnchorPoint:CGPointZero];
     [clipping_ca_layer_ addSublayer:rounded_corner_ca_layer_];
   }
 
+  if ([clipping_ca_layer_ superlayer] != superlayer) {
+    DCHECK_EQ([clipping_ca_layer_ superlayer], nil);
+    if (last_committed_clip_ca_layer == nullptr) {
+      [superlayer insertSublayer:clipping_ca_layer_ atIndex:0];
+    } else {
+      [superlayer insertSublayer:clipping_ca_layer_
+                           above:last_committed_clip_ca_layer];
+    }
+  }
+
   if (!rounded_corner_bounds_.IsEmpty()) {
-    if (!old_layer ||
-        old_layer->rounded_corner_bounds_ != rounded_corner_bounds_) {
+    if (!old_layer_ ||
+        old_layer_->rounded_corner_bounds_ != rounded_corner_bounds_) {
       gfx::RectF dip_rounded_corner_bounds =
           gfx::RectF(rounded_corner_bounds_.rect());
-      dip_rounded_corner_bounds.Scale(1 / scale_factor);
+      dip_rounded_corner_bounds.Scale(1 / tree()->scale_factor_);
 
       [rounded_corner_ca_layer_ setMasksToBounds:true];
 
@@ -754,7 +1025,7 @@ void CARendererLayerTree::ClipAndSortingLayer::CommitToCA(
 
       [rounded_corner_ca_layer_
           setCornerRadius:rounded_corner_bounds_.GetSimpleRadius() /
-                          scale_factor];
+                          tree()->scale_factor_];
     }
   } else {
     [rounded_corner_ca_layer_ setMasksToBounds:false];
@@ -763,9 +1034,11 @@ void CARendererLayerTree::ClipAndSortingLayer::CommitToCA(
     [rounded_corner_ca_layer_ setSublayerTransform:CATransform3DIdentity];
     [rounded_corner_ca_layer_ setCornerRadius:0];
   }
-  if ([clipping_ca_layer_ superlayer] != superlayer) {
-    DLOG(ERROR) << "CARendererLayerTree root layer not attached to tree.";
-  }
+
+  DCHECK_EQ([clipping_ca_layer_ superlayer], superlayer)
+      << "CARendererLayerTree root layer not attached to tree."
+      << "clipping_ca_layer_: " << clipping_ca_layer_
+      << " last clilp ca_layer: " << last_committed_clip_ca_layer;
 
   if (update_is_clipped)
     [clipping_ca_layer_ setMasksToBounds:is_clipped_];
@@ -773,7 +1046,7 @@ void CARendererLayerTree::ClipAndSortingLayer::CommitToCA(
   if (update_clip_rect) {
     if (is_clipped_) {
       gfx::RectF dip_clip_rect = gfx::RectF(clip_rect_);
-      dip_clip_rect.Scale(1 / scale_factor);
+      dip_clip_rect.Scale(1 / tree()->scale_factor_);
       [clipping_ca_layer_
           setPosition:CGPointMake(dip_clip_rect.x(), dip_clip_rect.y())];
       [clipping_ca_layer_ setBounds:CGRectMake(0, 0, dip_clip_rect.width(),
@@ -788,53 +1061,88 @@ void CARendererLayerTree::ClipAndSortingLayer::CommitToCA(
     }
   }
 
-  for (size_t i = 0; i < transform_layers_.size(); ++i) {
-    TransformLayer* old_transform_layer = nullptr;
-    if (old_layer && i < old_layer->transform_layers_.size())
-      old_transform_layer = &old_layer->transform_layers_[i];
-    transform_layers_[i].CommitToCA(rounded_corner_ca_layer_,
-                                    old_transform_layer, scale_factor);
+  if (g_print_ca_layers) {
+    std::string str;
+    if (old_layer_) {
+      str = " Reuse, ";
+    } else {
+      str = " New, ";
+    }
+    if (!update_is_clipped && !update_clip_rect)
+      str = str + "HIT";
+
+    VLOG(kOutputLevel) << "ClipAndSortingLayer: clip: " << clipping_ca_layer_
+                       << " round:" << rounded_corner_ca_layer_ << str;
+  }
+
+  CALayer* last_committed_transform_ca_layer = nullptr;
+  for (auto& child_layer : transform_layers_) {
+    child_layer.CommitToCA(last_committed_transform_ca_layer);
+    last_committed_transform_ca_layer = child_layer.ca_layer_.get();
   }
 }
 
-void CARendererLayerTree::TransformLayer::CommitToCA(CALayer* superlayer,
-                                                     TransformLayer* old_layer,
-                                                     float scale_factor) {
+void CARendererLayerTree::TransformLayer::CommitToCA(
+    CALayer* last_committed_transform_ca_layer) {
+  CALayer* superlayer = parent_layer_->rounded_corner_ca_layer_.get();
   bool update_transform = true;
-  if (old_layer) {
-    DCHECK(old_layer->ca_layer_);
-    std::swap(ca_layer_, old_layer->ca_layer_);
-    update_transform = old_layer->transform_ != transform_;
+
+  if (old_layer_) {
+    DCHECK(old_layer_->ca_layer_);
+    std::swap(ca_layer_, old_layer_->ca_layer_);
+    update_transform = old_layer_->transform_ != transform_;
   } else {
     ca_layer_.reset([[CATransformLayer alloc] init]);
-    [superlayer addSublayer:ca_layer_];
   }
-  DCHECK_EQ([ca_layer_ superlayer], superlayer);
+
+  if ([ca_layer_ superlayer] != superlayer) {
+    DCHECK_EQ([ca_layer_ superlayer], nil);
+    if (last_committed_transform_ca_layer == nullptr) {
+      [superlayer insertSublayer:ca_layer_ atIndex:0];
+    } else {
+      [superlayer insertSublayer:ca_layer_
+                           above:last_committed_transform_ca_layer];
+    }
+  }
+
+  DCHECK_EQ([ca_layer_ superlayer], superlayer)
+      << "ca_layer: " << ca_layer_
+      << " last transform ca_layer: " << last_committed_transform_ca_layer;
 
   if (update_transform) {
     gfx::Transform pre_scale;
     gfx::Transform post_scale;
-    pre_scale.Scale(1 / scale_factor, 1 / scale_factor);
-    post_scale.Scale(scale_factor, scale_factor);
+    pre_scale.Scale(1 / tree()->scale_factor_, 1 / tree()->scale_factor_);
+    post_scale.Scale(tree()->scale_factor_, tree()->scale_factor_);
     gfx::Transform conjugated_transform = pre_scale * transform_ * post_scale;
 
-    CATransform3D ca_transform;
-    conjugated_transform.matrix().asColMajord(&ca_transform.m11);
+    CATransform3D ca_transform = ToCATransform3D(conjugated_transform);
     [ca_layer_ setTransform:ca_transform];
   }
 
-  for (size_t i = 0; i < content_layers_.size(); ++i) {
-    ContentLayer* old_content_layer = nullptr;
-    if (old_layer && i < old_layer->content_layers_.size())
-      old_content_layer = &old_layer->content_layers_[i];
-    content_layers_[i].CommitToCA(ca_layer_.get(), old_content_layer,
-                                  scale_factor);
+  if (g_print_ca_layers) {
+    std::string str;
+    if (old_layer_) {
+      str = " Reuse, ";
+    } else {
+      str = " New, ";
+    }
+    if (!update_transform)
+      str = str + "HIT";
+
+    VLOG(kOutputLevel) << " TransformLayer: " << ca_layer_ << str;
+  }
+
+  CALayer* last_committed_content_ca_layer_ = nullptr;
+  for (auto& child_layer : content_layers_) {
+    child_layer.CommitToCA(last_committed_content_ca_layer_);
+    last_committed_content_ca_layer_ = child_layer.ca_layer_.get();
   }
 }
 
-void CARendererLayerTree::ContentLayer::CommitToCA(CALayer* superlayer,
-                                                   ContentLayer* old_layer,
-                                                   float scale_factor) {
+void CARendererLayerTree::ContentLayer::CommitToCA(
+    CALayer* last_committed_ca_layer) {
+  CALayer* superlayer = parent_layer_->ca_layer_.get();
   bool update_contents = true;
   bool update_contents_rect = true;
   bool update_rect = true;
@@ -842,19 +1150,23 @@ void CARendererLayerTree::ContentLayer::CommitToCA(CALayer* superlayer,
   bool update_ca_edge_aa_mask = true;
   bool update_opacity = true;
   bool update_ca_filter = true;
-  if (old_layer && old_layer->type_ == type_) {
-    DCHECK(old_layer->ca_layer_);
-    std::swap(ca_layer_, old_layer->ca_layer_);
-    std::swap(av_layer_, old_layer->av_layer_);
-    update_contents = old_layer->io_surface_ != io_surface_ ||
-                      old_layer->cv_pixel_buffer_ != cv_pixel_buffer_ ||
-                      old_layer->solid_color_contents_ != solid_color_contents_;
-    update_contents_rect = old_layer->contents_rect_ != contents_rect_;
-    update_rect = old_layer->rect_ != rect_;
-    update_background_color = old_layer->background_color_ != background_color_;
-    update_ca_edge_aa_mask = old_layer->ca_edge_aa_mask_ != ca_edge_aa_mask_;
-    update_opacity = old_layer->opacity_ != opacity_;
-    update_ca_filter = old_layer->ca_filter_ != ca_filter_;
+
+  if (old_layer_ && old_layer_->type_ == type_) {
+    DCHECK(old_layer_->ca_layer_);
+    std::swap(ca_layer_, old_layer_->ca_layer_);
+    std::swap(av_layer_, old_layer_->av_layer_);
+    update_contents =
+        old_layer_->io_surface_ != io_surface_ ||
+        old_layer_->cv_pixel_buffer_ != cv_pixel_buffer_ ||
+        old_layer_->solid_color_contents_ != solid_color_contents_ ||
+        old_layer_->hdr_metadata_ != hdr_metadata_;
+    update_contents_rect = old_layer_->contents_rect_ != contents_rect_;
+    update_rect = old_layer_->rect_ != rect_;
+    update_background_color =
+        old_layer_->background_color_ != background_color_;
+    update_ca_edge_aa_mask = old_layer_->ca_edge_aa_mask_ != ca_edge_aa_mask_;
+    update_opacity = old_layer_->opacity_ != opacity_;
+    update_ca_filter = old_layer_->ca_filter_ != ca_filter_;
   } else {
     switch (type_) {
       case CALayerType::kHDRCopier:
@@ -864,8 +1176,7 @@ void CARendererLayerTree::ContentLayer::CommitToCA(CALayer* superlayer,
         av_layer_.reset([[AVSampleBufferDisplayLayer alloc] init]);
         ca_layer_.reset([av_layer_ retain]);
         [av_layer_ setVideoGravity:AVLayerVideoGravityResize];
-        if (protected_video_type_ ==
-            gfx::ProtectedVideoType::kHardwareProtected) {
+        if (protected_video_type_ != gfx::ProtectedVideoType::kClear) {
           if (@available(macOS 10.15, *)) {
             [av_layer_ setPreventsCapture:true];
           }
@@ -875,12 +1186,20 @@ void CARendererLayerTree::ContentLayer::CommitToCA(CALayer* superlayer,
         ca_layer_.reset([[CALayer alloc] init]);
     }
     [ca_layer_ setAnchorPoint:CGPointZero];
-    if (old_layer && old_layer->ca_layer_)
-      [superlayer replaceSublayer:old_layer->ca_layer_ with:ca_layer_];
-    else
-      [superlayer addSublayer:ca_layer_];
   }
-  DCHECK_EQ([ca_layer_ superlayer], superlayer);
+
+  if ([ca_layer_ superlayer] != superlayer) {
+    DCHECK_EQ([ca_layer_ superlayer], nil);
+    if (last_committed_ca_layer == nullptr) {
+      [superlayer insertSublayer:ca_layer_ atIndex:0];
+    } else {
+      [superlayer insertSublayer:ca_layer_ above:last_committed_ca_layer];
+    }
+  }
+
+  DCHECK_EQ([ca_layer_ superlayer], superlayer)
+      << " last contnet ca_layer: " << last_committed_ca_layer;
+
   bool update_anything = update_contents || update_contents_rect ||
                          update_rect || update_background_color ||
                          update_ca_edge_aa_mask || update_opacity ||
@@ -890,7 +1209,8 @@ void CARendererLayerTree::ContentLayer::CommitToCA(CALayer* superlayer,
     case CALayerType::kHDRCopier:
       if (update_contents) {
         metal::UpdateHDRCopierLayer(ca_layer_.get(), io_surface_.get(),
-                                    io_surface_color_space_);
+                                    tree()->metal_device_,
+                                    io_surface_color_space_, hdr_metadata_);
       }
       break;
     case CALayerType::kVideo:
@@ -905,7 +1225,7 @@ void CARendererLayerTree::ContentLayer::CommitToCA(CALayer* superlayer,
           }
         } else {
           result = AVSampleBufferDisplayLayerEnqueueIOSurface(
-              av_layer_, io_surface_, io_surface_color_space_);
+              av_layer_, io_surface_, io_surface_color_space_, hdr_metadata_);
           if (!result) {
             LOG(ERROR) << "AVSampleBufferDisplayLayerEnqueueIOSurface failed";
           }
@@ -920,13 +1240,20 @@ void CARendererLayerTree::ContentLayer::CommitToCA(CALayer* superlayer,
       if (update_contents) {
         if (io_surface_) {
           [ca_layer_ setContents:static_cast<id>(io_surface_.get())];
+          // Used for UMA
+          tree()->changed_io_surfaces_during_commit_++;
+          tree()->total_updated_io_surface_size_during_commit_ +=
+              IOSurfaceGetAllocSize(io_surface_);
         } else if (solid_color_contents_) {
           [ca_layer_ setContents:solid_color_contents_->GetContents()];
         } else {
           [ca_layer_ setContents:nil];
         }
-        if ([ca_layer_ respondsToSelector:(@selector(setContentsScale:))])
-          [ca_layer_ setContentsScale:scale_factor];
+        [ca_layer_ setContentsScale:tree()->scale_factor_];
+      } else {
+        // Used for UMA
+        if (io_surface_)
+          tree()->unchanged_io_surfaces_during_commit_++;
       }
       break;
   }
@@ -937,7 +1264,7 @@ void CARendererLayerTree::ContentLayer::CommitToCA(CALayer* superlayer,
   }
   if (update_rect) {
     gfx::RectF dip_rect = gfx::RectF(rect_);
-    dip_rect.Scale(1 / scale_factor);
+    dip_rect.Scale(1 / tree()->scale_factor_);
     [ca_layer_ setPosition:CGPointMake(dip_rect.x(), dip_rect.y())];
     [ca_layer_ setBounds:CGRectMake(0, 0, dip_rect.width(), dip_rect.height())];
   }
@@ -1038,6 +1365,85 @@ void CARendererLayerTree::ContentLayer::CommitToCA(CALayer* superlayer,
         [update_indicator_layer_ setOpacity:0.1];
       }
     }
+  }
+
+  // Print CALayer optimizaton info
+  if (g_print_ca_layers) {
+    IOSurfaceRef io_surface_ref = io_surface_.get();
+
+    std::string str;
+    if (io_surface_ref) {
+      if (old_layer_ && old_layer_->type_ == type_) {
+        if (update_contents) {
+          IOSurfaceRef old_io_surface = nullptr;
+          if (old_layer_->io_surface_) {
+            old_io_surface = old_layer_->io_surface_.get();
+          } else if (old_layer_->solid_color_contents_) {
+            old_io_surface =
+                old_layer_->solid_color_contents_->GetIOSurfaceRef();
+          }
+
+          str = ", Missed, Reuse " +
+                base::StringPrintf("0x%lx", (unsigned long)old_io_surface);
+        } else {
+          str = ", HIT";
+        }
+      } else {
+        str = ", insert_new";
+      }
+    }
+
+    VLOG(kOutputLevel) << "   ContentLayer: " << ca_layer_
+                       << " io_surface_ref: " << io_surface_ref << str;
+  }
+}
+
+void CARendererLayerTree::VerifyCommittedCALayers() {
+  bool print_whole_tree = false;
+
+  NSArray<__kindof CALayer*>* _Nullable clip_sublayers =
+      [root_layer_.ca_layer_ sublayers];
+  if (print_whole_tree) {
+    VLOG(kOutputLevel) << "Veryfy Committed CALayers.";
+    VLOG(kOutputLevel) << "Clip and Sorting Sublayers: " << clip_sublayers;
+  }
+
+  int clip_index = 0;
+  for (auto& clip_and_sorting_layer : root_layer_.clip_and_sorting_layers_) {
+    DCHECK_EQ(clip_and_sorting_layer.clipping_ca_layer_.get(),
+              clip_sublayers[clip_index]);
+
+    NSArray<__kindof CALayer*>* _Nullable transform_sublayers =
+        [clip_and_sorting_layer.rounded_corner_ca_layer_ sublayers];
+    if (print_whole_tree) {
+      VLOG(kOutputLevel) << "Transform Sublayers of Clip[" << clip_index
+                         << "]: " << transform_sublayers;
+    }
+
+    int transform_index = 0;
+    for (auto& transform_layer : clip_and_sorting_layer.transform_layers_) {
+      DCHECK_EQ(transform_layer.ca_layer_.get(),
+                transform_sublayers[transform_index]);
+
+      NSArray<__kindof CALayer*>* _Nullable content_sublayers =
+          [transform_layer.ca_layer_ sublayers];
+      if (print_whole_tree) {
+        VLOG(kOutputLevel) << "Content Sublayers of Transform["
+                           << transform_index << "]: " << content_sublayers;
+      }
+
+      int content_index = 0;
+      for (auto& content_layer : transform_layer.content_layers_) {
+        DCHECK_EQ(content_layer.ca_layer_.get(),
+                  content_sublayers[content_index])
+            << "Incorrect content layer "
+            << " ( " << clip_index << ", " << transform_index << ", "
+            << content_index << ")";
+        content_index++;
+      }
+      transform_index++;
+    }
+    clip_index++;
   }
 }
 

@@ -27,7 +27,7 @@ Loaded resource 1
 PASS: Threw NetworkError: Failed to execute 'importScripts' on 'WorkerGlobalScope': The script at 'http://127.0.0.1:8000/workers/resources/nonexistant' failed to load. when load failed
 PASS: some resources were loaded despite the network error
 Loaded resource 1
-PASS: Threw SyntaxError: Unexpected identifier when encountering a syntax error in imported script
+PASS: Threw SyntaxError: Unexpected identifier 'syntax' when encountering a syntax error in imported script
 PASS: some resources were loaded despite the presence of a syntax error
 Testing multiple arguments, with first resource throwing an exception:
 Loaded resource 1

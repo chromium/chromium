@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 #define UI_AURA_TEST_WINDOW_OCCLUSION_TRACKER_TEST_API_H_
 
 #include <memory>
+
+#include "base/memory/raw_ptr.h"
 
 namespace aura {
 
@@ -37,7 +39,7 @@ class WindowOcclusionTrackerTestApi {
   bool IsPaused() const;
 
  private:
-  WindowOcclusionTracker* const tracker_;
+  const raw_ptr<WindowOcclusionTracker> tracker_;
 };
 
 }  // namespace test

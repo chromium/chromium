@@ -1,12 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef EXTENSIONS_RENDERER_EXTENSION_JS_RUNNER_H_
 #define EXTENSIONS_RENDERER_EXTENSION_JS_RUNNER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "extensions/renderer/bindings/js_runner.h"
 #include "v8/include/v8-forward.h"
 
@@ -37,8 +37,9 @@ class ExtensionJSRunner : public JSRunner {
 
  private:
   // Called with the result of executing the JS function.
-  void OnFunctionComplete(ResultCallback callback,
-                          const std::vector<v8::Local<v8::Value>>& results);
+  void OnFunctionComplete(ResultCallback,
+                          absl::optional<base::Value> value,
+                          base::TimeTicks start_time);
 
   // The associated ScriptContext. Guaranteed to outlive this object.
   ScriptContext* const script_context_;

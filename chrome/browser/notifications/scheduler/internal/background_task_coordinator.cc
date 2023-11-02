@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,9 @@
 
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
+#include "base/time/time.h"
 #include "chrome/browser/notifications/scheduler/internal/impression_types.h"
 #include "chrome/browser/notifications/scheduler/internal/notification_entry.h"
 #include "chrome/browser/notifications/scheduler/internal/scheduler_config.h"
@@ -166,9 +168,9 @@ class BackgroundTaskCoordinatorHelper {
         window_start_time + config_->background_task_window_duration);
   }
 
-  NotificationBackgroundTaskScheduler* background_task_;
-  const SchedulerConfig* config_;
-  base::Clock* clock_;
+  raw_ptr<NotificationBackgroundTaskScheduler> background_task_;
+  raw_ptr<const SchedulerConfig> config_;
+  raw_ptr<base::Clock> clock_;
   absl::optional<base::Time> background_task_time_;
 };
 
@@ -203,10 +205,10 @@ class BackgroundTaskCoordinatorImpl : public BackgroundTaskCoordinator {
   std::unique_ptr<NotificationBackgroundTaskScheduler> background_task_;
 
   // System configuration.
-  const SchedulerConfig* config_;
+  raw_ptr<const SchedulerConfig> config_;
 
   // Clock to query the current timestamp.
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 };
 
 // static

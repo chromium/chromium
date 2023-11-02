@@ -1,0 +1,71 @@
+Tests basic functionality of tab target.
+[
+    [0] : {
+        attached : false
+        browserContextId : <string>
+        canAccessOpener : false
+        targetId : <string>
+        title : 127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+        type : tab
+        url : http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+    }
+    [1] : {
+        attached : false
+        browserContextId : <string>
+        canAccessOpener : false
+        targetId : <string>
+        title : 127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-test.html?test=http://127.0.0.1:8000/inspector-protocol/target/tab-target.js
+        type : tab
+        url : http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-test.html?test=http://127.0.0.1:8000/inspector-protocol/target/tab-target.js
+    }
+]
+Tab target info, as obtained from target{
+    id : <number>
+    result : {
+        targetInfo : {
+            attached : true
+            browserContextId : <string>
+            canAccessOpener : false
+            targetId : <string>
+            title : 127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+            type : tab
+            url : http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+        }
+    }
+    sessionId : <string>
+}
+Auto-attached targets (there should be exactly 1): [
+    [0] : {
+        sessionId : <string>
+        targetInfo : {
+            attached : true
+            browserContextId : <string>
+            canAccessOpener : false
+            targetId : <string>
+            title : 127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+            type : page
+            url : http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+        }
+        waitingForDebugger : false
+    }
+]
+Attached to page http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+Auto-attached subframe target{
+    method : Target.attachedToTarget
+    params : {
+        sessionId : <string>
+        targetInfo : {
+            attached : true
+            browserContextId : <string>
+            canAccessOpener : false
+            targetId : <string>
+            title : 
+            type : iframe
+            url : 
+        }
+        waitingForDebugger : false
+    }
+    sessionId : <string>
+}
+Number of auto-attached tab sessions (should be 1): 1
+

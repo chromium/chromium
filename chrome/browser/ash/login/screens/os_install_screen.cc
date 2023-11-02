@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,32 +19,20 @@ constexpr const char kUserActionErrorSendFeedbackClicked[] =
     "os-install-error-send-feedback";
 constexpr const char kUserActionErrorShutdownClicked[] =
     "os-install-error-shutdown";
-constexpr const char kUserActionSuccessRestartClicked[] =
-    "os-install-success-restart";
 
 constexpr const base::TimeDelta kTimeTillShutdownOnSuccess = base::Seconds(60);
 constexpr const base::TimeDelta kCountdownDelta = base::Milliseconds(10);
 }  // namespace
 
-OsInstallScreen::OsInstallScreen(OsInstallScreenView* view,
+OsInstallScreen::OsInstallScreen(base::WeakPtr<OsInstallScreenView> view,
                                  const base::RepeatingClosure& exit_callback)
     : BaseScreen(OsInstallScreenView::kScreenId, OobeScreenPriority::DEFAULT),
-      view_(view),
+      view_(std::move(view)),
       tick_clock_(base::DefaultTickClock::GetInstance()),
-      exit_callback_(exit_callback) {
-  if (view_)
-    view_->Bind(this);
-}
+      exit_callback_(exit_callback) {}
 
 OsInstallScreen::~OsInstallScreen() {
   scoped_observation_.Reset();
-  if (view_)
-    view_->Unbind();
-}
-
-void OsInstallScreen::OnViewDestroyed(OsInstallScreenView* view) {
-  if (view_ == view)
-    view_ = nullptr;
 }
 
 void OsInstallScreen::ShowImpl() {
@@ -56,7 +44,8 @@ void OsInstallScreen::ShowImpl() {
 
 void OsInstallScreen::HideImpl() {}
 
-void OsInstallScreen::OnUserAction(const std::string& action_id) {
+void OsInstallScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionExitClicked) {
     exit_callback_.Run();
   } else if (action_id == kUserActionConfirmNextClicked) {
@@ -66,15 +55,15 @@ void OsInstallScreen::OnUserAction(const std::string& action_id) {
         LoginAcceleratorAction::kShowFeedback);
   } else if (action_id == kUserActionErrorShutdownClicked) {
     Shutdown();
-  } else if (action_id == kUserActionSuccessRestartClicked) {
-    Restart();
   } else {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserAction(args);
   }
 }
 
 void OsInstallScreen::StatusChanged(OsInstallClient::Status status,
                                     const std::string& service_log) {
+  if (!view_)
+    return;
   if (status == OsInstallClient::Status::Succeeded)
     RunAutoShutdownCountdown();
   view_->SetStatus(status);
@@ -82,6 +71,8 @@ void OsInstallScreen::StatusChanged(OsInstallClient::Status status,
 }
 
 void OsInstallScreen::StartInstall() {
+  if (!view_)
+    return;
   view_->SetStatus(OsInstallClient::Status::InProgress);
 
   OsInstallClient* const os_install_client = OsInstallClient::Get();
@@ -101,23 +92,19 @@ void OsInstallScreen::RunAutoShutdownCountdown() {
 }
 
 void OsInstallScreen::UpdateCountdownString() {
-  auto time_left = (shutdown_time_ - tick_clock_->NowTicks()).InSeconds();
-  if (time_left <= 0) {
+  base::TimeDelta time_left = shutdown_time_ - tick_clock_->NowTicks();
+  if (!time_left.is_positive()) {
     shutdown_countdown_->Stop();
     shutdown_countdown_.reset();
     Shutdown();
   }
-  view_->UpdateCountdownStringWithTime(time_left);
+  if (view_)
+    view_->UpdateCountdownStringWithTime(time_left);
 }
 
 void OsInstallScreen::Shutdown() {
   chromeos::PowerManagerClient::Get()->RequestShutdown(
       power_manager::REQUEST_SHUTDOWN_FOR_USER, "OS install shut down");
-}
-
-void OsInstallScreen::Restart() {
-  chromeos::PowerManagerClient::Get()->RequestRestart(
-      power_manager::REQUEST_RESTART_FOR_USER, "OS install restart");
 }
 
 }  // namespace ash

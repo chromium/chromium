@@ -1,19 +1,23 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/history/core/browser/top_sites_impl.h"
 
 #include <stdint.h>
-#include <algorithm>
+
 #include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/hash/md5.h"
 #include "base/location.h"
+#include "base/memory/ref_counted.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -22,15 +26,23 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_constants.h"
 #include "components/history/core/browser/history_db_task.h"
+#include "components/history/core/browser/keyword_search_term.h"
+#include "components/history/core/browser/keyword_search_term_util.h"
 #include "components/history/core/browser/page_usage_data.h"
 #include "components/history/core/browser/top_sites_observer.h"
+#include "components/history/core/browser/url_database.h"
 #include "components/history/core/browser/url_utils.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/search_engines/search_terms_data.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace history {
@@ -61,18 +73,32 @@ bool DoTitlesDiffer(const MostVisitedURLList& old_list,
                      });
 }
 
+// Transforms |number| in the range given by |max| and |min| to a number in the
+// range given by |new_max| and |new_min| while maintaining the ratio.
+double GetNumberInNewRange(double number,
+                           double max,
+                           double min,
+                           double new_max,
+                           double new_min) {
+  DCHECK_LE(number, max);
+  DCHECK_GE(number, min);
+  DCHECK_GE(new_max, new_min);
+  const auto ratio = (max == min) ? 1 : (number - min) / (max - min);
+  return ratio * (new_max - new_min) + new_min;
+}
+
 // The delay for the first HistoryService query at startup.
 constexpr base::TimeDelta kFirstDelayAtStartup = base::Seconds(15);
 
 // The delay for the all HistoryService queries other than the first one.
-#if defined(OS_IOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 // On mobile, having the max at 60 minutes results in the topsites database
 // being not updated often enough since the app isn't usually running for long
 // stretches of time.
 constexpr base::TimeDelta kDelayForUpdates = base::Minutes(5);
 #else
 constexpr base::TimeDelta kDelayForUpdates = base::Minutes(60);
-#endif  // defined(OS_IOS) || defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 
 // Key for preference listing the URLs that should not be shown as most visited
 // tiles.
@@ -81,17 +107,43 @@ const char kBlockedUrlsPrefsKey[] = "ntp.most_visited_blacklist";
 
 }  // namespace
 
+// Stores the most visited sites and the most repeated queries returned from
+// the history service. Used to synchronize parallel requests to the history
+// service in order to combine the sites and the queries.
+struct SitesAndQueriesRequest
+    : public base::RefCounted<SitesAndQueriesRequest> {
+ public:
+  SitesAndQueriesRequest() = default;
+  SitesAndQueriesRequest(const SitesAndQueriesRequest&) = delete;
+  SitesAndQueriesRequest& operator=(const SitesAndQueriesRequest&) = delete;
+
+  bool request_is_complete() const {
+    return sites.has_value() && queries.has_value();
+  }
+
+  absl::optional<MostVisitedURLList> sites;
+  absl::optional<KeywordSearchTermVisitList> queries;
+  base::TimeTicks begin_time{base::TimeTicks::Now()};
+
+ private:
+  friend class base::RefCounted<SitesAndQueriesRequest>;
+
+  ~SitesAndQueriesRequest() = default;
+};
+
 // Initially, histogram is not recorded.
 bool TopSitesImpl::histogram_recorded_ = false;
 
 TopSitesImpl::TopSitesImpl(PrefService* pref_service,
                            HistoryService* history_service,
+                           TemplateURLService* template_url_service,
                            const PrepopulatedPageList& prepopulated_pages,
                            const CanAddURLToHistoryFn& can_add_url_to_history)
     : backend_(nullptr),
       prepopulated_pages_(prepopulated_pages),
       pref_service_(pref_service),
       history_service_(history_service),
+      template_url_service_(template_url_service),
       can_add_url_to_history_(can_add_url_to_history),
       loaded_(false) {
   DCHECK(pref_service_);
@@ -128,13 +180,6 @@ void TopSitesImpl::GetMostVisitedURLs(GetMostVisitedURLsCallback callback) {
   std::move(callback).Run(filtered_urls);
 }
 
-static bool Contains(const MostVisitedURLList& urls, const GURL& url) {
-  return std::find_if(urls.begin(), urls.end(),
-                      [&url](const MostVisitedURL& item) {
-                        return item.url == url;
-                      }) != urls.end();
-}
-
 void TopSitesImpl::SyncWithHistory() {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (loaded_)
@@ -142,9 +187,7 @@ void TopSitesImpl::SyncWithHistory() {
 }
 
 bool TopSitesImpl::HasBlockedUrls() const {
-  const base::Value* blocked_urls =
-      pref_service_->GetDictionary(kBlockedUrlsPrefsKey);
-  return blocked_urls && !blocked_urls->DictEmpty();
+  return !pref_service_->GetDict(kBlockedUrlsPrefsKey).empty();
 }
 
 void TopSitesImpl::AddBlockedUrl(const GURL& url) {
@@ -173,9 +216,7 @@ void TopSitesImpl::RemoveBlockedUrl(const GURL& url) {
 
 bool TopSitesImpl::IsBlocked(const GURL& url) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  const base::Value* blocked_urls =
-      pref_service_->GetDictionary(kBlockedUrlsPrefsKey);
-  return blocked_urls && blocked_urls->FindKey(GetURLHash(url));
+  return pref_service_->GetDict(kBlockedUrlsPrefsKey).contains(GetURLHash(url));
 }
 
 void TopSitesImpl::ClearBlockedUrls() {
@@ -229,18 +270,40 @@ void TopSitesImpl::RegisterPrefs(PrefRegistrySimple* registry) {
 TopSitesImpl::~TopSitesImpl() = default;
 
 void TopSitesImpl::StartQueryForMostVisited() {
-  constexpr int kDaysOfHistory = 90;
-
   DCHECK(loaded_);
   timer_.Stop();
 
-  if (!history_service_)
+  // Request the most visited URLs if the history service is available.
+  if (!history_service_) {
     return;
+  }
+
+  auto request = base::MakeRefCounted<SitesAndQueriesRequest>();
 
   history_service_->QueryMostVisitedURLs(
-      num_results_to_request_from_history(), kDaysOfHistory,
-      base::BindOnce(&TopSitesImpl::OnTopSitesAvailableFromHistory,
-                     base::Unretained(this)),
+      num_results_to_request_from_history(),
+      base::BindOnce(&TopSitesImpl::OnGotMostVisitedURLsFromHistory,
+                     base::Unretained(this), request),
+      &cancelable_task_tracker_);
+
+  // Request the most repeated queries if the corresponding feature is enabled
+  // and the default search provider is available.
+  if (!base::FeatureList::IsEnabled(kOrganicRepeatableQueries)) {
+    request->queries = KeywordSearchTermVisitList();
+    return;
+  }
+
+  const auto* default_provider =
+      template_url_service_->GetDefaultSearchProvider();
+  if (!default_provider) {
+    request->queries = KeywordSearchTermVisitList();
+    return;
+  }
+
+  history_service_->QueryMostRepeatedQueriesForKeyword(
+      default_provider->id(), num_results_to_request_from_history(),
+      base::BindOnce(&TopSitesImpl::OnGotMostRepeatedQueriesFromHistory,
+                     base::Unretained(this), request),
       &cancelable_task_tracker_);
 }
 
@@ -288,7 +351,8 @@ bool TopSitesImpl::AddPrepopulatedPages(MostVisitedURLList* urls) const {
   for (const auto& prepopulated_page : prepopulated_pages_) {
     if (urls->size() >= kTopSitesNumber)
       break;
-    if (!Contains(*urls, prepopulated_page.most_visited.url)) {
+    if (!base::Contains(*urls, prepopulated_page.most_visited.url,
+                        &MostVisitedURL::url)) {
       urls->push_back(prepopulated_page.most_visited);
       added = true;
     }
@@ -367,9 +431,7 @@ void TopSitesImpl::SetTopSites(MostVisitedURLList top_sites,
 int TopSitesImpl::num_results_to_request_from_history() const {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  const base::Value* blocked_urls =
-      pref_service_->GetDictionary(kBlockedUrlsPrefsKey);
-  return kTopSitesNumber + (blocked_urls ? blocked_urls->DictSize() : 0);
+  return kTopSitesNumber + pref_service_->GetDict(kBlockedUrlsPrefsKey).size();
 }
 
 void TopSitesImpl::MoveStateToLoaded() {
@@ -396,7 +458,7 @@ void TopSitesImpl::MoveStateToLoaded() {
     std::move(callback).Run(urls);
 
   if (history_service_)
-    history_service_observation_.Observe(history_service_);
+    history_service_observation_.Observe(history_service_.get());
 
   NotifyTopSitesLoaded();
 }
@@ -428,8 +490,111 @@ void TopSitesImpl::OnGotMostVisitedURLs(MostVisitedURLList sites) {
                &TopSitesImpl::StartQueryForMostVisited);
 }
 
-void TopSitesImpl::OnTopSitesAvailableFromHistory(MostVisitedURLList pages) {
-  SetTopSites(std::move(pages), CALL_LOCATION_FROM_OTHER_PLACES);
+void TopSitesImpl::OnGotMostVisitedURLsFromHistory(
+    scoped_refptr<SitesAndQueriesRequest> request,
+    MostVisitedURLList sites) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+
+  request->sites = std::move(sites);
+  if (request->request_is_complete()) {
+    SetTopSitesFromHistory(request);
+  }
+}
+
+void TopSitesImpl::OnGotMostRepeatedQueriesFromHistory(
+    scoped_refptr<SitesAndQueriesRequest> request,
+    KeywordSearchTermVisitList queries) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+
+  request->queries = std::move(queries);
+  if (request->request_is_complete()) {
+    SetTopSitesFromHistory(request);
+  }
+}
+
+void TopSitesImpl::SetTopSitesFromHistory(
+    scoped_refptr<SitesAndQueriesRequest> request) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+
+  DCHECK(request->request_is_complete());
+  base::UmaHistogramTimes("History.TopSites.QueryFromHistoryTime",
+                          base::TimeTicks::Now() - request->begin_time);
+
+  // Generate the final list of the most repeated queries in descending order of
+  // their scores. Ensure the correct search results page URLs are set.
+  MostVisitedURLList most_repeated_queries;
+  const size_t most_repeated_queries_limit = kMaxNumRepeatableQueries.Get();
+  for (const auto& query : *request->queries) {
+    GURL url = template_url_service_->GenerateSearchURLForDefaultSearchProvider(
+        query->normalized_term);
+    if (!url.is_valid() || IsBlocked(url)) {
+      continue;
+    }
+    most_repeated_queries.emplace_back(url, query->normalized_term,
+                                       *query->score);
+    if (most_repeated_queries.size() >= most_repeated_queries_limit) {
+      break;
+    }
+  }
+
+  auto most_visited_sites = std::move(*request->sites);
+
+  // If there are no more queries left, there is nothing left to do.
+  if (most_repeated_queries.empty()) {
+    SetTopSites(std::move(most_visited_sites), CALL_LOCATION_FROM_OTHER_PLACES);
+    return;
+  }
+
+  // Generate the final list of the most visited sites arranged in descending
+  // order of their scores. Exclude any site that is the search results page.
+  base::EraseIf(most_visited_sites, [&](const auto& site) {
+    return template_url_service_->IsSearchResultsPageFromDefaultSearchProvider(
+               site.url) ||
+           IsBlocked(site.url);
+  });
+  if (most_visited_sites.size() > kTopSitesNumber) {
+    most_visited_sites.resize(kTopSitesNumber);
+  }
+
+  // If there are no more sites left, there is nothing left to do.
+  if (most_visited_sites.empty()) {
+    SetTopSites(std::move(most_repeated_queries),
+                CALL_LOCATION_FROM_OTHER_PLACES);
+    return;
+  }
+
+  // To achieve a uniform mix of the sites and the queries as much as possible,
+  // scale the scores to the new range which includes both sites and queries.
+  if (kScaleRepeatableQueriesScores.Get()) {
+    const auto queries_max = most_repeated_queries.front().score;
+    const auto queries_min = most_repeated_queries.back().score;
+    const auto sites_max = most_visited_sites.front().score;
+    const auto sites_min = most_visited_sites.back().score;
+    const auto new_min = std::min(sites_min, queries_min);
+    const auto new_max = std::max(sites_max, queries_max);
+    for (auto& query : most_repeated_queries) {
+      query.score = GetNumberInNewRange(query.score, queries_max, queries_min,
+                                        new_max, new_min);
+    }
+    for (auto& site : most_visited_sites) {
+      site.score = GetNumberInNewRange(site.score, sites_max, sites_min,
+                                       new_max, new_min);
+    }
+  }
+
+  // Merge the two sorted lists of sites and queries into a single list. Equal
+  // elements from the first list precede the elements from the second list.
+  const auto& first_list = kPrivilegeRepeatableQueries.Get()
+                               ? most_repeated_queries
+                               : most_visited_sites;
+  const auto& second_list = kPrivilegeRepeatableQueries.Get()
+                                ? most_visited_sites
+                                : most_repeated_queries;
+  MostVisitedURLList merged_list;
+  std::merge(first_list.begin(), first_list.end(), second_list.begin(),
+             second_list.end(), std::back_inserter(merged_list),
+             [](const auto& a, const auto& b) { return a.score > b.score; });
+  SetTopSites(std::move(merged_list), CALL_LOCATION_FROM_OTHER_PLACES);
 }
 
 void TopSitesImpl::OnURLsDeleted(HistoryService* history_service,

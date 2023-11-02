@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 #include <set>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/values.h"
+#include "extensions/common/mojom/extra_response_data.mojom.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/api_last_error.h"
 #include "extensions/renderer/bindings/interaction_provider.h"
@@ -78,7 +78,8 @@ class APIRequestHandler {
       std::unique_ptr<base::Value> arguments_list,
       binding::AsyncResponseType async_type,
       v8::Local<v8::Function> callback,
-      v8::Local<v8::Function> custom_callback);
+      v8::Local<v8::Function> custom_callback,
+      binding::ResultModifierFunction result_modifier);
 
   // Adds a pending request for the request handler to manage (and complete via
   // CompleteRequest). This is used by renderer-side implementations that
@@ -86,9 +87,11 @@ class APIRequestHandler {
   // classes don't have to worry about context invalidation. Returns the details
   // of the newly-added request.
   // Note: Unlike StartRequest(), this will not track user gesture state.
-  RequestDetails AddPendingRequest(v8::Local<v8::Context> context,
-                                   binding::AsyncResponseType async_type,
-                                   v8::Local<v8::Function> callback);
+  RequestDetails AddPendingRequest(
+      v8::Local<v8::Context> context,
+      binding::AsyncResponseType async_type,
+      v8::Local<v8::Function> callback,
+      binding::ResultModifierFunction result_modifier);
 
   // Responds to the request with the given |request_id|, calling the callback
   // with the given |response| arguments.
@@ -96,8 +99,9 @@ class APIRequestHandler {
   // Warning: This can run arbitrary JS code, so the |context| may be
   // invalidated after this!
   void CompleteRequest(int request_id,
-                       const base::Value& response_list,
-                       const std::string& error);
+                       const base::Value::List& response_list,
+                       const std::string& error,
+                       mojom::ExtraResponseDataPtr extra_data = nullptr);
   void CompleteRequest(int request_id,
                        const std::vector<v8::Local<v8::Value>>& response,
                        const std::string& error);
@@ -148,16 +152,17 @@ class APIRequestHandler {
   // requires an asynchronous response, otherwise returns null. Also populates
   // |promise_out| with the associated promise if this is a promise based
   // request.
-  static std::unique_ptr<AsyncResultHandler> GetAsyncResultHandler(
+  std::unique_ptr<AsyncResultHandler> GetAsyncResultHandler(
       v8::Local<v8::Context> context,
       binding::AsyncResponseType async_type,
       v8::Local<v8::Function> callback,
       v8::Local<v8::Function> custom_callback,
+      binding::ResultModifierFunction result_modifier,
       v8::Local<v8::Promise>* promise_out);
 
   // Common implementation for completing a request.
   void CompleteRequestImpl(int request_id,
-                           const ArgumentAdapter& arguments,
+                           ArgumentAdapter arguments,
                            const std::string& error);
 
   // The next available request identifier.

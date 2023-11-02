@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_base.h"
 #include "components/metrics/log_store.h"
 #include "components/metrics/metrics_log.h"
+#include "components/metrics/metrics_logs_event_manager.h"
 #include "components/metrics/unsent_log_store.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -61,9 +62,12 @@ class MetricsLogStore : public LogStore {
   // |storage_limits| provides log count and size limits to enforce when
   // persisting logs to local storage. |signing_key| is used to generate a
   // signature of a log, which will be uploaded to validate data integrity.
+  // |logs_event_manager| is used to notify observers of log events. Can be set
+  // to null if observing the events is not necessary.
   MetricsLogStore(PrefService* local_state,
                   StorageLimits storage_limits,
-                  const std::string& signing_key);
+                  const std::string& signing_key,
+                  MetricsLogsEventManager* logs_event_manager);
 
   MetricsLogStore(const MetricsLogStore&) = delete;
   MetricsLogStore& operator=(const MetricsLogStore&) = delete;
@@ -106,7 +110,7 @@ class MetricsLogStore : public LogStore {
   void StageNextLog() override;
   void DiscardStagedLog() override;
   void MarkStagedLogAsSent() override;
-  void TrimAndPersistUnsentLogs() override;
+  void TrimAndPersistUnsentLogs(bool overwrite_in_memory_store) override;
   void LoadPersistedUnsentLogs() override;
 
   // Inspection methods for tests.
@@ -128,6 +132,9 @@ class MetricsLogStore : public LogStore {
 
   // Tracks whether unsent logs (if any) have been loaded from the serializer.
   bool unsent_logs_loaded_;
+
+  // Event manager to notify observers of log events.
+  const raw_ptr<MetricsLogsEventManager> logs_event_manager_;
 
   // Logs stored with the INITIAL_STABILITY_LOG type that haven't been sent yet.
   // These logs will be staged first when staging new logs.

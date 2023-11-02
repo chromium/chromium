@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,10 @@
 
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer_observer.h"
-#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image_skia_rep.h"
 
@@ -109,7 +109,7 @@ TEST_F(WallpaperResizerTest, BasicResize) {
       WALLPAPER_LAYOUT_CENTER, WALLPAPER_LAYOUT_CENTER_CROPPED,
       WALLPAPER_LAYOUT_STRETCH, WALLPAPER_LAYOUT_TILE,
   };
-  const int length = base::size(layouts);
+  const int length = std::size(layouts);
 
   for (int i = 0; i < length; i++) {
     WallpaperLayout layout = layouts[i];

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/geo/region_data_loader.h"
 #include "components/strings/grit/components_strings.h"
@@ -36,18 +37,15 @@ void RegionComboboxModel::LoadRegionData(const std::string& country_code,
                           weak_factory_.GetWeakPtr()));
 }
 
-int RegionComboboxModel::GetItemCount() const {
+size_t RegionComboboxModel::GetItemCount() const {
   // The combobox view needs to always have at least one item. If the regions
   // have not been completely loaded yet, we display a single "loading" item.
-  if (regions_.size() == 0)
-    return 1;
-  return regions_.size();
+  return std::max(regions_.size(), size_t{1});
 }
 
-std::u16string RegionComboboxModel::GetItemAt(int index) const {
-  DCHECK_GE(index, 0);
+std::u16string RegionComboboxModel::GetItemAt(size_t index) const {
   // This might happen because of the asynchronous nature of the data.
-  if (static_cast<size_t>(index) >= regions_.size())
+  if (index >= regions_.size())
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_LOADING_REGIONS);
 
   if (!regions_[index].second.empty())
@@ -58,20 +56,8 @@ std::u16string RegionComboboxModel::GetItemAt(int index) const {
   return u"---";
 }
 
-bool RegionComboboxModel::IsItemSeparatorAt(int index) const {
-  // This might happen because of the asynchronous nature of the data.
-  DCHECK_GE(index, 0);
-  if (static_cast<size_t>(index) >= regions_.size())
-    return false;
-  return regions_[index].first.empty();
-}
-
-void RegionComboboxModel::AddObserver(ui::ComboboxModelObserver* observer) {
-  observers_.AddObserver(observer);
-}
-
-void RegionComboboxModel::RemoveObserver(ui::ComboboxModelObserver* observer) {
-  observers_.RemoveObserver(observer);
+bool RegionComboboxModel::IsItemSeparatorAt(size_t index) const {
+  return index < regions_.size() && regions_[index].first.empty();
 }
 
 void RegionComboboxModel::OnRegionDataLoaded(
@@ -94,7 +80,7 @@ void RegionComboboxModel::OnRegionDataLoaded(
     failed_to_load_data_ = true;
   }
 
-  for (auto& observer : observers_) {
+  for (auto& observer : observers()) {
     observer.OnComboboxModelChanged(this);
   }
 }

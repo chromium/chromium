@@ -25,36 +25,38 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-@namespace "http://www.w3.org/1998/Math/MathML";
+@namespace url(http://www.w3.org/1998/Math/MathML);
 
-/* Default display */
+/* Universal rules */
 * {
-    display: block math;
     font-size: math;
-}
-
-/* By default, we only display the MathML formulas without any formatting other than the one specified by the display attribute. */
-math {
-    direction: ltr;
-    writing-mode:  horizontal-tb;
-    text-indent: 0;
-    letter-spacing: normal;
-    line-height: normal;
-    word-spacing: normal;
-    font-family: math;
-    font-size: inherited;
-    font-style: normal;
-    font-weight: normal;
-    display: inline math;
-    math-shift: normal;
-    math-style: compact;
-    font-size: inherited;
-    math-depth: 0;
-}
-
-math[display="block"] {
     display: block math;
-    text-align: center;
+}
+
+/* The <math> element */
+math {
+  direction: ltr;
+  writing-mode: horizontal-tb;
+  text-indent: 0;
+  letter-spacing: normal;
+  line-height: normal;
+  word-spacing: normal;
+  font-family: math;
+  font-size: inherit;
+  font-style: normal;
+  font-weight: normal;
+  display: inline math;
+  math-shift: normal;
+  math-style: compact;
+  math-depth: 0;
+}
+math[display="block" i] {
+  display: block math;
+  math-style: normal;
+}
+math[display="inline" i] {
+  display: inline math;
+  math-style: compact;
 }
 
 :-internal-spatial-navigation-interest {
@@ -74,14 +76,15 @@ mspace {
 semantics > :not(:first-child) {
   display: none;
 }
-
-merror {
-    border: 1px solid red;
-    background-color: lightYellow;
+maction > :not(:first-child) {
+  display: none;
 }
-
+merror {
+  border: 1px solid red;
+  background-color: lightYellow;
+}
 mphantom {
-    visibility: hidden;
+  visibility: hidden;
 }
 
 /* Token elements */
@@ -91,19 +94,18 @@ mi {
 
 /* Tables */
 mtable {
-  math-style: compact;
   display: inline-table;
+  math-style: compact;
 }
-
 mtr {
   display: table-row;
 }
-
 mtd {
   display: table-cell;
-  padding: 0.5ex 0.4em;
-  /* TODO(crbug.com/1125111): Properly center complex <mtd> children like mrow. */
+  /* Centering inside table cells should rely on box alignment properties.
+     See https://github.com/w3c/mathml-core/issues/156 */
   text-align: -webkit-center;
+  padding: 0.5ex 0.4em;
 }
 
 /* Fractions */
@@ -111,23 +113,21 @@ mfrac {
   padding-inline-start: 1px;
   padding-inline-end: 1px;
 }
-
 mfrac > * {
   math-depth: auto-add;
   math-style: compact;
 }
-
 mfrac > :nth-child(2) {
   math-shift: compact;
 }
 
 /* Other rules for scriptlevel, displaystyle and math-shift */
 mroot > :not(:first-child) {
-    math-depth: add(2);
-    math-style: compact;
+  math-depth: add(2);
+  math-style: compact;
 }
 mroot, msqrt {
-    math-shift: compact;
+  math-shift: compact;
 }
 msub > :not(:first-child),
 msup > :not(:first-child),
@@ -139,7 +139,6 @@ munderover > :not(:first-child) {
   math-depth: add(1);
   math-style: compact;
 }
-
 munder[accentunder="true" i] > :nth-child(2),
 mover[accent="true" i] > :nth-child(2),
 munderover[accentunder="true" i] > :nth-child(2),

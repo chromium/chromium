@@ -1,0 +1,42 @@
+{
+    "ref_tokens": [
+        {
+            "token_name": "cros.ref.primary50",
+            "css_variable": "--cros-ref-primary50"
+        }
+    ],
+    "sys_tokens": [
+        {
+            "token_name": "cros.sys.primary",
+            "css_variable": "--cros-sys-primary",
+            "mode_values": {
+                "light": "cros.ref.primary50",
+                "dark": "rgba(0, 0, 0, 0.5)"
+            }
+        },
+        {
+            "token_name": "cros.sys.on-primary",
+            "css_variable": "--cros-sys-on_primary",
+            "mode_values": {
+                "light": "rgba(255, 255, 255, 1)",
+                "dark": "cros.ref.primary50"
+            }
+        },
+        {
+            "token_name": "cros.sys.primary-container",
+            "css_variable": "--cros-sys-primary_container",
+            "mode_values": {
+                "light": "cros.ref.primary50.rgb @ 10%",
+                "dark": "cros.ref.primary50.rgb @ var(--cros.sys.disabled-opacity)"
+            }
+        },
+        {
+            "token_name": "cros.sys.on-primary-container",
+            "css_variable": "--cros-sys-on_primary_container",
+            "mode_values": {
+                "light": "rgba(255, 255, 255, 1)",
+                "dark": "blend(rgba(255, 255, 255, 0.04), cros.ref.primary50)"
+            }
+        }
+    ]
+}

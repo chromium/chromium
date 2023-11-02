@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -138,6 +138,12 @@ public class NotificationConstants {
      * used as a security key with another device.
      */
     public static final int NOTIFICATION_ID_SECURITY_KEY = 16;
+
+    /**
+     * Unique identifier for notifications announcing that the unified password manager has
+     * encountered an error.
+     */
+    public static final int NOTIFICATION_ID_UPM = 17;
 
     /**
      * Separator used to separate the notification origin from additional data such as the

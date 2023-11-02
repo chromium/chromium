@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -75,11 +75,15 @@ UIResourceBitmap::UIResourceBitmap(const SkBitmap& skbitmap) {
   DCHECK(skbitmap.isImmutable());
 
   const SkBitmap* target = &skbitmap;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   SkBitmap copy;
   if (features::IsDrDcEnabled()) {
     // TODO(vikassoni): Forcing everything to N32 while android backing cannot
-    // support some other formats.
+    // support some other formats. Note that DrDc is disabled on some gl
+    // renderers and hence gpus via gpu driver bug workaround. That workaround
+    // is not applied here and so on those disable gpus, everything will still
+    // be forced to N32 even though drdc is disabled. This should be fine for
+    // now and would be fixed later. crbug.com/1354201.
     if (skbitmap.colorType() != kN32_SkColorType) {
       SkImageInfo new_info = skbitmap.info().makeColorType(kN32_SkColorType);
       copy.allocPixels(new_info, new_info.minRowBytes());

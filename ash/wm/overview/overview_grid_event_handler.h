@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,6 +33,8 @@ class OverviewGridEventHandler : public ui::EventHandler {
   OverviewGridEventHandler& operator=(const OverviewGridEventHandler&) = delete;
   ~OverviewGridEventHandler() override;
 
+  void HandleClickOrTap(ui::Event* event);
+
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
@@ -40,8 +42,6 @@ class OverviewGridEventHandler : public ui::EventHandler {
   bool IsFlingInProgressForTesting() const { return !!fling_handler_; }
 
  private:
-  void HandleClickOrTap(ui::Event* event);
-
   void HandleFlingScroll(ui::GestureEvent* event);
 
   bool OnFlingStep(float offset);

@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_MULTI_PROFILE_CREDENTIALS_FILTER_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_MULTI_PROFILE_CREDENTIALS_FILTER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/sync_credentials_filter.h"
 
 class DiceWebSigninInterceptor;
@@ -29,7 +30,7 @@ class MultiProfileCredentialsFilter
   bool ShouldSave(const password_manager::PasswordForm& form) const override;
 
  private:
-  const DiceWebSigninInterceptor* const dice_web_signin_interceptor_;
+  const raw_ptr<const DiceWebSigninInterceptor> dice_web_signin_interceptor_;
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_MULTI_PROFILE_CREDENTIALS_FILTER_H_

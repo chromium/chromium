@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,14 @@
 #include <string>
 #include <vector>
 
+#include "build/chromeos_buildflags.h"
 #include "ui/base/clipboard/clipboard.h"
 
 namespace ui {
 
-// ClipboardOzone is not yet shipped in production. It is a work in progress
-// for desktop Linux Wayland support.
+// Clipboard implementation for Ozone-based ports. It delegates the platform
+// specifics to the PlatformClipboard instance provided by the Ozone platform.
+// Currently, used on Linux Desktop, i.e: X11 and Wayland, and Lacros platforms.
 class ClipboardOzone : public Clipboard {
  public:
   ClipboardOzone(const ClipboardOzone&) = delete;
@@ -100,6 +102,17 @@ class ClipboardOzone : public Clipboard {
   void WriteData(const ClipboardFormatType& format,
                  const char* data_data,
                  size_t data_len) override;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Used for syncing clipboard sources between Lacros and Ash in ChromeOS.
+  void AddClipboardSourceToDataOffer(const ClipboardBuffer buffer);
+
+  // Updates the source for the given buffer. It is used by
+  // `async_clipboard_ozone_` whenever some text is copied from Ash and pasted
+  // to Lacros.
+  void SetSource(ClipboardBuffer buffer,
+                 std::unique_ptr<DataTransferEndpoint> data_src);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   base::span<uint8_t> ReadPngInternal(const ClipboardBuffer buffer) const;
 

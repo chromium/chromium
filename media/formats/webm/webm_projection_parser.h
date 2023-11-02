@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MEDIA_FORMATS_WEBM_WEBM_PROJECTION_PARSER_H_
 #define MEDIA_FORMATS_WEBM_WEBM_PROJECTION_PARSER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "media/base/media_log.h"
 #include "media/formats/webm/webm_parser.h"
 
@@ -31,7 +32,7 @@ class MEDIA_EXPORT WebMProjectionParser : public WebMParserClient {
   bool OnFloat(int id, double val) override;
 
   // private data
-  MediaLog* media_log_;
+  raw_ptr<MediaLog> media_log_;
   int64_t projection_type_;
   double pose_yaw_;    // value must be [-180, 180]
   double pose_pitch_;  // value must be [-90, 90]

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -149,7 +149,12 @@ void LogSystemMediaPermissionsStartupStats() {
         CheckSystemVideoCapturePermission();
     LogStartupCameraSystemPermission(video_permission);
     MaybeLogAdditionalCameraSystemPermissionStats(video_permission);
-  }  // (@available(macOS 10.14, *))
+  }
+
+  if (@available(macOS 10.15, *)) {
+    // CheckSystemScreenCapturePermission() will log a sample of the permission.
+    CheckSystemScreenCapturePermission();
+  }
 }
 
 void SystemAudioCapturePermissionDetermined(SystemPermission permission) {
@@ -164,6 +169,11 @@ void SystemVideoCapturePermissionDetermined(SystemPermission permission) {
     DCHECK_NE(permission, SystemPermission::kNotDetermined);
     LogStartupCameraSystemPermission(permission);
   }
+}
+
+void LogSystemScreenCapturePermission(bool allowed) {
+  base::UmaHistogramBoolean(
+      "Media.Video.Capture.Mac.ScreenCaptureSystemPermission", allowed);
 }
 
 void SystemAudioCapturePermissionBlocked() {

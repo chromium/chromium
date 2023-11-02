@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
-#include "chromeos/dbus/login_manager/policy_descriptor.pb.h"
+#include "chromeos/ash/components/dbus/login_manager/policy_descriptor.pb.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_map.h"
@@ -73,16 +73,15 @@ std::string GetPolicyValue(const std::string& policy_fetch_response_blob) {
 // Parses |json| to a base::Value. Returns nullptr and prints errors
 // on failure.
 absl::optional<base::Value> ParseJsonToDict(const std::string& json) {
-  base::JSONReader::ValueWithError value_with_error =
-      base::JSONReader::ReadAndReturnValueWithError(
-          json, base::JSON_ALLOW_TRAILING_COMMAS);
-  if (!value_with_error.value) {
+  auto value_with_error = base::JSONReader::ReadAndReturnValueWithError(
+      json, base::JSON_ALLOW_TRAILING_COMMAS);
+  if (!value_with_error.has_value()) {
     LOG(ERROR) << "Could not parse policy value as JSON: "
-               << value_with_error.error_message;
+               << value_with_error.error().message;
     return absl::nullopt;
   }
 
-  base::Value value = std::move(value_with_error.value.value());
+  base::Value value = std::move(*value_with_error);
   if (!value.is_dict()) {
     LOG(ERROR) << "The JSON policy value is not a dictionary.";
     return absl::nullopt;
@@ -138,11 +137,9 @@ bool ParsePolicy(const std::string& policy_fetch_response_blob,
       LOG(ERROR) << "Failed to filter JSON policy at level " << level->json_key;
       continue;
     }
-    const base::DictionaryValue& converted_dict =
-        base::Value::AsDictionaryValue(converted_value.value());
 
     // Put the policy into the right spot.
-    policy->LoadFrom(&converted_dict, level->level, scope,
+    policy->LoadFrom(converted_value->GetDict(), level->level, scope,
                      POLICY_SOURCE_ACTIVE_DIRECTORY);
   }
   return true;

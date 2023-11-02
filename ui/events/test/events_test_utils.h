@@ -1,10 +1,11 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_EVENTS_TEST_EVENTS_TEST_UTILS_H_
 #define UI_EVENTS_TEST_EVENTS_TEST_UTILS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/events/event.h"
 #include "ui/events/event_dispatcher.h"
 #include "ui/events/event_target.h"
@@ -34,7 +35,7 @@ class EventTestApi {
  private:
   EventTestApi();
 
-  Event* event_;
+  raw_ptr<Event> event_;
 };
 
 class LocatedEventTestApi : public EventTestApi {
@@ -56,7 +57,7 @@ class LocatedEventTestApi : public EventTestApi {
  private:
   LocatedEventTestApi();
 
-  LocatedEvent* located_event_;
+  raw_ptr<LocatedEvent> located_event_;
 };
 
 class KeyEventTestApi : public EventTestApi {
@@ -77,7 +78,7 @@ class KeyEventTestApi : public EventTestApi {
  private:
   KeyEventTestApi();
 
-  KeyEvent* key_event_;
+  raw_ptr<KeyEvent> key_event_;
 };
 
 class EventTargetTestApi {
@@ -96,7 +97,7 @@ class EventTargetTestApi {
  private:
   EventTargetTestApi();
 
-  EventTarget* target_;
+  raw_ptr<EventTarget> target_;
 };
 
 class EventSourceTestApi {
@@ -106,12 +107,12 @@ class EventSourceTestApi {
   EventSourceTestApi(const EventSourceTestApi&) = delete;
   EventSourceTestApi& operator=(const EventSourceTestApi&) = delete;
 
-  EventDispatchDetails SendEventToSink(Event* event) WARN_UNUSED_RESULT;
+  [[nodiscard]] EventDispatchDetails SendEventToSink(Event* event);
 
  private:
   EventSourceTestApi();
 
-  EventSource* event_source_;
+  raw_ptr<EventSource> event_source_;
 };
 
 }  // namespace ui

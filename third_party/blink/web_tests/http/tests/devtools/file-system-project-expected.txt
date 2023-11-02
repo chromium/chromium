@@ -63,8 +63,8 @@ Dumping uiSourceCodes origin URLs:
   - file:///var/www4/html/bar.js
 
 Running: testGitFolders
-project_1
-project_2
+project_1/
+project_2/
 
 Running: testUISourceCodeMetadata
 Initial metadata

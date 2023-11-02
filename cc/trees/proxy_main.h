@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,11 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/input/browser_controls_state.h"
+#include "cc/metrics/event_latency_tracker.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/paint_holding_reason.h"
 #include "cc/trees/proxy.h"
@@ -24,6 +27,10 @@ class LayerTreeMutator;
 class PaintWorkletLayerPainter;
 class ProxyImpl;
 class RenderFrameMetadataObserver;
+
+namespace devtools_instrumentation {
+struct ScopedCommitTrace;
+}
 
 // This class aggregates all interactions that the impl side of the compositor
 // needs to have with the main side.
@@ -57,6 +64,7 @@ class CC_EXPORT ProxyMain : public Proxy {
   void DidCompletePageScaleAnimation();
   void BeginMainFrame(
       std::unique_ptr<BeginMainFrameAndCommitState> begin_main_frame_state);
+  void DidCompleteCommit(CommitTimestamps);
   void DidPresentCompositorFrame(
       uint32_t frame_token,
       std::vector<PresentationTimeCallbackBuffer::MainCallback> callbacks,
@@ -64,6 +72,9 @@ class CC_EXPORT ProxyMain : public Proxy {
   void NotifyThroughputTrackerResults(CustomTrackerResults results);
   void DidObserveFirstScrollDelay(base::TimeDelta first_scroll_delay,
                                   base::TimeTicks first_scroll_timestamp);
+  void ReportEventLatency(
+      std::vector<EventLatencyTracker::LatencyData> latencies);
+  void NotifyTransitionRequestFinished(uint32_t sequence_id);
 
   CommitPipelineStage max_requested_pipeline_stage() const {
     return max_requested_pipeline_stage_;
@@ -74,6 +85,8 @@ class CC_EXPORT ProxyMain : public Proxy {
   CommitPipelineStage final_pipeline_stage() const {
     return final_pipeline_stage_;
   }
+
+  void RecordReplayRepaint();
 
  private:
   // Proxy implementation.
@@ -89,6 +102,7 @@ class CC_EXPORT ProxyMain : public Proxy {
       const viz::LocalSurfaceId& target_local_surface_id) override;
   bool RequestedAnimatePending() override;
   void SetDeferMainFrameUpdate(bool defer_main_frame_update) override;
+  void SetPauseRendering(bool pause_rendering) override;
   bool StartDeferringCommits(base::TimeDelta timeout,
                              PaintHoldingReason reason) override;
   void StopDeferringCommits(PaintHoldingCommitTrigger) override;
@@ -108,11 +122,9 @@ class CC_EXPORT ProxyMain : public Proxy {
   void SetSourceURL(ukm::SourceId source_id, const GURL& url) override;
   void SetUkmSmoothnessDestination(
       base::WritableSharedMemoryMapping ukm_smoothness_data) override;
-  void ClearHistory() override;
   void SetRenderFrameObserver(
       std::unique_ptr<RenderFrameMetadataObserver> observer) override;
-  void SetEnableFrameRateThrottling(bool enable_frame_rate_throttling) override;
-  uint32_t GetAverageThroughput() const override;
+  double GetPercentDroppedFrames() const override;
 
   // Returns |true| if the request was actually sent, |false| if one was
   // already outstanding.
@@ -122,12 +134,16 @@ class CC_EXPORT ProxyMain : public Proxy {
   bool IsImplThread() const;
   base::SingleThreadTaskRunner* ImplThreadTaskRunner();
 
-  void InitializeOnImplThread(CompletionEvent* completion_event);
+  void InitializeOnImplThread(
+      CompletionEvent* completion_event,
+      int id,
+      const LayerTreeSettings* settings,
+      RenderingStatsInstrumentation* rendering_stats_instrumentation);
   void DestroyProxyImplOnImplThread(CompletionEvent* completion_event);
 
-  LayerTreeHost* layer_tree_host_;
+  raw_ptr<LayerTreeHost> layer_tree_host_;
 
-  TaskRunnerProvider* task_runner_provider_;
+  raw_ptr<TaskRunnerProvider> task_runner_provider_;
 
   const int layer_tree_host_id_;
 
@@ -153,8 +169,14 @@ class CC_EXPORT ProxyMain : public Proxy {
   bool defer_main_frame_update_;
   absl::optional<PaintHoldingReason> paint_holding_reason_;
 
+  bool pause_rendering_;
+
   // Only used when defer_commits_ is active and must be set in such cases.
   base::TimeTicks commits_restart_time_;
+
+  // TODO(paint-dev): it's not clear how devtools will handle interlacing of
+  // main thread tasks with commit tracing (crbug.com/1277952).
+  std::unique_ptr<devtools_instrumentation::ScopedCommitTrace> commit_trace_;
 
   // ProxyImpl is created and destroyed on the impl thread, and should only be
   // accessed on the impl thread.

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/controls/menu/menu_types.h"
@@ -97,8 +97,13 @@ class VIEWS_EXPORT MenuRunner {
     // finger after the context menu of the item is opened.
     SEND_GESTURE_EVENTS_TO_OWNER = 1 << 7,
 
-    // Whether to use the touchable layout for this context menu.
-    USE_TOUCHABLE_LAYOUT = 1 << 8,
+    // Applying the system UI specific layout to the context menu. This should
+    // be set for the context menu inside system UI only (e.g, the context menu
+    // while right clicking the wallpaper of a ChromeBook). Thus, this can be
+    // used to differentiate the context menu inside system UI from others. It
+    // is useful if we want to customize some attributes of the context menu
+    // inside system UI, e.g, colors.
+    USE_ASH_SYS_UI_LAYOUT = 1 << 8,
 
     // Similar to COMBOBOX, but does not capture the mouse and lets some keys
     // propagate back to the parent so the combobox content can be edited even
@@ -161,7 +166,7 @@ class VIEWS_EXPORT MenuRunner {
   const int32_t run_types_;
 
   // We own this. No scoped_ptr because it is destroyed by calling Release().
-  internal::MenuRunnerImplInterface* impl_;
+  raw_ptr<internal::MenuRunnerImplInterface> impl_;
 
   // An implementation of RunMenuAt. This is usually NULL and ignored. If this
   // is not NULL, this implementation will be used.

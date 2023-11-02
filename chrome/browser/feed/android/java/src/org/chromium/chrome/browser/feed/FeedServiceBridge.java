@@ -1,24 +1,28 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.feed;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.util.DisplayMetrics;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeClassQualifiedName;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.feed.hooks.FeedHooks;
+import org.chromium.chrome.browser.feed.hooks.FeedHooksImpl;
 import org.chromium.chrome.browser.feed.v2.ContentOrder;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.xsurface.ImageCacheHelper;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
 
 /**
@@ -33,33 +37,59 @@ public final class FeedServiceBridge {
         return FeedServiceBridgeJni.TEST_HOOKS;
     }
 
-    /**
-     * Interface to chrome_java. Eventually, we will move some of these pieces into the Feed module
-     * to eliminate the need for an interface here.
-     */
-    public static interface Delegate {
-        default ProcessScope getProcessScope() {
+    private static FeedServiceDependencyProviderFactory getDependencyProviderFactory() {
+        Class<?> dependencyProviderFactoryClazz;
+        try {
+            dependencyProviderFactoryClazz = Class.forName(
+                    "org.chromium.chrome.browser.app.feed.FeedServiceDependencyProviderFactoryImpl");
+        } catch (ClassNotFoundException e) {
             return null;
         }
-        /** Called when state of the feed must be cleared. */
-        default void clearAll() {}
+        try {
+            return (FeedServiceDependencyProviderFactory) dependencyProviderFactoryClazz
+                    .getDeclaredMethod("getInstance")
+                    .invoke(null);
+        } catch (NoSuchMethodException e) {
+        } catch (InvocationTargetException e) {
+        } catch (IllegalAccessException e) {
+        }
+        return null;
     }
 
-    private static Delegate sDelegate = new Delegate() {};
-    public static void setDelegate(Delegate delegate) {
-        sDelegate = delegate;
-    }
+    private static ProcessScope sXSurfaceProcessScope;
 
     public static ProcessScope xSurfaceProcessScope() {
-        ProcessScope ps = sDelegate.getProcessScope();
-        return ps;
+        if (sXSurfaceProcessScope != null) {
+            return sXSurfaceProcessScope;
+        }
+        FeedHooks feedHooks = FeedHooksImpl.getInstance();
+        if (!feedHooks.isEnabled()) {
+            return null;
+        }
+        sXSurfaceProcessScope = feedHooks.createProcessScope(
+                getDependencyProviderFactory().createProcessScopeDependencyProvider());
+        return sXSurfaceProcessScope;
     }
+
+    public static void setProcessScopeForTesting(ProcessScope processScope) {
+        sXSurfaceProcessScope = processScope;
+    }
+
+    private static FeedServiceUtil sFeedServiceUtil;
+
+    public static FeedServiceUtil feedServiceUtil() {
+        if (sFeedServiceUtil == null) {
+            sFeedServiceUtil = getDependencyProviderFactory().createFeedServiceUtil();
+        }
+        return sFeedServiceUtil;
+    }
+
     public static boolean isEnabled() {
         return FeedServiceBridgeJni.get().isEnabled();
     }
 
     /** Returns the top user specified locale. */
-    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(Build.VERSION_CODES.N)
     private static Locale getLocale(Context context) {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
                 ? context.getResources().getConfiguration().getLocales().get(0)
@@ -81,7 +111,7 @@ public final class FeedServiceBridge {
 
     @CalledByNative
     public static void clearAll() {
-        sDelegate.clearAll();
+        FeedSurfaceTracker.getInstance().clearAll();
     }
 
     @CalledByNative
@@ -94,13 +124,15 @@ public final class FeedServiceBridge {
             }
         }
     }
+
+    @CalledByNative
+    public static @TabGroupEnabledState int getTabGroupEnabledState() {
+        return feedServiceUtil().getTabGroupEnabledState();
+    }
+
     /** Called at startup to trigger creation of |FeedService|. */
     public static void startup() {
         FeedServiceBridgeJni.get().startup();
-    }
-
-    public static String getClientInstanceId() {
-        return FeedServiceBridgeJni.get().getClientInstanceId();
     }
 
     /** Retrieves the config value for load_more_trigger_lookahead. */
@@ -146,8 +178,17 @@ public final class FeedServiceBridge {
      * Reports that a user action occurred which is untied to a Feed tab. Use
      * FeedStream.reportOtherUserAction for stream-specific actions.
      */
-    public static void reportOtherUserAction(@FeedUserActionType int userAction) {
-        FeedServiceBridgeJni.get().reportOtherUserAction(userAction);
+    public static void reportOtherUserAction(
+            @StreamKind int streamKind, @FeedUserActionType int userAction) {
+        FeedServiceBridgeJni.get().reportOtherUserAction(streamKind, userAction);
+    }
+
+    /**
+     * @return True if the user is signed in for feed purposes (i.e. if a personalized feed can be
+     *         requested).
+     */
+    public static boolean isSignedIn() {
+        return FeedServiceBridgeJni.get().isSignedIn();
     }
 
     /** Observes whether or not the Feed stream contains unread content */
@@ -183,18 +224,18 @@ public final class FeedServiceBridge {
         void startup();
         int getLoadMoreTriggerLookahead();
         int getLoadMoreTriggerScrollDistanceDp();
-        String getClientInstanceId();
         void reportOpenVisitComplete(long visitTimeMs);
         int getVideoPreviewsTypePreference();
         void setVideoPreviewsTypePreference(int videoPreviewsType);
         long getReliabilityLoggingId();
         boolean isAutoplayEnabled();
-        void reportOtherUserAction(@FeedUserActionType int userAction);
+        void reportOtherUserAction(@StreamKind int streamKind, @FeedUserActionType int userAction);
         @ContentOrder
         int getContentOrderForWebFeed();
         void setContentOrderForWebFeed(@ContentOrder int contentOrder);
 
         long addUnreadContentObserver(Object object, boolean isWebFeed);
+        boolean isSignedIn();
         @NativeClassQualifiedName("feed::JavaUnreadContentObserver")
         void destroy(long nativePtr);
     }

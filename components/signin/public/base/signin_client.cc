@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,4 @@ void SigninClient::PreSignOut(
     signin_metrics::ProfileSignout signout_source_metric) {
   // Allow sign out to continue.
   std::move(on_signout_decision_reached).Run(SignoutDecision::ALLOW_SIGNOUT);
-}
-
-bool SigninClient::IsNonEnterpriseUser(const std::string& username) {
-  return false;
 }

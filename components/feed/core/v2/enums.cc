@@ -1,14 +1,45 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/feed/core/v2/enums.h"
 
 #include <ostream>
+#include "base/strings/string_piece.h"
 
 namespace feed {
 
 // Included for debug builds only for reduced binary size.
+
+std::ostream& operator<<(std::ostream& out, NetworkRequestType value) {
+#ifndef NDEBUG
+  switch (value) {
+    case NetworkRequestType::kFeedQuery:
+      return out << "kFeedQuery";
+    case NetworkRequestType::kUploadActions:
+      return out << "kUploadActions";
+    case NetworkRequestType::kNextPage:
+      return out << "kNextPage";
+    case NetworkRequestType::kListWebFeeds:
+      return out << "kListWebFeeds";
+    case NetworkRequestType::kUnfollowWebFeed:
+      return out << "kUnfollowWebFeed";
+    case NetworkRequestType::kFollowWebFeed:
+      return out << "kFollowWebFeed";
+    case NetworkRequestType::kListRecommendedWebFeeds:
+      return out << "kListRecommendedWebFeeds";
+    case NetworkRequestType::kWebFeedListContents:
+      return out << "kWebFeedListContents";
+    case NetworkRequestType::kQueryInteractiveFeed:
+      return out << "kQueryInteractiveFeed";
+    case NetworkRequestType::kQueryBackgroundFeed:
+      return out << "kQueryBackgroundFeed";
+    case NetworkRequestType::kQueryNextPage:
+      return out << "kQueryNextPage";
+  }
+#endif
+  return out << (static_cast<int>(value));
+}
 
 std::ostream& operator<<(std::ostream& out, LoadStreamStatus value) {
 #ifndef NDEBUG
@@ -69,6 +100,14 @@ std::ostream& operator<<(std::ostream& out, LoadStreamStatus value) {
       return out << "kAlreadyHaveUnreadContent";
     case LoadStreamStatus::kNotAWebFeedSubscriber:
       return out << "kNotAWebFeedSubscriber";
+    case LoadStreamStatus::kAccountTokenFetchFailedWrongAccount:
+      return out << "kAccountTokenFetchFailedWrongAccount";
+    case LoadStreamStatus::kAccountTokenFetchTimedOut:
+      return out << "kAccountTokenFetchTimedOut";
+    case LoadStreamStatus::kNetworkFetchTimedOut:
+      return out << "kNetworkFetchTimedOut";
+    case LoadStreamStatus::kLoadNotAllowedDisabled:
+      return out << "kLoadNotAllowedDisabled";
   }
 #else
   return out << (static_cast<int>(value));
@@ -106,6 +145,11 @@ bool IsLoadingSuccessfulAndFresh(LoadStreamStatus status) {
     case LoadStreamStatus::kAbortWithPendingClearAll:
     case LoadStreamStatus::kAlreadyHaveUnreadContent:
     case LoadStreamStatus::kNotAWebFeedSubscriber:
+
+    case LoadStreamStatus::kAccountTokenFetchFailedWrongAccount:
+    case LoadStreamStatus::kAccountTokenFetchTimedOut:
+    case LoadStreamStatus::kNetworkFetchTimedOut:
+    case LoadStreamStatus::kLoadNotAllowedDisabled:
       return false;
   }
 }
@@ -175,6 +219,35 @@ std::ostream& operator<<(std::ostream& out, WebFeedRefreshStatus value) {
     case WebFeedRefreshStatus::kAbortFetchWebFeedPendingClearAll:
       return out << "kAbortFetchWebFeedPendingClearAll";
   }
+}
+
+base::StringPiece ToString(UserSettingsOnStart v) {
+  switch (v) {
+    case UserSettingsOnStart::kFeedNotEnabledByPolicy:
+      return "FeedNotEnabledByPolicy";
+    case UserSettingsOnStart::kFeedNotVisibleSignedOut:
+      return "FeedNotVisibleSignedOut";
+    case UserSettingsOnStart::kFeedNotVisibleSignedIn:
+      return "FeedNotVisibleSignedIn";
+    case UserSettingsOnStart::kSignedOut:
+      return "SignedOut";
+    case UserSettingsOnStart::kSignedInWaaOnDpOn:
+      return "SignedInWaaOnDpOn";
+    case UserSettingsOnStart::kSignedInWaaOnDpOff:
+      return "SignedInWaaOnDpOff";
+    case UserSettingsOnStart::kSignedInWaaOffDpOn:
+      return "SignedInWaaOffDpOn";
+    case UserSettingsOnStart::kSignedInWaaOffDpOff:
+      return "SignedInWaaOffDpOff";
+    case UserSettingsOnStart::kSignedInNoRecentData:
+      return "SignedInNoRecentData";
+    case UserSettingsOnStart::kFeedNotEnabled:
+      return "FeedNotEnabled";
+  }
+  return "Unknown";
+}
+std::ostream& operator<<(std::ostream& out, UserSettingsOnStart value) {
+  return out << ToString(value);
 }
 
 }  // namespace feed

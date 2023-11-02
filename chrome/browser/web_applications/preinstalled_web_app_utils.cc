@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,11 @@
 #include "chrome/browser/apps/user_type_filter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/webapps/common/constants.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "ui/gfx/codec/png_codec.h"
 
@@ -62,6 +65,14 @@ constexpr char kCreateShortcuts[] = "create_shortcuts";
 //  - if the feature is enabled, the app will be installed
 //  - if the feature is not enabled, the app will be removed.
 constexpr char kFeatureName[] = "feature_name";
+
+// kFeatureNameOrInstalled is an optional string parameter specifying a feature
+// associated with this app. The feature must be present in
+// |kPreinstalledAppInstallFeatures| to be applicable.
+//
+// When specified, the app will only be installed when the feature is enabled.
+// If the feature is disabled, existing installations will not be removed.
+constexpr char kFeatureNameOrInstalled[] = "feature_name_or_installed";
 
 // kDisableIfArcSupported is an optional bool which specifies whether to skip
 // install of the app if the device supports Arc (Chrome OS only).
@@ -149,6 +160,10 @@ constexpr char kOfflineManifestDisplay[] = "display";
 // icons for offline install. Will be installed with purpose "any".
 constexpr char kOfflineManifestIconAnyPngs[] = "icon_any_pngs";
 
+// List of PNG files in the default web app config directory to use as the
+// icons for offline install. Will be installed with purpose "maskable".
+constexpr char kOfflineManifestIconMaskablePngs[] = "icon_maskable_pngs";
+
 // Optional 8 value ARGB hex code to use as the "theme_color" manifest value.
 // Example:
 //   "theme_color_argb_hex": "FFFF0000"
@@ -169,12 +184,12 @@ constexpr char kOemInstalled[] = "oem_installed";
 constexpr char kDisableIfTouchScreenWithStylusNotSupported[] =
     "disable_if_touchscreen_with_stylus_not_supported";
 
-void EnsureContains(ListPrefUpdate& update, base::StringPiece value) {
-  for (const base::Value& item : update->GetList()) {
+void EnsureContains(base::Value::List& list, base::StringPiece value) {
+  for (const base::Value& item : list) {
     if (item.is_string() && item.GetString() == value)
       return;
   }
-  update->Append(value);
+  list.Append(value);
 }
 
 }  // namespace
@@ -183,7 +198,7 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
                            const base::FilePath& dir,
                            const base::FilePath& file,
                            const base::Value& app_config) {
-  ExternalInstallOptions options(GURL(), DisplayMode::kStandalone,
+  ExternalInstallOptions options(GURL(), UserDisplayMode::kStandalone,
                                  ExternalInstallSource::kExternalDefault);
   options.require_manifest = true;
   options.force_reinstall = false;
@@ -192,13 +207,14 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
     return base::StrCat(
         {file.AsUTF8Unsafe(), " was not a dictionary as the top level"});
   }
+  const base::Value::Dict& app_config_dict = app_config.GetDict();
 
   // user_type
-  const base::Value* value = app_config.FindListKey(kUserType);
-  if (!value) {
+  const base::Value::List* list = app_config_dict.FindList(kUserType);
+  if (!list) {
     return base::StrCat({file.AsUTF8Unsafe(), " missing ", kUserType});
   }
-  for (const auto& item : value->GetList()) {
+  for (const auto& item : *list) {
     if (!item.is_string()) {
       return base::StrCat({file.AsUTF8Unsafe(), " has invalid ", kUserType,
                            item.DebugString()});
@@ -210,22 +226,28 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
   }
 
   // feature_name
-  const std::string* feature_name = app_config.FindStringKey(kFeatureName);
+  const std::string* feature_name = app_config_dict.FindString(kFeatureName);
   if (feature_name)
     options.gate_on_feature = *feature_name;
 
+  // feature_name_or_installed
+  const std::string* feature_name_or_installed =
+      app_config_dict.FindString(kFeatureNameOrInstalled);
+  if (feature_name_or_installed)
+    options.gate_on_feature_or_installed = *feature_name_or_installed;
+
   // app_url
-  value = app_config.FindKeyOfType(kAppUrl, base::Value::Type::STRING);
-  if (!value) {
+  const std::string* string = app_config_dict.FindString(kAppUrl);
+  if (!string) {
     return base::StrCat({file.AsUTF8Unsafe(), " had a missing ", kAppUrl});
   }
-  options.install_url = GURL(value->GetString());
+  options.install_url = GURL(*string);
   if (!options.install_url.is_valid()) {
     return base::StrCat({file.AsUTF8Unsafe(), " had an invalid ", kAppUrl});
   }
 
   // only_for_new_users
-  value = app_config.FindKey(kOnlyForNewUsers);
+  const base::Value* value = app_config_dict.Find(kOnlyForNewUsers);
   if (value) {
     if (!value->is_bool()) {
       return base::StrCat(
@@ -235,7 +257,7 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
   }
 
   // only_if_previously_preinstalled
-  value = app_config.FindKey(kOnlyIfPreviouslyPreinstalled);
+  value = app_config_dict.Find(kOnlyIfPreviouslyPreinstalled);
   if (value) {
     if (!value->is_bool()) {
       return base::StrCat({file.AsUTF8Unsafe(), " had an invalid ",
@@ -246,7 +268,7 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
 
   // hide_from_user
   bool hide_from_user = false;
-  value = app_config.FindKey(kHideFromUser);
+  value = app_config_dict.Find(kHideFromUser);
   if (value) {
     if (!value->is_bool()) {
       return base::StrCat(
@@ -260,7 +282,7 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
 
   // create_shortcuts
   bool create_shortcuts = false;
-  value = app_config.FindKey(kCreateShortcuts);
+  value = app_config_dict.Find(kCreateShortcuts);
   if (value) {
     if (!value->is_bool()) {
       return base::StrCat(
@@ -275,7 +297,7 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
   DCHECK(!(hide_from_user && create_shortcuts));
 
   // disable_if_arc_supported
-  value = app_config.FindKey(kDisableIfArcSupported);
+  value = app_config_dict.Find(kDisableIfArcSupported);
   if (value) {
     if (!value->is_bool()) {
       return base::StrCat(
@@ -285,7 +307,7 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
   }
 
   // disable_if_tablet_form_factor
-  value = app_config.FindKey(kDisableIfTabletFormFactor);
+  value = app_config_dict.Find(kDisableIfTabletFormFactor);
   if (value) {
     if (!value->is_bool()) {
       return base::StrCat({file.AsUTF8Unsafe(), " had an invalid ",
@@ -295,23 +317,23 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
   }
 
   // launch_container
-  value = app_config.FindKeyOfType(kLaunchContainer, base::Value::Type::STRING);
-  if (!value) {
+  string = app_config_dict.FindString(kLaunchContainer);
+  if (!string) {
     return base::StrCat(
         {file.AsUTF8Unsafe(), " had an invalid ", kLaunchContainer});
   }
-  std::string launch_container_str = value->GetString();
+  std::string launch_container_str = *string;
   if (launch_container_str == kLaunchContainerTab) {
-    options.user_display_mode = DisplayMode::kBrowser;
+    options.user_display_mode = UserDisplayMode::kBrowser;
   } else if (launch_container_str == kLaunchContainerWindow) {
-    options.user_display_mode = DisplayMode::kStandalone;
+    options.user_display_mode = UserDisplayMode::kStandalone;
   } else {
     return base::StrCat({file.AsUTF8Unsafe(), " had an invalid ",
                          kLaunchContainer, ": ", launch_container_str});
   }
 
   // launch_query_params
-  value = app_config.FindKey(kLaunchQueryParams);
+  value = app_config_dict.Find(kLaunchQueryParams);
   if (value) {
     if (!value->is_string()) {
       return base::StrCat(
@@ -321,7 +343,7 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
   }
 
   // load_and_await_service_worker_registration
-  value = app_config.FindKey(kLoadAndAwaitServiceWorkerRegistration);
+  value = app_config_dict.Find(kLoadAndAwaitServiceWorkerRegistration);
   if (value) {
     if (!value->is_bool()) {
       return base::StrCat({file.AsUTF8Unsafe(), " had an invalid ",
@@ -331,7 +353,7 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
   }
 
   // service_worker_registration_url
-  value = app_config.FindKey(kServiceWorkerRegistrationUrl);
+  value = app_config_dict.Find(kServiceWorkerRegistrationUrl);
   if (value) {
     if (!options.load_and_await_service_worker_registration) {
       return base::StrCat({file.AsUTF8Unsafe(), " should not specify a ",
@@ -351,13 +373,13 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
   }
 
   // uninstall_and_replace
-  value = app_config.FindKey(kUninstallAndReplace);
+  value = app_config_dict.Find(kUninstallAndReplace);
   if (value) {
     if (!value->is_list()) {
       return base::StrCat(
           {file.AsUTF8Unsafe(), " had an invalid ", kUninstallAndReplace});
     }
-    base::Value::ConstListView uninstall_and_replace_values = value->GetList();
+    const base::Value::List& uninstall_and_replace_values = value->GetList();
 
     for (const auto& app_id_value : uninstall_and_replace_values) {
       if (!app_id_value.is_string()) {
@@ -369,7 +391,7 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
   }
 
   // only_use_offline_manifest
-  value = app_config.FindKey(kOnlyUseOfflineManifest);
+  value = app_config_dict.Find(kOnlyUseOfflineManifest);
   if (value) {
     if (!value->is_bool()) {
       return base::StrCat(
@@ -379,16 +401,16 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
   }
 
   // offline_manifest
-  value = app_config.FindDictKey(kOfflineManifest);
-  if (value) {
-    WebApplicationInfoFactoryOrError offline_manifest_result =
+  value = app_config_dict.Find(kOfflineManifest);
+  if (value && value->is_dict()) {
+    WebAppInstallInfoFactoryOrError offline_manifest_result =
         ParseOfflineManifest(file_utils, dir, file, *value);
     if (std::string* error =
             absl::get_if<std::string>(&offline_manifest_result)) {
       return std::move(*error);
     }
-    options.app_info_factory = std::move(
-        absl::get<WebApplicationInfoFactory>(offline_manifest_result));
+    options.app_info_factory =
+        std::move(absl::get<WebAppInstallInfoFactory>(offline_manifest_result));
   }
 
   if (options.only_use_app_info_factory && !options.app_info_factory) {
@@ -397,7 +419,7 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
   }
 
   // force_reinstall_for_milestone
-  value = app_config.FindKey(kForceReinstallForMilestone);
+  value = app_config_dict.Find(kForceReinstallForMilestone);
   if (value) {
     if (!value->is_int()) {
       return base::StrCat({file.AsUTF8Unsafe(), " had an invalid ",
@@ -407,7 +429,7 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
   }
 
   // oem_installed
-  value = app_config.FindKey(kOemInstalled);
+  value = app_config_dict.Find(kOemInstalled);
   if (value) {
     if (!value->is_bool()) {
       return base::StrCat(
@@ -417,7 +439,7 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
   }
 
   // disable_if_touchscreen_with_stylus_not_supported
-  value = app_config.FindKey(kDisableIfTouchScreenWithStylusNotSupported);
+  value = app_config_dict.Find(kDisableIfTouchScreenWithStylusNotSupported);
   if (value) {
     if (!value->is_bool()) {
       return base::StrCat({file.AsUTF8Unsafe(), " had an invalid ",
@@ -429,16 +451,59 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
   return options;
 }
 
-WebApplicationInfoFactoryOrError ParseOfflineManifest(
+IconBitmapsOrError ParseOfflineManifestIconBitmaps(
+    FileUtilsWrapper& file_utils,
+    const base::FilePath& dir,
+    const base::FilePath& manifest_file,
+    const char* icon_key,
+    const base::Value::List& icon_files) {
+  std::map<SquareSizePx, SkBitmap> icon_bitmaps;
+
+  for (const base::Value& icon_file : icon_files) {
+    if (!icon_file.is_string()) {
+      return base::unexpected(base::StrCat(
+          {manifest_file.AsUTF8Unsafe(), " ", kOfflineManifest, " ", icon_key,
+           " ", icon_file.DebugString(), " invalid."}));
+    }
+    base::FilePath icon_path = dir.AppendASCII(icon_file.GetString());
+    std::string icon_data;
+    if (!file_utils.ReadFileToString(icon_path, &icon_data)) {
+      return base::unexpected(base::StrCat(
+          {manifest_file.AsUTF8Unsafe(), " ", kOfflineManifest, " ", icon_key,
+           " ", icon_file.DebugString(), " failed to read."}));
+    }
+    SkBitmap bitmap;
+    if (!gfx::PNGCodec::Decode(
+            reinterpret_cast<const unsigned char*>(icon_data.c_str()),
+            icon_data.size(), &bitmap)) {
+      return base::unexpected(base::StrCat(
+          {manifest_file.AsUTF8Unsafe(), " ", kOfflineManifest, " ", icon_key,
+           " ", icon_file.DebugString(), " failed to decode."}));
+    }
+    if (bitmap.width() != bitmap.height()) {
+      return base::unexpected(base::StrCat(
+          {manifest_file.AsUTF8Unsafe(), " ", kOfflineManifest, " ", icon_key,
+           " ", icon_file.DebugString(),
+           " must be square: ", base::NumberToString(bitmap.width()), "x",
+           base::NumberToString(bitmap.height())}));
+    }
+    icon_bitmaps[bitmap.width()] = std::move(bitmap);
+  }
+
+  return icon_bitmaps;
+}
+
+WebAppInstallInfoFactoryOrError ParseOfflineManifest(
     FileUtilsWrapper& file_utils,
     const base::FilePath& dir,
     const base::FilePath& file,
     const base::Value& offline_manifest) {
-  WebApplicationInfo app_info;
+  const base::Value::Dict& offline_manifest_dict = offline_manifest.GetDict();
+  WebAppInstallInfo app_info;
 
   // name
   const std::string* name_string =
-      offline_manifest.FindStringKey(kOfflineManifestName);
+      offline_manifest_dict.FindString(kOfflineManifestName);
   if (!name_string) {
     return base::StrCat({file.AsUTF8Unsafe(), " ", kOfflineManifest, " ",
                          kOfflineManifestName, " missing or invalid."});
@@ -452,7 +517,7 @@ WebApplicationInfoFactoryOrError ParseOfflineManifest(
 
   // start_url
   const std::string* start_url_string =
-      offline_manifest.FindStringKey(kOfflineManifestStartUrl);
+      offline_manifest_dict.FindString(kOfflineManifestStartUrl);
   if (!start_url_string) {
     return base::StrCat({file.AsUTF8Unsafe(), " ", kOfflineManifest, " ",
                          kOfflineManifestStartUrl, " missing or invalid."});
@@ -466,7 +531,7 @@ WebApplicationInfoFactoryOrError ParseOfflineManifest(
 
   // scope
   const std::string* scope_string =
-      offline_manifest.FindStringKey(kOfflineManifestScope);
+      offline_manifest_dict.FindString(kOfflineManifestScope);
   if (!scope_string) {
     return base::StrCat({file.AsUTF8Unsafe(), " ", kOfflineManifest, " ",
                          kOfflineManifestScope, " missing or invalid."});
@@ -486,7 +551,7 @@ WebApplicationInfoFactoryOrError ParseOfflineManifest(
 
   // display
   const std::string* display_string =
-      offline_manifest.FindStringKey(kOfflineManifestDisplay);
+      offline_manifest_dict.FindString(kOfflineManifestDisplay);
   if (!display_string) {
     return base::StrCat({file.AsUTF8Unsafe(), " ", kOfflineManifest, " ",
                          kOfflineManifestDisplay, " missing or invalid."});
@@ -499,53 +564,53 @@ WebApplicationInfoFactoryOrError ParseOfflineManifest(
   }
   app_info.display_mode = display;
 
-  // icon_any_pngs
-  const base::Value* icon_files =
-      offline_manifest.FindListKey(kOfflineManifestIconAnyPngs);
-  if (!icon_files || icon_files->GetList().empty()) {
+  // icon_any_pngs || icon_maskable_pngs
+  const base::Value::List* icon_any_files =
+      offline_manifest_dict.FindList(kOfflineManifestIconAnyPngs);
+  const base::Value::List* icon_maskable_files =
+      offline_manifest_dict.FindList(kOfflineManifestIconMaskablePngs);
+
+  if (!icon_any_files && !icon_maskable_files) {
     return base::StrCat({file.AsUTF8Unsafe(), " ", kOfflineManifest, " ",
-                         kOfflineManifestIconAnyPngs,
-                         " missing, empty or invalid."});
+                         kOfflineManifestIconAnyPngs, " and ",
+                         kOfflineManifestIconMaskablePngs,
+                         " missing or invalid."});
   }
-  for (const base::Value& icon_file : icon_files->GetList()) {
-    if (!icon_file.is_string()) {
+
+  if (icon_any_files) {
+    if (icon_any_files->empty()) {
       return base::StrCat({file.AsUTF8Unsafe(), " ", kOfflineManifest, " ",
-                           kOfflineManifestIconAnyPngs, " ",
-                           icon_file.DebugString(), " invalid."});
+                           kOfflineManifestIconAnyPngs, " empty."});
     }
 
-    base::FilePath icon_path = dir.AppendASCII(icon_file.GetString());
-    std::string icon_data;
-    if (!file_utils.ReadFileToString(icon_path, &icon_data)) {
-      return base::StrCat({file.AsUTF8Unsafe(), " ", kOfflineManifest, " ",
-                           kOfflineManifestIconAnyPngs, " ",
-                           icon_file.DebugString(), " failed to read."});
+    auto any_bitmaps = ParseOfflineManifestIconBitmaps(
+        file_utils, dir, file, kOfflineManifestIconAnyPngs, *icon_any_files);
+    if (!any_bitmaps.has_value()) {
+      return std::move(any_bitmaps.error());
     }
 
-    SkBitmap bitmap;
-    if (!gfx::PNGCodec::Decode(
-            reinterpret_cast<const unsigned char*>(icon_data.c_str()),
-            icon_data.size(), &bitmap)) {
-      return base::StrCat({file.AsUTF8Unsafe(), " ", kOfflineManifest, " ",
-                           kOfflineManifestIconAnyPngs, " ",
-                           icon_file.DebugString(), " failed to decode."});
-    }
-
-    if (bitmap.width() != bitmap.height()) {
-      return base::StrCat(
-          {file.AsUTF8Unsafe(), " ", kOfflineManifest, " ",
-           kOfflineManifestIconAnyPngs, " ", icon_file.DebugString(),
-           " must be square: ", base::NumberToString(bitmap.width()), "x",
-           base::NumberToString(bitmap.height())});
-    }
-
-    app_info.icon_bitmaps.any[bitmap.width()] = std::move(bitmap);
+    app_info.icon_bitmaps.any = std::move(any_bitmaps.value());
   }
-  DCHECK(!app_info.icon_bitmaps.any.empty());
+
+  if (icon_maskable_files) {
+    if (icon_maskable_files->empty()) {
+      return base::StrCat({file.AsUTF8Unsafe(), " ", kOfflineManifest, " ",
+                           kOfflineManifestIconMaskablePngs, " empty."});
+    }
+
+    auto maskable_bitmaps = ParseOfflineManifestIconBitmaps(
+        file_utils, dir, file, kOfflineManifestIconMaskablePngs,
+        *icon_maskable_files);
+    if (!maskable_bitmaps.has_value()) {
+      return std::move(maskable_bitmaps.error());
+    }
+
+    app_info.icon_bitmaps.maskable = maskable_bitmaps.value();
+  }
 
   // theme_color_argb_hex (optional)
   const base::Value* theme_color_value =
-      offline_manifest.FindKey(kOfflineManifestThemeColorArgbHex);
+      offline_manifest_dict.Find(kOfflineManifestThemeColorArgbHex);
   if (theme_color_value) {
     const std::string* theme_color_argb_hex =
         theme_color_value->is_string() ? &theme_color_value->GetString()
@@ -561,7 +626,7 @@ WebApplicationInfoFactoryOrError ParseOfflineManifest(
   }
 
   return base::BindRepeating(
-      &std::make_unique<WebApplicationInfo, const WebApplicationInfo&>,
+      &std::make_unique<WebAppInstallInfo, const WebAppInstallInfo&>,
       std::move(app_info));
 }
 
@@ -585,12 +650,10 @@ bool IsReinstallPastMilestoneNeeded(
 }
 
 bool WasAppMigratedToWebApp(Profile* profile, const std::string& app_id) {
-  const base::ListValue* migrated_apps =
-      profile->GetPrefs()->GetList(prefs::kWebAppsMigratedPreinstalledApps);
-  if (!migrated_apps)
-    return false;
+  const base::Value::List& migrated_apps =
+      profile->GetPrefs()->GetList(webapps::kWebAppsMigratedPreinstalledApps);
 
-  for (const auto& val : migrated_apps->GetList()) {
+  for (const auto& val : migrated_apps) {
     if (val.is_string() && val.GetString() == app_id)
       return true;
   }
@@ -601,21 +664,20 @@ bool WasAppMigratedToWebApp(Profile* profile, const std::string& app_id) {
 void MarkAppAsMigratedToWebApp(Profile* profile,
                                const std::string& app_id,
                                bool was_migrated) {
-  ListPrefUpdate update(profile->GetPrefs(),
-                        prefs::kWebAppsMigratedPreinstalledApps);
+  ScopedListPrefUpdate update(profile->GetPrefs(),
+                              webapps::kWebAppsMigratedPreinstalledApps);
+  base::Value::List& update_list = update.Get();
   if (was_migrated)
-    EnsureContains(update, app_id);
+    EnsureContains(update_list, app_id);
   else
-    update->EraseListValue(base::Value(app_id));
+    update_list.EraseValue(base::Value(app_id));
 }
 
 bool WasMigrationRun(Profile* profile, base::StringPiece feature_name) {
-  const base::ListValue* migrated_features =
+  const base::Value::List& migrated_features =
       profile->GetPrefs()->GetList(prefs::kWebAppsDidMigrateDefaultChromeApps);
-  if (!migrated_features)
-    return false;
 
-  for (const auto& val : migrated_features->GetList()) {
+  for (const auto& val : migrated_features) {
     if (val.is_string() && val.GetString() == feature_name)
       return true;
   }
@@ -626,22 +688,21 @@ bool WasMigrationRun(Profile* profile, base::StringPiece feature_name) {
 void SetMigrationRun(Profile* profile,
                      base::StringPiece feature_name,
                      bool was_migrated) {
-  ListPrefUpdate update(profile->GetPrefs(),
-                        prefs::kWebAppsDidMigrateDefaultChromeApps);
+  ScopedListPrefUpdate update(profile->GetPrefs(),
+                              prefs::kWebAppsDidMigrateDefaultChromeApps);
+  base::Value::List& update_list = update.Get();
   if (was_migrated)
-    EnsureContains(update, feature_name);
+    EnsureContains(update_list, feature_name);
   else
-    update->EraseListValue(base::Value(feature_name));
+    update_list.EraseValue(base::Value(feature_name));
 }
 
 bool WasPreinstalledAppUninstalled(Profile* profile,
                                    const std::string& app_id) {
-  const base::ListValue* uninstalled_apps =
+  const base::Value::List& uninstalled_apps =
       profile->GetPrefs()->GetList(prefs::kWebAppsUninstalledDefaultChromeApps);
-  if (!uninstalled_apps)
-    return false;
 
-  for (const auto& val : uninstalled_apps->GetList()) {
+  for (const auto& val : uninstalled_apps) {
     if (val.is_string() && val.GetString() == app_id)
       return true;
   }
@@ -653,8 +714,8 @@ void MarkPreinstalledAppAsUninstalled(Profile* profile,
                                       const std::string& app_id) {
   if (WasPreinstalledAppUninstalled(profile, app_id))
     return;
-  ListPrefUpdate update(profile->GetPrefs(),
-                        prefs::kWebAppsUninstalledDefaultChromeApps);
-  EnsureContains(update, app_id);
+  ScopedListPrefUpdate update(profile->GetPrefs(),
+                              prefs::kWebAppsUninstalledDefaultChromeApps);
+  EnsureContains(update.Get(), app_id);
 }
 }  // namespace web_app

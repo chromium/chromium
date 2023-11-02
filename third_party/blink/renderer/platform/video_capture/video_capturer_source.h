@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,13 +12,18 @@
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "base/token.h"
-#include "media/capture/mojom/video_capture_types.mojom-blink.h"
 #include "media/capture/video/video_capture_feedback.h"
 #include "media/capture/video_capture_types.h"
 #include "third_party/blink/public/common/media/video_capture.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
+
+enum class RunState {
+  kRunning = 0,
+  kStopped,
+  kSystemPermissionsError,
+};
 
 // VideoCapturerSource is an interface representing the source for captured
 // video.  An implementation will periodically call the frame callback with new
@@ -27,7 +32,7 @@ class PLATFORM_EXPORT VideoCapturerSource {
  public:
   virtual ~VideoCapturerSource();
 
-  using RunningCallback = base::RepeatingCallback<void(bool)>;
+  using RunningCallback = base::RepeatingCallback<void(RunState)>;
 
   // Returns formats that are preferred and can currently be used. May be empty
   // if no formats are available or known.
@@ -35,17 +40,24 @@ class PLATFORM_EXPORT VideoCapturerSource {
 
   // Starts capturing frames using the capture |params|. |new_frame_callback| is
   // triggered when a new video frame is available.
+  //
   // If capturing is started successfully then |running_callback| will be
   // called with a parameter of true. Note that some implementations may
   // simply reject StartCapture (by calling running_callback with a false
   // argument) if called with the wrong task runner.
+  //
   // If capturing fails to start or stopped due to an external event then
   // |running_callback| will be called with a parameter of false.
   // |running_callback| will always be called on the same thread as the
   // StartCapture.
+  //
+  // |crop_version_callback| will be called when it is guaranteed that all
+  // subsequent frames |new_frame_callback| is called for, have a crop version
+  // that is equal-to-or-greater-than the given crop version.
   virtual void StartCapture(
       const media::VideoCaptureParams& params,
       const VideoCaptureDeliverFrameCB& new_frame_callback,
+      const VideoCaptureCropVersionCB& crop_version_callback,
       const RunningCallback& running_callback) = 0;
 
   // Returns a callback for providing the feedback from the consumer.
@@ -84,14 +96,6 @@ class PLATFORM_EXPORT VideoCapturerSource {
   // Note: This should only be called after StartCapture() and before
   // StopCapture(). Otherwise, its behavior is undefined.
   virtual void Resume() {}
-
-  // Start/stop cropping a video track.
-  // Non-empty |crop_id| sets (or changes) the crop-target.
-  // Empty |crop_id| reverts the capture to its original, uncropped state.
-  // The callback reports success/failure.
-  virtual void Crop(
-      const base::Token& crop_id,
-      base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {}
 
   // Stops capturing frames and clears all callbacks including the
   // SupportedFormatsCallback callback. Note that queued frame callbacks

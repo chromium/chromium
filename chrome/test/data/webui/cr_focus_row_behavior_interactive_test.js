@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ GEN('#include "content/public/test/browser_test.h"');
 var CrFocusRowBehaviorTest = class extends PolymerInteractiveUITest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_focus_row_behavior_test.js';
+    return 'chrome://webui-test/test_loader.html?module=cr_focus_row_behavior_test.js';
   }
 
   /** @override */

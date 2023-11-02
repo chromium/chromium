@@ -1,19 +1,19 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/web/js_messaging/crw_js_window_id_manager.h"
 
-#include <ostream>
+#import <ostream>
 
-#include "base/dcheck_is_on.h"
-#include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/notreached.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/time/time.h"
-#include "crypto/random.h"
+#import "base/dcheck_is_on.h"
+#import "base/logging.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/notreached.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
+#import "crypto/random.h"
 #import "ios/web/js_messaging/page_script_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -31,7 +31,7 @@ const size_t kUniqueKeyLength = 16;
 // value.
 const double kSignificantInjectionTime = 0.1;
 
-// Returns whether |error| represents a failure to execute JavaScript due to
+// Returns whether `error` represents a failure to execute JavaScript due to
 // JavaScript execution being disallowed.
 bool IsJavaScriptExecutionProhibitedError(NSError* error) {
   return error.code == WKErrorJavaScriptExceptionOccurred &&
@@ -77,10 +77,11 @@ bool IsJavaScriptExecutionProhibitedError(NSError* error) {
   NSString* script = [web::GetPageScript(@"window_id")
       stringByReplacingOccurrencesOfString:@"$(WINDOW_ID)"
                                 withString:_windowID];
-  // WKUserScript may not be injected yet. Make windowID script return boolean
-  // indicating whether the injection was successful.
+  // WKUserScript for message API may not be injected yet. Make windowID script
+  // return boolean indicating whether the injection was successful.
   NSString* scriptWithResult = [NSString
-      stringWithFormat:@"if (!window.__gCrWeb) {false; } else { %@; true; }",
+      stringWithFormat:@"if (!window.__gCrWeb || !window.__gCrWeb.message) "
+                       @"{false; } else { %@; true; }",
                        script];
 
   __weak CRWJSWindowIDManager* weakSelf = self;
@@ -91,16 +92,19 @@ bool IsJavaScriptExecutionProhibitedError(NSError* error) {
                  return;
                if (error) {
 #if DCHECK_IS_ON()
-                 DCHECK(error.code == WKErrorWebViewInvalidated ||
-                        error.code == WKErrorWebContentProcessTerminated ||
-                        IsJavaScriptExecutionProhibitedError(error))
-                     << scriptWithResult << " failed with error "
-                     << base::SysNSStringToUTF8(error.description);
+                 BOOL isExpectedError =
+                     error.code == WKErrorWebViewInvalidated ||
+                     error.code == WKErrorWebContentProcessTerminated ||
+                     IsJavaScriptExecutionProhibitedError(error);
+                 DCHECK(isExpectedError)
+                     << base::SysNSStringToUTF8(error.domain) << "-"
+                     << error.code << " "
+                     << base::SysNSStringToUTF16(scriptWithResult);
 #endif
                  return;
                }
 
-               // If |result| is an incorrect type, do not check its value.
+               // If `result` is an incorrect type, do not check its value.
                // Also do not attempt to re-inject scripts as it may lead to
                // endless recursion attempting to inject the scripts correctly.
                if (result && CFBooleanGetTypeID() !=

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,18 +8,16 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/no_destructor.h"
-#include "base/task/post_task.h"
-#include "base/task/task_traits.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/media/webrtc/media_authorization_wrapper_mac.h"
+#include "chrome/browser/media/webrtc/system_media_capture_permissions_stats_mac.h"
 #include "chrome/common/chrome_features.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 #include "media/base/media_switches.h"
 #include "ui/base/cocoa/permissions_utils.h"
 
@@ -50,24 +48,24 @@ class MediaAuthorizationWrapperImpl final : public MediaAuthorizationWrapper {
     if (@available(macOS 10.14, *)) {
       return [AVCaptureDevice authorizationStatusForMediaType:media_type];
     } else {
-      NOTREACHED();
+      CHECK(false);
       return 0;
     }
   }
 
   void RequestAccessForMediaType(AVMediaType media_type,
-                                 base::OnceClosure callback,
-                                 const base::TaskTraits& traits) override {
+                                 base::OnceClosure callback) override {
     if (@available(macOS 10.14, *)) {
       __block base::OnceClosure block_callback = std::move(callback);
+      __block scoped_refptr<base::SequencedTaskRunner> requesting_thread =
+          base::SequencedTaskRunnerHandle::Get();
       [AVCaptureDevice requestAccessForMediaType:media_type
                                completionHandler:^(BOOL granted) {
-                                 base::PostTask(FROM_HERE, traits,
-                                                std::move(block_callback));
+                                 requesting_thread->PostTask(
+                                     FROM_HERE, std::move(block_callback));
                                }];
     } else {
-      NOTREACHED();
-      base::PostTask(FROM_HERE, traits, std::move(callback));
+      CHECK(false);
     }
   }
 };
@@ -87,7 +85,7 @@ NSInteger MediaAuthorizationStatus(AVMediaType media_type) {
         media_type);
   }
 
-  NOTREACHED();
+  CHECK(false);
   return 0;
 }
 
@@ -117,22 +115,18 @@ SystemPermission CheckSystemMediaCapturePermission(AVMediaType media_type) {
 }
 
 void RequestSystemMediaCapturePermission(AVMediaType media_type,
-                                         base::OnceClosure callback,
-                                         const base::TaskTraits& traits) {
+                                         base::OnceClosure callback) {
   if (UsingFakeMediaDevices()) {
-    base::PostTask(FROM_HERE, traits, std::move(callback));
+    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                     std::move(callback));
     return;
   }
 
   if (@available(macOS 10.14, *)) {
     GetMediaAuthorizationWrapper().RequestAccessForMediaType(
-        media_type, std::move(callback), traits);
+        media_type, std::move(callback));
   } else {
-    NOTREACHED();
-    // Should never happen since for pre-10.14 system permissions don't exist
-    // and checking them in CheckSystemAudioCapturePermission() will always
-    // return allowed, and this function should not be called.
-    base::PostTask(FROM_HERE, traits, std::move(callback));
+    CHECK(false);
   }
 }
 
@@ -144,7 +138,9 @@ bool IsScreenCaptureAllowed() {
     }
   }
 
-  return ui::IsScreenCaptureAllowed();
+  bool allowed = ui::IsScreenCaptureAllowed();
+  LogSystemScreenCapturePermission(allowed);
+  return allowed;
 }
 
 }  // namespace
@@ -162,16 +158,12 @@ SystemPermission CheckSystemScreenCapturePermission() {
                                   : SystemPermission::kDenied;
 }
 
-void RequestSystemAudioCapturePermisson(base::OnceClosure callback,
-                                        const base::TaskTraits& traits) {
-  RequestSystemMediaCapturePermission(AVMediaTypeAudio, std::move(callback),
-                                      traits);
+void RequestSystemAudioCapturePermisson(base::OnceClosure callback) {
+  RequestSystemMediaCapturePermission(AVMediaTypeAudio, std::move(callback));
 }
 
-void RequestSystemVideoCapturePermisson(base::OnceClosure callback,
-                                        const base::TaskTraits& traits) {
-  RequestSystemMediaCapturePermission(AVMediaTypeVideo, std::move(callback),
-                                      traits);
+void RequestSystemVideoCapturePermisson(base::OnceClosure callback) {
+  RequestSystemMediaCapturePermission(AVMediaTypeVideo, std::move(callback));
 }
 
 void SetMediaAuthorizationWrapperForTesting(

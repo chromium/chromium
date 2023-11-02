@@ -1,5 +1,5 @@
-#!/usr/bin/env vpython
-# Copyright 2019 The Chromium Authors. All rights reserved.
+#!/usr/bin/env vpython3
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -92,6 +92,28 @@ class CompileDbTest(unittest.TestCase):
     input_db = [{
         'command':
         r'clang -g -Xclang -fuse-ctor-homing -funroll-loops test.cc'
+    }]
+    self.assertEquals(compile_db.ProcessCompileDatabase(input_db, []),
+                      [{
+                          'command': r'clang -g -funroll-loops test.cc'
+                      }])
+
+  def testGomaccPathFiltered(self):
+    sys.platform = 'linux2'
+    input_db = [{
+        'command':
+        r'clang -g --gomacc-path /path/to/gomacc -funroll-loops test.cc'
+    }]
+    self.assertEquals(compile_db.ProcessCompileDatabase(input_db, []),
+                      [{
+                          'command': r'clang -g -funroll-loops test.cc'
+                      }])
+
+  def testProfileSampleUseFiltered(self):
+    sys.platform = 'linux2'
+    input_db = [{
+        'command':
+        r'clang -g -fprofile-sample-use=../path/to.prof -funroll-loops test.cc'
     }]
     self.assertEquals(compile_db.ProcessCompileDatabase(input_db, []),
                       [{

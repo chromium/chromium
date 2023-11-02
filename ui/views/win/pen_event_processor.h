@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
@@ -53,7 +54,7 @@ class VIEWS_EXPORT PenEventProcessor {
       const gfx::Point& point,
       const ui::PointerDetails& pointer_details);
 
-  ui::SequentialIDGenerator* id_generator_;
+  raw_ptr<ui::SequentialIDGenerator> id_generator_;
   bool direct_manipulation_enabled_;
   base::flat_map<UINT32, bool> pen_in_contact_;
   base::flat_map<UINT32, bool> send_touch_for_pen_;
@@ -62,7 +63,7 @@ class VIEWS_EXPORT PenEventProcessor {
   base::flat_map<UINT32, bool> sent_mouse_down_;
   base::flat_map<UINT32, bool> sent_touch_start_;
 
-  absl::optional<unsigned int> eraser_pointer_id_;
+  absl::optional<ui::PointerId> eraser_pointer_id_;
 };
 
 }  // namespace views

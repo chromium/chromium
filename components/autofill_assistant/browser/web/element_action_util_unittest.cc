@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "components/autofill_assistant/browser/action_value.pb.h"
 #include "components/autofill_assistant/browser/actions/action_test_utils.h"
-#include "components/autofill_assistant/browser/web/element_finder.h"
+#include "components/autofill_assistant/browser/web/element_finder_result.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
@@ -26,23 +26,21 @@ class ElementActionUtilTest : public testing::Test {
  public:
   ElementActionUtilTest() {}
 
-  void SetUp() override {
-    element_.dom_object.object_data.object_id = "element";
-  }
+  void SetUp() override { element_.SetObjectId("element"); }
 
   MOCK_METHOD2(MockAction,
-               void(const ElementFinder::Result& element,
+               void(const ElementFinderResult& element,
                     base::OnceCallback<void(const ClientStatus&)> done));
 
   MOCK_METHOD3(MockIndexedAction,
                void(int index,
-                    const ElementFinder::Result&,
+                    const ElementFinderResult&,
                     base::OnceCallback<void(const ClientStatus&)> done));
 
   MOCK_METHOD1(MockDone, void(const ClientStatus& status));
 
   MOCK_METHOD2(MockGetAction,
-               void(const ElementFinder::Result& element,
+               void(const ElementFinderResult& element,
                     base::OnceCallback<void(const ClientStatus&,
                                             const std::string&)> done));
 
@@ -51,7 +49,7 @@ class ElementActionUtilTest : public testing::Test {
 
  protected:
   MockWebController mock_web_controller_;
-  ElementFinder::Result element_;
+  ElementFinderResult element_;
 };
 
 TEST_F(ElementActionUtilTest, ExecuteSingleAction) {
@@ -115,7 +113,7 @@ TEST_F(ElementActionUtilTest, ExecuteActionsAbortOnError) {
 }
 
 TEST_F(ElementActionUtilTest, TakeElementAndPerform) {
-  auto expected_element = std::make_unique<ElementFinder::Result>();
+  auto expected_element = std::make_unique<ElementFinderResult>();
 
   EXPECT_CALL(*this, MockAction(EqualsElement(*expected_element), _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus()));
@@ -129,7 +127,7 @@ TEST_F(ElementActionUtilTest, TakeElementAndPerform) {
 }
 
 TEST_F(ElementActionUtilTest, TakeElementAndPerformWithFailedStatus) {
-  auto expected_element = std::make_unique<ElementFinder::Result>();
+  auto expected_element = std::make_unique<ElementFinderResult>();
 
   EXPECT_CALL(*this, MockAction(_, _)).Times(0);
   EXPECT_CALL(*this,
@@ -143,7 +141,7 @@ TEST_F(ElementActionUtilTest, TakeElementAndPerformWithFailedStatus) {
 }
 
 TEST_F(ElementActionUtilTest, TakeElementAndGetProperty) {
-  auto expected_element = std::make_unique<ElementFinder::Result>();
+  auto expected_element = std::make_unique<ElementFinderResult>();
 
   EXPECT_CALL(*this, MockGetAction(EqualsElement(*expected_element), _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), "value"));
@@ -159,7 +157,7 @@ TEST_F(ElementActionUtilTest, TakeElementAndGetProperty) {
 }
 
 TEST_F(ElementActionUtilTest, TakeElementAndGetPropertyWithFailedStatus) {
-  auto expected_element = std::make_unique<ElementFinder::Result>();
+  auto expected_element = std::make_unique<ElementFinderResult>();
 
   EXPECT_CALL(*this, MockGetAction(_, _)).Times(0);
   EXPECT_CALL(*this,

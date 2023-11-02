@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,10 +61,10 @@ public class SplashActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         boolean androidSSplashSuccess = false;
-        if (isAtLeastS() && getIntent().hasCategory("android.intent.category.LAUNCHER")) {
+        if (androidSSplashScreenEnabled() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             // When launched with a data Intent, the splash screen is created, but
             // SplashScreen.OnExitAnimationListener#onSplashScreenExit is not called.
-            // Fall back to manually creating out own splash screen in that case.
+            // Fall back to manually creating our own splash screen in that case.
             androidSSplashSuccess =
                     SplashUtilsForS.listenForSplashScreen(this, getWindow(), (view, bitmap) -> {
                         mSplashView = view;
@@ -171,7 +171,7 @@ public class SplashActivity extends Activity {
             setRequestedOrientation(orientation);
         }
 
-        if (isAtLeastS()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             // This case will be hit when we are launched by a data intent.
             mSplashView = SplashUtilsForS.createSplashView(this);
         } else {
@@ -280,17 +280,8 @@ public class SplashActivity extends Activity {
                         .executeOnExecutor(android.os.AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    /**
-     * Checks if the device is running on a pre-release version of Android S or a release version of
-     * Android S or newer.
-     * <p>
-     * <strong>Note:</strong> When Android S is finalized for release, this method will be
-     * deprecated and all calls should be replaced with {@code Build.VERSION.SDK_INT >=
-     * Build.VERSION_CODES.S}.
-     *
-     * @return {@code true} if S APIs are available for use, {@code false} otherwise
-     */
-    static boolean isAtLeastS() {
-        return Build.VERSION.SDK_INT >= 31;
+    /** Whether we enable integration with Android S splash screens. */
+    static boolean androidSSplashScreenEnabled() {
+        return false;
     }
 }

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,9 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/record_replay.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "components/viz/service/display/record_replay_render.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/vsync_provider.h"
@@ -48,7 +50,14 @@ SkCanvas* SoftwareOutputDevice::BeginPaint(const gfx::Rect& damage_rect) {
   return surface_ ? surface_->getCanvas() : nullptr;
 }
 
-void SoftwareOutputDevice::EndPaint() {}
+void SoftwareOutputDevice::EndPaint() {
+  if (recordreplay::IsRecordingOrReplaying("notify-paints")) {
+    SkPixmap pixmap;
+    if (surface_ && surface_->peekPixels(&pixmap)) {
+      recordreplay::OnPaintFinished(pixmap);
+    }
+  }
+}
 
 gfx::VSyncProvider* SoftwareOutputDevice::GetVSyncProvider() {
   return vsync_provider_.get();
@@ -62,6 +71,10 @@ void SoftwareOutputDevice::OnSwapBuffers(
 
 int SoftwareOutputDevice::MaxFramesPending() const {
   return 1;
+}
+
+bool SoftwareOutputDevice::SupportsOverridePlatformSize() const {
+  return false;
 }
 
 }  // namespace viz

@@ -1,9 +1,14 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/app_list/arc/arc_usb_host_permission_manager.h"
 
+#include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/mojom/app.mojom.h"
+#include "ash/components/arc/test/arc_util_test_support.h"
+#include "ash/components/arc/test/connection_holder_util.h"
+#include "ash/components/arc/test/fake_app_instance.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
@@ -17,11 +22,6 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/arc/arc_util.h"
-#include "components/arc/mojom/app.mojom.h"
-#include "components/arc/test/arc_util_test_support.h"
-#include "components/arc/test/connection_holder_util.h"
-#include "components/arc/test/fake_app_instance.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -88,12 +88,11 @@ class ArcUsbHostPermissionTest : public InProcessBrowserTest {
   void AddArcApp(const std::string& app_name,
                  const std::string& package_name,
                  const std::string& activity) {
-    arc::mojom::AppInfo app_info;
-    app_info.name = app_name;
-    app_info.package_name = package_name;
-    app_info.activity = activity;
+    std::vector<arc::mojom::AppInfoPtr> apps;
+    apps.emplace_back(
+        arc::mojom::AppInfo::New(app_name, package_name, activity));
 
-    app_instance_->SendPackageAppListRefreshed(package_name, {app_info});
+    app_instance_->SendPackageAppListRefreshed(package_name, apps);
   }
 
   void AddArcPackage(const std::string& package_name) {

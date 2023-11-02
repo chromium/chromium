@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "base/files/file.h"
 #include "base/files/file_util.h"
-#include "base/task/post_task.h"
 #include "components/upload_list/text_log_upload_list.h"
 #include "content/public/browser/browser_context.h"
 

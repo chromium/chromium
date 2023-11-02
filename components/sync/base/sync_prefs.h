@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
@@ -89,36 +90,22 @@ class SyncPrefs {
   void SetSelectedOsTypes(bool sync_all_os_types,
                           UserSelectableOsTypeSet registered_types,
                           UserSelectableOsTypeSet selected_types);
-  bool IsOsSyncFeatureEnabled() const;
-  void SetOsSyncFeatureEnabled(bool enabled);
 
   // Maps |type| to its corresponding preference name. Returns nullptr if |type|
   // isn't an OS type.
   static const char* GetPrefNameForOsType(UserSelectableOsType type);
 #endif
 
-  // Whether Sync is forced off by enterprise policy. Note that this only covers
-  // one out of two types of policy, "browser" policy. The second kind, "cloud"
-  // policy, is handled directly in SyncServiceImpl.
-  bool IsManaged() const;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  bool IsAppsSyncEnabledByOs() const;
+  void SetAppsSyncEnabledByOs(bool apps_sync_enabled);
+#endif
+
+  // Whether Sync is disabled on the client for all profiles and accounts.
+  bool IsSyncClientDisabledByPolicy() const;
 
   // Maps |type| to its corresponding preference name.
   static const char* GetPrefNameForType(UserSelectableType type);
-
-#if defined(OS_ANDROID)
-  // Sets a boolean pref representing that Sync should no longer respect whether
-  // Android master sync is enabled/disabled. It is set per-device and never
-  // gets cleared.
-  void SetDecoupledFromAndroidMasterSync();
-
-  // Gets the value for the boolean pref representing whether Sync should no
-  // longer respect if Android master sync is enabled/disabled. Returns false
-  // until |SetDecoupledFromAndroidMasterSync()| is called.
-  bool GetDecoupledFromAndroidMasterSync();
-#endif  // defined(OS_ANDROID)
-
-  // For testing.
-  void SetManagedForTest(bool is_managed);
 
   // Gets the local sync backend enabled state.
   bool IsLocalSyncEnabled() const;
@@ -143,7 +130,7 @@ class SyncPrefs {
   void OnSyncRequestedPrefChange();
 
   // Never null.
-  PrefService* const pref_service_;
+  const raw_ptr<PrefService> pref_service_;
 
   base::ObserverList<SyncPrefObserver>::Unchecked sync_pref_observers_;
 
@@ -160,8 +147,13 @@ class SyncPrefs {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-void ClearObsoletePassphrasePromptPrefs(PrefService* pref_service);
-void MigrateSyncSuppressedPref(PrefService* pref_service);
+#if BUILDFLAG(IS_ANDROID)
+void ClearObsoleteSyncDecoupledFromAndroidMasterSync(PrefService* pref_service);
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+void MigrateSyncRequestedPrefPostMice(PrefService* pref_service);
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 }  // namespace syncer
 

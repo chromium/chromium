@@ -26,6 +26,8 @@
 #include "third_party/blink/renderer/core/svg/animation/smil_time_container.h"
 
 #include <algorithm>
+
+#include "base/auto_reset.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -101,7 +103,7 @@ class SMILTimeContainer::TimingUpdate {
     return time_container_->should_dispatch_events_;
   }
 
-  using UpdatedElementsMap = HeapHashMap<Member<SVGSMILElement>, SMILInterval>;
+  using UpdatedElementsMap = HeapHashMap<Member<SVGSMILElement>, SMILInterval, WTF::MemberHashRecordReplayId<SVGSMILElement>>;
   UpdatedElementsMap& UpdatedElements() { return updated_elements_; }
 
   TimingUpdate(const TimingUpdate&) = delete;
@@ -117,7 +119,7 @@ class SMILTimeContainer::TimingUpdate {
 SMILTimeContainer::TimingUpdate::~TimingUpdate() {
   if (!ShouldDispatchEvents())
     return;
-  DCHECK(IsSeek() || updated_elements_.IsEmpty());
+  DCHECK(IsSeek() || updated_elements_.empty());
   for (const auto& entry : updated_elements_) {
     SVGSMILElement* element = entry.key;
     if (auto events_to_dispatch = element->ComputeSeekEvents(entry.value))
@@ -215,7 +217,7 @@ void SMILTimeContainer::Reschedule(SVGSMILElement* animation,
 }
 
 bool SMILTimeContainer::HasAnimations() const {
-  return !animated_targets_.IsEmpty();
+  return !animated_targets_.empty();
 }
 
 bool SMILTimeContainer::HasPendingSynchronization() const {

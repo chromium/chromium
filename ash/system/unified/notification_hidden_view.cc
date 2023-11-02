@@ -1,15 +1,17 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/unified/notification_hidden_view.h"
 
+#include "ash/bubble/bubble_constants.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/button_style.h"
+#include "ash/style/pill_button.h"
 #include "ash/system/message_center/ash_message_center_lock_screen_controller.h"
+#include "ash/system/message_center/message_center_constants.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -52,7 +54,7 @@ NotificationHiddenView::NotificationHiddenView()
       views::CreateEmptyBorder(kUnifiedNotificationHiddenPadding));
 
   container_->SetBackground(views::CreateRoundedRectBackground(
-      GetBackgroundColor(), kUnifiedTrayCornerRadius));
+      GetBackgroundColor(), kBubbleCornerRadius));
 
   auto* layout =
       container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -66,13 +68,13 @@ NotificationHiddenView::NotificationHiddenView()
         base::BindRepeating(&NotificationHiddenView::ChangeButtonPressed,
                             base::Unretained(this)),
         l10n_util::GetStringUTF16(IDS_ASH_MESSAGE_CENTER_LOCKSCREEN_CHANGE),
-        PillButton::Type::kIconless, /*icon=*/nullptr));
+        PillButton::Type::kDefaultWithoutIcon, /*icon=*/nullptr,
+        kNotificationPillButtonHorizontalSpacing));
     change_button_->SetTooltipText(l10n_util::GetStringUTF16(
         IDS_ASH_MESSAGE_CENTER_LOCKSCREEN_CHANGE_TOOLTIP));
   }
 
-  SetBorder(
-      views::CreateEmptyBorder(gfx::Insets(kUnifiedNotificationCenterSpacing)));
+  SetBorder(views::CreateEmptyBorder(kUnifiedNotificationCenterSpacing));
   SetLayoutManager(std::make_unique<views::FillLayout>());
 }
 

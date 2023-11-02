@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -162,7 +162,7 @@ TEST_F(ImageSanitizerTest, NoImagesProvided) {
 
 TEST_F(ImageSanitizerTest, InvalidPathAbsolute) {
   base::FilePath normal_path(FILE_PATH_LITERAL("hello.png"));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::FilePath absolute_path(FILE_PATH_LITERAL("c:\\Windows\\win32"));
 #else
   base::FilePath absolute_path(FILE_PATH_LITERAL("/usr/bin/root"));

@@ -23,7 +23,7 @@ ctx.fillRect(0, 0, aCanvas.width, aCanvas.height);
 var firstImage = aCanvas.transferToImageBitmap();
 var secondImage = aCanvas.transferToImageBitmap();
 var testCanvas = document.createElement('canvas');
-var testCtx = testCanvas.getContext('2d');
+var testCtx = testCanvas.getContext('2d', {willReadFrequently: true});
 testCtx.drawImage(firstImage, 0, 0);
 var imgData = testCtx.getImageData(0, 0, 1, 1).data;
 shouldBe("imgData[0]", "255");

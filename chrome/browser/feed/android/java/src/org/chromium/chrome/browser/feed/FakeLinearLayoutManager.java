@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,13 @@ import android.view.View;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /** A fake version of LinearLayoutManager. */
-public class FakeLinearLayoutManager extends LinearLayoutManager {
+public class FakeLinearLayoutManager extends LinearLayoutManager implements ListLayoutHelper {
     private final List<View> mChildViews;
     private int mFirstVisiblePosition = RecyclerView.NO_POSITION;
     private int mLastVisiblePosition = RecyclerView.NO_POSITION;

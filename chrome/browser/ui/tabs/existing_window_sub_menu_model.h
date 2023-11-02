@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,8 +66,7 @@ class ExistingWindowSubMenuModel : public ExistingBaseSubMenuModel {
 
  private:
   // ExistingBaseSubMenuModel:
-  void ExecuteNewCommand(int event_flags) override;
-  void ExecuteExistingCommand(int target_index) override;
+  void ExecuteExistingCommand(size_t target_index) override;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_EXISTING_WINDOW_SUB_MENU_MODEL_H_

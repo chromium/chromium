@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,9 @@ ShellPluginServiceFilter::ShellPluginServiceFilter() = default;
 
 ShellPluginServiceFilter::~ShellPluginServiceFilter() = default;
 
-bool ShellPluginServiceFilter::IsPluginAvailable(int render_process_id,
-                                                 const WebPluginInfo& plugin) {
+bool ShellPluginServiceFilter::IsPluginAvailable(
+    content::BrowserContext* browser_context,
+    const WebPluginInfo& plugin) {
   return plugin.name == u"Blink Test Plugin" ||
          plugin.name == u"Blink Deprecated Test Plugin" ||
          plugin.name == u"WebKit Test PlugIn";

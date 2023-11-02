@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -102,6 +102,7 @@ class PolicyTemplateGenerator:
           'ios': ('chrome', 'ios'),
           'chrome_os': ('chrome_os', 'chrome_os'),
           'chrome_frame': ('chrome_frame', 'win'),
+          'fuchsia': ('chrome', 'fuchsia'),
       }[product_platform_string]
       platforms = [platform]
     return product, platforms

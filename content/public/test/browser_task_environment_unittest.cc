@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,7 @@ namespace {
 constexpr int kNumHops = 13;
 constexpr int kNumTasks = 8;
 
-#if DCHECK_IS_ON() && !defined(OS_ANDROID)
+#if DCHECK_IS_ON() && !BUILDFLAG(IS_ANDROID)
 // Expect that in builds with working DCHECK messages the failure message
 // includes a hint towards using the BrowserTaskEnvironment class.
 const char kDeathMatcher[] = "Check failed:.*\n*.*BrowserTaskEnvironment";

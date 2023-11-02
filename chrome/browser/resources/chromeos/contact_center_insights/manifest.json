@@ -1,0 +1,16 @@
+{
+  // chrome-extension://oebfonohdfogiaaaelfmjlkjbgdbaahf
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxOnBHZ/Nxvc2WeeAxeSNXiOAmOPSeyjC70+3tfpbySO8Pslt/zWJBT76dhM/Gm+OwVoFdB5/C/pXfJGMqPTGFNyMq5MgJuo4giqWA542sKgn4y8lwtN4Z/2XhZPo5BXizyyxRq1lZdV21ZyImmW+3ODkC35CZ/bTXdpHzV0I5hJ14wVRzZ/fS047R5Dx+/JUJCp7uspL8nt00hPuwFmW/PLZjAnmMq3ULW216YP2VhF9ROUwRwvZqgJ5nWmfQj7dlVKstwa1PtQgqe/2p0oVif4NP/hg3+zpz7y9f0kXFRB/QVjg6R9hLGqDuqu5uh5LfTarVMH35zvaiZGhtB4rLQIDAQAB",
+  "name": "Contact Center Insights",
+  "version": "1.0.1",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "background_wrapper.js"
+  },
+  "permissions": [
+    "alarms",
+    "background",
+    "enterprise.reportingPrivate",
+    "idle"
+  ]
+}

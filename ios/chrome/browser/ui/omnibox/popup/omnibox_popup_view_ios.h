@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,8 +36,6 @@ class OmniboxPopupViewIOS : public OmniboxPopupView,
   void OnMatchIconUpdated(size_t match_index) override {}
   void OnDragCanceled() override {}
 
-  void UpdateEditViewIcon();
-
   // OmniboxPopupProvider implemetation.
   void SetTextAlignment(NSTextAlignment alignment) override;
   void SetSemanticContentAttribute(
@@ -46,8 +44,7 @@ class OmniboxPopupViewIOS : public OmniboxPopupView,
 
   // OmniboxPopupViewControllerDelegate implementation.
   bool IsStarredMatch(const AutocompleteMatch& match) const override;
-  void OnMatchHighlighted(size_t row) override;
-  // |disposition| should be CURRENT_TAB is the match should be loaded,
+  // `disposition` should be CURRENT_TAB is the match should be loaded,
   // SWITCH_TO_TAB if it should switch to this tab.
   void OnMatchSelected(const AutocompleteMatch& match,
                        size_t row,

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@ class LoginDataDispatcher;
 
 // Base test fixture for testing the views-based login and lock screens. This
 // class provides easy access to types which the login/lock frequently need.
-class LoginTestBase : public AshTestBase {
+class LoginTestBase : public NoSessionAshTestBase {
  public:
   LoginTestBase();
 
@@ -35,7 +35,8 @@ class LoginTestBase : public AshTestBase {
   // component needs to be able to talk directly to the lockscreen (e.g. getting
   // the ScreenType).
   void ShowLockScreen();
-  void ShowLoginScreen();
+  // If `set_wallpaper` is true, sets a wallpaper in the default color.
+  void ShowLoginScreen(bool set_wallpaper = true);
 
   // Sets the primary test widget. The widget can be retrieved using |widget()|.
   // This can be used to make a widget scoped to the whole test, e.g. if the

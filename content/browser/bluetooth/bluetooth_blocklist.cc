@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,14 @@
 #include "base/check.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split.h"
+#include "content/browser/bluetooth/bluetooth_util.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
 
 using device::BluetoothUUID;
+using ManufacturerId = device::BluetoothDevice::ManufacturerId;
 
 namespace {
 
@@ -40,6 +43,8 @@ void BluetoothBlocklist::Add(const BluetoothUUID& uuid, Value value) {
   }
 }
 
+// TODO(crbug.com/1348063): Support |blocklist_string| for manufacturer data
+// prefix.
 void BluetoothBlocklist::Add(base::StringPiece blocklist_string) {
   if (blocklist_string.empty())
     return;
@@ -66,6 +71,18 @@ void BluetoothBlocklist::Add(base::StringPiece blocklist_string) {
   }
 }
 
+void BluetoothBlocklist::Add(
+    const device::BluetoothDevice::ManufacturerId& company_identifier,
+    const std::vector<blink::mojom::WebBluetoothDataFilter>& prefix) {
+  DataPrefix data_prefix;
+  for (const auto& byte : prefix) {
+    data_prefix.push_back(
+        blink::mojom::WebBluetoothDataFilter::New(byte.data, byte.mask));
+  }
+  blocklisted_manufacturer_data_prefix_[company_identifier].push_back(
+      std::move(data_prefix));
+}
+
 bool BluetoothBlocklist::IsExcluded(const BluetoothUUID& uuid) const {
   CHECK(uuid.IsValid());
   const auto& it = blocklisted_uuids_.find(uuid);
@@ -75,14 +92,80 @@ bool BluetoothBlocklist::IsExcluded(const BluetoothUUID& uuid) const {
 }
 
 bool BluetoothBlocklist::IsExcluded(
-    const std::vector<blink::mojom::WebBluetoothLeScanFilterPtr>& filters) {
-  for (const blink::mojom::WebBluetoothLeScanFilterPtr& filter : filters) {
-    if (!filter->services) {
+    const blink::mojom::WebBluetoothCompanyPtr& company_identifier,
+    const std::vector<blink::mojom::WebBluetoothDataFilterPtr>& filter_data)
+    const {
+  auto it = blocklisted_manufacturer_data_prefix_.find(company_identifier->id);
+  if (it == blocklisted_manufacturer_data_prefix_.end()) {
+    return false;
+  }
+  // Check if |filter_data| is a strict subset of any blocked record in
+  // |blocklisted_manufacturer_data_prefix_| in order to provide developers
+  // with feedback if they request data they will not be allowed to receive.
+  //
+  // We don't want to exclude |filter_data| if it only has a non-empty
+  // intersection with the blocked data as the filter might also match other
+  // unblocked data. This means that filters which match blocked data will be
+  // allowed in a call to requestDevice(). The blocked data will still be
+  // filtered out when constructing the BluetoothAdvertisementEvent.
+  for (const auto& blocked_data_prefix : it->second) {
+    // If |filter_data| length is shorter, it can't be subset of
+    // |blocked_data_prefix|. For example:
+    // - blocked_data_prefix = {{0x01, 0xff}, {0x00, 0x00}}
+    // - filter_data = {{0x01, 0xff}}
+    // data like {0x1} is matched by |filter_data| but not by
+    // |blocked_data_prefix|.
+    if (blocked_data_prefix.size() > filter_data.size()) {
       continue;
     }
-    for (const BluetoothUUID& service : filter->services.value()) {
-      if (IsExcluded(service)) {
-        return true;
+    size_t i = 0;
+    for (const auto& byte : blocked_data_prefix) {
+      if ((byte->mask & filter_data.at(i)->mask) != byte->mask) {
+        break;
+      }
+      if ((byte->data & byte->mask) != (filter_data.at(i)->data & byte->mask)) {
+        break;
+      }
+      i += 1;
+    }
+    if (i == blocked_data_prefix.size()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool BluetoothBlocklist::IsExcluded(
+    const device::BluetoothDevice::ManufacturerId& company_identifier,
+    const device::BluetoothDevice::ManufacturerData& manufacturer_data) const {
+  auto it = blocklisted_manufacturer_data_prefix_.find(company_identifier);
+  if (it == blocklisted_manufacturer_data_prefix_.end()) {
+    return false;
+  }
+
+  for (const auto& blocked_data_prefix : it->second) {
+    if (MatchesBluetoothDataFilter(blocked_data_prefix, manufacturer_data))
+      return true;
+  }
+  return false;
+}
+
+bool BluetoothBlocklist::IsExcluded(
+    const std::vector<blink::mojom::WebBluetoothLeScanFilterPtr>& filters) {
+  for (const blink::mojom::WebBluetoothLeScanFilterPtr& filter : filters) {
+    if (filter->services) {
+      for (const BluetoothUUID& service : filter->services.value()) {
+        if (IsExcluded(service)) {
+          return true;
+        }
+      }
+    }
+    if (filter->manufacturer_data) {
+      for (const auto& [company_id, data_filter] :
+           filter->manufacturer_data.value()) {
+        if (IsExcluded(company_id, data_filter)) {
+          return true;
+        }
       }
     }
   }
@@ -118,6 +201,7 @@ void BluetoothBlocklist::RemoveExcludedUUIDs(
 
 void BluetoothBlocklist::ResetToDefaultValuesForTest() {
   blocklisted_uuids_.clear();
+  blocklisted_manufacturer_data_prefix_.clear();
   PopulateWithDefaultValues();
   PopulateWithServerProvidedValues();
 }
@@ -130,18 +214,6 @@ BluetoothBlocklist::BluetoothBlocklist() {
 void BluetoothBlocklist::PopulateWithDefaultValues() {
   blocklisted_uuids_.clear();
 
-  // Testing from Web Tests Note:
-  //
-  // Random UUIDs for object & exclude permutations that do not exist in the
-  // standard blocklist are included to facilitate integration testing from
-  // Web Tests.  Unit tests can dynamically modify the blocklist, but don't
-  // offer the full integration test to the Web Bluetooth Javascript bindings.
-  //
-  // This is done for simplicity as opposed to exposing a testing API that can
-  // add to the blocklist over time, which would be over engineered.
-  //
-  // Remove testing UUIDs if the specified blocklist is updated to include UUIDs
-  // that match the specific permutations.
   DCHECK(BluetoothUUID("00001800-0000-1000-8000-00805f9b34fb") ==
          BluetoothUUID("1800"));
 
@@ -161,16 +233,38 @@ void BluetoothBlocklist::PopulateWithDefaultValues() {
   Add(BluetoothUUID("2a02"), Value::EXCLUDE_WRITES);
   Add(BluetoothUUID("2a03"), Value::EXCLUDE);
   Add(BluetoothUUID("2a25"), Value::EXCLUDE);
-  // Characteristics for Web Tests:
-  Add(BluetoothUUID("bad1c9a2-9a5b-4015-8b60-1579bbbf2135"),
-      Value::EXCLUDE_READS);
   // Descriptors:
   Add(BluetoothUUID("2902"), Value::EXCLUDE_WRITES);
   Add(BluetoothUUID("2903"), Value::EXCLUDE_WRITES);
+
+  // Testing from Web Tests Note:
+  //
+  // Random UUIDs for object & exclude permutations that do not exist in the
+  // standard blocklist are included to facilitate integration testing from
+  // Web Tests.  Unit tests can dynamically modify the blocklist, but don't
+  // offer the full integration test to the Web Bluetooth Javascript bindings.
+  //
+  // This is done for simplicity as opposed to exposing a testing API that can
+  // add to the blocklist over time, which would be over engineered.
+  //
+  // Remove testing UUIDs if the specified blocklist is updated to include UUIDs
+  // that match the specific permutations.
+  //
+  // Characteristics for Web Tests:
+  Add(BluetoothUUID("bad1c9a2-9a5b-4015-8b60-1579bbbf2135"),
+      Value::EXCLUDE_READS);
   // Descriptors for Web Tests:
   Add(BluetoothUUID("bad2ddcf-60db-45cd-bef9-fd72b153cf7c"), Value::EXCLUDE);
   Add(BluetoothUUID("bad3ec61-3cc3-4954-9702-7977df514114"),
       Value::EXCLUDE_READS);
+
+  // TODO(crbug.com/1163207): To fill below when manufacturer blocklist spec
+  // patch is done.
+  // Blocklist manufacturer data prefix updated [TBD date] from: [TBD
+  // blocklist link].
+  // iBeacon's proximity UUID might reveal user's location information. See
+  // https://en.wikipedia.org/wiki/IBeacon for detail.
+  Add(0x4c, {{0x02, 0xff}});
 }
 
 void BluetoothBlocklist::PopulateWithServerProvidedValues() {

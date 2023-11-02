@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/segmentation_platform/ukm_database_client.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 
 namespace segmentation_platform {
@@ -55,6 +56,13 @@ SegmentationPlatformProfileObserver::~SegmentationPlatformProfileObserver() {
 }
 
 void SegmentationPlatformProfileObserver::OnProfileAdded(Profile* profile) {
+  // We might call this method for the same profile more than once, but should
+  // not process the same profile twice. That can be the case during the
+  // construction of this `SegmentationPlatformProfileObserver`, which can be
+  // called from within another `ProfileManagerObserver::OnProfileAdded`.
+  if (observed_profiles_.IsObservingSource(profile))
+    return;
+
   observed_profiles_.AddObservation(profile);
 
   // Check if we have any OTR profiles.

@@ -1,8 +1,9 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
+#include <tuple>
+
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -94,7 +95,7 @@ class CustomTabsHeader : public AndroidBrowserTest {
     auto* web_contents = content::WebContents::FromRenderFrameHost(host);
     ClientDataHeaderWebContentsObserver::FromWebContents(web_contents)
         ->SetHeader(kHeaderValue2);
-    ignore_result(ExecJs(host, "document.images[0].src = 'google3.jpg'"));
+    std::ignore = ExecJs(host, "document.images[0].src = 'google3.jpg'");
   }
 
  private:

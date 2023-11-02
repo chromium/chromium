@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,8 +24,7 @@ using net::IOBuffer;
 using testing::_;
 using testing::Return;
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 const int kBufferSize = 4096;
@@ -114,5 +113,4 @@ TEST_F(TransportChannelSocketAdapterTest, SendPending) {
   ASSERT_EQ(net::OK, result);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

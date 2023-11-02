@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) 2009 The Chromium Authors. All rights reserved.
+# Copyright 2009 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 #
@@ -17,10 +17,11 @@
 # "false" as desired. An empty $DEFAULTS_FILE is the same as setting both values
 # to "false".
 
+@@include@@../common/variables.include
+
 @@include@@apt.include
 
 ## MAIN ##
-DEFAULTS_FILE="/etc/default/@@PACKAGE@@"
 if [ -r "$DEFAULTS_FILE" ]; then
   . "$DEFAULTS_FILE"
 fi

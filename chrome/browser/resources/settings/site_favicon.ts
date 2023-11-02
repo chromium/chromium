@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,16 +8,22 @@
  */
 
 import {getFavicon, getFaviconForPageURL} from 'chrome://resources/js/icon.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './site_favicon.html.js';
 
+export interface SiteFaviconElement {
+  $: {
+    favicon: HTMLElement,
+  };
+}
 
-class SiteFaviconElement extends PolymerElement {
+export class SiteFaviconElement extends PolymerElement {
   static get is() {
     return 'site-favicon';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -73,6 +79,12 @@ class SiteFaviconElement extends PolymerElement {
       return url;
     }
     return url.includes('://') ? url : 'http://' + url;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'site-favicon': SiteFaviconElement;
   }
 }
 

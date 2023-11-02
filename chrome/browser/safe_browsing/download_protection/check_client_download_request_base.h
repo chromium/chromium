@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,9 @@
 #include "base/callback_list.h"
 #include "base/cancelable_callback.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
@@ -32,7 +34,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/common/safe_browsing/disk_image_type_sniffer_mac.h"
 #include "chrome/services/file_util/public/cpp/sandboxed_dmg_analyzer_mac.h"
 #endif
@@ -100,9 +102,12 @@ class CheckClientDownloadRequestBase {
   // for concrete sub classes to implement, rather than having three separate
   // hooks with slightly different logic when they are called.
 
-  // Called with the download ping token as returned by the server, if one was
-  // returned.
-  virtual void SetDownloadPingToken(const std::string& token) = 0;
+  // Called with the client download response as returned by the server, if one
+  // was returned and the returned verdict is unsafe (i.e. not safe or unknown).
+  virtual void SetDownloadProtectionData(
+      const std::string& token,
+      const ClientDownloadResponse::Verdict& verdict,
+      const ClientDownloadResponse::TailoredVerdict& tailored_verdict) = 0;
 
   // Called when a valid response has been received from the server.
   virtual void MaybeStorePingsForDownload(DownloadCheckResult result,
@@ -159,15 +164,15 @@ class CheckClientDownloadRequestBase {
   std::unique_ptr<ClientDownloadRequest> client_download_request_;
   std::string client_download_request_data_;
 
-  DownloadProtectionService* const service_;
+  const raw_ptr<DownloadProtectionService> service_;
   const scoped_refptr<SafeBrowsingDatabaseManager> database_manager_;
   const bool pingback_enabled_;
   base::CancelableTaskTracker request_tracker_;  // For HistoryService lookup.
   base::TimeTicks start_time_ = base::TimeTicks::Now();  // Used for stats.
   base::TimeTicks timeout_start_time_;
   base::TimeTicks request_start_time_;
-  bool skipped_url_whitelist_ = false;
-  bool skipped_certificate_whitelist_ = false;
+  bool skipped_url_allowlist_ = false;
+  bool skipped_certificate_allowlist_ = false;
   bool sampled_unsupported_file_ = false;
 
   bool is_extended_reporting_ = false;

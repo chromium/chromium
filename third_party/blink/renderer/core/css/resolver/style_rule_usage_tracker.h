@@ -1,11 +1,16 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_STYLE_RULE_USAGE_TRACKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_STYLE_RULE_USAGE_TRACKER_H_
 
+// Pick up CSSStyleSheet definition for computing the default hash.
+// FIXME remove this, see https://linear.app/replay/issue/RUN-1741
+#include "third_party/blink/renderer/core/css/css_style_sheet.h"
+
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 
 namespace blink {
 

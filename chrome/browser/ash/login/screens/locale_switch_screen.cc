@@ -1,12 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/screens/locale_switch_screen.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/base/locale_util.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -29,10 +29,7 @@ constexpr base::TimeDelta kWaitTimeout = base::Seconds(5);
 // Returns whether all information needed (locale and account capabilities)
 // has been fetched.
 bool IsAllInfoFetched(const AccountInfo& info) {
-  bool result = !info.locale.empty();
-  if (features::IsMinorModeRestrictionEnabled())
-    result &= info.capabilities.AreAllCapabilitiesKnown();
-  return result;
+  return !info.locale.empty() && info.capabilities.AreAllCapabilitiesKnown();
 }
 
 }  // namespace
@@ -55,21 +52,31 @@ std::string LocaleSwitchScreen::GetResultString(Result result) {
   }
 }
 
-LocaleSwitchScreen::LocaleSwitchScreen(LocaleSwitchView* view,
+LocaleSwitchScreen::LocaleSwitchScreen(base::WeakPtr<LocaleSwitchView> view,
                                        const ScreenExitCallback& exit_callback)
     : BaseScreen(LocaleSwitchView::kScreenId, OobeScreenPriority::DEFAULT),
-      view_(view),
-      exit_callback_(exit_callback) {
-  if (view_)
-    view_->Bind(this);
-}
+      view_(std::move(view)),
+      exit_callback_(exit_callback) {}
 
-LocaleSwitchScreen::~LocaleSwitchScreen() {
-  if (view_)
-    view_->Unbind();
-}
+LocaleSwitchScreen::~LocaleSwitchScreen() = default;
 
-bool LocaleSwitchScreen::MaybeSkip(WizardContext* wizard_context) {
+bool LocaleSwitchScreen::MaybeSkip(WizardContext& wizard_context) {
+  if (wizard_context.skip_post_login_screens_for_tests) {
+    exit_callback_.Run(Result::NOT_APPLICABLE);
+    return true;
+  }
+
+  // Skip GAIA language sync if user specifically set language through the UI
+  // on the welcome screen.
+  PrefService* local_state = g_browser_process->local_state();
+  if (local_state->GetBoolean(prefs::kOobeLocaleChangedOnWelcomeScreen)) {
+    VLOG(1) << "Skipping GAIA language sync because user chose specific"
+            << " locale on the Welcome Screen.";
+    local_state->ClearPref(prefs::kOobeLocaleChangedOnWelcomeScreen);
+    exit_callback_.Run(Result::NOT_APPLICABLE);
+    return true;
+  }
+
   user_manager::User* user = user_manager::UserManager::Get()->GetActiveUser();
   if (user->HasGaiaAccount()) {
     return false;
@@ -135,11 +142,6 @@ void LocaleSwitchScreen::ShowImpl() {
 
 void LocaleSwitchScreen::HideImpl() {
   ResetState();
-}
-
-void LocaleSwitchScreen::OnViewDestroyed(LocaleSwitchView* view) {
-  if (view == view_)
-    view_ = nullptr;
 }
 
 void LocaleSwitchScreen::OnErrorStateOfRefreshTokenUpdatedForAccount(

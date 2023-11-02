@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/services/quarantine/public/cpp/quarantine_features_win.h"
 #include "content/public/test/browser_test.h"
 
 namespace {
@@ -116,9 +115,8 @@ class ThirdPartyBlockingBrowserTest : public InProcessBrowserTest {
 
   // InProcessBrowserTest:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({features::kThirdPartyModulesBlocking,
-                                           quarantine::kOutOfProcessQuarantine},
-                                          {});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kThirdPartyModulesBlocking);
 
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
     ASSERT_NO_FATAL_FAILURE(

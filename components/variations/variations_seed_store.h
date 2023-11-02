@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,9 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/variations/metrics.h"
@@ -65,9 +65,9 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // problem with loading, clears the seed pref value and returns false. If
   // successful, fills the the outparams with the loaded data and returns true.
   // Virtual for testing.
-  virtual bool LoadSeed(VariationsSeed* seed,
-                        std::string* seed_data,
-                        std::string* base64_seed_signature) WARN_UNUSED_RESULT;
+  [[nodiscard]] virtual bool LoadSeed(VariationsSeed* seed,
+                                      std::string* seed_data,
+                                      std::string* base64_seed_signature);
 
   // Stores the given seed |data| (serialized protobuf) to local state, along
   // with a base64-encoded digital signature for seed and the date when it was
@@ -78,29 +78,30 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // The actual seed data will be base64 encoded for storage. If the string
   // is invalid, the existing prefs are untouched and false is returned.
   // Additionally, stores the |country_code| that was received with the seed in
-  // a separate pref. On success and if |parsed_seed| is not NULL, |parsed_seed|
-  // will be filled with the de-serialized decoded protobuf.
-  bool StoreSeedData(const std::string& data,
-                     const std::string& base64_seed_signature,
-                     const std::string& country_code,
-                     const base::Time& date_fetched,
-                     bool is_delta_compressed,
-                     bool is_gzip_compressed,
-                     VariationsSeed* parsed_seed) WARN_UNUSED_RESULT;
+  // a separate pref. |done_callback| will be called with the result of the
+  // operation, with a non-empty de-serialized, decoded protobuf VariationsSeed
+  // on success.
+  // Note: Strings are passed by value to support std::move() semantics.
+  void StoreSeedData(
+      std::string data,
+      std::string base64_seed_signature,
+      std::string country_code,
+      base::Time date_fetched,
+      bool is_delta_compressed,
+      bool is_gzip_compressed,
+      base::OnceCallback<void(bool, VariationsSeed)> done_callback);
 
   // Loads the safe variations seed data from local state into |seed| and
-  // updates any relevant fields in |client_state|. Returns
-  // LoadSeedResult::kSuccess iff the safe seed was read successfully from
-  // prefs. If the safe seed could not be loaded, it is guaranteed that no
-  // fields in |client_state| are modified.
+  // updates any relevant fields in |client_state|. Returns true iff the safe
+  // seed was read successfully from prefs. If the safe seed could not be
+  // loaded, it is guaranteed that no fields in |client_state| are modified.
   //
   // Side effect: Upon failing to read or validate the safe seed, clears all
   // of the safe seed pref values.
   //
   // Virtual for testing.
-  virtual LoadSeedResult LoadSafeSeed(VariationsSeed* seed,
-                                      ClientFilterableState* client_state)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] virtual bool LoadSafeSeed(VariationsSeed* seed,
+                                          ClientFilterableState* client_state);
 
   // Stores the given |seed_data| (a serialized protobuf) to local state as a
   // safe seed, along with a base64-encoded digital signature for seed and any
@@ -167,14 +168,14 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // type.
   void ClearPrefs(SeedType seed_type);
 
-#if defined(OS_ANDROID)
-  // Imports the variations seed from the Java side. Logs UMA on failure.
-  // Android Chrome uses this on first run; WebView uses this on every startup.
-  // In Chrome's case, it's important to set the first run seed as soon as
-  // possible, because some clients query the seed store prefs directly rather
-  // than accessing them via the seed store API: https://crbug.com/829527
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // Imports the variations seed from the Java/iOS side. Logs UMA on failure.
+  // Android and iOS Chrome uses this on first run; WebView uses this on every
+  // startup. In Chrome's case, it's important to set the first run seed as soon
+  // as possible, because some clients query the seed store prefs directly
+  // rather than accessing them via the seed store API: https://crbug.com/829527
   void ImportInitialSeed(std::unique_ptr<SeedResponse> initial_seed);
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
   // Loads the variations seed data from local state into |seed|, as well as the
   // raw pref values into |seed_data| and |base64_signature|. Loads either the
@@ -182,69 +183,69 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // loading the seed was successful.
   // Side-effect: Upon any failure to read or validate the safe seed, clears all
   // of the pref values for the seed. This occurs iff the method returns false.
-  LoadSeedResult LoadSeedImpl(SeedType seed_type,
-                              VariationsSeed* seed,
-                              std::string* seed_data,
-                              std::string* base64_seed_signature)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] LoadSeedResult LoadSeedImpl(SeedType seed_type,
+                                            VariationsSeed* seed,
+                                            std::string* seed_data,
+                                            std::string* base64_seed_signature);
 
   // Reads the variations seed data from prefs into |seed_data|, and returns the
   // result of the load. The value stored into |seed_data| should only be used
   // if the result is SUCCESS. Reads either the latest or the safe seed,
   // according to the specified |seed_type|.
   // Side-effect: If the read fails, clears the prefs associated with the seed.
-  LoadSeedResult ReadSeedData(SeedType seed_type,
-                              std::string* seed_data) WARN_UNUSED_RESULT;
+  [[nodiscard]] LoadSeedResult ReadSeedData(SeedType seed_type,
+                                            std::string* seed_data);
 
   // Resolves a |delta_bytes| against the latest seed.
   // Returns success or an error, populating |seed_bytes| on success.
-  StoreSeedResult ResolveDelta(const std::string& delta_bytes,
-                               std::string* seed_bytes) WARN_UNUSED_RESULT;
+  [[nodiscard]] StoreSeedResult ResolveDelta(const std::string& delta_bytes,
+                                             std::string* seed_bytes);
 
   // Resolves instance manipulations applied to received data.
   // Returns success or an error, populating |seed_bytes| on success.
-  StoreSeedResult ResolveInstanceManipulations(const std::string& data,
-                                               const InstanceManipulations& im,
-                                               std::string* seed_bytes)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] StoreSeedResult ResolveInstanceManipulations(
+      const std::string& data,
+      const InstanceManipulations& im,
+      std::string* seed_bytes);
 
   // Validates that |seed_bytes| parses and matches |base64_seed_signature|.
   // Signature checking may be disabled via |signature_verification_enabled_|.
   // |seed_type| indicates the source of the seed for logging purposes.
   // |result| must be non-null, and will be populated on success.
   // Returns success or some error value.
-  StoreSeedResult ValidateSeedBytes(const std::string& seed_bytes,
-                                    const std::string& base64_seed_signature,
-                                    SeedType seed_type,
-                                    ValidatedSeed* result) WARN_UNUSED_RESULT;
+  [[nodiscard]] StoreSeedResult ValidateSeedBytes(
+      const std::string& seed_bytes,
+      const std::string& base64_seed_signature,
+      SeedType seed_type,
+      ValidatedSeed* result);
 
   // Gzip compresses and base64 encodes a validated seed.
   // Returns success or error and populates base64_seed_data on success.
-  StoreSeedResult CompressSeedBytes(const ValidatedSeed& validated,
-                                    std::string* base64_seed_data)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] StoreSeedResult CompressSeedBytes(
+      const ValidatedSeed& validated,
+      std::string* base64_seed_data);
 
   // Updates the latest seed with validated data.
-  StoreSeedResult StoreValidatedSeed(const ValidatedSeed& seed,
-                                     const std::string& country_code,
-                                     const base::Time& date_fetched)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] StoreSeedResult StoreValidatedSeed(
+      const ValidatedSeed& seed,
+      const std::string& country_code,
+      const base::Time& date_fetched);
 
   // Updates the safe seed with validated data.
-  StoreSeedResult StoreValidatedSafeSeed(
+  [[nodiscard]] StoreSeedResult StoreValidatedSafeSeed(
       const ValidatedSeed& seed,
       int seed_milestone,
       const ClientFilterableState& client_state,
-      base::Time seed_fetch_time) WARN_UNUSED_RESULT;
+      base::Time seed_fetch_time);
 
   // Applies a delta-compressed |patch| to |existing_data|, producing the result
   // in |output|. Returns whether the operation was successful.
-  static bool ApplyDeltaPatch(const std::string& existing_data,
-                              const std::string& patch,
-                              std::string* output) WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool ApplyDeltaPatch(const std::string& existing_data,
+                                            const std::string& patch,
+                                            std::string* output);
 
   // The pref service used to persist the variations seed.
-  PrefService* local_state_;
+  raw_ptr<PrefService> local_state_;
 
   // Cached serial number from the most recently fetched variations seed.
   std::string latest_serial_number_;

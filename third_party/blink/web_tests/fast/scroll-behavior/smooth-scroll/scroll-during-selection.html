@@ -35,7 +35,7 @@ body {
       );
       await smoothScroll(
         pixelsToScrollY, 40, 20, GestureSourceType.MOUSE_INPUT, 'down',
-        SPEED_INSTANT
+        SPEED_INSTANT, !isPercentBasedScrollingEnabled()
       );
       await waitForAnimationEndTimeBased(() => { return window.scrollY; });
       // Windows and Linux values appear to be slightly different

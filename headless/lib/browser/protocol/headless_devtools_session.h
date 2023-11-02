@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/devtools_manager_delegate.h"
-#include "headless/lib/browser/protocol/forward.h"
 #include "headless/lib/browser/protocol/protocol.h"
 
 namespace headless {
@@ -52,7 +52,7 @@ class HeadlessDevToolsSession : public FrontendChannel {
   std::vector<std::unique_ptr<DomainHandler>> handlers_;
   base::flat_map<int, content::DevToolsManagerDelegate::NotHandledCallback>
       pending_commands_;
-  content::DevToolsAgentHostClientChannel* client_channel_;
+  raw_ptr<content::DevToolsAgentHostClientChannel> client_channel_;
 };
 
 }  // namespace protocol

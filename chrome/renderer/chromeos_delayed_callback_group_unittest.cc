@@ -1,11 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/renderer/chromeos_delayed_callback_group.h"
 
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -65,7 +64,15 @@ TEST(DelayedCallbackGroup, TimeoutSimple) {
   EXPECT_GE(delta, kTimeout);
 }
 
-TEST(DelayedCallbackGroup, TimeoutAndRun) {
+#if BUILDFLAG(IS_CHROMEOS)
+// Failing on CrOS ASAN: crbug.com/1290874
+#define MAYBE_TimeoutAndRun DISABLED_TimeoutAndRun
+#else
+#define MAYBE_TimeoutAndRun TimeoutAndRun
+#endif
+
+
+TEST(DelayedCallbackGroup, MAYBE_TimeoutAndRun) {
   const base::TimeDelta kTimeout = base::Milliseconds(500);
   base::test::TaskEnvironment task_environment;
   auto callback_group = base::MakeRefCounted<DelayedCallbackGroup>(

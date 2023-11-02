@@ -1,19 +1,20 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_menu_helper.h"
 
 #import "base/ios/ios_util.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/histogram_macros.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/menu/tab_context_menu_delegate.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_menu_provider.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_presentation_delegate.h"
-#include "ios/chrome/browser/ui/recent_tabs/synced_sessions.h"
+#import "ios/chrome/browser/ui/recent_tabs/synced_sessions.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_url_item.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -73,10 +74,14 @@
     NSMutableArray<UIMenuElement*>* menuElements =
         [[NSMutableArray alloc] init];
 
+    GURL gurl;
+    if (item.URL) {
+      gurl = item.URL.gurl;
+    }
     [menuElements
         addObject:
             [actionFactory
-                actionToOpenInNewTabWithURL:item.URL
+                actionToOpenInNewTabWithURL:gurl
                                  completion:^{
                                    [weakSelf.recentTabsPresentationDelegate
                                            showActiveRegularTabFromRecentTabs];
@@ -85,16 +90,16 @@
     if (base::ios::IsMultipleScenesSupported()) {
       [menuElements
           addObject:[actionFactory
-                        actionToOpenInNewWindowWithURL:item.URL
+                        actionToOpenInNewWindowWithURL:gurl
                                         activityOrigin:
                                             WindowActivityRecentTabsOrigin]];
     }
 
-    [menuElements addObject:[actionFactory actionToCopyURL:item.URL]];
+    [menuElements addObject:[actionFactory actionToCopyURL:gurl]];
 
     [menuElements addObject:[actionFactory actionToShareWithBlock:^{
                     [weakSelf.contextMenuDelegate
-                        shareURL:item.URL
+                        shareURL:gurl
                            title:item.title
                         scenario:ActivityScenario::RecentTabsEntry
                         fromView:view];

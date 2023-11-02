@@ -34,7 +34,7 @@
 namespace blink {
 
 void TreeOrderedList::Add(Node* node) {
-  if (nodes_.IsEmpty()) {
+  if (nodes_.empty()) {
     nodes_.insert(node);
     return;
   }

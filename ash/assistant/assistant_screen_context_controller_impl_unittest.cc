@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,42 +62,6 @@ class AssistantScreenContextControllerTest : public AssistantAshTestBase {
 
   AssistantScreenContextControllerImpl* controller() { return controller_; }
 
-  AssistantScreenContextModel* model() { return &controller_->model_; }
-
-  void WaitAndAssertAssistantStructure() {
-    base::RunLoop run_loop;
-    model()->assistant_structure()->GetValueAsync(base::BindOnce(
-        [](base::RunLoop* run_loop,
-           const ax::mojom::AssistantStructure& structure) {
-          run_loop->Quit();
-        },
-        &run_loop));
-
-    run_loop.Run();
-    EXPECT_TRUE(model()->assistant_structure()->HasValue());
-  }
-
-  void WaitAndAssertScreenContext(bool include_assistant_structure) {
-    base::RunLoop run_loop;
-    controller()->RequestScreenContext(
-        include_assistant_structure,
-        /*region=*/gfx::Rect(),
-        base::BindOnce(
-            [](base::RunLoop* run_loop, bool include_assistant_structure,
-               ax::mojom::AssistantStructurePtr assistant_structure,
-               const std::vector<uint8_t>& screenshot) {
-              if (include_assistant_structure)
-                EXPECT_TRUE(assistant_structure);
-              else
-                EXPECT_FALSE(assistant_structure);
-
-              run_loop->Quit();
-            },
-            &run_loop, include_assistant_structure));
-
-    run_loop.Run();
-  }
-
  private:
   AssistantScreenContextControllerImpl* controller_ = nullptr;
 };
@@ -136,95 +100,6 @@ TEST_F(AssistantScreenContextControllerTest, Screenshot) {
       layer_owner->root(), base::BindRepeating([](ui::Layer* layer) {
         return layer->type() == ui::LayerType::LAYER_SOLID_COLOR;
       })));
-}
-
-// Verify that, in Clamshell mode, opening Launcher will request and cache the
-// Assistant structure.
-TEST_F(AssistantScreenContextControllerTest,
-       ShouldCacheAssistantStructureFutureByOpeningLauncher) {
-  OpenLauncher();
-  WaitAndAssertAssistantStructure();
-}
-
-// Verify that, in Clamshell mode, opening Launcher with Assistant UI will
-// request and cache the Assistant structure.
-TEST_F(AssistantScreenContextControllerTest,
-       ShouldCacheAssistantStructureFutureByOpeningLauncherWithAssistantUi) {
-  ShowAssistantUi(AssistantEntryPoint::kLongPressLauncher);
-  WaitAndAssertAssistantStructure();
-}
-
-// Verify that, in Clamshell mode, closing Launcher will clear the cached
-// Assistant structure.
-TEST_F(AssistantScreenContextControllerTest,
-       ShouldClearAssistantStructureFutureByClosinggLauncher) {
-  ShowAssistantUi(AssistantEntryPoint::kLongPressLauncher);
-  WaitAndAssertAssistantStructure();
-
-  CloseLauncher();
-  EXPECT_FALSE(model()->assistant_structure()->HasValue());
-}
-
-// Verify that, in Clamshell mode, closing Assistant UI will not clear the
-// Assistant structure.
-TEST_F(AssistantScreenContextControllerTest,
-       ShouldNotClearAssistantStructureFutureByClosingAssistantUi) {
-  OpenLauncher();
-  WaitAndAssertAssistantStructure();
-
-  // Open Assistant UI will not change the cache of Assistant structure.
-  ShowAssistantUi(AssistantEntryPoint::kLauncherSearchResult);
-  EXPECT_TRUE(model()->assistant_structure()->HasValue());
-
-  // Close Assistant UI will not change the cache of Assistant structure.
-  CloseAssistantUi(AssistantExitPoint::kBackInLauncher);
-  EXPECT_TRUE(model()->assistant_structure()->HasValue());
-}
-
-// Verify that, in Tablet mode, opening Assistant UI will request and cache the
-// Assistant structure.
-TEST_F(AssistantScreenContextControllerTest,
-       ShouldCacheAssistantStructureFutureByOpeningAssistantUiInTabletMode) {
-  SetTabletMode(/*enable=*/true);
-  ShowAssistantUi(AssistantEntryPoint::kUnspecified);
-  WaitAndAssertAssistantStructure();
-}
-
-// Verify that, in Tablet mode, closing Assistant UI will clear the Assistant
-// structure.
-TEST_F(AssistantScreenContextControllerTest,
-       ShouldClearAssistantStructureFutureByClosingAssistantUiInTabletMode) {
-  SetTabletMode(/*enable=*/true);
-  ShowAssistantUi(AssistantEntryPoint::kUnspecified);
-  WaitAndAssertAssistantStructure();
-
-  CloseAssistantUi();
-  EXPECT_FALSE(model()->assistant_structure()->HasValue());
-}
-
-// Verify that screen context request without Assistant structure is returned.
-TEST_F(AssistantScreenContextControllerTest,
-       ShouldCallCallbackForRequestScreenContextWithoutAssistantStructure) {
-  ShowAssistantUi(AssistantEntryPoint::kLongPressLauncher);
-  WaitAndAssertScreenContext(/*include_assistant_structure=*/false);
-}
-
-// Verify that screen context request with non-cached Assistant structure is
-// returned.
-TEST_F(
-    AssistantScreenContextControllerTest,
-    ShouldCallCallbackForRequestScreenContextWithNonCachedAssistantStructure) {
-  ShowAssistantUi(AssistantEntryPoint::kLongPressLauncher);
-  WaitAndAssertScreenContext(/*include_assistant_structure=*/true);
-}
-
-// Verify that screen context request with cached Assistant structure is
-// returned.
-TEST_F(AssistantScreenContextControllerTest,
-       ShouldCallCallbackForRequestScreenContextWithCachedAssistantStructure) {
-  ShowAssistantUi(AssistantEntryPoint::kLongPressLauncher);
-  WaitAndAssertAssistantStructure();
-  WaitAndAssertScreenContext(/*include_assistant_structure=*/true);
 }
 
 }  // namespace ash

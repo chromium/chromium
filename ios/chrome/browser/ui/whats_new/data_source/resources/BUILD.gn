@@ -1,0 +1,147 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/asset_catalog.gni")
+import("//ios/chrome/tools/strings/substitute_strings_identifier.gni")
+
+substitute_strings_identifier("convert_whats_new_items") {
+  source = "whats_new_entries.plist"
+  output = "$target_gen_dir/whats_new_items.plist"
+  headers = [ "$root_gen_dir/ios/chrome/grit/ios_strings.h" ]
+  deps = [ "//ios/chrome/app/strings:ios_strings" ]
+}
+
+bundle_data("whats_new_entries_plist") {
+  public_deps = [ ":convert_whats_new_items" ]
+  sources = get_target_outputs(":convert_whats_new_items")
+
+  outputs = [ "{{bundle_resources_dir}}/whats_new_entries.plist" ]
+}
+
+substitute_strings_identifier("convert_unit_tests_resources") {
+  source = "test/data/whats_new_test.plist"
+  output = "$target_gen_dir/whats_new/test/data/whats_new_test.plist"
+  headers = [ "$root_gen_dir/ios/chrome/grit/ios_strings.h" ]
+  deps = [ "//ios/chrome/app/strings:ios_strings" ]
+}
+
+bundle_data("unit_tests_resources") {
+  visibility = [ "//ios/chrome/browser/ui/whats_new/data_source:unit_tests" ]
+  testonly = true
+  public_deps = [ ":convert_unit_tests_resources" ]
+  sources = get_target_outputs(":convert_unit_tests_resources")
+
+  outputs =
+      [ "{{bundle_resources_dir}}/whats_new/test/data/whats_new_test.plist" ]
+}
+
+imageset("add_passwords_manually_banner") {
+  sources = [
+    "add_passwords_manually_banner.imageset/Contents.json",
+    "add_passwords_manually_banner.imageset/add_passwords_manually_banner@2x.png",
+    "add_passwords_manually_banner.imageset/add_passwords_manually_banner@3x.png",
+    "add_passwords_manually_banner.imageset/add_passwords_manually_banner_dark@2x.png",
+    "add_passwords_manually_banner.imageset/add_passwords_manually_banner_dark@3x.png",
+  ]
+}
+
+imageset("autofill_banner") {
+  sources = [
+    "autofill_banner.imageset/Contents.json",
+    "autofill_banner.imageset/autofill_banner@2x.png",
+    "autofill_banner.imageset/autofill_banner@3x.png",
+    "autofill_banner.imageset/autofill_banner_dark@2x.png",
+    "autofill_banner.imageset/autofill_banner_dark@3x.png",
+  ]
+}
+
+imageset("new_overflow_menu_banner") {
+  sources = [
+    "new_overflow_menu_banner.imageset/Contents.json",
+    "new_overflow_menu_banner.imageset/new_overflow_menu_banner@2x.png",
+    "new_overflow_menu_banner.imageset/new_overflow_menu_banner@3x.png",
+    "new_overflow_menu_banner.imageset/new_overflow_menu_banner_dark@2x.png",
+    "new_overflow_menu_banner.imageset/new_overflow_menu_banner_dark@3x.png",
+  ]
+}
+
+imageset("passwords_in_other_apps_banner") {
+  sources = [
+    "passwords_in_other_apps_banner.imageset/Contents.json",
+    "passwords_in_other_apps_banner.imageset/passwords_in_other_apps_banner@2x.png",
+    "passwords_in_other_apps_banner.imageset/passwords_in_other_apps_banner@3x.png",
+    "passwords_in_other_apps_banner.imageset/passwords_in_other_apps_banner_dark@2x.png",
+    "passwords_in_other_apps_banner.imageset/passwords_in_other_apps_banner_dark@3x.png",
+  ]
+}
+
+imageset("search_tabs_banner") {
+  sources = [
+    "search_tabs_banner.imageset/Contents.json",
+    "search_tabs_banner.imageset/search_tabs_banner@2x.png",
+    "search_tabs_banner.imageset/search_tabs_banner@3x.png",
+    "search_tabs_banner.imageset/search_tabs_banner_dark@2x.png",
+    "search_tabs_banner.imageset/search_tabs_banner_dark@3x.png",
+  ]
+}
+
+imageset("shared_highlighting_banner") {
+  sources = [
+    "shared_highlighting_banner.imageset/Contents.json",
+    "shared_highlighting_banner.imageset/shared_highlighting_banner@2x.png",
+    "shared_highlighting_banner.imageset/shared_highlighting_banner@3x.png",
+    "shared_highlighting_banner.imageset/shared_highlighting_banner_dark@2x.png",
+    "shared_highlighting_banner.imageset/shared_highlighting_banner_dark@3x.png",
+  ]
+}
+
+imageset("use_chrome_by_default_banner") {
+  sources = [
+    "use_chrome_by_default_banner.imageset/Contents.json",
+    "use_chrome_by_default_banner.imageset/use_chrome_by_default_banner@2x.png",
+    "use_chrome_by_default_banner.imageset/use_chrome_by_default_banner@3x.png",
+    "use_chrome_by_default_banner.imageset/use_chrome_by_default_banner_dark@2x.png",
+    "use_chrome_by_default_banner.imageset/use_chrome_by_default_banner_dark@3x.png",
+  ]
+}
+
+imageset("autofill_hero_banner") {
+  sources = [
+    "autofill_hero_banner.imageset/Contents.json",
+    "autofill_hero_banner.imageset/autofill_hero_banner@2x.png",
+    "autofill_hero_banner.imageset/autofill_hero_banner@3x.png",
+    "autofill_hero_banner.imageset/autofill_hero_banner_dark@2x.png",
+    "autofill_hero_banner.imageset/autofill_hero_banner_dark@3x.png",
+  ]
+}
+
+imageset("chrome_by_default_hero_banner") {
+  sources = [
+    "chrome_by_default_hero_banner.imageset/Contents.json",
+    "chrome_by_default_hero_banner.imageset/chrome_by_default_hero_banner@2x.png",
+    "chrome_by_default_hero_banner.imageset/chrome_by_default_hero_banner@3x.png",
+    "chrome_by_default_hero_banner.imageset/chrome_by_default_hero_banner_dark@2x.png",
+    "chrome_by_default_hero_banner.imageset/chrome_by_default_hero_banner_dark@3x.png",
+  ]
+}
+
+imageset("passwords_in_other_apps_hero_banner") {
+  sources = [
+    "passwords_in_other_apps_hero_banner.imageset/Contents.json",
+    "passwords_in_other_apps_hero_banner.imageset/passwords_in_other_apps_hero_banner@2x.png",
+    "passwords_in_other_apps_hero_banner.imageset/passwords_in_other_apps_hero_banner@3x.png",
+    "passwords_in_other_apps_hero_banner.imageset/passwords_in_other_apps_hero_banner_dark@2x.png",
+    "passwords_in_other_apps_hero_banner.imageset/passwords_in_other_apps_hero_banner_dark@3x.png",
+  ]
+}
+
+imageset("search_tabs_hero_banner") {
+  sources = [
+    "search_tabs_hero_banner.imageset/Contents.json",
+    "search_tabs_hero_banner.imageset/search_tabs_hero_banner@2x.png",
+    "search_tabs_hero_banner.imageset/search_tabs_hero_banner@3x.png",
+    "search_tabs_hero_banner.imageset/search_tabs_hero_banner_dark@2x.png",
+    "search_tabs_hero_banner.imageset/search_tabs_hero_banner_dark@3x.png",
+  ]
+}

@@ -1,11 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/renderer/accessibility/blink_ax_action_target.h"
-#include "skia/ext/skia_matrix_44.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/transform.h"
 
 using blink::WebAXObject;
 
@@ -44,7 +44,7 @@ bool BlinkAXActionTarget::PerformAction(
 gfx::Rect BlinkAXActionTarget::GetRelativeBounds() const {
   blink::WebAXObject offset_container;
   gfx::RectF bounds;
-  skia::Matrix44 container_transform;
+  gfx::Transform container_transform;
   web_ax_object_.GetRelativeBounds(offset_container, bounds,
                                    container_transform);
   return gfx::ToEnclosedRect(bounds);

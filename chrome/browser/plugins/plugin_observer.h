@@ -1,12 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_PLUGINS_PLUGIN_OBSERVER_H_
 #define CHROME_BROWSER_PLUGINS_PLUGIN_OBSERVER_H_
 
-#include <map>
-#include <memory>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
@@ -53,23 +51,13 @@ class PluginObserver : public content::WebContentsObserver,
       const std::u16string& plugin_name);
 
  private:
-  class PluginPlaceholderHost;
   friend class content::WebContentsUserData<PluginObserver>;
 
   explicit PluginObserver(content::WebContents* web_contents);
 
   // chrome::mojom::PluginHost methods.
   void CouldNotLoadPlugin(const base::FilePath& plugin_path) override;
-  void BlockedOutdatedPlugin(
-      mojo::PendingRemote<chrome::mojom::PluginRenderer> plugin_renderer,
-      const std::string& identifier) override;
   void OpenPDF(const GURL& url) override;
-
-  void RemovePluginPlaceholderHost(PluginPlaceholderHost* placeholder);
-
-  // Stores all PluginPlaceholderHosts, keyed by memory address.
-  std::map<PluginPlaceholderHost*, std::unique_ptr<PluginPlaceholderHost>>
-      plugin_placeholders_;
 
   content::RenderFrameHostReceiverSet<chrome::mojom::PluginHost>
       plugin_host_receivers_;

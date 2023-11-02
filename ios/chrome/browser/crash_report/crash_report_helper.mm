@@ -1,34 +1,33 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/crash_report/crash_report_helper.h"
+#import "ios/chrome/browser/crash_report/crash_report_helper.h"
 
 #import <Foundation/Foundation.h>
 
-#include "base/auto_reset.h"
-#include "base/bind.h"
-#include "base/debug/crash_logging.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/location.h"
-#include "base/path_service.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/time/time.h"
-#include "components/breadcrumbs/core/breadcrumb_manager.h"
-#include "components/breadcrumbs/core/crash_reporter_breadcrumb_observer.h"
-#include "components/upload_list/crash_upload_list.h"
-#include "ios/chrome/browser/chrome_paths.h"
-#include "ios/chrome/browser/crash_report/crash_helper.h"
-#include "ios/chrome/browser/crash_report/crash_keys_helper.h"
+#import "base/auto_reset.h"
+#import "base/bind.h"
+#import "base/debug/crash_logging.h"
+#import "base/files/file_path.h"
+#import "base/files/file_util.h"
+#import "base/location.h"
+#import "base/path_service.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
+#import "components/breadcrumbs/core/breadcrumb_manager.h"
+#import "components/breadcrumbs/core/crash_reporter_breadcrumb_observer.h"
+#import "components/upload_list/crash_upload_list.h"
+#import "ios/chrome/browser/crash_report/crash_helper.h"
+#import "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #import "ios/chrome/browser/crash_report/crash_report_user_application_state.h"
-#include "ios/chrome/browser/crash_report/crash_reporter_url_observer.h"
-#import "ios/chrome/browser/web/tab_id_tab_helper.h"
+#import "ios/chrome/browser/crash_report/crash_reporter_url_observer.h"
+#import "ios/chrome/browser/paths/paths.h"
 #import "ios/chrome/browser/web_state_list/all_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/web/public/navigation/navigation_context.h"
-#include "ios/web/public/thread/web_thread.h"
+#import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "net/base/mac/url_conversions.h"
@@ -59,24 +58,24 @@
 - (void)removeTabId:(NSString*)tabId;
 // Removes document related information from tabCurrentStateByTabId_.
 - (void)closingDocumentInTab:(NSString*)tabId;
-// Sets a tab |tabId| specific information with key |key| and value |value| in
+// Sets a tab `tabId` specific information with key `key` and value `value` in
 // tabCurrentStateByTabId_.
 - (void)setTabInfo:(NSString*)key
          withValue:(const NSString*)value
             forTab:(NSString*)tabId;
-// Retrieves the |key| information for tab |tabID|.
+// Retrieves the `key` information for tab `tabID`.
 - (id)tabInfo:(NSString*)key forTab:(NSString*)tabID;
-// Removes the |key| information for tab |tabId|
+// Removes the `key` information for tab `tabId`
 - (void)removeTabInfo:(NSString*)key forTab:(NSString*)tabId;
-// Observes |webState| by this instance of the CrashReporterTabStateObserver.
+// Observes `webState` by this instance of the CrashReporterTabStateObserver.
 - (void)observeWebState:(web::WebState*)webState;
-// Stop Observing |webState| by this instance of the
+// Stop Observing `webState` by this instance of the
 // CrashReporterTabStateObserver.
 - (void)stopObservingWebState:(web::WebState*)webState;
-// Observes |webStateList| by this instance of the
+// Observes `webStateList` by this instance of the
 // CrashReporterTabStateObserver.
 - (void)observeWebStateList:(WebStateList*)webStateList;
-// Stop Observing |webStateList| by this instance of the
+// Stop Observing `webStateList` by this instance of the
 // CrashReporterTabStateObserver.
 - (void)stopObservingWebStateList:(WebStateList*)webStateList;
 @end
@@ -166,29 +165,28 @@ const NSString* kDocumentMimeType = @"application/pdf";
 - (void)webStateList:(WebStateList*)webStateList
     didDetachWebState:(web::WebState*)webState
               atIndex:(int)atIndex {
-  [self removeTabId:TabIdTabHelper::FromWebState(webState)->tab_id()];
+  [self removeTabId:webState->GetStableIdentifier()];
 }
 
 - (void)webStateList:(WebStateList*)webStateList
     didReplaceWebState:(web::WebState*)oldWebState
           withWebState:(web::WebState*)newWebState
                atIndex:(int)atIndex {
-  [self removeTabId:TabIdTabHelper::FromWebState(oldWebState)->tab_id()];
+  [self removeTabId:oldWebState->GetStableIdentifier()];
 }
 
 #pragma mark - CRWWebStateObserver protocol
 
 - (void)webState:(web::WebState*)webState
     didStartNavigation:(web::NavigationContext*)navigation {
-  NSString* tabID = TabIdTabHelper::FromWebState(webState)->tab_id();
-  [self closingDocumentInTab:tabID];
+  [self closingDocumentInTab:webState->GetStableIdentifier()];
 }
 
 - (void)webState:(web::WebState*)webState
     didLoadPageWithSuccess:(BOOL)loadSuccess {
   if (!loadSuccess || webState->GetContentsMimeType() != "application/pdf")
     return;
-  NSString* tabID = TabIdTabHelper::FromWebState(webState)->tab_id();
+  NSString* tabID = webState->GetStableIdentifier();
   NSString* oldMime = (NSString*)[self tabInfo:@"mime" forTab:tabID];
   if ([kDocumentMimeType isEqualToString:oldMime])
     return;
@@ -234,18 +232,6 @@ void StopMonitoringTabStateForWebStateList(WebStateList* web_state_list) {
 void ClearStateForWebStateList(WebStateList* web_state_list) {
   CrashReporterURLObserver::GetSharedInstance()->RemoveWebStateList(
       web_state_list);
-}
-
-void MonitorBreadcrumbManagerService(
-    breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_manager_service) {
-  breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
-      .ObserveBreadcrumbManagerService(breadcrumb_manager_service);
-}
-
-void StopMonitoringBreadcrumbManagerService(
-    breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_manager_service) {
-  breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
-      .StopObservingBreadcrumbManagerService(breadcrumb_manager_service);
 }
 
 void SetPreviousSessionEvents(const std::vector<std::string>& events) {

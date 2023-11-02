@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -121,7 +121,9 @@ void TableRowPainter::PaintBoxDecorationBackground(
 
 void TableRowPainter::PaintCollapsedBorders(const PaintInfo& paint_info,
                                             const CellSpan& dirtied_columns) {
-  ScopedPaintState paint_state(layout_table_row_, paint_info);
+  ScopedPaintState paint_state(
+      layout_table_row_, paint_info,
+      /*painting_legacy_table_part_in_ancestor_layer*/ true);
   absl::optional<BoxDrawingRecorder> recorder;
 
   HandleChangedPartialPaint(paint_info, dirtied_columns);

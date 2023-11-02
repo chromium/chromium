@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,9 @@
 
 #include "base/callback.h"
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "net/base/io_buffer.h"
-#include "net/third_party/quiche/src/spdy/core/spdy_protocol.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 
 namespace net {
 
@@ -61,13 +60,12 @@ class SpdyBuffer::SharedFrameIOBuffer : public IOBuffer {
 };
 
 SpdyBuffer::SpdyBuffer(std::unique_ptr<spdy::SpdySerializedFrame> frame)
-    : shared_frame_(new SharedFrame(std::move(frame))), offset_(0) {}
+    : shared_frame_(base::MakeRefCounted<SharedFrame>(std::move(frame))) {}
 
 // The given data may not be strictly a SPDY frame; we (ab)use
 // |frame_| just as a container.
-SpdyBuffer::SpdyBuffer(const char* data, size_t size) :
-    shared_frame_(new SharedFrame()),
-    offset_(0) {
+SpdyBuffer::SpdyBuffer(const char* data, size_t size)
+    : shared_frame_(base::MakeRefCounted<SharedFrame>()) {
   CHECK_GT(size, 0u);
   CHECK_LE(size, kMaxSpdyFrameSize);
   shared_frame_->data = MakeSpdySerializedFrame(data, size);

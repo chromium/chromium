@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,6 +35,7 @@ class TestingPrefServiceSyncable
   TestingPrefServiceSyncable(TestingPrefStore* managed_prefs,
                              TestingPrefStore* supervised_user_prefs,
                              TestingPrefStore* extension_prefs,
+                             TestingPrefStore* standalone_browser_prefs,
                              TestingPrefStore* user_prefs,
                              TestingPrefStore* recommended_prefs,
                              user_prefs::PrefRegistrySyncable* pref_registry,
@@ -60,6 +61,7 @@ TestingPrefServiceBase<sync_preferences::PrefServiceSyncable,
     TestingPrefServiceBase(TestingPrefStore* managed_prefs,
                            TestingPrefStore* supervised_user_prefs,
                            TestingPrefStore* extension_prefs,
+                           TestingPrefStore* standalone_browser_prefs,
                            TestingPrefStore* user_prefs,
                            TestingPrefStore* recommended_prefs,
                            user_prefs::PrefRegistrySyncable* pref_registry,

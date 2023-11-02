@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 
 namespace base {
 class Value;
+class ValueView;
 }
 
 namespace blink {
@@ -44,7 +45,7 @@ class BLINK_EXPORT WebV8ValueConverter {
   // while setting a value, that property or item is skipped, leaving a hole in
   // the case of arrays.
   // TODO(dcheng): This should just take a const reference.
-  virtual v8::Local<v8::Value> ToV8Value(const base::Value* value,
+  virtual v8::Local<v8::Value> ToV8Value(base::ValueView value,
                                          v8::Local<v8::Context> context) = 0;
 
   // Converts a v8::Value to base::Value.

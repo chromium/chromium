@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,7 @@ class MockScriptElementBase : public GarbageCollected<MockScriptElementBase>,
   MOCK_CONST_METHOD0(ForAttributeValue, String());
   MOCK_CONST_METHOD0(IntegrityAttributeValue, String());
   MOCK_CONST_METHOD0(ReferrerPolicyAttributeValue, String());
-  MOCK_CONST_METHOD0(ImportanceAttributeValue, String());
+  MOCK_CONST_METHOD0(FetchPriorityAttributeValue, String());
   MOCK_CONST_METHOD0(LanguageAttributeValue, String());
   MOCK_CONST_METHOD0(NomoduleAttributeValue, bool());
   MOCK_CONST_METHOD0(SourceAttributeValue, String());
@@ -37,11 +37,13 @@ class MockScriptElementBase : public GarbageCollected<MockScriptElementBase>,
   MOCK_METHOD0(ChildTextContent, String());
   MOCK_CONST_METHOD0(ScriptTextInternalSlot, String());
   MOCK_CONST_METHOD0(HasSourceAttribute, bool());
+  MOCK_CONST_METHOD0(HasAttributionsrcAttribute, bool());
   MOCK_CONST_METHOD0(IsConnected, bool());
   MOCK_CONST_METHOD0(HasChildren, bool());
   MOCK_CONST_METHOD0(GetNonceForElement, const AtomicString&());
   MOCK_CONST_METHOD0(ElementHasDuplicateAttributes, bool());
   MOCK_CONST_METHOD0(InitiatorName, AtomicString());
+  MOCK_CONST_METHOD0(IsPotentiallyRenderBlocking, bool());
   MOCK_METHOD3(AllowInlineScriptForCSP,
                bool(const AtomicString&,
                     const WTF::OrdinalNumber&,

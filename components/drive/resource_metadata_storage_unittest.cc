@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -244,7 +244,7 @@ TEST_F(ResourceMetadataStorageTest, GetIdByResourceId) {
 TEST_F(ResourceMetadataStorageTest, GetChildren) {
   const std::string parents_id[] = { "mercury", "venus", "mars", "jupiter",
                                      "saturn" };
-  std::vector<base::StringPairs> children_name_id(base::size(parents_id));
+  std::vector<base::StringPairs> children_name_id(std::size(parents_id));
   // Skip children_name_id[0/1] here because Mercury and Venus have no moon.
   children_name_id[2].push_back(std::make_pair("phobos", "mars_i"));
   children_name_id[2].push_back(std::make_pair("deimos", "mars_ii"));

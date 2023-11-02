@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,10 +19,10 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.util.ByteBufferTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.nio.ByteBuffer;
@@ -68,9 +68,10 @@ public class LevelDBPersistedDataStorageTest {
     @After
     public void tearDown() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            for (int i = 0; i < mPersistedDataStorage.length; i++) {
-                mPersistedDataStorage[i].destroy();
-            }
+            // Both PersistedDataStorage are associated with the same BrowserContext so calling
+            // destroy() on the first one will free the same SessionProtoDB for all of them. Calling
+            // on both would cause call destroy() on a freed SessionProtoDB.
+            mPersistedDataStorage[0].destroy();
         });
     }
 
@@ -194,7 +195,7 @@ public class LevelDBPersistedDataStorageTest {
             persistedDataStorage.load(key, (res) -> { ch.notifyCalled(ByteBuffer.wrap(res)); });
         });
         ch.waitForCallback(chCount);
-        TabTestUtils.verifyByteBuffer(expected, ch.getRes());
+        ByteBufferTestUtils.verifyByteBuffer(expected, ch.getRes());
     }
 
     private void delete(String key, LevelDBPersistedDataStorage persistedDataStorage)

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -194,7 +194,7 @@ class ASH_EXPORT SessionStateAnimator {
   virtual AnimationSequence* BeginAnimationSequence(
       AnimationCallback callback) = 0;
 
-  // Retruns true if the wallpaper is hidden.
+  // Returns true if the wallpaper is hidden.
   virtual bool IsWallpaperHidden() const = 0;
 
   // Shows the wallpaper immediately.

@@ -1,10 +1,9 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/app_list/arc/arc_app_icon.h"
 
-#include <algorithm>
 #include <map>
 #include <memory>
 #include <utility>
@@ -17,7 +16,7 @@
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "base/task/post_task.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_icon_descriptor.h"
@@ -280,7 +279,7 @@ ArcAppIcon::ArcAppIcon(content::BrowserContext* context,
       }
       // Deliberately fall through to IconType::kUncompressed to update
       // |image_skia_| and |incomplete_scale_factors_|.
-      FALLTHROUGH;
+      [[fallthrough]];
     case IconType::kUncompressed:
       image_skia_ = gfx::ImageSkia(
           std::make_unique<Source>(weak_ptr_factory_.GetWeakPtr(),
@@ -288,7 +287,7 @@ ArcAppIcon::ArcAppIcon(content::BrowserContext* context,
           resource_size);
       // Deliberately fall through to IconType::kCompressed to update
       // |incomplete_scale_factors_|.
-      FALLTHROUGH;
+      [[fallthrough]];
     case IconType::kCompressed:
       for (const auto& scale_factor : scale_factors) {
         incomplete_scale_factors_.insert({scale_factor, base::Time::Now()});
@@ -318,7 +317,7 @@ void ArcAppIcon::LoadSupportedScaleFactors() {
       }
       // Deliberately fall through to IconType::kCompressed to update
       // |image_skia_|.
-      FALLTHROUGH;
+      [[fallthrough]];
     case IconType::kUncompressed:
       // Calling GetRepresentation indirectly calls LoadForScaleFactor but also
       // first initializes image_skia_ with the placeholder icons (e.g.
@@ -336,7 +335,7 @@ bool ArcAppIcon::EverySupportedScaleFactorIsLoaded() {
     case IconType::kUncompressed:
       // Deliberately fall through to IconType::kCompressed to check
       // |incomplete_scale_factors_|.
-      FALLTHROUGH;
+      [[fallthrough]];
     case IconType::kCompressed:
       return incomplete_scale_factors_.empty();
     case IconType::kAdaptive: {
@@ -408,12 +407,12 @@ void ArcAppIcon::LoadForScaleFactor(ui::ResourceScaleFactor scale_factor) {
       // |paths|. For the migration scenario, when the foreground icon file
       // doesn't exist, load the original icon file to resolve the icon lag
       // issue.
-      FALLTHROUGH;
+      [[fallthrough]];
     }
     case IconType::kUncompressed: {
       // Deliberately fall through to IconType::kCompressed to add |path| to
       // |paths|.
-      FALLTHROUGH;
+      [[fallthrough]];
     }
     case IconType::kCompressed: {
       base::FilePath path = prefs->GetIconPath(mapped_app_id_, descriptor);
@@ -458,7 +457,7 @@ std::unique_ptr<ArcAppIcon::ReadResult> ArcAppIcon::ReadOnBackgroundThread(
   switch (icon_type) {
     case IconType::kUncompressed:
       // Deliberately fall through to IconType::kCompressed.
-      FALLTHROUGH;
+      [[fallthrough]];
     case IconType::kCompressed:
       DCHECK_EQ(1u, paths.size());
       return ArcAppIcon::ReadSingleIconFile(scale_factor, paths[0],
@@ -785,10 +784,8 @@ void ArcAppIcon::DiscardDecodeRequest(DecodeRequest* request,
                                       bool is_decode_success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  auto it = std::find_if(decode_requests_.begin(), decode_requests_.end(),
-                         [request](const std::unique_ptr<DecodeRequest>& ptr) {
-                           return ptr.get() == request;
-                         });
+  auto it = base::ranges::find(decode_requests_, request,
+                               &std::unique_ptr<DecodeRequest>::get);
   DCHECK(it != decode_requests_.end());
   decode_requests_.erase(it);
 

@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/translate/content/android/translate_utils.h"
 
 #include "base/android/jni_array.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/metrics/metrics_log.h"
 #include "components/translate/core/browser/mock_translate_infobar_delegate.h"
@@ -35,8 +36,8 @@ class TranslateUtilsTest : public ::testing::Test {
   }
 
   std::unique_ptr<MockTranslateInfoBarDelegateFactory> delegate_factory_;
-  MockTranslateInfoBarDelegate* delegate_;
-  JNIEnv* env_;
+  raw_ptr<MockTranslateInfoBarDelegate> delegate_;
+  raw_ptr<JNIEnv> env_;
 };
 
 // Tests that content languages information in the java format is correct for

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -94,9 +94,9 @@ enum WebBluetoothResult {
   BLOCKLISTED_WRITE,
   NOT_ALLOWED_TO_ACCESS_ANY_SERVICE,
   NOT_ALLOWED_TO_ACCESS_SERVICE,
-  REQUEST_DEVICE_WITH_BLOCKLISTED_UUID,
-  REQUEST_DEVICE_FROM_CROSS_ORIGIN_IFRAME,
+  REQUEST_DEVICE_WITH_BLOCKLISTED_UUID_OR_MANUFACTURER_DATA,
   DESCRIPTOR_NO_LONGER_EXISTS,
+  PERMISSIONS_POLICY_VIOLATION,
   // NotAllowedError:
   SCANNING_BLOCKED,
 };
@@ -156,7 +156,7 @@ enum WebBluetoothGATTQueryQuantity {
 // to a common device. Web content may persist this identifier for future
 // sessions to identify the same device.
 struct WebBluetoothDeviceId {
-  string device_id;
+  array<uint8, 16> device_id;
 };
 
 struct WebBluetoothDevice {
@@ -218,8 +218,12 @@ interface WebBluetoothService {
   // Returns a list of permitted Bluetooth devices that the current origin can
   // access services on. These devices are granted access via RequestDevice(),
   // but the permission can be revoked at any time by the user through the
-  // browser's UI.
+  // browser's UI or by the website through ForgetDevice().
   GetDevices() => (array<WebBluetoothDevice> devices);
+
+  // Attempts to revoke the permission to the Device identified by |device_id|.
+  // It will fail silently if the permission cannot be revoked.
+  ForgetDevice(WebBluetoothDeviceId device_id) => ();
 
   // Creates a GATT Connection to a Bluetooth Device identified by |device_id|
   // if a connection to the device didn't exist already. If a GATT connection

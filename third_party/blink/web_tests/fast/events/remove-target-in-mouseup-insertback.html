@@ -2,13 +2,14 @@
 <html>
 <body>
 <p>This test ensures WebKit does not fire click event on a node that has been removed and inserted back in mouseup event.</p>
-<div id="test"><span id="target" onmouseup="mouseup()" onclick="test.innerHTML = 'PASS';">click here</span></div>
+<div id="test"><span id="target" onmouseup="mouseup()" onclick="test.innerHTML = 'FAIL';">click here</span></div>
 <script>
 
 var test = document.getElementById('test');
 var target = document.getElementById('target');
 
 function mouseup() {
+    test.appendChild(document.createTextNode('PASS'));
     test.removeChild(target);
     test.appendChild(target);
 }
@@ -22,6 +23,7 @@ if (window.testRunner) {
         eventSender.mouseDown();
         eventSender.leapForward(200);
         eventSender.mouseUp();
+        test.removeChild(target);
     }
 }
 

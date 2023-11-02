@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,13 @@
 #define UI_GTK_WINDOW_FRAME_PROVIDER_GTK_H_
 
 #include "base/containers/flat_map.h"
-#include "ui/views/linux_ui/linux_ui.h"
-#include "ui/views/linux_ui/window_frame_provider.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/linux/window_frame_provider.h"
 
 namespace gtk {
 
-class WindowFrameProviderGtk : public views::WindowFrameProvider {
+class WindowFrameProviderGtk : public ui::WindowFrameProvider {
  public:
   explicit WindowFrameProviderGtk(bool solid_frame);
 
@@ -20,7 +21,7 @@ class WindowFrameProviderGtk : public views::WindowFrameProvider {
 
   ~WindowFrameProviderGtk() override;
 
-  // views::WindowFrameProvider:
+  // ui::WindowFrameProvider:
   int GetTopCornerRadiusDip() override;
   gfx::Insets GetFrameThicknessDip() override;
   void PaintWindowFrame(gfx::Canvas* canvas,

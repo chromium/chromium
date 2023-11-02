@@ -1,9 +1,7 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {PrinterType} from './data/destination_match.js';
 import {NativeLayer, NativeLayerImpl} from './native_layer.js';
 
 /**
@@ -18,45 +16,12 @@ export enum DestinationSearchBucket {
   // Used when the print destination search widget is closed without selecting
   // a print destination.
   DESTINATION_CLOSED_UNCHANGED = 2,
-  // Used when the Google Cloud Print promotion (shown in the destination
-  // search widget) is shown to the user.
-  SIGNIN_PROMPT = 3,
-  // Used when the user chooses to sign-in to their Google account.
-  SIGNIN_TRIGGERED = 4,
-  // Used when a user selects the Privet printer in a pair of duplicate
-  // Privet and cloud printers.
-  PRIVET_DUPLICATE_SELECTED = 5,
-  // Used when a user selects the cloud printer in a pair of duplicate
-  // Privet and cloud printers.
-  CLOUD_DUPLICATE_SELECTED = 6,
-  // Used when a user sees a register promo for a cloud print printer.
-  REGISTER_PROMO_SHOWN = 7,
-  // Used when a user selects a register promo for a cloud print printer.
-  REGISTER_PROMO_SELECTED = 8,
-  // User changed active account.
-  ACCOUNT_CHANGED = 9,
-  // User tried to log into another account.
-  ADD_ACCOUNT_SELECTED = 10,
-  // Note: values 11-13 are intentionally unset as these correspond to
+  // Note: values 3-13 are intentionally unset as these correspond to
   // deprecated values in histograms/enums.xml. These enums are append-only.
   // User clicked on Manage button
   MANAGE_BUTTON_CLICKED = 14,
   // Max value.
   DESTINATION_SEARCH_MAX_BUCKET = 15
-}
-
-/**
- * Print Preview initialization events metrics buckets.
- */
-export enum PrintPreviewInitializationEvents {
-  // Function initiated.
-  FUNCTION_INITIATED = 0,
-  // Function completed succesfully.
-  FUNCTION_SUCCESSFUL = 1,
-  // Function failed.
-  FUNCTION_FAILED = 2,
-  // Max value.
-  PRINT_PREVIEW_INITIALIZATION_EVENTS_MAX_BUCKET = 3
 }
 
 /**
@@ -106,77 +71,11 @@ export class MetricsContext {
   }
 
   /**
-   * Destination Search specific usage statistics context.
-   */
-  static destinationSearch(): MetricsContext {
-    return new MetricsContext(
-        'PrintPreview.DestinationAction',
-        DestinationSearchBucket.DESTINATION_SEARCH_MAX_BUCKET);
-  }
-
-  /**
    * Print settings UI specific usage statistics context
    */
   static printSettingsUi(): MetricsContext {
     return new MetricsContext(
         'PrintPreview.PrintSettingsUi',
         PrintSettingsUiBucket.PRINT_SETTINGS_UI_MAX_BUCKET);
-  }
-
-  /**
-   * NativeLayer.getInitialSettings() specific usage statistics context
-   */
-  static getInitialSettings(): MetricsContext {
-    return new MetricsContext(
-        'PrintPreview.Initialization.GetInitialSettings',
-        PrintPreviewInitializationEvents
-            .PRINT_PREVIEW_INITIALIZATION_EVENTS_MAX_BUCKET);
-  }
-
-  /**
-   * NativeLayer.getPrinterCapabilities() specific usage statistics context
-   */
-  static getPrinterCapabilities(): MetricsContext {
-    return new MetricsContext(
-        'PrintPreview.Initialization.GetPrinterCapabilities',
-        PrintPreviewInitializationEvents
-            .PRINT_PREVIEW_INITIALIZATION_EVENTS_MAX_BUCKET);
-  }
-
-  /**
-   * NativeLayer.getPreview() specific usage statistics context
-   */
-  static getPreview(): MetricsContext {
-    return new MetricsContext(
-        'PrintPreview.Initialization.GetPreview',
-        PrintPreviewInitializationEvents
-            .PRINT_PREVIEW_INITIALIZATION_EVENTS_MAX_BUCKET);
-  }
-
-  /**
-   * NativeLayer.getPrinters() specific usage statistics context
-   */
-  static getPrinters(type: PrinterType): MetricsContext {
-    let histogram = '';
-    switch (type) {
-      case (PrinterType.EXTENSION_PRINTER):
-        histogram = 'PrintPreview.Initialization.GetPrinters.Extension';
-        break;
-      case (PrinterType.PDF_PRINTER):
-        histogram = 'PrintPreview.Initialization.GetPrinters.PDF';
-        break;
-      case (PrinterType.LOCAL_PRINTER):
-        histogram = 'PrintPreview.Initialization.GetPrinters.Local';
-        break;
-      case (PrinterType.CLOUD_PRINTER):
-        histogram = 'PrintPreview.Initialization.GetPrinters.Cloud';
-        break;
-      default:
-        assertNotReached('unknown type = ' + type);
-    }
-    return new MetricsContext(
-        histogram,
-        PrintPreviewInitializationEvents
-            .PRINT_PREVIEW_INITIALIZATION_EVENTS_MAX_BUCKET);
   }
 }

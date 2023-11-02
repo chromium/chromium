@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -23,8 +24,8 @@
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/surface_origin.h"
 #include "ui/gfx/swap_result.h"
+#include "ui/gl/gl_display.h"
 #include "ui/gl/gl_export.h"
-#include "ui/gl/gl_image.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface_format.h"
 #include "ui/gl/gpu_preference.h"
@@ -34,6 +35,7 @@ namespace mojom {
 class DelegatedInkPointRenderer;
 }  // namespace mojom
 class ColorSpace;
+struct OverlayPlaneData;
 class GpuFence;
 class VSyncProvider;
 }  // namespace gfx
@@ -46,7 +48,20 @@ struct DCRendererLayerParams;
 namespace gl {
 
 class GLContext;
+class GLImage;
 class EGLTimestampClient;
+
+// Contains per frame data, and is passed along with SwapBuffer, PostSubbuffer,
+// CommitOverlayPlanes type methods.
+struct FrameData {
+  FrameData() = default;
+  ~FrameData() = default;
+
+  FrameData(const FrameData&) = delete;
+  FrameData& operator=(const FrameData&) = delete;
+  FrameData(FrameData&& other) = default;
+  FrameData& operator=(FrameData&& other) = default;
+};
 
 // Encapsulates a surface that can be rendered to with GL, hiding platform
 // specific management.
@@ -107,7 +122,8 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
   // Swaps front and back buffers. This has no effect for off-screen
   // contexts. If it returns SWAP_FAILED, it is possible that the context is no
   // longer current.
-  virtual gfx::SwapResult SwapBuffers(PresentationCallback callback) = 0;
+  virtual gfx::SwapResult SwapBuffers(PresentationCallback callback,
+                                      FrameData data) = 0;
 
   // Get the size of the surface.
   virtual gfx::Size GetSize() = 0;
@@ -151,13 +167,15 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
   // SwapBufferAck till that data is available. The callback should be run on
   // the calling thread (i.e. same thread SwapBuffersAsync is called)
   virtual void SwapBuffersAsync(SwapCompletionCallback completion_callback,
-                                PresentationCallback presentation_callback);
+                                PresentationCallback presentation_callback,
+                                FrameData data);
 
   // Swap buffers with content bounds. If it returns SWAP_FAILED, it is possible
   // that the context is no longer current.
   virtual gfx::SwapResult SwapBuffersWithBounds(
       const std::vector<gfx::Rect>& rects,
-      PresentationCallback callback);
+      PresentationCallback callback,
+      FrameData data);
 
   // Copy part of the backbuffer to the frontbuffer. If it returns SWAP_FAILED,
   // it is possible that the context is no longer current.
@@ -165,7 +183,8 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
                                         int y,
                                         int width,
                                         int height,
-                                        PresentationCallback callback);
+                                        PresentationCallback callback,
+                                        FrameData data);
 
   // Copy part of the backbuffer to the frontbuffer. On some platforms, we want
   // to send SwapBufferAck only after the surface is displayed on screen. The
@@ -177,13 +196,15 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
                                   int width,
                                   int height,
                                   SwapCompletionCallback completion_callback,
-                                  PresentationCallback presentation_callback);
+                                  PresentationCallback presentation_callback,
+                                  FrameData data);
 
   // Show overlay planes but don't swap the front and back buffers. This acts
   // like SwapBuffers from the point of view of the client, but is cheaper when
   // overlays account for all the damage. If it returns SWAP_FAILED,
   // it is possible that the context is no longer current.
-  virtual gfx::SwapResult CommitOverlayPlanes(PresentationCallback callback);
+  virtual gfx::SwapResult CommitOverlayPlanes(PresentationCallback callback,
+                                              FrameData data);
 
   // Show overlay planes but don't swap the front and back buffers. On some
   // platforms, we want to send SwapBufferAck only after the overlays are
@@ -192,7 +213,8 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
   // the calling thread (i.e. same thread CommitOverlayPlanesAsync is called).
   virtual void CommitOverlayPlanesAsync(
       SwapCompletionCallback completion_callback,
-      PresentationCallback presentation_callback);
+      PresentationCallback presentation_callback,
+      FrameData data);
 
   // Called after a context is made current with this surface. Returns false
   // on error.
@@ -208,7 +230,7 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
 
   // Get the platform specific display on which this surface resides, if
   // available.
-  virtual void* GetDisplay();
+  virtual GLDisplay* GetGLDisplay();
 
   // Get the platfrom specific configuration for this surface, if available.
   virtual void* GetConfig();
@@ -240,16 +262,6 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
   // Schedule a CALayer to be shown at swap time.
   // All arguments correspond to their CALayer properties.
   virtual bool ScheduleCALayer(const ui::CARendererLayerParams& params);
-
-  struct GL_EXPORT CALayerInUseQuery {
-    CALayerInUseQuery();
-    explicit CALayerInUseQuery(const CALayerInUseQuery&);
-    ~CALayerInUseQuery();
-    unsigned texture = 0;
-    scoped_refptr<GLImage> image;
-  };
-  virtual void ScheduleCALayerInUseQuery(
-      std::vector<CALayerInUseQuery> queries);
 
   virtual bool ScheduleDCLayer(
       std::unique_ptr<ui::DCRendererLayerParams> params);
@@ -312,6 +324,8 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
 
   virtual void SetDisplayTransform(gfx::OverlayTransform transform) {}
   virtual void SetFrameRate(float frame_rate) {}
+  virtual void SetChoreographerVsyncIdForNextFrame(
+      absl::optional<int64_t> choreographer_vsync_id) {}
 
   static GLSurface* GetCurrent();
 
@@ -332,6 +346,8 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
   // If a gpu preference is forced (by GPU driver bug workaround, etc), return
   // it. Otherwise, return the original input preference.
   static GpuPreference AdjustGpuPreference(GpuPreference gpu_preference);
+
+  virtual void SetCALayerErrorCode(gfx::CALayerResult ca_layer_error_code) {}
 
  protected:
   virtual ~GLSurface();
@@ -364,26 +380,32 @@ class GL_EXPORT GLSurfaceAdapter : public GLSurface {
   bool Recreate() override;
   bool DeferDraws() override;
   bool IsOffscreen() override;
-  gfx::SwapResult SwapBuffers(PresentationCallback callback) override;
+  gfx::SwapResult SwapBuffers(PresentationCallback callback,
+                              FrameData data) override;
   void SwapBuffersAsync(SwapCompletionCallback completion_callback,
-                        PresentationCallback presentation_callback) override;
+                        PresentationCallback presentation_callback,
+                        FrameData data) override;
   gfx::SwapResult SwapBuffersWithBounds(const std::vector<gfx::Rect>& rects,
-                                        PresentationCallback callback) override;
+                                        PresentationCallback callback,
+                                        FrameData data) override;
   gfx::SwapResult PostSubBuffer(int x,
                                 int y,
                                 int width,
                                 int height,
-                                PresentationCallback callback) override;
+                                PresentationCallback callback,
+                                FrameData data) override;
   void PostSubBufferAsync(int x,
                           int y,
                           int width,
                           int height,
                           SwapCompletionCallback completion_callback,
-                          PresentationCallback presentation_callback) override;
-  gfx::SwapResult CommitOverlayPlanes(PresentationCallback callback) override;
-  void CommitOverlayPlanesAsync(
-      SwapCompletionCallback completion_callback,
-      PresentationCallback presentation_callback) override;
+                          PresentationCallback presentation_callback,
+                          FrameData data) override;
+  gfx::SwapResult CommitOverlayPlanes(PresentationCallback callback,
+                                      FrameData data) override;
+  void CommitOverlayPlanesAsync(SwapCompletionCallback completion_callback,
+                                PresentationCallback presentation_callback,
+                                FrameData data) override;
   bool SupportsSwapBuffersWithBounds() override;
   bool SupportsPostSubBuffer() override;
   bool SupportsCommitOverlayPlanes() override;
@@ -396,7 +418,7 @@ class GL_EXPORT GLSurfaceAdapter : public GLSurface {
   bool SetBackbufferAllocation(bool allocated) override;
   void SetFrontbufferAllocation(bool allocated) override;
   void* GetShareHandle() override;
-  void* GetDisplay() override;
+  GLDisplay* GetGLDisplay() override;
   void* GetConfig() override;
   GLSurfaceFormat GetFormat() override;
   gfx::VSyncProvider* GetVSyncProvider() override;
@@ -427,6 +449,8 @@ class GL_EXPORT GLSurfaceAdapter : public GLSurface {
   void SetGpuVSyncEnabled(bool enabled) override;
   void SetDisplayTransform(gfx::OverlayTransform transform) override;
   void SetFrameRate(float frame_rate) override;
+  void SetChoreographerVsyncIdForNextFrame(
+      absl::optional<int64_t> choreographer_vsync_id) override;
   void SetCurrent() override;
   bool IsCurrent() override;
 

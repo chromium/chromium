@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.metrics.TimingMetric;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
@@ -97,8 +98,8 @@ public class ServiceTabLauncher {
         Context context = ContextUtils.getApplicationContext();
 
         List<ResolveInfo> resolveInfos;
-        try (BrowserServicesTimingMetrics.TimingMetric t =
-                        BrowserServicesTimingMetrics.getServiceTabResolveInfoTimingContext()) {
+        try (TimingMetric t = TimingMetric.mediumUptime(
+                     BrowserServicesTimingMetrics.SERVICE_TAB_RESOLVE_TIME)) {
             resolveInfos = WebApkValidator.resolveInfosForUrl(context, url);
         }
         String webApkPackageName = WebApkValidator.findFirstWebApkPackage(context, resolveInfos);

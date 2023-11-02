@@ -1,23 +1,24 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/web/webui/crw_web_ui_scheme_handler.h"
 
-#include <map>
+#import <map>
 
-#include "base/files/file_path.h"
+#import "base/files/file_path.h"
+#import "base/ranges/algorithm.h"
 #import "ios/web/webui/url_fetcher_block_adapter.h"
-#include "ios/web/webui/web_ui_ios_controller_factory_registry.h"
+#import "ios/web/webui/web_ui_ios_controller_factory_registry.h"
 #import "net/base/mac/url_conversions.h"
-#include "url/gurl.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 namespace {
-// Returns the error code associated with |URL|.
+// Returns the error code associated with `URL`.
 NSInteger GetErrorCodeForUrl(const GURL& URL) {
   web::WebUIIOSControllerFactory* factory =
       web::WebUIIOSControllerFactoryRegistry::GetInstance();
@@ -30,7 +31,6 @@ NSInteger GetErrorCodeForUrl(const GURL& URL) {
   scoped_refptr<network::SharedURLLoaderFactory> _URLLoaderFactory;
 
   // Set of live WebUI fetchers for retrieving data.
-  API_AVAILABLE(ios(11.0))
   std::map<id<WKURLSchemeTask>, std::unique_ptr<web::URLFetcherBlockAdapter>>
       _map;
 }
@@ -45,8 +45,7 @@ NSInteger GetErrorCodeForUrl(const GURL& URL) {
 }
 
 - (void)webView:(WKWebView*)webView
-    startURLSchemeTask:(id<WKURLSchemeTask>)urlSchemeTask
-    API_AVAILABLE(ios(11.0)) {
+    startURLSchemeTask:(id<WKURLSchemeTask>)urlSchemeTask {
   GURL URL = net::GURLWithNSURL(urlSchemeTask.request.URL);
   // Check the mainDocumentURL as the URL might be one of the subresource, so
   // not a WebUI URL itself.
@@ -103,8 +102,7 @@ NSInteger GetErrorCodeForUrl(const GURL& URL) {
 }
 
 - (void)webView:(WKWebView*)webView
-    stopURLSchemeTask:(id<WKURLSchemeTask>)urlSchemeTask
-    API_AVAILABLE(ios(11.0)) {
+    stopURLSchemeTask:(id<WKURLSchemeTask>)urlSchemeTask {
   auto result = _map.find(urlSchemeTask);
   if (result != _map.end()) {
     _map.erase(result);
@@ -113,20 +111,20 @@ NSInteger GetErrorCodeForUrl(const GURL& URL) {
 
 #pragma mark - Private
 
-// Returns a pointer to the |_map| ivar for strongSelf.
+// Returns a pointer to the `_map` ivar for strongSelf.
 - (std::map<id<WKURLSchemeTask>, std::unique_ptr<web::URLFetcherBlockAdapter>>*)
-    map API_AVAILABLE(ios(11.0)) {
+    map {
   return &_map;
 }
 
-// Removes |fetcher| from map of active fetchers.
-- (void)removeFetcher:(web::URLFetcherBlockAdapter*)fetcher
-    API_AVAILABLE(ios(11.0)) {
-  _map.erase(std::find_if(
-      _map.begin(), _map.end(),
-      [fetcher](const std::pair<const id<WKURLSchemeTask>,
-                                std::unique_ptr<web::URLFetcherBlockAdapter>>&
-                    entry) { return entry.second.get() == fetcher; }));
+// Removes `fetcher` from map of active fetchers.
+- (void)removeFetcher:(web::URLFetcherBlockAdapter*)fetcher {
+  _map.erase(base::ranges::find(
+      _map, fetcher,
+      [](const std::pair<const id<WKURLSchemeTask>,
+                         std::unique_ptr<web::URLFetcherBlockAdapter>>& entry) {
+        return entry.second.get();
+      }));
 }
 
 @end

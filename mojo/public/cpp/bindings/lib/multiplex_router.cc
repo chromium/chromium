@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,8 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
@@ -23,8 +23,9 @@
 #include "mojo/public/cpp/bindings/interface_endpoint_controller.h"
 #include "mojo/public/cpp/bindings/lib/may_auto_lock.h"
 #include "mojo/public/cpp/bindings/lib/message_quota_checker.h"
-#include "mojo/public/cpp/bindings/message_header_validator.h"
 #include "mojo/public/cpp/bindings/sequence_local_sync_event_watcher.h"
+
+#include "base/record_replay.h"
 
 namespace mojo {
 namespace internal {
@@ -186,7 +187,7 @@ class MultiplexRouter::InterfaceEndpoint
 
   void OnSyncEventSignaled() {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
-    scoped_refptr<MultiplexRouter> router_protector(router_);
+    scoped_refptr<MultiplexRouter> router_protector(router_.get());
 
     MayAutoLock locker(&router_->lock_);
     scoped_refptr<InterfaceEndpoint> self_protector(this);
@@ -222,7 +223,7 @@ class MultiplexRouter::InterfaceEndpoint
   // ---------------------------------------------------------------------------
   // The following members are safe to access from any sequence.
 
-  MultiplexRouter* const router_;
+  const raw_ptr<MultiplexRouter> router_;
   const InterfaceId id_;
 
   // ---------------------------------------------------------------------------
@@ -242,7 +243,7 @@ class MultiplexRouter::InterfaceEndpoint
   // The task runner on which |client_|'s methods can be called.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   // Not owned. It is null if no client is attached to this endpoint.
-  InterfaceEndpointClient* client_;
+  raw_ptr<InterfaceEndpointClient> client_;
 
   // Indicates whether the sync watcher should be signaled for this endpoint.
   bool sync_message_event_signaled_ = false;
@@ -292,17 +293,28 @@ class MultiplexRouter::MessageWrapper {
   // handles.
   Message DeserializeEndpointHandlesAndTake() {
     if (!value_.DeserializeAssociatedEndpointHandles(router_)) {
+      // https://linear.app/replay/issue/RUN-1228
+      // Not asserting here because the location where false is returned
+      // in the call above is asserted instead.
+
       // The previous call may have deserialized part of the associated
       // interface endpoint handles. They must be destroyed outside of the
       // router's lock, so we cannot wait until destruction of MessageWrapper.
       value_.Reset();
       return Message();
     }
+
+    // https://linear.app/replay/issue/RUN-1228
+    recordreplay::Assert("[RUN-1228] MessageWrapper::DeserializeEndpointHandlesAndTake #2 isNull=%d",
+      value_.IsNull());
     return std::move(value_);
   }
 
  private:
-  MultiplexRouter* router_ = nullptr;
+  // `router_` is not a raw_ptr<...> for performance reasons (based on analysis
+  // of sampling profiler data and tab_search:top100:2020).
+  RAW_PTR_EXCLUSION MultiplexRouter* router_ = nullptr;
+
   Message value_;
 };
 
@@ -381,8 +393,10 @@ MultiplexRouter::MultiplexRouter(
                  primary_interface_name),
       control_message_handler_(this),
       control_message_proxy_(&connector_) {
+  recordreplay::RegisterPointer("MultiplexRouter", this);
+
   if (config_ == MULTI_INTERFACE)
-    lock_.emplace();
+    lock_.emplace("MultiplexRouter.lock_");
 
   connector_.set_incoming_receiver(&dispatcher_);
 
@@ -391,14 +405,7 @@ MultiplexRouter::MultiplexRouter(
   if (quota_checker)
     connector_.SetMessageQuotaChecker(std::move(quota_checker));
 
-  std::unique_ptr<MessageHeaderValidator> header_validator =
-      std::make_unique<MessageHeaderValidator>();
-  header_validator_ = header_validator.get();
-  dispatcher_.SetValidator(std::move(header_validator));
-
   if (primary_interface_name) {
-    header_validator_->SetDescription(base::JoinString(
-        {primary_interface_name, "[primary] MessageHeaderValidator"}, " "));
     control_message_handler_.SetDescription(base::JoinString(
         {primary_interface_name, "[primary] PipeControlMessageHandler"}, " "));
   }
@@ -422,6 +429,8 @@ void MultiplexRouter::StartReceiving() {
 }
 
 MultiplexRouter::~MultiplexRouter() {
+  recordreplay::UnregisterPointer(this);
+
   MayAutoLock locker(&lock_);
 
   being_destructed_ = true;
@@ -505,6 +514,11 @@ ScopedInterfaceEndpointHandle MultiplexRouter::CreateLocalEndpointHandle(
 void MultiplexRouter::CloseEndpointHandle(
     InterfaceId id,
     const absl::optional<DisconnectReason>& reason) {
+  recordreplay::Assert(
+      "[RUN-1209-1784] MultiplexRouter::CloseEndpointHandle %u %d %d %u %s", id,
+      IsValidInterfaceId(id), IsPrimaryInterfaceId(id), 
+      reason.has_value() ? reason->custom_reason : (uint32_t)-1,
+      reason.has_value() ? reason->description.c_str() : "");
   if (!IsValidInterfaceId(id))
     return;
 
@@ -551,7 +565,18 @@ void MultiplexRouter::DetachEndpointClient(
 
   DCHECK(IsValidInterfaceId(id));
 
+  // Avoid warning when endpoints are removed at non-deterministic points,
+  // e.g. during GC.
+  if (recordreplay::AreEventsDisallowed()) {
+    recordreplay::BeginPassThroughEvents();
+  }
+
   MayAutoLock locker(&lock_);
+
+  if (recordreplay::AreEventsDisallowed()) {
+    recordreplay::EndPassThroughEvents();
+  }
+
   DCHECK(base::Contains(endpoints_, id));
 
   InterfaceEndpoint* endpoint = endpoints_[id].get();
@@ -1061,8 +1086,9 @@ bool MultiplexRouter::ProcessIncomingMessage(
   DCHECK(IsValidInterfaceId(id));
 
   InterfaceEndpoint* endpoint = FindEndpoint(id);
-  if (!endpoint || endpoint->closed())
+  if (!endpoint || endpoint->closed()) {
     return true;
+  }
 
   if (!endpoint->client()) {
     // We need to wait until a client is attached in order to dispatch further
@@ -1097,6 +1123,9 @@ bool MultiplexRouter::ProcessIncomingMessage(
     // always accessed on the same sequence, including DetachEndpointClient().
     MayAutoUnlock unlocker(&lock_);
     Message tmp_message = message_wrapper->DeserializeEndpointHandlesAndTake();
+    recordreplay::Assert(
+        "[RUN-2229-2231] MultiplexRouter::ProcessIncomingMessage %d",
+        tmp_message.IsNull());
     result =
         !tmp_message.IsNull() && client->HandleIncomingMessage(&tmp_message);
   }

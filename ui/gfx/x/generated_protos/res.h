@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -86,32 +86,59 @@ class COMPONENT_EXPORT(X11) Res {
   };
 
   struct Client {
+    bool operator==(const Client& other) const {
+      return resource_base == other.resource_base &&
+             resource_mask == other.resource_mask;
+    }
+
     uint32_t resource_base{};
     uint32_t resource_mask{};
   };
 
   struct Type {
+    bool operator==(const Type& other) const {
+      return resource_type == other.resource_type && count == other.count;
+    }
+
     Atom resource_type{};
     uint32_t count{};
   };
 
   struct ClientIdSpec {
+    bool operator==(const ClientIdSpec& other) const {
+      return client == other.client && mask == other.mask;
+    }
+
     uint32_t client{};
     ClientIdMask mask{};
   };
 
   struct ClientIdValue {
+    bool operator==(const ClientIdValue& other) const {
+      return spec == other.spec && length == other.length &&
+             value == other.value;
+    }
+
     ClientIdSpec spec{};
     uint32_t length{};
     std::vector<uint32_t> value{};
   };
 
   struct ResourceIdSpec {
+    bool operator==(const ResourceIdSpec& other) const {
+      return resource == other.resource && type == other.type;
+    }
+
     uint32_t resource{};
     uint32_t type{};
   };
 
   struct ResourceSizeSpec {
+    bool operator==(const ResourceSizeSpec& other) const {
+      return spec == other.spec && bytes == other.bytes &&
+             ref_count == other.ref_count && use_count == other.use_count;
+    }
+
     ResourceIdSpec spec{};
     uint32_t bytes{};
     uint32_t ref_count{};
@@ -119,6 +146,10 @@ class COMPONENT_EXPORT(X11) Res {
   };
 
   struct ResourceSizeValue {
+    bool operator==(const ResourceSizeValue& other) const {
+      return size == other.size && cross_references == other.cross_references;
+    }
+
     ResourceSizeSpec size{};
     std::vector<ResourceSizeSpec> cross_references{};
   };

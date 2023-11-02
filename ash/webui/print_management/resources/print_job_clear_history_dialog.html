@@ -16,8 +16,10 @@
   }
 
   #confirmationText {
-    @apply --print-management-default-font;
     color: var(--print-management-default-text-color);
+    font-family: var(--print-management-default-font-family);
+    font-size: var(--print-management-default-font-size);
+    font-weight: var(--print-management-default-font-weight);
     overflow-wrap: break-word;
   }
 
@@ -37,11 +39,11 @@
     </div>
   </div>
   <div slot="button-container">
-    <cr-button id="cancelButton" on-click="onCancelButtonClick_">
+    <cr-button id="cancelButton" on-click="onCancelButtonClick">
       [[i18n('cancelButtonLabel')]]
     </cr-button>
-    <cr-button class="action-button" on-click="onClearButtonClick_"
-        disabled="[[shouldDisableClearButton_]]">
+    <cr-button class="action-button" on-click="onClearButtonClick"
+        disabled="[[shouldDisableClearButton]]">
       [[i18n('clearButtonLabel')]]
     </cr-button>
   </div>

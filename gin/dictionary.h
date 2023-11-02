@@ -1,10 +1,11 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef GIN_DICTIONARY_H_
 #define GIN_DICTIONARY_H_
 
+#include "base/memory/raw_ptr.h"
 #include "gin/converter.h"
 #include "gin/gin_export.h"
 
@@ -58,7 +59,7 @@ class GIN_EXPORT Dictionary {
   friend struct Converter<Dictionary>;
 
   // TODO(aa): Remove this. Instead, get via FromV8(), Set(), and Get().
-  v8::Isolate* isolate_;
+  raw_ptr<v8::Isolate> isolate_;
   v8::Local<v8::Object> object_;
 };
 

@@ -1,8 +1,9 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
@@ -32,16 +33,10 @@
 
 using extensions::api::feedback_private::FeedbackFlow;
 
-namespace {
-
-void StopMessageLoopCallback() {
-  base::RunLoop::QuitCurrentWhenIdleDeprecated();
-}
-
-}  // namespace
-
 namespace extensions {
 
+// TODO(http://b/230376167): Remove or migrate the tests to work with WebUI
+// Feedback.
 class FeedbackTest : public ExtensionBrowserTest {
  public:
   void SetUp() override {
@@ -54,50 +49,15 @@ class FeedbackTest : public ExtensionBrowserTest {
   }
 
  protected:
-  bool IsFeedbackAppAvailable() {
-    return extensions::EventRouter::Get(browser()->profile())
-        ->ExtensionHasEventListener(
-            extension_misc::kFeedbackExtensionId,
-            extensions::api::feedback_private::OnFeedbackRequested::kEventName);
-  }
+  bool IsFeedbackAppAvailable() { return false; }
 
   void StartFeedbackUI(FeedbackFlow flow,
                        const std::string& extra_diagnostics,
                        bool from_assistant = false,
                        bool include_bluetooth_logs = false,
-                       bool show_questionnaire = false) {
-    base::OnceClosure callback = base::BindOnce(&StopMessageLoopCallback);
-    extensions::FeedbackPrivateGetStringsFunction::set_test_callback(&callback);
-    InvokeFeedbackUI(flow, extra_diagnostics, from_assistant,
-                     include_bluetooth_logs, show_questionnaire);
-    content::RunMessageLoop();
-    extensions::FeedbackPrivateGetStringsFunction::set_test_callback(nullptr);
-  }
+                       bool show_questionnaire = false) {}
 
-  void VerifyFeedbackAppLaunch() {
-    AppWindow* window =
-        PlatformAppBrowserTest::GetFirstAppWindowForBrowser(browser());
-    ASSERT_TRUE(window);
-    const Extension* feedback_app = window->GetExtension();
-    ASSERT_TRUE(feedback_app);
-    EXPECT_EQ(feedback_app->id(),
-              std::string(extension_misc::kFeedbackExtensionId));
-  }
-
- private:
-  void InvokeFeedbackUI(FeedbackFlow flow,
-                        const std::string& extra_diagnostics,
-                        bool from_assistant,
-                        bool include_bluetooth_logs,
-                        bool show_questionnaire) {
-    extensions::FeedbackPrivateAPI* api =
-        extensions::FeedbackPrivateAPI::GetFactoryInstance()->Get(
-            browser()->profile());
-    api->RequestFeedbackForFlow(
-        "Test description", "Test placeholder", "Test tag", extra_diagnostics,
-        GURL("http://www.test.com"), flow, from_assistant,
-        include_bluetooth_logs, show_questionnaire);
-  }
+  void VerifyFeedbackAppLaunch() {}
 };
 
 class TestFeedbackUploaderDelegate
@@ -109,7 +69,7 @@ class TestFeedbackUploaderDelegate
   void OnStartDispatchingReport() override { quit_on_dispatch_->Quit(); }
 
  private:
-  base::RunLoop* quit_on_dispatch_;
+  raw_ptr<base::RunLoop> quit_on_dispatch_;
 };
 
 // TODO(crbug.com/1241504): disable tests.
@@ -244,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_ShowFeedbackFromAssistant) {
 // Ensures that when triggered from a Google account and a Bluetooth related
 // string is entered into the description, that we provide the option for
 // uploading Bluetooth logs as well.
-IN_PROC_BROWSER_TEST_F(FeedbackTest, ProvideBluetoothLogs) {
+IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_ProvideBluetoothLogs) {
   WaitForExtensionViewsToLoad();
 
   ASSERT_TRUE(IsFeedbackAppAvailable());
@@ -293,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, ProvideBluetoothLogs) {
 // Ensures that when triggered from a Google account and a Bluetooth related
 // string is entered into the description, that we append Bluetooth-related
 // questions to the issue description.
-IN_PROC_BROWSER_TEST_F(FeedbackTest, AppendQuestionnaire) {
+IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_AppendQuestionnaire) {
   WaitForExtensionViewsToLoad();
 
   ASSERT_TRUE(IsFeedbackAppAvailable());
@@ -351,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, AppendQuestionnaire) {
 }
 
 // Questionnaires should not be displayed if it's not a Googler session.
-IN_PROC_BROWSER_TEST_F(FeedbackTest, AppendQuestionnaireNotGoogler) {
+IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_AppendQuestionnaireNotGoogler) {
   WaitForExtensionViewsToLoad();
 
   ASSERT_TRUE(IsFeedbackAppAvailable());

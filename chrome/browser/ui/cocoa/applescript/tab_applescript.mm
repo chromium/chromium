@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -236,7 +236,7 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
 - (void)handlesPrintScriptCommand:(NSScriptCommand*)command {
   AppleScript::LogAppleScriptUMA(AppleScript::AppleScriptCommand::TAB_PRINT);
   bool initiated = printing::PrintViewManager::FromWebContents(_webContents)
-                       ->PrintNow(_webContents->GetMainFrame());
+                       ->PrintNow(_webContents->GetPrimaryMainFrame());
   if (!initiated) {
     AppleScript::SetError(AppleScript::errInitiatePrinting);
   }
@@ -306,7 +306,7 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
     return nil;
   }
 
-  content::RenderFrameHost* frame = _webContents->GetMainFrame();
+  content::RenderFrameHost* frame = _webContents->GetPrimaryMainFrame();
   if (!frame) {
     NOTREACHED();
     return nil;

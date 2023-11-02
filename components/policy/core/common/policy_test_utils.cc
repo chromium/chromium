@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/policy_constants.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include <CoreFoundation/CoreFoundation.h>
 
 #include "base/mac/scoped_cftyperef.h"
@@ -46,18 +46,18 @@ bool PolicyServiceIsEmpty(const PolicyService* service) {
   const PolicyMap& map = service->GetPolicies(
       PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
   if (!map.empty()) {
-    base::DictionaryValue dict;
-    for (auto it = map.begin(); it != map.end(); ++it)
-      dict.SetKey(it->first, it->second.value()->Clone());
+    base::Value::Dict dict;
+    for (const auto& it : map)
+      dict.Set(it.first, it.second.value_unsafe()->Clone());
     LOG(WARNING) << "There are pre-existing policies in this machine: " << dict;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     LOG(WARNING) << "From: " << kRegistryChromePolicyKey;
 #endif
   }
   return map.empty();
 }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 CFPropertyListRef ValueToProperty(const base::Value& value) {
   switch (value.type()) {
     case base::Value::Type::NONE:
@@ -101,10 +101,10 @@ CFPropertyListRef ValueToProperty(const base::Value& value) {
     }
 
     case base::Value::Type::LIST: {
-      base::Value::ConstListView list_view = value.GetList();
+      const base::Value::List& list = value.GetList();
       CFMutableArrayRef array =
-          CFArrayCreateMutable(NULL, list_view.size(), &kCFTypeArrayCallBacks);
-      for (const base::Value& entry : list_view) {
+          CFArrayCreateMutable(NULL, list.size(), &kCFTypeArrayCallBacks);
+      for (const base::Value& entry : list) {
         // CFArrayAppendValue() retains |cf_value|, so make sure the reference
         // created by ValueToProperty() is released.
         base::ScopedCFTypeRef<CFPropertyListRef> cf_value(
@@ -124,7 +124,7 @@ CFPropertyListRef ValueToProperty(const base::Value& value) {
 
   return NULL;
 }
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
 }  // namespace policy
 
@@ -182,7 +182,7 @@ std::ostream& operator<<(std::ostream& os, const policy::PolicyMap::Entry& e) {
   return os << "{" << std::endl
             << "  \"level\": " << e.level << "," << std::endl
             << "  \"scope\": " << e.scope << "," << std::endl
-            << "  \"value\": " << *e.value() << "}";
+            << "  \"value\": " << *e.value_unsafe() << "}";
 }
 
 std::ostream& operator<<(std::ostream& os, const policy::PolicyNamespace& ns) {

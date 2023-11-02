@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,15 +43,15 @@ class MediaRoute {
   // |description|: Human readable description of the casting activity.
   // |is_local|: true if the route was created from this browser.
   //     provider. empty otherwise.
-  // |for_display|: Set to true if this route should be displayed for
-  //     |media_sink_id| in UI.
   MediaRoute(const MediaRoute::Id& media_route_id,
              const MediaSource& media_source,
              const MediaSink::Id& media_sink_id,
              const std::string& description,
-             bool is_local,
-             bool for_display);
+             bool is_local);
   MediaRoute(const MediaRoute& other);
+
+  // TODO(crbug.com/1311341): Delete the default constructor and
+  // disallow passing in an empty string into the MediaSource ctor.
   MediaRoute();
 
   ~MediaRoute();
@@ -95,9 +95,6 @@ class MediaRoute {
     controller_type_ = controller_type;
   }
   RouteControllerType controller_type() const { return controller_type_; }
-
-  void set_for_display(bool for_display) { for_display_ = for_display; }
-  bool for_display() const { return for_display_; }
 
   void set_off_the_record(bool is_off_the_record) {
     is_off_the_record_ = is_off_the_record;
@@ -144,14 +141,12 @@ class MediaRoute {
   // The type of MediaRouteController supported by this route.
   RouteControllerType controller_type_ = RouteControllerType::kNone;
 
-  // |true| if the route can be displayed in the UI.
-  bool for_display_ = false;
-
   // |true| if the route was created by an OffTheRecord profile.
   bool is_off_the_record_ = false;
 
   // |true| if the presentation associated with this route is a local
   // presentation.
+  // TODO(crbug.com/1309770): Remove |is_local_presentation_|.
   bool is_local_presentation_ = false;
 
   // |true| if the route is created by the MRP but is waiting for receivers'

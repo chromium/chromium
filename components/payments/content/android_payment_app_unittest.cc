@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "components/payments/content/android_app_communication.h"
 #include "components/payments/content/android_app_communication_test_support.h"
@@ -53,7 +54,7 @@ class AndroidPaymentAppTest : public testing::Test,
         GURL("https://top-level-origin.com"),
         GURL("https://payment-request-origin.com"), "payment-request-id",
         std::move(description), communication,
-        web_contents->GetMainFrame()->GetGlobalId());
+        web_contents->GetPrimaryMainFrame()->GetGlobalId());
   }
 
   AndroidPaymentAppTest()
@@ -81,7 +82,7 @@ class AndroidPaymentAppTest : public testing::Test,
 
   std::unique_ptr<AndroidAppCommunicationTestSupport> support_;
   content::TestWebContentsFactory web_contents_factory_;
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<AndroidAppCommunicationTestSupport::ScopedInitialization>
       scoped_initialization_;
   base::WeakPtr<AndroidAppCommunication> communication_;

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,14 @@
 #include <utility>
 
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/service_worker/service_worker_register_job.h"
 #include "content/browser/service_worker/service_worker_unregister_job.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_ancestor_frame_type.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -39,7 +41,9 @@ class CONTENT_EXPORT ServiceWorkerJobCoordinator {
                 blink::mojom::FetchClientSettingsObjectPtr
                     outside_fetch_client_settings_object,
                 const GlobalRenderFrameHostId& requesting_frame_id,
-                ServiceWorkerRegisterJob::RegistrationCallback callback);
+                blink::mojom::AncestorFrameType ancestor_frame_type,
+                ServiceWorkerRegisterJob::RegistrationCallback callback,
+                const PolicyContainerPolicies& policy_container_policies);
 
   // If |is_immediate| is true, unregister clears the active worker from the
   // registration without waiting for the controlled clients to unload.
@@ -105,7 +109,7 @@ class CONTENT_EXPORT ServiceWorkerJobCoordinator {
   };
 
   // The ServiceWorkerContextCore object must outlive this.
-  ServiceWorkerContextCore* const context_;
+  const raw_ptr<ServiceWorkerContextCore> context_;
   std::map<UniqueRegistrationKey, JobQueue> job_queues_;
 };
 

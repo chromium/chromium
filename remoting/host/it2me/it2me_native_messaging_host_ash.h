@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #ifndef REMOTING_HOST_IT2ME_IT2ME_NATIVE_MESSAGING_HOST_ASH_H_
@@ -7,18 +7,14 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
 #include "base/sequence_checker.h"
+#include "base/values.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "remoting/host/mojom/remote_support.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace base {
-class Value;
-}
 
 namespace extensions {
 class NativeMessageHost;
@@ -69,10 +65,10 @@ class It2MeNativeMessageHostAsh : public extensions::NativeMessageHost::Client {
   // Handlers for messages received from the wrapped native message host.
   void HandleConnectResponse();
   void HandleDisconnectResponse();
-  void HandleHostStateChangeMessage(base::Value message);
-  void HandleNatPolicyChangedMessage(base::Value message);
-  void HandlePolicyErrorMessage(base::Value message);
-  void HandleErrorMessage(base::Value message);
+  void HandleHostStateChangeMessage(base::Value::Dict message);
+  void HandleNatPolicyChangedMessage(base::Value::Dict message);
+  void HandlePolicyErrorMessage(base::Value::Dict message);
+  void HandleErrorMessage(base::Value::Dict message);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -47,12 +47,10 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
-#include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 
@@ -64,13 +62,6 @@ namespace blink {
 PaintLayerStackingNode::PaintLayerStackingNode(PaintLayer* layer)
     : layer_(layer) {
   DCHECK(layer->GetLayoutObject().IsStackingContext());
-}
-
-PaintLayerCompositor* PaintLayerStackingNode::Compositor() const {
-  DCHECK(layer_->GetLayoutObject().View());
-  if (!layer_->GetLayoutObject().View())
-    return nullptr;
-  return layer_->GetLayoutObject().View()->Compositor();
 }
 
 void PaintLayerStackingNode::DirtyZOrderLists() {
@@ -90,9 +81,6 @@ void PaintLayerStackingNode::DirtyZOrderLists() {
   overlay_overflow_controls_reordered_list_.clear();
 
   z_order_lists_dirty_ = true;
-
-  if (!layer_->GetLayoutObject().DocumentBeingDestroyed() && Compositor())
-    Compositor()->SetNeedsCompositingUpdate(kCompositingUpdateRebuildTree);
 }
 
 static bool ZIndexLessThan(const PaintLayer* first, const PaintLayer* second) {
@@ -117,6 +105,9 @@ static bool SetIfHigher(const PaintLayer*& first, const PaintLayer* second) {
 
 // For finding the proper z-order of reparented overlay overflow controls.
 struct PaintLayerStackingNode::HighestLayers {
+  STACK_ALLOCATED();
+
+ public:
   enum LayerType {
     kAbsolutePosition,
     kFixedPosition,
@@ -260,7 +251,7 @@ void PaintLayerStackingNode::CollectLayers(PaintLayer& paint_layer,
 
   for (PaintLayer* child = paint_layer.FirstChild(); child;
        child = child->NextSibling()) {
-    CollectLayers(*child, base::OptionalOrNullptr(subtree_highest_layers));
+    CollectLayers(*child, base::OptionalToPtr(subtree_highest_layers));
   }
 
   if (has_overlay_overflow_controls) {
@@ -314,20 +305,10 @@ bool PaintLayerStackingNode::StyleDidChange(PaintLayer& paint_layer,
       old_z_index == new_style.EffectiveZIndex())
     return false;
 
-  // Need to force requirements update, due to change of stacking order.
-  paint_layer.SetNeedsCompositingRequirementsUpdate();
   paint_layer.DirtyStackingContextZOrderLists();
 
   if (paint_layer.StackingNode())
     paint_layer.StackingNode()->DirtyZOrderLists();
-
-  if (was_stacked != should_be_stacked) {
-    if (!paint_layer.GetLayoutObject().DocumentBeingDestroyed() &&
-        !paint_layer.IsRootLayer() && paint_layer.Compositor()) {
-      paint_layer.Compositor()->SetNeedsCompositingUpdate(
-          kCompositingUpdateRebuildTree);
-    }
-  }
   return true;
 }
 

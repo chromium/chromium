@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 
 namespace views {
 
@@ -52,6 +53,13 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegateMac::GetParent() const {
     return nil;
 
   return window_host->GetNativeViewAccessibleForNSView();
+}
+
+void ViewAXPlatformNodeDelegateMac::OverrideNativeWindowTitle(
+    const std::string& title) {
+  if (gfx::NativeViewAccessible ax_window = GetNSWindow()) {
+    [ax_window setAccessibilityLabel:base::SysUTF8ToNSString(title)];
+  }
 }
 
 }  // namespace views

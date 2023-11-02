@@ -1,10 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/paint/svg_shape_painter.h"
 
-#include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_marker.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_shape.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
@@ -77,7 +77,7 @@ void SVGShapePainter::Paint(const PaintInfo& paint_info) {
       for (int i = 0; i < 3; i++) {
         switch (style.PaintOrderType(i)) {
           case PT_FILL: {
-            PaintFlags fill_flags;
+            cc::PaintFlags fill_flags;
             if (!SVGObjectPainter(layout_svg_shape_)
                      .PreparePaint(paint_info.context,
                                    paint_info.IsRenderingClipPathAsMaskImage(),
@@ -103,13 +103,13 @@ void SVGShapePainter::Paint(const PaintInfo& paint_info) {
                   return;
               }
 
-              PaintFlags stroke_flags;
+              cc::PaintFlags stroke_flags;
               if (!SVGObjectPainter(layout_svg_shape_)
                        .PreparePaint(
                            paint_info.context,
                            paint_info.IsRenderingClipPathAsMaskImage(), style,
                            kApplyToStrokeMode, stroke_flags,
-                           base::OptionalOrNullptr(non_scaling_transform))) {
+                           base::OptionalToPtr(non_scaling_transform))) {
                 break;
               }
               stroke_flags.setAntiAlias(should_anti_alias);
@@ -138,6 +138,8 @@ void SVGShapePainter::Paint(const PaintInfo& paint_info) {
 }
 
 class PathWithTemporaryWindingRule {
+  STACK_ALLOCATED();
+
  public:
   PathWithTemporaryWindingRule(Path& path, SkPathFillType fill_type)
       : path_(const_cast<SkPath&>(path.GetSkPath())) {
@@ -154,18 +156,20 @@ class PathWithTemporaryWindingRule {
 };
 
 void SVGShapePainter::FillShape(GraphicsContext& context,
-                                const PaintFlags& flags,
+                                const cc::PaintFlags& flags,
                                 SkPathFillType fill_type) {
   AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
       layout_svg_shape_.StyleRef(), DarkModeFilter::ElementRole::kSVG));
   switch (layout_svg_shape_.GeometryCodePath()) {
     case kRectGeometryFastPath:
-      context.DrawRect(FloatRect(layout_svg_shape_.ObjectBoundingBox()), flags,
-                       auto_dark_mode);
+      context.DrawRect(
+          gfx::RectFToSkRect(layout_svg_shape_.ObjectBoundingBox()), flags,
+          auto_dark_mode);
       break;
     case kEllipseGeometryFastPath:
-      context.DrawOval(FloatRect(layout_svg_shape_.ObjectBoundingBox()), flags,
-                       auto_dark_mode);
+      context.DrawOval(
+          gfx::RectFToSkRect(layout_svg_shape_.ObjectBoundingBox()), flags,
+          auto_dark_mode);
       break;
     default: {
       PathWithTemporaryWindingRule path_with_winding(
@@ -178,7 +182,7 @@ void SVGShapePainter::FillShape(GraphicsContext& context,
 }
 
 void SVGShapePainter::StrokeShape(GraphicsContext& context,
-                                  const PaintFlags& flags) {
+                                  const cc::PaintFlags& flags) {
   DCHECK(layout_svg_shape_.StyleRef().HasVisibleStroke());
 
   AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
@@ -186,12 +190,14 @@ void SVGShapePainter::StrokeShape(GraphicsContext& context,
 
   switch (layout_svg_shape_.GeometryCodePath()) {
     case kRectGeometryFastPath:
-      context.DrawRect(FloatRect(layout_svg_shape_.ObjectBoundingBox()), flags,
-                       auto_dark_mode);
+      context.DrawRect(
+          gfx::RectFToSkRect(layout_svg_shape_.ObjectBoundingBox()), flags,
+          auto_dark_mode);
       break;
     case kEllipseGeometryFastPath:
-      context.DrawOval(FloatRect(layout_svg_shape_.ObjectBoundingBox()), flags,
-                       auto_dark_mode);
+      context.DrawOval(
+          gfx::RectFToSkRect(layout_svg_shape_.ObjectBoundingBox()), flags,
+          auto_dark_mode);
       break;
     default:
       DCHECK(layout_svg_shape_.HasPath());
@@ -207,7 +213,7 @@ void SVGShapePainter::StrokeShape(GraphicsContext& context,
 void SVGShapePainter::PaintMarkers(const PaintInfo& paint_info) {
   const Vector<MarkerPosition>* marker_positions =
       layout_svg_shape_.MarkerPositions();
-  if (!marker_positions || marker_positions->IsEmpty())
+  if (!marker_positions || marker_positions->empty())
     return;
   SVGResourceClient* client = SVGResources::GetClient(layout_svg_shape_);
   const ComputedStyle& style = layout_svg_shape_.StyleRef();

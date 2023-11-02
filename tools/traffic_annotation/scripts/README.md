@@ -4,7 +4,10 @@ This file describes the scripts in `tools/traffic_annotation/scripts`.
 # auditor/auditor.py
 
 The new implementation of `traffic_annotation_auditor`. It is meant as a
-drop-in replacement, i.e. you can call it with the same command-line arguments
+drop-in replacement, and it adds new annotations to the grouping xml file.
+After the grouping xml file is generated, we'll decide if the new annotation 
+should be in the report by adding hidden="false".
+i.e. you can call it with the same command-line arguments
 and it should give similar output.
 
 # check_annotations.py

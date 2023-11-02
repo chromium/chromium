@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/url_pattern_index/url_pattern_index.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher_base.h"
 
@@ -36,10 +37,8 @@ class ExtensionUrlPatternIndexMatcher final : public RulesetMatcherBase {
   std::vector<RequestAction> GetModifyHeadersActions(
       const RequestParams& params,
       absl::optional<uint64_t> min_priority) const override;
-  bool IsExtraHeadersMatcher() const override {
-    return is_extra_headers_matcher_;
-  }
-  size_t GetRulesCount() const override { return rules_count_; }
+  bool IsExtraHeadersMatcher() const override;
+  size_t GetRulesCount() const override;
 
  private:
   using UrlPatternIndexMatcher = url_pattern_index::UrlPatternIndexMatcher;
@@ -65,7 +64,7 @@ class ExtensionUrlPatternIndexMatcher final : public RulesetMatcherBase {
       const RequestParams& params,
       flat::IndexType index) const;
 
-  const ExtensionMetadataList* const metadata_list_;
+  const raw_ptr<const ExtensionMetadataList> metadata_list_;
 
   // UrlPatternIndexMatchers corresponding to entries in flat::IndexType.
   const std::vector<UrlPatternIndexMatcher> matchers_;

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,14 @@
 #define CHROME_BROWSER_ASH_SHARESHEET_DRIVE_SHARE_ACTION_H_
 
 #include "chrome/browser/sharesheet/share_action/share_action.h"
-
-class Profile;
+#include "components/services/app_service/public/cpp/intent.h"
 
 namespace ash {
 namespace sharesheet {
 
 class DriveShareAction : public ::sharesheet::ShareAction {
  public:
-  explicit DriveShareAction(Profile* profile);
+  DriveShareAction();
   ~DriveShareAction() override;
   DriveShareAction(const DriveShareAction&) = delete;
   DriveShareAction& operator=(const DriveShareAction&) = delete;
@@ -24,13 +23,12 @@ class DriveShareAction : public ::sharesheet::ShareAction {
   const gfx::VectorIcon& GetActionIcon() override;
   void LaunchAction(::sharesheet::SharesheetController* controller,
                     views::View* root_view,
-                    apps::mojom::IntentPtr intent) override;
+                    apps::IntentPtr intent) override;
   void OnClosing(::sharesheet::SharesheetController* controller) override;
-  bool ShouldShowAction(const apps::mojom::IntentPtr& intent,
+  bool ShouldShowAction(const apps::IntentPtr& intent,
                         bool contains_hosted_document) override;
 
  private:
-  Profile* profile_;
   ::sharesheet::SharesheetController* controller_ = nullptr;
 };
 

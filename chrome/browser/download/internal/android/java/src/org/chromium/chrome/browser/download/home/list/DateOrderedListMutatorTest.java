@@ -1,10 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.download.home.list;
 
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -38,12 +38,13 @@ import org.chromium.components.browser_ui.util.date.CalendarFactory;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemFilter;
-import org.chromium.components.offline_items_collection.OfflineItemSchedule;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -79,9 +80,9 @@ public class DateOrderedListMutatorTest {
     public void setUp() {
         mModel = new ListItemModel();
         mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, mUrlFormatterJniMock);
-        when(mUrlFormatterJniMock.formatStringUrlForSecurityDisplay(
-                     anyString(), eq(SchemeDisplay.OMIT_HTTP_AND_HTTPS)))
-                .then(inv -> inv.getArgument(0));
+        when(mUrlFormatterJniMock.formatUrlForSecurityDisplay(
+                     any(), eq(SchemeDisplay.OMIT_HTTP_AND_HTTPS)))
+                .then(inv -> ((GURL) (inv.getArgument(0))).getSpec());
     }
 
     @After
@@ -317,35 +318,6 @@ public class DateOrderedListMutatorTest {
         assertOfflineItem(mModel.get(1), buildCalendar(2018, 2, 1, 1), item1);
         assertSectionHeader(mModel.get(2), buildCalendar(2018, 1, 1, 0));
         assertOfflineItem(mModel.get(3), buildCalendar(2018, 1, 1, 1), item2);
-    }
-
-    /**
-     * Action                               List
-     * 1. Set(item1 @ 1:00 1/1/2018         [ Header Scheduled for later,
-     *              Scheduled for later,      item1  @ 1:00 1/1/2018
-     *        item2 @ 1:00 2/1/2018           Header Just Now
-     *              Video IN_PROGRESS         item2  @ 1:00 2/1/2018
-     *        item3 @ 1:00 1/1/2018           DATE   1/1/2018
-     *              Audio COMPLETE)           item3  @ 1:00 1/1/2018 ]
-     */
-    @Test
-    public void testScheduledForLaterSection() {
-        Calendar calendar = buildCalendar(2018, 1, 1, 1);
-        OfflineItem item1 = buildItem("1", calendar, OfflineItemFilter.VIDEO);
-        item1.schedule = new OfflineItemSchedule(false, calendar.getTimeInMillis() + 1000);
-        OfflineItem item2 = buildItem("1", buildCalendar(2018, 2, 1, 1), OfflineItemFilter.VIDEO);
-        OfflineItem item3 = buildItem("2", buildCalendar(2018, 1, 1, 1), OfflineItemFilter.AUDIO);
-        item2.state = OfflineItemState.IN_PROGRESS;
-        when(mSource.getItems()).thenReturn(Arrays.asList(item1, item2, item3));
-        DateOrderedListMutator list = createMutatorWithJustNowProvider();
-
-        Assert.assertEquals(6, mModel.size());
-        assertScheduledLaterHeader(mModel.get(0));
-        assertOfflineItem(mModel.get(1), calendar, item1);
-        assertJustNowSection(mModel.get(2));
-        assertOfflineItem(mModel.get(3), buildCalendar(2018, 2, 1, 1), item2);
-        assertSectionHeader(mModel.get(4), buildCalendar(2018, 1, 1, 0));
-        assertOfflineItem(mModel.get(5), buildCalendar(2018, 1, 1, 1), item3);
     }
 
     /**
@@ -1086,7 +1058,7 @@ public class DateOrderedListMutatorTest {
 
         Assert.assertEquals(10, mModel.size());
         assertDivider(mModel.get(0), ListItem.CardDividerListItem.Position.TOP);
-        assertCardHeader(mModel.get(1), buildCalendar(2018, 1, 4, 0), "http://example.com/xyz");
+        assertCardHeader(mModel.get(1), buildCalendar(2018, 1, 4, 0), JUnitTestGURLs.EXAMPLE_URL);
         assertOfflineItem(mModel.get(2), buildCalendar(2018, 1, 4, 4), item4);
         assertDivider(mModel.get(3), ListItem.CardDividerListItem.Position.MIDDLE);
         assertOfflineItem(mModel.get(4), buildCalendar(2018, 1, 4, 3), item3);
@@ -1192,7 +1164,7 @@ public class DateOrderedListMutatorTest {
         item.isSuggested = true;
         item.creationTimeMs = calendar.getTimeInMillis();
         item.filter = filter;
-        item.url = "http://example.com/xyz";
+        item.url = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
         return item;
     }
 
@@ -1274,9 +1246,6 @@ public class DateOrderedListMutatorTest {
         Assert.assertEquals(SectionHeaderListItem.generateStableId(
                                     SectionHeaderType.JUST_NOW, calendar.getTimeInMillis()),
                 StableIds.JUST_NOW_SECTION);
-        Assert.assertEquals(SectionHeaderListItem.generateStableId(
-                                    SectionHeaderType.SCHEDULED_LATER, calendar.getTimeInMillis()),
-                StableIds.SCHEDULE_LATER_SECTION);
     }
 
     private static void assertJustNowSection(ListItem item) {
@@ -1284,13 +1253,6 @@ public class DateOrderedListMutatorTest {
         SectionHeaderListItem sectionHeader = (SectionHeaderListItem) item;
         Assert.assertEquals(SectionHeaderType.JUST_NOW, sectionHeader.type);
         Assert.assertEquals(StableIds.JUST_NOW_SECTION, item.stableId);
-    }
-
-    private static void assertScheduledLaterHeader(ListItem item) {
-        Assert.assertTrue(item instanceof SectionHeaderListItem);
-        SectionHeaderListItem sectionHeader = (SectionHeaderListItem) item;
-        Assert.assertEquals(SectionHeaderType.SCHEDULED_LATER, sectionHeader.type);
-        Assert.assertEquals(StableIds.SCHEDULE_LATER_SECTION, item.stableId);
     }
 
     private static void assertCardHeader(ListItem item, Calendar calendar, String domain) {

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,6 @@ namespace blink {
 class DisplayItemClient;
 class GraphicsContext;
 class LayoutObject;
-struct PhysicalOffset;
 
 class CORE_EXPORT ClipPathClipper {
   STATIC_ONLY(ClipPathClipper);
@@ -23,8 +22,7 @@ class CORE_EXPORT ClipPathClipper {
  public:
   static void PaintClipPathAsMaskImage(GraphicsContext&,
                                        const LayoutObject&,
-                                       const DisplayItemClient&,
-                                       const PhysicalOffset& paint_offset);
+                                       const DisplayItemClient&);
 
   // Returns the reference box used by CSS clip-path. For HTML objects,
   // this is the border box of the element. For SVG objects this is the
@@ -47,7 +45,8 @@ class CORE_EXPORT ClipPathClipper {
   // clip-path, it could be one of the SVG clip path in the chain.
   // Returns the path if the clip-path can use path-based clip.
   static absl::optional<Path> PathBasedClip(
-      const LayoutObject& clip_path_owner);
+      const LayoutObject& clip_path_owner,
+      const bool is_in_block_fragmentation);
 };
 
 }  // namespace blink

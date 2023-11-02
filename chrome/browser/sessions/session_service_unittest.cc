@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
@@ -87,9 +88,9 @@ class SessionServiceTest : public BrowserWithTestWindowTest {
   absl::optional<SessionServiceEvent> FindMostRecentEventOfType(
       SessionServiceEventLogType type) {
     auto events = GetSessionServiceEvents(browser()->profile());
-    for (auto i = events.rbegin(); i != events.rend(); ++i) {
-      if (i->type == type)
-        return *i;
+    for (const SessionServiceEvent& event : base::Reversed(events)) {
+      if (event.type == type)
+        return event;
     }
     return absl::nullopt;
   }
@@ -849,6 +850,34 @@ TEST_F(SessionServiceTest, PersistUserAgentOverrides) {
               tab->user_agent_override.ua_string_override);
   EXPECT_TRUE(blink::UserAgentMetadata::Marshal(client_hints_override) ==
               tab->user_agent_override.opaque_ua_metadata_override);
+}
+
+TEST_F(SessionServiceTest, PersistExtraData) {
+  SessionID tab_id = SessionID::NewUnique();
+  constexpr char kSampleKey[] = "test";
+  constexpr char kSampleValue[] = "true";
+
+  SerializedNavigationEntry nav1 =
+      ContentTestHelper::CreateNavigation("http://google.com", "abc");
+
+  helper_.PrepareTabInWindow(window_id, tab_id, 0, true);
+  UpdateNavigation(window_id, tab_id, nav1, true);
+  helper_.service()->AddWindowExtraData(window_id, kSampleKey, kSampleValue);
+  helper_.service()->AddTabExtraData(window_id, tab_id, kSampleKey,
+                                     kSampleValue);
+
+  std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
+  ReadWindows(&windows, nullptr);
+  EXPECT_EQ(1U, windows.size());
+  EXPECT_EQ(1U, windows[0]->tabs.size());
+  EXPECT_EQ(1U, windows[0]->extra_data.size());
+  EXPECT_EQ(kSampleValue, windows[0]->extra_data[kSampleKey]);
+
+  sessions::SessionTab* tab = windows[0]->tabs[0].get();
+  helper_.AssertTabEquals(window_id, tab_id, 0, 0, 1, *tab);
+  helper_.AssertNavigationEquals(nav1, tab->navigations[0]);
+  EXPECT_EQ(1U, tab->extra_data.size());
+  EXPECT_EQ(kSampleValue, tab->extra_data[kSampleKey]);
 }
 
 // Verifies SetWindowBounds maps SHOW_STATE_DEFAULT to SHOW_STATE_NORMAL.

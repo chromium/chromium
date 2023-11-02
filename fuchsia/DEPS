@@ -1,6 +1,0 @@
-include_rules = [
-  # The //fuchsia directory is effectively a top-level directory under which
-  # components that exist only on Fuchsia are defined. As such we do not allow
-  # sub-directories to reference one another without explicit opt-in.
-  "-fuchsia",
-]

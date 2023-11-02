@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,8 +22,11 @@ class CORE_EXPORT FencedFrameShadowDOMDelegate
  public:
   explicit FencedFrameShadowDOMDelegate(HTMLFencedFrameElement* outer_element);
 
-  void DidGetInserted() override;
   void Navigate(const KURL&) override;
+  void FreezeFrameSize() override;
+
+ private:
+  void AddUserAgentShadowContent(ShadowRoot&);
 };
 
 }  // namespace blink

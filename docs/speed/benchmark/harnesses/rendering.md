@@ -8,7 +8,7 @@ This document provides an overview of the benchmarks used to monitor Chrome’s 
 
 -   **Page** (or story): A recording of a website, which is associated with a set of actions (ex. scrolling)
 -   **Page Set** (or story set): A collection of different pages, organized by some shared characteristic (ex. top real world mobile sites)
--   **Metric**: A process that describes how to collect meaningful data from a Chrome trace and calculate results (ex. frame time)
+-   **Metric**: A process that describes how to collect meaningful data from a Chrome trace and calculate results (ex. cpu time per frame)
 -   **Benchmark**: A combination of a page set and multiple metrics
 -   **Telemetry**: The [framework](https://github.com/catapult-project/catapult/blob/master/telemetry/README.md) used for Chrome performance testing, which allows benchmarks to be run and metrics to be collected
 
@@ -30,7 +30,6 @@ These benchmarks are run on the [Chromium Perf Waterfall](https://ci.chromium.or
 Rendering metrics are [written in Javascript](https://cs.chromium.org/chromium/src/third_party/catapult/tracing/tracing/metrics/rendering/). The list of all metrics and their meanings should be documented in the files they are defined in.
 
 -   [cpu\_utilization.html](https://cs.chromium.org/chromium/src/third_party/catapult/tracing/tracing/metrics/rendering/cpu_utilization.html): `cpu_time_per_frame` and `tasks_per_frame`
--   [frame\_time.html](https://cs.chromium.org/chromium/src/third_party/catapult/tracing/tracing/metrics/rendering/frame_time.html): `frame_times`, `avg_surface_fps`, `jank_count`, and `ui_frame_times`
 -   [pixels.html](https://cs.chromium.org/chromium/src/third_party/catapult/tracing/tracing/metrics/rendering/pixels.html): `mean_pixels_approximated` and `mean_pixels_checkerboarded`
 -   [queueing\_duration.html](https://cs.chromium.org/chromium/src/third_party/catapult/tracing/tracing/metrics/rendering/queueing_duration.html): `queueing_durations`
 
@@ -86,9 +85,8 @@ Children classes should specify these attributes:
 
 All pages in the rendering benchmark need to use [RenderingSharedState](https://cs.chromium.org/chromium/src/tools/perf/page_sets/rendering/rendering_shared_state.py?dr&g=0) as the shared_page_state_class, since this has to be consistent across pages in a page set. Individual pages can also specify `extra_browser_args`, in order to set specific flags.
 
-After adding the page, record it and upload it to cloud storage using:
-
-`./tools/perf/record_wpr rendering_desktop --browser=system --story-tag-filter=<tag name> --upload`
+After adding the page, record it and upload it to cloud storage using
+[these instructions](https://source.chromium.org/chromium/chromium/src/+/main:tools/perf/recording_benchmarks.md).
 
 This will modify the [data/rendering_desktop.json](https://cs.chromium.org/chromium/src/tools/perf/page_sets/data/rendering_desktop.json?type=cs&q=rendering_deskt&g=0&l=1) or [data/rendering_mobile.json](https://cs.chromium.org/chromium/src/tools/perf/page_sets/data/rendering_mobile.json?type=cs&g=0) files and generate .sha1 files, which should be included in the CL.
 

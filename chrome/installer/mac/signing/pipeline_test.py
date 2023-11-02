@@ -1,14 +1,13 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import os.path
 import unittest
+from unittest import mock
 from xml.etree import ElementTree
 
-from . import model, pipeline, test_common, test_config
-
-mock = test_common.import_mock()
+from . import model, pipeline, test_config
 
 
 def _get_work_dir(*args, **kwargs):
@@ -78,6 +77,24 @@ def _get_adjacent_item(l, o):
     """
     index = l.index(o)
     return l[index + 1]
+
+
+def _filter_distributions(d, b, c):
+    _filter_distributions.brands = b
+    _filter_distributions.channels = c
+    return d
+
+
+_filter_distributions.brands = None
+_filter_distributions.channels = None
+
+
+def _last_brand_filter():
+    return _filter_distributions.brands
+
+
+def _last_channel_filter():
+    return _filter_distributions.channels
 
 
 @mock.patch.multiple(
@@ -889,6 +906,94 @@ framework dir is 'App Product.app/Contents/Frameworks/Product Framework.framewor
         self.assertEqual(len(copied_files), len(files_to_copy))
         self.assertEqual(set(copied_files), files_to_copy)
 
+    def test_filter_distributions(self, **kwargs):
+        dist1 = model.Distribution()
+        dist2 = model.Distribution(branding_code='MOO', channel='beta')
+        dist3 = model.Distribution(branding_code='ARF', channel='dev')
+        dist4 = model.Distribution(branding_code='MOOF', channel='canary')
+
+        distributions = [dist1, dist2, dist3, dist4]
+
+        # --- Neither ---
+
+        # No filters should yield no change to the distribution list.
+        self.assertEqual(distributions,
+                         pipeline._filter_distributions(distributions, [], []))
+
+        # --- Brands only ---
+
+        # Filtering a brand code not being built should throw.
+        with self.assertRaises(ValueError) as cm:
+            pipeline._filter_distributions(distributions, ['MOOG'], [])
+        self.assertEqual(
+            cm.exception.args[0],
+            "Brand codes do not match any distribution: %r" % {'MOOG'})
+
+        # Filtering one or more brand codes explicitly should remove them.
+        self.assertEqual([dist1, dist2, dist3],
+                         pipeline._filter_distributions(distributions, ['MOOF'],
+                                                        []))
+        self.assertEqual([dist1, dist3],
+                         pipeline._filter_distributions(distributions,
+                                                        ['MOO', 'MOOF'], []))
+
+        # Filtering a '*' should remove all brand coded distributions.
+        self.assertEqual([dist1],
+                         pipeline._filter_distributions(distributions, ['*'],
+                                                        []))
+
+        # Filtering a specific brand code and '*' should remove all brand coded
+        # distributions.
+        self.assertEqual([dist1],
+                         pipeline._filter_distributions(distributions,
+                                                        ['*', 'MOOF'], []))
+
+        # Filtering all brand codes when there aren't any should yield no change
+        # to the distribution list.
+        self.assertEqual([dist1],
+                         pipeline._filter_distributions([dist1], ['*'], []))
+
+        # --- Channels ---
+
+        # Filtering for a channel not being built should throw.
+        with self.assertRaises(ValueError) as cm:
+            pipeline._filter_distributions(distributions, [], ['hyper'])
+        self.assertEqual(
+            cm.exception.args[0],
+            "Channels do not match any distribution: %r" % {'hyper'})
+
+        # Filtering for 'stable' should result in the distribution with None
+        # as a channel.
+        self.assertEqual([dist1],
+                         pipeline._filter_distributions(distributions, [],
+                                                        ['stable']))
+
+        # Filtering for any other string as channel name should work.
+        self.assertEqual([dist2],
+                         pipeline._filter_distributions(distributions, [],
+                                                        ['beta']))
+
+        # Filtering for 'stable' along with other strings should work.
+        self.assertEqual([dist1, dist3],
+                         pipeline._filter_distributions(distributions, [],
+                                                        ['stable', 'dev']))
+
+        # --- Both ---
+
+        # Filtering on both in a way that allows a result should work.
+        self.assertEqual([dist2],
+                         pipeline._filter_distributions(distributions, ['MOOF'],
+                                                        ['beta']))
+
+        # Filtering for inclusion of a channel that is filtered out due to brand
+        # code should throw.
+        with self.assertRaises(ValueError) as cm:
+            pipeline._filter_distributions(distributions, ['MOO'], ['beta'])
+        self.assertEqual(
+            cm.exception.args[0],
+            "All distributions for channels were filtered out by brand: %r" %
+            {'beta'})
+
 
 @mock.patch.multiple(
     'signing.commands', **{
@@ -1200,13 +1305,110 @@ class TestSignAll(unittest.TestCase):
         self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
         self.assertEqual(1, kwargs['run_command'].call_count)
 
+    def test_sign_notarize_no_wait(self, **kwargs):
+        manager = mock.Mock()
+        for attr in kwargs:
+            manager.attach_mock(kwargs[attr], attr)
+
+        app_uuid = 'f38ee49c-c55b-4a10-a4f5-aaaa17636b76'
+        dmg_uuid = '9f49067e-a13d-436a-8016-3a22a4f6ef92'
+        kwargs['submit'].side_effect = [app_uuid, dmg_uuid]
+        kwargs['wait_for_results'].side_effect = [
+            iter([app_uuid]), iter([dmg_uuid])
+        ]
+        kwargs[
+            '_package_and_sign_dmg'].return_value = '/$O/AppProduct-99.0.9999.99.dmg'
+
+        config = test_config.TestConfig()
+        pipeline.sign_all(
+            self.paths,
+            config,
+            notarization=model.NotarizeAndStapleLevel.NOWAIT)
+
+        self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
+
+        manager.assert_has_calls([
+            # First customize the distribution and sign it.
+            mock.call._customize_and_sign_chrome(mock.ANY, mock.ANY,
+                                                 '/$W_1/stable', mock.ANY),
+
+            # Prepare the app for notarization.
+            mock.call.run_command([
+                'zip', '--recurse-paths', '--symlinks', '--quiet',
+                '/$W_1/AppProduct-99.0.9999.99.zip', 'App Product.app'
+            ],
+                                  cwd='/$W_1/stable'),
+            mock.call.submit('/$W_1/AppProduct-99.0.9999.99.zip', mock.ANY),
+            mock.call.shutil.rmtree('/$W_2'),
+
+            # Make the DMG.
+            mock.call._package_and_sign_dmg(mock.ANY, mock.ANY),
+
+            # Notarize the DMG.
+            mock.call.submit('/$O/AppProduct-99.0.9999.99.dmg', mock.ANY),
+            mock.call.shutil.rmtree('/$W_1'),
+
+            # Package the installer tools.
+            mock.call._package_installer_tools(mock.ANY, mock.ANY),
+        ])
+
+    def test_sign_notarize_wait_no_staple(self, **kwargs):
+        manager = mock.Mock()
+        for attr in kwargs:
+            manager.attach_mock(kwargs[attr], attr)
+
+        app_uuid = 'f38ee49c-c55b-4a10-a4f5-aaaa17636b76'
+        dmg_uuid = '9f49067e-a13d-436a-8016-3a22a4f6ef92'
+        kwargs['submit'].side_effect = [app_uuid, dmg_uuid]
+        kwargs['wait_for_results'].side_effect = [
+            iter([app_uuid]), iter([dmg_uuid])
+        ]
+        kwargs[
+            '_package_and_sign_dmg'].return_value = '/$O/AppProduct-99.0.9999.99.dmg'
+
+        config = test_config.TestConfig()
+        pipeline.sign_all(
+            self.paths,
+            config,
+            notarization=model.NotarizeAndStapleLevel.WAIT_NOSTAPLE)
+
+        self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
+
+        manager.assert_has_calls([
+            # First customize the distribution and sign it.
+            mock.call._customize_and_sign_chrome(mock.ANY, mock.ANY,
+                                                 '/$W_1/stable', mock.ANY),
+
+            # Prepare the app for notarization.
+            mock.call.run_command([
+                'zip', '--recurse-paths', '--symlinks', '--quiet',
+                '/$W_1/AppProduct-99.0.9999.99.zip', 'App Product.app'
+            ],
+                                  cwd='/$W_1/stable'),
+            mock.call.submit('/$W_1/AppProduct-99.0.9999.99.zip', mock.ANY),
+            mock.call.shutil.rmtree('/$W_2'),
+            mock.call.wait_for_results({app_uuid: None}.keys(), mock.ANY),
+
+            # Make the DMG.
+            mock.call._package_and_sign_dmg(mock.ANY, mock.ANY),
+
+            # Notarize the DMG.
+            mock.call.submit('/$O/AppProduct-99.0.9999.99.dmg', mock.ANY),
+            mock.call.wait_for_results({dmg_uuid: None}.keys(), mock.ANY),
+            mock.call.shutil.rmtree('/$W_1'),
+
+            # Package the installer tools.
+            mock.call._package_installer_tools(mock.ANY, mock.ANY),
+        ])
+
     def test_sign_no_notarization(self, **kwargs):
         manager = mock.Mock()
         for attr in kwargs:
             manager.attach_mock(kwargs[attr], attr)
 
         config = test_config.TestConfig()
-        pipeline.sign_all(self.paths, config, do_notarization=False)
+        pipeline.sign_all(
+            self.paths, config, notarization=model.NotarizeAndStapleLevel.NONE)
 
         self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
 
@@ -1231,7 +1433,10 @@ class TestSignAll(unittest.TestCase):
 
         config = test_config.TestConfig()
         pipeline.sign_all(
-            self.paths, config, disable_packaging=True, do_notarization=False)
+            self.paths,
+            config,
+            disable_packaging=True,
+            notarization=model.NotarizeAndStapleLevel.NONE)
 
         manager.assert_has_calls([
             # First customize the distribution and sign it.
@@ -1276,7 +1481,8 @@ class TestSignAll(unittest.TestCase):
                 ]
 
         config = Config()
-        pipeline.sign_all(self.paths, config, do_notarization=False)
+        pipeline.sign_all(
+            self.paths, config, notarization=model.NotarizeAndStapleLevel.NONE)
 
         self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
         self.assertEqual(3, kwargs['_customize_and_sign_chrome'].call_count)
@@ -1310,3 +1516,31 @@ class TestSignAll(unittest.TestCase):
             # Finally the installer tools.
             mock.call._package_installer_tools(mock.ANY, mock.ANY),
         ])
+
+    @mock.patch('signing.pipeline._filter_distributions', _filter_distributions)
+    def test_sign_calls_filters(self, **kwargs):
+        manager = mock.Mock()
+        for attr in kwargs:
+            manager.attach_mock(kwargs[attr], attr)
+
+        skip_brands = ['MOO']
+        include_channels = ['beta']
+
+        class Config(test_config.TestConfig):
+
+            @property
+            def distributions(self):
+                return [
+                    model.Distribution(),
+                ]
+
+        config = Config()
+        pipeline.sign_all(
+            self.paths,
+            config,
+            notarization=model.NotarizeAndStapleLevel.NONE,
+            skip_brands=skip_brands,
+            channels=include_channels)
+
+        self.assertEqual(_last_brand_filter(), skip_brands)
+        self.assertEqual(_last_channel_filter(), include_channels)

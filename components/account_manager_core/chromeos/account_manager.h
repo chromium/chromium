@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -146,56 +147,45 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   // Returns |true| if |AccountManager| has been fully initialized.
   bool IsInitialized() const;
 
-  // Gets (async) a list of account keys known to |AccountManager|. Note that
-  // |callback| will be immediately called in the same thread if
-  // |AccountManager| has been fully initialized and hence it may not be safe to
+  // Gets (async) a list of account keys known to `AccountManager`. Note that
+  // `callback` will be immediately called in the same thread if
+  // `AccountManager` has been fully initialized and hence it may not be safe to
   // call this method directly in some class's constructor, with a callback on
   // the same class, since it may result in a method call on a partially
   // constructed object.
   void GetAccounts(AccountListCallback callback);
 
   // Gets (async) the raw, un-canonicalized email id corresponding to
-  // |account_key|. |callback| is called with an empty string if |account_key|
+  // `account_key`. `callback` is called with an empty string if `account_key`
   // is not known to Account Manager.
   void GetAccountEmail(const ::account_manager::AccountKey& account_key,
                        base::OnceCallback<void(const std::string&)> callback);
 
-  // Removes an account. Does not do anything if |account_key| is not known by
-  // |AccountManager|.
+  // Removes an account. Does not do anything if `account_key` is not known by
+  // `AccountManager`.
   // Observers are notified about an account removal through
-  // |Observer::OnAccountRemoved|.
+  // `Observer::OnAccountRemoved`.
   // If the account being removed is a GAIA account, a token revocation with
   // GAIA is also attempted, on a best effort basis. Even if token revocation
   // with GAIA fails, AccountManager will forget the account.
   void RemoveAccount(const ::account_manager::AccountKey& account_key);
 
-  // Similar to |RemoveAccount(AccountKey)| except that it accepts |email| as
-  // the account identifier instead of |account_key|. |email| can be the raw
-  // email or the canonical email.
-  void RemoveAccount(const std::string& email);
-
-  // Updates or inserts an account. |raw_email| is the raw, un-canonicalized
-  // email id for |account_key|. |raw_email| must not be empty. Use
-  // |AccountManager::kActiveDirectoryDummyToken| as the |token| for Active
-  // Directory accounts, and |AccountManager::kInvalidToken| for Gaia accounts
+  // Updates or inserts an account. `raw_email` is the raw, un-canonicalized
+  // email id for `account_key`. `raw_email` must not be empty. Use
+  // `AccountManager::kActiveDirectoryDummyToken` as the `token` for Active
+  // Directory accounts, and `AccountManager::kInvalidToken` for Gaia accounts
   // with unknown tokens.
   // Note: This API is idempotent.
   void UpsertAccount(const ::account_manager::AccountKey& account_key,
                      const std::string& raw_email,
                      const std::string& token);
 
-  // Updates the token for the account corresponding to the given |account_key|.
-  // The account must be known to Account Manager. See |UpsertAccount| for
+  // Updates the token for the account corresponding to the given `account_key`.
+  // The account must be known to Account Manager. See `UpsertAccount` for
   // information about adding an account.
   // Note: This API is idempotent.
   void UpdateToken(const ::account_manager::AccountKey& account_key,
                    const std::string& token);
-
-  // Updates the email associated with |account_key|. The account must be known
-  // to Account Manager. See |UpsertAccount| for information about adding an
-  // account.
-  void UpdateEmail(const ::account_manager::AccountKey& account_key,
-                   const std::string& raw_email);
 
   // Add a non owning pointer to an |AccountManager::Observer|.
   void AddObserver(Observer* observer);
@@ -223,15 +213,15 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   // initialized yet.
   bool IsTokenAvailable(const ::account_manager::AccountKey& account_key) const;
 
-  // Calls the |callback| with true if the token stored against |account_key| is
+  // Calls the `callback` with true if the token stored against `account_key` is
   // a dummy Gaia token.
   void HasDummyGaiaToken(const ::account_manager::AccountKey& account_key,
                          base::OnceCallback<void(bool)> callback);
 
-  // Calls the |callback| with a list of pairs of |account_key| and boolean
-  // which is set to true if the token stored against |account_key| is a dummy
+  // Calls the `callback` with a list of pairs of `account_key` and boolean
+  // which is set to true if the token stored against `account_key` is a dummy
   // Gaia token, for all accounts stored in AccountManager. See
-  // |HasDummyGaiaToken|.
+  // `HasDummyGaiaToken`.
   void CheckDummyGaiaTokenForAllAccounts(
       base::OnceCallback<
           void(const std::vector<std::pair<::account_manager::Account, bool>>&)>
@@ -292,33 +282,6 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   // class is initialized.
   void RunOnInitialization(base::OnceClosure closure);
 
-  // Does the actual work of getting a list of accounts. Assumes that
-  // |AccountManager| initialization (|init_state_|) is complete.
-  void GetAccountsInternal(AccountListCallback callback);
-
-  // Does the actual work of fetching the email for |account_key|. Assumes that
-  // |AccountManager| initialization (|init_state_|) is complete.
-  void GetAccountEmailInternal(
-      const ::account_manager::AccountKey& account_key,
-      base::OnceCallback<void(const std::string&)> callback);
-
-  // Does the actual work of removing an account. Assumes that
-  // |AccountManager| initialization (|init_state_|) is complete.
-  void RemoveAccountInternal(const ::account_manager::AccountKey& account_key);
-
-  // Does the actual work of removing an account. Assumes that |AccountManager|
-  // initialization (|init_state_|) is complete. |email| can be the raw email or
-  // the canonical email.
-  void RemoveAccountByEmailInternal(const std::string& email);
-
-  // Assumes that |AccountManager| initialization (|init_state_|) is complete.
-  void UpdateTokenInternal(const ::account_manager::AccountKey& account_key,
-                           const std::string& token);
-
-  // Assumes that |AccountManager| initialization (|init_state_|) is complete.
-  void UpdateEmailInternal(const ::account_manager::AccountKey& account_key,
-                           const std::string& raw_email);
-
   // Does the actual work of upserting an account and performing related tasks
   // like revoking old tokens and informing observers. All account updates
   // funnel through to this method. Assumes that |AccountManager| initialization
@@ -333,8 +296,8 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   // Gets a serialized representation of accounts.
   std::string GetSerializedAccounts();
 
-  // Gets the publicly viewable information stored in |accounts_|.
-  std::vector<::account_manager::Account> GetAccounts();
+  // Gets the publicly viewable information stored in `accounts_`.
+  std::vector<::account_manager::Account> GetAccountsView();
 
   // Notifies |Observer|s about a token update for |account|.
   void NotifyTokenObservers(const ::account_manager::Account& account);
@@ -362,19 +325,6 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   // mode, and not persisting anything to disk.
   bool IsEphemeralMode() const;
 
-  // Does the actual work of checking dummy token for |account_key|. Assumes
-  // that |AccountManager| initialization (|init_state_|) is complete.
-  void HasDummyGaiaTokenInternal(
-      const ::account_manager::AccountKey& account_key,
-      base::OnceCallback<void(bool)> callback) const;
-
-  // Does the actual work of checking dummy token for all accounts. Assumes that
-  // |AccountManager| initialization (|init_state_|) is complete.
-  void CheckDummyGaiaTokenForAllAccountsInternal(
-      base::OnceCallback<
-          void(const std::vector<std::pair<::account_manager::Account, bool>>&)>
-          callback) const;
-
   // Returns the refresh token for `account_key`, if present. `account_key` must
   // be a Gaia account. Assumes that `AccountManager` initialization
   // (`init_state_`) is complete.
@@ -397,7 +347,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   DelayNetworkCallRunner delay_network_call_runner_;
 
   // Non-owning pointer.
-  PrefService* pref_service_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
 
   // A task runner for disk I/O.
   // Will be |nullptr| if |AccountManager| is operating in ephemeral mode.

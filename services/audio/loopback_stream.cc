@@ -1,14 +1,14 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/audio/loopback_stream.h"
 
-#include <algorithm>
 #include <string>
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "base/sync_socket.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
@@ -17,6 +17,7 @@
 #include "media/base/vector_math.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "mojo/public/cpp/system/platform_handle.h"
+#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 namespace audio {
 
@@ -78,7 +79,7 @@ LoopbackStream::LoopbackStream(
       socket_handle = mojo::PlatformHandle(foreign_socket.Take());
       if (socket_handle.is_valid()) {
         std::move(created_callback)
-            .Run({base::in_place, std::move(shared_memory_region),
+            .Run({absl::in_place, std::move(shared_memory_region),
                   std::move(socket_handle)});
         network_.reset(new FlowNetwork(std::move(flow_task_runner), params,
                                        std::move(writer)));
@@ -259,7 +260,7 @@ void LoopbackStream::FlowNetwork::RemoveInput(SnooperNode* node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(control_sequence_);
 
   base::AutoLock scoped_lock(lock_);
-  const auto it = std::find(inputs_.begin(), inputs_.end(), node);
+  const auto it = base::ranges::find(inputs_, node);
   DCHECK(it != inputs_.end());
   inputs_.erase(it);
 }
@@ -275,7 +276,7 @@ void LoopbackStream::FlowNetwork::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(control_sequence_);
   DCHECK(!is_started());
 
-  timer_.emplace(clock_);
+  timer_.emplace();
   // Note: GenerateMoreAudio() will schedule the timer.
 
   first_generate_time_ = clock_->NowTicks();
@@ -379,7 +380,7 @@ void LoopbackStream::FlowNetwork::GenerateMoreAudio() {
   const base::TimeTicks now = clock_->NowTicks();
   if (next_generate_time_ < now) {
     TRACE_EVENT_INSTANT1("audio", "GenerateMoreAudio Is Behind",
-                         TRACE_EVENT_SCOPE_THREAD, u8"µsec_behind",
+                         TRACE_EVENT_SCOPE_THREAD, "µsec_behind",
                          (now - next_generate_time_).InMicroseconds());
     // Audio generation has fallen behind. Skip-ahead the frame counter so that
     // audio generation will resume for the next buffer after the one that
@@ -400,8 +401,8 @@ void LoopbackStream::FlowNetwork::GenerateMoreAudio() {
   // due to integer truncation behaviors in the math above. The timer task
   // started below will just run immediately and there will be no harmful
   // effects in the next GenerateMoreAudio() call. http://crbug.com/847487
-  timer_->Start(FROM_HERE, next_generate_time_ - now, this,
-                &FlowNetwork::GenerateMoreAudio);
+  timer_->Start(FROM_HERE, next_generate_time_, this,
+                &FlowNetwork::GenerateMoreAudio, base::ExactDeadline(true));
 }
 
 }  // namespace audio

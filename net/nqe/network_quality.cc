@@ -1,12 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/nqe/network_quality.h"
 
-namespace net {
-namespace nqe {
-namespace internal {
+namespace net::nqe::internal {
 
 base::TimeDelta InvalidRTT() {
   return base::Milliseconds(INVALID_RTT_THROUGHPUT);
@@ -73,6 +71,4 @@ void NetworkQuality::VerifyValueCorrectness() const {
   DCHECK_LE(INVALID_RTT_THROUGHPUT, downstream_throughput_kbps_);
 }
 
-}  // namespace internal
-}  // namespace nqe
-}  // namespace net
+}  // namespace net::nqe::internal

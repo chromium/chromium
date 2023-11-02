@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,12 @@
 
 #include <memory>
 
+#include "ash/public/cpp/login_accelerators.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/feature_list.h"
+#include "base/immediate_crash.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/syslog_logging.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
@@ -15,8 +20,12 @@
 #include "chrome/browser/ash/app_mode/startup_app_launcher.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_service_launcher.h"
+#include "chrome/browser/ash/crosapi/browser_data_migrator.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/force_installed_tracker_ash.h"
 #include "chrome/browser/ash/login/enterprise_user_session_metrics.h"
 #include "chrome/browser/ash/login/screens/encryption_migration_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
@@ -26,6 +35,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
+#include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/extensions/policy_handlers.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
@@ -102,6 +112,40 @@ void RecordKioskLaunchUMA(bool is_auto_launch) {
   }
 }
 
+void RecordKioskExtensionInstallError(
+    extensions::InstallStageTracker::FailureReason reason,
+    bool is_from_store) {
+  if (is_from_store) {
+    base::UmaHistogramEnumeration("Kiosk.Extensions.InstallError.WebStore",
+                                  reason);
+  } else {
+    base::UmaHistogramEnumeration("Kiosk.Extensions.InstallError.OffStore",
+                                  reason);
+  }
+}
+
+void RecordKioskExtensionInstallTimedOut(bool timeout) {
+  UMA_HISTOGRAM_BOOLEAN("Kiosk.Extensions.InstallTimedOut", timeout);
+}
+
+void RecordKioskExtensionInstallDuration(base::TimeDelta time_delta) {
+  UMA_HISTOGRAM_MEDIUM_TIMES("Kiosk.Extensions.InstallDuration", time_delta);
+}
+
+void RecordKioskLaunchDuration(KioskAppType type, base::TimeDelta duration) {
+  switch (type) {
+    case KioskAppType::kArcApp:
+      base::UmaHistogramLongTimes("Kiosk.LaunchDuration.Arc", duration);
+      break;
+    case KioskAppType::kChromeApp:
+      base::UmaHistogramLongTimes("Kiosk.LaunchDuration.ChromeApp", duration);
+      break;
+    case KioskAppType::kWebApp:
+      base::UmaHistogramLongTimes("Kiosk.LaunchDuration.Web", duration);
+      break;
+  }
+}
+
 extensions::ForceInstalledTracker* GetForceInstalledTracker(Profile* profile) {
   extensions::ExtensionSystem* system =
       extensions::ExtensionSystem::Get(profile);
@@ -174,10 +218,10 @@ KioskLaunchController::~KioskLaunchController() {
 
 void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
                                   bool auto_launch) {
-  SYSLOG(INFO) << "Starting kiosk mode of type "
-               << static_cast<int>(kiosk_app_id.type) << "...";
+  SYSLOG(INFO) << "Starting kiosk mode for app " << kiosk_app_id;
   kiosk_app_id_ = kiosk_app_id;
   auto_launch_ = auto_launch;
+  launcher_start_time_ = base::Time::Now();
 
   RecordKioskLaunchUMA(auto_launch);
 
@@ -209,8 +253,47 @@ void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
   kiosk_profile_loader_->Start();
 }
 
+void KioskLaunchController::AddKioskProfileLoadFailedObserver(
+    KioskProfileLoadFailedObserver* observer) {
+  profile_load_failed_observers_.AddObserver(observer);
+}
+
+void KioskLaunchController::RemoveKioskProfileLoadFailedObserver(
+    KioskProfileLoadFailedObserver* observer) {
+  profile_load_failed_observers_.RemoveObserver(observer);
+}
+
+bool KioskLaunchController::HandleAccelerator(LoginAcceleratorAction action) {
+  if (action == LoginAcceleratorAction::kAppLaunchBailout) {
+    OnCancelAppLaunch();
+    return true;
+  }
+
+  if (action == LoginAcceleratorAction::kAppLaunchNetworkConfig) {
+    OnNetworkConfigRequested();
+    return true;
+  }
+
+  return false;
+}
+
 void KioskLaunchController::OnProfileLoaded(Profile* profile) {
   SYSLOG(INFO) << "Profile loaded... Starting app launch.";
+
+  // Call `ClearMigrationStep()` once per signin so that the check for migration
+  // is run exactly once per signin. Check the comment for `kMigrationStep` in
+  // browser_data_migrator.h for details.
+  BrowserDataMigratorImpl::ClearMigrationStep(g_browser_process->local_state());
+
+  const user_manager::User* user =
+      ProfileHelper::Get()->GetUserByProfile(profile);
+  if (BrowserDataMigratorImpl::MaybeRestartToMigrate(
+          user->GetAccountId(), user->username_hash(),
+          crosapi::browser_util::PolicyInitState::kAfterInit)) {
+    LOG(WARNING) << "Restarting chrome to run profile migration.";
+    return;
+  }
+
   profile_ = profile;
 
   // This is needed to trigger input method extensions being loaded.
@@ -235,8 +318,16 @@ void KioskLaunchController::OnProfileLoaded(Profile* profile) {
       case KioskAppType::kWebApp:
         // Make keyboard config sync with the `VirtualKeyboardFeatures` policy.
         ChromeKeyboardControllerClient::Get()->SetKeyboardConfigFromPref(true);
-        app_launcher_ = std::make_unique<WebKioskAppLauncher>(
-            profile, this, *kiosk_app_id_.account_id);
+        // TODO(b/242023891): |WebKioskAppServiceLauncher| does not support
+        // Lacros until App Service installation API is available.
+        if (base::FeatureList::IsEnabled(features::kKioskEnableAppService) &&
+            !crosapi::browser_util::IsLacrosEnabled()) {
+          app_launcher_ = std::make_unique<WebKioskAppServiceLauncher>(
+              profile, this, *kiosk_app_id_.account_id);
+        } else {
+          app_launcher_ = std::make_unique<WebKioskAppLauncher>(
+              profile, this, *kiosk_app_id_.account_id);
+        }
         break;
     }
   }
@@ -282,6 +373,8 @@ void KioskLaunchController::OnCancelAppLaunch() {
 
 void KioskLaunchController::OnDeletingSplashScreenView() {
   splash_screen_view_ = nullptr;
+  RecordKioskLaunchDuration(kiosk_app_id_.type,
+                            base::Time::Now() - launcher_start_time_);
 }
 
 KioskAppManagerBase::App KioskLaunchController::GetAppData() {
@@ -327,6 +420,8 @@ void KioskLaunchController::CleanUp() {
   extension_wait_timer_.Stop();
   network_wait_timer_.Stop();
   splash_wait_timer_.Stop();
+
+  extension_start_time_ = absl::nullopt;
 
   kiosk_profile_loader_.reset();
   // Can be null in tests.
@@ -378,7 +473,7 @@ void KioskLaunchController::OnAppPrepared() {
 
     splash_screen_view_->ShowErrorMessage(
         KioskAppLaunchError::Error::kExtensionsPolicyInvalid);
-    OnForceInstalledExtensionsReady();
+    FinishForcedExtensionsInstall(/*timeout=*/false);
     return;
   }
 
@@ -386,13 +481,22 @@ void KioskLaunchController::OnAppPrepared() {
 
   // Launch lacros-chrome if the corresponding feature flags are enabled.
   if (crosapi::browser_util::IsLacrosEnabledInWebKioskSession()) {
-    // Start observing the installation status of extensions in Lacros.
-    force_installed_observation_for_lacros_.Observe(
-        GetForceInstalledTrackerAsh());
-    StartTimerToWaitForExtensions();
+    crosapi::ForceInstalledTrackerAsh* tracker_ash =
+        GetForceInstalledTrackerAsh();
+
+    if (tracker_ash && !tracker_ash->IsReady()) {
+      // Start observing the installation status of extensions in Lacros.
+      force_installed_observation_for_lacros_.Observe(
+          GetForceInstalledTrackerAsh());
+      StartTimerToWaitForExtensions();
+    } else {
+      FinishForcedExtensionsInstall(/*timeout=*/false);
+    }
 
     // Initialize and start Lacros for preparing force-installed extensions.
-    crosapi::BrowserManager::Get()->InitializeAndStart();
+    if (!crosapi::BrowserManager::Get()->IsRunningOrWillRun())
+      crosapi::BrowserManager::Get()->InitializeAndStartIfNeeded();
+
     return;
   }
 
@@ -403,7 +507,7 @@ void KioskLaunchController::OnAppPrepared() {
     force_installed_observation_for_ash_.Observe(tracker);
     StartTimerToWaitForExtensions();
   } else {
-    OnForceInstalledExtensionsReady();
+    FinishForcedExtensionsInstall(/*timeout=*/false);
   }
 }
 
@@ -446,6 +550,7 @@ void KioskLaunchController::OnNetworkWaitTimedOut() {
 }
 
 void KioskLaunchController::StartTimerToWaitForExtensions() {
+  extension_start_time_ = absl::make_optional(base::Time::Now());
   extension_wait_timer_.Start(FROM_HERE, g_extension_wait_time, this,
                               &KioskLaunchController::OnExtensionWaitTimedOut);
   splash_screen_view_->UpdateAppLaunchState(
@@ -458,7 +563,7 @@ void KioskLaunchController::OnExtensionWaitTimedOut() {
 
   splash_screen_view_->ShowErrorMessage(
       KioskAppLaunchError::Error::kExtensionsLoadTimeout);
-  OnForceInstalledExtensionsReady();
+  FinishForcedExtensionsInstall(/*timeout=*/true);
 }
 
 bool KioskLaunchController::IsNetworkReady() const {
@@ -480,7 +585,14 @@ void KioskLaunchController::OnLaunchFailed(KioskAppLaunchError::Error error) {
   DCHECK_NE(KioskAppLaunchError::Error::kNone, error);
   SYSLOG(ERROR) << "Kiosk launch failed, error=" << static_cast<int>(error);
 
-  if (kiosk_app_id_.type == KioskAppType::kWebApp) {
+  // App Service launcher requires the web app to be installed. Temporary issues
+  // like URL redirection should not stop the app from being installed as
+  // placeholder. Force launching the app is not possible in case installation
+  // fails.
+  if (kiosk_app_id_.type == KioskAppType::kWebApp &&
+      error == KioskAppLaunchError::Error::kUnableToInstall &&
+      (!base::FeatureList::IsEnabled(features::kKioskEnableAppService) ||
+       crosapi::browser_util::IsLacrosEnabled())) {
     HandleWebAppInstallFailed();
     return;
   }
@@ -521,6 +633,30 @@ void KioskLaunchController::HandleWebAppInstallFailed() {
     LaunchApp();
 }
 
+void KioskLaunchController::FinishForcedExtensionsInstall(bool timeout) {
+  app_state_ = AppState::kInstalled;
+
+  // If forced extension install was started, record UMA metrics for extension
+  // install.
+  if (extension_start_time_) {
+    RecordKioskExtensionInstallTimedOut(timeout);
+    RecordKioskExtensionInstallDuration(base::Time::Now() -
+                                        *extension_start_time_);
+  }
+
+  if (crosapi::browser_util::IsLacrosEnabledInWebKioskSession())
+    force_installed_observation_for_lacros_.Reset();
+  else
+    force_installed_observation_for_ash_.Reset();
+
+  splash_screen_view_->UpdateAppLaunchState(
+      AppLaunchSplashScreenView::AppLaunchState::kWaitingAppWindow);
+  splash_screen_view_->Show();
+
+  if (launch_on_install_ || g_skip_splash_wait_for_testing)
+    LaunchApp();
+}
+
 void KioskLaunchController::OnAppLaunched() {
   SYSLOG(INFO) << "Kiosk launch succeeded, wait for app window.";
   app_state_ = AppState::kLaunched;
@@ -549,6 +685,9 @@ void KioskLaunchController::OnAppDataUpdated() {
 
 void KioskLaunchController::OnProfileLoadFailed(
     KioskAppLaunchError::Error error) {
+  for (auto& observer : profile_load_failed_observers_) {
+    observer.OnKioskProfileLoadFailed();
+  }
   OnLaunchFailed(error);
 }
 
@@ -568,19 +707,14 @@ void KioskLaunchController::OnOldEncryptionDetected(
 }
 
 void KioskLaunchController::OnForceInstalledExtensionsReady() {
-  app_state_ = AppState::kInstalled;
+  FinishForcedExtensionsInstall(/*timeout=*/false);
+}
 
-  if (crosapi::browser_util::IsLacrosEnabledInWebKioskSession())
-    force_installed_observation_for_lacros_.Reset();
-  else
-    force_installed_observation_for_ash_.Reset();
-
-  splash_screen_view_->UpdateAppLaunchState(
-      AppLaunchSplashScreenView::AppLaunchState::kWaitingAppWindow);
-  splash_screen_view_->Show();
-
-  if (launch_on_install_ || g_skip_splash_wait_for_testing)
-    LaunchApp();
+void KioskLaunchController::OnForceInstalledExtensionFailed(
+    const extensions::ExtensionId& extension_id,
+    extensions::InstallStageTracker::FailureReason reason,
+    bool is_from_store) {
+  RecordKioskExtensionInstallError(reason, is_from_store);
 }
 
 void KioskLaunchController::OnOwnerSigninSuccess() {

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -86,8 +86,9 @@ class MockRTCPeerConnectionHandlerPlatform : public RTCPeerConnectionHandler {
   MockRTCPeerConnectionHandlerPlatform();
   ~MockRTCPeerConnectionHandlerPlatform() override;
 
-  bool Initialize(const webrtc::PeerConnectionInterface::RTCConfiguration&,
-                  const MediaConstraints&,
+  bool Initialize(ExecutionContext* context,
+                  const webrtc::PeerConnectionInterface::RTCConfiguration&,
+                  GoogMediaConstraints* media_constraints,
                   WebLocalFrame*,
                   ExceptionState&) override;
   void Close() override;
@@ -95,12 +96,7 @@ class MockRTCPeerConnectionHandlerPlatform : public RTCPeerConnectionHandler {
 
   Vector<std::unique_ptr<RTCRtpTransceiverPlatform>> CreateOffer(
       RTCSessionDescriptionRequest*,
-      const MediaConstraints&) override;
-  Vector<std::unique_ptr<RTCRtpTransceiverPlatform>> CreateOffer(
-      RTCSessionDescriptionRequest*,
       RTCOfferOptionsPlatform*) override;
-  void CreateAnswer(RTCSessionDescriptionRequest*,
-                    const MediaConstraints&) override;
   void CreateAnswer(RTCSessionDescriptionRequest*,
                     RTCAnswerOptionsPlatform*) override;
   void SetLocalDescription(RTCVoidRequest*) override;
@@ -133,12 +129,12 @@ class MockRTCPeerConnectionHandlerPlatform : public RTCPeerConnectionHandler {
   void RunSynchronousOnceClosureOnSignalingThread(
       CrossThreadOnceClosure closure,
       const char* trace_event_name) override;
-  void RunSynchronousRepeatingClosureOnSignalingThread(
-      const base::RepeatingClosure& closure,
+  void RunSynchronousOnceClosureOnSignalingThread(
+      base::OnceClosure closure,
       const char* trace_event_name) override;
   void TrackIceConnectionStateChange(
-      RTCPeerConnectionHandler::IceConnectionStateVersion version,
       webrtc::PeerConnectionInterface::IceConnectionState state) override;
+
  private:
   class DummyRTCRtpTransceiverPlatform;
 

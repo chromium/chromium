@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,13 +35,13 @@ class SmbHandler : public content::WebUIMessageHandler {
   void RegisterMessages() override;
 
   // WebUI call to mount an Smb Filesystem.
-  void HandleSmbMount(const base::ListValue* args);
+  void HandleSmbMount(const base::Value::List& args);
 
   // WebUI call to start file share discovery on the network.
-  void HandleStartDiscovery(const base::ListValue* args);
+  void HandleStartDiscovery(const base::Value::List& args);
 
   // WebUI call to update the credentials of a mounted share.
-  void HandleUpdateCredentials(const base::ListValue* args);
+  void HandleUpdateCredentials(const base::Value::List& args);
 
   // Callback handler for SmbMount.
   void HandleSmbMountResponse(const std::string& callback_id,

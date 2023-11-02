@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/elements/button.h"
 #include "chrome/browser/vr/elements/text.h"
 
@@ -27,7 +28,7 @@ class TextButton : public Button {
  private:
   void OnSetColors(const ButtonColors& colors) override;
 
-  Text* text_ = nullptr;
+  raw_ptr<Text> text_ = nullptr;
 };
 
 }  // namespace vr

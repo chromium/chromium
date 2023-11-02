@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,7 +44,7 @@ class NativeMediaFileUtil : public storage::AsyncFileUtil {
   // DeviceMediaAsyncFileUtil.
   static void CreatedSnapshotFileForCreateOrOpen(
       base::SequencedTaskRunner* media_task_runner,
-      int file_flags,
+      uint32_t file_flags,
       storage::AsyncFileUtil::CreateOrOpenCallback callback,
       base::File::Error result,
       const base::File::Info& file_info,
@@ -55,7 +55,7 @@ class NativeMediaFileUtil : public storage::AsyncFileUtil {
   void CreateOrOpen(
       std::unique_ptr<storage::FileSystemOperationContext> context,
       const storage::FileSystemURL& url,
-      int file_flags,
+      uint32_t file_flags,
       CreateOrOpenCallback callback) override;
   void EnsureFileExists(
       std::unique_ptr<storage::FileSystemOperationContext> context,

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,10 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
+#include "third_party/blink/renderer/platform/heap/member.h"
+
 namespace base {
+class LazyNow;
 namespace trace_event {
 class TracedValue;
 }
@@ -98,18 +101,17 @@ class PLATFORM_EXPORT TaskQueueThrottler final
   base::TimeTicks GetTimeTasksCanRunUntil(base::TimeTicks now) const;
 
   // See GetNextAllowedWakeUp().
-  absl::optional<base::sequence_manager::DelayedWakeUp>
-  GetNextAllowedWakeUpImpl(
-      base::sequence_manager::LazyNow* lazy_now,
-      absl::optional<base::sequence_manager::DelayedWakeUp> next_wake_up,
+  absl::optional<base::sequence_manager::WakeUp> GetNextAllowedWakeUpImpl(
+      base::LazyNow* lazy_now,
+      absl::optional<base::sequence_manager::WakeUp> next_wake_up,
       bool has_ready_task);
 
   // TaskQueue::Throttler implementation:
-  absl::optional<base::sequence_manager::DelayedWakeUp> GetNextAllowedWakeUp(
-      base::sequence_manager::LazyNow* lazy_now,
-      absl::optional<base::sequence_manager::DelayedWakeUp> next_wake_up,
+  absl::optional<base::sequence_manager::WakeUp> GetNextAllowedWakeUp(
+      base::LazyNow* lazy_now,
+      absl::optional<base::sequence_manager::WakeUp> next_wake_up,
       bool has_ready_task) override;
-  void OnWakeUp(base::sequence_manager::LazyNow* lazy_now) override;
+  void OnWakeUp(base::LazyNow* lazy_now) override;
   void OnHasImmediateTask() override;
 
   void UpdateFence(base::TimeTicks now);
@@ -118,7 +120,9 @@ class PLATFORM_EXPORT TaskQueueThrottler final
 
   base::sequence_manager::TaskQueue* const task_queue_;
   size_t throttling_ref_count_ = 0;
-  HashSet<BudgetPool*> budget_pools_;
+  HashSet<BudgetPool*,
+          WTF::MemberHashRecordReplayRegisteredPointerId<BudgetPool>>
+    budget_pools_;
   const base::TickClock* tick_clock_;
 };
 

@@ -1,20 +1,19 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chromecast/renderer/cast_window_manager_bindings.h"
 
+#include <tuple>
 #include <vector>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chromecast/base/cast_features.h"
 #include "chromecast/common/feature_constants.h"
 #include "chromecast/common/mojom/gesture.mojom.h"
 #include "chromecast/renderer/feature_manager.h"
 #include "content/public/renderer/render_frame.h"
-#include "content/public/renderer/render_view.h"
 #include "gin/data_object_builder.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/web/blink.h"
@@ -42,7 +41,7 @@ const char kCanRightDragName[] = "canRightDrag";
 const char kMinimize[] = "minimize";
 const char kMaximize[] = "maximize";
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 const char kDisplayControlsName[] = "displayControls";
 #endif
 
@@ -183,7 +182,7 @@ void CastWindowManagerBindings::OnTouchInputSupportSet(
     resolver.Get(isolate)
         ->Resolve(context,
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
                   gin::DataObjectBuilder(isolate)
                       .Set(kDisplayControlsName, display_controls)
                       .Build()
@@ -238,7 +237,7 @@ void CastWindowManagerBindings::InvokeV8Callback(
   *callback_function = v8::UniquePersistent<v8::Function>(isolate, handler);
 
   v8::Local<v8::Value> result;
-  ignore_result(maybe_result.ToLocal(&result));
+  std::ignore = maybe_result.ToLocal(&result);
 }
 
 void CastWindowManagerBindings::InvokeV8Callback(
@@ -267,7 +266,7 @@ void CastWindowManagerBindings::InvokeV8Callback(
   *callback_function = v8::UniquePersistent<v8::Function>(isolate, handler);
 
   v8::Local<v8::Value> result;
-  ignore_result(maybe_result.ToLocal(&result));
+  std::ignore = maybe_result.ToLocal(&result);
 }
 
 void CastWindowManagerBindings::OnBackGesture(

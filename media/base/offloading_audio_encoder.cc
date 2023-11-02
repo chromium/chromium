@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,7 +34,7 @@ OffloadingAudioEncoder::OffloadingAudioEncoder(
 
 void OffloadingAudioEncoder::Initialize(const Options& options,
                                         OutputCB output_cb,
-                                        StatusCB done_cb) {
+                                        EncoderStatusCB done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   work_runner_->PostTask(
       FROM_HERE, base::BindOnce(&AudioEncoder::Initialize,
@@ -45,7 +45,7 @@ void OffloadingAudioEncoder::Initialize(const Options& options,
 
 void OffloadingAudioEncoder::Encode(std::unique_ptr<AudioBus> audio_bus,
                                     base::TimeTicks capture_time,
-                                    StatusCB done_cb) {
+                                    EncoderStatusCB done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   work_runner_->PostTask(
       FROM_HERE, base::BindOnce(&AudioEncoder::Encode,
@@ -54,7 +54,7 @@ void OffloadingAudioEncoder::Encode(std::unique_ptr<AudioBus> audio_bus,
                                 WrapCallback(std::move(done_cb))));
 }
 
-void OffloadingAudioEncoder::Flush(StatusCB done_cb) {
+void OffloadingAudioEncoder::Flush(EncoderStatusCB done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   work_runner_->PostTask(
       FROM_HERE, base::BindOnce(&AudioEncoder::Flush,

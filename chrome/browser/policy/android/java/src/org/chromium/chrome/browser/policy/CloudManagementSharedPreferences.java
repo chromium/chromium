@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,14 @@ public class CloudManagementSharedPreferences {
     public static void saveDmToken(String dmToken) {
         SharedPreferencesManager.getInstance().writeString(
                 ChromePreferenceKeys.CLOUD_MANAGEMENT_DM_TOKEN, dmToken);
+    }
+    /**
+     * Deletes the "Cloud management DM token" preference.
+     */
+    @CalledByNative
+    public static void deleteDmToken() {
+        SharedPreferencesManager.getInstance().removeKey(
+                ChromePreferenceKeys.CLOUD_MANAGEMENT_DM_TOKEN);
     }
 
     /**

@@ -46,7 +46,7 @@ InsertNodeBeforeCommand::InsertNodeBeforeCommand(
   DCHECK(ref_child_);
   DCHECK(ref_child_->parentNode()) << ref_child_;
 
-  DCHECK(HasEditableStyle(*ref_child_->parentNode()) ||
+  DCHECK(IsEditable(*ref_child_->parentNode()) ||
          !ref_child_->parentNode()->InActiveDocument())
       << ref_child_->parentNode();
 }
@@ -56,9 +56,9 @@ void InsertNodeBeforeCommand::DoApply(EditingState* editing_state) {
   GetDocument().UpdateStyleAndLayoutTree();
   if (!parent || (should_assume_content_is_always_editable_ ==
                       kDoNotAssumeContentIsAlwaysEditable &&
-                  !HasEditableStyle(*parent)))
+                  !IsEditable(*parent)))
     return;
-  DCHECK(HasEditableStyle(*parent)) << parent;
+  DCHECK(IsEditable(*parent)) << parent;
 
   DummyExceptionStateForTesting exception_state;
   parent->InsertBefore(insert_child_.Get(), ref_child_.Get(), exception_state);
@@ -67,7 +67,7 @@ void InsertNodeBeforeCommand::DoApply(EditingState* editing_state) {
 
 void InsertNodeBeforeCommand::DoUnapply() {
   GetDocument().UpdateStyleAndLayoutTree();
-  if (!HasEditableStyle(*insert_child_))
+  if (!IsEditable(*insert_child_))
     return;
 
   insert_child_->remove(IGNORE_EXCEPTION_FOR_TESTING);

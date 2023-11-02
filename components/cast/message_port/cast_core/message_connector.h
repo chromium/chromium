@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 #define COMPONENTS_CAST_MESSAGE_PORT_CAST_CORE_MESSAGE_CONNECTOR_H_
 
 #include <cstdint>
+
+#include "base/memory/raw_ptr.h"
 
 namespace cast_api_bindings {
 
@@ -50,7 +52,7 @@ class MessageConnector {
   virtual ~MessageConnector();
 
   uint32_t channel_id_;
-  MessageConnector* peer_ = nullptr;
+  raw_ptr<MessageConnector> peer_ = nullptr;
   bool started_ = false;
 };
 

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,7 +41,7 @@ TEST_F(PasswordChangeSuccessNotificationTest, ShowPasswordChangeSuccess) {
   PasswordChangeSuccessNotification::Show(&profile_);
   ASSERT_TRUE(Notification().has_value());
 
-  EXPECT_EQ(utf16("Chrome OS password updated"), Notification()->title());
+  EXPECT_EQ(utf16("ChromeOS password updated"), Notification()->title());
   EXPECT_EQ(utf16("Your password change was successful. Please use the new "
                   "password from now on."),
             Notification()->message());

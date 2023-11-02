@@ -1,6 +1,7 @@
 {
   "WebRTC Chromium Android Builder": {
     "gn_args": {
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": true,

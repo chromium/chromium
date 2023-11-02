@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_main_parts.h"
-#include "content/public/common/main_function_params.h"
 #include "headless/public/headless_browser.h"
 #include "headless/public/headless_export.h"
 
@@ -33,8 +33,7 @@ class HeadlessBrowserImpl;
 class HEADLESS_EXPORT HeadlessBrowserMainParts
     : public content::BrowserMainParts {
  public:
-  explicit HeadlessBrowserMainParts(content::MainFunctionParams parameters,
-                                    HeadlessBrowserImpl* browser);
+  explicit HeadlessBrowserMainParts(HeadlessBrowserImpl* browser);
 
   HeadlessBrowserMainParts(const HeadlessBrowserMainParts&) = delete;
   HeadlessBrowserMainParts& operator=(const HeadlessBrowserMainParts&) = delete;
@@ -46,15 +45,15 @@ class HEADLESS_EXPORT HeadlessBrowserMainParts
   void WillRunMainMessageLoop(
       std::unique_ptr<base::RunLoop>& run_loop) override;
   void PostMainMessageLoopRun() override;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void PreCreateMainMessageLoop() override;
 #endif
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   void PostCreateMainMessageLoop() override;
 #endif
   void QuitMainMessageLoop();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   device::GeolocationManager* GetGeolocationManager();
   void SetGeolocationManagerForTesting(
       std::unique_ptr<device::GeolocationManager> fake_geolocation_manager);
@@ -74,8 +73,7 @@ class HEADLESS_EXPORT HeadlessBrowserMainParts
   void CreatePrefService();
 #endif
 
-  content::MainFunctionParams parameters_;  // For running browser tests.
-  HeadlessBrowserImpl* browser_;  // Not owned.
+  raw_ptr<HeadlessBrowserImpl> browser_;    // Not owned.
 
 #if defined(HEADLESS_USE_POLICY)
   std::unique_ptr<policy::HeadlessBrowserPolicyConnector> policy_connector_;
@@ -87,7 +85,7 @@ class HEADLESS_EXPORT HeadlessBrowserMainParts
 
   bool devtools_http_handler_started_ = false;
   base::OnceClosure quit_main_message_loop_;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   std::unique_ptr<device::GeolocationManager> geolocation_manager_;
 #endif
 };

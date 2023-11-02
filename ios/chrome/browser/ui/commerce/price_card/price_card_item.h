@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 // Model object representing price information for a shopping website.
 @interface PriceCardItem : NSObject
 
-// Create a price card item with |price|, and |previous price|.
+// Create a price card item with `price`, and `previous price`.
 - (instancetype)initWithPrice:(NSString*)price
                 previousPrice:(NSString*)previousPrice
     NS_DESIGNATED_INITIALIZER;

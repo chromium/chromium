@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,8 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "device/fido/authenticator_selection_criteria.h"
+#include "device/fido/device_public_key_extension.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/pin.h"
 #include "device/fido/public_key_credential_descriptor.h"
@@ -116,9 +116,21 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapMakeCredentialRequest {
   // authenticators to consider, i.e. for the Windows API.
   bool cred_protect_enforce = false;
 
+  // min_pin_length_requested indicates that the minPinLength extension[1]
+  // should be sent to request that the authenticator report the minimum allowed
+  // PIN length configured.
+  //
+  // [1]
+  // https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-20210615.html#sctn-minpinlength-extension
+  bool min_pin_length_requested = false;
+
   // cred_blob contains an optional credBlob extension.
   // https://fidoalliance.org/specs/fido-v2.1-rd-20201208/fido-client-to-authenticator-protocol-v2.1-rd-20201208.html#sctn-credBlob-extension
   absl::optional<std::vector<uint8_t>> cred_blob;
+
+  // device_public_key contains parameters for the devicePubKey extension
+  // https://github.com/w3c/webauthn/pull/1663
+  absl::optional<DevicePublicKeyRequest> device_public_key;
 };
 
 // MakeCredentialOptions contains higher-level request parameters that aren't

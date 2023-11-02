@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,16 +9,12 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/history/core/browser/keyword_id.h"
-#include "components/history/core/browser/top_sites.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
-#include "components/omnibox/browser/keyword_extensions_delegate.h"
-#include "components/omnibox/browser/omnibox_triggered_feature_service.h"
-#include "components/omnibox/browser/shortcuts_backend.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
-class AutocompleteController;
 struct AutocompleteMatch;
 class AutocompleteClassifier;
 class AutocompleteSchemeClassifier;
@@ -26,11 +22,14 @@ class RemoteSuggestionsService;
 class DocumentSuggestionsService;
 class GURL;
 class InMemoryURLIndex;
+class KeywordExtensionsDelegate;
 class KeywordProvider;
 class OmniboxPedalProvider;
+class OmniboxTriggeredFeatureService;
 class PrefService;
 class ShortcutsBackend;
 class TabMatcher;
+class ZeroSuggestCacheService;
 
 namespace bookmarks {
 class BookmarkModel;
@@ -39,6 +38,7 @@ class BookmarkModel;
 namespace history {
 class HistoryService;
 class URLDatabase;
+class TopSites;
 }
 
 namespace history_clusters {
@@ -61,10 +61,6 @@ namespace query_tiles {
 class TileService;
 }
 
-namespace ntp_tiles {
-class MostVisitedSites;
-}
-
 class TemplateURLService;
 
 class AutocompleteProviderClient : public OmniboxAction::Client {
@@ -75,12 +71,12 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   GetURLLoaderFactory() = 0;
   virtual PrefService* GetPrefs() const = 0;
   virtual PrefService* GetLocalState() = 0;
+  virtual std::string GetApplicationLocale() const = 0;
   virtual const AutocompleteSchemeClassifier& GetSchemeClassifier() const = 0;
   virtual AutocompleteClassifier* GetAutocompleteClassifier() = 0;
   virtual history::HistoryService* GetHistoryService() = 0;
   virtual history_clusters::HistoryClustersService* GetHistoryClustersService();
   virtual scoped_refptr<history::TopSites> GetTopSites() = 0;
-  virtual ntp_tiles::MostVisitedSites* GetNtpMostVisitedSites();
   virtual bookmarks::BookmarkModel* GetBookmarkModel() = 0;
   virtual history::URLDatabase* GetInMemoryDatabase() = 0;
   virtual InMemoryURLIndex* GetInMemoryURLIndex() = 0;
@@ -90,6 +86,8 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
       bool create_if_necessary) const = 0;
   virtual DocumentSuggestionsService* GetDocumentSuggestionsService(
       bool create_if_necessary) const = 0;
+  virtual ZeroSuggestCacheService* GetZeroSuggestCacheService() = 0;
+  virtual const ZeroSuggestCacheService* GetZeroSuggestCacheService() const = 0;
   virtual OmniboxPedalProvider* GetPedalProvider() const = 0;
   virtual scoped_refptr<ShortcutsBackend> GetShortcutsBackend() = 0;
   virtual scoped_refptr<ShortcutsBackend> GetShortcutsBackendIfExists() = 0;
@@ -169,16 +167,10 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   virtual void PrefetchImage(const GURL& url) = 0;
 
   // Sends a hint to the service worker context that navigation to
-  // |desination_url| is likely, unless the current profile is in incognito
+  // |destination_url| is likely, unless the current profile is in incognito
   // mode. On platforms where this is supported, the service worker lookup can
   // be expensive so this method should only be called once per input session.
   virtual void StartServiceWorker(const GURL& destination_url) {}
-
-  // Called by |controller| when its results have changed and all providers are
-  // done processing the autocomplete request. Used by chrome to inform the
-  // prefetch service of updated results.
-  virtual void OnAutocompleteControllerResultReady(
-      AutocompleteController* controller) {}
 
   // Called after creation of |keyword_provider| to allow the client to
   // configure the provider if desired.
@@ -193,6 +185,10 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
 
   // Returns true if the sharing hub command is enabled.
   virtual bool IsSharingHubAvailable() const;
+
+  // Gets a weak pointer to the client. Used when providers need to use the
+  // client when the client may no longer be around.
+  virtual base::WeakPtr<AutocompleteProviderClient> GetWeakPtr();
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_PROVIDER_CLIENT_H_

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,9 +18,9 @@
 #include "ui/ozone/platform/drm/common/display_types.h"
 #include "ui/ozone/platform/drm/host/drm_cursor.h"
 #include "ui/ozone/platform/drm/host/gpu_thread_adapter.h"
+#include "ui/ozone/platform/drm/mojom/device_cursor.mojom.h"
+#include "ui/ozone/platform/drm/mojom/drm_device.mojom.h"
 #include "ui/ozone/public/gpu_platform_support_host.h"
-#include "ui/ozone/public/mojom/device_cursor.mojom.h"
-#include "ui/ozone/public/mojom/drm_device.mojom.h"
 
 namespace ui {
 class DrmDisplayHostManager;
@@ -62,11 +62,14 @@ class HostDrmDevice : public base::RefCountedThreadSafe<HostDrmDevice>,
   void GpuAddGraphicsDevice(const base::FilePath& path,
                             base::ScopedFD fd) override;
   bool GpuRemoveGraphicsDevice(const base::FilePath& path) override;
+  void GpuShouldDisplayEventTriggerConfiguration(
+      const EventPropertyMap& event_props) override;
 
   // Services needed by DrmDisplayHost
   void GpuConfigureNativeDisplays(
       const std::vector<display::DisplayConfigurationParams>& config_requests,
-      display::ConfigureCallback callback) override;
+      display::ConfigureCallback callback,
+      uint32_t modeset_flag) override;
   bool GpuGetHDCPState(int64_t display_id) override;
   bool GpuSetHDCPState(
       int64_t display_id,
@@ -78,7 +81,9 @@ class HostDrmDevice : public base::RefCountedThreadSafe<HostDrmDevice>,
       int64_t display_id,
       const std::vector<display::GammaRampRGBEntry>& degamma_lut,
       const std::vector<display::GammaRampRGBEntry>& gamma_lut) override;
-  bool GpuSetPrivacyScreen(int64_t display_id, bool enabled) override;
+  void GpuSetPrivacyScreen(int64_t display_id,
+                           bool enabled,
+                           display::SetPrivacyScreenCallback callback) override;
 
   // Services needed by DrmWindowHost
   bool GpuDestroyWindow(gfx::AcceleratedWidget widget) override;
@@ -98,6 +103,8 @@ class HostDrmDevice : public base::RefCountedThreadSafe<HostDrmDevice>,
   void GpuRefreshNativeDisplaysCallback(MovableDisplaySnapshots displays) const;
   void GpuTakeDisplayControlCallback(bool success) const;
   void GpuRelinquishDisplayControlCallback(bool success) const;
+  void GpuShouldDisplayEventTriggerConfigurationCallback(
+      bool should_trigger) const;
   void GpuGetHDCPStateCallback(
       int64_t display_id,
       bool success,

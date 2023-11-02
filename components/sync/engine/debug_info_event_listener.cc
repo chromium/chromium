@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,17 +31,11 @@ void DebugInfoEventListener::OnSyncCycleCompleted(
   sync_pb::SyncCycleCompletedEventInfo* sync_completed_event_info =
       event_info.mutable_sync_cycle_completed_event_info();
 
-  sync_completed_event_info->set_num_encryption_conflicts(
-      snapshot.num_encryption_conflicts());
-  sync_completed_event_info->set_num_hierarchy_conflicts(
-      snapshot.num_hierarchy_conflicts());
   sync_completed_event_info->set_num_server_conflicts(
       snapshot.num_server_conflicts());
 
   sync_completed_event_info->set_num_updates_downloaded(
       snapshot.model_neutral_state().num_updates_downloaded_total);
-  sync_completed_event_info->set_num_reflected_updates_downloaded(
-      snapshot.model_neutral_state().num_reflected_updates_downloaded_total);
   sync_completed_event_info->set_get_updates_origin(
       snapshot.get_updates_origin());
   sync_completed_event_info->mutable_caller_info()->set_notifications_enabled(
@@ -80,12 +74,6 @@ void DebugInfoEventListener::OnTrustedVaultKeyRequired() {
 void DebugInfoEventListener::OnTrustedVaultKeyAccepted() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CreateAndAddEvent(sync_pb::SyncEnums::TRUSTED_VAULT_KEY_ACCEPTED);
-}
-
-void DebugInfoEventListener::OnBootstrapTokenUpdated(
-    const std::string& bootstrap_token) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CreateAndAddEvent(sync_pb::SyncEnums::BOOTSTRAP_TOKEN_UPDATED);
 }
 
 void DebugInfoEventListener::OnEncryptedTypesChanged(
@@ -152,44 +140,6 @@ void DebugInfoEventListener::ClearDebugInfo() {
 
   events_.clear();
   events_dropped_ = false;
-}
-
-base::WeakPtr<DataTypeDebugInfoListener> DebugInfoEventListener::GetWeakPtr() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
-void DebugInfoEventListener::OnDataTypeConfigureComplete(
-    const std::vector<DataTypeConfigurationStats>& configuration_stats) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  for (const DataTypeConfigurationStats& configuration_stat :
-       configuration_stats) {
-    DCHECK(ProtocolTypes().Has(configuration_stat.model_type));
-    sync_pb::DebugEventInfo association_event;
-    sync_pb::DatatypeAssociationStats* datatype_stats =
-        association_event.mutable_datatype_association_stats();
-    datatype_stats->set_data_type_id(
-        GetSpecificsFieldNumberFromModelType(configuration_stat.model_type));
-    datatype_stats->set_download_wait_time_us(
-        configuration_stat.download_wait_time.InMicroseconds());
-    datatype_stats->set_download_time_us(
-        configuration_stat.download_time.InMicroseconds());
-
-    for (ModelType type :
-         configuration_stat.high_priority_types_configured_before) {
-      datatype_stats->add_high_priority_type_configured_before(
-          GetSpecificsFieldNumberFromModelType(type));
-    }
-
-    for (ModelType type :
-         configuration_stat.same_priority_types_configured_before) {
-      datatype_stats->add_same_priority_type_configured_before(
-          GetSpecificsFieldNumberFromModelType(type));
-    }
-
-    AddEventToQueue(association_event);
-  }
 }
 
 void DebugInfoEventListener::CreateAndAddEvent(

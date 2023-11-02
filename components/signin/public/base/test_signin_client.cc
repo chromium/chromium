@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -112,19 +112,25 @@ std::unique_ptr<GaiaAuthFetcher> TestSigninClient::CreateGaiaAuthFetcher(
                                            GetURLLoaderFactory());
 }
 
-bool TestSigninClient::IsNonEnterpriseUser(const std::string& email) {
-  return gaia::ExtractDomainName(email) == "gmail.com";
-}
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 absl::optional<account_manager::Account>
 TestSigninClient::GetInitialPrimaryAccount() {
   return initial_primary_account_;
 }
 
-void TestSigninClient::SetInitialPrimaryAccountForTests(
-    const account_manager::Account& account) {
-  initial_primary_account_ = absl::make_optional(account);
+absl::optional<bool> TestSigninClient::IsInitialPrimaryAccountChild() const {
+  return is_initial_primary_account_child_;
 }
 
-#endif
+void TestSigninClient::SetInitialPrimaryAccountForTests(
+    const account_manager::Account& account,
+    const absl::optional<bool>& is_child) {
+  initial_primary_account_ = absl::make_optional(account);
+  is_initial_primary_account_child_ = is_child;
+}
+
+void TestSigninClient::RemoveAccount(
+    const account_manager::AccountKey& account_key) {}
+void TestSigninClient::RemoveAllAccounts() {}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

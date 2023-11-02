@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,6 @@
 #include "crypto/ec_signature_creator.h"
 #include "crypto/openssl_util.h"
 #include "device/fido/fido_parsing_utils.h"
-#include "device/fido/large_blob.h"
 #include "device/fido/p256_public_key.h"
 #include "device/fido/public_key.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
@@ -435,11 +434,10 @@ bool VirtualFidoDevice::State::InjectResidentKey(
       credential_id, PublicKeyCredentialRpEntity(std::move(relying_party_id)),
       PublicKeyCredentialUserEntity(fido_parsing_utils::Materialize(user_id),
                                     std::move(user_name),
-                                    std::move(user_display_name),
-                                    /*icon_url=*/absl::nullopt));
+                                    std::move(user_display_name)));
 }
 
-absl::optional<std::vector<uint8_t>> VirtualFidoDevice::State::GetLargeBlob(
+absl::optional<LargeBlob> VirtualFidoDevice::State::GetLargeBlob(
     const RegistrationData& credential) {
   if (!credential.large_blob_key) {
     return absl::nullopt;
@@ -452,8 +450,7 @@ absl::optional<std::vector<uint8_t>> VirtualFidoDevice::State::GetLargeBlob(
     return absl::nullopt;
   }
   for (const auto& data : *large_blob_array) {
-    absl::optional<std::vector<uint8_t>> blob =
-        data.Decrypt(*credential.large_blob_key);
+    absl::optional<LargeBlob> blob = data.Decrypt(*credential.large_blob_key);
     if (blob) {
       return blob;
     }
@@ -462,7 +459,7 @@ absl::optional<std::vector<uint8_t>> VirtualFidoDevice::State::GetLargeBlob(
 }
 
 void VirtualFidoDevice::State::InjectLargeBlob(RegistrationData* credential,
-                                               base::span<const uint8_t> blob) {
+                                               LargeBlob blob) {
   LargeBlobArrayReader reader;
   reader.Append(large_blob);
   std::vector<LargeBlobData> large_blob_array =
@@ -478,8 +475,9 @@ void VirtualFidoDevice::State::InjectLargeBlob(RegistrationData* credential,
                     credential->large_blob_key->size());
   }
 
-  large_blob_array.insert(large_blob_array.end(),
-                          LargeBlobData(*credential->large_blob_key, blob));
+  large_blob_array.insert(
+      large_blob_array.end(),
+      LargeBlobData(*credential->large_blob_key, std::move(blob)));
   LargeBlobArrayWriter writer(large_blob_array);
   large_blob = writer.Pop(writer.size()).bytes;
 }
@@ -498,6 +496,10 @@ VirtualFidoDevice::VirtualFidoDevice(scoped_refptr<State> state)
 
 VirtualFidoDevice::~VirtualFidoDevice() = default;
 
+std::string VirtualFidoDevice::GetId() const {
+  return state_->device_id_override.value_or(id_);
+}
+
 // static
 std::vector<uint8_t> VirtualFidoDevice::GetAttestationKey() {
   return fido_parsing_utils::Materialize(kAttestationKey);
@@ -512,7 +514,8 @@ bool VirtualFidoDevice::Sign(crypto::ECPrivateKey* private_key,
 
 absl::optional<std::vector<uint8_t>>
 VirtualFidoDevice::GenerateAttestationCertificate(
-    bool individual_attestation_requested) const {
+    bool individual_attestation_requested,
+    bool include_transports) const {
   std::unique_ptr<crypto::ECPrivateKey> attestation_private_key =
       crypto::ECPrivateKey::CreateFromPrivateKeyInfo(GetAttestationKey());
   constexpr uint32_t kAttestationCertSerialNumber = 1;
@@ -523,7 +526,7 @@ VirtualFidoDevice::GenerateAttestationCertificate(
   uint8_t transport_bit;
   switch (DeviceTransport()) {
     case FidoTransportProtocol::kBluetoothLowEnergy:
-    case FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy:
+    case FidoTransportProtocol::kHybrid:
       transport_bit = 1;
       break;
     case FidoTransportProtocol::kUsbHumanInterfaceDevice:
@@ -557,10 +560,13 @@ VirtualFidoDevice::GenerateAttestationCertificate(
       0x00,  // zero bytes long
   };
 
-  const std::vector<net::x509_util::Extension> extensions = {
-      {kTransportTypesOID, /*critical=*/false, kTransportTypesContents},
+  std::vector<net::x509_util::Extension> extensions = {
       {kBasicContraintsOID, /*critical=*/true, kBasicContraintsContents},
   };
+  if (include_transports) {
+    extensions.push_back(
+        {kTransportTypesOID, /*critical=*/false, kTransportTypesContents});
+  }
 
   // https://w3c.github.io/webauthn/#sctn-packed-attestation-cert-requirements
   // Make the certificate expire about 20 years from now.
@@ -632,10 +638,6 @@ bool VirtualFidoDevice::SimulatePress() {
 
 void VirtualFidoDevice::TryWink(base::OnceClosure cb) {
   std::move(cb).Run();
-}
-
-std::string VirtualFidoDevice::GetId() const {
-  return id_;
 }
 
 FidoTransportProtocol VirtualFidoDevice::DeviceTransport() const {

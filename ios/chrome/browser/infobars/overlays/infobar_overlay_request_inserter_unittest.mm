@@ -1,22 +1,22 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
 
-#include "base/strings/utf_string_conversions.h"
-#include "components/infobars/core/infobar.h"
-#include "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "base/strings/utf_string_conversions.h"
+#import "components/infobars/core/infobar.h"
+#import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/overlays/fake_infobar_overlay_request_factory.h"
 #import "ios/chrome/browser/infobars/test/fake_infobar_delegate.h"
 #import "ios/chrome/browser/infobars/test/fake_infobar_ios.h"
 #import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
-#include "ios/chrome/browser/overlays/public/overlay_request.h"
-#include "ios/chrome/browser/overlays/public/overlay_request_queue.h"
+#import "ios/chrome/browser/overlays/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -57,7 +57,7 @@ class InfobarOverlayRequestInserterTest : public PlatformTest {
   }
 
   // Adds an InfoBar created with a test delegate to the manager.  Returns a
-  // pointer to the added InfoBar.  If |message_text| matches an infobar already
+  // pointer to the added InfoBar.  If `message_text` matches an infobar already
   // added, then it the new one will be ignored.
   InfoBar* CreateInfobar(std::u16string message_text) {
     std::unique_ptr<InfoBar> added_infobar = std::make_unique<FakeInfobarIOS>(
@@ -75,7 +75,7 @@ class InfobarOverlayRequestInserterTest : public PlatformTest {
 TEST_F(InfobarOverlayRequestInserterTest, InsertBanner) {
   OverlayRequestQueue* queue = GetQueue(InfobarOverlayType::kBanner);
   ASSERT_EQ(0U, queue->size());
-  // Insert |infobar| at front of queue and check that the queue is updated
+  // Insert `infobar` at front of queue and check that the queue is updated
   // correctly.
   InfoBar* infobar = CreateInfobar(kFirstInfobarMessageText);
   InsertParams params(static_cast<InfoBarIOS*>(infobar));
@@ -87,7 +87,7 @@ TEST_F(InfobarOverlayRequestInserterTest, InsertBanner) {
   EXPECT_EQ(infobar, queue->front_request()
                          ->GetConfig<InfobarOverlayRequestConfig>()
                          ->infobar());
-  // Insert |inserted_infobar| in front of |infobar| and check that it is now
+  // Insert `inserted_infobar` in front of `infobar` and check that it is now
   // the front request.
   InfoBar* inserted_infobar = CreateInfobar(kSecondInfobarMessageText);
   params.infobar = static_cast<InfoBarIOS*>(inserted_infobar);
@@ -102,7 +102,7 @@ TEST_F(InfobarOverlayRequestInserterTest, InsertBanner) {
 TEST_F(InfobarOverlayRequestInserterTest, AddBanner) {
   OverlayRequestQueue* queue = GetQueue(InfobarOverlayType::kBanner);
   ASSERT_EQ(0U, queue->size());
-  // Add |infobar| to the back of the queue and check that the it is updated
+  // Add `infobar` to the back of the queue and check that the it is updated
   // correctly.
   InfoBar* infobar = CreateInfobar(kFirstInfobarMessageText);
   InsertParams params(static_cast<InfoBarIOS*>(infobar));
@@ -114,7 +114,7 @@ TEST_F(InfobarOverlayRequestInserterTest, AddBanner) {
   EXPECT_EQ(infobar, queue->front_request()
                          ->GetConfig<InfobarOverlayRequestConfig>()
                          ->infobar());
-  // Add |second_infobar| in to the queue and check that it is second in the
+  // Add `second_infobar` in to the queue and check that it is second in the
   // queue.
   InfoBar* second_infobar = CreateInfobar(kSecondInfobarMessageText);
   params.infobar = static_cast<InfoBarIOS*>(second_infobar);

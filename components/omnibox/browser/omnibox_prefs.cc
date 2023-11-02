@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,11 +34,6 @@ const char kIntranetRedirectBehavior[] = "browser.intranet_redirect_behavior";
 const char kKeywordSpaceTriggeringEnabled[] =
     "omnibox.keyword_space_triggering_enabled";
 
-// Boolean that specifies whether the omnibox should display a lock icon for
-// secure connections.
-const char kLockIconInAddressBarEnabled[] =
-    "omnibox.lock_icon_in_address_bar_enabled";
-
 // A dictionary of visibility preferences for suggestion groups. The key is the
 // suggestion group ID serialized as a string, and the value is
 // SuggestionGroupVisibility serialized as an integer.
@@ -47,8 +42,14 @@ const char kSuggestionGroupVisibility[] = "omnibox.suggestionGroupVisibility";
 // Boolean that specifies whether to always show full URLs in the omnibox.
 const char kPreventUrlElisionsInOmnibox[] = "omnibox.prevent_url_elisions";
 
-// A cache of zero suggest results using JSON serialized into a string.
+// A cache of NTP zero suggest results using a JSON dictionary serialized into a
+// string.
 const char kZeroSuggestCachedResults[] = "zerosuggest.cachedresults";
+
+// A cache of SRP/Web zero suggest results using a JSON dictionary serialized
+// into a string keyed off the page URL.
+const char kZeroSuggestCachedResultsWithURL[] =
+    "zerosuggest.cachedresults_with_url";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kSuggestionGroupVisibility);
@@ -62,12 +63,11 @@ SuggestionGroupVisibility GetUserPreferenceForSuggestionGroupVisibility(
     int suggestion_group_id) {
   DCHECK(prefs);
 
-  const base::DictionaryValue* dictionary =
-      prefs->GetDictionary(kSuggestionGroupVisibility);
-  DCHECK(dictionary);
+  const base::Value::Dict& dictionary =
+      prefs->GetDict(kSuggestionGroupVisibility);
 
   absl::optional<int> value =
-      dictionary->FindIntKey(base::NumberToString(suggestion_group_id));
+      dictionary.FindInt(base::NumberToString(suggestion_group_id));
 
   if (value == SuggestionGroupVisibility::HIDDEN ||
       value == SuggestionGroupVisibility::SHOWN) {
@@ -77,20 +77,52 @@ SuggestionGroupVisibility GetUserPreferenceForSuggestionGroupVisibility(
   return SuggestionGroupVisibility::DEFAULT;
 }
 
-void SetSuggestionGroupVisibility(PrefService* prefs,
-                                  int suggestion_group_id,
-                                  SuggestionGroupVisibility new_value) {
+void SetUserPreferenceForSuggestionGroupVisibility(
+    PrefService* prefs,
+    int suggestion_group_id,
+    SuggestionGroupVisibility visibility) {
   DCHECK(prefs);
 
   DictionaryPrefUpdate update(prefs, kSuggestionGroupVisibility);
-  update->SetIntKey(base::NumberToString(suggestion_group_id), new_value);
+  update->SetIntKey(base::NumberToString(suggestion_group_id), visibility);
 
   base::SparseHistogram::FactoryGet(
-      new_value == SuggestionGroupVisibility::SHOWN
+      visibility == SuggestionGroupVisibility::SHOWN
           ? kToggleSuggestionGroupIdOnHistogram
           : kToggleSuggestionGroupIdOffHistogram,
       base::HistogramBase::kUmaTargetedHistogramFlag)
       ->Add(suggestion_group_id);
+}
+
+void SetUserPreferenceForZeroSuggestCachedResponse(
+    PrefService* prefs,
+    const std::string& page_url,
+    const std::string& response) {
+  DCHECK(prefs);
+
+  if (page_url.empty()) {
+    prefs->SetString(kZeroSuggestCachedResults, response);
+  } else {
+    // Constrain the cache to a single entry by overwriting the existing value.
+    base::Value::Dict new_dict;
+    new_dict.Set(page_url, response);
+    prefs->SetDict(kZeroSuggestCachedResultsWithURL, std::move(new_dict));
+  }
+}
+
+std::string GetUserPreferenceForZeroSuggestCachedResponse(
+    PrefService* prefs,
+    const std::string& page_url) {
+  DCHECK(prefs);
+
+  if (page_url.empty()) {
+    return prefs->GetString(omnibox::kZeroSuggestCachedResults);
+  }
+
+  const base::Value::Dict& dictionary =
+      prefs->GetDict(omnibox::kZeroSuggestCachedResultsWithURL);
+  auto* value_ptr = dictionary.FindString(page_url);
+  return value_ptr ? *value_ptr : std::string();
 }
 
 }  // namespace omnibox

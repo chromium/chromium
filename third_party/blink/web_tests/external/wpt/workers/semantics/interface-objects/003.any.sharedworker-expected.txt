@@ -18,9 +18,9 @@ FAIL The CanvasPath interface object should be exposed assert_true: expected tru
 PASS The Path2D interface object should be exposed
 PASS The PromiseRejectionEvent interface object should be exposed
 PASS The EventSource interface object should be exposed
+PASS The BroadcastChannel interface object should be exposed
 PASS The WebSocket interface object should be exposed
 PASS The CloseEvent interface object should be exposed
-PASS The BroadcastChannel interface object should be exposed
 PASS The ArrayBuffer interface object should be exposed
 PASS The Int8Array interface object should be exposed
 PASS The Uint8Array interface object should be exposed

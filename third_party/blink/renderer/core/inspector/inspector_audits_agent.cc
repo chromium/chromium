@@ -1,9 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/inspector/inspector_audits_agent.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_data.h"
@@ -52,7 +53,7 @@ bool EncodeAsImage(char* body,
                         kUnpremul_SkAlphaType);
   uint32_t row_bytes = static_cast<uint32_t>(info.minRowBytes());
   Vector<unsigned char> pixel_storage(
-      SafeCast<wtf_size_t>(info.computeByteSize(row_bytes)));
+      base::checked_cast<wtf_size_t>(info.computeByteSize(row_bytes)));
   SkPixmap pixmap(info, pixel_storage.data(), row_bytes);
   sk_sp<SkImage> image = SkImage::MakeFromBitmap(bitmap);
 
@@ -78,7 +79,7 @@ std::unique_ptr<protocol::Audits::InspectorIssue> CreateLowTextContrastIssue(
   StringBuilder sb;
   auto element_id = element->getAttribute("id").LowerASCII();
   sb.Append(element->nodeName().LowerASCII());
-  if (!element_id.IsEmpty()) {
+  if (!element_id.empty()) {
     sb.Append("#");
     sb.Append(element_id);
   }
@@ -120,7 +121,9 @@ InspectorAuditsAgent::InspectorAuditsAgent(InspectorNetworkAgent* network_agent,
     : inspector_issue_storage_(storage),
       enabled_(&agent_state_, false),
       network_agent_(network_agent),
-      inspected_frames_(inspected_frames) {}
+      inspected_frames_(inspected_frames) {
+  DCHECK(network_agent);
+}
 
 InspectorAuditsAgent::~InspectorAuditsAgent() = default;
 

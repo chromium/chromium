@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/mojom/frame.mojom.h"
@@ -75,8 +76,7 @@ class ExtensionFunctionDispatcher
   // Dispatches a request and the response is sent in |callback| that is a reply
   // of mojom::LocalFrameHost::Request.
   void Dispatch(mojom::RequestParamsPtr params,
-                content::RenderFrameHost* render_frame_host,
-                int render_process_id,
+                content::RenderFrameHost& frame,
                 mojom::LocalFrameHost::RequestCallback callback);
 
   // Message handlers.
@@ -138,7 +138,6 @@ class ExtensionFunctionDispatcher
       const GURL* rfh_url,
       const ProcessMap& process_map,
       ExtensionAPI* api,
-      void* profile_id,
       ExtensionFunction::ResponseCallback callback);
 
   void DispatchWithCallbackInternal(
@@ -149,9 +148,9 @@ class ExtensionFunctionDispatcher
 
   void RemoveWorkerCallbacksForProcess(int render_process_id);
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   // This map doesn't own either the keys or the values. When a RenderFrameHost
   // instance goes away, the corresponding entry in this map (if exists) will be

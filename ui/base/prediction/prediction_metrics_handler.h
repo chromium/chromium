@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/metrics/histogram_base.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -78,11 +79,6 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) PredictionMetricsHandler {
   // an indicator of smoothness.
   double ComputePredictionJitterMetric();
 
-  // Compute the WrongDirectionMetric score.
-  // The score is a boolean (as double) indicating whether the prediction is
-  // in the same direction as the real trajectory..
-  bool ComputeWrongDirectionMetric();
-
   // Compute the VisualJitterMetric score.
   // The score is the euclidean distance between 2 successive variation of
   // prediction and the corresponding real events at frame time. It is
@@ -117,6 +113,17 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) PredictionMetricsHandler {
   // .PredictionJitter, .VisualJitter) appended to it when counting the metric
   // in a histogram.
   const std::string histogram_name_;
+
+  // Histograms are never deleted we leak them at shutdown so it is fine to keep
+  // a reference here.
+  base::HistogramBase& over_prediction_histogram_;
+  base::HistogramBase& under_prediction_histogram_;
+  base::HistogramBase& prediction_score_histogram_;
+  base::HistogramBase& frame_over_prediction_histogram_;
+  base::HistogramBase& frame_under_prediction_histogram_;
+  base::HistogramBase& frame_prediction_score_histogram_;
+  base::HistogramBase& prediction_jitter_histogram_;
+  base::HistogramBase& visual_jitter_histogram_;
 };
 
 }  // namespace ui

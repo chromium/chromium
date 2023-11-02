@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -75,7 +75,7 @@ class BASE_EXPORT Unwinder {
   // is greater than the previous value and less than |stack_top|.
   virtual UnwindResult TryUnwind(RegisterContext* thread_context,
                                  uintptr_t stack_top,
-                                 std::vector<Frame>* stack) const = 0;
+                                 std::vector<Frame>* stack) = 0;
 
   Unwinder(const Unwinder&) = delete;
   Unwinder& operator=(const Unwinder&) = delete;

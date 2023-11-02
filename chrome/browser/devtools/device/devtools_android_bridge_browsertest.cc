@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include <algorithm>
@@ -102,15 +102,15 @@ IN_PROC_BROWSER_TEST_F(DevToolsAndroidBridgeTest, DefaultValues) {
   service->ClearPref(prefs::kDevToolsDiscoverTCPTargetsEnabled);
   service->ClearPref(prefs::kDevToolsTCPDiscoveryConfig);
 
-  const base::ListValue* targets =
-    service->GetList(prefs::kDevToolsTCPDiscoveryConfig);
-  EXPECT_NE(nullptr, targets);
-  EXPECT_EQ(2ul, targets->GetList().size());
+  const base::Value::List& targets =
+      service->GetList(prefs::kDevToolsTCPDiscoveryConfig);
+  EXPECT_EQ(2ul, targets.size());
 
   std::set<std::string> actual;
-  for (size_t i = 0; i < targets->GetList().size(); i++) {
+  for (const base::Value& item : targets) {
     std::string value;
-    targets->GetString(i, &value);
+    if (item.is_string())
+      value = item.GetString();
     actual.insert(value);
   }
   EXPECT_STREQ("localhost:9222, localhost:9229", SetToString(actual).c_str());

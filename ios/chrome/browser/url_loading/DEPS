@@ -1,0 +1,10 @@
+specific_include_rules = {
+  # TODO(crbug.com/1294160): Remove these dependencies.
+  "^url_loading_browser_agent.mm": [
+    "+ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h",
+    "+ios/chrome/browser/ui/main/scene_state_browser_agent.h",
+    "+ios/chrome/browser/ui/ntp/ntp_util.h",
+    "+ios/chrome/browser/ui/ui_feature_flags.h",
+  ],
+}
+

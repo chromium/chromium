@@ -1,0 +1,48 @@
+diff --git a/src/google/protobuf/descriptor.cc b/src/google/protobuf/descriptor.cc
+index 0524fd46226e6..082e5124a023f 100644
+--- a/src/google/protobuf/descriptor.cc
++++ b/src/google/protobuf/descriptor.cc
+@@ -301,22 +301,16 @@ class FlatAllocation {
+     return ends_.template Get<U>();
+   }
+ 
+-  // Avoid the reinterpret_cast if the array is empty.
+-  // Clang's Control Flow Integrity does not like the cast pointing to memory
+-  // that is not yet initialized to be of that type.
+-  // (from -fsanitize=cfi-unrelated-cast)
+   template <typename U>
++  PROTOBUF_NO_SANITIZE("cfi-unrelated-cast", "vptr")
+   U* Begin() const {
+-    int begin = BeginOffset<U>(), end = EndOffset<U>();
+-    if (begin == end) return nullptr;
+-    return reinterpret_cast<U*>(data() + begin);
++    return reinterpret_cast<U*>(data() + BeginOffset<U>());
+   }
+ 
+   template <typename U>
++  PROTOBUF_NO_SANITIZE("cfi-unrelated-cast", "vptr")
+   U* End() const {
+-    int begin = BeginOffset<U>(), end = EndOffset<U>();
+-    if (begin == end) return nullptr;
+-    return reinterpret_cast<U*>(data() + end);
++    return reinterpret_cast<U*>(data() + EndOffset<U>());
+   }
+ 
+   template <typename U>
+diff --git a/src/google/protobuf/port_def.inc b/src/google/protobuf/port_def.inc
+index cae9ebe01ec2c..b84b55e4d8762 100644
+--- a/src/google/protobuf/port_def.inc
++++ b/src/google/protobuf/port_def.inc
+@@ -764,6 +764,12 @@
+ #define PROTOBUF_UNUSED
+ #endif
+ 
++#if __has_attribute(no_sanitize)
++#define PROTOBUF_NO_SANITIZE(...) __attribute__((no_sanitize(__VA_ARGS__)))
++#else
++#define PROTOBUF_NO_SANITIZE(...)
++#endif
++
+ // ThreadSafeArenaz is turned off completely in opensource builds.
+ 
+ // Windows declares several inconvenient macro names.  We #undef them and then

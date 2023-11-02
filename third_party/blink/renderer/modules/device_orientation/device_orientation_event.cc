@@ -25,8 +25,12 @@
 
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_event.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_device_orientation_event_init.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/modules/device_orientation/device_orientation_controller.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_data.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink {
 
@@ -67,6 +71,22 @@ absl::optional<double> DeviceOrientationEvent::gamma() const {
 
 bool DeviceOrientationEvent::absolute() const {
   return orientation_->Absolute();
+}
+
+// static
+ScriptPromise DeviceOrientationEvent::requestPermission(
+    ScriptState* script_state) {
+  if (!script_state->ContextIsValid())
+    return ScriptPromise();
+
+  auto* window = To<LocalDOMWindow>(ExecutionContext::From(script_state));
+  if (!window) {
+    NOTREACHED();
+    return ScriptPromise();
+  }
+
+  return DeviceOrientationController::From(*window).RequestPermission(
+      script_state);
 }
 
 const AtomicString& DeviceOrientationEvent::InterfaceName() const {

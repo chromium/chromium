@@ -1,16 +1,17 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/web/navigation/crw_error_page_helper.h"
 
-#include <ostream>
+#import <ostream>
 
-#include "base/check.h"
-#include "base/strings/sys_string_conversions.h"
-#include "net/base/escape.h"
-#include "net/base/url_util.h"
-#include "url/gurl.h"
+#import "base/check.h"
+#import "base/strings/escape.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "net/base/url_util.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -25,10 +26,10 @@ NSBundle* BundleForHTMLFiles() {
   return [NSBundle bundleForClass:CRWErrorPageHelper.class];
 }
 
-// Escapes HTML characters in |text|.
+// Escapes HTML characters in `text`.
 NSString* EscapeHTMLCharacters(NSString* text) {
   return base::SysUTF8ToNSString(
-      net::EscapeForHTML(base::SysNSStringToUTF8(text)));
+      base::EscapeForHTML(base::SysNSStringToUTF8(text)));
 }
 
 // Resturns the path for the error page to be loaded.
@@ -122,7 +123,9 @@ NSString* InjectedErrorPageFilePath() {
       URL.path() == base::SysNSStringToUTF8(LoadedErrorPageFilePath())) {
     std::string value;
     if (net::GetValueForKeyInQuery(URL, kOriginalUrlKey, &value)) {
-      return GURL(value);
+      // The URL was escaped when it was added to the error URL, unescape it
+      // here.
+      return GURL(base::UnescapeForHTML(base::UTF8ToUTF16(value)));
     }
   }
 
@@ -157,11 +160,11 @@ NSString* InjectedErrorPageFilePath() {
 }
 
 - (BOOL)isErrorPageFileURLForFailedNavigationURL:(NSURL*)URL {
-  // Check that |URL| is a file URL of error page.
+  // Check that `URL` is a file URL of error page.
   if (!URL.fileURL || ![URL.path isEqualToString:self.errorPageFileURL.path]) {
     return NO;
   }
-  // Check that |URL| has the same failed URL as |self|.
+  // Check that `URL` has the same failed URL as `self`.
   NSURLComponents* URLComponents = [NSURLComponents componentsWithURL:URL
                                               resolvingAgainstBaseURL:NO];
   NSURL* failedNavigationURL = nil;

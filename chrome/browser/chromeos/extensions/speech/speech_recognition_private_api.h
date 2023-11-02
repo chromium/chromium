@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,10 @@
 
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
+
+namespace speech {
+enum class SpeechRecognitionType;
+}  // namespace speech
 
 namespace extensions {
 
@@ -22,7 +26,8 @@ class SpeechRecognitionPrivateStartFunction : public ExtensionFunction {
 
  private:
   // A callback that is run when the speech recognition service starts.
-  void OnStart(absl::optional<std::string> error);
+  void OnStart(speech::SpeechRecognitionType type,
+               absl::optional<std::string> error);
 };
 
 // An API function that stops speech recognition.

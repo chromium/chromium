@@ -1,18 +1,18 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
 // So that mojo is defined.
-// #import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-// #import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
-// #import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
-// #import 'chrome://nearby/mojo/nearby_share_target_types.mojom-lite.js';
-// #import 'chrome://nearby/mojo/nearby_share_share_type.mojom-lite.js';
-// #import 'chrome://nearby/mojo/nearby_share.mojom-lite.js';
-// #import 'chrome://nearby/shared/nearby_device.m.js';
-// #import {assertEquals} from '../../chai_assert.js';
-// clang-format on
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
+import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
+import 'chrome://nearby/mojo/nearby_share_target_types.mojom-lite.js';
+import 'chrome://nearby/mojo/nearby_share_share_type.mojom-lite.js';
+import 'chrome://nearby/mojo/nearby_share.mojom-lite.js';
+
+import {NearbyDeviceElement} from 'chrome://nearby/shared/nearby_device.js';
+
+import {assertEquals} from '../../chai_assert.js';
 
 suite('DeviceTest', function() {
   /** @type {!NearbyDeviceElement} */
@@ -50,14 +50,16 @@ suite('DeviceTest', function() {
     shareTarget.name = name;
     deviceElement.shareTarget = shareTarget;
 
-    const renderedName = deviceElement.$$('#name').textContent;
+    const renderedName =
+        deviceElement.shadowRoot.querySelector('#name').textContent;
     assertEquals(name, renderedName);
   });
 
   test('renders target image', function() {
     deviceElement.shareTarget = getDefaultShareTarget();
 
-    const renderedSource = deviceElement.$$('#share-target-image').src;
+    const renderedSource =
+        deviceElement.shadowRoot.querySelector('#share-target-image').src;
     assertEquals('chrome://image/?http://google.com/image=s26', renderedSource);
   });
 
@@ -66,7 +68,8 @@ suite('DeviceTest', function() {
     shareTarget.imageUrl.url = '';
     deviceElement.shareTarget = shareTarget;
 
-    const renderedSource = deviceElement.$$('#share-target-image').src;
+    const renderedSource =
+        deviceElement.shadowRoot.querySelector('#share-target-image').src;
     assertEquals('', renderedSource);
   });
 });

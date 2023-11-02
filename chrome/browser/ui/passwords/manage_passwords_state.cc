@@ -1,12 +1,12 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/passwords/manage_passwords_state.h"
 
-#include <algorithm>
 #include <utility>
 
+#include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
@@ -42,11 +42,10 @@ void AppendDeepCopyVector(const std::vector<const PasswordForm*>& forms,
 // Returns true if the form was found and updated.
 bool UpdateFormInVector(const PasswordForm& updated_form,
                         std::vector<std::unique_ptr<PasswordForm>>* forms) {
-  auto it =
-      std::find_if(forms->begin(), forms->end(),
-                   [&updated_form](const std::unique_ptr<PasswordForm>& form) {
-                     return ArePasswordFormUniqueKeysEqual(*form, updated_form);
-                   });
+  auto it = base::ranges::find_if(
+      *forms, [&updated_form](const std::unique_ptr<PasswordForm>& form) {
+        return ArePasswordFormUniqueKeysEqual(*form, updated_form);
+      });
   if (it != forms->end()) {
     **it = updated_form;
     return true;
@@ -58,9 +57,8 @@ bool UpdateFormInVector(const PasswordForm& updated_form,
 // Returns true iff the form was deleted.
 bool RemoveFormFromVector(const PasswordForm& form_to_delete,
                           std::vector<std::unique_ptr<PasswordForm>>* forms) {
-  auto it = std::find_if(
-      forms->begin(), forms->end(),
-      [&form_to_delete](const std::unique_ptr<PasswordForm>& form) {
+  auto it = base::ranges::find_if(
+      *forms, [&form_to_delete](const std::unique_ptr<PasswordForm>& form) {
         return ArePasswordFormUniqueKeysEqual(*form, form_to_delete);
       });
   if (it != forms->end()) {
@@ -183,7 +181,11 @@ void ManagePasswordsState::TransitionToState(
   DCHECK_NE(password_manager::ui::INACTIVE_STATE, state_);
   DCHECK(state == password_manager::ui::MANAGE_STATE ||
          state == password_manager::ui::PASSWORD_UPDATED_SAFE_STATE ||
-         state == password_manager::ui::PASSWORD_UPDATED_MORE_TO_FIX)
+         state == password_manager::ui::PASSWORD_UPDATED_MORE_TO_FIX ||
+         state ==
+             password_manager::ui::BIOMETRIC_AUTHENTICATION_FOR_FILLING_STATE ||
+         state ==
+             password_manager::ui::BIOMETRIC_AUTHENTICATION_CONFIRMATION_STATE)
       << state_;
   if (state_ == password_manager::ui::CREDENTIAL_REQUEST_STATE) {
     if (!credentials_callback_.is_null()) {

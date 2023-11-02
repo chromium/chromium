@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <mfapi.h>
 #include <mfidl.h>
 
+#include "media/filters/win/media_foundation_utils.h"
 #include "media/renderers/win/media_foundation_stream_wrapper.h"
 
 #include "media/base/media_log.h"

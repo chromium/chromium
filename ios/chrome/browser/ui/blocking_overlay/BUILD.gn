@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -12,7 +12,7 @@ source_set("blocking_overlay") {
   deps = [
     "//base",
     "//ios/chrome/app:blocking_scene_commands",
-    "//ios/chrome/app/strings:ios_strings",
+    "//ios/chrome/app/strings",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
   ]

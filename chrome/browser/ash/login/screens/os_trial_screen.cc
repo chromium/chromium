@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,25 +24,13 @@ std::string OsTrialScreen::GetResultString(Result result) {
   }
 }
 
-OsTrialScreen::OsTrialScreen(OsTrialScreenView* view,
+OsTrialScreen::OsTrialScreen(base::WeakPtr<OsTrialScreenView> view,
                              const ScreenExitCallback& exit_callback)
     : BaseScreen(OsTrialScreenView::kScreenId, OobeScreenPriority::DEFAULT),
-      view_(view),
-      exit_callback_(exit_callback) {
-  DCHECK(view_);
-  if (view_)
-    view_->Bind(this);
-}
+      view_(std::move(view)),
+      exit_callback_(exit_callback) {}
 
-OsTrialScreen::~OsTrialScreen() {
-  if (view_)
-    view_->Unbind();
-}
-
-void OsTrialScreen::OnViewDestroyed(OsTrialScreenView* view) {
-  if (view_ == view)
-    view_ = nullptr;
-}
+OsTrialScreen::~OsTrialScreen() = default;
 
 void OsTrialScreen::ShowImpl() {
   if (!view_)
@@ -53,7 +41,8 @@ void OsTrialScreen::ShowImpl() {
 
 void OsTrialScreen::HideImpl() {}
 
-void OsTrialScreen::OnUserAction(const std::string& action_id) {
+void OsTrialScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionTryNextClicked) {
     exit_callback_.Run(Result::NEXT_TRY);
   } else if (action_id == kUserActionInstallNextClicked) {
@@ -61,7 +50,7 @@ void OsTrialScreen::OnUserAction(const std::string& action_id) {
   } else if (action_id == kUserActionBackClicked) {
     exit_callback_.Run(Result::BACK);
   } else {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserAction(args);
   }
 }
 }  // namespace ash

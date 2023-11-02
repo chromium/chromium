@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,12 +12,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
-#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -41,9 +40,9 @@ class SignedExchangePrefetchMetricRecorder;
 
 // A URLLoader for loading a prefetch request, including <link rel="prefetch">.
 // It basically just keeps draining the data.
-class CONTENT_EXPORT PrefetchURLLoader : public network::mojom::URLLoader,
-                                         public network::mojom::URLLoaderClient,
-                                         public mojo::DataPipeDrainer::Client {
+class PrefetchURLLoader : public network::mojom::URLLoader,
+                          public network::mojom::URLLoaderClient,
+                          public mojo::DataPipeDrainer::Client {
  public:
   using URLLoaderThrottlesGetter = base::RepeatingCallback<
       std::vector<std::unique_ptr<blink::URLLoaderThrottle>>()>;
@@ -51,10 +50,10 @@ class CONTENT_EXPORT PrefetchURLLoader : public network::mojom::URLLoader,
       base::OnceCallback<base::UnguessableToken(
           const network::ResourceRequest&)>;
 
-  // |network_isolation_key| must be the NetworkIsolationKey that will be used
-  // for the request (either matching |resource_request.trusted_params|'s
-  // IsolationInfo, if trusted_params| is non-null, or bound to
-  // |network_loader_factory|, otherwise).
+  // |network_anonymization_key| must be the NetworkAnonymizationKey that will
+  // be used for the request (either matching
+  // |resource_request.trusted_params|'s IsolationInfo, if trusted_params| is
+  // non-null, or bound to |network_loader_factory|, otherwise).
   //
   // |url_loader_throttles_getter| may be used when a prefetch handler needs to
   // additionally create a request (e.g. for fetching certificate if the
@@ -64,7 +63,7 @@ class CONTENT_EXPORT PrefetchURLLoader : public network::mojom::URLLoader,
       uint32_t options,
       int frame_tree_node_id,
       const network::ResourceRequest& resource_request,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory,
@@ -104,16 +103,16 @@ class CONTENT_EXPORT PrefetchURLLoader : public network::mojom::URLLoader,
 
   // network::mojom::URLLoaderClient overrides:
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
-  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head) override;
+  void OnReceiveResponse(
+      network::mojom::URLResponseHeadPtr head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      absl::optional<mojo_base::BigBuffer> cached_metadata) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          network::mojom::URLResponseHeadPtr head) override;
   void OnUploadProgress(int64_t current_position,
                         int64_t total_size,
                         base::OnceCallback<void()> callback) override;
-  void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override;
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override;
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
   // mojo::DataPipeDrainer::Client overrides:
@@ -128,7 +127,9 @@ class CONTENT_EXPORT PrefetchURLLoader : public network::mojom::URLLoader,
   // Set in the constructor and updated when redirected.
   network::ResourceRequest resource_request_;
 
-  const net::NetworkIsolationKey network_isolation_key_;
+  network::mojom::URLResponseHeadPtr response_;
+
+  const net::NetworkAnonymizationKey network_anonymization_key_;
 
   scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory_;
 
@@ -149,8 +150,8 @@ class CONTENT_EXPORT PrefetchURLLoader : public network::mojom::URLLoader,
   scoped_refptr<SignedExchangePrefetchMetricRecorder>
       signed_exchange_prefetch_metric_recorder_;
 
-  // Used when SignedExchangeSubresourcePrefetch is enabled to store the
-  // prefetched signed exchanges to a PrefetchedSignedExchangeCache.
+  // Used to store the prefetched signed exchanges to a
+  // PrefetchedSignedExchangeCache.
   std::unique_ptr<PrefetchedSignedExchangeCacheAdapter>
       prefetched_signed_exchange_cache_adapter_;
 

@@ -29,6 +29,8 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
+#include "third_party/blink/public/common/input/web_keyboard_event.h"
+#include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
@@ -42,19 +44,23 @@
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/events/simulated_event_util.h"
+#include "third_party/blink/renderer/core/events/text_event.h"
 #include "third_party/blink/renderer/core/frame/ad_tracker.h"
-#include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation_controller.h"
 #include "third_party/blink/renderer/core/timing/event_timing.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/keyboard_codes.h"
+#include "ui/events/keycodes/dom/keycode_converter.h"
 
 namespace blink {
 
@@ -145,6 +151,27 @@ void EventDispatcher::DispatchSimulatedClick(
   nodes_dispatching_simulated_clicks->erase(&node);
 }
 
+void EventDispatcher::DispatchSimulatedEnterEvent(
+    HTMLInputElement& input_element) {
+  LocalDOMWindow* local_dom_window = input_element.GetDocument().domWindow();
+  for (auto type : {WebInputEvent::Type::kRawKeyDown,
+                    WebInputEvent::Type::kChar, WebInputEvent::Type::kKeyUp}) {
+    WebKeyboardEvent enter{type, WebInputEvent::kNoModifiers,
+                           base::TimeTicks::Now()};
+    enter.dom_key = ui::DomKey::ENTER;
+    enter.dom_code = static_cast<int>(ui::DomKey::ENTER);
+    enter.native_key_code = blink::VKEY_RETURN;
+    enter.windows_key_code = blink::VKEY_RETURN;
+    enter.text[0] = blink::VKEY_RETURN;
+    enter.unmodified_text[0] = blink::VKEY_RETURN;
+
+    KeyboardEvent* event =
+        blink::KeyboardEvent::Create(enter, local_dom_window, true);
+    event->SetTrusted(true);
+    DispatchScopedEvent(input_element, *event);
+  }
+}
+
 // https://dom.spec.whatwg.org/#dispatching-events
 DispatchEventResult EventDispatcher::Dispatch() {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("blink.debug"),
@@ -161,10 +188,13 @@ DispatchEventResult EventDispatcher::Dispatch() {
   }
   std::unique_ptr<EventTiming> eventTiming;
   LocalFrame* frame = node_->GetDocument().GetFrame();
-  if (frame && frame->DomWindow()) {
-    eventTiming = EventTiming::Create(frame->DomWindow(), *event_);
-    if (!base::FeatureList::IsEnabled(kFirstInputDelayWithoutEventListener))
-      EventTiming::HandleInputDelay(frame->DomWindow(), *event_);
+  LocalDOMWindow* window = nullptr;
+  if (frame) {
+    window = frame->DomWindow();
+  }
+
+  if (frame && window) {
+    eventTiming = EventTiming::Create(window, *event_);
   }
 
   if (event_->type() == event_type_names::kChange && event_->isTrusted() &&
@@ -176,17 +206,19 @@ DispatchEventResult EventDispatcher::Dispatch() {
   const bool is_click =
       event_->IsMouseEvent() && event_->type() == event_type_names::kClick;
 
-  if (is_click && event_->isTrusted()) {
-    Document& document = node_->GetDocument();
-    if (frame) {
-      // A genuine mouse click cannot be triggered by script so we don't expect
-      // there are any script in the stack.
-      DCHECK(!frame->GetAdTracker() ||
-             !frame->GetAdTracker()->IsAdScriptInStack(
-                 AdTracker::StackType::kBottomAndTop));
-      if (frame->IsAdSubframe()) {
-        UseCounter::Count(document, WebFeature::kAdClick);
-      }
+  std::unique_ptr<SoftNavigationEventScope> soft_navigation_scope;
+  if (is_click && event_->isTrusted() && frame) {
+    if (window && frame->IsMainFrame()) {
+      soft_navigation_scope = std::make_unique<SoftNavigationEventScope>(
+          SoftNavigationHeuristics::From(*window),
+          ToScriptStateForMainWorld(frame));
+    }
+    // A genuine mouse click cannot be triggered by script so we don't expect
+    // there are any script in the stack.
+    DCHECK(!frame->GetAdTracker() || !frame->GetAdTracker()->IsAdScriptInStack(
+                                         AdTracker::StackType::kBottomAndTop));
+    if (frame->IsAdFrame()) {
+      UseCounter::Count(node_->GetDocument(), WebFeature::kAdClick);
     }
   }
 
@@ -225,13 +257,19 @@ DispatchEventResult EventDispatcher::Dispatch() {
   if (DispatchEventPreProcess(activation_target,
                               pre_dispatch_event_handler_result) ==
       kContinueDispatching) {
-    if (DispatchEventAtCapturing() == kContinueDispatching)
+    if (DispatchEventAtCapturing() == kContinueDispatching) {
       DispatchEventAtBubbling();
+    }
   }
   DispatchEventPostProcess(activation_target,
                            pre_dispatch_event_handler_result);
 
-  return EventTarget::GetDispatchEventResult(*event_);
+  auto result = EventTarget::GetDispatchEventResult(*event_);
+  if (soft_navigation_scope) {
+    soft_navigation_scope->SetResult(result);
+  }
+
+  return result;
 }
 
 inline EventDispatchContinuation EventDispatcher::DispatchEventPreProcess(
@@ -254,7 +292,7 @@ inline EventDispatchContinuation EventDispatcher::DispatchEventAtCapturing() {
   // Trigger capturing event handlers, starting at the top and working our way
   // down. When we get to the last one, the target, change the event phase to
   // AT_TARGET and fire only the capture listeners on it.
-  event_->SetEventPhase(Event::kCapturingPhase);
+  event_->SetEventPhase(Event::PhaseType::kCapturingPhase);
 
   if (event_->GetEventPath().GetWindowEventContext().HandleLocalEvents(
           *event_) &&
@@ -264,12 +302,12 @@ inline EventDispatchContinuation EventDispatcher::DispatchEventAtCapturing() {
   for (wtf_size_t i = event_->GetEventPath().size(); i > 0; --i) {
     const NodeEventContext& event_context = event_->GetEventPath()[i - 1];
     if (event_context.CurrentTargetSameAsTarget()) {
-      event_->SetEventPhase(Event::kAtTarget);
+      event_->SetEventPhase(Event::PhaseType::kAtTarget);
       event_->SetFireOnlyCaptureListenersAtTarget(true);
       event_context.HandleLocalEvents(*event_);
       event_->SetFireOnlyCaptureListenersAtTarget(false);
     } else {
-      event_->SetEventPhase(Event::kCapturingPhase);
+      event_->SetEventPhase(Event::PhaseType::kCapturingPhase);
       event_context.HandleLocalEvents(*event_);
     }
     if (event_->PropagationStopped())
@@ -288,12 +326,12 @@ inline void EventDispatcher::DispatchEventAtBubbling() {
     const NodeEventContext& event_context = event_->GetEventPath()[i];
     if (event_context.CurrentTargetSameAsTarget()) {
       // TODO(hayato): Need to check cancelBubble() also here?
-      event_->SetEventPhase(Event::kAtTarget);
+      event_->SetEventPhase(Event::PhaseType::kAtTarget);
       event_->SetFireOnlyNonCaptureListenersAtTarget(true);
       event_context.HandleLocalEvents(*event_);
       event_->SetFireOnlyNonCaptureListenersAtTarget(false);
     } else if (event_->bubbles() && !event_->cancelBubble()) {
-      event_->SetEventPhase(Event::kBubblingPhase);
+      event_->SetEventPhase(Event::PhaseType::kBubblingPhase);
       event_context.HandleLocalEvents(*event_);
     } else {
       continue;
@@ -302,7 +340,7 @@ inline void EventDispatcher::DispatchEventAtBubbling() {
       return;
   }
   if (event_->bubbles() && !event_->cancelBubble()) {
-    event_->SetEventPhase(Event::kBubblingPhase);
+    event_->SetEventPhase(Event::PhaseType::kBubblingPhase);
     event_->GetEventPath().GetWindowEventContext().HandleLocalEvents(*event_);
   }
 }
@@ -317,7 +355,7 @@ inline void EventDispatcher::DispatchEventPostProcess(
   event_->SetStopPropagation(false);
   event_->SetStopImmediatePropagation(false);
   // 15. Set event’s eventPhase attribute to NONE.
-  event_->SetEventPhase(0);
+  event_->SetEventPhase(Event::PhaseType::kNone);
   // TODO(rakina): investigate this and move it to the bottom of step 16
   // 17. Set event’s currentTarget attribute to null.
   event_->SetCurrentTarget(nullptr);
@@ -379,13 +417,13 @@ inline void EventDispatcher::DispatchEventPostProcess(
       }
     }
   } else {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // If a keypress event is prevented, the cursor position may be out of
     // sync as RenderWidgetHostViewCocoa::insertText assumes that the text
     // has been accepted. See https://crbug.com/1204523 for details.
     if (event_->type() == event_type_names::kKeypress && view_)
       view_->GetFrame().GetEditor().SyncSelection(SyncCondition::kForced);
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
   }
 
   auto* keyboard_event = DynamicTo<KeyboardEvent>(event_);

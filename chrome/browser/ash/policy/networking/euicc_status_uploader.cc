@@ -1,18 +1,21 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/policy/networking/euicc_status_uploader.h"
 
 #include "base/json/json_string_value_serializer.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chromeos/dbus/hermes/hermes_manager_client.h"
-#include "chromeos/network/managed_network_configuration_handler.h"
-#include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_state_handler.h"
+#include "chromeos/ash/components/network/cellular_esim_profile_handler.h"
+#include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
+#include "chromeos/ash/components/network/network_event_log.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -26,7 +29,6 @@ const char kLastUploadedEuiccStatusESimProfilesKey[] = "esim_profiles";
 const char kLastUploadedEuiccStatusESimProfilesIccidKey[] = "iccid";
 const char kLastUploadedEuiccStatusESimProfilesSmdpAddressKey[] =
     "smdp_address";
-const char kLastUploadedEuiccStatusClearProfileListKey[] = "clear_profile_list";
 const net::BackoffEntry::Policy kBackOffPolicy = {
     // Number of initial errors (in sequence) to ignore before applying
     // exponential back-off rules.
@@ -51,32 +53,58 @@ const net::BackoffEntry::Policy kBackOffPolicy = {
     // Starts with initial delay.
     true,
 };
+
+// Returns whether the device's policy data is active and provisioned.
+bool IsDeviceManaged() {
+  return ::ash::DeviceSettingsService::IsInitialized() &&
+         ::ash::DeviceSettingsService::Get()->policy_data() &&
+         ::ash::DeviceSettingsService::Get()->policy_data()->state() ==
+             enterprise_management::PolicyData::ACTIVE;
+}
+
 }  // namespace
 
 // static
 const char EuiccStatusUploader::kLastUploadedEuiccStatusPref[] =
     "esim.last_upload_euicc_status";
+const char EuiccStatusUploader::kShouldSendClearProfilesRequestPref[] =
+    "esim.should_clear_profile_list";
 
 EuiccStatusUploader::EuiccStatusUploader(CloudPolicyClient* client,
                                          PrefService* local_state)
+    : EuiccStatusUploader(client,
+                          local_state,
+                          base::BindRepeating(&IsDeviceManaged)) {}
+
+EuiccStatusUploader::EuiccStatusUploader(
+    CloudPolicyClient* client,
+    PrefService* local_state,
+    IsDeviceActiveCallback is_device_active_callback)
     : client_(client),
       local_state_(local_state),
+      is_device_managed_callback_(std::move(is_device_active_callback)),
       retry_entry_(&kBackOffPolicy) {
-  chromeos::NetworkHandler::Get()
-      ->managed_network_configuration_handler()
-      ->AddObserver(this);
-  chromeos::NetworkHandler::Get()->network_state_handler()->AddObserver(
-      this, FROM_HERE);
+  if (!ash::NetworkHandler::IsInitialized()) {
+    LOG(WARNING) << "NetworkHandler is not initialized.";
+    return;
+  }
 
-  MaybeUploadStatus();
+  hermes_manager_observation_.Observe(ash::HermesManagerClient::Get());
+  hermes_euicc_observation_.Observe(ash::HermesEuiccClient::Get());
+  cloud_policy_client_observation_.Observe(client_);
+
+  auto* network_handler = ash::NetworkHandler::Get();
+  network_handler->managed_cellular_pref_handler()->AddObserver(this);
+  managed_network_configuration_handler_ =
+      network_handler->managed_network_configuration_handler();
+  managed_network_configuration_handler_->AddObserver(this);
 }
 
 EuiccStatusUploader::~EuiccStatusUploader() {
-  chromeos::NetworkHandler::Get()
-      ->managed_network_configuration_handler()
-      ->RemoveObserver(this);
-  chromeos::NetworkHandler::Get()->network_state_handler()->RemoveObserver(
-      this, FROM_HERE);
+  if (ash::NetworkHandler::IsInitialized())
+    ash::NetworkHandler::Get()->managed_cellular_pref_handler()->RemoveObserver(
+        this);
+  OnManagedNetworkConfigurationHandlerShuttingDown();
 }
 
 // static
@@ -84,11 +112,14 @@ void EuiccStatusUploader::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kLastUploadedEuiccStatusPref,
                                    PrefRegistry::NO_REGISTRATION_FLAGS);
+  registry->RegisterBooleanPref(kShouldSendClearProfilesRequestPref,
+                                /*default_value=*/false);
 }
 
 // static
 std::unique_ptr<enterprise_management::UploadEuiccInfoRequest>
-EuiccStatusUploader::ConstructRequestFromStatus(const base::Value& status) {
+EuiccStatusUploader::ConstructRequestFromStatus(const base::Value& status,
+                                                bool clear_profile_list) {
   auto upload_request =
       std::make_unique<enterprise_management::UploadEuiccInfoRequest>();
   upload_request->set_euicc_count(
@@ -105,83 +136,123 @@ EuiccStatusUploader::ConstructRequestFromStatus(const base::Value& status) {
         kLastUploadedEuiccStatusESimProfilesSmdpAddressKey));
     mutable_esim_profiles->Add(std::move(esim_profile_info));
   }
-
-  upload_request->set_clear_profile_list(
-      status.FindBoolKey(kLastUploadedEuiccStatusClearProfileListKey).value());
+  upload_request->set_clear_profile_list(clear_profile_list);
   return upload_request;
+}
+
+void EuiccStatusUploader::OnManagedNetworkConfigurationHandlerShuttingDown() {
+  if (managed_network_configuration_handler_ &&
+      managed_network_configuration_handler_->HasObserver(this)) {
+    managed_network_configuration_handler_->RemoveObserver(this);
+  }
+  managed_network_configuration_handler_ = nullptr;
+}
+
+void EuiccStatusUploader::OnRegistrationStateChanged(
+    CloudPolicyClient* client) {
+  MaybeUploadStatus();
+}
+
+void EuiccStatusUploader::OnPolicyFetched(CloudPolicyClient* client) {
+  if (is_policy_fetched_) {
+    return;
+  }
+  is_policy_fetched_ = true;
+  MaybeUploadStatus();
 }
 
 void EuiccStatusUploader::PoliciesApplied(const std::string& userhash) {
   MaybeUploadStatus();
 }
 
-void EuiccStatusUploader::NetworkListChanged() {
+void EuiccStatusUploader::OnManagedCellularPrefChanged() {
   MaybeUploadStatus();
 }
 
-base::Value EuiccStatusUploader::GetCurrentEuiccStatus() {
+void EuiccStatusUploader::OnAvailableEuiccListChanged() {
+  MaybeUploadStatus();
+}
+
+void EuiccStatusUploader::OnEuiccReset(const dbus::ObjectPath& euicc_path) {
+  // Remember that we should clear the profile list in the next upload. This
+  // ensures that profile list will be eventually cleared even if the immediate
+  // uploads do not succeed.
+  local_state_->SetBoolean(kShouldSendClearProfilesRequestPref, true);
+  MaybeUploadStatus();
+}
+
+base::Value EuiccStatusUploader::GetCurrentEuiccStatus() const {
   base::Value status(base::Value::Type::DICTIONARY);
 
   status.SetIntKey(
       kLastUploadedEuiccStatusEuiccCountKey,
-      chromeos::HermesManagerClient::Get()->GetAvailableEuiccs().size());
+      ash::HermesManagerClient::Get()->GetAvailableEuiccs().size());
 
   base::Value esim_profiles(base::Value::Type::LIST);
 
-  chromeos::NetworkStateHandler::NetworkStateList networks;
-  chromeos::NetworkHandler::Get()
-      ->network_state_handler()
-      ->GetNetworkListByType(ash::NetworkTypePattern::Cellular(),
-                             /*configure_only=*/false, /*visible_only=*/false,
-                             /*limit=*/0, &networks);
-
-  onc::ONCSource onc_source = onc::ONC_SOURCE_NONE;
-  for (const chromeos::NetworkState* network : networks) {
-    // Report only managed profiles.
-    if (!network->IsManagedByPolicy())
-      continue;
-
+  for (const auto& esim_profile : ash::NetworkHandler::Get()
+                                      ->cellular_esim_profile_handler()
+                                      ->GetESimProfiles()) {
     // Do not report non-provisioned cellular networks.
-    if (network->iccid().empty())
+    if (esim_profile.iccid().empty())
       continue;
-
-    // Read the SMDP address from ONC.
-    const base::DictionaryValue* policy =
-        chromeos::NetworkHandler::Get()
-            ->managed_network_configuration_handler()
-            ->FindPolicyByGUID(/*userhash=*/std::string(), network->guid(),
-                               &onc_source);
-    DCHECK(policy);
-
-    const base::Value* cellular_dict =
-        policy->FindKey(::onc::network_config::kCellular);
-    DCHECK(cellular_dict);
 
     const std::string* smdp_address =
-        cellular_dict->FindStringKey(::onc::cellular::kSMDPAddress);
+        ash::NetworkHandler::Get()
+            ->managed_cellular_pref_handler()
+            ->GetSmdpAddressFromIccid(esim_profile.iccid());
+    // Report only managed profiles with a SMDP address.
     if (!smdp_address)
       continue;
 
-    base::Value esim_profile(base::Value::Type::DICTIONARY);
-    esim_profile.SetStringKey(kLastUploadedEuiccStatusESimProfilesIccidKey,
-                              network->iccid());
-    esim_profile.SetStringKey(
+    base::Value esim_profile_to_add(base::Value::Type::DICTIONARY);
+    esim_profile_to_add.SetStringKey(
+        kLastUploadedEuiccStatusESimProfilesIccidKey, esim_profile.iccid());
+    esim_profile_to_add.SetStringKey(
         kLastUploadedEuiccStatusESimProfilesSmdpAddressKey, *smdp_address);
-    esim_profiles.Append(std::move(esim_profile));
+    esim_profiles.Append(std::move(esim_profile_to_add));
   }
 
   status.SetPath(kLastUploadedEuiccStatusESimProfilesKey,
                  std::move(esim_profiles));
-  // TODO(crbug.com/1231305): Set this to true when clear request was triggered.
-  status.SetBoolKey(kLastUploadedEuiccStatusClearProfileListKey, false);
-
   return status;
 }
 
 void EuiccStatusUploader::MaybeUploadStatus() {
-  const base::Value* last_uploaded_pref =
-      local_state_->Get(kLastUploadedEuiccStatusPref);
+  if (!client_->is_registered()) {
+    VLOG(1) << "Policy client is not registered.";
+    return;
+  }
+
+  if (!is_policy_fetched_) {
+    VLOG(1) << "Policy not fetched yet.";
+    return;
+  }
+
+  if (!is_device_managed_callback_.Run()) {
+    VLOG(1) << "Device is unmanaged or deprovisioned.";
+    return;
+  }
+
+  if (!managed_network_configuration_handler_) {
+    LOG(WARNING) << "ManageNetworkConfigurationHandler is not initialized.";
+    return;
+  }
+
+  if (ash::HermesManagerClient::Get()->GetAvailableEuiccs().empty()) {
+    VLOG(1) << "No EUICC available on the device.";
+    return;
+  }
+
+  const base::Value& last_uploaded_pref =
+      local_state_->GetValue(kLastUploadedEuiccStatusPref);
   auto current_state = GetCurrentEuiccStatus();
+
+  // Force send the status if reset request was received.
+  if (local_state_->GetBoolean(kShouldSendClearProfilesRequestPref)) {
+    UploadStatus(std::move(current_state));
+    return;
+  }
 
   if (attempted_upload_status_ == current_state) {
     // We attempted to upload this status, but failed.
@@ -197,7 +268,7 @@ void EuiccStatusUploader::MaybeUploadStatus() {
 
   retry_timer_.reset();
 
-  if (!last_uploaded_pref || *last_uploaded_pref != current_state) {
+  if (last_uploaded_pref != current_state) {
     UploadStatus(std::move(current_state));
   }
 }
@@ -209,7 +280,9 @@ void EuiccStatusUploader::UploadStatus(base::Value status) {
   currently_uploading_ = true;
   attempted_upload_status_ = std::move(status);
 
-  auto upload_request = ConstructRequestFromStatus(attempted_upload_status_);
+  auto upload_request = ConstructRequestFromStatus(
+      attempted_upload_status_,
+      local_state_->GetBoolean(kShouldSendClearProfilesRequestPref));
   client_->UploadEuiccInfo(
       std::move(upload_request),
       base::BindOnce(&EuiccStatusUploader::OnStatusUploaded,
@@ -219,6 +292,8 @@ void EuiccStatusUploader::UploadStatus(base::Value status) {
 void EuiccStatusUploader::OnStatusUploaded(bool success) {
   currently_uploading_ = false;
   retry_entry_.InformOfRequest(/*succeeded=*/success);
+  base::UmaHistogramBoolean(
+      "Network.Cellular.ESim.Policy.EuiccStatusUploadResult", success);
 
   if (!success) {
     LOG(ERROR) << "Failed to upload EUICC status.";
@@ -227,10 +302,15 @@ void EuiccStatusUploader::OnStatusUploaded(bool success) {
   }
 
   VLOG(1) << "EUICC status successfully uploaded.";
-  local_state_->Set(kLastUploadedEuiccStatusPref, attempted_upload_status_);
+
+  // Remember the last uploaded status to not upload it again.
+  local_state_->Set(kLastUploadedEuiccStatusPref,
+                    std::move(attempted_upload_status_));
+  // Clean out the local state preference to not send |clear_profile_list| =
+  // true multiple times.
+  local_state_->ClearPref(kShouldSendClearProfilesRequestPref);
   attempted_upload_status_.DictClear();
-  // TODO(apotapchuk): Clean up reset profile list local state pref if it was
-  // set to true.
+
   MaybeUploadStatus();
   return;
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/io_buffer.h"
 
@@ -65,7 +64,7 @@ class HttpConnection {
     ~ReadIOBuffer() override;
 
     scoped_refptr<GrowableIOBuffer> base_;
-    int max_buffer_size_;
+    int max_buffer_size_ = kDefaultMaxBufferSize;
   };
 
   // IOBuffer of pending data to write which has a queue of pending data. Each
@@ -110,8 +109,8 @@ class HttpConnection {
     // This needs to indirect since we need pointer stability for the payload
     // chunks, as they may be handed out via net::IOBuffer::data().
     base::queue<std::unique_ptr<std::string>> pending_data_;
-    int total_size_;
-    int max_buffer_size_;
+    int total_size_ = 0;
+    int max_buffer_size_ = kDefaultMaxBufferSize;
   };
 
   HttpConnection(int id, std::unique_ptr<StreamSocket> socket);

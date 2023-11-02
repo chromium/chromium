@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -125,7 +125,7 @@ constexpr CGFloat kCornerRadius = 12.;
 #pragma mark - SwipeGesture
 
 // Called when the swipe gesture is active. This method controls the sliding
-// between two view controls in |self|.
+// between two view controls in `self`.
 - (void)swipeAction:(UIScreenEdgePanGestureRecognizer*)gestureRecognizer {
   if (!gestureRecognizer.view) {
     self.interactionTransition = nil;

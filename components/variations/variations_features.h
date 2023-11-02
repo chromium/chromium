@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ namespace internal {
 // transmitted in all contexts. See IsFirstPartyContext() in
 // variations_http_headers.cc for more details.
 COMPONENT_EXPORT(VARIATIONS_FEATURES)
-extern const base::Feature kRestrictGoogleWebVisibility;
+BASE_DECLARE_FEATURE(kRestrictGoogleWebVisibility);
 
 }  // namespace internal
 }  // namespace variations

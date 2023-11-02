@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,8 +18,8 @@ class JavaHandlerThreadForTest : public android::JavaHandlerThread {
  public:
   explicit JavaHandlerThreadForTest(
       const char* name,
-      base::ThreadPriority priority = base::ThreadPriority::NORMAL)
-      : android::JavaHandlerThread(name, priority) {}
+      base::ThreadType thread_type = base::ThreadType::kDefault)
+      : android::JavaHandlerThread(name, thread_type) {}
 
   using android::JavaHandlerThread::state;
   using android::JavaHandlerThread::State;

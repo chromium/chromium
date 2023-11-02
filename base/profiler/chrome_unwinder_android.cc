@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "base/numerics/checked_math.h"
 #include "base/profiler/module_cache.h"
-#include "base/profiler/native_unwinder.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -28,7 +27,7 @@ bool ChromeUnwinderAndroid::CanUnwindFrom(const Frame& current_frame) const {
 
 UnwindResult ChromeUnwinderAndroid::TryUnwind(RegisterContext* thread_context,
                                               uintptr_t stack_top,
-                                              std::vector<Frame>* stack) const {
+                                              std::vector<Frame>* stack) {
   DCHECK(CanUnwindFrom(stack->back()));
   do {
     const ModuleCache::Module* module = stack->back().module;

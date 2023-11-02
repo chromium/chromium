@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/values.h"
 #include "content/public/browser/render_frame_host.h"
@@ -133,19 +132,22 @@ std::unique_ptr<base::DictionaryValue> CreateRequestBodyData(
                                       keys::kRequestBodyRawKey};
   bool some_succeeded = false;
   if (!data_sources.empty()) {
-    for (size_t i = 0; i < base::size(presenters); ++i) {
+    for (size_t i = 0; i < std::size(presenters); ++i) {
       for (auto& source : data_sources)
         source->FeedToPresenter(presenters[i]);
       if (presenters[i]->Succeeded()) {
-        request_body_data->Set(kKeys[i], presenters[i]->Result());
+        request_body_data->GetDict().Set(kKeys[i],
+                                         presenters[i]->TakeResult().value());
         some_succeeded = true;
         break;
       }
     }
   }
 
-  if (!some_succeeded)
-    request_body_data->SetString(keys::kRequestBodyErrorKey, "Unknown error.");
+  if (!some_succeeded) {
+    request_body_data->SetStringKey(keys::kRequestBodyErrorKey,
+                                    "Unknown error.");
+  }
 
   return request_body_data;
 }
@@ -157,9 +159,8 @@ WebRequestInfoInitParams::WebRequestInfoInitParams() = default;
 WebRequestInfoInitParams::WebRequestInfoInitParams(
     uint64_t request_id,
     int render_process_id,
-    int render_frame_id,
+    int frame_routing_id,
     std::unique_ptr<ExtensionNavigationUIData> navigation_ui_data,
-    int32_t view_routing_id,
     const network::ResourceRequest& request,
     bool is_download,
     bool is_async,
@@ -169,8 +170,7 @@ WebRequestInfoInitParams::WebRequestInfoInitParams(
     : id(request_id),
       url(request.url),
       render_process_id(render_process_id),
-      view_routing_id(view_routing_id),
-      frame_id(render_frame_id),
+      frame_routing_id(frame_routing_id),
       method(request.method),
       is_navigation_request(!!navigation_ui_data),
       initiator(request.request_initiator),
@@ -181,7 +181,7 @@ WebRequestInfoInitParams::WebRequestInfoInitParams(
       ukm_source_id(ukm_source_id) {
   web_request_type = ToWebRequestResourceType(request, is_download);
 
-  DCHECK_EQ(is_navigation_request, navigation_id.has_value());
+  DCHECK_EQ(is_navigation_request, this->navigation_id.has_value());
 
   InitializeWebViewAndFrameData(navigation_ui_data.get());
 
@@ -209,11 +209,11 @@ void WebRequestInfoInitParams::InitializeWebViewAndFrameData(
         navigation_ui_data->web_view_rules_registry_id();
     frame_data = navigation_ui_data->frame_data();
     parent_routing_id = navigation_ui_data->parent_routing_id();
-  } else if (frame_id >= 0) {
+  } else if (frame_routing_id != MSG_ROUTING_NONE) {
     // Grab any WebView-related information if relevant.
     WebViewRendererState::WebViewInfo web_view_info;
     if (WebViewRendererState::GetInstance()->GetInfo(
-            render_process_id, view_routing_id, &web_view_info)) {
+            render_process_id, frame_routing_id, &web_view_info)) {
       is_web_view = true;
       web_view_instance_id = web_view_info.instance_id;
       web_view_rules_registry_id = web_view_info.rules_registry_id;
@@ -222,10 +222,10 @@ void WebRequestInfoInitParams::InitializeWebViewAndFrameData(
 
     // For subresource loads we attempt to resolve the FrameData immediately.
     frame_data = ExtensionApiFrameIdMap::Get()->GetFrameData(
-        content::GlobalRenderFrameHostId(render_process_id, frame_id));
+        content::GlobalRenderFrameHostId(render_process_id, frame_routing_id));
 
     parent_routing_id =
-        content::GlobalRenderFrameHostId(render_process_id, frame_id);
+        content::GlobalRenderFrameHostId(render_process_id, frame_routing_id);
   }
 }
 
@@ -233,8 +233,7 @@ WebRequestInfo::WebRequestInfo(WebRequestInfoInitParams params)
     : id(params.id),
       url(std::move(params.url)),
       render_process_id(params.render_process_id),
-      view_routing_id(params.view_routing_id),
-      frame_id(params.frame_id),
+      frame_routing_id(params.frame_routing_id),
       method(std::move(params.method)),
       is_navigation_request(params.is_navigation_request),
       initiator(std::move(params.initiator)),

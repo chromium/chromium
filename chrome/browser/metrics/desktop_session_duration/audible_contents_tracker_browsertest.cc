@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -74,7 +74,8 @@ class AudibleContentsTrackerTest : public InProcessBrowserTest {
 };
 
 // TODO(crbug.com/1124845): Flaky on Win7 32-bit.
-#if defined(OS_WIN) && defined(ARCH_CPU_X86_FAMILY) && defined(ARCH_CPU_32_BITS)
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86_FAMILY) && \
+    defined(ARCH_CPU_32_BITS)
 #define MAYBE_TestAudioNotifications DISABLED_TestAudioNotifications
 #else
 #define MAYBE_TestAudioNotifications TestAudioNotifications

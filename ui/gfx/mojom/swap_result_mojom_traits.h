@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_GFX_MOJOM_SWAP_RESULT_MOJOM_TRAITS_H_
 #define UI_GFX_MOJOM_SWAP_RESULT_MOJOM_TRAITS_H_
 
+#include "base/notreached.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "ui/gfx/mojom/swap_result.mojom-shared.h"
 #include "ui/gfx/swap_result.h"

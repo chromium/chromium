@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Runs captured sites framework recording and tests.
@@ -9,6 +9,9 @@ Commands:
   chrome  Starts a Chrome instance with autofill hooks
   wpr     Starts a WPR server instance to record or replay
   run     Starts a test for a single site or "*" for all sites
+  refresh Starts a test for a single site or "*" for all sites, and records new
+          server prediction responses.
+
 Use "captured_sites [command] -h" for more information about each command.',
 
 This script attempts to simplify the various configuration and override options
@@ -84,9 +87,12 @@ _WPR_INJECT_SCRIPTS = ('--inject_scripts=third_party/catapult/web_page_replay_g'
 _NORMAL_BROWSER_AUTOFILL = 'cache_replayer=1'
 _RUN_BACKGROUND = 'testing/xvfb.py'
 _RUN_DISABLED_TESTS = '--gtest_also_run_disabled_tests'
+_RUN_DEBUGGING_TESTS = '--gtest_break_on_failure'
 
 _AUTOFILL_TEST = '*/AutofillCapturedSitesInteractiveTest'
+_AUTOFILL_REFRESH = '*/AutofillCapturedSitesRefresh'
 _PASSWORD_MANAGER_TEST = '*/CapturedSitesPasswordManagerBrowserTest'
+_PASSWORD_MANAGER_REFRESH = '*/CapturedSitesPasswordManagerRefresh'
 _VMODULE_AUTOFILL_FILE = 'autofill_captured_sites_interactive_uitest'
 _VMODULE_PASSWORD_FILE = 'password_manager_captured_sites_interactive_uitest'
 
@@ -170,6 +176,12 @@ def _add_run_args(parser):
                       dest='add_disabled',
                       action='store_true',
                       help='Also run disabled tests that match the filter.')
+  parser.add_argument('-f',
+                      '--break_on_failure',
+                      dest='add_break_on_failure',
+                      action='store_true',
+                      help=('Run tests in single-process mode and brings the '
+                            'debugger on an assertion failure.'))
   parser.add_argument('-v',
                       '--verbose',
                       dest='verbose_logging',
@@ -197,6 +209,11 @@ def _add_run_args(parser):
                       default='',
                       type=str,
                       help='Location of "pipe: file')
+  parser.add_argument('-w',
+                      '--wpr_verbose',
+                      dest='wpr_verbose',
+                      action='store_true',
+                      help='Also include verbose WPR output.')
 
 
 def _add_shared_args(parser):
@@ -311,12 +328,22 @@ def _launch_wpr(options, forward_args):
   _make_process_call(command_args + forward_args, options.print_only)
 
 
+def _launch_refresh(options, forward_args):
+  _launch_test(options, forward_args, _AUTOFILL_REFRESH,
+               _PASSWORD_MANAGER_REFRESH)
+
+
 def _launch_run(options, forward_args):
-  gtest_filter = _AUTOFILL_TEST
+  _launch_test(options, forward_args, _AUTOFILL_TEST, _PASSWORD_MANAGER_TEST)
+
+
+def _launch_test(options, forward_args, gtest_filter_autofill,
+                 gtest_filter_password):
+  gtest_filter = gtest_filter_autofill
   gtest_parameter = options.site_name
   vmodule_name = _VMODULE_AUTOFILL_FILE
   if options.scenario_dir != '':
-    gtest_filter = _PASSWORD_MANAGER_TEST
+    gtest_filter = gtest_filter_password
     gtest_parameter = '%s_%s' % (options.scenario_dir, options.site_name)
     vmodule_name = _VMODULE_PASSWORD_FILE
 
@@ -334,6 +361,12 @@ def _launch_run(options, forward_args):
   if options.add_disabled:
     command_args.append(_RUN_DISABLED_TESTS)
 
+  if options.add_break_on_failure:
+    command_args.append(_RUN_DEBUGGING_TESTS)
+
+  if options.wpr_verbose:
+    command_args.append('--wpr_verbose')
+
   if options.retry_count > 0:
     command_args.append('--test-launcher-retry-limit=%d' % options.retry_count)
 
@@ -342,7 +375,8 @@ def _launch_run(options, forward_args):
     command_args.append('--autofill-server-type=%s ' % full_cache_type)
 
   if options.command_file:
-    command_args.append('--command_file=%s' % options.command_file)
+    command_args.append('--command_file=%s' %
+                        os.path.expanduser(options.command_file))
 
   if options.store_log:
     if not os.path.isdir(_LOG_DATA_DIR_PATH):
@@ -389,6 +423,10 @@ def main():
       Command('Start WPR to replay or record.',
               [_add_wpr_args, _add_shared_args, _add_scenario_site_args],
               _launch_wpr),
+      'refresh':
+      Command('Refresh the Server Predictions of an autofill or password test.',
+              [_add_run_args, _add_shared_args, _add_scenario_site_args],
+              _launch_refresh),
       'run':
       Command('Start an autofill or password test run.',
               [_add_run_args, _add_shared_args, _add_scenario_site_args],

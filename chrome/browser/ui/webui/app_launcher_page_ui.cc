@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,10 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -45,7 +47,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/animation/animation.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/platform_util.h"
 #endif
 
@@ -129,10 +131,10 @@ AppLauncherPageUI::AppLauncherPageUI(content::WebUI* web_ui)
                         .spec());
 
   bool is_swipe_tracking_from_scroll_events_enabled = false;
-#if defined(OS_MAC)
-  // On Mac OS X 10.7+, horizontal scrolling can be treated as a back or
-  // forward gesture. Pass through a flag that indicates whether or not that
-  // feature is enabled.
+#if BUILDFLAG(IS_MAC)
+  // On the Mac, horizontal scrolling can be treated as a back or forward
+  // gesture. Pass through a flag that indicates whether or not that feature is
+  // enabled.
   is_swipe_tracking_from_scroll_events_enabled =
       platform_util::IsSwipeTrackingFromScrollEventsEnabled();
 #endif
@@ -181,10 +183,9 @@ AppLauncherPageUI::~AppLauncherPageUI() {
 }
 
 void AppLauncherPageUI::OnHideWebStoreIconChanged() {
-  std::unique_ptr<base::DictionaryValue> update(new base::DictionaryValue);
+  base::Value::Dict update;
   PrefService* prefs = GetProfile()->GetPrefs();
-  update->SetBoolean("showWebStoreIcon",
-                     !prefs->GetBoolean(prefs::kHideWebStoreIcon));
+  update.Set("showWebStoreIcon", !prefs->GetBoolean(prefs::kHideWebStoreIcon));
   content::WebUIDataSource::Update(
       GetProfile(), chrome::kChromeUIAppLauncherPageHost, std::move(update));
 }

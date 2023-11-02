@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,12 @@ import {VolumeManager} from '../volume_manager.js';
  * @interface
  */
 export class FileOperationManager extends EventTarget {
+  /**
+   * Store a reference to our owning File Manager.
+   * @param {Object} fileManager reference to the 'foreground' app.
+   */
+  setFileManager(fileManager) {}
+
   /**
    * Says if there are any tasks in the queue.
    * @return {boolean} True, if there are any tasks.
@@ -39,20 +45,6 @@ export class FileOperationManager extends EventTarget {
   filterSameDirectoryEntry(sourceEntries, targetEntry, isMove) {}
 
   /**
-   * Kick off pasting.
-   *
-   * @param {Array<Entry>} sourceEntries Entries of the source files.
-   * @param {DirectoryEntry} targetEntry The destination entry of the target
-   *     directory.
-   * @param {boolean} isMove True if the operation is "move", otherwise (i.e.
-   *     if the operation is "copy") false.
-   * @param {string=} opt_taskId If the corresponding item has already created
-   *     at another places, we need to specify the ID of the item. If the
-   *     item is not created, FileOperationManager generates new ID.
-   */
-  paste(sourceEntries, targetEntry, isMove, opt_taskId) {}
-
-  /**
    * Returns true if all entries will use trash for delete.
    *
    * @param {!VolumeManager} volumeManager
@@ -71,24 +63,19 @@ export class FileOperationManager extends EventTarget {
   deleteEntries(entries, permanentlyDelete = false) {}
 
   /**
-   * Schedules the files to be restored.
+   * Notifies File Manager that an extraction operation has finished.
    *
-   * @param {!Array<!FilesAppEntry>} entries The trash entries.
+   * @param {number} taskId The unique task id for the IO operation.
    */
-  restoreDeleted(entries) {}
+  notifyExtractDone(taskId) {}
 
   /**
-   * Schedules the Trash to be emptied.
-   */
-  emptyTrash() {}
-
-  /**
-   * Creates a zip file for the selection of files.
+   * Called when an IOTask finished with a NEED_PASSWORD status.
+   * Delegate it to the task controller to deal with it.
    *
-   * @param {!Array<!Entry>} selectionEntries The selected entries.
-   * @param {!DirectoryEntry} dirEntry The directory containing the selection.
+   * @param {number} taskId The unique task id for the IO operation.
    */
-  zipSelection(selectionEntries, dirEntry) {}
+  handleMissingPassword(taskId) {}
 
   /**
    * Writes file to destination dir.

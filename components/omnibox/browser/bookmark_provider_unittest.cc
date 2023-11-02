@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/guid.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
@@ -24,14 +23,18 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/browser/titled_url_match_utils.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "components/search_engines/omnibox_focus_type.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_service.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
@@ -79,6 +82,18 @@ struct BookmarksTestInfo {
     {"", "http://emptytitle.com/"},
     // For testing short bookmarks.
     {"testing short bookmarks", "https://zzz.com"},
+    // For testing bookmarks search in keyword mode.
+    {"@bookmarks", "chrome://bookmarks"},
+    // For testing max matches.
+    {"zyx1", "http://randomsite.com/zyx1"},
+    {"zyx2", "http://randomsite.com/zyx2"},
+    {"zyx3", "http://randomsite.com/zyx3"},
+    {"zyx4", "http://randomsite.com/zyx4"},
+    {"zyx5", "http://randomsite.com/zyx5"},
+    {"zyx6", "http://randomsite.com/zyx6"},
+    {"zyx7", "http://randomsite.com/zyx7"},
+    {"zyx8", "http://randomsite.com/zyx8"},
+    {"zyx9", "http://randomsite.com/zyx9"},
 };
 
 // Structures and functions supporting the BookmarkProviderTest.Positions
@@ -153,8 +168,8 @@ TestBookmarkPositions PositionsFromAutocompleteMatch(
   return positions;
 }
 
-// Convience function to make comparing test expectations structure against the
-// actual ACMatchClassifications easier.
+// Convenience function to make comparing test expectations structure against
+// the actual ACMatchClassifications easier.
 TestBookmarkPositions PositionsFromExpectations(
     const size_t expectations[9][2]) {
   TestBookmarkPositions positions;
@@ -205,9 +220,12 @@ void BookmarkProviderTest::SetUp() {
   EXPECT_CALL(*provider_client_, GetSchemeClassifier())
       .WillRepeatedly(testing::ReturnRef(classifier_));
 
+  provider_client_->set_template_url_service(
+      std::make_unique<TemplateURLService>(nullptr, 0));
+
   provider_ = new BookmarkProvider(provider_client_.get());
   const BookmarkNode* other_node = model_->other_node();
-  for (size_t i = 0; i < base::size(bookmark_provider_test_data); ++i) {
+  for (size_t i = 0; i < std::size(bookmark_provider_test_data); ++i) {
     const BookmarksTestInfo& cur(bookmark_provider_test_data[i]);
     const GURL url(cur.url);
     model_->AddURL(other_node, other_node->children().size(),
@@ -306,7 +324,7 @@ TEST_F(BookmarkProviderTest, Positions) {
       {"emptytitle", 1, {}},
   };
 
-  for (size_t i = 0; i < base::size(query_data); ++i) {
+  for (size_t i = 0; i < std::size(query_data); ++i) {
     AutocompleteInput input(base::ASCIIToUTF16(query_data[i].query),
                             metrics::OmniboxEventProto::OTHER,
                             TestSchemeClassifier());
@@ -384,7 +402,7 @@ TEST_F(BookmarkProviderTest, Rankings) {
                       "burning worms #2"}},  // not boosted
   };
 
-  for (size_t i = 0; i < base::size(query_data); ++i) {
+  for (size_t i = 0; i < std::size(query_data); ++i) {
     AutocompleteInput input(base::ASCIIToUTF16(query_data[i].query),
                             metrics::OmniboxEventProto::OTHER,
                             TestSchemeClassifier());
@@ -438,7 +456,7 @@ TEST_F(BookmarkProviderTest, InlineAutocompletion) {
       // actually bookmarked.
   };
 
-  for (size_t i = 0; i < base::size(query_data); ++i) {
+  for (size_t i = 0; i < std::size(query_data); ++i) {
     const std::string description =
         "for query=" + query_data[i].query + " and url=" + query_data[i].url;
     AutocompleteInput input(base::ASCIIToUTF16(query_data[i].query),
@@ -486,7 +504,7 @@ TEST_F(BookmarkProviderTest, StripHttpAndAdjustOffsets) {
       // clang-format on
   };
 
-  for (size_t i = 0; i < base::size(query_data); ++i) {
+  for (size_t i = 0; i < std::size(query_data); ++i) {
     std::string description = "for query=" + query_data[i].query;
     AutocompleteInput input(base::ASCIIToUTF16(query_data[i].query),
                             metrics::OmniboxEventProto::OTHER,
@@ -528,7 +546,7 @@ TEST_F(BookmarkProviderTest, StripHttpAndAdjustOffsets) {
 TEST_F(BookmarkProviderTest, DoesNotProvideMatchesOnFocus) {
   AutocompleteInput input(u"foo", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
-  input.set_focus_type(OmniboxFocusType::ON_FOCUS);
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
   provider_->Start(input, false);
   EXPECT_TRUE(provider_->matches().empty());
 }
@@ -748,4 +766,86 @@ TEST_F(BookmarkProviderTest, GetMatchesWithBookmarkPaths) {
     TestNumMatchesAndTriggeredFeature("carefully", 1);
     TestNumMatchesAndTriggeredFeature("carefully other", 1, trigger_feature);
   }
+}
+
+// Make sure that user input is trimmed correctly for starter pack keyword mode.
+// In this mode, suggestions should be provided for only the user input after
+// the keyword, i.e. "@bookmarks domain" should only match "domain".
+TEST_F(BookmarkProviderTest, KeywordModeExtractUserInput) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kSiteSearchStarterPack);
+
+  // Populate template URL with starter pack entries
+  std::vector<std::unique_ptr<TemplateURLData>> turls =
+      TemplateURLStarterPackData::GetStarterPackEngines();
+  for (auto& turl : turls) {
+    provider_client_->GetTemplateURLService()->Add(
+        std::make_unique<TemplateURL>(std::move(*turl)));
+  }
+  // Test result for user text "domain", we should get back a result for domain.
+  AutocompleteInput input(u"domain", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  provider_->Start(input, false);
+
+  ACMatches matches = provider_->matches();
+  ASSERT_GT(matches.size(), 0u);
+  EXPECT_EQ(u"domain", matches[0].description);
+
+  // Test result for "@bookmarks" and "@bookmarks domain" while NOT in keyword
+  // mode, we should get a result for the @bookmarks bookmark and not for the
+  // domain bookmark since we're searching for the whole input text including
+  // "@bookmarks".
+  AutocompleteInput input2(u"@bookmarks", metrics::OmniboxEventProto::OTHER,
+                           TestSchemeClassifier());
+  provider_->Start(input2, false);
+
+  matches = provider_->matches();
+  ASSERT_GT(matches.size(), 0u);
+  EXPECT_EQ(u"@bookmarks", matches[0].description);
+
+  AutocompleteInput input3(u"@bookmarks domain",
+                           metrics::OmniboxEventProto::OTHER,
+                           TestSchemeClassifier());
+  provider_->Start(input3, false);
+
+  matches = provider_->matches();
+  ASSERT_EQ(matches.size(), 0u);
+
+  // Turn on keyword mode, test result again, we should only get back the result
+  // for the domain bookmark since we're searching only for the user text after
+  // the keyword.
+  input3.set_prefer_keyword(true);
+  input3.set_keyword_mode_entry_method(
+      metrics::OmniboxEventProto_KeywordModeEntryMethod_TAB);
+  provider_->Start(input3, false);
+
+  matches = provider_->matches();
+  ASSERT_EQ(matches.size(), 1u);
+  EXPECT_EQ(u"domain", matches[0].description);
+
+  // Ensure keyword and transition are set properly to keep user in keyword
+  // mode.
+  EXPECT_TRUE(matches[0].from_keyword);
+  EXPECT_EQ(matches[0].keyword, u"@bookmarks");
+  EXPECT_TRUE(PageTransitionCoreTypeIs(matches[0].transition,
+                                       ui::PAGE_TRANSITION_KEYWORD));
+}
+
+TEST_F(BookmarkProviderTest, MaxMatches) {
+  // Keyword mode is off. We should only get provider_max_matches_ matches.
+  AutocompleteInput input(u"zyx", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  provider_->Start(input, false);
+
+  ACMatches matches = provider_->matches();
+  EXPECT_EQ(matches.size(), provider_->provider_max_matches());
+
+  // Turn keyword mode on. we should be able to get more matches now.
+  input.set_keyword_mode_entry_method(
+      metrics::OmniboxEventProto_KeywordModeEntryMethod_TAB);
+  input.set_prefer_keyword(true);
+  provider_->Start(input, false);
+
+  matches = provider_->matches();
+  EXPECT_EQ(matches.size(), provider_->provider_max_matches_in_keyword_mode());
 }

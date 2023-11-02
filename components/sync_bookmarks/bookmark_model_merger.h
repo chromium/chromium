@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,8 @@
 #include <vector>
 
 #include "base/guid.h"
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 
@@ -30,9 +32,8 @@ class SyncedBookmarkTracker;
 
 // Responsible for merging local and remote bookmark models when bookmark sync
 // is enabled for the first time by the user (i.e. no sync metadata exists
-// locally), so we need a best-effort merge based on similarity. It implements
-// similar logic to that in BookmarkModelAssociator::AssociateModels() to be
-// used by the BookmarkModelTypeProcessor().
+// locally), so we need a best-effort merge based on similarity. It is used by
+// the BookmarkModelTypeProcessor().
 class BookmarkModelMerger {
  public:
   // |bookmark_model|, |favicon_service| and |bookmark_tracker| must not be
@@ -58,20 +59,23 @@ class BookmarkModelMerger {
   // Internal representation of a remote tree, composed of nodes.
   class RemoteTreeNode final {
    private:
-    using UpdatesPerParentId =
-        std::unordered_map<std::string, std::list<syncer::UpdateResponseData>>;
+    using UpdatesPerParentGUID =
+        std::unordered_map<base::GUID,
+                           std::list<syncer::UpdateResponseData>,
+                           base::GUIDHash>;
 
    public:
     // Constructs a tree given |update| as root and recursively all descendants
-    // by traversing |*updates_per_parent_id|. |update| and
-    // |updates_per_parent_id| must not be null. All updates
-    // |*updates_per_parent_id| must represent valid updates. Updates
+    // by traversing |*updates_per_parent_guid|. |update| and
+    // |updates_per_parent_guid| must not be null. All updates
+    // |*updates_per_parent_guid| must represent valid updates. Updates
     // corresponding from descendant nodes are moved away from
-    // |*updates_per_parent_id|. |max_depth| is the max tree depth to sync
+    // |*updates_per_parent_guid|. |max_depth| is the max tree depth to sync
     // after which content is silently ignored.
-    static RemoteTreeNode BuildTree(syncer::UpdateResponseData update,
-                                    size_t max_depth,
-                                    UpdatesPerParentId* updates_per_parent_id);
+    static RemoteTreeNode BuildTree(
+        syncer::UpdateResponseData update,
+        size_t max_depth,
+        UpdatesPerParentGUID* updates_per_parent_guid);
 
     ~RemoteTreeNode();
 
@@ -122,7 +126,12 @@ class BookmarkModelMerger {
   // tag. All invalid updates are filtered out, including invalid bookmark
   // specifics as well as tombstones, in the unlikely event that the server
   // sends tombstones as part of the initial download.
-  static RemoteForest BuildRemoteForest(syncer::UpdateResponseDataList updates);
+  // |tracker_for_recording_ignored_updates| must not be null and is exclusively
+  // used to record which updates where ignored because their parent couldn't be
+  // determined.
+  static RemoteForest BuildRemoteForest(
+      syncer::UpdateResponseDataList updates,
+      SyncedBookmarkTracker* tracker_for_recording_ignored_updates);
 
   // Recursively counts and returns the number of descendants for |node|,
   // excluding |node| itself.
@@ -203,9 +212,17 @@ class BookmarkModelMerger {
       size_t index,
       const std::string& suffix) const;
 
-  bookmarks::BookmarkModel* const bookmark_model_;
-  favicon::FaviconService* const favicon_service_;
-  SyncedBookmarkTracker* const bookmark_tracker_;
+  void ReportTimeMetrics();
+
+  // The base time used to calculate elapsed time at different stages during the
+  // initial merge. Should be the first member to initialize before any other
+  // long operations like BuildRemoteForest().
+  const base::TimeTicks started_ = base::TimeTicks::Now();
+
+  const raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
+  const raw_ptr<favicon::FaviconService> favicon_service_;
+  const raw_ptr<SyncedBookmarkTracker> bookmark_tracker_;
+  const size_t remote_updates_size_;
   // Preprocessed remote nodes in the form a forest where each tree's root is a
   // permanent node. Computed upon construction via BuildRemoteForest().
   const RemoteForest remote_forest_;

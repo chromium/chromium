@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -92,20 +92,20 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
   // The script may not have a name field, but we need one for an extension. If
   // it is missing, use the filename of the original URL.
   if (!script.name().empty())
-    root->SetString(manifest_keys::kName, script.name());
+    root->SetStringKey(manifest_keys::kName, script.name());
   else
-    root->SetString(manifest_keys::kName, original_url.ExtractFileName());
+    root->SetStringKey(manifest_keys::kName, original_url.ExtractFileName());
 
   // Not all scripts have a version, but we need one. Default to 1.0 if it is
   // missing.
   if (!script.version().empty())
-    root->SetString(manifest_keys::kVersion, script.version());
+    root->SetStringKey(manifest_keys::kVersion, script.version());
   else
-    root->SetString(manifest_keys::kVersion, "1.0");
+    root->SetStringKey(manifest_keys::kVersion, "1.0");
 
-  root->SetString(manifest_keys::kDescription, script.description());
-  root->SetString(manifest_keys::kPublicKey, key);
-  root->SetBoolean(manifest_keys::kConvertedFromUserScript, true);
+  root->SetStringKey(manifest_keys::kDescription, script.description());
+  root->SetStringKey(manifest_keys::kPublicKey, key);
+  root->SetBoolKey(manifest_keys::kConvertedFromUserScript, true);
 
   // If the script provides its own match patterns, we use those. Otherwise, we
   // generate some using the include globs.
@@ -128,14 +128,11 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
 
   ContentScript content_script;
   content_script.matches = std::move(matches);
-  content_script.exclude_matches =
-      std::make_unique<std::vector<std::string>>(std::move(exclude_matches));
-  content_script.include_globs =
-      std::make_unique<std::vector<std::string>>(script.globs());
-  content_script.exclude_globs =
-      std::make_unique<std::vector<std::string>>(script.exclude_globs());
+  content_script.exclude_matches = std::move(exclude_matches);
+  content_script.include_globs = script.globs();
+  content_script.exclude_globs = script.exclude_globs();
 
-  content_script.js = std::make_unique<std::vector<std::string>>();
+  content_script.js.emplace();
   content_script.js->push_back("script.js");
 
   if (script.run_location() == mojom::RunLocation::kDocumentStart) {
@@ -148,8 +145,7 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
   }
 
   base::Value content_scripts(base::Value::Type::LIST);
-  content_scripts.Append(
-      base::Value::FromUniquePtrValue(content_script.ToValue()));
+  content_scripts.Append(base::Value(content_script.ToValue()));
   root->SetKey(api::content_scripts::ManifestKeys::kContentScripts,
                std::move(content_scripts));
 

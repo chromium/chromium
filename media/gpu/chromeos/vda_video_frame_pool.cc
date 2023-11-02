@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "media/gpu/chromeos/gpu_buffer_layout.h"
 #include "media/gpu/macros.h"
+#include "media/media_buildflags.h"
 
 namespace media {
 
@@ -35,14 +36,18 @@ CroStatus::Or<GpuBufferLayout> VdaVideoFramePool::Initialize(
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
     size_t max_num_frames,
-    bool use_protected) {
+    bool use_protected,
+    bool use_linear_buffers) {
   DVLOGF(3);
   DCHECK_CALLED_ON_VALID_SEQUENCE(parent_sequence_checker_);
+  DCHECK(!use_linear_buffers);
 
+#if !BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
   if (use_protected) {
     LOG(ERROR) << "Cannot allocated protected buffers for VDA";
     return CroStatus::Codes::kProtectedContentUnsupported;
   }
+#endif  // !BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
 
   visible_rect_ = visible_rect;
   natural_size_ = natural_size;
@@ -171,8 +176,8 @@ void VdaVideoFramePool::NotifyWhenFrameAvailable(base::OnceClosure cb) {
 
 void VdaVideoFramePool::ReleaseAllFrames() {
   // TODO(jkardatzke): Implement this when we do protected content on Android
-  // for Intel platforms.
-  NOTREACHED();
+  // for Intel platforms. I will do this in a follow up CL, removing the
+  // NOREACHED() for now in order to prevent a DCHECK when this occurs.
 }
 
 void VdaVideoFramePool::CallFrameAvailableCbIfNeeded() {

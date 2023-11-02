@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@ struct Data {
   bool file_externally_removed;
   bool is_dangerous;
   bool is_mixed_content;
-  bool should_show_incognito_warning;
+  bool is_reviewable;
   // |otr| stands for off-the-record and is true when a download entry is
   // created during an incognito or guest profile session.
   bool otr;
@@ -50,7 +50,6 @@ interface PageHandler {
   OpenFileRequiringGesture(string id);
   Drag(string id);
   SaveDangerousRequiringGesture(string id);
-  AcceptIncognitoWarning(string id);
   DiscardDangerous(string id);
   RetryDownload(string id);
   Show(string id);
@@ -66,6 +65,11 @@ interface PageHandler {
   // Browsing. This completes the scan early. This requires a user gesture on
   // the WebUI.
   OpenDuringScanningRequiringGesture(string id);
+
+  // Opens a review dialog for the download with the given |id| after it has
+  // received a warning deep scanning verdict. This requires a user gesture on
+  // the WebUI.
+  ReviewDangerousRequiringGesture(string id);
 };
 
 interface Page {

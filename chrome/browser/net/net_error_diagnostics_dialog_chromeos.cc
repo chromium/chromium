@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,17 +8,17 @@
 #include "ash/webui/connectivity_diagnostics/url_constants.h"
 #include "base/check.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 
 namespace {
 void LaunchDiagnosticsAppAtConnectivityScreen(Profile* profile) {
   DCHECK(ash::features::IsNetworkingInDiagnosticsAppEnabled());
   std::string diagnostics_connectivity_url = {
       "chrome://diagnostics/?connectivity"};
-  web_app::SystemAppLaunchParams params;
+  ash::SystemAppLaunchParams params;
   params.url = GURL(diagnostics_connectivity_url);
-  LaunchSystemWebAppAsync(profile, web_app::SystemAppType::DIAGNOSTICS, params);
+  LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::DIAGNOSTICS, params);
 }
 }  // namespace
 
@@ -36,7 +36,7 @@ void ShowNetworkDiagnosticsDialog(content::WebContents* web_contents,
   if (ash::features::IsNetworkingInDiagnosticsAppEnabled()) {
     LaunchDiagnosticsAppAtConnectivityScreen(std::move(profile));
   } else {
-    LaunchSystemWebAppAsync(profile,
-                            web_app::SystemAppType::CONNECTIVITY_DIAGNOSTICS);
+    ash::LaunchSystemWebAppAsync(
+        profile, ash::SystemWebAppType::CONNECTIVITY_DIAGNOSTICS);
   }
 }

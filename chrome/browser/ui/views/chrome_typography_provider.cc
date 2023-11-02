@@ -1,11 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/chrome_typography_provider.h"
 
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
@@ -17,7 +18,7 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #include "ui/native_theme/native_theme_win.h"
 #endif
@@ -37,6 +38,9 @@ ui::ResourceBundle::FontDetails ChromeTypographyProvider::GetFontDetails(
   constexpr int kBodyTextLargeSize = 13;
   constexpr int kDefaultSize = 12;
   constexpr int kStatusSize = 10;
+
+  DCHECK(StyleAllowedForContext(context, style))
+      << "context: " << context << " style: " << style;
 
   ui::ResourceBundle::FontDetails details;
   details.size_delta = kDefaultSize - gfx::PlatformFont::kDefaultBaseFontSize;
@@ -77,7 +81,6 @@ ui::ResourceBundle::FontDetails ChromeTypographyProvider::GetFontDetails(
   }
 
   if (context == CONTEXT_TAB_HOVER_CARD_TITLE) {
-    DCHECK_EQ(views::style::STYLE_PRIMARY, style);
     details.weight = gfx::Font::Weight::SEMIBOLD;
   }
 
@@ -86,29 +89,23 @@ ui::ResourceBundle::FontDetails ChromeTypographyProvider::GetFontDetails(
     // Secondary font is for double-digit counts. Because we have control over
     // system fonts on ChromeOS, we can just choose a condensed font. For other
     // platforms we adjust size.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
     details.typeface = "Roboto Condensed";
 #else
     details.size_delta -= 2;
 #endif
   }
 
-  if (style == STYLE_EMPHASIZED || style == STYLE_EMPHASIZED_SECONDARY) {
-    // Limit emphasizing text to contexts where it's obviously correct. If you
-    // hit this DCHECK, ensure it's sane and UX-approved to extend it to your
-    // new case (e.g. don't add CONTEXT_BUTTON_MD).
-    DCHECK(context == views::style::CONTEXT_LABEL ||
-           context == views::style::CONTEXT_DIALOG_BODY_TEXT ||
-           context == CONTEXT_DIALOG_BODY_TEXT_SMALL ||
-           context == CONTEXT_DOWNLOAD_SHELF);
+  if (style == views::style::STYLE_EMPHASIZED ||
+      style == views::style::STYLE_EMPHASIZED_SECONDARY) {
     details.weight = gfx::Font::Weight::SEMIBOLD;
   }
 
   if (style == STYLE_PRIMARY_MONOSPACED ||
       style == STYLE_SECONDARY_MONOSPACED) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     details.typeface = "Menlo";
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
     details.typeface = "Consolas";
 #else
     details.typeface = "DejaVu Sans Mono";
@@ -126,25 +123,6 @@ SkColor ChromeTypographyProvider::GetColor(const views::View& view,
       context == CONTEXT_DIALOG_BODY_TEXT_SMALL)
     context = views::style::CONTEXT_LABEL;
 
-  if (context == CONTEXT_DOWNLOAD_SHELF ||
-      (context == CONTEXT_DOWNLOAD_SHELF_STATUS &&
-       style == views::style::STYLE_DISABLED)) {
-    // TODO(pkasting): Instead of reusing COLOR_BOOKMARK_TEXT, use dedicated
-    // values.
-    const auto* theme_provider = view.GetThemeProvider();
-    if (!theme_provider)
-      return gfx::kPlaceholderColor;
-    const SkColor base_color =
-        theme_provider->GetColor(ThemeProperties::COLOR_BOOKMARK_TEXT);
-    // TODO(pkasting): Should use some way of dimming text that's as analogous
-    // as possible to e.g. enabled vs. disabled labels.
-    const SkColor dimmed_color = SkColorSetA(base_color, 0xC7);
-    if (style == views::style::STYLE_DISABLED)
-      return dimmed_color;
-    if (context == CONTEXT_DOWNLOAD_SHELF)
-      return base_color;
-  }
-
   // Monospaced styles have the same colors as their normal counterparts.
   if (style == STYLE_PRIMARY_MONOSPACED) {
     style = views::style::STYLE_PRIMARY;
@@ -152,7 +130,27 @@ SkColor ChromeTypographyProvider::GetColor(const views::View& view,
     style = views::style::STYLE_SECONDARY;
   }
 
+  const auto* color_provider = view.GetColorProvider();
   ui::ColorId color_id;
+  if (context == CONTEXT_DOWNLOAD_SHELF ||
+      context == CONTEXT_DOWNLOAD_SHELF_STATUS) {
+    switch (style) {
+      case STYLE_RED:
+        color_id = kColorDownloadItemForegroundDangerous;
+        break;
+      case STYLE_GREEN:
+        color_id = kColorDownloadItemForegroundSafe;
+        break;
+      case views::style::STYLE_DISABLED:
+        color_id = kColorDownloadItemForegroundDisabled;
+        break;
+      default:
+        color_id = kColorDownloadItemForeground;
+        break;
+    }
+    return color_provider->GetColor(color_id);
+  }
+
   switch (style) {
     case STYLE_RED:
       color_id = ui::kColorAlertHighSeverity;
@@ -163,7 +161,7 @@ SkColor ChromeTypographyProvider::GetColor(const views::View& view,
     default:
       return TypographyProvider::GetColor(view, context, style);
   }
-  return view.GetColorProvider()->GetColor(color_id);
+  return color_provider->GetColor(color_id);
 }
 
 int ChromeTypographyProvider::GetLineHeight(int context, int style) const {
@@ -179,12 +177,12 @@ int ChromeTypographyProvider::GetLineHeight(int context, int style) const {
 // The platform-specific heights (i.e. gfx::Font::GetHeight()) that result when
 // asking for the target size constants in ChromeTypographyProvider::GetFont()
 // in a default OS configuration.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   constexpr int kHeadlinePlatformHeight = 25;
   constexpr int kTitlePlatformHeight = 19;
   constexpr int kBodyTextLargePlatformHeight = 16;
   constexpr int kBodyTextSmallPlatformHeight = 15;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   constexpr int kHeadlinePlatformHeight = 27;
   constexpr int kTitlePlatformHeight = 20;
   constexpr int kBodyTextLargePlatformHeight = 18;
@@ -237,4 +235,28 @@ int ChromeTypographyProvider::GetLineHeight(int context, int style) const {
     default:
       return default_height;
   }
+}
+
+bool ChromeTypographyProvider::StyleAllowedForContext(int context,
+                                                      int style) const {
+  if (context == CONTEXT_TAB_HOVER_CARD_TITLE)
+    return style == views::style::STYLE_PRIMARY;
+
+  if (style == views::style::STYLE_EMPHASIZED ||
+      style == views::style::STYLE_EMPHASIZED_SECONDARY) {
+    // Limit emphasizing text to contexts where it's obviously correct. If you
+    // hit this check, ensure it's sane and UX-approved to extend it to your
+    // new case (e.g. don't add CONTEXT_BUTTON_MD).
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // TODO(https://crbug.com/1352340): Limit more specific Ash contexts.
+    return true;
+#else
+    return context == views::style::CONTEXT_LABEL ||
+           context == views::style::CONTEXT_DIALOG_BODY_TEXT ||
+           context == CONTEXT_DIALOG_BODY_TEXT_SMALL ||
+           context == CONTEXT_DOWNLOAD_SHELF;
+#endif
+  }
+
+  return true;
 }

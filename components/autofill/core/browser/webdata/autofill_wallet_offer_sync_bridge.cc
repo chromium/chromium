@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,12 @@
 
 #include <utility>
 
+#include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
@@ -78,7 +80,9 @@ std::unique_ptr<syncer::MetadataChangeList>
 AutofillWalletOfferSyncBridge::CreateMetadataChangeList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<syncer::SyncMetadataStoreChangeList>(
-      GetAutofillTable(), syncer::AUTOFILL_WALLET_OFFER);
+      GetAutofillTable(), syncer::AUTOFILL_WALLET_OFFER,
+      base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
+                          change_processor()->GetWeakPtr()));
 }
 
 absl::optional<syncer::ModelError> AutofillWalletOfferSyncBridge::MergeSyncData(
@@ -181,7 +185,7 @@ void AutofillWalletOfferSyncBridge::MergeRemoteData(
     if (offer_valid) {
       offer_data.push_back(AutofillOfferDataFromOfferSpecifics(specifics));
     }
-    AutofillMetrics::LogSyncedOfferDataBeingValid(offer_valid);
+    autofill_metrics::LogSyncedOfferDataBeingValid(offer_valid);
   }
 
   AutofillTable* table = GetAutofillTable();
@@ -204,7 +208,6 @@ void AutofillWalletOfferSyncBridge::MergeRemoteData(
   web_data_backend_->CommitChanges();
 
   if (offer_data_changed) {
-    // TODO(crbug.com/1112095): Add enum to indicate what actually changed.
     web_data_backend_->NotifyOfMultipleAutofillChanges();
   }
 }

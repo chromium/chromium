@@ -1,12 +1,12 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/win/windows_version.h"
-#include "sandbox/win/src/handle_closer.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/sandbox_factory.h"
 #include "sandbox/win/src/sandbox_policy.h"
+#include "sandbox/win/src/win_utils.h"
 #include "sandbox/win/tests/common/controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -26,7 +26,7 @@ SBOX_TESTS_COMMAND int NamedPipe_Create(int argc, wchar_t** argv) {
   // pipe should be in the object namespace after creation.
   if (argc == 2) {
     std::wstring handle_name;
-    if (GetHandleName(pipe, &handle_name)) {
+    if (GetPathFromHandle(pipe, &handle_name)) {
       if (handle_name.compare(0, wcslen(argv[1]), argv[1]) != 0)
         return SBOX_TEST_FAILED;
     } else {
@@ -52,39 +52,52 @@ SBOX_TESTS_COMMAND int NamedPipe_Create(int argc, wchar_t** argv) {
   return SBOX_TEST_SUCCEEDED;
 }
 
-// Tests if we can create a pipe in the sandbox.
-TEST(NamedPipePolicyTest, CreatePipe) {
-  TestRunner runner;
+std::unique_ptr<TestRunner> CreatePipeRunner() {
+  auto runner = std::make_unique<TestRunner>();
   // TODO(nsylvain): This policy is wrong because "*" is a valid char in a
   // namedpipe name. Here we apply it like a wildcard. http://b/893603
-  EXPECT_TRUE(runner.AddRule(TargetPolicy::SUBSYS_NAMED_PIPES,
-                             TargetPolicy::NAMEDPIPES_ALLOW_ANY,
-                             L"\\\\.\\pipe\\test*"));
+  runner->AddRule(SubSystem::kNamedPipes, Semantics::kNamedPipesAllowAny,
+                  L"\\\\.\\pipe\\test*");
+  return runner;
+}
 
+// Tests if we can create a pipe in the sandbox.
+TEST(NamedPipePolicyTest, CreatePipe) {
+  auto runner = CreatePipeRunner();
   EXPECT_EQ(SBOX_TEST_SUCCEEDED,
-            runner.RunTest(L"NamedPipe_Create \\\\.\\pipe\\testbleh"));
+            runner->RunTest(L"NamedPipe_Create \\\\.\\pipe\\testbleh"));
 
+  runner = CreatePipeRunner();
   EXPECT_EQ(SBOX_TEST_DENIED,
-            runner.RunTest(L"NamedPipe_Create \\\\.\\pipe\\bleh"));
+            runner->RunTest(L"NamedPipe_Create \\\\.\\pipe\\bleh"));
+}
+
+std::unique_ptr<TestRunner> PipeTraversalRunner() {
+  auto runner = std::make_unique<TestRunner>();
+  // TODO(nsylvain): This policy is wrong because "*" is a valid char in a
+  // namedpipe name. Here we apply it like a wildcard. http://b/893603
+  runner->AddRule(SubSystem::kNamedPipes, Semantics::kNamedPipesAllowAny,
+                  L"\\\\.\\pipe\\test*");
+  return runner;
 }
 
 // Tests if we can create a pipe with a path traversal in the sandbox.
 TEST(NamedPipePolicyTest, CreatePipeTraversal) {
-  TestRunner runner;
-  // TODO(nsylvain): This policy is wrong because "*" is a valid char in a
-  // namedpipe name. Here we apply it like a wildcard. http://b/893603
-  EXPECT_TRUE(runner.AddRule(TargetPolicy::SUBSYS_NAMED_PIPES,
-                             TargetPolicy::NAMEDPIPES_ALLOW_ANY,
-                             L"\\\\.\\pipe\\test*"));
+  auto runner = PipeTraversalRunner();
+  EXPECT_EQ(SBOX_TEST_DENIED,
+            runner->RunTest(L"NamedPipe_Create \\\\.\\pipe\\test\\..\\bleh"));
 
+  runner = PipeTraversalRunner();
   EXPECT_EQ(SBOX_TEST_DENIED,
-            runner.RunTest(L"NamedPipe_Create \\\\.\\pipe\\test\\..\\bleh"));
+            runner->RunTest(L"NamedPipe_Create \\\\.\\pipe\\test/../bleh"));
+
+  runner = PipeTraversalRunner();
   EXPECT_EQ(SBOX_TEST_DENIED,
-            runner.RunTest(L"NamedPipe_Create \\\\.\\pipe\\test/../bleh"));
+            runner->RunTest(L"NamedPipe_Create \\\\.\\pipe\\test\\../bleh"));
+
+  runner = PipeTraversalRunner();
   EXPECT_EQ(SBOX_TEST_DENIED,
-            runner.RunTest(L"NamedPipe_Create \\\\.\\pipe\\test\\../bleh"));
-  EXPECT_EQ(SBOX_TEST_DENIED,
-            runner.RunTest(L"NamedPipe_Create \\\\.\\pipe\\test/..\\bleh"));
+            runner->RunTest(L"NamedPipe_Create \\\\.\\pipe\\test/..\\bleh"));
 }
 
 // This tests that path canonicalization is actually disabled if we use \\?\
@@ -98,24 +111,6 @@ TEST(NamedPipePolicyTest, CreatePipeCanonicalization) {
                             L"\\Device\\NamedPipe\\test"};
   EXPECT_EQ(SBOX_TEST_SUCCEEDED,
             NamedPipe_Create(2, const_cast<wchar_t**>(argv)));
-}
-
-// The same test as CreatePipe but this time using strict interceptions.
-TEST(NamedPipePolicyTest, CreatePipeStrictInterceptions) {
-  TestRunner runner;
-  runner.GetPolicy()->SetStrictInterceptions();
-
-  // TODO(nsylvain): This policy is wrong because "*" is a valid char in a
-  // namedpipe name. Here we apply it like a wildcard. http://b/893603
-  EXPECT_TRUE(runner.AddRule(TargetPolicy::SUBSYS_NAMED_PIPES,
-                             TargetPolicy::NAMEDPIPES_ALLOW_ANY,
-                             L"\\\\.\\pipe\\test*"));
-
-  EXPECT_EQ(SBOX_TEST_SUCCEEDED,
-            runner.RunTest(L"NamedPipe_Create \\\\.\\pipe\\testbleh"));
-
-  EXPECT_EQ(SBOX_TEST_DENIED,
-            runner.RunTest(L"NamedPipe_Create \\\\.\\pipe\\bleh"));
 }
 
 }  // namespace sandbox

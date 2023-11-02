@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,10 @@
 #include "url/gurl.h"
 
 namespace password_manager {
-struct PasswordForm;
+struct CredentialUIEntry;
 }  // namespace password_manager
 
-// Object which is used by |PasswordDetailsViewController| to show
+// Object which is used by `PasswordDetailsViewController` to show
 // information about password.
 @interface PasswordDetails : NSObject
 
@@ -38,7 +38,8 @@ struct PasswordForm;
 // URL which allows to change the password of compromised credential.
 @property(nonatomic, readonly) GURL changePasswordURL;
 
-- (instancetype)initWithPasswordForm:(const password_manager::PasswordForm&)form
+- (instancetype)initWithCredential:
+    (const password_manager::CredentialUIEntry&)credential
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

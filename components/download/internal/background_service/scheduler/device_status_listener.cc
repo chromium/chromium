@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,7 +33,7 @@ NetworkStatus ToNetworkStatus(network::mojom::ConnectionType type) {
     case network::mojom::ConnectionType::CONNECTION_BLUETOOTH:
       return NetworkStatus::DISCONNECTED;
     case network::mojom::ConnectionType::CONNECTION_UNKNOWN:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       return NetworkStatus::DISCONNECTED;
 #else
       return NetworkStatus::UNMETERED;

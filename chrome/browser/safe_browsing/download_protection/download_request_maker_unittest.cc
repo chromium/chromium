@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -413,7 +413,8 @@ TEST_F(DownloadRequestMakerTest, CreatesFromDownloadItem) {
   EXPECT_CALL(mock_download_item, HasUserGesture()).WillOnce(Return(true));
   EXPECT_CALL(mock_download_item, GetRemoteAddress())
       .WillRepeatedly(Return(std::string("remote_ip")));
-  content::DownloadItemUtils::AttachInfo(&mock_download_item, nullptr, nullptr);
+  content::DownloadItemUtils::AttachInfoForTesting(&mock_download_item, nullptr,
+                                                   nullptr);
 
   base::RunLoop run_loop;
   base::FilePath tmp_path(FILE_PATH_LITERAL("full_path.exe"));

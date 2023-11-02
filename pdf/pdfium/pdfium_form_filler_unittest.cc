@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "gin/public/isolate_holder.h"
@@ -117,7 +116,7 @@ TEST_F(FormFillerTest, DoURIActionWithKeyboardModifier) {
   }
 
   constexpr blink::WebInputEvent::Modifiers kModifierKey =
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       blink::WebInputEvent::Modifiers::kMetaKey;
 #else
       blink::WebInputEvent::Modifiers::kControlKey;
@@ -227,7 +226,7 @@ TEST_F(FormFillerJavaScriptTest, IsolateScoping) {
 
 TEST_F(FormFillerJavaScriptTest, GetFilePath) {
   constexpr char kTestPath[] = "https://www.example.com/path/to/the.pdf";
-  constexpr int kTestPathSize = static_cast<int>(base::size(kTestPath));
+  constexpr int kTestPathSize = static_cast<int>(std::size(kTestPath));
 
   FormFillerTestClient client;
   EXPECT_CALL(client, GetURL).Times(2).WillRepeatedly(Return(kTestPath));
@@ -258,7 +257,7 @@ TEST_F(FormFillerJavaScriptTest, GetFilePathEmpty) {
 
 TEST_F(FormFillerJavaScriptTest, GetFilePathShortBuffer) {
   constexpr char kTestPath[] = "https://www.example.com/path/to/the.pdf";
-  constexpr int kTestPathSize = static_cast<int>(base::size(kTestPath));
+  constexpr int kTestPathSize = static_cast<int>(std::size(kTestPath));
 
   FormFillerTestClient client;
   EXPECT_CALL(client, GetURL).WillRepeatedly(Return(kTestPath));

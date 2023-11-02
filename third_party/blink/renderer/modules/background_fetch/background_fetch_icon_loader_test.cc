@@ -1,6 +1,6 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
-// found in the LiICENSE file.
+// found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/background_fetch/background_fetch_icon_loader.h"
 
@@ -50,7 +50,7 @@ class BackgroundFetchIconLoaderTest : public PageTestBase {
   }
 
   void SetUp() override {
-    PageTestBase::SetUp(IntSize());
+    PageTestBase::SetUp(gfx::Size());
     GetDocument().SetBaseURLOverride(KURL(kBackgroundFetchImageLoaderBaseUrl));
     RegisterMockedURL(kBackgroundFetchImageLoaderIcon500x500);
     RegisterMockedURL(kBackgroundFetchImageLoaderIcon48x48);
@@ -113,8 +113,8 @@ class BackgroundFetchIconLoaderTest : public PageTestBase {
     loader_->icons_ = std::move(icons);
     loader_->DidGetIconDisplaySizeIfSoLoadIcon(
         GetContext(),
-        WTF::Bind(&BackgroundFetchIconLoaderTest::IconLoaded,
-                  WTF::Unretained(this), std::move(quit_closure)),
+        WTF::BindOnce(&BackgroundFetchIconLoaderTest::IconLoaded,
+                      WTF::Unretained(this), std::move(quit_closure)),
         maximum_size);
   }
 

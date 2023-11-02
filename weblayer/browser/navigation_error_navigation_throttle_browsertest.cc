@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(NavigationErrorNavigationThrottleBrowserTest,
 
 // Verifies a null return value results in a default error page.
 // Network errors only have non-empty error pages on android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(NavigationErrorNavigationThrottleBrowserTest,
                        DefaultErrorPage) {
   GURL url("http://doesntexist.com/foo");

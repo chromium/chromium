@@ -1,12 +1,13 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
 
-#include "base/bind.h"
-#include "base/check_op.h"
-#include "base/threading/thread_task_runner_handle.h"
+#import "base/bind.h"
+#import "base/check_op.h"
+#import "base/threading/thread_task_runner_handle.h"
+#import "base/time/time.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -18,7 +19,7 @@
 
 namespace {
 // Placeholder will not be displayed longer than this time.
-const double kPlaceholderMaxDisplayTimeInSeconds = 1.5;
+constexpr base::TimeDelta kPlaceholderMaxDisplayTime = base::Seconds(1.5);
 
 // Placeholder removal will include a fade-out animation of this length.
 const NSTimeInterval kPlaceholderFadeOutAnimationLengthInSeconds = 0.5;
@@ -78,6 +79,12 @@ void PagePlaceholderTabHelper::WebStateDestroyed(web::WebState* web_state) {
   RemovePlaceholder();
 }
 
+void PagePlaceholderTabHelper::OnImageRetrieved(UIImage* image) {
+  if (displaying_placeholder()) {
+    DisplaySnapshotImage(image);
+  }
+}
+
 void PagePlaceholderTabHelper::AddPlaceholder() {
   // WebState::WasShown() and WebState::IsVisible() are bookkeeping mechanisms
   // that do not guarantee the WebState's view is in the view hierarchy.
@@ -99,13 +106,20 @@ void PagePlaceholderTabHelper::AddPlaceholder() {
   SnapshotTabHelper* snapshotTabHelper =
       SnapshotTabHelper::FromWebState(web_state_);
   if (snapshotTabHelper) {
-    base::WeakPtr<PagePlaceholderTabHelper> weak_tab_helper =
-        weak_factory_.GetWeakPtr();
-    snapshotTabHelper->RetrieveGreySnapshot(^(UIImage* snapshot) {
-      if (weak_tab_helper && weak_tab_helper->displaying_placeholder()) {
-        DisplaySnapshotImage(snapshot);
-      }
-    });
+    __block base::OnceCallback<void(UIImage*)> callback =
+        base::BindOnce(&PagePlaceholderTabHelper::OnImageRetrieved,
+                       weak_factory_.GetWeakPtr());
+
+    auto block = ^(UIImage* image) {
+      std::move(callback).Run(image);
+    };
+
+    // Show grey snapshots only for the WebStates that haven't been loaded
+    if (web_state_->IsLoading()) {
+      snapshotTabHelper->RetrieveGreySnapshot(block);
+    } else {
+      snapshotTabHelper->RetrieveColorSnapshot(block);
+    }
   }
 
   // Remove placeholder if it takes too long to load the page.
@@ -113,7 +127,7 @@ void PagePlaceholderTabHelper::AddPlaceholder() {
       FROM_HERE,
       base::BindOnce(&PagePlaceholderTabHelper::RemovePlaceholder,
                      weak_factory_.GetWeakPtr()),
-      base::Seconds(kPlaceholderMaxDisplayTimeInSeconds));
+      kPlaceholderMaxDisplayTime);
 }
 
 void PagePlaceholderTabHelper::DisplaySnapshotImage(UIImage* snapshot) {

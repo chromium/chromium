@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,9 @@ TabRestoreService::TimeFactory::~TimeFactory() {}
 TabRestoreService::Entry::~Entry() = default;
 
 TabRestoreService::Entry::Entry(Type type)
-    : id(SessionID::NewUnique()), type(type) {}
+    : id(SessionID::NewUnique()),
+      original_id(SessionID::InvalidValue()),
+      type(type) {}
 
 size_t TabRestoreService::Entry::EstimateMemoryUsage() const {
   return 0;

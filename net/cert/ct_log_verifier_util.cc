@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,7 @@
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
 
-namespace net {
-
-namespace ct {
-
-namespace internal {
+namespace net::ct::internal {
 
 std::string HashNodes(const std::string& lh, const std::string& rh) {
   std::unique_ptr<crypto::SecureHash> hash(
@@ -30,8 +26,4 @@ std::string HashNodes(const std::string& lh, const std::string& rh) {
   return result;
 }
 
-}  // namespace internal
-
-}  // namespace ct
-
-}  // namespace net
+}  // namespace net::ct::internal

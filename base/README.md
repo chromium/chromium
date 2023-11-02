@@ -65,14 +65,20 @@ synthetic microbenchmarks that measure performance in various scenarios:
   * MessageLoopPerfTest: Measures the speed of task posting in various
     configurations.
   * ObserverListPerfTest: Exercises adding, removing and signalling observers.
+  * PartitionLockPerfTest: Tests the implementation of Lock used in
+    PartitionAlloc
   * PthreadEventPerfTest: Establishes the baseline thread switching cost using
     pthreads.
+  * RandUtilPerfTest: Measures the time it takes to generate random numbers.
   * ScheduleWorkTest: Measures the overhead of MessagePump::ScheduleWork.
   * SequenceManagerPerfTest: Benchmarks SequenceManager scheduling with various
     underlying task runners.
   * TaskObserverPerfTest: Measures the incremental cost of adding task
     observers.
   * TaskPerfTest: Checks the cost of posting tasks between threads.
+  * ThreadLocalStoragePerfTest: Exercises different mechanisms for accessing
+    data associated with the current thread (C++ `thread_local`, the
+    implementation in //base, the POSIX/WinAPI directly)
   * WaitableEvent{Thread,}PerfTest: Measures waitable events in single and
     multithreaded scenarios.
 

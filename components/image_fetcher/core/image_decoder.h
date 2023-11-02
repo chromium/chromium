@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,10 @@
 #include <string>
 
 #include "base/callback_forward.h"
+
+namespace data_decoder {
+class DataDecoder;
+}  // namespace data_decoder
 
 namespace gfx {
 class Image;
@@ -37,9 +41,13 @@ class ImageDecoder {
   // close as possible to |desired_image_frame_size| is chosen (tries to take
   // one in larger size if there's no precise match). Passing gfx::Size() as
   // |desired_image_frame_size| is also supported and will result in chosing the
-  // smallest available size.
+  // smallest available size. Pass |data_decoder| to batch multiple image
+  // decodes in the same process. If |data_decoder| is null, a new process will
+  // be created to decode this image. |data_decoder| must outlive the
+  // ImageDecoder.
   virtual void DecodeImage(const std::string& image_data,
                            const gfx::Size& desired_image_frame_size,
+                           data_decoder::DataDecoder* data_decoder,
                            ImageDecodedCallback callback) = 0;
 };
 

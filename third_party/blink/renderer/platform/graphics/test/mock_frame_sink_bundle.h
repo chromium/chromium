@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/read_only_shared_memory_region.h"
+#include "build/build_config.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "gpu/ipc/common/mailbox.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -44,6 +45,9 @@ class MockFrameSinkBundle : public viz::mojom::blink::FrameSinkBundle {
                void(uint32_t,
                     base::ReadOnlySharedMemoryRegion,
                     const gpu::Mailbox&));
+#if BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD2(SetThreadIds, void(uint32_t, const WTF::Vector<int32_t>&));
+#endif
 
  private:
   mojo::Receiver<viz::mojom::blink::FrameSinkBundle> receiver_{this};

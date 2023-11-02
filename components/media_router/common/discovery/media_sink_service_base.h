@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -83,6 +83,7 @@ class MediaSinkServiceBase {
   const MediaSinkInternal* GetSinkByRoute(const MediaRoute& route) const;
 
   void SetTimerForTest(std::unique_ptr<base::OneShotTimer> timer);
+  void AddSinkForTest(const MediaSinkInternal& sink);
 
  protected:
   // Called when |discovery_timer_| expires. Informs subclass to report device

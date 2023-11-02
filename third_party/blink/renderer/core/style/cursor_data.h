@@ -25,7 +25,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_CURSOR_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_CURSOR_DATA_H_
 
-#include "third_party/blink/renderer/core/style/data_equivalency.h"
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
 #include "ui/gfx/geometry/point.h"
 
@@ -43,7 +43,7 @@ class CursorData {
         hot_spot_(hot_spot) {}
 
   bool operator==(const CursorData& o) const {
-    return hot_spot_ == o.hot_spot_ && DataEquivalent(image_, o.image_);
+    return hot_spot_ == o.hot_spot_ && base::ValuesEquivalent(image_, o.image_);
   }
 
   bool operator!=(const CursorData& o) const { return !(*this == o); }

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,27 +22,47 @@ NSString* const kMDCSecondaryInkColor = @"mdc_secondary_ink_color";
 NSString* const kPlaceholderImageTintColor = @"placeholder_image_tint_color";
 NSString* const kPrimaryBackgroundColor = @"primary_background_color";
 NSString* const kScrimBackgroundColor = @"scrim_background_color";
+NSString* const kDarkerScrimBackgroundColor = @"darker_scrim_background_color";
 NSString* const kSecondaryBackgroundColor = @"secondary_background_color";
 NSString* const kSeparatorColor = @"separator_color";
 NSString* const kSolidButtonTextColor = @"solid_button_text_color";
 NSString* const kTableViewRowHighlightColor = @"table_view_row_highlight_color";
 NSString* const kTertiaryBackgroundColor = @"tertiary_background_color";
+NSString* const kUpdatedTertiaryBackgroundColor =
+    @"updated_tertiary_background_color";
 NSString* const kTextPrimaryColor = @"text_primary_color";
 NSString* const kTextSecondaryColor = @"text_secondary_color";
 NSString* const kTextTertiaryColor = @"text_tertiary_color";
 NSString* const kTextQuaternaryColor = @"text_quaternary_color";
 NSString* const kTextfieldBackgroundColor = @"textfield_background_color";
+NSString* const kTextfieldFocusedBackgroundColor =
+    @"textfield_focused_background_color";
+NSString* const kTextfieldHighlightBackgroundColor =
+    @"textfield_highlight_background_color";
 NSString* const kTextfieldPlaceholderColor = @"textfield_placeholder_color";
 NSString* const kToolbarButtonColor = @"toolbar_button_color";
 NSString* const kToolbarShadowColor = @"toolbar_shadow_color";
+NSString* const kSolidPrimaryColor = @"solid_primary_color";
 
 #pragma mark - Standard Colors
 NSString* const kBlueColor = @"blue_color";
 NSString* const kBlueHaloColor = @"blue_halo_color";
+NSString* const kBlue500Color = @"blue_500_color";
+NSString* const kBlue600Color = @"blue_600_color";
+NSString* const kBlue700Color = @"blue_700_color";
 NSString* const kGreenColor = @"green_color";
 NSString* const kGreen50Color = @"green_50_color";
+NSString* const kGreen500Color = @"green_500_color";
 NSString* const kGreen700Color = @"green_700_color";
-NSString* const kRedColor = @"red_color";
+NSString* const kRedColor = kRed600Color;
+NSString* const kRed500Color = @"red_500_color";
+NSString* const kRed600Color = @"red_600_color";
+NSString* const kPink400Color = @"pink_400_color";
+NSString* const kPink500Color = @"pink_500_color";
+NSString* const kPurple500Color = @"purple_500_color";
+NSString* const kPurple600Color = @"purple_600_color";
+NSString* const kYellow500Color = @"yellow_500_color";
+NSString* const kOrange500Color = @"orange_500_color";
 
 #pragma mark - Grey Palette
 NSString* const kGrey50Color = @"grey_50_color";

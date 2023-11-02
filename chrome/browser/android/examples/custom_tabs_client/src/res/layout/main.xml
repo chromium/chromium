@@ -16,6 +16,7 @@
 
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_height="match_parent"
     android:layout_width="match_parent">
 
@@ -25,15 +26,11 @@
         android:padding="5dp"
         android:orientation="vertical" >
 
-        <EditText
-            android:id="@+id/edit"
-            android:padding="5dp"
-            android:layout_margin="5dp"
-            android:layout_width="match_parent"
+        <AutoCompleteTextView
+            android:id="@+id/autocomplete_url"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/url_hint"
-            android:inputType="textNoSuggestions"
-            android:text="@string/default_url" />
+            android:hint="URL here"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -45,46 +42,89 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="3dp"
+                android:layout_gravity="center_vertical|start"
                 android:text="@string/package_label"/>
 
             <Spinner
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/spinner"
+                android:id="@+id/package_spinner"
                 android:layout_margin="3dp"
                 android:layout_gravity="center_horizontal" />
         </LinearLayout>
 
-        <Space
+        <!-- TODO(crbug/1369793) TextView and Spinner are not aligned -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="5dp" />
-
-        <Button
-            android:id="@+id/connect_button"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="3dp"
-            android:textAllCaps="false"
-            android:text="@string/connect_button_text"
-            android:enabled="true" />
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/warmup_button"
-            android:layout_width="wrap_content"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:text="@string/cct_type"/>
+
+            <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/cct_spinner"
+                android:layout_margin="3dp"
+                android:layout_gravity="center_horizontal" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="3dp"
-            android:textAllCaps="false"
-            android:text="@string/warmup_button_text"
-            android:enabled="false" />
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/may_launch_button"
-            android:layout_width="wrap_content"
+            <Button
+                android:id="@+id/connect_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:textAllCaps="false"
+                android:text="@string/connect_button_text"
+                android:enabled="true" />
+
+            <Button
+                android:id="@+id/disconnect_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:textAllCaps="false"
+                android:text="@string/disconnect_button_text"
+                android:enabled="false" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="3dp"
-            android:textAllCaps="false"
-            android:text="@string/may_launch_button_text"
-            android:enabled="false" />
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/may_launch_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:textAllCaps="false"
+                android:text="@string/may_launch_button_text"
+                android:enabled="false" />
+
+            <Button
+                android:id="@+id/warmup_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:textAllCaps="false"
+                android:text="@string/warmup_button_text"
+                android:enabled="false" />
+
+        </LinearLayout>
 
         <Button
             android:id="@+id/launch_button"
@@ -95,31 +135,273 @@
             android:text="@string/launch_button_text"
             android:enabled="true" />
 
-        <Button
-            android:id="@+id/launch_incognito_button"
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_margin="5dp"
+            android:background="@android:color/darker_gray"/>
+
+        <TextView
+            android:id="@+id/customizations_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:textAllCaps="false"
-            android:text="@string/launch_incognito_button_text"
-            android:enabled="true" />
+            android:clickable="true"
+            android:text="@string/toolbar_customizations_text"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            style="?attr/textAppearanceTitleMedium" />
 
-        <Button
-            android:id="@+id/launch_browser_actions_button"
-            android:layout_width="wrap_content"
+        <!-- TODO(crbug/1369793) TextView and Spinner are not aligned -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="3dp"
-            android:textAllCaps="false"
-            android:text="@string/launch_browser_actions_button_text" />
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/register_twa_service"
-            android:layout_width="wrap_content"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:text="@string/color"/>
+
+            <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/color_spinner"
+                android:layout_margin="3dp"
+                android:layout_gravity="center_horizontal" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:textAllCaps="false"
-            android:text="@string/register_twa_service" />
+            android:orientation="horizontal"
+            android:layout_marginStart="3dp"
+            android:layout_marginBottom="16dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|start"
+                android:text="@string/theme_text"
+                android:layout_marginEnd="16dp"
+                style="?attr/textAppearanceLabelLarge" />
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/theme_toggle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                app:singleSelection="true"
+                app:selectionRequired="true">
+                <Button
+                    android:id="@+id/system_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/theme_button_system"
+                    style="?attr/materialButtonOutlinedStyle" />
+                <Button
+                    android:id="@+id/light_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/theme_button_light"
+                    style="?attr/materialButtonOutlinedStyle" />
+                <Button
+                    android:id="@+id/dark_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/theme_button_dark"
+                    style="?attr/materialButtonOutlinedStyle" />
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+        </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginStart="3dp"
+            android:layout_marginBottom="16dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|start"
+                android:text="@string/close_button_position_text"
+                android:layout_marginEnd="16dp"
+                style="?attr/textAppearanceLabelLarge" />
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/close_button_position_toggle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                app:singleSelection="true"
+                app:selectionRequired="true">
+                <Button
+                    android:id="@+id/start_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/close_button_start_text"
+                    style="?attr/materialButtonOutlinedStyle" />
+                <Button
+                    android:id="@+id/end_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/close_button_end_text"
+                    style="?attr/materialButtonOutlinedStyle" />
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginStart="3dp"
+            android:layout_marginBottom="16dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|start"
+                android:text="@string/close_button_icon_text"
+                android:layout_marginEnd="16dp"
+                style="?attr/textAppearanceLabelLarge" />
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/close_button_icon_toggle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                app:singleSelection="true"
+                app:selectionRequired="true">
+                <Button
+                    android:id="@+id/x_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/close_button_X"
+                    style="?attr/materialButtonOutlinedStyle" />
+                <Button
+                    android:id="@+id/back_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/close_button_back"
+                    style="?attr/materialButtonOutlinedStyle" />
+                <Button
+                    android:id="@+id/check_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/close_button_check"
+                    style="?attr/materialButtonOutlinedStyle" />
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginStart="3dp"
+            android:layout_marginBottom="16dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/toolbar_corner_radius_text"
+                android:layout_marginEnd="8dp"
+                android:maxWidth="160sp"
+                style="?attr/textAppearanceLabelLarge" />
+            <TextView
+                android:id="@+id/corner_radius_slider_label"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical|end"
+                android:minWidth="40sp"
+                android:labelFor="@+id/corner_radius_slider"
+                android:contentDescription="@string/toolbar_corner_radius_slider_label_desc"
+                style="?attr/textAppearanceLabelLarge" />
+            <SeekBar
+                android:id="@+id/corner_radius_slider"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:progress="16"
+                android:max="72"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginStart="3dp"
+            android:layout_marginBottom="16dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pcct_initial_height_text"
+                android:layout_marginEnd="8dp"
+                android:maxWidth="160sp"
+                style="?attr/textAppearanceLabelLarge" />
+            <TextView
+                android:id="@+id/pcct_initial_height_slider_label"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical|end"
+                android:minWidth="40sp"
+                android:labelFor="@+id/pcct_initial_height_slider"
+                android:contentDescription="@string/pcct_initial_height_slider_label_desc"
+                style="?attr/textAppearanceLabelLarge" />
+            <SeekBar
+                android:id="@+id/pcct_initial_height_slider"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginStart="3dp"
+            android:layout_marginBottom="16dp">
+
+            <CheckBox
+                android:id="@+id/pcct_resizable_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked = "true"
+                android:text="@string/pcct_resizable_text" />
+
+            <CheckBox
+                android:id="@+id/bottom_toolbar_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked = "false"
+                android:text="@string/bottom_toolbar_toggle" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginStart="3dp"
+            android:layout_marginBottom="16dp">
+            <CheckBox
+                android:id="@+id/show_title_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked = "true"
+                android:text="@string/show_title_text" />
+
+            <CheckBox
+                android:id="@+id/url_hiding_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked = "true"
+                android:text="@string/url_hiding_text" />
+        </LinearLayout>
     </LinearLayout>
-
 </ScrollView>

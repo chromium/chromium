@@ -2,6 +2,7 @@ include_rules = [
   "+components/metrics",
   "+components/prefs",
   "+components/ukm",
+  "+components/variations/synthetic_trial_registry.h",
   "+components/version_info",
   "+content/public/browser",
   "+content/public/test",

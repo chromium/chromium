@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/observer_list.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/aura/client/cursor_client_observer.h"
 #include "ui/base/cursor/cursor_size.h"
@@ -47,6 +48,11 @@ class CursorState {
     cursor_size_ = cursor_size;
   }
 
+  const gfx::Size& system_cursor_size() const { return system_cursor_size_; }
+  void set_system_cursor_size(const gfx::Size& system_cursor_size) {
+    system_cursor_size_ = system_cursor_size;
+  }
+
   bool mouse_events_enabled() const { return mouse_events_enabled_; }
   void SetMouseEventsEnabled(bool enabled) {
     if (mouse_events_enabled_ == enabled)
@@ -70,6 +76,8 @@ class CursorState {
 
   // The visibility to set when mouse events are enabled.
   bool visible_on_mouse_events_enabled_;
+
+  gfx::Size system_cursor_size_;
 };
 
 }  // namespace internal
@@ -225,6 +233,18 @@ bool CursorManager::ShouldHideCursorOnKeyEvent(
   return false;
 }
 
+bool CursorManager::ShouldHideCursorOnTouchEvent(
+    const ui::TouchEvent& event) const {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+  return true;
+#else
+  // Linux Aura does not hide the cursor on touch by default.
+  // TODO(tdanderson): Change this if having consistency across
+  // all platforms which use Aura is desired.
+  return false;
+#endif
+}
+
 void CursorManager::CommitCursor(gfx::NativeCursor cursor) {
   current_state_->set_cursor(cursor);
 }
@@ -245,6 +265,18 @@ void CursorManager::CommitCursorSize(ui::CursorSize cursor_size) {
 
 void CursorManager::CommitMouseEventsEnabled(bool enabled) {
   current_state_->SetMouseEventsEnabled(enabled);
+}
+
+gfx::Size CursorManager::GetSystemCursorSize() const {
+  return current_state_->system_cursor_size();
+}
+
+void CursorManager::CommitSystemCursorSize(
+    const gfx::Size& system_cursor_size) {
+  current_state_->set_system_cursor_size(system_cursor_size);
+  for (auto& observer : observers_) {
+    observer.OnSystemCursorSizeChanged(system_cursor_size);
+  }
 }
 
 void CursorManager::SetCursorImpl(gfx::NativeCursor cursor, bool forced) {

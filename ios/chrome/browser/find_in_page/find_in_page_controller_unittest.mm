@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,17 @@
 
 #import "base/mac/foundation_util.h"
 #import "base/test/ios/wait_util.h"
-#include "components/ukm/ios/ukm_url_recorder.h"
-#include "components/ukm/test_ukm_recorder.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "components/ukm/ios/ukm_url_recorder.h"
+#import "components/ukm/test_ukm_recorder.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/find_in_page/find_in_page_model.h"
 #import "ios/chrome/browser/find_in_page/find_in_page_response_delegate.h"
 #import "ios/chrome/browser/web/chrome_web_client.h"
-#import "ios/chrome/browser/web/chrome_web_test.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "ios/web/public/test/scoped_testing_web_client.h"
+#import "ios/web/public/test/web_state_test_util.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -38,14 +41,21 @@ namespace {
 const char kFindInPageUkmSearchMatchesEvent[] = "IOS.FindInPageSearchMatches";
 const char kFindInPageUkmSearchMetric[] = "HasMatches";
 
-class FindInPageControllerTest : public ChromeWebTest {
+class FindInPageControllerTest : public PlatformTest {
  protected:
   FindInPageControllerTest()
-      : ChromeWebTest(std::make_unique<ChromeWebClient>()) {}
+      : web_client_(std::make_unique<ChromeWebClient>()) {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+
+    web::WebState::CreateParams params(browser_state_.get());
+    web_state_ = web::WebState::Create(params);
+    web_state_->GetView();
+    web_state_->SetKeepRenderProcessAlive(true);
+  }
   ~FindInPageControllerTest() override {}
 
   void SetUp() override {
-    ChromeWebTest::SetUp();
+    PlatformTest::SetUp();
     find_in_page_controller_ =
         [[FindInPageController alloc] initWithWebState:web_state()];
     delegate_ = [[TestFindInPageResponseDelegate alloc] init];
@@ -56,9 +66,15 @@ class FindInPageControllerTest : public ChromeWebTest {
   void TearDown() override {
     [find_in_page_controller_ detachFromWebState];
     test_ukm_recorder_.Purge();
-    ChromeWebTest::TearDown();
+    web_state_.reset();
   }
 
+  web::WebState* web_state() { return web_state_.get(); }
+
+  web::ScopedTestingWebClient web_client_;
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<web::WebState> web_state_;
   FindInPageController* find_in_page_controller_ = nil;
   TestFindInPageResponseDelegate* delegate_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
@@ -68,7 +84,7 @@ class FindInPageControllerTest : public ChromeWebTest {
 // logged the search as having found a match.
 TEST_F(FindInPageControllerTest, VerifyUKMLoggedTrue) {
   test_ukm_recorder_.Purge();
-  LoadHtml(@"<html><p>some string</p></html>");
+  web::test::LoadHtml(@"<html><p>some string</p></html>", web_state());
   [find_in_page_controller_ findStringInPage:@"some string"];
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
     base::RunLoop().RunUntilIdle();
@@ -87,7 +103,7 @@ TEST_F(FindInPageControllerTest, VerifyUKMLoggedTrue) {
 // match, and ensures UKM has not logged the search as having found a match.
 TEST_F(FindInPageControllerTest, VerifyUKMLoggedFalse) {
   test_ukm_recorder_.Purge();
-  LoadHtml(@"<html><p>some string</p></html>");
+  web::test::LoadHtml(@"<html><p>some string</p></html>", web_state());
   [find_in_page_controller_ findStringInPage:@"nothing"];
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
     base::RunLoop().RunUntilIdle();

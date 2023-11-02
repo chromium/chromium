@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,14 +22,16 @@ class DesktopMediaWindowRegistryMac final : public DesktopMediaWindowRegistry {
   DesktopMediaWindowRegistryMac& operator=(
       const DesktopMediaWindowRegistryMac&) = delete;
 
-  Id RegisterWindow(gfx::NativeWindow window) override {
-    // Note that DesktopMediaPickerViews in //chrome depends on the fact that
-    // the Id returned from this function is the NSWindow's windowNumber, but
-    // that invariant is *not* part of the general contract for DesktopMediaID.
+  // Note that DesktopMediaPickerViews in //chrome depends on the fact that
+  // the Id returned from this function is the NSWindow's windowNumber, but
+  // that invariant is *not* part of the general contract for DesktopMediaID.
+  DesktopMediaID::Id RegisterWindow(gfx::NativeWindow window) override {
+    // Ensure that we don't inadvertently crop IDs.
+    static_assert(sizeof(NSInteger) == sizeof(DesktopMediaID::Id));
     return window.GetNativeNSWindow().windowNumber;
   }
 
-  gfx::NativeWindow GetWindowById(Id id) override {
+  gfx::NativeWindow GetWindowById(DesktopMediaID::Id id) override {
     return gfx::NativeWindow([NSApp windowWithWindowNumber:id]);
   }
 

@@ -1,0 +1,77 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+if (is_win || is_mac) {
+  copy("old_updater") {
+    testonly = true
+    sources = []
+
+    if (is_win && is_chrome_branded) {
+      sources += [
+        "chrome_win_x86/UpdaterSetup_test.exe",
+        "chrome_win_x86_64/UpdaterSetup_test.exe",
+      ]
+    }
+
+    if (is_win && !is_chrome_branded) {
+      sources += [
+        "chromium_win_x86/UpdaterSetup_test.exe",
+        "chromium_win_x86_64/UpdaterSetup_test.exe",
+      ]
+    }
+
+    if (is_mac && is_chrome_branded) {
+      sources += [
+        "chrome_mac_universal/GoogleUpdater_test.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Helpers/ksadmin",
+        "chrome_mac_universal/GoogleUpdater_test.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Helpers/ksinstall",
+        "chrome_mac_universal/GoogleUpdater_test.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Info.plist",
+        "chrome_mac_universal/GoogleUpdater_test.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/MacOS/GoogleSoftwareUpdate",
+        "chrome_mac_universal/GoogleUpdater_test.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Resources/GoogleSoftwareUpdateAgent.app/Contents/MacOS/GoogleSoftwareUpdateAgent",
+        "chrome_mac_universal/GoogleUpdater_test.app/Contents/Info.plist",
+        "chrome_mac_universal/GoogleUpdater_test.app/Contents/MacOS/GoogleUpdater_test",
+        "chrome_mac_universal/GoogleUpdater_test.app/Contents/PkgInfo",
+        "chrome_mac_universal_prod/GoogleUpdater.app/Contents/CodeResources",
+        "chrome_mac_universal_prod/GoogleUpdater.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Helpers/ksadmin",
+        "chrome_mac_universal_prod/GoogleUpdater.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Helpers/ksinstall",
+        "chrome_mac_universal_prod/GoogleUpdater.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Info.plist",
+        "chrome_mac_universal_prod/GoogleUpdater.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/MacOS/GoogleSoftwareUpdate",
+        "chrome_mac_universal_prod/GoogleUpdater.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Resources/GoogleSoftwareUpdateAgent.app/Contents/Info.plist",
+        "chrome_mac_universal_prod/GoogleUpdater.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Resources/GoogleSoftwareUpdateAgent.app/Contents/MacOS/GoogleSoftwareUpdateAgent",
+        "chrome_mac_universal_prod/GoogleUpdater.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Resources/GoogleSoftwareUpdateAgent.app/Contents/_CodeSignature",
+        "chrome_mac_universal_prod/GoogleUpdater.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/_CodeSignature",
+        "chrome_mac_universal_prod/GoogleUpdater.app/Contents/Info.plist",
+        "chrome_mac_universal_prod/GoogleUpdater.app/Contents/MacOS/GoogleUpdater",
+        "chrome_mac_universal_prod/GoogleUpdater.app/Contents/PkgInfo",
+        "chrome_mac_universal_prod/GoogleUpdater.app/Contents/_CodeSignature",
+      ]
+    }
+
+    if (is_mac && !is_chrome_branded) {
+      sources += [
+        "chromium_mac_amd64/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Helpers/ksadmin",
+        "chromium_mac_amd64/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Helpers/ksinstall",
+        "chromium_mac_amd64/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Info.plist",
+        "chromium_mac_amd64/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/MacOS/ChromiumSoftwareUpdate",
+        "chromium_mac_amd64/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Resources/ChromiumSoftwareUpdateAgent.app/Contents/Info.plist",
+        "chromium_mac_amd64/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Resources/ChromiumSoftwareUpdateAgent.app/Contents/MacOS/ChromiumSoftwareUpdateAgent",
+        "chromium_mac_amd64/ChromiumUpdater_test.app/Contents/Info.plist",
+        "chromium_mac_amd64/ChromiumUpdater_test.app/Contents/MacOS/ChromiumUpdater_test",
+        "chromium_mac_amd64/ChromiumUpdater_test.app/Contents/PkgInfo",
+        "chromium_mac_arm64/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Helpers/ksadmin",
+        "chromium_mac_arm64/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Helpers/ksinstall",
+        "chromium_mac_arm64/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Info.plist",
+        "chromium_mac_arm64/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/MacOS/ChromiumSoftwareUpdate",
+        "chromium_mac_arm64/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Resources/ChromiumSoftwareUpdateAgent.app/Contents/Info.plist",
+        "chromium_mac_arm64/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Resources/ChromiumSoftwareUpdateAgent.app/Contents/MacOS/ChromiumSoftwareUpdateAgent",
+        "chromium_mac_arm64/ChromiumUpdater_test.app/Contents/Info.plist",
+        "chromium_mac_arm64/ChromiumUpdater_test.app/Contents/MacOS/ChromiumUpdater_test",
+        "chromium_mac_arm64/ChromiumUpdater_test.app/Contents/PkgInfo",
+      ]
+    }
+
+    outputs = [ "$root_build_dir/old_updater/{{source_target_relative}}" ]
+  }
+}

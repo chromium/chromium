@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,11 +26,12 @@ namespace ui {
 // paragraph breaks, that have been introduced by layout. For example, consider
 // the following HTML snippet: "A<div>B</div>C".
 enum class AXTextConcatenationBehavior {
-  // Preserve any introduced formatting, line breaks, e.g. GetText = "A\nB\nC".
-  kAsInnerText,
-  // Ignore any introduced formatting, such as line breaks, e.g. GetText =
+  // Preserve any introduced formatting, such as paragraph breaks, e.g. GetText
+  // = "A\nB\nC".
+  kWithParagraphBreaks,
+  // Ignore any introduced formatting, such as paragraph breaks, e.g. GetText =
   // "ABC".
-  kAsTextContent
+  kWithoutParagraphBreaks
 };
 
 class AXRangeRectDelegate {
@@ -129,6 +130,8 @@ class AXRange {
   //   nullopt - If positions are not comparable (see AXPosition::CompareTo).
   static absl::optional<int> CompareEndpoints(const AXPositionType* first,
                                               const AXPositionType* second) {
+    DCHECK(first->IsValid());
+    DCHECK(second->IsValid());
     absl::optional<int> tree_position_comparison =
         first->AsTreePosition()->CompareTo(*second->AsTreePosition());
 
@@ -203,8 +206,14 @@ class AXRange {
   //
   // This class allows AXRange to be iterated through all "leaf text ranges"
   // contained between its endpoints, composing the entire range.
-  class Iterator : public std::iterator<std::input_iterator_tag, AXRange> {
+  class Iterator {
    public:
+    using iterator_category = std::input_iterator_tag;
+    using value_type = AXRange;
+    using difference_type = std::ptrdiff_t;
+    using pointer = AXRange*;
+    using reference = AXRange&;
+
     Iterator()
         : current_start_(AXPositionType::CreateNullPosition()),
           iterator_end_(AXPositionType::CreateNullPosition()) {}
@@ -288,11 +297,14 @@ class AXRange {
   // Pass a |max_count| of -1 to retrieve all text in the AXRange.
   // Note that if this AXRange has its anchor or focus located at an ignored
   // position, we shrink the range to the closest unignored positions.
-  std::u16string GetText(AXTextConcatenationBehavior concatenation_behavior =
-                             AXTextConcatenationBehavior::kAsTextContent,
-                         int max_count = -1,
-                         bool include_ignored = false,
-                         size_t* appended_newlines_count = nullptr) const {
+  std::u16string GetText(
+      AXTextConcatenationBehavior concatenation_behavior =
+          AXTextConcatenationBehavior::kWithoutParagraphBreaks,
+      AXEmbeddedObjectBehavior embedded_object_behavior =
+          AXEmbeddedObjectBehavior::kExposeCharacter,
+      int max_count = -1,
+      bool include_ignored = false,
+      size_t* appended_newlines_count = nullptr) const {
     if (max_count == 0 || IsNull())
       return std::u16string();
 
@@ -312,18 +324,20 @@ class AXRange {
     size_t computed_newlines_count = 0;
     bool is_first_non_whitespace_leaf = true;
     bool crossed_paragraph_boundary = false;
-    bool is_first_unignored_leaf = true;
+    bool is_first_included_leaf = true;
     bool found_trailing_newline = false;
 
     while (!start->IsNullPosition()) {
       DCHECK(start->IsLeafTextPosition());
       DCHECK_GE(start->text_offset(), 0);
+      const bool start_is_unignored = !start->IsIgnored();
+      const bool start_is_in_white_space = start->IsInWhiteSpace();
 
-      if (include_ignored || !start->IsIgnored()) {
+      if (include_ignored || start_is_unignored) {
         if (concatenation_behavior ==
-                AXTextConcatenationBehavior::kAsInnerText &&
-            !start->IsInWhiteSpace()) {
-          if (is_first_non_whitespace_leaf && !is_first_unignored_leaf) {
+                AXTextConcatenationBehavior::kWithParagraphBreaks &&
+            !start_is_in_white_space) {
+          if (is_first_non_whitespace_leaf && !is_first_included_leaf) {
             // The first non-whitespace leaf in the range could be preceded by
             // whitespace spanning even before the start of this range, we need
             // to check such positions in order to correctly determine if this
@@ -334,7 +348,7 @@ class AXRange {
             // beginning of the text range, as experienced by the user, is after
             // any trailing ignored nodes.
             crossed_paragraph_boundary =
-                !start->IsIgnored() && start->AtStartOfParagraph();
+                start_is_unignored && start->AtStartOfParagraph();
           }
 
           // When preserving layout line breaks, don't append `\n` next if the
@@ -348,9 +362,10 @@ class AXRange {
           crossed_paragraph_boundary = false;
         }
 
-        int current_end_offset = (start->GetAnchor() != end->GetAnchor())
-                                     ? start->MaxTextOffset()
-                                     : end->text_offset();
+        int current_end_offset =
+            (start->GetAnchor() != end->GetAnchor())
+                ? start->MaxTextOffset(embedded_object_behavior)
+                : end->text_offset();
 
         if (current_end_offset > start->text_offset()) {
           int characters_to_append =
@@ -359,30 +374,37 @@ class AXRange {
                              current_end_offset - start->text_offset())
                   : current_end_offset - start->text_offset();
 
-          range_text += start->GetText().substr(start->text_offset(),
-                                                characters_to_append);
+          std::u16string position_text =
+              start->GetText(embedded_object_behavior);
+          if (start->text_offset() < static_cast<int>(position_text.length())) {
+            range_text += position_text.substr(start->text_offset(),
+                                               characters_to_append);
+          }
 
-          // Collapse all whitespace following any line break.
+          // To minimize user confusion, collapse all whitespace following any
+          // line break unless it is a hard line break (<br> or a text node with
+          // a single '\n' character), or an empty object such as an empty text
+          // field.
           found_trailing_newline =
               start->GetAnchor()->IsLineBreak() ||
-              (found_trailing_newline && start->IsInWhiteSpace());
+              (found_trailing_newline && start_is_in_white_space);
         }
 
         DCHECK(max_count < 0 ||
                static_cast<int>(range_text.length()) <= max_count);
-        is_first_unignored_leaf = false;
+        is_first_included_leaf = false;
       }
 
       if (start->GetAnchor() == end->GetAnchor() ||
           static_cast<int>(range_text.length()) == max_count) {
         break;
-      } else {
-        start = start->CreateNextLeafTextPosition();
-        if (concatenation_behavior ==
-                AXTextConcatenationBehavior::kAsInnerText &&
-            !crossed_paragraph_boundary && !is_first_non_whitespace_leaf) {
-          crossed_paragraph_boundary = start->AtStartOfParagraph();
-        }
+      }
+
+      start = start->CreateNextLeafTextPosition();
+      if (concatenation_behavior ==
+              AXTextConcatenationBehavior::kWithParagraphBreaks &&
+          !crossed_paragraph_boundary && !is_first_non_whitespace_leaf) {
+        crossed_paragraph_boundary = start->AtStartOfParagraph();
       }
     }
 

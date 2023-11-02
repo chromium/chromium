@@ -1,4 +1,4 @@
-/* Copyright 2021 The Chromium Authors. All rights reserved.
+/* Copyright 2021 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
@@ -13,18 +13,15 @@
   background-color: rgba(255, 255, 255, 0.08);
 }
 
-#reset-all-container,
-#panel-container {
-  backdrop-filter: blur(10px);
-  background: rgb(32, 33, 36, 0.9);
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.3);
-  overflow: hidden;
-}
-
 #reset-all-container {
   border-radius: var(--border-radius-rounded-with-short-side);
   height: 32px;
   margin-bottom: 8px;
+  overflow: unset;
+}
+
+#reset-all-container>button {
+  border-radius: var(--border-radius-rounded-with-short-side);
 }
 
 #ptz-reset-all {
@@ -52,26 +49,34 @@
   font-weight: 500;
 }
 
-#panel-container {
+#ptz-panel-container {
   --divider-color: rgba(255, 255, 255, 0.14);
   --divider-width: 1px;
 
   border-radius: 20px;
 }
 
-#panel-container button {
+#ptz-panel-container button {
   --svg-width: 20px;
   --svg-height: 20px;
-  --focus-ring-size: 8px;
-  --focus-ring-style: circle;
 
   height: 48px;
   position: absolute;
   width: 48px;
 }
 
-#panel-container button:disabled::before {
+#ptz-panel-container button:disabled::before {
   opacity: 0.38;
+}
+
+#ptz-panel-container>button:focus {
+  outline: none;
+}
+
+#ptz-panel-container>button:focus-visible::before {
+  border-radius: 50%;
+  outline: 2px solid var(--blue-300);
+  outline-offset: 3px;
 }
 
 body:not(.has-pan-support) :is(#pan-left, #pan-right),
@@ -106,17 +111,19 @@ body:not(.has-zoom-support) :is(#zoom-in, #zoom-out) {
   content: url(/images/ptz_zoom_out.svg);
 }
 
-#panel-container button::before {
+#ptz-panel-container button::before {
+  height: var(--svg-height);
   left: calc(50% - var(--svg-width) / 2);
   position: absolute;
   top: calc(50% - var(--svg-height) / 2);
+  width: var(--svg-width);
 }
 
 
 /* Only P, Only Z */
 
-body.has-pan-support:not(.has-tilt-support):not(.has-zoom-support) #panel-container,
-body.has-zoom-support:not(.has-pan-support):not(.has-tilt-support) #panel-container {
+body.has-pan-support:not(.has-tilt-support):not(.has-zoom-support) #ptz-panel-container,
+body.has-zoom-support:not(.has-pan-support):not(.has-tilt-support) #ptz-panel-container {
   height: 48px;
   width: 96px;
 }
@@ -133,7 +140,7 @@ body.has-zoom-support:not(.has-pan-support):not(.has-tilt-support) #zoom-out {
 
 /* Only T */
 
-body:not(.has-pan-support).has-tilt-support:not(.has-zoom-support) #panel-container {
+body:not(.has-pan-support).has-tilt-support:not(.has-zoom-support) #ptz-panel-container {
   height: 96px;
   width: 48px;
 }
@@ -148,7 +155,7 @@ body:not(.has-pan-support).has-tilt-support:not(.has-zoom-support) #tilt-down {
 
 /* P, T */
 
-body.has-pan-support.has-tilt-support:not(.has-zoom-support) #panel-container {
+body.has-pan-support.has-tilt-support:not(.has-zoom-support) #ptz-panel-container {
   height: 144px;
   width: 144px;
 }
@@ -179,7 +186,7 @@ body.has-pan-support.has-tilt-support:not(.has-zoom-support) #tilt-down {
 
 /* P, Z */
 
-body.has-pan-support:not(.has-tilt-support).has-zoom-support #panel-container {
+body.has-pan-support:not(.has-tilt-support).has-zoom-support #ptz-panel-container {
   height: 48px;
   width: 192px;
 }
@@ -202,7 +209,7 @@ body.has-pan-support:not(.has-tilt-support).has-zoom-support #zoom-out {
 
 /* T, Z */
 
-body:not(.has-pan-support).has-tilt-support.has-zoom-support #panel-container {
+body:not(.has-pan-support).has-tilt-support.has-zoom-support #ptz-panel-container {
   height: 144px;
   width: 96px;
 }
@@ -233,7 +240,7 @@ body:not(.has-pan-support).has-tilt-support.has-zoom-support #zoom-in {
 
 /* P, T, Z */
 
-body.has-pan-support.has-tilt-support.has-zoom-support #panel-container {
+body.has-pan-support.has-tilt-support.has-zoom-support #ptz-panel-container {
   border-radius: 20px;
   height: 192px;
   width: 192px;

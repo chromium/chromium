@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -127,6 +127,14 @@ void TestLayerAnimationDelegate::SetRoundedCornersFromAnimation(
   last_property_change_reason_is_set_ = true;
 }
 
+void TestLayerAnimationDelegate::SetGradientMaskFromAnimation(
+    const gfx::LinearGradient& gradient_mask,
+    PropertyChangeReason reason) {
+  gradient_mask_ = gradient_mask;
+  last_property_change_reason_ = reason;
+  last_property_change_reason_is_set_ = true;
+}
+
 void TestLayerAnimationDelegate::ScheduleDrawForAnimation() {
 }
 
@@ -165,6 +173,11 @@ gfx::Rect TestLayerAnimationDelegate::GetClipRectForAnimation() const {
 gfx::RoundedCornersF TestLayerAnimationDelegate::GetRoundedCornersForAnimation()
     const {
   return rounded_corners_;
+}
+
+const gfx::LinearGradient&
+TestLayerAnimationDelegate::GetGradientMaskForAnimation() const {
+  return gradient_mask_;
 }
 
 float TestLayerAnimationDelegate::GetDeviceScaleFactor() const {

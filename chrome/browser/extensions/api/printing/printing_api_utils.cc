@@ -1,16 +1,16 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/api/printing/printing_api_utils.h"
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/json/json_reader.h"
+#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/printing/printer_configuration.h"
@@ -89,9 +89,7 @@ idl::Printer PrinterToIdl(
       DoesPrinterMatchDefaultPrinterRules(printer, default_printer_rules);
   auto it = recently_used_ranks.find(printer.id);
   if (it != recently_used_ranks.end())
-    idl_printer.recently_used_rank = std::make_unique<int>(it->second);
-  else
-    idl_printer.recently_used_rank = nullptr;
+    idl_printer.recently_used_rank = it->second;
   return idl_printer;
 }
 
@@ -196,12 +194,11 @@ std::unique_ptr<printing::PrintSettings> ParsePrintTicket(base::Value ticket) {
     return nullptr;
   cloud_devices::printer::Media media_value = media.value();
   printing::PrintSettings::RequestedMedia requested_media;
-  if (media_value.width_um <= 0 || media_value.height_um <= 0 ||
+  if (media_value.size_um.width() <= 0 || media_value.size_um.height() <= 0 ||
       media_value.vendor_id.empty()) {
     return nullptr;
   }
-  requested_media.size_microns =
-      gfx::Size(media_value.width_um, media_value.height_um);
+  requested_media.size_microns = media_value.size_um;
   requested_media.vendor_id = media_value.vendor_id;
   settings->set_requested_media(requested_media);
 
@@ -244,8 +241,8 @@ bool CheckSettingsAndCapabilitiesCompatibility(
 
   const printing::PrintSettings::RequestedMedia& requested_media =
       settings.requested_media();
-  return std::any_of(
-      capabilities.papers.begin(), capabilities.papers.end(),
+  return base::ranges::any_of(
+      capabilities.papers,
       [&requested_media](
           const printing::PrinterSemanticCapsAndDefaults::Paper& paper) {
         return paper.size_um == requested_media.size_microns &&

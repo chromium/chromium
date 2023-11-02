@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,7 +47,8 @@ class RenderWidgetHelper
   bool TakeFrameTokensForFrameRoutingID(
       int32_t routing_id,
       blink::LocalFrameToken& frame_token,
-      base::UnguessableToken& devtools_frame_token);
+      base::UnguessableToken& devtools_frame_token,
+      blink::DocumentToken& document_token);
 
   // Store a set of frame tokens given a routing id. This is usually called on
   // the IO thread, and |GetFrameTokensForFrameRoutingID| will be called on the
@@ -55,14 +56,10 @@ class RenderWidgetHelper
   void StoreNextFrameRoutingID(
       int32_t routing_id,
       const blink::LocalFrameToken& frame_token,
-      const base::UnguessableToken& devtools_frame_token);
+      const base::UnguessableToken& devtools_frame_token,
+      const blink::DocumentToken& document_token);
 
   // IO THREAD ONLY -----------------------------------------------------------
-
-  // Lookup the RenderWidgetHelper from the render_process_host_id. Returns NULL
-  // if not found. NOTE: The raw pointer is for temporary use only. To retain,
-  // store in a scoped_refptr.
-  static RenderWidgetHelper* FromProcessHostID(int render_process_host_id);
 
  private:
   friend class base::RefCountedThreadSafe<RenderWidgetHelper>;
@@ -75,13 +72,15 @@ class RenderWidgetHelper
 
   struct FrameTokens {
     FrameTokens(const blink::LocalFrameToken& frame_token,
-                const base::UnguessableToken& devtools_frame_token);
+                const base::UnguessableToken& devtools_frame_token,
+                const blink::DocumentToken& document_token);
     FrameTokens(const FrameTokens& other);
     FrameTokens& operator=(const FrameTokens& other);
     ~FrameTokens();
 
     blink::LocalFrameToken frame_token;
     base::UnguessableToken devtools_frame_token;
+    blink::DocumentToken document_token;
   };
 
   // Lock that is used to provide access to |frame_token_routing_id_map_|

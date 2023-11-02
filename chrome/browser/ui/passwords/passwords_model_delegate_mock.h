@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -98,6 +98,10 @@ class PasswordsModelDelegateMock
   MOCK_METHOD(void, OnDialogHidden, (), (override));
   MOCK_METHOD(bool, AuthenticateUser, (), (override));
   MOCK_METHOD(void,
+              AuthenticateUserWithMessage,
+              (const std::u16string& message, AvailabilityCallback callback),
+              (override));
+  MOCK_METHOD(void,
               AuthenticateUserForAccountStoreOptInAndSavePassword,
               (const std::u16string&, const std::u16string&),
               (override));
@@ -114,6 +118,7 @@ class PasswordsModelDelegateMock
               ArePasswordsRevealedWhenBubbleIsOpened,
               (),
               (const override));
+  MOCK_METHOD(void, ShowBiometricActivationConfirmation, (), (override));
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_PASSWORDS_MODEL_DELEGATE_MOCK_H_

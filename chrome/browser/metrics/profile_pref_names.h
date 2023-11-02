@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,9 @@ namespace prefs {
 
 // Alphabetical list of profile preference names. Document each in the .cc file.
 extern const char kMetricsRequiresClientIdResetOnConsent[];
-extern const char kMetricsUserId[];
 extern const char kMetricsUserConsent[];
+extern const char kMetricsUserId[];
+extern const char kMetricsUserInheritOwnerConsent[];
 extern const char kMetricsUserMetricLogs[];
 extern const char kMetricsUserMetricLogsMetadata[];
 

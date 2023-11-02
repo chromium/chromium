@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,24 +7,25 @@
 #include <cert.h>  // Must be included before certdb.h
 #include <certdb.h>
 #include <cryptohi.h>
+#include <dlfcn.h>
 #include <nss.h>
 #include <pk11pub.h>
 #include <prerror.h>
+#include <seccomon.h>
 #include <secder.h>
 #include <sechash.h>
 #include <secmod.h>
 #include <secport.h>
 #include <string.h>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "crypto/nss_util.h"
 #include "crypto/scoped_nss_types.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 
-namespace net {
-
-namespace x509_util {
+namespace net::x509_util {
 
 namespace {
 
@@ -85,8 +86,8 @@ std::string GetDefaultNickname(CERTCertificate* nss_cert, CertType type) {
     // Find the private key for this certificate and see if it has a
     // nickname.  If there is a private key, and it has a nickname, then
     // return that nickname.
-    SECKEYPrivateKey* private_key =
-        PK11_FindPrivateKeyFromCert(nss_cert->slot, nss_cert, NULL /*wincx*/);
+    SECKEYPrivateKey* private_key = PK11_FindPrivateKeyFromCert(
+        nss_cert->slot, nss_cert, nullptr /*wincx*/);
     if (private_key) {
       char* private_key_nickname = PK11_GetPrivateKeyNickname(private_key);
       if (private_key_nickname) {
@@ -155,7 +156,7 @@ ScopedCERTCertificate CreateCERTCertificateFromBytes(const uint8_t* data,
   crypto::EnsureNSSInit();
 
   if (!NSS_IsInitialized())
-    return NULL;
+    return nullptr;
 
   SECItem der_cert;
   der_cert.data = const_cast<uint8_t*>(data);
@@ -309,7 +310,7 @@ bool GetPEMEncoded(CERTCertificate* cert, std::string* pem_encoded) {
 
 void GetRFC822SubjectAltNames(CERTCertificate* cert_handle,
                               std::vector<std::string>* names) {
-  crypto::ScopedSECItem alt_name(SECITEM_AllocItem(NULL, NULL, 0));
+  crypto::ScopedSECItem alt_name(SECITEM_AllocItem(nullptr, nullptr, 0));
   DCHECK(alt_name.get());
 
   names->clear();
@@ -339,7 +340,7 @@ void GetRFC822SubjectAltNames(CERTCertificate* cert_handle,
 
 void GetUPNSubjectAltNames(CERTCertificate* cert_handle,
                            std::vector<std::string>* names) {
-  crypto::ScopedSECItem alt_name(SECITEM_AllocItem(NULL, NULL, 0));
+  crypto::ScopedSECItem alt_name(SECITEM_AllocItem(nullptr, nullptr, 0));
   DCHECK(alt_name.get());
 
   names->clear();
@@ -389,7 +390,7 @@ std::string GetCERTNameDisplayName(CERTName* name) {
   CERTRDN** rdns = name->rdns;
   for (size_t rdn = 0; rdns[rdn]; ++rdn) {
     CERTAVA** avas = rdns[rdn]->avas;
-    for (size_t pair = 0; avas[pair] != 0; ++pair) {
+    for (size_t pair = 0; avas[pair] != nullptr; ++pair) {
       SECOidTag tag = CERT_GetAVATag(avas[pair]);
       if (tag == SEC_OID_AVA_COMMON_NAME) {
         // If CN is found, return immediately.
@@ -438,6 +439,19 @@ SHA256HashValue CalculateFingerprint256(CERTCertificate* cert) {
   return sha256;
 }
 
-}  // namespace x509_util
+DISABLE_CFI_DLSYM
+SECStatus GetCertIsPerm(const CERTCertificate* cert, PRBool* isperm) {
+  // TODO(https://crbug.com/1365414): When the minimum NSS version is raised to
+  // 3.31 or higher, replace this with calling CERT_GetCertIsPerm directly.
+  using GetCertIsPermFunction = SECStatus (*)(const CERTCertificate*, PRBool*);
+  static GetCertIsPermFunction get_cert_is_perm =
+      reinterpret_cast<GetCertIsPermFunction>(
+          dlsym(RTLD_DEFAULT, "CERT_GetCertIsPerm"));
+  if (get_cert_is_perm) {
+    return get_cert_is_perm(cert, isperm);
+  }
+  *isperm = cert->isperm;
+  return SECSuccess;
+}
 
-}  // namespace net
+}  // namespace net::x509_util

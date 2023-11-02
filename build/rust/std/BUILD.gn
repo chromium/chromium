@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -29,52 +29,55 @@
 import("//build/config/compiler/compiler.gni")
 import("//build/config/rust.gni")
 
-# List of Rust stdlib rlibs which are present in the official
-# Rust toolchain we are using from the Android team. This is usually
-# a version or two behind nightly.
-stdlib_files = [
-  "std",  # List first because it makes depfiles more debuggable (see below)
-  "addr2line",
-  "adler",
-  "alloc",
-  "cfg_if",
-  "compiler_builtins",
-  "core",
-  "getopts",
-  "gimli",
-  "hashbrown",
-  "libc",
-  "miniz_oxide",
-  "object",
-  "panic_abort",
-  "panic_unwind",
-  "proc_macro",
-  "rustc_demangle",
-  "std_detect",
-  "test",
-  "unicode_width",
-  "unwind",
-]
-
-# Different Rust toolchains may add or remove files relative to the above
-# list. That can be specified in gn args for anyone using (for instance)
-# nightly or some other experimental toolchain, prior to it becoming official.
-stdlib_files -= removed_rust_stdlib_libs
-stdlib_files += added_rust_stdlib_libs
-
-if (!use_unverified_rust_toolchain) {
-  # rlib files which are distributed alongside Rust's prebuilt stdlib, but we
-  # don't need to pass to the C++ linker because they're used for specialized
-  # purposes.
-  skip_stdlib_files = [
-    "profiler_builtins",
-    "rustc_std_workspace_alloc",
-    "rustc_std_workspace_core",
-    "rustc_std_workspace_std",
-  ]
-}
-
 if (toolchain_has_rust) {
+  # List of Rust stdlib rlibs which are present in the official
+  # Rust toolchain we are using from the Android team. This is usually
+  # a version or two behind nightly.
+  # See //docs/security/rust-toolchain.md#building-on-non_linux-platforms
+  # for how to maintain this list.
+  stdlib_files = [
+    "std",  # List first because it makes depfiles more debuggable (see below)
+    "addr2line",
+    "adler",
+    "alloc",
+    "cfg_if",
+    "compiler_builtins",
+    "core",
+    "getopts",
+    "gimli",
+    "hashbrown",
+    "libc",
+    "memchr",
+    "miniz_oxide",
+    "object",
+    "panic_abort",
+    "panic_unwind",
+    "proc_macro",
+    "rustc_demangle",
+    "std_detect",
+    "test",
+    "unicode_width",
+    "unwind",
+  ]
+
+  # Different Rust toolchains may add or remove files relative to the above
+  # list. That can be specified in gn args for anyone using (for instance)
+  # nightly or some other experimental toolchain, prior to it becoming official.
+  stdlib_files -= removed_rust_stdlib_libs
+  stdlib_files += added_rust_stdlib_libs
+
+  if (!use_unverified_rust_toolchain) {
+    # rlib files which are distributed alongside Rust's prebuilt stdlib, but we
+    # don't need to pass to the C++ linker because they're used for specialized
+    # purposes.
+    skip_stdlib_files = [
+      "profiler_builtins",
+      "rustc_std_workspace_alloc",
+      "rustc_std_workspace_core",
+      "rustc_std_workspace_std",
+    ]
+  }
+
   action("find_stdlib") {
     # Specifics of what we're doing here.
     #
@@ -109,7 +112,7 @@ if (toolchain_has_rust) {
     out_depfile = rebase_path(depfile, root_build_dir)
     args = [
       "--rust-bin-dir",
-      rust_prefix,
+      rebase_path("${rust_sysroot}/bin", root_build_dir),
       "--output",
       out_libdir,
       "--depfile",

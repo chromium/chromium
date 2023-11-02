@@ -1,9 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/optimization_guide/optimization_guide_validation_tab_helper.h"
+#import "ios/chrome/browser/optimization_guide/optimization_guide_validation_tab_helper.h"
 
+#import "base/command_line.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
@@ -57,7 +58,15 @@ class OptimizationGuideValidationTabHelperTest : public PlatformTest {
          optimization_guide::features::kOptimizationGuideMetadataValidation},
         {});
 
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    TestChromeBrowserState::Builder builder;
+    builder.AddTestingFactory(
+        OptimizationGuideServiceFactory::GetInstance(),
+        OptimizationGuideServiceFactory::GetDefaultFactory());
+    browser_state_ = builder.Build();
+    optimization_guide_service_ =
+        OptimizationGuideServiceFactory::GetForBrowserState(
+            browser_state_.get());
+    optimization_guide_service_->DoFinalInit();
 
     web_state_.SetBrowserState(browser_state_.get());
     optimization_guide_service_ =

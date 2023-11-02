@@ -1,9 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/segmentation_platform/internal/database/signal_database_impl.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "components/leveldb_proto/testing/fake_db.h"
@@ -68,7 +69,7 @@ class SignalDatabaseImplTest : public testing::Test {
   base::SimpleTestClock test_clock_;
   std::vector<SignalDatabase::Sample> get_samples_result_;
   std::map<std::string, proto::SignalData> db_entries_;
-  leveldb_proto::test::FakeDB<proto::SignalData>* db_{nullptr};
+  raw_ptr<leveldb_proto::test::FakeDB<proto::SignalData>> db_{nullptr};
   std::unique_ptr<SignalDatabaseImpl> signal_db_;
 };
 
@@ -208,6 +209,10 @@ TEST_F(SignalDatabaseImplTest, WriteMultipleSamplesAndRunCompaction) {
       base::Time::Now().UTCMidnight() + base::Hours(8) - base::Days(2);
   base::Time day2 = day1 + base::Days(1);
   base::Time day3 = day2 + base::Days(1);
+  base::Time end_of_day1 =
+      day1.UTCMidnight() + base::Days(1) - base::Seconds(1);
+  base::Time end_of_day2 = end_of_day1 + base::Days(1);
+  base::Time end_of_day3 = end_of_day2 + base::Days(1);
 
   SetUpDB();
   EXPECT_EQ(0u, db_entries_.size());
@@ -248,10 +253,16 @@ TEST_F(SignalDatabaseImplTest, WriteMultipleSamplesAndRunCompaction) {
 
   // Compact samples for the day1 and verify. We will have two samples, but one
   // less entry.
-  signal_db_->CompactSamplesForDay(signal_type, name_hash, day1,
+  signal_db_->CompactSamplesForDay(signal_type, name_hash, end_of_day1,
                                    base::DoNothing());
   db_->LoadCallback(true);
   db_->UpdateCallback(true);
+  signal_db_->CompactSamplesForDay(signal_type, name_hash, end_of_day1,
+                                   base::DoNothing());
+  db_->LoadCallback(true);
+  signal_db_->CompactSamplesForDay(signal_type, name_hash, end_of_day1,
+                                   base::DoNothing());
+  db_->LoadCallback(true);
 
   signal_db_->GetSamples(signal_type, name_hash, day1.UTCMidnight(),
                          day2.UTCMidnight(),
@@ -264,10 +275,9 @@ TEST_F(SignalDatabaseImplTest, WriteMultipleSamplesAndRunCompaction) {
   EXPECT_EQ(2u, db_entries_.size());
 
   // Compact samples for the day2 and verify.
-  signal_db_->CompactSamplesForDay(signal_type, name_hash, day2,
+  signal_db_->CompactSamplesForDay(signal_type, name_hash, end_of_day2,
                                    base::DoNothing());
   db_->LoadCallback(true);
-  db_->UpdateCallback(true);
 
   signal_db_->GetSamples(signal_type, name_hash, day2.UTCMidnight(),
                          day3.UTCMidnight(),
@@ -280,7 +290,10 @@ TEST_F(SignalDatabaseImplTest, WriteMultipleSamplesAndRunCompaction) {
 
   // Compact samples for the day3 and verify. There should be no change since
   // there are no samples.
-  signal_db_->CompactSamplesForDay(signal_type, name_hash, day3,
+  signal_db_->CompactSamplesForDay(signal_type, name_hash, end_of_day3,
+                                   base::DoNothing());
+  db_->LoadCallback(true);
+  signal_db_->CompactSamplesForDay(signal_type, name_hash, end_of_day3,
                                    base::DoNothing());
   db_->LoadCallback(true);
 

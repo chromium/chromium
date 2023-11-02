@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,15 +10,13 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace base {
-class Value;
-}
 
 namespace policy {
 class MockCloudPolicyClient;
@@ -38,38 +36,44 @@ class EventReportValidator {
 
   void ExpectDangerousDeepScanningResult(
       const std::string& expected_url,
+      const absl::optional<std::string>& expected_source,
+      const absl::optional<std::string>& expected_destination,
       const std::string& expected_filename,
       const std::string& expected_sha256,
       const std::string& expected_threat_type,
       const std::string& expected_trigger,
       const std::set<std::string>* expected_mimetypes,
-      int expected_content_size,
+      int64_t expected_content_size,
       const std::string& expected_result,
       const std::string& expected_username,
       const absl::optional<std::string>& expected_scan_id);
 
   void ExpectSensitiveDataEvent(
       const std::string& expected_url,
+      const absl::optional<std::string>& expected_source,
+      const absl::optional<std::string>& expected_destination,
       const std::string& expected_filename,
       const std::string& expected_sha256,
       const std::string& expected_trigger,
       const enterprise_connectors::ContentAnalysisResponse::Result&
           expected_dlp_verdict,
       const std::set<std::string>* expected_mimetypes,
-      int expected_content_size,
+      int64_t expected_content_size,
       const std::string& expected_result,
       const std::string& expected_username,
       const std::string& expected_scan_id);
 
   void ExpectSensitiveDataEvents(
       const std::string& expected_url,
-      const std::vector<const std::string>& expected_filenames,
-      const std::vector<const std::string>& expected_sha256s,
+      const absl::optional<std::string>& expected_source,
+      const absl::optional<std::string>& expected_destination,
+      const std::vector<std::string>& expected_filenames,
+      const std::vector<std::string>& expected_sha256s,
       const std::string& expected_trigger,
       const std::vector<enterprise_connectors::ContentAnalysisResponse::Result>&
           expected_dlp_verdicts,
       const std::set<std::string>* expected_mimetypes,
-      int expected_content_size,
+      int64_t expected_content_size,
       const std::vector<std::string>& expected_results,
       const std::string& expected_username,
       const std::vector<std::string>& expected_scan_ids);
@@ -83,7 +87,7 @@ class EventReportValidator {
       const enterprise_connectors::ContentAnalysisResponse::Result&
           expected_dlp_verdict,
       const std::set<std::string>* expected_mimetypes,
-      int expected_content_size,
+      int64_t expected_content_size,
       const std::string& expected_result,
       const std::string& expected_username,
       const std::string& expected_scan_id);
@@ -97,29 +101,32 @@ class EventReportValidator {
       const enterprise_connectors::ContentAnalysisResponse::Result&
           expected_dlp_verdict,
       const std::set<std::string>* expected_mimetypes,
-      int expected_content_size,
+      int64_t expected_content_size,
       const std::string& expected_result,
       const std::string& expected_username,
       const std::string& expected_scan_id);
 
-  void ExpectUnscannedFileEvent(const std::string& expected_url,
-                                const std::string& expected_filename,
-                                const std::string& expected_sha256,
-                                const std::string& expected_trigger,
-                                const std::string& expected_reason,
-                                const std::set<std::string>* expected_mimetypes,
-                                int expected_content_size,
-                                const std::string& expected_result,
-                                const std::string& expected_username);
-
-  void ExpectUnscannedFileEvents(
+  void ExpectUnscannedFileEvent(
       const std::string& expected_url,
-      const std::vector<const std::string>& expected_filenames,
-      const std::vector<const std::string>& expected_sha256s,
+      const absl::optional<std::string>& expected_source,
+      const absl::optional<std::string>& expected_destination,
+      const std::string& expected_filename,
+      const std::string& expected_sha256,
       const std::string& expected_trigger,
       const std::string& expected_reason,
       const std::set<std::string>* expected_mimetypes,
-      int expected_content_size,
+      int64_t expected_content_size,
+      const std::string& expected_result,
+      const std::string& expected_username);
+
+  void ExpectUnscannedFileEvents(
+      const std::string& expected_url,
+      const std::vector<std::string>& expected_filenames,
+      const std::vector<std::string>& expected_sha256s,
+      const std::string& expected_trigger,
+      const std::string& expected_reason,
+      const std::set<std::string>* expected_mimetypes,
+      int64_t expected_content_size,
       const std::string& expected_result,
       const std::string& expected_username);
 
@@ -130,7 +137,7 @@ class EventReportValidator {
       const std::string& expected_threat_type,
       const std::string& expected_trigger,
       const std::set<std::string>* expected_mimetypes,
-      int expected_content_size,
+      int64_t expected_content_size,
       const std::string& expected_result,
       const std::string& expected_username,
       const absl::optional<std::string>& expected_scan_id);
@@ -153,39 +160,41 @@ class EventReportValidator {
   void SetDoneClosure(base::RepeatingClosure closure);
 
  private:
-  void ValidateReport(base::Value* report);
-  void ValidateFederatedOrigin(base::Value* value);
-  void ValidateIdentities(base::Value* value);
-  void ValidateMimeType(base::Value* value);
+  void ValidateReport(const base::Value::Dict* report);
+  void ValidateFederatedOrigin(const base::Value::Dict* value);
+  void ValidateIdentities(const base::Value::Dict* value);
+  void ValidateMimeType(const base::Value::Dict* value);
   void ValidateDlpVerdict(
-      base::Value* value,
+      const base::Value::Dict* value,
       const enterprise_connectors::ContentAnalysisResponse::Result& result);
-  void ValidateDlpRule(base::Value* value,
+  void ValidateDlpRule(const base::Value::Dict* value,
                        const enterprise_connectors::ContentAnalysisResponse::
                            Result::TriggeredRule& expected_rule);
-  void ValidateFilenameMappedAttributes(base::Value* value);
-  void ValidateField(base::Value* value,
+  void ValidateFilenameMappedAttributes(const base::Value::Dict* value);
+  void ValidateField(const base::Value::Dict* value,
                      const std::string& field_key,
                      const absl::optional<std::string>& expected_value);
-  void ValidateField(base::Value* value,
+  void ValidateField(const base::Value::Dict* value,
                      const std::string& field_key,
                      const absl::optional<std::u16string>& expected_value);
-  void ValidateField(base::Value* value,
+  void ValidateField(const base::Value::Dict* value,
                      const std::string& field_key,
                      const absl::optional<int>& expected_value);
-  void ValidateField(base::Value* value,
+  void ValidateField(const base::Value::Dict* value,
                      const std::string& field_key,
                      const absl::optional<bool>& expected_value);
 
-  policy::MockCloudPolicyClient* client_;
+  raw_ptr<policy::MockCloudPolicyClient> client_;
 
   std::string event_key_;
   absl::optional<std::string> url_;
+  absl::optional<std::string> source_;
+  absl::optional<std::string> destination_;
   absl::optional<std::string> trigger_ = absl::nullopt;
   absl::optional<std::string> threat_type_ = absl::nullopt;
   absl::optional<std::string> unscanned_reason_ = absl::nullopt;
-  absl::optional<int> content_size_ = absl::nullopt;
-  const std::set<std::string>* mimetypes_ = nullptr;
+  absl::optional<int64_t> content_size_ = absl::nullopt;
+  raw_ptr<const std::set<std::string>> mimetypes_ = nullptr;
   std::string username_;
   absl::optional<bool> is_federated_ = absl::nullopt;
   absl::optional<std::string> federated_origin_ = absl::nullopt;
@@ -215,6 +224,9 @@ void SetOnSecurityEventReporting(
     PrefService* prefs,
     bool enabled,
     const std::set<std::string>& enabled_event_names = std::set<std::string>(),
+    const std::map<std::string, std::vector<std::string>>&
+        enabled_opt_in_events =
+            std::map<std::string, std::vector<std::string>>(),
     bool machine_scope = true);
 void ClearAnalysisConnector(PrefService* prefs,
                             enterprise_connectors::AnalysisConnector connector);

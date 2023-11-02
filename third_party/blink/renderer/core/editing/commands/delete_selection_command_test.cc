@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 #include <memory>
 
@@ -65,6 +65,27 @@ TEST_F(DeleteSelectionCommandTest, deleteListFromTable) {
                                   .ToOffsetInAnchor());
 }
 
+// http://crbug.com/1273266
+TEST_F(DeleteSelectionCommandTest, FixupWhitespace) {
+  // Note: To make |RendersInDifferentPosition()| works correctly, font size
+  // should not be 1px.
+  InsertStyleElement("body { font-size: 10px; }");
+  Selection().SetSelection(
+      SetSelectionTextToBody(
+          "<p contenteditable>a<b>&#32;^X|</b>&#32;<ruby>&#32;</ruby></p>"),
+      SetSelectionOptions());
+
+  DeleteSelectionCommand& command =
+      *MakeGarbageCollected<DeleteSelectionCommand>(
+          GetDocument(), DeleteSelectionOptions::Builder()
+                             .SetMergeBlocksAfterDelete(true)
+                             .SetSanitizeMarkup(true)
+                             .Build());
+  EXPECT_TRUE(command.Apply()) << "the delete command should have succeeded";
+  EXPECT_EQ("<p contenteditable>a<b>\u00A0|</b>\u00A0<ruby></ruby></p>",
+            GetSelectionTextFromBody());
+}
+
 TEST_F(DeleteSelectionCommandTest, ForwardDeleteWithFirstLetter) {
   InsertStyleElement("p::first-letter {font-size:200%;}");
   Selection().SetSelection(
@@ -81,13 +102,37 @@ TEST_F(DeleteSelectionCommandTest, ForwardDeleteWithFirstLetter) {
   EXPECT_EQ("<p contenteditable>a|c</p>", GetSelectionTextFromBody());
 }
 
+// http://crbug.com/1299189
+TEST_F(DeleteSelectionCommandTest, DeleteOptionElement) {
+  Selection().SetSelection(
+      SetSelectionTextToBody("<p contenteditable>"
+                             "^<option></option>|"
+                             "<select><option>A</option></select>"
+                             "</p>"),
+      SetSelectionOptions());
+
+  DeleteSelectionCommand& command =
+      *MakeGarbageCollected<DeleteSelectionCommand>(
+          GetDocument(), DeleteSelectionOptions::Builder()
+                             .SetMergeBlocksAfterDelete(true)
+                             .SetSanitizeMarkup(true)
+                             .Build());
+  EXPECT_TRUE(command.Apply()) << "the delete command should have succeeded";
+  EXPECT_EQ(
+      "<p contenteditable>"
+      "^<option><select><option>A</option></select><br></option>|"
+      "</p>",
+      GetSelectionTextFromBody())
+      << "Not sure why we get this.";
+}
+
 // This is a regression test for https://crbug.com/1172439
 TEST_F(DeleteSelectionCommandTest, DeleteWithEditabilityChange) {
   Selection().SetSelection(
       SetSelectionTextToBody(
           "^<style>body{-webkit-user-modify:read-write}</style>x|"),
       SetSelectionOptions());
-  EXPECT_TRUE(HasEditableStyle(*GetDocument().body()));
+  EXPECT_TRUE(IsEditable(*GetDocument().body()));
 
   DeleteSelectionCommand& command =
       *MakeGarbageCollected<DeleteSelectionCommand>(
@@ -100,8 +145,23 @@ TEST_F(DeleteSelectionCommandTest, DeleteWithEditabilityChange) {
 
   // The command removes the <style>, so the <body> stops being editable,
   // and then "x" is not removed.
-  EXPECT_FALSE(HasEditableStyle(*GetDocument().body()));
+  EXPECT_FALSE(IsEditable(*GetDocument().body()));
   EXPECT_EQ("|x", GetSelectionTextFromBody());
+}
+
+// This is a regression test for https://crbug.com/1307391
+TEST_F(DeleteSelectionCommandTest, FloatingInputsWithTrailingSpace) {
+  GetDocument().setDesignMode("on");
+  InsertStyleElement("input { float: left; }");
+  Selection().SetSelection(SetSelectionTextToBody("<input>^<input><input>| "),
+                           SetSelectionOptions());
+
+  DeleteSelectionCommand& command =
+      *MakeGarbageCollected<DeleteSelectionCommand>(
+          GetDocument(), DeleteSelectionOptions::NormalDelete());
+  // Should not crash.
+  EXPECT_TRUE(command.Apply());
+  EXPECT_EQ("<input>| ", GetSelectionTextFromBody());
 }
 
 }  // namespace blink

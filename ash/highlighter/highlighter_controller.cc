@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -128,7 +128,7 @@ void HighlighterController::UpdatePointerView(ui::TouchEvent* event) {
 
   gfx::Rect bounds =
       highlighter_view_widget_->GetNativeWindow()->GetRootWindow()->bounds();
-  bounds.Inset(kScreenEdgeMargin, kScreenEdgeMargin);
+  bounds.Inset(kScreenEdgeMargin);
 
   const gfx::PointF pos = GetHighlighterView()->points().GetNewest().location;
   if (bounds.Contains(

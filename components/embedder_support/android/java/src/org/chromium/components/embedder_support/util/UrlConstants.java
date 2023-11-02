@@ -1,8 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.components.embedder_support.util;
+
+import org.chromium.url.GURL;
 
 /**
  * Java side version of chrome/common/url_constants.cc
@@ -75,6 +77,8 @@ public class UrlConstants {
     public static final String GPU_URL = "chrome://gpu/";
     public static final String VERSION_URL = "chrome://version/";
 
+    public static final String GOOGLE_ACCOUNT_HOME_URL = "https://myaccount.google.com/";
+
     public static final String GOOGLE_ACCOUNT_ACTIVITY_CONTROLS_URL =
             "https://myaccount.google.com/activitycontrols/search";
 
@@ -99,4 +103,20 @@ public class UrlConstants {
 
     public static final String MANAGEMENT_HOST = "management";
     public static final String MANAGEMENT_URL = "chrome://management/";
+
+    private static class Holder {
+        private static final String SERIALIZED_NTP_URL =
+                "73,1,true,0,6,0,-1,0,-1,9,6,0,-1,15,1,0,-1,0,-1,false,false,chrome://newtab/";
+        private static GURL sNtpGurl =
+                GURL.deserializeLatestVersionOnly(SERIALIZED_NTP_URL.replace(',', '\0'));
+    }
+
+    /**
+     * Returns a cached GURL representation of {@link UrlConstants.NTP_NON_NATIVE_URL}. It is safe
+     * to call this method before native is loaded and doing so will not block on native loading
+     * completion since a hardcoded, serialized string is used.
+     */
+    public static GURL ntpGurl() {
+        return Holder.sNtpGurl;
+    }
 }

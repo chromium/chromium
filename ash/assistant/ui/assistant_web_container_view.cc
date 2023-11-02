@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -89,7 +89,7 @@ void AssistantWebContainerView::DidStopLoading() {
   contents_view_ptr_ = AddChildView(std::move(contents_view_));
   constexpr int kTopPaddingDip = 8;
   contents_view_ptr_->SetBorder(
-      views::CreateEmptyBorder(kTopPaddingDip, 0, 0, 0));
+      views::CreateEmptyBorder(gfx::Insets::TLBR(kTopPaddingDip, 0, 0, 0)));
   SetFocusBehavior(FocusBehavior::ALWAYS);
 }
 

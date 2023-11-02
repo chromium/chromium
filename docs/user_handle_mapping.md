@@ -31,6 +31,7 @@ For Chromium contributors that have different nicks on other domains.
 | littledan         | dehrenberg      |
 | loonybear         | lunalu          |
 | mark              | mmentovai       |
+| mathias           | mths, mathiasb  |
 | nick              | ncarter         |
 | oleg              | olege           |
 | pam               | pamg            |

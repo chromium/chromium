@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -232,6 +232,28 @@ chrome.test.runTests([
         {isolatedWorld: '<none>', mainWorld: 'from main world'},
         results[0].result);
 
+    chrome.test.succeed();
+  },
+
+  async function promisesAreResolved() {
+    const query = {url: 'http://example.com/*'};
+    let tab = await getSingleTab(query);
+    const target = {tabId: tab.id};
+
+    const promiseFunc = async () => {
+      // Return a promise that resolves asynchronously.
+      let result = await new Promise((r) => {
+        setTimeout(r, 50, 'Hello, World!');
+      });
+      return result;
+    };
+    const results = await chrome.scripting.executeScript({
+      target: target,
+      func: promiseFunc,
+    });
+
+    chrome.test.assertEq(1, results.length);
+    chrome.test.assertEq('Hello, World!', results[0].result);
     chrome.test.succeed();
   },
 

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,8 +30,8 @@ class LacrosServiceNeverBlockingState {
 
   // Crosapi is the interface that lacros-chrome uses to message
   // ash-chrome. This method binds the remote, which allows queuing of message
-  // to ash-chrome. The messages will not go through until
-  // RequestCrosapiReceiver() is invoked.
+  // to ash-chrome. The messages will not go through until FusePipeCrosapi() is
+  // invoked.
   void BindCrosapi();
 
   void FusePipeCrosapi(

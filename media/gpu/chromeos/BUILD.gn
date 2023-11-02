@@ -1,10 +1,11 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//media/gpu/args.gni")
 import("//testing/test.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 assert(use_v4l2_codec || use_vaapi)
 
@@ -17,6 +18,7 @@ source_set("chromeos") {
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
   sources = [
     "image_processor_factory.cc",
+    "oop_video_decoder.cc",
     "video_decoder_pipeline.cc",
   ]
 
@@ -24,10 +26,12 @@ source_set("chromeos") {
 
   deps = [
     "//base",
+    "//build/config/linux/libdrm",
     "//media",
     "//media/gpu:buildflags",
     "//media/gpu:command_buffer_helper",
     "//media/gpu:common",
+    "//media/mojo/common:common",
   ]
 
   if (use_vaapi) {
@@ -40,6 +44,11 @@ source_set("chromeos") {
   if (use_v4l2_codec) {
     deps += [ "//media/gpu/v4l2" ]
   }
+
+  if (is_chromeos) {
+    deps +=
+        [ "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu" ]
+  }
 }
 
 # This target can be depended by targets in //media/gpu/{v4l2,vaapi}.
@@ -49,6 +58,8 @@ source_set("common") {
     "chromeos_status.h",
     "dmabuf_video_frame_pool.cc",
     "dmabuf_video_frame_pool.h",
+    "gl_image_processor_backend.cc",
+    "gl_image_processor_backend.h",
     "gpu_buffer_layout.cc",
     "gpu_buffer_layout.h",
     "image_processor.cc",
@@ -62,6 +73,7 @@ source_set("common") {
     "libyuv_image_processor_backend.h",
     "mailbox_video_frame_converter.cc",
     "mailbox_video_frame_converter.h",
+    "oop_video_decoder.h",
     "platform_video_frame_pool.cc",
     "platform_video_frame_pool.h",
     "platform_video_frame_utils.cc",
@@ -76,7 +88,11 @@ source_set("common") {
   ]
 
   # TODO(crbug.com/1012587): Merge :fourcc to :common.
-  public_deps = [ ":fourcc" ]
+  public_deps = [
+    ":fourcc",
+    "//gpu/ipc/service",
+    "//media/mojo/mojom/stable:stable_video_decoder",
+  ]
 
   deps = [
     ":fourcc",
@@ -85,6 +101,7 @@ source_set("common") {
     "//build/config/linux/libdrm",
     "//gpu/ipc/common:common",
     "//media",
+    "//media/gpu:buffer_validation",
     "//media/gpu:buildflags",
     "//media/gpu:command_buffer_helper",
     "//media/gpu:common",
@@ -97,13 +114,15 @@ source_set("common") {
     "//ui/gfx/linux:gbm",
     "//ui/gl",
   ]
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "decoder_buffer_transcryptor.cc",
       "decoder_buffer_transcryptor.h",
     ]
-    deps +=
-        [ "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu" ]
+    deps += [
+      ":cdm-oemcrypto-proto",
+      "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu",
+    ]
   }
 }
 
@@ -140,6 +159,15 @@ source_set("video_frame_mapper") {
     "//media/gpu:common",
     "//media/gpu:video_frame_mapper_common",
   ]
+}
+
+if (is_chromeos) {
+  proto_library("cdm-oemcrypto-proto") {
+    sources = [
+      "//third_party/cros_system_api/dbus/cdm_oemcrypto/secure_buffer.proto",
+    ]
+    proto_out_dir = "media/gpu/chromeos"
+  }
 }
 
 source_set("unit_tests") {

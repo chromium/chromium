@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,13 +12,13 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -47,7 +47,7 @@ class NET_EXPORT NetworkErrorLoggingService {
   // Every (NIK, origin) pair can have at most one policy.
   struct NET_EXPORT NelPolicyKey {
     NelPolicyKey();
-    NelPolicyKey(const NetworkIsolationKey& network_isolation_key,
+    NelPolicyKey(const NetworkAnonymizationKey& network_anonymization_key,
                  const url::Origin& origin);
     NelPolicyKey(const NelPolicyKey& other);
     ~NelPolicyKey();
@@ -59,7 +59,7 @@ class NET_EXPORT NetworkErrorLoggingService {
     // The NIK of the request this policy was received from. This will be used
     // for any requests uploading reports according to this policy. (Not
     // included in the report itself.)
-    NetworkIsolationKey network_isolation_key;
+    NetworkAnonymizationKey network_anonymization_key;
 
     url::Origin origin;
   };
@@ -68,8 +68,9 @@ class NET_EXPORT NetworkErrorLoggingService {
   // subdomains.
   struct WildcardNelPolicyKey {
     WildcardNelPolicyKey();
-    WildcardNelPolicyKey(const NetworkIsolationKey& network_isolation_key,
-                         const std::string& domain);
+    WildcardNelPolicyKey(
+        const NetworkAnonymizationKey& network_anonymization_key,
+        const std::string& domain);
     explicit WildcardNelPolicyKey(const NelPolicyKey& origin_key);
     WildcardNelPolicyKey(const WildcardNelPolicyKey& other);
     ~WildcardNelPolicyKey();
@@ -79,7 +80,7 @@ class NET_EXPORT NetworkErrorLoggingService {
     // The NIK of the request this policy was received from. This will be used
     // for any requests uploading reports according to this policy. (Not
     // included in the report itself.)
-    NetworkIsolationKey network_isolation_key;
+    NetworkAnonymizationKey network_anonymization_key;
 
     std::string domain;
   };
@@ -117,9 +118,9 @@ class NET_EXPORT NetworkErrorLoggingService {
     RequestDetails(const RequestDetails& other);
     ~RequestDetails();
 
-    // NetworkIsolationKey of the request triggering the error. Not included
+    // NetworkAnonymizationKey of the request triggering the error. Not included
     // in the uploaded report.
-    NetworkIsolationKey network_isolation_key;
+    NetworkAnonymizationKey network_anonymization_key;
 
     GURL uri;
     GURL referrer;
@@ -147,9 +148,9 @@ class NET_EXPORT NetworkErrorLoggingService {
     SignedExchangeReportDetails(const SignedExchangeReportDetails& other);
     ~SignedExchangeReportDetails();
 
-    // NetworkIsolationKey of the request triggering the error. Not included
+    // NetworkAnonymizationKey of the request triggering the error. Not included
     // in the uploaded report.
-    NetworkIsolationKey network_isolation_key;
+    NetworkAnonymizationKey network_anonymization_key;
 
     bool success;
     std::string type;
@@ -225,13 +226,14 @@ class NET_EXPORT NetworkErrorLoggingService {
 
   virtual ~NetworkErrorLoggingService();
 
-  // Ingests a "NEL:" header received for |network_isolation_key| and |origin|
-  // from |received_ip_address| with normalized value |value|. May or may not
-  // actually set a policy for that origin.
-  virtual void OnHeader(const NetworkIsolationKey& network_isolation_key,
-                        const url::Origin& origin,
-                        const IPAddress& received_ip_address,
-                        const std::string& value) = 0;
+  // Ingests a "NEL:" header received for |network_anonymization_key| and
+  // |origin| from |received_ip_address| with normalized value |value|. May or
+  // may not actually set a policy for that origin.
+  virtual void OnHeader(
+      const NetworkAnonymizationKey& network_anonymization_key,
+      const url::Origin& origin,
+      const IPAddress& received_ip_address,
+      const std::string& value) = 0;
 
   // Considers queueing a network error report for the request described in
   // |details|.  The contents of |details| might be changed, depending on the
@@ -253,7 +255,8 @@ class NET_EXPORT NetworkErrorLoggingService {
   // Removes browsing data (origin policies) associated with any origin for
   // which |origin_filter| returns true.
   virtual void RemoveBrowsingData(
-      const base::RepeatingCallback<bool(const GURL&)>& origin_filter) = 0;
+      const base::RepeatingCallback<bool(const url::Origin&)>&
+          origin_filter) = 0;
 
   // Removes browsing data (origin policies) for all origins. Allows slight
   // optimization over passing an always-true filter to RemoveBrowsingData.
@@ -290,9 +293,9 @@ class NET_EXPORT NetworkErrorLoggingService {
   NetworkErrorLoggingService();
 
   // Unowned:
-  const base::Clock* clock_;
-  ReportingService* reporting_service_;
-  bool shut_down_;
+  raw_ptr<const base::Clock> clock_;
+  raw_ptr<ReportingService> reporting_service_ = nullptr;
+  bool shut_down_ = false;
 };
 
 // Persistent storage for NEL policies.

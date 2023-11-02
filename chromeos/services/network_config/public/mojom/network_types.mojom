@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,6 +42,13 @@ enum DeviceStateType {
   kProhibited,
   // Not used in DeviceStateProperties, but useful when querying by type.
   kUnavailable,
+};
+
+// The IP configuration type.
+[Stable, Extensible]
+enum IPConfigType {
+  kIPv4,
+  kIPv6,
 };
 
 // The network technology type. NOTE: 'All' and 'Wireless' are only used by

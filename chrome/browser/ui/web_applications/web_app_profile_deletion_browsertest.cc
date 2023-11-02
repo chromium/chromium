@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,10 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -33,7 +35,7 @@ class WebAppProfileDeletionBrowserTest : public WebAppControllerBrowserTest {
 };
 
 // Flaky on Windows: https://crbug.com/1247547.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_AppRegistrarNotifiesProfileDeletion \
   DISABLED_AppRegistrarNotifiesProfileDeletion
 #else
@@ -55,6 +57,18 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionBrowserTest,
 
         run_loop.Quit();
       }));
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  // Create an additional profile. ScheduleProfileForDeletion() ensures another
+  // profile exists. If one does not exist, it will create one (async). As
+  // creation is async, and ScheduleProfileForDeletion() will close all
+  // browsers, triggering shutdown, creation will fail (DCHECK). By creating
+  // another profile first, we ensure this doesn't happen.
+  base::FilePath path_profile2 =
+      profile_manager->GenerateNextProfileDirectoryPath();
+  profiles::testing::CreateProfileSync(profile_manager, path_profile2);
+#endif
 
   ScheduleCurrentProfileForDeletion();
   run_loop.Run();

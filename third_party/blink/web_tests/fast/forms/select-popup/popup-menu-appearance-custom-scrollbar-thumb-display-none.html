@@ -1,11 +1,9 @@
 <!DOCTYPE html>
-<html>
-<head>
-<script>
-  window.enablePixelTesting = true;
-</script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src="../../resources/ahem.js"></script>
 <script src="../resources/picker-common.js"></script>
+
 <style>
   select:focus {
     outline-width: 0;
@@ -29,8 +27,7 @@
     display: none;
   }
 </style>
-</head>
-<body>
+
 <select id='menu'>
   <option>This is an option</option>
   <option>This is an option</option>
@@ -57,8 +54,7 @@
   <option>This is an option</option>
   <option>This is an option</option>
 </select>
+
 <script>
-   openPickerAppearanceOnly(document.getElementById('menu'), () => testRunner.notifyDone());
+  window.onload = openPickerAppearanceOnly(document.querySelector('select'));
 </script>
-</body>
-</html>

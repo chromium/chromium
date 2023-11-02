@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -102,12 +102,36 @@ TEST_P(SupervisedUserErrorPageTest_BuildHtml, BuildHtml) {
   if (param.allow_access_requests) {
     EXPECT_THAT(result, testing::HasSubstr(l10n_util::GetStringUTF8(
                             IDS_CHILD_BLOCK_INTERSTITIAL_HEADER)));
-    if (param.is_web_filter_interstitial_refresh_enabled &&
-        (param.reason == ASYNC_CHECKER || param.reason == DENYLIST)) {
-      EXPECT_THAT(
-          result,
-          testing::HasSubstr(l10n_util::GetStringUTF8(
-              IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_SAFE_SITES_BLOCKED)));
+    if (param.is_web_filter_interstitial_refresh_enabled) {
+      EXPECT_THAT(result, testing::HasSubstr(l10n_util::GetStringUTF8(
+                              IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_V2)));
+      // Ensure that HTML contains a block message that is specific to the
+      // number of parents who can approve and the reason that the site is
+      // blocked. DEFAULT indicates that the parent(s) required the child
+      // request permission for all sites, and MANUAL indicates that the
+      // parent(s) specifically blocked this site.
+      if (param.reason == DEFAULT) {
+        if (param.has_two_parents) {
+          EXPECT_THAT(result,
+                      testing::HasSubstr(l10n_util::GetStringUTF8(
+                          IDS_CHILD_BLOCK_MESSAGE_DEFAULT_MULTI_PARENT)));
+        } else {
+          EXPECT_THAT(result,
+                      testing::HasSubstr(l10n_util::GetStringUTF8(
+                          IDS_CHILD_BLOCK_MESSAGE_DEFAULT_SINGLE_PARENT)));
+        }
+      }
+      if (param.reason == MANUAL) {
+        if (param.has_two_parents) {
+          EXPECT_THAT(result,
+                      testing::HasSubstr(l10n_util::GetStringUTF8(
+                          IDS_CHILD_BLOCK_MESSAGE_MANUAL_MULTI_PARENT)));
+        } else {
+          EXPECT_THAT(result,
+                      testing::HasSubstr(l10n_util::GetStringUTF8(
+                          IDS_CHILD_BLOCK_MESSAGE_MANUAL_SINGLE_PARENT)));
+        }
+      }
     } else {
       EXPECT_THAT(result, testing::HasSubstr(l10n_util::GetStringUTF8(
                               IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE)));

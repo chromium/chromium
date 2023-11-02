@@ -81,6 +81,8 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
   // previous animations are rendered useless.
   bool OverwritesUnderlyingAnimationValue() const;
 
+  void Trace(Visitor* visitor) const override;
+
  protected:
   SVGAnimationElement(const QualifiedName&, Document&);
 
@@ -146,7 +148,7 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
   // or key_times_for_paced_ by toggling the flag use_paced_key_times_.
   void CalculateKeyTimesForCalcModePaced();
 
-  Vector<float> const& KeyTimes() const {
+  HeapVector<float> const& KeyTimes() const {
     return use_paced_key_times_ ? key_times_for_paced_
                                 : key_times_from_attribute_;
   }
@@ -179,10 +181,10 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
   // Storing two sets of values to avoid overwriting (or reparsing) when
   // calc-mode changes. Fix for Issue 231525. What list to use is
   // decided in CalculateKeyTimesForCalcModePaced.
-  Vector<float> key_times_from_attribute_;
-  Vector<float> key_times_for_paced_;
+  HeapVector<float> key_times_from_attribute_;
+  HeapVector<float> key_times_for_paced_;
 
-  Vector<float> key_points_;
+  HeapVector<float> key_points_;
   Vector<gfx::CubicBezier> key_splines_;
   String last_values_animation_from_;
   String last_values_animation_to_;

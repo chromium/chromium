@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,11 @@
 
 #include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "cc/base/rolling_time_delta_history.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
@@ -33,7 +35,6 @@
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
 #include "components/viz/service/viz_service_export.h"
-#include "gpu/command_buffer/common/texture_in_use_response.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/gfx/swap_result.h"
@@ -141,7 +142,7 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
 
   // Sets the color matrix that will be used to transform the output of this
   // display. This is only supported for GPU compositing.
-  void SetColorMatrix(const skia::Matrix44& matrix);
+  void SetColorMatrix(const SkM44& matrix);
 
   void SetDisplayColorSpaces(
       const gfx::DisplayColorSpaces& display_color_spaces);
@@ -150,18 +151,15 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   const SurfaceId& CurrentSurfaceId() const;
 
   // DisplaySchedulerClient implementation.
-  bool DrawAndSwap(base::TimeTicks expected_display_time) override;
+  bool DrawAndSwap(const DrawAndSwapParams& params) override;
   void DidFinishFrame(const BeginFrameAck& ack) override;
   base::TimeDelta GetEstimatedDisplayDrawTime(const base::TimeDelta interval,
                                               double percentile) const override;
-  void OnObservingBeginFrameSourceChanged(bool observing) override;
 
   // OutputSurfaceClient implementation.
   void SetNeedsRedrawRect(const gfx::Rect& damage_rect) override;
   void DidReceiveSwapBuffersAck(const gfx::SwapTimings& timings,
                                 gfx::GpuFenceHandle release_fence) override;
-  void DidReceiveTextureInUseResponses(
-      const gpu::TextureInUseResponses& responses) override;
   void DidReceiveCALayerParams(
       const gfx::CALayerParams& ca_layer_params) override;
   void DidSwapWithSize(const gfx::Size& pixel_size) override;
@@ -232,18 +230,21 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
 
     void AddPresentationHelper(
         std::unique_ptr<Surface::PresentationHelper> helper);
-    void OnDraw(base::TimeTicks draw_start_timestamp);
-    void OnSwap(gfx::SwapTimings timings);
+    void OnDraw(base::TimeTicks frame_time,
+                base::TimeTicks draw_start_timestamp,
+                base::flat_set<base::PlatformThreadId> thread_ids);
+    void OnSwap(gfx::SwapTimings timings, DisplaySchedulerBase* scheduler);
     bool HasSwapped() const { return !swap_timings_.is_null(); }
-    void OnPresent(const gfx::PresentationFeedback& feedback,
-                   DisplaySchedulerBase* scheduler);
+    void OnPresent(const gfx::PresentationFeedback& feedback);
 
     base::TimeTicks draw_start_timestamp() const {
       return draw_start_timestamp_;
     }
 
    private:
+    base::TimeTicks frame_time_;
     base::TimeTicks draw_start_timestamp_;
+    base::flat_set<base::PlatformThreadId> thread_ids_;
     gfx::SwapTimings swap_timings_;
     std::vector<std::unique_ptr<Surface::PresentationHelper>>
         presentation_helpers_;
@@ -256,15 +257,15 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   // ContextLostObserver implementation.
   void OnContextLost() override;
 
-  SharedBitmapManager* const bitmap_manager_;
+  const raw_ptr<SharedBitmapManager> bitmap_manager_;
   const RendererSettings settings_;
 
   // Points to the viz-global singleton.
-  const DebugRendererSettings* const debug_settings_;
+  const raw_ptr<const DebugRendererSettings> debug_settings_;
 
-  DisplayClient* client_ = nullptr;
+  raw_ptr<DisplayClient> client_ = nullptr;
   base::ObserverList<DisplayObserver>::Unchecked observers_;
-  SurfaceManager* surface_manager_ = nullptr;
+  raw_ptr<SurfaceManager> surface_manager_ = nullptr;
   const FrameSinkId frame_sink_id_;
   SurfaceId current_surface_id_;
   gfx::Size current_surface_size_;
@@ -280,23 +281,33 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
 #endif
   std::unique_ptr<DisplayCompositorMemoryAndTaskController> gpu_dependency_;
   std::unique_ptr<OutputSurface> output_surface_;
-  SkiaOutputSurface* const skia_output_surface_;
-  std::unique_ptr<DisplayDamageTracker> damage_tracker_;
-  std::unique_ptr<DisplaySchedulerBase> scheduler_;
+  const raw_ptr<SkiaOutputSurface> skia_output_surface_;
   std::unique_ptr<DisplayResourceProvider> resource_provider_;
+  // `aggregator_` depends on `resource_provider_` so it must be declared last
+  // and destroyed first.
   std::unique_ptr<SurfaceAggregator> aggregator_;
+  // `damage_tracker_` depends on `aggregator_` so it must be declared last and
+  // destroyed first.
+  std::unique_ptr<DisplayDamageTracker> damage_tracker_;
+  // `scheduler_` depends on `damage_tracker_` so it must be declared last and
+  // destroyed first.
+  std::unique_ptr<DisplaySchedulerBase> scheduler_;
   bool last_wide_color_enabled_ = false;
   std::unique_ptr<FrameRateDecider> frame_rate_decider_;
   // This may be null if the Display is on a thread without a MessageLoop.
   scoped_refptr<base::SingleThreadTaskRunner> current_task_runner_;
-  std::unique_ptr<DirectRenderer> renderer_;
-  SoftwareRenderer* software_renderer_ = nullptr;
   // Currently, this OverlayProcessor takes raw pointer to memory tracker, which
   // is owned by the OutputSurface. This OverlayProcessor also takes resource
   // locks which contains raw pointers to DisplayResourceProvider. Make sure
   // both the OutputSurface and the DisplayResourceProvider outlive the
   // Overlay Processor.
   std::unique_ptr<OverlayProcessorInterface> overlay_processor_;
+  // `renderer_` depends on `overlay_processor_` and `resource_provider_`. It
+  // must be declared last and destroyed first.
+  std::unique_ptr<DirectRenderer> renderer_;
+  // `software_renderer_` depends on `renderer_`. It must be declared last and
+  // cleared first.
+  raw_ptr<SoftwareRenderer> software_renderer_ = nullptr;
   std::vector<ui::LatencyInfo> stored_latency_info_;
   std::vector<gfx::Rect> cached_visible_region_;
 

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 
 namespace remoting {
 
@@ -37,7 +36,7 @@ class OAuthTokenGetter {
   // This structure contains information required to perform authorization
   // with the authorization server.
   struct OAuthAuthorizationCredentials {
-    // |login| is used to valdiate |refresh_token| match.
+    // |login| is used to validate |refresh_token| match.
     // |is_service_account| should be True if the OAuth refresh token is for a
     // service account, False for a user account, to allow the correct client-ID
     // to be used.
@@ -70,7 +69,7 @@ class OAuthTokenGetter {
 
     ~OAuthIntermediateCredentials();
 
-    // Code used to check out a access token from the authrozation service.
+    // Code used to exchange for an access token from the authorization service.
     std::string authorization_code;
 
     // Override uri for oauth redirect. This is used for client accounts only

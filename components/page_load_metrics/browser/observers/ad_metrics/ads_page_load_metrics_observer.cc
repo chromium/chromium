@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,8 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/heavy_ad_intervention/heavy_ad_blocklist.h"
 #include "components/heavy_ad_intervention/heavy_ad_features.h"
 #include "components/heavy_ad_intervention/heavy_ad_helper.h"
@@ -29,10 +31,10 @@
 #include "components/page_load_metrics/common/page_end_reason.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
+#include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/subresource_filter/core/common/common_features.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
@@ -48,14 +50,12 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-shared.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
-
-#include "components/subresource_filter/core/browser/subresource_filter_features.h"
 
 namespace page_load_metrics {
 
@@ -71,8 +71,9 @@ namespace features {
 //
 // Currently this feature only changes AdTagging behavior for metrics recorded
 // in AdsPageLoadMetricsObserver, and for triggering the Heavy Ad Intervention.
-const base::Feature kRestrictedNavigationAdTagging{
-    "RestrictedNavigationAdTagging", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kRestrictedNavigationAdTagging,
+             "RestrictedNavigationAdTagging",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
 
@@ -148,6 +149,16 @@ blink::mojom::HeavyAdReason GetHeavyAdReason(HeavyAdStatus status) {
   }
 }
 
+int64_t GetExponentialBucketForDistributionMoment(double sample) {
+  constexpr static double kBucketSpacing = 1.3;
+
+  base::ClampedNumeric<int64_t> rounded = base::ClampRound<int64_t>(sample);
+
+  // If sample is negative, we need to first bucket it as a positive value.
+  return (sample >= 0 ? 1 : -1) *
+         ukm::GetExponentialBucketMin(rounded.Abs(), kBucketSpacing);
+}
+
 }  // namespace
 
 // static
@@ -168,14 +179,19 @@ AdsPageLoadMetricsObserver::CreateIfNeeded(
 }
 
 // static
-bool AdsPageLoadMetricsObserver::IsSubframeSameOriginToMainFrame(
-    content::RenderFrameHost* sub_host) {
-  DCHECK(sub_host);
-  content::RenderFrameHost* main_host =
-      content::WebContents::FromRenderFrameHost(sub_host)->GetMainFrame();
-  url::Origin subframe_origin = sub_host->GetLastCommittedOrigin();
-  url::Origin mainframe_origin = main_host->GetLastCommittedOrigin();
-  return subframe_origin.IsSameOriginWith(mainframe_origin);
+bool AdsPageLoadMetricsObserver::IsFrameSameOriginToOutermostMainFrame(
+    content::RenderFrameHost* host) {
+  DCHECK(host);
+  // In navigation for prerendering, `AdsPageLoadMetricsObserver` is removed
+  // from PageLoadTracker.
+  // TODO(https://crbug.com/1317494): Enable it if possible.
+  DCHECK_NE(content::RenderFrameHost::LifecycleState::kPrerendering,
+            host->GetLifecycleState());
+  content::RenderFrameHost* outermost_main_host = host->GetOutermostMainFrame();
+  url::Origin frame_origin = host->GetLastCommittedOrigin();
+  url::Origin outermost_mainframe_origin =
+      outermost_main_host->GetLastCommittedOrigin();
+  return frame_origin.IsSameOriginWith(outermost_mainframe_origin);
 }
 
 AdsPageLoadMetricsObserver::FrameInstance::FrameInstance()
@@ -231,13 +247,19 @@ AdsPageLoadMetricsObserver::AdsPageLoadMetricsObserver(
           heavy_ad_intervention::features::kHeavyAdPrivacyMitigations)),
       heavy_ad_threshold_noise_provider_(
           std::make_unique<HeavyAdThresholdNoiseProvider>(
-              heavy_ad_privacy_mitigations_enabled_ /* use_noise */)) {
+              heavy_ad_privacy_mitigations_enabled_ /* use_noise */)),
+      page_ad_density_tracker_(clock) {
   // Manual setting of the heavy ad blocklist should be used only as a
   // convenience for tests that don't create HeavyAdService.
   DCHECK(!heavy_ad_service_ || !heavy_ad_blocklist_);
 }
 
 AdsPageLoadMetricsObserver::~AdsPageLoadMetricsObserver() = default;
+
+const char* AdsPageLoadMetricsObserver::GetObserverName() const {
+  static const char kName[] = "AdsPageLoadMetricsObserver";
+  return kName;
+}
 
 PageLoadMetricsObserver::ObservePolicy AdsPageLoadMetricsObserver::OnStart(
     content::NavigationHandle* navigation_handle,
@@ -255,9 +277,19 @@ PageLoadMetricsObserver::ObservePolicy AdsPageLoadMetricsObserver::OnStart(
   return CONTINUE_OBSERVING;
 }
 
-PageLoadMetricsObserver::ObservePolicy AdsPageLoadMetricsObserver::OnCommit(
+PageLoadMetricsObserver::ObservePolicy
+AdsPageLoadMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
-    ukm::SourceId source_id) {
+    const GURL& currently_committed_url) {
+  // Need the observer-level forwarding for FrameReceivedUserActivation,
+  // FrameDisplayStateChanged, FrameSizeChanged, MediaStartedPlaying,
+  // OnMainFrameIntersectionRectChanged, OnMainFrameViewportRectChanged,
+  // and OnV8MemoryChanged.
+  return FORWARD_OBSERVING;
+}
+
+PageLoadMetricsObserver::ObservePolicy AdsPageLoadMetricsObserver::OnCommit(
+    content::NavigationHandle* navigation_handle) {
   DCHECK(ad_frames_data_.empty());
 
   page_load_is_reload_ =
@@ -278,13 +310,12 @@ PageLoadMetricsObserver::ObservePolicy AdsPageLoadMetricsObserver::OnCommit(
 }
 
 void AdsPageLoadMetricsObserver::OnTimingUpdate(
-    content::RenderFrameHost* subframe_rfh,
+    content::RenderFrameHost* frame_rfh,
     const mojom::PageLoadTiming& timing) {
-  if (!subframe_rfh)
+  if (!frame_rfh)
     return;
 
-  FrameTreeData* ancestor_data =
-      FindFrameData(subframe_rfh->GetFrameTreeNodeId());
+  FrameTreeData* ancestor_data = FindFrameData(frame_rfh->GetFrameTreeNodeId());
 
   if (!ancestor_data)
     return;
@@ -301,10 +332,8 @@ void AdsPageLoadMetricsObserver::OnTimingUpdate(
   // set Creative Origin Status.
   if (has_new_fcp) {
     OriginStatus origin_status =
-        AdsPageLoadMetricsObserver::IsSubframeSameOriginToMainFrame(
-            subframe_rfh)
-            ? OriginStatus::kSame
-            : OriginStatus::kCross;
+        IsFrameSameOriginToOutermostMainFrame(frame_rfh) ? OriginStatus::kSame
+                                                         : OriginStatus::kCross;
     ancestor_data->set_creative_origin_status(origin_status);
   }
 }
@@ -376,7 +405,7 @@ void AdsPageLoadMetricsObserver::UpdateAdFrameData(
   // Determine who the parent frame's ad ancestor is.  If we don't know who it
   // is, return, such as with a frame from a previous navigation.
   content::RenderFrameHost* parent_frame_host =
-      navigation_handle->GetParentFrame();
+      navigation_handle->GetParentFrameOrOuterDocument();
   const auto& parent_id_and_data =
       parent_frame_host
           ? ad_frames_data_.find(parent_frame_host->GetFrameTreeNodeId())
@@ -445,6 +474,11 @@ void AdsPageLoadMetricsObserver::ReadyToCommitNextNavigation(
   // ignore any such messages when a navigation is about to commit.
   if (!navigation_handle->IsInMainFrame())
     return;
+  // Prerendering navigation doesn't get here since this observer in
+  // prerendering is removed from PageLoadTracker.
+  // TODO(https://crbug.com/1317494): Consider enabling this observer for
+  // prerendering.
+  DCHECK(!navigation_handle->IsInPrerenderedMainFrame());
   process_display_state_updates_ = false;
 }
 
@@ -487,9 +521,9 @@ void AdsPageLoadMetricsObserver::OnDidFinishSubFrameNavigation(
 
     const GURL& last_committed_url =
         navigation_handle->GetRenderFrameHost()->GetLastCommittedURL();
-    const GURL& main_frame_last_committed_url =
+    const GURL& outermost_main_frame_last_committed_url =
         navigation_handle->GetRenderFrameHost()
-            ->GetMainFrame()
+            ->GetOutermostMainFrame()
             ->GetLastCommittedURL();
     // If a frame is detected to be an ad, but is same domain to the top frame,
     // and does not match a disallowed rule, ignore it.
@@ -497,7 +531,7 @@ void AdsPageLoadMetricsObserver::OnDidFinishSubFrameNavigation(
         (*load_policy != subresource_filter::LoadPolicy::DISALLOW) &&
         (*load_policy != subresource_filter::LoadPolicy::WOULD_DISALLOW) &&
         net::registry_controlled_domains::SameDomainOrHost(
-            last_committed_url, main_frame_last_committed_url,
+            last_committed_url, outermost_main_frame_last_committed_url,
             net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
     should_ignore_detected_ad =
         navigation_is_explicitly_allowed || should_ignore_same_domain_ad;
@@ -548,7 +582,7 @@ void AdsPageLoadMetricsObserver::OnResourceDataUseObserved(
     content::RenderFrameHost* rfh,
     const std::vector<mojom::ResourceDataUpdatePtr>& resources) {
   for (auto const& resource : resources) {
-    ProcessResourceForPage(rfh->GetProcess()->GetID(), resource);
+    ProcessResourceForPage(rfh, resource);
     ProcessResourceForFrame(rfh, resource);
   }
 }
@@ -591,16 +625,13 @@ void AdsPageLoadMetricsObserver::MediaStartedPlaying(
     ancestor_data->set_media_status(MediaStatus::kPlayed);
 }
 
-void AdsPageLoadMetricsObserver::OnFrameIntersectionUpdate(
+void AdsPageLoadMetricsObserver::OnMainFrameIntersectionRectChanged(
     content::RenderFrameHost* render_frame_host,
-    const mojom::FrameIntersectionUpdate& intersection_update) {
-  if (!intersection_update.main_frame_intersection_rect)
-    return;
-
+    const gfx::Rect& main_frame_intersection_rect) {
   int frame_tree_node_id = render_frame_host->GetFrameTreeNodeId();
-  if (render_frame_host == GetDelegate().GetWebContents()->GetMainFrame()) {
-    page_ad_density_tracker_.UpdateMainFrameRect(
-        *intersection_update.main_frame_intersection_rect);
+  if (render_frame_host ==
+      GetDelegate().GetWebContents()->GetPrimaryMainFrame()) {
+    page_ad_density_tracker_.UpdateMainFrameRect(main_frame_intersection_rect);
     return;
   }
 
@@ -612,19 +643,24 @@ void AdsPageLoadMetricsObserver::OnFrameIntersectionUpdate(
     page_ad_density_tracker_.RemoveRect(frame_tree_node_id);
     // Only add frames if they are visible.
     if (!ancestor_data->is_display_none()) {
-      page_ad_density_tracker_.AddRect(
-          frame_tree_node_id,
-          *intersection_update.main_frame_intersection_rect);
+      page_ad_density_tracker_.AddRect(frame_tree_node_id,
+                                       main_frame_intersection_rect);
     }
   }
 
   CheckForAdDensityViolation();
 }
 
+void AdsPageLoadMetricsObserver::OnMainFrameViewportRectChanged(
+    const gfx::Rect& main_frame_viewport_rect) {
+  page_ad_density_tracker_.UpdateMainFrameViewportRect(
+      main_frame_viewport_rect);
+}
+
 // TODO(https://crbug.com/1142669): Evaluate imposing width requirements
 // for ad density violations.
 void AdsPageLoadMetricsObserver::CheckForAdDensityViolation() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   const int kMaxMobileAdDensityByHeight = 30;
   if (page_ad_density_tracker_.MaxPageAdDensityByHeight() >
       kMaxMobileAdDensityByHeight) {
@@ -642,7 +678,7 @@ void AdsPageLoadMetricsObserver::CheckForAdDensityViolation() {
     // violations after the first are ignored. Ad frame violations are
     // attributed to the main frame url.
     throttle_manager->OnAdsViolationTriggered(
-        GetDelegate().GetWebContents()->GetMainFrame(),
+        GetDelegate().GetWebContents()->GetPrimaryMainFrame(),
         subresource_filter::mojom::AdsViolation::
             kMobileAdDensityByHeightAbove30);
   }
@@ -694,9 +730,10 @@ void AdsPageLoadMetricsObserver::OnV8MemoryChanged(
       ad_frame_data->UpdateMemoryUsage(update.delta_bytes);
       UpdateAggregateMemoryUsage(update.delta_bytes,
                                  ad_frame_data->visibility());
-    } else if (!render_frame_host->GetParent()) {
-      // |render_frame_host| is the main frame.
-      aggregate_frame_data_->update_main_frame_memory(update.delta_bytes);
+    } else if (!render_frame_host->GetParentOrOuterDocument()) {
+      // |render_frame_host| is the outermost main frame.
+      aggregate_frame_data_->update_outermost_main_frame_memory(
+          update.delta_bytes);
     }
   }
 }
@@ -717,6 +754,10 @@ void AdsPageLoadMetricsObserver::OnPageActivationComputed(
       navigation_handle->GetNavigationId() == navigation_id_ &&
       activation_state.activation_level ==
           subresource_filter::mojom::ActivationLevel::kEnabled) {
+    // Prerendering navigation is filtered out by checking `navigation_id_`.
+    // TODO(https://crbug.com/1317494): Consider enabling this observer for
+    // prerendering.
+    DCHECK(!navigation_handle->IsInPrerenderedMainFrame());
     DCHECK(!subresource_filter_is_enabled_);
     subresource_filter_is_enabled_ = true;
   }
@@ -745,15 +786,17 @@ int AdsPageLoadMetricsObserver::GetUnaccountedAdBytes(
 }
 
 void AdsPageLoadMetricsObserver::ProcessResourceForPage(
-    int process_id,
+    content::RenderFrameHost* render_frame_host,
     const mojom::ResourceDataUpdatePtr& resource) {
+  int process_id = render_frame_host->GetProcess()->GetID();
   auto mime_type = ResourceLoadAggregator::GetResourceMimeType(resource);
   int unaccounted_ad_bytes = GetUnaccountedAdBytes(process_id, resource);
-  bool is_main_frame = resource->is_main_frame_resource;
-  aggregate_frame_data_->ProcessResourceLoadInFrame(resource, is_main_frame);
+  bool is_outermost_main_frame = !render_frame_host->GetParentOrOuterDocument();
+  aggregate_frame_data_->ProcessResourceLoadInFrame(resource,
+                                                    is_outermost_main_frame);
   if (unaccounted_ad_bytes)
     aggregate_frame_data_->AdjustAdBytes(unaccounted_ad_bytes, mime_type,
-                                         is_main_frame);
+                                         is_outermost_main_frame);
 }
 
 void AdsPageLoadMetricsObserver::ProcessResourceForFrame(
@@ -840,7 +883,8 @@ void AdsPageLoadMetricsObserver::RecordPageResourceTotalHistograms(
           resource_data.GetAdNetworkBytesForMime(ResourceMimeType::kVideo) >>
           10)
       .SetMainframeAdBytes(ukm::GetExponentialBucketMinForBytes(
-          aggregate_frame_data_->main_frame_resource_data().ad_network_bytes()))
+          aggregate_frame_data_->outermost_main_frame_resource_data()
+              .ad_network_bytes()))
       .SetMaxAdDensityByArea(page_ad_density_tracker_.MaxPageAdDensityByArea())
       .SetMaxAdDensityByHeight(
           page_ad_density_tracker_.MaxPageAdDensityByHeight());
@@ -849,6 +893,24 @@ void AdsPageLoadMetricsObserver::RecordPageResourceTotalHistograms(
   builder.SetAdCpuTime(
       aggregate_frame_data_->total_ad_cpu_usage().InMilliseconds());
   builder.Record(ukm_recorder->Get());
+
+  // Record custom sampling metrics.
+  ukm::builders::AdPageLoadCustomSampling custom_sampling_builder(source_id);
+
+  page_ad_density_tracker_.Finalize();
+
+  UnivariateStats::DistributionMoments moments =
+      page_ad_density_tracker_.GetAdDensityByAreaStats();
+
+  custom_sampling_builder.SetAverageViewportAdDensity(
+      std::llround(moments.mean));
+  custom_sampling_builder.SetVarianceViewportAdDensity(
+      GetExponentialBucketForDistributionMoment(moments.variance));
+  custom_sampling_builder.SetSkewnessViewportAdDensity(
+      GetExponentialBucketForDistributionMoment(moments.skewness));
+  custom_sampling_builder.SetKurtosisViewportAdDensity(
+      GetExponentialBucketForDistributionMoment(moments.excess_kurtosis));
+  custom_sampling_builder.Record(ukm_recorder->Get());
 }
 
 void AdsPageLoadMetricsObserver::RecordHistograms(ukm::SourceId source_id) {
@@ -968,19 +1030,20 @@ void AdsPageLoadMetricsObserver::RecordAggregateHistogramsForAdTagging(
   if (visibility != FrameVisibility::kAnyVisibility)
     return;
 
-  const auto& main_frame_resource_data =
-      aggregate_frame_data_->main_frame_resource_data();
+  const auto& outermost_main_frame_resource_data =
+      aggregate_frame_data_->outermost_main_frame_resource_data();
   ADS_HISTOGRAM("Bytes.MainFrame.Network", PAGE_BYTES_HISTOGRAM, visibility,
-                main_frame_resource_data.network_bytes());
+                outermost_main_frame_resource_data.network_bytes());
   ADS_HISTOGRAM("Bytes.MainFrame.Total2", PAGE_BYTES_HISTOGRAM, visibility,
-                main_frame_resource_data.bytes());
+                outermost_main_frame_resource_data.bytes());
   ADS_HISTOGRAM("Bytes.MainFrame.Ads.Network", PAGE_BYTES_HISTOGRAM, visibility,
-                main_frame_resource_data.ad_network_bytes());
+                outermost_main_frame_resource_data.ad_network_bytes());
   ADS_HISTOGRAM("Bytes.MainFrame.Ads.Total2", PAGE_BYTES_HISTOGRAM, visibility,
-                main_frame_resource_data.ad_bytes());
+                outermost_main_frame_resource_data.ad_bytes());
   if (base::FeatureList::IsEnabled(::features::kV8PerFrameMemoryMonitoring)) {
-    PAGE_BYTES_HISTOGRAM("PageLoad.Clients.Ads.Memory.MainFrame.Max",
-                         aggregate_frame_data_->main_frame_max_memory());
+    PAGE_BYTES_HISTOGRAM(
+        "PageLoad.Clients.Ads.Memory.MainFrame.Max",
+        aggregate_frame_data_->outermost_main_frame_max_memory());
     UMA_HISTOGRAM_COUNTS_10000("PageLoad.Clients.Ads.Memory.UpdateCount",
                                memory_update_count_);
   }
@@ -1177,7 +1240,7 @@ void AdsPageLoadMetricsObserver::MaybeTriggerStrictHeavyAdIntervention() {
   // violations after the first are ignored. Ad frame violations are
   // attributed to the main frame url.
   throttle_manager->OnAdsViolationTriggered(
-      GetDelegate().GetWebContents()->GetMainFrame(),
+      GetDelegate().GetWebContents()->GetPrimaryMainFrame(),
       subresource_filter::mojom::AdsViolation::
           kHeavyAdsInterventionAtHostLimit);
 }
@@ -1221,7 +1284,7 @@ void AdsPageLoadMetricsObserver::MaybeTriggerHeavyAdIntervention(
   // ad by our heuristics.
   while (render_frame_host && render_frame_host->GetFrameTreeNodeId() !=
                                   frame_data->root_frame_tree_node_id()) {
-    render_frame_host = render_frame_host->GetParent();
+    render_frame_host = render_frame_host->GetParentOrOuterDocument();
   }
   if (!render_frame_host) {
     frame_data->set_heavy_ad_action(HeavyAdAction::kIgnored);
@@ -1229,7 +1292,7 @@ void AdsPageLoadMetricsObserver::MaybeTriggerHeavyAdIntervention(
   }
 
   // Ensure that this RenderFrameHost is a subframe.
-  DCHECK(render_frame_host->GetParent());
+  DCHECK(render_frame_host->GetParentOrOuterDocument());
 
   frame_data->set_heavy_ad_action(action);
 
@@ -1258,19 +1321,18 @@ void AdsPageLoadMetricsObserver::MaybeTriggerHeavyAdIntervention(
   // be available in the the unload handler.
   std::string report_message =
       GetHeavyAdReportMessage(*frame_data, action == HeavyAdAction::kUnload);
-  render_frame_host->ForEachRenderFrameHost(base::BindRepeating(
-      [](const std::string& report_message, const content::Page* page,
-         content::RenderFrameHost* frame) {
+  render_frame_host->ForEachRenderFrameHostWithAction(
+      [&report_message,
+       &page = render_frame_host->GetPage()](content::RenderFrameHost* frame) {
         // If `frame`'s page doesn't match the one we are associated with (for
         // fenced frames or portals) skip the subtree.
-        if (page != &frame->GetPage())
+        if (&page != &frame->GetPage())
           return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
-        const char kReportId[] = "HeavyAdIntervention";
+        static constexpr char kReportId[] = "HeavyAdIntervention";
         if (frame->IsRenderFrameLive())
           frame->SendInterventionReport(kReportId, report_message);
         return content::RenderFrameHost::FrameIterationAction::kContinue;
-      },
-      report_message, &render_frame_host->GetPage()));
+      });
 
   // Report intervention to the blocklist.
   if (auto* blocklist = GetHeavyAdBlocklist()) {

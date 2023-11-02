@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/time/time.h"
 #include "components/visitedlink/browser/visitedlink_delegate.h"
 #include "components/visitedlink/common/visitedlink.mojom.h"
 #include "content/public/browser/notification_service.h"
@@ -121,8 +122,6 @@ VisitedLinkEventListener::VisitedLinkEventListener(
     content::BrowserContext* browser_context)
     : coalesce_timer_(&default_coalesce_timer_),
       browser_context_(browser_context) {
-  registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_CREATED,
-                 content::NotificationService::AllBrowserContextsAndSources());
   registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_TERMINATED,
                  content::NotificationService::AllBrowserContextsAndSources());
   registrar_.Add(this, content::NOTIFICATION_RENDER_WIDGET_VISIBILITY_CHANGED,
@@ -189,26 +188,24 @@ void VisitedLinkEventListener::CommitVisitedLinks() {
   pending_visited_links_.clear();
 }
 
+void VisitedLinkEventListener::OnRenderProcessHostCreated(
+    content::RenderProcessHost* rph) {
+  if (browser_context_ != rph->GetBrowserContext())
+    return;
+
+  // Happens on browser start up.
+  if (!table_region_.IsValid())
+    return;
+
+  updaters_[rph->GetID()] = std::make_unique<VisitedLinkUpdater>(rph->GetID());
+  updaters_[rph->GetID()]->SendVisitedLinkTable(&table_region_);
+}
+
 void VisitedLinkEventListener::Observe(
     int type,
     const content::NotificationSource& source,
     const content::NotificationDetails& details) {
   switch (type) {
-    case content::NOTIFICATION_RENDERER_PROCESS_CREATED: {
-      content::RenderProcessHost* process =
-          content::Source<content::RenderProcessHost>(source).ptr();
-      if (browser_context_ != process->GetBrowserContext())
-        return;
-
-      // Happens on browser start up.
-      if (!table_region_.IsValid())
-        return;
-
-      updaters_[process->GetID()] =
-          std::make_unique<VisitedLinkUpdater>(process->GetID());
-      updaters_[process->GetID()]->SendVisitedLinkTable(&table_region_);
-      break;
-    }
     case content::NOTIFICATION_RENDERER_PROCESS_TERMINATED: {
       content::RenderProcessHost* process =
           content::Source<content::RenderProcessHost>(source).ptr();

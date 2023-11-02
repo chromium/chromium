@@ -1,8 +1,9 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
@@ -31,8 +32,9 @@ class TestLocalSessionEventHandler
   void OnLocalTabModified(
       sync_sessions::SyncedTabDelegate* modified_tab) override {
     local_tab_updated_ = true;
-    if (quit_closure_)
+    if (quit_closure_) {
       std::move(quit_closure_).Run();
+    }
   }
 
   bool local_tab_updated() { return local_tab_updated_; }
@@ -48,16 +50,19 @@ class TestTranslateDriverObserver
  public:
   void OnLanguageDetermined(
       const translate::LanguageDetectionDetails& details) override {
-    if (interested_url_ != details.url)
+    if (interested_url_ != details.url) {
       return;
+    }
     language_determined_ = true;
-    if (quit_closure_)
+    if (quit_closure_) {
       std::move(quit_closure_).Run();
+    }
   }
 
   void WaitForLanguageDetermined() {
-    if (language_determined_)
+    if (language_determined_) {
       return;
+    }
     base::RunLoop run_loop;
     quit_closure_ = run_loop.QuitClosure();
     run_loop.Run();
@@ -95,8 +100,9 @@ class SyncSessionsRouterTabHelperBrowserTest : public InProcessBrowserTest {
     observer_.SetInterestedURL(url);
     ChromeTranslateClient* chrome_translate_client =
         ChromeTranslateClient::FromWebContents(web_contents());
-    if (!chrome_translate_client)
+    if (!chrome_translate_client) {
       return;
+    }
     chrome_translate_client->GetTranslateDriver()->AddLanguageDetectionObserver(
         &observer_);
   }
@@ -105,8 +111,9 @@ class SyncSessionsRouterTabHelperBrowserTest : public InProcessBrowserTest {
     observer_.SetInterestedURL(GURL::EmptyGURL());
     ChromeTranslateClient* chrome_translate_client =
         ChromeTranslateClient::FromWebContents(web_contents());
-    if (!chrome_translate_client)
+    if (!chrome_translate_client) {
       return;
+    }
     chrome_translate_client->GetTranslateDriver()
         ->RemoveLanguageDetectionObserver(&observer_);
   }
@@ -122,7 +129,7 @@ class SyncSessionsRouterTabHelperBrowserTest : public InProcessBrowserTest {
 
  protected:
  private:
-  content::WebContents* web_contents_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
   content::test::PrerenderTestHelper prerender_helper_;
   TestLocalSessionEventHandler handler;
   TestTranslateDriverObserver observer_;
@@ -154,8 +161,8 @@ IN_PROC_BROWSER_TEST_F(SyncSessionsRouterTabHelperBrowserTest,
   // OnLocalTabModified() by SyncSessionsRouterTabHelper::TitleWasSet(). Except
   // it, SyncSessionsRouterTabHelper doesn't trigger OnLocalTabModified() on
   // prerendering.
-  auto prerender_url = embedded_test_server()->GetURL("/title1.html");
-  auto prerender_id = prerender_helper()->AddPrerender(prerender_url);
+  GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
+  int prerender_id = prerender_helper()->AddPrerender(prerender_url);
   content::test::PrerenderHostObserver host_observer(*web_contents(),
                                                      prerender_id);
   // Make sure that OnLocalTabModified() is not called.

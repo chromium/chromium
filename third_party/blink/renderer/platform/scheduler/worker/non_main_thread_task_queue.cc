@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,9 @@
 
 #include "base/bind.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/budget_pool.h"
-#include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_scheduler_impl.h"
+#include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_scheduler_base.h"
+
+#include "base/record_replay.h"
 
 namespace blink {
 namespace scheduler {
@@ -16,35 +18,41 @@ using base::sequence_manager::TaskQueue;
 NonMainThreadTaskQueue::NonMainThreadTaskQueue(
     std::unique_ptr<base::sequence_manager::internal::TaskQueueImpl> impl,
     const TaskQueue::Spec& spec,
-    NonMainThreadSchedulerImpl* non_main_thread_scheduler,
+    NonMainThreadSchedulerBase* non_main_thread_scheduler,
     bool can_be_throttled)
-    : TaskQueue(std::move(impl), spec),
+    : task_queue_(base::MakeRefCounted<TaskQueue>(std::move(impl), spec)),
       non_main_thread_scheduler_(non_main_thread_scheduler) {
+  // Pointer registration is needed for sorting in TaskQueueVoterMap.
+  recordreplay::RegisterPointer("NonMainThreadTaskQueue", this);
+
   // Throttling needs |should_notify_observers| to get task timing.
   DCHECK(!can_be_throttled || spec.should_notify_observers)
       << "Throttled queue is not supported with |!should_notify_observers|";
-  if (GetTaskQueueImpl() && spec.should_notify_observers) {
+  if (task_queue_->HasImpl() && spec.should_notify_observers) {
     if (can_be_throttled) {
-      throttler_.emplace(this, non_main_thread_scheduler->GetTickClock());
+      throttler_.emplace(task_queue_.get(),
+                         non_main_thread_scheduler->GetTickClock());
     }
     // TaskQueueImpl may be null for tests.
-    GetTaskQueueImpl()->SetOnTaskCompletedHandler(base::BindRepeating(
+    task_queue_->SetOnTaskCompletedHandler(base::BindRepeating(
         &NonMainThreadTaskQueue::OnTaskCompleted, base::Unretained(this)));
   }
 }
 
-NonMainThreadTaskQueue::~NonMainThreadTaskQueue() = default;
+NonMainThreadTaskQueue::~NonMainThreadTaskQueue() {
+  recordreplay::UnregisterPointer(this);
+}
 
 void NonMainThreadTaskQueue::ShutdownTaskQueue() {
   non_main_thread_scheduler_ = nullptr;
   throttler_.reset();
-  TaskQueue::ShutdownTaskQueue();
+  task_queue_->ShutdownTaskQueue();
 }
 
 void NonMainThreadTaskQueue::OnTaskCompleted(
     const base::sequence_manager::Task& task,
     TaskQueue::TaskTiming* task_timing,
-    base::sequence_manager::LazyNow* lazy_now) {
+    base::LazyNow* lazy_now) {
   // |non_main_thread_scheduler_| can be nullptr in tests.
   if (non_main_thread_scheduler_) {
     non_main_thread_scheduler_->OnTaskCompleted(this, task, task_timing,
@@ -90,13 +98,13 @@ void NonMainThreadTaskQueue::OnWebSchedulingPriorityChanged() {
   DCHECK(web_scheduling_priority_);
   switch (web_scheduling_priority_.value()) {
     case WebSchedulingPriority::kUserBlockingPriority:
-      SetQueuePriority(TaskQueue::QueuePriority::kHighPriority);
+      task_queue_->SetQueuePriority(TaskQueue::QueuePriority::kHighPriority);
       return;
     case WebSchedulingPriority::kUserVisiblePriority:
-      SetQueuePriority(TaskQueue::QueuePriority::kNormalPriority);
+      task_queue_->SetQueuePriority(TaskQueue::QueuePriority::kNormalPriority);
       return;
     case WebSchedulingPriority::kBackgroundPriority:
-      SetQueuePriority(TaskQueue::QueuePriority::kLowPriority);
+      task_queue_->SetQueuePriority(TaskQueue::QueuePriority::kLowPriority);
       return;
   }
 }

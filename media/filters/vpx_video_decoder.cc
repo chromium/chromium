@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -146,12 +146,13 @@ void VpxVideoDecoder::Initialize(const VideoDecoderConfig& config,
   InitCB bound_init_cb = bind_callbacks_ ? BindToCurrentLoop(std::move(init_cb))
                                          : std::move(init_cb);
   if (config.is_encrypted()) {
-    std::move(bound_init_cb).Run(StatusCode::kEncryptedContentUnsupported);
+    std::move(bound_init_cb)
+        .Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
     return;
   }
 
   if (!ConfigureDecoder(config)) {
-    std::move(bound_init_cb).Run(StatusCode::kDecoderFailedInitialization);
+    std::move(bound_init_cb).Run(DecoderStatus::Codes::kUnsupportedConfig);
     return;
   }
 
@@ -159,7 +160,7 @@ void VpxVideoDecoder::Initialize(const VideoDecoderConfig& config,
   config_ = config;
   state_ = DecoderState::kNormal;
   output_cb_ = output_cb;
-  std::move(bound_init_cb).Run(OkStatus());
+  std::move(bound_init_cb).Run(DecoderStatus::Codes::kOk);
 }
 
 void VpxVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
@@ -176,25 +177,25 @@ void VpxVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                                  : std::move(decode_cb);
 
   if (state_ == DecoderState::kError) {
-    std::move(bound_decode_cb).Run(DecodeStatus::DECODE_ERROR);
+    std::move(bound_decode_cb).Run(DecoderStatus::Codes::kFailed);
     return;
   }
 
   if (state_ == DecoderState::kDecodeFinished) {
-    std::move(bound_decode_cb).Run(DecodeStatus::OK);
+    std::move(bound_decode_cb).Run(DecoderStatus::Codes::kOk);
     return;
   }
 
   if (state_ == DecoderState::kNormal && buffer->end_of_stream()) {
     state_ = DecoderState::kDecodeFinished;
-    std::move(bound_decode_cb).Run(DecodeStatus::OK);
+    std::move(bound_decode_cb).Run(DecoderStatus::Codes::kOk);
     return;
   }
 
   scoped_refptr<VideoFrame> video_frame;
   if (!VpxDecode(buffer.get(), &video_frame)) {
     state_ = DecoderState::kError;
-    std::move(bound_decode_cb).Run(DecodeStatus::DECODE_ERROR);
+    std::move(bound_decode_cb).Run(DecoderStatus::Codes::kFailed);
     return;
   }
 
@@ -206,7 +207,7 @@ void VpxVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   }
 
   // VideoDecoderShim expects |decode_cb| call after |output_cb_|.
-  std::move(bound_decode_cb).Run(DecodeStatus::OK);
+  std::move(bound_decode_cb).Run(DecoderStatus::Codes::kOk);
 }
 
 void VpxVideoDecoder::Reset(base::OnceClosure reset_cb) {
@@ -348,12 +349,13 @@ bool VpxVideoDecoder::VpxDecode(const DecoderBuffer* buffer,
     return false;
 
   if (vpx_image_alpha && config_.codec() == VideoCodec::kVP8) {
-    libyuv::CopyPlane(vpx_image_alpha->planes[VPX_PLANE_Y],
-                      vpx_image_alpha->stride[VPX_PLANE_Y],
-                      (*video_frame)->visible_data(VideoFrame::kAPlane),
-                      (*video_frame)->stride(VideoFrame::kAPlane),
-                      (*video_frame)->visible_rect().width(),
-                      (*video_frame)->visible_rect().height());
+    libyuv::CopyPlane(
+        vpx_image_alpha->planes[VPX_PLANE_Y],
+        vpx_image_alpha->stride[VPX_PLANE_Y],
+        (*video_frame)->GetWritableVisibleData(VideoFrame::kAPlane),
+        (*video_frame)->stride(VideoFrame::kAPlane),
+        (*video_frame)->visible_rect().width(),
+        (*video_frame)->visible_rect().height());
   }
 
   (*video_frame)->set_timestamp(buffer->timestamp());
@@ -403,7 +405,7 @@ bool VpxVideoDecoder::VpxDecode(const DecoderBuffer* buffer,
       break;
     case VPX_CS_SRGB:
       primaries = gfx::ColorSpace::PrimaryID::BT709;
-      transfer = gfx::ColorSpace::TransferID::IEC61966_2_1;
+      transfer = gfx::ColorSpace::TransferID::SRGB;
       matrix = gfx::ColorSpace::MatrixID::GBR;
       break;
     default:
@@ -591,10 +593,11 @@ bool VpxVideoDecoder::CopyVpxImageToVideoFrame(
     return false;
 
   for (int plane = 0; plane < 3; plane++) {
-    libyuv::CopyPlane(
-        vpx_image->planes[plane], vpx_image->stride[plane],
-        (*video_frame)->visible_data(plane), (*video_frame)->stride(plane),
-        (*video_frame)->row_bytes(plane), (*video_frame)->rows(plane));
+    libyuv::CopyPlane(vpx_image->planes[plane], vpx_image->stride[plane],
+                      (*video_frame)->GetWritableVisibleData(plane),
+                      (*video_frame)->stride(plane),
+                      (*video_frame)->row_bytes(plane),
+                      (*video_frame)->rows(plane));
   }
 
   return true;

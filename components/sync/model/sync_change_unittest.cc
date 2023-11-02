@@ -1,10 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/sync/model/sync_change.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/time/time.h"
 #include "base/values.h"
@@ -14,9 +15,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {
-
-// Ordered list of SyncChange's.
-using SyncChangeList = std::vector<SyncChange>;
 
 namespace {
 
@@ -49,7 +47,7 @@ TEST(SyncChangeTest, LocalUpdate) {
       EntitySpecificsToValue(specifics));
   std::unique_ptr<base::DictionaryValue> e_spec(
       EntitySpecificsToValue(e.sync_data().GetSpecifics()));
-  EXPECT_TRUE(ref_spec->Equals(e_spec.get()));
+  EXPECT_EQ(*ref_spec, *e_spec);
 }
 
 TEST(SyncChangeTest, LocalAdd) {
@@ -70,7 +68,7 @@ TEST(SyncChangeTest, LocalAdd) {
       EntitySpecificsToValue(specifics));
   std::unique_ptr<base::DictionaryValue> e_spec(
       EntitySpecificsToValue(e.sync_data().GetSpecifics()));
-  EXPECT_TRUE(ref_spec->Equals(e_spec.get()));
+  EXPECT_EQ(*ref_spec, *e_spec);
 }
 
 TEST(SyncChangeTest, SyncerChanges) {
@@ -114,7 +112,7 @@ TEST(SyncChangeTest, SyncerChanges) {
       EntitySpecificsToValue(update_specifics));
   std::unique_ptr<base::DictionaryValue> e_spec(
       EntitySpecificsToValue(e.sync_data().GetSpecifics()));
-  EXPECT_TRUE(ref_spec->Equals(e_spec.get()));
+  EXPECT_EQ(*ref_spec, *e_spec);
 
   // Verify add.
   e = change_list[1];
@@ -122,7 +120,7 @@ TEST(SyncChangeTest, SyncerChanges) {
   EXPECT_EQ(PREFERENCES, e.sync_data().GetDataType());
   ref_spec = EntitySpecificsToValue(add_specifics);
   e_spec = EntitySpecificsToValue(e.sync_data().GetSpecifics());
-  EXPECT_TRUE(ref_spec->Equals(e_spec.get()));
+  EXPECT_EQ(*ref_spec, *e_spec);
 
   // Verify delete.
   e = change_list[2];
@@ -130,7 +128,35 @@ TEST(SyncChangeTest, SyncerChanges) {
   EXPECT_EQ(PREFERENCES, e.sync_data().GetDataType());
   ref_spec = EntitySpecificsToValue(delete_specifics);
   e_spec = EntitySpecificsToValue(e.sync_data().GetSpecifics());
-  EXPECT_TRUE(ref_spec->Equals(e_spec.get()));
+  EXPECT_EQ(*ref_spec, *e_spec);
+}
+
+TEST(SyncChangeTest, MoveIsCopy) {
+  const std::string kTag = "client_tag";
+  const std::string kTitle = "client_title";
+  const std::string kPrefName = "test_name";
+  const SyncChange::SyncChangeType kChangeType = SyncChange::ACTION_UPDATE;
+
+  sync_pb::EntitySpecifics specifics;
+  sync_pb::PreferenceSpecifics* pref_specifics = specifics.mutable_preference();
+  pref_specifics->set_name(kPrefName);
+  SyncChange original(FROM_HERE, kChangeType,
+                      SyncData::CreateLocalData(kTag, kTitle, specifics));
+
+  SyncChange other = std::move(original);
+
+  ASSERT_EQ(kChangeType, other.change_type());
+  ASSERT_EQ(ClientTagHash::FromUnhashed(PREFERENCES, kTag),
+            other.sync_data().GetClientTagHash());
+  ASSERT_EQ(PREFERENCES, other.sync_data().GetDataType());
+  ASSERT_EQ(kPrefName, other.sync_data().GetSpecifics().preference().name());
+
+  // The original instance should remain valid, unmodified.
+  EXPECT_EQ(kChangeType, original.change_type());
+  EXPECT_EQ(ClientTagHash::FromUnhashed(PREFERENCES, kTag),
+            original.sync_data().GetClientTagHash());
+  EXPECT_EQ(PREFERENCES, original.sync_data().GetDataType());
+  EXPECT_EQ(kPrefName, original.sync_data().GetSpecifics().preference().name());
 }
 
 }  // namespace

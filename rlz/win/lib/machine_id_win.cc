@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "rlz/lib/assert.h"
 
@@ -85,7 +84,7 @@ bool GetRawMachineId(std::u16string* sid_string, int* volume_id) {
   // Calculate the Windows SID.
 
   wchar_t computer_name[MAX_COMPUTERNAME_LENGTH + 1] = {0};
-  DWORD size = base::size(computer_name);
+  DWORD size = std::size(computer_name);
 
   if (GetComputerNameW(computer_name, &size)) {
     char sid_buffer[SECURITY_MAX_SID_SIZE];

@@ -1,13 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/metrics/ios_chrome_default_browser_metrics_provider.h"
 
-#include "base/test/metrics/histogram_tester.h"
-#include "components/metrics/metrics_log_uploader.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "components/metrics/metrics_log_uploader.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

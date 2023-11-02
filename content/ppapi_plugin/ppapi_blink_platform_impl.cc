@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,9 +18,9 @@
 #include "ppapi/shared_impl/proxy_lock.h"
 #include "third_party/blink/public/platform/web_string.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "content/child/child_process_sandbox_support_impl_mac.h"
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "content/child/child_process_sandbox_support_impl_linux.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #endif
@@ -35,14 +35,14 @@ typedef struct CGFont* CGFontRef;
 namespace content {
 
 PpapiBlinkPlatformImpl::PpapiBlinkPlatformImpl() {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   mojo::PendingRemote<font_service::mojom::FontService> font_service;
   ChildThread::Get()->BindHostReceiver(
       font_service.InitWithNewPipeAndPassReceiver());
   font_loader_ = sk_make_sp<font_service::FontLoader>(std::move(font_service));
   SkFontConfigInterface::SetGlobal(font_loader_);
   sandbox_support_ = std::make_unique<WebSandboxSupportLinux>(font_loader_);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   sandbox_support_ = std::make_unique<WebSandboxSupportMac>();
 #endif
 }
@@ -53,7 +53,7 @@ PpapiBlinkPlatformImpl::~PpapiBlinkPlatformImpl() {
 void PpapiBlinkPlatformImpl::Shutdown() {}
 
 blink::WebSandboxSupport* PpapiBlinkPlatformImpl::GetSandboxSupport() {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
   return sandbox_support_.get();
 #else
   return nullptr;
@@ -73,11 +73,6 @@ bool PpapiBlinkPlatformImpl::IsLinkVisited(uint64_t link_hash) {
 
 blink::WebString PpapiBlinkPlatformImpl::DefaultLocale() {
   return blink::WebString::FromUTF8("en");
-}
-
-blink::WebThemeEngine* PpapiBlinkPlatformImpl::ThemeEngine() {
-  NOTREACHED();
-  return nullptr;
 }
 
 }  // namespace content

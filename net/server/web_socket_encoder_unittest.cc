@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -403,7 +403,7 @@ TEST_F(WebSocketEncoderCompressionTest, LongFrame) {
   frame.reserve(length);
   for (int i = 0; i < length; ++i) {
     int64_t j = i;
-    frame += temp.data()[(j * j) % length];
+    frame += temp[(j * j) % length];
   }
 
   int mask = 0;

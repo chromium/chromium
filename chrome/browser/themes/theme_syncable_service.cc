@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,8 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/adapters.h"
+#include "base/observer_list.h"
 #include "base/one_shot_event.h"
 #include "base/strings/stringprintf.h"
 #include "base/version.h"
@@ -36,8 +38,9 @@ bool IsTheme(const extensions::Extension* extension,
 
 }  // namespace
 
-const char ThemeSyncableService::kCurrentThemeClientTag[] = "current_theme";
-const char ThemeSyncableService::kCurrentThemeNodeTitle[] = "Current Theme";
+// "Current" is part of the name for historical reasons, shouldn't be changed.
+const char ThemeSyncableService::kSyncEntityClientTag[] = "current_theme";
+const char ThemeSyncableService::kSyncEntityTitle[] = "Current Theme";
 
 ThemeSyncableService::ThemeSyncableService(Profile* profile,
                                            ThemeService* theme_service)
@@ -120,13 +123,12 @@ ThemeSyncableService::MergeDataAndStartSyncing(
   // Find the last SyncData that has theme data and set the current theme from
   // it. If SyncData doesn't have a theme, but there is a current theme, it will
   // not reset it.
-  for (auto sync_data = initial_sync_data.rbegin();
-       sync_data != initial_sync_data.rend(); ++sync_data) {
-    if (sync_data->GetSpecifics().has_theme()) {
+  for (const syncer::SyncData& sync_data : base::Reversed(initial_sync_data)) {
+    if (sync_data.GetSpecifics().has_theme()) {
       if (!HasNonDefaultTheme(current_specifics) ||
-          HasNonDefaultTheme(sync_data->GetSpecifics().theme())) {
+          HasNonDefaultTheme(sync_data.GetSpecifics().theme())) {
         ThemeSyncState startup_state =
-            MaybeSetTheme(current_specifics, *sync_data);
+            MaybeSetTheme(current_specifics, sync_data);
         NotifyOnSyncStarted(startup_state);
         return absl::nullopt;
       }
@@ -156,9 +158,8 @@ syncer::SyncDataList ThemeSyncableService::GetAllSyncDataForTesting(
   syncer::SyncDataList list;
   sync_pb::EntitySpecifics entity_specifics;
   if (GetThemeSpecificsFromCurrentTheme(entity_specifics.mutable_theme())) {
-    list.push_back(syncer::SyncData::CreateLocalData(kCurrentThemeClientTag,
-                                                     kCurrentThemeNodeTitle,
-                                                     entity_specifics));
+    list.push_back(syncer::SyncData::CreateLocalData(
+        kSyncEntityClientTag, kSyncEntityTitle, entity_specifics));
   }
   return list;
 }
@@ -202,12 +203,11 @@ absl::optional<syncer::ModelError> ThemeSyncableService::ProcessSyncChanges(
 
   // Set current theme from the theme specifics of the last change of type
   // |ACTION_ADD| or |ACTION_UPDATE|.
-  for (auto theme_change = change_list.rbegin();
-       theme_change != change_list.rend(); ++theme_change) {
-    if (theme_change->sync_data().GetSpecifics().has_theme() &&
-        (theme_change->change_type() == syncer::SyncChange::ACTION_ADD ||
-            theme_change->change_type() == syncer::SyncChange::ACTION_UPDATE)) {
-      MaybeSetTheme(current_specifics, theme_change->sync_data());
+  for (const syncer::SyncChange& theme_change : base::Reversed(change_list)) {
+    if (theme_change.sync_data().GetSpecifics().has_theme() &&
+        (theme_change.change_type() == syncer::SyncChange::ACTION_ADD ||
+         theme_change.change_type() == syncer::SyncChange::ACTION_UPDATE)) {
+      MaybeSetTheme(current_specifics, theme_change.sync_data());
       return absl::nullopt;
     }
   }
@@ -400,11 +400,10 @@ absl::optional<syncer::ModelError> ThemeSyncableService::ProcessNewTheme(
   sync_pb::EntitySpecifics entity_specifics;
   entity_specifics.mutable_theme()->CopyFrom(theme_specifics);
 
-  changes.push_back(
-      syncer::SyncChange(FROM_HERE, change_type,
-                         syncer::SyncData::CreateLocalData(
-                             kCurrentThemeClientTag, kCurrentThemeNodeTitle,
-                             entity_specifics)));
+  changes.emplace_back(
+      FROM_HERE, change_type,
+      syncer::SyncData::CreateLocalData(kSyncEntityClientTag, kSyncEntityTitle,
+                                        entity_specifics));
 
   DVLOG(1) << "Update theme specifics from current theme: "
       << changes.back().ToString();

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/reporting/client/dm_token_retriever.h"
@@ -51,11 +50,7 @@ class UserDMTokenRetriever : public DMTokenRetriever {
  private:
   explicit UserDMTokenRetriever(ProfileRetrievalCallback profile_retrieval_cb);
 
-  void OnDMTokenRetrieved(DMTokenRetriever::CompletionCallback completion_cb,
-                          const policy::DMToken& dm_token);
-
   const ProfileRetrievalCallback profile_retrieval_cb_;
-  const base::WeakPtrFactory<UserDMTokenRetriever> weak_ptr_factory_{this};
 };
 
 }  // namespace reporting

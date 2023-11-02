@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,9 +15,9 @@ class RectF;
 
 namespace blink {
 
-class ImageResourceContent;
 class LayoutObject;
 class LocalFrameView;
+class KURL;
 
 // While Largest Contentful Paint only concerns about the largest contentful
 // rect, the smaller rects used in its computation are helpful for debugging
@@ -25,13 +25,16 @@ class LocalFrameView;
 // intermediate rects. These debugging events, as well as their intermediate
 // rects, can be visualized by third-party visualization tools.
 class CORE_EXPORT PaintTimingVisualizer {
+  DISALLOW_NEW();
+
  public:
   static bool IsTracingEnabled();
 
   void DumpTextDebuggingRect(const LayoutObject&, const gfx::RectF&);
   void DumpImageDebuggingRect(const LayoutObject&,
                               const gfx::RectF&,
-                              const ImageResourceContent&);
+                              bool is_loaded,
+                              const KURL& url);
   void RecordMainFrameViewport(LocalFrameView& frame_view);
   inline void OnViewportChanged() { need_recording_viewport = true; }
 

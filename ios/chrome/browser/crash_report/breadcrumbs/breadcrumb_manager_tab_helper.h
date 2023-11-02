@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ namespace web {
 class WebState;
 }  // namespace web
 
-// Handles logging of Breadcrumb events associated with |web_state_|.
+// Handles logging of Breadcrumb events associated with `web_state_`.
 class BreadcrumbManagerTabHelper
     : public breadcrumbs::BreadcrumbManagerTabHelper,
       public web::WebStateObserver,

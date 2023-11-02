@@ -1,24 +1,29 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/js/util.m.js';
-import '//resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
-import '//resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
-import '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
-import '//resources/cr_elements/shared_style_css.m.js';
-import '//resources/cr_elements/shared_vars_css.m.js';
+import '//resources/js/util.js';
+import '//resources/cr_components/localized_link/localized_link.js';
+import '//resources/cr_elements/cr_radio_button/cr_radio_button.js';
+import '//resources/cr_elements/cr_radio_group/cr_radio_group.js';
+import '//resources/cr_elements/cr_toggle/cr_toggle.js';
+import '//resources/cr_elements/cr_shared_style.css.js';
+import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import '../settings_shared_css.js';
+import '../settings_shared.css.js';
 
-import {assert} from '//resources/js/assert.m.js';
-import {WebUIListenerMixin} from '//resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from '//resources/js/assert_ts.js';
+import {WebUIListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+// <if expr="is_chromeos">
 import {loadTimeData} from '../i18n_setup.js';
+// </if>
+
 import {Route, Router} from '../router.js';
 
 import {StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDataTypes, SyncStatus} from './sync_browser_proxy.js';
+import {getTemplate} from './sync_controls.html.js';
 
 /**
  * Names of the radio buttons which allow the user to choose their data sync
@@ -36,13 +41,14 @@ enum RadioButtonNames {
 
 const SettingsSyncControlsElementBase = WebUIListenerMixin(PolymerElement);
 
-class SettingsSyncControlsElement extends SettingsSyncControlsElementBase {
+export class SettingsSyncControlsElement extends
+    SettingsSyncControlsElementBase {
   static get is() {
     return 'settings-sync-controls';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -70,7 +76,7 @@ class SettingsSyncControlsElement extends SettingsSyncControlsElementBase {
     };
   }
 
-  hidden: boolean;
+  override hidden: boolean;
   syncPrefs?: SyncPrefs;
   syncStatus: SyncStatus;
   private browserProxy_: SyncBrowserProxy = SyncBrowserProxyImpl.getInstance();
@@ -86,7 +92,7 @@ class SettingsSyncControlsElement extends SettingsSyncControlsElementBase {
     this.cachedSyncPrefs_ = null;
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.addWebUIListener(
@@ -100,7 +106,7 @@ class SettingsSyncControlsElement extends SettingsSyncControlsElementBase {
   }
 
 
-  // <if expr="chromeos or lacros">
+  // <if expr="is_chromeos">
   private shouldShowLacrosSideBySideWarning_(): boolean {
     return loadTimeData.getBoolean('shouldShowLacrosSideBySideWarning');
   }
@@ -186,7 +192,7 @@ class SettingsSyncControlsElement extends SettingsSyncControlsElementBase {
     this.onSingleSyncDataTypeChanged_();
   }
 
-  shouldPaymentsCheckboxBeDisabled_(
+  private shouldPaymentsCheckboxBeDisabled_(
       syncAllDataTypes: boolean, autofillSynced: boolean): boolean {
     return syncAllDataTypes || !autofillSynced;
   }
@@ -217,6 +223,12 @@ class SettingsSyncControlsElement extends SettingsSyncControlsElementBase {
         this.syncStatus.statusAction !== StatusAction.ENTER_PASSPHRASE &&
         this.syncStatus.statusAction !==
         StatusAction.RETRIEVE_TRUSTED_VAULT_KEYS;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-sync-controls': SettingsSyncControlsElement;
   }
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <fuchsia/media/cpp/fidl.h>
 
 #include "base/memory/shared_memory_mapping.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "media/audio/audio_io.h"
 #include "media/base/audio_parameters.h"
@@ -66,7 +67,7 @@ class AudioOutputStreamFuchsia : public AudioOutputStream {
 
   // Schedules |timer_| to call PumpSamples() when appropriate for the next
   // packet.
-  void SchedulePumpSamples(base::TimeTicks now);
+  void SchedulePumpSamples();
 
   AudioManagerFuchsia* manager_;
   AudioParameters parameters_;
@@ -98,7 +99,7 @@ class AudioOutputStreamFuchsia : public AudioOutputStream {
   absl::optional<base::TimeDelta> min_lead_time_;
 
   // Timer that's scheduled to call PumpSamples().
-  base::OneShotTimer timer_;
+  base::DeadlineTimer timer_;
 };
 
 }  // namespace media

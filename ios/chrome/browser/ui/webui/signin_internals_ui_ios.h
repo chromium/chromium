@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "components/signin/core/browser/about_signin_internals.h"
 #include "ios/web/public/webui/web_ui_ios_controller.h"
@@ -35,13 +34,13 @@ class SignInInternalsHandlerIOS : public web::WebUIIOSMessageHandler,
   // web::WebUIIOSMessageHandler:
   void RegisterMessages() override;
 
-  void HandleGetSignInInfo(const base::ListValue* args);
+  void HandleGetSignInInfo(const base::Value::List& args);
 
   // AboutSigninInternals::Observer::OnSigninStateChanged implementation.
-  void OnSigninStateChanged(const base::Value* info) override;
+  void OnSigninStateChanged(const base::Value::Dict& info) override;
 
   // Notification that the cookie accounts are ready to be displayed.
-  void OnCookieAccountsFetched(const base::Value* info) override;
+  void OnCookieAccountsFetched(const base::Value::Dict& info) override;
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_WEBUI_SIGNIN_INTERNALS_UI_IOS_H_

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,25 +39,14 @@ Modulator* Modulator::From(ScriptState* script_state) {
   if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
     modulator = MakeGarbageCollected<DocumentModulatorImpl>(script_state);
     Modulator::SetModulator(script_state, modulator);
-
-    // See comment in LocalDOMWindow::modulator_ for this workaround.
-    window->SetModulator(modulator);
   } else if (auto* worklet_scope =
                  DynamicTo<WorkletGlobalScope>(execution_context)) {
     modulator = MakeGarbageCollected<WorkletModulatorImpl>(script_state);
     Modulator::SetModulator(script_state, modulator);
-
-    // See comment in WorkerOrWorkletGlobalScope::modulator_ for this
-    // workaround.
-    worklet_scope->SetModulator(modulator);
   } else if (auto* worker_scope =
                  DynamicTo<WorkerGlobalScope>(execution_context)) {
     modulator = MakeGarbageCollected<WorkerModulatorImpl>(script_state);
     Modulator::SetModulator(script_state, modulator);
-
-    // See comment in WorkerOrWorkletGlobalScope::modulator_ for this
-    // workaround.
-    worker_scope->SetModulator(modulator);
   } else {
     NOTREACHED();
   }

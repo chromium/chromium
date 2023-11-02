@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,13 @@ import {PrefsManager} from './prefs_manager.js';
 // Utilities for UMA metrics.
 
 export class MetricsUtils {
-  constructor() {}
-
   /**
    * Records a cancel event if speech was in progress.
    */
   static recordCancelIfSpeaking() {
     // TODO(b/1157214): Use select-to-speak's internal state instead of TTS
     // state.
-    chrome.tts.isSpeaking((speaking) => {
+    chrome.tts.isSpeaking(speaking => {
       if (speaking) {
         MetricsUtils.recordCancelEvent_();
       }
@@ -171,7 +169,7 @@ MetricsUtils.StartSpeechMethod = {
  */
 MetricsUtils.START_SPEECH_METHOD_METRIC = {
   EVENT_COUNT: Object.keys(MetricsUtils.StartSpeechMethod).length,
-  METRIC_NAME: 'Accessibility.CrosSelectToSpeak.StartSpeechMethod'
+  METRIC_NAME: 'Accessibility.CrosSelectToSpeak.StartSpeechMethod',
 };
 
 /**
@@ -192,7 +190,7 @@ MetricsUtils.StateChangeEvent = {
  */
 MetricsUtils.STATE_CHANGE_METRIC = {
   EVENT_COUNT: Object.keys(MetricsUtils.StateChangeEvent).length,
-  METRIC_NAME: 'Accessibility.CrosSelectToSpeak.StateChangeEvent'
+  METRIC_NAME: 'Accessibility.CrosSelectToSpeak.StateChangeEvent',
 };
 
 /**
@@ -215,7 +213,7 @@ MetricsUtils.TtsEngineUsed = {
  */
 MetricsUtils.TTS_ENGINE_USED_METRIC = {
   EVENT_COUNT: Object.keys(MetricsUtils.TtsEngineUsed).length,
-  METRIC_NAME: 'Accessibility.CrosSelectToSpeak.TtsEngineUsed'
+  METRIC_NAME: 'Accessibility.CrosSelectToSpeak.TtsEngineUsed',
 };
 
 /**

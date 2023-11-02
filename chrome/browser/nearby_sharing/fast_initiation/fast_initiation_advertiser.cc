@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -96,17 +96,16 @@ void FastInitiationAdvertiser::RegisterAdvertisement(
       std::make_unique<device::BluetoothAdvertisement::Data>(
           device::BluetoothAdvertisement::ADVERTISEMENT_TYPE_BROADCAST);
 
-  auto list = std::make_unique<device::BluetoothAdvertisement::UUIDList>();
-  list->push_back(kFastInitiationServiceUuid);
+  device::BluetoothAdvertisement::UUIDList list;
+  list.push_back(kFastInitiationServiceUuid);
   advertisement_data->set_service_uuids(std::move(list));
 
-  auto service_data =
-      std::make_unique<device::BluetoothAdvertisement::ServiceData>();
+  device::BluetoothAdvertisement::ServiceData service_data;
   auto payload = std::vector<uint8_t>(std::begin(kFastInitiationModelId),
                                       std::end(kFastInitiationModelId));
   auto metadata = GenerateFastInitV1Metadata(type);
   payload.insert(std::end(payload), std::begin(metadata), std::end(metadata));
-  service_data->insert(std::pair<std::string, std::vector<uint8_t>>(
+  service_data.insert(std::pair<std::string, std::vector<uint8_t>>(
       kFastInitiationServiceUuid, payload));
   advertisement_data->set_service_data(std::move(service_data));
 

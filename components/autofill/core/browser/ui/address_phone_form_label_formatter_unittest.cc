@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -310,8 +310,8 @@ TEST(AddressPhoneFormLabelFormatterTest, GetLabelsForFormWithoutName) {
 
   const std::vector<AutofillProfile*> profiles{&profile};
   const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
-      profiles, "en-US", ADDRESS_BILLING_LINE1,
-      {ADDRESS_BILLING_LINE1, ADDRESS_BILLING_ZIP, PHONE_HOME_WHOLE_NUMBER});
+      profiles, "en-US", ADDRESS_HOME_LINE1,
+      {ADDRESS_HOME_LINE1, ADDRESS_HOME_ZIP, PHONE_HOME_WHOLE_NUMBER});
 
   // Checks that the name does not appear in the labels.
   EXPECT_THAT(formatter->GetLabels(), ElementsAre(u"(617) 523-2338"));

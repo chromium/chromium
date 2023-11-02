@@ -1,3 +1,3 @@
 file://third_party/blink/common/mediastream/OWNERS
 
-per-file media_stream_audio_processor*=olka@chromium.org
+per-file *audio_processor*=olka@chromium.org

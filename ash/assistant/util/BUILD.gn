@@ -1,8 +1,10 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_chromeos)
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
 
 component("util") {
   output_name = "assistant_util"
@@ -30,8 +32,8 @@ component("util") {
     "//ash/public/cpp",
     "//base",
     "//base:i18n",
-    "//chromeos/services/assistant/public/cpp",
-    "//chromeos/services/assistant/public/mojom",
+    "//chromeos/ash/services/assistant/public/cpp",
+    "//chromeos/ash/services/assistant/public/mojom",
     "//chromeos/ui/vector_icons",
     "//net",
     "//ui/base",

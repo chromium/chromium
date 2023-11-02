@@ -17,7 +17,7 @@
     },
     "alt_shift_f": {
       "suggested_key": "Alt+Shift+F",
-      "description": "Send a ctrl shift f test message"
+      "description": "Send an alt shift f test message"
     }
   }
 }

@@ -1,0 +1,11 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# These enums should not need to depend on chrome/browser/ui. They have been
+# broken out of the chrome/browser/ui build file into a separate target to
+# prevent a circular dependency between mojo targets that chrome/browser/ui
+# depends on which have these enums in their dependency chain.
+source_set("tab_enums") {
+  sources = [ "tab_enums.h" ]
+}

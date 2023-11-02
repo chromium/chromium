@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<script>
+  if (window.testRunner)
+      testRunner.setPrinting();
+</script>
+<style>
+  body { margin: 0; }
+</style>
+<p>
+  When printed, there should be two pages. On the first page, the word "WORD"
+  should be seen at the bottom. On the second page, the same word should be seen
+  at the top.
+</p>
+<div style="line-height:100px;">
+  <div style="position:absolute; left:0; bottom:0; width:100px; height:100px;">
+    WORD
+  </div>
+  <div style="break-before:page;">WORD</div>
+</div>

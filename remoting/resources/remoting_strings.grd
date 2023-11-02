@@ -7,17 +7,23 @@
       <emit emit_type="prepend"/>
     </output>
 
+    <if expr="is_chromeos">
+      <output filename="remoting/resources/af.pak" lang="af" type="data_package"/>
+    </if>
     <output filename="remoting/resources/am.pak" lang="am" type="data_package"/>
     <output filename="remoting/resources/ar.pak" lang="ar" type="data_package"/>
     <output filename="remoting/resources/bg.pak" lang="bg" type="data_package"/>
     <output filename="remoting/resources/bn.pak" lang="bn" type="data_package"/>
     <output filename="remoting/resources/ca.pak" lang="ca" type="data_package"/>
     <output filename="remoting/resources/cs.pak" lang="cs" type="data_package"/>
+    <if expr="is_chromeos">
+      <output filename="remoting/resources/cy.pak" lang="cy" type="data_package"/>
+    </if>
     <output filename="remoting/resources/da.pak" lang="da" type="data_package"/>
     <output filename="remoting/resources/de.pak" lang="de" type="data_package"/>
     <output filename="remoting/resources/el.pak" lang="el" type="data_package"/>
     <output filename="remoting/resources/en-GB.pak" lang="en-GB" type="data_package"/>
-    <if expr="chromeos or lacros">
+    <if expr="is_chromeos">
       <output filename="remoting/resources/en-US.pak" lang="en" type="data_package"/>
     </if>
     <output filename="remoting/resources/en.pak" lang="en" type="data_package"/>
@@ -30,17 +36,23 @@
     </if>
     <output filename="remoting/resources/es.pak" lang="es" type="data_package"/>
     <output filename="remoting/resources/et.pak" lang="et" type="data_package"/>
+    <if expr="is_chromeos">
+      <output filename="remoting/resources/eu.pak" lang="eu" type="data_package"/>
+    </if>
     <output filename="remoting/resources/fa.pak" lang="fa" type="data_package"/>
     <output filename="remoting/resources/fi.pak" lang="fi" type="data_package"/>
     <output filename="remoting/resources/fil.pak" lang="fil" type="data_package"/>
     <output filename="remoting/resources/fr.pak" lang="fr" type="data_package"/>
+    <if expr="is_chromeos">
+      <output filename="remoting/resources/gl.pak" lang="gl" type="data_package"/>
+    </if>
     <output filename="remoting/resources/gu.pak" lang="gu" type="data_package"/>
     <output filename="remoting/resources/he.pak" lang="he" type="data_package"/>
     <output filename="remoting/resources/hi.pak" lang="hi" type="data_package"/>
     <output filename="remoting/resources/hr.pak" lang="hr" type="data_package"/>
     <output filename="remoting/resources/hu.pak" lang="hu" type="data_package"/>
     <output filename="remoting/resources/id.pak" lang="id" type="data_package"/>
-    <if expr="chromeos or lacros">
+    <if expr="is_chromeos">
       <output filename="remoting/resources/is.pak" lang="is" type="data_package"/>
     </if>
     <output filename="remoting/resources/it.pak" lang="it" type="data_package"/>
@@ -79,23 +91,32 @@
     <output filename="remoting/resources/vi.pak" lang="vi" type="data_package"/>
     <output filename="remoting/resources/zh-CN.pak" lang="zh-CN" type="data_package"/>
     <output filename="remoting/resources/zh-TW.pak" lang="zh-TW" type="data_package"/>
+    <if expr="is_chromeos">
+      <output filename="remoting/resources/zu.pak" lang="zu" type="data_package"/>
+    </if>
 
     <!-- Pseudolocales -->
     <output filename="remoting/resources/ar-XB.pak" lang="ar-XB" type="data_package"/>
     <output filename="remoting/resources/en-XA.pak" lang="en-XA" type="data_package"/>
 
+    <if expr="is_chromeos">
+      <output filename="remoting/resources/_locales/af/messages.json" lang="af" type="chrome_messages_json"/>
+    </if>
     <output filename="remoting/resources/_locales/am/messages.json" lang="am" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/ar/messages.json" lang="ar" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/bg/messages.json" lang="bg" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/bn/messages.json" lang="bn" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/ca/messages.json" lang="ca" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/cs/messages.json" lang="cs" type="chrome_messages_json"/>
+    <if expr="is_chromeos">
+      <output filename="remoting/resources/_locales/cy/messages.json" lang="cy" type="chrome_messages_json"/>
+    </if>
     <output filename="remoting/resources/_locales/da/messages.json" lang="da" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/de/messages.json" lang="de" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/fa/messages.json" lang="fa" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/el/messages.json" lang="el" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/en/messages.json" lang="en" type="chrome_messages_json"/>
-    <if expr="chromeos or lacros">
+    <if expr="is_chromeos">
       <!-- lang="en-US" will create an empty json file. -->
       <output filename="remoting/resources/_locales/en_US/messages.json" lang="en" type="chrome_messages_json"/>
     </if>
@@ -109,16 +130,22 @@
       <output filename="remoting/resources/_locales/es_419/messages.json" lang="es-419" type="chrome_messages_json"/>
     </if>
     <output filename="remoting/resources/_locales/et/messages.json" lang="et" type="chrome_messages_json"/>
+    <if expr="is_chromeos">
+      <output filename="remoting/resources/_locales/eu/messages.json" lang="eu" type="chrome_messages_json"/>
+    </if>
     <output filename="remoting/resources/_locales/fi/messages.json" lang="fi" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/fil/messages.json" lang="fil" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/fr/messages.json" lang="fr" type="chrome_messages_json"/>
+    <if expr="is_chromeos">
+      <output filename="remoting/resources/_locales/gl/messages.json" lang="gl" type="chrome_messages_json"/>
+    </if>
     <output filename="remoting/resources/_locales/gu/messages.json" lang="gu" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/he/messages.json" lang="he" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/hi/messages.json" lang="hi" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/hr/messages.json" lang="hr" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/hu/messages.json" lang="hu" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/id/messages.json" lang="id" type="chrome_messages_json"/>
-    <if expr="chromeos or lacros">
+    <if expr="is_chromeos">
       <output filename="remoting/resources/_locales/is/messages.json" lang="is" type="chrome_messages_json"/>
     </if>
     <output filename="remoting/resources/_locales/it/messages.json" lang="it" type="chrome_messages_json"/>
@@ -157,6 +184,9 @@
     <output filename="remoting/resources/_locales/vi/messages.json" lang="vi" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/zh_CN/messages.json" lang="zh-CN" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/zh_TW/messages.json" lang="zh-TW" type="chrome_messages_json"/>
+    <if expr="is_chromeos">
+      <output filename="remoting/resources/_locales/zu/messages.json" lang="zu" type="chrome_messages_json"/>
+    </if>
 
     <!-- Pseudolocales -->
     <output filename="remoting/resources/_locales/ar_XB/messages.json" lang="ar-XB" type="chrome_messages_json"/>
@@ -222,6 +252,7 @@
     <file path="remoting_strings_bs.xtb" lang="bs"/>
     <file path="remoting_strings_ca.xtb" lang="ca"/>
     <file path="remoting_strings_cs.xtb" lang="cs"/>
+    <file path="remoting_strings_cy.xtb" lang="cy"/>
     <file path="remoting_strings_da.xtb" lang="da"/>
     <file path="remoting_strings_de.xtb" lang="de"/>
     <file path="remoting_strings_el.xtb" lang="el"/>
@@ -322,7 +353,7 @@
           Google LLC
         </message>
         <message name="IDS_COPYRIGHT" desc="The copyright message specified in the version information of each Chrome Remote Desktop Host executable. It should be updated every year.">
-          Copyright 2021 Google LLC. All Rights Reserved.
+          Copyright 2022 Google LLC. All Rights Reserved.
         </message>
         <message name="IDS_DISPLAY_SERVICE_NAME" desc="The name of the Windows service installed by Chrome Remote Desktop.">
           Chrome Remote Desktop Service
@@ -364,7 +395,7 @@
           The Chromium Authors
         </message>
         <message name="IDS_COPYRIGHT" desc="The copyright message specified in the version information of each Chromoting Host executable. It should be updated every year.">
-          Copyright 2021 The Chromium Authors. All Rights Reserved.
+          Copyright 2022 The Chromium Authors. All Rights Reserved.
         </message>
         <message name="IDS_DISPLAY_SERVICE_NAME" desc="The name of the Windows service installed by Chromoting.">
           Chromoting Service

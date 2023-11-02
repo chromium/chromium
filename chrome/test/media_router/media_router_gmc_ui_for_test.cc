@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,22 +33,16 @@ void MediaRouterGmcUiForTest::SetUp() {
 }
 
 void MediaRouterGmcUiForTest::ShowDialog() {
-  Browser* browser = chrome::FindBrowserWithWebContents(&GetWebContents());
-  MediaToolbarButtonView* button =
-      BrowserView::GetBrowserViewForBrowser(browser)->toolbar()->media_button();
-  base::RunLoop closure_loop;
-  ui_test_utils::MoveMouseToCenterAndPress(button, ui_controls::LEFT,
-                                           ui_controls::DOWN | ui_controls::UP,
-                                           closure_loop.QuitClosure());
-  closure_loop.Run();
+  dialog_ui_.ClickToolbarIcon();
+  CHECK(dialog_ui_.WaitForDialogOpened());
 }
 
 bool MediaRouterGmcUiForTest::IsDialogShown() const {
-  return MediaDialogView::GetDialogViewForTesting()->IsShowing();
+  return MediaDialogView::IsShowing();
 }
 
 void MediaRouterGmcUiForTest::HideDialog() {
-  return MediaDialogView::GetDialogViewForTesting()->HideDialog();
+  return MediaDialogView::HideDialog();
 }
 
 void MediaRouterGmcUiForTest::ChooseSourceType(
@@ -80,29 +74,24 @@ void MediaRouterGmcUiForTest::WaitForAnyRoute() {
 }
 
 void MediaRouterGmcUiForTest::WaitForDialogShown() {
-  NOTIMPLEMENTED();
+  CHECK(dialog_ui_.WaitForDialogOpened());
 }
 
 void MediaRouterGmcUiForTest::WaitForDialogHidden() {
   NOTIMPLEMENTED();
 }
 
-void MediaRouterGmcUiForTest::SetLocalFile(const GURL& file_url) {
-  NOTIMPLEMENTED();
-}
-
-void MediaRouterGmcUiForTest::SetLocalFileSelectionIssue(
-    const IssueInfo& issue) {
-  NOTIMPLEMENTED();
-}
-
 MediaRouterGmcUiForTest::MediaRouterGmcUiForTest(
     content::WebContents* web_contents)
     : MediaRouterUiForTestBase(web_contents),
-      content::WebContentsUserData<MediaRouterGmcUiForTest>(*web_contents) {}
+      content::WebContentsUserData<MediaRouterGmcUiForTest>(*web_contents),
+      browser_(chrome::FindBrowserWithWebContents(&GetWebContents())) {
+  DCHECK(browser_);
+}
 
 CastDialogSinkButton* MediaRouterGmcUiForTest::GetSinkButton(
     const std::string& sink_name) const {
+  DCHECK(IsDialogShown());
   auto items = MediaDialogView::GetDialogViewForTesting()->GetItemsForTesting();
   global_media_controls::MediaItemUIView* view = items.begin()->second;
   auto* device_selector = static_cast<MediaItemUIDeviceSelectorView*>(

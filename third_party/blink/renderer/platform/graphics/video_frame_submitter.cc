@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,9 @@
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/threading/platform_thread.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "cc/metrics/video_playback_roughness_reporter.h"
@@ -44,8 +46,19 @@ namespace {
 // other VideoFrameSubmitter living on the same thread with the same parent
 // FrameSinkId. This is used to aggregate Viz communication and substantially
 // reduce IPC traffic when many VideoFrameSubmitters are active within a frame.
-const base::Feature kUseVideoFrameSinkBundle{"UseVideoFrameSinkBundle",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kUseVideoFrameSinkBundle,
+             "UseVideoFrameSinkBundle",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Builds a cc::FrameInfo representing a video frame, which is considered
+// Compositor-only.
+cc::FrameInfo CreateFrameInfo(cc::FrameInfo::FrameFinalState final_state) {
+  cc::FrameInfo frame_info;
+  frame_info.final_state = final_state;
+  frame_info.smooth_thread = cc::FrameInfo::SmoothThread::kSmoothCompositor;
+  frame_info.main_thread_response = cc::FrameInfo::MainThreadResponse::kMissing;
+  return frame_info;
+}
 
 }  // namespace
 
@@ -138,6 +151,12 @@ class VideoFrameSubmitter::FrameSinkBundleProxy
     bundle_->InitializeCompositorFrameSinkType(frame_sink_id_.sink_id(), type);
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  void SetThreadIds(const WTF::Vector<int32_t>& thread_ids) override {
+    bundle_->SetThreadIds(frame_sink_id_.sink_id(), thread_ids);
+  }
+#endif
+
  private:
   const base::WeakPtr<VideoFrameSinkBundle> bundle_;
   const viz::FrameSinkBundleId bundle_id_;
@@ -154,6 +173,9 @@ VideoFrameSubmitter::VideoFrameSubmitter(
       roughness_reporter_(std::make_unique<cc::VideoPlaybackRoughnessReporter>(
           std::move(roughness_reporting_callback))),
       frame_trackers_(false, nullptr),
+      frame_sorter_(base::BindRepeating(
+          &cc::FrameSequenceTrackerCollection::AddSortedFrame,
+          base::Unretained(&frame_trackers_))),
       power_mode_voter_(
           power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
               "PowerModeVoter.VideoPlayback")) {
@@ -198,6 +220,7 @@ void VideoFrameSubmitter::StopRendering() {
   is_rendering_ = false;
 
   frame_trackers_.StopSequence(cc::FrameSequenceTrackerType::kVideo);
+  frame_sorter_.Reset();
 
   UpdateSubmissionState();
 }
@@ -282,6 +305,9 @@ void VideoFrameSubmitter::OnContextLost() {
   waiting_for_compositor_ack_ = false;
   last_frame_id_.reset();
 
+  if (video_frame_provider_)
+    video_frame_provider_->OnContextLost();
+
   resource_provider_->OnContextLost();
 
   // NOTE: These objects should be reset last; and if `bundle_proxy`_ is set, it
@@ -321,7 +347,7 @@ void VideoFrameSubmitter::OnBeginFrame(
       continue;
     auto& feedback =
         timing_details.find(frame_token)->value.presentation_feedback;
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     // TODO: On Linux failure flag is unreliable, and perfectly rendered frames
     // are reported as failures all the time.
     bool presentation_failure = false;
@@ -329,31 +355,45 @@ void VideoFrameSubmitter::OnBeginFrame(
     bool presentation_failure =
         feedback.flags & gfx::PresentationFeedback::kFailure;
 #endif
-    if (!presentation_failure &&
-        !ignorable_submitted_frames_.contains(frame_token)) {
-      frame_trackers_.NotifyFramePresented(
-          frame_token,
-          gfx::PresentationFeedback(feedback.timestamp, feedback.interval,
-                                    feedback.flags));
+    cc::FrameInfo::FrameFinalState final_state =
+        cc::FrameInfo::FrameFinalState::kNoUpdateDesired;
+    if (ignorable_submitted_frames_.contains(frame_token)) {
+      ignorable_submitted_frames_.erase(frame_token);
+    } else {
+      if (presentation_failure) {
+        final_state = cc::FrameInfo::FrameFinalState::kDropped;
+      } else {
+        frame_trackers_.NotifyFramePresented(
+            frame_token,
+            gfx::PresentationFeedback(feedback.timestamp, feedback.interval,
+                                      feedback.flags));
+        final_state = cc::FrameInfo::FrameFinalState::kPresentedAll;
 
-      // We assume that presentation feedback is reliable if
-      // 1. (kHWCompletion) OS told us that the frame was shown at that time
-      //  or
-      // 2. (kVSync) at least presentation time is aligned with vsyncs intervals
-      uint32_t reliable_feedback_mask =
-          gfx::PresentationFeedback::kHWCompletion |
-          gfx::PresentationFeedback::kVSync;
-      bool reliable_timestamp = feedback.flags & reliable_feedback_mask;
-      roughness_reporter_->FramePresented(frame_token, feedback.timestamp,
-                                          reliable_timestamp);
+        // We assume that presentation feedback is reliable if
+        // 1. (kHWCompletion) OS told us that the frame was shown at that time
+        //  or
+        // 2. (kVSync) at least presentation time is aligned with vsyncs
+        // intervals
+        uint32_t reliable_feedback_mask =
+            gfx::PresentationFeedback::kHWCompletion |
+            gfx::PresentationFeedback::kVSync;
+        bool reliable_timestamp = feedback.flags & reliable_feedback_mask;
+        roughness_reporter_->FramePresented(frame_token, feedback.timestamp,
+                                            reliable_timestamp);
+      }
+      if (pending_frames_.contains(frame_token)) {
+        frame_sorter_.AddFrameResult(pending_frames_[frame_token],
+                                     CreateFrameInfo(final_state));
+        pending_frames_.erase(frame_token);
+      }
     }
 
-    ignorable_submitted_frames_.erase(frame_token);
     TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
         "media", "VideoFrameSubmitter", TRACE_ID_LOCAL(frame_token),
         feedback.timestamp);
   }
   frame_trackers_.NotifyBeginImplFrame(args);
+  frame_sorter_.AddNewFrame(args);
 
   base::ScopedClosureRunner end_frame(
       base::BindOnce(&cc::FrameSequenceTrackerCollection::NotifyFrameEnd,
@@ -368,6 +408,9 @@ void VideoFrameSubmitter::OnBeginFrame(
   if (args.type == viz::BeginFrameArgs::MISSED || !is_rendering_) {
     compositor_frame_sink_->DidNotProduceFrame(current_begin_frame_ack);
     frame_trackers_.NotifyImplFrameCausedNoDamage(current_begin_frame_ack);
+    frame_sorter_.AddFrameResult(
+        args,
+        CreateFrameInfo(cc::FrameInfo::FrameFinalState::kNoUpdateDesired));
     return;
   }
 
@@ -380,6 +423,9 @@ void VideoFrameSubmitter::OnBeginFrame(
                                     args.frame_time + 2 * args.interval)) {
     compositor_frame_sink_->DidNotProduceFrame(current_begin_frame_ack);
     frame_trackers_.NotifyImplFrameCausedNoDamage(current_begin_frame_ack);
+    frame_sorter_.AddFrameResult(
+        args,
+        CreateFrameInfo(cc::FrameInfo::FrameFinalState::kNoUpdateDesired));
     return;
   }
 
@@ -389,6 +435,9 @@ void VideoFrameSubmitter::OnBeginFrame(
   if (!SubmitFrame(current_begin_frame_ack, std::move(video_frame))) {
     compositor_frame_sink_->DidNotProduceFrame(current_begin_frame_ack);
     frame_trackers_.NotifyImplFrameCausedNoDamage(current_begin_frame_ack);
+    frame_sorter_.AddFrameResult(
+        args,
+        CreateFrameInfo(cc::FrameInfo::FrameFinalState::kNoUpdateDesired));
     return;
   }
 
@@ -432,39 +481,40 @@ void VideoFrameSubmitter::OnReceivedContextProvider(
     return;
   }
 
-  bool has_good_context = false;
-  while (!has_good_context) {
-    if (!context_provider) {
-      // Delay to retry getting the context_provider.
-      constexpr base::TimeDelta kGetContextProviderRetryTimeout =
-          base::Milliseconds(150);
-
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(
-              context_provider_callback_, context_provider_,
-              base::BindOnce(&VideoFrameSubmitter::OnReceivedContextProvider,
-                             weak_ptr_factory_.GetWeakPtr())),
-          kGetContextProviderRetryTimeout);
-      return;
-    }
-
-    // Note that |context_provider| is now null after the move, such that if we
-    // end up having !|has_good_context|, we will retry to obtain the
-    // context_provider.
-    context_provider_ = std::move(context_provider);
-    auto result = context_provider_->BindToCurrentThread();
-
-    has_good_context =
-        result == gpu::ContextResult::kSuccess &&
-        context_provider_->ContextGL()->GetGraphicsResetStatusKHR() ==
-            GL_NO_ERROR;
+  if (!MaybeAcceptContextProvider(std::move(context_provider))) {
+    constexpr base::TimeDelta kGetContextProviderRetryTimeout =
+        base::Milliseconds(150);
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            context_provider_callback_, context_provider_,
+            base::BindOnce(&VideoFrameSubmitter::OnReceivedContextProvider,
+                           weak_ptr_factory_.GetWeakPtr())),
+        kGetContextProviderRetryTimeout);
+    return;
   }
+
   context_provider_->AddObserver(this);
   resource_provider_->Initialize(context_provider_.get(), nullptr);
 
   if (frame_sink_id_.is_valid())
     StartSubmitting();
+}
+
+bool VideoFrameSubmitter::MaybeAcceptContextProvider(
+    scoped_refptr<viz::RasterContextProvider> context_provider) {
+  if (!context_provider) {
+    return false;
+  }
+
+  context_provider_ = std::move(context_provider);
+  if (context_provider_->BindToCurrentThread() !=
+      gpu::ContextResult::kSuccess) {
+    return false;
+  }
+
+  return context_provider_->ContextGL()->GetGraphicsResetStatusKHR() ==
+         GL_NO_ERROR;
 }
 
 void VideoFrameSubmitter::StartSubmitting() {
@@ -502,6 +552,14 @@ void VideoFrameSubmitter::StartSubmitting() {
   compositor_frame_sink_->InitializeCompositorFrameSinkType(
       is_media_stream_ ? viz::mojom::CompositorFrameSinkType::kMediaStream
                        : viz::mojom::CompositorFrameSinkType::kVideo);
+
+#if BUILDFLAG(IS_ANDROID)
+  WTF::Vector<base::PlatformThreadId> thread_ids;
+  thread_ids.push_back(base::PlatformThread::CurrentId());
+  thread_ids.push_back(Platform::Current()->GetIOThreadId());
+  compositor_frame_sink_->SetThreadIds(thread_ids);
+#endif
+
   UpdateSubmissionState();
 }
 
@@ -509,7 +567,6 @@ void VideoFrameSubmitter::UpdateSubmissionState() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!compositor_frame_sink_)
     return;
-
   const auto is_driving_frame_updates = IsDrivingFrameUpdates();
   compositor_frame_sink_->SetNeedsBeginFrame(is_driving_frame_updates);
   power_mode_voter_->VoteFor(power_scheduler::PowerMode::kVideoPlayback);
@@ -731,8 +788,11 @@ viz::CompositorFrame VideoFrameSubmitter::CreateCompositorFrame(
                                     TRACE_ID_LOCAL(frame_token));
 
     if (begin_frame_ack.frame_id.source_id ==
-        viz::BeginFrameArgs::kManualSourceId)
+        viz::BeginFrameArgs::kManualSourceId) {
       ignorable_submitted_frames_.insert(frame_token);
+    } else {
+      pending_frames_[frame_token] = last_begin_frame_args_;
+    }
 
     UMA_HISTOGRAM_TIMES("Media.VideoFrameSubmitter.PreSubmitBuffering",
                         base::TimeTicks::Now() - value);
@@ -747,6 +807,10 @@ viz::CompositorFrame VideoFrameSubmitter::CreateCompositorFrame(
   compositor_frame.metadata.begin_frame_ack.has_damage = true;
   compositor_frame.metadata.device_scale_factor = 1;
   compositor_frame.metadata.may_contain_video = true;
+  // If we're submitting frames even if we're not visible, then also turn off
+  // throttling.  This is for picture in picture, which can be throttled if the
+  // opener window is minimized without this.
+  compositor_frame.metadata.may_throttle_if_undrawn_frames = force_submit_;
 
   // Specify size of shared quad state and quad lists so that RenderPass doesn't
   // allocate using the defaults of 32 and 128 since we only append one quad.

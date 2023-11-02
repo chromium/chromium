@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
@@ -17,6 +18,7 @@
 #include "components/autofill_assistant/browser/client.h"
 #include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/onboarding_result.h"
+#include "components/autofill_assistant/browser/script_parameters.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/service/service_request_sender.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
@@ -59,11 +61,12 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
 
   // |web_contents| must outlive this instance.
   TriggerScriptCoordinator(
-      StarterPlatformDelegate* starter_delegate,
+      base::WeakPtr<StarterPlatformDelegate> starter_delegate,
       content::WebContents* web_contents,
       std::unique_ptr<WebController> web_controller,
       std::unique_ptr<ServiceRequestSender> request_sender,
       const GURL& get_trigger_scripts_server,
+      const GURL& get_trigger_scripts_by_hash_prefix_server_,
       std::unique_ptr<StaticTriggerConditions> static_trigger_conditions,
       std::unique_ptr<DynamicTriggerConditions> dynamic_trigger_conditions,
       ukm::UkmRecorder* ukm_recorder,
@@ -124,7 +127,13 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   friend class TriggerScriptCoordinatorTest;
 
   // From content::WebContentsObserver.
+  // By default, DidFinishNavigation will be used and the other one will early
+  // return. In case DidNavigation will not work properly, we a feature toggle
+  // to invert the situation.
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
   void PrimaryPageChanged(content::Page& page) override;
+
   void OnVisibilityChanged(content::Visibility visibility) override;
   void WebContentsDestroyed() override;
 
@@ -136,7 +145,17 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   void OnDynamicTriggerConditionsEvaluated(
       bool is_out_of_schedule,
       absl::optional<base::TimeTicks> start_time);
-  void OnGetTriggerScripts(int http_status, const std::string& response);
+  void OnGetTriggerScripts(
+      int http_status,
+      const std::string& response,
+      const ServiceRequestSender::ResponseInfo& response_info);
+  void OnGetTriggerScriptsByHashPrefix(
+      int http_status,
+      const std::string& response,
+      const ServiceRequestSender::ResponseInfo& response_info);
+  bool ShouldGetTriggerScriptsByHashPrefix();
+  void RegisterExperimentSyntheticFieldTrial(
+      const ScriptParameters& parameters) const;
   GURL GetCurrentURL() const;
   void OnEffectiveVisibilityChanged();
   void OnOnboardingFinished(bool onboardingShown, OnboardingResult result);
@@ -158,7 +177,7 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   TriggerScriptProto::TriggerUIType GetTriggerUiTypeForVisibleScript() const;
 
   // Delegate used to access settings and show the onboarding.
-  StarterPlatformDelegate* starter_delegate_ = nullptr;
+  base::WeakPtr<StarterPlatformDelegate> starter_delegate_;
 
   // Delegate used to show and hide the UI.
   std::unique_ptr<UiDelegate> ui_delegate_;
@@ -204,6 +223,10 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   // The URL of the server that should be contacted by |request_sender_|.
   GURL get_trigger_scripts_server_;
 
+  // The URL of the server that should be contacted by |request_sender_|
+  // to get the trigger scripts in a privacy-sensitive way.
+  GURL get_trigger_scripts_by_hash_prefix_server_;
+
   // The web controller to evaluate element conditions.
   std::unique_ptr<WebController> web_controller_;
 
@@ -231,7 +254,7 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   int64_t initial_trigger_condition_evaluations_ = -1;
 
   // The UKM recorder to use for metrics.
-  ukm::UkmRecorder* const ukm_recorder_;
+  const raw_ptr<ukm::UkmRecorder> ukm_recorder_;
 
   // The UKM source id to record. This can change over time as the user
   // navigates around, but will always point to a source-id on a supported

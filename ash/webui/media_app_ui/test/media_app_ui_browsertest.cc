@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ namespace {
 
 // File containing the test utility library, shared with integration tests.
 constexpr base::FilePath::CharType kTestLibraryPath[] =
-    FILE_PATH_LITERAL("ash/webui/media_app_ui/test/dom_testing_helpers.js");
+    FILE_PATH_LITERAL("ash/webui/system_apps/public/js/dom_testing_helpers.js");
 
 // Test cases that run in the guest context.
 constexpr char kGuestTestCases[] = "media_app_guest_ui_browsertest.js";

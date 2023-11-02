@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "ash/system/media/unified_media_controls_view.h"
 #include "ash/test/ash_test_base.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "media/base/media_switches.h"
@@ -130,12 +131,11 @@ class UnifiedMediaControlsControllerTest : public AshTestBase {
   }
 
   views::Button* GetActionButton(MediaSessionAction action) {
-    const auto it = std::find_if(
-        button_row()->children().begin(), button_row()->children().end(),
-        [action](views::View* child) {
-          return static_cast<views::Button*>(child)->tag() ==
-                 static_cast<int>(action);
-        });
+    const auto it =
+        base::ranges::find(button_row()->children(), static_cast<int>(action),
+                           [](views::View* child) {
+                             return static_cast<views::Button*>(child)->tag();
+                           });
 
     if (it == button_row()->children().end())
       return nullptr;

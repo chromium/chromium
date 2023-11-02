@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -96,7 +96,7 @@ void ContentUiEventHandler::SendMouseWheelEvent(
   if (!event_handler)
     return;
 
-  // Compute Event.Latency.OS.MOUSE_WHEEL histogram.
+  // Compute Event.Latency.OS2.MOUSE_WHEEL histogram.
   base::TimeTicks current_time = ui::EventTimeForNow();
   base::TimeTicks event_time = base::TimeTicks() + base::Milliseconds(time_ms);
   ComputeEventLatencyOS(ui::ET_MOUSEWHEEL, event_time, current_time);

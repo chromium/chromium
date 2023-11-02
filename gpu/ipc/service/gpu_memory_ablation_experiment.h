@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -30,7 +31,7 @@ class SharedContextState;
 class SharedImageFactory;
 class SharedImageRepresentationFactory;
 
-extern const base::Feature kGPUMemoryAblationFeature;
+BASE_DECLARE_FEATURE(kGPUMemoryAblationFeature);
 
 // When enabled, this experiment allocates additional memory alongside each
 // normal allocation. This will allow a study of the correlation between
@@ -131,7 +132,7 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryAblationExperiment
   scoped_refptr<SharedContextState> context_state_;
   std::unique_ptr<SharedImageFactory> factory_;
   std::unique_ptr<SharedImageRepresentationFactory> rep_factory_;
-  GpuChannelManager* channel_manager_;
+  raw_ptr<GpuChannelManager> channel_manager_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<GpuMemoryAblationExperiment> weak_factory_{this};
 };

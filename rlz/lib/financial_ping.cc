@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -11,7 +11,6 @@
 #include <memory>
 
 #include "base/atomicops.h"
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
@@ -20,7 +19,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -37,7 +35,7 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 #include "base/time/time.h"
 #endif
 
@@ -129,7 +127,7 @@ bool FinancialPing::FormRequest(Product product,
   // Add the product events.
   char cgi[kMaxCgiLength + 1];
   cgi[0] = 0;
-  bool has_events = GetProductEventsAsCgi(product, cgi, base::size(cgi));
+  bool has_events = GetProductEventsAsCgi(product, cgi, std::size(cgi));
   if (has_events)
     base::StringAppendF(request, "&%s", cgi);
 
@@ -143,7 +141,7 @@ bool FinancialPing::FormRequest(Product product,
     for (int ap = NO_ACCESS_POINT + 1; ap < LAST_ACCESS_POINT; ap++) {
       rlz[0] = 0;
       AccessPoint point = static_cast<AccessPoint>(ap);
-      if (GetAccessPointRlz(point, rlz, base::size(rlz)) && rlz[0] != '\0')
+      if (GetAccessPointRlz(point, rlz, std::size(rlz)) && rlz[0] != '\0')
         all_points[idx++] = point;
     }
     all_points[idx] = NO_ACCESS_POINT;
@@ -153,7 +151,7 @@ bool FinancialPing::FormRequest(Product product,
   // This will also include the RLZ Exchange Protocol CGI Argument.
   cgi[0] = 0;
   if (GetPingParams(product, has_events ? access_points : all_points, cgi,
-                    base::size(cgi)))
+                    std::size(cgi)))
     base::StringAppendF(request, "&%s", cgi);
 
   if (has_events && !exclude_machine_id) {
@@ -441,7 +439,7 @@ bool FinancialPing::IsPingTime(Product product, bool no_delay) {
   // Check if this product has any unreported events.
   char cgi[kMaxCgiLength + 1];
   cgi[0] = 0;
-  bool has_events = GetProductEventsAsCgi(product, cgi, base::size(cgi));
+  bool has_events = GetProductEventsAsCgi(product, cgi, std::size(cgi));
   if (no_delay && has_events)
     return true;
 

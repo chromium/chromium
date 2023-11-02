@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/showcase/bubble/sc_bubble_coordinator.h"
 
-#include "ios/chrome/browser/ui/bubble/bubble_util.h"
+#import "ios/chrome/browser/ui/bubble/bubble_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -29,10 +29,15 @@
 
   BubbleArrowDirection direction = BubbleArrowDirectionUp;
   BubbleAlignment alignment = BubbleAlignmentTrailing;
+  CGFloat bubbleAlignmentOffset = bubble_util::BubbleDefaultAlignmentOffset();
   self.bubbleViewController =
       [[BubbleViewController alloc] initWithText:@"Lorem ipsum dolor"
+                                           title:nil
+                                           image:nil
                                   arrowDirection:direction
-                                       alignment:alignment];
+                                       alignment:alignment
+                                  bubbleViewType:BubbleViewTypeDefault
+                                        delegate:nil];
 
   // Mock UI element for the bubble to be anchored on. Set the x-coordinate of
   // the origin to be two-thirds of the container's width.
@@ -43,14 +48,15 @@
   [containerView addSubview:elementView];
   CGPoint anchorPoint = bubble_util::AnchorPoint(elementView.frame, direction);
   // Maximum width of the bubble such that it stays within |containerView|.
-  CGSize maxBubbleSize = bubble_util::BubbleMaxSize(
-      anchorPoint, direction, alignment, containerView.frame.size);
+  CGSize maxBubbleSize =
+      bubble_util::BubbleMaxSize(anchorPoint, bubbleAlignmentOffset, direction,
+                                 alignment, containerView.frame.size);
 
   CGSize bubbleSize =
       [self.bubbleViewController.view sizeThatFits:maxBubbleSize];
-  CGRect bubbleFrame =
-      bubble_util::BubbleFrame(anchorPoint, bubbleSize, direction, alignment,
-                               containerView.frame.size.width);
+  CGRect bubbleFrame = bubble_util::BubbleFrame(
+      anchorPoint, bubbleAlignmentOffset, bubbleSize, direction, alignment,
+      containerView.frame.size.width);
 
   [self addBubbleViewControllerWithFrame:bubbleFrame];
   [self.baseViewController pushViewController:self.containerViewController

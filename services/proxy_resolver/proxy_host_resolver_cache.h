@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 
 #include "base/time/time.h"
 #include "net/base/ip_address.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 
 namespace proxy_resolver {
 
@@ -29,7 +29,7 @@ class ProxyHostResolverCache {
   ProxyHostResolverCache& operator=(const ProxyHostResolverCache&) = delete;
 
   void StoreEntry(std::string hostname,
-                  net::NetworkIsolationKey network_isolation_key,
+                  net::NetworkAnonymizationKey network_anonymization_key,
                   bool is_ex_operation,
                   std::vector<net::IPAddress> results);
 
@@ -37,7 +37,7 @@ class ProxyHostResolverCache {
   // expired.
   const std::vector<net::IPAddress>* LookupEntry(
       std::string hostname,
-      net::NetworkIsolationKey network_isolation_key,
+      net::NetworkAnonymizationKey network_anonymization_key,
       bool is_ex_operation);
 
   size_t GetSizeForTesting() const;
@@ -45,13 +45,13 @@ class ProxyHostResolverCache {
  private:
   struct Key {
     bool operator<(const Key& other) const {
-      return std::tie(hostname, network_isolation_key, is_ex_operation) <
-             std::tie(other.hostname, other.network_isolation_key,
+      return std::tie(hostname, network_anonymization_key, is_ex_operation) <
+             std::tie(other.hostname, other.network_anonymization_key,
                       other.is_ex_operation);
     }
 
     std::string hostname;
-    net::NetworkIsolationKey network_isolation_key;
+    net::NetworkAnonymizationKey network_anonymization_key;
     bool is_ex_operation;
   };
 

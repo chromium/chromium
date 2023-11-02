@@ -1,15 +1,16 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/base/data_buffer.h"
 
 #include <stdint.h>
+
 #include <memory>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -49,7 +50,7 @@ TEST(DataBufferTest, Constructor_ScopedArray) {
 
 TEST(DataBufferTest, CopyFrom) {
   const uint8_t kTestData[] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77};
-  const int kTestDataSize = base::size(kTestData);
+  const int kTestDataSize = std::size(kTestData);
 
   scoped_refptr<DataBuffer> buffer =
       DataBuffer::CopyFrom(kTestData, kTestDataSize);
@@ -99,9 +100,9 @@ TEST(DataBufferTest, Duration) {
 
 TEST(DataBufferTest, ReadingWriting) {
   const char kData[] = "hello";
-  const int kDataSize = base::size(kData);
+  const int kDataSize = std::size(kData);
   const char kNewData[] = "chromium";
-  const int kNewDataSize = base::size(kNewData);
+  const int kNewDataSize = std::size(kNewData);
 
   // Create a DataBuffer.
   scoped_refptr<DataBuffer> buffer(new DataBuffer(kDataSize));

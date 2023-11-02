@@ -1,15 +1,15 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.webapk.lib.runtime_library;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.os.Binder;
 import android.os.Build;
@@ -19,6 +19,7 @@ import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.Log;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationManagerCompat;
 
 /**
@@ -57,13 +58,14 @@ public class WebApkServiceImpl extends IWebApkApi.Stub {
     }
 
     @Override
-    public boolean onTransact(int arg0, Parcel arg1, Parcel arg2, int arg3) throws RemoteException {
+    public boolean onTransact(int code, Parcel data, Parcel reply, int flags)
+            throws RemoteException {
         int callingUid = Binder.getCallingUid();
         if (mHostUid != callingUid) {
             throw new RemoteException("Unauthorized caller " + callingUid
                     + " does not match expected host=" + mHostUid);
         }
-        return super.onTransact(arg0, arg1, arg2, arg3);
+        return super.onTransact(code, data, reply, flags);
     }
 
     @Override
@@ -85,6 +87,9 @@ public class WebApkServiceImpl extends IWebApkApi.Stub {
 
     @Override
     public boolean notificationPermissionEnabled() {
+        Log.w(TAG,
+                "Should NOT reach WebApkServiceImpl#notificationPermissionEnabled() because it is"
+                        + " deprecated.");
         return NotificationManagerCompat.from(mContext).areNotificationsEnabled();
     }
 
@@ -105,8 +110,22 @@ public class WebApkServiceImpl extends IWebApkApi.Stub {
         return false;
     }
 
+    @Override
+    public int checkNotificationPermission() {
+        Log.w(TAG, "Should NOT reach WebApkServiceImpl#checkNotificationPermission().");
+        return -1;
+    }
+
+    @Override
+    public PendingIntent requestNotificationPermission(String channelName, String channelId) {
+        Log.w(TAG,
+                "Should NOT reach WebApkServiceImpl#requestNotificationPermission(String,"
+                        + " String).");
+        return null;
+    }
+
     /** Returns the package name of the task's base activity. */
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private static String getTaskBaseActivityPackageName(ActivityManager.AppTask task) {
         try {
             ActivityManager.RecentTaskInfo info = task.getTaskInfo();

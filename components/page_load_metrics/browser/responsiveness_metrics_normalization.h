@@ -1,9 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_PAGE_LOAD_METRICS_BROWSER_RESPONSIVENESS_METRICS_NORMALIZATION_H_
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_RESPONSIVENESS_METRICS_NORMALIZATION_H_
+
+#include <queue>
 
 #include "base/time/time.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
@@ -21,15 +23,20 @@ struct NormalizedInteractionLatencies {
   base::TimeDelta worst_latency;
   // For metrics below, we reduce a fixed budget from every user interaction
   // latency and we call it latency over budget. Then we calculaute the
-  // worst(maximum), the sum, the second worst and an approximation of high
-  // quantile.
+  // worst(maximum), the sum, and an approximation of high quantile.
   base::TimeDelta worst_latency_over_budget;
   base::TimeDelta sum_of_latency_over_budget;
-  base::TimeDelta pseudo_second_worst_latency_over_budget;
   base::TimeDelta high_percentile_latency_over_budget;
 
   // A min priority queue. The top is the smallest base::TimeDelta in the queue.
   // We use the worst 10 latencies to approximate a high percentile.
+  std::priority_queue<base::TimeDelta,
+                      std::vector<base::TimeDelta>,
+                      std::greater<>>
+      worst_ten_latencies;
+
+  // A min priority queue. The top is the smallest base::TimeDelta in the queue.
+  // We use the worst 10 latencies over budget to approximate a high percentile.
   std::priority_queue<base::TimeDelta,
                       std::vector<base::TimeDelta>,
                       std::greater<>>
@@ -63,8 +70,7 @@ class ResponsivenessMetricsNormalization {
 
   void AddNewUserInteractionLatencies(
       uint64_t num_new_interactions,
-      const mojom::UserInteractionLatencies& max_event_durations,
-      const mojom::UserInteractionLatencies& total_event_durations);
+      const mojom::UserInteractionLatencies& max_event_durations);
 
   const NormalizedResponsivenessMetrics& GetNormalizedResponsivenessMetrics()
       const {
@@ -79,7 +85,7 @@ class ResponsivenessMetricsNormalization {
       uint64_t num_interactions,
       std::priority_queue<base::TimeDelta,
                           std::vector<base::TimeDelta>,
-                          std::greater<>> worst_ten_latencies_over_budget);
+                          std::greater<>> worst_ten_latencies);
 
  private:
   void NormalizeUserInteractionLatencies(

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ class WaylandBufferBackingSolidColor : public WaylandBufferBacking {
   WaylandBufferBackingSolidColor& operator=(
       const WaylandBufferBackingSolidColor&) = delete;
   WaylandBufferBackingSolidColor(const WaylandConnection* connection,
-                                 SkColor color,
+                                 SkColor4f color,
                                  const gfx::Size& size,
                                  uint32_t buffer_id);
   ~WaylandBufferBackingSolidColor() override;
@@ -29,8 +29,9 @@ class WaylandBufferBackingSolidColor : public WaylandBufferBacking {
   // WaylandBufferBacking override:
   void RequestBufferHandle(
       base::OnceCallback<void(wl::Object<wl_buffer>)> callback) override;
+  BufferBackingType GetBackingType() const override;
 
-  SkColor color_;
+  SkColor4f color_;
 };
 
 }  // namespace ui

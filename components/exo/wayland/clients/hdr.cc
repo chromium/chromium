@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -303,7 +303,7 @@ int main(int argc, char* argv[]) {
   int32_t transfer1 = ZCR_COLOR_MANAGER_V1_EOTF_NAMES_SRGB;
   // HDR BT2020, PQ, full range RGB
   int32_t primary2 = ZCR_COLOR_MANAGER_V1_CHROMATICITY_NAMES_BT2020;
-  int32_t transfer2 = ZCR_COLOR_MANAGER_V1_EOTF_NAMES_BT2087;
+  int32_t transfer2 = ZCR_COLOR_MANAGER_V1_EOTF_NAMES_PQ;
 
   params.bo_usage =
       GBM_BO_USE_SCANOUT | GBM_BO_USE_LINEAR | GBM_BO_USE_TEXTURING;

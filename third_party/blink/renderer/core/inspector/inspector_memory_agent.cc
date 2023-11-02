@@ -34,6 +34,7 @@
 
 #include "base/debug/stack_trace.h"
 #include "base/profiler/module_cache.h"
+#include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
 #include "base/sampling_heap_profiler/sampling_heap_profiler.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -102,8 +103,10 @@ Response InspectorMemoryAgent::startSampling(
     return Response::ServerError("Invalid sampling rate.");
   base::SamplingHeapProfiler::Get()->SetSamplingInterval(interval);
   sampling_profile_interval_.Set(interval);
-  if (in_suppressRandomness.fromMaybe(false))
-    base::PoissonAllocationSampler::Get()->SuppressRandomnessForTest(true);
+  if (in_suppressRandomness.fromMaybe(false)) {
+    randomness_suppressor_ = std::make_unique<
+        base::PoissonAllocationSampler::ScopedSuppressRandomnessForTesting>();
+  }
   profile_id_ = base::SamplingHeapProfiler::Get()->Start();
   return Response::Success();
 }
@@ -113,6 +116,7 @@ Response InspectorMemoryAgent::stopSampling() {
     return Response::ServerError("Sampling profiler is not started.");
   base::SamplingHeapProfiler::Get()->Stop();
   sampling_profile_interval_.Clear();
+  randomness_suppressor_.reset();
   return Response::Success();
 }
 
@@ -186,7 +190,7 @@ InspectorMemoryAgent::GetSamplingProfileById(uint32_t id) {
 
 Vector<String> InspectorMemoryAgent::Symbolize(
     const WebVector<void*>& addresses) {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // TODO(alph): Move symbolization to the client.
   Vector<void*> addresses_to_symbolize;
   for (size_t i = 0; i < addresses.size(); i++) {

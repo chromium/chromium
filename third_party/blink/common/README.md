@@ -18,4 +18,4 @@ Unlike other directories in Blink, code in this directory should:
 * Use Chromium's common types (e.g. //base ones) rather than Blink's ones
   (e.g. WTF types)
 
-* Follow [Chromium's common coding style guide](https://chromium.googlesource.com/chromium/src/+/master/styleguide/c++/c++.md)
+* Follow [Chromium's common coding style guide](https://chromium.googlesource.com/chromium/src/+/main/styleguide/c++/c++.md)

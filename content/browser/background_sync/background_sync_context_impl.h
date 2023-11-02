@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,7 @@ class BackgroundSyncManager;
 class DevToolsBackgroundServicesContextImpl;
 class OneShotBackgroundSyncServiceImpl;
 class PeriodicBackgroundSyncServiceImpl;
+class RenderProcessHost;
 class ServiceWorkerContextWrapper;
 
 // One instance of this exists per StoragePartition, and services multiple child
@@ -58,12 +59,14 @@ class CONTENT_EXPORT BackgroundSyncContextImpl
   // Creates a OneShotBackgroundSyncServiceImpl that is owned by `this`.
   void CreateOneShotSyncService(
       const url::Origin& origin,
+      RenderProcessHost* render_process_host,
       mojo::PendingReceiver<blink::mojom::OneShotBackgroundSyncService>
           receiver);
 
   // Creates a PeriodicBackgroundSyncServiceImpl that is owned by `this`.
   void CreatePeriodicSyncService(
       const url::Origin& origin,
+      RenderProcessHost* render_process_host,
       mojo::PendingReceiver<blink::mojom::PeriodicBackgroundSyncService>
           receiver);
 

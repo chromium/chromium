@@ -1,0 +1,52 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Message format for the MojoLPM fuzzer for the MediaStreamDispatcherHost
+// interface.
+
+syntax = "proto2";
+
+package content.fuzzing.media_stream_dispatcher_host.proto;
+
+import "third_party/blink/public/mojom/mediastream/media_stream.mojom.mojolpm.proto";
+
+// Bind a new MediaStreamDispatcherHost remote
+message NewMediaStreamDispatcherHostAction {
+  required uint32 id = 1;
+}
+
+// Run the specific sequence for (an indeterminate) period. This is not
+// intended to create a specific ordering, but to allow the fuzzer to delay a
+// later task until previous tasks have completed.
+message RunThreadAction {
+  enum ThreadId {
+    IO = 0;
+    UI = 1;
+  }
+
+  required ThreadId id = 1;
+}
+
+// Actions that can be performed by the fuzzer.
+message Action {
+  oneof action {
+    NewMediaStreamDispatcherHostAction new_media_stream_dispatcher_host = 1;
+    RunThreadAction run_thread = 2;
+    mojolpm.blink.mojom.MediaStreamDispatcherHost.RemoteAction
+        media_stream_dispatcher_host_remote_action = 3;
+  }
+}
+
+// Sequence provides a level of indirection which allows Testcase to compactly
+// express repeated sequences of actions.
+message Sequence {
+  repeated uint32 action_indexes = 1 [packed = true];
+}
+
+// Testcase is the top-level message type interpreted by the fuzzer.
+message Testcase {
+  repeated Action actions = 1;
+  repeated Sequence sequences = 2;
+  repeated uint32 sequence_indexes = 3 [packed = true];
+}

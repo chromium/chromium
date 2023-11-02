@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,12 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
+#include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/task_runner_util.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/quirks/quirks_manager.h"
 #include "components/version_info/version_info.h"
-#include "net/base/escape.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -78,8 +78,8 @@ void QuirksClient::StartDownload() {
       kQuirksUrlFormat, IdToHexString(product_id_).c_str(), major_version);
 
   if (!display_name_.empty()) {
-    url +=
-        "display_name=" + net::EscapeQueryParamValue(display_name_, true) + "&";
+    url += "display_name=" + base::EscapeQueryParamValue(display_name_, true) +
+           "&";
   }
 
   VLOG(2) << "Preparing to download\n  " << url << "\nto file "
@@ -189,16 +189,19 @@ void QuirksClient::Retry() {
 }
 
 bool QuirksClient::ParseResult(const std::string& result, std::string* data) {
-  std::string data64;
-  const base::DictionaryValue* dict;
-  std::unique_ptr<base::Value> json = base::JSONReader::ReadDeprecated(result);
-  if (!json || !json->GetAsDictionary(&dict) ||
-      !dict->GetString("icc", &data64)) {
+  absl::optional<base::Value> maybe_json = base::JSONReader::Read(result);
+  if (!maybe_json || !maybe_json->is_dict()) {
     VLOG(1) << "Failed to parse JSON icc data";
     return false;
   }
 
-  if (!base::Base64Decode(data64, data)) {
+  std::string* data64 = maybe_json->GetDict().FindString("icc");
+  if (!data64) {
+    VLOG(1) << "Missing icc data";
+    return false;
+  }
+
+  if (!base::Base64Decode(*data64, data)) {
     VLOG(1) << "Failed to decode Base64 icc data";
     return false;
   }

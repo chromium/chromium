@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,10 @@
 #include <map>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "components/translate/content/common/translate.mojom.h"
 #include "components/translate/core/browser/translate_driver.h"
 #include "components/translate/core/common/translate_errors.h"
@@ -21,7 +23,6 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace content {
-class NavigationController;
 class WebContents;
 }  // namespace content
 
@@ -51,12 +52,10 @@ class ContentTranslateDriver : public TranslateDriver,
     // Called when the page has been translated.
     virtual void OnPageTranslated(const std::string& source_lang,
                                   const std::string& translated_lang,
-                                  translate::TranslateErrors::Type error_type) {
-    }
+                                  translate::TranslateErrors error_type) {}
   };
 
   ContentTranslateDriver(content::WebContents& web_contents,
-                         content::NavigationController* nav_controller,
                          language::UrlLanguageHistogram* url_language_histogram,
                          TranslateModelService* translate_model_service);
 
@@ -106,7 +105,7 @@ class ContentTranslateDriver : public TranslateDriver,
   void OnPageTranslated(bool cancelled,
                         const std::string& source_lang,
                         const std::string& translated_lang,
-                        TranslateErrors::Type error_type);
+                        TranslateErrors error_type);
 
   // Adds a receiver in |receivers_| for the passed |receiver|.
   void AddReceiver(
@@ -151,10 +150,7 @@ class ContentTranslateDriver : public TranslateDriver,
       GetLanguageDetectionModelCallback callback,
       bool is_available);
 
-  // The navigation controller of the tab we are associated with.
-  content::NavigationController* navigation_controller_;
-
-  TranslateManager* translate_manager_;
+  raw_ptr<TranslateManager> translate_manager_;
 
   base::ObserverList<TranslationObserver, true> translation_observers_;
 
@@ -170,7 +166,7 @@ class ContentTranslateDriver : public TranslateDriver,
 
   // Histogram to be notified about detected language of every page visited. Not
   // owned here.
-  language::UrlLanguageHistogram* const language_histogram_;
+  const raw_ptr<language::UrlLanguageHistogram> language_histogram_;
 
   // ContentTranslateDriver is a singleton per web contents but multiple render
   // frames may be contained in a single web contents. TranslateAgents get the
@@ -184,7 +180,7 @@ class ContentTranslateDriver : public TranslateDriver,
 
   // The service that provides the model files needed for translate. Not owned
   // but guaranteed to outlive |this|.
-  TranslateModelService* const translate_model_service_;
+  const raw_ptr<TranslateModelService> translate_model_service_;
 
   base::WeakPtrFactory<ContentTranslateDriver> weak_pointer_factory_{this};
 };

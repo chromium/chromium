@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,6 @@
 #include "chromecast/graphics/cast_window_tree_host_aura.h"
 #include "chromecast/graphics/gestures/cast_system_gesture_event_handler.h"
 #include "chromecast/graphics/gestures/side_swipe_detector.h"
-#include "chromecast/graphics/rounded_window_corners.h"
 #include "ui/aura/client/default_capture_client.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/env.h"
@@ -32,7 +31,7 @@
 #include "ui/touch_selection/touch_selection_menu_runner.h"
 #include "ui/wm/core/default_screen_position_client.h"
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include "ui/platform_window/fuchsia/initialize_presenter_api_view.h"
 #endif
 
@@ -188,7 +187,7 @@ void CastWindowManagerAura::Setup() {
   gfx::Rect host_bounds = GetPrimaryDisplayHostBounds();
   ui::PlatformWindowInitProperties properties(host_bounds);
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   // When using Scenic Ozone platform we need to supply a view_token to the
   // window. This is not necessary when using the headless ozone platform.
   if (ui::OzonePlatform::GetInstance()
@@ -204,7 +203,8 @@ void CastWindowManagerAura::Setup() {
       enable_input_, std::move(properties));
   window_tree_host_->InitHost();
   aura::Window* root_window = window_tree_host_->window();
-  root_window->SetLayoutManager(new CastLayoutManager(this, root_window));
+  root_window->SetLayoutManager(
+      std::make_unique<CastLayoutManager>(this, root_window));
   window_tree_host_->SetRootTransform(GetPrimaryDisplayRotationTransform());
 
   // Allow seeing through to the hardware video plane:
@@ -234,10 +234,6 @@ void CastWindowManagerAura::Setup() {
   side_swipe_detector_ = std::make_unique<SideSwipeDetector>(
       system_gesture_dispatcher_.get(), root_window);
 
-  // Add rounded corners, but defaulted to hidden until explicitly asked for by
-  // a component.
-  rounded_window_corners_ = RoundedWindowCorners::Create(this);
-
 #if BUILDFLAG(IS_CAST_AUDIO_ONLY)
   window_tree_host_->compositor()->SetDisplayVSyncParameters(
       base::TimeTicks(), base::Milliseconds(250));
@@ -245,11 +241,6 @@ void CastWindowManagerAura::Setup() {
 
   // Chromecast devices do not support cut/copy/paste.
   DCHECK(!ui::TouchSelectionMenuRunner::GetInstance());
-}
-
-bool CastWindowManagerAura::HasRoundedWindowCorners() const {
-  return rounded_window_corners_.get() != nullptr &&
-         rounded_window_corners_->IsEnabled();
 }
 
 void CastWindowManagerAura::OnWindowOrderChanged(
@@ -358,15 +349,6 @@ void CastWindowManagerAura::AddTouchActivityObserver(
 void CastWindowManagerAura::RemoveTouchActivityObserver(
     CastTouchActivityObserver* observer) {
   event_gate_->RemoveObserver(observer);
-}
-
-void CastWindowManagerAura::SetEnableRoundedCorners(bool enable) {
-  DCHECK(rounded_window_corners_);
-  rounded_window_corners_->SetEnabled(enable);
-}
-
-void CastWindowManagerAura::NotifyColorInversionEnabled(bool enabled) {
-  rounded_window_corners_->SetColorInversion(enabled);
 }
 
 }  // namespace chromecast

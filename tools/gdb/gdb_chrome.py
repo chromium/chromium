@@ -1,4 +1,4 @@
-# Copyright (c) 2011 The Chromium Authors. All rights reserved.
+# Copyright 2011 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """GDB support for Chrome types.
@@ -465,7 +465,7 @@ class AtomicPrinter(Printer):
     return self.val['__a_']['__a_value']
 
 
-pp_set.add_printer('std::__Cr::atomic', '^std::__Cr::atomic<.*>$',
+pp_set.add_printer('std::Cr::__atomic', '^std::Cr::__atomic<.*>$',
                    AtomicPrinter)
 
 gdb.printing.register_pretty_printer(gdb, pp_set, replace=_DEBUGGING)

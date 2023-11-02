@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,10 +40,11 @@ class PLATFORM_EXPORT WebrtcDecodingInfoHandler {
   // https://wicg.github.io/media-capabilities/#media-capabilities-interface
   using OnMediaCapabilitiesDecodingInfoCallback =
       base::OnceCallback<void(bool, bool)>;
-  void DecodingInfo(const absl::optional<String> audio_mime_type,
-                    const absl::optional<String> video_mime_type,
-                    const absl::optional<String> video_scalability_mode,
-                    OnMediaCapabilitiesDecodingInfoCallback callback) const;
+  void DecodingInfo(
+      const absl::optional<webrtc::SdpAudioFormat> sdp_audio_format,
+      const absl::optional<webrtc::SdpVideoFormat> sdp_video_format,
+      const bool video_spatial_scalability,
+      OnMediaCapabilitiesDecodingInfoCallback callback) const;
 
  private:
   std::unique_ptr<webrtc::VideoDecoderFactory> video_decoder_factory_;

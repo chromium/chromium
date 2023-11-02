@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,9 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include <sync/sync.h>
 #endif
 
@@ -41,7 +42,7 @@ void GpuFence::Wait() {
     return;
   }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   static const int kInfiniteSyncWaitTimeout = -1;
   DCHECK_GE(fence_handle_.owned_fd.get(), 0);
   if (sync_wait(fence_handle_.owned_fd.get(), kInfiniteSyncWaitTimeout) < 0) {
@@ -56,7 +57,7 @@ void GpuFence::Wait() {
 GpuFence::FenceStatus GpuFence::GetStatusChangeTime(int fd,
                                                     base::TimeTicks* time) {
   DCHECK_NE(fd, -1);
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   auto info =
       std::unique_ptr<sync_fence_info_data, void (*)(sync_fence_info_data*)>{
           sync_fence_info(fd), sync_fence_info_free};
@@ -88,7 +89,7 @@ GpuFence::FenceStatus GpuFence::GetStatusChangeTime(int fd,
 
 base::TimeTicks GpuFence::GetMaxTimestamp() const {
   base::TimeTicks timestamp;
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   FenceStatus status =
       GetStatusChangeTime(fence_handle_.owned_fd.get(), &timestamp);
   DCHECK_EQ(status, FenceStatus::kSignaled);

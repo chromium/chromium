@@ -30,7 +30,9 @@
 <translation id="1189258430971676908">ಅಭ್ಯಾಸ ಪ್ರದೇಶ: ಡ್ರಾಪ್-ಡೌನ್ ಪಟ್ಟಿಗಳು</translation>
 <translation id="1195238899008218998">ನಂತರದ</translation>
 <translation id="1197088940767939838">ಕಿತ್ತಳೆ</translation>
+<translation id="1198865190323699001">ಟಚ್ ಗೆಸ್ಚರ್‌ಗಳು</translation>
 <translation id="1201402288615127009">ಮುಂದೆ</translation>
+<translation id="1202112913213080585">ರದ್ದುಮಾಡಿ</translation>
 <translation id="1206619573307042055">ಮಾರ್ಕ್ಯೂ</translation>
 <translation id="1207086294218137981">ಯಾವುದೇ ಮುಂದಿನ ಹಂತ 4 ರ ಶಿರೋನಾಮೆಯಿಲ್ಲ</translation>
 <translation id="1212770441379271564">ಮುಂದಿನ ಕೆಲವು ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು ChromeVox ಕಮಾಂಡ್‌ಗಳಲ್ಲ, ಆದರೆ Chrome ನಿಂದ ಹೆಚ್ಚಿನ ಪ್ರಯೋಜನ ಪಡೆದುಕೊಳ್ಳಲು ಅವು ಬಹಳ ಉಪಯುಕ್ತವಾಗಿವೆ.
@@ -42,6 +44,7 @@
     Chrome ಬ್ರೌಸರ್ ಮೆನುವನ್ನು ತೆರೆಯಲು, Alt+F ಒತ್ತಿ.</translation>
 <translation id="1213216066620407844">ChromeVox - Chrome ಗೆ ಧ್ವನಿ ನೀಡುವುದು</translation>
 <translation id="1225969361094801578">ಗಾಢ ಸ್ಲೇಟ್ ಬೂದು</translation>
+<translation id="122928249241119550">ಹಿಂದಿನ ವಾಕ್ಯಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="1230503547248836149">ಆಯ್ಕೆಮಾಡಿದ ಪ್ರದೇಶದಿಂದ ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="1236794971743289975">ಮುಕ್ತಾಯ ಟಿಪ್ಪಣಿ</translation>
 <translation id="1237797094773582699">ಅದೇ ರೀತಿಯಲ್ಲಿ, ಹಿಂದಿನ ವಿಭಾಗಕ್ಕೆ ತೆರಳಲು ಬಲದಿಂದ ಎಡಕ್ಕೆ ನಾಲ್ಕು ಬೆರಳುಗಳಿಂದ ಸ್ವೈಪ್ ಮಾಡುವುದನ್ನು ಬಳಸಬಹುದು. ಅದನ್ನು ಈಗಲೇ ಪ್ರಯತ್ನಿಸಿ!</translation>
@@ -51,7 +54,7 @@
 <translation id="1251750620252348585">ಮುಂದಿನ ಹಂತದ 6 ಶಿರೋನಾಮೆ</translation>
 <translation id="1268366246392928616">ಯಾವುದೇ ಹಿಂದಿನ ಗಣಿತದ ಎಕ್ಸ್‌ಪ್ರೆಶನ್‌ ಇಲ್ಲ</translation>
 <translation id="1273314450961659276">ಪಠ್ಯದಿಂದ ಧ್ವನಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
-<translation id="1275718070701477396">ಆಯ್ಕೆ ಮಾಡಿದ</translation>
+<translation id="1275718070701477396">ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1284576163386164372">ನಾಲ್ಕು ಬೆರಳುಗಳ ಟ್ಯಾಪ್ ಮೂಲಕ ಮೆನುಗಳನ್ನು ತೆರೆಯುವ ಕುರಿತು ನೀವು ಯಾವಾಗಲೂ ಟುಟೋರಿಯಲ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಬಹುದು. ನಂತರ “ChromeVox” ವಿಭಾಗದ ಅಡಿಯಲ್ಲಿ ಟುಟೋರಿಯಲ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ.</translation>
 <translation id="1291286136605998134">ಟಾಗಲ್ ಬಟನ್</translation>
 <translation id="1299774449519412690">ತಿಳಿ ಆಕಾಶ ನೀಲಿ</translation>
@@ -135,9 +138,9 @@
 <translation id="1812527064848182527">ಲ್ಯಾಂಡ್‌ಸ್ಕೇಪ್</translation>
 <translation id="1829244130665387512">ಪುಟದಲ್ಲಿ ಹುಡುಕಿ</translation>
 <translation id="1834891354138622109">ಕಾಲಮ್</translation>
-<translation id="1845944666972354496">ಸಕ್ರಿಯಗೊಳಿಸಲು ಡಬಲ್ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="1846771122725914429">ಬ್ಲೂಟೂತ್ ಬ್ರೈಲ್ ಡಿಸ್‌ಪ್ಲೇ</translation>
 <translation id="1852018405765032699">ನಾಲ್ಕು ಬೆರಳುಗಳಿಂದ ಸ್ಕ್ರೀನ್ ಟ್ಯಾಪ್ ಮಾಡುವುದರಿಂದ ChromeVox ಮೆನುಗಳನ್ನು ತೆರೆಯುತ್ತದೆ ಹಾಗೂ ಮುಚ್ಚುತ್ತದೆ. ಈ ಮೆನುಗಳಲ್ಲಿ ಕಮಾಂಡ್‌ಗಳು ಮತ್ತು ಶಾರ್ಟ್‌ಕಟ್‌ಗಳ ಕುರಿತು ಉಪಯುಕ್ತವಾದ ಮಾಹಿತಿಯಿದೆ. ಮೆನುಗಳನ್ನು ತೆರೆದ ನಂತರ, ಐಟಂಗಳ ಮೂಲಕ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು ನೀವು ಒಂದು ಬೆರಳಿನಿಂದ ಸ್ವೈಪ್ ಮಾಡಬಹುದು ಮತ್ತು ಐಟಂಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ಡಬಲ್-ಟ್ಯಾಪ್ ಮಾಡಿ. ಮುಂದುವರಿಸಲು, ನಾಲ್ಕು ಬೆರಳುಗಳಿಂದ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
+<translation id="1864430479908918647">Search+Space ಅನ್ನು ಒತ್ತಿರಿ</translation>
 <translation id="1865601187525349519">ಪಠ್ಯದ ಕೊನೆ</translation>
 <translation id="1876229593313240038">doc</translation>
 <translation id="1902396333223336119">ಸೆಲ್</translation>
@@ -212,6 +215,7 @@
 <translation id="2435422727584637732">ಡಾಡ್ಜರ್ ಬ್ಲೂ</translation>
 <translation id="2438712309510062123">ಸೂಚಿಸಿ</translation>
 <translation id="2450814015951372393">ಚೆಕ್‌ಬಾಕ್ಸ್</translation>
+<translation id="2450992626945324272">ಮುಂದಿನ ವಾಕ್ಯಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="2461822463642141190">ಪ್ರಸ್ತುತ</translation>
 <translation id="2462626033734746142">ರೇಡಿಯೊ ಬಟನ್ ಗುಂಪು</translation>
 <translation id="2467741090055146971">ಆಯ್ಕೆ ರದ್ದುಮಾಡಿ</translation>
@@ -234,6 +238,7 @@
 <translation id="2619344480613750862">ನೀವು ಸ್ಕ್ರೀನ್‌ನ ವಿಭಾಗಗಳ ನಡುವೆಯೂ ಚಲಿಸಬಹುದು. ಉದಾಹರಣೆಗೆ, ನೀವು ಲಾಂಚರ್, ಶೆಲ್ಫ್ ಮತ್ತು ನಿಮ್ಮ Chrome ಟ್ಯಾಬ್‌ಗಳ ನಡುವೆ ಸರಿಸಬಹುದು. ಮುಂದಿನ ವಿಭಾಗಕ್ಕೆ ತೆರಳಲು, ನಾಲ್ಕು ಬೆರಳುಗಳಿಂದ ಎಡದಿಂದ ಬಲಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಿ. ಮುಂದುವರಿಯಲು ಇದನ್ನು ಈಗ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="2624431853467395961">ಕಲಿಕೆ ಮೋಡ್‌ ತೆರೆಯಿರಿ</translation>
 <translation id="2626530649491650971">ಕ್ಲಿಕ್ ಮಾಡಬಹುದಾದ</translation>
+<translation id="263637551280112393">Search+Shift+Space ಒತ್ತಿರಿ</translation>
 <translation id="2637227747952042642">ಗಣಿತ</translation>
 <translation id="2638785836053527382">ಡೌನ್‌ಲೋಡ್ ಪುನರಾರಂಭಿಸಲಾಗಿದೆ <ph name="FILE_NAME" /></translation>
 <translation id="2639750663247012216">ChromeVox ಪರಿವರ್ತಕ</translation>
@@ -389,7 +394,9 @@
 <translation id="3492609944033322585">{COUNT,plural, =1{ಬಲ ಆವರಣ}one{# ಬಲ ಆವರಣಗಳು}other{# ಬಲ ಆವರಣಗಳು}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
 <translation id="3497063866483065785">{COUNT,plural, =1{ಪ್ರಶ್ನಾರ್ಥಕ ಚಿಹ್ನೆ}one{# ಪ್ರಶ್ನಾರ್ಥಕ ಚಿಹ್ನೆಗಳು}other{# ಪ್ರಶ್ನಾರ್ಥಕ ಚಿಹ್ನೆಗಳು}}</translation>
+<translation id="3505359110822747654">ChromeVox ಮೆನುಗಳನ್ನು ಕುಗ್ಗಿಸಿ</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{ಕ್ಯಾರೆಟ್}one{# ಕ್ಯಾರೆಟ್‌‌ಗಳು}other{# ಕ್ಯಾರೆಟ್‌‌ಗಳು}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{ಬಿಳಿ ಬುಲೆಟ್}one{# ಬಿಳಿ ಬುಲೆಟ್‌ಗಳು}other{# ಬಿಳಿ ಬುಲೆಟ್‌ಗಳು}}</translation>
 <translation id="352577523970648069">ಎಡಿಟ್ ಮಾಡಬಹುದಾದ ಪಠ್ಯ ಕ್ಷೇತ್ರ</translation>
 <translation id="3538907380453898475">ವಿವರಣೆ ಪಟ್ಟಿ</translation>
 <translation id="3549141990712742152"><ph name="TEXT" /> ಅನ್ನು ಕತ್ತರಿಸಿ.</translation>
@@ -419,7 +426,7 @@
 <translation id="3712520970944678024">ಮಾತಿನ ನಿಯಂತ್ರಣ</translation>
 <translation id="371302509916403935">ಅಡಿಗೆರೆ</translation>
 <translation id="3716845769494773620">ಬಹು ಸಾಲು</translation>
-<translation id="3735039640698208086">ಆಡಿಯೊ ಪ್ಲೇ ಆಗುತ್ತಿರುವಾಗ...</translation>
+<translation id="3735039640698208086">ಆಡಿಯೋ ಪ್ಲೇ ಆಗುತ್ತಿರುವಾಗ...</translation>
 <translation id="3762198587642264450">ಪ್ರಸ್ತುತ ಸಾಲಿನ ಅಂತ್ಯಕ್ಕೆ ಹೋಗಿ</translation>
 <translation id="3777255250339039212">h1</translation>
 <translation id="3777742246909257041">ಹಿಮ</translation>
@@ -486,6 +493,7 @@
 <translation id="42164919740161077">ಕ್ಯಾಡೆಟ್ ಬ್ಲೂ</translation>
 <translation id="4217571870635786043">ಉಕ್ತಲೇಖನ</translation>
 <translation id="4218529045364428769">{COUNT,plural, =1{ಡ್ಯಾಶ್}one{# ಡ್ಯಾಶ್‌ಗಳು}other{# ಡ್ಯಾಶ್‌ಗಳು}}</translation>
+<translation id="4220024144662591089"><ph name="START_PHRASE" /> ಗೆ <ph name="END_PHRASE" /> ನಿಂದ ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="4221012616705981690">ಯಾವುದೇ ಹಿಂದಿನ ಪಟ್ಟಿ ಇಲ್ಲ</translation>
 <translation id="4225355998815256469">ಫಾರ್ಮ್ ನಿಯಂತ್ರಣಗಳು</translation>
 <translation id="4230834257931120629">ತಿಳಿ ಸ್ಲೇಟ್ ಬೂದು</translation>
@@ -504,6 +512,7 @@
 <translation id="4300318234632215983">ಲಿಂಕ್‌ ಹಿಂದಿರುವ URL ಅನ್ನು ಪ್ರಕಟಿಸಿ</translation>
 <translation id="4322625298640984693">ಸಿಯೆನ್ನಾ</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{ಪೂರ್ಣ ವಿರಾಮ}=3{ದೀರ್ಘವೃತ್ತಗಳು}one{# ಪೂರ್ಣ ವಿರಾಮಗಳು}other{# ಪೂರ್ಣ ವಿರಾಮಗಳು}}</translation>
+<translation id="4352022650330571548"><ph name="PHRASE" /> ಅನ್ನು ಟೈಪ್ ಮಾಡಿ</translation>
 <translation id="4372435075475052704">ಕನಿಷ್ಠ:<ph name="X" /></translation>
 <translation id="4372705107434148843">ಮಾತು ನಿಲ್ಲಿಸಿ</translation>
 <translation id="4376316291247992553">ಗ್ರಾಫಿಕ್ ಅನ್ನು ಬ್ರೈಲ್‌ನಂತೆ ವೀಕ್ಷಿಸಿ</translation>
@@ -521,6 +530,7 @@
 <translation id="4479068155583208887">ಫೈರ್ ಬ್ರಿಕ್</translation>
 <translation id="4482330759234983253">ಹಿಂದಿನ ಕೋಷ್ಟಕ</translation>
 <translation id="4491109536499578614">ಚಿತ್ರ</translation>
+<translation id="4507332368061453500">ಪ್ರಸ್ತುತ ಐಟಂ ಮೇಲೆ ದೀರ್ಘ ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="4511186779140817916">ಬ್ಲಾಂಚ್ ಮಾಡಿದ ಆಲ್ಮಂಡ್</translation>
 <translation id="451510441928265982">ಯಾವುದೇ ಹಿಂದಿನ ಹಂತ 2 ರ ಶಿರೋನಾಮೆಯಿಲ್ಲ</translation>
 <translation id="4515799157838123044">ಹಿನ್ನೆಲೆ ವಿಷಯವನ್ನು ಶೇಡ್ ಮಾಡಿ</translation>
@@ -533,6 +543,7 @@
 <translation id="4601367666219428522">ಕೋಷ್ಠಕ <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">ಮುಂದಿನ ಕೀ ಒತ್ತುವಿಕೆಯನ್ನು ನಿರ್ಲಕ್ಷಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="4623097797855662355">ಕೊಲೊಫೋನ್</translation>
+<translation id="4624970070706497034">TalkBack ಇನ್ನು ಮುಂದೆ Chromebook ಗಳಿಗಾಗಿ ಕಸ್ಟಮೈಸೇಶನ್‌ ಅನ್ನು ಒದಗಿಸುವುದಿಲ್ಲ. ನೀವು ಈಗಲೂ ಇದನ್ನು ಬಳಸಬಹುದು, ಆದರೆ TalkBack ಡೀಫಾಲ್ಟ್ ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳನ್ನು ಬಳಸಿ. ಲಭ್ಯವಿರುವ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳನ್ನು ನೋಡಲು ಹುಡುಕಾಟ + A ಮತ್ತು ನಂತರ K ಒತ್ತಿರಿ. ನೀವು ಇನ್ನೂ TalkBack ಅನ್ನು ಬಳಸಲು ಬಯಸಿದರೆ, ಕಮಾಂಡ್ ಅನ್ನು ಮತ್ತೊಮ್ಮೆ ಒತ್ತಿರಿ.</translation>
 <translation id="463135993322337640">ಹೊಸದೇನಿದೆ ಎಂಬುದನ್ನು ಕಂಡುಕೊಳ್ಳಲು ChromeVox o, n ಅನ್ನು ಒತ್ತಿ</translation>
 <translation id="4649220074413114917">ಪ್ರಸ್ತುತ ಯಾವುದೇ ಭಾಷಣವನ್ನು ನಿಲ್ಲಿಸಲು, ಎರಡು ಬೆರಳುಗಳಿಂದ ಸ್ಕ್ರೀನ್‌ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಲು ಬಳಸಬಹುದು. ChromeVox ಏನನ್ನಾದರೂ ಓದಲು ನೀವು ಬಯಸದಿದ್ದರೆ, ಇದು ಉಪಯುಕ್ತವಾಗಿರುತ್ತದೆ. ಮುಂದುವರಿಸಲು, ಎರಡು ಬೆರಳುಗಳಿಂದ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="4660783501463101648">ಕ್ಲಾಸಿಕ್ ಅನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ. ChromeVox ಕ್ಲಾಸಿಕ್‌ಗೆ ಹಿಂತಿರುಗಲು ಕೀಬೋರ್ಡ್ ಟಾಗಲ್ ಅನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ.</translation>
@@ -588,7 +599,6 @@
 <translation id="4993152509206108683">ದರ <ph name="PERCENT" /> ಶೇಕಡಾ</translation>
 <translation id="4994420463726586413">ಪ್ರಸ್ತುತ ಬ್ಯಾಟರಿ ಸ್ಥಿತಿಯನ್ನು ಪ್ರಕಟಿಸಿ</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, ರೇಡಿಯೊ ಬಟನ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
-<translation id="5011664330025416377">ಸಕ್ರಿಯಗೊಳಿಸಲು, Search+Space ಕೀ ಅನ್ನು ಒತ್ತಿರಿ</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, ಮೆನು ಐಟಂ ರೇಡಿಯೋ ಬಟನ್ ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="5020651427400641814">ಮಾತಿನ ಲಾಗಿಂಗ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="5041394372352067729">ಬ್ರೈಲ್‌ ಡಿಸ್‌ಪ್ಲೇಯನ್ನು ಪುಟದ ಮೇಲ್ಭಾಗಕ್ಕೆ ಸರಿಸು</translation>
@@ -615,7 +625,6 @@
 <translation id="5170206230005240598">ಬ್ರೈಲಿ ಶೀರ್ಷಿಕೆಗಳು ಸಕ್ರಿಯವಾಗಿವೆ</translation>
 <translation id="5183440668879371625">ಬ್ರೈಲಿ ಹಿಂದಿನ ಸಾಲು</translation>
 <translation id="5189244881767082992">ಸಾಲು</translation>
-<translation id="5234747236692380506"><ph name="TEXT" /> ಅನ್ನು ಟೈಪ್ ಮಾಡಿ</translation>
 <translation id="5263034204789987535">ಕಾರ್ನ್ ಸಿಲ್ಕ್</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">ಅಂತ್ಯ</translation>
@@ -642,6 +651,7 @@
 <translation id="5355014376930441909">ಯಾವುದೇ ಮುಂದಿನ ವಿಭಾಗವಿಲ್ಲ</translation>
 <translation id="5368000168321181111">Earcons ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="5368505757342402527">ಡೌನ್‌ಲೋಡ್ <ph name="PROGRESS" />% ಪೂರ್ಣಗೊಂಡಿದೆ <ph name="FILE_NAME" />. ಇನ್ನೂ <ph name="TIME" /> <ph name="UNITS" /> ಬಾಕಿ ಉಳಿದಿದೆ.</translation>
+<translation id="5381388086899614489">ದೀರ್ಘಕಾಲ ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="5400836586163650660">ಬೂದು</translation>
 <translation id="5402367795255837559">ಬ್ರೈಲಿ</translation>
 <translation id="5402791055281059602">ಒಂದು ಮಾದರಿ ಎಚ್ಚರಿಕೆ</translation>
@@ -663,6 +673,7 @@
 <translation id="5522423213731659107">ತ್ವರಿತ ಓರಿಯಂಟೇಶನ್ ಪೂರ್ಣಗೊಂಡಿದೆ!</translation>
 <translation id="5534303576632885660">hdr</translation>
 <translation id="5539820223028224601">ಗೇನ್ಸ್‌ಬೋರೋ</translation>
+<translation id="554893713779400387">ಡಿಕ್ಟೇಶನ್ ಟಾಗಲ್ ಮಾಡಿ</translation>
 <translation id="5549179427201066174">ಧ್ವನಿ ಪ್ರತಿಕ್ರಿಯೆ (ಇಯರ್‌ಕಾನ್‌‌ಗಳು) ಆನ್ ಅಥವಾ ಆಫ್ ಮಾಡಿ</translation>
 <translation id="556042886152191864">ಬಟನ್</translation>
 <translation id="5561345396546889625">ಮುಂದಿನ ಪಟ್ಟಿ</translation>
@@ -673,6 +684,7 @@
 <translation id="5597170376237141345">ಮುಂದಿನ ಚೆಕ್‌ಬಾಕ್ಸ್</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, ರೇಡಿಯೊ ಬಟನ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಲಿಲ್ಲ</translation>
 <translation id="5601172225407283979">ಡಿಫಾಲ್ಟ್ ಕ್ರಮವನ್ನು ಮಾಡಿ</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{ಚೌಕದ ಬುಲೆಟ್}one{# ಚೌಕದ ಬುಲೆಟ್‌ಗಳು}other{# ಚೌಕದ ಬುಲೆಟ್‌ಗಳು}}</translation>
 <translation id="5608798115546226984">ಸ್ವಯಂಪೂರ್ಣಗೊಳಿಸುವಿಕೆಯ ಇನ್‌ಲೈನ್</translation>
 <translation id="5616029807486814372">ಮುಂದಿನ ಅಧ್ಯಾಯ</translation>
 <translation id="561939826962581046">ಸಮಯ</translation>
@@ -680,6 +692,8 @@
 <translation id="5623842676595125836">ಲಾಗ್</translation>
 <translation id="5628125749885014029">h4</translation>
 <translation id="5632083598315326067">ಗ್ರಾಫಿಕ್ಸ್ ಚಿಹ್ನೆ</translation>
+<translation id="5648939288050772726">ಅಭಿನಂದನೆಗಳು! ChromeVox ಅನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಬಳಸಲು ಅಗತ್ಯವಿರುವ ಸಂಗತಿಗಳ ಕುರಿತು ನೀವು ತಿಳಿದುಕೊಂಡಿದ್ದೀರಿ. Search+Period ಒತ್ತುವ ಮೂಲಕ ನೀವು ಯಾವಾಗ ಬೇಕಾದರೂ ChromeVox ಕಮಾಂಡ್ ಮೆನುವನ್ನು ತೆರೆಯಬಹುದು ಎಂಬುದನ್ನು ನೆನಪಿಡಿ. ChromeVox ಹಾಗೂ ChromeOS ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿದುಕೊಳ್ಳಲು, ಕೆಳಗಿನ ಲೇಖನಗಳನ್ನು ಓದಿ.
+    ನೀವು ಟುಟೋರಿಯಲ್ ಅನ್ನು ಓದಿ ಮುಗಿಸಿದ್ದರೆ, ChromeVox ಅನ್ನು ಬಳಸಿ Close ಬಟನ್‌ಗೆ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಿ ಮತ್ತು ಅದನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
 <translation id="5653397561111110475">Chromebook ಟಚ್ ಸ್ಕ್ರೀನ್ ಪ್ರವೇಶಿಸುವಿಕೆ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಬಳಸಿ</translation>
 <translation id="5655682562155942719">ಆಜ್ಞೆಗಳಿಗೆ ಹೋಗು</translation>
 <translation id="56637627897541303">ಪಠ್ಯ ಪ್ರದೇಶ</translation>
@@ -750,8 +764,10 @@
 <translation id="6100239002225743044">ಒಂದು ಸಾಲು ಮೇಲಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="6118126368611144850">Chrome ಗಾಗಿ Android ಅಪ್ಲಿಕೇಶನ್‌ಗಳು. ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ನೀವು Play Store  ಅನ್ನು ಹೊಂದಿದ್ದರೆ, Android ಅಪ್ಲಿಕೇಶನ್‌ಗಳೊಂದಿಗೆ ChromeVox ನಲ್ಲಿ ಸ್ನೀಕ್ ಪೀಕ್ ಅನ್ನು ಪಡೆದುಕೊಳ್ಳಿ. Play Store ‌ನಿಂದ Google Chrome Canary ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡುವ ಮೂಲಕ ಪ್ರಾಯೋಗಿಕ ಬೆಂಬಲವನ್ನು ಬಳಸಿ ನೋಡಿ.</translation>
 <translation id="611827076493383239">vtd</translation>
+<translation id="6119846243427417423">ಸಕ್ರಿಯಗೊಳಿಸು</translation>
 <translation id="6122013438240733403">btn</translation>
 <translation id="6132506484792346370">ಪಟ್ಟಿ ಬಾಕ್ಸ್ ಅಥವಾ ಕಾಂಬೊ ಬಾಕ್ಸ್</translation>
+<translation id="613344593214611552">ಹಿಂದಿನ ವಾಕ್ಯವನ್ನು ಅಳಿಸಿ</translation>
 <translation id="6142308968191113180">ಶೀರ್ಷಿಕೆ 4</translation>
 <translation id="6150023170003443621">ಹಳದಿ ಹಸಿರು</translation>
 <translation id="6158882249329863701">ಸಾಲು <ph name="TABLECELLROWINDEX" /> ಕಾಲಮ್ <ph name="TABLECELLCOLUMNINDEX" /></translation>
@@ -761,9 +777,11 @@
 <translation id="6186305613600865047">ಪುಟದ ಕೆಳಕ್ಕೆ ಹೋಗಿ</translation>
 <translation id="6187190722927752226">ಅಕ್ವಾಮರೈನ್</translation>
 <translation id="6197361807490522975">ಗಾಢ ನೀಲಿ</translation>
+<translation id="6218813441317556731"><ph name="DELETE_PHRASE" /> ಅನ್ನು <ph name="INSERT_PHRASE" /> ನಿಂದ ಬದಲಾಯಿಸಿ</translation>
 <translation id="6236061028292614533">ಮುಂದಿನ ಶಿರೋನಾಮೆ</translation>
 <translation id="6254901459154107917">ಮುಂದಿನ ಸಂಪಾದಿಸಬಹುದಾದ ಪಠ್ಯ ಪ್ರದೇಶ</translation>
 <translation id="6259464875943891919"><ph name="TYPE" /> ನಿರ್ಗಮಿಸಲಾಗಿದೆ.</translation>
+<translation id="6280088282605782512">ಡಬಲ್ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="6282062888058716985">nav</translation>
 <translation id="6295699829709583154">ಅಗತ್ಯ ಕೀಗಳು: ಹುಡುಕಾಟ</translation>
 <translation id="6305702903308659374">ChromeVox ಮಾತನಾಡುತ್ತಿರುವಾಗಲೂ ಸಹ ಸಾಮಾನ್ಯ ವಾಲ್ಯೂಮ್‌‌ನಲ್ಲಿ ಪ್ಲೇ ಮಾಡಿ</translation>
@@ -933,6 +951,7 @@
 <translation id="7533226154149229506">ತಿಳಿ ಗೋಲ್ಡನ್ ರಾಡ್ ಹಳದಿ</translation>
 <translation id="7543255924852002459">ತ್ಯಜಿಸಿ ಲೇಬಲ್</translation>
 <translation id="7552432549459840808">ಉಪಯುಕ್ತ Chrome ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು</translation>
+<translation id="7553679324939294712"><ph name="BEFORE_PHRASE" /> ಮುಂಚಿತವಾಗಿ <ph name="INSERT_PHRASE" /> ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="7569983096843329377">ಕಪ್ಪು</translation>
 <translation id="7579911500627256166">ಡಾಟ್‌ <ph name="DOT" /></translation>
 <translation id="7592060599656252486">ಕೆಲವು</translation>
@@ -956,16 +975,16 @@
 <translation id="7684431668231950609">ಪಠ್ಯ ಎಡಿಟ್ ಮಾಡಿ, URL ನಮೂದು</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">ಹಿಂದಿನ ರೇಡಿಯೊ ಬಟನ್</translation>
+<translation id="7696631298608145306">ಮುಂದಿನ ಪದಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="7701040980221191251">ಯಾವುದೂ ಇಲ್ಲ</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7713139339518499741">ನೈಸರ್ಗಿಕ ಧ್ವನಿ</translation>
 <translation id="7714340021005120797">ಯಾವುದೇ ಮುಂದಿನ ಕಾಂಬೊ ಬಾಕ್ಸ್ ಇಲ್ಲ</translation>
-<translation id="772146615414628379">ಅಭಿನಂದನೆಗಳು! ChromeVox ಅನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಬಳಸಲು ಅಗತ್ಯವಿರುವ ಸಂಗತಿಗಳ ಕುರಿತು ನೀವು ತಿಳಿದುಕೊಂಡಿದ್ದೀರಿ. Search+Period ಒತ್ತುವ ಮೂಲಕ ನೀವು ಯಾವಾಗ ಬೇಕಾದರೂ ChromeVox ಕಮಾಂಡ್ ಮೆನುವನ್ನು ತೆರೆಯಬಹುದು ಎಂಬುದನ್ನು ನೆನಪಿಡಿ. ChromeVox ಹಾಗೂ Chrome OS ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿದುಕೊಳ್ಳಲು, ಕೆಳಗಿನ ಲೇಖನಗಳನ್ನು ಓದಿ.
-    ನೀವು ಟುಟೋರಿಯಲ್ ಅನ್ನು ಓದಿ ಮುಗಿಸಿದ್ದರೆ, ChromeVox ಅನ್ನು ಬಳಸಿ Close ಬಟನ್‌ಗೆ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಿ ಮತ್ತು ಅದನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
 <translation id="7724603315864178912">ಕತ್ತರಿಸು</translation>
 <translation id="7731785449856576010">ಯಾವುದೇ ಮುಂದಿನ ಮಾಧ್ಯಮ ವಿಜೆಟ್ ಇಲ್ಲ</translation>
 <translation id="7735498529470878067">ಸ್ಕ್ರೀನ್‌ನಲ್ಲಿ ಏನಿದೆ ಎಂಬುದನ್ನು ತ್ವರಿತವಾಗಿ ತಿಳಿಯಲು ಸ್ಪರ್ಶದ ಮೂಲಕ ಎಕ್ಸ್‌ಪ್ಲೋರ್ ಮಾಡಿ ಸಹಾಯ ಮಾಡುತ್ತದೆ.</translation>
 <translation id="773906353055481349">ಸೆಲ್ ಪ್ರಕಾರ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು, ಬಾಣಗಳ ಕೀ ಜೊತೆಗೆ Search+Ctrl+Alt ಅನ್ನು ಒತ್ತಿರಿ</translation>
+<translation id="7746976083433980639"><ph name="ACTION" /> ನಿಂದ <ph name="LABEL" /></translation>
 <translation id="7763537600611320912">ಡೌನ್‌ಲೋಡ್ ಪ್ರಾರಂಭಗೊಂಡಿದೆ <ph name="FILE_NAME" /></translation>
 <translation id="7768784765476638775">ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಆಲಿಸಿ</translation>
 <translation id="7776293189010177726">ChromeVox ಮೆನುಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
@@ -1065,6 +1084,7 @@
 <translation id="8455868257606149352">ಗರಿಷ್ಟ <ph name="X" /></translation>
 <translation id="84575901236241018">ಪ್ರವೇಶ ಕೀ ಹೊಂದಿದೆ, <ph name="KEY" /></translation>
 <translation id="8463645336674919227">ವ್ಯಾಕರಣ ದೋಷವನ್ನು ತೊರೆಯಲಾಗುತ್ತಿದೆ</translation>
+<translation id="8465573210279050749">ಹಿಂದಿನ ಪದವನ್ನು ಅಳಿಸಿ</translation>
 <translation id="847040613207937740">ಯಾವುದೇ ಮುಂದಿನ ಚೆಕ್‌ಬಾಕ್ಸ್ ಇಲ್ಲ</translation>
 <translation id="8473540203671727883">ಮೌಸ್ ಕರ್ಸರ್‌ನ ಕೆಳಗಿರುವ ಪಠ್ಯವನ್ನು ಓದಿ</translation>
 <translation id="8476408756881832830">ChromeVox ಮಾತನಾಡುತ್ತಿರುವಾಗ ಪ್ಲೇಬ್ಯಾಕ್ ಅನ್ನು ವಿರಾಮಗೊಳಿಸಿ</translation>
@@ -1095,11 +1115,13 @@
 <translation id="8659501358298941449">ಡ್ರಾಪ್-ಡೌನ್ ಪಟ್ಟಿಗಳು</translation>
 <translation id="8666733765751421568"><ph name="TYPE" /> ಅಂತ್ಯ</translation>
 <translation id="867187640362843212">ಶೀರ್ಷಿಕೆ 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}one{ನೆಸ್ಟ್ ಮಾಡಿದ ಹಂತ #}other{ನೆಸ್ಟ್ ಮಾಡಿದ ಹಂತ #}}</translation>
 <translation id="8693391540059827073">ನನ್ನ ನೆಚ್ಚಿನ ಋತು</translation>
 <translation id="8696284982970258155">ಹನಿಡ್ಯೂ</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{ಪೈಪ್}one{# ಲಂಬ ಪೈಪ್‌ಗಳು}other{# ಲಂಬ ಪೈಪ್‌ಗಳು}}</translation>
 <translation id="8741370088760768424">ಸುಳಿವು: ಪ್ರಸ್ತುತ ಐಟಂ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ಹುಡುಕಾಟ + ಸ್ಪೇಸ್‌ ಅನ್ನು ಒತ್ತಿರಿ.</translation>
 <translation id="8743786158317878347">ಕೋಷ್ಟಕಗಳಂತಹ, ವ್ಯವಸ್ಥಿತಗೊಳಿಸಿದ ವಿಷಯ ನಮೂದಿಸಿ</translation>
+<translation id="8746846427395705317">ಹಿಂದಿನ ಪದಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="8747966237988593539">ವ್ಯವಸ್ಥಿತವಾದ ಪಟ್ಟಿ</translation>
 <translation id="8749988712346667988">ಬೆಳ್ಳಿ</translation>
 <translation id="875769700429317857">ಡೌನ್‌ಲೋಡ್ ಪೂರ್ಣಗೊಂಡಿದೆ <ph name="FILE_NAME" /></translation>
@@ -1127,6 +1149,7 @@
 <translation id="8970172509886453271">ಯಾವುದೇ ಹಿಂದಿನ ವಿಭಾಗವಿಲ್ಲ</translation>
 <translation id="89720367119469899">ಎಸ್ಕೇಪ್</translation>
 <translation id="8978496506222343566">tltip</translation>
+<translation id="898089897833732740"><ph name="PHRASE" /> ಅಳಿಸಿ</translation>
 <translation id="8986362086234534611">ಮರೆತುಹೋಗು</translation>
 <translation id="8989104346085848538">ಯಾವುದೇ ಪ್ರಸ್ತುತ ChromeVox ಧ್ವನಿಯನ್ನು ನಿಲ್ಲಿಸಲು, Control ಕೀಯನ್ನು ಒತ್ತಿರಿ.</translation>
 <translation id="8993737615451556423">ಓದುವ ಧ್ವನಿಯನ್ನು ವೇಗಗೊಳಿಸುವ, ನಿಧಾನಗೊಳಿಸುವ ಮತ್ತು ವಿರಾಮಗೊಳಿಸಲು ನಿಯಂತ್ರಣಗಳನ್ನು ಒದಗಿಸುತ್ತದೆ</translation>
@@ -1162,6 +1185,7 @@
 <translation id="9223032053830369045">ಕಡು ಗೆಂಪು</translation>
 <translation id="923331726185079994">ChromeVox ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="93384979447910801">ಗಾಢ ಸಮುದ್ರ ಹಸಿರು</translation>
+<translation id="937605981140327129">ಪ್ರಸ್ತುತವಾಗಿ TalkBack ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗಿದೆ. Play Store ಮೂಲಕ Android AccessibilitySuite ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ ಹಾಗೂ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="948171205378458592">ಮಾತಿನ ಪ್ರಮಾಣವನ್ನು ಇಳಿಸಿ</translation>
 <translation id="957570623732056069">ಈ ಪಠ್ಯಕ್ಕೆ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು ಒಂದು ಬೆರಳಿನಲ್ಲಿ ಎಡಕ್ಕೆ ಅಥವಾ ಬಲಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಿ</translation>
 <translation id="958854023026327378">ಒಂದು ಬೆರಳಿನಿಂದ ಕೆಳಕ್ಕೆ ಸ್ವೈಪ್‌ ಮಾಡಿ</translation>

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,10 +15,6 @@
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-
-namespace base {
-class ListValue;
-}
 
 // WebUI message handler for the Dice web signin intercept bubble.
 class DiceWebSigninInterceptHandler : public content::WebUIMessageHandler,
@@ -43,17 +39,21 @@ class DiceWebSigninInterceptHandler : public content::WebUIMessageHandler,
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
 
  private:
+  friend class DiceWebSigninInterceptHandlerTest;
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptHandlerTest,
+                           GetInterceptionParametersValue);
+
   const AccountInfo& primary_account();
   const AccountInfo& intercepted_account();
 
-  void HandleAccept(const base::ListValue* args);
-  void HandleCancel(const base::ListValue* args);
-  void HandleGuest(const base::ListValue* args);
-  void HandlePageLoaded(const base::ListValue* args);
+  void HandleAccept(const base::Value::List& args);
+  void HandleCancel(const base::Value::List& args);
+  void HandleGuest(const base::Value::List& args);
+  void HandlePageLoaded(const base::Value::List& args);
 
   // Gets the values sent to javascript.
-  base::Value GetAccountInfoValue(const AccountInfo& info);
-  base::Value GetInterceptionParametersValue();
+  base::Value::Dict GetAccountInfoValue(const AccountInfo& info);
+  base::Value::Dict GetInterceptionParametersValue();
 
   // The dialog string is different when the device is managed. This function
   // returns whether the version for managed devices should be used.
@@ -62,6 +62,10 @@ class DiceWebSigninInterceptHandler : public content::WebUIMessageHandler,
   std::string GetHeaderText();
   std::string GetBodyTitle();
   std::string GetBodyText();
+  std::string GetConfirmButtonLabel();
+  std::string GetCancelButtonLabel();
+  std::string GetManagedDisclaimerText();
+  bool GetShouldUseV2Design();
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

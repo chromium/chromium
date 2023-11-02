@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,6 +34,7 @@ class MockSystemMediaControls : public SystemMediaControls {
   MOCK_METHOD1(SetIsStopEnabled, void(bool value));
   MOCK_METHOD1(SetIsSeekToEnabled, void(bool value));
   MOCK_METHOD1(SetPlaybackStatus, void(PlaybackStatus value));
+  MOCK_METHOD1(SetID, void(const std::string* value));
   MOCK_METHOD1(SetTitle, void(const std::u16string& title));
   MOCK_METHOD1(SetArtist, void(const std::u16string& artist));
   MOCK_METHOD1(SetAlbum, void(const std::u16string& artist));

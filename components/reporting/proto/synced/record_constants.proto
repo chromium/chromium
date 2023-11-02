@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,11 +34,6 @@ enum Destination {
   // |REPORTING_RECORD| Temporary group for Encrypted Reporting Pipeline
   REPORTING_RECORD = 7;
 
-  // |DEVICE_TRUST_REPORTS| handler is for reporting data updates related to the
-  // Device Trust connector, sent by Chrome browsers for Chrome Browser Cloud
-  // Management (CBCM).
-  DEVICE_TRUST_REPORTS = 8;
-
   // |PRINT_JOBS| handler is for print jobs.
   PRINT_JOBS = 9;
 
@@ -71,6 +66,26 @@ enum Destination {
 
   // |CRD_EVENTS| are sent for Chrome remote desktop connect and disconnect.
   CRD_EVENTS = 18;
+
+  // |PERIPHERAL_EVENTS| is for both event and telemetry data from peripherals
+  // connected to ChromeOS devices.
+  PERIPHERAL_EVENTS = 19;
+
+  // |SUSPICIOUS_EVENTS| is for events when a suspicious mount or process
+  // is detected by the security daemon.
+  SUSPICIOUS_EVENTS = 20;
+
+  // |LOCK_UNLOCK_EVENTS| is for lock/unlock events.
+  LOCK_UNLOCK_EVENTS = 21;
+
+  // |CROS_SECURITY_AGENT| is for events that starts the secagentd agent or
+  // indicates that it is running.
+  CROS_SECURITY_AGENT = 22;
+
+  // |CROS_SECURITY_PROCESS| is for events that exec or terminate process.
+  CROS_SECURITY_PROCESS = 23;
+
+  reserved 8;
 }
 
 // |Priority| is used to determine when items from the queue should be rate
@@ -115,7 +130,7 @@ enum Priority {
   // |MANUAL_BATCH| records are the first to be rate limited, and since there
   // is no automatic transfer, it is important to explicitly flush them often
   // enough to avoid loss of data.
-  // |MANUAL_BATCH| records are the first to be shed.
+  // |MANUAL_BATCH| records are one of the first few ones to be shed.
   MANUAL_BATCH = 5;
 
   // |SECURITY| queues should transfer information indicating potential security
@@ -125,4 +140,15 @@ enum Priority {
   // be exposed to the domain admin. These are the events that will be rate
   // limited last. |SECURITY| records are the last ones to be shed.
   SECURITY = 6;
+
+  // |MANUAL_BATCH_LACROS| queues transfer data only on explicit request in
+  // Lacros. Note that since a queue can hold records submitted by multiple
+  // clients, one client requesting to transfer data will do so for all
+  // collected records of the same priority, including those enqueued by other
+  // clients within Lacros. |MANUAL_BATCH_LACROS| records, like those with
+  // |MANUAL_BATCH|, are the first to be rate limited, and since there
+  // is no automatic transfer, it is important to explicitly flush them often
+  // enough to avoid loss of data.
+  // |MANUAL_BATCH_LACROS| records are one of the first few ones to be shed.
+  MANUAL_BATCH_LACROS = 7;
 }

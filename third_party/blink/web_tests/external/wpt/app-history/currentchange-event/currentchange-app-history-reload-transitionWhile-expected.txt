@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL AppHistoryCurrentChangeEvent fires for appHistory.reload() intercepted by transitionWhile assert_equals: expected object "[object AppHistoryEntry]" but got object "[object AppHistoryEntry]"
-Harness: the test ran to completion.
-

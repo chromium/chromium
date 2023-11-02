@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,8 @@ void TestParsing(const Environment& env, const std::string& data) {
 void TestValidation(const Environment& env, const base::Value& parsed_json) {
   // Exercise with every possible strategy.
   for (auto strategy : {SCHEMA_STRICT, SCHEMA_ALLOW_UNKNOWN,
-                        SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY}) {
+                        SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY,
+                        SCHEMA_ALLOW_UNKNOWN_WITHOUT_WARNING}) {
     env.chrome_policy_schema.Validate(parsed_json, strategy,
                                       /*out_error_path=*/nullptr,
                                       /*out_error=*/nullptr);

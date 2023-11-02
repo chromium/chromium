@@ -112,7 +112,7 @@ The following is the recommended thresholds for different code coverage levels:
 * >level 3(commendable): 75%
 * >level 4(exemplary): 90%
 
-Go to [code coverage dashboard](https://analysis.chromium.org/p/chromium/coverage) to check the code coverage for your project.
+Go to [code coverage dashboard](https://analysis.chromium.org/coverage/p/chromium) to check the code coverage for your project.
 
 
 ## How to write new tests
@@ -179,7 +179,7 @@ development pain for other and then fix it later. "[How do I disable a flaky
 test]" has instructions on how to disable a flaky test.
 
 [gtest]: https://github.com/google/googletest
-[Simple gtests]: https://github.com/google/googletest/blob/master/docs/primer.md#simple-tests
+[Simple gtests]: https://github.com/google/googletest/blob/main/docs/primer.md#simple-tests
 [Junit]: https://developer.android.com/training/testing/junit-rules
 [Instrumentation Tests]: https://chromium.googlesource.com/chromium/src/+/main/testing/android/docs/instrumentation.md
 [EarlGrey]: https://github.com/google/EarlGrey

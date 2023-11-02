@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
+#include "base/task/task_traits.h"
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -26,10 +27,11 @@ class SingleThreadTaskRunner;
 }  // namespace base
 
 namespace component_updater {
-using RegisterCallback =
-    base::OnceCallback<bool(const update_client::CrxComponent&)>;
 
+struct ComponentRegistration;
 class ComponentUpdateService;
+
+using RegisterCallback = base::OnceCallback<bool(const ComponentRegistration&)>;
 
 // Components should use a ComponentInstaller by defining a class that
 // implements the members of ComponentInstallerPolicy, and then registering a
@@ -122,12 +124,24 @@ class ComponentInstaller final : public update_client::CrxInstaller {
   // |cus| provides the registration logic.
   // The passed |callback| will be called once the initial check for installed
   // versions is done and the component has been registered.
-  void Register(ComponentUpdateService* cus, base::OnceClosure callback);
+  // Registration tasks will be done with a priority of |task_priority|. Some
+  // components may affect user-visible features, hence a default of
+  // USER_VISIBLE.
+  void Register(
+      ComponentUpdateService* cus,
+      base::OnceClosure callback,
+      base::TaskPriority task_priority = base::TaskPriority::USER_VISIBLE);
 
   // Registers the component for update checks and installs.
   // |register_callback| is called to do the registration.
   // |callback| is called when registration finishes.
-  void Register(RegisterCallback register_callback, base::OnceClosure callback);
+  // Registration tasks will be done with a priority of |task_priority|. Some
+  // components may affect user-visible features, hence a default of
+  // USER_VISIBLE.
+  void Register(
+      RegisterCallback register_callback,
+      base::OnceClosure callback,
+      base::TaskPriority task_priority = base::TaskPriority::USER_VISIBLE);
 
   // Overrides from update_client::CrxInstaller.
   void OnUpdateError(int error) override;

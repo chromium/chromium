@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,7 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/select_file_policy.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -63,14 +64,19 @@ class TestSelectFileDialog : public ui::SelectFileDialog {
                       int file_type_index,
                       const base::FilePath::StringType& default_extension,
                       gfx::NativeWindow owning_window,
-                      void* params) override {
+                      void* params,
+                      const GURL* caller) override {
     if (selected_path_.empty()) {
       listener_->FileSelectionCanceled(params);
       return;
     }
 
-    listener_->FileSelected(selected_path_, 0 /* index */,
-                            nullptr /* params */);
+    // Put the selected path on the stack so that it stays valid for the
+    // duration of Listener::FileSelected() despite deleting the
+    // SelectFileDialog immediately. This is in line with the default behavior
+    // of SelectFileDialog.
+    base::FilePath selected_path = std::move(selected_path_);
+    listener_->FileSelected(selected_path, 0 /* index */, nullptr /* params */);
   }
 
   bool IsRunning(gfx::NativeWindow owning_window) const override {
@@ -180,8 +186,8 @@ class ScanningHandlerTest : public testing::Test {
     scanning_handler_->SetWebUIForTest(&web_ui_);
     scanning_handler_->RegisterMessages();
 
-    base::ListValue args;
-    web_ui_.HandleReceivedMessage("initialize", &args);
+    base::Value::List args;
+    web_ui_.HandleReceivedMessage("initialize", args);
 
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     my_files_path_ = temp_dir_.GetPath().Append("MyFiles");
@@ -225,17 +231,16 @@ TEST_F(ScanningHandlerTest, SelectDirectory) {
       new TestSelectFileDialogFactory(base_file_path));
 
   const size_t call_data_count_before_call = web_ui_.call_data().size();
-  base::ListValue args;
+  base::Value::List args;
   args.Append(kHandlerFunctionName);
-  web_ui_.HandleReceivedMessage("requestScanToLocation", &args);
+  web_ui_.HandleReceivedMessage("requestScanToLocation", args);
 
   const content::TestWebUI::CallData& call_data =
       GetCallData(call_data_count_before_call);
-  const base::DictionaryValue* selected_path_dict;
-  EXPECT_TRUE(call_data.arg3()->GetAsDictionary(&selected_path_dict));
-  EXPECT_EQ(base_file_path.value(),
-            *selected_path_dict->FindStringPath("filePath"));
-  EXPECT_EQ("Base Name", *selected_path_dict->FindStringPath("baseName"));
+  ASSERT_TRUE(call_data.arg3()->is_dict());
+  const base::Value::Dict& selected_path_dict = call_data.arg3()->GetDict();
+  EXPECT_EQ(base_file_path.value(), *selected_path_dict.FindString("filePath"));
+  EXPECT_EQ("Base Name", *selected_path_dict.FindString("baseName"));
 }
 
 // Validates that invoking the requestScanToLocation Web UI event opens the
@@ -246,26 +251,26 @@ TEST_F(ScanningHandlerTest, CancelDialog) {
       new TestSelectFileDialogFactory(base::FilePath()));
 
   const size_t call_data_count_before_call = web_ui_.call_data().size();
-  base::ListValue args;
+  base::Value::List args;
   args.Append(kHandlerFunctionName);
-  web_ui_.HandleReceivedMessage("requestScanToLocation", &args);
+  web_ui_.HandleReceivedMessage("requestScanToLocation", args);
 
   const content::TestWebUI::CallData& call_data =
       GetCallData(call_data_count_before_call);
-  const base::DictionaryValue* selected_path_dict;
-  EXPECT_TRUE(call_data.arg3()->GetAsDictionary(&selected_path_dict));
-  EXPECT_EQ("", *selected_path_dict->FindStringPath("filePath"));
-  EXPECT_EQ("", *selected_path_dict->FindStringPath("baseName"));
+  ASSERT_TRUE(call_data.arg3()->is_dict());
+  const base::Value::Dict& selected_path_dict = call_data.arg3()->GetDict();
+  EXPECT_EQ("", *selected_path_dict.FindString("filePath"));
+  EXPECT_EQ("", *selected_path_dict.FindString("baseName"));
 }
 
 // Validates that invoking the showFileInLocation Web UI event calls the
 // OpenFilesAppFunction function and returns the callback with the boolean.
 TEST_F(ScanningHandlerTest, ShowFileInLocation) {
   const size_t call_data_count_before_call = web_ui_.call_data().size();
-  base::ListValue args;
+  base::Value::List args;
   args.Append(kHandlerFunctionName);
   args.Append(kTestFilePath);
-  web_ui_.HandleReceivedMessage("showFileInLocation", &args);
+  web_ui_.HandleReceivedMessage("showFileInLocation", args);
 
   const content::TestWebUI::CallData& call_data =
       GetCallData(call_data_count_before_call);
@@ -277,9 +282,9 @@ TEST_F(ScanningHandlerTest, ShowFileInLocation) {
 // path.
 TEST_F(ScanningHandlerTest, GetMyFilesPath) {
   const size_t call_data_count_before_call = web_ui_.call_data().size();
-  base::ListValue args;
+  base::Value::List args;
   args.Append(kHandlerFunctionName);
-  web_ui_.HandleReceivedMessage("getMyFilesPath", &args);
+  web_ui_.HandleReceivedMessage("getMyFilesPath", args);
 
   const content::TestWebUI::CallData& call_data =
       GetCallData(call_data_count_before_call);
@@ -296,9 +301,9 @@ TEST_F(ScanningHandlerTest, OpenFilesInMediaApp) {
   file_paths_value.Append(base::Value(file1));
   file_paths_value.Append(base::Value(file2));
 
-  base::ListValue args;
+  base::Value::List args;
   args.Append(std::move(file_paths_value));
-  web_ui_.HandleReceivedMessage("openFilesInMediaApp", &args);
+  web_ui_.HandleReceivedMessage("openFilesInMediaApp", args);
 
   const std::vector<base::FilePath> expected_file_paths(
       {base::FilePath(file1), base::FilePath(file2)});
@@ -326,15 +331,15 @@ TEST_F(ScanningHandlerTest, ScanSettingsPrefs) {
   })";
 
   // First, save the expected scan settings to the Pref service.
-  base::ListValue save_args;
+  base::Value::List save_args;
   save_args.Append(expected_sticky_settings);
-  web_ui_.HandleReceivedMessage("saveScanSettings", &save_args);
+  web_ui_.HandleReceivedMessage("saveScanSettings", save_args);
 
   // Then retrieve the expected scan settings from the Pref service.
   const size_t call_data_count_before_call = web_ui_.call_data().size();
-  base::ListValue get_args;
+  base::Value::List get_args;
   get_args.Append(kHandlerFunctionName);
-  web_ui_.HandleReceivedMessage("getScanSettings", &get_args);
+  web_ui_.HandleReceivedMessage("getScanSettings", get_args);
   const content::TestWebUI::CallData& call_data =
       GetCallData(call_data_count_before_call);
   EXPECT_EQ(expected_sticky_settings, call_data.arg3()->GetString());
@@ -347,19 +352,18 @@ TEST_F(ScanningHandlerTest, ValidFilePathExists) {
   base::File(myScanPath, base::File::FLAG_CREATE | base::File::FLAG_READ);
 
   const size_t call_data_count_before_call = web_ui_.call_data().size();
-  base::ListValue args;
+  base::Value::List args;
   args.Append(kHandlerFunctionName);
   args.Append(myScanPath.value());
-  web_ui_.HandleReceivedMessage("ensureValidFilePath", &args);
+  web_ui_.HandleReceivedMessage("ensureValidFilePath", args);
   task_environment_.RunUntilIdle();
 
   const content::TestWebUI::CallData& call_data =
       GetCallData(call_data_count_before_call);
-  const base::DictionaryValue* selected_path_dict;
-  EXPECT_TRUE(call_data.arg3()->GetAsDictionary(&selected_path_dict));
-  EXPECT_EQ(myScanPath.value(),
-            *selected_path_dict->FindStringPath("filePath"));
-  EXPECT_EQ("myScanPath", *selected_path_dict->FindStringPath("baseName"));
+  ASSERT_TRUE(call_data.arg3()->is_dict());
+  const base::Value::Dict& selected_path_dict = call_data.arg3()->GetDict();
+  EXPECT_EQ(myScanPath.value(), *selected_path_dict.FindString("filePath"));
+  EXPECT_EQ("myScanPath", *selected_path_dict.FindString("baseName"));
 }
 
 // Validates that invoking the ensureValidFilePath Web UI event with an invalid
@@ -368,18 +372,33 @@ TEST_F(ScanningHandlerTest, InvalidFilePath) {
   const std::string invalidFilePath = "invalid/file/path";
 
   const size_t call_data_count_before_call = web_ui_.call_data().size();
-  base::ListValue args;
+  base::Value::List args;
   args.Append(kHandlerFunctionName);
   args.Append(invalidFilePath);
-  web_ui_.HandleReceivedMessage("ensureValidFilePath", &args);
+  web_ui_.HandleReceivedMessage("ensureValidFilePath", args);
   task_environment_.RunUntilIdle();
 
   const content::TestWebUI::CallData& call_data =
       GetCallData(call_data_count_before_call);
-  const base::DictionaryValue* selected_path_dict;
-  EXPECT_TRUE(call_data.arg3()->GetAsDictionary(&selected_path_dict));
-  EXPECT_EQ(std::string(), *selected_path_dict->FindStringPath("filePath"));
-  EXPECT_EQ(std::string(), *selected_path_dict->FindStringPath("baseName"));
+  ASSERT_TRUE(call_data.arg3()->is_dict());
+  const base::Value::Dict& selected_path_dict = call_data.arg3()->GetDict();
+  EXPECT_EQ(std::string(), *selected_path_dict.FindString("filePath"));
+  EXPECT_EQ(std::string(), *selected_path_dict.FindString("baseName"));
+}
+
+// Validates a request for a plural string with a key missing in the plural
+// string map does return a value.
+TEST_F(ScanningHandlerTest, GetPluralStringBadKey) {
+  base::Value::List args;
+  args.Append(kHandlerFunctionName);
+  args.Append(/*name=*/"incorrectKey");
+  args.Append(/*count=*/2);
+  web_ui_.HandleReceivedMessage("getPluralString", args);
+  task_environment_.RunUntilIdle();
+
+  const std::vector<std::unique_ptr<content::TestWebUI::CallData>>&
+      call_data_list = web_ui_.call_data();
+  EXPECT_EQ(0u, call_data_list.size());
 }
 
 }  // namespace ash

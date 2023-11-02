@@ -1,12 +1,13 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 
 import {AsyncUtil} from '../../common/js/async_util.js';
 import {FileOperationError, FileOperationProgressEvent} from '../../common/js/file_operation_common.js';
+import {metrics} from '../../common/js/metrics.js';
 import {TrashEntry} from '../../common/js/trash.js';
 import {util} from '../../common/js/util.js';
 
@@ -673,7 +674,7 @@ fileOperationUtil.Task = class {
       processedBytes: this.processedBytes,
       processingEntryName: processingEntry ? processingEntry.name : '',
       targetDirEntryName: this.targetDirEntry.name,
-      remainingTime: this.speedometer_.getRemainingTime()
+      remainingTime: this.speedometer_.getRemainingTime(),
     };
   }
 
@@ -783,7 +784,7 @@ fileOperationUtil.CopyTask = class extends fileOperationUtil.Task {
               callback();
             },
             error => {
-              console.error('Failed to resolve for copy: %s', error.name);
+              console.warn('Failed to resolve for copy: %s', error.name);
               callback();
             });
       }.bind(this, i));
@@ -1187,6 +1188,7 @@ fileOperationUtil.ZipTask = class extends fileOperationUtil.Task {
         }
 
         // Start ZIP operation.
+        const startTime = Date.now();
         const {zipId, totalBytes} = await new Promise(
             (resolve, reject) => chrome.fileManagerPrivate.zipSelection(
                 assert(this.sourceEntries), this.zipBaseDirEntry, destPath,
@@ -1233,6 +1235,8 @@ fileOperationUtil.ZipTask = class extends fileOperationUtil.Task {
 
           // Check for success.
           if (result == 0) {
+            // On success, record zip time UMA.
+            metrics.recordTime(`ZipTask.Time`, Date.now() - startTime);
             successCallback();
             return;
           }

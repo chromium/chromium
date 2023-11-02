@@ -148,7 +148,7 @@ class LinkedHashSet {
     DCHECK(value_to_index_.size() == list_.size());
     return list_.size();
   }
-  bool IsEmpty() const { return list_.empty(); }
+  bool empty() const { return list_.empty(); }
 
   iterator begin() { return MakeIterator(list_.begin()); }
   const_iterator begin() const { return MakeIterator(list_.cbegin()); }
@@ -404,13 +404,13 @@ inline void LinkedHashSet<T, TraitsArg, HashArg, Allocator>::erase(
 
 template <typename T, typename TraitsArg, typename HashArg, typename Allocator>
 inline void LinkedHashSet<T, TraitsArg, HashArg, Allocator>::RemoveFirst() {
-  DCHECK(!IsEmpty());
+  DCHECK(!empty());
   erase(begin());
 }
 
 template <typename T, typename TraitsArg, typename HashArg, typename Allocator>
 inline void LinkedHashSet<T, TraitsArg, HashArg, Allocator>::pop_back() {
-  DCHECK(!IsEmpty());
+  DCHECK(!empty());
   erase(--end());
 }
 

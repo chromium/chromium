@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,7 @@ class PrefRegistrySyncable;
 }
 
 namespace blocked_content {
-extern const base::Feature kAbusiveExperienceEnforce;
+BASE_DECLARE_FEATURE(kAbusiveExperienceEnforce);
 
 constexpr char kAbusiveEnforceMessage[] =
     "Chrome prevented this site from opening a new tab or window. Learn more "

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,7 +44,6 @@ class SiteEngagementMetrics {
   static const char kMedianEngagementHistogram[];
   static const char kEngagementScoreHistogram[];
   static const char kOriginsWithMaxEngagementHistogram[];
-  static const char kOriginsWithMaxDailyEngagementHistogram[];
   static const char kEngagementTypeHistogram[];
   static const char kEngagementBucketHistogramBase[];
   static const char kDaysSinceLastShortcutLaunchHistogram[];

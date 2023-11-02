@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """
@@ -45,6 +45,8 @@ class ImageDecoderProtoGenerator(BinaryProtoGenerator):
         globals()['fuzzer_inputs_pb2'] = fuzzer_inputs_pb2
 
     def EmptyProtoInstance(self):
+        # pylint: disable=undefined-variable
+        # `fuzzer_inputs_pb2` is placed directly in `globals()`
         return fuzzer_inputs_pb2.ImageDecoderApiInvocationSequence()
 
     def ProcessPb(self, opts, pb):

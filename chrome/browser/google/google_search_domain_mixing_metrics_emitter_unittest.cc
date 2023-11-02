@@ -1,12 +1,14 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/google/google_search_domain_mixing_metrics_emitter.h"
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
+#include "base/time/time.h"
 #include "base/timer/mock_timer.h"
 #include "components/history/core/browser/domain_mixing_metrics.h"
 #include "components/history/core/browser/history_service.h"
@@ -80,8 +82,8 @@ class GoogleSearchDomainMixingMetricsEmitterTest : public testing::Test {
   base::ScopedTempDir history_dir_;
   std::unique_ptr<history::HistoryService> history_service_;
   std::unique_ptr<GoogleSearchDomainMixingMetricsEmitter> emitter_;
-  base::SimpleTestClock* clock_;  // Not owned.
-  base::MockRepeatingTimer* timer_;  // Not owned.
+  raw_ptr<base::SimpleTestClock> clock_;     // Not owned.
+  raw_ptr<base::MockRepeatingTimer> timer_;  // Not owned.
 };
 
 TEST_F(GoogleSearchDomainMixingMetricsEmitterTest, FirstStart) {

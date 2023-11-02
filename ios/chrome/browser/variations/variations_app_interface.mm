@@ -1,16 +1,16 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/variations/variations_app_interface.h"
+#import "ios/chrome/browser/variations/variations_app_interface.h"
 
-#include <string>
+#import <string>
 
-#include "base/metrics/field_trial.h"
-#include "components/prefs/pref_service.h"
-#include "components/variations/pref_names.h"
-#include "components/variations/variations_test_utils.h"
-#include "ios/chrome/browser/application_context.h"
+#import "base/metrics/field_trial.h"
+#import "components/prefs/pref_service.h"
+#import "components/variations/pref_names.h"
+#import "components/variations/variations_test_utils.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -68,6 +68,12 @@
   PrefService* prefService = GetApplicationContext()->GetLocalState();
   variations::WriteSeedData(prefService, variations::kTestSeedData,
                             variations::kSafeSeedPrefKeys);
+}
+
++ (void)setCrashingRegularSeedAndSignature {
+  PrefService* prefService = GetApplicationContext()->GetLocalState();
+  variations::WriteSeedData(prefService, variations::kCrashingSeedData,
+                            variations::kRegularSeedPrefKeys);
 }
 
 + (int)crashStreak {

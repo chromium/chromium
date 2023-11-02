@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,10 +42,13 @@ class MessageDispatcherBridge {
   // code that doesn't have access to ResourceMapper, e.g. code in //components.
   virtual int MapToJavaDrawableId(int resource_id);
 
-  void SetResourceIdMapper(ResourceIdMapper resource_id_mapper);
+  void Initialize(ResourceIdMapper resource_id_mapper);
+
+  bool IsMessagesEnabledForEmbedder() { return messages_enabled_for_embedder_; }
 
  protected:
   virtual ~MessageDispatcherBridge();
+  bool messages_enabled_for_embedder_ = false;
 
  private:
   ResourceIdMapper resource_id_mapper_;

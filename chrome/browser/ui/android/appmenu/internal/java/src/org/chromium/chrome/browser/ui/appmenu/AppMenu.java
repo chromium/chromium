@@ -1,4 +1,4 @@
-// Copyright 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,21 +32,25 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ContextUtils;
+import org.chromium.base.Callback;
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.ui.appmenu.internal.R;
+import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.widget.ChipView;
 import org.chromium.ui.widget.Toast;
 
 import java.util.ArrayList;
@@ -60,6 +64,9 @@ import java.util.List;
  */
 class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler {
     private static final float LAST_ITEM_SHOW_FRACTION = 0.5f;
+
+    /** A means of reporting an exception/stack without crashing. */
+    private static Callback<Throwable> sExceptionReporter;
 
     private final int mItemRowHeight;
     private final int mVerticalFadeDistance;
@@ -166,12 +173,14 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
      * @param groupDividerResourceId     The resource id of divider menu items. This will be used to
      *         determine the number of dividers that appear in the menu.
      * @param customViewBinders     See {@link AppMenuPropertiesDelegate#getCustomViewBinders()}.
+     * @param isMenuIconAtStart     Whether the menu is being shown from a menu icon positioned at
+     *                              the start.
      */
     void show(Context context, final View anchorView, boolean isByPermanentButton,
             int screenRotation, Rect visibleDisplayFrame, int screenHeight,
             @IdRes int footerResourceId, @IdRes int headerResourceId,
             @IdRes int groupDividerResourceId, Integer highlightedItemId,
-            @Nullable List<CustomViewBinder> customViewBinders) {
+            @Nullable List<CustomViewBinder> customViewBinders, boolean isMenuIconAtStart) {
         mPopup = new PopupWindow(context);
         mPopup.setFocusable(true);
         mPopup.setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
@@ -212,7 +221,10 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
         // Make sure that the popup window will be closed when touch outside of it.
         mPopup.setOutsideTouchable(true);
 
-        if (!isByPermanentButton) mPopup.setAnimationStyle(R.style.OverflowMenuAnim);
+        if (!isByPermanentButton) {
+            mPopup.setAnimationStyle(
+                    isMenuIconAtStart ? R.style.StartIconMenuAnim : R.style.EndIconMenuAnim);
+        }
 
         // Turn off window animations for low end devices.
         if (SysUtils.isLowEndDevice()) mPopup.setAnimationStyle(0);
@@ -285,8 +297,11 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
                 mNegativeSoftwareVerticalOffset, mNegativeVerticalOffsetNotTopAnchored,
                 mCurrentScreenRotation, visibleDisplayFrame, sizingPadding, anchorView, popupWidth,
                 popupHeight, anchorView.getRootView().getLayoutDirection());
-
         mPopup.setContentView(contentView);
+
+        if (popupHeight + popupPosition[1] > visibleDisplayFrame.bottom) {
+            mPopup.setHeight(visibleDisplayFrame.height());
+        }
 
         try {
             mPopup.showAtLocation(anchorView.getRootView(), Gravity.NO_GRAVITY, popupPosition[0],
@@ -394,8 +409,15 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
 
     @VisibleForTesting
     boolean showToastForItem(CharSequence message, View view) {
-        Context context = ContextUtils.getApplicationContext();
-        return Toast.showAnchoredToast(context, view, message);
+        Context context = view.getContext();
+        final @ColorInt int backgroundColor =
+                ChromeColors.getSurfaceColor(context, R.dimen.toast_elevation);
+        return new Toast.Builder(context)
+                .withText(message)
+                .withAnchoredView(view)
+                .withBackgroundColor(backgroundColor)
+                .withTextAppearance(R.style.TextAppearance_TextSmall_Primary)
+                .buildAndShow();
     }
 
     @Override
@@ -406,7 +428,6 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
     @Override
     public boolean onKey(View v, int keyCode, KeyEvent event) {
         if (mListView == null) return false;
-
         if (event.getKeyCode() == KeyEvent.KEYCODE_MENU) {
             if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
                 event.startTracking();
@@ -521,6 +542,17 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
 
         availableScreenSpace -= (padding.bottom + footerHeight + headerHeight);
         if (mIsByPermanentButton) availableScreenSpace -= padding.top;
+        if (availableScreenSpace <= 0 && sExceptionReporter != null) {
+            String logMessage = String.format(
+                    "there is no screen space for app menn, mIsByPermanentButton = "
+                    + mIsByPermanentButton + ", anchorViewY = " + anchorViewY
+                    + ", appDimensions.height() = " + appDimensions.height()
+                    + ", anchorView.getHeight() = " + anchorView.getHeight()
+                    + " padding.top = " + padding.top + ", padding.bottom = " + padding.bottom
+                    + ", footerHeight = " + footerHeight + ", headerHeight = " + headerHeight);
+            PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                    () -> sExceptionReporter.onResult(new Throwable(logMessage)));
+        }
 
         int menuHeight = calculateHeightForItems(
                 menuItemIds, heightList, groupDividerResourceId, availableScreenSpace);
@@ -531,7 +563,8 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
 
     @VisibleForTesting
     int calculateHeightForItems(List<Integer> menuItemIds, List<Integer> heightList,
-            @IdRes int groupDividerResourceId, int availableScreenSpace) {
+            @IdRes int groupDividerResourceId, int screenSpaceForItems) {
+        int availableScreenSpace = screenSpaceForItems > 0 ? screenSpaceForItems : 0;
         int spaceForFullItems = 0;
         for (int i = 0; i < heightList.size(); i++) {
             spaceForFullItems += heightList.get(i);
@@ -650,5 +683,10 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
             }
         }
         return mItemRowHeight;
+    }
+
+    /** @param reporter A means of reporting an exception without crashing. */
+    static void setExceptionReporter(Callback<Throwable> reporter) {
+        sExceptionReporter = reporter;
     }
 }

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
@@ -53,15 +54,15 @@ class ContextMenuModel : public ui::SimpleMenuModel,
  private:
   enum CommandID { COMMAND_OPEN_DEVTOOLS };
 
-  WebContents* web_contents_;
+  raw_ptr<WebContents> web_contents_;
   ContextMenuParams params_;
 };
 
 }  // namespace
 
-WebContentsViewDelegate* CreateShellWebContentsViewDelegate(
+std::unique_ptr<WebContentsViewDelegate> CreateShellWebContentsViewDelegate(
     WebContents* web_contents) {
-  return new ShellWebContentsViewDelegate(web_contents);
+  return std::make_unique<ShellWebContentsViewDelegate>(web_contents);
 }
 
 ShellWebContentsViewDelegate::ShellWebContentsViewDelegate(

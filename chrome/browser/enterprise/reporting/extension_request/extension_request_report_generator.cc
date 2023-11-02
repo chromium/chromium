@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/json/values_util.h"
-#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -20,17 +19,13 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "components/enterprise/common/proto/extensions_workflow_events.pb.h"
+#include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "extensions/common/extension_urls.h"
 
 namespace enterprise_reporting {
 namespace {
-
-bool IsRequestInDict(const std::string& extension_id,
-                     const base::DictionaryValue* requests) {
-  return requests->FindKey(extension_id) != nullptr;
-}
 
 // Create the ExtensionsWorkflowEvent based on the |extension_id| and
 // |request_data|. |request_data| is nullptr for remove-request and used for
@@ -62,6 +57,7 @@ std::unique_ptr<ExtensionsWorkflowEvent> GenerateReport(
   report->set_client_type(ExtensionsWorkflowEvent::CHROME_OS_USER);
 #else
   report->set_client_type(ExtensionsWorkflowEvent::BROWSER_DEVICE);
+  report->set_device_name(policy::GetMachineName());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return report;
 }
@@ -101,12 +97,12 @@ ExtensionRequestReportGenerator::GenerateForProfile(Profile* profile) {
   std::string webstore_update_url =
       extension_urls::GetDefaultWebstoreUpdateUrl().spec();
 
-  const base::DictionaryValue* pending_requests =
-      profile->GetPrefs()->GetDictionary(prefs::kCloudExtensionRequestIds);
-  const base::DictionaryValue* uploaded_requests =
-      profile->GetPrefs()->GetDictionary(kCloudExtensionRequestUploadedIds);
+  const base::Value::Dict& pending_requests =
+      profile->GetPrefs()->GetDict(prefs::kCloudExtensionRequestIds);
+  const base::Value::Dict& uploaded_requests =
+      profile->GetPrefs()->GetDict(kCloudExtensionRequestUploadedIds);
 
-  for (auto it : pending_requests->DictItems()) {
+  for (auto it : pending_requests) {
     const std::string& extension_id = it.first;
     if (!ShouldUploadExtensionRequest(extension_id, webstore_update_url,
                                       extension_management)) {
@@ -114,34 +110,34 @@ ExtensionRequestReportGenerator::GenerateForProfile(Profile* profile) {
     }
 
     // Request has already been uploaded.
-    if (IsRequestInDict(extension_id, uploaded_requests))
+    if (uploaded_requests.contains(extension_id))
       continue;
 
     reports.push_back(
         GenerateReport(extension_id, /*request_data=*/&it.second));
   }
 
-  for (auto it : uploaded_requests->DictItems()) {
+  for (auto it : uploaded_requests) {
     const std::string& extension_id = it.first;
 
     // Request is still pending, no need to send remove request.
-    if (IsRequestInDict(extension_id, pending_requests))
+    if (pending_requests.contains(extension_id))
       continue;
 
     reports.push_back(GenerateReport(extension_id, /*request_data=*/nullptr));
   }
 
   // Update the preference in the end.
-  DictionaryPrefUpdate uploaded_requests_update(
+  ScopedDictPrefUpdate uploaded_requests_update(
       profile->GetPrefs(), kCloudExtensionRequestUploadedIds);
 
   for (const auto& report : reports) {
     std::string id = report.get()->id();
     if (!report.get()->removed()) {
-      uploaded_requests_update->SetPath(id + ".upload_timestamp",
-                                        ::base::TimeToValue(base::Time::Now()));
+      uploaded_requests_update->SetByDottedPath(
+          id + ".upload_timestamp", ::base::TimeToValue(base::Time::Now()));
     } else {
-      uploaded_requests_update->RemoveKey(id);
+      uploaded_requests_update->Remove(id);
     }
   }
 

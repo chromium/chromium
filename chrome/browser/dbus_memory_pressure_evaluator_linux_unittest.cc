@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,10 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -143,7 +145,7 @@ class DbusMemoryPressureEvaluatorLinuxTest : public testing::Test {
   scoped_refptr<dbus::MockObjectProxy> portal_proxy_;
 
   std::unique_ptr<DbusMemoryPressureEvaluatorLinux> evaluator_;
-  MockMemoryPressureVoter* mock_voter_ = nullptr;
+  raw_ptr<MockMemoryPressureVoter> mock_voter_ = nullptr;
 
   std::vector<std::string> running_services_;
 };

@@ -19,7 +19,7 @@ and then call toDataURL() again.
 function createContexts() {
     var preserve_canvas2d = document.getElementById("preserve-canvas2d");
     preserve_canvas2d.toDataURL();
-    preserve_ctx2D = preserve_canvas2d.getContext("2d");
+    preserve_ctx2D = preserve_canvas2d.getContext("2d", {willReadFrequently: true});
     preserve_canvas2d.toDataURL();
     preserve_canvas3D = document.getElementById('preserve-canvas3d');
     preserve_canvas3D.toDataURL();
@@ -28,7 +28,7 @@ function createContexts() {
 
     var nonpreserve_canvas2d = document.getElementById("nonpreserve-canvas2d");
     nonpreserve_canvas2d.toDataURL();
-    nonpreserve_ctx2D = nonpreserve_canvas2d.getContext("2d");
+    nonpreserve_ctx2D = nonpreserve_canvas2d.getContext("2d", {willReadFrequently: true});
     nonpreserve_canvas2d.toDataURL();
     nonpreserve_canvas3D = document.getElementById('nonpreserve-canvas3d');
     nonpreserve_canvas3D.toDataURL();

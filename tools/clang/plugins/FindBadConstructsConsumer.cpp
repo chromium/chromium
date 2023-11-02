@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,10 +70,8 @@ bool IsGmockObject(const CXXRecordDecl* decl) {
 }
 
 bool IsPodOrTemplateType(const CXXRecordDecl& record) {
-  return record.isPOD() ||
-         record.getDescribedClassTemplate() ||
-         record.getTemplateSpecializationKind() ||
-         record.isDependentType();
+  return record.isPOD() || record.getDescribedClassTemplate() ||
+         record.getTemplateSpecializationKind() || record.isDependentType();
 }
 
 // Use a local RAV implementation to simply collect all FunctionDecls marked for
@@ -120,6 +118,10 @@ std::string GetAutoReplacementTypeAsString(QualType type,
 FindBadConstructsConsumer::FindBadConstructsConsumer(CompilerInstance& instance,
                                                      const Options& options)
     : ChromeClassTester(instance, options) {
+  if (options.check_blink_data_member_type) {
+    blink_data_member_type_checker_.reset(
+        new BlinkDataMemberTypeChecker(instance));
+  }
   if (options.check_ipc) {
     ipc_visitor_.reset(new CheckIPCVisitor(instance));
   }
@@ -226,13 +228,16 @@ void FindBadConstructsConsumer::Traverse(ASTContext& context) {
     layout_visitor_->VisitLayoutObjectMethods(context);
   }
   RecursiveASTVisitor::TraverseDecl(context.getTranslationUnitDecl());
-  if (ipc_visitor_) ipc_visitor_->set_context(nullptr);
+  if (ipc_visitor_)
+    ipc_visitor_->set_context(nullptr);
 }
 
 bool FindBadConstructsConsumer::TraverseDecl(Decl* decl) {
-  if (ipc_visitor_) ipc_visitor_->BeginDecl(decl);
+  if (ipc_visitor_)
+    ipc_visitor_->BeginDecl(decl);
   bool result = RecursiveASTVisitor::TraverseDecl(decl);
-  if (ipc_visitor_) ipc_visitor_->EndDecl();
+  if (ipc_visitor_)
+    ipc_visitor_->EndDecl();
   return result;
 }
 
@@ -249,12 +254,14 @@ bool FindBadConstructsConsumer::VisitTagDecl(clang::TagDecl* tag_decl) {
 
 bool FindBadConstructsConsumer::VisitTemplateSpecializationType(
     TemplateSpecializationType* spec) {
-  if (ipc_visitor_) ipc_visitor_->VisitTemplateSpecializationType(spec);
+  if (ipc_visitor_)
+    ipc_visitor_->VisitTemplateSpecializationType(spec);
   return true;
 }
 
 bool FindBadConstructsConsumer::VisitCallExpr(CallExpr* call_expr) {
-  if (ipc_visitor_) ipc_visitor_->VisitCallExpr(call_expr);
+  if (ipc_visitor_)
+    ipc_visitor_->VisitCallExpr(call_expr);
   return true;
 }
 
@@ -294,6 +301,11 @@ void FindBadConstructsConsumer::CheckChromeClass(LocationType location_type,
   // modularized.
   if (location_type != LocationType::kBlink)
     CheckRefCountedDtors(record_location, record);
+
+  if (blink_data_member_type_checker_ &&
+      location_type == LocationType::kBlink) {
+    blink_data_member_type_checker_->CheckClass(record_location, record);
+  }
 
   CheckWeakPtrFactoryMembers(record_location, record);
 }
@@ -369,8 +381,7 @@ void FindBadConstructsConsumer::CheckCtorDtorWeight(
   // destructor can be inlined.
   int templated_base_classes = 0;
   for (CXXRecordDecl::base_class_const_iterator it = record->bases_begin();
-       it != record->bases_end();
-       ++it) {
+       it != record->bases_end(); ++it) {
     if (it->getTypeSourceInfo()->getTypeLoc().getTypeLocClass() ==
         TypeLoc::TemplateSpecialization) {
       ++templated_base_classes;
@@ -382,12 +393,24 @@ void FindBadConstructsConsumer::CheckCtorDtorWeight(
   int non_trivial_member = 0;
   int templated_non_trivial_member = 0;
   for (RecordDecl::field_iterator it = record->field_begin();
-       it != record->field_end();
-       ++it) {
-    CountType(it->getType().getTypePtr(),
-              &trivial_member,
-              &non_trivial_member,
-              &templated_non_trivial_member);
+       it != record->field_end(); ++it) {
+    switch (ClassifyType(it->getType().getTypePtr())) {
+      case TypeClassification::kTrivial:
+        trivial_member += 1;
+        break;
+      case TypeClassification::kNonTrivial:
+        non_trivial_member += 1;
+        break;
+      case TypeClassification::kTrivialTemplate:
+        trivial_member += 1;
+        break;
+      case TypeClassification::kNonTrivialTemplate:
+        templated_non_trivial_member += 1;
+        break;
+      case TypeClassification::kNonTrivialExternTemplate:
+        non_trivial_member += 1;
+        break;
+    }
   }
 
   // Check to see if we need to ban inlined/synthesized constructors. Note
@@ -416,8 +439,7 @@ void FindBadConstructsConsumer::CheckCtorDtorWeight(
       // Iterate across all the constructors in this file and yell if we
       // find one that tries to be inline.
       for (CXXRecordDecl::ctor_iterator it = record->ctor_begin();
-           it != record->ctor_end();
-           ++it) {
+           it != record->ctor_end(); ++it) {
         // The current check is buggy. An implicit copy constructor does not
         // have an inline body, so this check never fires for classes with a
         // user-declared out-of-line constructor.
@@ -449,8 +471,9 @@ void FindBadConstructsConsumer::CheckCtorDtorWeight(
                                             diag_inline_complex_ctor_);
           }
         } else if (it->isInlined() && !it->isInlineSpecified() &&
-                   !it->isDeleted() && (!it->isCopyOrMoveConstructor() ||
-                                        it->isExplicitlyDefaulted())) {
+                   !it->isDeleted() &&
+                   (!it->isCopyOrMoveConstructor() ||
+                    it->isExplicitlyDefaulted())) {
           // isInlined() is a more reliable check than hasInlineBody(), but
           // unfortunately, it results in warnings for implicit copy/move
           // constructors in the previously mentioned situation. To preserve
@@ -509,14 +532,11 @@ void FindBadConstructsConsumer::CheckVirtualMethods(
     CXXRecordDecl* record,
     bool warn_on_inline_bodies) {
   if (IsGmockObject(record)) {
-    if (!options_.check_gmock_objects)
-      return;
     warn_on_inline_bodies = false;
   }
 
   for (CXXRecordDecl::method_iterator it = record->method_begin();
-       it != record->method_end();
-       ++it) {
+       it != record->method_end(); ++it) {
     if (it->isCopyAssignmentOperator() || isa<CXXConstructorDecl>(*it)) {
       // Ignore constructors and assignment operators.
     } else if (isa<CXXDestructorDecl>(*it) &&
@@ -671,10 +691,8 @@ void FindBadConstructsConsumer::CheckVirtualBodies(
   }
 }
 
-void FindBadConstructsConsumer::CountType(const Type* type,
-                                          int* trivial_member,
-                                          int* non_trivial_member,
-                                          int* templated_non_trivial_member) {
+FindBadConstructsConsumer::TypeClassification
+FindBadConstructsConsumer::ClassifyType(const Type* type) {
   switch (type->getTypeClass()) {
     case Type::Record: {
       auto* record_decl = type->getAsCXXRecordDecl();
@@ -685,69 +703,119 @@ void FindBadConstructsConsumer::CountType(const Type* type,
       // case, just count it as a trivial member to avoid emitting warnings that
       // might be spurious.
       if (!record_decl->hasDefinition() || record_decl->hasTrivialDestructor())
-        (*trivial_member)++;
-      else
-        (*non_trivial_member)++;
-      break;
+        return TypeClassification::kTrivial;
+
+      const auto name = record_decl->getQualifiedNameAsString();
+
+      // `std::basic_string` is externed by libc++, so even though it's a
+      // non-trivial type wrapped by a template, we shouldn't classify it as a
+      // `kNonTrivialTemplate`. The `kNonTrivialExternTemplate` classification
+      // exists for this purpose.
+      // https://github.com/llvm-mirror/libcxx/blob/78d6a7767ed57b50122a161b91f59f19c9bd0d19/include/string#L4317
+      if (name == "std::basic_string")
+        return TypeClassification::kNonTrivialExternTemplate;
+
+      // `base::raw_ptr` and `base::raw_ref` are non-trivial if the
+      // `use_backup_ref_ptr` flag is enabled, and trivial otherwise. Since
+      // there are many existing types using this that we don't wish to burden
+      // with defining custom ctors/dtors, and we'd rather not vary on
+      // triviality by build config, treat this as always trivial.
+      if (name == "base::raw_ptr" ||
+          (options_.raw_ref_template_as_trivial_member &&
+           name == "base::raw_ref")) {
+        return TypeClassification::kTrivialTemplate;
+      }
+
+      return TypeClassification::kNonTrivial;
     }
     case Type::TemplateSpecialization: {
-      TemplateName name =
-          dyn_cast<TemplateSpecializationType>(type)->getTemplateName();
+      // A "Template Specialization" is a type produced by providing arguments
+      // to any type template, not necessarily just a template which has
+      // explicitly declared specializations. This may be a regular type
+      // template, or a templated type alias.
+      //
+      // A great way to reason about templates is as a compile-time function
+      // taking compile-time arguments, and producing a regular type. In the
+      // context of a `TemplateSpecializationType`, we're referring to this
+      // particular invocation of that function. We can "desugar" that into the
+      // produced type, which is no longer seen as a template.
+      //
+      // Types produced by templates are of particular concern here, since they
+      // almost certainly have inline ctors/dtors and may result in lots of code
+      // being generated for types containing them. For that reason, non-trivial
+      // templates are weighted higher than regular non-trivial types.
+      auto* template_type = dyn_cast<TemplateSpecializationType>(type);
 
-      // HACK: I'm at a loss about how to get the syntax checker to get
-      // whether a template is externed or not. For the first pass here,
-      // just do simple string comparisons.
-      if (TemplateDecl* decl = name.getAsTemplateDecl()) {
-        std::string base_name = decl->getQualifiedNameAsString();
-        if (base_name == "std::basic_string") {
-          (*non_trivial_member)++;
-          break;
-        }
-        if (options_.checked_ptr_as_trivial_member &&
-            base_name == "base::CheckedPtr") {
-          (*trivial_member)++;
-          break;
-        }
-        if (options_.raw_ptr_template_as_trivial_member &&
-            base_name == "base::raw_ptr") {
-          (*trivial_member)++;
-          break;
-        }
-      }
+      // If this is a template type alias, just consider the underlying type
+      // without the context of it being a template.
+      // For an example:
+      //
+      // template <typename T>
+      // using Foo = Bar<T>;
+      //
+      // Given `Foo<Baz>`, we want to classify it simply as `Bar<Baz>` would be.
+      if (template_type->isTypeAlias())
+        return ClassifyType(template_type->getAliasedType().getTypePtr());
 
-        (*templated_non_trivial_member)++;
-      break;
+      // Otherwise, classify the type produced by the template and apply the
+      // corresponding template classification. For an example:
+      //
+      // template <typename T>
+      // struct Foo { ... };
+      //
+      // Given `Foo<Baz>`, classify `struct Foo { ... };` with `Baz` substituted
+      // for `T`;
+      const auto classification =
+          ClassifyType(template_type->desugar().getTypePtr());
+      if (classification == TypeClassification::kTrivial)
+        return TypeClassification::kTrivialTemplate;
+      if (classification == TypeClassification::kNonTrivial)
+        return TypeClassification::kNonTrivialTemplate;
+
+      return classification;
+    }
+    case Type::SubstTemplateTypeParm: {
+      // `SubstTemplateTypeParmType` appears wherever a template type parameter
+      // is encountered, and may be desugared into the type argument given to
+      // the template. For example:
+      //
+      // template <typename T>
+      // struct Foo {
+      //  T bar; // <-- `bar` here is a `SubstTemplateTypeParmType`
+      // };
+      //
+      // or
+      //
+      // template <typename T>
+      // using Foo = T; // <-- `T` here is a `SubstTemplateTypeParmType`
+      const auto* const subst_type = dyn_cast<SubstTemplateTypeParmType>(type)
+                                         ->getReplacementType()
+                                         .getTypePtr();
+      return ClassifyType(subst_type);
     }
     case Type::Elaborated: {
-      CountType(dyn_cast<ElaboratedType>(type)->getNamedType().getTypePtr(),
-                trivial_member,
-                non_trivial_member,
-                templated_non_trivial_member);
-      break;
+      // Quote from the LLVM documentation:
+      // "Represents a type that was referred to using an elaborated type
+      // keyword, e.g., struct S, or via a qualified name, e.g., N::M::type, or
+      // both. This type is used to keep track of a type name as written in the
+      // source code, including tag keywords and any nested-name-specifiers. The
+      // type itself is always "sugar", used to express what was written in the
+      // source code but containing no additional semantic information."
+      return ClassifyType(
+          dyn_cast<ElaboratedType>(type)->getNamedType().getTypePtr());
     }
     case Type::Typedef: {
-      while (const TypedefType* TT = dyn_cast<TypedefType>(type)) {
-        if (auto* decl = TT->getDecl()) {
-          const std::string name = decl->getNameAsString();
-          auto* context = decl->getDeclContext();
-          if (name == "atomic_int" && context->isStdNamespace()) {
-            (*trivial_member)++;
-            return;
-          }
-          type = decl->getUnderlyingType().getTypePtr();
-        }
-      }
-      CountType(type,
-                trivial_member,
-                non_trivial_member,
-                templated_non_trivial_member);
-      break;
+      // A "typedef type" is the representation of a type named through a
+      // typedef (or a C++11 type alias). In this case, we don't care about the
+      // typedef itself, so we desugar it into the underlying type and classify
+      // that.
+      const auto* const decl = dyn_cast<TypedefType>(type)->getDecl();
+      return ClassifyType(decl->getUnderlyingType().getTypePtr());
     }
     default: {
       // Stupid assumption: anything we see that isn't the above is a POD
       // or reference type.
-      (*trivial_member)++;
-      break;
+      return TypeClassification::kTrivial;
     }
   }
 }
@@ -779,9 +847,8 @@ FindBadConstructsConsumer::CheckRecordForRefcountIssue(
 
 // Returns true if |base| specifies one of the Chromium reference counted
 // classes (base::RefCounted / base::RefCountedThreadSafe).
-bool FindBadConstructsConsumer::IsRefCounted(
-    const CXXBaseSpecifier* base,
-    CXXBasePath& path) {
+bool FindBadConstructsConsumer::IsRefCounted(const CXXBaseSpecifier* base,
+                                             CXXBasePath& path) {
   const TemplateSpecializationType* base_type =
       dyn_cast<TemplateSpecializationType>(
           UnwrapType(base->getType().getTypePtr()));
@@ -932,8 +999,7 @@ void FindBadConstructsConsumer::CheckRefCountedDtors(
   }
 
   for (CXXBasePaths::const_paths_iterator it = dtor_paths.begin();
-       it != dtor_paths.end();
-       ++it) {
+       it != dtor_paths.end(); ++it) {
     // The record with the problem will always be the last record
     // in the path, since it is the record that stopped the search.
     const CXXRecordDecl* problem_record = dyn_cast<CXXRecordDecl>(

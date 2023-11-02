@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,14 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"
 
+#if defined(__OBJC__)
 @class NSWindow;
+#else
+class NSWindow;
+#endif
 
 namespace remote_cocoa {
 
@@ -42,7 +47,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT CocoaMouseCapture {
   // Deactivates the event tap if still active.
   void OnOtherClientGotCapture();
 
-  CocoaMouseCaptureDelegate* delegate_;  // Weak. Owns this.
+  raw_ptr<CocoaMouseCaptureDelegate> delegate_;  // Weak. Owns this.
 
   // The active event tap for this capture. Owned by this, but can be cleared
   // out early if another instance of CocoaMouseCapture is created.

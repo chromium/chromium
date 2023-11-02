@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,22 +14,16 @@ class PaymentRequestDelegate;
 class ScriptState;
 class ScriptValue;
 
-class UpdatePaymentDetailsFunction : public ScriptFunction {
+class UpdatePaymentDetailsFunction : public ScriptFunction::Callable {
  public:
   enum class ResolveType {
     kFulfill,
     kReject,
   };
 
-  static v8::Local<v8::Function> CreateFunction(ScriptState*,
-                                                PaymentRequestDelegate*,
-                                                ResolveType);
-
-  UpdatePaymentDetailsFunction(ScriptState*,
-                               PaymentRequestDelegate*,
-                               ResolveType);
+  UpdatePaymentDetailsFunction(PaymentRequestDelegate*, ResolveType);
   void Trace(Visitor*) const override;
-  ScriptValue Call(ScriptValue) override;
+  ScriptValue Call(ScriptState*, ScriptValue) override;
 
  private:
   Member<PaymentRequestDelegate> delegate_;

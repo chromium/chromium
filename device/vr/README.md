@@ -1,5 +1,8 @@
 # VR
 
+_For a more thorough/high level overview of the entire WebXR stack, please refer to
+[components/webxr](https://source.chromium.org/chromium/chromium/src/+/main:components/webxr/README.md)_
+
 `device/vr` abstracts [WebXR](https://immersive-web.github.io/webxr/) features
 across multiple platforms.
 

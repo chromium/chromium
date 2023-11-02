@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/viz/common/hit_test/aggregated_hit_test_region.h"
 #include "components/viz/common/surfaces/surface_id.h"
@@ -61,12 +62,6 @@ class VIZ_SERVICE_EXPORT HitTestManager : public SurfaceObserver {
 
   int64_t GetTraceId(const SurfaceId& id) const;
 
-  const base::flat_set<FrameSinkId>* GetHitTestAsyncQueriedDebugRegions(
-      const FrameSinkId& root_frame_sink_id) const;
-  void SetHitTestAsyncQueriedDebugRegions(
-      const FrameSinkId& root_frame_sink_id,
-      const std::vector<FrameSinkId>& hit_test_async_queried_debug_queue);
-
   uint64_t submit_hit_test_region_list_index() const {
     return submit_hit_test_region_list_index_;
   }
@@ -76,29 +71,10 @@ class VIZ_SERVICE_EXPORT HitTestManager : public SurfaceObserver {
   bool ValidateHitTestRegionList(const SurfaceId& surface_id,
                                  HitTestRegionList* hit_test_region_list);
 
-  SurfaceManager* const surface_manager_;
+  const raw_ptr<SurfaceManager> surface_manager_;
 
   std::map<SurfaceId, base::flat_map<uint64_t, HitTestRegionList>>
       hit_test_region_lists_;
-
-  struct HitTestAsyncQueriedDebugRegion {
-    HitTestAsyncQueriedDebugRegion();
-    explicit HitTestAsyncQueriedDebugRegion(
-        base::flat_set<FrameSinkId> regions);
-    ~HitTestAsyncQueriedDebugRegion();
-
-    HitTestAsyncQueriedDebugRegion(HitTestAsyncQueriedDebugRegion&&);
-    HitTestAsyncQueriedDebugRegion& operator=(HitTestAsyncQueriedDebugRegion&&);
-
-    base::flat_set<FrameSinkId> regions;
-    base::ElapsedTimer timer;
-  };
-
-  // We store the async queried regions for each |root_frame_sink_id|. If viz
-  // hit-test debug is enabled, We will highlight the regions red in
-  // HitTestAggregator for 2 seconds, or until the next async queried event.
-  base::flat_map<FrameSinkId, HitTestAsyncQueriedDebugRegion>
-      hit_test_async_queried_debug_regions_;
 
   // Keeps track of the number of submitted HitTestRegionLists. This allows the
   // HitTestAggregators to stay in sync with the HitTestManager and only

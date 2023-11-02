@@ -1,4 +1,4 @@
-// Copyright (c) 2006-2008 The Chromium Authors. All rights reserved.
+// Copyright 2006-2008 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
@@ -66,10 +65,10 @@ TEST(ProxyListTest, SetFromPacString) {
     },
   };
 
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (const auto& test : tests) {
     ProxyList list;
-    list.SetFromPacString(tests[i].pac_input);
-    EXPECT_EQ(tests[i].pac_output, list.ToPacString());
+    list.SetFromPacString(test.pac_input);
+    EXPECT_EQ(test.pac_output, list.ToPacString());
     EXPECT_FALSE(list.IsEmpty());
   }
 }
@@ -92,11 +91,11 @@ TEST(ProxyListTest, RemoveProxiesWithoutScheme) {
     },
   };
 
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (const auto& test : tests) {
     ProxyList list;
-    list.SetFromPacString(tests[i].pac_input);
-    list.RemoveProxiesWithoutScheme(tests[i].filter);
-    EXPECT_EQ(tests[i].filtered_pac_output, list.ToPacString());
+    list.SetFromPacString(test.pac_input);
+    list.RemoveProxiesWithoutScheme(test.filter);
+    EXPECT_EQ(test.filtered_pac_output, list.ToPacString());
   }
 }
 
@@ -174,7 +173,6 @@ TEST(ProxyListTest, DeprioritizeBadProxies) {
 }
 
 TEST(ProxyListTest, UpdateRetryInfoOnFallback) {
-  ProxyRetryInfo proxy_retry_info;
   // Retrying should put the first proxy on the retry list.
   {
     ProxyList list;

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/files/file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -148,6 +149,9 @@ class RequestManager {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // Destroys the request with the passed |request_id|.
+  void DestroyRequest(int request_id);
+
  private:
   struct Request {
     Request();
@@ -163,9 +167,6 @@ class RequestManager {
     // Handler tied to this request.
     std::unique_ptr<HandlerInterface> handler;
   };
-
-  // Destroys the request with the passed |request_id|.
-  void DestroyRequest(int request_id);
 
   // Called when a request with |request_id| timeouts.
   void OnRequestTimeout(int request_id);
@@ -183,10 +184,10 @@ class RequestManager {
   // and user.
   bool IsInteractingWithUser() const;
 
-  Profile* profile_;  // Not owned.
+  raw_ptr<Profile> profile_;  // Not owned.
   std::string provider_id_;
   std::map<int, std::unique_ptr<Request>> requests_;
-  NotificationManagerInterface* notification_manager_;  // Not owned.
+  raw_ptr<NotificationManagerInterface> notification_manager_;  // Not owned.
   int next_id_;
   base::TimeDelta timeout_;
   base::ObserverList<Observer>::Unchecked observers_;

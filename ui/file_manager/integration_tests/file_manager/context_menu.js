@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,9 +26,7 @@ async function maybeCopyToClipboard(appId, commandId, file = 'hello.txt') {
   if (!/^paste/.test(commandId)) {
     return;
   }
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('selectFile', appId, [file]),
-      'selectFile failed');
+  await remoteCall.waitUntilSelected(appId, file);
   chrome.test.assertTrue(
       !!await remoteCall.callRemoteTestUtil('execCommand', appId, ['copy']),
       'execCommand failed');
@@ -42,8 +40,7 @@ async function maybeCopyToClipboard(appId, commandId, file = 'hello.txt') {
  */
 async function selectFile(appId, path) {
   // Select the file |path|.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('selectFile', appId, [path]));
+  await remoteCall.waitUntilSelected(appId, path);
 
   // Wait for the file to be selected.
   await remoteCall.waitForElement(appId, '.table-row[selected]');
@@ -71,9 +68,13 @@ async function rightClickSelectedFile(appId) {
  * @param {string} commandId ID of the command in the context menu to check.
  * @param {string} path Path to the file to open the context menu for.
  * @param {boolean} expectedEnabledState True if the command should be enabled
- *     in the context menu, false if not.
+ *     in the context menu, false if not. Only checked if the command isn't
+ * hidden.
+ * @param {boolean} expectedHiddenState True if the command should be hidden
+ *     in the context menu, false if not. Defaults to false.
  */
-async function checkContextMenu(commandId, path, expectedEnabledState) {
+async function checkContextMenu(
+    commandId, path, expectedEnabledState, expectedHiddenState = false) {
   // Open Files App on Drive.
   const appId =
       await setupAndWaitUntilReady(RootPath.DRIVE, [], COMPLEX_DRIVE_ENTRY_SET);
@@ -82,8 +83,7 @@ async function checkContextMenu(commandId, path, expectedEnabledState) {
   await maybeCopyToClipboard(appId, commandId);
 
   // Select the file |path|.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('selectFile', appId, [path]));
+  await remoteCall.waitUntilSelected(appId, path);
 
   // Wait for the file to be selected.
   await remoteCall.waitForElement(appId, '.table-row[selected]');
@@ -97,11 +97,16 @@ async function checkContextMenu(commandId, path, expectedEnabledState) {
 
   // Wait for the command option to appear.
   let query = '#file-context-menu:not([hidden])';
-  if (expectedEnabledState) {
-    query += ` [command="#${commandId}"]:not([hidden]):not([disabled])`;
+  if (expectedHiddenState) {
+    query += ` [command="#${commandId}"][hidden]`;
   } else {
-    query += ` [command="#${commandId}"][disabled]:not([hidden])`;
+    if (expectedEnabledState) {
+      query += ` [command="#${commandId}"]:not([hidden]):not([disabled])`;
+    } else {
+      query += ` [command="#${commandId}"][disabled]:not([hidden])`;
+    }
   }
+
   await remoteCall.waitForElement(appId, query);
 }
 
@@ -261,6 +266,15 @@ testcase.checkCutDisabledForReadOnlyDocument = () => {
  */
 testcase.checkCutDisabledForReadOnlyFile = () => {
   return checkContextMenu('cut', 'Read-Only File.jpg', false);
+};
+
+/**
+ * Tests that the Restriction details menu item is hidden if DLP is disabled.
+ */
+testcase.checkDlpRestrictionDetailsDisabledForNonDlpFiles = () => {
+  return checkContextMenu(
+      'dlp-restriction-details', 'hello.txt', /*expectedEnabledState=*/ false,
+      /*expectedHiddenState=*/ true);
 };
 
 /**
@@ -433,9 +447,7 @@ testcase.checkContextMenuForRenameInput = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Select the file.
-  chrome.test.assertTrue(
-      await remoteCall.callRemoteTestUtil('selectFile', appId, ['hello.txt']),
-      'selectFile failed');
+  await remoteCall.waitUntilSelected(appId, 'hello.txt');
 
   // Press Ctrl+Enter key to rename the file.
   const key = ['#file-list', 'Enter', true, false, false];
@@ -586,8 +598,7 @@ async function checkMyFilesRootItemContextMenu(itemName, commandStates) {
       {ignoreFileSize: true, ignoreLastModifiedTime: true});
 
   // Select the item.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('selectFile', appId, [itemName]));
+  await remoteCall.waitUntilSelected(appId, itemName);
 
   // Wait for the file to be selected.
   await remoteCall.waitForElement(appId, '.table-row[selected]');
@@ -699,8 +710,7 @@ async function checkDocumentsProviderContextMenu(
   await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
 
   // Select the file |path|.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('selectFile', appId, [path]));
+  await remoteCall.waitUntilSelected(appId, path);
 
   // Wait for the file to be selected.
   await remoteCall.waitForElement(appId, '.table-row[selected]');
@@ -784,7 +794,7 @@ async function checkRecentsContextMenu(
   await remoteCall.waitForFiles(appId, expectedRows);
 
   if (opt_selectMultiple) {
-    // Select all the files and check that the delete button isn't visible.
+    // Select all the files.
     const ctrlA = ['#file-list', 'a', true, false, false];
     await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, ctrlA);
 
@@ -792,8 +802,7 @@ async function checkRecentsContextMenu(
     await remoteCall.waitForElement(appId, '#file-list li[selected]');
   } else {
     // Select the item.
-    chrome.test.assertTrue(
-        !!await remoteCall.callRemoteTestUtil('selectFile', appId, [fileName]));
+    await remoteCall.waitUntilSelected(appId, fileName);
 
     // Wait for the file to be selected.
     await remoteCall.waitForElement(appId, '.table-row[selected]');
@@ -850,8 +859,7 @@ testcase.checkContextMenuFocus = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Select the file |path|.
-  chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, ['hello.txt']));
+  await remoteCall.waitUntilSelected(appId, 'hello.txt');
 
   // Wait for the file to be selected.
   await remoteCall.waitForElement(appId, '.table-row[selected]');

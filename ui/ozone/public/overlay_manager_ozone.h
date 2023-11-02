@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,6 +26,14 @@ class OverlayManagerOzone {
   bool allow_sync_and_real_buffer_page_flip_testing() const {
     return allow_sync_and_real_buffer_page_flip_testing_;
   }
+
+  // Tell the manager that the overlay delegation is enabled. This is only
+  // useful for Wayland as checking for overlay support depends on
+  // features::IsDelegatedCompositingEnabled, which cannot be accessed from
+  // //ui/ozone.
+  // TODO(msisov, petermcneeley): remove this once Wayland uses only delegated
+  // context.
+  virtual void SetContextDelegated() {}
 
  protected:
   // TODO(fangzhoug): Some Chrome OS boards still use the legacy video decoder.

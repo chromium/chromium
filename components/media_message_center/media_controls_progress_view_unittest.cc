@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -42,7 +43,7 @@ class MediaControlsProgressViewTest : public views::ViewsTestBase {
         widget_.SetContentsView(std::make_unique<views::View>());
 
     progress_view_ = new MediaControlsProgressView(base::DoNothing());
-    container->AddChildView(progress_view_);
+    container->AddChildView(progress_view_.get());
 
     widget_.Show();
   }
@@ -53,7 +54,7 @@ class MediaControlsProgressViewTest : public views::ViewsTestBase {
   }
 
  protected:
-  MediaControlsProgressView* progress_view_ = nullptr;
+  raw_ptr<MediaControlsProgressView> progress_view_ = nullptr;
 
  private:
   views::Widget widget_;
@@ -125,7 +126,9 @@ TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgress) {
   EXPECT_EQ(progress_view_->progress_bar_for_testing()->GetValue(), .55);
 }
 
-TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgressFastPlayback) {
+// Flaky on multiple platforms. crbug.com/1293864
+TEST_F(MAYBE_MediaControlsProgressViewTest,
+       DISABLED_UpdateProgressFastPlayback) {
   media_session::MediaPosition media_position(
       /*playback_rate=*/2, /*duration=*/base::Seconds(600),
       /*position=*/base::Seconds(300), /*end_of_media=*/false);

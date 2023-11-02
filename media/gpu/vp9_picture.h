@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ namespace media {
 class V4L2VP9Picture;
 class VaapiVP9Picture;
 
-class VP9Picture : public CodecPicture {
+class MEDIA_GPU_EXPORT VP9Picture : public CodecPicture {
  public:
   VP9Picture();
 

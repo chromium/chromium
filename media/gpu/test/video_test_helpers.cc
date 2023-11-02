@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,16 +9,16 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/shared_memory_mapping.h"
 #include "base/stl_util.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
-#include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "media/base/format_utils.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame_layout.h"
 #include "media/filters/vp9_parser.h"
 #include "media/gpu/test/video.h"
 #include "media/gpu/test/video_frame_helpers.h"
-#include "media/mojo/common/mojo_shared_buffer_video_frame.h"
 #include "media/parsers/vp8_parser.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -145,10 +145,10 @@ bool IvfWriter::WriteFrame(uint32_t data_size,
 }
 
 EncodedDataHelper::EncodedDataHelper(const std::vector<uint8_t>& stream,
-                                     VideoCodecProfile profile)
+                                     VideoCodec codec)
     : data_(std::string(reinterpret_cast<const char*>(stream.data()),
                         stream.size())),
-      profile_(profile) {}
+      codec_(codec) {}
 
 EncodedDataHelper::~EncodedDataHelper() {
   base::STLClearObject(&data_);
@@ -160,7 +160,7 @@ bool EncodedDataHelper::IsNALHeader(const std::string& data, size_t pos) {
 }
 
 scoped_refptr<DecoderBuffer> EncodedDataHelper::GetNextBuffer() {
-  switch (VideoCodecProfileToVideoCodec(profile_)) {
+  switch (codec_) {
     case VideoCodec::kH264:
     case VideoCodec::kHEVC:
       return GetNextFragment();
@@ -214,11 +214,11 @@ size_t EncodedDataHelper::GetBytesForNextNALU(size_t start_pos) {
 bool EncodedDataHelper::LookForSPS(size_t* skipped_fragments_count) {
   *skipped_fragments_count = 0;
   while (next_pos_to_decode_ + 4 < data_.size()) {
-    if ((profile_ >= H264PROFILE_MIN && profile_ <= H264PROFILE_MAX) &&
-        ((data_[next_pos_to_decode_ + 4] & 0x1f) == 0x7)) {
+    if (codec_ == VideoCodec::kH264 &&
+        (data_[next_pos_to_decode_ + 4] & 0x1f) == 0x7) {
       return true;
-    } else if ((profile_ >= HEVCPROFILE_MIN && profile_ <= HEVCPROFILE_MAX) &&
-               ((data_[next_pos_to_decode_ + 4] & 0x7e) == 0x42)) {
+    } else if (codec_ == VideoCodec::kHEVC &&
+               (data_[next_pos_to_decode_ + 4] & 0x7e) == 0x42) {
       return true;
     }
     *skipped_fragments_count += 1;
@@ -245,34 +245,39 @@ scoped_refptr<DecoderBuffer> EncodedDataHelper::GetNextFrame() {
     next_pos_to_decode_ = kIvfFileHeaderSize;  // Skip IVF header.
   }
 
-  // Group IVF data whose timestamps are the same. Spatial layers in a
-  // spatial-SVC stream may separately be stored in IVF data, where the
-  // timestamps of the IVF frame headers are the same. However, it is necessary
-  // for VD(A) to feed the spatial layers by a single DecoderBuffer. So this
-  // grouping is required.
   std::vector<IvfFrame> ivf_frames;
-  while (!ReachEndOfStream()) {
-    auto frame_header = GetNextIvfFrameHeader();
-    if (!frame_header)
-      return nullptr;
-
-    // Timestamp is different from the current one. The next IVF data must be
-    // grouped in the next group.
-    if (!ivf_frames.empty() &&
-        frame_header->timestamp != ivf_frames[0].header.timestamp) {
-      break;
-    }
-
-    auto frame_data = ReadNextIvfFrame();
-    if (!frame_data)
-      return nullptr;
-
-    ivf_frames.push_back(*frame_data);
-  }
-
-  if (ivf_frames.empty()) {
+  auto frame_data = ReadNextIvfFrame();
+  if (!frame_data) {
     LOG(ERROR) << "No IVF frame is available";
     return nullptr;
+  }
+  ivf_frames.push_back(*frame_data);
+
+  if (codec_ == VideoCodec::kVP9 || codec_ == VideoCodec::kAV1) {
+    // Group IVF data whose timestamps are the same in VP9 and AV1. Spatial
+    // layers in a spatial-SVC stream may separately be stored in IVF data,
+    // where the timestamps of the IVF frame headers are the same. However, it
+    // is necessary for VD(A) to feed the spatial layers by a single
+    // DecoderBuffer. So this grouping is required.
+    while (!ReachEndOfStream()) {
+      auto frame_header = GetNextIvfFrameHeader();
+      if (!frame_header) {
+        LOG(ERROR) << "No IVF frame header is available";
+        return nullptr;
+      }
+
+      // Timestamp is different from the current one. The next IVF data must be
+      // grouped in the next group.
+      if (frame_header->timestamp != ivf_frames[0].header.timestamp)
+        break;
+
+      frame_data = ReadNextIvfFrame();
+      if (!frame_data) {
+        LOG(ERROR) << "No IVF frame is available";
+        return nullptr;
+      }
+      ivf_frames.push_back(*frame_data);
+    }
   }
 
   // Standard stream case.
@@ -350,43 +355,18 @@ bool EncodedDataHelper::HasConfigInfo(const uint8_t* data,
     return IsH264SPSNALU(data, size);
   } else if (profile >= HEVCPROFILE_MIN && profile <= HEVCPROFILE_MAX) {
     return IsHevcSPSNALU(data, size);
-  } else if (profile >= VP8PROFILE_MIN && profile <= VP8PROFILE_MAX) {
-    Vp8Parser parser;
-    Vp8FrameHeader frame_header;
-    if (!parser.ParseFrame(data, size, &frame_header)) {
-      // Let the VDA figure out there's something wrong with the stream.
-      return false;
-    }
-    // Stream configuration is present in a keyframe in vp8.
-    return frame_header.IsKeyframe();
-  } else if (profile >= VP9PROFILE_MIN && profile <= VP9PROFILE_MAX) {
-    Vp9Parser parser(false);
-    parser.SetStream(data, size, nullptr);
-    Vp9FrameHeader frame_header;
-    std::unique_ptr<DecryptConfig> null_config;
-    gfx::Size allocated_size;
-    Vp9Parser::Result result =
-        parser.ParseNextFrame(&frame_header, &allocated_size, &null_config);
-    if (result != Vp9Parser::kOk) {
-      // Let the VDA figure out there's something wrong with the stream.
-      return false;
-    }
-    // Stream configuration is present in a keyframe in vp9.
-    return frame_header.IsKeyframe();
-  } else if (profile >= AV1PROFILE_MIN && profile <= AV1PROFILE_MAX) {
-    // TODO(hiroh): Implement this.
-    return false;
   }
-  // Shouldn't happen at this point.
-  LOG(FATAL) << "Invalid profile: " << GetProfileName(profile);
+
+  LOG(FATAL) << "HasConfigInfo() should be called only for H264/HEVC stream: "
+             << GetProfileName(profile);
   return false;
 }
 
 struct AlignedDataHelper::VideoFrameData {
   VideoFrameData() = default;
-  VideoFrameData(mojo::ScopedSharedBufferHandle mojo_handle)
-      : mojo_handle(std::move(mojo_handle)) {}
-  VideoFrameData(gfx::GpuMemoryBufferHandle gmb_handle)
+  explicit VideoFrameData(base::ReadOnlySharedMemoryRegion shmem_region)
+      : shmem_region(std::move(shmem_region)) {}
+  explicit VideoFrameData(gfx::GpuMemoryBufferHandle gmb_handle)
       : gmb_handle(std::move(gmb_handle)) {}
 
   VideoFrameData(VideoFrameData&&) = default;
@@ -394,28 +374,25 @@ struct AlignedDataHelper::VideoFrameData {
   VideoFrameData(const VideoFrameData&) = delete;
   VideoFrameData& operator=(const VideoFrameData&) = delete;
 
-  mojo::ScopedSharedBufferHandle mojo_handle;
+  base::ReadOnlySharedMemoryRegion shmem_region;
   gfx::GpuMemoryBufferHandle gmb_handle;
 };
 
-AlignedDataHelper::AlignedDataHelper(
-    const std::vector<uint8_t>& stream,
-    uint32_t num_frames,
-    uint32_t num_read_frames,
-    bool reverse,
-    VideoPixelFormat pixel_format,
-    const gfx::Size& src_coded_size,
-    const gfx::Size& dst_coded_size,
-    const gfx::Rect& visible_rect,
-    const gfx::Size& natural_size,
-    uint32_t frame_rate,
-    VideoFrame::StorageType storage_type,
-    gpu::GpuMemoryBufferFactory* const gpu_memory_buffer_factory)
+AlignedDataHelper::AlignedDataHelper(const std::vector<uint8_t>& stream,
+                                     uint32_t num_frames,
+                                     uint32_t num_read_frames,
+                                     bool reverse,
+                                     VideoPixelFormat pixel_format,
+                                     const gfx::Size& src_coded_size,
+                                     const gfx::Size& dst_coded_size,
+                                     const gfx::Rect& visible_rect,
+                                     const gfx::Size& natural_size,
+                                     uint32_t frame_rate,
+                                     VideoFrame::StorageType storage_type)
     : num_frames_(num_frames),
       num_read_frames_(num_read_frames),
       reverse_(reverse),
       storage_type_(storage_type),
-      gpu_memory_buffer_factory_(gpu_memory_buffer_factory),
       visible_rect_(visible_rect),
       natural_size_(natural_size),
       time_stamp_interval_(base::Seconds(/*secs=*/0u)),
@@ -426,11 +403,10 @@ AlignedDataHelper::AlignedDataHelper(
   UpdateFrameRate(frame_rate);
 
   if (storage_type_ == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-    LOG_ASSERT(gpu_memory_buffer_factory_ != nullptr);
     InitializeGpuMemoryBufferFrames(stream, pixel_format, src_coded_size,
                                     dst_coded_size);
   } else {
-    LOG_ASSERT(storage_type == VideoFrame::STORAGE_MOJO_SHARED_BUFFER);
+    LOG_ASSERT(storage_type == VideoFrame::STORAGE_SHMEM);
     InitializeAlignedMemoryFrames(stream, pixel_format, src_coded_size,
                                   dst_coded_size);
   }
@@ -506,26 +482,24 @@ scoped_refptr<VideoFrame> AlignedDataHelper::GetNextFrame() {
         dummy_mailbox, base::DoNothing() /* mailbox_holder_release_cb_ */,
         frame_timestamp);
   } else {
-    const auto& mojo_handle = video_frame_data_[read_frame_index].mojo_handle;
-    auto dup_handle =
-        mojo_handle->Clone(mojo::SharedBufferHandle::AccessMode::READ_WRITE);
-    if (!dup_handle.is_valid()) {
-      LOG(ERROR) << "Failed duplicating mojo handle";
+    const auto& shmem_region = video_frame_data_[read_frame_index].shmem_region;
+    auto dup_region = shmem_region.Duplicate();
+    if (!dup_region.IsValid()) {
+      LOG(ERROR) << "Failed duplicating shmem region";
       return nullptr;
     }
+    base::ReadOnlySharedMemoryMapping mapping = shmem_region.Map();
+    uint8_t* buf = const_cast<uint8_t*>(mapping.GetMemoryAs<uint8_t>());
+    uint8_t* data[3] = {};
+    for (size_t i = 0; i < layout_->planes().size(); i++)
+      data[i] = buf + layout_->planes()[i].offset;
 
-    std::vector<uint32_t> offsets(layout_->planes().size());
-    std::vector<int32_t> strides(layout_->planes().size());
-    for (size_t i = 0; i < layout_->planes().size(); i++) {
-      offsets[i] = layout_->planes()[i].offset;
-      strides[i] = layout_->planes()[i].stride;
-    }
-    const size_t video_frame_size =
-        layout_->planes().back().offset + layout_->planes().back().size;
-    return MojoSharedBufferVideoFrame::Create(
-        layout_->format(), layout_->coded_size(), visible_rect_, natural_size_,
-        std::move(dup_handle), video_frame_size, offsets, strides,
+    auto frame = media::VideoFrame::WrapExternalYuvDataWithLayout(
+        *layout_, visible_rect_, natural_size_, data[0], data[1], data[2],
         frame_timestamp);
+    DCHECK(frame);
+    frame->BackWithOwnedSharedMemory(std::move(dup_region), std::move(mapping));
+    return frame;
   }
 }
 
@@ -562,11 +536,12 @@ void AlignedDataHelper::InitializeAlignedMemoryFrames(
   const size_t num_planes = VideoFrame::NumPlanes(pixel_format);
   const uint8_t* src_frame_ptr = &stream[0];
   for (size_t i = 0; i < num_frames_; i++) {
-    auto handle = mojo::SharedBufferHandle::Create(video_frame_size);
-    ASSERT_TRUE(handle.is_valid()) << "Failed allocating a handle";
-    auto mapping = handle->Map(video_frame_size);
-    ASSERT_TRUE(!!mapping);
-    uint8_t* buffer = reinterpret_cast<uint8_t*>(mapping.get());
+    auto mapped_region =
+        base::ReadOnlySharedMemoryRegion::Create(video_frame_size);
+    ASSERT_TRUE(mapped_region.IsValid()) << "Failed allocating a region";
+    base::WritableSharedMemoryMapping& mapping = mapped_region.mapping;
+    ASSERT_TRUE(mapping.IsValid());
+    uint8_t* buffer = mapping.GetMemoryAs<uint8_t>();
     for (size_t j = 0; j < num_planes; j++) {
       auto src_plane_layout = src_layout.planes()[j];
       auto dst_plane_layout = layout_->planes()[j];
@@ -577,7 +552,7 @@ void AlignedDataHelper::InitializeAlignedMemoryFrames(
                         src_plane_rows[j]);
     }
     src_frame_ptr += src_video_frame_size;
-    video_frame_data_[i] = VideoFrameData(std::move(handle));
+    video_frame_data_[i] = VideoFrameData(std::move(mapped_region.region));
   }
 }
 
@@ -588,7 +563,7 @@ void AlignedDataHelper::InitializeGpuMemoryBufferFrames(
     const gfx::Size& dst_coded_size) {
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   layout_ = GetPlatformVideoFrameLayout(
-      gpu_memory_buffer_factory_, pixel_format, dst_coded_size,
+      pixel_format, dst_coded_size,
       gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
   ASSERT_TRUE(layout_) << "Failed getting platform VideoFrameLayout";
 
@@ -609,15 +584,14 @@ void AlignedDataHelper::InitializeGpuMemoryBufferFrames(
     LOG_ASSERT(!!memory_frame) << "Failed creating VideoFrame";
     for (size_t j = 0; j < num_planes; j++) {
       libyuv::CopyPlane(src_frame_ptr + src_layout.planes()[j].offset,
-                        src_layout.planes()[j].stride, memory_frame->data(j),
-                        memory_frame->stride(j), src_layout.planes()[j].stride,
-                        src_plane_rows[j]);
+                        src_layout.planes()[j].stride,
+                        memory_frame->writable_data(j), memory_frame->stride(j),
+                        src_layout.planes()[j].stride, src_plane_rows[j]);
     }
     src_frame_ptr += src_video_frame_size;
-    auto frame =
-        CloneVideoFrame(gpu_memory_buffer_factory_, memory_frame.get(),
-                        *layout_, VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
-                        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
+    auto frame = CloneVideoFrame(
+        memory_frame.get(), *layout_, VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
+        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
     LOG_ASSERT(!!frame) << "Failed creating GpuMemoryBuffer VideoFrame";
     auto gmb_handle = CreateGpuMemoryBufferHandle(frame.get());
     LOG_ASSERT(!gmb_handle.is_null())
@@ -715,8 +689,6 @@ scoped_refptr<const VideoFrame> RawDataHelper::GetFrame(size_t index) {
     offset += layout_->planes()[i].size;
   }
 
-  // TODO(crbug.com/1045825): Investigate use of MOJO_SHARED_BUFFER, similar to
-  // changes made in crrev.com/c/2050895.
   scoped_refptr<const VideoFrame> video_frame =
       VideoFrame::WrapExternalYuvDataWithLayout(
           *layout_, video_->VisibleRect(), video_->VisibleRect().size(),

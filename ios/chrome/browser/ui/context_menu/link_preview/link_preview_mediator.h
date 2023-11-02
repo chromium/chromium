@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,8 +22,8 @@ class WebState;
 // The consumer that is updated by this mediator.
 @property(nonatomic, weak) id<LinkPreviewConsumer> consumer;
 
-// Init the LinkPreviewMediator with a |webState|, the |previewURL| and the
-// |referrer|.
+// Init the LinkPreviewMediator with a `webState`, the `previewURL` and the
+// `referrer`.
 - (instancetype)initWithWebState:(web::WebState*)webState
                       previewURL:(const GURL&)previewURL
                         referrer:(const web::Referrer&)referrer;

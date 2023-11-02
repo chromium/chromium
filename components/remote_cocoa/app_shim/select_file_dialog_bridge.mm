@@ -1,10 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/remote_cocoa/app_shim/select_file_dialog_bridge.h"
 
+#include <AppKit/AppKit.h>
 #include <CoreServices/CoreServices.h>
+#include <Foundation/Foundation.h>
 #include <stddef.h>
 
 #include "base/files/file_util.h"
@@ -16,7 +18,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/hang_watcher.h"
 #include "base/threading/thread_restrictions.h"
-#import "ui/base/cocoa/controls/textfield_utils.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/strings/grit/ui_strings.h"
 
@@ -48,9 +49,9 @@ NSString* GetDescriptionFromExtension(const base::FilePath::StringType& ext) {
 
 base::scoped_nsobject<NSView> CreateAccessoryView() {
   // The label. Add attributes per-OS to match the labels that macOS uses.
-  NSTextField* label = [TextFieldUtils
-      labelWithString:l10n_util::GetNSString(
-                          IDS_SAVE_PAGE_FILE_FORMAT_PROMPT_MAC)];
+  NSTextField* label =
+      [NSTextField labelWithString:l10n_util::GetNSString(
+                                       IDS_SAVE_PAGE_FILE_FORMAT_PROMPT_MAC)];
   label.translatesAutoresizingMaskIntoConstraints = NO;
   if (base::mac::IsAtLeastOS10_14())
     label.textColor = NSColor.secondaryLabelColor;
@@ -145,15 +146,6 @@ base::scoped_nsobject<NSView> CreateAccessoryView() {
   [constraints
       addObject:[view.bottomAnchor constraintEqualToAnchor:group.bottomAnchor]];
 
-  // Maybe minimum width (through macOS 10.12).
-  if (base::mac::IsAtMostOS10_12()) {
-    // Through macOS 10.12, the file dialog didn't properly constrain the width
-    // of the accessory view. Therefore, add in a "can you please make this at
-    // least so big" constraint in so it doesn't collapse width-wise.
-    [constraints addObject:[view.widthAnchor
-                               constraintGreaterThanOrEqualToConstant:400]];
-  }
-
   [NSLayoutConstraint activateConstraints:constraints];
 
   return scoped_view;
@@ -192,7 +184,7 @@ NSSavePanel* g_last_created_panel_for_testing = nil;
   // Refuse to accept users closing the dialog with a key repeat, since the key
   // may have been first pressed while the user was looking at insecure content.
   // See https://crbug.com/637098.
-  if ([[NSApp currentEvent] type] == NSKeyDown &&
+  if ([[NSApp currentEvent] type] == NSEventTypeKeyDown &&
       [[NSApp currentEvent] isARepeat]) {
     return NO;
   }
@@ -365,7 +357,7 @@ void SelectFileDialogBridge::Show(
                                       weak_factory_.GetWeakPtr());
   [dialog beginSheetModalForWindow:owning_window_
                  completionHandler:^(NSInteger result) {
-                   callback.Run(result != NSFileHandlingPanelOKButton);
+                   callback.Run(result != NSModalResponseOK);
                  }];
 }
 
@@ -499,10 +491,32 @@ void SelectFileDialogBridge::OnPanelEnded(bool did_cancel) {
         index = 1;
       }
     } else {
-      NSArray* urls = [static_cast<NSOpenPanel*>(panel_) URLs];
-      for (NSURL* url in urls)
-        if ([url isFileURL])
-          paths.push_back(base::mac::NSStringToFilePath([url path]));
+      // This does not use ObjCCast because the underlying object could be a
+      // non-exported AppKit type (https://crbug.com/995476).
+      NSOpenPanel* open_panel = static_cast<NSOpenPanel*>(panel_);
+
+      for (NSURL* url in open_panel.URLs) {
+        if (!url.isFileURL)
+          continue;
+        NSString* path = url.path;
+
+        // There is a bug in macOS where, despite a request to disallow file
+        // selection, files/packages are able to be selected. If indeed file
+        // selection was disallowed, drop any files selected.
+        // https://crbug.com/1357523, FB11405008
+        if (!open_panel.canChooseFiles) {
+          BOOL is_directory;
+          BOOL exists =
+              [[NSFileManager defaultManager] fileExistsAtPath:path
+                                                   isDirectory:&is_directory];
+          BOOL is_package =
+              [[NSWorkspace sharedWorkspace] isFilePackageAtPath:path];
+          if (!exists || !is_directory || is_package)
+            continue;
+        }
+
+        paths.push_back(base::mac::NSStringToFilePath(path));
+      }
     }
   }
 

@@ -1,13 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/parser/css_supports_parser.h"
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_impl.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
 
 namespace blink {
 
@@ -255,6 +257,11 @@ TEST_F(CSSSupportsParserTest, ConsumeSupportsSelectorFn) {
             ConsumeSupportsSelectorFn("selector(a.cls::before)"));
   EXPECT_EQ(Result::kSupported,
             ConsumeSupportsSelectorFn("selector(div::-webkit-clear-button)"));
+  EXPECT_EQ(Result::kSupported, ConsumeSupportsSelectorFn("selector(:is(.a))"));
+  EXPECT_EQ(Result::kSupported,
+            ConsumeSupportsSelectorFn("selector(:where(.a))"));
+  EXPECT_EQ(Result::kSupported,
+            ConsumeSupportsSelectorFn("selector(:has(.a))"));
 
   EXPECT_EQ(Result::kUnsupported,
             ConsumeSupportsSelectorFn("selector(div::-webkit-asdf)"));
@@ -290,6 +297,51 @@ TEST_F(CSSSupportsParserTest, ConsumeSupportsSelectorFn) {
   EXPECT_EQ(Result::kUnsupported, ConsumeSupportsSelectorFn("selector(:asdf)"));
   EXPECT_EQ(Result::kUnsupported,
             ConsumeSupportsSelectorFn("selector(::asdf)"));
+  EXPECT_EQ(Result::kUnsupported, ConsumeSupportsSelectorFn("selector(:is())"));
+  EXPECT_EQ(Result::kUnsupported,
+            ConsumeSupportsSelectorFn("selector(:where())"));
+  EXPECT_EQ(Result::kUnsupported,
+            ConsumeSupportsSelectorFn("selector(:not())"));
+  EXPECT_EQ(Result::kUnsupported,
+            ConsumeSupportsSelectorFn("selector(:is(:foo))"));
+  EXPECT_EQ(Result::kUnsupported,
+            ConsumeSupportsSelectorFn("selector(:is(:has(:foo)))"));
+  EXPECT_EQ(Result::kUnsupported,
+            ConsumeSupportsSelectorFn("selector(:where(:foo))"));
+  EXPECT_EQ(Result::kUnsupported,
+            ConsumeSupportsSelectorFn("selector(:where(:has(:foo)))"));
+  EXPECT_EQ(Result::kUnsupported,
+            ConsumeSupportsSelectorFn("selector(:has(:foo))"));
+  EXPECT_EQ(Result::kUnsupported,
+            ConsumeSupportsSelectorFn("selector(:has(:is(:foo)))"));
+  EXPECT_EQ(Result::kUnsupported,
+            ConsumeSupportsSelectorFn("selector(:has(.a, :is(:foo)))"));
+  EXPECT_EQ(Result::kUnsupported,
+            ConsumeSupportsSelectorFn("selector(:has(.a, .b, :is(:foo)))"));
+  EXPECT_EQ(Result::kUnsupported,
+            ConsumeSupportsSelectorFn("selector(:is(.a, :foo))"));
+  EXPECT_EQ(Result::kUnsupported,
+            ConsumeSupportsSelectorFn("selector(:where(.a, :foo))"));
+  EXPECT_EQ(Result::kUnsupported,
+            ConsumeSupportsSelectorFn("selector(:has(.a, :foo))"));
+  EXPECT_EQ(Result::kUnsupported,
+            ConsumeSupportsSelectorFn("selector(:has(.a, .b, :foo))"));
+  EXPECT_EQ(Result::kUnsupported,
+            ConsumeSupportsSelectorFn("selector(:has(:has(.a)))"));
+  EXPECT_EQ(Result::kUnsupported,
+            ConsumeSupportsSelectorFn("selector(:has(:is(:has(.a))))"));
+  EXPECT_EQ(Result::kUnsupported,
+            ConsumeSupportsSelectorFn("selector(:has(:is(:has(.a), .b)))"));
+  EXPECT_EQ(Result::kUnsupported,
+            ConsumeSupportsSelectorFn("selector(:has(.a, :has(.b)))"));
+  EXPECT_EQ(Result::kUnsupported,
+            ConsumeSupportsSelectorFn("selector(:has(.a, .b, :has(.c)))"));
+  EXPECT_EQ(Result::kUnsupported,
+            ConsumeSupportsSelectorFn("selector(:host(:is(:foo)))"));
+  EXPECT_EQ(Result::kUnsupported,
+            ConsumeSupportsSelectorFn("selector(:host(:has(.a)))"));
+  EXPECT_EQ(Result::kUnsupported,
+            ConsumeSupportsSelectorFn("selector(::part(foo):has(.a)))"));
 }
 
 TEST_F(CSSSupportsParserTest, ConsumeSupportsDecl) {

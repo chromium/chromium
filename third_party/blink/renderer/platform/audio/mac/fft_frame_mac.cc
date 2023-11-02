@@ -30,7 +30,7 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_MAC) && !defined(WTF_USE_WEBAUDIO_PFFFT)
+#if BUILDFLAG(IS_MAC) && !defined(WTF_USE_WEBAUDIO_PFFFT)
 
 #include "third_party/blink/renderer/platform/audio/fft_frame.h"
 #include "third_party/blink/renderer/platform/audio/hrtf_panner.h"
@@ -68,8 +68,8 @@ Vector<std::unique_ptr<FFTFrame::FFTSetupDatum>>& FFTFrame::FFTSetups() {
 
   // A vector to hold all of the possible FFT setups we need.  The setups are
   // initialized lazily.
-  DEFINE_STATIC_LOCAL(Vector<std::unique_ptr<FFTSetupDatum>>, fft_setups,
-                      (kMaxFFTPow2Size));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(Vector<std::unique_ptr<FFTSetupDatum>>,
+                                  fft_setups, (kMaxFFTPow2Size));
 
   return fft_setups;
 }
@@ -201,4 +201,4 @@ void FFTFrame::Cleanup() {
 
 }  // namespace blink
 
-#endif  // #if defined(OS_MAC) && !defined(WTF_USE_WEBAUDIO_PFFFT)
+#endif  // BUILDFLAG(IS_MAC) && !defined(WTF_USE_WEBAUDIO_PFFFT)

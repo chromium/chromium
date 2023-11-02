@@ -2,7 +2,6 @@
 [content/browser/service_worker]: /content/browser/service_worker
 [content/renderer/service_worker]: /content/renderer/service_worker
 [content/renderer/service_worker]: /content/renderer/service_worker
-[content/common/service_worker]: /content/common/service_worker
 [disk_cache]: /net/disk_cache/README.md
 [embedded_worker.mojom]: https://codesearch.chromium.org/chromium/src/third_party/blink/public/mojom/service_worker/embedded_worker.mojom
 [service_worker_container.mojom]: https://codesearch.chromium.org/chromium/src/third_party/blink/public/mojom/service_worker/service_worker_container.mojom
@@ -127,7 +126,7 @@ renderer process:
 
 In the browser process, `ServiceWorkerContextCore` is root class which all other
 service worker classes are attached to. There is one context per [storage
-partition](/content/browser/public/storage_partition.h).
+partition](/content/public/browser/storage_partition.h).
 
 `ServiceWorkerContextCore` is owned by a thread-safe refcounted wrapper called
 `ServiceWorkerContextWrapper`. `StoragePartition` is the primary owner of this
@@ -207,7 +206,7 @@ with a `blink::ServiceWorkerGlobalScope` global.
 `ServiceWorkerGlobalScope` implements two Mojo interfaces:
 - `mojom.blink.ServiceWorker`, which the browser process uses to dispatch events
   to the service worker.
-- `mojom.blink.ServiceWorkerController`, which renderer processes use to
+- `mojom.blink.ControllerServiceWorker`, which other renderer processes use to
   dispatch fetch events to a service worker that controls a client in that
   process.
 
@@ -245,7 +244,7 @@ message pipe. `ServiceWorkerRegistration` has a remote to a
 `mojom.blink.ServiceWorkerRegistrationObjectHost` and `ServiceWorker` has a
 remote to a `ServiceWorkerObjectHost`. Conversely, the browser process has
 remotes to `mojom.blink.ServiceWorkerRegistrationObject` and
-`mojom.blink.ServiceWorkerRegistration`.
+`mojom.blink.ServiceWorkerObject`.
 
 > After making this design, there's been some realization that asynchronous
 > ownership makes destruction complicated because of non-deterministic
@@ -333,7 +332,6 @@ it can again dispatch fetch events to it.
   these host objects.
 - [content/renderer/service_worker]: Renderer process code. This should move to
   third_party/blink per [Onion Soup].
-- [content/common/service_worker]: Common process code.
 - [third_party/blink/common/service_worker]: Common process code. Contains the
   implementation of [third_party/blink/public/common/service_worker].
 - [third_party/blink/public/common/service_worker]: Header files for common
@@ -371,7 +369,7 @@ For incognito windows, everything is in-memory.
 Service workers storage lasts indefinitely, i.e, there is no periodic deletion
 of old but still installed service workers. Installed service workers are only
 evicted by the [Quota Manager] (or user action). The Quota Manager controls
-several web platform APIs, including sandboxed filesystem, WebSQL, appcache,
+several web platform APIs, including sandboxed filesystem, WebSQL,
 IndexedDB, cache storage, service worker (registration and scripts), and
 background fetch.
 

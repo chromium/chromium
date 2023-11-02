@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,10 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/eme_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_media_key_system_media_capability.h"
@@ -42,7 +44,7 @@ class BLINK_PLATFORM_EXPORT KeySystemConfigSelector {
     virtual ~WebLocalFrameDelegate() = default;
 
     // Delegate to WebLocalFrame.
-    virtual bool IsCrossOriginToMainFrame();
+    virtual bool IsCrossOriginToOutermostMainFrame();
 
     // Delegate to WebContentSettingsClient within WebLocalFrame.
     virtual bool AllowStorageAccessSync(
@@ -52,7 +54,7 @@ class BLINK_PLATFORM_EXPORT KeySystemConfigSelector {
     // The pointer below will always be valid for the lifetime of this object
     // because it is held by KeySystemConfigSelector whose chain of ownership is
     // the same as RenderFrameImpl.
-    WebLocalFrame* web_frame_;
+    raw_ptr<WebLocalFrame> web_frame_;
   };
 
   KeySystemConfigSelector(
@@ -128,18 +130,18 @@ class BLINK_PLATFORM_EXPORT KeySystemConfigSelector {
                               const std::string& codecs,
                               ConfigState* config_state);
 
-  media::EmeConfigRule GetEncryptionSchemeConfigRule(
+  media::EmeConfig::Rule GetEncryptionSchemeConfigRule(
       const std::string& key_system,
       const WebMediaKeySystemMediaCapability::EncryptionScheme
           encryption_scheme);
 
-  media::KeySystems* const key_systems_;
+  const raw_ptr<media::KeySystems> key_systems_;
 
   // This object is unowned but its pointer is always valid. It has the same
   // lifetime as RenderFrameImpl, and |this| also has the same lifetime
   // as RenderFrameImpl. RenderFrameImpl owns content::MediaFactory which owns
   // WebEncryptedMediaClientImpl which owns |this|.
-  media::MediaPermission* media_permission_;
+  raw_ptr<media::MediaPermission> media_permission_;
 
   std::unique_ptr<WebLocalFrameDelegate> web_frame_delegate_;
 

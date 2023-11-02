@@ -1,0 +1,107 @@
+# Copyright 2018 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//chromeos/dbus/config/use_real_dbus_clients.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+
+component("drivefs") {
+  sources = [
+    "drivefs_auth.cc",
+    "drivefs_auth.h",
+    "drivefs_bootstrap.cc",
+    "drivefs_bootstrap.h",
+    "drivefs_host.cc",
+    "drivefs_host.h",
+    "drivefs_host_observer.h",
+    "drivefs_http_client.cc",
+    "drivefs_http_client.h",
+    "drivefs_search.cc",
+    "drivefs_search.h",
+    "drivefs_session.cc",
+    "drivefs_session.h",
+    "drivefs_util.h",
+    "sync_status_tracker.cc",
+    "sync_status_tracker.h",
+  ]
+  if (!use_real_dbus_clients) {
+    sources += [
+      "fake_drivefs_launcher_client.cc",
+      "fake_drivefs_launcher_client.h",
+    ]
+  }
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/cros_disks",
+    "//chromeos/ash/components/disks",
+    "//chromeos/ash/components/drivefs/mojom",
+    "//chromeos/components/mojo_bootstrap",
+    "//components/account_id",
+    "//components/drive",
+    "//components/signin/public/identity_manager",
+    "//dbus",
+    "//google_apis",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/platform",
+    "//net",
+    "//services/network/public/cpp:cpp",
+  ]
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_DRIVEFS_IMPL" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_drivefs.cc",
+    "fake_drivefs.h",
+  ]
+  deps = [
+    ":drivefs",
+    "//base",
+    "//chromeos/ash/components/dbus:test_support",
+    "//chromeos/ash/components/dbus/cros_disks",
+    "//chromeos/ash/components/drivefs/mojom",
+    "//net",
+    "//testing/gmock",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "drivefs_auth_unittest.cc",
+    "drivefs_bootstrap_unittest.cc",
+    "drivefs_host_unittest.cc",
+    "drivefs_http_client_unittest.cc",
+    "drivefs_search_unittest.cc",
+    "drivefs_session_unittest.cc",
+    "sync_status_tracker_unittest.cc",
+  ]
+
+  deps = [
+    ":drivefs",
+    ":test_support",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/disks:test_support",
+    "//chromeos/ash/components/drivefs/mojom",
+    "//chromeos/components/mojo_bootstrap",
+    "//components/account_id",
+    "//components/drive",
+    "//components/invalidation/impl:test_support",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//net:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp:cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

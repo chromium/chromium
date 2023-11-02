@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,6 +59,14 @@ std::set<std::string> AppNotifications::GetAppIdsForNotification(
     return {};
   }
   return it->second;
+}
+
+AppPtr AppNotifications::CreateAppWithHasBadgeStatus(
+    AppType app_type,
+    const std::string& app_id) {
+  auto app = std::make_unique<App>(app_type, app_id);
+  app->has_badge = HasNotification(app_id);
+  return app;
 }
 
 apps::mojom::AppPtr AppNotifications::GetAppWithHasBadgeStatus(

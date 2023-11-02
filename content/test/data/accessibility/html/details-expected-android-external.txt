@@ -1,0 +1,6 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View actions:[AX_FOCUS] bundle:[chromeRole="details"]
+++++View text:"details tag" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, EXPAND] bundle:[chromeRole="disclosureTriangle", clickableScore="300", roleDescription="disclosure triangle"]
+++View actions:[AX_FOCUS] bundle:[chromeRole="details"]
+++++View text:"details tag open" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, COLLAPSE] bundle:[chromeRole="disclosureTriangle", clickableScore="300", roleDescription="disclosure triangle"]
+++++TextView text:"The details tag with open specifies that the details should be visible (open) to the user." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="paragraph"]

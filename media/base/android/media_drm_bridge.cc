@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #include <sys/system_properties.h>
+
 #include <algorithm>
 #include <memory>
 #include <utility>
@@ -15,7 +16,6 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -181,7 +181,7 @@ class KeySystemManager {
 KeySystemManager::KeySystemManager() {
   // Widevine is always supported in Android.
   key_system_uuid_map_[kWidevineKeySystem] =
-      UUID(kWidevineUuid, kWidevineUuid + base::size(kWidevineUuid));
+      UUID(kWidevineUuid, kWidevineUuid + std::size(kWidevineUuid));
   MediaDrmBridgeClient* client = GetMediaDrmBridgeClient();
   if (client)
     client->AddKeySystemUUIDMappings(&key_system_uuid_map_);
@@ -217,8 +217,6 @@ KeySystemManager* GetKeySystemManager() {
 // resolved.
 bool IsKeySystemSupportedWithTypeImpl(const std::string& key_system,
                                       const std::string& container_mime_type) {
-  DCHECK(MediaDrmBridge::IsAvailable());
-
   if (key_system.empty()) {
     NOTREACHED();
     return false;
@@ -275,18 +273,8 @@ int GetFirstApiLevel() {
 
 }  // namespace
 
-// MediaDrm is not generally usable without MediaCodec. Thus, both the MediaDrm
-// APIs and MediaCodec APIs must be enabled and not blocked.
-// static
-bool MediaDrmBridge::IsAvailable() {
-  return MediaCodecUtil::IsMediaCodecAvailable();
-}
-
 // static
 bool MediaDrmBridge::IsKeySystemSupported(const std::string& key_system) {
-  if (!MediaDrmBridge::IsAvailable())
-    return false;
-
   return IsKeySystemSupportedWithTypeImpl(key_system, "");
 }
 
@@ -317,10 +305,9 @@ bool MediaDrmBridge::IsPersistentLicenseTypeSupported(
     const std::string& /* key_system */) {
   // TODO(yucliu): Check |key_system| if persistent license is supported by
   // MediaDrm.
-  return MediaDrmBridge::IsAvailable() &&
-         // In development. See http://crbug.com/493521
-         base::FeatureList::IsEnabled(kMediaDrmPersistentLicense) &&
-         IsPerOriginProvisioningSupported();
+  return  // In development. See http://crbug.com/493521
+      base::FeatureList::IsEnabled(kMediaDrmPersistentLicense) &&
+      IsPerOriginProvisioningSupported();
 }
 
 // static
@@ -329,17 +316,11 @@ bool MediaDrmBridge::IsKeySystemSupportedWithType(
     const std::string& container_mime_type) {
   DCHECK(!container_mime_type.empty()) << "Call IsKeySystemSupported instead";
 
-  if (!MediaDrmBridge::IsAvailable())
-    return false;
-
   return IsKeySystemSupportedWithTypeImpl(key_system, container_mime_type);
 }
 
 // static
 std::vector<std::string> MediaDrmBridge::GetPlatformKeySystemNames() {
-  if (!MediaDrmBridge::IsAvailable())
-    return std::vector<std::string>();
-
   return GetKeySystemManager()->GetPlatformKeySystemNames();
 }
 
@@ -567,8 +548,6 @@ MediaCryptoContext* MediaDrmBridge::GetMediaCryptoContext() {
 }
 
 bool MediaDrmBridge::IsSecureCodecRequired() {
-  DCHECK(IsAvailable());
-
   // For Widevine, this depends on the security level.
   // TODO(xhwang): This is specific to Widevine. See http://crbug.com/459400.
   // To fix it, we could call MediaCrypto.requiresSecureDecoderComponent().

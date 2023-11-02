@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,15 +15,9 @@
 
 namespace blink {
 class MediaConstraints;
-class WebString;
 }  // namespace blink
 
 namespace blink {
-
-// Calculates and returns videoKind value for |format|.
-// See https://w3c.github.io/mediacapture-depth.
-MODULES_EXPORT WebString
-GetVideoKindForFormat(const media::VideoCaptureFormat& format);
 
 MODULES_EXPORT MediaStreamTrackPlatform::FacingMode ToPlatformFacingMode(
     mojom::blink::FacingMode video_facing);

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink.h"
-#include "third_party/blink/public/mojom/timing/worker_timing_container.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/loader/fetch/worker_resource_timing_notifier.h"
 
 namespace blink {
@@ -43,20 +43,14 @@ class CORE_EXPORT WorkerResourceTimingNotifierImpl final
       const WorkerResourceTimingNotifierImpl&) = delete;
   ~WorkerResourceTimingNotifierImpl() override = default;
 
-  void AddResourceTiming(
-      mojom::blink::ResourceTimingInfoPtr,
-      const AtomicString& initiator_type,
-      mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>
-          worker_timing_receiver) override;
+  void AddResourceTiming(mojom::blink::ResourceTimingInfoPtr,
+                         const AtomicString& initiator_type) override;
 
   void Trace(Visitor*) const override;
 
  private:
-  void AddCrossThreadResourceTiming(
-      mojom::blink::ResourceTimingInfoPtr,
-      const String& initiator_type,
-      mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>
-          worker_timing_receiver);
+  void AddCrossThreadResourceTiming(mojom::blink::ResourceTimingInfoPtr,
+                                    const String& initiator_type);
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
@@ -86,11 +80,8 @@ class CORE_EXPORT NullWorkerResourceTimingNotifier final
       const NullWorkerResourceTimingNotifier&) = delete;
   ~NullWorkerResourceTimingNotifier() override = default;
 
-  void AddResourceTiming(
-      mojom::blink::ResourceTimingInfoPtr,
-      const AtomicString& initiator_type,
-      mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>
-          worker_timing_receiver) override {}
+  void AddResourceTiming(mojom::blink::ResourceTimingInfoPtr,
+                         const AtomicString& initiator_type) override {}
 };
 
 }  // namespace blink

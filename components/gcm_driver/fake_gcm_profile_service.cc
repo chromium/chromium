@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/format_macros.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -80,7 +81,7 @@ class FakeGCMProfileService::CustomFakeGCMDriver
               const std::string& receiver_id,
               const OutgoingMessage& message);
 
-  FakeGCMProfileService* service_;
+  raw_ptr<FakeGCMProfileService> service_;
 
   // Used to give each registration a unique registration id. Does not decrease
   // when unregister is called.
@@ -92,9 +93,7 @@ class FakeGCMProfileService::CustomFakeGCMDriver
 
 FakeGCMProfileService::CustomFakeGCMDriver::CustomFakeGCMDriver(
     FakeGCMProfileService* service)
-    : instance_id::FakeGCMDriverForInstanceID(
-          base::ThreadTaskRunnerHandle::Get()),
-      service_(service) {}
+    : service_(service) {}
 
 FakeGCMProfileService::CustomFakeGCMDriver::~CustomFakeGCMDriver() {}
 

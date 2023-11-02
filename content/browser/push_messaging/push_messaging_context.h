@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
 
 class GURL;
@@ -40,7 +41,7 @@ class PushMessagingContext : public ServiceWorkerContextCoreObserver {
   void OnStorageWiped() override;
 
  private:
-  BrowserContext* browser_context_;
+  raw_ptr<BrowserContext> browser_context_;
 
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
 };

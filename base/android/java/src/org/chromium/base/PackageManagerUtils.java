@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -65,6 +65,24 @@ public class PackageManagerUtils {
             handleExpectedExceptionsOrRethrow(e, intent);
         }
         return Collections.emptyList();
+    }
+
+    /**
+     * Check if the given Intent can be resolved by any Activities on the system.
+     *
+     * See {@link PackageManagerUtils#queryIntentActivities(Intent, int)}
+     */
+    public static boolean canResolveActivity(Intent intent, int flags) {
+        return !queryIntentActivities(intent, flags).isEmpty();
+    }
+
+    /**
+     * Check if the given Intent can be resolved by any Activities on the system.
+     *
+     * See {@link PackageManagerUtils#canResolveActivity(Intent, int)}
+     */
+    public static boolean canResolveActivity(Intent intent) {
+        return canResolveActivity(intent, 0);
     }
 
     /**

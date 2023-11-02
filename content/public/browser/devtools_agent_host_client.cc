@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,17 @@
 
 namespace content {
 
+bool DevToolsAgentHostClient::MayAttachToRenderFrameHost(
+    RenderFrameHost* render_frame_host) {
+  return true;
+}
+
 bool DevToolsAgentHostClient::MayAttachToURL(const GURL& url, bool is_webui) {
   return true;
 }
 
 // Defaults to true, restricted clients must override this to false.
-bool DevToolsAgentHostClient::MayAttachToBrowser() {
+bool DevToolsAgentHostClient::IsTrusted() {
   return true;
 }
 
@@ -33,6 +38,15 @@ bool DevToolsAgentHostClient::UsesBinaryProtocol() {
 // this to true.
 bool DevToolsAgentHostClient::AllowUnsafeOperations() {
   return false;
+}
+
+absl::optional<url::Origin>
+DevToolsAgentHostClient::GetNavigationInitiatorOrigin() {
+  return absl::nullopt;
+}
+
+std::string DevToolsAgentHostClient::GetTypeForMetrics() {
+  return "Other";
 }
 
 }  // namespace content

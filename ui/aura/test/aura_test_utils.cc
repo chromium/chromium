@@ -1,8 +1,9 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/aura/test/aura_test_utils.h"
+#include "base/memory/raw_ptr.h"
 
 #include <utility>
 
@@ -35,7 +36,7 @@ class WindowTreeHostTestApi {
   }
 
  private:
-  WindowTreeHost* host_;
+  raw_ptr<WindowTreeHost> host_;
 };
 
 const gfx::Point& QueryLatestMousePositionRequestInHost(WindowTreeHost* host) {

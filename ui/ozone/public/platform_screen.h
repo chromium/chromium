@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 
 #include "base/component_export.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/gfx/gpu_extra_info.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -21,6 +22,7 @@ class TimeDelta;
 namespace display {
 class Display;
 class DisplayObserver;
+enum class TabletState;
 }  // namespace display
 
 namespace gfx {
@@ -51,7 +53,7 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformScreen {
 
   virtual ~PlatformScreen();
 
-  // Provide a |display:;Display| for each physical display available to Chrome.
+  // Provide a |display::Display| for each physical display available to Chrome.
   virtual const std::vector<display::Display>& GetAllDisplays() const = 0;
 
   // Returns the |Display| whose origin (top left corner) is 0,0 in the
@@ -68,17 +70,20 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformScreen {
   // TODO(rjkroege): Verify these semantics.
   virtual gfx::Point GetCursorScreenPoint() const = 0;
 
+  virtual bool IsAcceleratedWidgetUnderCursor(
+      gfx::AcceleratedWidget widget) const;
+
   virtual gfx::AcceleratedWidget GetAcceleratedWidgetAtScreenPoint(
-      const gfx::Point& point) const = 0;
+      const gfx::Point& point_in_dip) const = 0;
 
   // Returns top level accelerated widget at |point| ignoring |ignore|.
   virtual gfx::AcceleratedWidget GetLocalProcessWidgetAtPoint(
-      const gfx::Point& point,
+      const gfx::Point& point_in_dip,
       const std::set<gfx::AcceleratedWidget>& ignore) const;
 
   // Returns the |Display| nearest the specified point. |point| must be in DIPs.
   virtual display::Display GetDisplayNearestPoint(
-      const gfx::Point& point) const = 0;
+      const gfx::Point& point_in_dip) const = 0;
 
   // Returns the |Display| that most closely intersects the provided rect if one
   // exists.
@@ -86,11 +91,27 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformScreen {
   virtual display::Display GetDisplayMatching(
       const gfx::Rect& match_rect) const = 0;
 
-  // Suspends the platform-specific screensaver, if applicable.
-  // Can be called more than once with the same value for |suspend|, but those
-  // states should not stack: the first alternating value should toggle the
-  // state of the suspend.
-  virtual void SetScreenSaverSuspended(bool suspend);
+  // Object which suspends the platform-specific screensaver for the duration of
+  // its existence.
+  class PlatformScreenSaverSuspender {
+   public:
+    PlatformScreenSaverSuspender() = default;
+
+    PlatformScreenSaverSuspender(const PlatformScreenSaverSuspender&) = delete;
+    PlatformScreenSaverSuspender& operator=(
+        const PlatformScreenSaverSuspender&) = delete;
+
+    // Causes the platform-specific screensaver to be un-suspended iff this is
+    // the last remaining instance.
+    virtual ~PlatformScreenSaverSuspender() = 0;
+  };
+
+  // Suspends the platform-specific screensaver until the returned
+  // |PlatformScreenSaverSuspender| is destructed, or returns nullptr if
+  // suspension failed. This method allows stacking multiple overlapping calls,
+  // such that the platform-specific screensaver will not be un-suspended until
+  // all returned |PlatformScreenSaverSuspender| instances have been destructed.
+  virtual std::unique_ptr<PlatformScreenSaverSuspender> SuspendScreenSaver();
 
   // Returns whether the screensaver is currently running.
   virtual bool IsScreenSaverActive() const;
@@ -108,15 +129,21 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformScreen {
 
   // Returns human readable description of the window manager, desktop, and
   // other system properties related to the compositing.
-  virtual std::vector<base::Value> GetGpuExtraInfo(
+  virtual base::Value::List GetGpuExtraInfo(
       const gfx::GpuExtraInfo& gpu_extra_info);
 
   // Sets device scale factor received from external sources such as toolkits.
   // Currently only used by Linux.
   virtual void SetDeviceScaleFactor(float scale);
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Returns tablet state. If a platform does not support this, returns
+  // display::TabletState::kInClamshellMode.
+  virtual display::TabletState GetTabletState() const;
+#endif
+
  protected:
-  void StorePlatformNameIntoListOfValues(std::vector<base::Value>& values,
+  void StorePlatformNameIntoListOfValues(base::Value::List& values,
                                          const std::string& platform_name);
 };
 

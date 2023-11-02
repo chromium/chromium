@@ -1,0 +1,86 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file is generated from:
+//   tests/colors_test.json5
+//   tests/colors_test_palette.json5
+
+#include "tools/style_variable_generator/colors_test_expected.h"
+
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkColor.h"
+
+namespace colors_test_expected {
+
+bool g_dark_mode_enabled = false;
+bool g_debug_colors_enabled = false;
+
+bool DarkModeEnabled() {
+  return g_dark_mode_enabled;
+}
+
+bool DebugColorsEnabled() {
+  return g_debug_colors_enabled;
+}
+
+void SetDarkModeEnabled(bool enabled) {
+  g_dark_mode_enabled = enabled;
+}
+
+void SetDebugColorsEnabled(bool enabled) {
+  g_debug_colors_enabled = enabled;
+}
+
+SkAlpha GetOpacity(OpacityName opacity_name, bool is_dark_mode) {
+  switch (opacity_name) {
+    case OpacityName::kDisabledOpacity:
+      return 0x60;
+    case OpacityName::kReferenceOpacity:
+      if (is_dark_mode) {
+        return 0xFF;
+      } else {
+        return GetOpacity(OpacityName::kDisabledOpacity, is_dark_mode);
+      }
+  }
+}
+
+absl::optional<SkColor> GetDebugColor(ColorName color_name, bool is_dark_mode) {
+  switch (color_name) {
+    case ColorName::kTextColorPrimary:
+      return ResolveColor(ColorName::kToggleColor, is_dark_mode);
+    case ColorName::kToggleColor:
+      return SkColorSetRGB(0xFF, 0xFF, 0xFF);
+    default:
+      return absl::nullopt;
+  }
+}
+
+SkColor ResolveColor(ColorName color_name,
+                     bool is_dark_mode,
+                     bool use_debug_colors) {
+  if (use_debug_colors) {
+    auto debug_color = GetDebugColor(color_name, is_dark_mode);
+    if (debug_color) {
+      return *debug_color;
+    }
+  }
+  switch (color_name) {
+    case ColorName::kGoogleGrey900:
+      return SkColorSetRGB(0x20, 0x21, 0x24);
+    case ColorName::kTextColorPrimary:
+      if (is_dark_mode)
+        return SkColorSetRGB(0xFF, 0xFF, 0xFF);
+      return ResolveColor(ColorName::kGoogleGrey900, is_dark_mode);
+    case ColorName::kToggleColor:
+      if (is_dark_mode)
+        return SkColorSetA(ResolveColor(ColorName::kTextColorPrimary, is_dark_mode), GetOpacity(OpacityName::kDisabledOpacity, is_dark_mode));
+      return SkColorSetA(ResolveColor(ColorName::kTextColorPrimary, is_dark_mode), 0x19);
+    case ColorName::kBgColorElevation1:
+      if (is_dark_mode)
+        return SkColorSetRGB(0x29, 0x2A, 0x2D);
+      return SkColorSetRGB(0xFF, 0xFF, 0xFF);
+  }
+}
+
+}  // namespace colors_test_expected

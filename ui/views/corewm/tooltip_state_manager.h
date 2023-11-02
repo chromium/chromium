@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,8 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/corewm/tooltip.h"
@@ -56,9 +58,6 @@ class VIEWS_EXPORT TooltipStateManager {
             const gfx::Point& position,
             TooltipTrigger trigger,
             const base::TimeDelta hide_delay);
-
-  void StopWillHideTooltipTimer();
-  void StopWillShowTooltipTimer();
 
   // Returns the |tooltip_id_|, which corresponds to the pointer of the view on
   // which the tooltip was last added.
@@ -108,13 +107,13 @@ class VIEWS_EXPORT TooltipStateManager {
   std::unique_ptr<Tooltip> tooltip_;
 
   // The pointer to the view for which the tooltip is set.
-  const void* tooltip_id_ = nullptr;
+  raw_ptr<const void> tooltip_id_ = nullptr;
 
   // The text value used at the last tooltip update.
   std::u16string tooltip_text_;
 
   // The window on which the tooltip is added.
-  aura::Window* tooltip_parent_window_ = nullptr;
+  raw_ptr<aura::Window> tooltip_parent_window_ = nullptr;
 
   TooltipTrigger tooltip_trigger_ = TooltipTrigger::kCursor;
 

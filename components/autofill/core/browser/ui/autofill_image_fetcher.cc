@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "components/autofill/core/browser/data_model/credit_card_art_image.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/image_fetcher/core/image_decoder.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "components/image_fetcher/core/request_metadata.h"
@@ -18,7 +19,9 @@
 namespace autofill {
 
 namespace {
+
 constexpr char kUmaClientName[] = "AutofillImageFetcher";
+
 constexpr net::NetworkTrafficAnnotationTag kCardArtImageTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("autofill_image_fetcher_card_art_image",
                                         R"(
@@ -47,6 +50,11 @@ constexpr net::NetworkTrafficAnnotationTag kCardArtImageTrafficAnnotation =
           }
         }
       })");
+
+// Defines the expiration of the fetched image in the disk cache of the image
+// fetcher.
+constexpr base::TimeDelta kDiskCacheExpiry = base::Minutes(10);
+
 }  // namespace
 
 ImageFetchOperation::ImageFetchOperation(size_t image_count,
@@ -54,8 +62,16 @@ ImageFetchOperation::ImageFetchOperation(size_t image_count,
     : pending_request_count_(image_count),
       all_fetches_complete_callback_(std::move(callback)) {}
 
-void ImageFetchOperation::ImageFetched(const GURL& card_art_url,
-                                       const gfx::Image& card_art_image) {
+void ImageFetchOperation::ImageFetched(
+    const GURL& card_art_url,
+    const gfx::Image& card_art_image,
+    const absl::optional<base::TimeTicks>& fetch_image_request_timestamp) {
+  // In case of invalid url, fetch_image_request_timestamp is nullopt, and hence
+  // we don't report any UMA metrics.
+  if (fetch_image_request_timestamp.has_value()) {
+    AutofillMetrics::LogImageFetcherRequestLatency(
+        AutofillTickClock::NowTicks() - *fetch_image_request_timestamp);
+  }
   AutofillMetrics::LogImageFetchResult(/*succeeded=*/!card_art_image.IsEmpty());
   pending_request_count_--;
 
@@ -105,19 +121,18 @@ void AutofillImageFetcher::FetchImageForUrl(
     const scoped_refptr<ImageFetchOperation>& operation,
     const GURL& card_art_url) {
   if (!card_art_url.is_valid()) {
-    OnCardArtImageFetched(operation, card_art_url, gfx::Image(),
+    OnCardArtImageFetched(operation, card_art_url, absl::nullopt, gfx::Image(),
                           image_fetcher::RequestMetadata());
     return;
   }
 
   image_fetcher::ImageFetcherParams params(kCardArtImageTrafficAnnotation,
                                            kUmaClientName);
-  params.set_hold_for_expiration_interval(base::Minutes(
-      features::kAutofillImageFetcherDiskCacheExpirationInMinutes.Get()));
+  params.set_hold_for_expiration_interval(kDiskCacheExpiry);
   image_fetcher_->FetchImage(
       card_art_url,
       base::BindOnce(&AutofillImageFetcher::OnCardArtImageFetched, operation,
-                     card_art_url),
+                     card_art_url, AutofillTickClock::NowTicks()),
       std::move(params));
 }
 
@@ -125,9 +140,11 @@ void AutofillImageFetcher::FetchImageForUrl(
 void AutofillImageFetcher::OnCardArtImageFetched(
     const scoped_refptr<ImageFetchOperation>& operation,
     const GURL& card_art_url,
+    const absl::optional<base::TimeTicks>& fetch_image_request_timestamp,
     const gfx::Image& card_art_image,
     const image_fetcher::RequestMetadata& metadata) {
-  operation->ImageFetched(card_art_url, card_art_image);
+  operation->ImageFetched(card_art_url, card_art_image,
+                          fetch_image_request_timestamp);
 }
 
 }  // namespace autofill

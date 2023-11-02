@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,10 +22,14 @@ class SystemInfo {
     std::unique_ptr<SystemInfo> Build();
     Builder& SetBoardName(const std::string& board_name);
     Builder& SetDeviceName(const std::string& device_name);
+    Builder& SetGaiaId(const std::string& gaia_id);
+    Builder& SetDeviceType(const std::string& device_type);
 
    private:
     std::string board_name_;
     std::string device_name_;
+    std::string gaia_id_;
+    std::string device_type_;
   };
 
   SystemInfo(const SystemInfo& other);
@@ -33,23 +37,23 @@ class SystemInfo {
 
   std::string GetDeviceName() const { return device_name_; }
   std::string GetBoardName() const { return board_name_; }
+  std::string GetGaiaId() const { return gaia_id_; }
+  std::string GetDeviceType() const { return device_type_; }
 
  protected:
-  SystemInfo(const std::string& device_name, const std::string& board_name);
+  SystemInfo(const std::string& device_name,
+             const std::string& board_name,
+             const std::string& gaia_id,
+             const std::string& device_type);
 
  private:
   std::string device_name_;
   std::string board_name_;
+  std::string gaia_id_;
+  std::string device_type_;
 };
 
 }  // namespace eche_app
 }  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-namespace eche_app {
-using ::ash::eche_app::SystemInfo;
-}  // namespace eche_app
-}  // namespace chromeos
 
 #endif  // ASH_WEBUI_ECHE_APP_UI_SYSTEM_INFO_H_

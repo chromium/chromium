@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,9 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/client_hints/browser/client_hints.h"
 #include "components/embedder_support/user_agent_utils.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -35,9 +33,12 @@ ClientHintsFactory* ClientHintsFactory::GetInstance() {
 }
 
 ClientHintsFactory::ClientHintsFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "ClientHints",
-          BrowserContextDependencyManager::GetInstance()) {}
+          ProfileSelections::BuildForRegularAndIncognito()) {
+  DependsOn(HostContentSettingsMapFactory::GetInstance());
+  DependsOn(CookieSettingsFactory::GetInstance());
+}
 
 ClientHintsFactory::~ClientHintsFactory() = default;
 
@@ -50,12 +51,7 @@ KeyedService* ClientHintsFactory::BuildServiceInstanceFor(
       HostContentSettingsMapFactory::GetForProfile(context),
       CookieSettingsFactory::GetForProfile(
           Profile::FromBrowserContext(context)),
-      embedder_support::GetUserAgentMetadata());
-}
-
-content::BrowserContext* ClientHintsFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
+      g_browser_process->local_state());
 }
 
 bool ClientHintsFactory::ServiceIsNULLWhileTesting() const {

@@ -1,8 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/quick_pair/scanning/fast_pair/fake_fast_pair_scanner.h"
+
+#include "ash/quick_pair/common/device.h"
 
 namespace ash {
 namespace quick_pair {
@@ -18,6 +20,8 @@ void FakeFastPairScanner::AddObserver(Observer* observer) {
 void FakeFastPairScanner::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
+
+void FakeFastPairScanner::OnDevicePaired(scoped_refptr<Device> device) {}
 
 void FakeFastPairScanner::NotifyDeviceFound(device::BluetoothDevice* device) {
   for (auto& obs : observers_)

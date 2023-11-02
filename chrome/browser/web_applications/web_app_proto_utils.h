@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,7 @@ using RepeatedIconInfosProto =
 
 absl::optional<std::vector<apps::IconInfo>> ParseAppIconInfos(
     const char* container_name_for_logging,
-    RepeatedIconInfosProto manifest_icons_proto);
+    const RepeatedIconInfosProto& manifest_icons_proto);
 
 // Use the given |app| to populate a |WebAppSpecifics| sync proto.
 sync_pb::WebAppSpecifics WebAppToSyncProto(const WebApp& app);

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,11 +31,6 @@ enum class WindowStateType {
   kPrimarySnapped,
   kSecondarySnapped,
 
-  // A window is in this state when it is automatically placed and
-  // sized by the window manager. (it's newly opened, or pushed to the side
-  // due to new window, for example).
-  kAutoPositioned,
-
   // A window is pinned on top of other windows with fullscreenized.
   // Corresponding shelf should be hidden, also most of windows other than the
   // pinned one should be hidden.
@@ -44,6 +39,11 @@ enum class WindowStateType {
 
   // A window in Picture-in-Picture mode (PIP).
   kPip,
+
+  // A window is floated on top of other windows (except PIP). When a window is
+  // floated, users are allowed to change the position and size of the window.
+  // One floated window is allowed per desk.
+  kFloated,
 };
 
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
@@ -65,10 +65,6 @@ bool IsPinnedWindowStateType(WindowStateType type);
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 bool IsFullscreenOrPinnedWindowStateType(WindowStateType type);
 
-// Returns true if |type| is kFloating.
-COMPONENT_EXPORT(CHROMEOS_UI_BASE)
-bool IsFloatingStateType(WindowStateType type);
-
 // Returns true if |type| is MAXIMIZED, FULLSCREEN, PINNED, or TRUSTED_PINNED.
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 bool IsMaximizedOrFullscreenOrPinnedWindowStateType(WindowStateType type);
@@ -81,7 +77,9 @@ bool IsMinimizedWindowStateType(WindowStateType type);
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 bool IsNormalWindowStateType(WindowStateType type);
 
-COMPONENT_EXPORT(CHROMEOS_UI_BASE) bool IsValidWindowStateType(int64_t value);
+// Returns true if `type` is either kPrimarySnapped or kSecondarySnapped.
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+bool IsSnappedWindowStateType(WindowStateType type);
 
 }  // namespace chromeos
 

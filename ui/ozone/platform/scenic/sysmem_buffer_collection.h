@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
-#include "gpu/vulkan/fuchsia/vulkan_fuchsia_ext.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
@@ -69,7 +68,8 @@ class SysmemBufferCollection
   // Creates a NativePixmap the buffer with the specified index. Returned
   // NativePixmap holds a reference to the collection, so the collection is not
   // deleted until all NativePixmap are destroyed.
-  scoped_refptr<gfx::NativePixmap> CreateNativePixmap(size_t buffer_index);
+  scoped_refptr<gfx::NativePixmap> CreateNativePixmap(size_t buffer_index,
+                                                      gfx::Size size);
 
   // Creates a new Vulkan image for the buffer with the specified index.
   bool CreateVkImage(size_t buffer_index,
@@ -78,12 +78,10 @@ class SysmemBufferCollection
                      VkImage* vk_image,
                      VkImageCreateInfo* vk_image_info,
                      VkDeviceMemory* vk_device_memory,
-                     VkDeviceSize* mem_allocation_size,
-                     absl::optional<gpu::VulkanYCbCrInfo>* ycbcr_info);
+                     VkDeviceSize* mem_allocation_size);
 
   gfx::SysmemBufferCollectionId id() const { return id_; }
   size_t num_buffers() const { return buffers_info_.buffer_count; }
-  gfx::Size size() const { return image_size_; }
   gfx::BufferFormat format() const { return format_; }
   size_t buffer_size() const {
     return buffers_info_.settings.buffer_settings.size_bytes;
@@ -128,7 +126,7 @@ class SysmemBufferCollection
 
   // Handle for the Vulkan object that holds the same logical buffer collection
   // that is referenced by |collection_|.
-  VkBufferCollectionFUCHSIAX vk_buffer_collection_ = VK_NULL_HANDLE;
+  VkBufferCollectionFUCHSIA vk_buffer_collection_ = VK_NULL_HANDLE;
 
   // |scenic_overlay_view_| view should be used and deleted on the same thread
   // as creation.
@@ -143,7 +141,6 @@ class SysmemBufferCollection
   // threads.
   THREAD_CHECKER(vulkan_thread_checker_);
 
-  gfx::Size image_size_;
   size_t buffer_size_ = 0;
   bool is_protected_ = false;
 

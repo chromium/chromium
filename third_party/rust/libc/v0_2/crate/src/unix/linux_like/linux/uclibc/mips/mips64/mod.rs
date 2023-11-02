@@ -8,7 +8,6 @@ pub type fsfilcnt_t = ::c_ulong;
 pub type ino_t = u64;
 pub type nlink_t = u64;
 pub type off_t = i64;
-pub type rlim_t = ::c_ulong;
 pub type suseconds_t = i64;
 pub type time_t = i64;
 pub type wchar_t = i32;
@@ -193,14 +192,7 @@ pub const __SIZEOF_PTHREAD_MUTEXATTR_T: usize = 4;
 pub const __SIZEOF_PTHREAD_MUTEX_T: usize = 40;
 pub const __SIZEOF_PTHREAD_RWLOCK_T: usize = 56;
 
-pub const RLIM_INFINITY: ::rlim_t = 0xffff_ffff_ffff_ffff;
-
 pub const SYS_gettid: ::c_long = 5178; // Valid for n64
-
-#[link(name = "util")]
-extern "C" {
-    pub fn ioctl(fd: ::c_int, request: ::c_ulong, ...) -> ::c_int;
-}
 
 cfg_if! {
     if #[cfg(libc_align)] {

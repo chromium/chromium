@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,7 +36,9 @@ class LogBuffer;
   /* If credit card upload is either enabled or disabled. */           \
   T(CreditCardUploadStatus)                                            \
   /* Whether or not card upload was offered to the user. */            \
-  T(CardUploadDecision)
+  T(CardUploadDecision)                                                \
+  /* The website modified a field */                                   \
+  T(WebsiteModifiedFieldValue)
 
 // Define a bunch of logging scopes: kContext, kParsing, ...
 #define AUTOFILL_TEMPLATE(NAME) k##NAME,

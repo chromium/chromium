@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -24,6 +24,7 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/pickle.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -50,20 +51,22 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/half_float.h"
-#include "url/origin.h"
+#include "url/gurl.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/base/clipboard/clipboard_util_win.h"
 #endif
 
 using base::ASCIIToUTF16;
 using base::UTF16ToUTF8;
 
+using testing::_;
 using testing::Contains;
+using testing::Property;
 
 namespace ui {
 
@@ -95,7 +98,7 @@ class ClipboardTest : public PlatformTest {
 
  private:
   // Clipboard has a protected destructor, so scoped_ptr doesn't work here.
-  Clipboard* clipboard_ = nullptr;
+  raw_ptr<Clipboard> clipboard_ = nullptr;
 };
 
 // A mock delegate for testing.
@@ -135,13 +138,6 @@ struct NullClipboardTraits {
 TYPED_TEST_SUITE(ClipboardTest, TypesToTest, NamesOfTypesToTest);
 
 TYPED_TEST(ClipboardTest, ClearTest) {
-#if defined(OS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // OS_MAC
-
   {
     ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
     clipboard_writer.WriteText(u"clear me");
@@ -152,7 +148,7 @@ TYPED_TEST(ClipboardTest, ClearTest) {
   EXPECT_FALSE(this->clipboard().IsFormatAvailable(
       ClipboardFormatType::PlainTextType(), ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_FALSE(this->clipboard().IsFormatAvailable(
       ClipboardFormatType::PlainTextAType(), ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));
@@ -160,13 +156,6 @@ TYPED_TEST(ClipboardTest, ClearTest) {
 }
 
 TYPED_TEST(ClipboardTest, TextTest) {
-#if defined(OS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // OS_MAC
-
   std::u16string text(u"This is a std::u16string!#$"), text_result;
   std::string ascii_text;
 
@@ -180,7 +169,7 @@ TYPED_TEST(ClipboardTest, TextTest) {
   EXPECT_TRUE(this->clipboard().IsFormatAvailable(
       ClipboardFormatType::PlainTextType(), ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_TRUE(this->clipboard().IsFormatAvailable(
       ClipboardFormatType::PlainTextAType(), ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));
@@ -196,13 +185,6 @@ TYPED_TEST(ClipboardTest, TextTest) {
 }
 
 TYPED_TEST(ClipboardTest, HTMLTest) {
-#if defined(OS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // OS_MAC
-
   std::u16string markup(u"<string>Hi!</string>"), markup_result;
   std::u16string plain(u"Hi!"), plain_result;
   std::string url("http://www.example.com/"), url_result;
@@ -226,21 +208,14 @@ TYPED_TEST(ClipboardTest, HTMLTest) {
   EXPECT_LE(markup.size(), fragment_end - fragment_start);
   EXPECT_EQ(markup,
             markup_result.substr(fragment_end - markup.size(), markup.size()));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // TODO(playmobil): It's not clear that non windows clipboards need to support
   // this.
   EXPECT_EQ(url, url_result);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 TYPED_TEST(ClipboardTest, SvgTest) {
-#if defined(OS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // OS_MAC
-
   std::u16string markup(u"<svg> <circle r=\"40\" /> </svg>");
 
   {
@@ -261,17 +236,10 @@ TYPED_TEST(ClipboardTest, SvgTest) {
   EXPECT_EQ(markup, markup_result);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // TODO(crbug/1064968): This test fails with ClipboardAndroid, but passes with
 // the TestClipboard as RTF isn't implemented in ClipboardAndroid.
 TYPED_TEST(ClipboardTest, RTFTest) {
-#if defined(OS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // OS_MAC
-
   std::string rtf =
       "{\\rtf1\\ansi{\\fonttbl\\f0\\fswiss Helvetica;}\\f0\\pard\n"
       "This is some {\\b bold} text.\\par\n"
@@ -292,11 +260,11 @@ TYPED_TEST(ClipboardTest, RTFTest) {
                             /* data_dst = */ nullptr, &result);
   EXPECT_EQ(rtf, result);
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // MultipleBufferTest only ran on Linux because Linux is the only platform that
 // supports the selection buffer by default.
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 TYPED_TEST(ClipboardTest, MultipleBufferTest) {
   if (!ui::Clipboard::IsSupportedClipboardBuffer(
           ui::ClipboardBuffer::kSelection)) {
@@ -350,16 +318,9 @@ TYPED_TEST(ClipboardTest, MultipleBufferTest) {
   EXPECT_EQ(markup,
             markup_result.substr(fragment_end - markup.size(), markup.size()));
 }
-#endif  // defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
 
 TYPED_TEST(ClipboardTest, TrickyHTMLTest) {
-#if defined(OS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // OS_MAC
-
   std::u16string markup(u"<em>Bye!<!--EndFragment --></em>"), markup_result;
   std::string url, url_result;
   std::u16string plain(u"Bye!"), plain_result;
@@ -383,30 +344,23 @@ TYPED_TEST(ClipboardTest, TrickyHTMLTest) {
   EXPECT_LE(markup.size(), fragment_end - fragment_start);
   EXPECT_EQ(markup,
             markup_result.substr(fragment_end - markup.size(), markup.size()));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // TODO(playmobil): It's not clear that non windows clipboards need to support
   // this.
   EXPECT_EQ(url, url_result);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 // Some platforms store HTML as UTF-8 internally. Make sure fragment indices are
 // adjusted appropriately when converting back to UTF-16.
 TYPED_TEST(ClipboardTest, UnicodeHTMLTest) {
-#if defined(OS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // OS_MAC
-
   std::u16string markup(u"<div>A ø 水</div>"), markup_result;
   std::string url, url_result;
 
   {
     ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
     clipboard_writer.WriteHTML(markup, url);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Android requires HTML and plain text representations to be written.
     clipboard_writer.WriteText(markup);
 #endif
@@ -425,21 +379,14 @@ TYPED_TEST(ClipboardTest, UnicodeHTMLTest) {
   EXPECT_LE(markup.size(), fragment_end - fragment_start);
   EXPECT_EQ(markup,
             markup_result.substr(fragment_end - markup.size(), markup.size()));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ(url, url_result);
 #endif
 }
 
 // TODO(estade): Port the following test (decide what target we use for urls)
-#if !defined(OS_POSIX) || defined(OS_APPLE) || defined(OS_WIN)
+#if !BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
 TYPED_TEST(ClipboardTest, BookmarkTest) {
-#if defined(OS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // OS_MAC
-
   std::u16string title(u"The Example Company"), title_result;
   std::string url("http://www.example.com/"), url_result;
 
@@ -453,7 +400,7 @@ TYPED_TEST(ClipboardTest, BookmarkTest) {
       /* data_dst = */ nullptr));
   this->clipboard().ReadBookmark(/* data_dst = */ nullptr, &title_result,
                                  &url_result);
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   EXPECT_EQ(title, title_result);
 #else
   // On Windows the title should be empty when CFSTR_INETURLW is queried.
@@ -461,18 +408,11 @@ TYPED_TEST(ClipboardTest, BookmarkTest) {
 #endif
   EXPECT_EQ(url, url_result);
 }
-#endif  // !defined(OS_POSIX) || defined(OS_APPLE)
+#endif  // !BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_APPLE)
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Filenames is not implemented in ClipboardAndroid.
 TYPED_TEST(ClipboardTest, FilenamesTest) {
-#if defined(OS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // OS_MAC
-
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -501,16 +441,9 @@ TYPED_TEST(ClipboardTest, FilenamesTest) {
   EXPECT_EQ(1u, filenames.size());
   EXPECT_EQ(file, filenames[0].path);
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TYPED_TEST(ClipboardTest, MultiFormatTest) {
-#if defined(OS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // OS_MAC
-
   std::u16string text(u"Hi!"), text_result;
   std::u16string markup(u"<strong>Hi!</string>"), markup_result;
   std::string url("http://www.example.com/"), url_result;
@@ -532,7 +465,7 @@ TYPED_TEST(ClipboardTest, MultiFormatTest) {
   EXPECT_TRUE(this->clipboard().IsFormatAvailable(
       ClipboardFormatType::PlainTextType(), ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_TRUE(this->clipboard().IsFormatAvailable(
       ClipboardFormatType::PlainTextAType(), ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));
@@ -545,11 +478,11 @@ TYPED_TEST(ClipboardTest, MultiFormatTest) {
   EXPECT_LE(markup.size(), fragment_end - fragment_start);
   EXPECT_EQ(markup,
             markup_result.substr(fragment_end - markup.size(), markup.size()));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // TODO(playmobil): It's not clear that non windows clipboards need to support
   // this.
   EXPECT_EQ(url, url_result);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   this->clipboard().ReadText(ClipboardBuffer::kCopyPaste,
                              /* data_dst = */ nullptr, &text_result);
   EXPECT_EQ(text, text_result);
@@ -559,13 +492,6 @@ TYPED_TEST(ClipboardTest, MultiFormatTest) {
 }
 
 TYPED_TEST(ClipboardTest, URLTest) {
-#if defined(OS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // OS_MAC
-
   std::u16string url(u"http://www.google.com/");
 
   {
@@ -578,7 +504,7 @@ TYPED_TEST(ClipboardTest, URLTest) {
   EXPECT_TRUE(this->clipboard().IsFormatAvailable(
       ClipboardFormatType::PlainTextType(), ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_TRUE(this->clipboard().IsFormatAvailable(
       ClipboardFormatType::PlainTextAType(), ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));
@@ -596,7 +522,7 @@ TYPED_TEST(ClipboardTest, URLTest) {
 
 // TODO(tonikitoo, msisov): enable back for ClipboardOzone implements
 // selection support. https://crbug.com/911992
-#if defined(OS_POSIX) && !defined(OS_APPLE) && !defined(OS_ANDROID) && \
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_ANDROID) && \
     !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(USE_OZONE)
   ascii_text.clear();
   this->clipboard().ReadAsciiText(ClipboardBuffer::kSelection,
@@ -616,7 +542,7 @@ void WriteBitmap(Clipboard* clipboard,
   {
     ScopedClipboardWriter clipboard_writer(
         ClipboardBuffer::kCopyPaste,
-        std::make_unique<DataTransferEndpoint>(url::Origin()));
+        std::make_unique<DataTransferEndpoint>(GURL()));
     SkBitmap bitmap;
     ASSERT_TRUE(bitmap.setInfo(info));
     bitmap.setPixels(const_cast<void*>(bitmap_data));
@@ -661,19 +587,12 @@ static void TestBitmapWriteAndPngRead(Clipboard* clipboard,
   AssertBitmapMatchesExpected(image, info, expect_data);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // TODO(crbug.com/815537): Re-enable this test once death tests work on Android.
 
 // Only kN32_SkColorType bitmaps are allowed into the clipboard to prevent
 // surprising buffer overflows due to bits-per-pixel assumptions.
 TYPED_TEST(ClipboardTest, BitmapWriteAndPngRead_F16_Premul) {
-#if defined(OS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // OS_MAC
-
   constexpr F16x4 kRGBAF16Premul = {0x30c5, 0x2d86, 0x2606, 0x3464};
   constexpr U8x4 kRGBAPremul = {0x26, 0x16, 0x06, 0x46};
   EXPECT_DEATH(
@@ -683,16 +602,9 @@ TYPED_TEST(ClipboardTest, BitmapWriteAndPngRead_F16_Premul) {
           &kRGBAF16Premul, &kRGBAPremul),
       "");
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TYPED_TEST(ClipboardTest, BitmapWriteAndPngRead_N32_Premul) {
-#if defined(OS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // OS_MAC
-
   constexpr U8x4 b[4 * 3] = {
       {0x26, 0x16, 0x06, 0x46}, {0x88, 0x59, 0x9f, 0xf6},
       {0x37, 0x29, 0x3f, 0x79}, {0x86, 0xb9, 0x55, 0xfa},
@@ -706,13 +618,6 @@ TYPED_TEST(ClipboardTest, BitmapWriteAndPngRead_N32_Premul) {
 }
 
 TYPED_TEST(ClipboardTest, BitmapWriteAndPngRead_N32_Premul_2x7) {
-#if defined(OS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // OS_MAC
-
   constexpr U8x4 b[2 * 7] = {
       {0x26, 0x16, 0x06, 0x46}, {0x88, 0x59, 0x9f, 0xf6},
       {0x37, 0x29, 0x3f, 0x79}, {0x86, 0xb9, 0x55, 0xfa},
@@ -729,13 +634,6 @@ TYPED_TEST(ClipboardTest, BitmapWriteAndPngRead_N32_Premul_2x7) {
 }  // namespace
 
 TYPED_TEST(ClipboardTest, PickleTest) {
-#if defined(OS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // OS_MAC
-
   const ClipboardFormatType kFormat =
       ClipboardFormatType::GetType("chromium/x-test-format");
   std::string payload("test string");
@@ -761,13 +659,6 @@ TYPED_TEST(ClipboardTest, PickleTest) {
 }
 
 TYPED_TEST(ClipboardTest, MultiplePickleTest) {
-#if defined(OS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // OS_MAC
-
   const ClipboardFormatType kFormat1 =
       ClipboardFormatType::GetType("chromium/x-test-format1");
   std::string payload1("test string1");
@@ -830,14 +721,7 @@ TYPED_TEST(ClipboardTest, MultiplePickleTest) {
 // TODO(crbug.com/106449): Implement multiple custom format write on Chrome OS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 TYPED_TEST(ClipboardTest, DataTest) {
-#if defined(OS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // OS_MAC
-
-  const std::string kFormatString = "chromium/x-test-format";
+  const std::string kFormatString = "web chromium/x-test-format";
   const std::u16string kFormatString16 = u"chromium/x-test-format";
   const std::string payload = "test string";
   base::span<const uint8_t> payload_span(
@@ -863,20 +747,13 @@ TYPED_TEST(ClipboardTest, DataTest) {
 }
 
 TYPED_TEST(ClipboardTest, MultipleDataTest) {
-#if defined(OS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // OS_MAC
-
-  const std::string kFormatString1 = "chromium/x-test-format1";
+  const std::string kFormatString1 = "web chromium/x-test-format1";
   const std::u16string kFormatString116 = u"chromium/x-test-format1";
   const std::string payload1("test string1");
   base::span<const uint8_t> payload_span1(
       reinterpret_cast<const uint8_t*>(payload1.data()), payload1.size());
 
-  const std::string kFormatString2 = "chromium/x-test-format2";
+  const std::string kFormatString2 = "web chromium/x-test-format2";
   const std::u16string kFormatString216 = u"chromium/x-test-format2";
   const std::string payload2("test string2");
   base::span<const uint8_t> payload_span2(
@@ -894,7 +771,7 @@ TYPED_TEST(ClipboardTest, MultipleDataTest) {
   // Check format 1.
   EXPECT_THAT(this->clipboard().ReadAvailableStandardAndCustomFormatNames(
                   ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr),
-              Contains(kFormatString116));
+              Contains(u"web chromium/x-test-format1"));
   std::string custom_format_json;
   this->clipboard().ReadData(ClipboardFormatType::WebCustomFormatMap(),
                              /* data_dst = */ nullptr, &custom_format_json);
@@ -912,7 +789,7 @@ TYPED_TEST(ClipboardTest, MultipleDataTest) {
   // Check format 2.
   EXPECT_THAT(this->clipboard().ReadAvailableStandardAndCustomFormatNames(
                   ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr),
-              Contains(kFormatString216));
+              Contains(u"web chromium/x-test-format2"));
   EXPECT_TRUE(custom_format_names.find(kFormatString2) !=
               custom_format_names.end());
   std::string output2;
@@ -923,20 +800,13 @@ TYPED_TEST(ClipboardTest, MultipleDataTest) {
 }
 
 TYPED_TEST(ClipboardTest, DataAndPortableFormatTest) {
-#if defined(OS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // OS_MAC
-
-  const std::string kFormatString1 = "chromium/x-test-format1";
+  const std::string kFormatString1 = "web chromium/x-test-format1";
   const std::u16string kFormatString116 = u"chromium/x-test-format1";
   const std::string payload1("test string1");
   base::span<const uint8_t> payload_span1(
       reinterpret_cast<const uint8_t*>(payload1.data()), payload1.size());
 
-  const std::string kFormatString2 = "text/plain";
+  const std::string kFormatString2 = "web text/plain";
   const std::u16string kFormatString216 = u"text/plain";
   const std::string payload2("test string2");
   base::span<const uint8_t> payload_span2(
@@ -954,7 +824,7 @@ TYPED_TEST(ClipboardTest, DataAndPortableFormatTest) {
   // Check format 1.
   EXPECT_THAT(this->clipboard().ReadAvailableStandardAndCustomFormatNames(
                   ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr),
-              Contains(kFormatString116));
+              Contains(u"web chromium/x-test-format1"));
   std::string custom_format_json;
   this->clipboard().ReadData(ClipboardFormatType::WebCustomFormatMap(),
                              /* data_dst = */ nullptr, &custom_format_json);
@@ -972,7 +842,7 @@ TYPED_TEST(ClipboardTest, DataAndPortableFormatTest) {
   // Check format 2.
   EXPECT_THAT(this->clipboard().ReadAvailableStandardAndCustomFormatNames(
                   ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr),
-              Contains(kFormatString216));
+              Contains(u"web text/plain"));
   EXPECT_TRUE(custom_format_names.find(kFormatString2) !=
               custom_format_names.end());
   std::string output2;
@@ -987,13 +857,6 @@ TYPED_TEST(ClipboardTest, DataAndPortableFormatTest) {
 // On Windows, this test uses a pre-defined ANSI format, CF_TEXT, and tests that
 // the Windows implicitly converts this to UNICODE as expected.
 TYPED_TEST(ClipboardTest, PlatformSpecificDataTest) {
-#if defined(OS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // OS_MAC
-
   // We're testing platform-specific behavior, so use PlatformClipboardTest.
   // TODO(https://crbug.com/1083050): The template shouldn't know about its
   // instantiations. Move this information up using a flag, virtual method, or
@@ -1005,8 +868,9 @@ TYPED_TEST(ClipboardTest, PlatformSpecificDataTest) {
     return;
 
   const std::string text = "test string";
-  const std::string kFormatString = "text/plain";
-#if defined(OS_WIN)
+  const std::string kFormatString = "web text/plain";
+  const std::u16string kFormatString16 = u"text/plain";
+#if BUILDFLAG(IS_WIN)
   // Windows requires an extra '\0' at the end for a raw write.
   const std::string kPlatformSpecificText = text + '\0';
 #else
@@ -1017,7 +881,7 @@ TYPED_TEST(ClipboardTest, PlatformSpecificDataTest) {
       kPlatformSpecificText.size());
   {
     ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
-    clipboard_writer.WriteData(ASCIIToUTF16(kFormatString),
+    clipboard_writer.WriteData(kFormatString16,
                                mojo_base::BigBuffer(text_span));
   }
 
@@ -1039,7 +903,7 @@ TYPED_TEST(ClipboardTest, PlatformSpecificDataTest) {
 }
 #endif
 
-#if !defined(OS_APPLE) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_ANDROID)
 TYPED_TEST(ClipboardTest, HyperlinkTest) {
   const std::string kTitle("The <Example> Company's \"home page\"");
   const std::string kUrl("http://www.example.com?x=3&lt=3#\"'<>");
@@ -1069,13 +933,6 @@ TYPED_TEST(ClipboardTest, HyperlinkTest) {
 #endif
 
 TYPED_TEST(ClipboardTest, WebSmartPasteTest) {
-#if defined(OS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // OS_MAC
-
   {
     ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
     clipboard_writer.WriteWebSmartPaste();
@@ -1086,7 +943,7 @@ TYPED_TEST(ClipboardTest, WebSmartPasteTest) {
       /* data_dst = */ nullptr));
 }
 
-#if defined(OS_WIN)  // Windows only tests.
+#if BUILDFLAG(IS_WIN)  // Windows only tests.
 void HtmlTestHelper(const std::string& cf_html,
                     const std::string& expected_html) {
   std::string html;
@@ -1130,17 +987,10 @@ TYPED_TEST(ClipboardTest, HtmlTest) {
       "</html>\r\n\r\n",
       "<p>Foo</p>");
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // Test writing all formats we have simultaneously.
 TYPED_TEST(ClipboardTest, WriteEverything) {
-#if defined(OS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // OS_MAC
-
   {
     ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
     writer.WriteText(u"foo");
@@ -1158,18 +1008,11 @@ TYPED_TEST(ClipboardTest, WriteEverything) {
 // clipboard change listener is posted to the Java message loop, and spinning
 // that loop from C++ to trigger the callback in the test requires a non-trivial
 // amount of additional work.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Simple test that the sequence number appears to change when the clipboard is
 // written to.
 // TODO(dcheng): Add a version to test ClipboardBuffer::kSelection.
 TYPED_TEST(ClipboardTest, GetSequenceNumber) {
-#if defined(OS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // OS_MAC
-
   const ClipboardSequenceNumberToken first_sequence_number =
       this->clipboard().GetSequenceNumber(ClipboardBuffer::kCopyPaste);
 
@@ -1192,104 +1035,48 @@ TYPED_TEST(ClipboardTest, GetSequenceNumber) {
 // Test that writing empty parameters doesn't try to dereference an empty data
 // vector. Not crashing = passing.
 TYPED_TEST(ClipboardTest, WriteTextEmptyParams) {
-#if defined(OS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // OS_MAC
-
   ScopedClipboardWriter scw(ClipboardBuffer::kCopyPaste);
   scw.WriteText(std::u16string());
 }
 
 TYPED_TEST(ClipboardTest, WriteHTMLEmptyParams) {
-#if defined(OS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // OS_MAC
-
   ScopedClipboardWriter scw(ClipboardBuffer::kCopyPaste);
   scw.WriteHTML(std::u16string(), std::string());
 }
 
 TYPED_TEST(ClipboardTest, EmptySvgTest) {
-#if defined(OS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // OS_MAC
-
   ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
   clipboard_writer.WriteSvg(std::u16string());
 }
 
 TYPED_TEST(ClipboardTest, WriteRTFEmptyParams) {
-#if defined(OS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // OS_MAC
-
   ScopedClipboardWriter scw(ClipboardBuffer::kCopyPaste);
   scw.WriteRTF(std::string());
 }
 
 TYPED_TEST(ClipboardTest, WriteBookmarkEmptyParams) {
-#if defined(OS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // OS_MAC
-
   ScopedClipboardWriter scw(ClipboardBuffer::kCopyPaste);
   scw.WriteBookmark(std::u16string(), std::string());
 }
 
 TYPED_TEST(ClipboardTest, WriteHyperlinkEmptyParams) {
-#if defined(OS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // OS_MAC
-
   ScopedClipboardWriter scw(ClipboardBuffer::kCopyPaste);
   scw.WriteHyperlink(std::u16string(), std::string());
 }
 
 TYPED_TEST(ClipboardTest, WritePickledData) {
-#if defined(OS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // OS_MAC
-
   ScopedClipboardWriter scw(ClipboardBuffer::kCopyPaste);
   scw.WritePickledData(base::Pickle(), ClipboardFormatType::PlainTextType());
 }
 
 TYPED_TEST(ClipboardTest, WriteImageEmptyParams) {
-#if defined(OS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // OS_MAC
-
   ScopedClipboardWriter scw(ClipboardBuffer::kCopyPaste);
   scw.WriteImage(SkBitmap());
 }
 
 // Policy controller is only intended to be used in Chrome OS, so the following
 // policy related tests are only run on Chrome OS.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 // Test that copy/paste would work normally if the policy controller didn't
 // restrict the clipboard data.
 TYPED_TEST(ClipboardTest, PolicyAllowDataRead) {
@@ -1298,7 +1085,7 @@ TYPED_TEST(ClipboardTest, PolicyAllowDataRead) {
   {
     ScopedClipboardWriter writer(
         ClipboardBuffer::kCopyPaste,
-        std::make_unique<DataTransferEndpoint>(url::Origin()));
+        std::make_unique<DataTransferEndpoint>(GURL("https://www.google.com")));
     writer.WriteText(kTestText);
   }
   EXPECT_CALL(*policy_controller, IsClipboardReadAllowed)
@@ -1306,8 +1093,21 @@ TYPED_TEST(ClipboardTest, PolicyAllowDataRead) {
   std::u16string read_result;
   this->clipboard().ReadText(ClipboardBuffer::kCopyPaste,
                              /* data_dst = */ nullptr, &read_result);
-  ::testing::Mock::VerifyAndClearExpectations(policy_controller.get());
   EXPECT_EQ(kTestText, read_result);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Checks that the clipboard source metadata is encoded in the
+  // DataTransferEndpoint mime type.
+  std::string actual_json;
+  this->clipboard().ReadData(
+      ui::ClipboardFormatType::DataTransferEndpointDataType(),
+      /* data_dst = */ nullptr, &actual_json);
+
+  EXPECT_EQ(R"({"endpoint_type":"url","url":"https://www.google.com/"})",
+            actual_json);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  ::testing::Mock::VerifyAndClearExpectations(policy_controller.get());
 }
 
 // Test that pasting clipboard data would not work if the policy controller
@@ -1318,7 +1118,7 @@ TYPED_TEST(ClipboardTest, PolicyDisallow_ReadText) {
   {
     ScopedClipboardWriter writer(
         ClipboardBuffer::kCopyPaste,
-        std::make_unique<DataTransferEndpoint>(url::Origin()));
+        std::make_unique<DataTransferEndpoint>(GURL()));
     writer.WriteText(kTestText);
   }
   EXPECT_CALL(*policy_controller, IsClipboardReadAllowed)
@@ -1349,7 +1149,41 @@ TYPED_TEST(ClipboardTest, PolicyDisallow_ReadPng) {
   EXPECT_EQ(true, image.empty());
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Checks that source DTEs provided through the custom MIME type can be parsed.
+TYPED_TEST(ClipboardTest, ClipboardSourceDteCanBeRetrievedByLacros) {
+  auto policy_controller = std::make_unique<MockPolicyController>();
+  const std::u16string kTestText(u"World");
+  const std::string kDteJson(
+      R"({"endpoint_type":"url","url":"https://www.google.com"})");
+  {
+    // No source DTE provided directly to the Lacros clipboard.
+    ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
+    writer.WriteText(kTestText);
+    // Encoded source DTE provided in custom MIME type.
+    writer.WriteEncodedDataTransferEndpointForTesting(kDteJson);
+  }
+
+  EXPECT_CALL(*policy_controller,
+              IsClipboardReadAllowed(
+                  Pointee(AllOf(
+                      Property(&DataTransferEndpoint::IsUrlType, true),
+                      Property(&DataTransferEndpoint::GetURL,
+                               Pointee(Property(&GURL::spec,
+                                                "https://www.google.com/"))))),
+                  _, _))
+      .WillRepeatedly(testing::Return(true));
+
+  std::u16string read_result;
+  this->clipboard().ReadText(ClipboardBuffer::kCopyPaste,
+                             /* data_dst= */ nullptr, &read_result);
+  EXPECT_EQ(kTestText, read_result);
+
+  ::testing::Mock::VerifyAndClearExpectations(policy_controller.get());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace ui
 

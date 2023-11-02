@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_VIDEO_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_VIDEO_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_media.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -33,7 +34,7 @@ namespace blink {
 
 class HTMLVideoElement;
 
-class LayoutVideo final : public LayoutMedia {
+class CORE_EXPORT LayoutVideo final : public LayoutMedia {
  public:
   explicit LayoutVideo(HTMLVideoElement*);
   ~LayoutVideo() override;
@@ -58,7 +59,8 @@ class LayoutVideo final : public LayoutMedia {
 
   OverflowClipAxes ComputeOverflowClipAxes() const final {
     NOT_DESTROYED();
-    return kOverflowClipBothAxis;
+    return RespectsCSSOverflow() ? LayoutMedia::ComputeOverflowClipAxes()
+                                 : kOverflowClipBothAxis;
   }
 
  private:

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,7 @@ class SkCanvas;
 
 namespace gfx {
 class Point;
+class PointF;
 class Transform;
 }  // namespace gfx
 
@@ -98,6 +99,12 @@ class CONTENT_EXPORT SynchronousCompositor {
       uint32_t layer_tree_frame_sink_id,
       std::vector<viz::ReturnedResource> resources) = 0;
 
+  // Notifies the client when a directive for DocumentTransition, submitted in
+  // a previous CompositorFrame, has finished executing.
+  virtual void OnCompositorFrameTransitionDirectiveProcessed(
+      uint32_t layer_tree_frame_sink_id,
+      uint32_t sequence_id) = 0;
+
   virtual void DidPresentCompositorFrames(
       viz::FrameTimingDetailsMap timing_details,
       uint32_t frame_token) = 0;
@@ -117,9 +124,9 @@ class CONTENT_EXPORT SynchronousCompositor {
 
   // Should be called by the embedder after the embedder had modified the
   // scroll offset of the root layer. |root_offset| must be in physical pixel
-  // scale if --use-zoom-for-dsf is enabled. Otherwise, it must be in DIP scale.
+  // scale.
   virtual void DidChangeRootLayerScrollOffset(
-      const gfx::Vector2dF& root_offset) = 0;
+      const gfx::PointF& root_offset) = 0;
 
   // Allows embedder to synchronously update the zoom level, ie page scale
   // factor, around the anchor point.

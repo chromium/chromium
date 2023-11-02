@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,10 @@
 namespace ios {
 namespace provider {
 
-// Dismisses any modals presented from a |collection_view| item.
+// Dismisses any modals presented from a `collection_view` item.
 void DismissModalsForCollectionView(UICollectionView* collection_view);
 
-// Dismisses any modals presented from a |table_view| cell.
+// Dismisses any modals presented from a `table_view` cell.
 void DismissModalsForTableView(UITableView* table_view);
 
 }  // namespace provider

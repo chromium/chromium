@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -67,7 +67,7 @@ cc::Layer* ScrollingContentsCcLayerByScrollElementId(
     cc::Layer* root,
     const CompositorElementId& scroll_element_id) {
   const auto& scroll_tree =
-      root->layer_tree_host()->property_trees()->scroll_tree;
+      root->layer_tree_host()->property_trees()->scroll_tree();
   for (auto& layer : root->children()) {
     const auto* scroll_node = scroll_tree.Node(layer->scroll_tree_index());
     if (scroll_node && scroll_node->element_id == scroll_element_id &&

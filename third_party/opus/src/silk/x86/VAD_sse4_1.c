@@ -1,5 +1,5 @@
-/* Copyright (c) 2014, Cisco Systems, INC
-   Written by XiangMingZhu WeiZhou MinPeng YanWang
+/* Copyright (c) 2014-2020, Cisco Systems, INC
+   Written by XiangMingZhu WeiZhou MinPeng YanWang FrancisQuiers
 
    Redistribution and use in source and binary forms, with or without
    modification, are permitted provided that the following conditions
@@ -62,6 +62,14 @@ opus_int silk_VAD_GetSA_Q8_sse4_1(                  /* O    Return value, 0 if s
     silk_VAD_state *psSilk_VAD = &psEncC->sVAD;
 
     SAVE_STACK;
+
+#ifdef OPUS_CHECK_ASM
+    silk_encoder_state psEncC_c;
+    opus_int ret_c;
+
+    silk_memcpy( &psEncC_c, psEncC, sizeof( psEncC_c ) );
+    ret_c = silk_VAD_GetSA_Q8_c( &psEncC_c, pIn );
+#endif
 
     /* Safety checks */
     silk_assert( VAD_N_BANDS == 4 );
@@ -233,15 +241,14 @@ opus_int silk_VAD_GetSA_Q8_sse4_1(                  /* O    Return value, 0 if s
         speech_nrg += ( b + 1 ) * silk_RSHIFT( Xnrg[ b ] - psSilk_VAD->NL[ b ], 4 );
     }
 
+    if( psEncC->frame_length == 20 * psEncC->fs_kHz ) {
+        speech_nrg = silk_RSHIFT32( speech_nrg, 1 );
+    }
     /* Power scaling */
     if( speech_nrg <= 0 ) {
         SA_Q15 = silk_RSHIFT( SA_Q15, 1 );
-    } else if( speech_nrg < 32768 ) {
-        if( psEncC->frame_length == 10 * psEncC->fs_kHz ) {
-            speech_nrg = silk_LSHIFT_SAT32( speech_nrg, 16 );
-        } else {
-            speech_nrg = silk_LSHIFT_SAT32( speech_nrg, 15 );
-        }
+    } else if( speech_nrg < 16384 ) {
+        speech_nrg = silk_LSHIFT32( speech_nrg, 16 );
 
         /* square-root */
         speech_nrg = silk_SQRT_APPROX( speech_nrg );
@@ -271,6 +278,11 @@ opus_int silk_VAD_GetSA_Q8_sse4_1(                  /* O    Return value, 0 if s
         /* quality = sigmoid( 0.25 * ( SNR_dB - 16 ) ); */
         psEncC->input_quality_bands_Q15[ b ] = silk_sigm_Q15( silk_RSHIFT( SNR_Q7 - 16 * 128, 4 ) );
     }
+
+#ifdef OPUS_CHECK_ASM
+    silk_assert( ret == ret_c );
+    silk_assert( !memcmp( &psEncC_c, psEncC, sizeof( psEncC_c ) ) );
+#endif
 
     RESTORE_STACK;
     return( ret );

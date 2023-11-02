@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/common/buildflags.h"
 #include "url/gurl.h"
 
 namespace extension_urls {
@@ -28,17 +29,11 @@ namespace extension_misc {
 // The extension id of the Calendar application.
 extern const char kCalendarAppId[];
 
-// The extension id of the Cloud Print component application.
-extern const char kCloudPrintAppId[];
-
 // The extension id of the Data Saver extension.
 extern const char kDataSaverExtensionId[];
 
 // The extension id of the Google Docs Offline extension.
 extern const char kDocsOfflineExtensionId[];
-
-// The extension id of the Enterprise Web Store component application.
-extern const char kEnterpriseWebStoreAppId[];
 
 // The extension id of the Google Maps application.
 extern const char kGoogleMapsAppId[];
@@ -66,6 +61,9 @@ extern const char kTextEditorAppId[];
 
 // The extension id of the in-app payments support application.
 extern const char kInAppPaymentsSupportAppId[];
+
+// The extension id of virtual keyboard extension.
+extern const char kKeyboardExtensionId[];
 
 // A list of all the first party extension IDs, last entry is null.
 extern const char* const kBuiltInFirstPartyExtensionIds[];
@@ -156,9 +154,23 @@ enum AppLaunchBucket {
   APP_LAUNCH_BUCKET_INVALID
 };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 // The extension id of the Assessment Assistant extension.
 extern const char kAssessmentAssistantExtensionId[];
+// The extension id of the extension responsible for providing chromeos perks.
+extern const char kEchoExtensionId[];
+// The extension id of the Gnubby chrome app.
+extern const char kGnubbyAppId[];
+// The extension id of the new v3 Gnubby extension.
+extern const char kGnubbyV3ExtensionId[];
+// The extension id of the GCSE.
+extern const char kGCSEExtensionId[];
+// The extension id of the Contact Center Insights chrome component extension.
+extern const char kContactCenterInsightsExtensionId[];
+// The extension id of the Desk API chrome component extension.
+extern const char kDeskApiExtensionId[];
+// The extension id of the Bruschetta Security Key Forwarder extension.
+extern const char kBruSecurityKeyForwarderExtensionId[];
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // The extension id of the Accessibility Common extension.
@@ -217,10 +229,8 @@ extern const char kGoogleSpeechSynthesisExtensionId[];
 extern const char kEspeakSpeechSynthesisExtensionPath[];
 // The extension id of the eSpeak-NG speech synthesis extension.
 extern const char kEspeakSpeechSynthesisExtensionId[];
-// The extension id of the wallpaper manager application.
-extern const char kWallpaperManagerId[];
-// Path to preinstalled Chrome camera app.
-extern const char kCameraAppPath[];
+// The extension id of official HelpApp extension.
+extern const char kHelpAppExtensionId[];
 #endif
 
 // What causes an extension to be installed? Used in histograms, so don't

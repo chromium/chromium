@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -103,14 +103,6 @@ ui::mojom::DragOperation MenuDelegate::GetDropOperation(
     MenuItemView* item,
     const ui::DropTargetEvent& event,
     DropPosition* position) {
-  NOTREACHED() << "If you override CanDrop, you need to override this too";
-  return ui::mojom::DragOperation::kNone;
-}
-
-ui::mojom::DragOperation MenuDelegate::OnPerformDrop(
-    MenuItemView* menu,
-    DropPosition position,
-    const ui::DropTargetEvent& event) {
   NOTREACHED() << "If you override CanDrop, you need to override this too";
   return ui::mojom::DragOperation::kNone;
 }

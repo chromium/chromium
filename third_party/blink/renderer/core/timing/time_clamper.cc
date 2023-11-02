@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -77,7 +77,7 @@ inline double TimeClamper::ToDouble(uint64_t value) {
   static const uint64_t kExponentBits = uint64_t{0x3FF0000000000000};
   static const uint64_t kMantissaMask = uint64_t{0x000FFFFFFFFFFFFF};
   uint64_t random = (value & kMantissaMask) | kExponentBits;
-  return bit_cast<double>(random) - 1;
+  return base::bit_cast<double>(random) - 1;
 }
 
 // static

@@ -34,9 +34,9 @@
 #include <unicode/ucptrie.h>
 #include <unicode/uobject.h>
 #include <unicode/uscript.h>
+
 #include <algorithm>
 
-#include "base/cxx17_backports.h"
 #include "third_party/blink/renderer/platform/text/character_property_data.h"
 #include "third_party/blink/renderer/platform/text/icu_error.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -87,13 +87,7 @@ bool Character::IsHangulSlow(UChar32 character) {
 unsigned Character::ExpansionOpportunityCount(
     base::span<const LChar> characters,
     TextDirection direction,
-    bool& is_after_expansion,
-    const TextJustify text_justify) {
-  if (text_justify == TextJustify::kDistribute) {
-    is_after_expansion = true;
-    return base::checked_cast<unsigned>(characters.size());
-  }
-
+    bool& is_after_expansion) {
   unsigned count = 0;
   if (direction == TextDirection::kLtr) {
     for (size_t i = 0; i < characters.size(); ++i) {
@@ -121,8 +115,7 @@ unsigned Character::ExpansionOpportunityCount(
 unsigned Character::ExpansionOpportunityCount(
     base::span<const UChar> characters,
     TextDirection direction,
-    bool& is_after_expansion,
-    const TextJustify text_justify) {
+    bool& is_after_expansion) {
   unsigned count = 0;
   if (direction == TextDirection::kLtr) {
     for (size_t i = 0; i < characters.size(); ++i) {
@@ -137,8 +130,7 @@ unsigned Character::ExpansionOpportunityCount(
         character = U16_GET_SUPPLEMENTARY(character, characters[i + 1]);
         i++;
       }
-      if (text_justify == TextJustify::kAuto &&
-          IsCJKIdeographOrSymbol(character)) {
+      if (IsCJKIdeographOrSymbol(character)) {
         if (!is_after_expansion)
           count++;
         count++;
@@ -159,8 +151,7 @@ unsigned Character::ExpansionOpportunityCount(
         character = U16_GET_SUPPLEMENTARY(characters[i - 2], character);
         i--;
       }
-      if (text_justify == TextJustify::kAuto &&
-          IsCJKIdeographOrSymbol(character)) {
+      if (IsCJKIdeographOrSymbol(character)) {
         if (!is_after_expansion)
           count++;
         count++;
@@ -296,7 +287,7 @@ bool Character::IsVerticalMathCharacter(UChar32 text_content) {
          text_content != kArabicMathematicalOperatorHahWithDal &&
          !std::binary_search(stretchy_operator_with_inline_axis,
                              stretchy_operator_with_inline_axis +
-                                 base::size(stretchy_operator_with_inline_axis),
+                                 std::size(stretchy_operator_with_inline_axis),
                              text_content);
 }
 

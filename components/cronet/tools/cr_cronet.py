@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright 2014 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -19,13 +19,13 @@ def quoted_args(args):
 
 
 def run(command, **kwargs):
-  print command, kwargs
+  print(command, kwargs)
   return subprocess.call(command, **kwargs)
 
 
 def run_shell(command, extra_options=''):
   command = command + ' ' + extra_options
-  print command
+  print(command)
   return os.system(command)
 
 
@@ -89,7 +89,9 @@ def stack(out_dir):
 
 
 def use_goma():
-  goma_dir = subprocess.check_output(['goma_ctl', 'goma_dir']).strip()
+  goma_dir = (subprocess.check_output(['goma_ctl', 'goma_dir'])
+                        .decode('utf-8')
+                        .strip())
   result = run(['goma_ctl', 'ensure_start'])
   if not result:
     return 'use_goma=true goma_dir="' + goma_dir + '" '
@@ -104,7 +106,7 @@ def get_ninja_jobs_options():
 
 def get_default_gn_args(target_os, is_release):
   gn_args = 'target_os="' + target_os + ('" enable_websockets=false '
-      'disable_file_support=true disable_ftp_support=true '
+      'disable_file_support=true '
       'disable_brotli_filter=false '
       'is_component_build=false '
       'use_crash_key_stubs=true '
@@ -121,7 +123,7 @@ def get_mobile_gn_args(target_os, is_release):
 
 
 def get_ios_gn_args(is_release, bundle_id_prefix, target_cpu):
-  print is_release, bundle_id_prefix, target_cpu
+  print(is_release, bundle_id_prefix, target_cpu)
   return get_mobile_gn_args('ios', is_release) + \
       ('is_cronet_build=true  '
       'enable_remoting=false '
@@ -130,6 +132,15 @@ def get_ios_gn_args(is_release, bundle_id_prefix, target_cpu):
       'enable_dsyms=true '
       'ios_stack_profiler_enabled=false '
       'target_cpu="%s" ') % (bundle_id_prefix, target_cpu)
+
+
+def get_android_gn_args(is_release):
+  return (get_mobile_gn_args('android', is_release) +
+          # Keep in sync with //tools/mb/mb_config.pyl cronet_android config.
+          'default_min_sdk_version = 19 ' +
+          'use_errorprone_java_compiler=true ' +
+          'enable_reporting=true ' +
+          'use_hashed_jni_names=true ')
 
 
 def get_mac_gn_args(is_release):
@@ -170,8 +181,8 @@ def main():
                       help='configure bundle id prefix')
 
   options, extra_options = parser.parse_known_args()
-  print options
-  print extra_options
+  print(options)
+  print(extra_options)
 
   if is_ios:
     test_target = 'cronet_test'
@@ -191,9 +202,8 @@ def main():
   else:
     test_target = 'cronet_test_instrumentation_apk'
     unit_target = 'cronet_unittests_android'
-    gn_args = get_mobile_gn_args('android', options.release) + \
-              'use_errorprone_java_compiler=true enable_reporting=true ' + \
-              'use_hashed_jni_names=true '
+    gn_args = get_android_gn_args(
+        options.release) + " treat_warnings_as_errors=false "
     gn_extra = []
     out_dir_suffix = ''
     if options.x86:

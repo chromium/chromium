@@ -12,9 +12,9 @@
 #include "../common/constants.h"
 #include "../common/platform.h"
 #include <brotli/types.h>
-#include "./fast_log.h"
-#include "./params.h"
-#include "./prefix.h"
+#include "fast_log.h"
+#include "params.h"
+#include "prefix.h"
 
 #if defined(__cplusplus) || defined(c_plusplus)
 extern "C" {

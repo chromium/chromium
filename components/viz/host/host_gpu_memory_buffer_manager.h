@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,10 @@
 #include <unordered_map>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_pool.h"
 #include "base/memory/weak_ptr.h"
-#include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -31,7 +31,14 @@ class GpuService;
 }
 
 // This GpuMemoryBufferManager implementation is for [de]allocating GPU memory
-// from the GPU process over the mojom.GpuService api.
+// from the GPU process over the mojom.GpuService api. Parts of this class,
+// namely methods in gpu::GpuMemoryBufferManager, are usable from any thread but
+// this class must be created and destroyed on the UI thread.
+//
+// Note: `Shutdown()` must be called before the class is destroyed. Shutdown()
+// should be called while other threads are still running to cancel any pending
+// requests and unblock waiting threads. This class should only be destroyed
+// after other threads are stopped to guarantee nothing is using it.
 class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
     : public gpu::GpuMemoryBufferManager,
       public base::trace_event::MemoryDumpProvider {
@@ -59,6 +66,11 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
       delete;
 
   ~HostGpuMemoryBufferManager() override;
+
+  // Shutdown GpuMemoryBufferManager before it's destroyed. This will cancel any
+  // pending requests to CreateGpuMemoryBuffer() and unblock any threads waiting
+  // on requests. Must be called from UI thread.
+  void Shutdown();
 
   void DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
                               int client_id,
@@ -144,7 +156,7 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
                                   gfx::BufferUsage usage);
 
   GpuServiceProvider gpu_service_provider_;
-  mojom::GpuService* gpu_service_ = nullptr;
+  raw_ptr<mojom::GpuService> gpu_service_ = nullptr;
 
   // This is incremented every time GPU service is shut down in order check
   // whether a buffer is allocated by the most current GPU service or not.
@@ -152,6 +164,9 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
 
   const int client_id_;
   int next_gpu_memory_id_ = 1;
+
+  // Used to cancel pending requests on shutdown.
+  base::WaitableEvent shutdown_event_;
 
   std::unordered_map<int, PendingBuffers> pending_buffers_;
   std::unordered_map<int, AllocatedBuffers> allocated_buffers_;
@@ -162,8 +177,6 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
 
   gpu::GpuMemoryBufferConfigurationSet native_configurations_;
   base::AtomicFlag native_configurations_initialized_;
-
-  const bool runs_on_ui_thread_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::WeakPtr<HostGpuMemoryBufferManager> weak_ptr_;

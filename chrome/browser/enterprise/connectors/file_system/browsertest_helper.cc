@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -176,14 +176,14 @@ bool BoxSignInObserver::GetUserNameFromSignInPage(std::string* result) {
       window.domAutomationController.send(
           document.getElementById('login').value);
     )";
-  return ExecuteScriptAndExtractString(web_contents()->GetMainFrame(),
+  return ExecuteScriptAndExtractString(web_contents()->GetPrimaryMainFrame(),
                                        get_login_value, result);
 }
 
 void BoxSignInObserver::CloseSignInWidget() {
-  WaitForSignInDialogToClose(
-      base::BindOnce([](views::Widget* dialog) { dialog->Close(); },
-                     std::move(sign_in_widget_)));
+  WaitForSignInDialogToClose(base::BindOnce(
+      [](views::Widget* dialog) { dialog->Close(); }, sign_in_widget_));
+  sign_in_widget_ = nullptr;
 }
 
 void BoxSignInObserver::WaitForPageLoad() {

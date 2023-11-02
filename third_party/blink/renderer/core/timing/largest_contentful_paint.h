@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_LARGEST_CONTENTFUL_PAINT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_LARGEST_CONTENTFUL_PAINT_H_
 
+#include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
@@ -25,7 +26,8 @@ class CORE_EXPORT LargestContentfulPaint final : public PerformanceEntry {
                          base::TimeDelta first_animated_frame_time,
                          const AtomicString& id,
                          const String& url,
-                         Element*);
+                         Element* element,
+                         uint32_t navigation_id);
   ~LargestContentfulPaint() override;
 
   AtomicString entryType() const override;

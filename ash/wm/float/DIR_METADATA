@@ -1,0 +1,10 @@
+team_email: "chromeos-wm-corexp@google.com"
+buganizer: {
+  component_id:1252568
+}
+buganizer_public: {
+  component_id:1253054
+}
+monorail {
+  component: "UI>Shell>WindowManager>FloatingWindow"
+}

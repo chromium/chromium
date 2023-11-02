@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -234,7 +234,7 @@ class KeyboardUIControllerTest : public aura::test::AuraTestBase,
     input_method->SetFocusedTextInputClient(client);
     if (client && client->GetTextInputType() != ui::TEXT_INPUT_TYPE_NONE &&
         client->GetTextInputMode() != ui::TEXT_INPUT_MODE_NONE) {
-      input_method->ShowVirtualKeyboardIfEnabled();
+      input_method->SetVirtualKeyboardVisibilityIfEnabled(true);
       ASSERT_TRUE(WaitUntilShown());
     }
   }
@@ -278,7 +278,8 @@ class KeyboardUIControllerTest : public aura::test::AuraTestBase,
 // TODO(https://crbug.com/849995): This is testing KeyboardLayoutManager /
 // ContainerFullWidthBehavior. Put this test there.
 TEST_F(KeyboardUIControllerTest, KeyboardSize) {
-  root_window()->SetLayoutManager(new KeyboardLayoutManager(&controller()));
+  root_window()->SetLayoutManager(
+      std::make_unique<KeyboardLayoutManager>(&controller()));
 
   // The keyboard window should not be visible.
   aura::Window* keyboard_window = controller().GetKeyboardWindow();

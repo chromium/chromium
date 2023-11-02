@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,8 +30,8 @@ const CGFloat kArrowDownMargin = 12.;
 @interface IdentityButtonControl ()
 
 @property(nonatomic, strong) IdentityView* identityView;
-// Image View for the arrow (down or left according to |style|, see the
-// |arrowDirection| property), letting the user know that more profiles can be
+// Image View for the arrow (down or left according to `style`, see the
+// `arrowDirection` property), letting the user know that more profiles can be
 // selected.
 @property(nonatomic, strong) UIImageView* arrowImageView;
 

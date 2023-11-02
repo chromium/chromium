@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -19,6 +18,7 @@
 #include "base/process/launch.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/app/app_utils.h"
@@ -28,12 +28,12 @@
 #include "chrome/updater/util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/updater/win/setup/uninstall.h"
-#endif
-
-#if defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "chrome/updater/mac/setup/setup.h"
+#elif BUILDFLAG(IS_LINUX)
+#include "chrome/updater/linux/setup/setup.h"
 #endif
 
 namespace updater {
@@ -43,7 +43,7 @@ namespace {
 // given `scope`.
 void UninstallOtherVersions(UpdaterScope scope) {
   const absl::optional<base::FilePath> updater_folder_path =
-      GetUpdaterFolderPath(scope);
+      GetBaseInstallDirectory(scope);
   if (!updater_folder_path) {
     LOG(ERROR) << "Failed to get updater folder path.";
     return;
@@ -52,7 +52,7 @@ void UninstallOtherVersions(UpdaterScope scope) {
                                        base::FileEnumerator::DIRECTORIES);
   for (base::FilePath version_folder_path = file_enumerator.Next();
        !version_folder_path.empty() &&
-       version_folder_path != GetVersionedUpdaterFolderPath(scope);
+       version_folder_path != GetVersionedInstallDirectory(scope);
        version_folder_path = file_enumerator.Next()) {
     const base::FilePath version_executable_path =
         version_folder_path.Append(GetExecutableRelativePath());
@@ -84,6 +84,7 @@ class AppUninstall : public App {
  private:
   ~AppUninstall() override = default;
   void Initialize() override;
+  void Uninitialize() override;
   void FirstTaskRun() override;
 
   // Conditionally set, if prefs must be acquired for some uninstall scenarios.
@@ -97,6 +98,10 @@ void AppUninstall::Initialize() {
       base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(kUninstallIfUnusedSwitch))
     global_prefs_ = CreateGlobalPrefs(updater_scope());
+}
+
+void AppUninstall::Uninitialize() {
+  global_prefs_ = nullptr;
 }
 
 void AppUninstall::FirstTaskRun() {
@@ -114,6 +119,7 @@ void AppUninstall::FirstTaskRun() {
             },
             updater_scope()),
         base::BindOnce(&AppUninstall::Shutdown, this));
+    return;
   }
 
   if (command_line->HasSwitch(kUninstallSelfSwitch)) {
@@ -127,22 +133,25 @@ void AppUninstall::FirstTaskRun() {
 
   if (command_line->HasSwitch(kUninstallIfUnusedSwitch)) {
     CHECK(global_prefs_);
-    if (ShouldUninstall(
-            base::MakeRefCounted<PersistedData>(global_prefs_->GetPrefService())
-                ->GetAppIds(),
-            global_prefs_->CountServerStarts())) {
+    auto persisted_data =
+        base::MakeRefCounted<PersistedData>(global_prefs_->GetPrefService());
+    const bool should_uninstall = ShouldUninstall(
+        persisted_data->GetAppIds(), global_prefs_->CountServerStarts(),
+        persisted_data->GetHadApps());
+    VLOG(1) << "ShouldUninstall returned: " << should_uninstall;
+    if (should_uninstall) {
       base::ThreadPool::PostTaskAndReplyWithResult(
           FROM_HERE, {base::MayBlock()},
           base::BindOnce(&Uninstall, updater_scope()),
-          base::BindOnce(
-              [](base::OnceCallback<void(int)> shutdown, int exit_code) {
-                // global_prefs is captured so that this process holds the prefs
-                // lock through uninstallation.
-                std::move(shutdown).Run(exit_code);
-              },
-              base::BindOnce(&AppUninstall::Shutdown, this)));
+          base::BindOnce(&AppUninstall::Shutdown, this));
+    } else {
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(&AppUninstall::Shutdown, this, 0));
     }
+    return;
   }
+
+  NOTREACHED();
 }
 
 scoped_refptr<App> MakeAppUninstall() {

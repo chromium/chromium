@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -207,7 +207,7 @@ class SyncTaskManager {
   TaskDependencyManager dependency_manager_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  base::SequenceChecker sequence_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<SyncTaskManager> weak_ptr_factory_{this};
 };

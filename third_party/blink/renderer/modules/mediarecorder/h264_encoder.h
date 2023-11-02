@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,12 +26,12 @@ class MODULES_EXPORT H264Encoder final : public VideoTrackRecorder::Encoder {
   };
   typedef std::unique_ptr<ISVCEncoder, ISVCEncoderDeleter> ScopedISVCEncoderPtr;
 
-  static void ShutdownEncoder(std::unique_ptr<Thread> encoding_thread,
+  static void ShutdownEncoder(std::unique_ptr<NonMainThread> encoding_thread,
                               ScopedISVCEncoderPtr encoder);
 
   H264Encoder(const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
               VideoTrackRecorder::CodecProfile codec_profile,
-              int32_t bits_per_second,
+              uint32_t bits_per_second,
               scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   H264Encoder(const H264Encoder&) = delete;
@@ -45,7 +45,7 @@ class MODULES_EXPORT H264Encoder final : public VideoTrackRecorder::Encoder {
   void EncodeOnEncodingTaskRunner(scoped_refptr<media::VideoFrame> frame,
                                   base::TimeTicks capture_timestamp) override;
 
-  WARN_UNUSED_RESULT bool ConfigureEncoderOnEncodingTaskRunner(
+  [[nodiscard]] bool ConfigureEncoderOnEncodingTaskRunner(
       const gfx::Size& size);
 
   SEncParamExt GetEncoderOptionForTesting();

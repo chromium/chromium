@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,7 @@ struct VectorIcon;
 
 namespace ash {
 
+class CaptureModeMenuHeader;
 class CaptureModeMenuItem;
 class CaptureModeOption;
 
@@ -44,18 +45,28 @@ class ASH_EXPORT CaptureModeMenuGroup : public views::View {
     virtual ~Delegate() = default;
   };
 
+  // If `managed_by_policy` is true, the header of this menu group will show an
+  // enterprise-managed feature icon next to the `header_label`.
   CaptureModeMenuGroup(Delegate* delegate,
                        const gfx::VectorIcon& header_icon,
-                       std::u16string header_label);
+                       std::u16string header_label,
+                       bool managed_by_policy = false);
   CaptureModeMenuGroup(const CaptureModeMenuGroup&) = delete;
   CaptureModeMenuGroup& operator=(const CaptureModeMenuGroup&) = delete;
   ~CaptureModeMenuGroup() override;
+
+  // Returns true if this menu group is for a setting that is managed by a
+  // policy set by admins.
+  bool IsManagedByPolicy() const;
 
   // Adds an option which has text and a checked image icon to the the menu
   // group. When the option is selected, its checked icon is visible. Otherwise
   // its checked icon is invisible. One and only one option's checked icon is
   // visible all the time.
   void AddOption(std::u16string option_label, int option_id);
+
+  // Deletes all options in `options_`.
+  void DeleteOptions();
 
   // If an option with the given |option_id| exists, it will be updated with the
   // given |option_label|. Otherwise, a new option will be added.
@@ -77,9 +88,13 @@ class ASH_EXPORT CaptureModeMenuGroup : public views::View {
   void AddMenuItem(views::Button::PressedCallback callback,
                    std::u16string item_label);
 
-  // Returns true if the option with the given |option_id| is checked, if such
+  // Returns true if the option with the given `option_id` is checked, if such
   // option exists.
   bool IsOptionChecked(int option_id) const;
+
+  // Returns true if the option with the given `option_id` is enabled, if such
+  // option exists.
+  bool IsOptionEnabled(int option_id) const;
 
   // Appends the enabled items from `options_` and `menu_items_` to the given
   // `highlightable_items`.
@@ -93,7 +108,7 @@ class ASH_EXPORT CaptureModeMenuGroup : public views::View {
   std::u16string GetOptionLabelForTesting(int option_id) const;
 
  private:
-  friend class CaptureModeAdvancedSettingsTestApi;
+  friend class CaptureModeSettingsTestApi;
 
   // Returns the option whose ID is |option_id|, and nullptr if no such option
   // exists.
@@ -103,9 +118,12 @@ class ASH_EXPORT CaptureModeMenuGroup : public views::View {
   // clicked/pressed button, and unselect any previously selected button.
   void HandleOptionClick(int option_id);
 
-  // CaptureModeAdvancedSettingsView is the |delegate_| here. It's owned by
+  // CaptureModeSettingsView is the |delegate_| here. It's owned by
   // its views hierarchy.
   const Delegate* const delegate_;
+
+  // The menu header of `this`. It's owned by the views hierarchy.
+  CaptureModeMenuHeader* menu_header_;
 
   // Options added via calls "AddOption()". Options are owned by theirs views
   // hierarchy.

@@ -1,11 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chromecast/media/gpu/cast_gpu_factory_impl.h"
 
 #include "base/check.h"
-#include "base/task/post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chromecast/mojo/remote_interfaces.h"
@@ -51,7 +50,7 @@ CastGpuFactoryImpl::CastGpuFactoryImpl(
 
   base::Thread::Options options;
   options.message_pump_type = base::MessagePumpType::IO;
-  options.priority = base::ThreadPriority::DISPLAY;
+  options.thread_type = base::ThreadType::kDisplayCritical;
   gpu_io_thread_.StartWithOptions(std::move(options));
 
   mojo::PendingRemote<viz::mojom::Gpu> remote_gpu;
@@ -110,8 +109,13 @@ CastGpuFactoryImpl::CreateVideoEncoder() {
   return CreateVideoEncodeAccelerator();
 }
 
-// Return whether GPU encoding/decoding is enabled.
-bool CastGpuFactoryImpl::IsGpuVideoAcceleratorEnabled() {
+// Return whether GPU decoding is enabled.
+bool CastGpuFactoryImpl::IsGpuVideoDecodeAcceleratorEnabled() {
+  return true;
+}
+
+// Return whether GPU encoding is enabled.
+bool CastGpuFactoryImpl::IsGpuVideoEncodeAcceleratorEnabled() {
   return true;
 }
 

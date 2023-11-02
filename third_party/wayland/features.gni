@@ -1,22 +1,37 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/sanitizers/sanitizers.gni")
+import("//build/config/sysroot.gni")
 
 declare_args() {
   # Controls whether the build should use the version of Wayland
   # library shipped with the system or Chromium third_party.
-  use_system_libwayland = is_linux && !is_chromecast && !is_chromeos_lacros &&
-                          default_toolchain != "//build/toolchain/cros:target"
+  use_system_libwayland = false
+}
 
-  # Path to wayland-scanner. Has effect only when the system libwayland is used.
-  assert(host_os == "linux")
-  system_wayland_scanner_path = "/usr/bin/wayland-scanner"
-
+declare_args() {
   # This may be set by Chromium packagers who do not wish to use the bundled
   # wayland scanner.
-  use_system_wayland_scanner = host_toolchain == default_toolchain && is_msan
+  use_system_wayland_scanner = use_system_libwayland
+}
+
+declare_args() {
+  # Path to the wayland-scanner in the sysroot.
+  assert(host_os == "linux")
+  if (use_system_wayland_scanner) {
+    if (use_sysroot) {
+      system_wayland_scanner_path = "$sysroot/usr/bin/wayland-scanner"
+    } else {
+      system_wayland_scanner_path = "/usr/bin/wayland-scanner"
+    }
+  }
+}
+
+if (use_system_libwayland) {
+  # ChromeOS should always be built with the bundled libwayland.
+  assert(!is_chromeos)
 }

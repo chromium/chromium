@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "net/test/embedded_test_server/http_response.h"
 
-namespace net {
-
-namespace test_server {
+namespace net::test_server {
 
 class ControllableHttpResponse::Interceptor : public HttpResponse {
  public:
@@ -28,7 +26,7 @@ class ControllableHttpResponse::Interceptor : public HttpResponse {
   Interceptor(const Interceptor&) = delete;
   Interceptor& operator=(const Interceptor&) = delete;
 
-  ~Interceptor() override {}
+  ~Interceptor() override = default;
 
  private:
   void SendResponse(base::WeakPtr<HttpResponseDelegate> delegate) override {
@@ -56,7 +54,7 @@ ControllableHttpResponse::ControllableHttpResponse(
       relative_url, relative_url_is_prefix));
 }
 
-ControllableHttpResponse::~ControllableHttpResponse() {}
+ControllableHttpResponse::~ControllableHttpResponse() = default;
 
 void ControllableHttpResponse::WaitForRequest() {
   TRACE_EVENT("test", "ControllableHttpResponse::WaitForRequest");
@@ -68,10 +66,12 @@ void ControllableHttpResponse::WaitForRequest() {
   state_ = State::READY_TO_SEND_DATA;
 }
 
-void ControllableHttpResponse::Send(net::HttpStatusCode http_status,
-                                    const std::string& content_type,
-                                    const std::string& content,
-                                    const std::vector<std::string>& cookies) {
+void ControllableHttpResponse::Send(
+    net::HttpStatusCode http_status,
+    const std::string& content_type,
+    const std::string& content,
+    const std::vector<std::string>& cookies,
+    const std::vector<std::string>& extra_headers) {
   TRACE_EVENT("test", "ControllableHttpResponse::Send", "http_status",
               http_status, "content_type", content_type, "content", content,
               "cookies", cookies);
@@ -80,6 +80,8 @@ void ControllableHttpResponse::Send(net::HttpStatusCode http_status,
       net::GetHttpReasonPhrase(http_status), content_type.c_str()));
   for (auto& cookie : cookies)
     content_data += "Set-Cookie: " + cookie + "\n";
+  for (auto& header : extra_headers)
+    content_data += header + "\n";
   content_data += "\n";
   content_data += content;
   Send(content_data);
@@ -107,6 +109,10 @@ void ControllableHttpResponse::Done() {
       FROM_HERE,
       base::BindOnce(&HttpResponseDelegate::FinishResponse, delegate_));
   state_ = State::DONE;
+}
+
+bool ControllableHttpResponse::has_received_request() {
+  return loop_.AnyQuitCalled();
 }
 
 void ControllableHttpResponse::OnRequest(
@@ -147,6 +153,4 @@ std::unique_ptr<HttpResponse> ControllableHttpResponse::RequestHandler(
   return nullptr;
 }
 
-}  // namespace test_server
-
-}  // namespace net
+}  // namespace net::test_server

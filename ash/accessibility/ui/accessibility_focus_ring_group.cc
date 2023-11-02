@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,8 @@
 #include "ash/accessibility/ui/accessibility_layer.h"
 #include "ash/accessibility/ui/layer_animation_info.h"
 #include "ash/public/cpp/accessibility_focus_ring_info.h"
+#include "base/memory/values_equivalent.h"
+#include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -149,8 +151,7 @@ bool AccessibilityFocusRingGroup::UpdateFocusRing(
   }
 
   // If there is no change, don't do any work.
-  if ((!focus_ring_info_ && !focus_ring) ||
-      (focus_ring_info_ && focus_ring && *focus_ring_info_ == *focus_ring))
+  if (base::ValuesEquivalent(focus_ring_info_, focus_ring))
     return false;
 
   focus_ring_info_ = std::move(focus_ring);
@@ -179,7 +180,7 @@ void AccessibilityFocusRingGroup::RectsToRings(
   rects.resize(src_rects.size());
   for (size_t i = 0; i < src_rects.size(); ++i) {
     rects[i] = src_rects[i];
-    rects[i].Inset(-GetMargin(), -GetMargin());
+    rects[i].Inset(-GetMargin());
   }
 
   // Split the rects into contiguous regions.

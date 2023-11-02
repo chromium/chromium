@@ -1,15 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/capture_mode/capture_mode_notification_view.h"
 
 #include "ash/capture_mode/capture_mode_util.h"
-#include "ash/public/cpp/assistant/assistant_state.h"
-#include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/views/background.h"
 #include "ui/views/view.h"
 
 namespace ash {

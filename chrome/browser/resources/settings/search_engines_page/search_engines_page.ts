@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,40 +6,44 @@
  * @fileoverview 'settings-search-engines-page' is the settings page
  * containing search engines settings.
  */
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import 'chrome://resources/cr_elements/shared_style_css.m.js';
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/js/cr.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../controls/controlled_radio_button.js';
 import '../controls/settings_radio_group.js';
-import './search_engine_dialog.js';
+import './search_engine_delete_confirmation_dialog.js';
+import './search_engine_edit_dialog.js';
 import './search_engines_list.js';
 import './omnibox_extension_entry.js';
-import '../settings_shared_css.js';
-import '../settings_vars_css.js';
+import '../settings_shared.css.js';
+import '../settings_vars.css.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
+import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
 import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
-import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 
 import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo, SearchEnginesInteractions} from './search_engines_browser_proxy.js';
+import {getTemplate} from './search_engines_page.html.js';
 
 type SearchEngineEditEvent = CustomEvent<{
   engine: SearchEngine,
   anchorElement: HTMLElement,
 }>;
 
+type SearchEngineDeleteEvent = CustomEvent<{
+  engine: SearchEngine,
+  anchorElement: HTMLElement,
+}>;
+
 export interface SettingsSearchEnginesPageElement {
   $: {
-    addSearchEngine: HTMLElement,
     extensions: IronListElement,
     keyboardShortcutSettingGroup: SettingsRadioGroupElement,
   };
@@ -56,7 +60,7 @@ export class SettingsSearchEnginesPageElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -126,20 +130,14 @@ export class SettingsSearchEnginesPageElement extends
         value: null,
       },
 
-      showDialog_: {
+      showEditDialog_: {
         type: Boolean,
         value: false,
       },
 
-      showKeywordTriggerSetting_: {
+      showDeleteConfirmationDialog_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('showKeywordTriggerSetting'),
-      },
-
-      isActiveSearchEnginesFlagEnabled_: {
-        type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('isActiveSearchEnginesFlagEnabled'),
+        value: false,
       },
     };
   }
@@ -148,27 +146,26 @@ export class SettingsSearchEnginesPageElement extends
     return ['extensionsChanged_(extensions, showExtensionsList_)'];
   }
 
-  defaultEngines: Array<SearchEngine>;
-  activeEngines: Array<SearchEngine>;
-  otherEngines: Array<SearchEngine>;
-  extensions: Array<SearchEngine>;
+  defaultEngines: SearchEngine[];
+  activeEngines: SearchEngine[];
+  otherEngines: SearchEngine[];
+  extensions: SearchEngine[];
   private showExtensionsList_: boolean;
   filter: string;
-  private matchingDefaultEngines_: Array<SearchEngine>;
-  private matchingActiveEngines_: Array<SearchEngine>;
-  private matchingOtherEngines_: Array<SearchEngine>;
-  private matchingExtensions_: Array<SearchEngine>;
+  private matchingDefaultEngines_: SearchEngine[];
+  private matchingActiveEngines_: SearchEngine[];
+  private matchingOtherEngines_: SearchEngine[];
+  private matchingExtensions_: SearchEngine[];
   private omniboxExtensionlastFocused_: HTMLElement;
   private omniboxExtensionListBlurred_: boolean;
   private dialogModel_: SearchEngine|null;
   private dialogAnchorElement_: HTMLElement|null;
-  private showDialog_: boolean;
-  private showKeywordTriggerSetting_: boolean;
-  private isActiveSearchEnginesFlagEnabled_: boolean;
+  private showEditDialog_: boolean;
+  private showDeleteConfirmationDialog_: boolean;
   private browserProxy_: SearchEnginesBrowserProxy =
       SearchEnginesBrowserProxyImpl.getInstance();
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.browserProxy_.getSearchEnginesList().then(
@@ -179,24 +176,45 @@ export class SettingsSearchEnginesPageElement extends
     this.addEventListener(
         'edit-search-engine',
         e => this.onEditSearchEngine_(e as SearchEngineEditEvent));
+
+    this.addEventListener(
+        'delete-search-engine',
+        e => this.onDeleteSearchEngine_(e as SearchEngineDeleteEvent));
   }
 
-  private openDialog_(
+  private openEditDialog_(
       searchEngine: SearchEngine|null, anchorElement: HTMLElement) {
     this.dialogModel_ = searchEngine;
     this.dialogAnchorElement_ = anchorElement;
-    this.showDialog_ = true;
+    this.showEditDialog_ = true;
   }
 
-  private onCloseDialog_() {
-    this.showDialog_ = false;
+  private openDeleteConfirmationDialog_(
+      searchEngine: SearchEngine|null, anchorElement: HTMLElement) {
+    this.dialogModel_ = searchEngine;
+    this.dialogAnchorElement_ = anchorElement;
+    this.showDeleteConfirmationDialog_ = true;
+  }
+
+  private onCloseEditDialog_() {
+    this.showEditDialog_ = false;
     focusWithoutInk(this.dialogAnchorElement_ as HTMLElement);
     this.dialogModel_ = null;
     this.dialogAnchorElement_ = null;
   }
 
+  private onCloseDeleteConfirmationDialog_() {
+    this.showDeleteConfirmationDialog_ = false;
+    this.dialogModel_ = null;
+    this.dialogAnchorElement_ = null;
+  }
+
   private onEditSearchEngine_(e: SearchEngineEditEvent) {
-    this.openDialog_(e.detail.engine, e.detail.anchorElement);
+    this.openEditDialog_(e.detail.engine, e.detail.anchorElement);
+  }
+
+  private onDeleteSearchEngine_(e: SearchEngineDeleteEvent) {
+    this.openDeleteConfirmationDialog_(e.detail.engine, e.detail.anchorElement);
   }
 
   private extensionsChanged_() {
@@ -221,7 +239,8 @@ export class SettingsSearchEnginesPageElement extends
 
   private onAddSearchEngineTap_(e: Event) {
     e.preventDefault();
-    this.openDialog_(null, this.$.addSearchEngine);
+    this.openEditDialog_(
+        null, this.shadowRoot!.querySelector('#addSearchEngine')!);
   }
 
   private computeShowExtensionsList_(): boolean {
@@ -231,8 +250,7 @@ export class SettingsSearchEnginesPageElement extends
   /**
    * Filters the given list based on the currently existing filter string.
    */
-  private computeMatchingEngines_(list: Array<SearchEngine>):
-      Array<SearchEngine> {
+  private computeMatchingEngines_(list: SearchEngine[]): SearchEngine[] {
     if (this.filter === '') {
       return list;
     }
@@ -250,7 +268,7 @@ export class SettingsSearchEnginesPageElement extends
    * @return Whether to show the "no results" message.
    */
   private showNoResultsMessage_(
-      list: Array<SearchEngine>, filteredList: Array<SearchEngine>): boolean {
+      list: SearchEngine[], filteredList: SearchEngine[]): boolean {
     return list.length > 0 && filteredList.length === 0;
   }
 

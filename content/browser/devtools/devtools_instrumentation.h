@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #ifndef CONTENT_BROWSER_DEVTOOLS_DEVTOOLS_INSTRUMENTATION_H_
@@ -12,6 +12,8 @@
 #include <vector>
 
 #include "content/browser/devtools/devtools_throttle_handle.h"
+#include "content/browser/preloading/prerender/prerender_host.h"
+#include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/certificate_request_result_type.h"
 #include "content/public/browser/global_routing_id.h"
@@ -53,11 +55,12 @@ namespace content {
 class BackForwardCacheCanStoreDocumentResult;
 class BrowserContext;
 class DevToolsAgentHostImpl;
+class FencedFrame;
 class FrameTreeNode;
 class NavigationHandle;
 class NavigationRequest;
 class NavigationThrottle;
-class RenderFrameHost;
+class Portal;
 class RenderFrameHostImpl;
 class RenderProcessHost;
 class SharedWorkerHost;
@@ -78,14 +81,17 @@ namespace devtools_instrumentation {
 
 // If this function caused the User-Agent header to be overridden,
 // `devtools_user_agent_overridden` will be set to true; otherwise, it will be
-// set to false.
+// set to false. If this function caused the Accept-Language header to be
+// overridden, `devtools_accept_language_overridden` will be set to true;
+// otherwise, it will be set to false.
 void ApplyNetworkRequestOverrides(
     FrameTreeNode* frame_tree_node,
     blink::mojom::BeginNavigationParams* begin_params,
     bool* report_raw_headers,
     absl::optional<std::vector<net::SourceStream::SourceType>>*
         devtools_accepted_stream_types,
-    bool* devtools_user_agent_overridden);
+    bool* devtools_user_agent_overridden,
+    bool* devtools_accept_language_overridden);
 
 // Returns true if devtools want |*override_out| to be used.
 // (A true return and |*override_out| being nullopt means no user agent client
@@ -140,7 +146,27 @@ bool WillCreateURLLoaderFactoryInternal(
         target_factory_receiver,
     network::mojom::URLLoaderFactoryOverridePtr* factory_override);
 
+void OnPrefetchRequestWillBeSent(FrameTreeNode* frame_tree_node,
+                                 const std::string& request_id,
+                                 const GURL& initiator,
+                                 const network::ResourceRequest& request);
+void OnPrefetchResponseReceived(FrameTreeNode* frame_tree_node,
+                                const std::string& request_id,
+                                const GURL& url,
+                                const network::mojom::URLResponseHead& head);
+void OnPrefetchRequestComplete(
+    FrameTreeNode* frame_tree_node,
+    const std::string& request_id,
+    const network::URLLoaderCompletionStatus& status);
+void OnPrefetchBodyDataReceived(FrameTreeNode* frame_tree_node,
+                                const std::string& request_id,
+                                const std::string& body,
+                                bool is_base64_encoded);
+
 void OnResetNavigationRequest(NavigationRequest* navigation_request);
+void MaybeAssignResourceRequestId(FrameTreeNode* ftn,
+                                  const std::string& id,
+                                  network::ResourceRequest& request);
 void OnNavigationRequestWillBeSent(const NavigationRequest& navigation_request);
 void OnNavigationResponseReceived(
     const NavigationRequest& nav_request,
@@ -155,7 +181,22 @@ void WillBeginDownload(download::DownloadCreateInfo* info,
 
 void BackForwardCacheNotUsed(
     const NavigationRequest* nav_request,
-    const BackForwardCacheCanStoreDocumentResult* result);
+    const BackForwardCacheCanStoreDocumentResult* result,
+    const BackForwardCacheCanStoreTreeResult* tree_result);
+
+void WillSwapFrameTreeNode(FrameTreeNode& old_node, FrameTreeNode& new_node);
+
+void WillInitiatePrerender(FrameTree& frame_tree);
+void DidActivatePrerender(const NavigationRequest& nav_request);
+// This function reports cancellation status to DevTools with the
+// `disallowed_api_method`, which is used to give users more information about
+// the cancellation details if the prerendering uses disallowed API method, and
+// disallowed_api_method will be formatted for display in the DevTools. See the
+// DevTools implementation for the format.
+void DidCancelPrerender(const GURL& prerendering_url,
+                        FrameTreeNode* ftn,
+                        PrerenderHost::FinalStatus status,
+                        const std::string& disallowed_api_method);
 
 void OnSignedExchangeReceived(
     FrameTreeNode* frame_tree_node,
@@ -231,26 +272,26 @@ bool HandleCertificateError(WebContents* web_contents,
 
 void PortalAttached(RenderFrameHostImpl* render_frame_host_impl);
 void PortalDetached(RenderFrameHostImpl* render_frame_host_impl);
-void PortalActivated(RenderFrameHostImpl* render_frame_host_impl);
+// This receives the _old_ portal being activated just before actual
+// tab contents is swapped by the embedder.
+void PortalActivated(Portal& portal);
 
-void ReportSameSiteCookieIssue(
+void FencedFrameCreated(
+    base::SafeRef<RenderFrameHostImpl> owner_render_frame_host,
+    FencedFrame* fenced_frame);
+
+// Tells tracing that process `pid` is being used for an auction worklet
+// associated to `owner`.
+void DidCreateProcessForAuctionWorklet(RenderFrameHostImpl* owner,
+                                       base::ProcessId pid);
+
+void ReportCookieIssue(
     RenderFrameHostImpl* render_frame_host_impl,
     const network::mojom::CookieOrLineWithAccessResultPtr& excluded_cookie,
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
-    blink::mojom::SameSiteCookieOperation operation,
+    blink::mojom::CookieOperation operation,
     const absl::optional<std::string>& devtools_request_id);
-
-enum class AttributionReportingIssueType {
-  kAttributionTriggerDataTooLarge,
-  kAttributionEventSourceTriggerDataTooLarge,
-};
-
-void ReportAttributionReportingIssue(
-    RenderFrameHost* render_frame_host,
-    AttributionReportingIssueType issue_type,
-    const absl::optional<std::string>& request_id,
-    const absl::optional<std::string>& invalid_parameter);
 
 // This function works similar to RenderFrameHostImpl::AddInspectorIssue, in
 // that it reports an InspectorIssue to DevTools clients. The difference is that
@@ -284,7 +325,24 @@ void OnWebTransportHandshakeFailed(
 
 void OnServiceWorkerMainScriptFetchingFailed(
     const GlobalRenderFrameHostId& requesting_frame_id,
-    const std::string& error);
+    const ServiceWorkerContextWrapper* context_wrapper,
+    int64_t version_id,
+    const std::string& error,
+    const network::URLLoaderCompletionStatus& status,
+    const network::mojom::URLResponseHead* response_head,
+    const GURL& url);
+void OnServiceWorkerMainScriptRequestWillBeSent(
+    const GlobalRenderFrameHostId& requesting_frame_id,
+    const ServiceWorkerContextWrapper* context_wrapper,
+    int64_t version_id,
+    network::ResourceRequest& request);
+
+// Fires `Network.onRequestWillBeSent` event for a dedicated worker and shared
+// worker main script. Used for PlzDedicatedWorker/PlzSharedWorker.
+void OnWorkerMainScriptRequestWillBeSent(
+    FrameTreeNode* ftn,
+    const base::UnguessableToken& worker_token,
+    network::ResourceRequest& request);
 
 // Fires `Network.onLoadingFailed` event for a dedicated worker main script.
 // Used for PlzDedicatedWorker.
@@ -301,13 +359,6 @@ void OnWorkerMainScriptLoadingFinished(
     FrameTreeNode* ftn,
     const base::UnguessableToken& worker_token,
     const network::URLLoaderCompletionStatus& status);
-
-// Fires `Network.onRequestWillBeSent` event for a dedicated worker and shared
-// worker main script. Used for PlzDedicatedWorker/PlzSharedWorker.
-void OnWorkerMainScriptRequestWillBeSent(
-    FrameTreeNode* ftn,
-    const base::UnguessableToken& worker_token,
-    const network::ResourceRequest& request);
 
 // Adds a message from a worklet to the devtools console. This is specific to
 // FLEDGE auction worklet and shared storage worklet where the message may

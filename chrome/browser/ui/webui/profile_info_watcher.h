@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "components/prefs/pref_member.h"
 
@@ -43,7 +44,7 @@ class ProfileInfoWatcher : public ProfileAttributesStorage::Observer {
   void RunCallback();
 
   // Weak reference to the profile this class observes.
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   // Called when the authenticated username changes.
   base::RepeatingClosure callback_;

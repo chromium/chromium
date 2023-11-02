@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/status_icons/status_icon.h"
@@ -59,10 +60,10 @@ class ExtensionIndicatorIcon : public StatusIconObserver,
   // IconImage::Observer:
   void OnExtensionIconImageChanged(IconImage* image) override;
 
-  const Extension* extension_;
-  StatusTray* status_tray_;
-  StatusIcon* status_icon_;
-  Profile* profile_;
+  raw_ptr<const Extension> extension_;
+  raw_ptr<StatusTray> status_tray_;
+  raw_ptr<StatusIcon> status_icon_;
+  raw_ptr<Profile> profile_;
   IconImage manifest_icon_;
   gfx::Image dynamic_icon_;
 };

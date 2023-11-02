@@ -29,7 +29,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/track/text_track.h"
 #include "third_party/blink/renderer/core/loader/text_track_loader.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -47,7 +47,7 @@ class HTMLTrackElement final : public HTMLElement,
   const AtomicString& kind();
   void setKind(const AtomicString&);
 
-  enum ReadyState { kNone = 0, kLoading = 1, kLoaded = 2, kError = 3 };
+  enum class ReadyState { kNone = 0, kLoading = 1, kLoaded = 2, kError = 3 };
   ReadyState getReadyState();
   void ScheduleLoad();
 

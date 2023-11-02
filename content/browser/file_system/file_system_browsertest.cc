@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,11 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/scoped_feature_list.h"
+#include "base/test/bind.h"
 #include "base/test/thread_test_helper.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -63,8 +65,7 @@ class FileSystemBrowserTest : public ContentBrowserTest,
 
  protected:
   bool is_incognito_;
-  Shell* browser_ = nullptr;
-  base::test::ScopedFeatureList feature_list_;
+  raw_ptr<Shell, DanglingUntriaged> browser_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(All, FileSystemBrowserTest, ::testing::Bool());
@@ -81,21 +82,23 @@ class FileSystemBrowserTestWithLowQuota : public FileSystemBrowserTest {
   }
 
   static void SetLowQuota(scoped_refptr<QuotaManager> qm) {
-    if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {
-      GetIOThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(&FileSystemBrowserTestWithLowQuota::SetLowQuota, qm));
-      return;
-    }
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
-    // These sizes must correspond with expectations in html and js.
-    const int kMeg = 1000 * 1024;
-    storage::QuotaSettings settings;
-    settings.pool_size = 25 * kMeg;
-    settings.per_host_quota = 5 * kMeg;
-    settings.must_remain_available = 10 * kMeg;
-    settings.refresh_interval = base::TimeDelta::Max();
-    qm->SetQuotaSettings(settings);
+    DCHECK(!BrowserThread::CurrentlyOn(BrowserThread::IO));
+
+    base::RunLoop run_loop;
+    GetIOThreadTaskRunner({})->PostTaskAndReply(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
+          DCHECK_CURRENTLY_ON(BrowserThread::IO);
+          // These sizes must correspond with expectations in html and js.
+          const int kMeg = 1000 * 1024;
+          storage::QuotaSettings settings;
+          settings.pool_size = 25 * kMeg;
+          settings.per_host_quota = 5 * kMeg;
+          settings.must_remain_available = 10 * kMeg;
+          settings.refresh_interval = base::TimeDelta::Max();
+          qm->SetQuotaSettings(settings);
+        }),
+        run_loop.QuitClosure());
+    run_loop.Run();
   }
 };
 

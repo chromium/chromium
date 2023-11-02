@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,14 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "content/browser/child_process_security_policy_impl.h"
+#include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/site_info.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/frame.mojom.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/webui_config_map.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
@@ -69,10 +71,6 @@ class WebUINavigationBrowserTest : public ContentBrowserTest {
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
-  }
-
-  ui::TestUntrustedWebUIControllerFactory& untrusted_factory() {
-    return untrusted_factory_;
   }
 
   // Verify that a document running in a process that has WebUI bindings,
@@ -202,9 +200,6 @@ class WebUINavigationBrowserTest : public ContentBrowserTest {
  private:
   TestWebUIControllerFactory factory_;
   ScopedWebUIControllerFactoryRegistration factory_registration_{&factory_};
-  ui::TestUntrustedWebUIControllerFactory untrusted_factory_;
-  ScopedWebUIControllerFactoryRegistration untrusted_factory_registration_{
-      &untrusted_factory_};
 };
 
 // Verify that a chrome: scheme document can add iframes with web content, as
@@ -268,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
   // Add an untrusted WebUI with no iframe restrictions.
   TestUntrustedDataSourceHeaders headers;
   headers.child_src = "child-src * data:;";
-  untrusted_factory().add_web_ui_config(
+  WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
       std::make_unique<ui::TestUntrustedWebUIConfig>("test-host", headers));
 
   GURL main_frame_url(GetChromeUntrustedUIURL("test-host/title1.html"));
@@ -342,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
                        WebFrameInChromeUntrustedSchemeDisallowedByCSP) {
   // Add an untrusted WebUI which disallows iframes by default.
-  untrusted_factory().add_web_ui_config(
+  WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
       std::make_unique<ui::TestUntrustedWebUIConfig>("test-host"));
   GURL main_frame_url(GetChromeUntrustedUIURL("test-host/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
@@ -381,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
     // Add a DataSource for chrome-untrusted:// that can be iframe'd.
     TestUntrustedDataSourceHeaders headers;
     headers.no_xfo = true;
-    untrusted_factory().add_web_ui_config(
+    WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
         std::make_unique<ui::TestUntrustedWebUIConfig>("test-iframe-host",
                                                        headers));
     GURL untrusted_url(GetChromeUntrustedUIURL("test-iframe-host/title1.html"));
@@ -447,7 +442,7 @@ IN_PROC_BROWSER_TEST_F(
 
   TestUntrustedDataSourceHeaders headers;
   headers.no_xfo = true;
-  untrusted_factory().add_web_ui_config(
+  WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
       std::make_unique<ui::TestUntrustedWebUIConfig>("test-iframe-host",
                                                      headers));
 
@@ -639,7 +634,7 @@ IN_PROC_BROWSER_TEST_F(
   // Add a DataSource for chrome-untrusted:// that can be iframe'd.
   TestUntrustedDataSourceHeaders headers;
   headers.no_xfo = true;
-  untrusted_factory().add_web_ui_config(
+  WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
       std::make_unique<ui::TestUntrustedWebUIConfig>("test-host", headers));
   GURL untrusted_url(GetChromeUntrustedUIURL("test-host/title1.html"));
 
@@ -679,9 +674,8 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
       webui_rfh->GetProcess()->GetID()));
   EXPECT_FALSE(
       webui_site_instance->GetSiteInfo().process_lock_url().is_empty());
-  EXPECT_EQ(ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
-                root->current_frame_host()->GetProcess()->GetID()),
-            webui_site_instance->GetProcessLock());
+  EXPECT_EQ(root->current_frame_host()->GetProcess()->GetProcessLock(),
+            ProcessLock::FromSiteInfo(webui_site_instance->GetSiteInfo()));
 
   TestUntrustedDataSourceHeaders headers;
   std::vector<std::string> frame_ancestors({"chrome://web-ui"});
@@ -690,7 +684,7 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
 
   // Add a DataSource for the chrome-untrusted:// iframe with frame ancestor
   // chrome://web-ui.
-  untrusted_factory().add_web_ui_config(
+  WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
       std::make_unique<ui::TestUntrustedWebUIConfig>("test-host", headers));
   GURL untrusted_url(GetChromeUntrustedUIURL("test-host/title1.html"));
   TestNavigationObserver observer(shell()->web_contents());
@@ -728,6 +722,113 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
   EXPECT_EQ(1U, root->child_count());
   RenderFrameHost* child = root->child_at(0)->current_frame_host();
   EXPECT_EQ(GURL(), child->GetLastCommittedURL());
+}
+
+const char kOpenUrlViaClickTargetFunc[] =
+    "(function(url) {\n"
+    "  var lnk = document.createElement(\"a\");\n"
+    "  lnk.href = url;\n"
+    "  lnk.rel = 'opener';\n"
+    "  lnk.target = \"_blank\";\n"
+    "  document.body.appendChild(lnk);\n"
+    "  lnk.click();\n"
+    "})";
+
+// Adds a link with given url and target=_blank, and clicks on it.
+void OpenUrlViaClickTarget(const ToRenderFrameHost& adapter, const GURL& url) {
+  EXPECT_TRUE(ExecuteScript(adapter, std::string(kOpenUrlViaClickTargetFunc) +
+                                         "(\"" + url.spec() + "\");"));
+}
+
+// Verify that two WebUIs with a shared domain have different SiteInstance
+// and BrowsingInstance even when the WebUI is opened from the other WebUI. Even
+// though they share a domain, their hosts are different, so they have different
+// WebUI types which triggers a BrowsingInstance swap.
+IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
+                       SharedDomainDifferentSiteInstanceNavigation) {
+  GURL url1("chrome://foo.web-ui/title1.html?bindings=" +
+            base::NumberToString(BINDINGS_POLICY_WEB_UI));
+  GURL url2("chrome://bar.web-ui/title1.html?bindings=" +
+            base::NumberToString(BINDINGS_POLICY_WEB_UI));
+
+  // Visit a WebUI page with bindings.
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID()));
+  SiteInstance* site_instance1 = shell()->web_contents()->GetSiteInstance();
+  int process1_id = site_instance1->GetProcess()->GetID();
+
+  // Visit the second WebUI page with bindings. Even though the navigation
+  // itself doesn't intend to swap BrowsingInstances, we still swap them due to
+  // a change in WebUI type.
+  EXPECT_TRUE(NavigateToURLInSameBrowsingInstance(shell(), url2));
+  EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID()));
+  SiteInstance* site_instance2 = shell()->web_contents()->GetSiteInstance();
+  int process2_id = site_instance2->GetProcess()->GetID();
+
+  // The 2nd WebUI page should swap to a different process, SiteInstance,
+  // and BrowsingInstance.
+  EXPECT_NE(process1_id, process2_id);
+  EXPECT_NE(site_instance2, site_instance1);
+  EXPECT_NE(static_cast<SiteInstanceImpl*>(site_instance2)->group(),
+            static_cast<SiteInstanceImpl*>(site_instance1)->group());
+  EXPECT_FALSE(site_instance2->IsRelatedSiteInstance(site_instance1));
+}
+
+// Verify that two WebUIs with a shared domain have different SiteInstance
+// and BrowsingInstance even when the WebUI is opened from the other WebUI. Even
+// though they share a domain, their hosts are different, so they have different
+// WebUI types which triggers a BrowsingInstance swap.
+IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
+                       SharedDomainDifferentSiteInstanceUrlClick) {
+  GURL url1("chrome://foo.web-ui/title1.html?bindings=" +
+            base::NumberToString(BINDINGS_POLICY_WEB_UI));
+  GURL url2("chrome://bar.web-ui/title1.html?bindings=" +
+            base::NumberToString(BINDINGS_POLICY_WEB_UI));
+
+  // Visit a WebUI page with bindings.
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID()));
+  SiteInstance* site_instance1 = shell()->web_contents()->GetSiteInstance();
+  int process1_id = site_instance1->GetProcess()->GetID();
+
+  // Open a new tab.
+  TestNavigationObserver nav_observer(nullptr);
+  nav_observer.StartWatchingNewWebContents();
+  ShellAddedObserver shao;
+  OpenUrlViaClickTarget(shell(), url2);
+  nav_observer.Wait();
+  Shell* new_shell = shao.GetShell();
+  WebContentsImpl* new_web_contents =
+      static_cast<WebContentsImpl*>(new_shell->web_contents());
+  SiteInstance* site_instance2 = new_web_contents->GetSiteInstance();
+  int process2_id = site_instance2->GetProcess()->GetID();
+
+  // The 2nd WebUI page should swap to a different process, SiteInstance,
+  // and BrowsingInstance.
+  EXPECT_NE(process1_id, process2_id);
+  EXPECT_NE(site_instance2, site_instance1);
+  EXPECT_NE(static_cast<SiteInstanceImpl*>(site_instance2)->group(),
+            static_cast<SiteInstanceImpl*>(site_instance1)->group());
+  EXPECT_FALSE(site_instance2->IsRelatedSiteInstance(site_instance1));
+
+  // TODO(crbug.com/1044951): Since we swap BrowsingInstances, we shouldn't
+  // keep a proxy for the second tab in the first tab's SiteInstance.
+  RenderFrameProxyHost* initial_rfph =
+      new_web_contents->GetRenderManagerForTesting()
+          ->current_frame_host()
+          ->browsing_context_state()
+          ->GetRenderFrameProxyHost(
+              static_cast<SiteInstanceImpl*>(site_instance1)->group());
+  ASSERT_TRUE(initial_rfph);
+
+  // Navigate to url1 and check bindings.
+  EXPECT_TRUE(NavigateToURLInSameBrowsingInstance(new_shell, url1));
+  EXPECT_NE(new_web_contents->GetSiteInstance(), site_instance1);
+  EXPECT_EQ(BINDINGS_POLICY_WEB_UI,
+            new_web_contents->GetPrimaryMainFrame()->GetEnabledBindings());
 }
 
 // Used to test browser-side checks by disabling some renderer-side checks.
@@ -790,7 +891,7 @@ IN_PROC_BROWSER_TEST_F(
 
   TestUntrustedDataSourceHeaders headers;
   headers.no_xfo = false;
-  untrusted_factory().add_web_ui_config(
+  WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
       std::make_unique<ui::TestUntrustedWebUIConfig>("test-iframe-host",
                                                      headers));
   GURL untrusted_url(GetChromeUntrustedUIURL("test-iframe-host/title1.html"));
@@ -822,8 +923,8 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationDisabledWebSecurityBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(popup->web_contents()));
   EXPECT_EQ(kBlockedURL, popup->web_contents()->GetLastCommittedURL());
 
-  RenderFrameHost* main_rfh = shell()->web_contents()->GetMainFrame();
-  RenderFrameHost* popup_rfh = popup->web_contents()->GetMainFrame();
+  RenderFrameHost* main_rfh = shell()->web_contents()->GetPrimaryMainFrame();
+  RenderFrameHost* popup_rfh = popup->web_contents()->GetPrimaryMainFrame();
   EXPECT_EQ(main_rfh->GetSiteInstance(), popup_rfh->GetSiteInstance());
   EXPECT_TRUE(main_rfh->GetSiteInstance()->IsRelatedSiteInstance(
       popup_rfh->GetSiteInstance()));
@@ -851,8 +952,8 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationDisabledWebSecurityBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(popup->web_contents()));
   EXPECT_EQ(kBlockedURL, popup->web_contents()->GetLastCommittedURL());
 
-  RenderFrameHost* main_rfh = shell()->web_contents()->GetMainFrame();
-  RenderFrameHost* popup_rfh = popup->web_contents()->GetMainFrame();
+  RenderFrameHost* main_rfh = shell()->web_contents()->GetPrimaryMainFrame();
+  RenderFrameHost* popup_rfh = popup->web_contents()->GetPrimaryMainFrame();
   EXPECT_EQ(main_rfh->GetSiteInstance(), popup_rfh->GetSiteInstance());
   EXPECT_TRUE(main_rfh->GetSiteInstance()->IsRelatedSiteInstance(
       popup_rfh->GetSiteInstance()));
@@ -874,9 +975,8 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest, WebUIMainFrameToWebAllowed) {
   EXPECT_EQ(chrome_url, webui_rfh->GetLastCommittedURL());
   EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
       webui_rfh->GetProcess()->GetID()));
-  EXPECT_EQ(ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
-                root->current_frame_host()->GetProcess()->GetID()),
-            webui_site_instance->GetProcessLock());
+  EXPECT_EQ(root->current_frame_host()->GetProcess()->GetProcessLock(),
+            ProcessLock::FromSiteInfo(webui_site_instance->GetSiteInfo()));
 
   GURL web_url(embedded_test_server()->GetURL("/title2.html"));
   std::string script =
@@ -893,12 +993,11 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest, WebUIMainFrameToWebAllowed) {
       root->current_frame_host()->GetSiteInstance()));
   EXPECT_FALSE(ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
       root->current_frame_host()->GetProcess()->GetID()));
-  EXPECT_NE(ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
-                root->current_frame_host()->GetProcess()->GetID()),
-            webui_site_instance->GetProcessLock());
+  EXPECT_NE(root->current_frame_host()->GetProcess()->GetProcessLock(),
+            ProcessLock::FromSiteInfo(webui_site_instance->GetSiteInfo()));
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // The following tests rely on full site isolation behavior, which is not
 // present on Android.
 IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
@@ -952,7 +1051,7 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
 
   // Verify that the "hostname" is also part of the site URL.
   auto site_info = static_cast<SiteInstanceImpl*>(
-                       web_contents->GetMainFrame()->GetSiteInstance())
+                       web_contents->GetPrimaryMainFrame()->GetSiteInstance())
                        ->GetSiteInfo();
   EXPECT_EQ(expected_site_info, site_info);
 
@@ -983,7 +1082,7 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
   IsolationContext isolation_context(browser_context);
 
   // Add a DataSource which disallows iframes by default.
-  untrusted_factory().add_web_ui_config(
+  WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
       std::make_unique<ui::TestUntrustedWebUIConfig>("test-host"));
   GURL chrome_untrusted_url(GetChromeUntrustedUIURL("test-host/title1.html"));
   auto expected_site_info = SiteInfo::CreateForTesting(
@@ -997,7 +1096,7 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
 
   // Verify that the "hostname" is also part of the site URL.
   auto site_info = static_cast<SiteInstanceImpl*>(
-                       web_contents->GetMainFrame()->GetSiteInstance())
+                       web_contents->GetPrimaryMainFrame()->GetSiteInstance())
                        ->GetSiteInfo();
   EXPECT_EQ(expected_site_info, site_info);
 
@@ -1027,8 +1126,9 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
   GURL start_url(GetWebUIURL("web-ui/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), start_url));
   EXPECT_EQ(start_url, shell()->web_contents()->GetLastCommittedURL());
-  EXPECT_EQ(BINDINGS_POLICY_WEB_UI,
-            shell()->web_contents()->GetMainFrame()->GetEnabledBindings());
+  EXPECT_EQ(
+      BINDINGS_POLICY_WEB_UI,
+      shell()->web_contents()->GetPrimaryMainFrame()->GetEnabledBindings());
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
                             ->GetPrimaryFrameTree()

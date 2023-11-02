@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,7 @@
 
 namespace reputation {
 
-namespace {
-
-// Retrieve existing config proto if set, or create a new one otherwise.
-std::unique_ptr<SafetyTipsConfig> GetConfig() {
+std::unique_ptr<SafetyTipsConfig> GetOrCreateSafetyTipsConfig() {
   auto* old = GetSafetyTipsRemoteConfigProto();
   if (old) {
     return std::make_unique<SafetyTipsConfig>(*old);
@@ -27,15 +24,13 @@ std::unique_ptr<SafetyTipsConfig> GetConfig() {
   return conf;
 }
 
-}  // namespace
-
 void InitializeSafetyTipConfig() {
-  SetSafetyTipsRemoteConfigProto(GetConfig());
+  SetSafetyTipsRemoteConfigProto(GetOrCreateSafetyTipsConfig());
 }
 
 void SetSafetyTipPatternsWithFlagType(std::vector<std::string> patterns,
                                       FlaggedPage::FlagType type) {
-  auto config_proto = GetConfig();
+  auto config_proto = GetOrCreateSafetyTipsConfig();
   config_proto->clear_flagged_page();
 
   std::sort(patterns.begin(), patterns.end());
@@ -55,7 +50,7 @@ void SetSafetyTipBadRepPatterns(std::vector<std::string> patterns) {
 void SetSafetyTipAllowlistPatterns(std::vector<std::string> patterns,
                                    std::vector<std::string> target_patterns,
                                    std::vector<std::string> common_words) {
-  auto config_proto = GetConfig();
+  auto config_proto = GetOrCreateSafetyTipsConfig();
   config_proto->clear_allowed_pattern();
   config_proto->clear_allowed_target_pattern();
   config_proto->clear_common_word();
@@ -80,6 +75,17 @@ void SetSafetyTipAllowlistPatterns(std::vector<std::string> patterns,
 
 void InitializeBlankLookalikeAllowlistForTesting() {
   SetSafetyTipAllowlistPatterns({}, {}, {});
+}
+
+void AddSafetyTipHeuristicLaunchConfigForTesting(
+    reputation::HeuristicLaunchConfig::Heuristic heuristic,
+    int launch_percentage) {
+  auto config_proto = GetOrCreateSafetyTipsConfig();
+  reputation::HeuristicLaunchConfig* launch_config =
+      config_proto->add_launch_config();
+  launch_config->set_heuristic(heuristic);
+  launch_config->set_launch_percentage(launch_percentage);
+  SetSafetyTipsRemoteConfigProto(std::move(config_proto));
 }
 
 }  // namespace reputation

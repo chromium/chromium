@@ -1,11 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SERVICES_TEST_ECHO_ECHO_SERVICE_H_
 #define SERVICES_TEST_ECHO_ECHO_SERVICE_H_
 
-#include "base/macros.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/test/echo/public/mojom/echo.mojom.h"
@@ -29,6 +29,9 @@ class EchoService : public mojom::EchoService {
                                 base::UnsafeSharedMemoryRegion region) override;
   void Quit() override;
   void Crash() override;
+#if BUILDFLAG(IS_WIN)
+  void DelayLoad() override;
+#endif
 
   mojo::Receiver<mojom::EchoService> receiver_;
 };

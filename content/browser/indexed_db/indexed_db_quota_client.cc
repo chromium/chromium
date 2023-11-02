@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "storage/browser/database/database_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -38,15 +39,18 @@ IndexedDBQuotaClient::~IndexedDBQuotaClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void IndexedDBQuotaClient::GetStorageKeyUsage(
-    const StorageKey& storage_key,
-    StorageType type,
-    GetStorageKeyUsageCallback callback) {
+void IndexedDBQuotaClient::GetBucketUsage(const storage::BucketLocator& bucket,
+                                          GetBucketUsageCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(type, StorageType::kTemporary);
+  DCHECK_EQ(bucket.type, StorageType::kTemporary);
 
-  std::move(callback).Run(
-      indexed_db_context_.GetStorageKeyDiskUsage(storage_key));
+  // Skip non-default buckets until Storage Buckets are supported for IndexedDB.
+  if (!bucket.is_default) {
+    std::move(callback).Run(0);
+    return;
+  }
+
+  std::move(callback).Run(indexed_db_context_.GetBucketDiskUsage(bucket));
 }
 
 void IndexedDBQuotaClient::GetStorageKeysForType(
@@ -54,42 +58,30 @@ void IndexedDBQuotaClient::GetStorageKeysForType(
     GetStorageKeysForTypeCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(type, StorageType::kTemporary);
-  std::vector<StorageKey> storage_keys =
-      indexed_db_context_.GetAllStorageKeys();
+  const auto& bucket_locators = indexed_db_context_.GetAllBuckets();
+  std::vector<StorageKey> storage_keys;
+  for (const auto& bucket_locator : bucket_locators)
+    storage_keys.push_back(bucket_locator.storage_key);
   std::move(callback).Run(std::move(storage_keys));
 }
 
-void IndexedDBQuotaClient::GetStorageKeysForHost(
-    StorageType type,
-    const std::string& host,
-    GetStorageKeysForHostCallback callback) {
+void IndexedDBQuotaClient::DeleteBucketData(
+    const storage::BucketLocator& bucket,
+    DeleteBucketDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(type, StorageType::kTemporary);
-
-  std::vector<StorageKey> host_storage_keys;
-  // In the vast majority of cases, this vector will end up with exactly one
-  // storage key. The storage key will be https://host or http://host.
-  host_storage_keys.reserve(1);
-
-  for (auto& storage_key : indexed_db_context_.GetAllStorageKeys()) {
-    if (host == storage_key.origin().host())
-      host_storage_keys.push_back(std::move(storage_key));
-  }
-  std::move(callback).Run(std::move(host_storage_keys));
-}
-
-void IndexedDBQuotaClient::DeleteStorageKeyData(
-    const StorageKey& storage_key,
-    StorageType type,
-    DeleteStorageKeyDataCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(type, StorageType::kTemporary);
+  DCHECK_EQ(bucket.type, StorageType::kTemporary);
   DCHECK(!callback.is_null());
 
-  indexed_db_context_.DeleteForStorageKey(
-      storage_key,
+  // Skip non-default buckets until Storage Buckets are supported for IndexedDB.
+  if (!bucket.is_default) {
+    std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk);
+    return;
+  }
+
+  indexed_db_context_.DeleteBucketData(
+      bucket,
       base::BindOnce(
-          [](DeleteStorageKeyDataCallback callback, bool success) {
+          [](DeleteBucketDataCallback callback, bool success) {
             blink::mojom::QuotaStatusCode status =
                 success ? blink::mojom::QuotaStatusCode::kOk
                         : blink::mojom::QuotaStatusCode::kUnknown;

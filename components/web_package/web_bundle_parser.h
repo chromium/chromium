@@ -1,12 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_WEB_PACKAGE_WEB_BUNDLE_PARSER_H_
 #define COMPONENTS_WEB_PACKAGE_WEB_BUNDLE_PARSER_H_
 
-#include "base/containers/flat_set.h"
 #include "base/memory/ref_counted.h"
+#include "base/observer_list.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -25,14 +25,13 @@ class WebBundleParser : public mojom::WebBundleParser {
 
   ~WebBundleParser() override;
 
- private:
-  class MetadataParser;
-  class ResponseParser;
-
   class SharedBundleDataSource
       : public base::RefCounted<SharedBundleDataSource> {
    public:
-    class Observer;
+    class Observer : public base::CheckedObserver {
+     public:
+      virtual void OnDisconnect() = 0;
+    };
 
     explicit SharedBundleDataSource(
         mojo::PendingRemote<mojom::BundleDataSource> pending_data_source);
@@ -47,6 +46,11 @@ class WebBundleParser : public mojom::WebBundleParser {
               uint64_t length,
               mojom::BundleDataSource::ReadCallback callback);
 
+    void Length(mojom::BundleDataSource::LengthCallback callback);
+
+    void IsRandomAccessContext(
+        mojom::BundleDataSource::IsRandomAccessContextCallback callback);
+
    private:
     friend class base::RefCounted<SharedBundleDataSource>;
 
@@ -55,11 +59,16 @@ class WebBundleParser : public mojom::WebBundleParser {
     void OnDisconnect();
 
     mojo::Remote<mojom::BundleDataSource> data_source_;
-    base::flat_set<Observer*> observers_;
+    base::ObserverList<Observer> observers_;
   };
 
+ private:
+  class MetadataParser;
+  class ResponseParser;
+
   // mojom::WebBundleParser implementation.
-  void ParseMetadata(ParseMetadataCallback callback) override;
+  void ParseIntegrityBlock(ParseIntegrityBlockCallback callback) override;
+  void ParseMetadata(int64_t offset, ParseMetadataCallback callback) override;
   void ParseResponse(uint64_t response_offset,
                      uint64_t response_length,
                      ParseResponseCallback callback) override;

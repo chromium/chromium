@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,14 +64,14 @@ EGLConfig ChooseCompatibleConfig(gfx::BufferFormat format) {
                                 EGL_NONE};
 
   EGLint num_config;
-  EGLDisplay display = gl::GLSurfaceEGL::GetHardwareDisplay();
+  EGLDisplay display = gl::GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay();
   EGLBoolean result =
       eglChooseConfig(display, attrib_list, nullptr, 0, &num_config);
   if (result != EGL_TRUE)
     return nullptr;
   std::vector<EGLConfig> all_configs(num_config);
-  result = eglChooseConfig(gl::GLSurfaceEGL::GetHardwareDisplay(), attrib_list,
-                           all_configs.data(), num_config, &num_config);
+  result = eglChooseConfig(display, attrib_list, all_configs.data(), num_config,
+                           &num_config);
   if (result != EGL_TRUE)
     return nullptr;
   for (EGLConfig config : all_configs) {
@@ -125,7 +125,7 @@ EGLSurface CreatePbuffer(const Microsoft::WRL::ComPtr<ID3D11Texture2D>& texture,
       EGL_NONE};
 
   return eglCreatePbufferFromClientBuffer(
-      gl::GLSurfaceEGL::GetHardwareDisplay(), EGL_D3D_TEXTURE_ANGLE,
+      gl::GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay(), EGL_D3D_TEXTURE_ANGLE,
       texture.Get(), config, pBufferAttributes);
 }
 
@@ -172,8 +172,8 @@ bool GLImageDXGI::BindTexImage(unsigned target) {
     return false;
   }
 
-  return eglBindTexImage(gl::GLSurfaceEGL::GetHardwareDisplay(), surface_,
-                         EGL_BACK_BUFFER) == EGL_TRUE;
+  return eglBindTexImage(gl::GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay(),
+                         surface_, EGL_BACK_BUFFER) == EGL_TRUE;
 }
 
 bool GLImageDXGI::CopyTexImage(unsigned target) {
@@ -221,8 +221,8 @@ void GLImageDXGI::ReleaseTexImage(unsigned target) {
 
   keyed_mutex_->ReleaseSync(KEY_RELEASE);
 
-  eglReleaseTexImage(gl::GLSurfaceEGL::GetHardwareDisplay(), surface_,
-                     EGL_BACK_BUFFER);
+  eglReleaseTexImage(gl::GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay(),
+                     surface_, EGL_BACK_BUFFER);
 }
 
 bool GLImageDXGI::InitializeHandle(base::win::ScopedHandle handle,
@@ -264,11 +264,12 @@ void GLImageDXGI::SetTexture(
 GLImageDXGI::~GLImageDXGI() {
   if (handle_.Get()) {
     if (surface_ != EGL_NO_SURFACE) {
-      eglDestroySurface(gl::GLSurfaceEGL::GetHardwareDisplay(), surface_);
+      eglDestroySurface(gl::GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay(),
+                        surface_);
     }
   } else if (stream_) {
-    EGLDisplay egl_display = gl::GLSurfaceEGL::GetHardwareDisplay();
-    eglDestroyStreamKHR(egl_display, stream_);
+    eglDestroyStreamKHR(gl::GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay(),
+                        stream_);
   }
 }
 
@@ -298,7 +299,7 @@ bool CopyingGLImageDXGI::Initialize() {
     DLOG(ERROR) << "CreateTexture2D failed: " << std::hex << hr;
     return false;
   }
-  EGLDisplay egl_display = gl::GLSurfaceEGL::GetHardwareDisplay();
+  EGLDisplay egl_display = gl::GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay();
 
   EGLAttrib frame_attributes[] = {
       EGL_D3D_TEXTURE_SUBRESOURCE_ID_ANGLE, 0, EGL_NONE,

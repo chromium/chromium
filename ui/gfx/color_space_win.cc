@@ -1,11 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/gfx/color_space_win.h"
 
 #include "base/logging.h"
-#include "third_party/skia/include/third_party/skcms/skcms.h"
+#include "third_party/skia/modules/skcms/skcms.h"
 
 namespace gfx {
 
@@ -79,7 +79,7 @@ DXVA2_ExtendedFormat ColorSpaceWin::GetExtendedFormat(
     case gfx::ColorSpace::PrimaryID::BT2020:
     case gfx::ColorSpace::PrimaryID::SMPTEST428_1:
     case gfx::ColorSpace::PrimaryID::SMPTEST431_2:
-    case gfx::ColorSpace::PrimaryID::SMPTEST432_1:
+    case gfx::ColorSpace::PrimaryID::P3:
     case gfx::ColorSpace::PrimaryID::XYZ_D50:
     case gfx::ColorSpace::PrimaryID::ADOBE_RGB:
     case gfx::ColorSpace::PrimaryID::APPLE_GENERIC_RGB:
@@ -106,10 +106,11 @@ DXVA2_ExtendedFormat ColorSpaceWin::GetExtendedFormat(
       break;
     case gfx::ColorSpace::TransferID::LINEAR:
     case gfx::ColorSpace::TransferID::LINEAR_HDR:
+    case gfx::ColorSpace::TransferID::SCRGB_LINEAR_80_NITS:
       format.VideoTransferFunction = DXVA2_VideoTransFunc_10;
       break;
-    case gfx::ColorSpace::TransferID::IEC61966_2_1:
-    case gfx::ColorSpace::TransferID::IEC61966_2_1_HDR:
+    case gfx::ColorSpace::TransferID::SRGB:
+    case gfx::ColorSpace::TransferID::SRGB_HDR:
       format.VideoTransferFunction = DXVA2_VideoTransFunc_sRGB;
       break;
 
@@ -119,9 +120,9 @@ DXVA2_ExtendedFormat ColorSpaceWin::GetExtendedFormat(
     case gfx::ColorSpace::TransferID::BT1361_ECG:
     case gfx::ColorSpace::TransferID::BT2020_10:
     case gfx::ColorSpace::TransferID::BT2020_12:
-    case gfx::ColorSpace::TransferID::SMPTEST2084:
+    case gfx::ColorSpace::TransferID::PQ:
     case gfx::ColorSpace::TransferID::SMPTEST428_1:
-    case gfx::ColorSpace::TransferID::ARIB_STD_B67:
+    case gfx::ColorSpace::TransferID::HLG:
     case gfx::ColorSpace::TransferID::BT709_APPLE:
     case gfx::ColorSpace::TransferID::GAMMA18:
     case gfx::ColorSpace::TransferID::GAMMA24:
@@ -148,8 +149,7 @@ DXGI_COLOR_SPACE_TYPE ColorSpaceWin::GetDXGIColorSpace(
     // For RGB, we default to FULL
     if (color_space.GetRangeID() == gfx::ColorSpace::RangeID::LIMITED) {
       if (color_space.GetPrimaryID() == gfx::ColorSpace::PrimaryID::BT2020) {
-        if (color_space.GetTransferID() ==
-            gfx::ColorSpace::TransferID::SMPTEST2084) {
+        if (color_space.GetTransferID() == gfx::ColorSpace::TransferID::PQ) {
           return DXGI_COLOR_SPACE_RGB_STUDIO_G2084_NONE_P2020;
         } else {
           return DXGI_COLOR_SPACE_RGB_STUDIO_G22_NONE_P2020;
@@ -159,8 +159,7 @@ DXGI_COLOR_SPACE_TYPE ColorSpaceWin::GetDXGIColorSpace(
       }
     } else {
       if (color_space.GetPrimaryID() == gfx::ColorSpace::PrimaryID::BT2020) {
-        if (color_space.GetTransferID() ==
-            gfx::ColorSpace::TransferID::SMPTEST2084) {
+        if (color_space.GetTransferID() == gfx::ColorSpace::TransferID::PQ) {
           return DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020;
         } else {
           return DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P2020;
@@ -169,7 +168,9 @@ DXGI_COLOR_SPACE_TYPE ColorSpaceWin::GetDXGIColorSpace(
         if (color_space.GetTransferID() ==
                 gfx::ColorSpace::TransferID::LINEAR ||
             color_space.GetTransferID() ==
-                gfx::ColorSpace::TransferID::LINEAR_HDR) {
+                gfx::ColorSpace::TransferID::LINEAR_HDR ||
+            color_space.GetTransferID() ==
+                gfx::ColorSpace::TransferID::SCRGB_LINEAR_80_NITS) {
           return DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709;
         } else if (color_space.GetTransferID() ==
                    gfx::ColorSpace::TransferID::CUSTOM_HDR) {
@@ -185,13 +186,12 @@ DXGI_COLOR_SPACE_TYPE ColorSpaceWin::GetDXGIColorSpace(
     }
   } else {
     if (color_space.GetPrimaryID() == gfx::ColorSpace::PrimaryID::BT2020) {
-      if (color_space.GetTransferID() ==
-          gfx::ColorSpace::TransferID::SMPTEST2084) {
+      if (color_space.GetTransferID() == gfx::ColorSpace::TransferID::PQ) {
         return DXGI_COLOR_SPACE_YCBCR_STUDIO_G2084_LEFT_P2020;
         // Could also be:
         // DXGI_COLOR_SPACE_YCBCR_STUDIO_G2084_TOPLEFT_P2020
       } else if (color_space.GetTransferID() ==
-                 gfx::ColorSpace::TransferID::ARIB_STD_B67) {
+                 gfx::ColorSpace::TransferID::HLG) {
         // Note: This may not always work. See https://crbug.com/1144260#c6.
         return DXGI_COLOR_SPACE_YCBCR_STUDIO_GHLG_TOPLEFT_P2020;
       } else {
@@ -234,7 +234,7 @@ DXGI_COLOR_SPACE_TYPE ColorSpaceWin::GetDXGIColorSpace(
 
 DXGI_FORMAT ColorSpaceWin::GetDXGIFormat(const gfx::ColorSpace& color_space) {
   // The PQ transfer function needs 10 bits.
-  if (color_space.GetTransferID() == gfx::ColorSpace::TransferID::SMPTEST2084)
+  if (color_space.GetTransferID() == gfx::ColorSpace::TransferID::PQ)
     return DXGI_FORMAT_R10G10B10A2_UNORM;
 
   // Non-PQ HDR color spaces use half-float.

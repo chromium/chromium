@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,9 @@ namespace feed {
 namespace prefs {
 void SetLastFetchHadNoticeCard(PrefService& pref_service, bool value);
 bool GetLastFetchHadNoticeCard(const PrefService& pref_service);
+
+// TODO(b/213622639): These two functions are still used for iOS, but should
+// be removed along with any calling code.
 void SetHasReachedClickAndViewActionsUploadConditions(PrefService& pref_service,
                                                       bool value);
 bool GetHasReachedClickAndViewActionsUploadConditions(

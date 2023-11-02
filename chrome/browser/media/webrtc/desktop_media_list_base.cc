@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,11 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/hash/hash.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"
 
 using content::BrowserThread;
@@ -50,6 +52,10 @@ void DesktopMediaListBase::StartUpdating(DesktopMediaListObserver* observer) {
   DCHECK(!observer_);
   observer_ = observer;
 
+  // If there is a delegated source list, it may not have been started yet.
+  if (IsSourceListDelegated())
+    StartDelegatedCapturer();
+
   // Process sources previously discovered by a call to Update().
   if (observer_) {
     for (size_t i = 0; i < sources_.size(); i++) {
@@ -88,6 +94,17 @@ DesktopMediaList::Type DesktopMediaListBase::GetMediaListType() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return type_;
 }
+
+bool DesktopMediaListBase::IsSourceListDelegated() const {
+  return false;
+}
+
+void DesktopMediaListBase::ClearDelegatedSourceListSelection() {
+  NOTREACHED();
+}
+
+void DesktopMediaListBase::FocusList() {}
+void DesktopMediaListBase::HideList() {}
 
 DesktopMediaListBase::SourceDescription::SourceDescription(
     DesktopMediaID id,
@@ -226,4 +243,18 @@ void DesktopMediaListBase::ScheduleNextRefresh() {
       base::BindOnce(&DesktopMediaListBase::Refresh, weak_factory_.GetWeakPtr(),
                      true),
       update_period_);
+}
+
+void DesktopMediaListBase::OnDelegatedSourceListSelection() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(IsSourceListDelegated());
+  if (observer_)
+    observer_->OnDelegatedSourceListSelection();
+}
+
+void DesktopMediaListBase::OnDelegatedSourceListDismissed() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(IsSourceListDelegated());
+  if (observer_)
+    observer_->OnDelegatedSourceListDismissed();
 }

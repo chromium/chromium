@@ -1,11 +1,11 @@
-#!/usr/bin/env python
-# Copyright 2016 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 """update_api.py - Update committed Cronet API."""
 
-from __future__ import print_function
+
 
 import argparse
 import filecmp
@@ -18,12 +18,18 @@ import sys
 import tempfile
 
 
+REPOSITORY_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
+
+sys.path.insert(0, os.path.join(REPOSITORY_ROOT, 'build/android/gyp'))
+from util import build_utils  # pylint: disable=wrong-import-position
+
 # Filename of dump of current API.
 API_FILENAME = os.path.abspath(os.path.join(
     os.path.dirname(__file__), '..', 'android', 'api.txt'))
-# Filename of file containing API version number.
-API_VERSION_FILENAME = os.path.abspath(os.path.join(
-    os.path.dirname(__file__), '..', 'android', 'api_version.txt'))
+# Filename of file containing the interface API version number.
+INTERFACE_API_VERSION_FILENAME = os.path.abspath(os.path.join(
+    os.path.dirname(__file__), '..', 'android', 'interface_api_version.txt'))
 
 # Regular expression that catches the beginning of lines that declare classes.
 # The first group returned by a match is the class name.
@@ -32,6 +38,13 @@ CLASS_RE = re.compile(r'.*class ([^ ]*) .*\{')
 # Regular expression that matches a string containing an unnamed class name,
 # for example 'Foo$1'.
 UNNAMED_CLASS_RE = re.compile(r'.*\$[0-9]')
+
+# javap still prints internal (package private, nested...) classes even though
+# -protected is passed so they need to be filtered out.
+INTERNAL_CLASS_RE = re.compile(r'^(?!public ((final|abstract) )?class).*')
+
+JAR_PATH = os.path.join(build_utils.JAVA_HOME, 'bin', 'jar')
+JAVAP_PATH = os.path.join(build_utils.JAVA_HOME, 'bin', 'javap')
 
 
 def generate_api(api_jar, output_filename):
@@ -45,8 +58,9 @@ def generate_api(api_jar, output_filename):
   temp_dir = tempfile.mkdtemp()
   old_cwd = os.getcwd()
   api_jar_path = os.path.abspath(api_jar)
+  jar_cmd = '%s xf %s' % (os.path.relpath(JAR_PATH, temp_dir), api_jar_path)
   os.chdir(temp_dir)
-  if os.system('jar xf %s' % api_jar_path):
+  if os.system(jar_cmd):
     print('ERROR: jar failed on ' + api_jar)
     return False
   os.chdir(old_cwd)
@@ -59,8 +73,10 @@ def generate_api(api_jar, output_filename):
   api_class_files.sort()
 
   # Dump API class files into |output_filename|
-  javap_cmd = ('javap -protected %s >> %s' % (' '.join(api_class_files),
-      output_filename)).replace('$', '\\$')
+  javap_cmd = (
+      '%s -protected %s >> %s' % (
+          JAVAP_PATH, ' '.join(api_class_files), output_filename)
+  ).replace('$', '\\$')
   if os.system(javap_cmd):
     print('ERROR: javap command failed: ' + javap_cmd)
     return False
@@ -77,8 +93,7 @@ def generate_api(api_jar, output_filename):
     if CLASS_RE.match(line):
       skip_to_next_class = (
           # Skip internal classes, they aren't exposed.
-          UNNAMED_CLASS_RE.match(line)
-      )
+          UNNAMED_CLASS_RE.match(line)) or (INTERNAL_CLASS_RE.match(line))
     if skip_to_next_class:
       skip_to_next_class = line != '}'
       continue
@@ -122,7 +137,7 @@ def check_api_update(old_api, new_api):
             return False
           seen_stamp = True
           break
-        new_hash.update(new_line)
+        new_hash.update(new_line.encode('utf8'))
         if new_line == old_line:
           break
         if not new_line:
@@ -133,7 +148,7 @@ def check_api_update(old_api, new_api):
             print('           ' + old_line)
             print('       Cronet API methods and classes cannot be modified.')
           return False
-      old_hash.update(old_line)
+      old_hash.update(old_line.encode('utf8'))
   if not seen_stamp:
     print('ERROR: api.txt not stamped by update_api.py.')
     return False
@@ -155,7 +170,7 @@ def main(args):
   if (generate_api(opts.api_jar, temp_filename) and
       check_api_update(API_FILENAME, temp_filename)):
     # Update API version number to new version number
-    with open(API_VERSION_FILENAME,'r+') as f:
+    with open(INTERFACE_API_VERSION_FILENAME,'r+') as f:
       version = int(f.read())
       f.seek(0)
       f.write(str(version + 1))

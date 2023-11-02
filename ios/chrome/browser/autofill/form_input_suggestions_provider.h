@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,7 @@ typedef void (^FormSuggestionsReadyCompletion)(
 @property(nonatomic, readonly) SuggestionProviderType type;
 
 // Asynchronously retrieves form suggestions from this provider for the
-// specified form/field and returns it via |accessoryViewUpdateBlock|. View
+// specified form/field and returns it via `accessoryViewUpdateBlock`. View
 // will be nil if no accessories are available from this provider.
 - (void)retrieveSuggestionsForForm:(const autofill::FormActivityParams&)params
                           webState:(web::WebState*)webState

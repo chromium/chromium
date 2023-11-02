@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,9 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
@@ -26,7 +28,11 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.url.GURL;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Provider for processed favicons in Tab list.
@@ -36,16 +42,14 @@ public class TabListFaviconProvider {
     static final int FAVICON_BACKGROUND_SELECTED_ALPHA = 0;
 
     /**
-     * Wrapper class that holds a favicon drawable and whether recolor is allowed.
+     * Wrapper class that holds a favicon drawable and whether recolor is allowed. Subclasses should
+     * make a best effort to implement an {@link Object#equals(Object)} that will allow efficient
+     * comparisons of favicon objects.
      */
-    static class TabFavicon {
+    abstract static class TabFavicon {
         private final @NonNull Drawable mDefaultDrawable;
         private final @NonNull Drawable mSelectedDrawable;
         private final boolean mIsRecolorAllowed;
-
-        private TabFavicon(@NonNull Drawable defaultDrawable) {
-            this(defaultDrawable, defaultDrawable, false);
-        }
 
         private TabFavicon(@NonNull Drawable defaultDrawable, @NonNull Drawable selectedDrawable,
                 boolean allowRecolor) {
@@ -72,6 +76,120 @@ public class TabListFaviconProvider {
         /** Return whether the drawables this {@link TabFavicon} contains can be recolored. */
         public boolean isRecolorAllowed() {
             return mIsRecolorAllowed;
+        }
+
+        @Override
+        public abstract boolean equals(Object other);
+    }
+
+    /** A favicon that is sourced from and equality checked on a single URL. */
+    @VisibleForTesting
+    static class UrlTabFavicon extends TabFavicon {
+        private final @NonNull GURL mGurl;
+
+        private UrlTabFavicon(@NonNull Drawable defaultDrawable, @NonNull Drawable selectedDrawable,
+                boolean allowRecolor, @NonNull GURL gurl) {
+            super(defaultDrawable, selectedDrawable, allowRecolor);
+            mGurl = gurl;
+        }
+
+        @VisibleForTesting
+        UrlTabFavicon(@NonNull Drawable drawable, @NonNull GURL gurl) {
+            this(drawable, drawable, false, gurl);
+        }
+
+        @Override
+        public int hashCode() {
+            return mGurl.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            if (!(other instanceof UrlTabFavicon)) {
+                return false;
+            }
+            return Objects.equals(mGurl, ((UrlTabFavicon) other).mGurl);
+        }
+    }
+
+    /** Tracks the GURLS that were used for the composed favicon for the equality check.  */
+    @VisibleForTesting
+    static class ComposedTabFavicon extends TabFavicon {
+        private final @NonNull GURL[] mGurls;
+
+        @VisibleForTesting
+        ComposedTabFavicon(@NonNull Drawable drawable, @NonNull GURL[] gurls) {
+            super(drawable, drawable, false);
+            mGurls = gurls;
+        }
+
+        @Override
+        public int hashCode() {
+            return Arrays.hashCode(mGurls);
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            if (!(other instanceof ComposedTabFavicon)) {
+                return false;
+            }
+            return Arrays.equals(mGurls, ((ComposedTabFavicon) other).mGurls);
+        }
+    }
+
+    @IntDef({
+            StaticTabFaviconType.UNKNOWN,
+            StaticTabFaviconType.ROUNDED_GLOBE,
+            StaticTabFaviconType.ROUNDED_CHROME,
+            StaticTabFaviconType.ROUNDED_COMPOSED_DEFAULT,
+            StaticTabFaviconType.ROUNDED_GLOBE_INCOGNITO,
+            StaticTabFaviconType.ROUNDED_CHROME_INCOGNITO,
+            StaticTabFaviconType.ROUNDED_COMPOSED_DEFAULT_INCOGNITO,
+            StaticTabFaviconType.ROUNDED_GLOBE_FOR_STRIP,
+            StaticTabFaviconType.ROUNDED_CHROME_FOR_STRIP,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @VisibleForTesting
+    @interface StaticTabFaviconType {
+        int UNKNOWN = 0;
+        int ROUNDED_GLOBE = 1;
+        int ROUNDED_CHROME = 2;
+        int ROUNDED_COMPOSED_DEFAULT = 3;
+        int ROUNDED_GLOBE_INCOGNITO = 4;
+        int ROUNDED_CHROME_INCOGNITO = 5;
+        int ROUNDED_COMPOSED_DEFAULT_INCOGNITO = 6;
+        int ROUNDED_GLOBE_FOR_STRIP = 7;
+        int ROUNDED_CHROME_FOR_STRIP = 8;
+    }
+
+    /** A favicon that is one of a fixed number of static icons. */
+    @VisibleForTesting
+    static class ResourceTabFavicon extends TabFavicon {
+        private final @StaticTabFaviconType int mType;
+
+        private ResourceTabFavicon(@NonNull Drawable defaultDrawable,
+                @NonNull Drawable selectedDrawable, boolean allowRecolor,
+                @StaticTabFaviconType int type) {
+            super(defaultDrawable, selectedDrawable, allowRecolor);
+            mType = type;
+        }
+
+        @VisibleForTesting
+        ResourceTabFavicon(@NonNull Drawable defaultDrawable, @StaticTabFaviconType int type) {
+            this(defaultDrawable, defaultDrawable, false, type);
+        }
+
+        @Override
+        public int hashCode() {
+            return Integer.hashCode(mType);
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            if (!(other instanceof ResourceTabFavicon)) {
+                return false;
+            }
+            return this.mType == ((ResourceTabFavicon) other).mType;
         }
     }
 
@@ -134,55 +252,65 @@ public class TabListFaviconProvider {
             Bitmap globeBitmap = getResizedBitmapFromDrawable(
                     AppCompatResources.getDrawable(context, R.drawable.ic_globe_24dp),
                     mDefaultFaviconSize);
-            sRoundedGlobeFavicon = createChromeOwnedTabFavicon(
-                    globeBitmap, mDefaultIconColor, mSelectedIconColor, false);
+            sRoundedGlobeFavicon =
+                    createChromeOwnedResourceTabFavicon(globeBitmap, mDefaultIconColor,
+                            mSelectedIconColor, false, StaticTabFaviconType.ROUNDED_GLOBE);
         }
         if (sRoundedChromeFavicon == null) {
             Bitmap chromeBitmap =
                     BitmapFactory.decodeResource(mContext.getResources(), R.drawable.chromelogo16);
-            sRoundedChromeFavicon = createChromeOwnedTabFavicon(
-                    chromeBitmap, mDefaultIconColor, mSelectedIconColor, false);
+            sRoundedChromeFavicon =
+                    createChromeOwnedResourceTabFavicon(chromeBitmap, mDefaultIconColor,
+                            mSelectedIconColor, false, StaticTabFaviconType.ROUNDED_CHROME);
         }
         if (sRoundedComposedDefaultFavicon == null) {
             Bitmap composedBitmap = getResizedBitmapFromDrawable(
                     AppCompatResources.getDrawable(context, R.drawable.ic_group_icon_16dp),
                     mDefaultFaviconSize);
-            sRoundedComposedDefaultFavicon = createChromeOwnedTabFavicon(
-                    composedBitmap, mDefaultIconColor, mSelectedIconColor, false);
+            sRoundedComposedDefaultFavicon = createChromeOwnedResourceTabFavicon(composedBitmap,
+                    mDefaultIconColor, mSelectedIconColor, false,
+                    StaticTabFaviconType.ROUNDED_COMPOSED_DEFAULT);
         }
         if (sRoundedGlobeFaviconIncognito == null) {
             Bitmap globeBitmap = getResizedBitmapFromDrawable(
                     AppCompatResources.getDrawable(context, R.drawable.ic_globe_24dp),
                     mDefaultFaviconSize);
-            sRoundedGlobeFaviconIncognito = createChromeOwnedTabFavicon(
-                    globeBitmap, mIncognitoIconColor, mIncognitoSelectedIconColor, false);
+            sRoundedGlobeFaviconIncognito = createChromeOwnedResourceTabFavicon(globeBitmap,
+                    mIncognitoIconColor, mIncognitoSelectedIconColor, false,
+                    StaticTabFaviconType.ROUNDED_GLOBE_INCOGNITO);
         }
         if (sRoundedChromeFaviconIncognito == null) {
             Bitmap chromeBitmap =
                     BitmapFactory.decodeResource(mContext.getResources(), R.drawable.chromelogo16);
-            sRoundedChromeFaviconIncognito = createChromeOwnedTabFavicon(
-                    chromeBitmap, mIncognitoIconColor, mIncognitoSelectedIconColor, false);
+            sRoundedChromeFaviconIncognito = createChromeOwnedResourceTabFavicon(chromeBitmap,
+                    mIncognitoIconColor, mIncognitoSelectedIconColor, false,
+                    StaticTabFaviconType.ROUNDED_CHROME_INCOGNITO);
         }
         if (sRoundedComposedDefaultFaviconIncognito == null) {
             Bitmap composedBitmap = getResizedBitmapFromDrawable(
                     AppCompatResources.getDrawable(context, R.drawable.ic_group_icon_16dp),
                     mDefaultFaviconSize);
-            sRoundedComposedDefaultFaviconIncognito = createChromeOwnedTabFavicon(
-                    composedBitmap, mIncognitoIconColor, mIncognitoSelectedIconColor, false);
+            sRoundedComposedDefaultFaviconIncognito = createChromeOwnedResourceTabFavicon(
+                    composedBitmap, mIncognitoIconColor, mIncognitoSelectedIconColor, false,
+                    StaticTabFaviconType.ROUNDED_COMPOSED_DEFAULT_INCOGNITO);
         }
 
         // Tab strip favicons do not recolor when selected.
         if (sRoundedGlobeFaviconForStrip == null) {
             Drawable globeDrawable =
                     AppCompatResources.getDrawable(context, R.drawable.ic_globe_24dp);
-            sRoundedGlobeFaviconForStrip = new TabFavicon(processBitmap(
-                    getResizedBitmapFromDrawable(globeDrawable, mStripFaviconSize), true));
+            sRoundedGlobeFaviconForStrip = new ResourceTabFavicon(
+                    processBitmap(
+                            getResizedBitmapFromDrawable(globeDrawable, mStripFaviconSize), true),
+                    StaticTabFaviconType.ROUNDED_GLOBE_FOR_STRIP);
         }
         if (sRoundedChromeFaviconForStrip == null) {
             Drawable chromeDrawable =
                     AppCompatResources.getDrawable(context, R.drawable.chromelogo16);
-            sRoundedChromeFaviconForStrip = new TabFavicon(processBitmap(
-                    getResizedBitmapFromDrawable(chromeDrawable, mStripFaviconSize), true));
+            sRoundedChromeFaviconForStrip = new ResourceTabFavicon(
+                    processBitmap(
+                            getResizedBitmapFromDrawable(chromeDrawable, mStripFaviconSize), true),
+                    StaticTabFaviconType.ROUNDED_CHROME_FOR_STRIP);
         }
     }
 
@@ -251,7 +379,7 @@ public class TabListFaviconProvider {
 
     /**
      * Asynchronously get the processed {@link TabFavicon}.
-     * @param url The URL whose favicon is requested.
+     * @param url The URL of the tab whose favicon is being requested.
      * @param isIncognito Whether the tab is incognito or not.
      * @param faviconCallback The callback that requests for favicon.
      */
@@ -268,12 +396,12 @@ public class TabListFaviconProvider {
                         } else if (UrlUtilities.isInternalScheme(url) && !mIsTabStrip) {
                             Bitmap resizedFavicon = getResizedBitmapFromDrawable(
                                     processBitmap(image, false), mDefaultFaviconSize);
-                            favicon = isIncognito ? createChromeOwnedTabFavicon(
-                                              resizedFavicon, 0, mIncognitoSelectedIconColor, true)
-                                                  : createChromeOwnedTabFavicon(resizedFavicon, 0,
-                                                          mSelectedIconColor, true);
+                            favicon = isIncognito ? createChromeOwnedUrlTabFavicon(resizedFavicon,
+                                              0, mIncognitoSelectedIconColor, true, iconUrl)
+                                                  : createChromeOwnedUrlTabFavicon(resizedFavicon,
+                                                          0, mSelectedIconColor, true, iconUrl);
                         } else {
-                            favicon = new TabFavicon(processBitmap(image, mIsTabStrip));
+                            favicon = new UrlTabFavicon(processBitmap(image, mIsTabStrip), iconUrl);
                         }
                         faviconCallback.onResult(favicon);
                     });
@@ -283,10 +411,11 @@ public class TabListFaviconProvider {
     /**
      * Synchronously get the processed favicon, assuming it is not recolor allowed.
      * @param icon The favicon that was received.
+     * @param iconUrl The url the favicon came from.
      * @return The processed {@link TabFavicon}.
      */
-    TabFavicon getFaviconFromBitmap(@NonNull Bitmap icon) {
-        return new TabFavicon(processBitmap(icon, mIsTabStrip));
+    TabFavicon getFaviconFromBitmap(@NonNull Bitmap icon, @NonNull GURL iconUrl) {
+        return new UrlTabFavicon(processBitmap(icon, mIsTabStrip), iconUrl);
     }
 
     /**
@@ -298,12 +427,12 @@ public class TabListFaviconProvider {
     void getComposedFaviconImageAsync(
             List<GURL> urls, boolean isIncognito, Callback<TabFavicon> faviconCallback) {
         assert urls != null && urls.size() > 1 && urls.size() <= 4;
-
-        mFaviconHelper.getComposedFaviconImage(mProfile, urls, mFaviconSize, (image, iconUrl) -> {
+        mFaviconHelper.getComposedFaviconImage(mProfile, urls, mFaviconSize, (image, iconUrls) -> {
             if (image == null) {
                 faviconCallback.onResult(getDefaultComposedImageFavicon(isIncognito));
             } else {
-                faviconCallback.onResult(new TabFavicon(processBitmap(image, mIsTabStrip)));
+                faviconCallback.onResult(
+                        new ComposedTabFavicon(processBitmap(image, mIsTabStrip), iconUrls));
             }
         });
     }
@@ -329,18 +458,30 @@ public class TabListFaviconProvider {
                            : colorFaviconWithTheme(sRoundedGlobeFavicon);
     }
 
-    private TabFavicon createChromeOwnedTabFavicon(Bitmap bitmap, @ColorInt int colorDefault,
-            @ColorInt int colorSelected, boolean useBitmapColorInDefault) {
-        Drawable defaultDrawable = processBitmap(bitmap, false);
-        if (!useBitmapColorInDefault) {
-            defaultDrawable.setColorFilter(
-                    new PorterDuffColorFilter(colorDefault, PorterDuff.Mode.SRC_IN));
-        }
+    private TabFavicon createChromeOwnedUrlTabFavicon(Bitmap bitmap, @ColorInt int colorDefault,
+            @ColorInt int colorSelected, boolean useBitmapColorInDefault, GURL gurl) {
+        Drawable defaultDrawable =
+                processBitmapMaybeColor(bitmap, !useBitmapColorInDefault, colorDefault);
+        Drawable selectedDrawable = processBitmapMaybeColor(bitmap, true, colorSelected);
+        return new UrlTabFavicon(defaultDrawable, selectedDrawable, true, gurl);
+    }
 
-        Drawable selectedDrawable = processBitmap(bitmap, false);
-        selectedDrawable.setColorFilter(
-                new PorterDuffColorFilter(colorSelected, PorterDuff.Mode.SRC_IN));
-        return new TabFavicon(defaultDrawable, selectedDrawable, true);
+    private TabFavicon createChromeOwnedResourceTabFavicon(Bitmap bitmap,
+            @ColorInt int colorDefault, @ColorInt int colorSelected,
+            boolean useBitmapColorInDefault, @StaticTabFaviconType int type) {
+        Drawable defaultDrawable =
+                processBitmapMaybeColor(bitmap, !useBitmapColorInDefault, colorDefault);
+        Drawable selectedDrawable = processBitmapMaybeColor(bitmap, true, colorSelected);
+        return new ResourceTabFavicon(defaultDrawable, selectedDrawable, true, type);
+    }
+
+    private Drawable processBitmapMaybeColor(
+            Bitmap bitmap, boolean shouldSetColor, @ColorInt int color) {
+        Drawable drawable = processBitmap(bitmap, false);
+        if (shouldSetColor) {
+            drawable.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN));
+        }
+        return drawable;
     }
 
     /**

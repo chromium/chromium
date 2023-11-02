@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,7 +43,7 @@ class ExternalProviderInterface {
     // location.
     virtual bool OnExternalExtensionUpdateUrlFound(
         const ExternalInstallInfoUpdateUrl& info,
-        bool is_initial_load) = 0;
+        bool force_update) = 0;
 
     // Called after all the external extensions have been reported
     // through the above two methods. |provider| is a pointer to the

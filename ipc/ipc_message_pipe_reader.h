@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include "base/atomicops.h"
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/threading/thread_checker.h"
@@ -25,7 +25,6 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
-#include "mojo/public/cpp/system/core.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
 namespace IPC {
@@ -112,7 +111,7 @@ class COMPONENT_EXPORT(IPC) MessagePipeReader : public mojom::Channel {
   void ForwardMessage(mojo::Message message);
 
   // |delegate_| is null once the message pipe is closed.
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
   mojo::AssociatedRemote<mojom::Channel> sender_;
   std::unique_ptr<mojo::ThreadSafeForwarder<mojom::Channel>>
       thread_safe_sender_;

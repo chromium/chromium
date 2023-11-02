@@ -1,9 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/page_info/page_info_permission_content_view.h"
 
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -80,13 +81,16 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
               base::Unretained(this)),
           views::style::CONTEXT_DIALOG_BODY_TEXT));
   remember_setting_->SetProperty(views::kMarginsKey,
-                                 gfx::Insets(controls_spacing, 0, 0, 0));
+                                 gfx::Insets::TLBR(controls_spacing, 0, 0, 0));
 
   const int title_height = title_->GetPreferredSize().height();
   toggle_button_ = permission_info_container->AddChildView(
       std::make_unique<views::ToggleButton>(base::BindRepeating(
           &PageInfoPermissionContentView::OnToggleButtonPressed,
           base::Unretained(this))));
+  toggle_button_->SetAccessibleName(
+      l10n_util::GetStringFUTF16(IDS_PAGE_INFO_SELECTOR_TOOLTIP,
+                                 PageInfoUI::PermissionTypeToUIString(type)));
   toggle_button_->SetPreferredSize(
       gfx::Size(toggle_button_->GetPreferredSize().width(), title_height));
 
@@ -94,8 +98,8 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
   // and label in the first row.
   const int margin =
       (title_height - GetLayoutConstant(PAGE_INFO_ICON_SIZE)) / 2;
-  icon_->SetProperty(views::kMarginsKey, gfx::Insets(margin, 0));
-  toggle_button_->SetProperty(views::kMarginsKey, gfx::Insets(margin, 0));
+  icon_->SetProperty(views::kMarginsKey, gfx::Insets::VH(margin, 0));
+  toggle_button_->SetProperty(views::kMarginsKey, gfx::Insets::VH(margin, 0));
 
   AddChildView(PageInfoViewFactory::CreateSeparator());
   // TODO(crbug.com/1225563): Consider to use permission specific text.
@@ -119,11 +123,8 @@ PageInfoPermissionContentView::~PageInfoPermissionContentView() = default;
 void PageInfoPermissionContentView::SetPermissionInfo(
     const PermissionInfoList& permission_info_list,
     ChosenObjectInfoList chosen_object_info_list) {
-  auto permission_it =
-      std::find_if(permission_info_list.begin(), permission_info_list.end(),
-                   [=](PageInfo::PermissionInfo permission_info) {
-                     return permission_info.type == type_;
-                   });
+  auto permission_it = base::ranges::find(permission_info_list, type_,
+                                          &PageInfo::PermissionInfo::type);
 
   CHECK(permission_it != permission_info_list.end());
 

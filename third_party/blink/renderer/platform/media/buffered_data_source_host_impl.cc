@@ -1,9 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/platform/media/buffered_data_source_host_impl.h"
+#include "third_party/blink/renderer/platform/media/buffered_data_source_host_impl.h"
 
+#include "base/record_replay.h"
 #include "media/base/timestamp_constants.h"
 
 namespace blink {
@@ -135,7 +136,8 @@ double BufferedDataSourceHostImpl::DownloadRate() const {
   // data point that has the lowest download rate, we avoid over-estimating.
   const double kVeryLargeRate = 1.0E20;
   double download_rate = kVeryLargeRate;
-  for (int i = 0; i < std::min<int>(20, download_history_.size() - 3); i++) {
+  for (size_t i = 0; i < std::min<size_t>(20, download_history_.size() - 3);
+       i++) {
     int64_t downloaded_bytes =
         download_history_.back().second - download_history_[i].second;
     base::TimeTicks now = tick_clock_->NowTicks();

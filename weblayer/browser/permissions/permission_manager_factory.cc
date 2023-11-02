@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,9 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_manager.h"
+#include "components/permissions/permission_util.h"
 #include "components/webrtc/media_stream_device_enumerator_impl.h"
-#include "content/public/browser/permission_type.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "weblayer/browser/background_fetch/background_fetch_permission_context.h"
 #include "weblayer/browser/host_content_settings_map_factory.h"
@@ -36,8 +37,6 @@ class DeniedPermissionContext : public permissions::PermissionContextBase {
       const GURL& embedding_origin) const override {
     return CONTENT_SETTING_BLOCK;
   }
-
-  bool IsRestrictedToSecureOrigins() const override { return true; }
 };
 
 // A permission context with default behavior, which is restricted to secure
@@ -47,9 +46,6 @@ class SafePermissionContext : public permissions::PermissionContextBase {
   using PermissionContextBase::PermissionContextBase;
   SafePermissionContext(const SafePermissionContext&) = delete;
   SafePermissionContext& operator=(const SafePermissionContext&) = delete;
-
- protected:
-  bool IsRestrictedToSecureOrigins() const override { return true; }
 };
 
 // Used by the CameraPanTiltZoomPermissionContext to query which devices support
@@ -70,14 +66,14 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
       std::make_unique<WebLayerCameraPanTiltZoomPermissionContextDelegate>();
   delegates.geolocation_permission_context_delegate =
       std::make_unique<GeolocationPermissionContextDelegate>();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // TODO(crbug.com/1200933): macOS uses GeolocationPermissionContextMac which
   // requires a GeolocationManager for construction. In Chrome this object is
   // owned by the BrowserProcess. An equivalent object will need to be created
   // in WebLayer and passed into the PermissionContextDelegates here before it
   // supports macOS.
   NOTREACHED();
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
   delegates.media_stream_device_enumerator = GetMediaStreamDeviceEnumerator();
   delegates.nfc_permission_context_delegate =
       std::make_unique<WebLayerNfcPermissionContextDelegate>();
@@ -107,7 +103,7 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
           browser_context, ContentSettingsType::MEDIASTREAM_MIC,
           blink::mojom::PermissionsPolicyFeature::kMicrophone);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // The Chrome implementation has special cases for Chrome OS and Windows which
   // we don't support yet. On Android this will match Chrome's behaviour.
   permission_contexts[ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER] =
@@ -118,14 +114,14 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
 
   // For now, all requests are denied. As features are added, their permission
   // contexts can be added here instead of DeniedPermissionContext.
-  for (content::PermissionType type : content::GetAllPermissionTypes()) {
-#if !defined(OS_ANDROID)
+  for (blink::PermissionType type : blink::GetAllPermissionTypes()) {
+#if !BUILDFLAG(IS_ANDROID)
     // PROTECTED_MEDIA_IDENTIFIER is only supported on Android.
-    if (type == content::PermissionType::PROTECTED_MEDIA_IDENTIFIER)
+    if (type == blink::PermissionType::PROTECTED_MEDIA_IDENTIFIER)
       continue;
 #endif
     ContentSettingsType content_settings_type =
-        permissions::PermissionManager::PermissionTypeToContentSetting(type);
+        permissions::PermissionUtil::PermissionTypeToContentSettingType(type);
     if (permission_contexts.find(content_settings_type) ==
         permission_contexts.end()) {
       permission_contexts[content_settings_type] =

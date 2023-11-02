@@ -1,14 +1,14 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "device/fido/make_credential_task.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "device/base/features.h"
 #include "device/fido/ctap2_device_operation.h"
 #include "device/fido/ctap_make_credential_request.h"
@@ -89,12 +89,16 @@ absl::optional<AuthenticatorMakeCredentialResponse> ConvertCTAPResponse(
     const base::flat_set<Ctap2Version>& ctap2_versions =
         device->device_info()->ctap2_versions;
     DCHECK(!ctap2_versions.empty());
-    const bool is_at_least_ctap2_1 =
-        std::any_of(ctap2_versions.begin(), ctap2_versions.end(),
-                    [](Ctap2Version v) { return v > Ctap2Version::kCtap2_0; });
+    const bool is_at_least_ctap2_1 = base::ranges::any_of(
+        ctap2_versions,
+        [](Ctap2Version v) { return v > Ctap2Version::kCtap2_0; });
     if (!resident_key_supported || is_at_least_ctap2_1) {
       response->is_resident_key = false;
     }
+  }
+
+  if (device->device_info() && device->device_info()->transports) {
+    response->transports = *device->device_info()->transports;
   }
 
   return response;
@@ -247,7 +251,8 @@ void MakeCredentialTask::MakeCredential() {
           device(), NextSilentRequest(),
           base::BindOnce(&MakeCredentialTask::HandleResponseToSilentSignRequest,
                          weak_factory_.GetWeakPtr()),
-          base::BindOnce(&ReadCTAPGetAssertionResponse),
+          base::BindOnce(&ReadCTAPGetAssertionResponse,
+                         device()->DeviceTransport()),
           /*string_fixup_predicate=*/nullptr);
   silent_sign_operation_->Start();
 }
@@ -301,7 +306,8 @@ void MakeCredentialTask::HandleResponseToSilentSignRequest(
         device(), NextSilentRequest(),
         base::BindOnce(&MakeCredentialTask::HandleResponseToSilentSignRequest,
                        weak_factory_.GetWeakPtr()),
-        base::BindOnce(&ReadCTAPGetAssertionResponse),
+        base::BindOnce(&ReadCTAPGetAssertionResponse,
+                       device()->DeviceTransport()),
         /*string_fixup_predicate=*/nullptr);
     silent_sign_operation_->Start();
     return;
@@ -391,7 +397,7 @@ FilterAndBatchCredentialDescriptors(
 
   for (const PublicKeyCredentialDescriptor& credential : in) {
     if (0 < max_credential_id_length &&
-        max_credential_id_length < credential.id().size()) {
+        max_credential_id_length < credential.id.size()) {
       continue;
     }
     if (result.back().size() == max_credential_count_in_list) {

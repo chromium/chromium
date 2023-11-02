@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/autofill/payments/create_card_unmask_prompt_view.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -42,38 +41,17 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/layout/grid_layout.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
 
 namespace autofill {
 
-namespace {
-
-static views::GridLayout* ResetOverlayLayout(views::View* overlay) {
-  views::GridLayout* overlay_layout =
-      overlay->SetLayoutManager(std::make_unique<views::GridLayout>());
-  views::ColumnSet* columns = overlay_layout->AddColumnSet(0);
-  // The throbber's checkmark is 18dp.
-  columns->AddColumn(views::GridLayout::TRAILING, views::GridLayout::CENTER,
-                     0.5, views::GridLayout::ColumnSize::kFixed, 18, 0);
-  columns->AddPaddingColumn(views::GridLayout::kFixedSize,
-                            ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                views::DISTANCE_RELATED_LABEL_HORIZONTAL));
-  columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER, 0.5,
-                     views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  overlay_layout->StartRow(1.0, 0);
-  return overlay_layout;
-}
-
-}  // namespace
-
 CardUnmaskPromptViews::CardUnmaskPromptViews(
     CardUnmaskPromptController* controller,
     content::WebContents* web_contents)
-    : controller_(controller), web_contents_(web_contents) {
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::CARD_UNMASK);
+    : controller_(controller), web_contents_(web_contents->GetWeakPtr()) {
   UpdateButtons();
 
   SetModalType(ui::MODAL_TYPE_CHILD);
@@ -87,7 +65,14 @@ CardUnmaskPromptViews::~CardUnmaskPromptViews() {
 }
 
 void CardUnmaskPromptViews::Show() {
-  constrained_window::ShowWebModalDialogViews(this, web_contents_);
+  // Don't show the bubble if the web contents are or will soon be destroyed. 
+  // (e.g. when closing the platform authentication tab that usually triggers 
+  // the unmask flow as a fallback).
+  if (!web_contents_ || web_contents_->IsBeingDestroyed()) {
+    delete this;
+    return;
+  }
+  constrained_window::ShowWebModalDialogViews(this, web_contents_.get());
 }
 
 void CardUnmaskPromptViews::ControllerGone() {
@@ -138,10 +123,7 @@ void CardUnmaskPromptViews::GotVerificationResult(
       SetRetriableErrorMessage(error_message);
     } else {
       SetRetriableErrorMessage(std::u16string());
-
-      // Rows cannot be replaced in GridLayout, so we reset it.
       overlay_->RemoveAllChildViews();
-      views::GridLayout* layout = ResetOverlayLayout(overlay_);
 
       // The label of the overlay will now show the error in red.
       auto error_label = std::make_unique<views::Label>(error_message);
@@ -156,9 +138,8 @@ void CardUnmaskPromptViews::GotVerificationResult(
           std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
               kBrowserToolsErrorIcon, ui::kColorAlertHighSeverity));
 
-      layout->StartRow(1.0, 0);
-      layout->AddView(std::move(error_icon));
-      layout->AddView(std::move(error_label));
+      overlay_->AddChildView(std::move(error_icon));
+      overlay_->AddChildView(std::move(error_label));
 
       // If it is a virtual card retrieval failure, we will need to update the
       // window title.
@@ -183,10 +164,10 @@ void CardUnmaskPromptViews::SetRetriableErrorMessage(
   // Update the dialog's size.
   if (GetWidget() && web_contents_) {
     constrained_window::UpdateWebContentsModalDialogPosition(
-        GetWidget(),
-        web_modal::WebContentsModalDialogManager::FromWebContents(web_contents_)
-            ->delegate()
-            ->GetWebContentsModalDialogHost());
+        GetWidget(), web_modal::WebContentsModalDialogManager::FromWebContents(
+                         web_contents_.get())
+                         ->delegate()
+                         ->GetWebContentsModalDialogHost());
   }
 
   Layout();
@@ -266,11 +247,11 @@ bool CardUnmaskPromptViews::Accept() {
 
   controller_->OnUnmaskPromptAccepted(
       cvc_input_->GetText(),
-      month_input_->GetVisible()
-          ? month_input_->GetTextForRow(month_input_->GetSelectedIndex())
-          : std::u16string(),
+      month_input_->GetVisible() ? month_input_->GetTextForRow(
+                                       month_input_->GetSelectedIndex().value())
+                                 : std::u16string(),
       year_input_->GetVisible()
-          ? year_input_->GetTextForRow(year_input_->GetSelectedIndex())
+          ? year_input_->GetTextForRow(year_input_->GetSelectedIndex().value())
           : std::u16string(),
       /*enable_fido_auth=*/false);
   return false;
@@ -294,9 +275,9 @@ void CardUnmaskPromptViews::DateChanged() {
       SetRetriableErrorMessage(std::u16string());
     }
   } else if (month_input_->GetSelectedIndex() !=
-                 month_combobox_model_.GetDefaultIndex() &&
+                 month_combobox_model_.GetDefaultIndex().value() &&
              year_input_->GetSelectedIndex() !=
-                 year_combobox_model_.GetDefaultIndex()) {
+                 year_combobox_model_.GetDefaultIndex().value()) {
     month_input_->SetInvalid(true);
     year_input_->SetInvalid(true);
     SetRetriableErrorMessage(l10n_util::GetStringUTF16(
@@ -405,18 +386,22 @@ void CardUnmaskPromptViews::InitIfNecessary() {
 
   // On top of the main contents, we add the progress/error overlay and hide it.
   // A child view will be added to it when about to be shown.
-  auto overlay = std::make_unique<views::View>();
-  views::GridLayout* overlay_layout = ResetOverlayLayout(overlay.get());
-  overlay->SetVisible(false);
-
-  progress_throbber_ =
-      overlay_layout->AddView(std::make_unique<views::Throbber>());
-
-  auto overlay_label = std::make_unique<views::Label>(l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_CARD_UNMASK_VERIFICATION_IN_PROGRESS));
-  overlay_label_ = overlay_layout->AddView(std::move(overlay_label));
-
-  overlay_ = AddChildView(std::move(overlay));
+  overlay_ = AddChildView(
+      views::Builder<views::BoxLayoutView>()
+          .SetBetweenChildSpacing(
+              ChromeLayoutProvider::Get()->GetDistanceMetric(
+                  views::DISTANCE_RELATED_LABEL_HORIZONTAL))
+          .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter)
+          .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter)
+          .SetVisible(false)
+          .AddChildren(
+              views::Builder<views::Throbber>().CopyAddressTo(
+                  &progress_throbber_),
+              views::Builder<views::Label>()
+                  .CopyAddressTo(&overlay_label_)
+                  .SetText(l10n_util::GetStringUTF16(
+                      IDS_AUTOFILL_CARD_UNMASK_VERIFICATION_IN_PROGRESS)))
+          .Build());
 }
 
 bool CardUnmaskPromptViews::ExpirationDateIsValid() const {
@@ -424,8 +409,8 @@ bool CardUnmaskPromptViews::ExpirationDateIsValid() const {
     return true;
 
   return controller_->InputExpirationIsValid(
-      month_input_->GetTextForRow(month_input_->GetSelectedIndex()),
-      year_input_->GetTextForRow(year_input_->GetSelectedIndex()));
+      month_input_->GetTextForRow(month_input_->GetSelectedIndex().value()),
+      year_input_->GetTextForRow(year_input_->GetSelectedIndex().value()));
 }
 
 void CardUnmaskPromptViews::ClosePrompt() {

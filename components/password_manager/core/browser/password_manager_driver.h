@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,15 +27,17 @@ namespace password_manager {
 
 class PasswordAutofillManager;
 class PasswordGenerationFrameHelper;
-class PasswordManager;
+class PasswordManagerInterface;
 
 // Interface that allows PasswordManager core code to interact with its driver
 // (i.e., obtain information from it and give information to it).
 class PasswordManagerDriver
     : public base::SupportsWeakPtr<PasswordManagerDriver> {
  public:
+#if BUILDFLAG(IS_ANDROID)
   using ShowVirtualKeyboard =
       base::StrongAlias<class ShowVirtualKeyboardTag, bool>;
+#endif
 
   PasswordManagerDriver() = default;
 
@@ -48,7 +50,7 @@ class PasswordManagerDriver
   virtual int GetId() const = 0;
 
   // Fills forms matching |form_data|.
-  virtual void FillPasswordForm(
+  virtual void SetPasswordFillData(
       const autofill::PasswordFormFillData& form_data) = 0;
 
   // Informs the driver that there are no saved credentials in the password
@@ -78,8 +80,6 @@ class PasswordManagerDriver
       autofill::FieldRendererId generation_element_id,
       const std::u16string& password) {}
 
-  virtual void TouchToFillClosed(ShowVirtualKeyboard show_virtual_keyboard) {}
-
   // Tells the driver to fill the form with the |username| and |password|.
   virtual void FillSuggestion(const std::u16string& username,
                               const std::u16string& password) = 0;
@@ -89,6 +89,15 @@ class PasswordManagerDriver
   virtual void FillIntoFocusedField(
       bool is_password,
       const std::u16string& user_provided_credential) {}
+
+#if BUILDFLAG(IS_ANDROID)
+  // Informs the renderer that the Touch To Fill sheet has been closed.
+  // Indicates whether the virtual keyboard should be shown instead.
+  virtual void TouchToFillClosed(ShowVirtualKeyboard show_virtual_keyboard) {}
+
+  // Triggers form submission on the last interacted web input element.
+  virtual void TriggerFormSubmission() {}
+#endif
 
   // Tells the driver to preview filling form with the |username| and
   // |password|.
@@ -102,7 +111,7 @@ class PasswordManagerDriver
   virtual PasswordGenerationFrameHelper* GetPasswordGenerationHelper() = 0;
 
   // Returns the PasswordManager associated with this instance.
-  virtual PasswordManager* GetPasswordManager() = 0;
+  virtual PasswordManagerInterface* GetPasswordManager() = 0;
 
   // Returns the PasswordAutofillManager associated with this instance.
   virtual PasswordAutofillManager* GetPasswordAutofillManager() = 0;

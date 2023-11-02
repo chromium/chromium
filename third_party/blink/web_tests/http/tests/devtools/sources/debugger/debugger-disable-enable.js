@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,18 +34,19 @@
   }
 
   function step4() {
-    TestRunner.addResult('function evaluated without a pause on the breakpoint.');
-    TestRunner.debuggerModel.addEventListener(SDK.DebuggerModel.Events.DebuggerWasEnabled, step5, this);
+    TestRunner.addResult('Function evaluated without a pause on the breakpoint.');
+    TestRunner.addSniffer(TestRunner.debuggerModel, "setBreakpointByURL", step5);
+    TestRunner.addResult('Enabling debugger.');
     TestRunner.debuggerModel.enableDebugger();
   }
 
   function step5() {
-    TestRunner.addResult('Debugger was enabled');
-    TestRunner.debuggerModel.removeEventListener(SDK.DebuggerModel.Events.DebuggerWasEnabled, step5, this);
+    TestRunner.addResult('Breakpoint was set after re-enabling.');
     SourcesTestRunner.runTestFunctionAndWaitUntilPaused(step6);
   }
 
   function step6() {
+    TestRunner.addResult('Function evaluated and paused on breakpoint.');
     SourcesTestRunner.completeDebuggerTest();
   }
 })();

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/cdm_context.h"
@@ -104,7 +105,7 @@ class MEDIA_MOJO_EXPORT MojoDecryptorService final : public mojom::Decryptor {
   // Helper class to send decrypted DecoderBuffer to the client.
   std::unique_ptr<MojoDecoderBufferWriter> decrypted_buffer_writer_;
 
-  media::Decryptor* decryptor_;
+  raw_ptr<media::Decryptor> decryptor_;
 
   // Holds the CdmContextRef to keep the CdmContext alive for the lifetime of
   // the |decryptor_|.

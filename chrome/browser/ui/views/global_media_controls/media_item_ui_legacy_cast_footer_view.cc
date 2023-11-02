@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_item.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/global_media_controls/public/media_item_manager.h"
@@ -26,9 +27,9 @@
 
 namespace {
 
-constexpr gfx::Insets kInsets{6, 15};
+constexpr auto kInsets = gfx::Insets::VH(6, 15);
 constexpr gfx::Size kSize{400, 30};
-constexpr gfx::Insets kBorderInsets{4, 8};
+constexpr auto kBorderInsets = gfx::Insets::VH(4, 8);
 
 }  // anonymous namespace
 
@@ -49,14 +50,16 @@ MediaItemUILegacyCastFooterView::MediaItemUILegacyCastFooterView(
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(
           IDS_GLOBAL_MEDIA_CONTROLS_STOP_CASTING_BUTTON_LABEL)));
-  views::InstallRoundRectHighlightPathGenerator(
-      stop_cast_button_, gfx::Insets(), kSize.height() / 2);
+  const int radius = ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
+      views::Emphasis::kMaximum, kSize);
+  views::InstallRoundRectHighlightPathGenerator(stop_cast_button_,
+                                                gfx::Insets(), radius);
 
   views::InkDrop::Get(stop_cast_button_)
       ->SetMode(views::InkDropHost::InkDropMode::ON);
   stop_cast_button_->SetFocusBehavior(FocusBehavior::ALWAYS);
   stop_cast_button_->SetBorder(views::CreatePaddedBorder(
-      views::CreateRoundedRectBorder(1, kSize.height() / 2, foreground_color_),
+      views::CreateRoundedRectBorder(1, radius, foreground_color_),
       kBorderInsets));
   UpdateColors();
 }
@@ -91,7 +94,9 @@ void MediaItemUILegacyCastFooterView::UpdateColors() {
   // Update button icon.
   stop_cast_button_->SetEnabledTextColors(foreground_color_);
   views::InkDrop::Get(stop_cast_button_)->SetBaseColor(foreground_color_);
+  const int radius = ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
+      views::Emphasis::kMaximum, kSize);
   stop_cast_button_->SetBorder(views::CreatePaddedBorder(
-      views::CreateRoundedRectBorder(1, kSize.height() / 2, foreground_color_),
+      views::CreateRoundedRectBorder(1, radius, foreground_color_),
       kBorderInsets));
 }

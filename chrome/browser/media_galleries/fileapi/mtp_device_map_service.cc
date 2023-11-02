@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -127,7 +127,7 @@ MTPDeviceAsyncDelegate* MTPDeviceMapService::GetMTPDeviceAsyncDelegate(
   base::FilePath device_path;
   if (!storage::ExternalMountPoints::GetSystemInstance()->GetRegisteredPath(
           filesystem_id, &device_path)) {
-    return NULL;
+    return nullptr;
   }
 
   const base::FilePath::StringType& device_location = device_path.value();
@@ -135,7 +135,7 @@ MTPDeviceAsyncDelegate* MTPDeviceMapService::GetMTPDeviceAsyncDelegate(
   MTPDeviceFileSystemMap::const_iterator mtp_device_map_it =
       mtp_device_map_.find(filesystem_id);
   if (mtp_device_map_it == mtp_device_map_.end())
-    return NULL;
+    return nullptr;
 
   DCHECK_EQ(device_path.value(), mtp_device_map_it->second.first);
   const bool read_only = mtp_device_map_it->second.second;

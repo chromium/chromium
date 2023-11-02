@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/network_change_notifier.h"
@@ -87,7 +87,7 @@ class PositionCacheImpl
   static Hash MakeKey(const WifiData& wifi_data);
   void EvictEntry(const Hash& hash);
 
-  const base::TickClock* clock_;
+  raw_ptr<const base::TickClock> clock_;
   std::vector<CacheEntry> data_;
   mojom::Geoposition last_used_position_;
 };

@@ -1,10 +1,11 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/events/event_source.h"
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/events/event_rewriter_continuation.h"
 #include "ui/events/event_sink.h"
 
@@ -77,8 +78,8 @@ class EventSource::EventRewriterContinuationImpl
   }
 
  private:
-  EventSource* const source_;
-  EventRewriter* rewriter_;
+  const raw_ptr<EventSource> source_;
+  raw_ptr<EventRewriter> rewriter_;
   EventRewriterList::iterator self_;
 
   base::WeakPtrFactory<EventRewriterContinuationImpl> weak_ptr_factory_{this};
@@ -126,7 +127,7 @@ EventDispatchDetails EventSource::SendEventToSinkFromRewriter(
     // EventRewriters don't expect an event with differing location and
     // root-location (because they don't honor the target). Provide such an
     // event.
-    event_for_rewriting_ptr = ui::Event::Clone(*event);
+    event_for_rewriting_ptr = event->Clone();
     event_for_rewriting_ptr->AsLocatedEvent()->set_location_f(
         event_for_rewriting_ptr->AsLocatedEvent()->root_location_f());
     event_for_rewriting = event_for_rewriting_ptr.get();

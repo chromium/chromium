@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,11 @@
 
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/style_util.h"
 #include "base/bind.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
@@ -22,10 +23,8 @@ CaptureModeButton::CaptureModeButton(views::Button::PressedCallback callback,
                                      const gfx::VectorIcon& icon)
     : views::ImageButton(callback) {
   ConfigureButton(this, views::FocusRing::Get(this));
-  const SkColor normal_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonIconColor);
-  SetImage(views::Button::STATE_NORMAL,
-           gfx::CreateVectorIcon(icon, normal_color));
+  SetImageModel(views::Button::STATE_NORMAL,
+                ui::ImageModel::FromVectorIcon(icon, kColorAshButtonIconColor));
 }
 
 // static
@@ -41,8 +40,7 @@ void CaptureModeButton::ConfigureButton(views::ImageButton* button,
   button->GetViewAccessibility().OverrideIsLeaf(true);
 
   button->SetInstallFocusRingOnFocus(true);
-  focus_ring->SetColor(AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor));
+  focus_ring->SetColorId(ui::kColorAshFocusRing);
   focus_ring->SetPathGenerator(
       std::make_unique<views::CircleHighlightPathGenerator>(
           capture_mode::kButtonPadding));

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,20 +26,20 @@ class BrowserViewRendererClient {
   // Called to trigger view invalidations.
   // This calls postInvalidateOnAnimation if outside of a vsync, otherwise it
   // calls invalidate.
-  virtual void PostInvalidate() = 0;
+  virtual void PostInvalidate(bool inside_vsync) = 0;
 
   // Called to get view's absolute location on the screen.
   virtual gfx::Point GetLocationOnScreen() = 0;
 
   // Try to set the view's scroll offset to |new_value|.
-  virtual void ScrollContainerViewTo(const gfx::Vector2d& new_value) = 0;
+  virtual void ScrollContainerViewTo(const gfx::Point& new_value) = 0;
 
   // Sets the following:
   // view's scroll offset cap to |max_scroll_offset|,
   // current contents_size to |contents_size_dip|,
   // the current page scale to |page_scale_factor| and page scale limits
   // to |min_page_scale_factor|..|max_page_scale_factor|.
-  virtual void UpdateScrollState(const gfx::Vector2d& max_scroll_offset,
+  virtual void UpdateScrollState(const gfx::Point& max_scroll_offset,
                                  const gfx::SizeF& contents_size_dip,
                                  float page_scale_factor,
                                  float min_page_scale_factor,
@@ -47,7 +47,8 @@ class BrowserViewRendererClient {
 
   // Handle overscroll.
   virtual void DidOverscroll(const gfx::Vector2d& overscroll_delta,
-                             const gfx::Vector2dF& overscroll_velocity) = 0;
+                             const gfx::Vector2dF& overscroll_velocity,
+                             bool inside_vsync) = 0;
 
   // Create a text selection handle on demand.
   virtual ui::TouchHandleDrawable* CreateDrawable() = 0;

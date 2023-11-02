@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,21 +19,28 @@ class PasswordEditDialogProperties {
      * selected username.
      */
     static final PropertyModel
-            .ReadableObjectPropertyKey<Callback<Integer>> USERNAME_SELECTED_CALLBACK =
-            new PropertyModel.ReadableObjectPropertyKey<>();
+            .ReadableObjectPropertyKey<Callback<String>> USERNAME_CHANGED_CALLBACK =
+            new PropertyModel.ReadableObjectPropertyKey<>("username selected callback");
 
     static final PropertyModel.ReadableObjectPropertyKey<List<String>> USERNAMES =
-            new PropertyModel.ReadableObjectPropertyKey<>();
+            new PropertyModel.ReadableObjectPropertyKey<>("usernames");
 
-    static final PropertyModel.WritableIntPropertyKey SELECTED_USERNAME_INDEX =
-            new PropertyModel.WritableIntPropertyKey();
+    static final PropertyModel.WritableObjectPropertyKey<String> USERNAME =
+            new PropertyModel.WritableObjectPropertyKey<>("username");
 
-    static final PropertyModel.ReadableObjectPropertyKey<String> PASSWORD =
-            new PropertyModel.ReadableObjectPropertyKey<>();
+    static final PropertyModel.WritableObjectPropertyKey<String> PASSWORD =
+            new PropertyModel.WritableObjectPropertyKey<>("password");
 
     static final PropertyModel.ReadableObjectPropertyKey<String> FOOTER =
-            new PropertyModel.ReadableObjectPropertyKey<>();
+            new PropertyModel.ReadableObjectPropertyKey<>("footer");
 
-    static final PropertyKey[] ALL_KEYS = {
-            USERNAME_SELECTED_CALLBACK, USERNAMES, SELECTED_USERNAME_INDEX, PASSWORD, FOOTER};
+    static final PropertyModel
+            .ReadableObjectPropertyKey<Callback<String>> PASSWORD_CHANGED_CALLBACK =
+            new PropertyModel.ReadableObjectPropertyKey<>("password changed callback");
+
+    static final PropertyModel.WritableObjectPropertyKey<String> PASSWORD_ERROR =
+            new PropertyModel.WritableObjectPropertyKey<>("empty password error");
+
+    static final PropertyKey[] ALL_KEYS = {USERNAME_CHANGED_CALLBACK, USERNAMES, USERNAME, PASSWORD,
+            PASSWORD_CHANGED_CALLBACK, PASSWORD_ERROR, FOOTER};
 }

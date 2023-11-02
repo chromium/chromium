@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,9 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_KEY_MANAGEMENT_CORE_SIGNING_KEY_PAIR_H_
 
 #include <memory>
-#include <string>
-#include <vector>
 
-#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "crypto/unexportable_key.h"
 
 namespace crypto {
 class UnexportableSigningKey;
@@ -19,40 +16,36 @@ class UnexportableSigningKey;
 
 namespace enterprise_connectors {
 
-// Class in charge of using a stored signing key and providing cryptographic
-// functionality.
+// Class in charge of storing a signing key and its trust level.
 class SigningKeyPair {
  public:
   using KeyTrustLevel =
       enterprise_management::BrowserPublicKeyUploadRequest::KeyTrustLevel;
 
-  // Uses `persistence_delegate` to create a SigningKeyPair instance based on
-  // a key that has already been persisted on the system. Returns absl::nullopt
-  // if no key was found.
-  static absl::optional<SigningKeyPair> Create(
-      KeyPersistenceDelegate* persistence_delegate);
-
-  SigningKeyPair(std::unique_ptr<crypto::UnexportableSigningKey> key_pair,
+  SigningKeyPair(std::unique_ptr<crypto::UnexportableSigningKey> signing_key,
                  KeyTrustLevel trust_level);
-
-  SigningKeyPair(SigningKeyPair&& other);
-  SigningKeyPair& operator=(SigningKeyPair&& other);
 
   SigningKeyPair(const SigningKeyPair&) = delete;
   SigningKeyPair& operator=(const SigningKeyPair&) = delete;
 
   ~SigningKeyPair();
 
+  bool is_empty() const {
+    return trust_level_ ==
+               enterprise_management::BrowserPublicKeyUploadRequest::
+                   KEY_TRUST_LEVEL_UNSPECIFIED ||
+           !key();
+  }
+
   crypto::UnexportableSigningKey* key() const {
-    return key_pair_ ? key_pair_.get() : nullptr;
+    return signing_key_ ? signing_key_.get() : nullptr;
   }
 
   KeyTrustLevel trust_level() const { return trust_level_; }
 
  private:
-  std::unique_ptr<crypto::UnexportableSigningKey> key_pair_;
-  KeyTrustLevel trust_level_ = enterprise_management::
-      BrowserPublicKeyUploadRequest::KEY_TRUST_LEVEL_UNSPECIFIED;
+  std::unique_ptr<crypto::UnexportableSigningKey> signing_key_;
+  KeyTrustLevel trust_level_;
 };
 
 }  // namespace enterprise_connectors

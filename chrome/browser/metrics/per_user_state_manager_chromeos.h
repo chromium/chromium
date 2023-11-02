@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,21 @@
 
 #include <string>
 
+#include "base/callback_list.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "base/task/thread_pool.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/profile_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/metrics/metrics_log_store.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/metrics/metrics_service.h"
+#include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/user_manager/user.h"
@@ -33,12 +41,16 @@ namespace metrics {
 // assumption is only true in Ash Chrome.
 class PerUserStateManagerChromeOS
     : public user_manager::UserManager::UserSessionStateObserver,
-      public user_manager::UserManager::Observer {
+      public user_manager::UserManager::Observer,
+      public ash::SessionTerminationManager::Observer {
  public:
+  // Callback to handle changes in user metrics consent.
+  using MetricsConsentHandler = base::RepeatingCallback<void(bool)>;
+
   // Does not own params passed by pointer. Caller should ensure that the
   // lifetimes of the weak pointers exceed that of |this|.
   PerUserStateManagerChromeOS(
-      MetricsServiceClient* metrics_service_client_,
+      MetricsServiceClient* metrics_service_client,
       user_manager::UserManager* user_manager,
       PrefService* local_state,
       const MetricsLogStore::StorageLimits& storage_limits,
@@ -59,18 +71,28 @@ class PerUserStateManagerChromeOS
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Returns the user_id of the current logged in user. If no user is logged in,
-  // returns absl::nullopt.
+  // returns absl::nullopt. If a user has logged in and has opted-out, will
+  // return absl::nullopt.
   //
   // If the user has opted-into metrics collection and is not ephemeral, then
   // this will return the pseudo-anonymous identifier associated with the user.
-  // If the user has opted-out, then this will return empty string instead of
-  // absl::nullopt since it is used to write to the pref.
   absl::optional<std::string> GetCurrentUserId() const;
 
-  // Returns the consent of the current logged in user. If no user is logged in,
-  // returns absl::nullopt. True means that the user has opted-into metrics
-  // collection during the session and False means that the user has opted-out.
-  absl::optional<bool> GetCurrentUserConsent() const;
+  // Returns the consent of the current logged in user only if current user's
+  // consent should be applied to metrics reporting.
+  //
+  // The cases in which this occurs are:
+  //
+  //    1) Regular non-owner users on non-managed devices.
+  //    2) Guest users on non-owned devices.
+  //
+  // If no user is logged in, returns absl::nullopt. True means that the user
+  // has opted-into metrics collection during the session and False means that
+  // the user has opted-out.
+  //
+  // Note: Use this function over GetUserConsentIfApplicable() to retrieve user
+  // metrics reporting status.
+  absl::optional<bool> GetCurrentUserReportingConsentIfApplicable() const;
 
   // Sets the metric consent for the current logged in user. If no user is
   // logged in, no-ops.
@@ -82,13 +104,6 @@ class PerUserStateManagerChromeOS
   //
   // This call should be used to toggle consent from the UI or during OOBE flow
   // for the current user.
-  //
-  // Initialization must be deferred in some cases since the initial consent
-  // will determine where the logs will be stored. If
-  // ShouldWaitForFirstConsent() is true for the current user, then
-  // initialization will be deferred until this function is called at least
-  // once. For specific cases, refer to documentation in
-  // ShouldWaitForFirstConsent().
   void SetCurrentUserMetricsConsent(bool metrics_consent);
 
   // Returns true if a user log store in the user cryptohome should be used for
@@ -107,6 +122,19 @@ class PerUserStateManagerChromeOS
   // This will return false for managed device users as well as guest users.
   bool IsUserAllowedToChangeConsent(user_manager::User* user) const;
 
+  // Adds an observer |callback| to be called when a user consent should be
+  // applied. This happens either when an applicable user logs in or an
+  // applicable user changes metrics consent.
+  base::CallbackListSubscription AddObserver(
+      const MetricsConsentHandler& callback);
+
+  // Sets behavior of IsReportingPolicyManaged() for testing.
+  //
+  // TODO(crbug/1269950): Investigate why ash::LoginManagerTest does not work
+  // with ash::ScopedStubInstallAttributes. Remove this function once resolved
+  // as it is hack to force PerUserStateManagerChromeOS to return a fixed value.
+  static void SetIsManagedForTesting(bool is_managed);
+
  protected:
   // These methods are marked virtual to stub out for testing.
 
@@ -123,11 +151,6 @@ class PerUserStateManagerChromeOS
   // |metrics_service_client_| implementation.
   virtual void ForceClientIdReset();
 
-  // Sets the reporting state for metrics collection. Default uses
-  // |metrics_service_client_| implementation. Should not be called if
-  // IsReportingPolicyManaged() is true.
-  virtual void SetReportingState(bool metrics_consent);
-
   // Returns true if the reporting policy is managed.
   virtual bool IsReportingPolicyManaged() const;
 
@@ -138,6 +161,25 @@ class PerUserStateManagerChromeOS
   // Returns true if user log store has been set to be used to persist metric
   // logs.
   virtual bool HasUserLogStore() const;
+
+  // Returns true if the device is owned either by a policy or a local owner.
+  //
+  // See //chrome/browser/ash/settings/device_settings_service.h for more
+  // details as to when a device is considered owned and how a device becomes
+  // owned.
+  virtual bool IsDeviceOwned() const;
+
+  // These methods are protected to avoid dependency on DeviceSettingsService
+  // during testing.
+
+  // Ensures that ownership status is known before proceeding with using
+  // profile prefs.
+  virtual void WaitForOwnershipStatus();
+
+  // Loads appropriate prefs from |current_user_| and creates new log storage
+  // using profile prefs.
+  void InitializeProfileMetricsState(
+      ash::DeviceSettingsService::OwnershipStatus status);
 
  private:
   // Possible states for |this|.
@@ -152,21 +194,11 @@ class PerUserStateManagerChromeOS
     // User profile has been created and ready to use.
     USER_PROFILE_READY = 2,
 
-    // Waiting on the first consent to determine if a user log store should be
-    // used or not.
-    //
-    // Guest sessions before device consent is set should use log store if guest
-    // session disables metrics reporting since the temporary cryptohome
-    // partition will be deleted at the end of the guest session.
-    //
-    // This state is skipped for all other users.
-    WAITING_ON_FIRST_CONSENT = 3,
-
     // User log store has been initialized, if applicable. Per-user consent
     // now can be changed if the user has permissions to change consent.
     //
     // Terminal state.
-    USER_LOG_STORE_HANDLED = 4,
+    USER_LOG_STORE_HANDLED = 3,
   };
 
   // UserManager::UserSessionStateObserver:
@@ -175,16 +207,8 @@ class PerUserStateManagerChromeOS
   // UserManager::Observer:
   void OnUserToBeRemoved(const AccountId& account_id) override;
 
-  // Loads appropriate prefs from |current_user_| and creates new log storage
-  // using profile prefs.
-  void InitializeProfileMetricsState();
-
-  // Called when the metrics consent is set for the first time and
-  // |ShouldWaitForFirstConsent()| returns true.
-  //
-  // Sets the log store if |metrics_consent| is false. If true, then logs should
-  // be written to local state to be persisted.
-  void OnFirstConsent(bool metrics_consent);
+  // ash::SessionTerminationManager::Observer:
+  void OnSessionWillBeTerminated() override;
 
   // Updates the current user ID to |new_user_id|. Updates both the profile pref
   // as well as local state pref.
@@ -200,17 +224,24 @@ class PerUserStateManagerChromeOS
   // the primary log store for ongoing logs.
   void AssignUserLogStore();
 
-  // Returns true if log store creation should be deferred until first consent
-  // is set. This will return true if |current_user_| is a guest and the device
-  // has no owner and is not managed.
+  // Sets the reporting state for metrics collection. Notifies observers that
+  // user metrics consent has changed to |metrics_consent|.
+  void SetReportingState(bool metrics_consent);
+
+  // Notifies observers of the per-user state change |metrics_consent|.
+  void NotifyObservers(bool metrics_consent);
+
+  // Updates local state prefs based on |metrics_enabled|. If |metrics_enabled|
+  // is true,
   //
-  // Normally, a guest session's metrics consent is determined by the owner's
-  // consent and whether to use the user log store or local state log store can
-  // be immediately determined at the start of a session. However, if no owner
-  // is set, this cannot be determined immediately and initialization of which
-  // log store to use for the session will be deferred until the guest user has
-  // selected metrics consent during OOBE flow.
-  bool ShouldWaitForFirstConsent() const;
+  //    1) Client ID will be reset if the user has ever had metrics reporting
+  //       enabled. This is to preserve the pseudo-anonymous identifier
+  //       <client_id, user_id>.
+  void UpdateLocalStatePrefs(bool metrics_enabled);
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  base::RepeatingCallbackList<void(bool)> callback_list_;
 
   // Raw pointer to Metrics service client that should own |this|.
   MetricsServiceClient* const metrics_service_client_;
@@ -234,6 +265,9 @@ class PerUserStateManagerChromeOS
 
   // Current state for |this|.
   State state_ = State::CONSTRUCTED;
+
+  // Task runner. Used to persist state to daemon-store.
+  scoped_refptr<base::SequencedTaskRunner> task_runner_ = nullptr;
 
   base::WeakPtrFactory<PerUserStateManagerChromeOS> weak_ptr_factory_{this};
 };

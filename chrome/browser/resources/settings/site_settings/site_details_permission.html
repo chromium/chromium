@@ -3,30 +3,30 @@
       <div id="permissionItem"
           class$="list-item [[permissionInfoStringClass_(site.source,
                                                          category,
-                                                         site.setting,
-                                                         site.settingDetail)]]">
+                                                         site.setting)]]">
         <div>
-          <iron-icon icon="[[icon]]">
+          <iron-icon icon="[[icon]]" aria-hidden="true" role="presentation">
           </iron-icon>
         </div>
-        <div class="middle" id="permissionHeader" aria-hidden="true">
+        <div class="middle" id="permissionHeader">
           [[label]]
           <div class="secondary" id="permissionSecondary"
               hidden$="[[!hasPermissionInfoString_(site.source,
                                                    category,
-                                                   site.setting,
-                                                   site.settingDetail)]]"
+                                                   site.setting)]]"
               inner-h-t-m-l="[[permissionInfoString_(
                 site.source,
                 category,
                 site.setting,
-                site.settingDetail,
                 '$i18nPolymer{siteSettingsAllowlisted}',
                 '$i18nPolymer{siteSettingsAdsBlockBlocklistedSingular}',
                 '$i18nPolymer{siteSettingsAdsBlockNotBlocklistedSingular}',
                 '$i18nPolymer{siteSettingsSourceEmbargo}',
                 '$i18nPolymer{siteSettingsSourceInsecureOrigin}',
                 '$i18nPolymer{siteSettingsSourceKillSwitch}',
+<if expr="is_win and _google_chrome">
+                '$i18nPolymer{siteSettingsProtectedContentIdentifiersAllowedSubLabel}',
+</if>
                 '$i18nPolymer{siteSettingsSourceExtensionAllow}',
                 '$i18nPolymer{siteSettingsSourceExtensionBlock}',
                 '$i18nPolymer{siteSettingsSourceExtensionAsk}',

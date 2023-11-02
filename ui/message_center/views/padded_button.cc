@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@ namespace message_center {
 
 PaddedButton::PaddedButton(PressedCallback callback)
     : views::ImageButton(std::move(callback)) {
-  SetBorder(views::CreateEmptyBorder(gfx::Insets(kControlButtonBorderSize)));
+  SetBorder(views::CreateEmptyBorder(kControlButtonBorderSize));
   SetAnimateOnStateChange(false);
 
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);

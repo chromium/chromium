@@ -1,15 +1,19 @@
 The **IDL compiler** or **bindings generator** [transcompiles](http://en.wikipedia.org/wiki/Transcompiler) [Web IDL](https://sites.google.com/a/chromium.org/dev/blink/webidl) to C++ code, specifically [bindings](http://en.wikipedia.org/wiki/Language_binding) between V8 (the [JavaScript engine](http://en.wikipedia.org/wiki/JavaScript_engine)) and Blink. That is, when an attribute or method in a [Web IDL interface](https://sites.google.com/a/chromium.org/dev/developers/web-idl-interfaces) is used from JavaScript, V8 calls the bindings code, which calls Blink code.
 
-As of early 2014, there are almost 700 IDL files, over 2,000 attributes, and almost 4,000 methods. This bindings code is highly repetitive, primarily passing values (arguments and return values) between V8 and Blink and doing various conversions and checks (e.g., type checking), hence it is mostly machine-generated.
+As of early 2022, there are almost 2,000 IDL files, about 5,000 attributes and 3,000 operations. This bindings code is highly repetitive, primarily passing values (arguments and return values) between V8 and Blink and doing various conversions and checks (e.g., type checking), hence it is mostly machine-generated.
 
-This is complicated by numerous parameters and special cases, due to either wanting to automatically generate repetitive code (so Blink implementation is simpler), supporting quirks of Web interfaces, or Blink implementation details. The compiler is under active development, due to adding new features (bug [345506](https://code.google.com/p/chromium/issues/detail?id=345506)), adjusting to changes in V8 or Blink, and reducing technical debt, particularly custom bindings (manually written bindings, bug [345519](https://code.google.com/p/chromium/issues/detail?id=345519)). By far the majority of development occurs on the _back end_ (**code generator**); the _front end_ and overall structure is quite stable.
+This is complicated by numerous parameters and special cases, due to either wanting to automatically generate repetitive code (so that the Blink implementation is simpler), supporting quirks of Web interfaces, or Blink implementation details.
 
-Users of the IDL compiler consist of:
-*   Blink (hence Chromium), which uses the whole compiler in the build (to generate V8 bindings) – this is the primary use.
-*   Other bindings generators (who want to compile Blink IDL files), which use the front end and optionally parts of the top-level compiler and build scripts.
-*   Other IDL use: Web IDL is a convenient format for specifying JavaScript interfaces, and the front end can be used for reading these files, most simply using the IR object (`IdlDefinitions`).
+The compiler is in [renderer/bindings/scripts](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/bindings/scripts/), and bindings are generated as part of the build.
 
-The compiler is in [Source/bindings/scripts](https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/renderer/bindings/scripts/), and bindings are generated as part of the build (see [IDL build](https://sites.google.com/a/chromium.org/dev/developers/design-documents/idl-build)). The top-level file [idl_compiler.py](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/bindings/scripts/idl_compiler.py), can be invoked directly (if you want to compile a single file), or via [tools/run_bindings_tests.py](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/tools/run_bindings_tests.py). The rest of this document describes design, implementation, and use.
+**The rest of this document is obsolete.**
+See
+[renderer/bindings/scripts/web_idl/README.md](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/bindings/scripts/web_idl/README.md)
+and
+[renderer/bindings/scripts/bind_gen/README.md](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/bindings/scripts/bind_gen/README.md)
+about the design of the current bindings generator.
+
+TODO(yukishiino): Update this document.
 
 ## Overall structure
 The compiler is factored into a pipeline, and the steps further divided into separate Python modules. While there are a number of components, each is simple and well-defined, and generally only one or two must be considered at a time.

@@ -1,11 +1,14 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 
+#include "ash/app_list/app_list_controller_impl.h"
+#include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
+#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -15,6 +18,7 @@
 #include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/wm/work_area_insets.h"
 #include "ui/base/class_property.h"
+#include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(ash::CollisionDetectionUtils::RelativePriority)
@@ -57,8 +61,7 @@ gfx::Rect ComputeCollisionRectFromBounds(const gfx::Rect& bounds,
   gfx::Rect collision_rect = bounds;
   ::wm::ConvertRectToScreen(parent, &collision_rect);
   if (inset) {
-    collision_rect.Inset(-kCollisionWindowWorkAreaInsetsDp,
-                         -kCollisionWindowWorkAreaInsetsDp);
+    collision_rect.Inset(-kCollisionWindowWorkAreaInsetsDp);
   }
   return collision_rect;
 }
@@ -87,9 +90,10 @@ std::vector<gfx::Rect> CollectCollisionRects(
     auto* shelf = Shelf::ForWindow(root_window);
     auto* shelf_window = shelf->GetWindow();
     if (shelf->IsVisible() &&
-        !ShouldIgnoreWindowForCollision(shelf_window, priority))
+        !ShouldIgnoreWindowForCollision(shelf_window, priority)) {
       rects.push_back(ComputeCollisionRectFromBounds(
           shelf_window->GetTargetBounds(), shelf_window->parent()));
+    }
 
     // Explicitly add popup notifications as they are not in the notification
     // tray.
@@ -99,9 +103,10 @@ std::vector<gfx::Rect> CollectCollisionRects(
       if (window->IsVisible() && !window->GetTargetBounds().IsEmpty() &&
           window->GetName() ==
               AshMessagePopupCollection::kMessagePopupWidgetName &&
-          !ShouldIgnoreWindowForCollision(window, priority))
+          !ShouldIgnoreWindowForCollision(window, priority)) {
         rects.push_back(ComputeCollisionRectFromBounds(
             window->GetTargetBounds(), window->parent()));
+      }
     }
 
     // The hotseat doesn't span the whole width of the display, but to allow
@@ -110,10 +115,16 @@ std::vector<gfx::Rect> CollectCollisionRects(
     auto* hotseat_widget = shelf->hotseat_widget();
     if (hotseat_widget) {
       auto* hotseat_window = hotseat_widget->GetNativeWindow();
-      gfx::Rect hotseat_rect{root_window->bounds().x(),
-                             hotseat_window->GetTargetBounds().y(),
-                             root_window->bounds().width(),
-                             hotseat_window->GetTargetBounds().height()};
+      gfx::Rect hotseat_rect =
+          shelf->IsHorizontalAlignment()
+              ? gfx::Rect(root_window->bounds().x(),
+                          hotseat_window->GetTargetBounds().y(),
+                          root_window->bounds().width(),
+                          hotseat_window->GetTargetBounds().height())
+              : gfx::Rect(hotseat_window->GetTargetBounds().x(),
+                          root_window->bounds().y(),
+                          hotseat_window->GetTargetBounds().width(),
+                          root_window->bounds().height());
       if (hotseat_widget->state() != HotseatState::kHidden &&
           hotseat_widget->state() != HotseatState::kNone &&
           !ShouldIgnoreWindowForCollision(hotseat_window, priority)) {
@@ -176,6 +187,29 @@ std::vector<gfx::Rect> CollectCollisionRects(
             ->GetNativeWindow();
     rects.push_back(ComputeCollisionRectFromBounds(
         capture_bar_window->GetTargetBounds(), capture_bar_window->parent()));
+  }
+
+  // Check the camera preview if it exists.
+  auto* camera_preview_widget =
+      capture_mode_controller->camera_controller()->camera_preview_widget();
+  if (camera_preview_widget && camera_preview_widget->IsVisible()) {
+    aura::Window* camera_preview_window =
+        camera_preview_widget->GetNativeWindow();
+    rects.push_back(
+        ComputeCollisionRectFromBounds(camera_preview_window->GetTargetBounds(),
+                                       camera_preview_window->parent()));
+  }
+
+  // Avoid clamshell-mode launcher bubble.
+  auto* app_list_controller = Shell::Get()->app_list_controller();
+  if (features::IsProductivityLauncherEnabled() &&
+      !Shell::Get()->IsInTabletMode() &&
+      app_list_controller->GetTargetVisibility(display.id())) {
+    aura::Window* window = app_list_controller->GetWindow();
+    if (window) {
+      rects.push_back(ComputeCollisionRectFromBounds(window->GetTargetBounds(),
+                                                     window->parent()));
+    }
   }
 
   return rects;
@@ -267,8 +301,7 @@ gfx::Rect CollisionDetectionUtils::GetMovementArea(
       WorkAreaInsets::ForWindow(Shell::GetRootWindowForDisplayId(display.id()))
           ->user_work_area_bounds();
 
-  work_area.Inset(kCollisionWindowWorkAreaInsetsDp,
-                  kCollisionWindowWorkAreaInsetsDp);
+  work_area.Inset(kCollisionWindowWorkAreaInsetsDp);
   return work_area;
 }
 
@@ -370,17 +403,18 @@ gfx::Rect CollisionDetectionUtils::AvoidObstaclesInternal(
 
   // For even sized bounds, there is no 'center' integer point, so we need
   // to adjust the obstacles and work area to account for this.
-  inset_work_area.Inset(
-      bounds_in_screen.width() / 2, bounds_in_screen.height() / 2,
-      (bounds_in_screen.width() - 1) / 2, (bounds_in_screen.height() - 1) / 2);
+  inset_work_area.Inset(gfx::Insets::TLBR(
+      bounds_in_screen.height() / 2, bounds_in_screen.width() / 2,
+      (bounds_in_screen.height() - 1) / 2, (bounds_in_screen.width() - 1) / 2));
   std::vector<gfx::Rect> inset_rects(rects);
   for (auto& rect : inset_rects) {
     // Reduce the collision resolution problem from rectangles-rectangle
     // resolution to rectangles-point resolution, by expanding each obstacle
     // by |bounds_in_screen| size.
-    rect.Inset(-(bounds_in_screen.width() - 1) / 2,
-               -(bounds_in_screen.height() - 1) / 2,
-               -bounds_in_screen.width() / 2, -bounds_in_screen.height() / 2);
+    rect.Inset(gfx::Insets::TLBR(-(bounds_in_screen.height() - 1) / 2,
+                                 -(bounds_in_screen.width() - 1) / 2,
+                                 -bounds_in_screen.height() / 2,
+                                 -bounds_in_screen.width() / 2));
   }
 
   gfx::Point moved_center = ComputeBestCandidatePoint(

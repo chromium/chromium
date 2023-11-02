@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -632,10 +632,18 @@ var availableTests = [
         assertEq({
           ConnectionState: ConnectionStateType.NOT_CONNECTED,
           GUID: 'stub_wifi2',
+          IPAddressConfigType: {
+            Active: 'DHCP',
+            Effective: 'UserPolicy'
+          },
           Name: {
             Active: 'wifi2_PSK',
             Effective: 'UserPolicy',
             UserPolicy: 'My WiFi Network'
+          },
+          NameServersConfigType: {
+            Active: 'DHCP',
+            Effective: 'UserPolicy'
           },
           ProxySettings: {
             Type: {
@@ -644,20 +652,16 @@ var availableTests = [
               UserPolicy: 'Direct'
             }
           },
-          IPAddressConfigType: {
-            Active: 'DHCP',
-            Effective: 'UserPolicy'
-          },
-          NameServersConfigType: {
-            Active: 'DHCP',
-            Effective: 'UserPolicy'
-          },
           Source: 'UserPolicy',
           Type: NetworkType.WI_FI,
           WiFi: {
             AutoConnect: {
-              UserEditable: true
+              Effective: 'UserPolicy',
+              UserEditable: true,
+              UserPolicy: false
             },
+            Frequency: 5000,
+            FrequencyList: [2400, 5000],
             HexSSID: {
               Active: '77696669325F50534B', // 'wifi2_PSK'
               Effective: 'UserPolicy',
@@ -668,8 +672,6 @@ var availableTests = [
               Effective: 'UserPolicy',
               UserPolicy: false,
             },
-            Frequency: 5000,
-            FrequencyList: [2400, 5000],
             Passphrase: {
               Effective: 'UserSetting',
               UserEditable: true,

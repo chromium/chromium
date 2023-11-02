@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,6 +31,28 @@ public class CloudManagementSharedPreferencesTest {
         Assert.assertEquals(SharedPreferencesManager.getInstance().readString(
                                     ChromePreferenceKeys.CLOUD_MANAGEMENT_DM_TOKEN, ""),
                 DM_TOKEN);
+    }
+
+    @Test
+    @SmallTest
+    public void testDeleteDmToken() {
+        CloudManagementSharedPreferences.saveDmToken(DM_TOKEN);
+        Assert.assertEquals(SharedPreferencesManager.getInstance().readString(
+                                    ChromePreferenceKeys.CLOUD_MANAGEMENT_DM_TOKEN, ""),
+                DM_TOKEN);
+        CloudManagementSharedPreferences.deleteDmToken();
+        Assert.assertEquals(SharedPreferencesManager.getInstance().readString(
+                                    ChromePreferenceKeys.CLOUD_MANAGEMENT_DM_TOKEN, ""),
+                "");
+    }
+
+    @Test
+    @SmallTest
+    public void testDeleteEmptyDmToken() {
+        CloudManagementSharedPreferences.deleteDmToken();
+        Assert.assertEquals(SharedPreferencesManager.getInstance().readString(
+                                    ChromePreferenceKeys.CLOUD_MANAGEMENT_DM_TOKEN, ""),
+                "");
     }
 
     @Test

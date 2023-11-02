@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
-#include "components/sync/nigori/nigori_test_utils.h"
+#include "components/sync/test/nigori_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -41,9 +41,12 @@ class TwoClientCustomPassphraseSyncTest : public SyncTest {
 
   bool WaitForBookmarksToMatch() { return BookmarksMatchChecker().Wait(); }
 
-  bool WaitForPassphraseRequiredState(int index, bool desired_state) {
-    return PassphraseRequiredStateChecker(GetSyncService(index), desired_state)
-        .Wait();
+  bool WaitForPassphraseRequired(int index) {
+    return PassphraseRequiredChecker(GetSyncService(index)).Wait();
+  }
+
+  bool WaitForPassphraseAccepted(int index) {
+    return PassphraseAcceptedChecker(GetSyncService(index)).Wait();
   }
 
   void AddTestBookmarksToClient(int index) {
@@ -62,8 +65,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientCustomPassphraseSyncTest,
   GetSyncService(kEncryptingClientId)
       ->GetUserSettings()
       ->SetEncryptionPassphrase("hunter2");
-  ASSERT_TRUE(WaitForPassphraseRequiredState(kDecryptingClientId,
-                                             /*desired_state=*/true));
+  ASSERT_TRUE(WaitForPassphraseRequired(kDecryptingClientId));
   EXPECT_FALSE(GetSyncService(kDecryptingClientId)
                    ->GetUserSettings()
                    ->SetDecryptionPassphrase("incorrect passphrase"));
@@ -79,13 +81,11 @@ IN_PROC_BROWSER_TEST_F(TwoClientCustomPassphraseSyncTest, ClientsCanSyncData) {
   GetSyncService(kEncryptingClientId)
       ->GetUserSettings()
       ->SetEncryptionPassphrase("hunter2");
-  ASSERT_TRUE(WaitForPassphraseRequiredState(kDecryptingClientId,
-                                             /*desired_state=*/true));
+  ASSERT_TRUE(WaitForPassphraseRequired(kDecryptingClientId));
   EXPECT_TRUE(GetSyncService(kDecryptingClientId)
                   ->GetUserSettings()
                   ->SetDecryptionPassphrase("hunter2"));
-  EXPECT_TRUE(WaitForPassphraseRequiredState(kDecryptingClientId,
-                                             /*desired_state=*/false));
+  EXPECT_TRUE(WaitForPassphraseAccepted(kDecryptingClientId));
   AddTestBookmarksToClient(kEncryptingClientId);
 
   ASSERT_TRUE(
@@ -111,9 +111,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientCustomPassphraseSyncTest,
       UpdatedProgressMarkerChecker(GetSyncService(kEncryptingClientId)).Wait());
 
   // Set up a new sync client.
-  ASSERT_TRUE(GetClient(kDecryptingClientId)
-                  ->SetupSyncNoWaitForCompletion(
-                      GetRegisteredSelectableTypes(kDecryptingClientId)));
+  ASSERT_TRUE(GetClient(kDecryptingClientId)->SetupSyncNoWaitForCompletion());
   ASSERT_TRUE(
       PassphraseRequiredChecker(GetSyncService(kDecryptingClientId)).Wait());
 

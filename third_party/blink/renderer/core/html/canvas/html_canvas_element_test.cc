@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
+#include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
@@ -34,39 +35,25 @@ TEST_P(HTMLCanvasElementTest, CreateLayerUpdatesCompositing) {
 
   SetBodyInnerHTML("<canvas id='canvas'></canvas>");
   auto* canvas = To<HTMLCanvasElement>(GetDocument().getElementById("canvas"));
-  auto* layer = GetPaintLayerByElementId("canvas");
-  ASSERT_TRUE(layer);
-  EXPECT_FALSE(layer->GetLayoutObject()
-                   .FirstFragment()
+  EXPECT_FALSE(canvas->GetLayoutObject()
+                   ->FirstFragment()
                    .PaintProperties()
                    ->PaintOffsetTranslation());
-  EXPECT_EQ(CompositingReason::kNone, layer->DirectCompositingReasons());
 
-  EXPECT_FALSE(layer->GetLayoutObject().NeedsPaintPropertyUpdate());
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_FALSE(layer->SelfNeedsRepaint());
-  } else {
-    EXPECT_FALSE(layer->NeedsCompositingInputsUpdate());
-  }
+  EXPECT_FALSE(canvas->GetLayoutObject()->NeedsPaintPropertyUpdate());
+  auto* painting_layer = GetLayoutObjectByElementId("canvas")->PaintingLayer();
+  EXPECT_FALSE(painting_layer->SelfNeedsRepaint());
   canvas->CreateLayer();
-  EXPECT_TRUE(layer->GetLayoutObject().NeedsPaintPropertyUpdate());
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_TRUE(layer->SelfNeedsRepaint());
-  } else {
-    EXPECT_TRUE(layer->NeedsCompositingInputsUpdate());
-  }
+  EXPECT_FALSE(canvas->GetLayoutObject()->NeedsPaintPropertyUpdate());
+  EXPECT_TRUE(painting_layer->SelfNeedsRepaint());
   UpdateAllLifecyclePhasesForTest();
-  ASSERT_EQ(layer,
-            To<LayoutBoxModelObject>(canvas->GetLayoutObject())->Layer());
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_TRUE(layer->GetLayoutObject()
-                    .FirstFragment()
-                    .PaintProperties()
-                    ->PaintOffsetTranslation()
-                    ->HasDirectCompositingReasons());
-  } else {
-    EXPECT_EQ(CompositingReason::kCanvas, layer->DirectCompositingReasons());
-  }
+  ASSERT_EQ(
+      painting_layer,
+      To<LayoutBoxModelObject>(canvas->GetLayoutObject())->PaintingLayer());
+  EXPECT_FALSE(canvas->GetLayoutObject()
+                   ->FirstFragment()
+                   .PaintProperties()
+                   ->PaintOffsetTranslation());
 }
 
 TEST_P(HTMLCanvasElementTest, CanvasInvalidation) {
@@ -149,6 +136,13 @@ TEST_P(HTMLCanvasElementTest, CanvasInvalidationInFrame) {
   ChildDocument().body()->appendChild(script);
   EXPECT_TRUE(
       GetDocument().GetPage()->Animator().has_canvas_invalidation_for_test());
+}
+
+TEST_P(HTMLCanvasElementTest, BrokenCanvasHighRes) {
+  EXPECT_NE(HTMLCanvasElement::BrokenCanvas(2.0).first,
+            HTMLCanvasElement::BrokenCanvas(1.0).first);
+  EXPECT_EQ(HTMLCanvasElement::BrokenCanvas(2.0).second, 2.0);
+  EXPECT_EQ(HTMLCanvasElement::BrokenCanvas(1.0).second, 1.0);
 }
 
 }  // namespace blink

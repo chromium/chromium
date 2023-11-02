@@ -1,11 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "extensions/browser/api/web_request/web_request_resource_type.h"
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
@@ -37,7 +36,7 @@ constexpr struct {
     {"other", WebRequestResourceType::OTHER},
 };
 
-constexpr size_t kResourceTypesLength = base::size(kResourceTypes);
+constexpr size_t kResourceTypesLength = std::size(kResourceTypes);
 
 static_assert(kResourceTypesLength ==
                   base::strict_cast<size_t>(WebRequestResourceType::OTHER) + 1,
@@ -98,6 +97,7 @@ WebRequestResourceType ToWebRequestResourceType(
     case network::mojom::RequestDestination::kAudioWorklet:
     case network::mojom::RequestDestination::kManifest:
     case network::mojom::RequestDestination::kPaintWorklet:
+    case network::mojom::RequestDestination::kWebIdentity:
       return WebRequestResourceType::OTHER;
   }
   NOTREACHED();

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@ bool ParseAnswer(const std::string& answer_json, SuggestionAnswer* answer) {
 
   // ParseAnswer previously did not change the default answer type of -1, so
   // here we keep the same behavior by explicitly supplying default value.
-  return SuggestionAnswer::ParseAnswer(*value, u"-1", answer);
+  return SuggestionAnswer::ParseAnswer(value->GetDict(), u"-1", answer);
 }
 
 }  // namespace
@@ -320,6 +320,23 @@ TEST(SuggestionAnswerTest, AddImageURLsTo) {
   answer.AddImageURLsTo(&urls);
   ASSERT_EQ(1U, urls.size());
   EXPECT_EQ(GURL("https://gstatic.com/bar.jpg"), urls[0]);
+}
+
+TEST(SuggestionAnswerTest, ParseAccessibilityLabel) {
+  SuggestionAnswer answer;
+  std::string json =
+      "{ \"l\": ["
+      "  { \"il\": { \"t\": [{ \"t\": \"text\", \"tt\": 8 }] } }, "
+      "  { \"il\": { \"al\": \"accessibility label\", "
+      "              \"at\": { \"t\": \"additional text\", \"tt\": 12 }, "
+      "              \"t\": [{ \"t\": \"other text\", \"tt\": 5 }] } }] }";
+  ASSERT_TRUE(ParseAnswer(json, &answer));
+
+  EXPECT_FALSE(answer.first_line().accessibility_label());
+
+  const std::u16string* label = answer.second_line().accessibility_label();
+  ASSERT_NE(label, nullptr);
+  EXPECT_EQ(*label, u"accessibility label");
 }
 
 TEST(SuggestionAnswerTest, LogAnswerUsed) {

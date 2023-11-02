@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,18 @@
 #define CONTENT_PUBLIC_COMMON_URL_UTILS_H_
 
 #include "content/common/content_export.h"
+#include "url/origin.h"
 
 class GURL;
 
 namespace content {
 
-// Returns true if the url has a scheme for WebUI.  See also
+// Returns true if the url has a scheme for WebUI. See also
 // WebUIControllerFactory::UseWebUIForURL in the browser process.
 CONTENT_EXPORT bool HasWebUIScheme(const GURL& url);
+
+// Returns true if the origin is a WebUI.
+CONTENT_EXPORT bool HasWebUIOrigin(const url::Origin& origin);
 
 // Check whether we can do the saving page operation for the specified URL.
 CONTENT_EXPORT bool IsSavableURL(const GURL& url);

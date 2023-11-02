@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
@@ -37,8 +36,10 @@ class PLATFORM_EXPORT Hyphenation : public RefCounted<Hyphenation> {
   static const unsigned kMinimumSuffixLength = 2;
 
  protected:
+  void Initialize(const AtomicString& locale);
+
   bool ShouldHyphenateWord(const StringView& word) const {
-    if (word.IsEmpty())
+    if (word.empty())
       return false;
     // Avoid hyphenating capitalized words.
     return hyphenate_capitalized_word_ || !WTF::unicode::IsUpper(word[0]);

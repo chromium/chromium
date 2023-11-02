@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,9 @@ namespace url {
 // We allow both "c:" and "c|" as drive identifiers.
 inline bool IsWindowsDriveSeparator(char16_t ch) {
   return ch == ':' || ch == '|';
+}
+inline bool IsWindowsDriveSeparator(char ch) {
+  return IsWindowsDriveSeparator(static_cast<char16_t>(ch));
 }
 
 // Returns the index of the next slash in the input after the given index, or

@@ -33,13 +33,11 @@
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_based_event_listener.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_event.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_html_collection.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_node.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
-#include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -207,6 +205,9 @@ void V8Window::NamedPropertyGetterCustom(
   Frame* child = frame->Tree().ScopedChild(name);
   if (child) {
     window->ReportCoopAccess("named");
+    window->RecordWindowProxyAccessMetrics(
+        WebFeature::kWindowProxyCrossOriginAccessNamedGetter,
+        WebFeature::kWindowProxyCrossOriginAccessFromOtherPageNamedGetter);
     UseCounter::Count(CurrentExecutionContext(info.GetIsolate()),
                       WebFeature::kNamedAccessOnWindow_ChildBrowsingContext);
 
@@ -249,8 +250,19 @@ void V8Window::NamedPropertyGetterCustom(
     return;
   }
 
+  auto* base_doc = To<LocalFrame>(frame)->GetDocument();
+
+  // LocalFrame document pointers can be invalid and lead to crashes while replaying
+  // and inspecting the current state. The underlying reason here is unknown,
+  // for now we workaround the problem by watching for invalid document pointers.
+  // Documents register themselves so we can test for a pointer ID.
+  if (recordreplay::IsInReplayCode() && base_doc && !recordreplay::PointerId(base_doc)) {
+    recordreplay::Warning("V8Window::NamedPropertyGetterCustom invalid document %p", base_doc);
+    return;
+  }
+
   // Search named items in the document.
-  auto* doc = DynamicTo<HTMLDocument>(To<LocalFrame>(frame)->GetDocument());
+  auto* doc = DynamicTo<HTMLDocument>(base_doc);
   if (!doc)
     return;
 
@@ -260,6 +272,9 @@ void V8Window::NamedPropertyGetterCustom(
   if (!has_named_item && !has_id_item)
     return;
   window->ReportCoopAccess("named");
+  window->RecordWindowProxyAccessMetrics(
+      WebFeature::kWindowProxyCrossOriginAccessNamedGetter,
+      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageNamedGetter);
 
   if (!has_named_item && has_id_item &&
       !doc->ContainsMultipleElementsWithId(name)) {

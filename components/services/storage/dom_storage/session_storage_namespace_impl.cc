@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -243,7 +243,7 @@ void SessionStorageNamespaceImpl::CloneAllNamespacesWaitingForClone(
         database, metadata->GetOrCreateNamespaceEntry(parent->namespace_id_));
   }
 
-  auto* delegate = parent->delegate_;
+  auto* delegate = parent->delegate_.get();
   for (const std::string& destination_namespace :
        child_namespaces_waiting_for_clone_call_) {
     if (parent->IsPopulated()) {

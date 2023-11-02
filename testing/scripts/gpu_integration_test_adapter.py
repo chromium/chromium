@@ -1,8 +1,15 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import common
+import os
+import sys
+
+# Add src/testing/ into sys.path for importing common without pylint errors.
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+from scripts import common
+
 
 class GpuIntegrationTestAdapater(common.BaseIsolatedScriptArgsAdapter):
 
@@ -15,10 +22,7 @@ class GpuIntegrationTestAdapater(common.BaseIsolatedScriptArgsAdapter):
   def generate_test_filter_args(self, test_filter_str):
     # isolated_script_test_filter comes in like:
     # WebglExtension_WEBGL_depth_texture::conformance/textures/misc/copytexsubimage2d-subrects.html # pylint: disable=line-too-long
-    # TODO(skbug.com/12149): Remove --has-test-filter once Gold-based tests no
-    # longer clobber earlier results on retry attempts.
-    return ['--test-filter=%s' % test_filter_str,
-            '--has-test-filter']
+    return ['--test-filter=%s' % test_filter_str]
 
   def generate_sharding_args(self, total_shards, shard_index):
     return ['--total-shards=%d' % total_shards,

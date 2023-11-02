@@ -1,8 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/frame/directive.h"
+
+#include "base/notreached.h"
 
 namespace blink {
 
@@ -15,13 +17,16 @@ Directive::Type Directive::GetType() const {
 
 String Directive::type() const {
   DEFINE_STATIC_LOCAL(const String, text, ("text"));
+  DEFINE_STATIC_LOCAL(const String, selector, ("selector"));
 
   switch (type_) {
-    case kText:
-      return text;
     case kUnknown:
       NOTREACHED();
       return String();
+    case kText:
+      return text;
+    case kSelector:
+      return selector;
   }
 
   NOTREACHED();

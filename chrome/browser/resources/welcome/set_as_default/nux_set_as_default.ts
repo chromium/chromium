@@ -1,24 +1,25 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 // <if expr="is_win">
-import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 // </if>
-import '../shared/animations_css.js';
+import '../shared/animations.css.js';
 import '../shared/step_indicator.js';
 import '../strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {navigateToNextStep, NavigationMixin} from '../navigation_mixin.js';
-import {DefaultBrowserInfo, stepIndicatorModel} from '../shared/nux_types.js';
+import {DefaultBrowserInfo, StepIndicatorModel} from '../shared/nux_types.js';
 
+import {getTemplate} from './nux_set_as_default.html.js';
 import {NuxSetAsDefaultProxy, NuxSetAsDefaultProxyImpl} from './nux_set_as_default_proxy.js';
 
 export interface NuxSetAsDefaultElement {
@@ -34,6 +35,10 @@ const NuxSetAsDefaultElementBase =
 export class NuxSetAsDefaultElement extends NuxSetAsDefaultElementBase {
   static get is() {
     return 'nux-set-as-default';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -57,7 +62,7 @@ export class NuxSetAsDefaultElement extends NuxSetAsDefaultElementBase {
   private browserProxy_: NuxSetAsDefaultProxy;
   private finalized_: boolean = false;
   navigateToNextStep: Function;
-  indicatorModel?: stepIndicatorModel;
+  indicatorModel?: StepIndicatorModel;
 
   constructor() {
     super();
@@ -65,7 +70,7 @@ export class NuxSetAsDefaultElement extends NuxSetAsDefaultElementBase {
     this.browserProxy_ = NuxSetAsDefaultProxyImpl.getInstance();
   }
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addWebUIListener(
@@ -73,12 +78,12 @@ export class NuxSetAsDefaultElement extends NuxSetAsDefaultElementBase {
         this.onDefaultBrowserChange_.bind(this));
   }
 
-  onRouteEnter() {
+  override onRouteEnter() {
     this.finalized_ = false;
     this.browserProxy_.recordPageShown();
   }
 
-  onRouteExit() {
+  override onRouteExit() {
     if (this.finalized_) {
       return;
     }
@@ -86,7 +91,7 @@ export class NuxSetAsDefaultElement extends NuxSetAsDefaultElementBase {
     this.browserProxy_.recordNavigatedAwayThroughBrowserHistory();
   }
 
-  onRouteUnload() {
+  override onRouteUnload() {
     if (this.finalized_) {
       return;
     }
@@ -138,10 +143,6 @@ export class NuxSetAsDefaultElement extends NuxSetAsDefaultElementBase {
   private finished_() {
     this.finalized_ = true;
     this.navigateToNextStep();
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,10 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/logging.h"
-#include "chrome/updater/device_management/cloud_policy_util.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/updater/device_management/dm_response_validator.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
 namespace updater {
@@ -170,6 +172,15 @@ std::string ParseDeviceRegistrationResponse(const std::string& response_data) {
   }
 
   return dm_response.register_response().device_management_token();
+}
+
+bool ShouldDeleteDmToken(const std::string& response_data) {
+  enterprise_management::DeviceManagementResponse dm_response;
+  return dm_response.ParseFromString(response_data) &&
+         base::ranges::find(dm_response.error_detail(),
+                            enterprise_management::
+                                CBCM_DELETION_POLICY_PREFERENCE_DELETE_TOKEN) !=
+             dm_response.error_detail().end();
 }
 
 DMPolicyMap ParsePolicyFetchResponse(

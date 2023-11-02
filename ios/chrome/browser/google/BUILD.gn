@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -28,7 +28,6 @@ source_set("google_logo") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/signin",
-    "//ios/chrome/browser/ui/util",
     "//ios/web",
     "//net",
     "//ui/gfx",

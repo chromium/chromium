@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,7 +53,7 @@ enum class DebugScenario {
 
   // RenderFrameProxyHost does not exist when trying to call
   // RenderFrameProxyHost::SetFocusedFrame().
-  kDebugNoRenderFrameProxyHostOnSetFocusedFrame = 9,
+  // 9: kDebugNoRenderFrameProxyHostOnSetFocusedFrame was removed.
 
   // The RenderFrameHost to be restored from the back/forward cache no longer
   // exists for a navigation that is not marked as being restarted.

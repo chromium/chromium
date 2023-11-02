@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,7 +61,7 @@ bool DiskCacheTest::CleanupCacheDir() {
 }
 
 void DiskCacheTest::TearDown() {
-  base::RunLoop().RunUntilIdle();
+  RunUntilIdle();
 }
 
 DiskCacheTestWithCache::TestIterator::TestIterator(
@@ -80,21 +80,7 @@ int DiskCacheTestWithCache::TestIterator::OpenNextEntry(
   return rv;
 }
 
-DiskCacheTestWithCache::DiskCacheTestWithCache()
-    : cache_impl_(nullptr),
-      simple_cache_impl_(nullptr),
-      mem_cache_(nullptr),
-      mask_(0),
-      size_(0),
-      type_(net::DISK_CACHE),
-      memory_only_(false),
-      simple_cache_mode_(false),
-      simple_cache_wait_for_index_(true),
-      force_creation_(false),
-      new_eviction_(false),
-      first_cleanup_(true),
-      integrity_(true),
-      use_current_thread_(false) {}
+DiskCacheTestWithCache::DiskCacheTestWithCache() = default;
 
 DiskCacheTestWithCache::~DiskCacheTestWithCache() = default;
 
@@ -238,7 +224,7 @@ void DiskCacheTestWithCache::FlushQueueForTest() {
     return;
 
   if (simple_cache_impl_) {
-    simple_cache_impl_->FlushWorkerPoolForTesting();
+    disk_cache::FlushCacheThreadForTesting();
     return;
   }
 
@@ -366,8 +352,9 @@ void DiskCacheTestWithCache::TearDown() {
 }
 
 void DiskCacheTestWithCache::InitMemoryCache() {
-  mem_cache_ = new disk_cache::MemBackendImpl(nullptr);
-  cache_.reset(mem_cache_);
+  auto cache = std::make_unique<disk_cache::MemBackendImpl>(nullptr);
+  mem_cache_ = cache.get();
+  cache_ = std::move(cache);
   ASSERT_TRUE(cache_);
 
   if (size_)
@@ -401,30 +388,35 @@ void DiskCacheTestWithCache::CreateBackend(uint32_t flags) {
           std::make_unique<disk_cache::SimpleFileTracker>(64);
     std::unique_ptr<disk_cache::SimpleBackendImpl> simple_backend =
         std::make_unique<disk_cache::SimpleBackendImpl>(
-            cache_path_, /* cleanup_tracker = */ nullptr,
-            simple_file_tracker_.get(), size_, type_, /*net_log = */ nullptr);
-    int rv = simple_backend->Init(cb.callback());
-    ASSERT_THAT(cb.GetResult(rv), IsOk());
+            /*file_operations=*/nullptr, cache_path_,
+            /* cleanup_tracker = */ nullptr, simple_file_tracker_.get(), size_,
+            type_, /*net_log = */ nullptr);
+    simple_backend->Init(cb.callback());
+    ASSERT_THAT(cb.WaitForResult(), IsOk());
     simple_cache_impl_ = simple_backend.get();
     cache_ = std::move(simple_backend);
     if (simple_cache_wait_for_index_) {
       net::TestCompletionCallback wait_for_index_cb;
       simple_cache_impl_->index()->ExecuteWhenReady(
           wait_for_index_cb.callback());
-      rv = wait_for_index_cb.WaitForResult();
+      int rv = wait_for_index_cb.WaitForResult();
       ASSERT_THAT(rv, IsOk());
     }
     return;
   }
 
-  if (mask_)
-    cache_impl_ = new disk_cache::BackendImpl(cache_path_, mask_, runner, type_,
-                                              /* net_log = */ nullptr);
-  else
-    cache_impl_ = new disk_cache::BackendImpl(
+  std::unique_ptr<disk_cache::BackendImpl> cache;
+  if (mask_) {
+    cache = std::make_unique<disk_cache::BackendImpl>(cache_path_, mask_,
+                                                      runner, type_,
+                                                      /* net_log = */ nullptr);
+  } else {
+    cache = std::make_unique<disk_cache::BackendImpl>(
         cache_path_, /* cleanup_tracker = */ nullptr, runner, type_,
         /* net_log = */ nullptr);
-  cache_.reset(cache_impl_);
+  }
+  cache_impl_ = cache.get();
+  cache_ = std::move(cache);
   ASSERT_TRUE(cache_);
   if (size_)
     EXPECT_TRUE(cache_impl_->SetMaxSize(size_));
@@ -432,6 +424,6 @@ void DiskCacheTestWithCache::CreateBackend(uint32_t flags) {
     cache_impl_->SetNewEviction();
   cache_impl_->SetFlags(flags);
   net::TestCompletionCallback cb;
-  int rv = cache_impl_->Init(cb.callback());
-  ASSERT_THAT(cb.GetResult(rv), IsOk());
+  cache_impl_->Init(cb.callback());
+  ASSERT_THAT(cb.WaitForResult(), IsOk());
 }

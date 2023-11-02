@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "content/public/browser/bluetooth_delegate.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/bluetooth/web_bluetooth_device_id.h"
@@ -20,19 +21,6 @@ namespace content {
 // separated into a separate interface for readability and testing purposes.
 class WebBluetoothPairingManagerDelegate {
  public:
-  enum class CredentialPromptResult {
-    // User entered text and pressed OK (or equiv.) button.
-    kSuccess,
-    // User cancelled, or agent cancelled on their behalf.
-    kCancelled,
-  };
-
-  // Callback for bluetooth auth credential (PIN, Passkey) prompts.
-  // |result| is only valid when status is SUCCESS.
-  using BluetoothCredentialsCallback =
-      base::OnceCallback<void(CredentialPromptResult,
-                              const std::string& result)>;
-
   // Return the cached device ID for the given characteric instance ID.
   // The returned device ID may be invalid - check before use.
   virtual blink::WebBluetoothDeviceId GetCharacteristicDeviceID(
@@ -63,6 +51,9 @@ class WebBluetoothPairingManagerDelegate {
   // Sends the PIN code |pincode| for the remote device during pairing.
   virtual void SetPinCode(const blink::WebBluetoothDeviceId& device_id,
                           const std::string& pincode) = 0;
+
+  // The user consented to pairing with the Bluetooth device.
+  virtual void PairConfirmed(const blink::WebBluetoothDeviceId& device_id) = 0;
 
   // Reads the value for the characteristic identified by
   // |characteristic_instance_id|. If the value is successfully read the
@@ -114,13 +105,16 @@ class WebBluetoothPairingManagerDelegate {
       blink::mojom::WebBluetoothService::
           RemoteCharacteristicStartNotificationsCallback callback) = 0;
 
-  // Display a dialog to prompt to user for their Bluetooth passkey.
+  // Display a dialog to prompt to user for Bluetooth pairing.
   // |device_identifier| is any string the caller wants to display to the user
   // to identify the device (MAC address, name, etc.). |callback| will be called
-  // with the dialog result.
-  virtual void PromptForBluetoothCredentials(
+  // with the dialog result. |pairng_kind| will be used to determined which
+  // prompt to show.
+  virtual void PromptForBluetoothPairing(
       const std::u16string& device_identifier,
-      BluetoothCredentialsCallback callback) = 0;
+      BluetoothDelegate::PairPromptCallback callback,
+      BluetoothDelegate::PairingKind pairing_kind,
+      const absl::optional<std::u16string>& pin) = 0;
 };
 
 }  // namespace content

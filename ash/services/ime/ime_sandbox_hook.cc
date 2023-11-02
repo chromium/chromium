@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@
 using sandbox::syscall_broker::BrokerFilePermission;
 using sandbox::syscall_broker::MakeBrokerCommandSet;
 
-namespace chromeos {
+namespace ash {
 namespace ime {
 
 namespace {
@@ -73,14 +73,14 @@ bool ImePreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
                                sandbox::policy::SandboxLinux::PreSandboxHook(),
                                options);
 
-  // Try to load IME decoder shared library by creating its instance.
+  // Try to load IME decoder shared library.
   // TODO(crbug.com/1217513): This is not ideal, as it means rule-based
   // input methods will unnecessarily load the IME decoder shared library.
   // Either remove this line, or use a separate sandbox for rule-based.
-  ImeDecoder::GetInstance();
+  ImeDecoderImpl::GetInstance()->MaybeLoadThenReturnEntryPoints();
   instance->EngageNamespaceSandboxIfPossible();
   return true;
 }
 
 }  // namespace ime
-}  // namespace chromeos
+}  // namespace ash

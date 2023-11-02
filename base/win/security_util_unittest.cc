@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,7 @@ namespace {
 constexpr wchar_t kBaseDacl[] = L"D:P(A;;FA;;;WD)";
 constexpr wchar_t kTest1Dacl[] = L"D:PAI(A;;FR;;;AU)(A;;FA;;;WD)";
 constexpr wchar_t kTest2Dacl[] = L"D:PAI(A;;FA;;;BA)(A;;FA;;;AU)(A;;FA;;;WD)";
+constexpr wchar_t kTest1DenyDacl[] = L"D:PAI(D;;FR;;;LG)(A;;FA;;;WD)";
 constexpr wchar_t kTest1DaclNoInherit[] = L"D:P(A;;FR;;;AU)(A;;FA;;;WD)";
 constexpr wchar_t kTest2DaclNoInherit[] =
     L"D:P(A;;FA;;;BA)(A;;FA;;;AU)(A;;FA;;;WD)";
@@ -39,6 +40,7 @@ constexpr wchar_t kTest3InheritedDacl[] = L"D:(A;ID;FR;;;AU)(A;ID;FA;;;WD)";
 constexpr wchar_t kNoWriteDacDacl[] = L"D:(D;;WD;;;OW)(A;;FRSD;;;WD)";
 
 constexpr wchar_t kAuthenticatedUsersSid[] = L"AU";
+constexpr wchar_t kLocalGuestSid[] = L"LG";
 
 std::wstring GetFileDacl(const FilePath& path) {
   PSECURITY_DESCRIPTOR sd;
@@ -72,7 +74,7 @@ bool CreateWithDacl(const FilePath& path, const wchar_t* sddl, bool directory) {
 
   return ScopedHandle(::CreateFile(path.value().c_str(), GENERIC_ALL, 0,
                                    &security_attr, CREATE_ALWAYS, 0, nullptr))
-      .IsValid();
+      .is_valid();
 }
 
 }  // namespace
@@ -136,6 +138,19 @@ TEST(SecurityUtilTest, GrantAccessToPathFileNoInherit) {
   EXPECT_EQ(kTest2DaclNoInherit, GetFileDacl(path));
 }
 
+TEST(SecurityUtilTest, DenyAccessToPathFile) {
+  ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  FilePath path = temp_dir.GetPath().Append(L"test");
+  ASSERT_TRUE(CreateWithDacl(path, kBaseDacl, false));
+  EXPECT_EQ(kBaseDacl, GetFileDacl(path));
+  auto sids = Sid::FromSddlStringVector({kLocalGuestSid});
+  ASSERT_TRUE(sids);
+  EXPECT_TRUE(
+      DenyAccessToPath(path, *sids, FILE_GENERIC_READ, NO_INHERITANCE, true));
+  EXPECT_EQ(kTest1DenyDacl, GetFileDacl(path));
+}
+
 TEST(SecurityUtilTest, GrantAccessToPathDirectory) {
   ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -180,6 +195,44 @@ TEST(SecurityUtilTest, GrantAccessToPathDirectoryNoInherit) {
   ASSERT_TRUE(file2.IsValid());
   file2.Close();
   EXPECT_EQ(kTest3InheritedDacl, GetFileDacl(file_path2));
+}
+
+TEST(SecurityUtilTest, CloneSidVector) {
+  std::vector<Sid> sids =
+      *Sid::FromKnownSidVector({WellKnownSid::kNull, WellKnownSid::kWorld});
+  std::vector<Sid> clone = CloneSidVector(sids);
+  ASSERT_EQ(sids.size(), clone.size());
+  for (size_t index = 0; index < sids.size(); ++index) {
+    ASSERT_EQ(sids[index], clone[index]);
+    ASSERT_NE(sids[index].GetPSID(), clone[index].GetPSID());
+  }
+  ASSERT_EQ(CloneSidVector(std::vector<Sid>()).size(), 0U);
+}
+
+TEST(SecurityUtilTest, AppendSidVector) {
+  std::vector<Sid> sids =
+      *Sid::FromKnownSidVector({WellKnownSid::kNull, WellKnownSid::kWorld});
+
+  std::vector<Sid> total_sids;
+  AppendSidVector(total_sids, sids);
+  EXPECT_EQ(total_sids.size(), sids.size());
+
+  std::vector<Sid> sids2 = *Sid::FromKnownSidVector(
+      {WellKnownSid::kCreatorOwner, WellKnownSid::kNetwork});
+  AppendSidVector(total_sids, sids2);
+  EXPECT_EQ(total_sids.size(), sids.size() + sids2.size());
+
+  auto sid_interator = total_sids.cbegin();
+  for (size_t index = 0; index < sids.size(); ++index) {
+    ASSERT_EQ(*sid_interator, sids[index]);
+    ASSERT_NE(sid_interator->GetPSID(), sids[index].GetPSID());
+    sid_interator++;
+  }
+  for (size_t index = 0; index < sids2.size(); ++index) {
+    ASSERT_EQ(*sid_interator, sids2[index]);
+    ASSERT_NE(sid_interator->GetPSID(), sids2[index].GetPSID());
+    sid_interator++;
+  }
 }
 
 }  // namespace win

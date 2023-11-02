@@ -50,6 +50,12 @@ static constexpr size_t kFontDataTableMaxSize = 250;
 
 namespace blink {
 
+// static
+CSSSegmentedFontFace* CSSSegmentedFontFace::Create(
+    FontSelectionCapabilities capabilities) {
+  return MakeGarbageCollected<CSSSegmentedFontFace>(capabilities);
+}
+
 CSSSegmentedFontFace::CSSSegmentedFontFace(
     FontSelectionCapabilities font_selection_capabilities)
     : font_selection_capabilities_(font_selection_capabilities),
@@ -117,11 +123,12 @@ scoped_refptr<FontData> CSSSegmentedFontFace::GetFontData(
   // usually only a small number of FontData/SegmentedFontData instances created
   // per CSSSegmentedFontFace. Whereas in variable font animations, this number
   // grows rapidly.
-  scoped_refptr<SegmentedFontData>* cached_font_data =
-      font_data_table_.Get(key);
-  if (cached_font_data && (*cached_font_data) &&
-      (*cached_font_data)->NumFaces())
-    return *cached_font_data;
+  auto it = font_data_table_.Get(key);
+  if (it != font_data_table_.end()) {
+    scoped_refptr<SegmentedFontData> cached_font_data = it->second;
+    if (cached_font_data && cached_font_data->NumFaces())
+      return cached_font_data;
+  }
 
   scoped_refptr<SegmentedFontData> created_font_data =
       SegmentedFontData::Create();
@@ -236,7 +243,7 @@ void CSSSegmentedFontFace::Trace(Visitor* visitor) const {
 }
 
 bool FontFaceList::IsEmpty() const {
-  return css_connected_face_.IsEmpty() && non_css_connected_face_.IsEmpty();
+  return css_connected_face_.empty() && non_css_connected_face_.empty();
 }
 
 namespace {

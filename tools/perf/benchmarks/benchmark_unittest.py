@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -43,9 +43,10 @@ class TestNoBenchmarkNamesDuplication(unittest.TestCase):
     for b in all_benchmarks:
       names_to_benchmarks[b.Name()].append(b)
     for n in names_to_benchmarks:
-      self.assertEquals(1, len(names_to_benchmarks[n]),
-                        'Multiple benchmarks with the same name %s are '
-                        'found: %s' % (n, str(names_to_benchmarks[n])))
+      self.assertEqual(
+          1, len(names_to_benchmarks[n]),
+          'Multiple benchmarks with the same name %s are '
+          'found: %s' % (n, str(names_to_benchmarks[n])))
 
 
 class TestBenchmarkNamingMobile(unittest.TestCase):
@@ -74,15 +75,19 @@ class TestNoOverrideCustomizeOptions(unittest.TestCase):
   def runTest(self):
     all_benchmarks = _GetAllPerfBenchmarks()
     for benchmark in all_benchmarks:
-      self.assertEquals(True, issubclass(benchmark,
-                                         perf_benchmark.PerfBenchmark),
-                        'Benchmark %s needs to subclass from PerfBenchmark'
-                        % benchmark.Name())
-      self.assertEquals(
+      self.assertEqual(
+          True, issubclass(benchmark, perf_benchmark.PerfBenchmark),
+          'Benchmark %s needs to subclass from PerfBenchmark' %
+          benchmark.Name())
+      self.assertEqual(
           benchmark.CustomizeOptions,
           perf_benchmark.PerfBenchmark.CustomizeOptions,
           'Benchmark %s should not override CustomizeOptions' %
           benchmark.Name())
+
+
+class BenchmarkOptionsTest(unittest.TestCase):
+  pass
 
 
 def _AddBenchmarkOptionsTests(suite):
@@ -94,8 +99,6 @@ def _AddBenchmarkOptionsTests(suite):
       # No need to test benchmarks that have not defined options.
       continue
 
-    class BenchmarkOptionsTest(unittest.TestCase):
-      pass
     setattr(BenchmarkOptionsTest, benchmark.Name(),
             _BenchmarkOptionsTestGenerator(benchmark))
     suite.addTest(BenchmarkOptionsTest(benchmark.Name()))

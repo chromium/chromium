@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,7 +45,8 @@ WebVector<Manifest::ImageResource> ToImageResource(
   WebVector<Manifest::ImageResource> image_resources;
   for (const auto& icon_definition : icon_definitions) {
     Manifest::ImageResource image_resource;
-    image_resource.src = execution_context->CompleteURL(icon_definition->src);
+    image_resource.src =
+        GURL(execution_context->CompleteURL(icon_definition->src));
     image_resource.type = WebString(icon_definition->type).Utf16();
     for (const auto& size :
          WebIconSizesParser::ParseIconSizes(icon_definition->sizes)) {
@@ -79,18 +80,19 @@ void ContentIndexIconLoader::Start(
     mojom::blink::ContentDescriptionPtr description,
     const Vector<gfx::Size>& icon_sizes,
     IconsCallback callback) {
-  DCHECK(!description->icons.IsEmpty());
-  DCHECK(!icon_sizes.IsEmpty());
+  DCHECK(!description->icons.empty());
+  DCHECK(!icon_sizes.empty());
 
   auto image_resources = ToImageResource(execution_context, description->icons);
 
   auto icons = std::make_unique<Vector<SkBitmap>>();
-  icons->ReserveCapacity(icon_sizes.size());
+  icons->reserve(icon_sizes.size());
   Vector<SkBitmap>* icons_ptr = icons.get();
   auto barrier_closure = base::BarrierClosure(
       icon_sizes.size(),
-      WTF::Bind(&ContentIndexIconLoader::DidGetIcons, WrapPersistent(this),
-                std::move(description), std::move(icons), std::move(callback)));
+      WTF::BindOnce(&ContentIndexIconLoader::DidGetIcons, WrapPersistent(this),
+                    std::move(description), std::move(icons),
+                    std::move(callback)));
 
   for (const auto& icon_size : icon_sizes) {
     // TODO(crbug.com/973844): The same `src` may be chosen more than once.
@@ -104,7 +106,7 @@ void ContentIndexIconLoader::Start(
     // |icons_ptr| is safe to use since it is owned by |barrier_closure|.
     FetchIcon(
         execution_context, icon_url, icon_size, threaded_icon_loader,
-        WTF::Bind(
+        WTF::BindOnce(
             [](base::OnceClosure done_closure, Vector<SkBitmap>* icons_ptr,
                ThreadedIconLoader* icon_loader, SkBitmap icon,
                double resize_scale) {

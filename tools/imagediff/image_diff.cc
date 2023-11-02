@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "tools/imagediff/image_diff_png.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "windows.h"
 #endif
 
@@ -497,7 +497,7 @@ int DiffImages(const base::FilePath& file1,
 // program reads paths on stdin and the program that spawns it outputs
 // paths as non-wide strings anyway.
 base::FilePath FilePathFromASCII(const std::string& str) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::FilePath(base::ASCIIToWide(str));
 #else
   return base::FilePath(str);

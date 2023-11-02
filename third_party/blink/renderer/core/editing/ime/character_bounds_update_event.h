@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,11 +19,14 @@ class CORE_EXPORT CharacterBoundsUpdateEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit CharacterBoundsUpdateEvent(
-      const CharacterBoundsUpdateEventInit* dict);
-  CharacterBoundsUpdateEvent(uint32_t range_start, uint32_t range_end);
+  CharacterBoundsUpdateEvent(const AtomicString& type,
+                             const CharacterBoundsUpdateEventInit* initializer);
+  CharacterBoundsUpdateEvent(const AtomicString& type,
+                             uint32_t range_start,
+                             uint32_t range_end);
   static CharacterBoundsUpdateEvent* Create(
-      const CharacterBoundsUpdateEventInit* dict);
+      const AtomicString& type,
+      const CharacterBoundsUpdateEventInit* initializer);
   ~CharacterBoundsUpdateEvent() override;
 
   uint32_t rangeStart() const;

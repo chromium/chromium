@@ -1,5 +1,5 @@
 #!/usr/bin/env vpython3
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 
 import unittest
+import mock  # pylint: disable=import-error
 
 from pylib.base import base_test_result
 from pylib.base import mock_environment
@@ -19,7 +20,7 @@ from pylib.local.device import local_device_instrumentation_test_run
 class LocalDeviceInstrumentationTestRunTest(unittest.TestCase):
 
   def setUp(self):
-    super(LocalDeviceInstrumentationTestRunTest, self).setUp()
+    super().setUp()
     self._env = mock_environment.MockEnvironment()
     self._ti = mock_test_instance.MockTestInstance()
     self._obj = (
@@ -163,6 +164,33 @@ class LocalDeviceInstrumentationTestRunTest(unittest.TestCase):
     original = ''
     with self.assertRaises(ValueError):
       local_device_instrumentation_test_run._ReplaceUncommonChars(original)
+
+  def testStoreDataInAppDir(self):
+    env = mock.MagicMock()
+    test_instance = mock.MagicMock()
+    test_instance.store_data_in_app_directory = True
+    device = mock.MagicMock()
+
+    device.GetApplicationDataDirectory.return_value = 'app_dir'
+    device.GetExternalStoragePath.return_value = 'external_dir'
+    test_run = (
+        local_device_instrumentation_test_run.LocalDeviceInstrumentationTestRun(
+            env, test_instance))
+    self.assertEqual(test_run._GetDataStorageRootDirectory(device), 'app_dir')
+
+  def testStoreDataInExternalDir(self):
+    env = mock.MagicMock()
+    test_instance = mock.MagicMock()
+    test_instance.store_data_in_app_directory = False
+    device = mock.MagicMock()
+
+    device.GetApplicationDataDirectory.return_value = 'app_dir'
+    device.GetExternalStoragePath.return_value = 'external_dir'
+    test_run = (
+        local_device_instrumentation_test_run.LocalDeviceInstrumentationTestRun(
+            env, test_instance))
+    self.assertEqual(test_run._GetDataStorageRootDirectory(device),
+                     'external_dir')
 
 
 if __name__ == '__main__':

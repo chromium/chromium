@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,24 +25,6 @@ class ASH_EXPORT ScopedLightModeAsDefault {
   // Value of |override_light_mode_as_default_| inside AshColorProvider before
   // setting.
   bool previous_override_light_mode_as_default_;
-};
-
-// As above, but for use in assistant code. Does not change the default mode if
-// feature ProductivityLauncher is enabled, because that feature enables a new
-// version of the app list where the embedded assistant can use dark colors by
-// default. This class can be deleted when either DarkLightMode or
-// ProductivityLauncher is permanently enabled, whichever comes first.
-class ASH_EXPORT ScopedAssistantLightModeAsDefault {
- public:
-  ScopedAssistantLightModeAsDefault();
-  ScopedAssistantLightModeAsDefault(const ScopedAssistantLightModeAsDefault&) =
-      delete;
-  ScopedAssistantLightModeAsDefault& operator=(
-      const ScopedAssistantLightModeAsDefault&) = delete;
-  ~ScopedAssistantLightModeAsDefault();
-
- private:
-  const bool previous_override_light_mode_as_default_;
 };
 
 }  // namespace ash

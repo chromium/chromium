@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,15 +9,16 @@
 
 @protocol FirstRunScreenDelegate;
 
-// Coordinator to present sign-in screen.
+// Coordinator to present sign-in screen with FRE consent (optional).
 @interface SigninScreenCoordinator : InterruptibleChromeCoordinator
 
-// Initiates a SigninScreenCoordinator with |navigationController|,
-// |browser| and |delegate|.
-// The |delegate| parameter is for handling the transfer between screens.
+// Initiates a SigninScreenCoordinator with `navigationController`,
+// `browser` and `delegate`.
+// The `delegate` parameter is for handling the transfer between screens.
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser
+                                  showFREConsent:(BOOL)showFREConsent
                                         delegate:
                                             (id<FirstRunScreenDelegate>)delegate
     NS_DESIGNATED_INITIALIZER;

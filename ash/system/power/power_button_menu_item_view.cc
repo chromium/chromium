@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -57,9 +57,9 @@ PowerButtonMenuItemView::PowerButtonMenuItemView(
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kMenuItem);
   GetViewAccessibility().OverrideName(title_->GetText());
 
-  SetBorder(views::CreateEmptyBorder(kItemBorderThickness, kItemBorderThickness,
-                                     kItemBorderThickness,
-                                     kItemBorderThickness));
+  SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(kItemBorderThickness, kItemBorderThickness,
+                        kItemBorderThickness, kItemBorderThickness)));
 }
 
 PowerButtonMenuItemView::~PowerButtonMenuItemView() = default;

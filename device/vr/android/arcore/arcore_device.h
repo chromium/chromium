@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "base/android/jni_android.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "device/vr/android/arcore/arcore_gl.h"
 #include "device/vr/public/cpp/xr_frame_sink_client.h"
 #include "device/vr/vr_device.h"
@@ -168,6 +167,10 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCoreDevice : public VRDeviceBase {
     std::vector<device::mojom::XRTrackedImagePtr> tracked_images_;
 
     viz::FrameSinkId frame_sink_id_;
+
+    // Trace ID of the requestSession() call that resulted in creating this
+    // session state.
+    uint64_t request_session_trace_id_;
   };
 
   // This object is reset to initial values when ending a session. This helps

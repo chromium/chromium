@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,10 +26,6 @@ class InputPredictor;
 }  // namespace ui
 
 namespace viz {
-// The maximum number of delegated ink points that will be stored at a time.
-// When this is hit, the oldest one will be removed each time a new one is
-// added.
-constexpr int kMaximumDelegatedInkPointsStored = 10;
 
 class VIZ_SERVICE_EXPORT DelegatedInkTrailData {
  public:

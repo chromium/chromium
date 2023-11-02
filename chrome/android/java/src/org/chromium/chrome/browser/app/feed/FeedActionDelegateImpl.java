@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@ import android.content.Context;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
-import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
+import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.feed.FeedActionDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -17,10 +17,11 @@ import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridge;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.share.crow.CrowButtonDelegate;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
+import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.Referrer;
@@ -32,16 +33,19 @@ import org.chromium.url.GURL;
 public class FeedActionDelegateImpl implements FeedActionDelegate {
     private static final String NEW_TAB_URL_HELP = "https://support.google.com/chrome/?p=new_tab";
     private final NativePageNavigationDelegate mNavigationDelegate;
-    private final BookmarkBridge mBookmarkBridge;
+    private final BookmarkModel mBookmarkModel;
     private final Context mActivityContext;
     private final SnackbarManager mSnackbarManager;
+    private final CrowButtonDelegate mCrowButtonDelegate;
 
     public FeedActionDelegateImpl(Context activityContext, SnackbarManager snackbarManager,
-            NativePageNavigationDelegate navigationDelegate, BookmarkBridge bookmarkBridge) {
+            NativePageNavigationDelegate navigationDelegate, BookmarkModel bookmarkModel,
+            CrowButtonDelegate crowButtonDelegate) {
         mActivityContext = activityContext;
         mNavigationDelegate = navigationDelegate;
-        mBookmarkBridge = bookmarkBridge;
+        mBookmarkModel = bookmarkModel;
         mSnackbarManager = snackbarManager;
+        mCrowButtonDelegate = crowButtonDelegate;
     }
     @Override
     public void downloadPage(String url) {
@@ -51,15 +55,16 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
     }
 
     @Override
-    public void openSuggestionUrl(int disposition, LoadUrlParams params, Runnable onPageLoaded,
-            Callback<VisitResult> onVisitComplete) {
+    public void openSuggestionUrl(int disposition, LoadUrlParams params, boolean inGroup,
+            Runnable onPageLoaded, Callback<VisitResult> onVisitComplete) {
         params.setReferrer(
                 new Referrer(SuggestionsConfig.getReferrerUrl(ChromeFeatureList.INTEREST_FEED_V2),
                         // WARNING: ReferrerPolicy.ALWAYS is assumed by other Chrome code for NTP
                         // tiles to set consider_for_ntp_most_visited.
                         org.chromium.network.mojom.ReferrerPolicy.ALWAYS));
 
-        Tab tab = mNavigationDelegate.openUrl(disposition, params);
+        Tab tab = inGroup ? mNavigationDelegate.openUrlInGroup(disposition, params)
+                          : mNavigationDelegate.openUrl(disposition, params);
 
         NewTabPageUma.recordAction(NewTabPageUma.ACTION_OPENED_SNIPPET);
 
@@ -74,7 +79,7 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
                 onVisitComplete.onResult(result);
             });
         }
-        ReturnToChromeExperimentsUtil.onFeedCardOpened();
+        ReturnToChromeUtil.onFeedCardOpened();
     }
 
     @Override
@@ -90,11 +95,26 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
 
     @Override
     public void addToReadingList(String title, String url) {
-        mBookmarkBridge.finishLoadingBookmarkModel(() -> {
+        mBookmarkModel.finishLoadingBookmarkModel(() -> {
             assert ThreadUtils.runningOnUiThread();
             BookmarkUtils.addToReadingList(
-                    new GURL(url), title, mSnackbarManager, mBookmarkBridge, mActivityContext);
+                    new GURL(url), title, mSnackbarManager, mBookmarkModel, mActivityContext);
         });
+    }
+
+    @Override
+    public void openCrow(String url) {
+        if (ChromeFeatureList.isInitialized()
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.SHARE_CROW_BUTTON_LAUNCH_TAB)) {
+            String tabUrl = mCrowButtonDelegate.getUrlForWebFlow(
+                    new GURL(url), GURL.emptyGURL(), /*isFollowing=*/true);
+            mNavigationDelegate.openUrl(
+                    WindowOpenDisposition.NEW_FOREGROUND_TAB, new LoadUrlParams(tabUrl));
+        } else {
+            mCrowButtonDelegate.launchCustomTab(
+                    /*tab=*/null, mActivityContext, new GURL(url), GURL.emptyGURL(),
+                    /*isFollowing=*/true);
+        }
     }
 
     @Override

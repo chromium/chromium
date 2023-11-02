@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2019 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2019 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 <resources>
+    <dimen name="autofill_assistant_backgroundless_privacy_notice_padding_start">40dp</dimen>
     <dimen name="autofill_assistant_bottombar_horizontal_spacing">24dp</dimen>
     <dimen name="autofill_assistant_bottombar_vertical_spacing">20dp</dimen>
     <dimen name="autofill_assistant_details_image_size">60dp</dimen>
@@ -55,4 +58,12 @@
     <dimen name="autofill_assistant_form_line_height_3">88dp</dimen>
 
     <dimen name="autofill_assistant_root_view_top_padding">12dp</dimen>
+
+    <!-- TODO (b/253214983): Revisit the UX regarding the padding used for legal disclaimer. -->
+    <dimen name="autofill_assistant_legal_disclaimer_view_vertical_padding">12dp</dimen>
+    <dimen name="autofill_assistant_legal_disclaimer_view_left_padding">27dp</dimen>
+    <dimen name="autofill_assistant_legal_disclaimer_view_right_padding">18dp</dimen>
+
+    <dimen name="autofill_assistant_loading_spinner_size">20dp</dimen>
+    <dimen name="autofill_assistant_loading_spinner_padding">4dp</dimen>
 </resources>

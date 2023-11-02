@@ -635,7 +635,7 @@ aes_hw_ctr32_encrypt_blocks:
 	//
 	// [0] ARM-EPM-049219 v23 Cortex-A57 MPCore Software Developers Errata Notice
 	// [1] ARM-EPM-012079 v11.0 Cortex-A72 MPCore Software Developers Errata Notice
-#ifndef __ARMEB__
+#ifndef __AARCH64EB__
 	rev	w8, w8
 #endif
 	add	w10, w8, #1

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,6 +38,9 @@ public class TabState {
 
     /** Whether this TabState was created from a file containing info about an incognito Tab. */
     public boolean isIncognito;
+
+    /** Tab level Request Desktop Site setting. */
+    public @TabUserAgent int userAgent;
 
     public boolean isIncognito() {
         return isIncognito;

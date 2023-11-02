@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,12 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/geolocation/simple_geolocation_provider.h"
-#include "ash/components/settings/timezone_settings.h"
 #include "ash/public/cpp/night_light_controller.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/settings/timezone_settings.h"
 
 namespace base {
 class Clock;
@@ -22,6 +22,8 @@ class Clock;
 namespace network {
 class SharedURLLoaderFactory;
 }
+
+namespace ash {
 
 // Periodically requests the IP-based geolocation and provides it to the
 // NightLightController running in ash.
@@ -111,5 +113,7 @@ class NightLightClient : public ash::NightLightController::Observer,
   // geoposition once per day.
   bool using_geoposition_ = false;
 };
+
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_NIGHT_LIGHT_NIGHT_LIGHT_CLIENT_H_

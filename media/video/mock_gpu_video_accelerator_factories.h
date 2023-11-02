@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
@@ -32,7 +33,8 @@ class MockGpuVideoAcceleratorFactories : public GpuVideoAcceleratorFactories {
 
   ~MockGpuVideoAcceleratorFactories() override;
 
-  bool IsGpuVideoAcceleratorEnabled() override;
+  bool IsGpuVideoDecodeAcceleratorEnabled() override;
+  bool IsGpuVideoEncodeAcceleratorEnabled() override;
 
   MOCK_METHOD1(GetChannelToken,
                void(gpu::mojom::GpuChannel::GetChannelTokenCallback));
@@ -46,6 +48,8 @@ class MockGpuVideoAcceleratorFactories : public GpuVideoAcceleratorFactories {
                std::unique_ptr<media::VideoDecoder>(MediaLog*,
                                                     RequestOverlayInfoCB));
 
+  MOCK_METHOD0(GetVideoEncodeAcceleratorSupportedProfiles,
+               absl::optional<VideoEncodeAccelerator::SupportedProfiles>());
   MOCK_METHOD0(IsEncoderSupportKnown, bool());
   MOCK_METHOD1(NotifyEncoderSupportKnown, void(base::OnceClosure));
   // CreateVideoEncodeAccelerator returns scoped_ptr, which the mocking
@@ -93,10 +97,6 @@ class MockGpuVideoAcceleratorFactories : public GpuVideoAcceleratorFactories {
 
   std::unique_ptr<VideoEncodeAccelerator> CreateVideoEncodeAccelerator()
       override;
-  absl::optional<VideoEncodeAccelerator::SupportedProfiles>
-  GetVideoEncodeAcceleratorSupportedProfiles() override {
-    return VideoEncodeAccelerator::SupportedProfiles();
-  }
 
   const std::vector<gfx::GpuMemoryBuffer*>& created_memory_buffers() {
     return created_memory_buffers_;
@@ -110,7 +110,7 @@ class MockGpuVideoAcceleratorFactories : public GpuVideoAcceleratorFactories {
 
   bool fail_to_map_gpu_memory_buffer_ = false;
 
-  gpu::SharedImageInterface* sii_;
+  raw_ptr<gpu::SharedImageInterface> sii_;
 
   std::vector<gfx::GpuMemoryBuffer*> created_memory_buffers_;
 };

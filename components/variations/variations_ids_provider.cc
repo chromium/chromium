@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,16 @@
 #include <algorithm>
 
 #include "base/base64.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
 #include "components/variations/proto/client_variations.pb.h"
+#include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_client.h"
 #include "components/variations/variations_features.h"
 
@@ -76,6 +79,8 @@ VariationsIdsProvider::GetClientDataHeaders(bool is_signed_in) {
 
   if (mode_ == Mode::kIgnoreSignedInState)
     is_signed_in = true;
+  else if (mode_ == Mode::kDontSendSignedInVariations)
+    is_signed_in = false;
 
   std::string first_party_header_copy;
   std::string any_context_header_copy;
@@ -154,13 +159,15 @@ void VariationsIdsProvider::SetLowEntropySourceValue(
 VariationsIdsProvider::ForceIdsResult VariationsIdsProvider::ForceVariationIds(
     const std::vector<std::string>& variation_ids,
     const std::string& command_line_variation_ids) {
-  default_variation_ids_set_.clear();
+  force_enabled_ids_set_.clear();
 
-  if (!AddVariationIdsToSet(variation_ids, &default_variation_ids_set_))
+  if (!AddVariationIdsToSet(variation_ids, /*should_dedupe=*/true,
+                            &force_enabled_ids_set_))
     return ForceIdsResult::INVALID_VECTOR_ENTRY;
 
   if (!ParseVariationIdsParameter(command_line_variation_ids,
-                                  &default_variation_ids_set_)) {
+                                  /*should_dedupe=*/true,
+                                  &force_enabled_ids_set_)) {
     return ForceIdsResult::INVALID_SWITCH_ENTRY;
   }
   if (variation_ids_cache_initialized_) {
@@ -175,7 +182,12 @@ VariationsIdsProvider::ForceIdsResult VariationsIdsProvider::ForceVariationIds(
 bool VariationsIdsProvider::ForceDisableVariationIds(
     const std::string& command_line_variation_ids) {
   force_disabled_ids_set_.clear();
+  // |should_dedupe| is false here in order to add the IDs specified in
+  // |command_line_variation_ids| to |force_disabled_ids_set_| even if they were
+  // defined before. The IDs are not marked as active; they are marked as
+  // disabled.
   if (!ParseVariationIdsParameter(command_line_variation_ids,
+                                  /*should_dedupe=*/false,
                                   &force_disabled_ids_set_)) {
     return false;
   }
@@ -204,7 +216,7 @@ void VariationsIdsProvider::ResetForTesting() {
   base::FieldTrialList::RemoveObserver(this);
   variation_ids_cache_initialized_ = false;
   variation_ids_set_.clear();
-  default_variation_ids_set_.clear();
+  force_enabled_ids_set_.clear();
   synthetic_variation_ids_set_.clear();
   force_disabled_ids_set_.clear();
   variations_headers_map_.clear();
@@ -248,13 +260,16 @@ void VariationsIdsProvider::OnSyntheticTrialsChanged(
   synthetic_variation_ids_set_.clear();
   for (const SyntheticTrialGroup& group : groups) {
     VariationID id = GetGoogleVariationIDFromHashes(
-        GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, group.id);
+        GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, group.id());
+    // TODO(crbug/1294948): Handle duplicated IDs in such a way that is visible
+    // to developers, but non-intrusive to users. See
+    // crrev/c/3628020/comments/e278cd12_2bb863ef for discussions.
     if (id != EMPTY_ID) {
       synthetic_variation_ids_set_.insert(
           VariationIDEntry(id, GOOGLE_WEB_PROPERTIES_ANY_CONTEXT));
     }
     id = GetGoogleVariationIDFromHashes(GOOGLE_WEB_PROPERTIES_SIGNED_IN,
-                                        group.id);
+                                        group.id());
     if (id != EMPTY_ID) {
       synthetic_variation_ids_set_.insert(
           VariationIDEntry(id, GOOGLE_WEB_PROPERTIES_SIGNED_IN));
@@ -298,6 +313,9 @@ void VariationsIdsProvider::CacheVariationsId(const std::string& trial_name,
   for (int i = 0; i < ID_COLLECTION_COUNT; ++i) {
     IDCollectionKey key = static_cast<IDCollectionKey>(i);
     const VariationID id = GetGoogleVariationID(key, trial_name, group_name);
+    // TODO(crbug/1294948): Handle duplicated IDs in such a way that is visible
+    // to developers, but non-intrusive to users. See
+    // crrev/c/3628020/comments/e278cd12_2bb863ef for discussions.
     if (id != EMPTY_ID)
       variation_ids_set_.insert(VariationIDEntry(id, key));
   }
@@ -397,10 +415,10 @@ std::string VariationsIdsProvider::GenerateBase64EncodedProto(
   // This is the bottleneck for the creation of the header, so validate the size
   // here. Force a hard maximum on the ID count in case the Variations server
   // returns too many IDs and DOSs receiving servers with large requests.
-  DCHECK_LE(total_id_count, 50U);
+  DCHECK_LE(total_id_count, 75U);
   UMA_HISTOGRAM_COUNTS_100("Variations.Headers.ExperimentCount",
                            total_id_count);
-  if (total_id_count > 75)
+  if (total_id_count > 100)
     return std::string();
 
   std::string serialized;
@@ -411,9 +429,9 @@ std::string VariationsIdsProvider::GenerateBase64EncodedProto(
   return hashed;
 }
 
-// static
 bool VariationsIdsProvider::AddVariationIdsToSet(
     const std::vector<std::string>& variation_ids,
+    bool should_dedupe,
     std::set<VariationIDEntry>* target_set) {
   for (const std::string& entry : variation_ids) {
     if (entry.empty()) {
@@ -430,6 +448,14 @@ bool VariationsIdsProvider::AddVariationIdsToSet(
       target_set->clear();
       return false;
     }
+
+    if (should_dedupe && IsDuplicateId(variation_id)) {
+      DVLOG(1) << "Invalid variation ID specified: " << entry
+               << " (it is already in use)";
+      target_set->clear();
+      return false;
+    }
+
     target_set->insert(VariationIDEntry(
         variation_id, trigger_id ? GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT
                                  : GOOGLE_WEB_PROPERTIES_ANY_CONTEXT));
@@ -437,9 +463,9 @@ bool VariationsIdsProvider::AddVariationIdsToSet(
   return true;
 }
 
-// static
 bool VariationsIdsProvider::ParseVariationIdsParameter(
     const std::string& command_line_variation_ids,
+    bool should_dedupe,
     std::set<VariationIDEntry>* target_set) {
   if (command_line_variation_ids.empty())
     return true;
@@ -447,7 +473,8 @@ bool VariationsIdsProvider::ParseVariationIdsParameter(
   std::vector<std::string> variation_ids_from_command_line =
       base::SplitString(command_line_variation_ids, ",", base::TRIM_WHITESPACE,
                         base::SPLIT_WANT_ALL);
-  return AddVariationIdsToSet(variation_ids_from_command_line, target_set);
+  return AddVariationIdsToSet(variation_ids_from_command_line, should_dedupe,
+                              target_set);
 }
 
 std::string VariationsIdsProvider::GetClientDataHeaderWhileLocked(
@@ -468,7 +495,7 @@ std::set<VariationsIdsProvider::VariationIDEntry>
 VariationsIdsProvider::GetAllVariationIds() {
   lock_.AssertAcquired();
 
-  std::set<VariationIDEntry> all_variation_ids_set = default_variation_ids_set_;
+  std::set<VariationIDEntry> all_variation_ids_set = force_enabled_ids_set_;
   for (const VariationIDEntry& entry : variation_ids_set_) {
     all_variation_ids_set.insert(entry);
   }
@@ -525,6 +552,24 @@ std::vector<VariationID> VariationsIdsProvider::GetVariationsVectorImpl(
   std::sort(result.begin(), result.end());
   result.erase(std::unique(result.begin(), result.end()), result.end());
   return result;
+}
+
+bool VariationsIdsProvider::IsDuplicateId(VariationID id) {
+  for (int i = 0; i < ID_COLLECTION_COUNT; ++i) {
+    IDCollectionKey key = static_cast<IDCollectionKey>(i);
+    // GOOGLE_APP ids may be duplicated. Further validation is done in
+    // GroupMapAccessor::ValidateID().
+    if (key == GOOGLE_APP)
+      continue;
+
+    VariationIDEntry entry(id, key);
+    if (base::Contains(variation_ids_set_, entry) ||
+        base::Contains(force_enabled_ids_set_, entry) ||
+        base::Contains(synthetic_variation_ids_set_, entry)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace variations

@@ -16,7 +16,9 @@
     "navigation",
     "paint",
     "resource",
+    "soft-navigation",
     "taskattribution",
     "visibility-state",
+    "back-forward-cache-restoration",
   ],
 }

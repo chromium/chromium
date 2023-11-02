@@ -1,29 +1,27 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/first_run/sync/sync_screen_view_controller.h"
 
-#include "base/check.h"
 #import "ios/chrome/browser/ui/elements/activity_overlay_view.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/common/ui/util/text_view_util.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "net/base/mac/url_conversions.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "url/gurl.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 namespace {
-constexpr CGFloat kMarginBetweenContents = 12;
 
 // URL for the Settings link.
 const char* const kSettingsSyncURL = "internal://settings-sync";
@@ -57,47 +55,23 @@ NSString* const kLearnMoreUrl = @"internal://learn-more";
 - (void)viewDidLoad {
   self.view.accessibilityIdentifier =
       first_run::kFirstRunSyncScreenAccessibilityIdentifier;
-  if (base::FeatureList::IsEnabled(kOldSyncStringFRE)) {
-    self.titleText =
-        [self contentTextWithStringID:IDS_IOS_ACCOUNT_UNIFIED_CONSENT_TITLE];
-    self.subtitleText = [self
-        contentTextWithStringID:IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_TITLE];
-    self.secondaryActionString =
-        [self contentTextWithStringID:
-                  IDS_IOS_FIRSTRUN_ACCOUNT_CONSISTENCY_SKIP_BUTTON];
-    self.activateSyncButtonID = IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON;
-  } else {
-    self.titleText =
-        [self contentTextWithStringID:IDS_IOS_FIRST_RUN_SYNC_SCREEN_TITLE];
-    self.subtitleText =
-        [self contentTextWithStringID:IDS_IOS_FIRST_RUN_SYNC_SCREEN_SUBTITLE];
-    self.secondaryActionString = [self
-        contentTextWithStringID:IDS_IOS_FIRST_RUN_SYNC_SCREEN_SECONDARY_ACTION];
-    self.activateSyncButtonID = IDS_IOS_FIRST_RUN_SYNC_SCREEN_PRIMARY_ACTION;
-  }
+  self.titleText =
+      [self contentTextWithStringID:IDS_IOS_ACCOUNT_UNIFIED_CONSENT_TITLE];
+  self.subtitleText =
+      [self contentTextWithStringID:IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_TITLE];
+  self.secondaryActionString =
+      [self contentTextWithStringID:
+                IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECONDARY_ACTION];
+  self.activateSyncButtonID = IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON;
 
   self.primaryActionString =
       [self contentTextWithStringID:self.activateSyncButtonID];
 
-  self.bannerImage = [UIImage imageNamed:@"sync_screen_banner"];
+  self.bannerName = @"sync_screen_banner";
   self.isTallBanner = NO;
   self.scrollToEndMandatory = YES;
   self.readMoreString =
       l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SCREEN_READ_MORE);
-
-  // Add sync screen-specific content
-  UILabel* contentText = [self createContentText];
-  [self.specificContentView addSubview:contentText];
-
-  UIView* advanceSyncSettingsButton;
-  if (base::FeatureList::IsEnabled(kOldSyncStringFRE)) {
-    advanceSyncSettingsButton = [self createAdvanceSyncTextField];
-  } else {
-    advanceSyncSettingsButton = [self createAdvanceSyncSettingsButton];
-  }
-
-  [self.specificContentView addSubview:advanceSyncSettingsButton];
-
 
   if (self.syncTypesRestricted) {
     self.learnMoreTextView.delegate = self;
@@ -105,8 +79,8 @@ NSString* const kLearnMoreUrl = @"internal://learn-more";
 
     [NSLayoutConstraint activateConstraints:@[
       [self.learnMoreTextView.topAnchor
-          constraintGreaterThanOrEqualToAnchor:advanceSyncSettingsButton
-                                                   .bottomAnchor],
+          constraintGreaterThanOrEqualToAnchor:self.specificContentView
+                                                   .topAnchor],
       [self.learnMoreTextView.bottomAnchor
           constraintEqualToAnchor:self.specificContentView.bottomAnchor],
       [self.learnMoreTextView.centerXAnchor
@@ -117,27 +91,17 @@ NSString* const kLearnMoreUrl = @"internal://learn-more";
     ]];
   }
 
-  // Sync screen-specific constraints.
-  [NSLayoutConstraint activateConstraints:@[
-    [contentText.topAnchor
-        constraintEqualToAnchor:self.specificContentView.topAnchor],
-    [contentText.centerXAnchor
-        constraintEqualToAnchor:self.specificContentView.centerXAnchor],
-    [contentText.widthAnchor
-        constraintLessThanOrEqualToAnchor:self.specificContentView.widthAnchor],
-    [advanceSyncSettingsButton.topAnchor
-        constraintEqualToAnchor:contentText.bottomAnchor
-                       constant:kMarginBetweenContents],
-    [advanceSyncSettingsButton.centerXAnchor
-        constraintEqualToAnchor:self.specificContentView.centerXAnchor],
-    [advanceSyncSettingsButton.widthAnchor
-        constraintLessThanOrEqualToAnchor:self.specificContentView.widthAnchor],
-    [advanceSyncSettingsButton.bottomAnchor
-        constraintLessThanOrEqualToAnchor:self.specificContentView
-                                              .bottomAnchor],
-  ]];
+  self.disclaimerText =
+      [self contentTextWithStringID:
+                IDS_IOS_FIRST_RUN_SYNC_SCREEN_CONTENT_WITH_LINK_TO_SETTINGS];
+  self.disclaimerURLs = @[ net::NSURLWithGURL(GURL(kSettingsSyncURL)) ];
 
   [super viewDidLoad];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  [self.delegate logScrollButtonVisible:!self.didReachBottom];
 }
 
 #pragma mark - Properties
@@ -152,7 +116,7 @@ NSString* const kLearnMoreUrl = @"internal://learn-more";
 
 - (UITextView*)learnMoreTextView {
   if (!_learnMoreTextView) {
-    _learnMoreTextView = [[UITextView alloc] init];
+    _learnMoreTextView = CreateUITextViewWithTextKit1();
     _learnMoreTextView.scrollEnabled = NO;
     _learnMoreTextView.editable = NO;
     _learnMoreTextView.adjustsFontForContentSizeCategory = YES;
@@ -171,7 +135,7 @@ NSString* const kLearnMoreUrl = @"internal://learn-more";
     NSDictionary* textAttributes = @{
       NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
       NSFontAttributeName :
-          [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
+          [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2],
       NSParagraphStyleAttributeName : paragraphStyle
     };
 
@@ -212,97 +176,10 @@ NSString* const kLearnMoreUrl = @"internal://learn-more";
 
 #pragma mark - Private
 
-// Creates and configures the text of sync screen
-- (UILabel*)createContentText {
-  UILabel* label = [[UILabel alloc] init];
-  label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
-  label.numberOfLines = 0;
-  label.textAlignment = NSTextAlignmentCenter;
-  label.translatesAutoresizingMaskIntoConstraints = NO;
-  label.adjustsFontForContentSizeCategory = YES;
-  if (base::FeatureList::IsEnabled(kOldSyncStringFRE)) {
-    label.text = [self
-        contentTextWithStringID:IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_SUBTITLE];
-    label.textColor = [UIColor colorNamed:kTextSecondaryColor];
-    label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
-  } else {
-    label.text =
-        [self contentTextWithStringID:IDS_IOS_FIRST_RUN_SYNC_SCREEN_CONTENT];
-    label.textColor = [UIColor colorNamed:kGrey600Color];
-    label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
-  }
-  return label;
-}
-
-// Creates and configures the sync settings button.
-- (UIButton*)createAdvanceSyncSettingsButton {
-  DCHECK(!base::FeatureList::IsEnabled(kOldSyncStringFRE));
-  UIButton* button = [[UIButton alloc] init];
-  button.translatesAutoresizingMaskIntoConstraints = NO;
-  button.titleLabel.numberOfLines = 0;
-  button.titleLabel.adjustsFontForContentSizeCategory = YES;
-  [button.titleLabel
-      setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]];
-  self.openSettingsStringID = IDS_IOS_FIRST_RUN_SYNC_SCREEN_ADVANCE_SETTINGS;
-  [button setTitle:[self contentTextWithStringID:self.openSettingsStringID]
-          forState:UIControlStateNormal];
-  [button setTitleColor:[UIColor colorNamed:kBlueColor]
-               forState:UIControlStateNormal];
-
-  [button addTarget:self
-                action:@selector(showAdvanceSyncSettings)
-      forControlEvents:UIControlEventTouchUpInside];
-  return button;
-}
-
-// Creates and configures the text field having a link to the settings.
-- (UIView*)createAdvanceSyncTextField {
-  DCHECK(base::FeatureList::IsEnabled(kOldSyncStringFRE));
-  UITextView* syncSettingsTextView = [[UITextView alloc] init];
-  syncSettingsTextView.scrollEnabled = NO;
-  syncSettingsTextView.editable = NO;
-  syncSettingsTextView.delegate = self;
-  syncSettingsTextView.backgroundColor = UIColor.clearColor;
-  syncSettingsTextView.adjustsFontForContentSizeCategory = YES;
-  syncSettingsTextView.translatesAutoresizingMaskIntoConstraints = NO;
-
-  self.openSettingsStringID = IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SETTINGS;
-  NSString* text = [self contentTextWithStringID:self.openSettingsStringID];
-
-  NSMutableParagraphStyle* paragraphStyle =
-      [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-  paragraphStyle.alignment = NSTextAlignmentCenter;
-
-  NSDictionary* textAttributes = @{
-    NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
-    NSFontAttributeName :
-        [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline],
-    NSParagraphStyleAttributeName : paragraphStyle
-  };
-
-  NSURL* URL = net::NSURLWithGURL(GURL(kSettingsSyncURL));
-  NSDictionary* linkAttributes = @{
-    NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
-    NSFontAttributeName :
-        [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline],
-    NSLinkAttributeName : URL,
-  };
-
-  syncSettingsTextView.attributedText =
-      AttributedStringFromStringWithLink(text, textAttributes, linkAttributes);
-
-  return syncSettingsTextView;
-}
-
-// Push the string id to |_contentStringIds| and returns NSString.
+// Push the string id to `_contentStringIds` and returns NSString.
 - (NSString*)contentTextWithStringID:(const int)stringID {
   [self.delegate addConsentStringID:stringID];
   return l10n_util::GetNSString(stringID);
-}
-
-// Called when the sync settings button is tapped
-- (void)showAdvanceSyncSettings {
-  [self.delegate showSyncSettings];
 }
 
 #pragma mark - UITextViewDelegate
@@ -311,12 +188,15 @@ NSString* const kLearnMoreUrl = @"internal://learn-more";
     shouldInteractWithURL:(NSURL*)URL
                   inRange:(NSRange)characterRange
               interaction:(UITextItemInteraction)interaction {
-  if ([URL isEqual:net::NSURLWithGURL(GURL(kSettingsSyncURL))]) {
-    [self showAdvanceSyncSettings];
-    // The handler is already handling the tap.
+  if (textView != self.learnMoreTextView) {
+    // The text view being tapped is not the learnMoreTextView. Defer to the
+    // handler in the superclass.
+    [super textView:textView
+        shouldInteractWithURL:URL
+                      inRange:characterRange
+                  interaction:interaction];
     return NO;
   }
-  DCHECK(textView == self.learnMoreTextView);
 
   // Open signin popover.
   EnterpriseInfoPopoverViewController* bubbleViewController =
@@ -339,13 +219,6 @@ NSString* const kLearnMoreUrl = @"internal://learn-more";
 
   // The handler is already handling the tap.
   return NO;
-}
-
-- (void)textViewDidChangeSelection:(UITextView*)textView {
-  // Always force the |selectedTextRange| to |nil| to prevent users from
-  // selecting text. Setting the |selectable| property to |NO| doesn't help
-  // since it makes links inside the text view untappable.
-  textView.selectedTextRange = nil;
 }
 
 @end

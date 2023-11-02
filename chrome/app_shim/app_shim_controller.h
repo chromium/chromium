@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,9 +24,14 @@ namespace apps {
 class MachBootstrapAcceptorTest;
 }
 
+namespace display {
+class ScopedNativeScreen;
+}
+
 @class AppShimDelegate;
 @class ProfileMenuTarget;
 @class ApplicationDockMenuTarget;
+@protocol RenderWidgetHostViewMacDelegate;
 
 // The AppShimController is responsible for launching and maintaining the
 // connection with the main Chrome process, and generally controls the lifetime
@@ -146,6 +151,14 @@ class AppShimController : public chrome::mojom::AppShim {
   static base::scoped_nsobject<NSRunningApplication>
   FindChromeFromSingletonLock(const base::FilePath& user_data_dir);
 
+  static void CreateRenderWidgetHostNSView(
+      uint64_t view_id,
+      mojo::ScopedInterfaceEndpointHandle host_handle,
+      mojo::ScopedInterfaceEndpointHandle view_request_handle);
+
+  static NSObject<RenderWidgetHostViewMacDelegate>*
+  CreateRenderWidgetHostViewDelegate(uint64_t view_id);
+
   const Params params_;
 
   // Populated by OpenFiles if it was called before OnAppFinishedLaunching
@@ -188,6 +201,9 @@ class AppShimController : public chrome::mojom::AppShim {
   // The target for NSMenuItems in the application dock menu.
   base::scoped_nsobject<ApplicationDockMenuTarget>
       application_dock_menu_target_;
+
+  // The screen object used in the app sim.
+  std::unique_ptr<display::ScopedNativeScreen> screen_;
 
   // The items in the profile menu.
   std::vector<chrome::mojom::ProfileMenuItemPtr> profile_menu_items_;

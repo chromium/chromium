@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,9 +17,6 @@ namespace network {
 namespace mojom {
 class CrossOriginEmbedderPolicyReporter;
 }  // namespace mojom
-
-struct CrossOriginEmbedderPolicy;
-
 }  // namespace network
 
 namespace content {
@@ -68,14 +65,14 @@ class CONTENT_EXPORT ServiceWorkerMainResourceHandle {
       blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info);
 
   // Called when the navigation is ready to commit.
-  // Provides |rfh_id|, and |cross_origin_embedder_policy| to the pre-created
+  // Provides |rfh_id|, and |policy_container_policies| to the pre-created
   // container host. Fills in |out_container_info| so the caller can send it to
   // the renderer process as part of the navigation commit IPC.
   // |out_container_info| can be filled as null if we failed to pre-create the
   // container host for some security reasons.
   void OnBeginNavigationCommit(
       const GlobalRenderFrameHostId& rfh_id,
-      const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+      const PolicyContainerPolicies& policy_container_policies,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
       blink::mojom::ServiceWorkerContainerInfoForClientPtr* out_container_info,
@@ -87,10 +84,9 @@ class CONTENT_EXPORT ServiceWorkerMainResourceHandle {
 
   // Similar to OnBeginNavigationCommit() for shared workers (and dedicated
   // workers when PlzDedicatedWorker is on).
-  // |cross_origin_embedder_policy| is passed to the pre-created container
-  // host.
+  // |policy_container_policies| is passed to the pre-created container host.
   void OnBeginWorkerCommit(
-      const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+      const PolicyContainerPolicies& policy_container_policies,
       ukm::SourceId worker_ukm_source_id);
 
   blink::mojom::ServiceWorkerContainerInfoForClientPtr TakeContainerInfo() {

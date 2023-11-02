@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -106,8 +106,8 @@ void WebView::SetWebContents(content::WebContents* replacement) {
     wc_owner_.reset();
   AttachWebContentsNativeView();
 
-  if (replacement && replacement->GetMainFrame()->IsRenderFrameCreated()) {
-    SetUpNewMainFrame(replacement->GetMainFrame());
+  if (replacement && replacement->GetPrimaryMainFrame()->IsRenderFrameLive()) {
+    SetUpNewMainFrame(replacement->GetPrimaryMainFrame());
   } else {
     LostMainFrame();
   }
@@ -138,8 +138,9 @@ void WebView::EnableSizingFromWebContents(const gfx::Size& min_size,
   DCHECK(!max_size.IsEmpty());
   min_size_ = min_size;
   max_size_ = max_size;
-  if (web_contents() && web_contents()->GetMainFrame()->IsRenderFrameCreated())
-    MaybeEnableAutoResize(web_contents()->GetMainFrame());
+  if (web_contents() &&
+      web_contents()->GetPrimaryMainFrame()->IsRenderFrameLive())
+    MaybeEnableAutoResize(web_contents()->GetPrimaryMainFrame());
 }
 
 void WebView::SetCrashedOverlayView(View* crashed_overlay_view) {
@@ -158,7 +159,7 @@ void WebView::SetCrashedOverlayView(View* crashed_overlay_view) {
 
   crashed_overlay_view_ = crashed_overlay_view;
   if (crashed_overlay_view_) {
-    AddChildView(crashed_overlay_view_);
+    AddChildView(crashed_overlay_view_.get());
     holder_->SetVisible(false);
     crashed_overlay_view_->SetBoundsRect(gfx::Rect(size()));
   }
@@ -316,7 +317,7 @@ void WebView::OnAXModeAdded(ui::AXMode mode) {
 
 void WebView::RenderFrameCreated(content::RenderFrameHost* render_frame_host) {
   // Only handle the initial main frame, not speculative ones.
-  if (render_frame_host != web_contents()->GetMainFrame())
+  if (render_frame_host != web_contents()->GetPrimaryMainFrame())
     return;
 
   SetUpNewMainFrame(render_frame_host);
@@ -324,7 +325,7 @@ void WebView::RenderFrameCreated(content::RenderFrameHost* render_frame_host) {
 
 void WebView::RenderFrameDeleted(content::RenderFrameHost* render_frame_host) {
   // Only handle the active main frame, not speculative ones.
-  if (render_frame_host != web_contents()->GetMainFrame())
+  if (render_frame_host != web_contents()->GetPrimaryMainFrame())
     return;
 
   LostMainFrame();
@@ -334,13 +335,13 @@ void WebView::RenderFrameHostChanged(content::RenderFrameHost* old_host,
                                      content::RenderFrameHost* new_host) {
   // Since we skipped speculative main frames in RenderFrameCreated, we must
   // watch for them being swapped in by watching for RenderFrameHostChanged().
-  if (new_host != web_contents()->GetMainFrame())
+  if (new_host != web_contents()->GetPrimaryMainFrame())
     return;
   // Ignore the initial main frame host, as there's no renderer frame for it
   // yet. If the DCHECK fires, then we would need to handle the initial main
   // frame when it its renderer frame is created.
   if (!old_host) {
-    DCHECK(!new_host->IsRenderFrameCreated());
+    DCHECK(!new_host->IsRenderFrameLive());
     return;
   }
 
@@ -435,7 +436,7 @@ void WebView::UpdateCrashedOverlayView() {
 
 void WebView::NotifyAccessibilityWebContentsChanged() {
   content::RenderFrameHost* rfh =
-      web_contents() ? web_contents()->GetMainFrame() : nullptr;
+      web_contents() ? web_contents()->GetPrimaryMainFrame() : nullptr;
   GetViewAccessibility().OverrideChildTreeID(rfh ? rfh->GetAXTreeID()
                                                  : ui::AXTreeIDUnknown());
   NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, false);
@@ -450,7 +451,7 @@ std::unique_ptr<content::WebContents> WebView::CreateWebContents(
   }
 
   if (!contents) {
-    content::WebContents::CreateParams create_params(browser_context, nullptr,
+    content::WebContents::CreateParams create_params(browser_context,
                                                      creator_location);
     return content::WebContents::Create(create_params);
   }
@@ -472,7 +473,7 @@ void WebView::LostMainFrame() {
 }
 
 void WebView::MaybeEnableAutoResize(content::RenderFrameHost* frame_host) {
-  DCHECK(frame_host->IsRenderFrameCreated());
+  DCHECK(frame_host->IsRenderFrameLive());
   if (!max_size_.IsEmpty())
     frame_host->GetView()->EnableAutoResize(min_size_, max_size_);
 }

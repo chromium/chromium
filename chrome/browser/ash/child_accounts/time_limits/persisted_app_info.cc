@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/values.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_policy_helpers.h"
 
 namespace ash {
@@ -80,7 +79,7 @@ std::vector<AppActivity::ActiveTime> AppActiveTimesFromList(
     return active_times;
   }
 
-  base::Value::ConstListView list_view = list->GetList();
+  const base::Value::List& list_view = list->GetList();
 
   for (const auto& value : list_view) {
     absl::optional<AppActivity::ActiveTime> entry = AppActivityFromDict(value);
@@ -139,15 +138,11 @@ absl::optional<PersistedAppInfo> PersistedAppInfo::PersistedAppInfoFromDict(
 
 // static
 std::vector<PersistedAppInfo> PersistedAppInfo::PersistedAppInfosFromList(
-    const base::Value* value,
+    const base::Value::List& list,
     bool include_app_activity_array) {
   std::vector<PersistedAppInfo> apps_info;
-  if (!value || !value->is_list())
-    return apps_info;
 
-  base::Value::ConstListView list_view = value->GetList();
-
-  for (const auto& per_app_info : list_view) {
+  for (const auto& per_app_info : list) {
     absl::optional<PersistedAppInfo> info =
         PersistedAppInfoFromDict(&per_app_info, include_app_activity_array);
     if (!info.has_value())
@@ -247,7 +242,7 @@ void PersistedAppInfo::UpdateAppActivityPreference(
 
   // If the last entry in |value| can be merged with the first entry in
   // |active_times_| merge them.
-  base::Value::ListView list_view = value->GetList();
+  base::Value::List& list_view = value->GetList();
   if (list_view.size() > 0) {
     base::Value& mergeable_entry = list_view[list_view.size() - 1];
     absl::optional<AppActivity::ActiveTime> active_time =

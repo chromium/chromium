@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/common/extensions/api/settings_private.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -18,8 +19,8 @@
 
 namespace {
 
-// Returns whether a primary account is present and syncing successfully.
-bool IsUserSignedInAndSyncing(Profile* profile) {
+// Returns whether the user can use the leak detection feature.
+bool IsUserAllowedToUseLeakDetection(Profile* profile) {
   if (profile->IsGuestSession())
     return false;
 
@@ -28,16 +29,9 @@ bool IsUserSignedInAndSyncing(Profile* profile) {
   if (!identity_manager)
     return false;
 
-  const SyncStatusLabels status_labels = GetSyncStatusLabels(profile);
-  bool sync_error =
-      status_labels.message_type == SyncStatusMessageType::kSyncError ||
-      status_labels.message_type ==
-          SyncStatusMessageType::kPasswordsOnlySyncError;
-
-  // Password leak detection only requires a signed in account and a functioning
-  // sync service, it does not require sync consent.
-  return identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
-         !sync_error;
+  return identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) ||
+         base::FeatureList::IsEnabled(
+             password_manager::features::kLeakDetectionUnauthenticated);
 }
 
 // Returns whether the effective value of the Safe Browsing preferences for
@@ -89,7 +83,8 @@ GeneratedPasswordLeakDetectionPref::SetPref(const base::Value* value) {
   if (!value->is_bool())
     return extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH;
 
-  if (!IsUserSignedInAndSyncing(profile_) || !IsSafeBrowsingStandard(profile_))
+  if (!IsSafeBrowsingStandard(profile_) ||
+      !IsUserAllowedToUseLeakDetection(profile_))
     return extensions::settings_private::SetPrefResult::PREF_NOT_MODIFIABLE;
 
   if (!profile_->GetPrefs()
@@ -113,11 +108,11 @@ GeneratedPasswordLeakDetectionPref::GetPrefObject() const {
   auto pref_object = std::make_unique<settings_api::PrefObject>();
   pref_object->key = kGeneratedPasswordLeakDetectionPref;
   pref_object->type = settings_api::PREF_TYPE_BOOLEAN;
-  pref_object->value =
-      std::make_unique<base::Value>(IsUserSignedInAndSyncing(profile_) &&
-                                    backing_preference->GetValue()->GetBool());
-  pref_object->user_control_disabled = std::make_unique<bool>(
-      !IsUserSignedInAndSyncing(profile_) || !IsSafeBrowsingStandard(profile_));
+  pref_object->value = base::Value(backing_preference->GetValue()->GetBool() &&
+                                   IsUserAllowedToUseLeakDetection(profile_));
+  pref_object->user_control_disabled =
+      !IsSafeBrowsingStandard(profile_) ||
+      !IsUserAllowedToUseLeakDetection(profile_);
   if (!backing_preference->IsUserModifiable()) {
     pref_object->enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
     extensions::settings_private::GeneratedPref::ApplyControlledByFromPref(
@@ -125,8 +120,8 @@ GeneratedPasswordLeakDetectionPref::GetPrefObject() const {
   } else if (backing_preference->GetRecommendedValue()) {
     pref_object->enforcement =
         settings_api::Enforcement::ENFORCEMENT_RECOMMENDED;
-    pref_object->recommended_value = std::make_unique<base::Value>(
-        backing_preference->GetRecommendedValue()->GetBool());
+    pref_object->recommended_value =
+        base::Value(backing_preference->GetRecommendedValue()->GetBool());
   }
 
   return pref_object;

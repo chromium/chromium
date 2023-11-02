@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,8 +44,12 @@ class HttpServer : public net::HttpServer::Delegate {
 
   void OnClose(int connection_id) override;
 
+  void Close(int connection_id);
+
   void AcceptWebSocket(int connection_id,
                        const net::HttpServerRequestInfo& request);
+
+  void SendOverWebSocket(int connection_id, const std::string& data);
 
   void SendResponse(int connection_id,
                     const net::HttpServerResponseInfo& response,

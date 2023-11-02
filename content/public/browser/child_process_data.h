@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,10 +43,6 @@ struct CONTENT_EXPORT ChildProcessData {
   ~ChildProcessData();
 
   ChildProcessData(ChildProcessData&& rhs);
-
-  // Copying these objects requires duplicating the handle which is moderately
-  // expensive, so make it an explicit action.
-  ChildProcessData Duplicate() const;
 
  private:
   // May be invalid if the process isn't started or is the current process.

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,8 @@
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
+#import "components/password_manager/ios/ios_password_manager_driver.h"
+#import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/password_manager/ios/shared_password_controller.h"
 #include "components/sync/driver/sync_service.h"
 #include "ios/web/public/js_messaging/web_frame.h"
@@ -45,7 +47,6 @@
 #include "ios/web_view/internal/autofill/web_view_strike_database_factory.h"
 #import "ios/web_view/internal/passwords/cwv_password_internal.h"
 #import "ios/web_view/internal/passwords/web_view_account_password_store_factory.h"
-#import "ios/web_view/internal/passwords/web_view_password_manager_driver.h"
 #include "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
 #include "ios/web_view/internal/web_view_browser_state.h"
 #import "ios/web_view/public/cwv_autofill_controller_delegate.h"
@@ -57,6 +58,8 @@
 
 using autofill::FormRendererId;
 using autofill::FieldRendererId;
+using UserDecision =
+    autofill::AutofillClient::SaveAddressProfileOfferUserDecision;
 
 @implementation CWVAutofillController {
   // Bridge to observe the |webState|.
@@ -75,8 +78,6 @@ using autofill::FieldRendererId;
   std::unique_ptr<password_manager::PasswordManager> _passwordManager;
   std::unique_ptr<ios_web_view::WebViewPasswordManagerClient>
       _passwordManagerClient;
-  std::unique_ptr<ios_web_view::WebViewPasswordManagerDriver>
-      _passwordManagerDriver;
   SharedPasswordController* _passwordController;
 
   // The current credit card saver. Can be nil if no save attempt is pending.
@@ -109,9 +110,6 @@ using autofill::FieldRendererId;
     passwordManagerClient:
         (std::unique_ptr<ios_web_view::WebViewPasswordManagerClient>)
             passwordManagerClient
-    passwordManagerDriver:
-        (std::unique_ptr<ios_web_view::WebViewPasswordManagerDriver>)
-            passwordManagerDriver
        passwordController:(SharedPasswordController*)passwordController
         applicationLocale:(const std::string&)applicationLocale {
   self = [super init];
@@ -133,13 +131,11 @@ using autofill::FieldRendererId;
 
     autofill::AutofillDriverIOS::PrepareForWebStateWebFrameAndDelegate(
         _webState, _autofillClient.get(), self, applicationLocale,
-        autofill::BrowserAutofillManager::ENABLE_AUTOFILL_DOWNLOAD_MANAGER);
+        autofill::AutofillManager::EnableDownloadManager(true));
 
     _passwordManagerClient = std::move(passwordManagerClient);
     _passwordManagerClient->set_bridge(self);
     _passwordManager = std::move(passwordManager);
-    _passwordManagerDriver = std::move(passwordManagerDriver);
-    _passwordManagerDriver->set_bridge(passwordController);
     _passwordController = passwordController;
     _passwordController.delegate = self;
 
@@ -170,13 +166,13 @@ using autofill::FieldRendererId;
   web::WebFrame* frame =
       web::GetWebFrameWithId(_webState, base::SysNSStringToUTF8(frameID));
   autofill::AutofillJavaScriptFeature::GetInstance()
-      ->ClearAutofilledFieldsForFormName(
-          frame, formName, _lastFormActivityUniqueFormID, fieldIdentifier,
-          _lastFormActivityUniqueFieldID, base::BindOnce(^(NSString*) {
-            if (completionHandler) {
-              completionHandler();
-            }
-          }));
+      ->ClearAutofilledFieldsForForm(frame, _lastFormActivityUniqueFormID,
+                                     _lastFormActivityUniqueFieldID,
+                                     base::BindOnce(^(NSString*) {
+                                       if (completionHandler) {
+                                         completionHandler();
+                                       }
+                                     }));
 }
 
 - (void)fetchSuggestionsForFormWithName:(NSString*)formName
@@ -210,9 +206,6 @@ using autofill::FieldRendererId;
   // It is necessary to call |checkIfSuggestionsAvailableForForm| before
   // |retrieveSuggestionsForForm| because the former actually queries the db,
   // while the latter merely returns them.
-  NSString* mainFrameID =
-      base::SysUTF8ToNSString(web::GetMainWebFrameId(_webState));
-  BOOL isMainFrame = [frameID isEqualToString:mainFrameID];
 
   // Check both autofill and password suggestions.
   NSArray<id<FormSuggestionProvider>>* providers =
@@ -250,7 +243,6 @@ using autofill::FieldRendererId;
     };
 
     [suggestionProvider checkIfSuggestionsAvailableForForm:formQuery
-                                               isMainFrame:isMainFrame
                                             hasUserGesture:YES
                                                   webState:_webState
                                          completionHandler:availableHandler];
@@ -406,9 +398,57 @@ showUnmaskPromptForCard:(const autofill::CreditCard&)creditCard
 }
 
 - (void)propagateAutofillPredictionsForForms:
-    (const std::vector<autofill::FormStructure*>&)forms {
-  _passwordManager->ProcessAutofillPredictions(_passwordManagerDriver.get(),
-                                               forms);
+            (const std::vector<autofill::FormStructure*>&)forms
+                                     inFrame:(web::WebFrame*)frame {
+  IOSPasswordManagerDriver* driver =
+      IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(_webState,
+                                                               frame);
+  if (!driver) {
+    return;
+  }
+  _passwordManager->ProcessAutofillPredictions(driver, forms);
+}
+
+- (void)
+    confirmSaveAddressProfile:(const autofill::AutofillProfile&)profile
+              originalProfile:(const autofill::AutofillProfile*)originalProfile
+                     callback:(autofill::AutofillClient::
+                                   AddressProfileSavePromptCallback)callback {
+  if ([_delegate
+          respondsToSelector:@selector
+          (autofillController:
+              confirmSaveForNewAutofillProfile:oldProfile:decisionHandler:)]) {
+    CWVAutofillProfile* newProfile =
+        [[CWVAutofillProfile alloc] initWithProfile:profile];
+    CWVAutofillProfile* oldProfile = nil;
+    if (originalProfile) {
+      oldProfile =
+          [[CWVAutofillProfile alloc] initWithProfile:*originalProfile];
+    }
+    __block auto scopedCallback = std::move(callback);
+    [_delegate autofillController:self
+        confirmSaveForNewAutofillProfile:newProfile
+                              oldProfile:oldProfile
+                         decisionHandler:^(
+                             CWVAutofillProfileUserDecision decision) {
+                           UserDecision userDecision;
+                           switch (decision) {
+                             case CWVAutofillProfileUserDecisionAccepted:
+                               userDecision = UserDecision::kAccepted;
+                               break;
+                             case CWVAutofillProfileUserDecisionDeclined:
+                               userDecision = UserDecision::kDeclined;
+                               break;
+                             case CWVAutofillProfileUserDecisionIgnored:
+                               userDecision = UserDecision::kIgnored;
+                               break;
+                           }
+                           std::move(scopedCallback)
+                               .Run(userDecision, *newProfile.internalProfile);
+                         }];
+  } else {
+    std::move(callback).Run(UserDecision::kUserNotAsked, profile);
+  }
 }
 
 #pragma mark - AutofillDriverIOSBridge
@@ -476,7 +516,9 @@ showUnmaskPromptForCard:(const autofill::CreditCard&)creditCard
                                   value:nsValue
                           userInitiated:userInitiated];
     }
-  } else if (params.type == "input") {
+  } else if (params.type == "input" || params.type == "keyup") {
+    // Some fields only emit 'keyup' events and not 'input' events, which would
+    // result in the delegate not being notified when the field is updated.
     if ([_delegate respondsToSelector:@selector
                    (autofillController:
                        didInputInFieldWithIdentifier:fieldType:formName:frameID
@@ -509,7 +551,6 @@ showUnmaskPromptForCard:(const autofill::CreditCard&)creditCard
     didSubmitDocumentWithFormNamed:(const std::string&)formName
                           withData:(const std::string&)formData
                     hasUserGesture:(BOOL)userInitiated
-                   formInMainFrame:(BOOL)isMainFrame
                            inFrame:(web::WebFrame*)frame {
   if ([_delegate respondsToSelector:@selector
                  (autofillController:
@@ -527,7 +568,6 @@ showUnmaskPromptForCard:(const autofill::CreditCard&)creditCard
   _autofillClient.reset();
   _webState->RemoveObserver(_webStateObserverBridge.get());
   _webStateObserverBridge.reset();
-  _passwordManagerDriver.reset();
   _passwordManager.reset();
   _passwordManagerClient.reset();
   _webState = nullptr;
@@ -619,23 +659,32 @@ showUnmaskPromptForCard:(const autofill::CreditCard&)creditCard
 }
 
 - (void)showPasswordBreachForLeakType:(CredentialLeakType)leakType
-                                  URL:(const GURL&)URL {
+                                  URL:(const GURL&)URL
+                             username:(const std::u16string&)username {
+  CWVPasswordLeakType cwvLeakType = 0;
+  if (password_manager::IsPasswordSaved(leakType)) {
+    cwvLeakType |= CWVPasswordLeakTypeSaved;
+  }
+  if (password_manager::IsPasswordUsedOnOtherSites(leakType)) {
+    cwvLeakType |= CWVPasswordLeakTypeUsedOnOtherSites;
+  }
+  if (password_manager::IsSyncingPasswordsNormally(leakType)) {
+    cwvLeakType |= CWVPasswordLeakTypeSyncingNormally;
+  }
   if ([self.delegate
           respondsToSelector:@selector(autofillController:
                                  notifyUserOfPasswordLeakOnURL:leakType:)]) {
-    CWVPasswordLeakType cwvLeakType = 0;
-    if (password_manager::IsPasswordSaved(leakType)) {
-      cwvLeakType |= CWVPasswordLeakTypeSaved;
-    }
-    if (password_manager::IsPasswordUsedOnOtherSites(leakType)) {
-      cwvLeakType |= CWVPasswordLeakTypeUsedOnOtherSites;
-    }
-    if (password_manager::IsSyncingPasswordsNormally(leakType)) {
-      cwvLeakType |= CWVPasswordLeakTypeSyncingNormally;
-    }
     [self.delegate autofillController:self
         notifyUserOfPasswordLeakOnURL:net::NSURLWithGURL(URL)
                              leakType:cwvLeakType];
+  }
+  if ([self.delegate respondsToSelector:@selector
+                     (autofillController:
+                         notifyUserOfPasswordLeakOnURL:leakType:username:)]) {
+    [self.delegate autofillController:self
+        notifyUserOfPasswordLeakOnURL:net::NSURLWithGURL(URL)
+                             leakType:cwvLeakType
+                             username:base::SysUTF16ToNSString(username)];
   }
 }
 
@@ -649,10 +698,6 @@ showUnmaskPromptForCard:(const autofill::CreditCard&)creditCard
 
 - (password_manager::PasswordManagerClient*)passwordManagerClient {
   return _passwordManagerClient.get();
-}
-
-- (password_manager::PasswordManagerDriver*)passwordManagerDriver {
-  return _passwordManagerDriver.get();
 }
 
 - (void)sharedPasswordController:(SharedPasswordController*)controller

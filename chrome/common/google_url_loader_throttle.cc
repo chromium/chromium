@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/public/mojom/x_frame_options.mojom.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "ui/base/device_form_factor.h"
 #endif
 
@@ -25,7 +25,7 @@
 
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const char kCCTClientDataHeader[] = "X-CCT-Client-Data";
 const char kRequestDesktopDataHeader[] = "X-Eligible-Tablet";
 #endif
@@ -39,19 +39,19 @@ void GoogleURLLoaderThrottle::UpdateCorsExemptHeader(
       safe_search_util::kGoogleAppsAllowedDomains);
   params->cors_exempt_header_list.push_back(
       safe_search_util::kYouTubeRestrictHeaderName);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   params->cors_exempt_header_list.push_back(kCCTClientDataHeader);
 #endif
 }
 
 GoogleURLLoaderThrottle::GoogleURLLoaderThrottle(
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     const std::string& client_data_header,
     bool is_tab_large_enough,
 #endif
     chrome::mojom::DynamicParams dynamic_params)
     :
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       client_data_header_(client_data_header),
       is_tab_large_enough_(is_tab_large_enough),
 #endif
@@ -91,7 +91,7 @@ void GoogleURLLoaderThrottle::WillStartRequest(
         dynamic_params_.allowed_domains_for_apps);
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (!client_data_header_.empty() &&
       google_util::IsGoogleAssociatedDomainUrl(request->url)) {
     request->cors_exempt_headers.SetHeader(kCCTClientDataHeader,
@@ -145,7 +145,7 @@ void GoogleURLLoaderThrottle::WillRedirectRequest(
         dynamic_params_.allowed_domains_for_apps);
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (!client_data_header_.empty() &&
       !google_util::IsGoogleAssociatedDomainUrl(redirect_info->new_url)) {
     to_be_removed_headers->push_back(kCCTClientDataHeader);
@@ -161,9 +161,8 @@ void GoogleURLLoaderThrottle::WillProcessResponse(
   // Built-in additional protection for the chrome web store origin by ensuring
   // that the X-Frame-Options protection mechanism is set to either DENY or
   // SAMEORIGIN.
-  GURL webstore_url(extension_urls::GetWebstoreLaunchURL());
   if (response_url.SchemeIsHTTPOrHTTPS() &&
-      response_url.DomainIs(webstore_url.host_piece())) {
+      extension_urls::IsWebstoreDomain(response_url)) {
     // TODO(mkwst): Consider shifting this to a NavigationThrottle rather than
     // relying on implicit ordering between this check and the time at which
     // ParsedHeaders is created.

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/v2/feedstore_util.h"
@@ -38,10 +37,12 @@ namespace {
 // subs                             -> subscribed_web_feeds
 // recommendedIndex                 -> recommended_web_feed_index
 // R/<web_feed_id>                  -> recommended_web_feed
+// W/<operation-id>                 -> pending_web_feed_operation
 constexpr char kLocalActionPrefix[] = "a/";
 constexpr char kMetadataKey[] = "m";
 constexpr char kSubscribedFeedsKey[] = "subs";
 constexpr char kRecommendedIndexKey[] = "recommendedIndex";
+constexpr char kPendingWebFeedOperationPrefix[] = "W/";
 
 leveldb::ReadOptions CreateReadOptions() {
   leveldb::ReadOptions opts;
@@ -58,7 +59,7 @@ std::string StreamDataKey(const base::StringPiece stream_id) {
   return base::StrCat({"S/", stream_id});
 }
 std::string StreamDataKey(const StreamType& stream_type) {
-  return StreamDataKey(feedstore::StreamId(stream_type));
+  return StreamDataKey(feedstore::StreamKey(stream_type));
 }
 std::string ContentKey(const base::StringPiece stream_type,
                        const feedwire::ContentId& content_id) {
@@ -67,7 +68,7 @@ std::string ContentKey(const base::StringPiece stream_type,
 }
 std::string ContentKey(const StreamType& stream_type,
                        const feedwire::ContentId& content_id) {
-  return ContentKey(feedstore::StreamId(stream_type), content_id);
+  return ContentKey(feedstore::StreamKey(stream_type), content_id);
 }
 std::string SharedStateKey(const base::StringPiece stream_type,
                            const feedwire::ContentId& content_id) {
@@ -76,7 +77,7 @@ std::string SharedStateKey(const base::StringPiece stream_type,
 }
 std::string SharedStateKey(const StreamType& stream_type,
                            const feedwire::ContentId& content_id) {
-  return SharedStateKey(feedstore::StreamId(stream_type), content_id);
+  return SharedStateKey(feedstore::StreamKey(stream_type), content_id);
 }
 std::string LocalActionKey(int64_t id) {
   return kLocalActionPrefix + base::NumberToString(id);
@@ -97,7 +98,7 @@ bool IsAnyStreamRecordKey(const std::string& key) {
 class StreamKeyMatcher {
  public:
   explicit StreamKeyMatcher(const StreamType& stream_type) {
-    stream_id_ = std::string(feedstore::StreamId(stream_type));
+    stream_id_ = std::string(feedstore::StreamKey(stream_type));
     stream_id_plus_slash_ = stream_id_ + '/';
   }
 
@@ -130,7 +131,7 @@ std::string KeyForRecord(const feedstore::Record& record) {
   switch (record.data_case()) {
     case feedstore::Record::kStreamData: {
       const std::string stream_id = record.stream_data().stream_id();
-      return stream_id.empty() ? StreamDataKey(kForYouStream)
+      return stream_id.empty() ? StreamDataKey(StreamType(StreamKind::kForYou))
                                : StreamDataKey(stream_id);
     }
     case feedstore::Record::kStreamStructures:
@@ -153,6 +154,10 @@ std::string KeyForRecord(const feedstore::Record& record) {
       return base::StrCat({"R/", record.recommended_web_feed().web_feed_id()});
     case feedstore::Record::kRecommendedWebFeedIndex:
       return kRecommendedIndexKey;
+    case feedstore::Record::kPendingWebFeedOperation:
+      return base::StrCat(
+          {"W/",
+           base::NumberToString(record.pending_web_feed_operation().id())});
     case feedstore::Record::DATA_NOT_SET:
       break;
   }
@@ -221,6 +226,12 @@ feedstore::Record MakeRecord(feedstore::WebFeedInfo web_feed_info) {
   return record;
 }
 
+feedstore::Record MakeRecord(feedstore::PendingWebFeedOperation operation) {
+  feedstore::Record record;
+  *record.mutable_pending_web_feed_operation() = std::move(operation);
+  return record;
+}
+
 template <typename T>
 std::pair<std::string, feedstore::Record> MakeKeyAndRecord(T record_data) {
   std::pair<std::string, feedstore::Record> result;
@@ -234,7 +245,7 @@ MakeUpdatesForStreamModelUpdateRequest(
     int32_t structure_set_sequence_number,
     const StreamType& stream_type,
     std::unique_ptr<StreamModelUpdateRequest> update_request) {
-  base::StringPiece stream_id = feedstore::StreamId(stream_type);
+  std::string stream_id = feedstore::StreamKey(stream_type);
   auto updates = std::make_unique<
       std::vector<std::pair<std::string, feedstore::Record>>>();
   update_request->stream_data.set_stream_id(std::string(stream_id));
@@ -245,11 +256,11 @@ MakeUpdatesForStreamModelUpdateRequest(
   }
   for (feedstore::StreamSharedState& shared_state :
        update_request->shared_states) {
-    shared_state.set_stream_id(std::string(stream_id));
+    shared_state.set_stream_id(stream_id);
     updates->push_back(MakeKeyAndRecord(std::move(shared_state)));
   }
   feedstore::StreamStructureSet stream_structure_set;
-  stream_structure_set.set_stream_id(std::string(stream_id));
+  stream_structure_set.set_stream_id(stream_id);
   stream_structure_set.set_sequence_number(structure_set_sequence_number);
   for (feedstore::StreamStructure& structure :
        update_request->stream_structures) {
@@ -285,6 +296,13 @@ FeedStore::StartupData::StartupData(StartupData&&) = default;
 FeedStore::StartupData::~StartupData() = default;
 FeedStore::StartupData& FeedStore::StartupData::operator=(StartupData&&) =
     default;
+
+FeedStore::WebFeedStartupData::WebFeedStartupData() = default;
+FeedStore::WebFeedStartupData::WebFeedStartupData(WebFeedStartupData&&) =
+    default;
+FeedStore::WebFeedStartupData::~WebFeedStartupData() = default;
+FeedStore::WebFeedStartupData& FeedStore::WebFeedStartupData::operator=(
+    WebFeedStartupData&&) = default;
 
 FeedStore::FeedStore(
     std::unique_ptr<leveldb_proto::ProtoDatabase<feedstore::Record>> database)
@@ -373,7 +391,7 @@ void FeedStore::LoadStream(
   database_->LoadEntriesWithFilter(
       base::BindRepeating(
           filter, StreamDataKey(stream_type),
-          base::StrCat({"T/", feedstore::StreamId(stream_type), "/"})),
+          base::StrCat({"T/", feedstore::StreamKey(stream_type), "/"})),
       CreateReadOptions(),
       /*target_prefix=*/"",
       base::BindOnce(&FeedStore::OnLoadStreamFinished, GetWeakPtr(),
@@ -395,12 +413,12 @@ void FeedStore::OnLoadStreamFinished(
         case feedstore::Record::kStreamData:
           result.stream_data = std::move(*record.mutable_stream_data());
           DLOG_IF(ERROR, result.stream_data.stream_id() !=
-                             feedstore::StreamId(stream_type))
+                             feedstore::StreamKey(stream_type))
               << "Read a record with the wrong stream_id";
           break;
         case feedstore::Record::kStreamStructures:
           DLOG_IF(ERROR, record.stream_structures().stream_id() !=
-                             feedstore::StreamId(stream_type))
+                             feedstore::StreamKey(stream_type))
               << "Read a record with the wrong stream_id";
           result.stream_structures.push_back(
               std::move(*record.mutable_stream_structures()));
@@ -486,7 +504,7 @@ void FeedStore::WriteOperations(
     const StreamType& stream_type,
     int32_t sequence_number,
     std::vector<feedstore::DataOperation> operations) {
-  base::StringPiece stream_id = feedstore::StreamId(stream_type);
+  std::string stream_id = feedstore::StreamKey(stream_type);
   std::vector<feedstore::Record> records;
   feedstore::Record structures_record;
   feedstore::StreamStructureSet& structure_set =
@@ -500,7 +518,7 @@ void FeedStore::WriteOperations(
       records.push_back(std::move(record));
     }
   }
-  structure_set.set_stream_id(std::string(feedstore::StreamId(stream_type)));
+  structure_set.set_stream_id(std::string(feedstore::StreamKey(stream_type)));
   structure_set.set_sequence_number(sequence_number);
 
   records.push_back(std::move(structures_record));
@@ -653,9 +671,15 @@ void FeedStore::ReadMetadata(
 
 void FeedStore::ReadWebFeedStartupData(
     base::OnceCallback<void(WebFeedStartupData)> callback) {
-  ReadMany({kSubscribedFeedsKey, kRecommendedIndexKey},
-           base::BindOnce(&FeedStore::OnReadWebFeedStartupDataFinished,
-                          GetWeakPtr(), std::move(callback)));
+  auto is_startup_data_filter = [](const std::string& key) {
+    return key == kSubscribedFeedsKey || key == kRecommendedIndexKey ||
+           base::StartsWith(key, kPendingWebFeedOperationPrefix);
+  };
+
+  database_->LoadEntriesWithFilter(
+      base::BindRepeating(is_startup_data_filter),
+      base::BindOnce(&FeedStore::OnReadWebFeedStartupDataFinished, GetWeakPtr(),
+                     std::move(callback)));
 }
 
 void FeedStore::OnReadWebFeedStartupDataFinished(
@@ -671,6 +695,9 @@ void FeedStore::OnReadWebFeedStartupDataFinished(
       } else if (r.has_subscribed_web_feeds()) {
         result.subscribed_web_feeds =
             std::move(*r.mutable_subscribed_web_feeds());
+      } else if (r.has_pending_web_feed_operation()) {
+        result.pending_operations.push_back(
+            std::move(*r.mutable_pending_web_feed_operation()));
       } else {
         DLOG(ERROR) << "OnReadWebFeedStartupDataFinished: Got record with no "
                        "useful data. data_case="
@@ -683,8 +710,8 @@ void FeedStore::OnReadWebFeedStartupDataFinished(
 
 void FeedStore::ReadStartupData(
     base::OnceCallback<void(StartupData)> callback) {
-  ReadMany({StreamDataKey(kWebFeedStream), StreamDataKey(kForYouStream),
-            kMetadataKey},
+  ReadMany({StreamDataKey(StreamType(StreamKind::kFollowing)),
+            StreamDataKey(StreamType(StreamKind::kForYou)), kMetadataKey},
            base::BindOnce(&FeedStore::OnReadStartupDataFinished, GetWeakPtr(),
                           std::move(callback)));
 }
@@ -788,6 +815,22 @@ void FeedStore::ReadRecommendedWebFeedInfoFinished(
 
   std::move(callback).Run(
       base::WrapUnique(record->release_recommended_web_feed()));
+}
+
+void FeedStore::WritePendingWebFeedOperation(
+    feedstore::PendingWebFeedOperation operation) {
+  Write({MakeRecord(std::move(operation))}, base::DoNothing());
+}
+
+void FeedStore::RemovePendingWebFeedOperation(int64_t operation_id) {
+  auto keys_to_remove = std::make_unique<std::vector<std::string>>();
+  keys_to_remove->push_back(base::StrCat(
+      {kPendingWebFeedOperationPrefix, base::NumberToString(operation_id)}));
+
+  database_->UpdateEntries(
+      /*entries_to_save=*/std::make_unique<
+          std::vector<std::pair<std::string, feedstore::Record>>>(),
+      std::move(keys_to_remove), base::DoNothing());
 }
 
 }  // namespace feed

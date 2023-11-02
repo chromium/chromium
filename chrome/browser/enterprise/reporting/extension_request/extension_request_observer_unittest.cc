@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_observer.h"
 
+#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -131,10 +132,7 @@ class ExtensionRequestObserverTest : public BrowserWithTestWindowTest {
       const std::vector<std::string>& expected_removed_requests) {
     // Record the number of requests before closing any notification.
     size_t number_of_existing_requests =
-        profile()
-            ->GetPrefs()
-            ->GetDictionary(prefs::kCloudExtensionRequestIds)
-            ->DictSize();
+        profile()->GetPrefs()->GetDict(prefs::kCloudExtensionRequestIds).size();
 
     // Close the notification
     base::RunLoop close_run_loop;
@@ -146,14 +144,12 @@ class ExtensionRequestObserverTest : public BrowserWithTestWindowTest {
     close_run_loop.Run();
 
     // Verify that only |expected_removed_requests| are removed from the pref.
-    const base::DictionaryValue* actual_pending_requests =
-        profile()->GetPrefs()->GetDictionary(prefs::kCloudExtensionRequestIds);
+    const base::Value::Dict& actual_pending_requests =
+        profile()->GetPrefs()->GetDict(prefs::kCloudExtensionRequestIds);
     EXPECT_EQ(number_of_existing_requests - expected_removed_requests.size(),
-              actual_pending_requests->DictSize());
-    for (auto it : actual_pending_requests->DictItems()) {
-      EXPECT_EQ(expected_removed_requests.end(),
-                std::find(expected_removed_requests.begin(),
-                          expected_removed_requests.end(), it.first));
+              actual_pending_requests.size());
+    for (auto it : actual_pending_requests) {
+      EXPECT_FALSE(base::Contains(expected_removed_requests, it.first));
     }
     closed_notification_count_ += 1;
     histogram_tester()->ExpectBucketCount(kPendingListUpdateMetricsName,
@@ -210,11 +206,9 @@ TEST_F(ExtensionRequestObserverTest, NotificationClosedWithoutUserConfirmed) {
   VerifyNotification(false);
 
   // No request removed when notification is not closed by user.
-  EXPECT_EQ(pending_list.size(),
-            profile()
-                ->GetPrefs()
-                ->GetDictionary(prefs::kCloudExtensionRequestIds)
-                ->DictSize());
+  EXPECT_EQ(
+      pending_list.size(),
+      profile()->GetPrefs()->GetDict(prefs::kCloudExtensionRequestIds).size());
   histogram_tester()->ExpectTotalCount(kPendingListUpdateMetricsName, 0);
 }
 
@@ -267,11 +261,9 @@ TEST_F(ExtensionRequestObserverTest, ExtensionRequestPolicyToggle) {
   VerifyNotification(false);
 
   // And no pending requests are removed.
-  EXPECT_EQ(pending_list.size(),
-            profile()
-                ->GetPrefs()
-                ->GetDictionary(prefs::kCloudExtensionRequestIds)
-                ->DictSize());
+  EXPECT_EQ(
+      pending_list.size(),
+      profile()->GetPrefs()->GetDict(prefs::kCloudExtensionRequestIds).size());
   histogram_tester()->ExpectTotalCount(kPendingListUpdateMetricsName, 0);
 }
 

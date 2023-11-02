@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,18 +12,10 @@
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId FamilyLinkNoticeView::kScreenId;
+FamilyLinkNoticeScreenHandler::FamilyLinkNoticeScreenHandler()
+    : BaseScreenHandler(kScreenId) {}
 
-FamilyLinkNoticeScreenHandler::FamilyLinkNoticeScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
-  set_user_acted_method_path("login.FamilyLinkNoticeScreen.userActed");
-}
-
-FamilyLinkNoticeScreenHandler::~FamilyLinkNoticeScreenHandler() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
+FamilyLinkNoticeScreenHandler::~FamilyLinkNoticeScreenHandler() = default;
 
 void FamilyLinkNoticeScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
@@ -41,32 +33,20 @@ void FamilyLinkNoticeScreenHandler::DeclareLocalizedValues(
                IDS_LOGIN_FAMILY_LINK_NOTICE_SCREEN_CONTINUE_BUTTON);
 }
 
-void FamilyLinkNoticeScreenHandler::Initialize() {}
-
 void FamilyLinkNoticeScreenHandler::Show() {
-  ShowScreen(kScreenId);
-}
-
-void FamilyLinkNoticeScreenHandler::Bind(FamilyLinkNoticeScreen* screen) {
-  screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen_);
-}
-
-void FamilyLinkNoticeScreenHandler::Unbind() {
-  screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreen(nullptr);
+  ShowInWebUI();
 }
 
 void FamilyLinkNoticeScreenHandler::SetIsNewGaiaAccount(bool value) {
-  CallJS("login.FamilyLinkNoticeScreen.setIsNewGaiaAccount", value);
+  CallExternalAPI("setIsNewGaiaAccount", value);
 }
 
 void FamilyLinkNoticeScreenHandler::SetDisplayEmail(const std::string& value) {
-  CallJS("login.FamilyLinkNoticeScreen.setDisplayEmail", value);
+  CallExternalAPI("setDisplayEmail", value);
 }
 
 void FamilyLinkNoticeScreenHandler::SetDomain(const std::string& value) {
-  CallJS("login.FamilyLinkNoticeScreen.setDomain", value);
+  CallExternalAPI("setDomain", value);
 }
 
 }  // namespace chromeos

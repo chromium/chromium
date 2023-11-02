@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include "ash/components/phonehub/message_receiver.h"
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class FakeMessageReceiver : public MessageReceiver {
@@ -16,6 +16,7 @@ class FakeMessageReceiver : public MessageReceiver {
   FakeMessageReceiver() = default;
   ~FakeMessageReceiver() override = default;
 
+  using MessageReceiver::NotifyFeatureSetupResponseReceived;
   using MessageReceiver::NotifyFetchCameraRollItemDataResponseReceived;
   using MessageReceiver::NotifyFetchCameraRollItemsResponseReceived;
   using MessageReceiver::NotifyPhoneStatusSnapshotReceived;
@@ -23,6 +24,6 @@ class FakeMessageReceiver : public MessageReceiver {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_FAKE_MESSAGE_RECEIVER_H_

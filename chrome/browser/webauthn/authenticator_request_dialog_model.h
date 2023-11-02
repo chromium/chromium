@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,14 +11,18 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/strings/string_piece.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "chrome/browser/webauthn/authenticator_reference.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
 #include "chrome/browser/webauthn/observable_authenticator_list.h"
+#include "content/public/browser/authenticator_request_client_delegate.h"
+#include "content/public/browser/global_routing_id.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
@@ -28,12 +32,17 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-namespace gfx {
-struct VectorIcon;
-}
+namespace content {
+class RenderFrameHost;
+}  // namespace content
 
 namespace device {
 class AuthenticatorGetAssertionResponse;
+class DiscoverableCredentialMetadata;
+}
+
+namespace gfx {
+struct VectorIcon;
 }
 
 // Encapsulates the model behind the Web Authentication request dialog's UX
@@ -54,9 +63,9 @@ class AuthenticatorRequestDialogModel {
     // The UX flow has not started yet, the dialog should still be hidden.
     kNotStarted,
 
-    // A more subtle version of the dialog is being shown as an icon or bubble
-    // on the omnibox, prompting the user to tap their security key.
-    kLocationBarBubble,
+    // Conditionally mediated UI. No dialog is shown, instead credentials are
+    // offered to the user on the password autofill prompt.
+    kConditionalMediation,
 
     kMechanismSelection,
 
@@ -82,6 +91,9 @@ class AuthenticatorRequestDialogModel {
     // Bluetooth Low Energy (BLE).
     kBlePowerOnAutomatic,
     kBlePowerOnManual,
+#if BUILDFLAG(IS_MAC)
+    kBlePermissionMac,
+#endif
 
     // Let the user confirm that they want to create a credential in an
     // off-the-record browsing context. Used for platform and caBLE credentials,
@@ -112,17 +124,25 @@ class AuthenticatorRequestDialogModel {
     // notice about resident credentials.
     kResidentCredentialConfirmation,
 
-    // Account selection,
+    // Account selection. This occurs prior to performing user verification for
+    // platform authenticators ("pre-select"), or afterwards for USB security
+    // keys. In each mode, there are different sheets for confirming a single
+    // available credential and choosing one from a list of multiple options.
     kSelectAccount,
+    kSelectSingleAccount,
+    kPreSelectAccount,
+    kPreSelectSingleAccount,
 
     // Attestation permission requests.
     kAttestationPermissionRequest,
     kEnterpriseAttestationPermissionRequest,
+
+    kCreatePasskey,
   };
 
   // Implemented by the dialog to observe this model and show the UI panels
   // appropriate for the current step.
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // Called when the user clicks "Try Again" to restart the user flow.
     virtual void OnStartOver() {}
@@ -144,6 +164,9 @@ class AuthenticatorRequestDialogModel {
     // Called when the user cancelled WebAuthN request by clicking the
     // "cancel" button or the back arrow in the UI dialog.
     virtual void OnCancelRequest() {}
+
+    // Called when the user clicks “Manage Devices” to manage their phones.
+    virtual void OnManageDevicesClicked() {}
   };
 
   // A Mechanism is a user-visable method of authenticating. It might be a
@@ -151,20 +174,20 @@ class AuthenticatorRequestDialogModel {
   // delegation to a platform API. Mechanisms are listed in the UI for the
   // user to select between.
   struct Mechanism {
-    // These types describe the type of Mechanism, but this is only for testing.
+    // These types describe the type of Mechanism.
     using Transport =
         base::StrongAlias<class TransportTag, AuthenticatorTransport>;
     using WindowsAPI = base::StrongAlias<class WindowsAPITag,
                                          bool /* unused, but cannot be void */>;
     using Phone = base::StrongAlias<class PhoneTag, std::string>;
-    using OtherPhone = base::StrongAlias<class OtherPhoneTag,
-                                         bool /* unused, but cannot be void */>;
-    using Type = absl::variant<Transport, WindowsAPI, Phone, OtherPhone>;
+    using AddPhone = base::StrongAlias<class AddPhoneTag,
+                                       bool /* unused, but cannot be void */>;
+    using Type = absl::variant<Transport, WindowsAPI, Phone, AddPhone>;
 
     Mechanism(Type type,
               std::u16string name,
               std::u16string short_name,
-              const gfx::VectorIcon* icon,
+              const gfx::VectorIcon& icon,
               base::RepeatingClosure callback,
               bool is_priority);
     ~Mechanism();
@@ -172,16 +195,14 @@ class AuthenticatorRequestDialogModel {
     Mechanism(const Mechanism&) = delete;
     Mechanism& operator=(const Mechanism&) = delete;
 
+    const Type type;
     const std::u16string name;
     const std::u16string short_name;
-    const gfx::VectorIcon* const icon;
+    const gfx::VectorIcon& icon;
     const base::RepeatingClosure callback;
     // priority is true if this mechanism should be activated immediately.
     // Only a single Mechanism in a list should have priority.
     const bool priority;
-
-    // type should only be accessed by tests.
-    const Type type;
   };
 
   // PairedPhone represents a paired caBLEv2 device.
@@ -217,7 +238,26 @@ class AuthenticatorRequestDialogModel {
     CABLE_V2_2ND_FACTOR,
   };
 
-  explicit AuthenticatorRequestDialogModel(const std::string& relying_party_id);
+  // ExperimentServerLinkSheet controls the the arms of an experiment to tweak
+  // the behaviour and visibility of buttons on the server-link sheet.
+  enum class ExperimentServerLinkSheet {
+    CONTROL = 1,
+    ARM_2 = 2,
+    ARM_3 = 3,
+    ARM_4 = 4,
+    ARM_5 = 5,
+    ARM_6 = 6,
+  };
+
+  // ExperimentServerLinkTitle enumerates the arms of an experiment to tweak the
+  // title on the server-link sheet.
+  enum class ExperimentServerLinkTitle {
+    CONTROL = 11,
+    UNLOCK_YOUR_PHONE = 12,
+  };
+
+  explicit AuthenticatorRequestDialogModel(
+      content::RenderFrameHost* render_frame_host);
 
   AuthenticatorRequestDialogModel(const AuthenticatorRequestDialogModel&) =
       delete;
@@ -242,14 +282,14 @@ class AuthenticatorRequestDialogModel {
            current_step() == Step::kClosed;
   }
 
+  // Returns whether the visible dialog should be closed. This usually means
+  // that the request has finished, or that we are in a step that does not
+  // involve showing UI.
   bool should_dialog_be_closed() const {
-    return current_step() == Step::kClosed;
+    return current_step() == Step::kClosed ||
+           current_step() == Step::kNotStarted ||
+           current_step() == Step::kConditionalMediation;
   }
-  bool should_dialog_be_hidden() const {
-    return current_step() == Step::kNotStarted ||
-           current_step() == Step::kLocationBarBubble;
-  }
-
   const TransportAvailabilityInfo* transport_availability() const {
     return &transport_availability_;
   }
@@ -262,19 +302,34 @@ class AuthenticatorRequestDialogModel {
     return ephemeral_state_.selected_authenticator_id_;
   }
 
+  const absl::optional<std::string>& selected_phone_name() const {
+    return ephemeral_state_.selected_phone_name_;
+  }
+
   // Starts the UX flow, by either showing the transport selection screen or
   // the guided flow for them most likely transport.
   //
-  // If |use_location_bar_bubble| is true, a non-modal bubble will be displayed
-  // on the location bar instead of the full-blown page-modal UI.
+  // If |is_conditional_mediation| is true, credentials will be shown on the
+  // password autofill instead of the full-blown page-modal UI.
+  //
+  // |prefer_native_api| indicates that the UI should jump directly to the
+  // system WebAuthn UI if there's no better option. This is currently only
+  // meaningful on Windows, but the parameter exists on all platforms to avoid
+  // too much #ifdef soup.
   //
   // Valid action when at step: kNotStarted.
-  void StartFlow(
-      TransportAvailabilityInfo transport_availability,
-      bool use_location_bar_bubble);
+  void StartFlow(TransportAvailabilityInfo transport_availability,
+                 bool is_conditional_mediation,
+                 bool prefer_native_api);
 
   // Restarts the UX flow.
   void StartOver();
+
+  // Starts a modal WebAuthn flow (i.e. what you normally get if you call
+  // WebAuthn with no mediation parameter) from a conditional request.
+  //
+  // Valid action when at step: kConditionalMediation.
+  void TransitionToModalWebAuthnRequest();
 
   // Starts the UX flow. Tries to figure out the most likely transport to be
   // used, and starts the guided flow for that transport; or shows the manual
@@ -287,6 +342,9 @@ class AuthenticatorRequestDialogModel {
   // Hides the modal Chrome UI dialog and shows the native Windows WebAuthn
   // UI instead.
   void HideDialogAndDispatchToNativeWindowsApi();
+
+  // Proceeds straight to the platform authenticator prompt.
+  void HideDialogAndDispatchToPlatformAuthenticator();
 
   // Called when an attempt to contact a phone failed.
   void OnPhoneContactFailed(const std::string& name);
@@ -317,6 +375,11 @@ class AuthenticatorRequestDialogModel {
   // Valid action when at step: kBlePowerOnAutomatic.
   void PowerOnBleAdapter();
 
+  // Open the system dialog to grant BLE permission to Chrome.
+  //
+  // Valid action when at step: kBlePermissionMac.
+  void OpenBlePreferences();
+
   // Tries if a USB device is present -- the user claims they plugged it in.
   //
   // Valid action when at step: kUsbInsert.
@@ -345,6 +408,9 @@ class AuthenticatorRequestDialogModel {
   //
   // Valid action at all steps.
   void Cancel();
+
+  // Opens a tab to the settings page for managing phones as security keys.
+  void ManageDevices();
 
   // Called by the AuthenticatorRequestSheetModel subclasses when their state
   // changes, which will trigger notifying observers of OnSheetModelChanged.
@@ -414,6 +480,10 @@ class AuthenticatorRequestDialogModel {
 
   void SetRequestCallback(RequestCallback request_callback);
 
+  void SetAccountPreselectedCallback(
+      content::AuthenticatorRequestClientDelegate::AccountPreselectedCallback
+          callback);
+
   void SetBluetoothAdapterPowerOnCallback(
       base::RepeatingClosure bluetooth_adapter_power_on_callback);
 
@@ -446,9 +516,15 @@ class AuthenticatorRequestDialogModel {
   // |responses()|.
   void OnAccountSelected(size_t index);
 
-  // Called when an account from |ephemeral_state_.users_| is selected from the
-  // Conditional UI prompt.
-  void OnAccountPreselected(const std::vector<uint8_t>& id);
+  // OnAccountPreselected is called when the user selects a discoverable
+  // credential from a platform authenticator prior to providing user
+  // authentication. `crededential_id` must match one of the credentials in
+  // `creds()`.
+  void OnAccountPreselected(const std::vector<uint8_t>& credential_id);
+
+  // Like `OnAccountPreselected()`, but this takes an index into `creds()`
+  // instead of a credential ID.
+  void OnAccountPreselectedIndex(size_t index);
 
   void SetSelectedAuthenticatorForTesting(AuthenticatorReference authenticator);
 
@@ -470,6 +546,13 @@ class AuthenticatorRequestDialogModel {
 
   // SetCurrentStepForTesting forces the model to the specified step.
   void SetCurrentStepForTesting(Step step);
+
+  TransportAvailabilityInfo& transport_availability_for_testing() {
+    return transport_availability_;
+  }
+
+  void ReplaceCredListForTesting(
+      std::vector<device::DiscoverableCredentialMetadata> creds);
 
   ObservableAuthenticatorList& saved_authenticators() {
     return ephemeral_state_.saved_authenticators_;
@@ -508,8 +591,8 @@ class AuthenticatorRequestDialogModel {
   void RequestAttestationPermission(bool is_enterprise_attestation,
                                     base::OnceCallback<void(bool)> callback);
 
-  const std::vector<device::PublicKeyCredentialUserEntity>& users() {
-    return ephemeral_state_.users_;
+  const std::vector<device::DiscoverableCredentialMetadata>& creds() {
+    return ephemeral_state_.creds_;
   }
 
   device::ResidentKeyRequirement resident_key_requirement() const {
@@ -530,24 +613,44 @@ class AuthenticatorRequestDialogModel {
   // phones.
   std::vector<std::string> paired_phone_names() const;
 
+  void set_relying_party_id(const std::string& relying_party_id) {
+    relying_party_id_ = relying_party_id;
+  }
   const std::string& relying_party_id() const { return relying_party_id_; }
+
+  void set_user_entity(device::PublicKeyCredentialUserEntity user_entity) {
+    user_entity_ = std::move(user_entity);
+  }
+  const device::PublicKeyCredentialUserEntity& user_entity() const {
+    return user_entity_;
+  }
 
   bool offer_try_again_in_ui() const { return offer_try_again_in_ui_; }
 
   base::WeakPtr<AuthenticatorRequestDialogModel> GetWeakPtr();
+
+  ExperimentServerLinkTitle experiment_server_link_title_ =
+      ExperimentServerLinkTitle::CONTROL;
+  ExperimentServerLinkSheet experiment_server_link_sheet_ =
+      ExperimentServerLinkSheet::CONTROL;
 
  private:
   // Contains the state that will be reset when calling StartOver(). StartOver()
   // might be called at an arbitrary point of execution.
   struct EphemeralState {
     EphemeralState();
+    EphemeralState(EphemeralState&&);
+    EphemeralState& operator=(EphemeralState&&);
     ~EphemeralState();
-
-    void Reset();
 
     // Represents the id of the Bluetooth authenticator that the user is trying
     // to connect to or conduct WebAuthN request to via the WebAuthN UI.
     absl::optional<std::string> selected_authenticator_id_;
+
+    // The name of the paired phone that was passed to `ContactPhone()`. It is
+    // shown on the UI sheet that prompts the user to check their phone for
+    // a notification.
+    absl::optional<std::string> selected_phone_name_;
 
     // Stores a list of |AuthenticatorReference| values such that a request can
     // be dispatched dispatched after some UI interaction. This is useful for
@@ -559,10 +662,15 @@ class AuthenticatorRequestDialogModel {
     // authenticator has responded to a request.
     std::vector<device::AuthenticatorGetAssertionResponse> responses_;
 
-    // users_ contains possible accounts to select between before or after an
+    // creds_ contains possible credentials to select between before or after an
     // authenticator has responded to a request.
-    std::vector<device::PublicKeyCredentialUserEntity> users_;
+    std::vector<device::DiscoverableCredentialMetadata> creds_;
   };
+
+  void ResetEphemeralState();
+
+  // Can return nullptr in tests.
+  content::WebContents* GetWebContents();
 
   void SetCurrentStep(Step step);
 
@@ -576,7 +684,7 @@ class AuthenticatorRequestDialogModel {
                                    size_t mechanism_index);
 
   // Starts the flow for adding an unlisted phone by showing a QR code.
-  void StartGuidedFlowForOtherPhone(size_t mechanism_index);
+  void StartGuidedFlowForAddPhone(size_t mechanism_index);
 
   // Displays a resident-key warning if needed and then calls
   // |HideDialogAndDispatchToNativeWindowsApi|.
@@ -585,24 +693,31 @@ class AuthenticatorRequestDialogModel {
   // Contacts a paired phone. The phone is specified by name.
   void ContactPhone(const std::string& name, size_t mechanism_index);
   void ContactPhoneAfterOffTheRecordInterstitial(std::string name);
+  void ContactPhoneAfterBleIsPowered(std::string name);
 
-  void StartLocationBarBubbleRequest();
+  void StartConditionalMediationRequest();
 
   void DispatchRequestAsync(AuthenticatorReference* authenticator);
   void DispatchRequestAsyncInternal(const std::string& authenticator_id);
 
   void ContactNextPhoneByName(const std::string& name);
-  void PopulateMechanisms();
 
-  // Proceeds straight to the platform authenticator prompt.
+  // PopulateMechanisms fills in |mechanisms_|.
   //
-  // Valid action when at all steps.
-  void HideDialogAndDispatchToPlatformAuthenticator();
+  // |prefer_native_api| indicates that the UI should jump directly to the
+  // system WebAuthn UI if there's no better option. This is currently only
+  // meaningful on Windows, but the parameter exists on all platforms to avoid
+  // too much #ifdef soup.
+  void PopulateMechanisms(bool prefer_native_api);
+
+  // Identifier for the RenderFrameHost of the frame that initiated the current
+  // request.
+  content::GlobalRenderFrameHostId frame_host_id_;
 
   EphemeralState ephemeral_state_;
 
   // relying_party_id is the RP ID from Webauthn, essentially a domain name.
-  const std::string relying_party_id_;
+  std::string relying_party_id_;
 
   // The current step of the request UX flow that is currently shown.
   Step current_step_ = Step::kNotStarted;
@@ -615,21 +730,22 @@ class AuthenticatorRequestDialogModel {
   // may request, e.g., PIN entry prior to that.
   absl::optional<Step> pending_step_;
 
-  // Determines which step to continue with once the Blueooth adapter is
-  // powered. Only set while the |current_step_| is either kBlePowerOnManual,
-  // kBlePowerOnAutomatic.
-  absl::optional<Step> next_step_once_ble_powered_;
-
   // after_off_the_record_interstitial_ contains the closure to run if the user
   // accepts the interstitial that warns that platform/caBLE authenticators may
   // record information even in incognito mode.
   base::OnceClosure after_off_the_record_interstitial_;
 
-  base::ObserverList<Observer>::Unchecked observers_;
+  // after_ble_adapter_powered_ contains the closure to run if the user
+  // accepts the interstitial that requests to turn on the BLE adapter.
+  base::OnceClosure after_ble_adapter_powered_;
+
+  base::ObserverList<Observer> observers_;
 
   // This field is only filled out once the UX flow is started.
   TransportAvailabilityInfo transport_availability_;
 
+  content::AuthenticatorRequestClientDelegate::AccountPreselectedCallback
+      account_preselected_callback_;
   RequestCallback request_callback_;
   base::RepeatingClosure bluetooth_adapter_power_on_callback_;
 
@@ -647,11 +763,13 @@ class AuthenticatorRequestDialogModel {
 
   base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>
       selection_callback_;
-  absl::optional<device::PublicKeyCredentialUserEntity> preselected_account_;
 
-  // True if this request should use the non-modal location bar bubble UI
-  // instead of the page-modal, regular UI.
-  bool use_location_bar_bubble_ = false;
+  // True if the modal dialog is being shown right now.
+  bool showing_dialog_ = false;
+
+  // True if this request should display credentials on the password autofill
+  // prompt instead of the page-modal, regular UI.
+  bool use_conditional_mediation_ = false;
 
   // offer_try_again_in_ui_ indicates whether a button to retry the request
   // should be included on the dialog sheet shown when encountering certain
@@ -661,6 +779,11 @@ class AuthenticatorRequestDialogModel {
   // cable_extension_provided_ indicates whether the request included a caBLE
   // extension.
   bool cable_extension_provided_ = false;
+
+  // have_restarted_due_to_windows_cancel_ is set to true if the request was
+  // restarted because the UI jumped directly to the Windows UI but the user
+  // hit cancel.
+  bool have_restarted_due_to_windows_cancel_ = false;
 
   // mechanisms contains the entries that appear in the "transport" selection
   // sheet and the drop-down menu.
@@ -686,6 +809,10 @@ class AuthenticatorRequestDialogModel {
   base::RepeatingCallback<void(size_t)> contact_phone_callback_;
 
   absl::optional<std::string> cable_qr_string_;
+
+  // For MakeCredential requests, the PublicKeyCredentialUserEntity associated
+  // with the request.
+  device::PublicKeyCredentialUserEntity user_entity_;
 
   base::WeakPtrFactory<AuthenticatorRequestDialogModel> weak_factory_{this};
 };

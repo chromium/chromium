@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/mojom/input_method_manager.mojom-forward.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_manager_bridge.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/ash/arc/input_method_manager/input_connection_impl.h"
 #include "chrome/browser/ash/arc/input_method_manager/input_method_prefs.h"
 #include "chrome/browser/ash/input_method/input_method_engine.h"
-#include "components/arc/mojom/input_method_manager.mojom-forward.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ui/base/ime/ash/ime_bridge_observer.h"
@@ -43,6 +43,15 @@ class ArcInputMethodManagerService
     virtual void OnAndroidVirtualKeyboardVisibilityChanged(bool visible) = 0;
   };
 
+  // The delegate class to access to the global window tree state.
+  // This class separates ash dependency from ArcInputMethodManagerService.
+  class WindowDelegate {
+   public:
+    virtual ~WindowDelegate() = default;
+    virtual aura::Window* GetFocusedWindow() const = 0;
+    virtual aura::Window* GetActiveWindow() const = 0;
+  };
+
   // Returns the instance for the given BrowserContext, or nullptr if the
   // browser |context| is not allowed to use ARC.
   static ArcInputMethodManagerService* GetForBrowserContext(
@@ -65,6 +74,7 @@ class ArcInputMethodManagerService
 
   void SetInputMethodManagerBridgeForTesting(
       std::unique_ptr<ArcInputMethodManagerBridge> test_bridge);
+  void SetWindowDelegateForTesting(std::unique_ptr<WindowDelegate> delegate);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -92,7 +102,6 @@ class ArcInputMethodManagerService
                           bool show_message) override;
 
   // ui::IMEBridgeObserver overrides:
-  void OnRequestSwitchEngine() override {}
   void OnInputContextHandlerChanged() override;
 
   // Called when a11y keyboard option changed and disables ARC IME while a11y
@@ -156,7 +165,7 @@ class ArcInputMethodManagerService
   std::unique_ptr<ash::input_method::InputMethodEngine> proxy_ime_engine_;
 
   // The current (active) input method, observed for
-  // OnShowVirtualKeyboardIfEnabled.
+  // OnVirtualKeyboardVisibilityChangedIfEnabled.
   ui::InputMethod* input_method_ = nullptr;
   bool is_arc_ime_active_ = false;
 
@@ -169,6 +178,8 @@ class ArcInputMethodManagerService
   std::unique_ptr<ArcInputMethodBoundsObserver> input_method_bounds_observer_;
 
   base::CallbackListSubscription accessibility_status_subscription_;
+
+  std::unique_ptr<WindowDelegate> window_delegate_;
 
   base::ObserverList<Observer> observers_;
 };

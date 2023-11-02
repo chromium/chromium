@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <map>
 #include <utility>
 
+#include "components/webapps/browser/installable/installable_data.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 namespace webapps {
@@ -62,11 +63,6 @@ void InstallableTaskQueue::Next() {
   tasks_.pop_front();
 }
 
-void InstallableTaskQueue::Reset() {
-  tasks_.clear();
-  paused_tasks_.clear();
-}
-
 void InstallableTaskQueue::ResetWithError(InstallableStatusCode code) {
   std::deque<InstallableTask> tasks = std::move(tasks_);
   std::deque<InstallableTask> paused_tasks = std::move(paused_tasks_);
@@ -78,16 +74,16 @@ void InstallableTaskQueue::ResetWithError(InstallableStatusCode code) {
     if (task.callback) {
       std::move(task.callback)
           .Run(InstallableData({code}, GURL(), manifest, GURL(), nullptr, false,
-                               GURL(), nullptr, false, std::vector<SkBitmap>(),
-                               false, false));
+                               GURL(), nullptr, false,
+                               std::vector<Screenshot>(), false, false));
     }
   }
   for (InstallableTask& task : paused_tasks) {
     if (task.callback) {
       std::move(task.callback)
           .Run(InstallableData({code}, GURL(), manifest, GURL(), nullptr, false,
-                               GURL(), nullptr, false, std::vector<SkBitmap>(),
-                               false, false));
+                               GURL(), nullptr, false,
+                               std::vector<Screenshot>(), false, false));
     }
   }
 }

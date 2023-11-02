@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,17 +58,18 @@ DevToolsPageHandler::~DevToolsPageHandler() = default;
 
 bool DevToolsPageHandler::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<ManifestURL> manifest_url(new ManifestURL);
-  std::string devtools_str;
-  if (!extension->manifest()->GetString(keys::kDevToolsPage, &devtools_str)) {
-    *error = base::ASCIIToUTF16(errors::kInvalidDevToolsPage);
+  const std::string* devtools_str =
+      extension->manifest()->FindStringPath(keys::kDevToolsPage);
+  if (!devtools_str) {
+    *error = errors::kInvalidDevToolsPage;
     return false;
   }
-  GURL url = extension->GetResourceURL(devtools_str);
+  GURL url = extension->GetResourceURL(*devtools_str);
   const bool is_extension_url =
       url.SchemeIs(kExtensionScheme) && url.host_piece() == extension->id();
   // TODO(caseq): using http(s) is unsupported and will be disabled in m83.
   if (!is_extension_url && !url.SchemeIsHTTPOrHTTPS()) {
-    *error = base::ASCIIToUTF16(errors::kInvalidDevToolsPage);
+    *error = errors::kInvalidDevToolsPage;
     return false;
   }
   manifest_url->url_ = std::move(url);
@@ -89,31 +90,34 @@ URLOverridesHandler::~URLOverridesHandler() = default;
 bool URLOverridesHandler::Parse(Extension* extension, std::u16string* error) {
   ChromeUrlOverridesKeys manifest_keys;
   if (!ChromeUrlOverridesKeys::ParseFromDictionary(
-          extension->manifest()->available_values(), &manifest_keys, error)) {
+          extension->manifest()->available_values().GetDict(), &manifest_keys,
+          error)) {
     return false;
   }
 
   using UrlOverrideInfo = api::chrome_url_overrides::UrlOverrideInfo;
   auto url_overrides = std::make_unique<URLOverrides>();
-  auto property_map = std::map<const char*, const std::string*>{
-      {UrlOverrideInfo::kNewtab,
-       manifest_keys.chrome_url_overrides.newtab.get()},
-      {UrlOverrideInfo::kBookmarks,
-       manifest_keys.chrome_url_overrides.bookmarks.get()},
-      {UrlOverrideInfo::kHistory,
-       manifest_keys.chrome_url_overrides.history.get()},
-      {UrlOverrideInfo::kActivationmessage,
-       manifest_keys.chrome_url_overrides.activationmessage.get()},
-      {UrlOverrideInfo::kKeyboard,
-       manifest_keys.chrome_url_overrides.keyboard.get()}};
+  auto property_map =
+      std::map<const char*,
+               std::reference_wrapper<const absl::optional<std::string>>>{
+          {UrlOverrideInfo::kNewtab,
+           std::ref(manifest_keys.chrome_url_overrides.newtab)},
+          {UrlOverrideInfo::kBookmarks,
+           std::ref(manifest_keys.chrome_url_overrides.bookmarks)},
+          {UrlOverrideInfo::kHistory,
+           std::ref(manifest_keys.chrome_url_overrides.history)},
+          {UrlOverrideInfo::kActivationmessage,
+           std::ref(manifest_keys.chrome_url_overrides.activationmessage)},
+          {UrlOverrideInfo::kKeyboard,
+           std::ref(manifest_keys.chrome_url_overrides.keyboard)}};
 
-  for (auto& property : property_map) {
-    if (!property.second)
+  for (const auto& property : property_map) {
+    if (!property.second.get())
       continue;
 
     // Replace the entry with a fully qualified chrome-extension:// URL.
     url_overrides->chrome_url_overrides_[property.first] =
-        extension->GetResourceURL(*property.second);
+        extension->GetResourceURL(*property.second.get());
 
     // For component extensions, add override URL to extent patterns.
     if (extension->is_legacy_packaged_app() &&
@@ -132,7 +136,7 @@ bool URLOverridesHandler::Parse(Extension* extension, std::u16string* error) {
 
   // An extension may override at most one page.
   if (url_overrides->chrome_url_overrides_.size() > 1u) {
-    *error = base::ASCIIToUTF16(errors::kMultipleOverrides);
+    *error = errors::kMultipleOverrides;
     return false;
   }
 

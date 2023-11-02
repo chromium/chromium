@@ -1,0 +1,25 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("tangible_sync") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "tangible_sync_screen_coordinator.h",
+    "tangible_sync_screen_coordinator.mm",
+  ]
+  deps = [
+    "//base:base",
+    "//components/sync/driver",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/ui/authentication/tangible_sync",
+    "//ios/chrome/browser/ui/first_run:interruptible_chrome_coordinator",
+    "//ios/chrome/browser/ui/first_run:screen_delegate",
+    "//ios/chrome/browser/ui/main:scene_state_header",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

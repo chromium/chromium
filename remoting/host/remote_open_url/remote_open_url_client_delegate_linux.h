@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,6 @@ class RemoteOpenUrlClientDelegateLinux final
   RemoteOpenUrlClientDelegateLinux();
   ~RemoteOpenUrlClientDelegateLinux() override;
 
-  bool IsInRemoteDesktopSession() override;
   void OpenUrlOnFallbackBrowser(const GURL& url) override;
   void ShowOpenUrlError(const GURL& url) override;
 

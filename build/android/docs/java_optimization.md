@@ -84,7 +84,7 @@ intended only for debug builds, or generated JNI classes that are meant to be
 zero-overhead abstractions. Annotating a class with
 [@CheckDiscard][checkdiscard] will add a `-checkdiscard` rule automatically.
 
-[checkdiscard]: /base/android/java/src/org/chromium/base/annotations/CheckDiscard.java
+[checkdiscard]: /build/android/java/src/org/chromium/build/annotations/CheckDiscard.java
 
 ```
 Item void org.chromium.base.library_loader.LibraryPrefetcherJni.<init>() was not discarded.

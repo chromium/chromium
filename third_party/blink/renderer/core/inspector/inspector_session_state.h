@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -183,7 +183,7 @@ class CORE_EXPORT InspectorAgentState {
     }
 
     // O(1) shortcut for Keys().empty().
-    bool IsEmpty() const { return map_.IsEmpty(); }
+    bool IsEmpty() const { return map_.empty(); }
 
     // Returns the value for a given |key|, or the default value if
     // the key wasn't set.

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "components/feed/core/v2/protocol_translator.h"
 
 namespace feed {
+struct AccountInfo;
 
 // Forwards to |feed::TranslateWireResponse()| by default. Can be overridden
 // for testing.
@@ -18,7 +19,7 @@ class WireResponseTranslator {
   virtual RefreshResponseData TranslateWireResponse(
       feedwire::Response response,
       StreamModelUpdateRequest::Source source,
-      bool was_signed_in_request,
+      const AccountInfo& account_info,
       base::Time current_time) const;
 };
 

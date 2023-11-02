@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,13 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "net/base/escape.h"
+#include "build/build_config.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
@@ -126,6 +129,7 @@ const int DeviceManagementService::kArcDisabled;
 const int DeviceManagementService::kInvalidDomainlessCustomer;
 const int DeviceManagementService::kTosHasNotBeenAccepted;
 const int DeviceManagementService::kIllegalAccountForPackagedEDULicense;
+const int DeviceManagementService::kInvalidPackagedDeviceForKiosk;
 
 // static
 std::string DeviceManagementService::JobConfiguration::GetJobTypeAsString(
@@ -203,6 +207,8 @@ std::string DeviceManagementService::JobConfiguration::GetJobTypeAsString(
     case DeviceManagementService::JobConfiguration::
         TYPE_BROWSER_UPLOAD_PUBLIC_KEY:
       return "BrowserUploadPublicKey";
+    case DeviceManagementService::JobConfiguration::TYPE_CHROME_PROFILE_REPORT:
+      return "ChromeProfileReport";
   }
   NOTREACHED() << "Invalid job type " << type;
   return "";
@@ -219,8 +225,15 @@ JobConfigurationBase::JobConfigurationBase(
       oauth_token_(std::move(oauth_token)) {
   CHECK(!auth_data_.has_oauth_token()) << "Use |oauth_token| instead";
 
-  if (oauth_token_)
+#if !BUILDFLAG(IS_IOS)
+  if (oauth_token_) {
+    // Put the oauth token in the query parameters for platforms that are not
+    // iOS. On iOS we are trying the oauth token in the request headers
+    // (crbug.com/1312158). We might want to use the iOS approach on all
+    // platforms at some point.
     AddParameter(dm_protocol::kParamOAuthToken, *oauth_token_);
+  }
+#endif
 }
 
 JobConfigurationBase::~JobConfigurationBase() = default;
@@ -305,15 +318,23 @@ JobConfigurationBase::GetResourceRequest(bool bypass_proxy, int last_error) {
   rr->trusted_params = network::ResourceRequest::TrustedParams();
   rr->trusted_params->disable_secure_dns = true;
 
+#if BUILDFLAG(IS_IOS)
+  // Put the oauth token in the request headers on iOS. We might want
+  // to use this approach on the other platforms at some point. This approach
+  // will be tried first on iOS (crbug.com/1312158). Technically, the
+  // DMServer should already be able to handle the oauth token in the
+  // request headers, but we prefer to try the approach on iOS first to
+  // avoid breaking the other platforms with unexpected issues.
+  if (oauth_token_ && !oauth_token_->empty()) {
+    rr->headers.SetHeader(dm_protocol::kAuthHeader,
+                          base::StrCat({dm_protocol::kOAuthTokenHeaderPrefix,
+                                        " ", *oauth_token_}));
+  }
+#endif
+
   // If auth data is specified, use it to build the request.
   switch (auth_data_.token_type()) {
     case DMAuthTokenType::kNoAuth:
-      break;
-    case DMAuthTokenType::kGaia:
-      rr->headers.SetHeader(
-          dm_protocol::kAuthHeader,
-          std::string(dm_protocol::kServiceTokenAuthHeaderPrefix) +
-              auth_data_.gaia_token());
       break;
     case DMAuthTokenType::kDm:
       rr->headers.SetHeader(dm_protocol::kAuthHeader,
@@ -339,6 +360,10 @@ DeviceManagementService::Job::RetryMethod JobConfigurationBase::ShouldRetry(
     const std::string& response_body) {
   // By default, no need to retry based on the contents of the response.
   return DeviceManagementService::Job::NO_RETRY;
+}
+
+absl::optional<base::TimeDelta> JobConfigurationBase::GetTimeoutDuration() {
+  return timeout_;
 }
 
 // A device management service job implementation.
@@ -408,6 +433,8 @@ void DeviceManagementService::JobImpl::CreateUrlLoader() {
   url_loader_ = network::SimpleURLLoader::Create(std::move(rr), annotation);
   url_loader_->AttachStringForUpload(config_->GetPayload(), kPostContentType);
   url_loader_->SetAllowHttpErrorResults(true);
+  if (config_->GetTimeoutDuration())
+    url_loader_->SetTimeoutDuration(config_->GetTimeoutDuration().value());
 }
 
 void DeviceManagementService::JobImpl::OnURLLoaderComplete(

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,8 +37,8 @@ std::string GetPngDataUrl(const unsigned char* data, size_t size);
 // an integer button and booleans alt key, ctrl key, meta key, and shift key
 // (in that order), starting at |start_index|.
 COMPONENT_EXPORT(UI_BASE)
-WindowOpenDisposition GetDispositionFromClick(const base::ListValue* args,
-                                              int start_index);
+WindowOpenDisposition GetDispositionFromClick(const base::Value::List& args,
+                                              size_t start_index);
 
 // Parse a formatted scale factor string into float and sets to |scale_factor|.
 COMPONENT_EXPORT(UI_BASE)
@@ -67,7 +67,8 @@ void ParsePathAndScale(const GURL& url, std::string* path, float* scale_factor);
 // application locale (i.e. g_browser_process->GetApplicationLocale()).
 COMPONENT_EXPORT(UI_BASE)
 void SetLoadTimeDataDefaults(const std::string& app_locale,
-                             base::Value* localized_strings);
+                             base::Value::Dict* localized_strings);
+
 COMPONENT_EXPORT(UI_BASE)
 void SetLoadTimeDataDefaults(const std::string& app_locale,
                              ui::TemplateReplacements* replacements);

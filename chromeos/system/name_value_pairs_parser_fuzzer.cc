@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,12 +28,14 @@ class NameValuePairsParserFuzzer {
  private:
   void testInputAsVpdDumpLine(const std::string& input) {
     NameValuePairsParser parser(&name_value_map_);
-    parser.ParseNameValuePairs(input, "=", "\n");
+    parser.ParseNameValuePairs(input, NameValuePairsFormat::kVpdDump,
+                               "testAsVpd");
   }
 
   void testInputAsCrossystemOutputLine(const std::string& input) {
     NameValuePairsParser parser(&name_value_map_);
-    parser.ParseNameValuePairsWithComments(input, "=", "\n", "#");
+    parser.ParseNameValuePairs(input, NameValuePairsFormat::kCrossystem,
+                               "testAsCrossystem");
   }
 
   void testInputAsVpdDumpValuesForKey(const std::string& input) {

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,6 @@ namespace {
 
 ////////////////////////////////////////////////////////////////////////////////
 // BEGIN: These were all borrowed from src/media/filters/ffmpeg_demuxer.cc.
-// TODO(miu): This code will be de-duped in a soon-upcoming change.
-
 // Some videos just want to watch the world burn, with a height of 0; cap the
 // "infinite" aspect ratio resulting.
 constexpr int kInfiniteRatio = 99999;
@@ -64,6 +62,11 @@ void SessionMetricsRecorder::DidStartSession() {
   if (last_video_codec_ != VideoCodec::kUnknown)
     RecordVideoConfiguration();
   RecordTrackConfiguration();
+}
+
+void SessionMetricsRecorder::StartSessionFailed(
+    mojom::RemotingStartFailReason reason) {
+  UMA_HISTOGRAM_ENUMERATION("Media.Remoting.SessionStartFailedReason", reason);
 }
 
 void SessionMetricsRecorder::WillStopSession(StopTrigger trigger) {

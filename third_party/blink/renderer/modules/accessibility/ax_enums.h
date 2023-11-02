@@ -1,11 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_ENUMS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_ENUMS_H_
-
-#include "third_party/blink/renderer/core/core_export.h"
 
 namespace blink {
 
@@ -57,6 +55,8 @@ enum class AXUIntAttribute {
 };
 
 enum class AXStringAttribute {
+  kAriaBrailleLabel,
+  kAriaBrailleRoleDescription,
   kAriaKeyShortcuts,
   kAriaRoleDescription,
   // TODO(bebeaudr): kAriaVirtualContent is currently a string attribute to
@@ -92,7 +92,6 @@ enum AccessibilityOptionalBool {
 // https://w3c.github.io/html-aam/#accessible-name-and-description-computation
 enum AXTextSource {
   kAXTextFromNativeSourceUninitialized = -1,
-  kAXTextFromNativeHTMLFigcaption,
   kAXTextFromNativeHTMLLabel,
   kAXTextFromNativeHTMLLabelFor,
   kAXTextFromNativeHTMLLabelWrapped,
@@ -104,6 +103,7 @@ enum AXTextSource {
 };
 
 enum AXIgnoredReason {
+  kAXActiveFullscreenElement,
   kAXActiveModalDialog,
   kAXAriaModalDialog,
   kAXAriaHiddenElement,

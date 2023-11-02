@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/values.h"
@@ -42,9 +43,9 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/user_selectable_type.h"
-#include "components/sync/driver/mock_sync_service.h"
 #include "components/sync/driver/sync_user_settings_impl.h"
-#include "components/sync/driver/sync_user_settings_mock.h"
+#include "components/sync/test/mock_sync_service.h"
+#include "components/sync/test/sync_user_settings_mock.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -83,34 +84,33 @@ enum SyncAllDataConfig {
 // to HandleSetDatatypes().
 std::string GetConfiguration(SyncAllDataConfig sync_all,
                              syncer::UserSelectableTypeSet types) {
-  base::DictionaryValue result;
-  result.SetBoolean("syncAllDataTypes", sync_all == SYNC_ALL_DATA);
+  base::Value::Dict result;
+  result.Set("syncAllDataTypes", sync_all == SYNC_ALL_DATA);
   // Add all of our data types.
-  result.SetBoolean("appsSynced", types.Has(syncer::UserSelectableType::kApps));
-  result.SetBoolean("autofillSynced",
-                    types.Has(syncer::UserSelectableType::kAutofill));
-  result.SetBoolean("bookmarksSynced",
-                    types.Has(syncer::UserSelectableType::kBookmarks));
-  result.SetBoolean("extensionsSynced",
-                    types.Has(syncer::UserSelectableType::kExtensions));
-  result.SetBoolean("passwordsSynced",
-                    types.Has(syncer::UserSelectableType::kPasswords));
-  result.SetBoolean("preferencesSynced",
-                    types.Has(syncer::UserSelectableType::kPreferences));
-  result.SetBoolean("readingListSynced",
-                    types.Has(syncer::UserSelectableType::kReadingList));
-  result.SetBoolean("tabsSynced", types.Has(syncer::UserSelectableType::kTabs));
-  result.SetBoolean("themesSynced",
-                    types.Has(syncer::UserSelectableType::kThemes));
-  result.SetBoolean("typedUrlsSynced",
-                    types.Has(syncer::UserSelectableType::kHistory));
-  result.SetBoolean("wifiConfigurationsSynced",
-                    types.Has(syncer::UserSelectableType::kWifiConfigurations));
-  result.SetBoolean("paymentsIntegrationEnabled", false);
+  result.Set("appsSynced", types.Has(syncer::UserSelectableType::kApps));
+  result.Set("autofillSynced",
+             types.Has(syncer::UserSelectableType::kAutofill));
+  result.Set("bookmarksSynced",
+             types.Has(syncer::UserSelectableType::kBookmarks));
+  result.Set("extensionsSynced",
+             types.Has(syncer::UserSelectableType::kExtensions));
+  result.Set("passwordsSynced",
+             types.Has(syncer::UserSelectableType::kPasswords));
+  result.Set("preferencesSynced",
+             types.Has(syncer::UserSelectableType::kPreferences));
+  result.Set("readingListSynced",
+             types.Has(syncer::UserSelectableType::kReadingList));
+  result.Set("tabsSynced", types.Has(syncer::UserSelectableType::kTabs));
+  result.Set("themesSynced", types.Has(syncer::UserSelectableType::kThemes));
+  result.Set("typedUrlsSynced",
+             types.Has(syncer::UserSelectableType::kHistory));
+  result.Set("wifiConfigurationsSynced",
+             types.Has(syncer::UserSelectableType::kWifiConfigurations));
+  result.Set("paymentsIntegrationEnabled", false);
 
   // Reading list doesn't really have a UI and is supported on ios only.
-  result.SetBoolean("readingListSynced",
-                    types.Has(syncer::UserSelectableType::kReadingList));
+  result.Set("readingListSynced",
+             types.Has(syncer::UserSelectableType::kReadingList));
 
   std::string args;
   base::JSONWriter::Write(result, &args);
@@ -120,21 +120,19 @@ std::string GetConfiguration(SyncAllDataConfig sync_all,
 // Checks whether the passed |dictionary| contains a |key| with the given
 // |expected_value|. This will fail if the key isn't present, even if
 // |expected_value| is false.
-void ExpectHasBoolKey(const base::DictionaryValue* dictionary,
+void ExpectHasBoolKey(const base::Value::Dict& dictionary,
                       const std::string& key,
                       bool expected_value) {
-  absl::optional<bool> actual_value = dictionary->FindBoolKey(key);
-  // The comparison with |expected_valued| could be done in a single
-  // expectation, but the semantics would be confusing since the values are
-  // booleans.
-  ASSERT_TRUE(actual_value.has_value()) << "No value found for " << key;
-  EXPECT_EQ(expected_value, *actual_value) << "Mismatch found for " << key;
+  ASSERT_TRUE(dictionary.contains(key)) << "No value found for " << key;
+  ASSERT_TRUE(dictionary.FindBool(key).has_value()) << key << " has wrong type";
+  EXPECT_EQ(expected_value, *dictionary.FindBool(key))
+      << "Mismatch found for " << key;
 }
 
 // Checks to make sure that the values stored in |dictionary| match the values
 // expected by the showSyncSetupPage() JS function for a given set of data
 // types.
-void CheckConfigDataTypeArguments(const base::DictionaryValue* dictionary,
+void CheckConfigDataTypeArguments(const base::Value::Dict& dictionary,
                                   SyncAllDataConfig config,
                                   syncer::UserSelectableTypeSet types) {
   ExpectHasBoolKey(dictionary, "syncAllDataTypes", config == SYNC_ALL_DATA);
@@ -326,28 +324,24 @@ class PeopleHandlerTest : public ChromeRenderViewHostTestHarness {
 
   // Must be called at most once per test to check if a sync-prefs-changed
   // event happened. Returns the single fired value.
-  const base::DictionaryValue* ExpectSyncPrefsChanged() {
+  base::Value::Dict ExpectSyncPrefsChanged() {
     std::vector<const base::Value*> args =
         GetAllFiredValuesForEventName("sync-prefs-changed");
     EXPECT_EQ(1U, args.size());
     EXPECT_NE(args[0], nullptr);
     EXPECT_TRUE(args[0]->is_dict());
-    const base::DictionaryValue* dictionary;
-    args[0]->GetAsDictionary(&dictionary);
-    return dictionary;
+    return args[0]->GetDict().Clone();
   }
 
   // Must be called at most once per test to check if a sync-status-changed
   // event happened. Returns the single fired value.
-  const base::DictionaryValue* ExpectSyncStatusChanged() {
+  base::Value::Dict ExpectSyncStatusChanged() {
     std::vector<const base::Value*> args =
         GetAllFiredValuesForEventName("sync-status-changed");
     EXPECT_EQ(1U, args.size());
     EXPECT_NE(args[0], nullptr);
     EXPECT_TRUE(args[0]->is_dict());
-    const base::DictionaryValue* dictionary;
-    args[0]->GetAsDictionary(&dictionary);
-    return dictionary;
+    return args[0]->GetDict().Clone();
   }
 
   void NotifySyncStateChanged() {
@@ -364,7 +358,7 @@ class PeopleHandlerTest : public ChromeRenderViewHostTestHarness {
 
   testing::NiceMock<base::MockCallback<base::RepeatingClosure>>
       mock_on_setup_in_progress_handle_destroyed_;
-  syncer::MockSyncService* mock_sync_service_;
+  raw_ptr<syncer::MockSyncService> mock_sync_service_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
   content::TestWebUI web_ui_;
@@ -387,8 +381,7 @@ TEST_F(PeopleHandlerTest, DisplayBasicLogin) {
       .WillByDefault(Return(false));
   // Ensure that the user is not signed in before calling |HandleStartSignin()|.
   identity_test_env()->ClearPrimaryAccount();
-  base::Value list_args(base::Value::Type::LIST);
-  handler_->HandleStartSignin(&base::Value::AsListValue(list_args));
+  handler_->HandleStartSignin(base::Value::List());
 
   // Sync setup hands off control to the gaia login tab.
   EXPECT_EQ(
@@ -424,7 +417,7 @@ TEST_F(PeopleHandlerTest, DisplayConfigureWithEngineDisabledAndCancel) {
   // engine will try to download control data types (e.g encryption info), but
   // that won't finish for this test as we're simulating cancelling while the
   // spinner is showing.
-  handler_->HandleShowSyncSetupUI(nullptr);
+  handler_->HandleShowSyncSetupUI(base::Value::List());
 
   EXPECT_EQ(
       handler_.get(),
@@ -458,7 +451,7 @@ TEST_F(PeopleHandlerTest,
               SetSyncRequested(true));
   SetDefaultExpectationsForConfigPage();
 
-  handler_->HandleShowSyncSetupUI(nullptr);
+  handler_->HandleShowSyncSetupUI(base::Value::List());
 
   // No data is sent yet, because the engine is not initialized.
   EXPECT_EQ(0U, web_ui_.call_data().size());
@@ -473,7 +466,7 @@ TEST_F(PeopleHandlerTest,
   // Updates for the sync status, sync prefs and trusted vault opt-in are sent.
   EXPECT_EQ(3U, web_ui_.call_data().size());
 
-  const base::DictionaryValue* dictionary = ExpectSyncPrefsChanged();
+  base::Value::Dict dictionary = ExpectSyncPrefsChanged();
   ExpectHasBoolKey(dictionary, "syncAllDataTypes", true);
   ExpectHasBoolKey(dictionary, "customPassphraseAllowed", true);
   ExpectHasBoolKey(dictionary, "encryptAllData", false);
@@ -499,7 +492,7 @@ TEST_F(PeopleHandlerTest,
   EXPECT_CALL(*mock_sync_service_->GetMockUserSettings(),
               SetSyncRequested(true));
   SetDefaultExpectationsForConfigPage();
-  handler_->HandleShowSyncSetupUI(nullptr);
+  handler_->HandleShowSyncSetupUI(base::Value::List());
 
   // Sync engine becomes active, so |handler_| is notified.
   NotifySyncStateChanged();
@@ -541,7 +534,7 @@ TEST_F(PeopleHandlerTest, RestartSyncAfterDashboardClear) {
                 Return(syncer::SyncService::TransportState::INITIALIZING));
       });
 
-  handler_->HandleShowSyncSetupUI(nullptr);
+  handler_->HandleShowSyncSetupUI(base::Value::List());
 
   // Since the engine is not initialized yet, no data should be sent.
   EXPECT_EQ(0U, web_ui_.call_data().size());
@@ -574,7 +567,7 @@ TEST_F(PeopleHandlerTest,
                 Return(syncer::SyncService::TransportState::CONFIGURING));
       });
 
-  handler_->HandleShowSyncSetupUI(nullptr);
+  handler_->HandleShowSyncSetupUI(base::Value::List());
   // Since the engine was already running, we should *not* get a spinner - all
   // the necessary values are already available.
   ExpectSyncPrefsChanged();
@@ -624,7 +617,7 @@ TEST_F(PeopleHandlerTest, UnrecoverableErrorInitializingSync) {
   ON_CALL(*mock_sync_service_->GetMockUserSettings(), IsFirstSetupComplete())
       .WillByDefault(Return(false));
   // Open the web UI.
-  handler_->HandleShowSyncSetupUI(nullptr);
+  handler_->HandleShowSyncSetupUI(base::Value::List());
 
   ASSERT_FALSE(handler_->is_configuring_sync());
 }
@@ -637,7 +630,7 @@ TEST_F(PeopleHandlerTest, GaiaErrorInitializingSync) {
   ON_CALL(*mock_sync_service_->GetMockUserSettings(), IsFirstSetupComplete())
       .WillByDefault(Return(false));
   // Open the web UI.
-  handler_->HandleShowSyncSetupUI(nullptr);
+  handler_->HandleShowSyncSetupUI(base::Value::List());
 
   ASSERT_FALSE(handler_->is_configuring_sync());
 }
@@ -646,7 +639,7 @@ TEST_F(PeopleHandlerTest, TestSyncEverything) {
   SigninUser();
   CreatePeopleHandler();
   std::string args = GetConfiguration(SYNC_ALL_DATA, GetAllTypes());
-  base::Value list_args(base::Value::Type::LIST);
+  base::Value::List list_args;
   list_args.Append(kTestCallbackId);
   list_args.Append(args);
   ON_CALL(*mock_sync_service_->GetMockUserSettings(),
@@ -657,7 +650,7 @@ TEST_F(PeopleHandlerTest, TestSyncEverything) {
   SetupInitializedSyncService();
   EXPECT_CALL(*mock_sync_service_->GetMockUserSettings(),
               SetSelectedTypes(true, _));
-  handler_->HandleSetDatatypes(&base::Value::AsListValue(list_args));
+  handler_->HandleSetDatatypes(list_args);
 
   ExpectPageStatusResponse(PeopleHandler::kConfigurePageStatus);
 }
@@ -683,10 +676,10 @@ TEST_F(PeopleHandlerTest, EnterCorrectExistingPassphrase) {
               SetDecryptionPassphrase("correct_passphrase"))
       .WillOnce(Return(true));
 
-  base::Value list_args(base::Value::Type::LIST);
+  base::Value::List list_args;
   list_args.Append(kTestCallbackId);
   list_args.Append("correct_passphrase");
-  handler_->HandleSetDecryptionPassphrase(&base::Value::AsListValue(list_args));
+  handler_->HandleSetDecryptionPassphrase(list_args);
 
   ExpectSetPassphraseSuccess(true);
 }
@@ -711,10 +704,10 @@ TEST_F(PeopleHandlerTest, SuccessfullyCreateCustomPassphrase) {
   EXPECT_CALL(*mock_sync_service_->GetMockUserSettings(),
               SetEncryptionPassphrase("custom_passphrase"));
 
-  base::Value list_args(base::Value::Type::LIST);
+  base::Value::List list_args;
   list_args.Append(kTestCallbackId);
   list_args.Append("custom_passphrase");
-  handler_->HandleSetEncryptionPassphrase(&base::Value::AsListValue(list_args));
+  handler_->HandleSetEncryptionPassphrase(list_args);
 
   ExpectSetPassphraseSuccess(true);
 }
@@ -740,10 +733,10 @@ TEST_F(PeopleHandlerTest, EnterWrongExistingPassphrase) {
               SetDecryptionPassphrase("invalid_passphrase"))
       .WillOnce(Return(false));
 
-  base::Value list_args(base::Value::Type::LIST);
+  base::Value::List list_args;
   list_args.Append(kTestCallbackId);
   list_args.Append("invalid_passphrase");
-  handler_->HandleSetDecryptionPassphrase(&base::Value::AsListValue(list_args));
+  handler_->HandleSetDecryptionPassphrase(list_args);
 
   ExpectSetPassphraseSuccess(false);
 }
@@ -769,10 +762,10 @@ TEST_F(PeopleHandlerTest, CannotCreateBlankPassphrase) {
               SetEncryptionPassphrase)
       .Times(0);
 
-  base::Value list_args(base::Value::Type::LIST);
+  base::Value::List list_args;
   list_args.Append(kTestCallbackId);
   list_args.Append("");
-  handler_->HandleSetEncryptionPassphrase(&base::Value::AsListValue(list_args));
+  handler_->HandleSetEncryptionPassphrase(list_args);
 
   ExpectSetPassphraseSuccess(false);
 }
@@ -787,7 +780,7 @@ TEST_F(PeopleHandlerTest, TestSyncIndividualTypes) {
     syncer::UserSelectableTypeSet type_to_set;
     type_to_set.Put(type);
     std::string args = GetConfiguration(CHOOSE_WHAT_TO_SYNC, type_to_set);
-    base::Value list_args(base::Value::Type::LIST);
+    base::Value::List list_args;
     list_args.Append(kTestCallbackId);
     list_args.Append(args);
     ON_CALL(*mock_sync_service_->GetMockUserSettings(),
@@ -799,7 +792,7 @@ TEST_F(PeopleHandlerTest, TestSyncIndividualTypes) {
     EXPECT_CALL(*mock_sync_service_->GetMockUserSettings(),
                 SetSelectedTypes(false, type_to_set));
 
-    handler_->HandleSetDatatypes(&base::Value::AsListValue(list_args));
+    handler_->HandleSetDatatypes(list_args);
     ExpectPageStatusResponse(PeopleHandler::kConfigurePageStatus);
     Mock::VerifyAndClearExpectations(mock_sync_service_);
   }
@@ -810,7 +803,7 @@ TEST_F(PeopleHandlerTest, TestSyncAllManually) {
   CreatePeopleHandler();
   SetDefaultExpectationsForConfigPage();
   std::string args = GetConfiguration(CHOOSE_WHAT_TO_SYNC, GetAllTypes());
-  base::Value list_args(base::Value::Type::LIST);
+  base::Value::List list_args;
   list_args.Append(kTestCallbackId);
   list_args.Append(args);
   ON_CALL(*mock_sync_service_->GetMockUserSettings(),
@@ -821,7 +814,7 @@ TEST_F(PeopleHandlerTest, TestSyncAllManually) {
   SetupInitializedSyncService();
   EXPECT_CALL(*mock_sync_service_->GetMockUserSettings(),
               SetSelectedTypes(false, GetAllTypes()));
-  handler_->HandleSetDatatypes(&base::Value::AsListValue(list_args));
+  handler_->HandleSetDatatypes(list_args);
 
   ExpectPageStatusResponse(PeopleHandler::kConfigurePageStatus);
 }
@@ -842,14 +835,14 @@ TEST_F(PeopleHandlerTest, NonRegisteredType) {
   // Simulate "Sync everything" being turned off, but all individual
   // toggles left on.
   std::string config = GetConfiguration(CHOOSE_WHAT_TO_SYNC, GetAllTypes());
-  base::Value list_args(base::Value::Type::LIST);
+  base::Value::List list_args;
   list_args.Append(kTestCallbackId);
   list_args.Append(config);
 
   // Only the registered types are selected.
   EXPECT_CALL(*mock_sync_service_->GetMockUserSettings(),
               SetSelectedTypes(/*sync_everything=*/false, registered_types));
-  handler_->HandleSetDatatypes(&base::Value::AsListValue(list_args));
+  handler_->HandleSetDatatypes(list_args);
 }
 
 TEST_F(PeopleHandlerTest, ShowSyncSetup) {
@@ -863,7 +856,7 @@ TEST_F(PeopleHandlerTest, ShowSyncSetup) {
   SetupInitializedSyncService();
   // This should display the sync setup dialog (not login).
   SetDefaultExpectationsForConfigPage();
-  handler_->HandleShowSyncSetupUI(nullptr);
+  handler_->HandleShowSyncSetupUI(base::Value::List());
 
   ExpectSyncPrefsChanged();
 }
@@ -879,9 +872,9 @@ TEST_F(PeopleHandlerTest, ShowSetupSyncEverything) {
   SetupInitializedSyncService();
   SetDefaultExpectationsForConfigPage();
   // This should display the sync setup dialog (not login).
-  handler_->HandleShowSyncSetupUI(nullptr);
+  handler_->HandleShowSyncSetupUI(base::Value::List());
 
-  const base::DictionaryValue* dictionary = ExpectSyncPrefsChanged();
+  base::Value::Dict dictionary = ExpectSyncPrefsChanged();
   ExpectHasBoolKey(dictionary, "syncAllDataTypes", true);
   ExpectHasBoolKey(dictionary, "appsRegistered", true);
   ExpectHasBoolKey(dictionary, "autofillRegistered", true);
@@ -912,9 +905,9 @@ TEST_F(PeopleHandlerTest, ShowSetupManuallySyncAll) {
   ON_CALL(*mock_sync_service_->GetMockUserSettings(), IsSyncEverythingEnabled())
       .WillByDefault(Return(false));
   // This should display the sync setup dialog (not login).
-  handler_->HandleShowSyncSetupUI(nullptr);
+  handler_->HandleShowSyncSetupUI(base::Value::List());
 
-  const base::DictionaryValue* dictionary = ExpectSyncPrefsChanged();
+  base::Value::Dict dictionary = ExpectSyncPrefsChanged();
   CheckConfigDataTypeArguments(dictionary, CHOOSE_WHAT_TO_SYNC, GetAllTypes());
 }
 
@@ -937,13 +930,13 @@ TEST_F(PeopleHandlerTest, ShowSetupSyncForAllTypesIndividually) {
         .WillByDefault(Return(types));
 
     // This should display the sync setup dialog (not login).
-    handler_->HandleShowSyncSetupUI(nullptr);
+    handler_->HandleShowSyncSetupUI(base::Value::List());
 
     // Close the config overlay.
     LoginUIServiceFactory::GetForProfile(profile())->LoginUIClosed(
         handler_.get());
 
-    const base::DictionaryValue* dictionary = ExpectSyncPrefsChanged();
+    base::Value::Dict dictionary = ExpectSyncPrefsChanged();
     CheckConfigDataTypeArguments(dictionary, CHOOSE_WHAT_TO_SYNC, types);
     Mock::VerifyAndClearExpectations(mock_sync_service_);
     // Clean up so we can loop back to display the dialog again.
@@ -966,13 +959,14 @@ TEST_F(PeopleHandlerTest, ShowSetupOldGaiaPassphraseRequired) {
   ON_CALL(*mock_sync_service_->GetMockUserSettings(), GetPassphraseType())
       .WillByDefault(Return(syncer::PassphraseType::kFrozenImplicitPassphrase));
 
-  handler_->HandleShowSyncSetupUI(nullptr);
+  handler_->HandleShowSyncSetupUI(base::Value::List());
 
-  const base::DictionaryValue* dictionary = ExpectSyncPrefsChanged();
+  base::Value::Dict dictionary = ExpectSyncPrefsChanged();
   ExpectHasBoolKey(dictionary, "passphraseRequired", true);
-  ASSERT_TRUE(dictionary->FindStringKey("explicitPassphraseTime"));
+  ASSERT_TRUE(dictionary.contains("explicitPassphraseTime"));
+  ASSERT_TRUE(dictionary.FindString("explicitPassphraseTime"));
   EXPECT_EQ(base::UTF16ToUTF8(base::TimeFormatShortDate(passphrase_time)),
-            *dictionary->FindStringKey("explicitPassphraseTime"));
+            *dictionary.FindString("explicitPassphraseTime"));
 }
 
 TEST_F(PeopleHandlerTest, ShowSetupCustomPassphraseRequired) {
@@ -990,13 +984,14 @@ TEST_F(PeopleHandlerTest, ShowSetupCustomPassphraseRequired) {
   ON_CALL(*mock_sync_service_->GetMockUserSettings(), GetPassphraseType())
       .WillByDefault(Return(syncer::PassphraseType::kCustomPassphrase));
 
-  handler_->HandleShowSyncSetupUI(nullptr);
+  handler_->HandleShowSyncSetupUI(base::Value::List());
 
-  const base::DictionaryValue* dictionary = ExpectSyncPrefsChanged();
+  base::Value::Dict dictionary = ExpectSyncPrefsChanged();
   ExpectHasBoolKey(dictionary, "passphraseRequired", true);
-  ASSERT_TRUE(dictionary->FindStringKey("explicitPassphraseTime"));
+  ASSERT_TRUE(dictionary.contains("explicitPassphraseTime"));
+  ASSERT_TRUE(dictionary.FindString("explicitPassphraseTime"));
   EXPECT_EQ(base::UTF16ToUTF8(base::TimeFormatShortDate(passphrase_time)),
-            *dictionary->FindStringKey("explicitPassphraseTime"));
+            *dictionary.FindString("explicitPassphraseTime"));
 }
 
 TEST_F(PeopleHandlerTest, ShowSetupTrustedVaultKeysRequired) {
@@ -1011,12 +1006,12 @@ TEST_F(PeopleHandlerTest, ShowSetupTrustedVaultKeysRequired) {
   SetDefaultExpectationsForConfigPage();
 
   // This should display the sync setup dialog (not login).
-  handler_->HandleShowSyncSetupUI(nullptr);
+  handler_->HandleShowSyncSetupUI(base::Value::List());
 
-  const base::DictionaryValue* dictionary = ExpectSyncPrefsChanged();
+  base::Value::Dict dictionary = ExpectSyncPrefsChanged();
   ExpectHasBoolKey(dictionary, "passphraseRequired", false);
   ExpectHasBoolKey(dictionary, "trustedVaultKeysRequired", true);
-  EXPECT_FALSE(dictionary->FindStringKey("explicitPassphraseTime"));
+  EXPECT_FALSE(dictionary.contains("explicitPassphraseTime"));
 }
 
 TEST_F(PeopleHandlerTest, ShowSetupEncryptAll) {
@@ -1034,9 +1029,9 @@ TEST_F(PeopleHandlerTest, ShowSetupEncryptAll) {
       .WillByDefault(Return(true));
 
   // This should display the sync setup dialog (not login).
-  handler_->HandleShowSyncSetupUI(nullptr);
+  handler_->HandleShowSyncSetupUI(base::Value::List());
 
-  const base::DictionaryValue* dictionary = ExpectSyncPrefsChanged();
+  base::Value::Dict dictionary = ExpectSyncPrefsChanged();
   ExpectHasBoolKey(dictionary, "encryptAllData", true);
 }
 
@@ -1055,9 +1050,9 @@ TEST_F(PeopleHandlerTest, ShowSetupEncryptAllDisallowed) {
       .WillByDefault(Return(false));
 
   // This should display the sync setup dialog (not login).
-  handler_->HandleShowSyncSetupUI(nullptr);
+  handler_->HandleShowSyncSetupUI(base::Value::List());
 
-  const base::DictionaryValue* dictionary = ExpectSyncPrefsChanged();
+  base::Value::Dict dictionary = ExpectSyncPrefsChanged();
   ExpectHasBoolKey(dictionary, "encryptAllData", false);
   ExpectHasBoolKey(dictionary, "customPassphraseAllowed", false);
 }
@@ -1083,10 +1078,10 @@ TEST_F(PeopleHandlerTest, CannotCreatePassphraseIfCustomPassphraseDisallowed) {
               SetEncryptionPassphrase)
       .Times(0);
 
-  base::Value list_args(base::Value::Type::LIST);
+  base::Value::List list_args;
   list_args.Append(kTestCallbackId);
   list_args.Append("passphrase123");
-  handler_->HandleSetEncryptionPassphrase(&base::Value::AsListValue(list_args));
+  handler_->HandleSetEncryptionPassphrase(list_args);
 
   ExpectSetPassphraseSuccess(false);
 }
@@ -1112,10 +1107,10 @@ TEST_F(PeopleHandlerTest, CannotOverwritePassphraseWithNewOne) {
               SetEncryptionPassphrase)
       .Times(0);
 
-  base::Value list_args(base::Value::Type::LIST);
+  base::Value::List list_args;
   list_args.Append(kTestCallbackId);
   list_args.Append("passphrase123");
-  handler_->HandleSetEncryptionPassphrase(&base::Value::AsListValue(list_args));
+  handler_->HandleSetEncryptionPassphrase(list_args);
 
   ExpectSetPassphraseSuccess(false);
 }
@@ -1126,7 +1121,7 @@ TEST_F(PeopleHandlerTest, DashboardClearWhileSettingsOpen_ConfirmSoon) {
   // Sync starts out fully enabled.
   SetDefaultExpectationsForConfigPage();
 
-  handler_->HandleShowSyncSetupUI(nullptr);
+  handler_->HandleShowSyncSetupUI(base::Value::List());
 
   // Now sync gets reset from the dashboard (the user clicked the "Manage synced
   // data" link), which results in the sync-requested and first-setup-complete
@@ -1170,9 +1165,9 @@ TEST_F(PeopleHandlerTest, DashboardClearWhileSettingsOpen_ConfirmSoon) {
         NotifySyncStateChanged();
       });
 
-  base::ListValue did_abort;
-  did_abort.Append(base::Value(false));
-  handler_->OnDidClosePage(&did_abort);
+  base::Value::List did_abort;
+  did_abort.Append(false);
+  handler_->OnDidClosePage(did_abort);
 }
 
 TEST_F(PeopleHandlerTest, DashboardClearWhileSettingsOpen_ConfirmLater) {
@@ -1181,7 +1176,7 @@ TEST_F(PeopleHandlerTest, DashboardClearWhileSettingsOpen_ConfirmLater) {
   // Sync starts out fully enabled.
   SetDefaultExpectationsForConfigPage();
 
-  handler_->HandleShowSyncSetupUI(nullptr);
+  handler_->HandleShowSyncSetupUI(base::Value::List());
 
   // Now sync gets reset from the dashboard (the user clicked the "Manage synced
   // data" link), which results in the sync-requested and first-setup-complete
@@ -1241,14 +1236,12 @@ TEST_F(PeopleHandlerTest, DashboardClearWhileSettingsOpen_ConfirmLater) {
         });
   }
 
-  base::ListValue did_abort;
-  did_abort.Append(base::Value(false));
-  handler_->OnDidClosePage(&did_abort);
+  base::Value::List did_abort;
+  did_abort.Append(false);
+  handler_->OnDidClosePage(did_abort);
 }
 
-// TODO(crbug.com/1220066): Remove the lacros exclusion when DICE is disabled on
-// Lacros.
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 TEST(PeopleHandlerDiceUnifiedConsentTest, StoredAccountsList) {
   ScopedTestingLocalState local_state(TestingBrowserProcess::GetGlobal());
 
@@ -1276,21 +1269,149 @@ TEST(PeopleHandlerDiceUnifiedConsentTest, StoredAccountsList) {
   auto account_1 = identity_test_env->MakeAccountAvailable("a@gmail.com");
   auto account_2 = identity_test_env->MakeAccountAvailable("b@gmail.com");
   identity_test_env->SetPrimaryAccount(account_1.email,
-                                       signin::ConsentLevel::kSync);
+                                       signin::ConsentLevel::kSignin);
 
   PeopleHandler handler(profile.get());
-  base::Value accounts = handler.GetStoredAccountsList();
+  base::Value::List accounts = handler.GetStoredAccountsList();
 
-  ASSERT_TRUE(accounts.is_list());
-  base::Value::ConstListView accounts_list = accounts.GetList();
-
-  ASSERT_EQ(2u, accounts_list.size());
-  ASSERT_TRUE(accounts_list[0].FindKey("email"));
-  ASSERT_TRUE(accounts_list[1].FindKey("email"));
-  EXPECT_EQ("a@gmail.com", accounts_list[0].FindKey("email")->GetString());
-  EXPECT_EQ("b@gmail.com", accounts_list[1].FindKey("email")->GetString());
+  ASSERT_EQ(2u, accounts.size());
+  ASSERT_TRUE(accounts[0].GetDict().FindString("email"));
+  ASSERT_TRUE(accounts[1].GetDict().FindString("email"));
+  EXPECT_EQ("a@gmail.com", *accounts[0].GetDict().FindString("email"));
+  EXPECT_EQ("b@gmail.com", *accounts[1].GetDict().FindString("email"));
 }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+TEST(PeopleHandlerMainProfile, Signout) {
+  content::BrowserTaskEnvironment task_environment;
+
+  TestingProfile::Builder builder;
+  builder.SetIsMainProfile(true);
+
+  std::unique_ptr<TestingProfile> profile =
+      IdentityTestEnvironmentProfileAdaptor::
+          CreateProfileForIdentityTestEnvironment(
+              builder, signin::AccountConsistencyMethod::kMirror);
+
+  auto identity_test_env_adaptor =
+      std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile.get());
+  auto* identity_test_env = identity_test_env_adaptor->identity_test_env();
+  auto* identity_manager = identity_test_env->identity_manager();
+
+  identity_test_env->MakePrimaryAccountAvailable("user@gmail.com",
+                                                 ConsentLevel::kSync);
+  ASSERT_TRUE(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
+
+  identity_test_env->MakeAccountAvailable("a@gmail.com");
+  EXPECT_EQ(2U, identity_manager->GetAccountsWithRefreshTokens().size());
+
+  PeopleHandler handler(profile.get());
+  base::Value::List args;
+  args.Append(/*delete_profile=*/false);
+  handler.HandleSignout(args);
+
+  EXPECT_FALSE(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
+  EXPECT_TRUE(identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
+  // Signout should only revoke sync consent and not change any accounts.
+  EXPECT_EQ(2U, identity_manager->GetAccountsWithRefreshTokens().size());
+}
+
+TEST(PeopleHandlerSecondaryProfile, SignoutWhenSyncing) {
+  content::BrowserTaskEnvironment task_environment;
+
+  TestingProfile::Builder builder;
+  builder.SetIsMainProfile(false);
+
+  std::unique_ptr<TestingProfile> profile =
+      IdentityTestEnvironmentProfileAdaptor::
+          CreateProfileForIdentityTestEnvironment(
+              builder, signin::AccountConsistencyMethod::kMirror);
+
+  auto identity_test_env_adaptor =
+      std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile.get());
+  auto* identity_test_env = identity_test_env_adaptor->identity_test_env();
+  auto* identity_manager = identity_test_env->identity_manager();
+
+  auto account_1 = identity_test_env->MakeAccountAvailable("a@gmail.com");
+  auto account_2 = identity_test_env->MakeAccountAvailable("b@gmail.com");
+  identity_test_env->SetPrimaryAccount(account_1.email,
+                                       signin::ConsentLevel::kSync);
+  EXPECT_EQ(2U, identity_manager->GetAccountsWithRefreshTokens().size());
+
+  PeopleHandler handler(profile.get());
+  base::Value::List args;
+  args.Append(/*delete_profile=*/false);
+  handler.HandleSignout(args);
+  EXPECT_FALSE(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
+  EXPECT_FALSE(identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
+  EXPECT_TRUE(identity_manager->GetAccountsWithRefreshTokens().empty());
+}
+
+TEST(PeopleHandlerMainProfile, GetStoredAccountsList) {
+  content::BrowserTaskEnvironment task_environment;
+
+  TestingProfile::Builder builder;
+  builder.SetIsMainProfile(true);
+
+  std::unique_ptr<TestingProfile> profile =
+      IdentityTestEnvironmentProfileAdaptor::
+          CreateProfileForIdentityTestEnvironment(
+              builder, signin::AccountConsistencyMethod::kMirror);
+
+  auto identity_test_env_adaptor =
+      std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile.get());
+  auto* identity_test_env = identity_test_env_adaptor->identity_test_env();
+  auto* identity_manager = identity_test_env->identity_manager();
+
+  identity_test_env->MakePrimaryAccountAvailable("user@gmail.com",
+                                                 ConsentLevel::kSignin);
+  ASSERT_TRUE(identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
+
+  identity_test_env->MakeAccountAvailable("a@gmail.com");
+  EXPECT_EQ(2U, identity_manager->GetAccountsWithRefreshTokens().size());
+
+  PeopleHandler handler(profile.get());
+  base::Value::List accounts = handler.GetStoredAccountsList();
+
+  ASSERT_EQ(1u, accounts.size());
+  ASSERT_TRUE(accounts[0].GetDict().FindString("email"));
+  EXPECT_EQ("user@gmail.com", *accounts[0].GetDict().FindString("email"));
+}
+
+TEST(PeopleHandlerSecondaryProfile, GetStoredAccountsList) {
+  ScopedTestingLocalState local_state(TestingBrowserProcess::GetGlobal());
+  content::BrowserTaskEnvironment task_environment;
+
+  TestingProfile::Builder builder;
+  builder.SetIsMainProfile(false);
+
+  std::unique_ptr<TestingProfile> profile =
+      IdentityTestEnvironmentProfileAdaptor::
+          CreateProfileForIdentityTestEnvironment(
+              builder, signin::AccountConsistencyMethod::kMirror);
+
+  auto identity_test_env_adaptor =
+      std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile.get());
+  auto* identity_test_env = identity_test_env_adaptor->identity_test_env();
+  auto* identity_manager = identity_test_env->identity_manager();
+
+  auto account_1 = identity_test_env->MakeAccountAvailable("a@gmail.com");
+  auto account_2 = identity_test_env->MakeAccountAvailable("b@gmail.com");
+  identity_test_env->SetPrimaryAccount(account_2.email,
+                                       signin::ConsentLevel::kSignin);
+  EXPECT_EQ(2U, identity_manager->GetAccountsWithRefreshTokens().size());
+
+  PeopleHandler handler(profile.get());
+  base::Value::List accounts = handler.GetStoredAccountsList();
+
+  ASSERT_EQ(2u, accounts.size());
+  ASSERT_TRUE(accounts[0].GetDict().FindString("email"));
+  ASSERT_TRUE(accounts[1].GetDict().FindString("email"));
+  EXPECT_EQ(account_2.email, *accounts[0].GetDict().FindString("email"));
+  EXPECT_EQ(account_1.email, *accounts[1].GetDict().FindString("email"));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Regression test for crash in guest mode. https://crbug.com/1040476
@@ -1301,8 +1422,8 @@ TEST(PeopleHandlerGuestModeTest, GetStoredAccountsList) {
   std::unique_ptr<Profile> profile = builder.Build();
 
   PeopleHandler handler(profile.get());
-  base::Value accounts = handler.GetStoredAccountsList();
-  EXPECT_TRUE(accounts.GetList().empty());
+  base::Value::List accounts = handler.GetStoredAccountsList();
+  EXPECT_TRUE(accounts.empty());
 }
 
 TEST_F(PeopleHandlerTest, TurnOffSync) {
@@ -1312,9 +1433,9 @@ TEST_F(PeopleHandlerTest, TurnOffSync) {
   ASSERT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
 
   CreatePeopleHandler();
-  handler_->HandleTurnOffSync(nullptr);
+  handler_->HandleTurnOffSync(base::Value::List());
   EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
-  const base::DictionaryValue* status = ExpectSyncStatusChanged();
+  base::Value::Dict status = ExpectSyncStatusChanged();
   ExpectHasBoolKey(status, "signedIn", false);
 }
 
@@ -1325,10 +1446,9 @@ TEST_F(PeopleHandlerTest, GetStoredAccountsList) {
   ASSERT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
 
   CreatePeopleHandler();
-  base::Value accounts = handler_->GetStoredAccountsList();
-  base::Value::ListView accounts_list = accounts.GetList();
-  ASSERT_EQ(1u, accounts_list.size());
-  EXPECT_EQ("user@gmail.com", accounts_list[0].FindKey("email")->GetString());
+  base::Value::List accounts = handler_->GetStoredAccountsList();
+  ASSERT_EQ(1u, accounts.size());
+  EXPECT_EQ("user@gmail.com", *accounts[0].GetDict().FindString("email"));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,10 +13,11 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/command_buffer_id.h"
 #include "gpu/command_buffer/common/constants.h"
@@ -141,7 +142,9 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
 
   // DecoderClient implementation:
   void OnConsoleMessage(int32_t id, const std::string& message) override;
-  void CacheShader(const std::string& key, const std::string& shader) override;
+  void CacheBlob(gpu::GpuDiskCacheType type,
+                 const std::string& key,
+                 const std::string& blob) override;
   void OnFenceSyncRelease(uint64_t release) override;
   void OnDescheduleUntilFinished() override;
   void OnRescheduleAfterFinished() override;
@@ -217,8 +220,6 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
                                 gfx::GpuFenceHandle handle) override;
   void GetGpuFenceHandle(uint32_t id,
                          GetGpuFenceHandleCallback callback) override;
-  void CreateImage(mojom::CreateImageParamsPtr params) override;
-  void DestroyImage(int32_t id) override;
   void SignalSyncToken(const SyncToken& sync_token, uint32_t id) override;
   void SignalQuery(uint32_t query, uint32_t id) override;
   void BindMediaReceiver(mojo::GenericPendingAssociatedReceiver receiver,
@@ -244,7 +245,7 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
   // The lifetime of objects of this class is managed by a GpuChannel. The
   // GpuChannels destroy all the CommandBufferStubs that they own when
   // they are destroyed. So a raw pointer is safe.
-  GpuChannel* const channel_;
+  const raw_ptr<GpuChannel> channel_;
 
   ContextType context_type_;
   ContextUrl active_url_;
@@ -318,7 +319,7 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
 
   base::ObserverList<DestructionObserver>::Unchecked destruction_observers_;
 
-  base::TimeTicks process_delayed_work_time_;
+  base::DeadlineTimer process_delayed_work_timer_;
   uint32_t previous_processed_num_;
   base::TimeTicks last_idle_time_;
 

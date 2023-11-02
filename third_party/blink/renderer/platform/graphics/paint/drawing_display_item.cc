@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkData.h"
+#include "ui/gfx/geometry/insets_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -22,10 +23,12 @@ namespace blink {
 static SkBitmap RecordToBitmap(sk_sp<const PaintRecord> record,
                                const gfx::Rect& bounds) {
   SkBitmap bitmap;
-  bitmap.allocPixels(
-      SkImageInfo::MakeN32Premul(bounds.width(), bounds.height()));
+  if (!bitmap.tryAllocPixels(
+          SkImageInfo::MakeN32Premul(bounds.width(), bounds.height())))
+    return bitmap;
+
   SkiaPaintCanvas canvas(bitmap);
-  canvas.clear(SK_ColorTRANSPARENT);
+  canvas.clear(SkColors::kTransparent);
   canvas.translate(-bounds.x(), -bounds.y());
   canvas.drawPicture(std::move(record));
   return bitmap;
@@ -36,6 +39,9 @@ static bool BitmapsEqual(sk_sp<const PaintRecord> record1,
                          const gfx::Rect& bounds) {
   SkBitmap bitmap1 = RecordToBitmap(record1, bounds);
   SkBitmap bitmap2 = RecordToBitmap(record2, bounds);
+  if (bitmap1.isNull() || bitmap2.isNull())
+    return true;
+
   int mismatch_count = 0;
   constexpr int kMaxMismatches = 10;
   for (int y = 0; y < bounds.height(); ++y) {
@@ -76,8 +82,6 @@ bool DrawingDisplayItem::EqualsForUnderInvalidationImpl(
 
   // Sometimes the client may produce different records for the same visual
   // result, which should be treated as equal.
-  // Limit the bounds to prevent OOM.
-  bounds.Intersect(gfx::Rect(bounds.x(), bounds.y(), 6000, 6000));
   return BitmapsEqual(std::move(record), std::move(other_record), bounds);
 }
 
@@ -86,35 +90,37 @@ SkColor DrawingDisplayItem::BackgroundColor(float& area) const {
 
   if (GetType() != DisplayItem::kBoxDecorationBackground &&
       GetType() != DisplayItem::kDocumentBackground &&
-      GetType() != DisplayItem::kDocumentRootBackdrop)
+      GetType() != DisplayItem::kDocumentRootBackdrop &&
+      GetType() != DisplayItem::kCaret &&
+      GetType() != DisplayItem::kScrollCorner)
     return SK_ColorTRANSPARENT;
 
   if (!record_)
     return SK_ColorTRANSPARENT;
 
   for (cc::PaintOpBuffer::Iterator it(record_.get()); it; ++it) {
-    const auto* op = *it;
-    if (!op->IsPaintOpWithFlags())
+    const cc::PaintOp& op = *it;
+    if (!op.IsPaintOpWithFlags())
       continue;
-    const auto& flags = static_cast<const cc::PaintOpWithFlags*>(op)->flags;
+    const auto& flags = static_cast<const cc::PaintOpWithFlags&>(op).flags;
     // Skip op with looper or shader which may modify the color.
     if (flags.getLooper() || flags.getShader() ||
         flags.getStyle() != cc::PaintFlags::kFill_Style) {
       continue;
     }
     SkRect item_rect;
-    switch (op->GetType()) {
+    switch (op.GetType()) {
       case cc::PaintOpType::DrawRect:
-        item_rect = static_cast<const cc::DrawRectOp*>(op)->rect;
+        item_rect = static_cast<const cc::DrawRectOp&>(op).rect;
         break;
       case cc::PaintOpType::DrawIRect:
-        item_rect = SkRect::Make(static_cast<const cc::DrawIRectOp*>(op)->rect);
+        item_rect = SkRect::Make(static_cast<const cc::DrawIRectOp&>(op).rect);
         break;
       case cc::PaintOpType::DrawRRect:
-        item_rect = static_cast<const cc::DrawRRectOp*>(op)->rrect.rect();
+        item_rect = static_cast<const cc::DrawRRectOp&>(op).rrect.rect();
         break;
       default:
-        continue;
+        return SK_ColorTRANSPARENT;
     }
     area = item_rect.width() * item_rect.height();
     return flags.getColor();
@@ -153,29 +159,29 @@ gfx::Rect DrawingDisplayItem::CalculateRectKnownToBeOpaqueForRecord(
     if (++op_count > kOpCountLimit)
       break;
 
-    const auto* op = *it;
+    const cc::PaintOp& op = *it;
     // Deal with the common pattern of clipped bleed avoiding images like:
     // Save, ClipRect, Draw..., Restore.
-    if (op->GetType() == cc::PaintOpType::Save)
+    if (op.GetType() == cc::PaintOpType::Save)
       continue;
-    if (op->GetType() == cc::PaintOpType::ClipRect) {
+    if (op.GetType() == cc::PaintOpType::ClipRect) {
       clip_rect.Intersect(gfx::ToEnclosedRect(
-          gfx::SkRectToRectF(static_cast<const cc::ClipRectOp*>(op)->rect)));
+          gfx::SkRectToRectF(static_cast<const cc::ClipRectOp&>(op).rect)));
       continue;
     }
 
-    if (!op->IsDrawOp())
+    if (!op.IsDrawOp())
       break;
 
     gfx::Rect op_opaque_rect;
-    if (op->GetType() == cc::PaintOpType::DrawRecord) {
+    if (op.GetType() == cc::PaintOpType::DrawRecord) {
       op_opaque_rect = CalculateRectKnownToBeOpaqueForRecord(
-          static_cast<const cc::DrawRecordOp*>(op)->record.get());
+          static_cast<const cc::DrawRecordOp&>(op).record.get());
     } else {
-      if (!op->IsPaintOpWithFlags())
+      if (!op.IsPaintOpWithFlags())
         continue;
 
-      const auto& flags = static_cast<const cc::PaintOpWithFlags*>(op)->flags;
+      const auto& flags = static_cast<const cc::PaintOpWithFlags&>(op).flags;
       if (flags.getStyle() != cc::PaintFlags::kFill_Style ||
           flags.getLooper() ||
           (flags.getBlendMode() != SkBlendMode::kSrc &&
@@ -185,13 +191,13 @@ gfx::Rect DrawingDisplayItem::CalculateRectKnownToBeOpaqueForRecord(
           (flags.getShader() && !flags.getShader()->IsOpaque()))
         continue;
 
-      switch (op->GetType()) {
+      switch (op.GetType()) {
         case cc::PaintOpType::DrawRect:
           op_opaque_rect = gfx::ToEnclosedRect(
-              gfx::SkRectToRectF(static_cast<const cc::DrawRectOp*>(op)->rect));
+              gfx::SkRectToRectF(static_cast<const cc::DrawRectOp&>(op).rect));
           break;
         case cc::PaintOpType::DrawRRect: {
-          const SkRRect& rrect = static_cast<const cc::DrawRRectOp*>(op)->rrect;
+          const SkRRect& rrect = static_cast<const cc::DrawRRectOp&>(op).rrect;
           SkVector top_left = rrect.radii(SkRRect::kUpperLeft_Corner);
           SkVector top_right = rrect.radii(SkRRect::kUpperRight_Corner);
           SkVector bottom_left = rrect.radii(SkRRect::kLowerLeft_Corner);
@@ -201,36 +207,39 @@ gfx::Rect DrawingDisplayItem::CalculateRectKnownToBeOpaqueForRecord(
           // that can be inscribed inside it has an inset of |((2 - sqrt(2)) /
           // 2) * radius|.
           gfx::RectF contained = gfx::SkRectToRectF(rrect.rect());
-          contained.Inset(std::max(top_left.y(), top_right.y()) * 0.3f,
-                          std::max(top_right.x(), bottom_right.x()) * 0.3f,
-                          std::max(bottom_left.y(), bottom_right.y()) * 0.3f,
-                          std::max(top_left.x(), bottom_left.x()) * 0.3f);
+          contained.Inset(
+              gfx::InsetsF()
+                  .set_top(std::max(top_left.y(), top_right.y()) * 0.3f)
+                  .set_right(std::max(top_right.x(), bottom_right.x()) * 0.3f)
+                  .set_bottom(std::max(bottom_left.y(), bottom_right.y()) *
+                              0.3f)
+                  .set_left(std::max(top_left.x(), bottom_left.x()) * 0.3f));
           op_opaque_rect = ToEnclosedRect(contained);
           break;
         }
         case cc::PaintOpType::DrawIRect:
           op_opaque_rect =
-              gfx::SkIRectToRect(static_cast<const cc::DrawIRectOp*>(op)->rect);
+              gfx::SkIRectToRect(static_cast<const cc::DrawIRectOp&>(op).rect);
           break;
         case cc::PaintOpType::DrawImage: {
-          const auto* draw_image_op = static_cast<const cc::DrawImageOp*>(op);
-          const auto& image = draw_image_op->image;
+          const auto& draw_image_op = static_cast<const cc::DrawImageOp&>(op);
+          const auto& image = draw_image_op.image;
           if (!image.IsOpaque())
             continue;
-          op_opaque_rect = gfx::Rect(draw_image_op->left, draw_image_op->top,
+          op_opaque_rect = gfx::Rect(draw_image_op.left, draw_image_op.top,
                                      image.width(), image.height());
           break;
         }
         case cc::PaintOpType::DrawImageRect: {
-          const auto* draw_image_rect_op =
-              static_cast<const cc::DrawImageRectOp*>(op);
-          const auto& image = draw_image_rect_op->image;
-          DCHECK(SkRect::MakeWH(image.width(), image.height())
-                     .contains(draw_image_rect_op->src));
+          const auto& draw_image_rect_op =
+              static_cast<const cc::DrawImageRectOp&>(op);
+          const auto& image = draw_image_rect_op.image;
+          DCHECK(gfx::RectF(image.width(), image.height())
+                     .Contains(gfx::SkRectToRectF(draw_image_rect_op.src)));
           if (!image.IsOpaque())
             continue;
           op_opaque_rect =
-              gfx::ToEnclosedRect(gfx::SkRectToRectF(draw_image_rect_op->dst));
+              gfx::ToEnclosedRect(gfx::SkRectToRectF(draw_image_rect_op.dst));
           break;
         }
         default:
@@ -252,11 +261,11 @@ gfx::Rect DrawingDisplayItem::TightenVisualRect(
     sk_sp<const PaintRecord>& record) {
   DCHECK(ShouldTightenVisualRect(record));
 
-  const auto* op = record->GetFirstOp();
-  if (!op->IsPaintOpWithFlags())
+  const cc::PaintOp& op = record->GetFirstOp();
+  if (!op.IsPaintOpWithFlags())
     return visual_rect;
 
-  const auto& flags = static_cast<const cc::PaintOpWithFlags*>(op)->flags;
+  const auto& flags = static_cast<const cc::PaintOpWithFlags&>(op).flags;
   // The following can cause the painted output to be outside the paint op rect.
   if (flags.getStyle() != cc::PaintFlags::kFill_Style || flags.getLooper() ||
       flags.getMaskFilter() || flags.getImageFilter() || flags.getShader()) {
@@ -267,18 +276,18 @@ gfx::Rect DrawingDisplayItem::TightenVisualRect(
   // implementation of the logic below.
 
   gfx::Rect item_rect;
-  switch (op->GetType()) {
+  switch (op.GetType()) {
     case cc::PaintOpType::DrawRect:
       item_rect = gfx::ToEnclosingRect(
-          gfx::SkRectToRectF(static_cast<const cc::DrawRectOp*>(op)->rect));
+          gfx::SkRectToRectF(static_cast<const cc::DrawRectOp&>(op).rect));
       break;
     case cc::PaintOpType::DrawIRect:
       item_rect =
-          gfx::SkIRectToRect(static_cast<const cc::DrawIRectOp*>(op)->rect);
+          gfx::SkIRectToRect(static_cast<const cc::DrawIRectOp&>(op).rect);
       break;
     case cc::PaintOpType::DrawRRect:
       item_rect = gfx::ToEnclosingRect(gfx::SkRectToRectF(
-          static_cast<const cc::DrawRRectOp*>(op)->rrect.rect()));
+          static_cast<const cc::DrawRRectOp&>(op).rrect.rect()));
       break;
     // TODO(pdr): Support image PaintOpTypes such as DrawImage{Rect}.
     // TODO(pdr): Consider checking PaintOpType::DrawTextBlob too.
@@ -301,11 +310,11 @@ bool DrawingDisplayItem::IsSolidColor() const {
   if (record_->size() != 1)
     return false;
 
-  const auto* op = record_->GetFirstOp();
-  if (!op->IsPaintOpWithFlags())
+  const cc::PaintOp& op = record_->GetFirstOp();
+  if (!op.IsPaintOpWithFlags())
     return false;
 
-  const auto& flags = static_cast<const cc::PaintOpWithFlags*>(op)->flags;
+  const auto& flags = static_cast<const cc::PaintOpWithFlags&>(op).flags;
   // The following can cause the painted output to be outside the paint op rect.
   if (flags.getStyle() != cc::PaintFlags::kFill_Style || flags.getLooper() ||
       flags.getMaskFilter() || flags.getImageFilter() || flags.getShader()) {
@@ -313,14 +322,14 @@ bool DrawingDisplayItem::IsSolidColor() const {
   }
 
   gfx::RectF solid_color_rect;
-  switch (op->GetType()) {
+  switch (op.GetType()) {
     case cc::PaintOpType::DrawRect:
       solid_color_rect =
-          gfx::SkRectToRectF(static_cast<const cc::DrawRectOp*>(op)->rect);
+          gfx::SkRectToRectF(static_cast<const cc::DrawRectOp&>(op).rect);
       break;
     case cc::PaintOpType::DrawIRect:
       solid_color_rect = gfx::RectF(
-          gfx::SkIRectToRect(static_cast<const cc::DrawIRectOp*>(op)->rect));
+          gfx::SkIRectToRect(static_cast<const cc::DrawIRectOp&>(op).rect));
       break;
     default:
       return false;

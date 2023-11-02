@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ namespace extensions {
 
 namespace {
 signin::ConsentLevel GetConsentLevelFromProfileDetails(
-    const api::identity::ProfileDetails* details) {
+    const absl::optional<api::identity::ProfileDetails>& details) {
   api::identity::AccountStatus account_status =
       details ? details->account_status : api::identity::ACCOUNT_STATUS_NONE;
 
@@ -57,7 +57,7 @@ ExtensionFunction::ResponseAction IdentityGetProfileUserInfoFunction::Run() {
   if (extension()->permissions_data()->HasAPIPermission(
           mojom::APIPermissionID::kIdentityEmail)) {
     signin::ConsentLevel consent_level =
-        GetConsentLevelFromProfileDetails(params->details.get());
+        GetConsentLevelFromProfileDetails(params->details);
     auto account_info = IdentityManagerFactory::GetForProfile(
                             Profile::FromBrowserContext(browser_context()))
                             ->GetPrimaryAccountInfo(consent_level);
@@ -65,8 +65,7 @@ ExtensionFunction::ResponseAction IdentityGetProfileUserInfoFunction::Run() {
     profile_user_info.id = account_info.gaia;
   }
 
-  return RespondNow(OneArgument(
-      base::Value::FromUniquePtrValue(profile_user_info.ToValue())));
+  return RespondNow(WithArguments(profile_user_info.ToValue()));
 }
 
 }  // namespace extensions

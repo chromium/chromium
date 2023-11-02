@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -75,8 +76,8 @@ class FakeMultipartUploadRequest : public MultipartUploadRequestBase {
 
  private:
   const GURL url_;
-  std::string* const upload_content_type_;
-  std::string* const upload_content_data_;
+  const raw_ptr<std::string> upload_content_type_;
+  const raw_ptr<std::string> upload_content_data_;
 };
 
 }  // namespace

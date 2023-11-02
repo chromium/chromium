@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,7 +53,7 @@ std::string GetPrivateFootprintHistogramName(HistogramProcessType type) {
 }
 
 base::TimeDelta GetDelayForNextMemoryLog() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::TimeDelta mean_time = base::Minutes(5);
 #else
   base::TimeDelta mean_time = base::Minutes(30);

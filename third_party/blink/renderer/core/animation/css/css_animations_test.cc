@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_delegate.h"
@@ -75,7 +76,7 @@ class CSSAnimationsTest : public RenderingTest, public PaintTestConfigurations {
     EXPECT_EQ(1u, element->GetComputedStyle()->Filter().size());
     const FilterOperation* filter =
         element->GetComputedStyle()->Filter().Operations()[0];
-    EXPECT_EQ(FilterOperation::OperationType::CONTRAST, filter->GetType());
+    EXPECT_EQ(FilterOperation::OperationType::kContrast, filter->GetType());
     return static_cast<const BasicComponentTransferFilterOperation*>(filter)
         ->Amount();
   }
@@ -84,7 +85,7 @@ class CSSAnimationsTest : public RenderingTest, public PaintTestConfigurations {
     EXPECT_EQ(1u, element->GetComputedStyle()->Filter().size());
     const FilterOperation* filter =
         element->GetComputedStyle()->Filter().Operations()[0];
-    EXPECT_EQ(FilterOperation::OperationType::SATURATE, filter->GetType());
+    EXPECT_EQ(FilterOperation::OperationType::kSaturate, filter->GetType());
     return static_cast<const BasicColorMatrixFilterOperation*>(filter)
         ->Amount();
   }
@@ -317,6 +318,15 @@ bool OpacityFlag(const ComputedStyle& style) {
 bool TransformFlag(const ComputedStyle& style) {
   return style.HasCurrentTransformAnimation();
 }
+bool ScaleFlag(const ComputedStyle& style) {
+  return style.HasCurrentScaleAnimation();
+}
+bool RotateFlag(const ComputedStyle& style) {
+  return style.HasCurrentRotateAnimation();
+}
+bool TranslateFlag(const ComputedStyle& style) {
+  return style.HasCurrentTranslateAnimation();
+}
 bool FilterFlag(const ComputedStyle& style) {
   return style.HasCurrentFilterAnimation();
 }
@@ -335,6 +345,15 @@ bool CompositedOpacityFlag(const ComputedStyle& style) {
 }
 bool CompositedTransformFlag(const ComputedStyle& style) {
   return style.IsRunningTransformAnimationOnCompositor();
+}
+bool CompositedScaleFlag(const ComputedStyle& style) {
+  return style.IsRunningScaleAnimationOnCompositor();
+}
+bool CompositedRotateFlag(const ComputedStyle& style) {
+  return style.IsRunningRotateAnimationOnCompositor();
+}
+bool CompositedTranslateFlag(const ComputedStyle& style) {
+  return style.IsRunningTranslateAnimationOnCompositor();
 }
 bool CompositedFilterFlag(const ComputedStyle& style) {
   return style.IsRunningFilterAnimationOnCompositor();
@@ -355,9 +374,9 @@ struct FlagData {
 FlagData flag_data[] = {
     {"opacity", "0", "1", OpacityFlag},
     {"transform", "scale(1)", "scale(2)", TransformFlag},
-    {"rotate", "10deg", "20deg", TransformFlag},
-    {"scale", "1", "2", TransformFlag},
-    {"translate", "10px", "20px", TransformFlag},
+    {"rotate", "10deg", "20deg", RotateFlag},
+    {"scale", "1", "2", ScaleFlag},
+    {"translate", "10px", "20px", TranslateFlag},
     {"filter", "contrast(10%)", "contrast(20%)", FilterFlag},
     {"backdrop-filter", "blur(10px)", "blur(20px)", BackdropFilterFlag},
     {"background-color", "red", "blue", BackgroundColorFlag},
@@ -367,6 +386,9 @@ FlagData flag_data[] = {
 FlagData compositor_flag_data[] = {
     {"opacity", "0", "1", CompositedOpacityFlag},
     {"transform", "scale(1)", "scale(2)", CompositedTransformFlag},
+    {"scale", "1", "2", CompositedScaleFlag},
+    {"rotate", "45deg", "90deg", CompositedRotateFlag},
+    {"translate", "10px 0px", "10px 20px", CompositedTranslateFlag},
     {"filter", "contrast(10%)", "contrast(20%)", CompositedFilterFlag},
     {"backdrop-filter", "blur(10px)", "blur(20px)",
      CompositedBackdropFilterFlag},

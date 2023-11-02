@@ -1,19 +1,26 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/enterprise/reporting/report_scheduler_android.h"
 
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/reporting_util.h"
+#include "components/policy/core/common/cloud/dm_token.h"
+#include "components/prefs/pref_service.h"
 
 namespace enterprise_reporting {
 
-ReportSchedulerAndroid::ReportSchedulerAndroid() = default;
+ReportSchedulerAndroid::ReportSchedulerAndroid()
+    : profile_(nullptr), prefs_(g_browser_process->local_state()) {}
+ReportSchedulerAndroid::ReportSchedulerAndroid(Profile* profile)
+    : profile_(profile), prefs_(profile_->GetPrefs()) {}
 
 ReportSchedulerAndroid::~ReportSchedulerAndroid() = default;
 
-PrefService* ReportSchedulerAndroid::GetLocalState() {
-  return g_browser_process->local_state();
+PrefService* ReportSchedulerAndroid::GetPrefService() {
+  return prefs_;
 }
 
 void ReportSchedulerAndroid::StartWatchingUpdatesIfNeeded(
@@ -40,6 +47,17 @@ void ReportSchedulerAndroid::StopWatchingExtensionRequest() {
 
 void ReportSchedulerAndroid::OnExtensionRequestUploaded() {
   // No-op because extensions are not supported on Android.
+}
+
+policy::DMToken ReportSchedulerAndroid::GetProfileDMToken() {
+  absl::optional<std::string> dm_token = reporting::GetUserDmToken(profile_);
+  if (!dm_token || dm_token->empty())
+    return policy::DMToken();
+  return policy::DMToken(policy::DMToken::Status::kValid, *dm_token);
+}
+
+std::string ReportSchedulerAndroid::GetProfileClientId() {
+  return reporting::GetUserClientId(profile_).value_or(std::string());
 }
 
 }  // namespace enterprise_reporting

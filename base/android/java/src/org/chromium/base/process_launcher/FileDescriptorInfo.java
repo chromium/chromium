@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@ import android.os.Parcel;
 import android.os.ParcelFileDescriptor;
 import android.os.Parcelable;
 
-import org.chromium.base.annotations.MainDex;
-import org.chromium.base.annotations.UsedByReflection;
+import org.chromium.build.annotations.MainDex;
+import org.chromium.build.annotations.UsedByReflection;
 
 import javax.annotation.concurrent.Immutable;
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,7 @@
  * Autofill keyboard accessory.
  */
 
-goog.provide('__crWeb.formHandlers');
-
-// Requires __crWeb.fill and __crWeb.form.
+// Requires functions from fill.js and form.js.
 
 /**
  * Namespace for this file. It depends on |__gCrWeb| having already been
@@ -19,8 +17,6 @@ goog.provide('__crWeb.formHandlers');
  */
 __gCrWeb.formHandlers = {};
 
-/** Beginning of anonymous object */
-(function() {
 /**
  * The MutationObserver tracking form related changes.
  */
@@ -134,7 +130,7 @@ function trackPasswordField_(field) {
           'fieldType': '',
           'type': 'password_form_cleared',
           'value': __gCrWeb.stringify(formData),
-          'hasUserGesture': false
+          'hasUserGesture': false,
         };
         sendMessageOnNextLoop_(msg);
       }
@@ -230,7 +226,7 @@ function formActivity_(evt) {
     'fieldType': fieldType,
     'type': type,
     'value': value,
-    'hasUserGesture': evt.isTrusted
+    'hasUserGesture': evt.isTrusted,
   };
   sendMessageOnNextLoop_(msg);
 }
@@ -257,7 +253,7 @@ function formSubmitted_(form) {
     'frameID': __gCrWeb.message.getFrameId(),
     'formName': __gCrWeb.form.getFormIdentifier(form),
     'href': getFullyQualifiedUrl_(action),
-    'formData': __gCrWeb.fill.autofillSubmissionData(form)
+    'formData': __gCrWeb.fill.autofillSubmissionData(form),
   });
 }
 
@@ -427,7 +423,7 @@ __gCrWeb.formHandlers['trackFormMutations'] = function(delay) {
           'fieldType': '',
           'type': 'form_changed',
           'value': '',
-          'hasUserGesture': false
+          'hasUserGesture': false,
         };
         return sendFormMutationMessageAfterDelay_(msg, delay);
       }
@@ -474,5 +470,3 @@ __gCrWeb.formHandlers['toggleTrackingUserEditedFields'] = function(track) {
     __gCrWeb.form.wasEditedByUser = null;
   }
 };
-
-}());  // End of anonymous object

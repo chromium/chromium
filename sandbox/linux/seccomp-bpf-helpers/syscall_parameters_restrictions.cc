@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,10 @@
 #include <sched.h>
 #include <signal.h>
 #include <stdint.h>
+#include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <sys/prctl.h>
+#include <sys/ptrace.h>
 #include <sys/resource.h>
 #include <sys/stat.h>
 #include <sys/time.h>
@@ -19,7 +21,6 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/synchronization/synchronization_buildflags.h"
 #include "build/build_config.h"
@@ -34,12 +35,8 @@
 #include "sandbox/linux/system_headers/linux_syscalls.h"
 #include "sandbox/linux/system_headers/linux_time.h"
 
-// PNaCl toolchain does not provide sys/ioctl.h and sys/ptrace.h headers.
-#if !defined(OS_NACL_NONSFI)
-#include <sys/ioctl.h>
-#include <sys/ptrace.h>
-#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
-    !defined(__arm__) && !defined(__aarch64__) &&           \
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
+    !defined(__arm__) && !defined(__aarch64__) &&             \
     !defined(PTRACE_GET_THREAD_AREA)
 // Also include asm/ptrace-abi.h since ptrace.h in older libc (for instance
 // the one in Ubuntu 16.04 LTS) is missing PTRACE_GET_THREAD_AREA.
@@ -47,15 +44,14 @@
 // defined on aarch64, so don't try to include this on those platforms.
 #include <asm/ptrace-abi.h>
 #endif
-#endif  // !OS_NACL_NONSFI
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 #if !defined(F_DUPFD_CLOEXEC)
 #define F_DUPFD_CLOEXEC (F_LINUX_SPECIFIC_BASE + 6)
 #endif
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if defined(__arm__) && !defined(MAP_STACK)
 #define MAP_STACK 0x20000  // Daisy build environment has old headers.
@@ -91,7 +87,7 @@ inline bool IsArchitectureI386() {
 }
 
 inline bool IsAndroid() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return true;
 #else
   return false;
@@ -131,7 +127,6 @@ using sandbox::bpf_dsl::ResultExpr;
 
 namespace sandbox {
 
-#if !defined(OS_NACL_NONSFI)
 // Allow Glibc's and Android pthread creation flags, crash on any other
 // thread creation attempts and EPERM attempts to use neither
 // CLONE_VM nor CLONE_THREAD (all fork implementations), unless CLONE_VFORK is
@@ -177,7 +172,7 @@ ResultExpr RestrictPrctl() {
   const Arg<int> option(0);
   return Switch(option)
       .CASES((PR_GET_NAME, PR_SET_NAME, PR_GET_DUMPABLE, PR_SET_DUMPABLE
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
               , PR_SET_VMA, PR_SET_PTRACER, PR_SET_TIMERSLACK
               , PR_GET_NO_NEW_PRIVS, PR_PAC_RESET_KEYS
 
@@ -207,10 +202,11 @@ ResultExpr RestrictPrctl() {
               , PR_SET_TIMERSLACK_PID_1
               , PR_SET_TIMERSLACK_PID_2
               , PR_SET_TIMERSLACK_PID_3
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
               ),
              Allow())
-      .Default(CrashSIGSYSPrctl());
+      .Default(
+          If(option == PR_SET_PTRACER, Error(EPERM)).Else(CrashSIGSYSPrctl()));
 }
 
 ResultExpr RestrictIoctl() {
@@ -265,7 +261,13 @@ ResultExpr RestrictFcntlCommands() {
 
   const uint64_t kAllowedMask = O_ACCMODE | O_APPEND | O_NONBLOCK | O_SYNC |
                                 kOLargeFileFlag | O_CLOEXEC | O_NOATIME;
-  const uint64_t kAllowedSeals = F_SEAL_SEAL | F_SEAL_GROW | F_SEAL_SHRINK;
+#if BUILDFLAG(IS_ANDROID)
+  const uint64_t kOsSpecificSeals = F_SEAL_FUTURE_WRITE;
+#else
+  const uint64_t kOsSpecificSeals = 0;
+#endif
+  const uint64_t kAllowedSeals = F_SEAL_SEAL | F_SEAL_GROW | F_SEAL_SHRINK |
+                                 kOsSpecificSeals;
   // clang-format off
   return Switch(cmd)
       .CASES((F_GETFL,
@@ -381,7 +383,6 @@ ResultExpr RestrictGetrusage() {
   return If(AnyOf(who == RUSAGE_SELF, who == RUSAGE_THREAD), Allow())
          .Else(CrashSIGSYS());
 }
-#endif  // !defined(OS_NACL_NONSFI)
 
 ResultExpr RestrictClockID() {
   static_assert(4 == sizeof(clockid_t), "clockid_t is not 32bit");
@@ -403,7 +404,7 @@ ResultExpr RestrictClockID() {
               CLOCK_THREAD_CPUTIME_ID),
              Allow())
       .Default(CrashSIGSYS()))
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Allow per-pid and per-tid clocks.
     .ElseIf((clockid & CPUCLOCK_CLOCK_MASK) != CLOCKFD, Allow())
 #endif
@@ -435,7 +436,6 @@ ResultExpr RestrictPrlimitToGetrlimit(pid_t target_pid) {
       .Else(Error(EPERM));
 }
 
-#if !defined(OS_NACL_NONSFI)
 ResultExpr RestrictPtrace() {
   const Arg<int> request(0);
 #if defined(__aarch64__)
@@ -460,11 +460,17 @@ ResultExpr RestrictPtrace() {
 #endif
       .Default(CrashSIGSYSPtrace());
 }
-#endif  // defined(OS_NACL_NONSFI)
 
 ResultExpr RestrictPkeyAllocFlags() {
   const Arg<int> flags(0);
   return If(flags == 0, Allow()).Else(CrashSIGSYS());
+}
+
+ResultExpr RestrictGoogle3Threading(int sysno) {
+  DCHECK(sysno == __NR_getitimer || sysno == __NR_setitimer);
+
+  const Arg<int> which(0);
+  return If(which == ITIMER_PROF, Allow()).Else(Error(EPERM));
 }
 
 }  // namespace sandbox.

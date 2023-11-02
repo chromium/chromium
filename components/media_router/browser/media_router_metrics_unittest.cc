@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -57,7 +57,7 @@ void TestRecordBooleanMetric(base::RepeatingCallback<void(bool)> recording_cb,
 // Tests that |record_cb| records metrics for each MediaRouteProvider in a
 // histogram specific to the provider.
 void TestRouteResultCodeHistogramsWithProviders(
-    base::RepeatingCallback<void(RouteRequestResult::ResultCode,
+    base::RepeatingCallback<void(mojom::RouteRequestResultCode,
                                  absl::optional<mojom::MediaRouteProviderId>)>
         record_cb,
     mojom::MediaRouteProviderId provider1,
@@ -68,29 +68,33 @@ void TestRouteResultCodeHistogramsWithProviders(
   tester.ExpectTotalCount(histogram_provider1, 0);
   tester.ExpectTotalCount(histogram_provider2, 0);
 
-  record_cb.Run(RouteRequestResult::SINK_NOT_FOUND, provider1);
-  record_cb.Run(RouteRequestResult::OK, provider2);
-  record_cb.Run(RouteRequestResult::SINK_NOT_FOUND, provider1);
-  record_cb.Run(RouteRequestResult::ROUTE_NOT_FOUND, provider2);
-  record_cb.Run(RouteRequestResult::OK, provider1);
+  record_cb.Run(mojom::RouteRequestResultCode::SINK_NOT_FOUND, provider1);
+  record_cb.Run(mojom::RouteRequestResultCode::OK, provider2);
+  record_cb.Run(mojom::RouteRequestResultCode::SINK_NOT_FOUND, provider1);
+  record_cb.Run(mojom::RouteRequestResultCode::ROUTE_NOT_FOUND, provider2);
+  record_cb.Run(mojom::RouteRequestResultCode::OK, provider1);
 
   tester.ExpectTotalCount(histogram_provider1, 3);
   EXPECT_THAT(
       tester.GetAllSamples(histogram_provider1),
       ElementsAre(
-          Bucket(static_cast<int>(RouteRequestResult::OK), 1),
-          Bucket(static_cast<int>(RouteRequestResult::SINK_NOT_FOUND), 2)));
+          Bucket(static_cast<int>(mojom::RouteRequestResultCode::OK), 1),
+          Bucket(
+              static_cast<int>(mojom::RouteRequestResultCode::SINK_NOT_FOUND),
+              2)));
 
   tester.ExpectTotalCount(histogram_provider2, 2);
   EXPECT_THAT(
       tester.GetAllSamples(histogram_provider2),
       ElementsAre(
-          Bucket(static_cast<int>(RouteRequestResult::OK), 1),
-          Bucket(static_cast<int>(RouteRequestResult::ROUTE_NOT_FOUND), 1)));
+          Bucket(static_cast<int>(mojom::RouteRequestResultCode::OK), 1),
+          Bucket(
+              static_cast<int>(mojom::RouteRequestResultCode::ROUTE_NOT_FOUND),
+              1)));
 }
 
 void TestRouteResultCodeHistograms(
-    base::RepeatingCallback<void(RouteRequestResult::ResultCode,
+    base::RepeatingCallback<void(mojom::RouteRequestResultCode,
                                  absl::optional<mojom::MediaRouteProviderId>)>
         record_cb,
     const std::string& base_histogram_name) {
@@ -107,22 +111,25 @@ void TestRouteResultCodeHistograms(
 
 }  // namespace
 
-TEST(MediaRouterMetricsTest, RecordMediaRouterDialogOrigin) {
+TEST(MediaRouterMetricsTest, RecordMediaRouterDialogActivationLocation) {
   base::HistogramTester tester;
-  const MediaRouterDialogOpenOrigin origin1 =
-      MediaRouterDialogOpenOrigin::TOOLBAR;
-  const MediaRouterDialogOpenOrigin origin2 =
-      MediaRouterDialogOpenOrigin::CONTEXTUAL_MENU;
+  const MediaRouterDialogActivationLocation activation_location1 =
+      MediaRouterDialogActivationLocation::TOOLBAR;
+  const MediaRouterDialogActivationLocation activation_location2 =
+      MediaRouterDialogActivationLocation::CONTEXTUAL_MENU;
 
   tester.ExpectTotalCount(MediaRouterMetrics::kHistogramIconClickLocation, 0);
-  MediaRouterMetrics::RecordMediaRouterDialogOrigin(origin1);
-  MediaRouterMetrics::RecordMediaRouterDialogOrigin(origin2);
-  MediaRouterMetrics::RecordMediaRouterDialogOrigin(origin1);
+  MediaRouterMetrics::RecordMediaRouterDialogActivationLocation(
+      activation_location1);
+  MediaRouterMetrics::RecordMediaRouterDialogActivationLocation(
+      activation_location2);
+  MediaRouterMetrics::RecordMediaRouterDialogActivationLocation(
+      activation_location1);
   tester.ExpectTotalCount(MediaRouterMetrics::kHistogramIconClickLocation, 3);
   EXPECT_THAT(
       tester.GetAllSamples(MediaRouterMetrics::kHistogramIconClickLocation),
-      ElementsAre(Bucket(static_cast<int>(origin1), 2),
-                  Bucket(static_cast<int>(origin2), 1)));
+      ElementsAre(Bucket(static_cast<int>(activation_location1), 2),
+                  Bucket(static_cast<int>(activation_location2), 1)));
 }
 
 TEST(MediaRouterMetricsTest, RecordMediaRouterDialogPaint) {
@@ -290,18 +297,6 @@ TEST(MediaRouterMetricsTest, RecordIconStateAtInit) {
   TestRecordBooleanMetric(
       base::BindRepeating(&MediaRouterMetrics::RecordIconStateAtInit),
       MediaRouterMetrics::kHistogramUiIconStateAtInit);
-}
-
-TEST(MediaRouterMetricsTest, RecordCloudPrefAtDialogOpen) {
-  TestRecordBooleanMetric(
-      base::BindRepeating(&MediaRouterMetrics::RecordCloudPrefAtDialogOpen),
-      MediaRouterMetrics::kHistogramCloudPrefAtDialogOpen);
-}
-
-TEST(MediaRouterMetricsTest, RecordCloudPrefAtInit) {
-  TestRecordBooleanMetric(
-      base::BindRepeating(&MediaRouterMetrics::RecordCloudPrefAtInit),
-      MediaRouterMetrics::kHistogramCloudPrefAtInit);
 }
 
 TEST(MediaRouterMetricsTest, RecordCreateRouteResultCode) {

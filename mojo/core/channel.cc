@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,12 @@
 #include <limits>
 #include <utility>
 
+#include "base/check_op.h"
+#include "base/functional/overloaded.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/nonscannable_memory.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_math.h"
 #include "base/process/process_handle.h"
 #include "base/trace_event/typed_macros.h"
@@ -23,11 +25,13 @@
 #include "mojo/core/core.h"
 #include "mojo/core/embedder/features.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mach_logging.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
 #endif
+
+#include "base/record_replay.h"
 
 namespace mojo {
 namespace core {
@@ -35,6 +39,14 @@ namespace core {
 namespace {
 
 std::atomic_bool g_use_trivial_messages{false};
+
+// To ensure amortized O(1) appends, need to be >1. Most STL implementations
+// use 2, but it may be too much for us, and we do see OOM crashes in the
+// reallocation.
+//
+// TODO(1301294): Consider asking the memory allocator for a
+// suitable size.
+constexpr float kGrowthFactor = 1.5;
 
 static_assert(
     IsAlignedForChannelMessage(sizeof(Channel::Message::LegacyHeader)),
@@ -77,6 +89,57 @@ Channel::AlignedBuffer MakeAlignedBuffer(size_t size) {
 
 struct TrivialMessage;
 
+// The type of message always used by a Channel which backs an ipcz transport.
+// Most of the inherited Message interface is unused since it's only called by
+// the original Mojo Core implementation.
+struct IpczMessage : public Channel::Message {
+  IpczMessage(base::span<const uint8_t> data,
+              std::vector<PlatformHandle> handles)
+      : data_(sizeof(IpczHeader) + data.size()) {
+    size_ = data_.size();
+    IpczHeader& header = *reinterpret_cast<IpczHeader*>(data_.data());
+    header.size = sizeof(IpczHeader);
+
+    DCHECK_LE(handles.size(), std::numeric_limits<uint16_t>::max());
+    DCHECK_LE(data_.size(), std::numeric_limits<uint32_t>::max());
+    header.num_handles = static_cast<uint16_t>(handles.size());
+    header.num_bytes = static_cast<uint32_t>(data_.size());
+    memcpy(&header + 1, data.data(), data.size());
+
+    handles_.reserve(handles.size());
+    for (PlatformHandle& handle : handles) {
+      handles_.emplace_back(std::move(handle));
+    }
+  }
+  ~IpczMessage() override = default;
+
+  // Channel::Message:
+  void SetHandles(std::vector<PlatformHandle>) override { NOTREACHED(); }
+  void SetHandles(std::vector<PlatformHandleInTransit>) override {
+    NOTREACHED();
+  }
+  std::vector<PlatformHandleInTransit> TakeHandles() override {
+    return std::move(handles_);
+  }
+  size_t NumHandlesForTransit() const override { return handles_.size(); }
+
+  const void* data() const override { return data_.data(); }
+  void* mutable_data() const override {
+    NOTREACHED();
+    return nullptr;
+  }
+  size_t capacity() const override { return data_.size(); }
+
+  bool ExtendPayload(size_t) override {
+    NOTREACHED();
+    return false;
+  }
+
+ private:
+  std::vector<uint8_t> data_;
+  std::vector<PlatformHandleInTransit> handles_;
+};
+
 // A complex message can be large or contain file handles.
 struct ComplexMessage : public Channel::Message {
   ComplexMessage() = default;
@@ -117,12 +180,12 @@ struct ComplexMessage : public Channel::Message {
 
   std::vector<PlatformHandleInTransit> handle_vector_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, handles are serialised into the extra header section.
-  HandleEntry* handles_ = nullptr;
-#elif defined(OS_MAC)
+  raw_ptr<HandleEntry> handles_ = nullptr;
+#elif BUILDFLAG(IS_MAC)
   // On OSX, handles are serialised into the extra header section.
-  MachPortsExtraHeader* mach_ports_header_ = nullptr;
+  raw_ptr<MachPortsExtraHeader> mach_ports_header_ = nullptr;
 #endif
 };
 
@@ -214,6 +277,13 @@ Channel::MessagePtr Channel::Message::CreateMessage(size_t capacity,
 }
 
 // static
+Channel::MessagePtr Channel::Message::CreateIpczMessage(
+    base::span<const uint8_t> data,
+    std::vector<PlatformHandle> handles) {
+  return std::make_unique<IpczMessage>(data, std::move(handles));
+}
+
+// static
 void Channel::set_use_trivial_messages(bool use_trivial_messages) {
   g_use_trivial_messages = use_trivial_messages;
 }
@@ -278,11 +348,11 @@ Channel::MessagePtr Channel::Message::Deserialize(
     return nullptr;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   uint32_t max_handles = extra_header_size / sizeof(HandleEntry);
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   uint32_t max_handles = extra_header_size / sizeof(HandleInfoEntry);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   if (extra_header_size > 0 &&
       extra_header_size < sizeof(MachPortsExtraHeader)) {
     DLOG(ERROR) << "Decoding invalid message: " << extra_header_size << " < "
@@ -301,7 +371,7 @@ Channel::MessagePtr Channel::Message::Deserialize(
     DLOG(ERROR) << "Decoding invalid message: unexpected extra_header_size > 0";
     return nullptr;
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   const uint16_t num_handles =
       header ? header->num_handles : legacy_header->num_handles;
@@ -339,7 +409,7 @@ Channel::MessagePtr Channel::Message::Deserialize(
     message->legacy_header()->num_handles = legacy_header->num_handles;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::vector<PlatformHandleInTransit> handles(num_handles);
   for (size_t i = 0; i < num_handles; i++) {
     HANDLE handle = base::win::Uint32ToHandle(
@@ -445,13 +515,13 @@ ComplexMessage::ComplexMessage(size_t capacity,
 
   const bool is_legacy_message = (message_type == MessageType::NORMAL_LEGACY);
   size_t extra_header_size = 0;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows we serialize HANDLEs into the extra header space.
   extra_header_size = max_handles_ * sizeof(HandleEntry);
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   // On Fuchsia we serialize handle types into the extra header space.
   extra_header_size = max_handles_ * sizeof(HandleInfoEntry);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   // On OSX, some of the platform handles may be mach ports, which are
   // serialised into the message buffer. Since there could be a mix of fds and
   // mach ports, we store the mach ports as an <index, port> pair (of uint32_t),
@@ -496,12 +566,12 @@ ComplexMessage::ComplexMessage(size_t capacity,
   }
 
   if (max_handles_ > 0) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     handles_ = reinterpret_cast<HandleEntry*>(mutable_extra_header());
     // Initialize all handles to invalid values.
     for (size_t i = 0; i < max_handles_; ++i)
       handles_[i].handle = base::win::HandleToUint32(INVALID_HANDLE_VALUE);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
     mach_ports_header_ =
         reinterpret_cast<MachPortsExtraHeader*>(mutable_extra_header());
     mach_ports_header_->num_ports = 0;
@@ -524,7 +594,9 @@ bool ComplexMessage::ExtendPayload(size_t new_payload_size) {
   size_t header_size = capacity_ - capacity_without_header;
   if (new_payload_size > capacity_without_header) {
     size_t new_capacity =
-        std::max(capacity_without_header * 2, new_payload_size) + header_size;
+        std::max(static_cast<size_t>(capacity_without_header * kGrowthFactor),
+                 new_payload_size) +
+        header_size;
     Channel::AlignedBuffer new_data = MakeAlignedBuffer(new_capacity);
     memcpy(new_data.get(), data_.get(), capacity_);
     data_ = std::move(new_data);
@@ -533,9 +605,9 @@ bool ComplexMessage::ExtendPayload(size_t new_payload_size) {
     if (max_handles_ > 0) {
 // We also need to update the cached extra header addresses in case the
 // payload buffer has been relocated.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       handles_ = reinterpret_cast<HandleEntry*>(mutable_extra_header());
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
       mach_ports_header_ =
           reinterpret_cast<MachPortsExtraHeader*>(mutable_extra_header());
 #endif
@@ -578,7 +650,7 @@ void ComplexMessage::SetHandles(
   CHECK_LE(new_handles.size(), max_handles_);
   header()->num_handles = static_cast<uint16_t>(new_handles.size());
   std::swap(handle_vector_, new_handles);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   memset(handles_, 0, extra_header_size());
   for (size_t i = 0; i < handle_vector_.size(); i++) {
     HANDLE handle = handle_vector_[i].remote_handle();
@@ -586,9 +658,9 @@ void ComplexMessage::SetHandles(
       handle = handle_vector_[i].handle().GetHandle().Get();
     handles_[i].handle = base::win::HandleToUint32(handle);
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (mach_ports_header_) {
     for (size_t i = 0; i < max_handles_; ++i) {
       mach_ports_header_->entries[i] = {0};
@@ -721,7 +793,8 @@ class Channel::ReadBuffer {
   // |num_bytes| more bytes; returns the address of the first available byte.
   char* Reserve(size_t num_bytes) {
     if (num_occupied_bytes_ + num_bytes > size_) {
-      size_ = std::max(size_ * 2, num_occupied_bytes_ + num_bytes);
+      size_ = std::max(static_cast<size_t>(size_ * kGrowthFactor),
+                       num_occupied_bytes_ + num_bytes);
       AlignedBuffer new_data = MakeAlignedBuffer(size_);
       memcpy(new_data.get(), data_.get(), num_occupied_bytes_);
       data_ = std::move(new_data);
@@ -732,6 +805,13 @@ class Channel::ReadBuffer {
 
   // Marks the first |num_bytes| unoccupied bytes as occupied.
   void Claim(size_t num_bytes) {
+    // On windows, the system calls which record/replay async I/O calls don't
+    // record/replay any data read asynchronously. Do this manually.
+#if BUILDFLAG(IS_WIN)
+    recordreplay::RecordReplayBytes("Channel::ReadBuffer::Claim",
+                                    data_.get() + num_occupied_bytes_, num_bytes);
+#endif
+
     DCHECK_LE(num_occupied_bytes_ + num_bytes, size_);
     num_occupied_bytes_ += num_bytes;
   }
@@ -792,20 +872,59 @@ class Channel::ReadBuffer {
   size_t num_occupied_bytes_ = 0;
 };
 
+bool Channel::Delegate::IsIpczTransport() const {
+  return false;
+}
+
+void Channel::Delegate::OnChannelDestroyed() {}
+
 Channel::Channel(Delegate* delegate,
                  HandlePolicy handle_policy,
                  DispatchBufferPolicy buffer_policy)
-    : delegate_(delegate),
+    : is_for_ipcz_(delegate ? delegate->IsIpczTransport() : false),
+      delegate_(delegate),
       handle_policy_(handle_policy),
       read_buffer_(buffer_policy == DispatchBufferPolicy::kManaged
                        ? new ReadBuffer
                        : nullptr) {}
 
-Channel::~Channel() = default;
+Channel::~Channel() {
+  if (is_for_ipcz()) {
+    DCHECK(delegate_);
+    delegate_->OnChannelDestroyed();
+  }
+}
+
+// static
+scoped_refptr<Channel> Channel::CreateForIpczDriver(
+    Delegate* delegate,
+    Endpoint endpoint,
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner) {
+#if BUILDFLAG(IS_NACL)
+  return nullptr;
+#else
+  ConnectionParams params =
+      absl::visit(base::Overloaded{
+                      [](PlatformChannelEndpoint& endpoint) {
+                        return ConnectionParams(std::move(endpoint));
+                      },
+                      [](PlatformChannelServerEndpoint& endpoint) {
+                        return ConnectionParams(std::move(endpoint));
+                      },
+                  },
+                  endpoint);
+  return Create(delegate, std::move(params), HandlePolicy::kAcceptHandles,
+                std::move(io_task_runner));
+#endif
+}
 
 void Channel::ShutDown() {
   ShutDownImpl();
-  delegate_ = nullptr;
+  if (!is_for_ipcz()) {
+    // When Channel is used for an ipcz transport, we leave `delegate_` intact
+    // so the Channel can notify once it's finally being destroyed.
+    delegate_ = nullptr;
+  }
 }
 
 char* Channel::GetReadBuffer(size_t* buffer_capacity) {
@@ -822,7 +941,10 @@ bool Channel::OnReadComplete(size_t bytes_read, size_t* next_read_size_hint) {
   DCHECK(read_buffer_);
   *next_read_size_hint = kReadBufferSize;
   read_buffer_->Claim(bytes_read);
-  while (read_buffer_->num_occupied_bytes() >= sizeof(Message::LegacyHeader)) {
+
+  const size_t header_size = is_for_ipcz_ ? sizeof(Message::IpczHeader)
+                                          : sizeof(Message::LegacyHeader);
+  while (read_buffer_->num_occupied_bytes() >= header_size) {
     // Ensure the occupied data is properly aligned. If it isn't, a SIGBUS could
     // happen on architectures that don't allow misaligned words access (i.e.
     // anything other than x86). Only re-align when necessary to avoid copies.
@@ -854,6 +976,39 @@ Channel::DispatchResult Channel::TryDispatchMessage(
     size_t* size_hint) {
   TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("toplevel.ipc"),
               "Mojo dispatch message");
+  if (is_for_ipcz_) {
+    // This has already been validated.
+    DCHECK_GE(buffer.size(), sizeof(Message::IpczHeader));
+
+    const auto& header =
+        *reinterpret_cast<const Message::IpczHeader*>(buffer.data());
+    const size_t header_size = header.size;
+    const size_t num_bytes = header.num_bytes;
+    const size_t num_handles = header.num_handles;
+    if (header_size < sizeof(header) || num_bytes < header_size) {
+      return DispatchResult::kError;
+    }
+
+    if (buffer.size() < num_bytes) {
+      *size_hint = num_bytes - buffer.size();
+      return DispatchResult::kNotEnoughData;
+    }
+
+    std::vector<PlatformHandle> handles;
+    if (num_handles > 0) {
+      if (handle_policy_ == HandlePolicy::kRejectHandles ||
+          !GetReadPlatformHandlesForIpcz(num_handles, handles)) {
+        return DispatchResult::kError;
+      }
+      if (handles.empty()) {
+        return DispatchResult::kMissingHandles;
+      }
+    }
+    auto data = buffer.first(num_bytes).subspan(header_size);
+    delegate_->OnChannelMessage(data.data(), data.size(), std::move(handles));
+    *size_hint = num_bytes;
+    return DispatchResult::kOK;
+  }
 
   // We have at least enough data available for a LegacyHeader.
   const Message::LegacyHeader* legacy_header =
@@ -950,8 +1105,8 @@ bool Channel::OnControlMessage(Message::MessageType message_type,
 }
 
 // Currently only Non-nacl CrOs, Linux, and Android support upgrades.
-#if defined(OS_NACL) || \
-    (!(defined(OS_CHROMEOS) || defined(OS_LINUX) || defined(OS_ANDROID)))
+#if BUILDFLAG(IS_NACL) || (!(BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
+                             BUILDFLAG(IS_ANDROID)))
 // static
 MOJO_SYSTEM_IMPL_EXPORT bool Channel::SupportsChannelUpgrade() {
   return false;

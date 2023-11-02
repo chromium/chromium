@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/loader/mock_content_security_notifier.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
@@ -26,7 +26,7 @@ namespace blink {
 // cache, the embedder is notified.
 TEST(ResourceLoadObserverForFrameTest, MemoryCacheCertificateError) {
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(
-      IntSize(), nullptr, MakeGarbageCollected<EmptyLocalFrameClient>());
+      gfx::Size(), nullptr, MakeGarbageCollected<EmptyLocalFrameClient>());
   LocalFrame& frame = dummy_page_holder->GetFrame();
   auto* observer = MakeGarbageCollected<ResourceLoadObserverForFrame>(
       *frame.GetDocument()->Loader(), *frame.GetDocument(),

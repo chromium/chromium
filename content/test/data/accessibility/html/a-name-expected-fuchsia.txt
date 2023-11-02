@@ -1,0 +1,9 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++UNKNOWN
+++++++++STATIC_TEXT label='named anchor'
+++++++++++UNKNOWN label='named anchor'
+++++++LINK focusable label='both a named anchor and a link' actions='{DEFAULT}'
+++++++++STATIC_TEXT label='both a named anchor and a link'
+++++++++++UNKNOWN label='both a named anchor and a link'

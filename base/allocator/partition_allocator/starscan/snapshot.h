@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,7 @@
 #include "base/allocator/partition_allocator/starscan/pcscan_internal.h"
 #include "base/allocator/partition_allocator/starscan/raceful_worklist.h"
 
-namespace base {
-namespace internal {
-
-class PCScanInternal;
+namespace partition_alloc::internal {
 
 class StarScanSnapshot final : public AllocatedOnPCScanMetadataPartition {
  public:
@@ -92,7 +89,6 @@ StarScanSnapshot::SweepingView::SweepingView(StarScanSnapshot& snapshot)
 StarScanSnapshot::UnprotectingView::UnprotectingView(StarScanSnapshot& snapshot)
     : StarScanSnapshot::ViewBase(snapshot.unprotect_worklist_) {}
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_SNAPSHOT_H_

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,9 +21,12 @@
 #include "ui/aura/window_tree_host_platform.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/compositor/layer.h"
-#include "ui/platform_window/platform_window.h"
 #include "ui/views/accessibility/ax_aura_obj_cache.h"
 #include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
+#endif
 
 namespace views {
 namespace {
@@ -82,21 +85,28 @@ std::string GetWindowName(aura::Window* window) {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 std::string GetPlatformWindowId(aura::Window* window) {
-  // This is a top level root window.
-  if (window->IsRootWindow() && !window->parent()) {
-    // On desktop aura there is one WindowTreeHost per top-level window.
-    aura::WindowTreeHost* window_tree_host = window->GetHost();
-    if (window_tree_host) {
-      // Lacros is based on Ozone/Wayland, which uses PlatformWindow and
-      // aura::WindowTreeHostPlatform.
-      aura::WindowTreeHostPlatform* window_tree_host_platform =
-          static_cast<aura::WindowTreeHostPlatform*>(window_tree_host);
+  // Ignore non-top level windows.
+  if (!window->IsRootWindow() || window->parent())
+    return std::string();
 
-      return window_tree_host_platform->platform_window()->GetWindowUniqueId();
-    }
+  // On desktop aura there is one WindowTreeHost per top-level window.
+  aura::WindowTreeHost* window_tree_host = window->GetHost();
+  if (!window_tree_host)
+    return std::string();
+
+  // Prefer the DesktopWindowTreeHostPlatform if it exists.
+  DesktopWindowTreeHostPlatform* desktop_window_tree_host_platform =
+      DesktopWindowTreeHostPlatform::GetHostForWidget(
+          window_tree_host->GetAcceleratedWidget());
+  if (!desktop_window_tree_host_platform)
+    return window_tree_host->GetUniqueId();
+
+  while (desktop_window_tree_host_platform->window_parent()) {
+    desktop_window_tree_host_platform =
+        desktop_window_tree_host_platform->window_parent();
   }
 
-  return std::string();
+  return desktop_window_tree_host_platform->GetUniqueId();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -264,19 +274,15 @@ void AXWindowObjWrapper::OnCaretBoundsChanged(
 }
 
 void AXWindowObjWrapper::OnWindowDestroyed(aura::Window* window) {
+  if (is_root_window_)
+    aura_obj_cache_->OnRootWindowObjDestroyed(window_);
+
   aura_obj_cache_->Remove(window, nullptr);
 }
 
 void AXWindowObjWrapper::OnWindowDestroying(aura::Window* window) {
-  if (window == window_)
-    window_destroying_ = true;
-
-  Widget* widget = GetWidgetForWindow(window);
-  if (widget)
-    aura_obj_cache_->Remove(widget);
-
-  if (is_root_window_)
-    aura_obj_cache_->OnRootWindowObjDestroyed(window_);
+  DCHECK_EQ(window, window_);
+  window_destroying_ = true;
 }
 
 void AXWindowObjWrapper::OnWindowHierarchyChanged(

@@ -1,8 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/compositor/test/test_compositor_host.h"
+
+#include "base/memory/raw_ptr.h"
 
 #import <AppKit/NSApplication.h>
 #import <AppKit/NSOpenGL.h>
@@ -15,7 +17,6 @@
 #include "base/compiler_specific.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/time/time.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "ui/accelerated_widget_mac/accelerated_widget_mac.h"
@@ -25,7 +26,7 @@
 // AcceleratedTestView provides an NSView class that delegates drawing to a
 // ui::Compositor delegate, setting up the NSOpenGLContext as required.
 @interface AcceleratedTestView : NSView {
-  ui::Compositor* _compositor;
+  raw_ptr<ui::Compositor> _compositor;
 }
 // Designated initializer.
 - (instancetype)init;
@@ -159,7 +160,7 @@ void TestCompositorHostMac::Show() {
   window_ = [[NSWindow alloc]
       initWithContentRect:NSMakeRect(bounds_.x(), bounds_.y(), bounds_.width(),
                                      bounds_.height())
-                styleMask:NSBorderlessWindowMask
+                styleMask:NSWindowStyleMaskBorderless
                   backing:NSBackingStoreBuffered
                     defer:NO];
   base::scoped_nsobject<AcceleratedTestView> view(

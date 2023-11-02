@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -107,14 +107,6 @@ enum class DeviceBatteryState {
 // session.
 @property(nonatomic, assign, readonly) BOOL OSRestartedAfterPreviousSession;
 
-// Whether the previous session was on Multi Window enabled version of the
-// application. A previous session doesn't have to be from a previous run, in
-// the case of single window to multiple windows migration, after the first
-// session created/restored the flag value should be updated to |YES|.
-// TODO(crbug.com/1109280): Remove after the migration to Multi-Window sessions
-// is done.
-@property(nonatomic, assign, readonly) BOOL isMultiWindowEnabledSession;
-
 // The OS version during the previous session or nil if no previous session data
 // is available.
 @property(nonatomic, strong, readonly) NSString* OSVersion;
@@ -200,11 +192,6 @@ enum class DeviceBatteryState {
 
 // Empties the list of connected session.
 - (void)resetConnectedSceneSessionIDs;
-
-// Updates the local and the saved Multi Window support status.
-// TODO(crbug.com/1109280): Remove after the migration to Multi-Window
-// sessions is done.
-- (void)updateMultiWindowSupportStatus;
 
 // Must be called when Chrome starts session restoration. The returned closure
 // runner will clear up the flag when destroyed. Can be used on different

@@ -1,8 +1,22 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/* #js_imports_placeholder */
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../../components/oobe_cr_lottie.m.js';
+import '../../components/common_styles/common_styles.m.js';
+import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+import '../../components/dialogs/oobe_adaptive_dialog.m.js';
+import '../../components/buttons/oobe_back_button.m.js';
+import '../../components/buttons/oobe_next_button.m.js';
+import '../../components/buttons/oobe_text_button.m.js';
+
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
+import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+
 
 /**
  * Enum to represent each page in the gesture navigation screen.
@@ -12,7 +26,7 @@ const GesturePage = {
   INTRO: 'gestureIntro',
   HOME: 'gestureHome',
   OVERVIEW: 'gestureOverview',
-  BACK: 'gestureBack'
+  BACK: 'gestureBack',
 };
 
 /**
@@ -21,16 +35,18 @@ const GesturePage = {
  * @implements {LoginScreenBehaviorInterface}
  * @implements {MultiStepBehaviorInterface}
  */
-const GestureScreenElementBase = Polymer.mixinBehaviors(
-    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
-    Polymer.Element);
+const GestureScreenElementBase = mixinBehaviors(
+    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
 
 class GestureNavigation extends GestureScreenElementBase {
   static get is() {
     return 'gesture-navigation-element';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
 
   static get properties() {
     return {};
@@ -54,7 +70,7 @@ class GestureNavigation extends GestureScreenElementBase {
   /** @override */
   ready() {
     super.ready();
-    this.initializeLoginScreen('GestureNavigationScreen', {resetAllowed: true});
+    this.initializeLoginScreen('GestureNavigationScreen');
   }
 
   /**
@@ -109,7 +125,7 @@ class GestureNavigation extends GestureScreenElementBase {
   setCurrentPage_(newPage) {
     this.setPlayCurrentScreenAnimation(false);
     this.setUIStep(newPage);
-    chrome.send('handleGesturePageChange', [newPage]);
+    this.userActed(['gesture-page-change', newPage]);
     this.setPlayCurrentScreenAnimation(true);
   }
 
@@ -121,7 +137,7 @@ class GestureNavigation extends GestureScreenElementBase {
   setPlayCurrentScreenAnimation(enabled) {
     var animation = this.$[this.uiStep].querySelector('.gesture-animation');
     if (animation) {
-      animation.setPlay(enabled);
+      animation.playing = enabled;
     }
   }
 }

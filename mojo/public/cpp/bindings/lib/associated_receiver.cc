@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,8 @@
 #include "mojo/public/cpp/bindings/lib/multiplex_router.h"
 #include "mojo/public/cpp/bindings/lib/task_runner_helper.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+
+#include "base/record_replay.h"
 
 namespace mojo {
 
@@ -23,11 +25,21 @@ void AssociatedReceiverBase::SetFilter(std::unique_ptr<MessageFilter> filter) {
 }
 
 void AssociatedReceiverBase::reset() {
+  // Endpoint clients must be destroyed at deterministic points, so leak the endpoint
+  // if we are reset e.g. during a GC.
+  if (recordreplay::AreEventsDisallowed("AssociatedReceiverBase::reset")) {
+    if (endpoint_client_)
+      endpoint_client_->record_replay_leak();
+    endpoint_client_.release();
+  }
+
   endpoint_client_.reset();
 }
 
 void AssociatedReceiverBase::ResetWithReason(uint32_t custom_reason,
-                                             const std::string& description) {
+                                             base::StringPiece description) {
+  // TODO(dcheng): This should unconditionally assert that there is an endpoint
+  // client.
   if (endpoint_client_)
     endpoint_client_->CloseWithReason(custom_reason, description);
   reset();
@@ -56,7 +68,14 @@ void AssociatedReceiverBase::FlushForTesting() {
   endpoint_client_->FlushForTesting();  // IN-TEST
 }
 
-AssociatedReceiverBase::~AssociatedReceiverBase() = default;
+AssociatedReceiverBase::~AssociatedReceiverBase() {
+  // Leak the endpoint client if necessary, as in reset().
+  if (recordreplay::AreEventsDisallowed("~AssociatedReceiverBase")) {
+    if (endpoint_client_)
+      endpoint_client_->record_replay_leak();
+    endpoint_client_.release();
+  }
+}
 
 void AssociatedReceiverBase::BindImpl(
     ScopedInterfaceEndpointHandle handle,
@@ -65,14 +84,17 @@ void AssociatedReceiverBase::BindImpl(
     bool expect_sync_requests,
     scoped_refptr<base::SequencedTaskRunner> runner,
     uint32_t interface_version,
-    const char* interface_name) {
+    const char* interface_name,
+    MessageToMethodInfoCallback method_info_callback,
+    MessageToMethodNameCallback method_name_callback) {
   DCHECK(handle.is_valid());
 
   endpoint_client_ = std::make_unique<InterfaceEndpointClient>(
       std::move(handle), receiver, std::move(payload_validator),
       expect_sync_requests,
       internal::GetTaskRunnerToUseFromUserProvidedTaskRunner(std::move(runner)),
-      interface_version, interface_name);
+      interface_version, interface_name, method_info_callback,
+      method_name_callback);
 }
 
 }  // namespace internal

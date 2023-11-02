@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,8 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/trace_event/trace_config.h"
-#include "components/ui_devtools/Tracing.h"
 #include "components/ui_devtools/devtools_base_agent.h"
+#include "components/ui_devtools/tracing.h"
 
 namespace base {
 class RepeatingTimer;

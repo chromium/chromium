@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autofill_subject.h"
 #include "components/autofill/core/browser/single_field_form_filler.h"
@@ -17,12 +18,15 @@
 #include "components/autofill/core/browser/webdata/autofill_entry.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 
 namespace autofill {
+
+struct SuggestionsContext;
 
 // Per-profile Autocomplete history manager. Handles receiving form data
 // from the renderers and the storing and retrieving of form data
@@ -41,21 +45,21 @@ class AutocompleteHistoryManager : public SingleFieldFormFiller,
   ~AutocompleteHistoryManager() override;
 
   // SingleFieldFormFiller overrides:
-  void OnGetSingleFieldSuggestions(
+  [[nodiscard]] bool OnGetSingleFieldSuggestions(
       int query_id,
       bool is_autocomplete_enabled,
       bool autoselect_first_suggestion,
-      const std::u16string& name,
-      const std::u16string& prefix,
-      const std::string& form_control_type,
-      base::WeakPtr<SuggestionsHandler> handler) override;
-  void OnWillSubmitForm(const FormData& form,
-                        bool is_autocomplete_enabled) override;
+      const FormFieldData& field,
+      base::WeakPtr<SuggestionsHandler> handler,
+      const SuggestionsContext& context) override;
+  void OnWillSubmitFormWithFields(const std::vector<FormFieldData>& fields,
+                                  bool is_autocomplete_enabled) override;
   void CancelPendingQueries(const SuggestionsHandler* handler) override;
-  void OnRemoveCurrentSingleFieldSuggestion(
-      const std::u16string& field_name,
-      const std::u16string& value) override;
-  void OnSingleFieldSuggestionSelected(const std::u16string& value) override;
+  void OnRemoveCurrentSingleFieldSuggestion(const std::u16string& field_name,
+                                            const std::u16string& value,
+                                            int frontend_id) override;
+  void OnSingleFieldSuggestionSelected(const std::u16string& value,
+                                       int frontend_id) override;
 
   // Initializes the instance with the given parameters.
   // |profile_database_| is a profile-scope DB used to access autocomplete data.
@@ -92,7 +96,7 @@ class AutocompleteHistoryManager : public SingleFieldFormFiller,
     ~UMARecorder() = default;
 
     void OnGetAutocompleteSuggestions(
-        const std::u16string& name,
+        const FieldGlobalId& global_id,
         WebDataServiceBase::Handle pending_query_handle);
     void OnWebDataServiceRequestDone(
         WebDataServiceBase::Handle pending_query_handle,
@@ -102,36 +106,10 @@ class AutocompleteHistoryManager : public SingleFieldFormFiller,
     // The query handle should be measured for UMA.
     WebDataServiceBase::Handle measuring_query_handle_ = 0;
 
-    // The name of field that is currently measured, we don't repeatedly measure
-    // the query of the same field while user is filling the field.
-    std::u16string measuring_name_;
-  };
-
-  // Internal data object used to keep a request's context to associate it
-  // with the appropriate response.
-  struct QueryHandler {
-    QueryHandler(int client_query_id,
-                 bool autoselect_first_suggestion,
-                 std::u16string prefix,
-                 base::WeakPtr<SuggestionsHandler> handler);
-    QueryHandler(const QueryHandler& original);
-    ~QueryHandler();
-
-    // Query ID living in the handler's scope, which is NOT the same as the
-    // database query ID. This ID is unique per frame, but not per profile.
-    int client_query_id_;
-
-    // Determines whether we should auto-select the first suggestion when
-    // returning. This value was given by the handler when requesting
-    // suggestions.
-    bool autoselect_first_suggestion_;
-
-    // Prefix used to search suggestions, submitted by the handler.
-    std::u16string prefix_;
-
-    // Weak pointer to the handler instance which will be called-back when
-    // we get the response for the associate query.
-    base::WeakPtr<SuggestionsHandler> handler_;
+    // The global id of the field that is currently being measured, saved so
+    // that we don't repeatedly measure the query of the same field while the
+    // user is filling the field.
+    FieldGlobalId measuring_field_global_id_;
   };
 
   // Sends the autocomplete |suggestions| to the |query_handler|'s handler for
@@ -178,7 +156,7 @@ class AutocompleteHistoryManager : public SingleFieldFormFiller,
       request_callbacks_;
 
   // The PrefService that this instance uses. Must outlive this instance.
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
 
   // When the manager makes a request from WebDataServiceBase, the database is
   // queried asynchronously. We associate the query handle to the requestor

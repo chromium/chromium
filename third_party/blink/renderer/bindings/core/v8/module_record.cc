@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,11 +21,13 @@
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/record_replay_events.h"
+
 namespace blink {
 
 ModuleRecordProduceCacheData::ModuleRecordProduceCacheData(
     v8::Isolate* isolate,
-    SingleCachedMetadataHandler* cache_handler,
+    CachedMetadataHandler* cache_handler,
     V8CodeCache::ProduceCacheOptions produce_cache_options,
     v8::Local<v8::Module> module)
     : cache_handler_(cache_handler),
@@ -115,11 +117,15 @@ ScriptValue ModuleRecord::Instantiate(ScriptState* script_state,
 
   // Script IDs are not available on errored modules or on non-source text
   // modules, so we give them a default value.
-  probe::ExecuteScript probe(ExecutionContext::From(script_state), source_url,
+  probe::ExecuteScript probe(ExecutionContext::From(script_state), context,
+                             source_url,
                              record->GetStatus() != v8::Module::kErrored &&
                                      record->IsSourceTextModule()
                                  ? record->ScriptId()
                                  : v8::UnboundScript::kNoScriptId);
+
+  recordreplay::UserEventProbe replayEvent;
+
   bool success;
   if (!record->InstantiateModule(context, &ResolveModuleCallback)
            .To(&success) ||

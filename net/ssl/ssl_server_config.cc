@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,7 @@
 
 namespace net {
 
-SSLServerConfig::SSLServerConfig()
-    : version_min(kDefaultSSLVersionMin),
-      version_max(kDefaultSSLVersionMax),
-      early_data_enabled(false),
-      require_ecdhe(false),
-      client_cert_type(NO_CLIENT_CERT),
-      client_cert_verifier(nullptr) {}
+SSLServerConfig::SSLServerConfig() = default;
 
 SSLServerConfig::SSLServerConfig(const SSLServerConfig& other) = default;
 

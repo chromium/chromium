@@ -9,12 +9,14 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_url_pattern_component.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/liburlpattern/parse.h"
 
 namespace blink {
 
 class ExceptionState;
 class URLPatternInit;
+class URLPatternOptions;
 class URLPatternResult;
 
 namespace url_pattern {
@@ -28,6 +30,15 @@ class MODULES_EXPORT URLPattern : public ScriptWrappable {
  public:
   static URLPattern* Create(const V8URLPatternInput* input,
                             const String& base_url,
+                            const URLPatternOptions* options,
+                            ExceptionState& exception_state);
+
+  static URLPattern* Create(const V8URLPatternInput* input,
+                            const String& base_url,
+                            ExceptionState& exception_state);
+
+  static URLPattern* Create(const V8URLPatternInput* input,
+                            const URLPatternOptions* options,
                             ExceptionState& exception_state);
 
   static URLPattern* Create(const V8URLPatternInput* input,
@@ -35,6 +46,7 @@ class MODULES_EXPORT URLPattern : public ScriptWrappable {
 
   static URLPattern* Create(const URLPatternInit* init,
                             Component* precomputed_protocol_component,
+                            const URLPatternOptions* options,
                             ExceptionState& exception_state);
 
   URLPattern(Component* protocol,
@@ -47,16 +59,20 @@ class MODULES_EXPORT URLPattern : public ScriptWrappable {
              Component* hash,
              base::PassKey<URLPattern> key);
 
-  bool test(const V8URLPatternInput* input,
+  bool test(ScriptState* script_state,
+            const V8URLPatternInput* input,
             const String& base_url,
             ExceptionState& exception_state) const;
-  bool test(const V8URLPatternInput* input,
+  bool test(ScriptState* script_state,
+            const V8URLPatternInput* input,
             ExceptionState& exception_state) const;
 
-  URLPatternResult* exec(const V8URLPatternInput* input,
+  URLPatternResult* exec(ScriptState* script_state,
+                         const V8URLPatternInput* input,
                          const String& base_url,
                          ExceptionState& exception_state) const;
-  URLPatternResult* exec(const V8URLPatternInput* input,
+  URLPatternResult* exec(ScriptState* script_state,
+                         const V8URLPatternInput* input,
                          ExceptionState& exception_state) const;
 
   String protocol() const;
@@ -78,7 +94,8 @@ class MODULES_EXPORT URLPattern : public ScriptWrappable {
   // A utility function to determine if a given `input` matches the pattern or
   // not.  Returns `true` if there is a match and `false` otherwise.  If
   // `result` is not nullptr then the URLPatternResult contents will be filled.
-  bool Match(const V8URLPatternInput* input,
+  bool Match(ScriptState* script_state,
+             const V8URLPatternInput* input,
              const String& base_url,
              URLPatternResult* result,
              ExceptionState& exception_state) const;

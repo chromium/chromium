@@ -33,9 +33,8 @@
 #include <memory>
 
 #include "base/location.h"
-#include "third_party/blink/public/platform/platform.h"
+#include "storage/common/database/database_identifier.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -78,13 +77,13 @@ bool DatabaseTracker::CanEstablishDatabase(DatabaseContext* database_context,
 String DatabaseTracker::FullPathForDatabase(const SecurityOrigin* origin,
                                             const String& name,
                                             bool) {
-  return String(Platform::Current()->DatabaseCreateOriginIdentifier(
-             WebSecurityOrigin(origin))) +
+  return String::FromUTF8(
+             storage::GetIdentifierFromOrigin(origin->ToUrlOrigin())) +
          "/" + name + "#";
 }
 
 void DatabaseTracker::AddOpenDatabase(Database* database) {
-  MutexLocker open_database_map_lock(open_database_map_guard_);
+  base::AutoLock open_database_map_lock(open_database_map_guard_);
   if (!open_database_map_)
     open_database_map_ = std::make_unique<DatabaseOriginMap>();
 
@@ -116,7 +115,7 @@ void DatabaseTracker::AddOpenDatabase(Database* database) {
 
 void DatabaseTracker::RemoveOpenDatabase(Database* database) {
   {
-    MutexLocker open_database_map_lock(open_database_map_guard_);
+    base::AutoLock open_database_map_lock(open_database_map_guard_);
     String origin_string = database->GetSecurityOrigin()->ToRawString();
     DCHECK(open_database_map_);
     auto open_database_map_it = open_database_map_->find(origin_string);
@@ -139,10 +138,10 @@ void DatabaseTracker::RemoveOpenDatabase(Database* database) {
       return;
 
     database_set->erase(found);
-    if (database_set->IsEmpty()) {
+    if (database_set->empty()) {
       name_map->erase(name);
       delete database_set;
-      if (name_map->IsEmpty()) {
+      if (name_map->empty()) {
         open_database_map_->erase(origin_string);
         delete name_map;
       }
@@ -186,7 +185,7 @@ uint64_t DatabaseTracker::GetMaxSizeForDatabase(const Database* database) {
 void DatabaseTracker::CloseDatabasesImmediately(const SecurityOrigin* origin,
                                                 const String& name) {
   String origin_string = origin->ToRawString();
-  MutexLocker open_database_map_lock(open_database_map_guard_);
+  base::AutoLock open_database_map_lock(open_database_map_guard_);
   if (!open_database_map_)
     return;
 
@@ -217,7 +216,7 @@ void DatabaseTracker::CloseDatabasesImmediately(const SecurityOrigin* origin,
 
 void DatabaseTracker::ForEachOpenDatabaseInPage(Page* page,
                                                 DatabaseCallback callback) {
-  MutexLocker open_database_map_lock(open_database_map_guard_);
+  base::AutoLock open_database_map_lock(open_database_map_guard_);
   if (!open_database_map_)
     return;
   for (auto& origin_map : *open_database_map_) {
@@ -236,7 +235,7 @@ void DatabaseTracker::CloseOneDatabaseImmediately(const String& origin_string,
                                                   Database* database) {
   // First we have to confirm the 'database' is still in our collection.
   {
-    MutexLocker open_database_map_lock(open_database_map_guard_);
+    base::AutoLock open_database_map_lock(open_database_map_guard_);
     if (!open_database_map_)
       return;
 

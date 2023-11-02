@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -68,9 +68,9 @@ FileSystemConfirmationModal::FileSystemConfirmationModal(
   SetButtonLabel(ui::DialogButton::DIALOG_BUTTON_OK, accept_button);
   // Set the message to be shown.
   std::unique_ptr<views::Label> view = std::make_unique<views::Label>(message_);
-  view->SetBorder(
-      views::CreateEmptyBorder(kMessageMarginHorizontal, kMessageMarginLeft,
-                               kMessageMarginHorizontal, kMessageMarginRight));
+  view->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(kMessageMarginHorizontal, kMessageMarginLeft,
+                        kMessageMarginHorizontal, kMessageMarginRight)));
   view->SetMultiLine(true);
   view->SizeToFit(kModalWidth);
   view->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
@@ -87,9 +87,8 @@ std::u16string FileSystemConfirmationModal::GetWindowTitle() const {
 
 ui::ImageModel FileSystemConfirmationModal::GetWindowIcon() {
   // Show the enterprise icon.
-  return ui::ImageModel::FromImageSkia(gfx::CreateVectorIcon(
-      gfx::IconDescription(vector_icons::kBusinessIcon, kBusinessIconSize,
-                           gfx::kGoogleBlue500)));
+  return ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
+                                        ui::kColorAccent, kBusinessIconSize);
 }
 
 ui::ModalType FileSystemConfirmationModal::GetModalType() const {

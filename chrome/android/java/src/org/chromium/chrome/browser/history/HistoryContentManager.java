@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.provider.Browser;
 import android.view.ContextThemeWrapper;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,10 +24,12 @@ import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Function;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -44,9 +47,13 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemV
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Displays and manages the content view / list UI for browsing history.
@@ -82,11 +89,17 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
 
         /** Called to notify when the user's sign in or pref state has changed. */
         void onUserAccountStateChanged();
+
+        /**
+         * Called when history has been deleted by some party external to the currently visible
+         * history UI, e.g. via "clear browsing data."
+         */
+        void onHistoryDeletedExternally();
     }
     private static final int FAVICON_MAX_CACHE_SIZE_BYTES =
             10 * ConversionUtils.BYTES_PER_MEGABYTE; // 10MB
     // PageTransition value to use for all URL requests triggered by the history page.
-    private static final int PAGE_TRANSITION_TYPE = PageTransition.AUTO_BOOKMARK;
+    static final int PAGE_TRANSITION_TYPE = PageTransition.AUTO_BOOKMARK;
 
     private static HistoryProvider sProviderForTests;
     private static Boolean sIsScrollToLoadDisabledForTests;
@@ -96,7 +109,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     private final boolean mIsSeparateActivity;
     private final boolean mIsIncognito;
     private final boolean mIsScrollToLoadDisabled;
-    private final boolean mShouldShowClearData;
+    private final boolean mShouldShowClearDataIfAvailable;
     private final String mHostName;
     private final Supplier<Tab> mTabSupplier;
     private HistoryAdapter mHistoryAdapter;
@@ -115,25 +128,33 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      * @param isIncognito Whether the incognito tab model is currently selected.
      * @param shouldShowPrivacyDisclaimers Whether the privacy disclaimers should be shown, if
      *         available.
-     * @param shouldShowClearData Whether the the clear history data button should be shown, if
-     *         available.
+     * @param shouldShowClearDataIfAvailable Whether the the clear history data button should be
+     *         shown, if available.
      * @param hostName The hostName to retrieve history entries for, or null for all hosts.
      * @param selectionDelegate A class responsible for handling list item selection, null for
      *         unselectable items.
      * @param tabSupplier Supplies the current tab, null if the history UI will be shown in a
      *                    separate activity.
+     * @param showHistoryToggleSupplier A supplier that tells us if and when we should show the
+     *         toggle that swaps between the Journeys and regular history UIs.
+     * @param toggleViewFactory Function that provides a toggle view container for the given parent
+     *         ViewGroup. This toggle is used to switch between the Journeys UI and the regular
+     *         history UI and is thus controlled by our parent component.
+     * @param historyProvider Provider of methods for querying and managing browsing history.
      */
     public HistoryContentManager(@NonNull Activity activity, @NonNull Observer observer,
             boolean isSeparateActivity, boolean isIncognito, boolean shouldShowPrivacyDisclaimers,
-            boolean shouldShowClearData, @Nullable String hostName,
+            boolean shouldShowClearDataIfAvailable, @Nullable String hostName,
             @Nullable SelectionDelegate<HistoryItem> selectionDelegate,
-            @Nullable Supplier<Tab> tabSupplier) {
+            @Nullable Supplier<Tab> tabSupplier,
+            ObservableSupplier<Boolean> showHistoryToggleSupplier,
+            Function<ViewGroup, ViewGroup> toggleViewFactory, HistoryProvider historyProvider) {
         mActivity = activity;
         mObserver = observer;
         mIsSeparateActivity = isSeparateActivity;
         mIsIncognito = isIncognito;
         mShouldShowPrivacyDisclaimers = shouldShowPrivacyDisclaimers;
-        mShouldShowClearData = shouldShowClearData;
+        mShouldShowClearDataIfAvailable = shouldShowClearDataIfAvailable;
         mHostName = hostName;
         mIsScrollToLoadDisabled = ChromeAccessibilityUtil.get().isAccessibilityEnabled()
                 || ChromeAccessibilityUtil.isHardwareKeyboardAttached(
@@ -162,7 +183,8 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         // explicitly redirects to use regular profile for Incognito case.
         Profile profile = Profile.getLastUsedRegularProfile();
         mHistoryAdapter = new HistoryAdapter(this,
-                sProviderForTests != null ? sProviderForTests : new BrowsingHistoryBridge(profile));
+                sProviderForTests != null ? sProviderForTests : historyProvider,
+                showHistoryToggleSupplier, toggleViewFactory);
 
         // Create a recycler view.
         mRecyclerView =
@@ -218,11 +240,11 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         mPrefChangeRegistrar.addObserver(Pref.INCOGNITO_MODE_AVAILABILITY, this);
     }
 
-    /** Initialize the HistoryContentManager to start loading items. */
-    public void initialize() {
+    /** Tell the HistoryContentManager to start loading items. */
+    public void startLoadingItems() {
         // Filtering the adapter to only the results from this particular host.
         mHistoryAdapter.setHostName(mHostName);
-        mHistoryAdapter.initialize();
+        mHistoryAdapter.startLoadingItems();
     }
 
     /** @return The RecyclerView for this HistoryContentManager. */
@@ -282,9 +304,13 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         return !mSelectionDelegate.isSelectionEnabled();
     }
 
-    /** Called to force clear all selected items. */
-    void clearSelection() {
+    /**
+     * Called to notify the content manager that history has been deleted by some party external to
+     * the currently visible history UI, e.g. via "clear browsing data."
+     */
+    void onHistoryDeletedExternally() {
         mSelectionDelegate.clearSelection();
+        mObserver.onHistoryDeletedExternally();
     }
 
     /**
@@ -326,10 +352,31 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
 
     /**
      * @return True if the clear history data button should be shown.
-     * Note that this may return true even if we are not showing the button.
      */
-    boolean getShouldShowClearDataIfAvailable() {
-        return mShouldShowClearData;
+    boolean getShouldShowClearData() {
+        return mShouldShowClearDataIfAvailable
+                && UserPrefs.get(Profile.getLastUsedRegularProfile())
+                           .getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY);
+    }
+
+    /**
+     * Opens the url of each of the visits in the provided list in a new tab.
+     */
+    public void openItemsInNewTab(List<HistoryItem> items, boolean isIncognito) {
+        if (mIsSeparateActivity && items.size() > 1) {
+            ArrayList<String> additionalUrls = new ArrayList<>(items.size() - 1);
+            for (int i = 1; i < items.size(); i++) {
+                additionalUrls.add(items.get(i).getUrl().getSpec());
+            }
+
+            Intent intent = getOpenUrlIntent(items.get(0).getUrl(), isIncognito, true);
+            intent.putExtra(IntentHandler.EXTRA_ADDITIONAL_URLS, additionalUrls);
+            IntentHandler.startActivityForTrustedIntent(intent);
+        } else {
+            for (HistoryItem item : items) {
+                openUrl(item.getUrl(), isIncognito, true);
+            }
+        }
     }
 
     /**
@@ -360,27 +407,9 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         }
     }
 
-    @VisibleForTesting
     Intent getOpenUrlIntent(GURL url, Boolean isIncognito, boolean createNewTab) {
         // Construct basic intent.
-        Intent viewIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url.getSpec()));
-        viewIntent.putExtra(
-                Browser.EXTRA_APPLICATION_ID, mActivity.getApplicationContext().getPackageName());
-        viewIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-        // Determine component or class name.
-        ComponentName component;
-        if (mActivity instanceof HistoryActivity) { // phone
-            component = IntentUtils.safeGetParcelableExtra(
-                    mActivity.getIntent(), IntentHandler.EXTRA_PARENT_COMPONENT);
-        } else { // tablet
-            component = mActivity.getComponentName();
-        }
-        if (component != null) {
-            ChromeTabbedActivity.setNonAliasedComponent(viewIntent, component);
-        } else {
-            viewIntent.setClass(mActivity, ChromeLauncherActivity.class);
-        }
+        Intent viewIntent = createOpenUrlIntent(url, mActivity);
 
         // Set other intent extras.
         if (isIncognito != null) {
@@ -388,7 +417,6 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         }
         if (createNewTab) viewIntent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
 
-        viewIntent.putExtra(IntentHandler.EXTRA_PAGE_TRANSITION_TYPE, PAGE_TRANSITION_TYPE);
         return viewIntent;
     }
 
@@ -487,6 +515,33 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     public void onPreferenceChange() {
         mObserver.onUserAccountStateChanged();
         mHistoryAdapter.onSignInStateChange();
+    }
+
+    /**
+     * Creates a view intent for opening the given url that is trusted and targets the correct main
+     * browsing activity.
+     */
+    static Intent createOpenUrlIntent(GURL url, Activity activity) {
+        Intent viewIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url.getSpec()));
+        viewIntent.putExtra(
+                Browser.EXTRA_APPLICATION_ID, activity.getApplicationContext().getPackageName());
+        viewIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        viewIntent.putExtra(IntentHandler.EXTRA_PAGE_TRANSITION_TYPE, PAGE_TRANSITION_TYPE);
+        // Determine component or class name.
+        ComponentName component;
+        if (activity instanceof HistoryActivity) { // phone
+            component = IntentUtils.safeGetParcelableExtra(
+                    activity.getIntent(), IntentHandler.EXTRA_PARENT_COMPONENT);
+        } else { // tablet
+            component = activity.getComponentName();
+        }
+        if (component != null) {
+            ActivityUtils.setNonAliasedComponentForMainBrowsingActivity(viewIntent, component);
+        } else {
+            viewIntent.setClass(activity, ChromeLauncherActivity.class);
+        }
+        IntentUtils.addTrustedIntentExtras(viewIntent);
+        return viewIntent;
     }
 
     /** @param provider The {@link HistoryProvider} that is used in place of a real one. */

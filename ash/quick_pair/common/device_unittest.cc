@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,5 +44,12 @@ TEST_F(DeviceTest, GetAndSetAdditionalData) {
   EXPECT_EQ(additional_data.value(), more_data);
 }
 
+TEST_F(DeviceTest, SetClassicAddressForV1Devices) {
+  // Test that overriding works.
+  std::vector<uint8_t> more_data = {1};
+  device_->SetAdditionalData(AdditionalDataType::kFastPairVersion, more_data);
+
+  EXPECT_EQ(device_->classic_address(), device_->ble_address);
+}
 }  // namespace quick_pair
 }  // namespace ash

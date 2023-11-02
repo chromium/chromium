@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/time/default_clock.h"
@@ -18,23 +19,10 @@ namespace safe_browsing {
 const size_t kAdSamplerTriggerDefaultQuota = 10;
 const size_t kSuspiciousSiteTriggerDefaultQuota = 5;
 const char kSuspiciousSiteTriggerQuotaParam[] = "suspicious_site_trigger_quota";
-const char kTriggerTypeAndQuotaParam[] = "trigger_type_and_quota_csv";
 
 namespace {
 const size_t kUnlimitedTriggerQuota = std::numeric_limits<size_t>::max();
 constexpr base::TimeDelta kOneDayTimeDelta = base::Days(1);
-
-// Predicate used to search |trigger_type_and_quota_list_| by trigger type.
-class TriggerTypeIs {
- public:
-  explicit TriggerTypeIs(const TriggerType type) : type_(type) {}
-  bool operator()(const TriggerTypeAndQuotaItem& trigger_type_and_quota) {
-    return type_ == trigger_type_and_quota.first;
-  }
-
- private:
-  TriggerType type_;
-};
 
 void ParseTriggerTypeAndQuotaParam(
     std::vector<TriggerTypeAndQuotaItem>* trigger_type_and_quota_list) {
@@ -49,44 +37,6 @@ void ParseTriggerTypeAndQuotaParam(
     trigger_type_and_quota_list->push_back(
         std::make_pair(TriggerType::SUSPICIOUS_SITE, suspicious_site_quota));
   }
-
-  // If the feature is disabled we just use the default list. Otherwise the list
-  // from the Finch param will be the one used.
-  if (!base::FeatureList::IsEnabled(kTriggerThrottlerDailyQuotaFeature)) {
-    return;
-  }
-
-  const std::string& trigger_and_quota_csv_param =
-      base::GetFieldTrialParamValueByFeature(kTriggerThrottlerDailyQuotaFeature,
-                                             kTriggerTypeAndQuotaParam);
-  if (trigger_and_quota_csv_param.empty()) {
-    return;
-  }
-
-  std::vector<std::string> split =
-      base::SplitString(trigger_and_quota_csv_param, ",", base::TRIM_WHITESPACE,
-                        base::SPLIT_WANT_NONEMPTY);
-  // If we don't have the right number of pairs in the csv then don't bother
-  // parsing further.
-  if (split.size() % 2 != 0) {
-    return;
-  }
-  for (size_t i = 0; i < split.size(); i += 2) {
-    // Make sure both the trigger type and quota are integers. Skip them if not.
-    int trigger_type_int = -1;
-    int quota_int = -1;
-    if (!base::StringToInt(split[i], &trigger_type_int) ||
-        !base::StringToInt(split[i + 1], &quota_int)) {
-      continue;
-    }
-    trigger_type_and_quota_list->push_back(
-        std::make_pair(static_cast<TriggerType>(trigger_type_int), quota_int));
-  }
-
-  std::sort(trigger_type_and_quota_list->begin(),
-            trigger_type_and_quota_list->end(),
-            [](const TriggerTypeAndQuotaItem& a,
-               const TriggerTypeAndQuotaItem& b) { return a.first < b.first; });
 }
 
 // Looks in |trigger_quota_list| for |trigger_type|. If found, sets |out_quota|
@@ -95,9 +45,8 @@ bool TryFindQuotaForTrigger(
     const TriggerType trigger_type,
     const std::vector<TriggerTypeAndQuotaItem>& trigger_quota_list,
     size_t* out_quota) {
-  const auto& trigger_quota_iter =
-      std::find_if(trigger_quota_list.begin(), trigger_quota_list.end(),
-                   TriggerTypeIs(trigger_type));
+  const auto& trigger_quota_iter = base::ranges::find(
+      trigger_quota_list, trigger_type, &TriggerTypeAndQuotaItem::first);
   if (trigger_quota_iter != trigger_quota_list.end()) {
     *out_quota = trigger_quota_iter->second;
     return true;
@@ -198,9 +147,9 @@ void TriggerThrottler::LoadTriggerEventsFromPref() {
   if (!local_state_prefs_)
     return;
 
-  const base::DictionaryValue* event_dict = local_state_prefs_->GetDictionary(
-      prefs::kSafeBrowsingTriggerEventTimestamps);
-  for (auto trigger_pair : event_dict->DictItems()) {
+  const base::Value::Dict& event_dict =
+      local_state_prefs_->GetDict(prefs::kSafeBrowsingTriggerEventTimestamps);
+  for (auto trigger_pair : event_dict) {
     // Check that the first item in the pair is convertible to a trigger type
     // and that the second item is a list.
     int trigger_type_int;
@@ -241,7 +190,7 @@ void TriggerThrottler::WriteTriggerEventsToPref() {
 
 size_t TriggerThrottler::GetDailyQuotaForTrigger(
     const TriggerType trigger_type) const {
-  size_t quota_from_finch = 0;
+  size_t quota = 0;
   switch (trigger_type) {
     case TriggerType::SECURITY_INTERSTITIAL:
     case TriggerType::GAIA_PASSWORD_REUSE:
@@ -253,18 +202,18 @@ size_t TriggerThrottler::GetDailyQuotaForTrigger(
       return 0;
 
     case TriggerType::AD_SAMPLE:
-      // Ad Samples have a non-zero default quota, but it can be overwritten
-      // through Finch.
+      // Check for non-default quota (needed for unit tests).
       if (TryFindQuotaForTrigger(trigger_type, trigger_type_and_quota_list_,
-                                 &quota_from_finch)) {
-        return quota_from_finch;
+                                 &quota)) {
+        return quota;
       }
       return kAdSamplerTriggerDefaultQuota;
+
     case TriggerType::SUSPICIOUS_SITE:
       // Suspicious Sites are disabled unless they are configured through Finch.
       if (TryFindQuotaForTrigger(trigger_type, trigger_type_and_quota_list_,
-                                 &quota_from_finch)) {
-        return quota_from_finch;
+                                 &quota)) {
+        return quota;
       }
       break;
   }

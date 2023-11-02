@@ -6,10 +6,16 @@ include_rules = [
   "+components/viz/service/display",
   "+components/viz/service/display_embedder",
   "+components/viz/service/hit_test",
+  "+components/viz/service/performance_hint",
   "+components/viz/service/surfaces",
   "+components/viz/service/transitions",
+  "+gpu/command_buffer/service/shared_context_state.h",
   "+gpu/ipc/common",
+  "+gpu/command_buffer/service/scheduler_sequence.h",
+  "+gpu/command_buffer/service/shared_image_interface_in_process.h",
   "+mojo/public",
+  "+media/video",
+  "+ui/gl/gl_features.h",
 ]
 
 specific_include_rules = {

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -31,8 +32,11 @@ class AuthenticatorRequestSheetView;
 // then guides them through the flow of setting up their security key using the
 // selecting transport protocol, and finally shows success/failure indications.
 //
+// The dialog view may be destroyed and recreated multiple times during the
+// lifetime of a single WebAuthn request.
+//
 // Note that as a DialogDelegateView, AuthenticatorRequestDialogView is
-// deleted when DeleteDelegate() is called.
+// eventually deleted when DeleteDelegate() is called.
 class AuthenticatorRequestDialogView
     : public views::DialogDelegateView,
       public AuthenticatorRequestDialogModel::Observer,
@@ -56,10 +60,9 @@ class AuthenticatorRequestDialogView
   // provided by the new sheet), and the dialog size and position.
   void UpdateUIForCurrentSheet();
 
-  // Shows or hides the "Choose another option" button based on whether the
-  // current sheet model defines a model for the other transports popup menu,
-  // and whether it has at least one element.
-  void ToggleOtherMechanismsButtonVisibility();
+  // Returns whether the "Choose another option" button show be shown based on
+  // whether the current sheet model defines a model for the other transports
+  // popup menu, and whether it has at least one element.
   bool ShouldOtherMechanismsButtonBeVisible() const;
 
   AuthenticatorRequestSheetView* sheet() const {
@@ -86,24 +89,25 @@ class AuthenticatorRequestDialogView
   friend class test::AuthenticatorRequestDialogViewTestApi;
   friend void ShowAuthenticatorRequestDialog(
       content::WebContents* web_contents,
-      std::unique_ptr<AuthenticatorRequestDialogModel> model);
+      AuthenticatorRequestDialogModel* model);
 
   // Show by calling ShowAuthenticatorRequestDialog().
-  AuthenticatorRequestDialogView(
-      content::WebContents* web_contents,
-      std::unique_ptr<AuthenticatorRequestDialogModel> model);
+  AuthenticatorRequestDialogView(content::WebContents* web_contents,
+                                 AuthenticatorRequestDialogModel* model);
 
   // Shows the dialog after creation or after being hidden.
   void Show();
 
   void OtherMechanismsButtonPressed();
+  void ManageDevicesButtonPressed();
 
   void OnDialogClosing();
 
-  std::unique_ptr<AuthenticatorRequestDialogModel> model_;
+  raw_ptr<AuthenticatorRequestDialogModel> model_;
 
-  AuthenticatorRequestSheetView* sheet_ = nullptr;
-  views::View* other_mechanisms_button_ = nullptr;
+  raw_ptr<AuthenticatorRequestSheetView> sheet_ = nullptr;
+  raw_ptr<views::View> other_mechanisms_button_ = nullptr;
+  raw_ptr<views::View> manage_devices_button_ = nullptr;
   std::unique_ptr<views::MenuRunner> other_mechanisms_menu_runner_;
   bool first_shown_ = false;
 

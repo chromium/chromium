@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,11 @@
 #include "base/thread_annotations.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
+#include "ui/gfx/gpu_memory_buffer.h"
+
+#if BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
+#include "media/gpu/chromeos/platform_video_frame_utils.h"
+#endif  // BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
 
 namespace media {
 
@@ -29,9 +34,10 @@ int32_t NextID(int32_t* counter) {
 
 class PictureBufferManagerImpl : public PictureBufferManager {
  public:
-  explicit PictureBufferManagerImpl(
-      ReusePictureBufferCB reuse_picture_buffer_cb)
-      : reuse_picture_buffer_cb_(std::move(reuse_picture_buffer_cb)) {
+  PictureBufferManagerImpl(bool allocate_gpu_memory_buffers,
+                           ReusePictureBufferCB reuse_picture_buffer_cb)
+      : allocate_gpu_memory_buffers_(allocate_gpu_memory_buffers),
+        reuse_picture_buffer_cb_(std::move(reuse_picture_buffer_cb)) {
     DVLOG(1) << __func__;
   }
   PictureBufferManagerImpl(const PictureBufferManagerImpl&) = delete;
@@ -71,7 +77,8 @@ class PictureBufferManagerImpl : public PictureBufferManager {
     return !has_assigned_picture_buffer;
   }
 
-  std::vector<PictureBuffer> CreatePictureBuffers(
+  std::vector<std::pair<PictureBuffer, gfx::GpuMemoryBufferHandle>>
+  CreatePictureBuffers(
       uint32_t count,
       VideoPixelFormat pixel_format,
       uint32_t planes,
@@ -84,6 +91,9 @@ class PictureBufferManagerImpl : public PictureBufferManager {
     DCHECK(count);
     DCHECK(planes);
     DCHECK_LE(planes, static_cast<uint32_t>(VideoFrame::kMaxPlanes));
+    DCHECK(!allocate_gpu_memory_buffers_ ||
+           mode == VideoDecodeAccelerator::TextureAllocationMode::
+                       kDoNotAllocateGLTextures);
 
     // TODO(sandersd): Consider requiring that CreatePictureBuffers() is
     // called with the context current.
@@ -91,11 +101,12 @@ class PictureBufferManagerImpl : public PictureBufferManager {
         VideoDecodeAccelerator::TextureAllocationMode::kAllocateGLTextures) {
       if (!command_buffer_helper_->MakeContextCurrent()) {
         DVLOG(1) << "Failed to make context current";
-        return std::vector<PictureBuffer>();
+        return {};
       }
     }
 
-    std::vector<PictureBuffer> picture_buffers;
+    std::vector<std::pair<PictureBuffer, gfx::GpuMemoryBufferHandle>>
+        picture_buffers_and_gmbs;
     for (uint32_t i = 0; i < count; i++) {
       PictureBufferData picture_data = {pixel_format, texture_size};
       if (mode ==
@@ -132,6 +143,46 @@ class PictureBufferManagerImpl : public PictureBufferManager {
         }
       }
 
+      gfx::GpuMemoryBufferHandle gmb_handle;
+      if (allocate_gpu_memory_buffers_) {
+#if BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
+        scoped_refptr<VideoFrame> gpu_memory_buffer_video_frame =
+            CreateGpuMemoryBufferVideoFrame(
+                pixel_format, texture_size, gfx::Rect(texture_size),
+                texture_size, base::TimeDelta(),
+                gfx::BufferUsage::SCANOUT_VDA_WRITE);
+        if (!gpu_memory_buffer_video_frame)
+          return {};
+        if (gpu_memory_buffer_video_frame->format() != pixel_format) {
+          // There is a mismatch (maybe deliberate) between
+          // VideoPixelFormatToGfxBufferFormat() and
+          // GfxBufferFormatToVideoPixelFormat(). For PIXEL_FORMAT_XBGR, the
+          // former returns gfx::BufferFormat::RGBX_8888, but for
+          // gfx::BufferFormat::RGBX_8888, the latter returns PIXEL_FORMAT_XRGB.
+          // Just fail if the allocated format doesn't match the requested
+          // format.
+          //
+          // TODO(andrescj): does this mismatch need to be fixed or is it
+          // intentional?
+          return {};
+        }
+
+        gfx::GpuMemoryBuffer* gmb =
+            gpu_memory_buffer_video_frame->GetGpuMemoryBuffer();
+        DCHECK(gmb);
+        gmb_handle = gmb->CloneHandle();
+        if (gmb_handle.type != gfx::NATIVE_PIXMAP ||
+            gmb_handle.native_pixmap_handle.planes.empty()) {
+          return {};
+        }
+        picture_data.gpu_memory_buffer_video_frame =
+            std::move(gpu_memory_buffer_video_frame);
+#else
+        NOTREACHED();
+        return {};
+#endif  // BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
+      }
+
       // Generate a picture buffer ID and record the picture buffer.
       int32_t picture_buffer_id = NextID(&picture_buffer_id_);
       {
@@ -145,12 +196,13 @@ class PictureBufferManagerImpl : public PictureBufferManager {
       //
       // TODO(sandersd): Refactor the bind image callback to use service IDs so
       // that we can get rid of the client IDs altogether.
-      picture_buffers.emplace_back(
-          picture_buffer_id, texture_size, picture_data.texture_sizes,
-          picture_data.service_ids, picture_data.service_ids, texture_target,
-          pixel_format);
+      picture_buffers_and_gmbs.emplace_back(
+          PictureBuffer{picture_buffer_id, texture_size,
+                        picture_data.texture_sizes, picture_data.service_ids,
+                        picture_data.service_ids, texture_target, pixel_format},
+          std::move(gmb_handle));
     }
-    return picture_buffers;
+    return picture_buffers_and_gmbs;
   }
 
   bool DismissPictureBuffer(int32_t picture_buffer_id) override {
@@ -236,15 +288,31 @@ class PictureBufferManagerImpl : public PictureBufferManager {
     }
 
     // Create and return a VideoFrame for the picture buffer.
-    scoped_refptr<VideoFrame> frame = VideoFrame::WrapNativeTextures(
-        picture_buffer_data.pixel_format, picture_buffer_data.mailbox_holders,
-        base::BindOnce(&PictureBufferManagerImpl::OnVideoFrameDestroyed, this,
-                       picture_buffer_id),
-        picture_buffer_data.texture_size, visible_rect, natural_size,
-        timestamp);
-    if (!frame) {
-      DLOG(ERROR) << "Failed to create VideoFrame for picture.";
-      return nullptr;
+    scoped_refptr<VideoFrame> frame;
+    if (picture_buffer_data.gpu_memory_buffer_video_frame) {
+      frame = VideoFrame::WrapVideoFrame(
+          picture_buffer_data.gpu_memory_buffer_video_frame,
+          picture_buffer_data.gpu_memory_buffer_video_frame->format(),
+          visible_rect, natural_size);
+      if (!frame) {
+        DLOG(ERROR) << "Failed to create VideoFrame for picture.";
+        return nullptr;
+      }
+      frame->set_timestamp(timestamp);
+      frame->AddDestructionObserver(
+          base::BindOnce(&PictureBufferManagerImpl::OnVideoFrameDestroyed, this,
+                         picture_buffer_id, gpu::SyncToken()));
+    } else {
+      frame = VideoFrame::WrapNativeTextures(
+          picture_buffer_data.pixel_format, picture_buffer_data.mailbox_holders,
+          base::BindOnce(&PictureBufferManagerImpl::OnVideoFrameDestroyed, this,
+                         picture_buffer_id),
+          picture_buffer_data.texture_size, visible_rect, natural_size,
+          timestamp);
+      if (!frame) {
+        DLOG(ERROR) << "Failed to create VideoFrame for picture.";
+        return nullptr;
+      }
     }
 
     frame->set_color_space(picture.color_space());
@@ -252,6 +320,7 @@ class PictureBufferManagerImpl : public PictureBufferManager {
     frame->metadata().allow_overlay = picture.allow_overlay();
     frame->metadata().read_lock_fences_enabled =
         picture.read_lock_fences_enabled();
+    frame->metadata().is_webgpu_compatible = picture.is_webgpu_compatible();
 
     // TODO(sandersd): Provide an API for VDAs to control this.
     frame->metadata().power_efficient = true;
@@ -262,7 +331,8 @@ class PictureBufferManagerImpl : public PictureBufferManager {
  private:
   ~PictureBufferManagerImpl() override {
     DVLOG(1) << __func__;
-    DCHECK(picture_buffers_.empty() || !command_buffer_helper_->HasStub());
+    DCHECK(picture_buffers_.empty() ||
+           (!command_buffer_helper_ || !command_buffer_helper_->HasStub()));
   }
 
   void OnVideoFrameDestroyed(int32_t picture_buffer_id,
@@ -279,14 +349,21 @@ class PictureBufferManagerImpl : public PictureBufferManager {
     it->second.output_count--;
     it->second.waiting_for_synctoken_count++;
 
-    // Wait for the SyncToken release.
-    gpu_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &CommandBufferHelper::WaitForSyncToken, command_buffer_helper_,
-            sync_token,
-            base::BindOnce(&PictureBufferManagerImpl::OnSyncTokenReleased, this,
-                           picture_buffer_id)));
+    if (command_buffer_helper_) {
+      // Wait for the SyncToken release.
+      gpu_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              &CommandBufferHelper::WaitForSyncToken, command_buffer_helper_,
+              sync_token,
+              base::BindOnce(&PictureBufferManagerImpl::OnSyncTokenReleased,
+                             this, picture_buffer_id)));
+    } else {
+      gpu_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&PictureBufferManagerImpl::OnSyncTokenReleased, this,
+                         picture_buffer_id));
+    }
   }
 
   void OnSyncTokenReleased(int32_t picture_buffer_id) {
@@ -352,6 +429,7 @@ class PictureBufferManagerImpl : public PictureBufferManager {
       command_buffer_helper_->DestroyTexture(service_id);
   }
 
+  const bool allocate_gpu_memory_buffers_;
   ReusePictureBufferCB reuse_picture_buffer_cb_;
 
   scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
@@ -368,6 +446,7 @@ class PictureBufferManagerImpl : public PictureBufferManager {
     std::array<scoped_refptr<Picture::ScopedSharedImage>,
                VideoFrame::kMaxPlanes>
         scoped_shared_images;
+    scoped_refptr<VideoFrame> gpu_memory_buffer_video_frame;
     bool dismissed = false;
 
     // The same picture buffer can be output from the VDA multiple times
@@ -392,9 +471,10 @@ class PictureBufferManagerImpl : public PictureBufferManager {
 
 // static
 scoped_refptr<PictureBufferManager> PictureBufferManager::Create(
+    bool allocate_gpu_memory_buffers,
     ReusePictureBufferCB reuse_picture_buffer_cb) {
   return base::MakeRefCounted<PictureBufferManagerImpl>(
-      std::move(reuse_picture_buffer_cb));
+      allocate_gpu_memory_buffers, std::move(reuse_picture_buffer_cb));
 }
 
 }  // namespace media

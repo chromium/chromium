@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,12 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
+#include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/service_worker/service_worker_single_script_update_checker.h"
 #include "content/browser/service_worker/service_worker_updated_script_loader.h"
+#include "content/common/content_export.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -119,6 +123,9 @@ class CONTENT_EXPORT ServiceWorkerUpdateChecker {
   network::CrossOriginEmbedderPolicy cross_origin_embedder_policy() const {
     return cross_origin_embedder_policy_;
   }
+  const scoped_refptr<PolicyContainerHost> policy_container_host() const {
+    return policy_container_host_;
+  }
 
  private:
   void CheckOneScript(const GURL& url, const int64_t resource_id);
@@ -157,10 +164,11 @@ class CONTENT_EXPORT ServiceWorkerUpdateChecker {
 
   // The Cross-Origin-Embedder-Policy header for the updated main script.
   network::CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
+  scoped_refptr<PolicyContainerHost> policy_container_host_;
 
   // |context_| outlives |this| because it owns |this| through
   // ServiceWorkerJobCoordinator and ServiceWorkerRegisterJob.
-  ServiceWorkerContextCore* const context_;
+  const raw_ptr<ServiceWorkerContextCore> context_;
 
   blink::mojom::FetchClientSettingsObjectPtr fetch_client_settings_object_;
 

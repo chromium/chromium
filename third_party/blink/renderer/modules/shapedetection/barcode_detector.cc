@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_barcode_detector_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_detected_barcode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_point_2d.h"
@@ -16,7 +18,7 @@
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/modules/shapedetection/barcode_detector_statics.h"
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -78,7 +80,7 @@ BarcodeDetector::BarcodeDetector(ExecutionContext* context,
         barcode_detector_options->formats.push_back(format);
     }
 
-    if (barcode_detector_options->formats.IsEmpty()) {
+    if (barcode_detector_options->formats.empty()) {
       exception_state.ThrowTypeError("Hint option provided, but is empty.");
       return;
     }
@@ -90,8 +92,8 @@ BarcodeDetector::BarcodeDetector(ExecutionContext* context,
   BarcodeDetectorStatics::From(context)->CreateBarcodeDetection(
       service_.BindNewPipeAndPassReceiver(task_runner),
       std::move(barcode_detector_options));
-  service_.set_disconnect_handler(
-      WTF::Bind(&BarcodeDetector::OnConnectionError, WrapWeakPersistent(this)));
+  service_.set_disconnect_handler(WTF::BindOnce(
+      &BarcodeDetector::OnConnectionError, WrapWeakPersistent(this)));
 }
 
 // static
@@ -136,19 +138,21 @@ String BarcodeDetector::BarcodeFormatToString(
   }
 }
 
-ScriptPromise BarcodeDetector::DoDetect(ScriptPromiseResolver* resolver,
-                                        SkBitmap bitmap) {
-  ScriptPromise promise = resolver->Promise();
+ScriptPromise BarcodeDetector::DoDetect(ScriptState* script_state,
+                                        SkBitmap bitmap,
+                                        ExceptionState& exception_state) {
   if (!service_.is_bound()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotSupportedError,
-        "Barcode detection service unavailable."));
-    return promise;
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Barcode detection service unavailable.");
+    return ScriptPromise();
   }
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto promise = resolver->Promise();
   detect_requests_.insert(resolver);
-  service_->Detect(std::move(bitmap),
-                   WTF::Bind(&BarcodeDetector::OnDetectBarcodes,
-                             WrapPersistent(this), WrapPersistent(resolver)));
+  service_->Detect(
+      std::move(bitmap),
+      WTF::BindOnce(&BarcodeDetector::OnDetectBarcodes, WrapPersistent(this),
+                    WrapPersistent(resolver)));
   return promise;
 }
 
@@ -188,7 +192,16 @@ void BarcodeDetector::OnConnectionError() {
   HeapHashSet<Member<ScriptPromiseResolver>> resolvers;
   resolvers.swap(detect_requests_);
   for (const auto& resolver : resolvers) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
+    // Check if callback's resolver is still valid.
+    if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                       resolver->GetScriptState())) {
+      continue;
+    }
+    // Enter into resolver's context to support creating DOMException.
+    ScriptState::Scope script_state_scope(resolver->GetScriptState());
+
+    resolver->Reject(V8ThrowDOMException::CreateOrDie(
+        resolver->GetScriptState()->GetIsolate(),
         DOMExceptionCode::kNotSupportedError,
         "Barcode Detection not implemented."));
   }

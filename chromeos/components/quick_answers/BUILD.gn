@@ -1,0 +1,120 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/buildflags.gni")
+
+assert(is_chromeos)
+
+source_set("quick_answers") {
+  sources = [
+    "quick_answers_client.cc",
+    "quick_answers_client.h",
+    "quick_answers_model.cc",
+    "quick_answers_model.h",
+    "result_loader.cc",
+    "result_loader.h",
+    "search_result_loader.cc",
+    "search_result_loader.h",
+    "search_result_parsers/definition_result_parser.cc",
+    "search_result_parsers/definition_result_parser.h",
+    "search_result_parsers/kp_entity_result_parser.cc",
+    "search_result_parsers/kp_entity_result_parser.h",
+    "search_result_parsers/result_parser.cc",
+    "search_result_parsers/result_parser.h",
+    "search_result_parsers/search_response_parser.cc",
+    "search_result_parsers/search_response_parser.h",
+    "search_result_parsers/unit_conversion_result_parser.cc",
+    "search_result_parsers/unit_conversion_result_parser.h",
+    "translation_response_parser.cc",
+    "translation_response_parser.h",
+    "translation_result_loader.cc",
+    "translation_result_loader.h",
+    "understanding/intent_generator.cc",
+    "understanding/intent_generator.h",
+    "utils/language_detector.cc",
+    "utils/language_detector.h",
+    "utils/quick_answers_metrics.cc",
+    "utils/quick_answers_metrics.h",
+    "utils/quick_answers_utils.cc",
+    "utils/quick_answers_utils.h",
+    "utils/spell_check_language.cc",
+    "utils/spell_check_language.h",
+    "utils/spell_checker.cc",
+    "utils/spell_checker.h",
+    "utils/unit_conversion_constants.cc",
+    "utils/unit_conversion_constants.h",
+    "utils/unit_converter.cc",
+    "utils/unit_converter.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/common:constants",
+    "//chromeos/components/quick_answers/public/cpp:cpp",
+    "//chromeos/components/quick_answers/public/cpp:prefs",
+    "//chromeos/components/quick_answers/public/mojom",
+    "//chromeos/constants",
+    "//chromeos/services/assistant/public/shared",
+    "//chromeos/services/machine_learning/public/cpp",
+    "//chromeos/services/machine_learning/public/mojom",
+    "//chromeos/strings:strings_grit",
+    "//components/account_id",
+    "//components/language/core/browser",
+    "//components/prefs:prefs",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/spellcheck/common",
+    "//content/public/browser",
+    "//google_apis",
+    "//net:net",
+    "//services/data_decoder/public/cpp",
+    "//services/network/public/cpp:cpp",
+    "//ui/base",
+    "//ui/color:color_headers",
+    "//ui/gfx",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "quick_answers_client_unittest.cc",
+    "search_result_loader_unittest.cc",
+    "search_result_parsers/definition_result_parser_unittest.cc",
+    "search_result_parsers/kp_entity_result_parser_unittest.cc",
+    "search_result_parsers/result_parser_unittest.cc",
+    "search_result_parsers/search_response_parser_unittest.cc",
+    "search_result_parsers/unit_conversion_result_parser_unittest.cc",
+    "test/fake_quick_answers_state.cc",
+    "test/fake_quick_answers_state.h",
+    "test/quick_answers_test_base.cc",
+    "test/quick_answers_test_base.h",
+    "test/test_helpers.cc",
+    "test/test_helpers.h",
+    "translation_response_parser_unittest.cc",
+    "translation_result_loader_unittest.cc",
+    "understanding/intent_generator_unittest.cc",
+    "utils/language_detector_unittest.cc",
+    "utils/spell_checker_unittest.cc",
+    "utils/unit_converter_unittest.cc",
+  ]
+
+  deps = [
+    ":quick_answers",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/components/quick_answers/public/cpp:cpp",
+    "//chromeos/components/quick_answers/public/cpp:prefs",
+    "//chromeos/constants:constants",
+    "//chromeos/services/assistant/public/shared",
+    "//chromeos/services/machine_learning/public/cpp:stub",
+    "//chromeos/services/machine_learning/public/mojom",
+    "//google_apis",
+    "//services/data_decoder/public/cpp:test_support",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/color:color_headers",
+  ]
+}

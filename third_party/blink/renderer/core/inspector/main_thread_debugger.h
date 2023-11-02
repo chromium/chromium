@@ -34,9 +34,7 @@
 #include <memory>
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
-#include "third_party/blink/renderer/core/inspector/thread_debugger.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/core/inspector/thread_debugger_common_impl.h"
 #include "v8/include/v8-inspector.h"
 #include "v8/include/v8.h"
 
@@ -44,10 +42,11 @@ namespace blink {
 
 class ErrorEvent;
 class LocalFrame;
+class ScriptState;
 class SecurityOrigin;
 class SourceLocation;
 
-class CORE_EXPORT MainThreadDebugger final : public ThreadDebugger {
+class CORE_EXPORT MainThreadDebugger final : public ThreadDebuggerCommonImpl {
  public:
   class ClientMessageLoop {
     USING_FAST_MALLOC(ClientMessageLoop);

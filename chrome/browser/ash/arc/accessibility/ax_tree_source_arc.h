@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,9 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/mojom/accessibility_helper.mojom-forward.h"
 #include "base/containers/flat_map.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_info_data_wrapper.h"
-#include "components/arc/mojom/accessibility_helper.mojom-forward.h"
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
 #include "ui/accessibility/ax_action_handler.h"
 #include "ui/accessibility/ax_node.h"
@@ -168,6 +168,14 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*>,
   // Resets tree state.
   void Reset();
 
+  // Returns true if we want to traversal |left| after |right|.
+  // Note that this comparison is NOT transitive.
+  bool NeedReorder(AccessibilityInfoDataWrapper* left,
+                   AccessibilityInfoDataWrapper* right) const;
+
+  // Returns true if we can traversal |left| before |right|.
+  bool CompareBounds(const gfx::Rect& left, const gfx::Rect& right) const;
+
   // AXTreeSource:
   int32_t GetId(AccessibilityInfoDataWrapper* info_data) const override;
   void GetChildren(
@@ -207,9 +215,6 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*>,
   // Mapping from Chrome node ID to its cached computed bounds.
   // This simplifies bounds calculations.
   std::map<int32_t, gfx::Rect> computed_bounds_;
-
-  // Mapping from Chrome node ID to the previous computed name for live region.
-  std::map<int32_t, std::string> previous_live_region_name_;
 
   // Mapping from Chrome node ID to the attached hook implementations.
   base::flat_map<int32_t, std::unique_ptr<Hook>> hooks_;

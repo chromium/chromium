@@ -27,11 +27,14 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_CLIENT_H_
 
 #include "base/gtest_prod_util.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+
+#include "base/record_replay.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -45,8 +48,13 @@ class PLATFORM_EXPORT ResourceClient : public GarbageCollectedMixin {
   USING_PRE_FINALIZER(ResourceClient, Prefinalize);
 
  public:
-  ResourceClient() = default;
-  virtual ~ResourceClient() = default;
+  ResourceClient() {
+    // Pointer registration is needed by ResourceClientWalker.
+    recordreplay::RegisterPointer("ResourceClient", this);
+  }
+  virtual ~ResourceClient() {
+    recordreplay::UnregisterPointer(this);
+  }
 
   // DataReceived() is called each time a chunk of data is received.
   // For cache hits, the data is replayed before NotifyFinished() is called.
@@ -74,6 +82,10 @@ class PLATFORM_EXPORT ResourceClient : public GarbageCollectedMixin {
   virtual String DebugName() const = 0;
 
   void Trace(Visitor* visitor) const override;
+
+  int RecordReplayId() const {
+    return recordreplay::PointerId(this);
+  }
 
  protected:
   void ClearResource() { SetResource(nullptr, nullptr); }

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/lock.h"
 #include "third_party/blink/public/platform/web_media_source.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -17,12 +18,12 @@
 #include "third_party/blink/renderer/core/html/time_ranges.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source_attachment_supplement.h"
+#include "third_party/blink/renderer/modules/mediasource/media_source_handle_impl.h"
 #include "third_party/blink/renderer/modules/mediasource/source_buffer.h"
 #include "third_party/blink/renderer/modules/mediasource/source_buffer_list.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
 namespace media {
 class AudioDecoderConfig;
@@ -45,9 +46,10 @@ class WebSourceBuffer;
 // HTMLMediaElement's instance to use the MSE API (also known as "attaching MSE
 // to a media element") by using a Media Source object URL as the media
 // element's src attribute or the src attribute of a <source> inside the media
-// element. A MediaSourceAttachmentSupplement encapsulates the linkage of that
-// object URL to a MediaSource instance, and allows communication between the
-// media element and the MSE API.
+// element, or by using a MediaSourceHandle for a worker-owned MediaSource as
+// the srcObject of the media element. A MediaSourceAttachmentSupplement
+// encapsulates the linkage of that object URL or handle to a MediaSource
+// instance, and allows communication between the media element and the MSE API.
 class MediaSource final : public EventTargetWithInlineData,
                           public ActiveScriptWrappable<MediaSource>,
                           public ExecutionContextLifecycleObserver {
@@ -95,6 +97,8 @@ class MediaSource final : public EventTargetWithInlineData,
       LOCKS_EXCLUDED(attachment_link_lock_);
   void clearLiveSeekableRange(ExceptionState&)
       LOCKS_EXCLUDED(attachment_link_lock_);
+
+  MediaSourceHandleImpl* handle() LOCKS_EXCLUDED(attachment_link_lock_);
 
   static bool isTypeSupported(ExecutionContext* context, const String& type);
 
@@ -277,11 +281,14 @@ class MediaSource final : public EventTargetWithInlineData,
       GUARDED_BY(attachment_link_lock_);
   bool context_already_destroyed_ GUARDED_BY(attachment_link_lock_);
 
+  Member<MediaSourceHandleImpl> worker_media_source_handle_;
+
   // |attachment_link_lock_| protects read/write of |media_source_attachment_|,
-  // |attachment_tracer_|, and |context_already_destroyed_|.  It is only truly
-  // necessary for CrossThreadAttachment usage of worker MSE, to prevent
-  // read/write collision on main thread versus worker thread. Note that
-  // |attachment_link_lock_| must be released before attempting
+  // |attachment_tracer_|, |context_already_destroyed_|, and execution of
+  // handle().
+  // It is only truly necessary for CrossThreadAttachment usage of worker MSE,
+  // to prevent read/write collision on main thread versus worker thread. Note
+  // that |attachment_link_lock_| must be released before attempting
   // CrossThreadMediaSourceAttachment RunExclusively() to avoid deadlock. Many
   // scenarios initiated by worker thread need to get the attachment to be able
   // to invoke operations on it. The attachment then takes internal
@@ -298,7 +305,7 @@ class MediaSource final : public EventTargetWithInlineData,
   // |attachment_link_lock_| and
   // callbacks for RunExclusively, when using SameThreadMediaSourceAttachment,
   // on main thread).
-  mutable Mutex attachment_link_lock_;
+  mutable base::Lock attachment_link_lock_;
 
   Member<SourceBufferList> source_buffers_;
   Member<SourceBufferList> active_source_buffers_;

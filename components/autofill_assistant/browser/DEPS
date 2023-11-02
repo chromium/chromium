@@ -1,11 +1,15 @@
 include_rules = [
   "+chrome/android/features/autofill_assistant/test_support_jni_headers",
   "+components/autofill",
+  "+components/client_update_protocol",
   "+components/google/core/common",
+  "+components/consent_auditor",
   "+components/keyed_service/core",
   "+components/password_manager/content/browser",
   "+components/password_manager/core/browser",
   "+components/password_manager/core/common",
+  "+components/prefs",
+  "+components/sync/protocol",
   "+components/ukm",
   "+components/url_matcher",
   "+components/version_info",
@@ -16,11 +20,13 @@ include_rules = [
   "+components/strings/grit/components_strings.h",
   "+crypto",
   "+google_apis",
+  "+mojo/public/cpp/bindings",
   "+net",
   "+services/metrics/public",
   "+services/network/public/cpp",
   "+services/network/public/mojom",
   "+services/network/test",
+  "+third_party/blink/public/common",
   "+third_party/blink/public/common/switches.h",
   "+third_party/blink/public/mojom/payments/payment_request.mojom.h",
   "+third_party/icu/source/common/unicode",
@@ -33,6 +39,14 @@ include_rules = [
 
 specific_include_rules = {
   ".*_unittest\.cc": [
+    "+components/prefs",
+    "+components/safe_browsing/core/common",
     "+third_party/blink/public/common/features.h",
-  ]
+  ],
+  'dependencies_util.h': [
+      '+components/variations/service/variations_service.h',
+  ],
+   'dependencies_util.cc': [
+      '+components/variations/service/variations_service.h',
+  ],
 }

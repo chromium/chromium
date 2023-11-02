@@ -10,7 +10,7 @@
 ++++++[paragraph] description='Visibility hidden paragraph in fallback content' described-by
 ++++++++[static] name='This is another paragraph in fallback'
 ++++++[static] name='<newline>    '
-++++++[heading] name='Aria hidden paragraph in fallback content' description-for
+++++++[heading] description-for
 ++++++++[static] name='Aria hidden paragraph in fallback content'
 ++++++[static] name='<newline>    '
 ++++++[heading]

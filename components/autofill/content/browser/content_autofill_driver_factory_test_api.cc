@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,19 +11,20 @@ std::unique_ptr<ContentAutofillDriverFactory>
 ContentAutofillDriverFactoryTestApi::Create(
     content::WebContents* web_contents,
     AutofillClient* client,
-    const std::string& app_locale,
-    BrowserAutofillManager::AutofillDownloadManagerState
-        enable_download_manager,
-    AutofillManager::AutofillManagerFactoryCallback
-        autofill_manager_factory_callback) {
-  return base::WrapUnique(new ContentAutofillDriverFactory(
-      web_contents, client, app_locale, enable_download_manager,
-      autofill_manager_factory_callback));
+    ContentAutofillDriverFactory::DriverInitCallback driver_init_hook) {
+  return base::WrapUnique(
+      new ContentAutofillDriverFactory(web_contents, client, driver_init_hook));
 }
 
 ContentAutofillDriverFactoryTestApi::ContentAutofillDriverFactoryTestApi(
     ContentAutofillDriverFactory* factory)
     : factory_(factory) {}
+
+void ContentAutofillDriverFactoryTestApi::SetDriver(
+    content::RenderFrameHost* rfh,
+    std::unique_ptr<ContentAutofillDriver> driver) {
+  factory_->driver_map_[rfh] = std::move(driver);
+}
 
 ContentAutofillDriver* ContentAutofillDriverFactoryTestApi::GetDriver(
     content::RenderFrameHost* rfh) {

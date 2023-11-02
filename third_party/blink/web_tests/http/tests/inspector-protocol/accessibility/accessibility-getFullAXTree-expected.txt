@@ -2,7 +2,7 @@ Tests Accessibility.getFullAXTree
 
 RootWebArea
   generic
-    StaticText "Some text in a div, also a"
+    StaticText "Some text in a div, also a "
       InlineTextBox
     link "link"
       StaticText "link"

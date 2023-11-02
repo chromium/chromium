@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,7 +53,7 @@ WebContentsCaptureClient::CaptureResult WebContentsCaptureClient::CaptureAsync(
   if (image_details) {
     if (image_details->format != api::extension_types::IMAGE_FORMAT_NONE)
       image_format_ = image_details->format;
-    if (image_details->quality.get())
+    if (image_details->quality)
       image_quality_ = *image_details->quality;
   }
 

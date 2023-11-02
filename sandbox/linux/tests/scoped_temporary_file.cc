@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,18 +9,17 @@
 #include <unistd.h>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
 
 namespace sandbox {
 
 ScopedTemporaryFile::ScopedTemporaryFile() : fd_(-1) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   static const char file_template[] = "/data/local/tmp/ScopedTempFileXXXXXX";
 #else
   static const char file_template[] = "/tmp/ScopedTempFileXXXXXX";
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   static_assert(sizeof(full_file_name_) >= sizeof(file_template),
                 "full_file_name is not large enough");
   memcpy(full_file_name_, file_template, sizeof(file_template));

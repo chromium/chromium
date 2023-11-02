@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/chrome_cleaner/os/initializer.h"
 
 #include <memory>
+#include <tuple>
 #include <utility>
 
 #include "base/command_line.h"
@@ -58,7 +59,7 @@ bool InitializeOSUtils() {
 
   // Call into the random number generator to initialize it. This must be done
   // once before lowering the token in the sandbox target process.
-  ANALYZER_ALLOW_UNUSED(base::RandUint64());
+  std::ignore = base::RandUint64();
 
   return true;
 }

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,14 +25,20 @@ struct PhysicalSize;
 // PhysicalOffset is the position of a rect (typically a fragment) relative to
 // its parent rect in the physical coordinate system.
 // For more information about physical and logical coordinate systems, see:
-// https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/renderer/core/layout/README.md#coordinate-spaces
+// https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/layout/README.md#coordinate-spaces
 struct CORE_EXPORT PhysicalOffset {
   constexpr PhysicalOffset() = default;
   constexpr PhysicalOffset(LayoutUnit left, LayoutUnit top)
       : left(left), top(top) {}
 
+  // This is deleted to avoid unwanted lossy conversion from float or double to
+  // LayoutUnit or int. Use explicit LayoutUnit constructor for each parameter,
+  // or use FromPointF*() instead.
+  PhysicalOffset(double, double) = delete;
+
   // For testing only. It's defined in core/testing/core_unit_test_helper.h.
-  inline PhysicalOffset(int left, int top);
+  // 'constexpr' is to let compiler detect usage from production code.
+  constexpr PhysicalOffset(int left, int top);
 
   LayoutUnit left;
   LayoutUnit top;
@@ -94,29 +100,10 @@ struct CORE_EXPORT PhysicalOffset {
   constexpr LayoutPoint ToLayoutPoint() const { return {left, top}; }
   constexpr LayoutSize ToLayoutSize() const { return {left, top}; }
 
-  explicit PhysicalOffset(const IntSize& size)
-      : left(size.width()), top(size.height()) {}
   explicit PhysicalOffset(const gfx::Point& point)
       : left(point.x()), top(point.y()) {}
   explicit PhysicalOffset(const gfx::Vector2d& vector)
       : left(vector.x()), top(vector.y()) {}
-
-  static PhysicalOffset FromFloatPointFloor(const FloatPoint& point) {
-    return {LayoutUnit::FromFloatFloor(point.x()),
-            LayoutUnit::FromFloatFloor(point.y())};
-  }
-  static PhysicalOffset FromFloatPointRound(const FloatPoint& point) {
-    return {LayoutUnit::FromFloatRound(point.x()),
-            LayoutUnit::FromFloatRound(point.y())};
-  }
-  static PhysicalOffset FromFloatSizeFloor(const FloatSize& size) {
-    return {LayoutUnit::FromFloatFloor(size.width()),
-            LayoutUnit::FromFloatFloor(size.height())};
-  }
-  static PhysicalOffset FromFloatSizeRound(const FloatSize& size) {
-    return {LayoutUnit::FromFloatRound(size.width()),
-            LayoutUnit::FromFloatRound(size.height())};
-  }
 
   static PhysicalOffset FromPointFFloor(const gfx::PointF& point) {
     return {LayoutUnit::FromFloatFloor(point.x()),
@@ -140,8 +127,6 @@ struct CORE_EXPORT PhysicalOffset {
     top *= s;
   }
 
-  constexpr explicit operator FloatPoint() const { return {left, top}; }
-  constexpr explicit operator FloatSize() const { return {left, top}; }
   constexpr explicit operator gfx::PointF() const { return {left, top}; }
   constexpr explicit operator gfx::Vector2dF() const { return {left, top}; }
 

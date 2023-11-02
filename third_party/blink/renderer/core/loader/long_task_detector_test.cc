@@ -1,10 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/loader/long_task_detector.h"
 
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -68,9 +70,9 @@ class LongTaskDetectorTest : public testing::Test {
   base::TimeTicks DummyTaskEndTime() { return dummy_task_end_time_; }
 
   void SimulateTask(base::TimeDelta duration) {
-    Thread::Current()->GetTaskRunner()->PostTask(
-        FROM_HERE, WTF::Bind(&LongTaskDetectorTest::DummyTaskWithDuration,
-                             WTF::Unretained(this), duration));
+    platform_->GetMainThreadScheduler()->DefaultTaskRunner()->PostTask(
+        FROM_HERE, WTF::BindOnce(&LongTaskDetectorTest::DummyTaskWithDuration,
+                                 WTF::Unretained(this), duration));
     platform_->RunUntilIdle();
   }
 

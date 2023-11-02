@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -268,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest,
   navigation_observer.Wait();
 
   content::RenderFrameHost* iframe =
-      ChildFrameAt(shell()->web_contents()->GetMainFrame(), 0);
+      ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(iframe);
   EXPECT_EQ("fail", iframe->GetLastCommittedURL().ref());
 }
@@ -295,7 +295,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest,
   navigation_observer.Wait();
 
   content::RenderFrameHost* iframe =
-      ChildFrameAt(shell()->web_contents()->GetMainFrame(), 0);
+      ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(iframe);
   EXPECT_EQ("pass", iframe->GetLastCommittedURL().ref());
 }
@@ -318,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest,
   navigation_observer.Wait();
 
   content::RenderFrameHost* iframe =
-      ChildFrameAt(shell()->web_contents()->GetMainFrame(), 0);
+      ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(iframe);
   EXPECT_EQ("fail", iframe->GetLastCommittedURL().ref());
 }
@@ -345,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest,
   navigation_observer.Wait();
 
   content::RenderFrameHost* iframe =
-      ChildFrameAt(shell()->web_contents()->GetMainFrame(), 0);
+      ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(iframe);
   EXPECT_EQ("pass", iframe->GetLastCommittedURL().ref());
 }

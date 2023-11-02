@@ -1,11 +1,12 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/ui/app_list/search/app_list_search_test_helper.h"
+#include "chrome/browser/ui/app_list/search/files/file_result.h"
+#include "chrome/browser/ui/app_list/search/test/app_list_search_test_helper.h"
 
 namespace app_list {
 
@@ -13,6 +14,8 @@ namespace app_list {
 // Drive file search in the launcher.
 class AppListDriveSearchBrowserTest : public AppListSearchBrowserTest {
  public:
+  AppListDriveSearchBrowserTest() = default;
+
   void SetUpInProcessBrowserTestFixture() override {
     create_drive_integration_service_ = base::BindRepeating(
         &AppListDriveSearchBrowserTest::CreateDriveIntegrationService,
@@ -45,7 +48,7 @@ class AppListDriveSearchBrowserTest : public AppListSearchBrowserTest {
 };
 
 // Test that Drive files can be searched.
-IN_PROC_BROWSER_TEST_F(AppListDriveSearchBrowserTest, DriveSearchTest) {
+IN_PROC_BROWSER_TEST_F(AppListDriveSearchBrowserTest, FileSearch) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   drive::DriveIntegrationService* drive_service =
@@ -66,7 +69,7 @@ IN_PROC_BROWSER_TEST_F(AppListDriveSearchBrowserTest, DriveSearchTest) {
 }
 
 // Test that Drive folders can be searched.
-IN_PROC_BROWSER_TEST_F(AppListDriveSearchBrowserTest, DriveFolderTest) {
+IN_PROC_BROWSER_TEST_F(AppListDriveSearchBrowserTest, FolderSearch) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   drive::DriveIntegrationService* drive_service =
@@ -83,6 +86,39 @@ IN_PROC_BROWSER_TEST_F(AppListDriveSearchBrowserTest, DriveFolderTest) {
   ASSERT_EQ(results.size(), 1u);
   ASSERT_TRUE(results[0]);
   EXPECT_EQ(base::UTF16ToASCII(results[0]->title()), "my_folder");
+}
+
+// Test that files are ordered based on access time.
+IN_PROC_BROWSER_TEST_F(AppListDriveSearchBrowserTest, ResultOrdering) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  drive::DriveIntegrationService* drive_service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(GetProfile());
+  ASSERT_TRUE(drive_service->IsMounted());
+  base::FilePath mount_path = drive_service->GetMountPointPath();
+
+  base::FilePath older = mount_path.Append("ranking_older.gdoc");
+  base::FilePath newer = mount_path.Append("ranking_newer.gdoc");
+  base::Time now = base::Time::Now();
+  base::Time then = now - base::Seconds(10000);
+  ASSERT_TRUE(base::WriteFile(older, "content"));
+  ASSERT_TRUE(base::WriteFile(newer, "content"));
+  ASSERT_TRUE(base::TouchFile(older, then, then));
+  ASSERT_TRUE(base::TouchFile(newer, now, now));
+
+  SearchAndWaitForProviders("ranking", {ResultType::kDriveSearch});
+
+  auto results = PublishedResultsForProvider(ResultType::kDriveSearch);
+
+  // Sort high-to-low by relevance.
+  std::sort(results.begin(), results.end(),
+            [](const ChromeSearchResult* a, const ChromeSearchResult* b) {
+              return a->relevance() > b->relevance();
+            });
+
+  ASSERT_EQ(results.size(), 2u);
+  EXPECT_EQ(base::UTF16ToASCII(results[0]->title()), "ranking_newer");
+  EXPECT_EQ(base::UTF16ToASCII(results[1]->title()), "ranking_older");
 }
 
 }  // namespace app_list

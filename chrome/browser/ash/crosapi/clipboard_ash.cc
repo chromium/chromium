@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,9 +20,7 @@ void ClipboardAsh::BindReceiver(
 void ClipboardAsh::GetCopyPasteText(GetCopyPasteTextCallback callback) {
   std::u16string text;
 
-  // There is no source that appropriately represents Lacros. Use kDefault for
-  // now.
-  const ui::DataTransferEndpoint endpoint(ui::EndpointType::kDefault);
+  const ui::DataTransferEndpoint endpoint(ui::EndpointType::kLacros);
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, &endpoint, &text);
 

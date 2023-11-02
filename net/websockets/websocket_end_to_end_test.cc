@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,8 +19,8 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -54,11 +54,13 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
+#include "net/test/ssl_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "net/websockets/websocket_channel.h"
 #include "net/websockets/websocket_event_interface.h"
@@ -157,7 +159,7 @@ class ConnectTestingEventInterface : public WebSocketEventInterface {
   void QuitNestedEventLoop();
 
   // failed_ is true if the handshake failed (ie. OnFailChannel was called).
-  bool failed_;
+  bool failed_ = false;
   std::unique_ptr<WebSocketHandshakeResponseInfo> response_;
   std::string selected_subprotocol_;
   std::string extensions_;
@@ -165,8 +167,7 @@ class ConnectTestingEventInterface : public WebSocketEventInterface {
   base::RunLoop run_loop_;
 };
 
-ConnectTestingEventInterface::ConnectTestingEventInterface() : failed_(false) {
-}
+ConnectTestingEventInterface::ConnectTestingEventInterface() = default;
 
 void ConnectTestingEventInterface::WaitForResponse() {
   run_loop_.Run();
@@ -294,24 +295,22 @@ class WebSocketEndToEndTest : public TestWithTaskEnvironment {
   WebSocketEndToEndTest()
       : event_interface_(),
         proxy_delegate_(std::make_unique<TestProxyDelegateWithProxyInfo>()),
-        context_(true),
-        channel_(),
-        initialised_context_(false) {}
+        context_builder_(CreateTestURLRequestContextBuilder()) {}
 
   // Initialise the URLRequestContext. Normally done automatically by
   // ConnectAndWait(). This method is for the use of tests that need the
   // URLRequestContext initialised before calling ConnectAndWait().
   void InitialiseContext() {
-    context_.Init();
-    context_.proxy_resolution_service()->SetProxyDelegate(
+    DCHECK(!context_);
+    context_ = context_builder_->Build();
+    context_->proxy_resolution_service()->SetProxyDelegate(
         proxy_delegate_.get());
-    initialised_context_ = true;
   }
 
   // Send the connect request to |socket_url| and wait for a response. Returns
   // true if the handshake succeeded.
   bool ConnectAndWait(const GURL& socket_url) {
-    if (!initialised_context_) {
+    if (!context_) {
       InitialiseContext();
     }
     url::Origin origin = url::Origin::Create(GURL("http://localhost"));
@@ -320,9 +319,10 @@ class WebSocketEndToEndTest : public TestWithTaskEnvironment {
     IsolationInfo isolation_info =
         IsolationInfo::Create(IsolationInfo::RequestType::kOther, origin,
                               origin, SiteForCookies::FromOrigin(origin));
-    event_interface_ = new ConnectTestingEventInterface();
-    channel_ = std::make_unique<WebSocketChannel>(
-        base::WrapUnique(event_interface_), &context_);
+    auto event_interface = std::make_unique<ConnectTestingEventInterface>();
+    event_interface_ = event_interface.get();
+    channel_ = std::make_unique<WebSocketChannel>(std::move(event_interface),
+                                                  context_.get());
     channel_->SendAddChannelRequest(
         GURL(socket_url), sub_protocols_, origin, site_for_cookies,
         isolation_info, HttpRequestHeaders(), TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -330,12 +330,12 @@ class WebSocketEndToEndTest : public TestWithTaskEnvironment {
     return !event_interface_->failed();
   }
 
-  ConnectTestingEventInterface* event_interface_;  // owned by channel_
+  raw_ptr<ConnectTestingEventInterface> event_interface_;  // owned by channel_
   std::unique_ptr<TestProxyDelegateWithProxyInfo> proxy_delegate_;
-  TestURLRequestContext context_;
+  std::unique_ptr<URLRequestContextBuilder> context_builder_;
+  std::unique_ptr<URLRequestContext> context_;
   std::unique_ptr<WebSocketChannel> channel_;
   std::vector<std::string> sub_protocols_;
-  bool initialised_context_;
 };
 
 // Basic test of connectivity. If this test fails, nothing else can be expected
@@ -362,10 +362,11 @@ TEST_F(WebSocketEndToEndTest, DISABLED_HttpsProxyUnauthedFails) {
   std::string proxy_config =
       "https=" + proxy_server.host_port_pair().ToString();
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service(
-      ConfiguredProxyResolutionService::CreateFixed(
+      ConfiguredProxyResolutionService::CreateFixedForTest(
           proxy_config, TRAFFIC_ANNOTATION_FOR_TESTS));
   ASSERT_TRUE(proxy_resolution_service);
-  context_.set_proxy_resolution_service(proxy_resolution_service.get());
+  context_builder_->set_proxy_resolution_service(
+      std::move(proxy_resolution_service));
   EXPECT_FALSE(ConnectAndWait(ws_server.GetURL(kEchoServer)));
   EXPECT_EQ("Proxy authentication failed", event_interface_->failure_message());
 }
@@ -373,7 +374,7 @@ TEST_F(WebSocketEndToEndTest, DISABLED_HttpsProxyUnauthedFails) {
 // These test are not compatible with RemoteTestServer because RemoteTestServer
 // doesn't support TYPE_BASIC_AUTH_PROXY.
 // TODO(ricea): Make these tests work. See crbug.com/441711.
-#if defined(OS_ANDROID) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_HttpsWssProxyUnauthedFails DISABLED_HttpsWssProxyUnauthedFails
 #define MAYBE_HttpsProxyUsed DISABLED_HttpsProxyUsed
 #else
@@ -397,10 +398,12 @@ TEST_F(WebSocketEndToEndTest, MAYBE_HttpsWssProxyUnauthedFails) {
   proxy_config.proxy_rules().bypass_rules.AddRulesToSubtractImplicit();
 
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service(
-      ConfiguredProxyResolutionService::CreateFixed(ProxyConfigWithAnnotation(
-          proxy_config, TRAFFIC_ANNOTATION_FOR_TESTS)));
+      ConfiguredProxyResolutionService::CreateFixedForTest(
+          ProxyConfigWithAnnotation(proxy_config,
+                                    TRAFFIC_ANNOTATION_FOR_TESTS)));
   ASSERT_TRUE(proxy_resolution_service);
-  context_.set_proxy_resolution_service(proxy_resolution_service.get());
+  context_builder_->set_proxy_resolution_service(
+      std::move(proxy_resolution_service));
   EXPECT_FALSE(ConnectAndWait(wss_server.GetURL(kEchoServer)));
   EXPECT_EQ("Proxy authentication failed", event_interface_->failure_message());
 }
@@ -424,9 +427,11 @@ TEST_F(WebSocketEndToEndTest, MAYBE_HttpsProxyUsed) {
   proxy_config.proxy_rules().bypass_rules.AddRulesToSubtractImplicit();
 
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service(
-      ConfiguredProxyResolutionService::CreateFixed(ProxyConfigWithAnnotation(
-          proxy_config, TRAFFIC_ANNOTATION_FOR_TESTS)));
-  context_.set_proxy_resolution_service(proxy_resolution_service.get());
+      ConfiguredProxyResolutionService::CreateFixedForTest(
+          ProxyConfigWithAnnotation(proxy_config,
+                                    TRAFFIC_ANNOTATION_FOR_TESTS)));
+  context_builder_->set_proxy_resolution_service(
+      std::move(proxy_resolution_service));
   InitialiseContext();
 
   GURL ws_url = ws_server.GetURL(kEchoServer);
@@ -462,7 +467,7 @@ std::unique_ptr<HttpResponse> ProxyPacHandler(const HttpRequest& request) {
 // TODO(ricea): Remove this test if --winhttp-proxy-resolver flag is removed.
 // See crbug.com/644030.
 
-#if defined(OS_WIN) || defined(OS_APPLE)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 #define MAYBE_ProxyPacUsed ProxyPacUsed
 #else
 #define MAYBE_ProxyPacUsed DISABLED_ProxyPacUsed
@@ -494,7 +499,8 @@ TEST_F(WebSocketEndToEndTest, MAYBE_ProxyPacUsed) {
           std::move(proxy_config_service), NetLog::Get(),
           /*quick_check_enabled=*/true));
   ASSERT_EQ(ws_server.host_port_pair().host(), "127.0.0.1");
-  context_.set_proxy_resolution_service(proxy_resolution_service.get());
+  context_builder_->set_proxy_resolution_service(
+      std::move(proxy_resolution_service));
   InitialiseContext();
 
   // Use a name other than localhost, since localhost implicitly bypasses the
@@ -542,7 +548,7 @@ TEST_F(WebSocketEndToEndTest, HstsHttpsToWebSocket) {
   // Set HSTS via https:
   TestDelegate delegate;
   GURL https_page = https_server.GetURL("/hsts-headers.html");
-  std::unique_ptr<URLRequest> request(context_.CreateRequest(
+  std::unique_ptr<URLRequest> request(context_->CreateRequest(
       https_page, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
   request->Start();
   delegate.RunUntilComplete();
@@ -575,7 +581,7 @@ TEST_F(WebSocketEndToEndTest, HstsWebSocketToHttps) {
   TestDelegate delegate;
   GURL http_page =
       ReplaceUrlScheme(https_server.GetURL("/simple.html"), "http");
-  std::unique_ptr<URLRequest> request(context_.CreateRequest(
+  std::unique_ptr<URLRequest> request(context_->CreateRequest(
       http_page, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
   request->Start();
   delegate.RunUntilComplete();
@@ -632,10 +638,6 @@ TEST_F(WebSocketEndToEndTest, HeaderContinuations) {
 // Test that ws->wss scheme upgrade is supported on receiving a DNS HTTPS
 // record.
 TEST_F(WebSocketEndToEndTest, DnsSchemeUpgradeSupported) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbHttpUpgrade", "true"}});
-
   SpawnedTestServer wss_server(SpawnedTestServer::TYPE_WSS,
                                SpawnedTestServer::SSLOptions(base::FilePath(
                                    FILE_PATH_LITERAL("test_names.pem"))),
@@ -651,15 +653,16 @@ TEST_F(WebSocketEndToEndTest, DnsSchemeUpgradeSupported) {
 
   // Note that due to socket pool behavior, HostResolver will see the ws/wss
   // requests as http/https.
-  MockHostResolver host_resolver;
+  auto host_resolver = std::make_unique<MockHostResolver>();
   MockHostResolverBase::RuleResolver::RuleKey unencrypted_resolve_key;
   unencrypted_resolve_key.scheme = url::kHttpScheme;
-  host_resolver.rules()->AddRule(std::move(unencrypted_resolve_key),
-                                 ERR_DNS_NAME_HTTPS_ONLY);
+  host_resolver->rules()->AddRule(std::move(unencrypted_resolve_key),
+                                  ERR_DNS_NAME_HTTPS_ONLY);
   MockHostResolverBase::RuleResolver::RuleKey encrypted_resolve_key;
   encrypted_resolve_key.scheme = url::kHttpsScheme;
-  host_resolver.rules()->AddRule(std::move(encrypted_resolve_key), "127.0.0.1");
-  context_.set_host_resolver(&host_resolver);
+  host_resolver->rules()->AddRule(std::move(encrypted_resolve_key),
+                                  "127.0.0.1");
+  context_builder_->set_host_resolver(std::move(host_resolver));
 
   EXPECT_TRUE(ConnectAndWait(ws_url));
 
@@ -667,6 +670,92 @@ TEST_F(WebSocketEndToEndTest, DnsSchemeUpgradeSupported) {
   EXPECT_EQ(event_interface_->response()->url, wss_url);
 }
 
+// Test that wss connections can use HostResolverEndpointResults from DNS.
+TEST_F(WebSocketEndToEndTest, HostResolverEndpointResult) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kUseDnsHttpsSvcb);
+
+  SpawnedTestServer wss_server(SpawnedTestServer::TYPE_WSS,
+                               SpawnedTestServer::SSLOptions(base::FilePath(
+                                   FILE_PATH_LITERAL("test_names.pem"))),
+                               GetWebSocketTestDataDirectory());
+  ASSERT_TRUE(wss_server.Start());
+
+  uint16_t port = wss_server.host_port_pair().port();
+  GURL wss_url("wss://a.test:" + base::NumberToString(port) + "/" +
+               kEchoServer);
+
+  auto host_resolver = std::make_unique<MockHostResolver>();
+  MockHostResolverBase::RuleResolver::RuleKey resolve_key;
+  // The DNS query itself is made with the https scheme rather than wss.
+  resolve_key.scheme = url::kHttpsScheme;
+  resolve_key.hostname_pattern = "a.test";
+  resolve_key.port = port;
+  HostResolverEndpointResult result;
+  result.ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), port)};
+  result.metadata.supported_protocol_alpns = {"http/1.1"};
+  host_resolver->rules()->AddRule(
+      std::move(resolve_key),
+      MockHostResolverBase::RuleResolver::RuleResult(std::vector{result}));
+  context_builder_->set_host_resolver(std::move(host_resolver));
+
+  EXPECT_TRUE(ConnectAndWait(wss_url));
+
+  // Expect request to have reached the server using the upgraded URL.
+  EXPECT_EQ(event_interface_->response()->url, wss_url);
+}
+
+// Test that wss connections can use EncryptedClientHello.
+TEST_F(WebSocketEndToEndTest, EncryptedClientHello) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      {features::kUseDnsHttpsSvcb, features::kEncryptedClientHello}, {});
+
+  // SpawnedTestServer does not support ECH, while EmbeddedTestServer does not
+  // support WebSockets (https://crbug.com/1281277). Until that is fixed, test
+  // ECH by configuring a non-WebSockets HTTPS server. The WebSockets handshake
+  // will fail, but getting that far tests that ECH worked.
+
+  // Configure a test server that speaks ECH.
+  static constexpr char kRealName[] = "secret.example";
+  static constexpr char kPublicName[] = "public.example";
+  EmbeddedTestServer::ServerCertificateConfig server_cert_config;
+  server_cert_config.dns_names = {kRealName};
+  SSLServerConfig ssl_server_config;
+  std::vector<uint8_t> ech_config_list;
+  ssl_server_config.ech_keys =
+      MakeTestEchKeys(kPublicName, /*max_name_len=*/128, &ech_config_list);
+  ASSERT_TRUE(ssl_server_config.ech_keys);
+
+  EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTPS);
+  test_server.SetSSLConfig(server_cert_config, ssl_server_config);
+  ASSERT_TRUE(test_server.Start());
+
+  GURL https_url = test_server.GetURL(kRealName, "/");
+  GURL::Replacements replacements;
+  replacements.SetSchemeStr(url::kWssScheme);
+  GURL wss_url = https_url.ReplaceComponents(replacements);
+
+  auto host_resolver = std::make_unique<MockHostResolver>();
+  MockHostResolverBase::RuleResolver::RuleKey resolve_key;
+  // The DNS query itself is made with the https scheme rather than wss.
+  resolve_key.scheme = url::kHttpsScheme;
+  resolve_key.hostname_pattern = wss_url.host();
+  resolve_key.port = wss_url.IntPort();
+  HostResolverEndpointResult result;
+  result.ip_endpoints = {
+      IPEndPoint(IPAddress::IPv4Localhost(), wss_url.IntPort())};
+  result.metadata.supported_protocol_alpns = {"http/1.1"};
+  result.metadata.ech_config_list = ech_config_list;
+  host_resolver->rules()->AddRule(
+      std::move(resolve_key),
+      MockHostResolverBase::RuleResolver::RuleResult(std::vector{result}));
+  context_builder_->set_host_resolver(std::move(host_resolver));
+
+  EXPECT_FALSE(ConnectAndWait(wss_url));
+  EXPECT_EQ("Error during WebSocket handshake: Unexpected response code: 404",
+            event_interface_->failure_message());
+}
 }  // namespace
 
 }  // namespace net

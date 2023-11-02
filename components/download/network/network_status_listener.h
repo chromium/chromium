@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_DOWNLOAD_NETWORK_NETWORK_STATUS_LISTENER_H_
 #define COMPONENTS_DOWNLOAD_NETWORK_NETWORK_STATUS_LISTENER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
 
 namespace download {
@@ -52,7 +53,7 @@ class NetworkStatusListener {
 
   // The only observer that listens to connection type change. Must outlive this
   // class.
-  Observer* observer_ = nullptr;
+  raw_ptr<Observer> observer_ = nullptr;
 
   // The current network status.
   network::mojom::ConnectionType connection_type_ =

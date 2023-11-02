@@ -33,6 +33,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/audio/hrtf_kernel.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -85,17 +86,18 @@ class PLATFORM_EXPORT HRTFElevation {
                              double& frame_delay_r);
 
   // Spacing, in degrees, between every azimuth loaded from resource.
-  static const unsigned kAzimuthSpacing;
+  static constexpr unsigned kAzimuthSpacing = 15;
 
   // Number of azimuths loaded from resource.
-  static const unsigned kNumberOfRawAzimuths;
+  static constexpr unsigned kNumberOfRawAzimuths = 360 / kAzimuthSpacing;
 
   // Interpolates by this factor to get the total number of azimuths from every
   // azimuth loaded from resource.
-  static const unsigned kInterpolationFactor;
+  static constexpr unsigned kInterpolationFactor = 8;
 
   // Total number of azimuths after interpolation.
-  static const unsigned kNumberOfTotalAzimuths;
+  static constexpr unsigned kNumberOfTotalAzimuths =
+      kNumberOfRawAzimuths * kInterpolationFactor;
 
   // Given a specific azimuth and elevation angle, returns the left and right
   // HRTFKernel.

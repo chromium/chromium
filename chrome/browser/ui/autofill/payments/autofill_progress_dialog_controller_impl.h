@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,15 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/payments/autofill_progress_dialog_controller.h"
 #include "chrome/browser/ui/autofill/payments/autofill_progress_dialog_view.h"
+#include "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #include "content/public/browser/web_contents.h"
 
 namespace autofill {
+
+enum class AutofillProgressDialogType;
 
 // Implementation of the AutofillProgressDialogController. This class shows a
 // progress bar with a cancel button that can be updated to a success state
@@ -29,7 +33,12 @@ class AutofillProgressDialogControllerImpl
 
   ~AutofillProgressDialogControllerImpl() override;
 
-  void ShowDialog(base::OnceClosure cancel_callback);
+  // Show a progress dialog for underlying autofill processes. The
+  // `autofill_progress_dialog_type` determines the type of the progress dialog
+  // and `cancel_callback` is the function to invoke when the cancel button is
+  // clicked.
+  void ShowDialog(AutofillProgressDialogType autofill_progress_dialog_type,
+                  base::OnceClosure cancel_callback);
   void DismissDialog(bool show_confirmation_before_closing);
 
   // AutofillProgressDialogController.
@@ -46,13 +55,17 @@ class AutofillProgressDialogControllerImpl
   }
 
  private:
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
   // View that displays the error dialog.
-  AutofillProgressDialogView* autofill_progress_dialog_view_ = nullptr;
+  raw_ptr<AutofillProgressDialogView> autofill_progress_dialog_view_ = nullptr;
 
   // Callback function invoked when the cancel button is clicked.
   base::OnceClosure cancel_callback_;
+
+  // The type of the progress dialog that is being displayed.
+  AutofillProgressDialogType autofill_progress_dialog_type_ =
+      AutofillProgressDialogType::kUnspecified;
 };
 
 }  // namespace autofill

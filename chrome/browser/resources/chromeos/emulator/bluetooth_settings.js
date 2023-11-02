@@ -1,20 +1,20 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
-import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
-import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
-import 'chrome://resources/cr_elements/shared_style_css.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
+import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import './icons.js';
 import './shared_styles.js';
 
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 
@@ -83,7 +83,7 @@ Polymer({
       type: Array,
       value() {
         return [];
-      }
+      },
     },
 
     /**
@@ -94,7 +94,7 @@ Polymer({
       type: Array,
       value() {
         return [];
-      }
+      },
     },
 
     /**
@@ -115,7 +115,7 @@ Polymer({
       type: Number,
       value() {
         return -1;
-      }
+      },
     },
 
     /**
@@ -128,11 +128,14 @@ Polymer({
       type: Array,
       value() {
         return [
-          {text: 'Unknown', value: 0}, {text: 'Mouse', value: 0x2580},
-          {text: 'Keyboard', value: 0x2540}, {text: 'Audio', value: 0x240408},
-          {text: 'Phone', value: 0x7a020c}, {text: 'Computer', value: 0x104}
+          {text: 'Unknown', value: 0},
+          {text: 'Mouse', value: 0x2580},
+          {text: 'Keyboard', value: 0x2540},
+          {text: 'Audio', value: 0x240408},
+          {text: 'Phone', value: 0x7a020c},
+          {text: 'Computer', value: 0x104},
         ];
-      }
+      },
     },
 
     /**
@@ -144,7 +147,7 @@ Polymer({
       type: Array,
       value() {
         return [];
-      }
+      },
     },
 
     /**
@@ -156,7 +159,7 @@ Polymer({
       type: Array,
       value() {
         return [];
-      }
+      },
     },
   },
 
@@ -211,8 +214,9 @@ Polymer({
     var val = input.value.replace(/[^a-f0-9]/ig, '');
 
     // Insert a ':' in the middle of every four hex characters.
-    while (regex.test(val))
+    while (regex.test(val)) {
       val = val.replace(regex, '$1:$2');
+    }
 
     input.value = val;
   },
@@ -330,8 +334,9 @@ Polymer({
     /** @type {!Array<!BluetoothDevice>} */ var deviceList = [];
 
     for (var i = 0; i < devices.length; ++i) {
-      if (this.devicePaths[devices[i].path] != undefined)
+      if (this.devicePaths[devices[i].path] != undefined) {
         continue;
+      }
 
       // Get the label for the device class which should be selected.
       devices[i].class = this.getTextForDeviceClass(devices[i].classValue);
@@ -339,7 +344,7 @@ Polymer({
       deviceList.push(devices[i]);
       this.devicePaths[devices[i].path] = {
         predefined: predefined,
-        index: deviceList.length - 1
+        index: deviceList.length - 1,
       };
     }
 
@@ -354,8 +359,9 @@ Polymer({
   devicePairedFromTray_(path) {
     var obj = this.devicePaths[path];
 
-    if (obj == undefined)
+    if (obj == undefined) {
       return;
+    }
 
     var index = obj.index;
     var devicePath = (obj.predefined ? 'predefinedDevices.' : 'devices.');
@@ -405,8 +411,9 @@ Polymer({
   pairFailed_(path) {
     var obj = this.devicePaths[path];
 
-    if (obj == undefined)
+    if (obj == undefined) {
       return;
+    }
 
     var devicePath = (obj.predefined ? 'predefinedDevices.' : 'devices.');
     devicePath += obj.index.toString();
@@ -469,7 +476,7 @@ Polymer({
     this.push('devices', device);
     this.devicePaths[device.path] = {
       predefined: false,
-      index: this.devices.length - 1
+      index: this.devices.length - 1,
     };
   },
 
@@ -538,8 +545,9 @@ Polymer({
    * @private
    */
   deviceRemovedFromMainAdapter_(path) {
-    if (this.devicePaths[path] == undefined)
+    if (this.devicePaths[path] == undefined) {
       return;
+    }
 
     var obj = this.devicePaths[path];
     var devicePath = (obj.predefined ? 'predefinedDevices.' : 'devices.');
@@ -556,8 +564,9 @@ Polymer({
    */
   getTextForDeviceClass(classValue) {
     for (var i = 0; i < this.deviceClassOptions.length; ++i) {
-      if (this.deviceClassOptions[i].value == classValue)
+      if (this.deviceClassOptions[i].value == classValue) {
         return this.deviceClassOptions[i].text;
+      }
     }
     return '';
   },
@@ -569,8 +578,9 @@ Polymer({
    */
   getValueForDeviceClass(classText) {
     for (var i = 0; i < this.deviceClassOptions.length; ++i) {
-      if (this.deviceClassOptions[i].text == classText)
+      if (this.deviceClassOptions[i].text == classText) {
         return this.deviceClassOptions[i].value;
+      }
     }
     return 0;
   },

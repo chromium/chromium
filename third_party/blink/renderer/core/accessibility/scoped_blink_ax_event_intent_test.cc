@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,7 +35,7 @@ TEST_F(ScopedBlinkAXEventIntentTest, SingleIntent) {
     EXPECT_EQ(1u, cache->ActiveEventIntents().size());
   }
 
-  EXPECT_TRUE(cache->ActiveEventIntents().IsEmpty());
+  EXPECT_TRUE(cache->ActiveEventIntents().empty());
 }
 
 TEST_F(ScopedBlinkAXEventIntentTest, MultipleIdenticalIntents) {
@@ -60,7 +60,7 @@ TEST_F(ScopedBlinkAXEventIntentTest, MultipleIdenticalIntents) {
     EXPECT_EQ(1u, cache->ActiveEventIntents().size());
   }
 
-  EXPECT_TRUE(cache->ActiveEventIntents().IsEmpty());
+  EXPECT_TRUE(cache->ActiveEventIntents().empty());
 }
 
 TEST_F(ScopedBlinkAXEventIntentTest, NestedIndividualIntents) {
@@ -98,7 +98,7 @@ TEST_F(ScopedBlinkAXEventIntentTest, NestedIndividualIntents) {
     EXPECT_EQ(1u, cache->ActiveEventIntents().size());
   }
 
-  EXPECT_TRUE(cache->ActiveEventIntents().IsEmpty());
+  EXPECT_TRUE(cache->ActiveEventIntents().empty());
 }
 
 TEST_F(ScopedBlinkAXEventIntentTest, NestedMultipleIntents) {
@@ -152,7 +152,7 @@ TEST_F(ScopedBlinkAXEventIntentTest, NestedMultipleIntents) {
     EXPECT_EQ(2u, cache->ActiveEventIntents().size());
   }
 
-  EXPECT_TRUE(cache->ActiveEventIntents().IsEmpty());
+  EXPECT_TRUE(cache->ActiveEventIntents().empty());
 }
 
 TEST_F(ScopedBlinkAXEventIntentTest, NestedIdenticalIntents) {
@@ -187,7 +187,7 @@ TEST_F(ScopedBlinkAXEventIntentTest, NestedIdenticalIntents) {
     EXPECT_EQ(1u, cache->ActiveEventIntents().size());
   }
 
-  EXPECT_TRUE(cache->ActiveEventIntents().IsEmpty());
+  EXPECT_TRUE(cache->ActiveEventIntents().empty());
 }
 
 }  // namespace blink

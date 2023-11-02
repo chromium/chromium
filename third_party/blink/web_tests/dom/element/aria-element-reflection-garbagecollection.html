@@ -136,7 +136,7 @@ promise_test((t) => {
     // Set describedBy based on the order of my fruit preferences.
     fruitBowl.ariaDescribedByElements = [pear, apple, banana];
     assert_array_equals(fruitBowl.ariaDescribedByElements, [pear, apple, banana]);
-    assert_equals(fruitBowl.getAttribute("aria-describedby"), "pear apple banana");
+    assert_equals(fruitBowl.getAttribute("aria-describedby"), "");
 
     // Someone else comes along and eats the apple.
     apple.remove();

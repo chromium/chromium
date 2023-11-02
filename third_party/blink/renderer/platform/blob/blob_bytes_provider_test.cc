@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -52,8 +53,7 @@ class BlobBytesProviderTest : public testing::Test {
 
   std::unique_ptr<BlobBytesProvider> CreateProvider(
       scoped_refptr<RawData> data = nullptr) {
-    auto result = BlobBytesProvider::CreateForTesting(
-        blink::scheduler::GetSequencedTaskRunnerForTesting());
+    auto result = std::make_unique<BlobBytesProvider>();
     if (data)
       result->AppendData(std::move(data));
     return result;
@@ -73,6 +73,8 @@ class BlobBytesProviderTest : public testing::Test {
 
 TEST_F(BlobBytesProviderTest, Consolidation) {
   auto data = CreateProvider();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(data->sequence_checker_);
+
   data->AppendData(base::make_span("abc", 3));
   data->AppendData(base::make_span("def", 3));
   data->AppendData(base::make_span("ps1", 3));

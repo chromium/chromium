@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/keycodes/dom/dom_key.h"
@@ -103,7 +102,7 @@ DomKey GetKeyFromFullLookupTable(DomCode dom_code) {
   // writing system table used by the class under test.  Ideally this would be a
   // static assert however that doesn't work since the other table is in a
   // different compilation unit.
-  DCHECK_EQ(base::size(kFullLookupTable), kWritingSystemKeyDomCodeEntries);
+  DCHECK_EQ(std::size(kFullLookupTable), kWritingSystemKeyDomCodeEntries);
 
   if (kFullLookupTable.count(dom_code) == 0)
     return DomKey::NONE;

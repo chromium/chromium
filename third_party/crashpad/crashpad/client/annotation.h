@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 
 #include <algorithm>
 #include <atomic>
+#include <ostream>
 
 #include <stdint.h>
 #include <string.h>
@@ -28,7 +29,7 @@
 #include "build/build_config.h"
 
 namespace crashpad {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 namespace internal {
 class InProcessIntermediateDumpHandler;
 }  // namespace internal
@@ -72,7 +73,8 @@ class AnnotationList;
 class Annotation {
  public:
   //! \brief The maximum length of an annotation’s name, in bytes.
-  static constexpr size_t kNameMaxLength = 64;
+  //!    Matches the behavior of Breakpad's SimpleStringDictionary.
+  static constexpr size_t kNameMaxLength = 256;
 
   //! \brief The maximum size of an annotation’s value, in bytes.
   static constexpr size_t kValueMaxSize = 5 * 4096;
@@ -106,7 +108,7 @@ class Annotation {
     // variables defined in a constexpr function, which is valid. Avoid them
     // and the also-problematic DCHECK until all the infrastructure is updated:
     // https://crbug.com/crashpad/201.
-#if !defined(OS_WIN) || (defined(_MSC_VER) && _MSC_VER >= 1910)
+#if !BUILDFLAG(IS_WIN) || (defined(_MSC_VER) && _MSC_VER >= 1910)
     const UnderlyingType start =
         static_cast<UnderlyingType>(Type::kUserDefinedStart);
     const UnderlyingType user_type = start + value;
@@ -173,7 +175,7 @@ class Annotation {
 
  protected:
   friend class AnnotationList;
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   friend class internal::InProcessIntermediateDumpHandler;
 #endif
 

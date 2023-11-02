@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,24 +12,37 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_render_bundle.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_render_pipeline.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
 // static
 GPURenderBundleEncoder* GPURenderBundleEncoder::Create(
     GPUDevice* device,
-    const GPURenderBundleEncoderDescriptor* webgpu_desc) {
+    const GPURenderBundleEncoderDescriptor* webgpu_desc,
+    ExceptionState& exception_state) {
   uint32_t color_formats_count =
       static_cast<uint32_t>(webgpu_desc->colorFormats().size());
+
+  for (const auto& color_format : webgpu_desc->colorFormats()) {
+    if (color_format.has_value() &&
+        !device->ValidateTextureFormatUsage(color_format.value(),
+                                            exception_state)) {
+      return nullptr;
+    }
+  }
 
   std::unique_ptr<WGPUTextureFormat[]> color_formats =
       AsDawnEnum<WGPUTextureFormat>(webgpu_desc->colorFormats());
 
   WGPUTextureFormat depth_stencil_format = WGPUTextureFormat_Undefined;
   if (webgpu_desc->hasDepthStencilFormat()) {
-    depth_stencil_format =
-        AsDawnEnum<WGPUTextureFormat>(webgpu_desc->depthStencilFormat());
+    if (!device->ValidateTextureFormatUsage(webgpu_desc->depthStencilFormat(),
+                                            exception_state)) {
+      return nullptr;
+    }
+
+    depth_stencil_format = AsDawnEnum(webgpu_desc->depthStencilFormat());
   }
 
   std::string label;
@@ -39,6 +52,8 @@ GPURenderBundleEncoder* GPURenderBundleEncoder::Create(
   dawn_desc.colorFormats = color_formats.get();
   dawn_desc.depthStencilFormat = depth_stencil_format;
   dawn_desc.sampleCount = webgpu_desc->sampleCount();
+  dawn_desc.depthReadOnly = webgpu_desc->depthReadOnly();
+  dawn_desc.stencilReadOnly = webgpu_desc->stencilReadOnly();
   if (webgpu_desc->hasLabel()) {
     label = webgpu_desc->label().Utf8();
     dawn_desc.label = label.c_str();

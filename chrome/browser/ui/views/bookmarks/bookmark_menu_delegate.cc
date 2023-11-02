@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -37,6 +38,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/base/window_open_disposition_utils.h"
 #include "ui/color/color_id.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -107,29 +109,26 @@ class BookmarkModelDropObserver : public bookmarks::BaseBookmarkModelObserver {
     bookmark_model_ = nullptr;
   }
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   const bookmarks::BookmarkNodeData drop_data_;
-  const bookmarks::BookmarkNode* drop_parent_;
+  raw_ptr<const bookmarks::BookmarkNode> drop_parent_;
   const size_t index_to_drop_at_;
-  bookmarks::BookmarkModel* bookmark_model_;
+  raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
 };
 
 }  // namespace
 
-BookmarkMenuDelegate::BookmarkMenuDelegate(
-    Browser* browser,
-    base::RepeatingCallback<content::PageNavigator*()> get_navigator,
-    views::Widget* parent)
+BookmarkMenuDelegate::BookmarkMenuDelegate(Browser* browser,
+                                           views::Widget* parent)
     : browser_(browser),
       profile_(browser->profile()),
-      get_navigator_(std::move(get_navigator)),
       parent_(parent),
       menu_(nullptr),
       parent_menu_item_(nullptr),
       next_menu_id_(IDC_FIRST_UNBOUNDED_MENU),
       real_delegate_(nullptr),
       is_mutating_model_(false),
-      location_(BOOKMARK_LAUNCH_LOCATION_NONE) {}
+      location_(BookmarkLaunchLocation::kNone) {}
 
 BookmarkMenuDelegate::~BookmarkMenuDelegate() {
   GetBookmarkModel()->RemoveObserver(this);
@@ -227,7 +226,7 @@ void BookmarkMenuDelegate::ExecuteCommand(int id, int mouse_event_flags) {
 
   RecordBookmarkLaunch(location_,
                        profile_metrics::GetBrowserProfileType(profile_));
-  chrome::OpenAllIfAllowed(browser_, get_navigator_, selection,
+  chrome::OpenAllIfAllowed(browser_, selection,
                            ui::DispositionFromEventFlags(mouse_event_flags),
                            false);
 }
@@ -303,7 +302,7 @@ ui::mojom::DragOperation BookmarkMenuDelegate::GetDropOperation(
 
   const BookmarkNode* node = menu_id_to_node_map_[item->GetCommand()];
   const BookmarkNode* drop_parent = node->parent();
-  size_t index_to_drop_at = static_cast<size_t>(drop_parent->GetIndexOf(node));
+  size_t index_to_drop_at = drop_parent->GetIndexOf(node).value();
   BookmarkModel* model = GetBookmarkModel();
   switch (*position) {
     case views::MenuDelegate::DropPosition::kAfter:
@@ -334,16 +333,6 @@ ui::mojom::DragOperation BookmarkMenuDelegate::GetDropOperation(
       profile_, event, drop_data_, drop_parent, index_to_drop_at);
 }
 
-ui::mojom::DragOperation BookmarkMenuDelegate::OnPerformDrop(
-    MenuItemView* menu,
-    views::MenuDelegate::DropPosition position,
-    const ui::DropTargetEvent& event) {
-  auto drop_cb = GetDropCallback(menu, position, event);
-  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-  std::move(drop_cb).Run(event, output_drag_op);
-  return output_drag_op;
-}
-
 views::View::DropCallback BookmarkMenuDelegate::GetDropCallback(
     views::MenuItemView* menu,
     views::MenuDelegate::DropPosition position,
@@ -354,8 +343,7 @@ views::View::DropCallback BookmarkMenuDelegate::GetDropCallback(
   DCHECK(model);
   const BookmarkNode* drop_parent = drop_node->parent();
   DCHECK(drop_parent);
-  size_t index_to_drop_at =
-      static_cast<size_t>(drop_parent->GetIndexOf(drop_node));
+  size_t index_to_drop_at = drop_parent->GetIndexOf(drop_node).value();
   switch (position) {
     case views::MenuDelegate::DropPosition::kAfter:
       index_to_drop_at++;
@@ -400,8 +388,7 @@ bool BookmarkMenuDelegate::ShowContextMenu(MenuItemView* source,
   const BookmarkNode* node = menu_id_to_node_map_[id];
   std::vector<const BookmarkNode*> nodes(1, node);
   context_menu_ = std::make_unique<BookmarkContextMenu>(
-      parent_, browser_, profile_, get_navigator_,
-      BOOKMARK_LAUNCH_LOCATION_APP_MENU, node->parent(), nodes,
+      parent_, browser_, profile_, location_, node->parent(), nodes,
       ShouldCloseOnRemove(node));
   context_menu_->set_observer(this);
   context_menu_->RunMenuAt(p, source_type);
@@ -605,7 +592,6 @@ void BookmarkMenuDelegate::BuildMenu(const BookmarkNode* parent,
                                      size_t start_child_index,
                                      MenuItemView* menu) {
   DCHECK_LE(start_child_index, parent->children().size());
-  ui::ResourceBundle* rb = &ui::ResourceBundle::GetSharedInstance();
   const ui::ImageModel folder_icon = chrome::GetBookmarkFolderIcon(
       chrome::BookmarkFolderIconType::kNormal, ui::kColorMenuIcon);
   for (auto i = parent->children().cbegin() + start_child_index;
@@ -615,20 +601,20 @@ void BookmarkMenuDelegate::BuildMenu(const BookmarkNode* parent,
     MenuItemView* child_menu_item;
     if (node->is_url()) {
       const gfx::Image& image = GetBookmarkModel()->GetFavicon(node);
-      const gfx::ImageSkia* icon = image.IsEmpty() ?
-          rb->GetImageSkiaNamed(IDR_DEFAULT_FAVICON) : image.ToImageSkia();
+      const gfx::ImageSkia* icon =
+          (image.IsEmpty() ? favicon::GetDefaultFavicon() : image)
+              .ToImageSkia();
       child_menu_item =
           menu->AppendMenuItem(id, MaybeEscapeLabel(node->GetTitle()),
                                ui::ImageModel::FromImageSkia(*icon));
       child_menu_item->GetViewAccessibility().OverrideDescription(
           url_formatter::FormatUrl(
               node->url(), url_formatter::kFormatUrlOmitDefaults,
-              net::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
+              base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
     } else {
       DCHECK(node->is_folder());
       child_menu_item = menu->AppendSubMenu(
           id, MaybeEscapeLabel(node->GetTitle()), folder_icon);
-      child_menu_item->GetViewAccessibility().OverrideDescription("");
     }
     AddMenuToMaps(child_menu_item, node);
   }

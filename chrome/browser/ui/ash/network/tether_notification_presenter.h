@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,24 +8,25 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/components/multidevice/remote_device_ref.h"
-#include "chromeos/components/tether/notification_presenter.h"
-#include "chromeos/network/network_state.h"
+#include "chromeos/ash/components/multidevice/remote_device_ref.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/tether/notification_presenter.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 class Profile;
+
+namespace ash {
+class NetworkConnect;
+}
 
 namespace message_center {
 class Notification;
 }  // namespace message_center
 
-namespace chromeos {
-
-class NetworkConnect;
-
-namespace tether {
+namespace ash::tether {
 
 // Produces notifications associated with CrOS tether network events and alerts
 // observers about interactions with those notifications.
@@ -95,6 +96,7 @@ class TetherNotificationPresenter : public NotificationPresenter {
 
   std::unique_ptr<message_center::Notification> CreateNotification(
       const std::string& id,
+      const NotificationCatalogName& catalog_name,
       const std::u16string& title,
       const std::u16string& message,
       const gfx::ImageSkia& small_image,
@@ -123,8 +125,6 @@ class TetherNotificationPresenter : public NotificationPresenter {
   base::WeakPtrFactory<TetherNotificationPresenter> weak_ptr_factory_{this};
 };
 
-}  // namespace tether
-
-}  // namespace chromeos
+}  // namespace ash::tether
 
 #endif  // CHROME_BROWSER_UI_ASH_NETWORK_TETHER_NOTIFICATION_PRESENTER_H_

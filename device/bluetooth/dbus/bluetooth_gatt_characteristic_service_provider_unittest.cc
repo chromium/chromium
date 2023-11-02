@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -82,7 +82,7 @@ TEST(BluetoothGattCharacteristicServiceProviderTest, ReadValueFailure) {
             EXPECT_FALSE(reader.PopArrayOfBytes(&bytes, &length));
             callback_called = true;
           }),
-      device::BluetoothGattService::GATT_ERROR_FAILED, read_value);
+      device::BluetoothGattService::GattErrorCode::kFailed, read_value);
 
   EXPECT_TRUE(callback_called);
 }

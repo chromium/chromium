@@ -1,19 +1,18 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/cert/ct_serialization.h"
 
 #include "base/logging.h"
+#include "base/numerics/checked_math.h"
 #include "crypto/sha2.h"
 #include "net/cert/merkle_tree_leaf.h"
 #include "net/cert/signed_certificate_timestamp.h"
 #include "net/cert/signed_tree_head.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 
-namespace net {
-
-namespace ct {
+namespace net::ct {
 
 namespace {
 
@@ -319,8 +318,7 @@ bool DecodeSCTList(base::StringPiece input,
 bool DecodeSignedCertificateTimestamp(
     base::StringPiece* input,
     scoped_refptr<SignedCertificateTimestamp>* output) {
-  scoped_refptr<SignedCertificateTimestamp> result(
-      new SignedCertificateTimestamp());
+  auto result = base::MakeRefCounted<SignedCertificateTimestamp>();
   uint8_t version;
   CBS input_cbs;
   CBS_init(&input_cbs, reinterpret_cast<const uint8_t*>(input->data()),
@@ -400,6 +398,4 @@ bool EncodeSCTListForTesting(const base::StringPiece& sct,
   return true;
 }
 
-}  // namespace ct
-
-}  // namespace net
+}  // namespace net::ct

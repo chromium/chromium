@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,8 +28,8 @@ BrowserFrameViewLayoutLinux::~BrowserFrameViewLayoutLinux() = default;
 
 gfx::Insets BrowserFrameViewLayoutLinux::MirroredFrameBorderInsets() const {
   auto border = FrameBorderInsets(false);
-  return base::i18n::IsRTL() ? gfx::Insets(border.top(), border.right(),
-                                           border.bottom(), border.left())
+  return base::i18n::IsRTL() ? gfx::Insets::TLBR(border.top(), border.right(),
+                                                 border.bottom(), border.left())
                              : border;
 }
 
@@ -54,21 +54,37 @@ gfx::Insets BrowserFrameViewLayoutLinux::RestoredFrameBorderInsets() const {
 
   // The border must be at least as large as the shadow.
   gfx::Rect frame_extents;
+  const auto tiled_edges = delegate_->GetTiledEdges();
   for (const auto& shadow_value : view_->GetShadowValues()) {
-    auto shadow_radius = shadow_value.blur() / 4;
+    const auto shadow_radius = shadow_value.blur() / 4;
+    const gfx::InsetsF shadow_insets =
+        gfx::InsetsF::TLBR(tiled_edges.top ? 0 : shadow_radius,
+                           tiled_edges.left ? 0 : shadow_radius,
+                           tiled_edges.bottom ? 0 : shadow_radius,
+                           tiled_edges.right ? 0 : shadow_radius);
     gfx::RectF shadow_extents;
-    shadow_extents.Inset(-gfx::InsetsF(shadow_radius));
-    shadow_extents.set_y(shadow_extents.y() + shadow_value.y());
+    shadow_extents.Inset(-shadow_insets);
+    if (!tiled_edges.top) {
+      shadow_extents.set_y(shadow_extents.y() + shadow_value.y());
+      // If the bottom edge is tiled, fix the height to compensate the addition
+      // to the top inset made above.
+      if (tiled_edges.bottom)
+        shadow_extents.set_height(-shadow_extents.y());
+    }
     frame_extents.Union(gfx::ToEnclosingRect(shadow_extents));
   }
 
   // The border must be at least as large as the input region.
+  const auto insets = gfx::Insets::TLBR(tiled_edges.top ? 0 : kResizeBorder,
+                                        tiled_edges.left ? 0 : kResizeBorder,
+                                        tiled_edges.bottom ? 0 : kResizeBorder,
+                                        tiled_edges.right ? 0 : kResizeBorder);
   gfx::Rect input_extents;
-  input_extents.Inset(-gfx::Insets(kResizeBorder));
+  input_extents.Inset(-insets);
   frame_extents.Union(input_extents);
 
-  return gfx::Insets(-frame_extents.y(), -frame_extents.x(),
-                     frame_extents.bottom(), frame_extents.right());
+  return gfx::Insets::TLBR(-frame_extents.y(), -frame_extents.x(),
+                           frame_extents.bottom(), frame_extents.right());
 }
 
 gfx::Insets BrowserFrameViewLayoutLinux::RestoredFrameEdgeInsets() const {

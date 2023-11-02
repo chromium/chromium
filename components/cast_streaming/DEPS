@@ -1,10 +1,10 @@
 include_rules = [
-  "+content/public/common",
   "+net",
-  "+services/network/public",
 
   # The browser and renderer code may not depend on eachother, and can only
-  # depend on shared "public" code.
+  # depend on shared "public" and "common" code.
   "-components/cast_streaming",
+  "+components/cast_streaming/buildflags.h",
+  "+components/cast_streaming/common",
   "+components/cast_streaming/public",
 ]

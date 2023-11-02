@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,28 +13,33 @@
 #include "base/logging.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/common/content_client.h"
 #include "media/base/cdm_context.h"
 #include "media/base/media_switches.h"
+#include "media/cdm/cdm_type.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/mojom/cdm_service.mojom.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "sandbox/mac/seatbelt_extension.h"
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
+#include "content/public/browser/gpu_data_manager.h"
+#include "content/public/browser/gpu_data_manager_observer.h"
 #include "media/mojo/mojom/media_foundation_service.mojom.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace content {
 
 namespace {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #if BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
 // TODO(xhwang): Move this to a common place.
 const base::FilePath::CharType kSignatureFileExtension[] =
@@ -94,7 +99,45 @@ class SeatbeltExtensionTokenProviderImpl final
  private:
   base::FilePath cdm_path_;
 };
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_WIN)
+// A singleton running in the browser process to notify (multiple) service
+// processes on GpuInfo updates.
+class GpuInfoMonitor : public GpuDataManagerObserver {
+ public:
+  static GpuInfoMonitor* GetInstance() {
+    static GpuInfoMonitor* instance = new GpuInfoMonitor();
+    return instance;
+  }
+
+  GpuInfoMonitor() { GpuDataManager::GetInstance()->AddObserver(this); }
+
+  void RegisterGpuInfoObserver(
+      mojo::PendingRemote<media::mojom::GpuInfoObserver> observer) {
+    auto observer_id = gpu_info_observers_.Add(std::move(observer));
+    // Notify upon registration in case there's a GPUInfo change between
+    // `InitializeBroker()` and when this observer is registered.
+    gpu_info_observers_.Get(observer_id)
+        ->OnGpuInfoUpdate(GpuDataManager::GetInstance()->GetGPUInfo());
+  }
+
+  // GpuDataManagerObserver:
+  void OnGpuInfoUpdate() override {
+    for (const auto& observer : gpu_info_observers_) {
+      observer->OnGpuInfoUpdate(GpuDataManager::GetInstance()->GetGPUInfo());
+    }
+  }
+
+ private:
+  mojo::RemoteSet<media::mojom::GpuInfoObserver> gpu_info_observers_;
+};
+
+void RegisterGpuInfoObserver(
+    mojo::PendingRemote<media::mojom::GpuInfoObserver> observer) {
+  GpuInfoMonitor::GetInstance()->RegisterGpuInfoObserver(std::move(observer));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 // How long an instance of the service is allowed to sit idle before we
 // disconnect and effectively kill it.
@@ -102,7 +145,7 @@ constexpr auto kServiceIdleTimeout = base::Seconds(5);
 
 // Services are keyed on CDM type, user profile and site URL. Note that site
 // is not normal URL nor origin. See chrome/browser/site_isolation for details.
-using ServiceKey = std::tuple<base::Token, const BrowserContext*, GURL>;
+using ServiceKey = std::tuple<media::CdmType, const BrowserContext*, GURL>;
 
 std::ostream& operator<<(std::ostream& os, const ServiceKey& key) {
   return os << "{" << std::get<0>(key).ToString() << ", " << std::get<1>(key)
@@ -112,17 +155,27 @@ std::ostream& operator<<(std::ostream& os, const ServiceKey& key) {
 template <typename T>
 struct ServiceTraits {};
 
+template <typename BrokerRemoteType>
+void InitializeBroker(BrokerRemoteType& broker_remote) {}
+
 template <>
 struct ServiceTraits<media::mojom::CdmService> {
   using BrokerType = media::mojom::CdmServiceBroker;
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 template <>
 struct ServiceTraits<media::mojom::MediaFoundationService> {
   using BrokerType = media::mojom::MediaFoundationServiceBroker;
 };
-#endif  // defined(OS_WIN)
+
+template <>
+void InitializeBroker(
+    mojo::Remote<media::mojom::MediaFoundationServiceBroker>& broker_remote) {
+  broker_remote->UpdateGpuInfo(GpuDataManager::GetInstance()->GetGPUInfo(),
+                               base::BindOnce(&RegisterGpuInfoObserver));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 // A map hosts all service remotes, each of which corresponds to one service
 // process. There should be only one instance of this class stored in
@@ -168,10 +221,10 @@ void EraseCdmService(const ServiceKey& key) {
   GetServiceMap<T>().EraseRemote(key);
 }
 
-// Gets an instance of the service for `guid`, `browser_context` and `site`.
+// Gets an instance of the service for `cdm_type`, `browser_context` and `site`.
 // Instances are started lazily as needed.
 template <typename T>
-T& GetService(const base::Token& guid,
+T& GetService(const media::CdmType& cdm_type,
               BrowserContext* browser_context,
               const GURL& site,
               const std::string& service_name,
@@ -180,14 +233,14 @@ T& GetService(const base::Token& guid,
   std::string display_name = service_name;
 
   if (base::FeatureList::IsEnabled(media::kCdmProcessSiteIsolation)) {
-    key = {guid, browser_context, site};
+    key = {cdm_type, browser_context, site};
     auto site_display_name =
         GetContentClient()->browser()->GetSiteDisplayNameForCdmProcess(
             browser_context, site);
     if (!site_display_name.empty())
       display_name += " (" + site_display_name + ")";
   } else {
-    key = {guid, nullptr, GURL()};
+    key = {cdm_type, nullptr, GURL()};
   }
   DVLOG(2) << __func__ << ": key=" << key;
 
@@ -200,7 +253,10 @@ T& GetService(const base::Token& guid,
     ServiceProcessHost::Launch(broker_remote.BindNewPipeAndPassReceiver(),
                                options.Pass());
 
-#if defined(OS_MAC)
+    // Initialize the broker if necessary.
+    InitializeBroker(broker_remote);
+
+#if BUILDFLAG(IS_MAC)
     mojo::PendingRemote<media::mojom::SeatbeltExtensionTokenProvider>
         token_provider_remote;
     mojo::MakeSelfOwnedReceiver(
@@ -210,7 +266,7 @@ T& GetService(const base::Token& guid,
                               remote.BindNewPipeAndPassReceiver());
 #else
     broker_remote->GetService(cdm_path, remote.BindNewPipeAndPassReceiver());
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
     // The idle handler must be set on the `remote` because the `broker_remote`
     // will never idle when the `remote` is bound.
@@ -224,23 +280,22 @@ T& GetService(const base::Token& guid,
 
 }  // namespace
 
-media::mojom::CdmService& GetCdmService(const base::Token& guid,
-                                        BrowserContext* browser_context,
+media::mojom::CdmService& GetCdmService(BrowserContext* browser_context,
                                         const GURL& site,
                                         const CdmInfo& cdm_info) {
-  return GetService<media::mojom::CdmService>(guid, browser_context, site,
-                                              cdm_info.name, cdm_info.path);
+  return GetService<media::mojom::CdmService>(
+      cdm_info.type, browser_context, site, cdm_info.name, cdm_info.path);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 media::mojom::MediaFoundationService& GetMediaFoundationService(
     BrowserContext* browser_context,
     const GURL& site,
     const base::FilePath& cdm_path) {
   return GetService<media::mojom::MediaFoundationService>(
-      base::Token(), browser_context, site, "Media Foundation Service",
+      media::CdmType(), browser_context, site, "Media Foundation Service",
       cdm_path);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace content

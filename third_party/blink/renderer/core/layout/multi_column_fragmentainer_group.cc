@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,10 +71,16 @@ LayoutUnit MultiColumnFragmentainerGroup::LogicalHeightInFlowThreadAt(
 }
 
 void MultiColumnFragmentainerGroup::ResetColumnHeight() {
-  max_logical_height_ = CalculateMaxColumnHeight();
-
   LayoutMultiColumnFlowThread* flow_thread =
       column_set_->MultiColumnFlowThread();
+  if (flow_thread->IsNGMulticol()) {
+    is_logical_height_known_ = false;
+    logical_height_ = LayoutUnit();
+    return;
+  }
+
+  max_logical_height_ = CalculateMaxColumnHeight();
+
   if (column_set_->HeightIsAuto()) {
     FragmentationContext* enclosing_fragmentation_context =
         flow_thread->EnclosingFragmentationContext();
@@ -489,8 +495,8 @@ LayoutRect MultiColumnFragmentainerGroup::FlowThreadPortionOverflowRectAt(
   // be clipped in the middle of adjacent column gaps. Care is taken here to
   // avoid rounding errors.
   LayoutRect overflow_rect(
-      IntRect(-kMulticolMaxClipPixels, -kMulticolMaxClipPixels,
-              2 * kMulticolMaxClipPixels, 2 * kMulticolMaxClipPixels));
+      gfx::Rect(-kMulticolMaxClipPixels, -kMulticolMaxClipPixels,
+                2 * kMulticolMaxClipPixels, 2 * kMulticolMaxClipPixels));
   if (column_set_->IsHorizontalWritingMode()) {
     if (!is_first_column_in_multicol_container)
       overflow_rect.ShiftYEdgeTo(portion_rect.Y());
@@ -639,7 +645,7 @@ MultiColumnFragmentainerGroupList::MultiColumnFragmentainerGroupList(
 }
 
 // An explicit empty destructor of MultiColumnFragmentainerGroupList should be
-// in MultiColumnFragmentainerGroup.cpp, because if an implicit destructor is
+// in multi_column_fragmentainer_group.cc, because if an implicit destructor is
 // used, msvc 2015 tries to generate its destructor (because the class is
 // dll-exported class) and causes a compile error because of lack of
 // MultiColumnFragmentainerGroup::operator=.  Since

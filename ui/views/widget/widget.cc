@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,12 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/containers/adapters.h"
-#include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/notreached.h"
+#include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/default_style.h"
 #include "ui/base/hit_test.h"
@@ -24,7 +25,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/color/color_provider_manager.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
@@ -36,12 +36,12 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/focus/focus_manager_factory.h"
 #include "ui/views/focus/widget_focus_manager.h"
-#include "ui/views/image_model_utils.h"
 #include "ui/views/views_delegate.h"
 #include "ui/views/views_features.h"
 #include "ui/views/widget/any_widget_observer_singleton.h"
 #include "ui/views/widget/native_widget_private.h"
 #include "ui/views/widget/root_view.h"
+#include "ui/views/widget/sublevel_manager.h"
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_deletion_observer.h"
@@ -50,8 +50,8 @@
 #include "ui/views/window/custom_frame_view.h"
 #include "ui/views/window/dialog_delegate.h"
 
-#if defined(OS_LINUX)
-#include "ui/views/linux_ui/linux_ui.h"
+#if BUILDFLAG(IS_LINUX)
+#include "ui/linux/linux_ui.h"
 #endif
 
 namespace views {
@@ -283,30 +283,11 @@ void Widget::GetAllOwnedWidgets(gfx::NativeView native_view, Widgets* owned) {
 void Widget::ReparentNativeView(gfx::NativeView native_view,
                                 gfx::NativeView new_parent) {
   internal::NativeWidgetPrivate::ReparentNativeView(native_view, new_parent);
-
   Widget* child_widget = GetWidgetForNativeView(native_view);
   Widget* parent_widget =
       new_parent ? GetWidgetForNativeView(new_parent) : nullptr;
-  if (child_widget) {
-    child_widget->parent_ = parent_widget;
-
-    // Release the paint-as-active lock on the old parent.
-    bool has_lock_on_parent = !!child_widget->parent_paint_as_active_lock_;
-    child_widget->parent_paint_as_active_lock_.reset();
-    child_widget->parent_paint_as_active_subscription_ =
-        base::CallbackListSubscription();
-
-    // Lock and subscribe to parent's paint-as-active.
-    if (parent_widget) {
-      if (has_lock_on_parent)
-        child_widget->parent_paint_as_active_lock_ =
-            parent_widget->LockPaintAsActive();
-      child_widget->parent_paint_as_active_subscription_ =
-          parent_widget->RegisterPaintAsActiveChangedCallback(
-              base::BindRepeating(&Widget::OnParentShouldPaintAsActiveChanged,
-                                  base::Unretained(child_widget)));
-    }
-  }
+  if (child_widget)
+    child_widget->SetParent(parent_widget);
 }
 
 // static
@@ -340,6 +321,9 @@ bool Widget::RequiresNonClientView(InitParams::Type type) {
 void Widget::Init(InitParams params) {
   TRACE_EVENT0("views", "Widget::Init");
 
+  DCHECK(!native_widget_initialized_)
+      << "This widget has already been initialized";
+
   if (params.name.empty() && params.delegate) {
     params.name = params.delegate->internal_name();
     // If an internal name was not provided the class name of the contents view
@@ -348,7 +332,8 @@ void Widget::Init(InitParams params) {
       params.name = params.delegate->GetContentsView()->GetClassName();
   }
 
-  parent_ = params.parent ? GetWidgetForNativeView(params.parent) : nullptr;
+  if (params.parent && GetWidgetForNativeView(params.parent))
+    parent_ = GetWidgetForNativeView(params.parent)->GetWeakPtr();
 
   // Subscripbe to parent's paint-as-active change.
   if (parent_) {
@@ -397,6 +382,16 @@ void Widget::Init(InitParams params) {
     params.delegate->WidgetInitializing(this);
 
   ownership_ = params.ownership;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  background_elevation_ = params.background_elevation;
+#endif
+
+  if (base::FeatureList::IsEnabled(features::kWidgetLayering)) {
+    sublevel_manager_ =
+        std::make_unique<SublevelManager>(this, params.sublevel);
+  }
+
   native_widget_ = CreateNativeWidget(params, this)->AsNativeWidgetPrivate();
   root_view_.reset(CreateRootView());
 
@@ -442,6 +437,11 @@ void Widget::Init(InitParams params) {
   } else if (delegate) {
     SetContentsView(delegate->TransferOwnershipOfContentsView());
     SetInitialBoundsForFramelessWindow(bounds);
+  }
+
+  if (base::FeatureList::IsEnabled(features::kWidgetLayering)) {
+    if (parent_)
+      parent_->GetSublevelManager()->TrackChildWidget(this);
   }
 
   native_theme_observation_.Observe(GetNativeTheme());
@@ -631,6 +631,10 @@ void Widget::SetVisibilityAnimationTransition(VisibilityTransition transition) {
   native_widget_->SetVisibilityAnimationTransition(transition);
 }
 
+bool Widget::IsMoveLoopSupported() const {
+  return native_widget_->IsMoveLoopSupported();
+}
+
 Widget::MoveLoopResult Widget::RunMoveLoop(
     const gfx::Vector2d& drag_offset,
     MoveLoopSource source,
@@ -654,6 +658,10 @@ void Widget::StackAtTop() {
   native_widget_->StackAtTop();
 }
 
+bool Widget::IsStackedAbove(gfx::NativeView native_view) {
+  return native_widget_->IsStackedAbove(native_view);
+}
+
 void Widget::SetShape(std::unique_ptr<ShapeRects> shape) {
   native_widget_->SetShape(std::move(shape));
 }
@@ -669,9 +677,9 @@ void Widget::CloseWithReason(ClosedReason closed_reason) {
     return;
   }
   if (non_client_view_ && non_client_view_->OnWindowCloseRequested() ==
-                              CloseRequestResult::kCannotClose)
+                              CloseRequestResult::kCannotClose) {
     return;
-
+  }
   // This is the last chance to cancel closing.
   if (widget_delegate_ && !widget_delegate_->OnCloseRequested(closed_reason))
     return;
@@ -682,8 +690,9 @@ void Widget::CloseWithReason(ClosedReason closed_reason) {
       (g_disable_activation_change_handling_ ==
            DisableActivationChangeHandlingType::kIgnore ||
        g_disable_activation_change_handling_ ==
-           DisableActivationChangeHandlingType::kIgnoreDeactivationOnly))
+           DisableActivationChangeHandlingType::kIgnoreDeactivationOnly)) {
     return;
+  }
 
   // The actions below can cause this function to be called again, so mark
   // |this| as closed early. See crbug.com/714334
@@ -708,6 +717,10 @@ void Widget::Close() {
 }
 
 void Widget::CloseNow() {
+  // Set this so that Widget::Close() early outs. In general this operation is
+  // a one-way and can't be undone.
+  widget_closed_ = true;
+
   for (WidgetObserver& observer : observers_)
     observer.OnWidgetClosing(this);
   internal::AnyWidgetObserverSingleton::GetInstance()->OnAnyWidgetClosing(this);
@@ -743,6 +756,10 @@ void Widget::Show() {
   } else {
     native_widget_->Show(preferred_show_state, gfx::Rect());
   }
+
+  if (base::FeatureList::IsEnabled(features::kWidgetLayering))
+    sublevel_manager_->EnsureOwnerSublevel();
+
   internal::AnyWidgetObserverSingleton::GetInstance()->OnAnyWidgetShown(this);
 }
 
@@ -786,6 +803,14 @@ ui::ZOrderLevel Widget::GetZOrderLevel() const {
   return native_widget_->GetZOrderLevel();
 }
 
+void Widget::SetZOrderSublevel(int sublevel) {
+  sublevel_manager_->SetSublevel(sublevel);
+}
+
+int Widget::GetZOrderSublevel() const {
+  return sublevel_manager_->GetSublevel();
+}
+
 void Widget::SetVisibleOnAllWorkspaces(bool always_visible) {
   native_widget_->SetVisibleOnAllWorkspaces(always_visible);
 }
@@ -814,12 +839,17 @@ bool Widget::IsMinimized() const {
   return native_widget_->IsMinimized();
 }
 
-void Widget::SetFullscreen(bool fullscreen, base::TimeDelta delay) {
-  if (IsFullscreen() == fullscreen)
+void Widget::SetFullscreen(bool fullscreen, int64_t target_display_id) {
+  // It isn't valid to specify `target_display_id` when exiting fullscreen.
+  if (!fullscreen)
+    DCHECK(target_display_id == display::kInvalidDisplayId);
+  if (IsFullscreen() == fullscreen &&
+      target_display_id == display::kInvalidDisplayId) {
     return;
+  }
 
   auto weak_ptr = GetWeakPtr();
-  native_widget_->SetFullscreen(fullscreen, delay);
+  native_widget_->SetFullscreen(fullscreen, target_display_id);
   if (!weak_ptr)
     return;
 
@@ -864,12 +894,17 @@ bool Widget::IsVisible() const {
 }
 
 const ui::ThemeProvider* Widget::GetThemeProvider() const {
-  const Widget* root_widget = GetTopLevelWidget();
+  // The theme provider is provided by the very top widget in the ownership
+  // chain, which may include parenting, anchoring, etc. Use
+  // GetPrimaryWindowWidget() rather than GetTopLevelWidget() for this purpose
+  // (see description of those methods to learn more).
+  const Widget* const root_widget = GetPrimaryWindowWidget();
   return (root_widget && root_widget != this) ? root_widget->GetThemeProvider()
                                               : nullptr;
 }
 
-ui::ColorProviderManager::InitializerSupplier* Widget::GetCustomTheme() const {
+ui::ColorProviderManager::ThemeInitializerSupplier* Widget::GetCustomTheme()
+    const {
   return nullptr;
 }
 
@@ -897,6 +932,10 @@ ui::InputMethod* Widget::GetInputMethod() {
     return (toplevel && toplevel != this) ? toplevel->GetInputMethod()
                                           : nullptr;
   }
+}
+
+SublevelManager* Widget::GetSublevelManager() {
+  return sublevel_manager_.get();
 }
 
 void Widget::RunShellDrag(View* view,
@@ -943,7 +982,7 @@ void Widget::ScheduleLayout() {
   native_widget_->ScheduleLayout();
 }
 
-void Widget::SetCursor(gfx::NativeCursor cursor) {
+void Widget::SetCursor(const ui::Cursor& cursor) {
   native_widget_->SetCursor(cursor);
 }
 
@@ -977,8 +1016,8 @@ void Widget::UpdateWindowIcon() {
   if (non_client_view_)
     non_client_view_->UpdateWindowIcon();
 
-  gfx::ImageSkia window_icon = GetImageSkiaFromImageModel(
-      widget_delegate_->GetWindowIcon(), GetColorProvider());
+  gfx::ImageSkia window_icon =
+      widget_delegate_->GetWindowIcon().Rasterize(GetColorProvider());
 
   // In general, icon information is read from a |widget_delegate_| and then
   // passed to |native_widget_|. On ChromeOS, for lacros-chrome to support the
@@ -993,8 +1032,8 @@ void Widget::UpdateWindowIcon() {
       window_icon = *icon;
   }
 
-  gfx::ImageSkia app_icon = GetImageSkiaFromImageModel(
-      widget_delegate_->GetWindowAppIcon(), GetColorProvider());
+  gfx::ImageSkia app_icon =
+      widget_delegate_->GetWindowAppIcon().Rasterize(GetColorProvider());
   if (app_icon.isNull()) {
     const gfx::ImageSkia* icon = native_widget_->GetWindowAppIcon();
     if (icon && !icon->isNull())
@@ -1216,7 +1255,6 @@ bool Widget::ShouldPaintAsActive() const {
 }
 
 void Widget::OnParentShouldPaintAsActiveChanged() {
-  DCHECK(parent());
   // |native_widget_| has already been deleted and |this| is being deleted so
   // that we don't have to handle the event and also it's unsafe to reference
   // |native_widget_| in this case.
@@ -1307,10 +1345,16 @@ void Widget::SetVisible(bool visible) {
 // Widget, NativeWidgetDelegate implementation:
 
 bool Widget::IsModal() const {
+  if (!widget_delegate_)
+    return false;
+
   return widget_delegate_->GetModalType() != ui::MODAL_TYPE_NONE;
 }
 
 bool Widget::IsDialogBox() const {
+  if (!widget_delegate_)
+    return false;
+
   return !!widget_delegate_->AsDialogDelegate();
 }
 
@@ -1325,11 +1369,7 @@ bool Widget::IsNativeWidgetInitialized() const {
 }
 
 bool Widget::OnNativeWidgetActivationChanged(bool active) {
-  if (g_disable_activation_change_handling_ ==
-          DisableActivationChangeHandlingType::kIgnore ||
-      (g_disable_activation_change_handling_ ==
-           DisableActivationChangeHandlingType::kIgnoreDeactivationOnly &&
-       !active))
+  if (!ShouldHandleNativeWidgetActivationChanged(active))
     return false;
 
   // On windows we may end up here before we've completed initialization (from
@@ -1345,7 +1385,19 @@ bool Widget::OnNativeWidgetActivationChanged(bool active) {
 
   // Widgets in a widget tree should share the same ShouldPaintAsActive().
   // Lock the parent as paint-as-active when this widget becomes active.
-  if (!active && !paint_as_active_refcount_)
+  // If we're in the process of closing the widget, delay resetting the
+  // `parent_paint_as_active_lock_` until the owning native widget destroys this
+  // widget (i.e. wait until widget destruction). Do this as closing a widget
+  // may result in synchronously calling into this method, which can cause the
+  // parent to immediately paint as inactive. This is an issue if, after this
+  // widget has been closed, the parent widget is the next widget to receive
+  // activation. If using a desktop native widget, the next widget to receive
+  // activation may be determined by the system's window manager and this may
+  // not happen synchronously with closing the Widget. By waiting for the owning
+  // native widget to destroy this widget we ensure that resetting the paint
+  // lock happens synchronously with the activation the next widget (see
+  // crbug/1303549).
+  if (!active && !paint_as_active_refcount_ && !widget_closed_)
     parent_paint_as_active_lock_.reset();
   else if (parent())
     parent_paint_as_active_lock_ = parent()->LockPaintAsActive();
@@ -1358,6 +1410,14 @@ bool Widget::OnNativeWidgetActivationChanged(bool active) {
     paint_as_active_callbacks_.Notify();
 
   return true;
+}
+
+bool Widget::ShouldHandleNativeWidgetActivationChanged(bool active) {
+  return (g_disable_activation_change_handling_ !=
+          DisableActivationChangeHandlingType::kIgnore) &&
+         (g_disable_activation_change_handling_ !=
+              DisableActivationChangeHandlingType::kIgnoreDeactivationOnly ||
+          active);
 }
 
 void Widget::OnNativeFocus() {
@@ -1404,12 +1464,19 @@ void Widget::OnNativeWidgetDestroyed() {
   for (WidgetObserver& observer : observers_)
     observer.OnWidgetDestroyed(this);
   widget_delegate_->can_delete_this_ = true;
-  widget_delegate_->DeleteDelegate();
-  widget_delegate_ = nullptr;
+  // `DeleteDelegate()` ends up destroying the object that `widget_delegate_`
+  // points to. Use `ExtractAsDangling()` to avoid having `widget_delegate_`
+  // briefly point to freed memory.
+  widget_delegate_.ExtractAsDangling()->DeleteDelegate();
   // TODO(pbos): Replace this with native_widget_ = nullptr; and nullptr
   // checking. This currently breaks on reentrant calls to CloseNow() that I'm
   // too scared to fix right now.
   native_widget_destroyed_ = true;
+}
+
+void Widget::OnNativeWidgetParentChanged(gfx::NativeView parent) {
+  Widget* parent_widget = parent ? GetWidgetForNativeView(parent) : nullptr;
+  SetParent(parent_widget);
 }
 
 gfx::Size Widget::GetMinimumSize() const {
@@ -1457,6 +1524,10 @@ void Widget::OnNativeWidgetBeginUserBoundsChange() {
 void Widget::OnNativeWidgetEndUserBoundsChange() {
   widget_delegate_->OnWindowEndUserBoundsChange();
 }
+
+void Widget::OnNativeWidgetAddedToCompositor() {}
+
+void Widget::OnNativeWidgetRemovingFromCompositor() {}
 
 bool Widget::HasFocusManager() const {
   return !!focus_manager_.get();
@@ -1614,6 +1685,9 @@ bool Widget::ExecuteCommand(int command_id) {
 }
 
 bool Widget::HasHitTestMask() const {
+  if (!widget_delegate_)
+    return false;
+
   return widget_delegate_->WidgetHasHitTestMask();
 }
 
@@ -1751,9 +1825,18 @@ void Widget::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
 ////////////////////////////////////////////////////////////////////////////////
 // Widget, ui::ColorProviderSource:
 
+ui::ColorProviderManager::Key Widget::GetColorProviderKey() const {
+  ui::ColorProviderManager::Key key =
+      GetNativeTheme()->GetColorProviderKey(GetCustomTheme());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  key.elevation_mode = background_elevation_;
+#endif
+  return key;
+}
+
 const ui::ColorProvider* Widget::GetColorProvider() const {
   return ui::ColorProviderManager::Get().GetColorProviderFor(
-      GetNativeTheme()->GetColorProviderKey(GetCustomTheme()));
+      GetColorProviderKey());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1782,16 +1865,12 @@ const ui::NativeTheme* Widget::GetNativeTheme() const {
   if (native_theme_)
     return native_theme_;
 
-  if (base::FeatureList::IsEnabled(
-          features::kInheritNativeThemeFromParentWidget) &&
-      parent_)
+  if (parent_)
     return parent_->GetNativeTheme();
 
-#if defined(OS_LINUX)
-  if (const views::LinuxUI* linux_ui = views::LinuxUI::instance()) {
-    if (auto* native_theme = linux_ui->GetNativeTheme(GetNativeWindow()))
-      return native_theme;
-  }
+#if BUILDFLAG(IS_LINUX)
+  if (auto* linux_ui_theme = ui::LinuxUiTheme::GetForWindow(GetNativeWindow()))
+    return linux_ui_theme->GetNativeTheme();
 #endif
 
   return ui::NativeTheme::GetInstanceForNativeUi();
@@ -1805,9 +1884,8 @@ void Widget::SaveWindowPlacement() {
   // by go/crash) that in some circumstances we can end up here after
   // WM_DESTROY, at which point the window delegate is likely gone. So just
   // bail.
-  if (!widget_delegate_)
+  if (!widget_delegate_ || !widget_delegate_->ShouldSaveWindowPlacement())
     return;
-
   ui::WindowShowState show_state = ui::SHOW_STATE_NORMAL;
   gfx::Rect bounds;
   native_widget_->GetWindowPlacement(&bounds, &show_state);
@@ -1864,6 +1942,36 @@ void Widget::SetInitialBoundsForFramelessWindow(const gfx::Rect& bounds) {
   } else {
     // Use the supplied initial bounds.
     SetBounds(bounds);
+  }
+}
+
+void Widget::SetParent(Widget* parent) {
+  if (parent == parent_.get())
+    return;
+
+  Widget* old_parent = parent_.get();
+  parent_ = parent ? parent->GetWeakPtr() : nullptr;
+
+  // Release the paint-as-active lock on the old parent.
+  bool has_lock_on_parent = !!parent_paint_as_active_lock_;
+  parent_paint_as_active_lock_.reset();
+  parent_paint_as_active_subscription_ = base::CallbackListSubscription();
+
+  // Lock and subscribe to parent's paint-as-active.
+  if (parent) {
+    if (has_lock_on_parent || native_widget_active_)
+      parent_paint_as_active_lock_ = parent->LockPaintAsActive();
+    parent_paint_as_active_subscription_ =
+        parent->RegisterPaintAsActiveChangedCallback(
+            base::BindRepeating(&Widget::OnParentShouldPaintAsActiveChanged,
+                                base::Unretained(this)));
+  }
+
+  if (base::FeatureList::IsEnabled(features::kWidgetLayering)) {
+    if (old_parent)
+      old_parent->GetSublevelManager()->UntrackChildWidget(this);
+    if (parent)
+      parent->GetSublevelManager()->TrackChildWidget(this);
   }
 }
 

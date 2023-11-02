@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -120,8 +120,7 @@ ChunkedByteBuffer::Chunk::~Chunk() {}
 size_t ChunkedByteBuffer::Chunk::ExpectedContentLength() const {
   DCHECK_EQ(header.size(), kHeaderLength);
   uint32_t content_length = 0;
-  base::ReadBigEndian(reinterpret_cast<const char*>(&header[0]),
-                      &content_length);
+  base::ReadBigEndian(&header[0], &content_length);
   return static_cast<size_t>(content_length);
 }
 

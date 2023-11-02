@@ -1,11 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 suite('SettingsDialog', function() {
   test('Theme Selection', function() {
     const body = document.body;
-    const queryString = "input[type='radio']:checked";
+    const queryString = 'input[type=\'radio\']:checked';
     chai.assert(body.classList.contains('light'));
     chai.assert.equal(document.querySelector(queryString).value, 'light');
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,17 +33,17 @@
 #include "ui/aura/window.h"  // nogncheck
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/base/win/message_box_win.h"
 #include "ui/views/win/hwnd_util.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/cocoa/simple_message_box_cocoa.h"
 #endif
 
 namespace {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 UINT GetMessageBoxFlagsFromType(chrome::MessageBoxType type) {
   UINT flags = MB_SETFOREGROUND;
   switch (type) {
@@ -116,7 +116,7 @@ chrome::MessageBoxResult MessageBoxDialog::Show(
 // Views dialogs cannot be shown outside the UI thread message loop or if the
 // ResourceBundle is not initialized yet.
 // Fallback to logging with a default response or a Windows MessageBox.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!base::CurrentUIThread::IsSet() ||
       !base::RunLoop::IsRunningOnCurrentThread() ||
       !ui::ResourceBundle::HasSharedInstance()) {
@@ -129,7 +129,7 @@ chrome::MessageBoxResult MessageBoxDialog::Show(
                                 : chrome::MESSAGE_BOX_RESULT_NO);
     return chrome::MESSAGE_BOX_RESULT_DEFERRED;
   }
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   if (!base::CurrentUIThread::IsSet() ||
       !base::RunLoop::IsRunningOnCurrentThread() ||
       !ui::ResourceBundle::HasSharedInstance()) {
@@ -153,7 +153,7 @@ chrome::MessageBoxResult MessageBoxDialog::Show(
 
   bool is_system_modal = !parent;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Mac does not support system modals, so never ask MessageBoxDialog to
   // be system modal.
   is_system_modal = false;
@@ -164,7 +164,7 @@ chrome::MessageBoxResult MessageBoxDialog::Show(
   views::Widget* widget =
       constrained_window::CreateBrowserModalDialogViews(dialog, parent);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Mac does not support system modal dialogs. If there is no parent window to
   // attach to, move the dialog's widget on top so other windows do not obscure
   // it.
@@ -265,7 +265,6 @@ MessageBoxDialog::MessageBoxDialog(const std::u16string& title,
 
   if (!checkbox_text.empty())
     message_box_view_->SetCheckBoxLabel(checkbox_text);
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::SIMPLE_MESSAGE_BOX);
 }
 
 MessageBoxDialog::~MessageBoxDialog() {
@@ -293,12 +292,12 @@ const views::Widget* MessageBoxDialog::GetWidget() const {
 
 namespace chrome {
 
-void ShowWarningMessageBox(gfx::NativeWindow parent,
-                           const std::u16string& title,
-                           const std::u16string& message) {
-  MessageBoxDialog::Show(parent, title, message,
-                         chrome::MESSAGE_BOX_TYPE_WARNING, std::u16string(),
-                         std::u16string(), std::u16string());
+MessageBoxResult ShowWarningMessageBox(gfx::NativeWindow parent,
+                                       const std::u16string& title,
+                                       const std::u16string& message) {
+  return MessageBoxDialog::Show(
+      parent, title, message, chrome::MESSAGE_BOX_TYPE_WARNING,
+      std::u16string(), std::u16string(), std::u16string());
 }
 
 void ShowWarningMessageBoxWithCheckbox(

@@ -1,12 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/guest_os/guest_os_mime_types_service_factory.h"
 
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/guest_os/guest_os_mime_types_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace guest_os {
 
@@ -24,9 +24,7 @@ GuestOsMimeTypesServiceFactory* GuestOsMimeTypesServiceFactory::GetInstance() {
 }
 
 GuestOsMimeTypesServiceFactory::GuestOsMimeTypesServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "GuestOsMimeTypesService",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("GuestOsMimeTypesService") {}
 
 GuestOsMimeTypesServiceFactory::~GuestOsMimeTypesServiceFactory() = default;
 

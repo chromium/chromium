@@ -21,6 +21,16 @@ endif
 silk_includes = [opus_includes, include_directories('float', 'fixed')]
 silk_static_libs = []
 
+if host_cpu_family in ['x86', 'x86_64'] and opus_conf.has('OPUS_HAVE_RTCD')
+  silk_sources +=  sources['SILK_SOURCES_X86_RTCD']
+endif
+
+if host_cpu_family in ['arm', 'aarch64'] and have_arm_intrinsics_or_asm
+  if opus_conf.has('OPUS_HAVE_RTCD')
+    silk_sources +=  sources['SILK_SOURCES_ARM_RTCD']
+  endif
+endif
+
 foreach intr_name : ['sse4_1', 'neon_intr']
   have_intr = get_variable('have_' + intr_name)
   if not have_intr

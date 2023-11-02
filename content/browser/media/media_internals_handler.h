@@ -1,17 +1,13 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_MEDIA_MEDIA_INTERNALS_HANDLER_H_
 #define CONTENT_BROWSER_MEDIA_MEDIA_INTERNALS_HANDLER_H_
 
-#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
+#include "base/values.h"
 #include "content/public/browser/web_ui_message_handler.h"
-
-namespace base {
-class ListValue;
-}
 
 namespace content {
 class MediaInternalsProxy;
@@ -32,7 +28,7 @@ class MediaInternalsMessageHandler : public WebUIMessageHandler {
   void RegisterMessages() override;
 
   // Javascript message handlers.
-  void OnGetEverything(const base::ListValue* list);
+  void OnGetEverything(const base::Value::List& list);
 
   // MediaInternals message handlers.
   void OnUpdate(const std::u16string& update);

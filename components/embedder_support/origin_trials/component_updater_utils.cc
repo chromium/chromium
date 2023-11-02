@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "base/values.h"
 #include "components/embedder_support/origin_trials/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/prefs/scoped_user_pref_update.h"
 
 namespace {
 
@@ -28,40 +27,31 @@ void ReadOriginTrialsConfigAndPopulateLocalState(PrefService* local_state,
                                                  base::Value manifest) {
   DCHECK(local_state);
 
+  base::Value::Dict& manifest_dict = manifest.GetDict();
+
   if (std::string* override_public_key =
-          manifest.FindStringPath(kManifestPublicKeyPath)) {
+          manifest_dict.FindStringByDottedPath(kManifestPublicKeyPath)) {
     local_state->Set(prefs::kOriginTrialPublicKey,
                      base::Value(*override_public_key));
   } else {
     local_state->ClearPref(prefs::kOriginTrialPublicKey);
   }
 
-  // TODO(crbug.com/1187062): Modernize use of base::ListValue once
-  // ListPrefUpdate is converted.
-  base::ListValue* override_disabled_feature_list = nullptr;
-  if (base::Value* raw_override_disabled_feature_list =
-          manifest.FindListPath(kManifestDisabledFeaturesPath)) {
-    raw_override_disabled_feature_list->GetAsList(
-        &override_disabled_feature_list);
-  }
+  base::Value::List* override_disabled_feature_list =
+      manifest_dict.FindListByDottedPath(kManifestDisabledFeaturesPath);
   if (override_disabled_feature_list &&
-      !override_disabled_feature_list->GetList().empty()) {
-    ListPrefUpdate update(local_state, prefs::kOriginTrialDisabledFeatures);
-    update->Swap(override_disabled_feature_list);
+      !override_disabled_feature_list->empty()) {
+    local_state->SetList(prefs::kOriginTrialDisabledFeatures,
+                         std::move(*override_disabled_feature_list));
   } else {
     local_state->ClearPref(prefs::kOriginTrialDisabledFeatures);
   }
 
-  // TODO(crbug.com/1187062): Modernize use of base::ListValue once
-  // ListPrefUpdate is converted.
-  base::ListValue* disabled_tokens_list = nullptr;
-  if (base::Value* raw_disabled_tokens_list =
-          manifest.FindListPath(kManifestDisabledTokenSignaturesPath)) {
-    raw_disabled_tokens_list->GetAsList(&disabled_tokens_list);
-  }
-  if (disabled_tokens_list && !disabled_tokens_list->GetList().empty()) {
-    ListPrefUpdate update(local_state, prefs::kOriginTrialDisabledTokens);
-    update->Swap(disabled_tokens_list);
+  base::Value::List* disabled_tokens_list =
+      manifest_dict.FindListByDottedPath(kManifestDisabledTokenSignaturesPath);
+  if (disabled_tokens_list && !disabled_tokens_list->empty()) {
+    local_state->SetList(prefs::kOriginTrialDisabledTokens,
+                         std::move(*disabled_tokens_list));
   } else {
     local_state->ClearPref(prefs::kOriginTrialDisabledTokens);
   }

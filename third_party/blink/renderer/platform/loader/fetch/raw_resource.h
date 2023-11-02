@@ -77,7 +77,6 @@ class PLATFORM_EXPORT RawResource final : public Resource {
               const ResourceLoaderOptions&);
 
   // Resource implementation
-  MatchStatus CanReuse(const FetchParameters&) const override;
   bool WillFollowRedirect(const ResourceRequest&,
                           const ResourceResponse&) override;
 
@@ -103,9 +102,9 @@ class PLATFORM_EXPORT RawResource final : public Resource {
   // Resource implementation
   void DidAddClient(ResourceClient*) override;
   void AppendData(const char*, size_t) override;
-  bool ShouldIgnoreHTTPStatusCodeErrors() const override {
-    return !IsLinkPreload();
-  }
+
+  bool ShouldIgnoreHTTPStatusCodeErrors() const override { return true; }
+
   void WillNotFollowRedirect() override;
   void ResponseReceived(const ResourceResponse&) override;
   void ResponseBodyReceived(
@@ -220,9 +219,10 @@ class PLATFORM_EXPORT RawResourceClientStateChecker final {
     kDataReceived,
     kDataDownloaded,
     kDidDownloadToBlob,
-    kNotifyFinished
+    kNotifyFinished,
+    kDetached,
   };
-  State state_;
+  State state_ = kNotAddedAsClient;
 };
 
 }  // namespace blink

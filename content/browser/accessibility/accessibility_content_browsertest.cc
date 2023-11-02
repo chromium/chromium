@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
@@ -13,7 +14,6 @@
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
-#include "net/base/escape.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
 namespace content {
@@ -25,7 +25,7 @@ void AccessibilityContentBrowserTest::LoadInitialAccessibilityTreeFromUrl(
                                          accessibility_mode,
                                          ax::mojom::Event::kLoadComplete);
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 }
 
 void AccessibilityContentBrowserTest::
@@ -43,7 +43,7 @@ void AccessibilityContentBrowserTest::LoadInitialAccessibilityTreeFromHtml(
     const std::string& html,
     ui::AXMode accessibility_mode) {
   LoadInitialAccessibilityTreeFromUrl(
-      GURL("data:text/html," + net::EscapeQueryParamValue(html, false)),
+      GURL("data:text/html," + base::EscapeQueryParamValue(html, false)),
       accessibility_mode);
 }
 
@@ -91,7 +91,7 @@ BrowserAccessibility* AccessibilityContentBrowserTest::GetRootAndAssertNonNull()
   // return type.
   auto GetRootAndAssertNonNull = [this](BrowserAccessibility** result) {
     BrowserAccessibility* root_browser_accessibility =
-        GetManagerAndAssertNonNull()->GetRoot();
+        GetManagerAndAssertNonNull()->GetBrowserAccessibilityRoot();
     ASSERT_NE(nullptr, result);
     *result = root_browser_accessibility;
   };

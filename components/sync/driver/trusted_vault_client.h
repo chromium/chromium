@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -90,6 +90,10 @@ class TrustedVaultClient {
                                         const std::vector<uint8_t>& public_key,
                                         int method_type_hint,
                                         base::OnceClosure cb) = 0;
+
+  // Clears all data associated with |account_info|. Doesn't remove account from
+  // storage.
+  virtual void ClearDataForAccount(const CoreAccountInfo& account_info) = 0;
 };
 
 }  // namespace syncer

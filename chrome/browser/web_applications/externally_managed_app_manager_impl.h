@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,9 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/external_install_options.h"
-#include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/externally_managed_app_install_task.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
@@ -81,14 +81,12 @@ class ExternallyManagedAppManagerImpl : public ExternallyManagedAppManager {
 
   void CreateWebContentsIfNecessary();
 
-  void OnInstalled(absl::optional<AppId> app_id,
-                   ExternallyManagedAppManager::InstallResult result);
+  void OnInstalled(ExternallyManagedAppManager::InstallResult result);
 
   void MaybeEnqueueServiceWorkerRegistration(
       const ExternalInstallOptions& install_options);
 
-  Profile* const profile_;
-  ExternallyInstalledWebAppPrefs externally_installed_app_prefs_;
+  const raw_ptr<Profile> profile_;
 
   // unique_ptr so that it can be replaced in tests.
   std::unique_ptr<WebAppUrlLoader> url_loader_;

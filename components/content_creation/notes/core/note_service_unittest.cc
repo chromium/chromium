@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -43,8 +44,8 @@ class NoteServiceTest : public testing::Test {
 
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<NoteService> note_service_;
-  test::MockTemplateStore* mock_template_store_;
-  test::MockNotesRepository* mock_notes_repository_;
+  raw_ptr<test::MockTemplateStore> mock_template_store_;
+  raw_ptr<test::MockNotesRepository> mock_notes_repository_;
 };
 
 TEST_F(NoteServiceTest, GetTemplatesSuccess_Empty) {

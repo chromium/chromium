@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -103,13 +103,13 @@ void NetworkDelegate::NotifyPACScriptError(int line_number,
 
 bool NetworkDelegate::AnnotateAndMoveUserBlockedCookies(
     const URLRequest& request,
+    const net::FirstPartySetMetadata& first_party_set_metadata,
     net::CookieAccessResultList& maybe_included_cookies,
-    net::CookieAccessResultList& excluded_cookies,
-    bool allowed_from_caller) {
+    net::CookieAccessResultList& excluded_cookies) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK_EQ(PrivacyMode::PRIVACY_MODE_DISABLED, request.privacy_mode());
   bool allowed = OnAnnotateAndMoveUserBlockedCookies(
-      request, maybe_included_cookies, excluded_cookies, allowed_from_caller);
+      request, first_party_set_metadata, maybe_included_cookies,
+      excluded_cookies);
   cookie_util::DCheckIncludedAndExcludedCookieLists(maybe_included_cookies,
                                                     excluded_cookies);
   return allowed;
@@ -117,14 +117,13 @@ bool NetworkDelegate::AnnotateAndMoveUserBlockedCookies(
 
 bool NetworkDelegate::CanSetCookie(const URLRequest& request,
                                    const CanonicalCookie& cookie,
-                                   CookieOptions* options,
-                                   bool allowed_from_caller) {
+                                   CookieOptions* options) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!(request.load_flags() & LOAD_DO_NOT_SAVE_COOKIES));
-  return OnCanSetCookie(request, cookie, options, allowed_from_caller);
+  return OnCanSetCookie(request, cookie, options);
 }
 
-bool NetworkDelegate::ForcePrivacyMode(
+NetworkDelegate::PrivacySetting NetworkDelegate::ForcePrivacyMode(
     const GURL& url,
     const SiteForCookies& site_for_cookies,
     const absl::optional<url::Origin>& top_frame_origin,
@@ -166,6 +165,16 @@ bool NetworkDelegate::CanUseReportingClient(const url::Origin& origin,
                                             const GURL& endpoint) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return OnCanUseReportingClient(origin, endpoint);
+}
+
+absl::optional<FirstPartySetsCacheFilter::MatchInfo>
+NetworkDelegate::GetFirstPartySetsCacheFilterMatchInfoMaybeAsync(
+    const SchemefulSite& request_site,
+    base::OnceCallback<void(FirstPartySetsCacheFilter::MatchInfo)> callback)
+    const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return OnGetFirstPartySetsCacheFilterMatchInfoMaybeAsync(request_site,
+                                                           std::move(callback));
 }
 
 // static

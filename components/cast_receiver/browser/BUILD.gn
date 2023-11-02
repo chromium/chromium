@@ -1,0 +1,40 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("browser") {
+  deps = [ "//base" ]
+  public = [
+    "public/application_client.h",
+    "public/application_state_observer.h",
+    "public/streaming_resolution_observer.h",
+  ]
+  sources = [ "application_client.cc" ]
+  friend = [ ":unit_tests" ]
+}
+
+# TODO(crbug.com/1359579): Limit visibility to just this component.
+source_set("page_state_observer") {
+  deps = [
+    "//base",
+    "//content",
+    "//net",
+  ]
+  sources = [
+    "page_state_observer.cc",
+    "page_state_observer.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":browser",
+    ":page_state_observer",
+    "//media",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx/geometry",
+  ]
+  sources = [ "application_client_unittest.cc" ]
+}

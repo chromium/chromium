@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include "base/containers/contains.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -72,8 +71,8 @@ MockLanguageSettingsPrivateDelegate::GetHunspellDictionaryStatuses() {
   DictionaryStatus status;
   status.language_code = "fr";
   status.is_ready = false;
-  status.is_downloading = std::make_unique<bool>(true);
-  status.download_failed = std::make_unique<bool>(false);
+  status.is_downloading = true;
+  status.download_failed = false;
   statuses.push_back(std::move(status));
   return statuses;
 }
@@ -111,16 +110,13 @@ class LanguageSettingsPrivateApiTest : public ExtensionServiceTestBase {
   void RunGetLanguageListTest();
 
   virtual void InitFeatures() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Force Windows hybrid spellcheck to be enabled.
     feature_list_.InitAndEnableFeature(spellcheck::kWinUseBrowserSpellChecker);
-#endif  // defined(OS_WIN)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    feature_list_.InitAndEnableFeature(ash::features::kLanguageSettingsUpdate2);
-#endif
+#endif  // BUILDFLAG(IS_WIN)
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   virtual void AddSpellcheckLanguagesForTesting(
       const std::vector<std::string>& spellcheck_languages_for_testing) {
     SpellcheckServiceFactory::GetInstance()
@@ -129,7 +125,7 @@ class LanguageSettingsPrivateApiTest : public ExtensionServiceTestBase {
   }
 
   base::test::ScopedFeatureList feature_list_;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
  private:
   void SetUp() override {
@@ -184,14 +180,14 @@ TEST_F(LanguageSettingsPrivateApiTest, GetSpellcheckDictionaryStatusesTest) {
                                                        profile());
   EXPECT_TRUE(actual) << function->GetError();
 
-  base::ListValue expected;
-  auto expected_status = std::make_unique<base::DictionaryValue>();
-  expected_status->SetString("languageCode", "fr");
-  expected_status->SetBoolean("isReady", false);
-  expected_status->SetBoolean("isDownloading", true);
-  expected_status->SetBoolean("downloadFailed", false);
+  base::Value::List expected;
+  base::Value::Dict expected_status;
+  expected_status.Set("languageCode", "fr");
+  expected_status.Set("isReady", false);
+  expected_status.Set("isDownloading", true);
+  expected_status.Set("downloadFailed", false);
   expected.Append(std::move(expected_status));
-  EXPECT_EQ(expected, *actual);
+  EXPECT_EQ(base::Value(std::move(expected)), *actual);
 }
 
 TEST_F(LanguageSettingsPrivateApiTest, SetLanguageAlwaysTranslateStateTest) {
@@ -266,11 +262,6 @@ TEST_F(LanguageSettingsPrivateApiTest, SetTranslateTargetLanguageTest) {
       api_test_utils::RunFunctionAndReturnSingleResult(function.get(),
                                                        "[\"af\"]", profile());
   ASSERT_EQ(translate_prefs_->GetRecentTargetLanguage(), "af");
-
-  std::vector<std::string> content_languages_after;
-  translate_prefs_->GetLanguageList(&content_languages_after);
-  ASSERT_EQ(std::vector<std::string>({"en-US", "en", "af"}),
-            content_languages_after);
 }
 
 TEST_F(LanguageSettingsPrivateApiTest, GetNeverTranslateLanguagesListTest) {
@@ -302,7 +293,26 @@ TEST_F(LanguageSettingsPrivateApiTest, GetNeverTranslateLanguagesListTest) {
   }
 }
 
-TEST_F(LanguageSettingsPrivateApiTest, GetLanguageListTest) {
+class LanguageSettingsPrivateApiGetLanguageListTest
+    : public LanguageSettingsPrivateApiTest {
+ public:
+  LanguageSettingsPrivateApiGetLanguageListTest() = default;
+  ~LanguageSettingsPrivateApiGetLanguageListTest() override = default;
+
+ protected:
+  void InitFeatures() override {
+#if BUILDFLAG(IS_WIN)
+    // Force Windows hybrid spellcheck to be enabled, and disable the delayed
+    // init feature since that case is tested in
+    // LanguageSettingsPrivateApiTestDelayInit below.
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{spellcheck::kWinUseBrowserSpellChecker},
+        /*disabled_features=*/{spellcheck::kWinDelaySpellcheckServiceInit});
+#endif  // BUILDFLAG(IS_WIN)
+  }
+};
+
+TEST_F(LanguageSettingsPrivateApiGetLanguageListTest, GetLanguageList) {
   translate::TranslateDownloadManager::GetInstance()->ResetForTesting();
   RunGetLanguageListTest();
 }
@@ -337,7 +347,7 @@ void LanguageSettingsPrivateApiTest::RunGetLanguageListTest() {
   // Windows spellcheck support depending on the OS version. GetLanguageList
   // only reports spellchecking is supported for these languages if the language
   // pack is installed.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (spellcheck::WindowsVersionSupportsSpellchecker()) {
     languages_to_test.push_back({"ar", "ar-SA", true, true});
     languages_to_test.push_back({"bn", "bn-IN", false, true});
@@ -348,7 +358,7 @@ void LanguageSettingsPrivateApiTest::RunGetLanguageListTest() {
 #else
   languages_to_test.push_back({"ar", "ar-SA", true, false});
   languages_to_test.push_back({"bn", "bn-IN", false, false});
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // Initialize accept languages prefs.
   std::vector<std::string> accept_languages;
@@ -364,7 +374,7 @@ void LanguageSettingsPrivateApiTest::RunGetLanguageListTest() {
   profile()->GetPrefs()->SetString(language::prefs::kAcceptLanguages,
                                    accept_languages_string);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Add fake Windows dictionaries using InitWindowsDictionaryLanguages.
   std::vector<std::string> windows_spellcheck_languages_for_testing;
   for (auto& language_to_test : languages_to_test) {
@@ -377,7 +387,7 @@ void LanguageSettingsPrivateApiTest::RunGetLanguageListTest() {
   }
 
   AddSpellcheckLanguagesForTesting(windows_spellcheck_languages_for_testing);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   auto function =
       base::MakeRefCounted<LanguageSettingsPrivateGetLanguageListFunction>();
@@ -560,9 +570,8 @@ TEST_F(LanguageSettingsPrivateApiTest, GetInputMethodListsTest) {
         input_method.FindListKey("languageCodes");
     ASSERT_NE(nullptr, ime_language_codes_ptr);
     for (auto& language_code : ime_language_codes_ptr->GetList()) {
-      std::string language_display_name =
-          base::UTF16ToUTF8(l10n_util::GetDisplayNameForLocale(
-              language_code.GetString(), "en", true));
+      std::u16string language_display_name = l10n_util::GetDisplayNameForLocale(
+          language_code.GetString(), "en", true);
       if (!language_display_name.empty())
         EXPECT_TRUE(base::Contains(ime_tags_ptr->GetList(),
                                    base::Value(language_display_name)));
@@ -708,7 +717,7 @@ TEST_F(LanguageSettingsPrivateApiTest, RemoveInputMethodTest) {
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 class LanguageSettingsPrivateApiTestDelayInit
     : public LanguageSettingsPrivateApiTest {
  public:
@@ -736,6 +745,6 @@ class LanguageSettingsPrivateApiTestDelayInit
 TEST_F(LanguageSettingsPrivateApiTestDelayInit, GetLanguageListTest) {
   RunGetLanguageListTest();
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace extensions

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_CONTENT_CREATION_NOTES_INTERNAL_NOTE_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class KeyedService;
 class Profile;
@@ -16,7 +16,7 @@ namespace content_creation {
 class NoteService;
 
 // Factory to create and retrieve a NoteService per profile.
-class NoteServiceFactory : public BrowserContextKeyedServiceFactory {
+class NoteServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static NoteServiceFactory* GetInstance();
   static content_creation::NoteService* GetForProfile(Profile* profile);

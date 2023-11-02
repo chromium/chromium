@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_LAUNCH_MANAGER_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Browser;
-enum class WindowOpenDisposition;
 class GURL;
 class Profile;
 
@@ -53,10 +53,10 @@ class WebAppLaunchManager {
       const base::FilePath& current_directory,
       const absl::optional<GURL>& url_handler_launch_url,
       const absl::optional<GURL>& protocol_handler_launch_url,
+      const absl::optional<GURL>& file_launch_url,
       const std::vector<base::FilePath>& launch_files,
       base::OnceCallback<void(Browser* browser,
-                              apps::mojom::LaunchContainer container)>
-          callback);
+                              apps::LaunchContainer container)> callback);
 
   static void SetOpenApplicationCallbackForTesting(
       OpenApplicationCallback callback);
@@ -65,32 +65,13 @@ class WebAppLaunchManager {
   virtual void LaunchWebApplication(
       apps::AppLaunchParams&& params,
       base::OnceCallback<void(Browser* browser,
-                              apps::mojom::LaunchContainer container)>
-          callback);
+                              apps::LaunchContainer container)> callback);
 
-  Profile* const profile_;
-  WebAppProvider* const provider_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<WebAppProvider> provider_;
 
   base::WeakPtrFactory<WebAppLaunchManager> weak_ptr_factory_{this};
 };
-
-Browser* CreateWebApplicationWindow(
-    Profile* profile,
-    const std::string& app_id,
-    WindowOpenDisposition disposition,
-    int32_t restore_id,
-    bool omit_from_session_restore = false,
-    bool can_resize = true,
-    bool can_maximize = true,
-    const gfx::Rect initial_bounds = gfx::Rect());
-
-content::WebContents* NavigateWebApplicationWindow(
-    Browser* browser,
-    const std::string& app_id,
-    const GURL& url,
-    WindowOpenDisposition disposition);
-
-void RecordAppWindowLaunch(Profile* profile, const std::string& app_id);
 
 }  // namespace web_app
 

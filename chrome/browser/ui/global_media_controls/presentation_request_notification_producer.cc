@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,11 @@
 
 #include <utility>
 
-#include "base/unguessable_token.h"
-#include "chrome/browser/profiles/profile.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 #include "components/global_media_controls/public/media_item_manager.h"
-#include "components/media_router/browser/media_router.h"
-#include "components/media_router/browser/media_router_factory.h"
-#include "components/media_router/browser/presentation/presentation_service_delegate_impl.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -72,7 +68,7 @@ class PresentationRequestNotificationProducer::
     notification_producer_->DeleteItemForPresentationRequest("Dialog closed.");
   }
 
-  PresentationRequestNotificationProducer* const notification_producer_;
+  const raw_ptr<PresentationRequestNotificationProducer> notification_producer_;
 };
 
 PresentationRequestNotificationProducer::
@@ -99,7 +95,7 @@ PresentationRequestNotificationProducer::GetMediaItem(const std::string& id) {
 }
 
 std::set<std::string>
-PresentationRequestNotificationProducer::GetActiveControllableItemIds() {
+PresentationRequestNotificationProducer::GetActiveControllableItemIds() const {
   return (item_ && !should_hide_) ? std::set<std::string>({item_->id()})
                                   : std::set<std::string>();
 }
@@ -213,9 +209,9 @@ void PresentationRequestNotificationProducer::AfterMediaDialogClosed() {
   presentation_manager_ = nullptr;
 }
 
-void PresentationRequestNotificationProducer::OnMediaRoutesChanged(
-    const std::vector<media_router::MediaRoute>& routes) {
-  if (!routes.empty()) {
+void PresentationRequestNotificationProducer::OnPresentationsChanged(
+    bool has_presentation) {
+  if (has_presentation) {
     item_manager_->HideDialog();
     if (item_) {
       item_->Dismiss();

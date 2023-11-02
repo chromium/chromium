@@ -1,12 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // https://github.com/WICG/is-input-pending
 [
-    Exposed=Window,
-    RuntimeEnabled=ExperimentalIsInputPending
+    Exposed=Window
 ] interface Scheduling {
-    [RuntimeEnabled=ExperimentalIsFramePending] boolean isFramePending();
-    [MeasureAs=SchedulingIsInputPending, RuntimeEnabled=ExperimentalIsInputPending] boolean isInputPending(optional IsInputPendingOptions options = {});
+    [MeasureAs=SchedulingIsInputPending] boolean isInputPending(optional IsInputPendingOptions options = {});
 };

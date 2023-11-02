@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -67,8 +67,8 @@ class CandidateWindowControllerImpl
   void SetCursorBounds(const gfx::Rect& cursor_bounds,
                        const gfx::Rect& composition_head) override;
   gfx::Rect GetCursorBounds() const override;
-  void UpdateLookupTable(const ui::CandidateWindow& candidate_window,
-                         bool visible) override;
+  void HideLookupTable() override;
+  void UpdateLookupTable(const ui::CandidateWindow& candidate_window) override;
   void UpdatePreeditText(const std::u16string& text,
                          unsigned int cursor,
                          bool visible) override;

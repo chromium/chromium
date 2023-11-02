@@ -1,8 +1,8 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/distributed_point_functions/src/dpf/distributed_point_function.h"
+#include "third_party/distributed_point_functions/code/dpf/distributed_point_function.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -110,11 +110,12 @@ void EvaluateAndCheckLevel(
     if ((is_first_evaluation ||
          prefixes[prefix_index] == previous_alpha_prefix) &&
         prefix_expansion_index == (current_alpha_prefix % outputs_per_prefix)) {
-      // We need to static_cast here since otherwise separator+ returns an
+      // We need to static_cast here since otherwise operator+ returns an
       // unsigned int without doing a modular reduction, which causes the test
       // to fail on types with sizeof(T) < sizeof(unsigned).
-      DPF_FUZZER_ASSERT(static_cast<T>((*result_0)[i] + (*result_1)[i]) ==
-                        beta[hierarchy_level]);
+      DPF_FUZZER_ASSERT(
+          absl::uint128{static_cast<T>((*result_0)[i] + (*result_1)[i])} ==
+          beta[hierarchy_level]);
     } else {
       DPF_FUZZER_ASSERT(static_cast<T>((*result_0)[i] + (*result_1)[i]) == 0U);
     }
@@ -162,7 +163,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
     distributed_point_functions::DpfParameters parameter;
     parameter.set_log_domain_size(log_domain_size);
-    parameter.set_element_bitsize(element_bitsize);
+    parameter.mutable_value_type()->mutable_integer()->set_bitsize(
+        element_bitsize);
     parameters.push_back(parameter);
 
     beta.push_back(ConsumeUint128(data_provider1));
@@ -184,7 +186,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     std::sort(element_bitsizes.begin(), element_bitsizes.end());
     for (size_t i = 0; i < num_levels; ++i) {
       parameters[i].set_log_domain_size(log_domain_sizes[i]);
-      parameters[i].set_element_bitsize(element_bitsizes[i]);
+      parameters[i].mutable_value_type()->mutable_integer()->set_bitsize(
+          element_bitsizes[i]);
     }
 
     status_or_dpf = distributed_point_functions::DistributedPointFunction::
@@ -239,9 +242,17 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Always evaluate on alpha.
   evaluation_points.push_back(alpha);
 
+  int32_t previous_log_domain_size = 0;
   for (int i = level_step - 1; i < static_cast<int>(num_levels);
        i += level_step) {
-    switch (parameters[i].element_bitsize()) {
+    // If any gap in the log_domain_sizes used in successive evaluations is
+    // larger than 62, validation will fail in `EvaluateAndCheckLevel`.
+    int32_t current_log_domain_size = parameters[i].log_domain_size();
+    if (current_log_domain_size - previous_log_domain_size > 62)
+      return 0;
+    previous_log_domain_size = current_log_domain_size;
+
+    switch (parameters[i].value_type().integer().bitsize()) {
       case 8:
         EvaluateAndCheckLevel<uint8_t>(i, evaluation_points, alpha, beta, ctx0,
                                        ctx1, parameters, *dpf);

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,12 +16,13 @@
 #include <security.h>
 #undef SECURITY_WIN32
 
-#include "chrome/browser/password_manager/password_manager_util_win.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/hang_watcher.h"
 #include "base/threading/scoped_thread_priority.h"
+#include "base/time/time.h"
 #include "base/win/win_util.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/password_manager/password_manager_util_win.h"
 #include "chrome/grit/chromium_strings.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -122,7 +123,7 @@ DWORD CredentialBufferValidator::IsValid(ULONG auth_package,
   LUID luid;
   HANDLE token = INVALID_HANDLE_VALUE;
 
-  strcpy_s(source.SourceName, base::size(source.SourceName), "Chrome");
+  strcpy_s(source.SourceName, std::size(source.SourceName), "Chrome");
   if (!AllocateLocallyUniqueId(&source.SourceIdentifier))
     return GetLastError();
 
@@ -271,10 +272,10 @@ bool CheckBlankPassword(const WCHAR* username) {
 }  // namespace
 
 bool AuthenticateUser(gfx::NativeWindow window,
-                      password_manager::ReauthPurpose purpose) {
+                      const std::u16string& password_prompt) {
   bool retval = false;
   WCHAR cur_username[CREDUI_MAX_USERNAME_LENGTH + 1] = {};
-  DWORD cur_username_length = base::size(cur_username);
+  DWORD cur_username_length = std::size(cur_username);
 
   // If this is a standlone workstation, it's possible the current user has no
   // password, so check here and allow it.
@@ -290,25 +291,6 @@ bool AuthenticateUser(gfx::NativeWindow window,
   // left empty on domain joined machines, CredUIPromptForWindowsCredentials()
   // fails to run.
   std::u16string product_name = l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
-  std::u16string password_prompt;
-  switch (purpose) {
-    case password_manager::ReauthPurpose::VIEW_PASSWORD:
-      password_prompt =
-          l10n_util::GetStringUTF16(IDS_PASSWORDS_PAGE_AUTHENTICATION_PROMPT);
-      break;
-    case password_manager::ReauthPurpose::COPY_PASSWORD:
-      password_prompt = l10n_util::GetStringUTF16(
-          IDS_PASSWORDS_PAGE_COPY_AUTHENTICATION_PROMPT);
-      break;
-    case password_manager::ReauthPurpose::EDIT_PASSWORD:
-      password_prompt = l10n_util::GetStringUTF16(
-          IDS_PASSWORDS_PAGE_EDIT_AUTHENTICATION_PROMPT);
-      break;
-    case password_manager::ReauthPurpose::EXPORT:
-      password_prompt = l10n_util::GetStringUTF16(
-          IDS_PASSWORDS_PAGE_EXPORT_AUTHENTICATION_PROMPT);
-      break;
-  }
   CREDUI_INFO cui;
   cui.cbSize = sizeof(cui);
   cui.hwndParent = window->GetHost()->GetAcceleratedWidget();
@@ -351,6 +333,26 @@ bool AuthenticateUser(gfx::NativeWindow window,
   } while (!retval && tries < kMaxPasswordRetries);
 
   return retval;
+}
+
+std::u16string GetMessageForLoginPrompt(
+    password_manager::ReauthPurpose purpose) {
+  switch (purpose) {
+    case password_manager::ReauthPurpose::VIEW_PASSWORD:
+      return l10n_util::GetStringUTF16(
+          IDS_PASSWORDS_PAGE_AUTHENTICATION_PROMPT);
+    case password_manager::ReauthPurpose::COPY_PASSWORD:
+      return l10n_util::GetStringUTF16(
+          IDS_PASSWORDS_PAGE_COPY_AUTHENTICATION_PROMPT);
+
+    case password_manager::ReauthPurpose::EDIT_PASSWORD:
+      return l10n_util::GetStringUTF16(
+          IDS_PASSWORDS_PAGE_EDIT_AUTHENTICATION_PROMPT);
+
+    case password_manager::ReauthPurpose::EXPORT:
+      return l10n_util::GetStringUTF16(
+          IDS_PASSWORDS_PAGE_EXPORT_AUTHENTICATION_PROMPT);
+  }
 }
 
 }  // namespace password_manager_util_win

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,15 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/scheduling_priority.h"
 #include "gpu/command_buffer/service/decoder_context.h"
 #include "gpu/command_buffer/service/scheduler.h"
-#include "gpu/command_buffer/service/shared_image_backing.h"
-#include "gpu/command_buffer/service/shared_image_representation.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/ipc/service/command_buffer_stub.h"
 #include "gpu/ipc/service/gpu_channel.h"
@@ -23,7 +24,7 @@
 #include "media/gpu/gles2_decoder_helper.h"
 #include "ui/gl/gl_context.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #endif
 
@@ -45,14 +46,14 @@ class CommandBufferHelperImpl
 
     stub_->AddDestructionObserver(this);
     wait_sequence_id_ = stub_->channel()->scheduler()->CreateSequence(
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
         // Workaround for crbug.com/1035750.
         // TODO(sandersd): Investigate whether there is a deeper scheduling
         // problem that can be resolved.
         gpu::SchedulingPriority::kHigh
 #else
         gpu::SchedulingPriority::kNormal
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
         ,
         stub_->channel()->task_runner());
     decoder_helper_ = GLES2DecoderHelper::Create(stub_->decoder_context());
@@ -82,7 +83,7 @@ class CommandBufferHelperImpl
     return stub_->channel()->shared_image_stub();
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   gpu::DXGISharedHandleManager* GetDXGISharedHandleManager() override {
     if (!stub_)
       return nullptr;
@@ -183,19 +184,6 @@ class CommandBufferHelperImpl
     return decoder_helper_->CreateMailbox(textures_[service_id].get());
   }
 
-  void ProduceTexture(const gpu::Mailbox& mailbox, GLuint service_id) override {
-    DVLOG(2) << __func__ << "(" << mailbox.ToDebugString() << ", " << service_id
-             << ")";
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-    if (!decoder_helper_)
-      return;
-
-    DCHECK(textures_.count(service_id));
-    return decoder_helper_->ProduceTexture(mailbox,
-                                           textures_[service_id].get());
-  }
-
   void WaitForSyncToken(gpu::SyncToken sync_token,
                         base::OnceClosure done_cb) override {
     DVLOG(2) << __func__;
@@ -274,7 +262,7 @@ class CommandBufferHelperImpl
     }
 
    private:
-    CommandBufferHelperImpl* const helper_;
+    const raw_ptr<CommandBufferHelperImpl> helper_;
     int client_id_ = 0;
     uint64_t client_tracing_id_ = 0;
     uint64_t context_group_tracing_id_ = 0;
@@ -318,7 +306,7 @@ class CommandBufferHelperImpl
     stub->channel()->scheduler()->DestroySequence(wait_sequence_id_);
   }
 
-  gpu::CommandBufferStub* stub_;
+  raw_ptr<gpu::CommandBufferStub> stub_;
   // Wait tasks are scheduled on our own sequence so that we can't inadvertently
   // block the command buffer.
   gpu::SequenceId wait_sequence_id_;

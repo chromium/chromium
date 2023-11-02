@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_buildflags.h"
@@ -264,7 +265,7 @@ class ScopedCrashKeyString {
   ~ScopedCrashKeyString() { crash_key_->Clear(); }
 
  private:
-  CrashKeyType* const crash_key_;
+  const raw_ptr<CrashKeyType> crash_key_;
 };
 
 namespace internal {
@@ -287,7 +288,9 @@ void SetCrashKeyStringToStackTrace(CrashKeyString<Size>* key,
   key->Set(trace_string);
 }
 
-// Initializes the crash key subsystem if it is required.
+// Initializes the crash key subsystem if it is required. Calling this multiple
+// times is safe (though not thread-safe) and will not result in data loss from
+// crash keys set prior to the last initialization.
 CRASH_KEY_EXPORT void InitializeCrashKeys();
 
 #if defined(UNIT_TEST) || defined(CRASH_CORE_COMMON_IMPLEMENTATION)

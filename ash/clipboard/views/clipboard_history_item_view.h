@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -57,7 +57,7 @@ class ClipboardHistoryItemView : public views::View {
   // the delete button) gets canceled.
   void OnMouseClickOnDescendantCanceled();
 
-  ClipboardHistoryUtil::Action action() const { return action_; }
+  clipboard_history_util::Action action() const { return action_; }
 
  protected:
   // Used by subclasses to draw contents, such as text or bitmaps.
@@ -139,10 +139,10 @@ class ClipboardHistoryItemView : public views::View {
   void GetAccessibleNodeData(ui::AXNodeData* data) override;
 
   // Activates the menu item with the specified action and event flags.
-  void Activate(ClipboardHistoryUtil::Action action, int event_flags);
+  void Activate(clipboard_history_util::Action action, int event_flags);
 
   // Calculates the action type when `main_button_` is clicked.
-  ClipboardHistoryUtil::Action CalculateActionForMainButtonClick() const;
+  clipboard_history_util::Action CalculateActionForMainButtonClick() const;
 
   bool ShouldShowDeleteButton() const;
 
@@ -168,7 +168,8 @@ class ClipboardHistoryItemView : public views::View {
 
   // Indicates the action to take. It is set when the menu item is activated
   // through `main_button_` or the delete button.
-  ClipboardHistoryUtil::Action action_ = ClipboardHistoryUtil::Action::kEmpty;
+  clipboard_history_util::Action action_ =
+      clipboard_history_util::Action::kEmpty;
 
   base::CallbackListSubscription subscription_;
 };

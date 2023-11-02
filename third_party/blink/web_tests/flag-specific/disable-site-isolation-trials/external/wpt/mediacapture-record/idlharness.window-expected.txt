@@ -1,0 +1,63 @@
+This is a testharness.js-based test.
+PASS idl_test setup
+PASS idl_test validation
+PASS MediaRecorder interface: existence and properties of interface object
+PASS MediaRecorder interface object length
+PASS MediaRecorder interface object name
+PASS MediaRecorder interface: existence and properties of interface prototype object
+PASS MediaRecorder interface: existence and properties of interface prototype object's "constructor" property
+PASS MediaRecorder interface: existence and properties of interface prototype object's @@unscopables property
+PASS MediaRecorder interface: attribute stream
+PASS MediaRecorder interface: attribute mimeType
+PASS MediaRecorder interface: attribute state
+PASS MediaRecorder interface: attribute onstart
+PASS MediaRecorder interface: attribute onstop
+PASS MediaRecorder interface: attribute ondataavailable
+PASS MediaRecorder interface: attribute onpause
+PASS MediaRecorder interface: attribute onresume
+PASS MediaRecorder interface: attribute onerror
+PASS MediaRecorder interface: attribute videoBitsPerSecond
+PASS MediaRecorder interface: attribute audioBitsPerSecond
+PASS MediaRecorder interface: attribute audioBitrateMode
+PASS MediaRecorder interface: operation start(optional unsigned long)
+PASS MediaRecorder interface: operation stop()
+PASS MediaRecorder interface: operation pause()
+PASS MediaRecorder interface: operation resume()
+PASS MediaRecorder interface: operation requestData()
+PASS MediaRecorder interface: operation isTypeSupported(DOMString)
+PASS MediaRecorder must be primary interface of [object MediaRecorder]
+PASS Stringification of [object MediaRecorder]
+PASS MediaRecorder interface: [object MediaRecorder] must inherit property "stream" with the proper type
+PASS MediaRecorder interface: [object MediaRecorder] must inherit property "mimeType" with the proper type
+PASS MediaRecorder interface: [object MediaRecorder] must inherit property "state" with the proper type
+PASS MediaRecorder interface: [object MediaRecorder] must inherit property "onstart" with the proper type
+PASS MediaRecorder interface: [object MediaRecorder] must inherit property "onstop" with the proper type
+PASS MediaRecorder interface: [object MediaRecorder] must inherit property "ondataavailable" with the proper type
+PASS MediaRecorder interface: [object MediaRecorder] must inherit property "onpause" with the proper type
+PASS MediaRecorder interface: [object MediaRecorder] must inherit property "onresume" with the proper type
+PASS MediaRecorder interface: [object MediaRecorder] must inherit property "onerror" with the proper type
+PASS MediaRecorder interface: [object MediaRecorder] must inherit property "videoBitsPerSecond" with the proper type
+PASS MediaRecorder interface: [object MediaRecorder] must inherit property "audioBitsPerSecond" with the proper type
+PASS MediaRecorder interface: [object MediaRecorder] must inherit property "audioBitrateMode" with the proper type
+PASS MediaRecorder interface: [object MediaRecorder] must inherit property "start(optional unsigned long)" with the proper type
+PASS MediaRecorder interface: calling start(optional unsigned long) on [object MediaRecorder] with too few arguments must throw TypeError
+PASS MediaRecorder interface: [object MediaRecorder] must inherit property "stop()" with the proper type
+PASS MediaRecorder interface: [object MediaRecorder] must inherit property "pause()" with the proper type
+PASS MediaRecorder interface: [object MediaRecorder] must inherit property "resume()" with the proper type
+PASS MediaRecorder interface: [object MediaRecorder] must inherit property "requestData()" with the proper type
+PASS MediaRecorder interface: [object MediaRecorder] must inherit property "isTypeSupported(DOMString)" with the proper type
+PASS MediaRecorder interface: calling isTypeSupported(DOMString) on [object MediaRecorder] with too few arguments must throw TypeError
+PASS BlobEvent interface: existence and properties of interface object
+PASS BlobEvent interface object length
+PASS BlobEvent interface object name
+PASS BlobEvent interface: existence and properties of interface prototype object
+PASS BlobEvent interface: existence and properties of interface prototype object's "constructor" property
+PASS BlobEvent interface: existence and properties of interface prototype object's @@unscopables property
+PASS BlobEvent interface: attribute data
+PASS BlobEvent interface: attribute timecode
+PASS BlobEvent must be primary interface of [object BlobEvent]
+PASS Stringification of [object BlobEvent]
+PASS BlobEvent interface: [object BlobEvent] must inherit property "data" with the proper type
+PASS BlobEvent interface: [object BlobEvent] must inherit property "timecode" with the proper type
+Harness: the test ran to completion.
+

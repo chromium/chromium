@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,11 +18,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/mac/net/network.h"
 #include "chrome/updater/policy/service.h"
 #import "net/base/mac/url_conversions.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 using ResponseStartedCallback =
@@ -44,7 +45,7 @@ using DownloadToFileCompleteCallback =
  @protected
   ResponseStartedCallback _responseStartedCallback;
   ProgressCallback _progressCallback;
-  scoped_refptr<base::SingleThreadTaskRunner> _callbackRunner;
+  scoped_refptr<base::SequencedTaskRunner> _callbackRunner;
 }
 
 - (instancetype)initWithResponseStartedCallback:
@@ -54,7 +55,7 @@ using DownloadToFileCompleteCallback =
   if (self = [super init]) {
     _responseStartedCallback = std::move(responseStartedCallback);
     _progressCallback = progressCallback;
-    _callbackRunner = base::ThreadTaskRunnerHandle::Get();
+    _callbackRunner = base::SequencedTaskRunnerHandle::Get();
   }
   return self;
 }
@@ -275,7 +276,7 @@ using DownloadToFileCompleteCallback =
 @end
 
 namespace base {
-class SingleThreadTaskRunner;
+class SequencedTaskRunner;
 }
 
 namespace updater {
@@ -358,7 +359,8 @@ void NetworkFetcher::DownloadToFile(
   [downloadTask resume];
 }
 
-NetworkFetcherFactory::NetworkFetcherFactory(scoped_refptr<PolicyService>) {}
+NetworkFetcherFactory::NetworkFetcherFactory(
+    absl::optional<PolicyServiceProxyConfiguration>) {}
 NetworkFetcherFactory::~NetworkFetcherFactory() = default;
 
 std::unique_ptr<update_client::NetworkFetcher> NetworkFetcherFactory::Create()

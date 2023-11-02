@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/debug/crash_logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "media/base/android/media_codec_util.h"
@@ -24,10 +25,10 @@ namespace media {
 // CodecOutputBuffer are the only two things that hold references to it.
 class CodecWrapperImpl : public base::RefCountedThreadSafe<CodecWrapperImpl> {
  public:
-  CodecWrapperImpl(
-      CodecSurfacePair codec_surface_pair,
-      CodecWrapper::OutputReleasedCB output_buffer_release_cb,
-      scoped_refptr<base::SequencedTaskRunner> release_task_runner);
+  CodecWrapperImpl(CodecSurfacePair codec_surface_pair,
+                   CodecWrapper::OutputReleasedCB output_buffer_release_cb,
+                   scoped_refptr<base::SequencedTaskRunner> release_task_runner,
+                   const gfx::Size& initial_expected_size);
 
   CodecWrapperImpl(const CodecWrapperImpl&) = delete;
   CodecWrapperImpl& operator=(const CodecWrapperImpl&) = delete;
@@ -143,11 +144,13 @@ bool CodecOutputBuffer::ReleaseToSurface() {
 CodecWrapperImpl::CodecWrapperImpl(
     CodecSurfacePair codec_surface_pair,
     CodecWrapper::OutputReleasedCB output_buffer_release_cb,
-    scoped_refptr<base::SequencedTaskRunner> release_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> release_task_runner,
+    const gfx::Size& initial_expected_size)
     : state_(State::kFlushed),
       codec_(std::move(codec_surface_pair.first)),
       surface_bundle_(std::move(codec_surface_pair.second)),
       next_buffer_id_(0),
+      size_(initial_expected_size),
       output_buffer_release_cb_(std::move(output_buffer_release_cb)),
       release_task_runner_(std::move(release_task_runner)) {
   DVLOG(2) << __func__;
@@ -349,15 +352,25 @@ CodecWrapperImpl::DequeueStatus CodecWrapperImpl::DequeueOutputBuffer(
         return DequeueStatus::kError;
       }
       case MEDIA_CODEC_OUTPUT_FORMAT_CHANGED: {
-        if (codec_->GetOutputSize(&size_) == MEDIA_CODEC_ERROR) {
+        gfx::Size temp_size;
+        if (codec_->GetOutputSize(&temp_size) == MEDIA_CODEC_ERROR) {
           state_ = State::kError;
           return DequeueStatus::kError;
         }
 
+        // In automated testing, we regularly see a blip where MediaCodec sends
+        // a format change to size 0,0, some number of output buffer available
+        // signals, and then finally the real size. Ignore this transient size
+        // change to avoid output errors. We'll either reuse the previous size
+        // information or the size provided during configure.
+        // See https://crbug.com/1207682.
+        if (!temp_size.IsEmpty())
+          size_ = temp_size;
+
         bool error =
             codec_->GetOutputColorSpace(&color_space_) == MEDIA_CODEC_ERROR;
         UMA_HISTOGRAM_BOOLEAN("Media.Android.GetColorSpaceError", error);
-        if (error) {
+        if (error && !size_.IsEmpty()) {
           // If we get back an unsupported color space, then just default to
           // sRGB for < 720p, or 709 otherwise.  It's better than nothing.
           color_space_ = size_.width() >= 1280 ? gfx::ColorSpace::CreateREC709()
@@ -429,6 +442,14 @@ bool CodecWrapperImpl::ReleaseCodecOutputBuffer(int64_t id, bool render) {
   }
 
   base::AutoLock l(lock_);
+
+  // Adding a scoped crash key here to detect the cause of gpu hang.
+  // crbug.com/1292936.
+  static auto* kCrashKey_1 = base::debug::AllocateCrashKeyString(
+      "acquired_lock_inside_codecwrapperimpl_releasecodecoutputbuffer",
+      base::debug::CrashKeySize::Size256);
+  base::debug::ScopedCrashKeyString scoped_crash_key_1(kCrashKey_1, "1");
+
   if (!codec_ || state_ == State::kError)
     return false;
 
@@ -440,7 +461,17 @@ bool CodecWrapperImpl::ReleaseCodecOutputBuffer(int64_t id, bool render) {
     return false;
 
   int index = buffer_it->second;
-  codec_->ReleaseOutputBuffer(index, render);
+
+  {
+    // Adding another scoped crash key here to detect the cause of gpu hang.
+    // crbug.com/1292936.
+    static auto* kCrashKey_2 = base::debug::AllocateCrashKeyString(
+        "executing_mediacodec_releaseoutputbuffer",
+        base::debug::CrashKeySize::Size256);
+    base::debug::ScopedCrashKeyString scoped_crash_key_2(kCrashKey_2, "1");
+    codec_->ReleaseOutputBuffer(index, render);
+  }
+
   buffer_ids_.erase(buffer_it);
   if (output_buffer_release_cb_) {
     output_buffer_release_cb_.Run(state_ == State::kDrained ||
@@ -453,10 +484,12 @@ bool CodecWrapperImpl::ReleaseCodecOutputBuffer(int64_t id, bool render) {
 CodecWrapper::CodecWrapper(
     CodecSurfacePair codec_surface_pair,
     OutputReleasedCB output_buffer_release_cb,
-    scoped_refptr<base::SequencedTaskRunner> release_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> release_task_runner,
+    const gfx::Size& initial_expected_size)
     : impl_(new CodecWrapperImpl(std::move(codec_surface_pair),
                                  std::move(output_buffer_release_cb),
-                                 std::move(release_task_runner))) {}
+                                 std::move(release_task_runner),
+                                 initial_expected_size)) {}
 
 CodecWrapper::~CodecWrapper() {
   // The codec must have already been taken.

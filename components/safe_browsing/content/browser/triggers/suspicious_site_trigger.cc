@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,6 +64,7 @@ SuspiciousSiteTrigger::SuspiciousSiteTrigger(
     ReferrerChainProvider* referrer_chain_provider,
     bool monitor_mode)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<SuspiciousSiteTrigger>(*web_contents),
       finish_report_delay_ms_(kSuspiciousSiteCollectionPeriodMilliseconds),
       current_state_(monitor_mode ? TriggerState::MONITOR_MODE
                                   : TriggerState::IDLE),

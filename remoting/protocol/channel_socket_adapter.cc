@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,11 @@
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 TransportChannelSocketAdapter::TransportChannelSocketAdapter(
     cricket::IceTransportInternal* ice_transport)
-    : channel_(ice_transport), closed_error_code_(net::OK) {
+    : channel_(ice_transport) {
   DCHECK(channel_);
 
   channel_->SignalReadPacket.connect(
@@ -28,7 +27,7 @@ TransportChannelSocketAdapter::TransportChannelSocketAdapter(
 }
 
 TransportChannelSocketAdapter::~TransportChannelSocketAdapter() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (destruction_callback_)
     std::move(destruction_callback_).Run();
 }
@@ -42,7 +41,7 @@ int TransportChannelSocketAdapter::Recv(
     const scoped_refptr<net::IOBuffer>& buf,
     int buffer_size,
     const net::CompletionRepeatingCallback& callback) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(buf);
   DCHECK(!callback.is_null());
   CHECK(read_callback_.is_null());
@@ -63,7 +62,7 @@ int TransportChannelSocketAdapter::Send(
     const scoped_refptr<net::IOBuffer>& buffer,
     int buffer_size,
     const net::CompletionRepeatingCallback& callback) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(buffer);
   DCHECK(!callback.is_null());
   CHECK(write_callback_.is_null());
@@ -98,7 +97,7 @@ int TransportChannelSocketAdapter::Send(
 }
 
 void TransportChannelSocketAdapter::Close(int error_code) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (!channel_)  // Already closed.
     return;
@@ -130,7 +129,7 @@ void TransportChannelSocketAdapter::OnNewPacket(
     size_t data_size,
     const int64_t& packet_time,
     int flags) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_EQ(transport, channel_);
   if (!read_callback_.is_null()) {
     DCHECK(read_buffer_.get());
@@ -156,7 +155,7 @@ void TransportChannelSocketAdapter::OnNewPacket(
 
 void TransportChannelSocketAdapter::OnWritableState(
     rtc::PacketTransportInternal* transport) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Try to send the packet if there is a pending write.
   if (!write_callback_.is_null()) {
     rtc::PacketOptions options;
@@ -177,10 +176,9 @@ void TransportChannelSocketAdapter::OnWritableState(
 
 void TransportChannelSocketAdapter::OnChannelDestroyed(
     cricket::IceTransportInternal* channel) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_EQ(channel, channel_);
   Close(net::ERR_CONNECTION_ABORTED);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

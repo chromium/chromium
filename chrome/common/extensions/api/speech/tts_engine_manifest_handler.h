@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,7 @@ struct TtsVoice {
 struct TtsVoices : public Extension::ManifestData {
   TtsVoices();
   ~TtsVoices() override;
-  static bool Parse(base::Value::ConstListView tts_voices,
+  static bool Parse(const base::Value::List& tts_voices,
                     TtsVoices* out_voices,
                     std::u16string* error,
                     Extension* extension);

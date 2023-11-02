@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,19 +9,19 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/containers/flat_set.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/supervised_user/kids_management_url_checker_client.h"
 #include "chrome/browser/supervised_user/supervised_user_denylist.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "components/policy/core/browser/url_util.h"
+#include "chrome/common/url_constants.h"
+#include "components/url_matcher/url_util.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
@@ -77,30 +77,94 @@ bool SetFilteringBehaviorResult(
 
   return true;
 }
+
+bool IsNonStandardUrlScheme(const GURL& effective_url) {
+  // URLs with a non-standard scheme (e.g. chrome://) are always allowed.
+  return !effective_url.SchemeIsHTTPOrHTTPS() &&
+         !effective_url.SchemeIsWSOrWSS() &&
+         !effective_url.SchemeIs(url::kFtpScheme);
+}
+
+bool IsAlwaysAllowedHost(const GURL& effective_url) {
+  // Allow navigations to allowed origins.
+  constexpr auto kAllowedHosts = base::MakeFixedFlatSet<base::StringPiece>(
+      {"accounts.google.com", "families.google.com", "familylink.google.com",
+       "myaccount.google.com", "policies.google.com", "support.google.com"});
+
+  return base::Contains(kAllowedHosts, effective_url.host_piece());
+}
+
+bool IsAlwaysAllowedUrlPrefix(const GURL& effective_url) {
+  // A list of allowed URL prefixes.
+  //
+  // Consider using url_matcher::CreateURLPrefixCondition (initialized once at
+  // startup) for performance if the set of allowed URL prefixes grows large.
+  static const char* const kAllowedUrlPrefixes[] = {
+      // The Chrome sync dashboard is linked to from within Chrome settings.
+      // Allow both the initial URL that is loaded, and the URL to which it
+      // redirects.
+      chrome::kSyncGoogleDashboardURL, "https://chrome.google.com/sync"};
+
+  for (const char* allowedUrlPrefix : kAllowedUrlPrefixes) {
+    if (base::StartsWith(effective_url.spec(), allowedUrlPrefix))
+      return true;
+  }
+  return false;
+}
+
+bool IsPlayStoreTermsOfServiceUrl(const GURL& effective_url) {
+  // Play Store terms of service path:
+  static const char* kPlayStoreHost = "play.google.com";
+  static const char* kPlayTermsPath = "/about/play-terms";
+  // Check Play Store terms of service.
+  // path_piece is checked separately from the host to match international pages
+  // like https://play.google.com/intl/pt-BR_pt/about/play-terms/.
+  return effective_url.SchemeIs(url::kHttpsScheme) &&
+         effective_url.host_piece() == kPlayStoreHost &&
+         (effective_url.path_piece().find(kPlayTermsPath) !=
+          base::StringPiece::npos);
+}
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+bool IsCrxWebstoreOrDownloadUrl(const GURL& effective_url) {
+  static const char* const kCrxDownloadUrls[] = {
+      "https://clients2.googleusercontent.com/crx/blobs/",
+      "https://chrome.google.com/webstore/download/"};
+
+  // Chrome Webstore.
+  if (extension_urls::GetWebstoreLaunchURL().host() ==
+      url_matcher::util::Normalize(effective_url).host()) {
+    return true;
+  }
+
+  // Allow webstore crx downloads. This applies to both extension installation
+  // and updates.
+  if (extension_urls::GetWebstoreUpdateUrl() ==
+      url_matcher::util::Normalize(effective_url)) {
+    return true;
+  }
+
+  // The actual CRX files are downloaded from other URLs. Allow them too.
+  // These URLs have https scheme.
+  if (!effective_url.SchemeIs(url::kHttpsScheme))
+    return false;
+
+  for (const char* crx_download_url_str : kCrxDownloadUrls) {
+    GURL crx_download_url(crx_download_url_str);
+    if (crx_download_url.host_piece() == effective_url.host_piece() &&
+        base::StartsWith(effective_url.path_piece(),
+                         crx_download_url.path_piece(),
+                         base::CompareCase::SENSITIVE)) {
+      return true;
+    }
+  }
+  return false;
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 }  // namespace
 
 namespace {
-
-// URL schemes not in this list (e.g., file:// and chrome://) will always be
-// allowed.
-const char* const kFilteredSchemes[] = {"http", "https", "ftp", "ws", "wss"};
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-const char* const kCrxDownloadUrls[] = {
-    "https://clients2.googleusercontent.com/crx/blobs/",
-    "https://chrome.google.com/webstore/download/"};
-#endif
-
-// Allowed origins:
-const char kFamiliesSecureUrl[] = "https://families.google.com/";
-const char kFamiliesUrl[] = "http://families.google.com/";
-
-// Play Store terms of service path:
-const char kPlayStoreHost[] = "play.google.com";
-const char kPlayTermsPath[] = "/about/play-terms";
-
-// accounts.google.com used for login:
-const char kAccountsGoogleUrl[] = "https://accounts.google.com";
 
 // UMA histogram FamilyUser.ManagedSiteList.Conflict
 // Reports conflict when the user tries to access a url that has a match in
@@ -108,29 +172,25 @@ const char kAccountsGoogleUrl[] = "https://accounts.google.com";
 const char kManagedSiteListConflictHistogramName[] =
     "FamilyUser.ManagedSiteList.Conflict";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // UMA histogram FamilyUser.WebFilterType
 // Reports WebFilterType which indicates web filter behaviour are used for
-// current Family Link user on Chrome OS.
+// current Family Link user.
 constexpr char kWebFilterTypeHistogramName[] = "FamilyUser.WebFilterType";
 
 // UMA histogram FamilyUser.ManualSiteListType
 // Reports ManualSiteListType which indicates approved list and blocked list
-// usage for current Family Link user on Chrome OS.
+// usage for current Family Link user.
 constexpr char kManagedSiteListHistogramName[] = "FamilyUser.ManagedSiteList";
 
 // UMA histogram FamilyUser.ManagedSiteListCount.Approved
-// Reports the number of approved urls and domains for current Family Link user
-// on Chrome OS.
+// Reports the number of approved urls and domains for current Family Link user.
 constexpr char kApprovedSitesCountHistogramName[] =
     "FamilyUser.ManagedSiteListCount.Approved";
 
 // UMA histogram FamilyUser.ManagedSiteListCount.Blocked
-// Reports the number of blocked urls and domains for current Family Link user
-// on Chrome OS.
+// Reports the number of blocked urls and domains for current Family Link user.
 constexpr char kBlockedSitesCountHistogramName[] =
     "FamilyUser.ManagedSiteListCount.Blocked";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }  // namespace
 
 SupervisedUserURLFilter::SupervisedUserURLFilter()
@@ -144,7 +204,6 @@ SupervisedUserURLFilter::~SupervisedUserURLFilter() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // static
 const char* SupervisedUserURLFilter::GetWebFilterTypeHistogramNameForTest() {
   return kWebFilterTypeHistogramName;
@@ -167,8 +226,6 @@ SupervisedUserURLFilter::GetBlockedSitesCountHistogramNameForTest() {
   return kBlockedSitesCountHistogramName;
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 // static
 const char*
 SupervisedUserURLFilter::GetManagedSiteListConflictHistogramNameForTest() {
@@ -183,25 +240,16 @@ bool SupervisedUserURLFilter::ShouldSkipParentManualAllowlistFiltering(
   content::WebContents* outer_most_content =
       contents->GetOutermostWebContents();
 
-  return outer_most_content->GetURL() ==
+  return outer_most_content->GetLastCommittedURL() ==
          GURL(SupervisedUserService::GetEduCoexistenceLoginUrl());
 }
 
 // static
 SupervisedUserURLFilter::FilteringBehavior
 SupervisedUserURLFilter::BehaviorFromInt(int behavior_value) {
-  DCHECK_GE(behavior_value, ALLOW);
-  DCHECK_LE(behavior_value, BLOCK);
+  DCHECK(behavior_value == ALLOW || behavior_value == BLOCK)
+      << "SupervisedUserURLFilter value not supported: " << behavior_value;
   return static_cast<FilteringBehavior>(behavior_value);
-}
-
-// static
-bool SupervisedUserURLFilter::HasFilteredScheme(const GURL& url) {
-  for (const char* scheme : kFilteredSchemes) {
-    if (url.scheme() == scheme)
-      return true;
-  }
-  return false;
 }
 
 // static
@@ -274,6 +322,20 @@ SupervisedUserURLFilter::GetFilteringBehaviorForURL(const GURL& url) const {
   return GetFilteringBehaviorForURL(url, false, &reason);
 }
 
+bool SupervisedUserURLFilter::IsExemptedFromGuardianApproval(
+    const GURL& effective_url) const {
+  bool exempted_from_guardian_approval =
+      IsNonStandardUrlScheme(effective_url) ||
+      IsAlwaysAllowedHost(effective_url) ||
+      IsAlwaysAllowedUrlPrefix(effective_url) ||
+      IsPlayStoreTermsOfServiceUrl(effective_url);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  exempted_from_guardian_approval |= IsCrxWebstoreOrDownloadUrl(effective_url);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+  return exempted_from_guardian_approval;
+}
+
 bool SupervisedUserURLFilter::GetManualFilteringBehaviorForURL(
     const GURL& url, FilteringBehavior* behavior) const {
   supervised_user_error_page::FilteringBehaviorReason reason;
@@ -288,57 +350,14 @@ SupervisedUserURLFilter::GetFilteringBehaviorForURL(
     supervised_user_error_page::FilteringBehaviorReason* reason) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  GURL effective_url = policy::url_util::GetEmbeddedURL(url);
+  GURL effective_url = url_matcher::util::GetEmbeddedURL(url);
   if (!effective_url.is_valid())
     effective_url = url;
 
   *reason = supervised_user_error_page::MANUAL;
 
-  // URLs with a non-standard scheme (e.g. chrome://) are always allowed.
-  if (!HasFilteredScheme(effective_url))
+  if (IsExemptedFromGuardianApproval(effective_url))
     return ALLOW;
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // Allow webstore crx downloads. This applies to both extension installation
-  // and updates.
-  if (extension_urls::GetWebstoreUpdateUrl() ==
-      policy::url_util::Normalize(effective_url)) {
-    return ALLOW;
-  }
-
-  // The actual CRX files are downloaded from other URLs. Allow them too.
-  for (const char* crx_download_url_str : kCrxDownloadUrls) {
-    GURL crx_download_url(crx_download_url_str);
-    if (effective_url.SchemeIs(url::kHttpsScheme) &&
-        crx_download_url.host_piece() == effective_url.host_piece() &&
-        base::StartsWith(effective_url.path_piece(),
-                         crx_download_url.path_piece(),
-                         base::CompareCase::SENSITIVE)) {
-      return ALLOW;
-    }
-  }
-#endif
-
-  // Allow navigations to allowed origins (currently families.google.com and
-  // accounts.google.com).
-  static const base::NoDestructor<base::flat_set<GURL>> kAllowedOrigins(
-      base::flat_set<GURL>(
-          {GURL(kFamiliesUrl).DeprecatedGetOriginAsURL(),
-           GURL(kFamiliesSecureUrl).DeprecatedGetOriginAsURL(),
-           GURL(kAccountsGoogleUrl).DeprecatedGetOriginAsURL()}));
-  if (base::Contains(*kAllowedOrigins,
-                     effective_url.DeprecatedGetOriginAsURL()))
-    return ALLOW;
-
-  // Check Play Store terms of service.
-  // path_piece is checked separetly from the host to match international pages
-  // like https://play.google.com/intl/pt-BR_pt/about/play-terms/.
-  if (effective_url.SchemeIs(url::kHttpsScheme) &&
-      effective_url.host_piece() == kPlayStoreHost &&
-      effective_url.path_piece().find(kPlayTermsPath) !=
-          base::StringPiece::npos) {
-    return ALLOW;
-  }
 
   // Check manual denylists and allowlists.
   FilteringBehavior manual_result =
@@ -352,15 +371,6 @@ SupervisedUserURLFilter::GetFilteringBehaviorForURL(
     *reason = supervised_user_error_page::DENYLIST;
     return BLOCK;
   }
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // The user requested the Chrome Webstore, and it
-  // hasn't specifically been blocked above, so allow.
-  if (policy::url_util::Normalize(effective_url).host() ==
-      extension_urls::GetWebstoreLaunchURL().host()) {
-    return ALLOW;
-  }
-#endif
 
   // Fall back to the default behavior.
   *reason = supervised_user_error_page::DEFAULT;
@@ -379,7 +389,7 @@ SupervisedUserURLFilter::GetManualFilteringBehaviorForURL(
   bool conflict = false;
 
   // Check manual overrides for the exact URL.
-  auto url_it = url_map_.find(policy::url_util::Normalize(url));
+  auto url_it = url_map_.find(url_matcher::util::Normalize(url));
   if (url_it != url_map_.end()) {
     conflict =
         SetFilteringBehaviorResult(url_it->second ? ALLOW : BLOCK, &result);
@@ -547,7 +557,6 @@ void SupervisedUserURLFilter::SetBlockingTaskRunnerForTesting(
   blocking_task_runner_ = task_runner;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 SupervisedUserURLFilter::WebFilterType
 SupervisedUserURLFilter::GetWebFilterType() const {
   // If the default filtering behavior is not block, it means the web filter
@@ -618,7 +627,6 @@ void SupervisedUserURLFilter::ReportManagedSiteListMetrics() const {
 void SupervisedUserURLFilter::SetFilterInitialized(bool is_filter_initialized) {
   is_filter_initialized_ = is_filter_initialized;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 bool SupervisedUserURLFilter::RunAsyncChecker(
     const GURL& url,
@@ -632,7 +640,7 @@ bool SupervisedUserURLFilter::RunAsyncChecker(
   }
 
   return async_url_checker_->CheckURL(
-      policy::url_util::Normalize(url),
+      url_matcher::util::Normalize(url),
       base::BindOnce(&SupervisedUserURLFilter::CheckCallback,
                      base::Unretained(this), std::move(callback)));
 }

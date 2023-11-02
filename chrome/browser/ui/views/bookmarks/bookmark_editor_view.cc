@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -22,6 +23,7 @@
 #include "chrome/grit/locale_settings.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -52,12 +54,14 @@ BookmarkEditorView::BookmarkEditorView(
     Profile* profile,
     const BookmarkNode* parent,
     const EditDetails& details,
-    BookmarkEditor::Configuration configuration)
+    BookmarkEditor::Configuration configuration,
+    BookmarkEditor::OnSaveCallback on_save_callback)
     : profile_(profile),
       parent_(parent),
       details_(details),
       bb_model_(BookmarkModelFactory::GetForBrowserContext(profile)),
-      show_tree_(configuration == SHOW_TREE) {
+      show_tree_(configuration == SHOW_TREE),
+      on_save_callback_(std::move(on_save_callback)) {
   DCHECK(profile);
   DCHECK(bb_model_);
   DCHECK(bb_model_->client()->CanBeEditedByUser(parent));
@@ -78,7 +82,6 @@ BookmarkEditorView::BookmarkEditorView(
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kControl, views::DialogContentType::kControl));
   Init();
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::BOOKMARK_EDITOR);
 }
 
 BookmarkEditorView::~BookmarkEditorView() {
@@ -132,7 +135,16 @@ bool BookmarkEditorView::HandleKeyEvent(views::Textfield* sender,
 
 void BookmarkEditorView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   views::DialogDelegateView::GetAccessibleNodeData(node_data);
-  node_data->SetName(l10n_util::GetStringUTF8(IDS_BOOKMARK_EDITOR_TITLE));
+
+  // TODO(crbug.com/1361263): Currently DialogDelegateView does not override
+  // GetAccessibleNodeData, thus the call above accomplishes nothing. We need
+  // this View to have a role before setting its name, but if we set it to
+  // dialog, we'll wind up with a dialog (this view) inside of a dialog
+  // (RootView). Note that both views also share the same accessible name.
+  // In the meantime, give it a generic role.
+  node_data->role = ax::mojom::Role::kPane;
+  node_data->SetNameChecked(
+      l10n_util::GetStringUTF8(IDS_BOOKMARK_EDITOR_TITLE));
 }
 
 bool BookmarkEditorView::IsCommandIdChecked(int command_id) const {
@@ -141,10 +153,10 @@ bool BookmarkEditorView::IsCommandIdChecked(int command_id) const {
 
 bool BookmarkEditorView::IsCommandIdEnabled(int command_id) const {
   switch (command_id) {
-    case IDS_EDIT:
-    case IDS_DELETE:
+    case kContextMenuItemEdit:
+    case kContextMenuItemDelete:
       return !running_menu_for_root_;
-    case IDS_BOOKMARK_EDITOR_NEW_FOLDER_MENU_ITEM:
+    case kContextMenuItemNewFolder:
       return true;
     default:
       NOTREACHED();
@@ -160,13 +172,13 @@ bool BookmarkEditorView::GetAcceleratorForCommandId(
 
 void BookmarkEditorView::ExecuteCommand(int command_id, int event_flags) {
   DCHECK(tree_view_->GetActiveNode());
-  if (command_id == IDS_EDIT) {
+  if (command_id == kContextMenuItemEdit) {
     tree_view_->StartEditing(tree_view_->GetActiveNode());
-  } else if (command_id == IDS_DELETE) {
+  } else if (command_id == kContextMenuItemDelete) {
     ExecuteCommandDelete(base::BindOnce(&chrome::ConfirmDeleteBookmarkNode,
                                         GetWidget()->GetNativeWindow()));
   } else {
-    DCHECK_EQ(IDS_BOOKMARK_EDITOR_NEW_FOLDER_MENU_ITEM, command_id);
+    DCHECK_EQ(kContextMenuItemNewFolder, command_id);
     NewFolder(tree_model_->AsNode(tree_view_->GetActiveNode()));
   }
 }
@@ -214,7 +226,8 @@ void BookmarkEditorView::BookmarkNodeMoved(BookmarkModel* model,
 
 void BookmarkEditorView::BookmarkNodeAdded(BookmarkModel* model,
                                            const BookmarkNode* parent,
-                                           size_t index) {
+                                           size_t index,
+                                           bool added_by_user) {
   Reset();
 }
 
@@ -375,10 +388,11 @@ void BookmarkEditorView::NewFolder(EditorNode* parent) {
 
 BookmarkEditorView::EditorNode* BookmarkEditorView::AddNewFolder(
     EditorNode* parent) {
-  return tree_model_->Add(
-      parent,
-      std::make_unique<EditorNode>(
-          l10n_util::GetStringUTF16(IDS_BOOKMARK_EDITOR_NEW_FOLDER_NAME), 0));
+  auto new_folder_node = std::make_unique<EditorNode>(
+      l10n_util::GetStringUTF16(IDS_BOOKMARK_EDITOR_NEW_FOLDER_NAME), 0);
+  new_folder_node->SetPlaceholderAccessibleTitle(
+      l10n_util::GetStringUTF16(IDS_UNNAMED_BOOKMARK_FOLDER));
+  return tree_model_->Add(parent, std::move(new_folder_node));
 }
 
 void BookmarkEditorView::ExpandAndSelect() {
@@ -425,6 +439,8 @@ void BookmarkEditorView::CreateNodes(const BookmarkNode* bb_node,
         bb_model_->client()->CanBeEditedByUser(child_bb_node.get())) {
       EditorNode* new_b_node = b_node->Add(std::make_unique<EditorNode>(
           child_bb_node->GetTitle(), child_bb_node->id()));
+      new_b_node->SetPlaceholderAccessibleTitle(
+          l10n_util::GetStringUTF16(IDS_UNNAMED_BOOKMARK_FOLDER));
       CreateNodes(child_bb_node.get(), new_b_node);
     }
   }
@@ -467,24 +483,27 @@ void BookmarkEditorView::ApplyEdits(EditorNode* parent) {
   if (!show_tree_) {
     BookmarkEditor::ApplyEditsWithNoFolderChange(
         bb_model_, parent_, details_, new_title, new_url);
-    return;
+  } else {
+    // Create the new folders and update the titles.
+    const BookmarkNode* new_parent = nullptr;
+    ApplyNameChangesAndCreateNewFolders(
+        bb_model_->root_node(), tree_model_->GetRoot(), parent, &new_parent);
+
+    BookmarkEditor::ApplyEditsWithPossibleFolderChange(
+        bb_model_, new_parent, details_, new_title, new_url);
+
+    BookmarkExpandedStateTracker::Nodes expanded_nodes;
+    UpdateExpandedNodes(tree_model_->GetRoot(), &expanded_nodes);
+    bb_model_->expanded_state_tracker()->SetExpandedNodes(expanded_nodes);
+
+    // Remove the folders that were removed. This has to be done after all the
+    // other changes have been committed.
+    bookmarks::DeleteBookmarkFolders(bb_model_, deletes_);
   }
 
-  // Create the new folders and update the titles.
-  const BookmarkNode* new_parent = nullptr;
-  ApplyNameChangesAndCreateNewFolders(
-      bb_model_->root_node(), tree_model_->GetRoot(), parent, &new_parent);
-
-  BookmarkEditor::ApplyEditsWithPossibleFolderChange(
-      bb_model_, new_parent, details_, new_title, new_url);
-
-  BookmarkExpandedStateTracker::Nodes expanded_nodes;
-  UpdateExpandedNodes(tree_model_->GetRoot(), &expanded_nodes);
-  bb_model_->expanded_state_tracker()->SetExpandedNodes(expanded_nodes);
-
-  // Remove the folders that were removed. This has to be done after all the
-  // other changes have been committed.
-  bookmarks::DeleteBookmarkFolders(bb_model_, deletes_);
+  // Once all required bookmarks updates have been called, call the configured
+  // callback.
+  std::move(on_save_callback_).Run();
 }
 
 void BookmarkEditorView::ApplyNameChangesAndCreateNewFolders(
@@ -504,14 +523,14 @@ void BookmarkEditorView::ApplyNameChangesAndCreateNewFolders(
     } else {
       // Existing node, reset the title (BookmarkModel ignores changes if the
       // title is the same).
-      const auto i = std::find_if(
-          bb_node->children().cbegin(), bb_node->children().cend(),
-          [&child_b_node](const auto& node) {
+      const auto i = base::ranges::find_if(
+          bb_node->children(), [&child_b_node](const auto& node) {
             return node->is_folder() && node->id() == child_b_node->value;
           });
       DCHECK(i != bb_node->children().cend());
       child_bb_node = i->get();
-      bb_model_->SetTitle(child_bb_node, child_b_node->GetTitle());
+      bb_model_->SetTitle(child_bb_node, child_b_node->GetTitle(),
+                          bookmarks::metrics::BookmarkEditSource::kUser);
     }
     ApplyNameChangesAndCreateNewFolders(child_bb_node, child_b_node.get(),
                                         parent_b_node, parent_bb_node);
@@ -537,11 +556,11 @@ void BookmarkEditorView::UpdateExpandedNodes(
 ui::SimpleMenuModel* BookmarkEditorView::GetMenuModel() {
   if (!context_menu_model_.get()) {
     context_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
-    context_menu_model_->AddItemWithStringId(IDS_EDIT, IDS_EDIT);
-    context_menu_model_->AddItemWithStringId(IDS_DELETE, IDS_DELETE);
+    context_menu_model_->AddItemWithStringId(kContextMenuItemEdit, IDS_EDIT);
+    context_menu_model_->AddItemWithStringId(kContextMenuItemDelete,
+                                             IDS_DELETE);
     context_menu_model_->AddItemWithStringId(
-        IDS_BOOKMARK_EDITOR_NEW_FOLDER_MENU_ITEM,
-        IDS_BOOKMARK_EDITOR_NEW_FOLDER_MENU_ITEM);
+        kContextMenuItemNewFolder, IDS_BOOKMARK_EDITOR_NEW_FOLDER_MENU_ITEM);
   }
   return context_menu_model_.get();
 }

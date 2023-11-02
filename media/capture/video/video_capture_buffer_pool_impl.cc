@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,30 +16,30 @@
 #include "media/capture/video/video_capture_buffer_tracker_factory_impl.h"
 #include "ui/gfx/buffer_format_util.h"
 
-#if defined(OS_WIN)
-#include "media/capture/video/win/video_capture_buffer_tracker_factory_win.h"
-#endif  // defined(OS_WIN)
-
 namespace media {
 
 VideoCaptureBufferPoolImpl::VideoCaptureBufferPoolImpl(
     VideoCaptureBufferType buffer_type)
-    : VideoCaptureBufferPoolImpl(buffer_type,
-                                 kVideoCaptureDefaultMaxBufferPoolSize) {}
+    : VideoCaptureBufferPoolImpl(
+          buffer_type,
+          kVideoCaptureDefaultMaxBufferPoolSize,
+          std::make_unique<media::VideoCaptureBufferTrackerFactoryImpl>()) {}
 
 VideoCaptureBufferPoolImpl::VideoCaptureBufferPoolImpl(
     VideoCaptureBufferType buffer_type,
     int count)
+    : VideoCaptureBufferPoolImpl(
+          buffer_type,
+          count,
+          std::make_unique<media::VideoCaptureBufferTrackerFactoryImpl>()) {}
+
+VideoCaptureBufferPoolImpl::VideoCaptureBufferPoolImpl(
+    VideoCaptureBufferType buffer_type,
+    int count,
+    std::unique_ptr<VideoCaptureBufferTrackerFactory> buffer_tracker_factory)
     : buffer_type_(buffer_type),
       count_(count),
-#if defined(OS_WIN)
-      buffer_tracker_factory_(
-          std::make_unique<media::VideoCaptureBufferTrackerFactoryWin>())
-#else
-      buffer_tracker_factory_(
-          std::make_unique<media::VideoCaptureBufferTrackerFactoryImpl>())
-#endif
-{
+      buffer_tracker_factory_(std::move(buffer_tracker_factory)) {
   DCHECK_GT(count, 0);
 }
 
@@ -69,39 +69,6 @@ VideoCaptureBufferPoolImpl::DuplicateAsMojoBuffer(int buffer_id) {
   return tracker->DuplicateAsMojoBuffer();
 }
 
-mojom::SharedMemoryViaRawFileDescriptorPtr
-VideoCaptureBufferPoolImpl::CreateSharedMemoryViaRawFileDescriptorStruct(
-    int buffer_id) {
-// This requires platforms where base::SharedMemoryHandle is backed by a
-// file descriptor.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  base::AutoLock lock(lock_);
-
-  VideoCaptureBufferTracker* tracker = GetTracker(buffer_id);
-  if (!tracker) {
-    NOTREACHED() << "Invalid buffer_id.";
-    return 0u;
-  }
-
-  // Convert the mojo::ScopedSharedBufferHandle to a PlatformSharedMemoryRegion
-  // in order to extract the platform file descriptor.
-  base::subtle::PlatformSharedMemoryRegion platform_region =
-      mojo::UnwrapPlatformSharedMemoryRegion(tracker->DuplicateAsMojoBuffer());
-  if (!platform_region.IsValid()) {
-    NOTREACHED();
-    return 0u;
-  }
-  base::subtle::ScopedFDPair fds = platform_region.PassPlatformHandle();
-  auto result = mojom::SharedMemoryViaRawFileDescriptor::New();
-  result->file_descriptor_handle = mojo::PlatformHandle(std::move(fds.fd));
-  result->shared_memory_size_in_bytes = tracker->GetMemorySizeInBytes();
-  return result;
-#else
-  NOTREACHED();
-  return mojom::SharedMemoryViaRawFileDescriptorPtr();
-#endif
-}
-
 std::unique_ptr<VideoCaptureBufferHandle>
 VideoCaptureBufferPoolImpl::GetHandleForInProcessAccess(int buffer_id) {
   base::AutoLock lock(lock_);
@@ -118,7 +85,6 @@ VideoCaptureBufferPoolImpl::GetHandleForInProcessAccess(int buffer_id) {
 gfx::GpuMemoryBufferHandle VideoCaptureBufferPoolImpl::GetGpuMemoryBufferHandle(
     int buffer_id) {
   base::AutoLock lock(lock_);
-
   VideoCaptureBufferTracker* tracker = GetTracker(buffer_id);
   if (!tracker) {
     NOTREACHED() << "Invalid buffer_id.";
@@ -279,8 +245,17 @@ VideoCaptureBufferPoolImpl::ReserveForProducerInternal(
   // Create the new tracker.
   const int new_buffer_id = next_buffer_id_++;
 
+  VideoCaptureBufferType buffer_type = buffer_type_;
+#if BUILDFLAG(IS_WIN)
+  // If the MediaFoundationD3D11VideoCapture path fails, a shared memory buffer
+  // is sent instead.
+  if (buffer_type == VideoCaptureBufferType::kGpuMemoryBuffer &&
+      pixel_format != PIXEL_FORMAT_NV12) {
+    buffer_type = VideoCaptureBufferType::kSharedMemory;
+  }
+#endif
   std::unique_ptr<VideoCaptureBufferTracker> tracker =
-      buffer_tracker_factory_->CreateTracker(buffer_type_);
+      buffer_tracker_factory_->CreateTracker(buffer_type);
   if (!tracker || !tracker->Init(dimensions, pixel_format, strides)) {
     DLOG(ERROR) << "Error initializing VideoCaptureBufferTracker";
     *buffer_id = kInvalidId;
@@ -300,5 +275,4 @@ VideoCaptureBufferTracker* VideoCaptureBufferPoolImpl::GetTracker(
   auto it = trackers_.find(buffer_id);
   return (it == trackers_.end()) ? nullptr : it->second.get();
 }
-
 }  // namespace media

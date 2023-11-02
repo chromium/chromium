@@ -1,0 +1,39 @@
+caption: Allows origin-keyed agent clustering by default.
+default: true
+desc: "This policy allows origin-keyed agent clustering by default.\n\n      The Origin-Agent-Cluster:\
+  \ HTTP header controls whether a document is\n      isolated in an origin-keyed\
+  \ agent cluster, or in a site-keyed agent\n      cluster. This has security implications\
+  \ since an origin-keyed agent\n      cluster allows isolating documents by origin.\
+  \ The developer-visible\n      consequence of this is that the document.domain accessor\
+  \ can no longer\n      be set.\n\n      The default behaviour - when no Origin-Agent-Cluster:\
+  \ header has been set\n      - changes in M106 from site-keyed to origin-keyed.\
+  \ If this policy\n      is enabled or not set, the browser will follow this new\
+  \ default from that\n      version on. If this policy is disabled this change is\
+  \ reversed and\n      documents without Origin-Agent-Cluster: headers will be assigned\
+  \ to\n      site-keyed agent clusters. As a consequence, the document.domain accessor\n\
+  \      remains settable by default. This matches the legacy behaviour.\n\n     \
+  \ See https://developer.chrome.com/blog/immutable-document-domain/\n      for additional\
+  \ details.\n      "
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: By default, documents may be put in origin-keyed agent clusters. document.domain
+    is not settable for such documents.
+  value: true
+- caption: By default, documents are put in site-keyed agent clusters. document.domain
+    remains settable.
+  value: false
+owners:
+- vogelheim@chromium.org
+- chrome-security-owp-team@google.com
+schema:
+  type: boolean
+supported_on:
+- chrome.*:100-
+- chrome_os:100-
+tags: []
+type: main

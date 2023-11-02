@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rule.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -27,9 +26,9 @@ class CORE_EXPORT SpeculationRuleSet final
   // If provided, |out_error| may be populated with an error/warning message.
   // A warning may be present even if parsing succeeds, to indicate a case that,
   // though valid, is likely to be an error.
-  static SpeculationRuleSet* ParseInline(const String& source_text,
-                                         const KURL& base_url,
-                                         String* out_error = nullptr);
+  static SpeculationRuleSet* Parse(const String& source_text,
+                                   const KURL& base_url,
+                                   String* out_error = nullptr);
 
   const HeapVector<Member<SpeculationRule>>& prefetch_rules() const {
     return prefetch_rules_;

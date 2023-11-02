@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,14 +49,14 @@ WebString TestWebFrameContentDumper::DumpAsMarkup(WebLocalFrame* frame) {
 WebString TestWebFrameContentDumper::DumpLayoutTreeAsText(
     WebLocalFrame* frame,
     LayoutAsTextControls to_show) {
-  LayoutAsTextBehavior behavior = kLayoutAsTextShowAllLayers;
+  LayoutAsTextBehavior behavior = 0;
 
   if (to_show & kLayoutAsTextWithLineTrees)
     behavior |= kLayoutAsTextShowLineTrees;
 
   if (to_show & kLayoutAsTextDebug) {
-    behavior |= kLayoutAsTextShowCompositedLayers | kLayoutAsTextShowAddresses |
-                kLayoutAsTextShowIDAndClass | kLayoutAsTextShowLayerNesting;
+    behavior |= kLayoutAsTextShowAddresses | kLayoutAsTextShowIDAndClass |
+                kLayoutAsTextShowLayerNesting;
   }
 
   if (to_show & kLayoutAsTextPrinting)

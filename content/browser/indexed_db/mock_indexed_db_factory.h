@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,7 @@ class MockIndexedDBFactory : public IndexedDBFactory {
                     const base::FilePath& data_directory));
   MOCK_METHOD3(GetDatabaseInfo,
                void(scoped_refptr<IndexedDBCallbacks> callbacks,
-                    const blink::StorageKey& storage_key,
+                    const storage::BucketLocator& bucket_locator,
                     const base::FilePath& data_directory));
   MOCK_METHOD4(OpenProxy,
                void(const std::u16string& name,
@@ -39,72 +39,75 @@ class MockIndexedDBFactory : public IndexedDBFactory {
   // Googlemock can't deal with move-only types, so *Proxy() is a workaround.
   void Open(const std::u16string& name,
             std::unique_ptr<IndexedDBPendingConnection> connection,
-            const blink::StorageKey& storage_key,
+            const storage::BucketLocator& bucket_locator,
             const base::FilePath& data_directory) override {
-    OpenProxy(name, connection.get(), storage_key, data_directory);
+    OpenProxy(name, connection.get(), bucket_locator.storage_key,
+              data_directory);
   }
   MOCK_METHOD5(DeleteDatabase,
                void(const std::u16string& name,
                     scoped_refptr<IndexedDBCallbacks> callbacks,
-                    const blink::StorageKey& storage_key,
+                    const storage::BucketLocator& bucket_locator,
                     const base::FilePath& data_directory,
                     bool force_close));
   MOCK_METHOD2(AbortTransactionsAndCompactDatabaseProxy,
                void(base::OnceCallback<void(leveldb::Status)>* callback,
-                    const blink::StorageKey& storage_key));
+                    const storage::BucketLocator& bucket_locator));
   void AbortTransactionsAndCompactDatabase(
       base::OnceCallback<void(leveldb::Status)> callback,
-      const blink::StorageKey& storage_key) override {
+      const storage::BucketLocator& bucket_locator) override {
     base::OnceCallback<void(leveldb::Status)>* callback_ref = &callback;
-    AbortTransactionsAndCompactDatabaseProxy(callback_ref, storage_key);
+    AbortTransactionsAndCompactDatabaseProxy(callback_ref, bucket_locator);
   }
   MOCK_METHOD2(AbortTransactionsForDatabaseProxy,
                void(base::OnceCallback<void(leveldb::Status)>* callback,
-                    const blink::StorageKey& storage_key));
+                    const storage::BucketLocator& bucket_locator));
   void AbortTransactionsForDatabase(
       base::OnceCallback<void(leveldb::Status)> callback,
-      const blink::StorageKey& storage_key) override {
+      const storage::BucketLocator& bucket_locator) override {
     base::OnceCallback<void(leveldb::Status)>* callback_ref = &callback;
-    AbortTransactionsForDatabaseProxy(callback_ref, storage_key);
+    AbortTransactionsForDatabaseProxy(callback_ref, bucket_locator);
   }
 
   MOCK_METHOD1(HandleBackingStoreFailure,
-               void(const blink::StorageKey& storage_key));
+               void(const storage::BucketLocator& bucket_locator));
   MOCK_METHOD2(HandleBackingStoreCorruption,
-               void(const blink::StorageKey& storage_key,
+               void(const storage::BucketLocator& bucket_locator,
                     const IndexedDBDatabaseError& error));
   // The Android NDK implements a subset of STL, and the gtest templates can't
   // deal with std::pair's. This means we can't use GoogleMock for this method
-  std::vector<IndexedDBDatabase*> GetOpenDatabasesForStorageKey(
-      const blink::StorageKey& storage_key) const override;
+  std::vector<IndexedDBDatabase*> GetOpenDatabasesForBucket(
+      const storage::BucketLocator& bucket_locator) const override;
   MOCK_METHOD2(ForceClose,
-               void(const blink::StorageKey& storage_key,
+               void(storage::BucketId bucket_locator,
                     bool delete_in_memory_store));
   MOCK_METHOD1(ForceSchemaDowngrade,
-               void(const blink::StorageKey& storage_key));
-  MOCK_METHOD1(HasV2SchemaCorruption,
-               V2SchemaCorruptionStatus(const blink::StorageKey& storage_key));
+               void(const storage::BucketLocator& bucket_locator));
+  MOCK_METHOD1(
+      HasV2SchemaCorruption,
+      V2SchemaCorruptionStatus(const storage::BucketLocator& bucket_locator));
   MOCK_METHOD0(ContextDestroyed, void());
 
-  MOCK_METHOD1(BlobFilesCleaned, void(const blink::StorageKey& storage_key));
+  MOCK_METHOD1(BlobFilesCleaned,
+               void(const storage::BucketLocator& bucket_locator));
 
   MOCK_CONST_METHOD1(GetConnectionCount,
-                     size_t(const blink::StorageKey& storage_key));
+                     size_t(storage::BucketId bucket_locator));
 
   MOCK_CONST_METHOD1(GetInMemoryDBSize,
-                     int64_t(const blink::StorageKey& storage_key));
+                     int64_t(const storage::BucketLocator& bucket_locator));
 
   MOCK_CONST_METHOD1(GetLastModified,
-                     base::Time(const blink::StorageKey& storage_key));
+                     base::Time(const storage::BucketLocator& bucket_locator));
 
   MOCK_METHOD2(ReportOutstandingBlobs,
-               void(const blink::StorageKey& storage_key,
+               void(const storage::BucketLocator& bucket_locator,
                     bool blobs_outstanding));
 
   MOCK_METHOD1(NotifyIndexedDBListChanged,
                void(const blink::StorageKey& storage_key));
   MOCK_METHOD3(NotifyIndexedDBContentChanged,
-               void(const blink::StorageKey& storage_key,
+               void(const storage::BucketLocator& bucket_locator,
                     const std::u16string& database_name,
                     const std::u16string& object_store_name));
 };

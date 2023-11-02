@@ -3,12 +3,14 @@ include_rules = [
   "+cc/debug",
   "+cc/output",
   "+cc/paint",
-  "+chromeos/cryptohome",
+  "+components/access_code_cast",
   "+components/account_id",
+  "+components/app_constants",
   "+components/app_restore",
   "+components/desks_storage",
   "+components/discardable_memory/public",
   "+components/discardable_memory/service/discardable_shared_memory_manager.h",
+  "+components/fullscreen_control",
   "+components/language/core/browser/pref_names.h",
   "+components/live_caption",
   "+components/media_message_center",
@@ -20,10 +22,13 @@ include_rules = [
   "+components/strings",
   "+components/sync",
   "+components/ui_devtools",
+  "+components/url_matcher",
   "+components/vector_icons",
+  "+components/version_info",
   "+components/viz/common",
   "+components/viz/host",
   "+components/wallpaper",
+  "+crypto",
   "+dbus",
   "+extensions/common/constants.h",
   "+gpu/config",
@@ -32,6 +37,7 @@ include_rules = [
   "+services/device/public",
   "+services/data_decoder/public",
   "+services/media_session/public",
+  "+services/video_capture/public/mojom",
   "+services/network/public",
   "+services/network/test",
   "+services/preferences/public",
@@ -54,30 +60,40 @@ include_rules = [
   # code out of //chromeos into //ash.
   "-chromeos",
   # //ash can use chromeos components that sit below it in the dependency tree.
-  "+chromeos/components/feature_usage",
-  "+chromeos/components/multidevice",
-  "+chromeos/components/proximity_auth/public",
+  "+chromeos/ash/components/audio",
+  "+chromeos/ash/components/cryptohome",
+  "+chromeos/ash/components/feature_usage",
+  "+chromeos/ash/components/human_presence",
+  "+chromeos/ash/components/local_search_service",
+  "+chromeos/ash/components/login/auth",
+  "+chromeos/ash/components/multidevice",
+  "+chromeos/ash/components/proximity_auth",
+  "+chromeos/components/quick_answers",
+  "+chromeos/components/security_token_pin",
   "+chromeos/components/sensors",
+  "+chromeos/components/webauthn",
+  "+chromeos/constants",
   # crosapi is an API to support lacros.
   "+chromeos/crosapi",
   # //ash can access all D-Bus client libraries. The mustash project previously
   # limit D-Bus communication to a subset of OS daemons, but that project
   # stopped in 2019. See //ash/README.md.
+  "+chromeos/ash/components/dbus",
+  # TODO(https://crbug.com/1164001): removed after all clients have migrated.
   "+chromeos/dbus",
   # //ash should use code in //ash/session to get login state. The state in
   # //ash/session and the state in //chromeos/login/login_state are both
   # derived from the canonical state in the browser. Using both sources could
   # create subtle inconsistencies based on when observers are called.
   "-chromeos/login/login_state",
-  "+chromeos/network",
+  "+chromeos/ash/components/network",
   # //ash can use the public interfaces of various services.
-  "+chromeos/services/assistant/public" ,
-  "+chromeos/services/assistant/test_support",
-  "+chromeos/services/bluetooth_config",
-  "+chromeos/services/libassistant/public",
+  "+chromeos/ash/services/assistant/public/cpp" ,
+  "+chromeos/ash/services/assistant/test_support",
+  "+chromeos/ash/services/bluetooth_config",
+  "+chromeos/ash/services/libassistant/public",
+  "+chromeos/ash/services/nearby/public",
   "+chromeos/services/machine_learning/public",
-  "+chromeos/services/multidevice_setup/public",
-  "+chromeos/services/nearby/public",
   "+chromeos/services/network_config/public",
   "+chromeos/services/power/public",
   "+chromeos/strings",
@@ -103,9 +119,6 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "ash_service\.*": [
-    "+chromeos/cryptohome",
-  ],
   "policy_recommendation_restorer_unittest.cc": [
     "+components/sync_preferences/testing_pref_service_syncable.h"
   ],
@@ -114,12 +127,6 @@ specific_include_rules = {
   ],
   "shell.cc": [
     "+ash/host/ash_window_tree_host_init_params.h"
-  ],
-  "shell_delegate.h": [
-    "+components/favicon_base/favicon_callback.h"
-  ],
-  "test_shell_delegate.h": [
-    "+components/favicon_base/favicon_callback.h"
   ],
   "window_manager.cc": [
     "+ash/host/ash_window_tree_host.h"

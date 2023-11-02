@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -84,7 +84,7 @@ void ServiceWorkerClient::postMessage(ScriptState* script_state,
                                       HeapVector<ScriptValue>& transfer,
                                       ExceptionState& exception_state) {
   PostMessageOptions* options = PostMessageOptions::Create();
-  if (!transfer.IsEmpty())
+  if (!transfer.empty())
     options->setTransfer(transfer);
   postMessage(script_state, message, options, exception_state);
 }
@@ -112,11 +112,8 @@ void ServiceWorkerClient::postMessage(ScriptState* script_state,
   if (exception_state.HadException())
     return;
 
-  if (msg.message->IsLockedToAgentCluster()) {
-    msg.locked_agent_cluster_id = context->GetAgentClusterID();
-  } else {
-    msg.locked_agent_cluster_id = absl::nullopt;
-  }
+  msg.sender_agent_cluster_id = context->GetAgentClusterID();
+  msg.locked_to_sender_agent_cluster = msg.message->IsLockedToAgentCluster();
 
   To<ServiceWorkerGlobalScope>(context)
       ->GetServiceWorkerHost()

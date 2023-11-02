@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/tracing/chrome_tracing_delegate.h"
-#include "chromeos/tpm/stub_install_attributes.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_observer.h"
 #include "components/prefs/pref_service.h"
@@ -69,7 +69,7 @@ class DeviceSystemWideTracingEnabledPolicyConsumerOwnedTest
   }
   ~DeviceSystemWideTracingEnabledPolicyConsumerOwnedTest() override = default;
 
-  chromeos::ScopedStubInstallAttributes install_attributes_;
+  ash::ScopedStubInstallAttributes install_attributes_;
 };
 
 // Test that system-wide tracing is enabled by default for a consumer-owned
@@ -90,7 +90,7 @@ class DeviceSystemWideTracingEnabledPolicyEnterpriseManagedTest
   ~DeviceSystemWideTracingEnabledPolicyEnterpriseManagedTest() override =
       default;
 
-  chromeos::ScopedStubInstallAttributes install_attributes_;
+  ash::ScopedStubInstallAttributes install_attributes_;
 };
 
 // Test that system-wide tracing is disabled by default for a managed device and

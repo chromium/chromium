@@ -1,6 +1,0 @@
-include_rules = [
-  "+components/exo",
-  "+components/profile_metrics",
-  "+content/public/browser",
-  "+third_party/grpc",
-]

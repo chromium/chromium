@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,16 +9,16 @@ import {DropPosition, IncognitoAvailability, MenuSource} from './constants.js';
  */
 
 // A normalized version of chrome.bookmarks.BookmarkTreeNode.
-export type BookmarkNode = {
-  id: string,
-  title: string,
-  parentId?: string,
-  url?: string,
-  dateAdded?: number,
-  dateGroupModified?: number,
-  unmodifiable?: string,
-  children?: string[],
-};
+export interface BookmarkNode {
+  id: string;
+  title: string;
+  parentId?: string;
+  url?: string;
+  dateAdded?: number;
+  dateGroupModified?: number;
+  unmodifiable?: string;
+  children?: string[];
+}
 
 export interface ObjectMap<Type> {
   [index: string]: Type;
@@ -27,18 +27,18 @@ export interface ObjectMap<Type> {
 export type NodeMap = ObjectMap<BookmarkNode>;
 
 // |items| is used as a set and all values in the map are true.
-export type SelectionState = {
-  items: Set<string>,
-  anchor?: string|null,
-};
+export interface SelectionState {
+  items: Set<string>;
+  anchor?: string|null;
+}
 
-export type OpenCommandMenuDetail = {
-  x?: number,
-  y?: number,
-  source: MenuSource,
-  targetId?: string,
-  targetElement?: HTMLElement,
-};
+export interface OpenCommandMenuDetail {
+  x?: number;
+  y?: number;
+  source: MenuSource;
+  targetId?: string;
+  targetElement?: HTMLElement;
+}
 
 /**
  * Note:
@@ -52,31 +52,32 @@ export type OpenCommandMenuDetail = {
  *   to know the exact search term used to generate |results|, you'll need to
  *   add a new field to the state to track it (eg, SearchState.resultsTerm).
  */
-export type SearchState = {
-  term: string,
-  inProgress: boolean,
-  results: string[]|null,
-};
+export interface SearchState {
+  term: string;
+  inProgress: boolean;
+  results: string[]|null;
+}
 
 export type FolderOpenState = Map<string, boolean>;
 
-export type PreferencesState = {
-  canEdit: boolean, incognitoAvailability: IncognitoAvailability;
-};
+export interface PreferencesState {
+  canEdit: boolean;
+  incognitoAvailability: IncognitoAvailability;
+}
 
-export type BookmarksPageState = {
-  nodes: NodeMap,
-  selectedFolder: string,
-  folderOpenState: FolderOpenState,
-  prefs: PreferencesState,
-  search: SearchState,
-  selection: SelectionState,
-};
+export interface BookmarksPageState {
+  nodes: NodeMap;
+  selectedFolder: string;
+  folderOpenState: FolderOpenState;
+  prefs: PreferencesState;
+  search: SearchState;
+  selection: SelectionState;
+}
 
-export type DropDestination = {
-  element: BookmarkElement,
-  position: DropPosition,
-};
+export interface DropDestination {
+  element: BookmarkElement;
+  position: DropPosition;
+}
 
 export class BookmarkElement extends HTMLElement {
   itemId: string = '';

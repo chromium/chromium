@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -65,8 +65,9 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   bool KeyboardTraversalEngaged() override;
   void StartAssistant() override {}
   void StartSearch(const std::u16string& raw_query) override {}
+  void StartZeroStateSearch(base::OnceClosure callback,
+                            base::TimeDelta timeout) override;
   void OpenSearchResult(const std::string& result_id,
-                        ash::AppListSearchResultType result_type,
                         int event_flags,
                         ash::AppListLaunchedFrom launched_from,
                         ash::AppListLaunchType launch_type,
@@ -80,14 +81,12 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   void ViewShown(int64_t display_id) override {}
   void DismissAppList() override;
   void ViewClosing() override {}
-  const std::vector<SkColor>& GetWallpaperProminentColors() override;
   void ActivateItem(const std::string& id,
                     int event_flags,
                     ash::AppListLaunchedFrom launched_from) override;
   void GetContextMenuModel(const std::string& id,
+                           AppListItemContext item_context,
                            GetContextMenuModelCallback callback) override;
-  void SortAppList(AppListSortOrder order) override {}
-  void RevertAppListSort() override {}
   ui::ImplicitAnimationObserver* GetAnimationObserver(
       ash::AppListViewState target_state) override;
   void ShowWallpaperContextMenu(const gfx::Point& onscreen_location,
@@ -98,10 +97,6 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   ash::AssistantViewDelegate* GetAssistantViewDelegate() override;
   void OnSearchResultVisibilityChanged(const std::string& id,
                                        bool visibility) override;
-  void NotifySearchResultsForLogging(
-      const std::u16string& raw_query,
-      const ash::SearchResultIdWithPositionIndices& results,
-      int position_index) override;
   void MaybeIncreaseSuggestedContentInfoShownCount() override;
   bool IsAssistantAllowedAndEnabled() const override;
   bool ShouldShowSuggestedContentInfo() const override;
@@ -120,8 +115,11 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   bool AppListTargetVisibility() const override;
   bool IsInTabletMode() override;
   AppListNotifier* GetNotifier() override;
-  int AdjustAppListViewScrollOffset(int offset, ui::EventType type) override;
   void LoadIcon(const std::string& app_id) override {}
+  bool HasValidProfile() const override;
+  bool ShouldHideContinueSection() const override;
+  void SetHideContinueSection(bool hide) override;
+  void CommitTemporarySortOrder() override {}
 
   // Do a bulk replacement of the items in the model.
   void ReplaceTestModel(int item_count);
@@ -152,7 +150,6 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   AppListModelProvider model_provider_;
   std::unique_ptr<AppListTestModel> model_;
   std::unique_ptr<SearchModel> search_model_;
-  std::vector<SkColor> wallpaper_prominent_colors_;
 };
 
 }  // namespace test

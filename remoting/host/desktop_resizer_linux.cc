@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,22 +21,29 @@ class DesktopResizerLinux : public DesktopResizer {
   DesktopResizerLinux& operator=(const DesktopResizerLinux&) = delete;
   ~DesktopResizerLinux() override = default;
 
-  ScreenResolution GetCurrentResolution() override {
+  ScreenResolution GetCurrentResolution(webrtc::ScreenId screen_id) override {
     NOTIMPLEMENTED();
     return ScreenResolution();
   }
 
   std::list<ScreenResolution> GetSupportedResolutions(
-      const ScreenResolution& preferred) override {
+      const ScreenResolution& preferred,
+      webrtc::ScreenId screen_id) override {
     NOTIMPLEMENTED();
     return std::list<ScreenResolution>();
   }
 
-  void SetResolution(const ScreenResolution& resolution) override {
+  void SetResolution(const ScreenResolution& resolution,
+                     webrtc::ScreenId screen_id) override {
     NOTIMPLEMENTED();
   }
 
-  void RestoreResolution(const ScreenResolution& original) override {
+  void RestoreResolution(const ScreenResolution& original,
+                         webrtc::ScreenId screen_id) override {
+    NOTIMPLEMENTED();
+  }
+
+  void SetVideoLayout(const protocol::VideoLayout& layout) override {
     NOTIMPLEMENTED();
   }
 };

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,29 +8,25 @@
  */
 
 import 'chrome://resources/js/action_link.js';
-import 'chrome://resources/cr_elements/action_link_css.m.js';
+import 'chrome://resources/cr_elements/action_link.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '../controls/extension_controlled_indicator.js';
-import '../settings_shared_css.js';
+import '../settings_shared.css.js';
 import './startup_url_dialog.js';
 
-import {CrScrollableBehavior} from 'chrome://resources/cr_elements/cr_scrollable_behavior.m.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrScrollableMixin} from 'chrome://resources/cr_elements/cr_scrollable_mixin.js';
+import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
+import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {EDIT_STARTUP_URL_EVENT} from './startup_url_entry.js';
+import {getTemplate} from './startup_urls_page.html.js';
 import {StartupPageInfo, StartupUrlsPageBrowserProxy, StartupUrlsPageBrowserProxyImpl} from './startup_urls_page_browser_proxy.js';
 
 
 const SettingsStartupUrlsPageElementBase =
-    mixinBehaviors(
-        [CrScrollableBehavior], WebUIListenerMixin(PolymerElement)) as {
-      new ():
-          PolymerElement & WebUIListenerMixinInterface & CrScrollableBehavior
-    };
+    CrScrollableMixin(WebUIListenerMixin(PolymerElement));
 
 export class SettingsStartupUrlsPageElement extends
     SettingsStartupUrlsPageElementBase {
@@ -39,7 +35,7 @@ export class SettingsStartupUrlsPageElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -59,7 +55,7 @@ export class SettingsStartupUrlsPageElement extends
   }
 
   prefs: Object;
-  private startupPages_: Array<StartupPageInfo>;
+  private startupPages_: StartupPageInfo[];
   private showStartupUrlDialog_: boolean;
   private startupUrlDialogModel_: StartupPageInfo|null;
   private lastFocused_: HTMLElement;
@@ -77,11 +73,11 @@ export class SettingsStartupUrlsPageElement extends
     this.startupUrlDialogAnchor_ = null;
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.addWebUIListener(
-        'update-startup-pages', (startupPages: Array<StartupPageInfo>) => {
+        'update-startup-pages', (startupPages: StartupPageInfo[]) => {
           // If an "edit" URL dialog was open, close it, because the underlying
           // page might have just been removed (and model indices have changed
           // anyway).
@@ -114,7 +110,7 @@ export class SettingsStartupUrlsPageElement extends
     this.showStartupUrlDialog_ = false;
     this.startupUrlDialogModel_ = null;
     if (this.startupUrlDialogAnchor_) {
-      focusWithoutInk(assert(this.startupUrlDialogAnchor_));
+      focusWithoutInk(this.startupUrlDialogAnchor_);
       this.startupUrlDialogAnchor_ = null;
     }
   }

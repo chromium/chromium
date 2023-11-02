@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,9 +56,11 @@ TEST(PaintOpHelper, ConcatToString) {
 }
 
 TEST(PaintOpHelper, DrawColorToString) {
-  DrawColorOp op(SkColorSetARGB(11, 22, 33, 44), SkBlendMode::kSrc);
+  DrawColorOp op({0.1, 0.2, 0.3, 0.4}, SkBlendMode::kSrc);
   std::string str = PaintOpHelper::ToString(&op);
-  EXPECT_EQ(str, "DrawColorOp(color=rgba(22, 33, 44, 11), mode=kSrc)");
+  EXPECT_EQ(str,
+            "DrawColorOp(color=rgba(0.100000, 0.200000, 0.300000, 0.400000), "
+            "mode=kSrc)");
 }
 
 TEST(PaintOpHelper, DrawDRRectToString) {
@@ -270,7 +272,7 @@ TEST(PaintOpHelper, SaveLayerToString) {
 
 TEST(PaintOpHelper, SaveLayerAlphaToString) {
   SkRect bounds = SkRect::MakeXYWH(1, 2, 3, 4);
-  SaveLayerAlphaOp op(&bounds, 255);
+  SaveLayerAlphaOp op(&bounds, 1.0f);
   std::string str = PaintOpHelper::ToString(&op);
   EXPECT_EQ(str,
             "SaveLayerAlphaOp(bounds=[1.000,2.000 3.000x4.000], alpha=255)");

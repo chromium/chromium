@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import time
@@ -17,6 +17,7 @@ class ToughFastScrollingPage(rendering_story.RenderingStory):
   SPEED_IN_PIXELS_PER_SECOND = None
   SYNTHETIC_GESTURE_SOURCE = page_action.GESTURE_SOURCE_DEFAULT
   TAGS = [story_tags.GPU_RASTERIZATION, story_tags.TOUGH_SCROLLING]
+  USE_FLING_SCROLL = False
 
   def __init__(self,
                page_set,
@@ -37,25 +38,52 @@ class ToughFastScrollingPage(rendering_story.RenderingStory):
     start = time.time()
     selector = self.SELECTOR
     with action_runner.CreateGestureInteraction('ScrollAction'):
-      direction = 'down'
+      direction = 'up' if self.USE_FLING_SCROLL else 'down'
       # Some of the metrics the benchmark reports require the scroll to run for
       # a few seconds (5+). Therefore, scroll the page for long enough that
       # these metrics are accurately reported.
       while time.time() - start < 15:
-        if selector is None:
-          action_runner.ScrollPage(
+        if self.USE_FLING_SCROLL:
+          action_runner.SwipePage(
               direction=direction,
-              speed_in_pixels_per_second=self.SPEED_IN_PIXELS_PER_SECOND,
-              synthetic_gesture_source=self.SYNTHETIC_GESTURE_SOURCE)
+              speed_in_pixels_per_second=self.SPEED_IN_PIXELS_PER_SECOND)
+          action_runner.Wait(1)
         else:
-          # When there is a `selector` specified, scroll just that particular
-          # element, rather than the entire page.
-          action_runner.ScrollElement(
-              selector=selector,
-              direction=direction,
-              speed_in_pixels_per_second=self.SPEED_IN_PIXELS_PER_SECOND,
-              synthetic_gesture_source=self.SYNTHETIC_GESTURE_SOURCE)
+          if selector is None:
+            action_runner.ScrollPage(
+                direction=direction,
+                speed_in_pixels_per_second=self.SPEED_IN_PIXELS_PER_SECOND,
+                synthetic_gesture_source=self.SYNTHETIC_GESTURE_SOURCE)
+          else:
+            # When there is a `selector` specified, scroll just that particular
+            # element, rather than the entire page.
+            action_runner.ScrollElement(
+                selector=selector,
+                direction=direction,
+                speed_in_pixels_per_second=self.SPEED_IN_PIXELS_PER_SECOND,
+                synthetic_gesture_source=self.SYNTHETIC_GESTURE_SOURCE)
         direction = 'up' if direction == 'down' else 'down'
+
+
+class FlingingText05000Page(ToughFastScrollingPage):
+  BASE_NAME = 'text_fling_05000_pixels_per_second'
+  URL = 'file://../tough_scrolling_cases/text.html'
+  USE_FLING_SCROLL = True
+  SPEED_IN_PIXELS_PER_SECOND = 5000
+
+
+class FlingingText10000Page(ToughFastScrollingPage):
+  BASE_NAME = 'text_fling_10000_pixels_per_second'
+  URL = 'file://../tough_scrolling_cases/text.html'
+  USE_FLING_SCROLL = True
+  SPEED_IN_PIXELS_PER_SECOND = 10000
+
+
+class FlingingText20000Page(ToughFastScrollingPage):
+  BASE_NAME = 'text_fling_20000_pixels_per_second'
+  URL = 'file://../tough_scrolling_cases/text.html'
+  USE_FLING_SCROLL = True
+  SPEED_IN_PIXELS_PER_SECOND = 20000
 
 
 class ScrollingText5000Page(ToughFastScrollingPage):

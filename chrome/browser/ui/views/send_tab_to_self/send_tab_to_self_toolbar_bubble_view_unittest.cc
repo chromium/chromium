@@ -1,8 +1,8 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_view_impl.h"
+#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_device_picker_bubble_view.h"
 
 #include <vector>
 
@@ -24,7 +24,7 @@ class SendTabToSelfToolbarBubbleViewTest : public ChromeViewsTestBase {};
 TEST_F(SendTabToSelfToolbarBubbleViewTest, ButtonNavigatesToPage) {
   GURL url("https://www.example.com");
   SendTabToSelfEntry entry("guid", url, "Example", base::Time::Now(),
-                           base::Time::Now(), "Example Device", "sync_guid");
+                           "Example Device", "sync_guid");
   SendTabToSelfToolbarBubbleView bubble(
       nullptr, nullptr, entry,
       base::BindLambdaForTesting([&](NavigateParams* params) {

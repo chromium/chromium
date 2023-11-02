@@ -28,7 +28,6 @@
  */
 
 #include "third_party/blink/renderer/platform/geometry/float_polygon.h"
-#include "third_party/blink/renderer/platform/geometry/float_shape_helpers.h"
 
 #include <memory>
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"

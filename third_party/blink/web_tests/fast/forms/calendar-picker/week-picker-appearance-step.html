@@ -1,22 +1,12 @@
 <!DOCTYPE html>
-<html>
-<head>
-<script>
-window.enablePixelTesting = true;
-</script>
-<script src="../../../resources/js-test.js"></script>
-<script src="../../forms/resources/picker-common.js"></script>
-<script src="resources/calendar-picker-common.js"></script>
-</head>
-<body>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="../resources/picker-common.js"></script>
+
 <!-- Check if step attribute is reflected in the appearance of the calendar picker.  -->
-<input type="week" id="week" min="2008-W07" value="2010-W12" max="2010-W12" step="3">
-
-<p id="description" style="opacity: 0"></p>
-<div id="console" style="opacity: 0"></div>
+<input type="week" min="2008-W07" value="2010-W12" max="2010-W12" step="3">
 
 <script>
-openPickerAppearanceOnly(document.getElementById('week'), finishJSTest);
+  window.onload = openPickerAppearanceOnly(document.querySelector('input'));
 </script>
-</body>
-</html>
+

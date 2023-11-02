@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,8 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/values.h"
-
 #include "content/test/fuzzer/fuzzer_support.h"
+#include "testing/libfuzzer/libfuzzer_exports.h"
 
 extern "C" size_t LLVMFuzzerMutate(uint8_t* Data, size_t Size, size_t MaxSize);
 
@@ -125,7 +125,7 @@ class NodeList : public std::vector<std::unique_ptr<Node>> {
   std::unique_ptr<base::Value> ToJson() const {
     std::unique_ptr<base::ListValue> result(new base::ListValue());
     for (const auto& node : *this) {
-      result->Append(node->ToJson());
+      result->GetList().Append(base::Value::FromUniquePtrValue(node->ToJson()));
     }
     return std::move(result);
   }
@@ -153,12 +153,11 @@ class NodeList : public std::vector<std::unique_ptr<Node>> {
   AttrPosition PickRandomAttribute(Random* rnd);
 
   void ParseJson(const base::Value& value) {
-    const base::ListValue* list;
-    if (!value.GetAsList(&list)) {
+    if (!value.is_list()) {
       return;
     }
 
-    for (const auto& listItem : list->GetList()) {
+    for (const auto& listItem : value.GetList()) {
       std::unique_ptr<Node> node(Node::ParseJson(listItem));
       if (node) {
         push_back(std::move(node));
@@ -251,7 +250,7 @@ class Element : public Node {
 
  protected:
   void ParseJson(const base::DictionaryValue& dict) override {
-    CHECK(dict.HasKey("e"));
+    CHECK(dict.FindKey("e"));
     dict.GetString("e", &tag_name_);
 
     const base::ListValue* list;
@@ -260,11 +259,9 @@ class Element : public Node {
 
     const base::DictionaryValue* attrsDict;
     if (dict.GetDictionary("a", &attrsDict)) {
-      for (base::DictionaryValue::Iterator it(*attrsDict); !it.IsAtEnd();
-           it.Advance()) {
-        std::string value;
-        if (it.value().GetAsString(&value))
-          attrs_[it.key()] = value;
+      for (const auto item : attrsDict->GetDict()) {
+        if (item.second.is_string())
+          attrs_[item.first] = item.second.GetString();
       }
     }
   }
@@ -305,7 +302,7 @@ class Text : public Node {
   }
 
   void ParseJson(const base::DictionaryValue& dict) override {
-    CHECK(dict.HasKey("t"));
+    CHECK(dict.FindKey("t"));
     dict.GetString("t", &text_);
   }
 
@@ -381,9 +378,9 @@ std::unique_ptr<Node> Node::ParseJson(const base::Value& value) {
 
   std::unique_ptr<Node> node;
 
-  if (dict->HasKey("t")) {
+  if (dict->FindKey("t")) {
     node.reset(new Text());
-  } else if (dict->HasKey("e")) {
+  } else if (dict->FindKey("e")) {
     node.reset(new Element());
   } else {
     LOG(ERROR) << "Bad node";
@@ -396,10 +393,7 @@ std::unique_ptr<Node> Node::ParseJson(const base::Value& value) {
 }
 
 static bool Mutate_InsertNode(NodeList* nodes, Random* rnd) {
-  NodeList* list = nullptr;
-  NodeList::iterator pos;
-
-  std::tie(list, pos) = nodes->PickRandomPos(
+  auto [list, pos] = nodes->PickRandomPos(
       rnd, [](const NodeList::NodePosition&) { return true; });
 
   list->insert(pos, Node::CreateRandom(rnd));
@@ -407,10 +401,7 @@ static bool Mutate_InsertNode(NodeList* nodes, Random* rnd) {
 }
 
 static bool Mutate_Text(NodeList* nodes, Random* rnd) {
-  NodeList* list = nullptr;
-  NodeList::iterator pos;
-
-  std::tie(list, pos) =
+  auto [list, pos] =
       nodes->PickRandomPos(rnd, [](const NodeList::NodePosition& p) {
         return p.second != p.first->end() && (*p.second)->IsText();
       });
@@ -422,10 +413,7 @@ static bool Mutate_Text(NodeList* nodes, Random* rnd) {
 }
 
 static bool Mutate_DeleteNode(NodeList* nodes, Random* rnd) {
-  NodeList* list = nullptr;
-  NodeList::iterator pos;
-
-  std::tie(list, pos) =
+  auto [list, pos] =
       nodes->PickRandomPos(rnd, [](const NodeList::NodePosition& p) {
         return p.second != p.first->end();
       });
@@ -500,10 +488,7 @@ static bool Mutate_AddAttribute(NodeList* nodes, Random* rnd) {
                                          "width",       "wrap"});
   }
 
-  NodeList* list = nullptr;
-  NodeList::iterator pos;
-
-  std::tie(list, pos) =
+  auto [list, pos] =
       nodes->PickRandomPos(rnd, [](const NodeList::NodePosition& p) {
         return p.second != p.first->end() && (*p.second)->IsElement();
       });
@@ -517,10 +502,7 @@ static bool Mutate_AddAttribute(NodeList* nodes, Random* rnd) {
 }
 
 static bool Mutate_DeleteAttribute(NodeList* nodes, Random* rnd) {
-  Attrs* attrs = nullptr;
-  Attrs::iterator pos;
-
-  std::tie(attrs, pos) = nodes->PickRandomAttribute(rnd);
+  auto [attrs, pos] = nodes->PickRandomAttribute(rnd);
 
   if (attrs == nullptr)
     return false;
@@ -530,10 +512,7 @@ static bool Mutate_DeleteAttribute(NodeList* nodes, Random* rnd) {
 }
 
 static bool Mutate_AttributeValue(NodeList* nodes, Random* rnd) {
-  Attrs* attrs = nullptr;
-  Attrs::iterator pos;
-
-  std::tie(attrs, pos) = nodes->PickRandomAttribute(rnd);
+  auto [attrs, pos] = nodes->PickRandomAttribute(rnd);
 
   if (attrs == nullptr)
     return false;

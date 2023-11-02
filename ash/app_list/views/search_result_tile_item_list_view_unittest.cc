@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,13 +15,13 @@
 #include "ash/app_list/views/search_result_view.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/test/test_app_list_color_provider.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/widget_test.h"
 
@@ -96,7 +96,7 @@ class SearchResultTileItemListViewTest
       result->set_result_id("InstalledApp " + base::NumberToString(i));
       result->set_display_type(SearchResultDisplayType::kTile);
       result->set_result_type(AppListSearchResultType::kInstalledApp);
-      result->set_title(u"InstalledApp " + base::NumberToString16(i));
+      result->SetTitle(u"InstalledApp " + base::NumberToString16(i));
       results->Add(std::move(result));
     }
 
@@ -107,7 +107,7 @@ class SearchResultTileItemListViewTest
       result->set_result_id("PlayStoreApp " + base::NumberToString(i));
       result->set_display_type(SearchResultDisplayType::kTile);
       result->set_result_type(AppListSearchResultType::kPlayStoreApp);
-      result->set_title(u"PlayStoreApp " + base::NumberToString16(i));
+      result->SetTitle(u"PlayStoreApp " + base::NumberToString16(i));
       result->SetRating(1 + i);
       result->SetFormattedPrice(u"Price " + base::NumberToString16(i));
       results->Add(std::move(result));
@@ -123,7 +123,7 @@ class SearchResultTileItemListViewTest
         result->set_result_type(
             AppListSearchResultType::kPlayStoreReinstallApp);
         result->set_display_index(SearchResultDisplayIndex::kSixthIndex);
-        result->set_title(u"RecommendedApp " + base::NumberToString16(i));
+        result->SetTitle(u"RecommendedApp " + base::NumberToString16(i));
         result->SetRating(1 + i);
         results->Add(std::move(result));
       }
@@ -144,7 +144,7 @@ class SearchResultTileItemListViewTest
       result->set_result_id("InstalledApp " + base::NumberToString(i));
       result->set_display_type(SearchResultDisplayType::kTile);
       result->set_result_type(AppListSearchResultType::kInstalledApp);
-      result->set_title(u"InstalledApp " + base::NumberToString16(i));
+      result->SetTitle(u"InstalledApp " + base::NumberToString16(i));
       results->Add(std::move(result));
     }
 
@@ -155,7 +155,7 @@ class SearchResultTileItemListViewTest
       result->set_result_id("PlayStoreApp " + base::NumberToString(i));
       result->set_display_type(SearchResultDisplayType::kTile);
       result->set_result_type(AppListSearchResultType::kPlayStoreApp);
-      result->set_title(u"PlayStoreApp " + base::NumberToString16(i));
+      result->SetTitle(u"PlayStoreApp " + base::NumberToString16(i));
       result->SetRating(1 + i);
       result->SetFormattedPrice(u"Price " + base::NumberToString16(i));
       results->Add(std::move(result));
@@ -178,7 +178,7 @@ class SearchResultTileItemListViewTest
         result->set_result_type(
             AppListSearchResultType::kPlayStoreReinstallApp);
         result->set_display_index(display_indexes[i]);
-        result->set_title(u"RecommendedApp " + base::NumberToString16(i));
+        result->SetTitle(u"RecommendedApp " + base::NumberToString16(i));
         result->SetRating(1 + i);
         results->AddAt(display_indexes[i], std::move(result));
       }
@@ -257,8 +257,7 @@ TEST_P(SearchResultTileItemListViewTest, Basic) {
         l10n_util::GetStringFUTF8(
             IDS_APP_ACCESSIBILITY_ARC_APP_ANNOUNCEMENT,
             base::UTF8ToUTF16("PlayStoreApp " + base::NumberToString(i))) +
-            ", Star rating " + base::NumberToString(i + 1) + ".0, Price " +
-            base::NumberToString(i),
+            ", Star rating " + base::NumberToString(i + 1) + ".0",
         node_data.GetStringAttribute(ax::mojom::StringAttribute::kName));
   }
 

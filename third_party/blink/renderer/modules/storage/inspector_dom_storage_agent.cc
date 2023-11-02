@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/modules/storage/cached_storage_area.h"
@@ -179,6 +180,8 @@ std::unique_ptr<protocol::DOMStorage::StorageId>
 InspectorDOMStorageAgent::GetStorageId(const BlinkStorageKey& storage_key,
                                        bool is_local_storage) {
   return protocol::DOMStorage::StorageId::create()
+      .setStorageKey(
+          WTF::String(static_cast<StorageKey>(storage_key).Serialize()))
       .setSecurityOrigin(storage_key.GetSecurityOrigin()->ToRawString())
       .setIsLocalStorage(is_local_storage)
       .build();
@@ -207,13 +210,34 @@ void InspectorDOMStorageAgent::DidDispatchDOMStorageEvent(
                                          new_value);
 }
 
+namespace {
+LocalFrame* FrameWithStorageKey(const String& key_raw_string,
+                                InspectedFrames& frames) {
+  for (LocalFrame* frame : frames) {
+    // any frame with given storage key would do, as it's only needed to satisfy
+    // the current API
+    if (static_cast<StorageKey>(frame->DomWindow()->GetStorageKey())
+            .Serialize() == key_raw_string.Utf8())
+      return frame;
+  }
+  return nullptr;
+}
+}  // namespace
+
 Response InspectorDOMStorageAgent::FindStorageArea(
     std::unique_ptr<protocol::DOMStorage::StorageId> storage_id,
     StorageArea*& storage_area) {
-  String security_origin = storage_id->getSecurityOrigin();
+  String security_origin = storage_id->getSecurityOrigin("");
+  String storage_key = storage_id->getStorageKey("");
   bool is_local_storage = storage_id->getIsLocalStorage();
-  LocalFrame* frame =
-      inspected_frames_->FrameWithSecurityOrigin(security_origin);
+  LocalFrame* frame = nullptr;
+  // TODO(crbug.com/1296582) Prioritize storageKey once everything is ready
+  if (security_origin) {
+    frame = inspected_frames_->FrameWithSecurityOrigin(security_origin);
+  } else if (storage_key) {
+    frame = FrameWithStorageKey(storage_key, *inspected_frames_);
+  }
+
   if (!frame) {
     return Response::ServerError(
         "Frame not found for the given security origin");

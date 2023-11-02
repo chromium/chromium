@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,6 +45,7 @@ enum class AppCreationFailureReason {
 };
 
 class ContentPaymentRequestDelegate;
+class CSPChecker;
 class PaymentManifestWebDataService;
 class PaymentRequestSpec;
 
@@ -78,7 +79,6 @@ class PaymentAppFactory {
     CreateInternalAuthenticator() const = 0;
     virtual scoped_refptr<PaymentManifestWebDataService>
     GetPaymentManifestWebDataService() const = 0;
-    virtual bool MayCrawlForInstallablePaymentApps() = 0;
     virtual bool IsOffTheRecord() const = 0;
 
     // Returns the merchant provided information, or null if the payment is
@@ -126,6 +126,10 @@ class PaymentAppFactory {
     // profile or the authenticator device, as long as a user-verifying platform
     // authenticator device is available.
     virtual void SetCanMakePaymentEvenWithoutApps() = 0;
+
+    // Return a Content Security Policy checker that should be used before
+    // downloading payment manifests and following their redirects.
+    virtual base::WeakPtr<CSPChecker> GetCSPChecker() = 0;
   };
 
   explicit PaymentAppFactory(PaymentApp::Type type);

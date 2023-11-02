@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,17 +58,13 @@ class RulesetDealer {
   base::File DuplicateRulesetFile();
 
  protected:
-  bool CalledOnValidSequence() const {
-    return sequence_checker_.CalledOnValidSequence();
-  }
+  SEQUENCE_CHECKER(sequence_checker_);
 
  private:
   friend class SubresourceFilterRulesetDealerTest;
 
   base::File ruleset_file_;
   base::WeakPtr<MemoryMappedRuleset> weak_cached_ruleset_;
-
-  base::SequenceChecker sequence_checker_;
 };
 
 }  // namespace subresource_filter

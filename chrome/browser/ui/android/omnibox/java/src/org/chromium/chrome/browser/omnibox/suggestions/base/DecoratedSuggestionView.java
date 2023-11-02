@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,8 +18,6 @@ import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 class DecoratedSuggestionView<T extends View> extends SimpleHorizontalLayoutView {
     private final ImageView mSuggestionIcon;
     private T mContentView;
-    private final int mContentVerticalPaddingPx;
-    private final int mContentMinimumHeightPx;
 
     /**
      * Constructs a new suggestion view.
@@ -28,11 +26,6 @@ class DecoratedSuggestionView<T extends View> extends SimpleHorizontalLayoutView
      */
     DecoratedSuggestionView(Context context) {
         super(context);
-
-        mContentVerticalPaddingPx = getResources().getDimensionPixelSize(
-                R.dimen.omnibox_suggestion_semicompact_padding);
-        mContentMinimumHeightPx =
-                getResources().getDimensionPixelSize(R.dimen.omnibox_suggestion_semicompact_height);
 
         setClickable(true);
         setFocusable(true);
@@ -52,8 +45,6 @@ class DecoratedSuggestionView<T extends View> extends SimpleHorizontalLayoutView
     void setContentView(T view) {
         if (mContentView != null) removeView(view);
         mContentView = view;
-        mContentView.setPaddingRelative(0, mContentVerticalPaddingPx, 0, mContentVerticalPaddingPx);
-        mContentView.setMinimumHeight(mContentMinimumHeightPx);
         mContentView.setLayoutParams(LayoutParams.forDynamicView());
         addView(mContentView);
     }

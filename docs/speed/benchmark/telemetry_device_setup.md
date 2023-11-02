@@ -5,7 +5,7 @@
 ## Install extra python dependencies
 
 If you only use Telemetry through `tools/perf/run_benchmark` script,
-`vpython` should already automatically install all the required deps for you,
+`vpython3` should already automatically install all the required deps for you,
 e.g:
 
 ```
@@ -13,7 +13,7 @@ $ tools/perf/run_benchmark --browser=system dummy_benchmark.noisy_benchmark_1
 ```
 
 Otherwise have a look at the required catapult dependencies listed in the
-[.vpython](https://chromium.googlesource.com/chromium/src/+/main/.vpython)
+[.vpython3](https://chromium.googlesource.com/chromium/src/+/main/.vpython3)
 spec file.
 
 ## Desktop benchmarks

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,8 +35,10 @@ void CopyTraceEventParameter(char** buffer,
                              const char** member,
                              const char* end) {
   if (*member) {
-    size_t written = strlcpy(*buffer, *member, end - *buffer) + 1;
-    DCHECK_LE(static_cast<int>(written), end - *buffer);
+    DCHECK_GE(end, *buffer);
+    size_t written =
+        strlcpy(*buffer, *member, static_cast<size_t>(end - *buffer)) + 1;
+    DCHECK_LE(static_cast<ptrdiff_t>(written), end - *buffer);
     *member = *buffer;
     *buffer += written;
   }
@@ -77,7 +79,7 @@ void AppendDouble(double val, bool as_json, std::string* out) {
   StringAppendF(out, "%s", real.c_str());
 }
 
-const char* TypeToString(char arg_type) {
+const char* TypeToString(unsigned char arg_type) {
   switch (arg_type) {
     case TRACE_VALUE_TYPE_INT:
       return "int";

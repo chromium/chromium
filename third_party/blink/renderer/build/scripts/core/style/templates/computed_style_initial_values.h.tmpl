@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,6 +47,9 @@ class ComputedStyleInitialValues{
   static wtf_size_t InitialGridAutoRepeatInsertionPoint() { return 0; }
   static AutoRepeatType InitialGridAutoRepeatType() {
     return AutoRepeatType::kNoAutoRepeat;
+  }
+  static GridAxisType InitialGridAxisType() {
+    return GridAxisType::kStandaloneAxis;
   }
 
   // FIXME: Remove letter-spacing/word-spacing and replace them with respective
@@ -102,6 +105,7 @@ class ComputedStyleInitialValues{
     {% endif %}
   {% elif property.field_template == "keyword" or
         property.field_template == "multi_keyword" or
+        property.field_template == "bitset_keyword" or
         property.field_template == "primitive" %}
 
   static {{property.type_name}} {{property.initial}}() {

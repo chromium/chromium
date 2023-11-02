@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,5 +32,5 @@ public class EmptyTabGroupModelFilterObserver implements TabGroupModelFilter.Obs
 
     @Override
     public void didCreateGroup(
-            List<Tab> tabs, List<Integer> tabOriginalIndex, boolean isSameGroup) {}
+            List<Tab> tabs, List<Integer> tabOriginalIndex, List<Integer> tabOriginalRootId) {}
 }

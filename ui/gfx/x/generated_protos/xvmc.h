@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -88,6 +88,15 @@ class COMPONENT_EXPORT(X11) XvMC {
   enum class SubPicture : uint32_t {};
 
   struct SurfaceInfo {
+    bool operator==(const SurfaceInfo& other) const {
+      return id == other.id && chroma_format == other.chroma_format &&
+             pad0 == other.pad0 && max_width == other.max_width &&
+             max_height == other.max_height &&
+             subpicture_max_width == other.subpicture_max_width &&
+             subpicture_max_height == other.subpicture_max_height &&
+             mc_type == other.mc_type && flags == other.flags;
+    }
+
     Surface id{};
     uint16_t chroma_format{};
     uint16_t pad0{};

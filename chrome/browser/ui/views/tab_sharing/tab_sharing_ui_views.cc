@@ -1,26 +1,28 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/tab_sharing/tab_sharing_ui_views.h"
 
+#include <string>
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/same_origin_observer.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/tab_sharing/tab_sharing_infobar_delegate.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/tab_sharing/tab_capture_contents_border_helper.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/url_formatter/elide_url.h"
@@ -32,10 +34,17 @@
 #include "extensions/common/constants.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "ui/gfx/color_palette.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/views/border.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
 #include "ui/views/widget/native_widget_aura.h"
 #endif
 
@@ -45,82 +54,22 @@ using content::GlobalRenderFrameHostId;
 using content::RenderFrameHost;
 using content::WebContents;
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-const int kContentsBorderThickness = 5;
-const float kContentsBorderOpacity = 0.50;
-const SkColor kContentsBorderColor = gfx::kGoogleBlue500;
-
-void InitContentsBorderWidget(WebContents* contents) {
-  Browser* browser = chrome::FindBrowserWithWebContents(contents);
-  if (!browser)
-    return;
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  if (browser_view->contents_border_widget())
-    return;
-
-  views::Widget* widget = new views::Widget;
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  views::Widget* frame = browser_view->contents_web_view()->GetWidget();
-  params.parent = frame->GetNativeView();
-  params.context = frame->GetNativeWindow();
-  // Make the widget non-top level.
-  params.child = true;
-  params.name = "TabSharingContentsBorder";
-  params.remove_standard_frame = true;
-  // Let events go through to underlying view.
-  params.accept_events = false;
-  params.activatable = views::Widget::InitParams::Activatable::kNo;
-#if defined(OS_WIN)
-  params.native_widget = new views::NativeWidgetAura(widget);
+#if BUILDFLAG(IS_CHROMEOS)
+bool g_apply_dlp_for_all_users_for_testing_ = false;
 #endif
-
-  widget->Init(std::move(params));
-  auto border_view = std::make_unique<views::View>();
-  border_view->SetBorder(
-      views::CreateSolidBorder(kContentsBorderThickness, kContentsBorderColor));
-  widget->SetContentsView(std::move(border_view));
-  widget->SetVisibilityChangedAnimationsEnabled(false);
-  widget->SetOpacity(kContentsBorderOpacity);
-
-  browser_view->set_contents_border_widget(widget);
-}
-#endif
-
-void SetContentsBorderVisible(WebContents* contents, bool visible) {
-  // TODO(https://crbug.com/1030925) fix contents border on ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!contents)
-    return;
-  Browser* browser = chrome::FindBrowserWithWebContents(contents);
-  if (!browser)
-    return;
-
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  if (!browser_view->contents_border_widget()) {
-    if (!visible)
-      return;
-    InitContentsBorderWidget(contents);
-  }
-  views::Widget* contents_border_widget =
-      browser_view->contents_border_widget();
-  if (visible)
-    contents_border_widget->Show();
-  else
-    contents_border_widget->Hide();
-#endif
-}
 
 std::u16string GetTabName(WebContents* tab) {
   const std::u16string formatted_origin =
       url_formatter::FormatOriginForSecurityDisplay(
-          tab->GetMainFrame()->GetLastCommittedOrigin());
+          tab->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   return formatted_origin.empty() ? tab->GetTitle() : formatted_origin;
 }
 
 GlobalRenderFrameHostId GetGlobalId(WebContents* web_contents) {
-  auto* const main_frame = web_contents->GetMainFrame();
+  if (!web_contents) {
+    return GlobalRenderFrameHostId();
+  }
+  auto* const main_frame = web_contents->GetPrimaryMainFrame();
   return main_frame ? main_frame->GetGlobalId() : GlobalRenderFrameHostId();
 }
 
@@ -145,22 +94,12 @@ WebContents* WebContentsFromId(GlobalRenderFrameHostId rfh_id) {
       content::RenderFrameHost::FromID(rfh_id));
 }
 
-GURL GetOriginFromId(GlobalRenderFrameHostId rfh_id) {
-  WebContents* capturer = WebContentsFromId(rfh_id);
-  if (!capturer)
+url::Origin GetOriginFromId(GlobalRenderFrameHostId rfh_id) {
+  auto* rfh = content::RenderFrameHost::FromID(rfh_id);
+  if (!rfh)
     return {};
 
-  return capturer->GetLastCommittedURL().DeprecatedGetOriginAsURL();
-}
-
-bool CanFocusCapturer(GlobalRenderFrameHostId capturer_id) {
-  WebContents* const capturer = WebContentsFromId(capturer_id);
-  if (!capturer) {
-    return false;
-  }
-
-  return !capturer->GetLastCommittedURL().SchemeIs(
-      extensions::kExtensionScheme);
+  return rfh->GetLastCommittedOrigin();
 }
 
 bool CapturerRestrictedToSameOrigin(GlobalRenderFrameHostId capturer_id) {
@@ -168,11 +107,13 @@ bool CapturerRestrictedToSameOrigin(GlobalRenderFrameHostId capturer_id) {
   if (!capturer)
     return false;
   return capture_policy::GetAllowedCaptureLevel(
-             capturer->GetLastCommittedURL().DeprecatedGetOriginAsURL(),
-             capturer) == AllowedScreenCaptureLevel::kSameOrigin;
+             GetOriginFromId(capturer_id).GetURL(), capturer) ==
+         AllowedScreenCaptureLevel::kSameOrigin;
 }
 
 }  // namespace
+
+uint32_t TabSharingUIViews::next_capture_session_id_ = 0;
 
 // static
 std::unique_ptr<TabSharingUI> TabSharingUI::Create(
@@ -180,8 +121,8 @@ std::unique_ptr<TabSharingUI> TabSharingUI::Create(
     const content::DesktopMediaID& media_id,
     std::u16string app_name,
     bool favicons_used_for_switch_to_tab_button) {
-  return base::WrapUnique(new TabSharingUIViews(
-      capturer, media_id, app_name, favicons_used_for_switch_to_tab_button));
+  return std::make_unique<TabSharingUIViews>(
+      capturer, media_id, app_name, favicons_used_for_switch_to_tab_button);
 }
 
 TabSharingUIViews::TabSharingUIViews(
@@ -189,25 +130,25 @@ TabSharingUIViews::TabSharingUIViews(
     const content::DesktopMediaID& media_id,
     std::u16string app_name,
     bool favicons_used_for_switch_to_tab_button)
-    : capturer_(capturer),
+    : capture_session_id_(next_capture_session_id_++),
+      capturer_(capturer),
       capturer_origin_(GetOriginFromId(capturer)),
-      can_focus_capturer_(CanFocusCapturer(capturer)),
+      can_focus_capturer_(GetOriginFromId(capturer).scheme() !=
+                          extensions::kExtensionScheme),
       capturer_restricted_to_same_origin_(
           CapturerRestrictedToSameOrigin(capturer)),
       shared_tab_media_id_(media_id),
       app_name_(std::move(app_name)),
+      shared_tab_(WebContents::FromRenderFrameHost(RenderFrameHost::FromID(
+          media_id.web_contents_id.render_process_id,
+          media_id.web_contents_id.main_render_frame_id))),
       favicons_used_for_switch_to_tab_button_(
           favicons_used_for_switch_to_tab_button) {
-  shared_tab_ = WebContents::FromRenderFrameHost(
-      RenderFrameHost::FromID(media_id.web_contents_id.render_process_id,
-                              media_id.web_contents_id.main_render_frame_id));
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   Observe(shared_tab_);
   shared_tab_name_ = GetTabName(shared_tab_);
   profile_ = ProfileManager::GetLastUsedProfileAllowedByPolicy();
-  // TODO(https://crbug.com/1030925) fix contents border on ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  InitContentsBorderWidget(shared_tab_);
-#endif
 
   if (capturer_restricted_to_same_origin_) {
     // base::Unretained is safe here because we own the origin observer, so it
@@ -234,7 +175,7 @@ gfx::NativeViewId TabSharingUIViews::OnStarted(
   source_callback_ = std::move(source_callback);
   stop_callback_ = std::move(stop_callback);
   CreateInfobarsForAllTabs();
-  SetContentsBorderVisible(shared_tab_, true);
+  UpdateTabCaptureData(shared_tab_, TabCaptureUpdate::kCaptureAdded);
   CreateTabCaptureIndicator();
   if (favicons_used_for_switch_to_tab_button_) {
     FaviconPeriodicUpdate(++share_session_seq_num_);
@@ -243,21 +184,17 @@ gfx::NativeViewId TabSharingUIViews::OnStarted(
 }
 
 void TabSharingUIViews::StartSharing(infobars::InfoBar* infobar) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (source_callback_.is_null())
     return;
-
-  SetContentsBorderVisible(shared_tab_, false);
 
   WebContents* shared_tab =
       infobars::ContentInfoBarManager::WebContentsFromInfoBar(infobar);
   DCHECK(shared_tab);
   DCHECK_EQ(infobars_[shared_tab], infobar);
-  shared_tab_ = shared_tab;
-  shared_tab_name_ = GetTabName(shared_tab_);
 
-  RenderFrameHost* main_frame = shared_tab->GetMainFrame();
+  RenderFrameHost* main_frame = shared_tab->GetPrimaryMainFrame();
   DCHECK(main_frame);
-  RemoveInfobarsForAllTabs();
   source_callback_.Run(content::DesktopMediaID(
       content::DesktopMediaID::TYPE_WEB_CONTENTS,
       content::DesktopMediaID::kNullId,
@@ -269,8 +206,12 @@ void TabSharingUIViews::StopSharing() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!stop_callback_.is_null())
     std::move(stop_callback_).Run();
+#if BUILDFLAG(IS_CHROMEOS)
+  policy::DlpContentManager::Get()->RemoveObserver(
+      this, policy::DlpContentRestriction::kScreenShare);
+#endif
   RemoveInfobarsForAllTabs();
-  SetContentsBorderVisible(shared_tab_, false);
+  UpdateTabCaptureData(shared_tab_, TabCaptureUpdate::kCaptureRemoved);
   tab_capture_indicator_ui_.reset();
   shared_tab_ = nullptr;
   ++share_session_seq_num_;  // Invalidates previously scheduled tasks.
@@ -299,12 +240,17 @@ void TabSharingUIViews::OnTabStripModelChanged(
     }
   }
 
+  if (change.type() == TabStripModelChange::kRemoved) {
+    for (const auto& contents : change.GetRemove()->contents) {
+      same_origin_observers_.erase(contents.contents);
+    }
+  }
+
   if (selection.active_tab_changed()) {
-    if (selection.old_contents)
-      SetContentsBorderVisible(selection.old_contents,
-                               selection.old_contents == shared_tab_);
-    SetContentsBorderVisible(selection.new_contents,
-                             selection.new_contents == shared_tab_);
+    UpdateTabCaptureData(selection.old_contents,
+                         TabCaptureUpdate::kCapturedVisibilityUpdated);
+    UpdateTabCaptureData(selection.new_contents,
+                         TabCaptureUpdate::kCapturedVisibilityUpdated);
   }
 }
 
@@ -323,10 +269,8 @@ void TabSharingUIViews::TabChangedAt(WebContents* contents,
 
 void TabSharingUIViews::OnInfoBarRemoved(infobars::InfoBar* infobar,
                                          bool animate) {
-  auto infobars_entry = std::find_if(infobars_.begin(), infobars_.end(),
-                                     [infobar](const auto& infobars_entry) {
-                                       return infobars_entry.second == infobar;
-                                     });
+  auto infobars_entry =
+      base::ranges::find(infobars_, infobar, &InfoBars::value_type::second);
   if (infobars_entry == infobars_.end())
     return;
 
@@ -337,14 +281,9 @@ void TabSharingUIViews::OnInfoBarRemoved(infobars::InfoBar* infobar,
     StopSharing();
 }
 
-void TabSharingUIViews::DidFinishNavigation(content::NavigationHandle* handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
-  if (!handle->IsInPrimaryMainFrame() || !handle->HasCommitted() ||
-      handle->IsSameDocument() || handle->GetWebContents() != shared_tab_) {
+void TabSharingUIViews::PrimaryPageChanged(content::Page& page) {
+  if (!shared_tab_)
     return;
-  }
   shared_tab_name_ = GetTabName(shared_tab_);
   for (const auto& infobars_entry : infobars_) {
     // Recreate infobars to reflect the new shared tab's hostname.
@@ -354,10 +293,51 @@ void TabSharingUIViews::DidFinishNavigation(content::NavigationHandle* handle) {
 }
 
 void TabSharingUIViews::WebContentsDestroyed() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // TODO(crbug.com/1276816): Prevent StopSharing() from interacting with
+  // |shared_tab_| while it is being destroyed.
   StopSharing();
 }
 
+void TabSharingUIViews::OnRegionCaptureRectChanged(
+    const absl::optional<gfx::Rect>& region_capture_rect) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (!shared_tab_) {
+    return;
+  }
+
+  auto* const helper =
+      TabCaptureContentsBorderHelper::FromWebContents(shared_tab_);
+  if (!helper) {
+    return;
+  }
+
+  helper->OnRegionCaptureRectChanged(capture_session_id_, region_capture_rect);
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+void TabSharingUIViews::OnConfidentialityChanged(
+    policy::DlpRulesManager::Level old_restriction_level,
+    policy::DlpRulesManager::Level new_restriction_level,
+    content::WebContents* web_contents) {
+  DCHECK(old_restriction_level != new_restriction_level);
+  if (old_restriction_level == policy::DlpRulesManager::Level::kBlock ||
+      new_restriction_level == policy::DlpRulesManager::Level::kBlock) {
+    // We only call this function if it was previously blocked or should be
+    // blocked now.
+    CreateInfobarForWebContents(web_contents);
+  }
+}
+
+// static
+void TabSharingUIViews::ApplyDlpForAllUsersForTesting() {
+  g_apply_dlp_for_all_users_for_testing_ = true;
+}
+#endif
+
 void TabSharingUIViews::CreateInfobarsForAllTabs() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   BrowserList* browser_list = BrowserList::GetInstance();
   for (auto* browser : *browser_list) {
     OnBrowserAdded(browser);
@@ -368,9 +348,18 @@ void TabSharingUIViews::CreateInfobarsForAllTabs() {
     }
   }
   browser_list->AddObserver(this);
+#if BUILDFLAG(IS_CHROMEOS)
+  // Observe only for managed users.
+  if (g_apply_dlp_for_all_users_for_testing_ ||
+      policy::DlpRulesManagerFactory::GetForPrimaryProfile()) {
+    policy::DlpContentManager::Get()->AddObserver(
+        this, policy::DlpContentRestriction::kScreenShare);
+  }
+#endif
 }
 
 void TabSharingUIViews::CreateInfobarForWebContents(WebContents* contents) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(contents);
 
   auto infobars_entry = infobars_.find(contents);
@@ -394,7 +383,7 @@ void TabSharingUIViews::CreateInfobarForWebContents(WebContents* contents) {
 
   // If sharing this tab instead of the currently captured tab is possible, it
   // may still be blocked by enterprise policy. If the enterprise policy is
-  // active, create an observer that will inform us when it's compliance state
+  // active, create an observer that will inform us when its compliance state
   // changes.
   if (capturer_restricted_to_same_origin_ && is_share_instead_button_possible &&
       !base::Contains(same_origin_observers_, contents)) {
@@ -422,21 +411,37 @@ void TabSharingUIViews::CreateInfobarForWebContents(WebContents* contents) {
   }
 
   // Determine if we are currently allowed to share this tab by policy.
-  const bool is_sharing_allowed_by_policy =
+  bool is_sharing_allowed_by_policy =
       !capturer_restricted_to_same_origin_ ||
-      url::IsSameOriginWith(
-          capturer_origin_,
-          contents->GetLastCommittedURL().DeprecatedGetOriginAsURL());
+      capturer_origin_.IsSameOriginWith(
+          contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
-  // Never show the [share this tab instead] if sharing is not possible or is
-  // blocked by policy.
-  const bool can_show_share_instead_button =
-      is_share_instead_button_possible && is_sharing_allowed_by_policy;
+#if BUILDFLAG(IS_CHROMEOS)
+  // Check if dlp policies allow sharing.
+  // This check is skipped if sharing is already forbidden.
+  if (is_sharing_allowed_by_policy) {
+    const bool dlp_enabled =
+        g_apply_dlp_for_all_users_for_testing_ ||
+        policy::DlpRulesManagerFactory::GetForPrimaryProfile();
+    if (dlp_enabled &&
+        policy::DlpContentManager::Get()->IsScreenShareBlocked(contents)) {
+      is_sharing_allowed_by_policy = false;
+    }
+  }
+#endif
+
+  TabSharingInfoBarDelegate::ButtonState share_this_tab_instead_button_state =
+      !is_share_instead_button_possible
+          ? TabSharingInfoBarDelegate::ButtonState::NOT_SHOWN
+          : is_sharing_allowed_by_policy
+                ? TabSharingInfoBarDelegate::ButtonState::ENABLED
+                : TabSharingInfoBarDelegate::ButtonState::DISABLED;
 
   infobars_[contents] = TabSharingInfoBarDelegate::Create(
       infobar_manager, shared_tab_name_, app_name_,
-      shared_tab_ == contents /*shared_tab*/, can_show_share_instead_button,
-      focus_target, this, favicons_used_for_switch_to_tab_button_);
+      shared_tab_ == contents /*shared_tab*/,
+      share_this_tab_instead_button_state, focus_target, this,
+      favicons_used_for_switch_to_tab_button_);
 }
 
 void TabSharingUIViews::RemoveInfobarsForAllTabs() {
@@ -459,11 +464,13 @@ void TabSharingUIViews::CreateTabCaptureIndicator() {
   if (!shared_tab_)
     return;
 
+  blink::mojom::StreamDevices devices;
+  devices.video_device = device;
   tab_capture_indicator_ui_ = MediaCaptureDevicesDispatcher::GetInstance()
                                   ->GetMediaStreamCaptureIndicator()
-                                  ->RegisterMediaStream(shared_tab_, {device});
+                                  ->RegisterMediaStream(shared_tab_, devices);
   tab_capture_indicator_ui_->OnStarted(
-      base::OnceClosure(), content::MediaStreamUI::SourceCallback(),
+      base::RepeatingClosure(), content::MediaStreamUI::SourceCallback(),
       /*label=*/std::string(), /*screen_capture_ids=*/{},
       content::MediaStreamUI::StateChangeCallback());
 }
@@ -552,4 +559,27 @@ void TabSharingUIViews::StopCaptureDueToPolicy(content::WebContents* contents) {
   // We use |contents| rather than |shared_tab_| here because |shared_tab_| is
   // cleared by the call to StopSharing().
   capture_policy::ShowCaptureTerminatedDialog(contents);
+}
+
+void TabSharingUIViews::UpdateTabCaptureData(WebContents* contents,
+                                             TabCaptureUpdate update) {
+  if (!contents) {
+    return;
+  }
+
+  TabCaptureContentsBorderHelper::CreateForWebContents(contents);
+  auto* const helper =
+      TabCaptureContentsBorderHelper::FromWebContents(contents);
+
+  switch (update) {
+    case TabCaptureUpdate::kCaptureAdded:
+      helper->OnCapturerAdded(capture_session_id_);
+      break;
+    case TabCaptureUpdate::kCaptureRemoved:
+      helper->OnCapturerRemoved(capture_session_id_);
+      break;
+    case TabCaptureUpdate::kCapturedVisibilityUpdated:
+      helper->VisibilityUpdated();
+      break;
+  }
 }

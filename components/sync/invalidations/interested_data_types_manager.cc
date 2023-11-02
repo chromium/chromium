@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/invalidations/interested_data_types_handler.h"
-#include "components/sync/invalidations/switches.h"
 
 namespace syncer {
 
@@ -50,7 +50,7 @@ void InterestedDataTypesManager::
 
   // Do not send an additional GetUpdates request when invalidations are
   // disabled.
-  if (base::FeatureList::IsEnabled(switches::kUseSyncInvalidations)) {
+  if (base::FeatureList::IsEnabled(kUseSyncInvalidations)) {
     interested_data_types_handler_
         ->SetCommittedAdditionalInterestedDataTypesCallback(
             std::move(callback));

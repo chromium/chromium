@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "chromecast/media/base/aligned_buffer.h"
 #include "chromecast/media/cma/backend/mixer/post_processing_pipeline.h"
 #include "chromecast/media/cma/backend/mixer/post_processor_factory.h"
@@ -38,11 +37,11 @@ class PostProcessingPipelineImpl : public PostProcessingPipeline {
 
   ~PostProcessingPipelineImpl() override;
 
-  double ProcessFrames(float* data,
-                       int num_frames,
-                       float current_volume,
-                       float target_volume,
-                       bool is_silence) override;
+  void ProcessFrames(float* data,
+                     int num_frames,
+                     float current_volume,
+                     float target_volume,
+                     bool is_silence) override;
 
   float* GetOutputBuffer() override;
   int NumOutputChannels() const override;
@@ -56,6 +55,7 @@ class PostProcessingPipelineImpl : public PostProcessingPipeline {
                               const std::string& config) override;
   void SetContentType(AudioContentType content_type) override;
   void UpdatePlayoutChannel(int channel) override;
+  double GetDelaySeconds() override;
 
  private:
   // Note: typedef is used to silence chromium-style mandatory constructor in

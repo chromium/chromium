@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -117,7 +117,7 @@ BrowserSavePasswordProgressLogger::StringID FormSchemeToStringID(
 }  // namespace
 
 BrowserSavePasswordProgressLogger::BrowserSavePasswordProgressLogger(
-    const autofill::LogManager* log_manager)
+    autofill::LogManager* log_manager)
     : log_manager_(log_manager) {
   DCHECK(log_manager_);
 }
@@ -166,9 +166,9 @@ BrowserSavePasswordProgressLogger::FormStructurePasswordAttributesLogString(
   const bool attribute_value = std::get<1>(attribute_vote.value());
 
   switch (attribute) {
-    case PasswordAttribute::kHasLowercaseLetter:
+    case PasswordAttribute::kHasLetter:
       message += BinaryPasswordAttributeLogString(
-          STRING_PASSWORD_REQUIREMENTS_VOTE_FOR_LOWERCASE, attribute_value);
+          STRING_PASSWORD_REQUIREMENTS_VOTE_FOR_LETTER, attribute_value);
       break;
 
     case PasswordAttribute::kHasSpecialSymbol:
@@ -350,7 +350,7 @@ void BrowserSavePasswordProgressLogger::LogPasswordRequirements(
 }
 
 void BrowserSavePasswordProgressLogger::SendLog(const std::string& log) {
-  log_manager_->LogTextMessage(log);
+  LOG_AF(*log_manager_) << log;
 }
 
 std::string BrowserSavePasswordProgressLogger::PasswordAttributeLogString(

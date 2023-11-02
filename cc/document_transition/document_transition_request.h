@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,22 +24,22 @@ namespace cc {
 // transition to occur.
 class CC_EXPORT DocumentTransitionRequest {
  public:
-  using Effect = viz::CompositorFrameTransitionDirective::Effect;
-  using TransitionConfig =
-      viz::CompositorFrameTransitionDirective::TransitionConfig;
+  struct CC_EXPORT SharedElementInfo {
+    SharedElementInfo();
+    ~SharedElementInfo();
 
-  // Creates a Type::kPrepare type of request.
-  static std::unique_ptr<DocumentTransitionRequest> CreatePrepare(
-      Effect effect,
-      uint32_t document_tag,
-      TransitionConfig root_config,
-      std::vector<TransitionConfig> shared_element_config,
-      base::OnceClosure commit_callback);
+    viz::CompositorRenderPassId render_pass_id;
+    viz::SharedElementResourceId resource_id;
+  };
 
-  // Creates a Type::kSave type of request.
-  static std::unique_ptr<DocumentTransitionRequest> CreateStart(
+  using SharedElementMap =
+      std::map<DocumentTransitionSharedElementId, SharedElementInfo>;
+
+  // Creates a Type::kCapture type of request.
+  static std::unique_ptr<DocumentTransitionRequest> CreateCapture(
       uint32_t document_tag,
       uint32_t shared_element_count,
+      std::vector<viz::SharedElementResourceId> capture_ids,
       base::OnceClosure commit_callback);
 
   // Creates a Type::kAnimateRenderer type of request.
@@ -63,19 +63,11 @@ class CC_EXPORT DocumentTransitionRequest {
     return std::move(commit_callback_);
   }
 
-  struct CC_EXPORT SharedElementInfo {
-    SharedElementInfo();
-    ~SharedElementInfo();
-
-    viz::CompositorRenderPassId render_pass_id;
-    viz::SharedElementResourceId resource_id;
-  };
   // This constructs a viz directive. Note that repeated calls to this function
   // would create a new sequence id for the directive, which means it would be
   // processed again by viz.
   viz::CompositorFrameTransitionDirective ConstructDirective(
-      const std::map<DocumentTransitionSharedElementId, SharedElementInfo>&
-          shared_element_render_pass_id_map) const;
+      const SharedElementMap& shared_element_render_pass_id_map) const;
 
   // Returns the sequence id for this request.
   uint32_t sequence_id() const { return sequence_id_; }
@@ -86,24 +78,19 @@ class CC_EXPORT DocumentTransitionRequest {
  private:
   using Type = viz::CompositorFrameTransitionDirective::Type;
 
-  DocumentTransitionRequest(Effect effect,
-                            uint32_t document_tag,
-                            TransitionConfig root_config,
-                            std::vector<TransitionConfig> shared_element_config,
-                            base::OnceClosure commit_callback);
-  DocumentTransitionRequest(uint32_t document_tag,
-                            uint32_t shared_element_count,
-                            base::OnceClosure commit_callback);
-  DocumentTransitionRequest(Type type, uint32_t document_tag);
+  DocumentTransitionRequest(
+      Type type,
+      uint32_t document_tag,
+      uint32_t shared_element_count,
+      std::vector<viz::SharedElementResourceId> capture_ids,
+      base::OnceClosure commit_callback);
 
   const Type type_;
-  const Effect effect_ = Effect::kNone;
-  const TransitionConfig root_config_;
   const uint32_t document_tag_;
   const uint32_t shared_element_count_;
-  const std::vector<TransitionConfig> shared_element_config_;
   base::OnceClosure commit_callback_;
   const uint32_t sequence_id_;
+  const std::vector<viz::SharedElementResourceId> capture_resource_ids_;
 
   static uint32_t s_next_sequence_id_;
 };

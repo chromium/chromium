@@ -36,7 +36,7 @@ namespace {
 
 TEST(DequeTest, Basic) {
   Deque<int> int_deque;
-  EXPECT_TRUE(int_deque.IsEmpty());
+  EXPECT_TRUE(int_deque.empty());
   EXPECT_EQ(0ul, int_deque.size());
 }
 

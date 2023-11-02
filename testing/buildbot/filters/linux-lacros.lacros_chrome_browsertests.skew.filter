@@ -3,5 +3,3 @@
 # If you want to disable a test only for version skew testing,
 # you should add the test here, not in the source code.
 
-# TODO(crbug.com/1252114) Flaky. Re-enable the test.
--LacrosExtensionAppsControllerTest.LaunchPinnedApp

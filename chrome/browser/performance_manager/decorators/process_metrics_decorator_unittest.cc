@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
@@ -119,7 +120,8 @@ class ProcessMetricsDecoratorTest : public GraphTestHarness {
         std::make_unique<TestProcessMetricsDecorator>();
     decorator_raw_ = decorator.get();
     mock_graph_ =
-        std::make_unique<MockSinglePageWithMultipleProcessesGraph>(graph());
+        std::make_unique<MockMultiplePagesAndWorkersWithMultipleProcessesGraph>(
+            graph());
     EXPECT_FALSE(decorator_raw_->IsTimerRunningForTesting());
     graph()->PassToGraph(std::move(decorator));
     EXPECT_FALSE(decorator_raw_->IsTimerRunningForTesting());
@@ -130,16 +132,17 @@ class ProcessMetricsDecoratorTest : public GraphTestHarness {
 
   TestProcessMetricsDecorator* decorator() const { return decorator_raw_; }
 
-  MockSinglePageWithMultipleProcessesGraph* mock_graph() {
+  MockMultiplePagesAndWorkersWithMultipleProcessesGraph* mock_graph() {
     return mock_graph_.get();
   }
 
   void ReleaseMetricsInterestToken() { metrics_interest_token_.reset(); }
 
  private:
-  TestProcessMetricsDecorator* decorator_raw_;
+  raw_ptr<TestProcessMetricsDecorator> decorator_raw_;
 
-  std::unique_ptr<MockSinglePageWithMultipleProcessesGraph> mock_graph_;
+  std::unique_ptr<MockMultiplePagesAndWorkersWithMultipleProcessesGraph>
+      mock_graph_;
 
   std::unique_ptr<ProcessMetricsDecorator::ScopedMetricsInterestToken>
       metrics_interest_token_;
@@ -171,9 +174,21 @@ TEST_F(ProcessMetricsDecoratorTest, RefreshTimer) {
   EXPECT_EQ(kFakePrivateFootprintKb,
             mock_graph()->process->private_footprint_kb());
 
+  EXPECT_EQ(kFakeResidentSetKb / 3,
+            mock_graph()->frame->resident_set_kb_estimate());
+  EXPECT_EQ(kFakeResidentSetKb / 3,
+            mock_graph()->other_frame->resident_set_kb_estimate());
+  EXPECT_EQ(kFakeResidentSetKb / 3,
+            mock_graph()->worker->resident_set_kb_estimate());
+
   EXPECT_EQ(kFakeResidentSetKb, mock_graph()->other_process->resident_set_kb());
   EXPECT_EQ(kFakePrivateFootprintKb,
             mock_graph()->other_process->private_footprint_kb());
+
+  EXPECT_EQ(kFakeResidentSetKb / 2,
+            mock_graph()->child_frame->resident_set_kb_estimate());
+  EXPECT_EQ(kFakeResidentSetKb / 2,
+            mock_graph()->other_worker->resident_set_kb_estimate());
 
   graph()->RemoveSystemNodeObserver(&sys_node_observer);
 }
@@ -209,10 +224,22 @@ TEST_F(ProcessMetricsDecoratorTest, PartialRefresh) {
   EXPECT_EQ(kFakePrivateFootprintKb,
             mock_graph()->process->private_footprint_kb());
 
+  EXPECT_EQ(kFakeResidentSetKb / 3,
+            mock_graph()->frame->resident_set_kb_estimate());
+  EXPECT_EQ(kFakeResidentSetKb / 3,
+            mock_graph()->other_frame->resident_set_kb_estimate());
+  EXPECT_EQ(kFakeResidentSetKb / 3,
+            mock_graph()->worker->resident_set_kb_estimate());
+
   EXPECT_EQ(kFakeResidentSetKb * 2,
             mock_graph()->other_process->resident_set_kb());
   EXPECT_EQ(kFakePrivateFootprintKb * 2,
             mock_graph()->other_process->private_footprint_kb());
+
+  EXPECT_EQ(kFakeResidentSetKb,
+            mock_graph()->child_frame->resident_set_kb_estimate());
+  EXPECT_EQ(kFakeResidentSetKb,
+            mock_graph()->other_worker->resident_set_kb_estimate());
 }
 
 TEST_F(ProcessMetricsDecoratorTest, RefreshFailure) {
@@ -223,6 +250,8 @@ TEST_F(ProcessMetricsDecoratorTest, RefreshFailure) {
 
   EXPECT_EQ(0U, mock_graph()->process->resident_set_kb());
   EXPECT_EQ(0U, mock_graph()->process->private_footprint_kb());
+  EXPECT_EQ(0U, mock_graph()->frame->resident_set_kb_estimate());
+  EXPECT_EQ(0U, mock_graph()->child_frame->resident_set_kb_estimate());
 }
 
 TEST_F(ProcessMetricsDecoratorTest, MetricsInterestTokens) {

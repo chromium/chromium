@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file.h"
@@ -22,17 +23,12 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/secure_channel/nearby_endpoint_finder.h"
 #include "chrome/browser/ash/secure_channel/util/histogram_util.h"
-#include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
 namespace secure_channel {
 namespace {
-
-// TODO(https://crbug.com/1164001): remove after
-// chromeos/services/secure_channel is moved to namespace ash.
-namespace mojom = ::chromeos::secure_channel::mojom;
 
 using ::location::nearby::connections::mojom::BytesPayload;
 using ::location::nearby::connections::mojom::ConnectionInfoPtr;
@@ -443,8 +439,8 @@ void NearbyConnectionBrokerImpl::OnPayloadFileRegistered(
     Status status) {
   bool success = status == Status::kSuccess;
   if (success) {
-    mojo::Remote<chromeos::secure_channel::mojom::FilePayloadListener>
-        listener_remote(std::move(listener));
+    mojo::Remote<mojom::FilePayloadListener> listener_remote(
+        std::move(listener));
     // Safe to use Unretained because the Remote and its disconnect handler does
     // not out live NearbyConnectionBrokerImpl.
     listener_remote.set_disconnect_handler(base::BindOnce(
@@ -452,8 +448,8 @@ void NearbyConnectionBrokerImpl::OnPayloadFileRegistered(
         base::Unretained(this), payload_id));
     file_payload_listeners_.emplace(payload_id, std::move(listener_remote));
   }
-  // TODO(https://crbug.com/1221297): log file payload registration results
   std::move(callback).Run(success);
+  util::RecordRegisterPayloadFilesResult(status);
 }
 
 void NearbyConnectionBrokerImpl::OnFilePayloadListenerDisconnect(
@@ -467,6 +463,8 @@ void NearbyConnectionBrokerImpl::CleanUpPendingFileTransfers() {
         id_to_listener.first, mojom::FileTransferStatus::kCanceled,
         /*total_bytes=*/0,
         /*bytes_transferred=*/0));
+    util::LogFileTransferResult(
+        util::FileTransferResult::kFileTransferCanceled);
   }
   file_payload_listeners_.clear();
 }
@@ -597,12 +595,13 @@ void NearbyConnectionBrokerImpl::OnPayloadReceived(
       PA_LOG(WARNING)
           << "OnPayloadReceived(): Received unregistered file payload with ID "
           << payload->id << ". Disconnecting.";
+      util::LogFileAction(util::FileAction::kUnexpectedFileReceived);
       Disconnect(
           util::NearbyDisconnectionReason::kReceivedUnregisteredFilePayload);
     } else {
       PA_LOG(VERBOSE) << "OnPayloadReceived(): Received file with payload ID "
                       << payload->id;
-      // TODO(https://crbug.com/1221297): log file payloads received
+      util::LogFileAction(util::FileAction::kRegisteredFileReceived);
     }
 
     // We don't need to use the base::File provided by |payload| and it should
@@ -659,9 +658,28 @@ void NearbyConnectionBrokerImpl::OnPayloadTransferUpdate(
       update->payload_id, ConvertFileTransferStatus(update->status),
       update->total_bytes, update->bytes_transferred));
 
-  if (update->status != PayloadStatus::kInProgress) {
+  bool is_transfer_complete = false;
+  switch (update->status) {
+    case PayloadStatus::kInProgress:
+      return;
+    case PayloadStatus::kSuccess:
+      is_transfer_complete = true;
+      util::LogFileTransferResult(
+          util::FileTransferResult::kFileTransferSuccess);
+      break;
+    case PayloadStatus::kFailure:
+      is_transfer_complete = true;
+      util::LogFileTransferResult(
+          util::FileTransferResult::kFileTransferFailure);
+      break;
+    case PayloadStatus::kCanceled:
+      is_transfer_complete = true;
+      util::LogFileTransferResult(
+          util::FileTransferResult::kFileTransferCanceled);
+      break;
+  }
+  if (is_transfer_complete) {
     file_payload_listeners_.erase(it);
-    // TODO(https://crbug.com/1221297): log result of file transfers
   }
 }
 

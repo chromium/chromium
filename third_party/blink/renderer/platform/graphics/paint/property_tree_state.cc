@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,35 +10,15 @@ namespace blink {
 
 namespace {
 
-bool HasCompositedTransformToAncestor(
-    const TransformPaintPropertyNode& node,
-    const TransformPaintPropertyNode& ancestor) {
-  for (const auto* n = &node; n != &ancestor; n = n->UnaliasedParent()) {
-    if (n->HasDirectCompositingReasons())
-      return true;
-  }
-  return false;
-}
-
-// Returns the lowest common ancestor if there is no composited transform
-// between the two transforms.
-const TransformPaintPropertyNode* NonCompositedLowestCommonAncestor(
-    const TransformPaintPropertyNode& transform1,
-    const TransformPaintPropertyNode& transform2) {
-  const auto& lca = transform1.LowestCommonAncestor(transform2).Unalias();
-  if (HasCompositedTransformToAncestor(transform1, lca) ||
-      HasCompositedTransformToAncestor(transform2, lca))
-    return nullptr;
-  return &lca;
-}
-
 bool ClipChainHasCompositedTransformTo(
     const ClipPaintPropertyNode& node,
     const ClipPaintPropertyNode& ancestor,
     const TransformPaintPropertyNode& transform) {
+  const auto* composited_ancestor =
+      transform.NearestDirectlyCompositedAncestor();
   for (const auto* n = &node; n != &ancestor; n = n->UnaliasedParent()) {
-    if (!NonCompositedLowestCommonAncestor(n->LocalTransformSpace().Unalias(),
-                                           transform))
+    if (composited_ancestor !=
+        n->LocalTransformSpace().Unalias().NearestDirectlyCompositedAncestor())
       return true;
   }
   return false;
@@ -75,21 +55,36 @@ absl::optional<PropertyTreeState> PropertyTreeState::CanUpcastWith(
   // must be within compositing boundary of the home transform space.
   DCHECK_EQ(&Effect(), &guest.Effect());
 
-  if (Transform().IsBackfaceHidden() != guest.Transform().IsBackfaceHidden())
-    return absl::nullopt;
+  const TransformPaintPropertyNode* upcast_transform = nullptr;
+  // Fast-path for the common case of the transform state being equal.
+  if (&Transform() == &guest.Transform()) {
+    upcast_transform = &Transform();
+  } else {
+    if (Transform().NearestDirectlyCompositedAncestor() !=
+        guest.Transform().NearestDirectlyCompositedAncestor())
+      return absl::nullopt;
 
-  auto* upcast_transform =
-      NonCompositedLowestCommonAncestor(Transform(), guest.Transform());
-  if (!upcast_transform)
-    return absl::nullopt;
+    if (Transform().IsBackfaceHidden() != guest.Transform().IsBackfaceHidden())
+      return absl::nullopt;
 
-  const auto& clip_lca = Clip().LowestCommonAncestor(guest.Clip()).Unalias();
-  if (ClipChainHasCompositedTransformTo(Clip(), clip_lca, *upcast_transform) ||
-      ClipChainHasCompositedTransformTo(guest.Clip(), clip_lca,
-                                        *upcast_transform))
-    return absl::nullopt;
+    upcast_transform =
+        &Transform().LowestCommonAncestor(guest.Transform()).Unalias();
+  }
 
-  return PropertyTreeState(*upcast_transform, clip_lca, Effect());
+  const ClipPaintPropertyNode* upcast_clip = nullptr;
+  if (&Clip() == &guest.Clip()) {
+    upcast_clip = &Clip();
+  } else {
+    upcast_clip = &Clip().LowestCommonAncestor(guest.Clip()).Unalias();
+    if (ClipChainHasCompositedTransformTo(Clip(), *upcast_clip,
+                                          *upcast_transform) ||
+        ClipChainHasCompositedTransformTo(guest.Clip(), *upcast_clip,
+                                          *upcast_transform)) {
+      return absl::nullopt;
+    }
+  }
+
+  return PropertyTreeState(*upcast_transform, *upcast_clip, Effect());
 }
 
 String PropertyTreeStateOrAlias::ToString() const {

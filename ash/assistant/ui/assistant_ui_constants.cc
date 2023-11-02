@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,10 @@ const gfx::FontList& GetDefaultFontList() {
 }
 
 int GetHorizontalMargin() {
-  return features::IsProductivityLauncherEnabled() ? 24 : 32;
+  // Expected margin for productivity launcher case is 24. But
+  // AppListBubbleAssistantPage is shifted by 1px, i.e. has 1px margin. See
+  // b/233384263 for details.
+  return features::IsProductivityLauncherEnabled() ? 23 : 32;
 }
 
 int GetHorizontalPadding() {

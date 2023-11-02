@@ -11,6 +11,7 @@ include_rules = [
 
     "!third_party/blink/renderer/core/layout/bidi_run.h",
     "!third_party/blink/renderer/core/layout/hit_test_location.h",
+    "!third_party/blink/renderer/core/layout/hit_test_phase.h",
     "!third_party/blink/renderer/core/layout/hit_test_result.h",
     "!third_party/blink/renderer/core/layout/layout_block_flow.h",
     "!third_party/blink/renderer/core/layout/overflow_model.h",

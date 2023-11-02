@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,17 +12,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 
-namespace chromeos {
+namespace ash {
 namespace switches {
 
 namespace {
-
-// Controls CrOS GaiaId migration for tests ("" is default).
-const char kTestCrosGaiaIdMigration[] = "test-cros-gaia-id-migration";
-
-// Value for kTestCrosGaiaIdMigration indicating that migration is started (i.e.
-// all stored user keys will be converted to GaiaId)
-const char kTestCrosGaiaIdMigrationStarted[] = "started";
 
 // Max and min number of seconds that must pass between showing user contextual
 // nudges when override switch is set.
@@ -51,6 +44,10 @@ const char kAllowOsInstall[] = "allow-os-install";
 // in testing where we do want to go through the permission flow even in dev
 // mode. This can be enabled by this flag.
 const char kAllowRAInDevMode[] = "allow-ra-in-dev-mode";
+
+// Causes HDCP of the specified type to always be enabled when an external
+// display is connected. Used for HDCP compliance testing on ChromeOS.
+const char kAlwaysEnableHdcp[] = "always-enable-hdcp";
 
 // Specifies whether an app launched in kiosk mode was auto launched with zero
 // delay. Used in order to properly restore auto-launched state during session
@@ -104,19 +101,12 @@ const char kArcDisableMediaStoreMaintenance[] =
 // apps silently. Used in autotests to resolve racy conditions.
 const char kArcDisablePlayAutoInstall[] = "arc-disable-play-auto-install";
 
-// Used for development of Android app that are included into ARC as system
-// default apps in order to be able to install them via adb.
-const char kArcDisableSystemDefaultApps[] = "arc-disable-system-default-apps";
+// Used in autotest to disable TTS cache which is on by default.
+const char kArcDisableTtsCache[] = "arc-disable-tts-cache";
 
 // Flag that disables ureadahead completely, including host and guest parts.
 // See also |kArcVmUreadaheadMode|.
 const char kArcDisableUreadahead[] = "arc-disable-ureadahead";
-
-// Flag to enables an experiment to allow users to turn on 64-bit support in
-// native bridge on systems that have such support available but not yet enabled
-// by default.
-const char kArcEnableNativeBridge64BitSupportExperiment[] =
-    "arc-enable-native-bridge-64bit-support-experiment";
 
 // Flag that forces the OptIn ui to be shown. Used in tests.
 const char kArcForceShowOptInUi[] = "arc-force-show-optin-ui";
@@ -230,6 +220,11 @@ const char kAshForceStatusAreaCollapsible[] = "force-status-area-collapsible";
 const char kAshHideNotificationsForFactory[] =
     "ash-hide-notifications-for-factory";
 
+// Hides educational nudges that can interfere with tast integration tests.
+// Somewhat similar to --no-first-run but affects system UI behavior, not
+// browser behavior.
+const char kAshNoNudges[] = "ash-no-nudges";
+
 // Power button position includes the power button's physical display side and
 // the percentage for power button center position to the display's
 // width/height in landscape_primary screen orientation. The value is a JSON
@@ -258,6 +253,10 @@ const char kAshUiMode[] = "force-tablet-mode";
 const char kAshUiModeClamshell[] = "clamshell";
 const char kAshUiModeTablet[] = "touch_view";
 
+// Makes ash use ChromeOS mojo service manager as the mojo broker.
+const char kAshUseCrOSMojoServiceManager[] =
+    "ash-use-cros-mojo-service-manager";
+
 // (Most) Chrome OS hardware reports ACPI power button releases correctly.
 // Standard hardware reports releases immediately after presses.  If set, we
 // lock the screen or shutdown the system immediately in response to a press
@@ -273,9 +272,6 @@ const char kAuraLegacyPowerButton[] = "aura-legacy-power-button";
 //    data connections.
 const char kCellularFirst[] = "cellular-first";
 
-// Indicates that CloudReady UI in OOBE should be shown.
-const char kCloudReadyOobe[] = "cloud-ready-oobe";
-
 // Default large wallpaper to use for kids accounts (as path to trusted,
 // non-user-writable JPEG file).
 const char kChildWallpaperLarge[] = "child-wallpaper-large";
@@ -287,8 +283,18 @@ const char kChildWallpaperSmall[] = "child-wallpaper-small";
 // Forces CrOS region value.
 const char kCrosRegion[] = "cros-region";
 
+// Overrides the url for fetching a reauth request token for Cryptohome recovery
+// flow.
+const char kCryptohomeRecoveryReauthUrl[] = "cryptohome-recovery-reauth-url";
+
 // Controls if AuthSession API should be used when interacting with cryptohomed.
 const char kCryptohomeUseAuthSession[] = "cryptohome-use-authsession";
+
+// Forces cryptohome to create new users using old (ecryptfs) encryption.
+// This switch can be used to set up configurations that can be used to
+// test encryption migration scenarios.
+const char kCryptohomeUseOldEncryptionForTesting[] =
+    "cryptohome-use-old-encryption-for-testing";
 
 // Indicates that the wallpaper images specified by
 // kAshDefaultWallpaper{Large,Small} are OEM-specific (i.e. they are not
@@ -309,15 +315,18 @@ const char kDemoModeHighlightsApp[] = "demo-mode-highlights-extension";
 // App ID to use for screensaver app in demo mode.
 const char kDemoModeScreensaverApp[] = "demo-mode-screensaver-extension";
 
+// Directory from which to fetch the demo mode SWA content (instead of
+// downloading from Omaha).
+const char kDemoModeSwaContentDirectory[] = "demo-mode-swa-content-directory";
+
 // Time in seconds before a machine at OOBE is considered derelict.
 const char kDerelictDetectionTimeout[] = "derelict-detection-timeout";
 
 // Time in seconds before a derelict machines starts demo mode.
 const char kDerelictIdleTimeout[] = "derelict-idle-timeout";
 
-// Prevents any CPU restrictions being set on the ARC container. Only meant to
-// be used by tests as some tests may time out if the ARC container is
-// throttled.
+// Prevents any CPU restrictions being set on ARC[VM]. Only meant to be used by
+// tests as some tests may time out if the ARC container is throttled.
 const char kDisableArcCpuRestriction[] = "disable-arc-cpu-restriction";
 
 // Disables android user data wipe on opt out.
@@ -344,8 +353,17 @@ const char kDisableGaiaServices[] = "disable-gaia-services";
 const char kDisableHIDDetectionOnOOBEForTesting[] =
     "disable-hid-detection-on-oobe";
 
+// Disables the Lacros keep alive for testing.
+const char kDisableLacrosKeepAliveForTesting[] = "disable-lacros-keep-alive";
+
 // Avoid doing expensive animations upon login.
 const char kDisableLoginAnimations[] = "disable-login-animations";
+
+// If Lacros is set to the primary web browser, on session login, it is
+// automatically launched. This disables the feature, i.e., if this flag is
+// set, even if lacros is the primary web browser, it won't automatically
+// launch on session login. This is for testing purpose, specifically for Tast.
+const char kDisableLoginLacrosOpening[] = "disable-login-lacros-opening";
 
 // Disables requests for an enterprise machine certificate during attestation.
 const char kDisableMachineCertRequest[] = "disable-machine-cert-request";
@@ -354,6 +372,10 @@ const char kDisableMachineCertRequest[] = "disable-machine-cert-request";
 // unexpected behavior during tests.
 const char kDisableOOBEChromeVoxHintTimerForTesting[] =
     "disable-oobe-chromevox-hint-timer-for-testing";
+
+// Disables network screen skip check which is based on ethernet connection.
+const char kDisableOOBENetworkScreenSkippingForTesting[] =
+    "disable-oobe-network-screen-skipping-for-testing";
 
 // Disables per-user timezone.
 const char kDisablePerUserTimezone[] = "disable-per-user-timezone";
@@ -422,7 +444,7 @@ const char kEnableOOBEChromeVoxHintForDevMode[] =
 // Enables OOBE testing API for tast tests.
 const char kEnableOobeTestAPI[] = "enable-oobe-test-api";
 
-// Enables configuring the OEM Device Requsition in the OOBE.
+// Enables configuring the OEM Device Requisition in the OOBE.
 const char kEnableRequisitionEdits[] = "enable-requisition-edits";
 
 // Enables tablet form factor.
@@ -467,6 +489,12 @@ const char kEnterpriseEnrollmentInitialModulus[] =
 const char kEnterpriseEnrollmentModulusLimit[] =
     "enterprise-enrollment-modulus-limit";
 
+// Disallow blocking developer mode through enterprise device policy:
+// - Fail enterprise enrollment if enrolling would block dev mode.
+// - Don't apply new device policy if it would block dev mode.
+// This is only usable on test builds.
+const char kDisallowPolicyBlockDevMode[] = "disallow-policy-block-dev-mode";
+
 // Write extension install events to chrome log for integration test.
 const char kExtensionInstallEventChromeLogForTests[] =
     "extension-install-event-chrome-log-for-tests";
@@ -507,6 +535,10 @@ const char kFingerprintSensorLocation[] = "fingerprint-sensor-location";
 // Not passed on restart after sign out.
 const char kFirstExecAfterBoot[] = "first-exec-after-boot";
 
+// Forces fetching tokens for Cryptohome Recovery.
+const char kForceCryptohomeRecoveryForTesting[] =
+    "force-cryptohome-recovery-for-testing";
+
 // Forces developer tools availability, no matter what values the enterprise
 // policies DeveloperToolsDisabled and DeveloperToolsAvailability are set to.
 const char kForceDevToolsAvailable[] = "force-devtools-available";
@@ -514,10 +546,9 @@ const char kForceDevToolsAvailable[] = "force-devtools-available";
 // Forces first-run UI to be shown for every login.
 const char kForceFirstRunUI[] = "force-first-run-ui";
 
-// Forces Hardware ID check (happens during OOBE) to fail. Should be used only
-// for testing.
-const char kForceHWIDCheckFailureForTest[] =
-    "force-hwid-check-failure-for-test";
+// Forces Hardware ID check (happens during OOBE) to fail or succeed. Possible
+// values: "failure" or "success". Should be used only for testing.
+const char kForceHWIDCheckResultForTest[] = "force-hwid-check-result-for-test";
 
 // Force enables the Happiness Tracking System for the device. This ignores
 // user profile check and time limits and shows the notification every time
@@ -530,6 +561,14 @@ const char kForceLaunchBrowser[] = "force-launch-browser";
 // Usually in browser tests the usual login manager bringup is skipped so that
 // tests can change how it's brought up. This flag disables that.
 const char kForceLoginManagerInTests[] = "force-login-manager-in-tests";
+
+// Forces the cursor to be shown even if we are mimicing touch events. Note that
+// cursor changes are locked when using this switch.
+const char kForceShowCursor[] = "force-show-cursor";
+
+// Force the "release track" UI to show in the system tray. Simulates the system
+// being on a non-stable release channel with feedback enabled.
+const char kForceShowReleaseTrack[] = "force-show-release-track";
 
 // Force system compositor mode when set.
 const char kForceSystemCompositorMode[] = "force-system-compositor-mode";
@@ -545,11 +584,6 @@ const char kFormFactor[] = "form-factor";
 
 // Sets the throttle fps for compositor frame submission.
 const char kFrameThrottleFps[] = "frame-throttle-fps";
-
-// A reauth request token that will be passed in the Gaia embedded sign-in URL.
-// The token will be obtained by a client-server request in the future, but in
-// this temporary prototype we're configuring it manually.
-const char kGaiaReauthRequestToken[] = "gaia-reauth-request-token";
 
 // Indicates that the browser is in "browse without sign-in" (Guest session)
 // mode. Should completely disable extensions, sync and bookmarks.
@@ -569,6 +603,9 @@ const char kGuestWallpaperSmall[] = "guest-wallpaper-small";
 // both Search and Caps Lock keys (e.g. stout) and for devices like Chromeboxes
 // that only use external keyboards.
 const char kHasChromeOSKeyboard[] = "has-chromeos-keyboard";
+
+// Whether this device that has hps.
+const char kHasHps[] = "has-hps";
 
 // Whether this device has an internal stylus.
 const char kHasInternalStylus[] = "has-internal-stylus";
@@ -592,6 +629,11 @@ const char kIgnoreArcVmDevConf[] = "ignore-arcvm-dev-conf";
 const char kIgnoreUserProfileMappingForTests[] =
     "ignore-user-profile-mapping-for-tests";
 
+// If true, the time dependent views (such as the time view) show with the
+// predefined fixed time.
+const char kStabilizeTimeDependentViewForTests[] =
+    "stabilize-time-dependent-view-for-tests";
+
 // Decreases delay in uploading installation event logs for integration test.
 const char kInstallLogFastUploadForTests[] =
     "install-log-fast-upload-for-tests";
@@ -599,11 +641,6 @@ const char kInstallLogFastUploadForTests[] =
 // When specified, Chrome OS will install a System Extension from the specified
 // directory. For now, only one extension can be specified.
 const char kInstallSystemExtension[] = "install-system-extension";
-
-// If set, the Chrome settings will not expose the option to enable crostini
-// unless the enable-experimental-kernel-vm-support flag is set in
-// chrome://flags
-const char kKernelnextRestrictVMs[] = "kernelnext-restrict-vms";
 
 // When this flag is set, the lacros-availability policy is ignored.
 const char kLacrosAvailabilityIgnore[] = "lacros-availability-ignore";
@@ -615,6 +652,14 @@ const char kLacrosAvailabilityIgnore[] = "lacros-availability-ignore";
 //   --foo=5
 //   --bar=/tmp/dir name
 const char kLacrosChromeAdditionalArgs[] = "lacros-chrome-additional-args";
+
+// If this switch is set, then ash-chrome will read from the provided path
+// and pass additional arguments when launching lacros-chrome. Each non-empty
+// line in the file will be treated as an argument. Example file contents:
+//   --foo=5
+//   --bar=/tmp/dir name
+const char kLacrosChromeAdditionalArgsFile[] =
+    "lacros-chrome-additional-args-file";
 
 // Additional environment variables set for lacros-chrome. The string '####' is
 // used as a delimiter. For example:
@@ -636,6 +681,10 @@ const char kLacrosChromePath[] = "lacros-chrome-path";
 // 2. A terminal to start lacros-chrome with a debugger.
 const char kLacrosMojoSocketForTesting[] = "lacros-mojo-socket-for-testing";
 
+// Start Chrome in RMA mode. Launches RMA app automatically.
+// kRmaNotAllowed switch takes priority over this one.
+const char kLaunchRma[] = "launch-rma";
+
 // Enables Chrome-as-a-login-manager behavior.
 const char kLoginManager[] = "login-manager";
 
@@ -651,6 +700,23 @@ const char kLoginUser[] = "login-user";
 
 // Specifies the user that the browser data migration should happen for.
 const char kBrowserDataMigrationForUser[] = "browser-data-migration-for-user";
+
+// Specifies the user that the browser data backward migration should happen
+// for.
+const char kBrowserDataBackwardMigrationForUser[] =
+    "browser-data-backward-migration-for-user";
+
+// Tells Chrome to forcefully trigger backward data migration.
+extern const char kForceBrowserDataBackwardMigration[] =
+    "force-browser-data-backward-migration";
+
+// Run move migration instead of copy. Passed with
+// `kBrowserDataMigrationForUser`.
+const char kBrowserDataMigrationMode[] = "browser-data-migration-mode";
+
+// Backward migration mode. Passed with `kBrowserDataBackwardMigrationForUser`.
+const char kBrowserDataBackwardMigrationMode[] =
+    "browser-data-backward-migration-mode";
 
 // Force skip or force migration. Should only be used for testing.
 const char kForceBrowserDataMigrationForTesting[] =
@@ -689,6 +755,11 @@ const char kOobeLargeScreenSpecialScaling[] =
 // Specifies directory for screenshots taken with OOBE UI Debugger.
 const char kOobeScreenshotDirectory[] = "oobe-screenshot-dir";
 
+// Shows a11y button on the marketing opt in without visiting gesture navigation
+// screen.
+const char kOobeShowAccessibilityButtonOnMarketingOptInForTesting[] =
+    "oobe-show-accessibility-button-on-marketing-opt-in-for-testing";
+
 // Skips all other OOBE pages after user login.
 const char kOobeSkipPostLogin[] = "oobe-skip-postlogin";
 
@@ -701,7 +772,7 @@ const char kOobeTimerInterval[] = "oobe-timer-interval";
 // Allows the timezone to be overridden on the marketing opt-in screen.
 const char kOobeTimezoneOverrideForTests[] = "oobe-timezone-override-for-tests";
 
-// Trigger sync engine initialziation timeout in OOBE for testing.
+// Trigger sync engine initialization timeout in OOBE for testing.
 const char kOobeTriggerSyncTimeoutForTests[] =
     "oobe-trigger-sync-timeout-for-tests";
 
@@ -720,8 +791,14 @@ const char kPublicAccountsSamlAclUrl[] = "public-accounts-saml-acl-url";
 // "/usr/share/chromeos-assets/regulatory_labels/".
 const char kRegulatoryLabelDir[] = "regulatory-label-dir";
 
+// Indicates that reven UI strings and features should be shown.
+const char kRevenBranding[] = "reven-branding";
+
 // The rlz ping delay (in seconds) that overwrites the default value.
 const char kRlzPingDelay[] = "rlz-ping-delay";
+
+// Start Chrome without opening RMA or checking the current RMA state.
+const char kRmaNotAllowed[] = "rma-not-allowed";
 
 // The switch added by session_manager daemon when chrome crashes 3 times or
 // more within the first 60 seconds on start.
@@ -760,6 +837,11 @@ const char kShowTaps[] = "show-taps";
 // Disables online sign-in enforcement in tast tests.
 const char kSkipForceOnlineSignInForTesting[] =
     "skip-force-online-signin-for-testing";
+
+// Used to skip the threshold duration that the reorder nudge has to show before
+// the nudge is considered as shown.
+const char kSkipReorderNudgeShowThresholdDurationForTest[] =
+    "skip-reorder-nudge-show-threshold-duration";
 
 // If set, the device will be forced to stay in clamshell UI mode but screen
 // auto rotation will be supported. E.g, chromebase device Dooly.
@@ -813,6 +895,13 @@ const char kUnfilteredBluetoothDevices[] = "unfiltered-bluetooth-devices";
 // for testing the policy behaviour on the DUT.
 const char kUpdateRequiredAueForTest[] = "aue-reached-for-update-required-test";
 
+// Flag that stored MyFiles folder inside the user data directory.
+// $HOME/Downloads is used as MyFiles folder for ease access to local files for
+// debugging when running on Linux. By setting this flag, <cryptohome>/MyFiles
+// is used even on Linux.
+const char kUseMyFilesInUserDataDirForTesting[] =
+    "use-myfiles-in-user-data-dir-for-testing";
+
 // Used to tell the policy infrastructure to not let profile initialization
 // complete until policy is manually set by a test. This is used to provide
 // backward compatibility with a few tests that incorrectly use the
@@ -821,30 +910,34 @@ const char kUpdateRequiredAueForTest[] = "aue-reached-for-update-required-test";
 const char kWaitForInitialPolicyFetchForTest[] =
     "wait-for-initial-policy-fetch-for-test";
 
+// If provided, any webui will be loaded from <flag value>/<handler_name>, where
+// handler_name is the name passed to MaybeConfigureTestableDataSource, if the
+// file exists.
+// For example, if the flag is /tmp/resource_overrides, attempting to load
+// js/app_main.js from the data source named "help_app/untrusted" will first
+// attempt to load from /tmp/resource_overrides/help_app/untrusted/js/main.js.
+const char kWebUiDataSourcePathForTesting[] =
+    "web-ui-data-source-path-for-testing";
+
 // Used to determine if and how on-device handwriting recognition is supported
 // (e.g. via rootfs or downloadable content).
 const char kOndeviceHandwritingSwitch[] = "ondevice_handwriting";
+
+// Enable the getAccessToken autotest API which creates access tokens using
+// the internal OAuth client ID.
+const char kGetAccessTokenForTest[] = "get-access-token-for-test";
 
 bool IsAuthSessionCryptohomeEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kCryptohomeUseAuthSession);
 }
 
-bool IsGaiaIdMigrationStarted() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(kTestCrosGaiaIdMigration))
-    return false;
-
-  return command_line->GetSwitchValueASCII(kTestCrosGaiaIdMigration) ==
-         kTestCrosGaiaIdMigrationStarted;
-}
-
 bool IsCellularFirstDevice() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(kCellularFirst);
 }
 
-bool IsCloudReadyOobe() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(kCloudReadyOobe);
+bool IsRevenBranding() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(kRevenBranding);
 }
 
 bool IsSigninFrameClientCertsEnabled() {
@@ -863,6 +956,11 @@ bool ShouldTetherHostScansIgnoreWiredConnections() {
 
 bool ShouldSkipOobePostLogin() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(kOobeSkipPostLogin);
+}
+
+bool ShouldShowAccessibilityButtonOnMarketingOptInForTesting() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kOobeShowAccessibilityButtonOnMarketingOptInForTesting);
 }
 
 bool IsTabletFormFactor() {
@@ -909,6 +1007,11 @@ bool IsOOBEChromeVoxHintTimerDisabledForTesting() {
       kDisableOOBEChromeVoxHintTimerForTesting);
 }
 
+bool IsOOBENetworkScreenSkippingDisabledForTesting() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kDisableOOBENetworkScreenSkippingForTesting);
+}
+
 bool IsOOBEChromeVoxHintEnabledForDevMode() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kEnableOOBEChromeVoxHintForDevMode);
@@ -953,5 +1056,19 @@ bool ShouldClearFastInkBuffer() {
       kAshClearFastInkBuffer);
 }
 
+bool HasHps() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(kHasHps);
+}
+
+bool IsSkipRecorderNudgeShowThresholdDurationEnabled() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kSkipReorderNudgeShowThresholdDurationForTest);
+}
+
+bool IsStabilizeTimeDependentViewForTestsEnabled() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kStabilizeTimeDependentViewForTests);
+}
+
 }  // namespace switches
-}  // namespace chromeos
+}  // namespace ash

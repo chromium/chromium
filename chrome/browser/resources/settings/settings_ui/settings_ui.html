@@ -97,8 +97,7 @@
         <template is="dom-if" id="drawerTemplate">
           <settings-menu id="drawerMenu"
               page-visibility="[[pageVisibility_]]"
-              on-iron-activate="onIronActivate_"
-              advanced-opened="{{advancedOpenedInMenu_}}">
+              on-iron-activate="onIronActivate_">
           </settings-menu>
         </template>
       </div>
@@ -107,14 +106,12 @@
       <div id="left" hidden$="[[narrow_]]">
         <settings-menu id="leftMenu"
             page-visibility="[[pageVisibility_]]"
-            on-iron-activate="onIronActivate_"
-            advanced-opened="{{advancedOpenedInMenu_}}">
+            on-iron-activate="onIronActivate_">
         </settings-menu>
       </div>
       <settings-main id="main" prefs="{{prefs}}"
           toolbar-spinner-active="{{toolbarSpinnerActive_}}"
-          page-visibility="[[pageVisibility_]]"
-          advanced-toggle-expanded="{{advancedOpenedInMain_}}">
+          page-visibility="[[pageVisibility_]]">
       </settings-main>
       <!-- An additional child of the flex #container to take up space,
            aligned with the right-hand child of the flex toolbar. -->

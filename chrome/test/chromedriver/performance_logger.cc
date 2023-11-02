@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -186,7 +186,7 @@ Status PerformanceLogger::EnableInspectorDomains(DevToolsClient* client) {
     enable_commands.push_back("Page.enable");
   }
   for (const auto& enable_command : enable_commands) {
-    base::DictionaryValue params;  // All the enable commands have empty params.
+    base::Value::Dict params;  // All the enable commands have empty params.
     Status status = client->SendCommand(enable_command, params);
     if (status.IsError())
       return status;
@@ -267,12 +267,13 @@ Status PerformanceLogger::StartTrace() {
   for (const std::string& str : str_list) {
     categories.Append(str);
   }
-  base::DictionaryValue params;
-  params.SetPath("traceConfig.includedCategories", std::move(categories));
-  params.SetString("traceConfig.recordingMode", "recordAsMuchAsPossible");
+  base::Value::Dict params;
+  params.SetByDottedPath("traceConfig.includedCategories",
+                         std::move(categories));
+  params.SetByDottedPath("traceConfig.recordingMode", "recordAsMuchAsPossible");
   // Ask DevTools to report buffer usage.
-  params.SetInteger("bufferUsageReportingInterval",
-                    prefs_.buffer_usage_reporting_interval);
+  params.Set("bufferUsageReportingInterval",
+             prefs_.buffer_usage_reporting_interval);
   Status status = browser_client_->SendCommand("Tracing.start", params);
   if (status.IsError()) {
     LOG(ERROR) << "error when starting trace: " << status.message();
@@ -292,7 +293,7 @@ Status PerformanceLogger::CollectTraceEvents() {
                   "was not started");
   }
 
-  base::DictionaryValue params;
+  base::Value::Dict params;
   Status status = browser_client_->SendCommand("Tracing.end", params);
   if (status.IsError()) {
     LOG(ERROR) << "error when stopping trace: " << status.message();

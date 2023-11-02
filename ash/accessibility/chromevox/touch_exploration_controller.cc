@@ -1,10 +1,9 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/accessibility/chromevox/touch_exploration_controller.h"
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -17,6 +16,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/aura/client/cursor_client.h"
@@ -174,8 +174,8 @@ ui::EventDispatchDetails TouchExplorationController::RewriteEvent(
     current_touch_ids_.push_back(touch_id);
     touch_locations_.insert(std::pair<int, gfx::PointF>(touch_id, location));
   } else if (type == ui::ET_TOUCH_RELEASED || type == ui::ET_TOUCH_CANCELLED) {
-    std::vector<int>::iterator it = std::find(
-        current_touch_ids_.begin(), current_touch_ids_.end(), touch_id);
+    std::vector<int>::iterator it =
+        base::ranges::find(current_touch_ids_, touch_id);
 
     // Can happen if touch exploration is enabled while fingers were down
     // or if an additional press occurred within the exclusion bounds.
@@ -201,8 +201,8 @@ ui::EventDispatchDetails TouchExplorationController::RewriteEvent(
     current_touch_ids_.erase(it);
     touch_locations_.erase(touch_id);
   } else if (type == ui::ET_TOUCH_MOVED) {
-    std::vector<int>::iterator it = std::find(
-        current_touch_ids_.begin(), current_touch_ids_.end(), touch_id);
+    std::vector<int>::iterator it =
+        base::ranges::find(current_touch_ids_, touch_id);
 
     // Can happen if touch exploration is enabled while fingers were down.
     if (it == current_touch_ids_.end())
@@ -791,7 +791,7 @@ void TouchExplorationController::OnTapTimerFired() {
       return;
     }
     case SINGLE_TAP_PRESSED:
-      FALLTHROUGH;
+      [[fallthrough]];
     case GESTURE_IN_PROGRESS:
       // If only one finger is down, go into touch exploration.
       if (current_touch_ids_.size() == 1) {
@@ -858,6 +858,11 @@ void TouchExplorationController::DispatchEvent(
 // synchronously), so we ignore this callback.
 void TouchExplorationController::OnGestureEvent(ui::GestureConsumer* consumer,
                                                 ui::GestureEvent* gesture) {}
+
+const std::string& TouchExplorationController::GetName() const {
+  static const std::string name("TouchExplorationController");
+  return name;
+}
 
 void TouchExplorationController::ProcessGestureEvents() {
   std::vector<std::unique_ptr<ui::GestureEvent>> gestures =
@@ -1032,7 +1037,7 @@ void TouchExplorationController::OnSwipeEvent(ui::GestureEvent* swipe_gesture) {
 int TouchExplorationController::FindEdgesWithinInset(gfx::Point point_dip,
                                                      float inset) {
   gfx::RectF inner_bounds_dip(root_window_->bounds());
-  inner_bounds_dip.Inset(inset, inset);
+  inner_bounds_dip.Inset(inset);
 
   // Bitwise manipulation in order to determine where on the screen the point
   // lies. If more than one bit is turned on, then it is a corner where the two
@@ -1064,20 +1069,6 @@ void TouchExplorationController::DispatchKeyWithFlags(
             << "\nKey up: key code : " << key_up.key_code()
             << ", flags: " << key_up.flags();
   }
-}
-
-std::unique_ptr<ui::MouseEvent>
-TouchExplorationController::CreateMouseMoveEvent(const gfx::PointF& location,
-                                                 int flags) {
-  // The "synthesized" flag should be set on all events that don't have a
-  // backing native event.
-  flags |= ui::EF_IS_SYNTHESIZED;
-
-  std::unique_ptr<ui::MouseEvent> event(new ui::MouseEvent(
-      ui::ET_MOUSE_MOVED, gfx::Point(), gfx::Point(), Now(), flags, 0));
-  event->set_location_f(location);
-  event->set_root_location_f(location);
-  return event;
 }
 
 void TouchExplorationController::EnterTouchToMouseMode() {

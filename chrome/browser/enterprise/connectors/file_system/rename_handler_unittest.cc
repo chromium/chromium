@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/connectors/common.h"
@@ -64,7 +65,7 @@ class RenameHandlerCreateTestBase : public testing::Test {
   content::RenderViewHostTestEnabler render_view_host_test_enabler_;
   base::test::ScopedFeatureList scoped_feature_list_;
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile> profile_;
 };
 
 class RenameHandlerCreateTest : public RenameHandlerCreateTestBase,
@@ -87,7 +88,7 @@ TEST_P(RenameHandlerCreateTest, FeatureFlagTest) {
   item.SetURL(GURL("https://renameme.com"));
   item.SetTabUrl(GURL("https://renameme.com"));
   item.SetMimeType("text/plain");
-  content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
+  content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
   auto handler = RenameHandler::CreateIfNeeded(&item);
   ASSERT_EQ(enable_feature_flag(), handler.get() != nullptr);
 }
@@ -117,7 +118,7 @@ TEST_P(RenameHandlerCreateTest, Completed_NoRerouteInfo) {
   ASSERT_FALSE(handler.get());
 }
 
-INSTANTIATE_TEST_CASE_P(, RenameHandlerCreateTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(, RenameHandlerCreateTest, testing::Bool());
 
 struct PolicyTestParam {
   const char* test_policy = nullptr;
@@ -156,7 +157,7 @@ TEST_P(RenameHandlerCreateTest_Policies, Test) {
   item.SetURL(GURL(param.item_url));
   item.SetTabUrl(GURL(param.tab_url));
   item.SetMimeType(param.item_mime_type);
-  content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
+  content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
 
   auto handler = RenameHandler::CreateIfNeeded(&item);
   bool rename_handler_created = handler.get() != nullptr;
@@ -219,9 +220,9 @@ std::vector<PolicyTestParam> incomplete_policies_tests = {
     {kFSCPref_NoEnterpriseId},
     {kFSCPref_NoUrlList},
     {kFSCPref_NoMimeTypes}};
-INSTANTIATE_TEST_CASE_P(PolicyValidation,
-                        RenameHandlerCreateTest_Policies,
-                        testing::ValuesIn(incomplete_policies_tests));
+INSTANTIATE_TEST_SUITE_P(PolicyValidation,
+                         RenameHandlerCreateTest_Policies,
+                         testing::ValuesIn(incomplete_policies_tests));
 
 constexpr char kFSCPref_EmptyEnable_OffByDefault[] = R"([
   {
@@ -250,9 +251,9 @@ PolicyTestParam empty_enable_equals_off_by_default{
 std::vector<PolicyTestParam> simple_policies_tests = {
     on_by_default_should_route_everything, empty_enable_equals_off_by_default};
 
-INSTANTIATE_TEST_CASE_P(SimplePolicies,
-                        RenameHandlerCreateTest_Policies,
-                        testing::ValuesIn(simple_policies_tests));
+INSTANTIATE_TEST_SUITE_P(SimplePolicies,
+                         RenameHandlerCreateTest_Policies,
+                         testing::ValuesIn(simple_policies_tests));
 
 constexpr char kMimeType_JPG[] = "image/jpg";
 constexpr char kMimeType_7Z[] = "application/x-7z-compressed";
@@ -320,9 +321,9 @@ PolicyTestParam no_enable_field_equals_disable{
 std::vector<PolicyTestParam> off_by_default_tests = {
     no_url_matches_pattern, file_url_matches_pattern, tab_url_matches_pattern,
     disallowed_by_mime_type, no_enable_field_equals_disable};
-INSTANTIATE_TEST_CASE_P(OffByDefault_Except,
-                        RenameHandlerCreateTest_Policies,
-                        testing::ValuesIn(off_by_default_tests));
+INSTANTIATE_TEST_SUITE_P(OffByDefault_Except,
+                         RenameHandlerCreateTest_Policies,
+                         testing::ValuesIn(off_by_default_tests));
 
 // Off by default policy: all combos should result in NO routing except for
 // yes.com + yes routing type
@@ -336,9 +337,10 @@ std::vector<PolicyTestParam> off_by_default_with_exception_tests = {
     {kFSCPref_OffByDefault_Except, "https://yes.com/file.7z", "https://yes.com",
      kMimeType_7Z, false}};
 
-INSTANTIATE_TEST_CASE_P(OffByDefaultWithExceptions,
-                        RenameHandlerCreateTest_Policies,
-                        testing::ValuesIn(off_by_default_with_exception_tests));
+INSTANTIATE_TEST_SUITE_P(
+    OffByDefaultWithExceptions,
+    RenameHandlerCreateTest_Policies,
+    testing::ValuesIn(off_by_default_with_exception_tests));
 
 constexpr char kFSCPref_OnByDefault_Except[] = R"([
   {
@@ -368,9 +370,9 @@ std::vector<PolicyTestParam> on_by_default_with_exception_tests = {
     {kFSCPref_OnByDefault_Except, "https://yes.com/file.7z", "https://yes.com",
      kMimeType_7Z, true}};
 
-INSTANTIATE_TEST_CASE_P(OnByDefault_Except,
-                        RenameHandlerCreateTest_Policies,
-                        testing::ValuesIn(on_by_default_with_exception_tests));
+INSTANTIATE_TEST_SUITE_P(OnByDefault_Except,
+                         RenameHandlerCreateTest_Policies,
+                         testing::ValuesIn(on_by_default_with_exception_tests));
 
 constexpr char kFSCPref_OffByDefault_Except_SubtypeWildcard[] = R"([
   {
@@ -398,7 +400,7 @@ std::vector<PolicyTestParam>
         {kFSCPref_OffByDefault_Except_SubtypeWildcard,
          "https://yes.com/file.7z", "https://yes.com", kMimeType_7Z, true}};
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     OffByDefault_Except_SubtypeWildcard,
     RenameHandlerCreateTest_Policies,
     testing::ValuesIn(off_by_default_with_exception_subtype_wildcard_tests));
@@ -432,7 +434,7 @@ std::vector<PolicyTestParam>
         {kFSCPref_OnByDefault_Except_SubtypeWildcard, "https://yes.com/file.7z",
          "https://yes.com", kMimeType_7Z, true}};
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     OnByDefault_Except_SubtypeWildcard,
     RenameHandlerCreateTest_Policies,
     testing::ValuesIn(on_by_default_with_exception_subtype_wildcard_tests));
@@ -463,9 +465,9 @@ std::vector<PolicyTestParam> conflicting_filter_tests = {
     {kFSCPref_DisEnableConflict, "https://yes.com/file.7z", "https://yes.com",
      kMimeType_7Z, false}};
 
-INSTANTIATE_TEST_CASE_P(DisEnableConflict,
-                        RenameHandlerCreateTest_Policies,
-                        testing::ValuesIn(conflicting_filter_tests));
+INSTANTIATE_TEST_SUITE_P(DisEnableConflict,
+                         RenameHandlerCreateTest_Policies,
+                         testing::ValuesIn(conflicting_filter_tests));
 
 constexpr char kFSCPref_OffByDefault_Except_WildcardWithExcessiveTypes[] = R"([
   {
@@ -535,9 +537,9 @@ std::vector<PolicyTestParam> excessive_filter_tests = {
     {kFSCPref_OnByDefault_Except_WildcardWithExcessiveTypes,
      "https://no.com/file.7z", "https://no.com", kMimeType_7Z, false}};
 
-INSTANTIATE_TEST_CASE_P(WildcardWithExcessiveItems,
-                        RenameHandlerCreateTest_Policies,
-                        testing::ValuesIn(excessive_filter_tests));
+INSTANTIATE_TEST_SUITE_P(WildcardWithExcessiveItems,
+                         RenameHandlerCreateTest_Policies,
+                         testing::ValuesIn(excessive_filter_tests));
 
 constexpr char kFSCPref_DisEnableLists[] = R"([
   {
@@ -583,9 +585,9 @@ std::vector<PolicyTestParam> disenable_lists_tests = {
     {kFSCPref_DisEnableLists, "https://yes-image.com/file.png",
      "https://yes-image.com", kMimeType_PNG, true}};
 
-INSTANTIATE_TEST_CASE_P(DisEnableLists,
-                        RenameHandlerCreateTest_Policies,
-                        testing::ValuesIn(disenable_lists_tests));
+INSTANTIATE_TEST_SUITE_P(DisEnableLists,
+                         RenameHandlerCreateTest_Policies,
+                         testing::ValuesIn(disenable_lists_tests));
 }  // namespace create_by_policies_tests
 
 constexpr char ATokenBySignIn[] = "ATokenBySignIn";
@@ -719,8 +721,8 @@ class RenameHandlerTestBase {
 
     item_.SetTargetFilePath(kTargetFileName);
     item_.SetURL(GURL("https://any.com"));
-    content::DownloadItemUtils::AttachInfo(&item_, profile,
-                                           web_contents_.get());
+    content::DownloadItemUtils::AttachInfoForTesting(&item_, profile,
+                                                     web_contents_.get());
     ASSERT_TRUE(base::WriteFile(item_.GetFullPath(), "RenameHandlerTest"))
         << "Failed to create " << item_.GetFullPath();
 
@@ -755,7 +757,7 @@ class RenameHandlerTestBase {
 
  private:
   std::unique_ptr<RenameHandlerForTest> handler_;
-  MockUploader* uploader_;
+  raw_ptr<MockUploader> uploader_;
 
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<content::WebContents> web_contents_;
@@ -844,7 +846,7 @@ class RenameHandlerOAuth2Test : public testing::Test,
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler render_view_host_test_enabler_;
   TestingProfileManager profile_manager_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile> profile_;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 

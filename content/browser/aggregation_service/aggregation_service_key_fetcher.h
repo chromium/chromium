@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,18 +11,17 @@
 #include "base/callback_forward.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace url {
-class Origin;
-}  // namespace url
+class GURL;
 
 namespace content {
 
-class AggregatableReportManager;
+class AggregationServiceStorageContext;
 
 // This class is responsible for requesting keys from storage, owned by the
 // assembler.
@@ -37,9 +36,9 @@ class CONTENT_EXPORT AggregationServiceKeyFetcher {
     using NetworkFetchCallback =
         base::OnceCallback<void(absl::optional<PublicKeyset>)>;
 
-    // Fetch public keys for `origin` from the helper servers. Returns
+    // Fetch public keys from the helper server endpoint `url`. Returns
     // absl::nullopt in case of network or parsing error.
-    virtual void FetchPublicKeys(const url::Origin& origin,
+    virtual void FetchPublicKeys(const GURL& url,
                                  NetworkFetchCallback callback) = 0;
   };
 
@@ -53,15 +52,16 @@ class CONTENT_EXPORT AggregationServiceKeyFetcher {
   using FetchCallback =
       base::OnceCallback<void(absl::optional<PublicKey>, PublicKeyFetchStatus)>;
 
-  AggregationServiceKeyFetcher(AggregatableReportManager* manager,
-                               std::unique_ptr<NetworkFetcher> network_fetcher);
+  AggregationServiceKeyFetcher(
+      AggregationServiceStorageContext* storage_context,
+      std::unique_ptr<NetworkFetcher> network_fetcher);
   AggregationServiceKeyFetcher(const AggregationServiceKeyFetcher& other) =
       delete;
   AggregationServiceKeyFetcher& operator=(
       const AggregationServiceKeyFetcher& other) = delete;
   virtual ~AggregationServiceKeyFetcher();
 
-  // Gets a currently valid public key for `origin` and triggers the `callback`
+  // Gets a currently valid public key for `url` and triggers the `callback`
   // once completed.
   //
   // Helper server's keys must be rotated weekly which is primarily to limit the
@@ -75,36 +75,34 @@ class CONTENT_EXPORT AggregationServiceKeyFetcher {
   // one of the public keys to use. This selection should be made independently
   // between reports so that the key choice cannot be used to partition reports
   // into separate groups of users. Virtual for mocking in tests.
-  virtual void GetPublicKey(const url::Origin& origin, FetchCallback callback);
+  virtual void GetPublicKey(const GURL& url, FetchCallback callback);
 
  private:
   // Called when public keys are received from the storage.
-  void OnPublicKeysReceivedFromStorage(const url::Origin& origin,
+  void OnPublicKeysReceivedFromStorage(const GURL& url,
                                        std::vector<PublicKey> keys);
 
   // Keys are fetched from the network if they are not found in storage.
-  void FetchPublicKeysFromNetwork(const url::Origin& origin);
+  void FetchPublicKeysFromNetwork(const GURL& url);
 
   // Called when public keys are received from the network fetcher.
-  void OnPublicKeysReceivedFromNetwork(const url::Origin& origin,
+  void OnPublicKeysReceivedFromNetwork(const GURL& url,
                                        absl::optional<PublicKeyset> keyset);
 
-  // Runs callbacks for pending requests for `origin` with the public keys
+  // Runs callbacks for pending requests for `url` with the public keys
   // received from the network or storage. Any keys specified must be currently
   // valid.
-  void RunCallbacksForOrigin(const url::Origin& origin,
-                             const std::vector<PublicKey>& keys);
+  void RunCallbacksForUrl(const GURL& url, const std::vector<PublicKey>& keys);
 
-  // Using a raw pointer is safe because `manager_` is guaranteed to outlive
-  // `this`.
-  AggregatableReportManager* manager_;
+  // Using a raw pointer is safe because `storage_context_` is guaranteed to
+  // outlive `this`.
+  raw_ptr<AggregationServiceStorageContext> storage_context_;
 
-  // Map of all origins that are currently waiting for the public keys, and
+  // Map of all URLs that are currently waiting for the public keys, and
   // their associated fetch callbacks. Used to cache ongoing requests to the
   // storage or network to prevent looking up the same key multiple times at
   // once.
-  base::flat_map<url::Origin, base::circular_deque<FetchCallback>>
-      origin_callbacks_;
+  base::flat_map<GURL, base::circular_deque<FetchCallback>> url_callbacks_;
 
   // Responsible for issuing requests to network for fetching public keys.
   std::unique_ptr<NetworkFetcher> network_fetcher_;

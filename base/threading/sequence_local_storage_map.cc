@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/lazy_instance.h"
+#include "base/record_replay.h"
 #include "base/threading/thread_local.h"
 
 namespace base {
@@ -19,9 +20,9 @@ LazyInstance<ThreadLocalPointer<SequenceLocalStorageMap>>::Leaky
     tls_current_sequence_local_storage = LAZY_INSTANCE_INITIALIZER;
 }  // namespace
 
-SequenceLocalStorageMap::SequenceLocalStorageMap() = default;
+SequenceLocalStorageMap::SequenceLocalStorageMap() {}
 
-SequenceLocalStorageMap::~SequenceLocalStorageMap() = default;
+SequenceLocalStorageMap::~SequenceLocalStorageMap() {}
 
 ScopedSetSequenceLocalStorageMapForCurrentThread::
     ScopedSetSequenceLocalStorageMapForCurrentThread(

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,11 +25,9 @@ class PdfToEmfConverterFactory : public mojom::PdfToEmfConverterFactory {
 
  private:
   // mojom::PdfToEmfConverterFactory implementation.
-  void CreateConverter(
-      base::ReadOnlySharedMemoryRegion pdf_region,
-      const PdfRenderSettings& render_settings,
-      mojo::PendingRemote<mojom::PdfToEmfConverterClient> client,
-      CreateConverterCallback callback) override;
+  void CreateConverter(base::ReadOnlySharedMemoryRegion pdf_region,
+                       const PdfRenderSettings& render_settings,
+                       CreateConverterCallback callback) override;
 };
 
 }  // namespace printing

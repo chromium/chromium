@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
@@ -44,7 +45,7 @@
 #include "net/log/net_log_capture_mode.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/browser_ui/share/android/intent_helper.h"
 #endif
 
@@ -69,11 +70,11 @@ content::WebUIDataSource* CreateNetExportHTMLSource() {
   return source;
 }
 
-void SetIfNotNull(base::DictionaryValue* dict,
+void SetIfNotNull(base::Value::Dict& dict,
                   const base::StringPiece& path,
                   std::unique_ptr<base::Value> in_value) {
   if (in_value) {
-    dict->Set(path, std::move(in_value));
+    dict.Set(path, base::Value::FromUniquePtrValue(std::move(in_value)));
   }
 }
 
@@ -97,11 +98,11 @@ class NetExportMessageHandler
   void RegisterMessages() override;
 
   // Messages
-  void OnEnableNotifyUIWithState(const base::ListValue* list);
-  void OnStartNetLog(const base::ListValue* list);
-  void OnStopNetLog(const base::ListValue* list);
-  void OnSendNetLog(const base::ListValue* list);
-  void OnShowFile(const base::ListValue* list);
+  void OnEnableNotifyUIWithState(const base::Value::List& list);
+  void OnStartNetLog(const base::Value::List& list);
+  void OnStopNetLog(const base::Value::List& list);
+  void OnSendNetLog(const base::Value::List& list);
+  void OnShowFile(const base::Value::List& list);
 
   // ui::SelectFileDialog::Listener implementation.
   void FileSelected(const base::FilePath& path,
@@ -110,7 +111,7 @@ class NetExportMessageHandler
   void FileSelectionCanceled(void* params) override;
 
   // net_log::NetExportFileWriter::StateObserver implementation.
-  void OnNewState(const base::DictionaryValue& state) override;
+  void OnNewState(const base::Value::Dict& state) override;
 
  private:
   // Send NetLog data via email.
@@ -135,14 +136,14 @@ class NetExportMessageHandler
 
   // Fires net-log-info-changed event to update the JavaScript UI in the
   // renderer.
-  void NotifyUIWithState(std::unique_ptr<base::DictionaryValue> state);
+  void NotifyUIWithState(const base::Value::Dict& state);
 
   // Opens the SelectFileDialog UI with the default path to save a
   // NetLog file.
   void ShowSelectFileDialog(const base::FilePath& default_path);
 
   // Cached pointer to SystemNetworkContextManager's NetExportFileWriter.
-  net_log::NetExportFileWriter* file_writer_;
+  raw_ptr<net_log::NetExportFileWriter> file_writer_;
 
   base::ScopedObservation<net_log::NetExportFileWriter,
                           net_log::NetExportFileWriter::StateObserver>
@@ -172,29 +173,29 @@ NetExportMessageHandler::~NetExportMessageHandler() {
   if (select_file_dialog_)
     select_file_dialog_->ListenerDestroyed();
 
-  file_writer_->StopNetLog(nullptr);
+  file_writer_->StopNetLog();
 }
 
 void NetExportMessageHandler::RegisterMessages() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       net_log::kEnableNotifyUIWithStateHandler,
       base::BindRepeating(&NetExportMessageHandler::OnEnableNotifyUIWithState,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       net_log::kStartNetLogHandler,
       base::BindRepeating(&NetExportMessageHandler::OnStartNetLog,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       net_log::kStopNetLogHandler,
       base::BindRepeating(&NetExportMessageHandler::OnStopNetLog,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       net_log::kSendNetLogHandler,
       base::BindRepeating(&NetExportMessageHandler::OnSendNetLog,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       net_log::kShowFile,
       base::BindRepeating(&NetExportMessageHandler::OnShowFile,
                           base::Unretained(this)));
@@ -204,19 +205,17 @@ void NetExportMessageHandler::RegisterMessages() {
 // After this function, NotifyUIWithState() will be called on all |file_writer_|
 // state changes.
 void NetExportMessageHandler::OnEnableNotifyUIWithState(
-    const base::ListValue* list) {
+    const base::Value::List& list) {
   AllowJavascript();
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!state_observation_manager_.IsObserving()) {
-    state_observation_manager_.Observe(file_writer_);
+    state_observation_manager_.Observe(file_writer_.get());
   }
   NotifyUIWithState(file_writer_->GetState());
 }
 
-void NetExportMessageHandler::OnStartNetLog(const base::ListValue* list) {
+void NetExportMessageHandler::OnStartNetLog(const base::Value::List& params) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  base::Value::ConstListView params = list->GetList();
 
   // Determine the capture mode.
   capture_mode_ = net::NetLogCaptureMode::kDefault;
@@ -244,32 +243,31 @@ void NetExportMessageHandler::OnStartNetLog(const base::ListValue* list) {
   }
 }
 
-void NetExportMessageHandler::OnStopNetLog(const base::ListValue* list) {
+void NetExportMessageHandler::OnStopNetLog(const base::Value::List& list) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  std::unique_ptr<base::DictionaryValue> ui_thread_polled_data(
-      new base::DictionaryValue());
+  base::Value::Dict ui_thread_polled_data;
 
   Profile* profile = Profile::FromWebUI(web_ui());
-  SetIfNotNull(ui_thread_polled_data.get(), "prerenderInfo",
+  SetIfNotNull(ui_thread_polled_data, "prerenderInfo",
                chrome_browser_net::GetPrerenderInfo(profile));
-  SetIfNotNull(ui_thread_polled_data.get(), "extensionInfo",
+  SetIfNotNull(ui_thread_polled_data, "extensionInfo",
                chrome_browser_net::GetExtensionInfo(profile));
-#if defined(OS_WIN)
-  SetIfNotNull(ui_thread_polled_data.get(), "serviceProviders",
+#if BUILDFLAG(IS_WIN)
+  SetIfNotNull(ui_thread_polled_data, "serviceProviders",
                chrome_browser_net::GetWindowsServiceProviders());
 #endif
 
   file_writer_->StopNetLog(std::move(ui_thread_polled_data));
 }
 
-void NetExportMessageHandler::OnSendNetLog(const base::ListValue* list) {
+void NetExportMessageHandler::OnSendNetLog(const base::Value::List& list) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   file_writer_->GetFilePathToCompletedLog(
       base::BindOnce(&NetExportMessageHandler::SendEmail));
 }
 
-void NetExportMessageHandler::OnShowFile(const base::ListValue* list) {
+void NetExportMessageHandler::OnShowFile(const base::Value::List& list) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   file_writer_->GetFilePathToCompletedLog(
       base::BindOnce(&NetExportMessageHandler::ShowFileInShell, AsWeakPtr()));
@@ -294,14 +292,14 @@ void NetExportMessageHandler::FileSelectionCanceled(void* params) {
   select_file_dialog_ = nullptr;
 }
 
-void NetExportMessageHandler::OnNewState(const base::DictionaryValue& state) {
-  NotifyUIWithState(state.CreateDeepCopy());
+void NetExportMessageHandler::OnNewState(const base::Value::Dict& state) {
+  NotifyUIWithState(state);
 }
 
 // static
 void NetExportMessageHandler::SendEmail(const base::FilePath& file_to_send) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (file_to_send.empty())
     return;
   std::string email;
@@ -341,7 +339,7 @@ void NetExportMessageHandler::ShowFileInShell(const base::FilePath& path) {
 
 // static
 bool NetExportMessageHandler::UsingMobileUI() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return true;
 #else
   return false;
@@ -349,10 +347,10 @@ bool NetExportMessageHandler::UsingMobileUI() {
 }
 
 void NetExportMessageHandler::NotifyUIWithState(
-    std::unique_ptr<base::DictionaryValue> state) {
+    const base::Value::Dict& state) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(web_ui());
-  FireWebUIListener(net_log::kNetLogInfoChangedEvent, *state);
+  FireWebUIListener(net_log::kNetLogInfoChangedEvent, state);
 }
 
 void NetExportMessageHandler::ShowSelectFileDialog(

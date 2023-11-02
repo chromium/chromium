@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,10 +7,10 @@ source_set("encoder") {
     "audio_encoder.h",
     "encoder_bitrate_filter.cc",
     "encoder_bitrate_filter.h",
-    "frame_processing_time_estimator.cc",
-    "frame_processing_time_estimator.h",
     "video_encoder.cc",
     "video_encoder.h",
+    "video_encoder_active_map.cc",
+    "video_encoder_active_map.h",
     "video_encoder_helper.cc",
     "video_encoder_helper.h",
     "video_encoder_verbatim.cc",
@@ -18,10 +18,8 @@ source_set("encoder") {
     "video_encoder_vpx.cc",
     "video_encoder_vpx.h",
     "webrtc_video_encoder.cc",
-    "webrtc_video_encoder_proxy.cc",
-    "webrtc_video_encoder_proxy.h",
-    "webrtc_video_encoder_selector.cc",
-    "webrtc_video_encoder_selector.h",
+    "webrtc_video_encoder_av1.cc",
+    "webrtc_video_encoder_av1.h",
     "webrtc_video_encoder_vpx.cc",
     "webrtc_video_encoder_vpx.h",
   ]
@@ -35,6 +33,7 @@ source_set("encoder") {
     "//remoting/base:base",
     "//remoting/proto",
     "//remoting/protocol:session_config",
+    "//third_party/libaom",
     "//third_party/libvpx",
     "//third_party/libyuv",
     "//third_party/opus",
@@ -64,13 +63,10 @@ source_set("encoder") {
     sources += [
       "audio_encoder_opus.cc",
       "audio_encoder_opus.h",
-      "cast_software_video_encoder_adapter.cc",
-      "cast_software_video_encoder_adapter.h",
     ]
     deps += [
       "//media",
       "//media:shared_memory_support",
-      "//media/cast:sender",
     ]
   }
 }
@@ -131,12 +127,10 @@ source_set("unit_tests") {
     "codec_test.cc",
     "codec_test.h",
     "encoder_bitrate_filter_unittest.cc",
-    "frame_processing_time_estimator_unittest.cc",
     "video_decoder_vpx_unittest.cc",
     "video_encoder_helper_unittest.cc",
     "video_encoder_verbatim_unittest.cc",
     "video_encoder_vpx_unittest.cc",
-    "webrtc_video_encoder_selector_unittest.cc",
   ]
 
   deps = [

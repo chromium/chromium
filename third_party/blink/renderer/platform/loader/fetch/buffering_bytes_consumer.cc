@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,8 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "base/numerics/safe_conversions.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -69,7 +70,7 @@ BytesConsumer::Result BufferingBytesConsumer::BeginRead(const char** buffer,
   // drain the underlying |bytes_consumer_| anyway.
   MaybeStartBuffering();
 
-  if (buffer_.IsEmpty()) {
+  if (buffer_.empty()) {
     if (buffering_state_ != BufferingState::kStarted)
       return bytes_consumer_->BeginRead(buffer, available);
 
@@ -86,18 +87,18 @@ BytesConsumer::Result BufferingBytesConsumer::BeginRead(const char** buffer,
     if (has_seen_error_)
       return Result::kError;
 
-    if (buffer_.IsEmpty())
+    if (buffer_.empty())
       return has_seen_end_of_data_ ? Result::kDone : Result::kShouldWait;
   }
 
-  DCHECK_LT(offset_for_first_chunk_, buffer_[0].size());
-  *buffer = buffer_[0].data() + offset_for_first_chunk_;
-  *available = buffer_[0].size() - offset_for_first_chunk_;
+  DCHECK_LT(offset_for_first_chunk_, buffer_[0]->size());
+  *buffer = buffer_[0]->data() + offset_for_first_chunk_;
+  *available = buffer_[0]->size() - offset_for_first_chunk_;
   return Result::kOk;
 }
 
 BytesConsumer::Result BufferingBytesConsumer::EndRead(size_t read_size) {
-  if (buffer_.IsEmpty()) {
+  if (buffer_.empty()) {
     if (buffering_state_ != BufferingState::kStarted)
       return bytes_consumer_->EndRead(read_size);
 
@@ -105,15 +106,19 @@ BytesConsumer::Result BufferingBytesConsumer::EndRead(size_t read_size) {
     return Result::kError;
   }
 
-  DCHECK_LE(offset_for_first_chunk_ + read_size, buffer_[0].size());
+  DCHECK_LE(offset_for_first_chunk_ + read_size, buffer_[0]->size());
   offset_for_first_chunk_ += read_size;
 
-  if (offset_for_first_chunk_ == buffer_[0].size()) {
+  if (offset_for_first_chunk_ == buffer_[0]->size()) {
     offset_for_first_chunk_ = 0;
+    // Actively clear the unused HeapVector at this point. This allows the GC to
+    // immediately reclaim it before any garbage collection is otherwise
+    // triggered. This is useful in this high-performance case.
+    buffer_[0]->clear();
     buffer_.pop_front();
   }
 
-  if (buffer_.IsEmpty() && has_seen_end_of_data_) {
+  if (buffer_.empty() && has_seen_end_of_data_) {
     ClearClient();
     return Result::kDone;
   }
@@ -152,7 +157,7 @@ void BufferingBytesConsumer::Cancel() {
 }
 
 BytesConsumer::PublicState BufferingBytesConsumer::GetPublicState() const {
-  if (buffer_.IsEmpty())
+  if (buffer_.empty())
     return bytes_consumer_->GetPublicState();
   return PublicState::kReadableOrWaiting;
 }
@@ -165,6 +170,7 @@ void BufferingBytesConsumer::Trace(Visitor* visitor) const {
   visitor->Trace(bytes_consumer_);
   visitor->Trace(client_);
   visitor->Trace(timer_);
+  visitor->Trace(buffer_);
   BytesConsumer::Trace(visitor);
   BytesConsumer::Client::Trace(visitor);
 }
@@ -191,9 +197,9 @@ void BufferingBytesConsumer::BufferData() {
     if (result == Result::kShouldWait)
       return;
     if (result == Result::kOk) {
-      Vector<char> chunk;
-      chunk.Append(p, SafeCast<wtf_size_t>(available));
-      buffer_.push_back(std::move(chunk));
+      auto* chunk = MakeGarbageCollected<HeapVector<char>>();
+      chunk->Append(p, base::checked_cast<wtf_size_t>(available));
+      buffer_.push_back(chunk);
       result = bytes_consumer_->EndRead(available);
     }
     if (result == Result::kDone) {

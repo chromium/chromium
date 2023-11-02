@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@ class MockLogReceiver : public autofill::LogReceiver {
  public:
   MockLogReceiver() {}
 
-  MOCK_METHOD(void, LogEntry, (const base::Value&), (override));
+  MOCK_METHOD(void, LogEntry, (const base::Value::Dict&), (override));
 };
 
 }  // namespace
@@ -53,10 +53,10 @@ TEST_F(AutofillLogRouterFactoryTest, ServiceActiveNonIncognito) {
   testing::StrictMock<MockLogReceiver> receiver;
 
   ASSERT_TRUE(log_router);
-  EXPECT_EQ(std::vector<base::Value>(),
-            log_router->RegisterReceiver(&receiver));
+  log_router->RegisterReceiver(&receiver);
 
-  base::Value log_entry = autofill::LogRouter::CreateEntryForText(kTestText);
+  base::Value::Dict log_entry =
+      autofill::LogRouter::CreateEntryForText(kTestText);
   EXPECT_CALL(receiver, LogEntry(testing::Eq(testing::ByRef(log_entry))))
       .Times(1);
   log_router->ProcessLog(kTestText);

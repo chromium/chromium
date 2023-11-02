@@ -1,9 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/cssom/css_math_negate.h"
 
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_sum_value.h"
@@ -20,8 +21,8 @@ absl::optional<CSSNumericSumValue> CSSMathNegate::SumValue() const {
   if (!maybe_sum.has_value())
     return absl::nullopt;
 
-  std::for_each(maybe_sum->terms.begin(), maybe_sum->terms.end(),
-                [](auto& term) { term.value *= -1; });
+  base::ranges::for_each(maybe_sum->terms,
+                         [](auto& term) { term.value *= -1; });
   return maybe_sum;
 }
 
@@ -42,7 +43,7 @@ CSSMathExpressionNode* CSSMathNegate::ToCalcExpressionNode() const {
   CSSMathExpressionNode* right_side = value_->ToCalcExpressionNode();
   if (!right_side)
     return nullptr;
-  return CSSMathExpressionBinaryOperation::CreateSimplified(
+  return CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
       CSSMathExpressionNumericLiteral::Create(
           -1, CSSPrimitiveValue::UnitType::kNumber),
       right_side, CSSMathOperator::kMultiply);

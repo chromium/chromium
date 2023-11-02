@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -49,6 +50,8 @@ class RemovableTestVolume;
 class DocumentsProviderTestVolume;
 class MediaViewTestVolume;
 class SmbfsTestVolume;
+class HiddenTestVolume;
+class GuestOsTestVolume;
 
 class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
                                    public extensions::ExtensionApiTest {
@@ -78,14 +81,14 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
     // Whether test should enable drive dss pinning.
     bool drive_dss_pin = false;
 
+    // Whether test needs the extract-archive feature.
+    bool extract_archive = false;
+
     // Whether Drive should act as if offline.
     bool offline = false;
 
-    // Whether test needs the files-swa feature.
-    bool files_swa = false;
-
-    // Whether test needs the media-swa apps.
-    bool media_swa = false;
+    // Whether test needs the files-app-experimental feature.
+    bool files_experimental = false;
 
     // Whether test needs a native SMB file system provider.
     bool native_smb = true;
@@ -110,6 +113,34 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
 
     // Whether test should run with the new Banners framework feature.
     bool enable_banners_framework = false;
+
+    // Whether test should enable DLP (Data Leak Prevention) files restrictions
+    // feature.
+    bool enable_dlp_files_restriction = false;
+
+    // Whether test should run with the Upload Office to Cloud feature.
+    bool enable_upload_office_to_cloud = false;
+
+    // Whether test should run with the GuestOs <-> Files app integration.
+    bool enable_guest_os_files = false;
+
+    // Whether test should run Android with the virtio-blk for /data.
+    bool enable_virtio_blk_for_data = false;
+
+    // Whether test needs the files-filters-in-recents-v2 flag.
+    bool enable_filters_in_recents_v2 = false;
+
+    // Whether test should run with the DriveFsMirroring flag.
+    bool enable_mirrorsync = false;
+
+    // Whether test should run with the FilesInlineSyncStatus flag.
+    bool enable_inline_status_sync = false;
+
+    // Whether test should enable the file transfer connector.
+    bool enable_file_transfer_connector = false;
+
+    // Whether test should use report-only mode for the file transfer connector.
+    bool file_transfer_connector_report_only = false;
   };
 
   FileManagerBrowserTestBase(const FileManagerBrowserTestBase&) = delete;
@@ -150,6 +181,8 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
   void StartTest();
 
  private:
+  using IdToWebContents = std::map<std::string, content::WebContents*>;
+
   class MockFileTasksObserver;
 
   // Launches the test extension with manifest |manifest_name|. The extension
@@ -165,8 +198,26 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
   // Process test extension command |name|, with arguments |value|. Write the
   // results to |output|.
   void OnCommand(const std::string& name,
-                 const base::DictionaryValue& value,
+                 const base::Value::Dict& value,
                  std::string* output);
+
+  // Checks if the command is a GuestOs one. If so, handles it and returns
+  // true, otherwise it returns false.
+  bool HandleGuestOsCommands(const std::string& name,
+                             const base::Value::Dict& value,
+                             std::string* output);
+
+  // Checks if the command is a DLP one. If so, handles it and returns true,
+  // otherwise it returns false.
+  virtual bool HandleDlpCommands(const std::string& name,
+                                 const base::Value::Dict& value,
+                                 std::string* output);
+
+  // Checks if the command is from enterprise connectors. If so, handles it and
+  // returns true, otherwise it returns false.
+  virtual bool HandleEnterpriseConnectorCommands(const std::string& name,
+                                                 const base::Value::Dict& value,
+                                                 std::string* output);
 
   // Called during setup if needed, to create a drive integration service for
   // the given |profile|. Caller owns the return result.
@@ -176,6 +227,10 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
   // Called during tests if needed to mount a crostini volume, and return the
   // mount path of the volume.
   base::FilePath MaybeMountCrostini(
+      const std::string& source_path,
+      const std::vector<std::string>& mount_options);
+
+  base::FilePath MaybeMountGuestOs(
       const std::string& source_path,
       const std::vector<std::string>& mount_options);
 
@@ -201,7 +256,7 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
 
   // Maps the app_id to WebContents* for all launched SWA apps. NOTE: if the
   // window is closed in the JS the WebContents* will remain invalid here.
-  std::map<std::string, content::WebContents*> swa_web_contents_;
+  IdToWebContents swa_web_contents_;
 
   std::unique_ptr<base::test::ScopedFeatureList> feature_list_;
   crostini::FakeCrostiniFeatures crostini_features_;
@@ -223,7 +278,13 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
   std::unique_ptr<MediaViewTestVolume> media_view_images_;
   std::unique_ptr<MediaViewTestVolume> media_view_videos_;
   std::unique_ptr<MediaViewTestVolume> media_view_audio_;
+  std::unique_ptr<MediaViewTestVolume> media_view_documents_;
   std::unique_ptr<SmbfsTestVolume> smbfs_volume_;
+  std::unique_ptr<HiddenTestVolume> hidden_volume_;
+
+  // Map from source path (e.g. sftp://1:2) to volume.
+  base::flat_map<std::string, std::unique_ptr<GuestOsTestVolume>>
+      guest_os_volumes_;
 
   drive::DriveIntegrationServiceFactory::FactoryCallback
       create_drive_integration_service_;

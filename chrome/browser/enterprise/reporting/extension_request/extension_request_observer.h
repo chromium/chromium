@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ENTERPRISE_REPORTING_EXTENSION_REQUEST_EXTENSION_REQUEST_OBSERVER_H_
 #define CHROME_BROWSER_ENTERPRISE_REPORTING_EXTENSION_REQUEST_EXTENSION_REQUEST_OBSERVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_notification.h"
 #include "chrome/browser/extensions/extension_management.h"
 
@@ -50,7 +51,7 @@ class ExtensionRequestObserver
   std::unique_ptr<ExtensionRequestNotification>
       notifications_[ExtensionRequestNotification::kNumberOfTypes];
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   PrefChangeRegistrar pref_change_registrar_;
   bool closing_notification_and_deleting_requests_ = false;

@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/shared_highlighting/core",
+  "+components/shared_highlighting/ios",
+]

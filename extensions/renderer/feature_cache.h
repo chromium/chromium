@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature.h"
 #include "url/gurl.h"
@@ -43,32 +42,55 @@ class FeatureCache {
                                          const Extension* extension,
                                          const GURL& url);
 
+  // Returns the names of features restricted to developer mode in a
+  // lexicographically sorted vector.
+  FeatureNameVector GetDeveloperModeRestrictedFeatures(
+      Feature::Context context_type,
+      const Extension* extension,
+      const GURL& url);
+
   // Invalidates the cache for the specified extension.
   void InvalidateExtension(const ExtensionId& extension_id);
 
  private:
   using FeatureVector = std::vector<const Feature*>;
+  struct ExtensionFeatureData {
+   public:
+    ExtensionFeatureData();
+    ExtensionFeatureData(const ExtensionFeatureData&);
+    ~ExtensionFeatureData();
+
+    // Features that are restricted to developer mode.
+    FeatureVector dev_mode_restricted_features;
+    // Available features that are not restricted to developer mode.
+    FeatureVector available_features;
+  };
+
   // Note: We use a key of ExtensionId, Feature::Context to maximize cache hits.
   // Unfortunately, this won't always be perfectly accurate, since some features
   // may have other context-dependent restrictions (such as URLs), but caching
   // by extension id + context + url would result in significantly fewer hits.
   using ExtensionCacheMapKey = std::pair<ExtensionId, Feature::Context>;
-  using ExtensionCacheMap = std::map<ExtensionCacheMapKey, FeatureVector>;
+  using ExtensionCacheMap =
+      std::map<ExtensionCacheMapKey, ExtensionFeatureData>;
 
   // Cache by origin.
-  using WebUICacheMap = std::map<GURL, FeatureVector>;
+  using WebUICacheMap = std::map<GURL, ExtensionFeatureData>;
 
   // Returns the features available to the given context from the cache,
   // creating a new entry if one doesn't exist.
-  const FeatureVector& GetFeaturesFromCache(Feature::Context context_type,
-                                            const Extension* extension,
-                                            const GURL& origin);
+  const ExtensionFeatureData& GetFeaturesFromCache(
+      Feature::Context context_type,
+      const Extension* extension,
+      const GURL& origin,
+      int context_id);
 
-  // Creates a FeatureVector to be entered into a cache for the specified
+  // Creates ExtensionFeatureData to be entered into a cache for the specified
   // context data.
-  FeatureVector CreateCacheEntry(Feature::Context context_type,
-                                 const Extension* extension,
-                                 const GURL& origin);
+  ExtensionFeatureData CreateCacheEntry(Feature::Context context_type,
+                                        const Extension* extension,
+                                        const GURL& origin,
+                                        int context_id);
 
   // The cache of extension-related contexts. These may be invalidated, since
   // extension permissions change.

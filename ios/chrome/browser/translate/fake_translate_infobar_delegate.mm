@@ -1,13 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/translate/fake_translate_infobar_delegate.h"
 
-#include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/translate/core/browser/mock_translate_client.h"
-#include "components/translate/core/browser/mock_translate_infobar_delegate.h"
-#include "components/translate/core/browser/mock_translate_ranker.h"
+#import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "components/translate/core/browser/mock_translate_client.h"
+#import "components/translate/core/browser/mock_translate_infobar_delegate.h"
+#import "components/translate/core/browser/mock_translate_ranker.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -19,14 +19,12 @@ using translate::testing::MockLanguageModel;
 
 FakeTranslateInfoBarDelegate::FakeTranslateInfoBarDelegate(
     const base::WeakPtr<translate::TranslateManager>& translate_manager,
-    bool is_off_the_record,
     translate::TranslateStep step,
     const std::string& source_language,
     const std::string& target_language,
-    translate::TranslateErrors::Type error_type,
+    translate::TranslateErrors error_type,
     bool triggered_from_menu)
     : translate::TranslateInfoBarDelegate(translate_manager,
-                                          is_off_the_record,
                                           step,
                                           source_language,
                                           target_language,
@@ -51,7 +49,7 @@ void FakeTranslateInfoBarDelegate::RemoveObserver(Observer* observer) {
 
 void FakeTranslateInfoBarDelegate::TriggerOnTranslateStepChanged(
     translate::TranslateStep step,
-    translate::TranslateErrors::Type error_type) {
+    translate::TranslateErrors error_type) {
   for (auto& observer : observers_) {
     observer.OnTranslateStepChanged(step, error_type);
   }
@@ -87,8 +85,8 @@ FakeTranslateInfoBarDelegateFactory::CreateFakeTranslateInfoBarDelegate(
     const std::string& source_language,
     const std::string& target_language,
     translate::TranslateStep translate_step,
-    translate::TranslateErrors::Type error_type) {
+    translate::TranslateErrors error_type) {
   return std::make_unique<FakeTranslateInfoBarDelegate>(
-      manager_->GetWeakPtr(), false, translate_step, source_language,
-      target_language, error_type, false);
+      manager_->GetWeakPtr(), translate_step, source_language, target_language,
+      error_type, false);
 }

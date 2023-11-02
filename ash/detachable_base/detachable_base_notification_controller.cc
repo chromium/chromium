@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,14 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/detachable_base/detachable_base_handler.h"
 #include "ash/detachable_base/detachable_base_pairing_status.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "chromeos/ui/vector_icons/vector_icons.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -69,9 +70,10 @@ void DetachableBaseNotificationController::
           GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kDetachableBaseNotifierId),
+              kDetachableBaseNotifierId,
+              NotificationCatalogName::kDetachableBaseRequiresUpdate),
           message_center::RichNotificationData(), nullptr,
-          chromeos::kNotificationWarningIcon,
+          vector_icons::kNotificationWarningIcon,
           message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
   // Set system priority so the notification gets shown when the user session is
   // blocked.
@@ -144,8 +146,9 @@ void DetachableBaseNotificationController::ShowPairingNotificationIfNeeded() {
           title, message, std::u16string(), GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kDetachableBaseNotifierId),
-          options, nullptr, chromeos::kNotificationWarningIcon,
+              kDetachableBaseNotifierId,
+              NotificationCatalogName::kDetachableBasePairingNotification),
+          options, nullptr, vector_icons::kNotificationWarningIcon,
           message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
 
   message_center::MessageCenter::Get()->AddNotification(

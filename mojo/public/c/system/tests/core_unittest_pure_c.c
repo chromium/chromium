@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,16 +58,24 @@ const char* MinimalCTest(void) {
 
   MojoMessageHandle message;
   EXPECT_EQ(MOJO_RESULT_OK, MojoCreateMessage(NULL, &message));
+  const uint64_t message_contents = 42424242;
+  uint32_t message_size = sizeof(message_contents);
+  void* buffer;
+  const struct MojoAppendMessageDataOptions options = {
+    .struct_size = sizeof(options),
+    .flags = MOJO_APPEND_MESSAGE_DATA_FLAG_COMMIT_SIZE,
+  };
   EXPECT_EQ(MOJO_RESULT_OK,
-            MojoSetMessageContext(message, 42, NULL, NULL, NULL));
+            MojoAppendMessageData(message, message_size, NULL, 0, &options,
+                                  &buffer, NULL));
+  memcpy(buffer, &message_contents, message_size);
   EXPECT_EQ(MOJO_RESULT_OK, MojoWriteMessage(handle0, message, NULL));
   EXPECT_EQ(MOJO_RESULT_OK, MojoReadMessage(handle1, NULL, &message));
 
-  uintptr_t context;
-  EXPECT_EQ(MOJO_RESULT_OK, MojoGetMessageContext(message, NULL, &context));
-  EXPECT_EQ(MOJO_RESULT_OK,
-            MojoSetMessageContext(message, 0, NULL, NULL, NULL));
-  EXPECT_EQ(42, context);
+  EXPECT_EQ(MOJO_RESULT_OK, MojoGetMessageData(message, NULL, &buffer,
+                                               &message_size, NULL, NULL));
+  EXPECT_EQ(sizeof(message_contents), message_size);
+  EXPECT_EQ(message_contents, *(uint64_t*)buffer);
   EXPECT_EQ(MOJO_RESULT_OK, MojoDestroyMessage(message));
 
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(handle0));

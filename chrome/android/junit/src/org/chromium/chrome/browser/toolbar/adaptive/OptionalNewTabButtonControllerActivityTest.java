@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.util.Pair;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.filters.MediumTest;
@@ -41,9 +41,10 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
-import org.chromium.chrome.browser.toolbar.ButtonDataProvider.ButtonDataObserver;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.top.OptionalBrowsingModeButtonController;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabCreatorManager;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.content_public.browser.WebContents;
@@ -61,14 +62,18 @@ import java.util.NoSuchElementException;
  * ChromeTabbedActivity}.
  */
 @Config(shadows = {OptionalNewTabButtonControllerActivityTest.ShadowDelegate.class,
-                OptionalNewTabButtonControllerActivityTest.ShadowChromeFeatureList.class,
                 ShadowGURL.class})
 @RunWith(BaseRobolectricTestRunner.class)
+@Features.EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
 @CommandLineFlags.
-Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_NATIVE_INITIALIZATION})
+Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
+        "enable-features=" + ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2
+                + "<FakeStudyName",
+        "force-fieldtrials=FakeStudyName/Enabled",
+        "force-fieldtrial-params=FakeStudyName.Enabled:min_version_adaptive/0"})
 public class OptionalNewTabButtonControllerActivityTest {
     @Rule
-    public TestRule mCommandLineFlagsRule = CommandLineFlags.getTestRule();
+    public TestRule mProcessor = new Features.JUnitProcessor();
 
     /**
      * Shadow of {@link OptionalNewTabButtonController.Delegate}. Injects testing values into every
@@ -108,7 +113,8 @@ public class OptionalNewTabButtonControllerActivityTest {
 
         @Implementation
         public static boolean isEnabled(String featureName) {
-            return featureName.equals(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR);
+            return featureName.equals(
+                    ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2);
         }
 
         public static void reset() {
@@ -124,8 +130,12 @@ public class OptionalNewTabButtonControllerActivityTest {
     public void setUp() {
         // Avoid leaking state from the previous test.
         resetStaticState();
-        ShadowChromeFeatureList.sParamValues.put("mode", AdaptiveToolbarFeatures.ALWAYS_NEW_TAB);
-
+        AdaptiveToolbarStatePredictor.setToolbarStateForTesting(
+                AdaptiveToolbarButtonVariant.NEW_TAB);
+        // To bypass a direct call to AdaptiveToolbarStatePredictor#readFromSegmentationPlatform for
+        // UMA.
+        AdaptiveToolbarStatePredictor.setSegmentationResultsForTesting(
+                new Pair<>(true, AdaptiveToolbarButtonVariant.NEW_TAB));
         MockTabModelSelector tabModelSelector = new MockTabModelSelector(
                 /*tabCount=*/1, /*incognitoTabCount=*/0, (id, incognito) -> {
                     Tab tab = spy(MockTab.createAndInitialize(id, incognito));
@@ -159,89 +169,32 @@ public class OptionalNewTabButtonControllerActivityTest {
         // AsyncInitializationActivity#applyOverrides to set incorrect smallestWidth.
         DisplayAndroidManager.resetInstanceForTesting();
         TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
-    }
-
-    @Test
-    @MediumTest
-    @Config(qualifiers = "w390dp-h820dp")
-    public void testRotateLandscape() {
-        mActivityScenario.onActivity(activity -> {
-            ButtonDataObserver observer = Mockito.mock(ButtonDataObserver.class);
-            mAdaptiveButtonController.addObserver(observer);
-
-            assertTrue(mAdaptiveButtonController.get(mTab).canShow());
-
-            applyQualifiers(activity, "+land");
-
-            verify(observer).buttonDataChanged(/*canShowHint=*/true);
-            assertTrue(mAdaptiveButtonController.get(mTab).canShow());
-        });
-    }
-
-    @Test
-    @MediumTest
-    @Config(qualifiers = "w359dp-h820dp")
-    public void testRotateLandscape_narrow() {
-        mActivityScenario.onActivity(activity -> {
-            ButtonDataObserver observer = Mockito.mock(ButtonDataObserver.class);
-            mAdaptiveButtonController.addObserver(observer);
-
-            // The button needs width of at least 360dp to be visible.
-            // See OptionalNewTabButtonController#MIN_WIDTH_DP
-            assertFalse(mAdaptiveButtonController.get(mTab).canShow());
-
-            applyQualifiers(activity, "+land");
-
-            verify(observer).buttonDataChanged(/*canShowHint=*/true);
-            assertTrue(mAdaptiveButtonController.get(mTab).canShow());
-        });
+        AdaptiveToolbarStatePredictor.setToolbarStateForTesting(null);
     }
 
     @Test
     @MediumTest
     @Config(qualifiers = "w390dp-h820dp-land")
-    public void testRotatePortrait() {
+    public void testAlwaysShownOnPhone() {
         mActivityScenario.onActivity(activity -> {
-            ButtonDataObserver observer = Mockito.mock(ButtonDataObserver.class);
-            mAdaptiveButtonController.addObserver(observer);
-
             assertTrue(mAdaptiveButtonController.get(mTab).canShow());
 
             applyQualifiers(activity, "+port");
 
-            verify(observer).buttonDataChanged(/*canShowHint=*/true);
             assertTrue(mAdaptiveButtonController.get(mTab).canShow());
-        });
-    }
-
-    @Test
-    @MediumTest
-    @Config(qualifiers = "w359dp-h820dp-land")
-    public void testRotatePortrait_narrow() {
-        mActivityScenario.onActivity(activity -> {
-            ButtonDataObserver observer = Mockito.mock(ButtonDataObserver.class);
-            mAdaptiveButtonController.addObserver(observer);
-
-            assertTrue(mAdaptiveButtonController.get(mTab).canShow());
-
-            applyQualifiers(activity, "+port");
-
-            // The button needs width of at least 360dp to be visible.
-            // See OptionalNewTabButtonController#MIN_WIDTH_DP
-            verify(observer).buttonDataChanged(/*canShowHint=*/false);
-            assertFalse(mAdaptiveButtonController.get(mTab).canShow());
         });
     }
 
     @Test
     @MediumTest
     @Config(qualifiers = "w600dp-h820dp")
-    public void testRotateTablet() {
+    public void testNeverShownOnTablet() {
         mActivityScenario.onActivity(activity -> {
             assertFalse(mAdaptiveButtonController.get(mTab).canShow());
 
             // Rotating a tablet should not change canShow.
             applyQualifiers(activity, "+land");
+
 
             assertFalse(mAdaptiveButtonController.get(mTab).canShow());
         });

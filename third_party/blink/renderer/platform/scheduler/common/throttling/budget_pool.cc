@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,22 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
 
+#include "base/record_replay.h"
+
 namespace blink {
 namespace scheduler {
 
 using base::sequence_manager::TaskQueue;
 
-BudgetPool::BudgetPool(const char* name) : name_(name), is_enabled_(true) {}
+BudgetPool::BudgetPool(const char* name) : name_(name), is_enabled_(true) {
+  // https://linear.app/replay/issue/RUN-966
+  // https://linear.app/replay/issue/RUN-1045
+  recordreplay::RegisterPointer("BudgetPool", this);
+}
 
 BudgetPool::~BudgetPool() {
+  recordreplay::UnregisterPointer(this);
+
   for (auto* throttler : associated_throttlers_) {
     throttler->RemoveBudgetPool(this);
   }
@@ -43,6 +51,12 @@ void BudgetPool::UnregisterThrottler(TaskQueueThrottler* throttler) {
 
 void BudgetPool::RemoveThrottler(base::TimeTicks now,
                                  TaskQueueThrottler* throttler) {
+  if (!recordreplay::AreEventsDisallowed()) {
+    recordreplay::Assert("[RUN-1436] BudgetPool::RemoveThrottler %d %d",
+                         recordreplay::PointerId(this),
+                         recordreplay::PointerId(throttler));
+  }
+
   throttler->RemoveBudgetPool(this);
   associated_throttlers_.erase(throttler);
 
@@ -52,7 +66,7 @@ void BudgetPool::RemoveThrottler(base::TimeTicks now,
   throttler->UpdateQueueState(now);
 }
 
-void BudgetPool::EnableThrottling(base::sequence_manager::LazyNow* lazy_now) {
+void BudgetPool::EnableThrottling(base::LazyNow* lazy_now) {
   if (is_enabled_)
     return;
   is_enabled_ = true;
@@ -62,7 +76,7 @@ void BudgetPool::EnableThrottling(base::sequence_manager::LazyNow* lazy_now) {
   UpdateStateForAllThrottlers(lazy_now->Now());
 }
 
-void BudgetPool::DisableThrottling(base::sequence_manager::LazyNow* lazy_now) {
+void BudgetPool::DisableThrottling(base::LazyNow* lazy_now) {
   if (!is_enabled_)
     return;
   is_enabled_ = false;
@@ -84,8 +98,20 @@ void BudgetPool::Close() {
 }
 
 void BudgetPool::UpdateStateForAllThrottlers(base::TimeTicks now) {
+  // https://linear.app/replay/issue/RUN-1045
+  recordreplay::Assert("[RUN-1045] BudgetPool::UpdateStateForAllThrottlers %d",
+                       recordreplay::PointerId(this));
+
+  std::vector<TaskQueueThrottler*> throttlers;
   for (TaskQueueThrottler* throttler : associated_throttlers_)
+    throttlers.push_back(throttler);
+  std::sort(throttlers.begin(), throttlers.end(), recordreplay::CompareByPointerId());
+  for (TaskQueueThrottler* throttler : throttlers) {
+    // https://linear.app/replay/issue/RUN-1045
+    recordreplay::Assert("[RUN-1045] BudgetPool::UpdateStateForAllThrottlers #1 %d",
+                         recordreplay::PointerId(throttler));
     throttler->UpdateQueueState(now);
+  }
 }
 
 }  // namespace scheduler

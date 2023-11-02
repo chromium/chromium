@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,13 @@
 #include "ash/system/model/update_model.h"
 #include "base/files/file_path.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace gfx {
+struct VectorIcon;
+}
+namespace message_center {
+enum class SystemNotificationWarningLevel;
+}
 
 namespace ash {
 
@@ -38,8 +45,11 @@ class ASH_EXPORT UpdateNotificationController : public UpdateObserver {
   friend class UpdateNotificationControllerTest;
 
   bool ShouldShowUpdate() const;
-  std::u16string GetNotificationTitle() const;
-  std::u16string GetNotificationMessage() const;
+  bool ShouldShowDeferredUpdate() const;
+  std::u16string GetTitle() const;
+  std::u16string GetMessage() const;
+  const gfx::VectorIcon& GetIcon() const;
+  message_center::SystemNotificationWarningLevel GetWarningLevel() const;
   void HandleNotificationClick(absl::optional<int> index);
   void GenerateUpdateNotification(
       absl::optional<bool> slow_boot_file_path_exists);

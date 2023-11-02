@@ -1,11 +1,14 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/optimization_guide/core/bert_model_handler.h"
 
 #include "base/path_service.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/buildflag.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -14,6 +17,11 @@ namespace optimization_guide {
 
 class BertModelExecutorTest : public testing::Test {
  public:
+  BertModelExecutorTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kPreventLongRunningPredictionModels);
+  }
+
   void SetUp() override {
     optimization_guide_model_provider_ =
         std::make_unique<TestOptimizationGuideModelProvider>();
@@ -54,6 +62,7 @@ class BertModelExecutorTest : public testing::Test {
   BertModelHandler* model_handler() { return model_handler_.get(); }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<TestOptimizationGuideModelProvider>
@@ -61,25 +70,14 @@ class BertModelExecutorTest : public testing::Test {
   std::unique_ptr<BertModelHandler> model_handler_;
 };
 
+// TODO(crbug.com/1337687): Running the model is slow and times out tests on
+// many platforms. Ideally, we can schedule this to run infrequently but for
+// now we will only load the model.
 TEST_F(BertModelExecutorTest, ValidBertModel) {
   CreateModelHandler();
 
   PushModelFileToModelExecutor(/*is_valid=*/true);
   EXPECT_TRUE(model_handler()->ModelAvailable());
-
-  std::string input = "some text";
-  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
-  model_handler()->ExecuteModelWithInput(
-      base::BindOnce(
-          [](base::RunLoop* run_loop,
-             const absl::optional<std::vector<tflite::task::core::Category>>&
-                 output) {
-            EXPECT_TRUE(output.has_value());
-            run_loop->Quit();
-          },
-          run_loop.get()),
-      input);
-  run_loop->Run();
 }
 
 TEST_F(BertModelExecutorTest, InvalidBertModel) {

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,17 +51,11 @@ void OfflinePageUtils::ShowDuplicatePrompt(
     const GURL& url,
     bool exists_duplicate_request,
     content::WebContents* web_contents) {
-  if (base::FeatureList::IsEnabled(
-          chrome::android::kEnableDuplicateDownloadDialog)) {
-    DuplicateDownloadDialogBridge::GetInstance()->Show(
-        url.spec(), DownloadDialogUtils::GetDisplayURLForPageURL(url),
-        -1 /*total_bytes*/, exists_duplicate_request, web_contents,
-        base::BindOnce(&OnDuplicateDialogConfirmed,
-                       std::move(confirm_continuation)));
-  } else {
-    OfflinePageInfoBarDelegate::Create(std::move(confirm_continuation), url,
-                                       exists_duplicate_request, web_contents);
-  }
+  DuplicateDownloadDialogBridge::GetInstance()->Show(
+      url.spec(), DownloadDialogUtils::GetDisplayURLForPageURL(url),
+      -1 /*total_bytes*/, exists_duplicate_request, web_contents,
+      base::BindOnce(&OnDuplicateDialogConfirmed,
+                     std::move(confirm_continuation)));
 }
 
 // static

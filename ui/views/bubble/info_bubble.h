@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace views {
@@ -53,8 +53,8 @@ class VIEWS_EXPORT InfoBubble : public BubbleDialogDelegateView {
   // Updates the position of the bubble.
   void UpdatePosition();
 
-  InfoBubbleFrame* frame_ = nullptr;
-  Label* label_ = nullptr;
+  raw_ptr<InfoBubbleFrame> frame_ = nullptr;
+  raw_ptr<Label> label_ = nullptr;
 
   // The width this bubble prefers to be. Default is 0 (no preference).
   int preferred_width_ = 0;

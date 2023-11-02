@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,8 @@ import android.content.Context;
 
 import org.chromium.android_webview.nonembedded.WebViewApkApplication;
 import org.chromium.base.library_loader.LibraryProcessType;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
+import org.chromium.build.annotations.IdentifierNameString;
+import org.chromium.components.version_info.VersionInfo;
 import org.chromium.content_public.browser.ChildProcessCreationParams;
 
 /**
@@ -16,21 +17,24 @@ import org.chromium.content_public.browser.ChildProcessCreationParams;
  * SplitChromeApplication} for more info.
  */
 public class SplitMonochromeApplication extends SplitChromeApplication {
+    @IdentifierNameString
+    private static String sImplClassName = "org.chromium.chrome.browser.MonochromeApplicationImpl";
+
     private static class NonBrowserMonochromeApplication extends Impl {
         @Override
         public void onCreate() {
             super.onCreate();
-            // TODO(crbug.com/1126301): This matches logic in MonochromeApplication.java.
-            // Deduplicate if chrome split launches.
-            if (!ChromeVersionInfo.isStableBuild() && getApplication().isWebViewProcess()) {
+            if (getApplication().isWebViewProcess()) {
+                WebViewApkApplication.checkForAppRecovery();
+            }
+            if (!VersionInfo.isStableBuild() && getApplication().isWebViewProcess()) {
                 WebViewApkApplication.postDeveloperUiLauncherIconTask();
             }
         }
     }
 
     public SplitMonochromeApplication() {
-        super(SplitCompatUtils.getIdentifierName(
-                "org.chromium.chrome.browser.MonochromeApplicationImpl"));
+        super(sImplClassName);
     }
 
     @Override

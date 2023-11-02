@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -152,7 +152,7 @@ absl::optional<AccessCode> Authenticator::Generate(base::Time timestamp) const {
   int32_t result;
   std::vector<uint8_t> slice(digest.begin() + offset,
                              digest.begin() + offset + sizeof(result));
-  base::ReadBigEndian(reinterpret_cast<char*>(slice.data()), &result);
+  base::ReadBigEndian(slice.data(), &result);
   // Clear sign bit.
   result &= 0x7fffffff;
 

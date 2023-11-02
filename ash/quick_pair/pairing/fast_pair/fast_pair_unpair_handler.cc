@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,21 +20,17 @@ FastPairUnpairHandler::FastPairUnpairHandler(
 
 FastPairUnpairHandler::~FastPairUnpairHandler() = default;
 
-void FastPairUnpairHandler::DevicePairedChanged(
-    device::BluetoothAdapter* adapter,
-    device::BluetoothDevice* device,
-    bool new_paired_status) {
-  QP_LOG(VERBOSE) << __func__ << ": " << device->GetAddress()
-                  << " new_paired_status="
-                  << (new_paired_status ? "true" : "false");
-
-  if (new_paired_status)
+void FastPairUnpairHandler::DeviceRemoved(device::BluetoothAdapter* adapter,
+                                          device::BluetoothDevice* device) {
+  // TODO(b/235117226): Move this logic to FastPairDelegate implementation for
+  // better consistency.
+  if (!device || !adapter || device->IsPaired())
     return;
 
-  if (FastPairRepository::Get()->DeleteAssociatedDevice(device)) {
-    QP_LOG(INFO) << __func__ << ": Repository is processing the delete";
-  } else {
-    QP_LOG(VERBOSE) << __func__ << ": No device found by repository";
+  if (FastPairRepository::Get()->EvictDeviceImages(device)) {
+    QP_LOG(VERBOSE) << __func__
+                    << ": Repository evicted device images for device = "
+                    << device->GetAddress();
   }
 }
 

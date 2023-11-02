@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,6 +39,7 @@ class CORE_EXPORT CSSStyleValue : public ScriptWrappable {
     kInvertType,
     kMinType,
     kMaxType,
+    kClampType,
     // End of CSSNumericValue subclasses
     kTransformType,
     kPositionType,
@@ -62,7 +63,7 @@ class CORE_EXPORT CSSStyleValue : public ScriptWrappable {
 
   virtual StyleValueType GetType() const = 0;
   bool IsNumericValue() const {
-    return GetType() >= kUnitType && GetType() <= kMaxType;
+    return GetType() >= kUnitType && GetType() <= kClampType;
   }
 
   virtual const CSSValue* ToCSSValue() const = 0;

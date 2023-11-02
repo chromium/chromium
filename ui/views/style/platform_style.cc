@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,19 +17,19 @@
 #include "ui/views/controls/focusable_border.h"
 #include "ui/views/controls/scrollbar/scroll_bar_views.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #include "ui/views/controls/scrollbar/overlay_scroll_bar.h"
 #endif
 
 namespace views {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const bool PlatformStyle::kIsOkButtonLeading = true;
 #else
 const bool PlatformStyle::kIsOkButtonLeading = false;
 #endif
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 
 const int PlatformStyle::kMinLabelButtonWidth = 70;
 const int PlatformStyle::kMinLabelButtonHeight = 33;
@@ -52,7 +52,7 @@ const View::FocusBehavior PlatformStyle::kDefaultFocusBehavior =
 const bool PlatformStyle::kAdjustBubbleIfOffscreen =
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
     false;
 #else
     true;
@@ -60,7 +60,7 @@ const bool PlatformStyle::kAdjustBubbleIfOffscreen =
 
 // static
 std::unique_ptr<ScrollBar> PlatformStyle::CreateScrollBar(bool is_horizontal) {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   return std::make_unique<OverlayScrollBar>(is_horizontal);
 #else
   return std::make_unique<ScrollBarViews>(is_horizontal);
@@ -79,15 +79,6 @@ gfx::Range PlatformStyle::RangeToDeleteBackwards(const std::u16string& text,
   return gfx::Range(cursor_position, previous_grapheme_index);
 }
 
-#endif  // OS_MAC
-
-#if !BUILDFLAG(ENABLE_DESKTOP_AURA) || \
-    (!defined(OS_LINUX) && !defined(OS_CHROMEOS))
-// static
-std::unique_ptr<Border> PlatformStyle::CreateThemedLabelButtonBorder(
-    LabelButton* button) {
-  return button->CreateDefaultBorder();
-}
-#endif
+#endif  // !BUILDFLAG(IS_MAC)
 
 }  // namespace views

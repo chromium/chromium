@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
@@ -55,8 +57,8 @@ void WidgetInputHandlerImpl::SetReceiver(
       base::BindOnce(&WidgetInputHandlerImpl::Release, base::Unretained(this)));
 }
 
-void WidgetInputHandlerImpl::SetFocus(bool focused) {
-  RunOnMainThread(base::BindOnce(&WidgetBase::SetFocus, widget_, focused));
+void WidgetInputHandlerImpl::SetFocus(mojom::blink::FocusState focus_state) {
+  RunOnMainThread(base::BindOnce(&WidgetBase::SetFocus, widget_, focus_state));
 }
 
 void WidgetInputHandlerImpl::MouseCaptureLost() {
@@ -95,9 +97,9 @@ void WidgetInputHandlerImpl::ImeSetComposition(
     int32_t end,
     WidgetInputHandlerImpl::ImeSetCompositionCallback callback) {
   RunOnMainThread(base::BindOnce(&ImeSetCompositionOnMainThread, widget_,
-                                 base::ThreadTaskRunnerHandle::Get(),
-                                 text.IsolatedCopy(), ime_text_spans, range,
-                                 start, end, std::move(callback)));
+                                 base::ThreadTaskRunnerHandle::Get(), text,
+                                 ime_text_spans, range, start, end,
+                                 std::move(callback)));
 }
 
 static void ImeCommitTextOnMainThread(
@@ -118,10 +120,10 @@ void WidgetInputHandlerImpl::ImeCommitText(
     const gfx::Range& range,
     int32_t relative_cursor_position,
     ImeCommitTextCallback callback) {
-  RunOnMainThread(base::BindOnce(
-      &ImeCommitTextOnMainThread, widget_, base::ThreadTaskRunnerHandle::Get(),
-      text.IsolatedCopy(), ime_text_spans, range, relative_cursor_position,
-      std::move(callback)));
+  RunOnMainThread(
+      base::BindOnce(&ImeCommitTextOnMainThread, widget_,
+                     base::ThreadTaskRunnerHandle::Get(), text, ime_text_spans,
+                     range, relative_cursor_position, std::move(callback)));
 }
 
 void WidgetInputHandlerImpl::ImeFinishComposingText(bool keep_selection) {
@@ -143,6 +145,9 @@ void WidgetInputHandlerImpl::RequestCompositionUpdates(bool immediate_request,
 void WidgetInputHandlerImpl::DispatchEvent(
     std::unique_ptr<WebCoalescedInputEvent> event,
     DispatchEventCallback callback) {
+  // https://linear.app/replay/issue/RUN-550
+  recordreplay::Assert("[RUN-550] WidgetInputHandlerImpl::DispatchEvent");
+
   TRACE_EVENT0("input", "WidgetInputHandlerImpl::DispatchEvent");
   input_handler_manager_->DispatchEvent(std::move(event), std::move(callback));
 }
@@ -174,7 +179,7 @@ void WidgetInputHandlerImpl::InputWasProcessed() {
     std::move(input_processed_ack_).Run();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void WidgetInputHandlerImpl::AttachSynchronousCompositor(
     mojo::PendingRemote<mojom::blink::SynchronousCompositorControlHost>
         control_host,
@@ -214,17 +219,7 @@ void WidgetInputHandlerImpl::Release() {
   if (input_processed_ack_)
     std::move(input_processed_ack_).Run();
 
-  if (!ThreadedCompositingEnabled()) {
-    delete this;
-    return;
-  }
-
-  // Close the binding on the compositor thread first before telling the main
-  // thread to delete this object.
-  receiver_.reset();
-  input_event_queue_->QueueClosure(base::BindOnce(
-      [](const WidgetInputHandlerImpl* handler) { delete handler; },
-      base::Unretained(this)));
+  delete this;
 }
 
 }  // namespace blink

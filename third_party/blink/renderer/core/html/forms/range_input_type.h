@@ -46,6 +46,7 @@ class RangeInputType final : public InputType, public InputTypeView {
 
   void Trace(Visitor*) const override;
   using InputType::GetElement;
+  bool TypeMismatchFor(const String&) const;
 
  private:
   InputTypeView* CreateView() override;
@@ -56,10 +57,8 @@ class RangeInputType final : public InputType, public InputTypeView {
   void SetValueAsDouble(double,
                         TextFieldEventBehavior,
                         ExceptionState&) const override;
-  bool TypeMismatchFor(const String&) const override;
   bool SupportsRequired() const override;
   StepRange CreateStepRange(AnyStepHandling) const override;
-  bool IsSteppable() const override;
   void HandleMouseDownEvent(MouseEvent&) override;
   void HandleKeydownEvent(KeyboardEvent&) override;
   LayoutObject* CreateLayoutObject(const ComputedStyle&,
@@ -83,12 +82,20 @@ class RangeInputType final : public InputType, public InputTypeView {
   void UpdateTickMarkValues();
 
   // InputTypeView function:
+  ControlPart AutoAppearance() const override;
   void UpdateView() override;
   void ValueAttributeChanged() override;
   bool IsDraggedSlider() const override;
 
   bool tick_mark_values_dirty_;
   Vector<Decimal> tick_mark_values_;
+};
+
+template <>
+struct DowncastTraits<RangeInputType> {
+  static bool AllowFrom(const InputType& type) {
+    return type.IsRangeInputType();
+  }
 };
 
 }  // namespace blink

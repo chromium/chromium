@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,7 +35,7 @@ class AmbientClientImplTest : public testing::Test {
 
     profile_ = profile_manager_->CreateTestingProfile(
         kTestProfileName, /*prefs=*/{}, kTestProfileName16,
-        /*avatar_id=*/0, /*supervised_user_id=*/{},
+        /*avatar_id=*/0,
         IdentityTestEnvironmentProfileAdaptor::
             GetIdentityTestEnvironmentFactories());
     identity_test_env_adaptor_ =
@@ -119,18 +119,6 @@ TEST_F(AmbientClientImplTest, DisallowedByEmailDomain) {
 }
 
 TEST_F(AmbientClientImplTest, DownloadImage) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(ash::features::kAmbientModeNewUrl);
-  ambient_client().DownloadImage("test_url", base::DoNothing());
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_TRUE(image_downloader().last_request_headers().IsEmpty());
-}
-
-TEST_F(AmbientClientImplTest, DownloadImageWithNewUrl) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(ash::features::kAmbientModeNewUrl);
-
   identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
   AddAndLoginUser(AccountId::FromUserEmailGaiaId(
       profile()->GetProfileUserName(), kTestGaiaId));
@@ -143,10 +131,7 @@ TEST_F(AmbientClientImplTest, DownloadImageWithNewUrl) {
   EXPECT_EQ("Bearer access_token", out);
 }
 
-TEST_F(AmbientClientImplTest, DownloadImageWithNewUrlMultipleTimes) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(ash::features::kAmbientModeNewUrl);
-
+TEST_F(AmbientClientImplTest, DownloadImageMultipleTimes) {
   identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
   AddAndLoginUser(AccountId::FromUserEmailGaiaId(
       profile()->GetProfileUserName(), kTestGaiaId));
@@ -155,9 +140,9 @@ TEST_F(AmbientClientImplTest, DownloadImageWithNewUrlMultipleTimes) {
   ambient_client().DownloadImage("test_url_2", base::DoNothing());
   ambient_client().DownloadImage("test_url_3", base::DoNothing());
 
-  EXPECT_EQ(3, ambient_client().token_fetchers_for_testing().size());
+  EXPECT_EQ(3u, ambient_client().token_fetchers_for_testing().size());
 
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(0, ambient_client().token_fetchers_for_testing().size());
+  EXPECT_EQ(0u, ambient_client().token_fetchers_for_testing().size());
 }

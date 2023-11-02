@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,6 +62,11 @@ class GEOMETRY_EXPORT Vector2d {
   // Gives the diagonal length of the vector.
   float Length() const;
 
+  void Transpose() {
+    using std::swap;
+    swap(x_, y_);
+  }
+
   std::string ToString() const;
 
   operator Vector2dF() const {
@@ -85,6 +90,10 @@ inline Vector2d operator-(const Vector2d& lhs, const Vector2d& rhs) {
   Vector2d result = lhs;
   result.Subtract(rhs);
   return result;
+}
+
+inline Vector2d TransposeVector2d(const Vector2d& v) {
+  return Vector2d(v.y(), v.x());
 }
 
 // This is declared here for use in gtest-based unit tests but is defined in

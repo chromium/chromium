@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/subresource_filter/content/browser/verified_ruleset_dealer.h"
@@ -184,13 +185,13 @@ class AsyncDocumentSubresourceFilter {
       mojom::ActivationState activation_state);
 
   // Note: Raw pointer, |core_| already holds a reference to |task_runner_|.
-  base::SequencedTaskRunner* task_runner_;
+  raw_ptr<base::SequencedTaskRunner> task_runner_;
   std::unique_ptr<Core, base::OnTaskRunnerDeleter> core_;
   base::OnceClosure first_disallowed_load_callback_;
 
   absl::optional<mojom::ActivationState> activation_state_;
 
-  base::SequenceChecker sequence_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<AsyncDocumentSubresourceFilter> weak_ptr_factory_{this};
 };
@@ -209,7 +210,7 @@ class AsyncDocumentSubresourceFilter::Core {
   // Can return nullptr even after initialization in case MemoryMappedRuleset
   // was not present, or was malformed during it.
   DocumentSubresourceFilter* filter() {
-    DCHECK(sequence_checker_.CalledOnValidSequence());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return filter_ ? &filter_.value() : nullptr;
   }
 
@@ -234,7 +235,7 @@ class AsyncDocumentSubresourceFilter::Core {
                                 VerifiedRuleset* verified_ruleset);
 
   absl::optional<DocumentSubresourceFilter> filter_;
-  base::SequenceChecker sequence_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace subresource_filter

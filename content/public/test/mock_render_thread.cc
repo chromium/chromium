@@ -1,13 +1,13 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/public/test/mock_render_thread.h"
 
 #include <memory>
+#include <tuple>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/unguessable_token.h"
@@ -17,7 +17,6 @@
 #include "content/common/render_message_filter.mojom.h"
 #include "content/public/renderer/render_thread_observer.h"
 #include "content/renderer/render_thread_impl.h"
-#include "content/renderer/render_view_impl.h"
 #include "content/test/test_render_frame.h"
 #include "ipc/ipc_message_utils.h"
 #include "ipc/ipc_sync_message.h"
@@ -28,7 +27,6 @@
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/page/widget.mojom.h"
 #include "third_party/blink/public/mojom/widget/platform_widget.mojom.h"
-#include "third_party/blink/public/web/web_script_controller.h"
 
 namespace content {
 
@@ -55,18 +53,20 @@ class MockRenderMessageFilterImpl : public mojom::RenderMessageFilter {
     int routing_id;
     blink::LocalFrameToken frame_token;
     base::UnguessableToken devtools_frame_token;
-    RenderThread::Get()->GenerateFrameRoutingID(routing_id, frame_token,
-                                                devtools_frame_token);
-    std::move(callback).Run(routing_id, frame_token, devtools_frame_token);
+    blink::DocumentToken document_token;
+    RenderThread::Get()->GenerateFrameRoutingID(
+        routing_id, frame_token, devtools_frame_token, document_token);
+    std::move(callback).Run(routing_id, frame_token, devtools_frame_token,
+                            document_token);
   }
 
   void HasGpuProcess(HasGpuProcessCallback callback) override {
     std::move(callback).Run(false);
   }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  void SetThreadPriority(int32_t platform_thread_id,
-                         base::ThreadPriority thread_priority) override {}
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  void SetThreadType(int32_t platform_thread_id,
+                     base::ThreadType thread_type) override {}
 #endif
 };
 
@@ -150,10 +150,12 @@ int MockRenderThread::GenerateRoutingID() {
 bool MockRenderThread::GenerateFrameRoutingID(
     int32_t& routing_id,
     blink::LocalFrameToken& frame_token,
-    base::UnguessableToken& devtools_frame_token) {
+    base::UnguessableToken& devtools_frame_token,
+    blink::DocumentToken& document_token) {
   routing_id = GetNextRoutingID();
   frame_token = blink::LocalFrameToken();
   devtools_frame_token = base::UnguessableToken::Create();
+  document_token = blink::DocumentToken();
   return true;
 }
 
@@ -193,11 +195,6 @@ void MockRenderThread::RecordAction(const base::UserMetricsAction& action) {
 void MockRenderThread::RecordComputedAction(const std::string& action) {
 }
 
-void MockRenderThread::RegisterExtension(
-    std::unique_ptr<v8::Extension> extension) {
-  blink::WebScriptController::RegisterExtension(std::move(extension));
-}
-
 int MockRenderThread::PostTaskToAllWebWorkers(base::RepeatingClosure closure) {
   return 0;
 }
@@ -217,6 +214,10 @@ blink::WebString MockRenderThread::GetUserAgent() {
   return blink::WebString();
 }
 
+blink::WebString MockRenderThread::GetFullUserAgent() {
+  return blink::WebString();
+}
+
 blink::WebString MockRenderThread::GetReducedUserAgent() {
   return blink::WebString();
 }
@@ -225,11 +226,7 @@ const blink::UserAgentMetadata& MockRenderThread::GetUserAgentMetadata() {
   return kUserAgentMetadata;
 }
 
-bool MockRenderThread::IsUseZoomForDSF() {
-  return zoom_for_dsf_;
-}
-
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void MockRenderThread::PreCacheFont(const LOGFONT& log_font) {
 }
 
@@ -239,10 +236,6 @@ void MockRenderThread::ReleaseCachedFonts() {
 
 void MockRenderThread::SetFieldTrialGroup(const std::string& trial_name,
                                           const std::string& group_name) {}
-
-void MockRenderThread::SetUseZoomForDSFEnabled(bool zoom_for_dsf) {
-  zoom_for_dsf_ = zoom_for_dsf;
-}
 
 void MockRenderThread::WriteIntoTrace(
     perfetto::TracedProto<perfetto::protos::pbzero::RenderProcessHost> proto) {
@@ -294,12 +287,13 @@ bool MockRenderThread::OnMessageReceived(const IPC::Message& msg) {
 void MockRenderThread::OnCreateWindow(
     const mojom::CreateNewWindowParams& params,
     mojom::CreateNewWindowReply* reply) {
-  reply->route_id = GetNextRoutingID();
   reply->frame = TestRenderFrame::CreateStubFrameReceiver();
   reply->main_frame_route_id = GetNextRoutingID();
   frame_routing_id_to_initial_browser_brokers_.emplace(
       reply->main_frame_route_id,
       reply->main_frame_interface_broker.InitWithNewPipeAndPassReceiver());
+  reply->associated_interface_provider =
+      TestRenderFrame::CreateStubAssociatedInterfaceProviderRemote();
   reply->cloned_session_storage_namespace_id =
       blink::AllocateSessionStorageNamespaceId();
 
@@ -310,13 +304,13 @@ void MockRenderThread::OnCreateWindow(
       blink_frame_widget_receiver =
           blink_frame_widget.BindNewEndpointAndPassDedicatedReceiver();
   mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> blink_frame_widget_host;
-  ignore_result(
-      blink_frame_widget_host.BindNewEndpointAndPassDedicatedReceiver());
+  std::ignore =
+      blink_frame_widget_host.BindNewEndpointAndPassDedicatedReceiver();
   mojo::AssociatedRemote<blink::mojom::Widget> blink_widget;
   mojo::PendingAssociatedReceiver<blink::mojom::Widget> blink_widget_receiver =
       blink_widget.BindNewEndpointAndPassDedicatedReceiver();
   mojo::AssociatedRemote<blink::mojom::WidgetHost> blink_widget_host;
-  ignore_result(blink_widget_host.BindNewEndpointAndPassDedicatedReceiver());
+  std::ignore = blink_widget_host.BindNewEndpointAndPassDedicatedReceiver();
 
   widget_params->frame_widget = std::move(blink_frame_widget_receiver);
   widget_params->frame_widget_host = blink_frame_widget_host.Unbind();
@@ -325,6 +319,15 @@ void MockRenderThread::OnCreateWindow(
   widget_params->visual_properties.screen_infos =
       display::ScreenInfos(display::ScreenInfo());
   reply->widget_params = std::move(widget_params);
+
+  mojo::AssociatedRemote<blink::mojom::PageBroadcast> page_broadcast;
+  reply->page_broadcast =
+      page_broadcast.BindNewEndpointAndPassDedicatedReceiver();
+  page_broadcasts_.push_back(std::move(page_broadcast));
+}
+
+void MockRenderThread::ReleaseAllWebViews() {
+  page_broadcasts_.clear();
 }
 
 }  // namespace content

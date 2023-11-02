@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,16 @@
 
 #include <string>
 
+#include "chrome-color-management-server-protocol.h"
+#include "components/exo/wayland/server_util.h"
 #include "components/exo/wayland/wayland_display_output.h"
+#include "components/exo/wayland/wayland_display_util.h"
+#include "components/exo/wayland/zcr_color_manager.h"
 #include "components/exo/wm_helper.h"
+#include "ui/display/display_observer.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/screen.h"
+#include "wayland-server-protocol-core.h"
 
 namespace exo {
 namespace wayland {
@@ -23,6 +29,10 @@ WaylandDisplayHandler::WaylandDisplayHandler(WaylandDisplayOutput* output,
 }
 
 WaylandDisplayHandler::~WaylandDisplayHandler() {
+  for (auto& obs : observers_)
+    obs.OnOutputDestroyed();
+  if (xdg_output_resource_)
+    wl_resource_set_user_data(xdg_output_resource_, nullptr);
   output_->UnregisterOutput(output_resource_);
 }
 
@@ -54,6 +64,10 @@ void WaylandDisplayHandler::AddObserver(WaylandDisplayObserver* observer) {
     }
     wl_client_flush(wl_resource_get_client(output_resource_));
   }
+}
+
+void WaylandDisplayHandler::RemoveObserver(WaylandDisplayObserver* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 int64_t WaylandDisplayHandler::id() const {
@@ -98,6 +112,21 @@ void WaylandDisplayHandler::OnXdgOutputCreated(
 void WaylandDisplayHandler::UnsetXdgOutputResource() {
   DCHECK(xdg_output_resource_);
   xdg_output_resource_ = nullptr;
+}
+
+void WaylandDisplayHandler::XdgOutputSendLogicalPosition(
+    const gfx::Point& position) {
+  zxdg_output_v1_send_logical_position(xdg_output_resource_, position.x(),
+                                       position.y());
+}
+
+void WaylandDisplayHandler::XdgOutputSendLogicalSize(const gfx::Size& size) {
+  zxdg_output_v1_send_logical_size(xdg_output_resource_, size.width(),
+                                   size.height());
+}
+
+void WaylandDisplayHandler::XdgOutputSendDescription(const std::string& desc) {
+  zxdg_output_v1_send_description(xdg_output_resource_, desc.c_str());
 }
 
 bool WaylandDisplayHandler::SendDisplayMetrics(const display::Display& display,
@@ -166,10 +195,9 @@ bool WaylandDisplayHandler::SendDisplayMetrics(const display::Display& display,
                       static_cast<int>(60000));
 
   if (xdg_output_resource_) {
-    const gfx::Size logical_size = ScaleToRoundedSize(
-        physical_size_px, 1.0f / display.device_scale_factor());
-    zxdg_output_v1_send_logical_size(xdg_output_resource_, logical_size.width(),
-                                     logical_size.height());
+    XdgOutputSendLogicalPosition(origin);
+    XdgOutputSendLogicalSize(display.bounds().size());
+    XdgOutputSendDescription(display.label());
   } else {
     if (wl_resource_get_version(output_resource_) >=
         WL_OUTPUT_SCALE_SINCE_VERSION) {
@@ -183,23 +211,18 @@ bool WaylandDisplayHandler::SendDisplayMetrics(const display::Display& display,
   return true;
 }
 
-wl_output_transform WaylandDisplayHandler::OutputTransform(
-    display::Display::Rotation rotation) {
-  // Note: |rotation| describes the counter clockwise rotation that a
-  // display's output is currently adjusted for, which is the inverse
-  // of what we need to return.
-  switch (rotation) {
-    case display::Display::ROTATE_0:
-      return WL_OUTPUT_TRANSFORM_NORMAL;
-    case display::Display::ROTATE_90:
-      return WL_OUTPUT_TRANSFORM_270;
-    case display::Display::ROTATE_180:
-      return WL_OUTPUT_TRANSFORM_180;
-    case display::Display::ROTATE_270:
-      return WL_OUTPUT_TRANSFORM_90;
+void WaylandDisplayHandler::OnOutputDestroyed() {
+  // destroying itself.
+  RemoveObserver(this);
+}
+
+size_t WaylandDisplayHandler::CountObserversForTesting() const {
+  size_t count = 0;
+  for (auto& obs : observers_) {
+    if (&obs != this)
+      count++;
   }
-  NOTREACHED();
-  return WL_OUTPUT_TRANSFORM_NORMAL;
+  return count;
 }
 
 }  // namespace wayland

@@ -1,23 +1,23 @@
 Document Name='Table example #2'
-++Table Grid.ColumnCount=3 Grid.RowCount=3 Table.RowOrColumnMajor='RowMajor'
-++++DataItem IsControlElement=false
-++++++DataItem Name='1' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1
-++++++++Text Name='1' IsControlElement=false
-++++++DataItem Name='2' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1
-++++++++Text Name='2' IsControlElement=false
-++++++DataItem Name='3' GridItem.Column=2 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1
-++++++++Text Name='3' IsControlElement=false
-++++DataItem IsControlElement=false
-++++++DataItem Name='4' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=1 GridItem.RowSpan=1
-++++++++Text Name='4' IsControlElement=false
-++++++DataItem Name='5' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=1 GridItem.RowSpan=1
-++++++++Text Name='5' IsControlElement=false
-++++++DataItem Name='6' GridItem.Column=2 GridItem.ColumnSpan=1 GridItem.Row=1 GridItem.RowSpan=1
-++++++++Text Name='6' IsControlElement=false
-++++DataItem IsControlElement=false
-++++++DataItem Name='7' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=2 GridItem.RowSpan=1
-++++++++Text Name='7' IsControlElement=false
-++++++DataItem Name='8' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=2 GridItem.RowSpan=1
-++++++++Text Name='8' IsControlElement=false
-++++++DataItem Name='9' GridItem.Column=2 GridItem.ColumnSpan=1 GridItem.Row=2 GridItem.RowSpan=1
-++++++++Text Name='9' IsControlElement=false
+++Group IsControlElement=false
+++++Group IsControlElement=false
+++++++Group Name='1'
+++++++++Text Name='1'
+++++++Group Name='2'
+++++++++Text Name='2'
+++++++Group Name='3'
+++++++++Text Name='3'
+++++Group IsControlElement=false
+++++++Group Name='4'
+++++++++Text Name='4'
+++++++Group Name='5'
+++++++++Text Name='5'
+++++++Group Name='6'
+++++++++Text Name='6'
+++++Group IsControlElement=false
+++++++Group Name='7'
+++++++++Text Name='7'
+++++++Group Name='8'
+++++++++Text Name='8'
+++++++Group Name='9'
+++++++++Text Name='9'

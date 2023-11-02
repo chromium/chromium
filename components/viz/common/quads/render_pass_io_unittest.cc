@@ -1,9 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/viz/common/quads/render_pass_io.h"
 
+#include <array>
 #include <memory>
 #include <string>
 
@@ -14,7 +15,6 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
-#include "components/viz/common/quads/stream_video_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/common/quads/video_hole_draw_quad.h"
@@ -22,6 +22,7 @@
 #include "components/viz/test/paths.h"
 #include "components/viz/test/test_surface_id_allocator.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/modules/skcms/skcms.h"
 
 namespace gl {
 struct HDRMetadata;
@@ -54,7 +55,7 @@ TEST(RenderPassIOTest, FilterOperations) {
     // Add three backdrop filters.
     cc::FilterOperation drop_shadow =
         cc::FilterOperation::CreateDropShadowFilter(gfx::Point(1.0f, 2.0f),
-                                                    0.8f, SK_ColorYELLOW);
+                                                    0.8f, SkColors::kYellow);
     render_pass0->backdrop_filters.Append(drop_shadow);
     cc::FilterOperation invert = cc::FilterOperation::CreateInvertFilter(0.64f);
     render_pass0->backdrop_filters.Append(invert);
@@ -87,7 +88,7 @@ TEST(RenderPassIOTest, FilterOperations) {
     EXPECT_EQ(cc::FilterOperation::DROP_SHADOW,
               render_pass1->backdrop_filters.at(0).type());
     EXPECT_EQ(0.8f, render_pass1->backdrop_filters.at(0).amount());
-    EXPECT_EQ(SK_ColorYELLOW,
+    EXPECT_EQ(SkColors::kYellow,
               render_pass1->backdrop_filters.at(0).drop_shadow_color());
     EXPECT_EQ(gfx::Point(1.0f, 2.0f),
               render_pass1->backdrop_filters.at(0).drop_shadow_offset());
@@ -124,16 +125,20 @@ TEST(RenderPassIOTest, SharedQuadStateList) {
     ASSERT_TRUE(sqs1);
     gfx::Transform transform;
     transform.MakeIdentity();
+    gfx::LinearGradient gradient_mask(40);
+    gradient_mask.AddStep(/*fraction=*/0, /*alpha=*/0);
+    gradient_mask.AddStep(1, 255);
     sqs1->SetAll(
         transform, gfx::Rect(0, 0, 640, 480), gfx::Rect(10, 10, 600, 400),
-        gfx::MaskFilterInfo(gfx::RRectF(gfx::RectF(2.f, 3.f, 4.f, 5.f), 1.5f)),
+        gfx::MaskFilterInfo(gfx::RRectF(gfx::RectF(2.f, 3.f, 4.f, 5.f), 1.5f),
+                            gradient_mask),
         gfx::Rect(5, 20, 1000, 200), false, 0.5f, SkBlendMode::kDstOver, 101);
     sqs1->is_fast_rounded_corner = true;
     sqs1->de_jelly_delta_y = 0.7f;
   }
   base::Value dict0 = CompositorRenderPassToDict(*render_pass0);
   auto render_pass1 = CompositorRenderPassFromDict(dict0);
-  EXPECT_TRUE(render_pass1);
+  ASSERT_TRUE(render_pass1);
   {
     // Verify two SQS.
     EXPECT_EQ(2u, render_pass1->shared_quad_state_list.size());
@@ -144,6 +149,7 @@ TEST(RenderPassIOTest, SharedQuadStateList) {
     EXPECT_EQ(gfx::Rect(), sqs0->quad_layer_rect);
     EXPECT_EQ(gfx::Rect(), sqs0->visible_quad_layer_rect);
     EXPECT_FALSE(sqs0->mask_filter_info.HasRoundedCorners());
+    EXPECT_FALSE(sqs0->mask_filter_info.HasGradientMask());
     EXPECT_EQ(absl::nullopt, sqs0->clip_rect);
     EXPECT_TRUE(sqs0->are_contents_opaque);
     EXPECT_EQ(1.0f, sqs0->opacity);
@@ -162,6 +168,13 @@ TEST(RenderPassIOTest, SharedQuadStateList) {
               sqs1->mask_filter_info.rounded_corner_bounds().GetType());
     EXPECT_EQ(1.5f,
               sqs1->mask_filter_info.rounded_corner_bounds().GetSimpleRadius());
+    ASSERT_TRUE(sqs1->mask_filter_info.HasGradientMask());
+    EXPECT_EQ(40, sqs1->mask_filter_info.gradient_mask()->angle());
+    EXPECT_EQ(2u, sqs1->mask_filter_info.gradient_mask()->step_count());
+    EXPECT_EQ(gfx::LinearGradient::Step({0, 0}),
+              sqs1->mask_filter_info.gradient_mask()->steps()[0]);
+    EXPECT_EQ(gfx::LinearGradient::Step({1, 255}),
+              sqs1->mask_filter_info.gradient_mask()->steps()[1]);
     EXPECT_EQ(gfx::RectF(2.f, 3.f, 4.f, 5.f), sqs1->mask_filter_info.bounds());
     EXPECT_EQ(gfx::Rect(5, 20, 1000, 200), sqs1->clip_rect);
     EXPECT_FALSE(sqs1->are_contents_opaque);
@@ -178,9 +191,9 @@ TEST(RenderPassIOTest, SharedQuadStateList) {
 TEST(RenderPassIOTest, QuadList) {
   const size_t kSharedQuadStateCount = 5;
   size_t quad_count = 0;
-  const DrawQuad::Material kQuadMaterials[] = {
+  const std::array<DrawQuad::Material, 9> kQuadMaterials = {
       DrawQuad::Material::kSolidColor,
-      DrawQuad::Material::kStreamVideoContent,
+      DrawQuad::Material::kTextureContent,  // is_stream_video set to true.
       DrawQuad::Material::kVideoHole,
       DrawQuad::Material::kYuvVideoContent,
       DrawQuad::Material::kTextureContent,
@@ -208,17 +221,21 @@ TEST(RenderPassIOTest, QuadList) {
           render_pass0->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
       quad->SetAll(render_pass0->shared_quad_state_list.ElementAt(sqs_index),
                    gfx::Rect(0, 0, 30, 40), gfx::Rect(1, 2, 20, 30), true,
-                   SK_ColorRED, false);
+                   SkColors::kRed, false);
       ++quad_count;
     }
     {
-      // 2. StreamVideoDrawQuad
-      StreamVideoDrawQuad* quad =
-          render_pass0->CreateAndAppendDrawQuad<StreamVideoDrawQuad>();
+      // 2. TextureDrawQuad with is_stream_video set to true.
+      TextureDrawQuad* quad =
+          render_pass0->CreateAndAppendDrawQuad<TextureDrawQuad>();
+      float opacity[] = {1, 1, 1, 1};
       quad->SetAll(render_pass0->shared_quad_state_list.ElementAt(sqs_index),
                    gfx::Rect(10, 10, 300, 400), gfx::Rect(10, 10, 200, 400),
-                   false, ResourceId(100), gfx::Size(600, 800),
-                   gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f));
+                   false, ResourceId(100), gfx::Size(600, 800), false,
+                   gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f),
+                   SkColors::kTransparent, opacity, false, false, false,
+                   gfx::ProtectedVideoType::kHardwareProtected);
+      quad->is_stream_video = true;
       ++sqs_index;
       ++quad_count;
     }
@@ -243,9 +260,8 @@ TEST(RenderPassIOTest, QuadList) {
       quad->SetAll(
           render_pass0->shared_quad_state_list.ElementAt(sqs_index),
           gfx::Rect(0, 0, 800, 600), gfx::Rect(10, 15, 780, 570), false,
-          gfx::RectF(0.f, 0.f, 0.5f, 0.6f), gfx::RectF(0.1f, 0.2f, 0.7f, 0.8f),
-          gfx::Size(400, 200), gfx::Size(800, 400), ResourceId(1u),
-          ResourceId(2u), ResourceId(3u), ResourceId(4u),
+          gfx::Size(800, 400), gfx::Rect(10, 20, 300, 400), gfx::Size(2, 2),
+          ResourceId(1u), ResourceId(2u), ResourceId(3u), ResourceId(4u),
           gfx::ColorSpace::CreateCustom(primary_matrix, transfer_func), 3.f,
           1.1f, 12u, gfx::ProtectedVideoType::kClear, gfx::HDRMetadata());
       ++sqs_index;
@@ -259,8 +275,8 @@ TEST(RenderPassIOTest, QuadList) {
       quad->SetAll(render_pass0->shared_quad_state_list.ElementAt(sqs_index),
                    gfx::Rect(0, 0, 100, 50), gfx::Rect(0, 0, 100, 50), false,
                    ResourceId(9u), gfx::Size(100, 50), false,
-                   gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f), SK_ColorBLUE,
-                   vertex_opacity, false, true, false,
+                   gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f),
+                   SkColors::kBlue, vertex_opacity, false, true, false,
                    gfx::ProtectedVideoType::kHardwareProtected);
       ++sqs_index;
       ++quad_count;
@@ -294,8 +310,8 @@ TEST(RenderPassIOTest, QuadList) {
           render_pass0->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
       quad->SetAll(render_pass0->shared_quad_state_list.ElementAt(sqs_index),
                    gfx::Rect(0, 0, 512, 256), gfx::Rect(2, 2, 500, 250), true,
-                   SurfaceRange(kSurfaceId1, kSurfaceId2), SK_ColorWHITE, false,
-                   false, true);
+                   SurfaceRange(kSurfaceId1, kSurfaceId2), SkColors::kWhite,
+                   false, false, true);
       ++quad_count;
     }
     {
@@ -305,7 +321,7 @@ TEST(RenderPassIOTest, QuadList) {
       quad->SetAll(render_pass0->shared_quad_state_list.ElementAt(sqs_index),
                    gfx::Rect(10, 10, 512, 256), gfx::Rect(12, 12, 500, 250),
                    true, SurfaceRange(absl::nullopt, kSurfaceId1),
-                   SK_ColorBLACK, true, true, false);
+                   SkColors::kBlack, true, true, false);
       ++quad_count;
     }
     DCHECK_EQ(kSharedQuadStateCount, sqs_index + 1);
@@ -346,15 +362,14 @@ TEST(RenderPassIOTest, CompositorRenderPassList) {
   // 'intersects_damage_under' in its CompositorRenderPassDrawQuad, I'm
   // removing the field on dict1 for the exact comparison to work.
   base::Value* list = dict1.FindListKey("render_pass_list");
-  for (size_t i = 0; i < list->GetList().size(); ++i) {
-    base::Value* quad_list = list->GetList()[i].FindListKey("quad_list");
+  for (auto& entry : list->GetList()) {
+    base::Value* quad_list = entry.FindListKey("quad_list");
 
-    for (size_t ii = 0; ii < quad_list->GetList().size(); ++ii) {
+    for (auto& quad_entry : quad_list->GetList()) {
       if (const base::Value* extra_value =
-              quad_list->GetList()[ii].FindKey("intersects_damage_under")) {
+              quad_entry.FindKey("intersects_damage_under")) {
         EXPECT_FALSE(extra_value->GetBool());
-        ASSERT_TRUE(
-            quad_list->GetList()[ii].RemoveKey("intersects_damage_under"));
+        ASSERT_TRUE(quad_entry.RemoveKey("intersects_damage_under"));
       }
     }
   }

@@ -1,11 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/crostini/crostini_expired_container_warning_view.h"
 
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader_dialog.h"
+#include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_dialog.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -20,31 +20,30 @@ CrostiniExpiredContainerWarningView* g_crostini_expired_container_warning_view =
 
 }  // namespace
 
-void CrostiniExpiredContainerWarningView::Show(
-    Profile* profile,
-    std::vector<base::OnceClosure> callbacks) {
+void CrostiniExpiredContainerWarningView::Show(Profile* profile,
+                                               base::OnceClosure callback) {
   if (g_crostini_expired_container_warning_view) {
-    for (auto&& callback : callbacks) {
-      g_crostini_expired_container_warning_view->callbacks_.push_back(
-          std::move(callback));
-    }
+    g_crostini_expired_container_warning_view->callbacks_.push_back(
+        std::move(callback));
   } else {
     g_crostini_expired_container_warning_view =
-        new CrostiniExpiredContainerWarningView(profile, std::move(callbacks));
+        new CrostiniExpiredContainerWarningView(profile, std::move(callback));
     CreateDialogWidget(g_crostini_expired_container_warning_view, nullptr,
                        nullptr);
   }
 
   // Always call Show to bring the dialog to the front of the screen.
   g_crostini_expired_container_warning_view->GetWidget()->Show();
+
+  VLOG(1) << "Showed CrostiniExpiredContainerWarningView";
 }
 
 CrostiniExpiredContainerWarningView::CrostiniExpiredContainerWarningView(
     Profile* profile,
-    std::vector<base::OnceClosure> callbacks)
-    : profile_(profile),
-      callbacks_(std::move(callbacks)),
-      weak_ptr_factory_(this) {
+    base::OnceClosure callback)
+    : profile_(profile), weak_ptr_factory_(this) {
+  callbacks_.push_back(std::move(callback));
+
   // Make the dialog modal to force the user to make a decision.
   SetModalType(ui::MODAL_TYPE_SYSTEM);
 
@@ -61,7 +60,7 @@ CrostiniExpiredContainerWarningView::CrostiniExpiredContainerWarningView(
   // Show upgrade dialog on accept, and pass in the callback.
   SetAcceptCallback(base::BindOnce(
       [](base::WeakPtr<CrostiniExpiredContainerWarningView> weak_this) {
-        chromeos::CrostiniUpgraderDialog::Show(
+        ash::CrostiniUpgraderDialog::Show(
             weak_this->profile_,
             base::BindOnce(
                 [](std::vector<base::OnceClosure> callbacks) {

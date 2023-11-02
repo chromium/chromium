@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,10 @@
 
 #include "base/allocator/partition_allocator/address_pool_manager.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/posix/eintr_wrapper.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
-#include "base/logging.h"
-#include "base/posix/eintr_wrapper.h"
-#include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 
 #if defined(PA_STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
@@ -25,8 +25,7 @@
 #include <sys/types.h>
 #endif  // defined(PA_STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 PCScan::ClearType NoWriteProtector::SupportedClearType() const {
   return PCScan::ClearType::kLazy;
@@ -38,17 +37,17 @@ void UserFaultFDThread(int uffd) {
   PA_DCHECK(-1 != uffd);
 
   static constexpr char kThreadName[] = "PCScanPFHandler";
-  base::PlatformThread::SetName(kThreadName);
+  internal::base::PlatformThread::SetName(kThreadName);
 
   while (true) {
     // Pool on the uffd descriptor for page fault events.
     pollfd pollfd{.fd = uffd, .events = POLLIN};
-    const int nready = HANDLE_EINTR(poll(&pollfd, 1, -1));
+    const int nready = PA_HANDLE_EINTR(poll(&pollfd, 1, -1));
     PA_CHECK(-1 != nready);
 
     // Get page fault info.
     uffd_msg msg;
-    const int nread = HANDLE_EINTR(read(uffd, &msg, sizeof(msg)));
+    const int nread = PA_HANDLE_EINTR(read(uffd, &msg, sizeof(msg)));
     PA_CHECK(0 != nread);
 
     // We only expect page faults.
@@ -66,7 +65,7 @@ void UserFaultFDThread(int uffd) {
 UserFaultFDWriteProtector::UserFaultFDWriteProtector()
     : uffd_(syscall(__NR_userfaultfd, O_CLOEXEC | O_NONBLOCK)) {
   if (uffd_ == -1) {
-    LOG(WARNING) << "userfaultfd is not supported by the current kernel";
+    PA_LOG(WARNING) << "userfaultfd is not supported by the current kernel";
     return;
   }
 
@@ -78,7 +77,7 @@ UserFaultFDWriteProtector::UserFaultFDWriteProtector()
   PA_CHECK(-1 != ioctl(uffd_, UFFDIO_API, &uffdio_api));
   PA_CHECK(UFFD_API == uffdio_api.api);
 
-  // Register the giga-cage to listen uffd events.
+  // Register the regular pool to listen uffd events.
   struct uffdio_register uffdio_register;
   uffdio_register.range.start = PartitionAddressSpace::RegularPoolBase();
   uffdio_register.range.len = kPoolMaxSize;
@@ -131,5 +130,4 @@ bool UserFaultFDWriteProtector::IsSupported() const {
 
 #endif  // defined(PA_STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal

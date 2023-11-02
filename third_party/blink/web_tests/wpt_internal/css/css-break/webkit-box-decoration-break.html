@@ -1,0 +1,12 @@
+<!doctype html>
+<title>Layout and paint invalidation for -webkit-box-decoration-break change.</title>
+<link rel="match" href="webkit-box-decoration-break-ref.html">
+<style>
+  span { border: 1px solid green; }
+  span.clone { -webkit-box-decoration-break: clone }
+</style>
+<div><span>These lines of text<br>should have closed borders.</span></div>
+<script>
+  document.body.offsetTop;
+  document.querySelector("span").className = "clone";
+</script>

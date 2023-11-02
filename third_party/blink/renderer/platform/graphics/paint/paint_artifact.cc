@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,12 +51,49 @@ DOMNodeId PaintArtifact::ClientOwnerNodeId(
 
 String PaintArtifact::IdAsString(const DisplayItem::Id& id) const {
 #if DCHECK_IS_ON()
-  return String::Format(
-      "%s:%s:%d", ClientDebugName(id.client_id).Utf8().c_str(),
-      DisplayItem::TypeAsDebugString(id.type).Utf8().c_str(), id.fragment);
-#else
-  return id.ToString();
+  String debug_name = ClientDebugName(id.client_id);
+  if (!debug_name.empty()) {
+    return String::Format(
+        "%p:%s:%s:%d", reinterpret_cast<void*>(id.client_id),
+        ClientDebugName(id.client_id).Utf8().c_str(),
+        DisplayItem::TypeAsDebugString(id.type).Utf8().c_str(), id.fragment);
+  }
 #endif
+  return id.ToString();
+}
+
+std::unique_ptr<JSONArray> PaintArtifact::ToJSON() const {
+  auto json = std::make_unique<JSONArray>();
+  AppendChunksAsJSON(0, chunks_.size(), *json, 0);
+  return json;
+}
+
+void PaintArtifact::AppendChunksAsJSON(wtf_size_t start_chunk_index,
+                                       wtf_size_t end_chunk_index,
+                                       JSONArray& json_array,
+                                       unsigned flags) const {
+  DCHECK_GT(end_chunk_index, start_chunk_index);
+  for (auto i = start_chunk_index; i < end_chunk_index; ++i) {
+    const auto& chunk = chunks_[i];
+    auto json_object = std::make_unique<JSONObject>();
+
+    json_object->SetString("chunk", ClientDebugName(chunk.id.client_id) + " " +
+                                        chunk.id.ToString(*this));
+    json_object->SetString("state", chunk.properties.ToString());
+    json_object->SetString("bounds", String(chunk.bounds.ToString()));
+#if DCHECK_IS_ON()
+    if (flags & DisplayItemList::kShowPaintRecords)
+      json_object->SetString("chunkData", chunk.ToString(*this));
+    json_object->SetArray("displayItems", DisplayItemList::DisplayItemsAsJSON(
+                                              *this, chunk.begin_index,
+                                              DisplayItemsInChunk(i), flags));
+#endif
+    json_array.PushObject(std::move(json_object));
+  }
+}
+
+std::ostream& operator<<(std::ostream& os, const PaintArtifact& artifact) {
+  return os << artifact.ToJSON()->ToPrettyJSONString().Utf8();
 }
 
 }  // namespace blink

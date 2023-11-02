@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "storage/browser/blob/blob_builder_from_stream.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_impl.h"
@@ -50,7 +51,6 @@ class BlobRegistryImpl::BlobUnderConstruction {
     ElementEntry& operator=(ElementEntry&& other) = default;
 
     blink::mojom::DataElementPtr element;
-    FileSystemURL filesystem_url;
     mojo::Remote<blink::mojom::BytesProvider> bytes_provider;
     mojo::Remote<blink::mojom::Blob> blob;
   };
@@ -178,7 +178,7 @@ class BlobRegistryImpl::BlobUnderConstruction {
 #endif
 
   // BlobRegistryImpl we belong to.
-  BlobRegistryImpl* blob_registry_;
+  raw_ptr<BlobRegistryImpl> blob_registry_;
 
   // UUID of the blob being built.
   std::string uuid_;
@@ -384,13 +384,6 @@ void BlobRegistryImpl::BlobUnderConstruction::ResolvedAllBlobDependencies() {
       builder_->AppendFile(
           f->path, f->offset, f->length,
           f->expected_modification_time.value_or(base::Time()));
-    } else if (element->is_file_filesystem()) {
-      DCHECK(entry.filesystem_url.is_valid());
-      const auto& f = element->get_file_filesystem();
-      builder_->AppendFileSystemFile(
-          entry.filesystem_url, f->offset, f->length,
-          f->expected_modification_time.value_or(base::Time()),
-          blob_registry_->file_system_context_);
     } else if (element->is_blob()) {
       DCHECK(blob_uuid_it != referenced_blob_uuids_.end());
       const std::string& blob_uuid = *blob_uuid_it++;
@@ -500,10 +493,10 @@ bool BlobRegistryImpl::BlobUnderConstruction::ContainsCycles(
 BlobRegistryImpl::BlobRegistryImpl(
     base::WeakPtr<BlobStorageContext> context,
     base::WeakPtr<BlobUrlRegistry> url_registry,
-    scoped_refptr<FileSystemContext> file_system_context)
+    scoped_refptr<base::TaskRunner> url_registry_runner)
     : context_(std::move(context)),
       url_registry_(std::move(url_registry)),
-      file_system_context_(std::move(file_system_context)) {}
+      url_registry_runner_(std::move(url_registry_runner)) {}
 
 BlobRegistryImpl::~BlobRegistryImpl() {
   // BlobBuilderFromStream needs to be aborted before it can be destroyed, but
@@ -548,25 +541,6 @@ void BlobRegistryImpl::Register(
     BlobUnderConstruction::ElementEntry entry(std::move(element));
     if (entry.element->is_file()) {
       if (!delegate->CanReadFile(entry.element->get_file()->path)) {
-        std::unique_ptr<BlobDataHandle> handle = context_->AddBrokenBlob(
-            uuid, content_type, content_disposition,
-            BlobStatus::ERR_REFERENCED_FILE_UNAVAILABLE);
-        BlobImpl::Create(std::move(handle), std::move(blob));
-        std::move(callback).Run();
-        return;
-      }
-    } else if (entry.element->is_file_filesystem()) {
-      const GURL crack_url = entry.element->get_file_filesystem()->url;
-      // TODO(https://crbug.com/1221308): determine whether StorageKey should be
-      // replaced with a more meaningful value
-      const blink::StorageKey crack_storage_key =
-          blink::StorageKey(url::Origin::Create(crack_url));
-      entry.filesystem_url =
-          file_system_context_->CrackURL(crack_url, crack_storage_key);
-      if (!entry.filesystem_url.is_valid() ||
-          !file_system_context_->GetFileSystemBackend(
-              entry.filesystem_url.type()) ||
-          !delegate->CanReadFileSystemFile(entry.filesystem_url)) {
         std::unique_ptr<BlobDataHandle> handle = context_->AddBrokenBlob(
             uuid, content_type, content_disposition,
             BlobStatus::ERR_REFERENCED_FILE_UNAVAILABLE);
@@ -631,7 +605,7 @@ void BlobRegistryImpl::GetBlobFromUUID(
     return;
   }
   if (!context_->registry().HasEntry(uuid)) {
-    // TODO(mek): Log histogram, old code logs Storage.Blob.InvalidReference
+    LOG(ERROR) << "Invalid UUID: " << uuid;
     std::move(callback).Run();
     return;
   }
@@ -644,15 +618,28 @@ void BlobRegistryImpl::URLStoreForOrigin(
     mojo::PendingAssociatedReceiver<blink::mojom::BlobURLStore> receiver) {
   Delegate* delegate = receivers_.current_context().get();
   DCHECK(delegate);
-  if (!origin.opaque() && !delegate->CanCommitURL(origin.GetURL())) {
+  if (!origin.opaque() && !delegate->CanAccessDataForOrigin(origin)) {
     mojo::ReportBadMessage(
-        "Non committable origin passed to BlobRegistryImpl::URLStoreForOrigin");
+        "Cannot access data for origin passed to "
+        "BlobRegistryImpl::URLStoreForOrigin");
+    return;
   }
-  auto self_owned_associated_receiver = mojo::MakeSelfOwnedAssociatedReceiver(
-      std::make_unique<BlobURLStoreImpl>(origin, url_registry_),
-      std::move(receiver));
-  if (g_url_store_creation_hook)
-    g_url_store_creation_hook->Run(self_owned_associated_receiver);
+  url_registry_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](const url::Origin& origin,
+             mojo::PendingAssociatedReceiver<blink::mojom::BlobURLStore>
+                 receiver,
+             base::WeakPtr<BlobUrlRegistry> url_registry) {
+            auto self_owned_associated_receiver =
+                mojo::MakeSelfOwnedAssociatedReceiver(
+                    std::make_unique<BlobURLStoreImpl>(
+                        blink::StorageKey(origin), std::move(url_registry)),
+                    std::move(receiver));
+            if (g_url_store_creation_hook)
+              g_url_store_creation_hook->Run(self_owned_associated_receiver);
+          },
+          origin, std::move(receiver), url_registry_));
 }
 
 // static

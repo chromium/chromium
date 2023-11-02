@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -160,12 +160,12 @@ bool PaymentsValidators::IsValidMethodFormat(const String& identifier) {
 
   // URL PMI validation rules:
   // https://www.w3.org/TR/payment-method-id/#dfn-validate-a-url-based-payment-method-identifier
-  if (!url.User().IsEmpty() || !url.Pass().IsEmpty())
+  if (!url.User().empty() || !url.Pass().empty())
     return false;
 
   // TODO(http://crbug.com/1200225): Align this with the specification.
   return url.ProtocolIsInHTTPFamily() &&
-         network::IsUrlPotentiallyTrustworthy(url);
+         network::IsUrlPotentiallyTrustworthy(GURL(url));
 }
 
 void PaymentsValidators::ValidateAndStringifyObject(

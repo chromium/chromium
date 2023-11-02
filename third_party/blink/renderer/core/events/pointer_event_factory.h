@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -93,12 +93,12 @@ class CORE_EXPORT PointerEventFactory {
   // Returns last_position of for the given pointerId if such id is active.
   // Otherwise it returns the PositionInScreen of the given events, so we will
   // get movement = 0 when there is no last position.
-  FloatPoint GetLastPointerPosition(PointerId pointer_id,
-                                    const WebPointerProperties& event,
-                                    WebInputEvent::Type event_type) const;
+  gfx::PointF GetLastPointerPosition(PointerId pointer_id,
+                                     const WebPointerProperties& event,
+                                     WebInputEvent::Type event_type) const;
 
   void SetLastPosition(PointerId pointer_id,
-                       const FloatPoint& position_in_screen,
+                       const gfx::PointF& position_in_screen,
                        WebInputEvent::Type event_type);
 
  private:
@@ -174,8 +174,8 @@ class CORE_EXPORT PointerEventFactory {
   int id_count_[static_cast<int>(WebPointerProperties::PointerType::kMaxValue) +
                 1];
 
-  PointerIdKeyMap<FloatPoint> pointer_id_last_position_mapping_;
-  PointerIdKeyMap<FloatPoint> pointerrawupdate_last_position_mapping_;
+  PointerIdKeyMap<gfx::PointF> pointer_id_last_position_mapping_;
+  PointerIdKeyMap<gfx::PointF> pointerrawupdate_last_position_mapping_;
 };
 
 }  // namespace blink

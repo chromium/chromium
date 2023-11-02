@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "testing/perf/perf_result_reporter.h"
 
 using bookmarks_helper::AddURL;
-using bookmarks_helper::AllModelsMatch;
 using bookmarks_helper::GetBookmarkBarNode;
 using bookmarks_helper::IndexedURL;
 using bookmarks_helper::IndexedURLTitle;
@@ -76,8 +75,10 @@ void BookmarksSyncPerfTest::AddURLs(int profile, size_t num_urls) {
 }
 
 void BookmarksSyncPerfTest::UpdateURLs(int profile) {
-  for (const auto& child : GetBookmarkBarNode(profile)->children())
+  for (const std::unique_ptr<bookmarks::BookmarkNode>& child :
+       GetBookmarkBarNode(profile)->children()) {
     ASSERT_TRUE(SetURL(profile, child.get(), GURL(NextIndexedURL())));
+  }
 }
 
 void BookmarksSyncPerfTest::RemoveURLs(int profile) {
@@ -101,7 +102,7 @@ std::string BookmarksSyncPerfTest::NextIndexedURLTitle() {
 IN_PROC_BROWSER_TEST_F(BookmarksSyncPerfTest, P0) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
-  auto reporter =
+  perf_test::PerfResultReporter reporter =
       SetUpReporter(base::NumberToString(kNumBookmarks) + "_bookmarks");
   AddURLs(0, kNumBookmarks);
   base::TimeDelta dt = TimeMutualSyncCycle(GetClient(0), GetClient(1));

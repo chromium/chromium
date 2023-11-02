@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
  * This class assists with processing repeated tree changes in nontrivial ways
  * by allowing only the most recent tree change to be processed.
  */
-class RepeatedTreeChangeHandler {
+export class RepeatedTreeChangeHandler {
   /**
    * @param {!chrome.automation.TreeChangeObserverFilter} filter
    * @param {!function(!chrome.automation.TreeChange)} callback
@@ -26,7 +26,7 @@ class RepeatedTreeChangeHandler {
      * default to always return true.
      * @private {!function(!chrome.automation.TreeChange)}
      */
-    this.predicate_ = options.predicate || ((c) => true);
+    this.predicate_ = options.predicate || (c => true);
 
     /** @private {!function(!chrome.automation.TreeChange)} */
     this.handler_ = change => this.onChange_(change);

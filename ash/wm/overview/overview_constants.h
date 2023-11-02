@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,12 @@ constexpr int kHeaderHeightDp = WindowMiniView::kHeaderHeightDp;
 // vice versa) will be classified as too wide or too tall and will be handled
 // slightly differently in overview mode.
 constexpr float kExtremeWindowRatioThreshold = 2.f;
+
+// Inset for the focus ring around the focusable overview items. The ring is 2px
+// thick and should have a 2px gap from the view it is associated with. Since
+// the thickness is 2px and the stroke is in the middle, we use a -3px inset to
+// achieve this.
+constexpr int kFocusRingHaloInset = -3;
 
 }  // namespace ash
 

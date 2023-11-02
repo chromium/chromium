@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -93,7 +93,7 @@ bool ObjectWatcher::StartWatchingInternal(HANDLE object,
   // DoneWaiting can be synchronously called from RegisterWaitForSingleObject,
   // so set up all state now.
   callback_ = BindRepeating(&ObjectWatcher::Signal, weak_factory_.GetWeakPtr(),
-                            delegate);
+                            base::UnsafeDanglingUntriaged(delegate));
   object_ = object;
 
   if (!RegisterWaitForSingleObject(&wait_object_, object, DoneWaiting, this,

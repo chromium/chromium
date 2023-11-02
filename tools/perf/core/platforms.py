@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -11,6 +11,7 @@ ANDROID_NOT_WEBVIEW = 'android-not-webview'
 ANDROID_WEBVIEW = 'android-webview'
 ANDROID = 'android'
 FUCHSIA_ASTRO = 'fuchsia-board-astro'
+FUCHSIA_SHERLOCK = 'fuchsia-board-sherlock'
 FUCHSIA_QEMU_X64 = 'fuchsia-board-qemu-x64'
 WIN10 = 'win10'
 CHROMEOS = 'chromeos'

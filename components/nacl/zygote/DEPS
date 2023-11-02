@@ -1,5 +1,6 @@
 include_rules = [
   "+crypto",
+  "+mojo/core",
   "+sandbox/linux/services",
   "+sandbox/linux/suid",
   "+sandbox/policy",

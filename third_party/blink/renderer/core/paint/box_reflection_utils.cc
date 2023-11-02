@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@ BoxReflection BoxReflectionForPaintLayer(const PaintLayer& layer,
   const StyleReflection* reflect_style = style.BoxReflect();
 
   LayoutRect frame_layout_rect = layer.GetLayoutBox()->FrameRect();
-  FloatRect frame_rect(frame_layout_rect);
+  gfx::RectF frame_rect(frame_layout_rect);
   BoxReflection::ReflectionDirection direction =
       BoxReflection::kVerticalReflection;
   float offset = 0;
@@ -49,7 +49,7 @@ BoxReflection BoxReflectionForPaintLayer(const PaintLayer& layer,
 
   const NinePieceImage& mask_nine_piece = reflect_style->Mask();
   if (!mask_nine_piece.HasImage())
-    return BoxReflection(direction, offset, nullptr, FloatRect());
+    return BoxReflection(direction, offset, nullptr, gfx::RectF());
 
   PhysicalRect mask_rect(PhysicalOffset(), frame_layout_rect.Size());
   PhysicalRect mask_bounding_rect(mask_rect);
@@ -69,7 +69,7 @@ BoxReflection BoxReflectionForPaintLayer(const PaintLayer& layer,
                                  mask_rect, style, mask_nine_piece);
   }
   return BoxReflection(direction, offset, builder->EndRecording(),
-                       FloatRect(mask_bounding_rect));
+                       gfx::RectF(mask_bounding_rect));
 }
 
 }  // namespace blink

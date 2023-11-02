@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
@@ -63,6 +64,9 @@ class NET_EXPORT WindowsSystemProxyResolutionRequest
                                        WinHttpStatus winhttp_status,
                                        int windows_error);
 
+  WindowsSystemProxyResolver::Request* GetProxyResolutionRequestForTesting();
+  void ResetProxyResolutionRequestForTesting();
+
  private:
   // Cancels the callback from the resolver for a previously started proxy
   // resolution.
@@ -75,9 +79,9 @@ class NET_EXPORT WindowsSystemProxyResolutionRequest
   // WindowsSystemProxyResolutionService. Outstanding requests are cancelled
   // during ~WindowsSystemProxyResolutionService, so this is guaranteed to be
   // valid throughout the lifetime of this object.
-  WindowsSystemProxyResolutionService* service_;
+  raw_ptr<WindowsSystemProxyResolutionService> service_;
   CompletionOnceCallback user_callback_;
-  ProxyInfo* results_;
+  raw_ptr<ProxyInfo> results_;
   const GURL url_;
   const std::string method_;
   NetLogWithSource net_log_;

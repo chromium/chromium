@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@ import android.view.View;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.share.qrcode.QrCodeDialogTab;
-import org.chromium.ui.base.AndroidPermissionDelegate;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -24,10 +24,13 @@ public class QrCodeScanCoordinator implements QrCodeDialogTab {
      * The QrCodeScanCoordinator constructor.
      *
      * @param context The context to use for user permissions.
+     * @param observer The observer for navigation event.
+     * @param windowAndroid The {@link WindowAndroid} for the containing activity.
      */
-    public QrCodeScanCoordinator(Context context, QrCodeScanMediator.NavigationObserver observer) {
+    public QrCodeScanCoordinator(Context context, QrCodeScanMediator.NavigationObserver observer,
+            WindowAndroid windowAndroid) {
         PropertyModel scanViewModel = new PropertyModel(QrCodeScanViewProperties.ALL_KEYS);
-        mMediator = new QrCodeScanMediator(context, scanViewModel, observer);
+        mMediator = new QrCodeScanMediator(context, scanViewModel, observer, windowAndroid);
 
         mScanView = new QrCodeScanView(
                 context, mMediator::onPreviewFrame, mMediator::promptForCameraPermission);
@@ -56,5 +59,5 @@ public class QrCodeScanCoordinator implements QrCodeDialogTab {
         mScanView.stopCamera();
     }
     @Override
-    public void updatePermissions(AndroidPermissionDelegate windowAndroid) {}
+    public void updatePermissions(WindowAndroid windowAndroid) {}
 }

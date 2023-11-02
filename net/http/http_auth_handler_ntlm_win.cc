@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,8 +22,8 @@ int HttpAuthHandlerNTLM::Factory::CreateAuthHandler(
     HttpAuthChallengeTokenizer* challenge,
     HttpAuth::Target target,
     const SSLInfo& ssl_info,
-    const NetworkIsolationKey& network_isolation_key,
-    const GURL& origin,
+    const NetworkAnonymizationKey& network_anonymization_key,
+    const url::SchemeHostPort& scheme_host_port,
     CreateReason reason,
     int digest_nonce_count,
     const NetLogWithSource& net_log,
@@ -33,12 +33,13 @@ int HttpAuthHandlerNTLM::Factory::CreateAuthHandler(
     return ERR_UNSUPPORTED_AUTH_SCHEME;
   // TODO(cbentzel): Move towards model of parsing in the factory
   //                 method and only constructing when valid.
-  std::unique_ptr<HttpAuthHandler> tmp_handler(
-      new HttpAuthHandlerNTLM(sspi_library_.get(), http_auth_preferences()));
+  auto tmp_handler = std::make_unique<HttpAuthHandlerNTLM>(
+      sspi_library_.get(), http_auth_preferences());
   if (!tmp_handler->InitFromChallenge(challenge, target, ssl_info,
-                                      network_isolation_key, origin, net_log))
+                                      network_anonymization_key, scheme_host_port,
+                                      net_log))
     return ERR_INVALID_RESPONSE;
-  handler->swap(tmp_handler);
+  *handler = std::move(tmp_handler);
   return OK;
 }
 
@@ -53,12 +54,12 @@ int HttpAuthHandlerNTLM::GenerateAuthTokenImpl(
     const HttpRequestInfo* request,
     CompletionOnceCallback callback,
     std::string* auth_token) {
-  return mechanism_.GenerateAuthToken(credentials, CreateSPN(origin_),
+  return mechanism_.GenerateAuthToken(credentials, CreateSPN(scheme_host_port_),
                                       channel_bindings_, auth_token, net_log(),
                                       std::move(callback));
 }
 
-HttpAuthHandlerNTLM::~HttpAuthHandlerNTLM() {}
+HttpAuthHandlerNTLM::~HttpAuthHandlerNTLM() = default;
 
 // Require identity on first pass instead of second.
 bool HttpAuthHandlerNTLM::NeedsIdentity() {
@@ -70,7 +71,7 @@ bool HttpAuthHandlerNTLM::AllowsDefaultCredentials() {
     return true;
   if (!http_auth_preferences_)
     return false;
-  return http_auth_preferences_->CanUseDefaultCredentials(origin_);
+  return http_auth_preferences_->CanUseDefaultCredentials(scheme_host_port_);
 }
 
 HttpAuth::AuthorizationResult HttpAuthHandlerNTLM::ParseChallenge(

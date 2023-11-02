@@ -1,7 +1,7 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Logic for diffing two SizeInfo objects."""
+"""Logic for diffing two SizeInfo objects. See: ./docs/diffs.md"""
 
 import collections
 import itertools
@@ -118,13 +118,14 @@ def _DiffSymbolGroups(containers, before, after):
     # Values need to be integer (crbug.com/1132394).
     padding = round(padding)
     if padding != 0:
-      after_sym = models.Symbol(section_name, padding)
-      after_sym.container = container_from_name[container_name]
+      padding_sym = models.Symbol(section_name, padding)
+      delta_container = container_from_name[container_name]
+      padding_sym.container = delta_container.after
       # This is after _NormalizeNames() is called, so set |full_name|,
       # |template_name|, and |name|.
-      after_sym.SetName("Overhead: aggregate padding of diff'ed symbols")
-      after_sym.padding = padding
-      all_deltas.append(models.DeltaSymbol(None, after_sym))
+      padding_sym.SetName("Overhead: aggregate padding of diff'ed symbols")
+      padding_sym.padding = padding
+      all_deltas.append(models.DeltaSymbol(None, padding_sym))
 
   return models.DeltaSymbolGroup(all_deltas)
 
@@ -149,7 +150,10 @@ def _DiffContainerLists(before_containers, after_containers):
 
 
 def Diff(before, after, sort=False):
-  """Diffs two SizeInfo objects. Returns a DeltaSizeInfo."""
+  """Diffs two SizeInfo objects. Returns a DeltaSizeInfo.
+
+  See docs/diffs.md for diffing algorithm.
+  """
   assert isinstance(before, models.SizeInfo)
   assert isinstance(after, models.SizeInfo)
   containers_diff = _DiffContainerLists(before.containers, after.containers)

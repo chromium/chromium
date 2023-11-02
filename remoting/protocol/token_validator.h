@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,9 +14,7 @@
 #include "remoting/protocol/authenticator.h"
 #include "url/gurl.h"
 
-namespace remoting {
-
-namespace protocol {
+namespace remoting::protocol {
 
 // The |TokenValidator| encapsulates the parameters to be sent to the client
 // to obtain a token, and the method to validate that token and obtain the
@@ -64,10 +62,9 @@ class TokenValidatorFactory
  protected:
   friend class base::RefCountedThreadSafe<TokenValidatorFactory>;
 
-  virtual ~TokenValidatorFactory() {}
+  virtual ~TokenValidatorFactory() = default;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_TOKEN_VALIDATOR_H_

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,22 +6,22 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 4
+// Next MinVersion: 8
 
-module chromeos.ime.mojom;
+module ash.ime.mojom;
 
 import "ash/services/ime/public/mojom/input_method.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 
 // Do not modify this enum. If new values are needed, deprecate the entire enum.
-[Stable]
+[Stable, Extensible, RenamedFrom="chromeos.ime.mojom.CommitTextCursorBehavior"]
 enum CommitTextCursorBehavior {
-  kMoveCursorAfterText = 0,
+  [Default] kMoveCursorAfterText = 0,
   kMoveCursorBeforeText = 1,
 };
 
 // Next ordinal: 1
-[Stable, Extensible]
+[Stable, Extensible, RenamedFrom="chromeos.ime.mojom.CompositionSpanStyle"]
 enum CompositionSpanStyle {
   // Default composition style. Usually, this adds an underline to the span.
   [Default] kDefault = 0,
@@ -33,7 +33,7 @@ enum CompositionSpanStyle {
 // The indices are relative to the composition text.
 //
 // Next ordinal: 3
-[Stable]
+[Stable, RenamedFrom="chromeos.ime.mojom.CompositionSpan"]
 struct CompositionSpan {
   uint32 start@0;
   uint32 end@1;
@@ -42,14 +42,14 @@ struct CompositionSpan {
 
 // A range of text. `start` can be equal to or greater than `end`.
 // Next ordinal: 2
-[Stable]
+[Stable, RenamedFrom="chromeos.ime.mojom.TextRange"]
 struct TextRange {
   uint32 start;
   uint32 end;
 };
 
 // Next ordinal: 3
-[Stable]
+[Stable, RenamedFrom="chromeos.ime.mojom.AutocorrectSpan"]
 struct AutocorrectSpan {
   // The range to set the autocorrect span to, currently having `current_text`.
   TextRange autocorrect_range@0;
@@ -71,7 +71,7 @@ struct AutocorrectSpan {
 // Proposed candidate for completing some text.
 //
 // Next ordinal: 2
-[Stable]
+[Stable, RenamedFrom="chromeos.ime.mojom.CompletionCandidate"]
 struct CompletionCandidate {
   // The candidate text
   string text@0;
@@ -81,7 +81,7 @@ struct CompletionCandidate {
 };
 
 // Next ordinal: 3
-[Stable, Extensible]
+[Stable, Extensible, RenamedFrom="chromeos.ime.mojom.SuggestionMode"]
 enum SuggestionMode {
   [Default] kUnknown = 0,
 
@@ -97,7 +97,7 @@ enum SuggestionMode {
 };
 
 // Next ordinal: 4
-[Stable, Extensible]
+[Stable, Extensible, RenamedFrom="chromeos.ime.mojom.SuggestionType"]
 enum SuggestionType {
   [Default] kUnknown = 0,
 
@@ -114,7 +114,7 @@ enum SuggestionType {
 // Single request to generate suggestion candidates from the given context.
 //
 // Next ordinal: 3
-[Stable]
+[Stable, RenamedFrom="chromeos.ime.mojom.SuggestionsRequest"]
 struct SuggestionsRequest {
   // The mode of suggestions that should be generated.
   SuggestionMode mode@0;
@@ -129,7 +129,7 @@ struct SuggestionsRequest {
 // The text candidate to use as a suggestion to the user.
 //
 // Next ordinal: 3
-[Stable]
+[Stable, RenamedFrom="chromeos.ime.mojom.SuggestionCandidate"]
 struct SuggestionCandidate {
   // How should a consumer use this suggestion.
   SuggestionMode mode@0;
@@ -144,13 +144,14 @@ struct SuggestionCandidate {
 // Encapsulates the results of a suggestions request.
 //
 // Next ordinal: 1
-[Stable]
+[Stable, RenamedFrom="chromeos.ime.mojom.SuggestionsResponse"]
 struct SuggestionsResponse {
   // A list of suggestion candidates generated.
   array<SuggestionCandidate> candidates@0;
 };
 
 // A URL-Keyed Metric (UKM) entry.
+[Stable]
 union UkmEntry {
   NonCompliantApiMetric non_compliant_api;
 };
@@ -159,7 +160,7 @@ union UkmEntry {
 // numeric values should never be reused.
 //
 // Next ordinal: 4
-[Stable, Extensible]
+[Stable, Extensible, RenamedFrom="chromeos.ime.mojom.InputMethodApiOperation"]
 enum InputMethodApiOperation {
   [Default] kUnknown = 0,
   kCommitText = 1,
@@ -168,7 +169,7 @@ enum InputMethodApiOperation {
 };
 
 // Next ordinal: 1
-[Stable]
+[Stable, RenamedFrom="chromeos.ime.mojom.NonCompliantApiMetric"]
 struct NonCompliantApiMetric {
   InputMethodApiOperation non_compliant_operation@0;
 };
@@ -176,7 +177,7 @@ struct NonCompliantApiMetric {
 // A candidate shown in the candidates window.
 //
 // Next ordinal: 2
-[Stable]
+[Stable, RenamedFrom="chromeos.ime.mojom.Candidate"]
 struct Candidate {
   string text@0;
 
@@ -191,23 +192,38 @@ struct Candidate {
   string? annotation@2;
 };
 
+// The highlighted candidate in a candidates window.
+// Need to be wrapped in a struct so that its nullable.
+[Stable, RenamedFrom="chromeos.ime.mojom.HighlightedCandidate"]
+struct HighlightedCandidate {
+  uint32 index@0;
+};
+
 // The candidates window shows a list of potential candidates for the user's
 // current input. It is usually shown as a window below the current composition.
 //
-// Next ordinal: 1
-[Stable, MinVersion=2]
+// Next ordinal: 3
+[Stable, RenamedFrom="chromeos.ime.mojom.CandidatesWindow"]
 struct CandidatesWindow {
   // List of candidates to be displayed. Must not be empty.
   array<Candidate> candidates@0;
 
   // The index of the candidate that should be highlighted visually.
-  uint32 highlighted_candidate@1;
+  // DEPRECATED: Use highlighted_candidate instead.
+  uint32 DEPRECATED_highlighted_candidate@1;
+
+  // The text to show at the footer of the candidates window.
+  // If empty, no footer is shown.
+  [MinVersion=4] string? auxiliary_text@2;
+
+  // If this is null, then no candidate is highlighted.
+  [MinVersion=6] HighlightedCandidate? highlighted_candidate@3;
 };
 
 // Metrics enum for various actions that can be performed on the Korean IME.
 //
 // Next ordinal: 4
-[Extensible, Stable, MinVersion=3]
+[Extensible, Stable, RenamedFrom="chromeos.ime.mojom.KoreanAction"]
 enum KoreanAction {
   [Default] kUnknown = 0,
   // The user pressed the Hanja key.
@@ -222,7 +238,8 @@ enum KoreanAction {
 // Provides a way for the InputMethod, which lives in a Chrome utility process,
 // to communicate back to the browser process.
 //
-// Next ordinal: 12
+// Next ordinal: 14
+[Stable]
 interface InputMethodHost {
   // ========================================================
   // The following methods operate on the focused text field.
@@ -242,7 +259,26 @@ interface InputMethodHost {
   // new composition at the current cursor position, deleting any text in the
   // current selection if any. The cursor is moved to the end of `text`.
   // `spans` is used to style `text`.
-  SetComposition@1(mojo_base.mojom.String16 text, array<CompositionSpan> spans);
+  DEPRECATED_SetComposition@1(mojo_base.mojom.String16 text, array<CompositionSpan> spans);
+
+  // Asks the focused input field to set composition with `text`.
+  // Replaces the current composition if there is one. Otherwise, start a
+  // new composition at the current cursor position, deleting any text in the
+  // current selection if any.
+  //
+  // `spans` is used to style `text`.
+  //
+  // The cursor then moves based on `new_cursor_position`, which is the relative
+  // UTF-16 offset of the new cursor position from the front of `text`.
+  // For example, if `new_cursor_position` is 3, then the cursor is placed
+  // between `text[3]` and `text[4]`. A `new_cursor_position` of 0 places the
+  // cursor immediately before `text`, and a value of `text.length()` places the
+  // cursor immediately after `text`.
+  // If `new_cursor_position > text.length()`, then this is a no-op.
+  [MinVersion=5]
+  SetComposition@12(mojo_base.mojom.String16 text,
+                    array<CompositionSpan> spans,
+                    uint32 new_cursor_position);
 
   // Asks the focused input field to mark the range of text spanned by
   // `start_index` and `end_index` as the current composition, where index 0
@@ -295,6 +331,9 @@ interface InputMethodHost {
   // prediction context.
   RequestSuggestions@7(SuggestionsRequest request)
     => (SuggestionsResponse response);
+
+  // Asks the system to update the quick settings menu.
+  [MinVersion=7] UpdateQuickSettings@13(InputMethodQuickSettings settings);
 
   // ============================================================
   // The following methods are for metrics and not require focus.

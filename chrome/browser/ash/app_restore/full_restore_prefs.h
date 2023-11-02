@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,7 @@
 class PrefRegistrySimple;
 class PrefService;
 
-namespace ash {
-namespace full_restore {
+namespace ash::full_restore {
 
 // Enum that specifies restore options on startup. The values must not be
 // changed as they are persisted on disk.
@@ -58,7 +57,6 @@ void SetDefaultRestorePrefIfNecessary(PrefService* prefs);
 // restore settings is synced.
 void UpdateRestorePrefIfNecessary(PrefService* prefs);
 
-}  // namespace full_restore
-}  // namespace ash
+}  // namespace ash::full_restore
 
 #endif  // CHROME_BROWSER_ASH_APP_RESTORE_FULL_RESTORE_PREFS_H_

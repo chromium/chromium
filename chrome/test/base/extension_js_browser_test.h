@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 // A super class that handles javascript-based tests against an extension.
 //
 // See an example usage at
-// chrome/browser/resources/chromeos/accessibility/chromevox/background/background_test.extjs
+// chrome/browser/resources/chromeos/accessibility/chromevox/background/background_test.js
 class ExtensionJSBrowserTest : public JavaScriptBrowserTest {
  public:
   ExtensionJSBrowserTest();

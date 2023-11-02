@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,8 @@ bool HistogramNameLesser(const base::HistogramBase* a,
 }  // namespace
 
 // static
-LazyInstance<absl::Mutex>::Leaky StatisticsRecorder::lock_;
+LazyInstance<absl::Mutex>::Leaky StatisticsRecorder::lock_ =
+    LAZY_INSTANCE_INITIALIZER;
 
 // static
 StatisticsRecorder* StatisticsRecorder::top_ = nullptr;
@@ -46,17 +47,6 @@ std::atomic<bool> StatisticsRecorder::have_active_callbacks_{false};
 // static
 std::atomic<StatisticsRecorder::GlobalSampleCallback>
     StatisticsRecorder::global_sample_callback_{nullptr};
-
-size_t StatisticsRecorder::BucketRangesHash::operator()(
-    const BucketRanges* const a) const {
-  return a->checksum();
-}
-
-bool StatisticsRecorder::BucketRangesEqual::operator()(
-    const BucketRanges* const a,
-    const BucketRanges* const b) const {
-  return a->Equals(b);
-}
 
 StatisticsRecorder::ScopedHistogramSampleObserver::
     ScopedHistogramSampleObserver(const std::string& name,
@@ -140,19 +130,14 @@ HistogramBase* StatisticsRecorder::RegisterOrDeleteDuplicate(
 // static
 const BucketRanges* StatisticsRecorder::RegisterOrDeleteDuplicateRanges(
     const BucketRanges* ranges) {
-  DCHECK(ranges->HasValidChecksum());
-
-  // Declared before |auto_lock| to ensure correct destruction order.
-  std::unique_ptr<const BucketRanges> ranges_deleter;
   const absl::MutexLock auto_lock(lock_.Pointer());
   EnsureGlobalRecorderWhileLocked();
 
-  const BucketRanges* const registered = *top_->ranges_.insert(ranges).first;
-  if (registered == ranges) {
+  const BucketRanges* const registered =
+      top_->ranges_manager_.RegisterOrDeleteDuplicateRanges(ranges);
+
+  if (registered == ranges)
     ANNOTATE_LEAKING_OBJECT_PTR(ranges);
-  } else {
-    ranges_deleter.reset(ranges);
-  }
 
   return registered;
 }
@@ -189,12 +174,10 @@ std::string StatisticsRecorder::ToJSON(JSONVerbosityLevel verbosity_level) {
 
 // static
 std::vector<const BucketRanges*> StatisticsRecorder::GetBucketRanges() {
-  std::vector<const BucketRanges*> out;
   const absl::MutexLock auto_lock(lock_.Pointer());
   EnsureGlobalRecorderWhileLocked();
-  out.reserve(top_->ranges_.size());
-  out.assign(top_->ranges_.begin(), top_->ranges_.end());
-  return out;
+
+  return top_->ranges_manager_.GetBucketRanges();
 }
 
 // static
@@ -263,7 +246,6 @@ void StatisticsRecorder::AddHistogramSampleObserver(
   const absl::MutexLock auto_lock(lock_.Pointer());
   EnsureGlobalRecorderWhileLocked();
 
-  scoped_refptr<HistogramSampleObserverList> observers;
   auto iter = top_->observers_.find(name);
   if (iter == top_->observers_.end()) {
     top_->observers_.insert(
@@ -373,7 +355,11 @@ void StatisticsRecorder::ForgetHistogramForTesting(base::StringPiece name) {
 std::unique_ptr<StatisticsRecorder>
 StatisticsRecorder::CreateTemporaryForTesting() {
   const absl::MutexLock auto_lock(lock_.Pointer());
-  return WrapUnique(new StatisticsRecorder());
+  std::unique_ptr<StatisticsRecorder> temporary_recorder =
+      WrapUnique(new StatisticsRecorder());
+  temporary_recorder->ranges_manager_
+      .DoNotReleaseRangesOnDestroyForTesting();  // IN-TEST
+  return temporary_recorder;
 }
 
 // static
@@ -386,9 +372,8 @@ void StatisticsRecorder::SetRecordChecker(
 
 // static
 bool StatisticsRecorder::ShouldRecordHistogram(uint32_t histogram_hash) {
-  const absl::MutexLock auto_lock(lock_.Pointer());
-  EnsureGlobalRecorderWhileLocked();
-  return !top_->record_checker_ ||
+  const absl::ReaderMutexLock auto_lock(lock_.Pointer());
+  return !top_ || !top_->record_checker_ ||
          top_->record_checker_->ShouldRecord(histogram_hash);
 }
 

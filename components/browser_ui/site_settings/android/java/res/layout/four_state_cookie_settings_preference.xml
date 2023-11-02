@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2020 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <!-- Layout used by the FourStateCookieSettingsPreference. -->
 
@@ -39,6 +41,22 @@
             app:primaryText="@string/website_settings_category_cookie_block_third_party_title"
             app:descriptionText="@string/website_settings_category_cookie_block_third_party_addition" />
 
+        <org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton
+            android:id="@+id/block_third_party_incognito_with_aux"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:primaryText="@string/website_settings_category_cookie_block_third_party_incognito_title"
+            app:descriptionText="@string/website_settings_category_cookie_block_third_party_addition" />
+
+        <org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton
+            android:id="@+id/block_third_party_with_aux"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:primaryText="@string/website_settings_category_cookie_block_third_party_title"
+            app:descriptionText="@string/website_settings_category_cookie_block_third_party_addition" />
+
         <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
             android:id="@+id/block"
             android:layout_width="match_parent"
@@ -57,6 +75,6 @@
         android:gravity="center_vertical"
         android:padding="16dp"
         android:drawablePadding="10dp"
-        app:chromeDrawableTint="@color/default_icon_color"
+        app:chromeDrawableTint="@macro/default_icon_color"
         android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
 </LinearLayout>

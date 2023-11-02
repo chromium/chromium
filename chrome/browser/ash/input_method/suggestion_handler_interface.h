@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,6 +54,7 @@ class SuggestionHandlerInterface {
 
   virtual bool AcceptSuggestionCandidate(int context_id,
                                          const std::u16string& candidate,
+                                         size_t delete_previous_utf16_len,
                                          std::string* error) = 0;
 
   // Shows/Hides given assistive window. No-op if context_id doesn't match or

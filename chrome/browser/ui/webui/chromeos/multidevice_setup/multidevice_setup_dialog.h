@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 #include <string>
 #include <vector>
 
+#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-forward.h"
 #include "base/callback.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
-#include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
@@ -51,6 +51,9 @@ class MultiDeviceSetupDialog : public SystemWebDialogDelegate {
   static MultiDeviceSetupDialog* current_instance_;
   static gfx::NativeWindow containing_window_;
 
+  // SystemWebDialogDelegate:
+  void AdjustWidgetInitParams(views::Widget::InitParams* params) override;
+
   // List of callbacks that have registered themselves to be invoked once this
   // dialog is closed.
   std::vector<base::OnceClosure> on_close_callbacks_;
@@ -68,8 +71,8 @@ class MultiDeviceSetupDialogUI : public ui::MojoWebDialogUI {
   // Instantiates implementor of the mojom::MultiDeviceSetup mojo interface
   // passing the pending receiver that will be internally bound.
   void BindInterface(
-      mojo::PendingReceiver<
-          chromeos::multidevice_setup::mojom::MultiDeviceSetup> receiver);
+      mojo::PendingReceiver<ash::multidevice_setup::mojom::MultiDeviceSetup>
+          receiver);
 
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();

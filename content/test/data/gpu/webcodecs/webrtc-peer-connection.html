@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<!--
+Take frames coming from OffscreenCanvas and send them over an RTCPeerConnection.
+-->
+<html>
+<head>
+  <title>RTCPeerConnection test</title>
+  <script src="webcodecs_common.js"></script>
+  <script type="text/javascript">
+    'use strict';
+    async function main(arg) {
+      const use_worker = arg.use_worker;
+
+      const canvas = document.getElementById('display');
+      const ctx = canvas.getContext('2d');
+
+      const mst_generator = new MediaStreamTrackGenerator({kind: 'video'});
+
+      let stopSource = () => {};
+      if (use_worker) {
+        const worker = new Worker('webrtc-peer-connection-worker.js');
+        const writable = mst_generator.writable;
+        worker.postMessage(
+            {writable, width: canvas.width, height: canvas.height}, [writable]);
+        stopSource = () => {
+          worker.terminate();
+        };
+      } else {
+        const source = new CanvasSource(canvas.width, canvas.height);
+
+        const writer = mst_generator.writable.getWriter();
+        // write frames continuously until test is completed
+        const intervalId = setInterval(async () => {
+          await writer.write(await source.getNextFrame());
+        }, 100);
+        stopSource = () => {
+          clearInterval(intervalId);
+          source.close();
+          writer.close();
+        };
+      }
+
+      const pc_track = await startPeerConnectionPipe(mst_generator);
+
+      const mst_processor = new MediaStreamTrackProcessor({
+        track: pc_track,
+      });
+      const reader = mst_processor.readable.getReader();
+
+      // WebRTC starts with limited bandwidth, so the frames have large encoding
+      // artifacts. By 30 frames we expect the diff to be more reasonable,
+      // although the tolerance is still quite liberal.
+      const high_tolerance_frames_to_read = 30;
+      const low_tolerance_frames_to_read = 5;
+      for (let i = 0;
+           i < high_tolerance_frames_to_read + low_tolerance_frames_to_read;
+           i++) {
+        const {value: frame, done} = await reader.read();
+        if (done) {
+          TEST.reportFailure('stream ended unexpectedly');
+        }
+        ctx.drawImage(frame, 0, 0);
+
+        // TODO(https://crbug.com/1302330): These tolerances are very high.
+        // Colour space issue, or just an expected network encoding diff?
+        const tolerance = i < high_tolerance_frames_to_read ? 50 : 40;
+        checkFourColorsFrame(ctx, canvas.width, canvas.height, tolerance);
+
+        frame.close();
+      }
+      reader.cancel();
+      pc_track.stop();
+    }
+
+    /**
+     * Send a track over an RTCPeerConnection. In this case, both ends of the
+     * connection are local.
+     * @param {!MediaStreamTrack} inputTrack
+     * @return {!Promise<!MediaStreamTrack>}
+     */
+    async function startPeerConnectionPipe(inputTrack) {
+      // Disable scaling to obtain stable results.
+      const caller = new RTCPeerConnection(null, {
+        optional: [
+          {
+            googCpuOveruseDetection: false,
+          },
+        ],
+      });
+      const callee = new RTCPeerConnection(null);
+      caller.onicecandidate = (/** !RTCPeerConnectionIceEvent*/ event) => {
+        if (event.candidate) callee.addIceCandidate(event.candidate);
+      };
+      callee.onicecandidate = (/** !RTCPeerConnectionIceEvent */ event) => {
+        if (event.candidate) caller.addIceCandidate(event.candidate);
+      };
+      const outputTrackPromise = new Promise((resolve) => {
+        callee.ontrack = (/** !RTCTrackEvent */ event) => {
+          resolve(event.track);
+        };
+      });
+      caller.addTransceiver(inputTrack, {
+        direction: 'sendonly',
+      });
+      await caller.setLocalDescription();
+      await callee.setRemoteDescription(caller.localDescription);
+      await callee.setLocalDescription();
+      await caller.setRemoteDescription(callee.localDescription);
+
+      return await outputTrackPromise;
+    }
+  </script>
+</head>
+
+<body>
+  <div>
+    <canvas id='display' width="640" height="480"></canvas>
+  </div>
+</body>
+
+</html>

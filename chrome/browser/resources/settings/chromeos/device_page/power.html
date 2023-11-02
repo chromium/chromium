@@ -36,7 +36,19 @@
   </div>
 </div>
 
-<div class$="cr-row [[getFirst_(batteryStatus_.present)]]">
+<settings-toggle-button hidden$="[[!adaptiveChargingEnabled_]]"
+  class$="[[getClassForRow_(batteryStatus_.present, 'adaptiveCharging')]]"
+  id="adaptiveChargingToggle"
+  pref="[[adaptiveChargingPref_]]"
+  label="$i18n{powerAdaptiveChargingLabel}"
+  sub-label="$i18n{powerAdaptiveChargingSubtext}"
+  learn-more-url="$i18n{powerAdaptiveChargingLearnMoreUrl}"
+  on-settings-boolean-control-change="onAdaptiveChargingToggleChange_"
+  deep-link-focus-id$="[[Setting.kAdaptiveCharging]]"
+  no-set-pref>
+</settings-toggle-button>
+
+<div class$="[[getClassForRow_(batteryStatus_.present, 'idle')]]">
   <div id="powerIdleLabel" class="flex" aria-label="true">
     $i18n{powerIdleLabel}
   </div>

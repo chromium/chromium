@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_OFFLINE_PAGES_CORE_MODEL_STARTUP_MAINTENANCE_TASK_H_
 #define COMPONENTS_OFFLINE_PAGES_CORE_MODEL_STARTUP_MAINTENANCE_TASK_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/task/task.h"
 
@@ -33,9 +34,9 @@ class StartupMaintenanceTask : public Task {
   void OnStartupMaintenanceDone(bool result);
 
   // The store containing the offline pages. Not owned.
-  OfflinePageMetadataStore* store_;
+  raw_ptr<OfflinePageMetadataStore> store_;
   // The archive manager storing archive directories. Not owned.
-  ArchiveManager* archive_manager_;
+  raw_ptr<ArchiveManager> archive_manager_;
 
   base::WeakPtrFactory<StartupMaintenanceTask> weak_ptr_factory_{this};
 };

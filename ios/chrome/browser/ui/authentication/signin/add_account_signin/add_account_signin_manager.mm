@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -83,7 +83,7 @@
   [self.identityInteractionManager
       addAccountWithPresentingViewController:self.baseViewController
                                    userEmail:userEmail
-                                  completion:^(ChromeIdentity* identity,
+                                  completion:^(id<SystemIdentity> identity,
                                                NSError* error) {
                                     [weakSelf
                                         operationCompletedWithIdentity:identity
@@ -102,7 +102,7 @@
 
 // Handles the reauthentication or add account operation or displays an alert
 // if the flow is interrupted by a sign-in error.
-- (void)operationCompletedWithIdentity:(ChromeIdentity*)identity
+- (void)operationCompletedWithIdentity:(id<SystemIdentity>)identity
                                  error:(NSError*)error {
   SigninCoordinatorResult signinResult = SigninCoordinatorResultSuccess;
   if (self.signinInterrupted) {

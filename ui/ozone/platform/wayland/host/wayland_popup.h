@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,7 @@ class WaylandPopup : public WaylandWindow {
   void Show(bool inactive) override;
   void Hide() override;
   bool IsVisible() const override;
-  void SetBounds(const gfx::Rect& bounds) override;
+  void SetBoundsInDIP(const gfx::Rect& bounds) override;
 
  private:
   // WaylandWindow overrides:
@@ -41,15 +41,15 @@ class WaylandPopup : public WaylandWindow {
   bool IsSurfaceConfigured() override;
   void SetWindowGeometry(gfx::Rect bounds) override;
   void AckConfigure(uint32_t serial) override;
-  void UpdateVisualSize(const gfx::Size& size_px, float scale_factor) override;
+  void UpdateVisualSize(const gfx::Size& size_px) override;
   void ApplyPendingBounds() override;
+  void UpdateWindowMask() override;
 
   // Creates a popup window, which is visible as a menu window.
   bool CreateShellPopup();
 
-  // Initializes the aura-shell surface, in the case aura-shell EXO extension
-  // is available.
-  void InitializeAuraShellSurface();
+  // Decorates the surface, which requires custom extensions based on exo.
+  void UpdateDecoration();
 
   // Returns bounds with origin relative to parent window's origin.
   gfx::Rect AdjustPopupWindowPosition();
@@ -58,6 +58,12 @@ class WaylandPopup : public WaylandWindow {
   // know anything about the version.
   std::unique_ptr<ShellPopupWrapper> shell_popup_;
 
+  // Set to true if the surface is decorated via aura_popup -- the custom exo
+  // extension to xdg_popup.
+  bool decorated_via_aura_popup_ = false;
+
+  // Exists only if the frame is decorated via aura_surface. This is the
+  // deprecated path and can be removed once Ash is >= M105.
   wl::Object<zaura_surface> aura_surface_;
 
   PlatformWindowShadowType shadow_type_ = PlatformWindowShadowType::kNone;

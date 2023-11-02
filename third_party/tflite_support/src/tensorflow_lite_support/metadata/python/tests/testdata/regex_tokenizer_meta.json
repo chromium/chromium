@@ -1,0 +1,21 @@
+{
+  "subgraph_metadata": [
+    {
+      "input_process_units": [
+        {
+          "options_type": "RegexTokenizerOptions",
+          "options": {
+            "delim_regex_pattern": "[^\\w\\']+",
+            "vocab_file": [
+              {
+                "name": "vocab.txt",
+                "description": "Vocabulary file to convert natural language words to embedding vectors.",
+                "type": "VOCABULARY"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -14,8 +14,11 @@
 use crate::proc_macro as pm;
 use crate::Lifetime;
 use proc_macro2::{Delimiter, Group, Ident, Literal, Punct, Spacing, Span, TokenStream, TokenTree};
+use std::hint;
 use std::marker::PhantomData;
+use std::mem;
 use std::ptr;
+use std::slice;
 
 /// Internal type which is used instead of `TokenTree` to represent a token tree
 /// within a `TokenBuffer`.
@@ -36,39 +39,59 @@ enum Entry {
 ///
 /// *This type is available only if Syn is built with the `"parsing"` feature.*
 pub struct TokenBuffer {
-    // NOTE: Do not derive clone on this - there are raw pointers inside which
-    // will be messed up. Moving the `TokenBuffer` itself is safe as the actual
-    // backing slices won't be moved.
-    data: Box<[Entry]>,
+    // NOTE: Do not implement clone on this - there are raw pointers inside
+    // these entries which will be messed up. Moving the `TokenBuffer` itself is
+    // safe as the data pointed to won't be moved.
+    ptr: *const Entry,
+    len: usize,
+}
+
+impl Drop for TokenBuffer {
+    fn drop(&mut self) {
+        unsafe {
+            let slice = slice::from_raw_parts_mut(self.ptr as *mut Entry, self.len);
+            let _ = Box::from_raw(slice);
+        }
+    }
 }
 
 impl TokenBuffer {
-    // NOTE: DO NOT MUTATE THE `Vec` RETURNED FROM THIS FUNCTION ONCE IT
-    // RETURNS, THE ADDRESS OF ITS BACKING MEMORY MUST REMAIN STABLE.
+    // NOTE: Do not mutate the Vec returned from this function once it returns;
+    // the address of its backing memory must remain stable.
     fn inner_new(stream: TokenStream, up: *const Entry) -> TokenBuffer {
-        // Build up the entries list, recording the locations of any Groups
-        // in the list to be processed later.
-        let mut entries = Vec::new();
-        let mut seqs = Vec::new();
-        for tt in stream {
+        let iterator = stream.into_iter();
+        let mut entries = Vec::with_capacity(iterator.size_hint().0 + 1);
+        let mut next_index_after_last_group = 0;
+        for tt in iterator {
             match tt {
-                TokenTree::Ident(sym) => {
-                    entries.push(Entry::Ident(sym));
+                TokenTree::Ident(ident) => {
+                    entries.push(Entry::Ident(ident));
                 }
-                TokenTree::Punct(op) => {
-                    entries.push(Entry::Punct(op));
+                TokenTree::Punct(punct) => {
+                    entries.push(Entry::Punct(punct));
                 }
-                TokenTree::Literal(l) => {
-                    entries.push(Entry::Literal(l));
+                TokenTree::Literal(literal) => {
+                    entries.push(Entry::Literal(literal));
                 }
-                TokenTree::Group(g) => {
-                    // Record the index of the interesting entry, and store an
-                    // `End(null)` there temporarially.
-                    seqs.push((entries.len(), g));
-                    entries.push(Entry::End(ptr::null()));
+                TokenTree::Group(group) => {
+                    // We cannot fill in a real `End` pointer until `entries` is
+                    // finished growing and getting potentially reallocated.
+                    // Instead, we temporarily coopt the spot where the end
+                    // pointer would go, and use it to string together an
+                    // intrusive linked list of all the Entry::Group entries in
+                    // the vector. Later after `entries` is done growing, we'll
+                    // traverse the linked list and fill in all the end
+                    // pointers with a correct value.
+                    let group_up =
+                        ptr::null::<u8>().wrapping_add(next_index_after_last_group) as *const Entry;
+
+                    let inner = Self::inner_new(group.stream(), group_up);
+                    entries.push(Entry::Group(group, inner));
+                    next_index_after_last_group = entries.len();
                 }
             }
         }
+
         // Add an `End` entry to the end with a reference to the enclosing token
         // stream which was passed in.
         entries.push(Entry::End(up));
@@ -77,24 +100,45 @@ impl TokenBuffer {
         // length of the backing buffer. The backing buffer must remain at a
         // constant address after this point, as we are going to store a raw
         // pointer into it.
-        let mut entries = entries.into_boxed_slice();
-        for (idx, group) in seqs {
-            // We know that this index refers to one of the temporary
-            // `End(null)` entries, and we know that the last entry is
-            // `End(up)`, so the next index is also valid.
-            let seq_up = &entries[idx + 1] as *const Entry;
+        let entries = entries.into_boxed_slice();
+        let len = entries.len();
 
-            // The end entry stored at the end of this Entry::Group should
-            // point to the Entry which follows the Group in the list.
-            let inner = Self::inner_new(group.stream(), seq_up);
-            entries[idx] = Entry::Group(group, inner);
+        // Convert boxed slice into a pointer to the first element early, to
+        // avoid invalidating pointers into this slice when we move the Box.
+        // See https://github.com/rust-lang/unsafe-code-guidelines/issues/326
+        let entries = Box::into_raw(entries) as *mut Entry;
+
+        // Traverse intrusive linked list of Entry::Group entries and fill in
+        // correct End pointers.
+        while let Some(idx) = next_index_after_last_group.checked_sub(1) {
+            // We know that idx refers to one of the Entry::Group entries, and
+            // that the very last entry is an Entry::End, so the next index
+            // after any group entry is a valid index.
+            let group_up = unsafe { entries.add(next_index_after_last_group) };
+
+            // Linked list only takes us to entries which are of type Group.
+            let token_buffer = match unsafe { &*entries.add(idx) } {
+                Entry::Group(_group, token_buffer) => token_buffer,
+                _ => unsafe { hint::unreachable_unchecked() },
+            };
+
+            // Last entry in any TokenBuffer is of type End.
+            let buffer_ptr = token_buffer.ptr as *mut Entry;
+            let last_entry = unsafe { &mut *buffer_ptr.add(token_buffer.len - 1) };
+            let end_ptr_slot = match last_entry {
+                Entry::End(end_ptr_slot) => end_ptr_slot,
+                _ => unsafe { hint::unreachable_unchecked() },
+            };
+
+            // Step to next element in linked list.
+            next_index_after_last_group = mem::replace(end_ptr_slot, group_up) as usize;
         }
 
-        TokenBuffer { data: entries }
+        TokenBuffer { ptr: entries, len }
     }
 
     /// Creates a `TokenBuffer` containing all the tokens from the input
-    /// `TokenStream`.
+    /// `proc_macro::TokenStream`.
     ///
     /// *This method is available only if Syn is built with both the `"parsing"` and
     /// `"proc-macro"` features.*
@@ -102,20 +146,20 @@ impl TokenBuffer {
         not(all(target_arch = "wasm32", any(target_os = "unknown", target_os = "wasi"))),
         feature = "proc-macro"
     ))]
-    pub fn new(stream: pm::TokenStream) -> TokenBuffer {
+    pub fn new(stream: pm::TokenStream) -> Self {
         Self::new2(stream.into())
     }
 
     /// Creates a `TokenBuffer` containing all the tokens from the input
-    /// `TokenStream`.
-    pub fn new2(stream: TokenStream) -> TokenBuffer {
+    /// `proc_macro2::TokenStream`.
+    pub fn new2(stream: TokenStream) -> Self {
         Self::inner_new(stream, ptr::null())
     }
 
     /// Creates a cursor referencing the first token in the buffer and able to
     /// traverse until the end of the buffer.
     pub fn begin(&self) -> Cursor {
-        unsafe { Cursor::create(&self.data[0], &self.data[self.data.len() - 1]) }
+        unsafe { Cursor::create(self.ptr, self.ptr.add(self.len - 1)) }
     }
 }
 
@@ -210,7 +254,7 @@ impl<'a> Cursor<'a> {
                 // situations where we should immediately exit the span after
                 // entering it are handled correctly.
                 unsafe {
-                    *self = Cursor::create(&buf.data[0], self.scope);
+                    *self = Cursor::create(buf.ptr, self.scope);
                 }
             } else {
                 break;
@@ -254,12 +298,14 @@ impl<'a> Cursor<'a> {
         }
     }
 
-    /// If the cursor is pointing at an `Punct`, returns it along with a cursor
+    /// If the cursor is pointing at a `Punct`, returns it along with a cursor
     /// pointing at the next `TokenTree`.
     pub fn punct(mut self) -> Option<(Punct, Cursor<'a>)> {
         self.ignore_none();
         match self.entry() {
-            Entry::Punct(op) if op.as_char() != '\'' => Some((op.clone(), unsafe { self.bump() })),
+            Entry::Punct(punct) if punct.as_char() != '\'' => {
+                Some((punct.clone(), unsafe { self.bump() }))
+            }
             _ => None,
         }
     }
@@ -269,7 +315,7 @@ impl<'a> Cursor<'a> {
     pub fn literal(mut self) -> Option<(Literal, Cursor<'a>)> {
         self.ignore_none();
         match self.entry() {
-            Entry::Literal(lit) => Some((lit.clone(), unsafe { self.bump() })),
+            Entry::Literal(literal) => Some((literal.clone(), unsafe { self.bump() })),
             _ => None,
         }
     }
@@ -279,12 +325,12 @@ impl<'a> Cursor<'a> {
     pub fn lifetime(mut self) -> Option<(Lifetime, Cursor<'a>)> {
         self.ignore_none();
         match self.entry() {
-            Entry::Punct(op) if op.as_char() == '\'' && op.spacing() == Spacing::Joint => {
+            Entry::Punct(punct) if punct.as_char() == '\'' && punct.spacing() == Spacing::Joint => {
                 let next = unsafe { self.bump() };
                 match next.ident() {
                     Some((ident, rest)) => {
                         let lifetime = Lifetime {
-                            apostrophe: op.span(),
+                            apostrophe: punct.span(),
                             ident,
                         };
                         Some((lifetime, rest))
@@ -318,12 +364,10 @@ impl<'a> Cursor<'a> {
     pub fn token_tree(self) -> Option<(TokenTree, Cursor<'a>)> {
         let tree = match self.entry() {
             Entry::Group(group, _) => group.clone().into(),
-            Entry::Literal(lit) => lit.clone().into(),
+            Entry::Literal(literal) => literal.clone().into(),
             Entry::Ident(ident) => ident.clone().into(),
-            Entry::Punct(op) => op.clone().into(),
-            Entry::End(..) => {
-                return None;
-            }
+            Entry::Punct(punct) => punct.clone().into(),
+            Entry::End(..) => return None,
         };
 
         Some((tree, unsafe { self.bump() }))
@@ -334,9 +378,9 @@ impl<'a> Cursor<'a> {
     pub fn span(self) -> Span {
         match self.entry() {
             Entry::Group(group, _) => group.span(),
-            Entry::Literal(l) => l.span(),
-            Entry::Ident(t) => t.span(),
-            Entry::Punct(o) => o.span(),
+            Entry::Literal(literal) => literal.span(),
+            Entry::Ident(ident) => ident.span(),
+            Entry::Punct(punct) => punct.span(),
             Entry::End(..) => Span::call_site(),
         }
     }
@@ -350,7 +394,7 @@ impl<'a> Cursor<'a> {
             Entry::End(..) => None,
 
             // Treat lifetimes as a single tt for the purposes of 'skip'.
-            Entry::Punct(op) if op.as_char() == '\'' && op.spacing() == Spacing::Joint => {
+            Entry::Punct(punct) if punct.as_char() == '\'' && punct.spacing() == Spacing::Joint => {
                 let next = unsafe { self.bump() };
                 match next.entry() {
                     Entry::Ident(_) => Some(unsafe { next.bump() }),

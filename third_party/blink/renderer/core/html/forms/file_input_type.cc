@@ -24,6 +24,7 @@
 
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
+#include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
@@ -44,7 +45,7 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
@@ -62,7 +63,7 @@ Vector<String> CollectAcceptTypes(const HTMLInputElement& input) {
   Vector<String> extensions = input.AcceptFileExtensions();
 
   Vector<String> accept_types;
-  accept_types.ReserveCapacity(mime_types.size() + extensions.size());
+  accept_types.reserve(mime_types.size() + extensions.size());
   accept_types.AppendVector(mime_types);
   accept_types.AppendVector(extensions);
   return accept_types;
@@ -71,7 +72,7 @@ Vector<String> CollectAcceptTypes(const HTMLInputElement& input) {
 }  // namespace
 
 FileInputType::FileInputType(HTMLInputElement& element)
-    : InputType(element),
+    : InputType(Type::kFile, element),
       KeyboardClickableInputTypeView(element),
       file_list_(MakeGarbageCollected<FileList>()) {}
 
@@ -145,7 +146,7 @@ void FileInputType::AppendToFormData(FormData& form_data) const {
 }
 
 bool FileInputType::ValueMissing(const String& value) const {
-  return GetElement().IsRequired() && value.IsEmpty();
+  return GetElement().IsRequired() && value.empty();
 }
 
 String FileInputType::ValueMissingText() const {
@@ -171,7 +172,8 @@ void FileInputType::HandleDOMActivateEvent(Event& event) {
   }
 
   bool intercepted = false;
-  probe::FileChooserOpened(document.GetFrame(), &input, &intercepted);
+  probe::FileChooserOpened(document.GetFrame(), &input, input.Multiple(),
+                           &intercepted);
   if (intercepted) {
     event.SetDefaultHandled();
     return;
@@ -239,7 +241,7 @@ bool FileInputType::CanSetValue(const String& value) {
   // the value attribute isn't applicable to the file upload control at all, but
   // for now we are keeping this behavior to avoid breaking existing websites
   // that may be relying on this.
-  return value.IsEmpty();
+  return value.empty();
 }
 
 String FileInputType::ValueInFilenameValueMode() const {
@@ -267,7 +269,8 @@ void FileInputType::SetValue(const String&,
   UpdateView();
 }
 
-FileList* FileInputType::CreateFileList(const FileChooserFileInfoList& files,
+FileList* FileInputType::CreateFileList(ExecutionContext& context,
+                                        const FileChooserFileInfoList& files,
                                         const base::FilePath& base_dir) {
   auto* file_list(MakeGarbageCollected<FileList>());
   wtf_size_t size = files.size();
@@ -312,8 +315,8 @@ FileList* FileInputType::CreateFileList(const FileChooserFileInfoList& files,
           NullableTimeToOptionalTime(fs_info->modification_time);
       metadata.length = fs_info->length;
       metadata.type = FileMetadata::kTypeFile;
-      file_list->Append(File::CreateForFileSystemFile(fs_info->url, metadata,
-                                                      File::kIsUserVisible));
+      file_list->Append(File::CreateForFileSystemFile(
+          context, fs_info->url, metadata, File::kIsUserVisible));
     }
   }
   return file_list;
@@ -427,15 +430,17 @@ void FileInputType::FilesChosen(FileChooserFileInfoList files,
     // Drop files of which names can not be converted to WTF String. We
     // can't expose such files via File API.
     if (files[i]->is_native_file() &&
-        FilePathToString(files[i]->get_native_file()->file_path).IsEmpty()) {
+        FilePathToString(files[i]->get_native_file()->file_path).empty()) {
       files.EraseAt(i);
       // Do not increment |i|.
       continue;
     }
     ++i;
   }
-  if (!will_be_destroyed_)
-    SetFilesAndDispatchEvents(CreateFileList(files, base_dir));
+  if (!will_be_destroyed_) {
+    SetFilesAndDispatchEvents(
+        CreateFileList(*GetElement().GetExecutionContext(), files, base_dir));
+  }
   if (HasConnectedFileChooser())
     DisconnectFileChooser();
 }
@@ -455,7 +460,7 @@ void FileInputType::SetFilesFromDirectory(const String& path) {
 }
 
 void FileInputType::SetFilesFromPaths(const Vector<String>& paths) {
-  if (paths.IsEmpty())
+  if (paths.empty())
     return;
 
   HTMLInputElement& input = GetElement();
@@ -480,7 +485,7 @@ void FileInputType::SetFilesFromPaths(const Vector<String>& paths) {
 bool FileInputType::ReceiveDroppedFiles(const DragData* drag_data) {
   Vector<String> paths;
   drag_data->AsFilePaths(paths);
-  if (paths.IsEmpty())
+  if (paths.empty())
     return false;
 
   if (!GetElement().FastHasAttribute(html_names::kWebkitdirectoryAttr)) {

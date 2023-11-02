@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,12 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/adapters.h"
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/url_util.h"
 #include "url/url_util.h"
@@ -65,10 +65,9 @@ void InsertRuleToTrie(const std::vector<base::StringPiece>& components,
                       TrieNode* root,
                       bool match_prefix) {
   TrieNode* node = root;
-  for (auto hostcomp = components.rbegin(); hostcomp != components.rend();
-       ++hostcomp) {
+  for (const auto& hostcomp : base::Reversed(components)) {
     DCHECK(!node->match_prefix);
-    std::string component(*hostcomp);
+    std::string component(hostcomp);
     auto child_node = node->children.find(component);
     if (child_node == node->children.end()) {
       std::unique_ptr<TrieNode> temp = std::make_unique<TrieNode>();
@@ -158,12 +157,11 @@ bool AddRules(const std::vector<std::string>& rules, TrieNode* root) {
 
 bool IsAllowed(const GURL& url, const TrieNode* node) {
   std::vector<base::StringPiece> components = SplitHost(url);
-  for (auto component = components.rbegin(); component != components.rend();
-       ++component) {
+  for (const base::StringPiece& component : base::Reversed(components)) {
     if (node->match_prefix) {
       return true;
     }
-    auto child_node = node->children.find(std::string(*component));
+    auto child_node = node->children.find(std::string(component));
     if (child_node == node->children.end()) {
       return false;
     } else {

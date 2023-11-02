@@ -1,16 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import {MultiDeviceBrowserProxyImpl, NotificationAccessSetupOperationStatus} from 'chrome://os-settings/chromeos/os_settings.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {TestMultideviceBrowserProxy} from './test_multidevice_browser_proxy.m.js';
-// #import {MultiDeviceBrowserProxyImpl, NotificationAccessSetupOperationStatus} from 'chrome://os-settings/chromeos/os_settings.js';
-// clang-format on
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+
+import {TestMultideviceBrowserProxy} from './test_multidevice_browser_proxy.js';
 
 /**
  * @fileoverview
@@ -30,9 +29,9 @@ suite('Multidevice', () => {
    * @param {NotificationAccessSetupOperationStatus} status
    */
   function simulateStatusChanged(status) {
-    cr.webUIListenerCallback('settings.onNotificationAccessSetupStatusChanged',
-        status);
-    Polymer.dom.flush();
+    webUIListenerCallback(
+        'settings.onNotificationAccessSetupStatusChanged', status);
+    flush();
   }
 
   /** @return {boolean} */
@@ -42,16 +41,17 @@ suite('Multidevice', () => {
 
   setup(() => {
     PolymerTest.clearBody();
-    browserProxy = new multidevice.TestMultideviceBrowserProxy();
-    settings.MultiDeviceBrowserProxyImpl.instance_ = browserProxy;
+    browserProxy = new TestMultideviceBrowserProxy();
+    MultiDeviceBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
     notificationAccessSetupDialog =
         document.createElement(
             'settings-multidevice-notification-access-setup-dialog');
     document.body.appendChild(notificationAccessSetupDialog);
-    Polymer.dom.flush();
+    flush();
     buttonContainer =
-        assert(notificationAccessSetupDialog.$$('#buttonContainer'));
+        assert(notificationAccessSetupDialog.shadowRoot.querySelector(
+            '#buttonContainer'));
   });
 
   test('Test success flow', async () => {
@@ -99,9 +99,11 @@ suite('Multidevice', () => {
     // NotificationAccessSetupOperationStatus.COMPLETED_SUCCESSFULLY.
     assertEquals(browserProxy.getCallCount('setFeatureEnabledState'), 1);
 
-    assertTrue(notificationAccessSetupDialog.$$('#dialog').open);
+    assertTrue(
+        notificationAccessSetupDialog.shadowRoot.querySelector('#dialog').open);
     buttonContainer.querySelector('#doneButton').click();
-    assertFalse(notificationAccessSetupDialog.$$('#dialog').open);
+    assertFalse(
+        notificationAccessSetupDialog.shadowRoot.querySelector('#dialog').open);
   });
 
   test('Test cancel during connecting flow', async () => {
@@ -122,7 +124,8 @@ suite('Multidevice', () => {
     buttonContainer.querySelector('#cancelButton').click();
     assertEquals(browserProxy.getCallCount('cancelNotificationSetup'), 1);
 
-    assertFalse(notificationAccessSetupDialog.$$('#dialog').open);
+    assertFalse(
+        notificationAccessSetupDialog.shadowRoot.querySelector('#dialog').open);
   });
 
   test('Test failure during connecting flow', async () => {
@@ -144,7 +147,7 @@ suite('Multidevice', () => {
     buttonContainer.querySelector('#tryAgainButton').click();
     assertEquals(browserProxy.getCallCount('attemptNotificationSetup'), 2);
 
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
     assertFalse(!!buttonContainer.querySelector('#getStartedButton'));
@@ -162,7 +165,8 @@ suite('Multidevice', () => {
     buttonContainer.querySelector('#cancelButton').click();
     assertEquals(browserProxy.getCallCount('cancelNotificationSetup'), 1);
 
-    assertFalse(notificationAccessSetupDialog.$$('#dialog').open);
+    assertFalse(
+        notificationAccessSetupDialog.shadowRoot.querySelector('#dialog').open);
   });
 
   test('Test notification access prohibited', async () => {
@@ -185,6 +189,7 @@ suite('Multidevice', () => {
 
     buttonContainer.querySelector('#closeButton').click();
 
-    assertFalse(notificationAccessSetupDialog.$$('#dialog').open);
+    assertFalse(
+        notificationAccessSetupDialog.shadowRoot.querySelector('#dialog').open);
   });
 });

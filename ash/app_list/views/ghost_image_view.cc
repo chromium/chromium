@@ -1,11 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/app_list/views/ghost_image_view.h"
 
 #include "ash/public/cpp/app_list/app_list_config.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -31,10 +31,9 @@ GhostImageView::~GhostImageView() {
   StopObservingImplicitAnimations();
 }
 
-void GhostImageView::Init(const AppListConfig* app_list_config,
-                          const gfx::Rect& drop_target_bounds) {
-  DCHECK(app_list_config);
-  corner_radius_ = app_list_config->grid_focus_corner_radius();
+void GhostImageView::Init(const gfx::Rect& drop_target_bounds,
+                          int grid_focus_corner_radius) {
+  corner_radius_ = grid_focus_corner_radius;
 
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
@@ -76,11 +75,9 @@ void GhostImageView::DoAnimation(bool hide) {
 void GhostImageView::OnPaint(gfx::Canvas* canvas) {
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  // TODO(crbug.com/1255369): Get the highlight color from the ash color
-  // provider once it is implemented.
-  flags.setColor(AshColorProvider::Get()->IsDarkModeEnabled()
+  flags.setColor(DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
                      ? gfx::kGoogleGrey200
-                     : gfx::kGoogleGrey700);
+                     : gfx::kGoogleGrey900);
   flags.setAlpha(kGhostColorOpacity);
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setStrokeWidth(kGhostCircleStrokeWidth);

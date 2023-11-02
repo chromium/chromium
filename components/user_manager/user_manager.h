@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,6 +49,11 @@ class USER_MANAGER_EXPORT UserManager {
 
     // Called when the image of the given user is changed.
     virtual void OnUserImageChanged(const User& user);
+
+    // Called when the user image enterprise state of the given user is changed.
+    virtual void OnUserImageIsEnterpriseManagedChanged(
+        const User& user,
+        bool is_enterprise_managed);
 
     // Called when the profile image download for the given user fails or
     // user has the default profile image or no porfile image at all.
@@ -262,6 +267,9 @@ class USER_MANAGER_EXPORT UserManager {
   virtual void SaveUserDisplayEmail(const AccountId& account_id,
                                     const std::string& display_email) = 0;
 
+  // Returns stored user type or USER_TYPE_REGULAR by default.
+  virtual UserType GetUserType(const AccountId& account_id) = 0;
+
   // Saves user's type for |user| into local state preferences.
   virtual void SaveUserType(const User* user) = 0;
 
@@ -332,6 +340,9 @@ class USER_MANAGER_EXPORT UserManager {
 
   virtual void NotifyLocalStateChanged() = 0;
   virtual void NotifyUserImageChanged(const User& user) = 0;
+  virtual void NotifyUserImageIsEnterpriseManagedChanged(
+      const User& user,
+      bool is_enterprise_managed) = 0;
   virtual void NotifyUserProfileImageUpdateFailed(const User& user) = 0;
   virtual void NotifyUserProfileImageUpdated(
       const User& user,
@@ -353,6 +364,10 @@ class USER_MANAGER_EXPORT UserManager {
   // Accepted user types: USER_TYPE_REGULAR, USER_TYPE_GUEST, USER_TYPE_CHILD.
   virtual bool IsUserAllowed(const User& user) const = 0;
 
+  // Returns true if trusted device policies have successfully been retrieved
+  // and ephemeral users are enabled.
+  virtual bool AreEphemeralUsersEnabled() const = 0;
+
   // Returns "Local State" PrefService instance.
   virtual PrefService* GetLocalState() const = 0;
 
@@ -360,7 +375,6 @@ class USER_MANAGER_EXPORT UserManager {
   // |gaia_id|. If data matches a known account, fills |out_account_id| with
   // account id and returns true.
   virtual bool GetPlatformKnownUserId(const std::string& user_email,
-                                      const std::string& gaia_id,
                                       AccountId* out_account_id) const = 0;
 
   // Returns account id of the Guest user.

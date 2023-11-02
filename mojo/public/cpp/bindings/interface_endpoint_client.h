@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,20 +12,19 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
+#include "base/dcheck_is_on.h"
 #include "base/location.h"
-#include "base/macros.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/synchronization/lock.h"
-#include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "mojo/public/cpp/bindings/associated_group.h"
 #include "mojo/public/cpp/bindings/connection_error_callback.h"
 #include "mojo/public/cpp/bindings/connection_group.h"
 #include "mojo/public/cpp/bindings/disconnect_reason.h"
@@ -33,6 +32,7 @@
 #include "mojo/public/cpp/bindings/lib/control_message_proxy.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/message_dispatcher.h"
+#include "mojo/public/cpp/bindings/message_metadata_helpers.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/bindings/thread_safe_proxy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -59,7 +59,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
                           bool expect_sync_requests,
                           scoped_refptr<base::SequencedTaskRunner> task_runner,
                           uint32_t interface_version,
-                          const char* interface_name);
+                          const char* interface_name,
+                          MessageToMethodInfoCallback method_info_callback,
+                          MessageToMethodNameCallback method_name_callback);
 
   InterfaceEndpointClient(const InterfaceEndpointClient&) = delete;
   InterfaceEndpointClient& operator=(const InterfaceEndpointClient&) = delete;
@@ -94,6 +96,10 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
     return !async_responders_.empty() || !sync_responses_.empty();
   }
 
+  void record_replay_leak() {
+    record_replay_leaked_ = true;
+  }
+
   AssociatedGroup* associated_group();
 
   scoped_refptr<ThreadSafeProxy> CreateThreadSafeProxy(
@@ -110,7 +116,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
   // and notifies all interfaces running on this pipe.
   void RaiseError();
 
-  void CloseWithReason(uint32_t custom_reason, const std::string& description);
+  void CloseWithReason(uint32_t custom_reason, base::StringPiece description);
 
   // Used by ControlMessageProxy to send messages through this endpoint.
   void SendControlMessage(Message* message);
@@ -191,6 +197,12 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
   void MaybeSendNotifyIdle();
 
   const char* interface_name() const { return interface_name_; }
+  MessageToMethodInfoCallback method_info_callback() const {
+    return method_info_callback_;
+  }
+  MessageToMethodNameCallback method_name_callback() const {
+    return method_name_callback_;
+  }
 
 #if DCHECK_IS_ON()
   void SetNextCallLocation(const base::Location& location) {
@@ -213,24 +225,36 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
   void ForgetAsyncRequest(uint64_t request_id);
 
  private:
-  // Maps from the id of a response to the MessageReceiver that handles the
-  // response.
-  using AsyncResponderMap =
-      std::map<uint64_t, std::unique_ptr<MessageReceiver>>;
+  struct PendingAsyncResponse {
+   public:
+    PendingAsyncResponse(uint32_t request_message_name,
+                         std::unique_ptr<MessageReceiver> responder);
+    PendingAsyncResponse(PendingAsyncResponse&&);
+    PendingAsyncResponse(const PendingAsyncResponse&) = delete;
+    PendingAsyncResponse& operator=(PendingAsyncResponse&&);
+    PendingAsyncResponse& operator=(const PendingAsyncResponse&) = delete;
+    ~PendingAsyncResponse();
+
+    uint32_t request_message_name;
+    std::unique_ptr<MessageReceiver> responder;
+  };
+
+  using AsyncResponderMap = std::map<uint64_t, PendingAsyncResponse>;
 
   struct SyncResponseInfo {
    public:
-    explicit SyncResponseInfo(bool* in_response_received);
+    SyncResponseInfo(uint32_t request_message_name, bool* in_response_received);
 
     SyncResponseInfo(const SyncResponseInfo&) = delete;
     SyncResponseInfo& operator=(const SyncResponseInfo&) = delete;
 
     ~SyncResponseInfo();
 
+    uint32_t request_message_name;
     Message response;
 
     // Points to a stack-allocated variable.
-    bool* response_received;
+    raw_ptr<bool> response_received;
   };
 
   using SyncResponseMap = std::map<uint64_t, std::unique_ptr<SyncResponseInfo>>;
@@ -251,7 +275,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
     bool Accept(Message* message) override;
 
    private:
-    InterfaceEndpointClient* const owner_;
+    const raw_ptr<InterfaceEndpointClient> owner_;
   };
 
   void InitControllerIfNecessary();
@@ -293,9 +317,14 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
 
   ScopedInterfaceEndpointHandle handle_;
   std::unique_ptr<AssociatedGroup> associated_group_;
-  InterfaceEndpointController* controller_ = nullptr;
+  // `controller_` is not a raw_ptr<...> for performance reasons (based on
+  // analysis of sampling profiler data).
+  RAW_PTR_EXCLUSION InterfaceEndpointController* controller_ = nullptr;
 
-  MessageReceiverWithResponderStatus* const incoming_receiver_ = nullptr;
+  // `incoming_receiver_` is not a raw_ptr<...> for performance reasons (based
+  // on analysis of sampling profiler data).
+  RAW_PTR_EXCLUSION MessageReceiverWithResponderStatus* const
+      incoming_receiver_ = nullptr;
   HandleIncomingMessageThunk thunk_{this};
   MessageDispatcher dispatcher_;
 
@@ -309,11 +338,18 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
   ConnectionErrorWithReasonCallback error_with_reason_handler_;
   bool encountered_error_ = false;
 
+  // When recording/replaying there are various points where endpoints are leaked
+  // to avoid destroying mojo resources at non-deterministic points. The receiver
+  // is no longer valid to use once this has been set.
+  bool record_replay_leaked_ = false;
+
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   internal::ControlMessageProxy control_message_proxy_{this};
   internal::ControlMessageHandler control_message_handler_;
   const char* interface_name_;
+  const MessageToMethodInfoCallback method_info_callback_;
+  const MessageToMethodNameCallback method_name_callback_;
 
 #if DCHECK_IS_ON()
   // The code location of the the most recent call into a method on this

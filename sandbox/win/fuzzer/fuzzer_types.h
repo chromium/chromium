@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,6 @@ typedef uint32_t ULONG;
 typedef uint32_t* ULONG_PTR;
 typedef LONG NTSTATUS;
 typedef void PROCESS_INFORMATION;
-typedef uintptr_t SOCKET;
 
 // __stdcall is used in one place. TODO(wfh): replace with WINAPI.
 #define __stdcall

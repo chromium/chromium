@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ios/components/security_interstitials/ios_security_interstitial_page.h"
 #include "net/ssl/ssl_info.h"
@@ -34,7 +33,7 @@ class IOSSSLBlockingPage
 
   // Creates an SSL blocking page. If the blocking page isn't shown, the caller
   // is responsible for cleaning up the blocking page, otherwise the
-  // interstitial takes ownership when shown. |options_mask| must be a bitwise
+  // interstitial takes ownership when shown. `options_mask` must be a bitwise
   // mask of SSLErrorOptionsMask values.
   IOSSSLBlockingPage(
       web::WebState* web_state,
@@ -49,7 +48,8 @@ class IOSSSLBlockingPage
  protected:
   // SecurityInterstitialPage implementation:
   bool ShouldCreateNewNavigation() const override;
-  void PopulateInterstitialStrings(base::Value* load_time_data) const override;
+  void PopulateInterstitialStrings(
+      base::Value::Dict& load_time_data) const override;
 
  private:
   void HandleCommand(
@@ -58,7 +58,7 @@ class IOSSSLBlockingPage
       bool user_is_interacting,
       web::WebFrame* sender_frame) override;
 
-  // Returns true if |options_mask| refers to a soft-overridable SSL error.
+  // Returns true if `options_mask` refers to a soft-overridable SSL error.
   static bool IsOverridable(int options_mask);
 
   web::WebState* web_state_ = nullptr;

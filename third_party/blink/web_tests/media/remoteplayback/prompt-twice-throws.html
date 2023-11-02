@@ -43,7 +43,7 @@
                         test.unreached_func(),
                         test.step_func_done(function(e) {
                             assert_equals(e.name, 'OperationError');
-                            assert_equals(e.message, 'A prompt is already being shown for this media element.');
+                            assert_equals(e.message, 'Failed to execute \'prompt\' on \'RemotePlayback\': A prompt is already being shown for this media element.');
                         }));
                     btn.onclick = null;
                 }

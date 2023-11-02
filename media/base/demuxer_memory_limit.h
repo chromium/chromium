@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,7 +45,7 @@ constexpr size_t kDemuxerStreamVideoMemoryLimitDefault = 150 * 1024 * 1024;
 constexpr size_t kDemuxerStreamVideoMemoryLimitMedium = 80 * 1024 * 1024;
 constexpr size_t kDemuxerStreamVideoMemoryLimitLow = 30 * 1024 * 1024;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Special "very low" settings for 512MiB Android Go devices:
 // * audio memory limit: 1MB (30 seconds of 256Kbps content).
 // * video memory limit: 15MB (30 seconds of 4Mbps content).

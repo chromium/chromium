@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "components/viz/common/quads/shared_element_draw_quad.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
-#include "components/viz/common/quads/stream_video_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
@@ -74,11 +73,6 @@ QuadList::Iterator QuadList::InsertCopyBeforeDrawQuad(Iterator at,
       const auto copy = *TileDrawQuad::MaterialCast(*at);
       return InsertBeforeAndInvalidateAllPointers<TileDrawQuad>(at, count,
                                                                 copy);
-    }
-    case DrawQuad::Material::kStreamVideoContent: {
-      const auto copy = *StreamVideoDrawQuad::MaterialCast(*at);
-      return InsertBeforeAndInvalidateAllPointers<StreamVideoDrawQuad>(
-          at, count, copy);
     }
     case DrawQuad::Material::kSurfaceContent: {
       const auto copy = *SurfaceDrawQuad::MaterialCast(*at);

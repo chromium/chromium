@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,9 +18,9 @@ class PrefService;
 // Activity that adds the page to bookmarks.
 @interface BookmarkActivity : UIActivity
 
-// Initializes the bookmark activity with a page's |URL| and |title|. The
-// |bookmarkModel| to verify if the page has already been bookmarked or not. The
-// |handler| is used to add the page to the bookmarks. The |prefService| is used
+// Initializes the bookmark activity with a page's `URL` and `title`. The
+// `bookmarkModel` to verify if the page has already been bookmarked or not. The
+// `handler` is used to add the page to the bookmarks. The `prefService` is used
 // to verify if the user can edit their bookmarks or not.
 - (instancetype)initWithURL:(const GURL&)URL
                       title:(NSString*)title

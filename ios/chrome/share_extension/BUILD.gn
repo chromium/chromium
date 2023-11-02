@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -22,8 +22,8 @@ group("resources") {
 
 extension_repack_all_locales("packed_resources") {
   extension = "share_extension"
-  input_locales = ios_packed_locales
-  output_locales = ios_packed_locales_as_mac_outputs
+  input_locales = platform_pak_locales
+  output_locales = locales_as_apple_outputs
 }
 
 tweak_info_plist("tweak_info_plist") {
@@ -57,6 +57,7 @@ ios_appex_bundle("share_extension") {
     "//ios/chrome/common/app_group:command",
     "//ios/chrome/common/crash_report",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
   ]
   bundle_deps_filter = [ "//third_party/icu:icudata" ]
 
@@ -85,7 +86,7 @@ generate_localizable_strings("system_strings") {
   _packed_resources_target = ":packed_resources"
   config_file = "share_extension_localize_strings_config.plist"
   datapack_dir = get_label_info(_packed_resources_target, "target_gen_dir")
-  packed_locales = ios_packed_locales_as_mac_outputs
+  packed_locales = locales_as_apple_outputs
   output_filenames = [ "Localizable.strings" ]
   deps = [ _packed_resources_target ]
 }

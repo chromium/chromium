@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,9 +21,8 @@ public interface NewTabPageManager extends SuggestionsUiDelegate {
      * Animates the search box up into the omnibox and bring up the keyboard.
      * @param beginVoiceSearch Whether to begin a voice search.
      * @param pastedText Text to paste in the omnibox after it's been focused. May be null.
-     * @param fromQueryTiles Whether the search box focus is caused by clicking on Query Tiles.
      */
-    void focusSearchBox(boolean beginVoiceSearch, String pastedText, boolean fromQueryTiles);
+    void focusSearchBox(boolean beginVoiceSearch, String pastedText);
 
     /**
      * Performs a search query on the current {@link Tab}.

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,13 +43,14 @@ class ChromeVisibilityObserverInteractiveTest
 
 // This test doesn't check whether switching between browser windows results in
 // separate sessions or not.
+// Disabled for being flaky. crbug.com/1311773
 IN_PROC_BROWSER_TEST_F(ChromeVisibilityObserverInteractiveTest,
-                       VisibilityTest) {
+                       DISABLED_VisibilityTest) {
   // Observer should now be active as there is one active browser.
   EXPECT_TRUE(is_active());
 
 // BrowserWindow::Deactivate() not implemented on Mac (https://crbug.com/51364).
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // Deactivating and activating the browser should affect the observer
   // accordingly.
   browser()->window()->Deactivate();
@@ -57,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(ChromeVisibilityObserverInteractiveTest,
   browser()->window()->Activate();
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   EXPECT_TRUE(is_active());
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 
   // Creating and closing new browsers should keep the observer active.
   Browser* new_browser = CreateBrowser(browser()->profile());

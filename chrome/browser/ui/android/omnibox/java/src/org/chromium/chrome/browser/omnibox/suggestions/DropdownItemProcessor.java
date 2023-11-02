@@ -1,10 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
-import org.chromium.base.annotations.MockedInTests;
+import org.chromium.build.annotations.MockedInTests;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -31,15 +31,22 @@ public interface DropdownItemProcessor {
     /**
      * @see org.chromium.chrome.browser.omnibox.UrlFocusChangeListener#onUrlFocusChange(boolean)
      */
-    void onUrlFocusChange(boolean hasFocus);
+    default void onUrlFocusChange(boolean hasFocus) {}
 
     /**
      * Signals that native initialization has completed.
      */
-    void onNativeInitialized();
+    default void onNativeInitialized() {}
 
     /**
      * Signals that the dropdown list is about to be populated with new content.
      */
     default void onSuggestionsReceived() {}
+
+    /**
+     * Return if the suggestion view can have background rounding.
+     */
+    default boolean allowBackgroundRounding() {
+        return false;
+    }
 }

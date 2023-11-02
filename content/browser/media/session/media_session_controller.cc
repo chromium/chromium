@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -212,6 +212,11 @@ void MediaSessionController::OnAudioOutputSinkChanged(
 void MediaSessionController::OnAudioOutputSinkChangingDisabled() {
   supports_audio_output_device_switching_ = false;
   media_session_->OnAudioOutputSinkChangingDisabled();
+}
+
+void MediaSessionController::OnRemotePlaybackMetadataChanged(
+    media_session::mojom::RemotePlaybackMetadataPtr metadata) {
+  media_session_->SetRemotePlaybackMetadata(std::move(metadata));
 }
 
 bool MediaSessionController::IsMediaSessionNeeded() const {

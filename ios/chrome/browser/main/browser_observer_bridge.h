@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@
 // implements the BrowserObserver protocol (the observer is *not* owned).
 class BrowserObserverBridge final : public BrowserObserver {
  public:
-  // Creates a bridge which observes |browser|, forwarding events to |observer|.
+  // Creates a bridge which observes `browser`, forwarding events to `observer`.
   // This class will handle ending observation after forwarding BrowserDestroyed
   // calls to the Objective-C observer.
   BrowserObserverBridge(Browser* browser, id<BrowserObserving> observer);

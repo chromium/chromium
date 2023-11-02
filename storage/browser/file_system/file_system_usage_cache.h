@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 
@@ -62,7 +61,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemUsageCache {
   static const base::FilePath::CharType kUsageFileName[];
   static const char kUsageFileHeader[];
   static const int kUsageFileSize;
-  static const int kUsageFileHeaderSize;
+  static const size_t kUsageFileHeaderSize;
 
  private:
   // Read the size, validity and the "dirty" entry described in the .usage file.

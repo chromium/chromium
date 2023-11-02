@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,24 +9,26 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/values.h"
 #include "chrome/browser/ash/authpolicy/authpolicy_helper.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/active_directory_login_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/login/auth/key.h"
 
 namespace ash {
+
+class Key;
 
 // Controller for the active directory login screen.
 class ActiveDirectoryLoginScreen
     : public BaseScreen,
       public NetworkStateInformer::NetworkStateInformerObserver {
  public:
-  ActiveDirectoryLoginScreen(ActiveDirectoryLoginView* view,
+  ActiveDirectoryLoginScreen(base::WeakPtr<ActiveDirectoryLoginView> view,
                              ErrorScreen* error_screen,
                              const base::RepeatingClosure& exit_callback);
 
@@ -36,18 +38,13 @@ class ActiveDirectoryLoginScreen
   ActiveDirectoryLoginScreen& operator=(const ActiveDirectoryLoginScreen&) =
       delete;
 
-  // Called when the screen is being destroyed. This should call Unbind() on the
-  // associated View if this class is destroyed before that.
-  void OnViewDestroyed(ActiveDirectoryLoginView* view);
-
-  void HandleCompleteAuth(const std::string& username,
-                          const std::string& password);
-
   // NetworkStateInformer::NetworkStateInformerObserver implementation:
   void UpdateState(NetworkError::ErrorReason reason) override;
 
  private:
   void HandleCancel();
+  void HandleCompleteAuth(const std::string& username,
+                          const std::string& password);
 
   // Callback for AuthPolicyClient.
   void OnAdAuthResult(
@@ -59,7 +56,7 @@ class ActiveDirectoryLoginScreen
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
   bool HandleAccelerator(LoginAcceleratorAction action) override;
 
   void ShowOfflineMessage(NetworkStateInformer::State state,
@@ -70,7 +67,7 @@ class ActiveDirectoryLoginScreen
   // authenticate users against Active Directory server.
   std::unique_ptr<AuthPolicyHelper> authpolicy_login_helper_;
 
-  ActiveDirectoryLoginView* view_ = nullptr;
+  base::WeakPtr<ActiveDirectoryLoginView> view_;
 
   scoped_refptr<NetworkStateInformer> network_state_informer_;
 

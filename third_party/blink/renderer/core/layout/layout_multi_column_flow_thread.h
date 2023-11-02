@@ -163,6 +163,11 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
     return To<LayoutBlockFlow>(Parent());
   }
 
+  bool IsNGMulticol() const {
+    NOT_DESTROYED();
+    return MultiColumnBlockFlow()->IsLayoutNGObject();
+  }
+
   LayoutMultiColumnSet* FirstMultiColumnSet() const;
   LayoutMultiColumnSet* LastMultiColumnSet() const;
 

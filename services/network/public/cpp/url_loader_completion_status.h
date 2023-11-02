@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "net/base/proxy_server.h"
 #include "net/dns/public/resolve_error_info.h"
@@ -54,8 +53,12 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) URLLoaderCompletionStatus {
   // Extra detail on the error.
   int extended_error_code = 0;
 
-  // A copy of the data requested exists in the cache.
+  // A copy of the data requested exists in the disk cache and/or the in-memory
+  // cache.
   bool exists_in_cache = false;
+
+  // A copy of the data requested exists in the in-memory cache.
+  bool exists_in_memory_cache = false;
 
   // Time the request completed.
   base::TimeTicks completion_time;
@@ -104,6 +107,9 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) URLLoaderCompletionStatus {
 
   // Whether the initiator of this request should be collapsed.
   bool should_collapse_initiator = false;
+
+  // Whether a pervasive payload is requested.
+  bool pervasive_payload_requested = false;
 
   // Write a representation of this struct into a trace.
   void WriteIntoTrace(perfetto::TracedValue context) const;

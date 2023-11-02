@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,23 @@
 #define CHROME_BROWSER_SIGNIN_SIGNIN_FEATURES_H_
 
 #include "base/feature_list.h"
-#include "build/chromeos_buildflags.h"
 
-extern const base::Feature kProcessGaiaRemoveLocalAccountHeader;
-
-extern const base::Feature kAccountPoliciesLoadedWithoutSync;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-extern const base::Feature kMultiProfileAccountConsistency;
+#if BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kEnableFamilyInfoFeedback);
 #endif
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kForYouFre);
+#endif
+
+BASE_DECLARE_FEATURE(kDelayConsentLevelUpgrade);
+
+BASE_DECLARE_FEATURE(kProcessGaiaRemoveLocalAccountHeader);
+
+BASE_DECLARE_FEATURE(kSyncPromoAfterSigninIntercept);
+
+BASE_DECLARE_FEATURE(kSigninInterceptBubbleV2);
+
+BASE_DECLARE_FEATURE(kShowEnterpriseDialogForAllManagedAccountsSignin);
 
 #endif  // CHROME_BROWSER_SIGNIN_SIGNIN_FEATURES_H_

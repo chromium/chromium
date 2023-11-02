@@ -61,7 +61,7 @@ canvas1.toBlob(function(blob) {
 var imageLoaded = new Promise((resolve, reject) => {
     newImg.onload = function() {
         var canvas2 = document.createElement("canvas");
-        var ctx2 = canvas2.getContext("2d");
+        var ctx2 = canvas2.getContext("2d", {willReadFrequently: true});
         ctx2.drawImage(newImg, 0, 0, imgWidth, imgHeight);
         resolve(ctx2.getImageData(0, 0, imgWidth, imgHeight).data);
     };
@@ -69,7 +69,7 @@ var imageLoaded = new Promise((resolve, reject) => {
 
 Promise.all([imageLoaded, getMessageFromWorker]).then(([imageDataFromImg, imageBitmapFromWorker]) => {
     var canvas3 = document.createElement("canvas");
-    var ctx3 = canvas3.getContext("2d");
+    var ctx3 = canvas3.getContext("2d", {willReadFrequently: true});
     for (var i = 0; i < numOfBitmaps; i++) {
         ctx3.clearRect(0, 0, imgWidth, imgHeight);
         ctx3.drawImage(bitmapArray[i], 0, 0, imgWidth, imgHeight);

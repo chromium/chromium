@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,14 @@
 
 #include <string>
 
-#if defined(OS_WIN)
+#include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process_metrics.h"
 #include "base/task/single_thread_task_executor.h"
@@ -24,9 +26,9 @@
 #include "ipc/ipc_sender.h"
 #include "ipc/ipc_test.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/system/core.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -58,7 +60,7 @@ class ChannelReflectorListener : public Listener {
   void Send(IPC::Message* message);
 
  private:
-  Sender* channel_;
+  raw_ptr<Sender> channel_;
   base::OnceClosure quit_closure_;
 };
 
@@ -78,9 +80,9 @@ class LockThreadAffinity {
 
  private:
   bool affinity_set_ok_;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DWORD_PTR old_affinity_;
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   cpu_set_t old_cpuset_;
 #endif
 };

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.autofill.settings.AutofillEditorBase;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
+import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
@@ -551,23 +552,29 @@ public class PersonalDataManager {
         private String mBasicCardIssuerNetwork;
         private int mIssuerIconDrawableId;
         private String mBillingAddressId;
-        private String mServerId;
+        private final String mServerId;
+        private final long mInstrumentId;
         // The label set for the card. This could be one of Card Network + LastFour, Nickname +
         // LastFour or a Google specific string for Google-issued cards. This is used for displaying
         // the card in PaymentMethods in Settings.
         private String mCardLabel;
         private String mNickname;
         private GURL mCardArtUrl;
+        private final @VirtualCardEnrollmentState int mVirtualCardEnrollmentState;
+        private String mProductDescription;
 
         @CalledByNative("CreditCard")
         public static CreditCard create(String guid, String origin, boolean isLocal,
                 boolean isCached, String name, String number, String mObfuscatedNumber,
                 String month, String year, String basicCardIssuerNetwork, int iconId,
-                String billingAddressId, String serverId, String cardLabel, String nickname,
-                GURL cardArtUrl) {
+                String billingAddressId, String serverId, long instrumentId, String cardLabel,
+                String nickname, GURL cardArtUrl,
+                @VirtualCardEnrollmentState int virtualCardEnrollmentState,
+                String productDescription) {
             return new CreditCard(guid, origin, isLocal, isCached, name, number, mObfuscatedNumber,
                     month, year, basicCardIssuerNetwork, iconId, billingAddressId, serverId,
-                    cardLabel, nickname, cardArtUrl);
+                    instrumentId, cardLabel, nickname, cardArtUrl, virtualCardEnrollmentState,
+                    productDescription);
         }
 
         public CreditCard(String guid, String origin, boolean isLocal, boolean isCached,
@@ -576,13 +583,18 @@ public class PersonalDataManager {
                 String serverId) {
             this(guid, origin, isLocal, isCached, name, number, obfuscatedNumber, month, year,
                     basicCardIssuerNetwork, issuerIconDrawableId, billingAddressId, serverId,
-                    /* cardLabel= */ obfuscatedNumber, /* nickname= */ "", /* cardArtUrl= */ null);
+                    /* instrumentId= */ 0, /* cardLabel= */ obfuscatedNumber, /* nickname= */ "",
+                    /* cardArtUrl= */ null,
+                    /* virtualCardEnrollmentState= */ VirtualCardEnrollmentState.UNSPECIFIED,
+                    /* productDescription= */ "");
         }
 
         public CreditCard(String guid, String origin, boolean isLocal, boolean isCached,
                 String name, String number, String obfuscatedNumber, String month, String year,
                 String basicCardIssuerNetwork, int issuerIconDrawableId, String billingAddressId,
-                String serverId, String cardLabel, String nickname, GURL cardArtUrl) {
+                String serverId, long instrumentId, String cardLabel, String nickname,
+                GURL cardArtUrl, @VirtualCardEnrollmentState int virtualCardEnrollmentState,
+                String productDescription) {
             mGUID = guid;
             mOrigin = origin;
             mIsLocal = isLocal;
@@ -596,9 +608,12 @@ public class PersonalDataManager {
             mIssuerIconDrawableId = issuerIconDrawableId;
             mBillingAddressId = billingAddressId;
             mServerId = serverId;
+            mInstrumentId = instrumentId;
             mCardLabel = cardLabel;
             mNickname = nickname;
             mCardArtUrl = cardArtUrl;
+            mVirtualCardEnrollmentState = virtualCardEnrollmentState;
+            mProductDescription = productDescription;
         }
 
         public CreditCard() {
@@ -677,6 +692,11 @@ public class PersonalDataManager {
             return mServerId;
         }
 
+        @CalledByNative("CreditCard")
+        public long getInstrumentId() {
+            return mInstrumentId;
+        }
+
         public String getCardLabel() {
             return mCardLabel;
         }
@@ -689,6 +709,16 @@ public class PersonalDataManager {
         @CalledByNative("CreditCard")
         public GURL getCardArtUrl() {
             return mCardArtUrl;
+        }
+
+        @CalledByNative("CreditCard")
+        public @VirtualCardEnrollmentState int getVirtualCardEnrollmentState() {
+            return mVirtualCardEnrollmentState;
+        }
+
+        @CalledByNative("CreditCard")
+        public String getProductDescription() {
+            return mProductDescription;
         }
 
         public void setGUID(String guid) {

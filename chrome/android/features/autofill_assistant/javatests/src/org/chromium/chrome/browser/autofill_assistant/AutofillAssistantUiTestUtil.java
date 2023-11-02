@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,7 +46,6 @@ import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
 import org.json.JSONArray;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
@@ -62,6 +61,8 @@ import org.chromium.chrome.browser.autofill_assistant.proto.TriggerScriptUIProto
 import org.chromium.chrome.browser.autofill_assistant.proto.TriggerScriptUIProto.TriggerChip;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.test.ChromeActivityTestRule;
+import org.chromium.components.autofill_assistant.R;
+import org.chromium.components.autofill_assistant.TriggerContext;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
@@ -229,8 +230,7 @@ class AutofillAssistantUiTestUtil {
                 this.mContext = imageView.getContext();
                 int imageTintColor = imageView.getImageTintList().getColorForState(
                         imageView.getDrawable().getState(), -1);
-                int expectedColor =
-                        ApiCompatibilityUtils.getColor(mContext.getResources(), colorResId);
+                int expectedColor = mContext.getColor(colorResId);
                 return imageTintColor == expectedColor;
             }
 
@@ -535,8 +535,7 @@ class AutofillAssistantUiTestUtil {
      */
     public static void attachToCoordinator(CustomTabActivity activity, View view) {
         ThreadUtils.assertOnUiThread();
-        ViewGroup chromeCoordinatorView =
-                activity.findViewById(org.chromium.chrome.autofill_assistant.R.id.coordinator);
+        ViewGroup chromeCoordinatorView = activity.findViewById(R.id.coordinator);
         CoordinatorLayout.LayoutParams lp = new CoordinatorLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         lp.gravity = Gravity.BOTTOM;
@@ -721,10 +720,11 @@ class AutofillAssistantUiTestUtil {
     }
 
     /**
-     * Retrieves the value of the specified element.
+     * Retrieves the value of a given property of an element.
+     * @return A JSONArray containing the property value as the single element.
      */
-    public static String getElementValue(WebContents webContents, String... elementIds)
-            throws Exception {
+    private static JSONArray getElementProperty(
+            WebContents webContents, String propertyName, String... elementIds) throws Exception {
         if (!checkElementExists(webContents, elementIds)) {
             throw new IllegalArgumentException(Arrays.toString(elementIds) + " does not exist");
         }
@@ -732,11 +732,31 @@ class AutofillAssistantUiTestUtil {
                 new TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper();
         javascriptHelper.evaluateJavaScriptForTests(webContents,
                 "(function() {"
-                        + " return [" + getElementSelectorString(elementIds) + ".value]"
+                        + " return [" + getElementSelectorString(elementIds) + "." + propertyName
+                        + "];"
                         + "})()");
         javascriptHelper.waitUntilHasValue();
         JSONArray result = new JSONArray(javascriptHelper.getJsonResultAndClear());
-        return result.getString(0);
+        if (result.length() != 1) {
+            throw new RuntimeException("Expected exactly one element in the result.");
+        }
+        return result;
+    }
+
+    /**
+     * Retrieves whether the element is checked, using the .checked property.
+     */
+    public static boolean getElementChecked(WebContents webContents, String... elementIds)
+            throws Exception {
+        return getElementProperty(webContents, "checked", elementIds).getBoolean(0);
+    }
+
+    /**
+     * Retrieves the value of the specified element.
+     */
+    public static String getElementValue(WebContents webContents, String... elementIds)
+            throws Exception {
+        return getElementProperty(webContents, "value", elementIds).getString(0);
     }
 
     /**

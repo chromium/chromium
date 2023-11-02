@@ -1,9 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "extensions/renderer/user_script_set_manager.h"
 
+#include "base/observer_list.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/renderer/render_thread.h"
 #include "extensions/common/extension_messages.h"
@@ -71,7 +72,7 @@ void UserScriptSetManager::GetAllActiveExtensionIds(
 UserScriptSet* UserScriptSetManager::GetScriptsByHostID(
     const mojom::HostID& host_id) {
   UserScriptSetMap::const_iterator it = scripts_.find(host_id);
-  return it != scripts_.end() ? it->second.get() : NULL;
+  return it != scripts_.end() ? it->second.get() : nullptr;
 }
 
 void UserScriptSetManager::OnUpdateUserScripts(

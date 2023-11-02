@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/models/menu_model_delegate.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 
@@ -52,15 +53,15 @@ class VIEWS_EXPORT MenuModelAdapter : public MenuDelegate,
   // Creates a menu item for the specified entry in the model and adds it as
   // a child to |menu| at the specified |menu_index|.
   static MenuItemView* AddMenuItemFromModelAt(ui::MenuModel* model,
-                                              int model_index,
+                                              size_t model_index,
                                               MenuItemView* menu,
-                                              int menu_index,
+                                              size_t menu_index,
                                               int item_id);
 
   // Creates a menu item for the specified entry in the model and appends it as
   // a child to |menu|.
   static MenuItemView* AppendMenuItemFromModel(ui::MenuModel* model,
-                                               int model_index,
+                                               size_t model_index,
                                                MenuItemView* menu,
                                                int item_id);
 
@@ -75,7 +76,7 @@ class VIEWS_EXPORT MenuModelAdapter : public MenuDelegate,
   // menu.
   virtual MenuItemView* AppendMenuItem(MenuItemView* menu,
                                        ui::MenuModel* model,
-                                       int index);
+                                       size_t index);
 
   // views::MenuDelegate implementation.
   void ExecuteCommand(int id) override;
@@ -98,11 +99,11 @@ class VIEWS_EXPORT MenuModelAdapter : public MenuDelegate,
   // Container of ui::MenuModel pointers as encountered by preorder
   // traversal.  The first element is always the top-level model
   // passed to the constructor.
-  ui::MenuModel* menu_model_;
+  raw_ptr<ui::MenuModel> menu_model_;
 
   // Pointer to the MenuItemView created and updated by |this|, but not owned by
   // |this|.
-  MenuItemView* menu_;
+  raw_ptr<MenuItemView> menu_;
 
   // Mouse event flags which can trigger menu actions.
   int triggerable_event_flags_;

@@ -70,7 +70,7 @@ AXRole: AXGenericContainer
             AXRole: AXMenuListPopup
                 AXRole: AXTextField "Explicit dropdown 1"
                 AXRole: AXTextField "Explicit dropdown 2"
-        AXRole: AXPopUpButton
+        AXRole: AXComboBoxSelect
             AXRole: AXMenuListPopup
                 AXRole: AXMenuListOption "Implicit dropdown 1"
                 AXRole: AXMenuListOption "Implicit dropdown 2"

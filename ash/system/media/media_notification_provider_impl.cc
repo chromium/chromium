@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -90,12 +90,12 @@ MediaNotificationProviderImpl::GetMediaNotificationListView(
       std::make_unique<global_media_controls::MediaItemUIListView>(
           global_media_controls::MediaItemUIListView::SeparatorStyle(
               color_theme_->separator_color, separator_thickness));
-  active_session_view_ = notification_list_view.get();
+  active_session_view_ = notification_list_view->GetWeakPtr();
   item_manager_->SetDialogDelegate(this);
   base::UmaHistogramEnumeration(
       "Media.GlobalMediaControls.EntryPoint",
       global_media_controls::GlobalMediaControlsEntryPoint::kSystemTray);
-  return std::move(notification_list_view);
+  return notification_list_view;
 }
 
 std::unique_ptr<views::View>

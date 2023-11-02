@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -155,8 +155,10 @@ class AwGLSurfaceExternalStencil::FrameBuffer {
   gfx::Size size_;
 };
 
-AwGLSurfaceExternalStencil::AwGLSurfaceExternalStencil(bool is_angle)
-    : AwGLSurface(is_angle) {}
+AwGLSurfaceExternalStencil::AwGLSurfaceExternalStencil(
+    gl::GLDisplayEGL* display,
+    bool is_angle)
+    : AwGLSurface(display, is_angle) {}
 
 AwGLSurfaceExternalStencil::~AwGLSurfaceExternalStencil() = default;
 
@@ -174,7 +176,8 @@ unsigned int AwGLSurfaceExternalStencil::GetBackingFramebufferObject() {
 }
 
 gfx::SwapResult AwGLSurfaceExternalStencil::SwapBuffers(
-    PresentationCallback callback) {
+    PresentationCallback callback,
+    gl::FrameData frame_data) {
   const auto& stencil_state =
       android_webview::ScopedAppGLStateRestore::Current()->stencil_state();
 
@@ -257,7 +260,7 @@ gfx::SwapResult AwGLSurfaceExternalStencil::SwapBuffers(
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
   }
 
-  return AwGLSurface::SwapBuffers(std::move(callback));
+  return AwGLSurface::SwapBuffers(std::move(callback), std::move(frame_data));
 }
 
 void AwGLSurfaceExternalStencil::RecalculateClipAndTransform(

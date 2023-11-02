@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -183,7 +183,6 @@ void V8IsolateMemoryDumpProvider::DumpHeapStatistics(
 
   std::string space_name_prefix = dump_base_name + "/heap";
 
-  size_t known_spaces_used_size = 0;
   size_t known_spaces_size = 0;
   size_t known_spaces_physical_size = 0;
   size_t number_of_spaces = isolate_holder_->isolate()->NumberOfHeapSpaces();
@@ -196,7 +195,6 @@ void V8IsolateMemoryDumpProvider::DumpHeapStatistics(
     const size_t space_physical_size = space_statistics.physical_space_size();
 
     known_spaces_size += space_size;
-    known_spaces_used_size += space_used_size;
     known_spaces_physical_size += space_physical_size;
 
     std::string space_dump_name = dump_base_name + "/heap/" +
@@ -217,11 +215,9 @@ void V8IsolateMemoryDumpProvider::DumpHeapStatistics(
                           space_used_size);
   }
 
-  // Sanity checks that all spaces are accounted for in GetHeapSpaceStatistics.
+  // Sanity check that all spaces are accounted for in GetHeapSpaceStatistics.
   // Background threads may be running and allocating concurrently, so the sum
-  // of space sizes may be exceed the total heap size that was sampled earlier.
-  DCHECK_LE(heap_statistics.total_physical_size(), known_spaces_physical_size);
-  DCHECK_LE(heap_statistics.used_heap_size(), known_spaces_used_size);
+  // of space sizes may exceed the total heap size that was sampled earlier.
   DCHECK_LE(heap_statistics.total_heap_size(), known_spaces_size);
 
   // If V8 zaps garbage, all the memory mapped regions become resident,
@@ -230,9 +226,13 @@ void V8IsolateMemoryDumpProvider::DumpHeapStatistics(
   if (heap_statistics.does_zap_garbage()) {
     auto* zap_dump = process_memory_dump->CreateAllocatorDump(
         dump_base_name + "/zapped_for_debug" + dump_name_suffix);
+    size_t zapped_size_for_debugging =
+        known_spaces_size >= known_spaces_physical_size
+            ? known_spaces_size - known_spaces_physical_size
+            : 0;
     zap_dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
                         base::trace_event::MemoryAllocatorDump::kUnitsBytes,
-                        known_spaces_size - known_spaces_physical_size);
+                        zapped_size_for_debugging);
   }
 
   // Dump statistics about malloced memory.

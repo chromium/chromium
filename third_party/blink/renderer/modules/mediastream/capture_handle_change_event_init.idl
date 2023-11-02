@@ -1,8 +1,0 @@
-// Copyright 2021 The Chromium Authors. All rihts reserved.
-// Use of this source code is governed by a BST-style license that can be
-// found in the LICENSE file.
-
-// https://wicg.github.io/capture-handle/
-dictionary CaptureHandleChangeEventInit : EventInit {
-    required CaptureHandle captureHandle;
-};

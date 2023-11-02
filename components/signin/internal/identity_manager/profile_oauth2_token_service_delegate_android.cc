@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/signin/public/android/jni_headers/ProfileOAuth2TokenServiceDelegate_jni.h"
@@ -68,7 +69,8 @@ class AndroidAccessTokenFetcher : public OAuth2AccessTokenFetcher {
  private:
   std::string CombineScopes(const std::vector<std::string>& scopes);
 
-  ProfileOAuth2TokenServiceDelegateAndroid* oauth2_token_service_delegate_;
+  raw_ptr<ProfileOAuth2TokenServiceDelegateAndroid>
+      oauth2_token_service_delegate_;
   std::string account_id_;
   bool request_was_cancelled_;
   base::WeakPtrFactory<AndroidAccessTokenFetcher> weak_factory_;
@@ -147,7 +149,8 @@ std::string AndroidAccessTokenFetcher::CombineScopes(
 ProfileOAuth2TokenServiceDelegateAndroid::
     ProfileOAuth2TokenServiceDelegateAndroid(
         AccountTrackerService* account_tracker_service)
-    : account_tracker_service_(account_tracker_service),
+    : ProfileOAuth2TokenServiceDelegate(/*use_backoff=*/false),
+      account_tracker_service_(account_tracker_service),
       fire_refresh_token_loaded_(RT_LOAD_NOT_START) {
   DVLOG(1) << "ProfileOAuth2TokenServiceDelegateAndroid::ctor";
   DCHECK(account_tracker_service_);
@@ -158,20 +161,6 @@ ProfileOAuth2TokenServiceDelegateAndroid::
           env, reinterpret_cast<intptr_t>(this),
           account_tracker_service_->GetJavaObject());
   java_ref_.Reset(env, local_java_ref.obj());
-
-  if (account_tracker_service_->GetMigrationState() ==
-      AccountTrackerService::MIGRATION_IN_PROGRESS) {
-    std::vector<CoreAccountId> accounts = GetAccounts();
-    std::vector<CoreAccountId> accounts_id;
-    for (auto account_name : accounts) {
-      std::string email = account_name.ToString();
-      AccountInfo account_info =
-          account_tracker_service_->FindAccountInfoByEmail(email);
-      DCHECK(!account_info.gaia.empty());
-      accounts_id.push_back(CoreAccountId::FromGaiaId(account_info.gaia));
-    }
-    SetAccounts(accounts_id);
-  }
 }
 
 ProfileOAuth2TokenServiceDelegateAndroid::
@@ -203,35 +192,6 @@ bool ProfileOAuth2TokenServiceDelegateAndroid::RefreshTokenIsAvailable(
       signin::Java_ProfileOAuth2TokenServiceDelegate_hasOAuth2RefreshToken(
           env, java_ref_, j_account_name);
   return refresh_token_is_available == JNI_TRUE;
-}
-
-GoogleServiceAuthError ProfileOAuth2TokenServiceDelegateAndroid::GetAuthError(
-    const CoreAccountId& account_id) const {
-  auto it = errors_.find(account_id);
-  return (it == errors_.end()) ? GoogleServiceAuthError::AuthErrorNone()
-                               : it->second;
-}
-
-void ProfileOAuth2TokenServiceDelegateAndroid::UpdateAuthError(
-    const CoreAccountId& account_id,
-    const GoogleServiceAuthError& error) {
-  DVLOG(1) << "ProfileOAuth2TokenServiceDelegateAndroid::UpdateAuthError"
-           << " account=" << account_id << " error=" << error.ToString();
-
-  if (error.IsTransientError())
-    return;
-
-  auto it = errors_.find(account_id);
-  if (error.state() == GoogleServiceAuthError::NONE) {
-    if (it == errors_.end())
-      return;
-    errors_.erase(it);
-  } else {
-    if (it != errors_.end() && it->second == error)
-      return;
-    errors_[account_id] = error;
-  }
-  FireAuthErrorChanged(account_id, error);
 }
 
 std::vector<CoreAccountId>
@@ -332,7 +292,7 @@ void ProfileOAuth2TokenServiceDelegateAndroid::UpdateAccountList(
            << " prev_ids=" << prev_ids.size()
            << " curr_ids=" << curr_ids.size();
   // Clear any auth errors so that client can retry to get access tokens.
-  errors_.clear();
+  ClearAuthError(absl::nullopt);
 
   std::vector<CoreAccountId> refreshed_ids;
   std::vector<CoreAccountId> revoked_ids;
@@ -362,14 +322,6 @@ void ProfileOAuth2TokenServiceDelegateAndroid::UpdateAccountList(
   for (const AccountInfo& info : accounts_info) {
     if (!base::Contains(curr_ids, info.account_id))
       account_tracker_service_->RemoveAccount(info.account_id);
-  }
-
-  // No need to wait for PrimaryAccountManager to finish migration if not signed
-  // in.
-  if (account_tracker_service_->GetMigrationState() ==
-          AccountTrackerService::MIGRATION_IN_PROGRESS &&
-      !signed_in_account_id.has_value()) {
-    account_tracker_service_->SetMigrationDone();
   }
 }
 
@@ -449,7 +401,8 @@ void ProfileOAuth2TokenServiceDelegateAndroid::RevokeAllCredentials() {
 }
 
 void ProfileOAuth2TokenServiceDelegateAndroid::LoadCredentials(
-    const CoreAccountId& primary_account_id) {
+    const CoreAccountId& primary_account_id,
+    bool is_syncing) {
   DCHECK_EQ(signin::LoadCredentialsState::LOAD_CREDENTIALS_NOT_STARTED,
             load_credentials_state());
   set_load_credentials_state(

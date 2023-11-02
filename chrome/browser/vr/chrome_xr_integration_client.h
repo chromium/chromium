@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
+#include "content/public/browser/browser_xr_runtime.h"
 #include "content/public/browser/xr_integration_client.h"
 
 class ChromeContentBrowserClient;
@@ -28,9 +29,11 @@ class ChromeXrIntegrationClient : public content::XrIntegrationClient {
   std::unique_ptr<content::XrInstallHelper> GetInstallHelper(
       device::mojom::XRDeviceId device_id) override;
   content::XRProviderList GetAdditionalProviders() override;
+  std::unique_ptr<content::BrowserXRRuntime::Observer> CreateRuntimeObserver()
+      override;
 
   // The only class that we have which implements VrUiHost is Win-only.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::unique_ptr<content::VrUiHost> CreateVrUiHost(
       device::mojom::XRDeviceId device_id,
       mojo::PendingRemote<device::mojom::XRCompositorHost> compositor) override;

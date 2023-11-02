@@ -1,0 +1,90 @@
+<style include="cr-shared-style settings-shared md-select iron-flex"></style>
+<settings-toggle-button id="offerTranslateOtherLanguages"
+    pref="{{prefs.translate.enabled}}"
+    label="$i18n{offerToEnableTranslate}"
+    sub-label="$i18n{offerToEnableTranslateSublabel}"
+    on-settings-boolean-control-change="onTranslateToggleChange_">
+</settings-toggle-button>
+<iron-collapse opened="[[prefs.translate.enabled.value]]">
+  <div class="cr-row continuation">
+    <div id="targetLanguageLabel" class="flex cr-padded-text"
+        aria-hidden="true">
+      $i18n{targetLanguageLabel}
+    </div>
+    <select id="targetLanguage" class="md-select"
+        aria-labelledby="targetLanguageLabel"
+        on-change="onTargetLanguageChange_">
+      <template is="dom-repeat" items="[[languages.supported]]"
+          filter="isTranslateSupported_">
+        <option value="[[item.code]]"
+            selected="[[translateLanguageEqual_(
+                item.code, languages.translateTarget)]]">
+          [[getTargetLanguageDisplayOption_(item)]]
+        </option>
+      </template>
+    </select>
+  </div>
+  <div class="cr-row continuation">
+    <h2 class="flex">$i18n{automaticallyTranslateLanguages}</h2>
+    <cr-button id="addAlwaysTranslate" class="header-aligned-button"
+        on-click="onAddAlwaysTranslateLanguagesClick_">
+      $i18n{addLanguages}
+    </cr-button>
+  </div>
+  <div class="list-frame">
+    <div id="alwaysTranslateList" class="vertical-list">
+      <template is="dom-repeat" items="[[languages.alwaysTranslate]]"
+          sort="alphabeticalSort_">
+        <div class="list-item">
+          <div class="start cr-padded-text">[[item.displayName]]</div>
+          <cr-icon-button class="icon-delete-gray"
+              on-click="onRemoveAlwaysTranslateLanguageClick_">
+          </cr-icon-button>
+        </div>
+      </template>
+    </div>
+    <div id="noAlwaysTranslateLabel" class="list-item"
+        hidden$="[[hasSome_(languages.alwaysTranslate)]]">
+      $i18n{noLanguagesAdded}
+    </div>
+  </div>
+  <div class="cr-row continuation">
+    <h2 class="flex">$i18n{neverTranslateLanguages}</h2>
+    <cr-button id="addNeverTranslate" class="header-aligned-button"
+        on-click="onAddNeverTranslateLanguagesClick_">
+      $i18n{addLanguages}
+    </cr-button>
+  </div>
+  <div class="list-frame">
+    <div id="neverTranslateList" class="vertical-list">
+      <template is="dom-repeat" items="[[languages.neverTranslate]]"
+          sort="alphabeticalSort_">
+        <div class="list-item">
+          <div class="start cr-padded-text">[[item.displayName]]</div>
+          <cr-icon-button class="icon-delete-gray" value="[[item.code]]"
+              disabled="[[hasLength_(languages.neverTranslate, 1)]]"
+              on-click="onRemoveNeverTranslateLanguageClick_">
+          </cr-icon-button>
+        </div>
+      </template>
+    </div>
+    <div id="noNeverTranslateLabel" class="list-item"
+        hidden$="[[hasSome_(languages.neverTranslate)]]">
+      $i18n{noLanguagesAdded}
+    </div>
+  </div>
+</iron-collapse>
+<template is="dom-if" if="[[showAddAlwaysTranslateDialog_]]" restamp>
+  <settings-add-languages-dialog languages="[[addLanguagesDialogLanguages_]]"
+      language-helper="[[languageHelper]]" id="alwaysTranslateDialog"
+      on-close="onAlwaysTranslateDialogClose_"
+      on-languages-added="onAlwaysTranslateLanguagesAdded_">
+  </settings-add-languages-dialog>
+</template>
+<template is="dom-if" if="[[showAddNeverTranslateDialog_]]" restamp>
+  <settings-add-languages-dialog languages="[[addLanguagesDialogLanguages_]]"
+      language-helper="[[languageHelper]]" id="neverTranslateDialog"
+      on-close="onNeverTranslateDialogClose_"
+      on-languages-added="onNeverTranslateLanguagesAdded_">
+  </settings-add-languages-dialog>
+</template>

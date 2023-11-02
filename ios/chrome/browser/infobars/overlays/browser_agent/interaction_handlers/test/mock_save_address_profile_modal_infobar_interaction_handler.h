@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ class MockSaveAddressProfileInfobarModalInteractionHandler
     : public SaveAddressProfileInfobarModalInteractionHandler {
  public:
   MockSaveAddressProfileInfobarModalInteractionHandler();
-  ~MockSaveAddressProfileInfobarModalInteractionHandler();
+  ~MockSaveAddressProfileInfobarModalInteractionHandler() override;
 
   MOCK_METHOD2(SaveEditedProfile,
                void(InfoBarIOS* infobar, NSDictionary* profileData));

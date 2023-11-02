@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -18,6 +19,7 @@
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
+#include "url/origin.h"
 
 namespace media_message_center {
 class MediaNotificationView;
@@ -78,6 +80,11 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionNotificationItem
   void MediaSessionPositionChanged(
       const absl::optional<media_session::MediaPosition>& position) override;
 
+  // Called when a media session item is associated with a presentation request
+  // to show the origin associated with the request rather than that for the
+  // top frame.
+  void UpdatePresentationRequestOrigin(const url::Origin& origin);
+
   // media_session::mojom::MediaControllerImageObserver:
   void MediaControllerImageChanged(
       media_session::mojom::MediaSessionImageType type,
@@ -94,6 +101,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionNotificationItem
   media_message_center::SourceType SourceType() override;
   void SetVolume(float volume) override {}
   void SetMute(bool mute) override;
+
+  // Stops the media session.
+  void Stop();
 
   // Calls |Raise()| on the underlying MediaSession, which will focus the
   // WebContents if the MediaSession is associated with one.
@@ -123,6 +133,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionNotificationItem
   }
 
  private:
+  media_session::MediaMetadata GetSessionMetadata() const;
+
   bool ShouldShowNotification() const;
 
   void MaybeUnfreeze();
@@ -137,12 +149,12 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionNotificationItem
 
   void MaybeHideOrShowNotification();
 
-  Delegate* const delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   bool is_bound_ = true;
 
   // Weak reference to the view of the currently shown media notification.
-  media_message_center::MediaNotificationView* view_ = nullptr;
+  raw_ptr<media_message_center::MediaNotificationView> view_ = nullptr;
 
   // The |request_id_| is the request id of the media session and is guaranteed
   // to be globally unique.
@@ -156,6 +168,12 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionNotificationItem
   media_session::mojom::MediaSessionInfoPtr session_info_;
 
   media_session::MediaMetadata session_metadata_;
+
+  // When a media session item is associated with a presentation request, we
+  // must show the origin associated with the request rather than that for the
+  // top frame. So, in case of having a presentation request, this field is set
+  // to hold the origin of that presentation request.
+  absl::optional<url::Origin> optional_presentation_request_origin_;
 
   base::flat_set<media_session::mojom::MediaSessionAction> session_actions_;
 

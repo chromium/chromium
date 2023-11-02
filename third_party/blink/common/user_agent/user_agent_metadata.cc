@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/pickle.h"
 #include "net/http/structured_headers.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace blink {
 
@@ -76,6 +77,7 @@ absl::optional<std::string> UserAgentMetadata::Marshal(
   out.WriteString(in->model);
   out.WriteBool(in->mobile);
   out.WriteString(in->bitness);
+  out.WriteBool(in->wow64);
   return std::string(reinterpret_cast<const char*>(out.data()), out.size());
 }
 
@@ -131,6 +133,8 @@ absl::optional<UserAgentMetadata> UserAgentMetadata::Demarshal(
     return absl::nullopt;
   if (!in.ReadString(&out.bitness))
     return absl::nullopt;
+  if (!in.ReadBool(&out.wow64))
+    return absl::nullopt;
   return absl::make_optional(std::move(out));
 }
 
@@ -144,7 +148,21 @@ bool operator==(const UserAgentMetadata& a, const UserAgentMetadata& b) {
          a.full_version == b.full_version && a.platform == b.platform &&
          a.platform_version == b.platform_version &&
          a.architecture == b.architecture && a.model == b.model &&
-         a.mobile == b.mobile && a.bitness == b.bitness;
+         a.mobile == b.mobile && a.bitness == b.bitness && a.wow64 == b.wow64;
+}
+
+// static
+UserAgentOverride UserAgentOverride::UserAgentOnly(const std::string& ua) {
+  UserAgentOverride result;
+  result.ua_string_override = ua;
+
+  // If ua is empty, it's assumed the system default should be used
+  if (!ua.empty() &&
+      base::FeatureList::IsEnabled(features::kUACHOverrideBlank)) {
+    result.ua_metadata_override = UserAgentMetadata();
+  }
+
+  return result;
 }
 
 bool operator==(const UserAgentOverride& a, const UserAgentOverride& b) {

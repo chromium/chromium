@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/browser/browser_context.h"
+#include "extensions/browser/event_router_factory.h"
 
 namespace ash {
 
@@ -24,8 +25,9 @@ RemoteAppsManager* RemoteAppsManagerFactory::GetForProfile(Profile* profile) {
 
 // static
 RemoteAppsManagerFactory* RemoteAppsManagerFactory::GetInstance() {
-  static base::NoDestructor<RemoteAppsManagerFactory> instance;
-  return instance.get();
+  // TODO(crbug.com/1269752): Restore use of base::NoDestructor when
+  // it no longer causes unit_test failures.
+  return base::Singleton<RemoteAppsManagerFactory>::get();
 }
 
 RemoteAppsManagerFactory::RemoteAppsManagerFactory()
@@ -34,6 +36,7 @@ RemoteAppsManagerFactory::RemoteAppsManagerFactory()
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(app_list::AppListSyncableServiceFactory::GetInstance());
   DependsOn(apps::AppServiceProxyFactory::GetInstance());
+  DependsOn(extensions::EventRouterFactory::GetInstance());
 }
 
 RemoteAppsManagerFactory::~RemoteAppsManagerFactory() = default;
@@ -46,8 +49,10 @@ KeyedService* RemoteAppsManagerFactory::BuildServiceInstanceFor(
 
   Profile* profile = Profile::FromBrowserContext(context);
   user_manager::User* user = profile_helper->GetUserByProfile(profile);
-  if (!user || user->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT)
+  if (!user || (user->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT &&
+                user->GetType() != user_manager::USER_TYPE_REGULAR)) {
     return nullptr;
+  }
 
   return new RemoteAppsManager(profile);
 }

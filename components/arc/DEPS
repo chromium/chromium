@@ -1,11 +1,10 @@
 include_rules = [
+  "+ash/components/arc",
   "+ash/constants",
   "+ash/public/cpp",
+  "+chromeos/ash/components/memory",
   "+chromeos/components/sensors",
-  "+chromeos/cryptohome",
   "+chromeos/dbus",
-  "+chromeos/memory",
-  "+chromeos/policy",
   "+chromeos/system",
   "+components/guest_os",
   "+components/account_id",

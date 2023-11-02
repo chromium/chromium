@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@ namespace test {
 
 mojo::NamedPlatformChannel::ServerName GenerateRandomServerName() {
   std::string temp_path;
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   // Posix server names should start with the temp directory path. Otherwise the
   // socket file will be created under the current working directory.
   base::FilePath temp_file_path;

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,37 +7,37 @@
  * delete browsing data that has been cached by Chromium.
  */
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './history_deletion_dialog.js';
 import './passwords_deletion_dialog.js';
 import './installed_app_checkbox.js';
 import '../controls/settings_checkbox.js';
-import '../icons.js';
-import '../settings_shared_css.js';
+import '../icons.html.js';
+import '../settings_shared.css.js';
 
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
-import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {IronPagesElement} from 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PrefControlMixinInterface} from '../controls/pref_control_mixin.js';
 import {SettingsCheckboxElement} from '../controls/settings_checkbox.js';
-import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
-import {SettingsDropdownMenuElement} from '../controls/settings_dropdown_menu.js';
+import {DropdownMenuOptionList, SettingsDropdownMenuElement} from '../controls/settings_dropdown_menu.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '../people_page/sync_browser_proxy.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
 import {ClearBrowsingDataBrowserProxy, ClearBrowsingDataBrowserProxyImpl, InstalledApp, UpdateSyncStateEvent} from './clear_browsing_data_browser_proxy.js';
+import {getTemplate} from './clear_browsing_data_dialog.html.js';
 
 /**
  * InstalledAppsDialogActions enum.
@@ -91,7 +91,7 @@ export interface SettingsClearBrowsingDataDialogElement {
 const SettingsClearBrowsingDataDialogElementBase =
     RouteObserverMixin(WebUIListenerMixin(I18nMixin(PolymerElement))) as {
       new (): PolymerElement & WebUIListenerMixinInterface &
-      I18nMixinInterface & RouteObserverMixinInterface
+          I18nMixinInterface & RouteObserverMixinInterface,
     };
 
 export class SettingsClearBrowsingDataDialogElement extends
@@ -101,7 +101,7 @@ export class SettingsClearBrowsingDataDialogElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -129,7 +129,7 @@ export class SettingsClearBrowsingDataDialogElement extends
         // Will be filled as results are reported.
         value() {
           return {};
-        }
+        },
       },
 
       /**
@@ -162,10 +162,10 @@ export class SettingsClearBrowsingDataDialogElement extends
         value: false,
       },
 
-      isSupervised_: {
+      isChildAccount_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('isSupervised');
+          return loadTimeData.getBoolean('isChildAccount');
         },
       },
 
@@ -245,11 +245,6 @@ export class SettingsClearBrowsingDataDialogElement extends
         value: () => loadTimeData.getBoolean('installedAppsInCbd'),
       },
 
-      searchHistoryLinkFlagEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('searchHistoryLink'),
-      },
-
       googleSearchHistoryString_: {
         type: String,
         computed: 'computeGoogleSearchHistoryString_(isNonGoogleDse_)',
@@ -271,7 +266,7 @@ export class SettingsClearBrowsingDataDialogElement extends
   private clearingInProgress_: boolean;
   private clearingDataAlertString_: string;
   private clearButtonDisabled_: boolean;
-  private isSupervised_: boolean;
+  private isChildAccount_: boolean;
   private showHistoryDeletionDialog_: boolean;
   private showPasswordsDeletionDialogLater_: boolean;
   private showPasswordsDeletionDialog_: boolean;
@@ -282,10 +277,9 @@ export class SettingsClearBrowsingDataDialogElement extends
   private isSyncPaused_: boolean;
   private hasPassphraseError_: boolean;
   private hasOtherSyncError_: boolean;
-  private tabsNames_: Array<string>;
-  private installedApps_: Array<InstalledApp>;
+  private tabsNames_: string[];
+  private installedApps_: InstalledApp[];
   private installedAppsFlagEnabled_: boolean;
-  private searchHistoryLinkFlagEnabled_: boolean;
   private googleSearchHistoryString_: string;
   private isNonGoogleDse_: boolean;
   private nonGoogleSearchHistoryString_: string;
@@ -295,7 +289,7 @@ export class SettingsClearBrowsingDataDialogElement extends
   private syncBrowserProxy_: SyncBrowserProxy =
       SyncBrowserProxyImpl.getInstance();
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.syncBrowserProxy_.getSyncStatus().then(
@@ -312,7 +306,7 @@ export class SettingsClearBrowsingDataDialogElement extends
         'settings-boolean-control-change', this.updateClearButtonState_);
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.browserProxy_.initialize().then(() => {
@@ -354,7 +348,7 @@ export class SettingsClearBrowsingDataDialogElement extends
    *
    * RouteObserverMixin
    */
-  currentRouteChanged(currentRoute: Route) {
+  override currentRouteChanged(currentRoute: Route) {
     if (currentRoute === routes.CLEAR_BROWSER_DATA) {
       chrome.metricsPrivate.recordUserAction('ClearBrowsingData_DialogCreated');
     }
@@ -376,18 +370,9 @@ export class SettingsClearBrowsingDataDialogElement extends
 
   /** Choose a label for the history checkbox. */
   private browsingCheckboxLabel_(
-      isSyncConsented: boolean, isSyncingHistory: boolean,
-      hasSyncError: boolean, historySummary: string,
-      historySummarySignedIn: string, historySummarySignedInNoLink: string,
-      historySummarySynced: string): string {
-    if (this.searchHistoryLinkFlagEnabled_) {
-      return isSyncingHistory ? historySummarySignedInNoLink : historySummary;
-    } else if (isSyncingHistory && !hasSyncError) {
-      return historySummarySynced;
-    } else if (isSyncConsented && !this.isSyncPaused_) {
-      return historySummarySignedIn;
-    }
-    return historySummary;
+      isSyncingHistory: boolean, historySummary: string,
+      historySummarySignedInNoLink: string): string {
+    return isSyncingHistory ? historySummarySignedInNoLink : historySummary;
   }
 
   /** Choose a label for the cookie checkbox. */
@@ -397,6 +382,11 @@ export class SettingsClearBrowsingDataDialogElement extends
     if (shouldShowCookieException) {
       return cookiesSummarySignedIn;
     }
+    // <if expr="chromeos_lacros">
+    if (!loadTimeData.getBoolean('isSecondaryUser')) {
+      return loadTimeData.getString('clearCookiesSummarySignedInMainProfile');
+    }
+    // </if>
     return cookiesSummary;
   }
 
@@ -410,15 +400,16 @@ export class SettingsClearBrowsingDataDialogElement extends
     // Data type deletion preferences are named "browser.clear_data.<datatype>".
     // Strip the common prefix, i.e. use only "<datatype>".
     const matches = prefName.match(/^browser\.clear_data\.(\w+)$/)!;
-    this.set('counters_.' + assert(matches[1]), text);
+    assert(matches[1]);
+    this.set('counters_.' + matches[1], text);
   }
 
   /**
    * @return A list of selected data types.
    */
-  private getSelectedDataTypes_(tab: HTMLElement): Array<string> {
+  private getSelectedDataTypes_(tab: HTMLElement): string[] {
     const checkboxes = tab.querySelectorAll('settings-checkbox');
-    const dataTypes: Array<string> = [];
+    const dataTypes: string[] = [];
     checkboxes.forEach((checkbox) => {
       if (checkbox.checked && !checkbox.hidden) {
         dataTypes.push(checkbox.pref!.key);
@@ -446,7 +437,8 @@ export class SettingsClearBrowsingDataDialogElement extends
     }
     const haveInstalledApps = this.installedApps_.length > 0;
     chrome.send('metricsHandler:recordBooleanHistogram', [
-      'History.ClearBrowsingData.InstalledAppsDialogShown', haveInstalledApps
+      'History.ClearBrowsingData.InstalledAppsDialogShown',
+      haveInstalledApps,
     ]);
     return haveInstalledApps;
   }
@@ -493,12 +485,7 @@ export class SettingsClearBrowsingDataDialogElement extends
         await this.browserProxy_.clearBrowsingData(
             dataTypes, timePeriod, this.installedApps_);
     this.clearingInProgress_ = false;
-    IronA11yAnnouncer.requestAvailability();
-    this.dispatchEvent(new CustomEvent('iron-announce', {
-      bubbles: true,
-      composed: true,
-      detail: {text: loadTimeData.getString('clearedData')}
-    }));
+    getAnnouncerInstance().announce(loadTimeData.getString('clearedData'));
     this.showHistoryDeletionDialog_ = showHistoryNotice;
     // If both the history notice and the passwords notice should be shown, show
     // the history notice first, and then show the passwords notice once the
@@ -556,7 +543,7 @@ export class SettingsClearBrowsingDataDialogElement extends
     }
   }
 
-  // <if expr="not chromeos">
+  // <if expr="not chromeos_ash">
   /** Called when the user clicks the link in the footer. */
   private onSyncDescriptionLinkClicked_(e: Event) {
     if ((e.target as HTMLElement).tagName === 'A') {
@@ -604,18 +591,9 @@ export class SettingsClearBrowsingDataDialogElement extends
         this.i18nAdvanced('clearGoogleSearchHistoryGoogleDse');
   }
 
-  private shouldShowGoogleSearchHistoryLabel_(isSignedIn: boolean): boolean {
-    return this.searchHistoryLinkFlagEnabled_ && isSignedIn;
-  }
-
-  private shouldShowNonGoogleSearchHistoryLabel_(isNonGoogleDse: boolean):
-      boolean {
-    return this.searchHistoryLinkFlagEnabled_ && isNonGoogleDse;
-  }
-
   private shouldShowFooter_(): boolean {
     let showFooter = false;
-    // <if expr="not chromeos">
+    // <if expr="not is_chromeos">
     showFooter = !!this.syncStatus && !!this.syncStatus!.signedIn;
     // </if>
     return showFooter;

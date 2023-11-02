@@ -45,6 +45,7 @@ if the current texture for the frame was acquired but not rendered to.
         device: device,
         format: 'bgra8unorm',
         usage: GPUTextureUsage.RENDER_ATTACHMENT,
+        compositingAlphaMode: 'premultiplied',
       });
 
       let framesToRender = 30;

@@ -1,21 +1,23 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SERVICES_NETWORK_URL_LOADER_FACTORY_H_
 #define SERVICES_NETWORK_URL_LOADER_FACTORY_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/corb/corb_api.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
+#include "services/network/url_loader_context.h"
 
 namespace network {
 
@@ -39,7 +41,8 @@ class CorsURLLoaderFactory;
 // Note that the CORS related part is implemented in CorsURLLoader[Factory]
 // and NetworkContext::CreateURLLoaderFactory returns a CorsURLLoaderFactory,
 // instead of a URLLoaderFactory.
-class URLLoaderFactory : public mojom::URLLoaderFactory {
+class URLLoaderFactory : public mojom::URLLoaderFactory,
+                         public URLLoaderContext {
  public:
   // NOTE: |context| must outlive this instance.
   URLLoaderFactory(
@@ -57,11 +60,28 @@ class URLLoaderFactory : public mojom::URLLoaderFactory {
   void CreateLoaderAndStart(mojo::PendingReceiver<mojom::URLLoader> receiver,
                             int32_t request_id,
                             uint32_t options,
-                            const ResourceRequest& url_request,
+                            const ResourceRequest& resource_request,
                             mojo::PendingRemote<mojom::URLLoaderClient> client,
                             const net::MutableNetworkTrafficAnnotationTag&
                                 traffic_annotation) override;
   void Clone(mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) override;
+
+  // URLLoaderContext implementation.
+  bool ShouldRequireNetworkIsolationKey() const override;
+  const cors::OriginAccessList& GetOriginAccessList() const override;
+  const mojom::URLLoaderFactoryParams& GetFactoryParams() const override;
+  mojom::CookieAccessObserver* GetCookieAccessObserver() const override;
+  mojom::CrossOriginEmbedderPolicyReporter* GetCoepReporter() const override;
+  mojom::DevToolsObserver* GetDevToolsObserver() const override;
+  mojom::NetworkContextClient* GetNetworkContextClient() const override;
+  mojom::TrustedURLLoaderHeaderClient* GetUrlLoaderHeaderClient()
+      const override;
+  mojom::URLLoaderNetworkServiceObserver* GetURLLoaderNetworkServiceObserver()
+      const override;
+  net::URLRequestContext* GetUrlRequestContext() const override;
+  scoped_refptr<ResourceSchedulerClient> GetResourceSchedulerClient()
+      const override;
+  corb::PerFactoryState& GetMutableCorbState() override;
 
   // Allows starting a URLLoader with a synchronous URLLoaderClient as an
   // optimization.
@@ -69,19 +89,10 @@ class URLLoaderFactory : public mojom::URLLoaderFactory {
       mojo::PendingReceiver<mojom::URLLoader> receiver,
       int32_t request_id,
       uint32_t options,
-      const ResourceRequest& url_request,
+      const ResourceRequest& resource_request,
       mojo::PendingRemote<mojom::URLLoaderClient> client,
       base::WeakPtr<mojom::URLLoaderClient> sync_client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation);
-
-  // Called by URLLoaders created by this factory each time before a request is
-  // sent.
-  void OnBeforeURLRequest();
-
-  mojom::DevToolsObserver* GetDevToolsObserver() const;
-  mojom::CookieAccessObserver* GetCookieAccessObserver() const;
-  mojom::URLLoaderNetworkServiceObserver* GetURLLoaderNetworkServiceObserver()
-      const;
 
   static constexpr int kMaxKeepaliveConnections = 2048;
   static constexpr int kMaxKeepaliveConnectionsPerTopLevelFrame = 256;
@@ -103,13 +114,23 @@ class URLLoaderFactory : public mojom::URLLoaderFactory {
   void UpdateLoadInfo();
 
   // The NetworkContext that indirectly owns |this|.
-  NetworkContext* const context_;
+  const raw_ptr<NetworkContext> context_;
   mojom::URLLoaderFactoryParamsPtr params_;
   scoped_refptr<ResourceSchedulerClient> resource_scheduler_client_;
   mojo::Remote<mojom::TrustedURLLoaderHeaderClient> header_client_;
 
   // |cors_url_loader_factory_| owns this.
-  cors::CorsURLLoaderFactory* cors_url_loader_factory_;
+  raw_ptr<cors::CorsURLLoaderFactory> const cors_url_loader_factory_;
+
+  // To allow subsequent range requests, ORB stores URLs of non-range-request
+  // responses that sniffed as an audio or video resource.  The lifetime of that
+  // storage should cover the lifetime of media elements that are responsible
+  // for the initial request and subsequent range requests.  The lifetime of
+  // `corb_per_factory_state_` is slightly bigger (URLLoaderFactory is typically
+  // associated with a single HTML document and covers all media documents
+  // within) but this approach seems easiest to implement.
+  // TODO(https://crbug.com/1178928): Add UMA tracking the size of CORB state.
+  corb::PerFactoryState corb_state_;
 
   mojo::Remote<mojom::CookieAccessObserver> cookie_observer_;
   mojo::Remote<mojom::URLLoaderNetworkServiceObserver>

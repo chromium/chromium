@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/version.h"
 #include "base/win/scoped_handle.h"
 #include "build/build_config.h"
@@ -63,7 +62,7 @@ XrResult GetSystem(XrInstance instance, XrSystemId* system) {
   return xrGetSystem(instance, &system_info, system);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool IsRunningInWin32AppContainer() {
   base::win::ScopedHandle scopedProcessToken;
   HANDLE processToken;
@@ -97,7 +96,7 @@ XrResult CreateInstance(
                                  version_info::GetMajorVersionNumber();
   errno_t error =
       strcpy_s(instance_create_info.applicationInfo.applicationName,
-               base::size(instance_create_info.applicationInfo.applicationName),
+               std::size(instance_create_info.applicationInfo.applicationName),
                application_name.c_str());
   DCHECK_EQ(error, 0);
 
@@ -109,7 +108,7 @@ XrResult CreateInstance(
   instance_create_info.applicationInfo.applicationVersion = build;
 
   error = strcpy_s(instance_create_info.applicationInfo.engineName,
-                   base::size(instance_create_info.applicationInfo.engineName),
+                   std::size(instance_create_info.applicationInfo.engineName),
                    "Chromium");
   DCHECK_EQ(error, 0);
 
@@ -135,58 +134,34 @@ XrResult CreateInstance(
     extensions.push_back(XR_EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME);
   }
 
+  auto EnableExtensionIfSupported = [&extension_enumeration,
+                                     &extensions](const char* extension) {
+    if (extension_enumeration.ExtensionSupported(extension)) {
+      extensions.push_back(extension);
+    }
+  };
+
   // XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME, is required for optional
   // functionality (unbounded reference spaces) and thus only requested if it is
   // available.
-  const bool unboundedSpaceExtensionSupported =
-      extension_enumeration.ExtensionSupported(
-          XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME);
-  if (unboundedSpaceExtensionSupported) {
-    extensions.push_back(XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME);
-  }
+  EnableExtensionIfSupported(XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME);
 
   // Input extensions. These enable interaction profiles not defined in the core
   // spec
-  const bool samsungInteractionProfileExtensionSupported =
-      extension_enumeration.ExtensionSupported(
-          kExtSamsungOdysseyControllerExtensionName);
-  if (samsungInteractionProfileExtensionSupported) {
-    extensions.push_back(kExtSamsungOdysseyControllerExtensionName);
-  }
+  EnableExtensionIfSupported(kExtSamsungOdysseyControllerExtensionName);
+  EnableExtensionIfSupported(kExtHPMixedRealityControllerExtensionName);
+  EnableExtensionIfSupported(kMSFTHandInteractionExtensionName);
+  EnableExtensionIfSupported(XR_HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME);
 
-  const bool hpControllerExtensionSupported =
-      extension_enumeration.ExtensionSupported(
-          kExtHPMixedRealityControllerExtensionName);
-  if (hpControllerExtensionSupported) {
-    extensions.push_back(kExtHPMixedRealityControllerExtensionName);
-  }
+  EnableExtensionIfSupported(XR_EXT_HAND_TRACKING_EXTENSION_NAME);
+  EnableExtensionIfSupported(XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME);
+  EnableExtensionIfSupported(XR_MSFT_SCENE_UNDERSTANDING_EXTENSION_NAME);
 
-  const bool handInteractionExtensionSupported =
-      extension_enumeration.ExtensionSupported(
-          kMSFTHandInteractionExtensionName);
-  if (handInteractionExtensionSupported) {
-    extensions.push_back(kMSFTHandInteractionExtensionName);
-  }
-
-  const bool handTrackingExtensionSupported =
-      extension_enumeration.ExtensionSupported(
-          XR_EXT_HAND_TRACKING_EXTENSION_NAME);
-  if (handTrackingExtensionSupported) {
-    extensions.push_back(XR_EXT_HAND_TRACKING_EXTENSION_NAME);
-  }
-
-  const bool anchorsExtensionSupported =
-      extension_enumeration.ExtensionSupported(
-          XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME);
-  if (anchorsExtensionSupported) {
-    extensions.push_back(XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME);
-  }
-
-  const bool sceneUnderstandingExtensionSupported =
-      extension_enumeration.ExtensionSupported(
-          XR_MSFT_SCENE_UNDERSTANDING_EXTENSION_NAME);
-  if (sceneUnderstandingExtensionSupported) {
-    extensions.push_back(XR_MSFT_SCENE_UNDERSTANDING_EXTENSION_NAME);
+  EnableExtensionIfSupported(
+      XR_MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME);
+  if (extension_enumeration.ExtensionSupported(
+          XR_MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME)) {
+    EnableExtensionIfSupported(XR_MSFT_FIRST_PERSON_OBSERVER_EXTENSION_NAME);
   }
 
   instance_create_info.enabledExtensionCount =

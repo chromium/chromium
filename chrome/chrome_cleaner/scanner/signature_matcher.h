@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@ namespace chrome_cleaner {
 class SignatureMatcher : public SignatureMatcherAPI {
  public:
   SignatureMatcher() = default;
-  virtual ~SignatureMatcher() = default;
+  ~SignatureMatcher() override = default;
 
   // SignatureMatcherAPI implementation.
   bool MatchFileDigestInfo(const base::FilePath& path,

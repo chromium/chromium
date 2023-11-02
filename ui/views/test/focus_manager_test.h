@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/views/focus/widget_focus_manager.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -54,9 +55,9 @@ class FocusManagerTest : public ViewsTestBase, public WidgetDelegate {
   void SetAccessiblePanes(const std::vector<View*>& panes);
 
  private:
-  View* contents_view_;
-  FocusChangeListener* focus_change_listener_ = nullptr;
-  WidgetFocusChangeListener* widget_focus_change_listener_ = nullptr;
+  raw_ptr<View> contents_view_;
+  raw_ptr<FocusChangeListener> focus_change_listener_ = nullptr;
+  raw_ptr<WidgetFocusChangeListener> widget_focus_change_listener_ = nullptr;
   std::vector<View*> accessible_panes_;
 };
 

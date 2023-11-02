@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,22 +9,27 @@
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 /** Account information sent from C++. */
-export type AccountInfo = {
-  isManaged: boolean,
-  pictureUrl: string,
-};
+export interface AccountInfo {
+  isManaged: boolean;
+  pictureUrl: string;
+}
 
-export type InterceptionParameters = {
-  headerText: string,
-  bodyTitle: string,
-  bodyText: string,
-  confirmButtonLabel: string,
-  cancelButtonLabel: string,
-  headerTextColor: string,
-  headerBackgroundColor: string,
-  interceptedAccount: AccountInfo,
-  showGuestOption: boolean,
-};
+export interface InterceptionParameters {
+  headerText: string;
+  bodyTitle: string;
+  bodyText: string;
+  confirmButtonLabel: string;
+  cancelButtonLabel: string;
+  managedDisclaimerText: string;
+  headerTextColor: string;
+  interceptedProfileColor: string;
+  primaryProfileColor: string;
+  interceptedAccount: AccountInfo;
+  primaryAccount: AccountInfo;
+  showGuestOption: boolean;
+  useV2Design: boolean;
+  showManagedDisclaimer: boolean;
+}
 
 export interface DiceWebSigninInterceptBrowserProxy {
   // Called when the user accepts the interception bubble.

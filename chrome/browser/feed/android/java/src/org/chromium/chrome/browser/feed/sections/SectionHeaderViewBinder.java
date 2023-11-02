@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,12 +23,10 @@ public class SectionHeaderViewBinder
     @Override
     public void bind(PropertyModel model, SectionHeaderView view, PropertyKey key) {
         if (key == SectionHeaderListProperties.IS_SECTION_ENABLED_KEY) {
-            boolean isExpanding = model.get(SectionHeaderListProperties.IS_SECTION_ENABLED_KEY);
-            if (isExpanding) {
-                view.expandHeader();
+            boolean isEnabled = model.get(SectionHeaderListProperties.IS_SECTION_ENABLED_KEY);
+            view.setTextsEnabled(isEnabled);
+            if (isEnabled) {
                 setActiveTab(model, view);
-            } else {
-                view.collapseHeader();
             }
         } else if (key == SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY) {
             setActiveTab(model, view);
@@ -88,7 +86,8 @@ public class SectionHeaderViewBinder
             SectionHeaderView view, int index, int count, PropertyKey payload) {
         PropertyModel header = headers.get(0);
         if (payload == null || payload == SectionHeaderProperties.HEADER_TEXT_KEY
-                || payload == SectionHeaderProperties.UNREAD_CONTENT_KEY) {
+                || payload == SectionHeaderProperties.UNREAD_CONTENT_KEY
+                || payload == SectionHeaderProperties.BADGE_TEXT_KEY) {
             // Only use 1st tab for legacy headerText;
             view.setHeaderText(header.get(SectionHeaderProperties.HEADER_TEXT_KEY));
 
@@ -97,8 +96,18 @@ public class SectionHeaderViewBinder
                 PropertyModel tabModel = headers.get(i);
                 boolean hasUnreadContent = tabModel.get(SectionHeaderProperties.UNREAD_CONTENT_KEY);
 
-                view.setHeaderAt(
-                        tabModel.get(SectionHeaderProperties.HEADER_TEXT_KEY), hasUnreadContent, i);
+                view.setHeaderAt(tabModel.get(SectionHeaderProperties.HEADER_TEXT_KEY),
+                        hasUnreadContent, tabModel.get(SectionHeaderProperties.BADGE_TEXT_KEY),
+                        tabModel.get(SectionHeaderProperties.ANIMATION_START_KEY), i);
+            }
+        }
+        if (payload == null || payload == SectionHeaderProperties.ANIMATION_START_KEY) {
+            for (int i = index; i < index + count; i++) {
+                boolean animationStart =
+                        headers.get(i).get(SectionHeaderProperties.ANIMATION_START_KEY);
+                if (animationStart) {
+                    view.startAnimationForHeader(i);
+                }
             }
         }
         if (payload == null
@@ -107,6 +116,13 @@ public class SectionHeaderViewBinder
                 PropertyModel tabModel = headers.get(i);
                 view.setOptionsIndicatorVisibilityForHeader(
                         i, tabModel.get(SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY));
+            }
+        }
+        if (payload == null || payload == SectionHeaderProperties.OPTIONS_INDICATOR_IS_OPEN_KEY) {
+            for (int i = index; i < index + count; i++) {
+                PropertyModel tabModel = headers.get(i);
+                view.updateDrawable(
+                        i, tabModel.get(SectionHeaderProperties.OPTIONS_INDICATOR_IS_OPEN_KEY));
             }
         }
     }

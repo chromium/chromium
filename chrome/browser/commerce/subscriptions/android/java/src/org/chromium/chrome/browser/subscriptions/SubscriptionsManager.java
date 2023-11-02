@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,6 +26,23 @@ public interface SubscriptionsManager {
         int INVALID_ARGUMENT = 4;
     }
 
+    /** An observer for notification about a product be tracked or untracked. */
+    interface SubscriptionObserver {
+        /**
+         * A notification that a user has subscribed to product updated.
+         *
+         * @param subscriptions The list of subscriptions being added.
+         */
+        void onSubscribe(List<CommerceSubscription> subscriptions);
+
+        /**
+         * A notification that a user has unsubscribed to product updated.
+         *
+         * @param subscriptions The list of subscriptions being removed.
+         */
+        void onUnsubscribe(List<CommerceSubscription> subscriptions);
+    }
+
     /**
      * Creates a new subscription on the server if needed.
      * @param subscription The {@link CommerceSubscription} to add.
@@ -48,6 +65,13 @@ public interface SubscriptionsManager {
     void unsubscribe(CommerceSubscription subscription, Callback<Integer> callback);
 
     /**
+     * This is batched version of {@link #unsubscribe(CommerceSubscription, Callback)}.
+     * @param subscriptions The list of subscription objects to unsubscribe from.
+     * @param callback A callback for whether the operation completed successfully.
+     */
+    void unsubscribe(List<CommerceSubscription> subscriptions, Callback<Integer> callback);
+
+    /**
      * Returns all subscriptions that match the provided type.
      * @param type The {@link CommerceSubscription.CommerceSubscriptionType} to query.
      * @param forceFetch Whether to fetch from server.
@@ -57,22 +81,24 @@ public interface SubscriptionsManager {
             boolean forceFetch, Callback<List<CommerceSubscription>> callback);
 
     /**
-     * Checks if the given subscription is subscribed to updates.
+     * Checks if the given subscription matches any subscriptions in local storage.
      *
-     * @param subscrition The subscription to check.
+     * @param subscription The subscription to check.
      * @param callback The callback to receive the result.
      */
-    default void isSubscribed(CommerceSubscription subscription, Callback<Boolean> callback) {
-        getSubscriptions(
-                subscription.getType(), /* forceFetch= */ false, (existingSubscriptions) -> {
-                    for (CommerceSubscription existingSubscription : existingSubscriptions) {
-                        if (existingSubscription.equals(subscription)) {
-                            callback.onResult(true);
-                            return;
-                        }
-                    }
+    void isSubscribed(CommerceSubscription subscription, Callback<Boolean> callback);
 
-                    callback.onResult(false);
-                });
-    }
+    /**
+     * Add an observer of subscribe and unsubscribe events.
+     *
+     * @param observer The observer to add.
+     */
+    void addObserver(SubscriptionObserver observer);
+
+    /**
+     * Remove an observer of subscribe and unsubscribe events.
+     *
+     * @param observer The observer to remove.
+     */
+    void removeObserver(SubscriptionObserver observer);
 }

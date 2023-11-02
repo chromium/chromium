@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,7 @@
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_utils.h"
 
@@ -79,6 +80,27 @@ bool SystemTrayTestApi::IsBubbleViewVisible(int view_id, bool open_tray) {
     GetTray()->ShowBubble();
   views::View* view = GetBubbleView(view_id);
   return view && view->GetVisible();
+}
+
+void SystemTrayTestApi::ScrollToShowView(int view_id) {
+  views::View* view = GetBubbleView(view_id);
+  DCHECK(view);
+
+  views::View* contents = view->parent();
+  DCHECK(contents);
+
+  views::ScrollView* scroll_view =
+      views::ScrollView::GetScrollViewForContents(contents);
+  DCHECK(scroll_view);
+
+  gfx::Point view_center = view->GetBoundsInScreen().CenterPoint();
+  gfx::Rect scroll_bounds = scroll_view->GetBoundsInScreen();
+
+  if (scroll_bounds.Contains(view_center.x(), view_center.y()))
+    return;
+
+  scroll_view->ScrollToPosition(scroll_view->vertical_scroll_bar(),
+                                view_center.y() - scroll_bounds.y());
 }
 
 void SystemTrayTestApi::ClickBubbleView(int view_id) {

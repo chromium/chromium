@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>select options.length too large</title>
+
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <select id="test">
+      <option value="1"></option>
+      <option value="2"></option>
+      <option value="3"></option>
+    </select>
+
+    <script>
+    var mySelect = document.getElementById("test");
+
+    test(function() {
+        mySelect.options.length = -1;
+        assert_equals(mySelect.options.length, 3, "Length of <select> should remain unchanged");
+    });
+
+    test(function() {
+        mySelect.options.length = 10001;
+        assert_equals(mySelect.options.length, 3, "Length of <select> should remain unchanged");
+    });
+
+    test(function() {
+        mySelect.options.length = 10000;
+        assert_equals(mySelect.options.length, 10000, "Length of <select> should be 10,000");
+    });
+    </script>
+  </body>
+</html>

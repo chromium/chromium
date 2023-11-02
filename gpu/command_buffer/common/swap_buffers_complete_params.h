@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "gpu/command_buffer/common/mailbox.h"
-#include "gpu/command_buffer/common/texture_in_use_response.h"
+#include "gpu/gpu_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/ca_layer_params.h"
 #include "ui/gfx/geometry/rect.h"
@@ -35,10 +35,6 @@ struct GPU_EXPORT SwapBuffersCompleteParams {
   // the front buffer. The overlay processor can use it to extract the buffer
   // for page flip tests.
   Mailbox primary_plane_mailbox;
-
-  // Used only on macOS, for coordinating IOSurface reuse with the system
-  // WindowServer.
-  gpu::TextureInUseResponses texture_in_use_responses;
 
   // Used only on macOS, to allow the browser hosted NSWindow to display
   // content populated in the GPU process.

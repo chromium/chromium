@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,6 +60,9 @@ const char kPrintToPDF[] = "print-to-pdf";
 // Do not display header and footer in the pdf file.
 const char kPrintToPDFNoHeader[] = "print-to-pdf-no-header";
 
+// Do not emit tags when printing PDFs.
+const char kDisablePDFTagging[] = "disable-pdf-tagging";
+
 // Specifies a list of hosts for whom we bypass proxy settings and use direct
 // connections. Ignored unless --proxy-server is also specified. This is a
 // comma-separated list of bypass rules. See:
@@ -86,12 +89,6 @@ const char kRepl[] = "repl";
 // Save a screenshot of the loaded page.
 const char kScreenshot[] = "screenshot";
 
-// Causes SSL key material to be logged to the specified file for debugging
-// purposes. See
-// https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/Key_Log_Format
-// for the format.
-const char kSSLKeyLogFile[] = "ssl-key-log-file";
-
 // Issues a stop after the specified number of milliseconds.  This cancels all
 // navigation and causes the DOMContentLoaded event to fire.
 const char kTimeout[] = "timeout";
@@ -108,8 +105,13 @@ const char kUseANGLE[] = "use-angle";
 const char kUserAgent[] = "user-agent";
 
 // Directory where the browser stores the user profile. Note that if this switch
-// is added, the session will no longer be Incognito.
+// is added, the session will no longer be Incognito, unless Incognito mode is
+// forced with --incognito switch.
 const char kUserDataDir[] = "user-data-dir";
+
+// Forces Incognito mode even if user data directory is specified using the
+// --user-data-dir switch.
+const char kIncognito[] = "incognito";
 
 // If set the system waits the specified number of virtual milliseconds before
 // deeming the page to be ready.  For determinism virtual time does not advance

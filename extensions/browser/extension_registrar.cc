@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,10 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
@@ -24,12 +24,16 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/lazy_context_id.h"
 #include "extensions/browser/lazy_context_task_queue.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/service_worker_task_queue.h"
 #include "extensions/browser/task_queue_util.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/common/permissions/permissions_data.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/browser_util.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using content::DevToolsAgentHost;
 
@@ -68,8 +72,6 @@ void ExtensionRegistrar::AddExtension(
       UMA_HISTOGRAM_ENUMERATION(
           "Extensions.AttemptedToDowngradeVersionLocation",
           extension->location());
-      UMA_HISTOGRAM_ENUMERATION("Extensions.AttemptedToDowngradeVersionType",
-                                extension->GetType(), Manifest::NUM_LOAD_TYPES);
 
       // TODO(https://crbug.com/810799): It would be awfully nice to CHECK this,
       // but that's caused problems. There are apparently times when this
@@ -126,11 +128,6 @@ void ExtensionRegistrar::AddNewExtension(
     registry_->AddBlocked(extension);
   } else if (extension_prefs_->IsExtensionDisabled(extension->id())) {
     registry_->AddDisabled(extension);
-    // Notify that a disabled extension was added or updated.
-    content::NotificationService::current()->Notify(
-        extensions::NOTIFICATION_EXTENSION_UPDATE_DISABLED,
-        content::Source<content::BrowserContext>(browser_context_),
-        content::Details<const Extension>(extension.get()));
   } else {  // Extension should be enabled.
     // All apps that are displayed in the launcher are ordered by their ordinals
     // so we must ensure they have valid ordinals.
@@ -150,17 +147,20 @@ void ExtensionRegistrar::RemoveExtension(const ExtensionId& extension_id,
                                          UnloadedExtensionReason reason) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  int include_mask =
-      ExtensionRegistry::EVERYTHING & ~ExtensionRegistry::TERMINATED;
+  int include_mask = ExtensionRegistry::ENABLED | ExtensionRegistry::DISABLED |
+                     ExtensionRegistry::TERMINATED;
   scoped_refptr<const Extension> extension(
       registry_->GetExtensionById(extension_id, include_mask));
 
-  // If the extension was already removed, just notify of the new unload reason.
-  // TODO: It's unclear when this needs to be called given that it may be a
-  // duplicate notification. See crbug.com/708230.
-  if (!extension) {
-    extension_system_->UnregisterExtensionWithRequestContexts(extension_id,
-                                                              reason);
+  // If the extension is blocked/blocklisted, no need to notify again.
+  if (!extension)
+    return;
+
+  if (registry_->terminated_extensions().Contains(extension_id)) {
+    // The extension was already deactivated from the call to
+    // TerminateExtension(), which also should have added it to
+    // unloaded_extension_paths_ if necessary.
+    registry_->RemoveTerminated(extension->id());
     return;
   }
 
@@ -171,17 +171,14 @@ void ExtensionRegistrar::RemoveExtension(const ExtensionId& extension_id,
   // Stop tracking whether the extension was meant to be enabled after a reload.
   reloading_extensions_.erase(extension->id());
 
-  if (registry_->disabled_extensions().Contains(extension_id)) {
-    // The extension is already deactivated.
-    registry_->RemoveDisabled(extension->id());
-    extension_system_->UnregisterExtensionWithRequestContexts(extension_id,
-                                                              reason);
-  } else {
-    // TODO(michaelpg): The extension may be blocked or blocklisted, in which
-    // case it shouldn't need to be "deactivated". Determine whether the removal
-    // notifications are necessary (crbug.com/708230).
+  if (registry_->enabled_extensions().Contains(extension_id)) {
     registry_->RemoveEnabled(extension_id);
     DeactivateExtension(extension.get(), reason);
+  } else {
+    // The extension was already deactivated from the call to
+    // DisableExtension().
+    bool removed = registry_->RemoveDisabled(extension->id());
+    DCHECK(removed);
   }
 }
 
@@ -240,6 +237,16 @@ void ExtensionRegistrar::DisableExtension(const ExtensionId& extension_id,
         extensions::disable_reason::DISABLE_BLOCKED_BY_POLICY |
         extensions::disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED |
         extensions::disable_reason::DISABLE_REINSTALL;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // For controlled extensions, only allow disabling not ash-keeplisted
+    // extensions if Lacros is the only browser.
+    if (!crosapi::browser_util::IsAshWebBrowserEnabled()) {
+      internal_disable_reason_mask |=
+          extensions::disable_reason::DISABLE_NOT_ASH_KEEPLISTED;
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     disable_reasons &= internal_disable_reason_mask;
 
     if (disable_reasons == disable_reason::DISABLE_NONE)
@@ -494,18 +501,17 @@ void ExtensionRegistrar::ActivateExtension(const Extension* extension,
 
   delegate_->PostActivateExtension(extension);
 
-  // When an existing extension is re-enabled, it may be necessary to spin up
-  // its lazy background page.
-  if (!is_newly_added)
-    MaybeSpinUpLazyBackgroundPage(extension);
+  // When an extension is activated, and it is either event page-based or
+  // service worker-based, it may be necessary to spin up its context.
+  if (BackgroundInfo::HasLazyContext(extension))
+    MaybeSpinUpLazyContext(extension, is_newly_added);
 }
 
 void ExtensionRegistrar::DeactivateExtension(const Extension* extension,
                                              UnloadedExtensionReason reason) {
   registry_->TriggerOnUnloaded(extension, reason);
   renderer_helper_->OnExtensionUnloaded(*extension);
-  extension_system_->UnregisterExtensionWithRequestContexts(extension->id(),
-                                                            reason);
+  extension_system_->UnregisterExtensionWithRequestContexts(extension->id());
   DeactivateTaskQueueForExtension(browser_context_, extension);
 
   delegate_->PostDeactivateExtension(extension);
@@ -544,10 +550,9 @@ void ExtensionRegistrar::OnExtensionRegisteredWithRequestContexts(
     registry_->TriggerOnReady(extension.get());
 }
 
-void ExtensionRegistrar::MaybeSpinUpLazyBackgroundPage(
-    const Extension* extension) {
-  if (!BackgroundInfo::HasLazyBackgroundPage(extension))
-    return;
+void ExtensionRegistrar::MaybeSpinUpLazyContext(const Extension* extension,
+                                                bool is_newly_added) {
+  DCHECK(BackgroundInfo::HasLazyContext(extension));
 
   // For orphaned devtools, we will reconnect devtools to it later in
   // DidCreateMainFrameForBackgroundPage().
@@ -560,11 +565,35 @@ void ExtensionRegistrar::MaybeSpinUpLazyBackgroundPage(
   bool is_component_extension =
       Manifest::IsComponentLocation(extension->location());
 
-  if (!has_orphaned_dev_tools && !is_component_extension)
+  // TODO(crbug.com/1024211): This is either a workaround or something
+  // that will be part of the permanent solution for service worker-
+  // based extensions.
+  // We spin up extensions with the webRequest permission so their
+  // listeners are reconstructed on load.
+  bool has_web_request_permission =
+      extension->permissions_data()->HasAPIPermission(
+          mojom::APIPermissionID::kWebRequest);
+  // Event page-based extension cannot have the webRequest permission.
+  DCHECK(!has_web_request_permission ||
+         BackgroundInfo::IsServiceWorkerBased(extension));
+
+  // If there aren't any special cases, we're done.
+  if (!has_orphaned_dev_tools && !is_component_extension &&
+      !has_web_request_permission) {
+    return;
+  }
+
+  // If the extension's not being reloaded (|is_newly_added| = true),
+  // only wake it up if it has the webRequest permission.
+  if (is_newly_added && !has_web_request_permission)
     return;
 
-  // Wake up the event page by posting a dummy task.
-  const LazyContextId context_id(browser_context_, extension->id());
+  // Wake up the extension by posting a dummy task. In the case of a service
+  // worker-based extension with the webRequest permission that's being newly
+  // installed, this will result in a no-op task that's not necessary, since
+  // this is really only needed for a previously-installed extension. However,
+  // that cost is minimal, since the worker is already active.
+  const LazyContextId context_id(browser_context_, extension);
   context_id.GetTaskQueue()->AddPendingTask(context_id, base::DoNothing());
 }
 

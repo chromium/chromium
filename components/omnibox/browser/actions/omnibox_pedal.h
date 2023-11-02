@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_concepts.h"
 #include "components/omnibox/browser/buildflags.h"
-#include "components/strings/grit/components_strings.h"
 #include "url/gurl.h"
 
 // Conceptually, a Pedal is a fixed action that can be taken by the user
@@ -177,14 +176,14 @@ class OmniboxPedal : public OmniboxAction {
 
   OmniboxPedal(OmniboxPedalId id, LabelStrings strings, GURL url);
 
-  // Writes labels associated with this Pedal by taking named
-  //  values from provided dictionary value |ui_strings|.
-  void SetLabelStrings(const base::Value& ui_strings);
+  // Called after the OmniboxPedalProvider finishes loading all pedals data.
+  // This can be used to override implementation bits based on flags, etc.
+  virtual void OnLoaded();
 
   // Sets the destination URL for the Pedal.
   void SetNavigationUrl(const GURL& url);
 
-#if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
+#if defined(SUPPORT_PEDALS_VECTOR_ICONS)
   // Returns the default vector icon to use for Pedals that do not specify one.
   static const gfx::VectorIcon& GetDefaultVectorIcon();
 #endif
@@ -204,7 +203,10 @@ class OmniboxPedal : public OmniboxAction {
   void AddSynonymGroup(SynonymGroup&& group);
 
   // Specify synonym groups to load from localization strings.
-  virtual std::vector<SynonymGroupSpec> SpecifySynonymGroups() const;
+  // `locale_is_english` provides a hint about which locale is being loaded,
+  // used to support both synonym-groups and whole-phrase localization.
+  virtual std::vector<SynonymGroupSpec> SpecifySynonymGroups(
+      bool locale_is_english) const;
 
   OmniboxPedalId id() const { return id_; }
 
@@ -221,13 +223,17 @@ class OmniboxPedal : public OmniboxAction {
   bool IsConceptMatch(TokenSequence& match_sequence) const;
 
   // OmniboxAction overrides:
-  void RecordActionShown(size_t position) const override;
-  void RecordActionExecuted(size_t position) const override;
-#if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
+  void RecordActionShown(size_t position, bool executed) const override;
+#if defined(SUPPORT_PEDALS_VECTOR_ICONS)
   const gfx::VectorIcon& GetVectorIcon() const override;
 #endif
   size_t EstimateMemoryUsage() const override;
   int32_t GetID() const override;
+
+#if BUILDFLAG(IS_ANDROID)
+  base::android::ScopedJavaGlobalRef<jobject> GetJavaObject() const override;
+  void CreateOrUpdateJavaObject();
+#endif
 
  protected:
   FRIEND_TEST_ALL_PREFIXES(OmniboxPedalTest, SynonymGroupErasesFirstMatchOnly);
@@ -246,20 +252,19 @@ class OmniboxPedal : public OmniboxAction {
   SynonymGroup verbatim_synonym_group_;
 
   std::vector<SynonymGroup> synonym_groups_;
+
+#if BUILDFLAG(IS_ANDROID)
+  base::android::ScopedJavaGlobalRef<jobject> j_omnibox_action_;
+#endif
 };
 
 // This is a simple pedal suitable only for use by tests.
 class TestOmniboxPedalClearBrowsingData : public OmniboxPedal {
  public:
-  explicit TestOmniboxPedalClearBrowsingData()
-      : OmniboxPedal(
-            OmniboxPedalId::CLEAR_BROWSING_DATA,
-            LabelStrings(
-                IDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_HINT,
-                IDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_SUGGESTION_CONTENTS,
-                IDS_ACC_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_SUFFIX,
-                IDS_ACC_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA),
-            GURL("chrome://settings/clearBrowserData")) {}
+  explicit TestOmniboxPedalClearBrowsingData();
+
+  std::vector<SynonymGroupSpec> SpecifySynonymGroups(
+      bool locale_is_english) const override;
 
  protected:
   ~TestOmniboxPedalClearBrowsingData() override = default;

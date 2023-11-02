@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_BROWSER_TAB_MENU_MODEL_DELEGATE_H_
 
 #include <vector>
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 
 class Browser;
@@ -23,7 +24,7 @@ class BrowserTabMenuModelDelegate : public TabMenuModelDelegate {
   // TabMenuModelDelegate:
   std::vector<Browser*> GetExistingWindowsForMoveMenu() override;
 
-  Browser* const browser_;
+  const raw_ptr<Browser> browser_;
 };
 
 }  // namespace chrome

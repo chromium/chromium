@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,15 +10,12 @@
 
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "base/values.h"
 #include "net/base/net_export.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/reporting/reporting_endpoint.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace net {
 
@@ -45,12 +42,12 @@ struct NET_EXPORT ReportingReport {
   // TODO(chlily): Remove |attempts| argument as it is (almost?) always 0.
   ReportingReport(
       const absl::optional<base::UnguessableToken>& reporting_source,
-      const NetworkIsolationKey& network_isolation_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       const GURL& url,
       const std::string& user_agent,
       const std::string& group,
       const std::string& type,
-      std::unique_ptr<const base::Value> body,
+      base::Value::Dict body,
       int depth,
       base::TimeTicks queued,
       int attempts);
@@ -87,9 +84,9 @@ struct NET_EXPORT ReportingReport {
   // (Not included in the delivered report.)
   absl::optional<base::UnguessableToken> reporting_source;
 
-  // The NIK of the request that triggered this report. (Not included in the
+  // The NAK of the request that triggered this report. (Not included in the
   // delivered report.)
-  NetworkIsolationKey network_isolation_key;
+  NetworkAnonymizationKey network_anonymization_key;
 
   // The id of the report, used by DevTools to identify and tell apart
   // individual reports.
@@ -110,7 +107,7 @@ struct NET_EXPORT ReportingReport {
   std::string type;
 
   // The body of the report. (Included in the delivered report.)
-  std::unique_ptr<const base::Value> body;
+  base::Value::Dict body;
 
   // How many uploads deep the related request was: 0 if the related request was
   // not an upload (or there was no related request), or n+1 if it was an upload

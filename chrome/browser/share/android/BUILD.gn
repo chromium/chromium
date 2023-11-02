@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -39,6 +39,7 @@ android_resources("java_resources") {
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/share/BitmapDownloadRequest.java",
+    "java/src/org/chromium/chrome/browser/share/crow/CrowBridge.java",
     "java/src/org/chromium/chrome/browser/share/link_to_text/LinkToTextBridge.java",
     "java/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/LongScreenshotsTabService.java",
     "java/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/LongScreenshotsTabServiceFactory.java",
@@ -47,8 +48,6 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/share/send_tab_to_self/MetricsRecorder.java",
     "java/src/org/chromium/chrome/browser/share/send_tab_to_self/NotificationManager.java",
     "java/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfAndroidBridge.java",
-    "java/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfEntry.java",
-    "java/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfModelObserverBridge.java",
     "java/src/org/chromium/chrome/browser/share/send_tab_to_self/TargetDeviceInfo.java",
   ]
 }

@@ -1,8 +1,8 @@
 Name: TensorFlow Text
 Short Name: tensorflow-text
 URL: https://github.com/tensorflow/text.git
-Version: 2.4.3
-Date: 2021/01/28
+Version: 2.7.3
+Date: 2021/12/08
 License: Apache 2.0
 License File: LICENSE
 Security Critical: Yes
@@ -13,3 +13,15 @@ TensorFlow Text provides a collection of text related classes and ops ready
 to use with TensorFlow 2.0. The library can perform the preprocessing
 regularly required by text-based models, and includes other features useful
 for sequence modeling not provided by core TensorFlow.
+
+Local Modifications:
+0001 - Run clang-format to make the rest of the patches easier for IDEs that
+auto-format on save.
+
+0002 - Change an includes to be the chromium third_party version.
+
+0003 - The most involved fix to change absl::string_view, which isn't well
+supported in Chromium so everything is changed to re2::StringPiece.
+
+0004 - Many of the files that aren't built into Chromium still trigger DEPS
+errors by the CQ, so those includes are just commented out.

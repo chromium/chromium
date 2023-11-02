@@ -28,7 +28,6 @@
 #ifndef InputStreamPreprocessor_h
 #define InputStreamPreprocessor_h
 
-#include "base/macros.h"
 #include "html_character_provider.h"
 
 namespace WebCore {

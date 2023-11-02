@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 // Contains metadata about browser tabs that are open on the user's phone.
@@ -68,13 +68,13 @@ std::ostream& operator<<(
     BrowserTabsModel::BrowserTabMetadata browser_tab_metadata);
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash {
+namespace chromeos {
 namespace phonehub {
-using ::chromeos::phonehub::BrowserTabsModel;
+using ::ash::phonehub::BrowserTabsModel;
 }
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // ASH_COMPONENTS_PHONEHUB_BROWSER_TABS_MODEL_H_

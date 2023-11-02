@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 #include "client/annotation.h"
 
 namespace crashpad {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 namespace internal {
 class InProcessIntermediateDumpHandler;
 }  // namespace internal
@@ -87,7 +87,7 @@ class AnnotationList {
   Iterator end();
 
  protected:
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   friend class internal::InProcessIntermediateDumpHandler;
 #endif
 

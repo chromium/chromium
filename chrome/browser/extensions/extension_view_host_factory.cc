@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,7 +64,7 @@ std::unique_ptr<ExtensionViewHost> CreateViewHostForIncognito(
   NOTREACHED() <<
       "We shouldn't be trying to create an incognito extension view unless "
       "it has been enabled for incognito.";
-  return NULL;
+  return nullptr;
 }
 
 // Returns the extension associated with |url| in |profile|. Returns NULL if
@@ -72,7 +72,7 @@ std::unique_ptr<ExtensionViewHost> CreateViewHostForIncognito(
 const Extension* GetExtensionForUrl(Profile* profile, const GURL& url) {
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile);
   if (!registry)
-    return NULL;
+    return nullptr;
   std::string extension_id = url.host();
   return registry->enabled_extensions().GetByID(extension_id);
 }
@@ -89,7 +89,7 @@ std::unique_ptr<ExtensionViewHost> CreateViewHost(
 
   const Extension* extension = GetExtensionForUrl(profile, url);
   if (!extension)
-    return NULL;
+    return nullptr;
   if (profile->IsOffTheRecord()) {
     return CreateViewHostForIncognito(
         extension, url, profile, browser, view_type);
@@ -114,7 +114,8 @@ std::unique_ptr<ExtensionViewHost> ExtensionViewHostFactory::CreateDialogHost(
     const GURL& url,
     Profile* profile) {
   DCHECK(profile);
-  return CreateViewHost(url, profile, NULL, mojom::ViewType::kExtensionDialog);
+  return CreateViewHost(url, profile, nullptr,
+                        mojom::ViewType::kExtensionDialog);
 }
 
 }  // namespace extensions

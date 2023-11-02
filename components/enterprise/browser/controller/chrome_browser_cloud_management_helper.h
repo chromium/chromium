@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
@@ -62,7 +63,7 @@ class ChromeBrowserCloudManagementRegistrar {
       CloudManagementRegistrationCallback callback);
 
   std::unique_ptr<CloudPolicyClientRegistrationHelper> registration_helper_;
-  DeviceManagementService* device_management_service_;
+  raw_ptr<DeviceManagementService> device_management_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 };
 
@@ -104,9 +105,9 @@ class MachineLevelUserCloudPolicyFetcher : public CloudPolicyService::Observer {
   // Fetch policy if device is enrolled.
   void TryToFetchPolicy();
 
-  MachineLevelUserCloudPolicyManager* policy_manager_;
-  PrefService* local_state_;
-  DeviceManagementService* device_management_service_;
+  raw_ptr<MachineLevelUserCloudPolicyManager> policy_manager_;
+  raw_ptr<PrefService> local_state_;
+  raw_ptr<DeviceManagementService> device_management_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 };
 

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -173,7 +173,7 @@ gfx::Rect TriView::GetAnchorBoundsInScreen() const {
   // If there are other instantiations of TriView where this overlap doesn't
   // make sense, the below inset could be settable on TriView and called from
   // NetworkStateListDetailedView.
-  bounds.Inset(gfx::Insets(0, 0, 8, 0));
+  bounds.Inset(gfx::Insets::TLBR(0, 0, 8, 0));
   return bounds;
 }
 

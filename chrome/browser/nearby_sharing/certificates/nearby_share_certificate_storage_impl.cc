@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/json/values_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -436,10 +435,10 @@ void NearbyShareCertificateStorageImpl::GetPublicCertificates(
 
 absl::optional<std::vector<NearbySharePrivateCertificate>>
 NearbyShareCertificateStorageImpl::GetPrivateCertificates() const {
-  const base::Value* list =
-      pref_service_->Get(prefs::kNearbySharingPrivateCertificateListPrefName);
+  const base::Value& list = pref_service_->GetValue(
+      prefs::kNearbySharingPrivateCertificateListPrefName);
   std::vector<NearbySharePrivateCertificate> certs;
-  for (const base::Value& cert_dict : list->GetList()) {
+  for (const base::Value& cert_dict : list.GetListDeprecated()) {
     absl::optional<NearbySharePrivateCertificate> cert(
         NearbySharePrivateCertificate::FromDictionary(cert_dict));
     if (!cert)
@@ -617,15 +616,12 @@ void NearbyShareCertificateStorageImpl::ClearPublicCertificates(
 }
 
 bool NearbyShareCertificateStorageImpl::FetchPublicCertificateExpirations() {
-  const base::Value* dict = pref_service_->Get(
+  const base::Value::Dict& dict = pref_service_->GetDict(
       prefs::kNearbySharingPublicCertificateExpirationDictPrefName);
   public_certificate_expirations_.clear();
-  if (!dict) {
-    return false;
-  }
 
-  public_certificate_expirations_.reserve(dict->DictSize());
-  for (const auto pair : dict->DictItems()) {
+  public_certificate_expirations_.reserve(dict.size());
+  for (const auto pair : dict) {
     absl::optional<std::string> id = DecodeString(pair.first);
     absl::optional<base::Time> expiration = base::ValueToTime(pair.second);
     if (!id || !expiration)

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -236,7 +236,7 @@ class StartupTracingTest
       case OutputType::kJSON:
         return "json";
       case OutputType::kProto:
-        return "proto";
+        return "pftrace";
     }
   }
 
@@ -265,11 +265,11 @@ class StartupTracingTest
   }
 
   static void CheckOutput(base::FilePath path, OutputType output_type) {
-#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
     // Skip checks because the thread sanitizer is often too slow to flush trace
     // data correctly within the timeouts. We still run the tests on TSAN to
     // catch general threading issues.
-#else // !(defined(OS_LINUX) && defined(THREAD_SANITIZER))
+#else   // !(BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER))
     std::string trace;
     base::ScopedAllowBlockingForTesting allow_blocking;
     ASSERT_TRUE(base::ReadFileToString(path, &trace))
@@ -280,10 +280,14 @@ class StartupTracingTest
     }
 
     // Both proto and json should have the trace event name recorded somewhere
-    // as a substring.
-    EXPECT_TRUE(trace.find("StartupTracingController::Start") !=
+    // as a substring. We check for "ThreadControllerImpl::RunTask" because
+    // it's an example of event that happens early in the trace, but any other
+    // early event will do. The event has to happen early because in
+    // WaitForTimeout and in EmergencyStop tests we don't wait for
+    // TracingSession::StartBlocking() to complete.
+    EXPECT_TRUE(trace.find("ThreadControllerImpl::RunTask") !=
                 std::string::npos);
-#endif // !(defined(OS_LINUX) && defined(THREAD_SANITIZER))
+#endif  // !(BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER))
   }
 
   void Wait() {
@@ -350,14 +354,21 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(OutputType::kJSON, OutputType::kProto),
         testing::Values(OutputLocation::kDirectoryWithDefaultBasename)));
 
-IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, StopOnUIThread) {
+// Flaky; see https://crbug.com/1341341 .
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_StopOnUIThread DISABLED_StopOnUIThread
+#else
+#define MAYBE_StopOnUIThread StopOnUIThread
+#endif
+IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, MAYBE_StopOnUIThread) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl("", "title1.html")));
 
   StartupTracingController::EmergencyStop();
   CheckOutput(GetExpectedPath(), GetOutputType());
 }
 
-IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, StopOnThreadPool) {
+// Flaky: crbug.com/1372387
+IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, DISABLED_StopOnThreadPool) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl("", "title1.html")));
 
   auto expected_path = GetExpectedPath();
@@ -374,7 +385,8 @@ IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, StopOnThreadPool) {
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, StopOnThreadPoolTwice) {
+// Flaky: crbug.com/1372387
+IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, DISABLED_StopOnThreadPoolTwice) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl("", "title1.html")));
 
   auto expected_path = GetExpectedPath();

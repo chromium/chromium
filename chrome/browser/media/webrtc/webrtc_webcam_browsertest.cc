@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,14 +25,14 @@ static const char kMainWebrtcTestHtmlPage[] =
 
 enum class TargetVideoCaptureImplementation {
   DEFAULT,
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   WIN_MEDIA_FOUNDATION
 #endif
 };
 
 const TargetVideoCaptureImplementation kTargetVideoCaptureImplementations[] = {
     TargetVideoCaptureImplementation::DEFAULT,
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     TargetVideoCaptureImplementation::WIN_MEDIA_FOUNDATION
 #endif
 };
@@ -47,7 +47,7 @@ class WebRtcWebcamBrowserTest
       public testing::WithParamInterface<TargetVideoCaptureImplementation> {
  public:
   WebRtcWebcamBrowserTest() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     if (GetParam() == TargetVideoCaptureImplementation::WIN_MEDIA_FOUNDATION) {
       scoped_feature_list_.InitAndEnableFeature(
           media::kMediaFoundationVideoCapture);

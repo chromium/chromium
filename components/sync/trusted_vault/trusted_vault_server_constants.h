@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_SYNC_TRUSTED_VAULT_TRUSTED_VAULT_SERVER_CONSTANTS_H_
 #define COMPONENTS_SYNC_TRUSTED_VAULT_TRUSTED_VAULT_SERVER_CONSTANTS_H_
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -13,13 +14,21 @@
 
 namespace syncer {
 
-extern const int kUnknownConstantKeyVersion;
+inline constexpr int kUnknownConstantKeyVersion = 0;
 
-extern const char kSyncSecurityDomainName[];
-extern const char kSecurityDomainMemberNamePrefix[];
-extern const char kJoinSecurityDomainsURLPath[];
-extern const char kJoinSecurityDomainsErrorDetailTypeURL[];
-extern const char kGetSecurityDomainURLPathAndQuery[];
+inline constexpr char kSyncSecurityDomainName[] =
+    "users/me/securitydomains/chromesync";
+inline constexpr char kSecurityDomainMemberNamePrefix[] = "users/me/members/";
+inline constexpr char kJoinSecurityDomainsURLPath[] =
+    "users/me/securitydomains/chromesync:join";
+inline constexpr char kJoinSecurityDomainsErrorDetailTypeURL[] =
+    "type.googleapis.com/"
+    "google.internal.identity.securitydomain.v1.JoinSecurityDomainErrorDetail";
+inline constexpr char kGetSecurityDomainURLPathAndQuery[] =
+    "users/me/securitydomains/chromesync?view=2";
+
+inline constexpr char kQueryParameterAlternateOutputKey[] = "alt";
+inline constexpr char kQueryParameterAlternateOutputProto[] = "proto";
 
 std::vector<uint8_t> GetConstantTrustedVaultKey();
 std::string GetGetSecurityDomainMemberURLPathAndQuery(

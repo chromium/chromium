@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,20 @@
 
 #include "base/callback.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/platform/modules/mediastream/web_media_stream_sink.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
+#include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+class WebMediaStreamAudioSink;
 
 // MediaStreamTrackPlatform is a low-level object backing a
 // WebMediaStreamTrack.
 class PLATFORM_EXPORT MediaStreamTrackPlatform {
+  USING_FAST_MALLOC(MediaStreamTrackPlatform);
+
  public:
   enum class FacingMode { kNone, kUser, kEnvironment, kLeft, kRight };
 
@@ -29,7 +34,6 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
     bool HasSampleSize() const { return sample_size >= 0; }
     bool HasChannelCount() const { return channel_count >= 0; }
     bool HasLatency() const { return latency >= 0; }
-    bool HasVideoKind() const { return !video_kind.IsNull(); }
     // The variables are read from
     // MediaStreamTrack::GetSettings only.
     double frame_rate = -1.0;
@@ -49,9 +53,6 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
     int32_t channel_count = -1;
     double latency = -1.0;
 
-    // Media Capture Depth Stream Extensions.
-    String video_kind;
-
     // Screen Capture extensions
     absl::optional<media::mojom::DisplayCaptureSurfaceType> display_surface;
     absl::optional<bool> logical_surface;
@@ -59,7 +60,7 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
   };
 
   struct CaptureHandle {
-    bool IsEmpty() const { return origin.IsEmpty() && handle.IsEmpty(); }
+    bool IsEmpty() const { return origin.empty() && handle.empty(); }
 
     String origin;
     String handle;
@@ -86,7 +87,33 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
   virtual void GetSettings(Settings& settings) {}
   virtual CaptureHandle GetCaptureHandle();
 
+  // Adds a one off callback that will be invoked when observing the first frame
+  // where |metadata.crop_version >= crop_version|.
+  virtual void AddCropVersionCallback(uint32_t crop_version,
+                                      base::OnceClosure callback) {}
+
+  // Removes the callback that was associated with this |crop_version|, if any.
+  virtual void RemoveCropVersionCallback(uint32_t crop_version) {}
+
   bool is_local_track() const { return is_local_track_; }
+
+  enum class StreamType { kAudio, kVideo };
+  virtual StreamType Type() const = 0;
+
+  // Add an audio sink to the track. This function must only be called for audio
+  // tracks. It will trigger a OnSetFormat() call on the |sink| before the first
+  // chunk of audio is delivered.
+  virtual void AddSink(WebMediaStreamAudioSink* sink) { NOTREACHED(); }
+  // Add a video sink to track. This function must only be called for video
+  // tracks.  The |sink| will receive video track state changes on the main
+  // render thread and video frames in the |callback| method on the IO-thread.
+  // |callback| will be reset on the render thread.
+  virtual void AddSink(WebMediaStreamSink* sink,
+                       const VideoCaptureDeliverFrameCB& callback,
+                       MediaStreamVideoSink::IsSecure is_secure,
+                       MediaStreamVideoSink::UsesAlpha uses_alpha) {
+    NOTREACHED();
+  }
 
  private:
   const bool is_local_track_;

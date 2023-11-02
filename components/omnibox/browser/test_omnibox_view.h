@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,7 +56,6 @@ class TestOmniboxView : public OmniboxView {
   void GetSelectionBounds(size_t* start, size_t* end) const override;
   size_t GetAllSelectionsLength() const override;
   void SelectAll(bool reversed) override;
-  void RevertAll() override {}
   void UpdatePopup() override {}
   void SetFocus(bool is_user_initiated) override {}
   void ApplyCaretVisibility() override {}

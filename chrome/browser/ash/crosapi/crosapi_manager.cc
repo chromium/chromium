@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,8 +31,10 @@ CrosapiManager* CrosapiManager::Get() {
   return g_instance;
 }
 
-CrosapiManager::CrosapiManager()
-    : crosapi_ash_(std::make_unique<CrosapiAsh>()) {
+CrosapiManager::CrosapiManager() : CrosapiManager(&default_registry_) {}
+
+CrosapiManager::CrosapiManager(CrosapiDependencyRegistry* registry)
+    : crosapi_ash_(std::make_unique<CrosapiAsh>(registry)) {
   DCHECK(!g_instance);
   g_instance = this;
 }

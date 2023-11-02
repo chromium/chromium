@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -86,8 +86,9 @@ class ThirdPartyDataRemoverTest : public InProcessBrowserTest {
     std::unique_ptr<net::CanonicalCookie> cookie =
         net::CanonicalCookie::CreateUnsafeCookieForTesting(
             name, "foobar", host, "/", base::Time(), base::Time(), base::Time(),
-            /* secure= */ true, /* httponly= */ false, same_site,
-            net::COOKIE_PRIORITY_LOW, /* same_party= */ false);
+            base::Time(),
+            /*secure=*/true, /*httponly=*/false, same_site,
+            net::COOKIE_PRIORITY_LOW, /*same_party=*/false);
     net::CookieOptions options;
     options.set_same_site_cookie_context(cookie_context);
     bool result_out;
@@ -131,7 +132,7 @@ class ThirdPartyDataRemoverTest : public InProcessBrowserTest {
   content::RenderFrameHost* GetFrame() {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    return ChildFrameAt(web_contents->GetMainFrame(), 0);
+    return ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   }
 
   void AddStorage(const std::string& top_level_host,

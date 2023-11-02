@@ -1,0 +1,20 @@
+caption: Use hardware acceleration when available
+desc: |-
+  Setting the policy to Enabled or leaving it unset turns on hardware acceleration, if available.
+
+        Setting the policy to Disabled turns off hardware acceleration.
+example_value: true
+features:
+  dynamic_refresh: false
+  per_profile: false
+future_on:
+- fuchsia
+owners:
+- zmo@chromium.org
+- kbr@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:46-
+tags: []
+type: main

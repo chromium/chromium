@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <map>
 #include <memory>
 
-#include "components/keyed_service/core/keyed_service.h"
+#include "base/memory/raw_ptr.h"
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/core/reading_list_model_storage.h"
@@ -22,8 +22,7 @@ class PrefService;
 
 // Concrete implementation of a reading list model using in memory lists.
 class ReadingListModelImpl : public ReadingListModel,
-                             public ReadingListStoreDelegate,
-                             public KeyedService {
+                             public ReadingListStoreDelegate {
  public:
   using ReadingListEntries = std::map<GURL, ReadingListEntry>;
 
@@ -35,8 +34,6 @@ class ReadingListModelImpl : public ReadingListModel,
   ReadingListModelImpl(std::unique_ptr<ReadingListModelStorage> storage_layer,
                        PrefService* pref_service,
                        base::Clock* clock_);
-
-  ReadingListModelImpl();
 
   syncer::ModelTypeSyncBridge* GetModelTypeSyncBridge() override;
 
@@ -157,9 +154,9 @@ class ReadingListModelImpl : public ReadingListModel,
   // Set the unseen flag to true.
   void SetUnseenFlag();
 
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
   std::unique_ptr<ReadingListModelStorage> storage_layer_;
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
   bool has_unseen_;
   bool loaded_;
 

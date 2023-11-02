@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,14 +46,13 @@ enum class TaskType : unsigned char {
   // This task source is used for features that trigger in response to network
   // activity.
   kNetworking = 3,
-  // This is a part of Networking task source used to annotate tasks which are
-  // posted from the loading stack (i.e. WebURLLoader).
-  kNetworkingWithURLLoaderAnnotation = 50,
   // This is a part of Networking task that should not be frozen when a page is
   // frozen.
   kNetworkingUnfreezable = 75,
   // This task source is used for control messages between kNetworking tasks.
   kNetworkingControl = 4,
+  // Tasks used to run low priority scripts.
+  kLowPriorityScriptExecution = 81,
   // This task source is used to queue calls to history.back() and similar APIs.
   kHistoryTraversal = 5,
 
@@ -143,6 +142,7 @@ enum class TaskType : unsigned char {
   kWorkerAnimation = 51,
 
   // Obsolete.
+  // kNetworkingWithURLLoaderAnnotation = 50, (see crbug.com/860545)
   // kExperimentalWebSchedulingUserInteraction = 53,
   // kExperimentalWebSchedulingBestEffort = 54,
 
@@ -161,7 +161,7 @@ enum class TaskType : unsigned char {
   // https://w3c.github.io/ServiceWorker/#dfn-client-message-queue
   kServiceWorkerClientMessage = 60,
 
-  // https://wicg.github.io/web-locks/#web-locks-tasks-source
+  // https://w3c.github.io/web-locks/#web-locks-tasks-source
   kWebLocks = 66,
 
   // Task type used for the Prioritized Task Scheduling API
@@ -264,6 +264,9 @@ enum class TaskType : unsigned char {
   // Cross-process PostMessage IPCs that are deferred in the current task.
   kInternalPostMessageForwarding = 79,
 
+  // Tasks related to renderer-initiated navigation cancellation.
+  kInternalNavigationCancellation = 80,
+
   ///////////////////////////////////////
   // The following task types are only for thread-local queues.
   ///////////////////////////////////////
@@ -291,7 +294,7 @@ enum class TaskType : unsigned char {
   kWorkerThreadTaskQueueV8 = 47,
   kWorkerThreadTaskQueueCompositor = 48,
 
-  kMaxValue = kInternalPostMessageForwarding,
+  kMaxValue = kLowPriorityScriptExecution,
 };
 
 }  // namespace blink

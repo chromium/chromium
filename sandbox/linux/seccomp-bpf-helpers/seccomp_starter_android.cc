@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,19 @@ SeccompStarterAndroid::SeccompStarterAndroid(int build_sdk)
     : sdk_int_(build_sdk) {}
 
 SeccompStarterAndroid::~SeccompStarterAndroid() = default;
+
+#if BUILDFLAG(USE_SECCOMP_BPF)
+BaselinePolicyAndroid::RuntimeOptions
+SeccompStarterAndroid::GetDefaultBaselineOptions() const {
+  BaselinePolicyAndroid::RuntimeOptions options;
+  // On Android S+, there are CTS-enforced requirements that the kernel carries
+  // patches to userfaultfd that enforce usermode pages only (i.e.
+  // UFFD_USER_MODE_ONLY). Userfaultfd is used for a new ART garbage collector.
+  // See https://crbug.com/1300653 for details.
+  options.allow_userfaultfd_ioctls = sdk_int_ >= base::android::SDK_VERSION_S;
+  return options;
+}
+#endif
 
 bool SeccompStarterAndroid::StartSandbox() {
 #if BUILDFLAG(USE_SECCOMP_BPF)

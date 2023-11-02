@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,11 +64,11 @@ void NGMathRowLayoutAlgorithm::LayoutRowItems(
   if (!inherits_block_stretch_size_constraint &&
       !inherits_inline_stretch_size_constraint) {
     auto UpdateBlockStretchSizes =
-        [&](const scoped_refptr<const NGLayoutResult>& result) {
+        [&](const NGLayoutResult* result) {
           NGBoxFragment fragment(
               ConstraintSpace().GetWritingDirection(),
               To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
-          LayoutUnit ascent = fragment.BaselineOrSynthesize(baseline_type);
+          LayoutUnit ascent = fragment.FirstBaselineOrSynthesize(baseline_type);
           stretch_sizes.ascent = std::max(stretch_sizes.ascent, ascent),
           stretch_sizes.descent =
               std::max(stretch_sizes.descent, fragment.BlockSize() - ascent);
@@ -85,7 +85,7 @@ void NGMathRowLayoutAlgorithm::LayoutRowItems(
       const auto child_constraint_space = CreateConstraintSpaceForMathChild(
           Node(), ChildAvailableSize(), ConstraintSpace(), child,
           NGCacheSlot::kMeasure);
-      const auto child_layout_result = To<NGBlockNode>(child).Layout(
+      const auto* child_layout_result = To<NGBlockNode>(child).Layout(
           child_constraint_space, nullptr /* break_token */);
       UpdateBlockStretchSizes(child_layout_result);
       should_layout_remaining_items_with_zero_block_stretch_size = false;
@@ -103,7 +103,7 @@ void NGMathRowLayoutAlgorithm::LayoutRowItems(
         const auto child_constraint_space = CreateConstraintSpaceForMathChild(
             Node(), ChildAvailableSize(), ConstraintSpace(), child,
             NGCacheSlot::kMeasure, zero_stretch_sizes);
-        const auto child_layout_result = To<NGBlockNode>(child).Layout(
+        const auto* child_layout_result = To<NGBlockNode>(child).Layout(
             child_constraint_space, nullptr /* break_token */);
         UpdateBlockStretchSizes(child_layout_result);
       }
@@ -144,7 +144,7 @@ void NGMathRowLayoutAlgorithm::LayoutRowItems(
       child_constraint_space = CreateConstraintSpaceForMathChild(
           Node(), ChildAvailableSize(), ConstraintSpace(), child);
     }
-    const auto child_layout_result = To<NGBlockNode>(child).Layout(
+    const auto* child_layout_result = To<NGBlockNode>(child).Layout(
         child_constraint_space, nullptr /* break_token */);
     LayoutUnit lspace, rspace;
     if (should_add_space)
@@ -159,7 +159,7 @@ void NGMathRowLayoutAlgorithm::LayoutRowItems(
     inline_offset += margins.inline_start;
 
     LayoutUnit ascent =
-        margins.block_start + fragment.BaselineOrSynthesize(baseline_type);
+        margins.block_start + fragment.FirstBaselineOrSynthesize(baseline_type);
     *max_row_block_baseline = std::max(*max_row_block_baseline, ascent);
 
     // TODO(crbug.com/1125136): take into account italic correction.
@@ -185,7 +185,7 @@ void NGMathRowLayoutAlgorithm::LayoutRowItems(
   row_total_size->block_size = max_row_ascent + max_row_descent;
 }
 
-scoped_refptr<const NGLayoutResult> NGMathRowLayoutAlgorithm::Layout() {
+const NGLayoutResult* NGMathRowLayoutAlgorithm::Layout() {
   DCHECK(!IsResumingLayout(BreakToken()));
 
   bool is_display_block_math =
@@ -213,7 +213,7 @@ scoped_refptr<const NGLayoutResult> NGMathRowLayoutAlgorithm::Layout() {
     child_data.child.StoreMargins(ConstraintSpace(), child_data.margins);
   }
 
-  container_builder_.SetBaseline(adjust_offset.block_offset);
+  container_builder_.SetBaselines(adjust_offset.block_offset);
 
   auto intrinsic_block_size =
       max_row_size.block_size + BorderScrollbarPadding().BlockSum();

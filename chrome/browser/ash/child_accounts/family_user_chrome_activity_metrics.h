@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,10 @@
 #include "chrome/browser/ash/child_accounts/family_user_metrics_service.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_service_wrapper.h"
 #include "chrome/browser/ash/child_accounts/usage_time_state_notifier.h"
+
+namespace base {
+class UnguessableToken;
+}  // namespace base
 
 class PrefRegistrySimple;
 class PrefService;
@@ -47,13 +51,13 @@ class FamilyUserChromeActivityMetrics
   // to active, this function does not get called. OnUsageTimeStateChange() gets
   // called instead.
   void OnAppActive(const app_time::AppId& app_id,
-                   const apps::Instance::InstanceKey& instance_key,
+                   const base::UnguessableToken& instance_id,
                    base::Time timestamp) override;
   // When the screen goes from on to off or device goes active
   // to idle, this function does not get called. OnUsageTimeStateChange() gets
   // called instead.
   void OnAppInactive(const app_time::AppId& app_id,
-                     const apps::Instance::InstanceKey& instance_key,
+                     const base::UnguessableToken& instance_id,
                      base::Time timestamp) override;
 
   // UsageTimeStateNotifier::Observer:
@@ -77,7 +81,7 @@ class FamilyUserChromeActivityMetrics
   // created or activated, OnAppActive adds that instance to the set. When the
   // Chrome browser instance gets destroyed or deactivated, OnAppInactive might
   // remove that instance from the set.
-  std::set<apps::Instance::InstanceKey> active_browser_instances_;
+  std::set<base::UnguessableToken> active_browser_instances_;
 };
 }  // namespace ash
 

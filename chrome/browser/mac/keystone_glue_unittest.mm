@@ -1,10 +1,10 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import <Foundation/Foundation.h>
-#import <objc/objc-class.h>
 
+#import "base/mac/scoped_objc_class_swizzler.h"
 #include "base/test/task_environment.h"
 #import "chrome/browser/mac/keystone_glue.h"
 #import "chrome/browser/mac/keystone_registration.h"
@@ -131,7 +131,8 @@ namespace ksr = keystone_registration;
 
 - (BOOL)loadKeystoneRegistration {
   // The real loadKeystoneRegistration adds a real registration.
-  [self addFakeRegistration];
+  // Add a fake one.
+  _registration.reset([[FakeKeystoneRegistration alloc] init]);
   return YES;
 }
 
@@ -145,10 +146,6 @@ namespace ksr = keystone_registration;
 // Confirms certain things are happy
 - (BOOL)hasATimer {
   return _timer ? YES : NO;
-}
-
-- (void)addFakeRegistration {
-  _registration.reset([[FakeKeystoneRegistration alloc] init]);
 }
 
 - (void)fakeAboutWindowCallback:(NSNotification*)notification {
@@ -181,34 +178,17 @@ class KeystoneGlueTest : public PlatformTest {
   base::test::TaskEnvironment task_environment_;
 };
 
-// The test is flaky: crbug.com/1041813.
-TEST_F(KeystoneGlueTest, DISABLED_BasicGlobalCreate) {
-  // Allow creation of a KeystoneGlue by mocking out a few calls
-  SEL ids = @selector(infoDictionary);
-  IMP oldInfoImp_ = [[KeystoneGlue class] instanceMethodForSelector:ids];
-  IMP newInfoImp_ = [[FakeKeystoneGlue class] instanceMethodForSelector:ids];
-  Method infoMethod_ = class_getInstanceMethod([KeystoneGlue class], ids);
-  method_setImplementation(infoMethod_, newInfoImp_);
-
-  SEL lks = @selector(loadKeystoneRegistration);
-  IMP oldLoadImp_ = [[KeystoneGlue class] instanceMethodForSelector:lks];
-  IMP newLoadImp_ = [[FakeKeystoneGlue class] instanceMethodForSelector:lks];
-  Method loadMethod_ = class_getInstanceMethod([KeystoneGlue class], lks);
-  method_setImplementation(loadMethod_, newLoadImp_);
-
-  SEL afr = @selector(addFakeRegistration);
-  IMP oldAddFake_ = [[KeystoneGlue class] instanceMethodForSelector:afr];
-  IMP newAddFake_ = [[FakeKeystoneGlue class] instanceMethodForSelector:afr];
-  Method addMethod_ = class_getInstanceMethod([KeystoneGlue class], afr);
-  method_setImplementation(loadMethod_, newAddFake_);
+TEST_F(KeystoneGlueTest, BasicGlobalCreate) {
+  // Allow creation of a KeystoneGlue by mocking out a couple calls.
+  base::mac::ScopedObjCClassSwizzler infoDictionarySwizzler(
+      [KeystoneGlue class], [FakeKeystoneGlue class],
+      @selector(infoDictionary));
+  base::mac::ScopedObjCClassSwizzler loadRegistrationSwizzler(
+      [KeystoneGlue class], [FakeKeystoneGlue class],
+      @selector(loadKeystoneRegistration));
 
   KeystoneGlue *glue = [KeystoneGlue defaultKeystoneGlue];
   ASSERT_TRUE(glue);
-
-  // Fix back up the class to the way we found it.
-  method_setImplementation(infoMethod_, oldInfoImp_);
-  method_setImplementation(loadMethod_, oldLoadImp_);
-  method_setImplementation(addMethod_, oldAddFake_);
 }
 
 TEST_F(KeystoneGlueTest, BasicUse) {

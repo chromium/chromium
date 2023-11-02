@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -18,7 +18,7 @@ This program can be run with no arguments to run its own unit tests.
 
 from __future__ import print_function
 
-import list_flags
+import utils
 import os
 import sys
 
@@ -51,7 +51,7 @@ def gen_file_header(prog_name, meta_name):
   >>> '/dataname' in gen_file_header('/progname', '/dataname')
   True
   """
-  return """// Copyright 2019 The Chromium Authors. All rights reserved.
+  return """// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -94,7 +94,7 @@ def gen_file_body(flags, mstone):
   '  {"foo", 1},\\n  {"bar", 2},'
   """
   if mstone != None:
-    flags = list_flags.keep_expired_by(flags, mstone)
+    flags = utils.keep_expired_by(flags, mstone)
   output = []
   for f in flags:
     if f['expiry_milestone'] != -1:
@@ -105,7 +105,7 @@ def gen_file_body(flags, mstone):
 
 def gen_expiry_file(program_name, metadata_name):
   output = gen_file_header(program_name, metadata_name)
-  output += gen_file_body(list_flags.load_metadata(), get_chromium_version())
+  output += gen_file_body(utils.load_metadata(), get_chromium_version())
   output += gen_file_footer()
   return output
 

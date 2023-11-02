@@ -9,14 +9,14 @@ Verifies that we can successfully retrieve origin trial in frame tree.
                     isThirdParty : false
                     matchSubDomains : false
                     origin : http://127.0.0.1:8000
-                    trialName : AppCache
+                    trialName : Frobulate
                     usageRestriction : None
                 }
-                rawTokenText : AnwB3aSh6U8pmYtO/AzzxELSwk8BRJoj77nUnCq6u3N8LMJKlX/ImydQmXn3SgE0a+8RyowLbV835tXQHJMHuAEAAABQeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE3NjE5OH0=
+                rawTokenText : Azyb0NvqGpCAlOx91FP6wa6pn5iu6+UTVuKv+H3QHoFQeKuMqqgJdwbpON0LpCSSpk6VZcR3/DULpkLjrQbViQUAAABReyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiRnJvYnVsYXRlIiwgImV4cGlyeSI6IDE3NjExNzYxOTh9
                 status : WrongOrigin
             }
         ]
-        trialName : AppCache
+        trialName : Frobulate
     }
 ]
 

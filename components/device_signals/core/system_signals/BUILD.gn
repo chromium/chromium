@@ -1,0 +1,87 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("system_signals") {
+  public = [
+    "executable_metadata_service.h",
+    "file_system_service.h",
+    "platform_delegate.h",
+  ]
+
+  sources = [
+    "executable_metadata_service.cc",
+    "file_system_service.cc",
+    "hashing_utils.cc",
+    "hashing_utils.h",
+    "platform_delegate.cc",
+  ]
+
+  if (is_win || is_mac || is_linux) {
+    public += [ "base_platform_delegate.h" ]
+
+    sources += [ "base_platform_delegate.cc" ]
+  }
+
+  public_deps = [ "//third_party/abseil-cpp:absl" ]
+
+  deps = [
+    "//base",
+    "//components/device_signals/core/common",
+    "//crypto",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_executable_metadata_service.cc",
+    "mock_executable_metadata_service.h",
+    "mock_file_system_service.cc",
+    "mock_file_system_service.h",
+    "mock_platform_delegate.cc",
+    "mock_platform_delegate.h",
+  ]
+
+  deps = [
+    ":system_signals",
+    "//base",
+    "//components/device_signals/core/common",
+    "//testing/gmock",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "executable_metadata_service_unittest.cc",
+    "file_system_service_unittest.cc",
+  ]
+
+  if (is_win || is_mac || is_linux) {
+    sources += [ "base_platform_delegate_unittest.cc" ]
+  }
+
+  deps = [
+    ":system_signals",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/device_signals/core/common",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  if (is_win) {
+    deps += [ "//components/device_signals/core/system_signals/win:unit_tests" ]
+  }
+
+  if (is_mac) {
+    deps += [ "//components/device_signals/core/system_signals/mac:unit_tests" ]
+  }
+
+  if (is_mac || is_linux) {
+    deps +=
+        [ "//components/device_signals/core/system_signals/posix:unit_tests" ]
+  }
+}

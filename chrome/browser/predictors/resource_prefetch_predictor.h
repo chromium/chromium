@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -27,7 +28,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/sqlite_proto/key_value_data.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -57,13 +58,14 @@ class ResourcePrefetcherManager;
 // Stores all values needed to trigger a preconnect/preresolve job to a single
 // origin.
 struct PreconnectRequest {
-  // |network_isolation_key| specifies the key that network requests for the
+  // |network_anonymization_key| specifies the key that network requests for the
   // preconnected URL are expected to use. If a request is issued with a
   // different key, it may not use the preconnected socket. It has no effect
   // when |num_sockets| == 0.
-  PreconnectRequest(const url::Origin& origin,
-                    int num_sockets,
-                    const net::NetworkIsolationKey& network_isolation_key);
+  PreconnectRequest(
+      const url::Origin& origin,
+      int num_sockets,
+      const net::NetworkAnonymizationKey& network_anonymization_key);
   PreconnectRequest(const PreconnectRequest&) = default;
   PreconnectRequest(PreconnectRequest&&) = default;
   PreconnectRequest& operator=(const PreconnectRequest&) = default;
@@ -73,12 +75,12 @@ struct PreconnectRequest {
   // A zero-value means that we need to preresolve a host only.
   int num_sockets = 0;
   bool allow_credentials = true;
-  net::NetworkIsolationKey network_isolation_key;
+  net::NetworkAnonymizationKey network_anonymization_key;
 };
 
 struct PrefetchRequest {
   PrefetchRequest(const GURL& url,
-                  const net::NetworkIsolationKey& network_isolation_key,
+                  const net::NetworkAnonymizationKey& network_anonymization_key,
                   network::mojom::RequestDestination destination);
 
   PrefetchRequest(const PrefetchRequest&) = default;
@@ -87,7 +89,7 @@ struct PrefetchRequest {
   PrefetchRequest& operator=(PrefetchRequest&&) = default;
 
   GURL url;
-  net::NetworkIsolationKey network_isolation_key;
+  net::NetworkAnonymizationKey network_anonymization_key;
   network::mojom::RequestDestination destination;
 };
 
@@ -306,8 +308,8 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
     tables_ = tables;
   }
 
-  Profile* const profile_;
-  TestObserver* observer_;
+  const raw_ptr<Profile> profile_;
+  raw_ptr<TestObserver> observer_;
   const LoadingPredictorConfig config_;
   InitializationState initialization_state_;
   scoped_refptr<ResourcePrefetchPredictorTables> tables_;
@@ -347,7 +349,7 @@ class TestObserver {
   explicit TestObserver(ResourcePrefetchPredictor* predictor);
 
  private:
-  ResourcePrefetchPredictor* predictor_;
+  raw_ptr<ResourcePrefetchPredictor> predictor_;
 };
 
 }  // namespace predictors

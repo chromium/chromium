@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,12 @@
  */
 import './site_list.js';
 
-import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+
+import {getTemplate} from './category_setting_exceptions.html.js';
 import {ContentSetting, ContentSettingsTypes} from './constants.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
 import {ContentSettingProvider} from './site_settings_prefs_browser_proxy.js';
@@ -27,7 +29,7 @@ export class CategorySettingExceptionsElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -42,12 +44,6 @@ export class CategorySettingExceptionsElement extends
               'siteSettingsCustomizedBehaviorsDescription');
         },
       },
-
-      /**
-       * The string ID of the category that this element is displaying data for.
-       * See site_settings/constants.js for possible values.
-       */
-      category: String,
 
       /**
        * Some content types (like Location) do not allow the user to manually
@@ -84,14 +80,6 @@ export class CategorySettingExceptionsElement extends
       },
 
       /**
-       * If true, displays the Block site list. Defaults to true.
-       */
-      showBlockSiteList_: {
-        type: Boolean,
-        value: true,
-      },
-
-      /**
        * Expose ContentSetting enum to HTML bindings.
        */
       contentSettingEnum_: {
@@ -108,16 +96,14 @@ export class CategorySettingExceptionsElement extends
   }
 
   description: string;
-  category: ContentSettingsTypes;
   private readOnlyList: boolean;
   private defaultManaged_: boolean;
   blockHeader: string;
   allowHeader: string;
   searchFilter: string;
   private showAllowSiteList_: boolean;
-  private showBlockSiteList_: boolean;
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addWebUIListener(

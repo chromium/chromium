@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Privacy Budget: Test page that fetches User Agent using a Shared Worker</title>
+<script src="test_utils.js"></script>
+<script language="javascript">
+  const myWorker = new SharedWorker('shared_worker.js');
+  myWorker.port.onmessage = (e) => {
+    sendValueToTest('Done');
+    myWorker.port.postMessage('close');
+  }
+  myWorker.port.postMessage('Start');
+</script>

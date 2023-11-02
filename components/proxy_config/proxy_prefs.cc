@@ -1,11 +1,10 @@
-// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/proxy_config/proxy_prefs.h"
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 
 namespace ProxyPrefs {
@@ -20,7 +19,7 @@ const char* kProxyModeNames[] = { kDirectProxyModeName,
                                   kFixedServersProxyModeName,
                                   kSystemProxyModeName };
 
-static_assert(base::size(kProxyModeNames) == kModeCount,
+static_assert(std::size(kProxyModeNames) == kModeCount,
               "kProxyModeNames must have kModeCount elements");
 
 }  // namespace

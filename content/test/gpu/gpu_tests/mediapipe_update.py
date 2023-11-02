@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -12,7 +12,7 @@ import zipfile
 import filecmp
 
 
-def GetChromiumSrcDir():
+def GetChromiumSrcDir() -> str:
   return os.path.abspath(
       os.path.join(os.path.dirname(__file__), '..', '..', '..', '..'))
 
@@ -20,7 +20,7 @@ def GetChromiumSrcDir():
 _TEST_ROOT = os.path.join(GetChromiumSrcDir(), 'content', 'test', 'data', 'gpu')
 
 
-def main():
+def main() -> int:
   sha1_src = os.path.join(_TEST_ROOT, 'mediapipe_zip',
                           'mediapipe_chromium_tests.zip.sha1')
   sha1_dest = os.path.join(_TEST_ROOT, 'mediapipe',

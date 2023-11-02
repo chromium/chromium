@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,7 +49,7 @@ TEST(TranslateServiceTest, CheckTranslatableURL) {
   EXPECT_TRUE(TranslateService::IsTranslatableURL(file_url));
 
   // kContentScheme is only used on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::string content = std::string(url::kContentScheme) + "://";
   GURL content_url = GURL(content);
   EXPECT_TRUE(TranslateService::IsTranslatableURL(content_url));

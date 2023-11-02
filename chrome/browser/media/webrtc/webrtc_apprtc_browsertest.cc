@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -98,7 +98,7 @@ class WebRtcApprtcBrowserTest : public WebRtcTestBase {
     }
 
     base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-    EXPECT_TRUE(GetPythonCommand(&command_line));
+    EXPECT_TRUE(GetPython3Command(&command_line));
 
     command_line.AppendArgPath(appengine_dev_appserver);
     command_line.AppendArgPath(apprtc_dir);
@@ -116,7 +116,7 @@ class WebRtcApprtcBrowserTest : public WebRtcTestBase {
                                  const std::string& collider_port) {
     // The go workspace should be created, and collidermain built, at the
     // runhooks stage when webrtc.DEPS/build_apprtc_collider.py runs.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     base::FilePath collider_server = GetSourceDir().Append(
         FILE_PATH_LITERAL("third_party/webrtc/rtc_tools/testing/"
                           "browsertest/collider/collidermain.exe"));

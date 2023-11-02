@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 // test code.
 @interface FirstRunAppInterface : NSObject
 
-// Resets the UMA collection enabled pref to |enabled|.
+// Resets the UMA collection enabled pref to `enabled`.
 + (void)setUMACollectionEnabled:(BOOL)enabled;
 
 // Returns whether UMA collection is enabled.
@@ -26,9 +26,6 @@
 
 // Returns whether sync has finished its first run setup.
 + (BOOL)isSyncFirstSetupComplete;
-
-// Checks if the "old strings in new FRE" feature is enabled.
-+ (BOOL)isOldSyncStringInFREEnabled;
 
 @end
 

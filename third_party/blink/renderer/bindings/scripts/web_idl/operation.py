@@ -1,11 +1,9 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import functools
 
-from .argument import Argument
-from .code_generator_info import CodeGeneratorInfo
 from .composition_parts import WithCodeGeneratorInfo
 from .composition_parts import WithComponent
 from .composition_parts import WithDebugInfo
@@ -13,10 +11,8 @@ from .composition_parts import WithExposure
 from .composition_parts import WithExtendedAttributes
 from .composition_parts import WithOwner
 from .composition_parts import WithOwnerMixin
-from .exposure import Exposure
 from .function_like import FunctionLike
 from .function_like import OverloadGroup
-from .idl_type import IdlType
 from .make_copy import make_copy
 
 
@@ -76,6 +72,7 @@ class Operation(FunctionLike, WithExtendedAttributes, WithCodeGeneratorInfo,
         WithComponent.__init__(self, ir, readonly=True)
         WithDebugInfo.__init__(self, ir)
 
+        self._is_static = ir.is_static
         self._is_getter = ir.is_getter
         self._is_setter = ir.is_setter
         self._is_deleter = ir.is_deleter
@@ -96,6 +93,11 @@ class Operation(FunctionLike, WithExtendedAttributes, WithCodeGeneratorInfo,
         (one of getter, setter, or deleter).
         """
         return self.is_getter or self.is_setter or self.is_deleter
+
+    @property
+    def is_static(self):
+        """Returns True if this is a static operation."""
+        return self._is_static
 
     @property
     def is_getter(self):
@@ -147,7 +149,8 @@ class OperationGroup(OverloadGroup, WithExtendedAttributes,
                      WithCodeGeneratorInfo, WithExposure, WithOwner,
                      WithComponent, WithDebugInfo):
     """
-    Represents a group of operations with the same identifier.
+    Represents a group of operations with the same identifier and
+    static/prototype visibility.
 
     The number of operations in this group may be 1 or 2+.  In the latter case,
     the operations are overloaded.

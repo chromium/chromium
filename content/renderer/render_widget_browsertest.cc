@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,12 @@
 #include "content/public/renderer/render_frame_visitor.h"
 #include "content/public/test/fake_render_widget_host.h"
 #include "content/public/test/render_view_test.h"
-#include "content/renderer/render_frame_proxy.h"
 #include "content/renderer/render_thread_impl.h"
-#include "content/renderer/render_view_impl.h"
 #include "third_party/blink/public/common/widget/visual_properties.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
+#include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
+#include "third_party/blink/public/web/web_hit_test_result.h"
 #include "third_party/blink/public/web/web_input_method_controller.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_range.h"
@@ -47,7 +47,7 @@ class RenderWidgetTest : public RenderViewTest {
 
   gfx::PointF GetCenterPointOfElement(const blink::WebString& id) {
     auto rect =
-        GetMainFrame()->GetDocument().GetElementById(id).BoundsInViewport();
+        GetMainFrame()->GetDocument().GetElementById(id).BoundsInWidget();
     return gfx::PointF(rect.x() + rect.width() / 2,
                        rect.y() + rect.height() / 2);
   }

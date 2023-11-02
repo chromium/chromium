@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,6 +35,9 @@ class EnrollmentRequisitionManager {
   static void SetDeviceRequisition(const std::string& requisition);
   static bool IsRemoraRequisition();
   static bool IsSharkRequisition();
+
+  // If the current device extends the CFM Overlay or has Remora bit set
+  static bool IsMeetDevice();
 
   // Gets/Sets the sub organization.
   static std::string GetSubOrganization();

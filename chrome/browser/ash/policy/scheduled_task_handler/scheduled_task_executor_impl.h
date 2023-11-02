@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/scheduled_task_executor.h"
 #include "chromeos/dbus/power/native_timer.h"
-#include "third_party/icu/source/i18n/unicode/calendar.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace policy {
 
@@ -29,18 +29,10 @@ class ScheduledTaskExecutorImpl : public ScheduledTaskExecutor {
   // ScheduledTaskExecutor:
   void Start(ScheduledTaskData* scheduled_task_data,
              chromeos::OnStartNativeTimerCallback result_cb,
-             TimerCallback timer_expired_cb) override;
-
-  // ScheduledTaskExecutor:
+             TimerCallback timer_expired_cb,
+             base::TimeDelta external_delay = base::TimeDelta()) override;
   void Reset() override;
-
- protected:
-  // Calculates the delay from |cur_time| at which |scheduled_task_timer_|
-  // should run next. Returns 0 delay if the calculation failed due to a
-  // concurrent DST or Time Zone change.
-  virtual base::TimeDelta CalculateNextScheduledTaskTimerDelay(
-      base::Time cur_time,
-      ScheduledTaskData* scheduled_task_data);
+  const base::Time GetScheduledTaskTime() const override;
 
  private:
   // Returns current time.
@@ -57,20 +49,10 @@ class ScheduledTaskExecutorImpl : public ScheduledTaskExecutor {
 
   // Timer that is scheduled to execute the task.
   std::unique_ptr<chromeos::NativeTimer> scheduled_task_timer_;
+
+  // Time when the task will be executed.
+  base::Time scheduled_task_time_;
 };
-
-namespace scheduled_task_internal {
-// Used as canonical value for timer delay calculations.
-constexpr base::TimeDelta kInvalidDelay = base::TimeDelta();
-
-// Calculates the difference in milliseconds of |a| - |b|. Caller has to ensure
-// |a| >= |b|.
-base::TimeDelta GetDiff(const icu::Calendar& a, const icu::Calendar& b);
-
-// Converts |cur_time| to ICU time in the time zone |tz|.
-std::unique_ptr<icu::Calendar> ConvertUtcToTzIcuTime(base::Time cur_time,
-                                                     const icu::TimeZone& tz);
-}  // namespace scheduled_task_internal
 
 }  // namespace policy
 

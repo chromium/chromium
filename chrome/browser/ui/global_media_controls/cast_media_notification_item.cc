@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_session_controller.h"
@@ -155,7 +156,7 @@ CastMediaNotificationItem::CastMediaNotificationItem(
       profile_(profile),
       session_controller_(std::move(session_controller)),
       media_route_id_(route.media_route_id()),
-      is_local_presentation_(route.is_local_presentation()),
+      route_is_local_(route.is_local()),
       image_downloader_(
           profile,
           base::BindRepeating(&CastMediaNotificationItem::ImageChanged,
@@ -334,9 +335,8 @@ void CastMediaNotificationItem::ImageDownloader::Download(const GURL& url) {
                               url_, this, GetTrafficAnnotationTag())
                         : std::make_unique<BitmapFetcher>(
                               url_, this, GetTrafficAnnotationTag());
-  bitmap_fetcher_->Init(
-      /* referrer */ "", net::ReferrerPolicy::NEVER_CLEAR,
-      network::mojom::CredentialsMode::kOmit);
+  bitmap_fetcher_->Init(net::ReferrerPolicy::NEVER_CLEAR,
+                        network::mojom::CredentialsMode::kOmit);
   bitmap_fetcher_->Start(url_loader_factory_.get());
 }
 

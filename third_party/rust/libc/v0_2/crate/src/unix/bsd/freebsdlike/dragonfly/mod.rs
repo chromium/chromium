@@ -32,12 +32,43 @@ pub type pthread_barrierattr_t = ::c_int;
 pub type pthread_barrier_t = ::uintptr_t;
 pub type pthread_spinlock_t = ::uintptr_t;
 
+pub type segsz_t = usize;
+
+pub type vm_prot_t = u8;
+pub type vm_maptype_t = u8;
+pub type vm_inherit_t = i8;
+pub type vm_subsys_t = ::c_int;
+pub type vm_eflags_t = ::c_uint;
+
+pub type vm_map_t = *mut __c_anonymous_vm_map;
+pub type vm_map_entry_t = *mut vm_map_entry;
+
+pub type pmap = __c_anonymous_pmap;
+
 #[cfg_attr(feature = "extra_traits", derive(Debug))]
 pub enum sem {}
 impl ::Copy for sem {}
 impl ::Clone for sem {
     fn clone(&self) -> sem {
         *self
+    }
+}
+
+e! {
+    #[repr(u32)]
+    pub enum lwpstat {
+        LSRUN = 1,
+        LSSTOP = 2,
+        LSSLEEP = 3,
+    }
+
+    #[repr(u32)]
+    pub enum procstat {
+        SIDL = 1,
+        SACTIVE = 2,
+        SSTOP = 3,
+        SZOMB = 4,
+        SCORE = 5,
     }
 }
 
@@ -123,11 +154,11 @@ s! {
         pub st_ctime_nsec: ::c_long,
         pub st_size: ::off_t,
         pub st_blocks: i64,
-        pub st_blksize: u32,
+        pub __old_st_blksize: u32,
         pub st_flags: u32,
         pub st_gen: u32,
         pub st_lspare: i32,
-        pub st_qspare1: i64,
+        pub st_blksize: i64,
         pub st_qspare2: i64,
     }
 
@@ -209,6 +240,176 @@ s! {
         pub shm_dtime: ::time_t,
         pub shm_ctime: ::time_t,
         shm_internal: *mut ::c_void,
+    }
+
+    pub struct kinfo_file {
+        pub f_size: ::size_t,
+        pub f_pid: ::pid_t,
+        pub f_uid: ::uid_t,
+        pub f_fd: ::c_int,
+        pub f_file: *mut ::c_void,
+        pub f_type: ::c_short,
+        pub f_count: ::c_int,
+        pub f_msgcount: ::c_int,
+        pub f_offset: ::off_t,
+        pub f_data: *mut ::c_void,
+        pub f_flag: ::c_uint,
+    }
+
+    pub struct kinfo_cputime {
+        pub cp_user: u64,
+        pub cp_nice: u64,
+        pub cp_sys: u64,
+        pub cp_intr: u64,
+        pub cp_idel: u64,
+        cp_unused01: u64,
+        cp_unused02: u64,
+        pub cp_sample_pc: u64,
+        pub cp_sample_sp: u64,
+        pub cp_msg: [::c_char; 32],
+    }
+
+    pub struct kinfo_lwp {
+        pub kl_pid: ::pid_t,
+        pub kl_tid: ::lwpid_t,
+        pub kl_flags: ::c_int,
+        pub kl_stat: ::lwpstat,
+        pub kl_lock: ::c_int,
+        pub kl_tdflags: ::c_int,
+        pub kl_mpcount: ::c_int,
+        pub kl_prio: ::c_int,
+        pub kl_tdprio: ::c_int,
+        pub kl_rtprio: ::rtprio,
+        pub kl_uticks: u64,
+        pub kl_sticks: u64,
+        pub kl_iticks: u64,
+        pub kl_cpticks: u64,
+        pub kl_pctcpu: ::c_uint,
+        pub kl_slptime: ::c_uint,
+        pub kl_origcpu: ::c_int,
+        pub kl_estcpu: ::c_int,
+        pub kl_cpuid: ::c_int,
+        pub kl_ru: ::rusage,
+        pub kl_siglist: ::sigset_t,
+        pub kl_sigmask: ::sigset_t,
+        pub kl_wchan: ::uintptr_t,
+        pub kl_wmesg: [::c_char; 9],
+        pub kl_comm: [::c_char; MAXCOMLEN+1],
+    }
+
+    pub struct kinfo_proc {
+        pub kp_paddr: ::uintptr_t,
+        pub kp_flags: ::c_int,
+        pub kp_stat: ::procstat,
+        pub kp_lock: ::c_int,
+        pub kp_acflag: ::c_int,
+        pub kp_traceflag: ::c_int,
+        pub kp_fd: ::uintptr_t,
+        pub kp_siglist: ::sigset_t,
+        pub kp_sigignore: ::sigset_t,
+        pub kp_sigcatch: ::sigset_t,
+        pub kp_sigflag: ::c_int,
+        pub kp_start: ::timeval,
+        pub kp_comm: [::c_char; MAXCOMLEN+1],
+        pub kp_uid: ::uid_t,
+        pub kp_ngroups: ::c_short,
+        pub kp_groups: [::gid_t; NGROUPS],
+        pub kp_ruid: ::uid_t,
+        pub kp_svuid: ::uid_t,
+        pub kp_rgid: ::gid_t,
+        pub kp_svgid: ::gid_t,
+        pub kp_pid: ::pid_t,
+        pub kp_ppid: ::pid_t,
+        pub kp_pgid: ::pid_t,
+        pub kp_jobc: ::c_int,
+        pub kp_sid: ::pid_t,
+        pub kp_login: [::c_char; 40], // MAXNAMELEN rounded up to the nearest sizeof(long)
+        pub kp_tdev: ::dev_t,
+        pub kp_tpgid: ::pid_t,
+        pub kp_tsid: ::pid_t,
+        pub kp_exitstat: ::c_ushort,
+        pub kp_nthreads: ::c_int,
+        pub kp_nice: ::c_int,
+        pub kp_swtime: ::c_uint,
+        pub kp_vm_map_size: ::size_t,
+        pub kp_vm_rssize: ::segsz_t,
+        pub kp_vm_swrss: ::segsz_t,
+        pub kp_vm_tsize: ::segsz_t,
+        pub kp_vm_dsize: ::segsz_t,
+        pub kp_vm_ssize: ::segsz_t,
+        pub kp_vm_prssize: ::c_uint,
+        pub kp_jailid: ::c_int,
+        pub kp_ru: ::rusage,
+        pub kp_cru: ::rusage,
+        pub kp_auxflags: ::c_int,
+        pub kp_lwp: ::kinfo_lwp,
+        pub kp_ktaddr: ::uintptr_t,
+        kp_spare: [::c_int; 2],
+    }
+
+    pub struct __c_anonymous_vm_map {
+        _priv: [::uintptr_t; 36],
+    }
+
+    pub struct vm_map_entry {
+        _priv: [::uintptr_t; 15],
+        pub eflags: ::vm_eflags_t,
+        pub maptype: ::vm_maptype_t,
+        pub protection: ::vm_prot_t,
+        pub max_protection: ::vm_prot_t,
+        pub inheritance: ::vm_inherit_t,
+        pub wired_count: ::c_int,
+        pub id: ::vm_subsys_t,
+    }
+
+    pub struct __c_anonymous_pmap {
+        _priv1: [::uintptr_t; 32],
+        _priv2: [::uintptr_t; 32],
+        _priv3: [::uintptr_t; 32],
+        _priv4: [::uintptr_t; 32],
+        _priv5: [::uintptr_t; 8],
+    }
+
+    pub struct vmspace {
+        vm_map: __c_anonymous_vm_map,
+        vm_pmap: __c_anonymous_pmap,
+        pub vm_flags: ::c_int,
+        pub vm_shm: *mut ::c_char,
+        pub vm_rssize: ::segsz_t,
+        pub vm_swrss: ::segsz_t,
+        pub vm_tsize: ::segsz_t,
+        pub vm_dsize: ::segsz_t,
+        pub vm_ssize: ::segsz_t,
+        pub vm_taddr: *mut ::c_char,
+        pub vm_daddr: *mut ::c_char,
+        pub vm_maxsaddr: *mut ::c_char,
+        pub vm_minsaddr: *mut ::c_char,
+        _unused1: ::c_int,
+        _unused2: ::c_int,
+        pub vm_pagesupply: ::c_int,
+        pub vm_holdcnt: ::c_uint,
+        pub vm_refcnt: ::c_uint,
+    }
+
+    pub struct cpuctl_msr_args_t {
+        pub msr: ::c_int,
+        pub data: u64,
+    }
+
+    pub struct cpuctl_cpuid_args_t {
+        pub level: ::c_int,
+        pub data: [u32; 4],
+    }
+
+    pub struct cpuctl_cpuid_count_args_t {
+        pub level: ::c_int,
+        pub level_type: ::c_int,
+        pub data: [u32; 4],
+    }
+
+    pub struct cpuctl_update_args_t {
+        pub data: *mut ::c_void,
+        pub size: ::size_t,
     }
 }
 
@@ -701,6 +902,10 @@ cfg_if! {
 pub const RAND_MAX: ::c_int = 0x7fff_ffff;
 pub const PTHREAD_STACK_MIN: ::size_t = 16384;
 pub const SIGSTKSZ: ::size_t = 40960;
+pub const SIGCKPT: ::c_int = 33;
+pub const SIGCKPTEXIT: ::c_int = 34;
+pub const CKPT_FREEZE: ::c_int = 0x1;
+pub const CKPT_THAW: ::c_int = 0x2;
 pub const MADV_INVAL: ::c_int = 10;
 pub const MADV_SETMAP: ::c_int = 11;
 pub const O_CLOEXEC: ::c_int = 0x00020000;
@@ -708,15 +913,15 @@ pub const O_DIRECTORY: ::c_int = 0x08000000;
 pub const F_GETLK: ::c_int = 7;
 pub const F_SETLK: ::c_int = 8;
 pub const F_SETLKW: ::c_int = 9;
+pub const F_GETPATH: ::c_int = 19;
 pub const ENOMEDIUM: ::c_int = 93;
+pub const ENOTRECOVERABLE: ::c_int = 94;
+pub const EOWNERDEAD: ::c_int = 95;
 pub const EASYNC: ::c_int = 99;
 pub const ELAST: ::c_int = 99;
 pub const RLIMIT_POSIXLOCKS: ::c_int = 11;
 #[deprecated(since = "0.2.64", note = "Not stable across OS versions")]
 pub const RLIM_NLIMITS: ::rlim_t = 12;
-
-#[deprecated(since = "0.2.105", note = "Only exists on FreeBSD, not DragonFly BSD")]
-pub const XU_NGROUPS: ::c_int = 16;
 
 pub const Q_GETQUOTA: ::c_int = 0x300;
 pub const Q_SETQUOTA: ::c_int = 0x400;
@@ -853,6 +1058,14 @@ pub const CTL_P1003_1B_SIGQUEUE_MAX: ::c_int = 24;
 pub const CTL_P1003_1B_TIMER_MAX: ::c_int = 25;
 pub const CTL_P1003_1B_MAXID: ::c_int = 26;
 
+pub const CPUCTL_RSMSR: ::c_int = 0xc0106301;
+pub const CPUCTL_WRMSR: ::c_int = 0xc0106302;
+pub const CPUCTL_CPUID: ::c_int = 0xc0106303;
+pub const CPUCTL_UPDATE: ::c_int = 0xc0106304;
+pub const CPUCTL_MSRSBIT: ::c_int = 0xc0106305;
+pub const CPUCTL_MSRCBIT: ::c_int = 0xc0106306;
+pub const CPUCTL_CPUID_COUNT: ::c_int = 0xc0106307;
+
 pub const EVFILT_READ: i16 = -1;
 pub const EVFILT_WRITE: i16 = -2;
 pub const EVFILT_AIO: i16 = -3;
@@ -877,6 +1090,8 @@ pub const EV_FLAG1: u16 = 0x2000;
 pub const EV_ERROR: u16 = 0x4000;
 pub const EV_EOF: u16 = 0x8000;
 pub const EV_SYSFLAGS: u16 = 0xf000;
+
+pub const FIODNAME: ::c_ulong = 0x80106678;
 
 pub const NOTE_TRIGGER: u32 = 0x01000000;
 pub const NOTE_FFNOP: u32 = 0x00000000;
@@ -905,6 +1120,7 @@ pub const NOTE_CHILD: u32 = 0x00000004;
 
 pub const SO_SNDSPACE: ::c_int = 0x100a;
 pub const SO_CPUHINT: ::c_int = 0x1030;
+pub const SO_PASSCRED: ::c_int = 0x4000;
 
 pub const PT_FIRSTMACH: ::c_int = 32;
 
@@ -1226,11 +1442,11 @@ pub const LC_ALL_MASK: ::c_int = LC_COLLATE_MASK
     | LC_NUMERIC_MASK
     | LC_TIME_MASK;
 
-pub const TIOCSIG: ::c_uint = 0x2000745f;
+pub const TIOCSIG: ::c_ulong = 0x2000745f;
 pub const BTUARTDISC: ::c_int = 0x7;
-pub const TIOCDCDTIMESTAMP: ::c_uint = 0x40107458;
-pub const TIOCISPTMASTER: ::c_uint = 0x20007455;
-pub const TIOCMODG: ::c_uint = 0x40047403;
+pub const TIOCDCDTIMESTAMP: ::c_ulong = 0x40107458;
+pub const TIOCISPTMASTER: ::c_ulong = 0x20007455;
+pub const TIOCMODG: ::c_ulong = 0x40047403;
 pub const TIOCMODS: ::c_ulong = 0x80047404;
 pub const TIOCREMOTE: ::c_ulong = 0x80047469;
 
@@ -1283,9 +1499,16 @@ pub const SF_XLINK: ::c_ulong = 0x01000000;
 pub const UTIME_OMIT: c_long = -2;
 pub const UTIME_NOW: c_long = -1;
 
+pub const MINCORE_SUPER: ::c_int = 0x20;
+
+// kinfo_proc constants
+pub const MAXCOMLEN: usize = 16;
+pub const MAXLOGNAME: usize = 33;
+pub const NGROUPS: usize = 16;
+
 const_fn! {
     {const} fn _CMSG_ALIGN(n: usize) -> usize {
-        (n + 3) & !3
+        (n + (::mem::size_of::<::c_long>() - 1)) & !(::mem::size_of::<::c_long>() - 1)
     }
 }
 
@@ -1359,6 +1582,13 @@ extern "C" {
 
     pub fn aio_waitcomplete(iocbp: *mut *mut aiocb, timeout: *mut ::timespec) -> ::c_int;
 
+    pub fn devname_r(
+        dev: ::dev_t,
+        mode: ::mode_t,
+        buf: *mut ::c_char,
+        len: ::size_t,
+    ) -> *mut ::c_char;
+
     pub fn waitid(
         idtype: idtype_t,
         id: ::id_t,
@@ -1407,6 +1637,11 @@ extern "C" {
     pub fn updlastlogx(fname: *const ::c_char, uid: ::uid_t, ll: *mut lastlogx) -> ::c_int;
     pub fn getutxuser(name: *const ::c_char) -> utmpx;
     pub fn utmpxname(file: *const ::c_char) -> ::c_int;
+
+    pub fn sys_checkpoint(tpe: ::c_int, fd: ::c_int, pid: ::pid_t, retval: ::c_int) -> ::c_int;
+
+    pub fn umtx_sleep(ptr: *const ::c_int, value: ::c_int, timeout: ::c_int) -> ::c_int;
+    pub fn umtx_wakeup(ptr: *const ::c_int, count: ::c_int) -> ::c_int;
 }
 
 #[link(name = "rt")]
@@ -1431,6 +1666,20 @@ extern "C" {
 
     pub fn reallocf(ptr: *mut ::c_void, size: ::size_t) -> *mut ::c_void;
     pub fn freezero(ptr: *mut ::c_void, size: ::size_t);
+}
+
+#[link(name = "kvm")]
+extern "C" {
+    pub fn kvm_vm_map_entry_first(
+        kvm: *mut ::kvm_t,
+        map: vm_map_t,
+        entry: vm_map_entry_t,
+    ) -> vm_map_entry_t;
+    pub fn kvm_vm_map_entry_next(
+        kvm: *mut ::kvm_t,
+        map: vm_map_entry_t,
+        entry: vm_map_entry_t,
+    ) -> vm_map_entry_t;
 }
 
 cfg_if! {

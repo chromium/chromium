@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,9 +70,4 @@ public interface AutocompleteDelegate extends UrlBarDelegate {
      * @return Whether the URL currently has focus.
      */
     boolean isUrlBarFocused();
-
-    /**
-     * @return Whether the omnibox was focused because of tapping on query tiles.
-     */
-    boolean didFocusUrlFromQueryTiles();
 }

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,31 +10,15 @@
 
 #include "base/callback_forward.h"
 #include "base/check.h"
-#include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/test/bind.h"
+#include "base/test/test_future_internal.h"
 #include "base/thread_annotations.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace base {
-namespace test {
-
-namespace internal {
-
-// Helper to only implement a method if the future holds a single value
-template <typename Tuple>
-using EnableIfSingleValue =
-    std::enable_if_t<(std::tuple_size<Tuple>::value <= 1), bool>;
-
-// Helper to only implement a method if the future holds multiple values
-template <typename Tuple>
-using EnableIfMultiValue =
-    std::enable_if_t<(std::tuple_size<Tuple>::value > 1), bool>;
-
-}  // namespace internal
+namespace base::test {
 
 // Helper class to test code that returns its result(s) asynchronously through a
 // callback:
@@ -51,12 +35,6 @@ using EnableIfMultiValue =
 // If for any reason you can't use TestFuture::GetCallback(), you can use
 // TestFuture::SetValue() to directly set the value. This method must be called
 // from the main sequence.
-//
-// A |base::test::ScopedRunLoopTimeout| can be used to control how long
-// TestFuture::Get() and TestFuture::Wait() block before timing out.
-// In case of a timeout:
-//     - TestFuture::Wait() will return 'false'.
-//     - TestFuture::Get() will DCHECK.
 //
 // Finally, TestFuture::Take() is similar to TestFuture::Get() but it will
 // move the result out, which can be helpful when testing a move-only class.
@@ -92,23 +70,20 @@ using EnableIfMultiValue =
 //
 //     object_under_test.DoSomethingAsync(future.GetCallback());
 //
-//     bool success = future.Wait();
-//
-//     // Optional. If a timeout happened, the test will already be in a failed
-//     // state, but an explicit check can be useful if you want to add extra
-//     // information.
-//     ASSERT_TRUE(success) << "Detailed error message";
+//     // Optional. The Get() call below will also wait until the value
+//     // arrives, but this explicit call to Wait() can be useful if you want to
+//     // add extra information.
+//     ASSERT_TRUE(future.Wait()) << "Detailed error message";
 //
 //     const ResultType& actual_result = future.Get();
 //   }
 //
-// All access to this class must be made from the same thread.
+// All access to this class must be made from the same sequence.
 template <typename... Types>
 class TestFuture {
  public:
-  // Helper type to make the SFINAE templates easier on the eyes.
-  using T = std::tuple<Types...>;
-  using FirstType = typename std::tuple_element<0, T>::type;
+  using TupleType = std::tuple<std::decay_t<Types>...>;
+  using FirstType = typename std::tuple_element<0, TupleType>::type;
 
   TestFuture() = default;
   TestFuture(const TestFuture&) = delete;
@@ -117,15 +92,15 @@ class TestFuture {
 
   // Wait for the value to arrive.
   //
-  // Returns true if the value arrives, or false if a timeout happens.
-  // A timeout can only happen if |base::test::ScopedRunLoopTimeout| is used in
-  // the calling context. In case of a timeout, the test will be failed
-  // automatically by |base::test::ScopedRunLoopTimeout|, however if you want to
-  // provide a better error message you can always add an explicit check:
+  // Returns true if the value arrived, or false if a timeout happens.
   //
-  //   ASSERT_TRUE(future.Wait()) << "Detailed error message";
+  // Directly calling Wait() is not required as Get()/Take() will also wait for
+  // the value to arrive, however you can use a direct call to Wait() to
+  // improve the error reported:
   //
-  bool Wait() {
+  //   ASSERT_TRUE(queue.Wait()) << "Detailed error message";
+  //
+  [[nodiscard]] bool Wait() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     if (values_)
@@ -148,12 +123,12 @@ class TestFuture {
   //
   // Example usage:
   //
-  //   TestFutureTuple<int, std::string> future;
+  //   TestFuture<int, std::string> future;
   //   int first = future.Get<0>();
   //   std::string second = future.Get<1>();
   //
   template <std::size_t I>
-  const typename std::tuple_element<I, std::tuple<Types...>>::type& Get() {
+  const typename std::tuple_element<I, TupleType>::type& Get() {
     return std::get<I>(GetTuple());
   }
 
@@ -175,9 +150,13 @@ class TestFuture {
   template <typename... CallbackArgumentsTypes>
   base::OnceCallback<void(CallbackArgumentsTypes...)> GetCallback() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return base::BindOnce(&TestFuture<Types...>::SetValueFromCallbackArguments<
-                              CallbackArgumentsTypes...>,
-                          weak_ptr_factory_.GetWeakPtr());
+    return base::BindOnce(
+        [](WeakPtr<TestFuture<Types...>> future,
+           CallbackArgumentsTypes... values) {
+          if (future)
+            future->SetValue(std::forward<CallbackArgumentsTypes>(values)...);
+        },
+        weak_ptr_factory_.GetWeakPtr());
   }
 
   base::OnceCallback<void(Types...)> GetCallback() {
@@ -191,7 +170,9 @@ class TestFuture {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     DCHECK(!values_.has_value())
-        << "The value of a TestFuture can only be set once.";
+        << "The value of a TestFuture can only be set once. If you need to "
+           "handle an ordered stream of result values, use "
+           "|base::test::RepeatingTestFuture|.";
 
     values_ = std::make_tuple(std::forward<Types>(values)...);
     run_loop_.Quit();
@@ -204,16 +185,16 @@ class TestFuture {
   // Wait for the value to arrive, and returns its value.
   //
   // Will DCHECK if a timeout happens.
-  template <typename U = T, internal::EnableIfSingleValue<U> = true>
-  const FirstType& WARN_UNUSED_RESULT Get() {
+  template <typename T = TupleType, internal::EnableIfSingleValue<T> = true>
+  [[nodiscard]] const FirstType& Get() {
     return std::get<0>(GetTuple());
   }
 
   // Wait for the value to arrive, and move it out.
   //
   // Will DCHECK if a timeout happens.
-  template <typename U = T, internal::EnableIfSingleValue<U> = true>
-  FirstType WARN_UNUSED_RESULT Take() {
+  template <typename T = TupleType, internal::EnableIfSingleValue<T> = true>
+  [[nodiscard]] FirstType Take() {
     return std::get<0>(TakeTuple());
   }
 
@@ -224,36 +205,28 @@ class TestFuture {
   // Wait for the values to arrive, and returns a tuple with the values.
   //
   // Will DCHECK if a timeout happens.
-  template <typename U = T, internal::EnableIfMultiValue<U> = true>
-  const std::tuple<Types...>& WARN_UNUSED_RESULT Get() {
+  template <typename T = TupleType, internal::EnableIfMultiValue<T> = true>
+  [[nodiscard]] const TupleType& Get() {
     return GetTuple();
   }
 
   // Wait for the values to arrive, and move a tuple with the values out.
   //
   // Will DCHECK if a timeout happens.
-  template <typename U = T, internal::EnableIfMultiValue<U> = true>
-  std::tuple<Types...> WARN_UNUSED_RESULT Take() {
+  template <typename T = TupleType, internal::EnableIfMultiValue<T> = true>
+  [[nodiscard]] TupleType Take() {
     return TakeTuple();
   }
 
  private:
-  // Used by GetCallback() to adapt between the form in which the callback
-  // provides arguments, and the argument types specified to this template.
-  // e.g. callbacks often carry arguments as |const Foo&| rather than |Foo|.
-  template <typename... CallbackArgumentsTypes>
-  void SetValueFromCallbackArguments(CallbackArgumentsTypes... values) {
-    SetValue(std::forward<CallbackArgumentsTypes>(values)...);
-  }
-
-  const std::tuple<Types...>& GetTuple() WARN_UNUSED_RESULT {
+  [[nodiscard]] const TupleType& GetTuple() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     bool success = Wait();
     DCHECK(success) << "Waiting for value timed out.";
     return values_.value();
   }
 
-  std::tuple<Types...> TakeTuple() WARN_UNUSED_RESULT {
+  [[nodiscard]] TupleType TakeTuple() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     bool success = Wait();
     DCHECK(success) << "Waiting for value timed out.";
@@ -264,18 +237,11 @@ class TestFuture {
 
   base::RunLoop run_loop_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  absl::optional<std::tuple<Types...>> values_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Task runner this class is tied to.
-  // All methods must be called from this same sequence.
-  scoped_refptr<base::SequencedTaskRunner> task_runner_ =
-      base::SequencedTaskRunnerHandle::Get();
+  absl::optional<TupleType> values_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<TestFuture<Types...>> weak_ptr_factory_{this};
 };
 
-}  // namespace test
-}  // namespace base
+}  // namespace base::test
 
 #endif  // BASE_TEST_TEST_FUTURE_H_

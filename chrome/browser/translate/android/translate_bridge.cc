@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/containers/adapters.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/language/android/jni_headers/TranslateBridge_jni.h"
@@ -33,6 +34,7 @@
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
+using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaArrayOfStrings;
 
 namespace {
@@ -222,50 +224,22 @@ static jboolean JNI_TranslateBridge_IsBlockedLanguage(
   return translate_prefs->IsBlockedLanguage(language_code);
 }
 
-// Gets all the model languages and calls back to the Java
-// TranslateBridge#addModelLanguageToSet once for each language.
-static void JNI_TranslateBridge_GetModelLanguages(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& set) {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  language::LanguageModel* language_model =
-      LanguageModelManagerFactory::GetForBrowserContext(profile)
-          ->GetPrimaryModel();
-  DCHECK(language_model);
-  std::string model_languages;
-  std::vector<language::LanguageModel::LanguageDetails> languageDetails =
-      language_model->GetLanguages();
-  DCHECK(!languageDetails.empty());
-  for (const auto& details : languageDetails) {
-    Java_TranslateBridge_addModelLanguageToSet(
-        env, set,
-        base::android::ConvertUTF8ToJavaString(env, details.lang_code));
-  }
-}
-
 // Gets all languages that should always be translated as a Java List.
-static void JNI_TranslateBridge_GetAlwaysTranslateLanguages(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& list) {
+static ScopedJavaLocalRef<jobjectArray>
+JNI_TranslateBridge_GetAlwaysTranslateLanguages(JNIEnv* env) {
   std::unique_ptr<translate::TranslatePrefs> translate_prefs =
       ChromeTranslateClient::CreateTranslatePrefs(GetPrefService());
-
-  Java_TranslateBridge_copyStringArrayToList(
-      env, list,
-      ToJavaArrayOfStrings(env,
-                           translate_prefs->GetAlwaysTranslateLanguages()));
+  return ToJavaArrayOfStrings(env,
+                              translate_prefs->GetAlwaysTranslateLanguages());
 }
 
 // Gets all languages for which translation should not be prompted.
-static void JNI_TranslateBridge_GetNeverTranslateLanguages(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& list) {
+static ScopedJavaLocalRef<jobjectArray>
+JNI_TranslateBridge_GetNeverTranslateLanguages(JNIEnv* env) {
   std::unique_ptr<translate::TranslatePrefs> translate_prefs =
       ChromeTranslateClient::CreateTranslatePrefs(GetPrefService());
-
-  Java_TranslateBridge_copyStringArrayToList(
-      env, list,
-      ToJavaArrayOfStrings(env, translate_prefs->GetNeverTranslateLanguages()));
+  return ToJavaArrayOfStrings(env,
+                              translate_prefs->GetNeverTranslateLanguages());
 }
 
 // Sets the always translate state for a language.
@@ -345,14 +319,14 @@ void TranslateBridge::PrependToAcceptLanguagesIfNecessary(
   // differences in case and whitespace.
   std::set<std::string> seen_languages;
   std::vector<std::string> output_list;
-  for (auto it = unique_locale_list.rbegin(); it != unique_locale_list.rend();
-       ++it) {
-    if (seen_languages.find(it->first) == seen_languages.end()) {
-      output_list.push_back(it->first);
-      seen_languages.insert(it->first);
+  for (const auto& [language_code, country_code] :
+       base::Reversed(unique_locale_list)) {
+    if (seen_languages.find(language_code) == seen_languages.end()) {
+      output_list.push_back(language_code);
+      seen_languages.insert(language_code);
     }
-    if (!it->second.empty())
-      output_list.push_back(it->first + "-" + it->second);
+    if (!country_code.empty())
+      output_list.push_back(language_code + "-" + country_code);
   }
 
   std::reverse(output_list.begin(), output_list.end());
@@ -391,16 +365,14 @@ static void JNI_TranslateBridge_GetChromeAcceptLanguages(
   }
 }
 
-static void JNI_TranslateBridge_GetUserAcceptLanguages(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& list) {
+static ScopedJavaLocalRef<jobjectArray>
+JNI_TranslateBridge_GetUserAcceptLanguages(JNIEnv* env) {
   std::unique_ptr<translate::TranslatePrefs> translate_prefs =
       ChromeTranslateClient::CreateTranslatePrefs(GetPrefService());
 
   std::vector<std::string> languages;
   translate_prefs->GetLanguageList(&languages);
-  Java_TranslateBridge_copyStringArrayToList(
-      env, list, ToJavaArrayOfStrings(env, languages));
+  return ToJavaArrayOfStrings(env, languages);
 }
 
 static void JNI_TranslateBridge_SetLanguageOrder(

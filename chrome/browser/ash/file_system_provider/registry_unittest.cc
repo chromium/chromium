@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,7 +37,7 @@ const ProviderId kProviderId = ProviderId::CreateFromExtensionId(kExtensionId);
 
 // The dot in the file system ID is there in order to check that saving to
 // preferences works correctly. File System ID is used as a key in
-// a base::DictionaryValue, so it has to be stored without path expansion.
+// a base::Value, so it has to be stored without path expansion.
 const char kFileSystemId[] = "camera/pictures/id .!@#$%^&*()_+";
 
 const int kOpenedFilesLimit = 5;
@@ -58,50 +58,44 @@ void RememberFakeFileSystem(TestingProfile* profile,
       profile->GetTestingPrefService();
   ASSERT_TRUE(pref_service);
 
-  base::DictionaryValue extensions;
-  auto file_system = std::make_unique<base::DictionaryValue>();
-  file_system->SetKey(kPrefKeyFileSystemId, base::Value(kFileSystemId));
-  file_system->SetKey(kPrefKeyDisplayName, base::Value(kDisplayName));
-  file_system->SetKey(kPrefKeyWritable, base::Value(writable));
-  file_system->SetKey(kPrefKeySupportsNotifyTag,
-                      base::Value(supports_notify_tag));
-  file_system->SetKey(kPrefKeyOpenedFilesLimit,
-                      base::Value(opened_files_limit));
+  base::Value extensions{base::Value::Type::DICTIONARY};
+  base::Value file_system{base::Value::Type::DICTIONARY};
+  file_system.SetKey(kPrefKeyFileSystemId, base::Value(kFileSystemId));
+  file_system.SetKey(kPrefKeyDisplayName, base::Value(kDisplayName));
+  file_system.SetKey(kPrefKeyWritable, base::Value(writable));
+  file_system.SetKey(kPrefKeySupportsNotifyTag,
+                     base::Value(supports_notify_tag));
+  file_system.SetKey(kPrefKeyOpenedFilesLimit, base::Value(opened_files_limit));
 
   // Remember watchers.
-  auto watcher_value = std::make_unique<base::DictionaryValue>();
-  watcher_value->SetKey(kPrefKeyWatcherEntryPath,
-                        base::Value(watcher.entry_path.value()));
-  watcher_value->SetKey(kPrefKeyWatcherRecursive,
-                        base::Value(watcher.recursive));
-  watcher_value->SetKey(kPrefKeyWatcherLastTag, base::Value(watcher.last_tag));
-  auto persistent_origins_value = std::make_unique<base::ListValue>();
+  base::Value watcher_value{base::Value::Type::DICTIONARY};
+  watcher_value.SetKey(kPrefKeyWatcherEntryPath,
+                       base::Value(watcher.entry_path.value()));
+  watcher_value.SetKey(kPrefKeyWatcherRecursive,
+                       base::Value(watcher.recursive));
+  watcher_value.SetKey(kPrefKeyWatcherLastTag, base::Value(watcher.last_tag));
+  base::Value persistent_origins_value{base::Value::Type::LIST};
   for (const auto& subscriber_it : watcher.subscribers) {
     if (subscriber_it.second.persistent)
-      persistent_origins_value->Append(subscriber_it.first.spec());
+      persistent_origins_value.Append(subscriber_it.first.spec());
   }
 
-  watcher_value->SetKey(
-      kPrefKeyWatcherPersistentOrigins,
-      base::Value::FromUniquePtrValue(std::move(persistent_origins_value)));
-  auto watchers = std::make_unique<base::DictionaryValue>();
-  watchers->SetKey(watcher.entry_path.value(),
-                   base::Value::FromUniquePtrValue(std::move(watcher_value)));
-  file_system->SetKey(kPrefKeyWatchers,
-                      base::Value::FromUniquePtrValue(std::move(watchers)));
-  auto file_systems = std::make_unique<base::DictionaryValue>();
-  file_systems->SetKey(kFileSystemId,
-                       base::Value::FromUniquePtrValue(std::move(file_system)));
-  extensions.SetKey(kProviderId.ToString(),
-                    base::Value::FromUniquePtrValue(std::move(file_systems)));
-  pref_service->Set(prefs::kFileSystemProviderMounted, extensions);
+  watcher_value.SetKey(kPrefKeyWatcherPersistentOrigins,
+                       std::move(persistent_origins_value));
+  base::Value watchers{base::Value::Type::DICTIONARY};
+  watchers.SetKey(watcher.entry_path.value(), std::move(watcher_value));
+  file_system.SetKey(kPrefKeyWatchers, std::move(watchers));
+  base::Value file_systems{base::Value::Type::DICTIONARY};
+  file_systems.SetKey(kFileSystemId, std::move(file_system));
+  extensions.SetKey(kProviderId.ToString(), std::move(file_systems));
+  pref_service->Set(prefs::kFileSystemProviderMounted, std::move(extensions));
 }
 
 }  // namespace
 
 class FileSystemProviderRegistryTest : public testing::Test {
  protected:
-  FileSystemProviderRegistryTest() : profile_(NULL) {}
+  FileSystemProviderRegistryTest() : profile_(nullptr) {}
 
   ~FileSystemProviderRegistryTest() override {}
 
@@ -179,76 +173,71 @@ TEST_F(FileSystemProviderRegistryTest, RememberFileSystem) {
       profile_->GetTestingPrefService();
   ASSERT_TRUE(pref_service);
 
-  const base::DictionaryValue* const extensions =
-      pref_service->GetDictionary(prefs::kFileSystemProviderMounted);
-  ASSERT_TRUE(extensions);
+  const base::Value::Dict& extensions =
+      pref_service->GetDict(prefs::kFileSystemProviderMounted);
 
-  const base::DictionaryValue* file_systems = NULL;
-  ASSERT_TRUE(extensions->GetDictionaryWithoutPathExpansion(
-      kProviderId.ToString(), &file_systems));
-  EXPECT_EQ(1u, file_systems->DictSize());
+  const base::Value::Dict* file_systems =
+      extensions.FindDict(kProviderId.ToString());
+  ASSERT_TRUE(file_systems);
+  EXPECT_EQ(1u, file_systems->size());
 
-  const base::Value* file_system_value = file_systems->FindKey(kFileSystemId);
-  ASSERT_TRUE(file_system_value);
-  const base::DictionaryValue* file_system = NULL;
-  ASSERT_TRUE(file_system_value->GetAsDictionary(&file_system));
+  const base::Value::Dict* file_system = file_systems->FindDict(kFileSystemId);
+  ASSERT_TRUE(file_system);
 
   const std::string* file_system_id =
-      file_system->FindStringKey(kPrefKeyFileSystemId);
+      file_system->FindString(kPrefKeyFileSystemId);
   EXPECT_TRUE(file_system_id);
   EXPECT_EQ(kFileSystemId, *file_system_id);
 
   const std::string* display_name =
-      file_system->FindStringKey(kPrefKeyDisplayName);
+      file_system->FindString(kPrefKeyDisplayName);
   EXPECT_TRUE(display_name);
   EXPECT_EQ(kDisplayName, *display_name);
 
-  absl::optional<bool> writable = file_system->FindBoolKey(kPrefKeyWritable);
+  absl::optional<bool> writable = file_system->FindBool(kPrefKeyWritable);
   EXPECT_TRUE(writable.has_value());
   EXPECT_TRUE(writable.value());
 
   absl::optional<bool> supports_notify_tag =
-      file_system->FindBoolKey(kPrefKeySupportsNotifyTag);
+      file_system->FindBool(kPrefKeySupportsNotifyTag);
   EXPECT_TRUE(supports_notify_tag.has_value());
   EXPECT_TRUE(supports_notify_tag.value());
 
   absl::optional<int> opened_files_limit =
-      file_system->FindIntKey(kPrefKeyOpenedFilesLimit);
+      file_system->FindInt(kPrefKeyOpenedFilesLimit);
   EXPECT_TRUE(opened_files_limit.has_value());
   EXPECT_EQ(kOpenedFilesLimit, opened_files_limit.value());
 
-  const base::DictionaryValue* watchers_value = NULL;
-  ASSERT_TRUE(file_system->GetDictionaryWithoutPathExpansion(kPrefKeyWatchers,
-                                                             &watchers_value));
+  const base::Value::Dict* watchers_value =
+      file_system->FindDict(kPrefKeyWatchers);
+  ASSERT_TRUE(watchers_value);
 
-  const base::DictionaryValue* watcher = NULL;
-  ASSERT_TRUE(watchers_value->GetDictionaryWithoutPathExpansion(
-      fake_watcher_.entry_path.value(), &watcher));
+  const base::Value::Dict* watcher =
+      watchers_value->FindDict(fake_watcher_.entry_path.value());
+  ASSERT_TRUE(watcher);
 
-  const std::string* entry_path =
-      watcher->FindStringKey(kPrefKeyWatcherEntryPath);
+  const std::string* entry_path = watcher->FindString(kPrefKeyWatcherEntryPath);
   EXPECT_TRUE(entry_path);
   EXPECT_EQ(fake_watcher_.entry_path.value(), *entry_path);
 
-  absl::optional<bool> recursive =
-      watcher->FindBoolKey(kPrefKeyWatcherRecursive);
+  absl::optional<bool> recursive = watcher->FindBool(kPrefKeyWatcherRecursive);
   EXPECT_TRUE(recursive.has_value());
   EXPECT_EQ(fake_watcher_.recursive, recursive.value());
 
-  const std::string* last_tag = watcher->FindStringKey(kPrefKeyWatcherLastTag);
+  const std::string* last_tag = watcher->FindString(kPrefKeyWatcherLastTag);
   EXPECT_TRUE(last_tag);
   EXPECT_EQ(fake_watcher_.last_tag, *last_tag);
 
-  const base::ListValue* persistent_origins = NULL;
-  ASSERT_TRUE(watcher->GetListWithoutPathExpansion(
-      kPrefKeyWatcherPersistentOrigins, &persistent_origins));
-  ASSERT_GT(fake_watcher_.subscribers.size(),
-            persistent_origins->GetList().size());
-  ASSERT_EQ(1u, persistent_origins->GetList().size());
-  std::string persistent_origin;
-  EXPECT_TRUE(persistent_origins->GetString(0, &persistent_origin));
+  const base::Value::List* persistent_origins =
+      watcher->FindList(kPrefKeyWatcherPersistentOrigins);
+  ASSERT_TRUE(persistent_origins);
+  ASSERT_GT(fake_watcher_.subscribers.size(), persistent_origins->size());
+  ASSERT_EQ(1u, persistent_origins->size());
+  const std::string* persistent_origin =
+      persistent_origins->front().GetIfString();
+  ASSERT_TRUE(persistent_origin);
   const auto& fake_subscriber_it =
-      fake_watcher_.subscribers.find(GURL(persistent_origin));
+      fake_watcher_.subscribers.find(GURL(*persistent_origin));
   ASSERT_NE(fake_watcher_.subscribers.end(), fake_subscriber_it);
   EXPECT_TRUE(fake_subscriber_it->second.persistent);
 }
@@ -265,13 +254,12 @@ TEST_F(FileSystemProviderRegistryTest, ForgetFileSystem) {
       profile_->GetTestingPrefService();
   ASSERT_TRUE(pref_service);
 
-  const base::DictionaryValue* const extensions =
-      pref_service->GetDictionary(prefs::kFileSystemProviderMounted);
-  ASSERT_TRUE(extensions);
+  const base::Value::Dict& extensions =
+      pref_service->GetDict(prefs::kFileSystemProviderMounted);
 
-  const base::DictionaryValue* file_systems = NULL;
-  EXPECT_FALSE(extensions->GetDictionaryWithoutPathExpansion(
-      kProviderId.GetExtensionId(), &file_systems));
+  const base::Value::Dict* file_systems =
+      extensions.FindDict(kProviderId.GetExtensionId());
+  EXPECT_FALSE(file_systems);
 }
 
 TEST_F(FileSystemProviderRegistryTest, UpdateWatcherTag) {
@@ -297,29 +285,26 @@ TEST_F(FileSystemProviderRegistryTest, UpdateWatcherTag) {
       profile_->GetTestingPrefService();
   ASSERT_TRUE(pref_service);
 
-  const base::DictionaryValue* const extensions =
-      pref_service->GetDictionary(prefs::kFileSystemProviderMounted);
-  ASSERT_TRUE(extensions);
+  const base::Value::Dict& extensions =
+      pref_service->GetDict(prefs::kFileSystemProviderMounted);
 
-  const base::DictionaryValue* file_systems = NULL;
-  ASSERT_TRUE(extensions->GetDictionaryWithoutPathExpansion(
-      kProviderId.ToString(), &file_systems));
-  EXPECT_EQ(1u, file_systems->DictSize());
+  const base::Value::Dict* file_systems =
+      extensions.FindDict(kProviderId.ToString());
+  ASSERT_TRUE(file_systems);
+  EXPECT_EQ(1u, file_systems->size());
 
-  const base::Value* file_system_value = file_systems->FindKey(kFileSystemId);
-  ASSERT_TRUE(file_system_value);
-  const base::DictionaryValue* file_system = NULL;
-  ASSERT_TRUE(file_system_value->GetAsDictionary(&file_system));
+  const base::Value::Dict* file_system = file_systems->FindDict(kFileSystemId);
+  ASSERT_TRUE(file_system);
 
-  const base::DictionaryValue* watchers_value = NULL;
-  ASSERT_TRUE(file_system->GetDictionaryWithoutPathExpansion(kPrefKeyWatchers,
-                                                             &watchers_value));
+  const base::Value::Dict* watchers_value =
+      file_system->FindDict(kPrefKeyWatchers);
+  ASSERT_TRUE(watchers_value);
 
-  const base::DictionaryValue* watcher = NULL;
-  ASSERT_TRUE(watchers_value->GetDictionaryWithoutPathExpansion(
-      fake_watcher_.entry_path.value(), &watcher));
+  const base::Value::Dict* watcher =
+      watchers_value->FindDict(fake_watcher_.entry_path.value());
+  ASSERT_TRUE(watcher);
 
-  const std::string* last_tag = watcher->FindStringKey(kPrefKeyWatcherLastTag);
+  const std::string* last_tag = watcher->FindString(kPrefKeyWatcherLastTag);
   EXPECT_TRUE(last_tag);
   EXPECT_EQ(fake_watcher_.last_tag, *last_tag);
 }

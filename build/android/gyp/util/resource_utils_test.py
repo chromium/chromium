@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # coding: utf-8
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -19,7 +19,7 @@ _BUILD_ANDROID_GYP_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.insert(1, _BUILD_ANDROID_GYP_ROOT)
 
-import resource_utils  # pylint: disable=relative-import
+import resource_utils
 
 # pylint: disable=line-too-long
 

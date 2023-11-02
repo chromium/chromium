@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,8 +41,6 @@ class FormActivityObserver {
 
   // Called on form submission in the main frame or in a same-origin iframe.
   // |has_user_gesture| is true if the user interacted with the page.
-  // |form_in_main_frame| is true if the submitted form is hosted in the main
-  // frame.
   // |form_data| contains information on the form that has been submitted.
   // It is in a JSON format and can be decoded by autofill::ExtractFormsData.
   // It is a list (for compatibility reason) containing 0 or 1 dictionary.
@@ -53,15 +51,12 @@ class FormActivityObserver {
   // the form submission message. |sender_frame| can be null if frame messaging
   // is not enabled (see web::WebState::ScriptCommandCallback comment for
   // details).
-  // TODO(crbug.com/881811): remove |form_in_main_frame| once frame messaging is
-  // fully enabled.
   // TODO(crbug.com/881816): Update comment once WebFrame cannot be null.
   virtual void DocumentSubmitted(web::WebState* web_state,
                                  web::WebFrame* sender_frame,
                                  const std::string& form_name,
                                  const std::string& form_data,
-                                 bool has_user_gesture,
-                                 bool form_in_main_frame) {}
+                                 bool has_user_gesture) {}
 
   // Called when the form is removed in the main frame or in the same-origin
   // iframe. |params.input_missing| is indicating if there is any

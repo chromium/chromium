@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 
 #include "base/callback_forward.h"
 #include "content/common/content_export.h"
+#include "net/cookies/cookie_partition_key.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace url {
 class Origin;
@@ -26,6 +28,8 @@ CONTENT_EXPORT void ClearSiteData(
     bool clear_storage,
     bool clear_cache,
     bool avoid_closing_connections,
+    const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
+    const absl::optional<blink::StorageKey>& storage_key,
     base::OnceClosure callback);
 
 }  // namespace content

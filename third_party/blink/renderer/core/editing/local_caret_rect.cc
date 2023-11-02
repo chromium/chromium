@@ -24,7 +24,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_caret_position.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_caret_rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
@@ -174,15 +175,17 @@ LocalCaretRect LocalSelectionRectOfPositionTemplate(
 
 }  // namespace
 
-LocalCaretRect LocalCaretRectOfPosition(const PositionWithAffinity& position) {
-  return LocalCaretRectOfPositionTemplate<EditingStrategy>(
-      position, nullptr, kCanCrossEditingBoundary);
+LocalCaretRect LocalCaretRectOfPosition(const PositionWithAffinity& position,
+                                        EditingBoundaryCrossingRule rule) {
+  return LocalCaretRectOfPositionTemplate<EditingStrategy>(position, nullptr,
+                                                           rule);
 }
 
 LocalCaretRect LocalCaretRectOfPosition(
-    const PositionInFlatTreeWithAffinity& position) {
+    const PositionInFlatTreeWithAffinity& position,
+    EditingBoundaryCrossingRule rule) {
   return LocalCaretRectOfPositionTemplate<EditingInFlatTreeStrategy>(
-      position, nullptr, kCanCrossEditingBoundary);
+      position, nullptr, rule);
 }
 
 LocalCaretRect LocalSelectionRectOfPosition(
@@ -193,40 +196,41 @@ LocalCaretRect LocalSelectionRectOfPosition(
 // ----
 
 template <typename Strategy>
-static IntRect AbsoluteCaretBoundsOfAlgorithm(
+static gfx::Rect AbsoluteCaretBoundsOfAlgorithm(
     const PositionWithAffinityTemplate<Strategy>& position,
     LayoutUnit* extra_width_to_end_of_line,
     EditingBoundaryCrossingRule rule) {
   const LocalCaretRect& caret_rect = LocalCaretRectOfPositionTemplate<Strategy>(
       position, extra_width_to_end_of_line, rule);
   if (caret_rect.IsEmpty())
-    return IntRect();
-  return LocalToAbsoluteQuadOf(caret_rect).EnclosingBoundingBox();
+    return gfx::Rect();
+  return gfx::ToEnclosingRect(LocalToAbsoluteQuadOf(caret_rect).BoundingBox());
 }
 
-IntRect AbsoluteCaretBoundsOf(const PositionWithAffinity& position,
-                              LayoutUnit* extra_width_to_end_of_line,
-                              EditingBoundaryCrossingRule rule) {
+gfx::Rect AbsoluteCaretBoundsOf(const PositionWithAffinity& position,
+                                LayoutUnit* extra_width_to_end_of_line,
+                                EditingBoundaryCrossingRule rule) {
   return AbsoluteCaretBoundsOfAlgorithm<EditingStrategy>(
       position, extra_width_to_end_of_line, rule);
 }
 
 template <typename Strategy>
-static IntRect AbsoluteSelectionBoundsOfAlgorithm(
+static gfx::Rect AbsoluteSelectionBoundsOfAlgorithm(
     const VisiblePositionTemplate<Strategy>& visible_position) {
   DCHECK(visible_position.IsValid()) << visible_position;
   const LocalCaretRect& caret_rect =
       LocalSelectionRectOfPosition(visible_position.ToPositionWithAffinity());
   if (caret_rect.IsEmpty())
-    return IntRect();
-  return LocalToAbsoluteQuadOf(caret_rect).EnclosingBoundingBox();
+    return gfx::Rect();
+  return gfx::ToEnclosingRect(LocalToAbsoluteQuadOf(caret_rect).BoundingBox());
 }
 
-IntRect AbsoluteSelectionBoundsOf(const VisiblePosition& visible_position) {
+gfx::Rect AbsoluteSelectionBoundsOf(const VisiblePosition& visible_position) {
   return AbsoluteSelectionBoundsOfAlgorithm<EditingStrategy>(visible_position);
 }
 
-IntRect AbsoluteCaretBoundsOf(const PositionInFlatTreeWithAffinity& position) {
+gfx::Rect AbsoluteCaretBoundsOf(
+    const PositionInFlatTreeWithAffinity& position) {
   return AbsoluteCaretBoundsOfAlgorithm<EditingInFlatTreeStrategy>(
       position, nullptr, kCanCrossEditingBoundary);
 }

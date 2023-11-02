@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,9 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/dcheck_is_on.h"
+#include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "ui/base/interaction/element_identifier.h"
 
 namespace ui {
@@ -30,16 +33,21 @@ class ElementTracker::ElementData {
     shown_callbacks_.set_removal_callback(removal_callback);
     activated_callbacks_.set_removal_callback(removal_callback);
     hidden_callbacks_.set_removal_callback(removal_callback);
+    custom_event_callbacks_.set_removal_callback(removal_callback);
   }
-
   ~ElementData() = default;
 
   ElementIdentifier identifier() const { return identifier_; }
   ElementContext context() const { return context_; }
 
+  bool HasElement(const TrackedElement* element) const {
+    return base::Contains(element_lookup_, element);
+  }
+
   bool empty() const {
     return elements_.empty() && shown_callbacks_.empty() &&
-           activated_callbacks_.empty() && hidden_callbacks_.empty();
+           activated_callbacks_.empty() && hidden_callbacks_.empty() &&
+           custom_event_callbacks_.empty();
   }
 
   size_t num_elements() const {
@@ -61,17 +69,26 @@ class ElementTracker::ElementData {
     return hidden_callbacks_.Add(callback);
   }
 
-  void NotifyElementShown(TrackedElement* element) {
+  Subscription AddCustomEventCallback(Callback callback) {
+    return custom_event_callbacks_.Add(callback);
+  }
+
+  void NotifyElementShown(TrackedElement*& element) {
+    DCHECK(element);
     DCHECK_EQ(identifier(), element->identifier());
-    DCHECK_EQ(static_cast<intptr_t>(context()),
-              static_cast<intptr_t>(element->context()));
-    const auto it = elements_.insert(elements_.end(), element);
-    const bool success = element_lookup_.emplace(element, it).second;
-    DCHECK(success);
+    // Zero context data is the "all contexts" entry and doesn't actually store
+    // new elements, just calls callbacks.
+    if (context()) {
+      DCHECK_EQ(static_cast<intptr_t>(context()),
+                static_cast<intptr_t>(element->context()));
+      const auto it = elements_.insert(elements_.end(), element);
+      const bool success = element_lookup_.emplace(element, it).second;
+      DCHECK(success);
+    }
     shown_callbacks_.Notify(element);
   }
 
-  void NotifyElementActivated(TrackedElement* element) {
+  void NotifyElementActivated(TrackedElement*& element) {
     DCHECK(base::Contains(element_lookup_, element));
     activated_callbacks_.Notify(element);
   }
@@ -82,6 +99,10 @@ class ElementTracker::ElementData {
     elements_.erase(it->second);
     element_lookup_.erase(it);
     hidden_callbacks_.Notify(element);
+  }
+
+  void NotifyCustomEvent(TrackedElement* element) {
+    custom_event_callbacks_.Notify(element);
   }
 
  private:
@@ -96,12 +117,13 @@ class ElementTracker::ElementData {
   // Provides a fast lookup into `elements_` by element for checking and
   // removal. Since there could be many elements (e.g. tabs in a browser) we
   // don't want removing a series of them to turn into an O(n^2) operation.
-  std::map<TrackedElement*, std::list<TrackedElement*>::iterator>
+  std::map<const TrackedElement*, std::list<TrackedElement*>::iterator>
       element_lookup_;
 
   base::RepeatingCallbackList<void(TrackedElement*)> shown_callbacks_;
   base::RepeatingCallbackList<void(TrackedElement*)> activated_callbacks_;
   base::RepeatingCallbackList<void(TrackedElement*)> hidden_callbacks_;
+  base::RepeatingCallbackList<void(TrackedElement*)> custom_event_callbacks_;
 };
 
 // Ensures that ElementData objects get cleaned up, but only after all callbacks
@@ -124,7 +146,7 @@ class ElementTracker::GarbageCollector {
     void Add(ElementData* data) { gc_->AddCandidate(data); }
 
    private:
-    GarbageCollector* const gc_;
+    const raw_ptr<GarbageCollector> gc_;
   };
 
   explicit GarbageCollector(ElementTracker* tracker) : tracker_(tracker) {}
@@ -152,7 +174,7 @@ class ElementTracker::GarbageCollector {
     candidates_.clear();
   }
 
-  ElementTracker* const tracker_;
+  const raw_ptr<ElementTracker> tracker_;
   std::set<ElementData*> candidates_;
   int frame_count_ = 0;
 };
@@ -176,19 +198,27 @@ ElementTrackerFrameworkDelegate* ElementTracker::GetFrameworkDelegate() {
 TrackedElement* ElementTracker::GetUniqueElement(ElementIdentifier id,
                                                  ElementContext context) {
   const auto it = element_data_.find(LookupKey(id, context));
-  if (it == element_data_.end() || it->second->num_elements() == 0)
+  if (it == element_data_.end() || it->second.num_elements() == 0)
     return nullptr;
-  DCHECK_EQ(1U, it->second->num_elements());
-  return it->second->elements().front();
+  DCHECK_EQ(1U, it->second.num_elements());
+  return it->second.elements().front();
 }
 
 TrackedElement* ElementTracker::GetFirstMatchingElement(
     ElementIdentifier id,
     ElementContext context) {
   const auto it = element_data_.find(LookupKey(id, context));
-  if (it == element_data_.end() || it->second->num_elements() == 0)
+  if (it == element_data_.end() || it->second.num_elements() == 0)
     return nullptr;
-  return it->second->elements().front();
+  return it->second.elements().front();
+}
+
+TrackedElement* ElementTracker::GetElementInAnyContext(ElementIdentifier id) {
+  for (const auto& [key, data] : element_data_) {
+    if (key.first == id && !data.elements().empty())
+      return data.elements().front();
+  }
+  return nullptr;
 }
 
 ElementTracker::ElementList ElementTracker::GetAllMatchingElements(
@@ -197,7 +227,7 @@ ElementTracker::ElementList ElementTracker::GetAllMatchingElements(
   const auto it = element_data_.find(LookupKey(id, context));
   ElementList result;
   if (it != element_data_.end()) {
-    std::copy(it->second->elements().begin(), it->second->elements().end(),
+    std::copy(it->second.elements().begin(), it->second.elements().end(),
               std::back_inserter(result));
   }
   return result;
@@ -206,9 +236,11 @@ ElementTracker::ElementList ElementTracker::GetAllMatchingElements(
 ElementTracker::ElementList ElementTracker::GetAllMatchingElementsInAnyContext(
     ElementIdentifier id) {
   ElementList result;
-  for (const auto& pr : element_to_data_lookup_) {
-    if (pr.first->identifier() == id)
-      result.push_back(pr.first);
+  for (const auto& [key, data] : element_data_) {
+    if (key.first == id) {
+      std::copy(data.elements().begin(), data.elements().end(),
+                std::back_inserter(result));
+    }
   }
   return result;
 }
@@ -216,7 +248,7 @@ ElementTracker::ElementList ElementTracker::GetAllMatchingElementsInAnyContext(
 bool ElementTracker::IsElementVisible(ElementIdentifier id,
                                       ElementContext context) {
   const auto it = element_data_.find(LookupKey(id, context));
-  return it != element_data_.end() && it->second->num_elements() > 0;
+  return it != element_data_.end() && it->second.num_elements() > 0;
 }
 
 ElementTracker::Subscription ElementTracker::AddElementShownCallback(
@@ -226,6 +258,14 @@ ElementTracker::Subscription ElementTracker::AddElementShownCallback(
   DCHECK(id);
   DCHECK(context);
   return GetOrAddElementData(id, context)->AddElementShownCallback(callback);
+}
+
+ElementTracker::Subscription
+ElementTracker::AddElementShownInAnyContextCallback(ElementIdentifier id,
+                                                    Callback callback) {
+  DCHECK(id);
+  return GetOrAddElementData(id, ElementContext())
+      ->AddElementShownCallback(callback);
 }
 
 ElementTracker::Subscription ElementTracker::AddElementActivatedCallback(
@@ -247,54 +287,113 @@ ElementTracker::Subscription ElementTracker::AddElementHiddenCallback(
   return GetOrAddElementData(id, context)->AddElementHiddenCallback(callback);
 }
 
+ElementTracker::Subscription ElementTracker::AddCustomEventCallback(
+    CustomElementEventType event_type,
+    ElementContext context,
+    Callback callback) {
+  DCHECK(event_type);
+  DCHECK(context);
+  // Because custom event callbacks are indexed by event type (and because we
+  // use the same underlying type for both element ids and custom events), we
+  // can store both in the same lookup table.
+  return GetOrAddElementData(event_type, context)
+      ->AddCustomEventCallback(callback);
+}
+
 ElementTracker::ElementTracker()
     : gc_(std::make_unique<GarbageCollector>(this)) {}
 
-ElementTracker::~ElementTracker() {
-  NOTREACHED();
-}
+ElementTracker::~ElementTracker() = default;
 
 void ElementTracker::NotifyElementShown(TrackedElement* element) {
+  notification_elements_.push_back(element);
+  TrackedElement*& safe_element = notification_elements_.back();
+
+  // Prevent garbage collection of dead entries until after we send
+  // notifications and all callbacks happen.
   GarbageCollector::Frame gc_frame(gc_.get());
-  DCHECK(!base::Contains(element_to_data_lookup_, element));
   ElementData* const element_data =
       GetOrAddElementData(element->identifier(), element->context());
-  element_to_data_lookup_.emplace(element, element_data);
-  element_data->NotifyElementShown(element);
+  DCHECK(!element_data->HasElement(element));
+  element_data->NotifyElementShown(safe_element);
+
+  // Do "all contexts" notification:
+  if (safe_element) {
+    const auto it =
+        element_data_.find(LookupKey(element->identifier(), ElementContext()));
+    if (it != element_data_.end())
+      it->second.NotifyElementShown(safe_element);
+  }
+
+  notification_elements_.pop_back();
 }
 
 void ElementTracker::NotifyElementActivated(TrackedElement* element) {
+  notification_elements_.push_back(element);
+  TrackedElement*& safe_element = notification_elements_.back();
+
+  // Prevent garbage collection of dead entries until after we send
+  // notifications and all callbacks happen.
   GarbageCollector::Frame gc_frame(gc_.get());
-  const auto it = element_to_data_lookup_.find(element);
-  DCHECK(it != element_to_data_lookup_.end());
-  it->second->NotifyElementActivated(element);
+  const auto it =
+      element_data_.find(LookupKey(element->identifier(), element->context()));
+  DCHECK(it != element_data_.end());
+  it->second.NotifyElementActivated(safe_element);
+
+  notification_elements_.pop_back();
 }
 
 void ElementTracker::NotifyElementHidden(TrackedElement* element) {
+  // Clear out any elements we're in the process of sending events for.
+  for (TrackedElement*& safe_element : notification_elements_) {
+    if (safe_element == element)
+      safe_element = nullptr;
+  }
+
+  // Prevent garbage collection of dead entries until after we send
+  // notifications and all callbacks happen.
   GarbageCollector::Frame gc_frame(gc_.get());
-  const auto it = element_to_data_lookup_.find(element);
-  DCHECK(it != element_to_data_lookup_.end());
-  ElementData* const data = it->second;
-  element_to_data_lookup_.erase(it);
+  const auto it =
+      element_data_.find(LookupKey(element->identifier(), element->context()));
+  DCHECK(it != element_data_.end());
+  ElementData* const data = &it->second;
   data->NotifyElementHidden(element);
   gc_frame.Add(data);
+}
+
+void ElementTracker::NotifyCustomEvent(TrackedElement* element,
+                                       CustomElementEventType event_type) {
+  // Prevent garbage collection of dead entries until after we send
+  // notifications and all callbacks happen.
+  GarbageCollector::Frame gc_frame(gc_.get());
+
+  // We'd like to verify that this element is valid, but don't need to expend
+  // the effort on an extra lookup if we're not doing checks.
+#if DCHECK_IS_ON()
+  const auto entry =
+      element_data_.find(LookupKey(element->identifier(), element->context()));
+  DCHECK(entry != element_data_.end() && entry->second.HasElement(element));
+#endif
+
+  // Since event types are identifiers, we store callbacks by event type rather
+  // than element identifier.
+  const auto it = element_data_.find(LookupKey(event_type, element->context()));
+  // If we don't find a match, that's fine; it means nobody was listening for
+  // that event type.
+  if (it != element_data_.end())
+    it->second.NotifyCustomEvent(element);
 }
 
 ElementTracker::ElementData* ElementTracker::GetOrAddElementData(
     ElementIdentifier id,
     ElementContext context) {
   const LookupKey key(id, context);
-  auto it = element_data_.find(key);
-  if (it == element_data_.end()) {
-    // This might be the first time we've referenced this identifier, so make
-    // sure it's registered.
+  const auto [it, added] = element_data_.try_emplace(key, this, id, context);
+  // This might be the first time we've referenced this identifier, so make
+  // sure it's registered.
+  if (added)
     ElementIdentifier::RegisterKnownIdentifier(id);
-    const auto result = element_data_.emplace(
-        key, std::make_unique<ElementData>(this, id, context));
-    DCHECK(result.second);
-    it = result.first;
-  }
-  return it->second.get();
+  return &it->second;
 }
 
 void ElementTracker::MaybeCleanup(ElementData* data) {

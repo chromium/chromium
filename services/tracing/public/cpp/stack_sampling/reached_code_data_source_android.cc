@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/android/reached_addresses_bitset.h"
 #include "base/android/reached_code_profiler.h"
 #include "base/debug/elf_reader.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_piece.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_producer.h"
 #include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
@@ -69,11 +70,9 @@ void ReachedCodeDataSource::WriteProfileData() {
   base::debug::ElfBuildIdBuffer buf;
   size_t size = base::debug::ReadElfBuildId(&__ehdr_start, true, buf);
   if (size > 0) {
-    std::string module_id(buf, size);
-    TracingSamplerProfiler::MangleModuleIDIfNeeded(&module_id);
     auto* str = interned_data->add_build_ids();
     str->set_iid(0);
-    str->set_str(module_id);
+    str->set_str(base::TransformModuleIDToBreakpadFormat({buf, size}));
   }
 
   absl::optional<base::StringPiece> library_name =

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,14 +17,18 @@
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/base/layout.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/image/image.h"
-#include "ui/gfx/native_widget_types.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ui/base/models/image_model.h"
+#endif
 
 class SkBitmap;
 
@@ -32,12 +36,7 @@ namespace base {
 class File;
 class Lock;
 class RefCountedMemory;
-class RefCountedString;
 }  // namespace base
-
-namespace gfx {
-class ImageSkiaRep;
-}
 
 namespace ui {
 
@@ -155,9 +154,12 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
     virtual ~Delegate() = default;
   };
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   using LottieImageParseFunction =
-      gfx::ImageSkiaRep (*)(const base::RefCountedString& bytes_string,
-                            float scale);
+      gfx::ImageSkia (*)(const std::string& bytes_string);
+  using LottieThemedImageParseFunction =
+      ui::ImageModel (*)(const std::string& bytes_string);
+#endif
 
   // Initialize the ResourceBundle for this process. Does not take ownership of
   // the |delegate| value. Returns the language selected or an empty string if
@@ -184,6 +186,11 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
       base::File pak_file,
       const base::MemoryMappedFile::Region& region);
 
+  // Initializes resource bundle by loading the primary data pack from the
+  // specified buffer. This does not infer the locale or access any files.
+  static void InitSharedInstanceWithBuffer(base::span<const uint8_t> buffer,
+                                           ResourceScaleFactor scale_factor);
+
   // Initialize the ResourceBundle using given data pack path for testing.
   static void InitSharedInstanceWithPakPath(const base::FilePath& path);
 
@@ -201,8 +208,9 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   static ResourceBundle& GetSharedInstance();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  static void SetParseLottieAsStillImage(
-      LottieImageParseFunction parse_lottie_as_still_image);
+  static void SetLottieParsingFunctions(
+      LottieImageParseFunction parse_lottie_as_still_image,
+      LottieThemedImageParseFunction parse_lottie_as_themed_still_image);
 #endif
 
   ResourceBundle(const ResourceBundle&) = delete;
@@ -240,6 +248,28 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   void AddOptionalDataPackFromPath(const base::FilePath& path,
                                    ResourceScaleFactor scale_factor);
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Same as AddDataPackFromPath but loads main source `shared_resource_path`
+  // with ash resources `ash_path`.
+  // When creating and adding ResourceHandle for `lacros_path`, we map lacros
+  // resources to ash resources if a resource is common and remove it from
+  // lacros resources. This is for saving memory.
+  // If `shared_resource_path` is not successfully loaded, load `lacros_path`
+  // as DataPack instead. In this case, the memory saving does not work.
+  void AddDataPackFromPathWithAshResources(
+      const base::FilePath& shared_resource_path,
+      const base::FilePath& ash_path,
+      const base::FilePath& lacros_path,
+      ResourceScaleFactor scale_factor);
+
+  // Same as above but does not log an error if the pack fails to load.
+  void AddOptionalDataPackFromPathWithAshResources(
+      const base::FilePath& shared_resource_path,
+      const base::FilePath& ash_path,
+      const base::FilePath& lacros_path,
+      ResourceScaleFactor scale_factor);
+#endif
+
   // Changes the locale for an already-initialized ResourceBundle, returning the
   // name of the newly-loaded locale, or an empty string if initialization
   // failed (e.g. resource bundle not found or corrupted). Future calls to get
@@ -269,6 +299,12 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // gfx::Image will perform a conversion, rather than using the native image
   // loading code of ResourceBundle.
   gfx::Image& GetNativeImageNamed(int resource_id);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Gets a themed Lottie image (not animated) with the specified |resource_id|
+  // from the current module data. |ResourceBundle| owns the result.
+  const ui::ImageModel& GetThemedLottieImageNamed(int resource_id);
+#endif
 
   // Loads the raw bytes of a scale independent data resource or null.
   base::RefCountedMemory* LoadDataResourceBytes(int resource_id) const;
@@ -300,7 +336,8 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // (such as wallpaper).
   base::StringPiece GetRawDataResourceForScale(
       int resource_id,
-      ResourceScaleFactor scale_factor) const;
+      ResourceScaleFactor scale_factor,
+      ResourceScaleFactor* loaded_scale_factor = nullptr) const;
 
   // Return the contents of a scale independent resource, decompressed
   // into a newly allocated string given the resource id. Todo: Look into
@@ -398,8 +435,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   friend class ResourceBundleTest;
   friend class ChromeBrowserMainMacBrowserTest;
 
-  class ResourceBundleImageSource;
-  friend class ResourceBundleImageSource;
+  class BitmapImageSource;
 
   using IdToStringMap = std::unordered_map<int, std::u16string>;
 
@@ -425,9 +461,21 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
                                    ResourceScaleFactor scale_factor,
                                    bool optional);
 
-  // Inserts |data_pack| to |data_pack_| and updates |max_scale_factor_|
-  // accordingly.
-  void AddDataPack(std::unique_ptr<DataPack> data_pack);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Implementation for the public methods which add a DataPack from a path with
+  // ash resources. If |optional| is false, an error is logged on failure to
+  // load.
+  void AddDataPackFromPathWithAshResourcesInternal(
+      const base::FilePath& shared_resource_path,
+      const base::FilePath& ash_path,
+      const base::FilePath& lacros_path,
+      ResourceScaleFactor scale_factor,
+      bool optional);
+#endif
+
+  // Inserts |resource_handle| to |resource_handle_| and updates
+  // |max_scale_factor_| accordingly.
+  void AddResourceHandle(std::unique_ptr<ResourceHandle> resource_handle);
 
   // Try to load the locale specific strings from an external data module.
   // Returns the locale that is loaded or an empty string if no resources were
@@ -447,6 +495,9 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
 
   // Initializes the font description of default gfx::FontList.
   void InitDefaultFontList();
+
+  // Creates a |gfx::ImageSkia| for the given |resource_id|.
+  gfx::ImageSkia CreateImageSkia(int resource_id);
 
   // Fills the |bitmap| given the data file to look in and the |resource_id|.
   // Returns false if the resource does not exist.
@@ -481,23 +532,17 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
                         bool* fell_back_to_1x);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Creates the |rep| from the Lottie asset with the given |resource_id|,
-  // rasterizing at the given |scale|. The |scale_factor| is used to select
-  // among multiple versions specially designed for different scales. For
-  // example, a picture of a flower could have a large-scale version with dew
-  // drops to add visual interest, and a small-scale version with no dew drops
-  // because such fine details cannot look good at that scale. There can only be
-  // a few such versions, but each of them is vector graphics to be rasterized
-  // at a more precise |scale|. Returns false if the resource does not exist.
-  bool LoadLottie(int resource_id,
-                  float scale,
-                  ResourceScaleFactor scale_factor,
-                  gfx::ImageSkiaRep* rep) const;
+  // Creates the |bytes_string| from a Lottie asset, given the |resource_id|.
+  // Returns false if the resource is not a Lottie asset.
+  bool LoadLottieBytesString(int resource_id, std::string* bytes_string) const;
 #endif
 
   // Returns an empty image for when a resource cannot be loaded. This is a
   // bright red bitmap.
   gfx::Image& GetEmptyImage();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const ui::ImageModel& GetEmptyImageModel();
+#endif
 
   const base::FilePath& GetOverriddenPakPath() const;
 
@@ -515,7 +560,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
 
   // This pointer is guaranteed to outlive the ResourceBundle instance and may
   // be null.
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   // Protects |locale_resources_data_|.
   std::unique_ptr<base::Lock> locale_resources_data_lock_;
@@ -523,7 +568,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // Handles for data sources.
   std::unique_ptr<ResourceHandle> locale_resources_data_;
   std::unique_ptr<ResourceHandle> secondary_locale_resources_data_;
-  std::vector<std::unique_ptr<ResourceHandle>> data_packs_;
+  std::vector<std::unique_ptr<ResourceHandle>> resource_handles_;
 
   // The maximum scale factor currently loaded.
   ResourceScaleFactor max_scale_factor_;
@@ -532,8 +577,15 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // ownership of the pointers.
   using ImageMap = std::map<int, gfx::Image>;
   ImageMap images_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  using ImageModelMap = std::map<int, ui::ImageModel>;
+  ImageModelMap image_models_;
+#endif
 
   gfx::Image empty_image_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ui::ImageModel empty_image_model_;
+#endif
 
   // The various font lists used, as a map from a signed size delta from the
   // platform base font size, plus style, to the FontList. Cached to avoid

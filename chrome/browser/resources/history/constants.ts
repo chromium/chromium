@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,21 +9,6 @@ export const RESULTS_PER_PAGE = 150;
  * measured in milliseconds.
  */
 export const BROWSING_GAP_TIME = 15 * 60 * 1000;
-
-/**
- * The largest bucket value for UMA histogram, based on entry ID. All entries
- * with IDs greater than this will be included in this bucket.
- * Keep consistent with the UMA constants on the Android history page
- * (see HistoryManager.java).
- */
-export const UMA_MAX_BUCKET_VALUE = 1000;
-
-/**
- * The largest bucket value for a UMA histogram that is a subset of above.
- * Keep consistent with the UMA constants on the Android history page
- * (see HistoryManager.java).
- */
-export const UMA_MAX_SUBSET_BUCKET_VALUE = 100;
 
 /**
  * Histogram buckets for UMA tracking of which view is being shown to the user.

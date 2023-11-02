@@ -87,16 +87,16 @@ bool RegisteredEventListener::Matches(
 
 bool RegisteredEventListener::ShouldFire(const Event& event) const {
   if (event.FireOnlyCaptureListenersAtTarget()) {
-    DCHECK_EQ(event.eventPhase(), Event::kAtTarget);
+    DCHECK_EQ(event.eventPhase(), Event::PhaseType::kAtTarget);
     return Capture();
   }
   if (event.FireOnlyNonCaptureListenersAtTarget()) {
-    DCHECK_EQ(event.eventPhase(), Event::kAtTarget);
+    DCHECK_EQ(event.eventPhase(), Event::PhaseType::kAtTarget);
     return !Capture();
   }
-  if (event.eventPhase() == Event::kCapturingPhase)
+  if (event.eventPhase() == Event::PhaseType::kCapturingPhase)
     return Capture();
-  if (event.eventPhase() == Event::kBubblingPhase)
+  if (event.eventPhase() == Event::PhaseType::kBubblingPhase)
     return !Capture();
   return true;
 }

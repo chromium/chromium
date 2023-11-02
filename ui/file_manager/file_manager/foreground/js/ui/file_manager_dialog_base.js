@@ -1,11 +1,11 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BaseDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
-
 import {util} from '../../../common/js/util.js';
 import {xfm} from '../../../common/js/xfm.js';
+
+import {BaseDialog} from './dialogs.js';
 
 /**
  * This class is an extended class, to manage the status of the dialogs.

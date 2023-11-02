@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,9 +32,6 @@ const char kEmbeddedExtensionOptions[] = "embedded-extension-options";
 // Enable BLE Advertisiing in apps.
 const char kEnableBLEAdvertising[] = "enable-ble-advertising-in-apps";
 
-const char kDisableDesktopCaptureAudio[] =
-    "disable-audio-support-for-desktop-share";
-
 // Enables extension APIs that are in development.
 const char kEnableExperimentalExtensionApis[] =
     "enable-experimental-extension-apis";
@@ -54,6 +51,11 @@ const char kExtensionsOnChromeURLs[] = "extensions-on-chrome-urls";
 
 // Whether to force developer mode extensions highlighting.
 const char kForceDevModeHighlighting[] = "force-dev-mode-highlighting";
+
+// Whether to disable app content verification when testing changes locally on
+// Chromebox for Meetings hardware.
+const char kDisableAppContentVerification[] =
+    "disable-app-content-verification";
 
 // Comma-separated list of paths to apps to load at startup. The first app in
 // the list will be launched.

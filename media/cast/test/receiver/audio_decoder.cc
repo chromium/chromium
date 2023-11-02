@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,10 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sys_byteorder.h"
 #include "build/build_config.h"
+#include "media/cast/common/encoded_frame.h"
 #include "third_party/opus/src/include/opus.h"
 
 namespace media {
@@ -151,7 +153,6 @@ class AudioDecoder::OpusImpl final : public AudioDecoder::ImplBase {
     // Copy interleaved samples from |buffer_| into a new AudioBus (where
     // samples are stored in planar format, for each channel).
     audio_bus = AudioBus::Create(num_channels_, num_samples_decoded);
-    // TODO(miu): This should be moved into AudioBus::FromInterleaved().
     for (int ch = 0; ch < num_channels_; ++ch) {
       const float* src = buffer_.get() + ch;
       const float* const src_end = src + num_samples_decoded * num_channels_;
@@ -163,7 +164,7 @@ class AudioDecoder::OpusImpl final : public AudioDecoder::ImplBase {
   }
 
   const std::unique_ptr<uint8_t[]> decoder_memory_;
-  OpusDecoder* const opus_decoder_;
+  const raw_ptr<OpusDecoder> opus_decoder_;
   const int max_samples_per_frame_;
   const std::unique_ptr<float[]> buffer_;
 

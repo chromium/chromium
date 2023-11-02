@@ -32,14 +32,21 @@
 
 #include <iosfwd>
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkRRect.h"
+#include "ui/gfx/geometry/insets_f.h"
+#include "ui/gfx/geometry/outsets_f.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
+
+namespace gfx {
+class QuadF;
+}
 
 namespace blink {
-
-class FloatQuad;
 
 // Represents a rect with rounded corners.
 // We don't use gfx::RRect in blink because gfx::RRect is based on SkRRect
@@ -56,32 +63,32 @@ class PLATFORM_EXPORT FloatRoundedRect {
 
    public:
     constexpr Radii() = default;
-    constexpr Radii(const FloatSize& top_left,
-                    const FloatSize& top_right,
-                    const FloatSize& bottom_left,
-                    const FloatSize& bottom_right)
+    constexpr Radii(const gfx::SizeF& top_left,
+                    const gfx::SizeF& top_right,
+                    const gfx::SizeF& bottom_left,
+                    const gfx::SizeF& bottom_right)
         : top_left_(top_left),
           top_right_(top_right),
           bottom_left_(bottom_left),
           bottom_right_(bottom_right) {}
     explicit constexpr Radii(float radius) : Radii(radius, radius) {}
     constexpr Radii(float radius_x, float radius_y)
-        : Radii(FloatSize(radius_x, radius_y),
-                FloatSize(radius_x, radius_y),
-                FloatSize(radius_x, radius_y),
-                FloatSize(radius_x, radius_y)) {}
+        : Radii(gfx::SizeF(radius_x, radius_y),
+                gfx::SizeF(radius_x, radius_y),
+                gfx::SizeF(radius_x, radius_y),
+                gfx::SizeF(radius_x, radius_y)) {}
 
     constexpr Radii(const Radii&) = default;
     constexpr Radii& operator=(const Radii&) = default;
 
-    void SetTopLeft(const FloatSize& size) { top_left_ = size; }
-    void SetTopRight(const FloatSize& size) { top_right_ = size; }
-    void SetBottomLeft(const FloatSize& size) { bottom_left_ = size; }
-    void SetBottomRight(const FloatSize& size) { bottom_right_ = size; }
-    constexpr const FloatSize& TopLeft() const { return top_left_; }
-    constexpr const FloatSize& TopRight() const { return top_right_; }
-    constexpr const FloatSize& BottomLeft() const { return bottom_left_; }
-    constexpr const FloatSize& BottomRight() const { return bottom_right_; }
+    void SetTopLeft(const gfx::SizeF& size) { top_left_ = size; }
+    void SetTopRight(const gfx::SizeF& size) { top_right_ = size; }
+    void SetBottomLeft(const gfx::SizeF& size) { bottom_left_ = size; }
+    void SetBottomRight(const gfx::SizeF& size) { bottom_right_ = size; }
+    constexpr const gfx::SizeF& TopLeft() const { return top_left_; }
+    constexpr const gfx::SizeF& TopRight() const { return top_right_; }
+    constexpr const gfx::SizeF& BottomLeft() const { return bottom_left_; }
+    constexpr const gfx::SizeF& BottomRight() const { return bottom_right_; }
 
     void SetMinimumRadius(float);
     absl::optional<float> UniformRadius() const;
@@ -91,85 +98,94 @@ class PLATFORM_EXPORT FloatRoundedRect {
              bottom_left_.IsZero() && bottom_right_.IsZero();
     }
 
-    void Scale(float factor);
-
-    void Expand(float top_width,
-                float bottom_width,
-                float left_width,
-                float right_width);
-    void Expand(float size) { Expand(size, size, size, size); }
-
-    void Shrink(float top_width,
-                float bottom_width,
-                float left_width,
-                float right_width);
-    void Shrink(float size) { Shrink(size, size, size, size); }
-
     String ToString() const;
 
    private:
-    FloatSize top_left_;
-    FloatSize top_right_;
-    FloatSize bottom_left_;
-    FloatSize bottom_right_;
+    friend class FloatRoundedRect;
+    void Scale(float factor);
+    void Outset(const gfx::OutsetsF& outsets);
+    void OutsetForMarginOrShadow(const gfx::OutsetsF&);
+    void OutsetForShapeMargin(float outset);
+
+    gfx::SizeF top_left_;
+    gfx::SizeF top_right_;
+    gfx::SizeF bottom_left_;
+    gfx::SizeF bottom_right_;
   };
 
   constexpr FloatRoundedRect() = default;
-  explicit FloatRoundedRect(const gfx::RectF& rect,
-                            const Radii& radii = Radii())
-      : FloatRoundedRect(FloatRect(rect), radii) {}
-  explicit FloatRoundedRect(const FloatRect&, const Radii& = Radii());
-  explicit FloatRoundedRect(const IntRect&, const Radii& = Radii());
+  explicit FloatRoundedRect(const gfx::RectF&, const Radii& radii = Radii());
+  explicit FloatRoundedRect(const gfx::Rect&, const Radii& radii = Radii());
   FloatRoundedRect(float x, float y, float width, float height);
-  FloatRoundedRect(const FloatRect&,
-                   const FloatSize& top_left,
-                   const FloatSize& top_right,
-                   const FloatSize& bottom_left,
-                   const FloatSize& bottom_right);
-  FloatRoundedRect(const FloatRect& r, float radius)
-      : FloatRoundedRect(r, Radii(radius)) {}
-  FloatRoundedRect(const FloatRect& r, float radius_x, float radius_y)
+  FloatRoundedRect(const gfx::RectF& rect,
+                   const gfx::SizeF& top_left,
+                   const gfx::SizeF& top_right,
+                   const gfx::SizeF& bottom_left,
+                   const gfx::SizeF& bottom_right);
+  FloatRoundedRect(const gfx::RectF& rect, float radius)
+      : rect_(rect), radii_(radius) {}
+  FloatRoundedRect(const gfx::RectF& r, float radius_x, float radius_y)
       : FloatRoundedRect(r, Radii(radius_x, radius_y)) {}
 
-  constexpr const FloatRect& Rect() const { return rect_; }
+  constexpr const gfx::RectF& Rect() const { return rect_; }
   constexpr const Radii& GetRadii() const { return radii_; }
   constexpr bool IsRounded() const { return !radii_.IsZero(); }
   constexpr bool IsEmpty() const { return rect_.IsEmpty(); }
 
-  void SetRect(const FloatRect& rect) { rect_ = rect; }
+  void SetRect(const gfx::RectF& rect) { rect_ = rect; }
   void SetRadii(const Radii& radii) { radii_ = radii; }
 
-  void Move(const FloatSize& size) { rect_.Offset(size); }
-  void InflateWithRadii(int size);
-  void Inflate(float size) { rect_.Outset(size); }
+  void Move(const gfx::Vector2dF& offset) { rect_.Offset(offset); }
 
-  // expandRadii() does not have any effect on corner radii which have zero
-  // width or height. This is because the process of expanding the radius of a
-  // corner is not allowed to make sharp corners non-sharp. This applies when
-  // "spreading" a shadow or a box shape.
-  void ExpandRadii(float size) { radii_.Expand(size); }
-  void ShrinkRadii(float size) { radii_.Shrink(size); }
+  // Inflates/shrinks the rounded rect by the specified amount on each side and
+  // corner. Zero widths and heights of radii are kept zero so that sharp
+  // corners are still sharp. Each side of |outsets|/|insets| can be positive,
+  // zero or negative independently.
+  void Outset(const gfx::OutsetsF& outsets);
+  void Outset(float outset) { Outset(gfx::OutsetsF(outset)); }
+  void Inset(const gfx::InsetsF& insets) { Outset(insets.ToOutsets()); }
+  void Inset(float inset) { Inset(gfx::InsetsF(inset)); }
 
-  // Returns a quickly computed rect enclosed by the rounded rect.
-  FloatRect RadiusCenterRect() const;
+  // Inflates (or shrinks if |outset| is negative) the rect and the corners
+  // based on the margin edge algorithm in
+  // https://drafts.csswg.org/css-backgrounds-3/#corner-shaping which is the
+  // same as the shadow spread algorithm in
+  // https://drafts.csswg.org/css-backgrounds-3/#shadow-shape.
+  // TODO(wangxianzhu): Consider merging this into Outset()/Inset() to apply
+  // the margin/shadow algorithm to all outsets except shape-margin. For now
+  // this is blocked by a problem of the algorithm
+  // (https://github.com/w3c/csswg-drafts/issues/7103).
+  void OutsetForMarginOrShadow(const gfx::OutsetsF& outsets);
+  void OutsetForMarginOrShadow(float outset) {
+    OutsetForMarginOrShadow(gfx::OutsetsF(outset));
+  }
 
-  constexpr FloatRect TopLeftCorner() const {
-    return FloatRect(rect_.x(), rect_.y(), radii_.TopLeft().width(),
-                     radii_.TopLeft().height());
+  // Inflates the rounded rect by the specified amount on each side and corner
+  // for shape-margin. |outset| must be non-negative. This is different from
+  // other outset methods in that it always expands by radial distance (always
+  // produces rounding) rather than following rules for sharp corner
+  // preservation and cubic reduction of the radius. See
+  // https://drafts.csswg.org/css-shapes/#shape-margin-property.
+  void OutsetForShapeMargin(float outset);
+
+  constexpr gfx::RectF TopLeftCorner() const {
+    return gfx::RectF(rect_.x(), rect_.y(), radii_.TopLeft().width(),
+                      radii_.TopLeft().height());
   }
-  constexpr FloatRect TopRightCorner() const {
-    return FloatRect(rect_.right() - radii_.TopRight().width(), rect_.y(),
-                     radii_.TopRight().width(), radii_.TopRight().height());
+  constexpr gfx::RectF TopRightCorner() const {
+    return gfx::RectF(rect_.right() - radii_.TopRight().width(), rect_.y(),
+                      radii_.TopRight().width(), radii_.TopRight().height());
   }
-  constexpr FloatRect BottomLeftCorner() const {
-    return FloatRect(rect_.x(), rect_.bottom() - radii_.BottomLeft().height(),
-                     radii_.BottomLeft().width(), radii_.BottomLeft().height());
+  constexpr gfx::RectF BottomLeftCorner() const {
+    return gfx::RectF(rect_.x(), rect_.bottom() - radii_.BottomLeft().height(),
+                      radii_.BottomLeft().width(),
+                      radii_.BottomLeft().height());
   }
-  constexpr FloatRect BottomRightCorner() const {
-    return FloatRect(rect_.right() - radii_.BottomRight().width(),
-                     rect_.bottom() - radii_.BottomRight().height(),
-                     radii_.BottomRight().width(),
-                     radii_.BottomRight().height());
+  constexpr gfx::RectF BottomRightCorner() const {
+    return gfx::RectF(rect_.right() - radii_.BottomRight().width(),
+                      rect_.bottom() - radii_.BottomRight().height(),
+                      radii_.BottomRight().width(),
+                      radii_.BottomRight().height());
   }
 
   bool XInterceptsAtY(float y,
@@ -180,7 +196,7 @@ class PLATFORM_EXPORT FloatRoundedRect {
   // This only works for convex quads.
   // This intersection is edge-inclusive and will return true even if the
   // intersecting area is empty (i.e., the intersection is a line or a point).
-  bool IntersectsQuad(const FloatQuad&) const;
+  bool IntersectsQuad(const gfx::QuadF&) const;
 
   // Whether the radii are constrained in the size of rect().
   bool IsRenderable() const;
@@ -192,12 +208,12 @@ class PLATFORM_EXPORT FloatRoundedRect {
   // the rounded border.
   void ConstrainRadii();
 
-  operator SkRRect() const;
+  explicit operator SkRRect() const;
 
   String ToString() const;
 
  private:
-  FloatRect rect_;
+  gfx::RectF rect_;
   Radii radii_;
 };
 
@@ -215,9 +231,9 @@ inline FloatRoundedRect::operator SkRRect() const {
     radii[SkRRect::kLowerLeft_Corner].set(BottomLeftCorner().width(),
                                           BottomLeftCorner().height());
 
-    rrect.setRectRadii(Rect(), radii);
+    rrect.setRectRadii(gfx::RectFToSkRect(Rect()), radii);
   } else {
-    rrect.setRect(Rect());
+    rrect.setRect(gfx::RectFToSkRect(Rect()));
   }
 
   return rrect;

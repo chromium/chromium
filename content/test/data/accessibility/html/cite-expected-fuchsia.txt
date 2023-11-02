@@ -1,0 +1,9 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++IMAGE label='Pipe'
+++++++PARAGRAPH
+++++++++STATIC_TEXT label='The pipe'
+++++++++++UNKNOWN label='The pipe'
+++++++++STATIC_TEXT label=' clicked by SomeOne.'
+++++++++++UNKNOWN label=' clicked by SomeOne.'

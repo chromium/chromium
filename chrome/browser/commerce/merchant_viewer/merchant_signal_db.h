@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,9 @@
 #define CHROME_BROWSER_COMMERCE_MERCHANT_VIEWER_MERCHANT_SIGNAL_DB_H_
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/commerce/merchant_viewer/merchant_signal_db_content.pb.h"
+#include "components/commerce/core/proto/merchant_signal_db_content.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/leveldb_proto/public/proto_database.h"
 
@@ -20,7 +21,7 @@ class MerchantSignalContentProto;
 }  // namespace merchant_signal_db
 
 template <typename T>
-class ProfileProtoDB;
+class SessionProtoDB;
 
 class MerchantSignalDB {
  public:
@@ -55,7 +56,8 @@ class MerchantSignalDB {
                  const base::android::JavaParamRef<jobject>& jcallback);
 
  private:
-  ProfileProtoDB<merchant_signal_db::MerchantSignalContentProto>* proto_db_;
+  raw_ptr<SessionProtoDB<merchant_signal_db::MerchantSignalContentProto>>
+      proto_db_;
   base::WeakPtrFactory<MerchantSignalDB> weak_ptr_factory_{this};
 };
 

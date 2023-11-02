@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/pickle.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -31,6 +32,7 @@
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -45,6 +47,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 
 using content::BrowserThread;
 using content::WebContents;
@@ -142,6 +145,13 @@ class ThreatDetailsWrap : public ThreatDetails {
     run_loop_ = nullptr;
   }
 
+  void OnRedirectionCollectionReady() override {
+    ThreatDetails::OnRedirectionCollectionReady();
+    if (should_stop_after_redirect_collection_ && run_loop_) {
+      run_loop_->Quit();
+    }
+  }
+
   // Used to synchronize ThreatDetailsDone() with WaitForThreatDetailsDone().
   // RunLoop::RunUntilIdle() is not sufficient because the MessageLoop task
   // queue completely drains at some point between the send and the wait.
@@ -154,10 +164,14 @@ class ThreatDetailsWrap : public ThreatDetails {
 
   void StartCollection() { ThreatDetails::StartCollection(); }
 
- private:
+  void SetShouldStopAfterRedirectCollection(bool should_stop) {
+    should_stop_after_redirect_collection_ = should_stop;
+  }
 
-  base::RunLoop* run_loop_;
+ private:
+  raw_ptr<base::RunLoop> run_loop_;
   size_t done_callback_count_;
+  bool should_stop_after_redirect_collection_ = false;
 };
 
 class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
@@ -174,11 +188,12 @@ class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
   MockSafeBrowsingUIManager& operator=(const MockSafeBrowsingUIManager&) =
       delete;
 
-  // When the serialized report is sent, this is called.
-  void SendSerializedThreatDetails(content::BrowserContext* browser_context,
-                                   const std::string& serialized) override {
+  // When the report is sent, this is called.
+  void SendThreatDetails(
+      content::BrowserContext* browser_context,
+      std::unique_ptr<ClientSafeBrowsingReportRequest> report) override {
     report_sent_ = true;
-    serialized_ = serialized;
+    report->SerializeToString(&serialized_);
   }
 
   const std::string& GetSerialized() { return serialized_; }
@@ -193,14 +208,16 @@ class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
 
 class MockReferrerChainProvider : public ReferrerChainProvider {
  public:
-  virtual ~MockReferrerChainProvider() {}
-  MOCK_METHOD3(IdentifyReferrerChainByWebContents,
-               AttributionResult(content::WebContents* web_contents,
+  virtual ~MockReferrerChainProvider() = default;
+  MOCK_METHOD3(IdentifyReferrerChainByRenderFrameHost,
+               AttributionResult(content::RenderFrameHost* rfh,
                                  int user_gesture_count_limit,
                                  ReferrerChain* out_referrer_chain));
-  MOCK_METHOD4(IdentifyReferrerChainByEventURL,
+  MOCK_METHOD5(IdentifyReferrerChainByEventURL,
                AttributionResult(const GURL& event_url,
                                  SessionID event_tab_id,
+                                 const content::GlobalRenderFrameHostId&
+                                     outermost_event_main_frame_id,
                                  int user_gesture_count_limit,
                                  ReferrerChain* out_referrer_chain));
   MOCK_METHOD3(IdentifyReferrerChainByPendingEventURL,
@@ -258,7 +275,7 @@ class ThreatDetailsTest : public ChromeRenderViewHostTestHarness {
                     const GURL& url,
                     UnsafeResource* resource) {
     const content::GlobalRenderFrameHostId primary_main_frame_id =
-        web_contents()->GetMainFrame()->GetGlobalId();
+        web_contents()->GetPrimaryMainFrame()->GetGlobalId();
     resource->url = url;
     resource->is_subresource = is_subresource;
     resource->threat_type = threat_type;
@@ -390,7 +407,7 @@ class ThreatDetailsTest : public ChromeRenderViewHostTestHarness {
     history_service()->AddPage(url, base::Time::Now(),
                                reinterpret_cast<history::ContextID>(1), 0,
                                GURL(), *redirects, ui::PAGE_TRANSITION_TYPED,
-                               history::SOURCE_BROWSED, false, false);
+                               history::SOURCE_BROWSED, false);
   }
 
   void WriteCacheEntry(const std::string& url,
@@ -483,7 +500,8 @@ TEST_F(ThreatDetailsTest, SuspiciousSiteWithReferrerChain) {
   returned_referrer_chain.Add()->set_url(kReferrerURL);
   returned_referrer_chain.Add()->set_url(kSecondRedirectURL);
   EXPECT_CALL(*referrer_chain_provider_,
-              IdentifyReferrerChainByWebContents(web_contents(), _, _))
+              IdentifyReferrerChainByRenderFrameHost(
+                  web_contents()->GetPrimaryMainFrame(), _, _))
       .WillOnce(DoAll(SetArgPointee<2>(returned_referrer_chain),
                       Return(ReferrerChainProvider::SUCCESS)));
 
@@ -608,7 +626,8 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails) {
   parent_node->children.push_back(GURL(kDOMChildURL));
   params.push_back(std::move(parent_node));
   report->OnReceivedThreatDOMDetails(mojo::Remote<mojom::ThreatReporter>(),
-                                     main_rfh(), std::move(params));
+                                     main_rfh()->GetWeakDocumentPtr(),
+                                     std::move(params));
 
   std::string serialized = WaitForThreatDetailsDone(
       report.get(), false /* did_proceed*/, 0 /* num_visit */);
@@ -694,7 +713,7 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails_MultipleFrames) {
       mojom::AttributeNameValue::New("src", kDOMChildURL));
   outer_child_iframe->attributes.push_back(
       mojom::AttributeNameValue::New("foo", "bar"));
-  outer_child_iframe->child_frame_routing_id = child_rfh->GetRoutingID();
+  outer_child_iframe->child_frame_token = child_rfh->GetFrameToken();
   outer_params.push_back(std::move(outer_child_iframe));
 
   mojom::ThreatDOMDetailsNodePtr outer_summary_node =
@@ -827,10 +846,11 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails_MultipleFrames) {
 
     // Send both sets of nodes from different render frames.
     report->OnReceivedThreatDOMDetails(mojo::Remote<mojom::ThreatReporter>(),
-                                       main_rfh(),
+                                       main_rfh()->GetWeakDocumentPtr(),
                                        std::move(outer_params_copy));
     report->OnReceivedThreatDOMDetails(mojo::Remote<mojom::ThreatReporter>(),
-                                       child_rfh, std::move(inner_params_copy));
+                                       child_rfh->GetWeakDocumentPtr(),
+                                       std::move(inner_params_copy));
 
     std::string serialized = WaitForThreatDetailsDone(
         report.get(), false /* did_proceed*/, 0 /* num_visit */);
@@ -876,9 +896,11 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails_MultipleFrames) {
 
     // Send both sets of nodes from different render frames.
     report->OnReceivedThreatDOMDetails(mojo::Remote<mojom::ThreatReporter>(),
-                                       child_rfh, std::move(inner_params));
+                                       child_rfh->GetWeakDocumentPtr(),
+                                       std::move(inner_params));
     report->OnReceivedThreatDOMDetails(mojo::Remote<mojom::ThreatReporter>(),
-                                       main_rfh(), std::move(outer_params));
+                                       main_rfh()->GetWeakDocumentPtr(),
+                                       std::move(outer_params));
 
     std::string serialized = WaitForThreatDetailsDone(
         report.get(), false /* did_proceed*/, 0 /* num_visit */);
@@ -917,9 +939,9 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails_AmbiguousDOM) {
       mojom::ThreatDOMDetailsNode::New();
   outer_summary_node->url = GURL(kDOMParentURL);
   outer_summary_node->children.push_back(GURL(kDataURL));
-  // Set |child_frame_routing_id| for this node to something non-sensical so
+  // Set |child_frame_token| for this node to something non-sensical so
   // that the child frame lookup fails.
-  outer_summary_node->child_frame_routing_id = -100;
+  outer_summary_node->child_frame_token = blink::RemoteFrameToken();
   outer_params.push_back(std::move(outer_summary_node));
 
   // Now define some more nodes for the body of the frame. The URL of this
@@ -1002,9 +1024,11 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails_AmbiguousDOM) {
 
   // Send both sets of nodes from different render frames.
   report->OnReceivedThreatDOMDetails(mojo::Remote<mojom::ThreatReporter>(),
-                                     main_rfh(), std::move(outer_params));
+                                     main_rfh()->GetWeakDocumentPtr(),
+                                     std::move(outer_params));
   report->OnReceivedThreatDOMDetails(mojo::Remote<mojom::ThreatReporter>(),
-                                     child_rfh, std::move(inner_params));
+                                     child_rfh->GetWeakDocumentPtr(),
+                                     std::move(inner_params));
   std::string serialized = WaitForThreatDetailsDone(
       report.get(), false /* did_proceed*/, 0 /* num_visit */);
   ClientSafeBrowsingReportRequest actual;
@@ -1106,7 +1130,7 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails_TrimToAdTags) {
       mojom::AttributeNameValue::New("src", kDOMChildURL));
   outer_child_iframe->attributes.push_back(
       mojom::AttributeNameValue::New("foo", "bar"));
-  outer_child_iframe->child_frame_routing_id = child_rfh->GetRoutingID();
+  outer_child_iframe->child_frame_token = child_rfh->GetFrameToken();
   outer_params.push_back(std::move(outer_child_iframe));
 
   mojom::ThreatDOMDetailsNodePtr outer_summary_node =
@@ -1269,10 +1293,10 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails_TrimToAdTags) {
 
   // Send both sets of nodes from different render frames.
   trimmed_report->OnReceivedThreatDOMDetails(
-      mojo::Remote<mojom::ThreatReporter>(), child_rfh,
+      mojo::Remote<mojom::ThreatReporter>(), child_rfh->GetWeakDocumentPtr(),
       std::move(inner_params));
   trimmed_report->OnReceivedThreatDOMDetails(
-      mojo::Remote<mojom::ThreatReporter>(), main_rfh(),
+      mojo::Remote<mojom::ThreatReporter>(), main_rfh()->GetWeakDocumentPtr(),
       std::move(outer_params));
 
   std::string serialized = WaitForThreatDetailsDone(
@@ -1310,9 +1334,9 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails_EmptyReportNotSent) {
       mojom::ThreatDOMDetailsNode::New();
   outer_summary_node->url = GURL(kDOMParentURL);
   outer_summary_node->children.push_back(GURL(kDataURL));
-  // Set |child_frame_routing_id| for this node to something non-sensical so
+  // Set |child_frame_token| for this node to something non-sensical so
   // that the child frame lookup fails.
-  outer_summary_node->child_frame_routing_id = -100;
+  outer_summary_node->child_frame_token = blink::RemoteFrameToken();
   outer_params.push_back(std::move(outer_summary_node));
 
   // Now define some more nodes for the body of the frame. The URL of this
@@ -1345,10 +1369,10 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails_EmptyReportNotSent) {
 
   // Send both sets of nodes from different render frames.
   trimmed_report->OnReceivedThreatDOMDetails(
-      mojo::Remote<mojom::ThreatReporter>(), child_rfh,
+      mojo::Remote<mojom::ThreatReporter>(), child_rfh->GetWeakDocumentPtr(),
       std::move(inner_params));
   trimmed_report->OnReceivedThreatDOMDetails(
-      mojo::Remote<mojom::ThreatReporter>(), main_rfh(),
+      mojo::Remote<mojom::ThreatReporter>(), main_rfh()->GetWeakDocumentPtr(),
       std::move(outer_params));
 
   std::string serialized = WaitForThreatDetailsDone(
@@ -1546,9 +1570,10 @@ TEST_F(ThreatDetailsTest, ThreatWithPendingLoad) {
 }
 
 TEST_F(ThreatDetailsTest, ThreatOnFreshTab) {
-  // A fresh WebContents should not have any NavigationEntries yet. (See
-  // https://crbug.com/524208.)
-  EXPECT_EQ(nullptr, controller().GetLastCommittedEntry());
+  // A fresh WebContents should be on the initial NavigationEntry, or have
+  // no NavigationEntry (if InitialNavigationEntry is disabled).
+  EXPECT_TRUE(!controller().GetLastCommittedEntry() ||
+              controller().GetLastCommittedEntry()->IsInitialEntry());
   EXPECT_EQ(nullptr, controller().GetPendingEntry());
 
   // Initiate the connection to a (pretend) renderer process.
@@ -1606,7 +1631,8 @@ TEST_F(ThreatDetailsTest, HTTPCache) {
   // The cache collection starts after the IPC from the DOM is fired.
   std::vector<mojom::ThreatDOMDetailsNodePtr> params;
   report->OnReceivedThreatDOMDetails(mojo::Remote<mojom::ThreatReporter>(),
-                                     main_rfh(), std::move(params));
+                                     main_rfh()->GetWeakDocumentPtr(),
+                                     std::move(params));
 
   // Let the cache callbacks complete.
   base::RunLoop().RunUntilIdle();
@@ -1686,7 +1712,8 @@ TEST_F(ThreatDetailsTest, HttpsResourceSanitization) {
   // The cache collection starts after the IPC from the DOM is fired.
   std::vector<mojom::ThreatDOMDetailsNodePtr> params;
   report->OnReceivedThreatDOMDetails(mojo::Remote<mojom::ThreatReporter>(),
-                                     main_rfh(), std::move(params));
+                                     main_rfh()->GetWeakDocumentPtr(),
+                                     std::move(params));
 
   // Let the cache callbacks complete.
   base::RunLoop().RunUntilIdle();
@@ -1769,7 +1796,8 @@ TEST_F(ThreatDetailsTest, HTTPCacheNoEntries) {
   // The cache collection starts after the IPC from the DOM is fired.
   std::vector<mojom::ThreatDOMDetailsNodePtr> params;
   report->OnReceivedThreatDOMDetails(mojo::Remote<mojom::ThreatReporter>(),
-                                     main_rfh(), std::move(params));
+                                     main_rfh()->GetWeakDocumentPtr(),
+                                     std::move(params));
 
   // Let the cache callbacks complete.
   base::RunLoop().RunUntilIdle();
@@ -1828,7 +1856,8 @@ TEST_F(ThreatDetailsTest, HistoryServiceUrls) {
   // The redirects collection starts after the IPC from the DOM is fired.
   std::vector<mojom::ThreatDOMDetailsNodePtr> params;
   report->OnReceivedThreatDOMDetails(mojo::Remote<mojom::ThreatReporter>(),
-                                     main_rfh(), std::move(params));
+                                     main_rfh()->GetWeakDocumentPtr(),
+                                     std::move(params));
 
   // Let the redirects callbacks complete.
   base::RunLoop().RunUntilIdle();
@@ -1865,6 +1894,46 @@ TEST_F(ThreatDetailsTest, HistoryServiceUrls) {
   pb_resource->set_url(kFirstRedirectURL);
 
   VerifyResults(actual, expected);
+}
+
+TEST_F(ThreatDetailsTest, CanCancelDuringCollection) {
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL(kLandingURL));
+
+  UnsafeResource resource;
+  InitResource(SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING,
+               ThreatSource::CLIENT_SIDE_DETECTION, true /* is_subresource */,
+               GURL(kThreatURL), &resource);
+
+  auto report = std::make_unique<ThreatDetailsWrap>(
+      ui_manager_.get(), web_contents(), resource, test_shared_loader_factory_,
+      history_service(), referrer_chain_provider_.get());
+  report->StartCollection();
+
+  SimulateFillCache(kThreatURL);
+
+  // The cache collection starts after the IPC from the DOM is fired.
+  std::vector<mojom::ThreatDOMDetailsNodePtr> params;
+  report->OnReceivedThreatDOMDetails(mojo::Remote<mojom::ThreatReporter>(),
+                                     main_rfh()->GetWeakDocumentPtr(),
+                                     std::move(params));
+
+  // Let the cache callbacks complete.
+  base::RunLoop().RunUntilIdle();
+
+  // Let the cache collection start
+  {
+    base::RunLoop run_loop;
+    report->SetShouldStopAfterRedirectCollection(true);
+    report->SetRunLoopToQuit(&run_loop);
+    report->FinishCollection(/*did_proceed=*/true, /*num_visits=*/-1);
+    run_loop.Run();
+  }
+
+  // Cancel the collection
+  report.reset();
+
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace safe_browsing

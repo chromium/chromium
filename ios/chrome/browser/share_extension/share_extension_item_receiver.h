@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,12 +14,12 @@ class BookmarkModel;
 class ReadingListModel;
 
 // This class observes the Application group folder
-// |app_group::ShareExtensionItemsFolder()| and process the files it contains
+// `app_group::ShareExtensionItemsFolder()` and process the files it contains
 // when a new file is created or when application is put in foreground.
 @interface ShareExtensionItemReceiver : NSObject
 
 // Initialize the ShareExtensionItemReceiver with the bookmark and reading
-// list models to use. |shutdown| must be called before the last reference
+// list models to use. `shutdown` must be called before the last reference
 // to the object is released.
 - (instancetype)initWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
                      readingListModel:(ReadingListModel*)readingListModel

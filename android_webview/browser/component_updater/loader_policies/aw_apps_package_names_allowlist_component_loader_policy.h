@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,12 +26,23 @@ class Version;
 
 namespace android_webview {
 
+class AwMetricsServiceClient;
+
 // All these constants have to be kept in sync with the allowlist generation
 // server, see http://go/aw-package-names-allowlist-bloomfilter.
 constexpr char kAllowlistBloomFilterFileName[] = "allowlistbloomfilter";
 constexpr char kBloomFilterNumHashKey[] = "bloomfilter_num_hash";
 constexpr char kBloomFilterNumBitsKey[] = "bloomfilter_num_bits";
 constexpr char kExpiryDateKey[] = "expiry_date";
+
+// Minimum time to throttle querying the app package names allowlist from the
+// component updater service, used when there is no valid cached allowlist
+// result. Exposed for testing only.
+extern const base::TimeDelta kWebViewAppsMinAllowlistThrottleTimeDelta;
+// Maximum time to throttle querying the app package names allowlist from the
+// component updater service, used when there is a valid cached allowlist
+// result. Exposed for testing only.
+extern const base::TimeDelta kWebViewAppsMaxAllowlistThrottleTimeDelta;
 
 // A callback for the result of loading and looking up the allowlist. If the
 // allowlist loading fails, it will be called with a null record.
@@ -91,7 +102,8 @@ class AwAppsPackageNamesAllowlistComponentLoaderPolicy
 };
 
 void LoadPackageNamesAllowlistComponent(
-    component_updater::ComponentLoaderPolicyVector& policies);
+    component_updater::ComponentLoaderPolicyVector& policies,
+    AwMetricsServiceClient* metrics_service_client);
 
 }  // namespace android_webview
 

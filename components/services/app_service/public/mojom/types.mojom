@@ -1,15 +1,18 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module apps.mojom;
 
 import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/safe_base_name.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/image/mojom/image.mojom";
 import "url/mojom/url.mojom";
 
 // Information about an app. See components/services/app_service/README.md.
+// Mojom App struct is DEPRECATED. When adding new fields, please use the App
+// struct in components/services/app_service/public/cpp/app_types.h.
 struct App {
   AppType app_type;
   string app_id;
@@ -46,9 +49,9 @@ struct App {
   // store, etc.
   InstallSource install_source;
 
-  // An optional ID used for policy to identify the app.
-  // For web apps, it contains the install URL.
-  string? policy_id;
+  // IDs used for policy to identify the app.
+  // For web apps, it contains the install URL(s).
+  array<string> policy_ids;
 
   // Whether the app is an extensions::Extensions where is_platform_app()
   // returns true.
@@ -90,7 +93,11 @@ struct App {
   // Whether the app's display mode is in the browser or otherwise.
   WindowMode window_mode;
 
-  // When adding new fields, also update the Merge method and other helpers in
+  // Whether the app runs on os login.
+  RunOnOsLogin? run_on_os_login;
+  // When adding new fields, also update the App struct in
+  // components/services/app_service/public/cpp/app_types.* and the Merge method
+  // and other helpers in
   // components/services/app_service/public/cpp/app_update.*
 };
 
@@ -111,6 +118,7 @@ enum PermissionType {
   kContacts        = 5,
   kStorage         = 6,
   kPrinting        = 7,
+  kFileHandling    = 8,
 };
 
 // The types of apps available in the registry.
@@ -119,7 +127,7 @@ enum AppType {
   kArc,                   // Android app.
   kBuiltIn,               // Built-in app.
   kCrostini,              // Linux (via Crostini) app.
-  kExtension,             // Extension-backed app.
+  kChromeApp,             // Chrome app.
   kWeb,                   // Web app.
   kMacOs,                 // Mac OS app.
   kPluginVm,              // Plugin VM app, see go/pluginvm.
@@ -127,7 +135,9 @@ enum AppType {
   kRemote,                // Remote app.
   kBorealis,              // Borealis app, see go/borealis-app.
   kSystemWeb,             // System web app.
-  kStandaloneBrowserExtension,  // Extension based apps hosted in Lacros.
+  kStandaloneBrowserChromeApp,  // Chrome app hosted in Lacros.
+  kExtension,             // Browser extension.
+  kStandaloneBrowserExtension,  // Extension hosted in Lacros.
 };
 
 // Whether an app is ready to launch, i.e. installed.
@@ -163,6 +173,8 @@ enum InstallReason {
   kSync,       // Installed by sync.
   kUser,       // Installed by user action.
   kSubApp,     // Installed by the SubApp API call.
+  kKiosk,      // Installed by Kiosk on Chrome OS.
+  kCommandLine,  // Installed by the command line argument.
 };
 
 // Where the app was installed from.
@@ -240,18 +252,13 @@ enum IconType {
   kStandard,
 };
 
-struct IconValue {
-  IconType icon_type;
-  gfx.mojom.ImageSkia? uncompressed;
-  array<uint8>? compressed;
-  bool is_placeholder_icon;
-};
-
 // Enumeration of possible app launch sources.
 // This should be kept in sync with metadata/apps/histograms.xml, and
 // LaunchSource in enums.xml.
 // Note the enumeration is used in UMA histogram so entries should not be
 // re-ordered or removed. New entries should be added at the bottom.
+// DEPRECATED. When adding new fields, please use the App struct in
+// components/services/app_service/public/cpp/app_launch_util.h.
 enum LaunchSource {
   kUnknown = 0,
   kFromAppListGrid = 1,               // Grid of apps, not the search box.
@@ -288,6 +295,7 @@ enum LaunchSource {
   kFromOsLogin = 29,                  // Run on OS login.
   kFromProtocolHandler = 30,          // Protocol handler.
   kFromUrlHandler = 31,               // Url handler.
+  kFromLockScreen = 32,               // Lock screen app launcher.
 };
 
 enum TriState {
@@ -365,7 +373,7 @@ enum MenuType {
 enum ConditionType {
   kScheme,         // Matches the URL scheme (e.g. https, tel).
   kHost,           // Matches the URL host (e.g. www.google.com).
-  kPattern,        // Matches the URL pattern (e.g. /abc/*).
+  kPath,           // Matches the URL path (e.g. /abc/*).
   kAction,         // Matches the action type (e.g. view, send).
   kMimeType,       // Matches the top-level mime type (e.g. text/plain).
   kFile,           // Matches against all files.
@@ -373,13 +381,14 @@ enum ConditionType {
 
 // The pattern match type for intent filter pattern condition.
 enum PatternMatchType {
-  kNone = 0,
-  kLiteral,
+  // kNone = 0   Deprecated. Use kLiteral which has the same function
+  kLiteral = 1,
   kPrefix,
   kGlob,
   kMimeType,
   kFileExtension,
   kIsDirectory,
+  kSuffix
 };
 
 // For pattern type of condition, the value match will be based on the pattern
@@ -413,6 +422,8 @@ struct IntentFilter {
 };
 
 // Metadata for a single file shared through an intent.
+// Mojom IntentFile struct is DEPRECATED. When adding new fields, please use
+// the IntentFile struct in components/services/app_service/public/cpp/intent.h.
 struct IntentFile {
   // The URL of the file to share. Normally has the filesystem: scheme, but
   // could be externalfile: or a different scheme, depending on the source.
@@ -422,17 +433,21 @@ struct IntentFile {
   // information in cases where fetching the metadata through the file would be
   // difficult or expensive.
 
-  string? mime_type;  // File MIME type.
-  // TODO(crbug.com/1238215): Use BaseName instead, when available.
-  string? file_name;  // Human readable file name, including extension. Should
-                      // not contain path separators.
-  uint64 file_size;   // File size in bytes.
-  OptionalBool is_directory; // Whether this is a directory or not.
+  // File MIME type.
+  string? mime_type;
+  // Human readable file name, including extension.
+  mojo_base.mojom.SafeBaseName? file_name;
+  // File size in bytes.
+  uint64 file_size;
+  // Whether this is a directory or not.
+  OptionalBool is_directory;
 };
 
 // Action and resource handling request. This should
 // be kept in sync with ConvertIntentToValue and ConvertValueToIntent in
 // components/services/app_service/public/cpp/intent_util.*
+// Mojom Intent struct is DEPRECATED. When adding new fields, please use
+// the Intent struct in components/services/app_service/public/cpp/intent.h.
 struct Intent {
   string action; // Intent action. e.g. view, send.
   url.mojom.Url? url; // The URL of the intent. e.g. https://www.google.com/.
@@ -452,19 +467,6 @@ struct Intent {
   map<string, string>? extras; // Optional string extras.
 };
 
-// Represents a group of |app_ids| that is no longer preferred app of their
-// corresponding |intent_filters|.
-struct ReplacedAppPreferences {
-  map<string, array<IntentFilter>> replaced_preference;
-};
-
-// Represents changes which have been made to the preferred apps list, both
-// adding new filters and removing existing filters.
-struct PreferredAppChanges {
-  map<string, array<IntentFilter>> added_filters;
-  map<string, array<IntentFilter>> removed_filters;
-};
-
 // The preferred app represents by |app_id| for |intent_fitler|.
 struct PreferredApp {
   IntentFilter intent_filter;
@@ -477,6 +479,9 @@ struct FilePaths {
 
 // Don't remove items or change the order of this enum.  It's used in
 // histograms and preferences.
+//
+// This is DEPRECATED. When adding new fields, please use the App
+// struct in components/services/app_service/public/cpp/app_launch_util.h.
 enum LaunchContainer {
   kLaunchContainerWindow = 0,
   kLaunchContainerPanelDeprecated = 1,
@@ -512,6 +517,8 @@ struct Rect {
 };
 
 // The window information to launch an app.
+// DEPRECATED. Please use the WindowInfo struct in
+// components/services/app_service/public/cpp/app_launch_util.h.
 struct WindowInfo {
   int32 window_id = -1;
   int32 state = 0;
@@ -528,4 +535,25 @@ enum WindowMode {
   kBrowser,
   // Opens in a tabbed app window
   kTabbedWindow,
+};
+
+// The RunOnOsLoginModes must be kept in sync
+// with RunOnOsLoginMode in
+// chrome/browser/web_applications/web_app_constants.h
+enum RunOnOsLoginMode {
+  kUnknown = 0,
+  // App won't run on OS Login.
+  kNotRun,
+  // App will run in windowed mode on OS Login.
+  kWindowed,
+};
+
+// RunOnOsLoginMode struct to be used
+// to verify if the mode is set by policy
+// or not.
+struct RunOnOsLogin {
+  RunOnOsLoginMode login_mode;
+  // If the run on os login mode is policy
+  // controlled or not.
+  bool is_managed;
 };

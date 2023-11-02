@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,7 +33,7 @@ DownloadUpdatedObserver::~DownloadUpdatedObserver() {
 }
 
 bool DownloadUpdatedObserver::WaitForEvent() {
-  if (item_ && filter_.Run(item_))
+  if (item_ && filter_.Run(item_.get()))
     event_seen_ = true;
   if (event_seen_)
     return true;
@@ -46,7 +46,7 @@ bool DownloadUpdatedObserver::WaitForEvent() {
 
 void DownloadUpdatedObserver::OnDownloadUpdated(download::DownloadItem* item) {
   DCHECK_EQ(item_, item);
-  if (filter_.Run(item_))
+  if (filter_.Run(item_.get()))
     event_seen_ = true;
   if (waiting_ && event_seen_)
     base::RunLoop::QuitCurrentWhenIdleDeprecated();

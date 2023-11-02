@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,9 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
+#include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/mojom/code_injection.mojom.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"
@@ -74,8 +76,13 @@ class ScriptExecutor {
     FrameResult(FrameResult&&);
     FrameResult& operator=(FrameResult&&);
 
-    // The ID of the frame of the injection.
+    // The ID of the frame of the injection. This is not consistent while
+    // executing content script, and the value represents the one that was set
+    // at the script injection was triggered.
     int frame_id = -1;
+    // The document ID of the frame of the injection. This can be stale if the
+    // frame navigates and another document is created for the frame.
+    ExtensionApiFrameIdMap::DocumentId document_id;
     // The error associated with the injection, if any. Empty if the injection
     // succeeded.
     std::string error;
@@ -130,7 +137,7 @@ class ScriptExecutor {
   }
 
  private:
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
   ScriptsExecutedNotification observer_;
 };

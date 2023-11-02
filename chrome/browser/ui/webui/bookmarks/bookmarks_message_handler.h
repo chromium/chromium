@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,6 @@
 
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_ui_message_handler.h"
-
-namespace base {
-class ListValue;
-}
 
 class BookmarksMessageHandler : public content::WebUIMessageHandler {
  public:
@@ -23,11 +19,11 @@ class BookmarksMessageHandler : public content::WebUIMessageHandler {
 
  private:
   int GetIncognitoAvailability();
-  void HandleGetIncognitoAvailability(const base::ListValue* args);
+  void HandleGetIncognitoAvailability(const base::Value::List& args);
   void UpdateIncognitoAvailability();
 
   bool CanEditBookmarks();
-  void HandleGetCanEditBookmarks(const base::ListValue* args);
+  void HandleGetCanEditBookmarks(const base::Value::List& args);
   void UpdateCanEditBookmarks();
 
   // content::WebUIMessageHandler:

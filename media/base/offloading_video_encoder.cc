@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/trace_event/trace_event.h"
 #include "media/base/video_frame.h"
 
 namespace media {
@@ -37,7 +38,7 @@ OffloadingVideoEncoder::OffloadingVideoEncoder(
 void OffloadingVideoEncoder::Initialize(VideoCodecProfile profile,
                                         const Options& options,
                                         OutputCB output_cb,
-                                        StatusCB done_cb) {
+                                        EncoderStatusCB done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   work_runner_->PostTask(
       FROM_HERE,
@@ -49,8 +50,9 @@ void OffloadingVideoEncoder::Initialize(VideoCodecProfile profile,
 
 void OffloadingVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
                                     bool key_frame,
-                                    StatusCB done_cb) {
+                                    EncoderStatusCB done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT0("media", "OffloadingVideoEncoder::Encode");
   work_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VideoEncoder::Encode,
@@ -60,7 +62,7 @@ void OffloadingVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
 
 void OffloadingVideoEncoder::ChangeOptions(const Options& options,
                                            OutputCB output_cb,
-                                           StatusCB done_cb) {
+                                           EncoderStatusCB done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   work_runner_->PostTask(
       FROM_HERE, base::BindOnce(&VideoEncoder::ChangeOptions,
@@ -69,7 +71,7 @@ void OffloadingVideoEncoder::ChangeOptions(const Options& options,
                                 WrapCallback(std::move(done_cb))));
 }
 
-void OffloadingVideoEncoder::Flush(StatusCB done_cb) {
+void OffloadingVideoEncoder::Flush(EncoderStatusCB done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   work_runner_->PostTask(
       FROM_HERE, base::BindOnce(&VideoEncoder::Flush,

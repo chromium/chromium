@@ -1,18 +1,22 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/autofill/autofill_uitest_util.h"
+#include "base/memory/raw_ptr.h"
 
 #include "base/run_loop.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
+#include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "content/public/test/test_utils.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
 
@@ -55,7 +59,7 @@ class PdmChangeWaiter : public PersonalDataManagerObserver {
  private:
   bool alerted_;
   bool has_run_message_loop_;
-  Profile* base_profile_;
+  raw_ptr<Profile> base_profile_;
 };
 
 static PersonalDataManager* GetPersonalDataManager(Profile* profile) {
@@ -118,7 +122,7 @@ void WaitForPersonalDataChange(Profile* base_profile) {
 
 void WaitForPersonalDataManagerToBeLoaded(Profile* base_profile) {
   PersonalDataManager* pdm =
-      autofill::PersonalDataManagerFactory::GetForProfile(base_profile);
+      PersonalDataManagerFactory::GetForProfile(base_profile);
   while (!pdm->IsDataLoaded())
     WaitForPersonalDataChange(base_profile);
 }
@@ -127,14 +131,22 @@ void GenerateTestAutofillPopup(
     AutofillExternalDelegate* autofill_external_delegate) {
   int query_id = 1;
   FormData form;
-  FormFieldData field;
-  field.is_focusable = true;
-  field.should_autocomplete = true;
+  form.url = GURL("https://foo.com/bar");
+  form.fields.emplace_back();
+  form.fields.front().is_focusable = true;
+  form.fields.front().should_autocomplete = true;
   gfx::RectF bounds(100.f, 100.f);
 
   ContentAutofillDriver* driver = static_cast<ContentAutofillDriver*>(
       absl::get<AutofillDriver*>(autofill_external_delegate->GetDriver()));
-  driver->AskForValuesToFill(query_id, form, field, bounds, false);
+  mojom::AutofillDriver* mojo_driver = driver;
+  TestAutofillManagerWaiter waiter(
+      *driver->autofill_manager(),
+      {&AutofillManager::Observer::OnAfterAskForValuesToFill});
+  mojo_driver->AskForValuesToFill(form, form.fields.front(), bounds, query_id,
+                                  /*autoselect_first_suggestion=*/false,
+                                  FormElementWasClicked(false));
+  ASSERT_TRUE(waiter.Wait());
 
   std::vector<Suggestion> suggestions = {Suggestion(u"Test suggestion")};
   autofill_external_delegate->OnSuggestionsReturned(

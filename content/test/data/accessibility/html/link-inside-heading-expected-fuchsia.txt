@@ -1,0 +1,7 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++UNKNOWN label='Link In Heading'
+++++++++LINK focusable label='Link In Heading' actions='{DEFAULT}'
+++++++++++STATIC_TEXT label='Link In Heading'
+++++++++++++UNKNOWN label='Link In Heading'

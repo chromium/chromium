@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,8 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/system/sys_info.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/remote_probe_service_strategy.h"
+#include "chromeos/crosapi/mojom/probe_service.mojom.h"
 
 namespace chromeos {
 
@@ -38,10 +39,16 @@ class HardwareInfoDelegate {
   HardwareInfoDelegate& operator=(const HardwareInfoDelegate&) = delete;
   virtual ~HardwareInfoDelegate();
 
-  virtual void GetManufacturer(ManufacturerCallback callback);
+  virtual void GetManufacturer(ManufacturerCallback done_cb);
 
  protected:
   HardwareInfoDelegate();
+
+ private:
+  void FallbackHandler(ManufacturerCallback done_cb,
+                       std::string probe_service_result);
+
+  std::unique_ptr<RemoteProbeServiceStrategy> remote_probe_service_strategy_;
 };
 
 }  // namespace chromeos

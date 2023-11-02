@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -13,6 +13,7 @@
 #include <functional>
 
 #include "base/check_op.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/i18n.h"
@@ -46,11 +47,10 @@ struct AvailableLanguageAliases {
 bool IsArraySortedAndLowerCased(span<const LangToOffset> languages_to_offset) {
   return std::is_sorted(languages_to_offset.begin(),
                         languages_to_offset.end()) &&
-         std::all_of(languages_to_offset.begin(), languages_to_offset.end(),
-                     [](const auto& lang) {
-                       auto language = AsStringPiece16(lang.first);
-                       return ToLowerASCII(language) == language;
-                     });
+         base::ranges::all_of(languages_to_offset, [](const auto& lang) {
+           auto language = AsStringPiece16(lang.first);
+           return ToLowerASCII(language) == language;
+         });
 }
 #endif  // DCHECK_IS_ON()
 
@@ -260,7 +260,7 @@ bool SelectIf(const std::vector<std::wstring>& candidates,
 void SelectLanguageMatchingCandidate(
     const std::vector<std::wstring>& candidates,
     span<const LangToOffset> languages_to_offset,
-    int* selected_offset,
+    size_t* selected_offset,
     std::wstring* matched_candidate,
     std::wstring* selected_language) {
   DCHECK(selected_offset);
@@ -306,7 +306,7 @@ std::vector<std::wstring> GetCandidatesFromSystem(
     WStringPiece preferred_language) {
   std::vector<std::wstring> candidates;
 
-  // Get the intitial candidate list for this particular implementation (if
+  // Get the initial candidate list for this particular implementation (if
   // applicable).
   if (!preferred_language.empty())
     candidates.emplace_back(preferred_language);

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,10 +64,10 @@ class CC_EXPORT RenderFrameMetadata {
   // The background color of a CompositorFrame. It can be used for filling the
   // content area if the primary surface is unavailable and fallback is not
   // specified.
-  SkColor root_background_color = SK_ColorWHITE;
+  SkColor4f root_background_color = SkColors::kWhite;
 
   // Scroll offset of the root layer.
-  absl::optional<gfx::Vector2dF> root_scroll_offset;
+  absl::optional<gfx::PointF> root_scroll_offset;
 
   // Selection region relative to the current viewport. If the selection is
   // empty or otherwise unused, the bound types will indicate such.
@@ -115,11 +115,15 @@ class CC_EXPORT RenderFrameMetadata {
   viz::VerticalScrollDirection new_vertical_scroll_direction =
       viz::VerticalScrollDirection::kNull;
 
-  // Measures the amount of time that Blink spends updating in response to a new
-  // set of VisualProperties arriving. See WidgetBase::UpdateVisualProperties.
-  base::TimeDelta visual_properties_update_duration;
+  // The cumulative time spent performing visual updates for all
+  // `local_surface_id` before this one.
+  base::TimeDelta previous_surfaces_visual_update_duration;
 
-#if defined(OS_ANDROID)
+  // The cumulative time spent performing visual updates for the current
+  // `local_surface_id`.
+  base::TimeDelta current_surface_visual_update_duration;
+
+#if BUILDFLAG(IS_ANDROID)
   // Used to position Android bottom bar, whose position is computed by the
   // renderer compositor.
   float bottom_controls_height = 0.f;

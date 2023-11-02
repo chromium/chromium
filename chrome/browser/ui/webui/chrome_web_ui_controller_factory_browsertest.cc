@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,5 +38,33 @@ IN_PROC_BROWSER_TEST_F(ChromeWebUIControllerFactoryBrowserTest,
       browser(), GURL(base::StrCat({"chrome://", chrome::kChromeUIVersionHost,
                                     "/title2.html"}))));
   EXPECT_EQ(u"About Version", web_contents->GetTitle());
+  EXPECT_TRUE(web_contents->GetWebUI());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebUIControllerFactoryBrowserTest,
+                       NoWebUiNtpInIncognitoProfile) {
+  auto* incognito_browser = CreateIncognitoBrowser();
+  auto* web_contents =
+      incognito_browser->tab_strip_model()->GetActiveWebContents();
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      incognito_browser, GURL(chrome::kChromeUINewTabPageURL)));
+  EXPECT_FALSE(web_contents->GetWebUI());
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      incognito_browser, GURL(chrome::kChromeUINewTabPageThirdPartyURL)));
+  EXPECT_FALSE(web_contents->GetWebUI());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebUIControllerFactoryBrowserTest,
+                       WebUiNtpInNormalProfile) {
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUINewTabPageURL)));
+  EXPECT_TRUE(web_contents->GetWebUI());
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUINewTabPageThirdPartyURL)));
   EXPECT_TRUE(web_contents->GetWebUI());
 }

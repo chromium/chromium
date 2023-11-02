@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,15 +15,17 @@ namespace browser_sync {
 BrowserSyncedWindowDelegatesGetter::BrowserSyncedWindowDelegatesGetter(
     Profile* profile)
     : profile_(profile) {}
-BrowserSyncedWindowDelegatesGetter::~BrowserSyncedWindowDelegatesGetter() {}
+BrowserSyncedWindowDelegatesGetter::~BrowserSyncedWindowDelegatesGetter() =
+    default;
 
 BrowserSyncedWindowDelegatesGetter::SyncedWindowDelegateMap
 BrowserSyncedWindowDelegatesGetter::GetSyncedWindowDelegates() {
   SyncedWindowDelegateMap synced_window_delegates;
   // Add all the browser windows.
   for (auto* browser : *BrowserList::GetInstance()) {
-    if (browser->profile() != profile_)
+    if (browser->profile() != profile_) {
       continue;
+    }
     synced_window_delegates[browser->synced_window_delegate()->GetSessionId()] =
         browser->synced_window_delegate();
   }

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ const char kCertFileName2[] = "expired_cert.pem";
 const char kHostName1[] = "www.example.com";
 const char kHostName2[] = "www.chromium.test";
 
-// Loads cert with the given |file_name|.
+// Loads cert with the given `file_name`.
 scoped_refptr<net::X509Certificate> GetCert(const std::string& file_name) {
   return net::ImportCertFromFile(net::GetTestCertsDirectory(), file_name);
 }

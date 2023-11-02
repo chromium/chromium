@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Log;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -64,7 +63,7 @@ public class OptimizationGuidePushNotificationManager {
     /** A sentinel Set that is set when the pref for a specific OptimizationType overflows. */
     private static final Set<String> OVERFLOW_SENTINEL_SET = Set.of("__overflow");
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    /** The default cache size in Java for push notification. */
     public static final IntCachedFieldTrialParameter MAX_CACHE_SIZE =
             new IntCachedFieldTrialParameter(
                     ChromeFeatureList.OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS, "max_cache_size", 100);
@@ -74,8 +73,7 @@ public class OptimizationGuidePushNotificationManager {
      * @param payload the incoming payload.
      */
     public static void onPushNotification(HintNotificationPayload payload) {
-        if (!CachedFeatureFlags.isEnabled(
-                    ChromeFeatureList.OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS)) {
+        if (!ChromeFeatureList.sOptimizationGuidePushNotifications.isEnabled()) {
             // In case the feature has become disabled after once being enabled, clear everything.
             clearCacheForAllTypes();
             return;

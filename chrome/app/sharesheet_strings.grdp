@@ -26,6 +26,9 @@
       other {{COUNT} files}}
   </message>
   <message name="IDS_SHARESHEET_COPY_TO_CLIPBOARD_SHARE_ACTION_LABEL" desc="The label for the button in the sharesheet that copies the data the user has selected to the clipboard.">
-    Copy to clipboard
+    Copy
+  </message>
+  <message name="IDS_SHARESHEET_COPY_TO_CLIPBOARD_SUCCESS_TOAST_LABEL" desc="The label for the system toast at the bottom of the screen that notifies the user that their selected data has been copied to the clipboard.">
+    Copied
   </message>
 </grit-part>

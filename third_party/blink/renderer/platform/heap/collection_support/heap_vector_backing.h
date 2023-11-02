@@ -1,14 +1,15 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_COLLECTION_SUPPORT_HEAP_VECTOR_BACKING_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_COLLECTION_SUPPORT_HEAP_VECTOR_BACKING_H_
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/platform/heap/custom_spaces.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
-#include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/heap/thread_state_storage.h"
 #include "third_party/blink/renderer/platform/heap/trace_traits.h"
 #include "third_party/blink/renderer/platform/wtf/conditional_destructor.h"
 #include "third_party/blink/renderer/platform/wtf/container_annotations.h"
@@ -35,7 +36,7 @@ template <typename T, typename Traits = WTF::VectorTraits<T>>
 class HeapVectorBacking final
     : public GarbageCollected<HeapVectorBacking<T, Traits>>,
       public WTF::ConditionalDestructor<HeapVectorBacking<T, Traits>,
-                                        !Traits::kNeedsDestruction> {
+                                        Traits::kNeedsDestruction> {
   using ClassType = HeapVectorBacking<T, Traits>;
 
  public:
@@ -144,17 +145,14 @@ struct TraceInCollectionTrait<kNoWeakHandling,
     //   This is fine because the fact that the object can be initialized
     //   with memset indicates that it is safe to treat the zerod slot
     //   as a valid object.
-    static_assert(!IsTraceableInCollectionTrait<Traits>::value ||
-                      Traits::kCanClearUnusedSlotsWithMemset ||
-                      std::is_polymorphic<T>::value,
-                  "HeapVectorBacking doesn't support objects that cannot be "
-                  "cleared as unused with memset.");
+    static_assert(
+        Traits::kCanClearUnusedSlotsWithMemset || std::is_polymorphic<T>::value,
+        "HeapVectorBacking doesn't support objects that cannot be "
+        "cleared as unused with memset.");
 
-    // This trace method is instantiated for vectors where
-    // IsTraceableInCollectionTrait<Traits>::value is false, but the trace
-    // method should not be called. Thus we cannot static-assert
-    // IsTraceableInCollectionTrait<Traits>::value but should runtime-assert it.
-    DCHECK(IsTraceableInCollectionTrait<Traits>::value);
+    // Bail out early if the contents are not actually traceable.
+    if constexpr (!IsTraceableInCollectionTrait<Traits>::value)
+      return;
 
     const T* array = reinterpret_cast<const T*>(self);
     const size_t length =

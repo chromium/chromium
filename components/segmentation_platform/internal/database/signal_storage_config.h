@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,12 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/segmentation_platform/internal/database/signal_key.h"
-#include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/signal_storage_config.pb.h"
+#include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
 namespace segmentation_platform {
 
@@ -45,7 +46,8 @@ class SignalStorageConfig {
   // evaluation. The model should be skipped if it hasn't been captured long
   // enough.
   virtual bool MeetsSignalCollectionRequirement(
-      const proto::SegmentationModelMetadata& model_metadata);
+      const proto::SegmentationModelMetadata& model_metadata,
+      bool include_output = false);
 
   // Called whenever we find a model. Noop for existing models. Loops through
   // all the signals and updates their storage requirements. Also sets their
@@ -83,7 +85,19 @@ class SignalStorageConfig {
       std::unique_ptr<std::vector<proto::SignalStorageConfigs>> entries);
 
   proto::SignalStorageConfig* FindSignal(uint64_t signal_hash,
+                                         uint64_t event_hash,
                                          proto::SignalType signal_type);
+
+  bool UpdateConfigForSignal(int signal_storage_length,
+                             uint64_t signal_hash,
+                             uint64_t event_hash,
+                             proto::SignalType signal_type);
+
+  bool MeetsSignalCollectionRequirementForSignal(
+      base::TimeDelta min_signal_collection_length,
+      uint64_t signal_hash,
+      uint64_t event_hash,
+      proto::SignalType signal_type);
 
   // Helper method to flush the cached data to the DB. Called whenever the cache
   // is dirty.
@@ -95,7 +109,7 @@ class SignalStorageConfig {
 
   std::unique_ptr<SignalStorageConfigProtoDb> database_;
 
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
   base::WeakPtrFactory<SignalStorageConfig> weak_ptr_factory_{this};
 };

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/values.h"
@@ -108,8 +108,7 @@ class BluetoothGattDescriptorClientImpl
 
     // Append empty option dict
     dbus::MessageWriter writer(&method_call);
-    base::DictionaryValue dict;
-    dbus::AppendValueData(&writer, dict);
+    dbus::AppendValueData(&writer, base::Value::Dict());
 
     object_proxy->CallMethodWithErrorCallback(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
@@ -139,8 +138,7 @@ class BluetoothGattDescriptorClientImpl
     writer.AppendArrayOfBytes(value.data(), value.size());
 
     // Append empty option dict
-    base::DictionaryValue dict;
-    dbus::AppendValueData(&writer, dict);
+    dbus::AppendValueData(&writer, base::Value::Dict());
 
     object_proxy->CallMethodWithErrorCallback(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
@@ -245,7 +243,7 @@ class BluetoothGattDescriptorClientImpl
     std::move(error_callback).Run(error_name, error_message);
   }
 
-  dbus::ObjectManager* object_manager_;
+  raw_ptr<dbus::ObjectManager> object_manager_;
 
   // List of observers interested in event notifications from us.
   base::ObserverList<BluetoothGattDescriptorClient::Observer>::Unchecked

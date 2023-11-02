@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/layers/layer_impl.h"
@@ -130,7 +131,7 @@ class CC_EXPORT BrowserControlsOffsetManager {
   void SetBottomMinHeightOffsetAnimationRange(float from, float to);
 
   // The client manages the lifecycle of this.
-  BrowserControlsOffsetManagerClient* client_;
+  raw_ptr<BrowserControlsOffsetManagerClient> client_;
 
   BrowserControlsState permitted_state_;
 

@@ -1,30 +1,30 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/sad_tab/sad_tab_view.h"
 
 #import <MaterialComponents/MaterialButtons.h>
-#import <MaterialComponents/MaterialTypography.h>
 
-#include "base/metrics/histogram_macros.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/grit/components_scaled_resources.h"
-#include "components/strings/grit/components_strings.h"
-#include "components/ui_metrics/sadtab_metrics_types.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
-#import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/grit/components_scaled_resources.h"
+#import "components/strings/grit/components_strings.h"
+#import "components/ui_metrics/sadtab_metrics_types.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
-#include "ios/chrome/browser/ui/util/rtl_geometry.h"
+#import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
-#include "ios/web/public/browser_state.h"
-#include "ios/web/public/navigation/navigation_manager.h"
+#import "ios/chrome/common/ui/util/text_view_util.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
+#import "ios/web/public/browser_state.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #import "net/base/mac/url_conversions.h"
-#include "ui/base/device_form_factor.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "url/gurl.h"
+#import "ui/base/device_form_factor.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -70,7 +70,7 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
 @property(nonatomic, readonly, strong) UILabel* titleLabel;
 // Displays the Sad Tab footer message (including a link to more help).
 @property(nonatomic, readonly, strong) UITextView* footerLabel;
-// The bounds of |containerView|, with a height updated to CGFLOAT_MAX to allow
+// The bounds of `containerView`, with a height updated to CGFLOAT_MAX to allow
 // text to be laid out using as many lines as necessary.
 @property(nonatomic, readonly) CGRect containerBounds;
 
@@ -103,7 +103,7 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
 // Returns the string to be used for the main action button.
 - (nonnull NSString*)buttonText;
 
-// The action selector for |_actionButton|.
+// The action selector for `_actionButton`.
 - (void)handleActionButtonTapped;
 
 // Returns the desired background color.
@@ -309,22 +309,22 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
     [_titleLabel setLineBreakMode:NSLineBreakByWordWrapping];
     [_titleLabel setNumberOfLines:0];
     [_titleLabel setTextColor:[UIColor colorNamed:kTextPrimaryColor]];
-    [_titleLabel setFont:[[MDCTypography fontLoader]
-                             regularFontOfSize:kTitleLabelFontSize]];
+    [_titleLabel setFont:[UIFont systemFontOfSize:kTitleLabelFontSize
+                                           weight:UIFontWeightRegular]];
   }
   return _titleLabel;
 }
 
 - (UITextView*)footerLabel {
   if (!_footerLabel) {
-    _footerLabel = [[UITextView alloc] initWithFrame:CGRectZero];
+    _footerLabel = CreateUITextViewWithTextKit1();
     _footerLabel.backgroundColor = self.backgroundColor;
     _footerLabel.delegate = self;
 
     // Set base text styling for footer.
     NSDictionary<NSAttributedStringKey, id>* footerAttributes = @{
-      NSFontAttributeName :
-          [[MDCTypography fontLoader] regularFontOfSize:kFooterLabelFontSize],
+      NSFontAttributeName : [UIFont systemFontOfSize:kFooterLabelFontSize
+                                              weight:UIFontWeightRegular],
       NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
     };
     NSMutableAttributedString* footerText =
@@ -534,13 +534,13 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
 
 - (UITextView*)messageTextView {
   if (!_messageTextView) {
-    _messageTextView = [[UITextView alloc] initWithFrame:CGRectZero];
+    _messageTextView = CreateUITextViewWithTextKit1();
     [_messageTextView setBackgroundColor:self.backgroundColor];
     [_messageTextView setAttributedText:[self messageTextViewAttributedText]];
     _messageTextView.textContainer.lineFragmentPadding = 0.0f;
     [_messageTextView setTextColor:[UIColor colorNamed:kTextSecondaryColor]];
-    [_messageTextView setFont:[[MDCTypography fontLoader]
-                                  regularFontOfSize:kMessageTextViewFontSize]];
+    [_messageTextView setFont:[UIFont systemFontOfSize:kMessageTextViewFontSize
+                                                weight:UIFontWeightRegular]];
     [_messageTextView setUserInteractionEnabled:NO];
   }
   return _messageTextView;

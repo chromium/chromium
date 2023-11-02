@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
@@ -37,9 +38,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/arc/arc_prefs.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "components/arc/arc_prefs.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -122,7 +123,7 @@ constexpr char kPossibleNonMisconfigurationFailures[] =
     "Extensions.ForceInstalledSessionsWithNonMisconfigurationFailureOccured";
 constexpr char kDisableReason[] =
     "Extensions.ForceInstalledNotLoadedDisableReason";
-constexpr char kBlocklisted[] = "Extensions.ForceInstalledAndBlackListed";
+constexpr char kBlocklisted[] = "Extensions.ForceInstalledAndBlockListed";
 constexpr char kWebStoreExtensionManifestInvalid[] =
     "Extensions.WebStore_ForceInstalledFailureManifestInvalidErrorDetail2";
 constexpr char kOffStoreExtensionManifestInvalid[] =
@@ -228,7 +229,7 @@ class ForceInstalledMetricsTest : public ForceInstalledTestBase {
 
  protected:
   base::HistogramTester histogram_tester_;
-  base::MockOneShotTimer* fake_timer_;
+  raw_ptr<base::MockOneShotTimer> fake_timer_;
   std::unique_ptr<ForceInstalledMetrics> metrics_;
 };
 
@@ -902,7 +903,7 @@ TEST_F(ForceInstalledMetricsTest, ReportManagedGuestSessionOnExtensionFailure) {
   fake_user_manager->UserLoggedIn(account_id, user->username_hash(),
                                   false /* browser_restart */,
                                   false /* is_child */);
-  chromeos::ProfileHelper::Get()->SetProfileToUserMappingForTesting(user);
+  ash::ProfileHelper::Get()->SetProfileToUserMappingForTesting(user);
   SetupForceList(ExtensionOrigin::kWebStore);
   install_stage_tracker()->ReportFailure(
       kExtensionId1, InstallStageTracker::FailureReason::INVALID_ID);
@@ -928,7 +929,7 @@ TEST_F(ForceInstalledMetricsTest, ReportGuestSessionOnExtensionFailure) {
   fake_user_manager->UserLoggedIn(account_id, user->username_hash(),
                                   false /* browser_restart */,
                                   false /* is_child */);
-  chromeos::ProfileHelper::Get()->SetProfileToUserMappingForTesting(user);
+  ash::ProfileHelper::Get()->SetProfileToUserMappingForTesting(user);
   SetupForceList(ExtensionOrigin::kWebStore);
   install_stage_tracker()->ReportFailure(
       kExtensionId1, InstallStageTracker::FailureReason::INVALID_ID);
@@ -957,7 +958,7 @@ TEST_F(ForceInstalledMetricsTest,
   fake_user_manager->UserLoggedIn(account_id, user->username_hash(),
                                   false /* browser_restart */,
                                   false /* is_child */);
-  chromeos::ProfileHelper::Get()->SetProfileToUserMappingForTesting(user);
+  ash::ProfileHelper::Get()->SetProfileToUserMappingForTesting(user);
 
   SetupForceList(ExtensionOrigin::kWebStore);
   CreateExtensionService(/*extensions_enabled=*/true);

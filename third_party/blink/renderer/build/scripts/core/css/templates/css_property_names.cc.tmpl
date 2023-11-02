@@ -1,12 +1,12 @@
 %{
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/{{file_basename}}.h"
 
 #include <string.h>
-#include "third_party/blink/public/mojom/use_counter/css_property_id.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/hash_tools.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -66,6 +66,15 @@ mojom::blink::CSSSampleId GetCSSSampleId(CSSPropertyID id) {
   }
 
   NOTREACHED();
+}
+
+int ResolveCSSPropertyAlias(int value) {
+  static constexpr uint16_t kLookupTable[] = {
+  {% for p in aliases : %}
+    {{p.aliased_enum_value}},
+  {% endfor %}
+  };
+  return kLookupTable[value - {{alias_offset}}];
 }
 
 }  // namespace blink

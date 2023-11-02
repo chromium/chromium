@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -341,6 +341,11 @@ bool SyscallSets::IsAllowedSignalHandling(int sysno) {
     case __NR_rt_sigprocmask:
     case __NR_rt_sigreturn:
     case __NR_rt_sigtimedwait:
+    // Used by Crashpad or Bionic to set up signal handler stacks. An alternate
+    // signal handler stack allows the kernel to deliver signals to threads
+    // whose stack pointers no longer point to their main stack, e.g. stack
+    // overflow.
+    case __NR_sigaltstack:
 #if defined(__i386__) || defined(__arm__) || \
     (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
     case __NR_rt_sigtimedwait_time64:
@@ -353,7 +358,6 @@ bool SyscallSets::IsAllowedSignalHandling(int sysno) {
     case __NR_rt_sigqueueinfo:
     case __NR_rt_sigsuspend:
     case __NR_rt_tgsigqueueinfo:
-    case __NR_sigaltstack:
 #if !defined(__aarch64__)
     case __NR_signalfd:
 #endif
@@ -1192,4 +1196,14 @@ bool SyscallSets::IsMipsMisc(int sysno) {
   }
 }
 #endif  // defined(__mips__)
+
+bool SyscallSets::IsGoogle3Threading(int sysno) {
+  switch (sysno) {
+    case __NR_getitimer:
+    case __NR_setitimer:
+      return true;
+    default:
+      return false;
+  }
+}
 }  // namespace sandbox.

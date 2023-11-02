@@ -1,9 +1,18 @@
+# When picking a reviewer for Fuchsia-related OWNERShip, please start by looking
+# at git history to find the most relevant owner. The team would appreciate it
+# if you would also add chromium-fuchsia-reviews@google.com so that a shadowed
+# reviewer is added automatically. Thank you.
+
 ddorwin@chromium.org
 fdegans@chromium.org
+grt@chromium.org
 kmarshall@chromium.org
-qsr@chromium.org
 sergeyu@chromium.org
 wez@chromium.org
 
 per-file linux.sdk.sha1=chromium-autoroll@skia-public.iam.gserviceaccount.com
 per-file mac.sdk.sha1=chromium-autoroll@skia-public.iam.gserviceaccount.com
+per-file linux_internal.sdk.sha1=chromium-internal-autoroll@skia-corp.google.com.iam.gserviceaccount.com
+
+per-file SECURITY_OWNERS=set noparent
+per-file SECURITY_OWNERS=file://build/fuchsia/SECURITY_OWNERS

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ash/release_notes/release_notes_storage.h"
@@ -76,7 +77,8 @@ const std::vector<InternalApp>& GetInternalAppList(const Profile* profile) {
 }
 
 bool IsSuggestionChip(const std::string& app_id) {
-  return base::LowerCaseEqualsASCII(app_id, ash::kInternalAppIdContinueReading);
+  return base::EqualsCaseInsensitiveASCII(app_id,
+                                          ash::kInternalAppIdContinueReading);
 }
 
 const InternalApp* FindInternalApp(const std::string& app_id) {

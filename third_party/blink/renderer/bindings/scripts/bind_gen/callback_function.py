@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -25,7 +25,6 @@ from .code_node_cxx import CxxNamespaceNode
 from .code_node_cxx import CxxUnlikelyIfNode
 from .codegen_accumulator import CodeGenAccumulator
 from .codegen_context import CodeGenContext
-from .codegen_format import format_template as _format
 from .codegen_utils import collect_forward_decls_and_include_headers
 from .codegen_utils import component_export
 from .codegen_utils import component_export_header
@@ -186,7 +185,7 @@ def make_callback_invocation_function(cg_context,
     func_decl = CxxFuncDeclNode(name=function_name,
                                 arg_decls=arg_decls,
                                 return_type=maybe_return_type,
-                                warn_unused_result=True)
+                                nodiscard=True)
     if cg_context.callback_function:
         if is_construct_call:
             comment = T("""\
@@ -251,7 +250,7 @@ if (!callback_relevant_script_state) {
                 body=[
                     T("v8::HandleScope handle_scope(${isolate});"),
                     T("v8::Context::Scope context_scope("
-                      "CallbackObject()->GetCreationContextChecked());"),
+                      "callback_relevant_script_state->GetContext());"),
                     T("${exception_state}.ThrowException("
                       "static_cast<ExceptionCode>(ESErrorType::kError), "
                       "\"The provided callback is no longer runnable.\");"),
@@ -269,6 +268,15 @@ if (!callback_relevant_script_state) {
             template_params.append(
                 "bindings::"
                 "CallbackInvokeHelperMode::kLegacyTreatNonObjectAsNull")
+        else:
+            template_params.append(
+                "bindings::CallbackInvokeHelperMode::kDefault")
+        if func_like.return_type.unwrap(typedef=True).is_promise:
+            template_params.append(
+                "bindings::CallbackReturnTypeIsPromise::kYes")
+        else:
+            template_params.append(
+                "bindings::CallbackReturnTypeIsPromise::kNo")
     elif cg_context.callback_interface:
         template_params = ["CallbackInterfaceBase"]
     body.extend([
@@ -412,7 +420,7 @@ def make_invoke_and_report_function(cg_context, function_name, api_func_name):
         T("v8::TryCatch try_catch(${isolate});"),
         T("try_catch.SetVerbose(true);"),
         EmptyNode(),
-        F("ignore_result({api_func_name}({arg_names}));",
+        F("std::ignore = {api_func_name}({arg_names});",
           api_func_name=api_func_name,
           arg_names=", ".join(arg_names)),
     ])
@@ -594,8 +602,10 @@ def generate_callback_function(callback_function_identifier):
         "third_party/blink/renderer/platform/bindings/callback_function_base.h",
         "third_party/blink/renderer/platform/bindings/v8_value_or_script_wrappable_adapter.h",
     ])
+    source_node.accumulator.add_stdcpp_include_headers([
+        "tuple",
+    ])
     source_node.accumulator.add_include_headers([
-        "base/macros.h",
         "third_party/blink/renderer/bindings/core/v8/callback_invoke_helper.h",
         "third_party/blink/renderer/bindings/core/v8/generated_code_helper.h",
         "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h",

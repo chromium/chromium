@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,14 +14,12 @@
 namespace base {
 
 FilteredServiceDirectory::FilteredServiceDirectory(
-    sys::ServiceDirectory* directory)
-    : directory_(std::move(directory)) {
-}
+    std::shared_ptr<sys::ServiceDirectory> directory)
+    : directory_(directory) {}
 
-FilteredServiceDirectory::~FilteredServiceDirectory() {}
+FilteredServiceDirectory::~FilteredServiceDirectory() = default;
 
-zx_status_t FilteredServiceDirectory::AddService(
-    base::StringPiece service_name) {
+zx_status_t FilteredServiceDirectory::AddService(StringPiece service_name) {
   return outgoing_directory_.AddPublicService(
       std::make_unique<vfs::Service>(
           [this, service_name = std::string(service_name)](
@@ -33,11 +31,12 @@ zx_status_t FilteredServiceDirectory::AddService(
 }
 
 zx_status_t FilteredServiceDirectory::ConnectClient(
-    fidl::InterfaceRequest<::fuchsia::io::Directory> dir_request) {
+    fidl::InterfaceRequest<fuchsia::io::Directory> dir_request) {
   // sys::OutgoingDirectory puts public services under ./svc . Connect to that
   // directory and return client handle for the connection,
   return outgoing_directory_.GetOrCreateDirectory("svc")->Serve(
-      ::fuchsia::io::OPEN_RIGHT_READABLE | ::fuchsia::io::OPEN_RIGHT_WRITABLE,
+      fuchsia::io::OpenFlags::RIGHT_READABLE |
+          fuchsia::io::OpenFlags::RIGHT_WRITABLE,
       dir_request.TakeChannel());
 }
 

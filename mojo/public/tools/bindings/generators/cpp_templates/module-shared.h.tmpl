@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,7 +43,6 @@ namespace {{namespace}} {
 #include <utility>
 
 {%- if not contains_only_enums %}
-#include "base/compiler_specific.h"
 #include "mojo/public/cpp/bindings/array_data_view.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/interface_data_view.h"
@@ -63,6 +62,7 @@ namespace {{namespace}} {
 {#- Avoid transitive includes of interface headers if possible. #}
 {% if not disallow_interfaces and uses_interfaces -%}
 #include "mojo/public/cpp/bindings/lib/interface_serialization.h"
+#include "mojo/public/cpp/system/data_pipe.h"
 {%- endif %}
 
 {% if not disallow_native_types and uses_native_types %}
